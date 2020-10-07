@@ -27,7 +27,7 @@ public class TimeArrays {
   // @Test
   public void testNc4Array() throws IOException {
     Stopwatch stopwatch = Stopwatch.createStarted();
-    long total = TestReadArrayProblem.compareArrays(filename);
+    long total = TestReadArrayCompare.compareNetcdfFile(filename);
     stopwatch.stop();
     double rate = ((double) total) / stopwatch.elapsed(TimeUnit.MICROSECONDS);
     System.out.printf("*** %d bytes took %s = %10.4f MB/sec%n", total, stopwatch, rate);

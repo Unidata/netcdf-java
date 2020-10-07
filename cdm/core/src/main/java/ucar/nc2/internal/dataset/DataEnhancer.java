@@ -32,7 +32,7 @@ public class DataEnhancer {
       // Creates STRING data. As a result, we can return here, because the other conversions don't apply to STRING.
       return convertEnums(data);
     } else {
-      // TODO: make work for isVariableLength; i thought BUFR worked?
+      // TODO: make this work for isVariableLength; i thought BUFR worked?
       if (variableDS.isVariableLength()) {
         return data;
       }
@@ -61,6 +61,5 @@ public class DataEnhancer {
     ucar.ma2.Array ma2 = ArraysConvert.convertFromArray(data);
     return ArraysConvert.convertToArray(convert(ma2, enhancements));
   }
-
 
 }

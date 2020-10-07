@@ -714,10 +714,8 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     // optionally cache it
     if (isCaching()) {
       cache.setCachedData(ArraysConvert.convertToArray(data));
-      return ArraysConvert.convertFromArray(cache.getData()); // dont let users get their nasty hands on cached data
-    } else {
-      return data;
     }
+    return data;
   }
 
   public ucar.array.Array<?> readArray() throws IOException {
@@ -1036,7 +1034,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
 
 
   /**
-   * Use when dimensions have changed, to recalculate the shape.
+   * Use when unlimited dimension grows, to recalculate the shape.
    * 
    * @deprecated Use Variable.builder()
    */
@@ -1057,7 +1055,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
         isVariableLength = true;
       }
     }
-    this.shapeAsSection = null; // recalc next time its asked for
+    this.shapeAsSection = Dimensions.makeSectionFromDimensions(this.dimensions).build();
   }
 
   /** Get immutable service provider opaque object. */
@@ -1177,7 +1175,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
   @Nullable
   protected final Object spiObject;
 
-  // computed
+  // TODO get rid of resetShape() so these can be final
   private Section shapeAsSection; // derived from the shape, immutable; used for every read, deferred creation
   protected int[] shape;
   protected boolean isVariableLength;
@@ -1323,7 +1321,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
   public static abstract class Builder<T extends Builder<T>> {
     public String shortName;
     public DataType dataType;
-    private int elementSize;
+    protected int elementSize;
 
     public NetcdfFile ncfile; // set in Group build() if null
     private Structure parentStruct; // set in Structure.build(), no not use otherwise

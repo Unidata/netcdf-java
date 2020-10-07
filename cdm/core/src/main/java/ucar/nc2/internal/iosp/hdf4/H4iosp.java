@@ -138,16 +138,16 @@ public class H4iosp extends AbstractIOServiceProvider {
     if (!vinfo.isCompressed) {
       if (!vinfo.isLinked && !vinfo.isChunked) {
         Layout layout = new LayoutRegular(vinfo.start, v.getElementSize(), v.getShape(), section);
-        return IospHelper.readDataFill(raf, layout, dataType, vinfo.fillValue, -1);
+        return IospHelper.readDataFill(raf, layout, dataType, vinfo.fillValue, null);
 
       } else if (vinfo.isLinked) {
         Layout layout = new LayoutSegmented(vinfo.segPos, vinfo.segSize, v.getElementSize(), v.getShape(), section);
-        return IospHelper.readDataFill(raf, layout, dataType, vinfo.fillValue, -1);
+        return IospHelper.readDataFill(raf, layout, dataType, vinfo.fillValue, null);
 
       } else if (vinfo.isChunked) {
         H4ChunkIterator chunkIterator = new H4ChunkIterator(vinfo);
         Layout layout = new LayoutTiled(chunkIterator, vinfo.chunkSize, v.getElementSize(), section);
-        return IospHelper.readDataFill(raf, layout, dataType, vinfo.fillValue, -1);
+        return IospHelper.readDataFill(raf, layout, dataType, vinfo.fillValue, null);
       }
 
     } else {
@@ -209,7 +209,7 @@ public class H4iosp extends AbstractIOServiceProvider {
 
     if (!vinfo.isLinked && !vinfo.isCompressed) {
       Layout layout = new LayoutRegular(vinfo.start, recsize, s.getShape(), section);
-      IospHelper.readData(raf, layout, DataType.STRUCTURE, result, -1, true);
+      IospHelper.readData(raf, layout, DataType.STRUCTURE, result, null, true);
 
       /*
        * option 1
@@ -264,7 +264,7 @@ public class H4iosp extends AbstractIOServiceProvider {
 
     if (!vinfo.isLinked && !vinfo.isCompressed) {
       Layout layout = new LayoutRegular(vinfo.start, recsize, s.getShape(), section);
-      IospHelper.readData(raf, layout, DataType.STRUCTURE, result, -1, true);
+      IospHelper.readData(raf, layout, DataType.STRUCTURE, result, null, true);
 
       // option 2
     } else if (vinfo.isLinked && !vinfo.isCompressed) {

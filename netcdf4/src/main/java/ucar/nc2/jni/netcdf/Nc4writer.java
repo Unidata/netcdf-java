@@ -1192,7 +1192,7 @@ public class Nc4writer extends Nc4reader implements IospFileCreator {
         // must update all variables that use this dimension
         for (Variable var : g.getVariables()) {
           if (contains(var.getDimensions(), d)) {
-            var.resetShape();
+            var.resetShape(); // LOOK
             var.invalidateCache();
           }
         }

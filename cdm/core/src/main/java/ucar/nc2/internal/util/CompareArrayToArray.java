@@ -86,14 +86,9 @@ public class CompareArrayToArray {
       // ok = false;
     }
 
-    if (org instanceof ArrayVlen) {
-      ArrayVlen<?> orgv = (ArrayVlen<?>) org;
-      ArrayVlen<?> arrv = (ArrayVlen<?>) array;
-      if (orgv.getPrimitiveArrayType() != arrv.getPrimitiveArrayType()) {
-        f.format(" WARN %s: primitive data type %s !== %s%n", name, orgv.getPrimitiveArrayType(),
-            arrv.getPrimitiveArrayType());
-        ok = false;
-      }
+    if (org.isVlen() != array.isVlen()) {
+      f.format(" WARN %s: vlens dont match %s !~= %s%n", name, org.isVlen(), array.isVlen());
+      ok = false;
     }
 
     if (!ok) {

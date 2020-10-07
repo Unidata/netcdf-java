@@ -48,8 +48,7 @@ public class TestArrayVlen {
     assertThat(array.getShape()).isEqualTo(new int[] {1, 2});
     assertThat(array.getRank()).isEqualTo(2);
     assertThat(array.length()).isEqualTo(2);
-    assertThat(array.getDataType()).isEqualTo(DataType.VLEN);
-    assertThat(array.getPrimitiveArrayType()).isEqualTo(DataType.SHORT);
+    assertThat(array.getDataType()).isEqualTo(DataType.SHORT);
   }
 
   @Test

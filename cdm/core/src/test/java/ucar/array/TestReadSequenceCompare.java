@@ -29,6 +29,8 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Sequence;
 import ucar.nc2.Variable;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.util.Misc;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
@@ -62,9 +64,44 @@ public class TestReadSequenceCompare {
 
   @Test
   public void compareSequence() throws IOException {
-    try (NetcdfFile org = NetcdfFiles.open(filename, -1, null, NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
-        NetcdfFile copy = NetcdfFiles.open(filename, -1, null, NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE)) {
-      System.out.println("Test input: " + org.getLocation());
+    compareSequence(filename);
+  }
+
+  public static void compareSequence(String filename) throws IOException {
+    try (NetcdfFile org = NetcdfFiles.open(filename, -1, null);
+        NetcdfFile copy = NetcdfFiles.open(filename, -1, null)) {
+      System.out.println("Test NetcdfFile: " + org.getLocation());
+
+      boolean ok = true;
+      for (Variable v : org.getVariables()) {
+        if (v.getDataType() == DataType.SEQUENCE) {
+          System.out.printf("  read sequence %s %s%n", v.getDataType(), v.getShortName());
+          Sequence s = (Sequence) v;
+          StructureDataIterator orgSeq = s.getStructureIterator(-1);
+          Sequence copyv = (Sequence) copy.findVariable(v.getFullName());
+          Iterator<StructureData> array = copyv.iterator();
+          Formatter f = new Formatter();
+          boolean ok1 = TestReadArrayCompare.compareSequence(f, v.getShortName(), orgSeq, array);
+          if (!ok1) {
+            System.out.printf("%s%n", f);
+          }
+          ok &= ok1;
+        }
+      }
+      assertThat(ok).isTrue();
+    }
+  }
+
+  @Test
+  public void compareDataset() throws IOException {
+    compareDataset(filename);
+  }
+
+  public static void compareDataset(String filename) throws IOException {
+
+    try (NetcdfDataset org = NetcdfDatasets.openDataset(filename);
+        NetcdfDataset copy = NetcdfDatasets.openDataset(filename)) {
+      System.out.println("Test NetcdfDataset: " + org.getLocation());
 
       boolean ok = true;
       for (Variable v : org.getVariables()) {

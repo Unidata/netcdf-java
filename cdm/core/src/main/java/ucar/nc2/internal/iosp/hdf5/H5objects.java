@@ -1141,7 +1141,7 @@ public class H5objects {
     int type, version;
     byte[] flags = new byte[3];
     int byteSize;
-    int endian; // 0 (LE) or 1 (BE) == RandomAccessFile.XXXXXX_ENDIAN
+    ByteOrder endian; // 0 (LE) or 1 (BE) == RandomAccessFile.XXXXXX_ENDIAN
     boolean isOK = true;
     boolean unsigned;
 
@@ -1178,7 +1178,7 @@ public class H5objects {
       f.format(" flags= ");
       for (int i = 0; i < 3; i++)
         f.format(" %d", flags[i]);
-      f.format(" endian= %s", endian == RandomAccessFile.BIG_ENDIAN ? "BIG" : "LITTLE");
+      f.format(" endian= %s", endian);
 
       if (type == 2) {
         f.format(" timeType= %s", timeType);
@@ -1226,12 +1226,11 @@ public class H5objects {
 
       raf.readFully(flags);
       byteSize = raf.readInt();
-      endian = ((flags[0] & 1) == 0) ? RandomAccessFile.LITTLE_ENDIAN : RandomAccessFile.BIG_ENDIAN;
+      endian = ((flags[0] & 1) == 0) ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN;
 
       if (debug1) {
         log.debug("   Datatype type=" + type + " version= " + version + " flags = " + flags[0] + " " + flags[1] + " "
-            + flags[2] + " byteSize=" + byteSize + " byteOrder="
-            + (endian == RandomAccessFile.BIG_ENDIAN ? "BIG" : "LITTLE"));
+            + flags[2] + " byteSize=" + byteSize + " byteOrder=" + endian);
       }
 
       if (type == 0) { // fixed point
@@ -1331,7 +1330,7 @@ public class H5objects {
         }
 
         // read the enum values; must switch to base byte order (!)
-        if (base.endian >= 0) {
+        if (base.endian != null) {
           raf.order(base.endian);
         }
         int[] enumValue = new int[nmembers];

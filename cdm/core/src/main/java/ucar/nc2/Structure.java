@@ -61,11 +61,9 @@ public class Structure extends Variable {
     return members.size();
   }
 
-  /** Get the size in bytes of one element of the Structure. */
+  /** Get the size in bytes of one Structure. */
   @Override
   public int getElementSize() {
-    if (elementSize <= 0)
-      calcElementSize();
     return elementSize;
   }
 
@@ -90,7 +88,9 @@ public class Structure extends Variable {
    * directly from the StructureData or ArrayStructure.
    *
    * @return a StructureMembers object that describes this Structure.
+   * @deprecated use StructureMembers().makeStructureMembers(Structure structure)
    */
+  @Deprecated
   public StructureMembers makeStructureMembers() {
     StructureMembers.Builder builder = StructureMembers.builder().setName(getShortName());
     for (Variable v2 : this.getVariables()) {
@@ -136,25 +136,9 @@ public class Structure extends Variable {
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-  protected int calcStructureSize() {
-    int structureSize = 0;
-    for (Variable member : members) {
-      structureSize += member.getSize() * member.getElementSize();
-    }
-    return structureSize;
-  }
-
-  /**
-   * Force recalculation of size of one element of this structure - equals the sum of sizes of its members.
-   * This is used only by low level classes like IOSPs.
-   */
-  private void calcElementSize() {
-    int total = 0;
-    for (Variable v : members) {
-      total += v.getElementSize() * v.getSize();
-    }
-    elementSize = total;
+  /** Calculation of size of one element of this structure - equals the sum of sizes of its members. */
+  private int calcElementSize() {
+    return ucar.array.StructureMembers.makeStructureMembers(this).getStorageSizeBytes(false);
   }
 
   //////////////////////////////////////////////////////////////////////////////////////
@@ -167,7 +151,7 @@ public class Structure extends Variable {
    * @return ith StructureData
    * @throws java.io.IOException on read error
    * @throws ucar.ma2.InvalidRangeException if index out of range
-   * @deprecated use readArray().get(index)
+   * @deprecated use readArray(Section)
    */
   @Deprecated
   public StructureData readStructure(int index) throws IOException, ucar.ma2.InvalidRangeException {
@@ -321,7 +305,7 @@ public class Structure extends Variable {
     public void setBufferSize(int bytes) {
       if (count > 0)
         return; // too late
-      int structureSize = calcStructureSize();
+      int structureSize = getElementSize();
       if (structureSize <= 0)
         structureSize = 1; // no members in the psuedo-structure LOOK is this ok?
       if (bytes <= 0)
@@ -446,8 +430,8 @@ public class Structure extends Variable {
     this.members = builder.vbuilders.stream().map(vb -> vb.build(parentGroup)).collect(ImmutableList.toImmutableList());
     memberHash = new HashMap<>();
     this.members.forEach(m -> memberHash.put(m.getShortName(), m));
-    if (elementSize <= 0) {
-      calcElementSize();
+    if (builder.elementSize <= 0) {
+      this.elementSize = calcElementSize();
     }
     this.isSubset = builder.isSubset;
   }

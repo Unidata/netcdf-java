@@ -1031,9 +1031,8 @@ public class H5header implements HdfHeaderIF {
         }
         StructureMembers.MemberBuilder mb = builder.addMember(h5sm.name, null, null, dt, dim);
 
-        if (h5sm.mdt.endian >= 0) // apparently each member may have seperate byte order (!!!??)
-          mb.setDataObject(
-              h5sm.mdt.endian == RandomAccessFile.LITTLE_ENDIAN ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
+        if (h5sm.mdt.endian != null) // apparently each member may have seperate byte order (!!!??)
+          mb.setDataObject(h5sm.mdt.endian);
         mb.setDataParam(h5sm.offset); // offset since start of Structure
         if (dt == DataType.STRING)
           hasStrings = true;
@@ -1091,11 +1090,11 @@ public class H5header implements HdfHeaderIF {
 
     // Vlen (non-String)
     if (vinfo.typeInfo.hdfType == 9) { // vlen
-      int endian = vinfo.typeInfo.endian;
+      ByteOrder endian = vinfo.typeInfo.endian;
       DataType readType = dataType;
       if (vinfo.typeInfo.base.hdfType == 7) { // reference
         readType = DataType.LONG;
-        endian = 1; // apparently always LE
+        endian = ByteOrder.LITTLE_ENDIAN; // apparently always LE
       }
 
       Layout layout = new LayoutRegular(matt.dataPos, matt.mdt.byteSize, shape, new Section(shape));
@@ -1126,7 +1125,7 @@ public class H5header implements HdfHeaderIF {
     // NON-STRUCTURE CASE
     DataType readDtype = dataType;
     int elemSize = dataType.getSize();
-    int endian = vinfo.typeInfo.endian;
+    ByteOrder endian = vinfo.typeInfo.endian;
 
     if (vinfo.typeInfo.hdfType == 2) { // time
       readDtype = vinfo.mdt.timeType;
@@ -1709,7 +1708,6 @@ public class H5header implements HdfHeaderIF {
       isvlen = this.mdt.isVlen();
 
       // figure out the data type
-      // this.hdfType = mdt.type;
       this.typeInfo = calcNCtype(mdt);
     }
 
@@ -1719,34 +1717,25 @@ public class H5header implements HdfHeaderIF {
         btree.setOwner(owner);
     }
 
-    /*
-     * TypeInfo getBaseType() {
-     * MessageDatatype want = mdt;
-     * while (want.base != null) want = want.base;
-     * return calcNCtype(want);
-     * }
-     */
-
     private TypeInfo calcNCtype(MessageDatatype mdt) {
       int hdfType = mdt.type;
       int byteSize = mdt.byteSize;
       byte[] flags = mdt.flags;
-      // boolean unsigned = mdt.unsigned;
 
       TypeInfo tinfo = new TypeInfo(hdfType, byteSize);
 
       if (hdfType == 0) { // int, long, short, byte
         tinfo.dataType = getNCtype(hdfType, byteSize, mdt.unsigned);
-        tinfo.endian = ((flags[0] & 1) == 0) ? RandomAccessFile.LITTLE_ENDIAN : RandomAccessFile.BIG_ENDIAN;
+        tinfo.endian = mdt.endian;
         tinfo.unsigned = ((flags[0] & 8) == 0);
 
       } else if (hdfType == 1) { // floats, doubles
         tinfo.dataType = getNCtype(hdfType, byteSize, mdt.unsigned);
-        tinfo.endian = ((flags[0] & 1) == 0) ? RandomAccessFile.LITTLE_ENDIAN : RandomAccessFile.BIG_ENDIAN;
+        tinfo.endian = mdt.endian;
 
       } else if (hdfType == 2) { // time
         tinfo.dataType = DataType.STRING;
-        tinfo.endian = ((flags[0] & 1) == 0) ? RandomAccessFile.LITTLE_ENDIAN : RandomAccessFile.BIG_ENDIAN;
+        tinfo.endian = mdt.endian;
 
       } else if (hdfType == 3) { // fixed length strings map to CHAR. String is used for Vlen type = 1.
         tinfo.dataType = DataType.CHAR;
@@ -1764,7 +1753,7 @@ public class H5header implements HdfHeaderIF {
         tinfo.dataType = DataType.STRUCTURE;
 
       } else if (hdfType == 7) { // reference
-        tinfo.endian = RandomAccessFile.LITTLE_ENDIAN;
+        tinfo.endian = ByteOrder.LITTLE_ENDIAN;
         tinfo.dataType = DataType.LONG; // file offset of the referenced object
         // LOOK - should get the object, and change type to whatever it is (?)
 
@@ -1776,11 +1765,10 @@ public class H5header implements HdfHeaderIF {
         else if (tinfo.byteSize == 4)
           tinfo.dataType = DataType.ENUM4;
         else {
-          log.warn("Illegal byte suze for enum type = {}", tinfo.byteSize);
-          throw new IllegalStateException("Illegal byte suze for enum type = " + tinfo.byteSize);
+          log.warn("Illegal byte size for enum type = {}", tinfo.byteSize);
+          throw new IllegalStateException("Illegal byte size for enum type = " + tinfo.byteSize);
         }
-
-        // enumMap = mdt.map;
+        tinfo.endian = mdt.base.endian;
 
       } else if (hdfType == 9) { // variable length array
         tinfo.isVString = mdt.isVString;
@@ -1794,7 +1782,7 @@ public class H5header implements HdfHeaderIF {
           tinfo.unsigned = mdt.base.unsigned;
         }
       } else if (hdfType == 10) { // array : used for structure members
-        tinfo.endian = (mdt.getFlags()[0] & 1) == 0 ? RandomAccessFile.LITTLE_ENDIAN : RandomAccessFile.BIG_ENDIAN;
+        tinfo.endian = mdt.endian;
         if (mdt.isVString()) {
           tinfo.dataType = DataType.STRING;
         } else {
@@ -1833,8 +1821,7 @@ public class H5header implements HdfHeaderIF {
       StringBuilder buff = new StringBuilder();
       if ((typeInfo.dataType != DataType.CHAR) && (typeInfo.dataType != DataType.STRING))
         buff.append(typeInfo.unsigned ? " unsigned" : " signed");
-      if (typeInfo.endian >= 0)
-        buff.append((typeInfo.endian == RandomAccessFile.LITTLE_ENDIAN) ? " LittleEndian" : " BigEndian");
+      buff.append("ByteOrder= " + typeInfo.endian);
       if (useFillValue)
         buff.append(" useFillValue");
       return buff.toString();
@@ -1861,8 +1848,8 @@ public class H5header implements HdfHeaderIF {
         return fillValue[0];
 
       ByteBuffer bbuff = ByteBuffer.wrap(fillValue);
-      if (typeInfo.endian >= 0)
-        bbuff.order(typeInfo.endian == RandomAccessFile.LITTLE_ENDIAN ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
+      if (typeInfo.endian != null)
+        bbuff.order(typeInfo.endian);
 
       if (typeInfo.dataType.getPrimitiveClassType() == short.class) {
         ShortBuffer tbuff = bbuff.asShortBuffer();
@@ -2003,7 +1990,7 @@ public class H5header implements HdfHeaderIF {
   public static class TypeInfo {
     int hdfType, byteSize;
     DataType dataType;
-    int endian = -1; // 1 = RandomAccessFile.LITTLE_ENDIAN || 0 = RandomAccessFile.BIG_ENDIAN
+    ByteOrder endian;
     boolean unsigned;
     boolean isVString; // is it a vlen string
     boolean isVlen; // vlen but not string
@@ -2039,7 +2026,7 @@ public class H5header implements HdfHeaderIF {
    * @return the Array read from the heap
    * @throws IOException on read error
    */
-  Array getHeapDataArray(long globalHeapIdAddress, DataType dataType, int endian) throws IOException {
+  Array getHeapDataArray(long globalHeapIdAddress, DataType dataType, ByteOrder endian) throws IOException {
     HeapIdentifier heapId = h5objects.readHeapIdentifier(globalHeapIdAddress);
     if (debugHeap) {
       log.debug(" heapId= {}", heapId);
@@ -2047,7 +2034,7 @@ public class H5header implements HdfHeaderIF {
     return getHeapDataArray(heapId, dataType, endian);
   }
 
-  Array getHeapDataArray(HeapIdentifier heapId, DataType dataType, int endian) throws IOException {
+  Array getHeapDataArray(HeapIdentifier heapId, DataType dataType, ByteOrder endian) throws IOException {
     GlobalHeap.HeapObject ho = heapId.getHeapObject();
     if (ho == null) {
       throw new IllegalStateException("Illegal Heap address, HeapObject = " + heapId);
@@ -2055,7 +2042,7 @@ public class H5header implements HdfHeaderIF {
     if (debugHeap) {
       log.debug(" HeapObject= {}", ho);
     }
-    if (endian >= 0) {
+    if (endian != null) {
       raf.order(endian);
     }
 
@@ -2134,7 +2121,7 @@ public class H5header implements HdfHeaderIF {
     return raf.readString((int) ho.dataSize, valueCharset);
   }
 
-  Array readHeapVlen(ByteBuffer bb, int pos, DataType dataType, int endian) throws IOException {
+  Array readHeapVlen(ByteBuffer bb, int pos, DataType dataType, ByteOrder endian) throws IOException {
     HeapIdentifier heapId = h5objects.readHeapIdentifier(bb, pos);
     return getHeapDataArray(heapId, dataType, endian);
   }
