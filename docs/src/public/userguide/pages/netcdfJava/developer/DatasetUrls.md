@@ -46,8 +46,8 @@ To disambiguate HTTP remote files from OPeNDAP or other URLS, you can use `https
 
 `NetcdfFiles` and `NetcdfDatasets` can open files stored as a single objects on any Object Store that supports the AWS RESTful API with byte range-requests, similar to HTTP.
 This new functionality is not available in the now deprecated `NetcdfFile` and `NetcdfDataset` open methods.
-You will also need to include the `cdm-s3` artifact in your build.
-This is currently not part of `netcdfAll.jar`.
+You will also need to include the `cdm-s3` artifact in your build (visit the [netcdf-java artifact guide](using_netcdf_java_artifacts.html) for details).
+Currently, this is not part of `netcdfAll.jar`.
 netCDF-Java implements a custom URI for identifying objects in an Object Store.
 Using the generic URI syntax from <a href="https://tools.ietf.org/html/rfc3986">RFC3986</a>, the CDM will identify resources located in an object store as follows:
 * scheme (**required**): defined to be cdms3
@@ -128,45 +128,24 @@ The following examples show how one could access the same GOES 16 data file acro
 
 [AWS S3 bucket](https://registry.opendata.aws/noaa-goes/){:target="_blank"} in the US East 1 region (open access):
 
-~~~java
-String region = Region.US_EAST_1.toString();
-String bucket = "noaa-goes16";
-String key = "ABI-L1b-RadC/2017/242/00/OR_ABI-L1b-RadC-M3C01_G16_s20172420002168_e20172420004540_c20172420004583.nc";
-String cdmS3Uri = "cdms3:" + bucket + "?" + key;
-
-System.setProperty("aws.region", region);
-try (NetcdfFile ncfile = NetcdfFiles.open(cdmS3Uri)) {
-  ...
-} finally {
-  System.clearProperty("aws.region");
-}
-~~~
+{% capture rmd %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/DatasetUrlExamples.java&awsGoes16Example %}
+{% endcapture %}
+{{ rmd | markdownify }}
 
 [Google Cloud Storage](https://console.cloud.google.com/storage/browser/gcp-public-data-goes-16){:target="_blank"} (open access):
 
-~~~java
-String host = "storage.googleapis.com";
-String bucket = "gcp-public-data-goes-16";
-String key = "ABI-L1b-RadC/2017/242/00/OR_ABI-L1b-RadC-M3C01_G16_s20172420002168_e20172420004540_c20172420004583.nc";
-String cdmS3Uri = "cdms3://" + host + "/" + bucket + "?" + key;
-
-try (NetcdfFile ncfile = NetcdfFiles.open(cdmS3Uri)) {
-  ...
-}
-~~~
+{% capture rmd %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/DatasetUrlExamples.java&gcsGoes16Example %}
+{% endcapture %}
+{{ rmd | markdownify }}
 
 [Open Science Data Cloud](https://www.opensciencedatacloud.org/){:target="_blank"} (Ceph) (open access):
 
-~~~java
-String host = "griffin-objstore.opensciencedatacloud.org";
-String bucket = "noaa-goes16-hurricane-archive-2017";
-String key = "242/00/OR_ABI-L1b-RadC-M3C01_G16_s20172420002168_e20172420004540_c20172420004583.nc";
-String cdmS3Uri = "cdms3://" + host + "/" + bucket + "?" + key;
-
-try (NetcdfFile ncfile = NetcdfFiles.open(cdmS3Uri)) {
-  ...
-}
-~~~
+{% capture rmd %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/DatasetUrlExamples.java&osdcGoes16Example %}
+{% endcapture %}
+{{ rmd | markdownify }}
 
 ### File Types
 
@@ -199,6 +178,31 @@ Also note that when passing an OPeNDAP dataset URL to the netCDF-Java library, d
 For an `http:` URL, we make a `HEAD` request, and if it succeeds and returns a header with `Content-Description="dods-dds"` or `"dods_dds"`, then we open as OPeNDAP.
 If it fails we try opening as an HTTP remote file.
 Using the `dods:` prefix makes it clear which protocol to use.
+
+The netCDF-Java `NetcdfDatasets.open*` methods can also be used to read the binary response from an OPeNDAP server from a file on disk.
+**Note:** one downside to this approach is that the entire dataset will be loaded into memory.
+At a minimum, you will need to have saved the binary response (`.dods`) and the Dataset Descriptor Structure (`.dds`).
+It is _strongly recommended_ that you also save the Data Attribute Structure (`.das`) as well, as this contains metadata for the dataset.
+The three files must be located in the same directory and should only differ by file extension.
+Once the files are in place, you may open the saved response by appending the `file:` protocol to the path to the `.dods` file:
+
+{% capture rmd %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/DatasetUrlExamples.java&openDodsBinaryFile %}
+{% endcapture %}
+{{ rmd | markdownify }}
+
+In the example above, `pathToDodsFile` should look like `C:/Users/me/Downloads/cool-dataset.nc.dods` or `/home/me/data/cool-dataset.nc.dods`.
+In addition to `cool-dataset.nc.dods`, `cool-dataset.nc.dds` must also exist.
+`cool-dataset.nc.das` should also exist, but is technically optional (you will not have metadata without it).
+
+As an example, the following three URLs will provide an example of each type of file needed:
+* [.dods](https://thredds.ucar.edu/thredds/dodsC/casestudies/python-gallery/NAM_20161031_1200.nc.dods?time[0:1:0],y[0:100:427],x[0:100:613],lat[0:100:427][0:100:613],lon[0:100:427][0:100:613],Temperature_height_above_ground[0:1:0][0:1:0][0:100:427][0:100:613],height_above_ground1[0:1:1])
+* [.dds](https://thredds.ucar.edu/thredds/dodsC/casestudies/python-gallery/NAM_20161031_1200.nc.dds?time[0:1:0],y[0:100:427],x[0:100:613],lat[0:100:427][0:100:613],lon[0:100:427][0:100:613],Temperature_height_above_ground[0:1:0][0:1:0][0:100:427][0:100:613],height_above_ground1[0:1:1])
+* [.das](https://thredds.ucar.edu/thredds/dodsC/casestudies/python-gallery/NAM_20161031_1200.nc.das)
+
+{% comment %}
+  If any of the three urls above change, make sure the changes are reflected in docs/src/test/java/examples/DatasetUrlExamples.java
+{% endcomment %}
 
 ### NcML datasets
 
