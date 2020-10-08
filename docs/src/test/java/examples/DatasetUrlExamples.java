@@ -18,14 +18,15 @@ public class DatasetUrlExamples {
   public static void awsGoes16Example() throws IOException {
     String region = "us-east-1";
     String bucket = "noaa-goes16";
-    String key = "ABI-L1b-RadC/2017/242/00/OR_ABI-L1b-RadC-M3C01_G16_s20172420002168_e20172420004540_c20172420004583.nc";
+    String key =
+        "ABI-L1b-RadC/2017/242/00/OR_ABI-L1b-RadC-M3C01_G16_s20172420002168_e20172420004540_c20172420004583.nc";
     String cdmS3Uri = "cdms3:" + bucket + "?" + key;
 
     System.setProperty("aws.region", region);
 
     try (NetcdfFile ncfile = NetcdfFiles.open(cdmS3Uri)) {
       // do cool stuff here
-      assertThat(ncfile).isNotNull(); /*DOCS-IGNORE*/
+      assertThat(ncfile).isNotNull(); /* DOCS-IGNORE */
     } finally {
       System.clearProperty("aws.region");
     }
@@ -39,12 +40,13 @@ public class DatasetUrlExamples {
   public static void gcsGoes16Example() throws IOException {
     String host = "storage.googleapis.com";
     String bucket = "gcp-public-data-goes-16";
-    String key = "ABI-L1b-RadC/2017/242/00/OR_ABI-L1b-RadC-M3C01_G16_s20172420002168_e20172420004540_c20172420004583.nc";
+    String key =
+        "ABI-L1b-RadC/2017/242/00/OR_ABI-L1b-RadC-M3C01_G16_s20172420002168_e20172420004540_c20172420004583.nc";
     String cdmS3Uri = "cdms3://" + host + "/" + bucket + "?" + key;
 
     try (NetcdfFile ncfile = NetcdfFiles.open(cdmS3Uri)) {
       // do cool stuff here
-      assertThat(ncfile).isNotNull(); /*DOCS-IGNORE*/
+      assertThat(ncfile).isNotNull(); /* DOCS-IGNORE */
     }
   }
 
@@ -56,12 +58,13 @@ public class DatasetUrlExamples {
   public static void osdcGoes16Example() throws IOException {
     String host = "griffin-objstore.opensciencedatacloud.org";
     String bucket = "noaa-goes16-hurricane-archive-2017";
-    String key = "ABI-L1b-RadC/242/00/OR_ABI-L1b-RadC-M3C01_G16_s20172420002168_e20172420004540_c20172420004583.nc";
+    String key =
+        "ABI-L1b-RadC/242/00/OR_ABI-L1b-RadC-M3C01_G16_s20172420002168_e20172420004540_c20172420004583.nc";
     String cdmS3Uri = "cdms3://" + host + "/" + bucket + "?" + key;
 
     try (NetcdfFile ncfile = NetcdfFiles.open(cdmS3Uri)) {
       // do cool stuff here
-      assertThat(ncfile).isNotNull(); /*DOCS-IGNORE*/
+      assertThat(ncfile).isNotNull(); /* DOCS-IGNORE */
     }
   }
 
@@ -75,7 +78,7 @@ public class DatasetUrlExamples {
     // pathToDodsFile looks like C:/Users/me/Downloads/cool-dataset.nc.dods
     try (NetcdfFile ncf = NetcdfDatasets.openFile("file:" + pathToDodsFile, null)) {
       // Do cool stuff here
-      assertThat(ncf).isNotNull(); /*DOCS-IGNORE*/
+      assertThat(ncf).isNotNull(); /* DOCS-IGNORE */
     }
   }
 }

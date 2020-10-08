@@ -1,8 +1,8 @@
-package tests;
+package tests.cdmdatasets;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import examples.WritingNetcdfTutorial;
+import examples.cdmdatasets.WritingNetcdfTutorial;
 import org.junit.*;
 import org.junit.rules.TemporaryFolder;
 import ucar.ma2.Array;
@@ -45,7 +45,7 @@ public class TestWritingNetcdfTutorial {
 
     Variable.Builder t = builder.addVariable("temperature", DataType.DOUBLE, dims);
     t.addAttribute(new Attribute("units", "K"));
-    Array data = Array.factory(DataType.INT, new int[]{3}, new int[]{1, 2, 3});
+    Array data = Array.factory(DataType.INT, new int[] {3}, new int[] {1, 2, 3});
     t.addAttribute(Attribute.builder("scale").setValues(data).build());
 
     Dimension svar_len = builder.addDimension("svar_len", 80);
@@ -194,7 +194,7 @@ public class TestWritingNetcdfTutorial {
     returnedWriter.close();
 
     NetcdfFile ncfile = NetcdfFiles.open(newFilePath);
-    String[] varNames = new String[]{"time", "rh", "T"};
+    String[] varNames = new String[] {"time", "rh", "T"};
     int numRecords = 10;
     for (String name : varNames) {
       Variable v = ncfile.findVariable(name);
@@ -213,8 +213,8 @@ public class TestWritingNetcdfTutorial {
     NetcdfFile ncIn = NetcdfDatasets.openFile(datasetIn, null);
 
     String datasetOut = tempFolder.newFile().getAbsolutePath();
-    NetcdfFile ncOut = WritingNetcdfTutorial.writeWithCompression(ncIn, datasetOut, Nc4Chunking.Strategy.standard,
-            0,false, NetcdfFileFormat.NETCDF4);
+    NetcdfFile ncOut = WritingNetcdfTutorial.writeWithCompression(ncIn, datasetOut,
+        Nc4Chunking.Strategy.standard, 0, false, NetcdfFileFormat.NETCDF4);
 
     assertThat(ncOut).isNotNull();
     assertThat(new CompareNetcdf2().compare(ncIn, ncOut)).isTrue();

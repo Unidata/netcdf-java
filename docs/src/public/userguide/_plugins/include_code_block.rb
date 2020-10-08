@@ -70,10 +70,13 @@ module Jekyll
     ##
     # left align code block
     def format(codestring, startline, endline)
+      # uncomment insert tag
+      insertTag = /\/\* INSERT .* \*\//
+      codestring.gsub!(insertTag) {|s| s[10..-3]}
       # split code into line array and subset
       codelines = codestring.split("\n")[startline..endline]
       # remove lines with ignore tag
-      ignoreTag = "/*DOCS-IGNORE*/"
+      ignoreTag = "/* DOCS-IGNORE */"
       codelines.select! { |s| !s.include? ignoreTag}
       # remove fixed num of tab characters from each line
       offset = /\S/ =~ codelines[0]

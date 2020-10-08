@@ -252,3 +252,14 @@ tasks.withType(JavaCompile).all {
   // show deprecation details
   options.compilerArgs = ['-Xlint:deprecation']
 }
+
+apply plugin: 'com.diffplug.gradle.spotless'
+spotless {
+  java {
+    // target java files in the test directory
+    target 'src/test/java/**/*.java'
+    eclipse().configFile("$rootDir/project-files/code-styles/eclipse-style-guide.xml",
+            'src/test/style/style-override.properties')
+    encoding 'UTF-8'
+  }
+}
