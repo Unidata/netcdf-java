@@ -511,7 +511,7 @@ public class Level2Record {
   byte reflectHR_data_word_size, velocityHR_data_word_size, spectrumHR_data_word_size;
   byte zdrHR_data_word_size, phiHR_data_word_size, rhoHR_data_word_size;
 
-  private List<String> missingProductWarned = new ArrayList<>();
+  private static List<String> missingProductWarned = new ArrayList<>();
 
   public static Level2Record factory(RandomAccessFile din, int record, long message_offset31) throws IOException {
     long offset = record * RADAR_DATA_SIZE + FILE_HEADER_SIZE + message_offset31;
@@ -610,6 +610,10 @@ public class Level2Record {
       int dbpp8 = 0;
       int dbpp9 = 0;
 
+      int missingPointerNumber = -999;
+      int missingPointerValue = -999;
+      String missingName = "";
+
       if (dbp4 > 0) {
         String tname = getDataBlockStringValue(din, (short) dbp4, 1, 3);
         if (tname.startsWith("REF")) {
@@ -631,10 +635,9 @@ public class Level2Record {
           hasHighResRHOData = true;
           dbpp9 = dbp4;
         } else {
-          if (!missingProductWarned.contains(tname)) {
-            logger.warn("Missing radial product dbp4={} tname={}", dbp4, tname);
-            missingProductWarned.add(tname);
-          }
+          missingName = tname;
+          missingPointerNumber = 4;
+          missingPointerValue = dbp4;
         }
 
       }
@@ -660,10 +663,9 @@ public class Level2Record {
           hasHighResRHOData = true;
           dbpp9 = dbp5;
         } else {
-          if (!missingProductWarned.contains(tname)) {
-            logger.warn("Missing radial product dbp5={} tname={}", dbp5, tname);
-            missingProductWarned.add(tname);
-          }
+          missingName = tname;
+          missingPointerNumber = 5;
+          missingPointerValue = dbp5;
         }
       }
       if (dbp6 > 0) {
@@ -688,10 +690,9 @@ public class Level2Record {
           hasHighResRHOData = true;
           dbpp9 = dbp6;
         } else {
-          if (!missingProductWarned.contains(tname)) {
-            logger.warn("Missing radial product dbp6={} tname={}", dbp6, tname);
-            missingProductWarned.add(tname);
-          }
+          missingName = tname;
+          missingPointerNumber = 6;
+          missingPointerValue = dbp6;
         }
       }
 
@@ -717,10 +718,9 @@ public class Level2Record {
           hasHighResRHOData = true;
           dbpp9 = dbp7;
         } else {
-          if (!missingProductWarned.contains(tname)) {
-            logger.warn("Missing radial product dbp7={} tname={}", dbp7, tname);
-            missingProductWarned.add(tname);
-          }
+          missingName = tname;
+          missingPointerNumber = 7;
+          missingPointerValue = dbp7;
         }
       }
 
@@ -746,10 +746,9 @@ public class Level2Record {
           hasHighResRHOData = true;
           dbpp9 = dbp8;
         } else {
-          if (!missingProductWarned.contains(tname)) {
-            logger.warn("Missing radial product dbp8={} tname={}", dbp8, tname);
-            missingProductWarned.add(tname);
-          }
+          missingName = tname;
+          missingPointerNumber = 8;
+          missingPointerValue = dbp8;
         }
       }
 
@@ -775,13 +774,23 @@ public class Level2Record {
           hasHighResRHOData = true;
           dbpp9 = dbp9;
         } else {
-          if (!missingProductWarned.contains(tname)) {
-            logger.warn("Missing radial product dbp9={} tname={}", dbp9, tname);
-            missingProductWarned.add(tname);
-          }
+          missingName = tname;
+          missingPointerNumber = 9;
+          missingPointerValue = dbp9;
         }
       }
-      // hasHighResREFData = (dbp4 > 0);
+
+      if (missingPointerNumber != -999) {
+        // warn once per type per pointer location
+        String missingKey = String.format("%s%d", missingName, missingPointerNumber);
+        if (!missingProductWarned.contains(missingKey)) {
+          String msg = String.format(
+              "Unknown radial product dbp%d=%d tname=%s " + "(this is the only message you will see about this.)",
+              missingPointerNumber, missingPointerValue, missingName);
+          logger.warn(msg);
+          missingProductWarned.add(missingKey);
+        }
+      }
 
       if (hasHighResREFData) {
         reflectHR_gate_count = getDataBlockValue(din, (short) dbpp4, 8);
