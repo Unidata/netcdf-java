@@ -28,19 +28,19 @@ public final class ArrayFloat extends Array<Float> {
   /** Create an Array of type float and the given shape and storage. */
   public ArrayFloat(int[] shape, Storage<Float> storageF) {
     super(DataType.FLOAT, shape);
-    Preconditions.checkArgument(indexFn.length() <= storageF.getLength());
+    Preconditions.checkArgument(indexFn.length() <= storageF.length());
     this.storageF = storageF;
   }
 
   /** Create an Array of type float and the given indexFn and storage. */
   private ArrayFloat(IndexFn indexFn, Storage<Float> storageF) {
     super(DataType.FLOAT, indexFn);
-    Preconditions.checkArgument(indexFn.length() <= storageF.getLength());
+    Preconditions.checkArgument(indexFn.length() <= storageF.length());
     this.storageF = storageF;
   }
 
   @Override
-  public Iterator<Float> fastIterator() {
+  Iterator<Float> fastIterator() {
     return storageF.iterator();
   }
 
@@ -108,7 +108,7 @@ public final class ArrayFloat extends Array<Float> {
     }
 
     @Override
-    public long getLength() {
+    public long length() {
       return storage.length;
     }
 
@@ -164,7 +164,7 @@ public final class ArrayFloat extends Array<Float> {
     }
 
     @Override
-    public long getLength() {
+    public long length() {
       return totalLength;
     }
 
@@ -187,7 +187,7 @@ public final class ArrayFloat extends Array<Float> {
 
       for (int index = startIndex; index < dataArrays.size(); index++) {
         Storage<Float> storage = dataArrays.get(index);
-        int have = (int) Math.min(storage.getLength() - startSrc, needed);
+        int have = (int) Math.min(storage.length() - startSrc, needed);
         storage.arraycopy(startSrc, dest, startDst, have);
         needed -= have;
         startDst += have;

@@ -27,19 +27,19 @@ public final class ArrayDouble extends ucar.array.Array<Double> {
   /** Create an Array of type double and the given shape and storage. */
   public ArrayDouble(int[] shape, Storage<Double> storageD) {
     super(DataType.DOUBLE, shape);
-    Preconditions.checkArgument(indexFn.length() <= storageD.getLength());
+    Preconditions.checkArgument(indexFn.length() <= storageD.length());
     this.storageD = storageD;
   }
 
   /** Create an Array of type double and the given indexFn and storage. */
   private ArrayDouble(IndexFn indexFn, Storage<Double> storageD) {
     super(DataType.DOUBLE, indexFn);
-    Preconditions.checkArgument(indexFn.length() <= storageD.getLength());
+    Preconditions.checkArgument(indexFn.length() <= storageD.length());
     this.storageD = storageD;
   }
 
   @Override
-  public Iterator<Double> fastIterator() {
+  Iterator<Double> fastIterator() {
     return storageD.iterator();
   }
 
@@ -108,7 +108,7 @@ public final class ArrayDouble extends ucar.array.Array<Double> {
     }
 
     @Override
-    public long getLength() {
+    public long length() {
       return storage.length;
     }
 
@@ -166,7 +166,7 @@ public final class ArrayDouble extends ucar.array.Array<Double> {
     }
 
     @Override
-    public long getLength() {
+    public long length() {
       return totalLength;
     }
 
@@ -189,7 +189,7 @@ public final class ArrayDouble extends ucar.array.Array<Double> {
 
       for (int index = startIndex; index < dataArrays.size(); index++) {
         Storage<Double> storage = dataArrays.get(index);
-        int have = (int) Math.min(storage.getLength() - startSrc, needed);
+        int have = (int) Math.min(storage.length() - startSrc, needed);
         storage.arraycopy(startSrc, dest, startDst, have);
         needed -= have;
         startDst += have;

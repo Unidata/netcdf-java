@@ -23,19 +23,19 @@ public final class ArrayInteger extends Array<Integer> {
   /** Create an Array of type Integer and the given shape and storage. */
   public ArrayInteger(DataType dtype, int[] shape, Storage<Integer> storage) {
     super(dtype, shape);
-    Preconditions.checkArgument(indexFn.length() <= storage.getLength());
+    Preconditions.checkArgument(indexFn.length() <= storage.length());
     this.storage = storage;
   }
 
   /** Create an Array of type Integer and the given indexFn and storage. */
   private ArrayInteger(DataType dtype, IndexFn indexFn, Storage<Integer> storageD) {
     super(dtype, indexFn);
-    Preconditions.checkArgument(indexFn.length() <= storageD.getLength());
+    Preconditions.checkArgument(indexFn.length() <= storageD.length());
     this.storage = storageD;
   }
 
   @Override
-  public Iterator<Integer> fastIterator() {
+  Iterator<Integer> fastIterator() {
     return storage.iterator();
   }
 
@@ -104,7 +104,7 @@ public final class ArrayInteger extends Array<Integer> {
     }
 
     @Override
-    public long getLength() {
+    public long length() {
       return storage.length;
     }
 

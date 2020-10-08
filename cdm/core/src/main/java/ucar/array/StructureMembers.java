@@ -20,7 +20,7 @@ import ucar.ma2.DataType;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 
-/** A Collection of members contained in StructureData. */
+/** A collection of members contained in StructureData. */
 @Immutable
 public final class StructureMembers implements Iterable<Member> {
 
@@ -39,6 +39,7 @@ public final class StructureMembers implements Iterable<Member> {
   ////////////////////////////////////////////////////////////////////////
 
   /** Get the StructureMembers' name. */
+  @Nullable
   public String getName() {
     return name;
   }
@@ -105,6 +106,7 @@ public final class StructureMembers implements Iterable<Member> {
     return Objects.hashCode(name, structureSize, structuresOnHeap, members);
   }
 
+  /** Iterate over the Members. */
   @Override
   public Iterator<Member> iterator() {
     return members.iterator();
@@ -154,6 +156,7 @@ public final class StructureMembers implements Iterable<Member> {
       return b;
     }
 
+    /** Get nested StructureMembers, if this is a Structure or Sequence. */
     @Nullable
     public StructureMembers getStructureMembers() {
       return members;
@@ -201,22 +204,26 @@ public final class StructureMembers implements Iterable<Member> {
       return isVlen;
     }
 
+    /** The ByteOrder used when storing in StructureDataStorageBB. */
     public ByteOrder getByteOrder() {
       return byteOrder;
     }
 
+    /** The offset from the start of th STructure, used when storing in StructureDataStorageBB. */
     public int getOffset() {
       return offset;
     }
 
     /**
      * Get the total size in bytes needed for storing the data in this Member.
-     * A Sequence, String and Vlen are always stored on the heap, so this returns 4 bytes used for the heap index.
+     * A Sequence, String Opaque, and Vlen are always stored on the heap, so this returns 4 bytes used for the heap
+     * index.
      * A Structure may be stored on the heap, depending on StructureMembers.isStructuresOnHeap().
      * If true, then takes 4 bytes. If false, then this will be the sum of the member's sizes (including nested
      * Structures) times the number of Strutures.
      *
-     * If the Member is a Structure, then the size of one Structure will be getStructureMembers.getStorageSizeBytes().
+     * If the Member is a nested Structure, then this is the size of one Structure times the number of nested
+     * Structures.
      *
      * @return total size in bytes
      */
@@ -262,6 +269,7 @@ public final class StructureMembers implements Iterable<Member> {
     }
   }
 
+  /** A builder for StructureMembers.Member */
   public static class MemberBuilder {
     private String name, desc, units;
     private DataType dataType;

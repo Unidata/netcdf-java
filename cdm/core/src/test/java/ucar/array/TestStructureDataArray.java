@@ -9,7 +9,6 @@ import static org.junit.Assert.fail;
 
 import com.google.common.collect.ImmutableList;
 import org.junit.Test;
-import ucar.array.StructureMembers.MemberBuilder;
 import ucar.ma2.DataType;
 
 /** Test {@link StructureDataArray} */
@@ -55,8 +54,7 @@ public class TestStructureDataArray {
     assertThat(array.getStructureMembers()).isEqualTo(members);
     assertThat(array.getStructureMemberNames()).isEqualTo(ImmutableList.of("mname1", "mname2"));
     assertThat(array.getStructureSize()).isEqualTo(121 + 4);
-    assertThat(array.getSizeBytes()).isEqualTo(2 * array.getStructureSize());
-    assertThat(array.storage().getLength()).isEqualTo(2);
+    assertThat(array.storage().length()).isEqualTo(2);
 
     StructureData sdata = array.get(0);
     assertThat(sdata.getStructureMembers()).isEqualTo(members);

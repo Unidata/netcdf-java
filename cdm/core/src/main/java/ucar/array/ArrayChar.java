@@ -23,19 +23,19 @@ public final class ArrayChar extends Array<Character> {
   /** Create an Array of type Char and the given shape and storage. */
   public ArrayChar(int[] shape, Storage<Character> storage) {
     super(DataType.CHAR, shape);
-    Preconditions.checkArgument(indexFn.length() <= storage.getLength());
+    Preconditions.checkArgument(indexFn.length() <= storage.length());
     this.storage = storage;
   }
 
   /** Create an Array of type Char and the given indexFn and storage. */
   private ArrayChar(IndexFn indexFn, Storage<Character> storageD) {
     super(DataType.CHAR, indexFn);
-    Preconditions.checkArgument(indexFn.length() <= storageD.getLength());
+    Preconditions.checkArgument(indexFn.length() <= storageD.length());
     this.storage = storageD;
   }
 
   @Override
-  public Iterator<Character> fastIterator() {
+  Iterator<Character> fastIterator() {
     return storage.iterator();
   }
 
@@ -70,11 +70,10 @@ public final class ArrayChar extends Array<Character> {
 
   /**
    * Create a String out of this rank zero or one ArrayChar.
-   * If there is a null (0) value in the ArrayChar array, the String will end there.
+   * If there is a null (zero) value in the ArrayChar array, the String will end there.
    * The null is not returned as part of the String.
    *
-   * @return String value of CharArray
-   * @throws IllegalArgumentException if rank != 1
+   * @throws Exception if rank > 1
    */
   public String makeStringFromChar() {
     Preconditions.checkArgument(getRank() < 2);
@@ -96,6 +95,13 @@ public final class ArrayChar extends Array<Character> {
     return String.valueOf(carr);
   }
 
+  /**
+   * Create an Array of Strings out of this ArrayChar of any rank.
+   * If there is a null (zero) value in the ArrayChar array, the String will end there.
+   * The null is not returned as part of the String.
+   *
+   * @return Array of Strings of rank - 1.
+   */
   public Array<String> makeStringsFromChar() {
     if (getRank() < 2) {
       return Arrays.factory(DataType.STRING, new int[] {1}, new String[] {makeStringFromChar()});
@@ -157,7 +163,7 @@ public final class ArrayChar extends Array<Character> {
     }
 
     @Override
-    public long getLength() {
+    public long length() {
       return storage.length;
     }
 

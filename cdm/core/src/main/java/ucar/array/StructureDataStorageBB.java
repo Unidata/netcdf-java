@@ -13,8 +13,8 @@ import ucar.ma2.DataType;
 import ucar.nc2.iosp.IospHelper;
 
 /**
- * Storage for Array<StructureData> with all data in a single ByteBuffer, member offsets and ByteOrder,
- * and a heap for vlen data such as Strings, Vlens, and Sequences. Mimics ArrayStructureBB.
+ * Storage for StructureDataArray with all data in a single ByteBuffer, using member's offsets and ByteOrder,
+ * and a heap for vlen data such as Strings, Vlens, and Sequences.
  * The StructureData are manufactured on the fly, referencing the ByteBuffer and heap for data.
  */
 public final class StructureDataStorageBB implements Storage<StructureData> {
@@ -42,6 +42,7 @@ public final class StructureDataStorageBB implements Storage<StructureData> {
     this.heap.addAll(heap);
   }
 
+  /** If Structures are stored on the heap. Do not use until better tested. */
   public StructureDataStorageBB setStructuresOnHeap(boolean structuresOnHeap) {
     this.structuresOnHeap = structuresOnHeap;
     return this;
@@ -54,7 +55,7 @@ public final class StructureDataStorageBB implements Storage<StructureData> {
   }
 
   @Override
-  public long getLength() {
+  public long length() {
     return nelems;
   }
 
@@ -68,6 +69,7 @@ public final class StructureDataStorageBB implements Storage<StructureData> {
     // TODO
   }
 
+  /** Get the total size of one Structure in bytes. */
   public int getStructureSize() {
     return members.getStorageSizeBytes();
   }
@@ -77,7 +79,7 @@ public final class StructureDataStorageBB implements Storage<StructureData> {
     return bbuffer;
   }
 
-  /** Copy Array data into ByteBuffer. */
+  /** Copy Array data into ByteBuffer at offset + member.getOffset(). */
   public void setMemberData(int offset, Member member, Array<?> data) {
     int pos = offset + member.getOffset();
     bbuffer.position(pos);
@@ -186,6 +188,7 @@ public final class StructureDataStorageBB implements Storage<StructureData> {
     }
   }
 
+  /** Fast iterator over StructureData objects. */
   @Override
   public Iterator<StructureData> iterator() {
     return new Iter();
