@@ -24,7 +24,7 @@ public class TestBufrBuilderProblem {
 
   @Test
   public void problem() throws Exception {
-    String filename = TestDir.cdmUnitTestDir + "formats/bufr/userExamples/gdas1.t18z.osbuv8.tm00.bufr_d";
+    String filename = TestDir.cdmUnitTestDir + "formats/bufr/userExamples/mixed/gdas1.t18z.osbuv8.tm00.bufr_d";
     // showOrg(filename);
     // showNew(filename);
     testRead(filename);

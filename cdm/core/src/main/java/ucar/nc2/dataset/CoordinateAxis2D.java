@@ -4,7 +4,12 @@
  */
 package ucar.nc2.dataset;
 
-import ucar.ma2.*;
+import ucar.ma2.Array;
+import ucar.ma2.ArrayDouble;
+import ucar.ma2.DataType;
+import ucar.ma2.InvalidRangeException;
+import ucar.ma2.MAMath;
+import ucar.ma2.Range;
 import ucar.nc2.Group;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CF;

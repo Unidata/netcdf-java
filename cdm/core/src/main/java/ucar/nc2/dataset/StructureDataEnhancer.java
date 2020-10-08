@@ -36,8 +36,9 @@ class StructureDataEnhancer {
   // 3) variable with cached data added to StructureDS through NcML
 
   ArrayStructure enhance(ArrayStructure orgAS, Section section) throws IOException {
-    if (!convertNeeded(topStructure, orgAS.getStructureMembers())) {
-      // name, info change only
+    // Can have length 0, if unlimited dimension
+    if (orgAS.getSize() == 0 || !convertNeeded(topStructure, orgAS.getStructureMembers())) {
+      // name, info change only LOOK what is this?
       convertMemberInfo(topStructure, orgAS.getStructureMembers());
       return orgAS;
     }
