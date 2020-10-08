@@ -24,7 +24,7 @@ dependencies {
   compile 'org.slf4j:slf4j-api'
 
   testImplementation project(':cdm-test-utils')
-
+  testImplementation 'com.google.truth:truth'
   testImplementation 'pl.pragmatists:JUnitParams'
 
   testRuntimeOnly 'ch.qos.logback:logback-classic'

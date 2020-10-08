@@ -9,12 +9,16 @@ apply from: "$rootDir/gradle/any/testing.gradle"
 
 dependencies {
   testCompile project(':cdm:cdm-core')
+  testCompile project(':cdm:cdm-s3')
   testCompile project(':netcdf4')
+  testCompile project(':opendap')
   testCompile project(':cdm-test-utils')
   testCompile 'org.slf4j:slf4j-api'
   testCompile 'junit:junit'
-  testRuntimeOnly 'ch.qos.logback:logback-classic'
   testCompile 'com.google.truth:truth'
+
+  testRuntimeOnly 'ch.qos.logback:logback-classic'
+
 }
 
 java {
