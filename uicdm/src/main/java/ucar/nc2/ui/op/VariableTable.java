@@ -6,7 +6,7 @@
 package ucar.nc2.ui.op;
 
 import java.nio.charset.StandardCharsets;
-import ucar.ma2.Array;
+import ucar.array.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
@@ -41,14 +41,14 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableModel;
 
+/** Component "Data Table" in DatasetViewer when you have a Variable (not Structure) selected */
 public class VariableTable extends JPanel {
-
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  private FileManager fileChooser; // for exporting
+  private final FileManager fileChooser; // for exporting
 
   private List col0;
-  private Array[] data;
+  private Array<?>[] data;
 
   private int col0Dim = -1;
   private boolean col0isDate;
@@ -58,12 +58,11 @@ public class VariableTable extends JPanel {
 
   private String[] columnNames;
 
-  private VariableTableModel dataModel = new VariableTableModel();
+  private final VariableTableModel dataModel = new VariableTableModel();
 
   private JCheckBox includeGlobals;
 
   VariableTable(PreferencesExt prefs) {
-
     PreferencesExt fcPrefs = (prefs == null) ? null : (PreferencesExt) prefs.node("FileManager");
     fileChooser = new FileManager(null, null, "csv", "comma seperated values", fcPrefs);
   }
@@ -139,17 +138,16 @@ public class VariableTable extends JPanel {
       columnNames[0] = vd.get(col0Dim).getShortName();
 
       try {
-
         if ((shape.length > 1) && (shape[1] > 1)) {
           Variable dimVar = file.findVariable(v.getDimension(1).getShortName());
-          Array dimArray = null;
+          Array<?> dimArray = null;
           if (dimVar != null)
-            dimArray = dimVar.read();
+            dimArray = dimVar.readArray();
 
           for (int j = 0; j < shape[1]; j++) {
-            data[i] = v.slice(1, j).read();
+            data[i] = v.slice(1, j).readArray();
             if (dimVar != null) {
-              columnNames[i + 1] = v.getShortName() + "[" + dimArray.getDouble(j) + "]";
+              columnNames[i + 1] = v.getShortName() + "[" + dimArray.get(j) + "]";
             } else {
               columnNames[i + 1] = v.getShortName() + "[" + j + "]";
             }
@@ -163,7 +161,7 @@ public class VariableTable extends JPanel {
             i++;
           }
         } else {
-          data[i] = v.read();
+          data[i] = v.readArray();
           columnNames[i + 1] = v.getShortName();
 
           Attribute unit = v.findAttribute("units");
@@ -207,7 +205,7 @@ public class VariableTable extends JPanel {
     }
 
     @Override
-    public Class getColumnClass(int col) {
+    public Class<?> getColumnClass(int col) {
       return String.class;
     }
 
@@ -222,7 +220,7 @@ public class VariableTable extends JPanel {
         return col0.get(row);
       }
 
-      return data[col - 1].getObject(row);
+      return data[col - 1].get(row);
     }
   }
 
@@ -316,8 +314,9 @@ public class VariableTable extends JPanel {
   }
 
   static class DateRenderer extends DefaultTableCellRenderer {
-    private CalendarDateFormatter newForm, oldForm;
-    private CalendarDate cutoff;
+    private final CalendarDateFormatter newForm;
+    private final CalendarDateFormatter oldForm;
+    private final CalendarDate cutoff;
 
     DateRenderer() {
 

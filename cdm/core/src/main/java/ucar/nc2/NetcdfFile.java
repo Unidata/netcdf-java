@@ -19,6 +19,7 @@ import javax.annotation.concurrent.Immutable;
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import ucar.array.StructureData;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
@@ -555,6 +556,15 @@ public class NetcdfFile implements FileCacheable, Closeable {
     else
       // allow iosp to optimize
       return iosp.readSection(cer);
+  }
+
+  public ucar.array.Array<?> readSectionArray(String variableSection) throws IOException, InvalidRangeException {
+    ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(this, variableSection);
+    if (cer.getChild() == null) {
+      return cer.getVariable().readArray(cer.getSection());
+    }
+
+    throw new NotImplementedException();
   }
 
   protected long readToOutputStream(Variable v, Section section, OutputStream out)
