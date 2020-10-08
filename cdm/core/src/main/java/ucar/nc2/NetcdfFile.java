@@ -557,6 +557,15 @@ public class NetcdfFile implements FileCacheable, Closeable {
       return iosp.readSection(cer);
   }
 
+  public ucar.array.Array<?> readSectionArray(String variableSection) throws IOException, InvalidRangeException {
+    ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(this, variableSection);
+    if (cer.getChild() == null) {
+      return cer.getVariable().readArray(cer.getSection());
+    }
+
+    throw new UnsupportedOperationException();
+  }
+
   protected long readToOutputStream(Variable v, Section section, OutputStream out)
       throws IOException, InvalidRangeException {
 
