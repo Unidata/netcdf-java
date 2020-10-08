@@ -25,19 +25,19 @@ public final class ArrayByte extends Array<Byte> {
   /** Create an Array of type Byte and the given shape and storage. */
   public ArrayByte(DataType dtype, int[] shape, Storage<Byte> storage) {
     super(dtype, shape);
-    Preconditions.checkArgument(indexFn.length() <= storage.getLength());
+    Preconditions.checkArgument(indexFn.length() <= storage.length());
     this.storage = storage;
   }
 
   /** Create an Array of type Byte and the given indexFn and storage. */
   private ArrayByte(DataType dtype, IndexFn indexFn, Storage<Byte> storageD) {
     super(dtype, indexFn);
-    Preconditions.checkArgument(indexFn.length() <= storageD.getLength());
+    Preconditions.checkArgument(indexFn.length() <= storageD.length());
     this.storage = storageD;
   }
 
   @Override
-  public Iterator<Byte> fastIterator() {
+  Iterator<Byte> fastIterator() {
     return storage.iterator();
   }
 
@@ -70,6 +70,7 @@ public final class ArrayByte extends Array<Byte> {
     }
   }
 
+  /** Convert the Array into a ByteString. */
   public ByteString getByteString() {
     if (indexFn.isCanonicalOrder()) {
       ByteString.copyFrom(((StorageS) storage).storage);
@@ -83,6 +84,7 @@ public final class ArrayByte extends Array<Byte> {
     return ByteString.copyFrom(raw);
   }
 
+  /** Convert the Array into a ByteBuffer. */
   public ByteBuffer getByteBuffer() {
     if (indexFn.isCanonicalOrder()) {
       return ByteBuffer.wrap(((StorageS) storage).storage);
@@ -130,7 +132,7 @@ public final class ArrayByte extends Array<Byte> {
     }
 
     @Override
-    public long getLength() {
+    public long length() {
       return storage.length;
     }
 

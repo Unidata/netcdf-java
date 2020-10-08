@@ -12,11 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.array.Array;
 import ucar.array.StructureData;
-import ucar.array.StructureDataArray;
-import ucar.array.StructureDataRow;
 import ucar.array.StructureDataStorageBB;
 import ucar.array.StructureMembers;
-import ucar.nc2.Structure;
 import ucar.nc2.dataset.SequenceDS;
 
 /** Enhance StructureData, for both StructureDS and SequenceDS. TODO move to internal. */

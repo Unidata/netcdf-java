@@ -114,7 +114,6 @@ public class MessageArrayCompressedReader {
     bbuffer.order(ByteOrder.BIG_ENDIAN);
 
     StructureDataStorageBB storageBB = new StructureDataStorageBB(members, bbuffer, this.ndatasets);
-    storageBB.setStructuresOnHeap(structuresOnHeap);
 
     // map dkey to Member recursively
     MessageArrayReaderUtils.associateMessage2Members(members, message.getRootDataDescriptor(), topmap);
@@ -430,7 +429,7 @@ public class MessageArrayCompressedReader {
     nestedBB.order(ByteOrder.BIG_ENDIAN);
 
     StructureDataStorageBB nestedStorage = new StructureDataStorageBB(nestedMembers, nestedBB, nestedElements);
-    nestedStorage.setStructuresOnHeap(true);
+    nestedStorage.setStructuresOnHeap(structuresOnHeap);
 
     HashMap<DataDescriptor, Member> nestedMap = new HashMap<>();
     MessageArrayReaderUtils.associateMessage2Members(nestedMembers, seqdd, nestedMap);

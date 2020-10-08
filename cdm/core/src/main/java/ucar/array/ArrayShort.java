@@ -23,19 +23,19 @@ public final class ArrayShort extends Array<Short> {
   /** Create an Array of type Short and the given shape and storage. */
   public ArrayShort(DataType dtype, int[] shape, Storage<Short> storage) {
     super(dtype, shape);
-    Preconditions.checkArgument(indexFn.length() <= storage.getLength());
+    Preconditions.checkArgument(indexFn.length() <= storage.length());
     this.storage = storage;
   }
 
   /** Create an Array of type Short and the given indexFn and storage. */
   private ArrayShort(DataType dtype, IndexFn indexFn, Storage<Short> storageD) {
     super(dtype, indexFn);
-    Preconditions.checkArgument(indexFn.length() <= storageD.getLength());
+    Preconditions.checkArgument(indexFn.length() <= storageD.length());
     this.storage = storageD;
   }
 
   @Override
-  public Iterator<Short> fastIterator() {
+  Iterator<Short> fastIterator() {
     return storage.iterator();
   }
 
@@ -104,7 +104,7 @@ public final class ArrayShort extends Array<Short> {
     }
 
     @Override
-    public long getLength() {
+    public long length() {
       return storage.length;
     }
 

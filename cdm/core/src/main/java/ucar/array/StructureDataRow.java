@@ -12,7 +12,7 @@ import ucar.array.StructureMembers.Member;
 import ucar.ma2.DataType;
 
 /** Experimental, used in Cdmr */
-public class StructureDataRow extends StructureData {
+class StructureDataRow extends StructureData {
   private final ByteBuffer bbuffer;
 
   public StructureDataRow(StructureMembers members) {

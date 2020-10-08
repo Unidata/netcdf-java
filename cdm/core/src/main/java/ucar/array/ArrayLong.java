@@ -23,19 +23,19 @@ public final class ArrayLong extends Array<Long> {
   /** Create an Array of type Long and the given shape and storage. */
   public ArrayLong(DataType dtype, int[] shape, Storage<Long> storage) {
     super(dtype, shape);
-    Preconditions.checkArgument(indexFn.length() <= storage.getLength());
+    Preconditions.checkArgument(indexFn.length() <= storage.length());
     this.storage = storage;
   }
 
   /** Create an Array of type Long and the given indexFn and storage. */
   private ArrayLong(DataType dtype, IndexFn indexFn, Storage<Long> storageD) {
     super(dtype, indexFn);
-    Preconditions.checkArgument(indexFn.length() <= storageD.getLength());
+    Preconditions.checkArgument(indexFn.length() <= storageD.length());
     this.storage = storageD;
   }
 
   @Override
-  public Iterator<Long> fastIterator() {
+  Iterator<Long> fastIterator() {
     return storage.iterator();
   }
 
@@ -104,7 +104,7 @@ public final class ArrayLong extends Array<Long> {
     }
 
     @Override
-    public long getLength() {
+    public long length() {
       return storage.length;
     }
 
