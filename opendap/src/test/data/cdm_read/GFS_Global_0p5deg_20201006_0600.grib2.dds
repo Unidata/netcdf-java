@@ -1,0 +1,14 @@
+Dataset {
+    Float32 lat[lat = 8];
+    Float32 lon[lon = 15];
+    Float64 reftime;
+    Float64 time3[time3 = 3];
+    Grid {
+     ARRAY:
+        Float32 Temperature_surface[time3 = 3][lat = 8][lon = 15];
+     MAPS:
+        Float64 time3[time3 = 3];
+        Float32 lat[lat = 8];
+        Float32 lon[lon = 15];
+    } Temperature_surface;
+} grib/NCEP/GFS/Global_0p5deg/GFS_Global_0p5deg_20201006_0600.grib2;
