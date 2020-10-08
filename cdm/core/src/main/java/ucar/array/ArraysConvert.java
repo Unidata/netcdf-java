@@ -7,6 +7,7 @@ package ucar.array;
 import com.google.common.base.Preconditions;
 import java.nio.ByteBuffer;
 import ucar.array.StructureMembers.Member;
+import ucar.ma2.ArrayObject;
 import ucar.ma2.ArrayStructure;
 import ucar.ma2.DataType;
 import ucar.ma2.IndexIterator;
@@ -16,20 +17,23 @@ import ucar.ma2.StructureDataW;
 public class ArraysConvert {
 
   public static Array<?> convertToArray(ucar.ma2.Array from) {
-    if (from.isVlen()) {
-      return convertVlen(from);
-    }
     DataType dtype = from.getDataType();
     if (dtype == DataType.OPAQUE) {
       return convertOpaque(from);
+
+    } else if (from.isVlen()) {
+      return convertVlen(from);
+
     } else if (dtype == DataType.STRING) {
       String[] sarray = new String[(int) from.getSize()];
       for (int idx = 0; idx < sarray.length; idx++) {
         sarray[idx] = (String) from.getObject(idx);
       }
       return Arrays.factory(dtype, from.getShape(), sarray);
+
     } else if (dtype == DataType.STRUCTURE) {
       return convertArrayStructure(from);
+
     } else {
       return Arrays.factory(dtype, from.getShape(), from.get1DJavaArray(dtype));
     }
@@ -51,17 +55,22 @@ public class ArraysConvert {
       }
       return ArrayVlen.factory(dtype, ma2.getShape(), dataArray);
     }
-    throw new RuntimeException("Unknown opaque array class " + from.getClass().getName());
+    throw new RuntimeException("Unimplemented opaque array class " + from.getClass().getName());
   }
 
-  // Opaque is Vlen of byte
   private static Array<?> convertVlen(ucar.ma2.Array from) {
     DataType dtype = from.getDataType();
-    Preconditions.checkArgument(dtype == DataType.OPAQUE);
     if (from instanceof ucar.ma2.ArrayObject) {
-      // dont know what to do, does are there any ucar.ma2 vlens?
+      ArrayVlen<?> result = ArrayVlen.factory(dtype, from.getShape());
+      int count = 0;
+      IndexIterator ii = from.getIndexIterator();
+      while (ii.hasNext()) {
+        Object parray = ii.getObjectNext();
+        result.set(count++, parray);
+      }
+      return result;
     }
-    throw new RuntimeException("Unknown vlen array class " + from.getClass().getName());
+    throw new RuntimeException("Unimplemented vlen array class " + from.getClass().getName());
   }
 
   private static Array<?> convertArrayStructure(ucar.ma2.Array from) {
@@ -82,7 +91,7 @@ public class ArraysConvert {
       }
       return new StructureDataArray(members, orgData.getShape(), storage);
     }
-    throw new RuntimeException("Unknown opaque array class " + from.getClass().getName());
+    throw new RuntimeException("Unimplemented ArrayStructure class " + from.getClass().getName());
   }
 
   private static StructureMembers.Builder convertMembers(ucar.ma2.StructureMembers from) {
@@ -108,8 +117,7 @@ public class ArraysConvert {
       ucar.ma2.Array data) {
     int pos = offset + member.getOffset();
     bbuffer.position(pos);
-    if (member.isVariableLength()) {
-      // LOOK not making a copy
+    if (member.isVlen()) {
       int index = storage.putOnHeap(convertVlen(data));
       bbuffer.putInt(index);
       return;
@@ -205,13 +213,11 @@ public class ArraysConvert {
   ////////////////////////////////////////////////////////////////////////////
 
   public static ucar.ma2.Array convertFromArray(Array<?> from) {
-    // Look this is not handling Structures, Opaques, Vlens correctly
-    Preconditions.checkArgument(!(from instanceof ArrayVlen), "Cant convert Vlen");
-    Preconditions.checkArgument(from.dataType != DataType.OPAQUE, "Cant convert Opaque");
-    Preconditions.checkArgument(from.dataType != DataType.SEQUENCE, "Cant convert Sequence");
-
-    if (from.dataType == DataType.STRUCTURE) {
+    if (from.dataType == DataType.STRUCTURE || from.dataType == DataType.SEQUENCE) {
       return convertStructureDataArray(from);
+    }
+    if (from.isVlen()) {
+      return convertVlen(from);
     }
 
     ucar.ma2.Array values = ucar.ma2.Array.factory(from.getDataType(), from.getShape());
@@ -220,6 +226,36 @@ public class ArraysConvert {
       values.setObject(count++, val);
     }
     return values;
+  }
+
+  private static ucar.ma2.Array convertVlen(Array<?> from) {
+    Preconditions.checkArgument(from instanceof ArrayVlen);
+    ArrayVlen<Array<?>> vlen = (ArrayVlen<Array<?>>) from;
+    if (vlen.getDataType() == DataType.OPAQUE) {
+      return convertOpaque(from);
+    }
+
+    ArrayObject result = new ArrayObject(vlen.getDataType(), Object.class, true, from.getShape());
+    int count = 0;
+    for (Array<?> array : vlen) {
+      result.setObject(count++, Arrays.copyPrimitiveArray(array));
+    }
+    return result;
+  }
+
+  private static ucar.ma2.Array convertOpaque(Array<?> from) {
+    Preconditions.checkArgument(from instanceof ArrayVlen);
+    ArrayVlen<Array<?>> vlen = (ArrayVlen<Array<?>>) from;
+    Preconditions.checkArgument(vlen.getDataType() == DataType.OPAQUE);
+
+    ucar.ma2.ArrayObject result = new ucar.ma2.ArrayObject(DataType.OPAQUE, ByteBuffer.class, true, from.getShape());;
+    int count = 0;
+    for (Array<?> array : vlen) {
+      ArrayByte barray = (ArrayByte) array;
+      ByteBuffer bb = barray.getByteBuffer();
+      result.setObject(count++, bb);
+    }
+    return result;
   }
 
   private static ucar.ma2.Array convertStructureDataArray(Array<?> from) {

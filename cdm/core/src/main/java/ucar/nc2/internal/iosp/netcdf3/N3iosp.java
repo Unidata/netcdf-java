@@ -243,7 +243,7 @@ public class N3iosp extends AbstractIOServiceProvider implements IOServiceProvid
     // if (layout.getTotalNelems() == 0) {
     // return Array.factory(dataType, section.getShape());
     // }
-    return IospHelper.readDataFill(raf, layout, dataType, null, -1);
+    return IospHelper.readDataFill(raf, layout, dataType, null, null);
   }
 
   /**

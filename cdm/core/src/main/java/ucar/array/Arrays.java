@@ -4,7 +4,6 @@
  */
 package ucar.array;
 
-import com.google.common.base.Preconditions;
 import java.util.ArrayList;
 import java.util.List;
 import ucar.ma2.DataType;
@@ -376,10 +375,6 @@ public class Arrays {
     return product;
   }
 
-  public static boolean isVariableLength(int[] shape) {
-    return shape.length > 0 && shape[shape.length - 1] < 0;
-  }
-
   /**
    * If there are any VLEN dimensions (length < 0), remove it and all dimensions to the right.
    * 
@@ -400,5 +395,85 @@ public class Arrays {
     int[] newshape = new int[prefixrank];
     System.arraycopy(shape, 0, newshape, 0, prefixrank);
     return newshape;
+  }
+
+  public static Object copyPrimitiveArray(Array<?> data) {
+    DataType dataType = data.getDataType();
+    int idx = 0;
+    switch (dataType) {
+      case ENUM1:
+      case UBYTE:
+      case BYTE: {
+        Array<Byte> bdata = (Array<Byte>) data;
+        byte[] parray = new byte[(int) data.length()];
+        for (byte val : bdata) {
+          parray[idx++] = val;
+        }
+        return parray;
+      }
+      case CHAR: {
+        Array<Character> cdata = (Array<Character>) data;
+        char[] parray = new char[(int) data.length()];
+        for (char val : cdata) {
+          parray[idx++] = val;
+        }
+        return parray;
+      }
+      case ENUM2:
+      case USHORT:
+      case SHORT: {
+        Array<Short> sdata = (Array<Short>) data;
+        short[] parray = new short[(int) data.length()];
+        for (short val : sdata) {
+          parray[idx++] = val;
+        }
+        return parray;
+      }
+      case ENUM4:
+      case UINT:
+      case INT: {
+        Array<Integer> idata = (Array<Integer>) data;
+        int[] parray = new int[(int) data.length()];
+        for (int val : idata) {
+          parray[idx++] = val;
+        }
+        return parray;
+      }
+      case ULONG:
+      case LONG: {
+        Array<Long> ldata = (Array<Long>) data;
+        long[] parray = new long[(int) data.length()];
+        for (long val : ldata) {
+          parray[idx++] = val;
+        }
+        return parray;
+      }
+      case FLOAT: {
+        Array<Float> fdata = (Array<Float>) data;
+        float[] parray = new float[(int) data.length()];
+        for (float val : fdata) {
+          parray[idx++] = val;
+        }
+        return parray;
+      }
+      case DOUBLE: {
+        Array<Double> ddata = (Array<Double>) data;
+        double[] parray = new double[(int) data.length()];
+        for (double val : ddata) {
+          parray[idx++] = val;
+        }
+        return parray;
+      }
+      case STRING: {
+        Array<String> sdata = (Array<String>) data;
+        String[] parray = new String[(int) data.length()];
+        for (String val : sdata) {
+          parray[idx++] = val;
+        }
+        return parray;
+      }
+      default:
+        throw new IllegalStateException("Unimplemented datatype " + dataType);
+    }
   }
 }

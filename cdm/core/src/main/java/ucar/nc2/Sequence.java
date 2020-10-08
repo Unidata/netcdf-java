@@ -54,36 +54,42 @@ public class Sequence extends Structure implements Iterable<ucar.array.Structure
 
   /** Same as read() */
   @Override
+  @Deprecated
   public Array read(ucar.ma2.Section section) throws java.io.IOException {
     return read();
   }
 
   /** @throws UnsupportedOperationException always */
   @Override
+  @Deprecated
   public Array read(int[] origin, int[] shape) {
     throw new UnsupportedOperationException();
   }
 
   /** @throws UnsupportedOperationException always */
   @Override
+  @Deprecated
   public Array read(String sectionSpec) {
     throw new UnsupportedOperationException();
   }
 
   /** @throws UnsupportedOperationException always */
   @Override
+  @Deprecated
   public Array read(List<Range> ranges) {
     throw new UnsupportedOperationException();
   }
 
   /** @throws UnsupportedOperationException always */
   @Override
+  @Deprecated
   public StructureData readStructure(int index) {
     throw new UnsupportedOperationException();
   }
 
   /** @throws UnsupportedOperationException always */
   @Override
+  @Deprecated
   public ArrayStructure readStructure(int start, int count) {
     throw new UnsupportedOperationException();
   }

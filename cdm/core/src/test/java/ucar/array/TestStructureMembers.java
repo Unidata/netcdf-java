@@ -56,7 +56,7 @@ public class TestStructureMembers {
     assertThat(m.length()).isEqualTo(121);
     assertThat(m.getStorageSizeBytes()).isEqualTo(121);
     assertThat(m.getIndex()).isEqualTo(0);
-    assertThat(m.isVariableLength()).isEqualTo(false);
+    assertThat(m.isVlen()).isEqualTo(false);
     assertThat(m.getStructureMembers()).isNull();
 
     Member m2 = sm.findMember("mname3");
@@ -114,7 +114,7 @@ public class TestStructureMembers {
     assertThat(m.length()).isEqualTo(1);
     assertThat(m.getStorageSizeBytes()).isEqualTo(198);
     assertThat(m.getIndex()).isEqualTo(2);
-    assertThat(m.isVariableLength()).isEqualTo(false);
+    assertThat(m.isVlen()).isEqualTo(false);
 
     StructureMembers ncm = m.getStructureMembers();
     assertThat(ncm).isNotNull();

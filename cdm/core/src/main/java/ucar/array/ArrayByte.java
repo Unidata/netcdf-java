@@ -6,6 +6,7 @@ package ucar.array;
 
 import com.google.common.base.Preconditions;
 import com.google.protobuf.ByteString;
+import java.nio.ByteBuffer;
 import java.util.Iterator;
 import javax.annotation.concurrent.Immutable;
 import ucar.ma2.DataType;
@@ -69,7 +70,6 @@ public final class ArrayByte extends Array<Byte> {
     }
   }
 
-
   public ByteString getByteString() {
     if (indexFn.isCanonicalOrder()) {
       ByteString.copyFrom(((StorageS) storage).storage);
@@ -81,6 +81,17 @@ public final class ArrayByte extends Array<Byte> {
       raw[idx++] = bval;
     }
     return ByteString.copyFrom(raw);
+  }
+
+  public ByteBuffer getByteBuffer() {
+    if (indexFn.isCanonicalOrder()) {
+      return ByteBuffer.wrap(((StorageS) storage).storage);
+    }
+    ByteBuffer result = ByteBuffer.allocate((int) this.length());
+    for (byte bval : this) {
+      result.put(bval);
+    }
+    return result;
   }
 
   @Override

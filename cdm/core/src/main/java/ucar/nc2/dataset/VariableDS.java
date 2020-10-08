@@ -54,6 +54,23 @@ public class VariableDS extends Variable implements EnhanceScaleMissingUnsigned,
     return getParentGroup() == null ? null : getParentGroup().getNetcdfFile();
   }
 
+  public boolean convertNeeded() {
+    if (enhanceMode.contains(Enhance.ConvertEnums)
+        && (dataType.isEnum() || (orgDataType != null && orgDataType.isEnum()))) {
+      return true;
+    }
+    if (enhanceMode.contains(Enhance.ConvertMissing) && hasMissing()) {
+      return true;
+    }
+    if (enhanceMode.contains(Enhance.ApplyScaleOffset) && hasScaleOffset()) {
+      return true;
+    }
+    if (enhanceMode.contains(Enhance.ConvertUnsigned) && dataType.isUnsigned()) {
+      return true;
+    }
+    return false;
+  }
+
   boolean needConvert() {
     Set<Enhance> enhancements = getEnhanceMode();
     return enhancements.contains(Enhance.ConvertEnums) || enhancements.contains(Enhance.ConvertUnsigned)
@@ -68,7 +85,7 @@ public class VariableDS extends Variable implements EnhanceScaleMissingUnsigned,
     return dataEnhancer.convert(data, enhancements);
   }
 
-  ucar.array.Array<?> convertArray(ucar.array.Array<?> data) {
+  public ucar.array.Array<?> convertArray(ucar.array.Array<?> data) {
     return dataEnhancer.convertArray(data, enhanceMode);
   }
 

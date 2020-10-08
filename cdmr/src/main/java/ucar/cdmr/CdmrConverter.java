@@ -274,7 +274,7 @@ public class CdmrConverter {
   ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   public static CdmRemoteProto.Data encodeData(DataType dataType, Array<?> data) {
-    if (data instanceof ArrayVlen) {
+    if (data.isVlen()) {
       return encodeVlenData(dataType, (ArrayVlen) data);
     } else if (data instanceof StructureDataArray) {
       return encodeStructureDataArray(dataType, (StructureDataArray) data);
@@ -405,7 +405,7 @@ public class CdmrConverter {
     builder.setDataType(convertDataType(dataType));
     encodeShape(builder, vlenarray.getShape());
     for (Array<?> one : vlenarray) {
-      builder.addVlen(encodeData(vlenarray.getPrimitiveArrayType(), one));
+      builder.addVlen(encodeData(vlenarray.getDataType(), one));
     }
     return builder.build();
   }

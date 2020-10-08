@@ -192,7 +192,7 @@ public class H5iosp extends AbstractIOServiceProvider {
       if (debugFilter)
         System.out.println("read variable filtered " + v2.getFullName() + " vinfo = " + vinfo);
       assert vinfo.isChunked;
-      ByteOrder bo = (vinfo.typeInfo.endian == 0) ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN;
+      ByteOrder bo = vinfo.typeInfo.endian;
       layout = new H5tiledLayoutBB(v2, wantSection, raf, vinfo.mfp.getFilters(), bo);
       if (vinfo.typeInfo.isVString) {
         data = readFilteredStringData((LayoutBB) layout);
@@ -207,7 +207,7 @@ public class H5iosp extends AbstractIOServiceProvider {
       DataType readDtype = v2.getDataType();
       int elemSize = v2.getElementSize();
       Object fillValue = vinfo.getFillValue();
-      int endian = vinfo.typeInfo.endian;
+      ByteOrder endian = vinfo.typeInfo.endian;
 
       // fill in the wantSection
       wantSection = Section.fill(wantSection, v2.getShape());
@@ -277,7 +277,7 @@ public class H5iosp extends AbstractIOServiceProvider {
    * @throws ucar.ma2.InvalidRangeException if invalid section
    */
   private Object readData(H5header.Vinfo vinfo, Variable v, Layout layout, DataType dataType, int[] shape,
-      Object fillValue, int endian) throws IOException, InvalidRangeException {
+      Object fillValue, ByteOrder endian) throws IOException, InvalidRangeException {
 
     H5header.TypeInfo typeInfo = vinfo.typeInfo;
 
@@ -418,9 +418,8 @@ public class H5iosp extends AbstractIOServiceProvider {
       H5header.Vinfo vm = (H5header.Vinfo) v2.getSPobject();
 
       // apparently each member may have seperate byte order (!!!??)
-      if (vm.typeInfo.endian >= 0) {
-        m.setDataObject(
-            vm.typeInfo.endian == RandomAccessFile.LITTLE_ENDIAN ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
+      if (vm.typeInfo.endian != null) {
+        m.setDataObject(vm.typeInfo.endian);
       }
 
       // vm.dataPos : offset since start of Structure
@@ -460,8 +459,7 @@ public class H5iosp extends AbstractIOServiceProvider {
         int startPos = pos + m.getDataParam();
         bb.order(ByteOrder.LITTLE_ENDIAN);
 
-        ByteOrder bo = (ByteOrder) m.getDataObject();
-        int endian = bo.equals(ByteOrder.LITTLE_ENDIAN) ? RandomAccessFile.LITTLE_ENDIAN : RandomAccessFile.BIG_ENDIAN;
+        ByteOrder endian = (ByteOrder) m.getDataObject();
         // Compute rank and size upto the first (and ideally last) VLEN
         int[] fieldshape = m.getShape();
         int prefixrank = 0;
@@ -509,7 +507,7 @@ public class H5iosp extends AbstractIOServiceProvider {
    * @return primitive array with data read in
    * @throws java.io.IOException if read error
    */
-  Object readDataPrimitive(Layout layout, DataType dataType, int[] shape, Object fillValue, int endian,
+  Object readDataPrimitive(Layout layout, DataType dataType, int[] shape, Object fillValue, ByteOrder endian,
       boolean convertChar) throws IOException {
 
     if (dataType == DataType.STRING) {

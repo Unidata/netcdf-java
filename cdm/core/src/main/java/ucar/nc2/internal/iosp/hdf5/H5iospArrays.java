@@ -85,7 +85,7 @@ public class H5iospArrays extends H5iosp {
       if (debugFilter)
         System.out.println("read variable filtered " + v2.getFullName() + " vinfo = " + vinfo);
       assert vinfo.isChunked;
-      ByteOrder bo = (vinfo.typeInfo.endian == 0) ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN;
+      ByteOrder bo = vinfo.typeInfo.endian;
       layout = new H5tiledLayoutBB(v2, wantSection, raf, vinfo.mfp.getFilters(), bo);
       if (vinfo.typeInfo.isVString) {
         data = readFilteredStringData((LayoutBB) layout);
@@ -100,7 +100,7 @@ public class H5iospArrays extends H5iosp {
       DataType readDtype = v2.getDataType();
       int elemSize = v2.getElementSize();
       Object fillValue = vinfo.getFillValue();
-      int endian = vinfo.typeInfo.endian;
+      ByteOrder endian = vinfo.typeInfo.endian;
 
       // fill in the wantSection
       wantSection = Section.fill(wantSection, v2.getShape());
@@ -170,7 +170,7 @@ public class H5iospArrays extends H5iosp {
    * @throws InvalidRangeException if invalid section
    */
   private Object readArrayOrPrimitive(H5header.Vinfo vinfo, Variable v, Layout layout, DataType dataType, int[] shape,
-      Object fillValue, int endian) throws IOException {
+      Object fillValue, ByteOrder endian) throws IOException {
 
     H5header.TypeInfo typeInfo = vinfo.typeInfo;
 
@@ -243,7 +243,7 @@ public class H5iospArrays extends H5iosp {
   // Vlen
 
   private ucar.array.Array<?> readVlen(DataType dataType, int[] shape, H5header.TypeInfo typeInfo, Layout layout,
-      int endian) throws IOException {
+      ByteOrder endian) throws IOException {
     DataType readType = dataType;
     if (typeInfo.base.hdfType == 7) { // reference
       readType = DataType.LONG;
@@ -287,7 +287,8 @@ public class H5iospArrays extends H5iosp {
    * @param endian byteOrder of the data (0 = BE, 1 = LE)
    * @return the primitice array read from the heap
    */
-  private Object readHeapPrimitiveArray(long globalHeapIdAddress, DataType dataType, int endian) throws IOException {
+  private Object readHeapPrimitiveArray(long globalHeapIdAddress, DataType dataType, ByteOrder endian)
+      throws IOException {
     HeapIdentifier heapId = header.h5objects.readHeapIdentifier(globalHeapIdAddress);
     if (debugHeap) {
       log.debug(" heapId= {}", heapId);
@@ -301,7 +302,7 @@ public class H5iospArrays extends H5iosp {
     if (debugHeap) {
       log.debug(" HeapObject= {}", ho);
     }
-    if (endian >= 0) {
+    if (endian != null) {
       raf.order(endian);
     }
 
@@ -411,11 +412,10 @@ public class H5iospArrays extends H5iosp {
       assert v2 != null;
       H5header.Vinfo vm = (H5header.Vinfo) v2.getSPobject();
 
-      // apparently each member may have seperate byte order (!!!??)
+      // apparently each member may have different byte order (!!!??)
       // perhaps better to flip as needed?
-      if (vm.typeInfo.endian >= 0) {
-        mb.setByteOrder(
-            vm.typeInfo.endian == RandomAccessFile.LITTLE_ENDIAN ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
+      if (vm.typeInfo.endian != null) {
+        mb.setByteOrder(vm.typeInfo.endian);
       }
 
       // vm.dataPos : offset since start of Structure
@@ -452,13 +452,11 @@ public class H5iospArrays extends H5iosp {
         bb.order(m.getByteOrder()); // write the string index in whatever that member's byte order is.
         bb.putInt(destPos, index); // overwrite with the index into the StringHeap
 
-      } else if (m.isVariableLength()) { // LOOK this may be wrong, needs testing
+      } else if (m.isVlen()) { // LOOK this may be wrong, needs testing
         int startPos = pos + m.getOffset();
         bb.order(ByteOrder.LITTLE_ENDIAN);
 
-        ByteOrder bo = m.getByteOrder();
-        int endian = bo.equals(ByteOrder.LITTLE_ENDIAN) ? RandomAccessFile.LITTLE_ENDIAN : RandomAccessFile.BIG_ENDIAN;
-
+        ByteOrder endian = m.getByteOrder();
         ArrayVlen<?> vlenArray = ArrayVlen.factory(m.getDataType(), m.getShape());
         int size = (int) Arrays.computeSize(vlenArray.getShape());
         Preconditions.checkArgument(size == m.length(), "Internal error: field size mismatch");

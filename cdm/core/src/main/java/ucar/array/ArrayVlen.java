@@ -114,28 +114,29 @@ public final class ArrayVlen<T> extends Array<Array<T>> {
 
   /////////////////////////////////////////////////////////////////////////
   private final StorageMutable<Array<T>> storage;
-  private final DataType primitiveArrayType;
 
-  /** Create an empty Vlen of type primitiveArrayType and the given shape. */
-  private ArrayVlen(DataType primitiveArrayType, int[] shape) {
-    super(DataType.VLEN, shape);
-    this.storage = createStorage(primitiveArrayType, (int) Arrays.computeSize(shape), null);
-    this.primitiveArrayType = primitiveArrayType;
+  /** Create an empty Vlen of type dataType and the given shape. */
+  private ArrayVlen(DataType dataType, int[] shape) {
+    super(dataType, shape);
+    this.storage = createStorage(dataType, (int) Arrays.computeSize(shape), null);
   }
 
-  /** Create an empty Vlen of type primitiveArrayType and data array T[][]. */
-  private ArrayVlen(DataType primitiveArrayType, int[] shape, Object dataArray) {
-    super(DataType.VLEN, shape);
-    this.storage = createStorage(primitiveArrayType, (int) Arrays.computeSize(shape), dataArray);
-    this.primitiveArrayType = primitiveArrayType;
+  /** Create an empty Vlen of type dataType and data array T[][]. */
+  private ArrayVlen(DataType dataType, int[] shape, Object dataArray) {
+    super(dataType, shape);
+    this.storage = createStorage(dataType, (int) Arrays.computeSize(shape), dataArray);
   }
 
   /** Create an Array of type Array<T> and the given indexFn and storage. */
-  private ArrayVlen(DataType primitiveArrayType, IndexFn indexFn, StorageMutable<Array<T>> storage) {
-    super(DataType.VLEN, indexFn);
+  private ArrayVlen(DataType dataType, IndexFn indexFn, StorageMutable<Array<T>> storage) {
+    super(dataType, indexFn);
     Preconditions.checkArgument(indexFn.length() <= storage.getLength());
     this.storage = storage;
-    this.primitiveArrayType = primitiveArrayType;
+  }
+
+  @Override
+  public boolean isVlen() {
+    return true;
   }
 
   @Override
@@ -156,11 +157,6 @@ public final class ArrayVlen<T> extends Array<Array<T>> {
   @Override
   public Array<T> get(Index index) {
     return get(index.getCurrentIndex());
-  }
-
-  /** The resulting object will be a primitive array of this type, eg double[], or any length. */
-  public DataType getPrimitiveArrayType() {
-    return this.primitiveArrayType;
   }
 
   /**
@@ -247,6 +243,9 @@ public final class ArrayVlen<T> extends Array<Array<T>> {
 
     @Override
     public void set(int index, Object value) {
+      if (value instanceof ArrayByte) {
+        value = Arrays.copyPrimitiveArray((ArrayByte) value);
+      }
       primitiveArray[index] = (byte[]) value;
     }
 
@@ -298,6 +297,9 @@ public final class ArrayVlen<T> extends Array<Array<T>> {
 
     @Override
     public void set(int index, Object value) {
+      if (value instanceof ArrayChar) {
+        value = Arrays.copyPrimitiveArray((ArrayChar) value);
+      }
       primitiveArray[index] = (char[]) value;
     }
 
@@ -349,6 +351,9 @@ public final class ArrayVlen<T> extends Array<Array<T>> {
 
     @Override
     public void set(int index, Object value) {
+      if (value instanceof ArrayDouble) {
+        value = Arrays.copyPrimitiveArray((ArrayDouble) value);
+      }
       primitiveArray[index] = (double[]) value;
     }
 
@@ -400,6 +405,9 @@ public final class ArrayVlen<T> extends Array<Array<T>> {
 
     @Override
     public void set(int index, Object value) {
+      if (value instanceof ArrayFloat) {
+        value = Arrays.copyPrimitiveArray((ArrayFloat) value);
+      }
       primitiveArray[index] = (float[]) value;
     }
 
@@ -453,6 +461,9 @@ public final class ArrayVlen<T> extends Array<Array<T>> {
 
     @Override
     public void set(int index, Object value) {
+      if (value instanceof ArrayInteger) {
+        value = Arrays.copyPrimitiveArray((ArrayInteger) value);
+      }
       primitiveArray[index] = (int[]) value;
     }
 
@@ -506,6 +517,9 @@ public final class ArrayVlen<T> extends Array<Array<T>> {
 
     @Override
     public void set(int index, Object value) {
+      if (value instanceof ArrayLong) {
+        value = Arrays.copyPrimitiveArray((ArrayLong) value);
+      }
       primitiveArray[index] = (long[]) value;
     }
 
@@ -559,6 +573,9 @@ public final class ArrayVlen<T> extends Array<Array<T>> {
 
     @Override
     public void set(int index, Object value) {
+      if (value instanceof ArrayShort) {
+        value = Arrays.copyPrimitiveArray((ArrayShort) value);
+      }
       primitiveArray[index] = (short[]) value;
     }
 
@@ -610,6 +627,9 @@ public final class ArrayVlen<T> extends Array<Array<T>> {
 
     @Override
     public void set(int index, Object value) {
+      if (value instanceof ArrayString) {
+        value = Arrays.copyPrimitiveArray((ArrayString) value);
+      }
       primitiveArray[index] = (String[]) value;
     }
 

@@ -37,14 +37,14 @@ public class IospHelper {
    * @throws java.io.IOException on read error
    */
   public static Object readDataFill(RandomAccessFile raf, Layout index, DataType dataType, Object fillValue,
-      int byteOrder) throws java.io.IOException {
+      ByteOrder byteOrder) throws java.io.IOException {
     Object arr = (fillValue == null) ? makePrimitiveArray((int) index.getTotalNelems(), dataType)
         : makePrimitiveArray((int) index.getTotalNelems(), dataType, fillValue);
     return readData(raf, index, dataType, arr, byteOrder, true);
   }
 
   public static Object readDataFill(RandomAccessFile raf, Layout index, DataType dataType, Object fillValue,
-      int byteOrder, boolean convertChar) throws java.io.IOException {
+      ByteOrder byteOrder, boolean convertChar) throws java.io.IOException {
     Object arr = (fillValue == null) ? makePrimitiveArray((int) index.getTotalNelems(), dataType)
         : makePrimitiveArray((int) index.getTotalNelems(), dataType, fillValue);
     return readData(raf, index, dataType, arr, byteOrder, convertChar);
@@ -63,7 +63,7 @@ public class IospHelper {
    * @return primitive array with data read in
    * @throws java.io.IOException on read error
    */
-  public static Object readData(RandomAccessFile raf, Layout layout, DataType dataType, Object arr, int byteOrder,
+  public static Object readData(RandomAccessFile raf, Layout layout, DataType dataType, Object arr, ByteOrder byteOrder,
       boolean convertChar) throws java.io.IOException {
     if (showLayoutTypes)
       System.out.println("***RAF LayoutType=" + layout.getClass().getName());

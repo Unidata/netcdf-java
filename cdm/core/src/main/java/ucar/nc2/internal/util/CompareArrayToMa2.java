@@ -86,22 +86,14 @@ public class CompareArrayToMa2 {
       // ok = false;
     }
 
-    if (org.isVlen() != (array.getDataType() == DataType.VLEN)) {
-      f.format(" WARN  %s: data vlen %s !== %s%n", name, org.isVlen(), (array.getDataType() == DataType.VLEN));
+    if (org.isVlen() != array.isVlen()) {
+      f.format(" WARN  %s: data vlen %s !== %s%n", name, org.isVlen(), array.isVlen());
       // ok = false;
     }
 
     if (testTypes && org.getDataType() != array.getDataType()) {
-      if (array instanceof ArrayVlen) {
-        ArrayVlen<?> arrv = (ArrayVlen<?>) array;
-        if (org.getDataType() != arrv.getPrimitiveArrayType()) {
-          f.format(" WARN %s: data type %s !== %s%n", name, org.getDataType(), arrv.getPrimitiveArrayType());
-          ok = false;
-        }
-      } else {
-        f.format(" WARN %s: data type %s !== %s%n", name, org.getDataType(), array.getDataType());
-        ok = false;
-      }
+      f.format(" WARN %s: data type %s !== %s%n", name, org.getDataType(), array.getDataType());
+      ok = false;
     }
 
     if (!ok) {
@@ -111,18 +103,21 @@ public class CompareArrayToMa2 {
     DataType dt = org.getDataType();
     IndexIterator iter1 = org.getIndexIterator();
 
-    if (org.isVlen()) {
+    if (dt != DataType.OPAQUE && (org.isVlen() || array.isVlen())) {
+      // problem is ma2 is unwrapping scalar Vlens, array is not
+      if (!org.isVlen() && array instanceof ArrayVlen && array.length() == 1) {
+        ArrayVlen<?> vlen = (ArrayVlen<?>) array;
+        array = vlen.get(0);
+      }
       Iterator<Object> iter2 = (Iterator<Object>) array.iterator();
+
       while (iter1.hasNext() && iter2.hasNext()) {
         Object v1 = iter1.getObjectNext();
         Object v2 = iter2.next();
         if (v1 instanceof ucar.ma2.Array && v2 instanceof Array) {
           ok &= compareData(f, name, (ucar.ma2.Array) v1, (Array) v2, justOne, testTypes);
-        } else if (v1 instanceof ucar.ma2.Array) {
-          // problem is we are unwrapping scalar Vlens, different from ma2
-          ok &= compareData(f, name, (ucar.ma2.Array) v1, array, justOne, testTypes);
-        } else {
-          f.format(" DIFF %s: Vlen class %s != %s %n", name, v1.getClass().getName(), v2.getClass().getName());
+        } else if (!v1.equals(v2)) {
+          f.format(" DIFF %s: Vlen %s != %s %n", name, v1, v2);
           ok = false;
           if (justOne)
             break;
@@ -271,16 +266,17 @@ public class CompareArrayToMa2 {
         while (iter1.hasNext() && iter2.hasNext()) {
           String v1 = (String) iter1.getObjectNext();
           String v2 = iter2.next();
-          if (!v1.equals(v2)) {
+          if ((v1 == null) != (v2 == null)) {
+            f.format(" DIFF string %s: null %s != %s count=%s%n", name, (v1 == null), (v2 == null), iter1);
+            ok = false;
+          }
+          if (v1 != null && !v1.equals(v2)) {
             f.format(" DIFF string %s: %s != %s count=%s%n", name, v1, v2, iter1);
             ok = false;
-            if (justOne)
-              break;
           }
         }
         break;
       }
-
 
       case SEQUENCE: {
         ArraySequence orgSeq = (ArraySequence) org;

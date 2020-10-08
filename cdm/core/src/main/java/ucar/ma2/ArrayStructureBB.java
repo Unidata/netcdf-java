@@ -5,6 +5,7 @@
 package ucar.ma2;
 
 import java.nio.charset.StandardCharsets;
+import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.util.Indent;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -365,10 +366,11 @@ public class ArrayStructureBB extends ArrayStructure {
 
     int offset = calcOffsetSetOrder(recnum, m);
     int count = m.getSize();
-    char[] pa = new char[count];
-    for (int i = 0; i < count; i++)
-      pa[i] = (char) bbuffer.get(offset + i);
-    return pa;
+    byte[] pa = new byte[count];
+    for (int i = 0; i < count; i++) {
+      pa[i] = bbuffer.get(offset + i);
+    }
+    return IospHelper.convertByteToChar(pa);
   }
 
   @Override

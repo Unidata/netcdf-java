@@ -9,7 +9,7 @@ import com.google.common.collect.ImmutableList;
 import javax.annotation.Nullable;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.internal.dataset.CoordinatesHelper;
+import ucar.nc2.internal.dataset.StructureDataArrayEnhancer;
 import ucar.nc2.util.CancelTask;
 import ucar.ma2.*;
 import java.io.IOException;
@@ -34,6 +34,7 @@ public class StructureDS extends ucar.nc2.Structure implements StructureEnhanced
   }
 
   @Override
+  @Deprecated
   public Array reallyRead(Variable client, CancelTask cancelTask) throws IOException {
     Array result;
 
@@ -51,20 +52,38 @@ public class StructureDS extends ucar.nc2.Structure implements StructureEnhanced
     return enhancer.enhance((ArrayStructure) result, null);
   }
 
-  // section of regular Variable
+  @Override
+  public ucar.array.Array<?> proxyReadArray(Variable client, CancelTask cancelTask) throws IOException {
+    ucar.array.Array<?> result;
+
+    if (hasCachedData()) {
+      result = super.proxyReadArray(client, cancelTask);
+    } else if (orgVar != null) {
+      result = orgVar.readArray();
+    } else {
+      throw new IllegalStateException("StructureDS has no way to get data");
+      // Object data = smProxy.getFillValue(getDataType());
+      // return Array.factoryConstant(dataType.getPrimitiveClassType(), getShape(), data);
+    }
+
+    StructureDataArrayEnhancer enhancer = new StructureDataArrayEnhancer(this, (ucar.array.StructureDataArray) result);
+    return enhancer.enhance();
+  }
 
   @Override
+  @Deprecated
   public Array reallyRead(Variable client, Section section, CancelTask cancelTask)
       throws IOException, InvalidRangeException {
-    if (section.computeSize() == getSize())
+    if (section.computeSize() == getSize()) {
       return _read();
+    }
 
     Array result;
-    if (hasCachedData())
+    if (hasCachedData()) {
       result = super.reallyRead(client, section, cancelTask);
-    else if (orgVar != null)
+    } else if (orgVar != null) {
       result = orgVar.read(section);
-    else {
+    } else {
       throw new IllegalStateException("StructureDS has no way to get data");
       // Object data = smProxy.getFillValue(getDataType());
       // return Array.factoryConstant(dataType.getPrimitiveClassType(), section.getShape(), data);
@@ -73,6 +92,27 @@ public class StructureDS extends ucar.nc2.Structure implements StructureEnhanced
     // do any needed conversions (enum/scale/offset/missing/unsigned, etc)
     StructureDataEnhancer enhancer = new StructureDataEnhancer(this);
     return enhancer.enhance((ArrayStructure) result, section);
+  }
+
+  @Override
+  public ucar.array.Array<?> proxyReadArray(Variable client, Section section, CancelTask cancelTask)
+      throws IOException, InvalidRangeException {
+    if (section.computeSize() == getSize()) {
+      return proxyReadArray(client, cancelTask);
+    }
+
+    ucar.array.Array<?> result;
+    if (hasCachedData())
+      result = super.proxyReadArray(client, section, cancelTask);
+    else if (orgVar != null)
+      result = orgVar.readArray(section);
+    else {
+      throw new IllegalStateException("StructureDS has no way to get data");
+    }
+
+    // do any needed conversions (enum/scale/offset/missing/unsigned, etc)
+    StructureDataArrayEnhancer enhancer = new StructureDataArrayEnhancer(this, (ucar.array.StructureDataArray) result);
+    return enhancer.enhance();
   }
 
   public ImmutableList<CoordinateSystem> getCoordinateSystems() {

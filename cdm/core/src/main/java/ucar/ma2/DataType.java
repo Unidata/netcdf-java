@@ -38,9 +38,7 @@ public enum DataType {
   UBYTE("ubyte", 1, byte.class, true), // unsigned byte
   USHORT("ushort", 2, short.class, true), // unsigned short
   UINT("uint", 4, int.class, true), // unsigned int
-  ULONG("ulong", 8, long.class, true), // unsigned long
-
-  VLEN("vlen", 1, Object.class, false); // size unknown; use with ucar.array.Array
+  ULONG("ulong", 8, long.class, true); // unsigned long
 
   /**
    * A property of {@link #isIntegral() integral} data types that determines whether they can represent both

@@ -6,6 +6,8 @@
 package ucar.nc2.dataset;
 
 import com.google.common.collect.ImmutableList;
+import java.util.Iterator;
+import ucar.array.StructureData;
 import ucar.ma2.ArrayStructure;
 import ucar.ma2.DataType;
 import ucar.nc2.Group;
@@ -16,12 +18,20 @@ import ucar.nc2.Sequence;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.StructureDataEnhancer.StructureDataIteratorEnhanced;
+import ucar.nc2.internal.dataset.SequenceArrayEnhancer;
 
 /** Enhanced sequence */
 public class SequenceDS extends Sequence implements StructureEnhanced {
 
+  @Override
+  @Deprecated
   public StructureDataIterator getStructureIterator(int bufferSize) throws java.io.IOException {
     return new StructureDataIteratorEnhanced(this, orgSeq.getStructureIterator(bufferSize));
+  }
+
+  @Override
+  public Iterator<StructureData> iterator() {
+    return new SequenceArrayEnhancer(this, orgSeq.iterator());
   }
 
   @Override

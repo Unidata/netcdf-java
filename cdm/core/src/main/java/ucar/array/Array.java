@@ -43,6 +43,10 @@ public abstract class Array<T> implements Iterable<T> {
     return this.dataType;
   }
 
+  public boolean isVlen() {
+    return false;
+  }
+
   /** An Index that can be used instead of int[], with the same rank as this Array. */
   public Index getIndex() {
     return new Index(this.rank);
