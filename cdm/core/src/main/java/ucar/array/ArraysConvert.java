@@ -13,7 +13,7 @@ import ucar.ma2.DataType;
 import ucar.ma2.IndexIterator;
 import ucar.ma2.StructureDataW;
 
-/** Static helper classes for {@link Array} */
+/** Static helper classes for converting {@link ucar.array.Array} to/from {@link ucar.ma2.Array}. */
 public class ArraysConvert {
 
   public static Array<?> convertToArray(ucar.ma2.Array from) {

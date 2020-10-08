@@ -10,7 +10,7 @@ import javax.annotation.concurrent.Immutable;
 import ucar.ma2.DataType;
 
 /**
- * Array of variable length primitive arrays of T, eg double[length][];
+ * Array of variable length primitive arrays of T, eg double[length][].
  * Cast resulting Array<T>, eg to Array<Double>.
  * Find out type from getPrimitiveArrayType() (not getDataType(), which is VLEN).
  * This is mutable, to assist users in constructing. See set(index, value).
@@ -130,7 +130,7 @@ public final class ArrayVlen<T> extends Array<Array<T>> {
   /** Create an Array of type Array<T> and the given indexFn and storage. */
   private ArrayVlen(DataType dataType, IndexFn indexFn, StorageMutable<Array<T>> storage) {
     super(dataType, indexFn);
-    Preconditions.checkArgument(indexFn.length() <= storage.getLength());
+    Preconditions.checkArgument(indexFn.length() <= storage.length());
     this.storage = storage;
   }
 
@@ -140,7 +140,7 @@ public final class ArrayVlen<T> extends Array<Array<T>> {
   }
 
   @Override
-  public Iterator<Array<T>> fastIterator() {
+  Iterator<Array<T>> fastIterator() {
     return storage.iterator();
   }
 
@@ -221,7 +221,7 @@ public final class ArrayVlen<T> extends Array<Array<T>> {
     }
 
     @Override
-    public long getLength() {
+    public long length() {
       return primitiveArray.length;
     }
 
@@ -275,7 +275,7 @@ public final class ArrayVlen<T> extends Array<Array<T>> {
     }
 
     @Override
-    public long getLength() {
+    public long length() {
       return primitiveArray.length;
     }
 
@@ -329,7 +329,7 @@ public final class ArrayVlen<T> extends Array<Array<T>> {
     }
 
     @Override
-    public long getLength() {
+    public long length() {
       return primitiveArray.length;
     }
 
@@ -383,7 +383,7 @@ public final class ArrayVlen<T> extends Array<Array<T>> {
     }
 
     @Override
-    public long getLength() {
+    public long length() {
       return primitiveArray.length;
     }
 
@@ -439,7 +439,7 @@ public final class ArrayVlen<T> extends Array<Array<T>> {
     }
 
     @Override
-    public long getLength() {
+    public long length() {
       return primitiveArray.length;
     }
 
@@ -495,7 +495,7 @@ public final class ArrayVlen<T> extends Array<Array<T>> {
     }
 
     @Override
-    public long getLength() {
+    public long length() {
       return primitiveArray.length;
     }
 
@@ -551,7 +551,7 @@ public final class ArrayVlen<T> extends Array<Array<T>> {
     }
 
     @Override
-    public long getLength() {
+    public long length() {
       return primitiveArray.length;
     }
 
@@ -605,7 +605,7 @@ public final class ArrayVlen<T> extends Array<Array<T>> {
     }
 
     @Override
-    public long getLength() {
+    public long length() {
       return primitiveArray.length;
     }
 

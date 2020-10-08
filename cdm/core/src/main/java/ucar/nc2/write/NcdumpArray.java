@@ -427,7 +427,7 @@ public class NcdumpArray {
     Index ima = ma.getIndex();
     if ((rank == 1) && (ma.getDataType() != DataType.STRUCTURE)) {
       for (int ii = 0; ii < last; ii++) {
-        Object value = ma.get(ima.set(ii));
+        Object value = ma.get(ima.setElem(ii)); // LOOK
 
         if (ma.getDataType().isUnsigned()) {
           assert value instanceof Number : "A data type being unsigned implies that it is numeric.";

@@ -82,7 +82,7 @@ final class IndexFn implements Iterable<Integer> {
 
   /** Get the total number of elements in the array. */
   public long length() {
-    return size;
+    return length;
   }
 
   public String toString() {
@@ -209,7 +209,7 @@ final class IndexFn implements Iterable<Integer> {
     newindex.setStride(newstride);
 
     // if equal, then its not a real subset, so can still use fastIterator
-    newindex.canonicalOrder = canonicalOrder && (Arrays.computeSize(newindex.shape) == size);
+    newindex.canonicalOrder = canonicalOrder && (Arrays.computeSize(newindex.shape) == length);
     return newindex.build();
   }
 
@@ -303,7 +303,7 @@ final class IndexFn implements Iterable<Integer> {
   private final int[] stride;
   private final int rank;
 
-  private final long size; // total number of elements
+  private final long length; // total number of elements
   private final int offset; // element = offset + stride[0]*current[0] + ...
   private final boolean canonicalOrder; // can use fast iterator if in canonical order
 
@@ -316,12 +316,12 @@ final class IndexFn implements Iterable<Integer> {
 
     if (builder.stride == null) {
       stride = new int[rank];
-      size = computeStrides(shape);
+      length = computeStrides(shape);
     } else {
       Preconditions.checkArgument(builder.stride.length == rank);
       this.stride = new int[rank];
       System.arraycopy(builder.stride, 0, this.stride, 0, rank);
-      this.size = Arrays.computeSize(shape);
+      this.length = Arrays.computeSize(shape);
     }
     this.offset = builder.offset;
     this.canonicalOrder = builder.canonicalOrder;
@@ -379,7 +379,7 @@ final class IndexFn implements Iterable<Integer> {
   }
 
   /** what is the odometer (n-dim index) for element (1-d index)? */
-  private int[] odometer(long element) {
+  int[] odometer(long element) {
     int[] odometer = new int[rank];
     for (int dim = 0; dim < rank; dim++) {
       odometer[dim] = (int) (element / stride[dim]);
@@ -395,7 +395,7 @@ final class IndexFn implements Iterable<Integer> {
     private int nextIndex;
 
     private Odometer() {
-      nelems = size; // all elements
+      nelems = length; // all elements
       current = new int[rank]; // starts at 0
       nextIndex = get(current);
     }

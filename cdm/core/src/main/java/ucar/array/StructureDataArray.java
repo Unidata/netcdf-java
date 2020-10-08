@@ -11,9 +11,8 @@ import javax.annotation.concurrent.Immutable;
 import ucar.ma2.DataType;
 
 /**
- * Array<StructureData>.
- * Specialization is in Storage<StructureData>
- * Not really immutable, since Storage<StructureData> may not be, but thats hidden to the consumer.
+ * Concrete implementation of Array specialized for StructureData.
+ * Not really immutable, since Storage\<StructureData\> may not be, but thats hidden to the consumer.
  */
 @Immutable
 public final class StructureDataArray extends Array<StructureData> {
@@ -30,7 +29,7 @@ public final class StructureDataArray extends Array<StructureData> {
   /** Create an Array of type StructureData and the given shape and storage. */
   public StructureDataArray(StructureMembers members, int[] shape, Storage<StructureData> storage) {
     super(DataType.STRUCTURE, shape);
-    Preconditions.checkArgument(indexFn.length() == storage.getLength());
+    Preconditions.checkArgument(indexFn.length() == storage.length());
     this.members = members;
     this.storage = storage;
   }
@@ -53,11 +52,6 @@ public final class StructureDataArray extends Array<StructureData> {
   }
 
   @Override
-  public long getSizeBytes() {
-    return indexFn.length() * members.getStorageSizeBytes();
-  }
-
-  @Override
   void arraycopy(int srcPos, Object dest, int destPos, long length) {
     // TODO
   }
@@ -68,7 +62,7 @@ public final class StructureDataArray extends Array<StructureData> {
   }
 
   @Override
-  public Iterator<StructureData> fastIterator() {
+  Iterator<StructureData> fastIterator() {
     return storage.iterator();
   }
 
@@ -88,7 +82,7 @@ public final class StructureDataArray extends Array<StructureData> {
     return get(index.getCurrentIndex());
   }
 
-  /** Get the size of each StructureData object in bytes. */
+  /** Get the size of one StructureData in bytes. */
   public int getStructureSize() {
     return members.getStorageSizeBytes();
   }
@@ -124,7 +118,7 @@ public final class StructureDataArray extends Array<StructureData> {
     }
 
     @Override
-    public long getLength() {
+    public long length() {
       return length;
     }
 

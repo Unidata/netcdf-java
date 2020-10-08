@@ -7,21 +7,29 @@ package ucar.array;
 import com.google.common.base.Preconditions;
 
 /**
- * Indexes for Multidimensional arrays. An Index refers to a particular element of an array.
+ * Indexes for Arrays. An Index refers to a particular element of an array.
  * This is a generalization of index as int[].
  * TODO: Some of these methods, maybe the whole class is to ease the transition from earlier versions.
  * TODO: evaluate how useful this is.
  */
 public class Index {
-  private final int[] current; // current element's index
+  private int[] current; // current element's index
+  private final IndexFn indexFn;
 
-  protected Index(int rank) {
+  protected Index(int rank, IndexFn indexFn) {
     current = new int[rank];
+    this.indexFn = indexFn;
   }
 
   /** Get the current index as int[] . */
   public int[] getCurrentIndex() {
     return current;
+  }
+
+  /** Set the current multidim index using 1-d element index. */
+  public Index setElem(long elem) {
+    this.current = indexFn.odometer(elem);
+    return this;
   }
 
   /**
