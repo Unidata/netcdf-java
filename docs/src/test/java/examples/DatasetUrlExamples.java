@@ -1,5 +1,9 @@
-package examples;
+/*
+ * Copyright (c) 2020 University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
 
+package examples;
 
 import static com.google.common.truth.Truth.assertThat;
 
