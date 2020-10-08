@@ -1,6 +1,8 @@
 on:
   pull_request:
-
+    branches-ignore:
+      # ignore this workflow while the develop branch is under heavy construction
+      - '**'
 jobs:
   check-doc-build:
     name: netCDF-Java Documentation Code Deprecation Check
