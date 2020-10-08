@@ -1,8 +1,8 @@
-package tests;
+package tests.cdmdatasets;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import examples.ReadingCdmTutorial;
+import examples.cdmdatasets.ReadingCdmTutorial;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -22,8 +22,9 @@ import java.util.List;
 
 public class TestReadingCdmTutorial {
 
-  private static String scalarDataPathStr = TestDir.cdmTestDataDir + "thredds/public/testdata/testData.nc";
-  private static String exampleDataPathStr = TestDir.cdmLocalFromTestDataDir +  "jan.nc";
+  private static String scalarDataPathStr =
+      TestDir.cdmTestDataDir + "thredds/public/testdata/testData.nc";
+  private static String exampleDataPathStr = TestDir.cdmLocalFromTestDataDir + "jan.nc";
 
   private static NetcdfFile scalarNcfile;
   private static NetcdfFile exampleNcfile;
@@ -68,7 +69,8 @@ public class TestReadingCdmTutorial {
 
     // test open fail
     ReadingCdmTutorial.openNCFile("");
-    assertThat(ReadingCdmTutorial.logger.getLastLogMsg()).isEqualTo(ReadingCdmTutorial.yourOpenNetCdfFileErrorMsgTxt);
+    assertThat(ReadingCdmTutorial.logger.getLastLogMsg())
+        .isEqualTo(ReadingCdmTutorial.yourOpenNetCdfFileErrorMsgTxt);
   }
 
   @Test
@@ -93,7 +95,8 @@ public class TestReadingCdmTutorial {
     // test read range exception
     ReadingCdmTutorial.toolsUIDataDump(exampleNcfile, var3DName, failSectionSpec);
     System.out.print(ReadingCdmTutorial.logger.getLastLogMsg());
-    assertThat(ReadingCdmTutorial.logger.getLastLogMsg()).isEqualTo(ReadingCdmTutorial.yourReadVarErrorMsgTxt);
+    assertThat(ReadingCdmTutorial.logger.getLastLogMsg())
+        .isEqualTo(ReadingCdmTutorial.yourReadVarErrorMsgTxt);
   }
 
   @Test
@@ -119,7 +122,7 @@ public class TestReadingCdmTutorial {
   }
 
   @Test
-  public void  testReadSubset() throws IOException, InvalidRangeException {
+  public void testReadSubset() throws IOException, InvalidRangeException {
     Array data = ReadingCdmTutorial.readSubset(var3d);
     assertThat(data).isNotNull();
     assertThat(data.getDataType()).isEqualTo(DataType.DOUBLE);
@@ -159,8 +162,8 @@ public class TestReadingCdmTutorial {
     int[] varShape = var3d.getShape();
     List ranges = new ArrayList();
     ranges.add(new Range(0, 0));
-    ranges.add(new Range(0, varShape[1]-1, 2));
-    ranges.add(new Range(0, varShape[2]-1, 2));
+    ranges.add(new Range(0, varShape[1] - 1, 2));
+    ranges.add(new Range(0, varShape[2] - 1, 2));
 
     List<int[]> args = ReadingCdmTutorial.convertRangesToSection(var3d, ranges);
     int ndims = var3d.getRank();
@@ -210,9 +213,9 @@ public class TestReadingCdmTutorial {
   public void testIndexManipulationTutorial() throws IOException, InvalidRangeException {
     // just test it runs without errors or deprecation warnings
     Array data = var3d.read();
-    int[] origin = new int[]{0, 0, 0};
-    int[] shape = new int[]{31, 1, 1};
-    int[] stride = new int[]{1, 1, 1};
+    int[] origin = new int[] {0, 0, 0};
+    int[] shape = new int[] {31, 1, 1};
+    int[] stride = new int[] {1, 1, 1};
     ReadingCdmTutorial.indexManipulation(data, origin, shape, stride);
   }
 
@@ -220,7 +223,7 @@ public class TestReadingCdmTutorial {
   public void testGetFlatArrayTutorial() throws IOException {
     Array data = var3d.read();
     double[] data1D = ReadingCdmTutorial.get1DArray(data);
-    assertThat(data1D).hasLength((int)data.getSize());
+    assertThat(data1D).hasLength((int) data.getSize());
   }
 
   @Test

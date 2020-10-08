@@ -26,10 +26,10 @@ public class TestDatasetUrlExamples {
 
   // matches the .dods file example in docs/src/public/userguide/pages/netcdfJava/developer/DatasetUrls.md
   private static final String baseFilename = "NAM_20161031_1200.nc";
-  private static final String constraintExpression = "time[0:1:0],y[0:100:427],x[0:100:613],lat[0:100:427][0:100:613],"
-      + "lon[0:100:427][0:100:613],Temperature_height_above_ground[0:1:0][0:1:0][0:100:427][0:100:613],"
-      + "height_above_ground1[0:1:1]";
-  private static final String tds = "https://thredds.ucar.edu/thredds/dodsC/casestudies/python-gallery/";
+  private static final String constraintExpression =
+      "time[0:1:0],y[0:100:427],x[0:100:613],lat[0:100:427][0:100:613],lon[0:100:427][0:100:613],Temperature_height_above_ground[0:1:0][0:1:0][0:100:427][0:100:613],height_above_ground1[0:1:1]";
+  private static final String tds =
+      "https://thredds.ucar.edu/thredds/dodsC/casestudies/python-gallery/";
 
   private static final String dodsUrl = tds + baseFilename + ".dods";
   private static final String dasUrl = dodsUrl.replace(".dods", ".das");
