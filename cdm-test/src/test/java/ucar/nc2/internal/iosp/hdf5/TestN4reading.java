@@ -279,7 +279,6 @@ public class TestN4reading {
 
       Attribute att = v2.findAttribute("units");
       assert att.getStringValue().equals("degF");
-
     }
   }
 

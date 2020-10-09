@@ -9,7 +9,6 @@ import com.google.common.collect.ImmutableList;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
-import java.util.*;
 
 /**
  * Implementation of Enhancements for coordinate systems and standard attribute handling.

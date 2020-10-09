@@ -612,11 +612,21 @@ public class Attribute {
 
       if (arr.length() == 1) {
         if (arr.getDataType().isNumeric()) {
-          this.nvalue = (Number) arr.get(0);
+          this.nvalue = (Number) arr.getScalar();
+          this.nelems = 1;
+          this.dataType = arr.getDataType();
+          return this;
+        } else if (arr.getDataType() == DataType.STRING) {
+          this.svalue = (String) arr.getScalar();
           this.nelems = 1;
           this.dataType = arr.getDataType();
           return this;
         }
+      }
+
+      if (arr.getRank() > 1) {
+        // flatten into 1D array
+        arr = Arrays.reshape(arr, new int[] {(int) arr.length()});
       }
 
       this.values = arr;

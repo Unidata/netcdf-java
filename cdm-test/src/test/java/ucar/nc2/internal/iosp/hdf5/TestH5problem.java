@@ -27,11 +27,19 @@ import java.lang.invoke.MethodHandles;
 public class TestH5problem {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
+  @Test
+  public void problem() throws IOException {
+    String filename =
+        TestH5.testDir + "npoess/ExampleFiles/AVAFO_NPP_d2003125_t10109_e101038_b9_c2005829155458_devl_Tst.h5";
+    try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
+    }
+  }
+
   // original file name is AG_100nt_even10k.biom
   // problem is that theres a deflate filter on array of strings
   // whats screwy about that is that the heapids get compressed, not the strings (!) doubt thats very useful.
   @Test
-  public void problemStringsWithFilter() throws IOException, InvalidRangeException {
+  public void problemStringsWithFilter() throws IOException {
     String filename = TestH5.testDir + "StringsWFilter.h5";
     try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
       Variable v = ncfile.findVariable("/sample/ids");

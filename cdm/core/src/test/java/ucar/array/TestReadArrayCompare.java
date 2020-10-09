@@ -8,7 +8,9 @@ package ucar.array;
 import static com.google.common.truth.Truth.assertThat;
 
 import com.google.common.base.Stopwatch;
+import java.io.File;
 import java.io.FileFilter;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Formatter;
@@ -111,6 +113,10 @@ public class TestReadArrayCompare {
         }
       }
       assertThat(ok).isTrue();
+    } catch (FileNotFoundException e) {
+      File file = new File(filename);
+      System.out.printf("File.getAbsolutePath = %s%n", file.getAbsolutePath());
+      throw e;
     }
     return total;
   }

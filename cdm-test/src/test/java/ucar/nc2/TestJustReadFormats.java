@@ -4,19 +4,15 @@ import static com.google.common.truth.Truth.assertThat;
 import java.io.IOException;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 
 /** Just open all the files in the selected directory. */
 @Category(NeedsCdmUnitTest.class)
 public class TestJustReadFormats {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   private static int countGood = 0;
   private static int countFail = 0;
   private List<String> failFiles = new ArrayList<>();

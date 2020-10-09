@@ -95,6 +95,9 @@ public class TestDir {
   /** cdm-test data directory (distributed with code but depends on data not in github) */
   public static String cdmTestDataDir = "../cdm-test/src/test/data/";
 
+  /** cdm-test data directory from cdm-core */
+  public static String cdmTestDataDirFromCore = "../../cdm-test/src/test/data/";
+
   //////////////////////////////////////////////////////////////////////
   // Various Test Server machines
   //////////////////////////////////////////////////////////////////////

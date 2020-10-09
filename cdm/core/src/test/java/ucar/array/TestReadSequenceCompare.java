@@ -7,31 +7,26 @@ package ucar.array;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import java.io.File;
 import java.io.FileFilter;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Formatter;
 import java.util.Iterator;
 import java.util.List;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.ma2.DataType;
-import ucar.ma2.IndexIterator;
-import ucar.ma2.InvalidRangeException;
 import ucar.ma2.StructureDataIterator;
-import ucar.ma2.StructureMembers;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Sequence;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.nc2.util.Misc;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
@@ -46,7 +41,8 @@ public class TestReadSequenceCompare {
     List<Object[]> result = new ArrayList<>(500);
     try {
       TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "formats/bufr/userExamples", ff, result, false);
-
+      result.add(
+          new Object[] {TestDir.cdmTestDataDirFromCore + "ucar/nc2/bufr/IUPT02_KBBY_281400_522246081.bufr.2018032814"});
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -89,6 +85,10 @@ public class TestReadSequenceCompare {
         }
       }
       assertThat(ok).isTrue();
+    } catch (FileNotFoundException e) {
+      File file = new File(filename);
+      System.out.printf("File.getAbsolutePath = %s%n", file.getAbsolutePath());
+      throw e;
     }
   }
 

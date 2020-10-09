@@ -141,7 +141,6 @@ public class TestSequence {
         Assert.assertTrue(obsIter.hasNext());
         StructureData obsData = obsIter.next();
         Assert.assertFalse("Expected to find only one 'obs' record.", obsIter.hasNext());
-
         ArrayStructure struct1Array = obsData.getArrayStructure("struct1");
 
         try (StructureDataIterator struct1Iter = struct1Array.getStructureDataIterator()) {

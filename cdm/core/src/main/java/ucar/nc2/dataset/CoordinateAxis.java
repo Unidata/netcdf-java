@@ -7,7 +7,9 @@ package ucar.nc2.dataset;
 
 import com.google.common.base.Preconditions;
 import javax.annotation.Nullable;
-import ucar.ma2.*;
+import ucar.ma2.Array;
+import ucar.ma2.DataType;
+import ucar.ma2.MAMath;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CDM;
@@ -296,10 +298,10 @@ public class CoordinateAxis extends VariableDS {
 
   ////////////////////////////////////////////////////////////////////////////////////////////
   // TODO make these final and immutable in 6.
-  protected NetcdfDataset ncd; // needed?
-  protected AxisType axisType;
-  protected String positive;
-  protected String boundaryRef;
+  protected final NetcdfDataset ncd; // needed?
+  protected final AxisType axisType;
+  protected final String positive;
+  protected final String boundaryRef;
   protected boolean isContiguous;
 
   protected CoordinateAxis(Builder<?> builder, Group parentGroup) {
