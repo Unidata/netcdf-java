@@ -396,6 +396,15 @@ public class DDS extends DStructure {
     Dap2Parser parser = new Dap2Parser(factory);
     parser.setURL(url);
 
+    if (url != null && url.startsWith("file:") && url.endsWith(".dods")) {
+      // if we are trying to access the dds from the dods response directly, as stored in a .dods file, we need to
+      // isolate the DDS portion of the response before parsing.
+      int dataStart = text.indexOf("Data:");
+      if (dataStart > 0) {
+        text = text.substring(0, dataStart).trim();
+      }
+    }
+
     int result = parser.ddsparse(text, this);
 
     if (result == Dap2Parse.DapERR)
