@@ -37,7 +37,8 @@ class StructureDataEnhancer {
 
   ArrayStructure enhance(ArrayStructure orgAS, Section section) throws IOException {
     // Can have length 0, if unlimited dimension
-    if (orgAS.getSize() == 0 || !convertNeeded(topStructure, orgAS.getStructureMembers())) {
+    if ((!(orgAS instanceof ArraySequence) && orgAS.getSize() == 0)
+        || !convertNeeded(topStructure, orgAS.getStructureMembers())) {
       // name, info change only LOOK what is this?
       convertMemberInfo(topStructure, orgAS.getStructureMembers());
       return orgAS;

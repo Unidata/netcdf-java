@@ -321,7 +321,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
         } catch (InterruptedException e) {
           e.printStackTrace();
         }
-        this.file = new java.io.RandomAccessFile(location, mode); // Windows having troublke keeping up ??
+        this.file = new java.io.RandomAccessFile(location, mode); // Windows having trouble keeping up ??
       } else {
         throw ioe;
       }
