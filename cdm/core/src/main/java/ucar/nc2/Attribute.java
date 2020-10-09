@@ -597,10 +597,6 @@ public class Attribute {
         dataType = DataType.STRING;
         return this;
       }
-      if (arr.getRank() > 1) {
-        // flatten into 1D array
-        arr = Arrays.reshape(arr, new int[] {(int) arr.length()});
-      }
 
       if (arr.getDataType() == DataType.CHAR) { // turn CHAR into STRING
         ucar.array.ArrayChar carr = (ucar.array.ArrayChar) arr;
@@ -626,6 +622,11 @@ public class Attribute {
           this.dataType = arr.getDataType();
           return this;
         }
+      }
+
+      if (arr.getRank() > 1) {
+        // flatten into 1D array
+        arr = Arrays.reshape(arr, new int[] {(int) arr.length()});
       }
 
       this.values = arr;
