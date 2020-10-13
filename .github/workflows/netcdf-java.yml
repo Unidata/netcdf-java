@@ -6,8 +6,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        # test against latest 8 and 11
-        java: [ 8, 11 ]
+        # test against latest 8, 11 LTS versions
+        java: [ 8, 11]
     steps:
       - uses: actions/checkout@v2
       - name: Setup java ${{ matrix.java }}
@@ -33,19 +33,23 @@ jobs:
           name: netCDF-Java_JUnit_Results_${{ github.sha }}_Zulu-JDK-${{ matrix.java }}
           path: build/reports/allTests
 
-  tests-adpotopenjdk-hs-8:
-    name: netCDF-Java Tests (AdoptOpenJDK-HS 8)
+  tests-adpotopenjdk-hs:
+    name: netCDF-Java Tests (AdoptiumJDK-HS)
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # test against latest Adoptium LTS releases, and latest non-LTS version
+        java: [ 8, 11, 15 ]
     steps:
       - uses: actions/checkout@v2
-      - name: Fetch latest AdoptOpenJDK 8 (hotspot) built for linux"
-        run: curl -L "https://api.adoptopenjdk.net/v2/binary/releases/openjdk8?openjdk_impl=hotspot&arch=x64&release=latest&type=jdk&os=linux" -o aojdk8-hs.tar.gz
-      - name: Setup Latest AdoptOpenJDK (hotspot) 8
+      - name: Fetch latest Adoptium JDK ${{ matrix.java }} (hotspot) built for linux
+        run: curl -L "https://api.adoptopenjdk.net/v3/binary/latest/${{ matrix.java }}/ga/linux/x64/jdk/hotspot/normal/adoptopenjdk" -o aojdk${{ matrix.java }}-hs.tar.gz
+      - name: Setup Latest Adoptium JDK (hotspot) ${{ matrix.java }}
         uses: actions/setup-java@master
         with:
-          java-version: 8
+          java-version: ${{ matrix.java }}
           architecture: x64
-          jdkFile: ./aojdk8-hs.tar.gz
+          jdkFile: ./aojdk${{ matrix.java }}-hs.tar.gz
       - name: Print java version
         run: java -version
       - name: Install netCDF-C
@@ -54,8 +58,8 @@ jobs:
         uses: actions/cache@v1
         with:
           path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
-          restore-keys: ${{ runner.os }}-gradle
+          key: ${{ runner.os }}-${{ matrix.java }}-gradle-${{ hashFiles('**/*.gradle') }}
+          restore-keys: ${{ runner.os }}-${{ matrix.java }}-gradle
       - name: Build and test with Gradle
         run: ./gradlew --info --stacktrace testAll
         env:
@@ -63,17 +67,17 @@ jobs:
       - uses: actions/upload-artifact@v2
         if: failure()
         with:
-          name: netCDF-Java_JUnit_Results_${{ github.sha }}_AdoptOpenJDK-HS-8
+          name: netCDF-Java_JUnit_Results_${{ github.sha }}Adoptium-HS-${{ matrix.java }}
           path: build/reports/allTests
 
-  tests-adpotopenjdk-hs-11:
-    name: netCDF-Java Tests (AdoptOpenJDK-HS 11)
+  check-assemble-adpotopenjdk-hs:
+    name: Check fresh assemble of netCDF-Java project (AdoptiumJDK-HS)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Fetch latest AdoptOpenJDK 11 (hotspot) built for linux"
-        run: curl -L "https://api.adoptopenjdk.net/v2/binary/releases/openjdk11?openjdk_impl=hotspot&arch=x64&release=latest&type=jdk&os=linux" -o aojdk11-hs.tar.gz
-      - name: Setup Latest AdoptOpenJDK (hotspot) 11
+      - name: Fetch latest Adoptium JDK (hotspot) built for linux
+        run: curl -L "https://api.adoptopenjdk.net/v3/binary/latest/11/ga/linux/x64/jdk/hotspot/normal/adoptopenjdk" -o aojdk11-hs.tar.gz
+      - name: Setup Latest Adoptium JDK (hotspot)
         uses: actions/setup-java@master
         with:
           java-version: 11
@@ -81,33 +85,18 @@ jobs:
           jdkFile: ./aojdk11-hs.tar.gz
       - name: Print java version
         run: java -version
-      - name: Install netCDF-C
-        run: sudo apt update && sudo apt-get install libnetcdf-dev
-      - name: Cache Gradle packages
-        uses: actions/cache@v1
-        with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
-          restore-keys: ${{ runner.os }}-gradle
-      - name: Build and test with Gradle
-        run: ./gradlew --info --stacktrace testAll
-        env:
-          TRAVIS: 'true'
-      - uses: actions/upload-artifact@v2
-        if: failure()
-        with:
-          name: netCDF-Java_JUnit_Results_${{ github.sha }}_AdoptOpenJDK-HS-11
-          path: build/reports/allTests
+      - name: Build with Gradle
+        run: ./gradlew assemble --refresh-dependencies
 
   spotless:
     name: Code Style Check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Set up JDK 1.8
+      - name: Set up JDK 11
         uses: actions/setup-java@v1
         with:
-          java-version: 1.8
+          java-version: 11
       - name: Cache Gradle packages
         uses: actions/cache@v1
         with:
