@@ -69,7 +69,7 @@ dependencies {
     // netcdf-java testing //
     //////////////////////////
 
-    api 'junit:junit:4.12'
+    api 'junit:junit:4.13.1'
     api 'commons-io:commons-io:2.5'
 
     // Fluent assertions for Java
