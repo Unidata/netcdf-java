@@ -7,7 +7,7 @@ jobs:
     strategy:
       matrix:
         # test against latest 8, 11 LTS versions
-        java: [ 8, 11]
+        java: [ 8, 11 ]
     steps:
       - uses: actions/checkout@v2
       - name: Setup java ${{ matrix.java }}
@@ -38,8 +38,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        # test against latest Adoptium LTS releases, and latest non-LTS version
-        java: [ 8, 11, 15 ]
+        # test against latest Adoptium LTS releases, and latest non-LTS version supported by gradle
+        java: [ 8, 11, 14 ]
     steps:
       - uses: actions/checkout@v2
       - name: Fetch latest Adoptium JDK ${{ matrix.java }} (hotspot) built for linux
