@@ -26,9 +26,14 @@ apply plugin: 'org.sonarqube'
 
 apply from: "$rootDir/gradle/any/properties.gradle"  // For SonarQube user token.
 
-def grgit = Grgit.open(currentDir: project.rootDir)
-def branchName = grgit.branch.current.name
-grgit.close()
+def branchName = 'unknown_branch'
+// If this is a git repo, grab the branch name to tag the sonarcloud analysis
+def folder = new File( "$rootDir/.git" )
+if( folder.exists() ) {
+  def grgit = Grgit.open(currentDir: project.rootDir)
+  branchName = grgit.branch.current.name
+  grgit.close()
+}
 
 gradle.projectsEvaluated {
   // Root project

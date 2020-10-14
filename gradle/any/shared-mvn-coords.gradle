@@ -7,7 +7,7 @@ ext {
 
   // plugin version management
   buildPlugins = [:]
-  buildPlugins.gretty = 'org.gretty:gretty:3.0.1'
+  buildPlugins.gretty = 'org.gretty:gretty:3.0.3'
   buildPlugins.shadow = 'com.github.jengelman.gradle.plugins:shadow:5.2.0'
   buildPlugins.sonarqube = 'org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:3.0'
   buildPlugins.spotless = 'com.diffplug.spotless:spotless-plugin-gradle:4.5.1'
