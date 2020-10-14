@@ -12,8 +12,8 @@ repositories {
 
 dependencies {
   // since this is a plugin, and will eventually be shared between the various THREDDS projects, make sure we use
-  // localGroovy() (i.e. the groovy version shipped with gradle). Currently, for version 6.5.1 of Gradle, this is
-  // groovy 2.5.11.
+  // localGroovy() (i.e. the groovy version shipped with gradle). Currently, for version 6.6.1 of Gradle, this is
+  // groovy 2.5.12.
   // If the version of groovy changes, we should make sure to find a spock version that works.
   compile localGroovy()
   compile 'io.github.http-builder-ng:http-builder-ng-okhttp:1.0.3'  // For Nexus tasks.
