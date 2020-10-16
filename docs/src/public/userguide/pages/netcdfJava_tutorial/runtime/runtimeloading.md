@@ -11,9 +11,9 @@ These are the various classes that can be plugged in at runtime:
 
 ### Register an IOServiceProvider
 
-1) The recommended way is to use the [Service Provider](https://docs.oracle.com/javase/tutorial/ext/basics/spi.html)
+1) The recommended way is to use the [Service Provider](https://docs.oracle.com/javase/tutorial/ext/basics/spi.html){:target="_blank"}
 mechanism and include your IOSP in a jar on the classpath, where it is dynamically loaded at runtime. In your
-jar, include a file named **META-INF/services/ucar.nc2.iosp.IOServiceProvider** containing the
+jar, include a file named `META-INF/services/ucar.nc2.iosp.IOServiceProvider` containing the
 name(s) of your implementations, eg:
 
 ~~~
@@ -23,65 +23,82 @@ ucar.nc2.iosp.gini.Giniiosp
 
 2) Alternatively, from your code, register your IOSP by calling:
 
-~~~
+~~~java
 ucar.nc2.NetcdfFile.registerIOProvider( String className);
 ~~~
 
-In all cases your class must implement <b>_ucar.nc2.IOServiceProvider_</b>. 
-When a <b>_NetcdfFile_</b> is opened, we loop through the <b>_IOServiceProvider_</b> classes and call
-~~~
+In both cases, your class must implement `ucar.nc2.IOServiceProvider`. 
+When a `NetcdfFiles.open` or `NetcdfDatasets.open` is called, we loop through the `IOServiceProvider` classes and call
+
+~~~java
 boolean isValidFile( ucar.unidata.io.RandomAccessFile raf)
 ~~~
-on each, until one returns true. This method must be fast and accurate.
+
+on each, until one returns `true`. This method must be fast and accurate.
 
 ### Register a CoordSysBuilder:
-~~~
+~~~java
 ucar.nc2.dataset.CoordSysBuilder.registerConvention( String conventionName, String className);
 ~~~ 
-The registered class must implement <b>_ucar.nc2.dataset.CoordSysBuilderIF_</b>. The NetcdfDataset is checked if it has a Convention attribute, and if so, it is matched by conventionName. If not, loop through the CoordSysBuilderIF classes and call
+The registered class must implement `ucar.nc2.dataset.CoordSysBuilderIF`. The `NetcdfDataset` is checked if it has a `Convention` attribute, and if so, 
+it is matched by `conventionName`. If not, loop through the `CoordSysBuilderIF` classes and call
 
- boolean isMine(NetcdfFile ncfile) 
-on each, until one returns true. If none are found, use the default _Coordinate Convention.
+~~~java
+boolean isMine(NetcdfFile ncfile) 
+~~~
+
+on each, until one returns `true`. If none are found, use the default `_Coordinate` convention.
 
 ### Register a CoordTransBuilder:
+~~~java
+ucar.nc2.dataset.CoordTransBuilder.registerTransform( String transformName, String className);
+~~~
 
- ucar.nc2.dataset.CoordTransBuilder.registerTransform( String transformName, String className);
-The registered class must implement ucar.nc2.dataset.CoordTransBuilderIF. The Coordinate Transform Variable must have the transform name as one of its parameters.
+The registered class must implement `ucar.nc2.dataset.CoordTransBuilderIF`. The Coordinate Transform `Variable` must have the transform name as one of its parameters.
 
 ### Register a FeatureDatasetFactory:
-~~~
+~~~java
 ucar.nc2.ft.FeatureDatasetFactoryManager.registerFactory( FeatureType featureType, String className);
 ~~~
-The registered class must implement ucar.nc2.ft.FeatureDatasetFactory, see javadoc for that interface.
+
+The registered class must implement `ucar.nc2.ft.FeatureDatasetFactory`.
 
 ### Register a GRIB1 or GRIB2 Lookup Table (4.2 and before):
-~~~
+~~~java
 ucar.grib.grib1.GribPDSParamTable.addParameterUserLookup( String filename);
 ucar.grib.grib2.ParameterTable.addParametersUser( String filename);
 ~~~  
+
 ### Register a GRIB1 table (4.3):
-~~~
+~~~java
 ucar.nc2.grib.grib1.tables.Grib1ParamTables.addParameterTable(int center, int subcenter, int tableVersion, String tableFilename);
 ~~~
+
 This registers a single table for the given center/subcenter/version.
-See <a href="grib_tables.html">GribTables</a> for more information about parameter tables.
-GRIB2 table handling is still being developed.
-Register a GRIB1 lookup table (4.3):
- ucar.nc2.grib.grib1.tables.Grib1ParamTables.addParameterTableLookup(String lookupFilename);
+See [GribTables](grib_tables.html) for more information about parameter tables.
+*Note:* GRIB2 table handling is still being developed.
+
+### Register a GRIB1 lookup table (4.3):
+~~~java
+ucar.nc2.grib.grib1.tables.Grib1ParamTables.addParameterTableLookup(String lookupFilename);
+~~~
 
 This registers one or more tables for different center/subcenter/versions.
-See <a href="grib_tables.html">GribTables</a> for more information about lookup tables.
-GRIB2 table handling is still being developed.
+See [GribTables](grib_tables.html) for more information about lookup tables.
+
+*NOTE:* GRIB2 table handling is still being developed.
 
 ### Register a BUFR Table lookup:
-~~~
+~~~java
 ucar.nc2.iosp.bufr.tables.BufrTables.addLookupFile( String filename) throws throws FileNotFoundException;
 ~~~
-The file must be a <a href="bufr_tables.html">BUFR table lookup file</a>.
+
+The file must be a [BUFR table lookup file](bufr_tables.html).
 
 ## Runtime Configuration
 
-Instead of calling the above routines in your code, you can pass the CDM library an XML configuration file. Note that your application must call <b>_ucar.nc2.util.xml.RuntimeConfigParser.read()_</b>.
+Instead of calling the above routines in your code, you can pass the CDM library an XML configuration file. 
+Note that your application must call `ucar.nc2.util.xml.RuntimeConfigParser.read()`.
 
 The configuration file looks like this:
 ~~~
@@ -106,24 +123,26 @@ The configuration file looks like this:
 </nj22Config>
 ~~~
 
-1. Loads an <b>_IOServiceProvider_</b> with the given class name
-2. Loads a <b>_CoordSysBuilderIF_</b> with the given class name, which looks for the given <b>_Convention_</b> attribute value.
-3. Loads a <b>_CoordTransBuilderIF_</b> with the given class name, which looks for the given <b>_transformName_</b> in the dataset. The type must be vertical or projection.
-4. Loads a <b>_FeatureDatasetFactory_</b> with the given class name which open <b>_FeatureDatasets_</b> of the given featureType.
-5. Load a <a href="grib_tables.html">GRIB-1 parameter table</a> (as of version 4.3)
-6. Load a <a href="grib_tables.html">GRIB-1 parameter table lookup</a> (as of version 4.3)
-7. Load a <a href="grib_tables.html">GRIB-1 parameter lookup table</a> (versions < 4.3, deprecated)
-8. Load a <a href="grib_tables.html">GRIB-2 parameter lookup table</a> (versions < 4.3, deprecated)
-9. Load a <a href="bufr_tables.html">BUFR table lookup</a> file.
-10. Turn <a href="grib_tables.html#strict">strict GRIB1 table handling</a> off.
-11. Configure how the <a href="netcdf4_c_library.html">NetCDF-4 C library</a> is discovered and used.
-    * <b>_libraryPath_</b>: The directory in which the native library is installed.
-    * <b>_libraryName_</b>: The name of the native library. This will be used to locate the proper .DLL, .SO, or .DYLIB file within the <b>_libraryPath_</b> directory.
-    * <b>_useForReading_</b>: By default, the native library is only used for writing NetCDF-4 files; a pure-Java layer is responsible for reading them. However, if this property is set to true, then it will be used for reading NetCDF-4 (and HDF5) files as well.
+1. Loads an `IOServiceProvider` with the given class name
+2. Loads a `CoordSysBuilderIF` with the given class name, which looks for the given `Convention` attribute value.
+3. Loads a `CoordTransBuilderIF` with the given class name, which looks for the given `transformName` in the dataset. The type must be vertical or projection.
+4. Loads a `FeatureDatasetFactory` with the given class name which open `FeatureDatasets` of the given `featureType`.
+5. Load a [GRIB-1 parameter table](grib_tables.html) (as of version 4.3)
+6. Load a [GRIB-1 parameter table lookup](grib_tables.html) (as of version 4.3)
+7. Load a [GRIB-1 parameter lookup table](grib_tables.html) (versions < 4.3, deprecated)
+8. Load a [GRIB-2 parameter lookup table](grib_tables.html) (versions < 4.3, deprecated)
+9. Load a [BUFR lookup table](bufr_tables.html) file.
+10. Turn [strict GRIB1 table handling](grib_tables.html#strict) off.
+11. Configure how the [NetCDF-4 C library](netcdf4_c_library.html) is discovered and used.
+    * `libraryPath`: The directory in which the native library is installed.
+    * `libraryName`: The name of the native library. This will be used to locate the proper `.DLL`, `.SO`, or `.DYLIB` file within the `libraryPath` directory.
+    * `useForReading`: By default, the native library is only used for writing NetCDF-4 files; a pure-Java layer is responsible for reading them. 
+    However, if this property is set to `true`, then it will be used for reading NetCDF-4 (and HDF5) files as well.
     
-There are several ways pass the Runtime Configuration XML to the CDM library. From your application, you can pass a <b>_java.io.InputStream_</b> (or JDOM element) to <b>_ucar.nc2.util.xml.RuntimeConfigParser_</b>, as in the following examples:
+There are several ways pass the Runtime Configuration XML to the CDM library. From your application, you can pass a `java.io.InputStream` (or JDOM element) to 
+`ucar.nc2.util.xml.RuntimeConfigParser`, as in the following examples:
 
-~~~
+~~~java
   // Example 1: read from file
   StringBuffer errlog = new StringBuffer();
   FileInputStream fis = new FileInputStream( filename);   
@@ -149,9 +168,9 @@ There are several ways pass the Runtime Configuration XML to the CDM library. Fr
     ucar.nc2.util.RuntimeConfigParser.read( elem, errlog);
 ~~~
     
-For example, the ToolsUI application allows you to specify this file on the command line with the <b>_-nj22Config_</b> parameter:
+For example, the ToolsUI application allows you to specify this file on the command line with the `-nj22Config` parameter:
 
-~~~
+~~~java
    public void main(String[] args) {
 
       for (int i = 0; i < args.length; i++) {
@@ -160,9 +179,8 @@ For example, the ToolsUI application allows you to specify this file on the comm
           i++;
           try {
             StringBuffer errlog = new StringBuffer();
-
-    FileInputStream fis = new FileInputStream( runtimeConfig);
- ucar.nc2.util.xml.RuntimeConfigParser.read( fis, errlog);
+            FileInputStream fis = new FileInputStream( runtimeConfig);
+            ucar.nc2.util.xml.RuntimeConfigParser.read( fis, errlog);
             System.out.println( errlog);
           } catch (IOException ioe) {
             System.out.println( "Error reading "+runtimeConfig+"="+ioe.getMessage());
@@ -171,25 +189,4 @@ For example, the ToolsUI application allows you to specify this file on the comm
       }
     ...
 ~~~
-If none is specified on the command line, it will look for the XML document in <b>_$USER_HOME/.unidata/nj22Config.xml_</b>.
-
- 
-## Runtime Loading of IOSP using javax.imageio.spi.ServiceRegistry
-
-(as of version 4.3.9)
-
-You can create an IOSP and have it discovered at runtime automatically.
-
-Your class must implement <b>_ucar.nc2.iosp.IOServiceProvider_</b>
-Create a JAR file with a <b>_services_</b> subdirectory in the META-INF directory. This directory contains a file called <b>_ucar.nc2.iosp.IOServiceProvider_</b>, which contains the name(s) of the implementing class(es). For example, if the JAR file contained a class named com.mycompany.MyIOSP, the JAR file would contain a file named:
-~~~
-META-INF/services/ucar.nc2.iosp.IOServiceProvider 
-~~~
-containing the line:
-~~~
-com.mycompany.MyIOSP
-~~~
-See:
-<a href="https://docs.oracle.com/javase/7/docs/api/javax/imageio/spi/ServiceRegistry.html" target="_blank">https://docs.oracle.com/javase/7/docs/api/javax/imageio/spi/ServiceRegistry.html</a>
-
-(thanks to Tom Kunicki at USGS for this contribution)
+If none is specified on the command line, it will look for the XML document in `$USER_HOME/.unidata/nj22Config.xml`.

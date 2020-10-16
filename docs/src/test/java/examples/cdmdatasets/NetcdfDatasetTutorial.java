@@ -1,4 +1,4 @@
-package examples;
+package examples.cdmdatasets;
 
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.DatasetUrl;
@@ -24,6 +24,7 @@ public class NetcdfDatasetTutorial {
 
   /**
    * Tutorial code snippet to open a netcdf file and log exceptions
+   * 
    * @param pathToYourFileAsStr: relative path to locally stored file
    */
   public static void openNCFile(String pathToYourFileAsStr) {
@@ -37,6 +38,7 @@ public class NetcdfDatasetTutorial {
 
   /**
    * Tutorial code snippet to open an enhanced NetcdfDataset
+   * 
    * @param pathToYourDatasetAsStr: relative path to locally stored file
    */
   public static void openEnhancedDataset(String pathToYourDatasetAsStr) {
@@ -50,52 +52,60 @@ public class NetcdfDatasetTutorial {
 
   /**
    * Tutorial code snippet to unpack data from dataset opened in enhanced mode
+   * 
    * @param packed_data_value
    * @param scale_factor
    * @param add_offset
    * @return
    */
   public static double unpackData(short packed_data_value, double scale_factor, double add_offset) {
-    double unpacked_data_value; /*DOCS-IGNORE*/
+    double unpacked_data_value; /* DOCS-IGNORE */
     unpacked_data_value = packed_data_value * scale_factor + add_offset;
-    return unpacked_data_value; /*DOCS-IGNORE*/
+    return unpacked_data_value; /* DOCS-IGNORE */
   }
 
   /**
    * Tutorial code snippet highlighting all options to open a file
    * full param list for NetcdfDatasets.openFile
+   * 
    * @return opened file pointer
    * @throws IOException
    */
-  public static NetcdfFile openNCFileOptions(DatasetUrl datasetUrl, int buffer_size, CancelTask cancelTask,
-                                             Object serviceProviderInstance) throws IOException {
+  public static NetcdfFile openNCFileOptions(DatasetUrl datasetUrl, int buffer_size,
+      CancelTask cancelTask, Object serviceProviderInstance) throws IOException {
     // public static NetcdfFile openFile(DatasetUrl location, int buffer_size, CancelTask cancelTask, Object spiObject)
-    NetcdfFile ncfile = NetcdfDatasets.openFile(datasetUrl, buffer_size, cancelTask, serviceProviderInstance);
-    return ncfile; /*DOCS-IGNORE*/
+    NetcdfFile ncfile =
+        NetcdfDatasets.openFile(datasetUrl, buffer_size, cancelTask, serviceProviderInstance);
+    return ncfile; /* DOCS-IGNORE */
   }
 
   /**
    * Tutorial code snippet highlighting all options to open a file
    * full param list for NetcdfDatasets.openDataset
+   * 
    * @return opened file pointer
    * @throws IOException
    */
-  public static NetcdfDataset openEnhancedDatasetOptions(DatasetUrl datasetUrl, Set<NetcdfDataset.Enhance> enhanceMode, int buffer_size,
-                                                CancelTask cancelTask, Object serviceProviderInstance) throws IOException {
-    // public static NetcdfDataset openDataset(DatasetUrl location, Set<Enhance> enhanceMode, int buffer_size, CancelTask cancelTask, Object spiObject)
-    NetcdfDataset ncd = NetcdfDatasets.openDataset(datasetUrl, enhanceMode, buffer_size, cancelTask, serviceProviderInstance);
-    return ncd; /*DOCS-IGNORE*/
+  public static NetcdfDataset openEnhancedDatasetOptions(DatasetUrl datasetUrl,
+      Set<NetcdfDataset.Enhance> enhanceMode, int buffer_size, CancelTask cancelTask,
+      Object serviceProviderInstance) throws IOException {
+    // public static NetcdfDataset openDataset(DatasetUrl location, Set<Enhance> enhanceMode, int buffer_size,
+    // CancelTask cancelTask, Object spiObject)
+    NetcdfDataset ncd = NetcdfDatasets.openDataset(datasetUrl, enhanceMode, buffer_size, cancelTask,
+        serviceProviderInstance);
+    return ncd; /* DOCS-IGNORE */
   }
 
   /**
-   *  Tutorial code snippet for caching opened files
+   * Tutorial code snippet for caching opened files
+   * 
    * @param datasetUrl
    * @param cancelTask
    * @throws IOException
    */
-  public static void cacheFiles(DatasetUrl datasetUrl, CancelTask cancelTask) throws IOException{
+  public static void cacheFiles(DatasetUrl datasetUrl, CancelTask cancelTask) throws IOException {
     // on application startup
-    NetcdfDatasets.initNetcdfFileCache(100,200,15*60);
+    NetcdfDatasets.initNetcdfFileCache(100, 200, 15 * 60);
 
     // instead of openFile
     NetcdfFile ncfile = NetcdfDatasets.acquireFile(datasetUrl, cancelTask);

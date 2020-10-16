@@ -6,17 +6,23 @@ permalink: other_classes.html
 toc: false
 ---
 
-## Writing an IOSP: Other Classes Needed
+## Other classes needed when writing an IOSP
+To implement an IOSP, you will likely need to be familiar with the following classes:
+* [`RandomAccessFile`](#randomaccessfile)
+* [`Array`](#array)
+* [`DataType`](#datatype)
 
-### ucar.unidata.io.RandomAccessFile
+### RandomAccessFile
 
-This class is a cover for <b>_java.io.RandomAccessFile_</b>, which it (usually) uses underneath. We originally did this for performance, so we could add user-settable buffer sizes. We later added ordering so we could handle files that had both big and little endianness, plus some other methods that improved the API.
+The class `ucar.unidata.io.RandomAccessFile` is a cover for `java.io.RandomAccessFile`, which it (usually) uses underneath. 
+It additionally implements user-settable buffer sizes, files with both big and little endianness, and several other methods to improve the API.
 
-There are subclasses of _RandomAccessFile_ such as _HTTPRandomAccessFile_ and _InMemoryRandomAccessFile_, which deal with remote HTTP files and memory resident files. Use of these subclasses is transparent to an IOSP.
+There are subclasses of `RandomAccessFile` such as `HTTPRandomAccessFile` and `InMemoryRandomAccessFile`, which deal with remote HTTP files 
+and memory resident files. Use of these subclasses is transparent to an IOSP.
 
 A summary of the public methods that may useful to an IOSP:
 
-~~~
+~~~java
 public class ucar.unidata.io.RandomAccessFile {
     public static final int BIG_ENDIAN;
     public static final int LITTLE_ENDIAN;
@@ -71,9 +77,9 @@ public class ucar.unidata.io.RandomAccessFile {
 ~~~
 
 ### Array
-An <b>_Array_</b> is a way to work with multidimensional arrays in a type and rank general way.
+A `ucar.ma2.Array` is a way to work with multidimensional arrays in a type and rank general way.
 
-~~~
+~~~java
 public abstract class Array {
 
     public static Array factory(ucar.ma2.DataType type, int[] shape);
@@ -126,17 +132,16 @@ public abstract class Array {
     public abstract void setObject(ucar.ma2.Index, java.lang.Object);
 }
 ~~~
-Typically an IOSP will create the underlying primitive Java array, then wrap it in an Array using <b>_Array.factory( Class, int[] shape, Object array)_</b>, for example:
+Typically an IOSP will create the underlying primitive Java array, then wrap it in an `Array` using `Array.factory`, for example:
 
- public Array readData(Variable v2, Section wantSection) throws IOException, InvalidRangeException {
-   int size = (int) v2.getSize();
-   short[] jarray = new short[size];
-   readData(jarray);
-   return Array.factory(v2.getDataType().getPrimitiveClassType(), v2.getShape(), jarray);
- }
-A <b>_Section_</b> is a container for a _<b>List_</b> of <b>_Range_</b> objects:
+{% capture rmd %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/writingiosp/OtherClassesIospTutorial.java&makeArray %}
+{% endcapture %}
+{{ rmd | markdownify }}
 
-~~~
+A `Section` is a container for a `List` of `Range` objects:
+
+~~~java
  public class ucar.ma2.Section {
    public List<Range> getRanges();
    public int[] getOrigin();
@@ -146,49 +151,43 @@ A <b>_Section_</b> is a container for a _<b>List_</b> of <b>_Range_</b> objects:
  }
 ~~~
 
-When you do end up working with an Array, you will get an Index or IndexIterator from the Array to access individual elements of the Array. An IndexIterator iterates over each element of the Array in canonical order.
+When you do end up working with an `Array`, you will get an `Index` or `IndexIterator` from the `Array` to access individual elements of 
+the `Array`. An `IndexIterator` iterates over each element of the `Array` in canonical order.
 
-~~~
-  Array data = Array.factory(v2.getDataType().getPrimitiveClassType(), v2.getShape());
-  IndexIterator ii = data.getIndexIterator();
-  while (count < v2.getSize())
-    ii.setShortNext( raf.readShort());
+{% capture rmd %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/writingiosp/OtherClassesIospTutorial.java&arrayIndexIterator %}
+{% endcapture %}
+{{ rmd | markdownify }}
 
-      or:
+Or, using an `Index`:
 
-      Array data2 = Array.factory(double.class, new int[] {128, 256});
- Index ima = data2.getIndex();
-  for (int j=0; j< 128; j++) {
-    ima.set(0, j); // set index 0
-    for (int i=0; i< 128; i++) {
-      ima.set(1, i); // set index 1
-      data2.setDouble(
-    ima, raf.readDouble()); 
-    }
-  }
-~~~
+{% capture rmd %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/writingiosp/OtherClassesIospTutorial.java&arrayIndex %}
+{% endcapture %}
+{{ rmd | markdownify }}
 
-If you know the rank and type of the Array, it is both convenient and more efficient to use the rank and type specific subclasses:
+If you know the rank and type of the `Array`, it is both convenient and more efficient to use the rank and type specific subclasses:
 
-~~~
- ArrayDouble.D2 data3 = new ArrayDouble.D2)(128, 256);
-  for (int j=0; j< 128; j++) 
-    for (int i=0; i< 128; i++) 
-      data3.set(
-  j, i, raf.readDouble());
-~~~
+{% capture rmd %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/writingiosp/OtherClassesIospTutorial.java&arrayRankAndType %}
+{% endcapture %}
+{{ rmd | markdownify }}
 
-The type specific Arrays are: <b>_ArrayBoolean, ArrayByte, ArrayChar, ArrayDouble, ArrayFloat, ArrayInt, ArrayLong, ArrayObject and ArrayShort_</b>. ArrayObject is used for the String DataType.
+The type specific Arrays are:  
+`ArrayBoolean`, `ArrayByte`, `ArrayChar`, `ArrayDouble`, `ArrayFloat`, `ArrayInt`, `ArrayLong`, `ArrayObject` and `ArrayShort`.  
+`ArrayObject` is used for the `String` `DataType`.
 
-Each of these have rank specific subtypes rank 0 through rank 7, so for example <b>_ArrayDouble.D0, ArrayDouble.D1, ArrayDouble.D2, ArrayDouble.D3, ArrayDouble.D4, ArrayDouble.D5, ArrayDouble.D6, ArrayDouble.D7_</b>.
+Each of these have rank specific subtypes rank 0 through rank 7, so for example:  
+`ArrayDouble.D0`, `ArrayDouble.D1`, `ArrayDouble.D2`, `ArrayDouble.D3`, `ArrayDouble.D4`, `ArrayDouble.D5`, `ArrayDouble.D6`, `ArrayDouble.D7`.
 
-There is also ArrayStructure, but this is handled different from the numeric and String types. See [ArrayStructures](arraystructures_ref.html).
+There is also `ArrayStructure`, but this is handled differently from the numeric and `String` types. 
+See [ArrayStructures](arraystructures_ref.html).
 
-### ucar.ma2.DataType
+### DataType
 
-This is a type-safe enumeration of data types for the CDM. Since Java has no unsigned types, the unsignedXToY methods convert an unsigned type to a wider signed type.
+The class `ucar.ma2.DataType` is a type-safe enumeration of data types for the CDM and include the following types:
 
-~~~
+~~~java
 public class ucar.ma2.DataType extends java.lang.Object{
     public static final ucar.ma2.DataType BOOLEAN;
     public static final ucar.ma2.DataType BYTE;
@@ -198,18 +197,21 @@ public class ucar.ma2.DataType extends java.lang.Object{
     public static final ucar.ma2.DataType LONG;
     public static final ucar.ma2.DataType FLOAT;
     public static final ucar.ma2.DataType DOUBLE;
+
+    public static final ucar.ma2.DataType SEQUENCE;
     public static final ucar.ma2.DataType STRING;
     public static final ucar.ma2.DataType STRUCTURE;
 
-    public static ucar.ma2.DataType getType(java.lang.String name);
-    public static ucar.ma2.DataType getType(java.lang.Class class);
+    public static final ucar.ma2.DataType ENUM1; // byte
+    public static final ucar.ma2.DataType ENUM2; // short
+    public static final ucar.ma2.DataType ENUM3; // int
 
-    public int getSize(); // size in bytes
-    public java.lang.Class getPrimitiveClassType(); // double.class
-    public java.lang.Class getClassType(); // Double.class
+    public static final ucar.ma2.DataType OPAQUE; // byte blobs
+    public static final ucar.ma2.DataType OBJECT;
 
-    public static long unsignedIntToLong(int);
-    public static int unsignedShortToInt(short);
-    public static short unsignedByteToShort(byte);
+    public static final ucar.ma2.DataType UBYTE;
+    public static final ucar.ma2.DataType USHORT;
+    public static final ucar.ma2.DataType UINT;
+    public static final ucar.ma2.DataType ULONG;
 }
 ~~~
