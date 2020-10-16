@@ -22,7 +22,10 @@ import java.util.List;
 /**
  * A 2-dimensional numeric Coordinate Axis. Must be invertible meaning, roughly, that
  * if you draw lines connecting the points, none would cross.
+ * TODO move into ucar.nc2.grid?
+ * @deprecated use GridAxis2D
  */
+@Deprecated
 public class CoordinateAxis2D extends CoordinateAxis {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinateAxis2D.class);
 
