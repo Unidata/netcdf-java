@@ -413,3 +413,15 @@ will render as:
 {{ rmd | markdownify }}
 
 The allows code included in the documentation to log or return values for the purpose of testing.
+
+Conversely, the `/* INSERT ... */` tag will render enclosed text in the documentation, for example:
+
+~~~java
+/* INSERT private */ArrayInt.D1 dateArray;
+~~~
+
+will render as:
+
+~~~java
+private ArrayInt.D1 dateArray;
+~~~

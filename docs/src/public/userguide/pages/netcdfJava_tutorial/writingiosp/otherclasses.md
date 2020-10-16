@@ -185,8 +185,7 @@ See [ArrayStructures](arraystructures_ref.html).
 
 ### DataType
 
-The class `ucar.ma2.DataType` is a type-safe enumeration of data types for the CDM. Since Java has no unsigned types, the `unsignedXToY` 
-methods convert an unsigned type to a wider signed type.
+The class `ucar.ma2.DataType` is a type-safe enumeration of data types for the CDM and include the following types:
 
 ~~~java
 public class ucar.ma2.DataType extends java.lang.Object{
@@ -198,18 +197,21 @@ public class ucar.ma2.DataType extends java.lang.Object{
     public static final ucar.ma2.DataType LONG;
     public static final ucar.ma2.DataType FLOAT;
     public static final ucar.ma2.DataType DOUBLE;
+
+    public static final ucar.ma2.DataType SEQUENCE;
     public static final ucar.ma2.DataType STRING;
     public static final ucar.ma2.DataType STRUCTURE;
 
-    public static ucar.ma2.DataType getType(java.lang.String name);
-    public static ucar.ma2.DataType getType(java.lang.Class class);
+    public static final ucar.ma2.DataType ENUM1; // byte
+    public static final ucar.ma2.DataType ENUM2; // short
+    public static final ucar.ma2.DataType ENUM3; // int
 
-    public int getSize(); // size in bytes
-    public java.lang.Class getPrimitiveClassType(); // double.class
-    public java.lang.Class getClassType(); // Double.class
+    public static final ucar.ma2.DataType OPAQUE; // byte blobs
+    public static final ucar.ma2.DataType OBJECT;
 
-    public static long unsignedIntToLong(int);
-    public static int unsignedShortToInt(short);
-    public static short unsignedByteToShort(byte);
+    public static final ucar.ma2.DataType UBYTE;
+    public static final ucar.ma2.DataType USHORT;
+    public static final ucar.ma2.DataType UINT;
+    public static final ucar.ma2.DataType ULONG;
 }
 ~~~

@@ -11,7 +11,7 @@ These are the various classes that can be plugged in at runtime:
 
 ### Register an IOServiceProvider
 
-1) The recommended way is to use the [Service Provider](https://docs.oracle.com/javase/tutorial/ext/basics/spi.html)
+1) The recommended way is to use the [Service Provider](https://docs.oracle.com/javase/tutorial/ext/basics/spi.html){:target="_blank"}
 mechanism and include your IOSP in a jar on the classpath, where it is dynamically loaded at runtime. In your
 jar, include a file named `META-INF/services/ucar.nc2.iosp.IOServiceProvider` containing the
 name(s) of your implementations, eg:

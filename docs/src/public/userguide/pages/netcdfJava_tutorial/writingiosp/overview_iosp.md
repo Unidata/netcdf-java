@@ -17,7 +17,7 @@ IOSPs are managed by the `NetcdfFiles` class. When a client requests a dataset (
 (an improved version of `java.io.RandomAccessFile`). Each registered IOSP is then asked *is this your file?* by calling `isValidFile`. 
 The first one that returns `true` claims it. When you implement `isValidFile` in your IOSP, it must be very fast and accurate.
 
-#### The ucar.nc2.IOServiceProvider interface
+### The ucar.nc2.IOServiceProvider interface
 
 When implementing an IOSP, your class should extend `ucar.nc2.iosp.AbstractIOServiceProvider`. 
 This provides default implementation of some of the methods in the `IOServiceProvider` interface, so minimally, 
@@ -35,7 +35,7 @@ You must define your file type and assign your IOSP a unique id with the `getFil
 The Builder pattern replaces `open` and `close` with `build` and `buildFinish`. The `isBuilder` method indicates whether an IOSP is 
 following the Builder pattern. Your IOSP should have an `isBuilder` method that returns `true` and should implement `build` instead of `open`. 
 
-#### Design goals for IOSP implementations
+### Design goals for IOSP implementations
 
 * Allow access to the dataset through the netCDF/CDM API
 * Allow user access to every interesting bit of information in the dataset
@@ -46,7 +46,7 @@ following the Builder pattern. Your IOSP should have an `isBuilder` method that 
 * Follow standards and good practices
  
 
-#### Design issues for IOSP implementors
+### Design issues for IOSP implementors
 
 * What are the netCDF objects to expose? Should I use netCDF-3 or full netCDF4/CDM data model? Attributes vs Variables?
 * How do I make data access efficient? What are the common use cases?

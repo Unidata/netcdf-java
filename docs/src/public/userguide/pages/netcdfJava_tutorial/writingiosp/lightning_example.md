@@ -125,7 +125,7 @@ The easiest way is to load it at runtime (e.g. on application spin-up) as follow
 {% endcapture %}
 {{ rmd | markdownify }}
 
-For more information on registering an IOSP, see the [IOSP details](#registering-an-iosp) docs.
+For more information on registering an IOSP, see the [runtime loading](runtime_loading.html#register-an-ioserviceprovider)
 
 Once your IOSP is registered, calling `NetcdfFiles.open` or `NetcdfDatasets.open` on the provided [data file](netcdfJava_tutorial/writingiosp/lightningData.txt) 
 will use your implementation.
