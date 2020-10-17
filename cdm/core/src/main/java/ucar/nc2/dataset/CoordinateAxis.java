@@ -34,11 +34,6 @@ import java.util.Formatter;
  * If its element type is String, it is a string-valued Coordinate Axis.
  * Otherwise it is numeric-valued, and <i>isNumeric()</i> is true.
  * <p/>
- * The one-dimensional case F(i) -> R is the common case which affords important optimizations.
- * In that case, use the subtype CoordinateAxis1D. The factory methods will return
- * either a CoordinateAxis1D if the variable is one-dimensional, a CoordinateAxis2D if its 2D, or a
- * CoordinateAxis for the general case.
- * <p/>
  * A CoordinateAxis is optionally marked as georeferencing with an AxisType. It should have
  * a units string and optionally a description string.
  * <p/>
@@ -65,11 +60,7 @@ public class CoordinateAxis extends VariableDS {
     }
   }
 
-  /**
-   * Get type of axis
-   *
-   * @return type of axis, or null if none.
-   */
+  /** Get type of axis */
   @Nullable
   public AxisType getAxisType() {
     return axisType;
@@ -82,7 +73,7 @@ public class CoordinateAxis extends VariableDS {
   }
 
   /**
-   * Does the axis have numeric values.
+   * Does the axis have numeric values?
    *
    * @return true if the CoordAxis is numeric, false if its string valued ("nominal").
    */
@@ -95,7 +86,7 @@ public class CoordinateAxis extends VariableDS {
    * Caution: many datasets do not explicitly specify this info, this is often a guess; default is true.
    *
    * @return true if the edges are contiguous or false if disjoint. Assumed true unless set otherwise.
-   * @deprecated use CoordinateAxis1D.isContiguous()
+   * @deprecated use GridAxis1D.isContiguous()
    */
   @Deprecated
   public boolean isContiguous() {
@@ -108,7 +99,7 @@ public class CoordinateAxis extends VariableDS {
    * If not interval, then it has one number, the coordinate value.
    * 
    * @return true if its an interval coordinate.
-   * @deprecated use CoordinateAxis1D.isInterval()
+   * @deprecated use GridAxis1D.isInterval()
    */
   @Deprecated
   public boolean isInterval() {
@@ -162,7 +153,7 @@ public class CoordinateAxis extends VariableDS {
    * The smallest coordinate value. Only call if isNumeric.
    *
    * @return the minimum coordinate value
-   * @deprecated use CoordinateAxis1D.getMinValue()
+   * @deprecated use GridAxis1D.getMinValue()
    */
   @Deprecated
   public double getMinValue() {
@@ -175,7 +166,7 @@ public class CoordinateAxis extends VariableDS {
    * The largest coordinate value. Only call if isNumeric.
    *
    * @return the maximum coordinate value
-   * @deprecated use CoordinateAxis1D.getMaxValue()
+   * @deprecated use GridAxis1D.getMaxValue()
    */
   @Deprecated
   public double getMaxValue() {

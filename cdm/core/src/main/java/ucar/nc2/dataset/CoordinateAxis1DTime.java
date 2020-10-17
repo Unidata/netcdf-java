@@ -30,7 +30,8 @@ import java.io.IOException;
  * Its coordinate values can be represented as Dates.
  * <p/>
  * May use udunit dates, or ISO Strings.
- * @deprecated use CoordinateAxisTime
+ * 
+ * @deprecated use GridAxis1DTime
  */
 @Deprecated
 public class CoordinateAxis1DTime extends CoordinateAxis1D {

@@ -12,8 +12,8 @@ import ucar.nc2.time.CalendarDateUnit;
 
 /**
  * Helper class for time coordinates
- * TODO move into ucar.nc2.grid?
- * @deprecated will move or be non-public in ver7
+ * 
+ * @deprecated use GridAxisTimeHelper
  */
 @Deprecated
 public class CoordinateAxisTimeHelper {
