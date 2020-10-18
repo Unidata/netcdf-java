@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -71,6 +71,11 @@ public class MFileOS7 implements MFile {
   @Override
   public boolean isDirectory() {
     return attr.isDirectory();
+  }
+
+  @Override
+  public boolean isReadable() {
+    return Files.isReadable(path);
   }
 
   @Override

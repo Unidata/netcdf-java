@@ -1,11 +1,9 @@
 /*
- * Copyright (c) 1998-2017 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  */
 package ucar.nc2.internal.ncml;
 
 import org.jdom2.Element;
-import thredds.filesystem.MFileOS;
-import thredds.filesystem.MFileOS7;
 import thredds.inventory.DateExtractor;
 import thredds.inventory.DateExtractorFromName;
 import thredds.inventory.MFile;
@@ -18,8 +16,6 @@ import ucar.nc2.util.CancelTask;
 import ucar.nc2.internal.util.DiskCache2;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.Executor;
 
@@ -381,17 +377,10 @@ public abstract class Aggregation {
     for (Iterator<AggDataset> datasetsIter = datasets.iterator(); datasetsIter.hasNext();) {
       AggDataset dataset = datasetsIter.next();
 
-      Path datasetPath;
-      if (dataset.getMFile() instanceof MFileOS) {
-        datasetPath = ((MFileOS) dataset.getMFile()).getFile().toPath();
-      } else if (dataset.getMFile() instanceof MFileOS7) {
-        datasetPath = ((MFileOS7) dataset.getMFile()).getNioPath();
-      } else {
-        continue;
-      }
-
-      if (!Files.isReadable(datasetPath)) { // File.canRead() is broken on Windows, but the JDK7 methods work.
-        logger.warn("Aggregation member isn't readable (permissions issue?). Skipping: " + datasetPath);
+      if ((dataset.getMFile() != null) && (!dataset.getMFile().isReadable())) { // File.canRead() is broken on Windows,
+                                                                                // but the JDK7 methods work.
+        logger
+            .warn("Aggregation member isn't readable (permissions issue?). Skipping: " + dataset.getMFile().getPath());
         datasetsIter.remove();
       }
     }

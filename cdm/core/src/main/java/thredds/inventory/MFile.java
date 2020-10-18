@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -30,6 +30,10 @@ public interface MFile extends Comparable<MFile> {
   long getLength();
 
   boolean isDirectory();
+
+  default boolean isReadable() {
+    return true;
+  }
 
   /**
    * Get full path name, replace \\ with /
