@@ -1,6 +1,7 @@
 /*
  * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  */
+
 package ucar.nc2.internal.ncml;
 
 import java.io.IOException;
@@ -659,8 +660,9 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
       Array data = getData(dset.getId());
       if (data != null)
         return data;
-      if (type == Type.joinNew)
+      if ((type == Type.joinNew) && !(this instanceof PromoteVar)) {
         return null; // ??
+      }
 
       try (NetcdfFile ncfile = dset.acquireFile(null)) {
         return read(dset, ncfile);
