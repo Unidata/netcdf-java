@@ -34,15 +34,11 @@ import java.util.Formatter;
  * If its element type is String, it is a string-valued Coordinate Axis.
  * Otherwise it is numeric-valued, and <i>isNumeric()</i> is true.
  * <p/>
- * The one-dimensional case F(i) -> R is the common case which affords important optimizations.
- * In that case, use the subtype CoordinateAxis1D. The factory methods will return
- * either a CoordinateAxis1D if the variable is one-dimensional, a CoordinateAxis2D if its 2D, or a
- * CoordinateAxis for the general case.
- * <p/>
  * A CoordinateAxis is optionally marked as georeferencing with an AxisType. It should have
  * a units string and optionally a description string.
  * <p/>
  * A Structure cannot be a CoordinateAxis, although members of Structures can.
+ * TODO make Immutable in ver7
  */
 public class CoordinateAxis extends VariableDS {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinateAxis.class);
@@ -64,11 +60,7 @@ public class CoordinateAxis extends VariableDS {
     }
   }
 
-  /**
-   * Get type of axis
-   *
-   * @return type of axis, or null if none.
-   */
+  /** Get type of axis */
   @Nullable
   public AxisType getAxisType() {
     return axisType;
@@ -81,13 +73,12 @@ public class CoordinateAxis extends VariableDS {
   }
 
   /**
-   * Does the axis have numeric values.
+   * Does the axis have numeric values?
    *
    * @return true if the CoordAxis is numeric, false if its string valued ("nominal").
    */
   public boolean isNumeric() {
-    return (getDataType() != DataType.CHAR) && (getDataType() != DataType.STRING)
-        && (getDataType() != DataType.STRUCTURE);
+    return getDataType().isNumeric();
   }
 
   /**
@@ -95,7 +86,9 @@ public class CoordinateAxis extends VariableDS {
    * Caution: many datasets do not explicitly specify this info, this is often a guess; default is true.
    *
    * @return true if the edges are contiguous or false if disjoint. Assumed true unless set otherwise.
+   * @deprecated use GridAxis1D.isContiguous()
    */
+  @Deprecated
   public boolean isContiguous() {
     return isContiguous;
   }
@@ -106,11 +99,12 @@ public class CoordinateAxis extends VariableDS {
    * If not interval, then it has one number, the coordinate value.
    * 
    * @return true if its an interval coordinate.
+   * @deprecated use GridAxis1D.isInterval()
    */
+  @Deprecated
   public boolean isInterval() {
     return false; // interval detection is done in subclasses
   }
-
 
   public boolean isIndependentCoordinate() {
     if (isCoordinateVariable())
@@ -122,7 +116,9 @@ public class CoordinateAxis extends VariableDS {
    * Get the direction of increasing values, used only for vertical Axes.
    *
    * @return POSITIVE_UP, POSITIVE_DOWN, or null if unknown.
+   * @deprecated use GridCoordSys.getPositive()
    */
+  @Deprecated
   public String getPositive() {
     return positive;
   }
@@ -131,7 +127,9 @@ public class CoordinateAxis extends VariableDS {
    * The name of this coordinate axis' boundary variable
    *
    * @return the name of this coordinate axis' boundary variable, or null if none.
+   * @deprecated do not use.
    */
+  @Deprecated
   public String getBoundaryRef() {
     return boundaryRef;
   }
@@ -140,6 +138,7 @@ public class CoordinateAxis extends VariableDS {
 
   private MAMath.MinMax minmax;
 
+  // TODO make Immutable in ver7
   private void init() {
     try {
       Array data = read();
@@ -154,7 +153,9 @@ public class CoordinateAxis extends VariableDS {
    * The smallest coordinate value. Only call if isNumeric.
    *
    * @return the minimum coordinate value
+   * @deprecated use GridAxis1D.getMinValue()
    */
+  @Deprecated
   public double getMinValue() {
     if (minmax == null)
       init();
@@ -165,7 +166,9 @@ public class CoordinateAxis extends VariableDS {
    * The largest coordinate value. Only call if isNumeric.
    *
    * @return the maximum coordinate value
+   * @deprecated use GridAxis1D.getMaxValue()
    */
+  @Deprecated
   public double getMaxValue() {
     if (minmax == null)
       init();
