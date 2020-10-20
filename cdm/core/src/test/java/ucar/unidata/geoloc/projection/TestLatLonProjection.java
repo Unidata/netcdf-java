@@ -158,43 +158,38 @@ public class TestLatLonProjection {
 
   @Test
   public void testLatLonToProjRect() {
-    ProjectionRect[] result = p.latLonToProjRect( 0, 20, 40, 60);
+    ProjectionRect[] result = p.latLonToProjRect(0, 20, 40, 60);
     assertThat(result).asList().containsExactly(new ProjectionRect(20, 0, 60, 40), null);
 
-    result = p.latLonToProjRect ( 0, 100, 40, 260);
+    result = p.latLonToProjRect(0, 100, 40, 260);
     assertThat(result).asList().containsExactly(new ProjectionRect(100, 0, 180, 40),
-            new ProjectionRect(-180, 0, -100, 40));
+        new ProjectionRect(-180, 0, -100, 40));
 
-    result = p.latLonToProjRect ( 0, 100, 40, -100);
+    result = p.latLonToProjRect(0, 100, 40, -100);
     assertThat(result).asList().containsExactly(new ProjectionRect(100, 0, 180, 40),
-            new ProjectionRect(-180, 0, -100, 40));
+        new ProjectionRect(-180, 0, -100, 40));
 
-    result = p.latLonToProjRect ( 0, 0, 40, 360);
-    assertThat(result).asList().containsExactly(new ProjectionRect(0, 0, 180, 40),
-            new ProjectionRect(-180, 0, 0, 40));
+    result = p.latLonToProjRect(0, 0, 40, 360);
+    assertThat(result).asList().containsExactly(new ProjectionRect(0, 0, 180, 40), new ProjectionRect(-180, 0, 0, 40));
 
-    result = p.latLonToProjRect ( 0, 0, 40, 1.e-9);
-    assertThat(result).asList().containsExactly(new ProjectionRect(0, 0, 180, 40),
-            new ProjectionRect(-180, 0, 0, 40));
+    result = p.latLonToProjRect(0, 0, 40, 1.e-9);
+    assertThat(result).asList().containsExactly(new ProjectionRect(0, 0, 180, 40), new ProjectionRect(-180, 0, 0, 40));
 
-    result = p.latLonToProjRect ( 0, -180, 40, -180);
+    result = p.latLonToProjRect(0, -180, 40, -180);
     assertThat(result).asList().containsExactly(new ProjectionRect(-180, 0, 180, 40), null);
 
     LatLonProjection p2 = new LatLonProjection("center180", null, 180);
-    ProjectionRect[] result2 = p2.latLonToProjRect ( LatLonRect.builder("0, -10, 99, 20").build());
-    assertThat(result2).asList().containsExactly(
-            ProjectionRect.builder().setRect(350, 0, 10, 90).build(),
-            ProjectionRect.builder().setRect(0, 0, 10, 90).build());
+    ProjectionRect[] result2 = p2.latLonToProjRect(LatLonRect.builder("0, -10, 99, 20").build());
+    assertThat(result2).asList().containsExactly(ProjectionRect.builder().setRect(350, 0, 10, 90).build(),
+        ProjectionRect.builder().setRect(0, 0, 10, 90).build());
 
-    result2 = p2.latLonToProjRect ( LatLonRect.builder("0, 111, 99, 200").build());
-    assertThat(result2).asList().containsExactly(
-            ProjectionRect.builder().setRect(111, 0, 200, 90).build(),
-            null);
+    result2 = p2.latLonToProjRect(LatLonRect.builder("0, 111, 99, 200").build());
+    assertThat(result2).asList().containsExactly(ProjectionRect.builder().setRect(111, 0, 200, 90).build(), null);
   }
 
   @Test
   public void problem2() {
-    ProjectionRect[] result = p.latLonToProjRect ( 0, -180, 40, -180);
+    ProjectionRect[] result = p.latLonToProjRect(0, -180, 40, -180);
     assertThat(result).asList().containsExactly(new ProjectionRect(-180, 0, 180, 40), null);
   }
 

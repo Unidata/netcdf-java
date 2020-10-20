@@ -3,40 +3,48 @@
  * See LICENSE for license information.
  */
 
-package ucar.nc2.ui.coverage2;
+package ucar.nc2.ui.grid2;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import ucar.ma2.DataType;
-import ucar.nc2.Attribute;
+import ucar.nc2.Dimensions;
 import ucar.nc2.constants.AxisType;
-import ucar.nc2.constants.FeatureType;
-import ucar.nc2.ft2.coverage.*;
-import ucar.ui.widget.*;
-import ucar.ui.widget.PopupMenu;
+import ucar.nc2.grid.Grid;
+import ucar.nc2.grid.GridAxis;
+import ucar.nc2.grid.GridDataset;
+import ucar.nc2.grid.GridCoordinateSystem;
 import ucar.nc2.util.NamedObject;
-import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.BeanTable;
+import ucar.ui.widget.BAMutil;
+import ucar.ui.widget.IndependentWindow;
+import ucar.ui.widget.PopupMenu;
+import ucar.ui.widget.TextHistoryPane;
+import ucar.util.prefs.PreferencesExt;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Formatter;
 import java.util.List;
 
-/** Bean Table for Coverage */
-public class CoverageTable extends JPanel {
+/** Bean Table for GridNew */
+public class GridNewTable extends JPanel {
   private final PreferencesExt prefs;
 
   private final BeanTable<DatasetBean> dsTable;
-  private final BeanTable<CoverageBean> covTable;
+  private final BeanTable<GridBean> covTable;
   private final BeanTable<CoordSysBean> csysTable;
   private final BeanTable<AxisBean> axisTable;
   private final JSplitPane split, split2, split3;
   private final TextHistoryPane infoTA;
   private final IndependentWindow infoWindow;
 
-  private FeatureDatasetCoverage coverageCollection;
-  private CoverageCollection currDataset;
+  private GridDataset gridDataset;
 
-  public CoverageTable(JPanel buttPanel, PreferencesExt prefs) {
+  public GridNewTable(PreferencesExt prefs) {
     this.prefs = prefs;
 
     dsTable = new BeanTable<>(DatasetBean.class, (PreferencesExt) prefs.node("DatasetBeans"), false, "CoverageDatasets",
@@ -44,21 +52,20 @@ public class CoverageTable extends JPanel {
     dsTable.addListSelectionListener(e -> {
       DatasetBean pb = dsTable.getSelectedBean();
       if (pb != null) {
-        currDataset = pb.cds;
-        setDataset(pb.cds);
+        setDataset(pb.gdataset);
       }
     });
 
-    covTable = new BeanTable<>(CoverageBean.class, (PreferencesExt) prefs.node("CoverageBeans"), false, "Coverages",
-        "ucar.nc2.ft2.coverage.Coverage", new CoverageBean());
+    covTable = new BeanTable<>(GridBean.class, (PreferencesExt) prefs.node("CoverageBeans"), false, "Coverages",
+        "ucar.nc2.ft2.coverage.Coverage", new GridBean());
 
     csysTable = new BeanTable<>(CoordSysBean.class, (PreferencesExt) prefs.node("CoverageCoordSysBeans"), false,
         "CoverageCoordSys", "ucar.nc2.ft2.coverage.CoverageCoordSys", null);
     csysTable.addListSelectionListener(e -> {
       CoordSysBean bean = csysTable.getSelectedBean();
       if (null != bean) { // find the coverages
-        List<CoverageBean> result = new ArrayList<>();
-        for (CoverageBean covBean : covTable.getBeans()) {
+        List<GridBean> result = new ArrayList<>();
+        for (GridBean covBean : covTable.getBeans()) {
           if (covBean.getCoordSysName().equals(bean.getName()))
             result.add(covBean);
         }
@@ -91,22 +98,22 @@ public class CoverageTable extends JPanel {
     JTable jtable;
 
     jtable = dsTable.getJTable();
-    PopupMenu dsPopup = new ucar.ui.widget.PopupMenu(jtable, "Options");
+    PopupMenu dsPopup = new PopupMenu(jtable, "Options");
     dsPopup.addAction("Show", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         DatasetBean bean = dsTable.getSelectedBean();
         infoTA.clear();
-        infoTA.appendLine(bean.cds.toString());
+        infoTA.appendLine(bean.gdataset.toString());
         infoTA.gotoTop();
         infoWindow.show();
       }
     });
 
     jtable = covTable.getJTable();
-    PopupMenu csPopup = new ucar.ui.widget.PopupMenu(jtable, "Options");
+    PopupMenu csPopup = new PopupMenu(jtable, "Options");
     csPopup.addAction("Show Declaration", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        CoverageBean vb = covTable.getSelectedBean();
+        GridBean vb = covTable.getSelectedBean();
         infoTA.clear();
         infoTA.appendLine(vb.geogrid.toString());
         infoTA.gotoTop();
@@ -115,7 +122,7 @@ public class CoverageTable extends JPanel {
     });
 
     jtable = csysTable.getJTable();
-    csPopup = new ucar.ui.widget.PopupMenu(jtable, "Options");
+    csPopup = new PopupMenu(jtable, "Options");
     csPopup.addAction("Show CoordSys", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         CoordSysBean bean = csysTable.getSelectedBean();
@@ -125,25 +132,9 @@ public class CoverageTable extends JPanel {
         infoWindow.show();
       }
     });
-    csPopup.addAction("Show Transforms", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        CoordSysBean bean = csysTable.getSelectedBean();
-        infoTA.clear();
-        for (CoverageTransform ct : bean.gcs.getTransforms())
-          if (!ct.isHoriz())
-            infoTA.appendLine(ct.toString());
-
-        HorizCoordSys hcs = bean.gcs.getHorizCoordSys();
-        if (hcs.getTransform() != null)
-          infoTA.appendLine(hcs.getTransform().toString());
-
-        infoTA.gotoTop();
-        infoWindow.show();
-      }
-    });
 
     jtable = axisTable.getJTable();
-    csPopup = new ucar.ui.widget.PopupMenu(jtable, "Options");
+    csPopup = new PopupMenu(jtable, "Options");
     csPopup.addAction("Show Axis", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         AxisBean bean = axisTable.getSelectedBean();
@@ -170,7 +161,6 @@ public class CoverageTable extends JPanel {
     covTable.clearBeans();
     csysTable.clearBeans();
     axisTable.clearBeans();
-    currDataset = null;
   }
 
   public void save() {
@@ -186,36 +176,38 @@ public class CoverageTable extends JPanel {
   }
 
   public void showInfo(Formatter result) {
-    if (coverageCollection == null)
-      return;
-    coverageCollection.getDetailInfo(result);
+    gridDataset.toString(result);
   }
 
-  public void setCollection(FeatureDatasetCoverage gds) {
-    this.coverageCollection = gds;
+  public void setCollection(GridDataset gds) {
     clear();
-
-    List<DatasetBean> dsList = new ArrayList<>();
-    for (CoverageCollection ds : coverageCollection.getCoverageCollections())
-      dsList.add(new DatasetBean(ds));
+    this.gridDataset = gds;
+    List<DatasetBean> dsList = ImmutableList.of(new DatasetBean(gds));
     dsTable.setBeans(dsList);
   }
 
-  public void setDataset(CoverageCollection coverageDataset) {
+  public GridDataset getGridCollection() {
+    return this.gridDataset;
+  }
 
-    List<CoverageBean> beanList = new ArrayList<>();
-    for (Coverage g : coverageDataset.getCoverages())
-      beanList.add(new CoverageBean(g));
+  public void setDataset(GridDataset gridDataset) {
+
+    List<GridBean> beanList = new ArrayList<>();
+    for (Grid g : gridDataset.getGrids()) {
+      beanList.add(new GridBean(g));
+    }
     covTable.setBeans(beanList);
 
     List<CoordSysBean> csList = new ArrayList<>();
-    for (CoverageCoordSys gcs : coverageDataset.getCoordSys())
-      csList.add(new CoordSysBean(coverageDataset, gcs));
+    for (GridCoordinateSystem gcs : gridDataset.getCoordSystems()) {
+      csList.add(new CoordSysBean(gcs));
+    }
     csysTable.setBeans(csList);
 
     List<AxisBean> axisList = new ArrayList<>();
-    for (CoverageCoordAxis axis : coverageDataset.getCoordAxes())
+    for (GridAxis axis : gridDataset.getCoordAxes()) {
       axisList.add(new AxisBean(axis));
+    }
     axisTable.setBeans(axisList);
   }
 
@@ -226,87 +218,85 @@ public class CoverageTable extends JPanel {
     return false;
   }
 
-  public CoverageCollection getCoverageDataset() {
-    return currDataset;
-  }
-
-  public List<CoverageBean> getCoverageBeans() {
+  public List<GridBean> getCoverageBeans() {
     return covTable.getBeans();
   }
 
   public List<String> getSelectedGrids() {
-    List<CoverageBean> grids = covTable.getSelectedBeans();
+    List<GridBean> grids = covTable.getSelectedBeans();
     List<String> result = new ArrayList<>();
-    for (CoverageBean gbean : grids) {
+    for (GridBean gbean : grids) {
       result.add(gbean.getName());
     }
     return result;
   }
 
   public static class DatasetBean {
-    CoverageCollection cds;
+    GridDataset gdataset;
 
     public DatasetBean() {}
 
-    public DatasetBean(CoverageCollection cds) {
-      this.cds = cds;
+    public DatasetBean(GridDataset cds) {
+      this.gdataset = cds;
     }
 
     public String getName() {
-      return cds.getName();
+      return gdataset.getName();
     }
 
-    public String getType() {
-      return cds.getCoverageType().toString();
-    }
-
-    public String getCalendar() {
-      return cds.getCalendar().toString();
-    }
-
-    public String getDateRange() {
-      return cds.getCalendarDateRange() == null ? "null" : cds.getCalendarDateRange().toString();
-    }
-
-    public String getLLBB() {
-      return cds.getLatlonBoundingBox() == null ? "null" : cds.getLatlonBoundingBox().toString();
-    }
+    /*
+     * public String getType() {
+     * return cds.getCoverageType().toString();
+     * }
+     * 
+     * public String getCalendar() {
+     * return cds.getCalendar().toString();
+     * }
+     * 
+     * public String getDateRange() {
+     * return cds.getCalendarDateRange() == null ? "null" : cds.getCalendarDateRange().toString();
+     * }
+     * 
+     * public String getLLBB() {
+     * return cds.getLatlonBoundingBox() == null ? "null" : cds.getLatlonBoundingBox().toString();
+     * }
+     */
 
     public int getNCoverages() {
-      return cds.getCoverageCount();
+      return Iterables.size(gdataset.getGrids());
     }
 
     public int getNCooordSys() {
-      return cds.getCoordSys().size();
+      return Iterables.size(gdataset.getCoordSystems());
     }
 
     public int getNAxes() {
-      return cds.getCoordAxes().size();
+      return Iterables.size(gdataset.getCoordAxes());
     }
   }
 
 
-  public static class CoverageBean implements NamedObject {
+  public static class GridBean implements NamedObject {
 
     public String hiddenProperties() { // for BeanTable
       return "value";
     }
 
-    Coverage geogrid;
+    Grid geogrid;
     String name, desc, units, coordSysName;
     DataType dataType;
 
     // no-arg constructor
-    public CoverageBean() {}
+    public GridBean() {}
 
     // create from a dataset
-    public CoverageBean(Coverage geogrid) {
+    public GridBean(Grid geogrid) {
       this.geogrid = geogrid;
-      name = geogrid.getShortName();
-      desc = (geogrid.getDescription());
-      units = (geogrid.getUnitsString());
-      dataType = (geogrid.getDataType());
-      coordSysName = (geogrid.getCoordSysName());
+      name = geogrid.getName();
+      desc = geogrid.getDescription();
+      units = geogrid.getUnitsString();
+      dataType = geogrid.getDataType();
+      coordSysName = geogrid.getCoordSysName();
     }
 
     public String getName() {
@@ -335,29 +325,32 @@ public class CoverageTable extends JPanel {
     }
 
     public String getShape() {
-      return Arrays.toString(geogrid.getCoordSys().getShape());
+      return Arrays.toString(Dimensions.makeShape(geogrid.getCoordinateSystem().getDomain()));
+    }
+
+    public String getDimensions() {
+      return Dimensions.makeDimensionsString(geogrid.getCoordinateSystem().getDomain());
     }
   }
 
   public static class CoordSysBean {
-    private CoverageCoordSys gcs;
+    private GridCoordinateSystem gcs;
     private String coordTrans, runtimeName, timeName, ensName, vertName;
     private int nIndAxis;
-    private int nCov;
 
     // no-arg constructor
     public CoordSysBean() {}
 
-    public CoordSysBean(CoverageCollection coverageDataset, CoverageCoordSys gcs) {
+    public CoordSysBean(GridCoordinateSystem gcs) {
       this.gcs = gcs;
 
       Formatter buff = new Formatter();
-      for (String ct : gcs.getTransformNames())
-        buff.format("%s,", ct);
+      // for (String ct : gcs.getTransformNames())
+      // buff.format("%s,", ct);
       coordTrans = buff.toString();
 
-      for (CoverageCoordAxis axis : gcs.getAxes()) {
-        if (axis.getDependenceType() == CoverageCoordAxis.DependenceType.independent)
+      for (GridAxis axis : gcs.getCoordAxes()) {
+        if (axis.getDependenceType() == GridAxis.DependenceType.independent)
           nIndAxis++;
 
         AxisType axisType = axis.getAxisType();
@@ -372,28 +365,21 @@ public class CoverageTable extends JPanel {
         else if (axisType.isVert())
           vertName = axis.getName();
       }
-
-      for (Coverage cov : coverageDataset.getCoverages()) {
-        if (cov.getCoordSys() == gcs)
-          nCov++;
-      }
     }
 
     public String getName() {
       return gcs.getName();
     }
 
-    public String getType() {
-      FeatureType type = gcs.getCoverageType();
-      return (type == null) ? "" : type.toString();
-    }
+    /*
+     * public String getType() {
+     * FeatureType type = gcs.getCoverageType();
+     * return (type == null) ? "" : type.toString();
+     * }
+     */
 
     public int getNIndCoords() {
       return nIndAxis;
-    }
-
-    public int getNCov() {
-      return nCov;
     }
 
     public String getRuntime() {
@@ -417,40 +403,8 @@ public class CoverageTable extends JPanel {
     }
   }
 
-  public static class CoordTransBean {
-    private CoverageTransform gcs;
-    String params;
-    boolean isHoriz;
-
-    // no-arg constructor
-    public CoordTransBean() {}
-
-    public CoordTransBean(CoverageTransform gcs) {
-      this.gcs = gcs;
-      this.isHoriz = gcs.isHoriz();
-
-      Formatter buff = new Formatter();
-      for (Attribute att : gcs.attributes()) {
-        buff.format("%s, ", att);
-      }
-      params = buff.toString();
-    }
-
-    public String getName() {
-      return gcs.getName();
-    }
-
-    public String getParams() {
-      return params;
-    }
-
-    public String getIsHoriz() {
-      return Boolean.toString(isHoriz);
-    }
-  }
-
   public static class AxisBean {
-    CoverageCoordAxis axis;
+    GridAxis axis;
     String name, desc, units;
     DataType dataType;
     AxisType axisType;
@@ -461,7 +415,7 @@ public class CoverageTable extends JPanel {
     public AxisBean() {}
 
     // create from a dataset
-    public AxisBean(CoverageCoordAxis v) {
+    public AxisBean(GridAxis v) {
       this.axis = v;
 
       name = (v.getName());
@@ -493,7 +447,7 @@ public class CoverageTable extends JPanel {
     }
 
     public String getSpacing() {
-      CoverageCoordAxis.Spacing sp = axis.getSpacing();
+      GridAxis.Spacing sp = axis.getSpacing();
       return (sp == null) ? "" : sp.toString();
     }
 
@@ -518,7 +472,7 @@ public class CoverageTable extends JPanel {
     }
 
     public String getDependsOn() {
-      if (axis.getDependenceType() != CoverageCoordAxis.DependenceType.independent)
+      if (axis.getDependenceType() != GridAxis.DependenceType.independent)
         return axis.getDependenceType() + ": " + axis.getDependsOn();
       else
         return axis.getDependenceType().toString();
@@ -585,7 +539,7 @@ public class CoverageTable extends JPanel {
       // add it to contentPane
       Container cp = getContentPane();
       cp.setLayout(new BorderLayout());
-      cp.add(CoverageTable.this, BorderLayout.CENTER);
+      cp.add(GridNewTable.this, BorderLayout.CENTER);
       pack();
     }
   }

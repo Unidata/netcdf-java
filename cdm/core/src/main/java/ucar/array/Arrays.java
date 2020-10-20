@@ -6,10 +6,9 @@ package ucar.array;
 
 import java.util.ArrayList;
 import java.util.List;
-import ucar.ma2.DataType;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Range;
-import ucar.ma2.Section;
+
+import com.google.auto.value.AutoValue;
+import ucar.ma2.*;
 
 /** Static helper classes for {@link Array} */
 public class Arrays {
@@ -167,7 +166,9 @@ public class Arrays {
   ////////////////////////////////////////////////////////////////////////////////////////
   // Experimental
 
-  /** Combine list of Array's by copying the underlying Array's into a single primitive array */
+  /**
+   * Combine list of Array's by copying the underlying Array's into a single primitive array
+   */
   public static <T> Array<T> factoryCopy(DataType dataType, int[] shape, List<Array<T>> dataArrays) {
     if (dataArrays.size() == 1) {
       return factory(dataType, shape, dataArrays.get(0).storage());
@@ -230,7 +231,10 @@ public class Arrays {
 
   // The only advantage over copying AFAICT is that it can handle arrays > 2G. as long as its broken up into
   // multiple arrays < 2G.
-  /** Experimental: keep list of Arrays seperate. This allows length > 2Gb. */
+
+  /**
+   * Experimental: keep list of Arrays seperate. This allows length > 2Gb.
+   */
   public static <T> Array<T> factoryArrays(DataType dataType, int[] shape, List<Array<?>> dataArrays) {
     if (dataArrays.size() == 1) {
       return factory(dataType, shape, (Storage<T>) dataArrays.get(0).storage());
@@ -377,7 +381,7 @@ public class Arrays {
 
   /**
    * If there are any VLEN dimensions (length < 0), remove it and all dimensions to the right.
-   * 
+   *
    * @param shape
    * @return modified shape, if needed.
    */
@@ -476,4 +480,37 @@ public class Arrays {
         throw new IllegalStateException("Unimplemented datatype " + dataType);
     }
   }
+
+  @AutoValue
+  public static abstract class MinMax {
+    public abstract double min();
+
+    public abstract double max();
+
+    public static MinMax create(double min, double max) {
+      return new AutoValue_Arrays_MinMax(min, max);
+    }
+
+    @Override
+    public String toString() {
+      return "MinMax{" + "min=" + min() + ", max=" + max() + '}';
+    }
+  }
+
+  public static MinMax getMinMaxSkipMissingData(Array<Double> a, IsMissingEvaluator eval) {
+    boolean hasEval = (eval == null || !eval.hasMissing());
+    double max = -Double.MAX_VALUE;
+    double min = Double.MAX_VALUE;
+    for (double val : a) {
+      if (hasEval && eval.isMissing(val)) {
+        continue;
+      }
+      if (val > max)
+        max = val;
+      if (val < min)
+        min = val;
+    }
+    return MinMax.create(min, max);
+  }
+
 }

@@ -2,7 +2,6 @@
  * Copyright (c) 1998-2019 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-
 package ucar.nc2.ui;
 
 import java.util.Formatter;
@@ -116,7 +115,7 @@ public class ToolsUI extends JPanel {
   private DatasetWriterPanel writerPanel;
   private DirectoryPartitionPanel dirPartPanel;
   private FeatureScanOpPanel ftPanel;
-  private GeoGridPanel gridPanel;
+  private GeoGridPanel geoGridPanel;
   // private GeotiffPanel geotiffPanel;
   private GribCodePanel gribCodePanel;
   private GribFilesOpPanel gribFilesPanel;
@@ -124,6 +123,7 @@ public class ToolsUI extends JPanel {
   private GribRewriteOpPanel gribRewritePanel;
   private GribTemplatePanel gribTemplatePanel;
   private Grib1CollectionOpPanel grib1CollectionPanel;
+  private GridPanel gridPanel;
   private ReportOpPanel grib1ReportPanel;
   private Grib1TablePanel grib1TablePanel;
   private Grib2CollectionOpPanel grib2CollectionPanel;
@@ -265,6 +265,7 @@ public class ToolsUI extends JPanel {
     // nested tab - features
     ftTabPane.addTab("Grids", new JLabel("Grids"));
     ftTabPane.addTab("Coverages", new JLabel("Coverages"));
+    ftTabPane.addTab("GridNew", new JLabel("GridNew"));
     ftTabPane.addTab("SimpleGeometry", new JLabel("SimpleGeometry"));
     ftTabPane.addTab("WMS", new JLabel("WMS"));
     ftTabPane.addTab("PointFeature", new JLabel("PointFeature"));
@@ -514,8 +515,8 @@ public class ToolsUI extends JPanel {
        */
 
       case "Grids":
-        gridPanel = new GeoGridPanel((PreferencesExt) mainPrefs.node("grid"));
-        c = gridPanel;
+        geoGridPanel = new GeoGridPanel((PreferencesExt) mainPrefs.node("grid"));
+        c = geoGridPanel;
         break;
 
       case "SimpleGeometry":
@@ -526,6 +527,11 @@ public class ToolsUI extends JPanel {
       case "Coverages":
         coveragePanel = new CoveragePanel((PreferencesExt) mainPrefs.node("coverage2"));
         c = coveragePanel;
+        break;
+
+      case "GridNew":
+        gridPanel = new GridPanel((PreferencesExt) mainPrefs.node("gridPanel"));
+        c = gridPanel;
         break;
 
       case "HDF5-Objects":
@@ -809,6 +815,9 @@ public class ToolsUI extends JPanel {
     if (gridPanel != null) {
       gridPanel.save();
     }
+    if (geoGridPanel != null) {
+      geoGridPanel.save();
+    }
     if (hdf5ObjectPanel != null) {
       hdf5ObjectPanel.save();
     }
@@ -1026,9 +1035,9 @@ public class ToolsUI extends JPanel {
 
   public void openGridDataset(String datasetName) {
     makeComponent(ftTabPane, "Grids");
-    gridPanel.doit(datasetName);
+    geoGridPanel.doit(datasetName);
     tabbedPane.setSelectedComponent(ftTabPane);
-    ftTabPane.setSelectedComponent(gridPanel);
+    ftTabPane.setSelectedComponent(geoGridPanel);
   }
 
 
@@ -1042,17 +1051,17 @@ public class ToolsUI extends JPanel {
 
   public void openGridDataset(NetcdfDataset dataset) {
     makeComponent(ftTabPane, "Grids");
-    gridPanel.setDataset(dataset);
+    geoGridPanel.setDataset(dataset);
     tabbedPane.setSelectedComponent(ftTabPane);
-    ftTabPane.setSelectedComponent(gridPanel);
+    ftTabPane.setSelectedComponent(geoGridPanel);
   }
 
 
   public void openGridDataset(GridDataset dataset) {
     makeComponent(ftTabPane, "Grids");
-    gridPanel.setDataset(dataset);
+    geoGridPanel.setDataset(dataset);
     tabbedPane.setSelectedComponent(ftTabPane);
-    ftTabPane.setSelectedComponent(gridPanel);
+    ftTabPane.setSelectedComponent(geoGridPanel);
   }
 
 
@@ -1183,9 +1192,9 @@ public class ToolsUI extends JPanel {
         ftTabPane.setSelectedComponent(coveragePanel);
       } else if (threddsData.featureDataset instanceof GridDataset) {
         makeComponent(ftTabPane, "Grids");
-        gridPanel.setDataset((GridDataset) threddsData.featureDataset);
+        geoGridPanel.setDataset((GridDataset) threddsData.featureDataset);
         tabbedPane.setSelectedComponent(ftTabPane);
-        ftTabPane.setSelectedComponent(gridPanel);
+        ftTabPane.setSelectedComponent(geoGridPanel);
       }
     } /*
        * else if (threddsData.featureType == FeatureType.IMAGE) {

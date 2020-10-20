@@ -139,8 +139,7 @@ public class TestGridSubset {
       assert grid.getRank() == 3;
 
       // bbox = ll: 16.79S 20.5W+ ur: 14.1N 20.09E
-      LatLonRect bbox =
-          new LatLonRect.Builder(LatLonPoint.create(-16.79, -20.5), LatLonPoint.create(14.1, 20.9)).build();
+      LatLonRect bbox = new LatLonRect(-16.79, -20.5, 14.1, 20.9);
 
       Projection p = gcs.getProjection();
       ProjectionRect prect = p.latLonToProjBB(bbox); // must override default implementation
@@ -375,8 +374,7 @@ public class TestGridSubset {
       System.out.printf("original bbox = %s%n", gcs.getBoundingBox());
       System.out.printf("lat/lon bbox = %s%n", gcs.getLatLonBoundingBox());
 
-      ucar.unidata.geoloc.LatLonRect llbb_subset =
-          new LatLonRect.Builder(LatLonPoint.create(38, -110), LatLonPoint.create(42, -90)).build();
+      ucar.unidata.geoloc.LatLonRect llbb_subset = new LatLonRect(38, -110, 42, -90);
       logger.debug("subset lat/lon bbox = {}", llbb_subset);
 
       GeoGrid grid_section = grid.subset(null, null, llbb_subset, 1, 1, 1);

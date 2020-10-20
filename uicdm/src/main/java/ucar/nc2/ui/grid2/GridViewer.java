@@ -3,51 +3,43 @@
  * See LICENSE for license information.
  */
 
-package ucar.nc2.ui.coverage2;
+package ucar.nc2.ui.grid2;
 
-import ucar.nc2.ft2.coverage.*;
+import ucar.ma2.InvalidRangeException;
+import ucar.nc2.grid.Grid;
+import ucar.nc2.grid.GridDataset;
+import ucar.nc2.ui.geoloc.NavigatedPanel;
+import ucar.nc2.ui.geoloc.ProjectionManager;
+import ucar.nc2.ui.gis.MapBean;
+import ucar.nc2.ui.grid.ColorScale;
+import ucar.nc2.util.NamedObject;
 import ucar.ui.event.ActionCoordinator;
 import ucar.ui.event.ActionSourceListener;
 import ucar.ui.event.ActionValueEvent;
-import ucar.nc2.ui.geoloc.*;
-import ucar.nc2.ui.gis.MapBean;
-import ucar.nc2.ui.grid.*;
+import ucar.ui.prefs.Debug;
+import ucar.ui.widget.PopupMenu;
 import ucar.ui.widget.*;
-import ucar.nc2.util.NamedObject;
 import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.ProjectionRect;
 import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.util.prefs.PreferencesExt;
-import ucar.ui.prefs.Debug;
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.Color;
-import java.awt.Graphics2D;
+
+import javax.swing.*;
+import javax.swing.border.EtchedBorder;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.geom.AffineTransform;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
-import javax.swing.AbstractAction;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JPanel;
-import javax.swing.JSpinner;
-import javax.swing.JToolBar;
-import javax.swing.RootPaneContainer;
-import javax.swing.SpinnerNumberModel;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
-import javax.swing.border.EtchedBorder;
 
 /**
- * ft2.coverage widget for displaying.
+ * Display nc2.grid objects.
  * more or less the controller in MVC
  */
-public class CoverageViewer extends JPanel {
-  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoverageViewer.class);
+public class GridViewer extends JPanel {
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GridViewer.class);
 
   // constants
   private static final int DELAY_DRAW_AFTER_DATA_EVENT = 250; // quarter sec
@@ -97,8 +89,8 @@ public class CoverageViewer extends JPanel {
 
   // data components
   private DataState dataState;
-  private CoverageCollection coverageDataset;
-  private Coverage currentField;
+  private GridDataset gridDataset;
+  private Grid currentField;
   private Projection project;
 
   // state
@@ -115,10 +107,10 @@ public class CoverageViewer extends JPanel {
   // rendering
   private final AffineTransform atI = new AffineTransform(); // identity transform
   private ucar.nc2.ui.util.Renderer mapRenderer;
-  private CoverageRenderer coverageRenderer;
+  private GridRenderer gridRenderer;
   private javax.swing.Timer redrawTimer;
 
-  public CoverageViewer(PreferencesExt pstore, RootPaneContainer root, FileManager fileChooser, int defaultHeight) {
+  public GridViewer(PreferencesExt pstore, RootPaneContainer root, FileManager fileChooser, int defaultHeight) {
     this.store = pstore;
 
     try {
@@ -157,19 +149,19 @@ public class CoverageViewer extends JPanel {
       csDataMinMax = new JComboBox(ColorScale.MinMaxType.values());
       csDataMinMax.setToolTipText("ColorScale Min/Max setting");
       csDataMinMax.addActionListener(e -> {
-        coverageRenderer.setDataMinMaxType((ColorScale.MinMaxType) csDataMinMax.getSelectedItem());
+        gridRenderer.setDataMinMaxType((ColorScale.MinMaxType) csDataMinMax.getSelectedItem());
         redrawLater();
       });
 
       // renderer
       // set up the renderers; Maps are added by addMapBean()
-      coverageRenderer = new CoverageRenderer(store);
-      coverageRenderer.setColorScale(colorScale);
+      gridRenderer = new GridRenderer(store);
+      gridRenderer.setColorScale(colorScale);
 
       strideSpinner = new JSpinner(new SpinnerNumberModel(1, 1, 100, 1));
       strideSpinner.addChangeListener(e -> {
         Integer val = (Integer) strideSpinner.getValue();
-        coverageRenderer.setHorizStride(val);
+        gridRenderer.setHorizStride(val);
       });
 
       makeActionsDataset();
@@ -271,9 +263,8 @@ public class CoverageViewer extends JPanel {
 
       // get last saved Projection
       project = (Projection) store.getBean(LastProjectionName, null);
-      if (project != null) {
+      if (project != null)
         setProjection(project);
-      }
 
       // redraw timer
       redrawTimer = new javax.swing.Timer(0, e -> {
@@ -301,7 +292,7 @@ public class CoverageViewer extends JPanel {
      * public void actionPerformed(ActionEvent e) {
      * String filename = fileChooser.chooseFilename();
      * if (filename == null) return;
-     * 
+     *
      * Dataset invDs;
      * try { // DatasetNode parent, String name, Map<String, Object> flds, List< AccessBuilder > accessBuilders, List<
      * DatasetBuilder > datasetBuilders
@@ -310,7 +301,7 @@ public class CoverageViewer extends JPanel {
      * flds.put(Dataset.ServiceName, ServiceType.File.toString()); // bogus
      * invDs = new Dataset(null, filename, flds, null, null);
      * setDataset(invDs);
-     * 
+     *
      * } catch (Exception ue) {
      * JOptionPane.showMessageDialog(CoverageDisplay.this, "Invalid filename = <" + filename + ">\n" + ue.getMessage());
      * ue.printStackTrace();
@@ -318,7 +309,7 @@ public class CoverageViewer extends JPanel {
      * }
      * };
      * BAMutil.setActionProperties(chooseLocalDatasetAction, "FileChooser", "open Local dataset...", false, 'L', -1);
-     * 
+     *
      * /* saveDatasetAction = new AbstractAction() {
      * public void actionPerformed(ActionEvent e) {
      * String fname = controller.getDatasetName();
@@ -362,7 +353,7 @@ public class CoverageViewer extends JPanel {
      * }
      * };
      * BAMutil.setActionProperties( chooseColorScaleAction, null, "ColorScale Manager...", false, 'C', 0);
-     * 
+     *
      */
     // redraw
     redrawAction = new AbstractAction() {
@@ -384,9 +375,9 @@ public class CoverageViewer extends JPanel {
         }
 
         datasetInfoTA.clear();
-        if (coverageDataset != null) {
+        if (gridDataset != null) {
           Formatter f = new Formatter();
-          coverageDataset.toString(f);
+          gridDataset.toString(f);
           datasetInfoTA.appendLine(f.toString());
         } else {
           datasetInfoTA.appendLine("No coverageDataset loaded");
@@ -396,63 +387,6 @@ public class CoverageViewer extends JPanel {
       }
     };
     BAMutil.setActionProperties(showDatasetInfoAction, "Information", "Show info...", false, 'S', -1);
-
-    /*
-     * showNcMLAction = new AbstractAction() {
-     * public void actionPerformed(ActionEvent e) {
-     * if (ncmlWindow == null) {
-     * ncmlTA = new TextHistoryPane();
-     * ncmlWindow = new IndependentWindow("Dataset NcML", BAMutil.getImage( "GDVs"), ncmlTA);
-     * ncmlWindow.setSize(700,700);
-     * ncmlWindow.setLocation(200, 70);
-     * }
-     * 
-     * ncmlTA.clear();
-     * //datasetInfoTA.appendLine( "GeoGrid XML for "+ controller.getDatasetName()+"\n");
-     * ncmlTA.appendLine( controller.getNcML());
-     * ncmlTA.gotoTop();
-     * ncmlWindow.show();
-     * }
-     * };
-     * BAMutil.setActionProperties( showNcMLAction, null, "Show NcML...", false, 'X', -1);
-     */
-
-    /*
-     * showGridDatasetInfoAction = new AbstractAction() {
-     * public void actionPerformed(ActionEvent e) {
-     * if (ncmlWindow == null) {
-     * ncmlTA = new TextHistoryPane();
-     * ncmlWindow = new IndependentWindow("Dataset NcML", BAMutil.getImage( "GDVs"), ncmlTA);
-     * ncmlWindow.setSize(700,700);
-     * ncmlWindow.setLocation(200, 70);
-     * }
-     * 
-     * ncmlTA.clear();
-     * //datasetInfoTA.appendLine( "GeoGrid XML for "+ controller.getDatasetName()+"\n");
-     * ncmlTA.appendLine( controller.getDatasetXML());
-     * ncmlTA.gotoTop();
-     * ncmlWindow.show();
-     * }
-     * };
-     * BAMutil.setActionProperties( showGridDatasetInfoAction, null, "Show GridDataset Info XML...", false, 'X', -1);
-     * 
-     * // show netcdf dataset Table
-     * /* showNetcdfDatasetAction = new AbstractAction() {
-     * public void actionPerformed(ActionEvent e) {
-     * NetcdfDataset netcdfDataset = controller.getNetcdfDataset();
-     * if (null != netcdfDataset) {
-     * try {
-     * dsTable.setDataset(netcdfDataset, null);
-     * } catch (IOException e1) {
-     * e1.printStackTrace();
-     * return;
-     * }
-     * dsDialog.show();
-     * }
-     * }
-     * };
-     * BAMutil.setActionProperties( showNetcdfDatasetAction, "netcdf", "NetcdfDataset Table Info...", false, 'D', -1);
-     */
 
     minmaxHorizAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
@@ -469,16 +403,6 @@ public class CoverageViewer extends JPanel {
       }
     };
     BAMutil.setActionProperties(minmaxLogAction, null, "log horiz plane", false, 'V', 0);
-
-    /*
-     * minmaxVolAction = new AbstractAction() {
-     * public void actionPerformed(ActionEvent e) {
-     * csDataMinMax.setSelectedIndex(GridRenderer.VOL_MinMaxType);
-     * controller.setDataMinMaxType(GridRenderer.MinMaxType.vert;
-     * }
-     * };
-     * BAMutil.setActionProperties( minmaxVolAction, null, "Grid volume", false, 'G', 0);
-     */
 
     minmaxHoldAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
@@ -530,7 +454,7 @@ public class CoverageViewer extends JPanel {
       public void actionPerformed(ActionEvent e) {
         Boolean state = (Boolean) getValue(BAMutil.STATE);
         if (state) {
-          Projection dataProjection = coverageRenderer.getDataProjection();
+          Projection dataProjection = gridRenderer.getDataProjection();
           if (null != dataProjection)
             setProjection(dataProjection);
         } else {
@@ -545,7 +469,7 @@ public class CoverageViewer extends JPanel {
     drawBBAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Boolean state = (Boolean) getValue(BAMutil.STATE);
-        coverageRenderer.setDrawBB(state);
+        gridRenderer.setDrawBB(state);
         draw(false);
       }
     };
@@ -582,40 +506,40 @@ public class CoverageViewer extends JPanel {
     showGridAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Boolean state = (Boolean) getValue(BAMutil.STATE);
-        coverageRenderer.setDrawGridLines(state);
+        gridRenderer.setDrawGridLines(state);
         draw(false);
       }
     };
     BAMutil.setActionProperties(showGridAction, "nj22/Grid", "show grid lines", true, 'G', 0);
     state = store.getBoolean("showGridAction", false);
     showGridAction.putValue(BAMutil.STATE, state);
-    coverageRenderer.setDrawGridLines(state);
+    gridRenderer.setDrawGridLines(state);
 
     // contouring
     showContoursAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Boolean state = (Boolean) getValue(BAMutil.STATE);
-        coverageRenderer.setDrawContours(state);
+        gridRenderer.setDrawContours(state);
         draw(false);
       }
     };
     BAMutil.setActionProperties(showContoursAction, "nj22/Contours", "show contours", true, 'C', 0);
     state = store.getBoolean("showContoursAction", false);
     showContoursAction.putValue(BAMutil.STATE, state);
-    coverageRenderer.setDrawContours(state);
+    gridRenderer.setDrawContours(state);
 
     // contouring labels
     showContourLabelsAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Boolean state = (Boolean) getValue(BAMutil.STATE);
-        coverageRenderer.setDrawContourLabels(state);
+        gridRenderer.setDrawContourLabels(state);
         draw(false);
       }
     };
     BAMutil.setActionProperties(showContourLabelsAction, "nj22/ContourLabels", "show contour labels", true, 'L', 0);
     state = store.getBoolean("showContourLabelsAction", false);
     showContourLabelsAction.putValue(BAMutil.STATE, state);
-    coverageRenderer.setDrawContourLabels(state);
+    gridRenderer.setDrawContourLabels(state);
   }
 
   private void makeEventManagement() {
@@ -698,36 +622,38 @@ public class CoverageViewer extends JPanel {
     };
     timeCoordinator.addActionSourceListener(timeSource);
 
-    // manage runtime selection events
-    actionName = "runtime";
-    ActionCoordinator runtimeCoordinator = new ActionCoordinator(actionName);
-    runtimeCoordinator.addActionSourceListener(runtimeChooser.getActionSourceListener());
-    // heres what to do when the runtime changes
-    ActionSourceListener runtimeSource = new ActionSourceListener(actionName) {
-      public void actionPerformed(ActionValueEvent e) {
-        // Object dataValue = e.getValue();
-        int runtime = findIndexFromName(runtimeNames, e.getValue().toString());
-        if ((runtime != -1) && (runtime != currentRunTime)) {
-          currentRunTime = runtime;
-
-          if (dataState.taxis2D != null) {
-            // CoverageCoordAxis1D taxis = dataState.taxis2D.getTimeAxisForRun((CalendarDate) dataValue);
-            dataState.taxis = dataState.taxis2D.getTimeAxisForRun(currentRunTime);
-            timeNames = dataState.taxis.getCoordValueNames();
-            timeChooser.setCollection(timeNames.iterator());
-            if (currentTime >= timeNames.size())
-              currentTime = 0;
-            timeChooser.setSelectedByIndex(currentTime);
-          }
-
-          if (e.getActionCommand().equals("redrawImmediate")) {
-            draw(true);
-          } else
-            redrawLater();
-        }
-      }
-    };
-    runtimeCoordinator.addActionSourceListener(runtimeSource);
+    /*
+     * manage runtime selection events
+     * actionName = "runtime";
+     * ActionCoordinator runtimeCoordinator = new ActionCoordinator(actionName);
+     * runtimeCoordinator.addActionSourceListener(runtimeChooser.getActionSourceListener());
+     * // heres what to do when the runtime changes
+     * ActionSourceListener runtimeSource = new ActionSourceListener(actionName) {
+     * public void actionPerformed(ActionValueEvent e) {
+     * // Object dataValue = e.getValue();
+     * int runtime = findIndexFromName(runtimeNames, e.getValue().toString());
+     * if ((runtime != -1) && (runtime != currentRunTime)) {
+     * currentRunTime = runtime;
+     * 
+     * if (dataState.taxis2D != null) {
+     * // CoverageCoordAxis1D taxis = dataState.taxis2D.getTimeAxisForRun((CalendarDate) dataValue);
+     * dataState.taxis = dataState.taxis2D.getTimeAxisForRun(currentRunTime);
+     * timeNames = dataState.taxis.getCoordValueNames();
+     * timeChooser.setCollection(timeNames.iterator());
+     * if (currentTime >= timeNames.size())
+     * currentTime = 0;
+     * timeChooser.setSelectedByIndex(currentTime);
+     * }
+     * 
+     * if (e.getActionCommand().equals("redrawImmediate")) {
+     * draw(true);
+     * } else
+     * redrawLater();
+     * }
+     * }
+     * };
+     * runtimeCoordinator.addActionSourceListener(runtimeSource);
+     */
 
     //// manage runtime selection events
     actionName = "ensemble";
@@ -757,7 +683,7 @@ public class CoverageViewer extends JPanel {
         System.out.println("Controller got NewProjectionEvent " + navPanel.getMapArea());
       if (eventsOK && mapRenderer != null) {
         mapRenderer.setProjection(e.getProjection());
-        coverageRenderer.setViewProjection(e.getProjection());
+        gridRenderer.setViewProjection(e.getProjection());
         drawH(false);
       }
     });
@@ -771,7 +697,7 @@ public class CoverageViewer extends JPanel {
 
     // get Move events from the navigated panel
     navPanel.addCursorMoveEventListener(e -> {
-      String valueS = coverageRenderer.getXYvalueStr(e.getLocation());
+      String valueS = gridRenderer.getXYvalueStr(e.getLocation());
       dataValueLabel.setText(valueS);
     });
 
@@ -837,25 +763,24 @@ public class CoverageViewer extends JPanel {
   // assume that its done in the event thread
   boolean showDataset() {
     // temp kludge for initialization
-    Iterable<Coverage> grids = coverageDataset.getCoverages();
 
-    currentField = grids.iterator().next(); // first
+    currentField = gridDataset.getGrids().iterator().next(); // first
     currentLevel = 0;
     currentTime = 0;
     currentEnsemble = 0;
     currentRunTime = 0;
 
     eventsOK = false; // dont let this trigger redraw
-    this.dataState = coverageRenderer.setCoverage(coverageDataset, currentField);
-    coverageRenderer.setDataProjection(currentField.getCoordSys().getProjection());
+    this.dataState = gridRenderer.setGrid(gridDataset, currentField);
+    gridRenderer.setDataProjection(currentField.getCoordinateSystem().getProjection());
     setField(currentField);
 
     // LOOK if possible, change the projection and the map area to one that fits this dataset
-    Projection dataProjection = currentField.getCoordSys().getProjection();
+    Projection dataProjection = currentField.getCoordinateSystem().getProjection();
     if (dataProjection != null) {
       setProjection(dataProjection);
     }
-    ProjectionRect fieldBB = currentField.getBoundingBox();
+    ProjectionRect fieldBB = currentField.getCoordinateSystem().getBoundingBox();
     if (fieldBB != null) {
       navPanel.setMapArea(fieldBB);
     }
@@ -866,53 +791,47 @@ public class CoverageViewer extends JPanel {
   }
 
   public void setDataMinMaxType(ColorScale.MinMaxType type) {
-    coverageRenderer.setDataMinMaxType(type);
+    gridRenderer.setDataMinMaxType(type);
     redrawLater();
   }
 
   private boolean startOK = true;
 
-  public void setDataset(ucar.nc2.ui.coverage2.CoverageTable dsTable) {
-    this.coverageDataset = dsTable.getCoverageDataset();
-    setFieldsFromBeans(dsTable.getCoverageBeans());
+  public void setGridCollection(GridDataset gcd) {
+    this.gridDataset = gcd;
+    setFields(gcd.getGrids());
 
     startOK = false; // wait till redraw is hit before drawing
-    showDataset();
-    datasetNameLabel.setText("Dataset:  " + coverageDataset.getName());
-    // gridTable.setDataset(controller.getFields());
+    try {
+      showDataset();
+    } catch (Throwable t) {
+      t.printStackTrace();
+      throw t;
+    }
+    datasetNameLabel.setText("Dataset:  " + gridDataset.getName());
   }
 
-  public void setDataset(CoverageCollection gcd) {
-    this.coverageDataset = gcd;
-    setFields(gcd.getCoverages());
-
-    startOK = false; // wait till redraw is hit before drawing
-    showDataset();
-    datasetNameLabel.setText("Dataset:  " + coverageDataset.getName());
-    // gridTable.setDataset(controller.getFields());
-  }
-
-  void setFieldsFromBeans(List<CoverageTable.CoverageBean> fields) {
+  void setFieldsFromBeans(List<GridNewTable.GridBean> fields) {
     fieldChooser.setCollection(fields.iterator());
   }
 
-  void setFields(Iterable<Coverage> fields) {
+  void setFields(Iterable<Grid> fields) {
     fieldChooser.setCollection(fields.iterator());
   }
 
   private boolean setField(Object fld) {
-    Coverage gg = null;
-    if (fld instanceof Coverage)
-      gg = (Coverage) fld;
+    Grid gg = null;
+    if (fld instanceof Grid)
+      gg = (Grid) fld;
     else if (fld instanceof String)
-      gg = coverageDataset.findCoverage((String) fld);
+      gg = gridDataset.findGrid((String) fld);
     else if (fld instanceof NamedObject)
-      gg = coverageDataset.findCoverage(((NamedObject) fld).getName());
+      gg = gridDataset.findGrid(((NamedObject) fld).getName());
     if (null == gg)
       return false;
 
-    this.dataState = coverageRenderer.setCoverage(coverageDataset, gg);
-    coverageRenderer.setDataProjection(this.dataState.geocs.getProjection());
+    this.dataState = gridRenderer.setGrid(gridDataset, gg);
+    gridRenderer.setDataProjection(this.dataState.geocs.getProjection());
     currentField = gg;
 
     // set runtimes
@@ -927,14 +846,16 @@ public class CoverageViewer extends JPanel {
       NamedObject no = runtimeNames.get(currentRunTime);
       runtimeChooser.setSelectedByName(no.getName());
 
-      if (this.dataState.taxis2D != null) {
-        this.dataState.taxis = this.dataState.taxis2D.getTimeAxisForRun(currentRunTime);
-      }
+      /*
+       * if (this.dataState.taxis2D != null) {
+       * this.dataState.taxis = this.dataState.taxis2D.getTimeAxisForRun(currentRunTime);
+       * }
+       */
 
     } else {
       runtimeNames = new ArrayList<>();
       setChooserWanted("runtime", false);
-      coverageRenderer.setRunTime(-1);
+      gridRenderer.setRunTime(-1);
     }
 
     // set times
@@ -971,7 +892,7 @@ public class CoverageViewer extends JPanel {
     } else {
       ensembleNames = new ArrayList<>();
       setChooserWanted("ensemble", false);
-      coverageRenderer.setEnsemble(-1);
+      gridRenderer.setEnsemble(-1);
     }
 
     // set levels
@@ -989,12 +910,12 @@ public class CoverageViewer extends JPanel {
     } else {
       levelNames = new ArrayList<>();
       setChooserWanted("level", false);
-      coverageRenderer.setLevel(-1);
+      gridRenderer.setLevel(-1);
     }
 
     addChoosers();
 
-    fieldChooser.setToolTipText(gg.getShortName());
+    fieldChooser.setToolTipText(gg.getName());
     colorScalePanel.setUnitString(gg.getUnitsString());
     return true;
   }
@@ -1014,9 +935,10 @@ public class CoverageViewer extends JPanel {
 
   public void setProjection(Projection p) {
     project = p;
-    if (mapRenderer != null)
+    if (mapRenderer != null) // gridTable.setDataset(controller.getFields());
+
       mapRenderer.setProjection(p);
-    coverageRenderer.setViewProjection(p);
+    gridRenderer.setViewProjection(p);
     // renderWind.setProjection( p);
     navPanel.setProjectionImpl(p);
     redrawLater();
@@ -1032,11 +954,11 @@ public class CoverageViewer extends JPanel {
     if (!startOK)
       return;
 
-    coverageRenderer.setLevel(currentLevel);
-    coverageRenderer.setTime(currentTime);
+    gridRenderer.setLevel(currentLevel);
+    gridRenderer.setTime(currentTime);
     // renderGrid.setSlice(currentSlice);
-    coverageRenderer.setEnsemble(currentEnsemble);
-    coverageRenderer.setRunTime(currentRunTime);
+    gridRenderer.setEnsemble(currentEnsemble);
+    gridRenderer.setRunTime(currentRunTime);
 
     if (drawHorizOn)
       drawH(immediate);
@@ -1068,7 +990,11 @@ public class CoverageViewer extends JPanel {
 
     // draw grid
     startTime = System.currentTimeMillis();
-    coverageRenderer.renderPlanView(gNP, atI);
+    try {
+      gridRenderer.renderPlanView(gNP, atI);
+    } catch (IOException | InvalidRangeException e) {
+      e.printStackTrace();
+    }
     if (Debug.isSet("timing/GridDraw")) {
       tookTime = System.currentTimeMillis() - startTime;
       System.out.println("timing.GridDraw: " + tookTime * .001 + " seconds");
@@ -1156,6 +1082,8 @@ public class CoverageViewer extends JPanel {
     projManager.addPropertyChangeListener(e -> {
       if (e.getPropertyName().equals("ProjectionImpl")) {
         Projection p = (Projection) e.getNewValue();
+        // p = p.constructCopy();
+        // System.out.println("UI: new Projection "+p);
         setProjection(p);
       }
     });

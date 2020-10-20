@@ -359,10 +359,8 @@ public class TestMiscPointFeature {
           StationTimeSeriesFeatureCollection stsfc = (StationTimeSeriesFeatureCollection) fc;
           // subset criteria not important, just want to get data
           // into flattened representation
-          PointFeatureCollection pfc =
-              stsfc.flatten(new LatLonRect.Builder(LatLonPoint.create(-90, -180), LatLonPoint.create(90, 180)).build(),
-                  CalendarDateRange.of(CalendarDate.parseISOformat(null, "1900-01-01"),
-                      CalendarDate.parseISOformat(null, "2100-01-01")));
+          PointFeatureCollection pfc = stsfc.flatten(new LatLonRect(-90, -180, 90, 180), CalendarDateRange
+              .of(CalendarDate.parseISOformat(null, "1900-01-01"), CalendarDate.parseISOformat(null, "2100-01-01")));
 
           for (PointFeature pf : pfc) {
             // the call to cursor.getParentStructure() in

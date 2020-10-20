@@ -5,55 +5,53 @@
 
 package ucar.nc2.ui.op;
 
-import ucar.nc2.ft.FeatureDataset;
-import ucar.nc2.ft2.coverage.CoverageCollection;
-import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
 import ucar.nc2.ft2.coverage.FeatureDatasetCoverage;
+import ucar.nc2.grid.GridDataset;
+import ucar.nc2.grid.GridDatasetFactory;
 import ucar.nc2.ui.OpPanel;
 import ucar.nc2.ui.ToolsUI;
-import ucar.nc2.ui.coverage2.CoverageTable;
-import ucar.nc2.ui.coverage2.CoverageViewer;
 import ucar.nc2.ui.gis.shapefile.ShapeFileBean;
 import ucar.nc2.ui.gis.worldmap.WorldMapBean;
+import ucar.nc2.ui.grid2.GridNewTable;
+import ucar.nc2.ui.grid2.GridViewer;
 import ucar.ui.widget.BAMutil;
 import ucar.ui.widget.IndependentWindow;
-import java.util.Optional;
 import ucar.util.prefs.PreferencesExt;
-import java.awt.BorderLayout;
-import java.awt.Rectangle;
-import java.lang.invoke.MethodHandles;
+
+import javax.swing.*;
+import java.awt.*;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
-import javax.swing.AbstractButton;
-import javax.swing.JOptionPane;
+import java.util.Optional;
 
-public class CoveragePanel extends OpPanel {
+public class GridPanel extends OpPanel {
   private static final org.slf4j.Logger logger =
       org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  private final CoverageTable dsTable;
-  private CoverageViewer display;
+  private final GridNewTable gridNewTable;
+  private GridViewer gridViewer;
   private IndependentWindow viewerWindow;
 
-  private FeatureDatasetCoverage covDatasetCollection;
+  private GridDataset gridDataset;
 
-  public CoveragePanel(PreferencesExt prefs) {
+  public GridPanel(PreferencesExt prefs) {
     super(prefs, "dataset:", true, false);
-    dsTable = new CoverageTable(buttPanel, prefs);
-    add(dsTable, BorderLayout.CENTER);
+    gridNewTable = new GridNewTable(prefs);
+    add(gridNewTable, BorderLayout.CENTER);
 
     AbstractButton viewButton = BAMutil.makeButtcon("alien", "Grid Viewer", false);
     viewButton.addActionListener(e -> {
-      CoverageCollection gridDataset = dsTable.getCoverageDataset();
+      GridDataset gridDataset = gridNewTable.getGridCollection();
       if (gridDataset == null) {
         return;
       }
-      if (display == null) {
+      if (gridViewer == null) {
         makeDisplay();
       }
-      display.setDataset(dsTable);
+      gridViewer.setGridCollection(gridDataset);
       viewerWindow.show();
     });
     buttPanel.add(viewButton);
@@ -61,7 +59,7 @@ public class CoveragePanel extends OpPanel {
     AbstractButton infoButton = BAMutil.makeButtcon("Information", "Show Info", false);
     infoButton.addActionListener(e -> {
       Formatter f = new Formatter();
-      dsTable.showInfo(f);
+      gridNewTable.showInfo(f);
       detailTA.setText(f.toString());
       detailTA.gotoTop();
       detailWindow.show();
@@ -72,13 +70,13 @@ public class CoveragePanel extends OpPanel {
   private void makeDisplay() {
     viewerWindow = new IndependentWindow("Coverage Viewer", BAMutil.getImage("nj22/NetcdfUI"));
 
-    display = new CoverageViewer((PreferencesExt) prefs.node("CoverageDisplay"), viewerWindow, fileChooser, 800);
-    display.addMapBean(new WorldMapBean());
-    display.addMapBean(
+    gridViewer = new GridViewer((PreferencesExt) prefs.node("CoverageDisplay"), viewerWindow, fileChooser, 800);
+    gridViewer.addMapBean(new WorldMapBean());
+    gridViewer.addMapBean(
         new ShapeFileBean("WorldDetailMap", "Global Detailed Map", "nj22/WorldDetailMap", ToolsUI.WORLD_DETAIL_MAP));
-    display.addMapBean(new ShapeFileBean("USDetailMap", "US Detailed Map", "nj22/USMap", ToolsUI.US_MAP));
+    gridViewer.addMapBean(new ShapeFileBean("USDetailMap", "US Detailed Map", "nj22/USMap", ToolsUI.US_MAP));
 
-    viewerWindow.setComponent(display);
+    viewerWindow.setComponent(gridViewer);
     Rectangle bounds = (Rectangle) ToolsUI.getPrefsBean(ToolsUI.GRIDVIEW_FRAME_SIZE, new Rectangle(77, 22, 700, 900));
     if (bounds.x < 0) {
       bounds.x = 0;
@@ -103,18 +101,17 @@ public class CoveragePanel extends OpPanel {
 
     try {
       Formatter errLog = new Formatter();
-      Optional<FeatureDatasetCoverage> opt = CoverageDatasetFactory.openCoverageDataset(command, errLog);
+      Optional<GridDataset> opt = GridDatasetFactory.openGridDataset(command, errLog);
       if (!opt.isPresent()) {
         JOptionPane.showMessageDialog(null, errLog.toString());
         return false;
       }
-      covDatasetCollection = opt.get();
-      dsTable.setCollection(covDatasetCollection);
+      gridDataset = opt.get();
+      gridNewTable.setCollection(gridDataset);
       setSelectedItem(command);
     } catch (IOException e) {
-      // e.printStackTrace();
-      JOptionPane.showMessageDialog(null,
-          String.format("CdmrFeatureDataset2.open cant open %s err=%s", command, e.getMessage()));
+      e.printStackTrace();
+      JOptionPane.showMessageDialog(null, String.format("GridPanel cant open %s err=%s", command, e.getMessage()));
     } catch (Throwable ioe) {
       ioe.printStackTrace();
       StringWriter sw = new StringWriter(5000);
@@ -127,7 +124,7 @@ public class CoveragePanel extends OpPanel {
     return !err;
   }
 
-  public void setDataset(FeatureDataset fd) {
+  public void setDataset(GridDataset fd) {
     if (fd == null) {
       return;
     }
@@ -141,23 +138,23 @@ public class CoveragePanel extends OpPanel {
       logger.warn("close failed");
     }
 
-    dsTable.setCollection((FeatureDatasetCoverage) fd);
+    gridNewTable.setCollection(fd);
     setSelectedItem(fd.getLocation());
   }
 
   @Override
   public void closeOpenFiles() throws IOException {
-    if (covDatasetCollection != null) {
-      covDatasetCollection.close();
+    if (gridDataset != null) {
+      gridDataset.close();
     }
-    covDatasetCollection = null;
-    dsTable.clear();
+    gridDataset = null;
+    gridNewTable.clear();
   }
 
   @Override
   public void save() {
     super.save();
-    dsTable.save();
+    gridNewTable.save();
     if (viewerWindow != null) {
       ToolsUI.putPrefsBeanObject(ToolsUI.GRIDVIEW_FRAME_SIZE, viewerWindow.getBounds());
     }

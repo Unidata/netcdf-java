@@ -327,11 +327,6 @@ public class CoordinateAxis extends VariableDS {
     return (Builder<?>) super.addLocalFieldsToBuilder(b);
   }
 
-  /**
-   * Get Builder for this class that allows subclassing.
-   * 
-   * @see "https://community.oracle.com/blogs/emcmanus/2010/10/24/using-builder-pattern-subclasses"
-   */
   public static Builder<?> builder() {
     return new Builder2();
   }

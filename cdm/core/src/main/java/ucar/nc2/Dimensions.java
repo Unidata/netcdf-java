@@ -3,7 +3,6 @@ package ucar.nc2;
 
 import com.google.common.collect.ImmutableList;
 import java.util.Formatter;
-import java.util.List;
 import java.util.Optional;
 import java.util.StringTokenizer;
 import javax.annotation.Nullable;
@@ -71,17 +70,19 @@ public class Dimensions {
   }
 
   /** Make a space-delineated String from a list of Dimension names, inverse of makeDimensionsList(). */
-  public static String makeDimensionsString(List<Dimension> dimensions) {
+  public static String makeDimensionsString(Iterable<Dimension> dimensions) {
     if (dimensions == null)
       return "";
 
+    int count = 0;
     Formatter buf = new Formatter();
-    for (int i = 0; i < dimensions.size(); i++) {
-      Dimension myd = dimensions.get(i);
+    for (Dimension myd : dimensions) {
       String dimName = myd.getShortName();
 
-      if (i != 0)
+      if (count != 0) {
         buf.format(" ");
+      }
+      count++;
 
       if (myd.isVariableLength()) {
         buf.format("*");

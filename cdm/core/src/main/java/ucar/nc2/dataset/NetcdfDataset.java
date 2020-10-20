@@ -268,7 +268,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   }
 
   /**
-   * Retrieve the CoordinateAxis with the specified type.
+   * Retrieve the CoordinateAxis with the specified fullName.
    *
    * @param fullName full escaped name of the coordinate axis
    * @return the CoordinateAxis, or null if not found
