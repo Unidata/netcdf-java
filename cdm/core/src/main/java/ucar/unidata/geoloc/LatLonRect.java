@@ -44,14 +44,14 @@ public class LatLonRect {
     this(new LatLonRect.Builder(LatLonPoint.create(-90, -180), 180, 360));
   }
 
-   /**
+  /**
    * Construct a lat/lon bounding box from a point, and a delta lat, lon.
    * This disambiguates which way the box wraps around the globe.
    *
    * @param p1 one corner of the box
    * @param deltaLat delta lat from p1. (may be positive or negetive)
    * @param deltaLon delta lon from p1. (may be positive or negetive). A negetive value is interepreted as
-    *                 indicating a wrap, and 360 is added to it.
+   *        indicating a wrap, and 360 is added to it.
    */
   public LatLonRect(LatLonPoint p1, double deltaLat, double deltaLon) {
     this(builder(p1, deltaLat, deltaLon));
@@ -59,6 +59,7 @@ public class LatLonRect {
 
   /**
    * Construct a lat/lon bounding box from unnormalized longitudes.
+   * 
    * @param lat0 lat of starting point
    * @param lon0 lon of starting point
    * @param lat1 lat of ending point
@@ -276,7 +277,8 @@ public class LatLonRect {
    */
   @Override
   public String toString() {
-    return " ll: " + lowerLeft + " ur: " + upperRight + " width: " + width + " cross: " + crossDateline + " all: " + allLongitude;
+    return " ll: " + lowerLeft + " ur: " + upperRight + " width: " + width + " cross: " + crossDateline + " all: "
+        + allLongitude;
   }
 
   /**
@@ -313,6 +315,7 @@ public class LatLonRect {
    * The order of lat doesnt matter: smaller will go to "lower" point (further south).
    *
    * There is an ambiguity when left = right, since LatLonPoint is normalized. Assume this is the full width = 360 case.
+   * 
    * @deprecated use builder(LatLonPoint p1, double deltaLat, double deltaLon).
    *
    * @param left left corner
@@ -344,6 +347,7 @@ public class LatLonRect {
 
   /**
    * Construct a lat/lon bounding box from unnormalized longitude.
+   * 
    * @param lat0 lat of starting point
    * @param lon0 lon of starting point
    * @param lat1 lat of ending point
@@ -395,15 +399,16 @@ public class LatLonRect {
     boolean allLongitudes;
     boolean crossDateline;
 
-    private Builder() {
-    }
+    private Builder() {}
 
-    /** @deprecated use LatLonRect.builder(LatLonPoint p1, double deltaLat, double deltaLon), or
-     * new LatLonRect(LatLonPoint p1, double deltaLat, double deltaLon) */
+    /**
+     * @deprecated use LatLonRect.builder(LatLonPoint p1, double deltaLat, double deltaLon), or
+     *             new LatLonRect(LatLonPoint p1, double deltaLat, double deltaLon)
+     */
     @Deprecated
     public Builder(LatLonPoint left, LatLonPoint right) {
       this(left, right.getLatitude() - left.getLatitude(),
-              LatLonPoints.lonNormal360(right.getLongitude() - left.getLongitude()));
+          LatLonPoints.lonNormal360(right.getLongitude() - left.getLongitude()));
     }
 
     /** @deprecated use LatLonRect.builder(String spec) */
@@ -421,8 +426,10 @@ public class LatLonRect {
       init(LatLonPoint.create(lat, lon), deltaLat, deltaLon);
     }
 
-    /** @deprecated use LatLonRect.builder(LatLonPoint p1, double deltaLat, double deltaLon), or
-     * new LatLonRect(LatLonPoint p1, double deltaLat, double deltaLon) */
+    /**
+     * @deprecated use LatLonRect.builder(LatLonPoint p1, double deltaLat, double deltaLon), or
+     *             new LatLonRect(LatLonPoint p1, double deltaLat, double deltaLon)
+     */
     @Deprecated
     public Builder(LatLonPoint p1, double deltaLat, double deltaLon) {
       init(p1, deltaLat, deltaLon);

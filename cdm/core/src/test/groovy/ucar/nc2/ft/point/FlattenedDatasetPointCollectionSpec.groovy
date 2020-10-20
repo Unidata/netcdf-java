@@ -9,7 +9,6 @@ import ucar.nc2.time.CalendarDateRange
 import ucar.nc2.time.CalendarDateUnit
 import ucar.unidata.geoloc.EarthLocation
 import ucar.unidata.geoloc.LatLonRect
-import ucar.unidata.geoloc.LatLonPoint
 
 /**
  * @author cwardgar
@@ -186,7 +185,7 @@ class FlattenedDatasetPointCollectionSpec extends Specification {
 
         and: "the bounds include all 9 PointFeatures"
         flattenedDatasetCol.size() == 9
-        flattenedDatasetCol.boundingBox == new LatLonRect(LatLonPoint.create(-85, -70), LatLonPoint.create(85, 170));
+        flattenedDatasetCol.boundingBox == new LatLonRect(-85, -70, 85, 170);
 
         and:
         def calDateUnit = flattenedDatasetCol.timeUnit

@@ -171,40 +171,41 @@ public class LatLonProjection extends AbstractProjection {
   }
 
   /*
-  public ProjectionRect[] latLonToProjRect2(LatLonRect latlonR) {
-    return latLonToProjRect2(latlonR.getLowerLeftPoint().getLatitude(),
-            latlonR.getLowerLeftPoint().getLongitude(),
-            latlonR.getUpperRightPoint().getLatitude(),
-            latlonR.getUpperRightPoint().getLongitude());
-  }
-
-  public ProjectionRect[] latLonToProjRect2(double lat0, double lon0, double lat1, double lon1) {
-    double height = Math.abs(lat1 - lat0);
-    lat0 = Math.min(lat1, lat0);
-    double width = lon1 - lon0;
-    if (Math.abs(width) < 1.0e-8) {
-      width = 360.0; // assume its the whole thing
-    }
-    lon0 = LatLonPoints.lonNormal(lon0, centerLon);
-    lon1 = LatLonPoints.lonNormal(lon1, centerLon);
-
-    ProjectionRect[] rects = new ProjectionRect[2];
-    if (width >= 360.0) {
-      rects[0] = ProjectionRect.builder().setRect(centerLon - 180.0, lat0, 360.0, height).build();
-      rects[1] = null;
-    } else if (lon0 < lon1 && width > 0) {
-      rects[0] = ProjectionRect.builder().setRect(lon0, lat0, width, height).build();
-      rects[1] = null;
-    } else {
-      double y = centerLon + 180 - lon0;
-      if (width < 0) {
-        width += 360;
-      }
-      rects[0] = ProjectionRect.builder().setRect(lon0, lat0, y, height).build();
-      rects[1] = ProjectionRect.builder().setRect(lon1 - width + y, lat0, width - y, height).build();
-    }
-    return rects;
-  } */
+   * public ProjectionRect[] latLonToProjRect2(LatLonRect latlonR) {
+   * return latLonToProjRect2(latlonR.getLowerLeftPoint().getLatitude(),
+   * latlonR.getLowerLeftPoint().getLongitude(),
+   * latlonR.getUpperRightPoint().getLatitude(),
+   * latlonR.getUpperRightPoint().getLongitude());
+   * }
+   * 
+   * public ProjectionRect[] latLonToProjRect2(double lat0, double lon0, double lat1, double lon1) {
+   * double height = Math.abs(lat1 - lat0);
+   * lat0 = Math.min(lat1, lat0);
+   * double width = lon1 - lon0;
+   * if (Math.abs(width) < 1.0e-8) {
+   * width = 360.0; // assume its the whole thing
+   * }
+   * lon0 = LatLonPoints.lonNormal(lon0, centerLon);
+   * lon1 = LatLonPoints.lonNormal(lon1, centerLon);
+   * 
+   * ProjectionRect[] rects = new ProjectionRect[2];
+   * if (width >= 360.0) {
+   * rects[0] = ProjectionRect.builder().setRect(centerLon - 180.0, lat0, 360.0, height).build();
+   * rects[1] = null;
+   * } else if (lon0 < lon1 && width > 0) {
+   * rects[0] = ProjectionRect.builder().setRect(lon0, lat0, width, height).build();
+   * rects[1] = null;
+   * } else {
+   * double y = centerLon + 180 - lon0;
+   * if (width < 0) {
+   * width += 360;
+   * }
+   * rects[0] = ProjectionRect.builder().setRect(lon0, lat0, y, height).build();
+   * rects[1] = ProjectionRect.builder().setRect(lon1 - width + y, lat0, width - y, height).build();
+   * }
+   * return rects;
+   * }
+   */
 
   /**
    * Split a latlon rectangle to the equivalent ProjectionRect(s).
@@ -213,7 +214,7 @@ public class LatLonProjection extends AbstractProjection {
    * @param latlonR the latlon rectangle to transform
    * @return 1 or 2 ProjectionRect. If it doesnt cross the seam,
    *         the second rectangle is null.
-   * see {@link #latLonToProjRect(double, double, double, double)}
+   *         see {@link #latLonToProjRect(double, double, double, double)}
    */
   public ProjectionRect[] latLonToProjRect(LatLonRect latlonR) {
     double lat0 = latlonR.getLowerLeftPoint().getLatitude();
