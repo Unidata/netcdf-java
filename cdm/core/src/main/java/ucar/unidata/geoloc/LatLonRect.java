@@ -19,13 +19,10 @@ import java.util.StringTokenizer;
  * The Rectangle always starts from lowerLeft, goes east width degrees until upperRight
  * For latitude, lower < upper.
  * Since the longitude must be in the range +/-180., right may be less or greater than left.
- *
- * @author Russ Rew
- * @author John Caron
  */
 @Immutable
 public class LatLonRect {
-  public static LatLonRect INVALID = new LatLonRect.Builder(LatLonPoint.INVALID, LatLonPoint.INVALID).build();
+  public static LatLonRect INVALID = LatLonRect.builder(LatLonPoint.INVALID, LatLonPoint.INVALID).build();
 
   /** upper right corner */
   private final LatLonPoint upperRight;
@@ -45,6 +42,30 @@ public class LatLonRect {
   /** Create a LatLonRect that covers the whole world. */
   public LatLonRect() {
     this(new LatLonRect.Builder(LatLonPoint.create(-90, -180), 180, 360));
+  }
+
+   /**
+   * Construct a lat/lon bounding box from a point, and a delta lat, lon.
+   * This disambiguates which way the box wraps around the globe.
+   *
+   * @param p1 one corner of the box
+   * @param deltaLat delta lat from p1. (may be positive or negetive)
+   * @param deltaLon delta lon from p1. (may be positive or negetive). A negetive value is interepreted as
+    *                 indicating a wrap, and 360 is added to it.
+   */
+  public LatLonRect(LatLonPoint p1, double deltaLat, double deltaLon) {
+    this(builder(p1, deltaLat, deltaLon));
+  }
+
+  /**
+   * Construct a lat/lon bounding box from unnormalized longitudes.
+   * @param lat0 lat of starting point
+   * @param lon0 lon of starting point
+   * @param lat1 lat of ending point
+   * @param lon1 lon of ending point
+   */
+  public LatLonRect(double lat0, double lon0, double lat1, double lon1) {
+    this(builder(lat0, lon0, lat1, lon1));
   }
 
   /** Get the upper right corner of the bounding box. */
@@ -70,6 +91,11 @@ public class LatLonRect {
   /** Get whether the bounding box crosses the +/- 180 seam */
   public boolean crossDateline() {
     return crossDateline;
+  }
+
+  /** Get whether the bounding box contains all longitudes. */
+  public boolean isAllLongitude() {
+    return allLongitude;
   }
 
   /** return width of bounding box in degrees longitude, always between 0 and 360 degrees. */
@@ -248,8 +274,9 @@ public class LatLonRect {
    *
    * @return a String representation of this object.
    */
+  @Override
   public String toString() {
-    return " ll: " + lowerLeft + "+ ur: " + upperRight;
+    return " ll: " + lowerLeft + " ur: " + upperRight + " width: " + width + " cross: " + crossDateline + " all: " + allLongitude;
   }
 
   /**
@@ -279,6 +306,78 @@ public class LatLonRect {
     return new Builder(this.lowerLeft, this.upperRight.getLatitude() - this.lowerLeft.getLatitude(), this.width);
   }
 
+  /**
+   * Construct a lat/lon bounding box from two points. The order of longitude coord of the two points matters:
+   * pt1.lon is always the "left" point, then points contained within the box increase (unless crossing the Dateline,
+   * in which case they jump to -180, but then start increasing again) until pt2.lon.
+   * The order of lat doesnt matter: smaller will go to "lower" point (further south).
+   *
+   * There is an ambiguity when left = right, since LatLonPoint is normalized. Assume this is the full width = 360 case.
+   * @deprecated use builder(LatLonPoint p1, double deltaLat, double deltaLon).
+   *
+   * @param left left corner
+   * @param right right corner
+   */
+  @Deprecated
+  public static Builder builder(LatLonPoint left, LatLonPoint right) {
+    double width = right.getLongitude() - left.getLongitude();
+    while (width < 0.0) {
+      width += 360;
+    }
+    if (width == 0.0) {
+      width = 360;
+    }
+    return new Builder(left, right.getLatitude() - left.getLatitude(), width);
+  }
+
+  /**
+   * Construct a lat/lon bounding box from a point, and a delta lat, lon. This disambiguates which way the box wraps
+   * around the globe.
+   *
+   * @param p1 one corner of the box
+   * @param deltaLat delta lat from p1. (may be positive or negetive)
+   * @param deltaLon delta lon from p1. (may be positive or negetive)
+   */
+  public static Builder builder(LatLonPoint p1, double deltaLat, double deltaLon) {
+    return new Builder().init(p1, deltaLat, deltaLon);
+  }
+
+  /**
+   * Construct a lat/lon bounding box from unnormalized longitude.
+   * @param lat0 lat of starting point
+   * @param lon0 lon of starting point
+   * @param lat1 lat of ending point
+   * @param lon1 lon of ending point
+   */
+  public static Builder builder(double lat0, double lon0, double lat1, double lon1) {
+    double width = lon1 - lon0;
+    if (Math.abs(width) < 1.0e-8) {
+      width = 360.0; // assume its the whole thing
+    }
+    return new Builder().init(LatLonPoint.create(lat0, lon0), lat1 - lat0, width);
+  }
+
+  /**
+   * Construct a lat/lon bounding box from a string.
+   *
+   * @param spec "lat, lon, deltaLat, deltaLon"
+   * @see {@link LatLonRect.Builder(LatLonPoint, double, double)}
+   */
+  public static Builder builder(String spec) {
+    StringTokenizer stoker = new StringTokenizer(spec, " ,");
+    int n = stoker.countTokens();
+    if (n != 4)
+      throw new IllegalArgumentException("Must be 4 numbers = lat, lon, latWidth, lonWidth");
+    double lat = Double.parseDouble(stoker.nextToken());
+    double lon = Double.parseDouble(stoker.nextToken());
+    double deltaLat = Double.parseDouble(stoker.nextToken());
+    double deltaLon = Double.parseDouble(stoker.nextToken());
+
+    return new Builder().init(LatLonPoint.create(lat, lon), deltaLat, deltaLon);
+  }
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
   private LatLonRect(Builder builder) {
     this.lowerLeft = LatLonPoint.create(builder.llLat, builder.llLon);
     this.upperRight = LatLonPoint.create(builder.urLat, builder.urLon);
@@ -296,28 +395,19 @@ public class LatLonRect {
     boolean allLongitudes;
     boolean crossDateline;
 
-    /**
-     * Construct a lat/lon bounding box from two points. The order of longitude coord of the two points matters: pt1.lon
-     * is always the
-     * "left" point, then points contained within the box increase (unless crossing the Dateline, in which case they
-     * jump to -180, but then
-     * start increasing again) until pt2.lon The order of lat doesnt matter: smaller will go to "lower" point (further
-     * south)
-     *
-     * @param left left corner
-     * @param right right corner
-     */
-    public Builder(LatLonPoint left, LatLonPoint right) {
-      this(left, right.getLatitude() - left.getLatitude(),
-          LatLonPoints.lonNormal360(right.getLongitude() - left.getLongitude()));
+    private Builder() {
     }
 
-    /**
-     * Construct a lat/lon bounding box from a string.
-     *
-     * @param spec "lat, lon, deltaLat, deltaLon"
-     * @see {@link LatLonRect.Builder(LatLonPoint, double, double)}
-     */
+    /** @deprecated use LatLonRect.builder(LatLonPoint p1, double deltaLat, double deltaLon), or
+     * new LatLonRect(LatLonPoint p1, double deltaLat, double deltaLon) */
+    @Deprecated
+    public Builder(LatLonPoint left, LatLonPoint right) {
+      this(left, right.getLatitude() - left.getLatitude(),
+              LatLonPoints.lonNormal360(right.getLongitude() - left.getLongitude()));
+    }
+
+    /** @deprecated use LatLonRect.builder(String spec) */
+    @Deprecated
     public Builder(String spec) {
       StringTokenizer stoker = new StringTokenizer(spec, " ,");
       int n = stoker.countTokens();
@@ -331,40 +421,38 @@ public class LatLonRect {
       init(LatLonPoint.create(lat, lon), deltaLat, deltaLon);
     }
 
-    /**
-     * Construct a lat/lon bounding box from a point, and a delta lat, lon. This disambiguates which way the box wraps
-     * around the globe.
-     *
-     * @param p1 one corner of the box
-     * @param deltaLat delta lat from p1. (may be positive or negetive)
-     * @param deltaLon delta lon from p1. (may be positive or negetive)
-     */
+    /** @deprecated use LatLonRect.builder(LatLonPoint p1, double deltaLat, double deltaLon), or
+     * new LatLonRect(LatLonPoint p1, double deltaLat, double deltaLon) */
+    @Deprecated
     public Builder(LatLonPoint p1, double deltaLat, double deltaLon) {
       init(p1, deltaLat, deltaLon);
     }
 
-    private void init(LatLonPoint p1, double deltaLat, double deltaLon) {
+    private Builder init(LatLonPoint p1, double deltaLat, double deltaLon) {
       double lonmin, lonmax;
       double latmin = Math.min(p1.getLatitude(), p1.getLatitude() + deltaLat);
       double latmax = Math.max(p1.getLatitude(), p1.getLatitude() + deltaLat);
+      while (deltaLon < 0) {
+        deltaLon += 360;
+      }
+      while (deltaLon > 360) {
+        deltaLon -= 360;
+      }
 
       double lonpt = p1.getLongitude();
-      if (deltaLon > 0) {
-        lonmin = lonpt;
-        lonmax = lonpt + deltaLon;
-        crossDateline = (lonmax > 180.0);
-      } else {
-        lonmax = lonpt;
-        lonmin = lonpt + deltaLon;
-        crossDateline = (lonmin < -180.0);
-      }
-      this.width = Math.abs(deltaLon);
+      lonmin = lonpt;
+      lonmax = lonpt + deltaLon;
+      crossDateline = (lonmax > 180.0);
+
+      this.width = deltaLon;
       this.allLongitudes = (this.width >= 360.0);
 
       this.llLat = latmin;
       this.llLon = LatLonPoints.lonNormal(lonmin);
       this.urLat = latmax;
       this.urLon = LatLonPoints.lonNormal(lonmax);
+
+      return this;
     }
 
     /** Start with a point, use extend() to add points. */

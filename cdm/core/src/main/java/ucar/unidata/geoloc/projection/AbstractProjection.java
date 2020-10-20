@@ -229,14 +229,14 @@ public abstract class AbstractProjection implements Projection {
     LatLonRect llbb;
 
     if (includesNorthPole && !includesSouthPole) {
-      LatLonRect.Builder builder = new LatLonRect.Builder(llpt, LatLonPoint.create(90.0, 0.0)); // ??? lon=???
+      LatLonRect.Builder builder = LatLonRect.builder(llpt, LatLonPoint.create(90.0, 0.0)); // ??? lon=???
       builder.extend(lrpt);
       builder.extend(urpt);
       builder.extend(ulpt);
       llbb = builder.build();
 
     } else if (includesSouthPole && !includesNorthPole) {
-      LatLonRect.Builder builder = new LatLonRect.Builder(llpt, LatLonPoint.create(-90.0, -180.0)); // ??? lon=???
+      LatLonRect.Builder builder = LatLonRect.builder(llpt, LatLonPoint.create(-90.0, -180.0)); // ??? lon=???
       builder.extend(lrpt);
       builder.extend(urpt);
       builder.extend(ulpt);
@@ -253,7 +253,7 @@ public abstract class AbstractProjection implements Projection {
       LatLonPoint ll = LatLonPoint.create(latMin, lonMin);
       LatLonPoint ur = LatLonPoint.create(latMax, lonMax);
 
-      llbb = new LatLonRect.Builder(ll, ur).build();
+      llbb = LatLonRect.builder(ll, ur).build();
     }
 
     return llbb;
