@@ -50,6 +50,6 @@ public class TestInterfaces {
     assertThat(namedThing.getValue() == thing).isTrue();
 
     assertThat(named instanceof NamedObject).isTrue();
-    assertThat(named.getClass()).isInstanceOf(NamedObject.class);
+    assertThat(named).isInstanceOf(NamedObject.class);
   }
 }
