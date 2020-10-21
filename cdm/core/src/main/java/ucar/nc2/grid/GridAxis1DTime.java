@@ -18,7 +18,6 @@ import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
-import ucar.nc2.util.NamedObject;
 
 import java.util.*;
 
@@ -228,17 +227,6 @@ public class GridAxis1DTime extends GridAxis1D {
 
     // otherwise return copy the original axis
     return Optional.of(this.toBuilder());
-  }
-
-  /** @deprecated will be moved in ver6 */
-  @Deprecated
-  @Override
-  public List<NamedObject> getCoordValueNames() {
-    List<NamedObject> result = new ArrayList<>();
-    for (int i = 0; i < cdates.size(); i++) {
-      result.add(NamedObject.create(cdates.get(i), getAxisType().toString()));
-    }
-    return result;
   }
 
   @Override

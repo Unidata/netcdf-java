@@ -10,7 +10,7 @@ package ucar.ui.table;
 import ucar.ui.widget.BAMutil;
 import ucar.ui.widget.MyMouseAdapter;
 import ucar.ui.widget.PopupMenu;
-import ucar.util.ListenerManager;
+import ucar.ui.util.ListenerManager;
 import ucar.util.prefs.PreferencesExt;
 import java.util.ArrayList;
 import java.util.HashSet;

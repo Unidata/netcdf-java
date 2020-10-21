@@ -44,7 +44,7 @@ import ucar.nc2.ui.grid.*;
 import ucar.nc2.ui.util.Renderer;
 import ucar.ui.widget.BAMutil;
 import ucar.nc2.ui.widget.ScaledPanel;
-import ucar.nc2.util.NamedObject;
+import ucar.ui.util.NamedObject;
 import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.ProjectionPoint;
 import ucar.unidata.geoloc.ProjectionRect;

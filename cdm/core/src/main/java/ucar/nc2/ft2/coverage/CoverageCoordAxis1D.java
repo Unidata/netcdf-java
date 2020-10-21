@@ -9,9 +9,7 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.Indent;
-import ucar.nc2.util.NamedObject;
 import java.util.Optional;
-import ucar.unidata.util.Format;
 import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
 import java.util.Formatter;
@@ -239,34 +237,6 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis { // implements Itera
     if (isInterval())
       return new double[] {getCoordEdge1(index), getCoordEdge2(index)};
     return getCoordMidpoint(index);
-  }
-
-  /** @deprecated will be moved in ver6 */
-  @Deprecated
-  public List<NamedObject> getCoordValueNames() {
-    loadValuesIfNeeded();
-    if (timeHelper != null)
-      return timeHelper.getCoordValueNames(this);
-
-    List<NamedObject> result = new ArrayList<>();
-    for (int i = 0; i < ncoords; i++) {
-      Object value = null;
-      switch (spacing) {
-        case regularPoint:
-        case irregularPoint:
-          value = Format.d(getCoordMidpoint(i), 3);
-          break;
-
-        case regularInterval:
-        case contiguousInterval:
-        case discontiguousInterval:
-          value = new CoordInterval(getCoordEdge1(i), getCoordEdge2(i), 3);
-          break;
-      }
-      result.add(NamedObject.create(value, value + " " + getUnits()));
-    }
-
-    return result;
   }
 
   @Override
@@ -504,7 +474,7 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis { // implements Itera
   // Look what about intervals ??
   private class MyIterator implements java.util.Iterator<Object> {
     private int current;
-    private int ncoords = getNcoords();
+    private final int ncoords = getNcoords();
 
     public boolean hasNext() {
       return current < ncoords;
