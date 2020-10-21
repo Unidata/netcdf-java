@@ -27,7 +27,6 @@ import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
 import ucar.nc2.ft2.coverage.GeoReferencedArray;
 import ucar.nc2.ft2.coverage.HorizCoordSys;
 import ucar.nc2.ft2.coverage.SubsetParams;
-import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
@@ -94,7 +93,7 @@ public class TestCoverageCurvilinear {
       Coverage coverage = gds.findCoverage(covName);
       Assert.assertNotNull(covName, coverage);
 
-      LatLonRect bbox = new LatLonRect.Builder(LatLonPoint.create(64.0, -61.), LatLonPoint.create(59.0, -52.)).build();
+      LatLonRect bbox = new LatLonRect(64.0, -61., 59.0, -52.);
 
       SubsetParams params = new SubsetParams().set(SubsetParams.timePresent, true).set(SubsetParams.latlonBB, bbox);
       GeoReferencedArray geo = coverage.readData(params);
@@ -194,8 +193,7 @@ public class TestCoverageCurvilinear {
       int[] expectedOrgShape = new int[] {85, 151, 171};
       assertThat(expectedOrgShape).isEqualTo(cs.getShape());
 
-      LatLonRect bbox =
-          new LatLonRect.Builder(LatLonPoint.create(43.489, -8.5353), LatLonPoint.create(43.371, -8.2420)).build();
+      LatLonRect bbox = new LatLonRect(43.489, -8.5353, 43.371, -8.2420);
 
       SubsetParams params = new SubsetParams().set(SubsetParams.timePresent, true).setLatLonBoundingBox(bbox);
       GeoReferencedArray geo = coverage.readData(params);
@@ -242,7 +240,7 @@ public class TestCoverageCurvilinear {
       logger.debug("org shape={}", Arrays.toString(cs.getShape()));
 
       // just try to bisect ot along the width
-      LatLonRect bbox = new LatLonRect.Builder(LatLonPoint.create(90, -180), LatLonPoint.create(-90, -90)).build();
+      LatLonRect bbox = new LatLonRect(90, -180, -90, -90);
 
       SubsetParams params = new SubsetParams().set(SubsetParams.timePresent, true).set(SubsetParams.latlonBB, bbox);
       GeoReferencedArray geo = coverage.readData(params);

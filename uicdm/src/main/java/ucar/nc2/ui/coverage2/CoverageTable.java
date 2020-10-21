@@ -18,63 +18,47 @@ import ucar.ui.prefs.BeanTable;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.*;
 import java.util.List;
 
-/**
- * Bean Table for GridCoverage
- *
- * @author John
- * @since 12/25/12
- */
+/** Bean Table for Coverage */
 public class CoverageTable extends JPanel {
-  private PreferencesExt prefs;
-  private FeatureDatasetCoverage coverageCollection;
+  private final PreferencesExt prefs;
 
-  private BeanTable dsTable, covTable, csysTable, axisTable;
-  private JSplitPane split, split2, split3;
-  private TextHistoryPane infoTA;
-  private IndependentWindow infoWindow;
+  private final BeanTable<DatasetBean> dsTable;
+  private final BeanTable<CoverageBean> covTable;
+  private final BeanTable<CoordSysBean> csysTable;
+  private final BeanTable<AxisBean> axisTable;
+  private final JSplitPane split, split2, split3;
+  private final TextHistoryPane infoTA;
+  private final IndependentWindow infoWindow;
+
+  private FeatureDatasetCoverage coverageCollection;
   private CoverageCollection currDataset;
 
   public CoverageTable(JPanel buttPanel, PreferencesExt prefs) {
     this.prefs = prefs;
 
-    dsTable = new BeanTable(DatasetBean.class, (PreferencesExt) prefs.node("DatasetBeans"), false, "CoverageDatasets",
+    dsTable = new BeanTable<>(DatasetBean.class, (PreferencesExt) prefs.node("DatasetBeans"), false, "CoverageDatasets",
         "ucar.nc2.ft2.coverage.CoverageDataset", null);
     dsTable.addListSelectionListener(e -> {
-      DatasetBean pb = (DatasetBean) dsTable.getSelectedBean();
+      DatasetBean pb = dsTable.getSelectedBean();
       if (pb != null) {
         currDataset = pb.cds;
         setDataset(pb.cds);
       }
     });
 
-    covTable = new BeanTable(CoverageBean.class, (PreferencesExt) prefs.node("CoverageBeans"), false, "Coverages",
+    covTable = new BeanTable<>(CoverageBean.class, (PreferencesExt) prefs.node("CoverageBeans"), false, "Coverages",
         "ucar.nc2.ft2.coverage.Coverage", new CoverageBean());
-    /*
-     * covTable.addListSelectionListener(e -> {
-     * CoverageBean bean = (CoverageBean) covTable.getSelectedBean();
-     * for (Object cbean : csysTable.getBeans()) {
-     * if (null != bean) { // find the coordinate system
-     * CoordSysBean csysBean = (CoordSysBean) cbean;
-     * if (csysBean.getName().equals(bean.coordSysName))
-     * csysTable.setSelectedBean(csysBean);
-     * }
-     * }
-     * });
-     */
 
-    csysTable = new BeanTable(CoordSysBean.class, (PreferencesExt) prefs.node("CoverageCoordSysBeans"), false,
+    csysTable = new BeanTable<>(CoordSysBean.class, (PreferencesExt) prefs.node("CoverageCoordSysBeans"), false,
         "CoverageCoordSys", "ucar.nc2.ft2.coverage.CoverageCoordSys", null);
     csysTable.addListSelectionListener(e -> {
-      CoordSysBean bean = (CoordSysBean) csysTable.getSelectedBean();
+      CoordSysBean bean = csysTable.getSelectedBean();
       if (null != bean) { // find the coverages
-        List result = new ArrayList();
-        for (Object cbean : covTable.getBeans()) {
-          CoverageBean covBean = (CoverageBean) cbean;
+        List<CoverageBean> result = new ArrayList<>();
+        for (CoverageBean covBean : covTable.getBeans()) {
           if (covBean.getCoordSysName().equals(bean.getName()))
             result.add(covBean);
         }
@@ -82,7 +66,7 @@ public class CoverageTable extends JPanel {
       }
     });
 
-    axisTable = new BeanTable(AxisBean.class, (PreferencesExt) prefs.node("CoverageCoordAxisBeans"), false,
+    axisTable = new BeanTable<>(AxisBean.class, (PreferencesExt) prefs.node("CoverageCoordAxisBeans"), false,
         "CoverageCoordAxes", "ucar.nc2.ft2.coverage.CoverageCoordAxis", null);
 
     // the info window
@@ -110,7 +94,7 @@ public class CoverageTable extends JPanel {
     PopupMenu dsPopup = new ucar.ui.widget.PopupMenu(jtable, "Options");
     dsPopup.addAction("Show", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        DatasetBean bean = (DatasetBean) dsTable.getSelectedBean();
+        DatasetBean bean = dsTable.getSelectedBean();
         infoTA.clear();
         infoTA.appendLine(bean.cds.toString());
         infoTA.gotoTop();
@@ -122,7 +106,7 @@ public class CoverageTable extends JPanel {
     PopupMenu csPopup = new ucar.ui.widget.PopupMenu(jtable, "Options");
     csPopup.addAction("Show Declaration", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        CoverageBean vb = (CoverageBean) covTable.getSelectedBean();
+        CoverageBean vb = covTable.getSelectedBean();
         infoTA.clear();
         infoTA.appendLine(vb.geogrid.toString());
         infoTA.gotoTop();
@@ -134,7 +118,7 @@ public class CoverageTable extends JPanel {
     csPopup = new ucar.ui.widget.PopupMenu(jtable, "Options");
     csPopup.addAction("Show CoordSys", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        CoordSysBean bean = (CoordSysBean) csysTable.getSelectedBean();
+        CoordSysBean bean = csysTable.getSelectedBean();
         infoTA.clear();
         infoTA.appendLine(bean.gcs.toString());
         infoTA.gotoTop();
@@ -143,7 +127,7 @@ public class CoverageTable extends JPanel {
     });
     csPopup.addAction("Show Transforms", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        CoordSysBean bean = (CoordSysBean) csysTable.getSelectedBean();
+        CoordSysBean bean = csysTable.getSelectedBean();
         infoTA.clear();
         for (CoverageTransform ct : bean.gcs.getTransforms())
           if (!ct.isHoriz())
@@ -162,7 +146,7 @@ public class CoverageTable extends JPanel {
     csPopup = new ucar.ui.widget.PopupMenu(jtable, "Options");
     csPopup.addAction("Show Axis", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        AxisBean bean = (AxisBean) axisTable.getSelectedBean();
+        AxisBean bean = axisTable.getSelectedBean();
         infoTA.clear();
         infoTA.appendLine(bean.axis.toString());
         infoTA.gotoTop();
@@ -171,7 +155,7 @@ public class CoverageTable extends JPanel {
     });
     csPopup.addAction("Show Coord Value differences", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        AxisBean bean = (AxisBean) axisTable.getSelectedBean();
+        AxisBean bean = axisTable.getSelectedBean();
         infoTA.clear();
         infoTA.appendLine(bean.showCoordValueDiffs());
         infoTA.gotoTop();
@@ -247,14 +231,13 @@ public class CoverageTable extends JPanel {
   }
 
   public List<CoverageBean> getCoverageBeans() {
-    return (List<CoverageBean>) covTable.getBeans();
+    return covTable.getBeans();
   }
 
   public List<String> getSelectedGrids() {
-    List grids = covTable.getSelectedBeans();
+    List<CoverageBean> grids = covTable.getSelectedBeans();
     List<String> result = new ArrayList<>();
-    for (Object bean : grids) {
-      CoverageBean gbean = (CoverageBean) bean;
+    for (CoverageBean gbean : grids) {
       result.add(gbean.getName());
     }
     return result;
@@ -594,24 +577,10 @@ public class CoverageTable extends JPanel {
       super(parent instanceof Frame ? (Frame) parent : null, title, modal);
 
       // L&F may change
-      UIManager.addPropertyChangeListener(new PropertyChangeListener() {
-        public void propertyChange(PropertyChangeEvent e) {
-          if (e.getPropertyName().equals("lookAndFeel"))
-            SwingUtilities.updateComponentTreeUI(CoverageTable.Dialog.this);
-        }
+      UIManager.addPropertyChangeListener(e -> {
+        if (e.getPropertyName().equals("lookAndFeel"))
+          SwingUtilities.updateComponentTreeUI(Dialog.this);
       });
-
-      /*
-       * add a dismiss button
-       * JButton dismissButton = new JButton("Dismiss");
-       * buttPanel.add(dismissButton, null);
-       * 
-       * dismissButton.addActionListener(new ActionListener() {
-       * public void actionPerformed(ActionEvent evt) {
-       * setVisible(false);
-       * }
-       * });
-       */
 
       // add it to contentPane
       Container cp = getContentPane();

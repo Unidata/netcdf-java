@@ -28,26 +28,17 @@ import java.io.StringWriter;
 import java.util.Formatter;
 import javax.swing.AbstractButton;
 import javax.swing.JOptionPane;
-import javax.swing.JSplitPane;
 
-/**
- *
- */
 public class CoveragePanel extends OpPanel {
-
   private static final org.slf4j.Logger logger =
       org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  private CoverageTable dsTable;
+  private final CoverageTable dsTable;
   private CoverageViewer display;
-  private JSplitPane split;
   private IndependentWindow viewerWindow;
 
   private FeatureDatasetCoverage covDatasetCollection;
 
-  /**
-   *
-   */
   public CoveragePanel(PreferencesExt prefs) {
     super(prefs, "dataset:", true, false);
     dsTable = new CoverageTable(buttPanel, prefs);
@@ -76,13 +67,8 @@ public class CoveragePanel extends OpPanel {
       detailWindow.show();
     });
     buttPanel.add(infoButton);
-
-    // dsTable.addExtra(buttPanel, fileChooser);
   }
 
-  /**
-   *
-   */
   private void makeDisplay() {
     viewerWindow = new IndependentWindow("Coverage Viewer", BAMutil.getImage("nj22/NetcdfUI"));
 
@@ -103,7 +89,6 @@ public class CoveragePanel extends OpPanel {
     viewerWindow.setBounds(bounds);
   }
 
-  /** */
   @Override
   public boolean process(Object o) {
     String command = (String) o;
@@ -142,9 +127,6 @@ public class CoveragePanel extends OpPanel {
     return !err;
   }
 
-  /**
-   *
-   */
   public void setDataset(FeatureDataset fd) {
     if (fd == null) {
       return;
@@ -163,7 +145,6 @@ public class CoveragePanel extends OpPanel {
     setSelectedItem(fd.getLocation());
   }
 
-  /** */
   @Override
   public void closeOpenFiles() throws IOException {
     if (covDatasetCollection != null) {
@@ -173,7 +154,6 @@ public class CoveragePanel extends OpPanel {
     dsTable.clear();
   }
 
-  /** */
   @Override
   public void save() {
     super.save();

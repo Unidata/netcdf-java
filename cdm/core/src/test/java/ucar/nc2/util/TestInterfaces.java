@@ -49,7 +49,7 @@ public class TestInterfaces {
     assertThat(namedThing.getDescription()).isEqualTo("descr");
     assertThat(namedThing.getValue() == thing).isTrue();
 
+    assertThat(named instanceof NamedObject).isTrue();
+    assertThat(named).isInstanceOf(NamedObject.class);
   }
-
-
 }

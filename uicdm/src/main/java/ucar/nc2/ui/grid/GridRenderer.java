@@ -303,9 +303,10 @@ public class GridRenderer {
     int wanty = valueIndex[1];
 
     // get value, construct the string
-    if ((wantx == -1) || (wanty == -1))
+    if ((wantx == -1) || (wanty == -1)) {
+      valueIndex = geocs.findXYindexFromCoord(loc.getX(), loc.getY(), valueIndex);
       return "outside grid area";
-    else {
+    } else {
       try {
         Index imaH = dataH.getIndex();
         double value = dataH.getDouble(imaH.set(wanty, wantx));

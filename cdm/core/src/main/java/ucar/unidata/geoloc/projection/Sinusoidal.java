@@ -363,6 +363,6 @@ public class Sinusoidal extends AbstractProjection {
       maxLon = Math.max(maxLon, latLonPoint.getLongitude());
     }
 
-    return new LatLonRect.Builder(LatLonPoint.create(minLat, minLon), LatLonPoint.create(maxLat, maxLon)).build();
+    return new LatLonRect(minLat, minLon, maxLat, maxLon);
   }
 }

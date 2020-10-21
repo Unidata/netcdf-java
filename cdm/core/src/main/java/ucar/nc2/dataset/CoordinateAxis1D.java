@@ -404,7 +404,6 @@ public class CoordinateAxis1D extends CoordinateAxis {
      * }
      * }
      */
-
     double distance = coordValue - this.start;
     double exactNumSteps = distance / this.increment;
     int index = (int) Math.round(exactNumSteps);

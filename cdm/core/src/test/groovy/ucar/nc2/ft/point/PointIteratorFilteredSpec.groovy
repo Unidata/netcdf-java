@@ -13,7 +13,6 @@ import ucar.nc2.ft.PointFeatureIterator
 import ucar.nc2.time.CalendarDate
 import ucar.nc2.time.CalendarDateRange
 import ucar.nc2.time.CalendarDateUnit
-import ucar.unidata.geoloc.LatLonPoint
 import ucar.unidata.geoloc.LatLonRect
 
 /**
@@ -32,8 +31,7 @@ class PointIteratorFilteredSpec extends Specification {
         double latMax = +50.0
         double lonMin = -60.0
         double lonMax = +10.0
-        LatLonRect filter_bb = new LatLonRect.Builder(
-                LatLonPoint.create(latMin, lonMin), LatLonPoint.create(latMax, lonMax)).build()
+        LatLonRect filter_bb = new LatLonRect(latMin, lonMin, latMax, lonMax);
 
         and: "time range"
         CalendarDateUnit calDateUnit = CalendarDateUnit.of("standard", "days since 1970-01-01 00:00:00")

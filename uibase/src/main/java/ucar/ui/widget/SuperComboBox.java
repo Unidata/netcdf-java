@@ -41,7 +41,7 @@ import ucar.ui.event.ActionValueListener;
 import ucar.ui.table.JTableSorted;
 import ucar.ui.table.TableRow;
 import ucar.ui.table.TableRowAbstract;
-import ucar.util.NamedObject;
+import ucar.nc2.util.NamedObject;
 import ucar.ui.prefs.Field;
 import ucar.ui.prefs.PrefPanel;
 

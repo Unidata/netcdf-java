@@ -8,6 +8,9 @@ apply plugin: 'groovy'  // For Spock tests.
 dependencies {
   compile enforcedPlatform(project(':netcdf-java-platform'))
 
+  // putting this back in for now, need NamedObject.
+  compile project(':cdm:cdm-core')
+
   compile 'org.jdom:jdom2'
   compile 'com.google.protobuf:protobuf-java'
   compile 'com.google.guava:guava'

@@ -1,7 +1,6 @@
 package ucar.nc2.ft2.coverage
 
 import spock.lang.Specification
-import ucar.unidata.geoloc.LatLonPoint
 import ucar.unidata.geoloc.LatLonRect
 import ucar.unidata.geoloc.ProjectionPoint
 import ucar.unidata.geoloc.ProjectionRect
@@ -199,7 +198,7 @@ class HorizCoordSysCrossSeamBoundarySpec extends Specification {
         and: "declare expected bounding box"
         // Derived by manually finding the minimum and maximum lat & lon values of the expected points in the
         // "calcConnectedLatLonBoundaryPoints() - lat/lon 1D" test.
-        LatLonRect expectedBB = new LatLonRect.Builder(LatLonPoint.create(0, 130), LatLonPoint.create(50, 230)).build()
+        LatLonRect expectedBB = new LatLonRect(0, 130, 50, 230);
         
         expect: "expected equals actual"
         expectedBB == actualBB
@@ -215,8 +214,7 @@ class HorizCoordSysCrossSeamBoundarySpec extends Specification {
         and: "declare expected bounding box"
         // Derived by manually finding the minimum and maximum lat & lon values of the expected points in the
         // "calcConnectedLatLonBoundaryPoints() - projection" test.
-        LatLonRect expectedBB = new LatLonRect.Builder(
-                LatLonPoint.create(43.3711, -261.5014), LatLonPoint.create(84.6159, -116.5346)).build()
+        LatLonRect expectedBB = new LatLonRect(43.3711, -261.5014, 84.6159, -116.5346);
     
         expect: "expected equals actual"
         expectedBB.nearlyEquals(actualBB)
@@ -232,8 +230,7 @@ class HorizCoordSysCrossSeamBoundarySpec extends Specification {
         and: "declare expected bounding box"
         // Derived by manually finding the minimum and maximum lat & lon values of the expected points in the
         // "calcConnectedLatLonBoundaryPoints() - lat/lon 2D" test.
-        LatLonRect expectedBB = new LatLonRect.Builder(
-                LatLonPoint.create(44.8740, -252.9728), LatLonPoint.create(85.1317, -106.0074)).build()
+        LatLonRect expectedBB = new LatLonRect(44.8740, -252.9728, 85.1317, -106.0074);
         
         expect: "expected equals actual"
         expectedBB.nearlyEquals(actualBB)

@@ -276,8 +276,7 @@ public class StationRegionDateChooser extends NPController {
         double minLat = minLatField.getDouble();
         double maxLon = maxLonField.getDouble();
         double maxLat = maxLatField.getDouble();
-        LatLonRect llbb =
-            new LatLonRect.Builder(LatLonPoint.create(minLat, minLon), LatLonPoint.create(maxLat, maxLon)).build();
+        LatLonRect llbb = new LatLonRect(minLat, minLon, maxLat, maxLon);
         setGeoSelection(llbb);
         redraw();
       });

@@ -11,6 +11,8 @@ import ucar.nc2.Attribute;
 import ucar.nc2.dataset.VariableDS;
 import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.geoloc.ProjectionRect;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -210,6 +212,10 @@ public interface GridDatatype extends IsMissingEvaluator, Comparable<GridDatatyp
    * @return the Grid's Coordinate System.
    */
   GridCoordSystem getCoordinateSystem();
+
+  default ProjectionRect getBoundingBox() {
+    return getCoordinateSystem().getBoundingBox();
+  }
 
   /**
    * get the Projection, if it exists.

@@ -15,6 +15,8 @@ import ucar.nc2.AttributeContainerMutable;
 import ucar.nc2.Dimension;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.util.Indent;
+import ucar.unidata.geoloc.ProjectionRect;
+
 import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.Formatter;
@@ -121,6 +123,10 @@ public class Coverage implements VariableSimpleIF, IsMissingEvaluator {
   @Nonnull
   public CoverageCoordSys getCoordSys() {
     return coordSys;
+  }
+
+  public ProjectionRect getBoundingBox() {
+    return getCoordSys().getHorizCoordSys().calcProjectionBoundingBox();
   }
 
   ///////////////////////////////////////////////////////////////

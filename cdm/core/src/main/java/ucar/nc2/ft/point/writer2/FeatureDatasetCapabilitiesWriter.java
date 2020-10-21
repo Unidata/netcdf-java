@@ -230,7 +230,7 @@ public class FeatureDatasetCapabilitiesWriter {
       double east = Double.parseDouble(eastS);
       double south = Double.parseDouble(southS);
       double north = Double.parseDouble(northS);
-      return new LatLonRect.Builder(LatLonPoint.create(south, east), LatLonPoint.create(north, west)).build();
+      return new LatLonRect(south, east, north, west);
 
     } catch (Exception e) {
       return null;

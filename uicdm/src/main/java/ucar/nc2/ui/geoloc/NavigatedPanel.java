@@ -118,6 +118,7 @@ public class NavigatedPanel extends JPanel {
   private ProjectionRect geoSelection;
   private boolean geoSelectionMode, moveSelectionMode;
   private RubberbandRectangleHandles selectionRB;
+  private ProjectionRect homeMapArea;
 
   // event management
   private ListenerManager lmPick;
@@ -149,7 +150,6 @@ public class NavigatedPanel extends JPanel {
     // default navigation and projection
     navigate = new Navigation(this);
     project = new LatLonProjection("Cyl.Eq"); // default projection
-    // navigate.setMapArea(project.getDefaultMapArea());
 
     // toolbar actions
     makeActions();
@@ -319,10 +319,14 @@ public class NavigatedPanel extends JPanel {
     navigate.setMapArea(ma);
   }
 
+  /** Set the Map Area. */
+  public void setMapAreaHome(ProjectionRect ma) {
+    this.homeMapArea = ma;
+    navigate.setMapArea(ma);
+  }
+
   /** Set the Map Area by converting LatLonRect to a ProjectionRect. */
   public void setMapArea(LatLonRect llbb) {
-    if (debugBB)
-      System.out.println("NP.setMapArea (ll) " + llbb);
     navigate.setMapArea(project.latLonToProjBB(llbb));
   }
 
@@ -368,7 +372,6 @@ public class NavigatedPanel extends JPanel {
 
     // switch projections
     project = p;
-    // navigate.setMapArea(project.getDefaultMapArea());
     if (Debug.isSet("projection/set") || debugNewProjection)
       System.out.println("projection/set NP=" + project);
 
@@ -376,7 +379,6 @@ public class NavigatedPanel extends JPanel {
     if (hasReference) {
       refWorld = project.latLonToProj(refLatLon);
     }
-
   }
 
   /**
@@ -1046,8 +1048,10 @@ public class NavigatedPanel extends JPanel {
 
     zoomDefault = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        // navigate.setMapArea(project.getDefaultMapArea());
-        drawG();
+        if (homeMapArea != null) {
+          navigate.setMapArea(homeMapArea);
+          drawG();
+        }
       }
     };
     BAMutil.setActionProperties(zoomDefault, "Home", "Home map area", false, 'H', KeyEvent.VK_HOME);

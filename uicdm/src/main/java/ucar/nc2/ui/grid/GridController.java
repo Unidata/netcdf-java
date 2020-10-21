@@ -14,7 +14,6 @@ import java.awt.geom.Point2D;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Formatter;
 import java.util.List;
@@ -158,7 +157,6 @@ public class GridController {
 
   // stuff to do after UI is complete
   void finishInit() {
-
     // some widgets from the GridUI
     np = ui.panz;
     vertPanel = ui.vertPanel;
@@ -167,8 +165,9 @@ public class GridController {
 
     // get last saved Projection
     project = (Projection) store.getBean(LastProjectionName, null);
-    if (project != null)
+    if (project != null) {
       setProjection(project);
+    }
 
     // get last saved MapArea
     ProjectionRect ma = (ProjectionRect) store.getBean(LastMapAreaName, null);
@@ -176,14 +175,6 @@ public class GridController {
       np.setMapArea(ma);
 
     makeEventManagement();
-
-    // last thing
-    /*
-     * get last dataset filename and reopen it
-     * String filename = (String) store.get(LastDatasetName);
-     * if (filename != null)
-     * setDataset(filename);
-     */
   }
 
   void start(boolean ok) {
@@ -199,8 +190,9 @@ public class GridController {
     dataProjectionAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Projection dataProjection = renderGrid.getDataProjection();
-        if (null != dataProjection)
+        if (null != dataProjection) {
           setProjection(dataProjection);
+        }
       }
     };
     BAMutil.setActionProperties(dataProjectionAction, "nj22/DataProjection", "use Data Projection", false, 'D', 0);
@@ -700,12 +692,15 @@ public class GridController {
     ui.setFields(gridDataset.getGrids());
     setField(currentField);
 
-    // if possible, change the projection and the map area to one that fits this
-    // dataset
+    // if possible, change the projection and the map area to one that fits this dataset
     Projection dataProjection = currentField.getProjection();
-    if (dataProjection != null)
+    if (dataProjection != null) {
       setProjection(dataProjection);
-
+    }
+    ProjectionRect fieldBB = currentField.getBoundingBox();
+    if (fieldBB != null) {
+      np.setMapArea(fieldBB);
+    }
     // ready to draw
     // draw(true);
 
