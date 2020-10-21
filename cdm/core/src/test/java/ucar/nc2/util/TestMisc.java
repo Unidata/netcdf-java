@@ -83,5 +83,4 @@ public class TestMisc {
     assertThat(f.toString()).isEqualTo(String.format("compareFloat: length 1=   3 != length 2=  2%n"));
   }
 
-
 }

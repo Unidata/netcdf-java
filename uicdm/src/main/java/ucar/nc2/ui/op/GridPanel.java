@@ -5,7 +5,6 @@
 
 package ucar.nc2.ui.op;
 
-import ucar.nc2.ft2.coverage.FeatureDatasetCoverage;
 import ucar.nc2.grid.GridDataset;
 import ucar.nc2.grid.GridDatasetFactory;
 import ucar.nc2.ui.OpPanel;
@@ -68,7 +67,7 @@ public class GridPanel extends OpPanel {
   }
 
   private void makeDisplay() {
-    viewerWindow = new IndependentWindow("Coverage Viewer", BAMutil.getImage("nj22/NetcdfUI"));
+    viewerWindow = new IndependentWindow("GridNew Viewer", BAMutil.getImage("nj22/NetcdfUI"));
 
     gridViewer = new GridViewer((PreferencesExt) prefs.node("CoverageDisplay"), viewerWindow, fileChooser, 800);
     gridViewer.addMapBean(new WorldMapBean());
@@ -126,9 +125,6 @@ public class GridPanel extends OpPanel {
 
   public void setDataset(GridDataset fd) {
     if (fd == null) {
-      return;
-    }
-    if (!(fd instanceof FeatureDatasetCoverage)) {
       return;
     }
 

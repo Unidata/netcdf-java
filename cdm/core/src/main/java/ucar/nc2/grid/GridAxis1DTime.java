@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 import ucar.ma2.RangeIterator;
-import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.ft2.coverage.SubsetParams;
@@ -231,26 +230,14 @@ public class GridAxis1DTime extends GridAxis1D {
     return Optional.of(this.toBuilder());
   }
 
-  public List<NamedObject> getCoordValueNames(GridAxis1D axis) {
+  /** @deprecated will be moved in ver6 */
+  @Deprecated
+  @Override
+  public List<NamedObject> getCoordValueNames() {
     List<NamedObject> result = new ArrayList<>();
-    for (int i = 0; i < axis.getNcoords(); i++) {
-      double value;
-      switch (axis.getSpacing()) {
-        case regularPoint:
-        case irregularPoint:
-          value = axis.getCoordMidpoint(i);
-          result.add(NamedObject.create(makeDate(value), axis.getAxisType().toString()));
-          break;
-
-        case regularInterval:
-        case contiguousInterval:
-        case discontiguousInterval:
-          CoordInterval coord = CoordInterval.create(axis.getCoordEdge1(i), axis.getCoordEdge2(i), 3);
-          result.add(NamedObject.create(coord, coord + " " + axis.getUnits()));
-          break;
-      }
+    for (int i = 0; i < cdates.size(); i++) {
+      result.add(NamedObject.create(cdates.get(i), getAxisType().toString()));
     }
-
     return result;
   }
 

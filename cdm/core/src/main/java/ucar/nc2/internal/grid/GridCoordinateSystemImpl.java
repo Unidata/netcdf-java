@@ -344,11 +344,7 @@ class GridCoordinateSystemImpl implements GridCoordinateSystem {
               axis1D.getCoordEdge2(i) - axis1D.getCoordEdge1(i));
         }
       }
-    } /*
-       * else {
-       * f.format("%s", Ncdump.printVariableData(axis., null));
-       * }
-       */
+    }
     f.format(" %s%n", axis.getUnits());
   }
 

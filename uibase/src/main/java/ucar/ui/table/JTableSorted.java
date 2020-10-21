@@ -13,7 +13,7 @@ import ucar.ui.event.UIChangeListener;
 import ucar.ui.widget.BAMutil;
 import ucar.ui.widget.PopupMenu;
 import ucar.util.ListenerManager;
-import ucar.util.NamedObject;
+import ucar.nc2.util.NamedObject;
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import javax.swing.event.ListSelectionListener;

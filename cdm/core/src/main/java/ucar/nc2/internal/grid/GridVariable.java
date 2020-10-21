@@ -62,6 +62,11 @@ public class GridVariable implements Grid {
   }
 
   @Override
+  public String toString() {
+    return vds.getShortName();
+  }
+
+  @Override
   public GridReferencedArray readData(SubsetParams subset) throws IOException, InvalidRangeException {
     GridCoordinateSystem orgCoordSys = this.cs;
     Formatter errlog = new Formatter();
@@ -100,6 +105,8 @@ public class GridVariable implements Grid {
    */
   public Array<Double> readDataSection(Section section, boolean canonicalOrder)
       throws IOException, InvalidRangeException {
+
+
 
     /*
      * get the ranges list in the order of the variable; a null range means "all" to vs.read()
