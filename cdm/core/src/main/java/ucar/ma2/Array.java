@@ -330,6 +330,9 @@ public abstract class Array {
       if (dtype == DataType.STRING) {
         dataI.setObjectNext(s);
 
+      } else if (dtype == DataType.OPAQUE) {
+        dataI.setObjectNext(ByteBuffer.wrap(s.getBytes()));
+
       } else if (dtype == DataType.LONG) {
         if (dtype.isUnsigned()) {
           BigInteger biggy = new BigInteger(s);
@@ -341,8 +344,13 @@ public abstract class Array {
         }
 
       } else { // this works for other numerics (LOOK not unsigned)
-        double val = Double.parseDouble(s);
-        dataI.setDoubleNext(val);
+        try {
+          double val = Double.parseDouble(s);
+          dataI.setDoubleNext(val);
+        } catch (NumberFormatException e) {
+          System.out.printf("NumberFormatException '%s'", s);
+          throw e;
+        }
       }
     }
     return result;

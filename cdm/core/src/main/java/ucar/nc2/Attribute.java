@@ -69,20 +69,8 @@ public class Attribute {
     Preconditions.checkNotNull(Strings.emptyToNull(name), "Attribute name cannot be empty or null");
     this.name = NetcdfFiles.makeValidCdmObjectName(name);
     this.dataType = DataType.STRING;
-
-    if (val != null) {
-      // get rid of trailing nul characters
-      int len = val.length();
-      while ((len > 0) && (val.charAt(len - 1) == 0)) {
-        len--;
-      }
-      if (len != val.length()) {
-        val = val.substring(0, len);
-      }
-    }
-
     this.nelems = 1;
-    this.svalue = val;
+    this.svalue = stripZeroes(val);
     this.enumtype = null;
     this.nvalue = null;
     this.values = null;
@@ -408,6 +396,22 @@ public class Attribute {
     return result;
   }
 
+  // get rid of trailing nul characters
+  private static String stripZeroes(String s) {
+    if (s == null) {
+      return null;
+    }
+    // get rid of trailing nul characters
+    int len = s.length();
+    while ((len > 0) && (s.charAt(len - 1) == 0)) {
+      len--;
+    }
+    if (len != s.length()) {
+      s = s.substring(0, len);
+    }
+    return s;
+  }
+
   ///////////////////////////////////////////////////////////////////////////////
 
   private final String name;
@@ -420,7 +424,7 @@ public class Attribute {
 
   private Attribute(Builder builder) {
     this.name = builder.name;
-    this.svalue = builder.svalue;
+    this.svalue = stripZeroes(builder.svalue);
     this.nvalue = builder.nvalue;
     this.dataType = builder.dataType;
     this.enumtype = builder.enumtype;
@@ -501,14 +505,6 @@ public class Attribute {
      */
     public Builder setStringValue(String svalue) {
       Preconditions.checkNotNull(svalue, "Attribute value cannot be null");
-
-      // get rid of trailing nul characters
-      int len = svalue.length();
-      while ((len > 0) && (svalue.charAt(len - 1) == 0))
-        len--;
-      if (len != svalue.length())
-        svalue = svalue.substring(0, len);
-
       this.svalue = svalue;
       this.nelems = 1;
       this.dataType = DataType.STRING;
@@ -520,8 +516,9 @@ public class Attribute {
      * Integer, Float, Double, Short, Long, Integer, Byte.
      */
     public Builder setValues(List<Object> values, boolean unsigned) {
-      if (values == null || values.isEmpty())
+      if (values == null || values.isEmpty()) {
         throw new IllegalArgumentException("values may not be null or empty");
+      }
       int n = values.size();
       Class<?> c = values.get(0).getClass();
       Object pa;
@@ -530,7 +527,7 @@ public class Attribute {
         String[] va = new String[n];
         pa = va;
         for (int i = 0; i < n; i++) {
-          va[i] = (String) values.get(i);
+          va[i] = stripZeroes((String) values.get(i));
         }
       } else if (c == Integer.class) {
         this.dataType = unsigned ? DataType.UINT : DataType.INT;

@@ -25,7 +25,8 @@ import org.jdom2.Namespace;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.XMLOutputter;
 import ucar.array.Arrays;
-import ucar.ma2.Array;
+import ucar.array.Array;
+import ucar.array.ArraysConvert;
 import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
@@ -609,7 +610,7 @@ public class NcmlReader {
         System.out.println(" add new att = " + name);
       }
       try {
-        ucar.ma2.Array values = readAttributeValues(attElem);
+        Array<?> values = readAttributeValues(attElem);
         dest.addAttribute(Attribute.fromArray(name, values));
       } catch (RuntimeException e) {
         errlog.format("NcML new Attribute Exception: %s att=%s in=%s%n", e.getMessage(), name, refName);
@@ -623,7 +624,7 @@ public class NcmlReader {
       boolean hasValue = attElem.getAttribute("value") != null;
       if (hasValue) { // has a new value
         try {
-          ucar.ma2.Array values = readAttributeValues(attElem); // Handles "isUnsigned".
+          Array<?> values = readAttributeValues(attElem); // Handles "isUnsigned".
           dest.addAttribute(Attribute.fromArray(name, values));
         } catch (RuntimeException e) {
           errlog.format("NcML existing Attribute Exception: %s att=%s in=%s%n", e.getMessage(), name, refName);
@@ -631,9 +632,9 @@ public class NcmlReader {
         }
 
       } else { // use the old values
-        Array oldval = oldatt.getValues();
+        Array<?> oldval = oldatt.getArrayValues();
         if (oldval != null) {
-          dest.addAttribute(Attribute.builder(name).setValues(oldatt.getValues()).build());
+          dest.addAttribute(Attribute.builder(name).setArrayValues(oldval).build());
         } else { // weird corner case of attribute with no value - must use the type
           String unS = attElem.getAttributeValue("isUnsigned"); // deprecated but must deal with
           boolean isUnsignedSet = "true".equalsIgnoreCase(unS);
@@ -653,7 +654,6 @@ public class NcmlReader {
           System.out.println(" remove old att = " + nameInFile);
         }
       }
-
     }
   }
 
@@ -664,7 +664,7 @@ public class NcmlReader {
    * @return Array with parsed values
    * @throws IllegalArgumentException if string values not parsable to specified data type
    */
-  public static ucar.ma2.Array readAttributeValues(Element s) throws IllegalArgumentException {
+  public static Array<?> readAttributeValues(Element s) throws IllegalArgumentException {
     String valString = s.getAttributeValue("value");
 
     // can also be element text
@@ -694,7 +694,8 @@ public class NcmlReader {
     if ((sep == null) && (dtype == DataType.STRING)) {
       List<String> list = new ArrayList<>();
       list.add(valString);
-      return Array.makeArray(dtype, list);
+      ucar.ma2.Array old = ucar.ma2.Array.makeArray(dtype, list);
+      return ArraysConvert.convertToArray(old);
     }
 
     if (sep == null) {
@@ -707,7 +708,8 @@ public class NcmlReader {
       stringValues.add(tokn.nextToken());
     }
 
-    return Array.makeArray(dtype, stringValues);
+    ucar.ma2.Array old = ucar.ma2.Array.makeArray(dtype, stringValues);
+    return ArraysConvert.convertToArray(old);
   }
 
   private ucar.nc2.Attribute findAttribute(AttributeContainer atts, String name) {
@@ -1243,7 +1245,7 @@ public class NcmlReader {
 
       } else {
         List<String> valList = getTokens(values, sep);
-        Array data = Array.makeArray(dtype, valList);
+        ucar.ma2.Array data = ucar.ma2.Array.makeArray(dtype, valList);
         if (v.getDimensions().size() != 1) { // dont have to reshape for rank 1
           data = data.reshape(Dimensions.makeShape(v.getDimensions()));
         }

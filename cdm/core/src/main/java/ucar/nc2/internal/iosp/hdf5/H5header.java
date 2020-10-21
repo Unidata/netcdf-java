@@ -1782,7 +1782,8 @@ public class H5header implements HdfHeaderIF {
           tinfo.unsigned = mdt.base.unsigned;
         }
       } else if (hdfType == 10) { // array : used for structure members
-        tinfo.endian = mdt.endian;
+        // mdt.getFlags uses the base type if it exists
+        tinfo.endian = (mdt.getFlags()[0] & 1) == 0 ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN;
         if (mdt.isVString()) {
           tinfo.dataType = DataType.STRING;
         } else {
