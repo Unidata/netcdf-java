@@ -256,7 +256,7 @@ entries:
       output: web, pdf
 
     - title: NetCDF Subset Service
-      url: subset_service.html
+      external_url: https://docs.unidata.ucar.edu/tds/current/userguide/netcdf_subset_service_ref.html
       output: web, pdf
 
     - title: netCDF C Library
