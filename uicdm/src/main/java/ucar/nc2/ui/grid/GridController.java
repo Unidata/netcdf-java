@@ -44,12 +44,12 @@ import ucar.nc2.ui.geoloc.PickEventListener;
 import ucar.nc2.ui.util.Renderer;
 import ucar.ui.widget.BAMutil;
 import ucar.nc2.ui.widget.ScaledPanel;
-import ucar.nc2.util.NamedObject;
 import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.ProjectionPoint;
 import ucar.unidata.geoloc.ProjectionRect;
 import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.Debug;
+import ucar.ui.util.NamedObject;
 
 /**
  * The controller manages the interactions between GRID data and renderers.

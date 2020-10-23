@@ -12,7 +12,8 @@ import ucar.nc2.ui.geoloc.NavigatedPanel;
 import ucar.nc2.ui.geoloc.ProjectionManager;
 import ucar.nc2.ui.gis.MapBean;
 import ucar.nc2.ui.grid.ColorScale;
-import ucar.nc2.util.NamedObject;
+import ucar.nc2.ui.util.NamedObjects;
+import ucar.ui.util.NamedObject;
 import ucar.ui.event.ActionCoordinator;
 import ucar.ui.event.ActionSourceListener;
 import ucar.ui.event.ActionValueEvent;
@@ -836,7 +837,7 @@ public class GridViewer extends JPanel {
 
     // set runtimes
     if (this.dataState.rtaxis != null) {
-      runtimeNames = this.dataState.rtaxis.getCoordValueNames();
+      runtimeNames = NamedObjects.getNames(this.dataState.rtaxis);
       currentRunTime = !runtimeNames.isEmpty() ? 0 : -1;
       if ((currentRunTime < 0) || (currentRunTime >= runtimeNames.size()))
         currentRunTime = 0;
@@ -861,7 +862,7 @@ public class GridViewer extends JPanel {
     // set times
     boolean hasDependentTimeAxis;
     if (this.dataState.taxis != null) {
-      timeNames = this.dataState.taxis.getCoordValueNames();
+      timeNames = NamedObjects.getNames(this.dataState.taxis);
       if ((currentTime < 0) || (currentTime >= timeNames.size()))
         currentTime = 0;
       hasDependentTimeAxis = true;
@@ -879,7 +880,7 @@ public class GridViewer extends JPanel {
 
     // set ensembles
     if (this.dataState.ensaxis != null) {
-      ensembleNames = this.dataState.ensaxis.getCoordValueNames();
+      ensembleNames = NamedObjects.getNames(this.dataState.ensaxis);
       currentEnsemble = !ensembleNames.isEmpty() ? 0 : -1;
       if ((currentEnsemble < 0) || (currentEnsemble >= ensembleNames.size()))
         currentEnsemble = 0;
@@ -897,7 +898,7 @@ public class GridViewer extends JPanel {
 
     // set levels
     if (this.dataState.zaxis != null) {
-      levelNames = this.dataState.zaxis.getCoordValueNames();
+      levelNames = NamedObjects.getNames(this.dataState.zaxis);
       if ((currentLevel < 0) || (currentLevel >= levelNames.size()))
         currentLevel = 0;
       // vertPanel.setCoordSys(currentField.getCoordinateSystem(), currentLevel);

@@ -8,10 +8,7 @@ import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.time.*;
-import ucar.nc2.util.NamedObject;
 import javax.annotation.concurrent.Immutable;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Helper class for Time coordinate axes
@@ -67,32 +64,6 @@ public class TimeHelper {
   // get offset from runDate, in units of dateUnit
   public double offsetFromRefDate(CalendarDate date) {
     return dateUnit.makeOffsetFromRefDate(date);
-  }
-
-  /** @deprecated will be moved in ver6 */
-  @Deprecated
-  public List<NamedObject> getCoordValueNames(CoverageCoordAxis1D axis) {
-    axis.loadValuesIfNeeded();
-    List<NamedObject> result = new ArrayList<>();
-    for (int i = 0; i < axis.getNcoords(); i++) {
-      double value;
-      switch (axis.getSpacing()) {
-        case regularPoint:
-        case irregularPoint:
-          value = axis.getCoordMidpoint(i);
-          result.add(NamedObject.create(makeDate(value), axis.getAxisType().toString()));
-          break;
-
-        case regularInterval:
-        case contiguousInterval:
-        case discontiguousInterval:
-          CoordInterval coord = new CoordInterval(axis.getCoordEdge1(i), axis.getCoordEdge2(i), 3);
-          result.add(NamedObject.create(coord, coord + " " + axis.getUnits()));
-          break;
-      }
-    }
-
-    return result;
   }
 
   public CalendarDate getRefDate() {

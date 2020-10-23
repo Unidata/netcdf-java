@@ -6,6 +6,7 @@
 package ucar.nc2.ui.coverage2;
 
 import ucar.nc2.ft2.coverage.*;
+import ucar.nc2.ui.util.NamedObjects;
 import ucar.ui.event.ActionCoordinator;
 import ucar.ui.event.ActionSourceListener;
 import ucar.ui.event.ActionValueEvent;
@@ -13,7 +14,7 @@ import ucar.nc2.ui.geoloc.*;
 import ucar.nc2.ui.gis.MapBean;
 import ucar.nc2.ui.grid.*;
 import ucar.ui.widget.*;
-import ucar.nc2.util.NamedObject;
+import ucar.ui.util.NamedObject;
 import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.ProjectionRect;
 import ucar.unidata.geoloc.projection.LatLonProjection;
@@ -713,7 +714,7 @@ public class CoverageViewer extends JPanel {
           if (dataState.taxis2D != null) {
             // CoverageCoordAxis1D taxis = dataState.taxis2D.getTimeAxisForRun((CalendarDate) dataValue);
             dataState.taxis = dataState.taxis2D.getTimeAxisForRun(currentRunTime);
-            timeNames = dataState.taxis.getCoordValueNames();
+            timeNames = NamedObjects.getNames(dataState.taxis);
             timeChooser.setCollection(timeNames.iterator());
             if (currentTime >= timeNames.size())
               currentTime = 0;
@@ -917,7 +918,7 @@ public class CoverageViewer extends JPanel {
 
     // set runtimes
     if (this.dataState.rtaxis != null) {
-      runtimeNames = this.dataState.rtaxis.getCoordValueNames();
+      runtimeNames = NamedObjects.getNames(this.dataState.rtaxis);
       currentRunTime = !runtimeNames.isEmpty() ? 0 : -1;
       if ((currentRunTime < 0) || (currentRunTime >= runtimeNames.size()))
         currentRunTime = 0;
@@ -940,7 +941,7 @@ public class CoverageViewer extends JPanel {
     // set times
     boolean hasDependentTimeAxis;
     if (this.dataState.taxis != null) {
-      timeNames = this.dataState.taxis.getCoordValueNames();
+      timeNames = NamedObjects.getNames(this.dataState.taxis);
       if ((currentTime < 0) || (currentTime >= timeNames.size()))
         currentTime = 0;
       hasDependentTimeAxis = true;
@@ -958,7 +959,7 @@ public class CoverageViewer extends JPanel {
 
     // set ensembles
     if (this.dataState.ensaxis != null) {
-      ensembleNames = this.dataState.ensaxis.getCoordValueNames();
+      ensembleNames = NamedObjects.getNames(this.dataState.ensaxis);
       currentEnsemble = !ensembleNames.isEmpty() ? 0 : -1;
       if ((currentEnsemble < 0) || (currentEnsemble >= ensembleNames.size()))
         currentEnsemble = 0;
@@ -976,7 +977,7 @@ public class CoverageViewer extends JPanel {
 
     // set levels
     if (this.dataState.zaxis != null) {
-      levelNames = this.dataState.zaxis.getCoordValueNames();
+      levelNames = NamedObjects.getNames(this.dataState.zaxis);
       if ((currentLevel < 0) || (currentLevel >= levelNames.size()))
         currentLevel = 0;
       // vertPanel.setCoordSys(currentField.getCoordinateSystem(), currentLevel);

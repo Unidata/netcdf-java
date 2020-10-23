@@ -15,8 +15,6 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.nc2.util.Indent;
-import ucar.nc2.util.NamedObject;
-import ucar.unidata.util.Format;
 
 import javax.annotation.concurrent.Immutable;
 import java.util.*;
@@ -208,32 +206,6 @@ public class GridAxis1D extends GridAxis {
     if (isInterval())
       return new double[] {getCoordEdge1(index), getCoordEdge2(index)};
     return getCoordMidpoint(index);
-  }
-
-  /** @deprecated will be moved in ver6 */
-  @Deprecated
-  public List<NamedObject> getCoordValueNames() {
-    loadValuesIfNeeded();
-
-    List<NamedObject> result = new ArrayList<>();
-    for (int i = 0; i < ncoords; i++) {
-      Object value = null;
-      switch (spacing) {
-        case regularPoint:
-        case irregularPoint:
-          value = Format.d(getCoordMidpoint(i), 3);
-          break;
-
-        case regularInterval:
-        case contiguousInterval:
-        case discontiguousInterval:
-          value = CoordInterval.create(getCoordEdge1(i), getCoordEdge2(i), 3);
-          break;
-      }
-      result.add(NamedObject.create(value, value + " " + getUnits()));
-    }
-
-    return result;
   }
 
   @Override

@@ -4,7 +4,7 @@
  */
 package ucar.ui.event;
 
-import ucar.util.ListenerManager;
+import ucar.ui.util.ListenerManager;
 
 /**
  * ActionSourceListeners are used by objects that are both source and listener for
