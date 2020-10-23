@@ -14,7 +14,7 @@ import ucar.nc2.grid.Grid;
 import ucar.nc2.grid.GridAxis;
 import ucar.nc2.grid.GridDataset;
 import ucar.nc2.grid.GridCoordinateSystem;
-import ucar.nc2.util.NamedObject;
+import ucar.ui.util.NamedObject;
 import ucar.ui.prefs.BeanTable;
 import ucar.ui.widget.BAMutil;
 import ucar.ui.widget.IndependentWindow;

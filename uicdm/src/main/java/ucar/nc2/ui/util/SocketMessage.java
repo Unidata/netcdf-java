@@ -6,6 +6,7 @@ package ucar.nc2.ui.util;
 
 import java.nio.charset.StandardCharsets;
 import ucar.nc2.util.IO;
+import ucar.ui.util.ListenerManager;
 import java.net.*;
 import java.io.*;
 

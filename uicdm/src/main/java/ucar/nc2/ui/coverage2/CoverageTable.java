@@ -12,7 +12,7 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft2.coverage.*;
 import ucar.ui.widget.*;
 import ucar.ui.widget.PopupMenu;
-import ucar.nc2.util.NamedObject;
+import ucar.ui.util.NamedObject;
 import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.BeanTable;
 import javax.swing.*;

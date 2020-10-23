@@ -9,7 +9,6 @@ import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
-import ucar.nc2.util.NamedObject;
 import ucar.nc2.dataset.*;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.util.Format;
@@ -311,24 +310,6 @@ public class GeoGrid implements ucar.nc2.dt.GridDatatype {
    */
   public Projection getProjection() {
     return gcs.getProjection();
-  }
-
-  /**
-   * @return ArrayList of thredds.util.NamedObject, from the GridCoordSys.
-   * @deprecated will move in ver 6
-   */
-  @Deprecated
-  public List<NamedObject> getLevels() {
-    return gcs.getLevels();
-  }
-
-  /**
-   * @return ArrayList of thredds.util.NamedObject, from the GridCoordSys.
-   * @deprecated will move in ver 6
-   */
-  @Deprecated
-  public List<NamedObject> getTimes() {
-    return gcs.getTimes();
   }
 
   /**

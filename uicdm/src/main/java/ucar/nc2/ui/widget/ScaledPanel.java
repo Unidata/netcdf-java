@@ -8,7 +8,7 @@ import ucar.nc2.ui.geoloc.CursorMoveEvent;
 import ucar.nc2.ui.geoloc.CursorMoveEventListener;
 import ucar.nc2.ui.geoloc.PickEvent;
 import ucar.nc2.ui.geoloc.PickEventListener;
-import ucar.nc2.ui.util.ListenerManager;
+import ucar.ui.util.ListenerManager;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;

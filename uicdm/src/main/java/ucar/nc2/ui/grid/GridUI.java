@@ -9,6 +9,7 @@ import thredds.client.catalog.Dataset;
 import thredds.client.catalog.tools.DataFactory;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.CoordinateAxis1D;
+import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
@@ -21,7 +22,7 @@ import ucar.nc2.ui.util.Renderer;
 import ucar.ui.widget.*;
 import ucar.ui.widget.PopupMenu;
 import ucar.ui.widget.ProgressMonitor;
-import ucar.nc2.util.NamedObject;
+import ucar.ui.util.NamedObject;
 import ucar.unidata.geoloc.Projection;
 import ucar.util.prefs.PreferencesExt;
 import javax.swing.*;
@@ -279,7 +280,7 @@ public class GridUI extends JPanel {
       axis = gcs.hasTimeAxis1D() ? gcs.getTimeAxis1D() : gcs.getTimeAxisForRun(0);
       setChooserWanted("time", axis != null);
       if (axis != null) {
-        List<NamedObject> names = NamedObjects.getNames(axis);
+        List<NamedObject> names = NamedObjects.getNames((CoordinateAxis1DTime) axis);
         timeChooser.setCollection(names.iterator(), true);
         NamedObject no = names.get(controller.getCurrentTimeIndex());
         timeChooser.setSelectedByName(no.getName());
@@ -300,7 +301,7 @@ public class GridUI extends JPanel {
     axis = gcs.getRunTimeAxis();
     setChooserWanted("runtime", axis != null);
     if (axis != null) {
-      List<NamedObject> names = NamedObjects.getNames(axis);
+      List<NamedObject> names = NamedObjects.getNames((CoordinateAxis1DTime) axis);
       runtimeChooser.setCollection(names.iterator(), true);
       NamedObject no = names.get(controller.getCurrentRunTimeIndex());
       runtimeChooser.setSelectedByName(no.getName());

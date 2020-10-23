@@ -36,7 +36,7 @@ public class TestNcmlWriteAndCompareProblem {
   /////////////////////////////////////////////////////////////
   boolean showFiles = true;
   boolean compareData = false;
-  String location = TestDir.cdmUnitTestDir + "/formats/netcdf4/files/tst_grps.nc4";
+  String location = TestDir.cdmUnitTestDir + "formats/netcdf4/files/tst_opaque_data.nc4";
 
   @Test
   public void compareProblemFile() throws IOException {

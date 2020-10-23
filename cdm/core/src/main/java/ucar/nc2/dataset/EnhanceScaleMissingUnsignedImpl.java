@@ -157,9 +157,11 @@ public class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsig
     Attribute fillValueAtt = forVar.attributes().findAttribute(CDM.FILL_VALUE);
     if (fillValueAtt != null && !fillValueAtt.isString()) {
       DataType fillType = getAttributeDataType(fillValueAtt);
-      fillValue = convertUnsigned(fillValueAtt.getNumericValue(), fillType).doubleValue();
-      fillValue = applyScaleOffset(fillValue); // This will fail when _FillValue is CHAR.
-      hasFillValue = true;
+      if (fillType.isNumeric()) {
+        fillValue = convertUnsigned(fillValueAtt.getNumericValue(), fillType).doubleValue();
+        fillValue = applyScaleOffset(fillValue); // This will fail when _FillValue is CHAR.
+        hasFillValue = true;
+      }
     } else {
       // No _FillValue attribute found. Instead, use NetCDF default fill value.
       if (unsignedConversionType.isNumeric()) {

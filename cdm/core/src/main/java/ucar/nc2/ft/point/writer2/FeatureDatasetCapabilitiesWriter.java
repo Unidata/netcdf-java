@@ -19,6 +19,7 @@ import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
+import ucar.array.Array;
 import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
@@ -37,7 +38,6 @@ import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.write.NcmlWriter;
-import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
 
@@ -318,7 +318,7 @@ public class FeatureDatasetCapabilitiesWriter {
       List<Element> attElems = velem.getChildren("attribute");
       for (Element attElem : attElems) {
         String attName = attElem.getAttributeValue("name");
-        ucar.ma2.Array values = NcmlReader.readAttributeValues(attElem);
+        Array<?> values = NcmlReader.readAttributeValues(attElem);
         atts.add(Attribute.fromArray(attName, values));
       }
 
