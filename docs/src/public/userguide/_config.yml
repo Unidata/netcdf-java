@@ -5,6 +5,9 @@ output: web
 docset_version: 5.4
 # this will appear in an HTML meta tag, sidebar, and perhaps elsewhere
 
+tds_docset_version: 5.0
+# this will appear in the sidebar and doc pages
+
 topnav_title: netCDF-Java
 # this appears on the top navigation bar next to the home button
 
