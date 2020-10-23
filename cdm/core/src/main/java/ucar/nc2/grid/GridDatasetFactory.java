@@ -4,13 +4,15 @@ import com.google.common.collect.Iterables;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.internal.grid.GridDatasetImpl;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.Formatter;
 import java.util.Optional;
 
 public class GridDatasetFactory {
 
-  public static Optional<GridDataset> openGridDataset(String endpoint, Formatter errLog) throws IOException {
+  @Nullable
+  public static GridDataset openGridDataset(String endpoint, Formatter errLog) throws IOException {
     NetcdfDataset ds = ucar.nc2.dataset.NetcdfDatasets.openDataset(endpoint);
 
     Optional<GridDatasetImpl> result =
@@ -18,10 +20,10 @@ public class GridDatasetFactory {
 
     if (!result.isPresent()) {
       errLog.format("Could not open as GridDataset: %s", endpoint);
-      return Optional.empty();
+      return null;
     }
 
-    return Optional.of(result.get());
+    return result.get();
   }
 
 }

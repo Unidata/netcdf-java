@@ -4,6 +4,7 @@
  */
 package ucar.nc2.grid;
 
+import com.google.common.base.Objects;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
@@ -11,7 +12,7 @@ import ucar.nc2.time.*;
 
 import javax.annotation.concurrent.Immutable;
 
-/** Helper class for Time coordinate axes */
+/** Helper class for time GridAxis . Should be package private */
 @Immutable
 public class TimeHelper {
 
@@ -35,20 +36,14 @@ public class TimeHelper {
 
   //////////////////////////////////////////////
 
-  // final Calendar cal;
   final CalendarDateUnit dateUnit;
-  // final CalendarDate refDate;
-  // final double duration;
 
   private TimeHelper(CalendarDateUnit dateUnit) {
-    // this.cal = cal;
     this.dateUnit = dateUnit;
-    // this.refDate = dateUnit.getBaseCalendarDate();
-    // this.duration = dateUnit.getTimeUnit().getValueInMillisecs();
   }
 
   // copy on modify
-  public TimeHelper setReferenceDate(CalendarDate refDate) {
+  public TimeHelper changeReferenceDate(CalendarDate refDate) {
     CalendarDateUnit cdUnit = CalendarDateUnit.of(dateUnit.getCalendar(), dateUnit.getCalendarField(), refDate);
     return new TimeHelper(cdUnit);
   }
@@ -107,4 +102,18 @@ public class TimeHelper {
     return CalendarDateFormatter.isoStringToCalendarDate(dateUnit.getCalendar(), offset);
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
+    TimeHelper that = (TimeHelper) o;
+    return Objects.equal(dateUnit, that.dateUnit);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(dateUnit);
+  }
 }

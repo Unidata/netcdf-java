@@ -5,7 +5,6 @@
 package ucar.nc2.grid;
 
 import ucar.ma2.InvalidRangeException;
-import ucar.nc2.ft2.coverage.SubsetParams;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -15,7 +14,7 @@ public interface GridReader extends Closeable {
 
   String getLocation();
 
-  GridReferencedArray readData(Grid grid, SubsetParams subset, boolean canonicalOrder)
+  GridReferencedArray readData(Grid grid, GridSubset subset, boolean canonicalOrder)
       throws IOException, InvalidRangeException;
 
 }

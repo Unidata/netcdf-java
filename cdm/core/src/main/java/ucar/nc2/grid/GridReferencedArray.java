@@ -21,11 +21,12 @@ public abstract class GridReferencedArray {
 
   public abstract DataType dataType();
 
-  public abstract Array<Double> data();
+  // not reduced
+  public abstract Array<Number> data();
 
   public abstract GridCoordinateSystem csSubset();
 
-  public static GridReferencedArray create(String coverageName, DataType dataType, Array<Double> data,
+  public static GridReferencedArray create(String coverageName, DataType dataType, Array<Number> data,
       GridCoordinateSystem csSubset) {
     return new AutoValue_GridReferencedArray(coverageName, dataType, data, csSubset);
   }

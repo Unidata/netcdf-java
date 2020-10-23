@@ -2,6 +2,7 @@ package ucar.nc2.grid;
 
 import java.io.Closeable;
 import java.util.Formatter;
+import java.util.Optional;
 
 public interface GridDataset extends Closeable {
 
@@ -15,7 +16,7 @@ public interface GridDataset extends Closeable {
 
   Iterable<Grid> getGrids();
 
-  Grid findGrid(String name);
+  Optional<Grid> findGrid(String name);
 
   void toString(Formatter f);
 

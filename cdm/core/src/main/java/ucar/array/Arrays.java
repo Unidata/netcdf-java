@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.google.auto.value.AutoValue;
+import com.google.common.base.Preconditions;
 import ucar.ma2.*;
 
 /** Static helper classes for {@link Array} */
@@ -497,18 +498,33 @@ public class Arrays {
     }
   }
 
-  public static MinMax getMinMaxSkipMissingData(Array<Double> a, IsMissingEvaluator eval) {
+  public static MinMax getMinMaxSkipMissingData(Array<? extends Number> a, IsMissingEvaluator eval) {
+    Preconditions.checkNotNull(a);
     boolean hasEval = (eval == null || !eval.hasMissing());
     double max = -Double.MAX_VALUE;
     double min = Double.MAX_VALUE;
-    for (double val : a) {
-      if (hasEval && eval.isMissing(val)) {
-        continue;
+    if (a instanceof ArrayDouble) {
+      ArrayDouble ad = (ArrayDouble) a;
+      for (double val : ad) {
+        if (hasEval && eval.isMissing(val)) {
+          continue;
+        }
+        if (val > max)
+          max = val;
+        if (val < min)
+          min = val;
       }
-      if (val > max)
-        max = val;
-      if (val < min)
-        min = val;
+    } else {
+      for (Number number : a) {
+        double val = number.doubleValue();
+        if (hasEval && eval.isMissing(val)) {
+          continue;
+        }
+        if (val > max)
+          max = val;
+        if (val < min)
+          min = val;
+      }
     }
     return MinMax.create(min, max);
   }

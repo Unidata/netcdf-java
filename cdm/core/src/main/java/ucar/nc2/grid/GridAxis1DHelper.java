@@ -29,7 +29,7 @@ class GridAxis1DHelper {
    * 
    * @param target interval in this coordinate system
    * @param bounded if true, always return a valid index. otherwise can return < 0 or > n-1
-   * @return index of grid point containing it, or < 0 or > n-1 if outside grid area
+   * @return index of grid point containing it, or < 0 or > n-1 if outside grid area<?>
    */
   int findCoordElement(double[] target, boolean bounded) {
     switch (orgGrid.getSpacing()) {
@@ -329,13 +329,13 @@ class GridAxis1DHelper {
   }
 
   public GridAxis1D.Builder<?> subsetClosest(CalendarDate date) {
-    double want = ((GridAxis1DTime) orgGrid).convert(date);
+    double want = ((GridAxis1DTime) orgGrid).makeValue(date);
     return isDiscontiguousInterval() ? subsetClosestDiscontiguousInterval(date) : subsetValuesClosest(want);
   }
 
   private GridAxis1D.Builder<?> subsetClosestDiscontiguousInterval(CalendarDate date) {
     // this is specific to dates
-    double target = ((GridAxis1DTime) orgGrid).convert(date);
+    double target = ((GridAxis1DTime) orgGrid).makeValue(date);
 
     double maxDateToSearch = 0;
     int intervals = 0;
@@ -361,25 +361,24 @@ class GridAxis1DHelper {
     }
 
     // if multipleIntervalBuilder exists, return it. Otherwise fallback to subsetValuesClosest.
-    return multipleIntervalBuilder.orElseGet(() -> subsetValuesClosest(((GridAxis1DTime) orgGrid).convert(date)));
+    return multipleIntervalBuilder.orElseGet(() -> subsetValuesClosest(((GridAxis1DTime) orgGrid).makeValue(date)));
   }
 
   public GridAxis1D.Builder<?> subsetClosest(CalendarDate[] date) {
     double[] want = new double[2];
-    want[0] = ((GridAxis1DTime) orgGrid).convert(date[0]);
-    want[1] = ((GridAxis1DTime) orgGrid).convert(date[1]);
+    want[0] = ((GridAxis1DTime) orgGrid).makeValue(date[0]);
+    want[1] = ((GridAxis1DTime) orgGrid).makeValue(date[1]);
     return subsetValuesClosest(want);
   }
 
   public Optional<GridAxis1D.Builder<?>> subset(CalendarDateRange dateRange, int stride, Formatter errLog) {
-    double min = ((GridAxis1DTime) orgGrid).convert(dateRange.getStart());
-    double max = ((GridAxis1DTime) orgGrid).convert(dateRange.getEnd());
+    double min = ((GridAxis1DTime) orgGrid).makeValue(dateRange.getStart());
+    double max = ((GridAxis1DTime) orgGrid).makeValue(dateRange.getEnd());
     return subsetValues(min, max, stride, errLog);
   }
 
   // LOOK could specialize when only one point
   private Optional<GridAxis1D.Builder<?>> subsetValues(double minValue, double maxValue, int stride, Formatter errLog) {
-
     double lower = orgGrid.isAscending() ? Math.min(minValue, maxValue) : Math.max(minValue, maxValue);
     double upper = orgGrid.isAscending() ? Math.max(minValue, maxValue) : Math.min(minValue, maxValue);
 
@@ -519,6 +518,7 @@ class GridAxis1DHelper {
   private GridAxis1D.Builder<?> subsetValuesClosest(double want) {
     int closest_index = findCoordElement(want, true); // bounded, always valid index
     GridAxis1D.Builder<?> builder = orgGrid.toBuilder();
+    builder.subsetIndex(closest_index);
 
     if (orgGrid.spacing == GridAxis.Spacing.regularPoint) {
       double val = orgGrid.getCoordMidpoint(closest_index);
@@ -530,7 +530,7 @@ class GridAxis1DHelper {
       builder.subset(1, val1, val2, val2 - val1, null);
 
     } else {
-      builder.subset(1, 0, 0, 0.0, makeValues(closest_index));
+      builder.subsetIndex(closest_index);
     }
 
     try {
@@ -538,6 +538,7 @@ class GridAxis1DHelper {
     } catch (InvalidRangeException e) {
       throw new RuntimeException(e); // cant happen
     }
+
     return builder;
   }
 
@@ -560,7 +561,7 @@ class GridAxis1DHelper {
     return Optional.of(builder);
   }
 
-  private GridAxis1D.Builder subsetValuesLatest() {
+  private GridAxis1D.Builder<?> subsetValuesLatest() {
     int last = orgGrid.getNcoords() - 1;
     double val = orgGrid.getCoordMidpoint(last);
 

@@ -4,6 +4,7 @@
  */
 package ucar.nc2.grid;
 
+import com.google.common.base.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.array.Array;
@@ -15,9 +16,9 @@ import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.VariableDS;
-import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.nc2.util.Indent;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.*;
 
@@ -29,10 +30,10 @@ public abstract class GridAxis implements Comparable<GridAxis> {
     regularPoint, // regularly spaced points (start, end, npts), start and end are pts, edges halfway between coords,
                   // resol = (start - end) / (npts-1)
     irregularPoint, // irregular spaced points (values, npts), edges halfway between coords
-    regularInterval, // regular contiguous intervals (start, end, npts), start and end are edges, resol = (start - end)
-                     // / npts
-    contiguousInterval, // irregular contiguous intervals (values, npts), values are the edges, values[npts+1], coord
-                        // halfway between edges
+    regularInterval, // regular contiguous intervals (start, end, npts), start and end are edges,
+                     // resol = (start - end) / npts
+    contiguousInterval, // irregular contiguous intervals (values, npts), values are the edges, values[npts+1],
+                        // coord halfway between edges
     discontiguousInterval // irregular discontiguous spaced intervals (values, npts), values are the edges,
                           // values[2*npts]: low0, high0, low1, high1, ...
   }
@@ -46,19 +47,14 @@ public abstract class GridAxis implements Comparable<GridAxis> {
     dimension // swath(scan, scanAcross)
   }
 
-  @Override
-  public int compareTo(GridAxis o) {
-    return axisType.axisOrder() - o.axisType.axisOrder();
-  }
-
-  // create a subset of this axis based on the SubsetParams. return copy if no subset requested, or params = null
-  public abstract Optional<GridAxis> subset(SubsetParams params, Formatter errlog);
-
-  // called from HorizCoordSys
-  public abstract Optional<GridAxis> subset(double minValue, double maxValue, int stride, Formatter errLog);
+  // create a subset of this axis based on the SubsetParams.
+  // TODO throw an Exception when subset fails?
+  @Nullable
+  public abstract GridAxis subset(GridSubset params, Formatter errlog);
 
   // called only on dependent axes. pass in independent axis
-  public abstract Optional<GridAxis> subsetDependent(GridAxis1D dependsOn, Formatter errlog);
+  @Nullable
+  public abstract GridAxis subsetDependent(GridAxis1D dependsOn, Formatter errlog);
 
   public abstract Array<Double> getCoordsAsArray();
 
@@ -68,6 +64,14 @@ public abstract class GridAxis implements Comparable<GridAxis> {
 
   public String getName() {
     return name;
+  }
+
+  public String getUnits() {
+    return units;
+  }
+
+  public String getDescription() {
+    return description;
   }
 
   public DataType getDataType() {
@@ -94,7 +98,12 @@ public abstract class GridAxis implements Comparable<GridAxis> {
     return (spacing == Spacing.regularPoint) || (spacing == Spacing.regularInterval);
   }
 
-  // Same as increment, used when isRegular
+  public boolean isInterval() {
+    return spacing == Spacing.regularInterval || spacing == Spacing.contiguousInterval
+        || spacing == Spacing.discontiguousInterval;
+  }
+
+  // When isRegular, same as increment, otherwise an average = (end - start) / npts
   public double getResolution() {
     return resolution;
   }
@@ -107,14 +116,6 @@ public abstract class GridAxis implements Comparable<GridAxis> {
     return endValue;
   }
 
-  public String getUnits() {
-    return units;
-  }
-
-  public String getDescription() {
-    return description;
-  }
-
   public DependenceType getDependenceType() {
     return dependenceType;
   }
@@ -123,14 +124,7 @@ public abstract class GridAxis implements Comparable<GridAxis> {
     return dependenceType == DependenceType.scalar;
   }
 
-  public String getDependsOn() {
-    Formatter result = new Formatter();
-    for (String name : dependsOn)
-      result.format("%s ", name);
-    return result.toString().trim();
-  }
-
-  public List<String> getDependsOnList() {
+  public List<String> getDependsOn() {
     return dependsOn;
   }
 
@@ -138,23 +132,12 @@ public abstract class GridAxis implements Comparable<GridAxis> {
     return values != null;
   }
 
+  // LOOK maybe subset should return different class, since you cant subset a subset?
   public boolean isSubset() {
     return isSubset;
   }
 
-  public boolean isInterval() {
-    return spacing == Spacing.regularInterval || spacing == Spacing.contiguousInterval
-        || spacing == Spacing.discontiguousInterval;
-  }
-
-  @Override
-  public String toString() {
-    Formatter f = new Formatter();
-    Indent indent = new Indent(2);
-    toString(f, indent);
-    return f.toString();
-  }
-
+  // LOOK what is this?
   public RangeIterator getRangeIterator() {
     if (getDependenceType() == GridAxis.DependenceType.scalar)
       return Range.EMPTY;
@@ -164,6 +147,41 @@ public abstract class GridAxis implements Comparable<GridAxis> {
     } catch (InvalidRangeException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  @Override
+  public int compareTo(GridAxis o) {
+    return axisType.axisOrder() - o.axisType.axisOrder();
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
+    GridAxis gridAxis = (GridAxis) o;
+    return ncoords == gridAxis.ncoords && Double.compare(gridAxis.startValue, startValue) == 0
+        && Double.compare(gridAxis.endValue, endValue) == 0 && Double.compare(gridAxis.resolution, resolution) == 0
+        && Objects.equal(name, gridAxis.name) && Objects.equal(description, gridAxis.description)
+        && Objects.equal(units, gridAxis.units) && dataType == gridAxis.dataType && axisType == gridAxis.axisType
+        && Objects.equal(attributes, gridAxis.attributes) && dependenceType == gridAxis.dependenceType
+        && Objects.equal(dependsOn, gridAxis.dependsOn) && spacing == gridAxis.spacing
+        && Objects.equal(reader, gridAxis.reader) && Objects.equal(values, gridAxis.values);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(name, description, units, dataType, axisType, attributes, dependenceType, dependsOn,
+        ncoords, spacing, startValue, endValue, resolution, reader, values);
+  }
+
+  @Override
+  public String toString() {
+    Formatter f = new Formatter();
+    Indent indent = new Indent(2);
+    toString(f, indent);
+    return f.toString();
   }
 
   public void toString(Formatter f, Indent indent) {
@@ -219,8 +237,15 @@ public abstract class GridAxis implements Comparable<GridAxis> {
   }
 
   ///////////////////////////////////////////////
+  // LOOK needed, or is it done all in the builder??
 
   private boolean valuesLoaded;
+
+  // will return null when isRegular, otherwise reads values if needed
+  public double[] getValues() {
+    // cant allow values array to escape, must be immutable
+    return values == null ? null : Arrays.copyOf(values, values.length);
+  }
 
   protected void loadValuesIfNeeded() {
     synchronized (this) {
@@ -229,18 +254,11 @@ public abstract class GridAxis implements Comparable<GridAxis> {
       if (values == null && reader != null)
         try {
           values = reader.readCoordValues(this);
-        } catch (IOException e) {
+        } catch (IOException e) { // TODO
           logger.error("Failed to read " + name, e);
         }
       valuesLoaded = true;
     }
-  }
-
-  // will return null when isRegular, otherwise reads values if needed
-  public double[] getValues() {
-    loadValuesIfNeeded();
-    // cant allow values array to escape, must be immutable
-    return values == null ? null : Arrays.copyOf(values, values.length);
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -259,8 +277,8 @@ public abstract class GridAxis implements Comparable<GridAxis> {
   protected final double startValue;
   protected final double endValue;
   protected final double resolution;
-  protected final GridAxisReader reader;
-  protected double[] values; // null if isRegular, or use GridAxisReader for lazy eval
+  protected final GridAxisReader reader; // LOOK when is this needed?
+  protected double[] values; // null if isRegular, or use reader for lazy eval
 
   protected final boolean isSubset;
 
@@ -319,8 +337,9 @@ public abstract class GridAxis implements Comparable<GridAxis> {
   public static abstract class Builder<T extends Builder<T>> {
     private String name;
     private String description;
+    private String units;
     private DataType dataType;
-    protected AxisType axisType; // ucar.nc2.constants.AxisType ordinal
+    AxisType axisType; // ucar.nc2.constants.AxisType ordinal
     private AttributeContainer attributes;
     DependenceType dependenceType;
     private ArrayList<String> dependsOn; // independent axes or dimensions
@@ -333,12 +352,8 @@ public abstract class GridAxis implements Comparable<GridAxis> {
     GridAxisReader reader;
     boolean isSubset;
 
-    private String units;
-
     // may be lazy eval
     protected double[] values; // null if isRegular, or use CoordAxisReader for lazy eval
-
-    private boolean built;
 
     protected abstract T self();
 

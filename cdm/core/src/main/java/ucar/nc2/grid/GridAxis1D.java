@@ -4,22 +4,21 @@
  */
 package ucar.nc2.grid;
 
-import com.google.common.collect.ImmutableList;
+import com.google.common.base.Objects;
 import ucar.array.Array;
 import ucar.array.Arrays;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 import ucar.ma2.RangeComposite;
 import ucar.ma2.RangeIterator;
-import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.VariableDS;
-import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.nc2.util.Indent;
 
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.*;
 
-/** Grid CoordAxis 1D case */
+/** Grid CoordAxis 1D concrete case */
 @Immutable
 public class GridAxis1D extends GridAxis {
 
@@ -49,6 +48,23 @@ public class GridAxis1D extends GridAxis {
     if (getDependenceType() == GridAxis.DependenceType.scalar)
       return new int[0];
     return new int[] {ncoords};
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
+    if (!super.equals(o))
+      return false;
+    GridAxis1D that = (GridAxis1D) o;
+    return Objects.equal(range, that.range) && Objects.equal(crange, that.crange);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(super.hashCode(), range, crange);
   }
 
   @Override
@@ -194,147 +210,152 @@ public class GridAxis1D extends GridAxis {
     return Arrays.factory(getDataType(), new int[] {ncoords, 2}, vals);
   }
 
+  /*
+   * CalendarDate, double[2], or Double
+   * public Object getCoordObject(int index) {
+   * if (isInterval())
+   * return new double[] {getCoordEdge1(index), getCoordEdge2(index)};
+   * return getCoordMidpoint(index);
+   * }
+   */
+
+  /*
+   * only for longitude, only for regular (do we need a subclass for longitude 1D coords ??
+   * public Optional<GridAxis1D> subsetByIntervals(List<Arrays.MinMax> lonIntvs, int stride, Formatter errLog) {
+   * if (axisType != AxisType.Lon) {
+   * errLog.format("subsetByIntervals only for longitude");
+   * return Optional.empty();
+   * }
+   * if (!isRegular()) {
+   * errLog.format("subsetByIntervals only for regular longitude");
+   * return Optional.empty();
+   * }
+   * 
+   * // adjust the resolution of the subset based on stride
+   * double subsetResolution = stride > 1 ? stride * resolution : resolution;
+   * 
+   * GridAxis1DHelper helper = new GridAxis1DHelper(this);
+   * 
+   * double start = Double.NaN;
+   * boolean first = true;
+   * List<RangeIterator> ranges = new ArrayList<>();
+   * for (Arrays.MinMax lonIntv : lonIntvs) {
+   * if (first)
+   * start = lonIntv.min();
+   * first = false;
+   * 
+   * Optional<RangeIterator> opt = helper.makeRange(lonIntv.min(), lonIntv.max(), stride, errLog);
+   * if (!opt.isPresent()) {
+   * return Optional.empty();
+   * }
+   * ranges.add(opt.get());
+   * }
+   * 
+   * RangeComposite compositeRange = new RangeComposite(AxisType.Lon.toString(), ranges);
+   * // number of points in the subset
+   * int npts = compositeRange.length();
+   * // need to use the subset resolution to figure out the end
+   * double end = start + npts * subsetResolution;
+   * 
+   * Builder<?> builder = toBuilder(); // copy
+   * builder.subset(npts, start, end, subsetResolution, null);
+   * builder.setRange(null);
+   * builder.setCompositeRange(compositeRange);
+   * 
+   * return Optional.of(new GridAxis1D(builder));
+   * }
+   * 
+   * public Optional<GridAxis1D> subset(double minValue, double maxValue, int stride, Formatter errLog) {
+   * GridAxis1DHelper helper = new GridAxis1DHelper(this);
+   * Optional<GridAxis1D.Builder<?>> buildero = helper.subset(minValue, maxValue, stride, errLog);
+   * return buildero.map(GridAxis1D::new);
+   * }
+   * 
+   * public Optional<GridAxis1D> subsetByIndex(Range range, Formatter errLog) {
+   * try {
+   * GridAxis1DHelper helper = new GridAxis1DHelper(this);
+   * GridAxis1D.Builder<?> builder = helper.subsetByIndex(range);
+   * return Optional.of(new GridAxis1D(builder));
+   * } catch (InvalidRangeException e) {
+   * errLog.format("%s", e.getMessage());
+   * return Optional.empty();
+   * }
+   * }
+   */
+
   @Override
-  public Optional<GridAxis> subset(double minValue, double maxValue, int stride, Formatter errLog) {
-    GridAxis1DHelper helper = new GridAxis1DHelper(this);
-    Optional<GridAxis1D.Builder<?>> buildero = helper.subset(minValue, maxValue, stride, errLog);
-    return buildero.map(GridAxis1D::new);
-  }
-
-  // CalendarDate, double[2], or Double
-  public Object getCoordObject(int index) {
-    if (isInterval())
-      return new double[] {getCoordEdge1(index), getCoordEdge2(index)};
-    return getCoordMidpoint(index);
-  }
-
-  @Override
-  public Optional<GridAxis> subset(SubsetParams params, Formatter errLog) {
-    Optional<Builder<?>> buildero = subsetBuilder(params, errLog);
-    return buildero.map(GridAxis1D::new);
-  }
-
-  // only for longitude, only for regular (do we need a subclass for longitude 1D coords ??
-  public Optional<GridAxis1D> subsetByIntervals(List<Arrays.MinMax> lonIntvs, int stride, Formatter errLog) {
-    if (axisType != AxisType.Lon) {
-      errLog.format("subsetByIntervals only for longitude");
-      return Optional.empty();
+  @Nullable
+  public GridAxis subset(GridSubset params, Formatter errLog) {
+    if (params == null) {
+      return this;
     }
-    if (!isRegular()) {
-      errLog.format("subsetByIntervals only for regular longitude");
-      return Optional.empty();
-    }
-
-    // adjust the resolution of the subset based on stride
-    double subsetResolution = stride > 1 ? stride * resolution : resolution;
-
-    GridAxis1DHelper helper = new GridAxis1DHelper(this);
-
-    double start = Double.NaN;
-    boolean first = true;
-    List<RangeIterator> ranges = new ArrayList<>();
-    for (Arrays.MinMax lonIntv : lonIntvs) {
-      if (first)
-        start = lonIntv.min();
-      first = false;
-
-      Optional<RangeIterator> opt = helper.makeRange(lonIntv.min(), lonIntv.max(), stride, errLog);
-      if (!opt.isPresent()) {
-        return Optional.empty();
-      }
-      ranges.add(opt.get());
-    }
-
-    RangeComposite compositeRange = new RangeComposite(AxisType.Lon.toString(), ranges);
-    // number of points in the subset
-    int npts = compositeRange.length();
-    // need to use the subset resolution to figure out the end
-    double end = start + npts * subsetResolution;
-
-    Builder<?> builder = toBuilder(); // copy
-    builder.subset(npts, start, end, subsetResolution, null);
-    builder.setRange(null);
-    builder.setCompositeRange(compositeRange);
-
-    return Optional.of(new GridAxis1D(builder));
-  }
-
-  public Optional<GridAxis1D> subsetByIndex(Range range, Formatter errLog) {
-    try {
-      GridAxis1DHelper helper = new GridAxis1DHelper(this);
-      GridAxis1D.Builder<?> builder = helper.subsetByIndex(range);
-      return Optional.of(new GridAxis1D(builder));
-    } catch (InvalidRangeException e) {
-      errLog.format("%s", e.getMessage());
-      return Optional.empty();
-    }
+    GridAxis1D.Builder<?> builder = subsetBuilder(params, errLog);
+    return (builder == null) ? null : builder.build();
   }
 
   // LOOK incomplete handling of subsetting params
-  Optional<GridAxis1D.Builder<?>> subsetBuilder(SubsetParams params, Formatter errLog) {
-    if (params == null) {
-      return Optional.of(this.toBuilder());
-    }
-
+  @Nullable
+  private GridAxis1D.Builder<?> subsetBuilder(GridSubset params, Formatter errLog) {
     GridAxis1DHelper helper = new GridAxis1DHelper(this);
-
     switch (getAxisType()) {
       case GeoZ:
       case Pressure:
       case Height:
         Double dval = params.getVertCoord();
         if (dval != null) {
-          return Optional.of(helper.subsetClosest(dval));
+          return helper.subsetClosest(dval);
         }
         // use midpoint of interval LOOK may not always be unique
         double[] intv = params.getVertCoordIntv();
         if (intv != null) {
-          return Optional.of(helper.subsetClosest((intv[0] + intv[1]) / 2));
+          return helper.subsetClosest((intv[0] + intv[1]) / 2);
         }
 
         double[] vertRange = params.getVertRange(); // used by WCS
         if (vertRange != null) {
-          return helper.subset(vertRange[0], vertRange[1], 1, errLog);
+          return helper.subset(vertRange[0], vertRange[1], 1, errLog).orElse(null);
         }
 
         // default is all
         break;
 
       case Ensemble:
-        Double eval = params.getDouble(SubsetParams.ensCoord);
+        Double eval = params.getDouble(GridSubset.ensCoord);
         if (eval != null) {
-          return Optional.of(helper.subsetClosest(eval));
+          return helper.subsetClosest(eval);
         }
         // default is all
         break;
 
-      // x,y get seperately subsetted
+      // TODO: old way is that x,y get seperately subsetted. Right now, not getting subsetted
       case GeoX:
       case GeoY:
       case Lat:
       case Lon:
-        throw new IllegalArgumentException();
-      // return null; // LOOK heres a case where null is "correct"
+        // throw new IllegalArgumentException();
+        break;
 
       default:
         // default is all
         break;
     }
 
-    // otherwise return copy the original axis
-    return Optional.of(this.toBuilder());
+    // otherwise return copy of the original axis
+    return this.toBuilder();
   }
 
   @Override
-  public Optional<GridAxis> subsetDependent(GridAxis1D dependsOn, Formatter errLog) {
+  @Nullable
+  public GridAxis subsetDependent(GridAxis1D dependsOn, Formatter errLog) {
     GridAxis1D.Builder<?> builder;
     try {
-      builder = new GridAxis1DHelper(this).subsetByIndex(dependsOn.getRange()); // LOOK Other possible subsets?
+      // TODO Other possible subsets?
+      builder = new GridAxis1DHelper(this).subsetByIndex(dependsOn.getRange());
     } catch (InvalidRangeException e) {
       errLog.format("%s", e.getMessage());
-      return Optional.empty();
+      return null;
     }
-    return Optional.of(new GridAxis1D(builder));
+    return builder.build();
   }
 
   //////////////////////////////////////////////////////////////
@@ -366,7 +387,7 @@ public class GridAxis1D extends GridAxis {
   // Add local fields to the builder.
   protected GridAxis1D.Builder<?> addLocalFieldsToBuilder(GridAxis1D.Builder<? extends GridAxis.Builder<?>> builder) {
     builder.setRange(this.range).setCompositeRange(this.crange);
-    return addLocalFieldsToBuilder(builder);
+    return (GridAxis1D.Builder<?>) super.addLocalFieldsToBuilder(builder);
   }
 
   /** A builder taking fields from a VariableDS */
@@ -402,16 +423,14 @@ public class GridAxis1D extends GridAxis {
       return self();
     }
 
-    T subset(String dependsOn, Spacing spacing, int ncoords, double[] values) {
-      assert values != null;
-      if (dependsOn != null) {
-        this.dependenceType = DependenceType.dependent;
-        setDependsOn(ImmutableList.of(dependsOn));
-      }
-      this.spacing = spacing;
-      this.ncoords = ncoords;
-      this.reader = null;
-      this.values = values;
+    T subsetIndex(int index) {
+      this.ncoords = 1;
+      this.startValue = 0;
+      this.endValue = 0;
+      this.resolution = 0;
+      double val = values[index];
+      this.values = new double[1];
+      this.values[0] = val;
       this.isSubset = true;
 
       return self();
