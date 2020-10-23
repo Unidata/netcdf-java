@@ -2,7 +2,7 @@
  * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-package ucar.nc2.util;
+package ucar.ui.util;
 
 import com.google.auto.value.AutoValue;
 
@@ -19,11 +19,11 @@ public interface NamedObject {
   Object getValue();
 
   static NamedObject create(String name, String desc, Object value) {
-    return NamedObject.Value.create(name, desc, value);
+    return Value.create(name, desc, value);
   }
 
   static NamedObject create(Object value, String desc) {
-    return NamedObject.Value.create(value.toString(), desc, value);
+    return Value.create(value.toString(), desc, value);
   }
 
   @AutoValue

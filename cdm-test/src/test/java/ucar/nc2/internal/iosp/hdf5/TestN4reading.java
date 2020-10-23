@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
 
+import static com.google.common.truth.Truth.assertThat;
+
 /**
  * Test netcdf-4 reading of misc files
  */
@@ -302,8 +304,8 @@ public class TestN4reading {
       assert att.getStringValue().equals("string for field 0");
 
       att = v2.findAttribute("att_char_array_test");
-      assert att.getStringValue().equals("a");
-
+      String result = att.getStringValue();
+      assertThat(att.getStringValue()).isEqualTo("a");
     }
   }
 

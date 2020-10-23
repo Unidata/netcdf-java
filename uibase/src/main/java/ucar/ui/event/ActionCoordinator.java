@@ -4,7 +4,7 @@
  */
 package ucar.ui.event;
 
-import ucar.util.ListenerManager;
+import ucar.ui.util.ListenerManager;
 
 /**
  * An ActionCoordinator helps manage the set of objects that send and receive

@@ -22,7 +22,7 @@ import ucar.nc2.ui.util.Renderer;
 import ucar.ui.widget.*;
 import ucar.ui.widget.PopupMenu;
 import ucar.ui.widget.ProgressMonitor;
-import ucar.nc2.util.NamedObject;
+import ucar.ui.util.NamedObject;
 import ucar.unidata.geoloc.Projection;
 import ucar.util.prefs.PreferencesExt;
 import javax.swing.*;

@@ -3,13 +3,13 @@
  * See LICENSE for license information.
  */
 
-package ucar.util;
+package ucar.util.prefs;
 
 /**
  * Maintains indentation level for printing nested structures.
  * Duplicate ucar.nc2.util, which we cannot depend on.
  */
-public class Indent {
+class Indent {
   private int nspaces;
 
   private int level;

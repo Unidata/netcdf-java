@@ -22,7 +22,6 @@ import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.SimpleUnit;
-import ucar.nc2.util.NamedObject;
 import ucar.nc2.write.Ncdump;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.LatLonProjection;
@@ -1385,26 +1384,6 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
   // cruft
 
   /**
-   * Get the list of level names, to be used for user selection.
-   * The ith one refers to the ith level coordinate.
-   *
-   * @return List of ucar.nc2.util.NamedObject, or empty list.
-   * @deprecated will move in ver 6
-   */
-  @Deprecated
-  public List<NamedObject> getLevels() {
-    if (vertZaxis == null)
-      return new ArrayList<>(0);
-
-    int n = (int) vertZaxis.getSize();
-    List<NamedObject> levels = new ArrayList<>(n);
-    for (int i = 0; i < n; i++)
-      levels.add(NamedObject.create(vertZaxis.getCoordName(i), vertZaxis.getUnitsString()));
-
-    return levels;
-  }
-
-  /**
    * Get the String name for the ith level(z) coordinate.
    *
    * @param index which level coordinate
@@ -1431,23 +1410,6 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
         return i;
     }
     return -1;
-  }
-
-  /**
-   * Get the list of time names, to be used for user selection.
-   * The ith one refers to the ith time coordinate.
-   *
-   * @return List of ucar.nc2.util.NamedObject, or empty list.
-   * @deprecated will move in ver 6
-   */
-  @Deprecated
-  public List<NamedObject> getTimes() {
-    List<CalendarDate> cdates = getCalendarDates();
-    List<NamedObject> times = new ArrayList<>(cdates.size());
-    for (CalendarDate cd : cdates) {
-      times.add(NamedObject.create(cd.toString(), "calendar date"));
-    }
-    return times;
   }
 
   ///////////////////////////////////////////////////////////////////////////
