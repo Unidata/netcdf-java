@@ -6,8 +6,11 @@ package ucar.nc2.dods;
 
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import java.io.IOException;
+import ucar.unidata.util.test.category.NeedsExternalResource;
 
+Category(NeedsExternalResource.class);
 public class TestHyraxServer {
   // https://opendap.jpl.nasa.gov/opendap/hyrax/ (Hyrax 1.16.0)
   @Test
