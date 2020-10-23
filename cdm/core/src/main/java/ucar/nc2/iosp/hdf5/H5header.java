@@ -4900,6 +4900,8 @@ public class H5header extends NCheader implements H5headerIF {
         long startPos = raf.getFilePointer();
         HeapObject o = new HeapObject();
         o.id = raf.readShort();
+        if (o.id == 0)
+          break; // ?? look
         o.refCount = raf.readShort();
         raf.skipBytes(4);
         o.dataSize = readLength();
@@ -4908,8 +4910,6 @@ public class H5header extends NCheader implements H5headerIF {
         int dsize = ((int) o.dataSize) + padding((int) o.dataSize, 8);
         countBytes += dsize + 16;
 
-        if (o.id == 0)
-          break; // ?? look
         if (o.dataSize < 0)
           break; // ran off the end, must be done
         if (countBytes < 0)
