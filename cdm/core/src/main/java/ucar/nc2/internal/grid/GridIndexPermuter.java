@@ -5,8 +5,7 @@ import ucar.ma2.Section;
 import ucar.nc2.Dimension;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.VariableDS;
-import ucar.nc2.grid.GridAxis;
-import ucar.nc2.grid.GridCoordinateSystem;
+import ucar.nc2.grid.GridAxis1D;
 
 import javax.annotation.concurrent.Immutable;
 import java.util.Arrays;
@@ -17,7 +16,7 @@ class GridIndexPermuter {
   private final int rank;
   private final int xDimOrgIndex, yDimOrgIndex, zDimOrgIndex, eDimOrgIndex, tDimOrgIndex, toDimOrgIndex, rtDimOrgIndex;
 
-  GridIndexPermuter(GridCoordinateSystem gcs, VariableDS vds) {
+  GridIndexPermuter(GridCS gcs, VariableDS vds) {
     this.rank = vds.getRank();
     this.xDimOrgIndex = findDimension(vds, gcs.getXHorizAxis());
     this.yDimOrgIndex = findDimension(vds, gcs.getYHorizAxis());
@@ -28,15 +27,20 @@ class GridIndexPermuter {
     this.rtDimOrgIndex = findDimension(vds, gcs.getRunTimeAxis());
   }
 
-  private int findDimension(VariableDS vds, GridAxis want) {
+  private int findDimension(VariableDS vds, GridAxis1D want) {
     if (want == null) {
       return -1;
     }
+    // This is the case where its a coordinate alias
+    String depends = (want.getDependsOn().size() == 1) ? want.getDependsOn().get(0) : null;
     List<Dimension> dims = vds.getDimensions();
     for (int i = 0; i < dims.size(); i++) {
       Dimension d = dims.get(i);
-      if (d.getShortName().equals(want.getName())) // LOOK
-        return i;
+      if (d.getShortName() != null) {
+        if (d.getShortName().equals(want.getName()) || d.getShortName().equals(depends)) {
+          return i;
+        }
+      }
     }
     return -1;
   }

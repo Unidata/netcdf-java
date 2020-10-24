@@ -450,67 +450,39 @@ class GridAxis1DHelper {
   // Range must be contained in this range
   GridAxis1D.Builder<?> subsetByIndex(Range range) throws InvalidRangeException {
     int ncoords = range.length();
-    if (range.last() >= orgGridAxis.getNcoords())
+    if (range.last() >= orgGridAxis.getNcoords()) {
       throw new InvalidRangeException("range.last() >= axis.getNcoords()");
-
-    double resolution = 0.0;
-
-    int count2 = 0;
-    double[] values = orgGridAxis.getValues(); // will be null for regular
-    double[] subsetValues = null;
-    switch (orgGridAxis.getSpacing()) {
-      case regularInterval:
-      case regularPoint:
-        resolution = range.stride() * orgGridAxis.getResolution();
-        break;
-
-      case irregularPoint:
-        subsetValues = new double[ncoords];
-        for (int i : range)
-          subsetValues[count2++] = values[i];
-        break;
-
-      case contiguousInterval:
-        subsetValues = new double[ncoords + 1]; // need npts+1
-        for (int i : range)
-          subsetValues[count2++] = values[i];
-        subsetValues[count2] = values[range.last() + 1];
-        break;
-
-      case discontiguousInterval:
-        subsetValues = new double[2 * ncoords]; // need 2*npts
-        for (int i : range) {
-          subsetValues[count2++] = values[2 * i];
-          subsetValues[count2++] = values[2 * i + 1];
-        }
-        break;
     }
 
-    // subset(int ncoords, double start, double end, double[] values)
+    double resolution = 0.0;
+    if (orgGridAxis.getSpacing().isRegular()) {
+      resolution = range.stride() * orgGridAxis.getResolution();
+    }
+
     GridAxis1D.Builder<?> builder = orgGridAxis.toBuilder();
     builder.subset(ncoords, orgGridAxis.getCoordMidpoint(range.first()), orgGridAxis.getCoordMidpoint(range.last()),
-        resolution, subsetValues);
-    builder.setRange(range);
+        resolution, range);
     return builder;
   }
 
   private GridAxis1D.Builder<?> subsetValuesClosest(double[] want) {
     int closest_index = findCoordElement(want, true); // bounded, always valid index
 
+    Range range;
+    try {
+      range = new Range(closest_index, closest_index);
+    } catch (InvalidRangeException e) {
+      throw new RuntimeException(e); // cant happen
+    }
+
     GridAxis1D.Builder<?> builder = orgGridAxis.toBuilder();
 
     if (orgGridAxis.spacing == GridAxis.Spacing.regularInterval) {
       double val1 = orgGridAxis.getCoordEdge1(closest_index);
       double val2 = orgGridAxis.getCoordEdge2(closest_index);
-      builder.subset(1, val1, val2, val2 - val1, null);
+      builder.subset(1, val1, val2, val2 - val1, range);
     } else {
-      builder.subset(1, 0, 0, 0.0, makeValues(closest_index));
-    }
-
-    try {
-      builder.setRange(new Range(closest_index, closest_index));
-    } catch (InvalidRangeException e) {
-      throw new RuntimeException(e); // cant happen
+      builder.subset(1, 0, 0, 0.0, range);
     }
     return builder;
   }
@@ -519,78 +491,63 @@ class GridAxis1DHelper {
     int closest_index = findCoordElement(want, true); // bounded, always valid index
     GridAxis1D.Builder<?> builder = orgGridAxis.toBuilder();
 
+    Range range;
+    try {
+      range = new Range(closest_index, closest_index);
+    } catch (InvalidRangeException e) {
+      throw new RuntimeException(e); // cant happen
+    }
+
     if (orgGridAxis.spacing == GridAxis.Spacing.regularPoint) {
       double val = orgGridAxis.getCoordMidpoint(closest_index);
-      builder.subset(1, val, val, 0.0, null);
+      builder.subset(1, val, val, 0.0, range);
 
     } else if (orgGridAxis.spacing == GridAxis.Spacing.regularInterval) {
       double val1 = orgGridAxis.getCoordEdge1(closest_index);
       double val2 = orgGridAxis.getCoordEdge2(closest_index);
-      builder.subset(1, val1, val2, val2 - val1, null);
+      builder.subset(1, val1, val2, val2 - val1, range);
 
     } else {
-      builder.subsetIndex(closest_index);
+      builder.subset(1, 0, 0, 0.0, range);
     }
-
-    try {
-      builder.setRange(new Range(closest_index, closest_index));
-    } catch (InvalidRangeException e) {
-      throw new RuntimeException(e); // cant happen
-    }
-
     return builder;
   }
 
-  Optional<GridAxis1D.Builder<?>> subsetContaining(double want, Formatter errlog) {
-    int index = findCoordElement(want, false); // not bounded, may not be valid index
-    if (index < 0 || index >= orgGridAxis.getNcoords()) {
-      errlog.format("value %f not in axis %s", want, orgGridAxis.getName());
-      return Optional.empty();
-    }
-
-    double val = orgGridAxis.getCoordMidpoint(index);
-
-    GridAxis1D.Builder<?> builder = orgGridAxis.toBuilder();
-    builder.subset(1, val, val, 0.0, makeValues(index));
-    try {
-      builder.setRange(new Range(index, index));
-    } catch (InvalidRangeException e) {
-      throw new RuntimeException(e); // cant happen
-    }
-    return Optional.of(builder);
-  }
+  /*
+   * Optional<GridAxis1D.Builder<?>> subsetContaining(double want, Formatter errlog) {
+   * int index = findCoordElement(want, false); // not bounded, may not be valid index
+   * if (index < 0 || index >= orgGridAxis.getNcoords()) {
+   * errlog.format("value %f not in axis %s", want, orgGridAxis.getName());
+   * return Optional.empty();
+   * }
+   * 
+   * double val = orgGridAxis.getCoordMidpoint(index);
+   * 
+   * GridAxis1D.Builder<?> builder = orgGridAxis.toBuilder();
+   * builder.subset(1, val, val, 0.0, makeValues(index));
+   * try {
+   * builder.setRange(new Range(index, index));
+   * } catch (InvalidRangeException e) {
+   * throw new RuntimeException(e); // cant happen
+   * }
+   * return Optional.of(builder);
+   * }
+   */
 
   private GridAxis1D.Builder<?> subsetValuesLatest() {
     int last = orgGridAxis.getNcoords() - 1;
     double val = orgGridAxis.getCoordMidpoint(last);
 
-    GridAxis1D.Builder<?> builder = orgGridAxis.toBuilder();
-    builder.subset(1, val, val, 0.0, makeValues(last));
+    Range range;
     try {
-      builder.setRange(new Range(last, last));
+      range = new Range(last, last);
     } catch (InvalidRangeException e) {
       throw new RuntimeException(e); // cant happen
     }
+
+    GridAxis1D.Builder<?> builder = orgGridAxis.toBuilder();
+    builder.subset(1, val, val, 0.0, range);
     return builder;
-  }
-
-  private double[] makeValues(int index) {
-    double[] subsetValues = null; // null for regular
-
-    switch (orgGridAxis.getSpacing()) {
-      case irregularPoint:
-        subsetValues = new double[1];
-        subsetValues[0] = orgGridAxis.getCoordMidpoint(index);
-        break;
-
-      case discontiguousInterval:
-      case contiguousInterval:
-        subsetValues = new double[2];
-        subsetValues[0] = orgGridAxis.getCoordEdge1(index);
-        subsetValues[1] = orgGridAxis.getCoordEdge2(index);
-        break;
-    }
-    return subsetValues;
   }
 
   int search(double want) {

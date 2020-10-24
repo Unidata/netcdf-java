@@ -16,13 +16,8 @@ import ucar.unidata.geoloc.ProjectionRect;
 import java.util.*;
 
 /**
- * Describes a subset of a Coverage.
+ * Describes a subset of a Grid.
  * Coordinate values only, no indices.
- *
- * @see "docs/website/tds/reference/services/CdmrfParams.adoc"
- *
- * @author caron
- * @since 5/6/2015
  */
 public class GridSubset {
   public static final String variables = "var"; // value = List<String>

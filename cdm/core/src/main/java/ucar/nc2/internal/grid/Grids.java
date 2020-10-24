@@ -8,46 +8,44 @@ import ucar.nc2.grid.GridAxis;
 import ucar.nc2.grid.GridAxis1D;
 import ucar.nc2.grid.GridAxis1DTime;
 
-import java.util.Formatter;
+import java.util.ArrayList;
 
 /** static utilities */
 class Grids {
 
-  static GridAxis1D extractGridAxis1D(CoordinateAxis axis) {
-    GridAxis1D.Builder<?> builder = GridAxis1D.builder(axis).setAxisType(axis.getAxisType());
-    extractGridAxis1D(axis, builder);
+  static GridAxis1D extractGridAxis1D(CoordinateAxis axis, boolean isIndependent) {
+    GridAxis1D.Builder<?> builder;
+    if (axis.getAxisType().isTime()) {
+      builder = GridAxis1DTime.builder(axis).setAxisType(axis.getAxisType());
+    } else {
+      builder = GridAxis1D.builder(axis).setAxisType(axis.getAxisType());
+    }
+    extractGridAxis1D(axis, builder, isIndependent);
     return builder.build();
   }
 
-  static GridAxis1DTime makeGridAxis1DTime(CoordinateAxis axis) {
-    GridAxis1DTime.Builder<?> builder = GridAxis1DTime.builder(axis).setAxisType(axis.getAxisType());
-    extractGridAxis1D(axis, builder);
-    return builder.build();
-  }
-
-  private static void extractGridAxis1D(CoordinateAxis dtCoordAxis, GridAxis1D.Builder<?> builder) {
+  private static void extractGridAxis1D(CoordinateAxis dtCoordAxis, GridAxis1D.Builder<?> builder,
+      boolean isIndependent) {
     Preconditions.checkArgument(dtCoordAxis.getRank() < 2);
     CoordinateAxis1DExtractor extract = new CoordinateAxis1DExtractor(dtCoordAxis);
 
-    String dependsOn = null;
-
     GridAxis.DependenceType dependenceType;
-    if (dtCoordAxis.isIndependentCoordinate()) {
+    if (dtCoordAxis.isCoordinateVariable()) {
       dependenceType = GridAxis.DependenceType.independent;
+    } else if (isIndependent) { // its a coordinate alias
+      dependenceType = GridAxis.DependenceType.independent;
+      builder.setDependsOn(ImmutableList.of(dtCoordAxis.getDimension(0).getShortName()));
     } else if (dtCoordAxis.isScalar()) {
       dependenceType = GridAxis.DependenceType.scalar;
     } else {
       dependenceType = GridAxis.DependenceType.dependent;
-      Formatter f = new Formatter();
-      for (Dimension d : dtCoordAxis.getDimensions()) {// LOOK axes may not exist
-        f.format("%s ", d.makeFullName(dtCoordAxis));
+      ArrayList<String> dependsOn = new ArrayList<>();
+      for (Dimension d : dtCoordAxis.getDimensions()) { // LOOK axes may not exist
+        dependsOn.add(d.makeFullName(dtCoordAxis));
       }
-      dependsOn = f.toString().trim();
+      builder.setDependsOn(dependsOn);
     }
     builder.setDependenceType(dependenceType);
-    if (dependsOn != null) {
-      builder.setDependsOn(ImmutableList.of(dependsOn));
-    }
 
     // Fix discontinuities in longitude axis. These occur when the axis crosses the date line.
     extract.correctLongitudeWrap();

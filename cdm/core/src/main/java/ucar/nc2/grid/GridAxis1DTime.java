@@ -7,6 +7,7 @@ package ucar.nc2.grid;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.InvalidRangeException;
@@ -29,11 +30,6 @@ import java.util.*;
  */
 public class GridAxis1DTime extends GridAxis1D {
   private static final Logger logger = LoggerFactory.getLogger(GridAxis1DTime.class);
-
-  @Override
-  public RangeIterator getRangeIterator() {
-    return crange != null ? crange : range;
-  }
 
   /** Get the the ith coordinate CalendarDate. */
   public CalendarDate getCalendarDate(int idx) {
@@ -323,7 +319,7 @@ public class GridAxis1DTime extends GridAxis1D {
 
   ////////////////////////////////////////////////////////////////////////////////////////////
   private final TimeHelper timeHelper; // AxisType = Time, RunTime only
-  private final List<CalendarDate> cdates;
+  private final ImmutableList<CalendarDate> cdates;
 
   protected GridAxis1DTime(Builder<?> builder) {
     super(builder);
@@ -332,8 +328,20 @@ public class GridAxis1DTime extends GridAxis1D {
     } else {
       this.timeHelper = TimeHelper.factory(this.units, this.attributes);
     }
-    this.cdates = builder.cdates;
+    if (range != null && builder.cdates != null) {
+      this.cdates = subsetDatesByRange(builder.cdates, range);
+    } else {
+      this.cdates = ImmutableList.copyOf(builder.cdates);
+    }
     Preconditions.checkArgument(cdates.size() == this.getNcoords());
+  }
+
+  private ImmutableList<CalendarDate> subsetDatesByRange(List<CalendarDate> dates, Range range) {
+    ImmutableList.Builder<CalendarDate> builder = ImmutableList.builder();
+    for (int index : range) {
+      builder.add(dates.get(index));
+    }
+    return builder.build();
   }
 
   public Builder<?> toBuilder() {
@@ -379,18 +387,9 @@ public class GridAxis1DTime extends GridAxis1D {
       return self();
     }
 
-    T subsetIndex(int index) {
-      ArrayList<CalendarDate> newDates = new ArrayList<>();
-      newDates.add(cdates.get(index));
-      cdates = newDates;
-
-      super.subsetIndex(index);
-      return self();
-    }
-
-    T subset(int ncoords, double startValue, double endValue, double resolution, double[] values) {
-      super.subset(ncoords, startValue, endValue, resolution, values);
-
+    @Override
+    T subset(int ncoords, double startValue, double endValue, double resolution, Range range) {
+      super.subset(ncoords, startValue, endValue, resolution, range);
       return self();
     }
 

@@ -19,7 +19,7 @@ public class GridVariable implements Grid {
   private final VariableDS vds;
   private final GridIndexPermuter permuter;
 
-  GridVariable(GridCoordinateSystem cs, VariableDS vds) {
+  GridVariable(GridCS cs, VariableDS vds) {
     this.cs = cs;
     this.vds = vds;
     this.permuter = new GridIndexPermuter(cs, vds);

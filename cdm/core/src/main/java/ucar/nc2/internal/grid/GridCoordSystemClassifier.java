@@ -147,7 +147,7 @@ class GridCoordSystemClassifier {
       // skip x,y if no projection
       if ((axis.getAxisType() == AxisType.GeoX || axis.getAxisType() == AxisType.GeoY) && isLatLon)
         continue;
-      if (axis.isIndependentCoordinate())
+      if (isIndependentCoordinate(cs, axis))
         independentAxes.add(axis);
       else
         otherAxes.add(axis);
@@ -252,8 +252,29 @@ class GridCoordSystemClassifier {
     this.orgProj = cs.getProjection();
   }
 
-  private FeatureType classify() {
+  // An axis is independent if its a coordinate variable, or it is 1D with a unique dimension.
+  private boolean isIndependentCoordinate(CoordinateSystem cs, CoordinateAxis axis) {
+    if (axis.isCoordinateVariable()) {
+      return true;
+    }
+    if (axis.getRank() != 1) {
+      return false;
+    }
+    Dimension dim = axis.getDimension(0);
+    for (CoordinateAxis other : cs.getCoordinateAxes()) {
+      if (other == axis) {
+        continue;
+      }
+      for (Dimension odim : other.getDimensions()) {
+        if (dim == odim) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
 
+  private FeatureType classify() {
     // now to classify
     boolean is2Dtime = (rtAxis != null) && (timeOffsetAxis != null || (timeAxis != null && timeAxis.getRank() == 2));
     if (is2Dtime) {

@@ -57,15 +57,17 @@ public class GridDatasetImpl implements GridDataset {
 
     // Convert axes
     this.gridAxes = new HashMap<>();
-    for (CoordinateAxis axis : ncd.getCoordinateAxes()) {
+    for (CoordinateAxis axis : facc.independentAxes) {
       if (axis.getAxisType() == null) {
         continue;
       }
-      if (axis.getAxisType().isTime()) {
-        gridAxes.put(axis.getFullName(), Grids.makeGridAxis1DTime(axis));
-      } else {
-        gridAxes.put(axis.getFullName(), Grids.extractGridAxis1D(axis));
+      gridAxes.put(axis.getFullName(), Grids.extractGridAxis1D(axis, true));
+    }
+    for (CoordinateAxis axis : facc.otherAxes) {
+      if (axis.getAxisType() == null) {
+        continue;
       }
+      gridAxes.put(axis.getFullName(), Grids.extractGridAxis1D(axis, false));
     }
 
     // Convert coordsys

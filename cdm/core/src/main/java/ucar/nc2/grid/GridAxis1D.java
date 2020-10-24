@@ -22,14 +22,18 @@ import java.util.*;
 @Immutable
 public class GridAxis1D extends GridAxis {
 
+  @Override
   public RangeIterator getRangeIterator() {
-    if (getDependenceType() == GridAxis.DependenceType.scalar)
-      return Range.EMPTY;
-
+    if (crange != null) {
+      return crange;
+    }
+    if (range != null) {
+      return range;
+    }
     try {
       return new Range(axisType.toString(), 0, ncoords - 1);
     } catch (InvalidRangeException e) {
-      throw new RuntimeException(e);
+      throw new RuntimeException(e); // not possible
     }
   }
 
@@ -423,28 +427,50 @@ public class GridAxis1D extends GridAxis {
       return self();
     }
 
-    T subsetIndex(int index) {
-      this.ncoords = 1;
-      this.startValue = 0;
-      this.endValue = 0;
-      this.resolution = 0;
-      double val = values[index];
-      this.values = new double[1];
-      this.values[0] = val;
-      this.isSubset = true;
-
-      return self();
-    }
-
-    T subset(int ncoords, double startValue, double endValue, double resolution, double[] values) {
+    T subset(int ncoords, double startValue, double endValue, double resolution, Range range) {
       this.ncoords = ncoords;
       this.startValue = startValue;
       this.endValue = endValue;
       this.resolution = resolution;
-      this.values = values;
+      this.range = range;
       this.isSubset = true;
+      this.values = makeValues(range);
 
       return self();
+    }
+
+    private double[] makeValues(Range range) {
+      if (spacing.isRegular()) {
+        return null;
+      }
+
+      double[] subsetValues = null;
+      int count = 0;
+      switch (spacing) {
+        case irregularPoint:
+          subsetValues = new double[ncoords];
+          for (int i : range) {
+            subsetValues[count++] = values[i];
+          }
+          break;
+
+        case contiguousInterval:
+          subsetValues = new double[ncoords + 1]; // need npts+1
+          for (int i : range) {
+            subsetValues[count++] = values[i];
+          }
+          subsetValues[count] = values[range.last() + 1];
+          break;
+
+        case discontiguousInterval:
+          subsetValues = new double[2 * ncoords]; // need 2*npts
+          for (int i : range) {
+            subsetValues[count++] = values[2 * i];
+            subsetValues[count++] = values[2 * i + 1];
+          }
+          break;
+      }
+      return subsetValues;
     }
 
     public GridAxis1D build() {
@@ -453,7 +479,6 @@ public class GridAxis1D extends GridAxis {
       built = true;
       return new GridAxis1D(this);
     }
-
   }
 
 }
