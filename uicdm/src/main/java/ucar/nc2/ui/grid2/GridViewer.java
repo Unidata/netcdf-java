@@ -800,7 +800,7 @@ public class GridViewer extends JPanel {
 
   public void setGridCollection(GridDataset gcd) {
     this.gridDataset = gcd;
-    setFields(gcd.getGrids());
+    setFields(NamedObjects.getNames(gcd.getGrids()));
 
     startOK = false; // wait till redraw is hit before drawing
     try {
@@ -816,7 +816,7 @@ public class GridViewer extends JPanel {
     fieldChooser.setCollection(fields.iterator());
   }
 
-  void setFields(Iterable<Grid> fields) {
+  void setFields(Iterable<NamedObject> fields) {
     fieldChooser.setCollection(fields.iterator());
   }
 
@@ -825,9 +825,9 @@ public class GridViewer extends JPanel {
     if (fld instanceof Grid)
       gg = (Grid) fld;
     else if (fld instanceof String)
-      gg = gridDataset.findGrid((String) fld);
+      gg = gridDataset.findGrid((String) fld).orElse(null);
     else if (fld instanceof NamedObject)
-      gg = gridDataset.findGrid(((NamedObject) fld).getName());
+      gg = gridDataset.findGrid(((NamedObject) fld).getName()).orElse(null);;
     if (null == gg)
       return false;
 

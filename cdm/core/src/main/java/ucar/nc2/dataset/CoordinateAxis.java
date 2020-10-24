@@ -184,7 +184,7 @@ public class CoordinateAxis extends VariableDS {
    */
   public void getInfo(Formatter buf) {
     buf.format("%-30s", getNameAndDimensions());
-    buf.format("%-20s", getUnitsString());
+    buf.format("%-30s", getUnitsString());
     if (axisType != null) {
       buf.format("%-10s", axisType.toString());
     }

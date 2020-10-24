@@ -24,7 +24,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
-import java.util.Optional;
 
 public class GridPanel extends OpPanel {
   private static final org.slf4j.Logger logger =
@@ -100,13 +99,12 @@ public class GridPanel extends OpPanel {
 
     try {
       Formatter errLog = new Formatter();
-      Optional<GridDataset> opt = GridDatasetFactory.openGridDataset(command, errLog);
-      if (!opt.isPresent()) {
+      gridDataset = GridDatasetFactory.openGridDataset(command, errLog);
+      if (gridDataset == null) {
         JOptionPane.showMessageDialog(null, errLog.toString());
         return false;
       }
-      gridDataset = opt.get();
-      gridNewTable.setCollection(gridDataset);
+      gridNewTable.setGridDataset(gridDataset);
       setSelectedItem(command);
     } catch (IOException e) {
       e.printStackTrace();
@@ -134,7 +132,7 @@ public class GridPanel extends OpPanel {
       logger.warn("close failed");
     }
 
-    gridNewTable.setCollection(fd);
+    gridNewTable.setGridDataset(fd);
     setSelectedItem(fd.getLocation());
   }
 

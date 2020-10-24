@@ -15,23 +15,25 @@ import ucar.nc2.units.SimpleUnit;
 import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.projection.RotatedPole;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 /** Grid CS classification and builder, using ucar.nc2.dataset.CoordinateSystem */
-public class GridCoordSystemBuilder {
+class GridCoordSystemClassifier {
 
   // classify based on largest coordinate system
-  public static GridCoordSystemBuilder classify(NetcdfDataset ds, Formatter errlog) {
+  @Nullable
+  static GridCoordSystemClassifier classify(NetcdfDataset ds, Formatter errlog) {
     if (errlog != null)
       errlog.format("CoverageFactory for '%s'%n", ds.getLocation());
 
-    // sort by largest size first
+    // sort by largest number of coord axes first
     List<CoordinateSystem> css = new ArrayList<>(ds.getCoordinateSystems());
     css.sort((o1, o2) -> o2.getCoordinateAxes().size() - o1.getCoordinateAxes().size());
 
-    GridCoordSystemBuilder builder = null;
+    GridCoordSystemClassifier builder = null;
     for (CoordinateSystem cs : css) {
-      builder = new GridCoordSystemBuilder(ds, cs, errlog);
+      builder = new GridCoordSystemClassifier(ds, cs, errlog);
       if (builder.type != null)
         break;
     }
@@ -43,12 +45,12 @@ public class GridCoordSystemBuilder {
   }
 
   public static String describe(NetcdfDataset ds, Formatter errlog) {
-    GridCoordSystemBuilder fac = classify(ds, errlog);
+    GridCoordSystemClassifier fac = classify(ds, errlog);
     return (fac == null || fac.type == null) ? "" : fac.showSummary();
   }
 
   public static String describe(NetcdfDataset ds, CoordinateSystem cs, Formatter errlog) {
-    GridCoordSystemBuilder fac = new GridCoordSystemBuilder(ds, cs, errlog);
+    GridCoordSystemClassifier fac = new GridCoordSystemClassifier(ds, cs, errlog);
     return fac.type == null ? "" : fac.showSummary();
   }
 
@@ -65,8 +67,7 @@ public class GridCoordSystemBuilder {
   List<CoordinateTransform> coordTransforms;
   Projection orgProj;
 
-  GridCoordSystemBuilder(NetcdfDataset ds, CoordinateSystem cs, Formatter errlog) {
-
+  GridCoordSystemClassifier(NetcdfDataset ds, CoordinateSystem cs, Formatter errlog) {
     // must be at least 2 dimensions
     if (cs.getRankDomain() < 2) {
       if (errlog != null)
@@ -284,7 +285,7 @@ public class GridCoordSystemBuilder {
     return type;
   }
 
-  public GridCoordinateSystemImpl build(Map<String, GridAxis> gridAxes) {
+  public GridCS build(Map<String, GridAxis> gridAxes) {
     /*
      * if (type == null)
      * return null;
@@ -301,7 +302,7 @@ public class GridCoordSystemBuilder {
      * }
      */
 
-    return new GridCoordinateSystemImpl(this, gridAxes);
+    return new GridCS(this, gridAxes);
   }
 
   @Override

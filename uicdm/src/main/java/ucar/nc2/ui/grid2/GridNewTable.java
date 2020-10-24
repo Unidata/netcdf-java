@@ -10,6 +10,7 @@ import com.google.common.collect.Iterables;
 import ucar.ma2.DataType;
 import ucar.nc2.Dimensions;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.dataset.CoordinateTransform;
 import ucar.nc2.grid.Grid;
 import ucar.nc2.grid.GridAxis;
 import ucar.nc2.grid.GridDataset;
@@ -47,8 +48,8 @@ public class GridNewTable extends JPanel {
   public GridNewTable(PreferencesExt prefs) {
     this.prefs = prefs;
 
-    dsTable = new BeanTable<>(DatasetBean.class, (PreferencesExt) prefs.node("DatasetBeans"), false, "CoverageDatasets",
-        "ucar.nc2.ft2.coverage.CoverageDataset", null);
+    dsTable = new BeanTable<>(DatasetBean.class, (PreferencesExt) prefs.node("GridDataset"), false, "GridDataset",
+        "ucar.nc2.grid.GridDataset", null);
     dsTable.addListSelectionListener(e -> {
       DatasetBean pb = dsTable.getSelectedBean();
       if (pb != null) {
@@ -56,11 +57,11 @@ public class GridNewTable extends JPanel {
       }
     });
 
-    covTable = new BeanTable<>(GridBean.class, (PreferencesExt) prefs.node("CoverageBeans"), false, "Coverages",
-        "ucar.nc2.ft2.coverage.Coverage", new GridBean());
+    covTable = new BeanTable<>(GridBean.class, (PreferencesExt) prefs.node("GridBeans"), false, "Grids",
+        "ucar.nc2.grid.Grid", new GridBean());
 
-    csysTable = new BeanTable<>(CoordSysBean.class, (PreferencesExt) prefs.node("CoverageCoordSysBeans"), false,
-        "CoverageCoordSys", "ucar.nc2.ft2.coverage.CoverageCoordSys", null);
+    csysTable = new BeanTable<>(CoordSysBean.class, (PreferencesExt) prefs.node("CoordSysBeans"), false,
+        "GridCoordinateSystems", "ucar.nc2.grid.GridCoordinateSystem", null);
     csysTable.addListSelectionListener(e -> {
       CoordSysBean bean = csysTable.getSelectedBean();
       if (null != bean) { // find the coverages
@@ -73,12 +74,12 @@ public class GridNewTable extends JPanel {
       }
     });
 
-    axisTable = new BeanTable<>(AxisBean.class, (PreferencesExt) prefs.node("CoverageCoordAxisBeans"), false,
-        "CoverageCoordAxes", "ucar.nc2.ft2.coverage.CoverageCoordAxis", null);
+    axisTable = new BeanTable<>(AxisBean.class, (PreferencesExt) prefs.node("AxisBeans"), false, "GridAxes",
+        "ucar.nc2.grid.GridAxis", null);
 
     // the info window
     infoTA = new TextHistoryPane();
-    infoWindow = new IndependentWindow("Variable Information", BAMutil.getImage("nj22/NetcdfUI"), infoTA);
+    infoWindow = new IndependentWindow("Extra Information", BAMutil.getImage("nj22/NetcdfUI"), infoTA);
     infoWindow.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 500, 300)));
 
     // layout
@@ -111,7 +112,7 @@ public class GridNewTable extends JPanel {
 
     jtable = covTable.getJTable();
     PopupMenu csPopup = new PopupMenu(jtable, "Options");
-    csPopup.addAction("Show Declaration", new AbstractAction() {
+    csPopup.addAction("Show", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         GridBean vb = covTable.getSelectedBean();
         infoTA.clear();
@@ -123,7 +124,7 @@ public class GridNewTable extends JPanel {
 
     jtable = csysTable.getJTable();
     csPopup = new PopupMenu(jtable, "Options");
-    csPopup.addAction("Show CoordSys", new AbstractAction() {
+    csPopup.addAction("Show", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         CoordSysBean bean = csysTable.getSelectedBean();
         infoTA.clear();
@@ -179,7 +180,7 @@ public class GridNewTable extends JPanel {
     gridDataset.toString(result);
   }
 
-  public void setCollection(GridDataset gds) {
+  public void setGridDataset(GridDataset gds) {
     clear();
     this.gridDataset = gds;
     List<DatasetBean> dsList = ImmutableList.of(new DatasetBean(gds));
@@ -335,7 +336,7 @@ public class GridNewTable extends JPanel {
 
   public static class CoordSysBean {
     private GridCoordinateSystem gcs;
-    private String coordTrans, runtimeName, timeName, ensName, vertName;
+    private String coordTrans;
     private int nIndAxis;
 
     // no-arg constructor
@@ -345,25 +346,15 @@ public class GridNewTable extends JPanel {
       this.gcs = gcs;
 
       Formatter buff = new Formatter();
-      // for (String ct : gcs.getTransformNames())
-      // buff.format("%s,", ct);
+      for (CoordinateTransform ct : gcs.getCoordTransforms()) {
+        buff.format("%s,", ct.getName());
+      }
       coordTrans = buff.toString();
 
-      for (GridAxis axis : gcs.getCoordAxes()) {
-        if (axis.getDependenceType() == GridAxis.DependenceType.independent)
+      for (GridAxis axis : gcs.getGridAxes()) {
+        if (axis.getDependenceType() == GridAxis.DependenceType.independent) {
           nIndAxis++;
-
-        AxisType axisType = axis.getAxisType();
-        if (axisType == null)
-          continue;
-        if (axisType == AxisType.RunTime)
-          runtimeName = axis.getName();
-        else if (axisType.isTime())
-          timeName = axis.getName();
-        else if (axisType == AxisType.Ensemble)
-          ensName = axis.getName();
-        else if (axisType.isVert())
-          vertName = axis.getName();
+        }
       }
     }
 
@@ -371,35 +362,36 @@ public class GridNewTable extends JPanel {
       return gcs.getName();
     }
 
-    /*
-     * public String getType() {
-     * FeatureType type = gcs.getCoverageType();
-     * return (type == null) ? "" : type.toString();
-     * }
-     */
-
     public int getNIndCoords() {
       return nIndAxis;
     }
 
     public String getRuntime() {
-      return runtimeName;
+      return this.gcs.getRunTimeAxis() == null ? "" : this.gcs.getRunTimeAxis().getName();
     }
 
     public String getTime() {
-      return timeName;
+      return this.gcs.getTimeAxis() == null ? "" : this.gcs.getTimeAxis().getName();
+    }
+
+    public String getTimeOffset() {
+      return this.gcs.getTimeOffsetAxis() == null ? "" : this.gcs.getTimeOffsetAxis().getName();
     }
 
     public String getEns() {
-      return ensName;
+      return this.gcs.getEnsembleAxis() == null ? "" : this.gcs.getEnsembleAxis().getName();
     }
 
     public String getVert() {
-      return vertName;
+      return this.gcs.getVerticalAxis() == null ? "" : this.gcs.getVerticalAxis().getName();
     }
 
-    public String getCoordTransforms() {
+    public String getTransforms() {
       return coordTrans;
+    }
+
+    public String getProjection() {
+      return this.gcs.getProjection() == null ? "" : this.gcs.getProjection().getName();
     }
   }
 
@@ -473,7 +465,7 @@ public class GridNewTable extends JPanel {
 
     public String getDependsOn() {
       if (axis.getDependenceType() != GridAxis.DependenceType.independent)
-        return axis.getDependenceType() + ": " + axis.getDependsOn();
+        return axis.getDependenceType() + ": " + String.join(",", axis.getDependsOn());
       else
         return axis.getDependenceType().toString();
     }

@@ -32,7 +32,7 @@ public class GridDatasetImpl implements GridDataset {
       ncd = NetcdfDatasets.enhance(ncd, enhance, null);
     }
 
-    GridCoordSystemBuilder facc = GridCoordSystemBuilder.classify(ncd, errInfo);
+    GridCoordSystemClassifier facc = GridCoordSystemClassifier.classify(ncd, errInfo);
     return (facc == null) ? Optional.empty() : Optional.of(new GridDatasetImpl(ncd, facc, errInfo));
   }
 
@@ -41,7 +41,7 @@ public class GridDatasetImpl implements GridDataset {
   private final NetcdfDataset ncd;
   private final FeatureType coverageType;
 
-  private final ArrayList<GridCoordinateSystemImpl> coordsys = new ArrayList<>();
+  private final ArrayList<GridCS> coordsys = new ArrayList<>();
 
   private final Map<String, GridAxis> gridAxes;
   private final ArrayList<Grid> grids = new ArrayList<>();
@@ -51,7 +51,7 @@ public class GridDatasetImpl implements GridDataset {
   private CalendarDateRange dateRangeMax;
   private ProjectionRect projBB;
 
-  private GridDatasetImpl(NetcdfDataset ncd, GridCoordSystemBuilder facc, Formatter errInfo) throws IOException {
+  private GridDatasetImpl(NetcdfDataset ncd, GridCoordSystemClassifier facc, Formatter errInfo) throws IOException {
     this.ncd = ncd;
     this.coverageType = facc.type;
 
@@ -69,13 +69,13 @@ public class GridDatasetImpl implements GridDataset {
     }
 
     // Convert coordsys
-    Map<CoordinateSystem, GridCoordinateSystemImpl> trackCsConverted = new HashMap<>();
+    Map<CoordinateSystem, GridCS> trackCsConverted = new HashMap<>();
     for (CoordinateSystem cs : ncd.getCoordinateSystems()) {
-      GridCoordSystemBuilder fac = new GridCoordSystemBuilder(ncd, cs, errInfo);
+      GridCoordSystemClassifier fac = new GridCoordSystemClassifier(ncd, cs, errInfo);
       if (fac.type == null) {
         continue;
       }
-      GridCoordinateSystemImpl gcs = fac.build(this.gridAxes);
+      GridCS gcs = fac.build(this.gridAxes);
       if (gcs == null) {
         continue;
       }
@@ -92,7 +92,7 @@ public class GridDatasetImpl implements GridDataset {
       }
       css.sort((o1, o2) -> o2.getCoordinateAxes().size() - o1.getCoordinateAxes().size());
       CoordinateSystem cs = css.get(0); // the largest one
-      GridCoordinateSystemImpl gcs = Preconditions.checkNotNull(trackCsConverted.get(cs));
+      GridCS gcs = Preconditions.checkNotNull(trackCsConverted.get(cs));
       Grid grid = new GridVariable(gcs, (VariableDS) ve);
       grids.add(grid);
       this.gridsets.put(gcs, grid);
@@ -156,8 +156,8 @@ public class GridDatasetImpl implements GridDataset {
   }
 
   @Override
-  public Grid findGrid(String name) {
-    return null;
+  public Optional<Grid> findGrid(String name) {
+    return grids.stream().filter(g -> g.getName().equals(name)).findFirst();
   }
 
   public String getDetailInfo() {
@@ -173,17 +173,22 @@ public class GridDatasetImpl implements GridDataset {
     buff.format("%n%n----------------------------------------------------%n");
   }
 
+
+  @Override
+  public String toString() {
+    Formatter f = new Formatter();
+    toString(f);
+    return f.toString();
+  }
+
   @Override
   public void toString(Formatter buf) {
     int countGridset = 0;
 
     for (GridCoordinateSystem gcs : gridsets.keys()) {
       buf.format("%nGridset %d  coordSys=%s", countGridset, gcs);
-      buf.format(" LLbb=%s ", gcs.getLatLonBoundingBox());
-      if ((gcs.getProjection() != null) && !gcs.getProjection().isLatLon())
-        buf.format(" bb= %s", gcs.getBoundingBox());
       buf.format("%n");
-      buf.format("Name__________________________Unit__________________________hasMissing_Description%n");
+      // buf.format("Name__________________________Unit__________________________hasMissing_Description%n");
       for (Grid grid : gridsets.get(gcs)) {
         buf.format("%s%n", grid);
       }
@@ -192,10 +197,8 @@ public class GridDatasetImpl implements GridDataset {
     }
 
     buf.format("%nGeoReferencing Coordinate Axes%n");
-    buf.format("Name__________________________Units_______________Type______Description%n");
+    buf.format("Name__________________________Units_________________________Type______Description%n");
     for (CoordinateAxis axis : ncd.getCoordinateAxes()) {
-      if (axis.getAxisType() == null)
-        continue;
       axis.getInfo(buf);
       buf.format("%n");
     }

@@ -200,8 +200,8 @@ public class GridRenderer {
     else {
       GridCoordinateSystem.CoordReturn cr = opt.get();
       try {
-        Array<Double> array = geodata.data();
-        double dataValue = array.get(cr.y, cr.x);
+        Array<?> array = geodata.data();
+        double dataValue = ((Number) array.get(cr.y, cr.x)).doubleValue();
         return makeXYZvalueStr(dataValue, cr);
       } catch (Exception e) {
         return "error " + cr.x + " " + cr.y;
@@ -230,7 +230,7 @@ public class GridRenderer {
 
     // get the data slice
     // dataH = useG.readDataSlice(runtime, ensemble, time, level, -1, -1);
-    SubsetParams subset = new SubsetParams();
+    GridSubset subset = new GridSubset();
     if (level >= 0 && dataState.zaxis != null) {
       double levelVal = dataState.zaxis.getCoordMidpoint(level);
       subset.set(SubsetParams.vertCoord, levelVal);
@@ -273,7 +273,6 @@ public class GridRenderer {
     isNewField = false;
 
     GridReferencedArray dataArr = readHSlice(wantLevel, wantTime, wantEnsemble, wantRunTime);
-
     if (dataArr != null) {
       Arrays.MinMax minmax = Arrays.getMinMaxSkipMissingData(dataArr.data(), dataState.grid);
       colorScale.setMinMax(minmax.min(), minmax.max());
@@ -410,10 +409,10 @@ public class GridRenderer {
 
   private void drawGridHorizRegular(Graphics2D g, GridReferencedArray referencedArray) {
     GridCoordinateSystem gsys = referencedArray.csSubset();
-    Array<Double> data = referencedArray.data();
+    Array<Number> data = referencedArray.data();
+    data = Arrays.reduce(data);
 
     int count = 0;
-
     GridAxis1D xaxis = gsys.getXHorizAxis();
     GridAxis1D yaxis = gsys.getYHorizAxis();
     if (data.getRank() != 2) {
@@ -435,8 +434,8 @@ public class GridRenderer {
 
     // find the most common color and fill the entire area with it
     colorScale.resetHist();
-    for (double val : data) {
-      colorScale.getIndexFromValue(val); // accum in histogram
+    for (Number number : data) {
+      colorScale.getIndexFromValue(number.doubleValue()); // accum in histogram
     }
     int modeColor = colorScale.getHistMax();
     if (debugMiss) {
@@ -468,7 +467,7 @@ public class GridRenderer {
       int xbeg = 0;
 
       for (int x = 0; x < nx; x++) {
-        double val = data.get(y, x);
+        double val = data.get(y, x).doubleValue();
         thisColor = colorScale.getIndexFromValue(val);
 
         if ((run == 0) || (lastColor == thisColor)) { // same color - keep running

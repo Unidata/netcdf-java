@@ -12,6 +12,7 @@ import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.ft2.coverage.CoverageCoordAxis1D;
 import ucar.nc2.grid.CoordInterval;
+import ucar.nc2.grid.Grid;
 import ucar.nc2.grid.GridAxis1D;
 import ucar.nc2.grid.GridAxis1DTime;
 import ucar.nc2.time.CalendarDate;
@@ -43,6 +44,17 @@ public class NamedObjects {
       names.add(NamedObject.create(axis.getCoordName(i), axis.getShortName() + " " + axis.getUnitsString()));
     }
     return names;
+  }
+
+  public static List<NamedObject> getNames(Iterable<Grid> grids) {
+    if (grids == null) {
+      return new ArrayList<>();
+    }
+    List<NamedObject> result = new ArrayList<>();
+    for (Grid grid : grids) {
+      result.add(NamedObject.create(grid.getName(), grid.getDescription()));
+    }
+    return result;
   }
 
   public static List<NamedObject> getNames(GridAxis1DTime axis) {
