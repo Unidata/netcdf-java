@@ -250,10 +250,10 @@ public class CoordinateAxis1DExtractor {
         if (isAscending) {
           if (coords[i] <= coords[i - 1]) {
             throw new RuntimeException(dtCoordAxis.getShortName() + " is not monotonic increasing ");
-          } else {
-            if (coords[i] >= coords[i - 1]) {
-              throw new RuntimeException(dtCoordAxis.getShortName() + " is not monotonic decreasing");
-            }
+          }
+        } else {
+          if (coords[i] >= coords[i - 1]) {
+            throw new RuntimeException(dtCoordAxis.getShortName() + " is not monotonic decreasing");
           }
         }
       }

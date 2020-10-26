@@ -10,7 +10,7 @@ public class TestGridCompareProblem {
 
   @Test
   public void testProblem() throws Exception {
-    String filename = TestDir.cdmUnitTestDir + "ft/grid/gfs_crossPM_contiguous.nc";
+    String filename = TestDir.cdmLocalTestDataDir + "ncml/fmrc/GFS_Puerto_Rico_191km_20090729_0000.nc";
     compareGridDataset(filename);
     compareGridCoverage(filename);
   }

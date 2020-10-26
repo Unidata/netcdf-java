@@ -246,7 +246,7 @@ public class TestReadGridCoordinateSystem {
       assertThat(csSubset.getYHorizAxis()).isEqualTo(gcs.getYHorizAxis());
       GridAxis1D vert = csSubset.getVerticalAxis();
       assertThat(vert.getNcoords()).isEqualTo(1);
-      assertThat(vert.getCoordMidpoint(0)).isEqualTo(770.);
+      assertThat(vert.getCoordMidpoint(0)).isEqualTo(700.);
     }
   }
 

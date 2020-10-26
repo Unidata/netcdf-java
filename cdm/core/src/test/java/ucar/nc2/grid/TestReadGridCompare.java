@@ -35,10 +35,6 @@ public class TestReadGridCompare {
     FileFilter ff = TestDir.FileFilterSkipSuffix(".ncx4 .gbx9 .cdl .pdf perverse.nc aggFmrc.xml");
     List<Object[]> result = new ArrayList<>(500);
     try {
-      // both files are messed up.
-      // result.add(new Object[] {TestDir.cdmUnitTestDir + "conventions/wrf/wrfout_01_000000_0003.nc"});
-      // result.add(new Object[] {TestDir.cdmUnitTestDir + "conventions/wrf/wrfout_01_000000_0003.ncml"});
-
       // in this case the time coordinate is not monotonic.
       // result.add(new Object[] {TestDir.cdmUnitTestDir + "conventions/nuwg/2003021212_avn-x.nc"});
 
