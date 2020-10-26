@@ -61,13 +61,21 @@ Using the generic URI syntax from <a href="https://tools.ietf.org/html/rfc3986">
 * path (**required**): path associated with the bucket
   * may not be empty.
   * the final path segment is interpreted to be the name of the object stores bucket.
-* query (**required**): the object's key
+* query (**required**): full or partial object key
+  * Only full keys can be used to read an object through the netCDF-Java API.
+  * Partial keys are treated as prefixes, and are used by netCDF-Java when, for example, performing bucket listing operations.
+* fragment (**optional**): configuration options
+  * Configuration options may be passed in through fragment on the CDM S3 URI.
+  * Currently, only one configuration option is available and is used to describe a delimiter for keys that have been designed to be hierarchical.
+    A commonly encountered case is that the object keys are the same as the file path on the system from which they were uploaded.
+    In this case, the delimiter might be the "/" character.
+    If the fragment is not used, netCDF-Java will assume there is no hierarchical structure to the object keys.
 
-Example `cdms3` URIs (Any S3 compatiable Object Store):
-* cdms3://profile_name@my.endpoint.edu/endpoint/path/bucket-name?super/long/key
-* cdms3://profile_name@my.endpoint.edu/bucket-name?super/long/key
-* cdms3://my.endpoint.edu/endpoint/path/bucket-name?super/long/key
-* cdms3://my.endpoint.edu/bucket-name?super/long/key
+Example `cdms3` URIs (Any S3 compatible Object Store):
+* cdms3://profile_name@my.endpoint.edu/endpoint/path/bucket-name?super/long/key#delimiter=/
+* cdms3://profile_name@my.endpoint.edu/bucket-name?super/long/key#delimiter=/
+* cdms3://my.endpoint.edu/endpoint/path/bucket-name?super/long/key#delimiter=/
+* cdms3://my.endpoint.edu/bucket-name?super/long/key#delimiter=/
 
 Secure HTTP access is assumed by default.
 Insecure HTTP access is attempted when of the following ports is explicitly referenced in the authority portion of the `cdms3` URI:
@@ -123,6 +131,10 @@ Note: In order to supply a profile name (one way to set the region and/or creden
 In addition to the use of the credentials file for setting the region, as described above, the region may be set using the `aws.region` Java System Property, or the `AWS_REGION` environment variable.
 Note that a region set within the credentials file for the `default` profile will take precedence over all others.
 Possible values for the region code can be found in the [AWS Regional endpoints](https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-endpoints){:target="_blank"} documentation.
+
+When running in AWS and accessing objects from S3, it is better to avoid the use of a credentials file when possible.
+One way to do that is to attach an IAM Policy role to the EC2 instance or lambda function in which your code is running.
+For more information on IAM Profiles, please visit the [AWS User Guide](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html){:target="_blank"}.
  
 The following examples show how one could access the same GOES 16 data file across a variety of Object Store technologies (special thanks to the [NOAA Big Data project's](https://www.noaa.gov/big-data-project){:target="_blank"}):
 
