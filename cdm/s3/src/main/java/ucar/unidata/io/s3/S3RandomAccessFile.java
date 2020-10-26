@@ -5,26 +5,14 @@
 
 package ucar.unidata.io.s3;
 
+import static com.google.common.base.Preconditions.checkState;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
-import java.time.Duration;
-import java.util.Optional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import software.amazon.awssdk.auth.credentials.AnonymousCredentialsProvider;
-import software.amazon.awssdk.auth.credentials.AwsCredentialsProviderChain;
-import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
-import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
 import software.amazon.awssdk.core.ResponseBytes;
-import software.amazon.awssdk.http.apache.ApacheHttpClient;
-import software.amazon.awssdk.http.apache.ApacheHttpClient.Builder;
-import software.amazon.awssdk.profiles.ProfileFile;
-import software.amazon.awssdk.profiles.ProfileProperty;
-import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.S3ClientBuilder;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
@@ -35,75 +23,30 @@ import ucar.unidata.io.RemoteRandomAccessFile;
 import ucar.unidata.io.spi.RandomAccessFileProvider;
 
 /**
+ * Manage random access file level access to objects stored on AWS S3 compatible Object Stores.
+ *
+ * Extensions to {@link ucar.unidata.io.RandomAccessFile} and {@link ucar.unidata.io.RemoteRandomAccessFile} for
+ * objects stored on AWS S3 compatible Object Stores.
+ *
  * @author James McClain, based on work by John Caron and Donald Denbof
+ * @since 5.3.2
  */
 
 public final class S3RandomAccessFile extends RemoteRandomAccessFile implements ReadableRemoteFile, Closeable {
-
-  private static final Logger logger = LoggerFactory.getLogger(S3RandomAccessFile.class);
-
-  private static final String AWS_REGION_ENV_VAR_NAME = "AWS_REGION";
-  private static final String AWS_REGION_PROP_NAME = "aws.region";
 
   private static final int s3BufferSize = Integer
       .parseInt(System.getProperty("ucar.unidata.io.s3.bufferSize", String.valueOf(defaultRemoteFileBufferSize)));
 
   private static final long s3MaxReadCacheSize = Long
       .parseLong(System.getProperty("ucar.unidata.io.s3.maxReadCacheSize", String.valueOf(defaultMaxReadCacheSize)));
-  /**
-   * The maximum number of connections allowed in the S3 http connection pool. Each built S3 HTTP client has it's own
-   * private connection pool.
-   */
-  private static final int maxConnections =
-      Integer.parseInt(System.getProperty("ucar.unidata.io.s3.httpMaxConnections", "128"));
-  /**
-   * The amount of time to wait (in milliseconds) when initially establishing a connection before giving up and timing
-   * out. A duration of
-   * 0 means infinity, and is not recommended.
-   */
-  private static final int connectionTimeout = Integer
-      .parseInt(System.getProperty("ucar.unidata.io.s3.connectionTimeout", String.valueOf(defaultRemoteFileTimeout)));
-  /**
-   * The amount of time to wait for data to be transferred over an established, open connection before the connection is
-   * timed out. A duration of 0 means infinity, and is not recommended.
-   */
-  private static final int socketTimeout =
-      Integer.parseInt(System.getProperty("ucar.unidata.io.s3.socketTimeout", "100000"));
+
   private final CdmS3Uri uri;
-  private final S3Client client;
+  private S3Client client;
 
   private HeadObjectResponse objectHeadResponse;
 
   private S3RandomAccessFile(String url) throws IOException {
     super(url, s3BufferSize, s3MaxReadCacheSize);
-
-    // Region is tricky. Since we are using AWS SDK to manage connections to all object stores, we might have users
-    // who use netCDF-Java and never touch AWS. If that's they case, they likely have not setup a basic credentials or
-    // configuration file, and thus lack a default region. What we will do here is check to see if there is one set.
-    // If, by the time we make the client, profileRegion isn't set, we will default to the AWS_GLOBAL region, which is
-    // like a no-op region when it comes to S3. This will allow requests to non-AWS-S3 object stores to work, because
-    // a region must be set, even if it's useless.
-    // First, look for a region in the default profile of the default config file (~/.aws/config)
-    Optional<Region> profileRegion = ProfileFile.defaultProfileFile().profile("default")
-        .map(p -> p.properties().get(ProfileProperty.REGION)).map(Region::of);
-
-    // If region not found, check the aws.region system property and, if not found there, the environmental
-    // variable AWS_REGION
-    if (!profileRegion.isPresent()) {
-      // first check system property
-      logger.debug("Checking system property {} for Region.", AWS_REGION_PROP_NAME);
-      String regionName = System.getProperty(AWS_REGION_PROP_NAME);
-      if (regionName == null) {
-        // ok, now check environmental variable
-        logger.debug("Checking environmental variable {} for Region.", AWS_REGION_ENV_VAR_NAME);
-        regionName = System.getenv(AWS_REGION_ENV_VAR_NAME);
-      }
-
-      if (regionName != null) {
-        logger.debug("Region found: {}", regionName);
-        profileRegion = Optional.ofNullable(Region.of(regionName));
-      }
-    }
 
     try {
       uri = new CdmS3Uri(url);
@@ -113,75 +56,22 @@ public final class S3RandomAccessFile extends RemoteRandomAccessFile implements 
       throw new IOException(urie.getCause());
     }
 
-    Builder httpConfig = ApacheHttpClient.builder().maxConnections(maxConnections)
-        .connectionTimeout(Duration.ofMillis(connectionTimeout)).socketTimeout(Duration.ofMillis(socketTimeout));
+    // must be trying to open an object, so the key of the cdms3uri must be present
+    checkState(uri.getKey().isPresent(), "The cdmS3Uri must reference an object - object key is missing.");
 
-    S3ClientBuilder s3ClientBuilder = S3Client.builder().httpClientBuilder(httpConfig);
-
-    // if we are accessing an S3 compatible service, we need to override the server endpoint
-    uri.getEndpoint().ifPresent(s3ClientBuilder::endpointOverride);
-
-    // build up a chain of credentials providers
-    AwsCredentialsProviderChain.Builder cdmCredentialsProviderChainBuilder = AwsCredentialsProviderChain.builder();
-
-    // if uri has a profile name, we need setup a credentials provider to look for potential credentials, and see if a
-    // region has been set
-    if (uri.getProfile().isPresent()) {
-      // get the profile name
-      String profileName = uri.getProfile().get();
-
-      ProfileCredentialsProvider namedProfileCredentials =
-          ProfileCredentialsProvider.builder().profileName(profileName).build();
-
-      // add it to the chain that it is the first thing checked for credentials
-      cdmCredentialsProviderChainBuilder.addCredentialsProvider(namedProfileCredentials);
-
-      // Read the region associated with the profile, if set, as it might be different than the
-      // default value in the profile file, or the value found in the System property or Environmental
-      // variable.
-      // Note: the java sdk does not do this by default
-      Optional<Region> namedProfileRegion = ProfileFile.defaultProfileFile().profile(profileName)
-          .map(p -> p.properties().get(ProfileProperty.REGION)).map(Region::of);
-      // if the named profile has a region, update profileRegion to use it.
-      if (namedProfileRegion.isPresent()) {
-        logger.debug("Region {} found for profile {} - will be using this region.", namedProfileRegion.get(),
-            profileName);
-        profileRegion = namedProfileRegion;
-      }
-    }
-
-    // Add the Default Credentials Provider Chain:
-    // https://docs.aws.amazon.com/sdk-for-java/v2/developer-guide/credentials.html
-    cdmCredentialsProviderChainBuilder.addCredentialsProvider(DefaultCredentialsProvider.create());
-
-    // Add the AnonymousCredentialsProvider last
-    cdmCredentialsProviderChainBuilder.addCredentialsProvider(AnonymousCredentialsProvider.create());
-
-    // build the credentials provider that we'll use
-    AwsCredentialsProviderChain cdmCredentialsProviderChain = cdmCredentialsProviderChainBuilder.build();
-
-    // Add the credentials provider to the client builder
-    s3ClientBuilder.credentialsProvider(cdmCredentialsProviderChain);
-
-    // Set the region for the client builder (or default to AWS_GLOBAL)
-    s3ClientBuilder.region(profileRegion.orElse(Region.AWS_GLOBAL));
-
-    // Build the client
-    client = s3ClientBuilder.build();
+    // create client that will make S3 API requests
+    client = CdmS3Client.acquire(uri);
 
     // request HEAD for the object
     HeadObjectRequest headdObjectRequest =
-        HeadObjectRequest.builder().bucket(uri.getBucket()).key(uri.getKey()).build();
+        HeadObjectRequest.builder().bucket(uri.getBucket()).key(uri.getKey().get()).build();
 
     objectHeadResponse = client.headObject(headdObjectRequest);
   }
 
   public void closeRemote() {
-    // close the client
-    if (client != null) {
-      client.close();
-    }
-
+    // client managed by CdmS3Client cache
+    client = null;
     objectHeadResponse = null;
   }
 
@@ -202,7 +92,7 @@ public final class S3RandomAccessFile extends RemoteRandomAccessFile implements 
 
     String range = String.format("bytes=%d-%d", pos, pos + len);
     GetObjectRequest rangeObjectRequest =
-        GetObjectRequest.builder().bucket(uri.getBucket()).key(uri.getKey()).range(range).build();
+        GetObjectRequest.builder().bucket(uri.getBucket()).key(uri.getKey().get()).range(range).build();
 
     ResponseBytes<GetObjectResponse> objectPortion = client.getObjectAsBytes(rangeObjectRequest);
 
@@ -219,6 +109,9 @@ public final class S3RandomAccessFile extends RemoteRandomAccessFile implements 
     return totalBytes;
   }
 
+  static int getDefaultRemoteFileTimeout() {
+    return defaultRemoteFileTimeout;
+  }
 
   @Override
   public long length() {
@@ -228,6 +121,15 @@ public final class S3RandomAccessFile extends RemoteRandomAccessFile implements 
   @Override
   public long getLastModified() {
     return objectHeadResponse.lastModified().toEpochMilli();
+  }
+
+  @Override
+  public String getLocation() {
+    return uri.toString();
+  }
+
+  public String getObjectName() {
+    return uri.getKey().get();
   }
 
   /**

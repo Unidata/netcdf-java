@@ -11,6 +11,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Paths;
 import java.util.Formatter;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -94,6 +95,10 @@ public class TestS3Read {
       logger.error(msg);
       throw new IOException(msg);
     }
+
+    // Disable CdmS3Uri cache, otherwise credentials, regions, etc. will be ignored.
+    // For example, awsProfileSharedCredsBadDefault will not pass.
+    CdmS3Client.enableCache(false);
   }
 
   /**
@@ -457,6 +462,12 @@ public class TestS3Read {
       assertThat(conv).isNotNull();
       assertThat(conv.getStringValue()).ignoringCase().isEqualTo("CF-1.4");
     }
+  }
+
+  @AfterClass
+  public static void resetCdmS3Client() {
+    // re-enable the CdmS3Cache
+    CdmS3Client.enableCache(true);
   }
 
   //////////////
