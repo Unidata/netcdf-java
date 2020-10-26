@@ -106,6 +106,8 @@ public class CoordinateAxis extends VariableDS {
     return false; // interval detection is done in subclasses
   }
 
+  /** @deprecated use NetcdfDataset.isIndependentCoordinate(CoordinateAxis) */
+  @Deprecated
   public boolean isIndependentCoordinate() {
     if (isCoordinateVariable())
       return true;

@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import ucar.nc2.Dimension;
 import ucar.nc2.dataset.CoordinateAxis;
+import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.grid.GridAxis;
 import ucar.nc2.grid.GridAxis1D;
 import ucar.nc2.grid.GridAxis1DTime;
@@ -13,35 +14,34 @@ import java.util.ArrayList;
 /** static utilities */
 class Grids {
 
-  static GridAxis1D extractGridAxis1D(CoordinateAxis axis, boolean isIndependent) {
+  static GridAxis1D extractGridAxis1D(NetcdfDataset ncd, CoordinateAxis axis) {
     GridAxis1D.Builder<?> builder;
     if (axis.getAxisType().isTime()) {
       builder = GridAxis1DTime.builder(axis).setAxisType(axis.getAxisType());
     } else {
       builder = GridAxis1D.builder(axis).setAxisType(axis.getAxisType());
     }
-    extractGridAxis1D(axis, builder, isIndependent);
+    extractGridAxis1D(ncd, axis, builder);
     return builder.build();
   }
 
-  private static void extractGridAxis1D(CoordinateAxis dtCoordAxis, GridAxis1D.Builder<?> builder,
-      boolean isIndependent) {
-    Preconditions.checkArgument(dtCoordAxis.getRank() < 2);
-    CoordinateAxis1DExtractor extract = new CoordinateAxis1DExtractor(dtCoordAxis);
+  private static void extractGridAxis1D(NetcdfDataset ncd, CoordinateAxis axis, GridAxis1D.Builder<?> builder) {
+    Preconditions.checkArgument(axis.getRank() < 2);
+    CoordinateAxis1DExtractor extract = new CoordinateAxis1DExtractor(axis);
 
     GridAxis.DependenceType dependenceType;
-    if (dtCoordAxis.isCoordinateVariable()) {
+    if (axis.isCoordinateVariable()) {
       dependenceType = GridAxis.DependenceType.independent;
-    } else if (isIndependent) { // its a coordinate alias
+    } else if (ncd.isIndependentCoordinate(axis)) { // is a coordinate alias
       dependenceType = GridAxis.DependenceType.independent;
-      builder.setDependsOn(ImmutableList.of(dtCoordAxis.getDimension(0).getShortName()));
-    } else if (dtCoordAxis.isScalar()) {
+      builder.setDependsOn(ImmutableList.of(axis.getDimension(0).getShortName()));
+    } else if (axis.isScalar()) {
       dependenceType = GridAxis.DependenceType.scalar;
     } else {
       dependenceType = GridAxis.DependenceType.dependent;
       ArrayList<String> dependsOn = new ArrayList<>();
-      for (Dimension d : dtCoordAxis.getDimensions()) { // LOOK axes may not exist
-        dependsOn.add(d.makeFullName(dtCoordAxis));
+      for (Dimension d : axis.getDimensions()) { // LOOK axes may not exist
+        dependsOn.add(d.makeFullName(axis));
       }
       builder.setDependsOn(dependsOn);
     }
@@ -89,7 +89,7 @@ class Grids {
 
     if (builder instanceof GridAxis1DTime.Builder) {
       GridAxis1DTime.Builder<?> timeBuilder = (GridAxis1DTime.Builder<?>) builder;
-      CoordinateAxis1DTimeExtractor extractTime = new CoordinateAxis1DTimeExtractor(dtCoordAxis, extract.coords);
+      CoordinateAxis1DTimeExtractor extractTime = new CoordinateAxis1DTimeExtractor(axis, extract.coords);
       timeBuilder.setTimeHelper(extractTime.timeHelper);
       timeBuilder.setCalendarDates(extractTime.cdates);
     }

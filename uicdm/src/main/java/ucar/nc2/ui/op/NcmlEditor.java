@@ -344,7 +344,6 @@ public class NcmlEditor extends JPanel {
     if (ncmlLocation == null) {
       return;
     }
-    boolean useBuilders = ToolsUI.getToolsUI().getUseBuilders();
     try (NetcdfDataset ncd = NetcdfDatasets.openDataset(ncmlLocation)) {
       ncd.check(f);
     } catch (IOException ioe) {

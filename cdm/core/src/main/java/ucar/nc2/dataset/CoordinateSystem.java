@@ -82,8 +82,9 @@ public class CoordinateSystem {
 
   // prefer smaller ranks, in case more than one
   private CoordinateAxis lesserRank(CoordinateAxis a1, CoordinateAxis a2) {
-    if (a1 == null)
+    if (a1 == null) {
       return a2;
+    }
     return (a1.getRank() <= a2.getRank()) ? a1 : a2;
   }
 
@@ -148,12 +149,14 @@ public class CoordinateSystem {
    * @param type look for this axisType
    * @return CoordinateAxis of the given AxisType, else null.
    */
+  @Nullable
   public CoordinateAxis findAxis(AxisType type) {
     CoordinateAxis result = null;
     for (CoordinateAxis axis : coordAxes) {
       AxisType axisType = axis.getAxisType();
-      if ((axisType != null) && (axisType == type))
+      if ((axisType != null) && (axisType == type)) {
         result = lesserRank(result, axis);
+      }
     }
     return result;
   }
@@ -313,14 +316,16 @@ public class CoordinateSystem {
 
   ////////////////////////////////////////////////////////////////////////////
   // classification
+
   /**
    * true if it has X and Y CoordinateAxis, and a CoordTransform Projection
    * 
    * @return true if it has X and Y CoordinateAxis, and a CoordTransform Projection
    */
   public boolean isGeoXY() {
-    if ((xAxis == null) || (yAxis == null))
+    if ((xAxis == null) || (yAxis == null)) {
       return false;
+    }
     return null != getProjection() && !(projection instanceof LatLonProjection);
   }
 
@@ -355,11 +360,14 @@ public class CoordinateSystem {
    * true if all axes are CoordinateAxis1D
    * 
    * @return true if all axes are CoordinateAxis1D
+   * @deprecated do not use
    */
+  @Deprecated
   public boolean isProductSet() {
     for (CoordinateAxis axis : coordAxes) {
-      if (!(axis instanceof CoordinateAxis1D))
+      if (axis.getRank() != 1) {
         return false;
+      }
     }
     return true;
   }
@@ -368,13 +376,17 @@ public class CoordinateSystem {
    * true if all axes are CoordinateAxis1D and are regular
    *
    * @return true if all axes are CoordinateAxis1D and are regular
+   * @deprecated do not use
    */
+  @Deprecated
   public boolean isRegular() {
     for (CoordinateAxis axis : coordAxes) {
-      if (!(axis instanceof CoordinateAxis1D))
+      if (!(axis instanceof CoordinateAxis1D)) {
         return false;
-      if (!((CoordinateAxis1D) axis).isRegular())
+      }
+      if (!((CoordinateAxis1D) axis).isRegular()) {
         return false;
+      }
     }
     return true;
   }
@@ -408,23 +420,31 @@ public class CoordinateSystem {
    * @param subset is this a subset
    * @param set of this?
    * @return true if all the Dimensions in subset are in set
+   * @deprecated use Dimensions.isSubset()
    */
+  @Deprecated
   public static boolean isSubset(Collection<Dimension> subset, Collection<Dimension> set) {
     for (Dimension d : subset) {
-      if (!(set.contains(d)))
+      if (!(set.contains(d))) {
         return false;
+      }
     }
     return true;
   }
 
+  /** @deprecated use Dimensions.isSubset() */
+  @Deprecated
   public static boolean isSubset(Set<String> subset, Set<String> set) {
     for (String d : subset) {
-      if (!(set.contains(d)))
+      if (!(set.contains(d))) {
         return false;
+      }
     }
     return true;
   }
 
+  /** @deprecated use Dimensions.makeDomain() */
+  @Deprecated
   public static Set<Dimension> makeDomain(Iterable<? extends Variable> axes) {
     Set<Dimension> domain = new HashSet<>();
     for (Variable axis : axes) {
@@ -433,6 +453,8 @@ public class CoordinateSystem {
     return domain;
   }
 
+  /** @deprecated use Dimensions.makeDomain().size() */
+  @Deprecated
   public static int countDomain(Variable[] axes) {
     Set<Dimension> domain = new HashSet<>();
     for (Variable axis : axes) {
@@ -470,16 +492,12 @@ public class CoordinateSystem {
     return (tAxis != null);
   }
 
-  /**
-   * Do we have all the axes in the list?
-   * 
-   * @param wantAxes List of CoordinateAxis
-   * @return true if all in our list.
-   */
+  /** Do we have all the axes in wantAxes? */
   public boolean containsAxes(List<CoordinateAxis> wantAxes) {
     for (CoordinateAxis ca : wantAxes) {
-      if (!containsAxis(ca.getFullName()))
+      if (!containsAxis(ca.getFullName())) {
         return false;
+      }
     }
     return true;
   }
@@ -498,26 +516,17 @@ public class CoordinateSystem {
     return false;
   }
 
-  /**
-   * Do we have all the dimensions in the list?
-   * 
-   * @param wantDimensions List of Dimensions
-   * @return true if all in our list.
-   */
+  /** Do we have all the dimensions in wantDimensions? */
   public boolean containsDomain(List<Dimension> wantDimensions) {
     for (Dimension d : wantDimensions) {
-      if (!domain.contains(d))
+      if (!domain.contains(d)) {
         return false;
+      }
     }
     return true;
   }
 
-  /**
-   * Do we have all the axes types in the list?
-   * 
-   * @param wantAxes List of AxisType
-   * @return true if all in our list.
-   */
+  /** Do we have all the axes types in wantAxes? */
   public boolean containsAxisTypes(List<AxisType> wantAxes) {
     for (AxisType wantAxisType : wantAxes) {
       if (!containsAxisType(wantAxisType))
@@ -528,15 +537,16 @@ public class CoordinateSystem {
 
 
   /**
-   * Do we have an axes of the given type?
+   * Do we have an axis of the given type?
    * 
    * @param wantAxisType want this AxisType
    * @return true if we have at least one axis of that type.
    */
   public boolean containsAxisType(AxisType wantAxisType) {
     for (CoordinateAxis ca : coordAxes) {
-      if (ca.getAxisType() == wantAxisType)
+      if (ca.getAxisType() == wantAxisType) {
         return true;
+      }
     }
     return false;
   }

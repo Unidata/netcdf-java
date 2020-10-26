@@ -9,6 +9,7 @@ import com.google.common.collect.ImmutableSet;
 import javax.annotation.Nullable;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants._Coordinate;
 import ucar.nc2.internal.dataset.CoordinatesHelper;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -313,6 +314,31 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
         return v;
     }
     return null;
+  }
+
+  /** Return true if axis is 1D with a unique dimension. */
+  public boolean isIndependentCoordinate(CoordinateAxis axis) {
+    if (axis.isCoordinateVariable()) {
+      return true;
+    }
+    if (axis.getRank() != 1) {
+      return false;
+    }
+    if (axis.attributes().hasAttribute(_Coordinate.AliasForDimension)) {
+      return true;
+    }
+    Dimension dim = axis.getDimension(0);
+    for (CoordinateAxis other : getCoordinateAxes()) {
+      if (other == axis) {
+        continue;
+      }
+      for (Dimension odim : other.getDimensions()) {
+        if (dim.equals(odim)) {
+          return false;
+        }
+      }
+    }
+    return true;
   }
 
   @Override

@@ -4,7 +4,6 @@
  */
 package ucar.nc2.internal.grid;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import ucar.nc2.*;
@@ -15,6 +14,7 @@ import ucar.nc2.grid.Grid;
 import ucar.nc2.grid.GridAxis;
 import ucar.nc2.grid.GridDataset;
 import ucar.nc2.grid.GridCoordinateSystem;
+import ucar.nc2.internal.dataset.DatasetClassifier;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionRect;
@@ -32,14 +32,15 @@ public class GridDatasetImpl implements GridDataset {
       ncd = NetcdfDatasets.enhance(ncd, enhance, null);
     }
 
-    GridCoordSystemClassifier facc = GridCoordSystemClassifier.classify(ncd, errInfo);
-    return (facc == null) ? Optional.empty() : Optional.of(new GridDatasetImpl(ncd, facc, errInfo));
+    DatasetClassifier facc = new DatasetClassifier(ncd, errInfo);
+    return (facc.getFeatureType() != FeatureType.GRID) ? Optional.empty()
+        : Optional.of(new GridDatasetImpl(ncd, facc, errInfo));
   }
 
   ///////////////////////////////////////////////////////////////////
 
   private final NetcdfDataset ncd;
-  private final FeatureType coverageType;
+  private final FeatureType featureType;
 
   private final ArrayList<GridCS> coordsys = new ArrayList<>();
 
@@ -51,38 +52,22 @@ public class GridDatasetImpl implements GridDataset {
   private CalendarDateRange dateRangeMax;
   private ProjectionRect projBB;
 
-  private GridDatasetImpl(NetcdfDataset ncd, GridCoordSystemClassifier facc, Formatter errInfo) throws IOException {
+  private GridDatasetImpl(NetcdfDataset ncd, DatasetClassifier classifier, Formatter errInfo) {
     this.ncd = ncd;
-    this.coverageType = facc.type;
+    this.featureType = classifier.getFeatureType();
 
     // Convert axes
     this.gridAxes = new HashMap<>();
-    for (CoordinateAxis axis : facc.independentAxes) {
-      if (axis.getAxisType() == null) {
-        continue;
-      }
-      gridAxes.put(axis.getFullName(), Grids.extractGridAxis1D(axis, true));
-    }
-    for (CoordinateAxis axis : facc.otherAxes) {
-      if (axis.getAxisType() == null) {
-        continue;
-      }
-      gridAxes.put(axis.getFullName(), Grids.extractGridAxis1D(axis, false));
+    for (CoordinateAxis axis : classifier.getAxesUsed()) {
+      gridAxes.put(axis.getFullName(), Grids.extractGridAxis1D(ncd, axis));
     }
 
     // Convert coordsys
-    Map<CoordinateSystem, GridCS> trackCsConverted = new HashMap<>();
-    for (CoordinateSystem cs : ncd.getCoordinateSystems()) {
-      GridCoordSystemClassifier fac = new GridCoordSystemClassifier(ncd, cs, errInfo);
-      if (fac.type == null) {
-        continue;
-      }
-      GridCS gcs = fac.build(this.gridAxes);
-      if (gcs == null) {
-        continue;
-      }
+    Map<String, GridCS> trackCsConverted = new HashMap<>();
+    for (DatasetClassifier.CoordSysClassifier csc : classifier.getCoordinateSystemsUsed()) {
+      GridCS gcs = new GridCS(csc, this.gridAxes);
       coordsys.add(gcs);
-      trackCsConverted.put(cs, gcs);
+      trackCsConverted.put(csc.getName(), gcs);
     }
 
     this.gridsets = ArrayListMultimap.create();
@@ -92,12 +77,17 @@ public class GridDatasetImpl implements GridDataset {
       if (css.isEmpty()) {
         continue;
       }
+      // Use the largest (# axes)
       css.sort((o1, o2) -> o2.getCoordinateAxes().size() - o1.getCoordinateAxes().size());
-      CoordinateSystem cs = css.get(0); // the largest one
-      GridCS gcs = Preconditions.checkNotNull(trackCsConverted.get(cs));
-      Grid grid = new GridVariable(gcs, (VariableDS) ve);
-      grids.add(grid);
-      this.gridsets.put(gcs, grid);
+      for (CoordinateSystem cs : css) {
+        GridCS gcs = trackCsConverted.get(cs.getName());
+        if (gcs != null && gcs.getFeatureType() == this.featureType) {
+          Grid grid = new GridVariable(gcs, (VariableDS) ve);
+          grids.add(grid);
+          this.gridsets.put(gcs, grid);
+          break;
+        }
+      }
     }
   }
 
@@ -125,7 +115,7 @@ public class GridDatasetImpl implements GridDataset {
   }
 
   public FeatureType getCoverageType() {
-    return coverageType;
+    return featureType;
   }
 
   @Override
@@ -144,12 +134,12 @@ public class GridDatasetImpl implements GridDataset {
 
   @Override
   public Iterable<GridCoordinateSystem> getCoordSystems() {
-    return gridsets.keys();
+    return gridsets.keySet();
   }
 
   @Override
   public Iterable<GridAxis> getCoordAxes() {
-    return gridAxes.values(); // LOOK sort ?
+    return gridAxes.values();
   }
 
   @Override
@@ -174,7 +164,6 @@ public class GridDatasetImpl implements GridDataset {
     buff.format("%s", ncd.toString());
     buff.format("%n%n----------------------------------------------------%n");
   }
-
 
   @Override
   public String toString() {

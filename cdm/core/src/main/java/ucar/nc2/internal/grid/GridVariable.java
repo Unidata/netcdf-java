@@ -72,9 +72,8 @@ public class GridVariable implements Grid {
 
   @Override
   public GridReferencedArray readData(GridSubset subset) throws IOException, InvalidRangeException {
-    GridCoordinateSystem orgCoordSys = this.cs;
     Formatter errlog = new Formatter();
-    Optional<GridCoordinateSystem> opt = orgCoordSys.subset(subset, errlog);
+    Optional<GridCoordinateSystem> opt = this.cs.subset(subset, errlog);
     if (!opt.isPresent()) {
       throw new InvalidRangeException(errlog.toString());
     }

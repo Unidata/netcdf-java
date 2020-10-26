@@ -237,15 +237,21 @@ public class WRFConvention extends CoordSystemBuilder {
 
       Projection proj = null;
       switch (projType) {
-        case 0: // for diagnostic runs with no georeferencing
+        case 0: { // for diagnostic runs with no georeferencing
           proj = new FlatEarth();
           projCT = new ProjectionCT("flat_earth", "FGDC", proj);
           break;
-        case 1:
-          proj = new LambertConformal(standardLat, standardLon, lat1, lat2, 0.0, 0.0, 6370);
+        }
+        case 1: {
+          // TODO what should be the correct value when STAND_LON and MOAD_CEN_LAT is missing ??
+          // TODO Just follow what appears to be correct for Stereographic.
+          double lon0 = (Double.isNaN(standardLon)) ? centralLon : standardLon;
+          double lat0 = (Double.isNaN(standardLat)) ? lat2 : standardLat;
+          proj = new LambertConformal(lat0, lon0, lat1, lat2, 0.0, 0.0, 6370);
           projCT = new ProjectionCT("Lambert", "FGDC", proj);
           break;
-        case 2:
+        }
+        case 2: {
           // Thanks to Heiko Klein for figuring out WRF Stereographic
           double lon0 = (Double.isNaN(standardLon)) ? centralLon : standardLon;
           double lat0 = (Double.isNaN(centralLat)) ? lat2 : centralLat; // ?? 7/20/2010
@@ -253,12 +259,14 @@ public class WRFConvention extends CoordSystemBuilder {
           proj = new Stereographic(lat0, lon0, scaleFactor, 0.0, 0.0, 6370);
           projCT = new ProjectionCT("Stereographic", "FGDC", proj);
           break;
-        case 3:
+        }
+        case 3: {
           // thanks to Robert Schmunk with edits for non-MOAD grids
           proj = new Mercator(standardLon, lat1, 0.0, 0.0, 6370);
           projCT = new ProjectionCT("Mercator", "FGDC", proj);
           break;
-        case 6:
+        }
+        case 6: {
           // version 3 "lat-lon", including global
           // http://www.mmm.ucar.edu/wrf/users/workshops/WS2008/presentations/1-2.pdf
           // use 2D XLAT, XLONG
@@ -284,9 +292,11 @@ public class WRFConvention extends CoordSystemBuilder {
             }
           }
           break;
-        default:
+        }
+        default: {
           parseInfo.format("ERROR: unknown projection type = %s%n", projType);
           break;
+        }
       }
 
       if (proj != null) {
@@ -561,8 +571,9 @@ public class WRFConvention extends CoordSystemBuilder {
     v.addAttribute(new Attribute(CF.POSITIVE, CF.POSITIVE_DOWN)); // eta coordinate is 1.0 at bottom, 0 at top
     v.setAxisType(AxisType.GeoZ);
     v.addAttribute(new Attribute(_Coordinate.AxisType, "GeoZ"));
-    if (!axisName.equals(dim.getShortName()))
+    if (!axisName.equals(dim.getShortName())) {
       v.addAttribute(new Attribute(_Coordinate.AliasForDimension, dim.getShortName()));
+    }
 
     // create eta values from file variables: ZNU, ZNW
     // But they are a function of time though the values are the same in the sample file

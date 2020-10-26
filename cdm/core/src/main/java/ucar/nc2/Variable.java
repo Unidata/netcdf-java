@@ -1248,6 +1248,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
 
     this.dimensions = ImmutableList.copyOf(dims);
     if (builder.autoGen != null) {
+      // LOOK could keep Autogen as part of cache
       this.cache.srcData = builder.autoGen.makeDataArray(this.dataType, this.dimensions);
     }
 
