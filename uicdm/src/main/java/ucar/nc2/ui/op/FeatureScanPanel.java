@@ -95,6 +95,15 @@ public class FeatureScanPanel extends JPanel {
       }
     });
 
+    varPopup.addAction("Open as NewGrid", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        FeatureScan.Bean ftb = (FeatureScan.Bean) ftTable.getSelectedBean();
+        if (ftb == null)
+          return;
+        FeatureScanPanel.this.firePropertyChange("openNewGrid", null, ftb.f.getPath());
+      }
+    });
+
     varPopup.addAction("Open as RadialDataset", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         FeatureScan.Bean ftb = (FeatureScan.Bean) ftTable.getSelectedBean();

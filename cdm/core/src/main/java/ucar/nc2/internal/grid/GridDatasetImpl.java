@@ -152,6 +152,11 @@ public class GridDatasetImpl implements GridDataset {
     return grids.stream().filter(g -> g.getName().equals(name)).findFirst();
   }
 
+  @Override
+  public FeatureType getFeatureType() {
+    return featureType;
+  };
+
   public String getDetailInfo() {
     Formatter buff = new Formatter();
     getDetailInfo(buff);

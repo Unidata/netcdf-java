@@ -5,30 +5,27 @@
 package ucar.nc2.ft2.scan;
 
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageCS;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageCSBuilder;
+import ucar.nc2.internal.dataset.DatasetClassifier;
+import ucar.nc2.internal.grid.GridDatasetImpl;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Formatter;
-import java.util.List;
+import java.util.*;
 
 /**
  * Scan a directory, try to open files as a Feature Type dataset.
  *
  * @author caron
  * @since Aug 15, 2009
- * @deprecated do not use.
  */
-@Deprecated
 public class FeatureScan {
   private String top;
   private boolean subdirs;
@@ -143,10 +140,10 @@ public class FeatureScan {
     FeatureType featureType, ftFromMetadata;
     String ftype;
     StringBuilder info = new StringBuilder();
-    String coordSysBuilder;
     String ftImpl;
     Throwable problem;
     DtCoverageCSBuilder builder; // LOOK replace with CoverageDataset
+    DatasetClassifier.CoordSysClassifier classifier;
 
     // no-arg constructor
     public Bean() {}
@@ -158,7 +155,6 @@ public class FeatureScan {
         System.out.printf(" featureScan=%s%n", f.getPath());
       try (NetcdfDataset ds = NetcdfDatasets.openDataset(f.getPath())) {
         fileType = ds.getFileTypeId();
-        coordSysBuilder = ds.getRootGroup().findAttributeString(_Coordinate._CoordSysBuilder, "none");
 
         Formatter errlog = new Formatter();
         builder = DtCoverageCSBuilder.classify(ds, errlog);
@@ -167,8 +163,16 @@ public class FeatureScan {
 
         ftFromMetadata = FeatureDatasetFactoryManager.findFeatureType(ds);
 
-        // old
         try {
+          // new
+          errlog = new Formatter();
+          DatasetClassifier dclassifier = new DatasetClassifier(ds, errlog);
+          classifier = dclassifier.getCoordinateSystemsUsed().stream().findFirst().orElse(null);
+          info.append("GridDatasetImpl errlog = ");
+          info.append(errlog);
+          info.append("\n\n");
+
+          // old
           errlog = new Formatter();
           FeatureDataset featureDataset = FeatureDatasetFactoryManager.wrap(null, ds, null, errlog);
           info.append("FeatureDatasetFactoryManager errlog = ");
@@ -216,8 +220,8 @@ public class FeatureScan {
       return coordMap;
     }
 
-    public String getCoordSysBuilder() {
-      return coordSysBuilder;
+    public String getNewGrid() {
+      return classifier == null ? "" : classifier.showSummary();
     }
 
     public void setCoordMap() {
