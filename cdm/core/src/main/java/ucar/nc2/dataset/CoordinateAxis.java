@@ -106,6 +106,8 @@ public class CoordinateAxis extends VariableDS {
     return false; // interval detection is done in subclasses
   }
 
+  /** @deprecated use NetcdfDataset.isIndependentCoordinate(CoordinateAxis) */
+  @Deprecated
   public boolean isIndependentCoordinate() {
     if (isCoordinateVariable())
       return true;
@@ -216,9 +218,7 @@ public class CoordinateAxis extends VariableDS {
     // buf.append("\n");
   }
 
-  /**
-   * Standard sort on Coordinate Axes
-   */
+  /** Standard sort on Coordinate Axes */
   public static class AxisComparator implements java.util.Comparator<CoordinateAxis> {
     public int compare(CoordinateAxis c1, CoordinateAxis c2) {
       Preconditions.checkNotNull(c1);

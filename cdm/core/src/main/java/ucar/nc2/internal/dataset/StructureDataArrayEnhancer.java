@@ -100,9 +100,6 @@ public class StructureDataArrayEnhancer {
         StructureData orgSdata = orgArray.get(nrow);
         for (StructureMembers.Member nmember : nestedMembers) {
           StructureMembers.Member orgMember = orgMembers.findMember(nmember.getName());
-          if (orgMember == null) {
-            System.out.printf("HEY%n");
-          }
           Preconditions.checkNotNull(orgMember, "Cant find " + orgMember.getName());
           int nestedPos = offset + nestedMembers.getStorageSizeBytes() * nrow + member.getOffset();
           convertNestedData(nestedStucture, nestedPos, nmember, storage, bbuffer, orgSdata.getMemberData(orgMember));

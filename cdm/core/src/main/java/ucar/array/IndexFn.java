@@ -85,7 +85,7 @@ final class IndexFn implements Iterable<Integer> {
     return length;
   }
 
-  public String toString() {
+  public String toString2() {
     StringBuilder sbuff = new StringBuilder();
     boolean first = true;
     for (int i : this) {
@@ -96,6 +96,12 @@ final class IndexFn implements Iterable<Integer> {
       first = false;
     }
     return sbuff.toString();
+  }
+
+  @Override
+  public String toString() {
+    return "IndexFn{" + "shape=" + java.util.Arrays.toString(shape) + ", stride=" + java.util.Arrays.toString(stride)
+        + ", rank=" + rank + ", length=" + length + ", offset=" + offset + ", canonicalOrder=" + canonicalOrder + '}';
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////

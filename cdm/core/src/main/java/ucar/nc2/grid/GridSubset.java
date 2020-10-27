@@ -16,13 +16,8 @@ import ucar.unidata.geoloc.ProjectionRect;
 import java.util.*;
 
 /**
- * Describes a subset of a Coverage.
+ * Describes a subset of a Grid.
  * Coordinate values only, no indices.
- *
- * @see "docs/website/tds/reference/services/CdmrfParams.adoc"
- *
- * @author caron
- * @since 5/6/2015
  */
 public class GridSubset {
   public static final String variables = "var"; // value = List<String>
@@ -34,6 +29,7 @@ public class GridSubset {
   public static final String stations = "stn"; // value = List<String>
 
   public static final String time = "time"; // value = CalendarDate
+  public static final String timeCoord = "timeCoord"; // value = Object
   public static final String timeRange = "timeRange"; // value = CalendarDateRange
   public static final String timeStride = "timeStride"; // value = Integer
   public static final String timePresent = "timePresent"; // value = Boolean
@@ -50,9 +46,8 @@ public class GridSubset {
   public static final String timeOffsetAll = "timeOffsetAll"; // value = Boolean
   public static final String timeOffsetIntv = "timeOffsetIntv"; // value = double[2]
 
-  public static final String vertCoord = "vertCoord"; // value = Double
-  public static final String vertIntv = "vertIntv"; // value = double[2]
-  public static final String vertRange = "vertRange"; // value = double[2] used WCS local, not remote
+  public static final String vertCoord = "vertCoord"; // value = Double or CoordInterval
+  // public static final String vertRange = "vertRange"; // value = double[2] used WCS local, not remote
 
   public static final String ensCoord = "ensCoord"; // value = Double
 
@@ -192,7 +187,8 @@ public class GridSubset {
   }
 
   public boolean hasTimeParam() {
-    return get(timeRange) != null || get(time) != null || get(timeStride) != null || get(timePresent) != null;
+    return get(timeRange) != null || get(time) != null || get(timeStride) != null || get(timePresent) != null
+        || get(timeCoord) != null;
   }
 
   public boolean hasTimeOffsetParam() {
@@ -253,6 +249,15 @@ public class GridSubset {
     return this;
   }
 
+  public GridSubset setTimeCoord(Object coord) {
+    set(timeCoord, coord);
+    return this;
+  }
+
+  public Object getTimeCoord() {
+    return get(timeCoord);
+  }
+
   public GridSubset setTime(CalendarDate date) {
     set(time, date);
     return this;
@@ -289,15 +294,17 @@ public class GridSubset {
     return (CalendarPeriod) get(timeWindow);
   }
 
-  public double[] getVertRange() {
-    return (double[]) get(vertRange);
+  /*
+   * public double[] getVertRange() {
+   * return (double[]) get(vertRange);
+   * }
+   */
+
+  public Object getVertCoord() {
+    return get(vertCoord);
   }
 
-  public Double getVertCoord() {
-    return (Double) get(vertCoord);
-  }
-
-  public GridSubset setVertCoord(double coord) {
+  public GridSubset setVertCoord(Object coord) {
     set(vertCoord, coord);
     return this;
   }
@@ -309,15 +316,6 @@ public class GridSubset {
   public GridSubset setEnsCoord(double coord) {
     set(ensCoord, coord);
     return this;
-  }
-
-  public GridSubset setVertCoordIntv(double[] vertCoordIntv) {
-    set(vertIntv, vertCoordIntv);
-    return this;
-  }
-
-  public double[] getVertCoordIntv() {
-    return (double[]) get(vertIntv);
   }
 
   // A time offset or time offset interval starts from the rundate of that point, in the units of the coordinate

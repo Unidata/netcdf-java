@@ -9,8 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.array.Array;
 import ucar.ma2.DataType;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Range;
 import ucar.ma2.RangeIterator;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
@@ -23,7 +21,7 @@ import java.io.IOException;
 import java.util.*;
 
 /** GridAxis abstract superclass */
-public abstract class GridAxis implements Comparable<GridAxis> {
+public abstract class GridAxis implements Iterable<Object> {
   private static final Logger logger = LoggerFactory.getLogger(GridAxis.class);
 
   public enum Spacing {
@@ -34,8 +32,18 @@ public abstract class GridAxis implements Comparable<GridAxis> {
                      // resol = (start - end) / npts
     contiguousInterval, // irregular contiguous intervals (values, npts), values are the edges, values[npts+1],
                         // coord halfway between edges
-    discontiguousInterval // irregular discontiguous spaced intervals (values, npts), values are the edges,
-                          // values[2*npts]: low0, high0, low1, high1, ...
+    discontiguousInterval; // irregular discontiguous spaced intervals (values, npts), values are the edges,
+                           // values[2*npts]: low0, high0, low1, high1, ...
+                           // Note that monotonicity is not guarenteed, and is ambiguous.
+
+    public boolean isRegular() {
+      return (this == Spacing.regularPoint) || (this == Spacing.regularInterval);
+    }
+
+    public boolean isInterval() {
+      return this == Spacing.regularInterval || this == Spacing.contiguousInterval
+          || this == Spacing.discontiguousInterval;
+    }
   }
 
   public enum DependenceType {
@@ -95,12 +103,11 @@ public abstract class GridAxis implements Comparable<GridAxis> {
   }
 
   public boolean isRegular() {
-    return (spacing == Spacing.regularPoint) || (spacing == Spacing.regularInterval);
+    return spacing.isRegular();
   }
 
   public boolean isInterval() {
-    return spacing == Spacing.regularInterval || spacing == Spacing.contiguousInterval
-        || spacing == Spacing.discontiguousInterval;
+    return spacing.isInterval();
   }
 
   // When isRegular, same as increment, otherwise an average = (end - start) / npts
@@ -137,19 +144,10 @@ public abstract class GridAxis implements Comparable<GridAxis> {
     return isSubset;
   }
 
-  // LOOK what is this?
-  public RangeIterator getRangeIterator() {
-    if (getDependenceType() == GridAxis.DependenceType.scalar)
-      return Range.EMPTY;
+  // Iterator over which coordinates wanted. TODO only in axis1d? Only for subset??
+  public abstract RangeIterator getRangeIterator();
 
-    try {
-      return new Range(axisType.toString(), 0, ncoords - 1);
-    } catch (InvalidRangeException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  @Override
+  // @Override
   public int compareTo(GridAxis o) {
     return axisType.axisOrder() - o.axisType.axisOrder();
   }
@@ -388,7 +386,7 @@ public abstract class GridAxis implements Comparable<GridAxis> {
     }
 
     public T setDependsOn(List<String> dependsOn) {
-      this.dependsOn = new ArrayList(dependsOn);
+      this.dependsOn = new ArrayList<>(dependsOn);
       return self();
     }
 

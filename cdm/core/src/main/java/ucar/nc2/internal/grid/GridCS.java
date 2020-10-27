@@ -9,6 +9,8 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import ucar.ma2.RangeIterator;
 import ucar.nc2.Dimension;
+import ucar.nc2.Dimensions;
+import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.*;
@@ -17,6 +19,7 @@ import ucar.nc2.grid.GridAxis1D;
 import ucar.nc2.grid.GridAxis1DTime;
 import ucar.nc2.grid.GridCoordinateSystem;
 import ucar.nc2.grid.GridSubset;
+import ucar.nc2.internal.dataset.DatasetClassifier;
 import ucar.unidata.geoloc.*;
 
 import javax.annotation.Nullable;
@@ -63,6 +66,19 @@ class GridCS implements GridCoordinateSystem {
       }
     }
     return null;
+  }
+
+  /**
+   * Can this be a coordinate system for v?
+   * True if each dimension of v is in this domain, or is 1 dimensional.
+   */
+  public boolean isCoordinateSystemFor(Variable v) {
+    for (Dimension d : Dimensions.makeDimensionsAll(v)) {
+      if (!domain.contains(d) && (d.getLength() != 1)) {
+        return false;
+      }
+    }
+    return true;
   }
 
   @Override
@@ -175,41 +191,43 @@ class GridCS implements GridCoordinateSystem {
     return mapArea;
   }
 
-  /**
+  /*
    * Get the Lat/Lon coordinates of the midpoint of a grid cell, using the x,y indices
    *
    * @param xindex x index
+   * 
    * @param yindex y index
+   * 
    * @return lat/lon coordinate of the midpoint of the cell
    *
-   *         public LatLonPoint getLatLon(int xindex, int yindex) {
-   *         double x, y;
+   * public LatLonPoint getLatLon(int xindex, int yindex) {
+   * double x, y;
    *
-   *         GridAxis1D horizXaxis = getXHorizAxis();
-   *         GridAxis1D horizYaxis = getYHorizAxis();
-   *         if (horizXaxis instanceof CoordinateAxis1D) {
-   *         CoordinateAxis1D horiz1D = (CoordinateAxis1D) horizXaxis;
-   *         x = horiz1D.getCoordValue(xindex);
-   *         } else {
-   *         CoordinateAxis2D horiz2D = (CoordinateAxis2D) horizXaxis;
-   *         x = horiz2D.getCoordValue(yindex, xindex);
-   *         }
+   * GridAxis1D horizXaxis = getXHorizAxis();
+   * GridAxis1D horizYaxis = getYHorizAxis();
+   * if (horizXaxis instanceof CoordinateAxis1D) {
+   * CoordinateAxis1D horiz1D = (CoordinateAxis1D) horizXaxis;
+   * x = horiz1D.getCoordValue(xindex);
+   * } else {
+   * CoordinateAxis2D horiz2D = (CoordinateAxis2D) horizXaxis;
+   * x = horiz2D.getCoordValue(yindex, xindex);
+   * }
    *
-   *         if (horizYaxis instanceof CoordinateAxis1D) {
-   *         CoordinateAxis1D horiz1D = (CoordinateAxis1D) horizYaxis;
-   *         y = horiz1D.getCoordValue(yindex);
-   *         } else {
-   *         CoordinateAxis2D horiz2D = (CoordinateAxis2D) horizYaxis;
-   *         y = horiz2D.getCoordValue(yindex, xindex);
-   *         }
+   * if (horizYaxis instanceof CoordinateAxis1D) {
+   * CoordinateAxis1D horiz1D = (CoordinateAxis1D) horizYaxis;
+   * y = horiz1D.getCoordValue(yindex);
+   * } else {
+   * CoordinateAxis2D horiz2D = (CoordinateAxis2D) horizYaxis;
+   * y = horiz2D.getCoordValue(yindex, xindex);
+   * }
    *
-   *         return isLatLon() ? LatLonPoint.create(y, x) : getLatLon(x, y);
-   *         }
+   * return isLatLon() ? LatLonPoint.create(y, x) : getLatLon(x, y);
+   * }
    *
-   *         public LatLonPoint getLatLon(double xcoord, double ycoord) {
-   *         Projection dataProjection = getProjection();
-   *         return dataProjection.projToLatLon(ProjectionPoint.create(xcoord, ycoord));
-   *         }
+   * public LatLonPoint getLatLon(double xcoord, double ycoord) {
+   * Projection dataProjection = getProjection();
+   * return dataProjection.projToLatLon(ProjectionPoint.create(xcoord, ycoord));
+   * }
    */
 
   private LatLonRect llbb;
@@ -228,12 +246,12 @@ class GridCS implements GridCoordinateSystem {
         double deltaLon = horizXaxis.getCoordEdgeLast() - startLon;
 
         LatLonPoint llpt = LatLonPoint.create(startLat, startLon);
-        llbb = new LatLonRect.Builder(llpt, deltaLat, deltaLon).build();
+        llbb = new LatLonRect(llpt, deltaLat, deltaLon);
 
       } else {
         Projection dataProjection = getProjection();
         ProjectionRect bb = getBoundingBox();
-        if (bb != null) {
+        if (dataProjection != null && bb != null) {
           llbb = dataProjection.projToLatLonBB(bb);
         }
       }
@@ -372,19 +390,12 @@ class GridCS implements GridCoordinateSystem {
       return Optional.empty();
     }
 
-    Collections.sort(builder.axes);
-
-    List<String> names = new ArrayList<>();
-    for (GridAxis axis : builder.axes) {
-      names.add(axis.getName());
-    }
-
     return Optional.of(builder.build());
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////
   private final ImmutableList<GridAxis> axes;
-  private final Set<Dimension> domain;
+  private final ImmutableSet<Dimension> domain;
   private final FeatureType featureType;
   private final boolean isLatLon;
   private final String name;
@@ -392,33 +403,27 @@ class GridCS implements GridCoordinateSystem {
   private final ImmutableList<CoordinateTransform> transforms;
 
   /**
-   * Create a GridCoordinateSystem from a GridCoordSystemBuilder.
+   * Create a GridCoordinateSystem from a DatasetClassifier.CoordSysClassifier.
    * 
    * @param classifier
    * @param gridAxes The gridAxes already built, so there are no duplicates as we make the coordSys.
    */
-  GridCS(GridCoordSystemClassifier classifier, Map<String, GridAxis> gridAxes) {
+  GridCS(DatasetClassifier.CoordSysClassifier classifier, Map<String, GridAxis> gridAxes) {
     // make name based on coordinate
-    this.name = CoordinateSystem.makeName(classifier.allAxes);
-    this.featureType = classifier.type;
-    this.isLatLon = classifier.isLatLon;
-    this.projection = classifier.orgProj;
-    this.transforms = ImmutableList.copyOf(classifier.coordTransforms);
+    this.name = classifier.getName();
+    this.featureType = classifier.getFeatureType();
+    this.isLatLon = classifier.isLatLon();
+    this.projection = classifier.getProjection();
+    this.transforms = ImmutableList.copyOf(classifier.getCoordTransforms());
 
     ImmutableList.Builder<GridAxis> axesb = ImmutableList.builder();
-    for (CoordinateAxis axis : classifier.allAxes) {
-      if (axis.getAxisType() == null) {
-        continue;
-      }
-      axesb.add(Preconditions.checkNotNull(gridAxes.get(axis.getFullName())));
+    for (CoordinateAxis axis : classifier.getAxesUsed()) {
+      GridAxis gaxis = gridAxes.get(axis.getFullName());
+      axesb.add(Preconditions.checkNotNull(gaxis));
     }
     this.axes = axesb.build();
 
-    ImmutableSet.Builder<Dimension> domainb = ImmutableSet.builder();
-    for (CoordinateAxis axis : classifier.independentAxes) {
-      domainb.addAll(axis.getDimensions());
-    }
-    this.domain = domainb.build();
+    this.domain = Dimensions.makeDomain(classifier.getAxesUsed());
   }
 
   public GridCS.Builder<?> toBuilder() {
@@ -435,7 +440,7 @@ class GridCS implements GridCoordinateSystem {
 
   GridCS(Builder<?> builder) {
     this.name = builder.name;
-    this.domain = builder.domain;
+    this.domain = ImmutableSet.copyOf(builder.domain);
     this.featureType = builder.featureType;
     this.isLatLon = builder.isLatLon;
     this.projection = builder.projection;

@@ -651,7 +651,7 @@ public class VariableDS extends Variable implements EnhanceScaleMissingUnsigned,
   void setCoordinateSystems(CoordinatesHelper coords) {
     ImmutableList.Builder<CoordinateSystem> sysBuilder = ImmutableList.builder();
     for (String name : this.coordSysNames) {
-      coords.findCoordSystem(name).ifPresent(sysBuilder::add);
+      coords.findCoordSystem(name).filter(cs -> cs.isCoordinateSystemFor(this)).ifPresent(sysBuilder::add);
     }
     this.enhanceProxy.setCoordinateSystem(sysBuilder.build());
   }

@@ -33,6 +33,7 @@ public class SubsetParams {
   public static final String stations = "stn"; // value = List<String>
 
   public static final String time = "time"; // value = CalendarDate
+  public static final String timeCoord = "timeCoord"; // value = Double
   public static final String timeRange = "timeRange"; // value = CalendarDateRange
   public static final String timeStride = "timeStride"; // value = Integer
   public static final String timePresent = "timePresent"; // value = Boolean
@@ -254,6 +255,11 @@ public class SubsetParams {
 
   public SubsetParams setTime(CalendarDate date) {
     set(time, date);
+    return this;
+  }
+
+  public SubsetParams setTimeCoord(double coord) {
+    set(timeCoord, coord);
     return this;
   }
 

@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Formatter;
 import java.util.Iterator;
-import java.util.concurrent.TimeUnit;
+
 import ucar.array.Array;
 import ucar.array.ArrayVlen;
 import ucar.ma2.ArraySequence;
@@ -135,7 +135,7 @@ public class CompareArrayToMa2 {
           byte v1 = iter1.getByteNext();
           byte v2 = iter2.next();
           if (v1 != v2) {
-            f.format(createNumericDataDiffMessage(dt, name, v1, v2, iter1));
+            f.format(makeNumericDataDiffMessage(dt, name, v1, v2, iter1));
             ok = false;
             if (justOne)
               break;
@@ -165,7 +165,7 @@ public class CompareArrayToMa2 {
           double v1 = iter1.getDoubleNext();
           double v2 = iter2.next();
           if (!Misc.nearlyEquals(v1, v2)) {
-            f.format(createNumericDataDiffMessage(dt, name, v1, v2, iter1));
+            f.format(makeNumericDataDiffMessage(dt, name, v1, v2, iter1));
             ok = false;
             if (justOne)
               break;
@@ -180,7 +180,7 @@ public class CompareArrayToMa2 {
           float v1 = iter1.getFloatNext();
           float v2 = iter2.next();
           if (!Misc.nearlyEquals(v1, v2)) {
-            f.format(createNumericDataDiffMessage(dt, name, v1, v2, iter1));
+            f.format(makeNumericDataDiffMessage(dt, name, v1, v2, iter1));
             ok = false;
             if (justOne)
               break;
@@ -197,7 +197,7 @@ public class CompareArrayToMa2 {
           int v1 = iter1.getIntNext();
           int v2 = iter2.next();
           if (v1 != v2) {
-            f.format(createNumericDataDiffMessage(dt, name, v1, v2, iter1));
+            f.format(makeNumericDataDiffMessage(dt, name, v1, v2, iter1));
             ok = false;
             if (justOne)
               break;
@@ -213,7 +213,7 @@ public class CompareArrayToMa2 {
           long v1 = iter1.getLongNext();
           long v2 = iter2.next();
           if (v1 != v2) {
-            f.format(createNumericDataDiffMessage(dt, name, v1, v2, iter1));
+            f.format(makeNumericDataDiffMessage(dt, name, v1, v2, iter1));
             ok = false;
             if (justOne)
               break;
@@ -234,7 +234,7 @@ public class CompareArrayToMa2 {
           }
           for (int idx = 0; idx < v1.remaining() && idx < v2.length(); idx++) {
             if (v1.get(idx) != v2.get(idx)) {
-              f.format(createNumericDataDiffMessage(dt, name, v1.get(idx), v2.get(idx), iter1));
+              f.format(makeNumericDataDiffMessage(dt, name, v1.get(idx), v2.get(idx), iter1));
               ok = false;
               if (justOne)
                 break;
@@ -252,7 +252,7 @@ public class CompareArrayToMa2 {
           short v1 = iter1.getShortNext();
           short v2 = iter2.next();
           if (v1 != v2) {
-            f.format(createNumericDataDiffMessage(dt, name, v1, v2, iter1));
+            f.format(makeNumericDataDiffMessage(dt, name, v1, v2, iter1));
             ok = false;
             if (justOne)
               break;
@@ -309,8 +309,7 @@ public class CompareArrayToMa2 {
     return ok;
   }
 
-  private static String createNumericDataDiffMessage(DataType dt, String name, Number v1, Number v2,
-      IndexIterator iter) {
+  private static String makeNumericDataDiffMessage(DataType dt, String name, Number v1, Number v2, IndexIterator iter) {
     return String.format(" DIFF %s %s: %s != %s;  count = %s, absDiff = %s, relDiff = %s %n", dt, name, v1, v2, iter,
         Misc.absoluteDifference(v1.doubleValue(), v2.doubleValue()),
         Misc.relativeDifference(v1.doubleValue(), v2.doubleValue()));

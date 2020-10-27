@@ -185,7 +185,7 @@ public class Misc {
 
     boolean ok = true;
     if (raw1.length != raw2.length) {
-      f.format("compareInt: length 1= %3d != length 2=%3d%n", raw1.length, raw2.length);
+      f.format("Misc.compare: length 1= %3d != length 2=%3d%n", raw1.length, raw2.length);
       ok = false;
     }
     int len = Math.min(raw1.length, raw2.length);

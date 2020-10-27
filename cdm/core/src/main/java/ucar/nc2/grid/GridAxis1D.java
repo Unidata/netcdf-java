@@ -5,6 +5,7 @@
 package ucar.nc2.grid;
 
 import com.google.common.base.Objects;
+import com.google.common.collect.AbstractIterator;
 import ucar.array.Array;
 import ucar.array.Arrays;
 import ucar.ma2.InvalidRangeException;
@@ -22,14 +23,18 @@ import java.util.*;
 @Immutable
 public class GridAxis1D extends GridAxis {
 
+  @Override
   public RangeIterator getRangeIterator() {
-    if (getDependenceType() == GridAxis.DependenceType.scalar)
-      return Range.EMPTY;
-
+    if (crange != null) {
+      return crange;
+    }
+    if (range != null) {
+      return range;
+    }
     try {
       return new Range(axisType.toString(), 0, ncoords - 1);
     } catch (InvalidRangeException e) {
-      throw new RuntimeException(e);
+      throw new RuntimeException(e); // not possible
     }
   }
 
@@ -300,24 +305,26 @@ public class GridAxis1D extends GridAxis {
     switch (getAxisType()) {
       case GeoZ:
       case Pressure:
-      case Height:
-        Double dval = params.getVertCoord();
+      case Height: {
+        Object dval = params.getVertCoord();
         if (dval != null) {
-          return helper.subsetClosest(dval);
-        }
-        // use midpoint of interval LOOK may not always be unique
-        double[] intv = params.getVertCoordIntv();
-        if (intv != null) {
-          return helper.subsetClosest((intv[0] + intv[1]) / 2);
+          if (dval instanceof Double) {
+            return helper.subsetClosest((Double) dval);
+          } else if (dval instanceof CoordInterval) {
+            return helper.subsetClosest((CoordInterval) dval);
+          }
         }
 
-        double[] vertRange = params.getVertRange(); // used by WCS
-        if (vertRange != null) {
-          return helper.subset(vertRange[0], vertRange[1], 1, errLog).orElse(null);
-        }
+        /*
+         * double[] vertRange = params.getVertRange(); // used by WCS
+         * if (vertRange != null) {
+         * return helper.subset(vertRange[0], vertRange[1], 1, errLog).orElse(null);
+         * }
+         */
 
         // default is all
         break;
+      }
 
       case Ensemble:
         Double eval = params.getDouble(GridSubset.ensCoord);
@@ -348,14 +355,29 @@ public class GridAxis1D extends GridAxis {
   @Nullable
   public GridAxis subsetDependent(GridAxis1D dependsOn, Formatter errLog) {
     GridAxis1D.Builder<?> builder;
-    try {
-      // TODO Other possible subsets?
-      builder = new GridAxis1DHelper(this).subsetByIndex(dependsOn.getRange());
-    } catch (InvalidRangeException e) {
-      errLog.format("%s", e.getMessage());
-      return null;
-    }
+    // TODO Other possible subsets?
+    builder = new GridAxis1DHelper(this).makeSubsetByIndex(dependsOn.getRange());
     return builder.build();
+  }
+
+  @Override
+  public Iterator<Object> iterator() {
+    return new CoordIterator();
+  }
+
+  private class CoordIterator extends AbstractIterator {
+    private int current = 0;
+
+    @Override
+    protected Object computeNext() {
+      if (current >= getNcoords()) {
+        return endOfData();
+      }
+      Object result = spacing != Spacing.discontiguousInterval ? new Double(getCoordMidpoint(current))
+          : CoordInterval.create(getCoordEdge1(current), getCoordEdge2(current));
+      current++;
+      return result;
+    }
   }
 
   //////////////////////////////////////////////////////////////
@@ -423,28 +445,50 @@ public class GridAxis1D extends GridAxis {
       return self();
     }
 
-    T subsetIndex(int index) {
-      this.ncoords = 1;
-      this.startValue = 0;
-      this.endValue = 0;
-      this.resolution = 0;
-      double val = values[index];
-      this.values = new double[1];
-      this.values[0] = val;
-      this.isSubset = true;
-
-      return self();
-    }
-
-    T subset(int ncoords, double startValue, double endValue, double resolution, double[] values) {
+    T subset(int ncoords, double startValue, double endValue, double resolution, Range range) {
       this.ncoords = ncoords;
       this.startValue = startValue;
       this.endValue = endValue;
       this.resolution = resolution;
-      this.values = values;
+      this.range = range;
       this.isSubset = true;
+      this.values = makeValues(range);
 
       return self();
+    }
+
+    private double[] makeValues(Range range) {
+      if (spacing.isRegular()) {
+        return null;
+      }
+
+      double[] subsetValues = null;
+      int count = 0;
+      switch (spacing) {
+        case irregularPoint:
+          subsetValues = new double[ncoords];
+          for (int i : range) {
+            subsetValues[count++] = values[i];
+          }
+          break;
+
+        case contiguousInterval:
+          subsetValues = new double[ncoords + 1]; // need npts+1
+          for (int i : range) {
+            subsetValues[count++] = values[i];
+          }
+          subsetValues[count] = values[range.last() + 1];
+          break;
+
+        case discontiguousInterval:
+          subsetValues = new double[2 * ncoords]; // need 2*npts
+          for (int i : range) {
+            subsetValues[count++] = values[2 * i];
+            subsetValues[count++] = values[2 * i + 1];
+          }
+          break;
+      }
+      return subsetValues;
     }
 
     public GridAxis1D build() {
@@ -453,7 +497,6 @@ public class GridAxis1D extends GridAxis {
       built = true;
       return new GridAxis1D(this);
     }
-
   }
 
 }

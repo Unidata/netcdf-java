@@ -31,4 +31,8 @@ public abstract class CoordInterval {
   public String toString() {
     return Format.d(start(), ndecimals()) + "-" + Format.d(end(), ndecimals());
   }
+
+  public double[] toPrimitiveArray() {
+    return new double[] {start(), end()};
+  }
 }

@@ -359,6 +359,10 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis { // implements Itera
         if (date != null)
           return Optional.of(helper.subsetClosest(date));
 
+        Double timeCoord = (Double) params.get(SubsetParams.timeCoord);
+        if (timeCoord != null)
+          return Optional.of(helper.subsetClosest(timeCoord));
+
         Integer stride = (Integer) params.get(SubsetParams.timeStride);
         if (stride == null || stride < 0)
           stride = 1;

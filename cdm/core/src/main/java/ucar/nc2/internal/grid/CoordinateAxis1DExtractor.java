@@ -47,12 +47,6 @@ public class CoordinateAxis1DExtractor {
     if (dtCoordAxis.isNumeric()) {
       readValues();
       makeBounds();
-
-      if (ncoords < 2) {
-        isAscending = true;
-      } else {
-        isAscending = coords[0] < coords[1]; // strictly monotonic
-      }
       calcIsRegular();
 
     } else if (dtCoordAxis.getDataType() == DataType.STRING) {
@@ -229,19 +223,38 @@ public class CoordinateAxis1DExtractor {
   }
 
   private void calcIsRegular() {
+    if (ncoords < 2) {
+      isAscending = true;
+    } else {
+      isAscending = coords[0] < coords[1]; // strictly monotonic
+    }
+
     if (!dtCoordAxis.isNumeric()) {
       isRegular = false;
     } else if (ncoords < 2) {
       isRegular = true;
+      isAscending = true;
     } else {
+      isAscending = coords[0] < coords[1]; // strictly monotonic
       start = coords[0];
       int n = ncoords;
       increment = (coords[n - 1] - coords[0]) / (n - 1);
+
       isRegular = true;
       for (int i = 1; i < ncoords; i++) {
         if (!ucar.nc2.util.Misc.nearlyEquals(coords[i] - coords[i - 1], increment, 5.0e-3)) {
           isRegular = false;
           break;
+        }
+        // LOOK we could internally reorder.
+        if (isAscending) {
+          if (coords[i] <= coords[i - 1]) {
+            throw new RuntimeException(dtCoordAxis.getShortName() + " is not monotonic increasing ");
+          }
+        } else {
+          if (coords[i] >= coords[i - 1]) {
+            throw new RuntimeException(dtCoordAxis.getShortName() + " is not monotonic decreasing");
+          }
         }
       }
     }
