@@ -136,7 +136,7 @@ public class TestVariable {
     Variable var = ncfile.findVariable("v");
     assertThat(var).isNotNull();
     assertThat(var.getDatasetLocation()).isEqualTo("loca");
-    assertThat(var.getFileTypeId()).isEqualTo("N/A");
+    assertThat(var.getFileTypeId()).isNull();
     assertThat(var.getNetcdfFile()).isEqualTo(ncfile);
   }
 
