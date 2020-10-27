@@ -153,14 +153,14 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
   private static final ucar.nc2.util.cache.FileFactory factory = new FileFactory() {
     public FileCacheable open(DatasetUrl durl, int buffer_size, CancelTask cancelTask, Object iospMessage)
         throws IOException {
-      String location = StringUtil2.replace(durl.trueurl, "\\", "/"); // canonicalize the name
+      String location = StringUtil2.replace(durl.getTrueurl(), "\\", "/"); // canonicalize the name
       RandomAccessFile result = new RandomAccessFile(location, "r", buffer_size);
       result.cacheState = 1; // in use
       return result;
     }
   };
 
-  private static FileCacheIF cache;
+  protected static FileCacheIF cache;
 
   public static synchronized void enableDefaultGlobalFileCache() {
     if (cache != null)
@@ -210,7 +210,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
    * File location
    */
   protected String location;
-  private int cacheState; // 0 - not in cache, 1 = in cache && in use, 2 = in cache but not in use
+  protected int cacheState; // 0 - not in cache, 1 = in cache && in use, 2 = in cache but not in use
 
   /**
    * The underlying java.io.RandomAccessFile.
@@ -266,7 +266,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
   /**
    * True if the data in the buffer has been modified.
    */
-  boolean bufferModified;
+  protected boolean bufferModified;
 
   /**
    * make sure file is at least this long when closed
@@ -327,7 +327,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
         } catch (InterruptedException e) {
           e.printStackTrace();
         }
-        this.file = new java.io.RandomAccessFile(location, mode); // Windows having troublke keeping up ??
+        this.file = new java.io.RandomAccessFile(location, mode); // Windows having trouble keeping up ??
       } else {
         throw ioe;
       }
@@ -466,6 +466,15 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
    */
   public boolean isAtEndOfFile() {
     return endOfFile;
+  }
+
+  /**
+   * Return true if RandomAccessFile is a directory structure
+   *
+   * @return true if RandomAccessFile is a directory structure
+   */
+  public boolean isDirectory() {
+    return false;
   }
 
   /**

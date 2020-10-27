@@ -240,6 +240,8 @@ public abstract class RemoteRandomAccessFile extends ucar.unidata.io.RandomAcces
   @Override
   public long readToByteChannel(WritableByteChannel dest, long offset, long nbytes) throws IOException {
     int n = (int) nbytes;
+    // since the byte buffer is a fixed length, reading past EOF will write additional zeroes to dest
+    n = Math.min((int) nbytes, (int) this.length() - (int) offset);
     byte[] buff = new byte[n];
     int done = read_(offset, buff, 0, n);
     dest.write(ByteBuffer.wrap(buff));

@@ -384,6 +384,7 @@ public class NetcdfFiles {
     copy(raf, new FileOutputStream(uriString), 1 << 20);
     try {
       String uncompressedFileName = makeUncompressed(uriString);
+
       // LOOK - this will only return one type of RandomAccessFile, which is OK for now,
       // but needs to be addressed with RandomAccessDirectory
       return ucar.unidata.io.RandomAccessFile.acquire(uncompressedFileName, buffer_size);
@@ -392,7 +393,7 @@ public class NetcdfFiles {
     }
   }
 
-  private static ucar.unidata.io.RandomAccessFile getRaf(String location, int buffer_size) throws IOException {
+  public static ucar.unidata.io.RandomAccessFile getRaf(String location, int buffer_size) throws IOException {
     String uriString = location.trim();
     if (buffer_size <= 0)
       buffer_size = default_buffersize;
@@ -418,7 +419,7 @@ public class NetcdfFiles {
           raf = provider.open(location, buffer_size);
           // might cause issues if the end of a resource location string
           // cannot be used to determine compression
-          if (looksCompressed(uriString)) {
+          if (looksCompressed(uriString) && !raf.isDirectory()) { // do not decompress directories all at once
             raf = downloadAndDecompress(raf, uriString, buffer_size);
           }
           break;
@@ -440,8 +441,7 @@ public class NetcdfFiles {
       if (looksCompressed(uriString)) {
         try {
           stringLocker.control(uriString); // Avoid race condition where the decompressed file is trying to be read by
-                                           // one
-          // thread while another is decompressing it
+                                           // one thread while another is decompressing it
           uncompressedFileName = makeUncompressed(uriString);
         } catch (Exception e) {
           log.warn("Failed to uncompress {}, err= {}; try as a regular file.", uriString, e.getMessage());
@@ -553,13 +553,13 @@ public class NetcdfFiles {
             log.info("uncompressed {} to {}", filename, uncompressedFile);
 
         } else if (suffix.equalsIgnoreCase("zip")) {
-
           try (ZipInputStream zin = new ZipInputStream(new FileInputStream(filename))) {
             ZipEntry ze = zin.getNextEntry();
             if (ze != null) {
               copy(zin, fout, 100000);
               if (NetcdfFile.debugCompress)
                 log.info("unzipped {} entry {} to {}", filename, ze.getName(), uncompressedFile);
+              ze = zin.getNextEntry();
             }
           }
 
