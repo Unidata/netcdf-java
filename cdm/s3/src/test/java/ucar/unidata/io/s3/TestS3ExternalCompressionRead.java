@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2019 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 2019-2020 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -22,12 +22,11 @@ public class TestS3ExternalCompressionRead {
 
   @Test
   public void testCompressedObjectRead() throws IOException {
-    String region = Region.US_EAST_1.toString();
     String bucket = "noaa-nexrad-level2";
     String key = "1991/07/20/KTLX/KTLX19910720_160529.gz";
     String s3uri = "cdms3:" + bucket + "?" + key;
 
-    System.setProperty("aws.region", region);
+    System.setProperty(S3TestsCommon.AWS_REGION_PROP_NAME, S3TestsCommon.AWS_G16_REGION);
     try (NetcdfFile ncfile = NetcdfFiles.open(s3uri)) {
 
       assertThat(ncfile.findDimension("scanR")).isNotNull();

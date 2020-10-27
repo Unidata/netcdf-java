@@ -1,17 +1,20 @@
+/*
+ * Copyright (c) 2020 University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
+
 package thredds.inventory.s3;
 
 import static com.google.common.truth.Truth.assertThat;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import software.amazon.awssdk.regions.Region;
 import thredds.inventory.MFile;
-import ucar.unidata.io.s3.TestS3Read;
+import ucar.unidata.io.s3.S3TestsCommon;
 
 public class TestMFileS3 {
 
@@ -32,35 +35,28 @@ public class TestMFileS3 {
   private static final String[] DELIMITER_FRAGMENTS = new String[] {"", DELIMITER_FRAGMENT};
 
   // AWS constants
-  private static final String TOP_LEVEL_AWS_BUCKET = "cdms3:noaa-goes16";
-  private static final String AWS_G16_S3_OBJECT_1 = TOP_LEVEL_AWS_BUCKET + "?" + G16_OBJECT_KEY_1;
-  private static final String AWS_G16_S3_OBJECT_2 = TOP_LEVEL_AWS_BUCKET + "?" + G16_OBJECT_KEY_2;
-  private static final String AWS_G16_S3_URI_DIR = TOP_LEVEL_AWS_BUCKET + "?" + G16_DIR;
-
-  private static final String AWS_REGION_PROP_NAME = "aws.region";
-  private static final String AWS_G16_REGION = Region.US_EAST_1.toString();
+  private static final String AWS_G16_S3_OBJECT_1 = S3TestsCommon.TOP_LEVEL_AWS_BUCKET + "?" + G16_OBJECT_KEY_1;
+  private static final String AWS_G16_S3_OBJECT_2 = S3TestsCommon.TOP_LEVEL_AWS_BUCKET + "?" + G16_OBJECT_KEY_2;
+  private static final String AWS_G16_S3_URI_DIR = S3TestsCommon.TOP_LEVEL_AWS_BUCKET + "?" + G16_DIR;
 
   // Google Cloud Platform constants
-  private static final String TOP_LEVEL_GCS_BUCKET = "cdms3://storage.googleapis.com/gcp-public-data-goes-16";
-  private static final String GCS_G16_S3_OBJECT_1 = TOP_LEVEL_GCS_BUCKET + "?" + G16_OBJECT_KEY_1;
-  private static final String GCS_G16_S3_OBJECT_2 = TOP_LEVEL_GCS_BUCKET + "?" + G16_OBJECT_KEY_2;
-  private static final String GCS_G16_S3_URI_DIR = TOP_LEVEL_GCS_BUCKET + "?" + G16_DIR;
+  private static final String GCS_G16_S3_OBJECT_1 = S3TestsCommon.TOP_LEVEL_GCS_BUCKET + "?" + G16_OBJECT_KEY_1;
+  private static final String GCS_G16_S3_OBJECT_2 = S3TestsCommon.TOP_LEVEL_GCS_BUCKET + "?" + G16_OBJECT_KEY_2;
+  private static final String GCS_G16_S3_URI_DIR = S3TestsCommon.TOP_LEVEL_GCS_BUCKET + "?" + G16_DIR;
 
   // Open Science Data Cloud Platform constants
-  private static final String TOP_LEVEL_OSDC_BUCKET =
-      "cdms3://griffin-objstore.opensciencedatacloud.org/noaa-goes16-hurricane-archive-2017";
+  // The keys on OSDC are slightly different that on GCS or AWS, so they take a little more work...
   private static final String OSDC_G16_DIR = "ABI-L1b-RadC/" + parentDirName + "/" + dirName;
   private static final String OSDC_G16_OBJECT_KEY_1 = G16_OBJECT_KEY_1.replaceFirst(G16_DIR, OSDC_G16_DIR);
-  private static final String OSDC_G16_OBJECT_KEY_2 = G16_OBJECT_KEY_2.replaceFirst(G16_DIR, OSDC_G16_DIR);
   private static final String OSDC_G16_S3_OBJECT_1 =
-      TOP_LEVEL_OSDC_BUCKET + "?" + G16_OBJECT_KEY_1.replaceFirst(G16_DIR, OSDC_G16_DIR);
+      S3TestsCommon.TOP_LEVEL_OSDC_BUCKET + "?" + G16_OBJECT_KEY_1.replaceFirst(G16_DIR, OSDC_G16_DIR);
   private static final String OSDC_G16_S3_OBJECT_2 =
-      TOP_LEVEL_OSDC_BUCKET + "?" + G16_OBJECT_KEY_2.replaceFirst(G16_DIR, OSDC_G16_DIR);
-  private static final String OSDC_G16_S3_URI_DIR = TOP_LEVEL_OSDC_BUCKET + "?" + OSDC_G16_DIR;
+      S3TestsCommon.TOP_LEVEL_OSDC_BUCKET + "?" + G16_OBJECT_KEY_2.replaceFirst(G16_DIR, OSDC_G16_DIR);
+  private static final String OSDC_G16_S3_URI_DIR = S3TestsCommon.TOP_LEVEL_OSDC_BUCKET + "?" + OSDC_G16_DIR;
 
   @BeforeClass
-  public static void setup() throws URISyntaxException, IOException {
-    System.setProperty(AWS_REGION_PROP_NAME, AWS_G16_REGION);
+  public static void setup() {
+    System.setProperty(S3TestsCommon.AWS_REGION_PROP_NAME, S3TestsCommon.AWS_G16_REGION);
   }
 
   /////////////////////////////////////////
@@ -69,24 +65,24 @@ public class TestMFileS3 {
   @Test
   public void justBucketAws() throws IOException {
     for (String delimiter : DELIMITER_FRAGMENTS) {
-      String fullUri = TOP_LEVEL_AWS_BUCKET + DELIMITER_FRAGMENT;
-      testJustBucket(fullUri);
+      String fullUri = S3TestsCommon.TOP_LEVEL_AWS_BUCKET + delimiter;
+      checkWithBucket(fullUri);
     }
   }
 
   @Test
   public void justBucketGcs() throws IOException {
     for (String delimiter : DELIMITER_FRAGMENTS) {
-      String fullUri = TOP_LEVEL_GCS_BUCKET + DELIMITER_FRAGMENT;
-      testJustBucket(fullUri);
+      String fullUri = S3TestsCommon.TOP_LEVEL_GCS_BUCKET + delimiter;
+      checkWithBucket(fullUri);
     }
   }
 
   @Test
   public void justBucketOsdc() throws IOException {
     for (String delimiter : DELIMITER_FRAGMENTS) {
-      String fullUri = TOP_LEVEL_OSDC_BUCKET + DELIMITER_FRAGMENT;
-      testJustBucket(fullUri);
+      String fullUri = S3TestsCommon.TOP_LEVEL_OSDC_BUCKET + delimiter;
+      checkWithBucket(fullUri);
     }
   }
 
@@ -96,77 +92,86 @@ public class TestMFileS3 {
   @Test
   public void bucketAndKeyAws() throws IOException {
     long lastModified = 1532465845000L;
-    testBucketAndKey(AWS_G16_S3_OBJECT_1, G16_OBJECT_KEY_1, null, lastModified);
-    testBucketAndKey(AWS_G16_S3_OBJECT_1 + DELIMITER_FRAGMENT, G16_NAME_1, "/", lastModified);
+    checkWithBucketAndKey(AWS_G16_S3_OBJECT_1, G16_OBJECT_KEY_1, null, lastModified);
+    checkWithBucketAndKey(AWS_G16_S3_OBJECT_1 + DELIMITER_FRAGMENT, G16_NAME_1, "/", lastModified);
   }
 
   @Test
   public void bucketAndKeyGcs() throws IOException {
     long lastModified = 1504051532000L;
-    testBucketAndKey(GCS_G16_S3_OBJECT_1, G16_OBJECT_KEY_1, null, lastModified);
-    testBucketAndKey(GCS_G16_S3_OBJECT_1 + DELIMITER_FRAGMENT, G16_NAME_1, "/", lastModified);
+    checkWithBucketAndKey(GCS_G16_S3_OBJECT_1, G16_OBJECT_KEY_1, null, lastModified);
+    checkWithBucketAndKey(GCS_G16_S3_OBJECT_1 + DELIMITER_FRAGMENT, G16_NAME_1, "/", lastModified);
   }
 
   @Test
   public void bucketAndKeyOsdc() throws IOException {
     long lastModified = 1603308465000L;
-    testBucketAndKey(OSDC_G16_S3_OBJECT_1, OSDC_G16_OBJECT_KEY_1, null, lastModified);
-    testBucketAndKey(OSDC_G16_S3_OBJECT_1 + DELIMITER_FRAGMENT, G16_NAME_1, "/", lastModified);
+    checkWithBucketAndKey(OSDC_G16_S3_OBJECT_1, OSDC_G16_OBJECT_KEY_1, null, lastModified);
+    checkWithBucketAndKey(OSDC_G16_S3_OBJECT_1 + DELIMITER_FRAGMENT, G16_NAME_1, "/", lastModified);
   }
 
   @Test
-  public void dirCheckNoDelim() throws IOException {
-    MFile mFile = new MFileS3(AWS_G16_S3_URI_DIR);
-    // The path is always the full cdms3 uri.
-    assertThat(mFile.getPath()).isEqualTo(AWS_G16_S3_URI_DIR);
-    // Without a delimiter, the name is the key.
-    assertThat(mFile.getName()).isEqualTo(G16_DIR);
-    // Without a delimiter, there is no parent.
-    assertThat(mFile.getParent()).isNull();
-    // Without a delimiter, there is no concept of a directory.
-    assertThat(mFile.isDirectory()).isFalse();
+  public void dirCheckAws() throws IOException {
+    dirCheckNoDelim(AWS_G16_S3_URI_DIR, G16_DIR);
+    dirCheckDelim(AWS_G16_S3_URI_DIR + DELIMITER_FRAGMENT);
   }
 
   @Test
-  public void dirCheckDelim() throws IOException {
-    String fullCdmS3Uri = AWS_G16_S3_URI_DIR + DELIMITER_FRAGMENT;
-    MFile mFile = new MFileS3(fullCdmS3Uri);
-    assertThat(mFile.getPath()).isEqualTo(fullCdmS3Uri);
-    // With a delimiter, the name is equal to the rightmost part of the path
-    assertThat(mFile.getName()).isEqualTo(dirName);
-    MFile parent = mFile.getParent();
-    // Since we have a delimiter, and the object key contains the delimiter, we know this should not be null.
-    assertThat(parent).isNotNull();
-    assertThat(parent.getName()).isEqualTo(parentDirName);
-    assertThat(parent.isDirectory()).isTrue();
+  public void dirCheckGcs() throws IOException {
+    dirCheckNoDelim(GCS_G16_S3_URI_DIR, G16_DIR);
+    dirCheckDelim(GCS_G16_S3_URI_DIR + DELIMITER_FRAGMENT);
   }
 
   @Test
-  public void compareS3MFiles() throws IOException {
-    MFile mFile1 = new MFileS3(AWS_G16_S3_OBJECT_1);
-    MFile mFile2 = new MFileS3(AWS_G16_S3_OBJECT_1);
-    MFile mFile3 = new MFileS3(AWS_G16_S3_OBJECT_2);
-    assert mFile1.equals(mFile2);
-    assertThat(mFile1).isEqualTo(mFile2);
-    assertThat(AWS_G16_S3_OBJECT_1).ignoringCase().isNotEqualTo(AWS_G16_S3_OBJECT_2);
-    assertThat(mFile1).isNotEqualTo(mFile3);
+  public void dirCheckOsdc() throws IOException {
+    dirCheckNoDelim(OSDC_G16_S3_URI_DIR, OSDC_G16_DIR);
+    dirCheckDelim(OSDC_G16_S3_URI_DIR + DELIMITER_FRAGMENT);
   }
 
   @Test
-  public void s3MFilesAuxInfo() throws IOException {
-    MFile mFile = new MFileS3(AWS_G16_S3_OBJECT_1);
-    mFile.setAuxInfo("Hello");
-    Object auxInfo = mFile.getAuxInfo();
-    assertThat(auxInfo.toString()).isEqualTo("Hello");
-    assertThat(auxInfo.toString()).isNotEqualTo("hello");
+  public void compareMFilesAws() throws IOException {
+    for (String delimiter : DELIMITER_FRAGMENTS) {
+      compareS3Mfiles(AWS_G16_S3_OBJECT_1 + delimiter, AWS_G16_S3_OBJECT_2 + delimiter);
+    }
   }
 
-  private String getLastPathSegment(String fullPath, String delimiter) {
-    int lastDelimiter = fullPath.lastIndexOf(delimiter);
-    return fullPath.substring(lastDelimiter + delimiter.length(), fullPath.length());
+  @Test
+  public void compareMFilesGcs() throws IOException {
+    for (String delimiter : DELIMITER_FRAGMENTS) {
+      compareS3Mfiles(GCS_G16_S3_OBJECT_1 + delimiter, GCS_G16_S3_OBJECT_2 + delimiter);
+    }
   }
 
-  private void testJustBucket(String cdmS3Uri) throws IOException {
+  @Test
+  public void compareMFilesOsdc() throws IOException {
+    for (String delimiter : DELIMITER_FRAGMENTS) {
+      compareS3Mfiles(OSDC_G16_S3_OBJECT_1 + delimiter, OSDC_G16_S3_OBJECT_2 + delimiter);
+    }
+  }
+
+  @Test
+  public void s3MFilesAuxInfoAws() throws IOException {
+    for (String delimiter : DELIMITER_FRAGMENTS) {
+      checkS3MFilesAuxInfo(AWS_G16_S3_OBJECT_1 + delimiter);
+    }
+  }
+
+  @Test
+  public void s3MFilesAuxInfoGsc() throws IOException {
+    for (String delimiter : DELIMITER_FRAGMENTS) {
+      checkS3MFilesAuxInfo(GCS_G16_S3_OBJECT_1 + delimiter);
+    }
+  }
+
+  @Test
+  public void s3MFilesAuxInfoOsdc() throws IOException {
+    for (String delimiter : DELIMITER_FRAGMENTS) {
+      checkS3MFilesAuxInfo(OSDC_G16_S3_OBJECT_1 + delimiter);
+    }
+  }
+
+  private void checkWithBucket(String cdmS3Uri) throws IOException {
+    logger.info("Checking {}", cdmS3Uri);
     MFile mFile = new MFileS3(cdmS3Uri);
     assertThat(mFile.getPath()).isEqualTo(cdmS3Uri);
     // Without a delimiter, the name is equal to the key. In this case, there is no key, so the name is empty
@@ -176,8 +181,9 @@ public class TestMFileS3 {
     assertThat(parent).isNull();
   }
 
-  private void testBucketAndKey(String cdmS3Uri, String expectedName, String delimiter, long expectedLastModified)
+  private void checkWithBucketAndKey(String cdmS3Uri, String expectedName, String delimiter, long expectedLastModified)
       throws IOException {
+    logger.info("Checking {}", cdmS3Uri);
     MFile mFile = new MFileS3(cdmS3Uri);
     assertThat(mFile.getPath()).isEqualTo(cdmS3Uri);
     assertThat(mFile.getName()).isEqualTo(expectedName);
@@ -192,8 +198,9 @@ public class TestMFileS3 {
     assertThat(mFile.getLength()).isEqualTo(G16_OBJECT_1_SIZE);
   }
 
-  private void dirCheck(String cdmS3Uri, String expectedName) throws IOException {
+  private void dirCheckNoDelim(String cdmS3Uri, String expectedName) throws IOException {
     MFile mFile = new MFileS3(cdmS3Uri);
+    logger.info("Checking {}", cdmS3Uri);
     // The path is always the full cdms3 uri.
     assertThat(mFile.getPath()).isEqualTo(cdmS3Uri);
     // Without a delimiter, the name is the key.
@@ -204,23 +211,42 @@ public class TestMFileS3 {
     assertThat(mFile.isDirectory()).isFalse();
   }
 
-  private void dirCheck(String cdmS3Uri, String expectedName, String expectedParentPath, String expectedParentName)
-      throws IOException {
+  private void dirCheckDelim(String cdmS3Uri) throws IOException {
+    logger.info("Checking {}", cdmS3Uri);
     MFile mFile = new MFileS3(cdmS3Uri);
     assertThat(mFile.getPath()).isEqualTo(cdmS3Uri);
     // With a delimiter, the name is equal to the rightmost part of the path
-    assertThat(mFile.getName()).isEqualTo(expectedName);
+    assertThat(mFile.getName()).isEqualTo(dirName);
     MFile parent = mFile.getParent();
     // Since we have a delimiter, and the object key contains the delimiter, we know this should not be null.
     assertThat(parent).isNotNull();
-    assertThat(parent.getPath()).isEqualTo(expectedParentPath);
-    assertThat(parent.getName()).isEqualTo(expectedParentName);
+    assertThat(parent.getPath()).isEqualTo(cdmS3Uri.replace("/" + dirName, "/"));
+    assertThat(parent.getName()).isEqualTo(parentDirName);
     assertThat(parent.isDirectory()).isTrue();
+  }
+
+  private void compareS3Mfiles(String uri1, String uri2) throws IOException {
+    MFile mFile1 = new MFileS3(uri1);
+    MFile mFile2 = new MFileS3(uri1);
+    MFile mFile3 = new MFileS3(uri2);
+    assert mFile1.equals(mFile2);
+    assertThat(mFile1).isEqualTo(mFile2);
+    assertThat(uri1).ignoringCase().isNotEqualTo(uri2);
+    assertThat(mFile1).isNotEqualTo(mFile3);
+  }
+
+  private void checkS3MFilesAuxInfo(String uri) throws IOException {
+    MFile mFile = new MFileS3(uri);
+    mFile.setAuxInfo("Aux Info");
+    Object auxInfo = mFile.getAuxInfo();
+    assertThat(auxInfo.toString()).isEqualTo("Aux Info");
+    assertThat(auxInfo.toString()).isNotEqualTo("aux info");
+    assertThat(auxInfo.toString()).isNotEqualTo("Ox Info");
   }
 
   @AfterClass
   public static void teardown() {
-    System.clearProperty(AWS_REGION_PROP_NAME);
+    System.clearProperty(S3TestsCommon.AWS_REGION_PROP_NAME);
   }
 
 }
