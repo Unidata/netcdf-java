@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>
+  <variable name="time" type="int" >
+    <attribute name="units" value="minutes since 2017-08-30 00:00"/>
+    <attribute name="_CoordinateAxisType" value="Time" />
+    <values>2 7 12 17 22 27 32 37 42 47 52 57</values>
+  </variable>
+  <variable name="Rad">
+    <attribute name="coordinates" value="band_id band_wavelength time y x" />
+  </variable>
+  <variable name="DQF">
+    <attribute name="coordinates" value="band_id band_wavelength time y x" />
+  </variable>
+  <aggregation dimName='time' type='joinNew'>
+    <variableAgg name="Rad"/>
+    <variableAgg name="DQF"/>
+    <netcdf location="cdms3:noaa-goes16?ABI-L1b-RadC/2017/242/00/OR_ABI-L1b-RadC-M3C01_G16_s20172420002168_e20172420004540_c20172420004583.nc" />
+    <netcdf location="cdms3:noaa-goes16?ABI-L1b-RadC/2017/242/00/OR_ABI-L1b-RadC-M3C01_G16_s20172420007168_e20172420009540_c20172420009585.nc" />
+    <netcdf location="cdms3:noaa-goes16?ABI-L1b-RadC/2017/242/00/OR_ABI-L1b-RadC-M3C01_G16_s20172420012168_e20172420014540_c20172420014583.nc" />
+    <netcdf location="cdms3:noaa-goes16?ABI-L1b-RadC/2017/242/00/OR_ABI-L1b-RadC-M3C01_G16_s20172420017168_e20172420019540_c20172420019583.nc" />
+    <netcdf location="cdms3:noaa-goes16?ABI-L1b-RadC/2017/242/00/OR_ABI-L1b-RadC-M3C01_G16_s20172420022168_e20172420024540_c20172420024584.nc" />
+    <netcdf location="cdms3:noaa-goes16?ABI-L1b-RadC/2017/242/00/OR_ABI-L1b-RadC-M3C01_G16_s20172420027168_e20172420029540_c20172420029583.nc" />
+    <netcdf location="cdms3:noaa-goes16?ABI-L1b-RadC/2017/242/00/OR_ABI-L1b-RadC-M3C01_G16_s20172420032168_e20172420034540_c20172420034585.nc" />
+    <netcdf location="cdms3:noaa-goes16?ABI-L1b-RadC/2017/242/00/OR_ABI-L1b-RadC-M3C01_G16_s20172420037168_e20172420039540_c20172420039581.nc" />
+    <netcdf location="cdms3:noaa-goes16?ABI-L1b-RadC/2017/242/00/OR_ABI-L1b-RadC-M3C01_G16_s20172420042168_e20172420044540_c20172420044582.nc" />
+    <netcdf location="cdms3:noaa-goes16?ABI-L1b-RadC/2017/242/00/OR_ABI-L1b-RadC-M3C01_G16_s20172420047168_e20172420049540_c20172420049582.nc" />
+    <netcdf location="cdms3:noaa-goes16?ABI-L1b-RadC/2017/242/00/OR_ABI-L1b-RadC-M3C01_G16_s20172420052168_e20172420054540_c20172420054586.nc" />
+    <netcdf location="cdms3:noaa-goes16?ABI-L1b-RadC/2017/242/00/OR_ABI-L1b-RadC-M3C01_G16_s20172420057168_e20172420059540_c20172420059581.nc" />
+  </aggregation>
+</netcdf>

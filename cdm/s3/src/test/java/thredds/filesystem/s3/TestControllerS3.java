@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2020 University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
+
 package thredds.filesystem.s3;
 
 import static com.google.common.truth.Truth.assertThat;
@@ -13,6 +18,7 @@ import software.amazon.awssdk.regions.Region;
 import thredds.inventory.CollectionConfig;
 import thredds.inventory.MFile;
 import ucar.unidata.io.s3.CdmS3Uri;
+import ucar.unidata.io.s3.S3TestsCommon;
 import ucar.unidata.io.s3.TestS3Read;
 
 /**
@@ -33,16 +39,8 @@ public class TestControllerS3 {
 
   private static final String DELIMITER_FRAGMENT = "#delimiter=/";
   private static final String[] DELIMITER_FRAGMENTS = new String[] {"", DELIMITER_FRAGMENT};
-  private static final String BUCKET = "cdms3:noaa-goes16";
   private static final String AWS_REGION_PROP_NAME = "aws.region";
   private static final String AWS_G16_REGION = Region.US_EAST_1.toString();
-
-  // Google Cloud Platform constants
-  private static final String GCS_G16_S3_URI = "cdms3://storage.googleapis.com/gcp-public-data-goes-16";
-
-  // Open Science Data Cloud constants
-  private static final String OSDC_G16_S3_URI =
-      "cdms3://griffin-objstore.opensciencedatacloud.org/noaa-goes16-hurricane-archive-2017";
 
   // The maximum number of objects reported from a bucket (currently 2000) to keep tests from spinning for an
   // incredibly long time while trying to list the entire GOES-16 archive
@@ -66,39 +64,39 @@ public class TestControllerS3 {
   //
   @Test
   public void testGetInventoryTopBucketNoDelimiterAws() throws URISyntaxException {
-    CdmS3Uri uri = new CdmS3Uri(BUCKET);
+    CdmS3Uri uri = new CdmS3Uri(S3TestsCommon.TOP_LEVEL_AWS_BUCKET);
     checkInventoryTopCount(uri, LIMIT_COUNT_MAX);
   }
 
   @Test
   public void testGetInventoryTopBucketNoDelimiterGcs() throws URISyntaxException {
-    CdmS3Uri uri = new CdmS3Uri(GCS_G16_S3_URI);
+    CdmS3Uri uri = new CdmS3Uri(S3TestsCommon.TOP_LEVEL_GCS_BUCKET);
     checkInventoryTopCount(uri, LIMIT_COUNT_MAX);
   }
 
   @Test
   public void testGetInventoryTopBucketGcsNoDelimiterOsdc() throws URISyntaxException {
-    CdmS3Uri uri = new CdmS3Uri(OSDC_G16_S3_URI);
+    CdmS3Uri uri = new CdmS3Uri(S3TestsCommon.TOP_LEVEL_OSDC_BUCKET);
     checkInventoryTopCount(uri, LIMIT_COUNT_MAX);
   }
 
   @Test
   public void testGetInventoryTopBucketDelimiterAws() throws URISyntaxException {
-    CdmS3Uri uri = new CdmS3Uri(BUCKET + DELIMITER_FRAGMENT);
+    CdmS3Uri uri = new CdmS3Uri(S3TestsCommon.TOP_LEVEL_AWS_BUCKET + DELIMITER_FRAGMENT);
     // contains a single object at "/" (/index.html)
     checkInventoryTopCount(uri, 1);
   }
 
   @Test
   public void testGetInventoryTopBucketDelimiterGcs() throws URISyntaxException {
-    CdmS3Uri uri = new CdmS3Uri(GCS_G16_S3_URI + DELIMITER_FRAGMENT);
+    CdmS3Uri uri = new CdmS3Uri(S3TestsCommon.TOP_LEVEL_GCS_BUCKET + DELIMITER_FRAGMENT);
     // does not contain anything at "/"
     checkInventoryTopCount(uri, 0);
   }
 
   @Test
   public void testGetInventoryTopBucketDelimiterOsdc() throws URISyntaxException {
-    CdmS3Uri uri = new CdmS3Uri(OSDC_G16_S3_URI + DELIMITER_FRAGMENT);
+    CdmS3Uri uri = new CdmS3Uri(S3TestsCommon.TOP_LEVEL_OSDC_BUCKET + DELIMITER_FRAGMENT);
     // does not contain anything at "/"
     checkInventoryTopCount(uri, 0);
   }
@@ -106,7 +104,7 @@ public class TestControllerS3 {
   @Test
   public void testGetInventoryTopBucketAndPrefixSingleMatchAws() throws URISyntaxException {
     for (String delimiter : DELIMITER_FRAGMENTS) {
-      CdmS3Uri uri = new CdmS3Uri(BUCKET + "?" + G16_KEY_PREFIX_SINGLE_MATCH + delimiter);
+      CdmS3Uri uri = new CdmS3Uri(S3TestsCommon.TOP_LEVEL_AWS_BUCKET + "?" + G16_KEY_PREFIX_SINGLE_MATCH + delimiter);
       checkInventoryTopCount(uri, 1);
     }
   }
@@ -114,7 +112,7 @@ public class TestControllerS3 {
   @Test
   public void testGetInventoryTopBucketAndPrefixSingleMatchGcs() throws URISyntaxException {
     for (String delimiter : DELIMITER_FRAGMENTS) {
-      CdmS3Uri uri = new CdmS3Uri(GCS_G16_S3_URI + "?" + G16_KEY_PREFIX_SINGLE_MATCH + delimiter);
+      CdmS3Uri uri = new CdmS3Uri(S3TestsCommon.TOP_LEVEL_GCS_BUCKET + "?" + G16_KEY_PREFIX_SINGLE_MATCH + delimiter);
       checkInventoryTopCount(uri, 1);
     }
   }
@@ -122,7 +120,8 @@ public class TestControllerS3 {
   @Test
   public void testGetInventoryTopBucketAndPrefixSingleMatchOsdc() throws URISyntaxException {
     for (String delimiter : DELIMITER_FRAGMENTS) {
-      CdmS3Uri uri = new CdmS3Uri(OSDC_G16_S3_URI + "?" + getOsdcKey(G16_KEY_PREFIX_SINGLE_MATCH) + delimiter);
+      CdmS3Uri uri =
+          new CdmS3Uri(S3TestsCommon.TOP_LEVEL_OSDC_BUCKET + "?" + getOsdcKey(G16_KEY_PREFIX_SINGLE_MATCH) + delimiter);
       checkInventoryTopCount(uri, 1);
     }
   }
@@ -130,7 +129,8 @@ public class TestControllerS3 {
   @Test
   public void testGetInventoryTopBucketAndPrefixMultiMatchAws() throws URISyntaxException {
     for (String delimiter : DELIMITER_FRAGMENTS) {
-      CdmS3Uri uri = new CdmS3Uri(BUCKET + "?" + G16_KEY_PREFIX_SINGLE_DAY_PARTIAL_FILE + delimiter);
+      CdmS3Uri uri =
+          new CdmS3Uri(S3TestsCommon.TOP_LEVEL_AWS_BUCKET + "?" + G16_KEY_PREFIX_SINGLE_DAY_PARTIAL_FILE + delimiter);
       checkInventoryTopCount(uri, 12);
     }
   }
@@ -138,7 +138,8 @@ public class TestControllerS3 {
   @Test
   public void testGetInventoryTopBucketAndPrefixMultiMatchGcs() throws URISyntaxException {
     for (String delimiter : DELIMITER_FRAGMENTS) {
-      CdmS3Uri uri = new CdmS3Uri(GCS_G16_S3_URI + "?" + G16_KEY_PREFIX_SINGLE_DAY_PARTIAL_FILE + delimiter);
+      CdmS3Uri uri =
+          new CdmS3Uri(S3TestsCommon.TOP_LEVEL_GCS_BUCKET + "?" + G16_KEY_PREFIX_SINGLE_DAY_PARTIAL_FILE + delimiter);
       checkInventoryTopCount(uri, 12);
     }
   }
@@ -146,8 +147,8 @@ public class TestControllerS3 {
   @Test
   public void testGetInventoryTopBucketAndPrefixMultiMatchOsdc() throws URISyntaxException {
     for (String delimiter : DELIMITER_FRAGMENTS) {
-      CdmS3Uri uri =
-          new CdmS3Uri(OSDC_G16_S3_URI + "?" + getOsdcKey(G16_KEY_PREFIX_SINGLE_DAY_PARTIAL_FILE) + delimiter);
+      CdmS3Uri uri = new CdmS3Uri(
+          S3TestsCommon.TOP_LEVEL_OSDC_BUCKET + "?" + getOsdcKey(G16_KEY_PREFIX_SINGLE_DAY_PARTIAL_FILE) + delimiter);
       checkInventoryTopCount(uri, 12);
     }
   }
@@ -158,7 +159,7 @@ public class TestControllerS3 {
   @Test
   public void testGetInventoryAllBucketAws() throws URISyntaxException {
     for (String delimiter : DELIMITER_FRAGMENTS) {
-      CdmS3Uri uri = new CdmS3Uri(BUCKET + delimiter);
+      CdmS3Uri uri = new CdmS3Uri(S3TestsCommon.TOP_LEVEL_AWS_BUCKET + delimiter);
       checkInventoryAllCount(uri, LIMIT_COUNT_MAX);
     }
   }
@@ -166,7 +167,7 @@ public class TestControllerS3 {
   @Test
   public void testGetInventoryAllBucketGcs() throws URISyntaxException {
     for (String delimiter : DELIMITER_FRAGMENTS) {
-      CdmS3Uri uri = new CdmS3Uri(GCS_G16_S3_URI + delimiter);
+      CdmS3Uri uri = new CdmS3Uri(S3TestsCommon.TOP_LEVEL_GCS_BUCKET + delimiter);
       checkInventoryAllCount(uri, LIMIT_COUNT_MAX);
     }
   }
@@ -174,7 +175,7 @@ public class TestControllerS3 {
   @Test
   public void testGetInventoryAllBucketOsdc() throws URISyntaxException {
     for (String delimiter : DELIMITER_FRAGMENTS) {
-      CdmS3Uri uri = new CdmS3Uri(OSDC_G16_S3_URI + delimiter);
+      CdmS3Uri uri = new CdmS3Uri(S3TestsCommon.TOP_LEVEL_OSDC_BUCKET + delimiter);
       checkInventoryAllCount(uri, LIMIT_COUNT_MAX);
     }
   }
@@ -182,7 +183,7 @@ public class TestControllerS3 {
   @Test
   public void testGetInventoryAllBucketAndPrefixSingleMatchAws() throws URISyntaxException {
     for (String delimiter : DELIMITER_FRAGMENTS) {
-      CdmS3Uri uri = new CdmS3Uri(BUCKET + "?" + G16_KEY_PREFIX_SINGLE_MATCH + delimiter);
+      CdmS3Uri uri = new CdmS3Uri(S3TestsCommon.TOP_LEVEL_AWS_BUCKET + "?" + G16_KEY_PREFIX_SINGLE_MATCH + delimiter);
       checkInventoryAllCount(uri, 1);
     }
   }
@@ -190,7 +191,7 @@ public class TestControllerS3 {
   @Test
   public void testGetInventoryAllBucketAndPrefixSingleMatchGcs() throws URISyntaxException {
     for (String delimiter : DELIMITER_FRAGMENTS) {
-      CdmS3Uri uri = new CdmS3Uri(GCS_G16_S3_URI + "?" + G16_KEY_PREFIX_SINGLE_MATCH + delimiter);
+      CdmS3Uri uri = new CdmS3Uri(S3TestsCommon.TOP_LEVEL_GCS_BUCKET + "?" + G16_KEY_PREFIX_SINGLE_MATCH + delimiter);
       checkInventoryAllCount(uri, 1);
     }
   }
@@ -198,7 +199,8 @@ public class TestControllerS3 {
   @Test
   public void testGetInventoryAllBucketAndPrefixSingleMatchOsdc() throws URISyntaxException {
     for (String delimiter : DELIMITER_FRAGMENTS) {
-      CdmS3Uri uri = new CdmS3Uri(OSDC_G16_S3_URI + "?" + getOsdcKey(G16_KEY_PREFIX_SINGLE_MATCH) + delimiter);
+      CdmS3Uri uri =
+          new CdmS3Uri(S3TestsCommon.TOP_LEVEL_OSDC_BUCKET + "?" + getOsdcKey(G16_KEY_PREFIX_SINGLE_MATCH) + delimiter);
       checkInventoryAllCount(uri, 1);
     }
   }
@@ -206,7 +208,8 @@ public class TestControllerS3 {
   @Test
   public void testGetInventoryAllBucketAndPrefixMultiMatchAws() throws URISyntaxException {
     for (String delimiter : DELIMITER_FRAGMENTS) {
-      CdmS3Uri uri = new CdmS3Uri(BUCKET + "?" + G16_KEY_PREFIX_SINGLE_DAY_PARTIAL_FILE + delimiter);
+      CdmS3Uri uri =
+          new CdmS3Uri(S3TestsCommon.TOP_LEVEL_AWS_BUCKET + "?" + G16_KEY_PREFIX_SINGLE_DAY_PARTIAL_FILE + delimiter);
       checkInventoryAllCount(uri, 12);
     }
   }
@@ -214,7 +217,8 @@ public class TestControllerS3 {
   @Test
   public void testGetInventoryAllBucketAndPrefixMultiMatchGcs() throws URISyntaxException {
     for (String delimiter : DELIMITER_FRAGMENTS) {
-      CdmS3Uri uri = new CdmS3Uri(GCS_G16_S3_URI + "?" + G16_KEY_PREFIX_SINGLE_DAY_PARTIAL_FILE + delimiter);
+      CdmS3Uri uri =
+          new CdmS3Uri(S3TestsCommon.TOP_LEVEL_GCS_BUCKET + "?" + G16_KEY_PREFIX_SINGLE_DAY_PARTIAL_FILE + delimiter);
       checkInventoryAllCount(uri, 12);
     }
   }
@@ -222,8 +226,8 @@ public class TestControllerS3 {
   @Test
   public void testGetInventoryAllBucketAndPrefixMultiMatchOsdc() throws URISyntaxException {
     for (String delimiter : DELIMITER_FRAGMENTS) {
-      CdmS3Uri uri =
-          new CdmS3Uri(OSDC_G16_S3_URI + "?" + getOsdcKey(G16_KEY_PREFIX_SINGLE_DAY_PARTIAL_FILE) + delimiter);
+      CdmS3Uri uri = new CdmS3Uri(
+          S3TestsCommon.TOP_LEVEL_OSDC_BUCKET + "?" + getOsdcKey(G16_KEY_PREFIX_SINGLE_DAY_PARTIAL_FILE) + delimiter);
       checkInventoryAllCount(uri, 12);
     }
   }
@@ -233,37 +237,38 @@ public class TestControllerS3 {
   //
   @Test
   public void testGetSubdirsWithDelimiterAws() throws URISyntaxException {
-    CdmS3Uri uri = new CdmS3Uri(BUCKET + "?" + G16_KEY_SINGLE_DAY + DELIMITER_FRAGMENT);
+    CdmS3Uri uri = new CdmS3Uri(S3TestsCommon.TOP_LEVEL_AWS_BUCKET + "?" + G16_KEY_SINGLE_DAY + DELIMITER_FRAGMENT);
     checkSubdirsCount(uri, 24);
   }
 
   @Test
   public void testGetSubdirsWithDelimiterGcs() throws URISyntaxException {
-    CdmS3Uri uri = new CdmS3Uri(GCS_G16_S3_URI + "?" + G16_KEY_SINGLE_DAY + DELIMITER_FRAGMENT);
+    CdmS3Uri uri = new CdmS3Uri(S3TestsCommon.TOP_LEVEL_GCS_BUCKET + "?" + G16_KEY_SINGLE_DAY + DELIMITER_FRAGMENT);
     checkSubdirsCount(uri, 24);
   }
 
   @Test
   public void testGetSubdirsWithDelimiterOsdc() throws URISyntaxException {
-    CdmS3Uri uri = new CdmS3Uri(OSDC_G16_S3_URI + "?" + getOsdcKey(G16_KEY_SINGLE_DAY) + DELIMITER_FRAGMENT);
+    CdmS3Uri uri =
+        new CdmS3Uri(S3TestsCommon.TOP_LEVEL_OSDC_BUCKET + "?" + getOsdcKey(G16_KEY_SINGLE_DAY) + DELIMITER_FRAGMENT);
     checkSubdirsCount(uri, 24);
   }
 
   @Test
   public void testGetSubdirsWithoutDelimiterAws() throws URISyntaxException {
-    CdmS3Uri uri = new CdmS3Uri(BUCKET + "?" + G16_KEY_SINGLE_DAY);
+    CdmS3Uri uri = new CdmS3Uri(S3TestsCommon.TOP_LEVEL_AWS_BUCKET + "?" + G16_KEY_SINGLE_DAY);
     checkSubdirsCount(uri, 0);
   }
 
   @Test
   public void testGetSubdirsWithoutDelimiterGcs() throws URISyntaxException {
-    CdmS3Uri uri = new CdmS3Uri(GCS_G16_S3_URI + "?" + G16_KEY_SINGLE_DAY);
+    CdmS3Uri uri = new CdmS3Uri(S3TestsCommon.TOP_LEVEL_GCS_BUCKET + "?" + G16_KEY_SINGLE_DAY);
     checkSubdirsCount(uri, 0);
   }
 
   @Test
   public void testGetSubdirsWithoutDelimiterOsdc() throws URISyntaxException {
-    CdmS3Uri uri = new CdmS3Uri(OSDC_G16_S3_URI + "?" + getOsdcKey(G16_KEY_SINGLE_DAY));
+    CdmS3Uri uri = new CdmS3Uri(S3TestsCommon.TOP_LEVEL_OSDC_BUCKET + "?" + getOsdcKey(G16_KEY_SINGLE_DAY));
     checkSubdirsCount(uri, 0);
   }
 
