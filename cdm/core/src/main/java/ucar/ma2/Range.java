@@ -45,7 +45,7 @@ public class Range implements RangeIterator {
     try {
       return new Range(first, last);
     } catch (InvalidRangeException e) {
-      throw new RuntimeException(e); // cant happen if len > 0
+      throw new RuntimeException(e); // cant happen if last >= first
     }
   }
 

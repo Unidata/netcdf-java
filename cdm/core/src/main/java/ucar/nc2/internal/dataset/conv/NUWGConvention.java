@@ -11,6 +11,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
+
+import ucar.array.Arrays;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.IndexIterator;
@@ -19,6 +21,7 @@ import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.constants.CF;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis1D;
@@ -175,7 +178,6 @@ public class NUWGConvention extends CoordSystemBuilder {
         }
 
       } else if (ncvars.size() == 2) {
-
         if (dimName.equals("record")) {
           Variable.Builder<?> ncvar0 = ncvars.get(0);
           Variable.Builder<?> ncvar1 = ncvars.get(1);
@@ -197,15 +199,12 @@ public class NUWGConvention extends CoordSystemBuilder {
             parseInfo.format("Couldnt add referential coordAxis = %s%n", ncvar.shortName);
           }
         } else {
-          // lower(?) bound
-          Variable.Builder<?> ncvar = ncvars.get(0);
-          if (ncvar.dataType == DataType.STRUCTURE)
-            continue; // cant be a structure
-
-          if (makeCoordinateAxis(ncvar, dim)) {
-            parseInfo.format("Added referential boundary coordAxis (2) = %s%n", ncvar.shortName);
+          if (makeCoordinateAxis(ncvars.get(0), ncvars.get(1), dim)) {
+            parseInfo.format("Added referential boundary coordAxis (2) = %s, %s%n", ncvars.get(0).shortName,
+                ncvars.get(1).shortName);
           } else {
-            parseInfo.format("Couldnt add referential coordAxis = %s%n", ncvar.shortName);
+            parseInfo.format("Couldnt add referential coordAxis = %s, %s%n", ncvars.get(0).shortName,
+                ncvars.get(1).shortName);
           }
         }
       } // 2
@@ -228,6 +227,52 @@ public class NUWGConvention extends CoordSystemBuilder {
     if (!dim.getShortName().equals(ncvar.shortName)) {
       ncvar.addAttribute(new Attribute(_Coordinate.AliasForDimension, dim.getShortName()));
     }
+    return true;
+  }
+
+  private boolean makeCoordinateAxis(Variable.Builder<?> ncvar0, Variable.Builder<?> ncvar1, Dimension dim) {
+    if ((ncvar0.getRank() != 1) || (ncvar1.getRank() != 1)) {
+      return false;
+    }
+    if (!ncvar0.getFirstDimensionName().equals(dim.getShortName())
+        || !ncvar1.getFirstDimensionName().equals(dim.getShortName())) {
+      return false;
+    }
+
+    int n = dim.getLength();
+    double[] midpointData = new double[n];
+    double[] boundsData = new double[2 * n];
+    try {
+      VariableDS.Builder<?> ds0 = (VariableDS.Builder<?>) ncvar0;
+      VariableDS.Builder<?> ds1 = (VariableDS.Builder<?>) ncvar1;
+      ucar.array.Array<Double> data0 = Arrays.toDouble(ds0.orgVar.readArray());
+      ucar.array.Array<Double> data1 = Arrays.toDouble(ds1.orgVar.readArray());
+
+      int count = 0;
+      for (int idx = 0; idx < n; idx++) {
+        boundsData[count++] = data0.get(idx);
+        boundsData[count++] = data1.get(idx);
+        midpointData[idx] = (data0.get(idx) + data1.get(idx)) / 2;
+      }
+
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+
+    String boundsName = dim.getShortName() + "_bounds";
+    Variable.Builder<?> coordVarBounds =
+        VariableDS.builder().setName(boundsName).setDataType(DataType.DOUBLE).setDesc("synthesized Z coord bounds")
+            .setParentGroupBuilder(this.rootGroup).setDimensionsByName(dim.getShortName() + " 2")
+            .setSourceData(Arrays.factory(DataType.DOUBLE, new int[] {n, 2}, boundsData));
+    this.rootGroup.addVariable(coordVarBounds);
+
+    Variable.Builder<?> coordVar = VariableDS.builder().setName(dim.getShortName()).setDataType(DataType.DOUBLE)
+        .setParentGroupBuilder(this.rootGroup).addDimension(dim).setDesc("synthesized Z coord")
+        .addAttribute(new Attribute(CF.BOUNDS, boundsName))
+        .addAttribute(new Attribute(_Coordinate.AliasForDimension, dim.getShortName()))
+        .setSourceData(Arrays.factory(DataType.DOUBLE, new int[] {n}, midpointData));
+    this.rootGroup.addVariable(coordVar);
+
     return true;
   }
 

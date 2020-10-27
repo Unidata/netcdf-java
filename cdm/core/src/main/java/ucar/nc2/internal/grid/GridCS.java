@@ -10,6 +10,7 @@ import com.google.common.collect.ImmutableSet;
 import ucar.ma2.RangeIterator;
 import ucar.nc2.Dimension;
 import ucar.nc2.Dimensions;
+import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.*;
@@ -65,6 +66,19 @@ class GridCS implements GridCoordinateSystem {
       }
     }
     return null;
+  }
+
+  /**
+   * Can this be a coordinate system for v?
+   * True if each dimension of v is in this domain, or is 1 dimensional.
+   */
+  public boolean isCoordinateSystemFor(Variable v) {
+    for (Dimension d : Dimensions.makeDimensionsAll(v)) {
+      if (!domain.contains(d) && (d.getLength() != 1)) {
+        return false;
+      }
+    }
+    return true;
   }
 
   @Override
@@ -404,14 +418,8 @@ class GridCS implements GridCoordinateSystem {
 
     ImmutableList.Builder<GridAxis> axesb = ImmutableList.builder();
     for (CoordinateAxis axis : classifier.getAxesUsed()) {
-      if (axis.getAxisType() == null) {
-        continue;
-      }
-      if (gridAxes.get(axis.getFullName()) == null) {
-        String full = axis.getFullName();
-        continue;
-      }
-      axesb.add(Preconditions.checkNotNull(gridAxes.get(axis.getFullName())));
+      GridAxis gaxis = gridAxes.get(axis.getFullName());
+      axesb.add(Preconditions.checkNotNull(gaxis));
     }
     this.axes = axesb.build();
 

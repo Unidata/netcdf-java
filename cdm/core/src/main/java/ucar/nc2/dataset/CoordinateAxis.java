@@ -218,9 +218,7 @@ public class CoordinateAxis extends VariableDS {
     // buf.append("\n");
   }
 
-  /**
-   * Standard sort on Coordinate Axes
-   */
+  /** Standard sort on Coordinate Axes */
   public static class AxisComparator implements java.util.Comparator<CoordinateAxis> {
     public int compare(CoordinateAxis c1, CoordinateAxis c2) {
       Preconditions.checkNotNull(c1);

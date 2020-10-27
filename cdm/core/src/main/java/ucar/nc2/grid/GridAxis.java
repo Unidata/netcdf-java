@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.util.*;
 
 /** GridAxis abstract superclass */
-public abstract class GridAxis implements Comparable<GridAxis> {
+public abstract class GridAxis implements Iterable<Object> {
   private static final Logger logger = LoggerFactory.getLogger(GridAxis.class);
 
   public enum Spacing {
@@ -34,6 +34,7 @@ public abstract class GridAxis implements Comparable<GridAxis> {
                         // coord halfway between edges
     discontiguousInterval; // irregular discontiguous spaced intervals (values, npts), values are the edges,
                            // values[2*npts]: low0, high0, low1, high1, ...
+                           // Note that monotonicity is not guarenteed, and is ambiguous.
 
     public boolean isRegular() {
       return (this == Spacing.regularPoint) || (this == Spacing.regularInterval);
@@ -146,7 +147,7 @@ public abstract class GridAxis implements Comparable<GridAxis> {
   // Iterator over which coordinates wanted. TODO only in axis1d? Only for subset??
   public abstract RangeIterator getRangeIterator();
 
-  @Override
+  // @Override
   public int compareTo(GridAxis o) {
     return axisType.axisOrder() - o.axisType.axisOrder();
   }

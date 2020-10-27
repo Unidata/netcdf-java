@@ -81,7 +81,7 @@ public class GridDatasetImpl implements GridDataset {
       css.sort((o1, o2) -> o2.getCoordinateAxes().size() - o1.getCoordinateAxes().size());
       for (CoordinateSystem cs : css) {
         GridCS gcs = trackCsConverted.get(cs.getName());
-        if (gcs != null && gcs.getFeatureType() == this.featureType) {
+        if (gcs != null && gcs.getFeatureType() == this.featureType && gcs.isCoordinateSystemFor(v)) {
           Grid grid = new GridVariable(gcs, (VariableDS) ve);
           grids.add(grid);
           this.gridsets.put(gcs, grid);

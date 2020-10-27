@@ -12,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
-import ucar.ma2.RangeIterator;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.time.Calendar;
@@ -168,6 +167,12 @@ public class GridAxis1DTime extends GridAxis1D {
           return helper.subsetClosest(date);
         }
 
+        // TODO, can time be discontinuous interval, if so need to add that case.
+        Double value = (Double) params.get(GridSubset.timeCoord);
+        if (value != null) {
+          return helper.subsetClosest(value);
+        }
+
         Integer stride = (Integer) params.get(GridSubset.timeStride);
         if (stride == null || stride < 0) {
           stride = 1;
@@ -210,7 +215,7 @@ public class GridAxis1DTime extends GridAxis1D {
 
         if (stride != 1)
           try {
-            return helper.subsetByIndex(getRange().copyWithStride(stride));
+            return helper.makeSubsetByIndex(getRange().copyWithStride(stride));
           } catch (InvalidRangeException e) {
             errLog.format(e.getMessage());
             return null;
@@ -251,12 +256,7 @@ public class GridAxis1DTime extends GridAxis1D {
         }
 
         if (params.isTrue(GridSubset.timeOffsetFirst)) {
-          try {
-            return helper.subsetByIndex(new Range(1));
-          } catch (InvalidRangeException e) {
-            errLog.format(e.getMessage());
-            return null;
-          }
+          return helper.makeSubsetByIndex(new Range(1));
         }
         // default is all
         break;

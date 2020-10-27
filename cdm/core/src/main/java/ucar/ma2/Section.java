@@ -673,8 +673,9 @@ public class Section {
   public long computeSize() {
     long product = 1;
     for (Range r : ranges) {
-      if (r == Range.VLEN)
+      if (r == Range.VLEN) {
         continue;
+      }
       product *= r.length();
     }
     return product;

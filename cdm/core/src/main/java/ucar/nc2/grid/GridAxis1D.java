@@ -5,6 +5,7 @@
 package ucar.nc2.grid;
 
 import com.google.common.base.Objects;
+import com.google.common.collect.AbstractIterator;
 import ucar.array.Array;
 import ucar.array.Arrays;
 import ucar.ma2.InvalidRangeException;
@@ -304,24 +305,26 @@ public class GridAxis1D extends GridAxis {
     switch (getAxisType()) {
       case GeoZ:
       case Pressure:
-      case Height:
-        Double dval = params.getVertCoord();
+      case Height: {
+        Object dval = params.getVertCoord();
         if (dval != null) {
-          return helper.subsetClosest(dval);
-        }
-        // use midpoint of interval LOOK may not always be unique
-        double[] intv = params.getVertCoordIntv();
-        if (intv != null) {
-          return helper.subsetClosest((intv[0] + intv[1]) / 2);
+          if (dval instanceof Double) {
+            return helper.subsetClosest((Double) dval);
+          } else if (dval instanceof CoordInterval) {
+            return helper.subsetClosest((CoordInterval) dval);
+          }
         }
 
-        double[] vertRange = params.getVertRange(); // used by WCS
-        if (vertRange != null) {
-          return helper.subset(vertRange[0], vertRange[1], 1, errLog).orElse(null);
-        }
+        /*
+         * double[] vertRange = params.getVertRange(); // used by WCS
+         * if (vertRange != null) {
+         * return helper.subset(vertRange[0], vertRange[1], 1, errLog).orElse(null);
+         * }
+         */
 
         // default is all
         break;
+      }
 
       case Ensemble:
         Double eval = params.getDouble(GridSubset.ensCoord);
@@ -352,14 +355,29 @@ public class GridAxis1D extends GridAxis {
   @Nullable
   public GridAxis subsetDependent(GridAxis1D dependsOn, Formatter errLog) {
     GridAxis1D.Builder<?> builder;
-    try {
-      // TODO Other possible subsets?
-      builder = new GridAxis1DHelper(this).subsetByIndex(dependsOn.getRange());
-    } catch (InvalidRangeException e) {
-      errLog.format("%s", e.getMessage());
-      return null;
-    }
+    // TODO Other possible subsets?
+    builder = new GridAxis1DHelper(this).makeSubsetByIndex(dependsOn.getRange());
     return builder.build();
+  }
+
+  @Override
+  public Iterator<Object> iterator() {
+    return new CoordIterator();
+  }
+
+  private class CoordIterator extends AbstractIterator {
+    private int current = 0;
+
+    @Override
+    protected Object computeNext() {
+      if (current >= getNcoords()) {
+        return endOfData();
+      }
+      Object result = spacing != Spacing.discontiguousInterval ? new Double(getCoordMidpoint(current))
+          : CoordInterval.create(getCoordEdge1(current), getCoordEdge2(current));
+      current++;
+      return result;
+    }
   }
 
   //////////////////////////////////////////////////////////////

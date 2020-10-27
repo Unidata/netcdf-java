@@ -211,28 +211,7 @@ public class DatasetClassifier {
       this.featureType = classify();
       this.coordTransforms = new ArrayList<>(cs.getCoordinateTransforms());
       this.orgProj = cs.getProjection();
-    }
-
-    // An axis is independent if its a coordinate variable, or it is 1D with a unique dimension.
-    private boolean isIndependentCoordinate(CoordinateSystem cs, CoordinateAxis axis) {
-      if (axis.isCoordinateVariable()) {
-        return true;
-      }
-      if (axis.getRank() != 1) {
-        return false;
-      }
-      Dimension dim = axis.getDimension(0);
-      for (CoordinateAxis other : cs.getCoordinateAxes()) {
-        if (other == axis) {
-          continue;
-        }
-        for (Dimension odim : other.getDimensions()) {
-          if (dim == odim) {
-            return false;
-          }
-        }
-      }
-      return true;
+      this.usedAxes.sort(new CoordinateAxis.AxisComparator()); // canonical ordering of axes
     }
 
     private FeatureType classify() {
@@ -289,6 +268,7 @@ public class DatasetClassifier {
     @Override
     public String toString() {
       Formatter f2 = new Formatter();
+      f2.format("%s ", cs.getName());
       f2.format("%s", featureType == null ? "" : featureType.toString());
       f2.format("%n xAxis=  %s", xaxis == null ? "" : xaxis.getNameAndDimensions());
       f2.format("%n yAxis=  %s", yaxis == null ? "" : yaxis.getNameAndDimensions());

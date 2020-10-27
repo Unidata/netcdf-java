@@ -482,6 +482,21 @@ public class Arrays {
     }
   }
 
+  /** Convert a numeric array to double values. */
+  public static Array<Double> toDouble(Array<?> array) {
+    if (array instanceof ArrayDouble) {
+      return (Array<Double>) array;
+    }
+    Array<Number> conv = (Array<Number>) array;
+    int n = (int) array.length();
+    double[] storage = new double[n];
+    int count = 0;
+    for (Number val : conv) {
+      storage[count++] = val.doubleValue();
+    }
+    return factory(DataType.DOUBLE, new int[] {n}, storage);
+  }
+
   @AutoValue
   public static abstract class MinMax {
     public abstract double min();
