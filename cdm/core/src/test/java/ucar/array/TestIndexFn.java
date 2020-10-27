@@ -47,14 +47,14 @@ public class TestIndexFn {
   public void testFlip() {
     int[] shape = new int[] {1, 2, 3};
     IndexFn index = IndexFn.builder(shape).build();
-    assertThat(index.toString()).isEqualTo("0, 1, 2, 3, 4, 5");
+    assertThat(index.toString2()).isEqualTo("0, 1, 2, 3, 4, 5");
 
     IndexFn indexf1 = index.flip(1);
-    assertThat(index.toString()).isEqualTo("0, 1, 2, 3, 4, 5");
-    assertThat(indexf1.toString()).isEqualTo("3, 4, 5, 0, 1, 2");
+    assertThat(index.toString2()).isEqualTo("0, 1, 2, 3, 4, 5");
+    assertThat(indexf1.toString2()).isEqualTo("3, 4, 5, 0, 1, 2");
 
     IndexFn indexf2 = index.flip(2);
-    assertThat(indexf2.toString()).isEqualTo("2, 1, 0, 5, 4, 3");
+    assertThat(indexf2.toString2()).isEqualTo("2, 1, 0, 5, 4, 3");
   }
 
   @Test
@@ -63,7 +63,7 @@ public class TestIndexFn {
     IndexFn index = IndexFn.builder(shape).build();
 
     IndexFn subset = index.section(ImmutableList.of(new Range(11, 15)));
-    assertThat(subset.toString()).isEqualTo("11, 12, 13, 14, 15");
+    assertThat(subset.toString2()).isEqualTo("11, 12, 13, 14, 15");
     assertThat(subset.getRank()).isEqualTo(1);
     assertThat(subset.getShape()).isEqualTo(new int[] {5});
     assertThat(subset.length()).isEqualTo(5);

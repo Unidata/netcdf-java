@@ -56,7 +56,7 @@ public class TestMisc {
 
     f = new Formatter();
     assertThat(Misc.compare(raw1, raw3, f)).isFalse();
-    assertThat(f.toString()).isEqualTo(String.format("compareInt: length 1=   3 != length 2=  2%n"));
+    assertThat(f.toString()).endsWith(String.format("length 1=   3 != length 2=  2%n"));
   }
 
   @Test

@@ -220,7 +220,7 @@ public class TestReadGridCoordinateSystem {
       GridSubset subset = new GridSubset();
       CalendarDate wantDate = CalendarDate.parseISOformat(null, "2003-02-14T06:00:00Z");
       subset.setTime(wantDate);
-      subset.setVertCoord(775.);
+      subset.setVertCoord(725.);
       GridReferencedArray geoArray = grid.readData(subset);
       Array<Number> data = geoArray.data();
       assertThat(data.getDataType()).isEqualTo(DataType.FLOAT);
