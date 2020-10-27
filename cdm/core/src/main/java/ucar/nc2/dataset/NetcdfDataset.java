@@ -78,7 +78,7 @@ import java.util.*;
 
 public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfDataset.class);
-  public static final String AGGREGATION = "Aggregaation";
+  public static final String AGGREGATION = "Aggregation";
 
   /**
    * Possible enhancements for a NetcdfDataset
@@ -511,12 +511,22 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   }
 
   @Override
+  @Nullable
   public String getFileTypeId() {
-    if (orgFile != null)
-      return orgFile.getFileTypeId();
-    if (agg != null)
-      return agg.getFileTypeId();
-    return "N/A";
+    String inner = null;
+    if (orgFile != null) {
+      inner = orgFile.getFileTypeId();
+    }
+    if (inner == null && agg != null) {
+      inner = agg.getFileTypeId();
+    }
+    if (this.fileTypeId == null) {
+      return inner;
+    }
+    if (inner == null) {
+      return this.fileTypeId;
+    }
+    return (inner.startsWith(this.fileTypeId)) ? inner : this.fileTypeId + "/" + inner;
   }
 
   @Override
@@ -548,17 +558,19 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   ////////////////////////////////////////////////////////////////////////////////////////////
   // TODO make these final and immutable in 6.
-  private NetcdfFile orgFile;
+  private NetcdfFile orgFile; // can be null in Ncml
   private List<CoordinateAxis> coordAxes = new ArrayList<>();
   private List<CoordinateSystem> coordSys = new ArrayList<>();
   private List<CoordinateTransform> coordTransforms = new ArrayList<>();
   private String convUsed;
   private Set<Enhance> enhanceMode = EnumSet.noneOf(Enhance.class); // enhancement mode for this specific dataset
   private ucar.nc2.internal.ncml.Aggregation agg;
+  private String fileTypeId;
 
   private NetcdfDataset(Builder<?> builder) {
     super(builder);
     this.orgFile = builder.orgFile;
+    this.fileTypeId = builder.fileTypeId;
     this.convUsed = builder.convUsed;
     this.enhanceMode = builder.getEnhanceMode();
     this.agg = builder.agg;
@@ -598,7 +610,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     this.coordTransforms.forEach(trans -> b.coords.addCoordinateTransform(trans.toBuilder()));
 
     b.setOrgFile(this.orgFile).setConventionUsed(this.convUsed).setEnhanceMode(this.enhanceMode)
-        .setAggregation(this.agg);
+        .setAggregation(this.agg).setFileTypeId(this.fileTypeId);
 
     return (Builder<?>) super.addLocalFieldsToBuilder(b);
   }
@@ -632,6 +644,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     private String convUsed;
     private Set<Enhance> enhanceMode = EnumSet.noneOf(Enhance.class); // LOOK should be default ??
     public ucar.nc2.internal.ncml.Aggregation agg; // If its an aggregation
+    private String fileTypeId;
 
     private boolean built;
 
@@ -651,6 +664,11 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
     public T setOrgFile(NetcdfFile orgFile) {
       this.orgFile = orgFile;
+      return self();
+    }
+
+    public T setFileTypeId(String fileTypeId) {
+      this.fileTypeId = fileTypeId;
       return self();
     }
 

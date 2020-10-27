@@ -12,7 +12,6 @@ import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageCS;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageCSBuilder;
 import ucar.nc2.internal.dataset.DatasetClassifier;
-import ucar.nc2.internal.grid.GridDatasetImpl;
 
 import java.io.File;
 import java.io.IOException;
@@ -81,12 +80,11 @@ public class FeatureScan {
       for (File f : files) {
         String name = f.getName();
         String stem = stem(name);
-        if (name.contains(".gbx") || name.contains(".ncx") || name.endsWith(".xml") || name.endsWith(".pdf")
-            || name.endsWith(".txt") || name.endsWith(".tar")) {
+        if (name.contains(".gbx9") || name.contains(".ncx") || name.endsWith(".xml") || name.endsWith(".pdf")
+            || name.endsWith(".txt") || name.endsWith(".tar") | name.endsWith(".tmp")) {
           files2.remove(f);
 
         } else if (prev != null) {
-
           if (name.endsWith(".ncml")) {
             if (prev.getName().equals(stem) || prev.getName().equals(stem + ".nc"))
               files2.remove(prev);
@@ -205,7 +203,16 @@ public class FeatureScan {
 
 
     public String getName() {
-      return f.getPath();
+      String path = f.getPath();
+      if (path.contains("/cdmUnitTest/")) {
+        int pos = path.indexOf("/cdmUnitTest/");
+        path = ".." + path.substring(pos);
+      }
+      if (path.contains("/core/src/test/data/")) {
+        int pos = path.indexOf("/core/src/test/data/");
+        path = ".." + path.substring(pos);
+      }
+      return path;
     }
 
     public String getFileType() {

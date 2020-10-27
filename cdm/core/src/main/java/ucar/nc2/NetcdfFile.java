@@ -381,10 +381,11 @@ public class NetcdfFile implements FileCacheable, Closeable {
    * @return registered id of the file type
    * @see "https://www.unidata.ucar.edu/software/netcdf-java/formats/FileTypes.html"
    */
+  @Nullable
   public String getFileTypeId() {
     if (iosp != null)
       return iosp.getFileTypeId();
-    return "N/A";
+    return null;
   }
 
   /**
