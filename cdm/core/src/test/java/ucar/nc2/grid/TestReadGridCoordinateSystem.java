@@ -1,11 +1,13 @@
 package ucar.nc2.grid;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.array.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.time.CalendarDate;
 import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.IOException;
 import java.util.Formatter;
@@ -134,6 +136,7 @@ public class TestReadGridCoordinateSystem {
     }
   }
 
+  @Category(NeedsCdmUnitTest.class)
   @Test
   public void testNoTimeAxis() throws IOException, InvalidRangeException {
     String filename = TestDir.cdmUnitTestDir + "conventions/coards/inittest24.QRIDV07200.ncml";
@@ -192,6 +195,7 @@ public class TestReadGridCoordinateSystem {
     }
   }
 
+  @Category(NeedsCdmUnitTest.class)
   @Test
   public void testProblem() throws IOException, InvalidRangeException {
     String filename = TestDir.cdmUnitTestDir + "conventions/nuwg/2003021212_avn-x.nc";
