@@ -1,6 +1,7 @@
 /* Copyright Unidata */
 package ucar.nc2.grib;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -25,6 +26,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 /** Test opening file and its index. */
+@Ignore("no passing tests")
 @Category(NeedsCdmUnitTest.class)
 @RunWith(Parameterized.class)
 public class TestGribIndex {
@@ -49,14 +51,14 @@ public class TestGribIndex {
     this.fail = fail;
   }
 
-  // @Test
+  @Test
   public void testOpenGrib() throws IOException {
     try (NetcdfFile ncfile = NetcdfFiles.open(filename, null)) {
       assertThat(ncfile.getFileTypeId()).isEqualTo(isGrib1 ? "Grib1" : "Grib2");
     }
   }
 
-  // @Test
+  @Test
   public void testReadIndexProto() {
     String indexFilename = filename + ".gbx9";
     if (isGrib1) {
