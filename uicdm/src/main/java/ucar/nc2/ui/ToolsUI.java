@@ -263,6 +263,7 @@ public class ToolsUI extends JPanel {
     addListeners(hdf5TabPane);
 
     // nested tab - features
+    ftTabPane.addTab("FeatureScan", new JLabel("FeatureScan"));
     ftTabPane.addTab("Grids", new JLabel("Grids"));
     ftTabPane.addTab("Coverages", new JLabel("Coverages"));
     ftTabPane.addTab("GridNew", new JLabel("GridNew"));
@@ -271,7 +272,6 @@ public class ToolsUI extends JPanel {
     ftTabPane.addTab("PointFeature", new JLabel("PointFeature"));
     ftTabPane.addTab("Images", new JLabel("Images"));
     ftTabPane.addTab("Radial", new JLabel("Radial"));
-    ftTabPane.addTab("FeatureScan", new JLabel("FeatureScan"));
     ftTabPane.addTab("FeatureCollection", fcTabPane);
     addListeners(ftTabPane);
 

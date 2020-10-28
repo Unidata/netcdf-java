@@ -82,8 +82,9 @@ public class FeatureScan {
       for (File f : files) {
         String name = f.getName();
         String stem = stem(name);
-        if (name.contains(".gbx9") || name.contains(".ncx") || name.endsWith(".xml") || name.endsWith(".pdf")
-            || name.endsWith(".txt") || name.endsWith(".tar") || name.endsWith(".tmp") || name.endsWith(".dump")) {
+        if (name.contains(".gbx") || name.contains(".ncx") || name.endsWith(".xml") || name.endsWith(".pdf")
+            || name.endsWith(".txt") || name.endsWith(".tar") || name.endsWith(".tmp") || name.endsWith(".dump")
+            || name.endsWith(".gitignore")) {
           files2.remove(f);
 
         } else if (prev != null) {

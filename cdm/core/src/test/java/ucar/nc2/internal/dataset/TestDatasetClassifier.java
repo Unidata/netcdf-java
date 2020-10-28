@@ -2,11 +2,13 @@ package ucar.nc2.internal.dataset;
 
 import com.google.common.collect.Iterables;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.internal.grid.GridDatasetImpl;
 import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.IOException;
 import java.util.Formatter;
@@ -31,6 +33,7 @@ public class TestDatasetClassifier {
   }
 
   @Test
+  @Category(NeedsCdmUnitTest.class)
   public void testScalerRuntime() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "gribCollections/anal/HRRR_CONUS_2p5km_ana_20150706_2000.grib2";
     try (NetcdfDataset ds = NetcdfDatasets.openDataset(filename)) {
