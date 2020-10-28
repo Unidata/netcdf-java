@@ -16,6 +16,7 @@ import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.projection.RotatedPole;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /** Coordinate System classification. TODO Here or Grid? */
 public class DatasetClassifier {
@@ -232,8 +233,9 @@ public class DatasetClassifier {
 
       // what makes it a grid?
       // each dimension must have its own coordinate variable
-      Set<Dimension> domain = Dimensions.makeDomain(usedAxes);
-      if (domain.size() == usedAxes.size()) {
+      List<CoordinateAxis> axes = usedAxes.stream().filter(a -> a.getRank() > 0).collect(Collectors.toList());
+      Set<Dimension> domain = Dimensions.makeDomain(axes);
+      if (domain.size() == axes.size()) {
         return FeatureType.GRID;
       }
 

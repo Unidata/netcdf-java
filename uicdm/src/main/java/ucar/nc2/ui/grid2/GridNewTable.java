@@ -463,11 +463,9 @@ public class GridNewTable extends JPanel {
       return axis.getHasData();
     }
 
-    public String getDependsOn() {
-      if (axis.getDependenceType() != GridAxis.DependenceType.independent)
-        return axis.getDependenceType() + ": " + String.join(",", axis.getDependsOn());
-      else
-        return axis.getDependenceType().toString();
+    public String getDependance() {
+      String extra = axis.getDependsOn() == null ? "" : ": " + String.join(",", axis.getDependsOn());
+      return axis.getDependenceType().toString() + extra;
     }
 
     String showCoordValueDiffs() {
