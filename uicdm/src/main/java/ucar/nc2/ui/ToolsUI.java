@@ -1032,14 +1032,12 @@ public class ToolsUI extends JPanel {
     grib1TabPane.setSelectedComponent(grib1DataPanel);
   }
 
-
   public void openGridDataset(String datasetName) {
     makeComponent(ftTabPane, "Grids");
     geoGridPanel.doit(datasetName);
     tabbedPane.setSelectedComponent(ftTabPane);
     ftTabPane.setSelectedComponent(geoGridPanel);
   }
-
 
   public void openCoverageDataset(String datasetName) {
     makeComponent(ftTabPane, "Coverages");
@@ -1048,6 +1046,12 @@ public class ToolsUI extends JPanel {
     ftTabPane.setSelectedComponent(coveragePanel);
   }
 
+  public void openNewGrid(String datasetName) {
+    makeComponent(ftTabPane, "GridNew");
+    gridPanel.doit(datasetName);
+    tabbedPane.setSelectedComponent(ftTabPane);
+    ftTabPane.setSelectedComponent(gridPanel);
+  }
 
   public void openGridDataset(NetcdfDataset dataset) {
     makeComponent(ftTabPane, "Grids");

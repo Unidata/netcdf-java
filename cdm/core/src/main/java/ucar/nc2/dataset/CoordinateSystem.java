@@ -9,6 +9,7 @@ import com.google.common.collect.ImmutableList;
 import javax.annotation.Nullable;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.grid.GridAxis;
 import ucar.unidata.geoloc.*;
 import java.util.*;
 import ucar.unidata.geoloc.projection.LatLonProjection;
@@ -159,6 +160,18 @@ public class CoordinateSystem {
       }
     }
     return result;
+  }
+
+  /** Find CoordinateAxis of one of the given types, in the order given. */
+  @Nullable
+  public CoordinateAxis findAxis(AxisType... axisType) {
+    for (AxisType type : axisType) {
+      CoordinateAxis result = findAxis(type);
+      if (result != null) {
+        return result;
+      }
+    }
+    return null;
   }
 
   /**

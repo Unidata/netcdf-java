@@ -408,7 +408,7 @@ public class NcmlReader {
     Element elemE = netcdfElem.getChild("explicit", ncNS);
     explicit = (elemE != null);
 
-    NetcdfDataset.Builder<?> builder = NetcdfDataset.builder().setOrgFile(this.refFile);
+    NetcdfDataset.Builder<?> builder = NetcdfDataset.builder().setOrgFile(this.refFile).setFileTypeId("NcML");
     if (this.refFile != null && !explicit) {
       // copy all the metadata from the original file.
       builder.copyFrom(this.refFile);

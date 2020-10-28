@@ -30,16 +30,13 @@ final class IndexFn implements Iterable<Integer> {
     if (this.rank == 0 && index.length == 1 && index[0] == 0) {
       return 0;
     }
-    Preconditions.checkArgument(this.rank == index.length,
-        String.format("bad index rank %d != %d", index.length, this.rank));
-    for (int i = 0; i < rank; i++) {
-      Preconditions.checkArgument(index[i] >= 0 && index[i] < shape[i],
-          String.format("index %d must be less than %d", index[i], shape[i]));
-    }
+    Preconditions.checkArgument(this.rank == index.length);
     int value = offset;
     for (int ii = 0; ii < rank; ii++) {
-      if (shape[ii] < 0)
-        break;// vlen
+      Preconditions.checkArgument(index[ii] >= 0 && index[ii] < shape[ii]);
+      if (shape[ii] < 0) {
+        break; // vlen
+      }
       value += index[ii] * stride[ii];
     }
     return value;

@@ -10,6 +10,8 @@ import org.slf4j.LoggerFactory;
 import thredds.inventory.CollectionUpdateType;
 import ucar.nc2.grib.grib1.Grib1Index;
 import ucar.nc2.grib.grib2.Grib2Index;
+import ucar.unidata.util.test.TestDir;
+
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,16 +26,17 @@ import java.util.List;
 @RunWith(Parameterized.class)
 public class TestGribIndexProto {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  private static final String gridTestDir = "../grib/src/test/data/index/";
 
   @Parameterized.Parameters(name = "{0}")
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
-    result.add(new Object[] {"grib1.proto2.gbx9", true, false});
-    result.add(new Object[] {"grib1.proto3.gbx9", true, true}); // fails
-    result.add(new Object[] {"grib1.proto3.syntax2.gbx9", true, false});
-    result.add(new Object[] {"grib2.proto2.gbx9", false, false});
-    result.add(new Object[] {"grib2.proto3.gbx9", false, true}); // fails
-    result.add(new Object[] {"grib2.proto3.syntax2.gbx9", false, false});
+    result.add(new Object[] {gridTestDir + "grib1.proto2.gbx9", true, false});
+    result.add(new Object[] {gridTestDir + "grib1.proto3.gbx9", true, true}); // fails
+    result.add(new Object[] {gridTestDir + "grib1.proto3.syntax2.gbx9", true, false});
+    result.add(new Object[] {gridTestDir + "grib2.proto2.gbx9", false, false});
+    result.add(new Object[] {gridTestDir + "grib2.proto3.gbx9", false, true}); // fails
+    result.add(new Object[] {gridTestDir + "grib2.proto3.syntax2.gbx9", false, false});
     return result;
   }
 
@@ -41,8 +44,8 @@ public class TestGribIndexProto {
   boolean isGrib1;
   boolean fail;
 
-  public TestGribIndexProto(String ds, boolean isGrib1, boolean fail) {
-    this.filename = "../grib/src/test/data/index/" + ds;
+  public TestGribIndexProto(String filename, boolean isGrib1, boolean fail) {
+    this.filename = filename;
     this.isGrib1 = isGrib1;
     this.fail = fail;
   }

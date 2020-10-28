@@ -63,6 +63,9 @@ public class FeatureScanOpPanel extends OpPanel {
           case "openCoverageDataset":
             ToolsUI.getToolsUI().openCoverageDataset(datasetName);
             break;
+          case "openNewGrid":
+            ToolsUI.getToolsUI().openNewGrid(datasetName);
+            break;
           case "openRadialDataset":
             ToolsUI.getToolsUI().openRadialDataset(datasetName);
             break;
