@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.ft2.coverage.adapter;
@@ -37,7 +37,7 @@ public class DtCoverageDataset implements Closeable {
    * Open a netcdf dataset, using NetcdfDataset.defaultEnhanceMode plus CoordSystems
    * and turn into a DtCoverageDataset.
    *
-   * @param location netcdf dataset to open, using NetcdfDataset.acquireDataset().
+   * @param location netcdf dataset to open, using NetcdfDatasets.acquireDataset().
    * @return GridDataset
    * @throws java.io.IOException on read error
    */
@@ -54,7 +54,7 @@ public class DtCoverageDataset implements Closeable {
    * Open a netcdf dataset, using NetcdfDataset.defaultEnhanceMode plus CoordSystems
    * and turn into a DtCoverageDataset.
    *
-   * @param durl netcdf dataset to open, using NetcdfDataset.acquireDataset().
+   * @param durl netcdf dataset to open, using NetcdfDatasets.acquireDataset().
    * @param enhanceMode open netcdf dataset with this enhanceMode
    * @return GridDataset
    * @throws java.io.IOException on read error
@@ -100,13 +100,12 @@ public class DtCoverageDataset implements Closeable {
    * @throws java.io.IOException on read error
    */
   public DtCoverageDataset(NetcdfDataset ncd, Formatter parseInfo) throws IOException {
-    Set<Enhance> enhance = ncd.getEnhanceMode();
-    if (enhance == null || !enhance.contains(NetcdfDataset.Enhance.CoordSystems)) {
+    this.ncd = ncd;
+
+    Set<NetcdfDataset.Enhance> enhance = ncd.getEnhanceMode();
+    if (enhance == null || enhance.isEmpty())
       enhance = NetcdfDataset.getDefaultEnhanceMode();
-      this.ncd = NetcdfDatasets.enhance(ncd, enhance, null);
-    } else {
-      this.ncd = ncd;
-    }
+    NetcdfDatasets.enhance(ncd, enhance, null);
 
     DtCoverageCSBuilder facc = DtCoverageCSBuilder.classify(ncd, parseInfo);
     if (facc != null)
