@@ -11,8 +11,14 @@ import ucar.unidata.util.test.TestDir;
 public class NcmlTestsCommon {
   // comparable aggregations
   static final String joinNewNcmlExplicit = TestDir.localTestDataDir + "ncml/S3JoinNewAggExplicit.ncml";
-  static final String joinNewNcmlScan = TestDir.localTestDataDir + "ncml/S3JoinNewAggScan.ncml";
+  static final String joinNewNcmlScanDelim = TestDir.localTestDataDir + "ncml/S3JoinNewAggScanDelim.ncml";
+  static final String joinNewNcmlScanEnhanced = TestDir.localTestDataDir + "ncml/S3JoinNewAggScanDelimEnhanced.ncml";
+  static final String joinNewNcmlScanNoDelim = TestDir.localTestDataDir + "ncml/S3JoinNewAggScanNoDelim.ncml";
+  static final String joinNewNcmlScanRegExpDelim = TestDir.localTestDataDir + "ncml/S3JoinNewAggScanRegExpDelim.ncml";
+  static final String joinNewNcmlScanRegExpNoDelim =
+      TestDir.localTestDataDir + "ncml/S3JoinNewAggScanRegExpNoDelim.ncml";
   static final int expectedNumberOfTimesInAgg = 12;
+  static final int expectedNumberOfTimesInAggRegExp = 2;
   static final String dataVarName = "/Rad";
   static final String timeVarName = "/time";
 
