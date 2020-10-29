@@ -4,6 +4,7 @@
  */
 package ucar.nc2.ft2.scan;
 
+import com.google.common.collect.Iterables;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
@@ -12,6 +13,7 @@ import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageCS;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageCSBuilder;
 import ucar.nc2.internal.dataset.DatasetClassifier;
+import ucar.nc2.internal.grid.GridDatasetImpl;
 
 import java.io.File;
 import java.io.IOException;
@@ -80,8 +82,9 @@ public class FeatureScan {
       for (File f : files) {
         String name = f.getName();
         String stem = stem(name);
-        if (name.contains(".gbx9") || name.contains(".ncx") || name.endsWith(".xml") || name.endsWith(".pdf")
-            || name.endsWith(".txt") || name.endsWith(".tar") | name.endsWith(".tmp")) {
+        if (name.contains(".gbx") || name.contains(".ncx") || name.endsWith(".xml") || name.endsWith(".pdf")
+            || name.endsWith(".txt") || name.endsWith(".tar") || name.endsWith(".tmp") || name.endsWith(".dump")
+            || name.endsWith(".gitignore")) {
           files2.remove(f);
 
         } else if (prev != null) {
@@ -164,8 +167,14 @@ public class FeatureScan {
         try {
           // new
           errlog = new Formatter();
-          DatasetClassifier dclassifier = new DatasetClassifier(ds, errlog);
-          classifier = dclassifier.getCoordinateSystemsUsed().stream().findFirst().orElse(null);
+          Optional<GridDatasetImpl> grido = GridDatasetImpl.create(ds, errlog);
+          if (grido.isPresent()) {
+            GridDatasetImpl gridDataset = grido.get();
+            if (!Iterables.isEmpty(gridDataset.getGrids())) {
+              DatasetClassifier dclassifier = new DatasetClassifier(ds, errlog);
+              classifier = dclassifier.getCoordinateSystemsUsed().stream().findFirst().orElse(null);
+            }
+          }
           info.append("GridDatasetImpl errlog = ");
           info.append(errlog);
           info.append("\n\n");
@@ -239,7 +248,6 @@ public class FeatureScan {
         return;
       coordMap = "f:D(" + cs.getDomainRank() + ")->R(" + cs.getRangeRank() + ")";
     }
-
 
     public String getFtMetadata() {
       return (ftFromMetadata == null) ? "" : ftFromMetadata.toString();
