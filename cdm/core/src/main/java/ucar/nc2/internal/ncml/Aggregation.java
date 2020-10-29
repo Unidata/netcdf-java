@@ -382,11 +382,9 @@ public abstract class Aggregation implements ucar.nc2.ncml.AggregationIF {
     // It would affect other collections than just NcML aggregation in that case.
     for (Iterator<AggDataset> datasetsIter = datasets.iterator(); datasetsIter.hasNext();) {
       AggDataset dataset = datasetsIter.next();
-
-      if ((dataset.getMFile() != null) && (!dataset.getMFile().isReadable())) { // File.canRead() is broken on Windows,
-                                                                                // but the JDK7 methods work.
-        logger
-            .warn("Aggregation member isn't readable (permissions issue?). Skipping: " + dataset.getMFile().getPath());
+      MFile mFile = dataset.getMFile();
+      if ((mFile != null) && (!mFile.isReadable())) {
+        logger.warn("Aggregation member isn't readable (permissions issue?). Skipping: " + mFile.getPath());
         datasetsIter.remove();
       }
     }
