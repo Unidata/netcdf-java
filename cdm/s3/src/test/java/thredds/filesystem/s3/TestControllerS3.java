@@ -284,7 +284,7 @@ public class TestControllerS3 {
   }
 
   private void checkInventoryTopCount(CdmS3Uri uri, int expectedCount) {
-    logger.warn("getInventoryTop: {}", uri);
+    logger.debug("getInventoryTop: {}", uri);
     ControllerS3 controller = new ControllerS3();
     controller.limit = true;
     Iterator<MFile> it = controller.getInventoryTop(getCollectionConfig(uri), false);
@@ -292,7 +292,7 @@ public class TestControllerS3 {
   }
 
   private void checkInventoryAllCount(CdmS3Uri uri, int expectedCount) {
-    logger.warn("getInventoryAll: {}", uri);
+    logger.debug("getInventoryAll: {}", uri);
     ControllerS3 controller = new ControllerS3();
     controller.limit = true;
     Iterator<MFile> it = controller.getInventoryAll(getCollectionConfig(uri), false);
@@ -300,7 +300,7 @@ public class TestControllerS3 {
   }
 
   private void checkSubdirsCount(CdmS3Uri uri, int expectedCount) {
-    logger.warn("getInventoryAll: {}", uri);
+    logger.debug("getInventoryAll: {}", uri);
     ControllerS3 controller = new ControllerS3();
     controller.limit = true;
     Iterator<MFile> it = controller.getSubdirs(getCollectionConfig(uri), false);
