@@ -317,8 +317,8 @@ public abstract class GridAxis implements Iterable<Object> {
   }
 
   /** A builder taking fields from a VariableDS */
-  public static GridAxis1D.Builder<?> builder(VariableDS vds) {
-    return (GridAxis1D.Builder<?>) builder().initFromVariableDS(vds);
+  public static Builder<?> builder(VariableDS vds) {
+    return builder().initFromVariableDS(vds);
   }
 
   public static Builder<?> builder() {

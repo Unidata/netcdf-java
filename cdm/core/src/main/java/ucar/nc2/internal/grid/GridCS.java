@@ -26,6 +26,7 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 /**
  * Base implementation of GridCoordinateSystem.
@@ -116,8 +117,8 @@ class GridCS implements GridCoordinateSystem {
 
   @Override
   @Nullable
-  public GridAxis1DTime getTimeOffsetAxis() {
-    return (GridAxis1DTime) findCoordAxis(AxisType.TimeOffset);
+  public GridAxis1D getTimeOffsetAxis() {
+    return (GridAxis1D) findCoordAxis(AxisType.TimeOffset);
   }
 
   @Override
@@ -313,6 +314,38 @@ class GridCS implements GridCoordinateSystem {
   }
 
   @Override
+  public String showFnSummary() {
+    if (featureType == null)
+      return "";
+
+    Formatter f2 = new Formatter();
+    f2.format("%s(", featureType.toString());
+
+    ArrayList<GridAxis> otherAxes = new ArrayList<>();
+    int count = 0;
+    for (GridAxis axis : axes) {
+      if (axis.getDependenceType() != GridAxis.DependenceType.independent) {
+        otherAxes.add(axis);
+        continue;
+      }
+      if (count > 0) {
+        f2.format(",");
+      }
+      f2.format("%s", axis.getAxisType() == null ? axis.getName() : axis.getAxisType().getCFAxisName());
+      count++;
+    }
+    f2.format(")");
+
+    count = 0;
+    for (GridAxis axis : otherAxes) {
+      f2.format(count == 0 ? ": " : ",");
+      f2.format("%s", axis.getAxisType() == null ? axis.getName() : axis.getAxisType().getCFAxisName());
+      count++;
+    }
+    return f2.toString();
+  }
+
+  @Override
   public Iterable<Dimension> getDomain() {
     return domain;
   }
@@ -409,8 +442,6 @@ class GridCS implements GridCoordinateSystem {
    * @param gridAxes The gridAxes already built, so there are no duplicates as we make the coordSys.
    */
   GridCS(DatasetClassifier.CoordSysClassifier classifier, Map<String, GridAxis> gridAxes) {
-    // make name based on coordinate
-    this.name = classifier.getName();
     this.featureType = classifier.getFeatureType();
     this.isLatLon = classifier.isLatLon();
     this.projection = classifier.getProjection();
@@ -419,9 +450,13 @@ class GridCS implements GridCoordinateSystem {
     ImmutableList.Builder<GridAxis> axesb = ImmutableList.builder();
     for (CoordinateAxis axis : classifier.getAxesUsed()) {
       GridAxis gaxis = gridAxes.get(axis.getFullName());
-      axesb.add(Preconditions.checkNotNull(gaxis));
+      if (gaxis != null) { // TODO
+        axesb.add(Preconditions.checkNotNull(gaxis));
+      }
     }
     this.axes = axesb.build();
+    List<String> names = axes.stream().map(a -> a.getName()).collect(Collectors.toList());
+    this.name = String.join(" ", names);
 
     this.domain = Dimensions.makeDomain(classifier.getAxesUsed());
   }

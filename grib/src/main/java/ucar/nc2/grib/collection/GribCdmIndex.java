@@ -818,10 +818,8 @@ public class GribCdmIndex implements IndexReader {
     MCollection dcm = new CollectionSingleFile(mfile, logger);
     dcm.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
     if (isGrib1) {
-      Grib1CollectionBuilder builder = new Grib1CollectionBuilder(dcm.getCollectionName(), dcm, logger); // LOOK
-                                                                                                         // ignoring
-                                                                                                         // partition
-                                                                                                         // type
+      // LOOK ignoring partition type
+      Grib1CollectionBuilder builder = new Grib1CollectionBuilder(dcm.getCollectionName(), dcm, logger);
       boolean changed =
           (builder.updateNeeded(updateType) && builder.createIndex(FeatureCollectionConfig.PartitionType.file, errlog));
     } else {

@@ -17,12 +17,7 @@ import java.util.*;
 import java.util.List;
 import javax.swing.*;
 
-/**
- * Scan for Feature Datasets
- * 
- * @author caron
- * @since Dec 30, 2008
- */
+/** Scan for Feature Datasets */
 public class FeatureScanPanel extends JPanel {
   private PreferencesExt prefs;
 
@@ -59,24 +54,6 @@ public class FeatureScanPanel extends JPanel {
       }
     });
 
-    varPopup.addAction("Open as PointDataset", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        FeatureScan.Bean ftb = (FeatureScan.Bean) ftTable.getSelectedBean();
-        if (ftb == null)
-          return;
-        FeatureScanPanel.this.firePropertyChange("openPointFeatureDataset", null, ftb.f.getPath());
-      }
-    });
-
-    varPopup.addAction("Open as NcML", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        FeatureScan.Bean ftb = (FeatureScan.Bean) ftTable.getSelectedBean();
-        if (ftb == null)
-          return;
-        FeatureScanPanel.this.firePropertyChange("openNcML", null, ftb.f.getPath());
-      }
-    });
-
     varPopup.addAction("Open as GridDataset", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         FeatureScan.Bean ftb = (FeatureScan.Bean) ftTable.getSelectedBean();
@@ -104,12 +81,30 @@ public class FeatureScanPanel extends JPanel {
       }
     });
 
+    varPopup.addAction("Open as PointDataset", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        FeatureScan.Bean ftb = (FeatureScan.Bean) ftTable.getSelectedBean();
+        if (ftb == null)
+          return;
+        FeatureScanPanel.this.firePropertyChange("openPointFeatureDataset", null, ftb.f.getPath());
+      }
+    });
+
     varPopup.addAction("Open as RadialDataset", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         FeatureScan.Bean ftb = (FeatureScan.Bean) ftTable.getSelectedBean();
         if (ftb == null)
           return;
         FeatureScanPanel.this.firePropertyChange("openRadialDataset", null, ftb.f.getPath());
+      }
+    });
+
+    varPopup.addAction("Open as NcML", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        FeatureScan.Bean ftb = (FeatureScan.Bean) ftTable.getSelectedBean();
+        if (ftb == null)
+          return;
+        FeatureScanPanel.this.firePropertyChange("openNcML", null, ftb.f.getPath());
       }
     });
 

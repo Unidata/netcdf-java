@@ -13,6 +13,7 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants._Coordinate;
+import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.collection.GribIosp.Time2Dinfo;
 import ucar.nc2.grib.collection.GribIosp.Time2DinfoType;
@@ -172,7 +173,7 @@ class GribIospBuilder {
     }
 
     boolean singleRuntimeWasMade = false;
-
+    boolean useTimeOffset = false;
     for (Coordinate coord : group.coords) {
       Coordinate.Type ctype = coord.getType();
       switch (ctype) {
@@ -197,7 +198,14 @@ class GribIospBuilder {
           if (gctype.isUniqueTime()) {
             makeUniqueTimeCoordinate2D(g, (CoordinateTime2D) coord);
           } else {
-            makeTimeCoordinate2D(g, (CoordinateTime2D) coord, gctype);
+            CoordinateTime2D time2D = (CoordinateTime2D) coord;
+            if (time2D.isOrthogonal()) {
+              String timeDimName = makeTimeOffsetAxis(g, time2D);
+              makeTimeCoordinate2D(g, time2D, timeDimName);
+              useTimeOffset = true;
+            } else {
+              makeTimeCoordinate2D(g, time2D, make2dValidTimeDimensionName(time2D.getName()));
+            }
           }
           break;
       }
@@ -205,7 +213,6 @@ class GribIospBuilder {
 
     for (GribCollectionImmutable.VariableIndex vindex : group.variList) {
       try (Formatter dimNames = new Formatter(); Formatter coordinateAtt = new Formatter()) {
-
         // do the times first
         Coordinate run = vindex.getCoordinate(Coordinate.Type.runtime);
         Coordinate time = vindex.getCoordinateTime();
@@ -213,10 +220,18 @@ class GribIospBuilder {
           throw new IllegalStateException("No time coordinate = " + vindex);
         }
 
-        String timeDimName =
-            time instanceof CoordinateTime2D ? make2dValidTimeDimensionName(time.getName()) : time.getName();
-        String timeCoordName =
-            time instanceof CoordinateTime2D ? make2dValidTimeCoordName(time.getName()) : time.getName();
+        String timeDimName = time.getName();
+        String timeCoordName = time.getName();
+
+        if (time instanceof CoordinateTime2D) {
+          CoordinateTime2D time2D = (CoordinateTime2D) time;
+          if (useTimeOffset) {
+            timeDimName = makeTimeOffsetName(time.getName());
+          } else {
+            timeDimName = make2dValidTimeDimensionName(time.getName());
+            timeCoordName = make2dValidTimeCoordName(timeDimName); // TODO backport this to version 5
+          }
+        }
 
         boolean isRunScaler = (run != null) && run.getSize() == 1;
 
@@ -426,20 +441,23 @@ class GribIospBuilder {
     return "valid" + dimName;
   }
 
+  private String makeTimeOffsetName(String timeName) {
+    return timeName.toLowerCase() + "Offset";
+  }
+
   /*
    * non unique time case
    * 3) time(nruns, ntimes) with reftime(nruns)
    */
-  private void makeTimeCoordinate2D(Group.Builder g, CoordinateTime2D time2D, GribCollectionImmutable.Type gctype) {
+  private void makeTimeCoordinate2D(Group.Builder g, CoordinateTime2D time2D, String timeDimName) {
     CoordinateRuntime runtime = time2D.getRuntimeCoordinate();
 
     int ntimes = time2D.getNtimes();
     String tcName = time2D.getName();
-    String timeDimName = make2dValidTimeDimensionName(tcName);
     String dims = runtime.getName() + " " + timeDimName;
     int dimLength = ntimes;
 
-    g.addDimension(new Dimension(timeDimName, dimLength));
+    g.addDimensionIfNotExists(new Dimension(timeDimName, dimLength));
     Variable.Builder<?> v = Variable.builder().setName(tcName).setDataType(DataType.DOUBLE).setParentGroupBuilder(g)
         .setDimensionsByName(dims);
     g.addVariable(v);
@@ -459,7 +477,7 @@ class GribIospBuilder {
     } else {
       v.setSPobject(new Time2Dinfo(Time2DinfoType.intv, time2D, null));
       // bounds for intervals
-      String bounds_name = timeDimName + "_bounds";
+      String bounds_name = tcName + "_bounds";
       Variable.Builder<?> bounds = Variable.builder().setName(bounds_name).setDataType(DataType.DOUBLE)
           .setParentGroupBuilder(g).setDimensionsByName(dims + " 2");
       g.addVariable(bounds);
@@ -795,5 +813,56 @@ class GribIospBuilder {
       data[count++] = ecc.getEnsMember();
     }
     v.setSourceData(Arrays.factory(DataType.INT, new int[] {n}, data));
+  }
+
+  // orthogonal runtime, offset; both independent
+  private String makeTimeOffsetAxis(Group.Builder g, CoordinateTime2D time2D) {
+    List<?> offsets = time2D.getOffsetsSorted();
+    int n = offsets.size();
+    String toName = makeTimeOffsetName(time2D.getName());
+    g.addDimension(new Dimension(toName, n));
+
+    Variable.Builder<?> v = Variable.builder().setName(toName).setDataType(DataType.DOUBLE).setParentGroupBuilder(g)
+        .setDimensionsByName(toName);
+    g.addVariable(v);
+    v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.TimeOffset.toString()));
+    v.addAttribute(new Attribute(CDM.UNITS, time2D.getUnit()));
+    v.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME_OFFSET));
+    v.addAttribute(new Attribute(CDM.LONG_NAME, CDM.TIME_OFFSET));
+    v.addAttribute(new Attribute(CDM.UDUNITS, time2D.getTimeUdUnit()));
+    v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.TimeOffset.toString()));
+
+    double[] midpoints = new double[n];
+    double[] bounds = null;
+    if (time2D.isTimeInterval()) {
+      bounds = new double[2 * n];
+      int count = 0;
+      int countb = 0;
+      for (Object offset : offsets) {
+        TimeCoordIntvValue tinv = (TimeCoordIntvValue) offset;
+        midpoints[count++] = (tinv.getBounds1() + tinv.getBounds2()) / 2.0;
+        bounds[countb++] = tinv.getBounds1();
+        bounds[countb++] = tinv.getBounds2();
+      }
+    } else {
+      int count = 0;
+      for (Object val : offsets) {
+        Integer off = (Integer) val;
+        midpoints[count++] = off; // int ??
+      }
+    }
+    v.setSourceData(Arrays.factory(DataType.DOUBLE, new int[] {n}, midpoints));
+
+    if (time2D.isTimeInterval()) {
+      String boundsName = toName + "_bounds";
+      Variable.Builder<?> coordVarBounds = VariableDS.builder().setName(boundsName).setDataType(DataType.DOUBLE)
+          .setDesc("TimeOffset coord bounds").setParentGroupBuilder(g).setDimensionsByName(toName + " 2")
+          .setSourceData(Arrays.factory(DataType.DOUBLE, new int[] {n, 2}, bounds));
+      g.addVariable(coordVarBounds);
+
+      v.addAttribute(new Attribute(CF.BOUNDS, boundsName));
+    }
+
+    return toName;
   }
 }

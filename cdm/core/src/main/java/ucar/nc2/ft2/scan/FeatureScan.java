@@ -12,7 +12,7 @@ import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageCS;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageCSBuilder;
-import ucar.nc2.internal.dataset.DatasetClassifier;
+import ucar.nc2.grid.GridCoordinateSystem;
 import ucar.nc2.internal.grid.GridDatasetImpl;
 
 import java.io.File;
@@ -21,12 +21,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.*;
 
-/**
- * Scan a directory, try to open files as a Feature Type dataset.
- *
- * @author caron
- * @since Aug 15, 2009
- */
+/** Scan a directory, try to open files as a Feature dataset. */
 public class FeatureScan {
   private String top;
   private boolean subdirs;
@@ -37,9 +32,7 @@ public class FeatureScan {
   }
 
   public java.util.List<FeatureScan.Bean> scan(Formatter errlog) {
-
     List<Bean> result = new ArrayList<>();
-
     File topFile = new File(top);
     if (!topFile.exists()) {
       errlog.format("File %s does not exist", top);
@@ -52,18 +45,19 @@ public class FeatureScan {
       Bean fdb = new Bean(topFile);
       result.add(fdb);
     }
-
     return result;
   }
 
   private void scanDirectory(File dir, java.util.List<FeatureScan.Bean> result) {
-    if ((dir.getName().equals("exclude")) || (dir.getName().equals("problem")))
+    if ((dir.getName().equals("exclude")) || (dir.getName().equals("problem"))) {
       return;
+    }
 
     // get list of files
     File[] fila = dir.listFiles();
-    if (fila == null)
+    if (fila == null) {
       return;
+    }
 
     List<File> files = new ArrayList<>();
     for (File f : fila) {
@@ -82,7 +76,7 @@ public class FeatureScan {
       for (File f : files) {
         String name = f.getName();
         String stem = stem(name);
-        if (name.contains(".gbx") || name.contains(".ncx") || name.endsWith(".xml") || name.endsWith(".pdf")
+        if (name.startsWith(".nfs") || name.contains(".gbx") || name.endsWith(".xml") || name.endsWith(".pdf")
             || name.endsWith(".txt") || name.endsWith(".tar") || name.endsWith(".tmp") || name.endsWith(".dump")
             || name.endsWith(".gitignore")) {
           files2.remove(f);
@@ -144,7 +138,7 @@ public class FeatureScan {
     String ftImpl;
     Throwable problem;
     DtCoverageCSBuilder builder; // LOOK replace with CoverageDataset
-    DatasetClassifier.CoordSysClassifier classifier;
+    GridCoordinateSystem gridCoordinateSystem;
 
     // no-arg constructor
     public Bean() {}
@@ -171,8 +165,7 @@ public class FeatureScan {
           if (grido.isPresent()) {
             GridDatasetImpl gridDataset = grido.get();
             if (!Iterables.isEmpty(gridDataset.getGrids())) {
-              DatasetClassifier dclassifier = new DatasetClassifier(ds, errlog);
-              classifier = dclassifier.getCoordinateSystemsUsed().stream().findFirst().orElse(null);
+              gridCoordinateSystem = gridDataset.getCoordSystems().get(0);
             }
           }
           info.append("GridDatasetImpl errlog = ");
@@ -237,7 +230,7 @@ public class FeatureScan {
     }
 
     public String getNewGrid() {
-      return classifier == null ? "" : classifier.showSummary();
+      return gridCoordinateSystem == null ? "" : gridCoordinateSystem.showFnSummary();
     }
 
     public void setCoordMap() {

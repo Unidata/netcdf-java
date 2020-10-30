@@ -57,7 +57,7 @@ public class CalendarDateUnit {
    * @param calendarName must match a calendar enum, or one of its aliases, see ucar.nc2.time.Calendar.get()
    * @param udunitString "unit since calendarDate"
    * @return CalendarDateUnit
-   * @throws IllegalArgumentException if udunitString is not paresable
+   * @throws IllegalArgumentException if udunitString is not parseable
    */
   public static CalendarDateUnit of(String calendarName, String udunitString) {
     Calendar calt = Calendar.get(calendarName);

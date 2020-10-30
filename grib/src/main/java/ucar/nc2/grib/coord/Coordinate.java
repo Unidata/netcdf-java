@@ -20,9 +20,12 @@ import java.util.List;
 public interface Coordinate {
   /** Coordinate types */
   enum Type {
-    runtime(0, AxisType.RunTime), time(1, AxisType.Time), timeIntv(1, AxisType.Time), vert(3,
-        AxisType.Height), time2D(1, AxisType.TimeOffset), ens(2, AxisType.Ensemble); // cant change order, protobuf uses
-                                                                                     // the ordinal
+    runtime(0, AxisType.RunTime), //
+    time(1, AxisType.Time), //
+    timeIntv(1, AxisType.Time), //
+    vert(3, AxisType.Height), //
+    time2D(1, AxisType.TimeOffset), //
+    ens(2, AxisType.Ensemble); // cant change order, protobuf uses the ordinal
 
     public final int order;
     public final AxisType axisType;

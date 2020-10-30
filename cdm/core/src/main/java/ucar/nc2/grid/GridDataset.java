@@ -1,5 +1,6 @@
 package ucar.nc2.grid;
 
+import com.google.common.collect.ImmutableList;
 import ucar.nc2.constants.FeatureType;
 
 import java.io.Closeable;
@@ -14,7 +15,7 @@ public interface GridDataset extends Closeable {
 
   FeatureType getFeatureType();
 
-  Iterable<GridCoordinateSystem> getCoordSystems();
+  ImmutableList<GridCoordinateSystem> getCoordSystems();
 
   Iterable<GridAxis> getCoordAxes();
 

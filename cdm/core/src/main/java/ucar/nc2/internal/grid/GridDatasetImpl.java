@@ -5,15 +5,14 @@
 package ucar.nc2.internal.grid;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
 import ucar.nc2.*;
+import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.*;
 import ucar.nc2.dataset.NetcdfDataset.Enhance;
-import ucar.nc2.grid.Grid;
-import ucar.nc2.grid.GridAxis;
-import ucar.nc2.grid.GridDataset;
-import ucar.nc2.grid.GridCoordinateSystem;
+import ucar.nc2.grid.*;
 import ucar.nc2.internal.dataset.DatasetClassifier;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
@@ -33,8 +32,8 @@ public class GridDatasetImpl implements GridDataset {
     }
 
     DatasetClassifier facc = new DatasetClassifier(ncd, errInfo);
-    return (facc.getFeatureType() != FeatureType.GRID) ? Optional.empty()
-        : Optional.of(new GridDatasetImpl(ncd, facc, errInfo));
+    return (facc.getFeatureType() == FeatureType.GRID) ? Optional.of(new GridDatasetImpl(ncd, facc, errInfo))
+        : Optional.empty();
   }
 
   ///////////////////////////////////////////////////////////////////
@@ -57,10 +56,24 @@ public class GridDatasetImpl implements GridDataset {
     this.featureType = classifier.getFeatureType();
 
     // Convert axes
+    GridAxis rtAxis = null;
     this.gridAxes = new HashMap<>();
     for (CoordinateAxis axis : classifier.getAxesUsed()) {
-      gridAxes.put(axis.getFullName(), Grids.extractGridAxis1D(ncd, axis));
+      if (axis.getRank() < 2) {
+        GridAxis gridAxis = Grids.extractGridAxis1D(ncd, axis);
+        gridAxes.put(axis.getFullName(), gridAxis);
+        if (gridAxis.getAxisType().equals(AxisType.RunTime)) {
+          rtAxis = gridAxis;
+        }
+      }
     }
+    /*
+     * for (CoordinateAxis axis : classifier.getAxesUsed()) {
+     * if (axis.getRank() == 2 && axis.getAxisType() == AxisType.Time && rtAxis != null) {
+     * gridAxes.put(axis.getFullName(), Grids.extractGridAxisTime2D(ncd, axis, (GridAxis1DTime) rtAxis));
+     * }
+     * }
+     */
 
     // Convert coordsys
     Map<String, GridCS> trackCsConverted = new HashMap<>();
@@ -69,6 +82,8 @@ public class GridDatasetImpl implements GridDataset {
       coordsys.add(gcs);
       trackCsConverted.put(csc.getName(), gcs);
     }
+    // Largest Coordinate Systems come first
+    coordsys.sort((o1, o2) -> o2.getGridAxes().size() - o1.getGridAxes().size());
 
     this.gridsets = ArrayListMultimap.create();
     for (Variable v : ncd.getVariables()) {
@@ -133,8 +148,8 @@ public class GridDatasetImpl implements GridDataset {
   }
 
   @Override
-  public Iterable<GridCoordinateSystem> getCoordSystems() {
-    return gridsets.keySet();
+  public ImmutableList<GridCoordinateSystem> getCoordSystems() {
+    return ImmutableList.copyOf(coordsys);
   }
 
   @Override

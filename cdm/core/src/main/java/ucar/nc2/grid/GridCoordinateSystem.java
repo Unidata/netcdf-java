@@ -64,7 +64,7 @@ public interface GridCoordinateSystem {
   GridAxis1DTime getRunTimeAxis();
 
   /** Get the Time Offset axis. */
-  GridAxis1DTime getTimeOffsetAxis();
+  GridAxis1D getTimeOffsetAxis();
 
   /** Get the Projection that performs the transform math. */
   @Nullable
@@ -81,6 +81,8 @@ public interface GridCoordinateSystem {
 
   /** Get horizontal bounding box in projection coordinates. */
   ucar.unidata.geoloc.ProjectionRect getBoundingBox();
+
+  String showFnSummary();
 
   class CoordReturn {
     public int x, y;
