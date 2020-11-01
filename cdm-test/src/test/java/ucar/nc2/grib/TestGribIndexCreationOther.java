@@ -23,7 +23,7 @@ import java.util.Formatter;
 
 /**
  * Test that the CDM Index Creation works on other Grib collections.
- * TODO: add other colelctions to unit tests as needed.
+ * TODO: add other collections to unit tests as needed.
  */
 @Ignore("too long")
 public class TestGribIndexCreationOther {

@@ -172,8 +172,6 @@ class GribIospBuilder {
       ycv.setAutoGen(hcs.starty, hcs.dy);
     }
 
-    boolean singleRuntimeWasMade = false;
-    boolean useTimeOffset = false;
     for (Coordinate coord : group.coords) {
       Coordinate.Type ctype = coord.getType();
       switch (ctype) {
@@ -202,7 +200,6 @@ class GribIospBuilder {
             if (time2D.isOrthogonal()) {
               String timeDimName = makeTimeOffsetAxis(g, time2D);
               makeTimeCoordinate2D(g, time2D, timeDimName);
-              useTimeOffset = true;
             } else {
               makeTimeCoordinate2D(g, time2D, make2dValidTimeDimensionName(time2D.getName()));
             }
@@ -225,7 +222,7 @@ class GribIospBuilder {
 
         if (time instanceof CoordinateTime2D) {
           CoordinateTime2D time2D = (CoordinateTime2D) time;
-          if (useTimeOffset) {
+          if (!gctype.isUniqueTime() && time2D.isOrthogonal()) {
             timeDimName = makeTimeOffsetName(time.getName());
           } else {
             timeDimName = make2dValidTimeDimensionName(time.getName());
