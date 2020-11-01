@@ -140,7 +140,13 @@ public class CoordSystemBuilder {
 
     Group.Builder groupb = vp.vb.getParentGroupBuilder();
     Group.Builder groupa = axis.getParentGroupBuilder();
-    Group.Builder commonGroup = groupb.commonParent(groupa);
+    Group.Builder commonGroup;
+    if (groupb == null || groupa == null) {
+      log.warn(String.format("Missing group for %s and/or %s", vp.vb.getFullName(), axis.getFullName()));
+      commonGroup = null;
+    } else {
+      commonGroup = groupb.commonParent(groupa);
+    }
 
     for (int i = 0; i < checkDims; i++) {
       Dimension axisDim = axisDims.get(i);
@@ -148,7 +154,7 @@ public class CoordSystemBuilder {
         return false;
       }
       // The dimension must be in the common parent group
-      if (!commonGroup.contains(axisDim)) {
+      if (commonGroup != null && !commonGroup.contains(axisDim)) {
         return false;
       }
       if (groupa != groupb) {
@@ -798,12 +804,13 @@ public class CoordSystemBuilder {
     public boolean isCoordinateTransform;
     public CoordinateTransform.Builder<?> ct;
 
-    /**
-     * Wrap the given variable. Identify Coordinate Variables. Process all _Coordinate attributes.
-     *
-     * @param v wrap this Variable
-     */
+    /** Wrap the given variable. Identify Coordinate Variables. Process all _Coordinate attributes. */
     private VarProcess(Group.Builder gb, VariableDS.Builder<?> v) {
+      if (v.getParentGroupBuilder() == null) {
+        if (v.getParentStructureBuilder() != null) {
+          v.setParentGroupBuilder(v.getParentStructureBuilder().getParentGroupBuilder());
+        }
+      }
       this.gb = gb;
       this.vb = v;
       isCoordinateVariable =
@@ -897,7 +904,7 @@ public class CoordSystemBuilder {
         axis = (CoordinateAxis.Builder<?>) vb;
       } else {
         // Create a CoordinateAxis out of this variable.
-        vb = axis = CoordinateAxis.fromVariableDS(vb);
+        vb = axis = CoordinateAxis.fromVariableDS(vb).setParentGroupBuilder(gb);
       }
 
       if (axisType != null) {
