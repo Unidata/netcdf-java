@@ -1,15 +1,24 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
+
 package ucar.nc2.dataset;
 
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
-import ucar.nc2.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Formatter;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.StringTokenizer;
+import ucar.nc2.Dimension;
+import ucar.nc2.Dimensions;
+import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
-import ucar.unidata.geoloc.*;
-import java.util.*;
+import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.projection.LatLonProjection;
 
 /**
@@ -67,7 +76,7 @@ public class CoordinateSystem {
       CoordinateAxis axis = axesSorted.get(i);
       if (i > 0)
         buff.append(" ");
-      buff.append(axis.getFullNameEscaped());
+      buff.append(axis.getFullName());
     }
     return buff.toString();
   }

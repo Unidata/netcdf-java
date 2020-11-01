@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
+
 package ucar.nc2.internal.dataset;
 
 import com.google.common.collect.ArrayListMultimap;
@@ -777,7 +782,8 @@ public class CoordSystemBuilder {
       isCoordinateVariable =
           isCoordinateVariable(v) || (null != v.getAttributeContainer().findAttribute(_Coordinate.AliasForDimension));
       if (isCoordinateVariable) {
-        coordVarsForDimension.put(v.getFirstDimensionName(), this);
+        String fullDimName = v.getParentGroupBuilder().makeFullName() + v.getFirstDimensionName();
+        coordVarsForDimension.put(fullDimName, this);
       }
 
       Attribute att = v.getAttributeContainer().findAttributeIgnoreCase(_Coordinate.AxisType);
