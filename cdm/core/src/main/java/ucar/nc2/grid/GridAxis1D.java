@@ -407,9 +407,9 @@ public class GridAxis1D extends GridAxis {
   }
 
   // Add local fields to the builder.
-  protected GridAxis1D.Builder<?> addLocalFieldsToBuilder(GridAxis1D.Builder<? extends GridAxis.Builder<?>> builder) {
+  protected Builder<?> addLocalFieldsToBuilder(Builder<? extends GridAxis.Builder<?>> builder) {
     builder.setRange(this.range).setCompositeRange(this.crange);
-    return (GridAxis1D.Builder<?>) super.addLocalFieldsToBuilder(builder);
+    return (Builder<?>) super.addLocalFieldsToBuilder(builder);
   }
 
   /** A builder taking fields from a VariableDS */

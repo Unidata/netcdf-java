@@ -3,20 +3,29 @@ package ucar.nc2.internal.grid;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import ucar.nc2.Dimension;
+import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.grid.GridAxis;
 import ucar.nc2.grid.GridAxis1D;
 import ucar.nc2.grid.GridAxis1DTime;
+import ucar.nc2.grid.GridAxis2DTime;
 
 import java.util.ArrayList;
 
 /** static utilities */
 class Grids {
 
+  static GridAxis2DTime extractGridAxisTime2D(NetcdfDataset ncd, CoordinateAxis axis, GridAxis1DTime runtime) {
+    GridAxis2DTime.Builder<?> builder = GridAxis2DTime.builder().initFromVariableDS(axis);
+    builder.setRuntimeAxis(runtime);
+    return builder.build();
+  }
+
   static GridAxis1D extractGridAxis1D(NetcdfDataset ncd, CoordinateAxis axis) {
     GridAxis1D.Builder<?> builder;
-    if (axis.getAxisType().isTime()) {
+    AxisType axisType = axis.getAxisType();
+    if (axisType == AxisType.Time || axisType == AxisType.RunTime) {
       builder = GridAxis1DTime.builder(axis).setAxisType(axis.getAxisType());
     } else {
       builder = GridAxis1D.builder(axis).setAxisType(axis.getAxisType());

@@ -14,10 +14,8 @@ import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.VariableDS;
+import ucar.nc2.time.*;
 import ucar.nc2.time.Calendar;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.util.Indent;
 
 import javax.annotation.Nullable;
@@ -100,6 +98,17 @@ public class GridAxis1DTime extends GridAxis1D {
   /** Use the CalendarDateUnit to make a CalendarDate from a value. */
   public CalendarDate makeDate(double value) {
     return timeHelper.makeDate(value);
+  }
+
+  /** Get the time from the runtime and offset */
+  public static CalendarDate addOffset(CalendarDate runDate, double offset, String offsetUnits) {
+    CalendarPeriod.Field field = CalendarPeriod.fromUnitString(offsetUnits);
+    // the problem is if offset is not integral
+    int offseti = (int) offset;
+    if (offseti != offset) {
+      throw new RuntimeException(String.format("Not integral offset = %f", offset));
+    }
+    return runDate.add(CalendarPeriod.of(offseti, field));
   }
 
   /** Use the CalendarDateUnit to make a value from a CalendarDate. */

@@ -179,7 +179,9 @@ public class CoordinateSystem {
    * if more than one, choose one with smallest rank
    * 
    * @return axis of type AxisType.GeoX, or null if none
+   * @deprecated use findAxis(AxisType.GeoX)
    */
+  @Deprecated
   public CoordinateAxis getXaxis() {
     return xAxis;
   }
@@ -189,7 +191,9 @@ public class CoordinateSystem {
    * if more than one, choose one with smallest rank
    * 
    * @return axis of type AxisType.GeoY, or null if none
+   * @deprecated use findAxis(AxisType.GeoY)
    */
+  @Deprecated
   public CoordinateAxis getYaxis() {
     return yAxis;
   }
@@ -199,7 +203,9 @@ public class CoordinateSystem {
    * if more than one, choose one with smallest rank
    * 
    * @return axis of type AxisType.GeoZ, or null if none
+   * @deprecated use findAxis(AxisType.GeoZ)
    */
+  @Deprecated
   public CoordinateAxis getZaxis() {
     return zAxis;
   }
@@ -209,7 +215,9 @@ public class CoordinateSystem {
    * if more than one, choose one with smallest rank
    * 
    * @return axis of type AxisType.Time, or null if none
+   * @deprecated use findAxis(AxisType.Time)
    */
+  @Deprecated
   public CoordinateAxis getTaxis() {
     return tAxis;
   }
@@ -219,7 +227,9 @@ public class CoordinateSystem {
    * if more than one, choose one with smallest rank
    * 
    * @return axis of type AxisType.Lat, or null if none
+   * @deprecated use findAxis(AxisType.Lat)
    */
+  @Deprecated
   public CoordinateAxis getLatAxis() {
     return latAxis;
   }
@@ -229,7 +239,9 @@ public class CoordinateSystem {
    * if more than one, choose one with smallest rank *
    * 
    * @return axis of type AxisType.Lon, or null if none
+   * @deprecated use findAxis(AxisType.Lon)
    */
+  @Deprecated
   public CoordinateAxis getLonAxis() {
     return lonAxis;
   }
@@ -239,7 +251,9 @@ public class CoordinateSystem {
    * if more than one, choose one with smallest rank
    * 
    * @return axis of type AxisType.Height, or null if none
+   * @deprecated use findAxis(AxisType.Height)
    */
+  @Deprecated
   public CoordinateAxis getHeightAxis() {
     return hAxis;
   }
@@ -249,7 +263,9 @@ public class CoordinateSystem {
    * if more than one, choose one with smallest rank.
    * 
    * @return axis of type AxisType.Pressure, or null if none
+   * @deprecated use findAxis(AxisType.Pressure)
    */
+  @Deprecated
   public CoordinateAxis getPressureAxis() {
     return pAxis;
   }
@@ -260,7 +276,9 @@ public class CoordinateSystem {
    * if more than one, choose one with smallest rank.
    * 
    * @return axis of type AxisType.Ensemble, or null if none
+   * @deprecated use findAxis(AxisType.Ensemble)
    */
+  @Deprecated
   public CoordinateAxis getEnsembleAxis() {
     return ensAxis;
   }
@@ -270,7 +288,9 @@ public class CoordinateSystem {
    * if more than one, choose one with smallest rank
    * 
    * @return axis of type AxisType.RadialAzimuth, or null if none
+   * @deprecated use findAxis(AxisType.RadialAzimuth)
    */
+  @Deprecated
   public CoordinateAxis getAzimuthAxis() {
     return aziAxis;
   }
@@ -280,7 +300,9 @@ public class CoordinateSystem {
    * if more than one, choose one with smallest rank
    * 
    * @return axis of type AxisType.RadialDistance, or null if none
+   * @deprecated use findAxis(AxisType.RadialDistance)
    */
+  @Deprecated
   public CoordinateAxis getRadialAxis() {
     return radialAxis;
   }
@@ -290,7 +312,9 @@ public class CoordinateSystem {
    * if more than one, choose one with smallest rank
    * 
    * @return axis of type AxisType.RadialElevation, or null if none
+   * @deprecated use findAxis(AxisType.RadialElevation)
    */
+  @Deprecated
   public CoordinateAxis getElevationAxis() {
     return elevAxis;
   }
@@ -491,7 +515,9 @@ public class CoordinateSystem {
    * true if has Height, Pressure, or GeoZ axis
    * 
    * @return true if has a vertical axis
+   * @deprecated use findAxis(...)
    */
+  @Deprecated
   public boolean hasVerticalAxis() {
     return (hAxis != null) || (pAxis != null) || (zAxis != null);
   }
@@ -500,12 +526,14 @@ public class CoordinateSystem {
    * true if has Time axis
    * 
    * @return true if has Time axis
+   * @deprecated use findAxis(...)
    */
+  @Deprecated
   public boolean hasTimeAxis() {
     return (tAxis != null);
   }
 
-  /** Do we have all the axes in wantAxes? */
+  /** Do we have all the axes in wantAxes, matching on full name */
   public boolean containsAxes(List<CoordinateAxis> wantAxes) {
     for (CoordinateAxis ca : wantAxes) {
       if (!containsAxis(ca.getFullName())) {
@@ -539,7 +567,12 @@ public class CoordinateSystem {
     return true;
   }
 
-  /** Do we have all the axes types in wantAxes? */
+  /**
+   * Do we have all the axes types in wantAxes?
+   * 
+   * @deprecated use findAxis(...)
+   */
+  @Deprecated
   public boolean containsAxisTypes(List<AxisType> wantAxes) {
     for (AxisType wantAxisType : wantAxes) {
       if (!containsAxisType(wantAxisType))
@@ -548,13 +581,14 @@ public class CoordinateSystem {
     return true;
   }
 
-
   /**
    * Do we have an axis of the given type?
    * 
    * @param wantAxisType want this AxisType
    * @return true if we have at least one axis of that type.
+   * @deprecated use findAxis(...)
    */
+  @Deprecated
   public boolean containsAxisType(AxisType wantAxisType) {
     for (CoordinateAxis ca : coordAxes) {
       if (ca.getAxisType() == wantAxisType) {
@@ -563,7 +597,6 @@ public class CoordinateSystem {
     }
     return false;
   }
-
 
   ////////////////////////////////////////////////////////////////////////////
   /**
