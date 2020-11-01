@@ -301,7 +301,7 @@ public class DtCoverageCS {
   }
 
   public void show(Formatter f, boolean showCoords) {
-    f.format("Coordinate System (%s)%n", getName());
+    f.format("Coordinate System (%s %s)%n", getName(), builder.showSummary());
 
     showCoordinateAxis(getRunTimeAxis(), f, showCoords);
     showCoordinateAxis(getEnsembleAxis(), f, showCoords);

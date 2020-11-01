@@ -1,5 +1,6 @@
 package ucar.nc2.internal.dataset;
 
+import com.google.auto.value.AutoValue;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
@@ -109,6 +110,17 @@ public class CoordSystemBuilder {
     return domain.size();
   }
 
+  @AutoValue
+  static abstract class DimensionWithGroup {
+    abstract Dimension dimension();
+
+    abstract Group.Builder group();
+
+    static DimensionWithGroup create(Dimension dim, Group.Builder group) {
+      return new AutoValue_CoordSystemBuilder_DimensionWithGroup(dim, group);
+    }
+  }
+
   /**
    * Does this axis "fit" this variable. True if all of the dimensions in the axis also appear in
    * the variable. If char variable, last dimension is left out.
@@ -126,10 +138,21 @@ public class CoordSystemBuilder {
     if (axis.dataType == DataType.CHAR)
       checkDims--;
 
+    Group.Builder groupb = vp.vb.getParentGroupBuilder();
+    Group.Builder groupa = axis.getParentGroupBuilder();
+    Group.Builder commonGroup = groupb.commonParent(groupa);
+
     for (int i = 0; i < checkDims; i++) {
       Dimension axisDim = axisDims.get(i);
       if (!varDims.contains(axisDim)) {
         return false;
+      }
+      // The dimension must be in the common parent group
+      if (!commonGroup.contains(axisDim)) {
+        return false;
+      }
+      if (groupa != groupb) {
+        boolean ok = commonGroup.contains(axisDim);
       }
     }
     return true;
@@ -146,7 +169,7 @@ public class CoordSystemBuilder {
   protected List<StructureDS.Builder<?>> structList = new ArrayList<>();
 
   // coordinate variables for Dimension (name)
-  protected Multimap<Dimension, VarProcess> coordVarsForDimension = ArrayListMultimap.create();
+  protected Multimap<DimensionWithGroup, VarProcess> coordVarsForDimension = ArrayListMultimap.create();
   // default name of Convention, override in subclass
   protected String conventionName = _Coordinate.Convention;
   protected Formatter parseInfo = new Formatter();
@@ -786,7 +809,7 @@ public class CoordSystemBuilder {
       isCoordinateVariable =
           isCoordinateVariable(v) || (null != v.getAttributeContainer().findAttribute(_Coordinate.AliasForDimension));
       if (isCoordinateVariable) {
-        coordVarsForDimension.put(v.getDimensions().get(0), this);
+        coordVarsForDimension.put(DimensionWithGroup.create(v.getDimensions().get(0), gb), this);
       }
 
       Attribute att = v.getAttributeContainer().findAttributeIgnoreCase(_Coordinate.AxisType);
@@ -814,7 +837,7 @@ public class CoordSystemBuilder {
                   coordVarAlias);
             } else {
               isCoordinateAxis = true;
-              coordVarsForDimension.put(coordDim, this);
+              coordVarsForDimension.put(DimensionWithGroup.create(coordDim, gb), this);
               parseInfo.format(" Coordinate Variable Alias added = %s for dimension= %s%n", v.getFullName(),
                   coordVarAlias);
             }
@@ -960,9 +983,10 @@ public class CoordSystemBuilder {
         }
       }
 
+      // LOOK
       if (addCoordVariables) {
         for (Dimension d : vb.getDimensions()) {
-          for (VarProcess vp : coordVarsForDimension.get(d)) {
+          for (VarProcess vp : coordVarsForDimension.get(DimensionWithGroup.create(d, gb))) {
             CoordinateAxis.Builder<?> axis = vp.makeIntoCoordinateAxis();
             if (!axesList.contains(axis)) {
               axesList.add(axis);

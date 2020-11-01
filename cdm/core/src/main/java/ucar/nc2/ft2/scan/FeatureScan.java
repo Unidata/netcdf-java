@@ -168,7 +168,7 @@ public class FeatureScan {
               gridCoordinateSystem = gridDataset.getCoordSystems().get(0);
             }
           }
-          info.append("GridDatasetImpl errlog = ");
+          info.append("\nGridDatasetImpl errlog = ");
           info.append(errlog);
           info.append("\n\n");
 
@@ -186,7 +186,7 @@ public class FeatureScan {
             ftImpl = featureDataset.getImplementationName();
             Formatter infof = new Formatter();
             featureDataset.getDetailInfo(infof);
-            info.append(infof);
+            // info.append(infof);
           } else {
             ftype = "";
           }
@@ -262,13 +262,18 @@ public class FeatureScan {
 
     public void toString(Formatter f, boolean showInfo) {
       f.format("%s%n %s%n map = '%s'%n", getName(), getFileType(), getCoordMap());
-      if (builder != null)
-        f.format("%n%s%n", builder.toString());
-      // f.format("%s%n", builder.makeCoordSys()); LOOK would have to reopen
+      if (gridCoordinateSystem != null) {
+        f.format("GridCoordinateSystem %s%n", gridCoordinateSystem.showFnSummary());
+      }
+
+      if (builder != null) {
+        f.format("%nDtCoverageCSBuilder %s%n", builder.toString());
+      }
 
       if (showInfo && info != null) {
         f.format("%n%s", info);
       }
+
       if (problem != null) {
         StringWriter sw = new StringWriter(5000);
         problem.printStackTrace(new PrintWriter(sw));

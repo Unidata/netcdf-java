@@ -573,6 +573,18 @@ public class Group {
     }
 
     /** Find Dimension in this Group or a parent Group */
+    public boolean contains(Dimension want) {
+      Dimension have = dimensions.stream().filter(d -> d.equals(want)).findFirst().orElse(null);
+      if (have != null) {
+        return true;
+      }
+      if (this.parentGroup != null) {
+        return this.parentGroup.contains(want);
+      }
+      return false;
+    }
+
+    /** Find Dimension in this Group or a parent Group */
     public Optional<Dimension> findDimension(String name) {
       if (name == null) {
         return Optional.empty();

@@ -26,7 +26,7 @@ public class DtCoverageCSBuilder {
   // classify based on largest coordinate system
   public static DtCoverageCSBuilder classify(NetcdfDataset ds, Formatter errlog) {
     if (errlog != null)
-      errlog.format("CoverageFactory for '%s'%n", ds.getLocation());
+      errlog.format("DtCoverageCSBuilder for '%s'%n", ds.getLocation());
 
     // sort by largest size first
     List<CoordinateSystem> css = new ArrayList<>(ds.getCoordinateSystems());
@@ -307,7 +307,7 @@ public class DtCoverageCSBuilder {
   @Override
   public String toString() {
     Formatter f2 = new Formatter();
-    f2.format("%s", type == null ? "" : type.toString());
+    f2.format("%s", showSummary());
     f2.format("%n xAxis=  %s", xaxis == null ? "" : xaxis.getNameAndDimensions());
     f2.format("%n yAxis=  %s", yaxis == null ? "" : yaxis.getNameAndDimensions());
     f2.format("%n zAxis=  %s", vertAxis == null ? "" : vertAxis.getNameAndDimensions());
