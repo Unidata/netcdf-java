@@ -215,6 +215,9 @@ class GribIospBuilder {
         String timeDimName =
             time instanceof CoordinateTime2D ? make2dValidTimeDimensionName(time.getName()) : time.getName();
 
+        String timeCoordName =
+            time instanceof CoordinateTime2D ? make2dValidTimeCoordName(time.getName()) : time.getName();
+
         boolean isRunScaler = (run != null) && run.getSize() == 1;
 
         switch (gctype) {
@@ -241,7 +244,7 @@ class GribIospBuilder {
             } else {
               dimNames.format("%s %s ", run.getName(), timeDimName);
             }
-            coordinateAtt.format("%s %s ", run.getName(), timeDimName);
+            coordinateAtt.format("%s %s ", run.getName(), timeCoordName);
             break;
 
           case Best: // PC: Best time partition [ntimes] (time) reftime is generated in makeTimeAuxReference()
@@ -417,6 +420,10 @@ class GribIospBuilder {
    */
   private String make2dValidTimeDimensionName(String variableName) {
     return variableName.replaceFirst("valid", "");
+  }
+
+  private String make2dValidTimeCoordName(String dimName) {
+    return dimName.startsWith("valid") ? dimName : "valid" + dimName;
   }
 
   /*
