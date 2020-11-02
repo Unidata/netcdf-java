@@ -22,6 +22,7 @@ import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.Group;
+import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CF;
@@ -34,6 +35,7 @@ import ucar.nc2.dataset.StructureDS;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dataset.spi.CoordSystemBuilderFactory;
 import ucar.nc2.util.CancelTask;
+import ucar.nc2.util.EscapeStrings;
 import ucar.unidata.util.Parameter;
 
 /**
@@ -146,7 +148,7 @@ public class CoordSystemBuilder {
   protected CoordinatesHelper.Builder coords;
 
   protected List<VarProcess> varList = new ArrayList<>();
-  // coordinate variables for Dimension (name)
+  // coordinate variables for Dimension (full name)
   protected Multimap<String, VarProcess> coordVarsForDimension = ArrayListMultimap.create();
   // default name of Convention, override in subclass
   protected String conventionName = _Coordinate.Convention;
@@ -741,6 +743,42 @@ public class CoordSystemBuilder {
     return v;
   }
 
+  @Nullable
+  private String findDimFullName(Variable.Builder vb, String dimShortName) {
+    String dimName = EscapeStrings.backslashEscape(dimShortName, NetcdfFiles.reservedFullName);
+    // In order to get the "full" dimension name, we need to know what group it lives in. We will start in the group
+    // that the variable belongs to and work our way up the group tree. If we don't find the dimension, we get null.
+    Group.Builder gb = vb.getParentGroupBuilder();
+    return findDimension(gb, dimShortName);
+  }
+
+  @Nullable
+  private String findDimension(@Nullable Group.Builder gb, String dimName) {
+    if (gb == null) {
+      return null;
+    } else {
+      Optional<Dimension> dim = gb.findDimensionLocal(dimName);
+      return dim.isPresent() ? makeDimFullName(gb, dimName) : findDimension(gb.getParentGroup(), dimName);
+    }
+  }
+
+  private String makeDimFullName(Variable.Builder vb, Dimension d) {
+    return makeDimFullName(vb.getParentGroupBuilder(), d);
+  }
+
+  private String makeDimFullName(Variable.Builder vb, String dimName) {
+    return makeDimFullName(vb.getParentGroupBuilder(), dimName);
+  }
+
+  private String makeDimFullName(Group.Builder gb, Dimension d) {
+    return makeDimFullName(gb, d.getShortName());
+  }
+
+  private String makeDimFullName(Group.Builder gb, String dimShortName) {
+    String dimName = EscapeStrings.backslashEscape(dimShortName, NetcdfFiles.reservedFullName);
+    return gb.makeFullName() + dimName;
+  }
+
   /** Classifications of Variables into axis, systems and transforms */
   protected class VarProcess {
     public Group.Builder gb;
@@ -782,8 +820,8 @@ public class CoordSystemBuilder {
       isCoordinateVariable =
           isCoordinateVariable(v) || (null != v.getAttributeContainer().findAttribute(_Coordinate.AliasForDimension));
       if (isCoordinateVariable) {
-        String fullDimName = v.getParentGroupBuilder().makeFullName() + v.getFirstDimensionName();
-        coordVarsForDimension.put(fullDimName, this);
+        String dimFullName = makeDimFullName(v, v.getFirstDimensionName());
+        coordVarsForDimension.put(dimFullName, this);
       }
 
       Attribute att = v.getAttributeContainer().findAttributeIgnoreCase(_Coordinate.AxisType);
@@ -811,7 +849,8 @@ public class CoordSystemBuilder {
                   coordVarAlias);
             } else {
               isCoordinateAxis = true;
-              coordVarsForDimension.put(coordDim.getShortName(), this);
+              String dimFullName = makeDimFullName(v, coordDim);
+              coordVarsForDimension.put(dimFullName, this);
               parseInfo.format(" Coordinate Variable Alias added = %s for dimension= %s%n", v.getFullName(),
                   coordVarAlias);
             }
@@ -959,7 +998,8 @@ public class CoordSystemBuilder {
 
       if (addCoordVariables) {
         for (String d : vb.getDimensionsAll()) {
-          for (VarProcess vp : coordVarsForDimension.get(d)) {
+          String dimFullName = findDimFullName(vb, d);
+          for (VarProcess vp : coordVarsForDimension.get(dimFullName)) {
             CoordinateAxis.Builder axis = vp.makeIntoCoordinateAxis();
             if (!axesList.contains(axis)) {
               axesList.add(axis);
