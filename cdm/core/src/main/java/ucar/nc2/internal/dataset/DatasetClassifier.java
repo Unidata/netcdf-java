@@ -15,25 +15,26 @@ import ucar.nc2.units.SimpleUnit;
 import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.projection.RotatedPole;
 
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 
 /** Coordinate System classification. TODO Here or Grid? */
 public class DatasetClassifier {
   private final NetcdfDataset ds;
-  private final Formatter errlog;
+  private final Formatter infolog;
   private ArrayList<CoordSysClassifier> coordSysUsed = new ArrayList<>();
 
   HashMap<String, CoordinateAxis> axesUsed = new HashMap<>();
   FeatureType featureType;
 
-  public DatasetClassifier(NetcdfDataset ds, Formatter errlog) {
+  public DatasetClassifier(NetcdfDataset ds, Formatter infolog) {
     Preconditions.checkNotNull(ds);
-    Preconditions.checkNotNull(errlog);
+    Preconditions.checkNotNull(infolog);
 
     this.ds = ds;
-    this.errlog = errlog;
-    errlog.format("DatasetClassifier for '%s'%n", ds.getLocation());
+    this.infolog = infolog;
+    infolog.format("DatasetClassifier for '%s'%n", ds.getLocation());
 
     // sort by largest number of coord axes first
     List<CoordinateSystem> css = new ArrayList<>(ds.getCoordinateSystems());
@@ -42,7 +43,7 @@ public class DatasetClassifier {
     for (CoordinateSystem cs : css) {
       classifyCoordSys(cs);
     }
-    errlog.format("Dataset featureType = %s%n", featureType);
+    infolog.format("Dataset featureType = %s%n", featureType);
   }
 
   public List<CoordinateAxis> getAxesUsed() {
@@ -62,10 +63,12 @@ public class DatasetClassifier {
   private CoordSysClassifier classifyCoordSys(CoordinateSystem cs) {
     CoordSysClassifier csc = new CoordSysClassifier(cs);
 
+    // Use the first (largest) one that has a classification
     if (this.featureType == null) {
       this.featureType = csc.featureType;
     }
 
+    // Then add only those types to coordSysUsed
     if (this.featureType == csc.featureType) {
       coordSysUsed.add(csc);
       csc.usedAxes.forEach(a -> axesUsed.put(a.getShortName(), a));
@@ -89,7 +92,7 @@ public class DatasetClassifier {
 
       // must be at least 2 dimensions
       if (cs.getRankDomain() < 2) {
-        errlog.format("CoordinateSystem '%s': domain rank < 2%n", cs.getName());
+        infolog.format(" '%s': domain rank < 2%n", cs.getName());
         return;
       }
 
@@ -99,11 +102,11 @@ public class DatasetClassifier {
       if (!cs.isLatLon()) {
         // do check for GeoXY
         if ((cs.findAxis(AxisType.GeoX) == null) || (cs.findAxis(AxisType.GeoY) == null)) {
-          errlog.format("%s: NO Lat,Lon or X,Y axis%n", cs.getName());
+          infolog.format(" %s: NO Lat,Lon or X,Y axis%n", cs.getName());
           return;
         }
         if (null == cs.getProjection()) {
-          errlog.format("%s: NO projection found%n", cs.getName());
+          infolog.format(" %s: NO projection found%n", cs.getName());
           return;
         }
       }
@@ -116,10 +119,10 @@ public class DatasetClassifier {
         Projection p = cs.getProjection();
         if (!(p instanceof RotatedPole)) {
           if (!SimpleUnit.kmUnit.isCompatible(xaxis.getUnitsString())) {
-            errlog.format("%s: X axis units are not convertible to km%n", cs.getName());
+            infolog.format(" %s: X axis units are not convertible to km%n", cs.getName());
           }
           if (!SimpleUnit.kmUnit.isCompatible(yaxis.getUnitsString())) {
-            errlog.format("%s: Y axis units are not convertible to km%n", cs.getName());
+            infolog.format(" %s: Y axis units are not convertible to km%n", cs.getName());
           }
         }
       } else {
@@ -130,20 +133,20 @@ public class DatasetClassifier {
 
       // check x,y rank <= 2
       if ((xaxis.getRank() > 2) || (yaxis.getRank() > 2)) {
-        errlog.format("%s: X and Y axis rank must be <= 2%n", cs.getName());
+        infolog.format(" %s: X and Y axis rank must be <= 2%n", cs.getName());
         return;
       }
 
       // check x,y with size 1
       if ((xaxis.getSize() < 2) || (yaxis.getSize() < 2)) {
-        errlog.format("%s: X and Y axis size must be >= 2%n", cs.getName());
+        infolog.format(" %s: X and Y axis size must be >= 2%n", cs.getName());
         return;
       }
 
       // check that the x,y have at least 2 dimensions between them ( this eliminates point data)
       int xyDomainSize = CoordinateSystem.countDomain(new CoordinateAxis[] {xaxis, yaxis});
       if (xyDomainSize < 2) {
-        errlog.format("%s: X and Y axis must have 2 or more dimensions%n", cs.getName());
+        infolog.format(" %s: X and Y axis must have 2 or more dimensions%n", cs.getName());
         return;
       }
 
@@ -165,7 +168,7 @@ public class DatasetClassifier {
       CoordinateAxis rt = cs.findAxis(AxisType.RunTime);
       if (rt != null) {
         if (rt.getRank() > 1) { // A runtime axis must be scalar or one-dimensional
-          errlog.format("%s: RunTime axis must be 1D or scalar%n", cs.getName());
+          infolog.format(" %s: RunTime axis must be 1D or scalar%n", cs.getName());
           // return; // LOOK
         } else {
           usedAxes.add(rtAxis = rt);
@@ -177,7 +180,7 @@ public class DatasetClassifier {
         if (rtAxis != null && rtAxis.getRank() == 1) {
           // time first dimension must agree with runtime
           if (!rtAxis.getDimension(0).equals(t.getDimension(0))) {
-            errlog.format("%s: 2D Time axis first dimension must be runtime%n", cs.getName());
+            infolog.format(" %s: 2D Time axis first dimension must be runtime%n", cs.getName());
             return; // TODO
           }
         }
@@ -211,32 +214,36 @@ public class DatasetClassifier {
       this.usedAxes.sort(new CoordinateAxis.AxisComparator()); // canonical ordering of axes
     }
 
+    @Nullable
     private FeatureType classify() {
+      FeatureType result = null;
+
       // FMRC is when we have 2D timeAxis and no timeOffset
       boolean is2Dtime = (rtAxis != null) && (timeOffsetAxis == null) && (timeAxis != null && timeAxis.getRank() == 2);
-      if (is2Dtime) {
-        return FeatureType.FMRC; // LOOK this would allow 2d horiz
-      }
-
       boolean is2Dhoriz = isLatLon && (xaxis.getRank() == 2) && (yaxis.getRank() == 2);
-      if (is2Dhoriz) {
+
+      if (is2Dtime) {
+        result = FeatureType.FMRC; // LOOK this would allow 2d horiz
+
+      } else if (is2Dhoriz) {
         Set<Dimension> xyDomain = Dimensions.makeDomain(Lists.newArrayList(xaxis, yaxis));
         if (timeAxis != null && Dimensions.isSubset(Dimensions.makeDimensionsAll(timeAxis), xyDomain))
-          return FeatureType.SWATH; // LOOK prob not exactly right
+          result = FeatureType.SWATH; // LOOK prob not exactly right
         else
-          return FeatureType.CURVILINEAR;
+          result = FeatureType.CURVILINEAR;
+
+      } else {
+        // what makes it a grid?
+        // each dimension must have its own coordinate variable
+        List<CoordinateAxis> axes = usedAxes.stream().filter(a -> a.getRank() == 1).collect(Collectors.toList());
+        Set<Dimension> domain = Dimensions.makeDomain(axes);
+        if (domain.size() == axes.size()) {
+          result = FeatureType.GRID;
+        }
       }
 
-      // what makes it a grid?
-      // each dimension must have its own coordinate variable
-      List<CoordinateAxis> axes = usedAxes.stream().filter(a -> a.getRank() == 1).collect(Collectors.toList());
-      Set<Dimension> domain = Dimensions.makeDomain(axes);
-      if (domain.size() == axes.size()) {
-        return FeatureType.GRID;
-      }
-
-      // default TODO what does this mean?
-      return FeatureType.COVERAGE;
+      infolog.format(" %s: classified as %s%n", cs.getName(), result);
+      return result;
     }
 
     public String getName() {

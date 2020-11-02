@@ -735,13 +735,13 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       g.addEnumTypedefs(from.getEnumTypedefs()); // copy
 
       for (Dimension d : from.getDimensions()) {
-        g.addDimension(d.toBuilder().build()); // can use without copy after ver 6.
+        g.addDimension(d);
       }
 
       g.addAttributes(from.attributes()); // copy
 
       for (Variable v : from.getVariables()) {
-        g.addVariable(convertVariable(v)); // convert
+        g.addVariable(convertVariable(g, v)); // convert
       }
 
       for (Group nested : from.getGroups()) {
@@ -751,7 +751,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       }
     }
 
-    private Variable.Builder<?> convertVariable(Variable v) {
+    private Variable.Builder<?> convertVariable(Group.Builder g, Variable v) {
       Variable.Builder<?> newVar;
       if (v instanceof Sequence) {
         newVar = SequenceDS.builder().copyFrom((Sequence) v);
@@ -760,6 +760,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       } else {
         newVar = VariableDS.builder().copyFrom(v);
       }
+      newVar.setParentGroupBuilder(g);
       return newVar;
     }
 

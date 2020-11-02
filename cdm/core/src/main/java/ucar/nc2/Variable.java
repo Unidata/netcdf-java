@@ -1538,8 +1538,6 @@ public class Variable implements VariableSimpleIF, ProxyReader {
       return self();
     }
 
-    // TODO problem with this is that things may not be wired together, so should eliminate use of it
-    @Deprecated
     public String getFullName() {
       String full = "";
       Group.Builder group = parentStructureBuilder != null ? parentStructureBuilder.parentBuilder : parentBuilder;

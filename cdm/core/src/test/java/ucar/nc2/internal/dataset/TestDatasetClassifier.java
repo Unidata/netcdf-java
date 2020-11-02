@@ -16,6 +16,7 @@ import ucar.nc2.grid.GridCoordinateSystem;
 import ucar.nc2.internal.grid.GridDatasetImpl;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
+import ucar.unidata.util.test.category.NeedsExternalResource;
 
 import java.io.IOException;
 import java.util.Formatter;
@@ -187,4 +188,115 @@ public class TestDatasetClassifier {
       }
     }
   }
+
+  @Test
+  @Category(NeedsCdmUnitTest.class)
+  public void testNonOrthogonalFmrc() throws IOException {
+    String filename = TestDir.cdmUnitTestDir + "gribCollections/gdsHashChange/noaaport/NDFD-CONUS_noaaport.ncx4";
+    try (FeatureDatasetCoverage covDataset = CoverageDatasetFactory.open(filename)) {
+      for (CoverageCollection cc : covDataset.getCoverageCollections()) {
+        if (cc.getName().endsWith("TwoD")) {
+          assertThat(cc.getCoverageType()).isEqualTo(FeatureType.FMRC);
+        }
+      }
+    }
+
+    try (NetcdfDataset ds = NetcdfDatasets.openDataset(filename)) {
+      Formatter errlog = new Formatter();
+      Optional<GridDatasetImpl> grido = GridDatasetImpl.create(ds, errlog);
+      if (grido.isPresent()) {
+        GridDatasetImpl gridDataset = grido.get();
+        if (!Iterables.isEmpty(gridDataset.getGrids())) {
+          DatasetClassifier dclassifier = new DatasetClassifier(ds, errlog);
+          DatasetClassifier.CoordSysClassifier classifier =
+              dclassifier.getCoordinateSystemsUsed().stream().findFirst().orElse(null);
+          assertThat(classifier.getFeatureType()).isEqualTo(FeatureType.GRID);
+        }
+      }
+    }
+  }
+
+  @Test
+  @Category(NeedsCdmUnitTest.class)
+  public void testMRUTP() throws IOException {
+    String filename = TestDir.cdmUnitTestDir + "tds/ncep/NDFD-CONUS-RUC2_CONUS_40km.ncx4";
+    try (FeatureDatasetCoverage covDataset = CoverageDatasetFactory.open(filename)) {
+      for (CoverageCollection cc : covDataset.getCoverageCollections()) {
+        if (cc.getName().endsWith("MRUTP")) {
+          assertThat(cc.getCoverageType()).isEqualTo(FeatureType.GRID);
+        }
+      }
+    }
+
+    // MRUTP has a runtime and time sharing the same dimension.
+    // Not sure what the point is except to avoid a 2D time?
+    try (NetcdfDataset ds = NetcdfDatasets.openDataset(filename)) {
+      Formatter errlog = new Formatter();
+      Optional<GridDatasetImpl> grido = GridDatasetImpl.create(ds, errlog);
+      if (grido.isPresent()) {
+        GridDatasetImpl gridDataset = grido.get();
+        if (!Iterables.isEmpty(gridDataset.getGrids())) {
+          DatasetClassifier dclassifier = new DatasetClassifier(ds, errlog);
+          DatasetClassifier.CoordSysClassifier classifier =
+              dclassifier.getCoordinateSystemsUsed().stream().findFirst().orElse(null);
+          assertThat(classifier.getFeatureType()).isEqualTo(FeatureType.GRID);
+        }
+      }
+    }
+  }
+
+  @Test
+  @Category(NeedsExternalResource.class)
+  public void testNamPolar() throws IOException {
+    String filename = "/media/snake/Elements/data/grib/idd/namPolar90/NAM_Polar_90km_20131203_0000.grib2";
+    try (FeatureDatasetCoverage covDataset = CoverageDatasetFactory.open(filename)) {
+      for (CoverageCollection cc : covDataset.getCoverageCollections()) {
+        if (cc.getName().endsWith("MRUTP")) {
+          assertThat(cc.getCoverageType()).isEqualTo(FeatureType.GRID);
+        }
+      }
+    }
+
+    try (NetcdfDataset ds = NetcdfDatasets.openDataset(filename)) {
+      Formatter errlog = new Formatter();
+      Optional<GridDatasetImpl> grido = GridDatasetImpl.create(ds, errlog);
+      if (grido.isPresent()) {
+        GridDatasetImpl gridDataset = grido.get();
+        if (!Iterables.isEmpty(gridDataset.getGrids())) {
+          DatasetClassifier dclassifier = new DatasetClassifier(ds, errlog);
+          DatasetClassifier.CoordSysClassifier classifier =
+              dclassifier.getCoordinateSystemsUsed().stream().findFirst().orElse(null);
+          assertThat(classifier.getFeatureType()).isEqualTo(FeatureType.GRID);
+        }
+      }
+    }
+  }
+
+  @Test
+  @Category(NeedsExternalResource.class)
+  public void testNamPolarCollection() throws IOException {
+    String filename = "/media/snake/Elements/data/grib/idd/namPolar90/NamPolar90.ncx4";
+    try (FeatureDatasetCoverage covDataset = CoverageDatasetFactory.open(filename)) {
+      for (CoverageCollection cc : covDataset.getCoverageCollections()) {
+        if (cc.getName().endsWith("MRUTP")) {
+          assertThat(cc.getCoverageType()).isEqualTo(FeatureType.GRID);
+        }
+      }
+    }
+
+    try (NetcdfDataset ds = NetcdfDatasets.openDataset(filename)) {
+      Formatter errlog = new Formatter();
+      Optional<GridDatasetImpl> grido = GridDatasetImpl.create(ds, errlog);
+      if (grido.isPresent()) {
+        GridDatasetImpl gridDataset = grido.get();
+        if (!Iterables.isEmpty(gridDataset.getGrids())) {
+          DatasetClassifier dclassifier = new DatasetClassifier(ds, errlog);
+          DatasetClassifier.CoordSysClassifier classifier =
+              dclassifier.getCoordinateSystemsUsed().stream().findFirst().orElse(null);
+          assertThat(classifier.getFeatureType()).isEqualTo(FeatureType.GRID);
+        }
+      }
+    }
+  }
+
 }

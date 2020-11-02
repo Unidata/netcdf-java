@@ -27,7 +27,7 @@ import java.util.Formatter;
 
 /**
  * Test that the CDM Index Creation works.
- * Jenkins seems to recreate indices, and so needs this to be on?
+ * Jenkins recreates indices, and so needs this to run.
  */
 @Category(NeedsCdmUnitTest.class)
 // @Ignore("too long")
@@ -305,18 +305,6 @@ public class TestGribIndexCreation {
     boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
     System.out.printf("changed = %s%n", changed);
     Grib.setDebugFlags(DebugFlags.create(""));
-  }
-
-  @Test
-  public void testWW3() throws IOException {
-    // String name, String path, FeatureCollectionType fcType,
-    // String spec, String collectionName,
-    // String dateFormatMark, String olderThan, String timePartition, Element innerNcml)
-    FeatureCollectionConfig config = new FeatureCollectionConfig("ds093.1", "test/ds093.1", FeatureCollectionType.GRIB2,
-        TestDir.cdmUnitTestDir + "tds/ncep/WW3_Coastal_Alaska_20140804_0000.grib2", null, null, null, "file", null);
-
-    boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
-    System.out.printf("changed = %s%n", changed);
   }
 
   @Test
