@@ -22,7 +22,7 @@ class Grids {
     return builder.build();
   }
 
-  static GridAxis1D extractGridAxis1D(NetcdfDataset ncd, CoordinateAxis axis) {
+  static GridAxis1D extractGridAxis1D(NetcdfDataset ncd, CoordinateAxis axis, GridAxis.DependenceType dependenceType) {
     GridAxis1D.Builder<?> builder;
     AxisType axisType = axis.getAxisType();
     if (axisType == AxisType.Time || axisType == AxisType.RunTime) {
@@ -30,31 +30,34 @@ class Grids {
     } else {
       builder = GridAxis1D.builder(axis).setAxisType(axis.getAxisType());
     }
-    extractGridAxis1D(ncd, axis, builder);
+    extractGridAxis1D(ncd, axis, builder, dependenceType);
     return builder.build();
   }
 
-  private static void extractGridAxis1D(NetcdfDataset ncd, CoordinateAxis axis, GridAxis1D.Builder<?> builder) {
+  private static void extractGridAxis1D(NetcdfDataset ncd, CoordinateAxis axis, GridAxis1D.Builder<?> builder,
+      GridAxis.DependenceType dependenceType) {
     Preconditions.checkArgument(axis.getRank() < 2);
     CoordinateAxis1DExtractor extract = new CoordinateAxis1DExtractor(axis);
 
-    GridAxis.DependenceType dependenceType;
-    if (axis.isCoordinateVariable()) {
-      dependenceType = GridAxis.DependenceType.independent;
-    } else if (ncd.isIndependentCoordinate(axis)) { // is a coordinate alias
-      dependenceType = GridAxis.DependenceType.independent;
-      builder.setDependsOn(ImmutableList.of(axis.getDimension(0).getShortName()));
-    } else if (axis.isScalar()) {
-      dependenceType = GridAxis.DependenceType.scalar;
-    } else {
-      dependenceType = GridAxis.DependenceType.dependent;
-      ArrayList<String> dependsOn = new ArrayList<>();
-      for (Dimension d : axis.getDimensions()) { // LOOK axes may not exist
-        dependsOn.add(d.makeFullName(axis));
-      }
-      builder.setDependsOn(dependsOn);
-    }
-    builder.setDependenceType(dependenceType);
+    /*
+     * GridAxis.DependenceType dependenceType;
+     * if (axis.isCoordinateVariable()) {
+     * dependenceType = GridAxis.DependenceType.independent;
+     * } else if (ncd.isIndependentCoordinate(axis)) { // is a coordinate alias
+     * dependenceType = GridAxis.DependenceType.independent;
+     * builder.setDependsOn(ImmutableList.of(axis.getDimension(0).getShortName()));
+     * } else if (axis.isScalar()) {
+     * dependenceType = GridAxis.DependenceType.scalar;
+     * } else {
+     * dependenceType = GridAxis.DependenceType.dependent;
+     * ArrayList<String> dependsOn = new ArrayList<>();
+     * for (Dimension d : axis.getDimensions()) { // LOOK axes may not exist
+     * dependsOn.add(d.makeFullName(axis));
+     * }
+     * builder.setDependsOn(dependsOn);
+     * }
+     */
+    builder.setDependenceType(axis.isScalar() ? GridAxis.DependenceType.scalar : dependenceType);
 
     // Fix discontinuities in longitude axis. These occur when the axis crosses the date line.
     extract.correctLongitudeWrap();

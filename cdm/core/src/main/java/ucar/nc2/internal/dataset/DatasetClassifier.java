@@ -21,18 +21,17 @@ import java.util.stream.Collectors;
 
 /** Coordinate System classification. TODO Here or Grid? */
 public class DatasetClassifier {
-  private final NetcdfDataset ds;
   private final Formatter infolog;
   private ArrayList<CoordSysClassifier> coordSysUsed = new ArrayList<>();
 
-  HashMap<String, CoordinateAxis> axesUsed = new HashMap<>();
-  FeatureType featureType;
+  private HashMap<String, CoordinateAxis> indAxes = new HashMap<>(); // eliminate duplicates
+  private HashMap<String, CoordinateAxis> depAxes = new HashMap<>(); // eliminate duplicates
+  private FeatureType featureType;
 
   public DatasetClassifier(NetcdfDataset ds, Formatter infolog) {
     Preconditions.checkNotNull(ds);
     Preconditions.checkNotNull(infolog);
 
-    this.ds = ds;
     this.infolog = infolog;
     infolog.format("DatasetClassifier for '%s'%n", ds.getLocation());
 
@@ -46,8 +45,14 @@ public class DatasetClassifier {
     infolog.format("Dataset featureType = %s%n", featureType);
   }
 
-  public List<CoordinateAxis> getAxesUsed() {
-    List<CoordinateAxis> other = new ArrayList<>(axesUsed.values());
+  public List<CoordinateAxis> getIndependentAxes() {
+    List<CoordinateAxis> other = new ArrayList<>(indAxes.values());
+    other.sort(new CoordinateAxis.AxisComparator()); // canonical ordering of axes
+    return other;
+  }
+
+  public List<CoordinateAxis> getDependentAxes() {
+    List<CoordinateAxis> other = new ArrayList<>(depAxes.values());
     other.sort(new CoordinateAxis.AxisComparator()); // canonical ordering of axes
     return other;
   }
@@ -71,7 +76,8 @@ public class DatasetClassifier {
     // Then add only those types to coordSysUsed
     if (this.featureType == csc.featureType) {
       coordSysUsed.add(csc);
-      csc.usedAxes.forEach(a -> axesUsed.put(a.getShortName(), a));
+      csc.indAxes.forEach(a -> indAxes.put(a.getFullName(), a));
+      csc.depAxes.forEach(a -> depAxes.put(a.getFullName(), a));
     }
 
     return csc;
@@ -83,7 +89,8 @@ public class DatasetClassifier {
     boolean isLatLon;
     CoordinateAxis xaxis, yaxis, timeAxis; // may be 1 or 2 dimensional
     CoordinateAxis vertAxis, ensAxis, timeOffsetAxis, rtAxis; // must be 1 dimensional
-    List<CoordinateAxis> usedAxes = new ArrayList<>();
+    List<CoordinateAxis> indAxes = new ArrayList<>();
+    List<CoordinateAxis> depAxes = new ArrayList<>();
     List<CoordinateTransform> coordTransforms;
     Projection orgProj;
 
@@ -113,8 +120,8 @@ public class DatasetClassifier {
 
       // obtain the x,y or lat/lon axes. x,y normally must be convertible to km
       if (cs.isGeoXY()) {
-        usedAxes.add(xaxis = cs.findAxis(AxisType.GeoX));
-        usedAxes.add(yaxis = cs.findAxis(AxisType.GeoY));
+        indAxes.add(xaxis = cs.findAxis(AxisType.GeoX));
+        indAxes.add(yaxis = cs.findAxis(AxisType.GeoY));
 
         Projection p = cs.getProjection();
         if (!(p instanceof RotatedPole)) {
@@ -126,8 +133,8 @@ public class DatasetClassifier {
           }
         }
       } else {
-        usedAxes.add(xaxis = cs.findAxis(AxisType.Lon));
-        usedAxes.add(yaxis = cs.findAxis(AxisType.Lat));
+        indAxes.add(xaxis = cs.findAxis(AxisType.Lon));
+        indAxes.add(yaxis = cs.findAxis(AxisType.Lat));
         isLatLon = true;
       }
 
@@ -160,58 +167,62 @@ public class DatasetClassifier {
         zAxis = cs.findAxis(AxisType.GeoZ);
       }
       if (zAxis != null && zAxis.getRank() < 2) {
-        usedAxes.add(vertAxis = zAxis);
+        indAxes.add(vertAxis = zAxis);
       }
 
       //////////////////////////////////////////////////////////////
       // time
-      CoordinateAxis rt = cs.findAxis(AxisType.RunTime);
-      if (rt != null) {
-        if (rt.getRank() > 1) { // A runtime axis must be scalar or one-dimensional
-          infolog.format(" %s: RunTime axis must be 1D or scalar%n", cs.getName());
-          // return; // LOOK
-        } else {
-          usedAxes.add(rtAxis = rt);
-        }
-      }
-
-      CoordinateAxis t = cs.findAxis(AxisType.Time);
-      if ((t != null) && t.getRank() > 1) { // If time axis is two-dimensional...
-        if (rtAxis != null && rtAxis.getRank() == 1) {
-          // time first dimension must agree with runtime
-          if (!rtAxis.getDimension(0).equals(t.getDimension(0))) {
-            infolog.format(" %s: 2D Time axis first dimension must be runtime%n", cs.getName());
-            return; // TODO
-          }
-        }
-      }
-
-      if (t != null) {
-        usedAxes.add(timeAxis = t);
-      }
-
       CoordinateAxis toAxis = cs.findAxis(AxisType.TimeOffset);
       if (toAxis != null) {
         if (toAxis.getRank() == 1) {
-          usedAxes.add(timeOffsetAxis = toAxis);
+          indAxes.add(timeOffsetAxis = toAxis);
         }
       }
 
-      if (t == null && rtAxis != null && timeOffsetAxis != null) {
-        // LOOK create time coord ??
+      CoordinateAxis rt = cs.findAxis(AxisType.RunTime);
+      if (rt != null) {
+        if (rt.getRank() == 0) {
+          depAxes.add(rtAxis = rt);
+        } else if (rt.getRank() == 1) {
+          indAxes.add(rtAxis = rt);
+        } else { // A runtime axis must be scalar or one-dimensional
+          infolog.format(" %s: RunTime axis must be 1D or scalar%n", cs.getName());
+          // return; // LOOK
+        }
+      }
+
+      boolean hasRuntimeAndOffset = (timeOffsetAxis != null) && (rtAxis != null);
+      if (!hasRuntimeAndOffset) { // ignore time if we have runtime and offset
+        CoordinateAxis t = cs.findAxis(AxisType.Time);
+        if ((t != null) && t.getRank() > 1) { // If time axis is two-dimensional...
+          if (rtAxis != null && rtAxis.getRank() == 1) {
+            // time first dimension must agree with runtime
+            if (!rtAxis.getDimension(0).equals(t.getDimension(0))) {
+              infolog.format(" %s: 2D Time axis first dimension must be runtime%n", cs.getName());
+              return; // TODO
+            }
+          }
+        }
+        if (t != null) {
+          if (t.getRank() == 1 && t.getDimension(0).equals(rt.getDimension(0))) {
+            depAxes.add(t);
+          } else {
+            indAxes.add(timeAxis = t);
+          }
+        }
       }
 
       CoordinateAxis eAxis = cs.findAxis(AxisType.Ensemble);
       if (eAxis != null) {
         if (eAxis.getRank() == 1) {
-          usedAxes.add(ensAxis = eAxis);
+          indAxes.add(ensAxis = eAxis);
         }
       }
 
       this.featureType = classify();
       this.coordTransforms = new ArrayList<>(cs.getCoordinateTransforms());
       this.orgProj = cs.getProjection();
-      this.usedAxes.sort(new CoordinateAxis.AxisComparator()); // canonical ordering of axes
+      this.indAxes.sort(new CoordinateAxis.AxisComparator()); // canonical ordering of axes
     }
 
     @Nullable
@@ -235,7 +246,7 @@ public class DatasetClassifier {
       } else {
         // what makes it a grid?
         // each dimension must have its own coordinate variable
-        List<CoordinateAxis> axes = usedAxes.stream().filter(a -> a.getRank() == 1).collect(Collectors.toList());
+        List<CoordinateAxis> axes = indAxes.stream().filter(a -> a.getRank() == 1).collect(Collectors.toList());
         Set<Dimension> domain = Dimensions.makeDomain(axes);
         if (domain.size() == axes.size()) {
           result = FeatureType.GRID;
@@ -267,7 +278,9 @@ public class DatasetClassifier {
     }
 
     public List<CoordinateAxis> getAxesUsed() {
-      return usedAxes;
+      ArrayList<CoordinateAxis> result = new ArrayList<>(indAxes);
+      result.addAll(depAxes);
+      return result;
     }
 
     @Override
@@ -286,7 +299,7 @@ public class DatasetClassifier {
         return f2.toString();
 
       f2.format("%n%n axes=(");
-      for (CoordinateAxis axis : usedAxes)
+      for (CoordinateAxis axis : indAxes)
         f2.format("%s, ", axis.getShortName());
       f2.format(") {");
 

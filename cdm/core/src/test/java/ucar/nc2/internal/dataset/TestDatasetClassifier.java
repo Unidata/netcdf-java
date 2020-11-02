@@ -177,18 +177,24 @@ public class TestDatasetClassifier {
     try (NetcdfDataset ds = NetcdfDatasets.openDataset(filename)) {
       Formatter errlog = new Formatter();
       Optional<GridDatasetImpl> grido = GridDatasetImpl.create(ds, errlog);
-      if (grido.isPresent()) {
-        GridDatasetImpl gridDataset = grido.get();
-        if (!Iterables.isEmpty(gridDataset.getGrids())) {
-          DatasetClassifier dclassifier = new DatasetClassifier(ds, errlog);
-          DatasetClassifier.CoordSysClassifier classifier =
-              dclassifier.getCoordinateSystemsUsed().stream().findFirst().orElse(null);
-          assertThat(classifier.getFeatureType()).isEqualTo(FeatureType.GRID);
-        }
+      assertThat(grido.isPresent()).isTrue();
+      GridDatasetImpl gridDataset = grido.get();
+      if (!Iterables.isEmpty(gridDataset.getGrids())) {
+        DatasetClassifier dclassifier = new DatasetClassifier(ds, errlog);
+        DatasetClassifier.CoordSysClassifier classifier =
+            dclassifier.getCoordinateSystemsUsed().stream().findFirst().orElse(null);
+        assertThat(classifier.getFeatureType()).isEqualTo(FeatureType.GRID);
       }
     }
   }
 
+  /*
+   * Non-orthogoinal offsets: Differs for hour 0 vs 12:
+   * time2D: time runtime=reftime nruns=16 ntimes=16 isOrthogonal=false isRegular=true
+   * All time values= 90, 96, 102, 108, 114, 120, 126, 132, 138, 144, 150, 156, 162, 168, 174, 180, 186, 192, (n=18)
+   * hour 0: time: 102, 108, 114, 120, 126, 132, 138, 144, 150, 156, 162, 168, 174, 180, 186, 192, (16)
+   * hour 12: time: 90, 96, 102, 108, 114, 120, 126, 132, 138, 144, 150, 156, 162, 168, 174, 180, (16)
+   */
   @Test
   @Category(NeedsCdmUnitTest.class)
   public void testNonOrthogonalFmrc() throws IOException {
@@ -204,15 +210,16 @@ public class TestDatasetClassifier {
     try (NetcdfDataset ds = NetcdfDatasets.openDataset(filename)) {
       Formatter errlog = new Formatter();
       Optional<GridDatasetImpl> grido = GridDatasetImpl.create(ds, errlog);
-      if (grido.isPresent()) {
-        GridDatasetImpl gridDataset = grido.get();
-        if (!Iterables.isEmpty(gridDataset.getGrids())) {
-          DatasetClassifier dclassifier = new DatasetClassifier(ds, errlog);
-          DatasetClassifier.CoordSysClassifier classifier =
-              dclassifier.getCoordinateSystemsUsed().stream().findFirst().orElse(null);
-          assertThat(classifier.getFeatureType()).isEqualTo(FeatureType.GRID);
-        }
-      }
+      assertThat(grido.isPresent()).isFalse();
+      /*
+       * GridDatasetImpl gridDataset = grido.get();
+       * if (!Iterables.isEmpty(gridDataset.getGrids())) {
+       * DatasetClassifier dclassifier = new DatasetClassifier(ds, errlog);
+       * DatasetClassifier.CoordSysClassifier classifier =
+       * dclassifier.getCoordinateSystemsUsed().stream().findFirst().orElse(null);
+       * assertThat(classifier.getFeatureType()).isEqualTo(FeatureType.GRID);
+       * }
+       */
     }
   }
 
@@ -233,14 +240,65 @@ public class TestDatasetClassifier {
     try (NetcdfDataset ds = NetcdfDatasets.openDataset(filename)) {
       Formatter errlog = new Formatter();
       Optional<GridDatasetImpl> grido = GridDatasetImpl.create(ds, errlog);
-      if (grido.isPresent()) {
-        GridDatasetImpl gridDataset = grido.get();
-        if (!Iterables.isEmpty(gridDataset.getGrids())) {
-          DatasetClassifier dclassifier = new DatasetClassifier(ds, errlog);
-          DatasetClassifier.CoordSysClassifier classifier =
-              dclassifier.getCoordinateSystemsUsed().stream().findFirst().orElse(null);
-          assertThat(classifier.getFeatureType()).isEqualTo(FeatureType.GRID);
+      assertThat(grido.isPresent()).isTrue();
+      GridDatasetImpl gridDataset = grido.get();
+      if (!Iterables.isEmpty(gridDataset.getGrids())) {
+        DatasetClassifier dclassifier = new DatasetClassifier(ds, errlog);
+        DatasetClassifier.CoordSysClassifier classifier =
+            dclassifier.getCoordinateSystemsUsed().stream().findFirst().orElse(null);
+        assertThat(classifier.getFeatureType()).isEqualTo(FeatureType.GRID);
+      }
+    }
+  }
+
+  @Test
+  @Category(NeedsCdmUnitTest.class)
+  public void testMRUTP2() throws IOException {
+    String filename = TestDir.cdmUnitTestDir + "gribCollections/anal/HRRRanalysis.ncx4";
+    try (FeatureDatasetCoverage covDataset = CoverageDatasetFactory.open(filename)) {
+      for (CoverageCollection cc : covDataset.getCoverageCollections()) {
+        if (cc.getName().endsWith("MRUTP")) {
+          assertThat(cc.getCoverageType()).isEqualTo(FeatureType.GRID);
         }
+      }
+    }
+
+    try (NetcdfDataset ds = NetcdfDatasets.openDataset(filename)) {
+      Formatter errlog = new Formatter();
+      Optional<GridDatasetImpl> grido = GridDatasetImpl.create(ds, errlog);
+      assertThat(grido.isPresent()).isTrue();
+      GridDatasetImpl gridDataset = grido.get();
+      if (!Iterables.isEmpty(gridDataset.getGrids())) {
+        DatasetClassifier dclassifier = new DatasetClassifier(ds, errlog);
+        DatasetClassifier.CoordSysClassifier classifier =
+            dclassifier.getCoordinateSystemsUsed().stream().findFirst().orElse(null);
+        assertThat(classifier.getFeatureType()).isEqualTo(FeatureType.GRID);
+      }
+    }
+  }
+
+  @Test
+  @Category(NeedsCdmUnitTest.class)
+  public void testMRUTP3() throws IOException {
+    String filename = TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds627.0/ei.oper.an.pv/ds627.0_46.ncx4";
+    try (FeatureDatasetCoverage covDataset = CoverageDatasetFactory.open(filename)) {
+      for (CoverageCollection cc : covDataset.getCoverageCollections()) {
+        if (cc.getName().endsWith("MRUTP")) {
+          assertThat(cc.getCoverageType()).isEqualTo(FeatureType.GRID);
+        }
+      }
+    }
+
+    try (NetcdfDataset ds = NetcdfDatasets.openDataset(filename)) {
+      Formatter errlog = new Formatter();
+      Optional<GridDatasetImpl> grido = GridDatasetImpl.create(ds, errlog);
+      assertThat(grido.isPresent()).isTrue();
+      GridDatasetImpl gridDataset = grido.get();
+      if (!Iterables.isEmpty(gridDataset.getGrids())) {
+        DatasetClassifier dclassifier = new DatasetClassifier(ds, errlog);
+        DatasetClassifier.CoordSysClassifier classifier =
+            dclassifier.getCoordinateSystemsUsed().stream().findFirst().orElse(null);
+        assertThat(classifier.getFeatureType()).isEqualTo(FeatureType.GRID);
       }
     }
   }
@@ -260,14 +318,13 @@ public class TestDatasetClassifier {
     try (NetcdfDataset ds = NetcdfDatasets.openDataset(filename)) {
       Formatter errlog = new Formatter();
       Optional<GridDatasetImpl> grido = GridDatasetImpl.create(ds, errlog);
-      if (grido.isPresent()) {
-        GridDatasetImpl gridDataset = grido.get();
-        if (!Iterables.isEmpty(gridDataset.getGrids())) {
-          DatasetClassifier dclassifier = new DatasetClassifier(ds, errlog);
-          DatasetClassifier.CoordSysClassifier classifier =
-              dclassifier.getCoordinateSystemsUsed().stream().findFirst().orElse(null);
-          assertThat(classifier.getFeatureType()).isEqualTo(FeatureType.GRID);
-        }
+      assertThat(grido.isPresent()).isTrue();
+      GridDatasetImpl gridDataset = grido.get();
+      if (!Iterables.isEmpty(gridDataset.getGrids())) {
+        DatasetClassifier dclassifier = new DatasetClassifier(ds, errlog);
+        DatasetClassifier.CoordSysClassifier classifier =
+            dclassifier.getCoordinateSystemsUsed().stream().findFirst().orElse(null);
+        assertThat(classifier.getFeatureType()).isEqualTo(FeatureType.GRID);
       }
     }
   }
@@ -287,14 +344,13 @@ public class TestDatasetClassifier {
     try (NetcdfDataset ds = NetcdfDatasets.openDataset(filename)) {
       Formatter errlog = new Formatter();
       Optional<GridDatasetImpl> grido = GridDatasetImpl.create(ds, errlog);
-      if (grido.isPresent()) {
-        GridDatasetImpl gridDataset = grido.get();
-        if (!Iterables.isEmpty(gridDataset.getGrids())) {
-          DatasetClassifier dclassifier = new DatasetClassifier(ds, errlog);
-          DatasetClassifier.CoordSysClassifier classifier =
-              dclassifier.getCoordinateSystemsUsed().stream().findFirst().orElse(null);
-          assertThat(classifier.getFeatureType()).isEqualTo(FeatureType.GRID);
-        }
+      assertThat(grido.isPresent()).isTrue();
+      GridDatasetImpl gridDataset = grido.get();
+      if (!Iterables.isEmpty(gridDataset.getGrids())) {
+        DatasetClassifier dclassifier = new DatasetClassifier(ds, errlog);
+        DatasetClassifier.CoordSysClassifier classifier =
+            dclassifier.getCoordinateSystemsUsed().stream().findFirst().orElse(null);
+        assertThat(classifier.getFeatureType()).isEqualTo(FeatureType.GRID);
       }
     }
   }

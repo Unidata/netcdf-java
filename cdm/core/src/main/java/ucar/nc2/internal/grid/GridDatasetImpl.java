@@ -8,7 +8,6 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
 import ucar.nc2.*;
-import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.*;
 import ucar.nc2.dataset.NetcdfDataset.Enhance;
@@ -45,7 +44,7 @@ public class GridDatasetImpl implements GridDataset {
 
   private final Map<String, GridAxis> gridAxes;
   private final ArrayList<Grid> grids = new ArrayList<>();
-  private final Multimap<GridCoordinateSystem, Grid> gridsets;
+  private final Multimap<GridCS, Grid> gridsets;
 
   private LatLonRect llbbMax;
   private CalendarDateRange dateRangeMax;
@@ -56,28 +55,32 @@ public class GridDatasetImpl implements GridDataset {
     this.featureType = classifier.getFeatureType();
 
     // Convert axes
-    GridAxis rtAxis = null;
     this.gridAxes = new HashMap<>();
-    for (CoordinateAxis axis : classifier.getAxesUsed()) {
+    for (CoordinateAxis axis : classifier.getIndependentAxes()) {
+      if (axis.getFullName().startsWith("Best/")) {
+        continue;
+      }
       if (axis.getRank() < 2) {
-        GridAxis gridAxis = Grids.extractGridAxis1D(ncd, axis);
+        GridAxis gridAxis = Grids.extractGridAxis1D(ncd, axis, GridAxis.DependenceType.independent);
         gridAxes.put(axis.getFullName(), gridAxis);
-        if (gridAxis.getAxisType().equals(AxisType.RunTime)) {
-          rtAxis = gridAxis;
-        }
       }
     }
-    /*
-     * for (CoordinateAxis axis : classifier.getAxesUsed()) {
-     * if (axis.getRank() == 2 && axis.getAxisType() == AxisType.Time && rtAxis != null) {
-     * gridAxes.put(axis.getFullName(), Grids.extractGridAxisTime2D(ncd, axis, (GridAxis1DTime) rtAxis));
-     * }
-     * }
-     */
+    for (CoordinateAxis axis : classifier.getDependentAxes()) {
+      if (axis.getFullName().startsWith("Best/")) {
+        continue;
+      }
+      if (axis.getRank() < 2) {
+        GridAxis gridAxis = Grids.extractGridAxis1D(ncd, axis, GridAxis.DependenceType.dependent);
+        gridAxes.put(axis.getFullName(), gridAxis);
+      }
+    }
 
     // Convert coordsys
     Map<String, GridCS> trackCsConverted = new HashMap<>();
     for (DatasetClassifier.CoordSysClassifier csc : classifier.getCoordinateSystemsUsed()) {
+      if (csc.getName().startsWith("Best/")) {
+        continue;
+      }
       GridCS gcs = new GridCS(csc, this.gridAxes);
       coordsys.add(gcs);
       trackCsConverted.put(csc.getName(), gcs);
@@ -87,6 +90,9 @@ public class GridDatasetImpl implements GridDataset {
 
     this.gridsets = ArrayListMultimap.create();
     for (Variable v : ncd.getVariables()) {
+      if (v.getFullName().startsWith("Best/")) {
+        continue;
+      }
       VariableEnhanced ve = (VariableEnhanced) v;
       List<CoordinateSystem> css = new ArrayList<>(ve.getCoordinateSystems());
       if (css.isEmpty()) {
@@ -110,7 +116,7 @@ public class GridDatasetImpl implements GridDataset {
     LatLonRect.Builder llbbBuilder = null;
 
     ProjectionRect.Builder projBBbuilder = null;
-    for (GridCoordinateSystem gcs : this.gridsets.keys()) {
+    for (GridCoordinateSystem gcs : this.gridsets.keySet()) {
       ProjectionRect bb = gcs.getBoundingBox();
       if (projBBbuilder == null)
         projBBbuilder = bb.toBuilder();
@@ -153,13 +159,13 @@ public class GridDatasetImpl implements GridDataset {
   }
 
   @Override
-  public Iterable<GridAxis> getCoordAxes() {
-    return gridAxes.values();
+  public ImmutableList<GridAxis> getCoordAxes() {
+    return ImmutableList.copyOf(gridAxes.values());
   }
 
   @Override
-  public Iterable<Grid> getGrids() {
-    return grids;
+  public ImmutableList<Grid> getGrids() {
+    return ImmutableList.copyOf(grids);
   }
 
   @Override
@@ -196,12 +202,13 @@ public class GridDatasetImpl implements GridDataset {
   public void toString(Formatter buf) {
     int countGridset = 0;
 
-    for (GridCoordinateSystem gcs : gridsets.keys()) {
-      buf.format("%nGridset %d  coordSys=%s", countGridset, gcs);
+    for (GridCS gcs : gridsets.keySet()) {
+      buf.format("%nGridset %d: ", countGridset);
+      gcs.show(buf, false);
       buf.format("%n");
-      // buf.format("Name__________________________Unit__________________________hasMissing_Description%n");
+      buf.format("Name___________________________________________Unit____________Description%n");
       for (Grid grid : gridsets.get(gcs)) {
-        buf.format("%s%n", grid);
+        buf.format(" %-46s %-15s %s%n", grid.getName(), grid.getUnitsString(), grid.getDescription());
       }
       countGridset++;
       buf.format("%n");

@@ -121,7 +121,7 @@ public class GridAxis1DTime extends GridAxis1D {
     return timeHelper.getCalendarDateUnit();
   }
 
-  /** Get Reference Date of the CalendarDateUnit */
+  /** Get Reference Date of the CalendarDateUnit (not the runtime) */
   public CalendarDate getRefDate() {
     return timeHelper.getRefDate();
   }

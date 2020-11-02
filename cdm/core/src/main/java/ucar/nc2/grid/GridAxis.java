@@ -82,10 +82,6 @@ public abstract class GridAxis implements Iterable<Object> {
     return description;
   }
 
-  public DataType getDataType() {
-    return dataType;
-  }
-
   public AxisType getAxisType() {
     return axisType;
   }

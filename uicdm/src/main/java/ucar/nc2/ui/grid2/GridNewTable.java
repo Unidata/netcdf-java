@@ -398,7 +398,6 @@ public class GridNewTable extends JPanel {
   public static class AxisBean {
     GridAxis axis;
     String name, desc, units;
-    DataType dataType;
     AxisType axisType;
     long nvalues;
     boolean indepenent;
@@ -411,7 +410,6 @@ public class GridNewTable extends JPanel {
       this.axis = v;
 
       name = (v.getName());
-      dataType = (v.getDataType());
       axisType = (v.getAxisType());
       units = (v.getUnits());
       desc = (v.getDescription());
@@ -432,10 +430,6 @@ public class GridNewTable extends JPanel {
 
     public String getUnits() {
       return units;
-    }
-
-    public DataType getDataType() {
-      return dataType;
     }
 
     public String getSpacing() {
