@@ -9,8 +9,8 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import org.jdom2.Element;
-import thredds.filesystem.MFileOS;
 import thredds.inventory.MFile;
+import thredds.inventory.MFiles;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
@@ -71,7 +71,7 @@ class AggDataset implements Comparable<AggDataset> {
   protected AggDataset(String cacheLocation, String location, @Nullable String id,
       @Nullable EnumSet<Enhance> wantEnhance, @Nullable ucar.nc2.util.cache.FileFactory reader,
       @Nullable Object spiObject, @Nullable Element ncmlElem) {
-    this.mfile = MFileOS.getExistingFile(location); // may be null
+    this.mfile = MFiles.create(location); // may be null
     this.cacheLocation = cacheLocation;
     this.id = id;
     this.enhance = (wantEnhance == null) ? NetcdfDataset.getEnhanceNone() : wantEnhance;

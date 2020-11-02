@@ -1,13 +1,17 @@
 /*
- * Copyright (c) 1998-2017 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 University Corporation for Atmospheric Research/Unidata
  * See LICENSE.txt for license information.
  */
 
 package thredds.inventory;
 
 import thredds.featurecollection.FeatureCollectionConfig;
-import thredds.filesystem.MFileOS;
-import thredds.inventory.filter.*;
+import thredds.filesystem.ControllerOS;
+import thredds.inventory.filter.CompositeMFileFilter;
+import thredds.inventory.filter.LastModifiedLimit;
+import thredds.inventory.filter.RegExpMatchOnName;
+import thredds.inventory.filter.WildcardMatchOnName;
+import thredds.inventory.filter.WildcardMatchOnPath;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.TimeDuration;
 import javax.annotation.concurrent.GuardedBy;
@@ -32,20 +36,26 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 @ThreadSafe
 public class MFileCollectionManager extends CollectionManagerAbstract {
-  private static MController controller;
+  private MController controller;
 
   /**
    * Set the MController used by scan. Defaults to thredds.filesystem.ControllerOS() if not set.
    *
    * @param _controller use this MController
    */
-  public static void setController(MController _controller) {
+  public void setController(MController _controller) {
     controller = _controller;
   }
 
-  public static MController getController() {
-    if (null == controller)
-      controller = new thredds.filesystem.ControllerOS(); // default
+  public MController getController() {
+    if (null == controller) {
+      if (!scanList.isEmpty()) {
+        CollectionConfig mc = scanList.get(0);
+        controller = MControllers.create(mc.getDirectoryName());
+      } else {
+        controller = new ControllerOS();
+      }
+    }
     return controller;
   }
 
@@ -351,7 +361,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
       // but we should still make a new map to see if the files
       // have been updated since the last recheck
       for (String file : oldMap.keySet()) {
-        newMap.put(file, MFileOS.getExistingFile(file));
+        newMap.put(file, MFiles.create(file));
       }
     } else {
       // we have a directory scan, so scan it
@@ -372,9 +382,9 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
           logger.debug("{}: scan found Dataset changed= {}", collectionName, path);
 
         } else if (changeChecker != null && changeChecker.hasntChangedSince(newFile, oldFile.getLastModified())) { // the
-                                                                                                                   // ancilliary
+                                                                                                                   // ancillary
                                                                                                                    // file
-                                                                                                                   // hasnt
+                                                                                                                   // hasn't
                                                                                                                    // changed
           nchange++;
           logger.debug("{}: scan changeChecker found Dataset changed= {}", collectionName, path);
@@ -440,7 +450,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
     // update MFileCollection map of files
     List<MFile> files = new ArrayList<>(filesRunDateMap.size());
     for (String file : filesRunDateMap.keySet()) {
-      files.add(MFileOS.getExistingFile(file));
+      files.add(MFiles.create(file));
     }
     setFiles(files);
   }

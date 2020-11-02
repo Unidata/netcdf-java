@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2019 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 2019-2020 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -11,6 +11,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Paths;
 import java.util.Formatter;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -44,12 +45,10 @@ public class TestS3Read {
       "ABI-L1b-RadC/2017/242/00/OR_ABI-L1b-RadC-M3C01_G16_s20172420002168_e20172420004540_c20172420004583.nc";
 
   // AWS specific constants
-  private static final String AWS_G16_S3_URI_FULL = "cdms3:noaa-goes16?" + COMMON_G16_KEY;
+  private static final String AWS_G16_S3_URI_FULL = S3TestsCommon.TOP_LEVEL_AWS_BUCKET + "?" + COMMON_G16_KEY;
   private static final String AWS_G16_S3_URI_SIMPLE = "s3://noaa-goes16/" + COMMON_G16_KEY; // deprecated
-  private static final String AWS_REGION_PROP_NAME = "aws.region";
   private static final String AWS_SHARED_CREDENTIALS_FILE_PROP =
       ProfileFileSystemSetting.AWS_SHARED_CREDENTIALS_FILE.property();
-  private static final String AWS_G16_REGION = Region.US_EAST_1.toString();
   private static final String CUSTOM_AWS_SHARED_CREDENTIALS_FILE_GOOD_DEFAULT =
       "s3test_shared_credentials_file_good_default";
   private static final String CUSTOM_AWS_SHARED_CREDENTIALS_FILE_BAD_DEFAULT =
@@ -58,13 +57,11 @@ public class TestS3Read {
   private static final String BAD_PROFILE_NAME = "no-goes-profile";
 
   // Google Cloud Platform constants
-  private static final String GCS_G16_S3_URI =
-      "cdms3://storage.googleapis.com/gcp-public-data-goes-16?" + COMMON_G16_KEY;
+  private static final String GCS_G16_S3_URI = S3TestsCommon.TOP_LEVEL_GCS_BUCKET + "?" + COMMON_G16_KEY;
 
   // Open Science Data Cloud constants
   private static final String OSDC_G16_S3_URI =
-      "cdms3://griffin-objstore.opensciencedatacloud.org/noaa-goes16-hurricane-archive-2017?ABI-L1b-RadC/"
-          + COMMON_G16_KEY.replaceFirst("ABI-L1b-RadC/2017/", "");
+      S3TestsCommon.TOP_LEVEL_OSDC_BUCKET + "?ABI-L1b-RadC/" + COMMON_G16_KEY.replaceFirst("ABI-L1b-RadC/2017/", "");
 
   // NCAR ActiveScale constants
   private static final String NCAR_PROFILE_NAME = "stratus-profile"; // generally not available
@@ -94,6 +91,10 @@ public class TestS3Read {
       logger.error(msg);
       throw new IOException(msg);
     }
+
+    // Disable CdmS3Uri cache, otherwise credentials, regions, etc. will be ignored.
+    // For example, awsProfileSharedCredsBadDefault will not pass.
+    CdmS3Client.enableCache(false);
   }
 
   /**
@@ -105,83 +106,83 @@ public class TestS3Read {
    */
   @Test
   public void awsFullReadFile() throws IOException {
-    System.setProperty(AWS_REGION_PROP_NAME, AWS_G16_REGION);
+    System.setProperty(S3TestsCommon.AWS_REGION_PROP_NAME, S3TestsCommon.AWS_G16_REGION);
     try (NetcdfFile ncfile = NetcdfFiles.open(AWS_G16_S3_URI_FULL)) {
       testFullReadGoes16S3(ncfile);
     } finally {
-      System.clearProperty(AWS_REGION_PROP_NAME);
+      System.clearProperty(S3TestsCommon.AWS_REGION_PROP_NAME);
     }
   }
 
   @Test
   public void awsFullReadDataset() throws IOException {
-    System.setProperty(AWS_REGION_PROP_NAME, AWS_G16_REGION);
+    System.setProperty(S3TestsCommon.AWS_REGION_PROP_NAME, S3TestsCommon.AWS_G16_REGION);
     try (NetcdfDataset ncd = NetcdfDatasets.openDataset(AWS_G16_S3_URI_FULL)) {
       testFullReadGoes16S3(ncd);
     } finally {
-      System.clearProperty(AWS_REGION_PROP_NAME);
+      System.clearProperty(S3TestsCommon.AWS_REGION_PROP_NAME);
     }
   }
 
   @Test
   public void awsPartialReadFileDefaultRegionProp() throws IOException, InvalidRangeException {
-    System.setProperty(AWS_REGION_PROP_NAME, AWS_G16_REGION);
+    System.setProperty(S3TestsCommon.AWS_REGION_PROP_NAME, S3TestsCommon.AWS_G16_REGION);
     try (NetcdfFile ncfile = NetcdfFiles.open(AWS_G16_S3_URI_FULL)) {
       testPartialReadGoes16S3(ncfile);
     } finally {
-      System.clearProperty(AWS_REGION_PROP_NAME);
+      System.clearProperty(S3TestsCommon.AWS_REGION_PROP_NAME);
     }
   }
 
   @Test
   public void awsPartialReadDataset() throws IOException, InvalidRangeException {
-    System.setProperty(AWS_REGION_PROP_NAME, AWS_G16_REGION);
+    System.setProperty(S3TestsCommon.AWS_REGION_PROP_NAME, S3TestsCommon.AWS_G16_REGION);
     try (NetcdfDataset ncd = NetcdfDatasets.openDataset(AWS_G16_S3_URI_FULL)) {
       testPartialReadGoes16S3(ncd);
     } finally {
-      System.clearProperty(AWS_REGION_PROP_NAME);
+      System.clearProperty(S3TestsCommon.AWS_REGION_PROP_NAME);
     }
   }
 
   @Test
   public void awsPartialReadFileSimple() throws IOException, InvalidRangeException {
-    System.setProperty(AWS_REGION_PROP_NAME, AWS_G16_REGION);
+    System.setProperty(S3TestsCommon.AWS_REGION_PROP_NAME, S3TestsCommon.AWS_G16_REGION);
     try (NetcdfFile ncfile = NetcdfFiles.open(AWS_G16_S3_URI_SIMPLE)) {
       testPartialReadGoes16S3(ncfile);
     } finally {
-      System.clearProperty(AWS_REGION_PROP_NAME);
+      System.clearProperty(S3TestsCommon.AWS_REGION_PROP_NAME);
     }
   }
 
   @Test
   public void awsPartialReadDatasetSimple() throws IOException, InvalidRangeException {
-    System.setProperty(AWS_REGION_PROP_NAME, AWS_G16_REGION);
+    System.setProperty(S3TestsCommon.AWS_REGION_PROP_NAME, S3TestsCommon.AWS_G16_REGION);
     try (NetcdfDataset ncd = NetcdfDatasets.openDataset(AWS_G16_S3_URI_SIMPLE)) {
       testPartialReadGoes16S3(ncd);
     } finally {
-      System.clearProperty(AWS_REGION_PROP_NAME);
+      System.clearProperty(S3TestsCommon.AWS_REGION_PROP_NAME);
     }
   }
 
   @Test
   public void awsPartialReadAquireFile() throws IOException, InvalidRangeException {
-    System.setProperty(AWS_REGION_PROP_NAME, AWS_G16_REGION);
+    System.setProperty(S3TestsCommon.AWS_REGION_PROP_NAME, S3TestsCommon.AWS_G16_REGION);
     DatasetUrl durl = DatasetUrl.findDatasetUrl(AWS_G16_S3_URI_FULL);
     try (NetcdfFile ncf = NetcdfDatasets.acquireFile(durl, null)) {
       testPartialReadGoes16S3(ncf);
     } finally {
-      System.clearProperty(AWS_REGION_PROP_NAME);
+      System.clearProperty(S3TestsCommon.AWS_REGION_PROP_NAME);
     }
   }
 
   @Test
   public void awsPartialReadAquireDataset() throws IOException, InvalidRangeException {
-    System.setProperty(AWS_REGION_PROP_NAME, AWS_G16_REGION);
+    System.setProperty(S3TestsCommon.AWS_REGION_PROP_NAME, S3TestsCommon.AWS_G16_REGION);
     DatasetUrl durl = DatasetUrl.findDatasetUrl(AWS_G16_S3_URI_FULL);
     try (NetcdfDataset ncd = NetcdfDatasets.acquireDataset(durl, null)) {
       testPartialReadGoes16S3(ncd);
     } finally {
-      System.clearProperty(AWS_REGION_PROP_NAME);
+      System.clearProperty(S3TestsCommon.AWS_REGION_PROP_NAME);
     }
   }
 
@@ -238,14 +239,14 @@ public class TestS3Read {
   @Test
   public void awsSharedCredsPrecedence() throws IOException {
     // Test that the region set in the custom shared credentials file takes precedence
-    System.setProperty(AWS_REGION_PROP_NAME, Region.AP_SOUTH_1.id());
+    System.setProperty(S3TestsCommon.AWS_REGION_PROP_NAME, Region.AP_SOUTH_1.id());
     System.setProperty(AWS_SHARED_CREDENTIALS_FILE_PROP, credentialsFileBadDefault);
     String cdmS3Uri = String.format("cdms3://%s@aws/noaa-goes16?", GOOD_PROFILE_NAME) + COMMON_G16_KEY;
     try (NetcdfFile ncfile = NetcdfFiles.open(cdmS3Uri)) {
       assertThat(ncfile).isNotNull();
     } finally {
       System.clearProperty(AWS_SHARED_CREDENTIALS_FILE_PROP);
-      System.clearProperty(AWS_REGION_PROP_NAME);
+      System.clearProperty(S3TestsCommon.AWS_REGION_PROP_NAME);
     }
   }
 
@@ -357,7 +358,7 @@ public class TestS3Read {
 
   @Test
   public void compareStores() throws IOException {
-    System.setProperty(AWS_REGION_PROP_NAME, AWS_G16_REGION);
+    System.setProperty(S3TestsCommon.AWS_REGION_PROP_NAME, S3TestsCommon.AWS_G16_REGION);
     try (NetcdfFile osdc = NetcdfFiles.open(OSDC_G16_S3_URI);
         NetcdfFile gcs = NetcdfFiles.open(GCS_G16_S3_URI);
         NetcdfFile aws = NetcdfFiles.open(AWS_G16_S3_URI_FULL)) {
@@ -367,7 +368,7 @@ public class TestS3Read {
       Assert.assertTrue(comparer.compare(aws, osdc));
       Assert.assertTrue(comparer.compare(osdc, gcs));
     } finally {
-      System.clearProperty(AWS_REGION_PROP_NAME);
+      System.clearProperty(S3TestsCommon.AWS_REGION_PROP_NAME);
     }
   }
 
@@ -457,6 +458,12 @@ public class TestS3Read {
       assertThat(conv).isNotNull();
       assertThat(conv.getStringValue()).ignoringCase().isEqualTo("CF-1.4");
     }
+  }
+
+  @AfterClass
+  public static void resetCdmS3Client() {
+    // re-enable the CdmS3Cache
+    CdmS3Client.enableCache(true);
   }
 
   //////////////
