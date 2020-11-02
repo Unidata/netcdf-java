@@ -5,6 +5,7 @@
 
 package ucar.nc2.internal.dataset;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
@@ -745,38 +746,34 @@ public class CoordSystemBuilder {
 
   @Nullable
   private String findDimFullName(Variable.Builder vb, String dimShortName) {
+    String dimFullName = null;
     String dimName = EscapeStrings.backslashEscape(dimShortName, NetcdfFiles.reservedFullName);
     // In order to get the "full" dimension name, we need to know what group it lives in. We will start in the group
     // that the variable belongs to and work our way up the group tree. If we don't find the dimension, we get null.
     Group.Builder gb = vb.getParentGroupBuilder();
-    return findDimension(gb, dimShortName);
+    while (gb != null) {
+      Optional<Dimension> dim = gb.findDimensionLocal(dimName);
+      if (dim.isPresent()) {
+        dimFullName = makeDimFullName(gb, dimName);
+        break;
+      } else {
+        gb = gb.getParentGroup();
+      }
+    }
+    return dimFullName;
   }
 
   @Nullable
-  private String findDimension(@Nullable Group.Builder gb, String dimName) {
-    if (gb == null) {
-      return null;
-    } else {
-      Optional<Dimension> dim = gb.findDimensionLocal(dimName);
-      return dim.isPresent() ? makeDimFullName(gb, dimName) : findDimension(gb.getParentGroup(), dimName);
-    }
-  }
-
   private String makeDimFullName(Variable.Builder vb, Dimension d) {
-    return makeDimFullName(vb.getParentGroupBuilder(), d);
-  }
-
-  private String makeDimFullName(Variable.Builder vb, String dimName) {
-    return makeDimFullName(vb.getParentGroupBuilder(), dimName);
-  }
-
-  private String makeDimFullName(Group.Builder gb, Dimension d) {
-    return makeDimFullName(gb, d.getShortName());
+    Preconditions.checkNotNull(d, "Cannot construct the full name of a null Dimension.");
+    Group.Builder gb = vb.getParentGroupBuilder();
+    return (gb != null) && gb.contains(d) ? makeDimFullName(gb, d.getShortName()) : null;
   }
 
   private String makeDimFullName(Group.Builder gb, String dimShortName) {
+    Preconditions.checkNotNull(dimShortName, "Cannot construct the full name of a Dimension if its short name is null");
     String dimName = EscapeStrings.backslashEscape(dimShortName, NetcdfFiles.reservedFullName);
-    return gb.makeFullName() + dimName;
+    return gb != null ? gb.makeFullName() + dimName : dimName;
   }
 
   /** Classifications of Variables into axis, systems and transforms */
@@ -820,7 +817,7 @@ public class CoordSystemBuilder {
       isCoordinateVariable =
           isCoordinateVariable(v) || (null != v.getAttributeContainer().findAttribute(_Coordinate.AliasForDimension));
       if (isCoordinateVariable) {
-        String dimFullName = makeDimFullName(v, v.getFirstDimensionName());
+        String dimFullName = makeDimFullName(v.getParentGroupBuilder(), v.getFirstDimensionName());
         coordVarsForDimension.put(dimFullName, this);
       }
 
@@ -850,9 +847,16 @@ public class CoordSystemBuilder {
             } else {
               isCoordinateAxis = true;
               String dimFullName = makeDimFullName(v, coordDim);
-              coordVarsForDimension.put(dimFullName, this);
-              parseInfo.format(" Coordinate Variable Alias added = %s for dimension= %s%n", v.getFullName(),
-                  coordVarAlias);
+              if (dimFullName != null) {
+                coordVarsForDimension.put(dimFullName, this);
+                parseInfo.format(" Coordinate Variable Alias added = %s for dimension= %s%n", v.getFullName(),
+                    coordVarAlias);
+              } else {
+                parseInfo.format("Can't find dimension %s in a Group or parent Group of variable %s%n",
+                    coordDim.getShortName(), vb);
+                userAdvice.format("Can't find dimension %s in a Group or parent Group of variable %s%n",
+                    coordDim.getShortName(), vb);
+              }
             }
           });
         }
