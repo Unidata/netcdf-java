@@ -2,9 +2,11 @@
  * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
+
 package ucar.nc2.internal.dataset.conv;
 
 import static ucar.nc2.internal.dataset.CoordSystemFactory.breakupConventionNames;
+
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import java.io.IOException;
@@ -13,6 +15,7 @@ import java.util.Map;
 import java.util.Optional;
 import ucar.ma2.Array;
 import ucar.nc2.Attribute;
+import ucar.nc2.Group;
 import ucar.nc2.Variable;
 import ucar.nc2.Variable.Builder;
 import ucar.nc2.constants.AxisType;
@@ -128,10 +131,25 @@ public class CF1Convention extends CSMConvention {
 
   @Override
   protected void augmentDataset(CancelTask cancelTask) throws IOException {
+    augmentGroups(rootGroup, cancelTask);
+  }
+
+  protected void augmentGroups(Group.Builder gb, CancelTask cancelTask) throws IOException {
+    // We have to augment the variables in every group, not just the root group. This is super critical for
+    // grib collections, where Best and TwoD are contained within their own group. A dataset could have hundreds
+    // of groups, but I have not seen a dataset with groups nested at hundreds of levels (most that I have seen are
+    // two levels deep or less), so recursion is probably ok here for now.
+    augmentGroup(gb, cancelTask);
+    for (Group.Builder subGb : gb.gbuilders) {
+      augmentGroups(subGb, cancelTask);
+    }
+  }
+
+  protected void augmentGroup(Group.Builder gb, CancelTask cancelTask) throws IOException {
     boolean got_grid_mapping = false;
 
     // look for transforms
-    for (Variable.Builder<?> vb : rootGroup.vbuilders) {
+    for (Variable.Builder<?> vb : gb.vbuilders) {
       // look for special standard_names
       String sname = vb.getAttributeContainer().findAttributeString(CF.STANDARD_NAME, null);
       if (sname != null) {
@@ -181,7 +199,7 @@ public class CF1Convention extends CSMConvention {
       // look for horiz transforms. only ones that are referenced by another variable.
       String grid_mapping = vb.getAttributeContainer().findAttributeString(CF.GRID_MAPPING, null);
       if (grid_mapping != null) {
-        Optional<Variable.Builder<?>> gridMapOpt = rootGroup.findVariableLocal(grid_mapping);
+        Optional<Variable.Builder<?>> gridMapOpt = gb.findVariableLocal(grid_mapping);
         if (gridMapOpt.isPresent()) {
           // TODO might be group relative - CF does not specify - see original version
           Variable.Builder<?> gridMap = gridMapOpt.get();
@@ -197,9 +215,8 @@ public class CF1Convention extends CSMConvention {
           }
 
           // check for CF-ish GOES-16/17 grid mappings
-          Attribute productionLocation =
-              rootGroup.getAttributeContainer().findAttributeIgnoreCase("production_location");
-          Attribute icdVersion = rootGroup.getAttributeContainer().findAttributeIgnoreCase("ICD_version");
+          Attribute productionLocation = gb.getAttributeContainer().findAttributeIgnoreCase("production_location");
+          Attribute icdVersion = gb.getAttributeContainer().findAttributeIgnoreCase("ICD_version");
           if (productionLocation != null && icdVersion != null) {
             // the fact that those two global attributes are not null means we should check to see
             // if the grid mapping variable has attributes that need corrected.
@@ -215,7 +232,7 @@ public class CF1Convention extends CSMConvention {
 
         if (vb.getAttributeContainer().findAttribute(CF.GEOMETRY) != null) {
           String geomValue = vb.getAttributeContainer().findAttributeString(CF.GEOMETRY, null);
-          rootGroup.findVariableLocal(geomValue).ifPresent(coordsvar -> {
+          gb.findVariableLocal(geomValue).ifPresent(coordsvar -> {
             vb.addAttribute(findAttributeIn(coordsvar, CF.GEOMETRY_TYPE));
             vb.addAttribute(findAttributeIn(coordsvar, CF.NODE_COORDINATES));
             vb.addAttribute(findAttributeIn(coordsvar, CF.PART_NODE_COUNT));
@@ -235,7 +252,7 @@ public class CF1Convention extends CSMConvention {
               String[] coords = nodeCoords.split(" ");
               final StringBuilder cds = new StringBuilder();
               for (String coord : coords) {
-                rootGroup.findVariableLocal(coord).ifPresent(temp -> {
+                gb.findVariableLocal(coord).ifPresent(temp -> {
                   Attribute axis = temp.getAttributeContainer().findAttribute(CF.AXIS);
                   if (axis != null) {
                     if ("x".equalsIgnoreCase(axis.getStringValue())) {
@@ -253,10 +270,6 @@ public class CF1Convention extends CSMConvention {
                 });
               }
 
-              if (vb.shortName.equals("et")) {
-                System.out.println("WTF");
-              }
-
               List<String> dimNames = ImmutableList.copyOf(vb.getDimensionNames());
               // Append any geometry dimensions as axis
               final StringBuilder pre = new StringBuilder();
@@ -264,7 +277,7 @@ public class CF1Convention extends CSMConvention {
               for (int i = dimNames.size() - 1; i >= 0; i--) {
                 String dimName = dimNames.get(i);
                 if (!dimName.equals("time")) {
-                  rootGroup.findVariableLocal(dimName).ifPresent(coordvar -> {
+                  gb.findVariableLocal(dimName).ifPresent(coordvar -> {
                     coordvar.getAttributeContainer()
                         .addAttribute(new Attribute(_Coordinate.AxisType, AxisType.SimpleGeometryID.toString()));
                   });
@@ -283,7 +296,7 @@ public class CF1Convention extends CSMConvention {
     }
 
     if (!got_grid_mapping) { // see if there are any grid mappings anyway
-      for (Variable.Builder vds : rootGroup.vbuilders) {
+      for (Variable.Builder vds : gb.vbuilders) {
         String grid_mapping_name = vds.getAttributeContainer().findAttributeString(CF.GRID_MAPPING_NAME, null);
         if (grid_mapping_name != null) {
           vds.addAttribute(new Attribute(_Coordinate.TransformType, TransformType.Projection.toString()));
@@ -298,9 +311,9 @@ public class CF1Convention extends CSMConvention {
     }
 
     // make corrections for specific datasets
-    String src = rootGroup.getAttributeContainer().findAttributeString("Source", "");
+    String src = gb.getAttributeContainer().findAttributeString("Source", "");
     if (src.equals("NOAA/National Climatic Data Center")) {
-      String title = rootGroup.getAttributeContainer().findAttributeString("title", "");
+      String title = gb.getAttributeContainer().findAttributeString("title", "");
       avhrr_oiv2 = title.indexOf("OI-V2") > 0;
     }
   }
