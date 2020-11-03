@@ -84,6 +84,8 @@ public interface GridCoordinateSystem {
 
   String showFnSummary();
 
+  void show(Formatter f, boolean showCoords);
+
   class CoordReturn {
     public int x, y;
     public double xcoord, ycoord;

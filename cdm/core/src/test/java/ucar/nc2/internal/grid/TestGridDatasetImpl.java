@@ -2,8 +2,10 @@ package ucar.nc2.internal.grid;
 
 import com.google.common.collect.Iterables;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.IOException;
 import java.util.Formatter;
@@ -15,6 +17,7 @@ import static org.junit.Assert.fail;
 public class TestGridDatasetImpl {
 
   @Test
+  @Category(NeedsCdmUnitTest.class)
   public void testOne() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "gribCollections/dgex/20141011/dgex_46-20141011.ncx4";
 

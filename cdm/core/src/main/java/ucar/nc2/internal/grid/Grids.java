@@ -35,28 +35,26 @@ class Grids {
   }
 
   private static void extractGridAxis1D(NetcdfDataset ncd, CoordinateAxis axis, GridAxis1D.Builder<?> builder,
-      GridAxis.DependenceType dependenceType) {
+      GridAxis.DependenceType dependenceTypeFromClassifier) {
     Preconditions.checkArgument(axis.getRank() < 2);
     CoordinateAxis1DExtractor extract = new CoordinateAxis1DExtractor(axis);
 
-    /*
-     * GridAxis.DependenceType dependenceType;
-     * if (axis.isCoordinateVariable()) {
-     * dependenceType = GridAxis.DependenceType.independent;
-     * } else if (ncd.isIndependentCoordinate(axis)) { // is a coordinate alias
-     * dependenceType = GridAxis.DependenceType.independent;
-     * builder.setDependsOn(ImmutableList.of(axis.getDimension(0).getShortName()));
-     * } else if (axis.isScalar()) {
-     * dependenceType = GridAxis.DependenceType.scalar;
-     * } else {
-     * dependenceType = GridAxis.DependenceType.dependent;
-     * ArrayList<String> dependsOn = new ArrayList<>();
-     * for (Dimension d : axis.getDimensions()) { // LOOK axes may not exist
-     * dependsOn.add(d.makeFullName(axis));
-     * }
-     * builder.setDependsOn(dependsOn);
-     * }
-     */
+    GridAxis.DependenceType dependenceType;
+    if (axis.isCoordinateVariable()) {
+      dependenceType = GridAxis.DependenceType.independent;
+    } else if (ncd.isIndependentCoordinate(axis)) { // is a coordinate alias
+      dependenceType = dependenceTypeFromClassifier; // TODO not clear
+      builder.setDependsOn(ImmutableList.of(axis.getDimension(0).getShortName()));
+    } else if (axis.isScalar()) {
+      dependenceType = GridAxis.DependenceType.scalar;
+    } else {
+      dependenceType = GridAxis.DependenceType.dependent;
+      ArrayList<String> dependsOn = new ArrayList<>();
+      for (Dimension d : axis.getDimensions()) { // LOOK axes may not exist
+        dependsOn.add(d.makeFullName(axis));
+      }
+      builder.setDependsOn(dependsOn);
+    }
     builder.setDependenceType(axis.isScalar() ? GridAxis.DependenceType.scalar : dependenceType);
 
     // Fix discontinuities in longitude axis. These occur when the axis crosses the date line.

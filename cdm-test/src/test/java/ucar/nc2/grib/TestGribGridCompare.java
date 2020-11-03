@@ -40,7 +40,7 @@ public class TestGribGridCompare {
           DatasetClassifier dclassifier = new DatasetClassifier(ds, errlog);
           DatasetClassifier.CoordSysClassifier classifier =
               dclassifier.getCoordinateSystemsUsed().stream().findFirst().orElse(null);
-          assertThat(classifier.getFeatureType()).isEqualTo(FeatureType.FMRC);
+          assertThat(classifier.getFeatureType()).isEqualTo(FeatureType.GRID);
         }
       }
     }

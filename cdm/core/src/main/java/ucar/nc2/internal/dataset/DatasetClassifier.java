@@ -204,7 +204,8 @@ public class DatasetClassifier {
           }
         }
         if (t != null) {
-          if (t.getRank() == 1 && t.getDimension(0).equals(rt.getDimension(0))) {
+          boolean sharedDimension = (rt != null) && t.getDimension(0).equals(rt.getDimension(0));
+          if (t.getRank() == 1 && sharedDimension) {
             depAxes.add(t);
           } else {
             indAxes.add(timeAxis = t);
