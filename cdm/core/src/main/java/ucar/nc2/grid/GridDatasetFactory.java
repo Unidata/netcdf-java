@@ -19,19 +19,21 @@ public class GridDatasetFactory {
   @Nullable
   public static GridDataset openGridDataset(String endpoint, Formatter errLog) throws IOException {
 
-    /* Grib is handled specially
-    DatasetUrl durl = DatasetUrl.findDatasetUrl(endpoint);
-    if (durl.getServiceType() == null) { // skip GRIB check for anything not a plain ole file
-      // check if its GRIB collection
-      GribDatasetOpenAttempt gribCoverage = openGrib(endpoint, errLog);
-      if (gribCoverage.isGrib) {
-        if (gribCoverage.gribDataset != null) {
-          return gribCoverage.gribDataset;
-        } else {
-          return null;
-        }
-      }
-    } */
+    /*
+     * Grib is handled specially
+     * DatasetUrl durl = DatasetUrl.findDatasetUrl(endpoint);
+     * if (durl.getServiceType() == null) { // skip GRIB check for anything not a plain ole file
+     * // check if its GRIB collection
+     * GribDatasetOpenAttempt gribCoverage = openGrib(endpoint, errLog);
+     * if (gribCoverage.isGrib) {
+     * if (gribCoverage.gribDataset != null) {
+     * return gribCoverage.gribDataset;
+     * } else {
+     * return null;
+     * }
+     * }
+     * }
+     */
 
     // Otherwise, wrap a NetcdfDataset
     NetcdfDataset ds = ucar.nc2.dataset.NetcdfDatasets.openDataset(endpoint);
