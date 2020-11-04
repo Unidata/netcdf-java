@@ -8,10 +8,7 @@ import com.google.common.base.Objects;
 import com.google.common.collect.AbstractIterator;
 import ucar.array.Array;
 import ucar.array.Arrays;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Range;
-import ucar.ma2.RangeComposite;
-import ucar.ma2.RangeIterator;
+import ucar.ma2.*;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.util.Indent;
 
@@ -196,9 +193,9 @@ public class GridAxis1D extends GridAxis {
 
     Array<Double> result;
     if (dependenceType == DependenceType.scalar) {
-      result = Arrays.factory(getDataType(), new int[0], vals);
+      result = Arrays.factory(DataType.DOUBLE, new int[0], vals);
     } else {
-      result = Arrays.factory(getDataType(), new int[] {ncoords}, vals);
+      result = Arrays.factory(DataType.DOUBLE, new int[] {ncoords}, vals);
     }
 
     return result;
@@ -212,7 +209,7 @@ public class GridAxis1D extends GridAxis {
       vals[count++] = getCoordEdge1(i);
       vals[count++] = getCoordEdge2(i);
     }
-    return Arrays.factory(getDataType(), new int[] {ncoords, 2}, vals);
+    return Arrays.factory(DataType.DOUBLE, new int[] {ncoords, 2}, vals);
   }
 
   /*

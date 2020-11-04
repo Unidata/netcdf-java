@@ -262,9 +262,7 @@ class GridCS implements GridCoordinateSystem {
 
   @Override
   public String toString() {
-    Formatter buff = new Formatter();
-    show(buff, false);
-    return buff.toString();
+    return getName();
   }
 
   public void show(Formatter f, boolean showCoords) {
@@ -288,16 +286,18 @@ class GridCS implements GridCoordinateSystem {
   }
 
   private void showCoordinateAxis(GridAxis1D axis, Formatter f, boolean showCoords) {
-    if (axis == null)
+    if (axis == null) {
       return;
-    f.format(" rt=%s (%s)", axis.getName(), axis.getClass().getName());
-    if (showCoords)
+    }
+    f.format(" %s (%s) ", axis.getName(), axis.getClass().getName());
+    if (showCoords) {
       showCoords(axis, f);
+    }
     f.format("%n");
   }
 
   private void showCoords(GridAxis axis, Formatter f) {
-    if (axis instanceof GridAxis1D && axis.getDataType().isNumeric()) {
+    if (axis instanceof GridAxis1D) {
       GridAxis1D axis1D = (GridAxis1D) axis;
       if (!axis1D.isInterval()) {
         for (double anE : axis1D.getCoordsAsArray()) {
@@ -310,7 +310,7 @@ class GridCS implements GridCoordinateSystem {
         }
       }
     }
-    f.format(" %s%n", axis.getUnits());
+    f.format(" %s", axis.getUnits());
   }
 
   @Override
@@ -450,9 +450,10 @@ class GridCS implements GridCoordinateSystem {
     ImmutableList.Builder<GridAxis> axesb = ImmutableList.builder();
     for (CoordinateAxis axis : classifier.getAxesUsed()) {
       GridAxis gaxis = gridAxes.get(axis.getFullName());
-      if (gaxis != null) { // TODO
-        axesb.add(Preconditions.checkNotNull(gaxis));
+      if (gaxis == null) {
+        System.out.printf("HEY %s%n", axis.getFullName());
       }
+      axesb.add(Preconditions.checkNotNull(gaxis));
     }
     this.axes = axesb.build();
     List<String> names = axes.stream().map(a -> a.getName()).collect(Collectors.toList());

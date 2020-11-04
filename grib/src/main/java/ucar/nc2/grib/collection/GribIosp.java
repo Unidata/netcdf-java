@@ -25,11 +25,8 @@ import java.util.Formatter;
 import java.util.List;
 
 /**
- * Grib Collection IOSP, version 2. Handles both collections and single GRIB files. Immutable after
- * open() is called.
- *
- * @author caron
- * @since 4/6/11
+ * Grib Collection IOSP. Handles both collections and single GRIB files.
+ * Immutable after open() is called.
  */
 public abstract class GribIosp extends AbstractIOServiceProvider {
   public static int debugIndexOnlyCount; // count number of data accesses

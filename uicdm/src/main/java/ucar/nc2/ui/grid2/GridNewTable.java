@@ -100,7 +100,7 @@ public class GridNewTable extends JPanel {
 
     jtable = dsTable.getJTable();
     PopupMenu dsPopup = new PopupMenu(jtable, "Options");
-    dsPopup.addAction("Show", new AbstractAction() {
+    dsPopup.addAction("Show GridDataset", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         DatasetBean bean = dsTable.getSelectedBean();
         infoTA.clear();
@@ -112,7 +112,7 @@ public class GridNewTable extends JPanel {
 
     jtable = covTable.getJTable();
     PopupMenu csPopup = new PopupMenu(jtable, "Options");
-    csPopup.addAction("Show", new AbstractAction() {
+    csPopup.addAction("Show Grid", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         GridBean vb = covTable.getSelectedBean();
         infoTA.clear();
@@ -124,11 +124,13 @@ public class GridNewTable extends JPanel {
 
     jtable = csysTable.getJTable();
     csPopup = new PopupMenu(jtable, "Options");
-    csPopup.addAction("Show", new AbstractAction() {
+    csPopup.addAction("Show GridCoordinateSystem", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         CoordSysBean bean = csysTable.getSelectedBean();
         infoTA.clear();
-        infoTA.appendLine(bean.gcs.toString());
+        Formatter f = new Formatter();
+        bean.gcs.show(f, false);
+        infoTA.appendLine(f.toString());
         infoTA.gotoTop();
         infoWindow.show();
       }
@@ -136,7 +138,7 @@ public class GridNewTable extends JPanel {
 
     jtable = axisTable.getJTable();
     csPopup = new PopupMenu(jtable, "Options");
-    csPopup.addAction("Show Axis", new AbstractAction() {
+    csPopup.addAction("Show GridAxis", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         AxisBean bean = axisTable.getSelectedBean();
         infoTA.clear();
@@ -398,7 +400,6 @@ public class GridNewTable extends JPanel {
   public static class AxisBean {
     GridAxis axis;
     String name, desc, units;
-    DataType dataType;
     AxisType axisType;
     long nvalues;
     boolean indepenent;
@@ -411,7 +412,6 @@ public class GridNewTable extends JPanel {
       this.axis = v;
 
       name = (v.getName());
-      dataType = (v.getDataType());
       axisType = (v.getAxisType());
       units = (v.getUnits());
       desc = (v.getDescription());
@@ -432,10 +432,6 @@ public class GridNewTable extends JPanel {
 
     public String getUnits() {
       return units;
-    }
-
-    public DataType getDataType() {
-      return dataType;
     }
 
     public String getSpacing() {

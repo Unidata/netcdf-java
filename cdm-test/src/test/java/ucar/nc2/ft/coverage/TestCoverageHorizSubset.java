@@ -176,7 +176,7 @@ public class TestCoverageHorizSubset {
       Assert.assertEquals("rank", 3, cs.getShape().length);
 
       LatLonRect bbox = LatLonRect.builder(40.0, -100.0, 10.0, 120.0).build();
-      checkLatLonSubset(gcs, coverage, bbox, new int[] {1, 21, 241});
+      checkLatLonSubset(gcs, coverage, bbox, new int[] {1, 61, 441});
     }
   }
 
@@ -275,12 +275,12 @@ public class TestCoverageHorizSubset {
     SubsetParams params = new SubsetParams().setLatLonBoundingBox(bbox).setTimePresent();
     GeoReferencedArray geo = coverage.readData(params);
     CoverageCoordSys gcs2 = geo.getCoordSysForData();
-    Assert.assertNotNull("CoordSysForData", gcs2);
+    assertThat(gcs2).isNotNull();
     System.out.printf(" data cs shape=%s%n", Arrays.toString(gcs2.getShape()));
     System.out.printf(" data shape=%s%n", Arrays.toString(geo.getData().getShape()));
 
-    Assert.assertArrayEquals("CoordSys=Data shape", gcs2.getShape(), geo.getData().getShape());
-    Assert.assertArrayEquals("expected data shape", expectedShape, geo.getData().getShape());
+    assertThat(gcs2.getShape()).isEqualTo(expectedShape);
+    assertThat(geo.getData().getShape()).isEqualTo(expectedShape);
   }
 
 }

@@ -17,9 +17,9 @@ public interface GridDataset extends Closeable {
 
   ImmutableList<GridCoordinateSystem> getCoordSystems();
 
-  Iterable<GridAxis> getCoordAxes();
+  ImmutableList<GridAxis> getCoordAxes();
 
-  Iterable<Grid> getGrids();
+  ImmutableList<Grid> getGrids();
 
   Optional<Grid> findGrid(String name);
 
