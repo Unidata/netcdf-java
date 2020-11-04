@@ -1,7 +1,8 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
+
 package ucar.nc2.dataset;
 
 import ucar.ma2.Array;
@@ -723,7 +724,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
       names[count++] = iter.next();
   }
 
-  private void readValues() {
+  protected void readValues() {
     Array data;
     try {
       // setUseNaNs(false); // missing values not allowed LOOK not true for point data !!
@@ -853,13 +854,13 @@ public class CoordinateAxis1D extends CoordinateAxis {
 
   ////////////////////////////////////////////////////////////////////////////////////////////
   // These are all calculated, I think?
-  private boolean wasRead; // have the data values been read
+  protected boolean wasRead; // have the data values been read
   private boolean wasBoundsDone; // have we created the bounds arrays if exists ?
   private boolean isInterval; // is this an interval coordinates - then should use bounds
   private boolean isAscending;
 
   // read in on doRead()
-  private double[] coords; // coordinate values, must be between edges
+  protected double[] coords; // coordinate values, must be between edges
   private String[] names; // only set if String or char values
 
   // defer making until asked, use makeBounds()
