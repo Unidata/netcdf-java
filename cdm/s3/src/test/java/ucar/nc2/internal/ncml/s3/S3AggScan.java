@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.AfterClass;
@@ -27,13 +26,8 @@ import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CF;
-import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.nc2.ft2.coverage.adapter.DtCoverage;
-import ucar.nc2.ft2.coverage.adapter.DtCoverageCS;
-import ucar.nc2.ft2.coverage.adapter.DtCoverageDataset;
-import ucar.nc2.ft2.coverage.adapter.DtCoverageDataset.Gridset;
 import ucar.unidata.io.s3.S3TestsCommon;
 
 public class S3AggScan {
@@ -102,32 +96,6 @@ public class S3AggScan {
   public void testAggJoinNewRegExpOpenNcml() throws IOException, InvalidRangeException {
     for (String ncmlFile : scanWithRegExp) {
       checkOpenNcmlFromString(ncmlFile, NcmlTestsCommon.expectedNumberOfTimesInAggRegExp);
-    }
-  }
-
-  @Test
-  public void testAggNewOpenAsDtCoverage() throws IOException {
-    String ncmlFile = NcmlTestsCommon.joinNewNcmlScanEnhanced;
-    logger.info("Opening {}", ncmlFile);
-    DtCoverageDataset cds = DtCoverageDataset.open(ncmlFile);
-    checkDtCoverage(cds);
-  }
-
-  @Test
-  public void testAggNewOpenNcmlAsDtCoverage() throws IOException {
-    String ncml;
-    String ncmlFile = NcmlTestsCommon.joinNewNcmlScanEnhanced;
-    logger.info("Reading {}", ncmlFile);
-    try (Stream<String> ncmlStream = Files.lines(Paths.get(ncmlFile))) {
-      ncml = ncmlStream.collect(Collectors.joining());
-    }
-    assertThat(ncml).isNotNull();
-
-    logger.debug("...opening contents of {} as string", ncmlFile);
-    try (NetcdfDataset ncd = NetcdfDatasets.openNcmlDataset(new StringReader(ncml), ncmlFile, null)) {
-      logger.debug("...opening NetcdfDataset as DtCoverageDataset");
-      DtCoverageDataset cds = new DtCoverageDataset(ncd);
-      checkDtCoverage(cds);
     }
   }
 
@@ -205,19 +173,6 @@ public class S3AggScan {
     try (NetcdfDataset ncd = NetcdfDatasets.openNcmlDataset(new StringReader(ncml), ncmlFile, null)) {
       expectedTimeCheck(ncd, expectedNumberOfTimes, timeVarName);
     }
-  }
-
-  private void checkDtCoverage(DtCoverageDataset cds) {
-    assertThat(cds).isNotNull();
-    List<DtCoverage> grids = cds.getGrids();
-    // two agg variables
-    assertThat(grids.size()).isEqualTo(2);
-    List<Gridset> gridSets = cds.getGridsets();
-    // one coordinate system
-    assertThat(gridSets.size()).isEqualTo(1);
-    DtCoverageCS coordSys = gridSets.get(0).getGeoCoordSystem();
-    CoordinateAxis timeAxis = coordSys.getTimeAxis();
-    assertThat(timeAxis.getSize()).isEqualTo(NcmlTestsCommon.expectedNumberOfTimesInAgg);
   }
 
   @AfterClass
