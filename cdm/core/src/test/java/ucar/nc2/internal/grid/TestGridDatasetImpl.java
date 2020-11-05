@@ -14,6 +14,7 @@ import java.util.Optional;
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.fail;
 
+/** Test {@link GridDatasetImpl} */
 public class TestGridDatasetImpl {
 
   @Test

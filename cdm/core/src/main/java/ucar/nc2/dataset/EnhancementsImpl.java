@@ -60,12 +60,15 @@ class EnhancementsImpl {
     return (coordSys == null) ? ImmutableList.of() : coordSys;
   }
 
-  /** Backdoor, do not use. */
+  /** @deprecated do not use */
+  @Deprecated
   void setCoordinateSystem(ImmutableList<CoordinateSystem> cs) {
     this.coordSys = cs;
   }
 
-  public void removeCoordinateSystem(ucar.nc2.dataset.CoordinateSystem p0) {
+  /** @deprecated do not use */
+  @Deprecated
+  public void removeCoordinateSystem(CoordinateSystem p0) {
     if (coordSys != null)
       coordSys.remove(p0);
   }

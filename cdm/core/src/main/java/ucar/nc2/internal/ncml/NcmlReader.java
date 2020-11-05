@@ -216,8 +216,8 @@ public class NcmlReader {
   }
 
   /**
-   * Use NCML to modify the referenced dataset, create a new dataset with the merged info Used to wrap each dataset of
-   * an aggregation before its aggregated.
+   * Use NCML to modify the referenced dataset, create a new dataset with the merged info.
+   * Used to wrap each dataset of an aggregation before its aggregated.
    *
    * @param ref referenced dataset
    * @param ncmlElem parent element - usually the aggregation element of the ncml

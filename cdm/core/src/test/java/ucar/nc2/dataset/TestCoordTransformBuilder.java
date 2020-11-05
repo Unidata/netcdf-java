@@ -19,10 +19,10 @@ import org.slf4j.LoggerFactory;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
-/** Test CoordTransformBuilders */
+/** Test {@link CoordinateTransform.Builder} */
 @Category(NeedsCdmUnitTest.class)
 @RunWith(Parameterized.class)
-public class TestCoordTransformBuilders {
+public class TestCoordTransformBuilder {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   private static String convDir = TestDir.cdmUnitTestDir + "/conventions";
   private static List<String> otherDirs =
@@ -44,7 +44,7 @@ public class TestCoordTransformBuilders {
 
   private String fileLocation;
 
-  public TestCoordTransformBuilders(String filename) {
+  public TestCoordTransformBuilder(String filename) {
     this.fileLocation = "file:" + filename;
   }
 

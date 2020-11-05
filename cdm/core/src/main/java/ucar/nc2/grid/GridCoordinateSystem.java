@@ -13,16 +13,7 @@ import ucar.nc2.dataset.CoordinateTransform;
 
 import java.util.*;
 
-/**
- * A Coordinate System for gridded data. Assume:
- * <ul>
- * <li>Has one dimensional X, Y, Z, T, E axes.
- * <li>T is CoordinateAxisTime.
- * <li>An optional HorizontalTransform can provide a lat and lon coordinate that may be 1 or 2 dimensional.
- * <li>An optional VerticalTransform can provide a height or pressure coordinate that may be 1-4 dimensional.
- * </ul>
- * <p/>
- */
+/** A Coordinate System for gridded data. */
 public interface GridCoordinateSystem {
 
   /** The name of the Grid Coordinate System. */
@@ -66,9 +57,13 @@ public interface GridCoordinateSystem {
   /** Get the Time Offset axis. */
   GridAxis1D getTimeOffsetAxis();
 
-  /** Get the Projection that performs the transform math. */
+  /** Get the horizontal Projection, if any. */
   @Nullable
   ucar.unidata.geoloc.Projection getProjection();
+
+  /** Get the Vertical Transform for this coordinate system, if any. */
+  @Nullable
+  ucar.nc2.dataset.VerticalCT getVerticalCT();
 
   /** Does this use lat/lon horizontal axes? */
   boolean isLatLon();

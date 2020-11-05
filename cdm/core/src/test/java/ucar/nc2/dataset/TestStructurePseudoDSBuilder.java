@@ -8,6 +8,7 @@ import ucar.ma2.DataType;
 import ucar.nc2.Variable;
 import ucar.nc2.internal.dataset.StructurePseudoDS;
 
+/** Test {@link StructurePseudoDS.Builder} */
 public class TestStructurePseudoDSBuilder {
 
   @Test

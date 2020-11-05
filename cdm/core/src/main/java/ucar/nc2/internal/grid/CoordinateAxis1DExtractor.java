@@ -13,7 +13,7 @@ import ucar.nc2.dataset.VariableDS;
 import java.io.IOException;
 
 /**
- * This extracts te coordinate values from a scalar or 1-d CoordinateAxis.
+ * This extracts coordinate values from a scalar or 1-d CoordinateAxis.
  * Previously this was done in CoordinateAxis1D.
  */
 public class CoordinateAxis1DExtractor {

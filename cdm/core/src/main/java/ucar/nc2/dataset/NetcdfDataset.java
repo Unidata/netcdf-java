@@ -12,7 +12,6 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.internal.dataset.CoordinatesHelper;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.*;
 
 /**
@@ -401,10 +400,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   // used by NcMLReader for NcML without a referenced dataset
 
   /**
-   * A NetcdfDataset usually wraps a NetcdfFile, where the actual I/O happens.
-   * This is called the "referenced file". CAUTION : this may have been modified in ways that make it
-   * unsuitable for general use.
-   *
    * @return underlying NetcdfFile, or null if none.
    * @deprecated Do not use
    */
@@ -413,27 +408,10 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     return orgFile;
   }
 
-  /**
-   * Set underlying file. CAUTION - normally only done through the constructor.
-   *
-   * @param ncfile underlying "referenced file"
-   * @deprecated Use NetcdfDataset.builder()
-   */
-  @Deprecated
-  public void setReferencedFile(NetcdfFile ncfile) {
-    orgFile = ncfile;
-  }
-
-  protected String toStringDebug(Object o) {
-    return "";
-  }
-
   ////////////////////////////////////////////////////////////////////
   // debugging
 
-  /**
-   * Show debug / underlying implementation details
-   */
+  /** Show debug / underlying implementation details */
   @Override
   public void getDetailInfo(Formatter f) {
     f.format("NetcdfDataset location= %s%n", getLocation());
@@ -459,55 +437,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       f.format("%nReferenced File:%n");
       f.format("%s", orgFile.getDetailInfo());
     }
-  }
-
-  private void dumpClasses(Group g, PrintWriter out) {
-
-    out.println("Dimensions:");
-    for (Dimension ds : g.getDimensions()) {
-      out.println("  " + ds.getShortName() + " " + ds.getClass().getName());
-    }
-
-    out.println("Atributes:");
-    for (Attribute a : g.attributes()) {
-      out.println("  " + a.getShortName() + " " + a.getClass().getName());
-    }
-
-    out.println("Variables:");
-    dumpVariables(g.getVariables(), out);
-
-    out.println("Groups:");
-    for (Group nested : g.getGroups()) {
-      out.println("  " + nested.getFullName() + " " + nested.getClass().getName());
-      dumpClasses(nested, out);
-    }
-  }
-
-  private void dumpVariables(List<Variable> vars, PrintWriter out) {
-    for (Variable v : vars) {
-      out.print("  " + v.getFullName() + " " + v.getClass().getName()); // +" "+Integer.toHexString(v.hashCode()));
-      if (v instanceof CoordinateAxis)
-        out.println("  " + ((CoordinateAxis) v).getAxisType());
-      else
-        out.println();
-
-      if (v instanceof Structure)
-        dumpVariables(((Structure) v).getVariables(), out);
-    }
-  }
-
-  /**
-   * Debugging
-   *
-   * @param out write here
-   * @param ncd info about this
-   * @deprecated do not use
-   */
-  @Deprecated
-  public static void debugDump(PrintWriter out, NetcdfDataset ncd) {
-    String referencedLocation = ncd.orgFile == null ? "(null)" : ncd.orgFile.getLocation();
-    out.println("\nNetcdfDataset dump = " + ncd.getLocation() + " url= " + referencedLocation + "\n");
-    ncd.dumpClasses(ncd.getRootGroup(), out);
   }
 
   @Override
@@ -538,27 +467,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     return "N/A";
   }
 
-  /** @deprecated do not use */
-  @Deprecated
-  public void check(Formatter f) {
-    for (Variable v : getVariables()) {
-      VariableDS vds = (VariableDS) v;
-      if (vds.getOriginalDataType() != vds.getDataType()) {
-        f.format("Variable %s has type %s, org = %s%n", vds.getFullName(), vds.getOriginalDataType(),
-            vds.getDataType());
-      }
-
-      Variable orgVar = vds.getOriginalVariable();
-      if (orgVar != null) {
-        if (orgVar.getRank() != vds.getRank())
-          f.format("Variable %s has rank %d, org = %d%n", vds.getFullName(), vds.getRank(), orgVar.getRank());
-      }
-    }
-  }
-
   ////////////////////////////////////////////////////////////////////////////////////////////
   // TODO make these final and immutable in 6.
-  private NetcdfFile orgFile; // can be null in Ncml
+  private @Nullable NetcdfFile orgFile; // can be null in Ncml
   private List<CoordinateAxis> coordAxes = new ArrayList<>();
   private List<CoordinateSystem> coordSys = new ArrayList<>();
   private List<CoordinateTransform> coordTransforms = new ArrayList<>();

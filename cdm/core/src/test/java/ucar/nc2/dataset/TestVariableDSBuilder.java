@@ -18,7 +18,7 @@ import ucar.nc2.Group;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
 
-/** Test VariableDS builders */
+/** Test {@link VariableDS.Builder} */
 public class TestVariableDSBuilder {
 
   @Test

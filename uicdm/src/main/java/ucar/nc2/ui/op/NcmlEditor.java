@@ -10,9 +10,10 @@ import org.bounce.text.ScrollableEditorPanel;
 import org.bounce.text.xml.XMLEditorKit;
 import org.bounce.text.xml.XMLStyleConstants;
 import org.jdom2.Element;
+import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.nc2.ui.ToolsUI;
+import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.ui.dialog.NetcdfOutputChooser;
 import ucar.nc2.write.NcmlWriter;
 import ucar.nc2.write.NetcdfCopier;
@@ -345,7 +346,19 @@ public class NcmlEditor extends JPanel {
       return;
     }
     try (NetcdfDataset ncd = NetcdfDatasets.openDataset(ncmlLocation)) {
-      ncd.check(f);
+      for (Variable v : ncd.getVariables()) {
+        VariableDS vds = (VariableDS) v;
+        if (vds.getOriginalDataType() != vds.getDataType()) {
+          f.format("Variable %s has type %s, org = %s%n", vds.getFullName(), vds.getOriginalDataType(),
+              vds.getDataType());
+        }
+
+        Variable orgVar = vds.getOriginalVariable();
+        if (orgVar != null) {
+          if (orgVar.getRank() != vds.getRank())
+            f.format("Variable %s has rank %d, org = %d%n", vds.getFullName(), vds.getRank(), orgVar.getRank());
+        }
+      }
     } catch (IOException ioe) {
       JOptionPane.showMessageDialog(this, "ERROR: " + ioe.getMessage());
       ioe.printStackTrace();

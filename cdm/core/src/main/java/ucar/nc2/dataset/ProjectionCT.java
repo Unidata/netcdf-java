@@ -20,7 +20,7 @@ public class ProjectionCT extends CoordinateTransform {
    * 
    * @param name name of transform, must be unique within the NcML.
    * @param authority naming authority.
-   * @param proj projection function. TODO will be Projection in ver6.
+   * @param proj projection function.
    */
   public ProjectionCT(String name, String authority, Projection proj) {
     super(name, authority, TransformType.Projection, proj.getProjectionParameters());
@@ -38,6 +38,8 @@ public class ProjectionCT extends CoordinateTransform {
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////
+  // TODO: No one needs the builder?
+
   private final Projection projection;
 
   protected ProjectionCT(Builder<?> builder, NetcdfDataset ncd) {

@@ -138,7 +138,7 @@ public class CoordinateAxis extends VariableDS {
 
   ////////////////////////////////
 
-  private MAMath.MinMax minmax;
+  private MAMath.MinMax minmax; // remove
 
   // TODO make Immutable in ver7
   private void init() {
@@ -191,31 +191,6 @@ public class CoordinateAxis extends VariableDS {
       buf.format("%-10s", axisType.toString());
     }
     buf.format("%s", getDescription());
-
-    /*
-     * if (isNumeric) {
-     * boolean debugCoords = ucar.util.prefs.ui.Debug.isSet("Dataset/showCoordValues");
-     * int ndigits = debugCoords ? 9 : 4;
-     * for (int i=0; i< getNumElements(); i++) {
-     * buf.append(Format.d(getCoordValue(i), ndigits));
-     * buf.append(" ");
-     * }
-     * if (debugCoords) {
-     * buf.append("\n      ");
-     * for (int i=0; i<=getNumElements(); i++) {
-     * buf.append(Format.d(getCoordEdge(i), ndigits));
-     * buf.append(" ");
-     * }
-     * }
-     * } else {
-     * for (int i=0; i< getNumElements(); i++) {
-     * buf.append(getCoordName(i));
-     * buf.append(" ");
-     * }
-     * }
-     */
-
-    // buf.append("\n");
   }
 
   /** Standard sort on Coordinate Axes */
@@ -301,11 +276,11 @@ public class CoordinateAxis extends VariableDS {
 
   ////////////////////////////////////////////////////////////////////////////////////////////
   // TODO make these final and immutable in 6.
-  protected final NetcdfDataset ncd; // needed?
+  protected final NetcdfDataset ncd; // remove
   protected final AxisType axisType;
-  protected final String positive;
-  protected final String boundaryRef;
-  protected boolean isContiguous;
+  protected final String positive; // remove
+  protected final String boundaryRef; // remove
+  protected boolean isContiguous; // remove
 
   protected CoordinateAxis(Builder<?> builder, Group parentGroup) {
     super(builder, parentGroup);

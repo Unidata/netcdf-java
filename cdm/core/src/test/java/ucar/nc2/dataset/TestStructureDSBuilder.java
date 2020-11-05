@@ -9,6 +9,7 @@ import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
 
+/** Test {@link StructureDS.Builder} */
 public class TestStructureDSBuilder {
 
   @Test

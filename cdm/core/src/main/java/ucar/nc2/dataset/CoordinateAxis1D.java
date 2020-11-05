@@ -144,7 +144,6 @@ public class CoordinateAxis1D extends CoordinateAxis {
     if (!isNumeric())
       throw new UnsupportedOperationException("CoordinateAxis1D.getCoordValue() on non-numeric");
     doRead();
-
     return Math.min(coords[0], coords[coords.length - 1]);
   }
 
@@ -153,7 +152,6 @@ public class CoordinateAxis1D extends CoordinateAxis {
     if (!isNumeric())
       throw new UnsupportedOperationException("CoordinateAxis1D.getCoordValue() on non-numeric");
     doRead();
-
     return Math.max(coords[0], coords[coords.length - 1]);
   }
 
@@ -163,7 +161,6 @@ public class CoordinateAxis1D extends CoordinateAxis {
     if (!isNumeric())
       throw new UnsupportedOperationException("CoordinateAxis1D.getCoordValue() on non-numeric");
     doRead();
-
     return Math.min(edge[0], edge[edge.length - 1]);
   }
 
@@ -173,7 +170,6 @@ public class CoordinateAxis1D extends CoordinateAxis {
     if (!isNumeric())
       throw new UnsupportedOperationException("CoordinateAxis1D.getCoordValue() on non-numeric");
     doRead();
-
     return Math.max(edge[0], edge[edge.length - 1]);
   }
 

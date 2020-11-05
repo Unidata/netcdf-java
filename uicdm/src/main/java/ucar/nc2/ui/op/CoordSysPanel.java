@@ -5,6 +5,8 @@
 
 package ucar.nc2.ui.op;
 
+import ucar.nc2.*;
+import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.ui.OpPanel;
@@ -18,6 +20,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
+import java.util.List;
 import javax.swing.AbstractButton;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
@@ -47,14 +50,53 @@ public class CoordSysPanel extends OpPanel {
     JButton dsButton = new JButton("Object dump");
     dsButton.addActionListener(e -> {
       if (ds != null) {
-        StringWriter sw = new StringWriter(5000);
-        NetcdfDataset.debugDump(new PrintWriter(sw), ds);
-        detailTA.setText(sw.toString());
+        Formatter f = new Formatter();
+        debugDump(ds, f);
+        detailTA.setText(f.toString());
         detailTA.gotoTop();
         detailWindow.show();
       }
     });
     buttPanel.add(dsButton);
+  }
+
+  private void debugDump(NetcdfDataset ncd, Formatter f) {
+    ncd.getDetailInfo(f);
+    dumpClasses(ncd.getRootGroup(), f);
+  }
+
+  private void dumpClasses(Group g, Formatter out) {
+    out.format("Dimensions:%n");
+    for (Dimension ds : g.getDimensions()) {
+      out.format("  %s %s%n", ds.getShortName(), ds.getClass().getName());
+    }
+
+    out.format("Attributes:%n");
+    for (Attribute a : g.attributes()) {
+      out.format("  " + a.getShortName() + " " + a.getClass().getName());
+    }
+
+    out.format("Variables:%n");
+    dumpVariables(g.getVariables(), out);
+
+    out.format("Groups:%n");
+    for (Group nested : g.getGroups()) {
+      out.format("  %s %s%n", nested.getFullName(), nested.getClass().getName());
+      dumpClasses(nested, out);
+    }
+  }
+
+  private void dumpVariables(List<Variable> vars, Formatter out) {
+    for (Variable v : vars) {
+      out.format("  %s %s", v.getFullName(), v.getClass().getName()); // +" "+Integer.toHexString(v.hashCode()));
+      if (v instanceof CoordinateAxis) {
+        out.format("  %s", ((CoordinateAxis) v).getAxisType());
+      }
+      out.format("%n");
+      if (v instanceof Structure) {
+        dumpVariables(((Structure) v).getVariables(), out);
+      }
+    }
   }
 
   @Override

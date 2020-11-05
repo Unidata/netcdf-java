@@ -34,11 +34,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * test vertical transforms.
- *
- * @author caron
- */
+/** Test vertical transforms. */
 @Category(NeedsCdmUnitTest.class)
 public class TestTransforms {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());

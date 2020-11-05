@@ -71,6 +71,8 @@ public class CoordinatesHelper {
         .filter(Objects::nonNull).collect(ImmutableList.toImmutableList());
   }
 
+  // LOOK this assumes that the CoordinateAxis have been added to the NetcdfDataset
+  // and appears to ignore builder.axes
   private void addAxes(Group group, List<CoordinateAxis> axes) {
     for (Variable v : group.getVariables()) {
       if (v instanceof CoordinateAxis) {

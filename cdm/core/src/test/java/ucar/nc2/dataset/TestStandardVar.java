@@ -20,10 +20,11 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.Formatter;
 
+/** Test basics of enhanced {@link NetcdfDataset} */
 public class TestStandardVar {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  private String filename = TestDir.cdmLocalTestDataDir + "standardVar.nc";
+  private final String filename = TestDir.cdmLocalTestDataDir + "standardVar.nc";
 
   @Test
   public void testWriteStandardVar() throws Exception {

@@ -20,8 +20,10 @@ import java.util.Formatter;
 
 /**
  * Abstract superclass for implementations of HorizTransformBuilderIF and VertTransformBuilderIF
- * LOOK could just be static helper class?
+ * 
+ * @deprecated will be a static helper class in ver7.
  */
+@Deprecated
 public abstract class AbstractTransformBuilder {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(AbstractTransformBuilder.class);
 
