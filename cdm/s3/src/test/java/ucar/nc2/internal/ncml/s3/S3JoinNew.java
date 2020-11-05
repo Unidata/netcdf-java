@@ -106,37 +106,35 @@ public class S3JoinNew {
         NetcdfDataset ncdLast = NetcdfDatasets.openDataset(NcmlTestsCommon.lastObjectLocation);
         NetcdfDataset ncdMid = NetcdfDatasets.openDataset(NcmlTestsCommon.sixthObjectLocation)) {
 
-      Variable varAggDs = ncdAgg.findVariable(NcmlTestsCommon.dataVarName);
       Variable varFirstDs = ncdFirst.findVariable(NcmlTestsCommon.dataVarName);
       Variable varMidDs = ncdMid.findVariable(NcmlTestsCommon.dataVarName);
       Variable varLastDs = ncdLast.findVariable(NcmlTestsCommon.dataVarName);
 
-      Array dataAggFirst = varAggDs.read("0,:,:");
-      Array dataAggMid = varAggDs.read((NcmlTestsCommon.expectedNumberOfTimesInAgg / 2) - 1 + ",:,:");
-      Array dataAggLast = varAggDs.read(NcmlTestsCommon.expectedNumberOfTimesInAgg - 1 + ",:,:");
+      Variable varAggDs = ncdAgg.findVariable(NcmlTestsCommon.dataVarName);
+      String aggFirstSpec = "0,:,:";
+      String aggMidSpec = (NcmlTestsCommon.expectedNumberOfTimesInAgg / 2) - 1 + ",:,:";
+      String aggLastSpec = NcmlTestsCommon.expectedNumberOfTimesInAgg - 1 + ",:,:";
 
-      Array dataFirst = varFirstDs.read();
-      Array dataMid = varMidDs.read();
-      Array dataLast = varLastDs.read();
-
-      // same total number of elements?
-      assertThat(dataAggFirst.getSize()).isEqualTo(dataFirst.getSize());
-      assertThat(dataAggMid.getSize()).isEqualTo(dataMid.getSize());
-      assertThat(dataAggLast.getSize()).isEqualTo(dataLast.getSize());
-
-      // same shapes (agg array must be reduced to get rid of the single time dimension)
-      assertThat(dataAggFirst.getShape()).isNotEqualTo(dataFirst.getShape());
-      assertThat(dataAggMid.getShape()).isNotEqualTo(dataMid.getShape());
-      assertThat(dataAggLast.getShape()).isNotEqualTo(dataLast.getShape());
-      assertThat(dataAggFirst.reduce().getShape()).isEqualTo(dataFirst.getShape());
-      assertThat(dataAggMid.reduce().getShape()).isEqualTo(dataMid.getShape());
-      assertThat(dataAggLast.reduce().getShape()).isEqualTo(dataLast.getShape());
-
-      // compare data arrays
-      assertThat(compareData(NcmlTestsCommon.dataVarName, dataAggFirst.reduce(), dataFirst)).isTrue();
-      assertThat(compareData(NcmlTestsCommon.dataVarName, dataAggMid.reduce(), dataMid)).isTrue();
-      assertThat(compareData(NcmlTestsCommon.dataVarName, dataAggLast.reduce(), dataLast)).isTrue();
+      compare(varFirstDs, varAggDs, aggFirstSpec);
+      compare(varMidDs, varAggDs, aggMidSpec);
+      compare(varLastDs, varAggDs, aggLastSpec);
     }
+  }
+
+  private void compare(Variable single, Variable agg, String aggSectionSpec) throws IOException, InvalidRangeException {
+    // read data to compare
+    Array dataSingle = single.read();
+    Array dataAgg = agg.read(aggSectionSpec);
+
+    // same total number of elements?
+    assertThat(dataSingle.getSize()).isEqualTo(dataAgg.getSize());
+
+    // same shapes (agg array must be reduced to get rid of the single time dimension)
+    assertThat(dataAgg.getShape()).isNotEqualTo(dataSingle.getShape());
+    assertThat(dataAgg.reduce().getShape()).isEqualTo(dataSingle.getShape());
+
+    // compare data arrays
+    assertThat(compareData(NcmlTestsCommon.dataVarName, dataAgg.reduce(), dataSingle)).isTrue();
   }
 
   @AfterClass
