@@ -392,7 +392,7 @@ public class VariableDS extends Variable implements EnhanceScaleMissingUnsigned,
 
   @Override
   public ImmutableList<CoordinateSystem> getCoordinateSystems() {
-    return enhanceProxy.getCoordinateSystems();
+    return this.coordinateSystems == null ? ImmutableList.of() : this.coordinateSystems;
   }
 
   //////////////////////////////////////////// EnhanceScaleMissingUnsigned ////////////////////////////////////////////
@@ -572,10 +572,7 @@ public class VariableDS extends Variable implements EnhanceScaleMissingUnsigned,
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////
-  // TODO remove in version 6.
   private final EnhancementsImpl enhanceProxy;
-  private final List<String> coordSysNames;
-
   private final EnhanceScaleMissingUnsignedImpl scaleMissingUnsignedProxy;
   private final Set<Enhance> enhanceMode; // The set of enhancements that were made.
   private final DataEnhancer dataEnhancer;
@@ -584,6 +581,9 @@ public class VariableDS extends Variable implements EnhanceScaleMissingUnsigned,
   protected final DataType orgDataType; // keep separate for the case where there is no orgVar.
   protected final String orgName; // in case Variable was renamed, and we need to keep track of the original name
   final String orgFileTypeId; // the original fileTypeId.
+
+  // Not technically immutable because of this
+  private ImmutableList<CoordinateSystem> coordinateSystems;
 
   protected VariableDS(Builder<?> builder, Group parentGroup) {
     super(builder, parentGroup);
@@ -624,8 +624,6 @@ public class VariableDS extends Variable implements EnhanceScaleMissingUnsigned,
     }
 
     // We have to complete this after the NetcdfDataset is built.
-    this.coordSysNames = builder.coordSysNames;
-
     this.dataEnhancer = new DataEnhancer(this, this.scaleMissingUnsignedProxy);
   }
 
@@ -639,21 +637,15 @@ public class VariableDS extends Variable implements EnhanceScaleMissingUnsigned,
         .setOriginalFileTypeId(this.orgFileTypeId).setEnhanceMode(this.enhanceMode)
         .setUnits(this.enhanceProxy.getUnitsString()).setDesc(this.enhanceProxy.getDescription());
 
-    for (CoordinateSystem coordSys : this.enhanceProxy.getCoordinateSystems()) {
-      builder.addCoordinateSystemName(coordSys.getName());
-    }
-
     return (VariableDS.Builder<?>) super.addLocalFieldsToBuilder(builder);
   }
 
-  /** @deprecated do not use */
-  @Deprecated
+  // Not technically immutable because of this
   void setCoordinateSystems(CoordinatesHelper coords) {
-    ImmutableList.Builder<CoordinateSystem> sysBuilder = ImmutableList.builder();
-    for (String name : this.coordSysNames) {
-      coords.findCoordSystem(name).filter(cs -> cs.isCoordinateSystemFor(this)).ifPresent(sysBuilder::add);
+    if (this.coordinateSystems != null) {
+      throw new RuntimeException("Cant call twice");
     }
-    this.enhanceProxy.setCoordinateSystem(sysBuilder.build());
+    this.coordinateSystems = coords.makeCoordinateSystemsFor(this);
   }
 
   /** Get Builder for this class that allows subclassing. */
@@ -678,7 +670,6 @@ public class VariableDS extends Variable implements EnhanceScaleMissingUnsigned,
     String orgName; // in case Variable was renamed, and we need to keep track of the original name
     private String units;
     private String desc;
-    public List<String> coordSysNames = new ArrayList<>();
 
     private boolean invalidDataIsMissing = NetcdfDataset.invalidDataIsMissing;
     private boolean fillValueIsMissing = NetcdfDataset.fillValueIsMissing;
@@ -735,10 +726,6 @@ public class VariableDS extends Variable implements EnhanceScaleMissingUnsigned,
       return self();
     }
 
-    public void addCoordinateSystemName(String coordSysName) {
-      coordSysNames.add(coordSysName);
-    }
-
     public void setFillValueIsMissing(boolean b) {
       this.fillValueIsMissing = b;
     }
@@ -774,7 +761,6 @@ public class VariableDS extends Variable implements EnhanceScaleMissingUnsigned,
     public T copyFrom(VariableDS.Builder<?> builder) {
       super.copyFrom(builder);
 
-      builder.coordSysNames.forEach(this::addCoordinateSystemName);
       setDesc(builder.desc);
       setEnhanceMode(builder.enhanceMode);
       setFillValueIsMissing(builder.fillValueIsMissing);

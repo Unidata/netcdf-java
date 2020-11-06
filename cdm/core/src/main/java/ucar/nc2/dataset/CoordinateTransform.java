@@ -152,7 +152,6 @@ public abstract class CoordinateTransform implements Comparable<CoordinateTransf
   protected List<Parameter> params = new ArrayList<>();
   private AttributeContainerMutable attributeContainer;
 
-  // TODO no one using the builder ??
   protected CoordinateTransform(Builder<?> builder, NetcdfDataset ncd) {
     this.name = builder.name;
     this.authority = builder.authority;

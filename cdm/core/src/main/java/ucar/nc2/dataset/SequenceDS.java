@@ -20,7 +20,10 @@ import ucar.nc2.Variable;
 import ucar.nc2.dataset.StructureDataEnhancer.StructureDataIteratorEnhanced;
 import ucar.nc2.internal.dataset.SequenceArrayEnhancer;
 
+import javax.annotation.concurrent.Immutable;
+
 /** Enhanced sequence */
+@Immutable
 public class SequenceDS extends Sequence implements StructureEnhanced {
 
   @Override

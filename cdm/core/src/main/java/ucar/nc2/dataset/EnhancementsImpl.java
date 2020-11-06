@@ -5,21 +5,21 @@
 package ucar.nc2.dataset;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 
+import javax.annotation.concurrent.Immutable;
+
 /**
  * Implementation of Enhancements for coordinate systems and standard attribute handling.
  * Factored out so that it can be used as a 'mixin' in VariablesDS and StructureDS.
- * TODO make immutable
  */
+@Immutable
 class EnhancementsImpl {
   private final Variable forVar;
   private final String desc;
   private final String units;
-  private ImmutableList<CoordinateSystem> coordSys; // LOOK not immutable
 
   /**
    * Constructor.
@@ -48,29 +48,6 @@ class EnhancementsImpl {
    */
   public String getUnitsString() {
     return units;
-  }
-
-  /**
-   * Get the list of Coordinate Systems for this variable.
-   * Normally this is empty unless you use ucar.nc2.dataset.NetcdfDataset.
-   * 
-   * @return list of type ucar.nc2.dataset.CoordinateSystem; may be empty not null.
-   */
-  public ImmutableList<CoordinateSystem> getCoordinateSystems() {
-    return (coordSys == null) ? ImmutableList.of() : coordSys;
-  }
-
-  /** @deprecated do not use */
-  @Deprecated
-  void setCoordinateSystem(ImmutableList<CoordinateSystem> cs) {
-    this.coordSys = cs;
-  }
-
-  /** @deprecated do not use */
-  @Deprecated
-  public void removeCoordinateSystem(CoordinateSystem p0) {
-    if (coordSys != null)
-      coordSys.remove(p0);
   }
 
   /**

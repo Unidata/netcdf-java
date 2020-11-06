@@ -35,11 +35,9 @@ import ucar.unidata.util.Parameter;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
-/**
- * test projections
- *
- * @author caron
- */
+import static com.google.common.truth.Truth.assertThat;
+
+/** Test Horizontal projections. */
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
 public class TestProjections {
@@ -123,40 +121,39 @@ public class TestProjections {
 
   @Test
   public void testOneProjection() throws IOException {
-    logger.debug("Open= {}", filename);
+    System.out.printf("Open %s %n", filename);
     try (NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDatasets.openDataset(filename)) {
-
       Variable ctv = null;
       if (ctvName != null) {
         ctv = ncd.findVariable(ctvName);
-        assert ctv != null;
+        assertThat(ctv).isNotNull();
         logger.debug(" dump of ctv = {}", ctv);
       }
 
       VariableDS v = (VariableDS) ncd.findVariable(varName);
-      assert v != null;
+      assertThat(v).isNotNull();
 
       List<CoordinateSystem> cList = v.getCoordinateSystems();
-      assert cList != null;
-      assert cList.size() == 1;
+      assertThat(cList).isNotNull();
+      assertThat(cList.size()).isEqualTo(1);
       CoordinateSystem csys = cList.get(0);
 
       List<CoordinateTransform> pList = new ArrayList<>();
       List<CoordinateTransform> tList = csys.getCoordinateTransforms();
-      assert tList != null;
+      assertThat(tList).isNotNull();
       for (CoordinateTransform ct : tList) {
         if (ct.getTransformType() == TransformType.Projection)
           pList.add(ct);
       }
-      assert pList.size() == 1;
+      assertThat(pList.size()).isEqualTo(1);
       CoordinateTransform ct = pList.get(0);
-      assert ct.getTransformType() == TransformType.Projection;
-      assert ct instanceof ProjectionCT;
+      assertThat(ct.getTransformType()).isEqualTo(TransformType.Projection);
+      assertThat(ct instanceof ProjectionCT).isTrue();
 
       ProjectionCT vct = (ProjectionCT) ct;
       Projection proj = vct.getProjection();
-      assert proj != null;
-      assert projClass.isInstance(proj) : proj.getClass().getName();
+      assertThat(proj).isNotNull();
+      assertThat(projClass.isInstance(proj)).isTrue();
 
       if (projClass != RotatedPole.class) {
         logger.debug("Projection Parameters");
@@ -174,8 +171,8 @@ public class TestProjections {
           }
         }
 
-        assert found;
-        assert (radius > 10000) : radius; // meters
+        assertThat(found).isTrue();
+        assertThat(radius).isGreaterThan(10000);
       }
 
       VariableDS ctvSyn = CoordTransformFactory.makeDummyTransformVariable(ncd, ct);

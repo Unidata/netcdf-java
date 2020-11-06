@@ -224,13 +224,11 @@ public class NcmlReader {
    * @return new dataset with the merged info
    */
   public static NetcdfDataset.Builder<?> mergeNcml(NetcdfFile ref, @Nullable Element ncmlElem) {
-    NetcdfDataset.Builder<?> targetDS = new NetcdfDataset(ref.toBuilder()).toBuilder(); // no enhance
-
+    NetcdfDataset.Builder<?> targetDS = NetcdfDataset.builder().copyFrom(ref).setOrgFile(ref);
     if (ncmlElem != null) {
       NcmlReader reader = new NcmlReader();
       reader.readGroup(targetDS, null, null, ncmlElem);
     }
-
     return targetDS;
   }
 

@@ -7,6 +7,8 @@ package ucar.nc2.dataset;
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
 import javax.annotation.Nullable;
+
+import ucar.ma2.DataType;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
 import ucar.unidata.geoloc.*;
@@ -50,6 +52,7 @@ import ucar.unidata.util.StringUtil2;
  * @author caron
  * @see <a href="https://www.unidata.ucar.edu/software/netcdf-java/reference/CSObjectModel.html">
  *      Coordinate System Object Model</a>
+ *      TODO: make Immutable in ver7.
  */
 public class CoordinateSystem {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinateSystem.class);
@@ -443,29 +446,51 @@ public class CoordinateSystem {
 
   /**
    * Check if this Coordinate System is complete for v, ie if all its dimensions are also used by v.
-   * 
-   * @param v check for this variable
-   * @return true if all dimensions in V (including parents) are in the domain of this coordinate system.
-   * @deprecated do not use
+   * Exclude dimensions with length < 2.
    */
-  @Deprecated
   public boolean isComplete(Variable v) {
-    return Dimensions.isSubset(Dimensions.makeDimensionsAll(v), domain);
+    return isComplete(v.getDimensionSet(), domain);
+  }
+
+  public static boolean isComplete(Collection<Dimension> variableDomain, Collection<Dimension> csysDomain) {
+    for (Dimension d : csysDomain) {
+      if (!(variableDomain.contains(d)) && (d.getLength() > 1)) {
+        return false;
+      }
+    }
+    return true;
   }
 
   /**
-   * Check if this Coordinate System can be used for the given variable.
-   * A CoordinateAxis can only be part of a Variable's CoordinateSystem if the CoordinateAxis' set of Dimensions is a
+   * Check if this Coordinate System can be used for the given variable, by checking if each CoordinateAxis
+   * can be used for the Variable.
+   * A CoordinateAxis can only be used if the CoordinateAxis' set of Dimensions is a
    * subset of the Variable's set of Dimensions.
-   * So, a CoordinateSystem' set of Dimensions must be a subset of the Variable's set of Dimensions.
-   * 
-   * @param v check for this variable
-   * @return true if all dimensions in the domain of this coordinate system are in V (including parents).
-   * @deprecated do not use
    */
-  @Deprecated
   public boolean isCoordinateSystemFor(Variable v) {
-    return Dimensions.isSubset(domain, Dimensions.makeDimensionsAll(v));
+    HashSet<Dimension> varDims = new HashSet<>(v.getDimensions());
+    for (CoordinateAxis axis : getCoordinateAxes()) {
+      Group groupv = v.getParentGroup();
+      Group groupa = axis.getParentGroup();
+      Group commonGroup = groupv.commonParent(groupa);
+
+      // a CHAR variable must really be a STRING, so leave out the last (string length) dimension
+      int checkDims = axis.getRank();
+      if (axis.getDataType() == DataType.CHAR) {
+        checkDims--;
+      }
+      for (int i = 0; i < checkDims; i++) {
+        Dimension axisDim = axis.getDimension(i);
+        if (!varDims.contains(axisDim)) {
+          return false;
+        }
+        // The dimension must be in the common parent group
+        if (groupa != groupv && commonGroup.findDimension(axisDim) == null) {
+          return false;
+        }
+      }
+    }
+    return true;
   }
 
   /**
@@ -649,7 +674,7 @@ public class CoordinateSystem {
 
   ////////////////////////////////////////////////////////////////////////////////////////////
   // TODO make these private, final and immutable in ver7.
-  protected NetcdfDataset ds; // needed?
+  protected NetcdfDataset ds; // cant remove until dt.GridCoordSys can be removed
   protected List<CoordinateAxis> coordAxes = new ArrayList<>();
   protected List<CoordinateTransform> coordTrans = new ArrayList<>(); // TODO keep projection and vertical separate, and
                                                                       // only allow one?
@@ -663,7 +688,7 @@ public class CoordinateSystem {
   protected boolean isImplicit; // where set?
   protected String dataType; // Grid, Station, etc. where set?
 
-  protected CoordinateSystem(Builder<?> builder, NetcdfDataset ncd, List<CoordinateAxis> axes,
+  protected CoordinateSystem(Builder<?> builder, NetcdfDataset ncd, List<CoordinateAxis> axesAll,
       List<CoordinateTransform> allTransforms) {
     this.ds = ncd;
     this.isImplicit = builder.isImplicit;
@@ -671,7 +696,7 @@ public class CoordinateSystem {
     // find referenced coordinate axes
     List<CoordinateAxis> axesList = new ArrayList<>();
     for (String axisName : StringUtil2.split(builder.coordAxesNames)) {
-      Optional<CoordinateAxis> found = axes.stream().filter(a -> axisName.equals(a.getFullName())).findFirst();
+      Optional<CoordinateAxis> found = axesAll.stream().filter(a -> axisName.equals(a.getFullName())).findFirst();
       if (!found.isPresent()) {
         throw new RuntimeException("Cant find axis " + axisName);
       } else {
@@ -780,7 +805,7 @@ public class CoordinateSystem {
     /**
      * Build a CoordinateSystem
      * 
-     * @param ncd The containing dataset
+     * @param ncd The containing dataset, TODO remove after dt.GridCoordSys is deleted in ver7
      * @param axes Must contain all axes that are named in coordAxesNames
      * @param transforms Must contain all transforms that are named by addCoordinateTransformByName
      */

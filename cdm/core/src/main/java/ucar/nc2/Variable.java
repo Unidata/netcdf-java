@@ -120,11 +120,14 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    * Get the list of dimensions used by this variable.
    * The most slowly varying (leftmost for Java and C programmers) dimension is first.
    * For scalar variables, the list is empty.
-   *
-   * @return List<Dimension>, will be ImmutableList in ver 6.
    */
   public ImmutableList<Dimension> getDimensions() {
-    return ImmutableList.copyOf(dimensions);
+    return dimensions;
+  }
+
+  /** Get the variable's Dimensions as a Set. */
+  public ImmutableSet<Dimension> getDimensionSet() {
+    return ImmutableSet.copyOf(dimensions);
   }
 
   /**
@@ -229,10 +232,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    * @return Section containing List<Range>, one for each Dimension.
    */
   public Section getShapeAsSection() {
-    if (shapeAsSection == null) {
-      shapeAsSection = Dimensions.makeSectionFromDimensions(this.dimensions).build();
-    }
-    return shapeAsSection;
+    return this.shapeAsSection;
   }
 
   /** The short name of the variable */
@@ -1165,22 +1165,23 @@ public class Variable implements VariableSimpleIF, ProxyReader {
   private final Structure parentStructure;
   @Nullable
   protected final NetcdfFile ncfile; // Physical container for this Variable where the I/O happens.
-                                     // TODO may be null if Variable is self contained (eg NcML). really?
-  protected DataType dataType; // TODO not final, so VariableDS can override, is there a better solution?
+                                     // may be null if Variable is self contained (eg NcML).
   @Nullable
   private final EnumTypedef enumTypedef;
+  @Nullable
+  protected final Object spiObject;
+
   protected final ImmutableList<Dimension> dimensions;
   protected final AttributeContainer attributes;
   protected final ProxyReader proxyReader;
-  @Nullable
-  protected final Object spiObject;
 
   // TODO get rid of resetShape() so these can be final
   private Section shapeAsSection; // derived from the shape, immutable; used for every read, deferred creation
   protected int[] shape;
   protected boolean isVariableLength;
-  protected int elementSize;
+  protected int elementSize; // set in Structure
 
+  protected DataType dataType; // TODO not final, so VariableDS can override, is there a better solution?
   protected Cache cache;
 
   protected Variable(Builder<?> builder, Group parentGroup) {
@@ -1337,7 +1338,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     private String enumTypeName;
     private AutoGen autoGen;
     private Slicer slicer;
-    private AttributeContainerMutable attributes = new AttributeContainerMutable("");
+    private final AttributeContainerMutable attributes = new AttributeContainerMutable("");
 
     private boolean built;
 
@@ -1434,7 +1435,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     public Iterable<String> getDimensionNames() {
       if (dimensions.size() > 0) {
         // TODO test if this always works
-        return dimensions.stream().map(d -> d.getShortName()).filter(Objects::nonNull).collect(Collectors.toList());
+        return dimensions.stream().map(Dimension::getShortName).filter(Objects::nonNull).collect(Collectors.toList());
       }
       return ImmutableList.of();
     }
@@ -1456,6 +1457,10 @@ public class Variable implements VariableSimpleIF, ProxyReader {
 
     public ImmutableList<Dimension> getDimensions() {
       return ImmutableList.copyOf(this.dimensions);
+    }
+
+    public Dimension getDimension(int idx) {
+      return this.dimensions.get(idx);
     }
 
     // Get all dimension names, including parent structure

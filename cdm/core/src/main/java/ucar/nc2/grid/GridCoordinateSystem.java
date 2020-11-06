@@ -6,10 +6,8 @@ package ucar.nc2.grid;
 
 import javax.annotation.Nullable;
 
-import com.google.common.collect.ImmutableList;
 import ucar.ma2.RangeIterator;
 import ucar.nc2.Dimension;
-import ucar.nc2.dataset.CoordinateTransform;
 
 import java.util.*;
 
@@ -27,9 +25,6 @@ public interface GridCoordinateSystem {
 
   /** True if both X and Y axes are 1 dimensional and are regularly spaced. */
   boolean isRegularSpatial();
-
-  /** Get the Coordinate Transforms for this Coordinate System. */
-  ImmutableList<CoordinateTransform> getCoordTransforms();
 
   /** the GridAxes that constitute this Coordinate System */
   Iterable<GridAxis> getGridAxes();

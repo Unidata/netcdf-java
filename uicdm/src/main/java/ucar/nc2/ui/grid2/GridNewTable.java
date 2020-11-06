@@ -10,7 +10,7 @@ import com.google.common.collect.Iterables;
 import ucar.ma2.DataType;
 import ucar.nc2.Dimensions;
 import ucar.nc2.constants.AxisType;
-import ucar.nc2.dataset.CoordinateTransform;
+import ucar.nc2.dataset.VerticalCT;
 import ucar.nc2.grid.Grid;
 import ucar.nc2.grid.GridAxis;
 import ucar.nc2.grid.GridDataset;
@@ -21,6 +21,7 @@ import ucar.ui.widget.BAMutil;
 import ucar.ui.widget.IndependentWindow;
 import ucar.ui.widget.PopupMenu;
 import ucar.ui.widget.TextHistoryPane;
+import ucar.unidata.geoloc.Projection;
 import ucar.util.prefs.PreferencesExt;
 
 import javax.swing.*;
@@ -347,11 +348,16 @@ public class GridNewTable extends JPanel {
     public CoordSysBean(GridCoordinateSystem gcs) {
       this.gcs = gcs;
 
-      Formatter buff = new Formatter();
-      for (CoordinateTransform ct : gcs.getCoordTransforms()) {
-        buff.format("%s,", ct.getName());
+      Formatter f = new Formatter();
+      Projection p = gcs.getProjection();
+      if (p != null) {
+        f.format("%s ", p.getName());
       }
-      coordTrans = buff.toString();
+      VerticalCT vct = gcs.getVerticalCT();
+      if (vct != null) {
+        f.format("%s ", vct.getName());
+      }
+      coordTrans = f.toString();
 
       for (GridAxis axis : gcs.getGridAxes()) {
         if (axis.getDependenceType() == GridAxis.DependenceType.independent) {

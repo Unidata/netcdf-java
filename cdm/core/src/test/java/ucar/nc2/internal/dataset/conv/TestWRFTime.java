@@ -19,6 +19,8 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.*;
 import ucar.unidata.util.test.TestDir;
 
+import static com.google.common.truth.Truth.assertThat;
+
 public class TestWRFTime {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -44,21 +46,22 @@ public class TestWRFTime {
   @Test
   public void testWrfNoTimeVar() throws IOException {
     String tstFile = TestDir.cdmLocalTestDataDir + "wrf/WrfNoTimeVar.nc";
-    logger.info("Open '{}'", tstFile);
+    System.out.printf("Open %s%n", tstFile);
     Set<NetcdfDataset.Enhance> defaultEnhanceMode = NetcdfDataset.getDefaultEnhanceMode();
     EnumSet<NetcdfDataset.Enhance> enhanceMode = EnumSet.copyOf(defaultEnhanceMode);
     enhanceMode.add(NetcdfDataset.Enhance.IncompleteCoordSystems);
     DatasetUrl durl = DatasetUrl.findDatasetUrl(tstFile);
-    NetcdfDataset ncd = NetcdfDatasets.acquireDataset(durl, enhanceMode, null, null);
+    try (NetcdfDataset ncd = NetcdfDatasets.acquireDataset(durl, enhanceMode, null, null)) {
+      List<CoordinateSystem> cs = ncd.getCoordinateSystems();
+      assertThat(cs.size()).isEqualTo(1);
+      CoordinateSystem dsCs = cs.get(0);
+      assertThat(dsCs.getCoordinateAxes().size()).isEqualTo(2);
 
-    List<CoordinateSystem> cs = ncd.getCoordinateSystems();
-    Assert.assertEquals(1, cs.size());
-    CoordinateSystem dsCs = cs.get(0);
-    Assert.assertEquals(2, dsCs.getCoordinateAxes().size());
-
-    VariableDS var = (VariableDS) ncd.findVariable("T2");
-    List<CoordinateSystem> varCs = var.getCoordinateSystems();
-    Assert.assertEquals(1, varCs.size());
-    Assert.assertEquals(dsCs, varCs.get(0));
+      VariableDS var = (VariableDS) ncd.findVariable("T2");
+      assertThat(var).isNotNull();
+      List<CoordinateSystem> varCs = var.getCoordinateSystems();
+      assertThat(varCs.size()).isEqualTo(1);
+      assertThat(dsCs).isEqualTo(varCs.get(0));
+    }
   }
 }

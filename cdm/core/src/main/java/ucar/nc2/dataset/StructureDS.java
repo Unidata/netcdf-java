@@ -7,14 +7,18 @@ package ucar.nc2.dataset;
 
 import com.google.common.collect.ImmutableList;
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
+
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.internal.dataset.CoordinatesHelper;
 import ucar.nc2.internal.dataset.StructureDataArrayEnhancer;
 import ucar.nc2.util.CancelTask;
 import ucar.ma2.*;
 import java.io.IOException;
 
 /** An "enhanced" Structure. */
+@Immutable
 public class StructureDS extends ucar.nc2.Structure implements StructureEnhanced {
 
   /** A StructureDS may wrap another Structure. */
@@ -115,8 +119,9 @@ public class StructureDS extends ucar.nc2.Structure implements StructureEnhanced
     return enhancer.enhance();
   }
 
+  @Override
   public ImmutableList<CoordinateSystem> getCoordinateSystems() {
-    return proxy.getCoordinateSystems();
+    return this.coordinateSystems == null ? ImmutableList.of() : this.coordinateSystems;
   }
 
   public java.lang.String getDescription() {
@@ -127,10 +132,21 @@ public class StructureDS extends ucar.nc2.Structure implements StructureEnhanced
     return proxy.getUnitsString();
   }
 
+  // Not technically immutable because of this
+  void setCoordinateSystems(CoordinatesHelper coords) {
+    if (this.coordinateSystems != null) {
+      throw new RuntimeException("Cant call twice");
+    }
+    this.coordinateSystems = coords.makeCoordinateSystemsFor(this);
+  }
+
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////
   protected final EnhancementsImpl proxy;
   protected final Structure orgVar; // wrap this Variable
   protected final String orgName; // in case Variable was renamed, and we need the original name for aggregation
+
+  // Not technically immutable because of this
+  private ImmutableList<CoordinateSystem> coordinateSystems;
 
   protected StructureDS(Builder<?> builder, Group parentGroup) {
     super(builder, parentGroup);
