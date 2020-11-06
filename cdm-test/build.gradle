@@ -30,9 +30,12 @@ dependencies {
   testRuntimeOnly 'ch.qos.logback:logback-classic'
 }
 
-task testIndexCreation(type: Test, dependsOn: [classes, testClasses], group: 'Verification',
-    description: 'Tests creation of Grib and collection indexes, which will be used by subsequent tests.') {
-  include 'ucar/nc2/grib/TestGribIndexCreation.class'
+tasks.register("testIndexCreation", Test) {
+  group 'Verification'
+  it.filter {
+    includeTestsMatching 'ucar.nc2.grib.TestGribIndexCreation'
+  }
+  it.dependsOn classes, testClasses
 }
 
 test {
@@ -43,5 +46,8 @@ test {
   // "cdm-test/build/reports/tests/index.html". It's not easy to add them back in. Fortunately, those
   // results will be included in the allTests aggregate report: "build/reports/allTests/index.html".
   // They should also still get picked up by Jenkins.
-  exclude 'ucar/nc2/grib/TestGribIndexCreation.class'
+  filter {
+    //includeTestsMatching 'ucar.nc2.dataset.TestConventions.testIfps'
+    excludeTestsMatching 'ucar.nc2.grib.TestGribIndexCreation'
+  }
 }
