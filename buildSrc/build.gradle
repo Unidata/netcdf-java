@@ -15,9 +15,9 @@ dependencies {
   // localGroovy() (i.e. the groovy version shipped with gradle). Currently, for version 6.6.1 of Gradle, this is
   // groovy 2.5.12.
   // If the version of groovy changes, we should make sure to find a spock version that works.
-  compile localGroovy()
-  compile 'io.github.http-builder-ng:http-builder-ng-okhttp:1.0.3'  // For Nexus tasks.
-  compile 'com.github.jruby-gradle:jruby-gradle-plugin:2.0.0' // for jekyll plugin
+  implementation localGroovy()
+  implementation 'io.github.http-builder-ng:http-builder-ng-okhttp:1.0.3'  // For Nexus tasks.
+  implementation 'com.github.jruby-gradle:jruby-gradle-plugin:2.0.0' // for jekyll plugin
   testImplementation 'org.slf4j:slf4j-api:1.7.28'
   testRuntimeOnly 'ch.qos.logback:logback-classic:1.2.3'
 
