@@ -116,7 +116,7 @@ public class VerticalCT extends CoordinateTransform {
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////
-  // TODO Make these final and immutable
+  // TODO No one uses the builder?
   private final VerticalCT.Type type;
   private final VertTransformBuilderIF transformBuilder;
 

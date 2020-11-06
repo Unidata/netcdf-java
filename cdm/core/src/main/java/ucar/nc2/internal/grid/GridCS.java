@@ -40,7 +40,7 @@ class GridCS implements GridCoordinateSystem {
     return name;
   }
 
-  // needed?
+  // needed? is it always GRID?
   public FeatureType getFeatureType() {
     return featureType;
   }
@@ -131,6 +131,14 @@ class GridCS implements GridCoordinateSystem {
   @Nullable
   public Projection getProjection() {
     return projection;
+  }
+
+  @Override
+  @Nullable
+  public VerticalCT getVerticalCT() {
+    Optional<CoordinateTransform> result =
+        transforms.stream().filter(t -> t.getTransformType() == TransformType.Vertical).findFirst();
+    return (VerticalCT) result.orElse(null);
   }
 
   @Override
@@ -429,7 +437,7 @@ class GridCS implements GridCoordinateSystem {
   ////////////////////////////////////////////////////////////////////////////////////////////
   private final ImmutableList<GridAxis> axes;
   private final ImmutableSet<Dimension> domain;
-  private final FeatureType featureType;
+  private final FeatureType featureType; // TODO redo FeatureType
   private final boolean isLatLon;
   private final String name;
   private final Projection projection;

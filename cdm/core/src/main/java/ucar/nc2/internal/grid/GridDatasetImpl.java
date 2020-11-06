@@ -13,7 +13,6 @@ import ucar.nc2.dataset.*;
 import ucar.nc2.dataset.NetcdfDataset.Enhance;
 import ucar.nc2.grid.*;
 import ucar.nc2.internal.dataset.DatasetClassifier;
-import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionRect;
 
@@ -45,10 +44,6 @@ public class GridDatasetImpl implements GridDataset {
   private final Map<String, GridAxis> gridAxes;
   private final ArrayList<Grid> grids = new ArrayList<>();
   private final Multimap<GridCS, Grid> gridsets;
-
-  private LatLonRect llbbMax;
-  private CalendarDateRange dateRangeMax;
-  private ProjectionRect projBB;
 
   private GridDatasetImpl(NetcdfDataset ncd, DatasetClassifier classifier, Formatter errInfo) {
     this.ncd = ncd;
@@ -90,7 +85,7 @@ public class GridDatasetImpl implements GridDataset {
 
     this.gridsets = ArrayListMultimap.create();
     for (Variable v : ncd.getVariables()) {
-      if (v.getFullName().startsWith("Best/")) {
+      if (v.getFullName().startsWith("Best/")) { // TODO remove Best from grib generation code
         continue;
       }
       VariableEnhanced ve = (VariableEnhanced) v;
@@ -131,7 +126,7 @@ public class GridDatasetImpl implements GridDataset {
     }
 
     if (llbbBuilder != null) {
-      llbbMax = llbbBuilder.build();
+      LatLonRect llbbMax = llbbBuilder.build();
     }
   }
 
@@ -177,19 +172,6 @@ public class GridDatasetImpl implements GridDataset {
   public FeatureType getFeatureType() {
     return featureType;
   };
-
-  public String getDetailInfo() {
-    Formatter buff = new Formatter();
-    getDetailInfo(buff);
-    return buff.toString();
-  }
-
-  public void getDetailInfo(Formatter buff) {
-    toString(buff);
-    buff.format("%n%n----------------------------------------------------%n");
-    buff.format("%s", ncd.toString());
-    buff.format("%n%n----------------------------------------------------%n");
-  }
 
   @Override
   public String toString() {

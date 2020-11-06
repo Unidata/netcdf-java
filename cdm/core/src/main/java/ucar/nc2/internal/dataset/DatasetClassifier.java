@@ -5,6 +5,7 @@
 package ucar.nc2.internal.dataset;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import ucar.nc2.Dimension;
 import ucar.nc2.Dimensions;
@@ -151,7 +152,7 @@ public class DatasetClassifier {
       }
 
       // check that the x,y have at least 2 dimensions between them ( this eliminates point data)
-      int xyDomainSize = CoordinateSystem.countDomain(new CoordinateAxis[] {xaxis, yaxis});
+      int xyDomainSize = Dimensions.makeDomain(ImmutableList.of(xaxis, yaxis)).size();
       if (xyDomainSize < 2) {
         infolog.format(" %s: X and Y axis must have 2 or more dimensions%n", cs.getName());
         return;

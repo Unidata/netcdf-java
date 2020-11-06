@@ -21,9 +21,8 @@ import ucar.nc2.iosp.NetcdfFormatUtils;
 import ucar.unidata.util.test.TestDir;
 
 /**
+ * Test fill values when reading sections of a Variable.
  * from (WUB-664639) (Didier Earith)
- *
- * @author caron
  */
 public class TestSectionFillValue {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());

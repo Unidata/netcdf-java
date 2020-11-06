@@ -7,7 +7,8 @@ import java.io.IOException;
 
 import static com.google.common.truth.Truth.assertThat;
 
-public class TestDataset {
+/** Test {@link NetcdfDataset} */
+public class TestNetcdfDataset {
 
   @Test
   public void testNcmlFileId() throws IOException {

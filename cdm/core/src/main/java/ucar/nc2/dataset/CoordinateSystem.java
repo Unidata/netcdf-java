@@ -9,10 +9,10 @@ import com.google.common.collect.ImmutableList;
 import javax.annotation.Nullable;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
-import ucar.nc2.grid.GridAxis;
 import ucar.unidata.geoloc.*;
 import java.util.*;
 import ucar.unidata.geoloc.projection.LatLonProjection;
+import ucar.unidata.util.StringUtil2;
 
 /**
  * A CoordinateSystem specifies the coordinates of a Variable's values.
@@ -55,7 +55,7 @@ public class CoordinateSystem {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinateSystem.class);
 
   /**
-   * TODO needed for GridCoordSys
+   * TODO needed for GridCoordSys, remove in ver7
    * 
    * @deprecated Use CoordinateSystem.builder().
    */
@@ -71,39 +71,27 @@ public class CoordinateSystem {
   public static String makeName(List<CoordinateAxis> axes) {
     List<CoordinateAxis> axesSorted = new ArrayList<>(axes);
     axesSorted.sort(new CoordinateAxis.AxisComparator());
-    StringBuilder buff = new StringBuilder();
-    for (int i = 0; i < axesSorted.size(); i++) {
-      CoordinateAxis axis = axesSorted.get(i);
-      if (i > 0)
-        buff.append(" ");
-      buff.append(NetcdfFiles.makeFullName(axis));
-    }
-    return buff.toString();
+    ArrayList<String> names = new ArrayList<>();
+    axesSorted.forEach(axis -> names.add(NetcdfFiles.makeFullName(axis)));
+    return String.join(" ", names);
   }
 
-  // prefer smaller ranks, in case more than one
-  private CoordinateAxis lesserRank(CoordinateAxis a1, CoordinateAxis a2) {
-    if (a1 == null) {
-      return a2;
-    }
-    return (a1.getRank() <= a2.getRank()) ? a1 : a2;
-  }
-
-  /** Get the List of CoordinateAxis objects */
+  /** Get the List of CoordinateAxes */
   public ImmutableList<CoordinateAxis> getCoordinateAxes() {
     return ImmutableList.copyOf(coordAxes);
   }
 
-  /** Get the List of CoordinateTransform objects */
+  /**
+   * Get the List of CoordinateTransforms.
+   * 
+   * @deprecated use getProjection() or getVerticalCT()
+   */
+  @Deprecated
   public ImmutableList<CoordinateTransform> getCoordinateTransforms() {
     return ImmutableList.copyOf(coordTrans);
   }
 
-  /**
-   * get the name of the Coordinate System
-   * 
-   * @return the name of the Coordinate System
-   */
+  /** Get the name of the Coordinate System */
   public String getName() {
     return name;
   }
@@ -111,13 +99,14 @@ public class CoordinateSystem {
   /**
    * Get the underlying NetcdfDataset
    * 
-   * @return the underlying NetcdfDataset.
+   * @deprecated do not use
    */
+  @Deprecated
   public NetcdfDataset getNetcdfDataset() {
     return ds;
   }
 
-  /** get the Collection of Dimensions that constitute the domain. */
+  /** Get the Collection of Dimensions that any of the CoordinateAxes use */
   public ImmutableCollection<Dimension> getDomain() {
     return ImmutableList.copyOf(domain);
   }
@@ -126,7 +115,9 @@ public class CoordinateSystem {
    * Get the domain rank of the coordinate system = number of dimensions it is a function of.
    * 
    * @return domain.size()
+   * @deprecated use getDomain().size();
    */
+  @Deprecated
   public int getRankDomain() {
     return domain.size();
   }
@@ -135,7 +126,9 @@ public class CoordinateSystem {
    * Get the range rank of the coordinate system = number of coordinate axes.
    * 
    * @return coordAxes.size()
+   * @deprecated use getCoordinateAxes().size();
    */
+  @Deprecated
   public int getRankRange() {
     return coordAxes.size();
   }
@@ -160,6 +153,14 @@ public class CoordinateSystem {
       }
     }
     return result;
+  }
+
+  // prefer smaller ranks, in case there's more than one
+  private CoordinateAxis lesserRank(CoordinateAxis a1, CoordinateAxis a2) {
+    if (a1 == null) {
+      return a2;
+    }
+    return (a1.getRank() <= a2.getRank()) ? a1 : a2;
   }
 
   /** Find CoordinateAxis of one of the given types, in the order given. */
@@ -323,7 +324,9 @@ public class CoordinateSystem {
    * Find the first ProjectionCT from the list of CoordinateTransforms.
    * 
    * @return ProjectionCT or null if none.
+   * @deprecated use getProjection()
    */
+  @Deprecated
   public ProjectionCT getProjectionCT() {
     for (CoordinateTransform ct : coordTrans) {
       if (ct instanceof ProjectionCT)
@@ -336,19 +339,29 @@ public class CoordinateSystem {
    * Get the Projection for this coordinate system.
    * If isLatLon(), then returns a LatLonProjection. Otherwise, extracts the
    * projection from any ProjectionCT CoordinateTransform.
-   * 
+   *
    * @return Projection or null if none.
    */
   @Nullable
   public Projection getProjection() {
     if (projection == null) {
-      if (isLatLon())
+      if (isLatLon()) {
         projection = new LatLonProjection();
+      }
       ProjectionCT projCT = getProjectionCT();
-      if (null != projCT)
+      if (null != projCT) {
         projection = projCT.getProjection();
+      }
     }
     return projection;
+  }
+
+  /** Get the Vertical Transform for this coordinate system, if any. */
+  @Nullable
+  public VerticalCT getVerticalCT() {
+    Optional<CoordinateTransform> result =
+        coordTrans.stream().filter(t -> t.getTransformType() == TransformType.Vertical).findFirst();
+    return (VerticalCT) result.orElse(null);
   }
 
   ////////////////////////////////////////////////////////////////////////////
@@ -397,7 +410,7 @@ public class CoordinateSystem {
    * true if all axes are CoordinateAxis1D
    * 
    * @return true if all axes are CoordinateAxis1D
-   * @deprecated do not use
+   * @deprecated use GridCoordinateSystem.isProductSet()
    */
   @Deprecated
   public boolean isProductSet() {
@@ -433,7 +446,9 @@ public class CoordinateSystem {
    * 
    * @param v check for this variable
    * @return true if all dimensions in V (including parents) are in the domain of this coordinate system.
+   * @deprecated do not use
    */
+  @Deprecated
   public boolean isComplete(Variable v) {
     return Dimensions.isSubset(Dimensions.makeDimensionsAll(v), domain);
   }
@@ -446,7 +461,9 @@ public class CoordinateSystem {
    * 
    * @param v check for this variable
    * @return true if all dimensions in the domain of this coordinate system are in V (including parents).
+   * @deprecated do not use
    */
+  @Deprecated
   public boolean isCoordinateSystemFor(Variable v) {
     return Dimensions.isSubset(domain, Dimensions.makeDimensionsAll(v));
   }
@@ -480,7 +497,7 @@ public class CoordinateSystem {
     return true;
   }
 
-  /** @deprecated use Dimensions.makeDomain() */
+  /** @deprecated use {@link Dimensions#makeDomain} */
   @Deprecated
   public static Set<Dimension> makeDomain(Iterable<? extends Variable> axes) {
     Set<Dimension> domain = new HashSet<>();
@@ -502,10 +519,7 @@ public class CoordinateSystem {
 
   /**
    * Implicit Coordinate System are constructed based on which Coordinate Variables exist for the Dimensions of the
-   * Variable.
-   * This is in contrast to a Coordinate System that is explicitly specified in the file.
-   * 
-   * @return true if this coordinate system was constructed implicitly.
+   * Variable. This is in contrast to a Coordinate System that is explicitly specified in the file.
    */
   public boolean isImplicit() {
     return isImplicit;
@@ -533,7 +547,12 @@ public class CoordinateSystem {
     return (tAxis != null);
   }
 
-  /** Do we have all the axes in wantAxes, matching on full name */
+  /**
+   * Do we have all the axes in wantAxes, matching on full name.
+   * 
+   * @deprecated do not use
+   */
+  @Deprecated
   public boolean containsAxes(List<CoordinateAxis> wantAxes) {
     for (CoordinateAxis ca : wantAxes) {
       if (!containsAxis(ca.getFullName())) {
@@ -546,18 +565,25 @@ public class CoordinateSystem {
   /**
    * Do we have the named axis?
    * 
-   * @param axisName (full unescaped) name of axis
+   * @param axisFullName (full unescaped) name of axis
    * @return true if we have an axis of that name
+   * @deprecated do not use
    */
-  public boolean containsAxis(String axisName) {
+  @Deprecated
+  public boolean containsAxis(String axisFullName) {
     for (CoordinateAxis ca : coordAxes) {
-      if (ca.getFullName().equals(axisName))
+      if (ca.getFullName().equals(axisFullName))
         return true;
     }
     return false;
   }
 
-  /** Do we have all the dimensions in wantDimensions? */
+  /**
+   * Do we have all the dimensions in wantDimensions?
+   * 
+   * @deprecated do not use
+   */
+  @Deprecated
   public boolean containsDomain(List<Dimension> wantDimensions) {
     for (Dimension d : wantDimensions) {
       if (!domain.contains(d)) {
@@ -586,7 +612,7 @@ public class CoordinateSystem {
    * 
    * @param wantAxisType want this AxisType
    * @return true if we have at least one axis of that type.
-   * @deprecated use findAxis(...)
+   * @deprecated use findAxis(...) != null
    */
   @Deprecated
   public boolean containsAxisType(AxisType wantAxisType) {
@@ -599,57 +625,34 @@ public class CoordinateSystem {
   }
 
   ////////////////////////////////////////////////////////////////////////////
-  /**
-   * Instances which have same name, axes and transforms are equal.
-   */
-  public boolean equals(Object oo) {
-    if (this == oo)
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o)
       return true;
-    if (!(oo instanceof CoordinateSystem))
+    if (o == null || getClass() != o.getClass())
       return false;
-    CoordinateSystem o = (CoordinateSystem) oo;
-
-    if (!getName().equals(o.getName()))
-      return false;
-
-    List<CoordinateAxis> oaxes = o.getCoordinateAxes();
-    for (CoordinateAxis axis : getCoordinateAxes()) {
-      if (!oaxes.contains(axis))
-        return false;
-    }
-
-    List<CoordinateTransform> otrans = o.getCoordinateTransforms();
-    for (CoordinateTransform tran : getCoordinateTransforms()) {
-      if (!otrans.contains(tran))
-        return false;
-    }
-
-    return true;
+    CoordinateSystem that = (CoordinateSystem) o;
+    return com.google.common.base.Objects.equal(coordAxes, that.coordAxes)
+        && com.google.common.base.Objects.equal(coordTrans, that.coordTrans)
+        && com.google.common.base.Objects.equal(name, that.name);
   }
 
-  /** Override Object.hashCode() to implement equals. */
+  @Override
   public int hashCode() {
-    if (hashCode == 0) {
-      int result = 17;
-      result = 37 * result + getName().hashCode();
-      result = 37 * result + getCoordinateAxes().hashCode();
-      result = 37 * result + getCoordinateTransforms().hashCode();
-      hashCode = result;
-    }
-    return hashCode;
+    return com.google.common.base.Objects.hashCode(coordAxes, coordTrans, name);
   }
-
-  private volatile int hashCode;
 
   public String toString() {
     return name;
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////
-  // TODO make these final and immutable in 6.
+  // TODO make these private, final and immutable in ver7.
   protected NetcdfDataset ds; // needed?
   protected List<CoordinateAxis> coordAxes = new ArrayList<>();
-  protected List<CoordinateTransform> coordTrans = new ArrayList<>();
+  protected List<CoordinateTransform> coordTrans = new ArrayList<>(); // TODO keep projection and vertical separate, and
+                                                                      // only allow one?
   private Projection projection;
 
   // these are calculated
@@ -667,17 +670,16 @@ public class CoordinateSystem {
 
     // find referenced coordinate axes
     List<CoordinateAxis> axesList = new ArrayList<>();
-    StringTokenizer stoker = new StringTokenizer(builder.coordAxesNames);
-    while (stoker.hasMoreTokens()) {
-      String vname = stoker.nextToken();
-      for (CoordinateAxis a : axes) {
-        String aname = a.getFullName();
-        if (aname.equals(vname)) {
-          axesList.add(a);
-        }
+    for (String axisName : StringUtil2.split(builder.coordAxesNames)) {
+      Optional<CoordinateAxis> found = axes.stream().filter(a -> axisName.equals(a.getFullName())).findFirst();
+      if (!found.isPresent()) {
+        throw new RuntimeException("Cant find axis " + axisName);
+      } else {
+        axesList.add(found.get());
       }
     }
     this.coordAxes = axesList;
+    this.coordAxes.sort(new CoordinateAxis.AxisComparator());
 
     // calculated
     this.name = makeName(coordAxes);
@@ -717,16 +719,12 @@ public class CoordinateSystem {
     }
 
     // Find the named coordinate transforms in allTransforms.
-    for (String wantTransName : builder.transNames) {
-      CoordinateTransform got = allTransforms.stream()
-          .filter(ct -> (wantTransName.equals(ct.getName())
-              || ct.attributes() != null && wantTransName.equals(ct.attributes().getName()))) // TODO what is this use
-                                                                                              // case?
-          .findFirst().orElse(null);
-      if (got != null) {
-        coordTrans.add(got);
-      }
-
+    for (String want : builder.transNames) {
+      // TODO what is the case where wantTransName matches attribute collection name?
+      allTransforms.stream()
+          .filter(
+              ct -> (want.equals(ct.getName()) || (ct.attributes() != null && want.equals(ct.attributes().getName()))))
+          .findFirst().ifPresent(got -> coordTrans.add(got));
     }
   }
 
@@ -739,11 +737,6 @@ public class CoordinateSystem {
     return b.setImplicit(this.isImplicit).setCoordAxesNames(this.name).addCoordinateTransforms(this.coordTrans);
   }
 
-  /**
-   * Get Builder for this class that allows subclassing.
-   * 
-   * @see "https://community.oracle.com/blogs/emcmanus/2010/10/24/using-builder-pattern-subclasses"
-   */
   public static Builder<?> builder() {
     return new Builder2();
   }
@@ -756,14 +749,14 @@ public class CoordinateSystem {
   }
 
   public static abstract class Builder<T extends Builder<T>> {
-    public String coordAxesNames; // canonicalized list of names
+    public String coordAxesNames = "";
     private final List<String> transNames = new ArrayList<>();
     private boolean isImplicit;
     private boolean built;
 
     protected abstract T self();
 
-    // LOOK need to be canonicalized
+    /** @param names list of axes full names, space delimited. Doesnt have to be sorted. */
     public T setCoordAxesNames(String names) {
       this.coordAxesNames = names;
       return self();
@@ -774,8 +767,8 @@ public class CoordinateSystem {
       return self();
     }
 
-    public T addCoordinateTransforms(Collection<CoordinateTransform> axes) {
-      axes.forEach(axis -> addCoordinateTransformByName(axis.name));
+    public T addCoordinateTransforms(Collection<CoordinateTransform> transforms) {
+      transforms.forEach(trans -> addCoordinateTransformByName(trans.name));
       return self();
     }
 
@@ -784,7 +777,13 @@ public class CoordinateSystem {
       return self();
     }
 
-    // LOOK do we really need NetcdfDataset?
+    /**
+     * Build a CoordinateSystem
+     * 
+     * @param ncd The containing dataset
+     * @param axes Must contain all axes that are named in coordAxesNames
+     * @param transforms Must contain all transforms that are named by addCoordinateTransformByName
+     */
     public CoordinateSystem build(NetcdfDataset ncd, List<CoordinateAxis> axes, List<CoordinateTransform> transforms) {
       if (built)
         throw new IllegalStateException("already built");

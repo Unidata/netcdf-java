@@ -21,13 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import ucar.unidata.util.test.category.Slow;
 
-/**
- * Test reading grib coordinates match gbx, replace TestGrib1CoordsMatch
- *
- * 
- * @author caron
- * @since 7/7/2016.
- */
+/** Test reading grib coordinates match gbx */
+@Ignore("too slow")
 @RunWith(Parameterized.class)
 @Category({NeedsCdmUnitTest.class, Slow.class})
 public class TestCoordinatesMatchGbxP {

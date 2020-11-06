@@ -41,8 +41,7 @@ import java.util.*;
 
 /**
  * Check that coordinate values match Grib Records.
- * Using GridDataset.
- * Using just the gbx
+ * Using GridDataset. Using just the gbx
  */
 public class GribCoordsMatchGbx {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());

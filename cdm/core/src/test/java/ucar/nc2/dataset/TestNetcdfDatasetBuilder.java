@@ -1,17 +1,26 @@
 package ucar.nc2.dataset;
 
 import static com.google.common.truth.Truth.assertThat;
+import static ucar.nc2.TestUtils.makeDummyGroup;
+
 import org.junit.Test;
 import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.Group;
 import ucar.nc2.Variable;
+import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants.CDM;
+import ucar.nc2.internal.dataset.CoordinatesHelper;
+import ucar.unidata.geoloc.projection.FlatEarth;
 
+import java.util.ArrayList;
+
+/** Test {@link NetcdfDataset.Builder} */
 public class TestNetcdfDatasetBuilder {
 
   @Test
-  public void testBuilder() {
+  public void testBasics() {
     Attribute att = new Attribute("attName", "value");
     Dimension dim = new Dimension("dimName", 42);
     Group.Builder nested = Group.builder().setName("child");
@@ -20,7 +29,7 @@ public class TestNetcdfDatasetBuilder {
         Group.builder().setName("").addAttribute(att).addDimension(dim).addGroup(nested).addVariable(vb);
     nested.setParentGroup(groupb);
 
-    NetcdfDataset.Builder builder =
+    NetcdfDataset.Builder<?> builder =
         NetcdfDataset.builder().setId("Hid").setLocation("location").setRootGroup(groupb).setTitle("title");
 
     NetcdfDataset ncfile = builder.build();
@@ -52,6 +61,42 @@ public class TestNetcdfDatasetBuilder {
     Variable v = group.findVariableLocal("varName");
     assertThat(v.getParentGroup()).isEqualTo(group);
     assertThat(v.getNetcdfFile()).isEqualTo(ncfile);
+  }
+
+  @Test
+  public void testCoordinatesHelper() {
+    NetcdfDataset.Builder<?> ncdb = NetcdfDataset.builder();
+    CoordinatesHelper.Builder coords = ncdb.coords;
+
+    VariableDS.Builder<?> xBuilder = VariableDS.builder().setName("xname").setDataType(DataType.FLOAT)
+        .setUnits("xunits").setDesc("xdesc").setEnhanceMode(NetcdfDataset.getEnhanceAll());
+    ncdb.rootGroup.addVariable(CoordinateAxis.fromVariableDS(xBuilder).setAxisType(AxisType.GeoX));
+
+    VariableDS.Builder<?> yBuilder = VariableDS.builder().setName("yname").setDataType(DataType.FLOAT)
+        .setUnits("yunits").setDesc("ydesc").setEnhanceMode(NetcdfDataset.getEnhanceAll());
+    ncdb.rootGroup.addVariable(CoordinateAxis.fromVariableDS(yBuilder).setAxisType(AxisType.GeoY));
+
+    CoordinateSystem.Builder<?> csb = CoordinateSystem.builder().setCoordAxesNames("xname yname");
+    coords.addCoordinateSystem(csb);
+
+    NetcdfDataset ncd = ncdb.build();
+    CoordinateSystem coordSys = ncd.findCoordinateSystem("yname xname");
+    assertThat(coordSys).isNotNull();
+
+    CoordinateAxis xaxis = coordSys.findAxis(AxisType.GeoX);
+    assertThat(xaxis).isNotNull();
+    assertThat(xaxis.getShortName()).isEqualTo("xname");
+    assertThat(xaxis.getDataType()).isEqualTo(DataType.FLOAT);
+    assertThat(xaxis.getUnitsString()).isEqualTo("xunits");
+    assertThat(xaxis.getDescription()).isEqualTo("xdesc");
+    assertThat(xaxis.getEnhanceMode()).isEqualTo(NetcdfDataset.getEnhanceAll());
+    assertThat(xaxis.findAttributeString(CDM.UNITS, "")).isEqualTo("xunits");
+    assertThat(xaxis.findAttributeString(CDM.LONG_NAME, "")).isEqualTo("xdesc");
+
+    CoordinateAxis xaxis2 = ncd.findCoordinateAxis("xname");
+    assertThat(xaxis2).isNotNull();
+    assertThat(xaxis2).isEqualTo(xaxis);
+
   }
 
 }

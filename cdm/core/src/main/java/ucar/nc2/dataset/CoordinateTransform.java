@@ -21,6 +21,7 @@ import java.util.List;
  * CoordinateTransform is the superclass for ProjectionCT and VerticalCT.
  * It contains the Attributes/Parameters needed to make a "Coordinate Transform Variable" which
  * is just a container for the Transform parameters.
+ * TODO make Immutable
  */
 @ThreadSafe
 public abstract class CoordinateTransform implements Comparable<CoordinateTransform> {
@@ -151,7 +152,7 @@ public abstract class CoordinateTransform implements Comparable<CoordinateTransf
   protected List<Parameter> params = new ArrayList<>();
   private AttributeContainerMutable attributeContainer;
 
-  // LOOK this is wrong, should create a ProjectionCT or a VerticalCT.
+  // TODO no one using the builder ??
   protected CoordinateTransform(Builder<?> builder, NetcdfDataset ncd) {
     this.name = builder.name;
     this.authority = builder.authority;

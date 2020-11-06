@@ -22,7 +22,7 @@ import java.util.*;
 
 /**
  * Detection of the protocol from a location string.
- * TODO: Review and refactor as needed. Perhaps BiMap\<ServiceType, String>?
+ * TODO: Review and refactor as needed.
  *
  * @author caron
  * @since 10/20/2015.

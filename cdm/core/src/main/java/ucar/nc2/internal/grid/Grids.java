@@ -9,18 +9,11 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.grid.GridAxis;
 import ucar.nc2.grid.GridAxis1D;
 import ucar.nc2.grid.GridAxis1DTime;
-import ucar.nc2.grid.GridAxis2DTime;
 
 import java.util.ArrayList;
 
 /** static utilities */
 class Grids {
-
-  static GridAxis2DTime extractGridAxisTime2D(NetcdfDataset ncd, CoordinateAxis axis, GridAxis1DTime runtime) {
-    GridAxis2DTime.Builder<?> builder = GridAxis2DTime.builder().initFromVariableDS(axis);
-    builder.setRuntimeAxis(runtime);
-    return builder.build();
-  }
 
   static GridAxis1D extractGridAxis1D(NetcdfDataset ncd, CoordinateAxis axis, GridAxis.DependenceType dependenceType) {
     GridAxis1D.Builder<?> builder;

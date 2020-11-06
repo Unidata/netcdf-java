@@ -3,18 +3,20 @@ package ucar.nc2.dataset;
 import static com.google.common.truth.Truth.assertThat;
 import static ucar.nc2.TestUtils.makeDummyGroup;
 import org.junit.Test;
+import ucar.array.Array;
 import ucar.ma2.DataType;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CDM;
 
+/** Test {@link CoordinateAxis.Builder} */
 public class TestCoordinateAxisBuilder {
 
   @Test
   public void testFromVariableDS() {
     // NetcdfDataset ncd = NetcdfDataset.builder().build();
-    VariableDS.Builder vdsBuilder = VariableDS.builder().setName("name").setDataType(DataType.FLOAT).setUnits("units")
-        .setDesc("desc").setEnhanceMode(NetcdfDataset.getEnhanceAll());
-    CoordinateAxis.Builder builder = CoordinateAxis.fromVariableDS(vdsBuilder).setAxisType(AxisType.GeoX);
+    VariableDS.Builder<?> vdsBuilder = VariableDS.builder().setName("name").setDataType(DataType.FLOAT)
+        .setUnits("units").setDesc("desc").setEnhanceMode(NetcdfDataset.getEnhanceAll());
+    CoordinateAxis.Builder<?> builder = CoordinateAxis.fromVariableDS(vdsBuilder).setAxisType(AxisType.GeoX);
     CoordinateAxis axis = builder.build(makeDummyGroup());
 
     assertThat(axis.getShortName()).isEqualTo("name");
@@ -24,6 +26,10 @@ public class TestCoordinateAxisBuilder {
     assertThat(axis.getEnhanceMode()).isEqualTo(NetcdfDataset.getEnhanceAll());
     assertThat(axis.findAttributeString(CDM.UNITS, "")).isEqualTo("units");
     assertThat(axis.findAttributeString(CDM.LONG_NAME, "")).isEqualTo("desc");
+
+    CoordinateAxis copy = axis.toBuilder().build(makeDummyGroup());
+    assertThat(copy).isEqualTo(axis);
+    assertThat(copy.hashCode()).isEqualTo(axis.hashCode());
   }
 
 }

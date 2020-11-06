@@ -7,6 +7,7 @@ import java.io.Closeable;
 import java.util.Formatter;
 import java.util.Optional;
 
+/** A Dataset that contains Grids. */
 public interface GridDataset extends Closeable {
 
   String getName();
