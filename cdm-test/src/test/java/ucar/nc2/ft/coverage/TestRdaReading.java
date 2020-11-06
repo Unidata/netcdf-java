@@ -6,6 +6,7 @@ package ucar.nc2.ft.coverage;
 
 import java.util.Arrays;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
@@ -27,6 +28,7 @@ import java.lang.invoke.MethodHandles;
  * @since 2/24/2016.
  */
 @Category(NeedsRdaData.class)
+@Ignore("files missing")
 public class TestRdaReading {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 

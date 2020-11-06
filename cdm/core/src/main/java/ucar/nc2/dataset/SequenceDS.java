@@ -49,7 +49,7 @@ public class SequenceDS extends Sequence implements StructureEnhanced {
 
   @Override
   public ImmutableList<CoordinateSystem> getCoordinateSystems() {
-    return null;
+    return ImmutableList.of();
   }
 
   @Override

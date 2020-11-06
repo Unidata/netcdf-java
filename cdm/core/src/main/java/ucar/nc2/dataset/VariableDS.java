@@ -17,6 +17,8 @@ import ucar.nc2.dataset.NetcdfDataset.Enhance;
 import ucar.nc2.internal.dataset.CoordinatesHelper;
 import ucar.nc2.internal.dataset.DataEnhancer;
 import ucar.nc2.util.CancelTask;
+import ucar.nc2.util.Indent;
+
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -166,6 +168,19 @@ public class VariableDS extends Variable implements EnhanceScaleMissingUnsigned,
     }
   }
 
+  @Override
+  public String toString() {
+    Formatter f = new Formatter();
+    writeCDL(f, new Indent(2), false, false);
+    if (orgVar != null) {
+      f.format("%nOriginal: %s %s%n", orgDataType, orgVar.getNameAndDimensions());
+    }
+    f.format("Coordinate Systems%n");
+    for (CoordinateSystem csys : getCoordinateSystems()) {
+      f.format(" %s (%d)%n", csys.getName(), csys.getCoordinateAxes().size());
+    }
+    return f.toString();
+  }
 
   ////////////////////////////////////////////////////////////////////////
 

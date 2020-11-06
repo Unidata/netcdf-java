@@ -901,7 +901,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     return buf.toString();
   }
 
-  void writeCDL(Formatter buf, Indent indent, boolean useFullName, boolean strict) {
+  protected void writeCDL(Formatter buf, Indent indent, boolean useFullName, boolean strict) {
     buf.format("%s", indent);
     if (dataType == null)
       buf.format("Unknown");

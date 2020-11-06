@@ -47,13 +47,14 @@ public class CoordinatesHelper {
   }
 
   public ImmutableList<CoordinateSystem> makeCoordinateSystemsFor(Variable v) {
-    ImmutableList.Builder<CoordinateSystem> builder = ImmutableList.builder();
+    ArrayList<CoordinateSystem> result = new ArrayList<>();
     for (CoordinateSystem csys : coordSystems) {
       if (csys.isCoordinateSystemFor(v) && csys.isComplete(v)) {
-        builder.add(csys);
+        result.add(csys);
       }
     }
-    return builder.build();
+    result.sort((cs1, cs2) -> cs2.getCoordinateAxes().size() - cs1.getCoordinateAxes().size());
+    return ImmutableList.copyOf(result);
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
