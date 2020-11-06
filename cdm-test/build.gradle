@@ -47,7 +47,6 @@ test {
   // results will be included in the allTests aggregate report: "build/reports/allTests/index.html".
   // They should also still get picked up by Jenkins.
   filter {
-    //includeTestsMatching 'ucar.nc2.dataset.TestConventions.testIfps'
     excludeTestsMatching 'ucar.nc2.grib.TestGribIndexCreation'
   }
 }
