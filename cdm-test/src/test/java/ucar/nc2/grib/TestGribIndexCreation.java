@@ -30,7 +30,6 @@ import java.util.Formatter;
  * @author caron
  * @since 11/14/2014
  */
-@Category(NeedsCdmUnitTest.class)
 public class TestGribIndexCreation {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -86,6 +85,7 @@ public class TestGribIndexCreation {
   /////////////////////////////////////////////////////////
 
   @Test
+  @Category(NeedsCdmUnitTest.class)
   public void testGdsHashChange() throws IOException {
     Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config =
@@ -129,6 +129,7 @@ public class TestGribIndexCreation {
    * </featureCollection>
    */
   @Test
+  @Category(NeedsCdmUnitTest.class)
   public void createNDFD() throws IOException {
     Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config =
@@ -142,6 +143,7 @@ public class TestGribIndexCreation {
   }
 
   @Test
+  @Category(NeedsCdmUnitTest.class)
   public void testCfrsAnalysisOnly() throws IOException {
     // this dataset 0-6 hour forecasts x 124 runtimes (4x31)
     // there are 2 groups, likely miscoded, the smaller group are 0 hour, duplicates, possibly miscoded
@@ -156,6 +158,7 @@ public class TestGribIndexCreation {
   }
 
   @Test
+  @Category(NeedsCdmUnitTest.class)
   public void testDgex() throws IOException {
     FeatureCollectionConfig config = new FeatureCollectionConfig("dgex_46", "test/dgex", FeatureCollectionType.GRIB2,
         TestDir.cdmUnitTestDir + "gribCollections/dgex/**/.*grib2", null, null, null, "file", null);
@@ -165,6 +168,7 @@ public class TestGribIndexCreation {
   }
 
   @Test
+  @Category(NeedsCdmUnitTest.class)
   public void testGFSconus80_file() throws IOException {
     FeatureCollectionConfig config =
         new FeatureCollectionConfig("gfsConus80_file", "test/gfsConus80", FeatureCollectionType.GRIB1,
@@ -176,6 +180,7 @@ public class TestGribIndexCreation {
   }
 
   @Test
+  @Category(NeedsCdmUnitTest.class)
   public void testGFSconus80_dir() throws IOException {
     FeatureCollectionConfig config =
         new FeatureCollectionConfig("gfsConus80_dir", "test/gfsConus80", FeatureCollectionType.GRIB1,
@@ -187,6 +192,7 @@ public class TestGribIndexCreation {
   }
 
   @Test
+  @Category(NeedsCdmUnitTest.class)
   public void testGFSconus80ncss() throws IOException {
     FeatureCollectionConfig config =
         new FeatureCollectionConfig("GFS_CONUS_80km", "test/gfsConus80", FeatureCollectionType.GRIB1,
@@ -198,6 +204,7 @@ public class TestGribIndexCreation {
   }
 
   @Test
+  @Category(NeedsCdmUnitTest.class)
   public void testGFS_2p5deg() throws IOException {
     FeatureCollectionConfig config =
         new FeatureCollectionConfig("gfs_2p5deg", "test/gfs_2p5deg", FeatureCollectionType.GRIB2,
@@ -208,6 +215,7 @@ public class TestGribIndexCreation {
   }
 
   @Test
+  @Category(NeedsCdmUnitTest.class)
   public void testSeanProblem() throws IOException {
     FeatureCollectionConfig config =
         new FeatureCollectionConfig("gfs_2p5deg", "test/gfs_2p5deg", FeatureCollectionType.GRIB2,
@@ -218,6 +226,7 @@ public class TestGribIndexCreation {
   }
 
   @Test
+  @Category(NeedsCdmUnitTest.class)
   public void testEnsembles() throws IOException {
     FeatureCollectionConfig config =
         new FeatureCollectionConfig("gefs_ens", "test/gefs_ens", FeatureCollectionType.GRIB2,
@@ -230,6 +239,7 @@ public class TestGribIndexCreation {
   ////////////////
 
   @Test
+  @Category(NeedsCdmUnitTest.class)
   public void testRdvamds083p2_PofP() throws IOException {
     FeatureCollectionConfig config = new FeatureCollectionConfig("ds083.2-pofp", "test/ds083.2-pofp",
         FeatureCollectionType.GRIB1, TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2/PofP/**/.*grib1", null,
@@ -241,6 +251,7 @@ public class TestGribIndexCreation {
   }
 
   @Test
+  @Category(NeedsCdmUnitTest.class)
   public void testRdvamds083p2() throws IOException {
     Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config = new FeatureCollectionConfig("ds083.2_Aggregation", "test/ds083.2",
@@ -268,6 +279,7 @@ public class TestGribIndexCreation {
    */
 
   @Test
+  @Category(NeedsCdmUnitTest.class)
   public void testRdvamds627p0() throws IOException {
     Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config = new FeatureCollectionConfig("ds627.0_46", "test/ds627.0",
@@ -281,6 +293,7 @@ public class TestGribIndexCreation {
 
 
   @Test // has one file for for each month, all in same directory
+  @Category(NeedsCdmUnitTest.class)
   public void testRdvamds627p1() throws IOException {
     Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config =
@@ -295,6 +308,7 @@ public class TestGribIndexCreation {
   ////////////////
 
   @Test // has one file for for each month, all in same directory
+  @Category(NeedsCdmUnitTest.class)
   public void testTimePartition() throws IOException {
     Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config = new FeatureCollectionConfig("yearPartition", "test/yearPartition",
@@ -308,6 +322,7 @@ public class TestGribIndexCreation {
   }
 
   @Test
+  @Category(NeedsCdmUnitTest.class)
   public void testWW3() throws IOException {
     // String name, String path, FeatureCollectionType fcType,
     // String spec, String collectionName,
@@ -320,6 +335,7 @@ public class TestGribIndexCreation {
   }
 
   @Test
+  @Category(NeedsCdmUnitTest.class)
   public void testMRUTP() throws IOException { // should be a TP (multiple runtime, single offset
     // String name, String path, FeatureCollectionType fcType,
     // String spec, String collectionName,
@@ -333,6 +349,7 @@ public class TestGribIndexCreation {
   }
 
   @Test
+  @Category(NeedsCdmUnitTest.class)
   public void createECMWFbcs() throws IOException { // SRC
     FeatureCollectionConfig config =
         new FeatureCollectionConfig("ECMWFbcs", "test/ECMWFbcs", FeatureCollectionType.GRIB1,
@@ -343,6 +360,7 @@ public class TestGribIndexCreation {
   }
 
   @Test
+  @Category(NeedsCdmUnitTest.class)
   public void createECMWFemd() throws IOException { // SRC
     FeatureCollectionConfig config =
         new FeatureCollectionConfig("ECMWFemd", "test/ECMWFemd", FeatureCollectionType.GRIB1,
@@ -353,6 +371,7 @@ public class TestGribIndexCreation {
   }
 
   @Test
+  @Category(NeedsCdmUnitTest.class)
   public void createECMWFmad() throws IOException { // SRC
     FeatureCollectionConfig config =
         new FeatureCollectionConfig("ECMWFmad", "test/ECMWFmad", FeatureCollectionType.GRIB1,
@@ -363,6 +382,7 @@ public class TestGribIndexCreation {
   }
 
   @Test
+  @Category(NeedsCdmUnitTest.class)
   public void createECMWFmee() throws IOException { // SRC
     FeatureCollectionConfig config =
         new FeatureCollectionConfig("ECMWFmee", "test/ECMWFmee", FeatureCollectionType.GRIB1,
@@ -373,6 +393,7 @@ public class TestGribIndexCreation {
   }
 
   @Test
+  @Category(NeedsCdmUnitTest.class)
   public void createECMWFmwp() throws IOException { // SRC
     FeatureCollectionConfig config =
         new FeatureCollectionConfig("ECMWFmwp", "test/ECMWFmwp", FeatureCollectionType.GRIB1,
@@ -383,6 +404,7 @@ public class TestGribIndexCreation {
   }
 
   @Test
+  @Category(NeedsCdmUnitTest.class)
   public void createHRRRanalysis() throws IOException { // MRUTC
     FeatureCollectionConfig config =
         new FeatureCollectionConfig("HRRRanalysis", "test/HRRRanalysis", FeatureCollectionType.GRIB2,
@@ -390,5 +412,15 @@ public class TestGribIndexCreation {
 
     boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
     System.out.printf("changed = %s%n", changed);
+  }
+
+  @Test
+  public void makeGradleHappy() {
+    // We have a special gradle task (:cdm-test:testIndexCreation) that creates grib index files before running the
+    // full :cdm-test:test task. The build logic was rearranged a bit to keep intellij happy when running individual
+    // tests out of the cdm-test subproject. However, gradle became upset that the special task no long found any tests
+    // to run, and the entire build would fail. This test exists so that gradle can find something to do in our special
+    // task.
+    Assert.assertTrue(true);
   }
 }
