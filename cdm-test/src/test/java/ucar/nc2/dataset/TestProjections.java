@@ -35,11 +35,9 @@ import ucar.unidata.util.Parameter;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
-/**
- * test projections
- *
- * @author caron
- */
+import static com.google.common.truth.Truth.assertThat;
+
+/** Test Horizontal projections. */
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
 public class TestProjections {
@@ -52,56 +50,57 @@ public class TestProjections {
   public static Collection<Object[]> data() {
     Object[][] data = new Object[][] {
 
-        {testDir + "Sigma_LC.nc", "Lambert_Conformal", "Temperature", LambertConformal.class, null},
+        {testDir + "Sigma_LC.nc", "Lambert_Conformal", "Temperature", LambertConformal.class, null, 1},
 
-        {testDir + "LambertAzimuth.nc", "grid_mapping0", "VIL", LambertAzimuthalEqualArea.class, null},
+        {testDir + "LambertAzimuth.nc", "grid_mapping0", "VIL", LambertAzimuthalEqualArea.class, null, 1},
 
-        {testDir + "PolarStereographic.nc", "Polar_Stereographic", "D2_O3", Stereographic.class, null},
+        {testDir + "PolarStereographic.nc", "Polar_Stereographic", "D2_O3", Stereographic.class, null, 2},
 
-        {testDir + "Polar_Stereographic2.nc", null, "dpd-Surface0", Stereographic.class, null},
+        {testDir + "Polar_Stereographic2.nc", null, "dpd-Surface0", Stereographic.class, null, 3},
 
-        {testDir + "Base_month.nc", null, "D2_SO4", Stereographic.class, null},
+        {testDir + "Base_month.nc", null, "D2_SO4", Stereographic.class, null, 1},
 
-        {testDir + "Mercator.grib1", "Mercator_Projection", "Temperature_isobaric", Mercator.class, null},
+        {testDir + "Mercator.grib1", "Mercator_Projection", "Temperature_isobaric", Mercator.class, null, 1},
 
         {testDir + "Eumetsat.VerticalPerspective.grb", "SpaceViewPerspective_Projection", "Pixel_scene_type",
-            MSGnavigation.class, testPoint},
+            MSGnavigation.class, testPoint, 1},
 
         {testDir + "sinusoidal/MOD13Q1.A2008033.h12v04.005.2008051065305.hdf",
             "MODIS_Grid_16DAY_250m_500m_VI/Data_Fields/Projection",
-            "MODIS_Grid_16DAY_250m_500m_VI/Data_Fields/250m_16_days_NDVI", Sinusoidal.class, testPoint},
+            "MODIS_Grid_16DAY_250m_500m_VI/Data_Fields/250m_16_days_NDVI", Sinusoidal.class, testPoint, 1},
 
-        {testDir + "heiko/topo_stere_sphere.nc", "projection_stere", "air_temperature_2m", Stereographic.class, null},
+        {testDir + "heiko/topo_stere_sphere.nc", "projection_stere", "air_temperature_2m", Stereographic.class, null,
+            1},
 
         {testDir + "heiko/topo_stere_WGS.nc", "projection_stere", "air_temperature_2m",
-            ucar.unidata.geoloc.projection.proj4.StereographicAzimuthalProjection.class, null},
+            ucar.unidata.geoloc.projection.proj4.StereographicAzimuthalProjection.class, null, 1},
 
         {testDir + "heiko/topo_utm_sphere.nc", "projection_tmerc", "air_temperature_2m",
-            ucar.unidata.geoloc.projection.TransverseMercator.class, null},
+            ucar.unidata.geoloc.projection.TransverseMercator.class, null, 1},
 
         {testDir + "heiko/topo_utm_WGS.nc", "projection_tmerc", "air_temperature_2m",
-            ucar.unidata.geoloc.projection.proj4.TransverseMercatorProjection.class, null},
+            ucar.unidata.geoloc.projection.proj4.TransverseMercatorProjection.class, null, 1},
 
-        {testDir + "rotatedPole/snow.DMI.ecctrl.v5.ncml", "rotated_pole", "snow", RotatedPole.class, null},
+        {testDir + "rotatedPole/snow.DMI.ecctrl.v5.ncml", "rotated_pole", "snow", RotatedPole.class, null, 1},
 
         {testDir + "melb-small_LCEA.nc", "lambert_cylindrical_equal_area", "Band1",
-            CylindricalEqualAreaProjection.class, testPoint},
+            CylindricalEqualAreaProjection.class, testPoint, 1},
 
         {testDir + "melb-small_AZE.nc", "azimuthal_equidistant", "Band1", EquidistantAzimuthalProjection.class,
-            LatLonPoint.create(-37, 145.0)},
+            LatLonPoint.create(-37, 145.0), 1},
 
         // :sweep_angle_axis = "x";
         // :longitude_of_projection_origin = -75.0; covers western hemisphere
         {testDir + "geostationary/IT_ABI-L2-CMIPF-M3C16_G16_s2005155201500_e2005155203700_c2014058132255.nc",
-            "goes_imager_projection", "CMI", Geostationary.class, LatLonPoint.create(-37, -45.0)},
+            "goes_imager_projection", "CMI", Geostationary.class, LatLonPoint.create(-37, -45.0), 1},
 
         // check to make sure map coordinates in microradians handled
         // https://github.com/Unidata/thredds/issues/1008
         {testDir + "geostationary/GOES16_FullDisk_20180205_060047_0.47_6km_0.0S_75.0W.nc4", "fixedgrid_projection",
-            "Sectorized_CMI", Geostationary.class, LatLonPoint.create(40, -105)},
+            "Sectorized_CMI", Geostationary.class, LatLonPoint.create(40, -105), 1},
 
         {TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/GFS_Global_2p5deg_20150301_0000.grib2.ncx4",
-            "LatLon_Projection", "Absolute_vorticity_isobaric", LatLonProjection.class, testPoint}};
+            "LatLon_Projection", "Absolute_vorticity_isobaric", LatLonProjection.class, testPoint, 1}};
 
     return Arrays.asList(data);
   }
@@ -112,51 +111,53 @@ public class TestProjections {
   String varName;
   Class projClass;
   LatLonPoint testPt;
+  int ncoordsys;
 
-  public TestProjections(String filename, String ctvName, String varName, Class projClass, LatLonPoint testPt) {
+  public TestProjections(String filename, String ctvName, String varName, Class projClass, LatLonPoint testPt,
+      int ncoordsys) {
     this.filename = filename;
     this.ctvName = ctvName;
     this.varName = varName;
     this.projClass = projClass;
     this.testPt = testPt;
+    this.ncoordsys = ncoordsys;
   }
 
   @Test
   public void testOneProjection() throws IOException {
-    logger.debug("Open= {}", filename);
+    System.out.printf("Open %s %s %n", filename, varName);
     try (NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDatasets.openDataset(filename)) {
-
       Variable ctv = null;
       if (ctvName != null) {
         ctv = ncd.findVariable(ctvName);
-        assert ctv != null;
+        assertThat(ctv).isNotNull();
         logger.debug(" dump of ctv = {}", ctv);
       }
 
       VariableDS v = (VariableDS) ncd.findVariable(varName);
-      assert v != null;
+      assertThat(v).isNotNull();
 
       List<CoordinateSystem> cList = v.getCoordinateSystems();
-      assert cList != null;
-      assert cList.size() == 1;
+      assertThat(cList).isNotNull();
+      assertThat(cList.size()).isEqualTo(ncoordsys);
       CoordinateSystem csys = cList.get(0);
 
       List<CoordinateTransform> pList = new ArrayList<>();
       List<CoordinateTransform> tList = csys.getCoordinateTransforms();
-      assert tList != null;
+      assertThat(tList).isNotNull();
       for (CoordinateTransform ct : tList) {
         if (ct.getTransformType() == TransformType.Projection)
           pList.add(ct);
       }
-      assert pList.size() == 1;
+      assertThat(pList.size()).isEqualTo(1);
       CoordinateTransform ct = pList.get(0);
-      assert ct.getTransformType() == TransformType.Projection;
-      assert ct instanceof ProjectionCT;
+      assertThat(ct.getTransformType()).isEqualTo(TransformType.Projection);
+      assertThat(ct instanceof ProjectionCT).isTrue();
 
       ProjectionCT vct = (ProjectionCT) ct;
       Projection proj = vct.getProjection();
-      assert proj != null;
-      assert projClass.isInstance(proj) : proj.getClass().getName();
+      assertThat(proj).isNotNull();
+      assertThat(projClass.isInstance(proj)).isTrue();
 
       if (projClass != RotatedPole.class) {
         logger.debug("Projection Parameters");
@@ -174,8 +175,8 @@ public class TestProjections {
           }
         }
 
-        assert found;
-        assert (radius > 10000) : radius; // meters
+        assertThat(found).isTrue();
+        assertThat(radius).isGreaterThan(10000);
       }
 
       VariableDS ctvSyn = CoordTransformFactory.makeDummyTransformVariable(ncd, ct);

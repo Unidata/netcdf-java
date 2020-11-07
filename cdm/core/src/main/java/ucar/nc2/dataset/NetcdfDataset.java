@@ -7,6 +7,8 @@ package ucar.nc2.dataset;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
+
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants._Coordinate;
@@ -56,25 +58,7 @@ import java.util.*;
  * @author caron
  * @see ucar.nc2.NetcdfFile
  */
-
-/*
- * Implementation notes.
- * 1) NetcdfDataset wraps a NetcdfFile.
- * orgFile = NetcdfFile
- * variables are wrapped by VariableDS, but are not reparented. VariableDS uses original variable for read.
- * Groups get reparented.
- * 2) NcML standard
- * NcML location is read in as the NetcdfDataset, then modified by the NcML
- * orgFile = null
- * 3) NcML explicit
- * NcML location is read in, then transferred to new NetcdfDataset as needed
- * orgFile = file defined by NcML location
- * NetcdfDataset defined only by NcML, data is set to FillValue unless explicitly defined
- * 4) NcML new
- * NcML location = null
- * orgFile = null
- */
-
+@Immutable
 public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfDataset.class);
   public static final String AGGREGATION = "Aggregation";
@@ -212,7 +196,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @return list of type CoordinateSystem; may be empty, not null.
    */
   public ImmutableList<CoordinateSystem> getCoordinateSystems() {
-    return ImmutableList.copyOf(coordSys);
+    return coords.getCoordSystems();
   }
 
   /**
@@ -237,9 +221,11 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * Get the list of all CoordinateTransform objects used by this dataset.
    *
    * @return list of type CoordinateTransform; may be empty, not null.
+   * @deprecated get transform from CoordinateSystem.
    */
+  @Deprecated
   public ImmutableList<CoordinateTransform> getCoordinateTransforms() {
-    return ImmutableList.copyOf(coordTransforms);
+    return coords.getCoordTransforms();
   }
 
   /**
@@ -248,7 +234,10 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @return list of type CoordinateAxis; may be empty, not null.
    */
   public ImmutableList<CoordinateAxis> getCoordinateAxes() {
-    return ImmutableList.copyOf(coordAxes);
+    if (coords == null && coordAxes != null) {
+      return coordAxes;
+    }
+    return coords.getCoordAxes();
   }
 
   /**
@@ -260,7 +249,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   public CoordinateAxis findCoordinateAxis(AxisType type) {
     if (type == null)
       return null;
-    for (CoordinateAxis v : coordAxes) {
+    for (CoordinateAxis v : coords.getCoordAxes()) {
       if (type == v.getAxisType())
         return v;
     }
@@ -276,7 +265,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   public CoordinateAxis findCoordinateAxis(String fullName) {
     if (fullName == null)
       return null;
-    for (CoordinateAxis v : coordAxes) {
+    for (CoordinateAxis v : coords.getCoordAxes()) {
       if (fullName.equals(v.getFullName()))
         return v;
     }
@@ -292,7 +281,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   public CoordinateSystem findCoordinateSystem(String name) {
     if (name == null)
       return null;
-    for (CoordinateSystem v : coordSys) {
+    for (CoordinateSystem v : coords.getCoordSystems()) {
       if (name.equals(v.getName()))
         return v;
     }
@@ -304,11 +293,13 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    *
    * @param name String which identifies the desired CoordinateSystem
    * @return the CoordinateSystem, or null if not found
+   * @deprecated get transform from CoordinateSystem.
    */
+  @Deprecated
   public CoordinateTransform findCoordinateTransform(String name) {
     if (name == null)
       return null;
-    for (CoordinateTransform v : coordTransforms) {
+    for (CoordinateTransform v : coords.getCoordTransforms()) {
       if (name.equals(v.getName()))
         return v;
     }
@@ -368,10 +359,13 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
         return;
     }
 
-    if (orgFile != null)
+    if (!wasClosed && orgFile != null) {
       orgFile.close();
-    orgFile = null;
+    }
+    wasClosed = true;
   }
+
+  private boolean wasClosed = false;
 
   /** @deprecated do not use */
   @Deprecated
@@ -467,16 +461,20 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     return "N/A";
   }
 
+  //// package private
+  CoordinatesHelper getCoordinatesHelper() {
+    return this.coords;
+  }
+
   ////////////////////////////////////////////////////////////////////////////////////////////
-  // TODO make these final and immutable in 6.
-  private @Nullable NetcdfFile orgFile; // can be null in Ncml
-  private List<CoordinateAxis> coordAxes = new ArrayList<>();
-  private List<CoordinateSystem> coordSys = new ArrayList<>();
-  private List<CoordinateTransform> coordTransforms = new ArrayList<>();
-  private String convUsed;
-  private Set<Enhance> enhanceMode = EnumSet.noneOf(Enhance.class); // enhancement mode for this specific dataset
-  private ucar.nc2.internal.ncml.Aggregation agg;
-  private String fileTypeId;
+  private final @Nullable NetcdfFile orgFile; // can be null in Ncml
+  private final CoordinatesHelper coords;
+  private final String convUsed;
+  private final Set<Enhance> enhanceMode; // enhancement mode for this specific dataset
+  private final ucar.nc2.internal.ncml.Aggregation agg;
+  private final String fileTypeId;
+
+  private final ImmutableList<CoordinateAxis> coordAxes; // TODO get rid of if possible
 
   private NetcdfDataset(Builder<?> builder) {
     super(builder);
@@ -486,22 +484,28 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     this.enhanceMode = builder.getEnhanceMode();
     this.agg = builder.agg;
 
-    // LOOK the need to reference the NetcdfDataset means we cant build the axes or system until now.
+    // The need to reference the NetcdfDataset means we can't build the axes or system until now.
     // LOOK this assumes the dataset has already been enhanced. Where does that happen?
-    CoordinatesHelper coords = builder.coords.build(this);
-    this.coordAxes = coords.getCoordAxes();
-    this.coordSys = coords.getCoordSystems();
-    this.coordTransforms = coords.getCoordTransforms();
+    // TODO: Problem, we are letting ds escape before its finished, namely coords is null at this point
+    // TODO: 1) VerticalCTBuilder.makeVerticalCT(ds) and 2) AbstractTransformBuilder.getGeoCoordinateUnits(ds, ctv)
+    this.coordAxes = CoordinatesHelper.makeAxes(this);
+    coords = builder.coords.build(this, this.coordAxes);
 
     // LOOK how do we get the variableDS to reference the coordinate system?
     // CoordinatesHelper has to wire the coordinate systems together
     // Perhaps a VariableDS uses NetcdfDataset or CoordinatesHelper to manage its CoordinateSystems and Transforms ??
     // So it doesnt need a reference directly to them.
     for (Variable v : this.getVariables()) {
-      // TODO can StructureDS, SequenceDS have a CoordinateSystem?
+      if (v instanceof CoordinateAxis) {
+        continue;
+      }
       if (v instanceof VariableDS) {
         VariableDS vds = (VariableDS) v;
         vds.setCoordinateSystems(coords);
+      }
+      if (v instanceof StructureDS) {
+        StructureDS sds = (StructureDS) v;
+        sds.setCoordinateSystems(coords);
       }
     }
   }
@@ -510,15 +514,11 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     return addLocalFieldsToBuilder(builder());
   }
 
-  public NetcdfDataset(NetcdfFile.Builder<?> builder) {
-    super(builder);
-  }
-
   // Add local fields to the passed - in builder.
   private Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
-    this.coordAxes.forEach(axis -> b.coords.addCoordinateAxis(axis.toBuilder()));
-    this.coordSys.forEach(sys -> b.coords.addCoordinateSystem(sys.toBuilder()));
-    this.coordTransforms.forEach(trans -> b.coords.addCoordinateTransform(trans.toBuilder()));
+    this.coords.getCoordAxes().forEach(axis -> b.coords.addCoordinateAxis(axis.toBuilder()));
+    this.coords.getCoordSystems().forEach(sys -> b.coords.addCoordinateSystem(sys.toBuilder()));
+    this.coords.getCoordTransforms().forEach(trans -> b.coords.addCoordinateTransform(trans.toBuilder()));
 
     b.setOrgFile(this.orgFile).setConventionUsed(this.convUsed).setEnhanceMode(this.enhanceMode)
         .setAggregation(this.agg).setFileTypeId(this.fileTypeId);
@@ -533,12 +533,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    */
   public static Builder<?> builder() {
     return new Builder2();
-  }
-
-  // LOOK this is wrong, cant do it this way.
-  public static NetcdfDataset.Builder builder(NetcdfFile from) {
-    NetcdfDataset.Builder builder = NetcdfDataset.builder().copyFrom(from).setOrgFile(from);
-    return builder;
   }
 
   private static class Builder2 extends Builder<Builder2> {

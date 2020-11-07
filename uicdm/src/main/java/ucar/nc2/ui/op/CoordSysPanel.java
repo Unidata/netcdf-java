@@ -10,7 +10,6 @@ import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.ui.OpPanel;
-import ucar.nc2.ui.ToolsUI;
 import ucar.ui.widget.BAMutil;
 import ucar.util.prefs.PreferencesExt;
 import java.awt.BorderLayout;
@@ -114,7 +113,6 @@ public class CoordSysPanel extends OpPanel {
     }
 
     try {
-      boolean useBuilders = ToolsUI.getToolsUI().getUseBuilders();
       ds = NetcdfDatasets.openDataset(command, true, null);
       if (ds == null) {
         JOptionPane.showMessageDialog(null, "Failed to open <" + command + ">");

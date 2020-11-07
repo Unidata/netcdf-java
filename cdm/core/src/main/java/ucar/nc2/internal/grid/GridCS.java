@@ -83,11 +83,6 @@ class GridCS implements GridCoordinateSystem {
   }
 
   @Override
-  public ImmutableList<CoordinateTransform> getCoordTransforms() {
-    return transforms;
-  }
-
-  @Override
   public GridAxis1D getXHorizAxis() {
     return (GridAxis1D) findCoordAxis(AxisType.GeoX, AxisType.Lon);
   }

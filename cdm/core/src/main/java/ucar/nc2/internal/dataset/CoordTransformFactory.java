@@ -141,7 +141,7 @@ public class CoordTransformFactory {
     String transName;
     Class<?> transClass;
 
-    Transform(String transName, Class transClass) {
+    Transform(String transName, Class<?> transClass) {
       this.transName = transName;
       this.transClass = transClass;
     }

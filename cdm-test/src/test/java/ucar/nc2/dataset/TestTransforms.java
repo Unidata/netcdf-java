@@ -34,6 +34,8 @@ import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.google.common.truth.Truth.assertThat;
+
 /** Test vertical transforms. */
 @Category(NeedsCdmUnitTest.class)
 public class TestTransforms {
@@ -60,9 +62,9 @@ public class TestTransforms {
     for (int i = 0; i < timeDim.getLength(); i++) {
       ucar.ma2.ArrayDouble.D3 coordVals = vt.getCoordinateArray(i);
       int[] shape = coordVals.getShape();
-      assert shape[0] == ncd.findDimension("lev").getLength();
-      assert shape[1] == ncd.findDimension("lat").getLength();
-      assert shape[2] == ncd.findDimension("lon").getLength();
+      assertThat(shape[0]).isEqualTo(ncd.findDimension("lev").getLength());
+      assertThat(shape[1]).isEqualTo(ncd.findDimension("lat").getLength());
+      assertThat(shape[2]).isEqualTo(ncd.findDimension("lon").getLength());
     }
 
     ncd.close();
@@ -79,9 +81,9 @@ public class TestTransforms {
     for (int i = 0; i < timeDim.getLength(); i++) {
       ucar.ma2.ArrayDouble.D3 coordVals = vt.getCoordinateArray(i);
       int[] shape = coordVals.getShape();
-      assert shape[0] == ncd.findDimension("hybrid").getLength();
-      assert shape[1] == ncd.findDimension("y").getLength();
-      assert shape[2] == ncd.findDimension("x").getLength();
+      assertThat(shape[0]).isEqualTo(ncd.findDimension("hybrid").getLength());
+      assertThat(shape[1]).isEqualTo(ncd.findDimension("y").getLength());
+      assertThat(shape[2]).isEqualTo(ncd.findDimension("x").getLength());
     }
 
     ncd.close();
@@ -236,32 +238,31 @@ public class TestTransforms {
     System.out.printf("file= %s%n", ncd.getLocation());
 
     VariableDS lev = (VariableDS) ncd.findVariable(levName);
-    assert lev != null;
+    assertThat(lev).isNotNull();
     if (show)
       System.out.println(" dump of ctv = \n" + lev);
 
     VariableDS v = (VariableDS) ncd.findVariable(varName);
-    assert v != null;
+    assertThat(v).isNotNull();
     System.out.printf(" data variable = %s%n", v);
     Section varSection = v.getShapeAsSection();
 
-    List cList = v.getCoordinateSystems();
-    assert cList != null;
-    assert cList.size() == 1;
-    CoordinateSystem csys = (CoordinateSystem) cList.get(0);
+    List<CoordinateSystem> cList = v.getCoordinateSystems();
+    assertThat(cList).isNotNull();
+    CoordinateSystem csys = cList.get(0);
 
     List<CoordinateTransform> vList = new ArrayList<CoordinateTransform>();
     for (CoordinateTransform ct : csys.getCoordinateTransforms()) {
       if (ct.getTransformType() == TransformType.Vertical)
         vList.add(ct);
     }
-    assert vList.size() == 1 : vList.size();
-    CoordinateTransform ct = (CoordinateTransform) vList.get(0);
-    assert ct.getTransformType() == TransformType.Vertical;
-    assert ct instanceof VerticalCT;
+    assertThat(vList.size()).isEqualTo(1);
+    CoordinateTransform ct = vList.get(0);
+    assertThat(ct.getTransformType()).isEqualTo(TransformType.Vertical);
+    assertThat(ct instanceof VerticalCT).isTrue();
 
     VerticalCT vct = (VerticalCT) ct;
-    assert vct.getVerticalTransformType() == vtype : vct.getVerticalTransformType();
+    assertThat(vct.getVerticalTransformType()).isEqualTo(vtype);
 
     VariableDS ctv = CoordTransformFactory.makeDummyTransformVariable(ncd, ct);
     if (show)
@@ -270,42 +271,41 @@ public class TestTransforms {
     VerticalTransform vt;
     if (timeName == null) {
       vt = vct.makeVerticalTransform(ncd, null);
-      assert !vt.isTimeDependent();
+      assertThat(vt.isTimeDependent()).isFalse();
       ucar.ma2.Array coordVals = vt.getCoordinateArray(0);
-      assert (null != coordVals);
+      assertThat(coordVals).isNotNull();
 
       Section cSection = new Section(coordVals.getShape());
       if (show)
         System.out.printf(" coordVal shape = %s %n", cSection);
-      assert varSection.computeSize() == cSection.computeSize();
+      assertThat(varSection.computeSize()).isEqualTo(cSection.computeSize());
 
     } else {
       Dimension timeDim = ncd.findDimension(timeName);
-      assert null != timeDim;
+      assertThat(timeDim).isNotNull();
       vt = vct.makeVerticalTransform(ncd, timeDim);
-      assert vt.isTimeDependent();
+      assertThat(vt.isTimeDependent()).isTrue();
 
       Section subV = varSection.toBuilder().removeRange(0).build(); // remove time dependence for comparision
       for (int i = 0; i < timeDim.getLength(); i++) {
         ucar.ma2.ArrayDouble.D3 coordVals = vt.getCoordinateArray(i);
-        assert (null != coordVals);
+        assertThat(coordVals).isNotNull();
         Section cSection = new Section(coordVals.getShape());
         if (show) {
           System.out.printf("%s: varSection shape = %s %n", v.getFullName(), subV);
           System.out.printf("%s: coordVal shape = %s %n", v.getFullName(), cSection);
         }
         if (varsMatch)
-          assert subV.computeSize() == cSection.computeSize();
+          assertThat(subV.computeSize()).isEqualTo(cSection.computeSize());
       }
     }
-    assert vt != null;
-    assert vclass.isInstance(vt);
+    assertThat(vt).isNotNull();
+    assertThat(vclass.isInstance(vt)).isTrue();
 
     // should be compatible with vunit
     if (vunit != null) {
       String vertCoordUnit = vt.getUnitString();
-      assert vunit.isCompatible(vertCoordUnit) : vertCoordUnit + " not udunits compatible with "
-          + vunit.getUnitString();
+      assertThat(vunit.isCompatible(vertCoordUnit)).isTrue();
     }
 
     return vt;
@@ -327,14 +327,14 @@ public class TestTransforms {
 
       if (vt.isTimeDependent())
         s = s.toBuilder().removeRange(0).build();
-      assert s.equals(sv);
+      assertThat(s).isEqualTo(sv);
     }
     return true;
   }
 
   private void testCoverage(String endpoint, String covName) throws IOException {
     try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
-      assert cc != null;
+      assertThat(cc).isNotNull();
       Assert.assertEquals(1, cc.getCoverageCollections().size());
       CoverageCollection gds = cc.getCoverageCollections().get(0);
       Assert.assertNotNull(endpoint, gds);

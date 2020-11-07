@@ -396,7 +396,7 @@ public class Structure extends Variable {
   }
 
   @Override
-  void writeCDL(Formatter buf, Indent indent, boolean useFullName, boolean strict) {
+  protected void writeCDL(Formatter buf, Indent indent, boolean useFullName, boolean strict) {
     buf.format("%n%s%s {%n", indent, dataType);
 
     indent.incr();

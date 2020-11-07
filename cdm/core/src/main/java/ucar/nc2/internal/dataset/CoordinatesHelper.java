@@ -7,34 +7,28 @@ package ucar.nc2.internal.dataset;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.stream.Collectors;
 import javax.annotation.concurrent.Immutable;
+
+import ucar.nc2.Dimension;
 import ucar.nc2.Group;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
-import ucar.nc2.dataset.CoordinateAxis;
-import ucar.nc2.dataset.CoordinateSystem;
-import ucar.nc2.dataset.CoordinateTransform;
-import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.*;
 import ucar.nc2.internal.dataset.transform.vertical.VerticalCTBuilder;
 
 /** A helper class for NetcdfDataset to build and manage coordinates. */
 @Immutable
 public class CoordinatesHelper {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinatesHelper.class);
-  private final ImmutableList<CoordinateAxis> coordAxes;
-  private final ImmutableList<CoordinateSystem> coordSystems;
-  private final ImmutableList<CoordinateTransform> coordTransforms;
 
   public ImmutableList<CoordinateAxis> getCoordAxes() {
     return coordAxes;
@@ -48,32 +42,35 @@ public class CoordinatesHelper {
     return coordSystems.stream().filter(cs -> cs.getName().equals(name)).findFirst();
   }
 
-  public List<CoordinateTransform> getCoordTransforms() {
+  public ImmutableList<CoordinateTransform> getCoordTransforms() {
     return coordTransforms;
   }
 
-  private CoordinatesHelper(Builder builder, NetcdfDataset ncd) {
-    List<CoordinateAxis> axes = new ArrayList<>();
-    addAxes(ncd.getRootGroup(), axes);
-    this.coordAxes = ImmutableList.copyOf(axes);
-
-    ImmutableList.Builder<CoordinateTransform> transBuilder = ImmutableList.builder();
-
-    // LOOK keep horiz and vert transforms seperate?
-    transBuilder.addAll(builder.coordTransforms.stream().map(ct -> ct.build(ncd)).filter(Objects::nonNull)
-        .collect(Collectors.toList()));
-
-    transBuilder.addAll(builder.verticalCTBuilders.stream().map(ct -> ct.makeVerticalCT(ncd)).filter(Objects::nonNull)
-        .collect(Collectors.toList()));
-    coordTransforms = transBuilder.build();
-
-    this.coordSystems = builder.coordSys.stream().map(s -> s.build(ncd, this.coordAxes, this.coordTransforms))
-        .filter(Objects::nonNull).collect(ImmutableList.toImmutableList());
+  public ImmutableList<CoordinateSystem> makeCoordinateSystemsFor(Variable v) {
+    ArrayList<CoordinateSystem> result = new ArrayList<>();
+    for (CoordinateSystem csys : coordSystems) {
+      if (csys.isCoordinateSystemFor(v) && csys.isComplete(v)) {
+        result.add(csys);
+      }
+    }
+    result.sort((cs1, cs2) -> cs2.getCoordinateAxes().size() - cs1.getCoordinateAxes().size());
+    return ImmutableList.copyOf(result);
   }
 
-  // LOOK this assumes that the CoordinateAxis have been added to the NetcdfDataset
-  // and appears to ignore builder.axes
-  private void addAxes(Group group, List<CoordinateAxis> axes) {
+  ////////////////////////////////////////////////////////////////////////////////////////////////////
+  private final ImmutableList<CoordinateAxis> coordAxes;
+  private final ImmutableList<CoordinateSystem> coordSystems;
+  private final ImmutableList<CoordinateTransform> coordTransforms;
+
+  public static ImmutableList<CoordinateAxis> makeAxes(NetcdfDataset ncd) {
+    List<CoordinateAxis> axes = new ArrayList<>();
+    addAxes(ncd.getRootGroup(), axes);
+    return ImmutableList.copyOf(axes);
+  }
+
+  // TODO this assumes that the CoordinateAxis have been added to the NetcdfDataset
+  // TODO and appears to ignore builder.axes
+  private static void addAxes(Group group, List<CoordinateAxis> axes) {
     for (Variable v : group.getVariables()) {
       if (v instanceof CoordinateAxis) {
         axes.add((CoordinateAxis) v);
@@ -90,6 +87,23 @@ public class CoordinatesHelper {
     for (Group nestedGroup : group.getGroups()) {
       addAxes(nestedGroup, axes);
     }
+  }
+
+  private CoordinatesHelper(Builder builder, NetcdfDataset ncd, ImmutableList<CoordinateAxis> axes) {
+    this.coordAxes = axes;
+
+    ImmutableList.Builder<CoordinateTransform> transBuilder = ImmutableList.builder();
+
+    // LOOK keep horiz and vert transforms separate?
+    transBuilder.addAll(builder.coordTransforms.stream().map(ct -> ct.build(ncd)).filter(Objects::nonNull)
+        .collect(Collectors.toList()));
+
+    transBuilder.addAll(builder.verticalCTBuilders.stream().map(ct -> ct.makeVerticalCT(ncd)).filter(Objects::nonNull)
+        .collect(Collectors.toList()));
+    coordTransforms = transBuilder.build();
+
+    this.coordSystems = builder.coordSys.stream().map(s -> s.build(ncd, this.coordAxes, this.coordTransforms))
+        .filter(Objects::nonNull).collect(ImmutableList.toImmutableList());
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -234,24 +248,21 @@ public class CoordinatesHelper {
       return axes.stream().sorted(new AxisComparator()).map(a -> a.getFullName()).collect(Collectors.joining(" "));
     }
 
-    public CoordinatesHelper build(NetcdfDataset ncd) {
+    public CoordinatesHelper build(NetcdfDataset ncd, ImmutableList<CoordinateAxis> coordAxes) {
       Preconditions.checkNotNull(ncd);
       if (built)
         throw new IllegalStateException("already built");
       built = true;
-      return new CoordinatesHelper(this, ncd);
+      return new CoordinatesHelper(this, ncd, coordAxes);
     }
 
     // Check if this Coordinate System is complete for v, ie if v dimensions are a subset..
     public boolean isComplete(CoordinateSystem.Builder<?> cs, Variable.Builder<?> vb) {
       Preconditions.checkNotNull(cs);
       Preconditions.checkNotNull(vb);
-      // TODO using strings instead of Dimensions, to avoid exposing mutable Dimension objects.
-      // TODO Might reconsider in 6.
-      Set<String> varDomain = ImmutableSet.copyOf(vb.getDimensionNamesAll().iterator());
-      HashSet<String> csDomain = new HashSet<>();
-      getAxesForSystem(cs).forEach(axis -> csDomain.addAll(axis.getDimensionNamesAll()));
-      return CoordinateSystem.isSubset(varDomain, csDomain);
+      HashSet<Dimension> csDomain = new HashSet<>();
+      getAxesForSystem(cs).forEach(axis -> csDomain.addAll(axis.getDimensions()));
+      return CoordinateSystem.isComplete(vb.getDimensions(), csDomain);
     }
 
     public boolean containsAxes(CoordinateSystem.Builder<?> cs, List<CoordinateAxis.Builder<?>> dataAxes) {
