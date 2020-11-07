@@ -60,7 +60,7 @@ public class TestReadandCount {
     // lon; no x,y
     // ** result.add(new Object[]{griddir+"cf/","feb2003_short.nc", 14, 4, 4, 1});
     result.add(new Object[] {griddir + "cf/", "feb2003_short2.nc", 22, 9, 8, 1});
-    result.add(new Object[] {griddir + "cf/", "temperature.nc", 4, 3, 5, 1});
+    result.add(new Object[] {griddir + "cf/", "temperature.nc", 2, 3, 5, 1});
 
     result.add(new Object[] {griddir + "gdv/", "testGDV.nc", 30, 1, 4, 1});
     result.add(new Object[] {griddir + "gdv/", "OceanDJF.nc", 15, 1, 4, 1});

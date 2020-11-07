@@ -97,6 +97,8 @@ public class CoverageCollection implements Closeable, CoordSysContainer {
       axisMap.put(axis.getName(), axis);
     for (CoverageCoordAxis axis : coordAxes)
       axis.setDataset(this);
+    for (CoverageCoordSys csys : coordSys)
+      csys.setDataset(this);
 
     // wire dependencies
     Map<String, CoordSysSet> map = new HashMap<>();
@@ -111,7 +113,6 @@ public class CoverageCollection implements Closeable, CoordSysContainer {
 
         gset = new CoordSysSet(ccsys); // must use findByName because objects arent wired up yet
         map.put(coverage.getCoordSysName(), gset);
-        gset.getCoordSys().setDataset(this); // wire dataset into coordSys
       }
       gset.addCoverage(coverage);
       coverage.setCoordSys(gset.getCoordSys()); // wire coordSys into coverage
@@ -124,7 +125,7 @@ public class CoverageCollection implements Closeable, CoordSysContainer {
   }
 
   private HorizCoordSys wireHorizCoordSys() {
-    CoverageCoordSys csys1 = coordSys.get(0);
+    CoverageCoordSys csys1 = coordSys.get(0); // LOOK: All the same I guess??
     HorizCoordSys hcs = csys1.makeHorizCoordSys();
 
     // we want them to share the same object for efficiency, esp 2D

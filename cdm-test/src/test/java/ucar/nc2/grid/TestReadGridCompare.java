@@ -103,7 +103,7 @@ public class TestReadGridCompare {
         GridCoordinateSystem newGcs = grid.getCoordinateSystem();
         assertThat(newGcs.getTimeAxis() == null).isEqualTo(gcs.getTimeAxis() == null);
 
-        if (newGcs.getTimeAxis() != null) {
+        if (newGcs.getTimeAxis() != null && gcs.getTimeAxis() != null) {
           GridAxis1DTime newTimeAxis = newGcs.getTimeAxis();
           CoordinateAxis1DTime timeAxis = (CoordinateAxis1DTime) gcs.getTimeAxis();
           assertThat(newTimeAxis.getNcoords()).isEqualTo(timeAxis.getSize());

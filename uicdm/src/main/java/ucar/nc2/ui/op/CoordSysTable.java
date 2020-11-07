@@ -43,12 +43,7 @@ import javax.swing.AbstractAction;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 
-/**
- * A Swing widget to examine Coordinate Systems.
- *
- * @author caron
- */
-
+/** A Swing widget to examine Coordinate Systems. */
 public class CoordSysTable extends JPanel {
   private PreferencesExt prefs;
   private NetcdfDataset ds;
@@ -95,7 +90,7 @@ public class CoordSysTable extends JPanel {
         if (v == null)
           return;
         infoTA.clear();
-        infoTA.appendLine(v.toString());
+        infoTA.appendLine(((VariableEnhanced) v).toString());
         infoTA.appendLine(showMissing(v));
         infoTA.gotoTop();
         infoWindow.show();

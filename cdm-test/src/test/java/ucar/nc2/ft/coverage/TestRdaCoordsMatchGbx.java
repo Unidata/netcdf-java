@@ -4,10 +4,7 @@
  */
 package ucar.nc2.ft.coverage;
 
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -31,6 +28,7 @@ import java.util.List;
  */
 @RunWith(Parameterized.class)
 @Category(NeedsRdaData.class)
+@Ignore("Files done exist")
 public class TestRdaCoordsMatchGbx {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   private static final boolean showFileCounters = true;

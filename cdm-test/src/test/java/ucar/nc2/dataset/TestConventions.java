@@ -100,15 +100,17 @@ public class TestConventions {
   public void testIfps() throws IOException {
     Optional<FeatureDatasetCoverage> ds = CoverageDatasetFactory
         .openCoverageDataset(TestDir.cdmUnitTestDir + "conventions/ifps/HUNGrids.netcdf", new Formatter());
-    assert ds.isPresent();
-    CoverageCollection cc = ds.get().getSingleCoverageCollection();
-    assert cc != null;
+    assertThat(ds.isPresent()).isTrue();
+    FeatureDatasetCoverage fds = ds.get();
+    CoverageCollection cc = fds.getSingleCoverageCollection();
+    assertThat(cc).isNotNull();
     Coverage coverage = cc.findCoverage("T_SFC");
-    assert coverage != null;
+    assertThat(coverage).isNotNull();
     CoverageCoordSys cs = coverage.getCoordSys();
     HorizCoordSys hcs = cs.getHorizCoordSys();
-    assert hcs.isProjection();
-    Assert.assertEquals(DataType.FLOAT, coverage.getDataType());
+    assertThat(hcs.isProjection()).isTrue();
+    assertThat(coverage.getDataType()).isEqualTo(DataType.FLOAT);
+    fds.close();
   }
 
 }

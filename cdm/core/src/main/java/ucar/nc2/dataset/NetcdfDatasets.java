@@ -217,7 +217,7 @@ public class NetcdfDatasets {
     }
 
     // original file not a NetcdfDataset
-    NetcdfDataset.Builder<?> builder = NetcdfDataset.builder(ncfile);
+    NetcdfDataset.Builder<?> builder = NetcdfDataset.builder().copyFrom(ncfile).setOrgFile(ncfile);
     if (DatasetEnhancer.enhanceNeeded(mode, null)) {
       DatasetEnhancer enhancer = new DatasetEnhancer(builder, mode, cancelTask);
       return enhancer.enhance().build();
