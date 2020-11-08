@@ -7,7 +7,7 @@ import ucar.unidata.util.test.TestDir;
 import static ucar.nc2.grid.TestReadGridCompare.compareGridCoverage;
 import static ucar.nc2.grid.TestReadGridCompare.compareGridDataset;
 
-// @Ignore("not fixed yet")
+@Ignore("not fixed yet")
 public class TestGridCompareProblem {
 
   @Test
