@@ -23,7 +23,7 @@ public class ProjectionCT extends CoordinateTransform {
    * @param proj projection function.
    */
   public ProjectionCT(String name, String authority, Projection proj) {
-    super(name, authority, TransformType.Projection, proj.getProjectionParameters());
+    super(name, authority, TransformType.Projection, proj.getProjectionAttributes());
     this.projection = proj;
   }
 

@@ -4,14 +4,15 @@
  */
 package ucar.nc2.dataset;
 
+import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
-import java.util.ArrayList;
+
+import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.AttributeContainerMutable;
 import ucar.unidata.util.Parameter;
 
 import javax.annotation.concurrent.Immutable;
-import java.util.List;
 
 /**
  * A CoordinateTransform is an abstraction of a function from a CoordinateSystem to a
@@ -36,75 +37,93 @@ public abstract class CoordinateTransform implements Comparable<CoordinateTransf
     return transformType;
   }
 
+  /** @deprecated use getCtvAttributes() */
+  @Deprecated
   public ImmutableList<Parameter> getParameters() {
-    return params;
+    ImmutableList.Builder<Parameter> params = ImmutableList.builder();
+    for (Attribute a : ctvAttributes) {
+      params.add(Attribute.toParameter(a));
+    }
+    return params.build();
   }
 
   public AttributeContainer getCtvAttributes() {
     return ctvAttributes;
   }
 
-
-  /**
-   * Convenience function; look up Parameter by name, ignoring case.
-   *
-   * @param name the name of the attribute
-   * @return the Attribute, or null if not found
-   */
+  /** @deprecated use getCtvAttributes() */
+  @Deprecated
   public Parameter findParameterIgnoreCase(String name) {
-    for (Parameter a : params) {
+    for (Attribute a : ctvAttributes) {
       if (name.equalsIgnoreCase(a.getName()))
-        return a;
+        return Attribute.toParameter(a);
     }
     return null;
   }
+  /*
+   * @Override
+   * public boolean equals(Object oo) {
+   * if (this == oo)
+   * return true;
+   * if (!(oo instanceof CoordinateTransform))
+   * return false;
+   * 
+   * CoordinateTransform o = (CoordinateTransform) oo;
+   * if (!getName().equals(o.getName()))
+   * return false;
+   * if (!getAuthority().equals(o.getAuthority()))
+   * return false;
+   * if (!(getTransformType() == o.getTransformType()))
+   * return false;
+   * 
+   * List<Parameter> oparams = o.getParameters();
+   * if (params.size() != oparams.size())
+   * return false;
+   * 
+   * for (int i = 0; i < params.size(); i++) {
+   * Parameter att = params.get(i);
+   * Parameter oatt = oparams.get(i);
+   * if (!att.getName().equals(oatt.getName()))
+   * return false;
+   * // if (!att.getValue().equals(oatt.getValue())) return false;
+   * }
+   * return true;
+   * }
+   * 
+   * @Override
+   * public int hashCode() {
+   * if (hashCode == 0) {
+   * int result = 17;
+   * result = 37 * result + getName().hashCode();
+   * result = 37 * result + getAuthority().hashCode();
+   * result = 37 * result + getTransformType().hashCode();
+   * for (Parameter att : params) {
+   * result = 37 * result + att.getName().hashCode();
+   * // result = 37*result + att.getValue().hashCode(); // why not?
+   * }
+   * hashCode = result;
+   * }
+   * return hashCode;
+   * }
+   * 
+   * private volatile int hashCode;
+   */
 
   @Override
-  public boolean equals(Object oo) {
-    if (this == oo)
+  public boolean equals(Object o) {
+    if (this == o)
       return true;
-    if (!(oo instanceof CoordinateTransform))
+    if (o == null || getClass() != o.getClass())
       return false;
-
-    CoordinateTransform o = (CoordinateTransform) oo;
-    if (!getName().equals(o.getName()))
-      return false;
-    if (!getAuthority().equals(o.getAuthority()))
-      return false;
-    if (!(getTransformType() == o.getTransformType()))
-      return false;
-
-    List<Parameter> oparams = o.getParameters();
-    if (params.size() != oparams.size())
-      return false;
-
-    for (int i = 0; i < params.size(); i++) {
-      Parameter att = params.get(i);
-      Parameter oatt = oparams.get(i);
-      if (!att.getName().equals(oatt.getName()))
-        return false;
-      // if (!att.getValue().equals(oatt.getValue())) return false;
-    }
-    return true;
+    CoordinateTransform that = (CoordinateTransform) o;
+    return Objects.equal(name, that.name) && Objects.equal(authority, that.authority)
+        && transformType == that.transformType && Objects.equal(ctvAttributes, that.ctvAttributes);
   }
 
   @Override
   public int hashCode() {
-    if (hashCode == 0) {
-      int result = 17;
-      result = 37 * result + getName().hashCode();
-      result = 37 * result + getAuthority().hashCode();
-      result = 37 * result + getTransformType().hashCode();
-      for (Parameter att : params) {
-        result = 37 * result + att.getName().hashCode();
-        // result = 37*result + att.getValue().hashCode(); // why not?
-      }
-      hashCode = result;
-    }
-    return hashCode;
+    return Objects.hashCode(name, authority, transformType, ctvAttributes);
   }
-
-  private volatile int hashCode;
 
   @Override
   public String toString() {
@@ -119,14 +138,12 @@ public abstract class CoordinateTransform implements Comparable<CoordinateTransf
   ////////////////////////////////////////////////////////////////////////////////////////////
   final String name, authority;
   final TransformType transformType;
-  final ImmutableList<Parameter> params; // what is difference with attributes ??
   final AttributeContainer ctvAttributes;
 
   protected CoordinateTransform(Builder<?> builder) {
     this.name = builder.name;
     this.authority = builder.authority;
     this.transformType = builder.transformType;
-    this.params = ImmutableList.copyOf(builder.params);
     this.ctvAttributes = builder.ctvAttributes.setName(this.name).toImmutable();
   }
 
@@ -138,12 +155,13 @@ public abstract class CoordinateTransform implements Comparable<CoordinateTransf
    * @param transformType type of transform.
    * @param params list of Parameters.
    */
-  protected CoordinateTransform(String name, String authority, TransformType transformType, List<Parameter> params) {
+  protected CoordinateTransform(String name, String authority, TransformType transformType, AttributeContainer params) {
     this.name = name;
     this.authority = authority;
     this.transformType = transformType;
-    this.params = ImmutableList.copyOf(params);
-    this.ctvAttributes = null; // WTF??
+    AttributeContainerMutable atts = new AttributeContainerMutable(this.name);
+    atts.addAll(params);
+    this.ctvAttributes = atts.toImmutable();
   }
 
   public abstract Builder<?> toBuilder();
@@ -158,8 +176,7 @@ public abstract class CoordinateTransform implements Comparable<CoordinateTransf
     public String name;
     private String authority;
     private TransformType transformType;
-    private AttributeContainerMutable ctvAttributes = new AttributeContainerMutable(".");
-    private List<Parameter> params = new ArrayList<>();
+    private final AttributeContainerMutable ctvAttributes = new AttributeContainerMutable(".");
 
     protected abstract T self();
 
@@ -183,8 +200,15 @@ public abstract class CoordinateTransform implements Comparable<CoordinateTransf
       return self();
     }
 
+    /** @deprecated use addParameter(Attribute param) */
+    @Deprecated
     public T addParameter(Parameter param) {
-      params.add(param);
+      this.ctvAttributes.addAttribute(Attribute.fromParameter(param));
+      return self();
+    }
+
+    public T addParameter(Attribute param) {
+      this.ctvAttributes.addAttribute(param);
       return self();
     }
 

@@ -33,7 +33,6 @@ import ucar.nc2.grib.grib2.Grib2Utils;
 import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.unidata.geoloc.projection.RotatedPole;
-import ucar.unidata.util.Parameter;
 import java.util.Formatter;
 import java.util.List;
 
@@ -89,9 +88,8 @@ class GribIospBuilder {
       Variable.Builder<?> hcsV = Variable.builder().setName(grid_mapping).setDataType(DataType.INT);
       g.addVariable(hcsV);
       hcsV.setSourceData(Arrays.factory(DataType.INT, new int[0], new int[] {0}));
-      for (Parameter p : hcs.proj.getProjectionParameters()) {
-        hcsV.addAttribute(Attribute.fromParameter(p));
-      }
+      hcsV.addAttributes(hcs.proj.getProjectionAttributes());
+
       horizDims = "rlat rlon";
       g.addDimension(new Dimension("rlat", hcs.ny));
       g.addDimension(new Dimension("rlon", hcs.nx));
@@ -119,9 +117,7 @@ class GribIospBuilder {
       Variable.Builder<?> hcsV = Variable.builder().setName(grid_mapping).setDataType(DataType.INT);
       g.addVariable(hcsV);
       hcsV.setSourceData(Arrays.factory(DataType.INT, new int[0], new int[] {0}));
-      for (Parameter p : hcs.proj.getProjectionParameters()) {
-        hcsV.addAttribute(Attribute.fromParameter(p));
-      }
+      hcsV.addAttributes(hcs.proj.getProjectionAttributes());
 
       horizDims = "lat lon";
       g.addDimension(new Dimension("lon", hcs.nx));
@@ -149,9 +145,7 @@ class GribIospBuilder {
       Variable.Builder<?> hcsV = Variable.builder().setName(grid_mapping).setDataType(DataType.INT);
       g.addVariable(hcsV);
       hcsV.setSourceData(Arrays.factory(DataType.INT, new int[0], new int[] {0}));
-      for (Parameter p : hcs.proj.getProjectionParameters()) {
-        hcsV.addAttribute(Attribute.fromParameter(p));
-      }
+      hcsV.addAttributes(hcs.proj.getProjectionAttributes());
 
       horizDims = "y x";
       g.addDimension(new Dimension("x", hcs.nx));

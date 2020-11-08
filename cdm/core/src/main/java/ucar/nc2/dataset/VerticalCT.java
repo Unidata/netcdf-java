@@ -5,13 +5,13 @@
 
 package ucar.nc2.dataset;
 
-import java.util.List;
 import javax.annotation.concurrent.Immutable;
+
+import ucar.nc2.AttributeContainer;
 import ucar.nc2.Dimension;
 import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.transform.VertTransformBuilderIF;
 import ucar.unidata.geoloc.VerticalTransform;
-import ucar.unidata.util.Parameter;
 
 /**
  * A VerticalCT is a CoordinateTransform function CT: (GeoZ) -> Height or Pressure.
@@ -66,7 +66,7 @@ public class VerticalCT extends CoordinateTransform {
     }
   }
 
-  protected VerticalCT(String name, String authority, VerticalCT.Type type, List<Parameter> params) {
+  protected VerticalCT(String name, String authority, VerticalCT.Type type, AttributeContainer params) {
     super(name, authority, TransformType.Vertical, params);
     this.type = type;
     this.transformBuilder = null;

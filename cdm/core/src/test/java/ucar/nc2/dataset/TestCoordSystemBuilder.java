@@ -3,6 +3,7 @@ package ucar.nc2.dataset;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.ma2.DataType;
+import ucar.nc2.AttributeContainerMutable;
 import ucar.nc2.Dimension;
 import ucar.nc2.Group;
 import ucar.nc2.Variable;
@@ -37,7 +38,7 @@ public class TestCoordSystemBuilder {
 
     ProjectionCT projct = new ProjectionCT("horiz", "auth", new FlatEarth());
     transforms.add(projct);
-    VerticalCT vertct = new VerticalCT("vert", "auth", VerticalCT.Type.HybridHeight, new ArrayList<>());
+    VerticalCT vertct = new VerticalCT("vert", "auth", VerticalCT.Type.HybridHeight, new AttributeContainerMutable(""));
     transforms.add(vertct);
 
     CoordinateSystem.Builder<?> builder = CoordinateSystem.builder().setCoordAxesNames("xname yname")

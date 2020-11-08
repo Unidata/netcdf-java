@@ -247,16 +247,7 @@ public class CoordTransformFactory {
    */
   public static VariableDS makeDummyTransformVariable(NetcdfDataset ds, CoordinateTransform ct) {
     VariableDS.Builder<?> vb = VariableDS.builder().setName(ct.getName()).setDataType(DataType.CHAR);
-    List<Parameter> params = ct.getParameters();
-    for (Parameter p : params) {
-      if (p.isString())
-        vb.addAttribute(new Attribute(p.getName(), p.getStringValue()));
-      else {
-        double[] data = p.getNumericValues();
-        Array dataA = Array.factory(DataType.DOUBLE, new int[] {data.length}, data);
-        vb.addAttribute(Attribute.builder(p.getName()).setValues(dataA).build());
-      }
-    }
+    vb.addAttributes(ct.getCtvAttributes());
     vb.addAttribute(new Attribute(_Coordinate.TransformType, ct.getTransformType().toString()));
 
     // fake data

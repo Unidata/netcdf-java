@@ -13,7 +13,6 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import javax.annotation.Nullable;
 import ucar.array.Arrays;
-import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
@@ -25,7 +24,6 @@ import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.*;
 import ucar.nc2.dataset.spi.CoordSystemBuilderFactory;
 import ucar.nc2.util.CancelTask;
-import ucar.unidata.util.Parameter;
 
 /**
  * Super class for implementing Convention-specific parsing of netCDF files.
@@ -744,16 +742,7 @@ public class CoordSystemBuilder {
    */
   public VariableDS.Builder<?> makeCoordinateTransformVariable(CoordinateTransform ct) {
     VariableDS.Builder<?> v = VariableDS.builder().setName(ct.getName()).setDataType(DataType.CHAR);
-    List<Parameter> params = ct.getParameters();
-    for (Parameter p : params) {
-      if (p.isString())
-        v.addAttribute(new Attribute(p.getName(), p.getStringValue()));
-      else {
-        double[] data = p.getNumericValues();
-        Array dataA = Array.factory(DataType.DOUBLE, new int[] {data.length}, data);
-        v.addAttribute(Attribute.fromArray(p.getName(), dataA));
-      }
-    }
+    v.addAttributes(ct.getCtvAttributes());
     v.addAttribute(new Attribute(_Coordinate.TransformType, ct.getTransformType().toString()));
 
     // fake data

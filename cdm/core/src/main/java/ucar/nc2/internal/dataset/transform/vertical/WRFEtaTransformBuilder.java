@@ -5,8 +5,9 @@
 
 package ucar.nc2.internal.dataset.transform.vertical;
 
-import java.util.ArrayList;
-import java.util.List;
+import ucar.nc2.Attribute;
+import ucar.nc2.AttributeContainer;
+import ucar.nc2.AttributeContainerMutable;
 import ucar.nc2.Dimension;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateSystem;
@@ -15,7 +16,6 @@ import ucar.nc2.dataset.VerticalCT;
 import ucar.nc2.internal.dataset.CoordinatesHelper;
 import ucar.unidata.geoloc.VerticalTransform;
 import ucar.unidata.geoloc.vertical.WRFEta;
-import ucar.unidata.util.Parameter;
 
 /** Because the transform depends on NetcdfDataset and CoordinateSystem, must handle differently */
 public class WRFEtaTransformBuilder implements VerticalCTBuilder {
@@ -30,28 +30,29 @@ public class WRFEtaTransformBuilder implements VerticalCTBuilder {
   @Override
   public VerticalCT makeVerticalCT(NetcdfDataset ds) {
     VerticalCT.Type type = VerticalCT.Type.WRFEta;
-    List<Parameter> params = new ArrayList<>();
-    params.add(new Parameter("height formula", "height(x,y,z) = (PH(x,y,z) + PHB(x,y,z)) / 9.81"));
-    params.add(new Parameter(WRFEta.PerturbationGeopotentialVariable, "PH"));
-    params.add(new Parameter(WRFEta.BaseGeopotentialVariable, "PHB"));
-    params.add(new Parameter("pressure formula", "pressure(x,y,z) = P(x,y,z) + PB(x,y,z)"));
-    params.add(new Parameter(WRFEta.PerturbationPressureVariable, "P"));
-    params.add(new Parameter(WRFEta.BasePressureVariable, "PB"));
+    AttributeContainerMutable atts = new AttributeContainerMutable(getTransformName());
+    atts.addAttribute(new Attribute("height formula", "height(x,y,z) = (PH(x,y,z) + PHB(x,y,z)) / 9.81"));
+    atts.addAttribute(new Attribute(WRFEta.PerturbationGeopotentialVariable, "PH"));
+    atts.addAttribute(new Attribute(WRFEta.BaseGeopotentialVariable, "PHB"));
+    atts.addAttribute(new Attribute("pressure formula", "pressure(x,y,z) = P(x,y,z) + PB(x,y,z)"));
+    atts.addAttribute(new Attribute(WRFEta.PerturbationPressureVariable, "P"));
+    atts.addAttribute(new Attribute(WRFEta.BasePressureVariable, "PB"));
 
     if (coords.findAxisByType(cs, AxisType.GeoX).isPresent())
-      params.add(new Parameter(WRFEta.IsStaggeredX, "" + isStaggered(AxisType.GeoX)));
+      atts.addAttribute(new Attribute(WRFEta.IsStaggeredX, "" + isStaggered(AxisType.GeoX)));
     else
-      params.add(new Parameter(WRFEta.IsStaggeredX, "" + isStaggered2(AxisType.Lon, 1)));
+      atts.addAttribute(new Attribute(WRFEta.IsStaggeredX, "" + isStaggered2(AxisType.Lon, 1)));
 
     if (coords.findAxisByType(cs, AxisType.GeoY).isPresent())
-      params.add(new Parameter(WRFEta.IsStaggeredY, "" + isStaggered(AxisType.GeoY)));
+      atts.addAttribute(new Attribute(WRFEta.IsStaggeredY, "" + isStaggered(AxisType.GeoY)));
     else
-      params.add(new Parameter(WRFEta.IsStaggeredY, "" + isStaggered2(AxisType.Lat, 0)));
+      atts.addAttribute(new Attribute(WRFEta.IsStaggeredY, "" + isStaggered2(AxisType.Lat, 0)));
 
-    params.add(new Parameter(WRFEta.IsStaggeredZ, "" + isStaggered(AxisType.GeoZ)));
-    coords.findAxisByType(cs, AxisType.GeoZ).ifPresent(a -> params.add(new Parameter("eta", "" + a.getFullName())));
+    atts.addAttribute(new Attribute(WRFEta.IsStaggeredZ, "" + isStaggered(AxisType.GeoZ)));
+    coords.findAxisByType(cs, AxisType.GeoZ)
+        .ifPresent(a -> atts.addAttribute(new Attribute("eta", "" + a.getFullName())));
 
-    return new WRFEtaTransform(getTransformName(), type.toString(), type, params);
+    return new WRFEtaTransform(getTransformName(), type.toString(), type, atts);
   }
 
   public String getTransformName() {
@@ -71,7 +72,7 @@ public class WRFEtaTransformBuilder implements VerticalCTBuilder {
   }
 
   static class WRFEtaTransform extends VerticalCT implements VerticalTransformBuilder {
-    WRFEtaTransform(String name, String authority, Type type, List<Parameter> params) {
+    WRFEtaTransform(String name, String authority, Type type, AttributeContainer params) {
       super(name, authority, type, params);
     }
 

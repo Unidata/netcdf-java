@@ -36,6 +36,7 @@ import com.google.common.collect.ImmutableList;
 import java.nio.charset.StandardCharsets;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.*;
+import ucar.nc2.Attribute;
 import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.grib.GribStatType;
 import ucar.nc2.grib.GribUtils;
@@ -51,7 +52,6 @@ import ucar.nc2.util.Misc;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.Projection;
 import ucar.unidata.io.RandomAccessFile;
-import ucar.unidata.util.Parameter;
 import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.BeanTable;
 import javax.swing.*;
@@ -676,8 +676,9 @@ public class Grib1CollectionPanel extends JPanel {
     f.format("%n%n%s", gdsHc);
     Projection proj = gdsHc.proj;
     f.format("%n%nProjection %s%n", proj.getName());
-    for (Parameter p : proj.getProjectionParameters())
+    for (Attribute p : proj.getProjectionAttributes()) {
       f.format("  %s == %s%n", p.getName(), p.getStringValue());
+    }
   }
 
   //////////////////////////////////////////////////////////////////////////////

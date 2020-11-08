@@ -17,7 +17,6 @@ import ucar.nc2.Dimension;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
-// import ucar.nc2.dt.radial.RadialCoordSys;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageCSBuilder;
 import ucar.nc2.time.*;
 import ucar.nc2.write.Ncdump;
@@ -29,7 +28,6 @@ import ucar.nc2.dataset.*;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dt.grid.*;
-import ucar.unidata.util.Parameter;
 import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.*;
 import java.awt.BorderLayout;
@@ -136,7 +134,7 @@ public class CoordSysTable extends JPanel {
         infoTA.appendLine(" Coordinate Transforms");
         for (CoordinateTransform ct : coordSys.getCoordinateTransforms()) {
           infoTA.appendLine("  " + ct.getName() + " type=" + ct.getTransformType());
-          for (Parameter p : ct.getParameters()) {
+          for (Attribute p : ct.getCtvAttributes()) {
             infoTA.appendLine("    " + p);
           }
           if (ct instanceof ProjectionCT) {
