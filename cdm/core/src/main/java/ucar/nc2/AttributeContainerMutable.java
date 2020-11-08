@@ -31,8 +31,9 @@ public class AttributeContainerMutable implements AttributeContainer {
     addAll(from);
   }
 
-  public void setName(@Nullable String name) {
+  public AttributeContainerMutable setName(@Nullable String name) {
     this.name = name;
+    return this;
   }
 
   @Override

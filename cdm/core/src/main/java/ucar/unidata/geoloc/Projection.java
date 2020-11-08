@@ -49,7 +49,7 @@ public interface Projection {
    */
   boolean crossSeam(ProjectionPoint pt1, ProjectionPoint pt2);
 
-  /** Get projection parameters. */
+  /** Get projection parameters. Add as Attributes to a Coordinate Transform Variable (ctv). */
   ImmutableList<Parameter> getProjectionParameters();
 
   /**

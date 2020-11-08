@@ -6,6 +6,7 @@
 package ucar.nc2.dataset.transform;
 
 import ucar.nc2.AttributeContainer;
+import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.*;
 import ucar.nc2.Dimension;
 import ucar.unidata.geoloc.VerticalTransform;
@@ -17,14 +18,14 @@ import ucar.unidata.util.Parameter;
  *
  * @author caron
  */
-public class CFOceanSigma extends AbstractTransformBuilder implements VertTransformBuilderIF {
+public class CFOceanSigma extends AbstractVerticalCT implements VertTransformBuilderIF {
   private String sigma, eta, depth;
 
   public String getTransformName() {
     return VerticalCT.Type.OceanSigma.name();
   }
 
-  public VerticalCT makeCoordinateTransform(NetcdfDataset ds, AttributeContainer ctv) {
+  public VerticalCT.Builder<?> makeCoordinateTransform(NetcdfFile ds, AttributeContainer ctv) {
     String formula_terms = getFormula(ctv);
     if (null == formula_terms)
       return null;
@@ -37,8 +38,9 @@ public class CFOceanSigma extends AbstractTransformBuilder implements VertTransf
     eta = values[1];
     depth = values[2];
 
-    VerticalCT rs =
-        new VerticalCT("OceanSigma_Transform_" + ctv.getName(), getTransformName(), VerticalCT.Type.OceanSigma, this);
+    VerticalCT.Builder<?> rs = VerticalCT.builder().setName("OceanSigma_Transform_" + ctv.getName())
+        .setAuthority(getTransformName()).setType(VerticalCT.Type.OceanSigma).setTransformBuilder(this);
+
     rs.addParameter(new Parameter("standard_name", getTransformName()));
     rs.addParameter(new Parameter("formula_terms", formula_terms));
     rs.addParameter((new Parameter("height_formula", "height(x,y,z) = eta(n,j,i) + sigma(k)*(depth(j,i)+eta(n,j,i))")));

@@ -9,22 +9,18 @@ import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.ProjectionCT;
 
-/**
- * Create a Orthographic Projection from the information in the Coordinate Transform Variable.
- *
- * @author caron
- */
-public class Orthographic extends AbstractTransformBuilder implements HorizTransformBuilderIF {
+/** Create a Orthographic Projection from the information in the Coordinate Transform Variable. */
+public class Orthographic extends AbstractProjectionCT implements HorizTransformBuilderIF {
 
   public String getTransformName() {
     return CF.ORTHOGRAPHIC;
   }
 
-  public ProjectionCT makeCoordinateTransform(AttributeContainer ctv, String geoCoordinateUnits) {
-    double lon0 = readAttributeDouble(ctv, CF.LONGITUDE_OF_PROJECTION_ORIGIN, Double.NaN);
-    double lat0 = readAttributeDouble(ctv, CF.LATITUDE_OF_PROJECTION_ORIGIN, Double.NaN);
+  public ProjectionCT.Builder<?> makeCoordinateTransform(AttributeContainer ctv, String geoCoordinateUnits) {
+    double lon0 = ctv.findAttributeDouble(CF.LONGITUDE_OF_PROJECTION_ORIGIN, Double.NaN);
+    double lat0 = ctv.findAttributeDouble(CF.LATITUDE_OF_PROJECTION_ORIGIN, Double.NaN);
 
     ucar.unidata.geoloc.projection.Orthographic proj = new ucar.unidata.geoloc.projection.Orthographic(lat0, lon0);
-    return new ProjectionCT(ctv.getName(), "FGDC", proj);
+    return ProjectionCT.builder().setName(ctv.getName()).setAuthority("FGDC").setProjection(proj);
   }
 }

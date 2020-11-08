@@ -73,6 +73,39 @@ public class TestCoordSystemBuilder {
   }
 
   @Test
+  public void testFindMethods() {
+    NetcdfDataset ncd = NetcdfDataset.builder().build();
+    ArrayList<CoordinateAxis> axes = new ArrayList<>();
+    ArrayList<CoordinateTransform> transforms = new ArrayList<>();
+
+    VariableDS.Builder<?> xBuilder = VariableDS.builder().setName("xname").setDataType(DataType.FLOAT)
+        .setUnits("xunits").setDesc("xdesc").setEnhanceMode(NetcdfDataset.getEnhanceAll());
+    axes.add(CoordinateAxis.fromVariableDS(xBuilder).setAxisType(AxisType.GeoX).build(makeDummyGroup()));
+
+    VariableDS.Builder<?> yBuilder = VariableDS.builder().setName("yname").setDataType(DataType.FLOAT)
+        .setUnits("yunits").setDesc("ydesc").setEnhanceMode(NetcdfDataset.getEnhanceAll());
+    axes.add(CoordinateAxis.fromVariableDS(yBuilder).setAxisType(AxisType.GeoY).build(makeDummyGroup()));
+
+    CoordinateSystem.Builder<?> builder = CoordinateSystem.builder().setCoordAxesNames("xname yname")
+        .addCoordinateTransformByName("horiz").addCoordinateTransformByName("vert");
+    CoordinateSystem coordSys = builder.build(ncd, axes, transforms);
+
+    CoordinateAxis xaxis = coordSys.findAxis(AxisType.GeoX);
+    assertThat(xaxis).isNotNull();
+    assertThat(coordSys.findAxis(AxisType.GeoZ, AxisType.GeoX, AxisType.GeoY)).isEqualTo(xaxis);
+
+    CoordinateAxis yaxis = coordSys.findAxis(AxisType.GeoY);
+    assertThat(yaxis).isNotNull();
+    assertThat(coordSys.findAxis(AxisType.GeoZ, AxisType.GeoY, AxisType.GeoX)).isEqualTo(yaxis);
+    assertThat(coordSys.findAxis(AxisType.GeoZ, AxisType.Pressure, AxisType.Height)).isNull();
+
+    assertThat(coordSys.findAxis(AxisType.GeoZ, AxisType.Pressure, AxisType.Height)).isNull();
+
+    assertThat(coordSys.getProjection()).isNull();
+    assertThat(coordSys.getVerticalCT()).isNull();
+  }
+
+  @Test
   @Category(NeedsCdmUnitTest.class)
   public void testSeparateGroups() throws IOException {
     // This has Best and TwoD, and the coordSys are mixing them up

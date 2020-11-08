@@ -6,6 +6,7 @@
 package ucar.nc2.dataset.transform;
 
 import ucar.nc2.AttributeContainer;
+import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.*;
 import ucar.nc2.Dimension;
 import ucar.unidata.geoloc.VerticalTransform;
@@ -19,14 +20,14 @@ import ucar.unidata.util.Parameter;
  * @author caron
  * @since May 6, 2008
  */
-public class CFLnPressure extends AbstractTransformBuilder implements VertTransformBuilderIF {
+public class CFLnPressure extends AbstractVerticalCT implements VertTransformBuilderIF {
   private String p0, lev;
 
   public String getTransformName() {
     return VerticalCT.Type.LnPressure.name();
   }
 
-  public VerticalCT makeCoordinateTransform(NetcdfDataset ds, AttributeContainer ctv) {
+  public VerticalCT.Builder<?> makeCoordinateTransform(NetcdfFile ds, AttributeContainer ctv) {
     String formula_terms = getFormula(ctv);
     if (null == formula_terms)
       return null;
@@ -39,8 +40,9 @@ public class CFLnPressure extends AbstractTransformBuilder implements VertTransf
     p0 = values[0];
     lev = values[1];
 
-    VerticalCT rs =
-        new VerticalCT("AtmSigma_Transform_" + ctv.getName(), getTransformName(), VerticalCT.Type.LnPressure, this);
+    VerticalCT.Builder<?> rs = VerticalCT.builder().setName("AtmSigma_Transform_" + ctv.getName())
+        .setAuthority(getTransformName()).setType(VerticalCT.Type.LnPressure).setTransformBuilder(this);
+
     rs.addParameter(new Parameter("standard_name", getTransformName()));
     rs.addParameter(new Parameter("formula_terms", formula_terms));
     rs.addParameter(new Parameter("formula", "pressure(z) = p0 * exp(-lev(k))"));

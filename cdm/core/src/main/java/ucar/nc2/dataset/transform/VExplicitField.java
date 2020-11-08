@@ -6,6 +6,7 @@
 package ucar.nc2.dataset.transform;
 
 import ucar.nc2.AttributeContainer;
+import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.*;
 import ucar.nc2.Dimension;
 import ucar.unidata.geoloc.VerticalTransform;
@@ -18,20 +19,21 @@ import ucar.unidata.util.Parameter;
  *
  * @author caron
  */
-public class VExplicitField extends AbstractTransformBuilder implements VertTransformBuilderIF {
+public class VExplicitField extends AbstractVerticalCT implements VertTransformBuilderIF {
   public String getTransformName() {
     return VerticalCT.Type.Existing3DField.name();
   }
 
-  public VerticalCT makeCoordinateTransform(NetcdfDataset ds, AttributeContainer ctv) {
-    VerticalCT ct = new VerticalCT(ctv.getName(), getTransformName(), VerticalCT.Type.Existing3DField, this);
+  public VerticalCT.Builder<?> makeCoordinateTransform(NetcdfFile ds, AttributeContainer ctv) {
+    VerticalCT.Builder<?> rs = VerticalCT.builder().setName(ctv.getName()).setAuthority(getTransformName())
+        .setType(VerticalCT.Type.Existing3DField).setTransformBuilder(this);
     String fieldName = ctv.findAttributeString(VTfromExistingData.existingDataField, null);
     if (null == fieldName)
       throw new IllegalArgumentException(
           "ExplicitField Vertical Transform must have attribute " + VTfromExistingData.existingDataField);
-    ct.addParameter(new Parameter("standard_name", getTransformName()));
-    ct.addParameter(new Parameter(VTfromExistingData.existingDataField, fieldName));
-    return ct;
+    rs.addParameter(new Parameter("standard_name", getTransformName()));
+    rs.addParameter(new Parameter(VTfromExistingData.existingDataField, fieldName));
+    return rs;
   }
 
   public VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {

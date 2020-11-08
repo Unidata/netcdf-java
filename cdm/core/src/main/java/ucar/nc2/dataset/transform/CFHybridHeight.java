@@ -6,6 +6,7 @@ package ucar.nc2.dataset.transform;
 
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.Dimension;
+import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.*;
 import ucar.unidata.geoloc.VerticalTransform;
 import ucar.unidata.geoloc.vertical.HybridHeight;
@@ -17,7 +18,7 @@ import ucar.unidata.util.Parameter;
  *
  * @author murray
  */
-public class CFHybridHeight extends AbstractTransformBuilder implements VertTransformBuilderIF {
+public class CFHybridHeight extends AbstractVerticalCT implements VertTransformBuilderIF {
 
   /**
    * The name of the a term
@@ -59,7 +60,7 @@ public class CFHybridHeight extends AbstractTransformBuilder implements VertTran
    * @param ctv the variable with the formula
    * @return the <code>CoordinateTransform</code>
    */
-  public VerticalCT makeCoordinateTransform(NetcdfDataset ds, AttributeContainer ctv) {
+  public VerticalCT.Builder<?> makeCoordinateTransform(NetcdfFile ds, AttributeContainer ctv) {
     String formula_terms = getFormula(ctv);
     if (null == formula_terms)
       return null;
@@ -73,8 +74,8 @@ public class CFHybridHeight extends AbstractTransformBuilder implements VertTran
     b = values[1];
     orog = values[2];
 
-    VerticalCT rs = new VerticalCT("AtmHybridHeight_Transform_" + ctv.getName(), getTransformName(),
-        VerticalCT.Type.HybridHeight, this);
+    VerticalCT.Builder<?> rs = VerticalCT.builder().setName("AtmHybridHeight_Transform_" + ctv.getName())
+        .setAuthority(getTransformName()).setType(VerticalCT.Type.HybridHeight).setTransformBuilder(this);
     rs.addParameter(new Parameter("standard_name", getTransformName()));
     rs.addParameter(new Parameter("formula_terms", formula_terms));
 

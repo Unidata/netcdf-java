@@ -18,16 +18,16 @@ import ucar.unidata.geoloc.Earth;
  * 
  * @author ghansham@sac.isro.gov.in 1/8/2012
  */
-public class PolyconicProjection extends AbstractTransformBuilder implements HorizTransformBuilderIF {
+public class PolyconicProjection extends AbstractProjectionCT implements HorizTransformBuilderIF {
 
-  public ProjectionCT makeCoordinateTransform(AttributeContainer ctv, String geoCoordinateUnits) {
+  public ProjectionCT.Builder<?> makeCoordinateTransform(AttributeContainer ctv, String geoCoordinateUnits) {
 
-    double lon0 = readAttributeDouble(ctv, "longitude_of_central_meridian", Double.NaN);
-    double lat0 = readAttributeDouble(ctv, "latitude_of_projection_origin", Double.NaN);
+    double lon0 = ctv.findAttributeDouble("longitude_of_central_meridian", Double.NaN);
+    double lat0 = ctv.findAttributeDouble("latitude_of_projection_origin", Double.NaN);
 
-    double semi_major_axis = readAttributeDouble(ctv, "semi_major_axis", Double.NaN);
-    double semi_minor_axis = readAttributeDouble(ctv, "semi_minor_axis", Double.NaN);
-    double inverse_flattening = readAttributeDouble(ctv, "inverse_flattening", 0.0);
+    double semi_major_axis = ctv.findAttributeDouble("semi_major_axis", Double.NaN);
+    double semi_minor_axis = ctv.findAttributeDouble("semi_minor_axis", Double.NaN);
+    double inverse_flattening = ctv.findAttributeDouble("inverse_flattening", 0.0);
 
     ucar.unidata.geoloc.Projection proj;
 
@@ -39,7 +39,7 @@ public class PolyconicProjection extends AbstractTransformBuilder implements Hor
       proj = new ucar.unidata.geoloc.projection.proj4.PolyconicProjection(lat0, lon0);
     }
 
-    return new ProjectionCT(ctv.getName(), "FGDC", proj);
+    return ProjectionCT.builder().setName(ctv.getName()).setAuthority("FGDC").setProjection(proj);
   }
 
   public String getTransformName() {

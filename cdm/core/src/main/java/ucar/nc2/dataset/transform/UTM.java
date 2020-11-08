@@ -10,16 +10,16 @@ import ucar.nc2.dataset.ProjectionCT;
 import ucar.unidata.geoloc.projection.UtmProjection;
 
 /** Create a UTM Projection from the information in the Coordinate Transform Variable. */
-public class UTM extends AbstractTransformBuilder implements HorizTransformBuilderIF {
+public class UTM extends AbstractProjectionCT implements HorizTransformBuilderIF {
 
   public String getTransformName() {
     return UtmProjection.GRID_MAPPING_NAME;
   }
 
-  public ProjectionCT makeCoordinateTransform(AttributeContainer ctv, String geoCoordinateUnits) {
-    double zoned = readAttributeDouble(ctv, UtmProjection.UTM_ZONE1, Double.NaN);
+  public ProjectionCT.Builder<?> makeCoordinateTransform(AttributeContainer ctv, String geoCoordinateUnits) {
+    double zoned = ctv.findAttributeDouble(UtmProjection.UTM_ZONE1, Double.NaN);
     if (Double.isNaN(zoned))
-      zoned = readAttributeDouble(ctv, UtmProjection.UTM_ZONE2, Double.NaN);
+      zoned = ctv.findAttributeDouble(UtmProjection.UTM_ZONE2, Double.NaN);
     if (Double.isNaN(zoned))
       throw new IllegalArgumentException("No zone was specified");
 
@@ -32,6 +32,6 @@ public class UTM extends AbstractTransformBuilder implements HorizTransformBuild
 
     // double a, double f, int zone, boolean isNorth
     UtmProjection proj = (axis != 0.0) ? new UtmProjection(axis, f, zone, isNorth) : new UtmProjection(zone, isNorth);
-    return new ProjectionCT(ctv.getName(), "FGDC", proj);
+    return ProjectionCT.builder().setName(ctv.getName()).setAuthority("FGDC").setProjection(proj);
   }
 }

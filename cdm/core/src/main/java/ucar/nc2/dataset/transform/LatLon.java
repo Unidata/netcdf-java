@@ -20,14 +20,14 @@ import ucar.unidata.geoloc.projection.LatLonProjection;
  *      "http://cfconventions.org/Data/cf-conventions/cf-conventions-1.7/cf-conventions.html#_latitude_longitude"
  *      >CF Conventions</a>
  */
-public class LatLon extends AbstractTransformBuilder implements HorizTransformBuilderIF {
+public class LatLon extends AbstractProjectionCT implements HorizTransformBuilderIF {
   @Override
   public String getTransformName() {
     return CF.LATITUDE_LONGITUDE;
   }
 
   @Override
-  public ProjectionCT makeCoordinateTransform(AttributeContainer ctv, String geoCoordinateUnits) {
+  public ProjectionCT.Builder<?> makeCoordinateTransform(AttributeContainer ctv, String geoCoordinateUnits) {
     readStandardParams(ctv, geoCoordinateUnits);
 
     // create spherical Earth obj if not created by readStandardParams w radii, flattening
@@ -41,6 +41,6 @@ public class LatLon extends AbstractTransformBuilder implements HorizTransformBu
     }
 
     LatLonProjection proj = new LatLonProjection(earth);
-    return new ProjectionCT(ctv.getName(), "FGDC", proj);
+    return ProjectionCT.builder().setName(ctv.getName()).setAuthority("FGDC").setProjection(proj);
   }
 }

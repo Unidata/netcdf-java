@@ -6,12 +6,11 @@ package ucar.nc2.dataset;
 
 import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
-import java.util.Formatter;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.AttributeContainerMutable;
-import ucar.nc2.internal.dataset.CoordTransformFactory;
 import ucar.unidata.util.Parameter;
-import javax.annotation.concurrent.ThreadSafe;
+
+import javax.annotation.concurrent.Immutable;
 import java.util.List;
 
 /**
@@ -19,46 +18,16 @@ import java.util.List;
  * "reference" CoordinateSystem.
  *
  * CoordinateTransform is the superclass for ProjectionCT and VerticalCT.
- * It contains the Attributes/Parameters needed to make a "Coordinate Transform Variable" which
- * is just a container for the Transform parameters.
- * TODO make Immutable
+ * It contains the Attributes/Parameters needed to make a "Coordinate Transform Variable".
  */
-@ThreadSafe
+@Immutable
 public abstract class CoordinateTransform implements Comparable<CoordinateTransform> {
-  /**
-   * Create a Coordinate Transform.
-   *
-   * @param name name of transform, must be unique within the Coordinate System.
-   * @param authority naming authority
-   * @param transformType type of transform.
-   * @param params list of Parameters.
-   */
-  protected CoordinateTransform(String name, String authority, TransformType transformType, List<Parameter> params) {
-    this.name = name;
-    this.authority = authority;
-    this.transformType = transformType;
-    this.params = new ArrayList<>(params);
-  }
-
-  /**
-   * add a parameter
-   * 
-   * @param param add this Parameter
-   * @deprecated Use CoordinateTransform.builder()
-   */
-  @Deprecated
-  public void addParameter(Parameter param) {
-    params.add(param);
-  }
 
   public String getName() {
     return name;
   }
 
-  public AttributeContainer attributes() {
-    return attributeContainer;
-  }
-
+  // TODO is this needed?
   public String getAuthority() {
     return authority;
   }
@@ -68,8 +37,13 @@ public abstract class CoordinateTransform implements Comparable<CoordinateTransf
   }
 
   public ImmutableList<Parameter> getParameters() {
-    return ImmutableList.copyOf(params);
+    return params;
   }
+
+  public AttributeContainer getCtvAttributes() {
+    return ctvAttributes;
+  }
+
 
   /**
    * Convenience function; look up Parameter by name, ignoring case.
@@ -85,9 +59,7 @@ public abstract class CoordinateTransform implements Comparable<CoordinateTransf
     return null;
   }
 
-  /**
-   * Instances which have same name, authority and parameters are equal.
-   */
+  @Override
   public boolean equals(Object oo) {
     if (this == oo)
       return true;
@@ -116,9 +88,7 @@ public abstract class CoordinateTransform implements Comparable<CoordinateTransf
     return true;
   }
 
-  /**
-   * Override Object.hashCode() to be consistent with equals.
-   */
+  @Override
   public int hashCode() {
     if (hashCode == 0) {
       int result = 17;
@@ -127,7 +97,7 @@ public abstract class CoordinateTransform implements Comparable<CoordinateTransf
       result = 37 * result + getTransformType().hashCode();
       for (Parameter att : params) {
         result = 37 * result + att.getName().hashCode();
-        // result = 37*result + att.getValue().hashCode();
+        // result = 37*result + att.getValue().hashCode(); // why not?
       }
       hashCode = result;
     }
@@ -136,6 +106,7 @@ public abstract class CoordinateTransform implements Comparable<CoordinateTransf
 
   private volatile int hashCode;
 
+  @Override
   public String toString() {
     return name;
   }
@@ -146,58 +117,49 @@ public abstract class CoordinateTransform implements Comparable<CoordinateTransf
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////
-  // TODO make these final and immutable in 6.
-  protected String name, authority;
-  protected final TransformType transformType;
-  protected List<Parameter> params = new ArrayList<>();
-  private AttributeContainerMutable attributeContainer;
+  final String name, authority;
+  final TransformType transformType;
+  final ImmutableList<Parameter> params; // what is difference with attributes ??
+  final AttributeContainer ctvAttributes;
 
-  protected CoordinateTransform(Builder<?> builder, NetcdfDataset ncd) {
+  protected CoordinateTransform(Builder<?> builder) {
     this.name = builder.name;
     this.authority = builder.authority;
     this.transformType = builder.transformType;
-    this.attributeContainer = new AttributeContainerMutable(this.name);
-    this.attributeContainer.addAll(builder.attributeContainer);
-
-    CoordinateTransform ct = CoordTransformFactory.makeCoordinateTransform(ncd, builder.attributeContainer,
-        new Formatter(), new Formatter());
-    ct.attributeContainer = new AttributeContainerMutable(this.name);
-    ct.attributeContainer.addAll(builder.attributeContainer);
+    this.params = ImmutableList.copyOf(builder.params);
+    this.ctvAttributes = builder.ctvAttributes.setName(this.name).toImmutable();
   }
 
-  public Builder<?> toBuilder() {
-    return addLocalFieldsToBuilder(builder());
+  /**
+   * Create a Coordinate Transform.
+   *
+   * @param name name of transform, must be unique within the Coordinate System.
+   * @param authority naming authority
+   * @param transformType type of transform.
+   * @param params list of Parameters.
+   */
+  protected CoordinateTransform(String name, String authority, TransformType transformType, List<Parameter> params) {
+    this.name = name;
+    this.authority = authority;
+    this.transformType = transformType;
+    this.params = ImmutableList.copyOf(params);
+    this.ctvAttributes = null; // WTF??
   }
+
+  public abstract Builder<?> toBuilder();
 
   // Add local fields to the passed - in builder.
   protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
     return b.setName(this.name).setAuthority(this.authority).setTransformType(this.transformType)
-        .setAttributeContainer(this.attributeContainer);
-  }
-
-  /**
-   * Get Builder for this class that allows subclassing.
-   * 
-   * @see "https://community.oracle.com/blogs/emcmanus/2010/10/24/using-builder-pattern-subclasses"
-   */
-  public static Builder<?> builder() {
-    return new Builder2();
-  }
-
-  private static class Builder2 extends Builder<Builder2> {
-    @Override
-    protected Builder2 self() {
-      return this;
-    }
+        .setCtvAttributes(this.ctvAttributes);
   }
 
   public static abstract class Builder<T extends Builder<T>> {
     public String name;
     private String authority;
     private TransformType transformType;
-    private AttributeContainer attributeContainer;
-    private CoordinateTransform preBuilt;
-    private boolean built;
+    private AttributeContainerMutable ctvAttributes = new AttributeContainerMutable(".");
+    private List<Parameter> params = new ArrayList<>();
 
     protected abstract T self();
 
@@ -216,38 +178,17 @@ public abstract class CoordinateTransform implements Comparable<CoordinateTransf
       return self();
     }
 
-    public T setAttributeContainer(AttributeContainer attributeContainer) {
-      this.attributeContainer = attributeContainer;
+    public T setCtvAttributes(AttributeContainer attributeContainer) {
+      this.ctvAttributes.addAll(attributeContainer);
       return self();
     }
 
-    public T setPreBuilt(CoordinateTransform preBuilt) {
-      this.preBuilt = preBuilt;
-      this.name = preBuilt.name;
+    public T addParameter(Parameter param) {
+      params.add(param);
       return self();
     }
 
-    public CoordinateTransform build(NetcdfDataset ncd) {
-      if (built)
-        throw new IllegalStateException("already built " + name);
-      built = true;
-
-      if (this.preBuilt != null) {
-        return this.preBuilt;
-      }
-
-      // All this trouble because we need ncd before we can build.
-      CoordinateTransform ct =
-          CoordTransformFactory.makeCoordinateTransform(ncd, attributeContainer, new Formatter(), new Formatter());
-      if (ct != null) {
-        // ct.name = this.name; // LOOK why is this commented out? Dont know name until this point? Not going to
-        // work....
-        ct.attributeContainer = new AttributeContainerMutable(this.name);
-        ct.attributeContainer.addAll(attributeContainer);
-      }
-
-      return ct;
-    }
+    public abstract CoordinateTransform build();
   }
 
 }

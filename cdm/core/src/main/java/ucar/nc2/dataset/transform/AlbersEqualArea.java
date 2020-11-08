@@ -10,18 +10,14 @@ import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.*;
 import ucar.unidata.geoloc.projection.proj4.AlbersEqualAreaEllipse;
 
-/**
- * Create a AlbersEqualArea Projection from the information in the Coordinate Transform Variable.
- *
- * @author caron
- */
-public class AlbersEqualArea extends AbstractTransformBuilder implements HorizTransformBuilderIF {
+/** Create a AlbersEqualArea Projection from the information in the Coordinate Transform Variable. */
+public class AlbersEqualArea extends AbstractProjectionCT implements HorizTransformBuilderIF {
 
   public String getTransformName() {
     return CF.ALBERS_CONICAL_EQUAL_AREA;
   }
 
-  public ProjectionCT makeCoordinateTransform(AttributeContainer ctv, String geoCoordinateUnits) {
+  public ProjectionCT.Builder<?> makeCoordinateTransform(AttributeContainer ctv, String geoCoordinateUnits) {
     double[] pars = readAttributeDouble2(ctv.findAttribute(CF.STANDARD_PARALLEL));
     if (pars == null)
       return null;
@@ -38,6 +34,6 @@ public class AlbersEqualArea extends AbstractTransformBuilder implements HorizTr
           false_northing, earth_radius);
     }
 
-    return new ProjectionCT(ctv.getName(), "FGDC", proj);
+    return ProjectionCT.builder().setName(ctv.getName()).setAuthority("FGDC").setProjection(proj);
   }
 }

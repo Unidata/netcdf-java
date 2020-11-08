@@ -10,24 +10,20 @@ import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.*;
 import ucar.unidata.geoloc.projection.sat.VerticalPerspectiveView;
 
-/**
- * VerticalPerspectiveView projection.
- *
- * @author caron
- */
-public class VerticalPerspective extends AbstractTransformBuilder implements HorizTransformBuilderIF {
+/** VerticalPerspectiveView projection. */
+public class VerticalPerspective extends AbstractProjectionCT implements HorizTransformBuilderIF {
 
   public String getTransformName() {
     return CF.VERTICAL_PERSPECTIVE;
   }
 
-  public ProjectionCT makeCoordinateTransform(AttributeContainer ctv, String geoCoordinateUnits) {
+  public ProjectionCT.Builder<?> makeCoordinateTransform(AttributeContainer ctv, String geoCoordinateUnits) {
 
     readStandardParams(ctv, geoCoordinateUnits);
 
-    double distance = readAttributeDouble(ctv, CF.PERSPECTIVE_POINT_HEIGHT, Double.NaN);
+    double distance = ctv.findAttributeDouble(CF.PERSPECTIVE_POINT_HEIGHT, Double.NaN);
     if (Double.isNaN(distance)) {
-      distance = readAttributeDouble(ctv, "height_above_earth", Double.NaN);
+      distance = ctv.findAttributeDouble("height_above_earth", Double.NaN);
     }
     if (Double.isNaN(lon0) || Double.isNaN(lat0) || Double.isNaN(distance))
       throw new IllegalArgumentException("Vertical Perspective must have: " + CF.LONGITUDE_OF_PROJECTION_ORIGIN + ", "
@@ -38,6 +34,6 @@ public class VerticalPerspective extends AbstractTransformBuilder implements Hor
     VerticalPerspectiveView proj =
         new VerticalPerspectiveView(lat0, lon0, earth_radius, distance / 1000., false_easting, false_northing);
 
-    return new ProjectionCT(ctv.getName(), "FGDC", proj);
+    return ProjectionCT.builder().setName(ctv.getName()).setAuthority("FGDC").setProjection(proj);
   }
 }

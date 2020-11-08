@@ -786,20 +786,13 @@ public class CoordSysTable extends JPanel {
        * }
        */
 
-      StringBuilder buff = new StringBuilder();
-      List ctList = cs.getCoordinateTransforms();
-      for (int i = 0; i < ctList.size(); i++) {
-        CoordinateTransform ct = (CoordinateTransform) ctList.get(i);
-        if (i > 0)
-          buff.append(" ");
-        buff.append(ct.getTransformType());
+      Formatter buff = new Formatter();
+      List<CoordinateTransform> ctList = cs.getCoordinateTransforms();
+      for (CoordinateTransform ct : ctList) {
         if (ct instanceof VerticalCT)
-          buff.append("(").append(((VerticalCT) ct).getVerticalTransformType()).append(")");
+          buff.format("V");
         if (ct instanceof ProjectionCT) {
-          ProjectionCT pct = (ProjectionCT) ct;
-          if (pct.getProjection() != null) {
-            buff.append("(").append(pct.getProjection().getClassName()).append(")");
-          }
+          buff.format("P");
         }
       }
       setCoordTransforms(buff.toString());

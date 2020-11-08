@@ -1,7 +1,6 @@
 package ucar.nc2.dataset;
 
 import static com.google.common.truth.Truth.assertThat;
-import static ucar.nc2.TestUtils.makeDummyGroup;
 
 import org.junit.Test;
 import ucar.ma2.DataType;
@@ -12,9 +11,7 @@ import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.internal.dataset.CoordinatesHelper;
-import ucar.unidata.geoloc.projection.FlatEarth;
-
-import java.util.ArrayList;
+import java.util.Formatter;
 
 /** Test {@link NetcdfDataset.Builder} */
 public class TestNetcdfDatasetBuilder {
@@ -36,6 +33,10 @@ public class TestNetcdfDatasetBuilder {
     assertThat(ncfile.getId()).isEqualTo("Hid");
     assertThat(ncfile.getLocation()).isEqualTo("location");
     assertThat(ncfile.getTitle()).isEqualTo("title");
+
+    Formatter f = new Formatter();
+    ncfile.getDetailInfo(f);
+    assertThat(f.toString()).startsWith("NetcdfDataset location= location");
 
     Group group = ncfile.getRootGroup();
     assertThat(group.getNetcdfFile()).isEqualTo(ncfile);

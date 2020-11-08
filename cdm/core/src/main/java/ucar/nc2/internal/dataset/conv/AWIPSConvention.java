@@ -25,14 +25,10 @@ import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants._Coordinate;
-import ucar.nc2.dataset.CoordinateAxis;
-import ucar.nc2.dataset.CoordinateAxis1D;
-import ucar.nc2.dataset.CoordinateTransform;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.ProjectionCT;
-import ucar.nc2.dataset.VariableDS;
+import ucar.nc2.dataset.*;
 import ucar.nc2.dataset.spi.CoordSystemBuilderFactory;
 import ucar.nc2.internal.dataset.CoordSystemBuilder;
+import ucar.nc2.internal.dataset.TransformBuilder;
 import ucar.nc2.iosp.NetcdfFormatUtils;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.util.CancelTask;
@@ -384,7 +380,7 @@ public class AWIPSConvention extends CoordSystemBuilder {
     if (projCT != null) {
       VarProcess vp = findVarProcess(projCT.getName(), null);
       vp.isCoordinateTransform = true;
-      vp.ct = CoordinateTransform.builder().setPreBuilt(projCT);
+      vp.ct = new TransformBuilder().setPreBuilt(projCT);
     }
     super.makeCoordinateTransforms();
   }

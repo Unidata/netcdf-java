@@ -61,11 +61,8 @@ import ucar.unidata.geoloc.Projection;
  * inverse_flattening may be specified independent of the semi_minor/major axes (GRS80). If left unspecified it will be
  * computed
  * from semi_minor/major_axis values.
- *
- * @author caron
- * @since 12/5/13
  */
-public class Geostationary extends AbstractTransformBuilder implements HorizTransformBuilderIF {
+public class Geostationary extends AbstractProjectionCT implements HorizTransformBuilderIF {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Geostationary.class);
 
   private static double defaultScaleFactor = -1.0;
@@ -93,25 +90,25 @@ public class Geostationary extends AbstractTransformBuilder implements HorizTran
     return scaleFactor;
   }
 
-  public ProjectionCT makeCoordinateTransform(AttributeContainer ctv, String geoCoordinateUnits) {
+  public ProjectionCT.Builder<?> makeCoordinateTransform(AttributeContainer ctv, String geoCoordinateUnits) {
     readStandardParams(ctv, geoCoordinateUnits);
 
-    double subLonDegrees = readAttributeDouble(ctv, CF.LONGITUDE_OF_PROJECTION_ORIGIN, Double.NaN);
+    double subLonDegrees = ctv.findAttributeDouble(CF.LONGITUDE_OF_PROJECTION_ORIGIN, Double.NaN);
     if (Double.isNaN(subLonDegrees)) {
       throw new IllegalArgumentException("Must specify " + CF.LONGITUDE_OF_PROJECTION_ORIGIN);
     }
-    double perspective_point_height = readAttributeDouble(ctv, CF.PERSPECTIVE_POINT_HEIGHT, Double.NaN);
+    double perspective_point_height = ctv.findAttributeDouble(CF.PERSPECTIVE_POINT_HEIGHT, Double.NaN);
     if (Double.isNaN(perspective_point_height)) {
       throw new IllegalArgumentException("Must specify " + CF.PERSPECTIVE_POINT_HEIGHT);
     }
 
-    double semi_major_axis = readAttributeDouble(ctv, CF.SEMI_MAJOR_AXIS, Double.NaN);
+    double semi_major_axis = ctv.findAttributeDouble(CF.SEMI_MAJOR_AXIS, Double.NaN);
     if (Double.isNaN(semi_major_axis)) {
       throw new IllegalArgumentException("Must specify " + CF.SEMI_MAJOR_AXIS);
     }
 
-    double semi_minor_axis = readAttributeDouble(ctv, CF.SEMI_MINOR_AXIS, Double.NaN);
-    double inv_flattening = readAttributeDouble(ctv, CF.INVERSE_FLATTENING, Double.NaN);
+    double semi_minor_axis = ctv.findAttributeDouble(CF.SEMI_MINOR_AXIS, Double.NaN);
+    double inv_flattening = ctv.findAttributeDouble(CF.INVERSE_FLATTENING, Double.NaN);
 
     if (Double.isNaN(semi_minor_axis) && Double.isNaN(inv_flattening)) {
       throw new IllegalArgumentException("Must specify " + CF.SEMI_MINOR_AXIS + " and/or " + CF.INVERSE_FLATTENING);
@@ -153,7 +150,7 @@ public class Geostationary extends AbstractTransformBuilder implements HorizTran
     Projection proj = new ucar.unidata.geoloc.projection.sat.Geostationary(subLonDegrees, perspective_point_height,
         semi_minor_axis, semi_major_axis, inv_flattening, isSweepX, geoCoordinateScaleFactor);
 
-    return new ProjectionCT(ctv.getName(), "FGDC", proj);
+    return ProjectionCT.builder().setName(ctv.getName()).setAuthority("FGDC").setProjection(proj);
   }
 
 }

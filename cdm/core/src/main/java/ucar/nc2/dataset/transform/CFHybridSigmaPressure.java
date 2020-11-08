@@ -6,6 +6,7 @@
 package ucar.nc2.dataset.transform;
 
 import ucar.nc2.AttributeContainer;
+import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.*;
 import ucar.nc2.Dimension;
 import ucar.unidata.geoloc.VerticalTransform;
@@ -19,7 +20,7 @@ import ucar.unidata.util.Parameter;
  * 
  * @author caron
  */
-public class CFHybridSigmaPressure extends AbstractTransformBuilder implements VertTransformBuilderIF {
+public class CFHybridSigmaPressure extends AbstractVerticalCT implements VertTransformBuilderIF {
   private boolean useAp;
   private String a, b, ps, p0, ap;
 
@@ -31,15 +32,15 @@ public class CFHybridSigmaPressure extends AbstractTransformBuilder implements V
     return TransformType.Vertical;
   }
 
-  public VerticalCT makeCoordinateTransform(NetcdfDataset ds, AttributeContainer ctv) {
+  public VerticalCT.Builder<?> makeCoordinateTransform(NetcdfFile ds, AttributeContainer ctv) {
     String formula_terms = getFormula(ctv);
     if (null == formula_terms)
       return null;
 
     useAp = formula_terms.contains("ap:");
 
-    VerticalCT rs = new VerticalCT("AtmHybridSigmaPressure_Transform_" + ctv.getName(), getTransformName(),
-        VerticalCT.Type.HybridSigmaPressure, this);
+    VerticalCT.Builder<?> rs = VerticalCT.builder().setName("AtmHybridSigmaPressure_Transform_" + ctv.getName())
+        .setAuthority(getTransformName()).setType(VerticalCT.Type.HybridSigmaPressure).setTransformBuilder(this);
     rs.addParameter(new Parameter("standard_name", getTransformName()));
     rs.addParameter(new Parameter("formula_terms", formula_terms));
 

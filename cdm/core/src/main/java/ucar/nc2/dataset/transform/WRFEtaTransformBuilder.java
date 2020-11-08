@@ -6,6 +6,7 @@
 package ucar.nc2.dataset.transform;
 
 import ucar.nc2.AttributeContainer;
+import ucar.nc2.NetcdfFile;
 import ucar.unidata.geoloc.VerticalTransform;
 import ucar.unidata.geoloc.vertical.WRFEta;
 import ucar.nc2.Dimension;
@@ -16,39 +17,39 @@ import ucar.unidata.util.Parameter;
  * Create WRF Eta vertical transform.
  * This is different from other VertTransformBuilderIF because it is specific to a CoordinateSystem.
  */
-public class WRFEtaTransformBuilder extends AbstractTransformBuilder implements VertTransformBuilderIF {
+public class WRFEtaTransformBuilder extends AbstractVerticalCT implements VertTransformBuilderIF {
   private CoordinateSystem cs; // can we figure out cs from ds?
 
   public WRFEtaTransformBuilder(CoordinateSystem cs) {
     this.cs = cs;
   }
 
-  public VerticalCT makeCoordinateTransform(NetcdfDataset ds, AttributeContainer v) {
+  public VerticalCT.Builder<?> makeCoordinateTransform(NetcdfFile ds, AttributeContainer ctv) {
     VerticalCT.Type type = VerticalCT.Type.WRFEta;
-    VerticalCT ct = new VerticalCT(type.toString(), getTransformName(), type, this);
+    VerticalCT.Builder<?> rs = VerticalCT.builder().setName(type.toString()).setAuthority(getTransformName())
+        .setType(type).setTransformBuilder(this);
 
-    ct.addParameter(new Parameter("height formula", "height(x,y,z) = (PH(x,y,z) + PHB(x,y,z)) / 9.81"));
-    ct.addParameter(new Parameter(WRFEta.PerturbationGeopotentialVariable, "PH"));
-    ct.addParameter(new Parameter(WRFEta.BaseGeopotentialVariable, "PHB"));
-    ct.addParameter(new Parameter("pressure formula", "pressure(x,y,z) = P(x,y,z) + PB(x,y,z)"));
-    ct.addParameter(new Parameter(WRFEta.PerturbationPressureVariable, "P"));
-    ct.addParameter(new Parameter(WRFEta.BasePressureVariable, "PB"));
+    rs.addParameter(new Parameter("height formula", "height(x,y,z) = (PH(x,y,z) + PHB(x,y,z)) / 9.81"));
+    rs.addParameter(new Parameter(WRFEta.PerturbationGeopotentialVariable, "PH"));
+    rs.addParameter(new Parameter(WRFEta.BaseGeopotentialVariable, "PHB"));
+    rs.addParameter(new Parameter("pressure formula", "pressure(x,y,z) = P(x,y,z) + PB(x,y,z)"));
+    rs.addParameter(new Parameter(WRFEta.PerturbationPressureVariable, "P"));
+    rs.addParameter(new Parameter(WRFEta.BasePressureVariable, "PB"));
 
     if (cs.getXaxis() != null)
-      ct.addParameter(new Parameter(WRFEta.IsStaggeredX, "" + isStaggered(cs.getXaxis())));
+      rs.addParameter(new Parameter(WRFEta.IsStaggeredX, "" + isStaggered(cs.getXaxis())));
     else
-      ct.addParameter(new Parameter(WRFEta.IsStaggeredX, "" + isStaggered2(cs.getLonAxis(), 1)));
+      rs.addParameter(new Parameter(WRFEta.IsStaggeredX, "" + isStaggered2(cs.getLonAxis(), 1)));
 
     if (cs.getYaxis() != null)
-      ct.addParameter(new Parameter(WRFEta.IsStaggeredY, "" + isStaggered(cs.getYaxis())));
+      rs.addParameter(new Parameter(WRFEta.IsStaggeredY, "" + isStaggered(cs.getYaxis())));
     else
-      ct.addParameter(new Parameter(WRFEta.IsStaggeredY, "" + isStaggered2(cs.getLatAxis(), 0)));
+      rs.addParameter(new Parameter(WRFEta.IsStaggeredY, "" + isStaggered2(cs.getLatAxis(), 0)));
 
-    ct.addParameter(new Parameter(WRFEta.IsStaggeredZ, "" + isStaggered(cs.getZaxis())));
+    rs.addParameter(new Parameter(WRFEta.IsStaggeredZ, "" + isStaggered(cs.getZaxis())));
+    rs.addParameter(new Parameter("eta", "" + cs.getZaxis().getFullName()));
 
-    ct.addParameter(new Parameter("eta", "" + cs.getZaxis().getFullName()));
-
-    return ct;
+    return rs;
   }
 
   public String getTransformName() {

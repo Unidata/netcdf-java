@@ -42,8 +42,8 @@ public class ProjectionCT extends CoordinateTransform {
 
   private final Projection projection;
 
-  protected ProjectionCT(Builder<?> builder, NetcdfDataset ncd) {
-    super(builder, ncd);
+  protected ProjectionCT(Builder<?> builder) {
+    super(builder);
     this.projection = builder.projection;
   }
 
@@ -79,11 +79,11 @@ public class ProjectionCT extends CoordinateTransform {
       return self();
     }
 
-    public ProjectionCT build(NetcdfDataset ncd) {
+    public ProjectionCT build() {
       if (built)
         throw new IllegalStateException("already built");
       built = true;
-      return new ProjectionCT(this, ncd);
+      return new ProjectionCT(this);
     }
   }
 }

@@ -22,12 +22,7 @@ import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants._Coordinate;
-import ucar.nc2.dataset.CoordinateAxis;
-import ucar.nc2.dataset.CoordinateSystem;
-import ucar.nc2.dataset.CoordinateTransform;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.StructureDS;
-import ucar.nc2.dataset.VariableDS;
+import ucar.nc2.dataset.*;
 import ucar.nc2.dataset.spi.CoordSystemBuilderFactory;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.util.Parameter;
@@ -590,16 +585,16 @@ public class CoordSystemBuilder {
   protected void makeCoordinateTransforms() {
     for (VarProcess vp : varList) {
       if (vp.isCoordinateTransform && vp.ct == null) { // TODO dont have ncd
-        vp.ct = makeCoordinateTransform(vp.vb);
+        vp.ct = makeTransformBuilder(vp.vb);
         if (vp.ct != null) {
-          coords.addCoordinateTransform(vp.ct);
+          coords.addTransformBuilder(vp.ct);
         }
       }
     }
   }
 
-  protected CoordinateTransform.Builder<?> makeCoordinateTransform(Variable.Builder<?> vb) {
-    return CoordinateTransform.builder().setName(vb.getFullName()).setAttributeContainer(vb.getAttributeContainer());
+  protected TransformBuilder makeTransformBuilder(Variable.Builder<?> vb) {
+    return new TransformBuilder().setName(vb.getFullName()).setCtvAttributes(vb.getAttributeContainer());
   }
 
   /** Assign CoordinateTransform objects to Variables and Coordinate Systems. */
@@ -658,7 +653,7 @@ public class CoordSystemBuilder {
         if (!dataAxesList.isEmpty()) {
           for (CoordinateSystem.Builder<?> cs : coords.coordSys) {
             if (coords.containsAxes(cs, dataAxesList)) {
-              coords.addCoordinateTransform(vp.ct);
+              coords.addTransformBuilder(vp.ct);
               cs.addCoordinateTransformByName(vp.ct.name);
               parseInfo.format("***assign (implicit coordAxes) coordTransform %s to CoordSys=  %s%n", vp.ct, cs);
             }
@@ -797,7 +792,7 @@ public class CoordSystemBuilder {
 
     // coord transform
     public boolean isCoordinateTransform;
-    public CoordinateTransform.Builder<?> ct;
+    public TransformBuilder ct;
 
     /** Wrap the given variable. Identify Coordinate Variables. Process all _Coordinate attributes. */
     private VarProcess(Group.Builder gb, VariableDS.Builder<?> v) {
@@ -1000,7 +995,7 @@ public class CoordSystemBuilder {
       return axesList;
     }
 
-    void addCoordinateTransform(CoordinateTransform.Builder<?> ct) {
+    void addCoordinateTransform(TransformBuilder ct) {
       if (cs == null) {
         parseInfo.format("  %s: no CoordinateSystem for CoordinateTransformVariable: %s%n", vb.getFullName(), ct.name);
         return;

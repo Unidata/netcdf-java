@@ -15,10 +15,7 @@ import ucar.nc2.Attribute;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants._Coordinate;
-import ucar.nc2.dataset.CoordinateTransform;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.ProjectionCT;
-import ucar.nc2.dataset.VariableDS;
+import ucar.nc2.dataset.*;
 import ucar.nc2.dataset.transform.*;
 import ucar.nc2.ft2.coverage.CoverageTransform;
 import ucar.unidata.geoloc.Projection;
@@ -42,8 +39,8 @@ public class CoordTransformFactory {
     registerTransform(CF.LAMBERT_CONFORMAL_CONIC, LambertConformalConic.class);
     registerTransform(CF.LAMBERT_CYLINDRICAL_EQUAL_AREA, LambertCylindricalEqualArea.class);
     registerTransform(CF.LATITUDE_LONGITUDE, LatLon.class);
-    registerTransformMaybe("mcidas_area", "ucar.nc2.iosp.mcidas.McIDASAreaTransformBuilder"); // optional - needs
-                                                                                              // visad.jar
+    // optional - needs visad.jar
+    registerTransformMaybe("mcidas_area", "ucar.nc2.iosp.mcidas.McIDASAreaTransformBuilder");
     registerTransform(CF.MERCATOR, Mercator.class);
     registerTransform("MSGnavigation", MSGnavigation.class);
     registerTransform(CF.ORTHOGRAPHIC, Orthographic.class);
@@ -57,8 +54,9 @@ public class CoordTransformFactory {
     registerTransform("UTM", UTM.class);
     registerTransform(CF.VERTICAL_PERSPECTIVE, VerticalPerspective.class);
 
-    // registerTransform("atmosphere_ln_pressure_coordinate", VAtmLnPressure.class); // DO NOT USE: see
-    // CF1Convention.makeAtmLnCoordinate()
+    // DO NOT USE: see CF1Convention.makeAtmLnCoordinate()
+    // registerTransform("atmosphere_ln_pressure_coordinate", VAtmLnPressure.class);
+
     registerTransform("atmosphere_hybrid_height_coordinate", CFHybridHeight.class);
     registerTransform("atmosphere_hybrid_sigma_pressure_coordinate", CFHybridSigmaPressure.class);
     registerTransform("atmosphere_sigma_coordinate", CFSigma.class);
@@ -158,7 +156,7 @@ public class CoordTransformFactory {
    * @return CoordinateTransform, or null if failure.
    */
   @Nullable
-  public static CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, AttributeContainer ctv,
+  public static CoordinateTransform.Builder<?> makeCoordinateTransform(NetcdfDataset ds, AttributeContainer ctv,
       Formatter parseInfo, Formatter errInfo) {
     // standard name
     String transform_name = ctv.findAttributeString("transform_name", null);
@@ -204,20 +202,26 @@ public class CoordTransformFactory {
       return null;
     }
 
-    CoordinateTransform ct;
+    CoordinateTransform.Builder<?> ct;
     if (builderObject instanceof VertTransformBuilderIF) {
       VertTransformBuilderIF vertBuilder = (VertTransformBuilderIF) builderObject;
       vertBuilder.setErrorBuffer(errInfo);
-      ct = vertBuilder.makeCoordinateTransform(ds, ctv);
+      ct = vertBuilder.makeCoordinateTransform(ds, ctv); // TODO: remove dependence on ds?
+      if (ct != null) {
+        ct.setTransformType(TransformType.Vertical);
+      }
 
     } else if (builderObject instanceof HorizTransformBuilderIF) {
       HorizTransformBuilderIF horizBuilder = (HorizTransformBuilderIF) builderObject;
       horizBuilder.setErrorBuffer(errInfo);
-      String units = AbstractTransformBuilder.getGeoCoordinateUnits(ds, ctv); // barfola
+      String units = TransformBuilders.getGeoCoordinateUnits(ds, ctv); // TODO: remove dependence on ds?
       ct = horizBuilder.makeCoordinateTransform(ctv, units);
+      if (ct != null) {
+        ct.setTransformType(TransformType.Projection);
+      }
 
     } else {
-      log.error("Illegals class " + builderClass.getName());
+      log.error("Illegal class " + builderClass.getName());
       return null;
     }
 
@@ -304,10 +308,12 @@ public class CoordTransformFactory {
 
     String units = gct.attributes().findAttributeString(CDM.UNITS, null);
     builder.setErrorBuffer(errInfo);
-    ProjectionCT ct = builder.makeCoordinateTransform(gct.attributes(), units);
-    assert ct != null;
+    ProjectionCT.Builder<?> ct = builder.makeCoordinateTransform(gct.attributes(), units);
+    if (ct == null) {
+      return null;
+    }
 
-    return ct.getProjection();
+    return ct.build().getProjection();
   }
 
 }

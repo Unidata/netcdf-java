@@ -10,39 +10,35 @@ import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.ProjectionCT;
 import ucar.unidata.geoloc.Earth;
 
-/**
- * Create a Transverse Mercator Projection from the information in the Coordinate Transform Variable.
- *
- * @author caron
- */
-public class TransverseMercator extends AbstractTransformBuilder implements HorizTransformBuilderIF {
+/** Create a Transverse Mercator Projection from the information in the Coordinate Transform Variable. */
+public class TransverseMercator extends AbstractProjectionCT implements HorizTransformBuilderIF {
 
   public String getTransformName() {
     return CF.TRANSVERSE_MERCATOR;
   }
 
-  public ProjectionCT makeCoordinateTransform(AttributeContainer ctv, String geoCoordinateUnits) {
+  public ProjectionCT.Builder<?> makeCoordinateTransform(AttributeContainer ctv, String geoCoordinateUnits) {
 
-    double scale = readAttributeDouble(ctv, CF.SCALE_FACTOR_AT_CENTRAL_MERIDIAN, Double.NaN);
+    double scale = ctv.findAttributeDouble(CF.SCALE_FACTOR_AT_CENTRAL_MERIDIAN, Double.NaN);
     if (Double.isNaN(scale))
-      scale = readAttributeDouble(ctv, CF.SCALE_FACTOR_AT_PROJECTION_ORIGIN, Double.NaN);
-    double lon0 = readAttributeDouble(ctv, CF.LONGITUDE_OF_CENTRAL_MERIDIAN, Double.NaN);
+      scale = ctv.findAttributeDouble(CF.SCALE_FACTOR_AT_PROJECTION_ORIGIN, Double.NaN);
+    double lon0 = ctv.findAttributeDouble(CF.LONGITUDE_OF_CENTRAL_MERIDIAN, Double.NaN);
     if (Double.isNaN(lon0))
-      lon0 = readAttributeDouble(ctv, CF.LONGITUDE_OF_PROJECTION_ORIGIN, Double.NaN);
-    double lat0 = readAttributeDouble(ctv, CF.LATITUDE_OF_PROJECTION_ORIGIN, Double.NaN);
-    double false_easting = readAttributeDouble(ctv, CF.FALSE_EASTING, 0.0);
-    double false_northing = readAttributeDouble(ctv, CF.FALSE_NORTHING, 0.0);
+      lon0 = ctv.findAttributeDouble(CF.LONGITUDE_OF_PROJECTION_ORIGIN, Double.NaN);
+    double lat0 = ctv.findAttributeDouble(CF.LATITUDE_OF_PROJECTION_ORIGIN, Double.NaN);
+    double false_easting = ctv.findAttributeDouble(CF.FALSE_EASTING, 0.0);
+    double false_northing = ctv.findAttributeDouble(CF.FALSE_NORTHING, 0.0);
 
     if ((false_easting != 0.0) || (false_northing != 0.0)) {
-      double scalef = getFalseEastingScaleFactor(geoCoordinateUnits);
+      double scalef = TransformBuilders.getFalseEastingScaleFactor(geoCoordinateUnits);
       false_easting *= scalef;
       false_northing *= scalef;
     }
 
-    double earth_radius = getEarthRadiusInKm(ctv);
-    double semi_major_axis = readAttributeDouble(ctv, CF.SEMI_MAJOR_AXIS, Double.NaN);
-    double semi_minor_axis = readAttributeDouble(ctv, CF.SEMI_MINOR_AXIS, Double.NaN);
-    double inverse_flattening = readAttributeDouble(ctv, CF.INVERSE_FLATTENING, 0.0);
+    double earth_radius = TransformBuilders.getEarthRadiusInKm(ctv);
+    double semi_major_axis = ctv.findAttributeDouble(CF.SEMI_MAJOR_AXIS, Double.NaN);
+    double semi_minor_axis = ctv.findAttributeDouble(CF.SEMI_MINOR_AXIS, Double.NaN);
+    double inverse_flattening = ctv.findAttributeDouble(CF.INVERSE_FLATTENING, 0.0);
 
     ucar.unidata.geoloc.Projection proj;
 
@@ -55,6 +51,6 @@ public class TransverseMercator extends AbstractTransformBuilder implements Hori
       proj = new ucar.unidata.geoloc.projection.TransverseMercator(lat0, lon0, scale, false_easting, false_northing,
           earth_radius);
     }
-    return new ProjectionCT(ctv.getName(), "FGDC", proj);
+    return ProjectionCT.builder().setName(ctv.getName()).setAuthority("FGDC").setProjection(proj);
   }
 }

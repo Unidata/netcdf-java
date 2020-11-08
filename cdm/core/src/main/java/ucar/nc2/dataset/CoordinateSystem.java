@@ -748,8 +748,8 @@ public class CoordinateSystem {
     for (String want : builder.transNames) {
       // TODO what is the case where wantTransName matches attribute collection name?
       allTransforms.stream()
-          .filter(
-              ct -> (want.equals(ct.getName()) || (ct.attributes() != null && want.equals(ct.attributes().getName()))))
+          .filter(ct -> (want.equals(ct.getName())
+              || (ct.getCtvAttributes() != null && want.equals(ct.getCtvAttributes().getName()))))
           .findFirst().ifPresent(got -> coordTrans.add(got));
     }
   }

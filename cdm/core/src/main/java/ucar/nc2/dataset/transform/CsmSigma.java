@@ -19,14 +19,16 @@ import ucar.unidata.geoloc.vertical.AtmosSigma;
 import ucar.unidata.geoloc.vertical.HybridSigmaPressure;
 import ucar.unidata.util.Parameter;
 
-public class CsmSigma extends AbstractTransformBuilder implements VertTransformBuilderIF {
+public class CsmSigma extends AbstractVerticalCT implements VertTransformBuilderIF {
 
   public String getTransformName() {
     return "csm_sigma_level";
   }
 
-  public VerticalCT makeCoordinateTransform(NetcdfDataset ds, AttributeContainer ctv) {
-    VerticalCT rs = new VerticalCT("sigma-" + ctv.getName(), getTransformName(), VerticalCT.Type.Sigma, this);
+  public VerticalCT.Builder<?> makeCoordinateTransform(NetcdfFile ds, AttributeContainer ctv) {
+    VerticalCT.Builder<?> rs = VerticalCT.builder().setName("sigma-" + ctv.getName()).setAuthority(getTransformName())
+        .setType(VerticalCT.Type.Sigma).setTransformBuilder(this);
+
     rs.addParameter(new Parameter("formula", "pressure(x,y,z) = ptop + sigma(z)*(surfacePressure(x,y)-ptop)"));
 
     if (!addParameter2(rs, AtmosSigma.PS, ds, ctv, "PS_var", false)) {
@@ -60,8 +62,8 @@ public class CsmSigma extends AbstractTransformBuilder implements VertTransformB
    * @param readData if true, read data and use a s parameter value
    * @return true if success, false is failed
    */
-  private static boolean addParameter2(CoordinateTransform rs, String paramName, NetcdfFile ds, AttributeContainer v,
-      String attName, boolean readData) {
+  private static boolean addParameter2(CoordinateTransform.Builder<?> rs, String paramName, NetcdfFile ds,
+      AttributeContainer v, String attName, boolean readData) {
     String varName;
     if (null == (varName = v.findAttributeString(attName, null))) {
       return false;
@@ -90,14 +92,16 @@ public class CsmSigma extends AbstractTransformBuilder implements VertTransformB
     return true;
   }
 
-  public static class HybridSigmaPressureBuilder extends AbstractTransformBuilder implements VertTransformBuilderIF {
+  public static class HybridSigmaPressureBuilder extends AbstractVerticalCT implements VertTransformBuilderIF {
 
     public String getTransformName() {
       return "csm_hybrid_sigma_pressure";
     }
 
-    public VerticalCT makeCoordinateTransform(NetcdfDataset ds, AttributeContainer ctv) {
-      VerticalCT rs = new VerticalCT(ctv.getName(), getTransformName(), VerticalCT.Type.HybridSigmaPressure, this);
+    public VerticalCT.Builder<?> makeCoordinateTransform(NetcdfFile ds, AttributeContainer ctv) {
+      VerticalCT.Builder<?> rs = VerticalCT.builder().setName(ctv.getName()).setAuthority(getTransformName())
+          .setType(VerticalCT.Type.HybridSigmaPressure).setTransformBuilder(this);
+
       rs.addParameter(new Parameter("formula", "pressure(x,y,z) = a(z)*p0 + b(z)*surfacePressure(x,y)"));
 
       if (!addParameter2(rs, HybridSigmaPressure.PS, ds, ctv, "PS_var", false)) {

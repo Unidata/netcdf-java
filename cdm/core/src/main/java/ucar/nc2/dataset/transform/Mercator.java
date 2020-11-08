@@ -9,12 +9,8 @@ import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.ProjectionCT;
 
-/**
- * Create a Mercator Projection from the information in the Coordinate Transform Variable.
- *
- * @author caron
- */
-public class Mercator extends AbstractTransformBuilder implements HorizTransformBuilderIF {
+/** Create a Mercator Projection from the information in the Coordinate Transform Variable. */
+public class Mercator extends AbstractProjectionCT implements HorizTransformBuilderIF {
 
   @Override
   public String getTransformName() {
@@ -22,10 +18,10 @@ public class Mercator extends AbstractTransformBuilder implements HorizTransform
   }
 
   @Override
-  public ProjectionCT makeCoordinateTransform(AttributeContainer ctv, String geoCoordinateUnits) {
-    double par = readAttributeDouble(ctv, CF.STANDARD_PARALLEL, Double.NaN);
+  public ProjectionCT.Builder<?> makeCoordinateTransform(AttributeContainer ctv, String geoCoordinateUnits) {
+    double par = ctv.findAttributeDouble(CF.STANDARD_PARALLEL, Double.NaN);
     if (Double.isNaN(par)) {
-      double scale = readAttributeDouble(ctv, CF.SCALE_FACTOR_AT_PROJECTION_ORIGIN, Double.NaN);
+      double scale = ctv.findAttributeDouble(CF.SCALE_FACTOR_AT_PROJECTION_ORIGIN, Double.NaN);
       if (Double.isNaN(scale))
         throw new IllegalArgumentException("Mercator projection must have attribute " + CF.STANDARD_PARALLEL + " or "
             + CF.SCALE_FACTOR_AT_PROJECTION_ORIGIN);
@@ -36,6 +32,6 @@ public class Mercator extends AbstractTransformBuilder implements HorizTransform
 
     ucar.unidata.geoloc.projection.Mercator proj =
         new ucar.unidata.geoloc.projection.Mercator(lon0, par, false_easting, false_northing, earth_radius);
-    return new ProjectionCT(ctv.getName(), "FGDC", proj);
+    return ProjectionCT.builder().setName(ctv.getName()).setAuthority("FGDC").setProjection(proj);
   }
 }

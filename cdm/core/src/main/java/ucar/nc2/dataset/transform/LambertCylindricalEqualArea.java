@@ -12,20 +12,15 @@ import ucar.unidata.geoloc.Earth;
 import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.projection.proj4.CylindricalEqualAreaProjection;
 
-/**
- * Lambert Cylindrical Equal Area Projection
- *
- * @author caron
- * @since 4/30/12
- */
-public class LambertCylindricalEqualArea extends AbstractTransformBuilder implements HorizTransformBuilderIF {
+/** Lambert Cylindrical Equal Area Projection */
+public class LambertCylindricalEqualArea extends AbstractProjectionCT implements HorizTransformBuilderIF {
 
   public String getTransformName() {
     return CF.LAMBERT_CYLINDRICAL_EQUAL_AREA;
   }
 
-  public ProjectionCT makeCoordinateTransform(AttributeContainer ctv, String geoCoordinateUnits) {
-    double par = readAttributeDouble(ctv, CF.STANDARD_PARALLEL, Double.NaN);
+  public ProjectionCT.Builder<?> makeCoordinateTransform(AttributeContainer ctv, String geoCoordinateUnits) {
+    double par = ctv.findAttributeDouble(CF.STANDARD_PARALLEL, Double.NaN);
 
     readStandardParams(ctv, geoCoordinateUnits);
 
@@ -41,6 +36,6 @@ public class LambertCylindricalEqualArea extends AbstractTransformBuilder implem
 
     Projection proj = new CylindricalEqualAreaProjection(lon0, par, false_easting, false_northing, earth);
 
-    return new ProjectionCT(ctv.getName(), "FGDC", proj);
+    return ProjectionCT.builder().setName(ctv.getName()).setAuthority("FGDC").setProjection(proj);
   }
 }

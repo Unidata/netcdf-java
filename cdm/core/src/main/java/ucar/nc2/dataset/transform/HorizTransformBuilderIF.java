@@ -3,6 +3,8 @@ package ucar.nc2.dataset.transform;
 
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.dataset.ProjectionCT;
+
+import javax.annotation.Nullable;
 import java.util.Formatter;
 
 /** A Builder of Projection CoordinateTransform. */
@@ -14,22 +16,15 @@ public interface HorizTransformBuilderIF {
    *
    * @param ctv the coordinate transform variable.
    * @param geoCoordinateUnits the geo X/Y coordinate units, or null.
-   * @return ProjectionCT
+   * @return ProjectionCT.Builder or null if not able to make one.
    */
-  ProjectionCT makeCoordinateTransform(AttributeContainer ctv, String geoCoordinateUnits);
+  @Nullable
+  ProjectionCT.Builder<?> makeCoordinateTransform(AttributeContainer ctv, @Nullable String geoCoordinateUnits);
 
-  /**
-   * Get the Transform name. Typically this is matched on by an attribute in the dataset.
-   * 
-   * @return name of the transform.
-   */
+  /** Get the Transform name. */
   String getTransformName();
 
-  /***
-   * Pass in a Formatter where error messages can be appended.
-   * 
-   * @param sb use this Formatter to record parse and error info
-   */
+  /*** Pass in a Formatter where error messages can be appended. */
   void setErrorBuffer(Formatter sb);
 
 }
