@@ -1,4 +1,6 @@
-<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="all">
+<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2"
+  id="GOES16 Aggregation for tests"
+  enhance="all">
   <!-- should find and aggregate 12 objects because we are only looking at OR_ABI-L1b-RadC-M3C01_G16_s* -->
   <!-- see https://noaa-goes16.s3.amazonaws.com/index.html#ABI-L1b-RadC/2017/090/00/ -->
   <remove name="t" type="variable" />
