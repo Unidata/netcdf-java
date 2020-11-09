@@ -60,7 +60,7 @@ public class CompareNetcdf2 {
       return true;
     }
 
-    // if true, compare dimension, else skip comparision
+    // if true, compare transform, else skip comparision
     default boolean compareCoordinateTransform(CoordinateTransform ct1, CoordinateTransform ct2) {
       return ct1.equals(ct2);
     }

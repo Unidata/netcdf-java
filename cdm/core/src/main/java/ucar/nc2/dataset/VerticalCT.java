@@ -10,7 +10,7 @@ import javax.annotation.concurrent.Immutable;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.Dimension;
 import ucar.nc2.constants.CF;
-import ucar.nc2.dataset.transform.VertTransformBuilderIF;
+import ucar.nc2.internal.dataset.transform.vertical.VertTransformBuilderIF;
 import ucar.unidata.geoloc.VerticalTransform;
 
 /**

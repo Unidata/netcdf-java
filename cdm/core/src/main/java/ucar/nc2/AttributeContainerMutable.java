@@ -1,6 +1,7 @@
 /* Copyright */
 package ucar.nc2;
 
+import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -273,6 +274,21 @@ public class AttributeContainerMutable implements AttributeContainer {
     @Override
     public boolean isEmpty() {
       return atts.isEmpty();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o)
+        return true;
+      if (o == null || getClass() != o.getClass())
+        return false;
+      AttributeContainerImmutable that = (AttributeContainerImmutable) o;
+      return Objects.equal(name, that.name) && Objects.equal(atts, that.atts);
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hashCode(name, atts);
     }
   }
 }

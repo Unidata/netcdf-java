@@ -16,10 +16,10 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.*;
-import ucar.nc2.dataset.transform.*;
 import ucar.nc2.ft2.coverage.CoverageTransform;
+import ucar.nc2.internal.dataset.transform.horiz.*;
+import ucar.nc2.internal.dataset.transform.vertical.*;
 import ucar.unidata.geoloc.Projection;
-import ucar.unidata.util.Parameter;
 
 /** Factory for Coordinate Transforms. */
 public class CoordTransformFactory {

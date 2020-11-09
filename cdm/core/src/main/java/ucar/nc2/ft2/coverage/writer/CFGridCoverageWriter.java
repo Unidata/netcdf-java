@@ -304,10 +304,12 @@ public class CFGridCoverageWriter {
 
   private void addCoordTransforms(CoverageCollection subsetDataset, Group.Builder group) {
     for (CoverageTransform ct : subsetDataset.getCoordTransforms()) {
-      // scalar coordinate transform variable - container for transform info
-      Variable.Builder ctv = Variable.builder().setName(ct.getName()).setDataType(DataType.INT);
-      group.addVariable(ctv);
-      ctv.addAttributes(ct.attributes());
+      if (!group.findVariableLocal(ct.getName()).isPresent()) {
+        // scalar coordinate transform variable - container for transform info
+        Variable.Builder ctv = Variable.builder().setName(ct.getName()).setDataType(DataType.INT);
+        group.addVariable(ctv);
+        ctv.addAttributes(ct.attributes());
+      }
     }
   }
 

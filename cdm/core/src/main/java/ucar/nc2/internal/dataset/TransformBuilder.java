@@ -45,7 +45,9 @@ public class TransformBuilder {
     if (ctb == null) {
       return null;
     }
-    ctb.setName(this.name);
+    if (this.name != null) {
+      ctb.setName(this.name);
+    }
     ctb.setCtvAttributes(this.ctvAttributes);
     return ctb.build();
   }

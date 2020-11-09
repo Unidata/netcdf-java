@@ -582,11 +582,11 @@ public class CoordSystemBuilder {
    */
   protected void makeCoordinateTransforms() {
     for (VarProcess vp : varList) {
-      if (vp.isCoordinateTransform && vp.ct == null) { // TODO dont have ncd
+      if (vp.isCoordinateTransform && vp.ct == null) {
         vp.ct = makeTransformBuilder(vp.vb);
-        if (vp.ct != null) {
-          coords.addTransformBuilder(vp.ct);
-        }
+      }
+      if (vp.ct != null) {
+        coords.addTransformBuilder(vp.ct);
       }
     }
   }
