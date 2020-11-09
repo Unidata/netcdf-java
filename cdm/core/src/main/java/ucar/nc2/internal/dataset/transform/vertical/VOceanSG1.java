@@ -18,14 +18,14 @@ import ucar.unidata.util.Parameter;
  *
  * @author Sachin (skbhate@ngi.msstate.edu)
  */
-public class VOceanSG1 extends AbstractVerticalCT implements VertTransformBuilderIF {
+public class VOceanSG1 extends AbstractVerticalCTBuilder implements VerticalTransformBuilder {
   private String s = "", eta = "", depth = "", c = "", depth_c = "";
 
   public String getTransformName() {
     return VerticalCT.Type.OceanSG1.name();
   }
 
-  public VerticalCT.Builder<?> makeCoordinateTransform(NetcdfFile ds, AttributeContainer ctv) {
+  public VerticalCT.Builder<?> makeVerticalCT(NetcdfFile ds, AttributeContainer ctv) {
     String formula_terms = getFormula(ctv);
     if (null == formula_terms)
       return null;
@@ -42,7 +42,7 @@ public class VOceanSG1 extends AbstractVerticalCT implements VertTransformBuilde
     depth_c = values[4];
 
     VerticalCT.Builder<?> rs = VerticalCT.builder().setName("OceanSG1_Transform_" + ctv.getName())
-        .setAuthority(getTransformName()).setType(VerticalCT.Type.OceanSG1).setTransformBuilder(this);
+        .setAuthority(getTransformName()).setVerticalType(VerticalCT.Type.OceanSG1).setTransformBuilder(this);
 
     rs.addParameter(new Parameter("standard_name", getTransformName()));
     rs.addParameter(new Parameter("formula_terms", formula_terms));

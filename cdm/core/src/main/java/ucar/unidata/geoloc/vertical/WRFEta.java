@@ -39,6 +39,7 @@ public class WRFEta extends AbstractVerticalTransform {
    * @param ds netCDF dataset
    * @param timeDim time dimension
    * @param params list of transformation Parameters
+   *        TODO: params will change to AttributeContainer in ver7.
    */
   public static WRFEta create(NetcdfFile ds, Dimension timeDim, List<Parameter> params) {
     boolean isXStag = getParameterBooleanValue(params, IsStaggeredX);

@@ -18,7 +18,7 @@ import ucar.unidata.util.Parameter;
  *
  * @author murray
  */
-public class CFHybridHeight extends AbstractVerticalCT implements VertTransformBuilderIF {
+public class CFHybridHeight extends AbstractVerticalCTBuilder implements VerticalTransformBuilder {
 
   /**
    * The name of the a term
@@ -60,7 +60,7 @@ public class CFHybridHeight extends AbstractVerticalCT implements VertTransformB
    * @param ctv the variable with the formula
    * @return the <code>CoordinateTransform</code>
    */
-  public VerticalCT.Builder<?> makeCoordinateTransform(NetcdfFile ds, AttributeContainer ctv) {
+  public VerticalCT.Builder<?> makeVerticalCT(NetcdfFile ds, AttributeContainer ctv) {
     String formula_terms = getFormula(ctv);
     if (null == formula_terms)
       return null;
@@ -75,7 +75,7 @@ public class CFHybridHeight extends AbstractVerticalCT implements VertTransformB
     orog = values[2];
 
     VerticalCT.Builder<?> rs = VerticalCT.builder().setName("AtmHybridHeight_Transform_" + ctv.getName())
-        .setAuthority(getTransformName()).setType(VerticalCT.Type.HybridHeight).setTransformBuilder(this);
+        .setAuthority(getTransformName()).setVerticalType(VerticalCT.Type.HybridHeight).setTransformBuilder(this);
     rs.addParameter(new Parameter("standard_name", getTransformName()));
     rs.addParameter(new Parameter("formula_terms", formula_terms));
 

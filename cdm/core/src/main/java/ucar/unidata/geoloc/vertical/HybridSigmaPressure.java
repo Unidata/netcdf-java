@@ -54,6 +54,7 @@ public class HybridSigmaPressure extends AbstractVerticalTransform {
    * @param ds netCDF dataset
    * @param timeDim time dimension
    * @param params list of transformation Parameters
+   *        TODO: params will change to AttributeContainer in ver7.
    */
   public static HybridSigmaPressure create(NetcdfFile ds, Dimension timeDim, List<Parameter> params) {
     Variable psVar = findVariableFromParameterName(ds, params, PS);

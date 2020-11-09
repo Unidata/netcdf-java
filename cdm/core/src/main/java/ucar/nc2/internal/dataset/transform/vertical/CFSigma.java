@@ -19,7 +19,7 @@ import ucar.unidata.util.Parameter;
  * 
  * @author caron
  */
-public class CFSigma extends AbstractVerticalCT implements VertTransformBuilderIF {
+public class CFSigma extends AbstractVerticalCTBuilder implements VerticalTransformBuilder {
   private String sigma = "", ps = "", ptop = "";
 
   public String getTransformName() {
@@ -30,7 +30,7 @@ public class CFSigma extends AbstractVerticalCT implements VertTransformBuilderI
     return TransformType.Vertical;
   }
 
-  public VerticalCT.Builder<?> makeCoordinateTransform(NetcdfFile ds, AttributeContainer ctv) {
+  public VerticalCT.Builder<?> makeVerticalCT(NetcdfFile ds, AttributeContainer ctv) {
     String formula_terms = getFormula(ctv);
     if (null == formula_terms)
       return null;
@@ -45,7 +45,7 @@ public class CFSigma extends AbstractVerticalCT implements VertTransformBuilderI
     ptop = values[2];
 
     VerticalCT.Builder<?> rs = VerticalCT.builder().setName("AtmSigma_Transform_" + ctv.getName())
-        .setAuthority(getTransformName()).setType(VerticalCT.Type.Sigma).setTransformBuilder(this);
+        .setAuthority(getTransformName()).setVerticalType(VerticalCT.Type.Sigma).setTransformBuilder(this);
 
     rs.addParameter(new Parameter("standard_name", getTransformName()));
     rs.addParameter(new Parameter("formula_terms", formula_terms));

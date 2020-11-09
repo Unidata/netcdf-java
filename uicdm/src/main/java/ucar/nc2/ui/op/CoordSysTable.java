@@ -133,7 +133,7 @@ public class CoordSysTable extends JPanel {
         }
         infoTA.appendLine(" Coordinate Transforms");
         for (CoordinateTransform ct : coordSys.getCoordinateTransforms()) {
-          infoTA.appendLine("  " + ct.getName() + " type=" + ct.getTransformType());
+          infoTA.appendLine("  " + ct.getTransformType() + ": " + ct.getName());
           for (Attribute p : ct.getCtvAttributes()) {
             infoTA.appendLine("    " + p);
           }
@@ -235,8 +235,13 @@ public class CoordSysTable extends JPanel {
     }
     int ncoordSys = csTable.getBeans().size();
     int ncoords = axisTable.getBeans().size();
+    int ntrans = ds.getCoordinateTransforms().size();
 
-    f.format(" ngrids=%d, ncoords=%d, ncoordSys=%d%n", ngrids, ncoords, ncoordSys);
+    f.format(" ngrids=%d, ncoords=%d, ncoordSys=%d ntrans=%d%n", ngrids, ncoords, ncoordSys, ntrans);
+    f.format("%nCoordinate Transforms%n");
+    for (CoordinateTransform trans : ds.getCoordinateTransforms()) {
+      f.format("  %-10s %s%n", trans.getTransformType(), trans.getName());
+    }
   }
 
   private BeanTable attTable;

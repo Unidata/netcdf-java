@@ -10,7 +10,7 @@ import javax.annotation.concurrent.Immutable;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.Dimension;
 import ucar.nc2.constants.CF;
-import ucar.nc2.internal.dataset.transform.vertical.VertTransformBuilderIF;
+import ucar.nc2.internal.dataset.transform.vertical.VerticalTransformBuilder;
 import ucar.unidata.geoloc.VerticalTransform;
 
 /**
@@ -85,21 +85,18 @@ public class VerticalCT extends CoordinateTransform {
    * @return VerticalTransform
    */
   public VerticalTransform makeVerticalTransform(NetcdfDataset ds, Dimension timeDim) {
-    // LOOK This is a VerticalTransform.Builder, not a VerticalCT.builder
     return transformBuilder.makeMathTransform(ds, timeDim, this);
   }
 
   @Override
   public String toString() {
-    String builderName = transformBuilder == null ? " none" : transformBuilder.getTransformName();
-    return "VerticalCT {" + "type=" + type + ", builder=" + builderName + '}';
+    return "VerticalCT {" + "type=" + type + ", builder=" + transformBuilder + '}';
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////
   private final VerticalCT.Type type;
-  private final VertTransformBuilderIF transformBuilder;
+  private final VerticalTransformBuilder transformBuilder;
 
-  // not needed?
   protected VerticalCT(Builder<?> builder) {
     super(builder);
     this.type = builder.type;
@@ -112,6 +109,7 @@ public class VerticalCT extends CoordinateTransform {
 
   // Add local fields to the builder.
   protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
+    b.setVerticalType(this.type).setTransformBuilder(this.transformBuilder);
     return (Builder<?>) super.addLocalFieldsToBuilder(b);
   }
 
@@ -128,17 +126,17 @@ public class VerticalCT extends CoordinateTransform {
 
   public static abstract class Builder<T extends Builder<T>> extends CoordinateTransform.Builder<T> {
     public VerticalCT.Type type;
-    private VertTransformBuilderIF transformBuilder;
+    private VerticalTransformBuilder transformBuilder;
     private boolean built;
 
     protected abstract T self();
 
-    public Builder<?> setType(Type type) {
+    public Builder<?> setVerticalType(Type type) {
       this.type = type;
       return self();
     }
 
-    public Builder<?> setTransformBuilder(VertTransformBuilderIF transformBuilder) {
+    public Builder<?> setTransformBuilder(VerticalTransformBuilder transformBuilder) {
       this.transformBuilder = transformBuilder;
       return self();
     }

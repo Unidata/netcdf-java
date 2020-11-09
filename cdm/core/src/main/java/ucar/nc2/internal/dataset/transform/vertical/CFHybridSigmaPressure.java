@@ -20,7 +20,7 @@ import ucar.unidata.util.Parameter;
  * 
  * @author caron
  */
-public class CFHybridSigmaPressure extends AbstractVerticalCT implements VertTransformBuilderIF {
+public class CFHybridSigmaPressure extends AbstractVerticalCTBuilder implements VerticalTransformBuilder {
   private boolean useAp;
   private String a, b, ps, p0, ap;
 
@@ -32,7 +32,7 @@ public class CFHybridSigmaPressure extends AbstractVerticalCT implements VertTra
     return TransformType.Vertical;
   }
 
-  public VerticalCT.Builder<?> makeCoordinateTransform(NetcdfFile ds, AttributeContainer ctv) {
+  public VerticalCT.Builder<?> makeVerticalCT(NetcdfFile ds, AttributeContainer ctv) {
     String formula_terms = getFormula(ctv);
     if (null == formula_terms)
       return null;
@@ -40,7 +40,8 @@ public class CFHybridSigmaPressure extends AbstractVerticalCT implements VertTra
     useAp = formula_terms.contains("ap:");
 
     VerticalCT.Builder<?> rs = VerticalCT.builder().setName("AtmHybridSigmaPressure_Transform_" + ctv.getName())
-        .setAuthority(getTransformName()).setType(VerticalCT.Type.HybridSigmaPressure).setTransformBuilder(this);
+        .setAuthority(getTransformName()).setVerticalType(VerticalCT.Type.HybridSigmaPressure)
+        .setTransformBuilder(this);
     rs.addParameter(new Parameter("standard_name", getTransformName()));
     rs.addParameter(new Parameter("formula_terms", formula_terms));
 

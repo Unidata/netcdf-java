@@ -83,7 +83,7 @@ public class CoordTransformFactory {
    * @param c class that implements CoordTransBuilderIF.
    */
   public static void registerTransform(String transformName, Class<?> c) {
-    if (!(VertTransformBuilderIF.class.isAssignableFrom(c)) && !(HorizTransformBuilderIF.class.isAssignableFrom(c)))
+    if (!(VerticalCTBuilder.class.isAssignableFrom(c)) && !(HorizTransformBuilderIF.class.isAssignableFrom(c)))
       throw new IllegalArgumentException(
           "Class " + c.getName() + " must implement VertTransformBuilderIF or HorizTransformBuilderIF");
 
@@ -203,10 +203,10 @@ public class CoordTransformFactory {
     }
 
     CoordinateTransform.Builder<?> ct;
-    if (builderObject instanceof VertTransformBuilderIF) {
-      VertTransformBuilderIF vertBuilder = (VertTransformBuilderIF) builderObject;
+    if (builderObject instanceof VerticalCTBuilder) {
+      VerticalCTBuilder vertBuilder = (VerticalCTBuilder) builderObject;
       vertBuilder.setErrorBuffer(errInfo);
-      ct = vertBuilder.makeCoordinateTransform(ds, ctv); // TODO: remove dependence on ds?
+      ct = vertBuilder.makeVerticalCT(ds, ctv); // TODO: remove dependence on ds?
       if (ct != null) {
         ct.setTransformType(TransformType.Vertical);
       }

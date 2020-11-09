@@ -11,8 +11,8 @@ import ucar.unidata.util.Parameter;
 import java.util.Formatter;
 
 /** Abstract superclass for implementations of VertTransformBuilderIF */
-public abstract class AbstractVerticalCT {
-  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(AbstractVerticalCT.class);
+public abstract class AbstractVerticalCTBuilder implements VerticalCTBuilder {
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(AbstractVerticalCTBuilder.class);
 
   private Formatter errBuffer;
 

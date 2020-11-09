@@ -60,54 +60,6 @@ public abstract class CoordinateTransform implements Comparable<CoordinateTransf
     }
     return null;
   }
-  /*
-   * @Override
-   * public boolean equals(Object oo) {
-   * if (this == oo)
-   * return true;
-   * if (!(oo instanceof CoordinateTransform))
-   * return false;
-   * 
-   * CoordinateTransform o = (CoordinateTransform) oo;
-   * if (!getName().equals(o.getName()))
-   * return false;
-   * if (!getAuthority().equals(o.getAuthority()))
-   * return false;
-   * if (!(getTransformType() == o.getTransformType()))
-   * return false;
-   * 
-   * List<Parameter> oparams = o.getParameters();
-   * if (params.size() != oparams.size())
-   * return false;
-   * 
-   * for (int i = 0; i < params.size(); i++) {
-   * Parameter att = params.get(i);
-   * Parameter oatt = oparams.get(i);
-   * if (!att.getName().equals(oatt.getName()))
-   * return false;
-   * // if (!att.getValue().equals(oatt.getValue())) return false;
-   * }
-   * return true;
-   * }
-   * 
-   * @Override
-   * public int hashCode() {
-   * if (hashCode == 0) {
-   * int result = 17;
-   * result = 37 * result + getName().hashCode();
-   * result = 37 * result + getAuthority().hashCode();
-   * result = 37 * result + getTransformType().hashCode();
-   * for (Parameter att : params) {
-   * result = 37 * result + att.getName().hashCode();
-   * // result = 37*result + att.getValue().hashCode(); // why not?
-   * }
-   * hashCode = result;
-   * }
-   * return hashCode;
-   * }
-   * 
-   * private volatile int hashCode;
-   */
 
   @Override
   public boolean equals(Object o) {

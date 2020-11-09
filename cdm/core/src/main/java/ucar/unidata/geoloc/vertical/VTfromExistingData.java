@@ -33,6 +33,7 @@ public class VTfromExistingData extends AbstractVerticalTransform {
    * @param ds containing Dataset
    * @param timeDim time Dimension
    * @param params list of transformation Parameters
+   *        TODO: params will change to AttributeContainer in ver7.
    */
   public static VTfromExistingData create(NetcdfFile ds, Dimension timeDim, List<Parameter> params) {
     Variable existingDataVar = findVariableFromParameterName(ds, params, existingDataField);

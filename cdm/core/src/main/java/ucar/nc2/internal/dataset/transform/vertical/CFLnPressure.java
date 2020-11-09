@@ -20,14 +20,14 @@ import ucar.unidata.util.Parameter;
  * @author caron
  * @since May 6, 2008
  */
-public class CFLnPressure extends AbstractVerticalCT implements VertTransformBuilderIF {
+public class CFLnPressure extends AbstractVerticalCTBuilder implements VerticalTransformBuilder {
   private String p0, lev;
 
   public String getTransformName() {
     return VerticalCT.Type.LnPressure.name();
   }
 
-  public VerticalCT.Builder<?> makeCoordinateTransform(NetcdfFile ds, AttributeContainer ctv) {
+  public VerticalCT.Builder<?> makeVerticalCT(NetcdfFile ds, AttributeContainer ctv) {
     String formula_terms = getFormula(ctv);
     if (null == formula_terms)
       return null;
@@ -41,7 +41,7 @@ public class CFLnPressure extends AbstractVerticalCT implements VertTransformBui
     lev = values[1];
 
     VerticalCT.Builder<?> rs = VerticalCT.builder().setName("AtmSigma_Transform_" + ctv.getName())
-        .setAuthority(getTransformName()).setType(VerticalCT.Type.LnPressure).setTransformBuilder(this);
+        .setAuthority(getTransformName()).setVerticalType(VerticalCT.Type.LnPressure).setTransformBuilder(this);
 
     rs.addParameter(new Parameter("standard_name", getTransformName()));
     rs.addParameter(new Parameter("formula_terms", formula_terms));
@@ -58,7 +58,6 @@ public class CFLnPressure extends AbstractVerticalCT implements VertTransformBui
   public String toString() {
     return "AtmLnPressure:" + "p0:" + p0 + " lev:" + lev;
   }
-
 
   public VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
     return AtmosLnPressure.create(ds, timeDim, vCT.getParameters());

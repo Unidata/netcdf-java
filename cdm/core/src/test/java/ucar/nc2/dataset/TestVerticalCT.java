@@ -15,7 +15,7 @@ public class TestVerticalCT {
 
   @Test
   public void testBuilder() {
-    VerticalCT vertCT = VerticalCT.builder().setType(VerticalCT.Type.LnPressure).build();
+    VerticalCT vertCT = VerticalCT.builder().setVerticalType(VerticalCT.Type.LnPressure).build();
     assertThat(vertCT.getVerticalTransformType()).isEqualTo(VerticalCT.Type.LnPressure);
   }
 }

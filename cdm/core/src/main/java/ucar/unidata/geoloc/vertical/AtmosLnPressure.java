@@ -39,6 +39,7 @@ public class AtmosLnPressure extends AbstractVerticalTransform {
    * @param ds dataset
    * @param timeDim time dimension
    * @param params list of transformation Parameters
+   *        TODO: params will change to AttributeContainer in ver7.
    */
   public static AtmosLnPressure create(NetcdfFile ds, Dimension timeDim, List<Parameter> params) {
     Variable p0var = findVariableFromParameterName(ds, params, P0);

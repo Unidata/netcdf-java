@@ -782,9 +782,10 @@ public class WRFConvention extends CoordSystemBuilder {
         coords.findAxisByType(cs, AxisType.GeoZ).ifPresent(axis -> {
           String units = axis.getUnits();
           if ((units == null) || (units.trim().isEmpty())) {
-            // LOOK each cs might have seperate ct; but they might be identical....
+            // LOOK each cs might have separate ct; but they might be equal....
             VerticalCTBuilder vctb = new WRFEtaTransformBuilder(coords, cs);
-            coords.addVerticalCTBuilder(vctb);
+            TransformBuilder tb = new TransformBuilder().setVertCTBuilder(vctb);
+            coords.addTransformBuilder(tb);
             cs.addCoordinateTransformByName(vctb.getTransformName());
             parseInfo.format("***Added WRFEtaTransformBuilderto '%s'%n", cs.coordAxesNames);
           }

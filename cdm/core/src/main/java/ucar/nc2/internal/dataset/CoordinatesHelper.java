@@ -23,7 +23,6 @@ import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.*;
-import ucar.nc2.internal.dataset.transform.vertical.VerticalCTBuilder;
 
 /** A helper class for NetcdfDataset to build and manage coordinates. */
 @Immutable
@@ -101,8 +100,8 @@ public class CoordinatesHelper {
     ctBuilders.addAll(builder.transformBuilders.stream().map(ct -> ct.build(ncd)).filter(Objects::nonNull)
         .collect(Collectors.toList()));
 
-    ctBuilders.addAll(builder.verticalCTBuilders.stream().map(ct -> ct.makeVerticalCT(ncd)).filter(Objects::nonNull)
-        .collect(Collectors.toList()));
+    // ctBuilders.addAll(builder.verticalCTBuilders.stream().map(ct -> ct.makeVerticalCT(ncd)).filter(Objects::nonNull)
+    // .collect(Collectors.toList()));
     coordTransforms = ctBuilders.build();
 
     this.coordSystems = builder.coordSys.stream().map(s -> s.build(ncd, this.coordAxes, this.coordTransforms))
@@ -122,7 +121,7 @@ public class CoordinatesHelper {
     public List<CoordinateSystem.Builder<?>> coordSys = new ArrayList<>();
     public List<CoordinateTransform.Builder<?>> coordTransforms = new ArrayList<>();
     public List<TransformBuilder> transformBuilders = new ArrayList<>();
-    List<VerticalCTBuilder> verticalCTBuilders = new ArrayList<>();
+    // List<VerticalCTBuilder> verticalCTBuilders = new ArrayList<>();
     private boolean built;
 
     public Builder addCoordinateAxis(CoordinateAxis.Builder<?> axis) {
@@ -177,10 +176,10 @@ public class CoordinatesHelper {
       return this;
     }
 
-    public Builder addVerticalCTBuilder(VerticalCTBuilder vctb) {
-      verticalCTBuilders.add(vctb);
-      return this;
-    }
+    // public Builder addVerticalCTBuilder(VerticalCTBuilder vctb) {
+    // verticalCTBuilders.add(vctb);
+    // return this;
+    // }
 
     Optional<CoordinateSystem.Builder<?>> findCoordinateSystem(String coordAxesNames) {
       Preconditions.checkNotNull(coordAxesNames);
@@ -193,6 +192,7 @@ public class CoordinatesHelper {
       return this;
     }
 
+    // this is used when making a copy, weve thrown away the TransformBuilder
     public Builder addCoordinateTransform(CoordinateTransform.Builder<?> ct) {
       Preconditions.checkNotNull(ct);
       if (coordTransforms.stream().noneMatch(old -> old.name.equals(ct.name))) {
@@ -201,6 +201,7 @@ public class CoordinatesHelper {
       return this;
     }
 
+    // this is used by CoordSysBuilder, when constructing
     public Builder addTransformBuilder(TransformBuilder ct) {
       Preconditions.checkNotNull(ct);
       if (transformBuilders.stream().noneMatch(old -> old.name.equals(ct.name))) {

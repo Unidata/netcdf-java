@@ -19,14 +19,14 @@ import ucar.unidata.util.Parameter;
  *
  * @author caron
  */
-public class VExplicitField extends AbstractVerticalCT implements VertTransformBuilderIF {
+public class VExplicitField extends AbstractVerticalCTBuilder implements VerticalTransformBuilder {
   public String getTransformName() {
     return VerticalCT.Type.Existing3DField.name();
   }
 
-  public VerticalCT.Builder<?> makeCoordinateTransform(NetcdfFile ds, AttributeContainer ctv) {
+  public VerticalCT.Builder<?> makeVerticalCT(NetcdfFile ds, AttributeContainer ctv) {
     VerticalCT.Builder<?> rs = VerticalCT.builder().setName(ctv.getName()).setAuthority(getTransformName())
-        .setType(VerticalCT.Type.Existing3DField).setTransformBuilder(this);
+        .setVerticalType(VerticalCT.Type.Existing3DField).setTransformBuilder(this);
     String fieldName = ctv.findAttributeString(VTfromExistingData.existingDataField, null);
     if (null == fieldName)
       throw new IllegalArgumentException(

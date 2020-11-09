@@ -5,20 +5,20 @@
 
 package ucar.nc2.internal.dataset.transform.vertical;
 
-import ucar.nc2.Attribute;
-import ucar.nc2.AttributeContainer;
-import ucar.nc2.AttributeContainerMutable;
-import ucar.nc2.Dimension;
+import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.TransformType;
 import ucar.nc2.dataset.VerticalCT;
 import ucar.nc2.internal.dataset.CoordinatesHelper;
 import ucar.unidata.geoloc.VerticalTransform;
 import ucar.unidata.geoloc.vertical.WRFEta;
 
+import java.util.Formatter;
+
 /** Because the transform depends on NetcdfDataset and CoordinateSystem, must handle differently */
-public class WRFEtaTransformBuilder implements VerticalCTBuilder {
+public class WRFEtaTransformBuilder implements VerticalCTBuilder, VerticalTransformBuilder {
   private final CoordinatesHelper.Builder coords;
   private final CoordinateSystem.Builder<?> cs;
 
@@ -27,8 +27,9 @@ public class WRFEtaTransformBuilder implements VerticalCTBuilder {
     this.cs = cs;
   }
 
+  // Note AttributeContainer ctv not used
   @Override
-  public VerticalCT makeVerticalCT(NetcdfDataset ds) {
+  public VerticalCT.Builder<?> makeVerticalCT(NetcdfFile ds, AttributeContainer ctv1) {
     VerticalCT.Type type = VerticalCT.Type.WRFEta;
     AttributeContainerMutable atts = new AttributeContainerMutable(getTransformName());
     atts.addAttribute(new Attribute("height formula", "height(x,y,z) = (PH(x,y,z) + PHB(x,y,z)) / 9.81"));
@@ -52,11 +53,20 @@ public class WRFEtaTransformBuilder implements VerticalCTBuilder {
     coords.findAxisByType(cs, AxisType.GeoZ)
         .ifPresent(a -> atts.addAttribute(new Attribute("eta", "" + a.getFullName())));
 
-    return new WRFEtaTransform(getTransformName(), type.toString(), type, atts);
+    return VerticalCT.builder().setName(getTransformName()).setCtvAttributes(atts)
+        .setTransformType(TransformType.Vertical).setVerticalType(type).setTransformBuilder(this);
   }
 
   public String getTransformName() {
     return VerticalCT.Type.WRFEta.name() + cs.coordAxesNames;
+  }
+
+  @Override
+  public void setErrorBuffer(Formatter sb) {}
+
+  @Override
+  public VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
+    return WRFEta.create(ds, timeDim, vCT.getParameters());
   }
 
   private boolean isStaggered(AxisType type) {
@@ -69,17 +79,6 @@ public class WRFEtaTransformBuilder implements VerticalCTBuilder {
       String dimName = a.getDimensionName(dimIndex);
       return dimName != null && dimName.endsWith("stag");
     }).orElse(false);
-  }
-
-  static class WRFEtaTransform extends VerticalCT implements VerticalTransformBuilder {
-    WRFEtaTransform(String name, String authority, Type type, AttributeContainer params) {
-      super(name, authority, type, params);
-    }
-
-    @Override
-    public VerticalTransform makeVerticalTransform(NetcdfDataset ds, Dimension timeDim) {
-      return WRFEta.create(ds, timeDim, this.getParameters());
-    }
   }
 
 }
