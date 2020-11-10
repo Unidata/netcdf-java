@@ -381,8 +381,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       orgFile.reacquire();
   }
 
-
   @Override
+  @Deprecated
   public long getLastModified() {
     if (agg != null) {
       return agg.getLastModified();
@@ -526,11 +526,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     return (Builder<?>) super.addLocalFieldsToBuilder(b);
   }
 
-  /**
-   * Get Builder for this class that allows subclassing.
-   * 
-   * @see "https://community.oracle.com/blogs/emcmanus/2010/10/24/using-builder-pattern-subclasses"
-   */
+  /** Get Builder for NetcdfDataset. */
+  // Subclassing: "https://community.oracle.com/blogs/emcmanus/2010/10/24/using-builder-pattern-subclasses"
   public static Builder<?> builder() {
     return new Builder2();
   }
@@ -542,6 +539,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     }
   }
 
+  /** A Builder of NetcdfDataset. */
   public static abstract class Builder<T extends Builder<T>> extends NetcdfFile.Builder<T> {
     @Nullable
     public NetcdfFile orgFile;

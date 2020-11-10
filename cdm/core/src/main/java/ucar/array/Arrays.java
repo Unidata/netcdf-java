@@ -497,6 +497,7 @@ public class Arrays {
     return factory(DataType.DOUBLE, new int[] {n}, storage);
   }
 
+  /** Value object storing a min and max value. */
   @AutoValue
   public static abstract class MinMax {
     public abstract double min();

@@ -454,6 +454,7 @@ public class CoordinateAxis2D extends CoordinateAxis {
     }
   }
 
+  @Deprecated
   public static abstract class Builder<T extends Builder<T>> extends CoordinateAxis.Builder<T> {
     private boolean built;
 

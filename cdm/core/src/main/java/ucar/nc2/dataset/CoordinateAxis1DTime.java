@@ -371,6 +371,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
     }
   }
 
+  @Deprecated
   public static abstract class Builder<T extends Builder<T>> extends CoordinateAxis1D.Builder<T> {
     private boolean built;
     private CoordinateAxisTimeHelper helper;

@@ -10,7 +10,7 @@ import javax.annotation.concurrent.Immutable;
 import ucar.nc2.util.Misc;
 
 /**
- * Bounding box for ProjectionPoint's.
+ * Bounding box for ProjectionPoints.
  * Note that getX() getY() really means getMinX(), getMinY(), rather than
  * "upper left point" of the rectangle.
  */
@@ -419,7 +419,7 @@ public class ProjectionRect {
     return new Builder().setWidth(width).setHeight(height).setX(wx0 - width / 2).setY(wy0 - height / 2);
   }
 
-  /** A builder of Groups. */
+  /** A builder of ProjectionRect. */
   public static class Builder {
     private double x;
     private double y;
