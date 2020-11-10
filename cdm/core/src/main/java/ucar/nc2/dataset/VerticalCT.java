@@ -113,6 +113,7 @@ public class VerticalCT extends CoordinateTransform {
     return (Builder<?>) super.addLocalFieldsToBuilder(b);
   }
 
+  /** Get a Builder for VerticalCT. */
   public static Builder<?> builder() {
     return new Builder2();
   }
@@ -124,6 +125,7 @@ public class VerticalCT extends CoordinateTransform {
     }
   }
 
+  /** A Builder of VerticalCT. */
   public static abstract class Builder<T extends Builder<T>> extends CoordinateTransform.Builder<T> {
     public VerticalCT.Type type;
     private VerticalTransformBuilder transformBuilder;

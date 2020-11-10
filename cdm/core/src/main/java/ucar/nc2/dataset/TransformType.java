@@ -5,7 +5,7 @@
 
 package ucar.nc2.dataset;
 
-/** Type-safe enumeration of netCDF Dataset TransformType. */
+/** Enumeration of CoordinateTransform Types. */
 public enum TransformType {
   Projection, Vertical
 }

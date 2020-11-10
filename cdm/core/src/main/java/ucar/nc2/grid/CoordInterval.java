@@ -9,20 +9,24 @@ import ucar.unidata.util.Format;
 
 import javax.annotation.concurrent.Immutable;
 
-/** Convenience wrapper for interval coordinates. */
+/** A Coordinate represented by an interval [start, end) */
 @AutoValue
 public abstract class CoordInterval {
+  /** The starting value of the coordinate interval */
   public abstract double start();
 
+  /** The ending value of the coordinate interval */
   public abstract double end();
 
+  /** Number of digits to right of decimal place in toString(). Default is 3. */
   public abstract int ndecimals();
 
+  /** Create an interval with default decimals. */
   public static CoordInterval create(double start, double end) {
     return new AutoValue_CoordInterval(start, end, 3);
-
   }
 
+  /** Create an interval with specified decimals. */
   public static CoordInterval create(double start, double end, int ndec) {
     return new AutoValue_CoordInterval(start, end, ndec);
   }
@@ -32,6 +36,7 @@ public abstract class CoordInterval {
     return Format.d(start(), ndecimals()) + "-" + Format.d(end(), ndecimals());
   }
 
+  /** Convert to a double[2] primitive array. */
   public double[] toPrimitiveArray() {
     return new double[] {start(), end()};
   }

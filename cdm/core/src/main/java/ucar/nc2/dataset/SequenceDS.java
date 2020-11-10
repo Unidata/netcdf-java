@@ -32,6 +32,7 @@ public class SequenceDS extends Sequence implements StructureEnhanced {
     return new StructureDataIteratorEnhanced(this, orgSeq.getStructureIterator(bufferSize));
   }
 
+  /** An iterator over all the data in the sequence, enhanced if needed. */
   @Override
   public Iterator<StructureData> iterator() {
     return new SequenceArrayEnhancer(this, orgSeq.iterator());
@@ -53,11 +54,13 @@ public class SequenceDS extends Sequence implements StructureEnhanced {
   }
 
   @Override
+  @Deprecated
   public Array read(ucar.ma2.Section section) throws java.io.IOException {
     return read();
   }
 
   @Override
+  @Deprecated
   public Array read() throws IOException {
     Array data = orgSeq.read();
     StructureDataEnhancer enhancer = new StructureDataEnhancer(this);
@@ -85,6 +88,7 @@ public class SequenceDS extends Sequence implements StructureEnhanced {
     return (Builder<?>) super.addLocalFieldsToBuilder(b);
   }
 
+  /** Get a Builder of SequenceDS. */
   public static Builder<?> builder() {
     return new Builder2();
   }
@@ -96,6 +100,7 @@ public class SequenceDS extends Sequence implements StructureEnhanced {
     }
   }
 
+  /** A Builder of SequenceDS. */
   public static abstract class Builder<T extends Builder<T>> extends Sequence.Builder<T> {
     private ucar.nc2.Sequence orgSeq;
     private String orgName;

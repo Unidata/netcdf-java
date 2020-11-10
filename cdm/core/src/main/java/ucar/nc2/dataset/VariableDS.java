@@ -106,11 +106,8 @@ public class VariableDS extends Variable implements EnhanceScaleMissingUnsigned,
     }
   }
 
-  /**
-   * A VariableDS usually wraps another Variable.
-   *
-   * @return original Variable or null
-   */
+  /** A VariableDS usually wraps another Variable. */
+  @Nullable
   @Override
   public Variable getOriginalVariable() {
     return orgVar;
@@ -128,9 +125,10 @@ public class VariableDS extends Variable implements EnhanceScaleMissingUnsigned,
   /**
    * When this wraps another Variable, get the original Variable's name.
    *
-   * @return original Variable's name
+   * @return original Variable's name, or null.
    */
   @Override
+  @Nullable
   public String getOriginalName() {
     return orgName;
   }
@@ -588,10 +586,11 @@ public class VariableDS extends Variable implements EnhanceScaleMissingUnsigned,
   private final Set<Enhance> enhanceMode; // The set of enhancements that were made.
   private final DataEnhancer dataEnhancer;
 
-  protected final Variable orgVar; // wrap this Variable : use it for the I/O
-  protected final DataType orgDataType; // keep separate for the case where there is no orgVar.
-  protected final String orgName; // in case Variable was renamed, and we need to keep track of the original name
-  final String orgFileTypeId; // the original fileTypeId.
+  protected final @Nullable Variable orgVar; // wrap this Variable : use it for the I/O
+  protected final DataType orgDataType; // keep separate for the case where there is no orgVar. TODO @Nullable?
+  protected final @Nullable String orgName; // in case Variable was renamed, and we need to keep track of the original
+                                            // name
+  final String orgFileTypeId; // the original fileTypeId. TODO @Nullable?
 
   // Not technically immutable because of this
   private ImmutableList<CoordinateSystem> coordinateSystems;
@@ -671,8 +670,7 @@ public class VariableDS extends Variable implements EnhanceScaleMissingUnsigned,
     }
   }
 
-  // Implement VariableSimpleIF in order to use EnhanceScaleMissingUnsignedImpl in order to set dataType in build()
-  // Maybe theres an easier way?
+  /** A Builder of VariableDS. */
   public static abstract class Builder<T extends Builder<T>> extends Variable.Builder<T> {
     public Set<Enhance> enhanceMode = EnumSet.noneOf(Enhance.class);
     public Variable orgVar; // wrap this Variable : use it for the I/O

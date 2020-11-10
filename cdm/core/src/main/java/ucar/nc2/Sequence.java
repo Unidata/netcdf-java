@@ -37,6 +37,7 @@ public class Sequence extends Structure implements Iterable<ucar.array.Structure
     throw new UnsupportedOperationException();
   }
 
+  /** An iterator over all the data in the sequence. */
   @Override
   public Iterator<ucar.array.StructureData> iterator() {
     if (cache.getData() != null) {

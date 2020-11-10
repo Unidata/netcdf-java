@@ -24,15 +24,18 @@ import javax.annotation.concurrent.Immutable;
 @Immutable
 public abstract class CoordinateTransform implements Comparable<CoordinateTransform> {
 
+  /** The CoordinateTransform's name. */
   public String getName() {
     return name;
   }
 
+  /** The naming authority. */
   // TODO is this needed?
   public String getAuthority() {
     return authority;
   }
 
+  /** The CoordinateTransform's type. */
   public TransformType getTransformType() {
     return transformType;
   }
@@ -47,6 +50,7 @@ public abstract class CoordinateTransform implements Comparable<CoordinateTransf
     return params.build();
   }
 
+  /** The attributes in the corresponding CoordinateTransform's Variable. */
   public AttributeContainer getCtvAttributes() {
     return ctvAttributes;
   }
@@ -116,6 +120,7 @@ public abstract class CoordinateTransform implements Comparable<CoordinateTransf
     this.ctvAttributes = atts.toImmutable();
   }
 
+  /** Convert to the mutable Builder. */
   public abstract Builder<?> toBuilder();
 
   // Add local fields to the passed - in builder.
@@ -124,6 +129,7 @@ public abstract class CoordinateTransform implements Comparable<CoordinateTransf
         .setCtvAttributes(this.ctvAttributes);
   }
 
+  /** A Builder of CoordinateTransform. */
   public static abstract class Builder<T extends Builder<T>> {
     public String name;
     private String authority;

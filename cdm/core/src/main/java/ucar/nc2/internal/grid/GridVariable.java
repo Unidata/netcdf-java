@@ -46,11 +46,6 @@ public class GridVariable implements Grid {
   }
 
   @Override
-  public String getCoordSysName() {
-    return cs.getName();
-  }
-
-  @Override
   public DataType getDataType() {
     return vds.getDataType();
   }

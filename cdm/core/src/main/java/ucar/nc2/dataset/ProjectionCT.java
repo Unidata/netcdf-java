@@ -57,6 +57,7 @@ public class ProjectionCT extends CoordinateTransform {
     return (Builder<?>) super.addLocalFieldsToBuilder(b);
   }
 
+  /** Get a Builder for ProjectionCT. */
   public static Builder<?> builder() {
     return new Builder2();
   }
@@ -68,6 +69,7 @@ public class ProjectionCT extends CoordinateTransform {
     }
   }
 
+  /** A Builder of ProjectionCT. */
   public static abstract class Builder<T extends Builder<T>> extends CoordinateTransform.Builder<T> {
     public Projection projection;
     private boolean built;

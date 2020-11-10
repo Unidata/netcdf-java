@@ -1,11 +1,11 @@
 /* Copyright */
 package ucar.nc2;
 
-import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
@@ -283,12 +283,12 @@ public class AttributeContainerMutable implements AttributeContainer {
       if (o == null || getClass() != o.getClass())
         return false;
       AttributeContainerImmutable that = (AttributeContainerImmutable) o;
-      return Objects.equal(name, that.name) && Objects.equal(atts, that.atts);
+      return Objects.equals(name, that.name) && Objects.equals(atts, that.atts);
     }
 
     @Override
     public int hashCode() {
-      return Objects.hashCode(name, atts);
+      return Objects.hash(name, atts);
     }
   }
 }

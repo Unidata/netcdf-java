@@ -249,11 +249,13 @@ public class CoordinateAxis extends VariableDS {
 
   /////////////////////////////////////
 
+  /** Figure out what calendar to use from the axis' attributes. */
   // needed by time coordinates
   public ucar.nc2.time.Calendar getCalendarFromAttribute() {
     return getCalendarFromAttribute(ncd, attributes);
   }
 
+  /** Figure out what calendar to use from the given attributes. */
   public static ucar.nc2.time.Calendar getCalendarFromAttribute(@Nullable NetcdfDataset ncd,
       AttributeContainer attributes) {
     String cal = attributes.findAttributeString(CF.CALENDAR, null);
@@ -302,6 +304,7 @@ public class CoordinateAxis extends VariableDS {
     return (Builder<?>) super.addLocalFieldsToBuilder(b);
   }
 
+  /** Get a Builder of CoordinateAxis */
   public static Builder<?> builder() {
     return new Builder2();
   }
@@ -313,6 +316,7 @@ public class CoordinateAxis extends VariableDS {
     }
   }
 
+  /** A Builder of CoordinateAxis. */
   public static abstract class Builder<T extends Builder<T>> extends VariableDS.Builder<T> {
     public AxisType axisType;
     protected String positive;
