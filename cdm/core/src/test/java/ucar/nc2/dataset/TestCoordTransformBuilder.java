@@ -16,8 +16,13 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ucar.nc2.Attribute;
+import ucar.nc2.AttributeContainer;
+import ucar.unidata.util.Parameter;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
+
+import static com.google.common.truth.Truth.assertThat;
 
 /** Test {@link CoordinateTransform.Builder} */
 @Category(NeedsCdmUnitTest.class)
@@ -54,6 +59,17 @@ public class TestCoordTransformBuilder {
     try (NetcdfDataset ncdb = NetcdfDatasets.openDataset(fileLocation)) {
       for (CoordinateTransform ct : ncdb.getCoordinateTransforms()) {
         System.out.printf("  %s%n", ct);
+
+        CoordinateTransform copy = ct.toBuilder().build();
+        assertThat(copy).isEqualTo(ct);
+
+        AttributeContainer atts = ct.getCtvAttributes();
+        List<Parameter> params = ct.getParameters();
+        for (Parameter param : params) {
+          Attribute att = atts.findAttribute(param.getName());
+          assertThat(att).isNotNull();
+          assertThat(Attribute.toParameter(att)).isEqualTo(param);
+        }
       }
     }
   }

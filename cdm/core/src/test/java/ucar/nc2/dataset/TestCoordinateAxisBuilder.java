@@ -13,7 +13,6 @@ public class TestCoordinateAxisBuilder {
 
   @Test
   public void testFromVariableDS() {
-    // NetcdfDataset ncd = NetcdfDataset.builder().build();
     VariableDS.Builder<?> vdsBuilder = VariableDS.builder().setName("name").setDataType(DataType.FLOAT)
         .setUnits("units").setDesc("desc").setEnhanceMode(NetcdfDataset.getEnhanceAll());
     CoordinateAxis.Builder<?> builder = CoordinateAxis.fromVariableDS(vdsBuilder).setAxisType(AxisType.GeoX);

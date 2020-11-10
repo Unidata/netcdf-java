@@ -12,12 +12,10 @@ import ucar.nc2.Attribute;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants._Coordinate;
-import ucar.nc2.dataset.CoordinateTransform;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.ProjectionCT;
-import ucar.nc2.dataset.VariableDS;
+import ucar.nc2.dataset.*;
 import ucar.nc2.dataset.spi.CoordSystemBuilderFactory;
 import ucar.nc2.internal.dataset.CoordSystemBuilder;
+import ucar.nc2.internal.dataset.TransformBuilder;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.projection.LambertConformal;
@@ -140,8 +138,7 @@ public class GDVConvention extends CSMConvention {
       VarProcess vp = findVarProcess(projCT.getName(), null);
       if (vp != null) {
         vp.isCoordinateTransform = true;
-        vp.ct = CoordinateTransform.builder().setPreBuilt(projCT);
-        coords.addCoordinateTransform(vp.ct);
+        vp.ct = new TransformBuilder().setPreBuilt(projCT);
       }
     }
     super.makeCoordinateTransforms();

@@ -129,11 +129,13 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
     return new CoverageCoordSys(dt.getName(), covAxesNames, transformNames, dt.getCoverageType());
   }
 
-  private static CoverageTransform makeTransform(ucar.nc2.dataset.CoordinateTransform dt) {
-    AttributeContainerMutable atts = new AttributeContainerMutable(dt.getName());
-    for (Parameter p : dt.getParameters())
+  private static CoverageTransform makeTransform(ucar.nc2.dataset.CoordinateTransform ct) {
+    AttributeContainerMutable atts = new AttributeContainerMutable(ct.getName());
+    atts.addAll(ct.getCtvAttributes());
+    for (Parameter p : ct.getParameters()) {
       atts.addAttribute(Attribute.fromParameter(p));
-    return new CoverageTransform(dt.getName(), atts, dt.getTransformType() == TransformType.Projection);
+    }
+    return new CoverageTransform(ct.getName(), atts, ct.getTransformType() == TransformType.Projection);
   }
 
   private static CoverageCoordAxis makeCoordAxisFromDimension(Dimension dim, String name) {

@@ -12,8 +12,10 @@ import javax.annotation.concurrent.Immutable;
 
 /**
  * A parameter has a name and a value that is String, a double, or an array of doubles.
- * A substitute for ucar.nc2.Attribute, to prevent dependencies of the ucar.unidata packages on ucar.nc2.
+ * 
+ * @deprecated use Attribute
  */
+@Deprecated
 @Immutable
 public class Parameter {
   private final String name;

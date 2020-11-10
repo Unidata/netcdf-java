@@ -18,4 +18,13 @@ public class TestNetcdfDataset {
     }
   }
 
+  @Test
+  public void testN3FileId() throws IOException {
+    String filename = TestDir.cdmLocalTestDataDir + "example1.nc";
+    try (NetcdfDataset ds = NetcdfDatasets.openDataset(filename)) {
+      assertThat(ds.getFileTypeId()).isEqualTo("NetCDF-3");
+      assertThat(ds.getFileTypeDescription()).isEqualTo("NetCDF-3/CDM");
+    }
+  }
+
 }

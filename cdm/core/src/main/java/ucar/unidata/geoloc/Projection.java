@@ -6,6 +6,7 @@
 package ucar.unidata.geoloc;
 
 import com.google.common.collect.ImmutableList;
+import ucar.nc2.AttributeContainer;
 import ucar.unidata.util.Parameter;
 
 /** Projective geometry transformations from (lat,lon) to (x,y) on a projective cartesian surface. */
@@ -49,8 +50,16 @@ public interface Projection {
    */
   boolean crossSeam(ProjectionPoint pt1, ProjectionPoint pt2);
 
-  /** Get projection parameters. */
+  /**
+   * Get projection parameters. Add as Attributes to a Coordinate Transform Variable (ctv).
+   * 
+   * @deprecated use getProjectionAttributes.
+   */
+  @Deprecated
   ImmutableList<Parameter> getProjectionParameters();
+
+  /** Get projection parameters. Add as Attributes to a Coordinate Transform Variable (ctv). */
+  AttributeContainer getProjectionAttributes();
 
   /**
    * Convert a lat/lon bounding box to a world coordinate bounding box,

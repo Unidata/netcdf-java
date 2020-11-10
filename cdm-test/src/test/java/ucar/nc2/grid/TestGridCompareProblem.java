@@ -31,4 +31,11 @@ public class TestGridCompareProblem {
     compareGridCoverage(filename);
   }
 
+  @Test
+  public void testProblem4() throws Exception {
+    String filename = TestDir.cdmUnitTestDir + "conventions/ifps/HUNGrids.netcdf";
+    compareGridDataset(filename);
+    compareGridCoverage(filename);
+  }
+
 }

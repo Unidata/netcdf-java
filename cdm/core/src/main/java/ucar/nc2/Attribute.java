@@ -42,6 +42,24 @@ public class Attribute {
     return b.build();
   }
 
+  /** Create an Attribute from a ucar.unidata.util.Parameter. */
+  public static Parameter toParameter(Attribute att) {
+    Preconditions.checkNotNull(att);
+
+    if (att.isString()) {
+      return new Parameter(att.getShortName(), att.getStringValue());
+    } else {
+      if (att.getLength() == 1) {
+        return new Parameter(att.getShortName(), att.getNumericValue().doubleValue());
+      }
+      double[] values = new double[att.getLength()];
+      for (int idx = 0; idx < att.getLength(); idx++) {
+        values[idx] = att.getNumericValue(idx).doubleValue();
+      }
+      return new Parameter(att.getShortName(), values);
+    }
+  }
+
   /** Create an Attribute from an ucar.ma2.Array. */
   public static Attribute fromArray(String name, ucar.ma2.Array values) {
     return builder(name).setValues(values).build();

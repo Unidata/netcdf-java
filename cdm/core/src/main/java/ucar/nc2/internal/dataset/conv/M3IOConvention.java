@@ -18,14 +18,10 @@ import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants._Coordinate;
-import ucar.nc2.dataset.CoordinateAxis;
-import ucar.nc2.dataset.CoordinateAxis1D;
-import ucar.nc2.dataset.CoordinateTransform;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.ProjectionCT;
-import ucar.nc2.dataset.VariableDS;
+import ucar.nc2.dataset.*;
 import ucar.nc2.dataset.spi.CoordSystemBuilderFactory;
 import ucar.nc2.internal.dataset.CoordSystemBuilder;
+import ucar.nc2.internal.dataset.TransformBuilder;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.geoloc.projection.AlbersEqualArea;
 import ucar.unidata.geoloc.projection.LambertAzimuthalEqualArea;
@@ -137,7 +133,7 @@ public class M3IOConvention extends CoordSystemBuilder {
     if (projCT != null) {
       VarProcess vp = findVarProcess(projCT.getName(), null);
       vp.isCoordinateTransform = true;
-      vp.ct = CoordinateTransform.builder().setPreBuilt(projCT);
+      vp.ct = new TransformBuilder().setPreBuilt(projCT);
     }
     super.makeCoordinateTransforms();
   }

@@ -38,7 +38,6 @@ import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.units.SimpleUnit;
 import java.util.Optional;
 import ucar.unidata.io.RandomAccessFile;
-import ucar.unidata.util.Parameter;
 import javax.annotation.concurrent.Immutable;
 import java.io.IOException;
 import java.util.*;
@@ -156,9 +155,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     // make horiz transform if needed
     List<CoverageTransform> transforms = new ArrayList<>();
 
-    AttributeContainerMutable projAtts = new AttributeContainerMutable(group.horizCoordSys.getId());
-    for (Parameter p : group.getGdsHorizCoordSys().proj.getProjectionParameters())
-      projAtts.addAttribute(Attribute.fromParameter(p));
+    AttributeContainer projAtts = group.getGdsHorizCoordSys().proj.getProjectionAttributes();
     CoverageTransform projTransform = new CoverageTransform(group.horizCoordSys.getId(), projAtts, true);
 
     transforms.add(projTransform);

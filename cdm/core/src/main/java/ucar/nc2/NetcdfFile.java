@@ -763,8 +763,7 @@ public class NetcdfFile implements FileCacheable, Closeable {
     return f.toString();
   }
 
-  /** @deprecated do not use */
-  @Deprecated
+  /** Show debug / underlying implementation details */
   public void getDetailInfo(Formatter f) {
     f.format("NetcdfFile location= %s%n", getLocation());
     f.format("  title= %s%n", getTitle());

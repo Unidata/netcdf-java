@@ -23,7 +23,6 @@ import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.*;
-import ucar.nc2.internal.dataset.transform.vertical.VerticalCTBuilder;
 
 /** A helper class for NetcdfDataset to build and manage coordinates. */
 @Immutable
@@ -92,18 +91,23 @@ public class CoordinatesHelper {
   private CoordinatesHelper(Builder builder, NetcdfDataset ncd, ImmutableList<CoordinateAxis> axes) {
     this.coordAxes = axes;
 
-    ImmutableList.Builder<CoordinateTransform> transBuilder = ImmutableList.builder();
+    ImmutableList.Builder<CoordinateTransform> ctBuilders = ImmutableList.builder();
 
     // LOOK keep horiz and vert transforms separate?
-    transBuilder.addAll(builder.coordTransforms.stream().map(ct -> ct.build(ncd)).filter(Objects::nonNull)
+    ctBuilders.addAll(
+        builder.coordTransforms.stream().map(ct -> ct.build()).filter(Objects::nonNull).collect(Collectors.toList()));
+
+    ctBuilders.addAll(builder.transformBuilders.stream().map(ct -> ct.build(ncd)).filter(Objects::nonNull)
         .collect(Collectors.toList()));
 
-    transBuilder.addAll(builder.verticalCTBuilders.stream().map(ct -> ct.makeVerticalCT(ncd)).filter(Objects::nonNull)
-        .collect(Collectors.toList()));
-    coordTransforms = transBuilder.build();
+    // ctBuilders.addAll(builder.verticalCTBuilders.stream().map(ct -> ct.makeVerticalCT(ncd)).filter(Objects::nonNull)
+    // .collect(Collectors.toList()));
+    coordTransforms = ctBuilders.build();
 
     this.coordSystems = builder.coordSys.stream().map(s -> s.build(ncd, this.coordAxes, this.coordTransforms))
         .filter(Objects::nonNull).collect(ImmutableList.toImmutableList());
+
+    // TODO trim coordSys not used by a variable....
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -116,7 +120,8 @@ public class CoordinatesHelper {
     public List<CoordinateAxis.Builder<?>> coordAxes = new ArrayList<>();
     public List<CoordinateSystem.Builder<?>> coordSys = new ArrayList<>();
     public List<CoordinateTransform.Builder<?>> coordTransforms = new ArrayList<>();
-    List<VerticalCTBuilder> verticalCTBuilders = new ArrayList<>();
+    public List<TransformBuilder> transformBuilders = new ArrayList<>();
+    // List<VerticalCTBuilder> verticalCTBuilders = new ArrayList<>();
     private boolean built;
 
     public Builder addCoordinateAxis(CoordinateAxis.Builder<?> axis) {
@@ -171,10 +176,10 @@ public class CoordinatesHelper {
       return this;
     }
 
-    public Builder addVerticalCTBuilder(VerticalCTBuilder vctb) {
-      verticalCTBuilders.add(vctb);
-      return this;
-    }
+    // public Builder addVerticalCTBuilder(VerticalCTBuilder vctb) {
+    // verticalCTBuilders.add(vctb);
+    // return this;
+    // }
 
     Optional<CoordinateSystem.Builder<?>> findCoordinateSystem(String coordAxesNames) {
       Preconditions.checkNotNull(coordAxesNames);
@@ -187,10 +192,20 @@ public class CoordinatesHelper {
       return this;
     }
 
+    // this is used when making a copy, weve thrown away the TransformBuilder
     public Builder addCoordinateTransform(CoordinateTransform.Builder<?> ct) {
       Preconditions.checkNotNull(ct);
-      if (!findCoordinateTransform(ct.name).isPresent()) {
+      if (coordTransforms.stream().noneMatch(old -> old.name.equals(ct.name))) {
         coordTransforms.add(ct);
+      }
+      return this;
+    }
+
+    // this is used by CoordSysBuilder, when constructing
+    public Builder addTransformBuilder(TransformBuilder ct) {
+      Preconditions.checkNotNull(ct);
+      if (transformBuilders.stream().noneMatch(old -> old.name.equals(ct.name))) {
+        transformBuilders.add(ct);
       }
       return this;
     }
@@ -199,11 +214,6 @@ public class CoordinatesHelper {
       Preconditions.checkNotNull(transforms);
       transforms.forEach(this::addCoordinateTransform);
       return this;
-    }
-
-    private Optional<CoordinateTransform.Builder<?>> findCoordinateTransform(String ctName) {
-      Preconditions.checkNotNull(ctName);
-      return coordTransforms.stream().filter(ct -> ct.name.equals(ctName)).findFirst();
     }
 
     private List<CoordinateAxis.Builder<?>> getAxesForSystem(CoordinateSystem.Builder<?> cs) {
@@ -248,14 +258,6 @@ public class CoordinatesHelper {
       return axes.stream().sorted(new AxisComparator()).map(a -> a.getFullName()).collect(Collectors.joining(" "));
     }
 
-    public CoordinatesHelper build(NetcdfDataset ncd, ImmutableList<CoordinateAxis> coordAxes) {
-      Preconditions.checkNotNull(ncd);
-      if (built)
-        throw new IllegalStateException("already built");
-      built = true;
-      return new CoordinatesHelper(this, ncd, coordAxes);
-    }
-
     // Check if this Coordinate System is complete for v, ie if v dimensions are a subset..
     public boolean isComplete(CoordinateSystem.Builder<?> cs, Variable.Builder<?> vb) {
       Preconditions.checkNotNull(cs);
@@ -289,6 +291,14 @@ public class CoordinatesHelper {
           return true;
       }
       return false;
+    }
+
+    public CoordinatesHelper build(NetcdfDataset ncd, ImmutableList<CoordinateAxis> coordAxes) {
+      Preconditions.checkNotNull(ncd);
+      if (built)
+        throw new IllegalStateException("already built");
+      built = true;
+      return new CoordinatesHelper(this, ncd, coordAxes);
     }
   }
 

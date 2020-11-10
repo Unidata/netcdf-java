@@ -933,9 +933,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     indent.decr();
   }
 
-  /**
-   * String representation of Variable and its attributes.
-   */
+  /** Debugging info */
   public String toStringDebug() {
     Formatter f = new Formatter();
     f.format("Variable %s", getFullName());

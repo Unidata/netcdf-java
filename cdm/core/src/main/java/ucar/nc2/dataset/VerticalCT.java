@@ -5,15 +5,13 @@
 
 package ucar.nc2.dataset;
 
-import com.google.common.collect.ImmutableList;
-import java.util.List;
 import javax.annotation.concurrent.Immutable;
+
+import ucar.nc2.AttributeContainer;
 import ucar.nc2.Dimension;
 import ucar.nc2.constants.CF;
-import ucar.nc2.dataset.transform.VertTransformBuilderIF;
+import ucar.nc2.internal.dataset.transform.vertical.VerticalTransformBuilder;
 import ucar.unidata.geoloc.VerticalTransform;
-import ucar.unidata.util.Parameter;
-
 
 /**
  * A VerticalCT is a CoordinateTransform function CT: (GeoZ) -> Height or Pressure.
@@ -40,7 +38,7 @@ public class VerticalCT extends CoordinateTransform {
     OceanSG2("ocean_s_g2"), //
 
     // others
-    Existing3DField("atmosphere_sigma"), //
+    Existing3DField("Existing3DField"), //
     WRFEta("WRFEta"); //
 
     private final String name;
@@ -68,31 +66,13 @@ public class VerticalCT extends CoordinateTransform {
     }
   }
 
-  protected VerticalCT(String name, String authority, VerticalCT.Type type, List<Parameter> params) {
+  protected VerticalCT(String name, String authority, VerticalCT.Type type, AttributeContainer params) {
     super(name, authority, TransformType.Vertical, params);
     this.type = type;
     this.transformBuilder = null;
   }
 
-  /**
-   * Create a Vertical Coordinate Transform.
-   *
-   * @param name name of transform, must be unique within the dataset.
-   * @param authority naming authority.
-   * @param type type of vertical transform
-   * @param builder creates the VerticalTransform
-   */
-  public VerticalCT(String name, String authority, VerticalCT.Type type, VertTransformBuilderIF builder) {
-    super(name, authority, TransformType.Vertical, ImmutableList.of());
-    this.type = type;
-    this.transformBuilder = builder;
-  }
-
-  /**
-   * get the Vertical Transform type
-   *
-   * @return the Vertical Transform Type
-   */
+  /** get the Vertical Transform type */
   public VerticalCT.Type getVerticalTransformType() {
     return type;
   }
@@ -105,26 +85,22 @@ public class VerticalCT extends CoordinateTransform {
    * @return VerticalTransform
    */
   public VerticalTransform makeVerticalTransform(NetcdfDataset ds, Dimension timeDim) {
-    // LOOK This is a VerticalTransform.Builder, not a VerticalCT.builder
     return transformBuilder.makeMathTransform(ds, timeDim, this);
   }
 
   @Override
   public String toString() {
-    String builderName = transformBuilder == null ? " none" : transformBuilder.getTransformName();
-    return "VerticalCT {" + "type=" + type + ", builder=" + builderName + '}';
+    return "VerticalCT {" + "type=" + type + ", builder=" + transformBuilder + '}';
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////
-  // TODO No one uses the builder?
   private final VerticalCT.Type type;
-  private final VertTransformBuilderIF transformBuilder;
+  private final VerticalTransformBuilder transformBuilder;
 
-  // not needed?
-  protected VerticalCT(Builder<?> builder, NetcdfDataset ncd) {
-    super(builder, ncd);
+  protected VerticalCT(Builder<?> builder) {
+    super(builder);
     this.type = builder.type;
-    this.transformBuilder = null; // placeholder
+    this.transformBuilder = builder.transformBuilder;
   }
 
   public Builder<?> toBuilder() {
@@ -133,6 +109,7 @@ public class VerticalCT extends CoordinateTransform {
 
   // Add local fields to the builder.
   protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
+    b.setVerticalType(this.type).setTransformBuilder(this.transformBuilder);
     return (Builder<?>) super.addLocalFieldsToBuilder(b);
   }
 
@@ -149,20 +126,26 @@ public class VerticalCT extends CoordinateTransform {
 
   public static abstract class Builder<T extends Builder<T>> extends CoordinateTransform.Builder<T> {
     public VerticalCT.Type type;
+    private VerticalTransformBuilder transformBuilder;
     private boolean built;
 
     protected abstract T self();
 
-    public Builder<?> setType(Type type) {
+    public Builder<?> setVerticalType(Type type) {
       this.type = type;
       return self();
     }
 
-    public VerticalCT build(NetcdfDataset ncd) {
+    public Builder<?> setTransformBuilder(VerticalTransformBuilder transformBuilder) {
+      this.transformBuilder = transformBuilder;
+      return self();
+    }
+
+    public VerticalCT build() {
       if (built)
         throw new IllegalStateException("already built");
       built = true;
-      return new VerticalCT(this, ncd);
+      return new VerticalCT(this);
     }
   }
 

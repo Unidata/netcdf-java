@@ -45,9 +45,9 @@ public class TestReadGridCompare {
       // result.add(new Object[] {TestDir.cdmUnitTestDir + "conventions/avhrr/amsr-avhrr-v2.20040729.nc"});
       // result.add(new Object[] {TestDir.cdmUnitTestDir + "wrf/wrfout_01_000000_0003.ncml"});
 
-      result.add(new Object[] {TestDir.cdmLocalTestDataDir + "ncml/nc/ubyte_1.nc4"});
-      result.add(new Object[] {TestDir.cdmLocalTestDataDir + "ncml/nc/cldc.mean.nc"});
-      result.add(new Object[] {TestDir.cdmLocalTestDataDir + "ncml/fmrc/GFS_Puerto_Rico_191km_20090729_0000.nc"});
+      result.add(new Object[] {TestDir.cdmLocalFromTestDataDir + "ncml/nc/ubyte_1.nc4"});
+      result.add(new Object[] {TestDir.cdmLocalFromTestDataDir + "ncml/nc/cldc.mean.nc"});
+      result.add(new Object[] {TestDir.cdmLocalFromTestDataDir + "ncml/fmrc/GFS_Puerto_Rico_191km_20090729_0000.nc"});
 
       TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "conventions/", ff, result);
       TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "ft/grid/", ff, result);
@@ -101,8 +101,6 @@ public class TestReadGridCompare {
         ucar.nc2.dt.GridCoordSystem gcs = geogrid.getCoordinateSystem();
 
         GridCoordinateSystem newGcs = grid.getCoordinateSystem();
-        assertThat(newGcs.getTimeAxis() == null).isEqualTo(gcs.getTimeAxis() == null);
-
         if (newGcs.getTimeAxis() != null && gcs.getTimeAxis() != null) {
           GridAxis1DTime newTimeAxis = newGcs.getTimeAxis();
           CoordinateAxis1DTime timeAxis = (CoordinateAxis1DTime) gcs.getTimeAxis();

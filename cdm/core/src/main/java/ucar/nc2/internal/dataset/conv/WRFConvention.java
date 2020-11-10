@@ -26,15 +26,10 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants._Coordinate;
-import ucar.nc2.dataset.CoordinateAxis;
-import ucar.nc2.dataset.CoordinateAxis1D;
-import ucar.nc2.dataset.CoordinateSystem;
-import ucar.nc2.dataset.CoordinateTransform;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.ProjectionCT;
-import ucar.nc2.dataset.VariableDS;
+import ucar.nc2.dataset.*;
 import ucar.nc2.internal.dataset.CoordSystemBuilder;
 import ucar.nc2.dataset.spi.CoordSystemBuilderFactory;
+import ucar.nc2.internal.dataset.TransformBuilder;
 import ucar.nc2.internal.dataset.transform.vertical.VerticalCTBuilder;
 import ucar.nc2.internal.dataset.transform.vertical.WRFEtaTransformBuilder;
 import ucar.nc2.time.CalendarDate;
@@ -419,8 +414,7 @@ public class WRFConvention extends CoordSystemBuilder {
       VarProcess vp = findVarProcess(projCT.getName(), null);
       if (vp != null) {
         vp.isCoordinateTransform = true;
-        vp.ct = CoordinateTransform.builder().setPreBuilt(projCT);
-        coords.addCoordinateTransform(vp.ct);
+        vp.ct = new TransformBuilder().setPreBuilt(projCT);
       }
     }
     super.makeCoordinateTransforms();
@@ -788,9 +782,10 @@ public class WRFConvention extends CoordSystemBuilder {
         coords.findAxisByType(cs, AxisType.GeoZ).ifPresent(axis -> {
           String units = axis.getUnits();
           if ((units == null) || (units.trim().isEmpty())) {
-            // LOOK each cs might have seperate ct; but they might be identical....
+            // LOOK each cs might have separate ct; but they might be equal....
             VerticalCTBuilder vctb = new WRFEtaTransformBuilder(coords, cs);
-            coords.addVerticalCTBuilder(vctb);
+            TransformBuilder tb = new TransformBuilder().setVertCTBuilder(vctb);
+            coords.addTransformBuilder(tb);
             cs.addCoordinateTransformByName(vctb.getTransformName());
             parseInfo.format("***Added WRFEtaTransformBuilderto '%s'%n", cs.coordAxesNames);
           }

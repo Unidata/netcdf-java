@@ -183,6 +183,7 @@ public class TestAttribute {
     Parameter p = new Parameter("name", "svalue");
     Attribute att = Attribute.fromParameter(p);
     assertThat(att).isEqualTo(new Attribute("name", "svalue"));
+    assertThat(Attribute.toParameter(att)).isEqualTo(p);
   }
 
   @Test
@@ -195,6 +196,7 @@ public class TestAttribute {
     Array data = Array.factory(DataType.DOUBLE, shape, darray);
     Attribute expect = Attribute.builder().setName("name").setValues(data).build();
     assertThat(att).isEqualTo(expect);
+    assertThat(Attribute.toParameter(att)).isEqualTo(p);
   }
 
   @Test

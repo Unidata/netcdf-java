@@ -17,7 +17,6 @@ import ucar.nc2.Dimension;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
-// import ucar.nc2.dt.radial.RadialCoordSys;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageCSBuilder;
 import ucar.nc2.time.*;
 import ucar.nc2.write.Ncdump;
@@ -29,7 +28,6 @@ import ucar.nc2.dataset.*;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dt.grid.*;
-import ucar.unidata.util.Parameter;
 import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.*;
 import java.awt.BorderLayout;
@@ -135,8 +133,8 @@ public class CoordSysTable extends JPanel {
         }
         infoTA.appendLine(" Coordinate Transforms");
         for (CoordinateTransform ct : coordSys.getCoordinateTransforms()) {
-          infoTA.appendLine("  " + ct.getName() + " type=" + ct.getTransformType());
-          for (Parameter p : ct.getParameters()) {
+          infoTA.appendLine("  " + ct.getTransformType() + ": " + ct.getName());
+          for (Attribute p : ct.getCtvAttributes()) {
             infoTA.appendLine("    " + p);
           }
           if (ct instanceof ProjectionCT) {
@@ -237,8 +235,13 @@ public class CoordSysTable extends JPanel {
     }
     int ncoordSys = csTable.getBeans().size();
     int ncoords = axisTable.getBeans().size();
+    int ntrans = ds.getCoordinateTransforms().size();
 
-    f.format(" ngrids=%d, ncoords=%d, ncoordSys=%d%n", ngrids, ncoords, ncoordSys);
+    f.format(" ngrids=%d, ncoords=%d, ncoordSys=%d ntrans=%d%n", ngrids, ncoords, ncoordSys, ntrans);
+    f.format("%nCoordinate Transforms%n");
+    for (CoordinateTransform trans : ds.getCoordinateTransforms()) {
+      f.format("  %-10s %s%n", trans.getTransformType(), trans.getName());
+    }
   }
 
   private BeanTable attTable;
@@ -786,20 +789,13 @@ public class CoordSysTable extends JPanel {
        * }
        */
 
-      StringBuilder buff = new StringBuilder();
-      List ctList = cs.getCoordinateTransforms();
-      for (int i = 0; i < ctList.size(); i++) {
-        CoordinateTransform ct = (CoordinateTransform) ctList.get(i);
-        if (i > 0)
-          buff.append(" ");
-        buff.append(ct.getTransformType());
+      Formatter buff = new Formatter();
+      List<CoordinateTransform> ctList = cs.getCoordinateTransforms();
+      for (CoordinateTransform ct : ctList) {
         if (ct instanceof VerticalCT)
-          buff.append("(").append(((VerticalCT) ct).getVerticalTransformType()).append(")");
+          buff.format("V");
         if (ct instanceof ProjectionCT) {
-          ProjectionCT pct = (ProjectionCT) ct;
-          if (pct.getProjection() != null) {
-            buff.append("(").append(pct.getProjection().getClassName()).append(")");
-          }
+          buff.format("P");
         }
       }
       setCoordTransforms(buff.toString());

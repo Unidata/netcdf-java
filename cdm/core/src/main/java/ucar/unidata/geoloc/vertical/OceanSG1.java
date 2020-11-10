@@ -47,6 +47,7 @@ public class OceanSG1 extends AbstractVerticalTransform {
    * @param ds dataset
    * @param timeDim time dimension
    * @param params list of transformation Parameters
+   *        TODO: params will change to AttributeContainer in ver7.
    */
   public static OceanSG1 create(NetcdfFile ds, Dimension timeDim, List<Parameter> params) {
     Variable etaVar = findVariableFromParameterName(ds, params, ETA);

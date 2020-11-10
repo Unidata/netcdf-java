@@ -157,10 +157,6 @@ public class VariableDS extends Variable implements EnhanceScaleMissingUnsigned,
     return null;
   }
 
-  public boolean hasCachedDataRecurse() {
-    return super.hasCachedData() || ((orgVar != null) && orgVar.hasCachedData());
-  }
-
   @Override
   public void setCaching(boolean caching) {
     if (caching && orgVar != null) {

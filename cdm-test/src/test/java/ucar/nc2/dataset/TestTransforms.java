@@ -5,7 +5,6 @@
 
 package ucar.nc2.dataset;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
@@ -59,6 +58,7 @@ public class TestTransforms {
         SimpleUnit.pressureUnit, true);
 
     Dimension timeDim = ncd.findDimension("time");
+    assertThat(timeDim).isNotNull();
     for (int i = 0; i < timeDim.getLength(); i++) {
       ucar.ma2.ArrayDouble.D3 coordVals = vt.getCoordinateArray(i);
       int[] shape = coordVals.getShape();
@@ -78,6 +78,7 @@ public class TestTransforms {
         HybridSigmaPressure.class, SimpleUnit.pressureUnit, true);
 
     Dimension timeDim = ncd.findDimension("time");
+    assertThat(timeDim).isNotNull();
     for (int i = 0; i < timeDim.getLength(); i++) {
       ucar.ma2.ArrayDouble.D3 coordVals = vt.getCoordinateArray(i);
       int[] shape = coordVals.getShape();
@@ -210,13 +211,13 @@ public class TestTransforms {
   }
 
   private VerticalTransform test(String filename, String levName, String varName, String timeName,
-      VerticalCT.Type vtype, Class vclass, SimpleUnit unit) throws IOException, InvalidRangeException {
+      VerticalCT.Type vtype, Class<?> vclass, SimpleUnit unit) throws IOException, InvalidRangeException {
 
     return _test(filename, levName, varName, timeName, vtype, vclass, unit, true);
   }
 
   private VerticalTransform _test(String filename, String levName, String varName, String timeName,
-      VerticalCT.Type vtype, Class vclass, SimpleUnit unit, boolean varsMatch)
+      VerticalCT.Type vtype, Class<?> vclass, SimpleUnit unit, boolean varsMatch)
       throws IOException, InvalidRangeException {
 
     NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDatasets.openDataset(filename);
@@ -232,7 +233,7 @@ public class TestTransforms {
   }
 
   private VerticalTransform test(NetcdfDataset ncd, String levName, String varName, String timeName,
-      VerticalCT.Type vtype, Class vclass, SimpleUnit vunit, boolean varsMatch)
+      VerticalCT.Type vtype, Class<?> vclass, SimpleUnit vunit, boolean varsMatch)
       throws IOException, InvalidRangeException {
 
     System.out.printf("file= %s%n", ncd.getLocation());
@@ -251,7 +252,7 @@ public class TestTransforms {
     assertThat(cList).isNotNull();
     CoordinateSystem csys = cList.get(0);
 
-    List<CoordinateTransform> vList = new ArrayList<CoordinateTransform>();
+    List<CoordinateTransform> vList = new ArrayList<>();
     for (CoordinateTransform ct : csys.getCoordinateTransforms()) {
       if (ct.getTransformType() == TransformType.Vertical)
         vList.add(ct);
@@ -321,6 +322,7 @@ public class TestTransforms {
 
       GridCoordSystem GridCoordS = grid.getCoordinateSystem();
       VerticalTransform vt = GridCoordS.getVerticalTransform();
+      assertThat(vt).isNotNull();
       ArrayDouble.D3 z = vt.getCoordinateArray(0);
       Section sv = new Section(z.getShape());
       System.out.printf("3dcoord = %s %n", sv);
@@ -335,18 +337,18 @@ public class TestTransforms {
   private void testCoverage(String endpoint, String covName) throws IOException {
     try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
       assertThat(cc).isNotNull();
-      Assert.assertEquals(1, cc.getCoverageCollections().size());
+      assertThat(cc.getCoverageCollections()).hasSize(1);
       CoverageCollection gds = cc.getCoverageCollections().get(0);
-      Assert.assertNotNull(endpoint, gds);
-      Assert.assertEquals(FeatureType.CURVILINEAR, gds.getCoverageType());
+      assertThat(gds).isNotNull();
+      assertThat(gds.getCoverageType()).isEqualTo(FeatureType.CURVILINEAR);
 
       HorizCoordSys hcs = gds.getHorizCoordSys();
-      Assert.assertNotNull(endpoint, hcs);
-      Assert.assertTrue(endpoint, !hcs.isProjection());
-      Assert.assertNull(endpoint, hcs.getTransform());
+      assertThat(hcs).isNotNull();
+      assertThat(hcs.isProjection()).isFalse();
+      assertThat(hcs.getTransform()).isNull();
 
       Coverage cover = gds.findCoverage(covName);
-      Assert.assertNotNull(covName, cover);
+      assertThat(cover).isNotNull();
     }
   }
 

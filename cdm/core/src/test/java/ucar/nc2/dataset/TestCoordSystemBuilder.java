@@ -3,6 +3,7 @@ package ucar.nc2.dataset;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.ma2.DataType;
+import ucar.nc2.AttributeContainerMutable;
 import ucar.nc2.Dimension;
 import ucar.nc2.Group;
 import ucar.nc2.Variable;
@@ -37,7 +38,7 @@ public class TestCoordSystemBuilder {
 
     ProjectionCT projct = new ProjectionCT("horiz", "auth", new FlatEarth());
     transforms.add(projct);
-    VerticalCT vertct = new VerticalCT("vert", "auth", VerticalCT.Type.HybridHeight, new ArrayList<>());
+    VerticalCT vertct = new VerticalCT("vert", "auth", VerticalCT.Type.HybridHeight, new AttributeContainerMutable(""));
     transforms.add(vertct);
 
     CoordinateSystem.Builder<?> builder = CoordinateSystem.builder().setCoordAxesNames("xname yname")
@@ -70,6 +71,39 @@ public class TestCoordSystemBuilder {
     assertThat(copy.findAxis(AxisType.GeoY)).isEqualTo(coordSys.findAxis(AxisType.GeoY));
     assertThat(copy).isEqualTo(coordSys);
     assertThat(copy.hashCode()).isEqualTo(coordSys.hashCode());
+  }
+
+  @Test
+  public void testFindMethods() {
+    NetcdfDataset ncd = NetcdfDataset.builder().build();
+    ArrayList<CoordinateAxis> axes = new ArrayList<>();
+    ArrayList<CoordinateTransform> transforms = new ArrayList<>();
+
+    VariableDS.Builder<?> xBuilder = VariableDS.builder().setName("xname").setDataType(DataType.FLOAT)
+        .setUnits("xunits").setDesc("xdesc").setEnhanceMode(NetcdfDataset.getEnhanceAll());
+    axes.add(CoordinateAxis.fromVariableDS(xBuilder).setAxisType(AxisType.GeoX).build(makeDummyGroup()));
+
+    VariableDS.Builder<?> yBuilder = VariableDS.builder().setName("yname").setDataType(DataType.FLOAT)
+        .setUnits("yunits").setDesc("ydesc").setEnhanceMode(NetcdfDataset.getEnhanceAll());
+    axes.add(CoordinateAxis.fromVariableDS(yBuilder).setAxisType(AxisType.GeoY).build(makeDummyGroup()));
+
+    CoordinateSystem.Builder<?> builder = CoordinateSystem.builder().setCoordAxesNames("xname yname")
+        .addCoordinateTransformByName("horiz").addCoordinateTransformByName("vert");
+    CoordinateSystem coordSys = builder.build(ncd, axes, transforms);
+
+    CoordinateAxis xaxis = coordSys.findAxis(AxisType.GeoX);
+    assertThat(xaxis).isNotNull();
+    assertThat(coordSys.findAxis(AxisType.GeoZ, AxisType.GeoX, AxisType.GeoY)).isEqualTo(xaxis);
+
+    CoordinateAxis yaxis = coordSys.findAxis(AxisType.GeoY);
+    assertThat(yaxis).isNotNull();
+    assertThat(coordSys.findAxis(AxisType.GeoZ, AxisType.GeoY, AxisType.GeoX)).isEqualTo(yaxis);
+    assertThat(coordSys.findAxis(AxisType.GeoZ, AxisType.Pressure, AxisType.Height)).isNull();
+
+    assertThat(coordSys.findAxis(AxisType.GeoZ, AxisType.Pressure, AxisType.Height)).isNull();
+
+    assertThat(coordSys.getProjection()).isNull();
+    assertThat(coordSys.getVerticalCT()).isNull();
   }
 
   @Test
