@@ -59,6 +59,7 @@ gradle.projectsEvaluated {  // Several statements below rely upon all subproject
     include 'ucar/nc2/constants/*.java'
     include 'ucar/nc2/dataset/*.java'
     include 'ucar/nc2/dataset/spi/*.java'
+    include 'ucar/nc2/grid/*.java'
     include 'ucar/nc2/iosp/*.java'
     include 'ucar/nc2/time/*.java'
     include 'ucar/nc2/units/*.java'

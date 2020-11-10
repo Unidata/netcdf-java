@@ -109,7 +109,7 @@ public class CoordinateSystem {
     return ds;
   }
 
-  /** Get the Collection of Dimensions that any of the CoordinateAxes use */
+  /** Get the Collection of Dimensions used by any of the CoordinateAxes. */
   public ImmutableCollection<Dimension> getDomain() {
     return ImmutableList.copyOf(domain);
   }
@@ -754,6 +754,7 @@ public class CoordinateSystem {
     }
   }
 
+  /** Convert to a mutable Builder. */
   public Builder<?> toBuilder() {
     return addLocalFieldsToBuilder(builder());
   }
@@ -763,6 +764,7 @@ public class CoordinateSystem {
     return b.setImplicit(this.isImplicit).setCoordAxesNames(this.name).addCoordinateTransforms(this.coordTrans);
   }
 
+  /** Get a Builder of CoordinateSystem */
   public static Builder<?> builder() {
     return new Builder2();
   }
@@ -774,6 +776,7 @@ public class CoordinateSystem {
     }
   }
 
+  /** A Builder of CoordinateSystem. */
   public static abstract class Builder<T extends Builder<T>> {
     public String coordAxesNames = "";
     private final List<String> transNames = new ArrayList<>();
