@@ -293,6 +293,7 @@ public class CoordinatesHelper {
       return false;
     }
 
+    // Note that only ncd.axes can be accessed, not coordsys or transforms.
     public CoordinatesHelper build(NetcdfDataset ncd, ImmutableList<CoordinateAxis> coordAxes) {
       Preconditions.checkNotNull(ncd);
       if (built)

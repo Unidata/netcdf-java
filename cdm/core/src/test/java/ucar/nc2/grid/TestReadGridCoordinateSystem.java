@@ -254,15 +254,4 @@ public class TestReadGridCoordinateSystem {
     }
   }
 
-  @Category(NeedsCdmUnitTest.class)
-  @Test
-  public void testBest() throws IOException, InvalidRangeException {
-    String filename = "/media/snake/Elements/data/grib/idd/namPolar90/NamPolar90.ncx4";
-    Formatter errlog = new Formatter();
-    try (GridDataset ncd = GridDatasetFactory.openGridDataset(filename, errlog)) {
-      System.out.println("readGridDataset: " + ncd.getLocation());
-    }
-  }
-
-
 }
