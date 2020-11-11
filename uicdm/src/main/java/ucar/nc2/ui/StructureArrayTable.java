@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Formatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -63,7 +64,7 @@ import ucar.util.prefs.PreferencesExt;
 /** Component "Data Table" in DatasetViewer when you have a Structure selected. */
 public class StructureArrayTable extends JPanel {
   private final PreferencesExt prefs;
-  private StructureTableModel dataModel;
+  private AbstractSATableModel dataModel;
 
   private JTable jtable;
   private PopupMenu popup;
@@ -71,6 +72,7 @@ public class StructureArrayTable extends JPanel {
   private final TextHistoryPane dumpTA;
   private final IndependentWindow dumpWindow;
   private final EventListenerList listeners = new EventListenerList();
+  // TODO why is this static?
   private static final HashMap<String, IndependentWindow> windows = new HashMap<>(); // display subtables
 
   public StructureArrayTable(PreferencesExt prefs) {
@@ -154,11 +156,11 @@ public class StructureArrayTable extends JPanel {
   }
 
   public void setStructureData(StructureDataArray as) {
-    dataModel = new ArrayStructureModel(as);
+    dataModel = new StructureDataArrayModel(as);
     initTable(dataModel);
   }
 
-  private void initTable(StructureTableModel m) {
+  private void initTable(AbstractSATableModel m) {
     TableColumnModel tcm = new HidableTableColumnModel(m);
     jtable = new JTable(m, tcm);
     jtable.setRowSorter(new UndoableRowSorter<>(m));
@@ -217,8 +219,8 @@ public class StructureArrayTable extends JPanel {
     });
 
     // add any subtables from inner Structures
-    for (Structure s : m.subtables) {
-      addActionToPopupMenu("Data Table for " + s.getShortName(), new SubtableAbstractAction(s));
+    for (String subtable : m.subtables) {
+      addActionToPopupMenu("Data Table for " + subtable, new SubtableAction("", subtable));
     }
 
     removeAll();
@@ -242,18 +244,19 @@ public class StructureArrayTable extends JPanel {
     revalidate();
   }
 
-  private class SubtableAbstractAction extends AbstractAction {
-    Structure s;
+  private class SubtableAction extends AbstractAction {
+    String memberName;
     StructureArrayTable dataTable;
     IndependentWindow dataWindow;
 
-    SubtableAbstractAction(Structure s) {
-      this.s = s;
-      dataTable = new StructureArrayTable(null);
-      dataWindow = windows.get(s.getFullName());
+    SubtableAction(String parentName, String memberName) {
+      this.memberName = memberName;
+      String fullname = parentName + "/" + memberName;
+      dataTable = new StructureArrayTable(null); // LOOK no nested prefs
+      dataWindow = windows.get(fullname);
       if (dataWindow == null) {
-        dataWindow = new IndependentWindow("Data Table", BAMutil.getImage("nj22/NetcdfUI"), dataTable);
-        windows.put(s.getFullName(), dataWindow);
+        dataWindow = new IndependentWindow("Data Array Table", BAMutil.getImage("nj22/NetcdfUI"), dataTable);
+        windows.put(fullname, dataWindow);
       } else {
         dataWindow.setComponent(dataTable);
       }
@@ -265,9 +268,9 @@ public class StructureArrayTable extends JPanel {
         return;
       }
       StructureMembers members = sd.getStructureMembers();
-      StructureMembers.Member m = members.findMember(s.getShortName());
+      StructureMembers.Member m = members.findMember(memberName);
       if (m == null)
-        throw new IllegalStateException("cant find member = " + s.getShortName());
+        throw new IllegalStateException("cant find member = " + memberName);
 
       if (m.getDataType() == DataType.STRUCTURE || m.getDataType() == DataType.SEQUENCE) {
         StructureDataArray as = (StructureDataArray) sd.getMemberData(m);
@@ -323,19 +326,22 @@ public class StructureArrayTable extends JPanel {
   }
 
   private void showDataInternal() {
-    /*
-     * TODO
-     * StructureData sd = getSelectedStructureData();
-     * if (sd == null)
-     * return;
-     * 
-     * Formatter f = new Formatter();
-     * sd.showInternalMembers(f, new Indent(2));
-     * f.format("%n");
-     * sd.showInternal(f, new Indent(2));
-     * dumpTA.setText(f.toString());
-     * dumpWindow.setVisible(true);
-     */
+    StructureData sd = getSelectedStructureData();
+    if (sd == null) {
+      return;
+    }
+
+    Formatter f = new Formatter();
+    f.format("Structure Data %s%n", sd.getName());
+    StructureMembers members = sd.getStructureMembers();
+    f.format(" Members %s%n", members.getName());
+    f.format("   Type      Offset Storage ByteOrder Name%n");
+    for (Member m : members) {
+      f.format("   %9s %3d %6d %12s %s%n", m.getDataType(), m.getOffset(), m.getStorageSizeBytes(), m.getByteOrder(),
+          m.getName());
+    }
+    dumpTA.setText(f.toString());
+    dumpWindow.setVisible(true);
   }
 
   private StructureData getSelectedStructureData() {
@@ -372,19 +378,17 @@ public class StructureArrayTable extends JPanel {
 
   ////////////////////////////////////////////////////////////////////////////////////////
 
-  private abstract static class StructureTableModel extends AbstractTableModel {
+  private abstract static class AbstractSATableModel extends AbstractTableModel {
     protected StructureMembers members;
     protected boolean wantDate;
-    protected List<Structure> subtables = new ArrayList<>();
+    protected List<String> subtables = new ArrayList<>();
     private final LoadingCache<Integer, StructureData> cache =
         CacheBuilder.newBuilder().maximumSize(500).build(new CacheLoader<Integer, StructureData>() {
           @Override
           public StructureData load(Integer row) {
             try {
               return getStructureData(row);
-            } catch (InvalidRangeException e) {
-              throw new IllegalStateException(e.getCause());
-            } catch (IOException e) {
+            } catch (InvalidRangeException | IOException e) {
               throw new IllegalStateException(e.getCause());
             }
           }
@@ -406,9 +410,13 @@ public class StructureArrayTable extends JPanel {
     public abstract void clear();
 
     // if we know how to extract the date for this data, add two extra columns
-    public abstract CalendarDate getObsDate(int row);
+    public CalendarDate getObsDate(int row) {
+      return null;
+    }
 
-    public abstract CalendarDate getNomDate(int row);
+    public CalendarDate getNomDate(int row) {
+      return null;
+    }
 
     public Object getRow(int row) throws InvalidRangeException, IOException {
       return getStructureData(row);
@@ -416,57 +424,57 @@ public class StructureArrayTable extends JPanel {
 
     @Override
     public int getColumnCount() {
-      if (members == null)
+      if (members == null) {
         return 0;
+      }
       return members.getMembers().size() + (wantDate ? 2 : 0);
     }
 
     @Override
     public String getColumnName(int columnIndex) {
-      if (wantDate && (columnIndex == 0))
+      if (wantDate && (columnIndex == 0)) {
         return "obsDate";
-      if (wantDate && (columnIndex == 1))
+      }
+      if (wantDate && (columnIndex == 1)) {
         return "nomDate";
+      }
       int memberCol = wantDate ? columnIndex - 2 : columnIndex;
       return members.getMember(memberCol).getName();
     }
 
     @Override
     public Object getValueAt(int row, int column) {
-      if (wantDate && (column == 0))
+      if (wantDate && (column == 0)) {
         return getObsDate(row);
-      if (wantDate && (column == 1))
+      }
+      if (wantDate && (column == 1)) {
         return getNomDate(row);
+      }
 
       StructureData sd = getStructureDataHash(row);
       String colName = getColumnName(column);
-      return sd.getMemberData(colName);
+      Array<?> data = sd.getMemberData(colName);
+      if (data instanceof StructureDataArray) {
+        return "len =" + data.length();
+      }
+      return data;
     }
   }
 
   ////////////////////////////////////////////////////////////////////////
   // handles Structures
 
-  private static class StructureModel extends StructureTableModel {
+  private static class StructureModel extends AbstractSATableModel {
     private Structure struct;
 
     StructureModel(Structure s) {
       this.struct = s;
       this.members = StructureMembers.makeStructureMembers(s).build();
       for (Variable v : s.getVariables()) {
-        if (v instanceof Structure)
-          subtables.add((Structure) v);
+        if (v instanceof Structure) {
+          subtables.add(v.getShortName());
+        }
       }
-    }
-
-    @Override
-    public CalendarDate getObsDate(int row) {
-      return null;
-    }
-
-    @Override
-    public CalendarDate getNomDate(int row) {
-      return null;
     }
 
     @Override
@@ -487,12 +495,6 @@ public class StructureArrayTable extends JPanel {
       struct = null;
       fireTableDataChanged();
     }
-
-    String enumLookup(StructureMembers.Member m, Number val) {
-      Variable v = struct.findVariable(m.getName());
-      return v.lookupEnumString(val.intValue());
-    }
-
   }
 
   private static class SequenceModel extends StructureModel {
@@ -511,16 +513,6 @@ public class StructureArrayTable extends JPanel {
           e.printStackTrace();
         }
       }
-    }
-
-    @Override
-    public CalendarDate getObsDate(int row) {
-      return null;
-    }
-
-    @Override
-    public CalendarDate getNomDate(int row) {
-      return null;
     }
 
     @Override
@@ -550,23 +542,19 @@ public class StructureArrayTable extends JPanel {
   }
 
   ////////////////////////////////////////////////////////////////////////
+  // Handles nested StructureDataArray
 
-  private static class ArrayStructureModel extends StructureTableModel {
+  private static class StructureDataArrayModel extends AbstractSATableModel {
     private StructureDataArray as;
 
-    ArrayStructureModel(StructureDataArray as) {
+    StructureDataArrayModel(StructureDataArray as) {
       this.as = as;
       this.members = as.getStructureMembers();
-    }
-
-    @Override
-    public CalendarDate getObsDate(int row) {
-      return null;
-    }
-
-    @Override
-    public CalendarDate getNomDate(int row) {
-      return null;
+      for (Member m : as.getStructureMembers()) {
+        if (m.getDataType() == DataType.SEQUENCE || m.getDataType() == DataType.STRUCTURE) {
+          subtables.add(m.getName());
+        }
+      }
     }
 
     @Override

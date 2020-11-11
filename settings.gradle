@@ -32,7 +32,6 @@ include 'cdmr'
 // Set name of cdm submodules
 project(':cdm:core').name = 'cdm-core'
 // project(':cdm:fmrc').name = 'cdm-fmrc'
-//project(':cdm:grid').name = 'cdm-grid'
 // project(':cdm:image').name = 'cdm-image'
 // project(':cdm:radial').name = 'cdm-radial'
 // project(':cdm:misc').name = 'cdm-misc'

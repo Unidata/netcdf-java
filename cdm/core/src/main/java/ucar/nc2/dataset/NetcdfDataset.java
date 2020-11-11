@@ -461,11 +461,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     return "N/A";
   }
 
-  //// package private
-  CoordinatesHelper getCoordinatesHelper() {
-    return this.coords;
-  }
-
   ////////////////////////////////////////////////////////////////////////////////////////////
   private final @Nullable NetcdfFile orgFile; // can be null in Ncml
   private final CoordinatesHelper coords;
@@ -489,12 +484,10 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     // TODO: Problem, we are letting ds escape before its finished, namely coords is null at this point
     // TODO: 1) VerticalCTBuilder.makeVerticalCT(ds) and 2) AbstractTransformBuilder.getGeoCoordinateUnits(ds, ctv)
     this.coordAxes = CoordinatesHelper.makeAxes(this);
+    // Note that only ncd.axes can be accessed, not coordsys or transforms.
     coords = builder.coords.build(this, this.coordAxes);
 
-    // LOOK how do we get the variableDS to reference the coordinate system?
-    // CoordinatesHelper has to wire the coordinate systems together
-    // Perhaps a VariableDS uses NetcdfDataset or CoordinatesHelper to manage its CoordinateSystems and Transforms ??
-    // So it doesnt need a reference directly to them.
+    // LOOK We have to break strict Immutability here, best we can do for now.
     for (Variable v : this.getVariables()) {
       if (v instanceof CoordinateAxis) {
         continue;
@@ -503,6 +496,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
         VariableDS vds = (VariableDS) v;
         vds.setCoordinateSystems(coords);
       }
+      // TODO This implies Structures can have CoordinateSystems. Review and justify this.
       if (v instanceof StructureDS) {
         StructureDS sds = (StructureDS) v;
         sds.setCoordinateSystems(coords);
@@ -514,7 +508,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     return addLocalFieldsToBuilder(builder());
   }
 
-  // Add local fields to the passed - in builder.
   private Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
     this.coords.getCoordAxes().forEach(axis -> b.coords.addCoordinateAxis(axis.toBuilder()));
     this.coords.getCoordSystems().forEach(sys -> b.coords.addCoordinateSystem(sys.toBuilder()));
