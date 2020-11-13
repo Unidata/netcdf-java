@@ -36,8 +36,8 @@ public class TestTdsOtherGribCollections {
       result.add(new Object[] {topDir + "CMC/RDPS/NA_15km/CMC_RDPS_ps15km_20201010_0000.grib2.ncx4", 58, 16, 22});
 
       // TODO /media/twobee/tds/CMC/RDPS/NA_15km/CMC_RDPS_ps15km_.*grib2.gbx9 has duplicates, I think because
-      // level 111 (eta) should have a VertCoordType, see getVertUnit(int code).
-      // It also has 2 grids, with disjunct variables. should be seperate?
+      // TODO level 111 (eta) should have a VertCoordType, see getVertUnit(int code).
+      // TODO It also has 2 grids, with disjunct variables. should be seperate?
 
       // fnmoc
       result.add(new Object[] {topDir + "FNMOC/WW3/Global_1p0deg/FNMOC_WW3_Global_1p0deg.ncx4", 15, 1, 4});

@@ -45,11 +45,9 @@ public class TestTdsGribProblems {
 
   // Heres an excessive number of coordinate systems (234). Are they unique??
   // 6 groups (TwoD, Best) x (LC 368 x 518, 384 x 634, 380 x 609). Grid could have one group with multiple coordsys
-  // having
-  // different grids sizes? Problem is that they have the same variables in each group. Possible these are different
-  // model runs
-  // that are not getting properly separated?? Or a moving grid ?? I think moving grid. Individual runtimes have single
-  // grid.
+  // having different grids sizes? Problem is that they have the same variables in each group. Possible these are
+  // different model runs that are not getting properly separated?? Or a moving grid ?? I think moving grid. Individual
+  // runtimes have single grid.
   // 1 runtime, 2 timeOffsets and 33 vertical coords.
   @Test
   public void testFirewxnest() throws Exception {
@@ -112,7 +110,6 @@ public class TestTdsGribProblems {
         }
         assertWithMessage("hour " + hour).that(count).isEqualTo(2 * expected[hour]);
       }
-
     }
   }
 }
