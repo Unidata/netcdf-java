@@ -1,5 +1,6 @@
 package ucar.nc2.grid;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import ucar.array.Array;
 import ucar.array.Arrays;
@@ -12,6 +13,7 @@ import java.util.Formatter;
 import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
 
+@Ignore("files not available")
 public class TestTdsGribProblems {
 
   /*
