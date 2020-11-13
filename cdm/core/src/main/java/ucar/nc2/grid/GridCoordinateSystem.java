@@ -40,6 +40,7 @@ public interface GridCoordinateSystem {
   GridAxis1D getVerticalAxis();
 
   /** Get the Time axis. */
+  @Nullable
   GridAxis1DTime getTimeAxis();
 
   /** Get the ensemble axis. */
@@ -47,10 +48,12 @@ public interface GridCoordinateSystem {
   GridAxis1D getEnsembleAxis();
 
   /** Get the RunTime axis. */
+  @Nullable
   GridAxis1DTime getRunTimeAxis();
 
   /** Get the Time Offset axis. */
-  GridAxis1D getTimeOffsetAxis();
+  @Nullable
+  GridAxis getTimeOffsetAxis();
 
   /** Get the horizontal Projection, if any. */
   @Nullable

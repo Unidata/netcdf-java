@@ -57,10 +57,10 @@ public class NcdumpArray {
    *
    * @param command command string
    * @param out send output here
-   * @param ct allow task to be cancelled; may be null.
+   * @param cancel allow task to be cancelled; may be null.
    * @throws IOException on write error
    */
-  public static void ncdump(String command, Writer out, CancelTask ct) throws IOException {
+  public static void ncdump(String command, Writer out, CancelTask cancel) throws IOException {
     // pull out the filename from the command
     String filename;
     StringTokenizer stoke = new StringTokenizer(command);
@@ -71,11 +71,11 @@ public class NcdumpArray {
       return;
     }
 
-    try (NetcdfFile nc = NetcdfDatasets.openFile(filename, ct)) {
+    try (NetcdfFile nc = NetcdfDatasets.openFile(filename, cancel)) {
       // the rest of the command
       int pos = command.indexOf(filename);
       command = command.substring(pos + filename.length());
-      ncdump(nc, command, out, ct);
+      ncdump(nc, command, out, cancel);
 
     } catch (FileNotFoundException e) {
       out.write("file not found= ");
@@ -92,12 +92,12 @@ public class NcdumpArray {
    * @param nc apply command to this file
    * @param command : command string
    * @param out send output here
-   * @param ct allow task to be cancelled; may be null.
+   * @param cancel allow task to be cancelled; may be null.
    */
-  public static void ncdump(NetcdfFile nc, String command, Writer out, CancelTask ct) throws IOException {
+  public static void ncdump(NetcdfFile nc, String command, Writer out, CancelTask cancel) throws IOException {
     WantValues showValues = WantValues.none;
 
-    Builder builder = builder(nc).setCancelTask(ct);
+    Builder builder = builder(nc).setCancelTask(cancel);
 
     if (command != null) {
       StringTokenizer stoke = new StringTokenizer(command);
@@ -304,14 +304,14 @@ public class NcdumpArray {
    * Print all the data of the given Variable.
    *
    * @param v variable to print
-   * @param ct allow task to be cancelled; may be null.
+   * @param cancel allow task to be cancelled; may be null.
    * @return String result
    * @throws IOException on write error
    */
-  public static String printVariableData(Variable v, CancelTask ct) throws IOException {
+  public static String printVariableData(Variable v, CancelTask cancel) throws IOException {
     Array<?> data = v.readArray();
     Formatter out = new Formatter();
-    printArray(out, data, v.getFullName(), new Indent(2), ct);
+    printArray(out, data, v.getFullName(), new Indent(2), cancel);
     return out.toString();
   }
 
@@ -336,19 +336,20 @@ public class NcdumpArray {
   }
 
   /** Print named array to returned String. */
-  public static String printArray(Array<?> array, String name, CancelTask ct) {
+  public static String printArray(Array<?> array, String name, CancelTask cancel) {
     Formatter out = new Formatter();
-    printArray(out, array, name, null, new Indent(2), ct);
+    printArray(out, array, name, null, new Indent(2), cancel);
     return out.toString();
   }
 
-  private static void printArray(Formatter out, Array<?> array, String name, Indent indent, CancelTask ct) {
-    printArray(out, array, name, null, indent, ct);
+  private static void printArray(Formatter out, Array<?> array, String name, Indent indent, CancelTask cancel) {
+    printArray(out, array, name, null, indent, cancel);
     out.flush();
   }
 
-  private static void printArray(Formatter out, Array<?> array, String name, String units, Indent ilev, CancelTask ct) {
-    if (ct != null && ct.isCancel()) {
+  private static void printArray(Formatter out, Array<?> array, String name, String units, Indent ilev,
+      CancelTask cancel) {
+    if (cancel != null && cancel.isCancel()) {
       return;
     }
 
@@ -364,13 +365,13 @@ public class NcdumpArray {
     }
 
     if ((array instanceof ArrayChar) && (array.getRank() > 0)) {
-      printStringArray(out, (ArrayChar) array, ilev, ct);
+      printStringArray(out, (ArrayChar) array, ilev, cancel);
 
     } else if (array.getDataType() == DataType.STRING) {
-      printStringArray(out, (ArrayString) array, ilev, ct);
+      printStringArray(out, (ArrayString) array, ilev, cancel);
 
     } else if (array instanceof StructureDataArray) {
-      printStructureDataArray(out, (StructureDataArray) array, ilev, ct);
+      printStructureDataArray(out, (StructureDataArray) array, ilev, cancel);
 
     } else if (array.getDataType() == DataType.OPAQUE) { // opaque type
       ArrayVlen<Byte> vlen = (ArrayVlen<Byte>) array;
@@ -379,14 +380,14 @@ public class NcdumpArray {
         out.format("%s%n", (count == 0) ? "," : ";"); // peek ahead
         ArrayByte barray = (ArrayByte) inner;
         printByteBuffer(out, barray.getByteBuffer(), ilev);
-        if (ct != null && ct.isCancel())
+        if (cancel != null && cancel.isCancel())
           return;
         count++;
       }
     } else if (array instanceof ArrayVlen) {
-      printVariableArray(out, (ArrayVlen<?>) array, ilev, ct);
+      printVariableArray(out, (ArrayVlen<?>) array, ilev, cancel);
     } else {
-      printArray(out, array, ilev, ct);
+      printArray(out, array, ilev, cancel);
     }
 
     if (units != null) {
@@ -397,8 +398,8 @@ public class NcdumpArray {
     out.flush();
   }
 
-  private static void printArray(Formatter out, Array<?> ma, Indent indent, CancelTask ct) {
-    if (ct != null && ct.isCancel())
+  private static void printArray(Formatter out, Array<?> ma, Indent indent, CancelTask cancel) {
+    if (cancel != null && cancel.isCancel())
       return;
     int rank = ma.getRank();
 
@@ -437,7 +438,7 @@ public class NcdumpArray {
         if (ii > 0)
           out.format(", ");
         out.format("%s", value);
-        if (ct != null && ct.isCancel())
+        if (cancel != null && cancel.isCancel())
           return;
       }
       out.format("}");
@@ -454,8 +455,8 @@ public class NcdumpArray {
       }
       if (ii > 0)
         out.format(",");
-      printArray(out, slice, indent, ct);
-      if (ct != null && ct.isCancel())
+      printArray(out, slice, indent, cancel);
+      if (cancel != null && cancel.isCancel())
         return;
     }
     indent.decr();
@@ -463,8 +464,8 @@ public class NcdumpArray {
     out.format("%n%s}", indent);
   }
 
-  private static void printStringArray(Formatter out, ArrayChar ma, Indent indent, CancelTask ct) {
-    if (ct != null && ct.isCancel())
+  private static void printStringArray(Formatter out, ArrayChar ma, Indent indent, CancelTask cancel) {
+    if (cancel != null && cancel.isCancel())
       return;
 
     int rank = ma.getRank();
@@ -482,7 +483,7 @@ public class NcdumpArray {
           out.format(", ");
         out.format("  \"%s\"", s);
         first = false;
-        if (ct != null && ct.isCancel())
+        if (cancel != null && cancel.isCancel())
           return;
       }
       return;
@@ -502,8 +503,8 @@ public class NcdumpArray {
       }
       if (ii > 0)
         out.format(",");
-      printStringArray(out, slice, indent, ct);
-      if (ct != null && ct.isCancel())
+      printStringArray(out, slice, indent, cancel);
+      if (cancel != null && cancel.isCancel())
         return;
     }
     indent.decr();
@@ -522,8 +523,8 @@ public class NcdumpArray {
       }
   }
 
-  private static void printStringArray(Formatter out, ArrayString ma, Indent indent, CancelTask ct) {
-    if (ct != null && ct.isCancel())
+  private static void printStringArray(Formatter out, ArrayString ma, Indent indent, CancelTask cancel) {
+    if (cancel != null && cancel.isCancel())
       return;
 
     int rank = ma.getRank();
@@ -558,32 +559,33 @@ public class NcdumpArray {
       }
       if (ii > 0)
         out.format(",");
-      printStringArray(out, slice, indent, ct);
+      printStringArray(out, slice, indent, cancel);
     }
     indent.decr();
     out.format("%n%s}", indent);
   }
 
-  private static void printStructureDataArray(Formatter out, StructureDataArray array, Indent indent, CancelTask ct) {
+  private static void printStructureDataArray(Formatter out, StructureDataArray array, Indent indent,
+      CancelTask cancel) {
     int count = 0;
     for (StructureData sdata : array) {
       out.format("%n%s{", indent);
-      printStructureData(out, sdata, indent, ct);
+      printStructureData(out, sdata, indent, cancel);
       out.format("%s} %s(%d)", indent, sdata.getName(), count);
-      if (ct != null && ct.isCancel())
+      if (cancel != null && cancel.isCancel())
         return;
       count++;
     }
   }
 
-  private static void printVariableArray(Formatter out, ArrayVlen<?> vlen, Indent indent, CancelTask ct) {
+  private static void printVariableArray(Formatter out, ArrayVlen<?> vlen, Indent indent, CancelTask cancel) {
     out.format("%n%s{", indent);
     indent.incr();
     int count = 0;
     for (Array<?> inner : vlen) {
       out.format("%s%n", (count == 0) ? "," : ";"); // peek ahead
-      printArray(out, inner, indent, ct);
-      if (ct != null && ct.isCancel())
+      printArray(out, inner, indent, cancel);
+      if (cancel != null && cancel.isCancel())
         return;
       count++;
     }
@@ -606,12 +608,12 @@ public class NcdumpArray {
     return out.toString();
   }
 
-  private static void printStructureData(Formatter out, StructureData sdata, Indent indent, CancelTask ct) {
+  private static void printStructureData(Formatter out, StructureData sdata, Indent indent, CancelTask cancel) {
     indent.incr();
     for (StructureMembers.Member m : sdata.getStructureMembers()) {
       Array sdataArray = sdata.getMemberData(m);
-      printArray(out, sdataArray, m.getName(), m.getUnitsString(), indent, ct);
-      if (ct != null && ct.isCancel())
+      printArray(out, sdataArray, m.getName(), m.getUnitsString(), indent, cancel);
+      if (cancel != null && cancel.isCancel())
         return;
     }
     indent.decr();

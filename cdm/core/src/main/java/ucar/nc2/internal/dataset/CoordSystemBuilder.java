@@ -124,11 +124,6 @@ public class CoordSystemBuilder {
   protected boolean isCoordinateAxisForVariable(CoordinateAxis.Builder<?> axis, VariableDS.Builder<?> vb) {
     HashSet<Dimension> varDims = new HashSet<>(vb.getDimensions());
 
-    // a CHAR variable must really be a STRING, so leave out the last (string length) dimension
-    int checkDims = axis.getRank();
-    if (axis.dataType == DataType.CHAR)
-      checkDims--;
-
     Group.Builder groupb = vb.getParentGroupBuilder();
     Group.Builder groupa = axis.getParentGroupBuilder();
     Group.Builder commonGroup;
@@ -139,8 +134,15 @@ public class CoordSystemBuilder {
       commonGroup = groupb.commonParent(groupa);
     }
 
+    // a CHAR variable must really be a STRING, so leave out the last (string length) dimension
+    int checkDims = axis.getRank();
+    if (axis.dataType == DataType.CHAR)
+      checkDims--;
     for (int i = 0; i < checkDims; i++) {
       Dimension axisDim = axis.getDimension(i);
+      if (!axisDim.isShared()) { // anon dimensions dont count. TODO does this work?
+        continue;
+      }
       if (!varDims.contains(axisDim)) {
         return false;
       }

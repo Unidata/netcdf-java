@@ -46,12 +46,6 @@ public class GridAxis1D extends GridAxis {
     }
   }
 
-  public int[] getShape() {
-    if (getDependenceType() == GridAxis.DependenceType.scalar)
-      return new int[0];
-    return new int[] {ncoords};
-  }
-
   @Override
   public boolean equals(Object o) {
     if (this == o)

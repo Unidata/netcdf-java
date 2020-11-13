@@ -54,6 +54,8 @@ public class CDM {
   public static final String LON_UNITS = "degrees_east";
   public static final String RLATLON_UNITS = "degrees";
   public static final String TIME_OFFSET = "time offset from runtime";
+  public static final String TIME_OFFSET_HOUR = "hoursFrom0z";
+  public static final String RUNTIME_COORDINATE = "runtimeCoordinate";
 
   // Special Attribute Names added by the Netcdf C library (apparently).
   public static final String NCPROPERTIES = "_NCProperties";

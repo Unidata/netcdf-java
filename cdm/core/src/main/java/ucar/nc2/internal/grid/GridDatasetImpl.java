@@ -7,7 +7,10 @@ package ucar.nc2.internal.grid;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.*;
+import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.*;
 import ucar.nc2.dataset.NetcdfDataset.Enhance;
@@ -21,6 +24,7 @@ import java.util.*;
 
 /** GridDataset implementation wrapping a NetcdfDataset. */
 public class GridDatasetImpl implements GridDataset {
+  private static Logger log = LoggerFactory.getLogger(GridDatasetImpl.class);
 
   public static Optional<GridDatasetImpl> create(NetcdfDataset ncd, Formatter errInfo) throws IOException {
     Set<Enhance> enhance = ncd.getEnhanceMode();
@@ -35,6 +39,7 @@ public class GridDatasetImpl implements GridDataset {
   }
 
   ///////////////////////////////////////////////////////////////////
+  // TODO make Immutable
 
   private final NetcdfDataset ncd;
   private final FeatureType featureType;
@@ -49,8 +54,9 @@ public class GridDatasetImpl implements GridDataset {
     this.ncd = ncd;
     this.featureType = classifier.getFeatureType();
 
-    // Convert axes
     this.gridAxes = new HashMap<>();
+
+    // Do all the independent axes first
     for (CoordinateAxis axis : classifier.getIndependentAxes()) {
       if (axis.getFullName().startsWith("Best/")) {
         continue;
@@ -58,14 +64,22 @@ public class GridDatasetImpl implements GridDataset {
       if (axis.getRank() < 2) {
         GridAxis gridAxis = Grids.extractGridAxis1D(ncd, axis, GridAxis.DependenceType.independent);
         gridAxes.put(axis.getFullName(), gridAxis);
+      } else {
+        log.warn("Independent gridAxis {} rank > 1", axis.getFullName());
+        errInfo.format("Independent gridAxis %s rank > 1", axis.getFullName());
       }
     }
+
+    // Now we can do dependent, knowing we have all the independent ones in gridAxes
     for (CoordinateAxis axis : classifier.getDependentAxes()) {
       if (axis.getFullName().startsWith("Best/")) {
         continue;
       }
       if (axis.getRank() < 2) {
         GridAxis gridAxis = Grids.extractGridAxis1D(ncd, axis, GridAxis.DependenceType.dependent);
+        gridAxes.put(axis.getFullName(), gridAxis);
+      } else if (axis.getAxisType() == AxisType.TimeOffset && axis.getRank() == 2) {
+        GridAxis gridAxis = Grids.extractGridAxisOffset2D(axis, GridAxis.DependenceType.dependent, gridAxes);
         gridAxes.put(axis.getFullName(), gridAxis);
       }
     }

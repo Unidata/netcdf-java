@@ -8,12 +8,7 @@ import java.awt.*;
 import java.io.*;
 import java.util.*;
 
-/**
- * Superclass for report panels
- *
- * @author caron
- * @since 8/22/13
- */
+/** Superclass for report panels */
 public abstract class ReportPanel extends JPanel {
 
   protected PreferencesExt prefs;
@@ -102,8 +97,8 @@ public abstract class ReportPanel extends JPanel {
       CollectionFiltered filteredCollection = new CollectionFiltered("GribReportPanel", org, new MFileFilter() {
         public boolean accept(MFile mfile) {
           String suffix = mfile.getName();
-          if (suffix.contains(".ncx"))
-            return false;
+          // if (suffix.contains(".ncx")) TODO how to control this??
+          // return false;
           return !suffix.contains(".gbx");
         }
       });

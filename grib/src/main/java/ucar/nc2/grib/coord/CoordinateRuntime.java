@@ -210,6 +210,11 @@ public class CoordinateRuntime implements Coordinate {
     return result;
   }
 
+  @Override
+  public String toString() {
+    return name;
+  }
+
   ///////////////////////////////////////////////////////
 
   public static class Builder2 extends CoordinateBuilderImpl<Grib2Record> {

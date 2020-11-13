@@ -482,6 +482,9 @@ public class CoordinateSystem {
       }
       for (int i = 0; i < checkDims; i++) {
         Dimension axisDim = axis.getDimension(i);
+        if (!axisDim.isShared()) { // anon dimensions dont count. TODO does this work?
+          continue;
+        }
         if (!varDims.contains(axisDim)) {
           return false;
         }
@@ -776,7 +779,6 @@ public class CoordinateSystem {
     }
   }
 
-  /** A Builder of CoordinateSystem. */
   public static abstract class Builder<T extends Builder<T>> {
     public String coordAxesNames = "";
     private final List<String> transNames = new ArrayList<>();

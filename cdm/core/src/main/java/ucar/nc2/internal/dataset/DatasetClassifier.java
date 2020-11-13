@@ -88,8 +88,8 @@ public class DatasetClassifier {
     CoordinateSystem cs;
     FeatureType featureType;
     boolean isLatLon;
-    CoordinateAxis xaxis, yaxis, timeAxis; // may be 1 or 2 dimensional
-    CoordinateAxis vertAxis, ensAxis, timeOffsetAxis, rtAxis; // must be 1 dimensional
+    CoordinateAxis xaxis, yaxis, timeAxis, timeOffsetAxis; // may be 1 or 2 dimensional
+    CoordinateAxis vertAxis, ensAxis, rtAxis; // must be 1 dimensional
     List<CoordinateAxis> indAxes = new ArrayList<>();
     List<CoordinateAxis> depAxes = new ArrayList<>();
     List<CoordinateTransform> coordTransforms;
@@ -152,7 +152,7 @@ public class DatasetClassifier {
       }
 
       // check that the x,y have at least 2 dimensions between them ( this eliminates point data)
-      int xyDomainSize = Dimensions.makeDomain(ImmutableList.of(xaxis, yaxis)).size();
+      int xyDomainSize = Dimensions.makeDomain(ImmutableList.of(xaxis, yaxis), true).size();
       if (xyDomainSize < 2) {
         infolog.format(" %s: X and Y axis must have 2 or more dimensions%n", cs.getName());
         return;
@@ -175,8 +175,10 @@ public class DatasetClassifier {
       // time
       CoordinateAxis toAxis = cs.findAxis(AxisType.TimeOffset);
       if (toAxis != null) {
-        if (toAxis.getRank() == 1) {
+        if (toAxis.getRank() < 2) {
           indAxes.add(timeOffsetAxis = toAxis);
+        } else {
+          depAxes.add(timeOffsetAxis = toAxis);
         }
       }
 
@@ -239,7 +241,7 @@ public class DatasetClassifier {
         result = FeatureType.FMRC; // LOOK this would allow 2d horiz
 
       } else if (is2Dhoriz) {
-        Set<Dimension> xyDomain = Dimensions.makeDomain(Lists.newArrayList(xaxis, yaxis));
+        Set<Dimension> xyDomain = Dimensions.makeDomain(Lists.newArrayList(xaxis, yaxis), true);
         if (timeAxis != null && Dimensions.isSubset(Dimensions.makeDimensionsAll(timeAxis), xyDomain))
           result = FeatureType.SWATH; // LOOK prob not exactly right
         else
@@ -249,7 +251,7 @@ public class DatasetClassifier {
         // what makes it a grid?
         // each dimension must have its own coordinate variable
         List<CoordinateAxis> axes = indAxes.stream().filter(a -> a.getRank() == 1).collect(Collectors.toList());
-        Set<Dimension> domain = Dimensions.makeDomain(axes);
+        Set<Dimension> domain = Dimensions.makeDomain(axes, false);
         if (domain.size() == axes.size()) {
           result = FeatureType.GRID;
         }

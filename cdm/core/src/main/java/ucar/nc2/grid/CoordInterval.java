@@ -7,8 +7,6 @@ package ucar.nc2.grid;
 import com.google.auto.value.AutoValue;
 import ucar.unidata.util.Format;
 
-import javax.annotation.concurrent.Immutable;
-
 /** A Coordinate represented by an interval [start, end) */
 @AutoValue
 public abstract class CoordInterval {

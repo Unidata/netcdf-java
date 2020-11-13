@@ -407,8 +407,7 @@ public class GridNewTable extends JPanel {
     GridAxis axis;
     String name, desc, units;
     AxisType axisType;
-    long nvalues;
-    boolean indepenent;
+    int[] shape;
 
     // no-arg constructor
     public AxisBean() {}
@@ -417,11 +416,11 @@ public class GridNewTable extends JPanel {
     public AxisBean(GridAxis v) {
       this.axis = v;
 
-      name = (v.getName());
-      axisType = (v.getAxisType());
-      units = (v.getUnits());
-      desc = (v.getDescription());
-      nvalues = (v.getNcoords());
+      name = v.getName();
+      axisType = v.getAxisType();
+      units = v.getUnits();
+      desc = v.getDescription();
+      shape = v.getCoordsAsArray().getShape();
     }
 
     public String getName() {
@@ -445,8 +444,8 @@ public class GridNewTable extends JPanel {
       return (sp == null) ? "" : sp.toString();
     }
 
-    public long getNvalues() {
-      return nvalues;
+    public String getShape() {
+      return Arrays.toString(shape);
     }
 
     public double getStartValue() {
@@ -461,12 +460,8 @@ public class GridNewTable extends JPanel {
       return axis.getResolution();
     }
 
-    public boolean getHasData() {
-      return axis.getHasData();
-    }
-
     public String getDependance() {
-      String extra = axis.getDependsOn() == null ? "" : ": " + String.join(",", axis.getDependsOn());
+      String extra = axis.getDependsOn().isEmpty() ? "" : ": " + String.join(",", axis.getDependsOn());
       return axis.getDependenceType().toString() + extra;
     }
 

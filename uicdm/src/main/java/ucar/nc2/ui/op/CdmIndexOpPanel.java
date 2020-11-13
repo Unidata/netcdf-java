@@ -20,13 +20,10 @@ import java.io.StringWriter;
 import java.nio.file.Paths;
 import javax.swing.JOptionPane;
 
-/**
- *
- */
+/** Show ncx4 indices. */
 public class CdmIndexOpPanel extends OpPanel {
   private CdmIndexPanel indexPanel;
 
-  /** */
   public CdmIndexOpPanel(PreferencesExt p) {
     super(p, "index file:", true, false);
 
@@ -43,7 +40,6 @@ public class CdmIndexOpPanel extends OpPanel {
     add(indexPanel, BorderLayout.CENTER);
   }
 
-  /** */
   @Override
   public boolean process(Object o) {
     String command = (String) o;
@@ -66,13 +62,11 @@ public class CdmIndexOpPanel extends OpPanel {
     return !err;
   }
 
-  /** */
   @Override
   public void closeOpenFiles() throws IOException {
     indexPanel.clear();
   }
 
-  /** */
   @Override
   public void save() {
     indexPanel.save();

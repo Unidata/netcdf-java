@@ -87,7 +87,7 @@ public class Grib2SectionBitMap {
 
     // LOOK: bitMapIndicator=254 == previously defined bitmap
     if (bitMapIndicator == 254)
-      logger.debug("HEY bitMapIndicator=254 previously defined bitmap");
+      logger.debug("bitMapIndicator=254 previously defined bitmap");
 
     if (bitMapIndicator != 0) {
       throw new UnsupportedOperationException(

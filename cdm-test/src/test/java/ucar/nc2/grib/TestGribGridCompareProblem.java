@@ -20,7 +20,7 @@ import java.util.Optional;
 
 import static com.google.common.truth.Truth.assertThat;
 
-public class TestGribGridCompare {
+public class TestGribGridCompareProblem {
 
   @Test
   @Category(NeedsCdmUnitTest.class)

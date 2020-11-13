@@ -89,7 +89,7 @@ public class CoordinatePartitionUnionizer {
           // debug
           CoordinateRuntime runtimeFrom2D = time2D.getRuntimeCoordinate();
           if (!runtimeFrom2D.equals(runtime))
-            logger.warn("HEY CoordinateUnionizer runtimes not equal");
+            logger.warn("CoordinateUnionizer runtimes not equal");
           break;
 
         case ens:
@@ -138,7 +138,7 @@ public class CoordinatePartitionUnionizer {
     if (runtimeBuilder != null)
       unionCoords.add(runtimeBuilder.finish());
     else
-      logger.warn("HEY CoordinateUnionizer missing runtime");
+      logger.warn("CoordinateUnionizer missing runtime");
 
     if (timeBuilder != null)
       unionCoords.add(timeBuilder.finish());
@@ -147,7 +147,7 @@ public class CoordinatePartitionUnionizer {
     else if (time2DBuilder != null)
       unionCoords.add(time2DBuilder.finish());
     else
-      logger.warn("HEY CoordinateUnionizer missing time");
+      logger.warn("CoordinateUnionizer missing time");
 
     if (ensBuilder != null) // ens must come before vert to preserve order
       unionCoords.add(ensBuilder.finish());
