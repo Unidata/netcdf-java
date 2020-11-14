@@ -348,6 +348,9 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter 
       case 109:
         return new VertCoordType(code, "K m2 kg-1 s-1", null, true); // positive?
 
+      case 111:
+        return new VertCoordType(code, "eta", null, false); // positive?
+      
       case 114:
         return new VertCoordType(code, "numeric", null, false);// ??
 
