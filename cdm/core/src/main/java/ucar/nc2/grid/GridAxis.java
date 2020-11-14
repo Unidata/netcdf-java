@@ -190,7 +190,6 @@ public abstract class GridAxis implements Iterable<Object> {
     f.format("%n");
 
     f.format("%saxisType=%s dataType=%s units='%s' desc='%s'%n", indent, axisType, dataType, units, description);
-    f.format("%snpts: %d [%f,%f] spacing=%s", indent, ncoords, startValue, endValue, spacing);
     if (getResolution() != 0.0)
       f.format(" resolution=%f", resolution);
     f.format("%n");
@@ -202,6 +201,7 @@ public abstract class GridAxis implements Iterable<Object> {
     f.format("%n");
     indent.decr();
 
+    f.format("%snpts: %d [%f,%f] spacing=%s", indent, ncoords, startValue, endValue, spacing);
     if (values != null) {
       int n = values.length;
       switch (spacing) {
@@ -269,7 +269,7 @@ public abstract class GridAxis implements Iterable<Object> {
 
   protected final int ncoords; // number of coordinates (not always same as values)
   protected final Spacing spacing;
-  protected final double startValue;
+  protected final double startValue; // only for regular
   protected final double endValue;
   protected final double resolution;
   protected final GridAxisReader reader; // LOOK when is this needed?

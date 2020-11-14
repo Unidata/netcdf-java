@@ -33,7 +33,7 @@ public class TestTdsOtherGribCollections {
     List<Object[]> result = new ArrayList<>(500);
     try {
       /// CMC
-      result.add(new Object[] {topDir + "CMC/RDPS/NA_15km/CMC_RDPS_ps15km_20201010_0000.grib2.ncx4", 58, 16, 22});
+      result.add(new Object[] {topDir + "CMC/RDPS/NA_15km/CMC_RDPS_ps15km_20201010_0000.grib2.ncx4", 58, 17, 24});
 
       // TODO /media/twobee/tds/CMC/RDPS/NA_15km/CMC_RDPS_ps15km_.*grib2.gbx9 has duplicates, I think because
       // TODO level 111 (eta) should have a VertCoordType, see getVertUnit(int code).
@@ -52,11 +52,12 @@ public class TestTdsOtherGribCollections {
       result.add(new Object[] {topDir + "FNMOC/COAMPS/Western_Atlantic/FNMOC_COAMPS_Western_Atlantic.ncx4", 18, 7, 11});
       result.add(new Object[] {topDir + "FNMOC/NAVGEM/Global_0p5deg/FNMOC_NAVGEM_Global_0p5deg.ncx4", 103, 37, 49});
 
-      // java.lang.RuntimeException: height_above_ground_layer is not monotonic decreasing
-      // result.add(new Object[]{topDir +
-      // "NOAA_GSD/HRRR/CONUS_3km/surface/HRRR_CONUS_3km_surface_202011091000.grib2.ncx4", });
-      // The following is a mess with huge missing. validtime1 looks wrong
-      result.add(new Object[] {topDir + "NOAA_GSD/HRRR/CONUS_3km/wrfprs/GSD_HRRR_CONUS_3km_wrfprs.ncx4", 15, 1, 5});
+      // The HRRR/CONUS_3km/wrfprs is a mess with huge missing. validtime1 looks wrong
+      // result.add(new Object[] {topDir + "NOAA_GSD/HRRR/CONUS_3km/wrfprs/GSD_HRRR_CONUS_3km_wrfprs.ncx4", 15, 1, 5});
+      result.add(new Object[] {
+          topDir + "NOAA_GSD/HRRR/CONUS_3km/surface/HRRR_CONUS_3km_surface_202011060000.grib2.ncx4", 129, 36, 39});
+      result
+          .add(new Object[] {topDir + "NOAA_GSD/HRRR/CONUS_3km/surface/GSD_HRRR_CONUS_3km_surface.ncx4", 128, 35, 37});
 
       // TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "ft/grid/", ff, result);
     } catch (Exception e) {

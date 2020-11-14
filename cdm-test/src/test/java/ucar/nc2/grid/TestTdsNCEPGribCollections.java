@@ -87,9 +87,9 @@ public class TestTdsNCEPGribCollections {
 
       // non-orthogonal regular time offset
       result.add(new Object[] {topDir + "NCEP/NAM/Alaska_45km/conduit/NAM-Alaska_45km-conduit.ncx4", 157, 35, 38});
-      result.add(new Object[] {topDir + "NCEP/NAM/CONUS_12km_conduit/NAM-CONUS_12km-conduit.ncx4", 152, 29, 30});
-      result.add(new Object[] {topDir + "NCEP/NAM/CONUS_40km/conduit/NAM-CONUS_40km-conduit.ncx4", 161, 29, 32});
-      result.add(new Object[] {topDir + "NCEP/NAM/Polar_90km/NAM-Polar_90km.ncx4", 111, 26, 29}); // */
+      result.add(new Object[] {topDir + "NCEP/NAM/CONUS_12km_conduit/NAM-CONUS_12km-conduit.ncx4", 159, 31, 32});
+      result.add(new Object[] {topDir + "NCEP/NAM/CONUS_40km/conduit/NAM-CONUS_40km-conduit.ncx4", 179, 31, 34});
+      result.add(new Object[] {topDir + "NCEP/NAM/Polar_90km/NAM-Polar_90km.ncx4", 133, 29, 32}); // */
 
       // nbm
       // Individual runtimes are SRC, and are fine
