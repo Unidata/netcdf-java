@@ -80,6 +80,7 @@ public class ToolsUI extends JPanel {
   private final JFrame parentFrame; // redundant? will equal static "frame" defined just above
 
   private final FileManager fileChooser;
+  private final FileManager dirChooser;
   private FileManager bufrFileChooser;
 
   private final JTabbedPane tabbedPane;
@@ -106,6 +107,7 @@ public class ToolsUI extends JPanel {
   private BufrCodePanel bufrCodePanel;
   private CdmrFeatureOpPanel cdmremotePanel;
   private CdmIndexOpPanel cdmIndexPanel;
+  private CdmIndexScanOp cdmIndexScanOp;
   private ReportOpPanel cdmIndexReportPanel;
   private CollectionSpecPanel fcPanel;
   private CoordSysPanel coordSysPanel;
@@ -162,9 +164,10 @@ public class ToolsUI extends JPanel {
     this.mainPrefs = prefs;
     this.parentFrame = parentFrame;
 
-    // FileChooser is shared
+    // FileChoosers are shared
     FileFilter[] filters = {new FileManager.HDF5ExtFilter(), new FileManager.NetcdfExtFilter()};
     fileChooser = new FileManager(parentFrame, null, filters, (PreferencesExt) prefs.node("FileManager"));
+    dirChooser = new FileManager(parentFrame, null, null, (PreferencesExt) prefs.node("FeatureScanFileManager"));
 
     OpPanel.setFileChooser(fileChooser);
 
@@ -231,8 +234,8 @@ public class ToolsUI extends JPanel {
     addListeners(bufrTabPane);
 
     // nested-2 tab - grib
-    // gribTabPane.addTab("CdmIndex", new JLabel("CdmIndex"));
     gribTabPane.addTab("CdmIndex4", new JLabel("CdmIndex4"));
+    gribTabPane.addTab("CdmIndexScan", new JLabel("CdmIndexScan"));
     gribTabPane.addTab("CdmIndexReport", new JLabel("CdmIndexReport"));
     gribTabPane.addTab("GribIndex", new JLabel("GribIndex"));
     gribTabPane.addTab("WMO-COMMON", new JLabel("WMO-COMMON"));
@@ -438,6 +441,11 @@ public class ToolsUI extends JPanel {
         c = cdmIndexPanel;
         break;
 
+      case "CdmIndexScan":
+        cdmIndexScanOp = new CdmIndexScanOp((PreferencesExt) mainPrefs.node("cdmIndexScan"), dirChooser);
+        c = cdmIndexScanOp;
+        break;
+
       case "CdmIndexReport": {
         PreferencesExt prefs = (PreferencesExt) mainPrefs.node("CdmIndexReport");
         ReportPanel rp = new CdmIndexReportPanel(prefs);
@@ -503,7 +511,7 @@ public class ToolsUI extends JPanel {
         break;
 
       case "FeatureScan":
-        ftPanel = new FeatureScanOpPanel((PreferencesExt) mainPrefs.node("ftPanel"));
+        ftPanel = new FeatureScanOpPanel((PreferencesExt) mainPrefs.node("ftPanel"), dirChooser);
         c = ftPanel;
         break;
 
@@ -745,6 +753,9 @@ public class ToolsUI extends JPanel {
     if (cdmIndexPanel != null) {
       cdmIndexPanel.save();
     }
+    if (cdmIndexScanOp != null) {
+      cdmIndexScanOp.save();
+    }
     if (cdmIndexReportPanel != null) {
       cdmIndexReportPanel.save();
     }
@@ -980,7 +991,6 @@ public class ToolsUI extends JPanel {
     tabbedPane.setSelectedComponent(coordSysPanel);
   }
 
-
   public void openNcML(String datasetName) {
     makeComponent(ncmlTabPane, "NcmlEditor");
     ncmlEditorPanel.doit(datasetName);
@@ -988,14 +998,12 @@ public class ToolsUI extends JPanel {
     ncmlTabPane.setSelectedComponent(ncmlEditorPanel);
   }
 
-
   public void openPointFeatureDataset(String datasetName) {
     makeComponent(ftTabPane, "PointFeature");
     pointFeaturePanel.setPointFeatureDataset(FeatureType.ANY_POINT, datasetName);
     tabbedPane.setSelectedComponent(ftTabPane);
     ftTabPane.setSelectedComponent(pointFeaturePanel);
   }
-
 
   public void openGrib1Collection(String collection) {
     makeComponent(grib1TabPane, "GRIB1collection"); // LOOK - does this aleays make component ?
@@ -1005,7 +1013,6 @@ public class ToolsUI extends JPanel {
     grib1TabPane.setSelectedComponent(grib1CollectionPanel);
   }
 
-
   public void openGrib2Collection(String collection) {
     makeComponent(grib2TabPane, "GRIB2collection");
     grib2CollectionPanel.setCollection(collection);
@@ -1014,7 +1021,6 @@ public class ToolsUI extends JPanel {
     grib2TabPane.setSelectedComponent(grib2CollectionPanel);
   }
 
-
   public void openGrib2Data(String datasetName) {
     makeComponent(grib2TabPane, "GRIB2data");
     grib2DataPanel.doit(datasetName);
@@ -1022,7 +1028,6 @@ public class ToolsUI extends JPanel {
     iospTabPane.setSelectedComponent(grib2TabPane);
     grib2TabPane.setSelectedComponent(grib2DataPanel);
   }
-
 
   public void openGrib1Data(String datasetName) {
     makeComponent(grib1TabPane, "GRIB1data");
@@ -1060,14 +1065,12 @@ public class ToolsUI extends JPanel {
     ftTabPane.setSelectedComponent(geoGridPanel);
   }
 
-
   public void openGridDataset(GridDataset dataset) {
     makeComponent(ftTabPane, "Grids");
     geoGridPanel.setDataset(dataset);
     tabbedPane.setSelectedComponent(ftTabPane);
     ftTabPane.setSelectedComponent(geoGridPanel);
   }
-
 
   public void openRadialDataset(String datasetName) {
     makeComponent(ftTabPane, "Radial");
@@ -1076,12 +1079,19 @@ public class ToolsUI extends JPanel {
     ftTabPane.setSelectedComponent(radialPanel);
   }
 
-
   private void openWMSDataset(String datasetName) {
     makeComponent(ftTabPane, "WMS");
     wmsPanel.doit(datasetName);
     tabbedPane.setSelectedComponent(ftTabPane);
     ftTabPane.setSelectedComponent(wmsPanel);
+  }
+
+  public void openIndexFile(String datasetName) {
+    makeComponent(ftTabPane, "WMS");
+    cdmIndexPanel.doit(datasetName);
+    tabbedPane.setSelectedComponent(iospTabPane);
+    iospTabPane.setSelectedComponent(gribTabPane);
+    gribTabPane.setSelectedComponent(cdmIndexPanel);
   }
 
   /**
