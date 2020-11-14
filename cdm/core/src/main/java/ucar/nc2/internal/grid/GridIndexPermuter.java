@@ -6,7 +6,7 @@ import ucar.ma2.Section;
 import ucar.nc2.Dimension;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.VariableDS;
-import ucar.nc2.grid.GridAxis1D;
+import ucar.nc2.grid.GridAxis;
 
 import javax.annotation.concurrent.Immutable;
 import java.util.Arrays;
@@ -28,11 +28,11 @@ class GridIndexPermuter {
     this.rtDimOrgIndex = findDimension(vds, gcs.getRunTimeAxis());
   }
 
-  private int findDimension(VariableDS vds, GridAxis1D want) {
+  private int findDimension(VariableDS vds, GridAxis want) {
     if (want == null) {
       return -1;
     }
-    // This is the case where its a coordinate alias
+    // This is the case where its a coordinate alias TODO needed?
     String depends = (want.getDependsOn().size() == 1) ? want.getDependsOn().get(0) : null;
     List<Dimension> dims = vds.getDimensions();
     for (int i = 0; i < dims.size(); i++) {

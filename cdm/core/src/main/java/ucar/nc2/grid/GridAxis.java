@@ -5,6 +5,8 @@
 package ucar.nc2.grid;
 
 import com.google.common.base.Objects;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.array.Array;
@@ -15,6 +17,7 @@ import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.util.Indent;
+import ucar.unidata.util.StringUtil2;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -127,12 +130,8 @@ public abstract class GridAxis implements Iterable<Object> {
     return dependenceType == DependenceType.scalar;
   }
 
-  public List<String> getDependsOn() {
+  public ImmutableList<String> getDependsOn() {
     return dependsOn;
-  }
-
-  public boolean getHasData() {
-    return values != null;
   }
 
   // LOOK maybe subset should return different class, since you cant subset a subset?
@@ -191,15 +190,17 @@ public abstract class GridAxis implements Iterable<Object> {
     f.format("%n");
 
     f.format("%saxisType=%s dataType=%s units='%s' desc='%s'%n", indent, axisType, dataType, units, description);
-
-    for (Attribute att : attributes) {
-      f.format("%s%s%n", indent, att);
-    }
-
     f.format("%snpts: %d [%f,%f] spacing=%s", indent, ncoords, startValue, endValue, spacing);
     if (getResolution() != 0.0)
       f.format(" resolution=%f", resolution);
     f.format("%n");
+
+    indent.incr();
+    for (Attribute att : attributes) {
+      f.format("%s%s%n", indent, att);
+    }
+    f.format("%n");
+    indent.decr();
 
     if (values != null) {
       int n = values.length;
@@ -261,10 +262,10 @@ public abstract class GridAxis implements Iterable<Object> {
   protected final String description;
   protected final String units;
   protected final DataType dataType;
-  protected final AxisType axisType; // ucar.nc2.constants.AxisType ordinal
+  protected final AxisType axisType;
   protected final AttributeContainer attributes;
   protected final DependenceType dependenceType;
-  protected final List<String> dependsOn; // independent axes or dimensions
+  protected final ImmutableList<String> dependsOn; // independent axes or dimensions
 
   protected final int ncoords; // number of coordinates (not always same as values)
   protected final Spacing spacing;
@@ -277,6 +278,8 @@ public abstract class GridAxis implements Iterable<Object> {
   protected final boolean isSubset;
 
   protected GridAxis(Builder<?> builder) {
+    Preconditions.checkNotNull(builder.name);
+    Preconditions.checkNotNull(builder.axisType);
     this.name = builder.name;
     this.description = builder.description;
     this.units = builder.units;
@@ -284,7 +287,7 @@ public abstract class GridAxis implements Iterable<Object> {
     this.axisType = builder.axisType;
     this.attributes = builder.attributes;
     this.dependenceType = builder.dependenceType;
-    this.dependsOn = builder.dependsOn == null ? Collections.emptyList() : builder.dependsOn;
+    this.dependsOn = builder.dependsOn == null ? ImmutableList.of() : ImmutableList.copyOf(builder.dependsOn);
 
     this.spacing = builder.spacing;
     this.values = builder.values;
@@ -383,6 +386,11 @@ public abstract class GridAxis implements Iterable<Object> {
 
     public T setDependsOn(List<String> dependsOn) {
       this.dependsOn = new ArrayList<>(dependsOn);
+      return self();
+    }
+
+    public T setDependsOn(String dependsOn) {
+      setDependsOn(StringUtil2.splitList(dependsOn));
       return self();
     }
 

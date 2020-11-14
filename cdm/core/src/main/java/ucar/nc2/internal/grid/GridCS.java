@@ -112,8 +112,8 @@ class GridCS implements GridCoordinateSystem {
 
   @Override
   @Nullable
-  public GridAxis1D getTimeOffsetAxis() {
-    return (GridAxis1D) findCoordAxis(AxisType.TimeOffset);
+  public GridAxis getTimeOffsetAxis() {
+    return findCoordAxis(AxisType.TimeOffset);
   }
 
   @Override
@@ -450,19 +450,17 @@ class GridCS implements GridCoordinateSystem {
     this.projection = classifier.getProjection();
     this.transforms = ImmutableList.copyOf(classifier.getCoordTransforms());
 
-    ImmutableList.Builder<GridAxis> axesb = ImmutableList.builder();
+    ArrayList<GridAxis> axesb = new ArrayList<>();
     for (CoordinateAxis axis : classifier.getAxesUsed()) {
       GridAxis gaxis = gridAxes.get(axis.getFullName());
-      if (gaxis == null) {
-        System.out.printf("HEY %s%n", axis.getFullName());
-      }
       axesb.add(Preconditions.checkNotNull(gaxis));
     }
-    this.axes = axesb.build();
+    Collections.sort(axesb, new Grids.AxisComparator());
+    this.axes = ImmutableList.copyOf(axesb);
     List<String> names = axes.stream().map(a -> a.getName()).collect(Collectors.toList());
     this.name = String.join(" ", names);
 
-    this.domain = Dimensions.makeDomain(classifier.getAxesUsed());
+    this.domain = Dimensions.makeDomain(classifier.getAxesUsed(), false);
   }
 
   public GridCS.Builder<?> toBuilder() {

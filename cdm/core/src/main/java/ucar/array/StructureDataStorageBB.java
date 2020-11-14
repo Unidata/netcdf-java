@@ -8,6 +8,9 @@ import com.google.common.base.Preconditions;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Iterator;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.array.StructureMembers.Member;
 import ucar.ma2.DataType;
 import ucar.nc2.iosp.IospHelper;
@@ -18,6 +21,8 @@ import ucar.nc2.iosp.IospHelper;
  * The StructureData are manufactured on the fly, referencing the ByteBuffer and heap for data.
  */
 public final class StructureDataStorageBB implements Storage<StructureData> {
+  private static Logger log = LoggerFactory.getLogger(StructureDataStorageBB.class);
+
   private static final boolean debug = false;
   private final StructureMembers members;
   private final ByteBuffer bbuffer;
@@ -296,7 +301,7 @@ public final class StructureDataStorageBB implements Storage<StructureData> {
         case STRING: {
           int heapIdx = bbuffer.getInt(pos);
           if (heapIdx < 0 || heapIdx >= heap.size()) {
-            System.out.printf("HEY getMemberData = %d heapIdx = %d member = %s bo = %s%n", pos, heapIdx, m.getName(),
+            log.warn("getMemberData = {} heapIdx = {} member = {} bo = {}", pos, heapIdx, m.getName(),
                 m.getByteOrder());
           }
           String[] array = (String[]) heap.get(heapIdx);

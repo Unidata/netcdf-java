@@ -458,7 +458,7 @@ public class ServletLogTable extends JPanel {
       if (log instanceof ServletLogParser.ServletLog) {
         logs.add((ServletLogParser.ServletLog) log);
       } else {
-        System.out.printf("HEY NULL LOG%n");
+        System.out.printf("NULL LOG%n");
       }
     }
   }

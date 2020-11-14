@@ -203,10 +203,10 @@ public class Dimensions {
   }
 
   /** Make the set of Dimensions used by axes. */
-  public static ImmutableSet<Dimension> makeDomain(Iterable<? extends Variable> axes) {
+  public static ImmutableSet<Dimension> makeDomain(Iterable<? extends Variable> axes, boolean addAnon) {
     ImmutableSet.Builder<Dimension> domain = ImmutableSet.builder();
     for (Variable axis : axes) {
-      domain.addAll(axis.getDimensions());
+      axis.getDimensions().stream().filter(d -> addAnon | d.isShared()).forEach(d -> domain.add(d));
     }
     return domain.build();
   }

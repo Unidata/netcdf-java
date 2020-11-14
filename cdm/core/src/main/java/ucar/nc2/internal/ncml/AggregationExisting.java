@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.jdom2.Element;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import thredds.client.catalog.Catalog;
 import thredds.inventory.MFile;
 import ucar.ma2.Array;
@@ -42,6 +44,7 @@ import ucar.nc2.util.CancelTask;
  * sum of the the component lengths. The dimensions must be the outer dimension.
  */
 class AggregationExisting extends AggregationOuter {
+  private static Logger log = LoggerFactory.getLogger(AggregationExisting.class);
 
   AggregationExisting(NetcdfDataset.Builder<?> ncd, String dimName, String recheckS) {
     super(ncd, dimName, Type.joinExisting, recheckS);
@@ -70,7 +73,7 @@ class AggregationExisting extends AggregationOuter {
             .setParentGroupBuilder(rootGroup).setDimensionsByName(dimName);
         fake.setAutoGen(0, 1);
         rootGroup.addVariable(fake);
-        System.out.printf("HEY adding a fake coord var for %s%n", dimName);
+        log.warn("Adding a fake coord var for {}", dimName);
       }
 
     } else {

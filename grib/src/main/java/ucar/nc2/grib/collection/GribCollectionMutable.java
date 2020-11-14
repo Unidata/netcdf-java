@@ -105,9 +105,9 @@ public class GribCollectionMutable implements Closeable {
     this.config = config;
     this.isGrib1 = isGrib1;
     if (config == null)
-      logger.error("HEY GribCollection {} has empty config%n", name);
+      logger.error("GribCollection {} has empty config%n", name);
     if (name == null)
-      logger.error("HEY GribCollection has null name dir={}%n", directory);
+      logger.error("GribCollection has null name dir={}%n", directory);
   }
 
   // for making partition collection

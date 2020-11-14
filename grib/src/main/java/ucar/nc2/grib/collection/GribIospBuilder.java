@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.collection;
 
+import com.google.common.collect.ImmutableList;
 import org.slf4j.Logger;
 import ucar.array.Arrays;
 import ucar.ma2.*;
@@ -192,7 +193,10 @@ class GribIospBuilder {
           } else {
             CoordinateTime2D time2D = (CoordinateTime2D) coord;
             if (time2D.isOrthogonal()) {
-              String timeDimName = makeTimeOffsetAxis(g, time2D);
+              String timeDimName = makeTimeOffsetOrthogonal(g, time2D);
+              makeTimeCoordinate2D(g, time2D, timeDimName);
+            } else if (time2D.isRegular()) {
+              String timeDimName = makeTimeOffsetRegular(g, time2D);
               makeTimeCoordinate2D(g, time2D, timeDimName);
             } else {
               makeTimeCoordinate2D(g, time2D, make2dValidTimeDimensionName(time2D.getName()));
@@ -216,7 +220,7 @@ class GribIospBuilder {
 
         if (time instanceof CoordinateTime2D) {
           CoordinateTime2D time2D = (CoordinateTime2D) time;
-          if (!gctype.isUniqueTime() && time2D.isOrthogonal()) {
+          if (!gctype.isUniqueTime() && (time2D.isOrthogonal() || time2D.isRegular())) {
             timeDimName = makeTimeOffsetName(time.getName());
           } else {
             timeDimName = make2dValidTimeDimensionName(time.getName());
@@ -251,6 +255,9 @@ class GribIospBuilder {
               dimNames.format("%s %s ", run.getName(), timeDimName);
             }
             coordinateAtt.format("%s %s ", run.getName(), timeCoordName);
+            if (timeDimName != timeCoordName) {
+              coordinateAtt.format("%s ", timeDimName);
+            }
             break;
 
           case Best: // PC: Best time partition [ntimes] (time) reftime is generated in makeTimeAuxReference()
@@ -344,9 +351,8 @@ class GribIospBuilder {
     boolean isScalar = (n == 1); // this is the case of runtime[1]
     String tcName = rtc.getName();
     String dims = isScalar ? null : rtc.getName(); // null means scalar
-    if (!isScalar) {
-      g.addDimension(new Dimension(tcName, n));
-    }
+    g.addDimension(new Dimension(tcName, n));
+
 
     Variable.Builder<?> v = Variable.builder().setName(tcName).setDataType(DataType.DOUBLE).setParentGroupBuilder(g)
         .setDimensionsByName(dims);
@@ -807,7 +813,7 @@ class GribIospBuilder {
   }
 
   // orthogonal runtime, offset; both independent
-  private String makeTimeOffsetAxis(Group.Builder g, CoordinateTime2D time2D) {
+  private String makeTimeOffsetOrthogonal(Group.Builder g, CoordinateTime2D time2D) {
     List<?> offsets = time2D.getOffsetsSorted();
     int n = offsets.size();
     String toName = makeTimeOffsetName(time2D.getName());
@@ -854,6 +860,72 @@ class GribIospBuilder {
       v.addAttribute(new Attribute(CF.BOUNDS, boundsName));
     }
 
+    return toName;
+  }
+
+  // regular runtime, offset; offset depends on runtime hour from 0z
+  private String makeTimeOffsetRegular(Group.Builder gb, CoordinateTime2D time2D) {
+    List<Object> hourFrom0z = ImmutableList.copyOf(time2D.getRegularHourOffsets());
+    int nhours = hourFrom0z.size();
+    int noffsets = time2D.getNtimes();
+    String toName = makeTimeOffsetName(time2D.getName());
+    gb.addDimension(new Dimension(toName, noffsets));
+    String dimNames = nhours + " " + toName;
+
+    Variable.Builder<?> v = Variable.builder().setName(toName).setDataType(DataType.DOUBLE).setParentGroupBuilder(gb)
+        .setDimensionsByName(dimNames);
+    gb.addVariable(v);
+    v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.TimeOffset.toString()));
+    v.addAttribute(new Attribute(CDM.UNITS, time2D.getUnit()));
+    v.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME_OFFSET));
+    v.addAttribute(new Attribute(CDM.LONG_NAME, CDM.TIME_OFFSET));
+    v.addAttribute(new Attribute(CDM.UDUNITS, time2D.getTimeUdUnit()));
+    v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.TimeOffset.toString()));
+
+    // Special Coordinates. TODO is there a CF equivalent?
+    v.addAttribute(new Attribute(CDM.RUNTIME_COORDINATE, gb.makeFullName() + time2D.getRuntimeCoordinate().getName()));
+    Attribute.Builder attb =
+        Attribute.builder(CDM.TIME_OFFSET_HOUR).setDataType(DataType.INT).setValues(hourFrom0z, false);
+    v.addAttribute(attb.build());
+
+    // We use a rectangular array; uneven arrays will have NaNs.
+    double[] midpoints = new double[nhours * noffsets];
+    java.util.Arrays.fill(midpoints, Double.NaN);
+    double[] bounds = null;
+    if (time2D.isTimeInterval()) {
+      bounds = new double[2 * nhours * noffsets];
+      java.util.Arrays.fill(bounds, Double.NaN);
+      for (int runidx = 0; runidx < nhours; runidx++) {
+        CoordinateTimeIntv timeCoord = (CoordinateTimeIntv) time2D.getTimeCoordinate(runidx);
+        // uneven number of values for each hour
+        int count = runidx * noffsets;
+        int countb = 2 * runidx * noffsets;
+        for (TimeCoordIntvValue tinv : timeCoord.getTimeIntervals()) {
+          midpoints[count++] = (tinv.getBounds1() + tinv.getBounds2()) / 2.0;
+          bounds[countb++] = tinv.getBounds1();
+          bounds[countb++] = tinv.getBounds2();
+        }
+      }
+    } else {
+      for (int runidx = 0; runidx < nhours; runidx++) {
+        int count = runidx * noffsets;
+        CoordinateTime timeCoord = (CoordinateTime) time2D.getTimeCoordinate(runidx);
+        for (Integer offset : timeCoord.getOffsetSorted()) {
+          midpoints[count++] = offset;
+        }
+      }
+    }
+    v.setSourceData(Arrays.factory(DataType.DOUBLE, new int[] {nhours, noffsets}, midpoints));
+
+    if (time2D.isTimeInterval()) {
+      String boundsName = toName + "_bounds";
+      Variable.Builder<?> coordVarBounds = VariableDS.builder().setName(boundsName).setDataType(DataType.DOUBLE)
+          .setDesc("time offset coord bounds").setParentGroupBuilder(gb).setDimensionsByName(dimNames + " 2");
+      gb.addVariable(coordVarBounds);
+      coordVarBounds.setSourceData(Arrays.factory(DataType.DOUBLE, new int[] {nhours, noffsets, 2}, bounds));
+
+      v.addAttribute(new Attribute(CF.BOUNDS, boundsName));
+    }
     return toName;
   }
 }

@@ -197,7 +197,7 @@ public class TestDatasetClassifier {
    */
   @Test
   @Category(NeedsCdmUnitTest.class)
-  public void testNonOrthogonalFmrc() throws IOException {
+  public void testRegularTimeOffset() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "gribCollections/gdsHashChange/noaaport/NDFD-CONUS_noaaport.ncx4";
     try (FeatureDatasetCoverage covDataset = CoverageDatasetFactory.open(filename)) {
       for (CoverageCollection cc : covDataset.getCoverageCollections()) {
@@ -210,16 +210,15 @@ public class TestDatasetClassifier {
     try (NetcdfDataset ds = NetcdfDatasets.openDataset(filename)) {
       Formatter errlog = new Formatter();
       Optional<GridDatasetImpl> grido = GridDatasetImpl.create(ds, errlog);
-      assertThat(grido.isPresent()).isFalse();
-      /*
-       * GridDatasetImpl gridDataset = grido.get();
-       * if (!Iterables.isEmpty(gridDataset.getGrids())) {
-       * DatasetClassifier dclassifier = new DatasetClassifier(ds, errlog);
-       * DatasetClassifier.CoordSysClassifier classifier =
-       * dclassifier.getCoordinateSystemsUsed().stream().findFirst().orElse(null);
-       * assertThat(classifier.getFeatureType()).isEqualTo(FeatureType.GRID);
-       * }
-       */
+      assertThat(grido.isPresent()).isTrue();
+      GridDatasetImpl gridDataset = grido.get();
+      if (!Iterables.isEmpty(gridDataset.getGrids())) {
+        DatasetClassifier dclassifier = new DatasetClassifier(ds, errlog);
+        DatasetClassifier.CoordSysClassifier classifier =
+            dclassifier.getCoordinateSystemsUsed().stream().findFirst().orElse(null);
+        assertThat(classifier).isNotNull();
+        assertThat(classifier.getFeatureType()).isEqualTo(FeatureType.GRID);
+      }
     }
   }
 

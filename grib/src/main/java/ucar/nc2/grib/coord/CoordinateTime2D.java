@@ -9,6 +9,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ucar.array.Array;
+import ucar.array.Arrays;
+import ucar.ma2.DataType;
 import ucar.nc2.grib.collection.Grib;
 import ucar.nc2.grib.grib1.Grib1Record;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
@@ -43,9 +46,8 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
   private final int[] offset; // list all offsets from the base/first runtime, length nruns (LOOK can we use
                               // SmartArrayInt ?)
 
-  private final boolean isRegular; // all offsets are the same for each "runtime hour of day"
-  private final boolean isOrthogonal; // all offsets are the same for all runtimes, so 2d time array is (runtime X
-                                      // otime)
+  private final boolean isRegular; // offsets are the same for each "runtime hour of day"
+  private final boolean isOrthogonal; // offsets same for all runtimes, so 2d time array is (runtime X otime)
   private final boolean isTimeInterval;
   private final int nruns;
   private final int ntimes;
@@ -222,6 +224,13 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
 
   public int getOffset(int runIndex) {
     return offset[runIndex];
+  }
+
+  public Iterable<Integer> getRegularHourOffsets() {
+    if (!isRegular) {
+      return null;
+    }
+    return regTimes.keySet();
   }
 
   @Override
@@ -437,9 +446,10 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
   ////////////////////////////////////////////////
 
   public CoordinateTimeAbstract getTimeCoordinate(int runIdx) {
-    if (isOrthogonal)
-      return factory(otime, getRefDate(runIdx)); // LOOK problem is cant use time.getRefDate(), must use
-                                                 // time2D.getRefDate(runIdx) !!
+    if (isOrthogonal) {
+      // LOOK problem is cant use time.getRefDate(), must use time2D.getRefDate(runIdx) !!
+      return factory(otime, getRefDate(runIdx));
+    }
 
     if (isRegular) {
       CalendarDate ref = getRefDate(runIdx);

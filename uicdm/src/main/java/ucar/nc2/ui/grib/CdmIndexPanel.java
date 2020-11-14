@@ -43,17 +43,14 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.List;
 
-/**
- * Show info in GRIB ncx index files.
- *
- * @author John
- * @since 12/5/13
- */
+/** Show info in GRIB ncx index files. */
 public class CdmIndexPanel extends JPanel {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CdmIndexPanel.class);
 
   private PreferencesExt prefs;
-  private BeanTable groupTable, varTable, coordTable;
+  private BeanTable<GroupBean> groupTable;
+  private BeanTable<VarBean> varTable;
+  private BeanTable<CoordBean> coordTable;
   private JSplitPane split, split2, split3;
 
   private TextHistoryPane infoTA, extraTA;
@@ -91,7 +88,6 @@ public class CdmIndexPanel extends JPanel {
       });
       buttPanel.add(rawButton);
 
-
       AbstractButton checkAllButton = BAMutil.makeButtcon("Select", "Check entire file", false);
       rawButton.addActionListener(e -> {
         Formatter f = new Formatter();
@@ -104,25 +100,19 @@ public class CdmIndexPanel extends JPanel {
 
     }
 
-    ////////////////////////////
-
     PopupMenu varPopup;
-
-    ////////////////
-    groupTable = new BeanTable(GroupBean.class, (PreferencesExt) prefs.node("GroupBean"), false, "GDS group",
+    groupTable = new BeanTable<>(GroupBean.class, (PreferencesExt) prefs.node("GroupBean"), false, "GDS group",
         "GribCollectionImmutable.GroupHcs", null);
-    groupTable.addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
-        GroupBean bean = (GroupBean) groupTable.getSelectedBean();
-        if (bean != null)
-          setGroup(bean);
-      }
+    groupTable.addListSelectionListener(e -> {
+      GroupBean bean = groupTable.getSelectedBean();
+      if (bean != null)
+        setGroup(bean);
     });
 
     varPopup = new PopupMenu(groupTable.getJTable(), "Options");
     varPopup.addAction("Show Group Info", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        GroupBean bean = (GroupBean) groupTable.getSelectedBean();
+        GroupBean bean = groupTable.getSelectedBean();
         if (bean != null && bean.group != null) {
           Formatter f = new Formatter();
           bean.group.show(f);
@@ -134,14 +124,14 @@ public class CdmIndexPanel extends JPanel {
     });
     varPopup.addAction("Show Files Used", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        GroupBean bean = (GroupBean) groupTable.getSelectedBean();
+        GroupBean bean = groupTable.getSelectedBean();
         if (bean != null && bean.group != null) {
           showFileTable(gc, bean.group);
         }
       }
     });
 
-    varTable = new BeanTable(VarBean.class, (PreferencesExt) prefs.node("Grib2Bean"), false, "Variables in group",
+    varTable = new BeanTable<>(VarBean.class, (PreferencesExt) prefs.node("Grib2Bean"), false, "Variables in group",
         "GribCollectionImmutable.VariableIndex", null);
 
     varPopup = new PopupMenu(varTable.getJTable(), "Options");
@@ -157,7 +147,7 @@ public class CdmIndexPanel extends JPanel {
     });
     varPopup.addAction("Show Sparse Array", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        VarBean bean = (VarBean) varTable.getSelectedBean();
+        VarBean bean = varTable.getSelectedBean();
         if (bean != null) {
           Formatter f = new Formatter();
           bean.showSparseArray(f);
@@ -181,13 +171,13 @@ public class CdmIndexPanel extends JPanel {
     });
 
 
-    coordTable = new BeanTable(CoordBean.class, (PreferencesExt) prefs.node("CoordBean"), false, "Coordinates in group",
-        "Coordinates", null);
+    coordTable = new BeanTable<>(CoordBean.class, (PreferencesExt) prefs.node("CoordBean"), false,
+        "Coordinates in group", "Coordinates", null);
     varPopup = new PopupMenu(coordTable.getJTable(), "Options");
 
     varPopup.addAction("Show", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        CoordBean bean = (CoordBean) coordTable.getSelectedBean();
+        CoordBean bean = coordTable.getSelectedBean();
         if (bean != null) {
           Formatter f = new Formatter();
           bean.coord.showCoords(f);
@@ -200,7 +190,7 @@ public class CdmIndexPanel extends JPanel {
 
     varPopup.addAction("ShowCompact", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        CoordBean bean = (CoordBean) coordTable.getSelectedBean();
+        CoordBean bean = coordTable.getSelectedBean();
         if (bean != null) {
           Formatter f = new Formatter();
           bean.coord.showInfo(f, new Indent(2));
@@ -213,7 +203,7 @@ public class CdmIndexPanel extends JPanel {
 
     varPopup.addAction("Test Time2D isOrthogonal", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        CoordBean bean = (CoordBean) coordTable.getSelectedBean();
+        CoordBean bean = coordTable.getSelectedBean();
         if (bean != null) {
           Formatter f = new Formatter();
           testOrthogonal(f, bean.coord);
@@ -226,7 +216,7 @@ public class CdmIndexPanel extends JPanel {
 
     varPopup.addAction("Test Time2D isRegular", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        CoordBean bean = (CoordBean) coordTable.getSelectedBean();
+        CoordBean bean = coordTable.getSelectedBean();
         if (bean != null) {
           Formatter f = new Formatter();
           testRegular(f, bean.coord);
@@ -240,7 +230,7 @@ public class CdmIndexPanel extends JPanel {
 
     varPopup.addAction("Show Resolution distribution", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        CoordBean bean = (CoordBean) coordTable.getSelectedBean();
+        CoordBean bean = coordTable.getSelectedBean();
         if (bean != null) {
           Formatter f = new Formatter();
           bean.showResolution(f);
@@ -271,11 +261,11 @@ public class CdmIndexPanel extends JPanel {
 
     varPopup.addAction("Try to Merge", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        List beans = coordTable.getSelectedBeans();
+        List<CoordBean> beans = coordTable.getSelectedBeans();
         if (beans.size() == 2) {
           Formatter f = new Formatter();
-          CoordBean bean1 = (CoordBean) beans.get(0);
-          CoordBean bean2 = (CoordBean) beans.get(1);
+          CoordBean bean1 = beans.get(0);
+          CoordBean bean2 = beans.get(1);
           if (bean1.coord.getType() == Coordinate.Type.time2D && bean2.coord.getType() == Coordinate.Type.time2D)
             mergeCoords2D(f, (CoordinateTime2D) bean1.coord, (CoordinateTime2D) bean2.coord);
           else
@@ -289,12 +279,8 @@ public class CdmIndexPanel extends JPanel {
 
     // file popup window
     fileTable = new MFileTable((PreferencesExt) prefs.node("MFileTable"), true);
-    fileTable.addPropertyChangeListener(new PropertyChangeListener() {
-      @Override
-      public void propertyChange(PropertyChangeEvent evt) {
-        firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
-      }
-    });
+    fileTable.addPropertyChangeListener(
+        evt -> firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue()));
 
     /////////////////////////////////////////
     // the info windows
@@ -386,7 +372,6 @@ public class CdmIndexPanel extends JPanel {
     }
   }
 
-
   private void checkAll(Formatter f) {
     if (gc == null)
       return;
@@ -436,8 +421,7 @@ public class CdmIndexPanel extends JPanel {
         }
       }
       int noSA = bytesTotal - bytesSATotal;
-      f.format("%n total KBytes=%d kbSATotal=%d kbNoSA=%d coordsAllTotal=%d%n", bytesTotal / 1000, bytesSATotal / 1000,
-          noSA / 1000, coordsAllTotal / 1000);
+      f.format("%n total KBytes=%d kbSATotal=%d kbNoSA=%d%n", bytesTotal / 1000, bytesSATotal / 1000, noSA / 1000);
       f.format("%n");
     }
   }

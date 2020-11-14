@@ -4,7 +4,6 @@
  */
 package ucar.nc2.ui.grib;
 
-import com.google.common.base.MoreObjects;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.*;
 import ucar.nc2.grib.coord.SparseArray;
@@ -17,12 +16,7 @@ import ucar.util.prefs.PreferencesExt;
 import java.io.*;
 import java.util.*;
 
-/**
- * Run through GRIB ncx indices and make reports
- *
- * @author caron
- * @since 5/15/2014
- */
+/** Run through GRIB ncx indices and make reports */
 public class CdmIndexReportPanel extends ReportPanel {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2ReportPanel.class);
 
@@ -67,8 +61,12 @@ public class CdmIndexReportPanel extends ReportPanel {
 
     @Override
     public String toString() {
-      return MoreObjects.toStringHelper(this).add("nrecords", nrecords).add("ndups", ndups).add("nmissing", nmissing)
-          .toString();
+      Formatter f = new Formatter();
+      f.format("Accum{nrecords=%d, ", nrecords);
+      double fn = (float) nrecords / 100.0;
+      f.format("ndups=%d (%3.1f %%), ", ndups, ndups / fn);
+      f.format("nmissing=%d (%3.1f %%)}", nmissing, nmissing / fn);
+      return f.toString();
     }
   }
 
@@ -79,7 +77,7 @@ public class CdmIndexReportPanel extends ReportPanel {
         doDupAndMissingEach(f, iter.next(), eachFile, extra, total);
       }
     }
-    f.format("total %s%n", total);
+    f.format("%n Grand Total %s%n", total);
   }
 
   // seperate report for each file in collection
@@ -113,7 +111,7 @@ public class CdmIndexReportPanel extends ReportPanel {
             accum.add(v);
           }
           if (each) {
-            f.format("total %s%n", groupAccum);
+            f.format(" total %s%n", groupAccum);
           }
         }
       }

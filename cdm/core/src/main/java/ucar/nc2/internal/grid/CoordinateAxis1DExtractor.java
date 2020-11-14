@@ -40,10 +40,7 @@ public class CoordinateAxis1DExtractor {
   CoordinateAxis1DExtractor(CoordinateAxis dtCoordAxis) {
     Preconditions.checkArgument(dtCoordAxis.getRank() < 2);
     this.dtCoordAxis = dtCoordAxis;
-    doRead();
-  }
 
-  private void doRead() {
     if (dtCoordAxis.isNumeric()) {
       readValues();
       makeBounds();

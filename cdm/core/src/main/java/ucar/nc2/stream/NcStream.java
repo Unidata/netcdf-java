@@ -485,8 +485,6 @@ public class NcStream {
 
     if (dtUse == DataType.STRING) {
       int lenp = attp.getSdataCount();
-      if (lenp != len)
-        System.out.println("HEY lenp != len");
       if (lenp == 1)
         return new Attribute(attp.getName(), attp.getSdata(0));
       else {

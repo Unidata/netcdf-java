@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import static com.google.common.truth.Truth.assertThat;
+import static com.google.common.truth.Truth.assertWithMessage;
 import static ucar.nc2.TestUtils.makeDummyGroup;
 
 /** Test {@link CoordinateSystem.Builder} */
@@ -46,6 +47,7 @@ public class TestCoordSystemBuilder {
     CoordinateSystem coordSys = builder.build(ncd, axes, transforms);
 
     CoordinateAxis xaxis = coordSys.findAxis(AxisType.GeoX);
+    assertThat(xaxis).isNotNull();
     assertThat(xaxis.getShortName()).isEqualTo("xname");
     assertThat(xaxis.getDataType()).isEqualTo(DataType.FLOAT);
     assertThat(xaxis.getUnitsString()).isEqualTo("xunits");
@@ -119,13 +121,17 @@ public class TestCoordSystemBuilder {
         for (CoordinateSystem csys : vds.getCoordinateSystems()) {
           System.out.printf("  Check csys %s%n", csys.getName());
           assertThat(csys.isCoordinateSystemFor(v));
-          for (Dimension dim : csys.getDomain()) {
-            assertThat(parent.findDimension(dim) == dim).isTrue();
+          for (Dimension dim : csys.getDomain()) { // TODO another possibility is to remove extra dimension from domain
+            if (dim.isShared()) {
+              assertWithMessage(dim.toString()).that(parent.findDimension(dim) == dim).isTrue();
+            }
           }
           for (CoordinateAxis axis : csys.getCoordinateAxes()) {
             System.out.printf("   Check axis %s%n", axis.getFullName());
             for (Dimension dim : axis.getDimensions()) {
-              assertThat(parent.findDimension(dim) == dim).isTrue();
+              if (dim.isShared()) {
+                assertWithMessage(dim.toString()).that(parent.findDimension(dim) == dim).isTrue();
+              }
             }
           }
         }

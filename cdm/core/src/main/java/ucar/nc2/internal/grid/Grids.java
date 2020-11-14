@@ -9,8 +9,10 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.grid.GridAxis;
 import ucar.nc2.grid.GridAxis1D;
 import ucar.nc2.grid.GridAxis1DTime;
+import ucar.nc2.grid.GridAxisOffsetTimeRegular;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 /** static utilities */
 class Grids {
@@ -97,5 +99,42 @@ class Grids {
       timeBuilder.setCalendarDates(extractTime.cdates);
     }
   }
+
+  static GridAxisOffsetTimeRegular extractGridAxisOffset2D(CoordinateAxis axis, GridAxis.DependenceType dependenceType,
+      Map<String, GridAxis> gridAxes) {
+    Preconditions.checkArgument(axis.getAxisType() == AxisType.TimeOffset);
+    Preconditions.checkArgument(axis.getRank() == 2);
+    GridAxisOffsetTimeRegular.Builder<?> builder =
+        GridAxisOffsetTimeRegular.builder(axis).setAxisType(axis.getAxisType()).setDependenceType(dependenceType);
+
+    CoordinateAxis2DExtractor extract = new CoordinateAxis2DExtractor(axis);
+    builder.setMidpoints(extract.getMidpoints());
+    builder.setBounds(extract.getBounds());
+    builder.setHourOffsets(extract.getHourOffsets());
+    builder.setSpacing(extract.isInterval() ? GridAxis.Spacing.discontiguousInterval : GridAxis.Spacing.irregularPoint);
+
+    Preconditions.checkNotNull(extract.getRuntimeAxisName());
+    GridAxis runtime = gridAxes.get(extract.getRuntimeAxisName());
+    Preconditions.checkNotNull(runtime, extract.getRuntimeAxisName());
+    Preconditions.checkArgument(runtime instanceof GridAxis1DTime, extract.getRuntimeAxisName());
+    Preconditions.checkArgument(runtime.getAxisType() == AxisType.RunTime, extract.getRuntimeAxisName());
+    builder.setRuntimeAxis((GridAxis1DTime) runtime);
+
+    return builder.build();
+  }
+
+  /** Standard sort on Coordinate Axes */
+  public static class AxisComparator implements java.util.Comparator<GridAxis> {
+    public int compare(GridAxis c1, GridAxis c2) {
+      Preconditions.checkNotNull(c1);
+      Preconditions.checkNotNull(c2);
+      AxisType t1 = c1.getAxisType();
+      AxisType t2 = c2.getAxisType();
+      Preconditions.checkNotNull(t1);
+      Preconditions.checkNotNull(t2);
+      return t1.axisOrder() - t2.axisOrder();
+    }
+  }
+
 
 }
