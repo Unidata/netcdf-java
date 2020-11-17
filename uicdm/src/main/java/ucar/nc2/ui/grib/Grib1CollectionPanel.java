@@ -402,7 +402,7 @@ public class Grib1CollectionPanel extends JPanel {
     String h1 = bean1.getHeader();
     String h2 = bean2.getHeader();
     if (!h1.equals(h2))
-      f.format("WMO headers differ %s != %s %n", h1, h2);
+      f.format("WMO headers differ%n  %s%n  %s%n%n", h1, h2);
 
     f.format("1 cdmHash = %d%n", cdmVariableHash(cust, bean1.gr));
     f.format("2 cdmHash = %d%n", cdmVariableHash(cust, bean2.gr));
@@ -417,7 +417,8 @@ public class Grib1CollectionPanel extends JPanel {
     f.format("%nCompare Gds%n");
     byte[] raw1 = gdss1.getRawBytes();
     byte[] raw2 = gdss2.getRawBytes();
-    Misc.compare(raw1, raw2, f);
+    boolean same = Misc.compare(raw1, raw2, f);
+    f.format(" exact byte compare= %s%n%n", same ? "True" : "False");
 
     Grib1Gds gds1 = gdss1.getGDS();
     Grib1Gds gds2 = gdss2.getGDS();
@@ -444,7 +445,8 @@ public class Grib1CollectionPanel extends JPanel {
     f.format("%nCompare Pds%n");
     byte[] raw1 = pds1.getRawBytes();
     byte[] raw2 = pds2.getRawBytes();
-    Misc.compare(raw1, raw2, f);
+    boolean same = Misc.compare(raw1, raw2, f);
+    f.format(" exact byte compare= %s%n%n", same ? "True" : "False");
   }
 
   private void compareData(RecordBean bean1, RecordBean bean2, Formatter f) {

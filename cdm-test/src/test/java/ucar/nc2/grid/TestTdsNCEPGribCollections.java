@@ -6,6 +6,7 @@
 package ucar.nc2.grid;
 
 import com.google.common.collect.Iterables;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -24,6 +25,7 @@ import static org.junit.Assert.fail;
 /** Compare reading TDS Grib Collections with old and new GridDataset. */
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
+@Ignore("Files not available")
 public class TestTdsNCEPGribCollections {
   private static final String topDir = "/media/twobee/tds/";
 
