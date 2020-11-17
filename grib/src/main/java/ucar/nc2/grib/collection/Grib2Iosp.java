@@ -11,7 +11,6 @@ import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.io.http.HTTPRandomAccessFile;
-import ucar.unidata.util.StringUtil2;
 import java.io.IOException;
 import java.util.Formatter;
 
@@ -81,6 +80,10 @@ public class Grib2Iosp extends GribIosp {
       } else if (vindex.isEnsemble()) {
         f.format("_ens");
       }
+
+      if (vindex.getPercentileValue() >= 0) {
+        f.format("_Percentile%2d", vindex.getPercentileValue());
+      }
       return f.toString();
     }
   }
@@ -135,6 +138,10 @@ public class Grib2Iosp extends GribIosp {
 
       } else if (useGenType && vindex.getGenProcessType() >= 0) {
         f.format(" %s", cust.getGeneratingProcessTypeName(vindex.getGenProcessType()));
+      }
+
+      if (vindex.getPercentileValue() >= 0) {
+        f.format(" %d Percentile", vindex.getPercentileValue());
       }
 
       if (vindex.getLevelType() != GribNumbers.UNDEFINED) { // satellite data doesnt have a level

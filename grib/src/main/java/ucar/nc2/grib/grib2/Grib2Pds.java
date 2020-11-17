@@ -240,6 +240,10 @@ public abstract class Grib2Pds {
     return (template >= 30 && template <= 32);
   }
 
+  public boolean isPercentile() {
+    return false;
+  }
+
   /*
    * public int getPerturbationNumber() {
    * return GribNumbers.UNDEFINED;
@@ -269,14 +273,6 @@ public abstract class Grib2Pds {
    *
    * public int getProbabilityType() {
    * return GribNumbers.UNDEFINED;
-   * }
-   *
-   * public boolean isPercentile() {
-   * return false;
-   * }
-   *
-   * public int getPercentileValue() {
-   * return -1;
    * }
    */
 
@@ -1253,11 +1249,7 @@ public abstract class Grib2Pds {
       return true;
     }
 
-    /**
-     * Percentile - from 100 to 0
-     *
-     * @return Percentile
-     */
+    /** Percentile - from 0 to 100 */
     public int getPercentileValue() {
       return getOctet(35);
     }
@@ -1266,9 +1258,7 @@ public abstract class Grib2Pds {
     public int templateLength() {
       return 36;
     }
-
   }
-
 
   /**
    * Product definition template 4.10 -
