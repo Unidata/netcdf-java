@@ -201,22 +201,15 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
 
   @Override
   protected void readValues() {
-    // if DataType is not numeric, handle special
-    if (!this.dataType.isNumeric()) {
+    // if orgVar DataType is not numeric (e.g. Char or String), read from the cdates array that was created when
+    // the axis was created by this classes factory.
+    if (this.orgDataType != null && !this.orgDataType.isNumeric()) {
       this.coords = cdates.stream().mapToDouble(cdate -> (double) cdate.getDifferenceInMsecs(cdates.get(0))).toArray();
-      // make sure we don't try to read from the orgVar again
+      // make sure parent methods do not try to read from the orgVar again
       this.wasRead = true;
     } else {
       super.readValues();
     }
-  }
-
-  @Override
-  public boolean isNumeric() {
-    // we're going to always handle the 1D time coordinate axis case as if it were numeric
-    // because if it is a String or Char, we'll try to convert the values into a
-    // UDUNITS compatible value in the readValues() method.
-    return true;
   }
 
   ////////////////////////////////////////////////////////////////////////
@@ -236,12 +229,17 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
   @Deprecated
   private CoordinateAxis1DTime(NetcdfDataset ncd, VariableDS org, Formatter errMessages, String dims)
       throws IOException {
-    super(ncd, org.getParentGroupOrRoot(), org.getShortName(), DataType.STRING, dims, org.getUnitsString(),
+    // Although we are dealing with a string or char variable, we're going to make a numeric valued time
+    // coordinate axis, as long as we can transform the string values into a UDUNITS time value (e.g.
+    // transform an ISO date/time string into something like "seconds since 1970-01-01 00:00:00 UTC)
+    super(ncd, org.getParentGroupOrRoot(), org.getShortName(), DataType.DOUBLE, dims, org.getUnitsString(),
         org.getDescription());
 
-    // Gotta set the original var. Otherwise it would be unable to read the values
+    // Need to set the original var its DataType, that way we can treat this coordinate axis as numeric properly
+    // when we override the readValues() method and encounter a 1D time coordinate axis backing variable that is
+    // of type String.
     this.orgVar = org;
-
+    this.orgDataType = org.getDataType();
     this.orgName = org.orgName;
     this.helper = new CoordinateAxisTimeHelper(getCalendarFromAttribute(), null);
 

@@ -54,7 +54,7 @@ public class TestAggSynGrid {
     assert gcsys.getTimeAxis() != null;
 
     CoordinateAxis1DTime taxis = gcsys.getTimeAxis1D();
-    assert taxis.getDataType() == DataType.STRING : taxis.getDataType();
+    assert taxis.getDataType() == DataType.DOUBLE : taxis.getDataType();
 
     List names = taxis.getNames();
     java.util.Date[] dates = taxis.getTimeDates();
