@@ -256,6 +256,18 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
   }
 
   @Override
+  protected void readValues() {
+    // if DataType is not numeric, handle special
+    if (!this.dataType.isNumeric()) {
+      this.coords = cdates.stream().mapToDouble(cdate -> (double) cdate.getDifferenceInMsecs(cdates.get(0))).toArray();
+      // make sure we don't try to read from the orgVar again
+      this.wasRead = true;
+    } else {
+      super.readValues();
+    }
+  }
+
+  @Override
   public boolean isNumeric() {
     // we're going to always handle the 1D time coordinate axis case as if it were numeric
     // because if it is a String or Char, we'll try to convert the values into a
@@ -320,7 +332,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
 
   /**
    * Does not handle non-standard Calendars
-   * 
+   *
    * @deprecated use getCalendarDates().
    */
   @Deprecated
