@@ -901,23 +901,24 @@ public class Grib2CollectionPanel extends JPanel {
     f.format("%nCompare Gds%n");
     byte[] raw1 = gdss1.getRawBytes();
     byte[] raw2 = gdss2.getRawBytes();
-    Misc.compare(raw1, raw2, f);
+    boolean same = Misc.compare(raw1, raw2, f);
+    f.format(" exact byte compare= %s%n%n", same ? "True" : "False");
 
     Grib2Gds gds1 = gdss1.getGDS();
     Grib2Gds gds2 = gdss2.getGDS();
     GdsHorizCoordSys gdsh1 = gds1.makeHorizCoordSys();
     GdsHorizCoordSys gdsh2 = gds2.makeHorizCoordSys();
 
-    f.format("%ncompare gds1 - gds22%n");
-    f.format(" Start x diff : %f%n", gdsh1.getStartX() - gdsh2.getStartX());
-    f.format(" Start y diff : %f%n", gdsh1.getStartY() - gdsh2.getStartY());
-    f.format(" End x diff : %f%n", gdsh1.getEndX() - gdsh2.getEndX());
-    f.format(" End y diff : %f%n", gdsh1.getEndY() - gdsh2.getEndY());
+    f.format(" compare gds1 - gds22%n");
+    f.format("  Start x diff : %f%n", gdsh1.getStartX() - gdsh2.getStartX());
+    f.format("  Start y diff : %f%n", gdsh1.getStartY() - gdsh2.getStartY());
+    f.format("  End x diff : %f%n", gdsh1.getEndX() - gdsh2.getEndX());
+    f.format("  End y diff : %f%n", gdsh1.getEndY() - gdsh2.getEndY());
 
     LatLonPoint pt1 = gdsh1.getCenterLatLon();
     LatLonPoint pt2 = gdsh2.getCenterLatLon();
-    f.format(" Center lon diff : %f%n", pt1.getLongitude() - pt2.getLongitude());
-    f.format(" Center lat diff : %f%n", pt1.getLatitude() - pt2.getLatitude());
+    f.format("  Center lon diff : %f%n", pt1.getLongitude() - pt2.getLongitude());
+    f.format("  Center lat diff : %f%n", pt1.getLatitude() - pt2.getLatitude());
   }
 
 
@@ -925,7 +926,8 @@ public class Grib2CollectionPanel extends JPanel {
     f.format("%nCompare Pds%n");
     byte[] raw1 = pds1.getRawBytes();
     byte[] raw2 = pds2.getRawBytes();
-    Misc.compare(raw1, raw2, f);
+    boolean same = Misc.compare(raw1, raw2, f);
+    f.format(" exact byte compare= %s%n%n", same ? "True" : "False");
   }
 
   public static void compareData(Grib2RecordBean bean1, Grib2RecordBean bean2, Formatter f) {

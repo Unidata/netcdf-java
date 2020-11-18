@@ -218,7 +218,6 @@ public class Dimension implements Comparable<Dimension> {
     return new Builder().setName(name).setLength(length);
   }
 
-  /** A builder of Dimension. */
   public static class Builder {
     private String shortName;
     private boolean isUnlimited;

@@ -1,9 +1,6 @@
 package ucar.nc2.grib;
 
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +22,8 @@ import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
 
+import static thredds.inventory.CollectionUpdateType.always;
+
 /**
  * Test that the CDM Index Creation works.
  * Jenkins recreates indices, and so needs this to run.
@@ -35,7 +34,7 @@ public class TestGribIndexCreation {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private static final boolean show = false;
-  private static CollectionUpdateType updateMode = CollectionUpdateType.always;
+  private static CollectionUpdateType updateMode = always;
 
   @BeforeClass
   static public void before() {
@@ -247,7 +246,7 @@ public class TestGribIndexCreation {
         FeatureCollectionType.GRIB1, TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2/grib1/**/.*gbx9", null,
         null, null, "directory", null);
 
-    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
+    boolean changed = GribCdmIndex.updateGribCollection(config, always, logger);
     System.out.printf("changed = %s%n", changed);
     Grib.setDebugFlags(DebugFlags.create(""));
   }
@@ -379,4 +378,29 @@ public class TestGribIndexCreation {
     boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
     System.out.printf("changed = %s%n", changed);
   }
+
+  @Ignore("files not available")
+  @Test
+  public void createNBMOcean() throws IOException { // TWOD
+    Grib.setDebugFlags(DebugFlags.create("Grib/debugGbxIndexOnly"));
+    FeatureCollectionConfig config = new FeatureCollectionConfig("NCEP_OCEAN_MODEL_FIXED", "test/NCEP_OCEAN_MODEL",
+        FeatureCollectionType.GRIB2, "/media/twobee/tds/NCEP/NBM/Ocean/.*gbx9", null, null, null, "file", null);
+
+    boolean changed = GribCdmIndex.updateGribCollection(config, always, logger);
+    System.out.printf("changed = %s%n", changed);
+    Grib.setDebugFlags(DebugFlags.create(""));
+  }
+
+  @Ignore("files not available")
+  @Test
+  public void createNndfCpc() throws IOException { // TWOD
+    Grib.setDebugFlags(DebugFlags.create("Grib/debugGbxIndexOnly"));
+    FeatureCollectionConfig config = new FeatureCollectionConfig("NCEP_NDFD_CPC_Experimental", "test/NCEP_NDFD_CPC",
+        FeatureCollectionType.GRIB2, "/media/twobee/tds/NCEP/NDFD/CPC/.*gbx9", null, null, null, "file", null);
+
+    boolean changed = GribCdmIndex.updateGribCollection(config, always, logger);
+    System.out.printf("changed = %s%n", changed);
+    Grib.setDebugFlags(DebugFlags.create(""));
+  }
+
 }

@@ -256,7 +256,7 @@ public class CdmIndexReportPanel extends ReportPanel {
 
           for (GribCollectionImmutable.VariableIndex vi : g.getVariables()) {
             String name = vi.makeVariableName(); // LOOK not actually right - some are partitioned by level
-            int nrecords = vi.getNRecords();
+            int nrecords = vi.countNRecords();
             f.format("  %7d: %s%n", nrecords, name);
             int hash = vi.hashCode() + g.getGdsHash().hashCode(); // must be both group and var
             VarInfo vinfo = varCount.get(hash);
@@ -298,11 +298,12 @@ public class CdmIndexReportPanel extends ReportPanel {
           for (GribCollectionImmutable.VariableIndex vi : g.getVariables()) {
             int hash = vi.hashCode() + g.getGdsHash().hashCode();
             VarInfo vinfo = varCount.get(hash);
-            if (vinfo == null)
+            if (vinfo == null) {
               f.format("ERROR on vi %s%n", vi);
-            else {
-              if (!vinfo.ok)
-                countMisplaced += vi.getNRecords();
+            } else {
+              if (!vinfo.ok) {
+                countMisplaced += vi.countNRecords();
+              }
             }
           }
         }

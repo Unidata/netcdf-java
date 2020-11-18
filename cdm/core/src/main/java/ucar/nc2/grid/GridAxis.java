@@ -23,42 +23,61 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.*;
 
-/** GridAxis abstract superclass */
+/** A GridAxis is a Coordinate Axis for Grids. */
 public abstract class GridAxis implements Iterable<Object> {
   private static final Logger logger = LoggerFactory.getLogger(GridAxis.class);
 
+  /** The spacing of the coordinate values, used for 1D axes. */
   public enum Spacing {
-    regularPoint, // regularly spaced points (start, end, npts), start and end are pts, edges halfway between coords,
-                  // resol = (start - end) / (npts-1)
-    irregularPoint, // irregular spaced points (values, npts), edges halfway between coords
-    regularInterval, // regular contiguous intervals (start, end, npts), start and end are edges,
-                     // resol = (start - end) / npts
-    contiguousInterval, // irregular contiguous intervals (values, npts), values are the edges, values[npts+1],
-                        // coord halfway between edges
-    discontiguousInterval; // irregular discontiguous spaced intervals (values, npts), values are the edges,
-                           // values[2*npts]: low0, high0, low1, high1, ...
-                           // Note that monotonicity is not guarenteed, and is ambiguous.
+    /**
+     * Regularly spaced points (start, end, npts); start and end are pts, edges halfway between coords, resol = (start -
+     * end) / (npts-1)
+     */
+    regularPoint, //
+    /** Irregular spaced points (values, npts); edges halfway between coords. */
+    irregularPoint, //
+    /** Regular contiguous intervals (start, end, npts); start and end are edges, resol = (start - end) / npts. */
+    regularInterval, //
+    /**
+     * Irregular contiguous intervals (values, npts); values are the edges, values[npts+1], coord halfway between edges.
+     */
+    contiguousInterval, //
+    /**
+     * Irregular discontiguous intervals (values, npts); values are the edges, values[2*npts]: low0, high0, low1, high1,
+     * ...
+     * Note that monotonicity is not guaranteed, and is ambiguous.
+     */
+    discontiguousInterval; //
 
+    /** If the spacing is regular. */
     public boolean isRegular() {
       return (this == Spacing.regularPoint) || (this == Spacing.regularInterval);
     }
 
+    /** If the coordinate values are intervals. */
     public boolean isInterval() {
       return this == Spacing.regularInterval || this == Spacing.contiguousInterval
           || this == Spacing.discontiguousInterval;
     }
   }
 
+  /** The way that the Axis depends on other axes. */
   public enum DependenceType {
-    independent, // has its own dimension, is a coordinate variable, eg x(x)
-    dependent, // aux coordinate, eg reftime(time) or time_bounds(time);
-    scalar, // eg reftime
-    twoD, // lat(x,y)
-    fmrcReg, // time(reftime, hourOfDay)
-    dimension // swath(scan, scanAcross)
+    /** Has its own dimension, so is a coordinate variable, eg x(x). */
+    independent, //
+    /** Auxilary coordinate, eg reftime(time) or time_bounds(time). */
+    dependent, //
+    /** A scalar doesnt involve indices. Eg the reference time is often a scalar. */
+    scalar, //
+    /** A coordinate needing two dimensions, eg lat(x,y). */
+    twoD, //
+    /** Eg time(reftime, hourOfDay). */
+    fmrcReg, //
+    /** Eg swath(scan, scanAcross). */
+    dimension //
   }
 
-  // create a subset of this axis based on the SubsetParams.
+  /** Create a subset of this axis based on the SubsetParams. */
   // TODO throw an Exception when subset fails?
   @Nullable
   public abstract GridAxis subset(GridSubset params, Formatter errlog);
@@ -109,7 +128,7 @@ public abstract class GridAxis implements Iterable<Object> {
     return spacing.isInterval();
   }
 
-  // When isRegular, same as increment, otherwise an average = (end - start) / npts
+  /** When isRegular, same as increment, otherwise an average = (end - start) / npts. */
   public double getResolution() {
     return resolution;
   }
@@ -190,7 +209,6 @@ public abstract class GridAxis implements Iterable<Object> {
     f.format("%n");
 
     f.format("%saxisType=%s dataType=%s units='%s' desc='%s'%n", indent, axisType, dataType, units, description);
-    f.format("%snpts: %d [%f,%f] spacing=%s", indent, ncoords, startValue, endValue, spacing);
     if (getResolution() != 0.0)
       f.format(" resolution=%f", resolution);
     f.format("%n");
@@ -202,6 +220,7 @@ public abstract class GridAxis implements Iterable<Object> {
     f.format("%n");
     indent.decr();
 
+    f.format("%snpts: %d [%f,%f] spacing=%s", indent, ncoords, startValue, endValue, spacing);
     if (values != null) {
       int n = values.length;
       switch (spacing) {
@@ -269,7 +288,7 @@ public abstract class GridAxis implements Iterable<Object> {
 
   protected final int ncoords; // number of coordinates (not always same as values)
   protected final Spacing spacing;
-  protected final double startValue;
+  protected final double startValue; // only for regular
   protected final double endValue;
   protected final double resolution;
   protected final GridAxisReader reader; // LOOK when is this needed?

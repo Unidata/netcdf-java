@@ -7,8 +7,6 @@ package ucar.nc2.dataset;
 import com.google.common.collect.ImmutableList;
 import javax.annotation.Nullable;
 import ucar.nc2.Group;
-import ucar.nc2.NetcdfFiles;
-import ucar.nc2.Variable;
 
 /** Interface to an "enhanced Variable". */
 public interface VariableEnhanced {
@@ -40,6 +38,4 @@ public interface VariableEnhanced {
 
   /** Get the list of Coordinate Systems for this Variable, larger number of axes first. */
   ImmutableList<CoordinateSystem> getCoordinateSystems();
-
-  String toString();
 }

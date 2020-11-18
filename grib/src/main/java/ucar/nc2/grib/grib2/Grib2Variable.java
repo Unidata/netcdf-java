@@ -144,6 +144,15 @@ public class Grib2Variable {
       probType = pdsProb.getProbabilityType();
     }
 
+    if (pds.isPercentile() != pds2.isPercentile())
+      return false;
+    if (pds.isPercentile()) {
+      Grib2Pds.PdsPercentile pdsPctl = (Grib2Pds.PdsPercentile) pds;
+      Grib2Pds.PdsPercentile pdsPctl2 = (Grib2Pds.PdsPercentile) pds2;
+      if (pdsPctl.getPercentileValue() != pdsPctl2.getPercentileValue())
+        return false;
+    }
+
     // if this uses any local tables, then we have to add the center id, and subcenter if present
     if ((pds2.getParameterCategory() > 191) || (pds2.getParameterNumber() > 191) || (pds2.getLevelType1() > 191)
         || (pds2.isTimeInterval() && pds2.getStatisticalProcessType() > 191) || (ensDerivedType > 191)
@@ -163,7 +172,6 @@ public class Grib2Variable {
     if (error != error2)
       return false;
     return !useGenType || (genType == genType2);
-
   }
 
 
@@ -213,6 +221,11 @@ public class Grib2Variable {
       Grib2Pds.PdsProbability pdsProb = (Grib2Pds.PdsProbability) pds;
       probType = pdsProb.getProbabilityType();
       result += result * 31 + pdsProb.getProbabilityHashcode();
+    }
+
+    if (pds.isPercentile()) {
+      Grib2Pds.PdsPercentile pdsPerc = (Grib2Pds.PdsPercentile) pds;
+      result += result * 31 + pdsPerc.getPercentileValue();
     }
 
     // if this uses any local tables, then we have to add the center id, and subcenter if present

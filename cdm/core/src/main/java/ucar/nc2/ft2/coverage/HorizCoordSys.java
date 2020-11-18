@@ -92,7 +92,7 @@ public class HorizCoordSys {
     }
 
     if (!isProjection && isLatLon2D && !(this instanceof HorizCoordSys2D))
-      logger.warn("HEY Should be HorizCoordSys2D");
+      logger.warn("Should be HorizCoordSys2D");
 
     if (isLatLon1D) {
       this.latAxis = (CoverageCoordAxis1D) latAxis;

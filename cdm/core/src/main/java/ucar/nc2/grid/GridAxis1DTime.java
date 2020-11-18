@@ -22,7 +22,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 
 /**
- * A 1-dimensional GridAxis whose coordinates are Calendar times.
+ * A 1-dimensional GridAxis whose coordinates can be converted to CalendarDates.
  * A GridAxis1DTime has a CalendarDateUnit that allows converting between doubles and CalendarDates.
  */
 public class GridAxis1DTime extends GridAxis1D {
@@ -82,7 +82,7 @@ public class GridAxis1DTime extends GridAxis1D {
     return cdates;
   }
 
-  /** Get the bounds of the ith coordinate as a CalendarDates. */
+  /** Get the bounds of the ith coordinate as a CalendarDate[2]. */
   public CalendarDate[] getCoordBoundsDate(int i) {
     CalendarDate[] e = new CalendarDate[2];
     e[0] = timeHelper.makeCalendarDateFromOffset(getCoordEdge1(i));

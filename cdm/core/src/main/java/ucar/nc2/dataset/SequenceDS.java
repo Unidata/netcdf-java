@@ -100,7 +100,6 @@ public class SequenceDS extends Sequence implements StructureEnhanced {
     }
   }
 
-  /** A Builder of SequenceDS. */
   public static abstract class Builder<T extends Builder<T>> extends Sequence.Builder<T> {
     private ucar.nc2.Sequence orgSeq;
     private String orgName;

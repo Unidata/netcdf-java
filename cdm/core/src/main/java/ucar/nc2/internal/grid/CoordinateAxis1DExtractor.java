@@ -27,7 +27,7 @@ public class CoordinateAxis1DExtractor {
   String[] names; // only set if String or char values
 
   // defer making until asked, use makeBounds()
-  double[] edge; // n+1 edges, edge[k] < midpoint[k] < edge[k+1]
+  double[] edge; // contiguous only: n+1 edges, edge[k] < midpoint[k] < edge[k+1]
   double[] bound1, bound2; // may be contiguous or not
   boolean boundsAreContiguous;
 
@@ -44,11 +44,13 @@ public class CoordinateAxis1DExtractor {
     if (dtCoordAxis.isNumeric()) {
       readValues();
       makeBounds();
-      calcIsRegular();
-
+      if (isInterval) {
+        isRegular = boundsAreContiguous;
+      } else {
+        calcIsRegular();
+      }
     } else if (dtCoordAxis.getDataType() == DataType.STRING) {
       readStringValues();
-
     } else if (dtCoordAxis.getDataType() == DataType.CHAR) {
       readCharValues();
     }
@@ -168,13 +170,7 @@ public class CoordinateAxis1DExtractor {
       edge[0] = value1[0];
       System.arraycopy(value2, 0, edge, 1, ncoords + 1 - 1);
       boundsAreContiguous = true;
-    } else { // what does edge mean when not contiguous ??
-      edge = new double[ncoords + 1];
-      edge[0] = value1[0];
-      for (int i = 1; i < ncoords; i++) {
-        edge[i] = (value1[i] + value2[i - 1]) / 2;
-      }
-      edge[ncoords] = value2[ncoords - 1];
+    } else {
       boundsAreContiguous = false;
     }
 
@@ -231,6 +227,9 @@ public class CoordinateAxis1DExtractor {
     } else if (ncoords < 2) {
       isRegular = true;
       isAscending = true;
+    } else if (ncoords == 2) {
+      isRegular = true;
+      isAscending = coords[0] < coords[1];
     } else {
       isAscending = coords[0] < coords[1]; // strictly monotonic
       start = coords[0];

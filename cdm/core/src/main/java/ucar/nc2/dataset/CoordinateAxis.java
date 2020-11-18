@@ -193,7 +193,6 @@ public class CoordinateAxis extends VariableDS {
     buf.format("%s", getDescription());
   }
 
-  /** Standard sort on Coordinate Axes */
   public static class AxisComparator implements java.util.Comparator<CoordinateAxis> {
     public int compare(CoordinateAxis c1, CoordinateAxis c2) {
       Preconditions.checkNotNull(c1);
@@ -316,7 +315,6 @@ public class CoordinateAxis extends VariableDS {
     }
   }
 
-  /** A Builder of CoordinateAxis. */
   public static abstract class Builder<T extends Builder<T>> extends VariableDS.Builder<T> {
     public AxisType axisType;
     protected String positive;

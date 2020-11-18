@@ -23,8 +23,8 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * This is a TimeOffset Axis where the offsets depend on the runtime hour since 0z.
- * For example a real life example from NAM-Polar_90km.ncx4:
+ * A TimeOffset Axis where the offsets depend on the runtime hour since 0z.
+ * A real life example from NAM-Polar_90km.ncx4:
  * 
  * <pre>
  * validtime1 runtime=reftime nruns=123 ntimes=52 isOrthogonal=false isRegular=true

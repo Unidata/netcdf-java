@@ -129,7 +129,6 @@ public abstract class CoordinateTransform implements Comparable<CoordinateTransf
         .setCtvAttributes(this.ctvAttributes);
   }
 
-  /** A Builder of CoordinateTransform. */
   public static abstract class Builder<T extends Builder<T>> {
     public String name;
     private String authority;

@@ -40,7 +40,7 @@ import java.util.*;
 @Immutable
 public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2Tables.class);
-  private static Map<Grib2TablesId, Grib2Tables> tables = new HashMap<>();
+  private static final Map<Grib2TablesId, Grib2Tables> tables = new HashMap<>();
   private static Grib2Tables wmoStandardTable;
 
   public static Grib2Tables factory(Grib2Record gr) {
@@ -349,7 +349,7 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter 
         return new VertCoordType(code, "K m2 kg-1 s-1", null, true); // positive?
 
       case 111:
-        return new VertCoordType(code, "eta", null, false); // positive?
+        return new VertCoordType(code, "eta", null, false);
 
       case 114:
         return new VertCoordType(code, "numeric", null, false);// ??

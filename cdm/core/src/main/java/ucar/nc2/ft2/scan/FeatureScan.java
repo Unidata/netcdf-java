@@ -21,7 +21,10 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.*;
 
-/** Scan a directory, try to open files as a Feature dataset. */
+/**
+ * Scan a directory, try to open files in various ways.
+ * Can be used as a standalone program, which is why its here and not in uicdm module.
+ */
 public class FeatureScan {
   private String top;
   private boolean subdirs;
@@ -325,6 +328,5 @@ public class FeatureScan {
     List<FeatureScan.Bean> beans = scanner.scan(new Formatter());
     for (Bean b : beans)
       System.out.printf(" %-60s %-20s %n", b.getName(), b.getFileType());
-
   }
 }

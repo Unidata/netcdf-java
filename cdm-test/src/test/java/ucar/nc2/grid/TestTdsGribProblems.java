@@ -112,4 +112,34 @@ public class TestTdsGribProblems {
       }
     }
   }
+
+  @Test
+  public void testHrrrConusSurface() throws Exception {
+    String filename =
+        "/media/twobee/tds/NOAA_GSD/HRRR/CONUS_3km/surface/HRRR_CONUS_3km_surface_202011060000.grib2.ncx4";
+
+    Formatter errlog = new Formatter();
+    try (GridDataset gridDataset = GridDatasetFactory.openGridDataset(filename, errlog)) {
+      if (gridDataset == null) {
+        System.out.printf("Cant open as GridDataset: %s%n", filename);
+        return;
+      }
+      System.out.printf("checkGridDataset: %s%n", gridDataset.getLocation());
+    }
+  }
+
+  @Test
+  public void testHrrrConusWrfprs() throws Exception {
+    String filename = "/media/twobee/tds/NOAA_GSD/HRRR/CONUS_3km/wrfprs/GSD_HRRR_CONUS_3km_wrfprs.ncx4";
+
+    Formatter errlog = new Formatter();
+    try (GridDataset gridDataset = GridDatasetFactory.openGridDataset(filename, errlog)) {
+      if (gridDataset == null) {
+        System.out.printf("Cant open as GridDataset: %s%n", filename);
+        return;
+      }
+      System.out.printf("checkGridDataset: %s%n", gridDataset.getLocation());
+    }
+  }
+
 }

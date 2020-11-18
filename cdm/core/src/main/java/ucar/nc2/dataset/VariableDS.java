@@ -670,7 +670,6 @@ public class VariableDS extends Variable implements EnhanceScaleMissingUnsigned,
     }
   }
 
-  /** A Builder of VariableDS. */
   public static abstract class Builder<T extends Builder<T>> extends Variable.Builder<T> {
     public Set<Enhance> enhanceMode = EnumSet.noneOf(Enhance.class);
     public Variable orgVar; // wrap this Variable : use it for the I/O
