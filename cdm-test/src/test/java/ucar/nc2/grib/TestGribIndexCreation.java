@@ -333,7 +333,10 @@ public class TestGribIndexCreation {
     System.out.printf("changed = %s%n", changed);
   }
 
-  // These files all fail, probably due to non-standard ecmwf format.
+  @Test
+  @Category(NeedsCdmUnitTest.class)
+  @Ignore("There appears to be an issue with the encoding of these messages, so they have been moved to "
+      + "cdmUnitTest/gribCollections/ecmwf/exclude/bcs/ until we can figure out what ECMWF has done to make these.")
   public void createECMWFbcs() throws IOException { // SRC
     FeatureCollectionConfig config =
         new FeatureCollectionConfig("ECMWFbcs", "test/ECMWFbcs", FeatureCollectionType.GRIB2,
