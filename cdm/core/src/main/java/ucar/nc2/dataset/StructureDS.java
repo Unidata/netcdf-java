@@ -179,7 +179,6 @@ public class StructureDS extends ucar.nc2.Structure implements StructureEnhanced
     }
   }
 
-  /** A Builder of StructureDS. */
   public static abstract class Builder<T extends Builder<T>> extends Structure.Builder<T> {
     private Structure orgVar; // wrap this Variable
     protected String orgName; // in case Variable was renamed, and we need the original name for aggregation

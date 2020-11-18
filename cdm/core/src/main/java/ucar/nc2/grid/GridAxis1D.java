@@ -351,6 +351,7 @@ public class GridAxis1D extends GridAxis {
     return builder.build();
   }
 
+  /** Iterates over coordinate values, either Double or CoordInterval. */
   @Override
   public Iterator<Object> iterator() {
     return new CoordIterator();

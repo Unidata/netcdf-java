@@ -125,7 +125,6 @@ public class VerticalCT extends CoordinateTransform {
     }
   }
 
-  /** A Builder of VerticalCT. */
   public static abstract class Builder<T extends Builder<T>> extends CoordinateTransform.Builder<T> {
     public VerticalCT.Type type;
     private VerticalTransformBuilder transformBuilder;

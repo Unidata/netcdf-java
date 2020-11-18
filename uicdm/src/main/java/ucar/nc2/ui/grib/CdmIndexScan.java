@@ -9,6 +9,8 @@ import org.slf4j.LoggerFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.grib.collection.GribCollectionImmutable;
+import ucar.nc2.grib.coord.Coordinate;
+import ucar.nc2.grib.coord.CoordinateTime2D;
 import ucar.ui.prefs.BeanTable;
 import ucar.ui.widget.BAMutil;
 import ucar.ui.widget.IndependentWindow;
@@ -170,8 +172,11 @@ public class CdmIndexScan extends JPanel {
 
       for (GribCollectionImmutable.Dataset ds : gc.getDatasets()) {
         info.format("%nDataset %s%n", ds.getType());
-
+        int groupno = 0;
         for (GribCollectionImmutable.GroupGC g : ds.getGroups()) {
+          if (g.getType() == GribCollectionImmutable.Type.Best) {
+            continue; // Best is deprecated.
+          }
           Formatter localInfo = new Formatter();
           localInfo.format("File %s%n", path);
           Accum groupAccum = new Accum();
@@ -185,7 +190,7 @@ public class CdmIndexScan extends JPanel {
           }
           info.format(" total %s%n", groupAccum);
           localInfo.format(" total %s%n", groupAccum);
-          result.add(new IndexScanBean(path, ds, g, groupAccum, localInfo.toString()));
+          result.add(new IndexScanBean(path, ds, g, groupno++, groupAccum, localInfo.toString()));
         }
       }
 
@@ -210,7 +215,7 @@ public class CdmIndexScan extends JPanel {
     Accum add(GribCollectionImmutable.VariableIndex v) {
       this.nrecords += v.getNrecords();
       this.ndups += v.getNdups();
-      this.nmissing += v.getNmissing();
+      this.nmissing += (v.getSize() - v.getNrecords());
       return this;
     }
 
@@ -230,28 +235,38 @@ public class CdmIndexScan extends JPanel {
     public String name;
     public Accum accum;
     public String info;
+    public String time2D;
     public GribCollectionImmutable.Dataset ds;
-    public GribCollectionImmutable.GroupGC group;
+    public int groupno;
 
     // no-arg constructor
     public IndexScanBean() {}
 
-    public IndexScanBean(String path, GribCollectionImmutable.Dataset ds, GribCollectionImmutable.GroupGC g,
-        Accum accum, String info) {
+    public IndexScanBean(String path, GribCollectionImmutable.Dataset ds, GribCollectionImmutable.GroupGC group,
+        int groupno, Accum accum, String info) {
       this.path = path;
-      if (path.contains("/cdmUnitTest/")) {
-        int pos = path.indexOf("/cdmUnitTest/");
-        this.name = ".." + path.substring(pos);
-      } else if (path.contains("/core/src/test/data/")) {
-        int pos = path.indexOf("/core/src/test/data/");
-        this.name = ".." + path.substring(pos);
-      } else {
-        this.name = path;
-      }
+      int pos = path.lastIndexOf('/');
+      this.name = ".." + path.substring(pos);
       this.accum = accum;
       this.ds = ds;
-      this.group = g;
+      this.groupno = groupno;
       this.info = info;
+
+      // Show the most complicated type of Time2D coordinate
+      boolean hasTime2D = false;
+      boolean hasOrthogonal = false;
+      boolean hasRegular = false;
+      for (Coordinate coord : group.getCoordinates()) {
+        if (coord.getType() == Coordinate.Type.time2D) {
+          hasTime2D = true;
+          CoordinateTime2D c2d = (CoordinateTime2D) coord;
+          if (c2d.isOrthogonal())
+            hasOrthogonal = true;
+          if (c2d.isRegular())
+            hasRegular = true;
+        }
+      }
+      time2D = hasRegular ? "reg" : hasOrthogonal ? "orth" : hasTime2D ? "time2D" : "";
     }
 
     public String getName() {
@@ -278,12 +293,16 @@ public class CdmIndexScan extends JPanel {
       return accum.nrecords == 0 ? 0 : 100.0f * accum.nmissing / (float) accum.nrecords;
     }
 
-    public String getDataset() {
+    public String getType() {
       return ds.getType().toString();
     }
 
-    public String getGroup() {
-      return group.getDescription();
+    public int getGroupNo() {
+      return groupno;
+    }
+
+    public String getTime2D() {
+      return time2D;
     }
 
     public String toString() {

@@ -923,7 +923,6 @@ public class NetcdfFile implements FileCacheable, Closeable {
     }
   }
 
-  /** A builder of NetcdfFile objects. */
   public static abstract class Builder<T extends Builder<T>> {
     public Group.Builder rootGroup = Group.builder().setName("");
     private String id;

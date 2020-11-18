@@ -12,9 +12,8 @@ import ucar.ma2.*;
 import java.util.List;
 
 /**
- * Sequence is a one-dimensional Structure with indeterminate length, including 0.
+ * Sequence is a one-dimensional Structure with indeterminate length, possibly 0.
  * The only data access is through getStructureIterator().
- * However, read() will read in the entire data and return an in-memory ArraySequence.
  */
 @Immutable
 public class Sequence extends Structure implements Iterable<ucar.array.StructureData> {
@@ -139,7 +138,6 @@ public class Sequence extends Structure implements Iterable<ucar.array.Structure
     }
   }
 
-  /** A builder of Sequences */
   public static abstract class Builder<T extends Builder<T>> extends Structure.Builder<T> {
     private boolean built;
 

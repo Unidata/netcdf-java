@@ -193,9 +193,7 @@ public class CF {
   public static final String featureTypeAtt3 = "CF:feature_type"; // GRIB was using this form (!)
   ///////////////////////////////////////////////////////////////////////
 
-  /**
-   * Map from CF feature type names to our FeatureType enums.
-   */
+  /** Map from CF feature type names to our FeatureType enums. */
   public enum FeatureType {
     point, timeSeries, profile, trajectory, timeSeriesProfile, trajectoryProfile, line, polygon,;
 

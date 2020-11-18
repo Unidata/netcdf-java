@@ -532,7 +532,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     }
   }
 
-  /** A Builder of NetcdfDataset. */
   public static abstract class Builder<T extends Builder<T>> extends NetcdfFile.Builder<T> {
     @Nullable
     public NetcdfFile orgFile;

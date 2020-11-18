@@ -234,9 +234,10 @@ abstract class GribPartitionBuilder {
         GribCollectionMutable.Dataset ds2dp = gc.getDatasetCanonical(); // the twoD or GC dataset
 
         // date ranges must not overlap in order to use MRUTP
-        if (dateRangeAll == null)
+        if (dateRangeAll == null) {
+          // System.out.printf(" %s = %s%n", gc.name, gc.dateRange);
           dateRangeAll = gc.dateRange;
-        else if (!rangeOverlaps) {
+        } else if (!rangeOverlaps) {
           rangeOverlaps = dateRangeAll.intersects(gc.dateRange);
           dateRangeAll = dateRangeAll.extend(gc.dateRange);
         }

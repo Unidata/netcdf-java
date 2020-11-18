@@ -464,7 +464,6 @@ public class Structure extends Variable {
     }
   }
 
-  /** A builder of Structures. */
   public static abstract class Builder<T extends Builder<T>> extends Variable.Builder<T> {
     public List<Variable.Builder<?>> vbuilders = new ArrayList<>();
     private boolean isSubset;

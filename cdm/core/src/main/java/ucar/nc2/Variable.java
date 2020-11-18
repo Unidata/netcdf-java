@@ -1317,7 +1317,6 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     }
   }
 
-  /** A builder for Variables. */
   public static abstract class Builder<T extends Builder<T>> {
     public String shortName;
     public DataType dataType;

@@ -479,7 +479,6 @@ public class Attribute {
     return new Builder().setName(name);
   }
 
-  /** A builder for Attributes */
   public static class Builder {
     private String name;
     private DataType dataType = DataType.STRING;

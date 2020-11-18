@@ -344,7 +344,7 @@ public class CdmIndexPanel extends JPanel {
     f.format("Groups%n");
     List<GroupBean> groups = groupTable.getBeans();
     for (GroupBean bean : groups) {
-      f.format("%-50s %-50s %d%n", bean.getGroupId(), bean.getDescription(), bean.getGdsHash());
+      f.format("%-50s %d%n", bean.getGroupId(), bean.getGdsHash());
       bean.group.show(f);
     }
 
@@ -921,10 +921,6 @@ public class CdmIndexPanel extends JPanel {
       return group.getVariables().size();
     }
 
-    public String getDescription() {
-      return group.getDescription();
-    }
-
     public int getNmissing() {
       return nmissing;
     }
@@ -1138,24 +1134,6 @@ public class CdmIndexPanel extends JPanel {
       this.group = group;
       this.name = vindex.makeVariableName();
     }
-
-    /*
-     * public int getNRecords() {
-     * return v.nrecords;
-     * }
-     * 
-     * public int getNMissing() {
-     * return v.missing;
-     * }
-     * 
-     * public int getNDups() {
-     * return v.ndups;
-     * }
-     * 
-     * public float getDensity() {
-     * return v.density;
-     * }
-     */
 
     public String getIndexes() {
       Formatter f = new Formatter();

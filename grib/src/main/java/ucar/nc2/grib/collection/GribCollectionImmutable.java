@@ -653,7 +653,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
       return sa;
     }
 
-    public int getNRecords() {
+    public int countNRecords() {
       return sa == null ? -1 : sa.countNotMissing();
     }
 
@@ -742,7 +742,6 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
       }
       return size;
     }
-
 
     @Override
     public String toString() {
