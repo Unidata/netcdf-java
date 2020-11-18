@@ -7,14 +7,15 @@ import ucar.array.Arrays;
 import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
+import ucar.unidata.util.test.TestDir;
 
 import java.util.Formatter;
 
 import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
 
-@Ignore("files not available")
 public class TestTdsGribProblems {
+  private static final String indexDir = TestDir.cdmUnitTestDir + "tds_index/";
 
   /*
    * All NCEP/NBM/Ocean/National_Blend_Ocean_20201010_0000.grib2.ncx4
@@ -27,11 +28,11 @@ public class TestTdsGribProblems {
    * point in time
    * 
    * which is not reflected in the name.
-   * Check to see if its happening in TDS 4 and 5.
+   * This is fixed by PR#564, but ncx4 must be regenerated.
    */
   @Test
   public void testNbmOcean() throws Exception {
-    String filename = "/media/twobee/tds/NCEP/NBM/Ocean/NCEP_OCEAN_MODEL_BLEND.ncx4";
+    String filename = indexDir + "NCEP/NBM/Ocean/NCEP_OCEAN_MODEL_BLEND.ncx4";
 
     Formatter errlog = new Formatter();
     try (GridDataset gridDataset = GridDatasetFactory.openGridDataset(filename, errlog)) {
@@ -51,7 +52,7 @@ public class TestTdsGribProblems {
   // 1 runtime, 2 timeOffsets and 33 vertical coords.
   @Test
   public void testFirewxnest() throws Exception {
-    String filename = "/media/twobee/tds/NCEP/NAM/Firewxnest/NAM-Firewxnest.ncx4";
+    String filename = indexDir + "NCEP/NAM/Firewxnest/NAM-Firewxnest.ncx4";
 
     try (NetcdfDataset dataset = NetcdfDatasets.openDataset(filename)) {
       System.out.printf("testNoProjection: %s ncoordsys = %d%n", dataset.getLocation(),
@@ -64,8 +65,7 @@ public class TestTdsGribProblems {
 
   @Test
   public void testMrmsRadar() throws Exception {
-    String filename =
-        "/media/snake/0B681ADF0B681ADF/tds/index_files/NCEP/MRMS/Radar/MRMS_Radar_20201011_2200.grib2.ncx4";
+    String filename = indexDir + "NCEP/MRMS/Radar/MRMS_Radar_20201011_2200.grib2.ncx4";
 
     try (NetcdfDataset dataset = NetcdfDatasets.openDataset(filename)) {
       System.out.printf("testNoProjection: %s ncoordsys = %d%n", dataset.getLocation(),
@@ -78,7 +78,7 @@ public class TestTdsGribProblems {
 
   @Test
   public void testTimeOffsetUnevenHours() throws Exception {
-    String filename = "/media/twobee/tds/NCEP/NBM/PuertoRico/NCEP_PUERTORICO_MODEL_BLEND.ncx4";
+    String filename = indexDir + "NCEP/NBM/PuertoRico/NCEP_PUERTORICO_MODEL_BLEND.ncx4";
     Formatter errlog = new Formatter();
     try (GridDataset gridDataset = GridDatasetFactory.openGridDataset(filename, errlog)) {
       if (gridDataset == null) {
@@ -115,8 +115,7 @@ public class TestTdsGribProblems {
 
   @Test
   public void testHrrrConusSurface() throws Exception {
-    String filename =
-        "/media/twobee/tds/NOAA_GSD/HRRR/CONUS_3km/surface/HRRR_CONUS_3km_surface_202011060000.grib2.ncx4";
+    String filename = indexDir + "NOAA_GSD/HRRR/CONUS_3km/surface/HRRR_CONUS_3km_surface_202011060000.grib2.ncx4";
 
     Formatter errlog = new Formatter();
     try (GridDataset gridDataset = GridDatasetFactory.openGridDataset(filename, errlog)) {
@@ -129,9 +128,10 @@ public class TestTdsGribProblems {
   }
 
   @Test
+  @Ignore("doesnt work")
   public void testHrrrConusWrfprs() throws Exception {
-    String filename = "/media/twobee/tds/NOAA_GSD/HRRR/CONUS_3km/wrfprs/GSD_HRRR_CONUS_3km_wrfprs.ncx4";
-
+    String filename = indexDir + "NOAA_GSD/HRRR/CONUS_3km/wrfprs/GSD_HRRR_CONUS_3km_wrfprs.ncx4";
+    System.out.printf("filename %s%n", filename);
     Formatter errlog = new Formatter();
     try (GridDataset gridDataset = GridDatasetFactory.openGridDataset(filename, errlog)) {
       if (gridDataset == null) {

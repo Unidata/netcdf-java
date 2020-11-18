@@ -453,7 +453,7 @@ class GridCS implements GridCoordinateSystem {
     ArrayList<GridAxis> axesb = new ArrayList<>();
     for (CoordinateAxis axis : classifier.getAxesUsed()) {
       GridAxis gaxis = gridAxes.get(axis.getFullName());
-      axesb.add(Preconditions.checkNotNull(gaxis));
+      axesb.add(Preconditions.checkNotNull(gaxis, "Missing Coordinate Axis " + axis.getFullName()));
     }
     Collections.sort(axesb, new Grids.AxisComparator());
     this.axes = ImmutableList.copyOf(axesb);
