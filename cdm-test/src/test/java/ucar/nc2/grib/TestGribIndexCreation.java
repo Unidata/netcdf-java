@@ -3,6 +3,7 @@ package ucar.nc2.grib;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
@@ -350,6 +351,8 @@ public class TestGribIndexCreation {
 
   @Test
   @Category(NeedsCdmUnitTest.class)
+  @Ignore("There appears to be an issue with the encoding of these messages, so they have been moved to "
+      + "cdmUnitTest/gribCollections/ecmwf/exclude/bcs/ until we can figure out what ECMWF has done to make these.")
   public void createECMWFbcs() throws IOException { // SRC
     FeatureCollectionConfig config =
         new FeatureCollectionConfig("ECMWFbcs", "test/ECMWFbcs", FeatureCollectionType.GRIB1,
