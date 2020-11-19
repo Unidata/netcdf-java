@@ -45,7 +45,7 @@ public class TestNexrad2HiResolution {
 
     @Override
     public int doAct(String filename) throws IOException {
-      if (deleteUncompress && !filename.endsWith(".bz2")) {
+      if (deleteUncompress && !filename.endsWith(".bz2") && !filename.endsWith(".ar2v")) {
         File uf = new File(filename);
         if (!uf.delete())
           System.out.printf("Failed to delete %s%n", filename);
