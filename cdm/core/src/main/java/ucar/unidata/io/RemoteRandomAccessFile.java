@@ -172,21 +172,17 @@ public abstract class RemoteRandomAccessFile extends ucar.unidata.io.RandomAcces
     int offsetIntoCacheBlock;
     int sizeToCopy;
     if (fillForward) {
-      // size to copy (assuming we will be hitting multiple blocks with the total read length)
-      // __________
-      // | |
-      // V V
+      // .....size to copy (assuming we will want to read until the end of the cache block)
+      // .....<-------->
       // X ---|------- X
       // ^____^
-      // |
+      // ..|
       // Offset Into Cache Block
       offsetIntoCacheBlock = Math.toIntExact(pos - posCacheBlockStart);
       sizeToCopy = readCacheBlockSize - offsetIntoCacheBlock;
     } else {
       // size to copy
-      // ______
-      // | |
-      // V V
+      // <---->
       // X ---|------- X
       // ^
       // Offset Into Cache Block
