@@ -6,7 +6,10 @@
 package ucar.unidata.io.s3;
 
 import static com.google.common.truth.Truth.assertThat;
+
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Paths;
@@ -33,6 +36,8 @@ import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.internal.util.CompareNetcdf2;
+import ucar.nc2.util.IO;
+import ucar.unidata.io.http.ReadFromUrl;
 import ucar.unidata.util.test.category.NeedsExternalResource;
 import ucar.unidata.util.test.category.NeedsUcarNetwork;
 
@@ -68,6 +73,8 @@ public class TestS3Read {
   private static final String NCAR_G16_S3_URI = "cdms3://" + NCAR_PROFILE_NAME
       + "@stratus.ucar.edu/unidata-netcdf-zarr-testing?netcdf-java/test/" + COMMON_G16_KEY;
 
+  // Location to save local copy of file for comparison
+  private static File LOCAL_G16_FILE;
 
   private static String credentialsFileGoodDefault = null;
   private static String credentialsFileBadDefault = null;
@@ -95,6 +102,16 @@ public class TestS3Read {
     // Disable CdmS3Uri cache, otherwise credentials, regions, etc. will be ignored.
     // For example, awsProfileSharedCredsBadDefault will not pass.
     CdmS3Client.enableCache(false);
+    String buffSize = System.getProperty("ucar.unidata.io.s3.bufferSize");
+    logger.info("S3 Read Buffer Size: {} bytes", buffSize);
+
+    // fetch local copy of the file we are testing against from AWS S3
+    String directDownloadUrl = "https://noaa-goes16.s3.amazonaws.com/" + COMMON_G16_KEY;
+    LOCAL_G16_FILE = File.createTempFile("ncj-", "TestS3Read.nc");
+    LOCAL_G16_FILE.deleteOnExit();
+    try (InputStream is = ReadFromUrl.getInputStreamFromUrl(directDownloadUrl)) {
+      IO.writeToFile(is, LOCAL_G16_FILE.getCanonicalPath());
+    }
   }
 
   /**
@@ -364,9 +381,27 @@ public class TestS3Read {
         NetcdfFile aws = NetcdfFiles.open(AWS_G16_S3_URI_FULL)) {
       Formatter f = new Formatter();
       CompareNetcdf2 comparer = new CompareNetcdf2(f, false, false, true);
-      Assert.assertTrue(comparer.compare(aws, gcs));
-      Assert.assertTrue(comparer.compare(aws, osdc));
-      Assert.assertTrue(comparer.compare(osdc, gcs));
+      Assert.assertTrue("Compare AWS S3 Object to GCS Object.", comparer.compare(aws, gcs));
+      Assert.assertTrue("Compare AWS S3 Object to OSDC Object.", comparer.compare(aws, osdc));
+      Assert.assertTrue("Compare OSDC Object to GCS Object.", comparer.compare(osdc, gcs));
+    } finally {
+      System.clearProperty(S3TestsCommon.AWS_REGION_PROP_NAME);
+    }
+  }
+
+  @Test
+  public void compareAgainstLocal() throws IOException {
+    System.setProperty(S3TestsCommon.AWS_REGION_PROP_NAME, S3TestsCommon.AWS_G16_REGION);
+    try (NetcdfFile osdc = NetcdfFiles.open(OSDC_G16_S3_URI);
+        NetcdfFile gcs = NetcdfFiles.open(GCS_G16_S3_URI);
+        NetcdfFile aws = NetcdfFiles.open(AWS_G16_S3_URI_FULL);
+        NetcdfFile local = NetcdfFiles.open(LOCAL_G16_FILE.getPath())) {
+      Formatter f = new Formatter();
+      CompareNetcdf2 comparer = new CompareNetcdf2(f, false, false, true);
+      // Indirectly verify some of the S3RandomAccessFile reading logic
+      Assert.assertTrue("Compare local file read to AWS S3 Object store read.", comparer.compare(local, aws));
+      Assert.assertTrue("Compare local file read to GCS Object store read.", comparer.compare(local, gcs));
+      Assert.assertTrue("Compare local file read to OSDC Object store read.", comparer.compare(local, osdc));
     } finally {
       System.clearProperty(S3TestsCommon.AWS_REGION_PROP_NAME);
     }
