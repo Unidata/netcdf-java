@@ -118,7 +118,8 @@ public abstract class RemoteRandomAccessFile extends ucar.unidata.io.RandomAcces
     int currentOffsetIntoBuffer = offset;
 
     // Read cacheBlock containing pos, and fill the buffer from the effective location of pos in the cache block
-    // to end of the cache block
+    // up to the smaller of these three lengths: 1. bytes remaining in the cache block, 2. bytes remaining in the file,
+    // or 3. bytes remaining in the destination array.
     totalBytesRead += readCacheBlockPartial(pos, buff, currentOffsetIntoBuffer, true);
     currentOffsetIntoBuffer += totalBytesRead;
     // If we have read everything we have been asked to read, skip the rest of the read logic.
@@ -137,9 +138,8 @@ public abstract class RemoteRandomAccessFile extends ucar.unidata.io.RandomAcces
       }
       logger.debug("Number of full cache block reads: {}", currentCacheBlockNumber - firstCacheBlockNumber - 1);
 
-      // Read last cacheBlock containing current pos, and fill the buffer from the start of the cache block to the
-      // effective location of the current pos in the cache block. Can be skipped if totalBytesRead is less than the
-      // length of the requested read size.
+      // If there are still bytes to read, read last cacheBlock from the start of the cache block to the
+      // smaller of these two lengths: 1. bytes remaining in the file, or 2. bytes remaining in the destination array.
       if (totalBytesRead < len) {
         totalBytesRead += readCacheBlockPartial(pos + totalBytesRead, buff, currentOffsetIntoBuffer, false);
       }
