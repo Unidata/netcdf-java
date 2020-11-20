@@ -221,8 +221,6 @@ public class MemoryCounterAgent {
   }
 
   private static long deepSizeOf3(String name, Object obj, Map visited, Class skipClass, boolean show, int indent) {
-    // if (name.endsWith("firstRecord-this$0-index-elementData"))
-    // System.out.println("HEY");
     long result = internalSizeOf3(name, obj, visited, skipClass, show, indent);
     if (show) {
       for (int i = 0; i < indent; i++)

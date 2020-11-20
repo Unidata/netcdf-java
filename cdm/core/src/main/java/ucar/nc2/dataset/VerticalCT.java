@@ -80,7 +80,9 @@ public class VerticalCT extends CoordinateTransform {
    * @param authority naming authority.
    * @param type type of vertical transform
    * @param builder creates the VerticalTransform
+   * @deprecated use builder
    */
+  @Deprecated
   public VerticalCT(String name, String authority, VerticalCT.Type type, VertTransformBuilderIF builder) {
     super(name, authority, TransformType.Vertical);
     this.type = type;

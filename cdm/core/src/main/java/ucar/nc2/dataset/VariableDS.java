@@ -407,6 +407,8 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     return null;
   }
 
+  /** @deprecated Removed in v6 */
+  @Deprecated
   public boolean hasCachedDataRecurse() {
     return super.hasCachedData() || ((orgVar != null) && orgVar.hasCachedData());
   }

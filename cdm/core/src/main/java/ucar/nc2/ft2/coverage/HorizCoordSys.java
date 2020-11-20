@@ -2,6 +2,7 @@
  * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
+
 package ucar.nc2.ft2.coverage;
 
 import com.google.common.collect.ImmutableList;
@@ -87,7 +88,7 @@ public class HorizCoordSys {
     }
 
     if (!isProjection && isLatLon2D && !(this instanceof HorizCoordSys2D))
-      logger.warn("HEY Should be HorizCoordSys2D");
+      logger.warn("Should be HorizCoordSys2D");
 
     if (isLatLon1D) {
       this.latAxis = (CoverageCoordAxis1D) latAxis;

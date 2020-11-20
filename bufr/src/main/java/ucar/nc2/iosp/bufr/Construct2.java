@@ -298,7 +298,7 @@ class Construct2 {
 
       Group g = struct.getParentGroupOrRoot();
       if (g == null)
-        System.out.printf("HEY%n");
+        log.warn("Struct parent group is null.");
       EnumTypedef enumTypedef = g.findEnumeration(ct.getName());
       if (enumTypedef == null) {
         enumTypedef = new EnumTypedef(ct.getName(), ct.getMap());

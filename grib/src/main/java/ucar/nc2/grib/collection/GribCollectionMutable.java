@@ -105,9 +105,9 @@ public class GribCollectionMutable implements Closeable {
     this.config = config;
     this.isGrib1 = isGrib1;
     if (config == null)
-      logger.error("HEY GribCollection {} has empty config%n", name);
+      logger.error("GribCollection {} has empty config%n", name);
     if (name == null)
-      logger.error("HEY GribCollection has null name dir={}%n", directory);
+      logger.error("GribCollection has null name dir={}%n", directory);
   }
 
   // for making partition collection
@@ -426,7 +426,7 @@ public class GribCollectionMutable implements Closeable {
     List<Integer> coordIndex; // indexes into group.coords
 
     // derived from pds
-    public final int category, parameter, levelType, intvType, ensDerivedType, probType;
+    public final int category, parameter, levelType, intvType, ensDerivedType, probType, percentile;
     private String intvName; // eg "mixed intervals, 3 Hour, etc"
     public final String probabilityName;
     public final boolean isLayer, isEnsemble;
@@ -470,6 +470,7 @@ public class GribCollectionMutable implements Closeable {
         this.ensDerivedType = -1;
         this.probType = -1;
         this.probabilityName = null;
+        this.percentile = -1;
 
         this.genProcessType = pds.getGenProcess(); // LOOK process vs process type ??
         this.isEnsemble = pds.isEnsemble();
@@ -508,6 +509,13 @@ public class GribCollectionMutable implements Closeable {
         } else {
           this.probType = -1;
           this.probabilityName = null;
+        }
+
+        if (pds.isPercentile()) {
+          Grib2Pds.PdsPercentile pdsPctl = (Grib2Pds.PdsPercentile) pds;
+          this.percentile = pdsPctl.getPercentileValue();
+        } else {
+          this.percentile = -1;
         }
 
         this.genProcessType = pds.getGenProcessType();
@@ -549,6 +557,7 @@ public class GribCollectionMutable implements Closeable {
       this.genProcessType = other.genProcessType;
       this.spatialStatType = other.spatialStatType;
       this.isEnsemble = other.isEnsemble;
+      this.percentile = other.percentile;
     }
 
     public List<Coordinate> getCoordinates() {

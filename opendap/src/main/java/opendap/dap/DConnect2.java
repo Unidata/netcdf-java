@@ -346,10 +346,12 @@ public class DConnect2 implements Closeable {
   }
 
   public static String captureStream(InputStream is) throws IOException {
+    BufferedInputStream s = new BufferedInputStream(is);
+    byte[] bytes = new byte[4096];
     ByteArrayOutputStream text = new ByteArrayOutputStream();
     int b;
-    while ((b = is.read()) >= 0) {
-      text.write(b);
+    while ((b = s.read(bytes)) >= 0) {
+      text.write(bytes, 0, b);
     }
     return new String(text.toByteArray(), StandardCharsets.UTF_8);
   }

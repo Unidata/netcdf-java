@@ -135,6 +135,13 @@ public class CoordSystemBuilder {
 
     for (int i = 0; i < checkDims; i++) {
       Dimension axisDim = axisDims.get(i);
+      // added in 6, but causes the following tests to fail:
+      // ucar.nc2.dataset.TestCoordSysCompareMore.compareCoordSysBuilders:
+      // --> cdmUnitTest/formats/hdf4/ssec/CAL_LID_L1-Launch-V1-06.2006-07-07T21-20-40ZD.hdf
+      // --> cdmUnitTest/formats/hdf5/SMAP_L4_SM_aup_20140115T030000_V05007_001.h5
+      // if (!axisDim.isShared()) { // anon dimensions dont count. TODO does this work?
+      // continue;
+      // }
       if (!varDims.contains(axisDim)) {
         return false;
       }

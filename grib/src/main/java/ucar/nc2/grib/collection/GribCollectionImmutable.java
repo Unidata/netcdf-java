@@ -653,7 +653,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
       return sa;
     }
 
-    public int getNRecords() {
+    public int countNRecords() {
       return sa == null ? -1 : sa.countNotMissing();
     }
 
@@ -691,6 +691,10 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
 
     public int getProbType() {
       return info.probType;
+    }
+
+    public int getPercentileValue() {
+      return info.percentile;
     }
 
     public String getIntvName() {
@@ -738,7 +742,6 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
       }
       return size;
     }
-
 
     @Override
     public String toString() {
@@ -817,7 +820,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
       final int discipline; // grib2 only
 
       // derived from pds
-      final int category, parameter, levelType, intvType, ensDerivedType, probType;
+      final int category, parameter, levelType, intvType, ensDerivedType, probType, percentile;
       @Nullable
       final String intvName; // eg "mixed intervals, 3 Hour, etc"
       final String probabilityName;
@@ -840,6 +843,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
         this.isEnsemble = gcVar.isEnsemble;
         this.genProcessType = gcVar.genProcessType;
         this.spatialStatType = gcVar.spatialStatType;
+        this.percentile = gcVar.percentile;
       }
 
       @Override

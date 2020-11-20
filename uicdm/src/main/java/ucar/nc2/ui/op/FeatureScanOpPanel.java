@@ -17,21 +17,13 @@ import java.beans.PropertyChangeListener;
 import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
 
-/**
- *
- */
 public class FeatureScanOpPanel extends OpPanel {
   private FeatureScanPanel ftTable;
   final FileManager dirChooser;
 
-  /**
-   *
-   */
-  public FeatureScanOpPanel(PreferencesExt prefs) {
+  public FeatureScanOpPanel(PreferencesExt prefs, FileManager dirChooser) {
     super(prefs, "dir:", false, false);
-
-    dirChooser =
-        new FileManager(ToolsUI.getToolsFrame(), null, null, (PreferencesExt) prefs.node("FeatureScanFileManager"));
+    this.dirChooser = dirChooser;
 
     ftTable = new FeatureScanPanel(prefs);
     add(ftTable, BorderLayout.CENTER);
@@ -86,20 +78,17 @@ public class FeatureScanOpPanel extends OpPanel {
     BAMutil.addActionToContainer(buttPanel, fileAction);
   }
 
-  /** */
   @Override
   public boolean process(Object o) {
     String command = (String) o;
     return ftTable.setScanDirectory(command);
   }
 
-  /** */
   @Override
   public void closeOpenFiles() {
     ftTable.clear();
   }
 
-  /** */
   @Override
   public void save() {
     dirChooser.save();

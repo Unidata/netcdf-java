@@ -790,7 +790,7 @@ public class Grib2DataReader {
       for (int i = 0, j = 0; i < totalNPoints; i++) {
         if (GribNumbers.testBitIsSet(bitmap[i / 8], i % 8)) {
           if (j >= idata.length) {
-            logger.warn("HEY jj2000 data count {} < bitmask count {}, i={}, totalNPoints={}", idata.length, j, i,
+            logger.warn("jj2000 data count {} < bitmask count {}, i={}, totalNPoints={}", idata.length, j, i,
                 totalNPoints);
             break;
           }
@@ -849,7 +849,7 @@ public class Grib2DataReader {
       for (int i = 0, j = 0; i < totalNPoints; i++) {
         if (GribNumbers.testBitIsSet(bitmap[i / 8], i % 8)) {
           if (j >= idata.length) {
-            logger.warn("HEY jj2000 data count {} < bitmask count {}, i={}, totalNPoints={}", idata.length, j, i,
+            logger.warn("jj2000 data count {} < bitmask count {}, i={}, totalNPoints={}", idata.length, j, i,
                 totalNPoints);
             break;
           }

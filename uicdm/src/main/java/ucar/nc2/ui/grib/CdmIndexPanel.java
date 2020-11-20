@@ -2,6 +2,7 @@
  * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
+
 package ucar.nc2.ui.grib;
 
 import thredds.featurecollection.FeatureCollectionConfig;
@@ -22,6 +23,7 @@ import ucar.nc2.grib.coord.TimeCoordIntvValue;
 import ucar.nc2.grib.coord.VertCoordValue;
 import ucar.nc2.time.*;
 import ucar.nc2.ui.MFileTable;
+import ucar.nc2.util.Counters;
 import ucar.ui.widget.BAMutil;
 import ucar.ui.widget.IndependentWindow;
 import ucar.ui.widget.PopupMenu;
@@ -30,29 +32,22 @@ import ucar.nc2.util.Indent;
 import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.BeanTable;
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.List;
 
-/**
- * Show info in GRIB ncx index files.
- *
- * @author John
- * @since 12/5/13
- */
+/** Show info in GRIB ncx index files. */
 public class CdmIndexPanel extends JPanel {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CdmIndexPanel.class);
 
   private PreferencesExt prefs;
-  private BeanTable groupTable, varTable, coordTable;
+  private BeanTable<GroupBean> groupTable;
+  private BeanTable<VarBean> varTable;
+  private BeanTable<CoordBean> coordTable;
   private JSplitPane split, split2, split3;
 
   private TextHistoryPane infoTA, extraTA;
@@ -90,7 +85,6 @@ public class CdmIndexPanel extends JPanel {
       });
       buttPanel.add(rawButton);
 
-
       AbstractButton checkAllButton = BAMutil.makeButtcon("Select", "Check entire file", false);
       rawButton.addActionListener(e -> {
         Formatter f = new Formatter();
@@ -103,25 +97,19 @@ public class CdmIndexPanel extends JPanel {
 
     }
 
-    ////////////////////////////
-
     PopupMenu varPopup;
-
-    ////////////////
-    groupTable = new BeanTable(GroupBean.class, (PreferencesExt) prefs.node("GroupBean"), false, "GDS group",
+    groupTable = new BeanTable<>(GroupBean.class, (PreferencesExt) prefs.node("GroupBean"), false, "GDS group",
         "GribCollectionImmutable.GroupHcs", null);
-    groupTable.addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
-        GroupBean bean = (GroupBean) groupTable.getSelectedBean();
-        if (bean != null)
-          setGroup(bean);
-      }
+    groupTable.addListSelectionListener(e -> {
+      GroupBean bean = groupTable.getSelectedBean();
+      if (bean != null)
+        setGroup(bean);
     });
 
     varPopup = new PopupMenu(groupTable.getJTable(), "Options");
     varPopup.addAction("Show Group Info", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        GroupBean bean = (GroupBean) groupTable.getSelectedBean();
+        GroupBean bean = groupTable.getSelectedBean();
         if (bean != null && bean.group != null) {
           Formatter f = new Formatter();
           bean.group.show(f);
@@ -133,14 +121,14 @@ public class CdmIndexPanel extends JPanel {
     });
     varPopup.addAction("Show Files Used", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        GroupBean bean = (GroupBean) groupTable.getSelectedBean();
+        GroupBean bean = groupTable.getSelectedBean();
         if (bean != null && bean.group != null) {
           showFileTable(gc, bean.group);
         }
       }
     });
 
-    varTable = new BeanTable(VarBean.class, (PreferencesExt) prefs.node("Grib2Bean"), false, "Variables in group",
+    varTable = new BeanTable<>(VarBean.class, (PreferencesExt) prefs.node("Grib2Bean"), false, "Variables in group",
         "GribCollectionImmutable.VariableIndex", null);
 
     varPopup = new PopupMenu(varTable.getJTable(), "Options");
@@ -156,7 +144,7 @@ public class CdmIndexPanel extends JPanel {
     });
     varPopup.addAction("Show Sparse Array", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        VarBean bean = (VarBean) varTable.getSelectedBean();
+        VarBean bean = varTable.getSelectedBean();
         if (bean != null) {
           Formatter f = new Formatter();
           bean.showSparseArray(f);
@@ -180,13 +168,13 @@ public class CdmIndexPanel extends JPanel {
     });
 
 
-    coordTable = new BeanTable(CoordBean.class, (PreferencesExt) prefs.node("CoordBean"), false, "Coordinates in group",
-        "Coordinates", null);
+    coordTable = new BeanTable<>(CoordBean.class, (PreferencesExt) prefs.node("CoordBean"), false,
+        "Coordinates in group", "Coordinates", null);
     varPopup = new PopupMenu(coordTable.getJTable(), "Options");
 
     varPopup.addAction("Show", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        CoordBean bean = (CoordBean) coordTable.getSelectedBean();
+        CoordBean bean = coordTable.getSelectedBean();
         if (bean != null) {
           Formatter f = new Formatter();
           bean.coord.showCoords(f);
@@ -199,7 +187,7 @@ public class CdmIndexPanel extends JPanel {
 
     varPopup.addAction("ShowCompact", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        CoordBean bean = (CoordBean) coordTable.getSelectedBean();
+        CoordBean bean = coordTable.getSelectedBean();
         if (bean != null) {
           Formatter f = new Formatter();
           bean.coord.showInfo(f, new Indent(2));
@@ -212,7 +200,7 @@ public class CdmIndexPanel extends JPanel {
 
     varPopup.addAction("Test Time2D isOrthogonal", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        CoordBean bean = (CoordBean) coordTable.getSelectedBean();
+        CoordBean bean = coordTable.getSelectedBean();
         if (bean != null) {
           Formatter f = new Formatter();
           testOrthogonal(f, bean.coord);
@@ -225,7 +213,7 @@ public class CdmIndexPanel extends JPanel {
 
     varPopup.addAction("Test Time2D isRegular", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        CoordBean bean = (CoordBean) coordTable.getSelectedBean();
+        CoordBean bean = coordTable.getSelectedBean();
         if (bean != null) {
           Formatter f = new Formatter();
           testRegular(f, bean.coord);
@@ -239,7 +227,7 @@ public class CdmIndexPanel extends JPanel {
 
     varPopup.addAction("Show Resolution distribution", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        CoordBean bean = (CoordBean) coordTable.getSelectedBean();
+        CoordBean bean = coordTable.getSelectedBean();
         if (bean != null) {
           Formatter f = new Formatter();
           bean.showResolution(f);
@@ -270,11 +258,11 @@ public class CdmIndexPanel extends JPanel {
 
     varPopup.addAction("Try to Merge", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        List beans = coordTable.getSelectedBeans();
+        List<CoordBean> beans = coordTable.getSelectedBeans();
         if (beans.size() == 2) {
           Formatter f = new Formatter();
-          CoordBean bean1 = (CoordBean) beans.get(0);
-          CoordBean bean2 = (CoordBean) beans.get(1);
+          CoordBean bean1 = beans.get(0);
+          CoordBean bean2 = beans.get(1);
           if (bean1.coord.getType() == Coordinate.Type.time2D && bean2.coord.getType() == Coordinate.Type.time2D)
             mergeCoords2D(f, (CoordinateTime2D) bean1.coord, (CoordinateTime2D) bean2.coord);
           else
@@ -288,12 +276,8 @@ public class CdmIndexPanel extends JPanel {
 
     // file popup window
     fileTable = new MFileTable((PreferencesExt) prefs.node("MFileTable"), true);
-    fileTable.addPropertyChangeListener(new PropertyChangeListener() {
-      @Override
-      public void propertyChange(PropertyChangeEvent evt) {
-        firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
-      }
-    });
+    fileTable.addPropertyChangeListener(
+        evt -> firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue()));
 
     /////////////////////////////////////////
     // the info windows
@@ -357,7 +341,7 @@ public class CdmIndexPanel extends JPanel {
     f.format("Groups%n");
     List<GroupBean> groups = groupTable.getBeans();
     for (GroupBean bean : groups) {
-      f.format("%-50s %-50s %d%n", bean.getGroupId(), bean.getDescription(), bean.getGdsHash());
+      f.format("%-50s %d%n", bean.getGroupId(), bean.getGdsHash());
       bean.group.show(f);
     }
 
@@ -384,7 +368,6 @@ public class CdmIndexPanel extends JPanel {
       return Integer.compare(size, o.size);
     }
   }
-
 
   private void checkAll(Formatter f) {
     if (gc == null)
@@ -435,8 +418,7 @@ public class CdmIndexPanel extends JPanel {
         }
       }
       int noSA = bytesTotal - bytesSATotal;
-      f.format("%n total KBytes=%d kbSATotal=%d kbNoSA=%d coordsAllTotal=%d%n", bytesTotal / 1000, bytesSATotal / 1000,
-          noSA / 1000, coordsAllTotal / 1000);
+      f.format("%n total KBytes=%d kbSATotal=%d kbNoSA=%d%n", bytesTotal / 1000, bytesSATotal / 1000, noSA / 1000);
       f.format("%n");
     }
   }
@@ -936,10 +918,6 @@ public class CdmIndexPanel extends JPanel {
       return group.getVariables().size();
     }
 
-    public String getDescription() {
-      return group.getDescription();
-    }
-
     public int getNmissing() {
       return nmissing;
     }
@@ -955,7 +933,7 @@ public class CdmIndexPanel extends JPanel {
     int idx;
     double start, end, resol;
     Comparable resolMode;
-    ucar.nc2.util.Counters counters;
+    Counters counters;
 
     // no-arg constructor
 
@@ -1153,24 +1131,6 @@ public class CdmIndexPanel extends JPanel {
       this.group = group;
       this.name = vindex.makeVariableName();
     }
-
-    /*
-     * public int getNRecords() {
-     * return v.nrecords;
-     * }
-     * 
-     * public int getNMissing() {
-     * return v.missing;
-     * }
-     * 
-     * public int getNDups() {
-     * return v.ndups;
-     * }
-     * 
-     * public float getDensity() {
-     * return v.density;
-     * }
-     */
 
     public String getIndexes() {
       Formatter f = new Formatter();
