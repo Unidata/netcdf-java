@@ -2253,21 +2253,13 @@ public class NetcdfFile implements FileCacheable, Closeable {
     return (iosp == null) ? "" : iosp.toStringDebug(o);
   }
 
-  /**
-   * Access to iosp debugging info.
-   *
-   * @return debug / underlying implementation details
-   * @deprecated do not use
-   */
-  @Deprecated
+  /** Show debug / underlying implementation details */
   public String getDetailInfo() {
     Formatter f = new Formatter();
     getDetailInfo(f);
     return f.toString();
   }
 
-  /** @deprecated do not use */
-  @Deprecated
   public void getDetailInfo(Formatter f) {
     f.format("NetcdfFile location= %s%n", getLocation());
     f.format("  title= %s%n", getTitle());
