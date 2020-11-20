@@ -72,7 +72,7 @@ class AggregationExisting extends AggregationOuter {
             .setParentGroupBuilder(rootGroup).setDimensionsByName(dimName);
         fake.setAutoGen(0, 1);
         rootGroup.addVariable(fake);
-        System.out.printf("HEY adding a fake coord var for %s%n", dimName);
+        logger.warn("Adding a fake coord var for {}", dimName);
       }
 
     } else {

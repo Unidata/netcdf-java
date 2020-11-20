@@ -96,6 +96,12 @@ public abstract class CoordinateTimeAbstract implements Coordinate {
   public double getOffsetInTimeUnits(CalendarDate start) {
     return timeUnit.getOffset(start, getRefDate());
   }
+
+  @Override
+  public String toString() {
+    return name;
+  }
+
   ////////////////////////////////////////
 
   /**

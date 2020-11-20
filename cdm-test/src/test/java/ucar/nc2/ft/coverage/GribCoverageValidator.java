@@ -50,7 +50,7 @@ public class GribCoverageValidator implements GribDataValidator {
     Double timeOffset = coords.getTimeOffset();
     double[] timeOffsetIntv = coords.getTimeOffsetIntv(); // LOOK ??
     if (timeOffset == null) {
-      logger.debug("HEY no timeOffsetCoord ");
+      logger.debug("no timeOffsetCoord ");
       return;
     }
 
@@ -117,7 +117,7 @@ public class GribCoverageValidator implements GribDataValidator {
     } else {
       CalendarDate fdate = cust.getForecastDate(gr);
       if (!fdate.equals(wantTimeOffset))
-        logger.debug("HEY forecast date");
+        logger.debug("forecast date");
       Assert.assertEquals("time coord", wantTimeOffset, fdate);
     }
 
