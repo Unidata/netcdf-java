@@ -1,4 +1,11 @@
+/*
+ * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
+
 package ucar.nc2.grib;
+
+import static thredds.inventory.CollectionUpdateType.always;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -13,6 +20,7 @@ import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.CollectionUpdateType;
 import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFiles;
 import ucar.nc2.grib.collection.*;
 import ucar.nc2.util.DebugFlagsImpl;
 import ucar.nc2.util.DiskCache2;
@@ -26,10 +34,8 @@ import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
 
 /**
- * Test that the CDM Index Creation works
- *
- * @author caron
- * @since 11/14/2014
+ * Test that the CDM Index Creation works.
+ * Jenkins recreates indices, and so needs this to run.
  */
 public class TestGribIndexCreation {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -97,14 +103,14 @@ public class TestGribIndexCreation {
 
     boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
     System.out.printf("changed = %s%n", changed);
+    String location = TestDir.cdmUnitTestDir + "gribCollections/gdsHashChange/noaaport/NDFD-CONUS_noaaport.ncx4";
     // LOOK add check that records were combined
-    try (NetcdfFile ncfile = NetcdfFile
-        .open(TestDir.cdmUnitTestDir + "gribCollections/gdsHashChange/noaaport/NDFD-CONUS_noaaport.ncx4", null)) {
+    try (NetcdfFile ncfile = NetcdfFiles.open(location, null)) {
       Group root = ncfile.getRootGroup();
       Assert.assertEquals(2, root.getGroups().size());
     }
 
-    Grib.setDebugFlags(new DebugFlagsImpl(""));
+    Grib.setDebugFlags(new DebugFlagsImpl());
   }
 
   /*
@@ -324,19 +330,6 @@ public class TestGribIndexCreation {
 
   @Test
   @Category(NeedsCdmUnitTest.class)
-  public void testWW3() throws IOException {
-    // String name, String path, FeatureCollectionType fcType,
-    // String spec, String collectionName,
-    // String dateFormatMark, String olderThan, String timePartition, Element innerNcml)
-    FeatureCollectionConfig config = new FeatureCollectionConfig("ds093.1", "test/ds093.1", FeatureCollectionType.GRIB2,
-        TestDir.cdmUnitTestDir + "tds/ncep/WW3_Coastal_Alaska_20140804_0000.grib2", null, null, null, "file", null);
-
-    boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
-    System.out.printf("changed = %s%n", changed);
-  }
-
-  @Test
-  @Category(NeedsCdmUnitTest.class)
   public void testMRUTP() throws IOException { // should be a TP (multiple runtime, single offset
     // String name, String path, FeatureCollectionType fcType,
     // String spec, String collectionName,
@@ -415,6 +408,32 @@ public class TestGribIndexCreation {
 
     boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
     System.out.printf("changed = %s%n", changed);
+  }
+
+  @Ignore("files not available")
+  @Test
+  @Category(NeedsCdmUnitTest.class)
+  public void createNBMOcean() throws IOException { // TWOD
+    Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    FeatureCollectionConfig config = new FeatureCollectionConfig("NCEP_OCEAN_MODEL_FIXED", "test/NCEP_OCEAN_MODEL",
+        FeatureCollectionType.GRIB2, "/media/twobee/tds/NCEP/NBM/Ocean/.*gbx9", null, null, null, "file", null);
+
+    boolean changed = GribCdmIndex.updateGribCollection(config, always, logger);
+    System.out.printf("changed = %s%n", changed);
+    Grib.setDebugFlags(new DebugFlagsImpl());
+  }
+
+  @Ignore("files not available")
+  @Test
+  @Category(NeedsCdmUnitTest.class)
+  public void createNndfCpc() throws IOException { // TWOD
+    Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    FeatureCollectionConfig config = new FeatureCollectionConfig("NCEP_NDFD_CPC_Experimental", "test/NCEP_NDFD_CPC",
+        FeatureCollectionType.GRIB2, "/media/twobee/tds/NCEP/NDFD/CPC/.*gbx9", null, null, null, "file", null);
+
+    boolean changed = GribCdmIndex.updateGribCollection(config, always, logger);
+    System.out.printf("changed = %s%n", changed);
+    Grib.setDebugFlags(new DebugFlagsImpl());
   }
 
   @Test

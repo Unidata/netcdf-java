@@ -2,8 +2,10 @@
  * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
+
 package ucar.nc2.constants;
 
+import javax.annotation.Nullable;
 import ucar.nc2.NetcdfFile;
 
 /**
@@ -192,12 +194,11 @@ public class CF {
   public static final String featureTypeAtt3 = "CF:feature_type"; // GRIB was using this form (!)
   ///////////////////////////////////////////////////////////////////////
 
-  /**
-   * Map from CF feature type names to our FeatureType enums.
-   */
+  /** Map from CF feature type names to our FeatureType enums. */
   public enum FeatureType {
     point, timeSeries, profile, trajectory, timeSeriesProfile, trajectoryProfile, line, polygon,;
 
+    @Nullable
     public static FeatureType convert(ucar.nc2.constants.FeatureType ft) {
       switch (ft) {
         case POINT:
@@ -216,6 +217,7 @@ public class CF {
       return null;
     }
 
+    @Nullable
     public static ucar.nc2.constants.FeatureType convert(FeatureType cff) {
       switch (cff) {
         case point:
@@ -234,6 +236,7 @@ public class CF {
       return null;
     }
 
+    @Nullable
     public static FeatureType getFeatureType(String s) {
       if (s.equalsIgnoreCase("point"))
         return FeatureType.point;
@@ -257,9 +260,14 @@ public class CF {
         return FeatureType.trajectoryProfile;
       if (s.equalsIgnoreCase("section"))
         return FeatureType.trajectoryProfile;
+      if (s.equalsIgnoreCase("line"))
+        return FeatureType.line;
+      if (s.equalsIgnoreCase("polygon"))
+        return FeatureType.polygon;
       return null;
     }
 
+    @Nullable
     public static FeatureType getFeatureTypeFromGlobalAttribute(NetcdfFile ds) {
       String ftypeS = ds.getRootGroup().findAttributeString(CF.FEATURE_TYPE, null);
       if (ftypeS == null)
