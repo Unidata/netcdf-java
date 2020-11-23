@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
-  <!-- Example -->
-  <!--suppress>
+  <suppress>
     <notes><![CDATA[
-      file name example: spring-security-core-4.2.7.RELEASE.jar, spring-security-cweb-4.2.7.RELEASE.jar
-      reason: Only valid if specifically using in combination with Spring 5.0.5 RELEASE. https://pivotal.io/security/cve-2018-1258
+       file name: junit-4.13.1.jar
+       reason: Fixed in junit-4.13.1 for applications running JDK 1.7 and later. We require Java 1.8
+               at a minimum, so we're good with regards to this CVE.
+               See https://nvd.nist.gov/vuln/detail/CVE-2020-15250.
       ]]></notes>
-    <gav regex="true">^org\.springframework\.security:spring-security.*$</gav>
-    <cve>CVE-2018-1258</cve>
-  </suppress-->
+    <packageUrl regex="true">^pkg:maven/junit/junit@.*$</packageUrl>
+    <vulnerabilityName>CVE-2020-15250</vulnerabilityName>
+  </suppress>
 </suppressions>
