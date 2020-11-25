@@ -26,7 +26,7 @@ import java.util.List;
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.fail;
 
-/** Compare reading netcdf with Array */
+/** Compare reading new and old GridDataset. */
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
 public class TestReadGridCompare {

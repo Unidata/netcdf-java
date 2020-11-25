@@ -12,6 +12,7 @@ import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.nc2.grid.*;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.ui.grid.ColorScale;
+import ucar.nc2.util.MinMax;
 import ucar.ui.prefs.Debug;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.LatLonProjection;
@@ -233,21 +234,21 @@ public class GridRenderer {
     GridSubset subset = new GridSubset();
     if (level >= 0 && dataState.zaxis != null) {
       double levelVal = dataState.zaxis.getCoordMidpoint(level);
-      subset.set(SubsetParams.vertCoord, levelVal);
+      subset.setVertCoord(levelVal);
     }
     if (time >= 0 && dataState.taxis != null) {
       double timeVal = dataState.taxis.getCoordMidpoint(time);
       CalendarDate date = dataState.taxis.makeDate(timeVal);
-      subset.set(SubsetParams.time, date);
+      subset.setTime(date);
     }
     if (runtime >= 0 && dataState.rtaxis != null) {
       double rtimeVal = dataState.rtaxis.getCoordMidpoint(runtime);
       CalendarDate date = dataState.rtaxis.makeDate(rtimeVal);
-      subset.set(SubsetParams.runtime, date);
+      subset.setRunTime(date);
     }
     if (ensemble >= 0 && dataState.ensaxis != null) {
       double ensVal = dataState.ensaxis.getCoordMidpoint(ensemble);
-      subset.set(SubsetParams.ensCoord, ensVal);
+      subset.setEnsCoord(ensVal);
     }
     if (horizStride != 1) {
       subset.setHorizStride(horizStride);
@@ -274,7 +275,7 @@ public class GridRenderer {
 
     GridReferencedArray dataArr = readHSlice(wantLevel, wantTime, wantEnsemble, wantRunTime);
     if (dataArr != null) {
-      Arrays.MinMax minmax = Arrays.getMinMaxSkipMissingData(dataArr.data(), dataState.grid);
+      MinMax minmax = Arrays.getMinMaxSkipMissingData(dataArr.data(), dataState.grid);
       colorScale.setMinMax(minmax.min(), minmax.max());
       colorScale.setGeoGrid(dataState.grid);
     }
@@ -441,15 +442,13 @@ public class GridRenderer {
     if (debugMiss) {
       System.out.println("mode = " + modeColor + " sameProj= " + sameProjection);
     }
+    MinMax xminmax = xaxis.getCoordEdgeMinMax();
+    MinMax yminmax = yaxis.getCoordEdgeMinMax();
 
     if (sameProjection) {
-      double xmin = Math.min(xaxis.getCoordEdge1(0), xaxis.getCoordEdgeLast());
-      double xmax = Math.max(xaxis.getCoordEdge1(0), xaxis.getCoordEdgeLast());
-      double ymin = Math.min(yaxis.getCoordEdge1(0), yaxis.getCoordEdgeLast());
-      double ymax = Math.max(yaxis.getCoordEdge1(0), yaxis.getCoordEdgeLast());
-
       // pre color the drawing area with the most used color
-      count += drawRect(g, modeColor, xmin, ymin, xmax, ymax, drawProjection.isLatLon());
+      count +=
+          drawRect(g, modeColor, xminmax.min(), yminmax.min(), xminmax.max(), yminmax.max(), drawProjection.isLatLon());
 
     } else if (useModeForProjections) {
       drawPathShape(g, modeColor, xaxis, yaxis);
@@ -489,8 +488,8 @@ public class GridRenderer {
       // get the ones at the end
       if (sameProjection) {
         if (lastColor != modeColor)
-          count += drawRect(g, lastColor, xaxis.getCoordEdge1(xbeg), ybeg, xaxis.getCoordEdgeLast(), yend,
-              drawProjection.isLatLon());
+          count += drawRect(g, lastColor, xaxis.getCoordEdge1(xbeg), ybeg, xaxis.getCoordEdge2(xaxis.getNcoords() - 1),
+              yend, drawProjection.isLatLon());
       } else {
         if (!useModeForProjections || (lastColor != modeColor))
           count += drawPathRun(g, lastColor, ybeg, yend, xaxis, xbeg, nx - 1, false); // needed ?

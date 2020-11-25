@@ -403,4 +403,14 @@ public class TestGribIndexCreation {
     Grib.setDebugFlags(DebugFlags.create(""));
   }
 
+  @Test
+  public void createNdfdSpc() throws IOException {
+    FeatureCollectionConfig config =
+        new FeatureCollectionConfig("NDFD-SPC", "test/NDFD-SPC", FeatureCollectionType.GRIB2,
+            TestDir.cdmUnitTestDir + "gribCollections/ndfd_spc/.*grib2$", null, null, null, "file", null);
+
+    boolean changed = GribCdmIndex.updateGribCollection(config, always, logger);
+    System.out.printf("changed = %s%n", changed);
+  }
+
 }

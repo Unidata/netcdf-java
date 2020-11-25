@@ -11,10 +11,7 @@ import ucar.ma2.DataType;
 import ucar.nc2.Dimensions;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.VerticalCT;
-import ucar.nc2.grid.Grid;
-import ucar.nc2.grid.GridAxis;
-import ucar.nc2.grid.GridDataset;
-import ucar.nc2.grid.GridCoordinateSystem;
+import ucar.nc2.grid.*;
 import ucar.ui.util.NamedObject;
 import ucar.ui.prefs.BeanTable;
 import ucar.ui.widget.BAMutil;
@@ -329,7 +326,13 @@ public class GridNewTable extends JPanel {
     }
 
     public String getShape() {
-      return Arrays.toString(Dimensions.makeShape(geogrid.getCoordinateSystem().getDomain()));
+      int n = Iterables.size(geogrid.getCoordinateSystem().getGridAxes());
+      int[] shape = new int[n];
+      int count = 0;
+      for (GridAxis gridAxis : geogrid.getCoordinateSystem().getGridAxes()) {
+        shape[count++] = gridAxis.getNcoords();
+      }
+      return Arrays.toString(shape);
     }
 
     public String getDimensions() {

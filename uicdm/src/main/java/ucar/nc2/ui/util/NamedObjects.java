@@ -84,7 +84,7 @@ public class NamedObjects {
         case regularInterval:
         case contiguousInterval:
         case discontiguousInterval:
-          value = CoordInterval.create(axis.getCoordEdge1(i), axis.getCoordEdge2(i), 3);
+          value = CoordInterval.create(axis.getCoordEdge1(i), axis.getCoordEdge2(i));
           break;
       }
       result.add(NamedObject.create(value, value + " " + axis.getUnits()));

@@ -1,50 +1,52 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.grid;
 
-import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.array.Array;
-import ucar.ma2.DataType;
 import ucar.ma2.RangeIterator;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
+import ucar.nc2.AttributeContainerMutable;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.util.Indent;
 import ucar.unidata.util.StringUtil2;
 
 import javax.annotation.Nullable;
-import java.io.IOException;
+import javax.annotation.concurrent.Immutable;
 import java.util.*;
 
 /** A GridAxis is a Coordinate Axis for Grids. */
+@Immutable
 public abstract class GridAxis implements Iterable<Object> {
   private static final Logger logger = LoggerFactory.getLogger(GridAxis.class);
 
   /** The spacing of the coordinate values, used for 1D axes. */
   public enum Spacing {
     /**
-     * Regularly spaced points (start, end, npts); start and end are pts, edges halfway between coords, resol = (start -
-     * end) / (npts-1)
+     * Regularly spaced points (start, end, npts); start and end are midpoints, edges halfway between midpoints,
+     * resol = (start - end) / (npts-1)
      */
     regularPoint, //
-    /** Irregular spaced points (values, npts); edges halfway between coords. */
+    /** Irregular spaced points values[npts]; edges halfway between coords. */
     irregularPoint, //
-    /** Regular contiguous intervals (start, end, npts); start and end are edges, resol = (start - end) / npts. */
-    regularInterval, //
+
     /**
-     * Irregular contiguous intervals (values, npts); values are the edges, values[npts+1], coord halfway between edges.
+     * Regular contiguous intervals (start, end, npts); start and end are edges, midpoints halfway between edges,
+     * resol = (start - end) / npts.
      */
+    regularInterval, //
+    /** Irregular contiguous intervals values[npts+1]; values are the edges, midpoints halfway between edges. */
     contiguousInterval, //
     /**
-     * Irregular discontiguous intervals (values, npts); values are the edges, values[2*npts]: low0, high0, low1, high1,
-     * ...
+     * Irregular discontiguous intervals values[2*npts]; values are the edges: low0, high0, low1, high1, ...
      * Note that monotonicity is not guaranteed, and is ambiguous.
      */
     discontiguousInterval; //
@@ -77,6 +79,10 @@ public abstract class GridAxis implements Iterable<Object> {
     dimension //
   }
 
+  public abstract Array<Double> getCoordsAsArray();
+
+  public abstract Array<Double> getCoordBoundsAsArray();
+
   /** Create a subset of this axis based on the SubsetParams. */
   // TODO throw an Exception when subset fails?
   @Nullable
@@ -86,9 +92,8 @@ public abstract class GridAxis implements Iterable<Object> {
   @Nullable
   public abstract GridAxis subsetDependent(GridAxis1D dependsOn, Formatter errlog);
 
-  public abstract Array<Double> getCoordsAsArray();
-
-  public abstract Array<Double> getCoordBoundsAsArray();
+  // Iterator over which coordinates wanted. TODO only in axis1d? Only for subset??
+  public abstract RangeIterator getRangeIterator();
 
   /////////////////////////////////////////////////////
 
@@ -100,6 +105,7 @@ public abstract class GridAxis implements Iterable<Object> {
     return units;
   }
 
+  @Nullable
   public String getDescription() {
     return description;
   }
@@ -128,7 +134,7 @@ public abstract class GridAxis implements Iterable<Object> {
     return spacing.isInterval();
   }
 
-  /** When isRegular, same as increment, otherwise an average = (end - start) / npts. */
+  /** When spacing.isRegular, same as increment. Otherwise the spacing average or mode, used for information only. */
   public double getResolution() {
     return resolution;
   }
@@ -145,10 +151,6 @@ public abstract class GridAxis implements Iterable<Object> {
     return dependenceType;
   }
 
-  public boolean isScalar() {
-    return dependenceType == DependenceType.scalar;
-  }
-
   public ImmutableList<String> getDependsOn() {
     return dependsOn;
   }
@@ -157,9 +159,6 @@ public abstract class GridAxis implements Iterable<Object> {
   public boolean isSubset() {
     return isSubset;
   }
-
-  // Iterator over which coordinates wanted. TODO only in axis1d? Only for subset??
-  public abstract RangeIterator getRangeIterator();
 
   // @Override
   public int compareTo(GridAxis o) {
@@ -172,20 +171,21 @@ public abstract class GridAxis implements Iterable<Object> {
       return true;
     if (o == null || getClass() != o.getClass())
       return false;
-    GridAxis gridAxis = (GridAxis) o;
-    return ncoords == gridAxis.ncoords && Double.compare(gridAxis.startValue, startValue) == 0
-        && Double.compare(gridAxis.endValue, endValue) == 0 && Double.compare(gridAxis.resolution, resolution) == 0
-        && Objects.equal(name, gridAxis.name) && Objects.equal(description, gridAxis.description)
-        && Objects.equal(units, gridAxis.units) && dataType == gridAxis.dataType && axisType == gridAxis.axisType
-        && Objects.equal(attributes, gridAxis.attributes) && dependenceType == gridAxis.dependenceType
-        && Objects.equal(dependsOn, gridAxis.dependsOn) && spacing == gridAxis.spacing
-        && Objects.equal(reader, gridAxis.reader) && Objects.equal(values, gridAxis.values);
+    GridAxis objects = (GridAxis) o;
+    return ncoords == objects.ncoords && Double.compare(objects.startValue, startValue) == 0
+        && Double.compare(objects.endValue, endValue) == 0 && Double.compare(objects.resolution, resolution) == 0
+        && name.equals(objects.name) && Objects.equals(description, objects.description)
+        && Objects.equals(units, objects.units) && axisType == objects.axisType && attributes.equals(objects.attributes)
+        && dependenceType == objects.dependenceType && dependsOn.equals(objects.dependsOn) && spacing == objects.spacing
+        && Arrays.equals(values, objects.values);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(name, description, units, dataType, axisType, attributes, dependenceType, dependsOn,
-        ncoords, spacing, startValue, endValue, resolution, reader, values);
+    int result = Objects.hash(name, description, units, axisType, attributes, dependenceType, dependsOn, spacing,
+        ncoords, startValue, endValue, resolution);
+    result = 31 * result + Arrays.hashCode(values);
+    return result;
   }
 
   @Override
@@ -208,10 +208,7 @@ public abstract class GridAxis implements Iterable<Object> {
     }
     f.format("%n");
 
-    f.format("%saxisType=%s dataType=%s units='%s' desc='%s'%n", indent, axisType, dataType, units, description);
-    if (getResolution() != 0.0)
-      f.format(" resolution=%f", resolution);
-    f.format("%n");
+    f.format("%saxisType=%s units='%s' desc='%s'%n", indent, axisType, units, description);
 
     indent.incr();
     for (Attribute att : attributes) {
@@ -250,29 +247,9 @@ public abstract class GridAxis implements Iterable<Object> {
     return f.toString();
   }
 
-  ///////////////////////////////////////////////
-  // LOOK needed, or is it done all in the builder??
-
-  private boolean valuesLoaded;
-
-  // will return null when isRegular, otherwise reads values if needed
   public double[] getValues() {
     // cant allow values array to escape, must be immutable
-    return values == null ? null : Arrays.copyOf(values, values.length);
-  }
-
-  protected void loadValuesIfNeeded() {
-    synchronized (this) {
-      if (isRegular() || valuesLoaded)
-        return;
-      if (values == null && reader != null)
-        try {
-          values = reader.readCoordValues(this);
-        } catch (IOException e) { // TODO
-          logger.error("Failed to read " + name, e);
-        }
-      valuesLoaded = true;
-    }
+    return values == null ? null : java.util.Arrays.copyOf(values, values.length);
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -280,37 +257,47 @@ public abstract class GridAxis implements Iterable<Object> {
   protected final String name;
   protected final String description;
   protected final String units;
-  protected final DataType dataType;
   protected final AxisType axisType;
   protected final AttributeContainer attributes;
   protected final DependenceType dependenceType;
   protected final ImmutableList<String> dependsOn; // independent axes or dimensions
 
-  protected final int ncoords; // number of coordinates (not always same as values)
   protected final Spacing spacing;
+  protected final int ncoords; // number of coordinates
   protected final double startValue; // only for regular
   protected final double endValue;
   protected final double resolution;
-  protected final GridAxisReader reader; // LOOK when is this needed?
-  protected double[] values; // null if isRegular, or use reader for lazy eval
+  protected final double[] values; // null if isRegular, len= ncoords (irregularPoint), ncoords+1 (contiguous interval),
+                                   // or 2*ncoords (discontinuous interval)
 
   protected final boolean isSubset;
 
   protected GridAxis(Builder<?> builder) {
     Preconditions.checkNotNull(builder.name);
     Preconditions.checkNotNull(builder.axisType);
+    Preconditions.checkNotNull(builder.spacing);
+    Preconditions.checkArgument(builder.ncoords > 0);
+
+    if (builder.units == null) {
+      this.units = builder.attributes.findAttributeString(CDM.UNITS, "");
+    } else {
+      this.units = builder.units;
+    }
+
+    if (builder.description == null) {
+      this.description = builder.attributes.findAttributeString(CDM.LONG_NAME, null);
+    } else {
+      this.description = builder.description;
+    }
+
     this.name = builder.name;
-    this.description = builder.description;
-    this.units = builder.units;
-    this.dataType = builder.dataType;
     this.axisType = builder.axisType;
-    this.attributes = builder.attributes;
+    this.attributes = builder.attributes.toImmutable();
     this.dependenceType = builder.dependenceType;
     this.dependsOn = builder.dependsOn == null ? ImmutableList.of() : ImmutableList.copyOf(builder.dependsOn);
 
     this.spacing = builder.spacing;
     this.values = builder.values;
-    this.reader = builder.reader; // used only if values == null
 
     this.startValue = builder.startValue;
     this.endValue = builder.endValue;
@@ -320,56 +307,34 @@ public abstract class GridAxis implements Iterable<Object> {
     this.isSubset = builder.isSubset;
   }
 
-  public Builder<?> toBuilder() {
-    return addLocalFieldsToBuilder(builder());
-  }
-
   // Add local fields to the builder.
   protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> builder) {
-    builder.setName(this.name).setUnits(this.units).setDescription(this.getDescription()).setDataType(this.dataType)
-        .setAxisType(this.axisType).setAttributes(this.attributes).setDependenceType(this.dependenceType)
-        .setDependsOn(this.dependsOn).setSpacing(this.spacing).setValues(this.values).setReader(this.reader)
-        .setGenerated(this.ncoords, this.startValue, this.endValue, this.resolution).setIsSubset(this.isSubset);
+    builder.setName(this.name).setUnits(this.units).setDescription(this.getDescription()).setAxisType(this.axisType)
+        .setAttributes(this.attributes).setDependenceType(this.dependenceType).setDependsOn(this.dependsOn)
+        .setSpacing(this.spacing).setValues(this.values)
+        .setRegular(this.ncoords, this.startValue, this.endValue, this.resolution).setIsSubset(this.isSubset);
 
     return builder;
   }
 
-  /** A builder taking fields from a VariableDS */
-  public static Builder<?> builder(VariableDS vds) {
-    return builder().initFromVariableDS(vds);
-  }
-
-  public static Builder<?> builder() {
-    return new Builder2();
-  }
-
-  private static class Builder2 extends Builder<Builder2> {
-    @Override
-    protected Builder2 self() {
-      return this;
-    }
-  }
-
   public static abstract class Builder<T extends Builder<T>> {
-    private String name;
+    private String name; // required
     private String description;
     private String units;
-    private DataType dataType;
-    AxisType axisType; // ucar.nc2.constants.AxisType ordinal
-    private AttributeContainer attributes;
-    DependenceType dependenceType;
+    AxisType axisType; // required
+    private AttributeContainerMutable attributes = new AttributeContainerMutable(null);
+    DependenceType dependenceType = DependenceType.independent; // default
     private ArrayList<String> dependsOn; // independent axes or dimensions
 
-    int ncoords; // number of coordinates (not always same as values)
-    Spacing spacing;
+    int ncoords; // number of coordinates, required
+    Spacing spacing; // required
     double startValue;
     double endValue;
     double resolution;
-    GridAxisReader reader;
     boolean isSubset;
 
     // may be lazy eval
-    protected double[] values; // null if isRegular, or use CoordAxisReader for lazy eval
+    protected double[] values; // null if isRegular, len = ncoords, ncoords+1, or 2*ncoords
 
     protected abstract T self();
 
@@ -383,18 +348,18 @@ public abstract class GridAxis implements Iterable<Object> {
       return self();
     }
 
-    public T setDataType(DataType dataType) {
-      this.dataType = dataType;
-      return self();
-    }
-
     public T setAxisType(AxisType axisType) {
       this.axisType = axisType;
       return self();
     }
 
+    public T addAttribute(Attribute att) {
+      this.attributes.addAttribute(att);
+      return self();
+    }
+
     public T setAttributes(AttributeContainer attributes) {
-      this.attributes = attributes;
+      this.attributes = new AttributeContainerMutable(null, attributes);
       return self();
     }
 
@@ -423,21 +388,22 @@ public abstract class GridAxis implements Iterable<Object> {
       return self();
     }
 
+    /** When spacing.isRegular, same as increment. Otherwise the spacing average or mode, used for information only. */
     public T setResolution(double resolution) {
       this.resolution = resolution;
       return self();
     }
 
-    public T setGenerated(int ncoords, double startValue, double endValue, double resolution) {
+    /**
+     * Only used when spacing.isRegular.
+     * regularPoint: start, end are pts; end = start + (ncoords - 1) * increment.
+     * regularInterval: start, end are edges; end = start + ncoords * increment.
+     */
+    public T setRegular(int ncoords, double startValue, double endValue, double increment) {
       this.ncoords = ncoords;
       this.startValue = startValue;
       this.endValue = endValue;
-      this.resolution = resolution;
-      return self();
-    }
-
-    public T setReader(GridAxisReader reader) {
-      this.reader = reader;
+      this.resolution = increment;
       return self();
     }
 
@@ -451,14 +417,25 @@ public abstract class GridAxis implements Iterable<Object> {
       return self();
     }
 
+    /**
+     * Spacing.regularXXX: not used
+     * Spacing.irregularPoint: pts[ncoords]
+     * Spacing.contiguousInterval: edges[ncoords+1]
+     * Spacing.discontiguousInterval: bounds[2*ncoords]
+     */
     public T setValues(double[] values) {
       this.values = values;
       return self();
     }
 
-    public T initFromVariableDS(VariableDS vds) {
+    @Override
+    public String toString() {
+      return name;
+    }
+
+    T initFromVariableDS(VariableDS vds) {
       return setName(vds.getShortName()).setUnits(vds.getUnitsString()).setDescription(vds.getDescription())
-          .setDataType(vds.getDataType()).setAttributes(vds.attributes()).setNcoords((int) vds.getSize());
+          .setAttributes(vds.attributes());
     }
   }
 }

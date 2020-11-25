@@ -1,7 +1,10 @@
+/*
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
 package ucar.nc2.grid;
 
 import com.google.common.collect.Iterables;
-import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.internal.grid.GridDatasetImpl;
 
@@ -14,6 +17,7 @@ import java.util.Formatter;
 import java.util.List;
 import java.util.Optional;
 
+/** Open Grid Datasets. */
 public class GridDatasetFactory {
 
   @Nullable
@@ -48,55 +52,58 @@ public class GridDatasetFactory {
     return result.get();
   }
 
-  static class GribDatasetOpenAttempt {
-    @Nullable
-    GridDataset gribDataset;
-    boolean isGrib; // We know its grib
-
-    public GribDatasetOpenAttempt(@Nullable GridDataset gribDataset, boolean isGrib) {
-      this.gribDataset = gribDataset;
-      this.isGrib = isGrib;
-    }
-  }
-
-  private static GribDatasetOpenAttempt openGrib(String endpoint, Formatter errLog) {
-    List<Object> notGribThrowables = Arrays.asList(IllegalAccessException.class, IllegalArgumentException.class,
-        ClassNotFoundException.class, NoSuchMethodException.class, NoSuchMethodError.class);
-
-    // Use reflection to allow grib module to not be present
-    try {
-      Class<?> c = GridDatasetFactory.class.getClassLoader().loadClass("ucar.nc2.grib.coverage.GribDatasetFactory");
-      Method method = c.getMethod("open", String.class, Formatter.class);
-      Formatter gribErrlog = new Formatter();
-      Optional<GridDataset> result = (Optional<GridDataset>) method.invoke(null, endpoint, gribErrlog);
-      if (result.isPresent()) {
-        return new GribDatasetOpenAttempt(result.get(), true);
-      } else if (!gribErrlog.toString().isEmpty()) {
-        errLog.format("%s", gribErrlog);
-        return new GribDatasetOpenAttempt(null, true);
-      } else {
-        return new GribDatasetOpenAttempt(null, false);
-      }
-    } catch (Exception e) {
-      for (Object noGrib : notGribThrowables) {
-        // check for possible errors that are due to the file not being grib. Need to look
-        // at the error causes too, as reflection error can be buried under a InvocationTargetException
-        boolean notGribTopLevel = e.getClass().equals(noGrib);
-        boolean notGribBuried = e.getClass().equals(InvocationTargetException.class) && e.getCause() != null
-            && e.getCause().getClass().equals(noGrib);
-
-        if (notGribTopLevel || notGribBuried) {
-          return new GribDatasetOpenAttempt(null, false);
-        }
-      }
-      // Ok, something went wrong, and it does not appear to be related to the file *not* being a grib file.
-      if (e.getCause() != null) {
-        errLog.format("%s", e.getCause().getMessage());
-      }
-      return new GribDatasetOpenAttempt(null, true);
-    }
-
-  }
+  /*
+   * static class GribDatasetOpenAttempt {
+   * 
+   * @Nullable
+   * final GridDataset gribDataset;
+   * final boolean isGrib; // Do we know if its grib?
+   * 
+   * GribDatasetOpenAttempt(@Nullable GridDataset gribDataset, boolean isGrib) {
+   * this.gribDataset = gribDataset;
+   * this.isGrib = isGrib;
+   * }
+   * }
+   * 
+   * private static GribDatasetOpenAttempt openGrib(String endpoint, Formatter errLog) {
+   * List<Object> notGribThrowables = Arrays.asList(IllegalAccessException.class, IllegalArgumentException.class,
+   * ClassNotFoundException.class, NoSuchMethodException.class, NoSuchMethodError.class);
+   * 
+   * // Use reflection to allow grib module to not be present
+   * try {
+   * Class<?> c = GridDatasetFactory.class.getClassLoader().loadClass("ucar.nc2.grib.coverage.GribDatasetFactory");
+   * Method method = c.getMethod("open", String.class, Formatter.class);
+   * Formatter gribErrlog = new Formatter();
+   * Optional<GridDataset> result = (Optional<GridDataset>) method.invoke(null, endpoint, gribErrlog);
+   * if (result.isPresent()) {
+   * return new GribDatasetOpenAttempt(result.get(), true);
+   * } else if (!gribErrlog.toString().isEmpty()) {
+   * errLog.format("%s", gribErrlog);
+   * return new GribDatasetOpenAttempt(null, true);
+   * } else {
+   * return new GribDatasetOpenAttempt(null, false);
+   * }
+   * } catch (Exception e) {
+   * for (Object noGrib : notGribThrowables) {
+   * // check for possible errors that are due to the file not being grib. Need to look
+   * // at the error causes too, as reflection error can be buried under a InvocationTargetException
+   * boolean notGribTopLevel = e.getClass().equals(noGrib);
+   * boolean notGribBuried = e.getClass().equals(InvocationTargetException.class) && e.getCause() != null
+   * && e.getCause().getClass().equals(noGrib);
+   * 
+   * if (notGribTopLevel || notGribBuried) {
+   * return new GribDatasetOpenAttempt(null, false);
+   * }
+   * }
+   * // Ok, something went wrong, and it does not appear to be related to the file *not* being a grib file.
+   * if (e.getCause() != null) {
+   * errLog.format("%s", e.getCause().getMessage());
+   * }
+   * return new GribDatasetOpenAttempt(null, true);
+   * }
+   * 
+   * }
+   */
 
 
 }

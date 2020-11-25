@@ -9,6 +9,7 @@ import com.google.re2j.Pattern;
 import javax.annotation.concurrent.Immutable;
 import java.util.Date;
 import java.util.Formatter;
+import java.util.Objects;
 
 /**
  * A Calendar Date Unit: "unit since date"
@@ -96,7 +97,6 @@ public class CalendarDateUnit {
 
   ////////////////////////////////////////////////////////////////////////////////////////
   private final Calendar cal;
-  // private final String unitString;
   private final CalendarPeriod period;
   private final CalendarPeriod.Field periodField;
   private final CalendarDate baseDate;
@@ -173,15 +173,6 @@ public class CalendarDateUnit {
     return toString();
   }
 
-  @Override
-  public String toString() {
-    Formatter f = new Formatter();
-    if (isCalendarField)
-      f.format("%s", byCalendarString);
-    f.format("%s since %s", periodField, CalendarDateFormatter.toDateTimeStringISO(baseDate));
-    return f.toString();
-  }
-
   public CalendarDate getBaseCalendarDate() {
     return baseDate;
   }
@@ -201,6 +192,35 @@ public class CalendarDateUnit {
   public boolean isCalendarField() {
     return isCalendarField;
   }
+
+  /////////////////////////////////////
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
+    CalendarDateUnit that = (CalendarDateUnit) o;
+    return isCalendarField == that.isCalendarField && cal == that.cal && period.equals(that.period)
+        && periodField == that.periodField && baseDate.equals(that.baseDate);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(cal, period, periodField, baseDate, isCalendarField);
+  }
+
+  @Override
+  public String toString() {
+    Formatter f = new Formatter();
+    if (isCalendarField)
+      f.format("%s", byCalendarString);
+    f.format("%s since %s", periodField, CalendarDateFormatter.toDateTimeStringISO(baseDate));
+    return f.toString();
+  }
+
+  /////////////////////////////////////////////
 
   // testing
   Date getBaseDate() {

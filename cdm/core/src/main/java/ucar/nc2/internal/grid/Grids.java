@@ -2,20 +2,29 @@ package ucar.nc2.internal.grid;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import ucar.array.Array;
+import ucar.array.Arrays;
 import ucar.nc2.Dimension;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.grid.GridAxis;
 import ucar.nc2.grid.GridAxis1D;
 import ucar.nc2.grid.GridAxis1DTime;
 import ucar.nc2.grid.GridAxisOffsetTimeRegular;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Optional;
 
 /** static utilities */
 class Grids {
+  private static final Logger log = LoggerFactory.getLogger(Grids.class);
 
   static GridAxis1D extractGridAxis1D(NetcdfDataset ncd, CoordinateAxis axis, GridAxis.DependenceType dependenceType) {
     GridAxis1D.Builder<?> builder;
@@ -32,14 +41,13 @@ class Grids {
   private static void extractGridAxis1D(NetcdfDataset ncd, CoordinateAxis axis, GridAxis1D.Builder<?> builder,
       GridAxis.DependenceType dependenceTypeFromClassifier) {
     Preconditions.checkArgument(axis.getRank() < 2);
-    CoordinateAxis1DExtractor extract = new CoordinateAxis1DExtractor(axis);
 
     GridAxis.DependenceType dependenceType;
     if (axis.isCoordinateVariable()) {
       dependenceType = GridAxis.DependenceType.independent;
     } else if (ncd.isIndependentCoordinate(axis)) { // is a coordinate alias
       dependenceType = dependenceTypeFromClassifier; // TODO not clear
-      builder.setDependsOn(ImmutableList.of(axis.getDimension(0).getShortName()));
+      builder.setDependsOn(axis.getDimension(0).getShortName());
     } else if (axis.isScalar()) {
       dependenceType = GridAxis.DependenceType.scalar;
     } else {
@@ -52,52 +60,56 @@ class Grids {
     }
     builder.setDependenceType(axis.isScalar() ? GridAxis.DependenceType.scalar : dependenceType);
 
-    // Fix discontinuities in longitude axis. These occur when the axis crosses the date line.
-    extract.correctLongitudeWrap();
-
-    builder.setNcoords(extract.ncoords);
-    if (extract.isRegular) {
-      builder.setSpacing(GridAxis.Spacing.regularPoint);
-      double ending = extract.start + extract.increment * extract.ncoords;
-      builder.setGenerated(extract.ncoords, extract.start, ending, extract.increment);
-
-    } else if (!extract.isInterval) {
-      builder.setSpacing(GridAxis.Spacing.irregularPoint);
-      builder.setValues(extract.coords);
-      double starting = extract.edge[0];
-      double ending = extract.edge[extract.ncoords - 1];
-      double resolution = (extract.ncoords == 1) ? 0.0 : (ending - starting) / (extract.ncoords - 1);
-      builder.setResolution(Math.abs(resolution));
-
-    } else if (extract.boundsAreContiguous) {
-      builder.setSpacing(GridAxis.Spacing.contiguousInterval);
-      builder.setValues(extract.edge);
-      double starting = extract.edge[0];
-      double ending = extract.edge[extract.ncoords];
-      double resolution = (ending - starting) / extract.ncoords;
-      builder.setResolution(Math.abs(resolution));
-
-    } else {
-      builder.setSpacing(GridAxis.Spacing.discontiguousInterval);
-      double[] bounds = new double[2 * extract.ncoords];
-      int count = 0;
-      for (int i = 0; i < extract.ncoords; i++) {
-        bounds[count++] = extract.bound1[i];
-        bounds[count++] = extract.bound2[i];
-      }
-      builder.setValues(bounds);
-      double starting = bounds[0];
-      double ending = bounds[2 * extract.ncoords - 1];
-      double resolution = (extract.ncoords == 1) ? 0.0 : (ending - starting) / (extract.ncoords - 1);
-      builder.setResolution(Math.abs(resolution));
+    CoordToGridAxis1D converter = new CoordToGridAxis1D(builder.toString(), readValues(axis), readBounds(axis));
+    if (axis.getAxisType() == AxisType.Lon) {
+      // Fix discontinuities in longitude axis. These occur when the axis crosses the date line.
+      converter.correctLongitudeWrap();
     }
+    converter.extract(builder);
 
     if (builder instanceof GridAxis1DTime.Builder) {
       GridAxis1DTime.Builder<?> timeBuilder = (GridAxis1DTime.Builder<?>) builder;
-      CoordinateAxis1DTimeExtractor extractTime = new CoordinateAxis1DTimeExtractor(axis, extract.coords);
+      CoordinateAxis1DTimeExtractor extractTime = new CoordinateAxis1DTimeExtractor(axis, converter.coords);
       timeBuilder.setTimeHelper(extractTime.timeHelper);
       timeBuilder.setCalendarDates(extractTime.cdates);
     }
+  }
+
+  private static Array<Double> readValues(CoordinateAxis axis) {
+    Array<?> data;
+    try {
+      data = axis.readArray();
+    } catch (IOException ioe) {
+      log.error("Error reading coordinate values ", ioe);
+      throw new IllegalStateException(ioe);
+    }
+    return Arrays.toDouble(data);
+  }
+
+  private static Optional<Array<Double>> readBounds(CoordinateAxis axis) {
+    String boundsVarName = axis.attributes().findAttributeString(CF.BOUNDS, null);
+    if (boundsVarName == null) {
+      return Optional.empty();
+    }
+    VariableDS boundsVar = (VariableDS) axis.getParentGroup().findVariableLocal(boundsVarName);
+    if (null == boundsVar)
+      return Optional.empty();
+    if (2 != boundsVar.getRank())
+      return Optional.empty();
+    if (axis.getDimension(0) != boundsVar.getDimension(0))
+      return Optional.empty();
+    if (2 != boundsVar.getDimension(1).getLength())
+      return Optional.empty();
+
+    Array<?> boundsData;
+    try {
+      boundsData = boundsVar.readArray();
+    } catch (IOException e) {
+      log.warn("GridAxis1DBuilder.makeBoundsFromAux read failed ", e);
+      return Optional.empty();
+    }
+
+    return Optional.of(Arrays.toDouble(boundsData));
   }
 
   static GridAxisOffsetTimeRegular extractGridAxisOffset2D(CoordinateAxis axis, GridAxis.DependenceType dependenceType,
@@ -110,6 +122,7 @@ class Grids {
     CoordinateAxis2DExtractor extract = new CoordinateAxis2DExtractor(axis);
     builder.setMidpoints(extract.getMidpoints());
     builder.setBounds(extract.getBounds());
+    builder.setNcoords(extract.getNtimes());
     builder.setHourOffsets(extract.getHourOffsets());
     builder.setSpacing(extract.isInterval() ? GridAxis.Spacing.discontiguousInterval : GridAxis.Spacing.irregularPoint);
 

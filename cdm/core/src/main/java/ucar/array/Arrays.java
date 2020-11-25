@@ -10,6 +10,7 @@ import java.util.List;
 import com.google.auto.value.AutoValue;
 import com.google.common.base.Preconditions;
 import ucar.ma2.*;
+import ucar.nc2.util.MinMax;
 
 /** Static helper classes for {@link Array} */
 public class Arrays {
@@ -494,24 +495,7 @@ public class Arrays {
     for (Number val : conv) {
       storage[count++] = val.doubleValue();
     }
-    return factory(DataType.DOUBLE, new int[] {n}, storage);
-  }
-
-  /** Value object storing a min and max value. */
-  @AutoValue
-  public static abstract class MinMax {
-    public abstract double min();
-
-    public abstract double max();
-
-    public static MinMax create(double min, double max) {
-      return new AutoValue_Arrays_MinMax(min, max);
-    }
-
-    @Override
-    public String toString() {
-      return "MinMax{" + "min=" + min() + ", max=" + max() + '}';
-    }
+    return factory(DataType.DOUBLE, array.getShape(), storage);
   }
 
   public static MinMax getMinMaxSkipMissingData(Array<? extends Number> a, IsMissingEvaluator eval) {

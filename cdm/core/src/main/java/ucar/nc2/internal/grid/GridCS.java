@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 
 /**
  * Base implementation of GridCoordinateSystem.
- * TODO its possible this is general, could be in API instead of interface.
+ * TODO is this general enough to be in API instead of interface?
  */
 @Immutable
 class GridCS implements GridCoordinateSystem {
@@ -143,14 +143,11 @@ class GridCS implements GridCoordinateSystem {
 
   @Override
   public boolean isGlobalLon() {
-    if (!isLatLon)
+    if (!isLatLon) {
       return false;
-    GridAxis1D lon = getXHorizAxis();
-    double first = lon.getCoordEdgeFirst();
-    double last = lon.getCoordEdgeLast();
-    double min = Math.min(first, last);
-    double max = Math.max(first, last);
-    return (max - min) >= 360;
+    }
+    LatLonRect rect = getLatLonBoundingBox();
+    return rect.getWidth() >= 360;
   }
 
   @Override
@@ -162,6 +159,7 @@ class GridCS implements GridCoordinateSystem {
 
   @Override
   public Optional<CoordReturn> findXYindexFromCoord(double x, double y) {
+    // TODO code in ft2.HorizCoordSys
     return Optional.empty();
   }
 
@@ -171,6 +169,7 @@ class GridCS implements GridCoordinateSystem {
     return axis.isRegular();
   }
 
+  // TODO experimental
   private String horizStaggerType;
 
   public String getHorizStaggerType() {
@@ -189,8 +188,8 @@ class GridCS implements GridCoordinateSystem {
       GridAxis1D xaxis1 = getXHorizAxis();
       GridAxis1D yaxis1 = getYHorizAxis();
 
-      mapArea = new ProjectionRect(xaxis1.getCoordEdgeFirst(), yaxis1.getCoordEdgeFirst(), xaxis1.getCoordEdgeLast(),
-          yaxis1.getCoordEdgeLast());
+      mapArea = new ProjectionRect(xaxis1.getCoordEdge1(0), yaxis1.getCoordEdge1(0),
+          xaxis1.getCoordEdge2(xaxis1.getNcoords() - 1), yaxis1.getCoordEdge2(yaxis1.getNcoords() - 1));
     }
     return mapArea;
   }
@@ -243,14 +242,14 @@ class GridCS implements GridCoordinateSystem {
       GridAxis1D horizXaxis = getXHorizAxis();
       GridAxis1D horizYaxis = getYHorizAxis();
       if (isLatLon()) {
-        double startLat = horizYaxis.getCoordEdgeFirst();
-        double startLon = horizXaxis.getCoordEdgeFirst();
+        double startLat = horizYaxis.getCoordEdge1(0);
+        double startLon = horizXaxis.getCoordEdge1(0);
 
-        double deltaLat = horizYaxis.getCoordEdgeLast() - startLat;
-        double deltaLon = horizXaxis.getCoordEdgeLast() - startLon;
+        double endLat = horizYaxis.getCoordEdge2(horizYaxis.getNcoords() - 1);
+        double endLon = horizXaxis.getCoordEdge2(horizXaxis.getNcoords() - 1);
 
         LatLonPoint llpt = LatLonPoint.create(startLat, startLon);
-        llbb = new LatLonRect(llpt, deltaLat, deltaLon);
+        llbb = new LatLonRect(llpt, endLat - startLat, endLon - startLon);
 
       } else {
         Projection dataProjection = getProjection();

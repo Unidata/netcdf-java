@@ -1,6 +1,7 @@
 package ucar.nc2.internal.dataset;
 
 import com.google.common.collect.Iterables;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.ma2.Range;
@@ -16,7 +17,6 @@ import ucar.nc2.grid.GridCoordinateSystem;
 import ucar.nc2.internal.grid.GridDatasetImpl;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
-import ucar.unidata.util.test.category.NeedsExternalResource;
 
 import java.io.IOException;
 import java.util.Formatter;
@@ -68,7 +68,7 @@ public class TestDatasetClassifier {
       assertThat(Iterables.size(gcs.getDomain())).isEqualTo(Iterables.size(gcs.getRanges()));
       assertThat(Iterables.size(gcs.getGridAxes())).isEqualTo(6);
       assertThat(gcs.getRunTimeAxis()).isNotNull();
-      assertThat(gcs.getRunTimeAxis().isScalar()).isTrue();
+      assertThat(gcs.getRunTimeAxis().getDependenceType() == GridAxis.DependenceType.scalar).isTrue();
       assertThat(gcs.getRunTimeAxis().getDependenceType()).isEqualTo(GridAxis.DependenceType.scalar);
       assertThat(gcs.getTimeAxis()).isNotNull();
       assertThat(gcs.getEnsembleAxis()).isNotNull();
@@ -106,13 +106,12 @@ public class TestDatasetClassifier {
       assertThat(Iterables.size(gcs.getDomain())).isEqualTo(Iterables.size(gcs.getRanges()));
       assertThat(Iterables.size(gcs.getGridAxes())).isEqualTo(5);
       assertThat(gcs.getRunTimeAxis()).isNotNull();
-      assertThat(gcs.getRunTimeAxis().isScalar()).isFalse();
+      assertThat(gcs.getRunTimeAxis().getDependenceType() == GridAxis.DependenceType.scalar).isFalse();
       assertThat(gcs.getRunTimeAxis().getDependenceType()).isEqualTo(GridAxis.DependenceType.independent);
       assertThat(gcs.getTimeAxis()).isNull();
       assertThat(gcs.getTimeOffsetAxis()).isNotNull();
       assertThat(gcs.getEnsembleAxis()).isNull();
       assertThat(gcs.getVerticalAxis()).isNotNull();
-      assertThat(gcs.getVerticalAxis().isScalar()).isTrue();
       assertThat(gcs.getVerticalAxis().getDependenceType()).isEqualTo(GridAxis.DependenceType.scalar);
       assertThat(gcs.getYHorizAxis()).isNotNull();
       assertThat(gcs.getXHorizAxis()).isNotNull();
@@ -278,6 +277,7 @@ public class TestDatasetClassifier {
 
   @Test
   @Category(NeedsCdmUnitTest.class)
+  @Ignore("fix when cdmUnit Test is repaired")
   public void testMRUTP3() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds627.0/ei.oper.an.pv/ds627.0_46.ncx4";
     try (FeatureDatasetCoverage covDataset = CoverageDatasetFactory.open(filename)) {

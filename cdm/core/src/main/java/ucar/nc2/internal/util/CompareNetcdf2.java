@@ -7,17 +7,16 @@
 
 package ucar.nc2.internal.util;
 
-import java.util.Arrays;
+import java.util.*;
 import javax.annotation.Nullable;
+
 import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.*;
 import ucar.nc2.*;
 import ucar.ma2.*;
 import java.io.*;
 import java.nio.ByteBuffer;
-import java.util.List;
-import java.util.Formatter;
-import java.util.ArrayList;
+
 import ucar.nc2.internal.iosp.hdf5.H5header;
 import ucar.nc2.iosp.NetcdfFormatUtils;
 import ucar.nc2.util.Misc;
@@ -138,8 +137,7 @@ public class CompareNetcdf2 {
       if (name2.endsWith("_t")) {
         name2 = name2.substring(0, name2.length() - 2);
       }
-      return com.google.common.base.Objects.equal(name1, name2)
-          && com.google.common.base.Objects.equal(enum1.getMap(), enum2.getMap())
+      return Objects.equals(name1, name2) && Objects.equals(enum1.getMap(), enum2.getMap())
           && enum1.getBaseType() == enum2.getBaseType();
     }
 
