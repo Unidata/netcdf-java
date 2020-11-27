@@ -6,7 +6,6 @@
 package ucar.nc2.grid;
 
 import com.google.common.collect.Iterables;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -25,9 +24,8 @@ import static org.junit.Assert.fail;
 /** Compare reading TDS Grib Collections with old and new GridDataset. */
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
-@Ignore("Files not available")
 public class TestTdsNCEPGribCollections {
-  private static final String topDir = "/media/twobee/tds/";
+  private static final String topDir = TestDir.cdmUnitTestDir + "tds_index/";
 
   @Parameterized.Parameters(name = "{0}")
   public static List<Object[]> getTestParameters() {
@@ -237,9 +235,12 @@ public class TestTdsNCEPGribCollections {
         }
       }
       for (GridDatatype geogrid : dataset.getGrids()) {
+        if (geogrid.getName().startsWith("Best")) {
+          continue;
+        }
         String name = removeGroup(geogrid.getName());
         if (!newDataset.findGrid(name).isPresent()) {
-          System.out.printf(" GeoGrid %s not in NewGrid%n", geogrid.getName());
+          System.out.printf(" GeoGrid %s not in NewGrid%n", name);
           ok = false;
         }
       }

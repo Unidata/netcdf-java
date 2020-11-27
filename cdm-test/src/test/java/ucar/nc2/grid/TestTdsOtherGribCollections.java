@@ -6,11 +6,11 @@
 package ucar.nc2.grid;
 
 import com.google.common.collect.Iterables;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dt.GridDatatype;
 import ucar.unidata.util.StringUtil2;
 import ucar.unidata.util.test.TestDir;
@@ -25,9 +25,8 @@ import static org.junit.Assert.fail;
 /** Compare reading TDS Grib Collections with old and new GridDataset. */
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
-@Ignore("Files not available")
 public class TestTdsOtherGribCollections {
-  private static final String topDir = "/media/twobee/tds/";
+  private static final String topDir = TestDir.cdmUnitTestDir + "tds_index/";
 
   @Parameterized.Parameters(name = "{0}")
   public static List<Object[]> getTestParameters() {
@@ -35,11 +34,7 @@ public class TestTdsOtherGribCollections {
     List<Object[]> result = new ArrayList<>(500);
     try {
       /// CMC
-      result.add(new Object[] {topDir + "CMC/RDPS/NA_15km/CMC_RDPS_ps15km_20201010_0000.grib2.ncx4", 58, 17, 24});
-
-      // TODO /media/twobee/tds/CMC/RDPS/NA_15km/CMC_RDPS_ps15km_.*grib2.gbx9 has duplicates, I think because
-      // TODO level 111 (eta) should have a VertCoordType, see getVertUnit(int code).
-      // TODO It also has 2 grids, with disjunct variables. should be seperate?
+      result.add(new Object[] {topDir + "CMC/RDPS/NA_15km/CMC_RDPS_ps15km_20201010_0000.grib2.ncx4", 58, 16, 22});
 
       // fnmoc
       result.add(new Object[] {topDir + "FNMOC/WW3/Global_1p0deg/FNMOC_WW3_Global_1p0deg.ncx4", 15, 1, 4});
@@ -87,7 +82,7 @@ public class TestTdsOtherGribCollections {
         System.out.printf("Cant open as GridDataset: %s%n", filename);
         return;
       }
-      System.out.printf("checkGridDataset: %s%n", gridDataset.getLocation());
+      System.out.printf("%ncheckGridDataset: %s%n", gridDataset.getLocation());
       assertThat(gridDataset.getCoordSystems()).hasSize(ncoordSys);
       assertThat(gridDataset.getCoordAxes()).hasSize(nAxes);
       assertThat(gridDataset.getGrids()).hasSize(ngrids);
@@ -115,7 +110,6 @@ public class TestTdsOtherGribCollections {
         System.out.printf("Cant open as GridDataset: %s%n", filename);
         fail();
       }
-      System.out.printf("compareGridDataset: %s%n", newDataset.getLocation());
       System.out.printf(" NewGrid: %d %d %d %n", newDataset.getGrids().size(), newDataset.getCoordSystems().size(),
           newDataset.getCoordAxes().size());
       System.out.printf(" OldGrid: %d %d %n", dataset.getGrids().size(), dataset.getGridsets().size());
@@ -135,10 +129,13 @@ public class TestTdsOtherGribCollections {
         }
       }
       for (GridDatatype geogrid : dataset.getGrids()) {
+        if (geogrid.getName().startsWith("Best")) {
+          continue;
+        }
         String name = removeGroup(geogrid.getName());
         if (!newDataset.findGrid(name).isPresent()) {
-          System.out.printf(" GeoGrid %s not in NewGrid%n", geogrid.getName());
-          ok = false;
+          CoordinateAxis timeAxis = geogrid.getCoordinateSystem().getTimeAxis();
+          System.out.printf(" GeoGrid %s not in NewGrid time=%s%n", name, timeAxis.getNameAndDimensions());
         }
       }
     }
