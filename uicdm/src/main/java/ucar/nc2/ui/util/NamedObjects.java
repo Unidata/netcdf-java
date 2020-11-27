@@ -134,28 +134,30 @@ public class NamedObjects {
     return result;
   }
 
-  /* public static List<NamedObject> getNames(GridAxis1D axis) {
-    if (axis == null) {
-      return new ArrayList<>();
-    }
-    List<NamedObject> result = new ArrayList<>();
-    for (int i = 0; i < axis.getNcoords(); i++) {
-      Object value = null;
-      switch (axis.getSpacing()) {
-        case regularPoint:
-        case irregularPoint:
-          value = Format.d(axis.getCoordMidpoint(i), 3);
-          break;
-
-        case regularInterval:
-        case contiguousInterval:
-        case discontiguousInterval:
-          value = CoordInterval.create(axis.getCoordEdge1(i), axis.getCoordEdge2(i));
-          break;
-      }
-      result.add(NamedObject.create(value, value + " " + axis.getUnits()));
-    }
-    return result;
-  } */
+  /*
+   * public static List<NamedObject> getNames(GridAxis1D axis) {
+   * if (axis == null) {
+   * return new ArrayList<>();
+   * }
+   * List<NamedObject> result = new ArrayList<>();
+   * for (int i = 0; i < axis.getNcoords(); i++) {
+   * Object value = null;
+   * switch (axis.getSpacing()) {
+   * case regularPoint:
+   * case irregularPoint:
+   * value = Format.d(axis.getCoordMidpoint(i), 3);
+   * break;
+   * 
+   * case regularInterval:
+   * case contiguousInterval:
+   * case discontiguousInterval:
+   * value = CoordInterval.create(axis.getCoordEdge1(i), axis.getCoordEdge2(i));
+   * break;
+   * }
+   * result.add(NamedObject.create(value, value + " " + axis.getUnits()));
+   * }
+   * return result;
+   * }
+   */
 
 }

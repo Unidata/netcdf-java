@@ -174,8 +174,7 @@ public class GridRenderer {
 
   //////// data routines
 
-  private GridReferencedArray readHSlice()
-      throws IOException, InvalidRangeException {
+  private GridReferencedArray readHSlice() throws IOException, InvalidRangeException {
 
     // make sure we need new one
     if (!dataState.hasChanged()) {

@@ -15,12 +15,18 @@ class DataState {
   Grid grid;
   GridCoordinateSystem geocs;
 
-  @Nullable GridAxis1DTime rtaxis;
-  @Nullable GridAxis1DTime taxis;
-  @Nullable GridAxis1D toaxis;
-  @Nullable GridAxisOffsetTimeRegular toaxisReg;
-  @Nullable GridAxis1D zaxis;
-  @Nullable GridAxis1D ensaxis;
+  @Nullable
+  GridAxis1DTime rtaxis;
+  @Nullable
+  GridAxis1DTime taxis;
+  @Nullable
+  GridAxis1D toaxis;
+  @Nullable
+  GridAxisOffsetTimeRegular toaxisReg;
+  @Nullable
+  GridAxis1D zaxis;
+  @Nullable
+  GridAxis1D ensaxis;
 
   Object runtimeCoord;
   Object timeCoord; // only one of taxis, toaxis, toaxisReg is used
