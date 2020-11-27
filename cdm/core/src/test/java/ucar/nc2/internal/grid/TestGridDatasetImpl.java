@@ -117,8 +117,8 @@ public class TestGridDatasetImpl {
         }
       }
       MinMax maxmin = timeAxis.getCoordEdgeMinMax();
-      assertThat(maxmin.min()).isEqualTo(expected[0]);
-      assertThat(maxmin.max()).isEqualTo(expected[16]);
+      assertThat(maxmin.min()).isEqualTo(-1.5);
+      assertThat(maxmin.max()).isEqualTo(48.5);
 
       int count = 0;
       for (double val : timeAxis.getCoordsAsArray()) {
@@ -188,8 +188,8 @@ public class TestGridDatasetImpl {
        * }
        */
 
-      int ncoords = 2;
-      assertThat(timeAxis.getNcoords()).isEqualTo(ncoords);
+      assertThat(timeAxis.getHourOffsets().size()).isEqualTo(4);
+      assertThat(timeAxis.getNOffsetPerRun()).isEqualTo(2);
       double[] bounds1 = new double[] {28, 52, 27, 51, 26, 50, 15, 39};
       double[] bounds2 = new double[] {52, 76, 51, 75, 50, 74, 39, 63};
 

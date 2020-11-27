@@ -4,11 +4,13 @@
  */
 package ucar.nc2.grid;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.AbstractIterator;
 import ucar.array.Array;
 import ucar.array.Arrays;
 import ucar.ma2.*;
 import ucar.nc2.dataset.VariableDS;
+import ucar.nc2.internal.grid.GridAxis1DHelper;
 import ucar.nc2.util.Indent;
 import ucar.nc2.util.MinMax;
 
@@ -30,13 +32,15 @@ public class GridAxis1D extends GridAxis {
       return false;
     if (!super.equals(o))
       return false;
-    GridAxis1D that = (GridAxis1D) o;
-    return Objects.equals(range, that.range) && Objects.equals(crange, that.crange);
+    GridAxis1D objects = (GridAxis1D) o;
+    return ncoords == objects.ncoords && Double.compare(objects.startValue, startValue) == 0
+        && Double.compare(objects.endValue, endValue) == 0 && Objects.equals(range, objects.range)
+        && Objects.equals(crange, objects.crange);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(super.hashCode(), range, crange);
+    return Objects.hash(super.hashCode(), ncoords, startValue, endValue, range, crange);
   }
 
   @Override
@@ -47,6 +51,7 @@ public class GridAxis1D extends GridAxis {
     f.format("%s range=%s isSubset=%s", indent, range, isSubset());
     f.format("%n");
   }
+
 
   public String getSummary() {
     Formatter f = new Formatter();
@@ -198,6 +203,21 @@ public class GridAxis1D extends GridAxis {
     return Arrays.factory(DataType.DOUBLE, new int[] {ncoords, 2}, vals);
   }
 
+  /** The number of coordinates. Coord or Interval. */
+  public int getNcoords() {
+    return ncoords;
+  }
+
+  /** Starting value when spacing.isRegular(). Coord or Interval. */
+  public double getStartValue() {
+    return startValue;
+  }
+
+  /** Ending value when spacing.isRegular(). Coord or Interval. */
+  public double getEndValue() {
+    return endValue;
+  }
+
   /////////////////////////////////////////////////////////////////////////////
   // subsetting
 
@@ -322,13 +342,35 @@ public class GridAxis1D extends GridAxis {
         break;
       }
 
-      case Ensemble:
+      case Ensemble: {
         Double eval = params.getEnsCoord();
         if (eval != null) {
           return helper.subsetClosest(eval);
         }
         // default is all
         break;
+      }
+
+      case TimeOffset: {
+        Double oval = params.getTimeOffset();
+        if (oval != null) {
+          return helper.subsetClosest(oval);
+        }
+
+        // If a time interval is sent, search for match.
+        CoordInterval timeOffsetIntv = params.getTimeOffsetIntv();
+        if (timeOffsetIntv != null) {
+          return helper.subsetClosest(timeOffsetIntv);
+        }
+
+        // TODO do we need this?
+        if (params.getTimeOffsetFirst()) {
+          return helper.makeSubsetByIndex(new Range(1));
+        }
+
+        // default is all
+        break;
+      }
 
       // TODO: old way is that x,y get seperately subsetted. Right now, not getting subsetted
       case GeoX:
@@ -378,11 +420,19 @@ public class GridAxis1D extends GridAxis {
   }
 
   //////////////////////////////////////////////////////////////
+  final int ncoords; // number of coordinates
+  final double startValue; // only for regular
+  final double endValue;
   final Range range; // for subset, tracks the indexes in the original
   final RangeComposite crange;
 
   GridAxis1D(Builder<?> builder) {
     super(builder);
+
+    Preconditions.checkArgument(builder.ncoords > 0);
+    this.ncoords = builder.ncoords;
+    this.startValue = builder.startValue;
+    this.endValue = builder.endValue;
 
     if (axisType == null && builder.dependenceType == DependenceType.independent) {
       throw new IllegalArgumentException("independent axis must have type");
@@ -404,7 +454,8 @@ public class GridAxis1D extends GridAxis {
 
   // Add local fields to the builder.
   protected Builder<?> addLocalFieldsToBuilder(Builder<? extends GridAxis.Builder<?>> builder) {
-    builder.setRange(this.range).setCompositeRange(this.crange);
+    builder.setRegular(this.ncoords, this.startValue, this.endValue, this.resolution).setRange(this.range)
+        .setCompositeRange(this.crange);
     return (Builder<?>) super.addLocalFieldsToBuilder(builder);
   }
 
@@ -426,10 +477,32 @@ public class GridAxis1D extends GridAxis {
   }
 
   public static abstract class Builder<T extends Builder<T>> extends GridAxis.Builder<T> {
+    int ncoords; // number of coordinates, required
+    double startValue;
+    double endValue;
+
     // does this really describe all subset possibilities? what about RangeScatter, composite ??
     private Range range; // for subset, tracks the indexes in the original
     private RangeComposite crange;
     private boolean built = false;
+
+    public T setNcoords(int ncoords) {
+      this.ncoords = ncoords;
+      return self();
+    }
+
+    /**
+     * Only used when spacing.isRegular.
+     * regularPoint: start, end are pts; end = start + (ncoords - 1) * increment.
+     * regularInterval: start, end are edges; end = start + ncoords * increment.
+     */
+    public T setRegular(int ncoords, double startValue, double endValue, double increment) {
+      this.ncoords = ncoords;
+      this.startValue = startValue;
+      this.endValue = endValue;
+      this.resolution = increment;
+      return self();
+    }
 
     public T setRange(Range range) {
       this.range = range;
@@ -441,7 +514,7 @@ public class GridAxis1D extends GridAxis {
       return self();
     }
 
-    T subset(int ncoords, double startValue, double endValue, double resolution, Range range) {
+    public T subset(int ncoords, double startValue, double endValue, double resolution, Range range) {
       this.ncoords = ncoords;
       this.startValue = startValue;
       this.endValue = endValue;
@@ -449,7 +522,6 @@ public class GridAxis1D extends GridAxis {
       this.range = range;
       this.isSubset = true;
       this.values = makeValues(range);
-
       return self();
     }
 

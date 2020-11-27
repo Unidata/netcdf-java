@@ -4,6 +4,7 @@
  */
 package ucar.nc2.grid;
 
+import com.google.common.base.Preconditions;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarPeriod;
@@ -23,6 +24,15 @@ public class GridSubset {
   public static final String latlonPoint = "latlonPoint"; // value = LatLonPoint
   public static final String stations = "stn"; // value = List<String>
 
+  public static final String runtime = "runtime"; // value = CalendarDate
+  public static final String runtimeLatest = "runtimeLatest"; // value = Boolean
+  public static final String runtimeAll = "runtimeAll"; // value = Boolean
+
+  public static final String timeOffset = "timeOffset"; // value = Double
+  public static final String timeOffsetIntv = "timeOffsetIntv"; // value = CoordInterval
+  public static final String timeOffsetFirst = "timeOffsetFirst"; // value = Boolean
+  public static final String timeOffsetAll = "timeOffsetAll"; // value = Boolean
+
   public static final String time = "time"; // value = CalendarDate
   public static final String timeCoord = "timeCoord"; // value = Object
   public static final String timeRange = "timeRange"; // value = CalendarDateRange
@@ -30,16 +40,6 @@ public class GridSubset {
   public static final String timePresent = "timePresent"; // value = Boolean
   public static final String timeAll = "timeAll"; // value = Boolean
   public static final String timeWindow = "timeWindow"; // value = CalendarPeriod
-
-  public static final String runtime = "runtime"; // value = CalendarDate
-  // public static final String runtimeRange = "runtimeRange"; // value = CalendarDateRange
-  public static final String runtimeLatest = "runtimeLatest"; // value = Boolean
-  public static final String runtimeAll = "runtimeAll"; // value = Boolean
-
-  public static final String timeOffset = "timeOffset"; // value = Double
-  public static final String timeOffsetFirst = "timeOffsetFirst"; // value = Boolean
-  public static final String timeOffsetAll = "timeOffsetAll"; // value = Boolean
-  public static final String timeOffsetIntv = "timeOffsetIntv"; // value = CoordInterval
 
   public static final String vertCoord = "vertCoord"; // value = Double or CoordInterval
   // public static final String vertRange = "vertRange"; // value = double[2] used WCS local, not remote
@@ -133,7 +133,8 @@ public class GridSubset {
     return getDouble(ensCoord);
   }
 
-  public GridSubset setEnsCoord(double coord) {
+  public GridSubset setEnsCoord(Object coord) {
+    Preconditions.checkArgument(coord instanceof Double);
     req.put(ensCoord, coord);
     return this;
   }
@@ -174,10 +175,17 @@ public class GridSubset {
     return this;
   }
 
+  public GridSubset setRunTimeCoord(Object coord) {
+    Preconditions.checkArgument(coord instanceof CalendarDate);
+    req.put(runtime, coord);
+    return this;
+  }
+
   public Boolean getRunTimeAll() {
     return isTrue(runtimeAll);
   }
 
+  // TODO whats happens for multiple runtimes for timeOffsetRegular?
   public GridSubset setRunTimeAll() {
     req.put(runtimeAll, true);
     return this;
@@ -246,10 +254,19 @@ public class GridSubset {
     return getDouble(timeOffset);
   }
 
-  // A time offset or time offset interval starts from the rundate of that point, in the units of the coordinate
-  // eg "calendar Month since 2004-12-30T00:00:00Z" or "Hours since 2004-12-30T00:00:00Z"
   public GridSubset setTimeOffset(double offset) {
     req.put(timeOffset, offset);
+    return this;
+  }
+
+  // A time offset or time offset interval starts from the rundate of that point, in the units of the coordinate
+  // eg "calendar Month since 2004-12-30T00:00:00Z" or "Hours since 2004-12-30T00:00:00Z"
+  public GridSubset setTimeOffsetCoord(Object coord) {
+    if (coord instanceof Double) {
+      req.put(timeOffset, coord);
+    } else if (coord instanceof CoordInterval) {
+      req.put(timeOffsetIntv, coord);
+    }
     return this;
   }
 

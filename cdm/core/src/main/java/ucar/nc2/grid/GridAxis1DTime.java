@@ -13,6 +13,7 @@ import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.VariableDS;
+import ucar.nc2.internal.grid.GridAxis1DHelper;
 import ucar.nc2.internal.grid.TimeHelper;
 import ucar.nc2.time.*;
 import ucar.nc2.time.Calendar;
@@ -256,27 +257,6 @@ public class GridAxis1DTime extends GridAxis1D {
         // default is latest
         return helper.subsetLatest();
       }
-
-      case TimeOffset: {
-        Double oval = params.getTimeOffset();
-        if (oval != null) {
-          return helper.subsetClosest(oval);
-        }
-
-        // If a time interval is sent, search for match.
-        CoordInterval timeOffsetIntv = params.getTimeOffsetIntv();
-        if (timeOffsetIntv != null) {
-          return helper.subsetClosest(timeOffsetIntv);
-        }
-
-        // TODO do we need this?
-        if (params.getTimeOffsetFirst()) {
-          return helper.makeSubsetByIndex(new Range(1));
-        }
-
-        // default is all
-        break;
-      }
     }
 
     // otherwise return copy of the original axis
@@ -409,7 +389,7 @@ public class GridAxis1DTime extends GridAxis1D {
     }
 
     @Override
-    T subset(int ncoords, double startValue, double endValue, double resolution, Range range) {
+    public T subset(int ncoords, double startValue, double endValue, double resolution, Range range) {
       super.subset(ncoords, startValue, endValue, resolution, range);
       return self();
     }

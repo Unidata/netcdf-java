@@ -46,52 +46,6 @@ public class NamedObjects {
     return names;
   }
 
-  public static List<NamedObject> getNames(Iterable<Grid> grids) {
-    if (grids == null) {
-      return new ArrayList<>();
-    }
-    List<NamedObject> result = new ArrayList<>();
-    for (Grid grid : grids) {
-      result.add(NamedObject.create(grid.getName(), grid.getDescription()));
-    }
-    return result;
-  }
-
-  public static List<NamedObject> getNames(GridAxis1DTime axis) {
-    if (axis == null) {
-      return new ArrayList<>();
-    }
-    List<NamedObject> result = new ArrayList<>();
-    for (CalendarDate cdate : axis.getCalendarDates()) {
-      result.add(NamedObject.create(cdate, axis.getAxisType().toString()));
-    }
-    return result;
-  }
-
-  public static List<NamedObject> getNames(GridAxis1D axis) {
-    if (axis == null) {
-      return new ArrayList<>();
-    }
-    List<NamedObject> result = new ArrayList<>();
-    for (int i = 0; i < axis.getNcoords(); i++) {
-      Object value = null;
-      switch (axis.getSpacing()) {
-        case regularPoint:
-        case irregularPoint:
-          value = Format.d(axis.getCoordMidpoint(i), 3);
-          break;
-
-        case regularInterval:
-        case contiguousInterval:
-        case discontiguousInterval:
-          value = CoordInterval.create(axis.getCoordEdge1(i), axis.getCoordEdge2(i));
-          break;
-      }
-      result.add(NamedObject.create(value, value + " " + axis.getUnits()));
-    }
-    return result;
-  }
-
   public static List<NamedObject> getNames(CoverageCoordAxis1D axis) {
     if (axis == null) {
       return new ArrayList<>();
@@ -144,5 +98,64 @@ public class NamedObjects {
 
     return result;
   }
+
+  /////////////////////////////////////////////////////////////////////////////
+
+  public static List<NamedObject> getNames(Iterable<Grid> grids) {
+    if (grids == null) {
+      return new ArrayList<>();
+    }
+    List<NamedObject> result = new ArrayList<>();
+    for (Grid grid : grids) {
+      result.add(NamedObject.create(grid.getName(), grid.getDescription(), grid));
+    }
+    return result;
+  }
+
+  public static List<NamedObject> getCoordNames(GridAxis1D axis) {
+    if (axis == null) {
+      return new ArrayList<>();
+    }
+    List<NamedObject> result = new ArrayList<>();
+    for (Object coord : axis) {
+      result.add(NamedObject.create(coord, axis.getUnits()));
+    }
+    return result;
+  }
+
+  public static List<NamedObject> getTimeNames(GridAxis1DTime axis) {
+    if (axis == null) {
+      return new ArrayList<>();
+    }
+    List<NamedObject> result = new ArrayList<>();
+    for (CalendarDate cdate : axis.getCalendarDates()) {
+      result.add(NamedObject.create(cdate, axis.getAxisType().toString()));
+    }
+    return result;
+  }
+
+  /* public static List<NamedObject> getNames(GridAxis1D axis) {
+    if (axis == null) {
+      return new ArrayList<>();
+    }
+    List<NamedObject> result = new ArrayList<>();
+    for (int i = 0; i < axis.getNcoords(); i++) {
+      Object value = null;
+      switch (axis.getSpacing()) {
+        case regularPoint:
+        case irregularPoint:
+          value = Format.d(axis.getCoordMidpoint(i), 3);
+          break;
+
+        case regularInterval:
+        case contiguousInterval:
+        case discontiguousInterval:
+          value = CoordInterval.create(axis.getCoordEdge1(i), axis.getCoordEdge2(i));
+          break;
+      }
+      result.add(NamedObject.create(value, value + " " + axis.getUnits()));
+    }
+    return result;
+  } */
 
 }

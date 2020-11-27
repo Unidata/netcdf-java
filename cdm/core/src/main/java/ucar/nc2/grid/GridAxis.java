@@ -118,33 +118,23 @@ public abstract class GridAxis implements Iterable<Object> {
     return attributes;
   }
 
-  public int getNcoords() {
-    return ncoords;
-  }
-
   public Spacing getSpacing() {
     return spacing;
   }
 
+  /** spacing.isRegular(). */
   public boolean isRegular() {
     return spacing.isRegular();
   }
 
+  /** spacing.isInterval(). */
   public boolean isInterval() {
     return spacing.isInterval();
   }
 
-  /** When spacing.isRegular, same as increment. Otherwise the spacing average or mode, used for information only. */
+  /** When spacing.isRegular, same as increment, otherwise the spacing average or mode, used for information only. */
   public double getResolution() {
     return resolution;
-  }
-
-  public double getStartValue() {
-    return startValue;
-  }
-
-  public double getEndValue() {
-    return endValue;
   }
 
   public DependenceType getDependenceType() {
@@ -172,18 +162,17 @@ public abstract class GridAxis implements Iterable<Object> {
     if (o == null || getClass() != o.getClass())
       return false;
     GridAxis objects = (GridAxis) o;
-    return ncoords == objects.ncoords && Double.compare(objects.startValue, startValue) == 0
-        && Double.compare(objects.endValue, endValue) == 0 && Double.compare(objects.resolution, resolution) == 0
-        && name.equals(objects.name) && Objects.equals(description, objects.description)
-        && Objects.equals(units, objects.units) && axisType == objects.axisType && attributes.equals(objects.attributes)
+    return Double.compare(objects.resolution, resolution) == 0 && name.equals(objects.name)
+        && Objects.equals(description, objects.description) && Objects.equals(units, objects.units)
+        && axisType == objects.axisType && attributes.equals(objects.attributes)
         && dependenceType == objects.dependenceType && dependsOn.equals(objects.dependsOn) && spacing == objects.spacing
         && Arrays.equals(values, objects.values);
   }
 
   @Override
   public int hashCode() {
-    int result = Objects.hash(name, description, units, axisType, attributes, dependenceType, dependsOn, spacing,
-        ncoords, startValue, endValue, resolution);
+    int result =
+        Objects.hash(name, description, units, axisType, attributes, dependenceType, dependsOn, spacing, resolution);
     result = 31 * result + Arrays.hashCode(values);
     return result;
   }
@@ -217,7 +206,6 @@ public abstract class GridAxis implements Iterable<Object> {
     f.format("%n");
     indent.decr();
 
-    f.format("%snpts: %d [%f,%f] spacing=%s", indent, ncoords, startValue, endValue, spacing);
     if (values != null) {
       int n = values.length;
       switch (spacing) {
@@ -240,13 +228,6 @@ public abstract class GridAxis implements Iterable<Object> {
     indent.decr();
   }
 
-  public String getSummary() {
-    Formatter f = new Formatter();
-    f.format("start=%f end=%f %s %s resolution=%f", startValue, endValue, units, spacing, resolution);
-    f.format(" (npts=%d)", ncoords);
-    return f.toString();
-  }
-
   public double[] getValues() {
     // cant allow values array to escape, must be immutable
     return values == null ? null : java.util.Arrays.copyOf(values, values.length);
@@ -263,9 +244,6 @@ public abstract class GridAxis implements Iterable<Object> {
   protected final ImmutableList<String> dependsOn; // independent axes or dimensions
 
   protected final Spacing spacing;
-  protected final int ncoords; // number of coordinates
-  protected final double startValue; // only for regular
-  protected final double endValue;
   protected final double resolution;
   protected final double[] values; // null if isRegular, len= ncoords (irregularPoint), ncoords+1 (contiguous interval),
                                    // or 2*ncoords (discontinuous interval)
@@ -276,7 +254,6 @@ public abstract class GridAxis implements Iterable<Object> {
     Preconditions.checkNotNull(builder.name);
     Preconditions.checkNotNull(builder.axisType);
     Preconditions.checkNotNull(builder.spacing);
-    Preconditions.checkArgument(builder.ncoords > 0);
 
     if (builder.units == null) {
       this.units = builder.attributes.findAttributeString(CDM.UNITS, "");
@@ -298,10 +275,6 @@ public abstract class GridAxis implements Iterable<Object> {
 
     this.spacing = builder.spacing;
     this.values = builder.values;
-
-    this.startValue = builder.startValue;
-    this.endValue = builder.endValue;
-    this.ncoords = builder.ncoords;
     this.resolution = builder.resolution;
 
     this.isSubset = builder.isSubset;
@@ -311,8 +284,7 @@ public abstract class GridAxis implements Iterable<Object> {
   protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> builder) {
     builder.setName(this.name).setUnits(this.units).setDescription(this.getDescription()).setAxisType(this.axisType)
         .setAttributes(this.attributes).setDependenceType(this.dependenceType).setDependsOn(this.dependsOn)
-        .setSpacing(this.spacing).setValues(this.values)
-        .setRegular(this.ncoords, this.startValue, this.endValue, this.resolution).setIsSubset(this.isSubset);
+        .setSpacing(this.spacing).setValues(this.values).setIsSubset(this.isSubset);
 
     return builder;
   }
@@ -326,10 +298,7 @@ public abstract class GridAxis implements Iterable<Object> {
     DependenceType dependenceType = DependenceType.independent; // default
     private ArrayList<String> dependsOn; // independent axes or dimensions
 
-    int ncoords; // number of coordinates, required
     Spacing spacing; // required
-    double startValue;
-    double endValue;
     double resolution;
     boolean isSubset;
 
@@ -383,27 +352,9 @@ public abstract class GridAxis implements Iterable<Object> {
       return self();
     }
 
-    public T setNcoords(int ncoords) {
-      this.ncoords = ncoords;
-      return self();
-    }
-
     /** When spacing.isRegular, same as increment. Otherwise the spacing average or mode, used for information only. */
     public T setResolution(double resolution) {
       this.resolution = resolution;
-      return self();
-    }
-
-    /**
-     * Only used when spacing.isRegular.
-     * regularPoint: start, end are pts; end = start + (ncoords - 1) * increment.
-     * regularInterval: start, end are edges; end = start + ncoords * increment.
-     */
-    public T setRegular(int ncoords, double startValue, double endValue, double increment) {
-      this.ncoords = ncoords;
-      this.startValue = startValue;
-      this.endValue = endValue;
-      this.resolution = increment;
       return self();
     }
 

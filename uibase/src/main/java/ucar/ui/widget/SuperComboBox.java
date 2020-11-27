@@ -319,6 +319,20 @@ public class SuperComboBox extends JPanel {
     return -1;
   }
 
+  public int setSelectedByValue(Object choice) {
+    for (int i = 0; i < list.size(); i++) {
+      TableRow row = list.get(i);
+      if (choice.equals(row.getValueAt(0))) {
+        sendExternalEvent = false;
+        setSelectedByIndex(i);
+        sendExternalEvent = true;
+        return i;
+      }
+    }
+    // setSelectedByIndex(-1); // force it to 0 or none
+    return -1;
+  }
+
   /**
    * Set the currently selected object using its index.
    * If sortOK, then this may not be the original index.

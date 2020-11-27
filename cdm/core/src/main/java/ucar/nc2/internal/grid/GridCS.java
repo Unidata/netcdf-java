@@ -14,11 +14,7 @@ import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.*;
-import ucar.nc2.grid.GridAxis;
-import ucar.nc2.grid.GridAxis1D;
-import ucar.nc2.grid.GridAxis1DTime;
-import ucar.nc2.grid.GridCoordinateSystem;
-import ucar.nc2.grid.GridSubset;
+import ucar.nc2.grid.*;
 import ucar.nc2.internal.dataset.DatasetClassifier;
 import ucar.unidata.geoloc.*;
 
@@ -83,13 +79,19 @@ class GridCS implements GridCoordinateSystem {
   }
 
   @Override
-  public GridAxis1D getXHorizAxis() {
-    return (GridAxis1D) findCoordAxis(AxisType.GeoX, AxisType.Lon);
+  @Nullable
+  public GridAxis1D getEnsembleAxis() {
+    return (GridAxis1D) findCoordAxis(AxisType.Ensemble);
   }
 
   @Override
-  public GridAxis1D getYHorizAxis() {
-    return (GridAxis1D) findCoordAxis(AxisType.GeoY, AxisType.Lat);
+  public GridAxis getXHorizAxis() {
+    return findCoordAxis(AxisType.GeoX, AxisType.Lon);
+  }
+
+  @Override
+  public GridAxis getYHorizAxis() {
+    return findCoordAxis(AxisType.GeoY, AxisType.Lat);
   }
 
   @Override
@@ -117,15 +119,8 @@ class GridCS implements GridCoordinateSystem {
   }
 
   @Override
-  @Nullable
-  public GridAxis1D getEnsembleAxis() {
-    return (GridAxis1D) findCoordAxis(AxisType.Ensemble);
-  }
-
-  @Override
-  @Nullable
-  public Projection getProjection() {
-    return projection;
+  public GridHorizCoordinateSystem getHorizCoordSystem() {
+    return horizCsys;
   }
 
   @Override
@@ -136,131 +131,7 @@ class GridCS implements GridCoordinateSystem {
     return (VerticalCT) result.orElse(null);
   }
 
-  @Override
-  public boolean isLatLon() {
-    return isLatLon;
-  }
 
-  @Override
-  public boolean isGlobalLon() {
-    if (!isLatLon) {
-      return false;
-    }
-    LatLonRect rect = getLatLonBoundingBox();
-    return rect.getWidth() >= 360;
-  }
-
-  @Override
-  public boolean isRegularSpatial() {
-    if (!isRegularSpatial(getXHorizAxis()))
-      return false;
-    return isRegularSpatial(getYHorizAxis());
-  }
-
-  @Override
-  public Optional<CoordReturn> findXYindexFromCoord(double x, double y) {
-    // TODO code in ft2.HorizCoordSys
-    return Optional.empty();
-  }
-
-  private boolean isRegularSpatial(GridAxis1D axis) {
-    if (axis == null)
-      return true;
-    return axis.isRegular();
-  }
-
-  // TODO experimental
-  private String horizStaggerType;
-
-  public String getHorizStaggerType() {
-    return horizStaggerType;
-  }
-
-  public void setHorizStaggerType(String horizStaggerType) {
-    this.horizStaggerType = horizStaggerType;
-  }
-
-  private ProjectionRect mapArea;
-
-  @Override
-  public ProjectionRect getBoundingBox() {
-    if (mapArea == null) {
-      GridAxis1D xaxis1 = getXHorizAxis();
-      GridAxis1D yaxis1 = getYHorizAxis();
-
-      mapArea = new ProjectionRect(xaxis1.getCoordEdge1(0), yaxis1.getCoordEdge1(0),
-          xaxis1.getCoordEdge2(xaxis1.getNcoords() - 1), yaxis1.getCoordEdge2(yaxis1.getNcoords() - 1));
-    }
-    return mapArea;
-  }
-
-  /*
-   * Get the Lat/Lon coordinates of the midpoint of a grid cell, using the x,y indices
-   *
-   * @param xindex x index
-   * 
-   * @param yindex y index
-   * 
-   * @return lat/lon coordinate of the midpoint of the cell
-   *
-   * public LatLonPoint getLatLon(int xindex, int yindex) {
-   * double x, y;
-   *
-   * GridAxis1D horizXaxis = getXHorizAxis();
-   * GridAxis1D horizYaxis = getYHorizAxis();
-   * if (horizXaxis instanceof CoordinateAxis1D) {
-   * CoordinateAxis1D horiz1D = (CoordinateAxis1D) horizXaxis;
-   * x = horiz1D.getCoordValue(xindex);
-   * } else {
-   * CoordinateAxis2D horiz2D = (CoordinateAxis2D) horizXaxis;
-   * x = horiz2D.getCoordValue(yindex, xindex);
-   * }
-   *
-   * if (horizYaxis instanceof CoordinateAxis1D) {
-   * CoordinateAxis1D horiz1D = (CoordinateAxis1D) horizYaxis;
-   * y = horiz1D.getCoordValue(yindex);
-   * } else {
-   * CoordinateAxis2D horiz2D = (CoordinateAxis2D) horizYaxis;
-   * y = horiz2D.getCoordValue(yindex, xindex);
-   * }
-   *
-   * return isLatLon() ? LatLonPoint.create(y, x) : getLatLon(x, y);
-   * }
-   *
-   * public LatLonPoint getLatLon(double xcoord, double ycoord) {
-   * Projection dataProjection = getProjection();
-   * return dataProjection.projToLatLon(ProjectionPoint.create(xcoord, ycoord));
-   * }
-   */
-
-  private LatLonRect llbb;
-
-  @Override
-  public LatLonRect getLatLonBoundingBox() {
-
-    if (llbb == null) {
-      GridAxis1D horizXaxis = getXHorizAxis();
-      GridAxis1D horizYaxis = getYHorizAxis();
-      if (isLatLon()) {
-        double startLat = horizYaxis.getCoordEdge1(0);
-        double startLon = horizXaxis.getCoordEdge1(0);
-
-        double endLat = horizYaxis.getCoordEdge2(horizYaxis.getNcoords() - 1);
-        double endLon = horizXaxis.getCoordEdge2(horizXaxis.getNcoords() - 1);
-
-        LatLonPoint llpt = LatLonPoint.create(startLat, startLon);
-        llbb = new LatLonRect(llpt, endLat - startLat, endLon - startLon);
-
-      } else {
-        Projection dataProjection = getProjection();
-        ProjectionRect bb = getBoundingBox();
-        if (dataProjection != null && bb != null) {
-          llbb = dataProjection.projToLatLonBB(bb);
-        }
-      }
-    }
-    return llbb;
-  }
 
   @Override
   public String toString() {
@@ -277,17 +148,17 @@ class GridCS implements GridCoordinateSystem {
     showCoordinateAxis(getYHorizAxis(), f, showCoords);
     showCoordinateAxis(getXHorizAxis(), f, showCoords);
 
-    if (projection != null) {
-      f.format(" Projection: %s %s%n", projection.getName(), projection.paramsToString());
+    if (horizCsys.getProjection() != null) {
+      f.format(" Projection: %s %s%n", horizCsys.getProjection().getName(), horizCsys.getProjection().paramsToString());
     }
 
-    f.format(" LLbb=%s%n", getLatLonBoundingBox());
-    if ((getProjection() != null) && !getProjection().isLatLon()) {
-      f.format(" bb= %s%n", getBoundingBox());
+    f.format(" LLbb=%s%n", horizCsys.getLatLonBoundingBox());
+    if ((horizCsys.getProjection() != null) && !horizCsys.isLatLon()) {
+      f.format(" bb= %s%n", horizCsys.getBoundingBox());
     }
   }
 
-  private void showCoordinateAxis(GridAxis1D axis, Formatter f, boolean showCoords) {
+  private void showCoordinateAxis(GridAxis axis, Formatter f, boolean showCoords) {
     if (axis == null) {
       return;
     }
@@ -434,8 +305,8 @@ class GridCS implements GridCoordinateSystem {
   private final FeatureType featureType; // TODO redo FeatureType
   private final boolean isLatLon;
   private final String name;
-  private final Projection projection;
   private final ImmutableList<CoordinateTransform> transforms;
+  private final GridHorizCoordinateSystem horizCsys;
 
   /**
    * Create a GridCoordinateSystem from a DatasetClassifier.CoordSysClassifier.
@@ -446,7 +317,6 @@ class GridCS implements GridCoordinateSystem {
   GridCS(DatasetClassifier.CoordSysClassifier classifier, Map<String, GridAxis> gridAxes) {
     this.featureType = classifier.getFeatureType();
     this.isLatLon = classifier.isLatLon();
-    this.projection = classifier.getProjection();
     this.transforms = ImmutableList.copyOf(classifier.getCoordTransforms());
 
     ArrayList<GridAxis> axesb = new ArrayList<>();
@@ -460,6 +330,7 @@ class GridCS implements GridCoordinateSystem {
     this.name = String.join(" ", names);
 
     this.domain = Dimensions.makeDomain(classifier.getAxesUsed(), false);
+    this.horizCsys = GridHorizCS.create(getXHorizAxis(), getYHorizAxis(), classifier.getProjection());
   }
 
   public GridCS.Builder<?> toBuilder() {
@@ -469,7 +340,7 @@ class GridCS implements GridCoordinateSystem {
   // Add local fields to the builder.
   protected GridCS.Builder<?> addLocalFieldsToBuilder(GridCS.Builder<? extends GridCS.Builder<?>> builder) {
     builder.setName(this.name).setDomain(this.domain).setFeatureType(this.featureType).setLatLon(this.isLatLon)
-        .setProjection(this.projection).setTransforms(this.transforms).setAxes(this.axes);
+        .setProjection(horizCsys.getProjection()).setTransforms(this.transforms).setAxes(this.axes);
 
     return builder;
   }
@@ -479,9 +350,9 @@ class GridCS implements GridCoordinateSystem {
     this.domain = ImmutableSet.copyOf(builder.domain);
     this.featureType = builder.featureType;
     this.isLatLon = builder.isLatLon;
-    this.projection = builder.projection;
     this.transforms = builder.transforms;
     this.axes = ImmutableList.copyOf(builder.axes);
+    this.horizCsys = GridHorizCS.create(getXHorizAxis(), getYHorizAxis(), builder.projection);
   }
 
   public static Builder<?> builder() {

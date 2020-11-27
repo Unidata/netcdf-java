@@ -126,13 +126,13 @@ public class GridDatasetImpl implements GridDataset {
 
     ProjectionRect.Builder projBBbuilder = null;
     for (GridCoordinateSystem gcs : this.gridsets.keySet()) {
-      ProjectionRect bb = gcs.getBoundingBox();
+      ProjectionRect bb = gcs.getHorizCoordSystem().getBoundingBox();
       if (projBBbuilder == null)
         projBBbuilder = bb.toBuilder();
       else if (bb != null)
         projBBbuilder.add(bb);
 
-      LatLonRect llbb = gcs.getLatLonBoundingBox();
+      LatLonRect llbb = gcs.getHorizCoordSystem().getLatLonBoundingBox();
       if (llbbBuilder == null)
         llbbBuilder = llbb.toBuilder();
       else if (llbb != null)

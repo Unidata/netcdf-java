@@ -32,6 +32,10 @@ public abstract class CoordInterval {
     return DoubleMath.fuzzyEquals(start(), other.start(), tol) && DoubleMath.fuzzyEquals(end(), other.end(), tol);
   }
 
+  public String toString() {
+    return toString(3);
+  }
+
   /** Show the interval with given decimal precision. */
   public String toString(int ndecimals) {
     return Format.d(start(), ndecimals) + "-" + Format.d(end(), ndecimals);

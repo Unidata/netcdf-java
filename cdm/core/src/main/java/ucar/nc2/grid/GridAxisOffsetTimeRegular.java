@@ -14,6 +14,7 @@ import ucar.ma2.RangeIterator;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.VariableDS;
+import ucar.nc2.internal.grid.GridAxis1DHelper;
 import ucar.nc2.internal.grid.TimeHelper;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.Indent;
@@ -55,6 +56,10 @@ public class GridAxisOffsetTimeRegular extends GridAxis {
 
   public ImmutableList<Integer> getHourOffsets() {
     return hourOffsets;
+  }
+
+  public int getNOffsetPerRun() {
+    return this.midpoints.getShape()[1];
   }
 
   /** Get the associated Runtime Axis. */

@@ -1,7 +1,6 @@
 package ucar.nc2.internal.grid;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.array.Array;
@@ -122,7 +121,6 @@ class Grids {
     CoordinateAxis2DExtractor extract = new CoordinateAxis2DExtractor(axis);
     builder.setMidpoints(extract.getMidpoints());
     builder.setBounds(extract.getBounds());
-    builder.setNcoords(extract.getNtimes());
     builder.setHourOffsets(extract.getHourOffsets());
     builder.setSpacing(extract.isInterval() ? GridAxis.Spacing.discontiguousInterval : GridAxis.Spacing.irregularPoint);
 
