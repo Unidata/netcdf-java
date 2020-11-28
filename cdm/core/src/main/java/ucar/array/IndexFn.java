@@ -18,8 +18,6 @@ import ucar.ma2.Section;
 @Immutable
 final class IndexFn implements Iterable<Integer> {
 
-  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
   /**
    * Get the 1-d index indicated by the list of multidimensional indices.
    *

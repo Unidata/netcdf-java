@@ -420,7 +420,7 @@ public class GridAxis1D extends GridAxis {
     return (Builder<?>) super.addLocalFieldsToBuilder(builder);
   }
 
-  /** A builder taking fields from a VariableDS */
+  /** A builder initializing its fields from a VariableDS */
   public static Builder<?> builder(VariableDS vds) {
     return builder().initFromVariableDS(vds);
   }

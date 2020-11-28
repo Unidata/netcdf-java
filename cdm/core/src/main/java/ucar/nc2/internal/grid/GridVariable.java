@@ -80,7 +80,7 @@ public class GridVariable implements Grid {
     }
 
     GridCoordinateSystem subsetCoordSys = opt.get();
-    List<RangeIterator> rangeIters = subsetCoordSys.getRanges();
+    List<RangeIterator> rangeIters = ((GridCS) subsetCoordSys).getRanges();
     List<Range> ranges = new ArrayList<>();
 
     boolean hasComposite = false;

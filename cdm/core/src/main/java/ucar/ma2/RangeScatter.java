@@ -4,7 +4,11 @@ import javax.annotation.concurrent.Immutable;
 import java.util.Arrays;
 import java.util.Iterator;
 
-/** A Range of indices describes by a list, rather than start:stop:stride. */
+/**
+ * A Range of indices describes by a list, rather than start:stop:stride.
+ * 
+ * @deprecated will move in ver7. TODO used?
+ */
 @Immutable
 public class RangeScatter implements RangeIterator {
   private final int[] vals;
