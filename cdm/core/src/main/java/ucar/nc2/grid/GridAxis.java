@@ -88,9 +88,8 @@ public abstract class GridAxis implements Iterable<Object> {
   @Nullable
   public abstract GridAxis subset(GridSubset params, Formatter errlog);
 
-  // called only on dependent axes. pass in independent axis
-  @Nullable
-  public abstract GridAxis subsetDependent(GridAxis1D dependsOn, Formatter errlog);
+  // called only on dependent axes. pass in the subsetted independent axis
+  public abstract Optional<GridAxis> subsetDependent(GridAxis1D subsetIndAxis, Formatter errlog);
 
   // Iterator over which coordinates wanted. TODO only in axis1d? Only for subset??
   public abstract RangeIterator getRangeIterator();

@@ -6,6 +6,7 @@ import ucar.ma2.RangeIterator;
 import javax.annotation.Nullable;
 import java.util.Formatter;
 import java.util.Iterator;
+import java.util.Optional;
 
 /** Used for curvilinear lat(i, j) and lon(i, j). No intervals. */
 public class GridAxis2D extends GridAxis {
@@ -47,10 +48,9 @@ public class GridAxis2D extends GridAxis {
     return null;
   }
 
-  @Nullable
   @Override
-  public GridAxis subsetDependent(GridAxis1D dependsOn, Formatter errlog) {
-    return null;
+  public Optional<GridAxis> subsetDependent(GridAxis1D subsetIndAxis, Formatter errlog) {
+    return Optional.empty(); // TODO
   }
 
   @Override

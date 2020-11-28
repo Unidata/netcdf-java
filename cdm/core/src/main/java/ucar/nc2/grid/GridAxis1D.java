@@ -390,12 +390,10 @@ public class GridAxis1D extends GridAxis {
   }
 
   @Override
-  @Nullable
-  public GridAxis subsetDependent(GridAxis1D dependsOn, Formatter errLog) {
+  public Optional<GridAxis> subsetDependent(GridAxis1D subsetIndAxis, Formatter errLog) {
     GridAxis1D.Builder<?> builder;
-    // TODO Other possible subsets?
-    builder = new GridAxis1DHelper(this).makeSubsetByIndex(dependsOn.getRange());
-    return builder.build();
+    builder = new GridAxis1DHelper(this).makeSubsetByIndex(subsetIndAxis.getRange());
+    return Optional.of(builder.build());
   }
 
   /** Iterates over coordinate values, either Double or CoordInterval. */

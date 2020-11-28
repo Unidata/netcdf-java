@@ -34,14 +34,14 @@ public class TestGridSubset {
       assertThat(timeOffset.getSpacing()).isEqualTo(GridAxis.Spacing.discontiguousInterval);
 
       assertThat(runtimeAxis.getNcoords()).isGreaterThan(1);
-      CalendarDate wantRuntime = runtimeAxis.getCalendarDate(1);
-      GridAxis1DTime timeAxis = timeOffset.getTimeAxisForRun(wantRuntime);
-      assertThat(timeAxis.getNcoords()).isGreaterThan(1);
-      CoordInterval coord = timeAxis.getCoordInterval(1);
+      CalendarDate wantRuntime = runtimeAxis.getCalendarDate(10);
+      GridAxis1D toAxis = timeOffset.getTimeOffsetAxisForRun(wantRuntime);
+      assertThat(toAxis.getNcoords()).isGreaterThan(1);
+      CoordInterval coord = toAxis.getCoordInterval(1);
       GridSubset subset = new GridSubset().setRunTime(wantRuntime).setTimeOffsetIntv(coord);
 
       GridReferencedArray geoArray = grid.readData(subset);
-      testGeoArray(geoArray, 3);
+      testGeoArray(geoArray, 2);
     }
   }
 

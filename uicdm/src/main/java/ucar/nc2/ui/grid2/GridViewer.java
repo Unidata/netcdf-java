@@ -7,7 +7,7 @@ package ucar.nc2.ui.grid2;
 
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.grid.Grid;
-import ucar.nc2.grid.GridAxis1DTime;
+import ucar.nc2.grid.GridAxis1D;
 import ucar.nc2.grid.GridDataset;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.ui.geoloc.NavigatedPanel;
@@ -599,7 +599,7 @@ public class GridViewer extends JPanel {
         NamedObject selected = (NamedObject) runtimeChooser.getSelectedObject();
         if (selected != null && dataState.setRuntimeCoord(selected.getValue())) {
           if (dataState.toaxisReg != null) {
-            GridAxis1DTime toaxis1D = dataState.toaxisReg.getTimeAxisForRun((CalendarDate) dataState.runtimeCoord);
+            GridAxis1D toaxis1D = dataState.toaxisReg.getTimeOffsetAxisForRun((CalendarDate) dataState.runtimeCoord);
             timeNames = NamedObjects.getCoordNames(toaxis1D);
             timeChooser.setCollection(timeNames.iterator(), true);
             NamedObject no = getNamedObject(timeNames, dataState.timeCoord);
@@ -813,7 +813,7 @@ public class GridViewer extends JPanel {
 
     // set times: only one of taxis, toaxis, toaxisReg is used
     if (this.dataState.toaxisReg != null) {
-      GridAxis1DTime toaxis1D = dataState.toaxisReg.getTimeAxisForRun((CalendarDate) dataState.runtimeCoord);
+      GridAxis1D toaxis1D = dataState.toaxisReg.getTimeOffsetAxisForRun((CalendarDate) dataState.runtimeCoord);
       timeNames = NamedObjects.getCoordNames(toaxis1D);
       timeChooser.setCollection(timeNames.iterator(), true);
       NamedObject no = getNamedObject(timeNames, dataState.timeCoord);

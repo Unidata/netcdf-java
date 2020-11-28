@@ -57,8 +57,6 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
 
   @Override
   public Object getValue(int idx) {
-    if (idx < 0 || idx >= timeIntervals.size())
-      System.out.printf("HEY");
     return timeIntervals.get(idx);
   }
 

@@ -25,6 +25,7 @@ import javax.annotation.concurrent.Immutable;
 import java.util.Formatter;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * A TimeOffset Axis where the offsets depend on the runtime hour since 0z.
@@ -67,25 +68,25 @@ public class GridAxisOffsetTimeRegular extends GridAxis {
     return this.runtimeAxis;
   }
 
-  /** Get the Time axis for the given runtime. */
-  public GridAxis1DTime getTimeAxisForRun(CalendarDate rundate) {
+  /** Get the Time Offset axis for the given runtime. */
+  @Nullable
+  public GridAxis1D getTimeOffsetAxisForRun(CalendarDate rundate) {
     double rundateTarget = runtimeAxis.makeValue(rundate);
     int run_index = new GridAxis1DHelper(runtimeAxis).findCoordElement(rundateTarget, false); // LOOK not Bounded
     try {
-      return (run_index < 0 || run_index >= runtimeAxis.getNcoords()) ? null : getTimeAxisForRun(run_index);
+      return (run_index < 0 || run_index >= runtimeAxis.getNcoords()) ? null : getTimeOffsetAxisForRun(run_index);
     } catch (InvalidRangeException e) {
       throw new RuntimeException(e); // cant happen
     }
   }
 
-  /** Get the Time axis for the given index into the Runtime Axis. */
-  public GridAxis1DTime getTimeAxisForRun(int run_index) throws InvalidRangeException {
-    GridAxis1DTime.Builder<?> builder =
-        GridAxis1DTime.builder().setName(name).setUnits(units).setDescription(description).setAxisType(axisType)
-            .setAttributes(AttributeContainer.filter(attributes, "_Coordinate")).setDependenceType(dependenceType)
-            .setDependsOn(dependsOn).setSpacing(spacing);
+  /** Get the Time Offset axis for the given index into the Runtime Axis. */
+  @Nullable
+  public GridAxis1D getTimeOffsetAxisForRun(int run_index) throws InvalidRangeException {
+    GridAxis1D.Builder<?> builder = GridAxis1D.builder().setName(name).setUnits(units).setDescription(description)
+        .setAxisType(axisType).setAttributes(AttributeContainer.filter(attributes, "_Coordinate"))
+        .setDependenceType(DependenceType.independent).setDependsOn(dependsOn).setSpacing(spacing); // TODO spacing ?
 
-    // TODO deal with NaNs
     Array<Double> data;
     if (spacing == Spacing.irregularPoint) {
       data = getCoordsAsArray();
@@ -96,12 +97,37 @@ public class GridAxisOffsetTimeRegular extends GridAxis {
       throw new RuntimeException("getTimeAxisForRun spacing=" + spacing);
     }
 
-    Array<Double> subset = Arrays.slice(data, 0, run_index);
+    // find which hour offset to use
+    CalendarDate runtime = runtimeAxis.getCalendarDate(run_index);
+    int hourOffset = runtime.getHourOfDay(); // hour from 0z
+    int hourOffsetIdx = hourOffsets.indexOf(hourOffset);
+    if (hourOffsetIdx < 0) {
+      throw new IllegalStateException(String.format("Cant find runtime %s hour offset %d in %s hours %s", runtime,
+          hourOffset, getName(), hourOffsets));
+    }
+
+    // eliminate NaNs: make sure all NaNs are at the end
+    Array<Double> subset = Arrays.slice(data, 0, hourOffsetIdx);
+    int countNonNaN = 0;
+    boolean hasNaN = false;
+    for (double dval : subset) {
+      if (Double.isNaN(dval)) {
+        hasNaN = true;
+      } else {
+        if (hasNaN) {
+          throw new IllegalStateException("Coordinate NaNs must be at the end for " + this.getName());
+        }
+        countNonNaN++;
+      }
+    }
+
     int count = 0;
-    int n = (int) subset.length();
-    double[] values = new double[n];
+    double[] values = new double[countNonNaN];
     for (double dval : subset) {
       values[count++] = dval;
+      if (count == countNonNaN) {
+        break;
+      }
     }
     int ncoords = spacing == Spacing.irregularPoint ? values.length : values.length / 2;
 
@@ -126,13 +152,13 @@ public class GridAxisOffsetTimeRegular extends GridAxis {
     if (latest) {
       run_index = runtimeAxis.getNcoords() - 1;
     } else if (rundate != null) {
-      GridAxis1DTime time1D = getTimeAxisForRun(rundate);
+      GridAxis1D time1D = getTimeOffsetAxisForRun(rundate);
       return time1D.subset(params, errlog);
     }
 
     if (run_index >= 0) {
       try {
-        GridAxis1DTime time1D = getTimeAxisForRun(run_index);
+        GridAxis1D time1D = getTimeOffsetAxisForRun(run_index);
         return time1D.subset(params, errlog);
       } catch (InvalidRangeException e) {
         throw new RuntimeException(e);
@@ -143,20 +169,19 @@ public class GridAxisOffsetTimeRegular extends GridAxis {
     return this;
   }
 
-  @Nullable
   @Override
-  public GridAxis subsetDependent(GridAxis1D dependsOn, Formatter errlog) {
-    return null;
+  public Optional<GridAxis> subsetDependent(GridAxis1D subsetIndAxis, Formatter errlog) {
+    return Optional.empty(); // TODO is it ever dependent? Should it be dependent on runtime?
   }
 
   @Override
   public RangeIterator getRangeIterator() {
-    return null;
+    return null; // TODO is it needed?
   }
 
   @Override
   public Iterator<Object> iterator() {
-    return null; // TODO
+    return null; // TODO is it needed?
   }
 
   @Override

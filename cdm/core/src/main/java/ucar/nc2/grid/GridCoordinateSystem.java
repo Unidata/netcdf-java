@@ -26,6 +26,8 @@ public interface GridCoordinateSystem {
   /** the GridAxes that constitute this Coordinate System */
   Iterable<GridAxis> getGridAxes();
 
+  Optional<GridAxis> findAxis(String axisName);
+
   /** Get the X axis. (either GeoX or Lon) */
   GridAxis getXHorizAxis();
 

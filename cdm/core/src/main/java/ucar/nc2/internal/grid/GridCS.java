@@ -6,6 +6,7 @@ package ucar.nc2.internal.grid;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableSet;
 import ucar.ma2.RangeIterator;
 import ucar.nc2.Dimension;
@@ -21,7 +22,6 @@ import ucar.unidata.geoloc.*;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 /**
@@ -46,12 +46,13 @@ class GridCS implements GridCoordinateSystem {
     return this.axes;
   }
 
-  public GridAxis findCoordAxis(String shortName) {
+  @Override
+  public Optional<GridAxis> findAxis(String axisName) {
     for (GridAxis axis : axes) {
-      if (axis.getName().equals(shortName))
-        return axis;
+      if (axis.getName().equals(axisName))
+        return Optional.of(axis);
     }
-    return null;
+    return Optional.empty();
   }
 
   // search in order given
@@ -130,8 +131,6 @@ class GridCS implements GridCoordinateSystem {
         transforms.stream().filter(t -> t.getTransformType() == TransformType.Vertical).findFirst();
     return (VerticalCT) result.orElse(null);
   }
-
-
 
   @Override
   public String toString() {
@@ -251,44 +250,18 @@ class GridCS implements GridCoordinateSystem {
       if (axis.getDependenceType() == GridAxis.DependenceType.dependent) {
         continue;
       }
-      /*
-       * if (axis.getAxisType().isHoriz())
-       * continue;
-       * if (isTime2D(axis))
-       * continue;
-       */
 
       GridAxis subsetAxis = axis.subset(params, errMessages);
       if (subsetAxis != null) {
         GridAxis1D subsetInd = (GridAxis1D) subsetAxis; // independent always 1D
         builder.addAxis(subsetInd);
 
-        /*
-         * subset any dependent axes
-         * for (CoverageCoordAxis dependent : getDependentAxes(subsetInd)) {
-         * Optional<GridAxis1D> depo = dependent.subsetDependent(subsetInd, errMessages);
-         * depo.ifPresent(subsetAxes::add);
-         * }
-         */
+        // subset any dependent axes
+        for (GridAxis dependent : this.dependMap.get(axis)) {
+          dependent.subsetDependent(subsetInd, errMessages).ifPresent(builder::addAxis);
+        }
       }
     }
-
-    AtomicBoolean isConstantForecast = new AtomicBoolean(false); // need a mutable boolean
-    /*
-     * if (time2DCoordSys != null) {
-     * Optional<List<CoverageCoordAxis>> time2Do =
-     * time2DCoordSys.subset(params, isConstantForecast, makeCFcompliant, errMessages);
-     * time2Do.ifPresent(subsetAxes::addAll);
-     * }
-     */
-
-    /*
-     * Optional<HorizCoordSys> horizo = horizCoordSys.subset(params, errMessages);
-     * if (horizo.isPresent()) {
-     * HorizCoordSys subsetHcs = horizo.get();
-     * subsetAxes.addAll(subsetHcs.getCoordAxes());
-     * }
-     */
 
     String errs = errMessages.toString();
     if (!errs.isEmpty()) {
@@ -307,6 +280,7 @@ class GridCS implements GridCoordinateSystem {
   private final String name;
   private final ImmutableList<CoordinateTransform> transforms;
   private final GridHorizCoordinateSystem horizCsys;
+  private final ImmutableMultimap<GridAxis, GridAxis> dependMap;
 
   /**
    * Create a GridCoordinateSystem from a DatasetClassifier.CoordSysClassifier.
@@ -324,13 +298,26 @@ class GridCS implements GridCoordinateSystem {
       GridAxis gaxis = gridAxes.get(axis.getFullName());
       axesb.add(Preconditions.checkNotNull(gaxis, "Missing Coordinate Axis " + axis.getFullName()));
     }
-    Collections.sort(axesb, new Grids.AxisComparator());
+    axesb.sort(new Grids.AxisComparator());
     this.axes = ImmutableList.copyOf(axesb);
-    List<String> names = axes.stream().map(a -> a.getName()).collect(Collectors.toList());
+    List<String> names = axes.stream().map(GridAxis::getName).collect(Collectors.toList());
     this.name = String.join(" ", names);
 
     this.domain = Dimensions.makeDomain(classifier.getAxesUsed(), false);
     this.horizCsys = GridHorizCS.create(getXHorizAxis(), getYHorizAxis(), classifier.getProjection());
+    this.dependMap = makeDependMap();
+  }
+
+  private ImmutableMultimap<GridAxis, GridAxis> makeDependMap() {
+    ImmutableMultimap.Builder<GridAxis, GridAxis> dependMapb = ImmutableMultimap.builder();
+    for (GridAxis axis : this.axes) {
+      if (axis.getDependenceType() == GridAxis.DependenceType.dependent) {
+        for (String dependsOn : axis.getDependsOn()) {
+          findAxis(dependsOn).ifPresent(indAxis -> dependMapb.put(axis, indAxis));
+        }
+      }
+    }
+    return dependMapb.build();
   }
 
   public GridCS.Builder<?> toBuilder() {
@@ -353,6 +340,7 @@ class GridCS implements GridCoordinateSystem {
     this.transforms = builder.transforms;
     this.axes = ImmutableList.copyOf(builder.axes);
     this.horizCsys = GridHorizCS.create(getXHorizAxis(), getYHorizAxis(), builder.projection);
+    this.dependMap = makeDependMap();
   }
 
   public static Builder<?> builder() {
