@@ -9,6 +9,8 @@ import java.util.Iterator;
 /**
  * Generalization of Range (which is restricted to (start:stop:stride).
  * RangeIterator is over an arbitrary set of integers from the set {0..fullSize-1}.
+ * 
+ * @deprecated will move in ver7.
  */
 public interface RangeIterator extends Iterable<Integer> {
 

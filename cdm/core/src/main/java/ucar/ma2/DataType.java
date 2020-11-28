@@ -12,6 +12,8 @@ import javax.annotation.Nullable;
 /**
  * Type-safe enumeration of data types.
  * Do not change the ordering of these enums, as they are used in protobuf messages, only add new ones onto the end.
+ * 
+ * @deprecated will move in ver7.
  */
 public enum DataType {
   BOOLEAN("boolean", 1, boolean.class, false), //
