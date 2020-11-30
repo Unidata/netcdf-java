@@ -393,19 +393,19 @@ public class GridAxis1DHelper {
     return makeSubsetValues(min, max, stride, errLog);
   }
 
-  // Range must be contained in this range
-  public GridAxis1D.Builder<?> makeSubsetByIndex(Range range) {
-    int ncoords = range.length();
-    Preconditions.checkArgument(range.last() < orgGridAxis.getNcoords());
+  // SubsetRange must be contained in this range
+  public GridAxis1D.Builder<?> makeSubsetByIndex(Range subsetRange) {
+    int ncoords = subsetRange.length();
+    Preconditions.checkArgument(subsetRange.last() < orgGridAxis.getNcoords());
 
     double resolution = 0.0;
     if (orgGridAxis.getSpacing().isRegular()) {
-      resolution = range.stride() * orgGridAxis.getResolution();
+      resolution = subsetRange.stride() * orgGridAxis.getResolution();
     }
 
     GridAxis1D.Builder<?> builder = orgGridAxis.toBuilder();
-    builder.subset(ncoords, orgGridAxis.getCoordMidpoint(range.first()), orgGridAxis.getCoordMidpoint(range.last()),
-        resolution, range);
+    builder.subset(ncoords, orgGridAxis.getCoordMidpoint(subsetRange.first()),
+        orgGridAxis.getCoordMidpoint(subsetRange.last()), resolution, subsetRange);
     return builder;
   }
 

@@ -528,5 +528,4 @@ public class Arrays {
     }
     return MinMax.create(min, max);
   }
-
 }

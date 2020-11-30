@@ -241,7 +241,7 @@ class GridCS implements GridCoordinateSystem {
   /////////////////////////////////////////////////////////////////////////////////////////
 
   @Override
-  public Optional<GridCoordinateSystem> subset(GridSubset params, Formatter errLog) {
+  public Optional<GridCoordinateSystem> subset(GridSubset params, Formatter errlog) {
     Formatter errMessages = new Formatter();
 
     Builder<?> builder = this.toBuilder();
@@ -253,19 +253,24 @@ class GridCS implements GridCoordinateSystem {
 
       GridAxis subsetAxis = axis.subset(params, errMessages);
       if (subsetAxis != null) {
-        GridAxis1D subsetInd = (GridAxis1D) subsetAxis; // independent always 1D
-        builder.addAxis(subsetInd);
+        builder.addAxis(subsetAxis);
 
         // subset any dependent axes
-        for (GridAxis dependent : this.dependMap.get(axis)) {
-          dependent.subsetDependent(subsetInd, errMessages).ifPresent(builder::addAxis);
+        if (subsetAxis instanceof GridAxis1D) {
+          GridAxis1D subsetInd = (GridAxis1D) subsetAxis; // independent always 1D
+          for (GridAxis dependent : this.dependMap.get(axis)) {
+            dependent.subsetDependent(subsetInd, errMessages).ifPresent(builder::addAxis);
+          }
         }
       }
+    }
+    for (GridAxis xyaxis : horizCsys.subset(params, errlog)) {
+      builder.addAxis(xyaxis);
     }
 
     String errs = errMessages.toString();
     if (!errs.isEmpty()) {
-      errLog.format("%s", errs);
+      errlog.format("%s", errs);
       return Optional.empty();
     }
 

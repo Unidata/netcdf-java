@@ -4,8 +4,11 @@
  */
 package ucar.ma2;
 
+import com.google.common.collect.ImmutableList;
+
 import javax.annotation.concurrent.Immutable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * A Composite of other RangeIterators.
@@ -13,12 +16,12 @@ import java.util.*;
  */
 @Immutable
 public class RangeComposite implements RangeIterator {
-  private final List<RangeIterator> ranges;
+  private final ImmutableList<RangeIterator> ranges;
   private final String name;
 
   public RangeComposite(String name, List<RangeIterator> ranges) {
     this.name = name;
-    this.ranges = ranges;
+    this.ranges = ImmutableList.copyOf(ranges);
   }
 
   @Override
@@ -26,7 +29,7 @@ public class RangeComposite implements RangeIterator {
     return name;
   }
 
-  public List<RangeIterator> getRanges() {
+  public ImmutableList<RangeIterator> getRanges() {
     return ranges;
   }
 
@@ -35,6 +38,15 @@ public class RangeComposite implements RangeIterator {
     if (name.equals(this.getName()))
       return this;
     return new RangeComposite(name, ranges);
+  }
+
+  @Override
+  public RangeIterator copyWithStride(int stride) throws InvalidRangeException {
+    ArrayList<RangeIterator> list = new ArrayList<>();
+    for (RangeIterator range : ranges) {
+      list.add(range.copyWithStride(stride));
+    }
+    return new RangeComposite(name, list);
   }
 
   @Override

@@ -4,10 +4,7 @@ import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants._Coordinate;
-import ucar.nc2.grid.GridAxis;
-import ucar.nc2.grid.GridAxis1D;
-import ucar.nc2.grid.GridAxis2D;
-import ucar.nc2.grid.GridHorizCoordinateSystem;
+import ucar.nc2.grid.*;
 import ucar.nc2.util.MinMax;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.LatLonProjection;
@@ -17,9 +14,11 @@ import ucar.unidata.geoloc.projection.sat.VerticalPerspectiveView;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Formatter;
 import java.util.List;
 import java.util.Optional;
 
+/** HorizCS with 1D x,y axes. */
 public class GridHorizCS implements GridHorizCoordinateSystem {
 
   public static GridHorizCS create(GridAxis xaxis, GridAxis yaxis, @Nullable Projection projection) {
@@ -176,6 +175,52 @@ public class GridHorizCS implements GridHorizCoordinateSystem {
     } else {
       return Optional.empty();
     }
+  }
+
+  @Override
+  public List<GridAxis> subset(GridSubset params, Formatter errlog) {
+    List<GridAxis> result = new ArrayList<>();
+    Integer horizStride = params.getHorizStride();
+    if (horizStride == null || horizStride < 1) {
+      horizStride = 1;
+    }
+
+    LatLonRect llbb = params.getLatLonBoundingBox();
+    ProjectionRect projbb = params.getProjectionRect();
+
+    // TODO GridSubset.latlonPoint
+    if (projbb != null) { // TODO ProjectionRect ok for isLatlon = true?
+      GridAxis1DHelper yhelper = new GridAxis1DHelper(yaxis);
+      yhelper.subset(projbb.getMinY(), projbb.getMaxY(), horizStride, errlog).ifPresent(b -> result.add(b.build()));
+
+      GridAxis1DHelper xhelper = new GridAxis1DHelper(xaxis);
+      xhelper.subset(projbb.getMinX(), projbb.getMaxX(), horizStride, errlog).ifPresent(b -> result.add(b.build()));
+
+    } else if (llbb != null && isLatLon()) { // TODO LatLonRect only used for isLatlon = true?
+      GridAxis1DHelper yhelper = new GridAxis1DHelper(yaxis);
+      yhelper.subset(projbb.getMinY(), projbb.getMaxY(), horizStride, errlog).ifPresent(b -> result.add(b.build()));
+
+      // TODO longitude wrapping
+      GridAxis1DHelper xhelper = new GridAxis1DHelper(xaxis);
+      xhelper.subset(projbb.getMinX(), projbb.getMaxX(), horizStride, errlog).ifPresent(b -> result.add(b.build()));
+
+    } else if (horizStride > 1) { // no bounding box, just horiz stride
+      try {
+        Range yRange = yaxis.getRange().copyWithStride(horizStride);
+        result.add(yaxis.toBuilder().setRange(yRange).build());
+
+        Range xRange = xaxis.getRange().copyWithStride(horizStride);
+        result.add(xaxis.toBuilder().setRange(xRange).build());
+      } catch (InvalidRangeException e) {
+        errlog.format(e.getMessage());
+      }
+
+    } else { // default is all x, y
+      result.add(yaxis);
+      result.add(xaxis);
+    }
+
+    return result;
   }
 
   /**

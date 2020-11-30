@@ -144,7 +144,7 @@ public abstract class GridAxis implements Iterable<Object> {
     return dependsOn;
   }
 
-  // LOOK maybe subset should return different class, since you cant subset a subset?
+  // TODO maybe subset should return different class, since you cant subset a subset?
   public boolean isSubset() {
     return isSubset;
   }
@@ -227,6 +227,7 @@ public abstract class GridAxis implements Iterable<Object> {
     indent.decr();
   }
 
+  // TODO remove from public
   public double[] getValues() {
     // cant allow values array to escape, must be immutable
     return values == null ? null : java.util.Arrays.copyOf(values, values.length);

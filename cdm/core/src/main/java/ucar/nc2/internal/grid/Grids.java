@@ -11,10 +11,7 @@ import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
-import ucar.nc2.grid.GridAxis;
-import ucar.nc2.grid.GridAxis1D;
-import ucar.nc2.grid.GridAxis1DTime;
-import ucar.nc2.grid.GridAxisOffsetTimeRegular;
+import ucar.nc2.grid.*;
 
 import java.io.IOException;
 import java.util.ArrayList;

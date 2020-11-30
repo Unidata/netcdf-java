@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
+import ucar.ma2.RangeIterator;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.internal.grid.GridAxis1DHelper;
@@ -180,7 +181,7 @@ public class GridAxis1DTime extends GridAxis1D {
           return helper.subsetClosest(date);
         }
 
-        // TODO, can time be discontinuous interval, if so need to add that case.
+        // TODO, can time be discontinuous interval? if so need to add that case.
         Object value = params.getTimeCoord();
         if (value instanceof Double) {
           return helper.subsetClosest((Double) value);
@@ -195,14 +196,6 @@ public class GridAxis1DTime extends GridAxis1D {
         if (dateRange != null) {
           return helper.subset(dateRange, stride, errLog).orElse(null);
         }
-
-        // If no time range or time point, a timeOffset can be used to specify the time point.
-        /*
-         * CalendarDate timeOffsetDate = params.getTimeOffsetDate();
-         * if (timeOffsetDate != null) {
-         * return Optional.of(helper.subsetClosest(timeOffsetDate));
-         * }
-         */
 
         // A time offset or time offset interval starts from the rundate of the offset
         Double timeOffset = params.getTimeOffset();
@@ -337,7 +330,7 @@ public class GridAxis1DTime extends GridAxis1D {
     }
   }
 
-  private ImmutableList<CalendarDate> subsetDatesByRange(List<CalendarDate> dates, Range range) {
+  private ImmutableList<CalendarDate> subsetDatesByRange(List<CalendarDate> dates, RangeIterator range) {
     ImmutableList.Builder<CalendarDate> builder = ImmutableList.builder();
     for (int index : range) {
       builder.add(dates.get(index));

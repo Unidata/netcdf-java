@@ -42,8 +42,6 @@ public class GridSubset {
   public static final String timeWindow = "timeWindow"; // value = CalendarPeriod
 
   public static final String vertCoord = "vertCoord"; // value = Double or CoordInterval
-  // public static final String vertRange = "vertRange"; // value = double[2] used WCS local, not remote
-
   public static final String ensCoord = "ensCoord"; // value = Double
 
   // cant use these for selecting, used for validation
@@ -127,6 +125,10 @@ public class GridSubset {
   public GridSubset setHorizStride(int stride) {
     req.put(horizStride, stride);
     return this;
+  }
+
+  public Integer getHorizStride() {
+    return (Integer) req.get(horizStride);
   }
 
   public Double getEnsCoord() {

@@ -26,21 +26,8 @@ public interface GridCoordinateSystem {
   /** the GridAxes that constitute this Coordinate System */
   Iterable<GridAxis> getGridAxes();
 
+  /** Find the named axis. */
   Optional<GridAxis> findAxis(String axisName);
-
-  /** Get the X axis. (either GeoX or Lon) */
-  GridAxis getXHorizAxis();
-
-  /** Get the Y axis. (either GeoY or Lat) */
-  GridAxis getYHorizAxis();
-
-  /** Get the Z axis (GeoZ, Height, Pressure). */
-  @Nullable
-  GridAxis1D getVerticalAxis();
-
-  /** Get the Time axis. */
-  @Nullable
-  GridAxis1DTime getTimeAxis();
 
   /** Get the ensemble axis. */
   @Nullable
@@ -50,9 +37,23 @@ public interface GridCoordinateSystem {
   @Nullable
   GridAxis1DTime getRunTimeAxis();
 
+  /** Get the Time axis. */
+  @Nullable
+  GridAxis1DTime getTimeAxis();
+
   /** Get the Time Offset axis. */
   @Nullable
   GridAxis getTimeOffsetAxis();
+
+  /** Get the Z axis (GeoZ, Height, Pressure). */
+  @Nullable
+  GridAxis1D getVerticalAxis();
+
+  /** Get the X axis. (either GeoX or Lon) */
+  GridAxis getXHorizAxis();
+
+  /** Get the Y axis. (either GeoY or Lat) */
+  GridAxis getYHorizAxis();
 
   /** Get the Horizontal CoordinateSystem. */
   GridHorizCoordinateSystem getHorizCoordSystem();
@@ -65,7 +66,7 @@ public interface GridCoordinateSystem {
 
   void show(Formatter f, boolean showCoords);
 
-  // LOOK: Optional, Nullable, Exception?
+  /** Subset each axis based on the given parameters. */
   Optional<GridCoordinateSystem> subset(GridSubset params, Formatter errLog);
 
   // LOOK what is this?

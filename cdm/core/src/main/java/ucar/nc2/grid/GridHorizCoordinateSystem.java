@@ -1,6 +1,8 @@
 package ucar.nc2.grid;
 
 import javax.annotation.Nullable;
+import java.util.Formatter;
+import java.util.List;
 import java.util.Optional;
 
 /** Manages Projection or Lat/Lon CoordinateSystem, assumed to be seperable; use of indices ok. */
@@ -51,5 +53,8 @@ public interface GridHorizCoordinateSystem {
 
   /** From the (x,y) projection point, find the indices and coordinates of the horizontal 2D grid. */
   Optional<CoordReturn> findXYindexFromCoord(double xpt, double ypt);
+
+  /** Subset both x and y axis based on the given parameters. */
+  List<GridAxis> subset(GridSubset params, Formatter errlog);
 
 }
