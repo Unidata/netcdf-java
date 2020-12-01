@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.dataset;
@@ -243,6 +243,14 @@ class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsigned {
           if (hasValidRange || hasValidMax) {
             validMax = applyScaleOffset(validMax);
           }
+        }
+        // During the scaling process, it is possible that the valid minimum and maximum values have effectively been
+        // swapped (for example, when the scale value is negative). Go ahead and check to make sure the valid min is
+        // actually less than the valid max, and if not, fix it. See https://github.com/Unidata/netcdf-java/issues/572.
+        if (validMin > validMax) {
+          double tmp = validMin;
+          validMin = validMax;
+          validMax = tmp;
         }
       }
     }
