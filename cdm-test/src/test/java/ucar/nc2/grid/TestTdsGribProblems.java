@@ -2,18 +2,21 @@ package ucar.nc2.grid;
 
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.array.Array;
 import ucar.array.Arrays;
 import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.util.Formatter;
 
 import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
 
+@Category(NeedsCdmUnitTest.class)
 public class TestTdsGribProblems {
   private static final String indexDir = TestDir.cdmUnitTestDir + "tds_index/";
 
