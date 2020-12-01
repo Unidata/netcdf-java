@@ -103,4 +103,29 @@ public class TestScaleOffsetMissing {
       }
     }
   }
+
+  // Same as testNegScaleOffsetValidRange, but using the old NetcdfDataset.openDataset API.
+  // TODO: Remove in 6
+  @Test
+  public void testNegScaleOffsetValidRangeDeprecatedApi() throws URISyntaxException, IOException {
+    File testResource = new File(getClass().getResource("testScaleOffsetMissing.ncml").toURI());
+
+    try (NetcdfDataset ncd = NetcdfDataset.openDataset(testResource.getAbsolutePath(), true, null)) {
+      VariableDS var = (VariableDS) ncd.findVariable("negScaleOffsetValidRange");
+
+      assertThat(var.getValidMin()).isWithin(fpTol).of(-expectedValidMax);
+      assertThat(var.getValidMax()).isWithin(fpTol).of(-expectedValidMin);
+
+      float[] actual = (float[]) var.read().getStorage();
+      for (int i = 0; i < actual.length; i++) {
+        if (var.isInvalidData(actual[i])) {
+          assertThat(actual[i]).isNaN();
+          assertThat(expected[i]).isNaN();
+        } else {
+          assertThat(actual[i]).isNotNaN();
+          assertThat(actual[i]).isWithin(fpTol).of(-expected[i]);
+        }
+      }
+    }
+  }
 }
