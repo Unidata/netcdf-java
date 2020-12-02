@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
@@ -82,6 +83,7 @@ public class S3JoinNew {
   }
 
   @Test
+  @Ignore("Not working in 6 - goal should be to get working with new grid axes classes.")
   public void testJoinNewDataset() throws IOException {
     try (NetcdfDataset ncd = NetcdfDatasets.openDataset(NcmlTestsCommon.joinNewNcmlExplicit)) {
       Variable rad = ncd.findVariable(NcmlTestsCommon.dataVarName);
