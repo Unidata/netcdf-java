@@ -15,6 +15,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.AfterClass;
@@ -45,7 +46,6 @@ import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarPeriod.Field;
-import ucar.nc2.util.Optional;
 import ucar.unidata.io.s3.S3TestsCommon;
 
 public class S3AggScanFeatureType {

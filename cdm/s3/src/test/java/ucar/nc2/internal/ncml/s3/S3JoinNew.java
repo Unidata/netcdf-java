@@ -6,7 +6,7 @@
 package ucar.nc2.internal.ncml.s3;
 
 import static com.google.common.truth.Truth.assertThat;
-import static ucar.nc2.util.CompareNetcdf2.compareData;
+import static ucar.nc2.internal.util.CompareNetcdf2.compareData;
 
 import com.google.common.collect.ImmutableList;
 import java.io.IOException;
