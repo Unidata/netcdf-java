@@ -22,7 +22,6 @@ public class GridSubset {
   public static final String projBB = "projBB"; // value = ProjectionRect
   public static final String horizStride = "horizStride"; // value = Integer
   public static final String latlonPoint = "latlonPoint"; // value = LatLonPoint
-  public static final String stations = "stn"; // value = List<String>
 
   public static final String runtime = "runtime"; // value = CalendarDate
   public static final String runtimeLatest = "runtimeLatest"; // value = Boolean
@@ -323,26 +322,5 @@ public class GridSubset {
       }
     }
     return f.toString();
-  }
-
-  //////////////////////////////
-  // probably not needed
-
-  public List<String> getStations() {
-    return (List<String>) get(stations);
-  }
-
-  public GridSubset setStations(List<String> stns) {
-    req.put(stations, stns);
-    return this;
-  }
-
-  public List<String> getVariables() {
-    return (List<String>) get(variables);
-  }
-
-  public GridSubset setVariables(List<String> vars) {
-    req.put(variables, vars);
-    return this;
   }
 }

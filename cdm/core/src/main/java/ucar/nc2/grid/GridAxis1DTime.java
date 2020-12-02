@@ -142,7 +142,7 @@ public class GridAxis1DTime extends GridAxis1D {
     return timeHelper.getCalendar();
   }
 
-  public TimeHelper getTimeHelper() {
+  TimeHelper getTimeHelper() {
     return timeHelper;
   }
 
@@ -237,12 +237,6 @@ public class GridAxis1DTime extends GridAxis1D {
           return helper.subsetClosest(rundate);
         }
 
-        /*
-         * CalendarDateRange rundateRange = (CalendarDateRange) params.get(SubsetParams.runtimeRange);
-         * if (rundateRange != null)
-         * return helper.subset(rundateRange, 1);
-         */
-
         if (params.getRunTimeAll()) {
           break;
         }
@@ -258,6 +252,7 @@ public class GridAxis1DTime extends GridAxis1D {
 
   @Override
   public String getSummary() {
+    // TODO why?
     if (axisType != AxisType.RunTime) {
       return super.getSummary();
     }
