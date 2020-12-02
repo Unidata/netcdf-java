@@ -1,8 +1,11 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
+
 package ucar.nc2.dataset;
+
+import static java.lang.Float.NaN;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -283,6 +286,31 @@ public class TestScaleOffsetMissingUnsigned {
     }
   }
 
+  // This test demonstrated the bug in https://github.com/Unidata/netcdf-java/issues/572, but for unsigned variables.
+  @Test
+  public void testNegativeScaleOffsetValidRangeUnsigned() throws URISyntaxException, IOException {
+    File testResource = new File(getClass().getResource("testScaleOffsetMissingUnsigned.ncml").toURI());
+    float fpTol = 1e-6f;
+
+    try (NetcdfDataset ncd = NetcdfDatasets.openDataset(testResource.getAbsolutePath(), true, null)) {
+      VariableDS var = (VariableDS) ncd.findVariable("scaleOffsetMissingUnsignedValidRange");
+
+      Assert.assertEquals(-25001, var.getValidMin(), fpTol);
+      Assert.assertEquals(-15001, var.getValidMax(), fpTol);
+
+      Assert.assertEquals(-25501, var.getFillValue(), fpTol);
+      Assert.assertEquals(-25501, var.getMissingValues()[0], fpTol);
+      // Because scale and offset are now float (to preserve negative values), var is float
+      Assert.assertEquals(DataType.FLOAT, var.getDataType());
+
+      // These vals are the same as ones from "missingUnsigned", but with a scale_factor of -100 and offset of
+      // -1 applied.
+      float[] expecteds = new float[] {NaN, -15001, -25001, NaN, NaN, NaN};
+      float[] actuals = (float[]) var.read().getStorage();
+      Assert.assertArrayEquals(expecteds, actuals, fpTol);
+    }
+  }
+
   @Test
   public void testScaleValidRange() throws IOException, URISyntaxException {
     File testResource = new File(getClass().getResource("testScaleOffsetMissingUnsigned.ncml").toURI());
@@ -296,7 +324,7 @@ public class TestScaleOffsetMissingUnsigned {
 
       Assert.assertEquals(DataType.FLOAT, var.getDataType()); // scale_factor is float.
 
-      float[] expecteds = new float[] {Float.NaN, 9.9f, 10.0f, 10.1f, Float.NaN};
+      float[] expecteds = new float[] {NaN, 9.9f, 10.0f, 10.1f, NaN};
       float[] actuals = (float[]) var.read().getStorage();
       Assert2.assertArrayNearlyEquals(expecteds, actuals);
     }
