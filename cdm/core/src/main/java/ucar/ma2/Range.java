@@ -33,6 +33,7 @@ public class Range implements RangeIterator {
   public static final Range ONE = new Range("ONE", 1);
   public static final Range VLEN = new Range("VLEN", -1);
 
+  /** Make a named Range from 0 to len-1. */
   public static Range make(String name, int len) {
     try {
       return new Range(name, 0, len - 1, 1);
@@ -41,6 +42,7 @@ public class Range implements RangeIterator {
     }
   }
 
+  /** Make an unnamed Range from first to last. */
   public static Range make(int first, int last) {
     try {
       return new Range(first, last);

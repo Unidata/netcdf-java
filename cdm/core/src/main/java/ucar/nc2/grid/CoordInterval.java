@@ -1,10 +1,11 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.grid;
 
 import com.google.auto.value.AutoValue;
+import com.google.common.math.DoubleMath;
 import ucar.unidata.util.Format;
 
 /** A Coordinate represented by an interval [start, end) */
@@ -16,26 +17,27 @@ public abstract class CoordInterval {
   /** The ending value of the coordinate interval */
   public abstract double end();
 
-  /** Number of digits to right of decimal place in toString(). Default is 3. */
-  public abstract int ndecimals();
-
-  /** Create an interval with default decimals. */
+  /** Create an interval. */
   public static CoordInterval create(double start, double end) {
-    return new AutoValue_CoordInterval(start, end, 3);
+    return new AutoValue_CoordInterval(start, end);
   }
 
-  /** Create an interval with specified decimals. */
-  public static CoordInterval create(double start, double end, int ndec) {
-    return new AutoValue_CoordInterval(start, end, ndec);
+  /** The midpoint between start and end. */
+  public double midpoint() {
+    return (start() + end()) / 2;
   }
 
-  @Override
+  /** Compare two intervals to within the given tolerence. */
+  public boolean fuzzyEquals(CoordInterval other, double tol) {
+    return DoubleMath.fuzzyEquals(start(), other.start(), tol) && DoubleMath.fuzzyEquals(end(), other.end(), tol);
+  }
+
   public String toString() {
-    return Format.d(start(), ndecimals()) + "-" + Format.d(end(), ndecimals());
+    return toString(3);
   }
 
-  /** Convert to a double[2] primitive array. */
-  public double[] toPrimitiveArray() {
-    return new double[] {start(), end()};
+  /** Show the interval with given decimal precision. */
+  public String toString(int ndecimals) {
+    return Format.d(start(), ndecimals) + "-" + Format.d(end(), ndecimals);
   }
 }

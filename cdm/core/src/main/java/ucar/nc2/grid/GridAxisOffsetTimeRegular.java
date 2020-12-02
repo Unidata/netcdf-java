@@ -1,9 +1,10 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.grid;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import ucar.array.Array;
 import ucar.array.Arrays;
@@ -13,14 +14,18 @@ import ucar.ma2.RangeIterator;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.VariableDS;
+import ucar.nc2.internal.grid.GridAxis1DHelper;
+import ucar.nc2.internal.grid.TimeHelper;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.Indent;
 import ucar.nc2.write.NcdumpArray;
 
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import java.util.Formatter;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * A TimeOffset Axis where the offsets depend on the runtime hour since 0z.
@@ -37,6 +42,7 @@ import java.util.List;
  * An orthogonal TimeOffset means the same offsets for any runtime, so both runtime and timeOffset are 1D.
  * A regular Timeoffset means it varies based on the hour of the runtime from 0Z.
  */
+@Immutable
 public class GridAxisOffsetTimeRegular extends GridAxis {
 
   @Override
@@ -49,52 +55,84 @@ public class GridAxisOffsetTimeRegular extends GridAxis {
     return this.bounds;
   }
 
+  public ImmutableList<Integer> getHourOffsets() {
+    return hourOffsets;
+  }
+
+  public int getNOffsetPerRun() {
+    return this.midpoints.getShape()[1];
+  }
+
+  /** Get the associated Runtime Axis. */
   public GridAxis1DTime getRunTimeAxis() {
     return this.runtimeAxis;
   }
 
-  public GridAxis1DTime getTimeAxisForRun(CalendarDate rundate) {
+  /** Get the Time Offset axis for the given runtime. */
+  @Nullable
+  public GridAxis1D getTimeOffsetAxisForRun(CalendarDate rundate) {
     double rundateTarget = runtimeAxis.makeValue(rundate);
     int run_index = new GridAxis1DHelper(runtimeAxis).findCoordElement(rundateTarget, false); // LOOK not Bounded
     try {
-      return (run_index < 0 || run_index >= runtimeAxis.getNcoords()) ? null : getTimeAxisForRun(run_index);
+      return (run_index < 0 || run_index >= runtimeAxis.getNcoords()) ? null : getTimeOffsetAxisForRun(run_index);
     } catch (InvalidRangeException e) {
       throw new RuntimeException(e); // cant happen
     }
   }
 
-  public GridAxis1DTime getTimeAxisForRun(int run_index) throws InvalidRangeException {
-    GridAxis1DTime.Builder<?> builder =
-        GridAxis1DTime.builder().setName(name).setUnits(units).setDescription(description).setDataType(dataType)
-            .setAxisType(axisType).setAttributes(AttributeContainer.filter(attributes, "_Coordinate"))
-            .setDependenceType(dependenceType).setDependsOn(dependsOn).setSpacing(spacing).setReader(reader);
+  /** Get the Time Offset axis for the given index into the Runtime Axis. */
+  @Nullable
+  public GridAxis1D getTimeOffsetAxisForRun(int run_index) throws InvalidRangeException {
+    GridAxis1D.Builder<?> builder = GridAxis1D.builder().setName(name).setUnits(units).setDescription(description)
+        .setAxisType(axisType).setAttributes(AttributeContainer.filter(attributes, "_Coordinate"))
+        .setDependenceType(DependenceType.independent).setDependsOn(dependsOn).setSpacing(spacing); // TODO spacing ?
 
-    double[] values = null;
+    Array<Double> data;
     if (spacing == Spacing.irregularPoint) {
-      Array<Double> data = getCoordsAsArray();
-      Array<Double> subset = Arrays.slice(data, 0, run_index);
-
-      int count = 0;
-      int n = (int) subset.length();
-      values = new double[n];
-      for (double dval : subset) {
-        values[count++] = dval;
-      }
-
+      data = getCoordsAsArray();
     } else if (spacing == Spacing.discontiguousInterval) {
-      Array<Double> data = getCoordBoundsAsArray();
-      Array<Double> subset = Arrays.slice(data, 0, run_index);
+      data = getCoordBoundsAsArray();
+    } else {
+      // TODO what about the other cases ??
+      throw new RuntimeException("getTimeAxisForRun spacing=" + spacing);
+    }
 
-      int count = 0;
-      int n = (int) subset.length();
-      values = new double[n];
-      for (double dval : subset) {
-        values[count++] = dval;
+    // find which hour offset to use
+    CalendarDate runtime = runtimeAxis.getCalendarDate(run_index);
+    int hourOffset = runtime.getHourOfDay(); // hour from 0z
+    int hourOffsetIdx = hourOffsets.indexOf(hourOffset);
+    if (hourOffsetIdx < 0) {
+      throw new IllegalStateException(String.format("Cant find runtime %s hour offset %d in %s hours %s", runtime,
+          hourOffset, getName(), hourOffsets));
+    }
+
+    // eliminate NaNs: make sure all NaNs are at the end
+    Array<Double> subset = Arrays.slice(data, 0, hourOffsetIdx);
+    int countNonNaN = 0;
+    boolean hasNaN = false;
+    for (double dval : subset) {
+      if (Double.isNaN(dval)) {
+        hasNaN = true;
+      } else {
+        if (hasNaN) {
+          throw new IllegalStateException("Coordinate NaNs must be at the end for " + this.getName());
+        }
+        countNonNaN++;
       }
     }
 
-    // TODO what about the other cases ??
+    int count = 0;
+    double[] values = new double[countNonNaN];
+    for (double dval : subset) {
+      values[count++] = dval;
+      if (count == countNonNaN) {
+        break;
+      }
+    }
+    int ncoords = spacing == Spacing.irregularPoint ? values.length : values.length / 2;
+
     builder.setValues(values);
+    builder.setNcoords(ncoords);
     builder.setIsSubset(true);
     return builder.build();
   }
@@ -106,21 +144,21 @@ public class GridAxisOffsetTimeRegular extends GridAxis {
       return this;
     }
 
-    CalendarDate rundate = (CalendarDate) params.get(GridSubset.runtime);
-    boolean runtimeAll = (Boolean) params.get(GridSubset.runtimeAll);
+    CalendarDate rundate = params.getRunTime();
+    boolean runtimeAll = params.getRunTimeAll();
     boolean latest = (rundate == null) && !runtimeAll; // default is latest
 
     int run_index = -1;
     if (latest) {
       run_index = runtimeAxis.getNcoords() - 1;
     } else if (rundate != null) {
-      GridAxis1DTime time1D = getTimeAxisForRun(rundate);
+      GridAxis1D time1D = getTimeOffsetAxisForRun(rundate);
       return time1D.subset(params, errlog);
     }
 
     if (run_index >= 0) {
       try {
-        GridAxis1DTime time1D = getTimeAxisForRun(run_index);
+        GridAxis1D time1D = getTimeOffsetAxisForRun(run_index);
         return time1D.subset(params, errlog);
       } catch (InvalidRangeException e) {
         throw new RuntimeException(e);
@@ -131,20 +169,19 @@ public class GridAxisOffsetTimeRegular extends GridAxis {
     return this;
   }
 
-  @Nullable
   @Override
-  public GridAxis subsetDependent(GridAxis1D dependsOn, Formatter errlog) {
-    return null;
+  public Optional<GridAxis> subsetDependent(GridAxis1D subsetIndAxis, Formatter errlog) {
+    return Optional.empty(); // TODO is it ever dependent? Should it be dependent on runtime?
   }
 
   @Override
   public RangeIterator getRangeIterator() {
-    return null;
+    return null; // TODO is it needed?
   }
 
   @Override
   public Iterator<Object> iterator() {
-    return null;
+    return null; // TODO is it needed?
   }
 
   @Override
@@ -161,20 +198,29 @@ public class GridAxisOffsetTimeRegular extends GridAxis {
   private final TimeHelper timeHelper; // AxisType = Time, RunTime only
   private final GridAxis1DTime runtimeAxis;
   private final Array<Double> midpoints;
+  @Nullable
   private final Array<Double> bounds;
-  private final Array<Integer> hourOffsets;
+  private final ImmutableList<Integer> hourOffsets;
 
   protected GridAxisOffsetTimeRegular(Builder<?> builder) {
     super(builder);
+    Preconditions.checkNotNull(builder.runtimeAxis);
+    Preconditions.checkNotNull(builder.midpoints);
+    Preconditions.checkNotNull(builder.bounds);
+
     this.runtimeAxis = builder.runtimeAxis;
     this.midpoints = builder.midpoints;
     this.bounds = builder.bounds;
-    this.hourOffsets = builder.hourOffsets;
     if (builder.timeHelper != null) {
       this.timeHelper = builder.timeHelper;
     } else {
-      this.timeHelper = TimeHelper.factory(this.units, this.attributes);
+      this.timeHelper = builder.runtimeAxis.getTimeHelper();
     }
+    ImmutableList.Builder<Integer> hourb = ImmutableList.builder();
+    for (int hour : builder.hourOffsets) {
+      hourb.add(hour);
+    }
+    this.hourOffsets = hourb.build();
   }
 
   private ImmutableList<CalendarDate> subsetDatesByRange(List<CalendarDate> dates, Range range) {

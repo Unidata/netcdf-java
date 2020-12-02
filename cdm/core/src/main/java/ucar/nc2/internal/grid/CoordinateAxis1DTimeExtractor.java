@@ -5,7 +5,6 @@ import ucar.array.ArrayChar;
 import ucar.ma2.DataType;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.*;
-import ucar.nc2.grid.TimeHelper;
 import ucar.nc2.time.CalendarDate;
 
 import java.io.IOException;
@@ -14,21 +13,21 @@ import java.util.Formatter;
 import java.util.List;
 
 class CoordinateAxis1DTimeExtractor {
-  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinateAxis1DExtractor.class);
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinateAxis1DTimeExtractor.class);
 
   final TimeHelper timeHelper;
   final List<CalendarDate> cdates;
 
-  CoordinateAxis1DTimeExtractor(CoordinateAxis dtCoordAxis, double[] values) {
-    Preconditions.checkArgument(dtCoordAxis.getRank() < 2);
-    this.timeHelper = TimeHelper.factory(dtCoordAxis.getUnitsString(), dtCoordAxis.attributes());
+  CoordinateAxis1DTimeExtractor(CoordinateAxis coordAxis, double[] values) {
+    Preconditions.checkArgument(coordAxis.getRank() < 2);
+    this.timeHelper = TimeHelper.factory(coordAxis.getUnitsString(), coordAxis.attributes());
 
     try {
       Formatter errMessages = new Formatter();
-      if (dtCoordAxis.getDataType() == DataType.CHAR) {
-        cdates = makeTimesFromChar(dtCoordAxis, errMessages);
-      } else if (dtCoordAxis.getDataType() == DataType.STRING) {
-        cdates = makeTimesFromStrings(dtCoordAxis, errMessages);
+      if (coordAxis.getDataType() == DataType.CHAR) {
+        cdates = makeTimesFromChar(coordAxis, errMessages);
+      } else if (coordAxis.getDataType() == DataType.STRING) {
+        cdates = makeTimesFromStrings(coordAxis, errMessages);
       } else {
         cdates = makeCalendarDateFromValues(values);
       }

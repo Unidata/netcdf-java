@@ -1,30 +1,34 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
 package ucar.nc2.grid;
 
-import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
+import ucar.ma2.RangeIterator;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.VariableDS;
+import ucar.nc2.internal.grid.GridAxis1DHelper;
+import ucar.nc2.internal.grid.TimeHelper;
 import ucar.nc2.time.*;
 import ucar.nc2.time.Calendar;
 import ucar.nc2.util.Indent;
 
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import java.util.*;
 
 /**
  * A 1-dimensional GridAxis whose coordinates can be converted to CalendarDates.
  * A GridAxis1DTime has a CalendarDateUnit that allows converting between doubles and CalendarDates.
  */
+@Immutable
 public class GridAxis1DTime extends GridAxis1D {
   private static final Logger logger = LoggerFactory.getLogger(GridAxis1DTime.class);
 
@@ -40,9 +44,6 @@ public class GridAxis1DTime extends GridAxis1D {
     int last = cd.size();
     return (last > 0) ? CalendarDateRange.of(cd.get(0), cd.get(last - 1)) : null;
   }
-
-  // LOOK public CalendarDateRange getDateRange() { return timeHelper.getDateRange(startValue, endValue); }
-
 
   /**
    * Given a Date, find the corresponding time index on the time coordinate axis.
@@ -141,6 +142,10 @@ public class GridAxis1DTime extends GridAxis1D {
     return timeHelper.getCalendar();
   }
 
+  public TimeHelper getTimeHelper() {
+    return timeHelper;
+  }
+
   /////////////////////////////////////////////////////////////////////////////////////////////////
 
   /*
@@ -166,39 +171,31 @@ public class GridAxis1DTime extends GridAxis1D {
   private GridAxis1D.Builder<?> subsetBuilder(GridSubset params, Formatter errLog) {
     GridAxis1DHelper helper = new GridAxis1DHelper(this);
     switch (getAxisType()) {
-      case Time:
-        if (params.isTrue(GridSubset.timePresent)) {
+      case Time: {
+        if (params.getTimePresent()) {
           return helper.subsetLatest();
         }
 
-        CalendarDate date = (CalendarDate) params.get(GridSubset.time);
+        CalendarDate date = params.getTime();
         if (date != null) {
           return helper.subsetClosest(date);
         }
 
-        // TODO, can time be discontinuous interval, if so need to add that case.
-        Double value = (Double) params.get(GridSubset.timeCoord);
-        if (value != null) {
-          return helper.subsetClosest(value);
+        // TODO, can time be discontinuous interval? if so need to add that case.
+        Object value = params.getTimeCoord();
+        if (value instanceof Double) {
+          return helper.subsetClosest((Double) value);
         }
 
-        Integer stride = (Integer) params.get(GridSubset.timeStride);
+        Integer stride = params.getTimeStride();
         if (stride == null || stride < 0) {
           stride = 1;
         }
 
-        CalendarDateRange dateRange = (CalendarDateRange) params.get(GridSubset.timeRange);
+        CalendarDateRange dateRange = params.getTimeRange();
         if (dateRange != null) {
           return helper.subset(dateRange, stride, errLog).orElse(null);
         }
-
-        // If no time range or time point, a timeOffset can be used to specify the time point.
-        /*
-         * CalendarDate timeOffsetDate = params.getTimeOffsetDate();
-         * if (timeOffsetDate != null) {
-         * return Optional.of(helper.subsetClosest(timeOffsetDate));
-         * }
-         */
 
         // A time offset or time offset interval starts from the rundate of the offset
         Double timeOffset = params.getTimeOffset();
@@ -213,12 +210,12 @@ public class GridAxis1DTime extends GridAxis1D {
         }
 
         // If a time interval is sent, search for match.
-        double[] timeOffsetIntv = params.getTimeOffsetIntv();
+        CoordInterval timeOffsetIntv = params.getTimeOffsetIntv();
         if (timeOffsetIntv != null && runtime != null) {
           // double midOffset = (timeOffsetIntv[0] + timeOffsetIntv[1]) / 2;
           CalendarDate[] dateIntv = new CalendarDate[2];
-          dateIntv[0] = makeDateInTimeUnits(runtime, timeOffsetIntv[0]);
-          dateIntv[1] = makeDateInTimeUnits(runtime, timeOffsetIntv[1]);
+          dateIntv[0] = makeDateInTimeUnits(runtime, timeOffsetIntv.start());
+          dateIntv[1] = makeDateInTimeUnits(runtime, timeOffsetIntv.end());
           return helper.subsetClosest(dateIntv);
         }
 
@@ -232,9 +229,10 @@ public class GridAxis1DTime extends GridAxis1D {
 
         // default is all
         break;
+      }
 
-      case RunTime:
-        CalendarDate rundate = (CalendarDate) params.get(GridSubset.runtime);
+      case RunTime: {
+        CalendarDate rundate = params.getRunTime();
         if (rundate != null) {
           return helper.subsetClosest(rundate);
         }
@@ -245,30 +243,13 @@ public class GridAxis1DTime extends GridAxis1D {
          * return helper.subset(rundateRange, 1);
          */
 
-        if (params.isTrue(GridSubset.runtimeAll)) {
+        if (params.getRunTimeAll()) {
           break;
         }
 
         // default is latest
         return helper.subsetLatest();
-
-      case TimeOffset:
-        Double oval = params.getDouble(GridSubset.timeOffset);
-        if (oval != null) {
-          return helper.subsetClosest(oval);
-        }
-
-        // If a time interval is sent, search for match.
-        timeOffsetIntv = params.getTimeOffsetIntv();
-        if (timeOffsetIntv != null) {
-          return helper.subsetClosest((timeOffsetIntv[0] + timeOffsetIntv[1]) / 2);
-        }
-
-        if (params.isTrue(GridSubset.timeOffsetFirst)) {
-          return helper.makeSubsetByIndex(new Range(1));
-        }
-        // default is all
-        break;
+      }
     }
 
     // otherwise return copy of the original axis
@@ -318,16 +299,16 @@ public class GridAxis1DTime extends GridAxis1D {
     if (!super.equals(o))
       return false;
     GridAxis1DTime that = (GridAxis1DTime) o;
-    return Objects.equal(timeHelper, that.timeHelper) && Objects.equal(cdates, that.cdates);
+    return Objects.equals(timeHelper, that.timeHelper) && Objects.equals(cdates, that.cdates);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(super.hashCode(), timeHelper, cdates);
+    return Objects.hash(super.hashCode(), timeHelper, cdates);
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////
-  private final TimeHelper timeHelper; // AxisType = Time, RunTime only
+  private final TimeHelper timeHelper;
   private final ImmutableList<CalendarDate> cdates;
 
   protected GridAxis1DTime(Builder<?> builder) {
@@ -337,15 +318,19 @@ public class GridAxis1DTime extends GridAxis1D {
     } else {
       this.timeHelper = TimeHelper.factory(this.units, this.attributes);
     }
+    // TODO do we require calendar dates or not?
     if (range != null && builder.cdates != null) {
       this.cdates = subsetDatesByRange(builder.cdates, range);
-    } else {
+      Preconditions.checkArgument(cdates.size() == this.getNcoords());
+    } else if (builder.cdates != null) {
       this.cdates = ImmutableList.copyOf(builder.cdates);
+      Preconditions.checkArgument(cdates.size() == this.getNcoords());
+    } else {
+      this.cdates = null;
     }
-    Preconditions.checkArgument(cdates.size() == this.getNcoords());
   }
 
-  private ImmutableList<CalendarDate> subsetDatesByRange(List<CalendarDate> dates, Range range) {
+  private ImmutableList<CalendarDate> subsetDatesByRange(List<CalendarDate> dates, RangeIterator range) {
     ImmutableList.Builder<CalendarDate> builder = ImmutableList.builder();
     for (int index : range) {
       builder.add(dates.get(index));
@@ -397,7 +382,7 @@ public class GridAxis1DTime extends GridAxis1D {
     }
 
     @Override
-    T subset(int ncoords, double startValue, double endValue, double resolution, Range range) {
+    public T subset(int ncoords, double startValue, double endValue, double resolution, Range range) {
       super.subset(ncoords, startValue, endValue, resolution, range);
       return self();
     }

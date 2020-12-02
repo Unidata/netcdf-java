@@ -37,13 +37,14 @@ public class ToolsAboutWindow extends JWindow {
 
     JLabel lab1 = new JLabel("<html> <body bgcolor=\"#FFECEC\"> <center>"
         + "<h1>Netcdf Tools User Interface (ToolsUI)</h1>" + "<b>" + getVersion() + "</b>"
-        + "<br><i>https://www.unidata.ucar.edu/software/netcdf-java/</i>"
-        + "<br><b><i>Developers:</b> John Caron, Sean Arms, Dennis Heimbinger, Ryan May, Christian Ward-Garrison</i></b>"
-        + "</center>" + "<br><br>With thanks to these <b>Open Source</b> contributors:" + "<ul>"
-        + "<li><b>ADDE/VisAD</b>: Bill Hibbard, Don Murray, Tom Whittaker, et al (http://www.ssec.wisc.edu/~billh/visad.html)</li>"
+        + "<br><i>https://www.unidata.ucar.edu/software/netcdf-java/</i>" //
+        + "<br><b><i>Developers:</b> John Caron, Sean Arms</i></b></center>" //
+        + "<br><br>With thanks to these <b>Open Source</b> contributors:" + "<ul>" //
+        + "<li><b>ADDE/VisAD</b>: Bill Hibbard, Don Murray, Tom Whittaker, et al (http://visad.ssec.wisc.edu/)</li>"
         + "<li><b>Apache HTTP Components</b> libraries: (http://hc.apache.org/)</li>"
-        + "<li><b>Apache Jakarta Commons</b> libraries: (http://jakarta.apache.org/commons/)</li>"
+        + "<li><b>Guava</b> library: Google (https://github.com/google/guava)</li>"
         + "<li><b>IDV:</b> Yuan Ho, Julien Chastang, Don Murray, Jeff McWhirter, Yuan H (https://www.unidata.ucar.edu/software/IDV/)</li>"
+        + "<li><b>Java Native Access (JNA)</b> Todd Fast and Timothy Wall et al. (https://github.com/java-native-access/jna)</li>"
         + "<li><b>Joda Time</b> library: Stephen Colebourne (http://www.joda.org/joda-time/)</li>"
         + "<li><b>JDOM</b> library: Jason Hunter, Brett McLaughlin et al (www.jdom.org)</li>"
         + "<li><b>JGoodies</b> library: Karsten Lentzsch (www.jgoodies.com)</li>"
@@ -51,11 +52,11 @@ public class ToolsAboutWindow extends JWindow {
         + "<li><b>JUnit</b> library: Erich Gamma, Kent Beck, Erik Meade, et al (http://sourceforge.net/projects/junit/)</li>"
         + "<li><b>NetCDF C Library</b> library: Russ Rew, Ward Fisher, Dennis Heimbinger</li>"
         + "<li><b>OPeNDAP Java</b> library: Dennis Heimbinger, James Gallagher, Nathan Potter, Don Denbo, et. al.(http://opendap.org)</li>"
-        + "<li><b>Protobuf serialization</b> library: Google (http://code.google.com/p/protobuf/)</li>"
+        + "<li><b>Protobuf serialization</b> library: Google (https://developers.google.com/protocol-buffers)</li>"
         + "<li><b>Simple Logging Facade for Java</b> library: Ceki Gulcu (http://www.slf4j.org/)</li>"
-        + "<li><b>Spring lightweight framework</b> library: Rod Johnson, et. al.(http://www.springsource.org/)</li>"
-        + "<li><b>Imaging utilities:</b>: Richard Eigenmann</li>" + "<li><b>Udunits:</b>: Steve Emmerson</li>"
-        + "</ul><center>Special thanks to <b>Sun/Oracle</b> (java.oracle.com) for the platform on which we stand."
+        + "<li><b>Udunits:</b>: Steve Emmerson</li>" //
+        + "</ul>" //
+        + "<center>Special thanks to <b>Sun/Oracle/OpenJDK</b> for the platform on which we stand."
         + "</center></body></html> ");
 
     JPanel main = new JPanel(new BorderLayout());

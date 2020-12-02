@@ -3,6 +3,7 @@ package ucar.nc2.internal.grid;
 import com.google.common.base.Preconditions;
 import ucar.array.Array;
 import ucar.array.Arrays;
+import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.CDM;
@@ -22,6 +23,7 @@ import java.io.IOException;
 public class CoordinateAxis2DExtractor {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinateAxis2DExtractor.class);
 
+  private final int ntimes;
   private final Array<Double> coords;
   private final Array<Double> bounds;
   private final Array<Integer> hours;
@@ -52,9 +54,14 @@ public class CoordinateAxis2DExtractor {
       throw new IllegalArgumentException("must be 2D");
     }
 
-    coords = Arrays.toDouble(data);
-    isInterval = computeIsInterval(dtCoordAxis);
-    bounds = makeBoundsFromAux(dtCoordAxis);
+    this.ntimes = data.getShape()[1];
+    this.coords = Arrays.toDouble(data);
+    this.isInterval = computeIsInterval(dtCoordAxis);
+    Array<Double> tempBounds = makeBoundsFromAux(dtCoordAxis);
+    if (tempBounds == null) {
+      tempBounds = makeBoundsFromMidpoints(this.coords);
+    }
+    this.bounds = tempBounds;
   }
 
   public String getRuntimeAxisName() {
@@ -71,6 +78,10 @@ public class CoordinateAxis2DExtractor {
 
   public Array<Double> getMidpoints() {
     return coords;
+  }
+
+  public int getNtimes() {
+    return ntimes;
   }
 
   /** Null if not isInterval(), otherwise 3D */
@@ -99,6 +110,7 @@ public class CoordinateAxis2DExtractor {
     return 2 == boundsVar.getDimension(2).getLength();
   }
 
+  @Nullable
   private Array<Double> makeBoundsFromAux(CoordinateAxis dtCoordAxis) {
     String boundsVarName = attributes.findAttributeString(CF.BOUNDS, null);
     if (boundsVarName == null) {
@@ -114,7 +126,36 @@ public class CoordinateAxis2DExtractor {
       log.warn("CoordinateAxis2DExtractor.makeBoundsFromAux read failed ", e);
       return null;
     }
-
     return Arrays.toDouble(data);
+  }
+
+  /**
+   * Calculate the bounds from the midpoints of a 2D coordinate.
+   * For each row, uses the same algorithm as GridAxis1D.
+   */
+  private Array<Double> makeBoundsFromMidpoints(Array<Double> midpoints) {
+    Preconditions.checkArgument(midpoints.getRank() == 2);
+    int[] shape = midpoints.getShape();
+    int nrows = shape[0];
+    int ncols = shape[1];
+
+    double[] bounds = new double[nrows * ncols * 2];
+    int count = 0;
+    for (int row = 0; row < nrows; row++) {
+      for (int col = 0; col < ncols; col++) {
+        if (col == 0) { // values[0] - (values[1] - values[0]) / 2
+          bounds[count++] = midpoints.get(row, 0) - (midpoints.get(row, 1) - midpoints.get(row, 0)) / 2;
+        } else {
+          bounds[count++] = (midpoints.get(row, col) + midpoints.get(row, col - 1)) / 2;
+        }
+        if (col == ncols - 1) { // values[index] + (values[index] - values[index - 1]) / 2;
+          bounds[count++] = midpoints.get(row, col) + (midpoints.get(row, col) - midpoints.get(row, col - 1)) / 2;
+        } else {
+          bounds[count++] = (midpoints.get(row, col) + midpoints.get(row, col + 1)) / 2;
+        }
+      }
+    }
+
+    return Arrays.factory(DataType.DOUBLE, new int[] {nrows, ncols, 2}, bounds);
   }
 }

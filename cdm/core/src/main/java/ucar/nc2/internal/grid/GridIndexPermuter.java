@@ -28,19 +28,25 @@ class GridIndexPermuter {
     this.rtDimOrgIndex = findDimension(vds, gcs.getRunTimeAxis());
   }
 
+  // TODO this depends on the coord axis being a coord variable, or being dependent on a coord variable. Not robust?
   private int findDimension(VariableDS vds, GridAxis want) {
     if (want == null) {
       return -1;
     }
-    // This is the case where its a coordinate alias TODO needed?
-    String depends = (want.getDependsOn().size() == 1) ? want.getDependsOn().get(0) : null;
     List<Dimension> dims = vds.getDimensions();
     for (int i = 0; i < dims.size(); i++) {
       Dimension d = dims.get(i);
-      if (d.getShortName() != null) {
-        if (d.getShortName().equals(want.getName()) || d.getShortName().equals(depends)) {
-          return i;
-        }
+      if (d.getShortName() != null && d.getShortName().equals(want.getName())) {
+        return i;
+      }
+    }
+
+    // This is the case where its a coordinate alias.
+    String depends = (want.getDependsOn().size() == 1) ? want.getDependsOn().get(0) : null;
+    for (int i = 0; i < dims.size(); i++) {
+      Dimension d = dims.get(i);
+      if (d.getShortName() != null && d.getShortName().equals(depends)) {
+        return i;
       }
     }
     return -1;

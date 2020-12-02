@@ -2,16 +2,20 @@
  * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-package ucar.nc2.grid;
+package ucar.nc2.internal.grid;
 
 import com.google.common.base.Preconditions;
 import com.google.common.math.DoubleMath;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
-import ucar.ma2.RangeIterator;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.grid.CoordInterval;
+import ucar.nc2.grid.GridAxis;
+import ucar.nc2.grid.GridAxis1D;
+import ucar.nc2.grid.GridAxis1DTime;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.util.MinMax;
 import ucar.nc2.util.Misc;
 
 import java.util.Arrays;
@@ -19,10 +23,10 @@ import java.util.Formatter;
 import java.util.Optional;
 
 /** Helper class for GridAxis1D for subsetting and searching. */
-class GridAxis1DHelper {
+public class GridAxis1DHelper {
   private final GridAxis1D orgGridAxis;
 
-  GridAxis1DHelper(GridAxis1D orgGrid) {
+  public GridAxis1DHelper(GridAxis1D orgGrid) {
     this.orgGridAxis = orgGrid;
   }
 
@@ -33,14 +37,14 @@ class GridAxis1DHelper {
    * @param bounded if true, always return a valid index. otherwise can return < 0 or > n-1
    * @return index of grid point containing it, or < 0 or > n-1 if outside grid area<?>
    */
-  int findCoordElement(double[] target, boolean bounded) {
+  public int findCoordElement(CoordInterval target, boolean bounded) {
     switch (orgGridAxis.getSpacing()) {
       case regularInterval:
         // can use midpoint
-        return findCoordElementRegular((target[0] + target[1]) / 2, bounded);
+        return findCoordElementRegular(target.midpoint(), bounded);
       case contiguousInterval:
         // can use midpoint
-        return findCoordElementContiguous((target[0] + target[1]) / 2, bounded);
+        return findCoordElementContiguous(target.midpoint(), bounded);
       case discontiguousInterval:
         // cant use midpoint
         return findCoordElementDiscontiguousInterval(target, bounded);
@@ -61,7 +65,7 @@ class GridAxis1DHelper {
    * @param bounded if true, always return a valid index. otherwise can return < 0 or > n-1
    * @return index of grid point containing it, or < 0 or > n-1 if outside grid area
    */
-  int findCoordElement(double target, boolean bounded) {
+  public int findCoordElement(double target, boolean bounded) {
     switch (orgGridAxis.getSpacing()) {
       case regularInterval:
       case regularPoint:
@@ -117,18 +121,18 @@ class GridAxis1DHelper {
    */
   private int findCoordElementContiguous(double target, boolean bounded) {
     int n = orgGridAxis.getNcoords();
-    // double resolution = (values[n-1] - values[0]) / (n - 1);
-    // int startGuess = (int) Math.round((target - values[0]) / resolution);
+
+    // Check that the point is within range
+    MinMax minmax = orgGridAxis.getCoordEdgeMinMax();
+    if (target < minmax.min()) {
+      return bounded ? 0 : -1;
+    } else if (target > minmax.max()) {
+      return bounded ? n - 1 : n;
+    }
 
     int low = 0;
     int high = n - 1;
     if (orgGridAxis.isAscending()) {
-      // Check that the point is within range
-      if (target < orgGridAxis.getCoordEdge1(0))
-        return bounded ? 0 : -1;
-      else if (target > orgGridAxis.getCoordEdgeLast())
-        return bounded ? n - 1 : n;
-
       // do a binary search to find the nearest index
       int mid;
       while (high > low + 1) {
@@ -143,13 +147,6 @@ class GridAxis1DHelper {
       return intervalContains(target, low, true, false) ? low : high;
 
     } else { // descending
-
-      // Check that the point is within range
-      if (target > orgGridAxis.getCoordEdge1(0))
-        return bounded ? 0 : -1;
-      else if (target < orgGridAxis.getCoordEdgeLast())
-        return bounded ? n - 1 : n;
-
       // do a binary search to find the nearest index
       int mid;
       while (high > low + 1) {
@@ -168,29 +165,32 @@ class GridAxis1DHelper {
   // same contract as findCoordElement(); in addition, -1 is returned when the target is not found
   // will return immediately if an exact match is found (i.e. interval with edges equal to target)
   // If bounded is true, then we will also look for the interval closest to the midpoint of the target
-  private int findCoordElementDiscontiguousInterval(double[] target, boolean bounded) {
+  private int findCoordElementDiscontiguousInterval(CoordInterval target, boolean bounded) {
+    Preconditions.checkNotNull(target);
+
     // Check that the target is within range
     int n = orgGridAxis.getNcoords();
-    double upperIndex = target[1] > target[0] ? target[1] : target[0];
-    double lowerIndex = upperIndex == target[1] ? target[0] : target[1];
-    if (lowerIndex < orgGridAxis.getCoordEdge1(0))
+    double lowerValue = Math.min(target.start(), target.end());
+    double upperValue = Math.max(target.start(), target.end());
+    MinMax minmax = orgGridAxis.getCoordEdgeMinMax();
+    if (upperValue < minmax.min()) {
       return bounded ? 0 : -1;
-    else if (upperIndex > orgGridAxis.getCoordEdgeLast())
+    } else if (lowerValue > minmax.max()) {
       return bounded ? n - 1 : n;
+    }
+
     // see if we can find an exact match
     int index = -1;
     for (int i = 0; i < orgGridAxis.getNcoords(); i++) {
-      double edge1 = orgGridAxis.getCoordEdge1(i);
-      double edge2 = orgGridAxis.getCoordEdge2(i);
-
-      if (DoubleMath.fuzzyEquals(edge1, target[0], 1.0e-8) && DoubleMath.fuzzyEquals(edge2, target[1], 1.0e-8))
+      if (target.fuzzyEquals(orgGridAxis.getCoordInterval(i), 1.0e-8)) {
         return i;
+      }
     }
+
     // ok, give up on exact match, try to find interval closest to midpoint of the target
     if (bounded) {
-      index = findCoordElementDiscontiguousInterval(lowerIndex + (upperIndex - lowerIndex) / 2, bounded);
+      index = findCoordElementDiscontiguousInterval(target.midpoint(), bounded);
     }
-
     return index;
   }
 
@@ -207,7 +207,7 @@ class GridAxis1DHelper {
     return findClosestDiscontiguousInterval(target);
   }
 
-  boolean intervalContains(double target, int coordIdx) {
+  private boolean intervalContains(double target, int coordIdx) {
     // Target must be in the closed bounds defined by the discontiguous interval at index coordIdx.
     double midVal1 = orgGridAxis.getCoordEdge1(coordIdx);
     double midVal2 = orgGridAxis.getCoordEdge2(coordIdx);
@@ -337,7 +337,7 @@ class GridAxis1DHelper {
         return makeSubsetByIndex(Range.make(idx, idx));
       }
     }
-    return makeSubsetValuesClosest(want.toPrimitiveArray());
+    return makeSubsetValuesClosest(want);
   }
 
   public GridAxis1D.Builder<?> subsetLatest() {
@@ -363,7 +363,7 @@ class GridAxis1DHelper {
         intervals += 1;
         double bound1 = orgGridAxis.getCoordEdge1(i);
         double bound2 = orgGridAxis.getCoordEdge2(i);
-        double intervalEnd = bound1 < bound2 ? bound2 : bound1;
+        double intervalEnd = Math.max(bound1, bound2);
         if (intervalEnd > maxDateToSearch) {
           maxDateToSearch = intervalEnd;
         }
@@ -382,10 +382,9 @@ class GridAxis1DHelper {
   }
 
   public GridAxis1D.Builder<?> subsetClosest(CalendarDate[] date) {
-    double[] want = new double[2];
-    want[0] = ((GridAxis1DTime) orgGridAxis).makeValue(date[0]);
-    want[1] = ((GridAxis1DTime) orgGridAxis).makeValue(date[1]);
-    return makeSubsetValuesClosest(want);
+    double start = ((GridAxis1DTime) orgGridAxis).makeValue(date[0]);
+    double end = ((GridAxis1DTime) orgGridAxis).makeValue(date[1]);
+    return makeSubsetValuesClosest(CoordInterval.create(start, end));
   }
 
   public Optional<GridAxis1D.Builder<?>> subset(CalendarDateRange dateRange, int stride, Formatter errLog) {
@@ -394,64 +393,28 @@ class GridAxis1DHelper {
     return makeSubsetValues(min, max, stride, errLog);
   }
 
-  private Optional<RangeIterator> makeRange(double minValue, double maxValue, int stride, Formatter errLog) {
-
-    double lower = orgGridAxis.isAscending() ? Math.min(minValue, maxValue) : Math.max(minValue, maxValue);
-    double upper = orgGridAxis.isAscending() ? Math.max(minValue, maxValue) : Math.min(minValue, maxValue);
-
-    int minIndex = findCoordElement(lower, false);
-    int maxIndex = findCoordElement(upper, false);
-
-    if (minIndex >= orgGridAxis.getNcoords()) {
-      errLog.format("no points in subset: lower %f > end %f", lower, orgGridAxis.getEndValue());
-      return Optional.empty();
-    }
-    if (maxIndex < 0) {
-      errLog.format("no points in subset: upper %f < start %f", upper, orgGridAxis.getStartValue());
-      return Optional.empty();
-    }
-
-    if (minIndex < 0)
-      minIndex = 0;
-    if (maxIndex >= orgGridAxis.getNcoords())
-      maxIndex = orgGridAxis.getNcoords() - 1;
-
-    int count = maxIndex - minIndex + 1;
-    if (count <= 0) {
-      errLog.format("no points in subset");
-      return Optional.empty();
-    }
-
-    try {
-      return Optional.of(new Range(minIndex, maxIndex, stride));
-    } catch (InvalidRangeException e) {
-      errLog.format("%s", e.getMessage());
-      return Optional.empty();
-    }
-  }
-
-  // Range must be contained in this range
-  GridAxis1D.Builder<?> makeSubsetByIndex(Range range) {
-    int ncoords = range.length();
-    Preconditions.checkArgument(range.last() < orgGridAxis.getNcoords());
+  // SubsetRange must be contained in this range
+  public GridAxis1D.Builder<?> makeSubsetByIndex(Range subsetRange) {
+    int ncoords = subsetRange.length();
+    Preconditions.checkArgument(subsetRange.last() < orgGridAxis.getNcoords());
 
     double resolution = 0.0;
     if (orgGridAxis.getSpacing().isRegular()) {
-      resolution = range.stride() * orgGridAxis.getResolution();
+      resolution = subsetRange.stride() * orgGridAxis.getResolution();
     }
 
     GridAxis1D.Builder<?> builder = orgGridAxis.toBuilder();
-    builder.subset(ncoords, orgGridAxis.getCoordMidpoint(range.first()), orgGridAxis.getCoordMidpoint(range.last()),
-        resolution, range);
+    builder.subset(ncoords, orgGridAxis.getCoordMidpoint(subsetRange.first()),
+        orgGridAxis.getCoordMidpoint(subsetRange.last()), resolution, subsetRange);
     return builder;
   }
 
-  private GridAxis1D.Builder<?> makeSubsetValuesClosest(double[] want) {
+  private GridAxis1D.Builder<?> makeSubsetValuesClosest(CoordInterval want) {
     int closest_index = findCoordElement(want, true); // bounded, always valid index
     Range range = Range.make(closest_index, closest_index);
 
     GridAxis1D.Builder<?> builder = orgGridAxis.toBuilder();
-    if (orgGridAxis.spacing == GridAxis.Spacing.regularInterval) {
+    if (orgGridAxis.getSpacing() == GridAxis.Spacing.regularInterval) {
       double val1 = orgGridAxis.getCoordEdge1(closest_index);
       double val2 = orgGridAxis.getCoordEdge2(closest_index);
       builder.subset(1, val1, val2, val2 - val1, range);
@@ -472,11 +435,11 @@ class GridAxis1DHelper {
       throw new RuntimeException(e); // cant happen
     }
 
-    if (orgGridAxis.spacing == GridAxis.Spacing.regularPoint) {
+    if (orgGridAxis.getSpacing() == GridAxis.Spacing.regularPoint) {
       double val = orgGridAxis.getCoordMidpoint(closest_index);
       builder.subset(1, val, val, 0.0, range);
 
-    } else if (orgGridAxis.spacing == GridAxis.Spacing.regularInterval) {
+    } else if (orgGridAxis.getSpacing() == GridAxis.Spacing.regularInterval) {
       double val1 = orgGridAxis.getCoordEdge1(closest_index);
       double val2 = orgGridAxis.getCoordEdge2(closest_index);
       builder.subset(1, val1, val2, val2 - val1, range);

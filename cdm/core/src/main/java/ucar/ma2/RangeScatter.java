@@ -34,6 +34,12 @@ public class RangeScatter implements RangeIterator {
     return new RangeScatter(name, vals);
   }
 
+  /** Make a copy with a different name. */
+  @Override
+  public RangeIterator copyWithStride(int stride) throws InvalidRangeException {
+    throw new UnsupportedOperationException();
+  }
+
   @Override
   public int length() {
     return vals.length;

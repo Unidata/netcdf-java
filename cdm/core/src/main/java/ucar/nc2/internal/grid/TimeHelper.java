@@ -1,18 +1,18 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-package ucar.nc2.grid;
+package ucar.nc2.internal.grid;
 
-import com.google.common.base.Objects;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.time.*;
 
 import javax.annotation.concurrent.Immutable;
+import java.util.Objects;
 
-/** Helper class for time GridAxis . Should be package private */
+/** Helper class for GridAxis time coordinates. */
 @Immutable
 public class TimeHelper {
 
@@ -109,11 +109,16 @@ public class TimeHelper {
     if (o == null || getClass() != o.getClass())
       return false;
     TimeHelper that = (TimeHelper) o;
-    return Objects.equal(dateUnit, that.dateUnit);
+    return dateUnit.equals(that.dateUnit);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(dateUnit);
+    return Objects.hash(dateUnit);
+  }
+
+  @Override
+  public String toString() {
+    return "TimeHelper{" + "dateUnit=" + dateUnit + '}';
   }
 }

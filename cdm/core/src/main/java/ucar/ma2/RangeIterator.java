@@ -23,4 +23,7 @@ public interface RangeIterator extends Iterable<Integer> {
 
   /** Make a copy with a different name. */
   RangeIterator copyWithName(String name);
+
+  /** Make a copy with a different name. */
+  RangeIterator copyWithStride(int stride) throws InvalidRangeException;
 }

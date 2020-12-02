@@ -1,11 +1,10 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.grid;
 
-import com.google.common.escape.Escaper;
-import com.google.common.net.UrlEscapers;
+import com.google.common.base.Preconditions;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarPeriod;
@@ -15,10 +14,7 @@ import ucar.unidata.geoloc.ProjectionRect;
 
 import java.util.*;
 
-/**
- * Describes a subset of a Grid.
- * Coordinate values only, no indices.
- */
+/** Coordinate value-based subsetting of a Grid. */
 public class GridSubset {
   public static final String variables = "var"; // value = List<String>
 
@@ -28,6 +24,15 @@ public class GridSubset {
   public static final String latlonPoint = "latlonPoint"; // value = LatLonPoint
   public static final String stations = "stn"; // value = List<String>
 
+  public static final String runtime = "runtime"; // value = CalendarDate
+  public static final String runtimeLatest = "runtimeLatest"; // value = Boolean
+  public static final String runtimeAll = "runtimeAll"; // value = Boolean
+
+  public static final String timeOffset = "timeOffset"; // value = Double
+  public static final String timeOffsetIntv = "timeOffsetIntv"; // value = CoordInterval
+  public static final String timeOffsetFirst = "timeOffsetFirst"; // value = Boolean
+  public static final String timeOffsetAll = "timeOffsetAll"; // value = Boolean
+
   public static final String time = "time"; // value = CalendarDate
   public static final String timeCoord = "timeCoord"; // value = Object
   public static final String timeRange = "timeRange"; // value = CalendarDateRange
@@ -36,88 +41,14 @@ public class GridSubset {
   public static final String timeAll = "timeAll"; // value = Boolean
   public static final String timeWindow = "timeWindow"; // value = CalendarPeriod
 
-  public static final String runtime = "runtime"; // value = CalendarDate
-  // public static final String runtimeRange = "runtimeRange"; // value = CalendarDateRange
-  public static final String runtimeLatest = "runtimeLatest"; // value = Boolean
-  public static final String runtimeAll = "runtimeAll"; // value = Boolean
-
-  public static final String timeOffset = "timeOffset"; // value = Double
-  public static final String timeOffsetFirst = "timeOffsetFirst"; // value = Boolean
-  public static final String timeOffsetAll = "timeOffsetAll"; // value = Boolean
-  public static final String timeOffsetIntv = "timeOffsetIntv"; // value = double[2]
-
   public static final String vertCoord = "vertCoord"; // value = Double or CoordInterval
-  // public static final String vertRange = "vertRange"; // value = double[2] used WCS local, not remote
-
   public static final String ensCoord = "ensCoord"; // value = Double
 
   // cant use these for selecting, used for validation
   public static final String timeOffsetDate = "timeOffsetDate"; // value = CalendarDate
   public static final String timeOffsetUnit = "timeOffsetUnit"; // value = CalendarDateUnit
 
-  /////////////////////////////////
-
-  public void encodeForCdmrfDataRequest(Formatter f, String varname) {
-    Escaper urlParamEscaper = UrlEscapers.urlFormParameterEscaper();
-    f.format("req=data&var=%s", urlParamEscaper.escape(varname));
-
-    for (Map.Entry<String, Object> entry : getEntries()) {
-      switch (entry.getKey()) {
-        case GridSubset.latlonBB:
-          LatLonRect llbb = (LatLonRect) entry.getValue();
-          f.format("&north=%s&south=%s&west=%s&east=%s", llbb.getLatMax(), llbb.getLatMin(), llbb.getLonMin(),
-              llbb.getLonMax());
-          break;
-        case GridSubset.projBB:
-          ProjectionRect projRect = (ProjectionRect) entry.getValue();
-          f.format("&minx=%s&miny=%s&maxx=%s&maxy=%s", projRect.getMinX(), projRect.getMinY(), projRect.getMaxX(),
-              projRect.getMaxY());
-          break;
-        case GridSubset.latlonPoint:
-          LatLonPoint llPoint = (LatLonPoint) entry.getValue();
-          f.format("&lat=%s&lon=%s", llPoint.getLatitude(), llPoint.getLongitude());
-          break;
-        case GridSubset.stations:
-          List<String> stns = (List<String>) entry.getValue();
-          int count = 0;
-          for (String stn : stns) {
-            if (count++ == 0)
-              f.format("&stn=%s", stn);
-            else
-              f.format(",%s", stn);
-          }
-          break;
-        case GridSubset.timeRange:
-          CalendarDateRange timeRange = (CalendarDateRange) entry.getValue();
-          f.format("&time_start=%s&time_end=%s", timeRange.getStart(), timeRange.getEnd());
-          break;
-        case GridSubset.timePresent:
-          f.format("&time=present");
-          break;
-        case GridSubset.timeAll:
-          f.format("&time=all");
-          break;
-        case GridSubset.runtimeLatest:
-          f.format("&runtime=latest");
-          break;
-        case GridSubset.runtimeAll:
-          f.format("&runtime=all");
-          break;
-        case GridSubset.timeOffsetAll:
-          f.format("&timeOffset=all");
-          break;
-        case GridSubset.timeOffsetFirst:
-          f.format("&timeOffset=first");
-          break;
-        default:
-          f.format("&%s=%s", entry.getKey(), entry.getValue());
-          break;
-      }
-    }
-
-  }
-
-  ///////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////////
 
   private final Map<String, Object> req = new HashMap<>();
 
@@ -125,25 +56,11 @@ public class GridSubset {
     return req.entrySet();
   }
 
-  public Set<String> getKeys() {
-    return req.keySet();
-  }
-
-  public GridSubset set(String key, Object value) {
-    req.put(key, value);
-    return this;
-  }
-
-  public Object get(String key) {
+  private Object get(String key) {
     return req.get(key);
   }
 
-  public boolean isTrue(String key) {
-    Boolean val = (Boolean) req.get(key);
-    return (val != null) && val;
-  }
-
-  public Double getDouble(String key) {
+  private Double getDouble(String key) {
     Object val = req.get(key);
     if (val == null)
       return null;
@@ -155,7 +72,27 @@ public class GridSubset {
     return dval;
   }
 
-  public Integer getInteger(String key) {
+  private CalendarDate getCalendarDate(String key) {
+    Object val = req.get(key);
+    if (val == null)
+      return null;
+    if (val instanceof CalendarDate) {
+      return (CalendarDate) val;
+    }
+    throw new RuntimeException(key + " not a Calendar Date " + val);
+  }
+
+  private CalendarDateRange getCalendarDateRange(String key) {
+    Object val = req.get(key);
+    if (val == null)
+      return null;
+    if (val instanceof CalendarDateRange) {
+      return (CalendarDateRange) val;
+    }
+    throw new RuntimeException(key + " not a Calendar Date Range " + val);
+  }
+
+  private Integer getInteger(String key) {
     Object val = req.get(key);
     if (val == null)
       return null;
@@ -165,6 +102,208 @@ public class GridSubset {
     else
       dval = Integer.parseInt((String) val);
     return dval;
+  }
+
+  private boolean isTrue(String key) {
+    Object val = req.get(key);
+    return (val instanceof Boolean) && (Boolean) val;
+  }
+
+  public boolean hasTimeParam() {
+    return get(timeRange) != null || get(time) != null || get(timeStride) != null || get(timePresent) != null
+        || get(timeCoord) != null;
+  }
+
+  public boolean hasTimeOffsetParam() {
+    return get(timeOffset) != null || get(timeOffsetFirst) != null || get(timeOffsetIntv) != null;
+  }
+
+  public boolean hasTimeOffsetIntvParam() {
+    return get(timeOffsetIntv) != null || get(timeOffsetFirst) != null;
+  }
+
+  public GridSubset setHorizStride(int stride) {
+    req.put(horizStride, stride);
+    return this;
+  }
+
+  public Integer getHorizStride() {
+    return (Integer) req.get(horizStride);
+  }
+
+  public Double getEnsCoord() {
+    return getDouble(ensCoord);
+  }
+
+  public GridSubset setEnsCoord(Object coord) {
+    Preconditions.checkArgument(coord instanceof Double);
+    req.put(ensCoord, coord);
+    return this;
+  }
+
+  public LatLonRect getLatLonBoundingBox() {
+    return (LatLonRect) get(latlonBB);
+  }
+
+  public GridSubset setLatLonBoundingBox(LatLonRect llbb) {
+    req.put(latlonBB, llbb);
+    return this;
+  }
+
+  public LatLonPoint getLatLonPoint() {
+    return (LatLonPoint) get(latlonPoint);
+  }
+
+  public GridSubset setLatLonPoint(LatLonPoint pt) {
+    req.put(latlonPoint, pt);
+    return this;
+  }
+
+  public ProjectionRect getProjectionRect() {
+    return (ProjectionRect) get(projBB);
+  }
+
+  public GridSubset setProjectionRect(ProjectionRect projRect) {
+    req.put(projBB, projRect);
+    return this;
+  }
+
+  public CalendarDate getRunTime() {
+    return getCalendarDate(runtime);
+  }
+
+  public GridSubset setRunTime(CalendarDate date) {
+    req.put(runtime, date);
+    return this;
+  }
+
+  public GridSubset setRunTimeCoord(Object coord) {
+    Preconditions.checkArgument(coord instanceof CalendarDate);
+    req.put(runtime, coord);
+    return this;
+  }
+
+  public Boolean getRunTimeAll() {
+    return isTrue(runtimeAll);
+  }
+
+  // TODO whats happens for multiple runtimes for timeOffsetRegular?
+  public GridSubset setRunTimeAll() {
+    req.put(runtimeAll, true);
+    return this;
+  }
+
+  public Boolean getRunTimeLatest() {
+    return isTrue(runtimeLatest);
+  }
+
+  public GridSubset setRunTimeLatest() {
+    req.put(runtimeLatest, true);
+    return this;
+  }
+
+  public CalendarDate getTime() {
+    return getCalendarDate(time);
+  }
+
+  public GridSubset setTime(CalendarDate date) {
+    req.put(time, date);
+    return this;
+  }
+
+  // TODO interval
+  public Object getTimeCoord() {
+    return get(timeCoord);
+  }
+
+  public GridSubset setTimeCoord(Object coord) {
+    req.put(timeCoord, coord);
+    return this;
+  }
+
+  public Boolean getTimePresent() {
+    return isTrue(timePresent);
+  }
+
+  public GridSubset setTimePresent() {
+    req.put(timePresent, true);
+    return this;
+  }
+
+  public CalendarDateRange getTimeRange() {
+    return getCalendarDateRange(timeRange);
+  }
+
+  public GridSubset setTimeRange(CalendarDateRange dateRange) {
+    req.put(timeRange, dateRange);
+    return this;
+  }
+
+  public Integer getTimeStride() {
+    return getInteger(timeStride);
+  }
+
+  public GridSubset setTimeStride(int stride) {
+    req.put(timeStride, stride);
+    return this;
+  }
+
+  public CalendarPeriod getTimeWindow() {
+    return (CalendarPeriod) get(timeWindow);
+  }
+
+  public Double getTimeOffset() {
+    return getDouble(timeOffset);
+  }
+
+  public GridSubset setTimeOffset(double offset) {
+    req.put(timeOffset, offset);
+    return this;
+  }
+
+  // A time offset or time offset interval starts from the rundate of that point, in the units of the coordinate
+  // eg "calendar Month since 2004-12-30T00:00:00Z" or "Hours since 2004-12-30T00:00:00Z"
+  public GridSubset setTimeOffsetCoord(Object coord) {
+    if (coord instanceof Double) {
+      req.put(timeOffset, coord);
+    } else if (coord instanceof CoordInterval) {
+      req.put(timeOffsetIntv, coord);
+    }
+    return this;
+  }
+
+  public CoordInterval getTimeOffsetIntv() {
+    Object val = req.get(timeOffsetIntv);
+    if (val == null)
+      return null;
+    if (val instanceof CoordInterval) {
+      return (CoordInterval) val;
+    }
+    throw new RuntimeException(timeOffsetIntv + " not a CoordInterval " + val);
+  }
+
+  public GridSubset setTimeOffsetIntv(CoordInterval coord) {
+    req.put(timeOffsetIntv, coord);
+    return this;
+  }
+
+  public Boolean getTimeOffsetFirst() {
+    return isTrue(timeOffsetFirst);
+  }
+
+  public GridSubset setTimeOffsetFirst() {
+    req.put(timeOffsetFirst, true);
+    return this;
+  }
+
+  // TODO interval vs point
+  public Object getVertCoord() {
+    return get(vertCoord);
+  }
+
+  public GridSubset setVertCoord(Object coord) {
+    req.put(vertCoord, coord);
+    return this;
   }
 
   @Override
@@ -186,57 +325,15 @@ public class GridSubset {
     return f.toString();
   }
 
-  public boolean hasTimeParam() {
-    return get(timeRange) != null || get(time) != null || get(timeStride) != null || get(timePresent) != null
-        || get(timeCoord) != null;
-  }
-
-  public boolean hasTimeOffsetParam() {
-    return get(timeOffset) != null || get(timeOffsetFirst) != null || get(timeOffsetIntv) != null;
-  }
-
-  public boolean hasTimeOffsetIntvParam() {
-    return get(timeOffsetIntv) != null || get(timeOffsetFirst) != null;
-  }
-
-  public GridSubset setHorizStride(int stride) {
-    set(horizStride, stride);
-    return this;
-  }
-
-  public LatLonRect getLatLonBoundingBox() {
-    return (LatLonRect) get(latlonBB);
-  }
-
-  public GridSubset setLatLonBoundingBox(LatLonRect llbb) {
-    set(latlonBB, llbb);
-    return this;
-  }
-
-  public ProjectionRect getProjectionRect() {
-    return (ProjectionRect) get(projBB);
-  }
-
-  public GridSubset setProjectionRect(ProjectionRect projRect) {
-    set(projBB, projRect);
-    return this;
-  }
-
-  public LatLonPoint getLatLonPoint() {
-    return (LatLonPoint) get(latlonPoint);
-  }
-
-  public GridSubset setLatLonPoint(LatLonPoint pt) {
-    set(latlonPoint, pt);
-    return this;
-  }
+  //////////////////////////////
+  // probably not needed
 
   public List<String> getStations() {
     return (List<String>) get(stations);
   }
 
   public GridSubset setStations(List<String> stns) {
-    set(stations, stns);
+    req.put(stations, stns);
     return this;
   }
 
@@ -245,97 +342,7 @@ public class GridSubset {
   }
 
   public GridSubset setVariables(List<String> vars) {
-    set(variables, vars);
+    req.put(variables, vars);
     return this;
   }
-
-  public GridSubset setTimeCoord(Object coord) {
-    set(timeCoord, coord);
-    return this;
-  }
-
-  public Object getTimeCoord() {
-    return get(timeCoord);
-  }
-
-  public GridSubset setTime(CalendarDate date) {
-    set(time, date);
-    return this;
-  }
-
-  public CalendarDate getTime() {
-    return (CalendarDate) get(time);
-  }
-
-  public GridSubset setTimePresent() {
-    set(timePresent, true);
-    return this;
-  }
-
-  public CalendarDateRange getTimeRange() {
-    return (CalendarDateRange) get(timeRange);
-  }
-
-  public GridSubset setTimeRange(CalendarDateRange dateRange) {
-    set(timeRange, dateRange);
-    return this;
-  }
-
-  public CalendarDate getRunTime() {
-    return (CalendarDate) get(runtime);
-  }
-
-  public GridSubset setRunTime(CalendarDate date) {
-    set(runtime, date);
-    return this;
-  }
-
-  public CalendarPeriod getTimeWindow() {
-    return (CalendarPeriod) get(timeWindow);
-  }
-
-  /*
-   * public double[] getVertRange() {
-   * return (double[]) get(vertRange);
-   * }
-   */
-
-  public Object getVertCoord() {
-    return get(vertCoord);
-  }
-
-  public GridSubset setVertCoord(Object coord) {
-    set(vertCoord, coord);
-    return this;
-  }
-
-  public Double getEnsCoord() {
-    return (Double) get(ensCoord);
-  }
-
-  public GridSubset setEnsCoord(double coord) {
-    set(ensCoord, coord);
-    return this;
-  }
-
-  // A time offset or time offset interval starts from the rundate of that point, in the units of the coordinate
-  // eg "calendar Month since 2004-12-30T00:00:00Z" or "Hours since 2004-12-30T00:00:00Z"
-  public GridSubset setTimeOffset(double offset) {
-    set(timeOffset, offset);
-    return this;
-  }
-
-  public Double getTimeOffset() {
-    return (Double) get(timeOffset);
-  }
-
-  public GridSubset setTimeOffsetIntv(double[] timeCoordIntv) {
-    set(timeOffsetIntv, timeCoordIntv);
-    return this;
-  }
-
-  public double[] getTimeOffsetIntv() {
-    return (double[]) get(timeOffsetIntv);
-  }
-
 }

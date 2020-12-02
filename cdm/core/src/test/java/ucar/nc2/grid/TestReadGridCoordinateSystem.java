@@ -27,7 +27,7 @@ public class TestReadGridCoordinateSystem {
       assertThat(grid).isNotNull();
       GridCoordinateSystem gcs = grid.getCoordinateSystem();
       assertThat(gcs).isNotNull();
-      assertThat(gcs.isLatLon()).isTrue();
+      assertThat(gcs.getHorizCoordSystem().isLatLon()).isTrue();
       assertThat(gcs.getXHorizAxis()).isNotNull();
       assertThat(gcs.getYHorizAxis()).isNotNull();
       assertThat(gcs.getTimeAxis()).isNotNull();
@@ -50,7 +50,7 @@ public class TestReadGridCoordinateSystem {
 
       GridCoordinateSystem csSubset = geoArray.csSubset();
       assertThat(csSubset).isNotNull();
-      assertThat(csSubset.isLatLon()).isTrue();
+      assertThat(csSubset.getHorizCoordSystem().isLatLon()).isTrue();
       assertThat(csSubset.getXHorizAxis()).isNotNull();
       assertThat(csSubset.getYHorizAxis()).isNotNull();
       assertThat(csSubset.getTimeAxis()).isNotNull();
@@ -83,8 +83,8 @@ public class TestReadGridCoordinateSystem {
       assertThat(grid).isNotNull();
       GridCoordinateSystem gcs = grid.getCoordinateSystem();
       assertThat(gcs).isNotNull();
-      assertThat(gcs.isLatLon()).isFalse();
-      assertThat(gcs.getProjection()).isNotNull();
+      assertThat(gcs.getHorizCoordSystem().isLatLon()).isFalse();
+      assertThat(gcs.getHorizCoordSystem().getProjection()).isNotNull();
       assertThat(gcs.getXHorizAxis()).isNotNull();
       assertThat(gcs.getYHorizAxis()).isNotNull();
       assertThat(gcs.getVerticalAxis()).isNotNull();
@@ -109,7 +109,7 @@ public class TestReadGridCoordinateSystem {
 
       GridCoordinateSystem csSubset = geoArray.csSubset();
       assertThat(csSubset).isNotNull();
-      assertThat(csSubset.isLatLon()).isFalse();
+      assertThat(csSubset.getHorizCoordSystem().isLatLon()).isFalse();
       assertThat(csSubset.getXHorizAxis()).isNotNull();
       assertThat(csSubset.getYHorizAxis()).isNotNull();
       assertThat(gcs.getVerticalAxis()).isNotNull();
@@ -148,8 +148,8 @@ public class TestReadGridCoordinateSystem {
       assertThat(grid).isNotNull();
       GridCoordinateSystem gcs = grid.getCoordinateSystem();
       assertThat(gcs).isNotNull();
-      assertThat(gcs.isLatLon()).isTrue();
-      assertThat(gcs.getProjection()).isNotNull();
+      assertThat(gcs.getHorizCoordSystem().isLatLon()).isTrue();
+      assertThat(gcs.getHorizCoordSystem().getProjection()).isNotNull();
       assertThat(gcs.getXHorizAxis()).isNotNull();
       assertThat(gcs.getYHorizAxis()).isNotNull();
       assertThat(gcs.getVerticalAxis()).isNotNull();
@@ -174,7 +174,7 @@ public class TestReadGridCoordinateSystem {
 
       GridCoordinateSystem csSubset = geoArray.csSubset();
       assertThat(csSubset).isNotNull();
-      assertThat(csSubset.isLatLon()).isTrue();
+      assertThat(csSubset.getHorizCoordSystem().isLatLon()).isTrue();
       assertThat(csSubset.getXHorizAxis()).isNotNull();
       assertThat(csSubset.getYHorizAxis()).isNotNull();
       assertThat(gcs.getVerticalAxis()).isNotNull();
@@ -207,8 +207,8 @@ public class TestReadGridCoordinateSystem {
       assertThat(grid).isNotNull();
       GridCoordinateSystem gcs = grid.getCoordinateSystem();
       assertThat(gcs).isNotNull();
-      assertThat(gcs.isLatLon()).isTrue();
-      assertThat(gcs.getProjection()).isNotNull();
+      assertThat(gcs.getHorizCoordSystem().isLatLon()).isTrue();
+      assertThat(gcs.getHorizCoordSystem().getProjection()).isNotNull();
       assertThat(gcs.getXHorizAxis()).isNotNull();
       assertThat(gcs.getYHorizAxis()).isNotNull();
       assertThat(gcs.getVerticalAxis()).isNotNull();
@@ -233,7 +233,7 @@ public class TestReadGridCoordinateSystem {
 
       GridCoordinateSystem csSubset = geoArray.csSubset();
       assertThat(csSubset).isNotNull();
-      assertThat(csSubset.isLatLon()).isEqualTo(gcs.isLatLon());
+      assertThat(csSubset.getHorizCoordSystem().isLatLon()).isEqualTo(gcs.getHorizCoordSystem().isLatLon());
       assertThat(csSubset.getXHorizAxis()).isNotNull();
       assertThat(csSubset.getYHorizAxis()).isNotNull();
       assertThat(gcs.getVerticalAxis()).isNotNull();

@@ -1,50 +1,31 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.grid;
 
-import com.google.common.base.Objects;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.AbstractIterator;
 import ucar.array.Array;
 import ucar.array.Arrays;
-import ucar.ma2.*;
+import ucar.ma2.DataType;
+import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Range;
+import ucar.ma2.RangeIterator;
 import ucar.nc2.dataset.VariableDS;
+import ucar.nc2.internal.grid.GridAxis1DHelper;
 import ucar.nc2.util.Indent;
+import ucar.nc2.util.MinMax;
 
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.*;
 
-/** Grid CoordAxis 1D concrete case */
+import static ucar.nc2.grid.GridAxis.Spacing.discontiguousInterval;
+
+/** Grid CoordAxis 1D concrete case. */
 @Immutable
 public class GridAxis1D extends GridAxis {
-
-  @Override
-  public RangeIterator getRangeIterator() {
-    if (crange != null) {
-      return crange;
-    }
-    if (range != null) {
-      return range;
-    }
-    try {
-      return new Range(axisType.toString(), 0, ncoords - 1);
-    } catch (InvalidRangeException e) {
-      throw new RuntimeException(e); // not possible
-    }
-  }
-
-  public Range getRange() {
-    if (getDependenceType() == GridAxis.DependenceType.scalar)
-      return Range.EMPTY;
-
-    try {
-      return new Range(axisType.toString(), 0, ncoords - 1);
-    } catch (InvalidRangeException e) {
-      throw new RuntimeException(e);
-    }
-  }
 
   @Override
   public boolean equals(Object o) {
@@ -54,27 +35,36 @@ public class GridAxis1D extends GridAxis {
       return false;
     if (!super.equals(o))
       return false;
-    GridAxis1D that = (GridAxis1D) o;
-    return Objects.equal(range, that.range) && Objects.equal(crange, that.crange);
+    GridAxis1D objects = (GridAxis1D) o;
+    return ncoords == objects.ncoords && Double.compare(objects.startValue, startValue) == 0
+        && Double.compare(objects.endValue, endValue) == 0 && Objects.equals(range, objects.range);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(super.hashCode(), range, crange);
+    return Objects.hash(super.hashCode(), ncoords, startValue, endValue, range);
   }
 
   @Override
   public void toString(Formatter f, Indent indent) {
     super.toString(f, indent);
+
+    f.format("%snpts: %d [%f,%f] resolution=%f spacing=%s", indent, ncoords, startValue, endValue, resolution, spacing);
     f.format("%s range=%s isSubset=%s", indent, range, isSubset());
     f.format("%n");
   }
 
+
+  public String getSummary() {
+    Formatter f = new Formatter();
+    f.format("start=%f end=%f %s %s resolution=%f", startValue, endValue, units, spacing, resolution);
+    f.format(" (npts=%d)", ncoords);
+    return f.toString();
+  }
+
   ///////////////////////////////////////////////////////////////////
-  // Spacing
 
   public boolean isAscending() {
-    loadValuesIfNeeded();
     switch (spacing) {
       case regularInterval:
       case regularPoint:
@@ -86,16 +76,33 @@ public class GridAxis1D extends GridAxis {
       case contiguousInterval:
         return values[0] <= values[ncoords];
 
-      case discontiguousInterval:
+      case discontiguousInterval: // actually ambiguous
         return values[0] <= values[2 * ncoords - 1];
     }
     throw new IllegalStateException("unknown spacing" + spacing);
   }
 
+  public MinMax getCoordEdgeMinMax() {
+    if (spacing != discontiguousInterval) {
+      double min = Math.min(getCoordEdge1(0), getCoordEdge2(ncoords - 1));
+      double max = Math.max(getCoordEdge1(0), getCoordEdge2(ncoords - 1));
+      return MinMax.create(min, max);
+    } else {
+      double max = -Double.MAX_VALUE;
+      double min = Double.MAX_VALUE;
+      for (int i = 0; i < ncoords; i++) {
+        min = Math.min(min, getCoordEdge1(i));
+        min = Math.min(min, getCoordEdge2(i));
+        max = Math.max(max, getCoordEdge1(i));
+        max = Math.max(max, getCoordEdge2(i));
+      }
+      return MinMax.create(min, max);
+    }
+  }
+
   public double getCoordMidpoint(int index) {
     if (index < 0 || index >= getNcoords())
       throw new IllegalArgumentException("Index out of range=" + index);
-    loadValuesIfNeeded();
 
     switch (spacing) {
       case regularPoint:
@@ -117,7 +124,6 @@ public class GridAxis1D extends GridAxis {
   public double getCoordEdge1(int index) {
     if (index < 0 || index >= getNcoords())
       throw new IllegalArgumentException("Index out of range=" + index);
-    loadValuesIfNeeded();
 
     switch (spacing) {
       case regularPoint:
@@ -144,12 +150,9 @@ public class GridAxis1D extends GridAxis {
   public double getCoordEdge2(int index) {
     if (index < 0 || index >= getNcoords())
       throw new IllegalArgumentException("Index out of range=" + index);
-    loadValuesIfNeeded();
 
     switch (spacing) {
       case regularPoint:
-        if (index < 0 || index >= ncoords)
-          throw new IllegalArgumentException("Index out of range " + index);
         return startValue + (index + .5) * getResolution();
 
       case regularInterval:
@@ -170,12 +173,8 @@ public class GridAxis1D extends GridAxis {
     throw new IllegalStateException("Unknown spacing=" + spacing);
   }
 
-  public double getCoordEdgeFirst() {
-    return getCoordEdge1(0);
-  }
-
-  public double getCoordEdgeLast() {
-    return getCoordEdge2(ncoords - 1);
+  public CoordInterval getCoordInterval(int index) {
+    return CoordInterval.create(getCoordEdge1(index), getCoordEdge2(index));
   }
 
   @Override
@@ -206,78 +205,68 @@ public class GridAxis1D extends GridAxis {
     return Arrays.factory(DataType.DOUBLE, new int[] {ncoords, 2}, vals);
   }
 
-  /*
-   * CalendarDate, double[2], or Double
-   * public Object getCoordObject(int index) {
-   * if (isInterval())
-   * return new double[] {getCoordEdge1(index), getCoordEdge2(index)};
-   * return getCoordMidpoint(index);
-   * }
-   */
+  /** The number of coordinates. Coord or Interval. */
+  public int getNcoords() {
+    return ncoords;
+  }
 
-  /*
-   * only for longitude, only for regular (do we need a subclass for longitude 1D coords ??
-   * public Optional<GridAxis1D> subsetByIntervals(List<Arrays.MinMax> lonIntvs, int stride, Formatter errLog) {
-   * if (axisType != AxisType.Lon) {
-   * errLog.format("subsetByIntervals only for longitude");
-   * return Optional.empty();
-   * }
-   * if (!isRegular()) {
-   * errLog.format("subsetByIntervals only for regular longitude");
-   * return Optional.empty();
-   * }
-   * 
-   * // adjust the resolution of the subset based on stride
-   * double subsetResolution = stride > 1 ? stride * resolution : resolution;
-   * 
-   * GridAxis1DHelper helper = new GridAxis1DHelper(this);
-   * 
-   * double start = Double.NaN;
-   * boolean first = true;
-   * List<RangeIterator> ranges = new ArrayList<>();
-   * for (Arrays.MinMax lonIntv : lonIntvs) {
-   * if (first)
-   * start = lonIntv.min();
-   * first = false;
-   * 
-   * Optional<RangeIterator> opt = helper.makeRange(lonIntv.min(), lonIntv.max(), stride, errLog);
-   * if (!opt.isPresent()) {
-   * return Optional.empty();
-   * }
-   * ranges.add(opt.get());
-   * }
-   * 
-   * RangeComposite compositeRange = new RangeComposite(AxisType.Lon.toString(), ranges);
-   * // number of points in the subset
-   * int npts = compositeRange.length();
-   * // need to use the subset resolution to figure out the end
-   * double end = start + npts * subsetResolution;
-   * 
-   * Builder<?> builder = toBuilder(); // copy
-   * builder.subset(npts, start, end, subsetResolution, null);
-   * builder.setRange(null);
-   * builder.setCompositeRange(compositeRange);
-   * 
-   * return Optional.of(new GridAxis1D(builder));
-   * }
-   * 
-   * public Optional<GridAxis1D> subset(double minValue, double maxValue, int stride, Formatter errLog) {
-   * GridAxis1DHelper helper = new GridAxis1DHelper(this);
-   * Optional<GridAxis1D.Builder<?>> buildero = helper.subset(minValue, maxValue, stride, errLog);
-   * return buildero.map(GridAxis1D::new);
-   * }
-   * 
-   * public Optional<GridAxis1D> subsetByIndex(Range range, Formatter errLog) {
-   * try {
-   * GridAxis1DHelper helper = new GridAxis1DHelper(this);
-   * GridAxis1D.Builder<?> builder = helper.subsetByIndex(range);
-   * return Optional.of(new GridAxis1D(builder));
-   * } catch (InvalidRangeException e) {
-   * errLog.format("%s", e.getMessage());
-   * return Optional.empty();
-   * }
-   * }
-   */
+  /** Starting value when spacing.isRegular(). Coord or Interval. */
+  public double getStartValue() {
+    return startValue;
+  }
+
+  /** Ending value when spacing.isRegular(). Coord or Interval. */
+  public double getEndValue() {
+    return endValue;
+  }
+
+  /** Iterates over coordinate values, either Double or CoordInterval. */
+  @Override
+  public Iterator<Object> iterator() {
+    return new CoordIterator();
+  }
+
+  private class CoordIterator extends AbstractIterator<Object> {
+    private int current = 0;
+
+    @Override
+    protected Object computeNext() {
+      if (current >= getNcoords()) {
+        return endOfData();
+      }
+      Object result = spacing != discontiguousInterval ? Double.valueOf(getCoordMidpoint(current))
+          : CoordInterval.create(getCoordEdge1(current), getCoordEdge2(current));
+      current++;
+      return result;
+    }
+  }
+
+  /////////////////////////////////////////////////////////////////////////////
+  // subsetting
+
+  @Override
+  public RangeIterator getRangeIterator() {
+    if (range != null) {
+      return range;
+    }
+    try {
+      return new Range(axisType.toString(), 0, ncoords - 1);
+    } catch (InvalidRangeException e) {
+      throw new RuntimeException(e); // not possible
+    }
+  }
+
+  public Range getRange() {
+    if (getDependenceType() == GridAxis.DependenceType.scalar) {
+      return Range.EMPTY;
+    }
+
+    try {
+      return new Range(axisType.toString(), 0, ncoords - 1);
+    } catch (InvalidRangeException e) {
+      throw new RuntimeException(e);
+    }
+  }
 
   @Override
   @Nullable
@@ -289,7 +278,7 @@ public class GridAxis1D extends GridAxis {
     return (builder == null) ? null : builder.build();
   }
 
-  // LOOK incomplete handling of subsetting params
+  // TODO incomplete handling of subsetting params
   @Nullable
   private GridAxis1D.Builder<?> subsetBuilder(GridSubset params, Formatter errLog) {
     GridAxis1DHelper helper = new GridAxis1DHelper(this);
@@ -306,32 +295,46 @@ public class GridAxis1D extends GridAxis {
           }
         }
 
-        /*
-         * double[] vertRange = params.getVertRange(); // used by WCS
-         * if (vertRange != null) {
-         * return helper.subset(vertRange[0], vertRange[1], 1, errLog).orElse(null);
-         * }
-         */
-
         // default is all
         break;
       }
 
-      case Ensemble:
-        Double eval = params.getDouble(GridSubset.ensCoord);
+      case Ensemble: {
+        Double eval = params.getEnsCoord();
         if (eval != null) {
           return helper.subsetClosest(eval);
         }
         // default is all
         break;
+      }
 
-      // TODO: old way is that x,y get seperately subsetted. Right now, not getting subsetted
+      case TimeOffset: {
+        Double oval = params.getTimeOffset();
+        if (oval != null) {
+          return helper.subsetClosest(oval);
+        }
+
+        // If a time interval is sent, search for match.
+        CoordInterval timeOffsetIntv = params.getTimeOffsetIntv();
+        if (timeOffsetIntv != null) {
+          return helper.subsetClosest(timeOffsetIntv);
+        }
+
+        // TODO do we need this?
+        if (params.getTimeOffsetFirst()) {
+          return helper.makeSubsetByIndex(new Range(1));
+        }
+
+        // default is all
+        break;
+      }
+
+      // These are subsetted by the HorizCS
       case GeoX:
       case GeoY:
       case Lat:
       case Lon:
-        // throw new IllegalArgumentException();
-        break;
+        return null;
 
       default:
         // default is all
@@ -343,42 +346,25 @@ public class GridAxis1D extends GridAxis {
   }
 
   @Override
-  @Nullable
-  public GridAxis subsetDependent(GridAxis1D dependsOn, Formatter errLog) {
+  public Optional<GridAxis> subsetDependent(GridAxis1D subsetIndAxis, Formatter errLog) {
     GridAxis1D.Builder<?> builder;
-    // TODO Other possible subsets?
-    builder = new GridAxis1DHelper(this).makeSubsetByIndex(dependsOn.getRange());
-    return builder.build();
-  }
-
-  /** Iterates over coordinate values, either Double or CoordInterval. */
-  @Override
-  public Iterator<Object> iterator() {
-    return new CoordIterator();
-  }
-
-  private class CoordIterator extends AbstractIterator {
-    private int current = 0;
-
-    @Override
-    protected Object computeNext() {
-      if (current >= getNcoords()) {
-        return endOfData();
-      }
-      Object result = spacing != Spacing.discontiguousInterval ? new Double(getCoordMidpoint(current))
-          : CoordInterval.create(getCoordEdge1(current), getCoordEdge2(current));
-      current++;
-      return result;
-    }
+    builder = new GridAxis1DHelper(this).makeSubsetByIndex(subsetIndAxis.getRange());
+    return Optional.of(builder.build());
   }
 
   //////////////////////////////////////////////////////////////
-
+  final int ncoords; // number of coordinates
+  final double startValue; // only for regular
+  final double endValue;
   final Range range; // for subset, tracks the indexes in the original
-  final RangeComposite crange;
 
   GridAxis1D(Builder<?> builder) {
     super(builder);
+
+    Preconditions.checkArgument(builder.ncoords > 0);
+    this.ncoords = builder.ncoords;
+    this.startValue = builder.startValue;
+    this.endValue = builder.endValue;
 
     if (axisType == null && builder.dependenceType == DependenceType.independent) {
       throw new IllegalArgumentException("independent axis must have type");
@@ -391,7 +377,6 @@ public class GridAxis1D extends GridAxis {
     } else {
       this.range = Range.make(rangeName, getNcoords());
     }
-    this.crange = builder.crange;
   }
 
   public GridAxis1D.Builder<?> toBuilder() {
@@ -400,7 +385,7 @@ public class GridAxis1D extends GridAxis {
 
   // Add local fields to the builder.
   protected Builder<?> addLocalFieldsToBuilder(Builder<? extends GridAxis.Builder<?>> builder) {
-    builder.setRange(this.range).setCompositeRange(this.crange);
+    builder.setRegular(this.ncoords, this.startValue, this.endValue, this.resolution).setRange(this.range);
     return (Builder<?>) super.addLocalFieldsToBuilder(builder);
   }
 
@@ -422,22 +407,38 @@ public class GridAxis1D extends GridAxis {
   }
 
   public static abstract class Builder<T extends Builder<T>> extends GridAxis.Builder<T> {
+    int ncoords; // number of coordinates, required
+    double startValue;
+    double endValue;
+
     // does this really describe all subset possibilities? what about RangeScatter, composite ??
     private Range range; // for subset, tracks the indexes in the original
-    private RangeComposite crange;
     private boolean built = false;
+
+    public T setNcoords(int ncoords) {
+      this.ncoords = ncoords;
+      return self();
+    }
+
+    /**
+     * Only used when spacing.isRegular.
+     * regularPoint: start, end are pts; end = start + (ncoords - 1) * increment.
+     * regularInterval: start, end are edges; end = start + ncoords * increment.
+     */
+    public T setRegular(int ncoords, double startValue, double endValue, double increment) {
+      this.ncoords = ncoords;
+      this.startValue = startValue;
+      this.endValue = endValue;
+      this.resolution = increment;
+      return self();
+    }
 
     public T setRange(Range range) {
       this.range = range;
       return self();
     }
 
-    public T setCompositeRange(RangeComposite crange) {
-      this.crange = crange;
-      return self();
-    }
-
-    T subset(int ncoords, double startValue, double endValue, double resolution, Range range) {
+    public T subset(int ncoords, double startValue, double endValue, double resolution, Range range) {
       this.ncoords = ncoords;
       this.startValue = startValue;
       this.endValue = endValue;
@@ -445,7 +446,6 @@ public class GridAxis1D extends GridAxis {
       this.range = range;
       this.isSubset = true;
       this.values = makeValues(range);
-
       return self();
     }
 

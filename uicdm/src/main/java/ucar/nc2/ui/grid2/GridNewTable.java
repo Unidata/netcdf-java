@@ -11,10 +11,8 @@ import ucar.ma2.DataType;
 import ucar.nc2.Dimensions;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.VerticalCT;
-import ucar.nc2.grid.Grid;
-import ucar.nc2.grid.GridAxis;
-import ucar.nc2.grid.GridDataset;
-import ucar.nc2.grid.GridCoordinateSystem;
+import ucar.nc2.grid.*;
+import ucar.nc2.internal.grid.GridLatLon2D;
 import ucar.ui.util.NamedObject;
 import ucar.ui.prefs.BeanTable;
 import ucar.ui.widget.BAMutil;
@@ -329,7 +327,27 @@ public class GridNewTable extends JPanel {
     }
 
     public String getShape() {
-      return Arrays.toString(Dimensions.makeShape(geogrid.getCoordinateSystem().getDomain()));
+      int n = Iterables.size(geogrid.getCoordinateSystem().getGridAxes());
+      int[] shape = new int[n];
+      int count = 0;
+      for (GridAxis gridAxis : geogrid.getCoordinateSystem().getGridAxes()) {
+        int ncoords = -1;
+        if (gridAxis instanceof GridAxis1D) {
+          ncoords = ((GridAxis1D) gridAxis).getNcoords();
+        } else if (gridAxis instanceof GridAxisOffsetTimeRegular) {
+          ncoords = ((GridAxisOffsetTimeRegular) gridAxis).getNOffsetPerRun();
+        }
+        shape[count++] = ncoords;
+      }
+      // awkward
+      if (geogrid.getCoordinateSystem().getHorizCoordSystem() instanceof GridLatLon2D) {
+        GridLatLon2D hcs = (GridLatLon2D) geogrid.getCoordinateSystem().getHorizCoordSystem();
+        int[] hshape = hcs.getShape();
+        shape[count++] = hshape[0];
+        shape[count++] = hshape[1];
+
+      }
+      return Arrays.toString(shape);
     }
 
     public String getDimensions() {
@@ -349,7 +367,7 @@ public class GridNewTable extends JPanel {
       this.gcs = gcs;
 
       Formatter f = new Formatter();
-      Projection p = gcs.getProjection();
+      Projection p = gcs.getHorizCoordSystem().getProjection();
       if (p != null) {
         f.format("%s ", p.getName());
       }
@@ -399,12 +417,14 @@ public class GridNewTable extends JPanel {
     }
 
     public String getProjection() {
-      return this.gcs.getProjection() == null ? "" : this.gcs.getProjection().getName();
+      Projection p = this.gcs.getHorizCoordSystem().getProjection();
+      return p == null ? "" : p.getName();
     }
   }
 
   public static class AxisBean {
     GridAxis axis;
+    GridAxis1D axis1d;
     String name, desc, units;
     AxisType axisType;
     int[] shape;
@@ -415,6 +435,9 @@ public class GridNewTable extends JPanel {
     // create from a dataset
     public AxisBean(GridAxis v) {
       this.axis = v;
+      if (axis instanceof GridAxis1D) {
+        axis1d = (GridAxis1D) axis;
+      }
 
       name = v.getName();
       axisType = v.getAxisType();
@@ -448,12 +471,16 @@ public class GridNewTable extends JPanel {
       return Arrays.toString(shape);
     }
 
+    public double getNcoords() {
+      return axis1d != null ? axis1d.getNcoords() : Double.NaN;
+    }
+
     public double getStartValue() {
-      return axis.getStartValue();
+      return axis1d != null ? axis1d.getStartValue() : Double.NaN;
     }
 
     public double getEndValue() {
-      return axis.getEndValue();
+      return axis1d != null ? axis1d.getEndValue() : Double.NaN;
     }
 
     public double getResolution() {
