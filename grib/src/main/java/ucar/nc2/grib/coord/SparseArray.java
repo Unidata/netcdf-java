@@ -139,7 +139,7 @@ public class SparseArray<T> {
   }
 
   public void showInfo(Formatter info, GribRecordStats all) {
-    info.format("SparseArray shape=[%s] ", Arrays.toString(shape));
+    info.format("SparseArray shape=%s, ", Arrays.toString(shape));
     info.format("ndups=%d, missing/total=%d/%d, density=%f%n", ndups, countMissing(), totalSize, getDensity());
 
     if (all != null) {
@@ -149,13 +149,17 @@ public class SparseArray<T> {
       all.vars++;
     }
 
+    info.format("%n");
+    showMissing(info);
+  }
+
+  public void showMissing(Formatter info) {
     List<Integer> sizes = new ArrayList<>();
     for (int s : shape) {
       if (s == 1)
         continue; // skip dimension len 1
       sizes.add(s);
     }
-    info.format("%n");
     showMissingRecurse(0, sizes, info);
   }
 
