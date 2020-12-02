@@ -135,7 +135,7 @@ public class GridCS implements GridCoordinateSystem {
     }
     String className = axis.getClass().getName();
     int pos = className.lastIndexOf(".");
-    f.format(" %s (%s) ", axis.getName(), className.substring(pos + 1));
+    f.format(" %s (%s) ", axis.getName(), className.substring(pos+1));
     if (showCoords) {
       showCoords(axis, f);
     }
@@ -340,23 +340,6 @@ public class GridCS implements GridCoordinateSystem {
     this.horizCsys = GridHorizCS.create(getXHorizAxis(), getYHorizAxis(), builder.projection);
     this.dependMap = makeDependMap();
   }
-   */
-
-  private GridCS(Builder<?> builder, List<GridAxis> gridAxes) {
-    Preconditions.checkNotNull(builder.axesNames);
-    Preconditions.checkNotNull(builder.projection);
-    this.name = builder.name;
-    this.featureType = builder.featureType;
-
-    ImmutableList.Builder<GridAxis> axesb = ImmutableList.builder();
-    for (String name : builder.axesNames) {
-      gridAxes.stream().filter(a -> a.getName().equals(name)).findFirst().ifPresent(axesb::add);
-    }
-    this.axes = axesb.build();
-
-    this.horizCsys = GridHorizCS.create(getXHorizAxis(), getYHorizAxis(), builder.projection);
-    this.dependMap = makeDependMap();
-  }
 
   public static Builder<?> builder() {
     return new Builder2();
@@ -423,15 +406,6 @@ public class GridCS implements GridCoordinateSystem {
       built = true;
       return new GridCS(this);
     }
-
-    /*
-    public GridCS build(List<GridAxis> gridAxes, List<CoordinateTransform> transforms) {
-      if (built)
-        throw new IllegalStateException("already built");
-      built = true;
-      return new GridCS(this, gridAxes);
-    }
-     */
 
     /** Axes are matched from names. */
     public GridCS build(List<GridAxis> gridAxes) {

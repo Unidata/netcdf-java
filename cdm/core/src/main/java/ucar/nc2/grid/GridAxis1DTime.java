@@ -183,13 +183,11 @@ public class GridAxis1DTime extends GridAxis1D {
         if (date != null) {
           return helper.subsetClosest(date);
         }
-        Double dval = params.getTimePoint();
-        if (dval != null) {
-          return helper.subsetClosest(dval);
-        }
-        CoordInterval intv = params.getTimeIntv();
-        if (intv != null) {
-          return helper.subsetClosest(intv);
+
+        // TODO, can time be discontinuous interval? if so need to add that case.
+        Object value = params.getTimeCoord();
+        if (value instanceof Double) {
+          return helper.subsetClosest((Double) value);
         }
 
         Integer stride = params.getTimeStride();
@@ -286,7 +284,8 @@ public class GridAxis1DTime extends GridAxis1D {
   @Override
   public void toString(Formatter f, Indent indent) {
     super.toString(f, indent);
-    f.format("%s dateUnit '%s' dates =%s%n", indent, timeHelper.getUdUnit(), cdates);
+    f.format("%s dates =%s", indent, cdates);
+    f.format("%n");
   }
 
   @Override
@@ -298,7 +297,7 @@ public class GridAxis1DTime extends GridAxis1D {
     if (!super.equals(o))
       return false;
     GridAxis1DTime that = (GridAxis1DTime) o;
-    return Objects.equals(timeHelper.getUdUnit(), that.timeHelper.getUdUnit());
+    return Objects.equals(timeHelper, that.timeHelper) && Objects.equals(cdates, that.cdates);
   }
 
   @Override
@@ -317,7 +316,7 @@ public class GridAxis1DTime extends GridAxis1D {
     } else {
       this.timeHelper = TimeHelper.factory(this.units, this.attributes);
     }
-
+    // TODO do we require calendar dates or not?
     if (range != null && builder.cdates != null) {
       this.cdates = subsetDatesByRange(builder.cdates, range);
       Preconditions.checkArgument(cdates.size() == this.getNcoords());
@@ -325,16 +324,8 @@ public class GridAxis1DTime extends GridAxis1D {
       this.cdates = ImmutableList.copyOf(builder.cdates);
       Preconditions.checkArgument(cdates.size() == this.getNcoords());
     } else {
-      this.cdates = makeCalendarDateFromValues();
+      this.cdates = null;
     }
-  }
-
-  private ImmutableList<CalendarDate> makeCalendarDateFromValues() {
-    ArrayList<CalendarDate> result = new ArrayList<>(getNcoords());
-    for (double val : getCoordsAsArray()) {
-      result.add(timeHelper.makeCalendarDateFromOffset(val));
-    }
-    return ImmutableList.copyOf(result);
   }
 
   private ImmutableList<CalendarDate> subsetDatesByRange(List<CalendarDate> dates, RangeIterator range) {
@@ -351,7 +342,7 @@ public class GridAxis1DTime extends GridAxis1D {
 
   // Add local fields to the passed - in builder.
   protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
-    b.setTimeHelper(this.timeHelper);
+    b.setTimeHelper(this.timeHelper).setCalendarDates(this.cdates);
     return (Builder<?>) super.addLocalFieldsToBuilder(b);
   }
 
@@ -378,11 +369,6 @@ public class GridAxis1DTime extends GridAxis1D {
 
     protected abstract T self();
 
-    public T setDateUnits(String dateUnits) {
-      this.timeHelper = TimeHelper.factory(dateUnits, null);
-      return self();
-    }
-
     public T setTimeHelper(TimeHelper timeHelper) {
       this.timeHelper = timeHelper;
       return self();
@@ -408,19 +394,7 @@ public class GridAxis1DTime extends GridAxis1D {
       if (axisType == null) {
         axisType = AxisType.Time;
       }
-      if (cdates != null && timeHelper != null) {
-        setValues(makeValuesFromCalendarDate());
-      }
       return new GridAxis1DTime(this);
-    }
-
-    private double[] makeValuesFromCalendarDate() {
-      double[] values = new double[cdates.size()];
-      int count = 0;
-      for (CalendarDate cd : cdates) {
-        values[count++] = timeHelper.offsetFromRefDate(cd);
-      }
-      return values;
     }
   }
 }
