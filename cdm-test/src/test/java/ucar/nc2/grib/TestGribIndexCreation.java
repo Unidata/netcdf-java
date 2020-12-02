@@ -410,30 +410,41 @@ public class TestGribIndexCreation {
     System.out.printf("changed = %s%n", changed);
   }
 
-  @Ignore("files not available")
   @Test
   @Category(NeedsCdmUnitTest.class)
   public void createNBMOcean() throws IOException { // TWOD
     Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
-    FeatureCollectionConfig config = new FeatureCollectionConfig("NCEP_OCEAN_MODEL_FIXED", "test/NCEP_OCEAN_MODEL",
-        FeatureCollectionType.GRIB2, "/media/twobee/tds/NCEP/NBM/Ocean/.*gbx9", null, null, null, "file", null);
+    FeatureCollectionConfig config =
+        new FeatureCollectionConfig("NCEP_OCEAN_MODEL_FIXED", "test/NCEP_OCEAN_MODEL", FeatureCollectionType.GRIB2,
+            TestDir.cdmUnitTestDir + "tds_index/NCEP/NBM/Ocean/.*gbx9", null, null, null, "file", null);
 
     boolean changed = GribCdmIndex.updateGribCollection(config, always, logger);
     System.out.printf("changed = %s%n", changed);
     Grib.setDebugFlags(new DebugFlagsImpl());
   }
 
-  @Ignore("files not available")
   @Test
   @Category(NeedsCdmUnitTest.class)
   public void createNndfCpc() throws IOException { // TWOD
     Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
-    FeatureCollectionConfig config = new FeatureCollectionConfig("NCEP_NDFD_CPC_Experimental", "test/NCEP_NDFD_CPC",
-        FeatureCollectionType.GRIB2, "/media/twobee/tds/NCEP/NDFD/CPC/.*gbx9", null, null, null, "file", null);
+    FeatureCollectionConfig config =
+        new FeatureCollectionConfig("NCEP_NDFD_CPC_Experimental", "test/NCEP_NDFD_CPC", FeatureCollectionType.GRIB2,
+            TestDir.cdmUnitTestDir + "tds_index/NCEP/NDFD/CPC/.*gbx9", null, null, null, "file", null);
 
     boolean changed = GribCdmIndex.updateGribCollection(config, always, logger);
     System.out.printf("changed = %s%n", changed);
     Grib.setDebugFlags(new DebugFlagsImpl());
+  }
+
+  @Test
+  @Ignore("Missing grib2 files in test datasets.")
+  public void createNdfdSpc() throws IOException {
+    FeatureCollectionConfig config =
+        new FeatureCollectionConfig("NDFD-SPC", "test/NDFD-SPC", FeatureCollectionType.GRIB2,
+            TestDir.cdmUnitTestDir + "gribCollections/ndfd_spc/.*grib2$", null, null, null, "file", null);
+
+    boolean changed = GribCdmIndex.updateGribCollection(config, always, logger);
+    System.out.printf("changed = %s%n", changed);
   }
 
   @Test

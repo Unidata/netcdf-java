@@ -136,8 +136,9 @@ public class CdmIndexPanel extends JPanel {
       public void actionPerformed(ActionEvent e) {
         List<VarBean> beans = varTable.getSelectedBeans();
         infoTA.clear();
-        for (VarBean bean : beans)
+        for (VarBean bean : beans) {
           infoTA.appendLine(bean.v.toStringFrom());
+        }
         infoTA.gotoTop();
         infoWindow.show();
       }
@@ -1182,35 +1183,26 @@ public class CdmIndexPanel extends JPanel {
 
     private void showSparseArray(Formatter f) {
 
-      /*
-       * int count = 0;
-       * Indent indent = new Indent(2);
-       * for (Coordinate coord : v.getCoordinates()) {
-       * f.format("%d: ", count++);
-       * coord.showInfo(f, indent);
-       * }
-       * f.format("%n");
-       */
 
       if (v instanceof PartitionCollectionImmutable.VariableIndexPartitioned) {
         PartitionCollectionImmutable.VariableIndexPartitioned vip =
             (PartitionCollectionImmutable.VariableIndexPartitioned) v;
         vip.show(f);
-
       } else {
+        // make sure sparse array has been read in.
         try {
           v.readRecords();
+
+          if (v.getSparseArray() != null) {
+            SparseArray<GribCollectionImmutable.Record> sa = v.getSparseArray();
+            sa.showInfo(f, null);
+            f.format("%n");
+            sa.showTracks(f);
+            f.format("%n");
+            sa.showContent(f);
+          }
         } catch (IOException e) {
-          e.printStackTrace();
-          return;
-        }
-        if (v.getSparseArray() != null) {
-          SparseArray<GribCollectionImmutable.Record> sa = v.getSparseArray();
-          sa.showInfo(f, null);
-          f.format("%n");
-          sa.showTracks(f);
-          f.format("%n");
-          sa.showContent(f);
+          logger.warn("Failed to showSparseArray for variable " + v, e);
         }
       }
     }

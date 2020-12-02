@@ -1254,71 +1254,81 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
 
   // regular runtime, offset; offset depends on runtime hour from 0z
   private String makeTimeOffsetRegular(Group g, CoordinateTime2D time2D) {
-    List<Object> hourFrom0z = ImmutableList.copyOf(time2D.getRegularHourOffsets());
-    int nhours = hourFrom0z.size();
-    int noffsets = time2D.getNtimes();
-    String toName = makeTimeOffsetName(time2D.getName());
-    if (g.findDimension(toName) == null) {
-      g.addDimension(new Dimension(toName, noffsets));
-    }
-    String dimNames = nhours + " " + toName;
+    try {
+      List<Object> hourFrom0z = ImmutableList.copyOf(time2D.getRegularHourOffsets());
+      int nhours = hourFrom0z.size();
+      int noffsets = time2D.getNtimes();
+      String toName = makeTimeOffsetName(time2D.getName());
+      if (g.findDimension(toName) == null) {
+        g.addDimension(new Dimension(toName, noffsets));
+      }
+      String dimNames = nhours + " " + toName;
 
-    Variable v = new Variable(ncfile, g, null, toName, DataType.DOUBLE, dimNames);
-    g.addVariable(v);
-    v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.TimeOffset.toString()));
-    v.addAttribute(new Attribute(CDM.UNITS, time2D.getUnit()));
-    v.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME_OFFSET));
-    v.addAttribute(new Attribute(CDM.LONG_NAME, CDM.TIME_OFFSET));
-    v.addAttribute(new Attribute(CDM.UDUNITS, time2D.getTimeUdUnit()));
-    v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.TimeOffset.toString()));
+      Variable v = new Variable(ncfile, g, null, toName, DataType.DOUBLE, dimNames);
+      g.addVariable(v);
+      v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.TimeOffset.toString()));
+      v.addAttribute(new Attribute(CDM.UNITS, time2D.getUnit()));
+      v.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME_OFFSET));
+      v.addAttribute(new Attribute(CDM.LONG_NAME, CDM.TIME_OFFSET));
+      v.addAttribute(new Attribute(CDM.UDUNITS, time2D.getTimeUdUnit()));
+      v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.TimeOffset.toString()));
 
-    // Special Coordinates. TODO is there a CF equivalent?
-    v.addAttribute(new Attribute(CDM.RUNTIME_COORDINATE, g.getFullName() + time2D.getRuntimeCoordinate().getName()));
-    Attribute.Builder attb =
-        Attribute.builder(CDM.TIME_OFFSET_HOUR).setDataType(DataType.INT).setValues(hourFrom0z, false);
-    v.addAttribute(attb.build());
+      // Special Coordinates. TODO is there a CF equivalent?
+      v.addAttribute(new Attribute(CDM.RUNTIME_COORDINATE, g.getFullName() + time2D.getRuntimeCoordinate().getName()));
+      Attribute.Builder attb =
+          Attribute.builder(CDM.TIME_OFFSET_HOUR).setDataType(DataType.INT).setValues(hourFrom0z, false);
+      v.addAttribute(attb.build());
 
-    // We use a rectangular array; uneven arrays will have NaNs.
-    double[] midpoints = new double[nhours * noffsets];
-    java.util.Arrays.fill(midpoints, Double.NaN);
-    double[] bounds = null;
-    if (time2D.isTimeInterval()) {
-      bounds = new double[2 * nhours * noffsets];
-      java.util.Arrays.fill(bounds, Double.NaN);
-      for (int runidx = 0; runidx < nhours; runidx++) {
-        CoordinateTimeIntv timeCoord = (CoordinateTimeIntv) time2D.getTimeCoordinate(runidx);
-        // uneven number of values for each hour
-        int count = runidx * noffsets;
-        int countb = 2 * runidx * noffsets;
-        for (TimeCoordIntvValue tinv : timeCoord.getTimeIntervals()) {
-          midpoints[count++] = (tinv.getBounds1() + tinv.getBounds2()) / 2.0;
-          bounds[countb++] = tinv.getBounds1();
-          bounds[countb++] = tinv.getBounds2();
+      // We use a rectangular array; uneven arrays will have NaNs.
+      double[] midpoints = new double[nhours * noffsets];
+      java.util.Arrays.fill(midpoints, Double.NaN);
+      double[] bounds = null;
+      if (time2D.isTimeInterval()) {
+        bounds = new double[2 * nhours * noffsets];
+        java.util.Arrays.fill(bounds, Double.NaN);
+        int houridx = 0;
+        for (int hour : time2D.getRegularHourOffsets()) {
+          CoordinateTimeIntv timeCoord = (CoordinateTimeIntv) time2D.getTimeCoordinate(houridx);
+          // uneven number of values for each hour
+          int count = houridx * noffsets;
+          int countb = 2 * houridx * noffsets;
+          for (TimeCoordIntvValue tinv : timeCoord.getTimeIntervals()) {
+            midpoints[count++] = (tinv.getBounds1() + tinv.getBounds2()) / 2.0;
+            bounds[countb++] = tinv.getBounds1();
+            bounds[countb++] = tinv.getBounds2();
+          }
+          houridx++;
+        }
+      } else {
+        java.util.Arrays.fill(midpoints, Double.NaN);
+        int houridx = 0;
+        for (int hour : time2D.getRegularHourOffsets()) {
+          CoordinateTime timeCoord = (CoordinateTime) time2D.getRegularTimeCoordinate(hour);
+          // may be uneven number of values for each hour
+          int count = houridx * noffsets;
+          for (Integer offset : timeCoord.getOffsetSorted()) {
+            midpoints[count++] = offset;
+          }
+          houridx++;
         }
       }
-    } else {
-      for (int runidx = 0; runidx < nhours; runidx++) {
-        int count = runidx * noffsets;
-        CoordinateTime timeCoord = (CoordinateTime) time2D.getTimeCoordinate(runidx);
-        for (Integer offset : timeCoord.getOffsetSorted()) {
-          midpoints[count++] = offset;
-        }
+      v.setCachedData(Array.factory(DataType.DOUBLE, new int[] {nhours, noffsets}, midpoints), false);
+
+      if (time2D.isTimeInterval()) {
+        String boundsName = toName + "_bounds";
+        Variable varBounds = new Variable(ncfile, g, null, boundsName, DataType.DOUBLE, toName + " 2");
+        varBounds.addAttribute(new Attribute(CDM.LONG_NAME, "time offset coord bounds"));
+        VariableDS coordVarBounds = new VariableDS(g, varBounds, true);
+        coordVarBounds.setUnitsString(time2D.getTimeUdUnit());
+        coordVarBounds.setCachedData(Array.factory(DataType.DOUBLE, new int[] {nhours, noffsets, 2}, bounds), false);
+
+        v.addAttribute(new Attribute(CF.BOUNDS, boundsName));
       }
+      return toName;
+    } catch (Throwable t) {
+      logger.error("Error in makeTimeOffsetRegular variable {}", makeTimeOffsetName(time2D.getName()), t);
+      throw new RuntimeException(t);
     }
-    v.setCachedData(Array.factory(DataType.DOUBLE, new int[] {nhours, noffsets}, midpoints), false);
-
-    if (time2D.isTimeInterval()) {
-      String boundsName = toName + "_bounds";
-      Variable varBounds = new Variable(ncfile, g, null, boundsName, DataType.DOUBLE, toName + " 2");
-      varBounds.addAttribute(new Attribute(CDM.LONG_NAME, "time offset coord bounds"));
-      VariableDS coordVarBounds = new VariableDS(g, varBounds, true);
-      coordVarBounds.setUnitsString(time2D.getTimeUdUnit());
-      coordVarBounds.setCachedData(Array.factory(DataType.DOUBLE, new int[] {nhours, noffsets, 2}, bounds), false);
-      coordVarBounds.setCachedData(Array.factory(DataType.DOUBLE, new int[] {nhours, noffsets, 2}, bounds), false);
-
-      v.addAttribute(new Attribute(CF.BOUNDS, boundsName));
-    }
-    return toName;
   }
 
   ///////////////////////////////////////

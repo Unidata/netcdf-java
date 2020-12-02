@@ -456,6 +456,10 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     return (CoordinateTimeAbstract) times.get(runIdx);
   }
 
+  public CoordinateTimeAbstract getRegularTimeCoordinate(int hour) {
+    return regTimes.get(hour);
+  }
+
   public CalendarDate getRefDate(int runIdx) {
     return runtime.getRuntimeDate(runIdx);
   }
