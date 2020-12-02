@@ -437,6 +437,7 @@ public class TestGribIndexCreation {
   }
 
   @Test
+  @Ignore("Missing grib2 files in test datasets.")
   public void createNdfdSpc() throws IOException {
     FeatureCollectionConfig config =
         new FeatureCollectionConfig("NDFD-SPC", "test/NDFD-SPC", FeatureCollectionType.GRIB2,
