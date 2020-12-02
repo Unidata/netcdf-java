@@ -62,7 +62,7 @@ public class GridVariable implements Grid {
 
   @Override
   public String toString() {
-    return "GridVariable{" + "vds=" + vds + ", cs=" + cs.getName() + ", permuter=" + permuter + '}';
+    return vds + "\n permuter=" + permuter + '}';
   }
 
   @Override

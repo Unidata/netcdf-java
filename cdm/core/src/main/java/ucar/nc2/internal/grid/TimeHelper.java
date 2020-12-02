@@ -26,12 +26,8 @@ public class TimeHelper {
 
     Calendar cal = getCalendarFromAttribute(atts);
     CalendarDateUnit dateUnit;
-    try {
-      dateUnit = CalendarDateUnit.withCalendar(cal, units); // this will throw exception on failure
-      return new TimeHelper(dateUnit);
-    } catch (IllegalArgumentException e) {
-      return null;
-    }
+    dateUnit = CalendarDateUnit.withCalendar(cal, units); // this will throw exception on failure
+    return new TimeHelper(dateUnit);
   }
 
   //////////////////////////////////////////////

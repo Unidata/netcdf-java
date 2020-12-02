@@ -35,16 +35,6 @@ public class CdmrEncode {
           LatLonPoint llPoint = (LatLonPoint) entry.getValue();
           f.format("&lat=%s&lon=%s", llPoint.getLatitude(), llPoint.getLongitude());
           break;
-        case GridSubset.stations:
-          List<String> stns = (List<String>) entry.getValue();
-          int count = 0;
-          for (String stn : stns) {
-            if (count++ == 0)
-              f.format("&stn=%s", stn);
-            else
-              f.format(",%s", stn);
-          }
-          break;
         case GridSubset.timeRange:
           CalendarDateRange timeRange = (CalendarDateRange) entry.getValue();
           f.format("&time_start=%s&time_end=%s", timeRange.getStart(), timeRange.getEnd());

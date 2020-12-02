@@ -18,12 +18,13 @@ class CoordinateAxis1DTimeExtractor {
   final TimeHelper timeHelper;
   final List<CalendarDate> cdates;
 
+  // TODO why pass in values?
   CoordinateAxis1DTimeExtractor(CoordinateAxis coordAxis, double[] values) {
-    Preconditions.checkArgument(coordAxis.getRank() < 2);
+    Preconditions.checkArgument(coordAxis.getDataType() == DataType.CHAR || coordAxis.getRank() < 2);
     this.timeHelper = TimeHelper.factory(coordAxis.getUnitsString(), coordAxis.attributes());
 
+    Formatter errMessages = new Formatter();
     try {
-      Formatter errMessages = new Formatter();
       if (coordAxis.getDataType() == DataType.CHAR) {
         cdates = makeTimesFromChar(coordAxis, errMessages);
       } else if (coordAxis.getDataType() == DataType.STRING) {
@@ -32,7 +33,7 @@ class CoordinateAxis1DTimeExtractor {
         cdates = makeCalendarDateFromValues(values);
       }
     } catch (IOException ioe) {
-      throw new RuntimeException(ioe);
+      throw new RuntimeException(errMessages.toString(), ioe);
     }
   }
 
@@ -63,15 +64,13 @@ class CoordinateAxis1DTimeExtractor {
   }
 
   private CalendarDate makeCalendarDateFromStringCoord(String coordValue, Variable org, Formatter errMessages) {
-    CalendarDate cd = timeHelper.makeCalendarDateFromOffset(coordValue);
-    if (cd == null) {
-      if (errMessages != null) {
-        errMessages.format("String time coordinate must be ISO formatted= %s%n", coordValue);
-        log.info("Char time coordinate must be ISO formatted= {} file = {}", coordValue, org.getDatasetLocation());
-      }
-      throw new IllegalArgumentException();
+    try {
+      return timeHelper.makeCalendarDateFromOffset(coordValue);
+    } catch (IllegalArgumentException e) {
+      errMessages.format("Bad time coordinate '%s' in dataset '%s'%n", coordValue, org.getDatasetLocation());
+      log.info("Bad time coordinate '{}' in dataset '{}'", coordValue, org.getDatasetLocation());
+      throw new RuntimeException(errMessages.toString(), e);
     }
-    return cd;
   }
 
   private List<CalendarDate> makeCalendarDateFromValues(double[] values) {
