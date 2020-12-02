@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2019-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
+
 package ucar.nc2.dataset;
 
 import static ucar.ma2.DataType.DOUBLE;
@@ -218,7 +223,7 @@ public class VariableEnhancer implements EnhanceScaleMissingUnsigned {
       }
     }
 
-    /// assign convertedDataType if needed
+    // assign convertedDataType if needed
     if (hasScaleOffset) {
       scaledOffsetType = largestOf(unsignedConversionType, scaleType, offsetType).withSignedness(signedness);
       logger.debug("assign scaledOffsetType = {}", scaledOffsetType);
@@ -239,6 +244,14 @@ public class VariableEnhancer implements EnhanceScaleMissingUnsigned {
           if (hasValidRange || hasValidMax) {
             validMax = applyScaleOffset(validMax);
           }
+        }
+        // During the scaling process, it is possible that the valid minimum and maximum values have effectively been
+        // swapped (for example, when the scale value is negative). Go ahead and check to make sure the valid min is
+        // actually less than the valid max, and if not, fix it. See https://github.com/Unidata/netcdf-java/issues/572.
+        if (validMin > validMax) {
+          double tmp = validMin;
+          validMin = validMax;
+          validMax = tmp;
         }
       }
     }
