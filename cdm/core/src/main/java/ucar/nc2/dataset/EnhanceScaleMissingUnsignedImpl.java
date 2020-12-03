@@ -428,7 +428,7 @@ public class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsig
   }
 
   // TODO using valid_min, valid_max to indicate "missing". Seems that these are often not used correctly,
-  //  and we should not support. CF or NUWG?
+  // and we should not support. CF or NUWG?
   @Override
   public boolean isInvalidData(double val) {
     // valid_min and valid_max may have been multiplied by scale_factor, which could be a float, not a double.
