@@ -186,7 +186,7 @@ public class GridHorizCS implements GridHorizCoordinateSystem {
     }
 
     LatLonRect llbb = params.getLatLonBoundingBox();
-    ProjectionRect projbb = params.getProjectionRect();
+    ProjectionRect projbb = params.getProjectionBoundingBox();
 
     // TODO GridSubset.latlonPoint
     if (projbb != null) { // TODO ProjectionRect ok for isLatlon = true?

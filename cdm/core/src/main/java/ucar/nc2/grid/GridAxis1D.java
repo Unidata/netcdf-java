@@ -309,15 +309,13 @@ public class GridAxis1D extends GridAxis {
       }
 
       case TimeOffset: {
-        Double oval = params.getTimeOffset();
-        if (oval != null) {
-          return helper.subsetClosest(oval);
-        }
-
-        // If a time interval is sent, search for match.
-        CoordInterval timeOffsetIntv = params.getTimeOffsetIntv();
-        if (timeOffsetIntv != null) {
-          return helper.subsetClosest(timeOffsetIntv);
+        Object dval = params.getTimeOffsetCoord();
+        if (dval != null) {
+          if (dval instanceof Double) {
+            return helper.subsetClosest((Double) dval);
+          } else if (dval instanceof CoordInterval) {
+            return helper.subsetClosest((CoordInterval) dval);
+          }
         }
 
         // TODO do we need this?

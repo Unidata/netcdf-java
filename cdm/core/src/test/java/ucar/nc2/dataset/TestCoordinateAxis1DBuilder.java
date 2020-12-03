@@ -16,11 +16,11 @@ public class TestCoordinateAxis1DBuilder {
   @Test
   public void testFromVariableDS() throws IOException {
     Group.Builder parent = Group.builder().addDimension(Dimension.builder("dim1", 7).setIsUnlimited(true).build())
-            .addDimension(new Dimension("dim2", 27));
+        .addDimension(new Dimension("dim2", 27));
 
-    VariableDS.Builder<?> vdsBuilder = VariableDS.builder().setName("name").setDataType(DataType.FLOAT).setUnits("units")
-            .setDesc("desc").setEnhanceMode(NetcdfDataset.getEnhanceAll())
-            .addAttribute(new Attribute("missing_value", 0.0f)).setParentGroupBuilder(parent).setDimensionsByName("dim1");
+    VariableDS.Builder<?> vdsBuilder = VariableDS.builder().setName("name").setDataType(DataType.FLOAT)
+        .setUnits("units").setDesc("desc").setEnhanceMode(NetcdfDataset.getEnhanceAll())
+        .addAttribute(new Attribute("missing_value", 0.0f)).setParentGroupBuilder(parent).setDimensionsByName("dim1");
     parent.addVariable(vdsBuilder);
 
     CoordinateAxis.Builder<?> builder = CoordinateAxis.fromVariableDS(vdsBuilder).setAxisType(AxisType.GeoX);
@@ -48,13 +48,12 @@ public class TestCoordinateAxis1DBuilder {
   @Test
   public void testFromVariableDSwithData() throws IOException {
     Group.Builder parent = Group.builder().addDimension(Dimension.builder("dim1", 7).setIsUnlimited(true).build())
-            .addDimension(new Dimension("dim2", 27));
+        .addDimension(new Dimension("dim2", 27));
 
     VariableDS.Builder<?> vdsBuilder = VariableDS.builder().setName("name").setDataType(DataType.FLOAT)
-            .setUnits("days since 2001-01-01:00:00")
-            .setDesc("desc").setEnhanceMode(NetcdfDataset.getEnhanceAll())
-            .setAutoGen(1, 2)
-            .addAttribute(new Attribute("missing_value", 0.0f)).setParentGroupBuilder(parent).setDimensionsByName("dim1");
+        .setUnits("days since 2001-01-01:00:00").setDesc("desc").setEnhanceMode(NetcdfDataset.getEnhanceAll())
+        .setAutoGen(1, 2).addAttribute(new Attribute("missing_value", 0.0f)).setParentGroupBuilder(parent)
+        .setDimensionsByName("dim1");
     parent.addVariable(vdsBuilder);
 
     CoordinateAxis.Builder<?> builder = CoordinateAxis.fromVariableDS(vdsBuilder).setAxisType(AxisType.Time);

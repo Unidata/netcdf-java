@@ -32,18 +32,34 @@ import java.util.*;
 public class GridAxis1DTime extends GridAxis1D {
   private static final Logger logger = LoggerFactory.getLogger(GridAxis1DTime.class);
 
+  /** Get the list of coordinates as CalendarDates. */
+  public ImmutableList<CalendarDate> getCalendarDates() {
+    return cdates;
+  }
+
   /** Get the the ith coordinate CalendarDate. */
   public CalendarDate getCalendarDate(int idx) {
-    List<CalendarDate> cdates = getCalendarDates(); // in case we want to lazily evaluate
     return cdates.get(idx);
   }
 
   /** Get the calendar date range */
   public CalendarDateRange getCalendarDateRange() {
-    List<CalendarDate> cd = getCalendarDates();
-    int last = cd.size();
-    return (last > 0) ? CalendarDateRange.of(cd.get(0), cd.get(last - 1)) : null;
+    int last = cdates.size();
+    return (last > 0) ? CalendarDateRange.of(cdates.get(0), cdates.get(last - 1)) : null;
   }
+
+  /** Use the CalendarDateUnit to make a value from a CalendarDate. */
+  public double makeValue(CalendarDate date) {
+    return timeHelper.offsetFromRefDate(date);
+  }
+
+  TimeHelper getTimeHelper() {
+    return timeHelper;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  // unused: candidates for removal
+  // I think this functionality was needed when we were using time coords instead of time offsets.
 
   /**
    * Given a Date, find the corresponding time index on the time coordinate axis.
@@ -78,11 +94,6 @@ public class GridAxis1DTime extends GridAxis1D {
     return false;
   }
 
-  /** Get the list of coordinates as CalendarDates. */
-  public List<CalendarDate> getCalendarDates() {
-    return cdates;
-  }
-
   /** Get the bounds of the ith coordinate as a CalendarDate[2]. */
   public CalendarDate[] getCoordBoundsDate(int i) {
     CalendarDate[] e = new CalendarDate[2];
@@ -96,10 +107,6 @@ public class GridAxis1DTime extends GridAxis1D {
     return timeHelper.makeCalendarDateFromOffset(getCoordMidpoint(i));
   }
 
-  /** Use the CalendarDateUnit to make a CalendarDate from a value. */
-  public CalendarDate makeDate(double value) {
-    return timeHelper.makeDate(value);
-  }
 
   /** Get the time from the runtime and offset */
   public static CalendarDate addOffset(CalendarDate runDate, double offset, String offsetUnits) {
@@ -110,11 +117,6 @@ public class GridAxis1DTime extends GridAxis1D {
       throw new RuntimeException(String.format("Not integral offset = %f", offset));
     }
     return runDate.add(CalendarPeriod.of(offseti, field));
-  }
-
-  /** Use the CalendarDateUnit to make a value from a CalendarDate. */
-  public double makeValue(CalendarDate date) {
-    return timeHelper.offsetFromRefDate(date);
   }
 
   /** Get the CalendarDateUnit */
@@ -142,8 +144,9 @@ public class GridAxis1DTime extends GridAxis1D {
     return timeHelper.getCalendar();
   }
 
-  TimeHelper getTimeHelper() {
-    return timeHelper;
+  /** Use the CalendarDateUnit to make a CalendarDate from a value. */
+  public CalendarDate makeDate(double value) {
+    return timeHelper.makeDate(value);
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -198,25 +201,23 @@ public class GridAxis1DTime extends GridAxis1D {
         }
 
         // A time offset or time offset interval starts from the rundate of the offset
-        Double timeOffset = params.getTimeOffset();
+        Object timeOffset = params.getTimeOffsetCoord();
         CalendarDate runtime = params.getRunTime();
         if (timeOffset != null) {
-          if (runtime != null) {
-            date = makeDateInTimeUnits(runtime, timeOffset);
-            return helper.subsetClosest(date);
-          } else {
-            return helper.subsetClosest(timeOffset);
+          if (timeOffset instanceof Double) {
+            if (runtime != null) {
+              date = makeDateInTimeUnits(runtime, (Double) timeOffset);
+              return helper.subsetClosest(date);
+            } else {
+              return helper.subsetClosest((Double) timeOffset);
+            }
+          } else if (timeOffset instanceof CoordInterval) {
+            CoordInterval timeOffsetIntv = (CoordInterval) timeOffset;
+            CalendarDate[] dateIntv = new CalendarDate[2];
+            dateIntv[0] = makeDateInTimeUnits(runtime, timeOffsetIntv.start());
+            dateIntv[1] = makeDateInTimeUnits(runtime, timeOffsetIntv.end());
+            return helper.subsetClosest(dateIntv);
           }
-        }
-
-        // If a time interval is sent, search for match.
-        CoordInterval timeOffsetIntv = params.getTimeOffsetIntv();
-        if (timeOffsetIntv != null && runtime != null) {
-          // double midOffset = (timeOffsetIntv[0] + timeOffsetIntv[1]) / 2;
-          CalendarDate[] dateIntv = new CalendarDate[2];
-          dateIntv[0] = makeDateInTimeUnits(runtime, timeOffsetIntv.start());
-          dateIntv[1] = makeDateInTimeUnits(runtime, timeOffsetIntv.end());
-          return helper.subsetClosest(dateIntv);
         }
 
         if (stride != 1)
@@ -260,7 +261,7 @@ public class GridAxis1DTime extends GridAxis1D {
     if (ncoords < 7) {
       Formatter f = new Formatter();
       for (int i = 0; i < ncoords; i++) {
-        CalendarDate cd = makeDate(getCoordMidpoint(i));
+        CalendarDate cd = timeHelper.makeDate(getCoordMidpoint(i));
         if (i > 0)
           f.format(", ");
         f.format("%s", cd);
@@ -269,9 +270,9 @@ public class GridAxis1DTime extends GridAxis1D {
     }
 
     Formatter f = new Formatter();
-    CalendarDate start = makeDate(getStartValue());
+    CalendarDate start = timeHelper.makeDate(getStartValue());
     f.format("start=%s", start);
-    CalendarDate end = makeDate(getEndValue());
+    CalendarDate end = timeHelper.makeDate(getEndValue());
     f.format(", end=%s", end);
     f.format(" (npts=%d spacing=%s)", getNcoords(), getSpacing());
 

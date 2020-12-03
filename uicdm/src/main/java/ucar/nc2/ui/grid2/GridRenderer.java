@@ -194,7 +194,7 @@ public class GridRenderer {
       }
     }
     if (dataState.runtimeCoord != null) {
-      subset.setRunTimeCoord(dataState.runtimeCoord);
+      subset.setRunTime(dataState.runtimeCoord);
     }
     if (dataState.ensCoord != null) {
       subset.setEnsCoord(dataState.ensCoord);

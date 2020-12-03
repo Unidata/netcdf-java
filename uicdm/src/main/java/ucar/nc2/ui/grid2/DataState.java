@@ -6,6 +6,7 @@
 package ucar.nc2.ui.grid2;
 
 import ucar.nc2.grid.*;
+import ucar.nc2.time.CalendarDate;
 
 import javax.annotation.Nullable;
 
@@ -28,10 +29,10 @@ class DataState {
   @Nullable
   GridAxis1D ensaxis;
 
-  Object runtimeCoord;
+  CalendarDate runtimeCoord;
   Object timeCoord; // only one of taxis, toaxis, toaxisReg is used
   Object vertCoord;
-  Object ensCoord;
+  Double ensCoord;
   int horizStride = 1;
 
   public DataState(GridDataset gridDataset, Grid grid) {
@@ -57,7 +58,7 @@ class DataState {
 
   boolean setRuntimeCoord(@Nullable Object coord) {
     boolean changed = coord != null && !coord.equals(runtimeCoord);
-    runtimeCoord = coord;
+    runtimeCoord = (CalendarDate) coord;
     return changed;
   }
 
@@ -75,7 +76,7 @@ class DataState {
 
   boolean setEnsCoord(@Nullable Object coord) {
     boolean changed = coord != null && !coord.equals(ensCoord);
-    ensCoord = coord;
+    ensCoord = (Double) coord;
     return changed;
   }
 

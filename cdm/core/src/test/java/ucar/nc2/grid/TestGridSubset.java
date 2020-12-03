@@ -1,89 +1,180 @@
 package ucar.nc2.grid;
 
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import ucar.array.Arrays;
-import ucar.ma2.InvalidRangeException;
 import ucar.nc2.time.CalendarDate;
-import ucar.unidata.util.test.TestDir;
-import ucar.unidata.util.test.category.NeedsCdmUnitTest;
-
-import java.io.IOException;
-import java.util.Formatter;
+import ucar.unidata.geoloc.LatLonPoint;
+import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.geoloc.ProjectionRect;
 
 import static com.google.common.truth.Truth.assertThat;
+import static org.junit.Assert.fail;
 
 public class TestGridSubset {
 
   @Test
-  @Category(NeedsCdmUnitTest.class)
-  public void testTimeOffsetRegular() throws IOException, InvalidRangeException {
-    String filename = TestDir.cdmUnitTestDir + "gribCollections/ndfd_spc/NDFD-SPC.ncx4";
+  public void testHoriz() {
+    GridSubset subset = new GridSubset();
+    Integer strideo = subset.getHorizStride();
+    assertThat(strideo).isNull();
 
-    Formatter infoLog = new Formatter();
-    try (GridDataset gridDataset = GridDatasetFactory.openGridDataset(filename, infoLog)) {
-      System.out.println("readGridDataset: " + gridDataset.getLocation());
+    try {
+      int stride = subset.getHorizStride();
+      fail();
+    } catch (NullPointerException e) {
+      // correct
+    }
 
-      Grid grid = gridDataset.findGrid("Convective_Hazard_Outlook_surface_24_Hour_Average")
-          .orElseThrow(() -> new RuntimeException("Cant find grid"));
+    subset.setHorizStride(999);
+    assertThat(subset.getHorizStride()).isEqualTo(999);
+    int stride = subset.getHorizStride();
+    assertThat(stride).isEqualTo(999);
 
-      GridCoordinateSystem csys = grid.getCoordinateSystem();
-      GridAxis1DTime runtimeAxis = csys.getRunTimeAxis();
-      GridAxisOffsetTimeRegular timeOffset = (GridAxisOffsetTimeRegular) csys.getTimeOffsetAxis();
-      assertThat(timeOffset).isNotNull();
-      assertThat(timeOffset.getSpacing()).isEqualTo(GridAxis.Spacing.discontiguousInterval);
+    subset.setHorizStride((byte) 999);
+    assertThat(subset.getHorizStride()).isEqualTo(-25);
+  }
 
-      assertThat(runtimeAxis.getNcoords()).isGreaterThan(1);
-      CalendarDate wantRuntime = runtimeAxis.getCalendarDate(10);
-      GridAxis1D toAxis = timeOffset.getTimeOffsetAxisForRun(wantRuntime);
-      assertThat(toAxis.getNcoords()).isGreaterThan(1);
-      CoordInterval coord = toAxis.getCoordInterval(1);
-      GridSubset subset = new GridSubset().setRunTime(wantRuntime).setTimeOffsetIntv(coord);
+  @Test
+  public void testEns() {
+    GridSubset subset = new GridSubset();
+    Double enso = subset.getEnsCoord();
+    assertThat(enso).isNull();
 
-      GridReferencedArray geoArray = grid.readData(subset);
-      testGeoArray(geoArray, 2);
+    try {
+      double ens = subset.getEnsCoord();
+      fail();
+    } catch (NullPointerException e) {
+      // correct
+    }
+
+    subset.setEnsCoord(999.0);
+    assertThat(subset.getEnsCoord()).isEqualTo(999);
+    double ens = subset.getEnsCoord();
+    assertThat(ens).isEqualTo(999);
+  }
+
+  @Test
+  public void testLatLonBoundingBox() {
+    GridSubset subset = new GridSubset();
+    LatLonRect llbb = subset.getLatLonBoundingBox();
+    assertThat(llbb).isNull();
+
+    LatLonRect llbb1 = new LatLonRect();
+    subset.setLatLonBoundingBox(llbb1);
+    assertThat(subset.getLatLonBoundingBox()).isEqualTo(llbb1);
+    assertThat(subset.getLatLonBoundingBox() == llbb1).isTrue();
+  }
+
+  @Test
+  public void testLatLonPoint() {
+    GridSubset subset = new GridSubset();
+    LatLonPoint pt = subset.getLatLonPoint();
+    assertThat(pt).isNull();
+
+    LatLonPoint llpt = LatLonPoint.create(99.0, .5);
+    subset.setLatLonPoint(llpt);
+    assertThat(subset.getLatLonPoint()).isEqualTo(llpt);
+    assertThat(subset.getLatLonPoint()).isEqualTo(LatLonPoint.create(99.0, .5));
+    assertThat(subset.getLatLonPoint() == llpt).isTrue();
+  }
+
+  @Test
+  public void testProjectionBoundingBox() {
+    GridSubset subset = new GridSubset();
+    ProjectionRect rect = subset.getProjectionBoundingBox();
+    assertThat(rect).isNull();
+
+    ProjectionRect rect1 = new ProjectionRect();
+    subset.setProjectionBoundingBox(rect1);
+    assertThat(subset.getProjectionBoundingBox()).isEqualTo(rect1);
+    assertThat(subset.getProjectionBoundingBox() == rect1).isTrue();
+  }
+
+  @Test
+  public void testRuntime() {
+    GridSubset subset = new GridSubset();
+    CalendarDate cd = subset.getRunTime();
+    assertThat(cd).isNull();
+
+    CalendarDate cd1 = CalendarDate.present();
+    subset.setRunTime(cd1);
+    assertThat(subset.getRunTime()).isEqualTo(cd1);
+    assertThat(subset.getRunTime() == cd1).isTrue();
+  }
+
+  @Test
+  public void testRuntimeLatest() {
+    GridSubset subset = new GridSubset();
+    Boolean latest = subset.getRunTimeLatest();
+    assertThat(latest).isEqualTo(false);
+
+    boolean late = subset.getRunTimeLatest();
+    assertThat(late).isEqualTo(false);
+
+    subset.setRunTimeLatest();
+    assertThat(subset.getRunTimeLatest()).isEqualTo(true);
+  }
+
+  @Test
+  public void testTime() {
+    GridSubset subset = new GridSubset();
+    CalendarDate cd = subset.getTime();
+    assertThat(cd).isNull();
+
+    CalendarDate cd1 = CalendarDate.present();
+    subset.setTime(cd1);
+    assertThat(subset.getTime()).isEqualTo(cd1);
+    assertThat(subset.getTime() == cd1).isTrue();
+  }
+
+  @Test
+  public void testTimeOffsetCoord() {
+    GridSubset subset = new GridSubset();
+    CoordInterval offsetv = CoordInterval.create(34.56, 78.9);
+    subset.setTimeOffsetCoord(offsetv);
+    assertThat(subset.getTimeOffsetCoord()).isEqualTo(offsetv);
+    assertThat(subset.getTimeOffsetCoord() == offsetv).isTrue();
+
+    subset.setTimeOffsetCoord(123.456);
+    assertThat(subset.getTimeOffsetCoord()).isEqualTo(123.456);
+
+    subset.setTimeOffsetCoord(999);
+    assertThat(subset.getTimeOffsetCoord()).isEqualTo(999);
+
+    try {
+      subset.setTimeOffsetCoord(999);
+    } catch (Exception e) {
+      // correct
+    }
+
+    try {
+      subset.setTimeOffsetCoord("999.9");
+    } catch (Exception e) {
+      // correct
     }
   }
 
   @Test
-  @Category(NeedsCdmUnitTest.class)
-  public void testTimeOffset() throws IOException, InvalidRangeException {
-    String filename = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4";
+  public void testTimeOffsetFirst() {
+    GridSubset subset = new GridSubset();
+    Boolean latest = subset.getTimeOffsetFirst();
+    assertThat(latest).isEqualTo(false);
 
-    Formatter infoLog = new Formatter();
-    try (GridDataset gridDataset = GridDatasetFactory.openGridDataset(filename, infoLog)) {
-      System.out.println("readGridDataset: " + gridDataset.getLocation());
+    boolean late = subset.getTimeOffsetFirst();
+    assertThat(late).isEqualTo(false);
 
-      Grid grid =
-          gridDataset.findGrid("Sunshine_Duration_surface").orElseThrow(() -> new RuntimeException("Cant find grid"));
-
-      GridCoordinateSystem csys = grid.getCoordinateSystem();
-      GridAxis1DTime runtimeAxis = csys.getRunTimeAxis();
-      assertThat(runtimeAxis).isNotNull();
-      GridAxis1D timeOffset = (GridAxis1D) csys.getTimeOffsetAxis();
-      assertThat(timeOffset).isNotNull();
-      assertThat(timeOffset.getSpacing()).isEqualTo(GridAxis.Spacing.irregularPoint);
-      assertThat(timeOffset.getNcoords()).isEqualTo(93);
-
-      assertThat(runtimeAxis.getNcoords()).isEqualTo(4);
-      CalendarDate wantRuntime = runtimeAxis.getCalendarDate(1);
-      double wantOffset = runtimeAxis.getCoordMidpoint(1);
-      GridSubset subset = new GridSubset().setRunTime(wantRuntime).setTimeOffset(wantOffset);
-
-      GridReferencedArray geoArray = grid.readData(subset);
-      testGeoArray(geoArray, 2);
-    }
+    subset.setTimeOffsetFirst();
+    assertThat(subset.getTimeOffsetFirst()).isEqualTo(true);
   }
 
-  private void testGeoArray(GridReferencedArray geoArray, int expected) {
-    assertThat(Arrays.reduce(geoArray.data()).getRank()).isEqualTo(expected);
-    int[] shape = geoArray.data().getShape();
-    int count = 0;
-    for (GridAxis axis : geoArray.csSubset().getGridAxes()) {
-      if (axis instanceof GridAxis1D) { // awkward
-        assertThat(((GridAxis1D) axis).getNcoords()).isEqualTo(shape[count]);
-      }
-      count++;
-    }
+  @Test
+  public void testVertCoord() {
+    GridSubset subset = new GridSubset();
+    CoordInterval offsetv = CoordInterval.create(34.56, 78.9);
+    subset.setVertCoord(offsetv);
+    assertThat(subset.getVertCoord()).isEqualTo(offsetv);
+    assertThat(subset.getVertCoord() == offsetv).isTrue();
+
+    subset.setVertCoord(123.456);
+    assertThat(subset.getVertCoord()).isEqualTo(123.456);
   }
 }

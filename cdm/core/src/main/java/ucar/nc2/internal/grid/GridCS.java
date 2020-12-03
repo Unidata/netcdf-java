@@ -163,7 +163,7 @@ class GridCS implements GridCoordinateSystem {
     }
     String className = axis.getClass().getName();
     int pos = className.lastIndexOf(".");
-    f.format(" %s (%s) ", axis.getName(), className.substring(pos+1));
+    f.format(" %s (%s) ", axis.getName(), className.substring(pos + 1));
     if (showCoords) {
       showCoords(axis, f);
     }
