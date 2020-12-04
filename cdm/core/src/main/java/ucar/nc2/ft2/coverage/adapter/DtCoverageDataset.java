@@ -1,7 +1,8 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
+
 package ucar.nc2.ft2.coverage.adapter;
 
 import java.io.Closeable;
@@ -12,11 +13,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import ucar.nc2.*;
+import ucar.nc2.Attribute;
+import ucar.nc2.Dimension;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.Variable;
+import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.*;
-import ucar.nc2.dataset.NetcdfDataset.Enhance;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
@@ -37,7 +41,7 @@ public class DtCoverageDataset implements Closeable {
    * Open a netcdf dataset, using NetcdfDataset.defaultEnhanceMode plus CoordSystems
    * and turn into a DtCoverageDataset.
    *
-   * @param location netcdf dataset to open, using NetcdfDataset.acquireDataset().
+   * @param location netcdf dataset to open, using NetcdfDatasets.acquireDataset().
    * @return GridDataset
    * @throws java.io.IOException on read error
    */
@@ -54,7 +58,7 @@ public class DtCoverageDataset implements Closeable {
    * Open a netcdf dataset, using NetcdfDataset.defaultEnhanceMode plus CoordSystems
    * and turn into a DtCoverageDataset.
    *
-   * @param durl netcdf dataset to open, using NetcdfDataset.acquireDataset().
+   * @param durl netcdf dataset to open, using NetcdfDatasets.acquireDataset().
    * @param enhanceMode open netcdf dataset with this enhanceMode
    * @return GridDataset
    * @throws java.io.IOException on read error
@@ -100,13 +104,12 @@ public class DtCoverageDataset implements Closeable {
    * @throws java.io.IOException on read error
    */
   public DtCoverageDataset(NetcdfDataset ncd, Formatter parseInfo) throws IOException {
-    Set<Enhance> enhance = ncd.getEnhanceMode();
-    if (enhance == null || !enhance.contains(NetcdfDataset.Enhance.CoordSystems)) {
+    this.ncd = ncd;
+
+    Set<NetcdfDataset.Enhance> enhance = ncd.getEnhanceMode();
+    if (enhance == null || enhance.isEmpty())
       enhance = NetcdfDataset.getDefaultEnhanceMode();
-      this.ncd = NetcdfDatasets.enhance(ncd, enhance, null);
-    } else {
-      this.ncd = ncd;
-    }
+    NetcdfDatasets.enhance(ncd, enhance, null);
 
     DtCoverageCSBuilder facc = DtCoverageCSBuilder.classify(ncd, parseInfo);
     if (facc != null)
@@ -274,11 +277,18 @@ public class DtCoverageDataset implements Closeable {
    * @return the name of the dataset
    */
   public String getName() {
-    String loc = ncd.getLocation();
-    int pos = loc.lastIndexOf('/');
-    if (pos < 0)
-      pos = loc.lastIndexOf('\\');
-    return (pos < 0) ? loc : loc.substring(pos + 1);
+    String name = ncd.getLocation();
+    if (name != null) {
+      int pos = name.lastIndexOf('/');
+      if (pos < 0)
+        pos = name.lastIndexOf('\\');
+      name = (pos < 0) ? name : name.substring(pos + 1);
+    } else {
+      // A dataset defined using NcML inside of a TDS configuration catalog will not have a location.
+      // While location cannot be set for these virtual datasets, the id value can, so let's look for it.
+      name = ncd.getId();
+    }
+    return name;
   }
 
   /**

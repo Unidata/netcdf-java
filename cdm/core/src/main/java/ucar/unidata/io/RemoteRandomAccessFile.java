@@ -43,14 +43,17 @@ public abstract class RemoteRandomAccessFile extends ucar.unidata.io.RandomAcces
     file = null;
     location = url;
 
-    // Only enable cache if given size is at least twice the buffer size
-    if (maxRemoteCacheSize >= 2 * bufferSize) {
-      this.readCacheBlockSize = 2 * bufferSize;
+    // Only enable cache if its maximum size is at least 2x the buffer size, both of which are configurable
+    // at runtime
+    int minimumCacheActivationSize = 2 * bufferSize;
+    if (maxRemoteCacheSize >= minimumCacheActivationSize) {
+      // have each cache block hold a 1 buffer sized chunk
+      this.readCacheBlockSize = bufferSize;
       // user set max cache size in bytes
       // guava cache set as number of objects
       // The question here is, how many readCacheBlockSize objects would there be in maxRemoteCacheSize bytes?
       // total max cache size in bytes / size of one cache block, rounded up.
-      long numberOfCacheBlocks = (long) Math.ceil(maxRemoteCacheSize / readCacheBlockSize);
+      long numberOfCacheBlocks = (maxRemoteCacheSize / readCacheBlockSize) + 1;
       this.readCache = initCache(numberOfCacheBlocks, Duration.ofMillis(defaultReadCacheTimeToLive));
       readCacheEnabled = true;
     } else {
@@ -93,43 +96,130 @@ public abstract class RemoteRandomAccessFile extends ucar.unidata.io.RandomAcces
     return readCacheEnabled ? readFromCache(pos, buff, offset, len) : readRemote(pos, buff, offset, len);
   }
 
+  /**
+   * Fill byte array with remote data.
+   *
+   * @param pos position of remote file or object to start reading
+   * @param buff put data into this buffer
+   * @param offset buffer offset
+   * @param len number of bytes to read
+   * @return actual number of bytes read
+   * @throws IOException error reading remote data
+   */
   private int readFromCache(long pos, byte[] buff, int offset, int len) throws IOException {
-    long startCacheBlock = pos / readCacheBlockSize;
-    long endCacheBlock = (pos + len - 1) / readCacheBlockSize;
+    // We basically treat the entire remote file or object as a series of non-overlapping blocks of size
+    // readCacheBlockSize. Each of these blocks are assigned a number (0 - N) starting from position 0 in the
+    // remote file or object, and that number is used as the key of the cache.
+    // Here, we compute the first and last cache block that we need to read from based on the desired position in the
+    // file and the length of read.
+    long firstCacheBlockNumber = pos / readCacheBlockSize;
+    long lastCacheBlockNumber = (pos + len) / readCacheBlockSize;
+    int totalBytesRead = 0;
+    int currentOffsetIntoBuffer = offset;
 
-    if (pos >= length()) {
-      // Do not read past end of the file
-      return 0;
-    } else if (endCacheBlock - startCacheBlock > 1) {
-      // If the request touches more than two cache blocks, punt
-      // This should never happen because cache block size is
-      // twice the buffer size
-      return readFromCache(pos, buff, offset, len);
-    } else if (endCacheBlock - startCacheBlock == 1) {
-      // If the request touches two cache blocks, split it
-      int length1 = (int) ((endCacheBlock * readCacheBlockSize) - pos);
-      int length2 = (int) ((pos + len) - (endCacheBlock * readCacheBlockSize));
-      return readFromCache(pos, buff, offset, length1) + readFromCache(pos + length1, buff, offset + length1, length2);
+    // Read cacheBlock containing pos, and fill the buffer from the effective location of pos in the cache block
+    // up to the smaller of these three lengths: 1. bytes remaining in the cache block, 2. bytes remaining in the file,
+    // or 3. bytes remaining in the destination array.
+    totalBytesRead += readCacheBlockPartial(pos, buff, currentOffsetIntoBuffer, true);
+    currentOffsetIntoBuffer += totalBytesRead;
+    // If we have read everything we have been asked to read, skip the rest of the read logic.
+    // Otherwise, keep going.
+    if ((totalBytesRead < len) && (firstCacheBlockNumber != lastCacheBlockNumber)) {
+      // Now fill the buffer using whole cache blocks, up until the last cache block (as reading from the last cache
+      // block might be a partial read).
+      // LOOK: might benefit from concurrency? Need to see how often we end up inside this while statement.
+      // Initial testing shows this only happens for small readCacheBlockSize (which is equal to the read buffer size)
+      // when reading netCDF-4 files, but I think might depend on the specific IOSP in use.
+      long currentCacheBlockNumber = firstCacheBlockNumber + 1;
+      while (currentCacheBlockNumber < lastCacheBlockNumber) {
+        totalBytesRead += readCacheBlockFull(currentCacheBlockNumber, currentOffsetIntoBuffer, buff);
+        currentOffsetIntoBuffer += readCacheBlockSize;
+        currentCacheBlockNumber += 1;
+      }
+      logger.debug("Number of full cache block reads: {}", currentCacheBlockNumber - firstCacheBlockNumber - 1);
+
+      // If there are still bytes to read, read last cacheBlock from the start of the cache block to the
+      // smaller of these two lengths: 1. bytes remaining in the file, or 2. bytes remaining in the destination array.
+      if (totalBytesRead < len) {
+        totalBytesRead += readCacheBlockPartial(pos + totalBytesRead, buff, currentOffsetIntoBuffer, false);
+      }
     }
 
-    // If we make it here, we are servicing a request that touches
-    // only one cache block.
+    return totalBytesRead;
+  }
+
+  private int readCacheBlockPartial(long pos, byte[] buff, int positionInBuffer, boolean fillForward)
+      throws IOException {
+
+    long cacheBlockNumber = pos / readCacheBlockSize;
+
+    // read in the cache block
     byte[] src;
-    Long key = startCacheBlock;
     try {
-      src = readCache.get(key);
+      src = readCache.get(cacheBlockNumber);
     } catch (ExecutionException ee) {
-      throw new IOException(ee.getCause());
+      throw new IOException("Error obtaining data from the remote data read cache.", ee);
     }
 
-    int srcPos = (int) (pos - (key * readCacheBlockSize));
-    int toEOB = src.length - srcPos;
-    int length = Math.min(toEOB, len);
-    // copy byte array fulfilling the request as obtained from the cache or a fresh read
-    // of the remote data into the destination buffer
-    System.arraycopy(src, srcPos, buff, offset, length);
+    // Careful - we are doing a partial read from the cache block. The pos in the file is some offset into the cache
+    // block, so let's start by calculating the pos of the first block
+    long posCacheBlockStart = cacheBlockNumber * readCacheBlockSize;
 
-    return len;
+    // Now, there are two possible cases. We either need to read from this position in the cache block to the end of
+    // the cache block (i.e. "fill buffer forward from the offset into the cache block"), or read from the beginning
+    // of the cache block up to the offset in the cache block (useful if reading last cache block in a series of cache
+    // blocks). Basically,the question is where do we start reading in the cache block, and what size read do we use?
+    int offsetIntoCacheBlock;
+    int sizeToCopy;
+    if (fillForward) {
+      // .....size to copy (assuming we will want to read until the end of the cache block)
+      // .....<-------->
+      // X ---|------- X
+      // ^____^
+      // ..|
+      // Offset Into Cache Block
+      offsetIntoCacheBlock = Math.toIntExact(pos - posCacheBlockStart);
+      sizeToCopy = readCacheBlockSize - offsetIntoCacheBlock;
+    } else {
+      // size to copy
+      // <---->
+      // X ---|------- X
+      // ^
+      // Offset Into Cache Block
+      offsetIntoCacheBlock = 0;
+      sizeToCopy = Math.toIntExact(pos - posCacheBlockStart);
+    }
+
+    // We don't want to read past the end of the file, so let's check sizeToCopy against how much of the file
+    // is left to read
+    long toEof = length() - pos;
+    sizeToCopy = Math.toIntExact(Math.min(sizeToCopy, toEof));
+
+    // Finally, check to make sure we are not reading more than buff will hold
+    sizeToCopy = Math.toIntExact(Math.min(sizeToCopy, buff.length - positionInBuffer));
+
+    // Copy byte array fulfilling the request as obtained from the cache into the destination buffer
+    logger.debug("Requested {} bytes from the cache block (cache block size upper limit: {} bytes.)", sizeToCopy,
+        readCacheBlockSize);
+    logger.debug("Actual size of the cache block: {} bytes.", src.length);
+    logger.debug("Offset into cache block to begin copy: {} bytes.", offsetIntoCacheBlock);
+    logger.debug("Total size of the destination buffer: {} bytes.", buff.length);
+    logger.debug("Position in buffer to place the copy from the cache: {} bytes.", positionInBuffer);
+    logger.debug("Trying to fit {} bytes from the cache into {} bytes of the destination.",
+        src.length - offsetIntoCacheBlock, buff.length - positionInBuffer);
+    System.arraycopy(src, offsetIntoCacheBlock, buff, positionInBuffer, sizeToCopy);
+    return sizeToCopy;
+  }
+
+  private int readCacheBlockFull(long cacheBlockNumber, int positionInBuffer, byte[] buff) throws IOException {
+    byte[] src;
+    try {
+      src = readCache.get(cacheBlockNumber);
+    } catch (ExecutionException ee) {
+      throw new IOException("Error obtaining data from the remote data read cache.", ee);
+    }
+    System.arraycopy(src, 0, buff, positionInBuffer, readCacheBlockSize);
+    return readCacheBlockSize;
   }
 
   /**

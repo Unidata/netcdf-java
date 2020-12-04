@@ -1,0 +1,20 @@
+<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
+  <!-- should find and aggregate 12 objects because we are only looking at OR_ABI-L1b-RadC-M3C01_G16_s* -->
+  <!-- see https://noaa-goes16.s3.amazonaws.com/index.html#ABI-L1b-RadC/2017/090/00/ -->
+  <variable name="expected_time" type="string" shape="12">
+    <values>2017-08-30T00:02:16Z 2017-08-30T00:07:16Z 2017-08-30T00:12:16Z 2017-08-30T00:17:16Z 2017-08-30T00:22:16Z 2017-08-30T00:27:16Z 2017-08-30T00:32:16Z 2017-08-30T00:37:16Z 2017-08-30T00:42:16Z 2017-08-30T00:47:16Z 2017-08-30T00:52:16Z 2017-08-30T00:57:16Z</values>
+  </variable>
+  <variable name="Rad">
+    <attribute name="coordinates" value="band_id band_wavelength time y x" />
+  </variable>
+  <variable name="DQF">
+    <attribute name="coordinates" value="band_id band_wavelength time y x" />
+  </variable>
+  <aggregation dimName="time" type="joinNew">
+    <variableAgg name="Rad"/>
+    <variableAgg name="DQF"/>
+    <scan location="cdms3:noaa-goes16?ABI-L1b-RadC/2017/242/00/OR_ABI-L1b-RadC-M3C01_G16_s#delimiter=/"
+      dateFormatMark="OR_ABI-L1b-RadC-M3C01_G16_s#yyyyDDDHHmmss"
+      suffix=".nc#delimiter=/" />
+  </aggregation>
+</netcdf>

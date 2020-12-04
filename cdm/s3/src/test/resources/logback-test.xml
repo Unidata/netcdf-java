@@ -37,7 +37,7 @@
     -->
     
     <!-- Log all messages at level WARN or higher to STDOUT. -->
-    <root level="WARN">
+    <root level="INFO">
         <appender-ref ref="STDOUT" />
     </root>
 </configuration>

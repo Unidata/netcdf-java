@@ -750,13 +750,7 @@ public class NetcdfFile implements FileCacheable, Closeable {
     this.cache = cache;
   }
 
-  /**
-   * Access to iosp debugging info.
-   *
-   * @return debug / underlying implementation details
-   * @deprecated do not use
-   */
-  @Deprecated
+  /** Show debug / underlying implementation details */
   public String getDetailInfo() {
     Formatter f = new Formatter();
     getDetailInfo(f);

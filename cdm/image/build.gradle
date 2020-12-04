@@ -12,6 +12,6 @@ dependencies {
   compile 'org.slf4j:slf4j-api'
 
   testImplementation project(':cdm-test-utils')
-
   testImplementation 'junit:junit'
+  testImplementation 'com.google.truth:truth'
 }

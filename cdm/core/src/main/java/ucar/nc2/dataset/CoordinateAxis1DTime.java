@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -30,7 +30,7 @@ import java.io.IOException;
  * Its coordinate values can be represented as Dates.
  * <p/>
  * May use udunit dates, or ISO Strings.
- * 
+ *
  * @deprecated use GridAxis1DTime
  */
 @Deprecated
@@ -156,7 +156,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
 
   /**
    * Get the the ith CalendarDate.
-   * 
+   *
    * @param idx index
    * @return the ith CalendarDate
    */
@@ -167,7 +167,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
 
   /**
    * Get calendar date range
-   * 
+   *
    * @return calendar date range
    */
   public CalendarDateRange getCalendarDateRange() {
@@ -234,7 +234,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
 
   /**
    * Get the list of datetimes in this coordinate as CalendarDate objects.
-   * 
+   *
    * @return list of CalendarDates.
    */
   public List<CalendarDate> getCalendarDates() {
@@ -253,6 +253,26 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
     double[] intv = getCoordBounds(i);
     double midpoint = (intv[0] + intv[1]) / 2;
     return helper.makeCalendarDateFromOffset(midpoint);
+  }
+
+  @Override
+  protected void readValues() {
+    // if DataType is not numeric, handle special
+    if (!this.dataType.isNumeric()) {
+      this.coords = cdates.stream().mapToDouble(cdate -> (double) cdate.getDifferenceInMsecs(cdates.get(0))).toArray();
+      // make sure we don't try to read from the orgVar again
+      this.wasRead = true;
+    } else {
+      super.readValues();
+    }
+  }
+
+  @Override
+  public boolean isNumeric() {
+    // we're going to always handle the 1D time coordinate axis case as if it were numeric
+    // because if it is a String or Char, we'll try to convert the values into a
+    // UDUNITS compatible value in the readValues() method.
+    return true;
   }
 
   ////////////////////////////////////////////////////////////////////////
@@ -307,11 +327,12 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
     return cd;
   }
 
+
   ///////////////////////////////////////////////////////
 
   /**
    * Does not handle non-standard Calendars
-   * 
+   *
    * @deprecated use getCalendarDates().
    */
   @Deprecated
@@ -357,7 +378,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
 
   /**
    * Get Builder for this class that allows subclassing.
-   * 
+   *
    * @see "https://community.oracle.com/blogs/emcmanus/2010/10/24/using-builder-pattern-subclasses"
    */
   public static Builder<?> builder() {
