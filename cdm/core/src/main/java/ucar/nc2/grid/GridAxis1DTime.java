@@ -347,7 +347,7 @@ public class GridAxis1DTime extends GridAxis1D {
 
   // Add local fields to the passed - in builder.
   protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
-    b.setTimeHelper(this.timeHelper).setCalendarDates(this.cdates);
+    b.setTimeHelper(this.timeHelper);
     return (Builder<?>) super.addLocalFieldsToBuilder(b);
   }
 

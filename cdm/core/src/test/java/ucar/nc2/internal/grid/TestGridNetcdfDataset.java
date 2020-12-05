@@ -18,7 +18,7 @@ import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.fail;
 
 /** Test {@link GridNetcdfDataset} */
-public class TestGridDatasetImpl {
+public class TestGridNetcdfDataset {
 
   @Test
   @Category(NeedsCdmUnitTest.class)

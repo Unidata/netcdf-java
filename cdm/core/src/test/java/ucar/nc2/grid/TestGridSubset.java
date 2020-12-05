@@ -9,6 +9,7 @@ import ucar.unidata.geoloc.ProjectionRect;
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.fail;
 
+/** Test {@link GridSubset} */
 public class TestGridSubset {
 
   @Test
