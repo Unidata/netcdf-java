@@ -24,15 +24,16 @@ ext {
   testdataDirKey = 'unidata.testdata.path'
   isCdmUnitTestDirAvailable = isSystemPropertyAValidDirectory testdataDirKey
 
-  runSlowTests = System.properties['runSlowTests'] as boolean // We only care if prop is defined, not its actual value.
+  // We only care if props are defined, not their actual value.
+  runSlowTests = System.properties['runSlowTests'] as boolean
   isRdaDataAvailable = System.properties['rdaDataAvailable'] as boolean
-  // We only care if prop is defined, not its actual value.
   isUcarNetworkAvailable = System.properties['ucarNetworkAvailable'] as boolean
-  // We only care if prop is defined, not its actual value.
 
   // Option to run all tests regardless of environment or resource availability
   runAllTests = System.properties['runAllTestExceptIgnored'] as boolean
-  // We only care if prop is defined, not its actual value.
+
+  // If not a release, the version will contain a -SNAPSHOT, -beta, etc.
+  isRelease = "${version}".split('-').length == 1
 
   if (runAllTests) {
     logger.warn 'Running all tests except those explicitly annotated with @Ignore.'
