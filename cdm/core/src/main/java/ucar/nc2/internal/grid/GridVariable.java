@@ -39,7 +39,7 @@ public class GridVariable implements Grid {
 
   @Override
   public String getUnits() {
-    return vds.getUnitsString();
+    return vds.getUnitsString() == null ? "" : vds.getUnitsString();
   }
 
   @Override
