@@ -16,6 +16,8 @@ import ucar.nc2.dataset.*;
 import ucar.nc2.dataset.NetcdfDataset.Enhance;
 import ucar.nc2.grid.*;
 import ucar.nc2.internal.dataset.DatasetClassifier;
+import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.geoloc.ProjectionRect;
 
 import java.io.IOException;
 import java.util.*;
@@ -83,14 +85,14 @@ public class GridNetcdfDataset implements GridDataset {
     }
 
     // Convert coordsys
-    Map<String, GridCS> trackCsConverted = new HashMap<>();
+    Map<String, TrackGridCS> trackCsConverted = new HashMap<>();
     for (DatasetClassifier.CoordSysClassifier csc : classifier.getCoordinateSystemsUsed()) {
       if (csc.getName().startsWith("Best/")) {
         continue;
       }
       GridCS gcs = new GridCS(csc, this.gridAxes);
       coordsys.add(gcs);
-      trackCsConverted.put(csc.getName(), gcs);
+      trackCsConverted.put(csc.getName(), new TrackGridCS(csc, gcs));
     }
     // Largest Coordinate Systems come first
     coordsys.sort((o1, o2) -> o2.getGridAxes().size() - o1.getGridAxes().size());
@@ -109,8 +111,13 @@ public class GridNetcdfDataset implements GridDataset {
       // Use the largest (# axes) coordsys
       css.sort((o1, o2) -> o2.getCoordinateAxes().size() - o1.getCoordinateAxes().size());
       for (CoordinateSystem cs : css) {
-        GridCS gcs = trackCsConverted.get(cs.getName());
-        if (gcs != null && gcs.getFeatureType() == this.featureType && gcs.isCoordinateSystemFor(v)) {
+        TrackGridCS track = trackCsConverted.get(cs.getName());
+        if (track == null) {
+          continue; // not used
+        }
+        GridCS gcs = track.gridCS;
+        Set<Dimension> domain = Dimensions.makeDomain(track.csc.getAxesUsed(), false);
+        if (gcs != null && gcs.getFeatureType() == this.featureType && Dimensions.isCoordinateSystemFor(domain, v)) {
           Grid grid = new GridVariable(gcs, (VariableDS) ve);
           grids.add(grid);
           this.gridsets.put(gcs, grid);
@@ -120,6 +127,43 @@ public class GridNetcdfDataset implements GridDataset {
     }
   }
 
+  private class TrackGridCS {
+    DatasetClassifier.CoordSysClassifier csc;
+    GridCS gridCS;
+
+    public TrackGridCS(DatasetClassifier.CoordSysClassifier csc, GridCS gridCS) {
+      this.csc = csc;
+      this.gridCS = gridCS;
+    }
+  }
+
+  private void makeHorizRanges() {
+    LatLonRect.Builder llbbBuilder = null;
+
+    ProjectionRect.Builder projBBbuilder = null;
+    for (GridCoordinateSystem gcs : this.gridsets.keySet()) {
+      ProjectionRect bb = gcs.getHorizCoordSystem().getBoundingBox();
+      if (projBBbuilder == null)
+        projBBbuilder = bb.toBuilder();
+      else if (bb != null)
+        projBBbuilder.add(bb);
+
+      LatLonRect llbb = gcs.getHorizCoordSystem().getLatLonBoundingBox();
+      if (llbbBuilder == null)
+        llbbBuilder = llbb.toBuilder();
+      else if (llbb != null)
+        llbbBuilder.extend(llbb);
+    }
+
+    if (llbbBuilder != null) {
+      LatLonRect llbbMax = llbbBuilder.build();
+    }
+  }
+
+  public FeatureType getCoverageType() {
+    return featureType;
+  }
+
   @Override
   public String getName() {
     String loc = ncd.getLocation();
@@ -127,10 +171,6 @@ public class GridNetcdfDataset implements GridDataset {
     if (pos < 0)
       pos = loc.lastIndexOf('\\');
     return (pos < 0) ? loc : loc.substring(pos + 1);
-  }
-
-  public FeatureType getCoverageType() {
-    return featureType;
   }
 
   @Override
@@ -175,29 +215,31 @@ public class GridNetcdfDataset implements GridDataset {
     return f.toString();
   }
 
-  @Override
-  public void toString(Formatter buf) {
-    int countGridset = 0;
-
-    for (GridCS gcs : gridsets.keySet()) {
-      buf.format("%nGridset %d: ", countGridset);
-      gcs.show(buf, false);
-      buf.format("%n");
-      buf.format("Name___________________________________________Unit____________Description%n");
-      for (Grid grid : gridsets.get(gcs)) {
-        buf.format(" %-46s %-15s %s%n", grid.getName(), grid.getUnits(), grid.getDescription());
-      }
-      countGridset++;
-      buf.format("%n");
-    }
-
-    buf.format("%nGeoReferencing Coordinate Axes%n");
-    buf.format("Name__________________________Units_________________________Type______Description%n");
-    for (CoordinateAxis axis : ncd.getCoordinateAxes()) {
-      axis.getInfo(buf);
-      buf.format("%n");
-    }
-  }
+  /*
+   * @Override
+   * public void toString(Formatter buf) {
+   * int countGridset = 0;
+   * 
+   * for (GridCS gcs : gridsets.keySet()) {
+   * buf.format("%nGridset %d: ", countGridset);
+   * gcs.show(buf, false);
+   * buf.format("%n");
+   * buf.format("Name___________________________________________Unit____________Description%n");
+   * for (Grid grid : gridsets.get(gcs)) {
+   * buf.format(" %-46s %-15s %s%n", grid.getName(), grid.getUnits(), grid.getDescription());
+   * }
+   * countGridset++;
+   * buf.format("%n");
+   * }
+   * 
+   * buf.format("%nGeoReferencing Coordinate Axes%n");
+   * buf.format("Name__________________________Units_________________________Type______Description%n");
+   * for (CoordinateAxis axis : ncd.getCoordinateAxes()) {
+   * axis.getInfo(buf);
+   * buf.format("%n");
+   * }
+   * }
+   */
 
   private boolean wasClosed = false;
 

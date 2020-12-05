@@ -64,8 +64,6 @@ public class TestDatasetClassifier {
       GridCoordinateSystem gcs = grid.getCoordinateSystem();
       assertThat(gcs).isNotNull();
       // rt (scalar), t, ens, z, y, x
-      assertThat(Iterables.size(gcs.getDomain())).isEqualTo(5);
-      assertThat(Iterables.size(gcs.getDomain())).isEqualTo(Iterables.size(gcs.getRanges()));
       assertThat(Iterables.size(gcs.getGridAxes())).isEqualTo(6);
       assertThat(gcs.getRunTimeAxis()).isNotNull();
       assertThat(gcs.getRunTimeAxis().getDependenceType() == GridAxis.DependenceType.scalar).isTrue();
@@ -102,8 +100,6 @@ public class TestDatasetClassifier {
       GridCoordinateSystem gcs = grid.getCoordinateSystem();
       assertThat(gcs).isNotNull();
       // rt, to, z (scaler), y, x
-      assertThat(Iterables.size(gcs.getDomain())).isEqualTo(4);
-      assertThat(Iterables.size(gcs.getDomain())).isEqualTo(Iterables.size(gcs.getRanges()));
       assertThat(Iterables.size(gcs.getGridAxes())).isEqualTo(5);
       assertThat(gcs.getRunTimeAxis()).isNotNull();
       assertThat(gcs.getRunTimeAxis().getDependenceType() == GridAxis.DependenceType.scalar).isFalse();
@@ -146,8 +142,6 @@ public class TestDatasetClassifier {
       GridCoordinateSystem gcs = grid.getCoordinateSystem();
       assertThat(gcs).isNotNull();
       // rt, to, t (depend), y, x
-      assertThat(Iterables.size(gcs.getDomain())).isEqualTo(4);
-      assertThat(Iterables.size(gcs.getDomain())).isEqualTo(Iterables.size(gcs.getRanges()));
       assertThat(Iterables.size(gcs.getGridAxes())).isEqualTo(4);
       assertThat(gcs.getRunTimeAxis()).isNotNull();
       assertThat(gcs.getTimeOffsetAxis()).isNotNull();

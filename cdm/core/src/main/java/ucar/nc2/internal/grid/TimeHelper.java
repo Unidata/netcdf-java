@@ -25,7 +25,8 @@ public class TimeHelper {
     if (units == null)
       throw new IllegalStateException("No units");
 
-    Calendar cal = getCalendarFromAttribute(atts);
+    Calendar cal = atts == null ? null : getCalendarFromAttribute(atts);
+
     CalendarDateUnit dateUnit;
     dateUnit = CalendarDateUnit.withCalendar(cal, units); // this will throw exception on failure
     return new TimeHelper(dateUnit);

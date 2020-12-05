@@ -2,15 +2,14 @@ package ucar.cdmr;
 
 import ucar.cdmr.client.CdmrGrid;
 import ucar.cdmr.client.CdmrGridDataset;
+import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.dataset.CoordinateTransform;
-import ucar.nc2.dataset.ProjectionCT;
-import ucar.nc2.dataset.TransformType;
-import ucar.nc2.dataset.VerticalCT;
 import ucar.nc2.grid.*;
 import ucar.nc2.internal.grid.GridCS;
 import ucar.unidata.geoloc.Projection;
+
+import java.util.Formatter;
 
 /** Convert between CdmrGrid Protos and GridDataset objects. */
 public class CdmrGridConverter {
@@ -65,15 +64,12 @@ public class CdmrGridConverter {
     return CdmrGridProto.DependenceType.valueOf(dtype.name());
   }
 
-  public static void decodeDataset(CdmrGridProto.GridDataset proto, CdmrGridDataset.Builder builder) {
+  public static void decodeDataset(CdmrGridProto.GridDataset proto, CdmrGridDataset.Builder builder, Formatter errlog) {
     for (CdmrGridProto.GridAxis axis : proto.getGridAxesList()) {
       builder.addGridAxis(decodeGridAxis(axis));
     }
-    for (CdmrGridProto.CoordinateTransform transform : proto.getCoordTransformsList()) {
-      builder.addCoordTransform(decodeCoordTransform(transform));
-    }
     for (CdmrGridProto.GridCoordinateSystem coordsys : proto.getCoordSysList()) {
-      builder.addCoordSys(decodeCoordSys(coordsys));
+      builder.addCoordSys(decodeCoordSys(coordsys, errlog));
     }
     for (CdmrGridProto.Grid grid : proto.getGridsList()) {
       builder.addGrid(decodeGrid(grid));
@@ -91,7 +87,7 @@ public class CdmrGridConverter {
       case Axis1DTime:
         axisb = GridAxis1DTime.builder();
         break;
-      case TimeOffserRegular:
+      case TimeOffsetRegular:
         axisb = GridAxisOffsetTimeRegular.builder();
         break;
       default:
@@ -114,7 +110,7 @@ public class CdmrGridConverter {
       if (proto.getValuesCount() > 0) {
         axis1b.setValues(proto.getValuesList());
       }
-  }
+    }
 
     if (axisb instanceof GridAxis1DTime.Builder) {
       GridAxis1DTime.Builder<?> axis1b = (GridAxis1DTime.Builder<?>) axisb;
@@ -131,33 +127,23 @@ public class CdmrGridConverter {
     return axisb;
   }
 
-  public static CoordinateTransform decodeCoordTransform(CdmrGridProto.CoordinateTransform proto) {
-    CoordinateTransform.Builder<?> builder;
-    if (proto.getIsHoriz()) {
-      builder = ProjectionCT.builder();
-    } else {
-      builder = VerticalCT.builder();
-    }
-    builder.setCtvAttributes(CdmrConverter.decodeAttributes(proto.getName(), proto.getAttributesList()));
-
-    // TODO remove dependence on ds. Maybe only Projections, not VerticalCT ?
-    // CoordinateTransform.Builder<?> makeCoordinateTransform(NetcdfDataset ds, AttributeContainer ctv,
-    //      Formatter parseInfo, Formatter errInfo)
-
-    return builder.build();
-  }
-
-  public static GridCS.Builder<?> decodeCoordSys(CdmrGridProto.GridCoordinateSystem proto) {
+  public static GridCS.Builder<?> decodeCoordSys(CdmrGridProto.GridCoordinateSystem proto, Formatter errlog) {
     GridCS.Builder<?> builder = GridCS.builder();
     builder.setName(proto.getName());
+    builder.setFeatureType(FeatureType.GRID);
     builder.setAxisNames(proto.getAxisNamesList());
-    builder.setTransformNames(proto.getTransformNamesList());
+    builder.setProjection(decodeProjection(proto.getProjection(), errlog));
 
     return builder;
   }
 
   public static CdmrGrid.Builder decodeGrid(CdmrGridProto.Grid proto) {
     return CdmrGrid.builder().setProto(proto);
+  }
+
+  public static Projection decodeProjection(CdmrGridProto.Projection proto, Formatter errlog) {
+    AttributeContainer ctv = CdmrConverter.decodeAttributes(proto.getName(), proto.getAttributesList());
+    return ucar.nc2.internal.dataset.transform.horiz.ProjectionFactory.makeProjection(ctv, proto.getGeoUnits(), errlog);
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -171,10 +157,6 @@ public class CdmrGridConverter {
 
     for (GridAxis axis : org.getGridAxes()) {
       builder.addGridAxes(encodeGridAxis(axis));
-    }
-
-    for (CoordinateTransform transform : org.getTransforms()) {
-      builder.addCoordTransforms(encodeCoordTransform(transform));
     }
     for (GridCoordinateSystem coordsys : org.getGridCoordinateSystems()) {
       builder.addCoordSys(encodeCoordSys(coordsys));
@@ -192,26 +174,35 @@ public class CdmrGridConverter {
     for (GridAxis axis : csys.getGridAxes()) {
       builder.addAxisNames(axis.getName());
     }
-
-    Projection proj = csys.getHorizCoordSystem().getProjection();
-    if (proj != null) {
-      builder.addTransformNames(proj.getName());
-    }
+    GridHorizCoordinateSystem horizCS = csys.getHorizCoordSystem();
+    builder.setProjection(encodeProjection(horizCS.getProjection(), horizCS.getGeoUnits()));
 
     return builder.build();
   }
 
-  public static CdmrGridProto.CoordinateTransform encodeCoordTransform(CoordinateTransform transform) {
-    CdmrGridProto.CoordinateTransform.Builder builder = CdmrGridProto.CoordinateTransform.newBuilder();
-    builder.setName(transform.getName());
-    builder.setIsHoriz(transform.getTransformType() == TransformType.Projection);
-    builder.addAllAttributes(CdmrConverter.encodeAttributes(transform.getCtvAttributes()));
+  public static CdmrGridProto.Projection encodeProjection(Projection projection, String geoUnits) {
+    CdmrGridProto.Projection.Builder builder = CdmrGridProto.Projection.newBuilder();
+    builder.setName(projection.getName());
+    if (geoUnits != null) {
+      builder.setGeoUnits(geoUnits);
+    }
+    builder.addAllAttributes(CdmrConverter.encodeAttributes(projection.getProjectionAttributes()));
 
     return builder.build();
   }
 
   public static CdmrGridProto.GridAxis encodeGridAxis(GridAxis axis) {
     CdmrGridProto.GridAxis.Builder builder = CdmrGridProto.GridAxis.newBuilder();
+
+    if (axis instanceof GridAxis1DTime) {
+      builder.setGridAxisType(CdmrGridProto.GridAxisType.Axis1DTime);
+    } else if (axis instanceof GridAxisOffsetTimeRegular) {
+      builder.setGridAxisType(CdmrGridProto.GridAxisType.TimeOffsetRegular);
+    } else if (axis instanceof GridAxis2D) {
+      builder.setGridAxisType(CdmrGridProto.GridAxisType.Axis2D);
+    } else {
+      builder.setGridAxisType(CdmrGridProto.GridAxisType.Axis1D);
+    }
 
     builder.setName(axis.getName());
     builder.setDescription(axis.getDescription());

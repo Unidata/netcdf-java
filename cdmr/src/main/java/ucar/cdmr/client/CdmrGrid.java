@@ -21,7 +21,6 @@ public class CdmrGrid implements Grid {
     return proto.getName();
   }
 
-  @Nullable
   @Override
   public String getDescription() {
     return proto.getDescription();
@@ -69,7 +68,8 @@ public class CdmrGrid implements Grid {
 
   private CdmrGrid(Builder builder, List<GridCoordinateSystem> coordsys) {
     this.proto = builder.proto;
-    Optional<GridCoordinateSystem> csopt = coordsys.stream().filter(cs -> cs.getName().equals(proto.getCoordSys())).findFirst();
+    Optional<GridCoordinateSystem> csopt =
+        coordsys.stream().filter(cs -> cs.getName().equals(proto.getCoordSys())).findFirst();
     if (csopt.isPresent()) {
       this.coordsys = csopt.get();
     } else {

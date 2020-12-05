@@ -7,7 +7,7 @@ import ucar.cdmr.*;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.dataset.CoordinateTransform;
+import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.grid.*;
 import ucar.nc2.internal.grid.GridCS;
 
@@ -71,8 +71,10 @@ public class CdmrGridDataset implements GridDataset {
   }
 
   @Override
-  public void toString(Formatter f) {
-
+  public String toString() {
+    Formatter f = new Formatter();
+    toString(f);
+    return f.toString();
   }
 
   @Override
@@ -126,7 +128,7 @@ public class CdmrGridDataset implements GridDataset {
 
     ImmutableList.Builder<GridCoordinateSystem> coordsysb = ImmutableList.builder();
     for (GridCS.Builder<?> sys : builder.coordsys) {
-      coordsysb.add(sys.build(this.axes, builder.transforms));
+      coordsysb.add(sys.build(this.axes));
     }
     this.coordsys = coordsysb.build();
 
@@ -158,11 +160,10 @@ public class CdmrGridDataset implements GridDataset {
     private CdmrGridProto.GridDataset proto;
     private ArrayList<GridAxis.Builder<?>> axes = new ArrayList<>();
     private ArrayList<GridCS.Builder<?>> coordsys = new ArrayList<>();
-    private ArrayList<CoordinateTransform> transforms = new ArrayList<>(); // TODO only Projections?
     private ArrayList<CdmrGrid.Builder> grids = new ArrayList<>();
 
     private boolean built;
-    
+
     public Builder setRemoteURI(String remoteURI) {
       this.remoteURI = remoteURI;
       return this;
@@ -170,11 +171,6 @@ public class CdmrGridDataset implements GridDataset {
 
     public Builder addGridAxis(GridAxis.Builder<?> axis) {
       axes.add(axis);
-      return this;
-    }
-
-    public Builder addCoordTransform(CoordinateTransform transform) {
-      transforms.add(transform);
       return this;
     }
 
@@ -209,14 +205,15 @@ public class CdmrGridDataset implements GridDataset {
       // and reusable. It is common to create channels at the beginning of your application and reuse
       // them until the application shuts down.
       this.channel = ManagedChannelBuilder.forTarget(target)
-              // Channels are secure by default (via SSL/TLS). For now, we disable TLS to avoid needing certificates.
-              .usePlaintext() //
-              .enableFullStreamDecompression() //
-              .maxInboundMessageSize(MAX_MESSAGE) //
-              .build();
+          // Channels are secure by default (via SSL/TLS). For now, we disable TLS to avoid needing certificates.
+          .usePlaintext() //
+          .enableFullStreamDecompression() //
+          .maxInboundMessageSize(MAX_MESSAGE) //
+          .build();
+      Formatter errlog = new Formatter();
       try {
         this.blockingStub = CdmRemoteGrpc.newBlockingStub(channel);
-        readDataset(path);
+        readDataset(path, errlog);
 
       } catch (Exception e) {
         // ManagedChannels use resources like threads and TCP connections. To prevent leaking these
@@ -229,19 +226,21 @@ public class CdmrGridDataset implements GridDataset {
           // fall through
         }
         e.printStackTrace();
+        System.out.printf("%nerrlog = %s%n", errlog);
         throw new RuntimeException("Cant open CdmRemote url " + this.remoteURI, e);
       }
     }
 
-    private void readDataset(String location) {
+    private void readDataset(String location, Formatter errlog) {
       log.info("CdmrGridDataset request header for " + location);
-      CdmrGridProto.GridDatasetRequest request = CdmrGridProto.GridDatasetRequest.newBuilder().setLocation(location).build();
+      CdmrGridProto.GridDatasetRequest request =
+          CdmrGridProto.GridDatasetRequest.newBuilder().setLocation(location).build();
       CdmrGridProto.GridDatasetResponse response = blockingStub.getGridDataset(request);
       if (response.hasError()) {
         throw new RuntimeException(response.getError().getMessage());
       } else {
         this.proto = response.getDataset();
-        CdmrGridConverter.decodeDataset(this.proto, this);
+        CdmrGridConverter.decodeDataset(this.proto, this, errlog);
       }
     }
 

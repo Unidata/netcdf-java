@@ -7,11 +7,7 @@ package ucar.nc2.internal.grid;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.ImmutableSet;
 import ucar.ma2.RangeIterator;
-import ucar.nc2.Dimension;
-import ucar.nc2.Dimensions;
-import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.*;
@@ -63,19 +59,6 @@ public class GridCS implements GridCoordinateSystem {
     return null;
   }
 
-  /**
-   * Can this be a coordinate system for v?
-   * True if each dimension of v is in this domain, or is 1 dimensional.
-   */
-  boolean isCoordinateSystemFor(Variable v) {
-    for (Dimension d : Dimensions.makeDimensionsAll(v)) {
-      if (!domain.contains(d) && (d.getLength() != 1)) {
-        return false;
-      }
-    }
-    return true;
-  }
-
   @Override
   @Nullable
   public GridAxis1D getEnsembleAxis() {
@@ -119,14 +102,6 @@ public class GridCS implements GridCoordinateSystem {
   @Override
   public GridHorizCoordinateSystem getHorizCoordSystem() {
     return horizCsys;
-  }
-
-  @Override
-  @Nullable
-  public VerticalCT getVerticalCT() {
-    Optional<CoordinateTransform> result =
-        transforms.stream().filter(t -> t.getTransformType() == TransformType.Vertical).findFirst();
-    return (VerticalCT) result.orElse(null);
   }
 
   @Override
@@ -217,11 +192,6 @@ public class GridCS implements GridCoordinateSystem {
   }
 
   @Override
-  public boolean isProductSet() {
-    return true;
-  }
-
-  @Override
   public List<RangeIterator> getRanges() {
     List<RangeIterator> result = new ArrayList<>();
     for (GridAxis axis : axes) {
@@ -230,6 +200,25 @@ public class GridCS implements GridCoordinateSystem {
       }
     }
     return result;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
+    GridCS gridCS = (GridCS) o;
+    boolean ok = featureType == gridCS.featureType && name.equals(gridCS.name) && horizCsys.equals(gridCS.horizCsys);
+    for (GridAxis axis : getGridAxes()) {
+      ok = gridCS.findAxis(axis.getName()).isPresent();
+    }
+    return ok;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(axes, featureType, name, horizCsys);
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////
@@ -274,24 +263,19 @@ public class GridCS implements GridCoordinateSystem {
   ////////////////////////////////////////////////////////////////////////////////////////////
 
   private final ImmutableList<GridAxis> axes;
-  private final ImmutableSet<Dimension> domain;
   private final FeatureType featureType; // TODO redo FeatureType
-  private final boolean isLatLon;
   private final String name;
-  private final ImmutableList<CoordinateTransform> transforms;
   private final GridHorizCoordinateSystem horizCsys;
   private final ImmutableMultimap<GridAxis, GridAxis> dependMap;
 
   /**
    * Create a GridCoordinateSystem from a DatasetClassifier.CoordSysClassifier.
-   * 
-   * @param classifier
+   *
+   * @param classifier the classifier.
    * @param gridAxes The gridAxes already built, so there are no duplicates as we make the coordSys.
    */
   GridCS(DatasetClassifier.CoordSysClassifier classifier, Map<String, GridAxis> gridAxes) {
     this.featureType = classifier.getFeatureType();
-    this.isLatLon = classifier.isLatLon();
-    this.transforms = ImmutableList.copyOf(classifier.getCoordTransforms());
 
     ArrayList<GridAxis> axesb = new ArrayList<>();
     for (CoordinateAxis axis : classifier.getAxesUsed()) {
@@ -303,7 +287,6 @@ public class GridCS implements GridCoordinateSystem {
     List<String> names = axes.stream().map(GridAxis::getName).collect(Collectors.toList());
     this.name = String.join(" ", names);
 
-    this.domain = Dimensions.makeDomain(classifier.getAxesUsed(), false);
     this.horizCsys = GridHorizCS.create(getXHorizAxis(), getYHorizAxis(), classifier.getProjection());
     this.dependMap = makeDependMap();
   }
@@ -326,38 +309,31 @@ public class GridCS implements GridCoordinateSystem {
 
   // Add local fields to the builder.
   protected GridCS.Builder<?> addLocalFieldsToBuilder(GridCS.Builder<? extends GridCS.Builder<?>> builder) {
-    builder.setName(this.name).setDomain(this.domain).setFeatureType(this.featureType).setLatLon(this.isLatLon)
-        .setProjection(horizCsys.getProjection()).setTransforms(this.transforms).setAxes(this.axes);
+    builder.setName(this.name).setFeatureType(this.featureType).setProjection(horizCsys.getProjection())
+        .setAxes(this.axes);
 
     return builder;
   }
 
   private GridCS(Builder<?> builder) {
+    Preconditions.checkNotNull(builder.axes);
+    Preconditions.checkNotNull(builder.projection);
     this.name = builder.name;
-    this.domain = ImmutableSet.copyOf(builder.domain);
     this.featureType = builder.featureType;
-    this.isLatLon = builder.isLatLon;
-    this.transforms = builder.transforms;
     this.axes = ImmutableList.copyOf(builder.axes);
     this.horizCsys = GridHorizCS.create(getXHorizAxis(), getYHorizAxis(), builder.projection);
     this.dependMap = makeDependMap();
   }
 
-  private GridCS(Builder<?> builder, List<GridAxis> gridAxes, List<CoordinateTransform> transforms) {
+  private GridCS(Builder<?> builder, List<GridAxis> gridAxes) {
+    Preconditions.checkNotNull(builder.axesNames);
+    Preconditions.checkNotNull(builder.projection);
     this.name = builder.name;
-    this.domain = ImmutableSet.copyOf(builder.domain);
     this.featureType = builder.featureType;
-    this.isLatLon = builder.isLatLon;
-
-    ImmutableList.Builder<CoordinateTransform> transformsb = ImmutableList.builder();
-    for (String name : builder.transformNames) {
-      transforms.stream().filter(ct -> ct.getName().equals(name)).findFirst().ifPresent(ct -> transformsb.add(ct));
-    }
-    this.transforms = transformsb.build();
 
     ImmutableList.Builder<GridAxis> axesb = ImmutableList.builder();
-    for (String name : builder.axisNames) {
-      gridAxes.stream().filter(a -> a.getName().equals(name)).findFirst().ifPresent(a -> axesb.add(a));
+    for (String name : builder.axesNames) {
+      gridAxes.stream().filter(a -> a.getName().equals(name)).findFirst().ifPresent(axesb::add);
     }
     this.axes = axesb.build();
 
@@ -378,14 +354,10 @@ public class GridCS implements GridCoordinateSystem {
 
   public static abstract class Builder<T extends GridCS.Builder<T>> {
     private String name;
-    private Set<Dimension> domain = new HashSet<>();
     private FeatureType featureType;
-    private boolean isLatLon;
     private Projection projection;
-    private ImmutableList<CoordinateTransform> transforms;
     private ArrayList<GridAxis> axes = new ArrayList<>();
-    private List<String> axisNames;
-    private List<String> transformNames;
+    private List<String> axesNames;
 
     private boolean built;
 
@@ -396,33 +368,13 @@ public class GridCS implements GridCoordinateSystem {
       return self();
     }
 
-    public T setDomain(Set<Dimension> domain) {
-      this.domain = domain;
-      return self();
-    }
-
     public T setFeatureType(FeatureType featureType) {
       this.featureType = featureType;
       return self();
     }
 
-    public T setLatLon(boolean latLon) {
-      isLatLon = latLon;
-      return self();
-    }
-
     public T setProjection(Projection projection) {
       this.projection = projection;
-      return self();
-    }
-
-    public T setTransforms(ImmutableList<CoordinateTransform> transforms) {
-      this.transforms = transforms;
-      return self();
-    }
-
-    public T setTransformNames(List<String> transformNames) {
-      this.transformNames = transformNames;
       return self();
     }
 
@@ -441,12 +393,12 @@ public class GridCS implements GridCoordinateSystem {
       return self();
     }
 
-    public T setAxisNames(List<String> axisNames) {
-      this.axisNames = axisNames;
+    public T setAxisNames(List<String> axesNames) {
+      this.axesNames = axesNames;
       return self();
     }
 
-    /** Axes and Transforms must be passed in. */
+    /** Axes must be passed in. */
     public GridCS build() {
       if (built)
         throw new IllegalStateException("already built");
@@ -454,12 +406,12 @@ public class GridCS implements GridCoordinateSystem {
       return new GridCS(this);
     }
 
-    /** Axes and Transforms are matched from names. */
-    public GridCS build(List<GridAxis> gridAxes, List<CoordinateTransform> transforms) {
+    /** Axes are matched from names. */
+    public GridCS build(List<GridAxis> gridAxes) {
       if (built)
         throw new IllegalStateException("already built");
       built = true;
-      return new GridCS(this, gridAxes, transforms);
+      return new GridCS(this, gridAxes);
     }
   }
 

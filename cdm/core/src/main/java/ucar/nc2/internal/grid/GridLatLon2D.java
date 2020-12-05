@@ -51,6 +51,12 @@ public class GridLatLon2D extends GridHorizCS {
   }
 
   @Override
+  @Nullable
+  public String getGeoUnits() {
+    return null;
+  }
+
+  @Override
   public ProjectionRect getBoundingBox() {
     if (mapArea == null) {
       mapArea = new ProjectionRect(lon2D.getCoordMin(), lat2D.getCoordMin(), lon2D.getCoordMax(), lat2D.getCoordMax());

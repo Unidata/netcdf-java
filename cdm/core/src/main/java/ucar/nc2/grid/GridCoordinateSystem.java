@@ -7,7 +7,6 @@ package ucar.nc2.grid;
 import javax.annotation.Nullable;
 
 import ucar.ma2.RangeIterator;
-import ucar.nc2.Dimension;
 
 import java.util.*;
 
@@ -16,9 +15,6 @@ public interface GridCoordinateSystem {
 
   /** The name of the Grid Coordinate System. */
   String getName();
-
-  /** True if all axes are 1 dimensional. */
-  boolean isProductSet();
 
   /** the GridAxes that constitute this Coordinate System */
   Iterable<GridAxis> getGridAxes();
@@ -55,10 +51,6 @@ public interface GridCoordinateSystem {
   /** Get the Horizontal CoordinateSystem. */
   GridHorizCoordinateSystem getHorizCoordSystem();
 
-  /** Get the Vertical Transform for this coordinate system, if any. */
-  @Nullable
-  ucar.nc2.dataset.VerticalCT getVerticalCT();
-
   String showFnSummary();
 
   void show(Formatter f, boolean showCoords);
@@ -66,6 +58,6 @@ public interface GridCoordinateSystem {
   /** Subset each axis based on the given parameters. */
   Optional<GridCoordinateSystem> subset(GridSubset params, Formatter errLog);
 
-  // LOOK what is this?
+  // TODO what is this?
   List<RangeIterator> getRanges();
 }

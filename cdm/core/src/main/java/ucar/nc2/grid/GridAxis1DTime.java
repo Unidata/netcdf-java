@@ -282,8 +282,7 @@ public class GridAxis1DTime extends GridAxis1D {
   @Override
   public void toString(Formatter f, Indent indent) {
     super.toString(f, indent);
-    f.format("%s dates =%s", indent, cdates);
-    f.format("%n");
+    f.format("%s dateUnit '%s' dates =%s%n", indent, timeHelper.getUdUnit(), cdates);
   }
 
   @Override
@@ -295,7 +294,7 @@ public class GridAxis1DTime extends GridAxis1D {
     if (!super.equals(o))
       return false;
     GridAxis1DTime that = (GridAxis1DTime) o;
-    return Objects.equals(timeHelper, that.timeHelper) && Objects.equals(cdates, that.cdates);
+    return Objects.equals(timeHelper.getUdUnit(), that.timeHelper.getUdUnit());
   }
 
   @Override
@@ -314,7 +313,7 @@ public class GridAxis1DTime extends GridAxis1D {
     } else {
       this.timeHelper = TimeHelper.factory(this.units, this.attributes);
     }
-    // TODO do we require calendar dates or not?
+
     if (range != null && builder.cdates != null) {
       this.cdates = subsetDatesByRange(builder.cdates, range);
       Preconditions.checkArgument(cdates.size() == this.getNcoords());
@@ -322,8 +321,16 @@ public class GridAxis1DTime extends GridAxis1D {
       this.cdates = ImmutableList.copyOf(builder.cdates);
       Preconditions.checkArgument(cdates.size() == this.getNcoords());
     } else {
-      this.cdates = null;
+      this.cdates = makeCalendarDateFromValues();
     }
+  }
+
+  private ImmutableList<CalendarDate> makeCalendarDateFromValues() {
+    ArrayList<CalendarDate> result = new ArrayList<>(getNcoords());
+    for (double val : getCoordsAsArray()) {
+      result.add(timeHelper.makeCalendarDateFromOffset(val));
+    }
+    return ImmutableList.copyOf(result);
   }
 
   private ImmutableList<CalendarDate> subsetDatesByRange(List<CalendarDate> dates, RangeIterator range) {
@@ -377,6 +384,8 @@ public class GridAxis1DTime extends GridAxis1D {
       return self();
     }
 
+    // You should only set this if you want to calculate dates from midpoints.
+    // Otherwise just set the midpoints
     public T setCalendarDates(List<CalendarDate> cdates) {
       this.cdates = cdates;
       return self();
@@ -395,7 +404,19 @@ public class GridAxis1DTime extends GridAxis1D {
       if (axisType == null) {
         axisType = AxisType.Time;
       }
+      if (cdates != null && timeHelper != null) {
+        setValues(makeValuesFromCalendarDate());
+      }
       return new GridAxis1DTime(this);
+    }
+
+    private double[] makeValuesFromCalendarDate() {
+      double[] values = new double[cdates.size()];
+      int count = 0;
+      for (CalendarDate cd : cdates) {
+        values[count++] = timeHelper.offsetFromRefDate(cd);
+      }
+      return values;
     }
   }
 }

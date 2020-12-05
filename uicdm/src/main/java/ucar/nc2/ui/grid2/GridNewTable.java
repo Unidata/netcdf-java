@@ -8,9 +8,7 @@ package ucar.nc2.ui.grid2;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import ucar.ma2.DataType;
-import ucar.nc2.Dimensions;
 import ucar.nc2.constants.AxisType;
-import ucar.nc2.dataset.VerticalCT;
 import ucar.nc2.grid.*;
 import ucar.nc2.internal.grid.GridLatLon2D;
 import ucar.ui.util.NamedObject;
@@ -349,10 +347,6 @@ public class GridNewTable extends JPanel {
       }
       return Arrays.toString(shape);
     }
-
-    public String getDimensions() {
-      return Dimensions.makeDimensionsString(geogrid.getCoordinateSystem().getDomain());
-    }
   }
 
   public static class CoordSysBean {
@@ -370,10 +364,6 @@ public class GridNewTable extends JPanel {
       Projection p = gcs.getHorizCoordSystem().getProjection();
       if (p != null) {
         f.format("%s ", p.getName());
-      }
-      VerticalCT vct = gcs.getVerticalCT();
-      if (vct != null) {
-        f.format("%s ", vct.getName());
       }
       coordTrans = f.toString();
 

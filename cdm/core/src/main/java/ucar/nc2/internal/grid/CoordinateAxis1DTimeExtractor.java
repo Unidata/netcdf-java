@@ -7,6 +7,7 @@ import ucar.nc2.Variable;
 import ucar.nc2.dataset.*;
 import ucar.nc2.time.CalendarDate;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Formatter;
@@ -16,24 +17,24 @@ class CoordinateAxis1DTimeExtractor {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinateAxis1DTimeExtractor.class);
 
   final TimeHelper timeHelper;
-  final List<CalendarDate> cdates;
+  @Nullable
+  final List<CalendarDate> cdates; // non null only if its a string of char coordinate
 
-  // TODO why pass in values?
-  CoordinateAxis1DTimeExtractor(CoordinateAxis coordAxis, double[] values) {
-    Preconditions.checkArgument(coordAxis.getDataType() == DataType.CHAR || coordAxis.getRank() < 2);
+  CoordinateAxis1DTimeExtractor(CoordinateAxis coordAxis) {
+    Preconditions.checkArgument(coordAxis.getRank() < 2);
     this.timeHelper = TimeHelper.factory(coordAxis.getUnitsString(), coordAxis.attributes());
 
-    Formatter errMessages = new Formatter();
     try {
+      Formatter errMessages = new Formatter();
       if (coordAxis.getDataType() == DataType.CHAR) {
         cdates = makeTimesFromChar(coordAxis, errMessages);
       } else if (coordAxis.getDataType() == DataType.STRING) {
         cdates = makeTimesFromStrings(coordAxis, errMessages);
       } else {
-        cdates = makeCalendarDateFromValues(values);
+        cdates = null;
       }
     } catch (IOException ioe) {
-      throw new RuntimeException(errMessages.toString(), ioe);
+      throw new RuntimeException(ioe);
     }
   }
 
@@ -64,13 +65,15 @@ class CoordinateAxis1DTimeExtractor {
   }
 
   private CalendarDate makeCalendarDateFromStringCoord(String coordValue, Variable org, Formatter errMessages) {
-    try {
-      return timeHelper.makeCalendarDateFromOffset(coordValue);
-    } catch (IllegalArgumentException e) {
-      errMessages.format("Bad time coordinate '%s' in dataset '%s'%n", coordValue, org.getDatasetLocation());
-      log.info("Bad time coordinate '{}' in dataset '{}'", coordValue, org.getDatasetLocation());
-      throw new RuntimeException(errMessages.toString(), e);
+    CalendarDate cd = timeHelper.makeCalendarDateFromOffset(coordValue);
+    if (cd == null) {
+      if (errMessages != null) {
+        errMessages.format("String time coordinate must be ISO formatted= %s%n", coordValue);
+        log.info("Char time coordinate must be ISO formatted= {} file = {}", coordValue, org.getDatasetLocation());
+      }
+      throw new IllegalArgumentException();
     }
+    return cd;
   }
 
   private List<CalendarDate> makeCalendarDateFromValues(double[] values) {

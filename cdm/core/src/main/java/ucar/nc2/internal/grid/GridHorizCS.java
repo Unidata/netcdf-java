@@ -13,10 +13,7 @@ import ucar.unidata.geoloc.projection.sat.MSGnavigation;
 import ucar.unidata.geoloc.projection.sat.VerticalPerspectiveView;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Formatter;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /** HorizCS with 1D x,y axes. */
 public class GridHorizCS implements GridHorizCoordinateSystem {
@@ -34,8 +31,8 @@ public class GridHorizCS implements GridHorizCoordinateSystem {
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////
-  private final @Nullable GridAxis1D xaxis;
-  private final @Nullable GridAxis1D yaxis;
+  private final @Nullable GridAxis1D xaxis; // null only if LatLon2D
+  private final @Nullable GridAxis1D yaxis; // null only if LatLon2D
   private final Projection projection;
   private final @Nullable String horizStaggerType;
 
@@ -43,6 +40,7 @@ public class GridHorizCS implements GridHorizCoordinateSystem {
       @Nullable String horizStaggerType) {
     this.xaxis = xaxis;
     this.yaxis = yaxis;
+    // TODO set the LatLon seam?
     this.projection = projection == null ? new LatLonProjection() : projection;
     this.horizStaggerType = horizStaggerType;
   }
@@ -89,6 +87,12 @@ public class GridHorizCS implements GridHorizCoordinateSystem {
     if (axis == null)
       return false;
     return axis.isRegular();
+  }
+
+  @Override
+  @Nullable
+  public String getGeoUnits() {
+    return isLatLon() ? null : xaxis.getUnits();
   }
 
   @Override
@@ -288,5 +292,21 @@ public class GridHorizCS implements GridHorizCoordinateSystem {
     lon2 = LatLonPoints.lonNormal(lon2, midpoint);
 
     return wantMin ? Math.min(lon1, lon2) : Math.max(lon1, lon2);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
+    GridHorizCS that = (GridHorizCS) o;
+    return Objects.equals(xaxis, that.xaxis) && Objects.equals(yaxis, that.yaxis)
+        && Objects.equals(projection, that.projection) && Objects.equals(horizStaggerType, that.horizStaggerType);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(xaxis, yaxis, projection, horizStaggerType);
   }
 }

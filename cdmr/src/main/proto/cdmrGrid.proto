@@ -72,15 +72,8 @@ enum FeatureType {
 enum GridAxisType {
   Axis1D=0;
   Axis1DTime=1;
-  TimeOffserRegular=2;
+  TimeOffsetRegular=2;
   Axis2D=3;
-}
-
-// models a nc2.dataset.CoordinateTransform
-message CoordinateTransform {
-  bool isHoriz = 1;         // horiz or vert
-  string name = 2;          // short name, unique within dataset
-  repeated Attribute attributes = 3;
 }
 
 message GridAxis {
@@ -110,10 +103,16 @@ message GridAxis {
   repeated uint32 shape = 21 ;      // for TimeOffsetRegular
 }
 
+message Projection {
+  string name = 1;
+  string geoUnits = 2;
+  repeated Attribute attributes = 3;
+}
+
 message GridCoordinateSystem {
   string name = 1;
   repeated string axisNames = 2;
-  repeated string transformNames = 3;
+  Projection projection = 3;
 }
 
 message Grid {
@@ -132,9 +131,8 @@ message GridDataset {
   FeatureType featureType = 3;
   repeated Attribute attributes = 4;
   repeated GridAxis gridAxes = 5;
-  repeated CoordinateTransform coordTransforms = 6;
-  repeated GridCoordinateSystem coordSys = 7;
-  repeated Grid grids = 8;
+  repeated GridCoordinateSystem coordSys = 6;
+  repeated Grid grids = 7;
 }
 
 /////////////////////////////////////////////////////////////////////////////

@@ -17,7 +17,6 @@ public interface Grid extends IsMissingEvaluator {
 
   String getName();
 
-  @Nullable
   String getDescription();
 
   String getUnits();

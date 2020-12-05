@@ -100,7 +100,6 @@ public abstract class GridAxis implements Iterable<Object> {
     return name;
   }
 
-  @Nullable
   public String getDescription() {
     return description;
   }
@@ -164,7 +163,8 @@ public abstract class GridAxis implements Iterable<Object> {
     return Double.compare(objects.resolution, resolution) == 0 && name.equals(objects.name)
         && Objects.equals(description, objects.description) && Objects.equals(units, objects.units)
         && axisType == objects.axisType && attributes.equals(objects.attributes)
-        && dependenceType == objects.dependenceType && dependsOn.equals(objects.dependsOn) && spacing == objects.spacing;
+        && dependenceType == objects.dependenceType && dependsOn.equals(objects.dependsOn)
+        && spacing == objects.spacing;
   }
 
   @Override
@@ -232,7 +232,7 @@ public abstract class GridAxis implements Iterable<Object> {
     }
 
     if (builder.description == null) {
-      this.description = builder.attributes.findAttributeString(CDM.LONG_NAME, null);
+      this.description = builder.attributes.findAttributeString(CDM.LONG_NAME, "");
     } else {
       this.description = builder.description;
     }
