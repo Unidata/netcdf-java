@@ -29,15 +29,16 @@ public class GridAxis1D extends GridAxis {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    if (!super.equals(o)) return false;
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
+    if (!super.equals(o))
+      return false;
     GridAxis1D objects = (GridAxis1D) o;
-    return ncoords == objects.ncoords &&
-            Double.compare(objects.startValue, startValue) == 0 &&
-            Double.compare(objects.endValue, endValue) == 0 &&
-            Objects.equals(range, objects.range) &&
-            java.util.Arrays.equals(values, objects.values);
+    return ncoords == objects.ncoords && Double.compare(objects.startValue, startValue) == 0
+        && Double.compare(objects.endValue, endValue) == 0 && Objects.equals(range, objects.range)
+        && java.util.Arrays.equals(values, objects.values);
   }
 
   @Override
@@ -414,7 +415,8 @@ public class GridAxis1D extends GridAxis {
 
   // Add local fields to the builder.
   protected Builder<?> addLocalFieldsToBuilder(Builder<? extends GridAxis.Builder<?>> builder) {
-    builder.setRegular(this.ncoords, this.startValue, this.endValue, this.resolution).setValues(this.values).setRange(this.range);
+    builder.setRegular(this.ncoords, this.startValue, this.endValue, this.resolution).setValues(this.values)
+        .setRange(this.range);
     return (Builder<?>) super.addLocalFieldsToBuilder(builder);
   }
 

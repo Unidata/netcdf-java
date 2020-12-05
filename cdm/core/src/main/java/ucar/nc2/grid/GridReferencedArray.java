@@ -12,8 +12,11 @@ import ucar.ma2.DataType;
 @AutoValue
 public abstract class GridReferencedArray {
   public abstract String gridName();
+
   public abstract DataType dataType();
+
   public abstract Array<Number> data(); // not reduced
+
   public abstract GridCoordinateSystem csSubset();
 
   public static GridReferencedArray create(String coverageName, DataType dataType, Array<Number> data,

@@ -121,7 +121,7 @@ public class CdmrConverter {
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  public static List<CdmrNetcdfProto.Attribute>  encodeAttributes(AttributeContainer atts) {
+  public static List<CdmrNetcdfProto.Attribute> encodeAttributes(AttributeContainer atts) {
     List<CdmrNetcdfProto.Attribute> result = new ArrayList<>();
     for (Attribute att : atts) {
       result.add(encodeAtt(att).build());

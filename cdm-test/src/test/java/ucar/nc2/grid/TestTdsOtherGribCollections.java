@@ -110,8 +110,8 @@ public class TestTdsOtherGribCollections {
         System.out.printf("Cant open as GridDataset: %s%n", filename);
         fail();
       }
-      System.out.printf(" NewGrid: %d %d %d %n", newDataset.getGrids().size(), newDataset.getGridCoordinateSystems().size(),
-          newDataset.getGridAxes().size());
+      System.out.printf(" NewGrid: %d %d %d %n", newDataset.getGrids().size(),
+          newDataset.getGridCoordinateSystems().size(), newDataset.getGridAxes().size());
       System.out.printf(" OldGrid: %d %d %n", dataset.getGrids().size(), dataset.getGridsets().size());
       // assertThat(dataset.getGrids()).hasSize(2 * ngrids);
       // assertThat(dataset.getGridsets()).hasSize(2 * ncoordSys);
