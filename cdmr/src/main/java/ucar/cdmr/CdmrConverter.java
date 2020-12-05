@@ -13,22 +13,35 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import ucar.array.*;
+import ucar.array.ArrayByte;
+import ucar.array.ArrayVlen;
+import ucar.array.Arrays;
+import ucar.array.StructureData;
+import ucar.array.StructureDataArray;
+import ucar.array.StructureDataStorageBB;
+import ucar.array.StructureMembers;
 import ucar.array.StructureMembers.Member;
 import ucar.array.StructureMembers.MemberBuilder;
 import ucar.cdmr.CdmrNetcdfProto.Data;
 import ucar.cdmr.CdmrNetcdfProto.StructureDataProto;
 import ucar.cdmr.CdmrNetcdfProto.StructureMemberProto;
+import ucar.array.Array;
+import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 import ucar.ma2.Section;
-import ucar.nc2.*;
+import ucar.nc2.Attribute;
+import ucar.nc2.Dimension;
+import ucar.nc2.EnumTypedef;
+import ucar.nc2.Group;
+import ucar.nc2.Sequence;
+import ucar.nc2.Structure;
+import ucar.nc2.Variable;
 
 /** Convert between CdmRemote Protos and Netcdf objects, using ucar.ma2.Array for data. */
 public class CdmrConverter {
 
-  public static CdmrNetcdfProto.DataType convertDataType(ArrayType dtype) {
+  public static CdmrNetcdfProto.DataType convertDataType(DataType dtype) {
     switch (dtype) {
       case CHAR:
         return CdmrNetcdfProto.DataType.CHAR;
@@ -70,7 +83,7 @@ public class CdmrConverter {
     throw new IllegalStateException("illegal data type " + dtype);
   }
 
-  public static ArrayType convertDataType(CdmrNetcdfProto.DataType dtype) {
+  public static DataType convertDataType(CdmrNetcdfProto.DataType dtype) {
     switch (dtype) {
       case CHAR:
         return ArrayType.CHAR;
@@ -114,7 +127,7 @@ public class CdmrConverter {
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  public static List<CdmrNetcdfProto.Attribute> encodeAttributes(AttributeContainer atts) {
+  public static List<CdmrNetcdfProto.Attribute>  encodeAttributes(AttributeContainer atts) {
     List<CdmrNetcdfProto.Attribute> result = new ArrayList<>();
     for (Attribute att : atts) {
       result.add(encodeAtt(att).build());

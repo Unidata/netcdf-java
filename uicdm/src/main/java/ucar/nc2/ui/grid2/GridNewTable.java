@@ -304,7 +304,7 @@ public class GridNewTable extends JPanel {
       name = geogrid.getName();
       desc = geogrid.getDescription();
       units = geogrid.getUnits();
-      dataType = geogrid.getArrayType();
+      dataType = geogrid.getDataType();
       coordSysName = geogrid.getCoordinateSystem().getName();
     }
 
