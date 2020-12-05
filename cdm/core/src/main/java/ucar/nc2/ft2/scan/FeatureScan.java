@@ -13,7 +13,7 @@ import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageCS;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageCSBuilder;
 import ucar.nc2.grid.GridCoordinateSystem;
-import ucar.nc2.internal.grid.GridDatasetImpl;
+import ucar.nc2.internal.grid.GridNetcdfDataset;
 
 import java.io.File;
 import java.io.IOException;
@@ -164,11 +164,11 @@ public class FeatureScan {
         try {
           // new
           errlog = new Formatter();
-          Optional<GridDatasetImpl> grido = GridDatasetImpl.create(ds, errlog);
+          Optional<GridNetcdfDataset> grido = GridNetcdfDataset.create(ds, errlog);
           if (grido.isPresent()) {
-            GridDatasetImpl gridDataset = grido.get();
+            GridNetcdfDataset gridDataset = grido.get();
             if (!Iterables.isEmpty(gridDataset.getGrids())) {
-              gridCoordinateSystem = gridDataset.getCoordSystems().get(0);
+              gridCoordinateSystem = gridDataset.getGridCoordinateSystems().get(0);
             }
           }
           info.append("\nGridDatasetImpl errlog = ");

@@ -17,12 +17,14 @@ import ucar.array.StructureData;
 import ucar.array.StructureDataArray;
 import ucar.array.StructureMembers;
 import ucar.cdmr.CdmRemoteGrpc.CdmRemoteImplBase;
-import ucar.cdmr.CdmRemoteProto;
-import ucar.cdmr.CdmRemoteProto.DataRequest;
-import ucar.cdmr.CdmRemoteProto.DataResponse;
-import ucar.cdmr.CdmRemoteProto.Header;
-import ucar.cdmr.CdmRemoteProto.HeaderRequest;
-import ucar.cdmr.CdmRemoteProto.HeaderResponse;
+import ucar.cdmr.CdmrGridConverter;
+import ucar.cdmr.CdmrGridProto;
+import ucar.cdmr.CdmrNetcdfProto;
+import ucar.cdmr.CdmrNetcdfProto.DataRequest;
+import ucar.cdmr.CdmrNetcdfProto.DataResponse;
+import ucar.cdmr.CdmrNetcdfProto.Header;
+import ucar.cdmr.CdmrNetcdfProto.HeaderRequest;
+import ucar.cdmr.CdmrNetcdfProto.HeaderResponse;
 import ucar.cdmr.CdmrConverter;
 import ucar.array.Array;
 import ucar.ma2.DataType;
@@ -33,7 +35,13 @@ import ucar.nc2.ParsedSectionSpec;
 import ucar.nc2.Sequence;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDatasets;
+import ucar.nc2.grid.GridDataset;
+import ucar.nc2.grid.GridDatasetFactory;
 import ucar.nc2.write.ChunkingIndex;
+
+import static io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall;
+import static ucar.cdmr.CdmRemoteGrpc.getGetGridDataMethod;
+import static ucar.cdmr.CdmRemoteGrpc.getGetGridDatasetMethod;
 
 /** Server that manages startup/shutdown of a Cdm Remote server. */
 public class CdmrServer {
@@ -103,12 +111,12 @@ public class CdmrServer {
   static class CdmRemoteImpl extends CdmRemoteImplBase {
 
     @Override
-    public void getHeader(HeaderRequest req, StreamObserver<HeaderResponse> responseObserver) {
+    public void getNetcdfHeader(HeaderRequest req, StreamObserver<HeaderResponse> responseObserver) {
       System.out.printf("CdmrServer getHeader open %s%n", req.getLocation());
       HeaderResponse.Builder response = HeaderResponse.newBuilder();
       try (NetcdfFile ncfile = NetcdfDatasets.openFile(req.getLocation(), null)) {
         Header.Builder header = Header.newBuilder().setLocation(req.getLocation())
-            .setRoot(CdmrConverter.encodeGroup(ncfile.getRootGroup(), 100).build());
+                .setRoot(CdmrConverter.encodeGroup(ncfile.getRootGroup(), 100).build());
         response.setHeader(header);
         responseObserver.onNext(response.build());
         responseObserver.onCompleted();
@@ -116,12 +124,12 @@ public class CdmrServer {
       } catch (Throwable t) {
         logger.warn("CdmrServer getHeader failed ", t);
         t.printStackTrace();
-        response.setError(CdmRemoteProto.Error.newBuilder().setMessage(t.getMessage()).build());
+        response.setError(CdmrNetcdfProto.Error.newBuilder().setMessage(t.getMessage()).build());
       }
     }
 
     @Override
-    public void getData(DataRequest req, StreamObserver<DataResponse> responseObserver) {
+    public void getNetcdfData(DataRequest req, StreamObserver<DataResponse> responseObserver) {
       System.out.printf("CdmrServer getData %s %s%n", req.getLocation(), req.getVariableSpec());
       final Stopwatch stopwatch = Stopwatch.createStarted();
       long size = -1;
@@ -134,7 +142,7 @@ public class CdmrServer {
         } else {
           Section wantSection = varSection.getSection();
           size = var.getElementSize() * wantSection.getSize();
-          getData(ncfile, varSection, responseObserver);
+          getNetcdfData(ncfile, varSection, responseObserver);
         }
         responseObserver.onCompleted();
         logger.info("CdmrServer getData " + req.getLocation());
@@ -143,17 +151,17 @@ public class CdmrServer {
         logger.warn("CdmrServer getData failed ", t);
         t.printStackTrace();
         DataResponse.Builder response =
-            DataResponse.newBuilder().setLocation(req.getLocation()).setVariableSpec(req.getVariableSpec());
+                DataResponse.newBuilder().setLocation(req.getLocation()).setVariableSpec(req.getVariableSpec());
         response.setError(
-            CdmRemoteProto.Error.newBuilder().setMessage(t.getMessage() == null ? "N/A" : t.getMessage()).build());
+                CdmrNetcdfProto.Error.newBuilder().setMessage(t.getMessage() == null ? "N/A" : t.getMessage()).build());
         responseObserver.onNext(response.build());
       }
 
       System.out.printf(" ** size=%d took=%s%n", size, stopwatch.stop());
     }
 
-    private void getData(NetcdfFile ncfile, ParsedSectionSpec varSection, StreamObserver<DataResponse> responseObserver)
-        throws IOException, InvalidRangeException {
+    private void getNetcdfData(NetcdfFile ncfile, ParsedSectionSpec varSection, StreamObserver<DataResponse> responseObserver)
+            throws IOException, InvalidRangeException {
       Variable var = varSection.getVariable();
       Section wantSection = varSection.getSection();
       long size = var.getElementSize() * wantSection.getSize();
@@ -165,7 +173,7 @@ public class CdmrServer {
     }
 
     private void getDataInChunks(NetcdfFile ncfile, ParsedSectionSpec varSection,
-        StreamObserver<DataResponse> responseObserver) throws IOException, InvalidRangeException {
+                                 StreamObserver<DataResponse> responseObserver) throws IOException, InvalidRangeException {
 
       Variable var = varSection.getVariable();
       long maxChunkElems = MAX_MESSAGE / var.getElementSize();
@@ -181,26 +189,26 @@ public class CdmrServer {
     }
 
     private void getOneChunk(NetcdfFile ncfile, ParsedSectionSpec varSection,
-        StreamObserver<DataResponse> responseObserver) throws IOException, InvalidRangeException {
+                             StreamObserver<DataResponse> responseObserver) throws IOException, InvalidRangeException {
 
       String spec = varSection.makeSectionSpecString();
       Variable var = varSection.getVariable();
       Section wantSection = varSection.getSection();
 
       DataResponse.Builder response = DataResponse.newBuilder().setLocation(ncfile.getLocation()).setVariableSpec(spec)
-          .setVarFullName(var.getFullName()).setSection(CdmrConverter.encodeSection(wantSection));
+              .setVarFullName(var.getFullName()).setSection(CdmrConverter.encodeSection(wantSection));
 
       Array<?> data = var.readArray(wantSection);
       response.setData(CdmrConverter.encodeData(data.getDataType(), data));
 
       responseObserver.onNext(response.build());
       System.out.printf(" Send one chunk %s size=%d bytes%n", spec,
-          data.length() * varSection.getVariable().getElementSize());
+              data.length() * varSection.getVariable().getElementSize());
     }
 
 
     private long getSequenceData(NetcdfFile ncfile, ParsedSectionSpec varSection,
-        StreamObserver<DataResponse> responseObserver) throws InvalidRangeException {
+                                 StreamObserver<DataResponse> responseObserver) throws InvalidRangeException {
 
       String spec = varSection.makeSectionSpecString();
       Sequence seq = (Sequence) varSection.getVariable();
@@ -216,10 +224,10 @@ public class CdmrServer {
         sdata[count++] = it.next();
 
         if (count >= SEQUENCE_CHUNK || !it.hasNext()) {
-          StructureDataArray sdataArray = new StructureDataArray(members, new int[] {count}, sdata);
+          StructureDataArray sdataArray = new StructureDataArray(members, new int[]{count}, sdata);
           Section section = Section.builder().appendRange(start, start + count).build();
           DataResponse.Builder response = DataResponse.newBuilder().setLocation(ncfile.getLocation())
-              .setVariableSpec(spec).setVarFullName(seq.getFullName()).setSection(CdmrConverter.encodeSection(section));
+                  .setVariableSpec(spec).setVarFullName(seq.getFullName()).setSection(CdmrConverter.encodeSection(section));
           response.setData(CdmrConverter.encodeData(DataType.SEQUENCE, sdataArray));
           responseObserver.onNext(response.build());
           start = count;
@@ -228,5 +236,32 @@ public class CdmrServer {
       }
       return (start + count) * members.getStorageSizeBytes();
     }
-  }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // GridDataset
+
+    @Override
+    public void getGridDataset(CdmrGridProto.GridDatasetRequest request,
+                               io.grpc.stub.StreamObserver<CdmrGridProto.GridDatasetResponse> responseObserver) {
+      System.out.printf("CdmrServer getGridDataset open %s%n", request.getLocation());
+      CdmrGridProto.GridDatasetResponse.Builder response = CdmrGridProto.GridDatasetResponse.newBuilder();
+      try (GridDataset gridDataset = GridDatasetFactory.openGridDataset(request.getLocation(), null)) {
+        response.setDataset(CdmrGridConverter.encodeDataset(gridDataset));
+        responseObserver.onNext(response.build());
+        responseObserver.onCompleted();
+        logger.info("CdmrServer getGridDataset " + request.getLocation());
+      } catch (Throwable t) {
+        logger.warn("CdmrServer getGridDataset failed ", t);
+        t.printStackTrace();
+        response.setError(CdmrNetcdfProto.Error.newBuilder().setMessage(t.getMessage()).build());
+      }
+    }
+
+    @Override
+    public void getGridData(CdmrGridProto.GridDataRequest request,
+                            io.grpc.stub.StreamObserver<ucar.cdmr.CdmrGridProto.GridDataResponse> responseObserver) {
+      asyncUnimplementedUnaryCall(getGetGridDataMethod(), responseObserver);
+    }
+
+  } // CdmRemoteImpl
 }

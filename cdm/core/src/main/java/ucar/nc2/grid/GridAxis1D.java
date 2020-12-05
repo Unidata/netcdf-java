@@ -29,20 +29,22 @@ public class GridAxis1D extends GridAxis {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o)
-      return true;
-    if (o == null || getClass() != o.getClass())
-      return false;
-    if (!super.equals(o))
-      return false;
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    if (!super.equals(o)) return false;
     GridAxis1D objects = (GridAxis1D) o;
-    return ncoords == objects.ncoords && Double.compare(objects.startValue, startValue) == 0
-        && Double.compare(objects.endValue, endValue) == 0 && Objects.equals(range, objects.range);
+    return ncoords == objects.ncoords &&
+            Double.compare(objects.startValue, startValue) == 0 &&
+            Double.compare(objects.endValue, endValue) == 0 &&
+            Objects.equals(range, objects.range) &&
+            java.util.Arrays.equals(values, objects.values);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(super.hashCode(), ncoords, startValue, endValue, range);
+    int result = Objects.hash(super.hashCode(), ncoords, startValue, endValue, range);
+    result = 31 * result + java.util.Arrays.hashCode(values);
+    return result;
   }
 
   @Override
@@ -52,6 +54,26 @@ public class GridAxis1D extends GridAxis {
     f.format("%snpts: %d [%f,%f] resolution=%f spacing=%s", indent, ncoords, startValue, endValue, resolution, spacing);
     f.format("%s range=%s isSubset=%s", indent, range, isSubset());
     f.format("%n");
+
+    if (values != null) {
+      int n = values.length;
+      switch (spacing) {
+        case irregularPoint:
+        case contiguousInterval:
+          f.format("%scontiguous values (%d)=", indent, n);
+          for (double v : values)
+            f.format("%f,", v);
+          f.format("%n");
+          break;
+
+        case discontiguousInterval:
+          f.format("%sdiscontiguous values (%d)=", indent, n);
+          for (int i = 0; i < n; i += 2)
+            f.format("(%f,%f) ", values[i], values[i + 1]);
+          f.format("%n");
+          break;
+      }
+    }
   }
 
 
@@ -220,6 +242,12 @@ public class GridAxis1D extends GridAxis {
     return endValue;
   }
 
+  // TODO remove from public
+  public double[] getValues() {
+    // cant allow values array to escape, must be immutable
+    return values == null ? null : java.util.Arrays.copyOf(values, values.length);
+  }
+
   /** Iterates over coordinate values, either Double or CoordInterval. */
   @Override
   public Iterator<Object> iterator() {
@@ -355,6 +383,8 @@ public class GridAxis1D extends GridAxis {
   final double startValue; // only for regular
   final double endValue;
   final Range range; // for subset, tracks the indexes in the original
+  final double[] values; // null if isRegular, len= ncoords (irregularPoint), ncoords+1 (contiguous interval),
+                         // or 2*ncoords (discontinuous interval)
 
   GridAxis1D(Builder<?> builder) {
     super(builder);
@@ -363,6 +393,7 @@ public class GridAxis1D extends GridAxis {
     this.ncoords = builder.ncoords;
     this.startValue = builder.startValue;
     this.endValue = builder.endValue;
+    this.values = builder.values;
 
     if (axisType == null && builder.dependenceType == DependenceType.independent) {
       throw new IllegalArgumentException("independent axis must have type");
@@ -383,7 +414,7 @@ public class GridAxis1D extends GridAxis {
 
   // Add local fields to the builder.
   protected Builder<?> addLocalFieldsToBuilder(Builder<? extends GridAxis.Builder<?>> builder) {
-    builder.setRegular(this.ncoords, this.startValue, this.endValue, this.resolution).setRange(this.range);
+    builder.setRegular(this.ncoords, this.startValue, this.endValue, this.resolution).setValues(this.values).setRange(this.range);
     return (Builder<?>) super.addLocalFieldsToBuilder(builder);
   }
 
@@ -408,6 +439,7 @@ public class GridAxis1D extends GridAxis {
     int ncoords; // number of coordinates, required
     double startValue;
     double endValue;
+    protected double[] values; // null if isRegular, len = ncoords, ncoords+1, or 2*ncoords
 
     // does this really describe all subset possibilities? what about RangeScatter, composite ??
     private Range range; // for subset, tracks the indexes in the original
@@ -415,6 +447,25 @@ public class GridAxis1D extends GridAxis {
 
     public T setNcoords(int ncoords) {
       this.ncoords = ncoords;
+      return self();
+    }
+
+    /**
+     * Spacing.regularXXX: not used
+     * Spacing.irregularPoint: pts[ncoords]
+     * Spacing.contiguousInterval: edges[ncoords+1]
+     * Spacing.discontiguousInterval: bounds[2*ncoords]
+     */
+    public T setValues(double[] values) {
+      this.values = values;
+      return self();
+    }
+
+    public T setValues(List<Double> values) {
+      this.values = new double[values.size()];
+      for (int i = 0; i < values.size(); i++) {
+        this.values[i] = values.get(i);
+      }
       return self();
     }
 

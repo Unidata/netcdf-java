@@ -17,9 +17,6 @@ public interface GridCoordinateSystem {
   /** The name of the Grid Coordinate System. */
   String getName();
 
-  /** Get the dimensions used by any of the Axes in the Coordinate System. */
-  Iterable<Dimension> getDomain();
-
   /** True if all axes are 1 dimensional. */
   boolean isProductSet();
 

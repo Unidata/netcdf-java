@@ -2,6 +2,7 @@ package ucar.nc2.internal.grid;
 
 import ucar.array.Array;
 import ucar.ma2.*;
+import ucar.nc2.AttributeContainer;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.grid.Grid;
 import ucar.nc2.grid.GridCoordinateSystem;
@@ -36,13 +37,18 @@ public class GridVariable implements Grid {
   }
 
   @Override
-  public String getUnitsString() {
+  public String getUnits() {
     return vds.getUnitsString();
   }
 
   @Override
   public String getDescription() {
     return vds.getDescription();
+  }
+
+  @Override
+  public AttributeContainer attributes() {
+    return vds.attributes();
   }
 
   @Override

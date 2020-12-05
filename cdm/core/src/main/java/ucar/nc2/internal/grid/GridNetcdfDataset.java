@@ -21,10 +21,10 @@ import java.io.IOException;
 import java.util.*;
 
 /** GridDataset implementation wrapping a NetcdfDataset. */
-public class GridDatasetImpl implements GridDataset {
-  private static Logger log = LoggerFactory.getLogger(GridDatasetImpl.class);
+public class GridNetcdfDataset implements GridDataset {
+  private static Logger log = LoggerFactory.getLogger(GridNetcdfDataset.class);
 
-  public static Optional<GridDatasetImpl> create(NetcdfDataset ncd, Formatter errInfo) throws IOException {
+  public static Optional<GridNetcdfDataset> create(NetcdfDataset ncd, Formatter errInfo) throws IOException {
     Set<Enhance> enhance = ncd.getEnhanceMode();
     if (enhance == null || !enhance.contains(Enhance.CoordSystems)) {
       enhance = NetcdfDataset.getDefaultEnhanceMode();
@@ -32,7 +32,7 @@ public class GridDatasetImpl implements GridDataset {
     }
 
     DatasetClassifier facc = new DatasetClassifier(ncd, errInfo);
-    return (facc.getFeatureType() == FeatureType.GRID) ? Optional.of(new GridDatasetImpl(ncd, facc, errInfo))
+    return (facc.getFeatureType() == FeatureType.GRID) ? Optional.of(new GridNetcdfDataset(ncd, facc, errInfo))
         : Optional.empty();
   }
 
@@ -48,7 +48,7 @@ public class GridDatasetImpl implements GridDataset {
   private final ArrayList<Grid> grids = new ArrayList<>();
   private final Multimap<GridCS, Grid> gridsets;
 
-  private GridDatasetImpl(NetcdfDataset ncd, DatasetClassifier classifier, Formatter errInfo) {
+  private GridNetcdfDataset(NetcdfDataset ncd, DatasetClassifier classifier, Formatter errInfo) {
     this.ncd = ncd;
     this.featureType = classifier.getFeatureType();
 
@@ -95,6 +95,7 @@ public class GridDatasetImpl implements GridDataset {
     // Largest Coordinate Systems come first
     coordsys.sort((o1, o2) -> o2.getGridAxes().size() - o1.getGridAxes().size());
 
+    // Assign coordsys to grids
     this.gridsets = ArrayListMultimap.create();
     for (Variable v : ncd.getVariables()) {
       if (v.getFullName().startsWith("Best/")) { // TODO remove Best from grib generation code
@@ -105,7 +106,7 @@ public class GridDatasetImpl implements GridDataset {
       if (css.isEmpty()) {
         continue;
       }
-      // Use the largest (# axes)
+      // Use the largest (# axes) coordsys
       css.sort((o1, o2) -> o2.getCoordinateAxes().size() - o1.getCoordinateAxes().size());
       for (CoordinateSystem cs : css) {
         GridCS gcs = trackCsConverted.get(cs.getName());
@@ -138,12 +139,17 @@ public class GridDatasetImpl implements GridDataset {
   }
 
   @Override
-  public ImmutableList<GridCoordinateSystem> getCoordSystems() {
+  public AttributeContainer attributes() {
+    return ncd.getRootGroup().attributes();
+  }
+
+  @Override
+  public ImmutableList<GridCoordinateSystem> getGridCoordinateSystems() {
     return ImmutableList.copyOf(coordsys);
   }
 
   @Override
-  public ImmutableList<GridAxis> getCoordAxes() {
+  public ImmutableList<GridAxis> getGridAxes() {
     return ImmutableList.copyOf(gridAxes.values());
   }
 
@@ -179,7 +185,7 @@ public class GridDatasetImpl implements GridDataset {
       buf.format("%n");
       buf.format("Name___________________________________________Unit____________Description%n");
       for (Grid grid : gridsets.get(gcs)) {
-        buf.format(" %-46s %-15s %s%n", grid.getName(), grid.getUnitsString(), grid.getDescription());
+        buf.format(" %-46s %-15s %s%n", grid.getName(), grid.getUnits(), grid.getDescription());
       }
       countGridset++;
       buf.format("%n");

@@ -896,7 +896,7 @@ public class GridViewer extends JPanel {
     addChoosers();
 
     fieldChooser.setToolTipText(gg.getName());
-    colorScalePanel.setUnitString(gg.getUnitsString());
+    colorScalePanel.setUnitString(gg.getUnits());
     return true;
   }
 

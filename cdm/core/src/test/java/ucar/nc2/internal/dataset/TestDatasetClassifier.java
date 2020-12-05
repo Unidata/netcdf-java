@@ -14,7 +14,7 @@ import ucar.nc2.ft2.coverage.FeatureDatasetCoverage;
 import ucar.nc2.grid.Grid;
 import ucar.nc2.grid.GridAxis;
 import ucar.nc2.grid.GridCoordinateSystem;
-import ucar.nc2.internal.grid.GridDatasetImpl;
+import ucar.nc2.internal.grid.GridNetcdfDataset;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
@@ -35,9 +35,9 @@ public class TestDatasetClassifier {
       Formatter errlog = new Formatter();
       DatasetClassifier classifier = new DatasetClassifier(ds, errlog);
       assertThat(classifier.getFeatureType()).isEqualTo(FeatureType.GRID);
-      Optional<GridDatasetImpl> grido = GridDatasetImpl.create(ds, errlog);
+      Optional<GridNetcdfDataset> grido = GridNetcdfDataset.create(ds, errlog);
       assertThat(grido.isPresent()).isTrue();
-      GridDatasetImpl gridDataset = grido.get();
+      GridNetcdfDataset gridDataset = grido.get();
       assertThat(Iterables.isEmpty(gridDataset.getGrids())).isTrue();
     }
   }
@@ -52,9 +52,9 @@ public class TestDatasetClassifier {
       DatasetClassifier classifier = new DatasetClassifier(ds, errlog);
       assertThat(classifier.getFeatureType()).isEqualTo(FeatureType.GRID);
 
-      Optional<GridDatasetImpl> gdso = GridDatasetImpl.create(ds, errlog);
+      Optional<GridNetcdfDataset> gdso = GridNetcdfDataset.create(ds, errlog);
       assertThat(gdso.isPresent()).isTrue();
-      GridDatasetImpl gridDataset = gdso.get();
+      GridNetcdfDataset gridDataset = gdso.get();
       assertThat(Iterables.isEmpty(gridDataset.getGrids())).isFalse();
 
       Optional<Grid> grido =
@@ -91,9 +91,9 @@ public class TestDatasetClassifier {
       DatasetClassifier classifier = new DatasetClassifier(ds, errlog);
       assertThat(classifier.getFeatureType()).isEqualTo(FeatureType.GRID);
 
-      Optional<GridDatasetImpl> gdso = GridDatasetImpl.create(ds, errlog);
+      Optional<GridNetcdfDataset> gdso = GridNetcdfDataset.create(ds, errlog);
       assertThat(gdso.isPresent()).isTrue();
-      GridDatasetImpl gridDataset = gdso.get();
+      GridNetcdfDataset gridDataset = gdso.get();
       assertThat(Iterables.isEmpty(gridDataset.getGrids())).isFalse();
 
       Optional<Grid> grido = gridDataset.findGrid("temperature_2m");
@@ -134,9 +134,9 @@ public class TestDatasetClassifier {
       DatasetClassifier classifier = new DatasetClassifier(ds, errlog);
       assertThat(classifier.getFeatureType()).isEqualTo(FeatureType.GRID);
 
-      Optional<GridDatasetImpl> gdso = GridDatasetImpl.create(ds, errlog);
+      Optional<GridNetcdfDataset> gdso = GridNetcdfDataset.create(ds, errlog);
       assertThat(gdso.isPresent()).isTrue();
-      GridDatasetImpl gridDataset = gdso.get();
+      GridNetcdfDataset gridDataset = gdso.get();
       assertThat(Iterables.isEmpty(gridDataset.getGrids())).isFalse();
       assertThat(gridDataset.getFeatureType()).isEqualTo(FeatureType.GRID);
 
@@ -175,9 +175,9 @@ public class TestDatasetClassifier {
 
     try (NetcdfDataset ds = NetcdfDatasets.openDataset(filename)) {
       Formatter errlog = new Formatter();
-      Optional<GridDatasetImpl> grido = GridDatasetImpl.create(ds, errlog);
+      Optional<GridNetcdfDataset> grido = GridNetcdfDataset.create(ds, errlog);
       assertThat(grido.isPresent()).isTrue();
-      GridDatasetImpl gridDataset = grido.get();
+      GridNetcdfDataset gridDataset = grido.get();
       if (!Iterables.isEmpty(gridDataset.getGrids())) {
         DatasetClassifier dclassifier = new DatasetClassifier(ds, errlog);
         DatasetClassifier.CoordSysClassifier classifier =
@@ -208,9 +208,9 @@ public class TestDatasetClassifier {
 
     try (NetcdfDataset ds = NetcdfDatasets.openDataset(filename)) {
       Formatter errlog = new Formatter();
-      Optional<GridDatasetImpl> grido = GridDatasetImpl.create(ds, errlog);
+      Optional<GridNetcdfDataset> grido = GridNetcdfDataset.create(ds, errlog);
       assertThat(grido.isPresent()).isTrue();
-      GridDatasetImpl gridDataset = grido.get();
+      GridNetcdfDataset gridDataset = grido.get();
       if (!Iterables.isEmpty(gridDataset.getGrids())) {
         DatasetClassifier dclassifier = new DatasetClassifier(ds, errlog);
         DatasetClassifier.CoordSysClassifier classifier =
@@ -237,9 +237,9 @@ public class TestDatasetClassifier {
     // Not sure what the point is except to avoid a 2D time?
     try (NetcdfDataset ds = NetcdfDatasets.openDataset(filename)) {
       Formatter errlog = new Formatter();
-      Optional<GridDatasetImpl> grido = GridDatasetImpl.create(ds, errlog);
+      Optional<GridNetcdfDataset> grido = GridNetcdfDataset.create(ds, errlog);
       assertThat(grido.isPresent()).isTrue();
-      GridDatasetImpl gridDataset = grido.get();
+      GridNetcdfDataset gridDataset = grido.get();
       if (!Iterables.isEmpty(gridDataset.getGrids())) {
         DatasetClassifier dclassifier = new DatasetClassifier(ds, errlog);
         DatasetClassifier.CoordSysClassifier classifier =
@@ -263,9 +263,9 @@ public class TestDatasetClassifier {
 
     try (NetcdfDataset ds = NetcdfDatasets.openDataset(filename)) {
       Formatter errlog = new Formatter();
-      Optional<GridDatasetImpl> grido = GridDatasetImpl.create(ds, errlog);
+      Optional<GridNetcdfDataset> grido = GridNetcdfDataset.create(ds, errlog);
       assertThat(grido.isPresent()).isTrue();
-      GridDatasetImpl gridDataset = grido.get();
+      GridNetcdfDataset gridDataset = grido.get();
       if (!Iterables.isEmpty(gridDataset.getGrids())) {
         DatasetClassifier dclassifier = new DatasetClassifier(ds, errlog);
         DatasetClassifier.CoordSysClassifier classifier =
@@ -290,9 +290,9 @@ public class TestDatasetClassifier {
 
     try (NetcdfDataset ds = NetcdfDatasets.openDataset(filename)) {
       Formatter errlog = new Formatter();
-      Optional<GridDatasetImpl> grido = GridDatasetImpl.create(ds, errlog);
+      Optional<GridNetcdfDataset> grido = GridNetcdfDataset.create(ds, errlog);
       assertThat(grido.isPresent()).isTrue();
-      GridDatasetImpl gridDataset = grido.get();
+      GridNetcdfDataset gridDataset = grido.get();
       if (!Iterables.isEmpty(gridDataset.getGrids())) {
         DatasetClassifier dclassifier = new DatasetClassifier(ds, errlog);
         DatasetClassifier.CoordSysClassifier classifier =

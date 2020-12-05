@@ -1,12 +1,8 @@
 syntax = "proto3";
 
+package ucar.cdmr;
 option java_package = "ucar.cdmr";
-option java_outer_classname = "CdmRemoteProto";
-
-service CdmRemote {
-  rpc GetHeader (HeaderRequest) returns (HeaderResponse) {}
-  rpc GetData (DataRequest) returns (stream DataResponse) {}
-}
+option java_outer_classname = "CdmrNetcdfProto";
 
 message HeaderRequest {
   string location = 1;
@@ -15,7 +11,6 @@ message HeaderRequest {
 message HeaderResponse {
   Error error = 1;  // non-empty on error
   uint32 version = 2; // response version
-
   Header header = 3;
 }
 
@@ -34,6 +29,11 @@ message DataResponse {
   Section section = 6;         // this is the Section of the entire variable. Its shape matches the data.
 
   Data data = 7;
+}
+
+message Error {
+  string message = 1;
+  uint32 code = 2;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -124,11 +124,6 @@ message Variable {
 }
 
 //////////////////////////////////
-
-message Error {
-  string message = 1;
-  uint32 code = 2;
-}
 
 enum Compress {
   NONE = 0;

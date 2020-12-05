@@ -10,7 +10,7 @@ import ucar.nc2.ft2.coverage.CoverageCollection;
 import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
 import ucar.nc2.ft2.coverage.FeatureDatasetCoverage;
 import ucar.nc2.internal.dataset.DatasetClassifier;
-import ucar.nc2.internal.grid.GridDatasetImpl;
+import ucar.nc2.internal.grid.GridNetcdfDataset;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
@@ -33,9 +33,9 @@ public class TestGribGridCompareProblem {
 
     try (NetcdfDataset ds = NetcdfDatasets.openDataset(filename)) {
       Formatter errlog = new Formatter();
-      Optional<GridDatasetImpl> grido = GridDatasetImpl.create(ds, errlog);
+      Optional<GridNetcdfDataset> grido = GridNetcdfDataset.create(ds, errlog);
       if (grido.isPresent()) {
-        GridDatasetImpl gridDataset = grido.get();
+        GridNetcdfDataset gridDataset = grido.get();
         if (!Iterables.isEmpty(gridDataset.getGrids())) {
           DatasetClassifier dclassifier = new DatasetClassifier(ds, errlog);
           DatasetClassifier.CoordSysClassifier classifier =

@@ -5,7 +5,7 @@ import org.junit.experimental.categories.Category;
 import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dataset.CoordinateTransform;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.internal.grid.GridDatasetImpl;
+import ucar.nc2.internal.grid.GridNetcdfDataset;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
@@ -13,7 +13,7 @@ import java.io.IOException;
 
 import static com.google.common.truth.Truth.assertThat;
 
-/** Test {@link GridDatasetImpl} */
+/** Test {@link GridNetcdfDataset} */
 public class TestCoordinateTransforms {
 
   @Test

@@ -11,13 +11,9 @@ import ucar.ma2.DataType;
 /** A data array with GeoReferencing. */
 @AutoValue
 public abstract class GridReferencedArray {
-  public abstract String coverageName();
-
+  public abstract String gridName();
   public abstract DataType dataType();
-
-  // not reduced
-  public abstract Array<Number> data();
-
+  public abstract Array<Number> data(); // not reduced
   public abstract GridCoordinateSystem csSubset();
 
   public static GridReferencedArray create(String coverageName, DataType dataType, Array<Number> data,

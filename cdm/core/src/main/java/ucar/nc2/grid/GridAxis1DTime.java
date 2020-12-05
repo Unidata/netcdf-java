@@ -367,6 +367,11 @@ public class GridAxis1DTime extends GridAxis1D {
 
     protected abstract T self();
 
+    public T setDateUnits(String dateUnits) {
+      this.timeHelper = TimeHelper.factory(dateUnits, null);
+      return self();
+    }
+
     public T setTimeHelper(TimeHelper timeHelper) {
       this.timeHelper = timeHelper;
       return self();

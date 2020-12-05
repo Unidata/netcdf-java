@@ -9,6 +9,7 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.time.*;
 
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.Objects;
 
@@ -16,7 +17,7 @@ import java.util.Objects;
 @Immutable
 public class TimeHelper {
 
-  public static TimeHelper factory(String units, AttributeContainer atts) {
+  public static TimeHelper factory(String units, @Nullable AttributeContainer atts) {
     if (units == null)
       units = atts.findAttributeString(CDM.UDUNITS, null);
     if (units == null)
