@@ -147,8 +147,9 @@ message GridDataResponse {
   Error error = 1;    // non-empty on error
   uint32 version = 2; // response version
 
-  map<string, string> subset = 3;
-  GeoReferencedArray data = 4;
+  string location = 3;
+  map<string, string> subset = 4;
+  GridReferencedArray data = 5;
 }
 
 message CalendarDateRange {
@@ -164,7 +165,7 @@ message Rectangle {
   double incy = 4;
 }
 
-message GeoReferencedArray {
+message GridReferencedArray {
   string gridName = 1;
   Data data = 2;
   GridCoordinateSystem csSubset = 3;

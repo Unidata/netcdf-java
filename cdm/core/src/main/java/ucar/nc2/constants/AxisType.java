@@ -8,12 +8,12 @@ package ucar.nc2.constants;
 /**
  * Enumeration of Coordinate Axis types. These are used for tagging georeferencing axes.
  * Do not change the ordering of these enums, as they are used in protobuf messages, only add new ones onto the end.
- * TODO: remove dependency on ordering.
+ * TODO: remove dependency on ordering in ver7.
  */
 public enum AxisType {
   RunTime(0, "R"), // runtime / reference time
   Ensemble(2, "E"), //
-  Time(1, "T"), //
+  Time(1, "T"), // udunits: numerical offset from fixed calendar date, stored in the units string.
   GeoX(5, "X"), //
   GeoY(4, "Y"), //
   GeoZ(3, "Z"), // typically "dimensionless" vertical coordinate
@@ -27,7 +27,7 @@ public enum AxisType {
   RadialElevation(6), //
   Spectral(1), //
 
-  TimeOffset(1, "TO"), // time offset from runtime reference time
+  TimeOffset(1, "TO"), // time offset from runtime reference time, units are time (seconds, hours)
   Dimension(99, "Dim"), // used for dimension axis (experimental);
   SimpleGeometryX(100, "SgX"), // Simple Geometry X
   SimpleGeometryY(101, "SgY"), // Simple Geometry Y

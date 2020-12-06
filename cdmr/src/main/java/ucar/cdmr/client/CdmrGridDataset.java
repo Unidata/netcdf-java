@@ -1,29 +1,27 @@
 package ucar.cdmr.client;
 
+import com.google.common.base.Stopwatch;
 import com.google.common.collect.ImmutableList;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import io.grpc.StatusRuntimeException;
 import ucar.cdmr.*;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.grid.*;
 import ucar.nc2.internal.grid.GridCS;
 
+import java.io.IOException;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Formatter;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /** A remote CDM GridDataset, using gprc protocol to communicate. */
 public class CdmrGridDataset implements GridDataset {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CdmrGridDataset.class);
+  private static final int MAX_DATA_WAIT_SECONDS = 30;
   private static final int MAX_MESSAGE = 51 * 1000 * 1000; // 51 Mb
-  public static final String PROTOCOL = "cdmr";
-  public static final String SCHEME = PROTOCOL + ":";
 
   @Override
   public String getName() {
@@ -134,9 +132,51 @@ public class CdmrGridDataset implements GridDataset {
 
     ImmutableList.Builder<Grid> gridsb = ImmutableList.builder();
     for (CdmrGrid.Builder b : builder.grids) {
-      gridsb.add(b.build(this.coordsys));
+      gridsb.add(b.setDataset(this).build(this.coordsys));
     }
     this.grids = gridsb.build();
+  }
+
+  GridReferencedArray readData(GridSubset subset) throws IOException {
+    log.info("CdmrGridDataset request data subset " + subset);
+    CdmrGridProto.GridDataRequest.Builder requestb = CdmrGridProto.GridDataRequest.newBuilder().setLocation(path);
+    for (Map.Entry<String, Object> entry : subset.getEntries()) {
+      requestb.putSubset(entry.getKey(), entry.getValue().toString());
+    }
+    final Stopwatch stopwatch = Stopwatch.createStarted();
+    long size = 0;
+    List<GridReferencedArray> results = new ArrayList<>();
+
+    try {
+      Iterator<CdmrGridProto.GridDataResponse> responses =
+          blockingStub.withDeadlineAfter(MAX_DATA_WAIT_SECONDS, TimeUnit.SECONDS).getGridData(requestb.build());
+
+      // while (responses.hasNext()) {
+      CdmrGridProto.GridDataResponse response = responses.next();
+      if (response.hasError()) {
+        throw new IOException(response.getError().getMessage());
+      }
+      GridReferencedArray result = CdmrGridConverter.decodeGridReferencedArray(response.getData(), getGridAxes());
+      results.add(result);
+      size += result.data().length();
+      // }
+
+    } catch (StatusRuntimeException e) {
+      log.warn("readSection requestData failed failed: ", e);
+      throw new IOException(e);
+
+    } catch (Throwable t) {
+      System.out.printf(" ** failed after %s%n", stopwatch);
+      log.warn("readSection requestData failed failed: ", t);
+      throw new IOException(t);
+    }
+    System.out.printf(" ** size=%d took=%s%n", size, stopwatch.stop());
+
+    if (results.size() == 1) {
+      return results.get(0);
+    } else {
+      throw new UnsupportedOperationException("multiple responses not supported"); // TODO
+    }
   }
 
   public Builder toBuilder() {
@@ -213,7 +253,7 @@ public class CdmrGridDataset implements GridDataset {
       Formatter errlog = new Formatter();
       try {
         this.blockingStub = CdmRemoteGrpc.newBlockingStub(channel);
-        readDataset(path, errlog);
+        readDataset(errlog);
 
       } catch (Exception e) {
         // ManagedChannels use resources like threads and TCP connections. To prevent leaking these
@@ -231,10 +271,10 @@ public class CdmrGridDataset implements GridDataset {
       }
     }
 
-    private void readDataset(String location, Formatter errlog) {
-      log.info("CdmrGridDataset request header for " + location);
+    private void readDataset(Formatter errlog) {
+      log.info("CdmrGridDataset request header for " + path);
       CdmrGridProto.GridDatasetRequest request =
-          CdmrGridProto.GridDatasetRequest.newBuilder().setLocation(location).build();
+          CdmrGridProto.GridDatasetRequest.newBuilder().setLocation(path).build();
       CdmrGridProto.GridDatasetResponse response = blockingStub.getGridDataset(request);
       if (response.hasError()) {
         throw new RuntimeException(response.getError().getMessage());
@@ -243,6 +283,5 @@ public class CdmrGridDataset implements GridDataset {
         CdmrGridConverter.decodeDataset(this.proto, this, errlog);
       }
     }
-
   }
 }

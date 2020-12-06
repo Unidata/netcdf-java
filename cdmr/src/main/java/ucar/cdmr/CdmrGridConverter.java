@@ -1,5 +1,7 @@
 package ucar.cdmr;
 
+import com.google.common.collect.ImmutableList;
+import ucar.array.Array;
 import ucar.cdmr.client.CdmrGrid;
 import ucar.cdmr.client.CdmrGridDataset;
 import ucar.nc2.AttributeContainer;
@@ -146,6 +148,14 @@ public class CdmrGridConverter {
     return ucar.nc2.internal.dataset.transform.horiz.ProjectionFactory.makeProjection(ctv, proto.getGeoUnits(), errlog);
   }
 
+  public static GridReferencedArray decodeGridReferencedArray(CdmrGridProto.GridReferencedArray proto,
+      ImmutableList<GridAxis> axes) {
+    Formatter errlog = new Formatter();
+    GridCS.Builder<?> cs = decodeCoordSys(proto.getCsSubset(), errlog);
+    Array<Number> data = CdmrConverter.decodeData(proto.getData());
+    return GridReferencedArray.create(proto.getGridName(), data.getDataType(), data, cs.build(axes));
+  }
+
   //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   public static CdmrGridProto.GridDataset encodeDataset(GridDataset org) {
@@ -222,8 +232,8 @@ public class CdmrGridConverter {
 
       double[] values = axis1.getValues();
       if (values != null) {
-        for (int i = 0; i < values.length; i++) {
-          builder.addValues(values[i]);
+        for (double value : values) {
+          builder.addValues(value);
         }
       }
     }
@@ -263,6 +273,14 @@ public class CdmrGridConverter {
     builder.setCoordSys(grid.getCoordinateSystem().getName());
     builder.setHasMissing(grid.hasMissing());
 
+    return builder.build();
+  }
+
+  public static CdmrGridProto.GridReferencedArray encodeGridReferencedArray(GridReferencedArray geoArray) {
+    CdmrGridProto.GridReferencedArray.Builder builder = CdmrGridProto.GridReferencedArray.newBuilder();
+    builder.setGridName(geoArray.gridName());
+    builder.setCsSubset(encodeCoordSys(geoArray.csSubset()));
+    builder.setData(CdmrConverter.encodeData(geoArray.dataType(), geoArray.data()));
     return builder.build();
   }
 

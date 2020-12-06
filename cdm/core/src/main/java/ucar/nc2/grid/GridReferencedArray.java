@@ -19,9 +19,9 @@ public abstract class GridReferencedArray {
 
   public abstract GridCoordinateSystem csSubset();
 
-  public static GridReferencedArray create(String coverageName, DataType dataType, Array<Number> data,
+  public static GridReferencedArray create(String gridName, DataType dataType, Array<Number> data,
       GridCoordinateSystem csSubset) {
-    return new AutoValue_GridReferencedArray(coverageName, dataType, data, csSubset);
+    return new AutoValue_GridReferencedArray(gridName, dataType, data, csSubset);
   }
 
 }

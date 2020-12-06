@@ -9,7 +9,10 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import ucar.ma2.InvalidRangeException;
 import ucar.nc2.grid.*;
+import ucar.nc2.internal.util.CompareArrayToArray;
+import ucar.nc2.time.CalendarDate;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsExternalResource;
 import ucar.unidata.util.test.category.NotJenkins;
@@ -70,6 +73,10 @@ public class TestCdmrGridDataset {
           System.out.printf("infp = '%s'%n", info);
         }
         assertThat(ok).isTrue();
+
+        for (Grid localGrid : local.getGrids()) {
+          remote.findGrid(localGrid.getName()).ifPresent(remoteGrid -> compareGrid(localGrid, remoteGrid));
+        }
       }
     }
   }
@@ -107,6 +114,76 @@ public class TestCdmrGridDataset {
     }
 
     return ok;
+  }
+
+  private static boolean compareGrid(Grid local, Grid remote) {
+    GridSubset subset = new GridSubset();
+    try {
+      return doRunTime(local, remote, subset);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return false;
+    }
+  }
+
+  private static boolean doRunTime(Grid local, Grid remote, GridSubset subset) throws Exception {
+    boolean ok = true;
+    GridAxis1DTime runtimeAxis = local.getCoordinateSystem().getRunTimeAxis();
+    if (runtimeAxis == null) {
+      ok &= doTime(local, remote, subset);
+    } else {
+      for (CalendarDate coord : runtimeAxis.getCalendarDates()) {
+        subset.setRunTime(coord);
+        ok &= doTime(local, remote, subset);
+      }
+    }
+    return ok;
+  }
+
+
+  private static boolean doTime(Grid local, Grid remote, GridSubset subset) throws Exception {
+    boolean ok = true;
+    GridAxis timeAxis = local.getCoordinateSystem().getTimeOffsetAxis();
+    if (timeAxis == null) {
+      timeAxis = local.getCoordinateSystem().getTimeAxis();
+    }
+    if (timeAxis == null) {
+      ok &= doVert(local, remote, subset);
+    } else {
+      for (Object coord : timeAxis) {
+        subset.setTimeCoord(coord);
+        ok &= doVert(local, remote, subset);
+      }
+    }
+    return ok;
+  }
+
+  private static boolean doVert(Grid local, Grid remote, GridSubset subset) throws Exception {
+    boolean ok = true;
+    GridAxis1D vertAxis = local.getCoordinateSystem().getVerticalAxis();
+    if (vertAxis == null) {
+      ok &= doSubset(local, remote, subset);
+    } else {
+      for (Object vertCoord : vertAxis) {
+        subset.setVertCoord(vertCoord);
+        ok &= doSubset(local, remote, subset);
+      }
+    }
+    return ok;
+  }
+
+  private static boolean doSubset(Grid local, Grid remote, GridSubset subset)
+      throws IOException, InvalidRangeException {
+    System.out.printf(" Grid %s subset %s %n", local.getName(), subset);
+    GridReferencedArray localArray = local.readData(subset);
+    GridReferencedArray remoteArray = remote.readData(subset);
+    Formatter f = new Formatter();
+    boolean ok1 =
+        CompareArrayToArray.compareData(f, local.getName(), localArray.data(), remoteArray.data(), true, true);
+    if (!ok1) {
+      System.out.printf("  FAIL %s%n", f);
+    }
+    return ok1;
   }
 
 }

@@ -5,8 +5,14 @@
 package ucar.nc2.grid;
 
 import com.google.auto.value.AutoValue;
+import com.google.common.base.CharMatcher;
+import com.google.common.base.Splitter;
 import com.google.common.math.DoubleMath;
 import ucar.unidata.util.Format;
+import ucar.unidata.util.StringUtil2;
+
+import javax.annotation.Nullable;
+import java.util.List;
 
 /** A Coordinate represented by an interval [start, end) */
 @AutoValue
@@ -39,5 +45,21 @@ public abstract class CoordInterval {
   /** Show the interval with given decimal precision. */
   public String toString(int ndecimals) {
     return Format.d(start(), ndecimals) + "-" + Format.d(end(), ndecimals);
+  }
+
+  /** The inverse of toString(), or null if cant parse */
+  @Nullable
+  public static CoordInterval parse(String source) {
+    List<String> ss = Splitter.on('-').omitEmptyStrings().trimResults().splitToList(source);
+    if (ss.size() != 2) {
+      return null;
+    }
+    try {
+      double start = Double.parseDouble(ss.get(0));
+      double end = Double.parseDouble(ss.get(1));
+      return CoordInterval.create(start, end);
+    } catch (Exception e) {
+      return null;
+    }
   }
 }

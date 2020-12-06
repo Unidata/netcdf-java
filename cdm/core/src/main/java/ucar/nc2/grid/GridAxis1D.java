@@ -315,15 +315,14 @@ public class GridAxis1D extends GridAxis {
       case GeoZ:
       case Pressure:
       case Height: {
-        Object dval = params.getVertCoord();
+        Double dval = params.getVertPoint();
         if (dval != null) {
-          if (dval instanceof Double) {
-            return helper.subsetClosest((Double) dval);
-          } else if (dval instanceof CoordInterval) {
-            return helper.subsetClosest((CoordInterval) dval);
-          }
+          return helper.subsetClosest(dval);
         }
-
+        CoordInterval intv = params.getVertIntv();
+        if (intv != null) {
+          return helper.subsetClosest(intv);
+        }
         // default is all
         break;
       }

@@ -36,13 +36,8 @@ import ucar.nc2.ParsedSectionSpec;
 import ucar.nc2.Sequence;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.nc2.grid.GridDataset;
-import ucar.nc2.grid.GridDatasetFactory;
+import ucar.nc2.grid.*;
 import ucar.nc2.write.ChunkingIndex;
-
-import static io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall;
-import static ucar.cdmr.CdmRemoteGrpc.getGetGridDataMethod;
-import static ucar.cdmr.CdmRemoteGrpc.getGetGridDatasetMethod;
 
 /** Server that manages startup/shutdown of a Cdm Remote server. */
 public class CdmrServer {
@@ -265,7 +260,50 @@ public class CdmrServer {
     @Override
     public void getGridData(CdmrGridProto.GridDataRequest request,
         io.grpc.stub.StreamObserver<ucar.cdmr.CdmrGridProto.GridDataResponse> responseObserver) {
-      asyncUnimplementedUnaryCall(getGetGridDataMethod(), responseObserver);
+
+      System.out.printf("CdmrServer getData %s %s%n", request.getLocation(), request.getSubsetMap());
+      CdmrGridProto.GridDataResponse.Builder response = CdmrGridProto.GridDataResponse.newBuilder();
+      response.setLocation(request.getLocation()).putAllSubset(request.getSubsetMap());
+      final Stopwatch stopwatch = Stopwatch.createStarted();
+
+      GridSubset gridSubset = new GridSubset(request.getSubsetMap());
+      if (gridSubset.getGridName() == null) {
+        makeError(response, "GridName is not set");
+        responseObserver.onNext(response.build());
+        return;
+      }
+
+      Formatter errlog = new Formatter();
+      try (GridDataset gridDataset = GridDatasetFactory.openGridDataset(request.getLocation(), errlog)) {
+        if (gridDataset == null) {
+          makeError(response, String.format("GridDataset '%s' not found", request.getLocation()));
+        } else {
+          String wantGridName = gridSubset.getGridName();
+          Grid wantGrid = gridDataset.findGrid(wantGridName).orElse(null);
+          if (wantGrid == null) {
+            makeError(response,
+                String.format("GridDataset '%s' does not have Grid '%s", request.getLocation(), wantGridName));
+          } else {
+            GridReferencedArray geoReferencedArray = wantGrid.readData(gridSubset);
+            response.setData(CdmrGridConverter.encodeGridReferencedArray(geoReferencedArray));
+            System.out.printf(" ** size=%d shape=%s%n", geoReferencedArray.data().length(),
+                java.util.Arrays.toString(geoReferencedArray.data().getShape()));
+
+          }
+        }
+
+      } catch (Throwable t) {
+        logger.warn("CdmrServer getGridData failed ", t);
+        t.printStackTrace();
+        errlog.format("%n%s", t.getMessage() == null ? "" : t.getMessage());
+        makeError(response, errlog.toString());
+      }
+      responseObserver.onNext(response.build());
+      System.out.printf(" ** took=%s%n", stopwatch.stop());
+    }
+
+    void makeError(CdmrGridProto.GridDataResponse.Builder response, String message) {
+      response.setError(CdmrNetcdfProto.Error.newBuilder().setMessage(message).build());
     }
 
   } // CdmRemoteImpl

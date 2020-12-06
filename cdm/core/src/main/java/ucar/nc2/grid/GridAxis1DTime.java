@@ -183,11 +183,13 @@ public class GridAxis1DTime extends GridAxis1D {
         if (date != null) {
           return helper.subsetClosest(date);
         }
-
-        // TODO, can time be discontinuous interval? if so need to add that case.
-        Object value = params.getTimeCoord();
-        if (value instanceof Double) {
-          return helper.subsetClosest((Double) value);
+        Double dval = params.getTimePoint();
+        if (dval != null) {
+          return helper.subsetClosest(dval);
+        }
+        CoordInterval intv = params.getTimeIntv();
+        if (intv != null) {
+          return helper.subsetClosest(intv);
         }
 
         Integer stride = params.getTimeStride();
@@ -201,23 +203,25 @@ public class GridAxis1DTime extends GridAxis1D {
         }
 
         // A time offset or time offset interval starts from the rundate of the offset
-        Object timeOffset = params.getTimeOffsetCoord();
+        Double timeOffset = params.getTimeOffset();
         CalendarDate runtime = params.getRunTime();
         if (timeOffset != null) {
-          if (timeOffset instanceof Double) {
-            if (runtime != null) {
-              date = makeDateInTimeUnits(runtime, (Double) timeOffset);
-              return helper.subsetClosest(date);
-            } else {
-              return helper.subsetClosest((Double) timeOffset);
-            }
-          } else if (timeOffset instanceof CoordInterval) {
-            CoordInterval timeOffsetIntv = (CoordInterval) timeOffset;
-            CalendarDate[] dateIntv = new CalendarDate[2];
-            dateIntv[0] = makeDateInTimeUnits(runtime, timeOffsetIntv.start());
-            dateIntv[1] = makeDateInTimeUnits(runtime, timeOffsetIntv.end());
-            return helper.subsetClosest(dateIntv);
+          if (runtime != null) {
+            date = makeDateInTimeUnits(runtime, timeOffset);
+            return helper.subsetClosest(date);
+          } else {
+            return helper.subsetClosest(timeOffset);
           }
+        }
+
+        // If a time interval is sent, search for match.
+        CoordInterval timeOffsetIntv = params.getTimeOffsetIntv();
+        if (timeOffsetIntv != null && runtime != null) {
+          // double midOffset = (timeOffsetIntv[0] + timeOffsetIntv[1]) / 2;
+          CalendarDate[] dateIntv = new CalendarDate[2];
+          dateIntv[0] = makeDateInTimeUnits(runtime, timeOffsetIntv.start());
+          dateIntv[1] = makeDateInTimeUnits(runtime, timeOffsetIntv.end());
+          return helper.subsetClosest(dateIntv);
         }
 
         if (stride != 1)
