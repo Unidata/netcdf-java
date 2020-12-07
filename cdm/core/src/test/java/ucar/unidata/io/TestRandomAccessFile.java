@@ -14,7 +14,6 @@ import java.nio.charset.StandardCharsets;
 
 import static com.google.common.truth.Truth.assertThat;
 
-@Ignore
 public class TestRandomAccessFile {
   // Test public methods of RandomAccessFile
   // NOTE: Does not test cache methods

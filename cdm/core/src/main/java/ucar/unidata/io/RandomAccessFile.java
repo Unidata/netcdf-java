@@ -1485,7 +1485,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
       }
     }
 
-    if ((c == -1) && (input.length() == 0)) {
+    if ((c == (char) -1) && (input.length() == 0)) {
       return null;
     }
     return input.toString();
