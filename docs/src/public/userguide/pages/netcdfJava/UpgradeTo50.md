@@ -299,9 +299,11 @@ For more information, see the [DatasetUrl](dataset_urls.html#object-stores) docu
 
 ## netCDF-Java API Changes (5.4.x)
 
-List of GitHub commits since 5.3.3 release ([link](https://github.com/Unidata/netcdf-java/compare/v5.3.3...master){:target="_blank"})
+List of GitHub commits since 5.3.3 release ([link](https://github.com/Unidata/netcdf-java/compare/v5.3.3...v5.4.0){:target="_blank"})
 
 Much of the work in 5.4.x is focused on establishing a public API.
 We now publish two sets of javadocs - [with](../javadoc-with-deprecations/){:target="_blank"} and [without deprecations](../javadoc/){:target="_blank"}.
-For more information about these efforts and why this work is being done, please visit <https://www.unidata.ucar.edu/blogs/developer/en/entry/netcdf-java-looking-ahead>.
+For more information about these efforts and why this work is being done, please visit ([link](https://www.unidata.ucar.edu/blogs/developer/en/entry/netcdf-java-looking-ahead){:target="_blank"}).
 Only those classes and methods outlined in the javadocs [without deprecations](../javadoc/) will exist in the next major release of netCDF-Java (`v6.0`).
+
+For more information about the changes in this release, please visit the [netCDF-Java github wiki](https://github.com/Unidata/netcdf-java/wiki#public-api-details){:target="_blank"}.
