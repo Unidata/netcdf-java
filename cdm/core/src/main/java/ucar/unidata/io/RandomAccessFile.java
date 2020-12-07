@@ -706,7 +706,8 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
     long need = nbytes;
     while (need > 0) {
       long count = fileChannel.transferTo(offset, need, dest);
-      if (count == 0) break; // EOF condition
+      if (count == 0)
+        break; // EOF condition
       need -= count;
       offset += count;
     }
@@ -1444,7 +1445,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
   }
 
   /**
-   *  Read the next line of text as the specified charset
+   * Read the next line of text as the specified charset
    *
    * @param charset - character encoding to use
    * @return
@@ -1452,16 +1453,17 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
    */
   public String readLine(Charset charset) throws IOException {
     StringBuilder input = new StringBuilder();
-    int bytes_per_char = (charset.equals(StandardCharsets.UTF_16) || charset.equals(StandardCharsets.UTF_16BE) || charset.equals(StandardCharsets.UTF_16LE)) ? 2 : 1;
+    int bytes_per_char = (charset.equals(StandardCharsets.UTF_16) || charset.equals(StandardCharsets.UTF_16BE)
+        || charset.equals(StandardCharsets.UTF_16LE)) ? 2 : 1;
 
-    char c = (char)-1;
+    char c = (char) -1;
     boolean eol = false;
 
     while (!eol) {
       try {
         // read 2 bytes at a time for UTF-16, else 1 byte at a time
         // NOTE: endianness of the file mst match endianness of the charset
-        switch (c = bytes_per_char > 1 ? readChar() : (char)read()) {
+        switch (c = bytes_per_char > 1 ? readChar() : (char) read()) {
           case (char) -1:
           case '\n':
             eol = true;
@@ -1469,7 +1471,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
           case '\r':
             eol = true;
             long cur = getFilePointer();
-            char next = bytes_per_char > 1 ? readChar() : (char)read();
+            char next = bytes_per_char > 1 ? readChar() : (char) read();
             if (next != '\n') {
               seek(cur);
             }
@@ -1478,7 +1480,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
             input.append(c);
             break;
         }
-      } catch(EOFException eof) {
+      } catch (EOFException eof) {
         eol = true;
       }
     }
@@ -1560,7 +1562,8 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
    * @throws IOException if an I/O error occurs.
    */
   public String readStringMax(int nbytes, Charset charset) throws IOException {
-    int bytes_per_char = (charset.equals(StandardCharsets.UTF_16) || charset.equals(StandardCharsets.UTF_16BE) || charset.equals(StandardCharsets.UTF_16LE)) ? 2 : 1;
+    int bytes_per_char = (charset.equals(StandardCharsets.UTF_16) || charset.equals(StandardCharsets.UTF_16BE)
+        || charset.equals(StandardCharsets.UTF_16LE)) ? 2 : 1;
     byte[] b = new byte[nbytes];
     readFully(b);
     int count;
@@ -1571,8 +1574,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
         // break if all bytes in char are zero
         if (nzeros == bytes_per_char)
           break;
-      }
-      else // reset nzeros for non-zero byte
+      } else // reset nzeros for non-zero byte
         nzeros = 0;
     }
     return new String(b, 0, count, charset);
@@ -1631,6 +1633,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
 
   /**
    * Writes a <code>short</code> to the file as two bytes
+   * 
    * @param v a <code>short</code> to be written.
    * @param endian Endianness of the file as an int (0 = big endian, 1 = little endian)
    * @throws IOException if an I/O error occurs.
@@ -1642,6 +1645,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
 
   /**
    * Writes a <code>short</code> to the file as two bytes,
+   * 
    * @param v a <code>short</code> to be written.
    * @param bo Endianness of the file as a ByteOrder
    * @throws IOException if an I/O error occurs.
@@ -1727,7 +1731,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
    * @throws IOException if an I/O error occurs.
    */
   public void writeChar(int v, ByteOrder bo) throws IOException {
-    if(bo.equals(ByteOrder.LITTLE_ENDIAN)) {
+    if (bo.equals(ByteOrder.LITTLE_ENDIAN)) {
       write((v) & 0xFF);
       write((v >>> 8) & 0xFF);
     } else {
@@ -1981,6 +1985,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
   public final void writeFloat(float v, int endian) throws IOException {
     writeInt(Float.floatToIntBits(v), endian);
   }
+
   /**
    * Converts the float argument to an <code>int</code> using the
    * <code>floatToIntBits</code> method in class <code>Float</code>,
