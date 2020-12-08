@@ -16,6 +16,7 @@ import java.util.Formatter;
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.fail;
 
+/** Test reading {@link GridDataset} from files. */
 public class TestReadGridDataset {
 
   @Test
@@ -27,7 +28,7 @@ public class TestReadGridDataset {
 
       Grid grid = ncd.findGrid("cldc").orElse(null);
       assertThat(grid).isNotNull();
-      assertThat(grid.getUnitsString()).isEqualTo("okta");
+      assertThat(grid.getUnits()).isEqualTo("okta");
       assertThat(grid.getDescription()).isEqualTo("Cloudiness Monthly Mean at Surface");
       assertThat(grid.toString()).contains("float cldc(time=456, lat=21, lon=360)");
       assertThat(grid.hasMissing()).isEqualTo(true);

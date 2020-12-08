@@ -100,13 +100,12 @@ public abstract class GridAxis implements Iterable<Object> {
     return name;
   }
 
-  public String getUnits() {
-    return units;
-  }
-
-  @Nullable
   public String getDescription() {
     return description;
+  }
+
+  public String getUnits() {
+    return units;
   }
 
   public AxisType getAxisType() {
@@ -164,15 +163,14 @@ public abstract class GridAxis implements Iterable<Object> {
     return Double.compare(objects.resolution, resolution) == 0 && name.equals(objects.name)
         && Objects.equals(description, objects.description) && Objects.equals(units, objects.units)
         && axisType == objects.axisType && attributes.equals(objects.attributes)
-        && dependenceType == objects.dependenceType && dependsOn.equals(objects.dependsOn) && spacing == objects.spacing
-        && Arrays.equals(values, objects.values);
+        && dependenceType == objects.dependenceType && dependsOn.equals(objects.dependsOn)
+        && spacing == objects.spacing;
   }
 
   @Override
   public int hashCode() {
     int result =
         Objects.hash(name, description, units, axisType, attributes, dependenceType, dependsOn, spacing, resolution);
-    result = 31 * result + Arrays.hashCode(values);
     return result;
   }
 
@@ -185,7 +183,7 @@ public abstract class GridAxis implements Iterable<Object> {
   }
 
   public void toString(Formatter f, Indent indent) {
-    f.format("%sCoordAxis '%s' (%s) ", indent, name, getClass().getName());
+    f.format("%sGridAxis '%s' (%s) ", indent, name, getClass().getName());
     indent.incr();
 
     f.format("%s", getDependenceType());
@@ -204,40 +202,14 @@ public abstract class GridAxis implements Iterable<Object> {
     }
     f.format("%n");
     indent.decr();
-
-    if (values != null) {
-      int n = values.length;
-      switch (spacing) {
-        case irregularPoint:
-        case contiguousInterval:
-          f.format("%scontiguous values (%d)=", indent, n);
-          for (double v : values)
-            f.format("%f,", v);
-          f.format("%n");
-          break;
-
-        case discontiguousInterval:
-          f.format("%sdiscontiguous values (%d)=", indent, n);
-          for (int i = 0; i < n; i += 2)
-            f.format("(%f,%f) ", values[i], values[i + 1]);
-          f.format("%n");
-          break;
-      }
-    }
     indent.decr();
-  }
-
-  // TODO remove from public
-  public double[] getValues() {
-    // cant allow values array to escape, must be immutable
-    return values == null ? null : java.util.Arrays.copyOf(values, values.length);
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////
 
   protected final String name;
-  protected final String description;
   protected final String units;
+  protected final String description;
   protected final AxisType axisType;
   protected final AttributeContainer attributes;
   protected final DependenceType dependenceType;
@@ -245,8 +217,6 @@ public abstract class GridAxis implements Iterable<Object> {
 
   protected final Spacing spacing;
   protected final double resolution;
-  protected final double[] values; // null if isRegular, len= ncoords (irregularPoint), ncoords+1 (contiguous interval),
-                                   // or 2*ncoords (discontinuous interval)
 
   protected final boolean isSubset;
 
@@ -262,7 +232,7 @@ public abstract class GridAxis implements Iterable<Object> {
     }
 
     if (builder.description == null) {
-      this.description = builder.attributes.findAttributeString(CDM.LONG_NAME, null);
+      this.description = builder.attributes.findAttributeString(CDM.LONG_NAME, "");
     } else {
       this.description = builder.description;
     }
@@ -274,7 +244,6 @@ public abstract class GridAxis implements Iterable<Object> {
     this.dependsOn = builder.dependsOn == null ? ImmutableList.of() : ImmutableList.copyOf(builder.dependsOn);
 
     this.spacing = builder.spacing;
-    this.values = builder.values;
     this.resolution = builder.resolution;
 
     this.isSubset = builder.isSubset;
@@ -284,7 +253,7 @@ public abstract class GridAxis implements Iterable<Object> {
   protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> builder) {
     builder.setName(this.name).setUnits(this.units).setDescription(this.getDescription()).setAxisType(this.axisType)
         .setAttributes(this.attributes).setDependenceType(this.dependenceType).setDependsOn(this.dependsOn)
-        .setSpacing(this.spacing).setValues(this.values).setIsSubset(this.isSubset);
+        .setSpacing(this.spacing).setIsSubset(this.isSubset);
 
     return builder;
   }
@@ -293,7 +262,7 @@ public abstract class GridAxis implements Iterable<Object> {
     private String name; // required
     private String description;
     private String units;
-    AxisType axisType; // required
+    public AxisType axisType; // required
     private AttributeContainerMutable attributes = new AttributeContainerMutable(null);
     DependenceType dependenceType = DependenceType.independent; // default
     private ArrayList<String> dependsOn; // independent axes or dimensions
@@ -301,9 +270,6 @@ public abstract class GridAxis implements Iterable<Object> {
     Spacing spacing; // required
     double resolution;
     boolean isSubset;
-
-    // may be lazy eval
-    protected double[] values; // null if isRegular, len = ncoords, ncoords+1, or 2*ncoords
 
     protected abstract T self();
 
@@ -368,17 +334,6 @@ public abstract class GridAxis implements Iterable<Object> {
       return self();
     }
 
-    /**
-     * Spacing.regularXXX: not used
-     * Spacing.irregularPoint: pts[ncoords]
-     * Spacing.contiguousInterval: edges[ncoords+1]
-     * Spacing.discontiguousInterval: bounds[2*ncoords]
-     */
-    public T setValues(double[] values) {
-      this.values = values;
-      return self();
-    }
-
     @Override
     public String toString() {
       return name;
@@ -388,5 +343,7 @@ public abstract class GridAxis implements Iterable<Object> {
       return setName(vds.getShortName()).setUnits(vds.getUnitsString()).setDescription(vds.getDescription())
           .setAttributes(vds.attributes());
     }
+
+    public abstract GridAxis build();
   }
 }

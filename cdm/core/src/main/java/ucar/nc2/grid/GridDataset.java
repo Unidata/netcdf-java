@@ -5,6 +5,8 @@
 package ucar.nc2.grid;
 
 import com.google.common.collect.ImmutableList;
+import ucar.nc2.Attribute;
+import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.FeatureType;
 
 import java.io.Closeable;
@@ -18,16 +20,40 @@ public interface GridDataset extends Closeable {
 
   String getLocation();
 
+  AttributeContainer attributes();
+
   FeatureType getFeatureType();
 
-  ImmutableList<GridCoordinateSystem> getCoordSystems();
+  ImmutableList<GridCoordinateSystem> getGridCoordinateSystems();
 
-  ImmutableList<GridAxis> getCoordAxes();
+  ImmutableList<GridAxis> getGridAxes();
 
   ImmutableList<Grid> getGrids();
 
   Optional<Grid> findGrid(String name);
 
-  void toString(Formatter f);
+  default void toString(Formatter buf) {
+    buf.format("name = %s%n", getName());
+    buf.format("location = %s%n", getLocation());
+    buf.format("featureType = %s%n", getFeatureType());
+    for (Attribute att : attributes()) {
+      buf.format("  %s%n", att);
+    }
+
+    buf.format("%nGridCoordinateSystem%n");
+    for (GridCoordinateSystem gcs : getGridCoordinateSystems()) {
+      buf.format("%s%n", gcs);
+    }
+
+    buf.format("%nGridAxes%n");
+    for (GridAxis axis : getGridAxes()) {
+      buf.format("%s%n", axis);
+    }
+
+    buf.format("%nGrids%n");
+    for (Grid grid : getGrids()) {
+      buf.format("%s%n", grid);
+    }
+  }
 
 }

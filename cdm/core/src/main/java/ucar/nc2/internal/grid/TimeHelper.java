@@ -9,6 +9,7 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.time.*;
 
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.Objects;
 
@@ -16,7 +17,7 @@ import java.util.Objects;
 @Immutable
 public class TimeHelper {
 
-  public static TimeHelper factory(String units, AttributeContainer atts) {
+  public static TimeHelper factory(String units, @Nullable AttributeContainer atts) {
     if (units == null)
       units = atts.findAttributeString(CDM.UDUNITS, null);
     if (units == null)
@@ -24,7 +25,8 @@ public class TimeHelper {
     if (units == null)
       throw new IllegalStateException("No units");
 
-    Calendar cal = getCalendarFromAttribute(atts);
+    Calendar cal = atts == null ? null : getCalendarFromAttribute(atts);
+
     CalendarDateUnit dateUnit;
     dateUnit = CalendarDateUnit.withCalendar(cal, units); // this will throw exception on failure
     return new TimeHelper(dateUnit);

@@ -8,9 +8,7 @@ package ucar.nc2.ui.grid2;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import ucar.ma2.DataType;
-import ucar.nc2.Dimensions;
 import ucar.nc2.constants.AxisType;
-import ucar.nc2.dataset.VerticalCT;
 import ucar.nc2.grid.*;
 import ucar.nc2.internal.grid.GridLatLon2D;
 import ucar.ui.util.NamedObject;
@@ -201,13 +199,13 @@ public class GridNewTable extends JPanel {
     covTable.setBeans(beanList);
 
     List<CoordSysBean> csList = new ArrayList<>();
-    for (GridCoordinateSystem gcs : gridDataset.getCoordSystems()) {
+    for (GridCoordinateSystem gcs : gridDataset.getGridCoordinateSystems()) {
       csList.add(new CoordSysBean(gcs));
     }
     csysTable.setBeans(csList);
 
     List<AxisBean> axisList = new ArrayList<>();
-    for (GridAxis axis : gridDataset.getCoordAxes()) {
+    for (GridAxis axis : gridDataset.getGridAxes()) {
       axisList.add(new AxisBean(axis));
     }
     axisTable.setBeans(axisList);
@@ -269,11 +267,11 @@ public class GridNewTable extends JPanel {
     }
 
     public int getNCooordSys() {
-      return Iterables.size(gdataset.getCoordSystems());
+      return Iterables.size(gdataset.getGridCoordinateSystems());
     }
 
     public int getNAxes() {
-      return Iterables.size(gdataset.getCoordAxes());
+      return Iterables.size(gdataset.getGridAxes());
     }
   }
 
@@ -296,7 +294,7 @@ public class GridNewTable extends JPanel {
       this.geogrid = geogrid;
       name = geogrid.getName();
       desc = geogrid.getDescription();
-      units = geogrid.getUnitsString();
+      units = geogrid.getUnits();
       dataType = geogrid.getDataType();
       coordSysName = geogrid.getCoordinateSystem().getName();
     }
@@ -349,10 +347,6 @@ public class GridNewTable extends JPanel {
       }
       return Arrays.toString(shape);
     }
-
-    public String getDimensions() {
-      return Dimensions.makeDimensionsString(geogrid.getCoordinateSystem().getDomain());
-    }
   }
 
   public static class CoordSysBean {
@@ -370,10 +364,6 @@ public class GridNewTable extends JPanel {
       Projection p = gcs.getHorizCoordSystem().getProjection();
       if (p != null) {
         f.format("%s ", p.getName());
-      }
-      VerticalCT vct = gcs.getVerticalCT();
-      if (vct != null) {
-        f.format("%s ", vct.getName());
       }
       coordTrans = f.toString();
 
@@ -493,8 +483,11 @@ public class GridNewTable extends JPanel {
     }
 
     String showCoordValueDiffs() {
+      if (axis1d == null) {
+        return "only 1d";
+      }
       Formatter f = new Formatter();
-      switch (axis.getSpacing()) {
+      switch (axis1d.getSpacing()) {
         case regularInterval:
         case regularPoint:
           f.format("%n%s resolution=%f%n", axis.getSpacing(), axis.getResolution());
@@ -502,7 +495,7 @@ public class GridNewTable extends JPanel {
 
         case irregularPoint:
         case contiguousInterval:
-          double[] values = axis.getValues();
+          double[] values = axis1d.getValues();
           int n = values.length;
           f.format("%n%s (npts=%d)%n", axis.getSpacing(), n);
           for (int i = 0; i < n - 1; i++) {
@@ -513,7 +506,7 @@ public class GridNewTable extends JPanel {
           break;
 
         case discontiguousInterval:
-          values = axis.getValues();
+          values = axis1d.getValues();
           n = values.length;
           f.format("%ndiscontiguous intervals (npts=%d)%n", n);
           for (int i = 0; i < n; i += 2) {

@@ -11,18 +11,18 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import ucar.array.Arrays;
 import ucar.cdmr.CdmRemoteGrpc;
-import ucar.cdmr.CdmRemoteProto.DataRequest;
-import ucar.cdmr.CdmRemoteProto.DataResponse;
-import ucar.cdmr.CdmRemoteProto.Header;
-import ucar.cdmr.CdmRemoteProto.HeaderRequest;
-import ucar.cdmr.CdmRemoteProto.HeaderResponse;
-import ucar.cdmr.CdmRemoteProto.Variable;
+import ucar.cdmr.CdmrNetcdfProto.DataRequest;
+import ucar.cdmr.CdmrNetcdfProto.DataResponse;
+import ucar.cdmr.CdmrNetcdfProto.Header;
+import ucar.cdmr.CdmrNetcdfProto.HeaderRequest;
+import ucar.cdmr.CdmrNetcdfProto.HeaderResponse;
+import ucar.cdmr.CdmrNetcdfProto.Variable;
 import ucar.cdmr.CdmrConverter;
 import ucar.array.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.Section;
 
-/** A simple client that makes a request from CdmrServer. Used for testing. */
+/** A simple client that makes a Netcdf request from CdmrServer. Used for testing. */
 public class CdmrClient {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CdmrClient.class);
   private static final int MAX_MESSAGE = 51 * 1000 * 1000; // 51 Mb
@@ -42,7 +42,7 @@ public class CdmrClient {
     HeaderRequest request = HeaderRequest.newBuilder().setLocation(location).build();
     HeaderResponse response;
     try {
-      response = blockingStub.getHeader(request);
+      response = blockingStub.getNetcdfHeader(request);
       // System.out.printf("Header response %s%n", response);
       return response.getHeader();
     } catch (StatusRuntimeException e) {
@@ -63,7 +63,7 @@ public class CdmrClient {
     DataRequest request = DataRequest.newBuilder().setLocation(location).setVariableSpec(v.getName()).build();
     Iterator<DataResponse> responses;
     try {
-      responses = blockingStub.withDeadlineAfter(30, TimeUnit.SECONDS).getData(request);
+      responses = blockingStub.withDeadlineAfter(30, TimeUnit.SECONDS).getNetcdfData(request);
       List<Array<T>> results = new ArrayList<>();
       while (responses.hasNext()) {
         DataResponse response = responses.next();

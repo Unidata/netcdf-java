@@ -1,12 +1,12 @@
 package ucar.cdmr.client;
 
 import thredds.client.catalog.ServiceType;
-import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.DatasetUrl;
-import ucar.nc2.dataset.spi.NetcdfFileProvider;
+import ucar.nc2.dataset.spi.GridDatasetProvider;
+import ucar.nc2.grid.GridDataset;
 import ucar.nc2.util.CancelTask;
 
-public class CdmrNetcdfFileProvider implements NetcdfFileProvider {
+public class CdmrGridDatasetProvider implements GridDatasetProvider {
   @Override
   public String getProtocol() {
     return "cdmr";
@@ -18,8 +18,8 @@ public class CdmrNetcdfFileProvider implements NetcdfFileProvider {
   }
 
   @Override
-  public NetcdfFile open(String location, CancelTask cancelTask) {
-    return CdmrNetcdfFile.builder().setRemoteURI(location).build();
+  public GridDataset open(String location, CancelTask cancelTask) {
+    return CdmrGridDataset.builder().setRemoteURI(location).build();
   }
 
 }

@@ -1,5 +1,5 @@
 plugins {
-  // Provide convenience executables for trying out the examples.
+  // Provide convenience executables for testing
   id 'application'
 }
 
@@ -45,6 +45,7 @@ sourceSets {
   main {
     java {
       srcDirs 'build/generated/source/proto/main/grpc'
+      srcDirs 'build/generated/source/proto/main/java'
     }
   }
 }

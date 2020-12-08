@@ -4,7 +4,6 @@ import com.google.common.collect.Iterables;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.ma2.InvalidRangeException;
-import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.grid.*;
 import ucar.nc2.util.MinMax;
@@ -18,8 +17,8 @@ import java.util.Optional;
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.fail;
 
-/** Test {@link GridDatasetImpl} */
-public class TestGridDatasetImpl {
+/** Test {@link GridNetcdfDataset} */
+public class TestGridNetcdfDataset {
 
   @Test
   @Category(NeedsCdmUnitTest.class)
@@ -28,14 +27,14 @@ public class TestGridDatasetImpl {
 
     try (NetcdfDataset ds = ucar.nc2.dataset.NetcdfDatasets.openDataset(filename)) {
       Formatter infoLog = new Formatter();
-      Optional<GridDatasetImpl> result =
-          GridDatasetImpl.create(ds, infoLog).filter(gds -> !Iterables.isEmpty(gds.getGrids()));
+      Optional<GridNetcdfDataset> result =
+          GridNetcdfDataset.create(ds, infoLog).filter(gds -> !Iterables.isEmpty(gds.getGrids()));
       if (!result.isPresent()) {
         fail();
       }
-      GridDatasetImpl gridDataset = result.get();
-      assertThat(gridDataset.getCoordSystems()).hasSize(4);
-      assertThat(gridDataset.getCoordSystems()).hasSize(4);
+      GridNetcdfDataset gridDataset = result.get();
+      assertThat(gridDataset.getGridAxes()).hasSize(10);
+      assertThat(gridDataset.getGridCoordinateSystems()).hasSize(4);
       assertThat(gridDataset.getGrids()).hasSize(4);
     }
   }
@@ -47,16 +46,12 @@ public class TestGridDatasetImpl {
 
     try (NetcdfDataset ds = ucar.nc2.dataset.NetcdfDatasets.openDataset(filename)) {
       Formatter infoLog = new Formatter();
-      Optional<GridDatasetImpl> result =
-          GridDatasetImpl.create(ds, infoLog).filter(gds -> !Iterables.isEmpty(gds.getGrids()));
+      Optional<GridNetcdfDataset> result =
+          GridNetcdfDataset.create(ds, infoLog).filter(gds -> !Iterables.isEmpty(gds.getGrids()));
       if (!result.isPresent()) {
         fail();
       }
-      GridDatasetImpl gridDataset = result.get();
-      assertThat(gridDataset.getName()).isEqualTo("NDFD_SPC_CONUS_2p5km_20201116_1700.grib2.ncx4");
-      assertThat(gridDataset.getFeatureType()).isEqualTo(FeatureType.GRID);
-      assertThat(gridDataset.toString()).contains("time1(time1=3)");
-
+      GridNetcdfDataset gridDataset = result.get();
       Grid grid = gridDataset.findGrid("Convective_Hazard_Outlook_surface_24_Hour_Average")
           .orElseThrow(() -> new RuntimeException("Cant find grid"));
       GridCoordinateSystem csys = grid.getCoordinateSystem();
@@ -99,12 +94,12 @@ public class TestGridDatasetImpl {
 
     try (NetcdfDataset ds = ucar.nc2.dataset.NetcdfDatasets.openDataset(filename)) {
       Formatter infoLog = new Formatter();
-      Optional<GridDatasetImpl> result =
-          GridDatasetImpl.create(ds, infoLog).filter(gds -> !Iterables.isEmpty(gds.getGrids()));
+      Optional<GridNetcdfDataset> result =
+          GridNetcdfDataset.create(ds, infoLog).filter(gds -> !Iterables.isEmpty(gds.getGrids()));
       if (!result.isPresent()) {
         fail();
       }
-      GridDatasetImpl gridDataset = result.get();
+      GridNetcdfDataset gridDataset = result.get();
       Grid grid = gridDataset.findGrid("Convective_Hazard_Outlook_surface_24_Hour_Average")
           .orElseThrow(() -> new RuntimeException("Cant find grid"));
       GridCoordinateSystem csys = grid.getCoordinateSystem();
@@ -139,12 +134,12 @@ public class TestGridDatasetImpl {
 
     try (NetcdfDataset ds = ucar.nc2.dataset.NetcdfDatasets.openDataset(filename)) {
       Formatter infoLog = new Formatter();
-      Optional<GridDatasetImpl> result =
-          GridDatasetImpl.create(ds, infoLog).filter(gds -> !Iterables.isEmpty(gds.getGrids()));
+      Optional<GridNetcdfDataset> result =
+          GridNetcdfDataset.create(ds, infoLog).filter(gds -> !Iterables.isEmpty(gds.getGrids()));
       if (!result.isPresent()) {
         fail();
       }
-      GridDatasetImpl gridDataset = result.get();
+      GridNetcdfDataset gridDataset = result.get();
       Grid grid =
           gridDataset.findGrid("Total_Probability_of_Severe_Thunderstorms_surface_24_Hour_Average_probability_above_0")
               .orElseThrow(() -> new RuntimeException("Cant find grid"));

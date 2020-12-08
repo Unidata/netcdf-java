@@ -10,6 +10,7 @@ import io.grpc.ServerCallHandler;
 import io.grpc.ServerInterceptor;
 import io.grpc.stub.StreamObserver;
 import java.io.IOException;
+import java.util.Formatter;
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 import ucar.array.Arrays;
@@ -17,12 +18,14 @@ import ucar.array.StructureData;
 import ucar.array.StructureDataArray;
 import ucar.array.StructureMembers;
 import ucar.cdmr.CdmRemoteGrpc.CdmRemoteImplBase;
-import ucar.cdmr.CdmRemoteProto;
-import ucar.cdmr.CdmRemoteProto.DataRequest;
-import ucar.cdmr.CdmRemoteProto.DataResponse;
-import ucar.cdmr.CdmRemoteProto.Header;
-import ucar.cdmr.CdmRemoteProto.HeaderRequest;
-import ucar.cdmr.CdmRemoteProto.HeaderResponse;
+import ucar.cdmr.CdmrGridConverter;
+import ucar.cdmr.CdmrGridProto;
+import ucar.cdmr.CdmrNetcdfProto;
+import ucar.cdmr.CdmrNetcdfProto.DataRequest;
+import ucar.cdmr.CdmrNetcdfProto.DataResponse;
+import ucar.cdmr.CdmrNetcdfProto.Header;
+import ucar.cdmr.CdmrNetcdfProto.HeaderRequest;
+import ucar.cdmr.CdmrNetcdfProto.HeaderResponse;
 import ucar.cdmr.CdmrConverter;
 import ucar.array.Array;
 import ucar.ma2.DataType;
@@ -33,6 +36,7 @@ import ucar.nc2.ParsedSectionSpec;
 import ucar.nc2.Sequence;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDatasets;
+import ucar.nc2.grid.*;
 import ucar.nc2.write.ChunkingIndex;
 
 /** Server that manages startup/shutdown of a Cdm Remote server. */
@@ -50,7 +54,6 @@ public class CdmrServer {
         .addService(new CdmRemoteImpl()) //
         // .intercept(new MyServerInterceptor())
         .build().start();
-    logger.info("Server started, listening on " + port);
     Runtime.getRuntime().addShutdownHook(new Thread() {
       @Override
       public void run() {
@@ -64,6 +67,9 @@ public class CdmrServer {
         System.err.println("*** server shut down");
       }
     });
+
+    logger.info("Server started, listening on " + port);
+    System.out.println("Server started, listening on " + port);
   }
 
   private void stop() throws InterruptedException {
@@ -103,7 +109,7 @@ public class CdmrServer {
   static class CdmRemoteImpl extends CdmRemoteImplBase {
 
     @Override
-    public void getHeader(HeaderRequest req, StreamObserver<HeaderResponse> responseObserver) {
+    public void getNetcdfHeader(HeaderRequest req, StreamObserver<HeaderResponse> responseObserver) {
       System.out.printf("CdmrServer getHeader open %s%n", req.getLocation());
       HeaderResponse.Builder response = HeaderResponse.newBuilder();
       try (NetcdfFile ncfile = NetcdfDatasets.openFile(req.getLocation(), null)) {
@@ -116,12 +122,12 @@ public class CdmrServer {
       } catch (Throwable t) {
         logger.warn("CdmrServer getHeader failed ", t);
         t.printStackTrace();
-        response.setError(CdmRemoteProto.Error.newBuilder().setMessage(t.getMessage()).build());
+        response.setError(CdmrNetcdfProto.Error.newBuilder().setMessage(t.getMessage()).build());
       }
     }
 
     @Override
-    public void getData(DataRequest req, StreamObserver<DataResponse> responseObserver) {
+    public void getNetcdfData(DataRequest req, StreamObserver<DataResponse> responseObserver) {
       System.out.printf("CdmrServer getData %s %s%n", req.getLocation(), req.getVariableSpec());
       final Stopwatch stopwatch = Stopwatch.createStarted();
       long size = -1;
@@ -134,7 +140,7 @@ public class CdmrServer {
         } else {
           Section wantSection = varSection.getSection();
           size = var.getElementSize() * wantSection.getSize();
-          getData(ncfile, varSection, responseObserver);
+          getNetcdfData(ncfile, varSection, responseObserver);
         }
         responseObserver.onCompleted();
         logger.info("CdmrServer getData " + req.getLocation());
@@ -145,15 +151,15 @@ public class CdmrServer {
         DataResponse.Builder response =
             DataResponse.newBuilder().setLocation(req.getLocation()).setVariableSpec(req.getVariableSpec());
         response.setError(
-            CdmRemoteProto.Error.newBuilder().setMessage(t.getMessage() == null ? "N/A" : t.getMessage()).build());
+            CdmrNetcdfProto.Error.newBuilder().setMessage(t.getMessage() == null ? "N/A" : t.getMessage()).build());
         responseObserver.onNext(response.build());
       }
 
       System.out.printf(" ** size=%d took=%s%n", size, stopwatch.stop());
     }
 
-    private void getData(NetcdfFile ncfile, ParsedSectionSpec varSection, StreamObserver<DataResponse> responseObserver)
-        throws IOException, InvalidRangeException {
+    private void getNetcdfData(NetcdfFile ncfile, ParsedSectionSpec varSection,
+        StreamObserver<DataResponse> responseObserver) throws IOException, InvalidRangeException {
       Variable var = varSection.getVariable();
       Section wantSection = varSection.getSection();
       long size = var.getElementSize() * wantSection.getSize();
@@ -228,5 +234,77 @@ public class CdmrServer {
       }
       return (start + count) * members.getStorageSizeBytes();
     }
-  }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // GridDataset
+
+    @Override
+    public void getGridDataset(CdmrGridProto.GridDatasetRequest request,
+        io.grpc.stub.StreamObserver<CdmrGridProto.GridDatasetResponse> responseObserver) {
+      System.out.printf("CdmrServer getGridDataset open %s%n", request.getLocation());
+      CdmrGridProto.GridDatasetResponse.Builder response = CdmrGridProto.GridDatasetResponse.newBuilder();
+      Formatter errlog = new Formatter();
+      try (GridDataset gridDataset = GridDatasetFactory.openGridDataset(request.getLocation(), errlog)) {
+        response.setDataset(CdmrGridConverter.encodeDataset(gridDataset));
+        responseObserver.onNext(response.build());
+        responseObserver.onCompleted();
+        logger.info("CdmrServer getGridDataset " + request.getLocation());
+      } catch (Throwable t) {
+        System.out.printf("CdmrServer getGridDataset failed %s %n%s%n", t.getMessage(), errlog);
+        logger.warn("CdmrServer getGridDataset failed ", t);
+        t.printStackTrace();
+        response.setError(CdmrNetcdfProto.Error.newBuilder().setMessage(t.getMessage()).build());
+      }
+    }
+
+    @Override
+    public void getGridData(CdmrGridProto.GridDataRequest request,
+        io.grpc.stub.StreamObserver<ucar.cdmr.CdmrGridProto.GridDataResponse> responseObserver) {
+
+      System.out.printf("CdmrServer getData %s %s%n", request.getLocation(), request.getSubsetMap());
+      CdmrGridProto.GridDataResponse.Builder response = CdmrGridProto.GridDataResponse.newBuilder();
+      response.setLocation(request.getLocation()).putAllSubset(request.getSubsetMap());
+      final Stopwatch stopwatch = Stopwatch.createStarted();
+
+      GridSubset gridSubset = new GridSubset(request.getSubsetMap());
+      if (gridSubset.getGridName() == null) {
+        makeError(response, "GridName is not set");
+        responseObserver.onNext(response.build());
+        return;
+      }
+
+      Formatter errlog = new Formatter();
+      try (GridDataset gridDataset = GridDatasetFactory.openGridDataset(request.getLocation(), errlog)) {
+        if (gridDataset == null) {
+          makeError(response, String.format("GridDataset '%s' not found", request.getLocation()));
+        } else {
+          String wantGridName = gridSubset.getGridName();
+          Grid wantGrid = gridDataset.findGrid(wantGridName).orElse(null);
+          if (wantGrid == null) {
+            makeError(response,
+                String.format("GridDataset '%s' does not have Grid '%s", request.getLocation(), wantGridName));
+          } else {
+            GridReferencedArray geoReferencedArray = wantGrid.readData(gridSubset);
+            response.setData(CdmrGridConverter.encodeGridReferencedArray(geoReferencedArray));
+            System.out.printf(" ** size=%d shape=%s%n", geoReferencedArray.data().length(),
+                java.util.Arrays.toString(geoReferencedArray.data().getShape()));
+
+          }
+        }
+
+      } catch (Throwable t) {
+        logger.warn("CdmrServer getGridData failed ", t);
+        t.printStackTrace();
+        errlog.format("%n%s", t.getMessage() == null ? "" : t.getMessage());
+        makeError(response, errlog.toString());
+      }
+      responseObserver.onNext(response.build());
+      System.out.printf(" ** took=%s%n", stopwatch.stop());
+    }
+
+    void makeError(CdmrGridProto.GridDataResponse.Builder response, String message) {
+      response.setError(CdmrNetcdfProto.Error.newBuilder().setMessage(message).build());
+    }
+
+  } // CdmRemoteImpl
 }

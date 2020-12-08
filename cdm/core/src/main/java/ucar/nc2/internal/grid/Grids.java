@@ -65,9 +65,11 @@ class Grids {
 
     if (builder instanceof GridAxis1DTime.Builder) {
       GridAxis1DTime.Builder<?> timeBuilder = (GridAxis1DTime.Builder<?>) builder;
-      CoordinateAxis1DTimeExtractor extractTime = new CoordinateAxis1DTimeExtractor(axis, converter.coords);
+      CoordinateAxis1DTimeExtractor extractTime = new CoordinateAxis1DTimeExtractor(axis);
       timeBuilder.setTimeHelper(extractTime.timeHelper);
-      timeBuilder.setCalendarDates(extractTime.cdates);
+      if (extractTime.cdates != null) {
+        timeBuilder.setCalendarDates(extractTime.cdates);
+      }
     }
   }
 

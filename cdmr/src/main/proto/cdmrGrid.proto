@@ -1,0 +1,172 @@
+syntax = "proto3";
+
+package ucar.cdmr;
+
+import "cdmrNetcdf.proto";
+
+option java_package = "ucar.cdmr";
+option java_outer_classname = "CdmrGridProto";
+
+message GridDatasetRequest {
+  string location = 1;
+}
+
+message GridDatasetResponse {
+  Error error = 1;  // non-empty on error
+  uint32 version = 2; // response version
+  GridDataset dataset = 3;
+}
+
+////////////////////////////////////////////////////////////////////
+// GridDataset
+
+enum AxisType {  // same as ucar.nc2.constants.AxisType
+  RunTime=0;
+  Ensemble=1;
+  Time=2;
+  GeoX=3;
+  GeoY=4;
+  GeoZ=5;
+  Lat=6;
+  Lon=7;
+  Height=8;
+  Pressure=9;
+  TimeOffset=14;
+}
+
+enum AxisSpacing {  // same as GridAxis.Spacing
+  regularPoint=0;
+  irregularPoint=1;
+  regularInterval=3;
+  contiguousInterval=4;
+  discontiguousInterval=5;
+}
+
+enum Calendar {  // same as ucar.nc2.time.Calendar
+  proleptic_gregorian=0;
+  gregorian=1;
+  noleap=2;
+  all_leap=3;
+  uniform30day=4;
+  julian=5;
+  none=6;
+}
+
+enum DependenceType {  // same as GridAxis.DependenceType
+  independent=0;     // has its own dimension, is a coordinate variable, eg x(x)
+  dependent=1;       // aux coordinate, reftime(time) or time_bounds(time);
+  scalar=2;          // reftime
+  twoD=3;            // lat(x,y)
+  fmrcReg=4;         // time(reftime, hourOfDay)
+  dimension=5;       // swath(scan, scanAcross)
+}
+
+enum FeatureType {
+  General=0;
+  Curvilinear=1;
+  Gridded=2;
+  Swath=3;
+  Fmrc=4;
+}
+
+enum GridAxisType {
+  Axis1D=0;
+  Axis1DTime=1;
+  TimeOffsetRegular=2;
+  Axis2D=3;
+}
+
+message GridAxis {
+  GridAxisType gridAxisType = 1;
+
+  string name = 2;
+  string description = 3;
+  string units = 4;
+  AxisType axisType = 5;
+  repeated Attribute attributes = 6;       // find calendar attribute here?
+  AxisSpacing spacing = 7;
+  DependenceType dependenceType = 8;
+  repeated string dependsOn = 9;    // depends on these axes, only for non-independent axes
+
+  uint32 ncoords = 11;
+  double startValue = 12;
+  double endValue = 13;
+  double resolution = 14;
+  repeated double values = 15;
+
+  string dateUnits = 16;             // for TimeHelper
+
+  string runtimeAxisName = 17;      // for TimeOffsetRegular
+  repeated int32 hourOffsets = 18;  // for TimeOffsetRegular
+  repeated double midpoints = 19;   // for TimeOffsetRegular
+  repeated double bounds = 20;      // for TimeOffsetRegular
+  repeated uint32 shape = 21 ;      // for TimeOffsetRegular
+}
+
+message Projection {
+  string name = 1;
+  string geoUnits = 2;
+  repeated Attribute attributes = 3;
+}
+
+message GridCoordinateSystem {
+  string name = 1;
+  repeated string axisNames = 2;
+  Projection projection = 3;
+}
+
+message Grid {
+  string name = 1;               // short name, unique within dataset
+  string units = 2;
+  string description = 3;
+  DataType dataType = 4;
+  repeated Attribute attributes = 5;
+  string coordSys = 6;
+  bool hasMissing = 7;
+}
+
+message GridDataset {
+  string name = 1;
+  string location = 2;
+  FeatureType featureType = 3;
+  repeated Attribute attributes = 4;
+  repeated GridAxis gridAxes = 5;
+  repeated GridCoordinateSystem coordSys = 6;
+  repeated Grid grids = 7;
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// GridData
+
+message GridDataRequest {
+  string location = 1;
+  map<string, string> subset = 2;
+}
+
+message GridDataResponse {
+  Error error = 1;    // non-empty on error
+  uint32 version = 2; // response version
+
+  string location = 3;
+  map<string, string> subset = 4;
+  GridReferencedArray data = 5;
+}
+
+message CalendarDateRange {
+  int64 start = 1;
+  int64 end = 2;
+  Calendar calendar = 3;
+}
+
+message Rectangle {
+  double startx = 1;
+  double starty = 2;
+  double incx = 3;
+  double incy = 4;
+}
+
+message GridReferencedArray {
+  string gridName = 1;
+  Data data = 2;
+  GridCoordinateSystem csSubset = 3;
+}

@@ -166,7 +166,7 @@ public class GridRenderer {
   private String makeXYZvalueStr(double value, GridHorizCoordinateSystem.CoordReturn cr) {
     String val = dataState.grid.isMissing(value) ? "missing value" : Format.d(value, 6);
     Formatter sbuff = new Formatter();
-    sbuff.format("%s %s", val, dataState.grid.getUnitsString());
+    sbuff.format("%s %s", val, dataState.grid.getUnits());
     sbuff.format(" @ (%f,%f)", cr.xcoord, cr.ycoord);
     sbuff.format("  [%d,%d]", cr.xindex, cr.yindex);
     return sbuff.toString();

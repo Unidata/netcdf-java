@@ -34,6 +34,13 @@ public interface GridHorizCoordinateSystem {
   /** Get the horizontal Projection. */
   ucar.unidata.geoloc.Projection getProjection();
 
+  /**
+   * Get the horizontal coordinate units, null for latlon. Needed to convert projection units.
+   * TODO add to projection directly ??
+   */
+  @Nullable
+  String getGeoUnits();
+
   /** Horizontal staggering (currently based on WRF). */
   String getHorizStaggerType();
 

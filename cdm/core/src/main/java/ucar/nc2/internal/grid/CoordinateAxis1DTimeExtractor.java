@@ -7,6 +7,7 @@ import ucar.nc2.Variable;
 import ucar.nc2.dataset.*;
 import ucar.nc2.time.CalendarDate;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Formatter;
@@ -16,10 +17,10 @@ class CoordinateAxis1DTimeExtractor {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinateAxis1DTimeExtractor.class);
 
   final TimeHelper timeHelper;
-  final List<CalendarDate> cdates;
+  @Nullable
+  final List<CalendarDate> cdates; // non null only if its a string or char coordinate
 
-  // TODO why pass in values?
-  CoordinateAxis1DTimeExtractor(CoordinateAxis coordAxis, double[] values) {
+  CoordinateAxis1DTimeExtractor(CoordinateAxis coordAxis) {
     Preconditions.checkArgument(coordAxis.getDataType() == DataType.CHAR || coordAxis.getRank() < 2);
     this.timeHelper = TimeHelper.factory(coordAxis.getUnitsString(), coordAxis.attributes());
 
@@ -30,7 +31,7 @@ class CoordinateAxis1DTimeExtractor {
       } else if (coordAxis.getDataType() == DataType.STRING) {
         cdates = makeTimesFromStrings(coordAxis, errMessages);
       } else {
-        cdates = makeCalendarDateFromValues(values);
+        cdates = null;
       }
     } catch (IOException ioe) {
       throw new RuntimeException(errMessages.toString(), ioe);
@@ -71,14 +72,5 @@ class CoordinateAxis1DTimeExtractor {
       log.info("Bad time coordinate '{}' in dataset '{}'", coordValue, org.getDatasetLocation());
       throw new RuntimeException(errMessages.toString(), e);
     }
-  }
-
-  private List<CalendarDate> makeCalendarDateFromValues(double[] values) {
-    int ncoords = values.length;
-    ArrayList<CalendarDate> result = new ArrayList<>(ncoords);
-    for (double val : values) {
-      result.add(timeHelper.makeCalendarDateFromOffset(val));
-    }
-    return result;
   }
 }

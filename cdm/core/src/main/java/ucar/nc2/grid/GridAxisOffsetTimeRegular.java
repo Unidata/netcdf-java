@@ -8,6 +8,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import ucar.array.Array;
 import ucar.array.Arrays;
+import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 import ucar.ma2.RangeIterator;
@@ -22,10 +23,7 @@ import ucar.nc2.write.NcdumpArray;
 
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import java.util.Formatter;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * A TimeOffset Axis where the offsets depend on the runtime hour since 0z.
@@ -198,7 +196,6 @@ public class GridAxisOffsetTimeRegular extends GridAxis {
   private final TimeHelper timeHelper; // AxisType = Time, RunTime only
   private final GridAxis1DTime runtimeAxis;
   private final Array<Double> midpoints;
-  @Nullable
   private final Array<Double> bounds;
   private final ImmutableList<Integer> hourOffsets;
 
@@ -207,6 +204,11 @@ public class GridAxisOffsetTimeRegular extends GridAxis {
     Preconditions.checkNotNull(builder.runtimeAxis);
     Preconditions.checkNotNull(builder.midpoints);
     Preconditions.checkNotNull(builder.bounds);
+    Preconditions.checkNotNull(builder.hourOffsets);
+    int nruns = builder.runtimeAxis.ncoords;
+    int nhours = builder.hourOffsets.size();
+    Preconditions.checkArgument(java.util.Arrays.equals(builder.midpoints.getShape(), new int[] {nruns, nhours}));
+    Preconditions.checkArgument(java.util.Arrays.equals(builder.bounds.getShape(), new int[] {nruns, nhours, 2}));
 
     this.runtimeAxis = builder.runtimeAxis;
     this.midpoints = builder.midpoints;
@@ -216,11 +218,7 @@ public class GridAxisOffsetTimeRegular extends GridAxis {
     } else {
       this.timeHelper = builder.runtimeAxis.getTimeHelper();
     }
-    ImmutableList.Builder<Integer> hourb = ImmutableList.builder();
-    for (int hour : builder.hourOffsets) {
-      hourb.add(hour);
-    }
-    this.hourOffsets = hourb.build();
+    this.hourOffsets = ImmutableList.copyOf(builder.hourOffsets);
   }
 
   private ImmutableList<CalendarDate> subsetDatesByRange(List<CalendarDate> dates, Range range) {
@@ -261,9 +259,10 @@ public class GridAxisOffsetTimeRegular extends GridAxis {
     private boolean built;
     private TimeHelper timeHelper;
     private GridAxis1DTime runtimeAxis;
+    private String runtimeAxisName;
     private Array<Double> midpoints;
     private Array<Double> bounds;
-    private Array<Integer> hourOffsets;
+    private List<Integer> hourOffsets;
 
     protected abstract T self();
 
@@ -277,6 +276,22 @@ public class GridAxisOffsetTimeRegular extends GridAxis {
       return self();
     }
 
+    public T setRuntimeAxis(List<GridAxis1DTime> runtimeAxes) {
+      if (runtimeAxisName == null) {
+        throw new IllegalStateException("Runtime axis name not set");
+      }
+      runtimeAxes.stream().filter(a -> a.getName().equals(runtimeAxisName)).findFirst().ifPresent(a -> runtimeAxis = a);
+      if (runtimeAxis == null) {
+        throw new IllegalStateException("Cant find runtime axis " + runtimeAxisName);
+      }
+      return self();
+    }
+
+    public T setRuntimeAxisName(String runtimeAxisName) {
+      this.runtimeAxisName = runtimeAxisName;
+      return self();
+    }
+
     public T setMidpoints(Array<Double> midpoints) {
       this.midpoints = midpoints;
       return self();
@@ -287,8 +302,37 @@ public class GridAxisOffsetTimeRegular extends GridAxis {
       return self();
     }
 
-    public T setHourOffsets(Array<Integer> hourOffsets) {
+    public T setMidpointsBounds(List<Integer> shape, List<Double> midpoints, List<Double> bounds) {
+      Preconditions.checkArgument(shape.size() == 2);
+      int ntimes = shape.get(0);
+      int nhours = shape.get(1);
+      double[] mids = new double[ntimes * nhours];
+      double[] bnds = new double[ntimes * nhours * 2];
+      Preconditions.checkArgument(midpoints.size() == mids.length);
+      Preconditions.checkArgument(bounds.size() == bnds.length);
+
+      for (int i = 0; i < midpoints.size(); i++) {
+        mids[i] = midpoints.get(i);
+      }
+      for (int i = 0; i < bounds.size(); i++) {
+        bnds[i] = bounds.get(i);
+      }
+      this.midpoints = Arrays.factory(DataType.DOUBLE, new int[] {ntimes, nhours}, mids);
+      this.bounds = Arrays.factory(DataType.DOUBLE, new int[] {ntimes, nhours, 2}, bnds);
+
+      return self();
+    }
+
+    public T setHourOffsets(List<Integer> hourOffsets) {
       this.hourOffsets = hourOffsets;
+      return self();
+    }
+
+    public T setHourOffsets(Array<Integer> hourOffsets) {
+      this.hourOffsets = new ArrayList<>();
+      for (int hour : hourOffsets) {
+        this.hourOffsets.add(hour);
+      }
       return self();
     }
 

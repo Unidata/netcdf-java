@@ -16,16 +16,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
-import ucar.array.Array;
 import ucar.array.Arrays;
-import ucar.array.StructureData;
 import ucar.array.StructureDataArray;
 import ucar.cdmr.CdmRemoteGrpc;
-import ucar.cdmr.CdmRemoteProto.DataRequest;
-import ucar.cdmr.CdmRemoteProto.DataResponse;
-import ucar.cdmr.CdmRemoteProto.Header;
-import ucar.cdmr.CdmRemoteProto.HeaderRequest;
-import ucar.cdmr.CdmRemoteProto.HeaderResponse;
+import ucar.cdmr.CdmrNetcdfProto.DataRequest;
+import ucar.cdmr.CdmrNetcdfProto.DataResponse;
+import ucar.cdmr.CdmrNetcdfProto.Header;
+import ucar.cdmr.CdmrNetcdfProto.HeaderRequest;
+import ucar.cdmr.CdmrNetcdfProto.HeaderResponse;
 import ucar.cdmr.CdmrConverter;
 import ucar.ma2.Section;
 import ucar.ma2.StructureDataIterator;
@@ -36,7 +34,7 @@ import ucar.nc2.Sequence;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 
-/** A remote CDM dataset, using cdmremote protocol to communicate. */
+/** A remote CDM NetcdfFile, using gprc protocol to communicate. */
 public class CdmrNetcdfFile extends NetcdfFile {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CdmrNetcdfFile.class);
   private static final int MAX_DATA_WAIT_SECONDS = 30;
@@ -49,7 +47,6 @@ public class CdmrNetcdfFile extends NetcdfFile {
   public static void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
     showRequest = debugFlag.isSet("CdmRemote/showRequest");
   }
-
 
   @Override
   protected ucar.ma2.Array readData(Variable v, Section sectionWanted) throws IOException {
@@ -84,7 +81,7 @@ public class CdmrNetcdfFile extends NetcdfFile {
     DataRequest request = DataRequest.newBuilder().setLocation(this.path).setVariableSpec(spec).build();
     try {
       Iterator<DataResponse> responses =
-          blockingStub.withDeadlineAfter(MAX_DATA_WAIT_SECONDS, TimeUnit.SECONDS).getData(request);
+          blockingStub.withDeadlineAfter(MAX_DATA_WAIT_SECONDS, TimeUnit.SECONDS).getNetcdfData(request);
       while (responses.hasNext()) {
         DataResponse response = responses.next();
         if (response.hasError()) {
@@ -158,11 +155,6 @@ public class CdmrNetcdfFile extends NetcdfFile {
     return (Builder<?>) super.addLocalFieldsToBuilder(b);
   }
 
-  /**
-   * Get Builder for this class that allows subclassing.
-   *
-   * @see "https://community.oracle.com/blogs/emcmanus/2010/10/24/using-builder-pattern-subclasses"
-   */
   public static Builder<?> builder() {
     return new Builder2();
   }
@@ -236,7 +228,7 @@ public class CdmrNetcdfFile extends NetcdfFile {
     private void readHeader(String location) {
       log.info("CdmrNetcdfFile request header for " + location);
       HeaderRequest request = HeaderRequest.newBuilder().setLocation(location).build();
-      HeaderResponse response = blockingStub.getHeader(request);
+      HeaderResponse response = blockingStub.getNetcdfHeader(request);
       if (response.hasError()) {
         throw new RuntimeException(response.getError().getMessage());
       } else {

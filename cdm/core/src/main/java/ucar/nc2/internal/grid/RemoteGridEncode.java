@@ -67,7 +67,7 @@ public class RemoteGridEncode {
           f.format("&timeOffset=first");
           break;
 
-        case GridSubset.variable:
+        case GridSubset.gridName:
           break;
 
         default:

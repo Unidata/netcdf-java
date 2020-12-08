@@ -188,8 +188,8 @@ public class TestTdsNCEPGribCollections {
         return;
       }
       System.out.printf("checkGridDataset: %s%n", gridDataset.getLocation());
-      assertThat(gridDataset.getCoordSystems()).hasSize(ncoordSys);
-      assertThat(gridDataset.getCoordAxes()).hasSize(nAxes);
+      assertThat(gridDataset.getGridCoordinateSystems()).hasSize(ncoordSys);
+      assertThat(gridDataset.getGridAxes()).hasSize(nAxes);
       assertThat(gridDataset.getGrids()).hasSize(ngrids);
 
       HashSet<GridCoordinateSystem> csysSet = new HashSet<>();
@@ -216,8 +216,8 @@ public class TestTdsNCEPGribCollections {
         fail();
       }
       System.out.printf("compareGridDataset: %s%n", newDataset.getLocation());
-      System.out.printf(" NewGrid: %d %d %d %n", newDataset.getGrids().size(), newDataset.getCoordSystems().size(),
-          newDataset.getCoordAxes().size());
+      System.out.printf(" NewGrid: %d %d %d %n", newDataset.getGrids().size(),
+          newDataset.getGridCoordinateSystems().size(), newDataset.getGridAxes().size());
       System.out.printf(" OldGrid: %d %d %n", dataset.getGrids().size(), dataset.getGridsets().size());
       // assertThat(dataset.getGrids()).hasSize(2 * ngrids);
       // assertThat(dataset.getGridsets()).hasSize(2 * ncoordSys);

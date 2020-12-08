@@ -188,6 +188,19 @@ public class Dimensions {
   }
 
   /**
+   * Can this be a coordinate system for v?
+   * True if each dimension of v is in this domain, or is 1 dimensional.
+   */
+  public static boolean isCoordinateSystemFor(Collection<Dimension> domain, Variable v) {
+    for (Dimension d : Dimensions.makeDimensionsAll(v)) {
+      if (!domain.contains(d) && (d.getLength() != 1)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /**
    * Test if all the Strings in subset are in set
    * 
    * @param subset is this a subset

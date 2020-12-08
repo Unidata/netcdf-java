@@ -30,7 +30,7 @@ public abstract class CoordinateTransform implements Comparable<CoordinateTransf
   }
 
   /** The naming authority. */
-  // TODO is this needed?
+  // TODO is this needed? candidate for deprecation and removal
   public String getAuthority() {
     return authority;
   }

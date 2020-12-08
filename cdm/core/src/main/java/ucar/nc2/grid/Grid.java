@@ -7,6 +7,7 @@ package ucar.nc2.grid;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.IsMissingEvaluator;
+import ucar.nc2.AttributeContainer;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -16,10 +17,11 @@ public interface Grid extends IsMissingEvaluator {
 
   String getName();
 
-  String getUnitsString();
-
-  @Nullable
   String getDescription();
+
+  String getUnits();
+
+  AttributeContainer attributes();
 
   DataType getDataType();
 

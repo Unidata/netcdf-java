@@ -15,6 +15,7 @@ import java.io.IOException;
 
 import static com.google.common.truth.Truth.assertThat;
 
+/** Test {@link GridAxis1D.Builder} */
 public class TestGridAxis1DBuilder {
 
   @Test
@@ -47,7 +48,7 @@ public class TestGridAxis1DBuilder {
     assertThat(axis1D.getName()).isEqualTo("name");
     assertThat(axis1D.getAxisType()).isEqualTo(AxisType.Ensemble);
     assertThat(axis1D.getUnits()).isEqualTo("unit");
-    assertThat(axis1D.getDescription()).isNull();
+    assertThat(axis1D.getDescription()).isEqualTo("");
     assertThat(axis1D.attributes().findAttributeString(CDM.UNITS, "")).isEqualTo("unit");
     assertThat(axis1D.attributes().findAttributeString(CDM.LONG_NAME, "")).isEqualTo("");
     assertThat(axis1D.attributes().findAttributeDouble("aname", 0.0)).isEqualTo(99.0);
