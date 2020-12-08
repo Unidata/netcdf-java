@@ -6,6 +6,7 @@ package ucar.unidata.geoloc;
 
 import com.google.common.math.DoubleMath;
 import java.util.StringTokenizer;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import ucar.nc2.util.Misc;
 
@@ -65,15 +66,36 @@ public class ProjectionRect {
   }
 
   /**
-   * Construct a bounding box from a string.
+   * Construct a bounding box from a string, or null if incorrect format.
    *
    * @param spec "startx, starty, width, height"
    */
+  @Nullable
+  public static ProjectionRect fromSpec(String spec) {
+    StringTokenizer stoker = new StringTokenizer(spec, " ,");
+    int n = stoker.countTokens();
+    if (n != 4) {
+      return null;
+    }
+    try {
+      double x = Double.parseDouble(stoker.nextToken());
+      double y = Double.parseDouble(stoker.nextToken());
+      double width = Double.parseDouble(stoker.nextToken());
+      double height = Double.parseDouble(stoker.nextToken());
+      return ProjectionRect.builder().setX(x).setY(y).setWidth(width).setHeight(height).build();
+    } catch (Exception e) {
+      return null;
+    }
+  }
+
+  /** @deprecated use fromSpec(String spec) */
+  @Deprecated
   public ProjectionRect(String spec) {
     StringTokenizer stoker = new StringTokenizer(spec, " ,");
     int n = stoker.countTokens();
-    if (n != 4)
+    if (n != 4) {
       throw new IllegalArgumentException("Must be 4 numbers = lat, lon, latWidth, lonWidth");
+    }
     this.x = Double.parseDouble(stoker.nextToken());
     this.y = Double.parseDouble(stoker.nextToken());
     this.width = Double.parseDouble(stoker.nextToken());
@@ -318,7 +340,7 @@ public class ProjectionRect {
    *
    * @return a String representation of this object.
    */
-  public String toString() {
+  public String toString1() {
     return String.format("min: %.3f %.3f size: %.3f %.3f", getX(), getY(), getWidth(), getHeight());
   }
 
@@ -331,7 +353,7 @@ public class ProjectionRect {
    * Return a String representation of this ProjectionRect that can be used in new ProjectionRect(String):
    * "x, y, width, height"
    */
-  public String toStringSpec() {
+  public String toString() {
     return String.format("%f, %f, %f, %f", x, y, getWidth(), getHeight());
   }
 

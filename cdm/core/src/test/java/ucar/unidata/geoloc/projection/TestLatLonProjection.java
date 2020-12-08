@@ -179,11 +179,11 @@ public class TestLatLonProjection {
     assertThat(result).asList().containsExactly(new ProjectionRect(-180, 0, 180, 40), null);
 
     LatLonProjection p2 = new LatLonProjection("center180", null, 180);
-    ProjectionRect[] result2 = p2.latLonToProjRect(LatLonRect.builder("0, -10, 99, 20").build());
+    ProjectionRect[] result2 = p2.latLonToProjRect(LatLonRect.fromSpec("0, -10, 99, 20"));
     assertThat(result2).asList().containsExactly(ProjectionRect.builder().setRect(350, 0, 10, 90).build(),
         ProjectionRect.builder().setRect(0, 0, 10, 90).build());
 
-    result2 = p2.latLonToProjRect(LatLonRect.builder("0, 111, 99, 200").build());
+    result2 = p2.latLonToProjRect(LatLonRect.fromSpec("0, 111, 99, 200"));
     assertThat(result2).asList().containsExactly(ProjectionRect.builder().setRect(111, 0, 200, 90).build(), null);
   }
 

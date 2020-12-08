@@ -5,7 +5,16 @@
 package ucar.unidata.geoloc;
 
 import java.util.Formatter;
+import java.util.List;
+
+import com.google.common.base.Splitter;
+import ucar.nc2.grid.CoordInterval;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.util.Format;
+import ucar.unidata.util.StringUtil2;
+
+import javax.annotation.Nullable;
 
 /** Static utilities for LatLonPoint. */
 public class LatLonPoints {
@@ -167,7 +176,7 @@ public class LatLonPoints {
   }
 
   /**
-   * String representation in the form, eg 40.23, -105.1
+   * String representation of LatLonPoint in the form, eg 40.23, -105.1
    *
    * @param pt the LatLonPoint
    * @param sigDigits significant digits
@@ -177,8 +186,24 @@ public class LatLonPoints {
     return String.format("%s, %s", Format.d(pt.getLatitude(), sigDigits), Format.d(pt.getLongitude(), sigDigits));
   }
 
+  /** The inverse of toString(LatLonPoint), or null if cant parse */
+  @Nullable
+  public static LatLonPoint parseLatLonPoint(String source) {
+    List<String> ss = Splitter.on(',').omitEmptyStrings().trimResults().splitToList(source);
+    if (ss.size() != 2) {
+      return null;
+    }
+    try {
+      double lat = Double.parseDouble(ss.get(0));
+      double lon = Double.parseDouble(ss.get(1));
+      return LatLonPoint.create(lat, lon);
+    } catch (Exception e) {
+      return null;
+    }
+  }
+
   /**
-   * String representation in the form, eg x, y
+   * String representation of ProjectionPoint in the form, eg x, y
    *
    * @param pt the ProjectionPoint
    * @param sigDigits significant digits

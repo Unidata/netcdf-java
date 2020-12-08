@@ -54,4 +54,9 @@ public abstract class LatLonPoint {
     return lonOk && Misc.nearlyEquals(that.getLatitude(), getLatitude(), maxRelDiff);
   }
 
+  @Override
+  public String toString() {
+    return LatLonPoints.toString(this, 5);
+  }
+
 }

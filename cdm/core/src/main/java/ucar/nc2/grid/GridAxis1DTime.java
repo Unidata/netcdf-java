@@ -388,7 +388,7 @@ public class GridAxis1DTime extends GridAxis1D {
       return self();
     }
 
-    // You should only set this if you want to calculate dates from midpoints.
+    // You should only set this if you want to calculate midpoints from dates.
     // Otherwise just set the midpoints
     public T setCalendarDates(List<CalendarDate> cdates) {
       this.cdates = cdates;

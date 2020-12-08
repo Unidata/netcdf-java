@@ -15,8 +15,8 @@ import java.io.IOException;
 
 import static com.google.common.truth.Truth.assertThat;
 
-/** Test {@link GridAxis1D.Builder} */
-public class TestGridAxis1DBuilder {
+/** Test {@link GridAxis1D} */
+public class TestGridAxis1D {
 
   @Test
   public void testFromVariableDS() {
@@ -125,6 +125,14 @@ public class TestGridAxis1DBuilder {
     }
 
     count = 0;
+    for (Object coord : axis1D) {
+      assertThat(coord).isInstanceOf(Double.class);
+      double val = (Double) coord;
+      assertThat(val).isEqualTo(count * 10.0);
+      count++;
+    }
+
+    count = 0;
     for (double val : axis1D.getCoordBoundsAsArray()) {
       if (count % 2 == 0) {
         assertThat(val).isEqualTo(10.0 * (count / 2) - 5.0);
@@ -192,6 +200,14 @@ public class TestGridAxis1DBuilder {
       count++;
     }
 
+    count = 0;
+    for (Object coord : axis1D) {
+      assertThat(coord).isInstanceOf(CoordInterval.class);
+      CoordInterval val = (CoordInterval) coord;
+      assertThat(val).isEqualTo(CoordInterval.create(10.0 * count - 5.0, 10.0 * count + 5.0));
+      count++;
+    }
+
     GridAxis1D copy = axis1D.toBuilder().build();
     assertThat(copy).isEqualTo(axis1D);
     assertThat(copy.hashCode()).isEqualTo(axis1D.hashCode());
@@ -242,6 +258,14 @@ public class TestGridAxis1DBuilder {
 
     int count = 0;
     for (double val : axis1D.getCoordsAsArray()) {
+      assertThat(val).isEqualTo(values[count]);
+      count++;
+    }
+
+    count = 0;
+    for (Object coord : axis1D) {
+      assertThat(coord).isInstanceOf(Double.class);
+      double val = (Double) coord;
       assertThat(val).isEqualTo(values[count]);
       count++;
     }
@@ -303,6 +327,14 @@ public class TestGridAxis1DBuilder {
       count++;
     }
 
+    count = 0;
+    for (Object coord : axis1D) {
+      assertThat(coord).isInstanceOf(CoordInterval.class);
+      CoordInterval val = (CoordInterval) coord;
+      assertThat(val).isEqualTo(CoordInterval.create(values[count], values[count + 1]));
+      count++;
+    }
+
     GridAxis1D copy = axis1D.toBuilder().build();
     assertThat(copy).isEqualTo(axis1D);
     assertThat(copy.hashCode()).isEqualTo(axis1D.hashCode());
@@ -354,6 +386,14 @@ public class TestGridAxis1DBuilder {
     for (double val : axis1D.getCoordBoundsAsArray()) {
       assertThat(val).isEqualTo(values[count]);
       count++;
+    }
+
+    count = 0;
+    for (Object coord : axis1D) {
+      assertThat(coord).isInstanceOf(CoordInterval.class);
+      CoordInterval val = (CoordInterval) coord;
+      assertThat(val).isEqualTo(CoordInterval.create(values[count], values[count + 1]));
+      count += 2;
     }
 
     GridAxis1D copy = axis1D.toBuilder().build();
