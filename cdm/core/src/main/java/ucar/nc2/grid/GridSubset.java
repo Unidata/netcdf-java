@@ -7,8 +7,8 @@ package ucar.nc2.grid;
 import com.google.common.base.Preconditions;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.time.CalendarPeriod;
 import ucar.unidata.geoloc.LatLonPoint;
+import ucar.unidata.geoloc.LatLonPoints;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionRect;
 
@@ -17,30 +17,32 @@ import java.util.*;
 
 /** Coordinate value-based subsetting of a Grid. */
 public class GridSubset {
-  public static final String variable = "var"; // value = String
+  public static final String gridName = "gridName"; // value = String
 
   public static final String latlonBB = "latlonBB"; // value = LatLonRect
   public static final String projBB = "projBB"; // value = ProjectionRect
-  public static final String latlonPoint = "latlonPoint"; // value = LatLonPoint
   public static final String horizStride = "horizStride"; // value = Integer
+  public static final String latlonPoint = "latlonPoint"; // value = LatLonPoint
 
   public static final String runtime = "runtime"; // value = CalendarDate
   public static final String runtimeLatest = "runtimeLatest"; // value = Boolean
   public static final String runtimeAll = "runtimeAll"; // value = Boolean
 
-  public static final String timeOffset = "timeOffset"; // value = Double or CoordInterval
+  public static final String timeOffset = "timeOffset"; // value = Double
+  public static final String timeOffsetIntv = "timeOffsetIntv"; // value = CoordInterval
   public static final String timeOffsetFirst = "timeOffsetFirst"; // value = Boolean
   public static final String timeOffsetAll = "timeOffsetAll"; // value = Boolean
 
   public static final String time = "time"; // value = CalendarDate
-  public static final String timeCoord = "timeCoord"; // value = Double or CoordInterval
+  public static final String timePoint = "timePoint"; // value = Double
+  public static final String timeIntv = "timeIntv"; // value = CoordInterval
   public static final String timeRange = "timeRange"; // value = CalendarDateRange
   public static final String timeStride = "timeStride"; // value = Integer
   public static final String timePresent = "timePresent"; // value = Boolean
   public static final String timeAll = "timeAll"; // value = Boolean
-  public static final String timeWindow = "timeWindow"; // value = CalendarPeriod
 
-  public static final String vertCoord = "vertCoord"; // value = Double or CoordInterval
+  public static final String vertPoint = "vertPoint"; // value = Double
+  public static final String vertIntv = "vertIntv"; // value = CoordInterval
   public static final String ensCoord = "ensCoord"; // value = Double
 
   // cant use these for selecting, used for validation
@@ -59,66 +61,99 @@ public class GridSubset {
   @Nullable
   private Double getDouble(String key) {
     Object val = req.get(key);
-    if (val == null)
+    if (val == null) {
       return null;
-    double dval;
-    if (val instanceof Number)
-      dval = ((Number) val).doubleValue();
-    else
-      dval = Double.parseDouble((String) val);
-    return dval;
+    } else if (val instanceof Number) {
+      return ((Number) val).doubleValue();
+    } else if (val instanceof String) {
+      try {
+        return Double.parseDouble((String) val);
+      } catch (Exception e) {
+        throw new RuntimeException(key + " cant parse as Double " + val);
+      }
+    }
+    throw new RuntimeException(key + " not a Double " + val);
   }
 
   @Nullable
   private CalendarDate getCalendarDate(String key) {
     Object val = req.get(key);
-    if (val == null)
+    if (val == null) {
       return null;
-    if (val instanceof CalendarDate) {
+    } else if (val instanceof CalendarDate) {
       return (CalendarDate) val;
+    } else if (val instanceof String) {
+      try {
+        // TODO calendar
+        return CalendarDate.parseISOformat(null, (String) val);
+      } catch (Exception e) {
+        throw new RuntimeException(key + " cant parse as Iso CalendarDate " + val);
+      }
     }
-    throw new RuntimeException(key + " not a Calendar Date " + val);
+    throw new RuntimeException(key + " not a CalendarDate " + val);
   }
 
   @Nullable
   private CalendarDateRange getCalendarDateRange(String key) {
     Object val = req.get(key);
-    if (val == null)
+    if (val == null) {
       return null;
-    if (val instanceof CalendarDateRange) {
+    } else if (val instanceof CalendarDateRange) {
       return (CalendarDateRange) val;
+    } else if (val instanceof String) {
+      try {
+        return CalendarDateRange.parse((String) val);
+      } catch (Exception e) {
+        throw new RuntimeException(key + " cant parse as CalendarDateRange " + val);
+      }
     }
-    throw new RuntimeException(key + " not a Calendar Date Range " + val);
+    throw new RuntimeException(key + " not a CalendarDateRange " + val);
+  }
+
+  private CoordInterval getCoordInterval(String key) {
+    Object val = req.get(key);
+    if (val == null) {
+      return null;
+    } else if (val instanceof CoordInterval) {
+      return (CoordInterval) val;
+    } else if (val instanceof String) {
+      try {
+        return CoordInterval.parse((String) val);
+      } catch (Exception e) {
+        throw new RuntimeException(key + " cant parse as CoordInterval " + val);
+      }
+    }
+    throw new RuntimeException(key + " not a CoordInterval " + val);
   }
 
   @Nullable
   private Integer getInteger(String key) {
     Object val = req.get(key);
-    if (val == null)
+    if (val == null) {
       return null;
-    int dval;
-    if (val instanceof Number) {
-      dval = ((Number) val).intValue();
-    } else {
-      dval = Integer.parseInt((String) val);
+    } else if (val instanceof Number) {
+      return ((Number) val).intValue();
+    } else if (val instanceof String) {
+      try {
+        return Integer.parseInt((String) val);
+      } catch (Exception e) {
+        throw new RuntimeException(key + " cant parse as Integer " + val);
+      }
     }
-    return dval;
+    throw new RuntimeException(key + " not a Integer " + val);
   }
 
   private boolean isTrue(String key) {
     Object val = req.get(key);
+    if (val instanceof String) {
+      return ((String) val).equalsIgnoreCase("true");
+    }
     return (val instanceof Boolean) && (Boolean) val;
   }
 
-  private void setCoord(String key, Object coord) {
-    if (coord instanceof Number) {
-      req.put(key, ((Number) coord).doubleValue());
-    } else if (coord instanceof CoordInterval) {
-      req.put(key, coord);
-    } else {
-      throw new IllegalArgumentException(
-          "Coord must be Number or CoordInterval, instead= " + coord.getClass().getName());
-    }
+  public GridSubset setHorizStride(int stride) {
+    req.put(horizStride, stride);
+    return this;
   }
 
   public Set<Map.Entry<String, Object>> getEntries() {
@@ -128,28 +163,36 @@ public class GridSubset {
   ////////////////////////////////////////////////////
 
   @Nullable
+  public Integer getHorizStride() {
+    return getInteger(horizStride);
+  }
+
+  @Nullable
   public Double getEnsCoord() {
     return getDouble(ensCoord);
   }
 
-  public GridSubset setEnsCoord(double coord) {
+  public GridSubset setEnsCoord(Object coord) {
+    Preconditions.checkArgument(coord instanceof Double);
     req.put(ensCoord, coord);
     return this;
   }
 
-  public GridSubset setHorizStride(int stride) {
-    req.put(horizStride, stride);
-    return this;
-  }
-
-  @Nullable
-  public Integer getHorizStride() {
-    return (Integer) req.get(horizStride);
-  }
-
   @Nullable
   public LatLonRect getLatLonBoundingBox() {
-    return (LatLonRect) get(latlonBB);
+    Object val = req.get(latlonBB);
+    if (val == null) {
+      return null;
+    } else if (val instanceof LatLonRect) {
+      return (LatLonRect) val;
+    } else if (val instanceof String) {
+      try {
+        return LatLonRect.fromSpec((String) val);
+      } catch (Exception e) {
+        throw new RuntimeException(" cant parse as LatLonRect " + val);
+      }
+    }
+    throw new RuntimeException(" not a LatLonRect " + val);
   }
 
   public GridSubset setLatLonBoundingBox(LatLonRect llbb) {
@@ -159,7 +202,19 @@ public class GridSubset {
 
   @Nullable
   public LatLonPoint getLatLonPoint() {
-    return (LatLonPoint) get(latlonPoint);
+    Object val = req.get(latlonPoint);
+    if (val == null) {
+      return null;
+    } else if (val instanceof LatLonPoint) {
+      return (LatLonPoint) val;
+    } else if (val instanceof String) {
+      try {
+        return LatLonPoints.parseLatLonPoint((String) val);
+      } catch (Exception e) {
+        throw new RuntimeException(" cant parse as LatLonPoint " + val);
+      }
+    }
+    throw new RuntimeException(" not a LatLonPoint " + val);
   }
 
   public GridSubset setLatLonPoint(LatLonPoint pt) {
@@ -169,7 +224,19 @@ public class GridSubset {
 
   @Nullable
   public ProjectionRect getProjectionBoundingBox() {
-    return (ProjectionRect) get(projBB);
+    Object val = req.get(projBB);
+    if (val == null) {
+      return null;
+    } else if (val instanceof ProjectionRect) {
+      return (ProjectionRect) val;
+    } else if (val instanceof String) {
+      try {
+        return ProjectionRect.fromSpec((String) val);
+      } catch (Exception e) {
+        throw new RuntimeException(" cant parse as ProjectionRect " + val);
+      }
+    }
+    throw new RuntimeException(" not a ProjectionRect " + val);
   }
 
   public GridSubset setProjectionBoundingBox(ProjectionRect projRect) {
@@ -184,6 +251,12 @@ public class GridSubset {
 
   public GridSubset setRunTime(CalendarDate date) {
     req.put(runtime, date);
+    return this;
+  }
+
+  public GridSubset setRunTimeCoord(Object coord) {
+    Preconditions.checkArgument(coord instanceof CalendarDate);
+    req.put(runtime, coord);
     return this;
   }
 
@@ -206,9 +279,6 @@ public class GridSubset {
     return this;
   }
 
-  //////////////////////////////////
-  // review time. do we need intervals?
-
   @Nullable
   public CalendarDate getTime() {
     return getCalendarDate(time);
@@ -219,14 +289,24 @@ public class GridSubset {
     return this;
   }
 
-  // TODO interval
   @Nullable
-  public Object getTimeCoord() {
-    return get(timeCoord);
+  public Double getTimePoint() {
+    return getDouble(timePoint);
+  }
+
+  @Nullable
+  public CoordInterval getTimeIntv() {
+    return getCoordInterval(timeIntv);
   }
 
   public GridSubset setTimeCoord(Object coord) {
-    setCoord(timeCoord, coord);
+    if (coord instanceof Number) {
+      req.put(timePoint, coord);
+    } else if (coord instanceof CoordInterval) {
+      req.put(timeIntv, coord);
+    } else {
+      throw new RuntimeException("setTimeCoord must be Number or CoordInterval " + coord);
+    }
     return this;
   }
 
@@ -260,24 +340,26 @@ public class GridSubset {
   }
 
   @Nullable
-  public CalendarPeriod getTimeWindow() {
-    return (CalendarPeriod) get(timeWindow);
+  public Double getTimeOffset() {
+    return getDouble(timeOffset);
   }
-
-  /////////////////////////////////////////////////
 
   // A time offset or time offset interval starts from the rundate of that point, in the units of the coordinate
   // eg "calendar Month since 2004-12-30T00:00:00Z" or "Hours since 2004-12-30T00:00:00Z"
   public GridSubset setTimeOffsetCoord(Object coord) {
-    Preconditions.checkArgument(coord instanceof Number || coord instanceof CoordInterval);
-    req.put(timeOffset, coord);
+    if (coord instanceof Number) {
+      req.put(timeOffset, coord);
+    } else if (coord instanceof CoordInterval) {
+      req.put(timeOffsetIntv, coord);
+    } else {
+      throw new RuntimeException("setTimeOffsetCoord must be Number or CoordInterval " + coord);
+    }
     return this;
   }
 
-  /** return Double or CoordInterval or null. */
   @Nullable
-  public Object getTimeOffsetCoord() {
-    return get(timeOffset);
+  public CoordInterval getTimeOffsetIntv() {
+    return getCoordInterval(timeOffsetIntv);
   }
 
   public boolean getTimeOffsetFirst() {
@@ -289,25 +371,24 @@ public class GridSubset {
     return this;
   }
 
-  /** return Double or CoordInterval or null. */
   @Nullable
-  public String getVariable() {
-    return (String) get(variable);
+  public Double getVertPoint() {
+    return getDouble(vertPoint);
   }
 
-  public GridSubset setVariable(String varname) {
-    req.put(variable, varname);
-    return this;
-  }
-
-  /** return Double or CoordInterval or null. */
   @Nullable
-  public Object getVertCoord() {
-    return get(vertCoord);
+  public CoordInterval getVertIntv() {
+    return getCoordInterval(vertIntv);
   }
 
   public GridSubset setVertCoord(Object coord) {
-    setCoord(vertCoord, coord);
+    if (coord instanceof Number) {
+      req.put(vertPoint, coord);
+    } else if (coord instanceof CoordInterval) {
+      req.put(vertIntv, coord);
+    } else {
+      throw new RuntimeException("setVertCoord must be Number or CoordInterval " + coord);
+    }
     return this;
   }
 
@@ -315,19 +396,26 @@ public class GridSubset {
   public String toString() {
     Formatter f = new Formatter();
     for (Map.Entry<String, Object> entry : req.entrySet()) {
-      f.format(" %s == ", entry.getKey());
-      Object val = entry.getValue();
-      if (val instanceof CalendarDate[]) {
-        CalendarDate[] cd = ((CalendarDate[]) val);
-        f.format("[%s,%s]", cd[0], cd[1]);
-      } else if (val instanceof double[]) {
-        double[] d = ((double[]) val);
-        f.format("[%f,%f]", d[0], d[1]);
-      } else {
-        f.format("%s,", entry.getValue());
-      }
+      f.format("%s == %s%n", entry.getKey(), entry.getValue());
     }
     return f.toString();
+  }
+
+  public String getGridName() {
+    return (String) get(gridName);
+  }
+
+  public GridSubset setGridName(String name) {
+    req.put(gridName, name);
+    return this;
+  }
+
+  public GridSubset() {}
+
+  public GridSubset(Map<String, String> stringMap) {
+    for (Map.Entry<String, String> entry : stringMap.entrySet()) {
+      req.put(entry.getKey(), entry.getValue());
+    }
   }
 
   @Override
@@ -344,4 +432,5 @@ public class GridSubset {
   public int hashCode() {
     return Objects.hash(req);
   }
+
 }
