@@ -164,7 +164,7 @@ public class GridSubset {
   }
 
   public GridSubset setEnsCoord(Object coord) {
-    Preconditions.checkArgument(coord instanceof Double);
+    Preconditions.checkArgument(coord instanceof Number);
     req.put(ensCoord, coord);
     return this;
   }
@@ -249,12 +249,12 @@ public class GridSubset {
   }
 
   public GridSubset setTimeCoord(Object coord) {
-    if (coord instanceof Double) {
+    if (coord instanceof Number) {
       req.put(timePoint, coord);
     } else if (coord instanceof CoordInterval) {
       req.put(timeIntv, coord);
     } else {
-      throw new RuntimeException("setTimeCoord msut be Double or CoordInterval " + coord);
+      throw new RuntimeException("setTimeCoord must be Number or CoordInterval " + coord);
     }
     return this;
   }
@@ -305,12 +305,12 @@ public class GridSubset {
   // A time offset or time offset interval starts from the rundate of that point, in the units of the coordinate
   // eg "calendar Month since 2004-12-30T00:00:00Z" or "Hours since 2004-12-30T00:00:00Z"
   public GridSubset setTimeOffsetCoord(Object coord) {
-    if (coord instanceof Double) {
+    if (coord instanceof Number) {
       req.put(timeOffset, coord);
     } else if (coord instanceof CoordInterval) {
       req.put(timeOffsetIntv, coord);
     } else {
-      throw new RuntimeException("setTimeOffsetCoord msut be Double or CoordInterval " + coord);
+      throw new RuntimeException("setTimeOffsetCoord must be Number or CoordInterval " + coord);
     }
     return this;
   }
@@ -340,12 +340,12 @@ public class GridSubset {
   }
 
   public GridSubset setVertCoord(Object coord) {
-    if (coord instanceof Double) {
+    if (coord instanceof Number) {
       req.put(vertPoint, coord);
     } else if (coord instanceof CoordInterval) {
       req.put(vertIntv, coord);
     } else {
-      throw new RuntimeException("setVertCoord msut be Double or CoordInterval " + coord);
+      throw new RuntimeException("setVertCoord must be Number or CoordInterval " + coord);
     }
     return this;
   }
