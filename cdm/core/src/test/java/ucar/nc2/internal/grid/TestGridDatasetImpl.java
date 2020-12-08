@@ -4,6 +4,7 @@ import com.google.common.collect.Iterables;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.ma2.InvalidRangeException;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.grid.*;
 import ucar.nc2.util.MinMax;
@@ -33,7 +34,7 @@ public class TestGridDatasetImpl {
         fail();
       }
       GridDatasetImpl gridDataset = result.get();
-      assertThat(gridDataset.getCoordAxes()).hasSize(10);
+      assertThat(gridDataset.getCoordSystems()).hasSize(4);
       assertThat(gridDataset.getCoordSystems()).hasSize(4);
       assertThat(gridDataset.getGrids()).hasSize(4);
     }
@@ -52,6 +53,10 @@ public class TestGridDatasetImpl {
         fail();
       }
       GridDatasetImpl gridDataset = result.get();
+      assertThat(gridDataset.getName()).isEqualTo("NDFD_SPC_CONUS_2p5km_20201116_1700.grib2.ncx4");
+      assertThat(gridDataset.getFeatureType()).isEqualTo(FeatureType.GRID);
+      assertThat(gridDataset.toString()).contains("time1(time1=3)");
+
       Grid grid = gridDataset.findGrid("Convective_Hazard_Outlook_surface_24_Hour_Average")
           .orElseThrow(() -> new RuntimeException("Cant find grid"));
       GridCoordinateSystem csys = grid.getCoordinateSystem();

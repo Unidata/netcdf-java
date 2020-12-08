@@ -16,8 +16,6 @@ import ucar.nc2.dataset.*;
 import ucar.nc2.dataset.NetcdfDataset.Enhance;
 import ucar.nc2.grid.*;
 import ucar.nc2.internal.dataset.DatasetClassifier;
-import ucar.unidata.geoloc.LatLonRect;
-import ucar.unidata.geoloc.ProjectionRect;
 
 import java.io.IOException;
 import java.util.*;
@@ -121,33 +119,6 @@ public class GridDatasetImpl implements GridDataset {
     }
   }
 
-  private void makeHorizRanges() {
-    LatLonRect.Builder llbbBuilder = null;
-
-    ProjectionRect.Builder projBBbuilder = null;
-    for (GridCoordinateSystem gcs : this.gridsets.keySet()) {
-      ProjectionRect bb = gcs.getHorizCoordSystem().getBoundingBox();
-      if (projBBbuilder == null)
-        projBBbuilder = bb.toBuilder();
-      else if (bb != null)
-        projBBbuilder.add(bb);
-
-      LatLonRect llbb = gcs.getHorizCoordSystem().getLatLonBoundingBox();
-      if (llbbBuilder == null)
-        llbbBuilder = llbb.toBuilder();
-      else if (llbb != null)
-        llbbBuilder.extend(llbb);
-    }
-
-    if (llbbBuilder != null) {
-      LatLonRect llbbMax = llbbBuilder.build();
-    }
-  }
-
-  public FeatureType getCoverageType() {
-    return featureType;
-  }
-
   @Override
   public String getName() {
     String loc = ncd.getLocation();
@@ -155,6 +126,10 @@ public class GridDatasetImpl implements GridDataset {
     if (pos < 0)
       pos = loc.lastIndexOf('\\');
     return (pos < 0) ? loc : loc.substring(pos + 1);
+  }
+
+  public FeatureType getCoverageType() {
+    return featureType;
   }
 
   @Override

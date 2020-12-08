@@ -9,12 +9,14 @@ import ucar.nc2.time.CalendarDate;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Formatter;
 
 import static com.google.common.truth.Truth.assertThat;
+import static org.junit.Assert.fail;
 
-public class TestReadGridCoordinateSystem {
+public class TestReadGridDataset {
 
   @Test
   public void readGridIrregularTime() throws IOException, InvalidRangeException {
@@ -25,8 +27,19 @@ public class TestReadGridCoordinateSystem {
 
       Grid grid = ncd.findGrid("cldc").orElse(null);
       assertThat(grid).isNotNull();
+      assertThat(grid.getUnitsString()).isEqualTo("okta");
+      assertThat(grid.getDescription()).isEqualTo("Cloudiness Monthly Mean at Surface");
+      assertThat(grid.toString()).contains("float cldc(time=456, lat=21, lon=360)");
+      assertThat(grid.hasMissing()).isEqualTo(true);
+      assertThat(grid.isMissing(0)).isEqualTo(false);
+      // :valid_range = 0.0f, 8.0f; // float
+      // :actual_range = 0.0f, 8.0f; // float
+      assertThat(grid.isMissing(32766)).isEqualTo(true); // outside valid range TODO correct?
+      assertThat(grid.isMissing(6553.100049)).isEqualTo(true); // with scale and offset
+
       GridCoordinateSystem gcs = grid.getCoordinateSystem();
       assertThat(gcs).isNotNull();
+      assertThat(gcs.getName()).isEqualTo("time lat lon");
       assertThat(gcs.getHorizCoordSystem().isLatLon()).isTrue();
       assertThat(gcs.getXHorizAxis()).isNotNull();
       assertThat(gcs.getYHorizAxis()).isNotNull();
@@ -38,6 +51,10 @@ public class TestReadGridCoordinateSystem {
           assertThat(axis).isInstanceOf(GridAxis1DTime.class);
         }
       }
+      assertThat(gcs.showFnSummary()).isEqualTo("GRID(T,Y,X)");
+      Formatter f = new Formatter();
+      gcs.show(f, true);
+      assertThat(f.toString()).contains("time (GridAxis1DTime) 715511");
 
       GridSubset subset = new GridSubset();
       CalendarDate wantDate = CalendarDate.parseISOformat(null, "1960-01-01T00:00:00Z");
@@ -251,6 +268,26 @@ public class TestReadGridCoordinateSystem {
       GridAxis1D vert = csSubset.getVerticalAxis();
       assertThat(vert.getNcoords()).isEqualTo(1);
       assertThat(vert.getCoordMidpoint(0)).isEqualTo(700.);
+    }
+  }
+
+  @Test
+  public void testFileNotFound() throws IOException {
+    String filename = TestDir.cdmLocalTestDataDir + "conventions/fileNot.nc";
+    Formatter errlog = new Formatter();
+    try (GridDataset gridDataset = GridDatasetFactory.openGridDataset(filename, errlog)) {
+      fail();
+    } catch (FileNotFoundException e) {
+      assertThat(e.getMessage()).contains("(No such file or directory)");
+    }
+  }
+
+  @Test
+  public void testFileNotGrid() throws IOException {
+    String filename = TestDir.cdmLocalTestDataDir + "point/point.ncml";
+    Formatter errlog = new Formatter();
+    try (GridDataset gridDataset = GridDatasetFactory.openGridDataset(filename, errlog)) {
+      assertThat(gridDataset).isNull();
     }
   }
 
