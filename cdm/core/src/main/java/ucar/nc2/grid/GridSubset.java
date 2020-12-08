@@ -54,6 +54,10 @@ public class GridSubset {
 
   private final Map<String, Object> req = new HashMap<>();
 
+  public Set<Map.Entry<String, Object>> getEntries() {
+    return req.entrySet();
+  }
+
   @Nullable
   private Object get(String key) {
     return req.get(key);

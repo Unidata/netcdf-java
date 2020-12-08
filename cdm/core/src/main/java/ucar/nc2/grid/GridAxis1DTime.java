@@ -53,7 +53,7 @@ public class GridAxis1DTime extends GridAxis1D {
     return timeHelper.offsetFromRefDate(date);
   }
 
-  TimeHelper getTimeHelper() {
+  public TimeHelper getTimeHelper() {
     return timeHelper;
   }
 

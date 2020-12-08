@@ -132,14 +132,14 @@ public class TestGridSubset {
     GridSubset subset = new GridSubset();
     CoordInterval offsetv = CoordInterval.create(34.56, 78.9);
     subset.setTimeOffsetCoord(offsetv);
-    assertThat(subset.getTimeOffsetCoord()).isEqualTo(offsetv);
-    assertThat(subset.getTimeOffsetCoord() == offsetv).isTrue();
+    assertThat(subset.getTimeOffsetIntv()).isEqualTo(offsetv);
+    assertThat(subset.getTimeOffsetIntv() == offsetv).isTrue();
 
     subset.setTimeOffsetCoord(123.456);
-    assertThat(subset.getTimeOffsetCoord()).isEqualTo(123.456);
+    assertThat(subset.getTimeOffset()).isEqualTo(123.456);
 
     subset.setTimeOffsetCoord(999);
-    assertThat(subset.getTimeOffsetCoord()).isEqualTo(999);
+    assertThat(subset.getTimeOffset()).isEqualTo(999);
 
     try {
       subset.setTimeOffsetCoord(999);
@@ -172,10 +172,10 @@ public class TestGridSubset {
     GridSubset subset = new GridSubset();
     CoordInterval offsetv = CoordInterval.create(34.56, 78.9);
     subset.setVertCoord(offsetv);
-    assertThat(subset.getVertCoord()).isEqualTo(offsetv);
-    assertThat(subset.getVertCoord() == offsetv).isTrue();
+    assertThat(subset.getVertIntv()).isEqualTo(offsetv);
+    assertThat(subset.getVertIntv() == offsetv).isTrue();
 
     subset.setVertCoord(123.456);
-    assertThat(subset.getVertCoord()).isEqualTo(123.456);
+    assertThat(subset.getVertPoint()).isEqualTo(123.456);
   }
 }

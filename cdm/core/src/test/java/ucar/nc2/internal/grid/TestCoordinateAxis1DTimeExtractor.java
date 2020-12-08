@@ -29,21 +29,10 @@ public class TestCoordinateAxis1DTimeExtractor {
 
     CoordinateAxis.Builder<?> builder = CoordinateAxis.fromVariableDS(vdsBuilder).setAxisType(AxisType.Time);
     CoordinateAxis axis = builder.build(parent.build());
-    int n = 10;
-    int count = 0;
-    double[] values = new double[n];
-    for (int i = 0; i < n; i++) {
-      values[i] = 5 + count++;
-    }
-    CoordinateAxis1DTimeExtractor extract = new CoordinateAxis1DTimeExtractor(axis, values);
+    CoordinateAxis1DTimeExtractor extract = new CoordinateAxis1DTimeExtractor(axis);
 
     assertThat(extract.timeHelper).isEqualTo(TimeHelper.factory(units, new AttributeContainerMutable("")));
-    assertThat(extract.cdates).hasSize(n);
-
-    count = 0;
-    for (CalendarDate cd : extract.cdates) {
-      assertThat(cd).isEqualTo(extract.timeHelper.makeCalendarDateFromOffset(5 + count++));
-    }
+    assertThat(extract.cdates).isNull();
   }
 
   @Test
@@ -69,7 +58,7 @@ public class TestCoordinateAxis1DTimeExtractor {
 
     CoordinateAxis.Builder<?> builder = CoordinateAxis.fromVariableDS(vdsBuilder).setAxisType(AxisType.Time);
     CoordinateAxis axis = builder.build(parent.build());
-    CoordinateAxis1DTimeExtractor extract = new CoordinateAxis1DTimeExtractor(axis, null);
+    CoordinateAxis1DTimeExtractor extract = new CoordinateAxis1DTimeExtractor(axis);
 
     assertThat(extract.timeHelper).isEqualTo(TimeHelper.factory(units, new AttributeContainerMutable("")));
     assertThat(extract.cdates).hasSize(n);
@@ -106,7 +95,7 @@ public class TestCoordinateAxis1DTimeExtractor {
     CoordinateAxis.Builder<?> builder = CoordinateAxis.fromVariableDS(vdsBuilder).setAxisType(AxisType.Time);
     CoordinateAxis axis = builder.build(parent.build());
     try {
-      new CoordinateAxis1DTimeExtractor(axis, null);
+      new CoordinateAxis1DTimeExtractor(axis);
       fail();
     } catch (Exception e) {
       assertThat(e).isInstanceOf(RuntimeException.class);
@@ -143,7 +132,7 @@ public class TestCoordinateAxis1DTimeExtractor {
 
     CoordinateAxis.Builder<?> builder = CoordinateAxis.fromVariableDS(vdsBuilder).setAxisType(AxisType.Time);
     CoordinateAxis axis = builder.build(parent.build());
-    CoordinateAxis1DTimeExtractor extract = new CoordinateAxis1DTimeExtractor(axis, null);
+    CoordinateAxis1DTimeExtractor extract = new CoordinateAxis1DTimeExtractor(axis);
 
     assertThat(extract.timeHelper).isEqualTo(TimeHelper.factory(units, new AttributeContainerMutable("")));
     assertThat(extract.cdates).hasSize(ndates);
