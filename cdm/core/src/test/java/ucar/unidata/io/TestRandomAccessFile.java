@@ -26,7 +26,7 @@ public class TestRandomAccessFile {
 
   // test file
   private static RandomAccessFile testFile;
-  private static final String TEST_FILE_PATH = "src/test/data/testUTF8.txt";
+  private static final String TEST_FILE_PATH = "src/test/data/preserveLineEndings/testUTF8.txt";
 
   // contents of test file
   private static final String TEST_FILE_STRING = "Hello world, this is a test.\r\nThis is a second line of text.";
