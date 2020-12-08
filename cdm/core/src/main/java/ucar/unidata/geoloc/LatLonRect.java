@@ -275,8 +275,7 @@ public class LatLonRect {
    *
    * @return a String representation of this object.
    */
-  @Override
-  public String toString() {
+  public String toString1() {
     return " ll: " + lowerLeft + " ur: " + upperRight + " width: " + width + " cross: " + crossDateline + " all: "
         + allLongitude;
   }
@@ -299,7 +298,8 @@ public class LatLonRect {
    * Return a String representation of this LatLonRect that can be used in new LatLonRect.Builder(String):
    * "lat, lon, deltaLat, deltaLon"
    */
-  public String toStringSpec() {
+  @Override
+  public String toString() {
     return String.format("%f, %f, %f, %f", lowerLeft.getLatitude(), lowerLeft.getLongitude(), getHeight(), getWidth());
   }
 
@@ -362,11 +362,27 @@ public class LatLonRect {
   }
 
   /**
-   * Construct a lat/lon bounding box from a string.
+   * Construct a lat/lon bounding box from a string, or null if format is wrong.
    *
    * @param spec "lat, lon, deltaLat, deltaLon"
    * @see {@link LatLonRect.Builder(LatLonPoint, double, double)}
    */
+  @Nullable
+  public static LatLonRect fromSpec(String spec) {
+    StringTokenizer stoker = new StringTokenizer(spec, " ,");
+    int n = stoker.countTokens();
+    if (n != 4)
+      throw new IllegalArgumentException("Must be 4 numbers = lat, lon, latWidth, lonWidth");
+    double lat = Double.parseDouble(stoker.nextToken());
+    double lon = Double.parseDouble(stoker.nextToken());
+    double deltaLat = Double.parseDouble(stoker.nextToken());
+    double deltaLon = Double.parseDouble(stoker.nextToken());
+
+    return new Builder().init(LatLonPoint.create(lat, lon), deltaLat, deltaLon).build();
+  }
+
+  /** @deprecated use fromSpec(String spec) */
+  @Deprecated
   public static Builder builder(String spec) {
     StringTokenizer stoker = new StringTokenizer(spec, " ,");
     int n = stoker.countTokens();

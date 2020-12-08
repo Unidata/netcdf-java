@@ -4,10 +4,15 @@
  */
 package ucar.nc2.time;
 
+import com.google.common.base.Splitter;
 import org.joda.time.DateTime;
 import ucar.nc2.units.DateRange;
+import ucar.unidata.util.StringUtil2;
+
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.Date;
+import java.util.List;
 
 /** A range of CalendarDates. */
 @Immutable
@@ -109,7 +114,25 @@ public class CalendarDateRange {
 
   @Override
   public String toString() {
-    return start + " - " + end;
+    return "[" + start + "," + end + "]";
+  }
+
+  /** The inverse of toString(), or null if cant parse */
+  @Nullable
+  public static CalendarDateRange parse(String source) {
+    StringBuilder sourceb = new StringBuilder(source);
+    StringUtil2.removeAll(sourceb, "[]");
+    List<String> ss = Splitter.on(',').omitEmptyStrings().trimResults().splitToList(sourceb);
+    if (ss.size() != 2) {
+      return null;
+    }
+    try {
+      CalendarDate start = CalendarDate.parseISOformat(null, ss.get(0));
+      CalendarDate end = CalendarDate.parseISOformat(null, ss.get(1));
+      return CalendarDateRange.of(start, end);
+    } catch (Exception e) {
+      return null;
+    }
   }
 
   ///////////////////////////////////////////////

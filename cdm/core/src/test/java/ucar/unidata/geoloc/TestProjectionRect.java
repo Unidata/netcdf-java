@@ -39,7 +39,7 @@ public class TestProjectionRect {
 
   @Test
   public void testSpecConstructor() {
-    ProjectionRect rect = new ProjectionRect("-4.502221, -4.570379, 3925.936303, 2148.077947");
+    ProjectionRect rect = ProjectionRect.fromSpec("-4.502221, -4.570379, 3925.936303, 2148.077947");
     ProjectionRect rect2 = ProjectionRect.builder().setRect(-4.502221, -4.570379, 3925.936303, 2148.077947).build();
     assertThat(rect).isEqualTo(rect2);
     assertThat(rect.hashCode()).isEqualTo(rect2.hashCode());
@@ -57,11 +57,11 @@ public class TestProjectionRect {
 
     ProjectionRect rect2 = new ProjectionRect().toBuilder().setX(-6000).setY(-6000).build();
     assertThat(ProjectionRect.intersect(rect, rect2).isEmpty()).isFalse();
-    assertThat(ProjectionRect.intersect(rect, rect2)).isEqualTo(new ProjectionRect("-5000, -5000, 9000, 9000"));
+    assertThat(ProjectionRect.intersect(rect, rect2)).isEqualTo(ProjectionRect.fromSpec("-5000, -5000, 9000, 9000"));
 
     ProjectionRect rect3 = new ProjectionRect().toBuilder().setX(-6000).setY(6000).build();
     assertThat(ProjectionRect.intersect(rect, rect3).isEmpty()).isTrue();
-    assertThat(ProjectionRect.intersect(rect, rect3)).isEqualTo(new ProjectionRect("-5000, 6000, 9000, -1000"));
+    assertThat(ProjectionRect.intersect(rect, rect3)).isEqualTo(ProjectionRect.fromSpec("-5000, 6000, 9000, -1000"));
   }
 
   @Test
@@ -70,10 +70,10 @@ public class TestProjectionRect {
     assertThat(rect).isEqualTo(new ProjectionRect());
 
     ProjectionRect rect3 = new ProjectionRect().toBuilder().add(ProjectionPoint.create(0, 6000)).build();
-    assertThat(rect3).isEqualTo(new ProjectionRect("-5000, -5000, 10000, 11000"));
+    assertThat(rect3).isEqualTo(ProjectionRect.fromSpec("-5000, -5000, 10000, 11000"));
 
     ProjectionRect rect2 = new ProjectionRect().toBuilder().add(10000, 1000).build();
-    assertThat(rect2).isEqualTo(new ProjectionRect("-5000, -5000, 15000, 10000"));
+    assertThat(rect2).isEqualTo(ProjectionRect.fromSpec("-5000, -5000, 15000, 10000"));
   }
 
 }

@@ -7,8 +7,8 @@ package ucar.nc2.grid;
 import com.google.common.base.Preconditions;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.time.CalendarPeriod;
 import ucar.unidata.geoloc.LatLonPoint;
+import ucar.unidata.geoloc.LatLonPoints;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionRect;
 
@@ -40,7 +40,6 @@ public class GridSubset {
   public static final String timeStride = "timeStride"; // value = Integer
   public static final String timePresent = "timePresent"; // value = Boolean
   public static final String timeAll = "timeAll"; // value = Boolean
-  public static final String timeWindow = "timeWindow"; // value = CalendarPeriod
 
   public static final String vertPoint = "vertPoint"; // value = Double
   public static final String vertIntv = "vertIntv"; // value = CoordInterval
@@ -101,12 +100,18 @@ public class GridSubset {
   @Nullable
   private CalendarDateRange getCalendarDateRange(String key) {
     Object val = req.get(key);
-    if (val == null)
+    if (val == null) {
       return null;
-    if (val instanceof CalendarDateRange) {
+    } else if (val instanceof CalendarDateRange) {
       return (CalendarDateRange) val;
+    } else if (val instanceof String) {
+      try {
+        return CalendarDateRange.parse((String) val);
+      } catch (Exception e) {
+        throw new RuntimeException(key + " cant parse as CalendarDateRange " + val);
+      }
     }
-    throw new RuntimeException(key + " not a Calendar Date Range " + val);
+    throw new RuntimeException(key + " not a CalendarDateRange " + val);
   }
 
   @Nullable
@@ -145,6 +150,9 @@ public class GridSubset {
 
   private boolean isTrue(String key) {
     Object val = req.get(key);
+    if (val instanceof String) {
+      return ((String) val).equalsIgnoreCase("true");
+    }
     return (val instanceof Boolean) && (Boolean) val;
   }
 
@@ -155,7 +163,7 @@ public class GridSubset {
 
   @Nullable
   public Integer getHorizStride() {
-    return (Integer) req.get(horizStride);
+    return getInteger(horizStride);
   }
 
   @Nullable
@@ -171,7 +179,19 @@ public class GridSubset {
 
   @Nullable
   public LatLonRect getLatLonBoundingBox() {
-    return (LatLonRect) get(latlonBB);
+    Object val = req.get(latlonBB);
+    if (val == null) {
+      return null;
+    } else if (val instanceof LatLonRect) {
+      return (LatLonRect) val;
+    } else if (val instanceof String) {
+      try {
+        return LatLonRect.fromSpec((String) val);
+      } catch (Exception e) {
+        throw new RuntimeException(" cant parse as LatLonRect " + val);
+      }
+    }
+    throw new RuntimeException(" not a LatLonRect " + val);
   }
 
   public GridSubset setLatLonBoundingBox(LatLonRect llbb) {
@@ -181,7 +201,19 @@ public class GridSubset {
 
   @Nullable
   public LatLonPoint getLatLonPoint() {
-    return (LatLonPoint) get(latlonPoint);
+    Object val = req.get(latlonPoint);
+    if (val == null) {
+      return null;
+    } else if (val instanceof LatLonPoint) {
+      return (LatLonPoint) val;
+    } else if (val instanceof String) {
+      try {
+        return LatLonPoints.parseLatLonPoint((String) val);
+      } catch (Exception e) {
+        throw new RuntimeException(" cant parse as LatLonPoint " + val);
+      }
+    }
+    throw new RuntimeException(" not a LatLonPoint " + val);
   }
 
   public GridSubset setLatLonPoint(LatLonPoint pt) {
@@ -191,7 +223,19 @@ public class GridSubset {
 
   @Nullable
   public ProjectionRect getProjectionBoundingBox() {
-    return (ProjectionRect) get(projBB);
+    Object val = req.get(projBB);
+    if (val == null) {
+      return null;
+    } else if (val instanceof ProjectionRect) {
+      return (ProjectionRect) val;
+    } else if (val instanceof String) {
+      try {
+        return ProjectionRect.fromSpec((String) val);
+      } catch (Exception e) {
+        throw new RuntimeException(" cant parse as ProjectionRect " + val);
+      }
+    }
+    throw new RuntimeException(" not a ProjectionRect " + val);
   }
 
   public GridSubset setProjectionBoundingBox(ProjectionRect projRect) {
@@ -206,6 +250,12 @@ public class GridSubset {
 
   public GridSubset setRunTime(CalendarDate date) {
     req.put(runtime, date);
+    return this;
+  }
+
+  public GridSubset setRunTimeCoord(Object coord) {
+    Preconditions.checkArgument(coord instanceof CalendarDate);
+    req.put(runtime, coord);
     return this;
   }
 
@@ -289,17 +339,8 @@ public class GridSubset {
   }
 
   @Nullable
-  public CalendarPeriod getTimeWindow() {
-    return (CalendarPeriod) get(timeWindow);
-  }
-
   public Double getTimeOffset() {
     return getDouble(timeOffset);
-  }
-
-  public GridSubset setTimeOffset(double offset) {
-    req.put(timeOffset, offset);
-    return this;
   }
 
   // A time offset or time offset interval starts from the rundate of that point, in the units of the coordinate
@@ -320,7 +361,7 @@ public class GridSubset {
     return getCoordInterval(timeOffsetIntv);
   }
 
-  public Boolean getTimeOffsetFirst() {
+  public boolean getTimeOffsetFirst() {
     return isTrue(timeOffsetFirst);
   }
 
@@ -354,17 +395,7 @@ public class GridSubset {
   public String toString() {
     Formatter f = new Formatter();
     for (Map.Entry<String, Object> entry : req.entrySet()) {
-      f.format(" %s == ", entry.getKey());
-      Object val = entry.getValue();
-      if (val instanceof CalendarDate[]) {
-        CalendarDate[] cd = ((CalendarDate[]) val);
-        f.format("[%s,%s]", cd[0], cd[1]);
-      } else if (val instanceof double[]) {
-        double[] d = ((double[]) val);
-        f.format("[%f,%f]", d[0], d[1]);
-      } else {
-        f.format("%s,", entry.getValue());
-      }
+      f.format("%s == %s%n", entry.getKey(), entry.getValue());
     }
     return f.toString();
   }
@@ -373,8 +404,8 @@ public class GridSubset {
     return (String) get(gridName);
   }
 
-  public GridSubset setGridName(String varName) {
-    req.put(gridName, varName);
+  public GridSubset setGridName(String name) {
+    req.put(gridName, name);
     return this;
   }
 
@@ -400,4 +431,5 @@ public class GridSubset {
   public int hashCode() {
     return Objects.hash(req);
   }
+
 }

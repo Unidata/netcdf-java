@@ -215,32 +215,6 @@ public class GridNetcdfDataset implements GridDataset {
     return f.toString();
   }
 
-  /*
-   * @Override
-   * public void toString(Formatter buf) {
-   * int countGridset = 0;
-   * 
-   * for (GridCS gcs : gridsets.keySet()) {
-   * buf.format("%nGridset %d: ", countGridset);
-   * gcs.show(buf, false);
-   * buf.format("%n");
-   * buf.format("Name___________________________________________Unit____________Description%n");
-   * for (Grid grid : gridsets.get(gcs)) {
-   * buf.format(" %-46s %-15s %s%n", grid.getName(), grid.getUnits(), grid.getDescription());
-   * }
-   * countGridset++;
-   * buf.format("%n");
-   * }
-   * 
-   * buf.format("%nGeoReferencing Coordinate Axes%n");
-   * buf.format("Name__________________________Units_________________________Type______Description%n");
-   * for (CoordinateAxis axis : ncd.getCoordinateAxes()) {
-   * axis.getInfo(buf);
-   * buf.format("%n");
-   * }
-   * }
-   */
-
   private boolean wasClosed = false;
 
   @Override

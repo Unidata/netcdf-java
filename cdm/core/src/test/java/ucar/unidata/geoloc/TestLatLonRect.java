@@ -124,7 +124,7 @@ public class TestLatLonRect {
   @Test
   public void testSpec() {
     LatLonRect rect1 = LatLonRect.builder(LatLonPoint.create(99, 100), 101, 102).build();
-    LatLonRect rect2 = LatLonRect.builder("99, 100, 101, 102").build();
+    LatLonRect rect2 = LatLonRect.fromSpec("99, 100, 101, 102");
     assertThat(rect1).isEqualTo(rect2);
   }
 

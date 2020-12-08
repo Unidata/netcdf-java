@@ -263,8 +263,8 @@ public class GridAxis1D extends GridAxis {
       if (current >= getNcoords()) {
         return endOfData();
       }
-      Object result = spacing != discontiguousInterval ? Double.valueOf(getCoordMidpoint(current))
-          : CoordInterval.create(getCoordEdge1(current), getCoordEdge2(current));
+      Object result = spacing.isInterval() ? CoordInterval.create(getCoordEdge1(current), getCoordEdge2(current))
+          : Double.valueOf(getCoordMidpoint(current));
       current++;
       return result;
     }

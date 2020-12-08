@@ -171,7 +171,7 @@ public class FeatureScan {
               gridCoordinateSystem = gridDataset.getGridCoordinateSystems().get(0);
             }
           }
-          info.append("\nGridDatasetImpl errlog = ");
+          info.append("\nGridNetcdfDataset errlog = ");
           info.append(errlog);
           info.append("\n\n");
 
