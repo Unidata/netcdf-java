@@ -5,8 +5,6 @@
 
 package ucar.unidata.io;
 
-
-import java.io.ByteArrayOutputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
@@ -28,10 +26,15 @@ import java.util.concurrent.atomic.AtomicLong;
 
 
 /**
- * A buffered drop-in replacement for java.io.RandomAccessFile.
- * Instances of this class realise substantial speed increases over
- * java.io.RandomAccessFile through the use of buffering. This is a
- * subclass of Object, as it was not possible to subclass
+ * A class intended as drop-in replacement for java.io.RandomAccessFile, with some notable extensions:
+ * <ul>
+ * <li>Buffered I/O: instances of this class realise substantial speed increases over
+ * * java.io.RandomAccessFile through the use of buffering.</li>
+ * <li>Read String methods support user-specified Charsets (default UTF-8).</li>
+ * <li>Support for both big and little endiannness on reads and write: users may specify the byte order for I/O
+ * operations.</li>
+ * </ul>
+ * This is a subclass of Object, as it was not possible to subclass
  * java.io.RandomAccessFile because many of the methods are
  * final. However, if it is necessary to use RandomAccessFile and
  * java.io.RandomAccessFile interchangeably, both classes implement the
@@ -545,8 +548,10 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
 
   /**
    * Change the current endian mode. Subsequent reads of short, int, float, double, long, char will
-   * use this. Does not currently affect writes.
+   * use this. Does not currently affect writes - ByteOrder must be explicitly specified on writes.
    * Default values is BIG_ENDIAN.
+   *
+   * This method is an extension not implemented in java.io.RandomAccessFile.
    *
    * @param endian RandomAccessFile.BIG_ENDIAN or RandomAccessFile.LITTLE_ENDIAN
    */
@@ -1446,6 +1451,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
 
   /**
    * Read the next line of text as the specified charset
+   * The charset parameter is an extension not implemented in java.io.RandomAccessFile.
    *
    * @param charset - character encoding to use
    * @return
@@ -1529,7 +1535,8 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
   }
 
   /**
-   * Read a String of known length.
+   * Read a String of known length as the specified charset.
+   * The charset parameter is an extension not implemented in java.io.RandomAccessFile.
    *
    * @param nbytes number of bytes to reSad
    * @param charset the {@link Charset charset} to be used to decode the bytes
@@ -1554,7 +1561,8 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
   }
 
   /**
-   * Read a String of max length, zero terminate.
+   * Read a String of max length as the specified charset, zero terminate.
+   * The charset parameter is an extension not implemented in java.io.RandomAccessFile.
    *
    * @param nbytes number of bytes to read
    * @param charset the {@link Charset charset} to be used to decode the bytes
@@ -1632,7 +1640,8 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
   }
 
   /**
-   * Writes a <code>short</code> to the file as two bytes
+   * Writes a <code>short</code> to the file as two bytes with the provided endianness.
+   * The endian parameter is an extension not implemented in java.io.RandomAccessFile.
    * 
    * @param v a <code>short</code> to be written.
    * @param endian Endianness of the file as an int (0 = big endian, 1 = little endian)
@@ -1644,7 +1653,8 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
   }
 
   /**
-   * Writes a <code>short</code> to the file as two bytes,
+   * Writes a <code>short</code> to the file as two bytes with the provided byte order.
+   * The byte order parameter is an extension not implemented in java.io.RandomAccessFile.
    * 
    * @param v a <code>short</code> to be written.
    * @param bo Endianness of the file as a ByteOrder
@@ -1673,7 +1683,8 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
   }
 
   /**
-   * Write an array of shorts
+   * Write an array of shorts with the provided endianness.
+   * The endian parameter is an extension not implemented in java.io.RandomAccessFile.
    *
    * @param pa write from this array
    * @param start starting with this element in the array
@@ -1687,7 +1698,8 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
   }
 
   /**
-   * Write an array of shorts
+   * Write an array of shorts with the provided byte order.
+   * The byte order parameter is an extension not implemented in java.io.RandomAccessFile.
    *
    * @param pa write from this array
    * @param start starting with this element in the array
@@ -1712,7 +1724,8 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
   }
 
   /**
-   * Writes a <code>char</code> to the file as a 2-byte value
+   * Writes a <code>char</code> to the file as a 2-byte value with the provided endianness.
+   * The endian parameter is an extension not implemented in java.io.RandomAccessFile.
    *
    * @param v a <code>char</code> value to be written.
    * @param endian Endianness of the file as an int (0 = big endian, 1 = little endian)
@@ -1724,7 +1737,8 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
   }
 
   /**
-   * Writes a <code>char</code> to the file as a 2-byte value
+   * Writes a <code>char</code> to the file as a 2-byte value with the provided byte order.
+   * The byte order parameter is an extension not implemented in java.io.RandomAccessFile.
    *
    * @param v a <code>char</code> value to be written.
    * @param bo Endianness of the file as a ByteOrder
@@ -1753,7 +1767,8 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
   }
 
   /**
-   * Write an array of chars
+   * Write an array of chars with the provided endianness.
+   * The endian parameter is an extension not implemented in java.io.RandomAccessFile.
    *
    * @param pa write from this array
    * @param start starting with this element in the array
@@ -1767,7 +1782,8 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
   }
 
   /**
-   * Write an array of chars
+   * Write an array of chars with the provided byte order.
+   * The byte order parameter is an extension not implemented in java.io.RandomAccessFile.
    *
    * @param pa write from this array
    * @param start starting with this element in the array
@@ -1792,7 +1808,8 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
   }
 
   /**
-   * Writes an <code>int</code> to the file as four bytes, high byte first.
+   * Writes an <code>int</code> to the file as four bytes with the provided endianness.
+   * The endian parameter is an extension not implemented in java.io.RandomAccessFile.
    *
    * @param v an <code>int</code> to be written.
    * @param endian Endianness of the file as an int (0 = big endian, 1 = little endian)
@@ -1804,7 +1821,8 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
   }
 
   /**
-   * Writes an <code>int</code> to the file as four bytes, high byte first.
+   * Writes an <code>int</code> to the file as four bytes with the provided byte order.
+   * The byte order parameter is an extension not implemented in java.io.RandomAccessFile.
    *
    * @param v an <code>int</code> to be written.
    * @param bo Endianness of the file as a ByteOrder
@@ -1837,7 +1855,8 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
   }
 
   /**
-   * Write an array of ints
+   * Write an array of ints with the provided endianness.
+   * The endian parameter is an extension not implemented in java.io.RandomAccessFile.
    *
    * @param pa write from this array
    * @param start starting with this element in the array
@@ -1851,7 +1870,8 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
   }
 
   /**
-   * Write an array of ints
+   * Write an array of ints with the provided byte order.
+   * The byte order parameter is an extension not implemented in java.io.RandomAccessFile.
    *
    * @param pa write from this array
    * @param start starting with this element in the array
@@ -1876,7 +1896,8 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
   }
 
   /**
-   * Writes a <code>long</code> to the file as eight bytes, high byte first.
+   * Writes a <code>long</code> to the file as eight bytes with the provided endianness.
+   * The endian parameter is an extension not implemented in java.io.RandomAccessFile.
    *
    * @param v a <code>long</code> to be written.
    * @param endian Endianness of the file as an int (0 = big endian, 1 = little endian)
@@ -1888,7 +1909,8 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
   }
 
   /**
-   * Writes a <code>long</code> to the file as eight bytes, high byte first.
+   * Writes a <code>long</code> to the file as eight bytes with the provided byte order.
+   * The byte order parameter is an extension not implemented in java.io.RandomAccessFile.
    *
    * @param v a <code>long</code> to be written.
    * @param bo Endianness of the file as a ByteOrder
@@ -1929,7 +1951,8 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
   }
 
   /**
-   * Write an array of longs
+   * Write an array of longs with the provided endianness.
+   * The endian parameter is an extension not implemented in java.io.RandomAccessFile.
    *
    * @param pa write from this array
    * @param start starting with this element in the array
@@ -1943,7 +1966,8 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
   }
 
   /**
-   * Write an array of longs
+   * Write an array of longs with the provided byte order.
+   * The byte order parameter is an extension not implemented in java.io.RandomAccessFile.
    *
    * @param pa write from this array
    * @param start starting with this element in the array
@@ -1975,7 +1999,8 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
    * Converts the float argument to an <code>int</code> using the
    * <code>floatToIntBits</code> method in class <code>Float</code>,
    * and then writes that <code>int</code> value to the file as a
-   * 4-byte quantity, high byte first.
+   * 4-byte quantity, with the provided endianness.
+   * The endian parameter is an extension not implemented in java.io.RandomAccessFile.
    *
    * @param v a <code>float</code> value to be written.
    * @param endian Endianness of the file as an int (0 = big endian, 1 = little endian)
@@ -1990,7 +2015,8 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
    * Converts the float argument to an <code>int</code> using the
    * <code>floatToIntBits</code> method in class <code>Float</code>,
    * and then writes that <code>int</code> value to the file as a
-   * 4-byte quantity, high byte first.
+   * 4-byte quantity, with the provided byte order.
+   * The byte order parameter is an extension not implemented in java.io.RandomAccessFile.
    *
    * @param v a <code>float</code> value to be written.
    * @param bo Endianness of the file as a ByteOrder
@@ -2014,7 +2040,8 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
   }
 
   /**
-   * Write an array of floats
+   * Write an array of floats with the provided endianness.
+   * The endian parameter is an extension not implemented in java.io.RandomAccessFile.
    *
    * @param pa write from this array
    * @param start starting with this element in the array
@@ -2028,7 +2055,8 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
   }
 
   /**
-   * Write an array of floats
+   * Write an array of floats with the provided byte order.
+   * The byte order parameter is an extension not implemented in java.io.RandomAccessFile.
    *
    * @param pa write from this array
    * @param start starting with this element in the array
@@ -2060,7 +2088,8 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
    * Converts the double argument to a <code>long</code> using the
    * <code>doubleToLongBits</code> method in class <code>Double</code>,
    * and then writes that <code>long</code> value to the file as an
-   * 8-byte quantity, high byte first.
+   * 8-byte quantity, with the provided endianness.
+   * The endian parameter is an extension not implemented in java.io.RandomAccessFile.
    *
    * @param v a <code>double</code> value to be written.
    * @param endian Endianness of the file as an int (0 = big endian, 1 = little endian)
@@ -2075,7 +2104,8 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
    * Converts the double argument to a <code>long</code> using the
    * <code>doubleToLongBits</code> method in class <code>Double</code>,
    * and then writes that <code>long</code> value to the file as an
-   * 8-byte quantity, high byte first.
+   * 8-byte quantity, with the provided byte order.
+   * The byte order parameter is an extension not implemented in java.io.RandomAccessFile.
    *
    * @param v a <code>double</code> value to be written.
    * @param bo Endianness of the file as a ByteOrder
@@ -2099,7 +2129,8 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
   }
 
   /**
-   * Write an array of doubles
+   * Write an array of doubles with the provided endianness.
+   * The endian parameter is an extension not implemented in java.io.RandomAccessFile.
    *
    * @param pa write from this array
    * @param start starting with this element in the array
@@ -2113,7 +2144,8 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
   }
 
   /**
-   * Write an array of doubles
+   * Write an array of doubles with the provided byte order.
+   * The byte order parameter is an extension not implemented in java.io.RandomAccessFile.
    *
    * @param pa write from this array
    * @param start starting with this element in the array
@@ -2174,7 +2206,8 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
   /**
    * Writes a string to the file as a sequence of characters. Each
    * character is written to the data output stream as if by the
-   * <code>writeChar</code> method.
+   * <code>writeChar</code> method, with the provided endianness.
+   * The endian parameter is an extension not implemented in java.io.RandomAccessFile.
    *
    * @param s a <code>String</code> value to be written.
    * @param endian Endianness of the file as an int (0 = big endian, 1 = little endian)
@@ -2189,7 +2222,8 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
   /**
    * Writes a string to the file as a sequence of characters. Each
    * character is written to the data output stream as if by the
-   * <code>writeChar</code> method.
+   * <code>writeChar</code> method, with the provided byte order.
+   * The byte order parameter is an extension not implemented in java.io.RandomAccessFile.
    *
    * @param s a <code>String</code> value to be written.
    * @throws IOException if an I/O error occurs.
