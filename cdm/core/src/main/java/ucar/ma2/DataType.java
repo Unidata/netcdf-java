@@ -15,6 +15,7 @@ import javax.annotation.Nullable;
  * 
  * @deprecated will move in ver7.
  */
+@Deprecated
 public enum DataType {
   BOOLEAN("boolean", 1, boolean.class, false), //
   BYTE("byte", 1, byte.class, false), //

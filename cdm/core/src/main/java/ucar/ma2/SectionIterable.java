@@ -16,6 +16,7 @@ import java.util.List;
  * 
  * @deprecated will move in ver7. TODO could be moved to Grib?
  */
+@Deprecated
 @Immutable
 public class SectionIterable implements Iterable<java.lang.Integer> {
 

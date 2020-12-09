@@ -5,6 +5,7 @@ package ucar.ma2;
  * 
  * @deprecated will move in ver7.
  */
+@Deprecated
 public interface IsMissingEvaluator {
   /** true if there may be missing data */
   boolean hasMissing();

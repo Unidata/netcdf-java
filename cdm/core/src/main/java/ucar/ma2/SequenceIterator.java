@@ -10,6 +10,7 @@ package ucar.ma2;
  * 
  * @deprecated do not use.
  */
+@Deprecated
 public class SequenceIterator implements StructureDataIterator {
   private int start, size, count;
   private ArrayStructure abb;
