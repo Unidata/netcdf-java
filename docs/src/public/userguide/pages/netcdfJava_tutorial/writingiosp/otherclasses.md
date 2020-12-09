@@ -15,7 +15,7 @@ To implement an IOSP, you will likely need to be familiar with the following cla
 ### RandomAccessFile
 
 The class `ucar.unidata.io.RandomAccessFile` is a cover for `java.io.RandomAccessFile`, which it (usually) uses underneath. 
-It additionally implements user-settable buffer sizes, files with both big and little endianness, and several other methods to improve the API.
+It additionally implements user-settable buffer sizes, files with both big and little endianness, reading multiple `Charsets`, and several other methods to improve the API.
 
 There are subclasses of `RandomAccessFile` such as `HTTPRandomAccessFile` and `InMemoryRandomAccessFile`, which deal with remote HTTP files 
 and memory resident files. Use of these subclasses is transparent to an IOSP.
@@ -61,8 +61,7 @@ public class ucar.unidata.io.RandomAccessFile {
     arr, int start, int n) throws IOException;
 
     public final short readShort() throws IOException;
-    public final void readShort(short[]
-    arr, int start, int n) throws IOException;
+    public final void readShort(short[] arr, int start, int n) throws IOException;
 
     // read unsigned, promote to int
     public final int readUnsignedShort() throws IOException;
