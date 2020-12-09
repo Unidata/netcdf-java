@@ -205,10 +205,12 @@ public class GridAxisOffsetTimeRegular extends GridAxis {
     Preconditions.checkNotNull(builder.midpoints);
     Preconditions.checkNotNull(builder.bounds);
     Preconditions.checkNotNull(builder.hourOffsets);
-    int nruns = builder.runtimeAxis.ncoords;
+    Preconditions.checkArgument(builder.midpoints.getRank() == 2);
+    Preconditions.checkArgument(builder.bounds.getRank() == 3);
     int nhours = builder.hourOffsets.size();
-    Preconditions.checkArgument(java.util.Arrays.equals(builder.midpoints.getShape(), new int[] {nruns, nhours}));
-    Preconditions.checkArgument(java.util.Arrays.equals(builder.bounds.getShape(), new int[] {nruns, nhours, 2}));
+    int noffsets = builder.midpoints.getShape()[1];
+    Preconditions.checkArgument(java.util.Arrays.equals(builder.midpoints.getShape(), new int[] {nhours, noffsets}));
+    Preconditions.checkArgument(java.util.Arrays.equals(builder.bounds.getShape(), new int[] {nhours, noffsets, 2}));
 
     this.runtimeAxis = builder.runtimeAxis;
     this.midpoints = builder.midpoints;

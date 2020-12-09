@@ -35,13 +35,14 @@ public class TestTdsNCEPGribCollections {
       /// NCEP
       // gefs
       result.add(new Object[] {
-          topDir + "NCEP/GEFS/Global_1p0deg_Ensemble/member/GEFS-Global_1p0deg_Ensemble-members.ncx4", 36, 12, 15});
-      result.add(new Object[] {
-          topDir + "NCEP/GEFS/Global_1p0deg_Ensemble/derived/GEFS-Global_1p0deg_Ensemble-derived_products.ncx4", 72, 12,
-          14});
-      result.add(new Object[] {
-          topDir + "NCEP/GEFS/Global_1p0deg_Ensemble/member_analysis/GEFS-Global_1p0deg_Ensemble-members-analysis.ncx4",
-          12, 6, 10});
+          TestDir.cdmUnitTestDir + "ncss/GEFS/Global_1p0deg_Ensemble/member/GEFS-Global_1p0deg_Ensemble-members.ncx4",
+          35, 11, 14});
+      // result.add(new Object[] {
+      // topDir + "NCEP/GEFS/Global_1p0deg_Ensemble/derived/GEFS-Global_1p0deg_Ensemble-derived_products.ncx4", 72, 12,
+      // 14});
+      // result.add(new Object[] {
+      // topDir + "NCEP/GEFS/Global_1p0deg_Ensemble/member_analysis/GEFS-Global_1p0deg_Ensemble-members-analysis.ncx4",
+      // 12, 6, 10});
 
       // gfs
       result.add(new Object[] {topDir + "NCEP/GFS/Alaska_20km/GFS-Alaska_20km.ncx4", 52, 12, 14});
@@ -62,9 +63,9 @@ public class TestTdsNCEPGribCollections {
 
       // mrms
       result.add(new Object[] {topDir + "NCEP/MRMS/BaseRef/MRMS-BaseRef.ncx4", 1, 1, 5});
-      result.add(new Object[] {topDir + "NCEP/MRMS/Model/MRMS-Model.ncx4", 2, 2, 10});
-      result.add(new Object[] {topDir + "NCEP/MRMS/NLDN/MRMS-NLDN.ncx4", 6, 6, 16});
-      result.add(new Object[] {topDir + "NCEP/MRMS/Precip/MRMS-Precip.ncx4", 39, 20, 43});
+      result.add(new Object[] {topDir + "NCEP/MRMS/Model/MRMS-Model.ncx4", 1, 1, 5});
+      result.add(new Object[] {topDir + "NCEP/MRMS/NLDN/MRMS-NLDN.ncx4", 5, 5, 14});
+      result.add(new Object[] {topDir + "NCEP/MRMS/Precip/MRMS-Precip.ncx4", 25, 14, 31});
       result.add(new Object[] {topDir + "NCEP/MRMS/Radar/MRMS-Radar.ncx4", 19, 19, 41});
       result.add(new Object[] {topDir + "NCEP/MRMS/RotationTrackML/MRMS-RotationTracksML.ncx4", 2, 2, 7});
       result.add(new Object[] {topDir + "NCEP/MRMS/Radar/MRMS-Radar.ncx4", 19, 19, 41}); // */
@@ -72,13 +73,13 @@ public class TestTdsNCEPGribCollections {
       // nam
       result.add(new Object[] {topDir + "NCEP/NAM/Alaska_45km/noaaport/NAM-Alaska_45km-noaaport.ncx4", 21, 6, 9});
       result.add(new Object[] {topDir + "NCEP/NAM/Alaska_95km/NAM-Alaska_95km.ncx4", 29, 12, 15});
-      result.add(new Object[] {topDir + "NCEP/NAM/CONUS_12km/NAM-CONUS_12km-noaaport.ncx4", 59, 18, 21});
+      result.add(new Object[] {topDir + "NCEP/NAM/CONUS_12km/NAM-CONUS_12km-noaaport.ncx4", 59, 15, 18});
       result.add(new Object[] {topDir + "NCEP/NAM/CONUS_80km/NAM-CONUS_80km.ncx4", 41, 11, 14});
-      result.add(new Object[] {topDir + "NCEP/NAM/Alaska_11km/NAM-Alaska_11km.ncx4", 59, 18, 21});
+      result.add(new Object[] {topDir + "NCEP/NAM/Alaska_11km/NAM-Alaska_11km.ncx4", 59, 15, 18});
       result.add(new Object[] {topDir + "NCEP/NAM/CONUS_20km/noaaport/NAM-CONUS_20km-noaaport.ncx4", 12, 5, 8});
 
       // Individual runtimes are SRC, and are fine
-      result.add(new Object[] {topDir + "NCEP/NAM/Firewxnest/NAM_Firewxnest_20201010_0000.grib2.ncx4", 214, 38, 38});
+      result.add(new Object[] {topDir + "NCEP/NAM/Firewxnest/NAM_Firewxnest_20201027_0000.grib2.ncx4", 214, 38, 38});
 
       // No projection found
       // Firewxnest partition has moving grids (3).
@@ -93,11 +94,11 @@ public class TestTdsNCEPGribCollections {
 
       // nbm
       // Individual runtimes are SRC, and are fine
-      result.add(new Object[] {topDir + "NCEP/NBM/Alaska/National_Blend_Alaska_20201010_0000.grib2.ncx4", 26, 16, 18});
-      result.add(new Object[] {topDir + "NCEP/NBM/CONUS/National_Blend_CONUS_20201010_0000.grib2.ncx4", 26, 16, 19});
-      result.add(new Object[] {topDir + "NCEP/NBM/Hawaii/National_Blend_Hawaii_20201010_1200.grib2.ncx4", 16, 12, 15});
+      result.add(new Object[] {topDir + "NCEP/NBM/Alaska/National_Blend_Alaska_20201027_0000.grib2.ncx4", 26, 16, 18});
+      result.add(new Object[] {topDir + "NCEP/NBM/CONUS/National_Blend_CONUS_20201027_0000.grib2.ncx4", 26, 16, 19});
+      result.add(new Object[] {topDir + "NCEP/NBM/Hawaii/National_Blend_Hawaii_20201027_1200.grib2.ncx4", 16, 12, 15});
       result.add(
-          new Object[] {topDir + "NCEP/NBM/PuertoRico/National_Blend_PuertoRico_20201010_0600.grib2.ncx4", 12, 4, 7});
+          new Object[] {topDir + "NCEP/NBM/PuertoRico/National_Blend_PuertoRico_20201027_0600.grib2.ncx4", 12, 4, 7});
 
       // nbm collection regular timeOffset
       result.add(new Object[] {topDir + "NCEP/NBM/Hawaii/NCEP_HAWAII_MODEL_BLEND.ncx4", 18, 17, 27}); // TODO fishy
@@ -112,15 +113,15 @@ public class TestTdsNCEPGribCollections {
 
       // ndfd
       // Individual runtimes are SRC, and are fine
-      result.add(new Object[] {topDir + "NCEP/NDFD/CPC/NDFD_CPC_CONUS_2p5km_20201013_2200.grib2.ncx4", 4, 1, 4});
+      result.add(new Object[] {topDir + "NCEP/NDFD/CPC/NDFD_CPC_CONUS_2p5km_20201027_2200.grib2.ncx4", 4, 1, 4});
       result.add(
-          new Object[] {topDir + "NCEP/NDFD/NWS/NDFD_NWS_CONUS_conduit_2p5km_20201010_0200.grib2.ncx4", 15, 7, 10});
+          new Object[] {topDir + "NCEP/NDFD/NWS/NDFD_NWS_CONUS_conduit_2p5km_20201126_0200.grib2.ncx4", 15, 7, 10});
       result
-          .add(new Object[] {topDir + "NCEP/NDFD/NWS_noaaport/NDFD_NWS_CONUS_2p5km_20201015_0000.grib2.ncx4", 8, 6, 9});
-      result.add(new Object[] {topDir + "NCEP/NDFD/SPC/NDFD_SPC_CONUS_2p5km_20201010_2000.grib2.ncx4", 2, 2, 5});
+          .add(new Object[] {topDir + "NCEP/NDFD/NWS_noaaport/NDFD_NWS_CONUS_2p5km_20201126_0000.grib2.ncx4", 8, 6, 9});
+      result.add(new Object[] {topDir + "NCEP/NDFD/SPC/NDFD_SPC_CONUS_2p5km_20201030_0000.grib2.ncx4", 2, 2, 5});
 
       // ndfd collections: non-orth regular
-      result.add(new Object[] {topDir + "NCEP/NDFD/NWS_noaaport/NDFD_NWS_CONUS_NOAAPORT.ncx4", 8, 6, 11});
+      result.add(new Object[] {topDir + "NCEP/NDFD/NWS_noaaport/NDFD_NWS_CONUS_NOAAPORT.ncx4", 8, 6, 9});
       result.add(new Object[] {topDir + "NCEP/NDFD/SPC/NDFD_SPC_CONUS_CONDUIT.ncx4", 4, 4, 10});
 
       // TODO What if you didnt collect them, just leave the SRC's
@@ -130,13 +131,13 @@ public class TestTdsNCEPGribCollections {
       // result.add(new Object[]{topDir + "NCEP/NDFD/NWS/NDFD_NWS_CONUS_CONDUIT.ncx4", });
 
       // rr
-      result.add(new Object[] {topDir + "NCEP/RR/CONUS_13km/RAP-CONUS_13km.ncx4", 53, 14, 16});
+      result.add(new Object[] {topDir + "NCEP/RR/CONUS_13km/RAP-CONUS_13km.ncx4", 53, 11, 14});
       result.add(new Object[] {topDir + "NCEP/RR/CONUS_40km/RAP-CONUS_40km.ncx4", 91, 19, 22});
       result.add(new Object[] {topDir + "NCEP/RR/CONUS_20km/RAP-CONUS_20km.ncx4", 91, 19, 22});
 
       // rtma
-      result.add(new Object[] {topDir + "NCEP/RTMA/CONUS_2p5km/RTMA-CONUS_2p5km.ncx4", 20, 10, 15});
-      result.add(new Object[] {topDir + "NCEP/RTMA/GUAM_2p5km/RTMA-GUAM_2p5km.ncx4", 17, 4, 8});
+      result.add(new Object[] {topDir + "NCEP/RTMA/CONUS_2p5km/RTMA-CONUS_2p5km.ncx4", 20, 5, 11});
+      result.add(new Object[] {topDir + "NCEP/RTMA/GUAM_2p5km/RTMA-GUAM_2p5km.ncx4", 17, 3, 6});
 
       // sref
       result.add(new Object[] {

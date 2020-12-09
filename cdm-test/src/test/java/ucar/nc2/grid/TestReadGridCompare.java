@@ -5,6 +5,7 @@
 
 package ucar.nc2.grid;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -29,6 +30,7 @@ import static org.junit.Assert.fail;
 /** Compare reading new and old GridDataset. */
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
+@Ignore("Slow")
 public class TestReadGridCompare {
 
   @Parameterized.Parameters(name = "{0}")
