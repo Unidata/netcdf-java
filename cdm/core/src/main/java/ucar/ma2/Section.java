@@ -22,6 +22,7 @@ import javax.annotation.concurrent.Immutable;
  * 
  * @deprecated will move in ver7.
  */
+@Deprecated
 @Immutable
 public class Section {
   public static final Section SCALAR = new Section(Range.ONE);

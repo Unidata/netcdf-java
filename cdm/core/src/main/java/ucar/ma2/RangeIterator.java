@@ -12,6 +12,7 @@ import java.util.Iterator;
  * 
  * @deprecated will move in ver7.
  */
+@Deprecated
 public interface RangeIterator extends Iterable<Integer> {
 
   @Override

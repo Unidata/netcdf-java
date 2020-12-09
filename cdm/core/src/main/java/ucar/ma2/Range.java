@@ -29,6 +29,7 @@ import java.util.Iterator;
  * 
  * @deprecated will move in ver7.
  */
+@Deprecated
 @Immutable
 public class Range implements RangeIterator {
   public static final Range EMPTY = new Range(); // used for unlimited dimension = 0

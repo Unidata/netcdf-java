@@ -9,6 +9,7 @@ package ucar.ma2;
  * 
  * @deprecated will move in ver7.
  */
+@Deprecated
 public class InvalidRangeException extends Exception {
   public InvalidRangeException() {}
 

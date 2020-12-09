@@ -9,6 +9,7 @@ import java.util.Iterator;
  * 
  * @deprecated will move in ver7. TODO used?
  */
+@Deprecated
 @Immutable
 public class RangeScatter implements RangeIterator {
   private final int[] vals;
