@@ -7,6 +7,7 @@ package ucar.nc2.grid;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import ucar.array.Array;
+import ucar.array.ArrayType;
 import ucar.array.Arrays;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
@@ -319,8 +320,8 @@ public class GridAxisOffsetTimeRegular extends GridAxis {
       for (int i = 0; i < bounds.size(); i++) {
         bnds[i] = bounds.get(i);
       }
-      this.midpoints = Arrays.factory(DataType.DOUBLE, new int[] {ntimes, nhours}, mids);
-      this.bounds = Arrays.factory(DataType.DOUBLE, new int[] {ntimes, nhours, 2}, bnds);
+      this.midpoints = Arrays.factory(ArrayType.DOUBLE, new int[] {ntimes, nhours}, mids);
+      this.bounds = Arrays.factory(ArrayType.DOUBLE, new int[] {ntimes, nhours, 2}, bnds);
 
       return self();
     }

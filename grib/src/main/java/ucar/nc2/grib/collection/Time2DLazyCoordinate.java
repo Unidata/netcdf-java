@@ -5,6 +5,8 @@
 package ucar.nc2.grib.collection;
 
 import java.util.List;
+
+import ucar.array.ArrayType;
 import ucar.array.Arrays;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
@@ -30,7 +32,7 @@ class Time2DLazyCoordinate {
     } else {
       data = makeLazyTime1Darray(info, gribCollection);
     }
-    return Arrays.factory(DataType.DOUBLE, v2.getShape(), data);
+    return Arrays.factory(ArrayType.DOUBLE, v2.getShape(), data);
   }
 
   static Array makeLazyCoordinateData(Variable v2, Time2Dinfo info, GribCollectionImmutable gribCollection) {

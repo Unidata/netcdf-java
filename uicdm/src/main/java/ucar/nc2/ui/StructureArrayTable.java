@@ -35,13 +35,11 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
-import ucar.array.Array;
-import ucar.array.StructureData;
-import ucar.array.StructureDataArray;
+
+import ucar.array.*;
 import ucar.array.StructureMembers.Member;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
-import ucar.array.StructureMembers;
 import ucar.ma2.Section;
 import ucar.nc2.Sequence;
 import ucar.nc2.Structure;
@@ -272,12 +270,12 @@ public class StructureArrayTable extends JPanel {
       if (m == null)
         throw new IllegalStateException("cant find member = " + memberName);
 
-      if (m.getDataType() == DataType.STRUCTURE || m.getDataType() == DataType.SEQUENCE) {
+      if (m.getArrayType() == ArrayType.STRUCTURE || m.getArrayType() == ArrayType.SEQUENCE) {
         StructureDataArray as = (StructureDataArray) sd.getMemberData(m);
         dataTable.setStructureData(as);
 
       } else {
-        throw new IllegalStateException("data type = " + m.getDataType());
+        throw new IllegalStateException("data type = " + m.getArrayType());
       }
 
       dataWindow.show();
@@ -337,7 +335,7 @@ public class StructureArrayTable extends JPanel {
     f.format(" Members %s%n", members.getName());
     f.format("   Type      Offset Storage ByteOrder Name%n");
     for (Member m : members) {
-      f.format("   %9s %3d %6d %12s %s%n", m.getDataType(), m.getOffset(), m.getStorageSizeBytes(), m.getByteOrder(),
+      f.format("   %9s %3d %6d %12s %s%n", m.getArrayType(), m.getOffset(), m.getStorageSizeBytes(), m.getByteOrder(),
           m.getName());
     }
     dumpTA.setText(f.toString());
@@ -551,7 +549,7 @@ public class StructureArrayTable extends JPanel {
       this.as = as;
       this.members = as.getStructureMembers();
       for (Member m : as.getStructureMembers()) {
-        if (m.getDataType() == DataType.SEQUENCE || m.getDataType() == DataType.STRUCTURE) {
+        if (m.getArrayType() == ArrayType.SEQUENCE || m.getArrayType() == ArrayType.STRUCTURE) {
           subtables.add(m.getName());
         }
       }

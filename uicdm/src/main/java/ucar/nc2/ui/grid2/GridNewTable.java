@@ -7,7 +7,7 @@ package ucar.nc2.ui.grid2;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
-import ucar.ma2.DataType;
+import ucar.array.ArrayType;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.grid.*;
 import ucar.nc2.internal.grid.GridLatLon2D;
@@ -284,7 +284,7 @@ public class GridNewTable extends JPanel {
 
     Grid geogrid;
     String name, desc, units, coordSysName;
-    DataType dataType;
+    ArrayType dataType;
 
     // no-arg constructor
     public GridBean() {}
@@ -295,7 +295,7 @@ public class GridNewTable extends JPanel {
       name = geogrid.getName();
       desc = geogrid.getDescription();
       units = geogrid.getUnits();
-      dataType = geogrid.getDataType();
+      dataType = geogrid.getArrayType();
       coordSysName = geogrid.getCoordinateSystem().getName();
     }
 
@@ -320,7 +320,7 @@ public class GridNewTable extends JPanel {
       return coordSysName;
     }
 
-    public DataType getDataType() {
+    public ArrayType getArrayType() {
       return dataType;
     }
 

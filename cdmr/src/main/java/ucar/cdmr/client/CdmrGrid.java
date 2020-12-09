@@ -1,28 +1,19 @@
 package ucar.cdmr.client;
 
-import com.google.common.base.Stopwatch;
-import io.grpc.StatusRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.array.Arrays;
+import ucar.array.ArrayType;
 import ucar.cdmr.CdmrGridProto;
 import ucar.cdmr.CdmrConverter;
-import ucar.cdmr.CdmrNetcdfProto;
-import ucar.ma2.DataType;
-import ucar.ma2.InvalidRangeException;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.grid.Grid;
 import ucar.nc2.grid.GridCoordinateSystem;
 import ucar.nc2.grid.GridReferencedArray;
 import ucar.nc2.grid.GridSubset;
 
-import javax.annotation.Nullable;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 public class CdmrGrid implements Grid {
   private static final Logger log = LoggerFactory.getLogger(CdmrGrid.class);
@@ -48,7 +39,7 @@ public class CdmrGrid implements Grid {
   }
 
   @Override
-  public DataType getDataType() {
+  public ArrayType getArrayType() {
     return CdmrConverter.convertDataType(proto.getDataType());
   }
 

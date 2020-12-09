@@ -7,9 +7,12 @@ package ucar.array;
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.fail;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import ucar.ma2.DataType;
+
+import java.nio.ByteBuffer;
 
 /** Test {@link StructureDataArray} */
 public class TestStructureDataArray {
@@ -18,8 +21,8 @@ public class TestStructureDataArray {
   public void testBasics() {
     StructureMembers.Builder builder = StructureMembers.builder();
     builder.setName("name");
-    builder.addMember("mname1", "mdesc1", "munits1", DataType.BYTE, new int[] {11, 11});
-    builder.addMember("mname2", "mdesc2", "munits1", DataType.FLOAT, new int[] {});
+    builder.addMember("mname1", "mdesc1", "munits1", ArrayType.BYTE, new int[] {11, 11});
+    builder.addMember("mname2", "mdesc2", "munits1", ArrayType.FLOAT, new int[] {});
     StructureMembers members = builder.build();
 
     StructureData[] parr = new StructureData[2];
@@ -59,6 +62,65 @@ public class TestStructureDataArray {
     StructureData sdata = array.get(0);
     assertThat(sdata.getStructureMembers()).isEqualTo(members);
     assertThat(sdata.getName()).isEqualTo("name");
+  }
+
+  /** Experimental, used in Cdmr */
+  class StructureDataRow extends StructureData {
+    private final ByteBuffer bbuffer;
+
+    public StructureDataRow(StructureMembers members) {
+      super(members);
+      this.bbuffer = ByteBuffer.allocate(members.getStorageSizeBytes());
+    }
+
+    public Array getMemberData(StructureMembers.Member m) {
+      ArrayType dataType = m.getArrayType();
+      int offset = m.getOffset();
+      int size = m.length();
+
+      switch (dataType) {
+        case DOUBLE:
+          double[] darray = new double[size];
+          for (int count = 0; count < size; count++) {
+            darray[count] = bbuffer.getDouble(offset + 8 * count);
+          }
+          return new ArrayDouble(m.getShape(), new ArrayDouble.StorageD(darray));
+        case FLOAT:
+          float[] farray = new float[size];
+          for (int count = 0; count < size; count++) {
+            farray[count] = bbuffer.getFloat(offset + 4 * count);
+          }
+          return new ArrayFloat(m.getShape(), new ArrayFloat.StorageF(farray));
+        default:
+          throw new RuntimeException("unknown dataType " + dataType);
+      }
+    }
+
+    public void setMemberData(StructureMembers.Member m, Array<?> data) {
+      Preconditions.checkArgument(data.length() == m.length());
+      ArrayType dataType = m.getArrayType();
+      int offset = m.getOffset();
+      int count = 0;
+
+      switch (dataType) {
+        case DOUBLE:
+          Array<Double> ddata = (Array<Double>) data;
+          for (double val : ddata) {
+            bbuffer.putDouble(offset + 8 * count, val);
+            count++;
+          }
+          break;
+        case FLOAT:
+          Array<Float> fdata = (Array<Float>) data;
+          for (float val : fdata) {
+            bbuffer.putFloat(offset + 4 * count, val);
+            count++;
+          }
+          break;
+        default:
+          throw new RuntimeException("unknown dataType " + dataType);
+      }
+    }
   }
 
 }

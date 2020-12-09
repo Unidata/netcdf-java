@@ -7,7 +7,6 @@ package ucar.array;
 import com.google.common.base.Preconditions;
 import java.util.Iterator;
 import javax.annotation.concurrent.Immutable;
-import ucar.ma2.DataType;
 
 /** Concrete implementation of Array specialized for Long. */
 @Immutable
@@ -15,20 +14,20 @@ public final class ArrayLong extends Array<Long> {
   private final Storage<Long> storage;
 
   /** Create an empty Array of type Long and the given shape. */
-  public ArrayLong(DataType dtype, int[] shape) {
+  public ArrayLong(ArrayType dtype, int[] shape) {
     super(dtype, shape);
     storage = new StorageS(new long[(int) indexFn.length()]);
   }
 
   /** Create an Array of type Long and the given shape and storage. */
-  public ArrayLong(DataType dtype, int[] shape, Storage<Long> storage) {
+  public ArrayLong(ArrayType dtype, int[] shape, Storage<Long> storage) {
     super(dtype, shape);
     Preconditions.checkArgument(indexFn.length() <= storage.length());
     this.storage = storage;
   }
 
   /** Create an Array of type Long and the given indexFn and storage. */
-  private ArrayLong(DataType dtype, IndexFn indexFn, Storage<Long> storageD) {
+  private ArrayLong(ArrayType dtype, IndexFn indexFn, Storage<Long> storageD) {
     super(dtype, indexFn);
     Preconditions.checkArgument(indexFn.length() <= storageD.length());
     this.storage = storageD;
@@ -76,7 +75,7 @@ public final class ArrayLong extends Array<Long> {
   /** create new Array with given IndexFn and the same backing store */
   @Override
   protected ArrayLong createView(IndexFn view) {
-    return new ArrayLong(this.dataType, view, this.storage);
+    return new ArrayLong(this.arrayType, view, this.storage);
   }
 
   // used when the data is not in canonical order

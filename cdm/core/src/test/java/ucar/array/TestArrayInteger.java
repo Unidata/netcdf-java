@@ -18,7 +18,7 @@ public class TestArrayInteger {
   public void testBasics() {
     int[] shape = new int[] {1, 2, 3};
     Storage<Integer> store = new ArrayInteger.StorageS(new int[] {1, 2, 3, 4, 5, 6});
-    ArrayInteger array = new ArrayInteger(DataType.INT, shape, store);
+    ArrayInteger array = new ArrayInteger(ArrayType.INT, shape, store);
 
     assertThat(array.get(0, 0, 0)).isEqualTo(1);
     assertThat(array.get(0, 0, 1)).isEqualTo(2);
@@ -59,7 +59,7 @@ public class TestArrayInteger {
   public void testNonCanonicalOrder() {
     int[] shape = new int[] {1, 2, 3};
     Storage<Integer> store = new ArrayInteger.StorageS(new int[] {1, 2, 3, 4, 5, 6});
-    Array<Integer> array = new ArrayInteger(DataType.INT, shape, store);
+    Array<Integer> array = new ArrayInteger(ArrayType.INT, shape, store);
     array = Arrays.flip(array, 1);
     int[] expected = new int[] {4, 5, 6, 1, 2, 3};
     int count = 0;
@@ -76,11 +76,11 @@ public class TestArrayInteger {
   @Test
   public void testFactoryCopy() {
     int[] shape1 = new int[] {1, 2, 3};
-    Array<Integer> array1 = Arrays.factory(DataType.INT, shape1, new int[] {1, 2, 3, 4, 5, 6});
-    Array<Integer> array2 = Arrays.factory(DataType.INT, shape1, new int[] {7, 8, 9, 10, 11, 12});
+    Array<Integer> array1 = Arrays.factory(ArrayType.INT, shape1, new int[] {1, 2, 3, 4, 5, 6});
+    Array<Integer> array2 = Arrays.factory(ArrayType.INT, shape1, new int[] {7, 8, 9, 10, 11, 12});
 
     int[] shape = new int[] {2, 2, 3};
-    Array<Integer> array = Arrays.factoryCopy(DataType.INT, shape, ImmutableList.of(array1, array2));
+    Array<Integer> array = Arrays.factoryCopy(ArrayType.INT, shape, ImmutableList.of(array1, array2));
 
     assertThat(array.get(0, 0, 0)).isEqualTo(1);
     assertThat(array.get(0, 0, 1)).isEqualTo(2);
@@ -105,7 +105,7 @@ public class TestArrayInteger {
   @Test
   public void testMisc() {
     int[] shape1 = new int[] {1, 2, 3};
-    Array<Integer> array = Arrays.factory(DataType.INT, shape1);
+    Array<Integer> array = Arrays.factory(ArrayType.INT, shape1);
     Index index = array.getIndex();
     assertThat(array.get(index.set(0, 1, 2))).isEqualTo(0);
   }

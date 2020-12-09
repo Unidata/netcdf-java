@@ -8,7 +8,6 @@ import com.google.common.base.Preconditions;
 import java.util.Iterator;
 import java.util.List;
 import javax.annotation.concurrent.Immutable;
-import ucar.ma2.DataType;
 
 /**
  * Concrete implementation of Array specialized for StructureData.
@@ -21,14 +20,14 @@ public final class StructureDataArray extends Array<StructureData> {
 
   /** Create an Array of type StructureData and the given shape and storage. Ok if parray is bigger than shape. */
   public StructureDataArray(StructureMembers members, int[] shape, StructureData[] parray) {
-    super(DataType.STRUCTURE, shape);
+    super(ArrayType.STRUCTURE, shape);
     this.members = members;
     storage = new StorageSD(parray, (int) indexFn.length());
   }
 
   /** Create an Array of type StructureData and the given shape and storage. */
   public StructureDataArray(StructureMembers members, int[] shape, Storage<StructureData> storage) {
-    super(DataType.STRUCTURE, shape);
+    super(ArrayType.STRUCTURE, shape);
     Preconditions.checkArgument(indexFn.length() == storage.length());
     this.members = members;
     this.storage = storage;
@@ -36,7 +35,7 @@ public final class StructureDataArray extends Array<StructureData> {
 
   /** Create an Array of type StructureData and the given indexFn and storage. */
   public StructureDataArray(StructureMembers members, IndexFn indexFn, Storage<StructureData> storage) {
-    super(DataType.STRUCTURE, indexFn);
+    super(ArrayType.STRUCTURE, indexFn);
     this.members = members;
     this.storage = storage;
   }

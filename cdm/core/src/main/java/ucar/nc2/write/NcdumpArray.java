@@ -20,16 +20,7 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import org.jdom2.Element;
-import ucar.array.Array;
-import ucar.array.ArrayByte;
-import ucar.array.ArrayChar;
-import ucar.array.ArrayString;
-import ucar.array.ArrayVlen;
-import ucar.array.Arrays;
-import ucar.array.Index;
-import ucar.array.StructureDataArray;
-import ucar.array.StructureData;
-import ucar.array.StructureMembers;
+import ucar.array.*;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFile;
@@ -367,13 +358,13 @@ public class NcdumpArray {
     if ((array instanceof ArrayChar) && (array.getRank() > 0)) {
       printStringArray(out, (ArrayChar) array, ilev, cancel);
 
-    } else if (array.getDataType() == DataType.STRING) {
+    } else if (array.getArrayType() == ArrayType.STRING) {
       printStringArray(out, (ArrayString) array, ilev, cancel);
 
     } else if (array instanceof StructureDataArray) {
       printStructureDataArray(out, (StructureDataArray) array, ilev, cancel);
 
-    } else if (array.getDataType() == DataType.OPAQUE) { // opaque type
+    } else if (array.getArrayType() == ArrayType.OPAQUE) { // opaque type
       ArrayVlen<Byte> vlen = (ArrayVlen<Byte>) array;
       int count = 0;
       for (Array<Byte> inner : vlen) {
@@ -407,7 +398,7 @@ public class NcdumpArray {
     if (rank == 0) {
       Object value = ma.getScalar();
 
-      if (ma.getDataType().isUnsigned()) {
+      if (ma.getArrayType().isUnsigned()) {
         assert value instanceof Number : "A data type being unsigned implies that it is numeric.";
 
         // "value" is an unsigned number, but it will be treated as signed when we print it below, because Java only
@@ -426,11 +417,11 @@ public class NcdumpArray {
 
     out.format("%n%s{", indent);
     Index ima = ma.getIndex();
-    if ((rank == 1) && (ma.getDataType() != DataType.STRUCTURE)) {
+    if ((rank == 1) && (ma.getArrayType() != ArrayType.STRUCTURE)) {
       for (int ii = 0; ii < last; ii++) {
         Object value = ma.get(ima.setElem(ii)); // LOOK
 
-        if (ma.getDataType().isUnsigned()) {
+        if (ma.getArrayType().isUnsigned()) {
           assert value instanceof Number : "A data type being unsigned implies that it is numeric.";
           value = DataType.widenNumberIfNegative((Number) value);
         }

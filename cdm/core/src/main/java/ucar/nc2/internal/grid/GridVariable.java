@@ -1,6 +1,7 @@
 package ucar.nc2.internal.grid;
 
 import ucar.array.Array;
+import ucar.array.ArrayType;
 import ucar.ma2.*;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.dataset.VariableDS;
@@ -52,8 +53,8 @@ public class GridVariable implements Grid {
   }
 
   @Override
-  public DataType getDataType() {
-    return vds.getDataType();
+  public ArrayType getArrayType() {
+    return vds.getArrayType();
   }
 
   @Override
@@ -93,7 +94,7 @@ public class GridVariable implements Grid {
 
     if (!hasComposite) {
       Array<Number> data = readDataSection(new Section(ranges), true);
-      return GridReferencedArray.create(getName(), getDataType(), data, subsetCoordSys);
+      return GridReferencedArray.create(getName(), getArrayType(), data, subsetCoordSys);
     }
 
     throw new UnsupportedOperationException();

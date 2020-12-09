@@ -9,7 +9,6 @@ import com.google.protobuf.ByteString;
 import java.nio.ByteBuffer;
 import java.util.Iterator;
 import javax.annotation.concurrent.Immutable;
-import ucar.ma2.DataType;
 
 /** Concrete implementation of Array specialized for Byte. */
 @Immutable
@@ -17,20 +16,20 @@ public final class ArrayByte extends Array<Byte> {
   private final Storage<Byte> storage;
 
   /** Create an empty Array of type Byte and the given shape. */
-  public ArrayByte(DataType dtype, int[] shape) {
+  public ArrayByte(ArrayType dtype, int[] shape) {
     super(dtype, shape);
     storage = new StorageS(new byte[(byte) indexFn.length()]);
   }
 
   /** Create an Array of type Byte and the given shape and storage. */
-  public ArrayByte(DataType dtype, int[] shape, Storage<Byte> storage) {
+  public ArrayByte(ArrayType dtype, int[] shape, Storage<Byte> storage) {
     super(dtype, shape);
     Preconditions.checkArgument(indexFn.length() <= storage.length());
     this.storage = storage;
   }
 
   /** Create an Array of type Byte and the given indexFn and storage. */
-  private ArrayByte(DataType dtype, IndexFn indexFn, Storage<Byte> storageD) {
+  private ArrayByte(ArrayType dtype, IndexFn indexFn, Storage<Byte> storageD) {
     super(dtype, indexFn);
     Preconditions.checkArgument(indexFn.length() <= storageD.length());
     this.storage = storageD;
@@ -104,7 +103,7 @@ public final class ArrayByte extends Array<Byte> {
   /** create new Array with given IndexFn and the same backing store */
   @Override
   protected ArrayByte createView(IndexFn view) {
-    return new ArrayByte(this.dataType, view, this.storage);
+    return new ArrayByte(this.arrayType, view, this.storage);
   }
 
   // used when the data is not in canonical order

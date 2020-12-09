@@ -33,7 +33,7 @@ public class TestArraysConvert {
   public void setup() {
     int[] shape = new int[] {1, 2, 3};
     double[] data = new double[] {1, 2, 3, 4, 5, 6};
-    array = Arrays.factory(DataType.DOUBLE, shape, data);
+    array = Arrays.factory(ArrayType.DOUBLE, shape, data);
 
     StructureData sdata = makeStructureDataMa2(1);
     ma2Struct = new ArrayStructureW(sdata.getStructureMembers(), new int[] {1}, new StructureData[] {sdata});
@@ -44,7 +44,7 @@ public class TestArraysConvert {
   @Test
   public void testConvert() {
     ucar.ma2.Array ma2 = ArraysConvert.convertFromArray(array);
-    assertThat(ma2.getDataType()).isEqualTo(array.getDataType());
+    assertThat(ma2.getDataType()).isEqualTo(array.getArrayType().getDataType());
     assertThat(ma2.getShape()).isEqualTo(array.getShape());
     assertThat(ma2.getSize()).isEqualTo(array.length());
 
@@ -58,7 +58,7 @@ public class TestArraysConvert {
   @Test
   public void testConvertStructureDataToArray() throws IOException {
     Array<?> sda = ArraysConvert.convertToArray(ma2Struct);
-    assertThat(sda.getDataType()).isEqualTo(ma2Struct.getDataType());
+    assertThat(sda.getArrayType().getDataType()).isEqualTo(ma2Struct.getDataType());
     assertThat(sda.getShape()).isEqualTo(ma2Struct.getShape());
     assertThat(sda.length()).isEqualTo(ma2Struct.getSize());
 
@@ -90,7 +90,7 @@ public class TestArraysConvert {
   @Test
   public void testConvertStructureDataToMa2() throws IOException {
     ucar.ma2.Array ma2 = ArraysConvert.convertFromArray(structureDataArray);
-    assertThat(ma2.getDataType()).isEqualTo(structureDataArray.getDataType());
+    assertThat(ma2.getDataType()).isEqualTo(structureDataArray.getArrayType().getDataType());
     assertThat(ma2.getShape()).isEqualTo(structureDataArray.getShape());
     assertThat(ma2.getSize()).isEqualTo(structureDataArray.length());
 
@@ -107,7 +107,7 @@ public class TestArraysConvert {
   public void testConvertStructureDataToMa2Roundtrip() throws IOException {
     ucar.ma2.Array ma2 = ArraysConvert.convertFromArray(structureDataArray);
     Array<?> converted = ArraysConvert.convertToArray(ma2);
-    assertThat(converted.getDataType()).isEqualTo(structureDataArray.getDataType());
+    assertThat(converted.getArrayType()).isEqualTo(structureDataArray.getArrayType());
     assertThat(converted.getShape()).isEqualTo(structureDataArray.getShape());
     assertThat(converted.length()).isEqualTo(structureDataArray.length());
 
@@ -131,8 +131,8 @@ public class TestArraysConvert {
   private StructureDataArray makeStructureDataArray() {
     StructureMembers.Builder builder = StructureMembers.builder();
     builder.setName("name");
-    builder.addMember("mbyte", "mdesc1", "munits1", DataType.BYTE, new int[] {11, 11});
-    builder.addMember("mfloat", "mdesc2", "munits1", DataType.FLOAT, new int[] {});
+    builder.addMember("mbyte", "mdesc1", "munits1", ArrayType.BYTE, new int[] {11, 11});
+    builder.addMember("mfloat", "mdesc2", "munits1", ArrayType.FLOAT, new int[] {});
     builder.setStandardOffsets(false);
     StructureMembers members = builder.build();
 

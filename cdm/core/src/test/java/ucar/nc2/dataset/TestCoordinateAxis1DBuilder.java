@@ -4,6 +4,7 @@ import static com.google.common.truth.Truth.assertThat;
 import java.io.IOException;
 import org.junit.Test;
 import ucar.array.Array;
+import ucar.array.ArrayType;
 import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
@@ -36,7 +37,7 @@ public class TestCoordinateAxis1DBuilder {
     assertThat(axis.findAttributeString(CDM.LONG_NAME, "")).isEqualTo("desc");
 
     ucar.array.Array<?> data = axis.readArray();
-    assertThat(data.getDataType()).isEqualTo(DataType.FLOAT);
+    assertThat(data.getArrayType()).isEqualTo(ArrayType.FLOAT);
     assertThat(data.length()).isEqualTo(7);
     ucar.array.Array<Float> fdata = (Array<Float>) data;
     System.out.printf("data = %s%n", data);
@@ -69,7 +70,7 @@ public class TestCoordinateAxis1DBuilder {
     assertThat(axis.findAttributeString(CDM.LONG_NAME, "")).isEqualTo("desc");
 
     Array<?> data = axis.readArray();
-    assertThat(data.getDataType()).isEqualTo(DataType.FLOAT);
+    assertThat(data.getArrayType()).isEqualTo(ArrayType.FLOAT);
     assertThat(data.length()).isEqualTo(7);
     Array<Float> fdata = (Array<Float>) data;
     System.out.printf("data = %s%n", data);

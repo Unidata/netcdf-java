@@ -3,22 +3,21 @@
  * See LICENSE for license information.
  */
 
-package ucar.ma2;
+package ucar.array;
 
-import ucar.array.ArrayType;
+import ucar.ma2.Array;
+import ucar.ma2.DataType;
+import ucar.ma2.StructureData;
+import ucar.ma2.StructureDataIterator;
 
+import javax.annotation.Nullable;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
-import javax.annotation.Nullable;
 
 /**
  * Type-safe enumeration of data types.
- * Do not change the ordering of these enums, as they are used in protobuf messages, only add new ones onto the end.
- *
- * @deprecated will move to ucar.array.ArrayType in ver7.
  */
-@Deprecated
-public enum DataType {
+public enum ArrayType {
   BOOLEAN("boolean", 1, boolean.class, false), //
   BYTE("byte", 1, byte.class, false), //
   CHAR("char", 1, char.class, false), //
@@ -31,7 +30,7 @@ public enum DataType {
   // object types
   SEQUENCE("Sequence", 4, StructureDataIterator.class, false), // 32-bit index
   STRING("String", 4, String.class, false), // 32-bit index
-  STRUCTURE("Structure", 0, StructureData.class, false), // size unknown
+  STRUCTURE("Structure", 0, ucar.ma2.StructureData.class, false), // size unknown
 
   ENUM1("enum1", 1, byte.class, false), // byte
   ENUM2("enum2", 2, short.class, false), // short
@@ -61,11 +60,11 @@ public enum DataType {
   private final Class<?> primitiveClass;
   private final Signedness signedness;
 
-  DataType(String s, int size, Class<?> primitiveClass, boolean isUnsigned) {
+  ArrayType(String s, int size, Class<?> primitiveClass, boolean isUnsigned) {
     this(s, size, primitiveClass, isUnsigned ? Signedness.UNSIGNED : Signedness.SIGNED);
   }
 
-  DataType(String s, int size, Class<?> primitiveClass, Signedness signedness) {
+  ArrayType(String s, int size, Class<?> primitiveClass, Signedness signedness) {
     this.niceName = s;
     this.size = size;
     this.primitiveClass = primitiveClass;
@@ -124,7 +123,7 @@ public enum DataType {
    * @return true if String or Char
    */
   public boolean isString() {
-    return (this == DataType.STRING) || (this == DataType.CHAR);
+    return (this == ArrayType.STRING) || (this == ArrayType.CHAR);
   }
 
   /**
@@ -133,7 +132,7 @@ public enum DataType {
    * @return true if numeric
    */
   public boolean isNumeric() {
-    return (this == DataType.FLOAT) || (this == DataType.DOUBLE) || isIntegral();
+    return (this == ArrayType.FLOAT) || (this == ArrayType.DOUBLE) || isIntegral();
   }
 
   /**
@@ -142,8 +141,9 @@ public enum DataType {
    * @return true if integral
    */
   public boolean isIntegral() {
-    return (this == DataType.BYTE) || (this == DataType.INT) || (this == DataType.SHORT) || (this == DataType.LONG)
-        || (this == DataType.UBYTE) || (this == DataType.UINT) || (this == DataType.USHORT) || (this == DataType.ULONG);
+    return (this == ArrayType.BYTE) || (this == ArrayType.INT) || (this == ArrayType.SHORT) || (this == ArrayType.LONG)
+        || (this == ArrayType.UBYTE) || (this == ArrayType.UINT) || (this == ArrayType.USHORT)
+        || (this == ArrayType.ULONG);
   }
 
   /**
@@ -152,7 +152,7 @@ public enum DataType {
    * @return true if floating point type
    */
   public boolean isFloatingPoint() {
-    return (this == DataType.FLOAT) || (this == DataType.DOUBLE);
+    return (this == ArrayType.FLOAT) || (this == ArrayType.DOUBLE);
   }
 
   /**
@@ -161,7 +161,7 @@ public enum DataType {
    * @return true if ENUM1, 2, or 4
    */
   public boolean isEnum() {
-    return (this == DataType.ENUM1) || (this == DataType.ENUM2) || (this == DataType.ENUM4);
+    return (this == ArrayType.ENUM1) || (this == ArrayType.ENUM2) || (this == ArrayType.ENUM4);
   }
 
   /**
@@ -179,7 +179,7 @@ public enum DataType {
    * @param signedness the desired signedness of the returned DataType.
    * @return a DataType that is related to {@code this}, but with the specified signedness.
    */
-  public DataType withSignedness(Signedness signedness) {
+  public ArrayType withSignedness(Signedness signedness) {
     switch (this) {
       case BYTE:
       case UBYTE:
@@ -197,31 +197,33 @@ public enum DataType {
     return this;
   }
 
-  public boolean isEnumCompatible(DataType inferred) {
+  public boolean isEnumCompatible(ArrayType inferred) {
     if (inferred == null)
       return false;
     if (this == inferred)
       return true;
     switch (this) {
       case ENUM1:
-        return inferred == DataType.BYTE || inferred == DataType.STRING;
+        return inferred == ArrayType.BYTE || inferred == ArrayType.STRING;
       case ENUM2:
-        return inferred == DataType.SHORT || inferred == DataType.STRING;
+        return inferred == ArrayType.SHORT || inferred == ArrayType.STRING;
       case ENUM4:
-        return inferred == DataType.INT || inferred == DataType.STRING;
+        return inferred == ArrayType.INT || inferred == ArrayType.STRING;
       default:
         break;
     }
     return false;
   }
 
-  public ArrayType getArrayType() {
-    return ArrayType.valueOf(this.name());
+  /** @deprecated do not use. */
+  @Deprecated
+  public DataType getDataType() {
+    return DataType.valueOf(this.name());
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////////////
 
-  public static DataType enumTypeize(DataType dt) {
+  public static ArrayType enumTypeize(ArrayType dt) {
     switch (dt) {
       case BYTE:
       case UBYTE:
@@ -244,7 +246,7 @@ public enum DataType {
    * @param name find DataType with this name.
    * @return DataType or null if no match.
    */
-  public static DataType getType(String name) {
+  public static ArrayType getType(String name) {
     if (name == null)
       return null;
     try {
@@ -254,7 +256,7 @@ public enum DataType {
     }
   }
 
-  public static DataType getType(Array arr) {
+  public static ArrayType getType(Array arr) {
     return getType(arr.getElementType(), arr.isUnsigned());
   }
 
@@ -265,32 +267,32 @@ public enum DataType {
    * @return DataType or null if no match.
    */
   @Nullable
-  public static DataType getType(Class<?> c, boolean isUnsigned) {
+  public static ArrayType getType(Class<?> c, boolean isUnsigned) {
     if ((c == float.class) || (c == Float.class))
-      return DataType.FLOAT;
+      return ArrayType.FLOAT;
     if ((c == double.class) || (c == Double.class))
-      return DataType.DOUBLE;
+      return ArrayType.DOUBLE;
     if ((c == short.class) || (c == Short.class))
-      return isUnsigned ? DataType.USHORT : DataType.SHORT;
+      return isUnsigned ? ArrayType.USHORT : ArrayType.SHORT;
     if ((c == int.class) || (c == Integer.class))
-      return isUnsigned ? DataType.UINT : DataType.INT;
+      return isUnsigned ? ArrayType.UINT : ArrayType.INT;
     if ((c == byte.class) || (c == Byte.class))
-      return isUnsigned ? DataType.UBYTE : DataType.BYTE;
+      return isUnsigned ? ArrayType.UBYTE : ArrayType.BYTE;
     if ((c == char.class) || (c == Character.class))
-      return DataType.CHAR;
+      return ArrayType.CHAR;
     if ((c == boolean.class) || (c == Boolean.class))
-      return DataType.BOOLEAN;
+      return ArrayType.BOOLEAN;
     if ((c == long.class) || (c == Long.class))
-      return isUnsigned ? DataType.ULONG : DataType.LONG;
+      return isUnsigned ? ArrayType.ULONG : ArrayType.LONG;
     if (c == String.class)
-      return DataType.STRING;
+      return ArrayType.STRING;
     if (c == StructureData.class)
-      return DataType.STRUCTURE;
+      return ArrayType.STRUCTURE;
     if (c == StructureDataIterator.class)
-      return DataType.SEQUENCE;
+      return ArrayType.SEQUENCE;
     if (c == ByteBuffer.class)
-      return DataType.OPAQUE;
-    return DataType.OBJECT;
+      return ArrayType.OPAQUE;
+    return ArrayType.OBJECT;
   }
 
   /**

@@ -22,7 +22,7 @@ public class TestArrayVlen {
     short[] arr1 = new short[] {1, 2, 3, 4, 5};
     short[] arr2 = new short[] {6, 7};
     short[][] ragged = new short[][] {arr1, arr2};
-    ArrayVlen<Short> array = ArrayVlen.factory(DataType.SHORT, shape, ragged);
+    ArrayVlen<Short> array = ArrayVlen.factory(ArrayType.SHORT, shape, ragged);
 
     Array<Short> elem1 = (Array<Short>) array.get(0, 0);
     assertThat(Iterables.toString(elem1)).isEqualTo("[1, 2, 3, 4, 5]");
@@ -48,7 +48,7 @@ public class TestArrayVlen {
     assertThat(array.getShape()).isEqualTo(new int[] {1, 2});
     assertThat(array.getRank()).isEqualTo(2);
     assertThat(array.length()).isEqualTo(2);
-    assertThat(array.getDataType()).isEqualTo(DataType.SHORT);
+    assertThat(array.getArrayType()).isEqualTo(ArrayType.SHORT);
   }
 
   @Test
@@ -57,7 +57,7 @@ public class TestArrayVlen {
     short[] arr1 = new short[] {1, 2, 3, 4, 5};
     short[] arr2 = new short[] {6, 7};
     short[][] ragged = new short[][] {arr1, arr2};
-    ArrayVlen<Short> array = ArrayVlen.factory(DataType.SHORT, shape);
+    ArrayVlen<Short> array = ArrayVlen.factory(ArrayType.SHORT, shape);
     array.set(0, arr1);
     array.set(1, arr2);
 
@@ -92,7 +92,7 @@ public class TestArrayVlen {
 
   @Test
   public void testTypes() {
-    ArrayVlen<Short> array = ArrayVlen.factory(DataType.BYTE, new int[] {11});
+    ArrayVlen<Short> array = ArrayVlen.factory(ArrayType.BYTE, new int[] {11});
     Storage<Array<Short>> storage = array.storage();
     array.set(0, new byte[] {1});
     assertThat(storage.getClass()).isAssignableTo(StorageMutable.class);
@@ -100,7 +100,7 @@ public class TestArrayVlen {
     assertThat(Iterables.size(array)).isEqualTo(11);
     assertThat(array.get(array.getIndex())).isNotNull();
 
-    ArrayVlen<Character> carray = ArrayVlen.factory(DataType.CHAR, new int[] {12});
+    ArrayVlen<Character> carray = ArrayVlen.factory(ArrayType.CHAR, new int[] {12});
     Storage<Array<Character>> cstorage = carray.storage();
     carray.set(0, new char[] {1});
     assertThat(cstorage.getClass()).isAssignableTo(StorageMutable.class);
@@ -108,7 +108,7 @@ public class TestArrayVlen {
     assertThat(Iterables.size(carray)).isEqualTo(12);
     assertThat(carray.get(carray.getIndex())).isNotNull();
 
-    ArrayVlen<Integer> iarray = ArrayVlen.factory(DataType.INT, new int[] {13});
+    ArrayVlen<Integer> iarray = ArrayVlen.factory(ArrayType.INT, new int[] {13});
     Storage<Array<Integer>> istorage = iarray.storage();
     iarray.set(0, new int[] {1});
     assertThat(istorage.getClass()).isAssignableTo(StorageMutable.class);
@@ -116,7 +116,7 @@ public class TestArrayVlen {
     assertThat(Iterables.size(iarray)).isEqualTo(13);
     assertThat(iarray.get(iarray.getIndex())).isNotNull();
 
-    ArrayVlen<Integer> larray = ArrayVlen.factory(DataType.ULONG, new int[] {14});
+    ArrayVlen<Integer> larray = ArrayVlen.factory(ArrayType.ULONG, new int[] {14});
     Storage<Array<Integer>> lstorage = larray.storage();
     larray.set(0, new long[] {1});
     assertThat(lstorage.getClass()).isAssignableTo(StorageMutable.class);
@@ -124,7 +124,7 @@ public class TestArrayVlen {
     assertThat(Iterables.size(larray)).isEqualTo(14);
     assertThat(larray.get(larray.getIndex())).isNotNull();
 
-    ArrayVlen<Double> darray = ArrayVlen.factory(DataType.DOUBLE, new int[] {15});
+    ArrayVlen<Double> darray = ArrayVlen.factory(ArrayType.DOUBLE, new int[] {15});
     Storage<Array<Double>> dstorage = darray.storage();
     darray.set(0, new double[] {1});
     assertThat(dstorage.getClass()).isAssignableTo(StorageMutable.class);
@@ -132,7 +132,7 @@ public class TestArrayVlen {
     assertThat(Iterables.size(dstorage)).isEqualTo(15);
     assertThat(darray.get(darray.getIndex())).isNotNull();
 
-    ArrayVlen<Float> farray = ArrayVlen.factory(DataType.FLOAT, new int[] {16});
+    ArrayVlen<Float> farray = ArrayVlen.factory(ArrayType.FLOAT, new int[] {16});
     Storage<Array<Float>> fstorage = farray.storage();
     farray.set(0, new float[] {1});
     assertThat(fstorage.getClass()).isAssignableTo(StorageMutable.class);
@@ -140,7 +140,7 @@ public class TestArrayVlen {
     assertThat(Iterables.size(fstorage)).isEqualTo(16);
     assertThat(farray.get(farray.getIndex())).isNotNull();
 
-    ArrayVlen<String> sarray = ArrayVlen.factory(DataType.STRING, new int[] {17});
+    ArrayVlen<String> sarray = ArrayVlen.factory(ArrayType.STRING, new int[] {17});
     Storage<Array<String>> sstorage = sarray.storage();
     sarray.set(0, new String[] {"one"});
     assertThat(sstorage.getClass()).isAssignableTo(StorageMutable.class);

@@ -13,20 +13,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import ucar.array.ArrayByte;
-import ucar.array.ArrayVlen;
-import ucar.array.Arrays;
-import ucar.array.StructureData;
-import ucar.array.StructureDataArray;
-import ucar.array.StructureDataStorageBB;
-import ucar.array.StructureMembers;
+
+import ucar.array.*;
 import ucar.array.StructureMembers.Member;
 import ucar.array.StructureMembers.MemberBuilder;
 import ucar.cdmr.CdmrNetcdfProto.Data;
 import ucar.cdmr.CdmrNetcdfProto.StructureDataProto;
 import ucar.cdmr.CdmrNetcdfProto.StructureMemberProto;
-import ucar.array.Array;
-import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 import ucar.ma2.Section;
@@ -35,7 +28,7 @@ import ucar.nc2.*;
 /** Convert between CdmRemote Protos and Netcdf objects, using ucar.ma2.Array for data. */
 public class CdmrConverter {
 
-  public static CdmrNetcdfProto.DataType convertDataType(DataType dtype) {
+  public static CdmrNetcdfProto.DataType convertDataType(ArrayType dtype) {
     switch (dtype) {
       case CHAR:
         return CdmrNetcdfProto.DataType.CHAR;
@@ -77,44 +70,44 @@ public class CdmrConverter {
     throw new IllegalStateException("illegal data type " + dtype);
   }
 
-  public static DataType convertDataType(CdmrNetcdfProto.DataType dtype) {
+  public static ArrayType convertDataType(CdmrNetcdfProto.DataType dtype) {
     switch (dtype) {
       case CHAR:
-        return DataType.CHAR;
+        return ArrayType.CHAR;
       case BYTE:
-        return DataType.BYTE;
+        return ArrayType.BYTE;
       case SHORT:
-        return DataType.SHORT;
+        return ArrayType.SHORT;
       case INT:
-        return DataType.INT;
+        return ArrayType.INT;
       case LONG:
-        return DataType.LONG;
+        return ArrayType.LONG;
       case FLOAT:
-        return DataType.FLOAT;
+        return ArrayType.FLOAT;
       case DOUBLE:
-        return DataType.DOUBLE;
+        return ArrayType.DOUBLE;
       case STRING:
-        return DataType.STRING;
+        return ArrayType.STRING;
       case STRUCTURE:
-        return DataType.STRUCTURE;
+        return ArrayType.STRUCTURE;
       case SEQUENCE:
-        return DataType.SEQUENCE;
+        return ArrayType.SEQUENCE;
       case ENUM1:
-        return DataType.ENUM1;
+        return ArrayType.ENUM1;
       case ENUM2:
-        return DataType.ENUM2;
+        return ArrayType.ENUM2;
       case ENUM4:
-        return DataType.ENUM4;
+        return ArrayType.ENUM4;
       case OPAQUE:
-        return DataType.OPAQUE;
+        return ArrayType.OPAQUE;
       case UBYTE:
-        return DataType.UBYTE;
+        return ArrayType.UBYTE;
       case USHORT:
-        return DataType.USHORT;
+        return ArrayType.USHORT;
       case UINT:
-        return DataType.UINT;
+        return ArrayType.UINT;
       case ULONG:
-        return DataType.ULONG;
+        return ArrayType.ULONG;
     }
     throw new IllegalStateException("illegal data type " + dtype);
   }
@@ -176,7 +169,7 @@ public class CdmrConverter {
   private static CdmrNetcdfProto.Attribute.Builder encodeAtt(Attribute att) {
     CdmrNetcdfProto.Attribute.Builder attBuilder = CdmrNetcdfProto.Attribute.newBuilder();
     attBuilder.setName(att.getShortName());
-    attBuilder.setDataType(convertDataType(att.getDataType()));
+    attBuilder.setDataType(convertDataType(att.getDataType().getArrayType()));
     attBuilder.setLength(att.getLength());
 
     // values
@@ -186,10 +179,10 @@ public class CdmrConverter {
         for (int i = 0; i < att.getLength(); i++) {
           datab.addSdata(att.getStringValue(i));
         }
-        datab.setDataType(convertDataType(att.getDataType()));
+        datab.setDataType(convertDataType(att.getArrayType()));
         attBuilder.setData(datab);
       } else {
-        attBuilder.setData(encodePrimitiveData(att.getDataType(), att.getArrayValues()));
+        attBuilder.setData(encodePrimitiveData(att.getArrayType(), att.getArrayValues()));
       }
     }
     return attBuilder;
@@ -211,7 +204,7 @@ public class CdmrConverter {
     CdmrNetcdfProto.EnumTypedef.Builder builder = CdmrNetcdfProto.EnumTypedef.newBuilder();
 
     builder.setName(enumType.getShortName());
-    builder.setBaseType(convertDataType(enumType.getBaseType()));
+    builder.setBaseType(convertDataType(enumType.getBaseType().getArrayType()));
     Map<Integer, String> map = enumType.getMap();
     CdmrNetcdfProto.EnumTypedef.EnumType.Builder b2 = CdmrNetcdfProto.EnumTypedef.EnumType.newBuilder();
     for (int code : map.keySet()) {
@@ -226,7 +219,7 @@ public class CdmrConverter {
   private static CdmrNetcdfProto.Structure.Builder encodeStructure(Structure s) throws IOException {
     CdmrNetcdfProto.Structure.Builder builder = CdmrNetcdfProto.Structure.newBuilder();
     builder.setName(s.getShortName());
-    builder.setDataType(convertDataType(s.getDataType()));
+    builder.setDataType(convertDataType(s.getArrayType()));
 
     for (Dimension dim : s.getDimensions())
       builder.addShape(encodeDim(dim));
@@ -248,7 +241,7 @@ public class CdmrConverter {
   private static CdmrNetcdfProto.Variable.Builder encodeVar(Variable var, int sizeToCache) throws IOException {
     CdmrNetcdfProto.Variable.Builder builder = CdmrNetcdfProto.Variable.newBuilder();
     builder.setName(var.getShortName());
-    builder.setDataType(convertDataType(var.getDataType()));
+    builder.setDataType(convertDataType(var.getArrayType()));
     if (var.getDataType().isEnum()) {
       EnumTypedef enumType = var.getEnumTypedef();
       if (enumType != null)
@@ -264,10 +257,10 @@ public class CdmrConverter {
     }
 
     // put small amounts of data in header "immediate mode"
-    if (var.isCaching() && var.getDataType().isNumeric()) {
+    if (var.isCaching() && var.getArrayType().isNumeric()) {
       if (var.isCoordinateVariable() || var.getSize() * var.getElementSize() < sizeToCache) {
         Array<?> data = var.readArray();
-        builder.setData(encodeData(var.getDataType(), data));
+        builder.setData(encodeData(var.getArrayType(), data));
       }
     }
     return builder;
@@ -275,7 +268,7 @@ public class CdmrConverter {
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  public static CdmrNetcdfProto.Data encodeData(DataType dataType, Array<?> data) {
+  public static CdmrNetcdfProto.Data encodeData(ArrayType dataType, Array<?> data) {
     if (data.isVlen()) {
       return encodeVlenData(dataType, (ArrayVlen) data);
     } else if (data instanceof StructureDataArray) {
@@ -291,7 +284,7 @@ public class CdmrConverter {
     }
   }
 
-  private static CdmrNetcdfProto.Data encodePrimitiveData(DataType dataType, Array<?> data) {
+  private static CdmrNetcdfProto.Data encodePrimitiveData(ArrayType dataType, Array<?> data) {
     CdmrNetcdfProto.Data.Builder builder = CdmrNetcdfProto.Data.newBuilder();
     builder.setDataType(convertDataType(dataType));
     encodeShape(builder, data.getShape());
@@ -363,7 +356,7 @@ public class CdmrConverter {
     return builder.build();
   }
 
-  private static CdmrNetcdfProto.Data encodeStructureDataArray(DataType dataType, StructureDataArray arrayStructure) {
+  private static CdmrNetcdfProto.Data encodeStructureDataArray(ArrayType dataType, StructureDataArray arrayStructure) {
     CdmrNetcdfProto.Data.Builder builder = CdmrNetcdfProto.Data.newBuilder();
     builder.setDataType(convertDataType(dataType));
     encodeShape(builder, arrayStructure.getShape());
@@ -383,7 +376,7 @@ public class CdmrConverter {
     int count = 0;
     for (Member member : structData.getStructureMembers()) {
       Array<?> data = structData.getMemberData(member);
-      builder.addMemberData(encodeData(member.getDataType(), data));
+      builder.addMemberData(encodeData(member.getArrayType(), data));
     }
     return builder.build();
   }
@@ -393,7 +386,7 @@ public class CdmrConverter {
     builder.setName(members.getName());
     for (Member member : members.getMembers()) {
       StructureMemberProto.Builder smBuilder = StructureMemberProto.newBuilder().setName(member.getName())
-          .setDataType(convertDataType(member.getDataType())).addAllShape(Ints.asList(member.getShape()));
+          .setDataType(convertDataType(member.getArrayType())).addAllShape(Ints.asList(member.getShape()));
       if (member.getStructureMembers() != null) {
         smBuilder.setMembers(encodeStructureMembers(member.getStructureMembers()));
       }
@@ -402,12 +395,12 @@ public class CdmrConverter {
     return builder.build();
   }
 
-  private static CdmrNetcdfProto.Data encodeVlenData(DataType dataType, ArrayVlen<?> vlenarray) {
+  private static CdmrNetcdfProto.Data encodeVlenData(ArrayType dataType, ArrayVlen<?> vlenarray) {
     CdmrNetcdfProto.Data.Builder builder = CdmrNetcdfProto.Data.newBuilder();
     builder.setDataType(convertDataType(dataType));
     encodeShape(builder, vlenarray.getShape());
     for (Array<?> one : vlenarray) {
-      builder.addVlen(encodeData(vlenarray.getDataType(), one));
+      builder.addVlen(encodeData(vlenarray.getArrayType(), one));
     }
     return builder.build();
   }
@@ -446,10 +439,10 @@ public class CdmrConverter {
   }
 
   private static Attribute decodeAtt(CdmrNetcdfProto.Attribute attp) {
-    DataType dtUse = convertDataType(attp.getDataType());
+    ArrayType dtUse = convertDataType(attp.getDataType());
     int len = attp.getLength();
     if (len == 0) { // deal with empty attribute
-      return Attribute.builder(attp.getName()).setDataType(dtUse).build();
+      return Attribute.builder(attp.getName()).setDataType(dtUse.getDataType()).build();
     }
 
     Array<?> attData = decodePrimitiveData(attp.getData());
@@ -469,15 +462,15 @@ public class CdmrConverter {
     for (CdmrNetcdfProto.EnumTypedef.EnumType et : list) {
       map.put(et.getCode(), et.getValue());
     }
-    DataType basetype = convertDataType(enumType.getBaseType());
-    return new EnumTypedef(enumType.getName(), map, basetype);
+    ArrayType basetype = convertDataType(enumType.getBaseType());
+    return new EnumTypedef(enumType.getName(), map, basetype.getDataType());
   }
 
   private static Structure.Builder<?> decodeStructure(CdmrNetcdfProto.Structure s) {
     Structure.Builder<?> ncvar =
         (s.getDataType() == CdmrNetcdfProto.DataType.SEQUENCE) ? Sequence.builder() : Structure.builder();
 
-    ncvar.setName(s.getName()).setDataType(convertDataType(s.getDataType()));
+    ncvar.setName(s.getName()).setDataType(convertDataType(s.getDataType()).getDataType());
 
     List<Dimension> dims = new ArrayList<>(6);
     for (CdmrNetcdfProto.Dimension dim : s.getShapeList()) {
@@ -541,8 +534,8 @@ public class CdmrConverter {
 
 
   private static Variable.Builder<?> decodeVar(CdmrNetcdfProto.Variable var) {
-    DataType varType = convertDataType(var.getDataType());
-    Variable.Builder<?> ncvar = Variable.builder().setName(var.getName()).setDataType(varType);
+    ArrayType varType = convertDataType(var.getDataType());
+    Variable.Builder<?> ncvar = Variable.builder().setName(var.getName()).setDataType(varType.getDataType());
 
     if (varType.isEnum()) {
       ncvar.setEnumTypeName(var.getEnumType());
@@ -583,7 +576,7 @@ public class CdmrConverter {
   }
 
   private static <T> Array<T> decodePrimitiveData(CdmrNetcdfProto.Data data) {
-    DataType dataType = convertDataType(data.getDataType());
+    ArrayType dataType = convertDataType(data.getDataType());
     int[] shape = decodeShape(data);
     switch (dataType) {
       case ENUM1:
@@ -711,7 +704,7 @@ public class CdmrConverter {
     for (StructureMemberProto memberProto : membersProto.getMembersList()) {
       MemberBuilder mb = StructureMembers.memberBuilder();
       mb.setName(memberProto.getName());
-      mb.setDataType(convertDataType(memberProto.getDataType()));
+      mb.setArrayType(convertDataType(memberProto.getDataType()));
       mb.setShape(Ints.toArray(memberProto.getShapeList()));
       if (memberProto.hasMembers()) {
         mb.setStructureMembers(decodeStructureMembers(memberProto.getMembers()));
@@ -742,7 +735,7 @@ public class CdmrConverter {
       return;
     }
 
-    DataType dataType = convertDataType(data.getDataType());
+    ArrayType dataType = convertDataType(data.getDataType());
     switch (dataType) {
       case ENUM1:
       case UBYTE:
@@ -863,7 +856,7 @@ public class CdmrConverter {
     int length = (int) Arrays.computeSize(shape);
     Preconditions.checkArgument(length == data.getVlenCount());
 
-    DataType dataType = convertDataType(data.getDataType());
+    ArrayType dataType = convertDataType(data.getDataType());
     ArrayVlen<T> result = ArrayVlen.factory(dataType, shape);
 
     for (int index = 0; index < length; index++) {

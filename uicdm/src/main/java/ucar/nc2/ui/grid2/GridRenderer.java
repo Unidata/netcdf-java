@@ -7,11 +7,11 @@ package ucar.nc2.ui.grid2;
 
 import ucar.array.Array;
 import ucar.array.Arrays;
+import ucar.array.MinMax;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.grid.*;
 import ucar.nc2.internal.grid.GridLatLon2D;
 import ucar.nc2.ui.grid.ColorScale;
-import ucar.nc2.util.MinMax;
 import ucar.ui.prefs.Debug;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.LatLonProjection;

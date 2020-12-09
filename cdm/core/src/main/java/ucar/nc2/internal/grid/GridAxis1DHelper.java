@@ -6,6 +6,7 @@ package ucar.nc2.internal.grid;
 
 import com.google.common.base.Preconditions;
 import com.google.common.math.DoubleMath;
+import ucar.array.MinMax;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 import ucar.nc2.constants.AxisType;
@@ -15,7 +16,6 @@ import ucar.nc2.grid.GridAxis1D;
 import ucar.nc2.grid.GridAxis1DTime;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.util.MinMax;
 import ucar.nc2.util.Misc;
 
 import java.util.Arrays;

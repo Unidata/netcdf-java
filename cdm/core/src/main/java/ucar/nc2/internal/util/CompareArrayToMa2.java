@@ -91,8 +91,8 @@ public class CompareArrayToMa2 {
       // ok = false;
     }
 
-    if (testTypes && org.getDataType() != array.getDataType()) {
-      f.format(" WARN %s: data type %s !== %s%n", name, org.getDataType(), array.getDataType());
+    if (testTypes && org.getDataType() != array.getArrayType().getDataType()) {
+      f.format(" WARN %s: data type %s !== %s%n", name, org.getDataType(), array.getArrayType());
       ok = false;
     }
 
