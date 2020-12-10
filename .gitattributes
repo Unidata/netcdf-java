@@ -8,6 +8,9 @@
 *.bat text eol=crlf
 *.ps1 text eol=crlf
 
+# Data files used in tests for which line endings matter preserve line endings
+**/test/data/**/preserveLineEndings/** binary
+
 # Treat the git hook for windows special, too.
 hooks/pre-commit-windows eol=crlf
 

@@ -8,6 +8,7 @@ package ucar.unidata.io;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
+
 import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.cache.FileCache;
@@ -25,10 +26,15 @@ import java.util.concurrent.atomic.AtomicLong;
 
 
 /**
- * A buffered drop-in replacement for java.io.RandomAccessFile.
- * Instances of this class realise substantial speed increases over
- * java.io.RandomAccessFile through the use of buffering. This is a
- * subclass of Object, as it was not possible to subclass
+ * A class intended as drop-in replacement for java.io.RandomAccessFile, with some notable extensions:
+ * <ul>
+ * <li>Buffered I/O: instances of this class realise substantial speed increases over
+ * * java.io.RandomAccessFile through the use of buffering.</li>
+ * <li>Read String methods support user-specified Charsets (default UTF-8).</li>
+ * <li>Support for both big and little endiannness on reads and write: users may specify the byte order for I/O
+ * operations.</li>
+ * </ul>
+ * This is a subclass of Object, as it was not possible to subclass
  * java.io.RandomAccessFile because many of the methods are
  * final. However, if it is necessary to use RandomAccessFile and
  * java.io.RandomAccessFile interchangeably, both classes implement the
@@ -358,6 +364,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
     filePosition = 0;
     buffer = new byte[bufferSize];
     endOfFile = false;
+    bigEndian = true;
   }
 
   /**
@@ -541,8 +548,10 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
 
   /**
    * Change the current endian mode. Subsequent reads of short, int, float, double, long, char will
-   * use this. Does not currently affect writes.
+   * use this. Does not currently affect writes - ByteOrder must be explicitly specified on writes.
    * Default values is BIG_ENDIAN.
+   *
+   * This method is an extension not implemented in java.io.RandomAccessFile.
    *
    * @param endian RandomAccessFile.BIG_ENDIAN or RandomAccessFile.LITTLE_ENDIAN
    */
@@ -702,7 +711,8 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
     long need = nbytes;
     while (need > 0) {
       long count = fileChannel.transferTo(offset, need, dest);
-      // if (count == 0) break; // LOOK not sure what the EOF condition is
+      if (count == 0)
+        break; // EOF condition
       need -= count;
       offset += count;
     }
@@ -1436,30 +1446,52 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
    * @exception IOException if an I/O error occurs.
    */
   public final String readLine() throws IOException {
+    return readLine(StandardCharsets.UTF_8);
+  }
+
+  /**
+   * Read the next line of text as the specified charset
+   * The charset parameter is an extension not implemented in java.io.RandomAccessFile.
+   *
+   * @param charset - character encoding to use
+   * @return
+   * @throws IOException
+   */
+  public String readLine(Charset charset) throws IOException {
     StringBuilder input = new StringBuilder();
-    int c = -1;
+    int bytes_per_char = (charset.equals(StandardCharsets.UTF_16) || charset.equals(StandardCharsets.UTF_16BE)
+        || charset.equals(StandardCharsets.UTF_16LE)) ? 2 : 1;
+
+    char c = (char) -1;
     boolean eol = false;
 
     while (!eol) {
-      switch (c = read()) {
-        case -1:
-        case '\n':
-          eol = true;
-          break;
-        case '\r':
-          eol = true;
-          long cur = getFilePointer();
-          if ((read()) != '\n') {
-            seek(cur);
-          }
-          break;
-        default:
-          input.append((char) c);
-          break;
+      try {
+        // read 2 bytes at a time for UTF-16, else 1 byte at a time
+        // NOTE: endianness of the file mst match endianness of the charset
+        switch (c = bytes_per_char > 1 ? readChar() : (char) read()) {
+          case (char) -1:
+          case '\n':
+            eol = true;
+            break;
+          case '\r':
+            eol = true;
+            long cur = getFilePointer();
+            char next = bytes_per_char > 1 ? readChar() : (char) read();
+            if (next != '\n') {
+              seek(cur);
+            }
+            break;
+          default:
+            input.append(c);
+            break;
+        }
+      } catch (EOFException eof) {
+        eol = true;
       }
     }
 
-    if ((c == -1) && (input.length() == 0)) {
+    if ((c == (char) -1) && (input.length() == 0)) {
       return null;
     }
     return input.toString();
@@ -1503,7 +1535,8 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
   }
 
   /**
-   * Read a String of known length.
+   * Read a String of known length as the specified charset.
+   * The charset parameter is an extension not implemented in java.io.RandomAccessFile.
    *
    * @param nbytes number of bytes to reSad
    * @param charset the {@link Charset charset} to be used to decode the bytes
@@ -1528,7 +1561,8 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
   }
 
   /**
-   * Read a String of max length, zero terminate.
+   * Read a String of max length as the specified charset, zero terminate.
+   * The charset parameter is an extension not implemented in java.io.RandomAccessFile.
    *
    * @param nbytes number of bytes to read
    * @param charset the {@link Charset charset} to be used to decode the bytes
@@ -1536,12 +1570,21 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
    * @throws IOException if an I/O error occurs.
    */
   public String readStringMax(int nbytes, Charset charset) throws IOException {
+    int bytes_per_char = (charset.equals(StandardCharsets.UTF_16) || charset.equals(StandardCharsets.UTF_16BE)
+        || charset.equals(StandardCharsets.UTF_16LE)) ? 2 : 1;
     byte[] b = new byte[nbytes];
     readFully(b);
     int count;
-    for (count = 0; count < nbytes; count++)
-      if (b[count] == 0)
-        break;
+    int nzeros = 0;
+    for (count = 0; count < nbytes; count++) {
+      if (b[count] == 0) {
+        nzeros++;
+        // break if all bytes in char are zero
+        if (nzeros == bytes_per_char)
+          break;
+      } else // reset nzeros for non-zero byte
+        nzeros = 0;
+    }
     return new String(b, 0, count, charset);
   }
 
@@ -1593,8 +1636,38 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
    * @throws IOException if an I/O error occurs.
    */
   public final void writeShort(int v) throws IOException {
-    write((v >>> 8) & 0xFF);
-    write((v) & 0xFF);
+    writeShort(v, ByteOrder.BIG_ENDIAN);
+  }
+
+  /**
+   * Writes a <code>short</code> to the file as two bytes with the provided endianness.
+   * The endian parameter is an extension not implemented in java.io.RandomAccessFile.
+   * 
+   * @param v a <code>short</code> to be written.
+   * @param endian Endianness of the file as an int (0 = big endian, 1 = little endian)
+   * @throws IOException if an I/O error occurs.
+   */
+  public final void writeShort(int v, int endian) throws IOException {
+    ByteOrder bo = endian == LITTLE_ENDIAN ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN;
+    writeShort(v, bo);
+  }
+
+  /**
+   * Writes a <code>short</code> to the file as two bytes with the provided byte order.
+   * The byte order parameter is an extension not implemented in java.io.RandomAccessFile.
+   * 
+   * @param v a <code>short</code> to be written.
+   * @param bo Endianness of the file as a ByteOrder
+   * @throws IOException if an I/O error occurs.
+   */
+  public void writeShort(int v, ByteOrder bo) throws IOException {
+    if (bo.equals(ByteOrder.LITTLE_ENDIAN)) {
+      write((v) & 0xFF);
+      write((v >>> 8) & 0xFF);
+    } else {
+      write((v >>> 8) & 0xFF);
+      write((v) & 0xFF);
+    }
   }
 
   /**
@@ -1606,21 +1679,79 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
    * @throws IOException on read error
    */
   public final void writeShort(short[] pa, int start, int n) throws IOException {
+    writeShort(pa, start, n, ByteOrder.BIG_ENDIAN);
+  }
+
+  /**
+   * Write an array of shorts with the provided endianness.
+   * The endian parameter is an extension not implemented in java.io.RandomAccessFile.
+   *
+   * @param pa write from this array
+   * @param start starting with this element in the array
+   * @param n this number of elements
+   * @param endian Endianness of the file as an int (0 = big endian, 1 = little endian)
+   * @throws IOException on read error
+   */
+  public final void writeShort(short[] pa, int start, int n, int endian) throws IOException {
+    ByteOrder bo = endian == LITTLE_ENDIAN ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN;
+    writeShort(pa, start, n, bo);
+  }
+
+  /**
+   * Write an array of shorts with the provided byte order.
+   * The byte order parameter is an extension not implemented in java.io.RandomAccessFile.
+   *
+   * @param pa write from this array
+   * @param start starting with this element in the array
+   * @param n this number of elements
+   * @param bo Endianness of the file as a ByteOrder
+   * @throws IOException on read error
+   */
+  public final void writeShort(short[] pa, int start, int n, ByteOrder bo) throws IOException {
     for (int i = 0; i < n; i++) {
-      writeShort(pa[start + i]);
+      writeShort(pa[start + i], bo);
     }
   }
 
   /**
-   * Writes a <code>char</code> to the file as a 2-byte value, high
-   * byte first.
+   * Writes a <code>char</code> to the file as a 2-byte value, high byte first.
    *
    * @param v a <code>char</code> value to be written.
    * @throws IOException if an I/O error occurs.
    */
   public final void writeChar(int v) throws IOException {
-    write((v >>> 8) & 0xFF);
-    write((v) & 0xFF);
+    writeChar(v, ByteOrder.BIG_ENDIAN);
+  }
+
+  /**
+   * Writes a <code>char</code> to the file as a 2-byte value with the provided endianness.
+   * The endian parameter is an extension not implemented in java.io.RandomAccessFile.
+   *
+   * @param v a <code>char</code> value to be written.
+   * @param endian Endianness of the file as an int (0 = big endian, 1 = little endian)
+   * @throws IOException if an I/O error occurs.
+   */
+  public void writeChar(int v, int endian) throws IOException {
+    ByteOrder bo = endian == LITTLE_ENDIAN ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN;
+    writeChar(v, bo);
+  }
+
+  /**
+   * Writes a <code>char</code> to the file as a 2-byte value with the provided byte order.
+   * The byte order parameter is an extension not implemented in java.io.RandomAccessFile.
+   *
+   * @param v a <code>char</code> value to be written.
+   * @param bo Endianness of the file as a ByteOrder
+   * @throws IOException if an I/O error occurs.
+   */
+  public void writeChar(int v, ByteOrder bo) throws IOException {
+    if (bo.equals(ByteOrder.LITTLE_ENDIAN)) {
+      write((v) & 0xFF);
+      write((v >>> 8) & 0xFF);
+    } else {
+      write((v >>> 8) & 0xFF);
+      write((v) & 0xFF);
+    }
   }
 
   /**
@@ -1632,8 +1763,37 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
    * @throws IOException on read error
    */
   public final void writeChar(char[] pa, int start, int n) throws IOException {
+    writeChar(pa, start, n, ByteOrder.BIG_ENDIAN);
+  }
+
+  /**
+   * Write an array of chars with the provided endianness.
+   * The endian parameter is an extension not implemented in java.io.RandomAccessFile.
+   *
+   * @param pa write from this array
+   * @param start starting with this element in the array
+   * @param n this number of elements
+   * @param endian Endianness of the file as an int (0 = big endian, 1 = little endian)
+   * @throws IOException on read error
+   */
+  public final void writeChar(char[] pa, int start, int n, int endian) throws IOException {
+    ByteOrder bo = endian == LITTLE_ENDIAN ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN;
+    writeChar(pa, start, n, bo);
+  }
+
+  /**
+   * Write an array of chars with the provided byte order.
+   * The byte order parameter is an extension not implemented in java.io.RandomAccessFile.
+   *
+   * @param pa write from this array
+   * @param start starting with this element in the array
+   * @param n this number of elements
+   * @param bo Endianness of the file as a ByteOrder
+   * @throws IOException on read error
+   */
+  public final void writeChar(char[] pa, int start, int n, ByteOrder bo) throws IOException {
     for (int i = 0; i < n; i++) {
-      writeChar(pa[start + i]);
+      writeChar(pa[start + i], bo);
     }
   }
 
@@ -1644,10 +1804,42 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
    * @throws IOException if an I/O error occurs.
    */
   public final void writeInt(int v) throws IOException {
-    write((v >>> 24) & 0xFF);
-    write((v >>> 16) & 0xFF);
-    write((v >>> 8) & 0xFF);
-    write((v) & 0xFF);
+    writeInt(v, ByteOrder.BIG_ENDIAN);
+  }
+
+  /**
+   * Writes an <code>int</code> to the file as four bytes with the provided endianness.
+   * The endian parameter is an extension not implemented in java.io.RandomAccessFile.
+   *
+   * @param v an <code>int</code> to be written.
+   * @param endian Endianness of the file as an int (0 = big endian, 1 = little endian)
+   * @throws IOException if an I/O error occurs.
+   */
+  public final void writeInt(int v, int endian) throws IOException {
+    ByteOrder bo = endian == LITTLE_ENDIAN ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN;
+    writeInt(v, bo);
+  }
+
+  /**
+   * Writes an <code>int</code> to the file as four bytes with the provided byte order.
+   * The byte order parameter is an extension not implemented in java.io.RandomAccessFile.
+   *
+   * @param v an <code>int</code> to be written.
+   * @param bo Endianness of the file as a ByteOrder
+   * @throws IOException if an I/O error occurs.
+   */
+  public final void writeInt(int v, ByteOrder bo) throws IOException {
+    if (bo.equals(ByteOrder.LITTLE_ENDIAN)) {
+      write((v) & 0xFF);
+      write((v >>> 8) & 0xFF);
+      write((v >>> 16) & 0xFF);
+      write((v >>> 24) & 0xFF);
+    } else {
+      write((v >>> 24) & 0xFF);
+      write((v >>> 16) & 0xFF);
+      write((v >>> 8) & 0xFF);
+      write((v) & 0xFF);
+    }
   }
 
   /**
@@ -1659,8 +1851,37 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
    * @throws IOException on read error
    */
   public final void writeInt(int[] pa, int start, int n) throws IOException {
+    writeInt(pa, start, n, ByteOrder.BIG_ENDIAN);
+  }
+
+  /**
+   * Write an array of ints with the provided endianness.
+   * The endian parameter is an extension not implemented in java.io.RandomAccessFile.
+   *
+   * @param pa write from this array
+   * @param start starting with this element in the array
+   * @param n write this number of elements
+   * @param endian Endianness of the file as an int (0 = big endian, 1 = little endian)
+   * @throws IOException on read error
+   */
+  public final void writeInt(int[] pa, int start, int n, int endian) throws IOException {
+    ByteOrder bo = endian == LITTLE_ENDIAN ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN;
+    writeInt(pa, start, n, bo);
+  }
+
+  /**
+   * Write an array of ints with the provided byte order.
+   * The byte order parameter is an extension not implemented in java.io.RandomAccessFile.
+   *
+   * @param pa write from this array
+   * @param start starting with this element in the array
+   * @param n write this number of elements
+   * @param bo Endianness of the file as a ByteOrder
+   * @throws IOException on read error
+   */
+  public final void writeInt(int[] pa, int start, int n, ByteOrder bo) throws IOException {
     for (int i = 0; i < n; i++) {
-      writeInt(pa[start + i]);
+      writeInt(pa[start + i], bo);
     }
   }
 
@@ -1671,14 +1892,50 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
    * @throws IOException if an I/O error occurs.
    */
   public final void writeLong(long v) throws IOException {
-    write((int) (v >>> 56) & 0xFF);
-    write((int) (v >>> 48) & 0xFF);
-    write((int) (v >>> 40) & 0xFF);
-    write((int) (v >>> 32) & 0xFF);
-    write((int) (v >>> 24) & 0xFF);
-    write((int) (v >>> 16) & 0xFF);
-    write((int) (v >>> 8) & 0xFF);
-    write((int) (v) & 0xFF);
+    writeLong(v, ByteOrder.BIG_ENDIAN);
+  }
+
+  /**
+   * Writes a <code>long</code> to the file as eight bytes with the provided endianness.
+   * The endian parameter is an extension not implemented in java.io.RandomAccessFile.
+   *
+   * @param v a <code>long</code> to be written.
+   * @param endian Endianness of the file as an int (0 = big endian, 1 = little endian)
+   * @throws IOException if an I/O error occurs.
+   */
+  public final void writeLong(long v, int endian) throws IOException {
+    ByteOrder bo = endian == LITTLE_ENDIAN ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN;
+    writeLong(v, bo);
+  }
+
+  /**
+   * Writes a <code>long</code> to the file as eight bytes with the provided byte order.
+   * The byte order parameter is an extension not implemented in java.io.RandomAccessFile.
+   *
+   * @param v a <code>long</code> to be written.
+   * @param bo Endianness of the file as a ByteOrder
+   * @throws IOException if an I/O error occurs.
+   */
+  public final void writeLong(long v, ByteOrder bo) throws IOException {
+    if (bo.equals(ByteOrder.LITTLE_ENDIAN)) {
+      write((int) (v) & 0xFF);
+      write((int) (v >>> 8) & 0xFF);
+      write((int) (v >>> 16) & 0xFF);
+      write((int) (v >>> 24) & 0xFF);
+      write((int) (v >>> 32) & 0xFF);
+      write((int) (v >>> 40) & 0xFF);
+      write((int) (v >>> 48) & 0xFF);
+      write((int) (v >>> 56) & 0xFF);
+    } else {
+      write((int) (v >>> 56) & 0xFF);
+      write((int) (v >>> 48) & 0xFF);
+      write((int) (v >>> 40) & 0xFF);
+      write((int) (v >>> 32) & 0xFF);
+      write((int) (v >>> 24) & 0xFF);
+      write((int) (v >>> 16) & 0xFF);
+      write((int) (v >>> 8) & 0xFF);
+      write((int) (v) & 0xFF);
+    }
   }
 
   /**
@@ -1690,8 +1947,37 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
    * @throws IOException on read error
    */
   public final void writeLong(long[] pa, int start, int n) throws IOException {
+    writeLong(pa, start, n, ByteOrder.BIG_ENDIAN);
+  }
+
+  /**
+   * Write an array of longs with the provided endianness.
+   * The endian parameter is an extension not implemented in java.io.RandomAccessFile.
+   *
+   * @param pa write from this array
+   * @param start starting with this element in the array
+   * @param n write this number of elements
+   * @param endian Endianness of the file as an int (0 = big endian, 1 = little endian)
+   * @throws IOException on read error
+   */
+  public final void writeLong(long[] pa, int start, int n, int endian) throws IOException {
+    ByteOrder bo = endian == LITTLE_ENDIAN ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN;
+    writeLong(pa, start, n, bo);
+  }
+
+  /**
+   * Write an array of longs with the provided byte order.
+   * The byte order parameter is an extension not implemented in java.io.RandomAccessFile.
+   *
+   * @param pa write from this array
+   * @param start starting with this element in the array
+   * @param n write this number of elements
+   * @param bo Endianness of the file as a ByteOrder
+   * @throws IOException on read error
+   */
+  public final void writeLong(long[] pa, int start, int n, ByteOrder bo) throws IOException {
     for (int i = 0; i < n; i++) {
-      writeLong(pa[start + i]);
+      writeLong(pa[start + i], bo);
     }
   }
 
@@ -1706,7 +1992,39 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
    * @see java.lang.Float#floatToIntBits(float)
    */
   public final void writeFloat(float v) throws IOException {
-    writeInt(Float.floatToIntBits(v));
+    writeInt(Float.floatToIntBits(v), ByteOrder.BIG_ENDIAN);
+  }
+
+  /**
+   * Converts the float argument to an <code>int</code> using the
+   * <code>floatToIntBits</code> method in class <code>Float</code>,
+   * and then writes that <code>int</code> value to the file as a
+   * 4-byte quantity, with the provided endianness.
+   * The endian parameter is an extension not implemented in java.io.RandomAccessFile.
+   *
+   * @param v a <code>float</code> value to be written.
+   * @param endian Endianness of the file as an int (0 = big endian, 1 = little endian)
+   * @throws IOException if an I/O error occurs.
+   * @see java.lang.Float#floatToIntBits(float)
+   */
+  public final void writeFloat(float v, int endian) throws IOException {
+    writeInt(Float.floatToIntBits(v), endian);
+  }
+
+  /**
+   * Converts the float argument to an <code>int</code> using the
+   * <code>floatToIntBits</code> method in class <code>Float</code>,
+   * and then writes that <code>int</code> value to the file as a
+   * 4-byte quantity, with the provided byte order.
+   * The byte order parameter is an extension not implemented in java.io.RandomAccessFile.
+   *
+   * @param v a <code>float</code> value to be written.
+   * @param bo Endianness of the file as a ByteOrder
+   * @throws IOException if an I/O error occurs.
+   * @see java.lang.Float#floatToIntBits(float)
+   */
+  public final void writeFloat(float v, ByteOrder bo) throws IOException {
+    writeInt(Float.floatToIntBits(v), bo);
   }
 
   /**
@@ -1718,11 +2036,39 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
    * @throws IOException on read error
    */
   public final void writeFloat(float[] pa, int start, int n) throws IOException {
-    for (int i = 0; i < n; i++) {
-      writeFloat(pa[start + i]);
-    }
+    writeFloat(pa, start, n, ByteOrder.BIG_ENDIAN);
   }
 
+  /**
+   * Write an array of floats with the provided endianness.
+   * The endian parameter is an extension not implemented in java.io.RandomAccessFile.
+   *
+   * @param pa write from this array
+   * @param start starting with this element in the array
+   * @param n write this number of elements
+   * @param endian Endianness of the file as an int (0 = big endian, 1 = little endian)
+   * @throws IOException on read error
+   */
+  public final void writeFloat(float[] pa, int start, int n, int endian) throws IOException {
+    ByteOrder bo = endian == LITTLE_ENDIAN ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN;
+    writeFloat(pa, start, n, bo);
+  }
+
+  /**
+   * Write an array of floats with the provided byte order.
+   * The byte order parameter is an extension not implemented in java.io.RandomAccessFile.
+   *
+   * @param pa write from this array
+   * @param start starting with this element in the array
+   * @param n write this number of elements
+   * @param bo Endianness of the file as a ByteOrder
+   * @throws IOException on read error
+   */
+  public final void writeFloat(float[] pa, int start, int n, ByteOrder bo) throws IOException {
+    for (int i = 0; i < n; i++) {
+      writeFloat(pa[start + i], bo);
+    }
+  }
 
   /**
    * Converts the double argument to a <code>long</code> using the
@@ -1735,7 +2081,39 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
    * @see java.lang.Double#doubleToLongBits(double)
    */
   public final void writeDouble(double v) throws IOException {
-    writeLong(Double.doubleToLongBits(v));
+    writeLong(Double.doubleToLongBits(v), ByteOrder.BIG_ENDIAN);
+  }
+
+  /**
+   * Converts the double argument to a <code>long</code> using the
+   * <code>doubleToLongBits</code> method in class <code>Double</code>,
+   * and then writes that <code>long</code> value to the file as an
+   * 8-byte quantity, with the provided endianness.
+   * The endian parameter is an extension not implemented in java.io.RandomAccessFile.
+   *
+   * @param v a <code>double</code> value to be written.
+   * @param endian Endianness of the file as an int (0 = big endian, 1 = little endian)
+   * @throws IOException if an I/O error occurs.
+   * @see java.lang.Double#doubleToLongBits(double)
+   */
+  public final void writeDouble(double v, int endian) throws IOException {
+    writeLong(Double.doubleToLongBits(v), endian);
+  }
+
+  /**
+   * Converts the double argument to a <code>long</code> using the
+   * <code>doubleToLongBits</code> method in class <code>Double</code>,
+   * and then writes that <code>long</code> value to the file as an
+   * 8-byte quantity, with the provided byte order.
+   * The byte order parameter is an extension not implemented in java.io.RandomAccessFile.
+   *
+   * @param v a <code>double</code> value to be written.
+   * @param bo Endianness of the file as a ByteOrder
+   * @throws IOException if an I/O error occurs.
+   * @see java.lang.Double#doubleToLongBits(double)
+   */
+  public final void writeDouble(double v, ByteOrder bo) throws IOException {
+    writeLong(Double.doubleToLongBits(v), bo);
   }
 
   /**
@@ -1747,8 +2125,37 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
    * @throws IOException on read error
    */
   public final void writeDouble(double[] pa, int start, int n) throws IOException {
+    writeDouble(pa, start, n, ByteOrder.BIG_ENDIAN);
+  }
+
+  /**
+   * Write an array of doubles with the provided endianness.
+   * The endian parameter is an extension not implemented in java.io.RandomAccessFile.
+   *
+   * @param pa write from this array
+   * @param start starting with this element in the array
+   * @param n write this number of elements
+   * @param endian Endianness of the file as an int (0 = big endian, 1 = little endian)
+   * @throws IOException on read error
+   */
+  public final void writeDouble(double[] pa, int start, int n, int endian) throws IOException {
+    ByteOrder bo = endian == LITTLE_ENDIAN ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN;
+    writeDouble(pa, start, n, bo);
+  }
+
+  /**
+   * Write an array of doubles with the provided byte order.
+   * The byte order parameter is an extension not implemented in java.io.RandomAccessFile.
+   *
+   * @param pa write from this array
+   * @param start starting with this element in the array
+   * @param n write this number of elements
+   * @param bo Endianness of the file as a ByteOrder
+   * @throws IOException on read error
+   */
+  public final void writeDouble(double[] pa, int start, int n, ByteOrder bo) throws IOException {
     for (int i = 0; i < n; i++) {
-      writeDouble(pa[start + i]);
+      writeDouble(pa[start + i], bo);
     }
   }
 
@@ -1793,11 +2200,41 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
    * @see java.io.RandomAccessFile#writeChar(int)
    */
   public final void writeChars(String s) throws IOException {
+    writeChars(s, ByteOrder.BIG_ENDIAN);
+  }
+
+  /**
+   * Writes a string to the file as a sequence of characters. Each
+   * character is written to the data output stream as if by the
+   * <code>writeChar</code> method, with the provided endianness.
+   * The endian parameter is an extension not implemented in java.io.RandomAccessFile.
+   *
+   * @param s a <code>String</code> value to be written.
+   * @param endian Endianness of the file as an int (0 = big endian, 1 = little endian)
+   * @throws IOException if an I/O error occurs.
+   * @see java.io.RandomAccessFile#writeChar(int)
+   */
+  public void writeChars(String s, int endian) throws IOException {
+    ByteOrder bo = endian == LITTLE_ENDIAN ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN;
+    writeChars(s, bo);
+  }
+
+  /**
+   * Writes a string to the file as a sequence of characters. Each
+   * character is written to the data output stream as if by the
+   * <code>writeChar</code> method, with the provided byte order.
+   * The byte order parameter is an extension not implemented in java.io.RandomAccessFile.
+   *
+   * @param s a <code>String</code> value to be written.
+   * @throws IOException if an I/O error occurs.
+   * @param bo Endianness of the file as a ByteOrder
+   * @see java.io.RandomAccessFile#writeChar(int)
+   */
+  public void writeChars(String s, ByteOrder bo) throws IOException {
     int len = s.length();
     for (int i = 0; i < len; i++) {
       int v = s.charAt(i);
-      write((v >>> 8) & 0xFF);
-      write((v) & 0xFF);
+      writeChar(v, bo);
     }
   }
 
