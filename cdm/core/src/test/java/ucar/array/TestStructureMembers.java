@@ -61,7 +61,7 @@ public class TestStructureMembers {
 
     Member m2 = sm.findMember("mname3");
     assertThat(m2).isNotNull();
-    assertThat(m2.getArrayType()).isEqualTo(DataType.SHORT);
+    assertThat(m2.getArrayType()).isEqualTo(ArrayType.SHORT);
     assertThat(m2.getShape()).isEqualTo(new int[] {});
     assertThat(m2.length()).isEqualTo(1);
     assertThat(m2.getStorageSizeBytes()).isEqualTo(2);
