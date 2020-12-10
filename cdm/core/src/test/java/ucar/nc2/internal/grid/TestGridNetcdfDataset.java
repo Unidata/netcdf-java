@@ -23,7 +23,7 @@ public class TestGridNetcdfDataset {
   @Test
   @Category(NeedsCdmUnitTest.class)
   public void testOneProblem() throws IOException {
-    String filename = TestDir.cdmUnitTestDir + "gribCollections/ndfd_spc/NDFD-SPC.ncx4";
+    String filename = TestDir.cdmUnitTestDir + "tds_index/NCEP/NDFD/SPC/NDFD-SPC.ncx4";
 
     try (NetcdfDataset ds = ucar.nc2.dataset.NetcdfDatasets.openDataset(filename)) {
       Formatter infoLog = new Formatter();
@@ -42,7 +42,7 @@ public class TestGridNetcdfDataset {
   @Test
   @Category(NeedsCdmUnitTest.class)
   public void testRegularIntervalCoordinate() throws IOException, InvalidRangeException {
-    String filename = TestDir.cdmUnitTestDir + "gribCollections/ndfd_spc/NDFD_SPC_CONUS_2p5km_20201116_1700.grib2.ncx4";
+    String filename = TestDir.cdmUnitTestDir + "tds_index/NCEP/NDFD/SPC/NDFD_SPC_CONUS_2p5km_20201116_1700.grib2.ncx4";
 
     try (NetcdfDataset ds = ucar.nc2.dataset.NetcdfDatasets.openDataset(filename)) {
       Formatter infoLog = new Formatter();
@@ -80,17 +80,14 @@ public class TestGridNetcdfDataset {
         assertThat(val).isEqualTo((expectedBounds[count] + expectedBounds[count + 1]) / 2);
         count += 2;
       }
-
-      GridSubset subset = new GridSubset().setRunTimeLatest();
-      GridReferencedArray geoArray = grid.readData(subset);
-      assertThat(geoArray.data().getRank()).isEqualTo(3);
     }
   }
 
   @Test
   @Category(NeedsCdmUnitTest.class)
   public void testIrregularPointCoordinate() throws IOException {
-    String filename = TestDir.cdmUnitTestDir + "gribCollections/ndfd_spc/NDFD-SPC.ncx4";
+    String filename =
+        TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2/PofP/2004/200406/ds083.2-pofp-200406.ncx4";
 
     try (NetcdfDataset ds = ucar.nc2.dataset.NetcdfDatasets.openDataset(filename)) {
       Formatter infoLog = new Formatter();
@@ -100,28 +97,28 @@ public class TestGridNetcdfDataset {
         fail();
       }
       GridNetcdfDataset gridDataset = result.get();
-      Grid grid = gridDataset.findGrid("Convective_Hazard_Outlook_surface_24_Hour_Average")
-          .orElseThrow(() -> new RuntimeException("Cant find grid"));
+      Grid grid =
+          gridDataset.findGrid("Ozone_mixing_ratio_isobaric").orElseThrow(() -> new RuntimeException("Cant find grid"));
       GridCoordinateSystem csys = grid.getCoordinateSystem();
-      GridAxis1DTime timeAxis = csys.getRunTimeAxis();
-      assertThat(timeAxis).isNotNull();
-      assertThat(timeAxis.getSpacing()).isEqualTo(GridAxis.Spacing.irregularPoint);
-      int ncoords = 17;
-      assertThat(timeAxis.getNcoords()).isEqualTo(ncoords);
-      double[] expected = new double[] {0, 3, 4, 8, 12, 13, 15, 20, 23, 24, 27, 28, 32, 36, 39, 44, 47};
-      for (int i = 0; i < timeAxis.getNcoords(); i++) {
-        assertThat(timeAxis.getCoordMidpoint(i)).isEqualTo(expected[i]);
-        if (i > 0 && i < timeAxis.getNcoords() - 1) {
-          assertThat(timeAxis.getCoordEdge1(i)).isEqualTo((expected[i] + expected[i - 1]) / 2);
-          assertThat(timeAxis.getCoordEdge2(i)).isEqualTo((expected[i] + expected[i + 1]) / 2);
+      GridAxis1D vertAxis = csys.getVerticalAxis();
+      assertThat(vertAxis).isNotNull();
+      assertThat(vertAxis.getSpacing()).isEqualTo(GridAxis.Spacing.irregularPoint);
+      int ncoords = 6;
+      assertThat(vertAxis.getNcoords()).isEqualTo(ncoords);
+      double[] expected = new double[] {10.000000, 20.000000, 30.000000, 50.000000, 70.000000, 100.000000};
+      for (int i = 0; i < vertAxis.getNcoords(); i++) {
+        assertThat(vertAxis.getCoordMidpoint(i)).isEqualTo(expected[i]);
+        if (i > 0 && i < vertAxis.getNcoords() - 1) {
+          assertThat(vertAxis.getCoordEdge1(i)).isEqualTo((expected[i] + expected[i - 1]) / 2);
+          assertThat(vertAxis.getCoordEdge2(i)).isEqualTo((expected[i] + expected[i + 1]) / 2);
         }
       }
-      MinMax maxmin = timeAxis.getCoordEdgeMinMax();
-      assertThat(maxmin.min()).isEqualTo(-1.5);
-      assertThat(maxmin.max()).isEqualTo(48.5);
+      MinMax maxmin = vertAxis.getCoordEdgeMinMax();
+      assertThat(maxmin.min()).isEqualTo(5.0);
+      assertThat(maxmin.max()).isEqualTo(115.0);
 
       int count = 0;
-      for (double val : timeAxis.getCoordsAsArray()) {
+      for (double val : vertAxis.getCoordsAsArray()) {
         assertThat(val).isEqualTo(expected[count++]);
       }
     }
@@ -130,7 +127,7 @@ public class TestGridNetcdfDataset {
   @Test
   @Category(NeedsCdmUnitTest.class)
   public void testOffsetRegularCoordinate() throws IOException {
-    String filename = TestDir.cdmUnitTestDir + "gribCollections/ndfd_spc/NDFD-SPC.ncx4";
+    String filename = TestDir.cdmUnitTestDir + "tds_index/NCEP/NDFD/SPC/NDFD-SPC.ncx4";
 
     try (NetcdfDataset ds = ucar.nc2.dataset.NetcdfDatasets.openDataset(filename)) {
       Formatter infoLog = new Formatter();
@@ -148,50 +145,12 @@ public class TestGridNetcdfDataset {
       assertThat(timeAxis).isNotNull();
       assertThat(timeAxis.getSpacing()).isEqualTo(GridAxis.Spacing.discontiguousInterval);
 
-      /*
-       * CdmIndex
-       * hour 8: timeIntv: (28,52), (52,76), (2)
-       * hour 9: timeIntv: (27,51), (51,75), (2)
-       * hour 10: timeIntv: (26,50), (50,74), (2)
-       * hour 21: timeIntv: (15,39), (39,63), (2)
-       */
-      assertThat(timeAxis.getHourOffsets()).containsExactly(8, 9, 10, 21);
+      assertThat(timeAxis.getHourOffsets()).containsExactly(6, 7, 8, 9, 10, 18, 21);
 
-      /*
-       * NewGrid
-       * npts: 2 [0.000000,0.000000] spacing=discontiguousInterval [4, 2]
-       * validtime1Offset values =
-       * {
-       * {40.0, 64.0},
-       * {39.0, 63.0},
-       * {38.0, 62.0},
-       * {27.0, 51.0}
-       * }
-       * validtime1Offset bounds =
-       * {
-       * {
-       * {28.0, 52.0},
-       * {52.0, 76.0}
-       * },
-       * {
-       * {27.0, 51.0},
-       * {51.0, 75.0}
-       * },
-       * {
-       * {26.0, 50.0},
-       * {50.0, 74.0}
-       * },
-       * {
-       * {15.0, 39.0},
-       * {39.0, 63.0}
-       * }
-       * }
-       */
-
-      assertThat(timeAxis.getHourOffsets().size()).isEqualTo(4);
+      assertThat(timeAxis.getHourOffsets().size()).isEqualTo(7);
       assertThat(timeAxis.getNOffsetPerRun()).isEqualTo(2);
-      double[] bounds1 = new double[] {28, 52, 27, 51, 26, 50, 15, 39};
-      double[] bounds2 = new double[] {52, 76, 51, 75, 50, 74, 39, 63};
+      double[] bounds1 = new double[] {30, 54, 29, 53, 28, 52, 27, 51, 26, 50, 18, 42, 15, 39};
+      double[] bounds2 = new double[] {54, 78, 53, 77, 52, 76, 51, 75, 50, 74, 42, 66, 39, 63};
 
       int count = 0;
       for (double val : timeAxis.getCoordBoundsAsArray()) {

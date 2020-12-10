@@ -32,7 +32,7 @@ public class TestGribIndexCreation {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private static final boolean show = false;
-  private static CollectionUpdateType updateMode = always;
+  private static final CollectionUpdateType updateMode = always;
 
   @BeforeClass
   static public void before() {
@@ -68,6 +68,7 @@ public class TestGribIndexCreation {
       rafCache.showCache(out);
     }
 
+    System.out.printf("%nSummary Stats%n");
     System.out.printf("            countGC=%7d%n", GribCollectionImmutable.countGC);
     System.out.printf("            countPC=%7d%n", PartitionCollectionImmutable.countPC);
     System.out.printf("    countDataAccess=%7d%n", GribIosp.debugIndexOnlyCount);
@@ -91,9 +92,9 @@ public class TestGribIndexCreation {
             TestDir.cdmUnitTestDir + "gribCollections/gdsHashChange/noaaport/.*gbx9", null, null, null, "file", null);
     // <gdsHash from='-1506003048' to='-1505079527'/>
     config.gribConfig.addGdsHash("-1506003048", "-1505079527");
+    System.out.printf("Create %s %s index for = %s%n", config.collectionName, config.ptype, config.spec);
 
-    boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
-    System.out.printf("changed = %s%n", changed);
+    GribCdmIndex.updateGribCollection(config, updateMode, logger);
     String location = TestDir.cdmUnitTestDir + "gribCollections/gdsHashChange/noaaport/NDFD-CONUS_noaaport.ncx4";
     // LOOK add check that records were combined
     try (NetcdfFile ncfile = NetcdfFiles.open(location, null)) {
@@ -135,9 +136,9 @@ public class TestGribIndexCreation {
             TestDir.cdmUnitTestDir + "datasets/NDFD-CONUS-5km/.*grib2$", null, null, null, "file", null);
     config.gribConfig.addGdsHash("-197088379", "-198041691");
     config.gribConfig.useGenType = true;
+    System.out.printf("Create %s %s index for = %s%n", config.collectionName, config.ptype, config.spec);
 
-    boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
-    System.out.printf("changed = %s%n", changed);
+    GribCdmIndex.updateGribCollection(config, updateMode, logger);
   }
 
   @Test
@@ -150,9 +151,9 @@ public class TestGribIndexCreation {
             TestDir.cdmUnitTestDir + "gribCollections/cfsr/.*grb2", null, null, null, "directory", null);
     // <gdsHash from="1450192070" to="1450218978"/>
     config.gribConfig.addGdsHash("1450192070", "1450218978");
+    System.out.printf("Create %s %s index for = %s%n", config.collectionName, config.ptype, config.spec);
 
-    boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
-    System.out.printf("changed = %s%n", changed);
+    GribCdmIndex.updateGribCollection(config, updateMode, logger);
   }
 
   @Test
@@ -160,9 +161,9 @@ public class TestGribIndexCreation {
   public void testDgex() throws IOException {
     FeatureCollectionConfig config = new FeatureCollectionConfig("dgex_46", "test/dgex", FeatureCollectionType.GRIB2,
         TestDir.cdmUnitTestDir + "gribCollections/dgex/**/.*grib2", null, null, null, "file", null);
+    System.out.printf("Create %s %s index for = %s%n", config.collectionName, config.ptype, config.spec);
 
-    boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
-    System.out.printf("changed = %s%n", changed);
+    GribCdmIndex.updateGribCollection(config, updateMode, logger);
   }
 
   @Test
@@ -171,10 +172,9 @@ public class TestGribIndexCreation {
     FeatureCollectionConfig config =
         new FeatureCollectionConfig("gfsConus80_file", "test/gfsConus80", FeatureCollectionType.GRIB1,
             TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/**/.*grib1", null, null, null, "file", null);
+    System.out.printf("Create %s %s index for = %s%n", config.collectionName, config.ptype, config.spec);
 
-    System.out.printf("===testGFSconus80_file %n");
-    boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
-    System.out.printf("changed = %s%n", changed);
+    GribCdmIndex.updateGribCollection(config, updateMode, logger);
   }
 
   @Test
@@ -183,10 +183,9 @@ public class TestGribIndexCreation {
     FeatureCollectionConfig config =
         new FeatureCollectionConfig("gfsConus80_dir", "test/gfsConus80", FeatureCollectionType.GRIB1,
             TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/**/.*grib1", null, null, null, "directory", null);
+    System.out.printf("Create %s %s index for = %s%n", config.collectionName, config.ptype, config.spec);
 
-    System.out.printf("===testGFSconus80_dir %n");
-    boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
-    System.out.printf("changed = %s%n", changed);
+    GribCdmIndex.updateGribCollection(config, updateMode, logger);
   }
 
   @Test
@@ -195,10 +194,9 @@ public class TestGribIndexCreation {
     FeatureCollectionConfig config =
         new FeatureCollectionConfig("GFS_CONUS_80km", "test/gfsConus80", FeatureCollectionType.GRIB1,
             TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/.*grib1", null, null, null, "file", null);
+    System.out.printf("Create %s %s index for = %s%n", config.collectionName, config.ptype, config.spec);
 
-    System.out.printf("===testGFSconus80ncss %n");
-    boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
-    System.out.printf("changed = %s%n", changed);
+    GribCdmIndex.updateGribCollection(config, updateMode, logger);
   }
 
   @Test
@@ -207,9 +205,9 @@ public class TestGribIndexCreation {
     FeatureCollectionConfig config =
         new FeatureCollectionConfig("gfs_2p5deg", "test/gfs_2p5deg", FeatureCollectionType.GRIB2,
             TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/.*grib2", null, null, null, "file", null);
+    System.out.printf("Create %s %s index for = %s%n", config.collectionName, config.ptype, config.spec);
 
-    boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
-    System.out.printf("changed = %s%n", changed);
+    GribCdmIndex.updateGribCollection(config, updateMode, logger);
   }
 
   @Test
@@ -218,9 +216,9 @@ public class TestGribIndexCreation {
     FeatureCollectionConfig config =
         new FeatureCollectionConfig("gfs_2p5deg", "test/gfs_2p5deg", FeatureCollectionType.GRIB2,
             TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/.*grib2", null, null, null, "file", null);
+    System.out.printf("Create %s %s index for = %s%n", config.collectionName, config.ptype, config.spec);
 
-    boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
-    System.out.printf("changed = %s%n", changed);
+    GribCdmIndex.updateGribCollection(config, updateMode, logger);
   }
 
   @Test
@@ -229,9 +227,9 @@ public class TestGribIndexCreation {
     FeatureCollectionConfig config =
         new FeatureCollectionConfig("gefs_ens", "test/gefs_ens", FeatureCollectionType.GRIB2,
             TestDir.cdmUnitTestDir + "gribCollections/ens/.*grib2", null, null, null, "file", null);
+    System.out.printf("Create %s %s index for = %s%n", config.collectionName, config.ptype, config.spec);
 
-    boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
-    System.out.printf("changed = %s%n", changed);
+    GribCdmIndex.updateGribCollection(config, updateMode, logger);
   }
 
   ////////////////
@@ -242,9 +240,9 @@ public class TestGribIndexCreation {
     FeatureCollectionConfig config = new FeatureCollectionConfig("ds083.2-pofp", "test/ds083.2-pofp",
         FeatureCollectionType.GRIB1, TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2/PofP/**/.*grib1", null,
         null, null, "directory", null);
+    System.out.printf("Create %s %s index for = %s%n", config.collectionName, config.ptype, config.spec);
 
-    boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
-    System.out.printf("changed = %s%n", changed);
+    GribCdmIndex.updateGribCollection(config, updateMode, logger);
     Grib.setDebugFlags(DebugFlags.create(""));
   }
 
@@ -255,26 +253,11 @@ public class TestGribIndexCreation {
     FeatureCollectionConfig config = new FeatureCollectionConfig("ds083.2_Aggregation", "test/ds083.2",
         FeatureCollectionType.GRIB1, TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2/grib1/**/.*gbx9", null,
         null, null, "directory", null);
+    System.out.printf("Create %s %s index for = %s%n", config.collectionName, config.ptype, config.spec);
 
-    boolean changed = GribCdmIndex.updateGribCollection(config, always, logger);
-    System.out.printf("changed = %s%n", changed);
+    GribCdmIndex.updateGribCollection(config, always, logger);
     Grib.setDebugFlags(DebugFlags.create(""));
   }
-
-  /*
-   * @Test
-   * public void testRdvamds083p2_1999() throws IOException {
-   * Grib.setDebugFlags(DebugFlags.create("Grib/debugGbxIndexOnly"));
-   * FeatureCollectionConfig config = new FeatureCollectionConfig("ds083.2_Aggregation", "test/ds083.2",
-   * FeatureCollectionType.GRIB1,
-   * TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2/grib1/2008/** /*gbx9",
-   * null, null, null, "directory", null);
-   * 
-   * boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
-   * System.out.printf("changed = %s%n", changed);
-   * Grib.setDebugFlags(DebugFlags.create(""));
-   * }
-   */
 
   @Test
   @Category(NeedsCdmUnitTest.class)
@@ -283,9 +266,9 @@ public class TestGribIndexCreation {
     FeatureCollectionConfig config = new FeatureCollectionConfig("ds627.0_46", "test/ds627.0",
         FeatureCollectionType.GRIB1, TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds627.0/ei.oper.an.pv/**/.*gbx9",
         null, "#ei.oper.an.pv/#yyyyMM", null, "directory", null);
+    System.out.printf("Create %s %s index for = %s%n", config.collectionName, config.ptype, config.spec);
 
-    boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
-    System.out.printf("changed = %s%n", changed);
+    GribCdmIndex.updateGribCollection(config, updateMode, logger);
     Grib.setDebugFlags(DebugFlags.create(""));
   }
 
@@ -297,9 +280,9 @@ public class TestGribIndexCreation {
     FeatureCollectionConfig config =
         new FeatureCollectionConfig("GCpass1-union", "test/GCpass1", FeatureCollectionType.GRIB1,
             TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds627.1/.*gbx9", null, null, null, "directory", null);
+    System.out.printf("Create %s %s index for = %s%n", config.collectionName, config.ptype, config.spec);
 
-    boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
-    System.out.printf("changed = %s%n", changed);
+    GribCdmIndex.updateGribCollection(config, updateMode, logger);
     Grib.setDebugFlags(DebugFlags.create(""));
   }
 
@@ -312,10 +295,9 @@ public class TestGribIndexCreation {
     FeatureCollectionConfig config = new FeatureCollectionConfig("yearPartition", "test/yearPartition",
         FeatureCollectionType.GRIB1, TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds627.1/.*gbx9", null,
         "#ei.mdfa.fc12hr.sfc.regn128sc.#yyyyMMddhh", null, "year", null);
-    System.out.printf("config = %s%n", config);
+    System.out.printf("Create %s %s index for = %s%n", config.collectionName, config.ptype, config.spec);
 
-    boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
-    System.out.printf("changed = %s%n", changed);
+    GribCdmIndex.updateGribCollection(config, updateMode, logger);
     Grib.setDebugFlags(DebugFlags.create(""));
   }
 
@@ -328,9 +310,9 @@ public class TestGribIndexCreation {
     FeatureCollectionConfig config =
         new FeatureCollectionConfig("GFSonedega", "test/GFSonedega", FeatureCollectionType.GRIB2,
             TestDir.cdmUnitTestDir + "gribCollections/tp/.*grib2", null, null, null, "file", null);
+    System.out.printf("Create %s %s index for = %s%n", config.collectionName, config.ptype, config.spec);
 
-    boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
-    System.out.printf("changed = %s%n", changed);
+    GribCdmIndex.updateGribCollection(config, updateMode, logger);
   }
 
   @Test
@@ -341,9 +323,9 @@ public class TestGribIndexCreation {
     FeatureCollectionConfig config =
         new FeatureCollectionConfig("ECMWFbcs", "test/ECMWFbcs", FeatureCollectionType.GRIB2,
             TestDir.cdmUnitTestDir + "gribCollections/ecmwf/bcs/.*001$", null, null, null, "directory", null);
+    System.out.printf("Create %s %s index for = %s%n", config.collectionName, config.ptype, config.spec);
 
-    boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
-    System.out.printf("changed = %s%n", changed);
+    GribCdmIndex.updateGribCollection(config, updateMode, logger);
   }
 
   @Test
@@ -352,9 +334,9 @@ public class TestGribIndexCreation {
     FeatureCollectionConfig config =
         new FeatureCollectionConfig("ECMWFemd", "test/ECMWFemd", FeatureCollectionType.GRIB1,
             TestDir.cdmUnitTestDir + "gribCollections/ecmwf/emd/.*grib$", null, null, null, "directory", null);
+    System.out.printf("Create %s %s index for = %s%n", config.collectionName, config.ptype, config.spec);
 
-    boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
-    System.out.printf("changed = %s%n", changed);
+    GribCdmIndex.updateGribCollection(config, updateMode, logger);
   }
 
   @Test
@@ -363,9 +345,9 @@ public class TestGribIndexCreation {
     FeatureCollectionConfig config =
         new FeatureCollectionConfig("ECMWFmad", "test/ECMWFmad", FeatureCollectionType.GRIB1,
             TestDir.cdmUnitTestDir + "gribCollections/ecmwf/mad/.*001$", null, null, null, "directory", null);
+    System.out.printf("Create %s %s index for = %s%n", config.collectionName, config.ptype, config.spec);
 
-    boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
-    System.out.printf("changed = %s%n", changed);
+    GribCdmIndex.updateGribCollection(config, updateMode, logger);
   }
 
   @Test
@@ -374,9 +356,9 @@ public class TestGribIndexCreation {
     FeatureCollectionConfig config =
         new FeatureCollectionConfig("ECMWFmee", "test/ECMWFmee", FeatureCollectionType.GRIB1,
             TestDir.cdmUnitTestDir + "gribCollections/ecmwf/mee/.*001$", null, null, null, "directory", null);
+    System.out.printf("Create %s %s index for = %s%n", config.collectionName, config.ptype, config.spec);
 
-    boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
-    System.out.printf("changed = %s%n", changed);
+    GribCdmIndex.updateGribCollection(config, updateMode, logger);
   }
 
   @Test
@@ -385,9 +367,9 @@ public class TestGribIndexCreation {
     FeatureCollectionConfig config =
         new FeatureCollectionConfig("ECMWFmwp", "test/ECMWFmwp", FeatureCollectionType.GRIB1,
             TestDir.cdmUnitTestDir + "gribCollections/ecmwf/mwp/.*001$", null, null, null, "directory", null);
+    System.out.printf("Create %s %s index for = %s%n", config.collectionName, config.ptype, config.spec);
 
-    boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
-    System.out.printf("changed = %s%n", changed);
+    GribCdmIndex.updateGribCollection(config, updateMode, logger);
   }
 
   @Test
@@ -396,20 +378,21 @@ public class TestGribIndexCreation {
     FeatureCollectionConfig config =
         new FeatureCollectionConfig("HRRRanalysis", "test/HRRRanalysis", FeatureCollectionType.GRIB2,
             TestDir.cdmUnitTestDir + "gribCollections/anal/.*grib2$", null, null, null, "directory", null);
+    System.out.printf("Create %s %s index for = %s%n", config.collectionName, config.ptype, config.spec);
 
-    boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
-    System.out.printf("changed = %s%n", changed);
+    GribCdmIndex.updateGribCollection(config, updateMode, logger);
   }
 
   @Test
   @Category(NeedsCdmUnitTest.class)
   public void createNBMOcean() throws IOException { // TWOD
     Grib.setDebugFlags(DebugFlags.create("Grib/debugGbxIndexOnly"));
-    FeatureCollectionConfig config = new FeatureCollectionConfig("NCEP_OCEAN_MODEL_FIXED", "test/NCEP_OCEAN_MODEL",
-        FeatureCollectionType.GRIB2, "tds_index/NCEP/NBM/Ocean/.*gbx9", null, null, null, "file", null);
+    FeatureCollectionConfig config =
+        new FeatureCollectionConfig("NCEP_OCEAN_MODEL_FIXED", "test/NCEP_OCEAN_MODEL", FeatureCollectionType.GRIB2,
+            TestDir.cdmUnitTestDir + "tds_index/NCEP/NBM/Ocean/.*gbx9", null, null, null, "file", null);
+    System.out.printf("Create %s %s index for = %s%n", config.collectionName, config.ptype, config.spec);
 
-    boolean changed = GribCdmIndex.updateGribCollection(config, always, logger);
-    System.out.printf("changed = %s%n", changed);
+    GribCdmIndex.updateGribCollection(config, always, logger);
     Grib.setDebugFlags(DebugFlags.create(""));
   }
 
@@ -417,23 +400,40 @@ public class TestGribIndexCreation {
   @Category(NeedsCdmUnitTest.class)
   public void createNndfCpc() throws IOException { // TWOD
     Grib.setDebugFlags(DebugFlags.create("Grib/debugGbxIndexOnly"));
-    FeatureCollectionConfig config = new FeatureCollectionConfig("NCEP_NDFD_CPC_Experimental", "test/NCEP_NDFD_CPC",
-        FeatureCollectionType.GRIB2, "tds_index/NCEP/NDFD/CPC/.*gbx9", null, null, null, "file", null);
+    FeatureCollectionConfig config =
+        new FeatureCollectionConfig("NCEP_NDFD_CPC_Experimental", "test/NCEP_NDFD_CPC", FeatureCollectionType.GRIB2,
+            TestDir.cdmUnitTestDir + "tds_index/NCEP/NDFD/CPC/.*gbx9", null, null, null, "file", null);
+    System.out.printf("Create %s %s index for = %s%n", config.collectionName, config.ptype, config.spec);
 
-    boolean changed = GribCdmIndex.updateGribCollection(config, always, logger);
-    System.out.printf("changed = %s%n", changed);
+    GribCdmIndex.updateGribCollection(config, always, logger);
     Grib.setDebugFlags(DebugFlags.create(""));
   }
 
   @Test
   @Category(NeedsCdmUnitTest.class)
   public void createNdfdSpc() throws IOException {
+    Grib.setDebugFlags(DebugFlags.create("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config =
         new FeatureCollectionConfig("NDFD-SPC", "test/NDFD-SPC", FeatureCollectionType.GRIB2,
-            TestDir.cdmUnitTestDir + "gribCollections/ndfd_spc/.*grib2$", null, null, null, "file", null);
+            TestDir.cdmUnitTestDir + "tds_index/NCEP/NDFD/SPC/.*gbx9", null, null, null, "file", null);
+    System.out.printf("Create %s %s index for = %s%n", config.collectionName, config.ptype, config.spec);
 
-    boolean changed = GribCdmIndex.updateGribCollection(config, always, logger);
-    System.out.printf("changed = %s%n", changed);
+    GribCdmIndex.updateGribCollection(config, always, logger);
+    Grib.setDebugFlags(DebugFlags.create(""));
+  }
+
+
+  @Test
+  @Category(NeedsCdmUnitTest.class)
+  public void createGEFSmembers() throws IOException {
+    Grib.setDebugFlags(DebugFlags.create("Grib/debugGbxIndexOnly"));
+    FeatureCollectionConfig config = new FeatureCollectionConfig("GEFS-Global_1p0deg_Ensemble-members",
+        "test/GEFSmembners", FeatureCollectionType.GRIB2,
+        TestDir.cdmUnitTestDir + "ncss/GEFS/Global_1p0deg_Ensemble/member/.*gbx9", null, null, null, "directory", null);
+    System.out.printf("Create %s %s index for = %s%n", config.collectionName, config.ptype, config.spec);
+
+    GribCdmIndex.updateGribCollection(config, always, logger);
+    Grib.setDebugFlags(DebugFlags.create(""));
   }
 
   @Test

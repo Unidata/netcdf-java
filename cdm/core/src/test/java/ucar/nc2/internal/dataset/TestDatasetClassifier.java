@@ -218,7 +218,7 @@ public class TestDatasetClassifier {
   @Test
   @Category(NeedsCdmUnitTest.class)
   public void testMRUTP() throws IOException {
-    String filename = TestDir.cdmUnitTestDir + "tds/ncep/NDFD-CONUS-RUC2_CONUS_40km.ncx4";
+    String filename = TestDir.cdmUnitTestDir + "tds_index/NCEP/GFS/Global_0p25deg_ana/GFS-Global_0p25deg_ana.ncx4";
     try (FeatureDatasetCoverage covDataset = CoverageDatasetFactory.open(filename)) {
       for (CoverageCollection cc : covDataset.getCoverageCollections()) {
         if (cc.getName().endsWith("MRUTP")) {
@@ -228,7 +228,6 @@ public class TestDatasetClassifier {
     }
 
     // MRUTP has a runtime and time sharing the same dimension.
-    // Not sure what the point is except to avoid a 2D time?
     try (NetcdfDataset ds = NetcdfDatasets.openDataset(filename)) {
       Formatter errlog = new Formatter();
       Optional<GridNetcdfDataset> grido = GridNetcdfDataset.create(ds, errlog);

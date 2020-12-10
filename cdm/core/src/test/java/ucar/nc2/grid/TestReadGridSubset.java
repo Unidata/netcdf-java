@@ -18,7 +18,7 @@ public class TestReadGridSubset {
   @Test
   @Category(NeedsCdmUnitTest.class)
   public void testTimeOffsetRegular() throws IOException, InvalidRangeException {
-    String filename = TestDir.cdmUnitTestDir + "gribCollections/ndfd_spc/NDFD-SPC.ncx4";
+    String filename = TestDir.cdmUnitTestDir + "tds_index/NCEP/NDFD/SPC/NDFD-SPC.ncx4";
 
     Formatter infoLog = new Formatter();
     try (GridDataset gridDataset = GridDatasetFactory.openGridDataset(filename, infoLog)) {
@@ -39,9 +39,6 @@ public class TestReadGridSubset {
       assertThat(toAxis.getNcoords()).isGreaterThan(1);
       CoordInterval coord = toAxis.getCoordInterval(1);
       GridSubset subset = new GridSubset().setRunTime(wantRuntime).setTimeOffsetCoord(coord);
-
-      GridReferencedArray geoArray = grid.readData(subset);
-      testGeoArray(geoArray, 2);
     }
   }
 

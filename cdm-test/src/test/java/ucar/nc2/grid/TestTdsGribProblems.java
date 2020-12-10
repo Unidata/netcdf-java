@@ -68,7 +68,7 @@ public class TestTdsGribProblems {
 
   @Test
   public void testMrmsRadar() throws Exception {
-    String filename = indexDir + "NCEP/MRMS/Radar/MRMS_Radar_20201011_2200.grib2.ncx4";
+    String filename = indexDir + "NCEP/MRMS/Radar/MRMS_Radar_20201111_2200.grib2.ncx4";
 
     try (NetcdfDataset dataset = NetcdfDatasets.openDataset(filename)) {
       System.out.printf("testNoProjection: %s ncoordsys = %d%n", dataset.getLocation(),
@@ -118,7 +118,7 @@ public class TestTdsGribProblems {
 
   @Test
   public void testHrrrConusSurface() throws Exception {
-    String filename = indexDir + "NOAA_GSD/HRRR/CONUS_3km/surface/HRRR_CONUS_3km_surface_202011060000.grib2.ncx4";
+    String filename = indexDir + "NOAA_GSD/HRRR/CONUS_3km/surface/HRRR_CONUS_3km_surface_202011260000.grib2.ncx4";
 
     Formatter errlog = new Formatter();
     try (GridDataset gridDataset = GridDatasetFactory.openGridDataset(filename, errlog)) {
