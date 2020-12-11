@@ -54,7 +54,6 @@ gradle.projectsEvaluated {  // Several statements below rely upon all subproject
     include 'thredds/client/catalog/*.java'
     include 'thredds/client/catalog/builder/*.java'
     include 'ucar/array/*.java'
-    include 'ucar/ma2/*.java'
     include 'ucar/nc2/*.java'
     include 'ucar/nc2/constants/*.java'
     include 'ucar/nc2/dataset/*.java'

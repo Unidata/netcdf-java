@@ -1,6 +1,11 @@
 package ucar.ma2;
 
-/** A mix-in interface for evaluating if a value is missing. */
+/**
+ * A mix-in interface for evaluating if a value is missing.
+ * 
+ * @deprecated will move in ver7.
+ */
+@Deprecated
 public interface IsMissingEvaluator {
   /** true if there may be missing data */
   boolean hasMissing();

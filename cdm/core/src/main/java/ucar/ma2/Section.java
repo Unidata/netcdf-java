@@ -19,7 +19,10 @@ import javax.annotation.concurrent.Immutable;
  * A section of multidimensional array indices.
  * Represented as List<Range>.
  * TODO evaluate use of null in ver7
+ * 
+ * @deprecated will move in ver7.
  */
+@Deprecated
 @Immutable
 public class Section {
   public static final Section SCALAR = new Section(Range.ONE);

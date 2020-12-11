@@ -9,7 +9,7 @@ import javax.annotation.concurrent.Immutable;
 import java.util.Iterator;
 
 /**
- * Represents a set of integers, used as an index for arrays.
+ * Represents a set of integers, used to indicate a subset of a 1-d array.
  * No duplicates are allowed.
  * It should be considered as a subset of the interval of integers [first(), last()] inclusive.
  * For example Range(1:11:3) represents the set of integers {1,4,7,10}
@@ -26,7 +26,10 @@ import java.util.Iterator;
  *    ...
  *  }
  * </pre>
+ * 
+ * @deprecated will move in ver7.
  */
+@Deprecated
 @Immutable
 public class Range implements RangeIterator {
   public static final Range EMPTY = new Range(); // used for unlimited dimension = 0
