@@ -23,7 +23,22 @@
         
         <values>-107 -106 -6 -5 -1 80</values>
     </variable>
-    
+
+    <variable name="scaleOffsetMissingUnsignedValidRange" shape="6" type="byte">
+        <!-- The difference between the scaleOffsetMissingUnsigned and scaleOffsetMissingUnsignedRange vars is basically
+        making the scale factor and offset negative, and combining valid_min, valid_max into valid_range.
+        However, because we are setting the scale factor and offset to be negative, we need to set their type to a non
+        integral type, otherwise they will be interpreted as unsigned thanks to _Unsigned=true. -->
+        <attribute name="scale_factor" type="float" value="-100" />
+        <attribute name="add_offset" type="float" value="-1" />
+        <attribute name="valid_range" type="byte" value="-6 -106" />
+
+        <attribute name="_Unsigned" value="true" />
+        <attribute name="_FillValue" type="byte" value="-1" />
+        <attribute name="missing_value" type="byte" value="-1" />
+        <values>-107 -106 -6 -5 -1 80</values>
+    </variable>
+
     <variable name="scaleValidRange" shape="5" type="ushort">
         <attribute name="scale_factor" type="float" value="0.01" />
         <attribute name="valid_range" type="ushort" value="990 1010" />

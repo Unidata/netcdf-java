@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
+  <variable name="scaleOffsetValidMaxMin" shape="4" type="byte">
+    <attribute name="scale_factor" type="float" value="0.01" />
+    <attribute name="add_offset" type="int" value="1" />
+    <attribute name="valid_min" type="byte" value="0" />
+    <attribute name="valid_max" type="byte" value="100" />
+    <values>-1 0 100 101</values>
+  </variable>
+  <variable name="scaleOffsetValidRange" shape="4" type="byte">
+    <!-- Only difference between this variable and scaleOffsetValidMaxMin is that this variable uses valid_range
+         instead of valid_min, valid_max -->
+    <attribute name="valid_range" type="byte" value="0 100" />
+
+    <attribute name="scale_factor" type="float" value="0.01" />
+    <attribute name="add_offset" type="int" value="1" />
+    <values>-1 0 100 101</values>
+  </variable>
+  <variable name="negScaleOffsetValidRange" shape="4" type="byte">
+    <!-- The differences between this variable and scaleOffsetValidRange is that this variable has negative
+         scale and offset vales. Unpacked values should be the same magnitude, but opposite sign, of the unpacked
+         values in scaleOffsetValidRange. -->
+    <attribute name="scale_factor" type="float" value="-0.01" />
+    <attribute name="add_offset" type="int" value="-1" />
+
+    <attribute name="valid_range" type="byte" value="0 100" />
+    <values>-1 0 100 101</values>
+  </variable>
+</netcdf>
