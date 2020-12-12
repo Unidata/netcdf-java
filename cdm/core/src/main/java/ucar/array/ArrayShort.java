@@ -7,7 +7,6 @@ package ucar.array;
 import com.google.common.base.Preconditions;
 import java.util.Iterator;
 import javax.annotation.concurrent.Immutable;
-import ucar.ma2.DataType;
 
 /** Concrete implementation of Array specialized for Short. */
 @Immutable
@@ -15,20 +14,20 @@ public final class ArrayShort extends Array<Short> {
   private final Storage<Short> storage;
 
   /** Create an empty Array of type Short and the given shape. */
-  public ArrayShort(DataType dtype, int[] shape) {
+  public ArrayShort(ArrayType dtype, int[] shape) {
     super(dtype, shape);
     storage = new StorageS(new short[(int) indexFn.length()]);
   }
 
   /** Create an Array of type Short and the given shape and storage. */
-  public ArrayShort(DataType dtype, int[] shape, Storage<Short> storage) {
+  public ArrayShort(ArrayType dtype, int[] shape, Storage<Short> storage) {
     super(dtype, shape);
     Preconditions.checkArgument(indexFn.length() <= storage.length());
     this.storage = storage;
   }
 
   /** Create an Array of type Short and the given indexFn and storage. */
-  private ArrayShort(DataType dtype, IndexFn indexFn, Storage<Short> storageD) {
+  private ArrayShort(ArrayType dtype, IndexFn indexFn, Storage<Short> storageD) {
     super(dtype, indexFn);
     Preconditions.checkArgument(indexFn.length() <= storageD.length());
     this.storage = storageD;
@@ -76,7 +75,7 @@ public final class ArrayShort extends Array<Short> {
   /** create new Array with given IndexFn and the same backing store */
   @Override
   protected ArrayShort createView(IndexFn view) {
-    return new ArrayShort(this.dataType, view, this.storage);
+    return new ArrayShort(this.arrayType, view, this.storage);
   }
 
   // used when the data is not in canonical order

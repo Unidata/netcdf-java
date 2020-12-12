@@ -6,6 +6,8 @@ package ucar.nc2.iosp.bufr;
 
 import java.nio.ByteBuffer;
 import java.util.HashMap;
+
+import ucar.array.ArrayType;
 import ucar.array.StructureMembers;
 import ucar.array.StructureMembers.Member;
 import ucar.ma2.DataType;
@@ -26,7 +28,7 @@ public class MessageArrayReaderUtils {
       if (m != null) {
         map.put(dkey, m);
 
-        if (m.getDataType() == DataType.STRUCTURE) {
+        if (m.getArrayType() == ArrayType.STRUCTURE) {
           if (dkey.getSubKeys() != null) {
             associateMessage2Members(m.getStructureMembers(), dkey, map);
           }

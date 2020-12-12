@@ -74,11 +74,11 @@ public class TestArrayFloat {
   @Test
   public void testFactoryCopy() {
     int[] shape1 = new int[] {1, 2, 3};
-    Array<Float> array1 = Arrays.factory(DataType.FLOAT, shape1, new float[] {1, 2, 3, 4, 5, 6});
-    Array<Float> array2 = Arrays.factory(DataType.FLOAT, shape1, new float[] {7, 8, 9, 10, 11, 12});
+    Array<Float> array1 = Arrays.factory(ArrayType.FLOAT, shape1, new float[] {1, 2, 3, 4, 5, 6});
+    Array<Float> array2 = Arrays.factory(ArrayType.FLOAT, shape1, new float[] {7, 8, 9, 10, 11, 12});
 
     int[] shape = new int[] {2, 2, 3};
-    Array<Float> array = Arrays.factoryCopy(DataType.FLOAT, shape, ImmutableList.of(array1, array2));
+    Array<Float> array = Arrays.factoryCopy(ArrayType.FLOAT, shape, ImmutableList.of(array1, array2));
 
     assertThat(array.get(0, 0, 0)).isEqualTo(1);
     assertThat(array.get(0, 0, 1)).isEqualTo(2);
@@ -103,11 +103,11 @@ public class TestArrayFloat {
   @Test
   public void testFactoryArrays() {
     int[] shape1 = new int[] {1, 2, 3};
-    Array<Float> array1 = Arrays.factory(DataType.FLOAT, shape1, new float[] {1, 2, 3, 4, 5, 6});
-    Array<Float> array2 = Arrays.factory(DataType.FLOAT, shape1, new float[] {7, 8, 9, 10, 11, 12});
+    Array<Float> array1 = Arrays.factory(ArrayType.FLOAT, shape1, new float[] {1, 2, 3, 4, 5, 6});
+    Array<Float> array2 = Arrays.factory(ArrayType.FLOAT, shape1, new float[] {7, 8, 9, 10, 11, 12});
 
     int[] shape = new int[] {2, 2, 3};
-    Array<Float> array = Arrays.factoryArrays(DataType.FLOAT, shape, ImmutableList.of(array1, array2));
+    Array<Float> array = Arrays.factoryArrays(ArrayType.FLOAT, shape, ImmutableList.of(array1, array2));
 
     assertThat(array.get(0, 0, 0)).isEqualTo(1);
     assertThat(array.get(0, 0, 1)).isEqualTo(2);

@@ -9,10 +9,8 @@ import com.google.common.base.Stopwatch;
 import java.io.IOException;
 import java.util.Formatter;
 import java.util.Iterator;
-import ucar.array.Array;
-import ucar.array.ArrayVlen;
-import ucar.array.StructureData;
-import ucar.array.StructureMembers;
+
+import ucar.array.*;
 import ucar.ma2.DataType;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Sequence;
@@ -75,8 +73,8 @@ public class CompareArrayToArray {
       // ok = false;
     }
 
-    if (org.getDataType() != array.getDataType()) {
-      f.format(" WARN  %s: dataType %d !== %d%n", name, org.getDataType(), array.getDataType());
+    if (org.getArrayType() != array.getArrayType()) {
+      f.format(" WARN  %s: dataType %d !== %d%n", name, org.getArrayType(), array.getArrayType());
       // ok = false;
     }
 
@@ -95,7 +93,7 @@ public class CompareArrayToArray {
       return false;
     }
 
-    DataType dt = org.getDataType();
+    ArrayType dt = org.getArrayType();
 
     if (org instanceof ArrayVlen) {
       ArrayVlen<?> orgv = (ArrayVlen<?>) org;
@@ -294,14 +292,14 @@ public class CompareArrayToArray {
 
       default: {
         ok = false;
-        f.format(" %s: Unknown data type %s%n", name, org.getDataType());
+        f.format(" %s: Unknown data type %s%n", name, org.getArrayType());
       }
     }
 
     return ok;
   }
 
-  private static String createNumericDataDiffMessage(DataType dt, String name, Number v1, Number v2, int idx) {
+  private static String createNumericDataDiffMessage(ArrayType dt, String name, Number v1, Number v2, int idx) {
     return String.format(" DIFF %s %s: %s != %s;  count = %s, absDiff = %s, relDiff = %s %n", dt, name, v1, v2, idx,
         Misc.absoluteDifference(v1.doubleValue(), v2.doubleValue()),
         Misc.relativeDifference(v1.doubleValue(), v2.doubleValue()));
@@ -327,7 +325,7 @@ public class CompareArrayToArray {
       Array<?> data1 = org.getMemberData(m2);
       Array<?> data2 = array.getMemberData(m2);
       if (data2 != null) {
-        f.format("    compare member %s %s%n", m1.getDataType(), m1.getName());
+        f.format("    compare member %s %s%n", m1.getArrayType(), m1.getName());
         ok &= compareData(f, m1.getName(), data1, data2, justOne, false);
       }
     }

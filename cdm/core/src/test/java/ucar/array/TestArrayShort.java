@@ -18,7 +18,7 @@ public class TestArrayShort {
   public void testBasics() {
     int[] shape = new int[] {1, 2, 3};
     Storage<Short> store = new ArrayShort.StorageS(new short[] {1, 2, 3, 4, 5, 6});
-    ArrayShort array = new ArrayShort(DataType.SHORT, shape, store);
+    ArrayShort array = new ArrayShort(ArrayType.SHORT, shape, store);
 
     assertThat(array.get(0, 0, 0)).isEqualTo(1);
     assertThat(array.get(0, 0, 1)).isEqualTo(2);
@@ -59,7 +59,7 @@ public class TestArrayShort {
   public void testNonCanonicalOrder() {
     int[] shape = new int[] {1, 2, 3};
     Storage<Short> store = new ArrayShort.StorageS(new short[] {1, 2, 3, 4, 5, 6});
-    Array<Short> array = new ArrayShort(DataType.SHORT, shape, store);
+    Array<Short> array = new ArrayShort(ArrayType.SHORT, shape, store);
     array = Arrays.flip(array, 1);
     short[] expected = new short[] {4, 5, 6, 1, 2, 3};
     int count = 0;
@@ -76,11 +76,11 @@ public class TestArrayShort {
   @Test
   public void testFactoryCopy() {
     int[] shape1 = new int[] {1, 2, 3};
-    Array<Short> array1 = Arrays.factory(DataType.SHORT, shape1, new short[] {1, 2, 3, 4, 5, 6});
-    Array<Short> array2 = Arrays.factory(DataType.SHORT, shape1, new short[] {7, 8, 9, 10, 11, 12});
+    Array<Short> array1 = Arrays.factory(ArrayType.SHORT, shape1, new short[] {1, 2, 3, 4, 5, 6});
+    Array<Short> array2 = Arrays.factory(ArrayType.SHORT, shape1, new short[] {7, 8, 9, 10, 11, 12});
 
     int[] shape = new int[] {2, 2, 3};
-    Array<Short> array = Arrays.factoryCopy(DataType.SHORT, shape, ImmutableList.of(array1, array2));
+    Array<Short> array = Arrays.factoryCopy(ArrayType.SHORT, shape, ImmutableList.of(array1, array2));
 
     assertThat(array.get(0, 0, 0)).isEqualTo(1);
     assertThat(array.get(0, 0, 1)).isEqualTo(2);
@@ -105,7 +105,7 @@ public class TestArrayShort {
   @Test
   public void testMisc() {
     int[] shape1 = new int[] {1, 2, 3};
-    Array<Short> array = Arrays.factory(DataType.SHORT, shape1);
+    Array<Short> array = Arrays.factory(ArrayType.SHORT, shape1);
     Index index = array.getIndex();
     assertThat(array.get(index.set(0, 1, 2))).isEqualTo(0);
   }

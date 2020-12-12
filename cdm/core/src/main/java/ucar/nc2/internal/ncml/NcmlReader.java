@@ -24,6 +24,7 @@ import org.jdom2.JDOMException;
 import org.jdom2.Namespace;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.XMLOutputter;
+import ucar.array.ArrayType;
 import ucar.array.Arrays;
 import ucar.array.Array;
 import ucar.array.ArraysConvert;
@@ -1238,7 +1239,7 @@ public class NcmlReader {
         for (int i = 0; i < nhave && i < nwant; i++) {
           data[i] = values.charAt(i);
         }
-        ucar.array.Array<?> dataArray = Arrays.factory(DataType.CHAR, Dimensions.makeShape(v.getDimensions()), data);
+        ucar.array.Array<?> dataArray = Arrays.factory(ArrayType.CHAR, Dimensions.makeShape(v.getDimensions()), data);
         v.setSourceData(dataArray);
 
       } else {

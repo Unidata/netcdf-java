@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import ucar.array.ArrayType;
 import ucar.array.Arrays;
 import ucar.cdmr.CdmRemoteGrpc;
 import ucar.cdmr.CdmrNetcdfProto.DataRequest;
@@ -53,10 +55,10 @@ public class CdmrClient {
   }
 
   private <T> Array<T> getData(String location, Variable v) {
-    DataType dataType = CdmrConverter.convertDataType(v.getDataType());
+    ArrayType dataType = CdmrConverter.convertDataType(v.getDataType());
     Section section = CdmrConverter.decodeSection(v);
     System.out.printf("Data request %s %s (%s)%n", v.getDataType(), v.getName(), section);
-    if (dataType != DataType.DOUBLE && dataType != DataType.FLOAT) {
+    if (dataType != ArrayType.DOUBLE && dataType != ArrayType.FLOAT) {
       System.out.printf("***skip%n");
       return null;
     }

@@ -7,6 +7,7 @@ package ucar.nc2.grib.collection;
 
 import com.google.common.collect.ImmutableList;
 import org.slf4j.Logger;
+import ucar.array.ArrayType;
 import ucar.array.Arrays;
 import ucar.ma2.*;
 import ucar.nc2.*;
@@ -88,7 +89,7 @@ class GribIospBuilder {
     if (isRotatedLatLon) {
       Variable.Builder<?> hcsV = Variable.builder().setName(grid_mapping).setDataType(DataType.INT);
       g.addVariable(hcsV);
-      hcsV.setSourceData(Arrays.factory(DataType.INT, new int[0], new int[] {0}));
+      hcsV.setSourceData(Arrays.factory(ArrayType.INT, new int[0], new int[] {0}));
       hcsV.addAttributes(hcs.proj.getProjectionAttributes());
 
       horizDims = "rlat rlon";
@@ -117,7 +118,7 @@ class GribIospBuilder {
       // make horiz coordsys coordinate variable
       Variable.Builder<?> hcsV = Variable.builder().setName(grid_mapping).setDataType(DataType.INT);
       g.addVariable(hcsV);
-      hcsV.setSourceData(Arrays.factory(DataType.INT, new int[0], new int[] {0}));
+      hcsV.setSourceData(Arrays.factory(ArrayType.INT, new int[0], new int[] {0}));
       hcsV.addAttributes(hcs.proj.getProjectionAttributes());
 
       horizDims = "lat lon";
@@ -145,7 +146,7 @@ class GribIospBuilder {
       // make horiz coordsys coordinate variable
       Variable.Builder<?> hcsV = Variable.builder().setName(grid_mapping).setDataType(DataType.INT);
       g.addVariable(hcsV);
-      hcsV.setSourceData(Arrays.factory(DataType.INT, new int[0], new int[] {0}));
+      hcsV.setSourceData(Arrays.factory(ArrayType.INT, new int[0], new int[] {0}));
       hcsV.addAttributes(hcs.proj.getProjectionAttributes());
 
       horizDims = "y x";
@@ -667,7 +668,7 @@ class GribIospBuilder {
     for (int val : coordTime.getOffsetSorted()) {
       data[count++] = val;
     }
-    v.setSourceData(Arrays.factory(DataType.DOUBLE, new int[] {ntimes}, data));
+    v.setSourceData(Arrays.factory(ArrayType.DOUBLE, new int[] {ntimes}, data));
 
     makeTimeAuxReference(g, tcName, units, coordTime);
   }
@@ -711,7 +712,7 @@ class GribIospBuilder {
     for (TimeCoordIntvValue tinv : coordTime.getTimeIntervals()) {
       data[count++] = tinv.getBounds2();
     }
-    v.setSourceData(Arrays.factory(DataType.DOUBLE, new int[] {ntimes}, data));
+    v.setSourceData(Arrays.factory(ArrayType.DOUBLE, new int[] {ntimes}, data));
 
     // bounds
     String bounds_name = tcName + "_bounds";
@@ -728,7 +729,7 @@ class GribIospBuilder {
       data[count++] = tinv.getBounds1();
       data[count++] = tinv.getBounds2();
     }
-    bounds.setSourceData(Arrays.factory(DataType.DOUBLE, new int[] {ntimes, 2}, data));
+    bounds.setSourceData(Arrays.factory(ArrayType.DOUBLE, new int[] {ntimes, 2}, data));
 
     makeTimeAuxReference(g, tcName, units, coordTime);
   }
@@ -764,7 +765,7 @@ class GribIospBuilder {
       for (VertCoordValue val : vc.getLevelSorted()) {
         data[count++] = (float) (val.getValue1() + val.getValue2()) / 2;
       }
-      v.setSourceData(Arrays.factory(DataType.FLOAT, new int[] {n}, data));
+      v.setSourceData(Arrays.factory(ArrayType.FLOAT, new int[] {n}, data));
 
       Variable.Builder<?> bounds = Variable.builder().setName(vcName + "_bounds").setDataType(DataType.FLOAT)
           .setParentGroupBuilder(g).setDimensionsByName(vcName + " 2");
@@ -782,7 +783,7 @@ class GribIospBuilder {
         data[count++] = (float) level.getValue1();
         data[count++] = (float) level.getValue2();
       }
-      bounds.setSourceData(Arrays.factory(DataType.FLOAT, new int[] {n, 2}, data));
+      bounds.setSourceData(Arrays.factory(ArrayType.FLOAT, new int[] {n, 2}, data));
 
     } else {
       float[] data = new float[n];
@@ -790,7 +791,7 @@ class GribIospBuilder {
       for (VertCoordValue val : vc.getLevelSorted()) {
         data[count++] = (float) val.getValue1();
       }
-      v.setSourceData(Arrays.factory(DataType.FLOAT, new int[] {n}, data));
+      v.setSourceData(Arrays.factory(ArrayType.FLOAT, new int[] {n}, data));
     }
   }
 
@@ -809,7 +810,7 @@ class GribIospBuilder {
     for (EnsCoordValue ecc : ec.getEnsSorted()) {
       data[count++] = ecc.getEnsMember();
     }
-    v.setSourceData(Arrays.factory(DataType.INT, new int[] {n}, data));
+    v.setSourceData(Arrays.factory(ArrayType.INT, new int[] {n}, data));
   }
 
   // orthogonal runtime, offset; both independent
@@ -848,13 +849,13 @@ class GribIospBuilder {
         midpoints[count++] = off; // int ??
       }
     }
-    v.setSourceData(Arrays.factory(DataType.DOUBLE, new int[] {n}, midpoints));
+    v.setSourceData(Arrays.factory(ArrayType.DOUBLE, new int[] {n}, midpoints));
 
     if (time2D.isTimeInterval()) {
       String boundsName = toName + "_bounds";
       Variable.Builder<?> coordVarBounds = VariableDS.builder().setName(boundsName).setDataType(DataType.DOUBLE)
           .setDesc("TimeOffset coord bounds").setParentGroupBuilder(g).setDimensionsByName(toName + " 2")
-          .setSourceData(Arrays.factory(DataType.DOUBLE, new int[] {n, 2}, bounds));
+          .setSourceData(Arrays.factory(ArrayType.DOUBLE, new int[] {n, 2}, bounds));
       g.addVariable(coordVarBounds);
 
       v.addAttribute(new Attribute(CF.BOUNDS, boundsName));
@@ -923,14 +924,14 @@ class GribIospBuilder {
           houridx++;
         }
       }
-      v.setSourceData(Arrays.factory(DataType.DOUBLE, new int[] {nhours, noffsets}, midpoints));
+      v.setSourceData(Arrays.factory(ArrayType.DOUBLE, new int[] {nhours, noffsets}, midpoints));
 
       if (time2D.isTimeInterval()) {
         String boundsName = toName + "_bounds";
         Variable.Builder<?> coordVarBounds = VariableDS.builder().setName(boundsName).setDataType(DataType.DOUBLE)
             .setDesc("time offset coord bounds").setParentGroupBuilder(gb).setDimensionsByName(dimNames + " 2");
         gb.addVariable(coordVarBounds);
-        coordVarBounds.setSourceData(Arrays.factory(DataType.DOUBLE, new int[] {nhours, noffsets, 2}, bounds));
+        coordVarBounds.setSourceData(Arrays.factory(ArrayType.DOUBLE, new int[] {nhours, noffsets, 2}, bounds));
 
         v.addAttribute(new Attribute(CF.BOUNDS, boundsName));
       }

@@ -7,10 +7,10 @@ package ucar.array;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.auto.value.AutoValue;
 import com.google.common.base.Preconditions;
-import ucar.ma2.*;
-import ucar.nc2.util.MinMax;
+import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Range;
+import ucar.ma2.Section;
 
 /** Static helper classes for {@link Array} */
 public class Arrays {
@@ -23,7 +23,7 @@ public class Arrays {
    * @param shape multidimensional shape, must have same total length as dataArray.
    * @param storage storage for type T.
    */
-  public static <T> Array<T> factory(DataType dataType, int[] shape, Storage<T> storage) {
+  public static <T> Array<T> factory(ArrayType dataType, int[] shape, Storage<T> storage) {
     switch (dataType) {
       case OPAQUE:
       case BOOLEAN:
@@ -59,7 +59,7 @@ public class Arrays {
         return (Array<T>) new ArrayString(shape, (Storage<String>) storage);
       }
       default:
-        throw new RuntimeException("Unimplemented DataType " + dataType);
+        throw new RuntimeException("Unimplemented ArrayType " + dataType);
     }
   }
 
@@ -71,7 +71,7 @@ public class Arrays {
    * @param shape multidimensional shape, must have same total length as dataArray.
    * @param dataArray must be java array of T, or java primitive array
    */
-  public static <T> Array<T> factory(DataType dataType, int[] shape, Object dataArray) {
+  public static <T> Array<T> factory(ArrayType dataType, int[] shape, Object dataArray) {
     switch (dataType) {
       case OPAQUE:
       case BOOLEAN:
@@ -115,7 +115,7 @@ public class Arrays {
         return (Array<T>) new ArrayString(shape, storageS);
       }
       default:
-        throw new RuntimeException("Unimplemented DataType= " + dataType);
+        throw new RuntimeException("Unimplemented ArrayType= " + dataType);
     }
   }
 
@@ -126,7 +126,7 @@ public class Arrays {
    * @param dataType
    * @param shape multidimensional shape;
    */
-  public static <T> Array<T> factory(DataType dataType, int[] shape) {
+  public static <T> Array<T> factory(ArrayType dataType, int[] shape) {
     switch (dataType) {
       case BOOLEAN:
       case BYTE:
@@ -161,7 +161,7 @@ public class Arrays {
         return (Array<T>) new ArrayString(shape);
       }
       default:
-        throw new RuntimeException("Unimplemented DataType " + dataType);
+        throw new RuntimeException("Unimplemented ArrayType " + dataType);
     }
   }
 
@@ -171,7 +171,7 @@ public class Arrays {
   /**
    * Combine list of Array's by copying the underlying Array's into a single primitive array
    */
-  public static <T> Array<T> factoryCopy(DataType dataType, int[] shape, List<Array<T>> dataArrays) {
+  public static <T> Array<T> factoryCopy(ArrayType dataType, int[] shape, List<Array<T>> dataArrays) {
     if (dataArrays.size() == 1) {
       return factory(dataType, shape, dataArrays.get(0).storage());
     }
@@ -179,7 +179,7 @@ public class Arrays {
     return factory(dataType, shape, dataArray);
   }
 
-  private static <T> Object combine(DataType dataType, int[] shape, List<Array<T>> dataArrays) {
+  private static <T> Object combine(ArrayType dataType, int[] shape, List<Array<T>> dataArrays) {
     Section section = new Section(shape);
     long size = section.getSize();
     if (size > Integer.MAX_VALUE) {
@@ -220,7 +220,7 @@ public class Arrays {
         all = new String[(int) size];
         break;
       default:
-        throw new RuntimeException(" DataType " + dataType);
+        throw new RuntimeException(" ArrayType " + dataType);
     }
 
     int start = 0;
@@ -237,7 +237,7 @@ public class Arrays {
   /**
    * Experimental: keep list of Arrays seperate. This allows length > 2Gb.
    */
-  public static <T> Array<T> factoryArrays(DataType dataType, int[] shape, List<Array<?>> dataArrays) {
+  public static <T> Array<T> factoryArrays(ArrayType dataType, int[] shape, List<Array<?>> dataArrays) {
     if (dataArrays.size() == 1) {
       return factory(dataType, shape, (Storage<T>) dataArrays.get(0).storage());
     }
@@ -404,7 +404,7 @@ public class Arrays {
   }
 
   public static Object copyPrimitiveArray(Array<?> data) {
-    DataType dataType = data.getDataType();
+    ArrayType dataType = data.getArrayType();
     int idx = 0;
     switch (dataType) {
       case ENUM1:
@@ -495,7 +495,7 @@ public class Arrays {
     for (Number val : conv) {
       storage[count++] = val.doubleValue();
     }
-    return factory(DataType.DOUBLE, array.getShape(), storage);
+    return factory(ArrayType.DOUBLE, array.getShape(), storage);
   }
 
   public static MinMax getMinMaxSkipMissingData(Array<? extends Number> a, IsMissingEvaluator eval) {

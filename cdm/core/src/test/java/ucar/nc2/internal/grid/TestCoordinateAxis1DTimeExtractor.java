@@ -2,6 +2,7 @@ package ucar.nc2.internal.grid;
 
 import org.junit.Test;
 import ucar.array.Array;
+import ucar.array.ArrayType;
 import ucar.array.Arrays;
 import ucar.ma2.DataType;
 import ucar.nc2.*;
@@ -48,7 +49,7 @@ public class TestCoordinateAxis1DTimeExtractor {
       strings[i] = CalendarDate.of(null, 2020, 2, count++, 0, 0, 0).toString();
     }
 
-    Array<String> values = Arrays.factory(DataType.STRING, new int[] {n}, strings);
+    Array<String> values = Arrays.factory(ArrayType.STRING, new int[] {n}, strings);
 
     VariableDS.Builder<?> vdsBuilder =
         VariableDS.builder().setName("name").setDataType(DataType.STRING).setUnits(units).setDesc("desc")
@@ -84,7 +85,7 @@ public class TestCoordinateAxis1DTimeExtractor {
     }
     strings[10] = "badenoff";
 
-    Array<String> values = Arrays.factory(DataType.STRING, new int[] {n}, strings);
+    Array<String> values = Arrays.factory(ArrayType.STRING, new int[] {n}, strings);
 
     VariableDS.Builder<?> vdsBuilder =
         VariableDS.builder().setName("name").setDataType(DataType.STRING).setUnits(units).setDesc("desc")
@@ -122,7 +123,7 @@ public class TestCoordinateAxis1DTimeExtractor {
       }
     }
 
-    Array<String> values = Arrays.factory(DataType.CHAR, new int[] {ndates, nchars}, chars);
+    Array<String> values = Arrays.factory(ArrayType.CHAR, new int[] {ndates, nchars}, chars);
 
     VariableDS.Builder<?> vdsBuilder =
         VariableDS.builder().setName("name").setDataType(DataType.CHAR).setUnits(units).setDesc("desc")

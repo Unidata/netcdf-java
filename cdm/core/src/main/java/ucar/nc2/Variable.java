@@ -10,6 +10,8 @@ import com.google.common.collect.ImmutableSet;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+
+import ucar.array.ArrayType;
 import ucar.array.Arrays;
 import ucar.array.ArraysConvert;
 import ucar.ma2.Array;
@@ -77,9 +79,20 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     return "N/A";
   }
 
-  /** Get the data type of the Variable. */
+  /**
+   * Get the data type of the Variable.
+   * 
+   * @deprecated use getArrayType()
+   */
+  @Deprecated
   public DataType getDataType() {
     return dataType;
+  }
+
+
+  /** Get the data type of the Variable. */
+  public ArrayType getArrayType() {
+    return dataType.getArrayType();
   }
 
   /**
@@ -1117,9 +1130,9 @@ public class Variable implements VariableSimpleIF, ProxyReader {
   }
 
   protected void setCachedData(ucar.array.Array<?> cacheData) {
-    if ((cacheData != null) && (cacheData.getDataType() != getDataType())) {
+    if ((cacheData != null) && (cacheData.getArrayType() != getArrayType())) {
       throw new IllegalArgumentException(
-          "setCachedData type=" + cacheData.getDataType() + " incompatible with variable type=" + getDataType());
+          "setCachedData type=" + cacheData.getArrayType() + " incompatible with variable type=" + getDataType());
     }
     this.cache.setCachedData(cacheData);
   }

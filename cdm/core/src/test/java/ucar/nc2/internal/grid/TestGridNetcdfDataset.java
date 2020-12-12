@@ -3,10 +3,10 @@ package ucar.nc2.internal.grid;
 import com.google.common.collect.Iterables;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import ucar.array.MinMax;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.grid.*;
-import ucar.nc2.util.MinMax;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 

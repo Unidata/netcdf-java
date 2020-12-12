@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import org.junit.Assert;
 import org.junit.Test;
+import ucar.array.ArrayType;
 import ucar.array.Arrays;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
@@ -216,7 +217,7 @@ public class TestAttribute {
 
   @Test
   public void testSetArrayValues() {
-    ucar.array.Array<?> data = Arrays.factory(DataType.FLOAT, new int[] {2}, new float[] {3.14f, .001f});
+    ucar.array.Array<?> data = Arrays.factory(ArrayType.FLOAT, new int[] {2}, new float[] {3.14f, .001f});
     Attribute att = Attribute.builder().setName("name").setArrayValues(data).build();
     assertThat(att).isEqualTo(Attribute.fromArray("name", data));
     assertThat(att).isEqualTo(att.toBuilder().build());

@@ -76,11 +76,11 @@ public class TestArrayChar {
   @Test
   public void testFactoryCopy() {
     int[] shape1 = new int[] {1, 2, 3};
-    Array<Character> array1 = Arrays.factory(DataType.CHAR, shape1, new char[] {1, 2, 3, 4, 5, 6});
-    Array<Character> array2 = Arrays.factory(DataType.CHAR, shape1, new char[] {7, 8, 9, 10, 11, 12});
+    Array<Character> array1 = Arrays.factory(ArrayType.CHAR, shape1, new char[] {1, 2, 3, 4, 5, 6});
+    Array<Character> array2 = Arrays.factory(ArrayType.CHAR, shape1, new char[] {7, 8, 9, 10, 11, 12});
 
     int[] shape = new int[] {2, 2, 3};
-    Array<Character> array = Arrays.factoryCopy(DataType.CHAR, shape, ImmutableList.of(array1, array2));
+    Array<Character> array = Arrays.factoryCopy(ArrayType.CHAR, shape, ImmutableList.of(array1, array2));
 
     assertThat(array.get(0, 0, 0)).isEqualTo(1);
     assertThat(array.get(0, 0, 1)).isEqualTo(2);
@@ -105,7 +105,7 @@ public class TestArrayChar {
   @Test
   public void testMisc() {
     int[] shape1 = new int[] {1, 2, 3};
-    Array<Character> array = Arrays.factory(DataType.CHAR, shape1);
+    Array<Character> array = Arrays.factory(ArrayType.CHAR, shape1);
     Index index = array.getIndex();
     assertThat(array.get(index.set(0, 1, 2))).isEqualTo(0);
   }

@@ -12,6 +12,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.StringTokenizer;
 import javax.annotation.Nullable;
+
+import ucar.array.ArrayType;
 import ucar.array.Arrays;
 import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
@@ -748,7 +750,7 @@ public class CoordSystemBuilder {
     v.addAttribute(new Attribute(_Coordinate.TransformType, ct.getTransformType().toString()));
 
     // fake data
-    v.setSourceData(Arrays.factory(DataType.CHAR, new int[] {}, new char[] {' '}));
+    v.setSourceData(Arrays.factory(ArrayType.CHAR, new int[] {}, new char[] {' '}));
 
     parseInfo.format("  made CoordinateTransformVariable: %s%n", ct.getName());
     return v;

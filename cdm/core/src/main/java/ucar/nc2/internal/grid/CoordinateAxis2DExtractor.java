@@ -2,6 +2,7 @@ package ucar.nc2.internal.grid;
 
 import com.google.common.base.Preconditions;
 import ucar.array.Array;
+import ucar.array.ArrayType;
 import ucar.array.Arrays;
 import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
@@ -156,6 +157,6 @@ public class CoordinateAxis2DExtractor {
       }
     }
 
-    return Arrays.factory(DataType.DOUBLE, new int[] {nrows, ncols, 2}, bounds);
+    return Arrays.factory(ArrayType.DOUBLE, new int[] {nrows, ncols, 2}, bounds);
   }
 }

@@ -8,14 +8,8 @@ import com.google.common.base.Preconditions;
 import java.nio.ByteBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.array.Array;
-import ucar.array.ArrayVlen;
-import ucar.array.StructureData;
-import ucar.array.StructureDataArray;
-import ucar.array.StructureDataStorageBB;
-import ucar.array.StructureMembers;
+import ucar.array.*;
 import ucar.array.StructureMembers.Member;
-import ucar.ma2.DataType;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.StructureEnhanced;
@@ -61,13 +55,13 @@ public class StructureDataArrayEnhancer {
     }
     Preconditions.checkNotNull(ve);
 
-    if (member.getDataType() == DataType.OPAQUE) {
+    if (member.getArrayType() == ArrayType.OPAQUE) {
       int index = storage.putOnHeap(orgMemberData); // no conversion possible
       int pos = offset + member.getOffset();
       bbuffer.position(pos);
       bbuffer.putInt(index);
 
-    } else if (member.getDataType() == DataType.SEQUENCE) {
+    } else if (member.getArrayType() == ArrayType.SEQUENCE) {
       Preconditions.checkArgument(ve instanceof StructureEnhanced);
       Preconditions.checkArgument(orgMemberData instanceof StructureDataArray);
       StructureDataArrayEnhancer nested =
@@ -87,7 +81,7 @@ public class StructureDataArrayEnhancer {
       bbuffer.position(pos);
       bbuffer.putInt(index);
 
-    } else if (member.getDataType() == DataType.STRUCTURE) {
+    } else if (member.getArrayType() == ArrayType.STRUCTURE) {
       StructureEnhanced nestedStucture = (StructureEnhanced) structure.findVariable(member.getName());
       Preconditions.checkNotNull(nestedStucture);
       Preconditions.checkArgument(member.getStructureMembers() != null);
@@ -117,7 +111,7 @@ public class StructureDataArrayEnhancer {
     if (!vds.convertNeeded()) {
       return orgVlenData;
     }
-    ArrayVlen<?> result = ArrayVlen.factory(vds.getDataType(), orgVlenData.getShape());
+    ArrayVlen<?> result = ArrayVlen.factory(vds.getArrayType(), orgVlenData.getShape());
     int index = 0;
     for (Array<?> data : orgVlenData) {
       result.set(index++, vds.convertArray(data));

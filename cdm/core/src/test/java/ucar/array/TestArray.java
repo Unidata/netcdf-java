@@ -21,12 +21,12 @@ public class TestArray {
   public void setup() {
     int[] shape = new int[] {1, 2, 3};
     double[] data = new double[] {1, 2, 3, 4, 5, 6};
-    array = Arrays.factory(DataType.DOUBLE, shape, data);
+    array = Arrays.factory(ArrayType.DOUBLE, shape, data);
   }
 
   @Test
   public void testArray() {
-    assertThat(array.getDataType()).isEqualTo(DataType.DOUBLE);
+    assertThat(array.getArrayType()).isEqualTo(ArrayType.DOUBLE);
     assertThat(array.getRank()).isEqualTo(3);
     assertThat(array.getShape()).isEqualTo(new int[] {1, 2, 3});
     assertThat(array.length()).isEqualTo(6);

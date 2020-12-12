@@ -11,7 +11,6 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import javax.annotation.concurrent.Immutable;
-import ucar.ma2.DataType;
 
 /** Concrete implementation of Array specialized for floats. */
 @Immutable
@@ -21,20 +20,20 @@ public final class ArrayFloat extends Array<Float> {
   // TODO whats the point if you cant change the storage?
   /** Create an empty Array of type float and the given shape. */
   public ArrayFloat(int[] shape) {
-    super(DataType.FLOAT, shape);
+    super(ArrayType.FLOAT, shape);
     storageF = new StorageF(new float[(int) indexFn.length()]);
   }
 
   /** Create an Array of type float and the given shape and storage. */
   public ArrayFloat(int[] shape, Storage<Float> storageF) {
-    super(DataType.FLOAT, shape);
+    super(ArrayType.FLOAT, shape);
     Preconditions.checkArgument(indexFn.length() <= storageF.length());
     this.storageF = storageF;
   }
 
   /** Create an Array of type float and the given indexFn and storage. */
   private ArrayFloat(IndexFn indexFn, Storage<Float> storageF) {
-    super(DataType.FLOAT, indexFn);
+    super(ArrayType.FLOAT, indexFn);
     Preconditions.checkArgument(indexFn.length() <= storageF.length());
     this.storageF = storageF;
   }

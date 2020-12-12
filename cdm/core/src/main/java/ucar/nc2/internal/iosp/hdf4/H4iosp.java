@@ -113,7 +113,7 @@ public class H4iosp extends AbstractIOServiceProvider {
 
     Object data = readDataObject(v, section);
     if (data != null) {
-      return Arrays.factory(v.getDataType(), section.getShape(), data);
+      return Arrays.factory(v.getArrayType(), section.getShape(), data);
     }
     throw new IllegalStateException();
   }

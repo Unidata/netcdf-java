@@ -9,7 +9,7 @@ import ucar.nc2.Group;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.VariableDS;
-import ucar.nc2.util.MinMax;
+import ucar.array.MinMax;
 
 import java.io.IOException;
 

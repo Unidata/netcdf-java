@@ -20,13 +20,13 @@ public class TestStructureMembers {
   public void testBasics() {
     StructureMembers.Builder builder = StructureMembers.builder();
     builder.setName("name");
-    builder.addMember("mname1", "mdesc1", "munits1", DataType.BYTE, new int[] {11, 11});
+    builder.addMember("mname1", "mdesc1", "munits1", ArrayType.BYTE, new int[] {11, 11});
     MemberBuilder mbuilder = StructureMembers.memberBuilder();
-    mbuilder.setName("mname2").setDesc("mdesc2").setUnits("munits2").setDataType(DataType.UBYTE)
+    mbuilder.setName("mname2").setDesc("mdesc2").setUnits("munits2").setArrayType(ArrayType.UBYTE)
         .setShape(new int[] {7, 11});
     builder.addMember(mbuilder);
     MemberBuilder mbuilder3 = StructureMembers.memberBuilder();
-    mbuilder3.setName("mname3").setDataType(DataType.SHORT);
+    mbuilder3.setName("mname3").setArrayType(ArrayType.SHORT);
     builder.addMember(1, mbuilder3);
 
     assertThat(builder.hasMember("nope")).isFalse();
@@ -49,7 +49,7 @@ public class TestStructureMembers {
 
     Member m = sm.findMember("mname1");
     assertThat(m).isNotNull();
-    assertThat(m.getDataType()).isEqualTo(DataType.BYTE);
+    assertThat(m.getArrayType()).isEqualTo(ArrayType.BYTE);
     assertThat(m.getDescription()).isEqualTo("mdesc1");
     assertThat(m.getUnitsString()).isEqualTo("munits1");
     assertThat(m.getShape()).isEqualTo(new int[] {11, 11});
@@ -61,7 +61,7 @@ public class TestStructureMembers {
 
     Member m2 = sm.findMember("mname3");
     assertThat(m2).isNotNull();
-    assertThat(m2.getDataType()).isEqualTo(DataType.SHORT);
+    assertThat(m2.getArrayType()).isEqualTo(ArrayType.SHORT);
     assertThat(m2.getShape()).isEqualTo(new int[] {});
     assertThat(m2.length()).isEqualTo(1);
     assertThat(m2.getStorageSizeBytes()).isEqualTo(2);
@@ -86,18 +86,18 @@ public class TestStructureMembers {
   public void testNestedStructureMembers() {
     StructureMembers.Builder nested = StructureMembers.builder();
     nested.setName("nested");
-    nested.addMember("mname1", "mdesc1", "munits1", DataType.BYTE, new int[] {11, 11});
+    nested.addMember("mname1", "mdesc1", "munits1", ArrayType.BYTE, new int[] {11, 11});
     MemberBuilder mbuilder = StructureMembers.memberBuilder();
-    mbuilder.setName("mname2").setDesc("mdesc2").setUnits("munits2").setDataType(DataType.UBYTE)
+    mbuilder.setName("mname2").setDesc("mdesc2").setUnits("munits2").setArrayType(ArrayType.UBYTE)
         .setShape(new int[] {7, 11});
     nested.addMember(mbuilder);
 
     StructureMembers.Builder topbuilder = StructureMembers.builder();
     topbuilder.setName("top");
-    topbuilder.addMember("nname1", "ndesc1", "nunits1", DataType.DOUBLE, new int[] {11});
-    topbuilder.addMember("nname2", "ndesc2", "nunits2", DataType.INT, new int[] {3, 3, 3});
-    MemberBuilder nbuilder =
-        StructureMembers.memberBuilder().setName("struct").setStructureMembers(nested).setDataType(DataType.STRUCTURE);
+    topbuilder.addMember("nname1", "ndesc1", "nunits1", ArrayType.DOUBLE, new int[] {11});
+    topbuilder.addMember("nname2", "ndesc2", "nunits2", ArrayType.INT, new int[] {3, 3, 3});
+    MemberBuilder nbuilder = StructureMembers.memberBuilder().setName("struct").setStructureMembers(nested)
+        .setArrayType(ArrayType.STRUCTURE);
     topbuilder.addMember(nbuilder);
 
     StructureMembers sm = topbuilder.build();
@@ -107,7 +107,7 @@ public class TestStructureMembers {
 
     Member m = sm.findMember("struct");
     assertThat(m).isNotNull();
-    assertThat(m.getDataType()).isEqualTo(DataType.STRUCTURE);
+    assertThat(m.getArrayType()).isEqualTo(ArrayType.STRUCTURE);
     assertThat(m.getDescription()).isNull();
     assertThat(m.getUnitsString()).isNull();
     assertThat(m.getShape()).isEqualTo(new int[] {});

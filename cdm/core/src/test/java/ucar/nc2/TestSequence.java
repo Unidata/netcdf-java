@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Formatter;
 import org.junit.Test;
+import ucar.array.ArrayType;
 import ucar.array.StructureDataArray;
 import ucar.array.StructureDataStorageBB;
 import ucar.array.StructureMembers;
@@ -101,8 +102,8 @@ public class TestSequence {
   private StructureDataArray makeStructureDataArray() {
     StructureMembers.Builder builder = StructureMembers.builder();
     builder.setName("name");
-    builder.addMember("mbyte", "mdesc1", "munits1", DataType.BYTE, new int[] {11, 11});
-    builder.addMember("mfloat", "mdesc2", "munits1", DataType.FLOAT, new int[] {});
+    builder.addMember("mbyte", "mdesc1", "munits1", ArrayType.BYTE, new int[] {11, 11});
+    builder.addMember("mfloat", "mdesc2", "munits1", ArrayType.FLOAT, new int[] {});
     builder.setStandardOffsets(false);
     StructureMembers members = builder.build();
 

@@ -239,7 +239,7 @@ public class MessageArrayCompressedReader {
           int nestedOffset;
           if (member.getStructureMembers() == null) {
             // this is the case where its a singleton replica, so not a compound, just a non-scalar field.
-            nestedOffset = posOffset + nrow * member.getDataType().getSize();
+            nestedOffset = posOffset + nrow * member.getArrayType().getSize();
           } else {
             nestedOffset = posOffset + nrow * member.getStructureSize() + member.getOffset();
           }

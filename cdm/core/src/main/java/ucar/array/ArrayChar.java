@@ -16,20 +16,20 @@ public final class ArrayChar extends Array<Character> {
 
   /** Create an empty Array of type Char and the given shape. */
   public ArrayChar(int[] shape) {
-    super(DataType.CHAR, shape);
+    super(ArrayType.CHAR, shape);
     storage = new StorageS(new char[(int) indexFn.length()]);
   }
 
   /** Create an Array of type Char and the given shape and storage. */
   public ArrayChar(int[] shape, Storage<Character> storage) {
-    super(DataType.CHAR, shape);
+    super(ArrayType.CHAR, shape);
     Preconditions.checkArgument(indexFn.length() <= storage.length());
     this.storage = storage;
   }
 
   /** Create an Array of type Char and the given indexFn and storage. */
   private ArrayChar(IndexFn indexFn, Storage<Character> storageD) {
-    super(DataType.CHAR, indexFn);
+    super(ArrayType.CHAR, indexFn);
     Preconditions.checkArgument(indexFn.length() <= storageD.length());
     this.storage = storageD;
   }
@@ -104,7 +104,7 @@ public final class ArrayChar extends Array<Character> {
    */
   public Array<String> makeStringsFromChar() {
     if (getRank() < 2) {
-      return Arrays.factory(DataType.STRING, new int[] {1}, new String[] {makeStringFromChar()});
+      return Arrays.factory(ArrayType.STRING, new int[] {1}, new String[] {makeStringFromChar()});
     }
     int innerLength = this.indexFn.getShape(this.rank - 1);
     int outerLength = (int) this.length() / innerLength;
@@ -124,7 +124,7 @@ public final class ArrayChar extends Array<Character> {
         cidx = 0;
       }
     }
-    return Arrays.factory(DataType.STRING, outerShape, result);
+    return Arrays.factory(ArrayType.STRING, outerShape, result);
   }
 
   @Override

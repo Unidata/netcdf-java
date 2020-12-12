@@ -76,11 +76,11 @@ public class TestArrayString {
   @Test
   public void testFactoryCopy() {
     int[] shape1 = new int[] {1, 2, 3};
-    Array<String> array1 = Arrays.factory(DataType.STRING, shape1, new String[] {"1", "2", "3", "4", "5", "6"});
-    Array<String> array2 = Arrays.factory(DataType.STRING, shape1, new String[] {"7", "8", "9", "10", "11", "12"});
+    Array<String> array1 = Arrays.factory(ArrayType.STRING, shape1, new String[] {"1", "2", "3", "4", "5", "6"});
+    Array<String> array2 = Arrays.factory(ArrayType.STRING, shape1, new String[] {"7", "8", "9", "10", "11", "12"});
 
     int[] shape = new int[] {2, 2, 3};
-    Array<String> array = Arrays.factoryCopy(DataType.STRING, shape, ImmutableList.of(array1, array2));
+    Array<String> array = Arrays.factoryCopy(ArrayType.STRING, shape, ImmutableList.of(array1, array2));
 
     assertThat(array.get(0, 0, 0)).isEqualTo("1");
     assertThat(array.get(0, 0, 1)).isEqualTo("2");
@@ -105,7 +105,7 @@ public class TestArrayString {
   @Test
   public void testMisc() {
     int[] shape1 = new int[] {1, 2, 3};
-    Array<String> array = Arrays.factory(DataType.STRING, shape1);
+    Array<String> array = Arrays.factory(ArrayType.STRING, shape1);
     Index index = array.getIndex();
     assertThat(array.get(index.set(0, 1, 2))).isNull();
   }

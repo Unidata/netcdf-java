@@ -10,6 +10,7 @@ import com.google.common.base.Strings;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import ucar.array.Array;
+import ucar.array.ArrayType;
 import ucar.array.Arrays;
 import ucar.array.ArraysConvert;
 import ucar.ma2.DataType;
@@ -36,7 +37,7 @@ public class Attribute {
       double[] values = param.getNumericValues();
       assert values != null;
       int n = values.length;
-      Array<?> vala = Arrays.factory(DataType.DOUBLE, new int[] {n}, values);
+      Array<?> vala = Arrays.factory(ArrayType.DOUBLE, new int[] {n}, values);
       b.setArrayValues(vala); // make private
     }
     return b.build();
@@ -113,9 +114,15 @@ public class Attribute {
     this.nelems = 1;
   }
 
-  /** Get the data type of the Attribute value. */
+  /** @deprecated use getArrayType() */
+  @Deprecated
   public DataType getDataType() {
     return dataType;
+  }
+
+  /** Get the data type of the Attribute value. */
+  public ArrayType getArrayType() {
+    return dataType.getArrayType();
   }
 
   /** Get the EnumTypedef of the Attribute value, if DataType is an ENUM. */
@@ -246,7 +253,7 @@ public class Attribute {
   @Nullable
   public ucar.array.Array<?> getArrayValues() {
     if (svalue != null) {
-      return Arrays.factory(DataType.STRING, new int[] {1}, new String[] {svalue});
+      return Arrays.factory(ArrayType.STRING, new int[] {1}, new String[] {svalue});
     }
     if (nvalue != null) {
       ucar.ma2.Array values = ucar.ma2.Array.factory(this.dataType, new int[] {1});
@@ -592,7 +599,7 @@ public class Attribute {
         throw new IllegalArgumentException("Unknown type for Attribute = " + c.getName());
       }
 
-      return setArrayValues(Arrays.factory(this.dataType, new int[] {n}, pa));
+      return setArrayValues(Arrays.factory(this.dataType.getArrayType(), new int[] {n}, pa));
     }
 
     /** Set the values from an Array, and the DataType from values.getElementType(). */
@@ -612,7 +619,7 @@ public class Attribute {
         return this;
       }
 
-      if (arr.getDataType() == DataType.CHAR) { // turn CHAR into STRING
+      if (arr.getArrayType() == ArrayType.CHAR) { // turn CHAR into STRING
         ucar.array.ArrayChar carr = (ucar.array.ArrayChar) arr;
         if (carr.getRank() < 2) { // common case
           svalue = carr.makeStringFromChar();
@@ -625,15 +632,15 @@ public class Attribute {
       }
 
       if (arr.length() == 1) {
-        if (arr.getDataType().isNumeric()) {
+        if (arr.getArrayType().isNumeric()) {
           this.nvalue = (Number) arr.getScalar();
           this.nelems = 1;
-          this.dataType = arr.getDataType();
+          this.dataType = arr.getArrayType().getDataType();
           return this;
-        } else if (arr.getDataType() == DataType.STRING) {
+        } else if (arr.getArrayType() == ArrayType.STRING) {
           this.svalue = (String) arr.getScalar();
           this.nelems = 1;
-          this.dataType = arr.getDataType();
+          this.dataType = arr.getArrayType().getDataType();
           return this;
         }
       }
@@ -645,7 +652,7 @@ public class Attribute {
 
       this.values = arr;
       this.nelems = (int) arr.length();
-      this.dataType = arr.getDataType();
+      this.dataType = arr.getArrayType().getDataType();
       return this;
     }
 

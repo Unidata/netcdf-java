@@ -13,10 +13,8 @@ import java.io.IOException;
 import java.util.Formatter;
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
-import ucar.array.Arrays;
-import ucar.array.StructureData;
-import ucar.array.StructureDataArray;
-import ucar.array.StructureMembers;
+
+import ucar.array.*;
 import ucar.cdmr.CdmRemoteGrpc.CdmRemoteImplBase;
 import ucar.cdmr.CdmrGridConverter;
 import ucar.cdmr.CdmrGridProto;
@@ -27,7 +25,6 @@ import ucar.cdmr.CdmrNetcdfProto.Header;
 import ucar.cdmr.CdmrNetcdfProto.HeaderRequest;
 import ucar.cdmr.CdmrNetcdfProto.HeaderResponse;
 import ucar.cdmr.CdmrConverter;
-import ucar.array.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
@@ -197,7 +194,7 @@ public class CdmrServer {
           .setVarFullName(var.getFullName()).setSection(CdmrConverter.encodeSection(wantSection));
 
       Array<?> data = var.readArray(wantSection);
-      response.setData(CdmrConverter.encodeData(data.getDataType(), data));
+      response.setData(CdmrConverter.encodeData(data.getArrayType(), data));
 
       responseObserver.onNext(response.build());
       System.out.printf(" Send one chunk %s size=%d bytes%n", spec,
@@ -226,7 +223,7 @@ public class CdmrServer {
           Section section = Section.builder().appendRange(start, start + count).build();
           DataResponse.Builder response = DataResponse.newBuilder().setLocation(ncfile.getLocation())
               .setVariableSpec(spec).setVarFullName(seq.getFullName()).setSection(CdmrConverter.encodeSection(section));
-          response.setData(CdmrConverter.encodeData(DataType.SEQUENCE, sdataArray));
+          response.setData(CdmrConverter.encodeData(ArrayType.SEQUENCE, sdataArray));
           responseObserver.onNext(response.build());
           start = count;
           count = 0;
