@@ -10,7 +10,8 @@ toc: false
 
 ### ucar.unidata.io.RandomAccessFile
 
-This class is a cover for <b>_java.io.RandomAccessFile_</b>, which it (usually) uses underneath. We originally did this for performance, so we could add user-settable buffer sizes. We later added ordering so we could handle files that had both big and little endianness, plus some other methods that improved the API.
+The class `ucar.unidata.io.RandomAccessFile` is a cover for `java.io.RandomAccessFile`, which it (usually) uses underneath. 
+It additionally implements user-settable buffer sizes, files with both big and little endianness, reading multiple `Charsets`, and several other methods to improve the API.
 
 There are subclasses of _RandomAccessFile_ such as _HTTPRandomAccessFile_ and _InMemoryRandomAccessFile_, which deal with remote HTTP files and memory resident files. Use of these subclasses is transparent to an IOSP.
 
@@ -55,8 +56,7 @@ public class ucar.unidata.io.RandomAccessFile {
     arr, int start, int n) throws IOException;
 
     public final short readShort() throws IOException;
-    public final void readShort(short[]
-    arr, int start, int n) throws IOException;
+    public final void readShort(short[] arr, int start, int n) throws IOException;
 
     // read unsigned, promote to int
     public final int readUnsignedShort() throws IOException;
