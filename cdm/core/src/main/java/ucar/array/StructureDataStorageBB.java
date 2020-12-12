@@ -12,7 +12,6 @@ import java.util.Iterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.array.StructureMembers.Member;
-import ucar.ma2.DataType;
 import ucar.nc2.iosp.IospHelper;
 
 /**
@@ -99,7 +98,7 @@ public final class StructureDataStorageBB implements Storage<StructureData> {
       return;
     }
 
-    DataType dataType = data.getDataType();
+    ArrayType dataType = data.getArrayType();
     switch (dataType) {
       case ENUM1:
       case UBYTE:
@@ -223,8 +222,8 @@ public final class StructureDataStorageBB implements Storage<StructureData> {
 
     @Override
     public Array<?> getMemberData(Member m) {
-      DataType dataType = m.getDataType();
-      if (m.isVlen() || dataType == DataType.OPAQUE) {
+      ArrayType dataType = m.getArrayType();
+      if (m.isVlen() || dataType == ArrayType.OPAQUE) {
         return getMemberVlenData(m);
       }
 

@@ -15,6 +15,7 @@ import javax.annotation.concurrent.Immutable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.array.Array;
+import ucar.array.ArrayType;
 import ucar.array.Arrays;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
@@ -392,7 +393,7 @@ public abstract class GribArrayReader {
 
     @Override
     public Array<?> getArray() {
-      return Arrays.factory(DataType.FLOAT, shape, dataArray);
+      return Arrays.factory(ArrayType.FLOAT, shape, dataArray);
     }
   }
 

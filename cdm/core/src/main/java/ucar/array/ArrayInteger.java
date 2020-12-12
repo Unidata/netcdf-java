@@ -7,7 +7,6 @@ package ucar.array;
 import com.google.common.base.Preconditions;
 import java.util.Iterator;
 import javax.annotation.concurrent.Immutable;
-import ucar.ma2.DataType;
 
 /** Concrete implementation of Array specialized for Integer. */
 @Immutable
@@ -15,20 +14,20 @@ public final class ArrayInteger extends Array<Integer> {
   private final Storage<Integer> storage;
 
   /** Create an empty Array of type Integer and the given shape. */
-  public ArrayInteger(DataType dtype, int[] shape) {
+  public ArrayInteger(ArrayType dtype, int[] shape) {
     super(dtype, shape);
     storage = new StorageS(new int[(int) indexFn.length()]);
   }
 
   /** Create an Array of type Integer and the given shape and storage. */
-  public ArrayInteger(DataType dtype, int[] shape, Storage<Integer> storage) {
+  public ArrayInteger(ArrayType dtype, int[] shape, Storage<Integer> storage) {
     super(dtype, shape);
     Preconditions.checkArgument(indexFn.length() <= storage.length());
     this.storage = storage;
   }
 
   /** Create an Array of type Integer and the given indexFn and storage. */
-  private ArrayInteger(DataType dtype, IndexFn indexFn, Storage<Integer> storageD) {
+  private ArrayInteger(ArrayType dtype, IndexFn indexFn, Storage<Integer> storageD) {
     super(dtype, indexFn);
     Preconditions.checkArgument(indexFn.length() <= storageD.length());
     this.storage = storageD;
@@ -76,7 +75,7 @@ public final class ArrayInteger extends Array<Integer> {
   /** create new Array with given IndexFn and the same backing store */
   @Override
   protected ArrayInteger createView(IndexFn view) {
-    return new ArrayInteger(this.dataType, view, this.storage);
+    return new ArrayInteger(this.arrayType, view, this.storage);
   }
 
   // used when the data is not in canonical order

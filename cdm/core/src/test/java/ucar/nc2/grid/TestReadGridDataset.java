@@ -3,6 +3,7 @@ package ucar.nc2.grid;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.array.Array;
+import ucar.array.ArrayType;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.time.CalendarDate;
@@ -62,7 +63,7 @@ public class TestReadGridDataset {
       subset.setTime(wantDate);
       GridReferencedArray geoArray = grid.readData(subset);
       Array<Number> data = geoArray.data();
-      assertThat(data.getDataType()).isEqualTo(DataType.FLOAT);
+      assertThat(data.getArrayType()).isEqualTo(ArrayType.FLOAT);
       assertThat(data.getRank()).isEqualTo(3);
       assertThat(data.getShape()).isEqualTo(new int[] {1, 21, 360});
 
@@ -121,7 +122,7 @@ public class TestReadGridDataset {
       subset.setVertCoord(700.0);
       GridReferencedArray geoArray = grid.readData(subset);
       Array<Number> data = geoArray.data();
-      assertThat(data.getDataType()).isEqualTo(DataType.FLOAT);
+      assertThat(data.getArrayType()).isEqualTo(ArrayType.FLOAT);
       assertThat(data.getRank()).isEqualTo(4);
       assertThat(data.getShape()).isEqualTo(new int[] {1, 1, 39, 45});
 
@@ -186,7 +187,7 @@ public class TestReadGridDataset {
       subset.setVertCoord(725.0);
       GridReferencedArray geoArray = grid.readData(subset);
       Array<Number> data = geoArray.data();
-      assertThat(data.getDataType()).isEqualTo(DataType.FLOAT);
+      assertThat(data.getArrayType()).isEqualTo(ArrayType.FLOAT);
       assertThat(data.getRank()).isEqualTo(3);
       assertThat(data.getShape()).isEqualTo(new int[] {1, 50, 50});
 
@@ -245,7 +246,7 @@ public class TestReadGridDataset {
       subset.setVertCoord(725.);
       GridReferencedArray geoArray = grid.readData(subset);
       Array<Number> data = geoArray.data();
-      assertThat(data.getDataType()).isEqualTo(DataType.FLOAT);
+      assertThat(data.getArrayType()).isEqualTo(ArrayType.FLOAT);
       assertThat(data.getRank()).isEqualTo(4);
       assertThat(data.getShape()).isEqualTo(new int[] {1, 1, 73, 73});
 

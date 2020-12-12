@@ -7,7 +7,6 @@ package ucar.array;
 import com.google.common.base.Preconditions;
 import java.util.Iterator;
 import javax.annotation.concurrent.Immutable;
-import ucar.ma2.DataType;
 
 /** Concrete implementation of Array specialized for Strings. */
 @Immutable
@@ -16,20 +15,20 @@ public final class ArrayString extends Array<String> {
 
   /** Create an empty Array of type String and the given shape. */
   public ArrayString(int[] shape) {
-    super(DataType.STRING, shape);
+    super(ArrayType.STRING, shape);
     storage = new StorageS(new String[(int) indexFn.length()]);
   }
 
   /** Create an Array of type String and the given shape and storage. */
   public ArrayString(int[] shape, Storage<String> storage) {
-    super(DataType.STRING, shape);
+    super(ArrayType.STRING, shape);
     Preconditions.checkArgument(indexFn.length() <= storage.length());
     this.storage = storage;
   }
 
   /** Create an Array of type String and the given indexFn and storage. */
   private ArrayString(IndexFn indexFn, Storage<String> storageD) {
-    super(DataType.STRING, indexFn);
+    super(ArrayType.STRING, indexFn);
     Preconditions.checkArgument(indexFn.length() <= storageD.length());
     this.storage = storageD;
   }

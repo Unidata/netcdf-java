@@ -11,7 +11,6 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import javax.annotation.concurrent.Immutable;
-import ucar.ma2.DataType;
 
 /** Concrete implementation of Array specialized for doubles. */
 @Immutable
@@ -20,20 +19,20 @@ public final class ArrayDouble extends ucar.array.Array<Double> {
 
   /** Create an empty Array of type double and the given shape. */
   public ArrayDouble(int[] shape) {
-    super(DataType.DOUBLE, shape);
+    super(ArrayType.DOUBLE, shape);
     storageD = new StorageD(new double[(int) indexFn.length()]);
   }
 
   /** Create an Array of type double and the given shape and storage. */
   public ArrayDouble(int[] shape, Storage<Double> storageD) {
-    super(DataType.DOUBLE, shape);
+    super(ArrayType.DOUBLE, shape);
     Preconditions.checkArgument(indexFn.length() <= storageD.length());
     this.storageD = storageD;
   }
 
   /** Create an Array of type double and the given indexFn and storage. */
   private ArrayDouble(IndexFn indexFn, Storage<Double> storageD) {
-    super(DataType.DOUBLE, indexFn);
+    super(ArrayType.DOUBLE, indexFn);
     Preconditions.checkArgument(indexFn.length() <= storageD.length());
     this.storageD = storageD;
   }

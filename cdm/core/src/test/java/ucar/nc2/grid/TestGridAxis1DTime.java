@@ -12,14 +12,14 @@ import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.internal.grid.TimeHelper;
-import ucar.nc2.util.MinMax;
+import ucar.array.MinMax;
 
 import java.io.IOException;
 
 import static com.google.common.truth.Truth.assertThat;
 
-/** Test {@link GridAxis1DTime.Builder} */
-public class TestGridAxis1DTimeBuilder {
+/** Test {@link GridAxis1DTime} */
+public class TestGridAxis1DTime {
   private static final String unitString = "days since 2020-11-01 0:00 GMT";
 
   @Test

@@ -228,7 +228,7 @@ public class N3iosp extends AbstractIOServiceProvider implements IOServiceProvid
     }
 
     Object data = readDataObject(v2, section);
-    return ucar.array.Arrays.factory(v2.getDataType(), section.getShape(), data);
+    return ucar.array.Arrays.factory(v2.getArrayType(), section.getShape(), data);
   }
 
   /** Read data subset from file for a variable, create primitive array. */

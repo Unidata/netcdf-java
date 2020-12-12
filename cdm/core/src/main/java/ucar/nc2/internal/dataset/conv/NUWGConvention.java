@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
+import ucar.array.ArrayType;
 import ucar.array.Arrays;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
@@ -258,14 +259,14 @@ public class NUWGConvention extends CoordSystemBuilder {
     Variable.Builder<?> coordVarBounds =
         VariableDS.builder().setName(boundsName).setDataType(DataType.DOUBLE).setDesc("synthesized Z coord bounds")
             .setParentGroupBuilder(this.rootGroup).setDimensionsByName(dim.getShortName() + " 2")
-            .setSourceData(Arrays.factory(DataType.DOUBLE, new int[] {n, 2}, boundsData));
+            .setSourceData(Arrays.factory(ArrayType.DOUBLE, new int[] {n, 2}, boundsData));
     this.rootGroup.addVariable(coordVarBounds);
 
     Variable.Builder<?> coordVar = VariableDS.builder().setName(dim.getShortName()).setDataType(DataType.DOUBLE)
         .setParentGroupBuilder(this.rootGroup).addDimension(dim).setDesc("synthesized Z coord")
         .addAttribute(new Attribute(CF.BOUNDS, boundsName))
         .addAttribute(new Attribute(_Coordinate.AliasForDimension, dim.getShortName()))
-        .setSourceData(Arrays.factory(DataType.DOUBLE, new int[] {n}, midpointData));
+        .setSourceData(Arrays.factory(ArrayType.DOUBLE, new int[] {n}, midpointData));
     this.rootGroup.addVariable(coordVar);
 
     return true;

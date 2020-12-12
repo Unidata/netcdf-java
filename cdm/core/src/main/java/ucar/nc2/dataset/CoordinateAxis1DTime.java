@@ -9,6 +9,7 @@ import com.google.common.collect.ImmutableList;
 import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ucar.array.ArrayType;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayChar;
 import ucar.ma2.ArrayObject;
@@ -296,7 +297,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
       dateStrings[i] = coordValue;
       result.add(cd);
     }
-    setCachedData(ucar.array.Arrays.factory(DataType.STRING, new int[] {ncoords}, dateStrings));
+    setCachedData(ucar.array.Arrays.factory(ArrayType.STRING, new int[] {ncoords}, dateStrings));
     return result;
   }
 

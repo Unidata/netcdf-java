@@ -23,7 +23,7 @@ public class TestArrays {
   public void setup() {
     int[] shape = new int[] {1, 2, 3};
     double[] data = new double[] {1, 2, 3, 4, 5, 6};
-    array = Arrays.factory(DataType.DOUBLE, shape, data);
+    array = Arrays.factory(ArrayType.DOUBLE, shape, data);
   }
 
   @Test
@@ -86,7 +86,7 @@ public class TestArrays {
     assertThat(pArray.get(0, 2, 1)).isEqualTo(6);
 
     permute = new int[] {2, 1, 0};
-    pArray = pArray = Arrays.permute(array, permute);
+    pArray = Arrays.permute(array, permute);
     assertThat(pArray.get(0, 0, 0)).isEqualTo(1);
     assertThat(pArray.get(1, 0, 0)).isEqualTo(2);
     assertThat(pArray.get(2, 0, 0)).isEqualTo(3);
@@ -95,7 +95,7 @@ public class TestArrays {
     assertThat(pArray.get(2, 1, 0)).isEqualTo(6);
 
     permute = new int[] {2, 0, 1};
-    pArray = pArray = Arrays.permute(array, permute);
+    pArray = Arrays.permute(array, permute);
     assertThat(pArray.get(0, 0, 0)).isEqualTo(1);
     assertThat(pArray.get(1, 0, 0)).isEqualTo(2);
     assertThat(pArray.get(2, 0, 0)).isEqualTo(3);

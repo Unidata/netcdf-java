@@ -7,7 +7,6 @@ package ucar.array;
 import com.google.common.base.Objects;
 import java.util.Iterator;
 import javax.annotation.concurrent.Immutable;
-import ucar.ma2.DataType;
 import ucar.ma2.Section;
 
 /** Superclass for implementations of multidimensional arrays. */
@@ -40,8 +39,8 @@ public abstract class Array<T> implements Iterable<T> {
   }
 
   /** The datatype for this array */
-  public DataType getDataType() {
-    return this.dataType;
+  public ArrayType getArrayType() {
+    return this.arrayType;
   }
 
   /** Is variable length and will be represented by Vlen\<T\> */
@@ -98,31 +97,31 @@ public abstract class Array<T> implements Iterable<T> {
       return false;
     }
     Array<?> array = (Array<?>) o;
-    return getRank() == array.getRank() && getDataType() == array.getDataType()
+    return getRank() == array.getRank() && getArrayType() == array.getArrayType()
         && Objects.equal(indexFn, array.indexFn);
   }
 
   /** Consistent with equals. */
   @Override
   public int hashCode() {
-    return Objects.hashCode(getDataType(), indexFn, getRank());
+    return Objects.hashCode(getArrayType(), indexFn, getRank());
   }
 
   //////////////////////////////////////////////////////////
   // package private
 
-  final DataType dataType;
+  final ArrayType arrayType;
   final IndexFn indexFn;
   final int rank;
 
-  Array(DataType dataType, int[] shape) {
-    this.dataType = dataType;
+  Array(ArrayType arrayType, int[] shape) {
+    this.arrayType = arrayType;
     this.rank = shape.length;
     this.indexFn = IndexFn.builder(shape).build();
   }
 
-  Array(DataType dataType, IndexFn indexFn) {
-    this.dataType = dataType;
+  Array(ArrayType arrayType, IndexFn indexFn) {
+    this.arrayType = arrayType;
     this.rank = indexFn.getRank();
     this.indexFn = indexFn;
   }

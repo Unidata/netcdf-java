@@ -8,11 +8,8 @@ import com.google.common.base.Preconditions;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import ucar.array.ArrayVlen;
-import ucar.array.Arrays;
-import ucar.array.StructureDataArray;
-import ucar.array.StructureDataStorageBB;
-import ucar.array.StructureMembers;
+
+import ucar.array.*;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
@@ -78,7 +75,7 @@ public class H5iospArrays extends H5iosp {
       if (dataType == DataType.CHAR) {
         pa = IospHelper.convertByteToChar((byte[]) pa);
       }
-      return Arrays.factory(dataType, wantSection.getShape(), pa);
+      return Arrays.factory(dataType.getArrayType(), wantSection.getShape(), pa);
     }
 
     if (vinfo.mfp != null) { // filtered
@@ -136,7 +133,7 @@ public class H5iospArrays extends H5iosp {
     else if (dataType == DataType.STRUCTURE) // LOOK does this ever happen?
       return makeStructureDataArray((Structure) v2, layout, wantSection.getShape(), (byte[]) data); // LOOK
     else
-      return Arrays.factory(dataType, wantSection.getShape(), data);
+      return Arrays.factory(dataType.getArrayType(), wantSection.getShape(), data);
   }
 
   private String[] readFilteredStringData(LayoutBB layout) throws IOException {
@@ -177,7 +174,7 @@ public class H5iospArrays extends H5iosp {
     // special processing
     if (typeInfo.hdfType == 2) { // time
       Object data = IospHelper.readDataFill(raf, layout, dataType, fillValue, endian, true);
-      ucar.array.Array<Long> timeArray = Arrays.factory(dataType, shape, data);
+      ucar.array.Array<Long> timeArray = Arrays.factory(dataType.getArrayType(), shape, data);
 
       // now transform into an ISO Date String
       String[] stringData = new String[(int) timeArray.length()];
@@ -216,7 +213,7 @@ public class H5iospArrays extends H5iosp {
     }
 
     if (dataType == DataType.OPAQUE) { // LOOK this may be wrong, needs testing
-      ArrayVlen<?> result = ArrayVlen.factory(DataType.OPAQUE, shape);
+      ArrayVlen<?> result = ArrayVlen.factory(ArrayType.OPAQUE, shape);
       Preconditions.checkArgument(Arrays.computeSize(shape) == layout.getTotalNelems());
 
       int count = 0;
@@ -249,7 +246,7 @@ public class H5iospArrays extends H5iosp {
       readType = DataType.LONG;
     }
 
-    ArrayVlen<?> vlenArray = ArrayVlen.factory(dataType, shape);
+    ArrayVlen<?> vlenArray = ArrayVlen.factory(dataType.getArrayType(), shape);
     int count = 0;
     while (layout.hasNext()) {
       Layout.Chunk chunk = layout.next();
@@ -440,7 +437,7 @@ public class H5iospArrays extends H5iosp {
   private void readHeapData(ByteBuffer bb, StructureDataStorageBB storage, int pos, StructureMembers sm)
       throws IOException {
     for (StructureMembers.Member m : sm.getMembers()) {
-      if (m.getDataType() == DataType.STRING) {
+      if (m.getArrayType() == ArrayType.STRING) {
         int size = m.length();
         int destPos = pos + m.getOffset();
         String[] result = new String[size];
@@ -457,7 +454,7 @@ public class H5iospArrays extends H5iosp {
         bb.order(ByteOrder.LITTLE_ENDIAN);
 
         ByteOrder endian = m.getByteOrder();
-        ArrayVlen<?> vlenArray = ArrayVlen.factory(m.getDataType(), m.getShape());
+        ArrayVlen<?> vlenArray = ArrayVlen.factory(m.getArrayType(), m.getShape());
         int size = (int) Arrays.computeSize(vlenArray.getShape());
         Preconditions.checkArgument(size == m.length(), "Internal error: field size mismatch");
 
@@ -466,8 +463,8 @@ public class H5iospArrays extends H5iosp {
           // LOOK coud we use readHeapPrimitiveArray(long globalHeapIdAddress, DataType dataType, int endian) ??
           // header.readHeapVlen reads the vlen at destPos from H5 heap, into a ucar.ma2.Array primitive array. Structs
           // not supported.
-          ucar.ma2.Array vlen = header.readHeapVlen(bb, readPos, m.getDataType(), endian);
-          vlenArray.set(i, vlen.get1DJavaArray(m.getDataType()));
+          ucar.ma2.Array vlen = header.readHeapVlen(bb, readPos, m.getArrayType().getDataType(), endian);
+          vlenArray.set(i, vlen.get1DJavaArray(m.getArrayType().getDataType()));
           readPos += VLEN_T_SIZE;
         }
         // put resulting ArrayVlen into the storage heap.

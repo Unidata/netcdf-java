@@ -18,7 +18,7 @@ public class TestArrayByte {
   public void testBasics() {
     int[] shape = new int[] {1, 2, 3};
     Storage<Byte> store = new ArrayByte.StorageS(new byte[] {1, 2, 3, 4, 5, 6});
-    ArrayByte array = new ArrayByte(DataType.BYTE, shape, store);
+    ArrayByte array = new ArrayByte(ArrayType.BYTE, shape, store);
 
     assertThat(array.get(0, 0, 0)).isEqualTo(1);
     assertThat(array.get(0, 0, 1)).isEqualTo(2);
@@ -59,7 +59,7 @@ public class TestArrayByte {
   public void testNonCanonicalOrder() {
     int[] shape = new int[] {1, 2, 3};
     Storage<Byte> store = new ArrayByte.StorageS(new byte[] {1, 2, 3, 4, 5, 6});
-    Array<Byte> array = new ArrayByte(DataType.BYTE, shape, store);
+    Array<Byte> array = new ArrayByte(ArrayType.BYTE, shape, store);
     array = Arrays.flip(array, 1);
     byte[] expected = new byte[] {4, 5, 6, 1, 2, 3};
     int count = 0;
@@ -76,11 +76,11 @@ public class TestArrayByte {
   @Test
   public void testFactoryCopy() {
     int[] shape1 = new int[] {1, 2, 3};
-    Array<Byte> array1 = Arrays.factory(DataType.BYTE, shape1, new byte[] {1, 2, 3, 4, 5, 6});
-    Array<Byte> array2 = Arrays.factory(DataType.BYTE, shape1, new byte[] {7, 8, 9, 10, 11, 12});
+    Array<Byte> array1 = Arrays.factory(ArrayType.BYTE, shape1, new byte[] {1, 2, 3, 4, 5, 6});
+    Array<Byte> array2 = Arrays.factory(ArrayType.BYTE, shape1, new byte[] {7, 8, 9, 10, 11, 12});
 
     int[] shape = new int[] {2, 2, 3};
-    Array<Byte> array = Arrays.factoryCopy(DataType.BYTE, shape, ImmutableList.of(array1, array2));
+    Array<Byte> array = Arrays.factoryCopy(ArrayType.BYTE, shape, ImmutableList.of(array1, array2));
 
     assertThat(array.get(0, 0, 0)).isEqualTo(1);
     assertThat(array.get(0, 0, 1)).isEqualTo(2);
@@ -105,7 +105,7 @@ public class TestArrayByte {
   @Test
   public void testMisc() {
     int[] shape1 = new int[] {1, 2, 3};
-    Array<Byte> array = Arrays.factory(DataType.BYTE, shape1);
+    Array<Byte> array = Arrays.factory(ArrayType.BYTE, shape1);
     Index index = array.getIndex();
     assertThat(array.get(index.set(0, 1, 2))).isEqualTo(0);
   }

@@ -153,7 +153,7 @@ public class CdmrGridConverter {
     Formatter errlog = new Formatter();
     GridCS.Builder<?> cs = decodeCoordSys(proto.getCsSubset(), errlog);
     Array<Number> data = CdmrConverter.decodeData(proto.getData());
-    return GridReferencedArray.create(proto.getGridName(), data.getDataType(), data, cs.build(axes));
+    return GridReferencedArray.create(proto.getGridName(), data.getArrayType(), data, cs.build(axes));
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -268,7 +268,7 @@ public class CdmrGridConverter {
     builder.setName(grid.getName());
     builder.setDescription(grid.getDescription());
     builder.setUnits(grid.getUnits());
-    builder.setDataType(CdmrConverter.convertDataType(grid.getDataType()));
+    builder.setDataType(CdmrConverter.convertDataType(grid.getArrayType()));
     builder.addAllAttributes(CdmrConverter.encodeAttributes(grid.attributes()));
     builder.setCoordSys(grid.getCoordinateSystem().getName());
     builder.setHasMissing(grid.hasMissing());
@@ -280,7 +280,7 @@ public class CdmrGridConverter {
     CdmrGridProto.GridReferencedArray.Builder builder = CdmrGridProto.GridReferencedArray.newBuilder();
     builder.setGridName(geoArray.gridName());
     builder.setCsSubset(encodeCoordSys(geoArray.csSubset()));
-    builder.setData(CdmrConverter.encodeData(geoArray.dataType(), geoArray.data()));
+    builder.setData(CdmrConverter.encodeData(geoArray.arrayType(), geoArray.data()));
     return builder.build();
   }
 
