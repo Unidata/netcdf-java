@@ -94,7 +94,7 @@ gradle.projectsEvaluated {  // Several statements below rely upon all subproject
 
 apply from: "$rootDir/gradle/any/properties.gradle"  // For Nexus credential properties.
 
-import edu.ucar.build.publishing.PublishToRawRepoTask
+import edu.ucar.build.publishing.tasks.PublishToRawRepoTask
 
 tasks.withType(PublishToRawRepoTask).all {  // Common PublishToRawRepoTask config.
   group = 'Documentation'
@@ -175,7 +175,7 @@ gradle.projectsEvaluated {
   }
 }
 
-import edu.ucar.build.publishing.DeleteFromNexusTask
+import edu.ucar.build.publishing.tasks.DeleteFromNexusTask
 
 // By default, this will perform a dry run, which simply prints the components that the query matched.
 // To actually delete those components, do:  ./gradlew :docs:deleteFromNexus --dryRun=false
