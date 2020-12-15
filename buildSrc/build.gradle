@@ -1,13 +1,10 @@
 plugins {
-  id 'groovy'
-  id 'java-gradle-plugin' // Adds gradleApi() compile dep and gradleTestKit() testCompile dep.
   id 'groovy-gradle-plugin'
   id 'com.github.jruby-gradle.base'
 }
 
 repositories {
   jcenter()
-  mavenCentral()  // JCenter isn't quite a superset of Maven Central.
 }
 
 dependencies {
@@ -16,33 +13,5 @@ dependencies {
   // groovy 2.5.12.
   // If the version of groovy changes, we should make sure to find a spock version that works.
   implementation localGroovy()
-  implementation 'io.github.http-builder-ng:http-builder-ng-okhttp:1.0.3'  // For Nexus tasks.
   implementation 'com.github.jruby-gradle:jruby-gradle-plugin:2.0.0' // for jekyll plugin
-  testImplementation 'org.slf4j:slf4j-api:1.7.28'
-  testRuntimeOnly 'ch.qos.logback:logback-classic:1.2.3'
-
-  testImplementation('org.spockframework:spock-core:1.3-groovy-2.5') {
-    // The Gradle API drags in the bundled version of Groovy that Gradle ships with (localGroovy()) –
-    // see https://discuss.gradle.org/t/unable-to-force-gradle-to-use-groovy-2-0-0-for-the-project/7021.
-    // Spock drags in another Groovy as a transitive dependency.
-    //
-    // So, there are multiple candidate versions of the Groovy dependency. Ordinarily, this is no problem for
-    // Gradle; it has version-conflict-resolution machinery to deal with it. However, localGroovy() is a special
-    // kind of dependency that doesn't participate in that resolution (again, see above URL).
-    //
-    // Once added to a configuration, localGroovy() will remain part of it no matter what. Furthermore, since
-    // localGroovy() is "special", Gradle will not consider a second, "normal" Groovy dependency to be in conflict
-    // with it. This can result in two different versions of Groovy in the same configuration, and ultimately
-    // errors like: "groovy.lang.GroovyRuntimeException: Conflicting module versions. Module [groovy-all is loaded
-    // in version 2.4.4 and you are trying to load version 2.4.1".
-    //
-    // Our solution is to explicitly exclude any other Groovy dependencies whenever localGroovy() is already part
-    // of the configuration.
-    exclude module: 'groovy-all'
-  }
 }
-
-// We'd normally refer to these scripts with the 'rootDir' property. However, 'buildSrc' is a SEPARATE build from
-// every other project in thredds (see https://goo.gl/45RFqd), so "$rootDir" actually points to the directory that
-// THIS file is in.
-apply from: '../gradle/any/coverage.gradle'
