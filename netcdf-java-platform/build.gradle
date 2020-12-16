@@ -4,7 +4,17 @@ apply from: "$rootDir/gradle/any/publishing.gradle"
 
 // All dependencies used by the netCDF-Java library are defined here
 
+javaPlatform {
+  allowDependencies()
+}
+
 dependencies {
+  // Results in upgrading jackson-databind to 2.10.5.1, which contains a fix for
+  // CVE-2020-25649 (https://nvd.nist.gov/vuln/detail/CVE-2020-25649)
+  // See https://github.com/FasterXML/jackson-databind/issues/2589#issuecomment-736973925
+  // jackson-databind is pulled in by AWS SDK (true as of version 2.15.40), so once they update to
+  // a newer version, we can get rid of this (and the javaPlatform allowDependencies() block above).
+  api enforcedPlatform('com.fasterxml.jackson:jackson-bom:2.10.5.20201202')
   constraints {
     // Note: The depVersion variable is defined in gradle/any/shared-mvn-coords.gradle and is used for dependencies
     // that are used in different configurations of a build that need access to the full maven coordinates.
@@ -42,12 +52,14 @@ dependencies {
     api 'edu.wisc.ssec:visad:2.0-20130124'
 
     // cdm-s3 (S3RandomAccessFile)
-    api 'software.amazon.awssdk:s3:2.13.52'
-    api 'software.amazon.awssdk:apache-client:2.13.52'
+    // If updating from 2.15.40, see note the note at the top of this dependencies block regarding
+    // the use of jackson-databind enforcedPlatform.
+    api 'software.amazon.awssdk:s3:2.15.46'
+    api 'software.amazon.awssdk:apache-client:2.15.46'
 
     // apache httpclient
-    api 'org.apache.httpcomponents:httpclient:4.5.12'
-    api 'org.apache.httpcomponents:httpmime:4.5.12'
+    api 'org.apache.httpcomponents:httpclient:4.5.13'
+    api 'org.apache.httpcomponents:httpmime:4.5.13'
     // version of httpcore matches the one used by httpclient
     // so if updating httpclient, look in its pom for the version of http core to use
     api 'org.apache.httpcomponents:httpcore:4.4.13'
