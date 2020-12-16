@@ -44,8 +44,8 @@ protobuf {
 sourceSets {
   main {
     java {
+      // not needed for proto generated source
       srcDirs 'build/generated/source/proto/main/grpc'
-      srcDirs 'build/generated/source/proto/main/java'
     }
   }
 }
