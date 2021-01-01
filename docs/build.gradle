@@ -1,6 +1,6 @@
 plugins {
   id 'base' // Adds 'assemble', 'check', 'build', and 'clean' tasks.
-  id 'jekyll' // comes from buildSrc/
+  id 'edu.ucar.unidata.site.jekyll'
 }
 
 //////////////////////////////////////////////// Javadoc ////////////////////////////////////////////////
@@ -18,7 +18,6 @@ dependencies {
   testCompile 'com.google.truth:truth'
 
   testRuntimeOnly 'ch.qos.logback:logback-classic'
-
 }
 
 java {
@@ -111,18 +110,20 @@ tasks.withType(PublishToRawRepoTask).all {  // Common PublishToRawRepoTask confi
   }
 }
 
-task publishAsVersionedUserGuide(type: PublishToRawRepoTask, dependsOn: buildJekyllSite) {
+tasks.register('publishAsVersionedUserGuide', PublishToRawRepoTask) {
   description = 'Publish user guide (versioned) to Nexus under /major.minor/.'
 
-  publishSrc = jekyllDestinationDir
+  publishSrc = buildJekyllSite.destinationDirectory.get()
   destPath = "netcdf-java/$project.docVersion/userguide/"
+  dependsOn tasks.getByName('buildJekyllSite')
 }
 
-task publishAsCurrentUserGuide(type: PublishToRawRepoTask, dependsOn: buildJekyllSite) {
+tasks.register('publishAsCurrentUserGuide', PublishToRawRepoTask) {
   description = 'Publish the user guide to Nexus under /current/.'
 
-  publishSrc = jekyllDestinationDir
+  publishSrc = buildJekyllSite.destinationDirectory.get()
   destPath = 'netcdf-java/current/userguide/'
+  dependsOn tasks.getByName('buildJekyllSite')
 }
 
 gradle.projectsEvaluated {
