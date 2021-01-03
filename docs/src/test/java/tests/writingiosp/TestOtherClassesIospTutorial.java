@@ -14,7 +14,7 @@ import java.io.IOException;
 public class TestOtherClassesIospTutorial {
 
   private final static String testFilePath =
-      "src/public/userguide/files/netcdfJava_tutorial/writingiosp/lightningData.txt";
+      "src/site/files/netcdfJava_tutorial/writingiosp/lightningData.txt";
 
   private static RandomAccessFile raf;
 

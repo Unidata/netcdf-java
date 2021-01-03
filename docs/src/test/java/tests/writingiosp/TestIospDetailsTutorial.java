@@ -19,7 +19,7 @@ import static com.google.common.truth.Truth.assertThat;
 
 public class TestIospDetailsTutorial {
   private final static String testFilePath =
-      "src/public/userguide/files/netcdfJava_tutorial/writingiosp/lightningData.txt";
+      "src/site/files/netcdfJava_tutorial/writingiosp/lightningData.txt";
 
   private static RandomAccessFile raf;
 
