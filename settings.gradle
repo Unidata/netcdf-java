@@ -29,6 +29,7 @@ include 'uicdm'
 include 'visad:mcidas'
 include 'visad:vis5d'
 include 'waterml'
+include 'zarr'
 
 // Set name of cdm submodules
 project(':cdm:core').name = 'cdm-core'
