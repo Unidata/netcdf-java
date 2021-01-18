@@ -46,7 +46,12 @@ public final class S3RandomAccessFile extends RemoteRandomAccessFile implements 
   private HeadObjectResponse objectHeadResponse;
 
   private S3RandomAccessFile(String url) throws IOException {
-    super(url, s3BufferSize, s3MaxReadCacheSize);
+    this(url, s3BufferSize);
+  }
+
+  private S3RandomAccessFile(String url, int bufferSize) throws IOException {
+
+    super(url, bufferSize, s3MaxReadCacheSize);
 
     try {
       uri = new CdmS3Uri(url);
@@ -149,6 +154,11 @@ public final class S3RandomAccessFile extends RemoteRandomAccessFile implements 
     @Override
     public RandomAccessFile open(String location) throws IOException {
       return new S3RandomAccessFile(location);
+    }
+
+    @Override
+    public RandomAccessFile open(String location, int bufferSize) throws IOException {
+      return new S3RandomAccessFile(location, bufferSize);
     }
   }
 }

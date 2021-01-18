@@ -15,6 +15,7 @@ import java.util.Optional;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
+import ucar.unidata.io.InMemoryRandomAccessFile;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.io.RemoteRandomAccessFile;
 import ucar.unidata.io.spi.RandomAccessFileProvider;
@@ -244,11 +245,16 @@ public final class HTTPRandomAccessFile extends RemoteRandomAccessFile {
 
     @Override
     public RandomAccessFile open(String location) throws IOException {
+      return this.open(location, httpBufferSize);
+    }
+
+    @Override
+    public RandomAccessFile open(String location, int bufferSize) throws IOException {
       String scheme = location.split(":")[0];
       if (!scheme.equalsIgnoreCase("https") && !scheme.equalsIgnoreCase("http")) {
         location = location.replace(scheme, "http");
       }
-      return new HTTPRandomAccessFile(location);
+      return new HTTPRandomAccessFile(location, bufferSize, httpMaxCacheSize);
     }
   }
 }
