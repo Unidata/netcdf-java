@@ -1,3 +1,5 @@
+
+
 /*
  * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
@@ -6,6 +8,8 @@
 package ucar.nc2.grib.grib1.tables;
 
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 import org.jsoup.Jsoup;
@@ -35,7 +39,7 @@ public class NcepHtmlScraper {
   private static final boolean debug = false;
   private static final boolean show = false;
 
-  private static final String dirOut = "C:/tmp/ncep/grib1/";
+  private static final String dirOut = "build/tables/grib1/";
 
   //////////////////////////////////////////////////////////////////
   // https://www.nco.ncep.noaa.gov/pmb/docs/on388/tablea.html
@@ -357,9 +361,10 @@ public class NcepHtmlScraper {
   }
 
   public static void main(String[] args) throws IOException {
+    Files.createDirectories(Paths.get(dirOut));
     NcepHtmlScraper scraper = new NcepHtmlScraper();
-    // scraper.parseTable2();
-    // scraper.parseTableA();
+    scraper.parseTable2();
+    scraper.parseTableA();
     scraper.parseTable3();
   }
 }
