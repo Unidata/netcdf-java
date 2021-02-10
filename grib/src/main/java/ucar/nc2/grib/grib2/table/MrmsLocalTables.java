@@ -223,7 +223,7 @@ public class MrmsLocalTables extends LocalTables {
     add(209, 10, 6, "LayerCompositeReflectivity_Super",
         "Layer Composite Reflectivity Mosaic 33-60 kft (super high altitude)", "dBZ", -999, -99); // v12.0
     add(209, 10, 7, "CREF_1HR_MAX", "Composite Reflectivity Hourly Maximum", "dBZ", -999, -99); // v12.0
-    add(209, 10, 8, "ReflectivityMaxAboveM10C", "Maximum Reflectivity at -10 deg C height and above", "dBZ", -999, -99); // v10.0.0
+    add(209, 10, 8, "ReflectivityMaxAboveM10C", "Maximum Reflectivity at -10 deg C height and above", "dBZ", -999, -99); // v10.0.1
     add(209, 10, 9, "LayerCompositeReflectivity_ANC", "Layer Composite Reflectivity Mosaic (2-4.5km) (for ANC)", "dBZ",
         -999, -99); // v12.0
     add(209, 10, 10, "BREF_1HR_MAX", "Base Reflectivity Hourly Maximum", "dBZ", -999, -99); // v12.0

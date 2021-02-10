@@ -1,5 +1,5 @@
-# created 2021-02-05T0637
-# using tables .\tables\UserTable_MRMS_v10.0.0.csv, .\tables\UserTable_MRMS_v10.0.1_updated20150407.csv, .\tables\UserTable_MRMS_v11.0.4.csv, .\tables\UserTable_MRMS_v11.5.5.csv, .\tables\UserTable_MRMS_v12.0.csv
+# created 2021-02-10T0300
+# using tables tables\UserTable_MRMS_v10.0.0.csv, tables\UserTable_MRMS_v10.0.1.csv, tables\UserTable_MRMS_v10.0.1_updated20150407.csv, tables\UserTable_MRMS_v11.0.4.csv, tables\UserTable_MRMS_v11.5.5.csv, tables\UserTable_MRMS_v12.0.csv
 add(209, 2, 0, "NLDN_CG_001min_AvgDensity", "CG Average Lightning Density 1-min - NLDN", "flashes/km^2/min", -3, -1); // v12.0
 add(209, 2, 1, "NLDN_CG_005min_AvgDensity", "CG Average Lightning Density 5-min - NLDN", "flashes/km^2/min", -3, -1); // v12.0
 add(209, 2, 2, "NLDN_CG_015min_AvgDensity", "CG Average Lightning Density 15-min - NLDN", "flashes/km^2/min", -3, -1); // v12.0
@@ -144,7 +144,7 @@ add(209, 10, 4, "LayerCompositeReflectivity_Low", "Layer Composite Reflectivity 
 add(209, 10, 5, "LayerCompositeReflectivity_High", "Layer Composite Reflectivity Mosaic 24-60 kft (highest altitude)", "dBZ", -999, -99); // v12.0
 add(209, 10, 6, "LayerCompositeReflectivity_Super", "Layer Composite Reflectivity Mosaic 33-60 kft (super high altitude)", "dBZ", -999, -99); // v12.0
 add(209, 10, 7, "CREF_1HR_MAX", "Composite Reflectivity Hourly Maximum", "dBZ", -999, -99); // v12.0
-add(209, 10, 8, "ReflectivityMaxAboveM10C", "Maximum Reflectivity at -10 deg C height and above", "dBZ", -999, -99); // v10.0.0
+add(209, 10, 8, "ReflectivityMaxAboveM10C", "Maximum Reflectivity at -10 deg C height and above", "dBZ", -999, -99); // v10.0.1
 add(209, 10, 9, "LayerCompositeReflectivity_ANC", "Layer Composite Reflectivity Mosaic (2-4.5km) (for ANC)", "dBZ", -999, -99); // v12.0
 add(209, 10, 10, "BREF_1HR_MAX", "Base Reflectivity Hourly Maximum", "dBZ", -999, -99); // v12.0
 add(209, 11, 0, "MergedBaseReflectivityQC", "Base Reflectivity Mosaic (optimal method)", "dBZ", -999, -99); // v12.0
