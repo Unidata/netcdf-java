@@ -44,7 +44,7 @@ public class TestGribCreationOptions {
      * olderThan="5 min"/>
      * 
      * <tdm rewrite="test" rescan="0 0/15 * * * ? *"/>
-     * <gribConfig>
+     * <gribConfig>TestRotatedPole
      * <option name="timeUnit" value="1 minute" />
      * </gribConfig>
      * </featureCollection>
@@ -52,8 +52,8 @@ public class TestGribCreationOptions {
 
     String dataset = TestDir.cdmUnitTestDir + "gribCollections/hrrr/DewpointTempFromGsdHrrrrConus3surface.grib2";
     try (NetcdfDataset ds = NetcdfDatasets.openDataset(dataset)) {
-      Variable v = ds.findVariable("Dewpoint_temperature_height_above_ground");
-      Assert.assertNotNull("Dewpoint_temperature_height_above_ground", v);
+      Variable v = ds.findVariable("DPT_height_above_ground");
+      Assert.assertNotNull("DPT_height_above_ground", v);
       Dimension d = v.getDimension(0);
       Assert.assertEquals(57, d.getLength());
     }
