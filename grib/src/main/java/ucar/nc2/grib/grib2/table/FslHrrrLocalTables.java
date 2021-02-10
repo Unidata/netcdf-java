@@ -7,7 +7,6 @@ package ucar.nc2.grib.grib2.table;
 
 import com.google.common.collect.ImmutableList;
 import java.nio.charset.StandardCharsets;
-import org.checkerframework.checker.fenum.qual.SwingVerticalOrientation;
 import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.grib2.Grib2Parameter;
 import java.io.BufferedReader;
