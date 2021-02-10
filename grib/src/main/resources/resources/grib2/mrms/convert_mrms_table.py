@@ -1,15 +1,12 @@
 #!/usr/bin/env python
 import csv
-import datetime as dt
+from datetime import datetime
 from collections import defaultdict, namedtuple
-from itertools import chain
-from os import listdir, remove
-from os.path import exists, join
 
 debug = False
 
 def parse_table_version(fname):
-    # filenames need to look like UserTable_MRMS_v<version>.csv
+    # Filenames need to look like path/blah/UserTable_MRMS_v<version>.csv
     return fname.split('S_v', 1)[1].replace('.csv', '')
 
 def parse_file(fname):
@@ -56,40 +53,36 @@ def fix_item(item):
 
     return item
 
-# extract the important parameters needed by netCDF-Java
+# Extract the important parameters needed by netCDF-Java
 def important_table_info(param):
-    important_info = '{0.Discipline}, {0.Category}, {0.Parameter}, "{0.Name}", ' + \
-                     '"{0.Description}", "{0.Unit}", {0.No_Coverage}, ' + \
-                     '{0.Missing}'
+    return (f'{param.Discipline}, {param.Category}, {param.Parameter}, "{param.Name}", '
+            f'"{param.Description}", "{param.Unit}", {param.No_Coverage}, '
+            f'{param.Missing}')
 
-    return important_info.format(param)
-
-# extract the critical parameters needed by netCDF-Java
+# Extract the critical parameters needed by netCDF-Java
 def critical_table_info(param):
-    critical_info = '{0.Discipline}, {0.Category}, {0.Parameter}, "{0.Unit}", {0.No_Coverage}, ' + \
-                     '{0.Missing}'
-
-    return critical_info.format(param)
+    return (f'{param.Discipline}, {param.Category}, {param.Parameter}, "{param.Unit}", '
+            f'{param.No_Coverage}, {param.Missing}')
 
 def sorter(item):
-    # extract the discipline, category, and parameter as int values
+    # Extract the discipline, category, and parameter as int values
     parts = important_table_info(item).split(',')
     return tuple(map(lambda x: int(x), parts[0:3]))
 
 def make_java(info, tables):
-    filename = 'MergedTableCode.txt'.format(dt.datetime.now())
-    # sort by discipline, category, and parameter, in that order.
+    filename = 'MergedTableCode.txt'
+    # Sort by discipline, category, and parameter, in that order.
     info = sorted(info, key = lambda item: sorter(item))
     with open(filename, 'w') as f:
-        f.write('# created {0:%Y}-{0:%m}-{0:%d}T{0:%I%M}\n'.format(dt.datetime.now()))
+        f.write('# created {0:%Y}-{0:%m}-{0:%d}T{0:%I%M}\n'.format(datetime.now()))
         f.write('# using tables {}\n'.format(', '.join(tables)))
         for i in info:
             i = fix_item(i)
-            # make sure the discipline value is numeric (skip the "Not GRIB2" items)
+            # Make sure the discipline value is numeric (skip the "Not GRIB2" items)
             if i.Discipline.isnumeric():
                 f.write('add({}); // v{}\n'.format(important_table_info(i), i.TableVersion))
 
-# return true if the parameters needed by netcdf-java are the same.
+# Return true if the parameters needed by netcdf-java are the same.
 def parameter_comparison(param_a, param_b):
     critical = False
     if critical:
@@ -106,7 +99,9 @@ def parameter_comparison(param_a, param_b):
     return marker_a.lower() == marker_b.lower()
 
 def process_tables(tables, interactive=False):
-
+    # Sort tables by name, lexicographically.
+    # Should restuld in the tables being sorted by version (older to newer).
+    tables.sort()
     params = defaultdict(list)
     for table in tables:
         info = parse_file(table)
@@ -118,32 +113,23 @@ def process_tables(tables, interactive=False):
     dupes = 0
     unique_params = []
     for param_key in params:
-        # if there is only one entry for a given discipline-category-parameter combination, use it
-        if len(params[param_key]) == 1:
-            unique_params.append(params[param_key][0])
-        else:
-            # let's figure out if there are differences between the table entries with the same discipline-category-parameter combination
-            has_diffs = False
+        if len(params[param_key]) > 1:
+            # There are multiple entries for a given discipline-category-parameter combination.
+            # Let's figure out if there are differences between the table entries with the same discipline-category-parameter combination
             param_versions = params[param_key]
             first = param_versions[0]
+            # By default, we will pick the latest version (for non-interactive cases)
+            selection = -1
             for version in range(1, len(param_versions)):
-                # compare the parameters from different tables to see if they are different
-                has_diffs = not parameter_comparison(first, param_versions[version])
-                if has_diffs:
-                    # ok, at least one entry is different, so let's stop checking here
-                    break
-            # If they are all equal (except for the table version part)
-            if not has_diffs:
-                # all the same, so pick one (we'll go with the latest)
-                unique_params.append(param_versions[-1])
-            else:
-                # So we have multiple table entries for a given discipline-category-parameter combination.
-                # Need a human to sort this out. List the options and ask.
+                if parameter_comparison(first, param_versions[version]):
+                    # Parameter definitions are the same, check next version
+                    continue
+
+                # If we make it here, we have multiple table entries for a given discipline-category-parameter
+                # combination that are different. We might need a human to sort this out.
                 dupes += 1
 
-                if not interactive:
-                    selection = -1
-                else:
+                if interactive:
                     print('Which version of {} would you like to use?'.format(param_key))
                     number_of_choices = len(param_versions)
                     # figure out padding for pretty printing
@@ -159,27 +145,28 @@ def process_tables(tables, interactive=False):
                         padding = ' '*(max_version_len - len(versioned_param[-1]))
                         print('    {} ({}): {}{}'.format(version + 1, versioned_param[-1], padding, important_table_info(versioned_param)))
 
-                    valid_selection = False
-                    while not valid_selection:
-                        if interactive:
-                            selection = input('  1 - {} (default {}): '.format(number_of_choices, number_of_choices))
-                        else:
-                            selection = ''
+                    while True:
+                        selection = input('  1 - {} (default {}): '.format(number_of_choices, number_of_choices))
 
                         if selection == '':
                             # if default, select the last choice in the list
                             selection = -1
-                            valid_selection = True
+                            break
                         elif selection.isnumeric():
                             selection = int(selection)
                             if (selection > 0) and (selection <= number_of_choices):
                                 selection -= 1
-                                valid_selection = True
-
-                        if not valid_selection:
+                                break
+                        else:
                             print('  --> {} is invalid. Please choose between 1 and {}.'.format(selection, number_of_choices))
-
-                unique_params.append(param_versions[selection])
+                break # break out of version loop since we resolved the multiple versions
+            # The issue of multiple, possibly conflicting, versions of a parameter has been resolved - add that result
+            # to the unique parameter list
+            unique_params.append(param_versions[selection])
+        else:
+            # Only one entry for a given discipline-category-parameter combination exists across various versions of a
+            # table, so add it to the unique parameter list.
+            unique_params.append(params[param_key][0])
 
     if debug or interactive:
         print('Selected {}'.format(param_versions[selection]))
@@ -191,23 +178,17 @@ def process_tables(tables, interactive=False):
 
 if __name__ == '__main__':
     import argparse
+    from pathlib import Path
 
     parser = argparse.ArgumentParser(description="Convert MRMS GRIB 2 table to Java code")
-    parser.add_argument('--table', type=str, required=False, action='append', nargs='+',
-      help="One or more source table (multiple tables separated by spaces). If missing, will try to merge all source tables located in tables/")
+    parser.add_argument('--table', type=str, required=False, action='append',
+      help="Path to a GRIB table (can be used multiple times to provide multiple tables). If missing, will try to merge all GRIB tables located in tables/")
     parser.add_argument('--interactive', action='store_true',
       help="When merging tables, prompt user to select between conflicting parameter definitions.")
     args = parser.parse_args()
 
     tables = args.table
     if tables is None:
-        table_directory_name = 'tables/'
-        tables = listdir(table_directory_name)
-        tables = map(lambda x: join(table_directory_name, x), tables)
-    else:
-        if isinstance(tables, str):
-            tables = [tables]
-        else:
-            tables = list(chain.from_iterable(tables))
+        tables = list(map(str, Path('tables/').iterdir()))
 
-    process_tables(tables, interactive = args.interactive)
+    process_tables(tables, interactive=args.interactive)
