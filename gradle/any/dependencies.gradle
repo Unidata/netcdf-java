@@ -13,10 +13,7 @@ apply from: "$rootDir/gradle/any/shared-mvn-coords.gradle"
 //================================================ Repositories ================================================//
 
 repositories {
-  // Prefer JCenter to Maven Central. See
-  // https://blog.bintray.com/2015/02/09/android-studio-migration-from-maven-central-to-jcenter/
-  jcenter()
-  mavenCentral()  // JCenter isn't quite a superset of Maven Central.
+  mavenCentral()
 
   // All of the hosted repositories below could be replaced with:
   //     url "https://artifacts.unidata.ucar.edu/repository/unidata-all/"
