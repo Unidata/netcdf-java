@@ -11,7 +11,6 @@ ext {
   buildPlugins.shadow = 'com.github.jengelman.gradle.plugins:shadow:5.2.0'
   buildPlugins.sonarqube = 'org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:3.0'
   buildPlugins.spotless = 'com.diffplug.spotless:spotless-plugin-gradle:4.5.1'
-  buildPlugins.grgit = 'org.ajoberstar.grgit:grgit-core:4.0.2'
   buildPlugins.protobuf = 'com.google.protobuf:protobuf-gradle-plugin:0.8.12'
   buildPlugins.depcheck = 'org.owasp:dependency-check-gradle:6.0.2'
   buildPlugins.nexus = 'edu.ucar.unidata:unidata-nexus-gradle:0.0.1'

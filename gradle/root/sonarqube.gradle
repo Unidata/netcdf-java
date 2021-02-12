@@ -1,24 +1,8 @@
-buildscript {
-  // Add the "buildPlugins" ExtraProperty. It should be usable from the rest of this script as well.
-  // See http://goo.gl/9bixNV
-  apply from: "$rootDir/gradle/any/shared-mvn-coords.gradle"
-
-  // The buildscript {} block is odd: even though we applied dependencies.gradle above, the repositories therein
-  // do not get included here. Instead, we must explicitly define the repos again. Yay for duplication.
-  repositories {
-    jcenter()
-  }
-
-  dependencies {
-    classpath buildPlugins.grgit
-  }
-}
+import java.nio.file.Paths
 
 if (!name.equals(rootProject.name)) {
   throw new GradleException("This script plugin should only be applied to the root project, not '$name'.")
 }
-
-import org.ajoberstar.grgit.Grgit
 
 // Effectively adds "sonarqube" extension to all projects.
 // Adds "sonarqube" task to only the root project. However, the task analyzes the root and all subprojects.
@@ -28,11 +12,10 @@ apply from: "$rootDir/gradle/any/properties.gradle"  // For SonarQube user token
 
 def branchName = 'unknown_branch'
 // If this is a git repo, grab the branch name to tag the sonarcloud analysis
-def folder = new File( "$rootDir/.git" )
-if( folder.exists() ) {
-  def grgit = Grgit.open(currentDir: project.rootDir)
-  branchName = grgit.branch.current.name
-  grgit.close()
+def headFile = Paths.get( "$rootDir", ".git", "HEAD" ).toFile()
+if(headFile.exists()) {
+  String head = headFile.getText('UTF-8')
+  branchName = head.split('refs/heads/').last()
 }
 
 gradle.projectsEvaluated {
