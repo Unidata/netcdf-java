@@ -105,7 +105,7 @@ public class TestMFileS3 {
 
   @Test
   public void bucketAndKeyOsdc() throws IOException {
-    long lastModified = 1603308465000L;
+    long lastModified = 1611593614000L;
     checkWithBucketAndKey(OSDC_G16_S3_OBJECT_1, OSDC_G16_OBJECT_KEY_1, null, lastModified);
     checkWithBucketAndKey(OSDC_G16_S3_OBJECT_1 + DELIMITER_FRAGMENT, G16_NAME_1, "/", lastModified);
   }

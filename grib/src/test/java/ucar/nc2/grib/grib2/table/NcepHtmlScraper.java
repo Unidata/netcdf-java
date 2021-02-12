@@ -6,6 +6,8 @@
 package ucar.nc2.grib.grib2.table;
 
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 import org.jsoup.Jsoup;
@@ -34,7 +36,7 @@ import java.util.List;
 public class NcepHtmlScraper {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  private static final String dirOut = "C:/tmp/ncep/";
+  private static final String dirOut = "build/tables/grib2/";
 
   private static final boolean debugParam = false;
   private static final boolean debug = false;
@@ -314,9 +316,7 @@ public class NcepHtmlScraper {
   // C:\dev\github\thredds\grib\src\main\resources\resources\grib2\ncep
 
   public static void main(String[] args) throws IOException {
-    File dir = new File(dirOut);
-    if (!dir.mkdirs())
-      System.out.printf("mkdir %s failed %n", dir.getPath());
+    Files.createDirectories(Paths.get(dirOut));
     NcepHtmlScraper scraper = new NcepHtmlScraper();
     scraper.parseTopDoc();
   }
