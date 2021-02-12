@@ -5,7 +5,9 @@ buildscript {
   apply from: "$rootDir/gradle/any/shared-mvn-coords.gradle"
 
   repositories {
-    jcenter()
+    maven {
+      url "https://plugins.gradle.org/m2/"
+    }
   }
   dependencies {
     classpath buildPlugins.gretty  // We want to import FarmBeforeIntegrationTestTask, etc.
@@ -15,6 +17,20 @@ buildscript {
 apply from: "$rootDir/gradle/any/properties.gradle"
 apply plugin: 'org.gretty'
 apply plugin: 'jacoco'
+
+// when applying the gretty buildScript to a project, make sure that project has access to the gradlePluginPortal
+// which is where the gretty tomcat runners live
+repositories {
+  exclusiveContent {
+    forRepository {
+      gradlePluginPortal()
+    }
+    // only look for unidata gretty related artifacts from the gradlePluginPortal
+    filter {
+      includeGroup 'org.gretty'
+    }
+  }
+}
 
 import org.akhikhl.gretty.GradleUtils
 import org.akhikhl.gretty.FarmStartTask

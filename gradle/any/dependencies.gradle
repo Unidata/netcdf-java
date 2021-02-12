@@ -17,8 +17,7 @@ repositories {
     url "https://maven-central.storage-download.googleapis.com/maven2/" }
   // Prefer JCenter to Maven Central. See
   // https://blog.bintray.com/2015/02/09/android-studio-migration-from-maven-central-to-jcenter/
-  jcenter()
-  mavenCentral()  // JCenter isn't quite a superset of Maven Central.
+  mavenCentral()
 
   // All of the hosted repositories below could be replaced with:
   //     url "https://artifacts.unidata.ucar.edu/repository/unidata-all/"
