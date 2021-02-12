@@ -33,7 +33,6 @@ buildscript {
     classpath buildPlugins.sonarqube
     classpath buildPlugins.spotless
     classpath buildPlugins.gretty
-    classpath buildPlugins.grgit
     classpath buildPlugins.protobuf
     classpath buildPlugins.depcheck
     classpath buildPlugins.nexus
