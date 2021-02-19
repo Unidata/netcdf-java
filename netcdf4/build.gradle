@@ -1,4 +1,4 @@
-description = 'An IOSP for NetCDF-4 that loads the C library to read and write files.'
+description = 'Reads and writes NetCDF by loading the NetCDF C library and accessing it through JNA.'
 ext.title = 'NetCDF-4 IOSP'
 ext.url = 'https://www.unidata.ucar.edu/software/netcdf/'
 

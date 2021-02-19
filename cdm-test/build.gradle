@@ -1,6 +1,5 @@
 description = 'Classes for CDM unit and integration testing. Relies on having access to ' +
-    'cdmUnitTest directory, so can which can be obtained at ' +
-    'https://github.com/unidata/thredds-test-data.'
+    'cdmUnitTest files, which can be obtained at https://github.com/unidata/thredds-test-data.'
 ext.title = 'Extended CDM Testing'
 
 apply from: "$rootDir/gradle/any/dependencies.gradle"

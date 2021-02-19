@@ -17,19 +17,8 @@ dependencies {
   compile "com.google.auto.value:auto-value-annotations"
   annotationProcessor "com.google.auto.value:auto-value:1.7.4"
 
-  // Used by NcmlEditor. Abandoned, no updates since 2013. https://sourceforge.net/projects/bounce/
-  // https://sourceforge.net/p/bounce/svn/HEAD/tree/src/main/java/org/bounce/
-  compile 'org.bounce:bounce:0.18'
-
-  // http://www.jfree.org/
-  compile 'org.jfree:jcommon:1.0.23'
-  compile 'org.jfree:jfreechart:1.0.19'
-
   // http://www.jgoodies.com/. Latest version is 1.9.0, but there is breakage when we try to upgrade.
   compile 'com.jgoodies:jgoodies-forms:1.6.0'
-
-  // LGoodDatePicker - swing calendar widget used in TdsMonitor
-  compile 'com.github.lgooddatepicker:LGoodDatePicker:10.3.1'
 
   testImplementation project(':cdm:cdm-core')
   testImplementation project(':cdm-test-utils')
