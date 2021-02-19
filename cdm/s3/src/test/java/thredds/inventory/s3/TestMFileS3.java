@@ -98,7 +98,7 @@ public class TestMFileS3 {
 
   @Test
   public void bucketAndKeyGcs() throws IOException {
-    long lastModified = 1504051532000L;
+    long lastModified = 1611593614000L;
     checkWithBucketAndKey(GCS_G16_S3_OBJECT_1, G16_OBJECT_KEY_1, null, lastModified);
     checkWithBucketAndKey(GCS_G16_S3_OBJECT_1 + DELIMITER_FRAGMENT, G16_NAME_1, "/", lastModified);
   }
