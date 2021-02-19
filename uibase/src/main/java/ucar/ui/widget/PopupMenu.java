@@ -20,12 +20,9 @@ import javax.swing.*;
  * showDeclaration(table);
  * }
  * });
- *
- * 
  */
-
 public class PopupMenu extends JPopupMenu {
-  private JComponent parent;
+  private final JComponent parent;
 
   /**
    * Constructor.

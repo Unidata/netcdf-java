@@ -18,8 +18,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.*;
 import java.util.List;
 import java.util.prefs.Preferences;
@@ -84,26 +82,23 @@ import java.util.prefs.Preferences;
  * Row and column numbers are 0 based. Each field has a width of 2 columns (one for the label and one for the
  * component) and a height of 1 row, unless you specify otherwise using a constraint.
  * A heading takes up an entire row, spanning all columns
- *
- * @author John Caron
  */
-
 public class PrefPanel extends JPanel {
-  private String name;
-  private Preferences prefs;
-  private PersistenceManager storeData;
+  private static final boolean debugLayout = false;
+
+  private final String name;
+  private final Preferences prefs;
+  private final PersistenceManager storeData;
 
   private boolean finished;
-  private HashMap<String, Field> flds = new HashMap<>(40);
-  private List<LayoutComponent> layoutComponents; // use with form layout
+  private final HashMap<String, Field> flds = new HashMap<>(40);
+  private final List<LayoutComponent> layoutComponents; // use with form layout
   private int cursorRow, cursorCol; // current row and column
 
-  private List<JComponent> auxButtons = new ArrayList<>();
+  private final List<JComponent> auxButtons = new ArrayList<>();
 
   // event handling
-  private EventListenerList listenerList = new EventListenerList();
-
-  private boolean debugLayout;
+  private final EventListenerList listenerList = new EventListenerList();
 
   /**
    * Constructor.
@@ -298,17 +293,13 @@ public class PrefPanel extends JPanel {
     flds.put(fld.getName(), fld);
     layoutComponents.add(new LayoutComponent(fld, col, row, constraint));
 
-    fld.addPropertyChangeListener(new PropertyChangeListener() {
-      public void propertyChange(PropertyChangeEvent e) {
-        revalidate();
-      }
-    });
+    fld.addPropertyChangeListener(e -> revalidate());
 
     return fld;
   }
 
-  public Field.BeanTableField addBeanTableField(String fldName, String label, java.util.ArrayList beans,
-      Class beanClass, int col, int row, String constraint) {
+  public Field.BeanTableField addBeanTableField(String fldName, String label, java.util.ArrayList<?> beans,
+      Class<?> beanClass, int col, int row, String constraint) {
     Field.BeanTableField fld =
         new Field.BeanTableField(fldName, label, beans, beanClass, (PreferencesExt) prefs, storeData);
     addField(fld, col, row, constraint);
@@ -400,7 +391,7 @@ public class PrefPanel extends JPanel {
   }
 
 
-  public Field.EnumCombo addEnumComboField(String fldName, String label, java.util.Collection defValues,
+  public Field.EnumCombo addEnumComboField(String fldName, String label, java.util.Collection<Object> defValues,
       boolean editable, int col, int row, String constraint) {
     Field.EnumCombo fld = new Field.EnumCombo(fldName, label, defValues, storeData);
     addField(fld, col, row, constraint);
@@ -408,7 +399,7 @@ public class PrefPanel extends JPanel {
     return fld;
   }
 
-  public Field.EnumCombo addEnumComboField(String fldName, String label, java.util.Collection defValues,
+  public Field.EnumCombo addEnumComboField(String fldName, String label, java.util.Collection<Object> defValues,
       boolean editable) {
     Field.EnumCombo fld = new Field.EnumCombo(fldName, label, defValues, storeData);
     addField(fld);
@@ -508,7 +499,7 @@ public class PrefPanel extends JPanel {
    * @param nKeep number of most recently used values to keep
    * @param editable whether the user can add new entries the list to select from.
    */
-  public Field.TextCombo addTextComboField(String fldName, String label, java.util.Collection defValues, int nKeep,
+  public Field.TextCombo addTextComboField(String fldName, String label, java.util.Collection<Object> defValues, int nKeep,
       boolean editable) {
     Field.TextCombo fld = new Field.TextCombo(fldName, label, defValues, nKeep, storeData);
     addField(fld);
@@ -516,7 +507,7 @@ public class PrefPanel extends JPanel {
     return fld;
   }
 
-  public Field.TextCombo addTextComboField(String fldName, String label, java.util.Collection defValues, int nKeep,
+  public Field.TextCombo addTextComboField(String fldName, String label, java.util.Collection<Object> defValues, int nKeep,
       boolean editable, int col, int row, String constraint) {
     Field.TextCombo fld = new Field.TextCombo(fldName, label, defValues, nKeep, storeData);
     addField(fld, col, row, constraint);
@@ -629,14 +620,14 @@ public class PrefPanel extends JPanel {
     StringBuilder sbuff = new StringBuilder();
 
     // column layout, first sort by col
-    layoutComponents.sort((o1, o2) -> o1.col - o2.col);
+    layoutComponents.sort(Comparator.comparingInt(o -> o.col));
 
     // now create column layout spec and x cell constraint
     sbuff.setLength(0);
     int currCol = -1;
-    Iterator iter = layoutComponents.iterator();
+    Iterator<LayoutComponent> iter = layoutComponents.iterator();
     while (iter.hasNext()) {
-      LayoutComponent lc = (LayoutComponent) iter.next();
+      LayoutComponent lc = iter.next();
       if (lc.col > currCol) {
         if (currCol >= 0)
           sbuff.append(", 5dlu, ");
@@ -654,13 +645,13 @@ public class PrefPanel extends JPanel {
     int ncols = 2 * currCol;
 
     // row layout, first sort by row
-    layoutComponents.sort((o1, o2) -> o1.row - o2.row);
+    layoutComponents.sort(Comparator.comparingInt(o -> o.row));
 
     // now adjust for any headings, put into y cell constraint
     int incr = 0;
     iter = layoutComponents.iterator();
     while (iter.hasNext()) {
-      LayoutComponent lc = (LayoutComponent) iter.next();
+      LayoutComponent lc = iter.next();
       if ((lc.comp instanceof String) && (lc.row > 0)) // its a header, not in first position
         incr++; // leave space by adding a row
 
@@ -675,7 +666,7 @@ public class PrefPanel extends JPanel {
     int currRow = -1;
     iter = layoutComponents.iterator();
     while (iter.hasNext()) {
-      LayoutComponent lc = (LayoutComponent) iter.next();
+      LayoutComponent lc = iter.next();
       while (lc.row > currRow) {
         if ((lc.comp instanceof String) && (lc.row > 0)) {
           sbuff.append(", 5dlu, default");
@@ -704,7 +695,7 @@ public class PrefPanel extends JPanel {
     // now add each component with correct constraint
     iter = layoutComponents.iterator();
     while (iter.hasNext()) {
-      LayoutComponent lc = (LayoutComponent) iter.next();
+      LayoutComponent lc = iter.next();
 
       if (lc.comp instanceof Field) {
         Field fld = (Field) lc.comp;
@@ -731,11 +722,7 @@ public class PrefPanel extends JPanel {
       buttPanel.add(auxButton, null);
 
     // button listeners
-    acceptButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent evt) {
-        accept();
-      }
-    });
+    acceptButton.addActionListener(evt -> accept());
 
     setLayout(new BorderLayout());
     add(mainPanel, BorderLayout.CENTER);
@@ -822,7 +809,7 @@ public class PrefPanel extends JPanel {
    * </pre>
    */
   public static class Dialog extends JDialog {
-    private PrefPanel pp;
+    private final PrefPanel pp;
     private PreferencesExt substore;
 
     /**
@@ -861,11 +848,9 @@ public class PrefPanel extends JPanel {
       }
 
       // L&F may change
-      UIManager.addPropertyChangeListener(new PropertyChangeListener() {
-        public void propertyChange(PropertyChangeEvent e) {
-          if (e.getPropertyName().equals("lookAndFeel"))
-            SwingUtilities.updateComponentTreeUI(Dialog.this);
-        }
+      UIManager.addPropertyChangeListener(e -> {
+        if (e.getPropertyName().equals("lookAndFeel"))
+          SwingUtilities.updateComponentTreeUI(Dialog.this);
       });
 
       Container cp = getContentPane();
@@ -874,19 +859,11 @@ public class PrefPanel extends JPanel {
 
       // add a dismiss button
       JButton dismiss = new JButton("Cancel");
-      dismiss.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent evt) {
-          setVisible(false);
-        }
-      });
+      dismiss.addActionListener(evt -> setVisible(false));
       pp.addButton(dismiss);
 
       // watch for accept
-      pp.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          setVisible(false);
-        }
-      });
+      pp.addActionListener(e -> setVisible(false));
 
       // catch move, resize events
       addComponentListener(new ComponentAdapter() {

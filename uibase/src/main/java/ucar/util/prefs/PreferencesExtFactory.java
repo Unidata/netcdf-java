@@ -23,7 +23,6 @@ package ucar.util.prefs;
  * <pre>
  * System.setProperty("java.util.prefs.PreferencesFactory", "ucar.util.prefs.PreferencesExtFactory");
  * </pre>
- *
  */
 public class PreferencesExtFactory implements java.util.prefs.PreferencesFactory {
 

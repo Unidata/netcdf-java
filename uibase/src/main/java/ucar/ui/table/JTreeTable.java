@@ -60,9 +60,9 @@ import java.util.EventObject;
  * @author Scott Violet
  */
 public class JTreeTable extends JTable {
-  private static Icon openIcon = BAMutil.getIcon("treeOpen", true);
-  private static Icon closedIcon = BAMutil.getIcon("treeClosed", true);
-  private static Icon leafIcon = BAMutil.getIcon("treeLeaf", true);
+  private static final Icon openIcon = BAMutil.getIcon("treeOpen", true);
+  private static final Icon closedIcon = BAMutil.getIcon("treeClosed", true);
+  private static final Icon leafIcon = BAMutil.getIcon("treeLeaf", true);
 
   protected TreeTableCellRenderer tree;
   protected TreeTableModelAdapter tableModel;
@@ -254,7 +254,7 @@ public class JTreeTable extends JTable {
     public void setRowHeight(int rowHeight) {
       if (rowHeight > 0) {
         super.setRowHeight(rowHeight);
-        if (JTreeTable.this != null && JTreeTable.this.getRowHeight() != rowHeight) {
+        if (JTreeTable.this.getRowHeight() != rowHeight) {
           JTreeTable.this.setRowHeight(getRowHeight());
         }
       }

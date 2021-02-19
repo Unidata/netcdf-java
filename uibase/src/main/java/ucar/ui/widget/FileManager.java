@@ -49,20 +49,18 @@ public class FileManager {
   private static final String BOUNDS = "Bounds";
   private static final String DEFAULT_DIR = "DefaultDir";
   private static final String DEFAULT_FILTER = "DefaultFilter";
+  private static final boolean debug =  false;
 
   // regular
-  private PreferencesExt prefs;
+  private final PreferencesExt prefs;
   private IndependentDialog w;
-  private ucar.ui.prefs.ComboBox<String> dirComboBox;
+  private final ucar.ui.prefs.ComboBox<String> dirComboBox;
   private JFileChooser chooser;
 
   // for override
   protected JPanel main;
-  // protected boolean selectedURL = false;
-  // protected ComboBox urlComboBox;
 
   private boolean readOk = true, selectedFile;
-  private static boolean debug;
 
   public FileManager(JFrame parent) {
     this(parent, null, null, null);
@@ -236,25 +234,19 @@ public class FileManager {
     if (!readOk)
       return null;
     selectedFile = false;
-    // selectedURL = false;
     w.setVisible(true); // modal, so blocks; listener calls hide(), which unblocks.
 
     if (selectedFile) {
       File file = chooser.getSelectedFile();
-      if (file == null)
+      if (file == null) {
         return null;
+      }
       try {
         return file.getCanonicalPath().replace('\\', '/');
       } catch (IOException ioe) {
-      } // return null
+        return null; // LOOK changed 2/19/21
+      }
     }
-
-    /*
-     * if (selectedURL) {
-     * return (String) urlComboBox.getSelectedItem();
-     * }
-     */
-
     return null;
   }
 

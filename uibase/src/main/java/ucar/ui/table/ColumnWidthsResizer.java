@@ -61,18 +61,15 @@ public class ColumnWidthsResizer implements TableModelListener, TableColumnModel
     // undefined (see https://weblogs.java.net/blog/alexfromsun/archive/2011/06/15/swing-better-world-listeners).
     // As a work-around, we're going to place the resize operation at the end of the event queue. That way, it'll
     // be executed after all TableModelListeners have been notified.
-    EventQueue.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        // Do not cache the value of doFullScan; we need to reevaluate each time because the number of rows in
-        // the table could have changed.
-        boolean doFullScan = table.getRowCount() <= fullScanCutoff;
+    EventQueue.invokeLater(() -> {
+      // Do not cache the value of doFullScan; we need to reevaluate each time because the number of rows in
+      // the table could have changed.
+      boolean doFullScan = table.getRowCount() <= fullScanCutoff;
 
-        if (e.getColumn() == TableModelEvent.ALL_COLUMNS) {
-          resize(table, doFullScan); // Resize all columns.
-        } else {
-          resize(table, e.getColumn(), doFullScan); // Resize only the affected column.
-        }
+      if (e.getColumn() == TableModelEvent.ALL_COLUMNS) {
+        resize(table, doFullScan); // Resize all columns.
+      } else {
+        resize(table, e.getColumn(), doFullScan); // Resize only the affected column.
       }
     });
   }

@@ -10,7 +10,7 @@ package ucar.util.prefs;
  * Duplicate ucar.nc2.util, which we cannot depend on.
  */
 class Indent {
-  private int nspaces;
+  private final int nspaces;
 
   private int level;
   private final StringBuilder blanks = new StringBuilder();

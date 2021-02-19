@@ -18,17 +18,15 @@ import javax.swing.event.EventListenerList;
  * Also can be adapted as a CancelTask implementation.
  * 
  * @see ProgressMonitorTask
- *
- * @author caron
  */
-
 public class StopButton extends JButton {
-  private static ImageIcon[] icon = new ImageIcon[2];
+  private static final boolean debug = false;
+
+  private static final ImageIcon[] icon = new ImageIcon[2];
   static {
     icon[0] = BAMutil.getIcon("Stop24", true);
     icon[1] = BAMutil.getIcon("Stop16", true);
   }
-  private static boolean debug;
 
   private ProgressMonitorTask task;
   private Timer myTimer;
@@ -36,7 +34,7 @@ public class StopButton extends JButton {
   private int count;
 
   // event handling
-  private EventListenerList listenerList = new EventListenerList();
+  private final EventListenerList listenerList = new EventListenerList();
 
   // bean for JForm Designer - let it set sizes
   public StopButton() {

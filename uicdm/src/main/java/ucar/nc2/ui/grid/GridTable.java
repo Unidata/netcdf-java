@@ -9,6 +9,7 @@ import ucar.nc2.dt.GridDatatype;
 import ucar.ui.event.ActionSourceListener;
 import ucar.ui.event.ActionValueEvent;
 import ucar.ui.table.JTableSorted;
+import ucar.ui.table.TableRow;
 import ucar.ui.table.TableRowAbstract;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -21,31 +22,28 @@ import java.util.Formatter;
  * Uses ActionSourceListener for events.
  *
  * @see ucar.ui.event.ActionSourceListener
- *
- * @author caron
  */
-
 public class GridTable {
-  private JTableSorted table;
-  private ArrayList<Row> list;
-  private ActionSourceListener actionSource;
+  private final JTableSorted table;
+  private ArrayList<TableRow> tableRows;
+  private final ActionSourceListener actionSource;
 
   private boolean eventOK = true;
   private boolean debug;
 
   public GridTable(String actionName) {
     // the main delegate
-    table = new JTableSorted(colName, list);
+    table = new JTableSorted(colName, tableRows);
 
     // event management
     actionSource = new ActionSourceListener(actionName) {
       public void actionPerformed(ActionValueEvent e) {
-        if (list == null)
+        if (tableRows == null)
           return;
         String want = e.getValue().toString();
         int count = 0;
-        for (Row row : list) {
-          if (want.equals(row.gg.getFullName())) {
+        for (TableRow row : tableRows) {
+          if (want.equals(((Row) row).gg.getFullName())) {
             eventOK = false;
             table.setSelected(count);
             eventOK = true;
@@ -73,19 +71,19 @@ public class GridTable {
   }
 
   public void clear() {
-    list.clear();
-    table.setList(list);
+    tableRows.clear();
+    table.setRows(tableRows);
   }
 
   public void setDataset(java.util.List<GridDatatype> fields) {
     if (fields == null)
       return;
 
-    list = new ArrayList<>(fields.size());
+    tableRows = new ArrayList<>(fields.size());
     for (GridDatatype gg : fields)
-      list.add(new Row(gg));
+      tableRows.add(new Row(gg));
 
-    table.setList(list);
+    table.setRows(tableRows);
   }
 
   public JPanel getPanel() {

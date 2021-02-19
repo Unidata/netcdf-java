@@ -33,8 +33,6 @@ import javax.swing.JWindow;
 import javax.swing.RootPaneContainer;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EtchedBorder;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import ucar.ui.event.ActionSourceListener;
 import ucar.ui.event.ActionValueEvent;
 import ucar.ui.event.ActionValueListener;
@@ -62,29 +60,24 @@ import ucar.ui.prefs.PrefPanel;
  * @author John Caron
  */
 public class SuperComboBox extends JPanel {
+  private static final boolean debug = false;
+  private static final boolean debugEvent = false;
 
   // data
-  private ArrayList<TableRow> list = new ArrayList<>(); // list of TableRow objects
+  private ArrayList<TableRow> rows = new ArrayList<>(); // list of things in the combobox
 
   // UI stuff
-  private String name;
-  private MyTextField text; // this is what shows all the time
-  private JButton next, prev, down; // arrow button
-  private JWindow pulldown; // pulldown menu
-  private JTableSorted table; // inside the pulldown
-  private IndependentWindow loopControl; // loop control
+  private final String name;
+  private final MyTextField text; // this is what shows all the time
+  private final JWindow pulldown; // pulldown menu
+  private final JTableSorted table; // inside the pulldown
+  private final IndependentWindow loopControl; // loop control
 
-  private ActionSourceListener actionSource;
+  private final ActionSourceListener actionSource;
 
-  private boolean isNamedObject;
   private boolean eventOK = true; // disallow events to prevent infinite loop
   private boolean sendExternalEvent = true; // disallow events to prevent infinite loop
   private boolean immediateMode; // used for looping
-
-  private boolean debug, debugEvent;
-
-  private int height = 222;
-  private int width = 100;
 
   /**
    * default is one column, with an iterator of NamedObjects
@@ -94,7 +87,7 @@ public class SuperComboBox extends JPanel {
    * @param sortOK true allow sorting, column adding and removing
    * @param iter Iterator of objects inside the combobox.
    */
-  public SuperComboBox(RootPaneContainer parent, String name, boolean sortOK, Iterator iter) {
+  public SuperComboBox(RootPaneContainer parent, String name, boolean sortOK, Iterator<Object> iter) {
     this.name = name;
 
     // create JLabel
@@ -103,17 +96,18 @@ public class SuperComboBox extends JPanel {
 
     // create arrow buttons
     JPanel seqPanel = new JPanel(new GridLayout(1, 2));
-    prev = makeButton(SpinIcon.TypeLeft);
+    JButton prev = makeButton(SpinIcon.TypeLeft);
     prev.setToolTipText("previous");
     seqPanel.add(prev);
 
-    next = makeButton(SpinIcon.TypeRight);
+    JButton next = makeButton(SpinIcon.TypeRight);
     next.setToolTipText("next");
     seqPanel.add(next);
 
     // JPanel bPanel = new JPanel(new GridLayout(2,1));
     JPanel bPanel = new JPanel(new BorderLayout());
-    down = makeButton(SpinIcon.TypeDown);
+    // arrow button
+    JButton down = makeButton(SpinIcon.TypeDown);
     down.setToolTipText("show menu");
     bPanel.add(seqPanel, BorderLayout.NORTH);
     bPanel.add(down, BorderLayout.SOUTH);
@@ -122,7 +116,8 @@ public class SuperComboBox extends JPanel {
     String[] colNames = new String[1];
     colNames[0] = name;
 
-    table = new JTableSorted(colNames, list);
+    // LOOK JTableSorted needs TableRow
+    table = new JTableSorted(colNames, rows);
     table.setSortOK(sortOK);
     if (iter != null)
       setCollection(iter);
@@ -169,14 +164,12 @@ public class SuperComboBox extends JPanel {
       }
     });
 
-    table.addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
-        if (debugEvent)
-          System.out.println(" JTable event ");
-        if (eventOK && !e.getValueIsAdjusting()) {
-          setSelection();
-          hidePulldownMenu();
-        }
+    table.addListSelectionListener(e -> {
+      if (debugEvent)
+        System.out.println(" JTable event ");
+      if (eventOK && !e.getValueIsAdjusting()) {
+        setSelection();
+        hidePulldownMenu();
       }
     });
     table.getTable().addMouseListener(new MyMouseAdapter() {
@@ -221,17 +214,21 @@ public class SuperComboBox extends JPanel {
   }
 
   /**
-   * Set the list of things to be selected.
-   * Iterator may return objects of type NamedObjects,
-   * otherwise will use object.toString()
+   * Set the list of things to be selected, with keepIndex = false.
+   * Iterator may return NamedObject, TableRow, or an Object that will be wrapped by SimpleRow()
    */
-  public void setCollection(Iterator iter) {
+  public void setCollection(Iterator<? extends Object> iter) {
     setCollection(iter, false);
   }
 
-  public void setCollection(Iterator iter, boolean keepIndex) {
+  /**
+   * Set the list of things to be selected..
+   * @param iter iterator of NamedObject, TableRow, or an Object that will wrapped by SimpleRow().
+   * @param keepIndex maintain the current selected index if possible.
+   */
+  public void setCollection(Iterator<? extends Object> iter, boolean keepIndex) {
     eventOK = false;
-    list = new ArrayList<>();
+    rows = new ArrayList<>();
 
     if (iter != null) {
       FontMetrics fm = text.getFontMetrics(text.getFont());
@@ -240,16 +237,19 @@ public class SuperComboBox extends JPanel {
       while (iter.hasNext()) {
         Object o = iter.next();
         TableRow row;
-        if (o instanceof NamedObject)
+        if (o instanceof TableRow) {
+          row = (TableRow) o;
+        } else if (o instanceof NamedObject) {
           row = new NamedObjectRow((NamedObject) o);
-        else
+        } else {
           row = new SimpleRow(o);
+        }
 
         String s = row.getValueAt(0).toString().trim();
         int slen = fm.stringWidth(s);
         width = Math.max(width, slen);
 
-        list.add(row);
+        rows.add(row);
       }
       // resize
       Dimension d = text.getPreferredSize();
@@ -258,14 +258,15 @@ public class SuperComboBox extends JPanel {
       text.revalidate();
     }
 
-    if (debugEvent)
+    if (debugEvent) {
       System.out.println(" New collection set = ");
-    table.setList(list);
-    if (list.isEmpty())
+    }
+    table.setRows(rows);
+    if (rows.isEmpty())
       setLabel("none");
     else {
       int currIndex = getSelectedIndex();
-      if (currIndex >= list.size() || currIndex < 0 || !keepIndex)
+      if (currIndex >= rows.size() || currIndex < 0 || !keepIndex)
         setSelectedByIndex(0);
     }
     eventOK = true;
@@ -305,8 +306,8 @@ public class SuperComboBox extends JPanel {
    * @return index of selection, or -1 if not found;
    */
   public int setSelectedByName(String choiceName) {
-    for (int i = 0; i < list.size(); i++) {
-      TableRow row = list.get(i);
+    for (int i = 0; i < rows.size(); i++) {
+      TableRow row = rows.get(i);
       String value = row.getValueAt(0).toString();
       if (choiceName.equals(value)) {
         sendExternalEvent = false;
@@ -320,8 +321,8 @@ public class SuperComboBox extends JPanel {
   }
 
   public int setSelectedByValue(Object choice) {
-    for (int i = 0; i < list.size(); i++) {
-      TableRow row = list.get(i);
+    for (int i = 0; i < rows.size(); i++) {
+      TableRow row = rows.get(i);
       if (choice.equals(row.getValueAt(0))) {
         sendExternalEvent = false;
         setSelectedByIndex(i);
@@ -340,10 +341,10 @@ public class SuperComboBox extends JPanel {
    * @param index of selected object.
    */
   public void setSelectedByIndex(int index) {
-    if ((index >= 0) && (index < list.size())) {
+    if ((index >= 0) && (index < rows.size())) {
       table.setSelected(index);
       setSelection();
-    } else if (!list.isEmpty()) {
+    } else if (!rows.isEmpty()) {
       table.setSelected(0);
       setSelection();
     } else
@@ -388,6 +389,7 @@ public class SuperComboBox extends JPanel {
     if (pulldown.isShowing())
       pulldown.setVisible(false);
     else {
+      int height = 222;
       Dimension d = new Dimension(getWidth(), height);
       pulldown.setSize(d);
       Point p = text.getLocationOnScreen();
@@ -500,7 +502,7 @@ public class SuperComboBox extends JPanel {
   }
 
   private class MyTextField extends JLabel {
-    private int arrow_size = 4;
+    private final int arrow_size = 4;
     private boolean wasDragged;
     private Rectangle b;
     private int nitems;
@@ -523,7 +525,7 @@ public class SuperComboBox extends JPanel {
       // g.setColor( component.isEnabled() ? MetalLookAndFeel.getControlInfo() :
       // MetalLookAndFeel.getControlShadow() );
       b = getBounds();
-      nitems = list.size(); // number of items
+      nitems = rows.size(); // number of items
 
       int posx = getItemPos();
       int line = b.height - 1;
@@ -590,18 +592,16 @@ public class SuperComboBox extends JPanel {
   } // inner class MyTextField
 
   private class LoopControl extends ucar.ui.widget.PopupMenu.PopupTriggerListener {
-    private IndependentWindow iw;
+    private final IndependentWindow iw;
 
-    private JPanel loopPanel;
-    private JButton moreOrLess;
-    private JSpinner stepSpinner;
+    private final JPanel loopPanel;
+    private final JButton moreOrLess;
     private AbstractButton loopButt, helpButt;
-    private PrefPanel ifPanel;
-    private Field.Int stepIF;
-    private Field.Text startIF;
+    private final PrefPanel ifPanel;
+    private final Field.Int stepIF;
+    private final Field.Text startIF;
 
-    private AbstractAction play, fastforward, stop, rewind, back, next, prev;
-    private AbstractAction loopAct, helpAct;
+    private final AbstractAction loopAct, helpAct;
     private boolean stopped, forward, first = true, continuous = true, less = true;
     private int step = 1, start = -1;
 
@@ -609,7 +609,7 @@ public class SuperComboBox extends JPanel {
       loopPanel = new JPanel();
 
       // create VCR buttons
-      play = new AbstractAction() {
+      AbstractAction play = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
           start(true);
         }
@@ -617,15 +617,15 @@ public class SuperComboBox extends JPanel {
       BAMutil.setActionProperties(play, "VCRPlay", "play", false, 'S', KeyEvent.VK_NUMPAD6);
       BAMutil.addActionToContainer(loopPanel, play);
 
-      fastforward = new AbstractAction() {
+      AbstractAction fastforward = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
-          setSelectedByIndex(list.size() - 1);
+          setSelectedByIndex(rows.size() - 1);
         }
       };
       BAMutil.setActionProperties(fastforward, "VCRFastForward", "go to end", false, 'F', KeyEvent.VK_NUMPAD1);
       BAMutil.addActionToContainer(loopPanel, fastforward);
 
-      next = new AbstractAction() {
+      AbstractAction next = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
           int current = incr(true, false);
           if (current >= 0) {
@@ -637,7 +637,7 @@ public class SuperComboBox extends JPanel {
       BAMutil.setActionProperties(next, "VCRNextFrame", "Next frame", false, 'N', KeyEvent.VK_PAGE_DOWN);
       BAMutil.addActionToContainer(loopPanel, next);
 
-      stop = new AbstractAction() {
+      AbstractAction stop = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
           stopped = true;
         }
@@ -645,7 +645,7 @@ public class SuperComboBox extends JPanel {
       BAMutil.setActionProperties(stop, "VCRStop", "stop", false, 'S', KeyEvent.VK_ESCAPE);
       BAMutil.addActionToContainer(loopPanel, stop);
 
-      prev = new AbstractAction() {
+      AbstractAction prev = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
           int current = incr(false, false);
           if (current >= 0) {
@@ -657,7 +657,7 @@ public class SuperComboBox extends JPanel {
       BAMutil.setActionProperties(prev, "VCRPrevFrame", "Previous frame", false, 'P', KeyEvent.VK_PAGE_UP);
       BAMutil.addActionToContainer(loopPanel, prev);
 
-      rewind = new AbstractAction() {
+      AbstractAction rewind = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
           setSelectedByIndex(0);
         }
@@ -665,7 +665,7 @@ public class SuperComboBox extends JPanel {
       BAMutil.setActionProperties(rewind, "VCRRewind", "rewind", false, 'R', KeyEvent.VK_NUMPAD7);
       BAMutil.addActionToContainer(loopPanel, rewind);
 
-      back = new AbstractAction() {
+      AbstractAction back = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
           start(false);
         }
@@ -692,8 +692,7 @@ public class SuperComboBox extends JPanel {
       // these arent added to the panel right away
       loopAct = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
-          Boolean state = (Boolean) getValue(BAMutil.STATE);
-          continuous = state;
+          continuous = (Boolean) getValue(BAMutil.STATE);
         }
       };
       BAMutil.setActionProperties(loopAct, "MovieLoop", "continuous loop", true, 'L', 0);
@@ -705,7 +704,7 @@ public class SuperComboBox extends JPanel {
       };
       BAMutil.setActionProperties(helpAct, "Help", "online Help...", false, 'H', KeyEvent.VK_H);
 
-      stepSpinner = new JSpinner();
+      JSpinner stepSpinner = new JSpinner();
       stepSpinner.setToolTipText("step");
 
       ifPanel = new PrefPanel("loopControl", null);
@@ -778,18 +777,21 @@ public class SuperComboBox extends JPanel {
 
     private int incr(boolean forward, boolean continuous) {
       int current = getSelectedIndex();
-      if (forward)
+      if (forward) {
         current += step;
-      else
+      } else {
         current -= step;
-      if (!continuous && ((current < 0) || (current >= list.size()))) {
+      }
+      if (!continuous && ((current < 0) || (current >= rows.size()))) {
         return -1;
       }
 
-      if (current >= list.size())
-        current = (start >= 0) ? start : 0;
-      if (current < 0)
-        current = (start >= 0) ? start : list.size() - 1;
+      if (current >= rows.size()) {
+        current = Math.max(start, 0);
+      }
+      if (current < 0) {
+        current = (start >= 0) ? start : rows.size() - 1;
+      }
       return current;
     }
 

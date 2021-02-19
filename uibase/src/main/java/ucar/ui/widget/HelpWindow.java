@@ -15,10 +15,6 @@ import javax.swing.SwingUtilities;
 
 /**
  * Popup Help window.
- * 
- * @author jcaron
- * @version 1.0
- *
  *          Example:
  *
  *          <pre>
@@ -35,9 +31,8 @@ import javax.swing.SwingUtilities;
  *          }
  *          </pre>
  */
-
 public class HelpWindow extends IndependentDialog {
-  private String helpMessage;
+  private final String helpMessage;
   private JTextArea ta;
 
   public HelpWindow(JFrame parent, String title, String helpMessage) {
@@ -69,8 +64,11 @@ public class HelpWindow extends IndependentDialog {
     super.setVisible(true);
   }
 
-  public void show() {
-    show(this);
+  @Override
+  public void setVisible(boolean show) {
+    if (show) {
+      this.show(this);
+    }
   }
 
 }

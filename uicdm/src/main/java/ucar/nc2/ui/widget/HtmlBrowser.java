@@ -3,7 +3,7 @@
  * See LICENSE for license information.
  */
 
-package ucar.ui.widget;
+package ucar.nc2.ui.widget;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -33,6 +33,8 @@ import javax.swing.text.EditorKit;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.HTMLFrameHyperlinkEvent;
+
+import ucar.ui.widget.BAMutil;
 import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.ComboBox;
 import ucar.ui.prefs.Debug;
@@ -42,12 +44,10 @@ import ucar.ui.prefs.Debug;
  *
  * @author John Caron
  */
-
 public class HtmlBrowser extends JPanel {
   private static EditorKit kit = JEditorPane.createEditorKitForContentType("text/html");
   private PreferencesExt prefs;
   private RootPaneContainer parent;
-
   private boolean eventsOK = true;
 
   // ui

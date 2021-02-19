@@ -43,18 +43,16 @@ import javax.swing.event.EventListenerList;
  * pm.start( this, "Add Datasets", datasets.size());
  * </pre>
  *
- * @author jcaron
- *         {@link ProgressMonitorTask}
+ * {@link ProgressMonitorTask}
  */
-
 public class ProgressMonitor {
   private javax.swing.ProgressMonitor pm;
-  private ProgressMonitorTask task;
+  private final ProgressMonitorTask task;
   private javax.swing.Timer timer;
   private int secs;
 
   // event handling
-  private EventListenerList listenerList = new EventListenerList();
+  private final EventListenerList listenerList = new EventListenerList();
 
   public ProgressMonitor(ProgressMonitorTask task) {
     this(task, null);

@@ -19,7 +19,6 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import java.beans.ExceptionListener;
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
 import java.io.*;
@@ -128,7 +127,7 @@ public class XMLStore {
   public static XMLStore createFromResource(String resourceName, XMLStore storedDefaults) throws java.io.IOException {
 
     // open files if exist
-    Class c = XMLStore.class;
+    Class<?> c = XMLStore.class;
     InputStream primIS = c.getResourceAsStream(resourceName);
     InputStream objIS = c.getResourceAsStream(resourceName);
 
@@ -141,12 +140,14 @@ public class XMLStore {
     return new XMLStore(primIS, objIS, storedDefaults);
   }
 
-  private static boolean debugConvert, debugWhichStore;
-  private static boolean debugWriteNested, debugWriteBean;
+  private static final boolean debugConvert = false;
+  private static final boolean showDecoderExceptions = false;
+  private static final boolean debugWhichStore = false;
+  private static final boolean debugWriteNested = false;
+  private static final boolean debugWriteBean = false;
 
   private File prefsFile;
-  private PreferencesExt rootPrefs = new PreferencesExt(null, ""); // root node
-  private boolean showDecoderExceptions = true; // debugging
+  private final PreferencesExt rootPrefs = new PreferencesExt(null, ""); // root node
 
   public XMLStore() {}
 
@@ -201,15 +202,11 @@ public class XMLStore {
 
   private XMLDecoder openBeanDecoder(InputStream objIS) {
     // filter stream for XMLDecoder
-    XMLDecoder beanDecoder = new XMLDecoder(objIS, null, new ExceptionListener() {
-      public void exceptionThrown(Exception e) {
-        if (showDecoderExceptions)
-          System.out.println("***XMLStore.read() got Exception= " + e.getClass().getName() + " " + e.getMessage());
-        e.printStackTrace();
-      }
+    return new XMLDecoder(objIS, null, e -> {
+      if (showDecoderExceptions)
+        System.out.println("***XMLStore.read() got Exception= " + e.getClass().getName() + " " + e.getMessage());
+      e.printStackTrace();
     });
-
-    return beanDecoder;
   }
 
   private InputStream convert2XmlDecoder(InputStream is) throws IOException {
@@ -306,15 +303,17 @@ public class XMLStore {
 
   // SAX callback handler
   private class MySaxHandler extends org.xml.sax.helpers.DefaultHandler {
-    private boolean debug, debugDetail;
-    private InputStream objIS;
+    private final boolean debug = false;
+    private final boolean debugDetail = false;
+
+    private final InputStream objIS;
     private XMLDecoder beanDecoder; // handles <beanObject> - arbitrary beans
 
-    MySaxHandler(InputStream objIS) throws IOException {
+    MySaxHandler(InputStream objIS) {
       this.objIS = objIS;
     }
 
-    public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
+    public void startElement(String uri, String localName, String qName, Attributes attributes) {
       if (qName.equalsIgnoreCase("root"))
         startRoot(attributes);
       else if (qName.equalsIgnoreCase("map"))
@@ -333,7 +332,7 @@ public class XMLStore {
         System.out.println(" unprocessed startElement = " + qName);
     }
 
-    public void endElement(String uri, String localName, String qName) throws SAXException {
+    public void endElement(String uri, String localName, String qName) {
       if (qName.equalsIgnoreCase("node"))
         endNode();
       if (qName.equalsIgnoreCase("beanCollection"))
@@ -488,12 +487,10 @@ public class XMLStore {
     PrintWriter pw = new PrintWriter(new OutputStreamWriter(bos, StandardCharsets.UTF_8));
 
     XMLEncoder beanEncoder = new XMLEncoder(bos);
-    beanEncoder.setExceptionListener(new ExceptionListener() {
-      public void exceptionThrown(Exception exception) {
-        System.out.println("XMLStore.save() got Exception: abort saving the preferences!");
-        exception.printStackTrace();
-        outputExceptionMessage = exception.getMessage();
-      }
+    beanEncoder.setExceptionListener(exception -> {
+      System.out.println("XMLStore.save() got Exception: abort saving the preferences!");
+      exception.printStackTrace();
+      outputExceptionMessage = exception.getMessage();
     });
 
     pw.printf("<?xml version='1.0' encoding='UTF-8'?>%n");
@@ -605,8 +602,8 @@ public class XMLStore {
     indent.decr();
   }
 
-  private static char[] replaceChar = {'&', '<', '>', '\'', '"', '\r', '\n'};
-  private static String[] replaceWith = {"&amp;", "&lt;", "&gt;", "&apos;", "&quot;", "&#13;", "&#10;"};
+  private static final char[] replaceChar = {'&', '<', '>', '\'', '"', '\r', '\n'};
+  private static final String[] replaceWith = {"&amp;", "&lt;", "&gt;", "&apos;", "&quot;", "&#13;", "&#10;"};
 
   static String quote(String x) {
     // common case no replacement

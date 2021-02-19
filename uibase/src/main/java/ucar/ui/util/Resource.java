@@ -24,8 +24,7 @@ import javax.swing.ImageIcon;
  */
 
 public class Resource {
-
-  static Class cl = Resource.class;
+  static Class<Resource> cl = Resource.class;
   private static boolean debug, debugIcon;
 
   /**
@@ -96,11 +95,7 @@ public class Resource {
     try {
       Toolkit tk = Toolkit.getDefaultToolkit();
       if (debug) {
-        ImageObserver obs = new ImageObserver() {
-          public boolean imageUpdate(Image image, int flags, int x, int y, int width, int height) {
-            return true;
-          }
-        };
+        ImageObserver obs = (image1, flags, x, y, width, height) -> true;
         System.out.println(" bestCursorSize = " + tk.getBestCursorSize(image.getWidth(obs), image.getHeight(obs)));
         System.out.println(" getMaximumCursorColors = " + tk.getMaximumCursorColors());
       }

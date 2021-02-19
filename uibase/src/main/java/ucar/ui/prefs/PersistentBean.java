@@ -15,10 +15,10 @@ import java.util.*;
  *
  * @author John Caron
  */
-
 public class PersistentBean implements PersistenceManager {
-  private BeanMap beanMap;
-  private boolean debugBean;
+  private static final boolean debugBean = false;
+
+  private final BeanMap beanMap;
 
   public PersistentBean(Object bean) {
     beanMap = new BeanMap(bean);
@@ -80,21 +80,21 @@ public class PersistentBean implements PersistenceManager {
     putObject(key, value);
   }
 
-  public java.util.List getList(String key, java.util.List def) {
+  public java.util.List<?> getList(String key, java.util.List<?> def) {
     Object value = getObject(key);
-    return (value == null) ? def : (List) value;
+    return (value == null) ? def : (List<?>) value;
   }
 
-  public void putList(String key, java.util.List value) {
+  public void putList(String key, java.util.List<?> value) {
     putObject(key, value);
   }
 
   // one for each bean; handles nested beans
-  private class BeanMap {
-    private Object bean;
-    private PropertyMap pmap;
-    private Map<String, BeanMap> beanMaps = new HashMap<>(); // nested BeanMap
-    private Object[] args = new Object[1];
+  private static class BeanMap {
+    private final Object bean;
+    private final PropertyMap pmap;
+    private final Map<String, BeanMap> beanMaps = new HashMap<>(); // nested BeanMap
+    private final Object[] args = new Object[1];
 
     BeanMap(Object bean) {
       this.bean = bean;
@@ -136,7 +136,7 @@ public class PersistentBean implements PersistenceManager {
     }
 
     private Object createObject(PropertyDescriptor prop) {
-      Class propClass = prop.getPropertyType();
+      Class<?> propClass = prop.getPropertyType();
       try {
         return propClass.newInstance();
       } catch (Exception ee) {
@@ -208,9 +208,9 @@ public class PersistentBean implements PersistenceManager {
 
   // helper class
   private static class ProxyProp {
-    private PropertyDescriptor prop;
-    private BeanMap nested;
-    private String childrenName;
+    private final PropertyDescriptor prop;
+    private final BeanMap nested;
+    private final String childrenName;
 
     ProxyProp(PropertyDescriptor prop, BeanMap nested, String childrenName) {
       this.prop = prop;
@@ -221,10 +221,11 @@ public class PersistentBean implements PersistenceManager {
 
   // one for each class
   private static class PropertyMap {
-    private static boolean debugBeanParser, debugBeanParserDetail;
-    private static Map<Class, PropertyMap> parsers = new HashMap<>();
+    private static final boolean debugBeanParser = false;
+    private static final boolean debugBeanParserDetail = false;
+    private static final Map<Class<?>, PropertyMap> parsers = new HashMap<>();
 
-    static PropertyMap getParser(Class beanClass) {
+    static PropertyMap getParser(Class<?> beanClass) {
       PropertyMap parser;
       if (null == (parser = parsers.get(beanClass))) {
         parser = new PropertyMap(beanClass);
@@ -233,9 +234,9 @@ public class PersistentBean implements PersistenceManager {
       return parser;
     }
 
-    private Map<String, PropertyDescriptor> properties = new LinkedHashMap<>();
+    private final Map<String, PropertyDescriptor> properties = new LinkedHashMap<>();
 
-    PropertyMap(Class beanClass) {
+    PropertyMap(Class<?> beanClass) {
       // get bean info
       BeanInfo info;
       try {
@@ -251,7 +252,7 @@ public class PersistentBean implements PersistenceManager {
       // properties must have read method
       PropertyDescriptor[] pds = info.getPropertyDescriptors();
       for (PropertyDescriptor prop : pds) {
-        Class propClass = prop.getPropertyType();
+        Class<?> propClass = prop.getPropertyType();
 
         if ((prop.getReadMethod() != null)) { // && (prop.getWriteMethod() != null)) {
           properties.put(prop.getName(), prop);
@@ -275,7 +276,7 @@ public class PersistentBean implements PersistenceManager {
         System.out.println(" Properties:");
         for (PropertyDescriptor pd : pds) {
           String name = pd.getName();
-          Class type = pd.getPropertyType();
+          Class<?> type = pd.getPropertyType();
           Method rm = pd.getReadMethod();
           Method wm = pd.getWriteMethod();
           System.out

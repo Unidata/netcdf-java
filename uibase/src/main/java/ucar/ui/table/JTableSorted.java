@@ -25,6 +25,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * JTableSorted adds sorting functionality to a JTable.
@@ -35,28 +36,26 @@ import java.util.Iterator;
  */
 
 public class JTableSorted extends JPanel {
+  private static final boolean debug = false;
+
   // for HeaderRenderer
-  private static Icon sortDownIcon = BAMutil.getIcon("SortDown", true);
-  private static Icon sortUpIcon = BAMutil.getIcon("SortUp", true);
-  private static Icon threadSortIcon = BAMutil.getIcon("ThreadSorted", true);
-  private static Icon threadUnSortIcon = BAMutil.getIcon("ThreadUnsorted", true);
+  static final Icon sortDownIcon = BAMutil.getIcon("SortDown", true);
+  static final Icon sortUpIcon = BAMutil.getIcon("SortUp", true);
+  static final Icon threadSortIcon = BAMutil.getIcon("ThreadSorted", true);
+  static final Icon threadUnSortIcon = BAMutil.getIcon("ThreadUnsorted", true);
 
-  private ArrayList list;
+  private List<TableRow> rows;
   private String[] colName;
-  private String objectName;
 
-  private JTable jtable;
-  private JScrollPane scrollPane;
-  private TableRowModel model;
-  private PopupMenu popupMenu;
-  private PopupAction[] acts;
+  private final JTable jtable;
+  private final JScrollPane scrollPane;
+  private final TableRowModel model;
 
-  private boolean debug;
   private boolean sortOK = true;
-  private ThreadSorter threadSorter;
+  private final  ThreadSorter threadSorter;
   private int threadCol = -1;
 
-  private ListenerManager lm;
+  private final ListenerManager lm;
 
   /**
    * Constructor.
@@ -65,7 +64,7 @@ public class JTableSorted extends JPanel {
    * @param listRT list of rows. This must contain objects that implement
    *        the TableRow interface. May be null or empty.
    */
-  public JTableSorted(String[] colName, ArrayList listRT) {
+  public JTableSorted(String[] colName, List<TableRow> listRT) {
     this(colName, listRT, false, null);
   }
 
@@ -79,10 +78,10 @@ public class JTableSorted extends JPanel {
    * @param threadSorter if not null, add a "thread sorting" column
    * 
    */
-  public JTableSorted(String[] columnName, ArrayList listRT, boolean enableColumnManipulation,
+  public JTableSorted(String[] columnName, List<TableRow> listRT, boolean enableColumnManipulation,
       ThreadSorter threadSorter) {
     this.colName = columnName;
-    this.list = (listRT == null) ? new ArrayList() : listRT;
+    this.rows = (listRT == null) ? new ArrayList<>() : listRT;
     this.threadSorter = threadSorter;
 
     // create the ui
@@ -127,9 +126,9 @@ public class JTableSorted extends JPanel {
 
     if (enableColumnManipulation) {
       // popupMenu
-      popupMenu = new PopupMenu(jtable.getTableHeader(), "Visible");
+      PopupMenu popupMenu = new PopupMenu(jtable.getTableHeader(), "Visible");
       int ncols = colName.length;
-      acts = new PopupAction[ncols];
+      PopupAction[] acts = new PopupAction[ncols];
       for (int i = 0; i < ncols; i++) {
         acts[i] = new PopupAction(colName[i]);
         popupMenu.addActionCheckBox(this.colName[i], acts[i], true);
@@ -150,7 +149,7 @@ public class JTableSorted extends JPanel {
         int selidx = jtable.getSelectedRow();
         Object selected = null;
         if (selidx >= 0)
-          selected = list.get(selidx);
+          selected = rows.get(selidx);
 
         // notify listsners of impending sort
         if (lm.hasListeners())
@@ -161,7 +160,7 @@ public class JTableSorted extends JPanel {
 
         /* keep current selection selected */
         if (selidx >= 0) {
-          int newSelectedRow = list.indexOf(selected);
+          int newSelectedRow = rows.indexOf(selected);
           jtable.setRowSelectionInterval(newSelectedRow, newSelectedRow);
           ensureRowIsVisible(newSelectedRow);
         }
@@ -278,9 +277,9 @@ public class JTableSorted extends JPanel {
    * 
    * @param rowList list of rows
    */
-  public void setList(ArrayList rowList) {
-    this.list = rowList;
-    if (!list.isEmpty())
+  public void setRows(ArrayList<TableRow> rowList) {
+    this.rows = rowList;
+    if (!rows.isEmpty())
       jtable.setRowSelectionInterval(0, 0);
     else
       jtable.clearSelection();
@@ -296,9 +295,9 @@ public class JTableSorted extends JPanel {
    * @param elem which element
    */
   public void removeRow(Object elem) {
-    Iterator iter = list.iterator();
+    Iterator<TableRow> iter = rows.iterator();
     while (iter.hasNext()) {
-      Object row = iter.next();
+      TableRow row = iter.next();
       if (row == elem) {
         iter.remove();
         break;
@@ -342,11 +341,11 @@ public class JTableSorted extends JPanel {
    * @return selected TableRow
    */
   public TableRow getSelected() {
-    if (list.isEmpty())
+    if (rows.isEmpty())
       return null;
     int sel = jtable.getSelectedRow();
     if (sel >= 0)
-      return (TableRow) list.get(sel);
+      return rows.get(sel);
     else
       return null;
   }
@@ -357,7 +356,7 @@ public class JTableSorted extends JPanel {
    * @param row index into rowList
    */
   public void setSelected(int row) {
-    if ((row < 0) || (row >= list.size()))
+    if ((row < 0) || (row >= rows.size()))
       return;
     if (debug)
       System.out.println("JTableSorted setSelected " + row);
@@ -371,10 +370,10 @@ public class JTableSorted extends JPanel {
    * @param increment true=increment, false=decrement
    */
   public void incrSelected(boolean increment) {
-    if (list.isEmpty())
+    if (rows.isEmpty())
       return;
     int curr = jtable.getSelectedRow();
-    if (increment && (curr < list.size() - 1))
+    if (increment && (curr < rows.size() - 1))
       setSelected(curr + 1);
     else if (!increment && (curr > 0))
       setSelected(curr - 1);
@@ -394,19 +393,15 @@ public class JTableSorted extends JPanel {
       TableColumn tc = tcm.getColumn(i);
       modelIndex[i] = tc.getModelIndex();
     }
-
     return modelIndex;
   }
-
 
   /////////////////////////////////////////////////////////////////////////////////
   private void ensureRowIsVisible(int nRow) {
     Rectangle visibleRect = jtable.getCellRect(nRow, 0, true);
-    if (visibleRect != null) {
-      visibleRect.x = scrollPane.getViewport().getViewPosition().x;
-      jtable.scrollRectToVisible(visibleRect);
-      jtable.repaint();
-    }
+    visibleRect.x = scrollPane.getViewport().getViewPosition().x;
+    jtable.scrollRectToVisible(visibleRect);
+    jtable.repaint();
   }
 
   private void setColumnWidths(int[] sizes) {
@@ -429,7 +424,7 @@ public class JTableSorted extends JPanel {
   }
 
   private class PopupAction extends AbstractAction {
-    private String id;
+    private final String id;
     private TableColumn tc;
 
     PopupAction(String id) {
@@ -462,7 +457,7 @@ public class JTableSorted extends JPanel {
 
     // AbstractTableModel methods
     public int getRowCount() {
-      return list.size();
+      return rows.size();
     }
 
     public int getColumnCount() {
@@ -474,7 +469,7 @@ public class JTableSorted extends JPanel {
     }
 
     public Object getValueAt(int row, int col) {
-      TableRow selectedRow = (TableRow) list.get(row);
+      TableRow selectedRow = rows.get(row);
 
       if (col == threadCol) {
         if (null == threadSorter)
@@ -502,9 +497,9 @@ public class JTableSorted extends JPanel {
     void sort(int sortCol, boolean reverse) {
       this.reverse = reverse;
       if ((sortCol == threadCol) && (threadSorter != null)) {
-        list = threadSorter.sort(sortCol, reverse, list);
+        rows = threadSorter.sort(sortCol, reverse, rows);
       } else if (sortCol >= 0) {
-        list.sort(new SortList(sortCol, reverse));
+        rows.sort(new SortList(sortCol, reverse));
       }
       JTableSorted.this.setSortCol(sortCol, reverse);
       this.sortCol = sortCol; // keep track of last sort
@@ -514,8 +509,7 @@ public class JTableSorted extends JPanel {
     public int getPreferredWidthForColumn(TableColumn col) {
       int hw = columnHeaderWidth(col); // hw = header width
       int cw = widestCellInColumn(col); // cw = column width
-
-      return hw > cw ? hw : cw;
+      return Math.max(hw, cw);
     }
 
     private int columnHeaderWidth(TableColumn col) {
@@ -534,24 +528,22 @@ public class JTableSorted extends JPanel {
         TableCellRenderer renderer = jtable.getCellRenderer(r, c);
         Component comp = renderer.getTableCellRendererComponent(jtable, getValueAt(r, c), false, false, r, c);
         width = comp.getPreferredSize().width;
-        maxw = width > maxw ? width : maxw;
+        maxw = Math.max(width, maxw);
       }
       return maxw;
     }
   }
 
-  private static class SortList implements Comparator, Serializable {
-    private int col;
-    private boolean reverse;
+  private static class SortList implements Comparator<TableRow>, Serializable {
+    private final int col;
+    private final boolean reverse;
 
     SortList(int col, boolean reverse) {
       this.col = col;
       this.reverse = reverse;
     }
 
-    public int compare(Object o1, Object o2) {
-      TableRow row1 = (TableRow) o1;
-      TableRow row2 = (TableRow) o2;
+    public int compare(TableRow row1, TableRow row2) {
       return reverse ? row2.compare(row1, col) : row1.compare(row2, col);
     }
   }
@@ -577,12 +569,10 @@ public class JTableSorted extends JPanel {
 
   // add tooltips
   private static class MyJTable extends javax.swing.JTable {
-
     public Point getToolTipLocation(MouseEvent e) {
       return e.getPoint();
     }
   }
-
 
   private static class SortedHeaderRenderer implements TableCellRenderer {
     int modelCol;
@@ -635,7 +625,7 @@ public class JTableSorted extends JPanel {
 
   }
 
-  private class ThreadHeaderRenderer extends SortedHeaderRenderer {
+  private static class ThreadHeaderRenderer extends SortedHeaderRenderer {
     JPanel sort, unsort;
 
     ThreadHeaderRenderer(int modelCol) {

@@ -20,8 +20,8 @@ import ucar.ui.util.ListenerManager;
 public abstract class ActionSourceListener implements ActionValueListener {
   public static final String SELECTED = "selected";
 
-  private ListenerManager lm;
-  private String eventType;
+  private final ListenerManager lm;
+  private final String eventType;
 
   public ActionSourceListener(String eventType) {
     this.eventType = eventType;

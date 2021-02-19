@@ -24,9 +24,9 @@ public interface PersistenceManager {
 
   void putInt(String key, int value);
 
-  java.util.List getList(String key, java.util.List def);
+  java.util.List<?> getList(String key, java.util.List<?> def);
 
-  void putList(String key, java.util.List value);
+  void putList(String key, java.util.List<?> value);
 
   Object getObject(String key);
 

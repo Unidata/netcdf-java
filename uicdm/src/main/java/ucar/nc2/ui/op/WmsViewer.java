@@ -55,7 +55,7 @@ public class WmsViewer extends JPanel {
 
   private JPanel imagePanel;
   private SuperComboBox crsChooser, formatChooser, styleChooser, timeChooser, levelChooser;
-  private BeanTable ftTable;
+  private BeanTable<LayerBean> ftTable;
 
   private JSplitPane split;
   private Formatter info = new Formatter();
@@ -111,7 +111,7 @@ public class WmsViewer extends JPanel {
 
     imagePanel = new JPanel();
 
-    ftTable = new BeanTable(LayerBean.class, (PreferencesExt) prefs.node("LayerBeans"), false);
+    ftTable = new BeanTable<LayerBean>(LayerBean.class, (PreferencesExt) prefs.node("LayerBeans"), false);
     ftTable.addListSelectionListener(e -> {
       LayerBean ftb = (LayerBean) ftTable.getSelectedBean();
       styleChooser.setCollection(ftb.styles.iterator());

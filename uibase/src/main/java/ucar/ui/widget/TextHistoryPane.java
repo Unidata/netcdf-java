@@ -15,7 +15,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.print.PageFormat;
 import java.awt.print.Printable;
-import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -45,12 +44,13 @@ import javax.swing.JTextField;
  * @author John Caron
  */
 public class TextHistoryPane extends JPanel {
-  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TextHistoryPane.class);
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TextHistoryPane.class);
 
   protected JTextArea ta;
-  private FontUtil.StandardFont fontu;
-  private int nlines, removeIncr, count;
-  private int ptSize;
+  private final FontUtil.StandardFont fontu;
+  private int nlines;
+  private final int removeIncr;
+  private int count;
 
   protected FileManager fileChooser;
 
@@ -158,10 +158,9 @@ public class TextHistoryPane extends JPanel {
    */
 
   private class MyPopupMenu extends ucar.ui.widget.PopupMenu.PopupTriggerListener implements Printable {
-    private JPopupMenu popup = new JPopupMenu("Options");
-    private JTextField nlinesFld = new JTextField();
-    private JTextField ptSizeFld = new JTextField();
-    private AbstractAction incrFontAction, decrFontAction;
+    private final JPopupMenu popup = new JPopupMenu("Options");
+    private final JTextField nlinesFld = new JTextField();
+    private final JTextField ptSizeFld = new JTextField();
 
     private StringTokenizer token;
     private Font newFont;
@@ -175,7 +174,7 @@ public class TextHistoryPane extends JPanel {
       nlPan.add(nlinesFld);
       popup.add(nlPan);
 
-      incrFontAction = new AbstractAction() {
+      AbstractAction incrFontAction = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
           fontu.incrFontSize();
           ta.setFont(fontu.getFont());
@@ -184,7 +183,7 @@ public class TextHistoryPane extends JPanel {
       BAMutil.setActionProperties(incrFontAction, "FontIncr", "Increase Font Size", false, '+', -1);
       BAMutil.addActionToPopupMenu(popup, incrFontAction);
 
-      decrFontAction = new AbstractAction() {
+      AbstractAction decrFontAction = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
           fontu.decrFontSize();
           ta.setFont(fontu.getFont());
@@ -279,11 +278,12 @@ public class TextHistoryPane extends JPanel {
 
     public void showPopup(MouseEvent e) {
       nlinesFld.setText("" + (TextHistoryPane.this.nlines + 1));
+      int ptSize = 0;
       ptSizeFld.setText("" + ptSize);
       popup.show(ta, e.getX(), e.getY());
     }
 
-    public int print(Graphics g, PageFormat pf, int pi) throws PrinterException {
+    public int print(Graphics g, PageFormat pf, int pi) {
       if (pi == 0)
         token = new StringTokenizer(ta.getText(), "\r\n");
 

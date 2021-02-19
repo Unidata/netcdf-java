@@ -8,9 +8,10 @@ import java.awt.event.MouseEvent;
 import java.io.Serializable;
 
 public class MyMouseAdapter extends java.awt.event.MouseAdapter implements Serializable {
+  private static final boolean debugEvent = false;
+
   private int startx, starty;
   private int minMove = 4;
-  private boolean debugEvent;
 
   public void mousePressed(MouseEvent e) {
     startx = e.getX();

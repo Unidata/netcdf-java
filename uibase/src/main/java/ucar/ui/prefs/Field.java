@@ -11,7 +11,6 @@ import javax.swing.*;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.NumberFormatter;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
@@ -21,8 +20,6 @@ import java.text.Format;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.prefs.PreferenceChangeEvent;
-import java.util.prefs.PreferenceChangeListener;
 
 /**
  * Data input fields, with an optional backing store.
@@ -89,13 +86,11 @@ public abstract class Field {
 
     // listen for changes to this value
     if (storeData != null) {
-      storeData.addPreferenceChangeListener(new PreferenceChangeListener() {
-        public void preferenceChange(PreferenceChangeEvent evt) {
-          if (evt.getKey().equals(getName())) {
-            // the value in the store has change: update the edit component
-            // send event if its different from previous
-            setNewValueFromStore();
-          }
+      storeData.addPreferenceChangeListener(evt -> {
+        if (evt.getKey().equals(getName())) {
+          // the value in the store has change: update the edit component
+          // send event if its different from previous
+          setNewValueFromStore();
         }
       });
     }
@@ -213,7 +208,7 @@ public abstract class Field {
     setEditValue(newValue);
   }
 
-  private List<FieldValidator> validators = new ArrayList<>();
+  private final List<FieldValidator> validators = new ArrayList<>();
 
   /**
    * Add a validator to this field.
@@ -353,7 +348,7 @@ public abstract class Field {
   }
 
   private class ActionWrapper extends AbstractAction {
-    private AbstractAction orgAct;
+    private final AbstractAction orgAct;
 
     ActionWrapper(String name, AbstractAction act) {
       this.orgAct = act;
@@ -557,7 +552,7 @@ public abstract class Field {
    * Use get/set Double to deal as a double.
    */
   public static class Double extends Field {
-    private JTextField tf;
+    private final JTextField tf;
     private int nfracDig = 3;
 
     /**
@@ -591,7 +586,7 @@ public abstract class Field {
       if (editValue.isEmpty())
         return true; // empty ok
       try {
-        new java.lang.Double(editValue);
+        java.lang.Double.valueOf(editValue);
       } catch (NumberFormatException e) {
         if (buff != null)
           buff.append(label).append(" has invalid format: must be floating point number\n");
@@ -611,7 +606,7 @@ public abstract class Field {
       if (editValue.isEmpty())
         return null; // empty ok
       try {
-        return new java.lang.Double(editValue);
+        return java.lang.Double.valueOf(editValue);
       } catch (NumberFormatException e) {
         return null;
       }
@@ -710,7 +705,7 @@ public abstract class Field {
       if (editValue.isEmpty())
         return null; // empty ok
       try {
-        return new java.lang.Integer(tf.getText());
+        return java.lang.Integer.valueOf(tf.getText());
       } catch (NumberFormatException e) {
         return null;
       }
@@ -1128,7 +1123,7 @@ public abstract class Field {
    * A boolean input box using a checkbox.
    */
   public static class CheckBox extends Field {
-    private JCheckBox checkbox;
+    private final JCheckBox checkbox;
 
     /**
      * Constructor.
@@ -1210,7 +1205,7 @@ public abstract class Field {
    * @see ComboBox
    */
   public static class TextCombo extends Field {
-    protected ComboBox combo;
+    protected final ComboBox<Object> combo;
 
     /**
      * Constructor.
@@ -1223,11 +1218,11 @@ public abstract class Field {
      * @param storeData store/fetch data from here, may be null.
      * @see PrefPanel#addTextComboField
      */
-    public TextCombo(String fldName, String label, java.util.Collection defValues, int n,
+    public TextCombo(String fldName, String label, java.util.Collection<Object> defValues, int n,
         PersistenceManager storeData) {
       super(fldName, label, storeData);
 
-      combo = new ComboBox(storeData, n); // == null ? null : (PersistenceManager) storeData.node(name+"_ComboBox"));
+      combo = new ComboBox<>(storeData, n); // == null ? null : (PersistenceManager) storeData.node(name+"_ComboBox"));
       java.util.List<Object> prevChoices = combo.getItemList();
 
       // add defaults : only added if not already present
@@ -1304,7 +1299,7 @@ public abstract class Field {
     /** Return the current selected value as a String */
     public String getText() {
       Object current = combo.getSelectedItem();
-      return current.toString();
+      return current != null ? current.toString() : "N/A";
     }
 
     /** Set current selected value of text; send event. */
@@ -1337,7 +1332,7 @@ public abstract class Field {
    * The actual stored object type is an object that should be equal to one of the choices.
    */
   public static class EnumCombo extends Field {
-    protected ComboBox combo;
+    protected final ComboBox<Object> combo;
 
     /**
      * Constructor.
@@ -1351,15 +1346,13 @@ public abstract class Field {
     public EnumCombo(String fldName, String label, java.util.Collection<Object> choices, PersistenceManager storeData) {
       super(fldName, label, storeData);
 
-      combo = new ComboBox(null, 0);
+      combo = new ComboBox<>(null, 0);
       combo.setItemList(choices);
       setEditValue(getStoreValue(null));
       finish();
 
-      combo.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          validate(null); // transfer to valid, send event
-        }
+      combo.addActionListener(e -> {
+        validate(null); // transfer to valid, send event
       });
     }
 
@@ -1380,8 +1373,9 @@ public abstract class Field {
     /** Get current value from editComponent */
     protected Object getEditValue() {
       Object item = combo.getSelectedItem();
-      if (item.equals(""))
+      if (item == null || item.equals("")) {
         return null;
+      }
       return item;
     }
 
@@ -1435,7 +1429,7 @@ public abstract class Field {
    * The actual stored object type is an ArrayList of Objects.
    */
   public static class BeanTableField extends Field {
-    protected BeanTable table;
+    protected BeanTable<?> table;
 
     /**
      * Constructor.
@@ -1447,10 +1441,10 @@ public abstract class Field {
      * @param storeData store/fetch data from here, may be null.
      * @see PrefPanel#addTextComboField
      */
-    public BeanTableField(String fldName, String label, java.util.ArrayList defBeans, Class beanClass,
+    public BeanTableField(String fldName, String label, java.util.ArrayList<?> defBeans, Class<?> beanClass,
         PreferencesExt prefs, PersistenceManager storeData) {
       super(fldName, label, storeData);
-      table = new BeanTable(beanClass, prefs, true);
+      table = new BeanTable<>(beanClass, prefs, true);
       if (storeData != null)
         setEditValue(getStoreValue(defBeans));
 
@@ -1480,7 +1474,7 @@ public abstract class Field {
     protected void setEditValue(Object value) {
       if (value == null)
         return;
-      table.setBeans((java.util.List<Object>) value);
+      table.setBeans((java.util.List) value);
     }
 
     /**

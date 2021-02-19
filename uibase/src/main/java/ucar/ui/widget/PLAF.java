@@ -4,6 +4,9 @@
  */
 package ucar.ui.widget;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.awt.event.ActionEvent;
 import java.lang.invoke.MethodHandles;
 import javax.swing.AbstractAction;
@@ -21,13 +24,10 @@ import javax.swing.UIManager;
  *
  * @author John Caron
  */
-
 public class PLAF {
-  private static final org.slf4j.Logger logger =
-      org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  private JComponent jc;
-  private boolean debug;
+  private final JComponent jc;
 
   /*
    * Constructor.
@@ -68,7 +68,7 @@ public class PLAF {
     logger.debug("PLAF LookAndFeelInfo  {}", className);
     boolean isSupported = true;
     try {
-      Class cl = Class.forName(className);
+      Class<?> cl = Class.forName(className);
       LookAndFeel lf = (LookAndFeel) cl.newInstance();
       if (!lf.isSupportedLookAndFeel()) {
         isSupported = false;

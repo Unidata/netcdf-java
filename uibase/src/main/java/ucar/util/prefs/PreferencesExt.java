@@ -40,8 +40,9 @@ public class PreferencesExt extends java.util.prefs.AbstractPreferences implemen
     systemRoot = prefs;
   }
 
-  private PreferencesExt parent;
-  private HashMap keyValues, children;
+  private final PreferencesExt parent;
+  private final HashMap<String, Object> keyValues;
+  private final HashMap<String, PreferencesExt> children;
   private PreferencesExt storedDefaults;
 
   /**
@@ -53,8 +54,8 @@ public class PreferencesExt extends java.util.prefs.AbstractPreferences implemen
     super(parent, name);
     this.parent = parent;
 
-    keyValues = new HashMap(20);
-    children = new HashMap(10);
+    keyValues = new HashMap<>(20);
+    children = new HashMap<>(10);
   }
 
   void setStoredDefaults(PreferencesExt storedDefaults) {
@@ -142,11 +143,12 @@ public class PreferencesExt extends java.util.prefs.AbstractPreferences implemen
    * @throws IllegalStateException if this node (or an ancestor) has been
    *         removed with the {@link #removeNode()} method.
    */
-  public void putBeanCollection(String key, Collection newValue) {
+  public void putBeanCollection(String key, Collection<?> newValue) {
     // if matches a stored Default, dont store
     Object oldValue = getBean(key, null);
-    if ((oldValue == null) || !oldValue.equals(newValue))
+    if ((oldValue == null) || !oldValue.equals(newValue)) {
       keyValues.put(key, new Bean.Collection(newValue));
+    }
   }
 
 
@@ -181,10 +183,10 @@ public class PreferencesExt extends java.util.prefs.AbstractPreferences implemen
    * @return the value associated with <tt>key</tt>, or <tt>def</tt>
    *         if no value is associated with <tt>key</tt>.
    */
-  public List getList(String key, List def) {
+  public List<Object> getList(String key, List def) {
     try {
       Object bean = getBean(key, def);
-      return (List) bean;
+      return (List<Object>) bean;
     } catch (Exception e) {
       e.printStackTrace();
       return null;
@@ -199,7 +201,7 @@ public class PreferencesExt extends java.util.prefs.AbstractPreferences implemen
    * @param key key with which the specified value is to be associated.
    * @param newValue value to be associated with the specified key.
    */
-  public void putList(String key, List newValue) {
+  public void putList(String key, List<?> newValue) {
     putBeanObject(key, newValue);
   }
 
@@ -210,31 +212,29 @@ public class PreferencesExt extends java.util.prefs.AbstractPreferences implemen
    * storedDefaults)
    */
   protected String[] childrenNamesSpi() {
-    HashSet allKids = new HashSet(children.keySet());
+    HashSet<String> allKids = new HashSet<>(children.keySet());
     PreferencesExt sd = getStoredDefaults();
     if (sd != null)
       allKids.addAll(sd.childrenNamesSpi(absolutePath()));
 
-    ArrayList list = new ArrayList(allKids);
+    ArrayList<String> list = new ArrayList<>(allKids);
     Collections.sort(list);
     String[] result = new String[list.size()];
     for (int i = 0; i < list.size(); i++)
-      result[i] = list.get(i).toString();
+      result[i] = list.get(i);
     return result;
   }
 
-  /*
-   * Find all children nodes of named node (or of identically named nodes in
-   * storedDefaults)
-   */
-  protected Collection childrenNamesSpi(String nodePath) {
-    HashSet allKids = new HashSet();
+  // Find all children nodes of named node (or of identically named nodes in storedDefaults)
+  protected Collection<String> childrenNamesSpi(String nodePath) {
+    HashSet<String> allKids = new HashSet<>();
     try {
       if (nodeExists(nodePath)) {
         PreferencesExt node = (PreferencesExt) node(nodePath);
         allKids.addAll(node.children.keySet());
       }
     } catch (java.util.prefs.BackingStoreException e) {
+      // fall through
     }
 
     PreferencesExt sd = getStoredDefaults();
@@ -243,14 +243,14 @@ public class PreferencesExt extends java.util.prefs.AbstractPreferences implemen
     return allKids;
   }
 
-  String[] keysNoDefaults() throws BackingStoreException {
-    HashSet allKeys = new HashSet(keyValues.keySet());
+  String[] keysNoDefaults() {
+    HashSet<String> allKeys = new HashSet<>(keyValues.keySet());
 
-    ArrayList list = new ArrayList(allKeys);
+    ArrayList<String> list = new ArrayList<>(allKeys);
     Collections.sort(list);
     String[] result = new String[list.size()];
     for (int i = 0; i < list.size(); i++)
-      result[i] = list.get(i).toString();
+      result[i] = list.get(i);
     return result;
   }
 
@@ -264,8 +264,8 @@ public class PreferencesExt extends java.util.prefs.AbstractPreferences implemen
    * 
    * This method is invoked with the lock on this node held.
    */
-  protected String[] keysSpi() throws BackingStoreException {
-    HashSet allKeys = new HashSet(keyValues.keySet());
+  protected String[] keysSpi() {
+    HashSet<String> allKeys = new HashSet<>(keyValues.keySet());
     // show( "allKeys1 ", allKeys);
 
     PreferencesExt sd = getStoredDefaults();
@@ -273,13 +273,13 @@ public class PreferencesExt extends java.util.prefs.AbstractPreferences implemen
       allKeys.addAll(sd.keysSpi(absolutePath()));
     // show( "allKeys2 ", allKeys);
 
-    ArrayList list = new ArrayList(allKeys);
+    ArrayList<String> list = new ArrayList<>(allKeys);
     Collections.sort(list);
     // show( "allKeys3 ", list);
 
     String[] result = new String[list.size()];
     for (int i = 0; i < list.size(); i++)
-      result[i] = list.get(i).toString();
+      result[i] = list.get(i);
     return result;
   }
 
@@ -288,7 +288,7 @@ public class PreferencesExt extends java.util.prefs.AbstractPreferences implemen
    * storedDefaults)
    */
   protected Collection keysSpi(String nodePath) {
-    HashSet allKeys = new HashSet();
+    HashSet<String> allKeys = new HashSet<>();
     try {
       if (nodeExists(nodePath)) {
         PreferencesExt node = (PreferencesExt) node(nodePath);
@@ -296,6 +296,7 @@ public class PreferencesExt extends java.util.prefs.AbstractPreferences implemen
         allKeys.addAll(node.keyValues.keySet());
       }
     } catch (java.util.prefs.BackingStoreException e) {
+      // Fall through
     }
 
     PreferencesExt sd = getStoredDefaults();
@@ -317,18 +318,6 @@ public class PreferencesExt extends java.util.prefs.AbstractPreferences implemen
     for (String kidName : kidNames) {
       ((PreferencesExt) node(kidName)).dump();
     }
-  }
-
-  void show(String what, Collection c) {
-    try {
-      System.out.println("---" + what + ":");
-      for (Object o : c) {
-        System.out.println("  " + o + " " + o.getClass().getName());
-      }
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-    System.out.println("***");
   }
 
   /*
@@ -358,7 +347,7 @@ public class PreferencesExt extends java.util.prefs.AbstractPreferences implemen
   protected AbstractPreferences childSpi(String name) {
     PreferencesExt child;
 
-    if (null != (child = (PreferencesExt) children.get(name)))
+    if (null != (child = children.get(name)))
       return child;
 
     child = new PreferencesExt(this, name);
@@ -370,7 +359,7 @@ public class PreferencesExt extends java.util.prefs.AbstractPreferences implemen
   /**
    * Empty, never used implementation of AbstractPreferences.flushSpi().
    */
-  protected void flushSpi() throws BackingStoreException {
+  protected void flushSpi() {
     // assert false;
   }
 
@@ -425,7 +414,7 @@ public class PreferencesExt extends java.util.prefs.AbstractPreferences implemen
    * The removal of a node needn't become persistent until the flush method is
    * invoked on this node (or an ancestor).
    */
-  protected void removeNodeSpi() throws BackingStoreException {
+  protected void removeNodeSpi() {
     if (parent != null) {
       if (null == parent.children.remove(name()))
         System.out.println("ERROR PreferencesExt.removeNodeSpi :" + name());
@@ -457,7 +446,7 @@ public class PreferencesExt extends java.util.prefs.AbstractPreferences implemen
    * If this node throws a BackingStoreException, the exception will propagate
    * out beyond the enclosing sync() invocation.
    */
-  protected void syncSpi() throws BackingStoreException {
+  protected void syncSpi() {
     // assert false;
   }
 
@@ -513,6 +502,7 @@ public class PreferencesExt extends java.util.prefs.AbstractPreferences implemen
         }
       }
     } catch (java.util.prefs.BackingStoreException e) {
+      // Fall through
     }
 
     // if failed, check the stored Defaults

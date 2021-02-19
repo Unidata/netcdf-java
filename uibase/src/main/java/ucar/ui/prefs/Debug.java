@@ -149,12 +149,6 @@ public class Debug {
       prefs.clear();
   }
 
-  /*
-   * static public void clear() {
-   * map = new TreeMap();
-   * }
-   */
-
   /**
    * Construct cascading pull-aside menus using the values of the debug flags
    * in the Preferences object.

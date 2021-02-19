@@ -7,6 +7,7 @@ package thredds.ui.catalog;
 
 import thredds.client.catalog.*;
 import thredds.client.catalog.tools.DatasetHtmlWriter;
+import ucar.nc2.ui.widget.HtmlBrowser;
 import ucar.nc2.ui.widget.TextGetPutPane;
 import ucar.ui.widget.*;
 import ucar.util.prefs.PreferencesExt;

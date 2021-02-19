@@ -31,7 +31,7 @@ public abstract class AbstractPanel extends JPanel {
       org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   protected PreferencesExt prefs;
-  protected ComboBox cb;
+  protected ComboBox<Object> cb;
   protected JPanel buttPanel;
   protected JPanel topPanel;
   protected AbstractButton coordButt;
@@ -60,7 +60,7 @@ public abstract class AbstractPanel extends JPanel {
     this.prefs = prefs;
     buttPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
 
-    cb = new ComboBox(prefs);
+    cb = new ComboBox<>(prefs);
     cb.addActionListener(e -> {
       logger.debug(" doit {} cmd={} when={} class={}", cb.getSelectedItem(), e.getActionCommand(), e.getWhen(),
           getClass().getName());

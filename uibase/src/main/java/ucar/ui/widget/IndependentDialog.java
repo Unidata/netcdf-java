@@ -6,7 +6,6 @@ package ucar.ui.widget;
 
 import ucar.ui.util.ScreenUtils;
 import java.awt.*;
-import java.beans.*;
 import javax.swing.*;
 
 /**
@@ -44,11 +43,9 @@ public class IndependentDialog extends JDialog {
       setTitle(title);
 
     // L&F may change
-    UIManager.addPropertyChangeListener(new PropertyChangeListener() {
-      public void propertyChange(PropertyChangeEvent e) {
-        if (e.getPropertyName().equals("lookAndFeel"))
-          SwingUtilities.updateComponentTreeUI(IndependentDialog.this);
-      }
+    UIManager.addPropertyChangeListener(e -> {
+      if (e.getPropertyName().equals("lookAndFeel"))
+        SwingUtilities.updateComponentTreeUI(IndependentDialog.this);
     });
 
     // set position based on owned

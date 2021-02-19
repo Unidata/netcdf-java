@@ -12,7 +12,10 @@ import ucar.ui.table.HidableTableColumnModel;
 import ucar.ui.table.TableAligner;
 import ucar.ui.table.TableAppearanceAction;
 import ucar.ui.table.UndoableRowSorter;
+import ucar.ui.widget.IndependentWindow;
 import ucar.ui.widget.MultilineTooltip;
+import ucar.ui.widget.PopupMenu;
+import ucar.ui.widget.TextHistoryPane;
 import ucar.util.prefs.PreferencesExt;
 import javax.swing.*;
 import javax.swing.event.EventListenerList;
@@ -24,6 +27,7 @@ import java.beans.*;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * A JTable that uses JavaBeans to store the data.
@@ -269,6 +273,27 @@ public class BeanTable<T> extends JPanel {
       ((javax.swing.event.ListSelectionListener) listeners[i + 1]).valueChanged(event);
   }
 
+  private ucar.ui.widget.PopupMenu varPopup;
+  public void addPopupOption(String title, Action act) {
+    if (this.varPopup == null) {
+      this.varPopup = new PopupMenu(this.getJTable(), "Options");
+    }
+    this.varPopup.addAction(title, act);
+  }
+
+  public Action makeShowAction(TextHistoryPane infoTA, IndependentWindow infoWindow, Function<Object, String> show) {
+    return new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        Object bean = getSelectedBean();
+        if (bean != null) {
+          infoTA.setText(show.apply(bean));
+          infoTA.gotoTop();
+          infoWindow.show();
+        }
+      }
+    };
+  }
+
   /**
    * Get the currently selected bean, or null if none selected.
    *
@@ -336,7 +361,7 @@ public class BeanTable<T> extends JPanel {
       TableColumn tc = tcm.getColumn(viewColumnIndex);
       int modelColumnIndex = tc.getModelIndex();
 
-      Class colClass = jtable.getColumnClass(viewColumnIndex);
+      Class<?> colClass = jtable.getColumnClass(viewColumnIndex);
       Object zeroValue = model.zeroValue(colClass);
       for (int viewRowIndex : viewRowIndices) {
         int modelRowIndex = jtable.convertRowIndexToModel(viewRowIndex);
@@ -502,7 +527,7 @@ public class BeanTable<T> extends JPanel {
       return;
     }
 
-    ArrayList propColObjs = (ArrayList) store.getBean("propertyCol", new ArrayList());
+    ArrayList<?> propColObjs = (ArrayList<?>) store.getBean("propertyCol", new ArrayList<>());
     HidableTableColumnModel tableColumnModel = (HidableTableColumnModel) jtable.getColumnModel();
     int newViewIndex = 0;
 
@@ -566,8 +591,8 @@ public class BeanTable<T> extends JPanel {
    * Renderer for Date type
    */
   static class DateRenderer extends DefaultTableCellRenderer {
-    private java.text.SimpleDateFormat newForm, oldForm;
-    private Date cutoff;
+    private final java.text.SimpleDateFormat newForm, oldForm;
+    private final Date cutoff;
 
     DateRenderer() {
       oldForm = new java.text.SimpleDateFormat("yyyy MMM dd HH:mm z");
@@ -601,7 +626,7 @@ public class BeanTable<T> extends JPanel {
 
     protected TableBeanModel() {}
 
-    protected TableBeanModel(Class beanClass) {
+    protected TableBeanModel(Class<?> beanClass) {
 
       // get bean info
       BeanInfo info;
@@ -695,7 +720,7 @@ public class BeanTable<T> extends JPanel {
         for (PropertyDescriptor pd : pds) {
           String displayName = pd.getDisplayName();
           String name = pd.getName();
-          Class type = pd.getPropertyType();
+          Class<?> type = pd.getPropertyType();
           Method rm = pd.getReadMethod();
           Method wm = pd.getWriteMethod();
           System.out.println(
@@ -767,7 +792,7 @@ public class BeanTable<T> extends JPanel {
 
     // editing
 
-    public Class getColumnClass(int col) {
+    public Class<?> getColumnClass(int col) {
       return wrapPrimitives(properties.get(col).getPropertyType());
     }
 
@@ -775,7 +800,7 @@ public class BeanTable<T> extends JPanel {
       PropertyDescriptor pd = properties.get(col);
       if (!pd.isPreferred())
         return false;
-      Class type = pd.getPropertyType();
+      Class<?>  type = pd.getPropertyType();
       return type.isPrimitive() || (type == String.class);
     }
 
@@ -796,7 +821,7 @@ public class BeanTable<T> extends JPanel {
 
     // extra stuff
 
-    protected Class wrapPrimitives(Class c) {
+    protected Class<?>  wrapPrimitives(Class<?>  c) {
       if (c == boolean.class)
         return Boolean.class;
       else if (c == int.class)
@@ -816,7 +841,7 @@ public class BeanTable<T> extends JPanel {
     }
 
     @Nullable
-    protected Object zeroValue(Class c) {
+    protected Object zeroValue(Class<?>  c) {
       if (c == Boolean.class)
         return Boolean.FALSE;
       else if (c == Integer.class)

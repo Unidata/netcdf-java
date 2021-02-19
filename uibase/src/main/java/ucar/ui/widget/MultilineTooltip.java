@@ -13,7 +13,8 @@ import java.awt.*;
  * @author Zafir Anjum
  */
 public class MultilineTooltip extends JToolTip {
-  JComponent component;
+  static MultiLineToolTipUI sharedInstance = new MultiLineToolTipUI();
+  static JToolTip tip;
 
   public MultilineTooltip() {
     updateUI();
@@ -43,80 +44,80 @@ public class MultilineTooltip extends JToolTip {
 
   protected int columns;
   protected int fixedwidth;
-}
 
 
-class MultiLineToolTipUI extends BasicToolTipUI {
-  static MultiLineToolTipUI sharedInstance = new MultiLineToolTipUI();
-  static JToolTip tip;
-  protected CellRendererPane rendererPane;
+  private static class MultiLineToolTipUI extends BasicToolTipUI {
+    protected CellRendererPane rendererPane;
 
-  private static JTextArea textArea;
+    private static JTextArea textArea;
 
-  public static ComponentUI createUI(JComponent c) {
-    return sharedInstance;
+    public static ComponentUI createUI(JComponent c) {
+      return sharedInstance;
+    }
+
+    public MultiLineToolTipUI() {
+    }
+
+    public void installUI(JComponent c) {
+      super.installUI(c);
+      tip = (JToolTip) c;
+      rendererPane = new CellRendererPane();
+      c.add(rendererPane);
+    }
+
+    public void uninstallUI(JComponent c) {
+      super.uninstallUI(c);
+
+      c.remove(rendererPane);
+      rendererPane = null;
+    }
+
+    public void paint(Graphics g, JComponent c) {
+      Dimension size = c.getSize();
+      textArea.setBackground(c.getBackground());
+      rendererPane.paintComponent(g, textArea, c, 1, 1, size.width - 1, size.height - 1, true);
+    }
+
+    public Dimension getPreferredSize(JComponent c) {
+      String tipText = ((JToolTip) c).getTipText();
+      if (tipText == null)
+        return new Dimension(0, 0);
+      textArea = new JTextArea(tipText);
+      rendererPane.removeAll();
+      rendererPane.add(textArea);
+      textArea.setWrapStyleWord(true);
+      int width = ((MultilineTooltip) c).getFixedWidth();
+      int columns = ((MultilineTooltip) c).getColumns();
+
+      if (columns > 0) {
+        textArea.setColumns(columns);
+        textArea.setSize(0, 0);
+        textArea.setLineWrap(true);
+        textArea.setSize(textArea.getPreferredSize());
+      } else if (width > 0) {
+        textArea.setLineWrap(true);
+        Dimension d = textArea.getPreferredSize();
+        d.width = width;
+        d.height++;
+        textArea.setSize(d);
+      } else
+        textArea.setLineWrap(false);
+
+
+      Dimension dim = textArea.getPreferredSize();
+
+      dim.height += 1;
+      dim.width += 1;
+      return dim;
+    }
+
+    public Dimension getMinimumSize(JComponent c) {
+      return getPreferredSize(c);
+    }
+
+    public Dimension getMaximumSize(JComponent c) {
+      return getPreferredSize(c);
+    }
   }
 
-  public MultiLineToolTipUI() {}
-
-  public void installUI(JComponent c) {
-    super.installUI(c);
-    tip = (JToolTip) c;
-    rendererPane = new CellRendererPane();
-    c.add(rendererPane);
-  }
-
-  public void uninstallUI(JComponent c) {
-    super.uninstallUI(c);
-
-    c.remove(rendererPane);
-    rendererPane = null;
-  }
-
-  public void paint(Graphics g, JComponent c) {
-    Dimension size = c.getSize();
-    textArea.setBackground(c.getBackground());
-    rendererPane.paintComponent(g, textArea, c, 1, 1, size.width - 1, size.height - 1, true);
-  }
-
-  public Dimension getPreferredSize(JComponent c) {
-    String tipText = ((JToolTip) c).getTipText();
-    if (tipText == null)
-      return new Dimension(0, 0);
-    textArea = new JTextArea(tipText);
-    rendererPane.removeAll();
-    rendererPane.add(textArea);
-    textArea.setWrapStyleWord(true);
-    int width = ((MultilineTooltip) c).getFixedWidth();
-    int columns = ((MultilineTooltip) c).getColumns();
-
-    if (columns > 0) {
-      textArea.setColumns(columns);
-      textArea.setSize(0, 0);
-      textArea.setLineWrap(true);
-      textArea.setSize(textArea.getPreferredSize());
-    } else if (width > 0) {
-      textArea.setLineWrap(true);
-      Dimension d = textArea.getPreferredSize();
-      d.width = width;
-      d.height++;
-      textArea.setSize(d);
-    } else
-      textArea.setLineWrap(false);
-
-
-    Dimension dim = textArea.getPreferredSize();
-
-    dim.height += 1;
-    dim.width += 1;
-    return dim;
-  }
-
-  public Dimension getMinimumSize(JComponent c) {
-    return getPreferredSize(c);
-  }
-
-  public Dimension getMaximumSize(JComponent c) {
-    return getPreferredSize(c);
-  }
 }
