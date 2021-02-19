@@ -10,6 +10,7 @@ import static com.google.common.truth.Truth.assertThat;
 import java.io.IOException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -97,6 +98,7 @@ public class TestMFileS3 {
   }
 
   @Test
+  @Ignore
   public void bucketAndKeyGcs() throws IOException {
     long lastModified = 1611593614000L;
     checkWithBucketAndKey(GCS_G16_S3_OBJECT_1, G16_OBJECT_KEY_1, null, lastModified);
