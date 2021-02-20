@@ -74,58 +74,9 @@ dependencies {
     api "org.slf4j:slf4j-api:${depVersion.slf4j}"
     runtime 'ch.qos.logback:logback-classic:1.2.3'
 
-    //////////////////////////
-    // netcdf-java testing //
-    //////////////////////////
-
-    api 'junit:junit:4.13.1'
-    api 'commons-io:commons-io:2.5'
-
-    // Fluent assertions for Java
-    api 'com.google.truth:truth:1.0'
-
-    // These two are for Spock.
-    api 'org.spockframework:spock-core:1.3-groovy-2.5'
-    api 'org.codehaus.groovy:groovy-all:2.5.12'
-
-    //mockito
-    api 'org.mockito:mockito-core:2.28.2'
-
-    // opendap
-    api 'pl.pragmatists:JUnitParams:1.0.5'
-
-    // cdm-test (GRIB related testing)
-    api 'org.apache.commons:commons-compress:1.12'
-
-    ///////////////////////
-    // toolsUI GUI stuff //
-    ///////////////////////
-
-    // Used by NcmlEditor. Abandoned, no updates since 2013. https://sourceforge.net/projects/bounce/
-    // https://sourceforge.net/p/bounce/svn/HEAD/tree/src/main/java/org/bounce/
-    api 'org.bounce:bounce:0.18'
-
-    // http://www.jfree.org/
-    api 'org.jfree:jcommon:1.0.23'
-    api 'org.jfree:jfreechart:1.0.19'
-
-    // http://www.jgoodies.com/. Latest version is 1.9.0, but there is breakage when we try to upgrade.
-    api 'com.jgoodies:jgoodies-forms:1.6.0'
-
-    // LGoodDatePicker - swing calendar widget used in TdsMonitor
-    api 'com.github.lgooddatepicker:LGoodDatePicker:10.3.1'
-
     // legacy gradle module
     // todo: remove with legacy in 6
     api 'com.amazonaws:aws-java-sdk-s3:1.11.871'
-
-    // In Spock, allows mocking of classes (in addition to interfaces).
-    // todo: remove with legacy in 6
-    runtime 'cglib:cglib-nodep:3.2.4'
-
-    // In Spock, allows mocking of classes without default constructor (together with CGLIB).
-    // todo: remove with legacy in 6
-    runtime 'org.objenesis:objenesis:2.4'
   }
 }
 
