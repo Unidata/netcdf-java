@@ -15,21 +15,21 @@ import javax.swing.SwingUtilities;
 
 /**
  * Popup Help window.
- *          Example:
+ * Example:
  *
- *          <pre>
- *          if (help != null) {
- *            helpButton = new JButton("help");
- *            helpButton.addActionListener(new AbstractAction() {
- *              public void actionPerformed(ActionEvent e) {
- *                if (helpWindow == null)
- *                  helpWindow = new HelpWindow(null, "Help on " + tit, helpMessage);
- *                helpWindow.show(helpButton);
- *              }
- *            });
- *            butts.add(helpButton);
- *          }
- *          </pre>
+ * <pre>
+ * if (help != null) {
+ *   helpButton = new JButton("help");
+ *   helpButton.addActionListener(new AbstractAction() {
+ *     public void actionPerformed(ActionEvent e) {
+ *       if (helpWindow == null)
+ *         helpWindow = new HelpWindow(null, "Help on " + tit, helpMessage);
+ *       helpWindow.show(helpButton);
+ *     }
+ *   });
+ *   butts.add(helpButton);
+ * }
+ * </pre>
  */
 public class HelpWindow extends IndependentDialog {
   private final String helpMessage;

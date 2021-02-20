@@ -223,6 +223,7 @@ public class SuperComboBox extends JPanel {
 
   /**
    * Set the list of things to be selected..
+   * 
    * @param iter iterator of NamedObject, TableRow, or an Object that will wrapped by SimpleRow().
    * @param keepIndex maintain the current selected index if possible.
    */

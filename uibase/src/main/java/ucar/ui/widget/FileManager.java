@@ -49,7 +49,7 @@ public class FileManager {
   private static final String BOUNDS = "Bounds";
   private static final String DEFAULT_DIR = "DefaultDir";
   private static final String DEFAULT_FILTER = "DefaultFilter";
-  private static final boolean debug =  false;
+  private static final boolean debug = false;
 
   // regular
   private final PreferencesExt prefs;

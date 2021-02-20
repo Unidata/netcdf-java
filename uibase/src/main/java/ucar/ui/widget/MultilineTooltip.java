@@ -55,8 +55,7 @@ public class MultilineTooltip extends JToolTip {
       return sharedInstance;
     }
 
-    public MultiLineToolTipUI() {
-    }
+    public MultiLineToolTipUI() {}
 
     public void installUI(JComponent c) {
       super.installUI(c);

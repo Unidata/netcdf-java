@@ -274,6 +274,7 @@ public class BeanTable<T> extends JPanel {
   }
 
   private ucar.ui.widget.PopupMenu varPopup;
+
   public void addPopupOption(String title, Action act) {
     if (this.varPopup == null) {
       this.varPopup = new PopupMenu(this.getJTable(), "Options");
@@ -800,7 +801,7 @@ public class BeanTable<T> extends JPanel {
       PropertyDescriptor pd = properties.get(col);
       if (!pd.isPreferred())
         return false;
-      Class<?>  type = pd.getPropertyType();
+      Class<?> type = pd.getPropertyType();
       return type.isPrimitive() || (type == String.class);
     }
 
@@ -821,7 +822,7 @@ public class BeanTable<T> extends JPanel {
 
     // extra stuff
 
-    protected Class<?>  wrapPrimitives(Class<?>  c) {
+    protected Class<?> wrapPrimitives(Class<?> c) {
       if (c == boolean.class)
         return Boolean.class;
       else if (c == int.class)
@@ -841,7 +842,7 @@ public class BeanTable<T> extends JPanel {
     }
 
     @Nullable
-    protected Object zeroValue(Class<?>  c) {
+    protected Object zeroValue(Class<?> c) {
       if (c == Boolean.class)
         return Boolean.FALSE;
       else if (c == Integer.class)

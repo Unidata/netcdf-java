@@ -52,7 +52,7 @@ public class JTableSorted extends JPanel {
   private final TableRowModel model;
 
   private boolean sortOK = true;
-  private final  ThreadSorter threadSorter;
+  private final ThreadSorter threadSorter;
   private int threadCol = -1;
 
   private final ListenerManager lm;

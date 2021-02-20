@@ -499,16 +499,16 @@ public class PrefPanel extends JPanel {
    * @param nKeep number of most recently used values to keep
    * @param editable whether the user can add new entries the list to select from.
    */
-  public Field.TextCombo addTextComboField(String fldName, String label, java.util.Collection<Object> defValues, int nKeep,
-      boolean editable) {
+  public Field.TextCombo addTextComboField(String fldName, String label, java.util.Collection<Object> defValues,
+      int nKeep, boolean editable) {
     Field.TextCombo fld = new Field.TextCombo(fldName, label, defValues, nKeep, storeData);
     addField(fld);
     fld.setEditable(editable);
     return fld;
   }
 
-  public Field.TextCombo addTextComboField(String fldName, String label, java.util.Collection<Object> defValues, int nKeep,
-      boolean editable, int col, int row, String constraint) {
+  public Field.TextCombo addTextComboField(String fldName, String label, java.util.Collection<Object> defValues,
+      int nKeep, boolean editable, int col, int row, String constraint) {
     Field.TextCombo fld = new Field.TextCombo(fldName, label, defValues, nKeep, storeData);
     addField(fld, col, row, constraint);
     fld.setEditable(editable);
