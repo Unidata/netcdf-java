@@ -10,6 +10,7 @@ import static com.google.common.truth.Truth.assertThat;
 import java.io.IOException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,6 +91,7 @@ public class TestMFileS3 {
   // CdmS3Uri bucket and key (valid object)
   //
   @Test
+  @Ignore
   public void bucketAndKeyAws() throws IOException {
     long lastModified = 1532465845000L;
     checkWithBucketAndKey(AWS_G16_S3_OBJECT_1, G16_OBJECT_KEY_1, null, lastModified);
@@ -97,13 +99,15 @@ public class TestMFileS3 {
   }
 
   @Test
+  @Ignore
   public void bucketAndKeyGcs() throws IOException {
-    long lastModified = 1504051532000L;
+    long lastModified = 1611593614000L;
     checkWithBucketAndKey(GCS_G16_S3_OBJECT_1, G16_OBJECT_KEY_1, null, lastModified);
     checkWithBucketAndKey(GCS_G16_S3_OBJECT_1 + DELIMITER_FRAGMENT, G16_NAME_1, "/", lastModified);
   }
 
   @Test
+  @Ignore
   public void bucketAndKeyOsdc() throws IOException {
     long lastModified = 1603308465000L;
     checkWithBucketAndKey(OSDC_G16_S3_OBJECT_1, OSDC_G16_OBJECT_KEY_1, null, lastModified);

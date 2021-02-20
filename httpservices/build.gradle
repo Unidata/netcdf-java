@@ -1,3 +1,4 @@
+description = 'Wrapper around org.apache.HttpClient.'
 ext.title = 'HttpClient Wrappers'
 
 apply from: "$rootDir/gradle/any/dependencies.gradle"

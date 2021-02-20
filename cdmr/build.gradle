@@ -3,6 +3,9 @@ plugins {
   id 'application'
 }
 
+description = 'CDM remote access using gRPC.'
+ext.title = 'CDM remote access'
+
 apply from: "$rootDir/gradle/any/dependencies.gradle"
 apply from: "$rootDir/gradle/any/java-library.gradle"
 apply from: "$rootDir/gradle/any/protobuf.gradle"

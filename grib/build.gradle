@@ -1,5 +1,5 @@
-description = 'Decoder for the GRIB 1 and 2 formats.'
-ext.title = 'GRIB 1 and 2 IOSPs and Feature Collections'
+description = 'Decoder for GRIB 1 and 2 files.'
+ext.title = 'GRIB 1 and 2 IOSPs and GRIB collections'
 
 apply from: "$rootDir/gradle/any/dependencies.gradle"
 apply from: "$rootDir/gradle/any/java-library.gradle"

@@ -1,7 +1,4 @@
-description = 'The ucar.units Java package is for decoding and encoding formatted unit specifications ' +
-    '(e.g. "m/s"), converting numeric values between compatible units (e.g. between "m/s" ' +
-    'and "knot"), and for performing arithmetic operations on units (e.g. dividing one unit ' +
-    'by another, or raising a unit to a power).'
+description = 'The ucar.units Java package for the Unidata formatted unit specifications'
 
 ext.title = 'UDUNITS'
 ext.url = 'https://www.unidata.ucar.edu/software/udunits/'

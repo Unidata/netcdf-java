@@ -1,5 +1,4 @@
-description = 'The Common Data Model (CDM) is a Java interface to NetCDF files, as well as to many other types of ' +
-    'scientific data formats.'
+description = 'The CDM core packages.'
 ext.title = 'CDM core library'
 
 apply from: "$rootDir/gradle/any/dependencies.gradle"
