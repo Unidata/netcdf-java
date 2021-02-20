@@ -5,9 +5,7 @@ buildscript {
   apply from: "$rootDir/gradle/any/shared-mvn-coords.gradle"
 
   repositories {
-    maven {
-      url "https://plugins.gradle.org/m2/"
-    }
+    gradlePluginPortal()
   }
   dependencies {
     classpath buildPlugins.gretty  // We want to import FarmBeforeIntegrationTestTask, etc.
