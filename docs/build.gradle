@@ -8,6 +8,8 @@ apply from: "$rootDir/gradle/any/javadoc.gradle"
 apply from: "$rootDir/gradle/any/testing.gradle"
 
 dependencies {
+  testImplementation enforcedPlatform(project(':netcdf-java-testing-platform'))
+
   testCompile project(':cdm:cdm-core')
   testCompile project(':cdm:cdm-s3')
   testCompile project(':netcdf4')

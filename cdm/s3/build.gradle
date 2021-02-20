@@ -8,6 +8,7 @@ apply plugin: 'groovy'  // For Spock tests.
 
 dependencies {
   api enforcedPlatform(project(':netcdf-java-platform'))
+  testImplementation enforcedPlatform(project(':netcdf-java-testing-platform'))
 
   compile project(':cdm:cdm-core')
   compile 'org.slf4j:slf4j-api'

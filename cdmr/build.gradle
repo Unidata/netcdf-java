@@ -23,6 +23,7 @@ dependencies {
 
   runtimeOnly "io.grpc:grpc-netty-shaded:${depVersion.grpc}"
 
+  testImplementation enforcedPlatform(project(':netcdf-java-testing-platform'))
   testImplementation project(':cdm-test-utils')
   testImplementation 'com.google.truth:truth'
   testImplementation "junit:junit:${depVersion.junit}"
