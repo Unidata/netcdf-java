@@ -7,6 +7,7 @@ apply from: "$rootDir/gradle/any/protobuf.gradle"
 
 dependencies {
   api enforcedPlatform(project(':netcdf-java-platform'))
+  testImplementation enforcedPlatform(project(':netcdf-java-testing-platform'))
 
   api project(':cdm:cdm-core')
 

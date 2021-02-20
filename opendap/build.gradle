@@ -13,6 +13,7 @@ apply from: "$rootDir/gradle/any/gretty.gradle"
 
 dependencies {
   api enforcedPlatform(project(':netcdf-java-platform'))
+  testImplementation enforcedPlatform(project(':netcdf-java-testing-platform'))
 
   api project(':cdm:cdm-core')
   api project(':httpservices')

@@ -5,6 +5,7 @@ apply from: "$rootDir/gradle/any/gretty.gradle"
 dependencies {
   // I bet some of these dependencies could be in the testRuntimeOnly config, not testImplementation.
   compile enforcedPlatform(project(':netcdf-java-platform'))
+  testImplementation enforcedPlatform(project(':netcdf-java-testing-platform'))
 
   testImplementation project(':dap4:d4core')
   testImplementation project(':dap4:d4lib')

@@ -7,6 +7,7 @@ apply plugin: 'groovy'  // For Spock tests.
 
 dependencies {
   compile enforcedPlatform(project(':netcdf-java-platform'))
+  testImplementation enforcedPlatform(project(':netcdf-java-testing-platform'))
 
   compile 'org.jdom:jdom2'
   compile 'com.google.protobuf:protobuf-java'
