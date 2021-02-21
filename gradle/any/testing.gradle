@@ -21,8 +21,8 @@ tasks.withType(Test).all {
         excludeCategories 'ucar.unidata.util.test.category.NotJenkins'
       }
 
-      if (isTravis) {
-        excludeCategories 'ucar.unidata.util.test.category.NotTravis'
+      if (isPullRequestCheck) {
+        excludeCategories 'ucar.unidata.util.test.category.NotPullRequest'
         excludeCategories 'ucar.unidata.util.test.category.NeedsExternalResource'
       }
 

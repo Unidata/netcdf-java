@@ -11,8 +11,7 @@ import ucar.ma2.ArrayFloat;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.constants.CDM;
-import ucar.unidata.util.test.TestDir;
-import ucar.unidata.util.test.category.NotTravis;
+import ucar.unidata.util.test.category.NotPullRequest;
 import java.io.File;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -26,7 +25,7 @@ import java.lang.invoke.MethodHandles;
  * In the future, potentially use the more general "Slow" category, because there's likely more places than just
  * Travis where we don't want to run this.
  */
-@Category(NotTravis.class)
+@Category(NotPullRequest.class)
 public class TestLargeGeneration {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
