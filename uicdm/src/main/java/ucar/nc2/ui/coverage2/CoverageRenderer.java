@@ -30,11 +30,12 @@ import java.util.Formatter;
  * @since 12/27/12
  */
 public class CoverageRenderer {
-  // draw state
-  private boolean drawGrid = true;
+  private static final boolean debugHorizDraw = false;
+  private static final boolean debugMiss = false;
+  private static boolean debugPts = false;
+
   private boolean drawGridLines = true;
   private boolean drawContours;
-  private boolean drawContourLabels;
   private boolean drawBB;
   private boolean isNewField = true;
 
@@ -55,12 +56,9 @@ public class CoverageRenderer {
   private Coverage lastGrid;
 
   // drawing optimization
-  private boolean useModeForProjections; // use colorMode optimization for different projections
+  private boolean useModeForProjections = false; // use colorMode optimization for different projections
   private boolean sameProjection = true;
   private LatLonProjection projectll; // special handling for LatLonProjection
-
-  private static final boolean debugHorizDraw = false, debugMiss = false;
-  private boolean debugPts, debugPathShape = true;
 
   /**
    * constructor
@@ -132,7 +130,6 @@ public class CoverageRenderer {
 
   /* set whether contour labels should be drawn */
   public void setDrawContourLabels(boolean drawContourLabels) {
-    this.drawContourLabels = drawContourLabels;
   }
 
   /* get what vertical level to draw */
@@ -481,8 +478,8 @@ public class CoverageRenderer {
     if ((dataState.grid == null) || (colorScale == null) || (drawProjection == null))
       return;
 
-    if (!drawGrid && !drawContours)
-      return;
+    // draw state
+    boolean drawGrid = true;
 
     // no anitaliasing
     g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
@@ -493,8 +490,7 @@ public class CoverageRenderer {
 
     setColorScaleParams();
 
-    if (drawGrid)
-      drawGridHoriz(g, dataH);
+    drawGridHoriz(g, dataH);
     // if (drawContours)
     // drawContours(g, dataH.transpose(0, 1), dFromN);
     if (drawGridLines)
@@ -730,7 +726,7 @@ public class CoverageRenderer {
   }
 
   //// draw using Rectangle when possible
-  private Rectangle2D rect = new Rectangle2D.Double();
+  private final Rectangle2D rect = new Rectangle2D.Double();
 
   private int drawRectLatLon(Graphics2D g, int color, double lon1, double lat1, double lon2, double lat2) {
     g.setColor(colorScale.getColor(color));
@@ -772,7 +768,7 @@ public class CoverageRenderer {
     return count;
   }
 
-  private GeneralPath gpRun = new GeneralPath(GeneralPath.WIND_EVEN_ODD, 25);
+  private final GeneralPath gpRun = new GeneralPath(GeneralPath.WIND_EVEN_ODD, 25);
 
   private int drawPathRun(Graphics2D g, int color, double y1, double y2, CoverageCoordAxis1D xaxis, int x1, int x2,
       boolean debugPts) {

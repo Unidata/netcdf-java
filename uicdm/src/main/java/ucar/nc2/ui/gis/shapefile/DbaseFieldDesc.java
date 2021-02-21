@@ -64,17 +64,16 @@ class DbaseFieldDesc {
 
     Name = Name.trim();
     Type = Header[11];
-    FieldLength = (int) Header[16];
+    FieldLength = Header[16];
     if (FieldLength < 0)
       FieldLength += 256;
-    DecimalCount = (int) Header[17];
+    DecimalCount = Header[17];
     if (DecimalCount < 0)
       DecimalCount += 256;
     return 0;
   }
 
   /* works for dbase 5.0 DOS and Windows too */
-
   private int read_dbase4(DataInputStream in) {
     if (read_dbase3(in) != 0)
       return -1;

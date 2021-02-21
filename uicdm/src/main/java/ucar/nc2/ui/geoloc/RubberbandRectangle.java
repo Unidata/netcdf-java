@@ -14,7 +14,6 @@ import java.awt.*;
  * @author John Caron
  */
 public class RubberbandRectangle extends Rubberband {
-
   public RubberbandRectangle(Component component, boolean listen) {
     super(component, listen);
   }
@@ -22,13 +21,11 @@ public class RubberbandRectangle extends Rubberband {
   public void drawLast(Graphics2D graphics) {
     Rectangle rect = lastBounds();
     graphics.drawRect(rect.x, rect.y, rect.width, rect.height);
-    // System.out.println("RBR drawLast");
   }
 
   public void drawNext(Graphics2D graphics) {
     Rectangle rect = getBounds();
     graphics.drawRect(rect.x, rect.y, rect.width, rect.height);
-    // System.out.println("RBR drawNext");
   }
 }
 

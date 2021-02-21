@@ -15,23 +15,16 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import javax.swing.JOptionPane;
 
-/**
- *
- */
 public class BufrPanel extends OpPanel {
   private RandomAccessFile raf;
-  private BufrMessageViewer bufrTable;
+  private final BufrMessageViewer bufrTable;
 
-  /**
-   *
-   */
   public BufrPanel(PreferencesExt p) {
     super(p, "file:", true, false);
     bufrTable = new BufrMessageViewer(prefs, buttPanel);
     add(bufrTable, BorderLayout.CENTER);
   }
 
-  /** */
   @Override
   public boolean process(Object o) {
     String command = (String) o;
@@ -59,7 +52,6 @@ public class BufrPanel extends OpPanel {
     return !err;
   }
 
-  /** */
   @Override
   public void closeOpenFiles() throws IOException {
     if (raf != null) {
@@ -68,7 +60,6 @@ public class BufrPanel extends OpPanel {
     raf = null;
   }
 
-  /** */
   @Override
   public void save() {
     bufrTable.save();

@@ -11,8 +11,6 @@ import ucar.nc2.ui.ToolsUI;
 import ucar.nc2.ui.grib.CdmIndexPanel;
 import ucar.util.prefs.PreferencesExt;
 import java.awt.BorderLayout;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -22,18 +20,16 @@ import javax.swing.JOptionPane;
 
 /** Show ncx4 indices. */
 public class CdmIndexOpPanel extends OpPanel {
-  private CdmIndexPanel indexPanel;
+  private final CdmIndexPanel indexPanel;
 
   public CdmIndexOpPanel(PreferencesExt p) {
     super(p, "index file:", true, false);
 
     indexPanel = new CdmIndexPanel(prefs, buttPanel);
-    indexPanel.addPropertyChangeListener(new PropertyChangeListener() {
-      public void propertyChange(PropertyChangeEvent e) {
-        if (e.getPropertyName().equals("openGrib2Collection")) {
-          String collectionName = (String) e.getNewValue();
-          ToolsUI.getToolsUI().openGrib2Collection(collectionName);
-        }
+    indexPanel.addPropertyChangeListener(e -> {
+      if (e.getPropertyName().equals("openGrib2Collection")) {
+        String collectionName = (String) e.getNewValue();
+        ToolsUI.getToolsUI().openGrib2Collection(collectionName);
       }
     });
 

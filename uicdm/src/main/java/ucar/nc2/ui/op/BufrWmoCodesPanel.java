@@ -27,41 +27,41 @@ import javax.swing.*;
  * @since 8/12/11
  */
 public class BufrWmoCodesPanel extends JPanel {
-  private PreferencesExt prefs;
+  private final PreferencesExt prefs;
 
-  private BeanTable codeTable, entryTable;
-  private JSplitPane split;
+  private final BeanTable<CodeTableBean> codeTable;
+  private final BeanTable<EntryBean> entryTable;
+  private final JSplitPane split;
 
-  private TextHistoryPane compareTA;
-  private IndependentWindow infoWindow;
+  private final TextHistoryPane compareTA;
+  private final IndependentWindow infoWindow;
 
   public BufrWmoCodesPanel(PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
 
-    codeTable = new BeanTable(CodeTableBean.class, (PreferencesExt) prefs.node("CodeTableBean"), false);
+    codeTable = new BeanTable<>(CodeTableBean.class, (PreferencesExt) prefs.node("CodeTableBean"), false);
     codeTable.addListSelectionListener(e -> {
-      CodeTableBean csb = (CodeTableBean) codeTable.getSelectedBean();
-      setEntries(csb.code);
+      CodeTableBean csb = codeTable.getSelectedBean();
+      if (csb != null) {
+        setEntries(csb.code);
+      }
     });
 
     ucar.ui.widget.PopupMenu varPopup = new ucar.ui.widget.PopupMenu(codeTable.getJTable(), "Options");
     varPopup.addAction("Show table", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Formatter out = new Formatter();
-        CodeTableBean csb = (CodeTableBean) codeTable.getSelectedBean();
-        csb.showTable(out);
-        compareTA.setText(out.toString());
-        compareTA.gotoTop();
-        infoWindow.setVisible(true);
+        CodeTableBean csb = codeTable.getSelectedBean();
+        if (csb != null) {
+          csb.showTable(out);
+          compareTA.setText(out.toString());
+          compareTA.gotoTop();
+          infoWindow.setVisible(true);
+        }
       }
     });
 
-    entryTable = new BeanTable(EntryBean.class, (PreferencesExt) prefs.node("EntryBean"), false);
-    /*
-     * entryTable.addListSelectionListener(e -> {
-     * entryTable.getSelectedBean();
-     * });
-     */
+    entryTable = new BeanTable<>(EntryBean.class, (PreferencesExt) prefs.node("EntryBean"), false);
 
     Map<Short, CodeFlagTables> tables = CodeFlagTables.getTables();
     List<CodeTableBean> beans = new ArrayList<>(tables.size());

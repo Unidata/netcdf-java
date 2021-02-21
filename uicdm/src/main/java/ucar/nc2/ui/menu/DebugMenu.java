@@ -14,16 +14,10 @@ import javax.swing.JMenu;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
-/**
- *
- */
 public class DebugMenu extends JMenu {
 
-  private ToolsUI toolsui;
+  private final ToolsUI toolsui;
 
-  /**
-   *
-   */
   public DebugMenu(ToolsUI tui) {
     super("Debug");
     setMnemonic('D');

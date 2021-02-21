@@ -13,10 +13,9 @@ import ucar.ui.widget.BAMutil;
  * Wraps shapefile maps into a MapBean
  *
  * @author John Caron
- */
-
+*/
 public class ShapeFileBean extends MapBean {
-  private String name, desc, iconName, shapefileName;
+  private final String name, desc, iconName, shapefileName;
   private Renderer rend;
 
   /**

@@ -14,15 +14,9 @@ import java.io.StringWriter;
 import java.util.Formatter;
 import javax.swing.AbstractButton;
 
-/**
- *
- */
 public class CollectionSpecPanel extends OpPanel {
-  private CollectionSpecTable table;
+  private final CollectionSpecTable table;
 
-  /**
-   *
-   */
   public CollectionSpecPanel(PreferencesExt dbPrefs) {
     super(dbPrefs, "collection spec:", true, false);
     table = new CollectionSpecTable(prefs);
@@ -45,7 +39,6 @@ public class CollectionSpecPanel extends OpPanel {
     buttPanel.add(infoButton);
   }
 
-  /** */
   @Override
   public boolean process(Object o) {
     String command = (String) o;
@@ -67,13 +60,11 @@ public class CollectionSpecPanel extends OpPanel {
     return false;
   }
 
-  /** */
   @Override
   public void closeOpenFiles() {
     // Nothing to do here.
   }
 
-  /** */
   @Override
   public void save() {
     table.save();

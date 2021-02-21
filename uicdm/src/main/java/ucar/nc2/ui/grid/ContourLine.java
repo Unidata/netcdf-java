@@ -23,9 +23,8 @@ import java.util.*; // for Iterator and ArrayList
  *
  * @author wier
  */
-
 public class ContourLine implements GisPart {
-  private double contourLevel; // the contour's level or value
+  private final double contourLevel; // the contour's level or value
   private boolean newLineFlag; // true if this line is new or edited
   int npts;
   double[] wx; // contour line positions found in ContourGrid class
@@ -57,20 +56,23 @@ public class ContourLine implements GisPart {
 
   // constructor with indicator if contour Line is new or modified;
   // used for systems with editable contour lines.
-  public ContourLine(ArrayList points, double level, boolean ifNew) {
+  public ContourLine(ArrayList<Point2D.Double> points, double level, boolean ifNew) {
     this(points, level);
     newLineFlag = ifNew;
   }
 
   // implement GisPart methods
+  @Override
   public int getNumPoints() {
     return npts;
   }
 
+  @Override
   public double[] getX() {
     return wx;
   }
 
+  @Override
   public double[] getY() {
     return wy;
   }

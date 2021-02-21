@@ -24,15 +24,15 @@ import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.util.ArrayList;
 
-/**
- * Render grids using Java2D API.
- *
- * @author caron
- */
-
+/** Render grids using Java2D API. */
 public class GridRenderer {
+  private static final boolean debugHorizDraw = false, debugMiss = false;
+  private static final boolean debugPathShape = false;
+  private static final boolean debugArrayShape = false;
+  private static boolean debugPts;
+
   // draw state
-  private boolean drawGrid = true;
+  private final boolean drawGrid = true;
   private boolean drawGridLines = true;
   private boolean drawContours;
   private boolean drawContourLabels;
@@ -53,14 +53,8 @@ public class GridRenderer {
   private int lastRunTime = -1, lastEnsemble = -1; // last data read
   private GridDatatype lastGrid;
 
-  // drawing optimization
-  private boolean useModeForProjections; // use colorMode optimization for different projections
   private boolean sameProjection;
   private LatLonProjection projectll; // special handling for LatLonProjection
-
-  private static final boolean debugHorizDraw = false, debugSeam = false, debugLatLon = false, debugMiss = false;
-  private static boolean debugPathShape, debugArrayShape, debugPts;
-
 
   ///// bean properties
 
@@ -458,23 +452,6 @@ public class GridRenderer {
 
   //////// data routines
 
-  /*
-   * get an x,y,z data volume for the given time
-   * private void makeDataVolume( GridDatatype g, int time) {
-   * try {
-   * dataVolume = g.readVolumeData( time);
-   * } catch (java.io.IOException e) {
-   * System.out.println("Error reading netcdf file "+e);
-   * dataVolume = null;
-   * }
-   * lastGrid = g;
-   * lastTime = time;
-   * lastLevel = -1; // invalidate
-   * lastSlice = -1; // invalidate
-   * dataVolumeChanged = true;
-   * }
-   */
-
   private Array makeHSlice(GridDatatype useG, int level, int time, int ensemble, int runtime) throws IOException {
 
     // make sure x, y exists
@@ -868,49 +845,10 @@ public class GridRenderer {
     }
   }
 
-  /*
-   * draw using GeneralPath shape
-   * private GeneralPath gp = new GeneralPath(GeneralPath.WIND_EVEN_ODD, 5);
-   * private Shape makeShape(double lon1, double lat1, double lon2, double lat2) {
-   * gp.reset();
-   * ProjectionPoint pt = drawProjection.latLonToProj( lat1, lon1);
-   * gp.moveTo( (float) pt.getX(), (float) pt.getY());
-   * 
-   * ptP1.setLocation(pt);
-   * pt = drawProjection.latLonToProj( lat1, lon2);
-   * gp.lineTo( (float) pt.getX(), (float) pt.getY());
-   * if (drawProjection.crossSeam(ptP1, pt))
-   * return null;
-   * 
-   * ptP1.setLocation(pt);
-   * pt = drawProjection.latLonToProj( lat2, lon2);
-   * gp.lineTo( (float) pt.getX(), (float) pt.getY());
-   * if (drawProjection.crossSeam(ptP1, pt))
-   * return null;
-   * 
-   * ptP1.setLocation(pt);
-   * pt = drawProjection.latLonToProj( lat2, lon1);
-   * gp.lineTo( (float) pt.getX(), (float) pt.getY());
-   * if (drawProjection.crossSeam(ptP1, pt))
-   * return null;
-   * 
-   * return gp;
-   * }
-   */
-
   private void drawGridHoriz1D(java.awt.Graphics2D g, Array data, CoordinateAxis1D xaxis1D, CoordinateAxis1D yaxis1D) {
     int count = 0;
-
     int nx = (int) xaxis1D.getSize();
     int ny = (int) yaxis1D.getSize();
-
-    /*
-     * how big is one pixel ?
-     * if (debug) System.out.println("affine transform = "+g.getTransform());
-     * if (debug) System.out.println("           scaleY= "+g.getTransform().getScaleY());
-     * onePixel = Math.abs(1.5/g.getTransform().getScaleY()); // a little nudge more than 1 pixel
-     * onePixel = 0;
-     */
 
     //// drawing optimizations
     sameProjection = drawProjection.equals(dataProjection);
@@ -933,6 +871,9 @@ public class GridRenderer {
     if (debugMiss)
       System.out.println("mode = " + modeColor + " sameProj= " + sameProjection);
 
+    // drawing optimization
+    // use colorMode optimization for different projections
+    boolean useModeForProjections = false;
     if (sameProjection) {
       count += drawRect(g, modeColor, xaxis1D.getCoordEdge(0), yaxis1D.getCoordEdge(0), xaxis1D.getCoordEdge(nx),
           yaxis1D.getCoordEdge(ny), drawProjection.isLatLon());
@@ -1112,70 +1053,6 @@ public class GridRenderer {
     // g.setPaintMode();
   }
 
-  /*
-   * private int drawPathShape(Graphics2D g, int color, CoordinateAxis xaxis, CoordinateAxis yaxis) {
-   * Point2D pt;
-   * gpRun.reset();
-   * int nx = xaxis.getNumElements();
-   * int ny = yaxis.getNumElements();
-   * boolean debugPathShape = true;
-   * int x, y;
-   * 
-   * pt = drawProjection.latLonToProj( yaxis.getCoordValue(0), xaxis.getCoordValue(0));
-   * gpRun.moveTo( (float) pt.getX(), (float) pt.getY());
-   * ptP1.set(pt);
-   * 
-   * y = 0;
-   * for (x=1; x<nx; x++) {
-   * pt = drawProjection.latLonToProj( yaxis.getCoordValue(y), xaxis.getCoordValue(x));
-   * gpRun.lineTo( (float) pt.getX(), (float) pt.getY());
-   * ptP1.set(pt);
-   * if (debugPathShape) System.out.println(x+" "+y+" "+pt+" "+drawProjection.crossSeam(ptP1, pt));
-   * }
-   * 
-   * x = nx-1;
-   * for (y=0; y<ny; y++) {
-   * pt = drawProjection.latLonToProj( yaxis.getCoordValue(y), xaxis.getCoordValue(x));
-   * gpRun.lineTo( (float) pt.getX(), (float) pt.getY());
-   * ptP1.set(pt);
-   * if (debugPathShape) System.out.println(x+" "+y+" "+pt+" "+drawProjection.crossSeam(ptP1, pt));
-   * }
-   * 
-   * y = ny-1;
-   * for (x=nx-1; x>=0; x--) {
-   * pt = drawProjection.latLonToProj( yaxis.getCoordValue(y), xaxis.getCoordValue(x));
-   * gpRun.lineTo( (float) pt.getX(), (float) pt.getY());
-   * ptP1.set(pt);
-   * if (debugPathShape) System.out.println(x+" "+y+" "+pt+" "+drawProjection.crossSeam(ptP1, pt));
-   * }
-   * 
-   * x = 0;
-   * for (y=ny-1; y>=0; y--) {
-   * pt = drawProjection.latLonToProj( yaxis.getCoordValue(y), xaxis.getCoordValue(x));
-   * gpRun.lineTo( (float) pt.getX(), (float) pt.getY());
-   * ptP1.set(pt);
-   * if (debugPathShape) System.out.println(x+" "+y+" "+pt+" "+drawProjection.crossSeam(ptP1, pt));
-   * }
-   * 
-   * g.setColor( cs.getColor(color));
-   * //g.fill(gpRun);
-   * return 1;
-   * }
-   */
-
-  /*
-   * private void drawLine(Graphics2D g, double lat1, double lon1, double lat2, double lon2) {
-   * ptP1.set(drawProjection.latLonToProj( lat1, lon1));
-   * Point2D pt2 = drawProjection.latLonToProj( lat2, lon2);
-   * if (drawProjection.crossSeam(ptP1, pt2))
-   * if (debugSeam) System.out.println( "crossSeam: "+ ptP1+ " to "+ pt2);
-   * else {
-   * line2D.setLine( ptP1, pt2);
-   * g.draw( line2D);
-   * }
-   * }
-   */
-
   //////// contouring
 
   private void drawContours(java.awt.Graphics2D g, Array hslice, AffineTransform dFromN) {
@@ -1187,7 +1064,7 @@ public class GridRenderer {
     double[] yedges = yaxis.getCoordValues();
 
     int nlevels = cs.getNumColors();
-    ArrayList levels = new ArrayList(nlevels);
+    ArrayList<Double> levels = new ArrayList(nlevels);
     for (int i = 1; i < nlevels - 1; i++)
       levels.add(cs.getEdge(i));
 

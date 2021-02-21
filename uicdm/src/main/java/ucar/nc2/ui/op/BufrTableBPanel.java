@@ -21,17 +21,11 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 
-/**
- *
- */
 public class BufrTableBPanel extends OpPanel {
-  private BufrTableBViewer bufrTable;
-  private JComboBox<BufrTables.Format> modes;
-  private JComboBox<BufrTables.TableConfig> tables;
+  private final BufrTableBViewer bufrTable;
+  private final JComboBox<BufrTables.Format> modes;
+  private final JComboBox<BufrTables.TableConfig> tables;
 
-  /**
-   *
-   */
   public BufrTableBPanel(PreferencesExt p) {
     super(p, "tableB:", false, false);
 
@@ -65,21 +59,16 @@ public class BufrTableBPanel extends OpPanel {
     add(bufrTable, BorderLayout.CENTER);
   }
 
-  /** */
   @Override
   public boolean process(Object command) {
     return true;
   }
 
-  /** */
   @Override
   public void closeOpenFiles() {
     // Nothing to do here.
   }
 
-  /**
-   *
-   */
   private void accept() {
     String command = (String) cb.getSelectedItem();
 
@@ -99,9 +88,6 @@ public class BufrTableBPanel extends OpPanel {
     }
   }
 
-  /**
-   *
-   */
   private void acceptTable(BufrTables.TableConfig tc) {
     try {
       bufrTable.setBufrTableB(tc.getTableBname(), tc.getTableBformat());
@@ -118,7 +104,6 @@ public class BufrTableBPanel extends OpPanel {
     }
   }
 
-  /** */
   @Override
   public void save() {
     bufrTable.save();

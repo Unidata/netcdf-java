@@ -5,7 +5,7 @@
 
 package ucar.nc2.ui.op;
 
-import ucar.nc2.units.DateFormatter;
+import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.units.DateFromString;
 import ucar.nc2.ui.OpPanel;
 import ucar.ui.widget.TextHistoryPane;
@@ -17,17 +17,10 @@ import java.io.StringWriter;
 import java.util.Date;
 import javax.swing.JButton;
 
-/**
- *
- */
 public class DateFormatMark extends OpPanel {
-  private ComboBox<String> testCB;
-  private DateFormatter dateFormatter = new DateFormatter();
-  private TextHistoryPane ta;
+  private final ComboBox<String> testCB;
+  private final TextHistoryPane ta;
 
-  /**
-   *
-   */
   public DateFormatMark(PreferencesExt prefs) {
     super(prefs, "dateFormatMark:", false, false);
 
@@ -42,25 +35,22 @@ public class DateFormatMark extends OpPanel {
     buttPanel.add(compareButton);
   }
 
-  /** */
   @Override
   public boolean process(Object o) {
     return false;
   }
 
-  /** */
   @Override
   public void closeOpenFiles() {
     // Nothing to do here.
   }
 
-  /** */
   private void apply(Object mark, Object testo) {
     String dateFormatMark = (String) mark;
     String filename = (String) testo;
     try {
       Date coordValueDate = DateFromString.getDateUsingDemarkatedCount(filename, dateFormatMark, '#');
-      String coordValue = dateFormatter.toDateTimeStringISO(coordValueDate);
+      String coordValue = CalendarDateFormatter.toDateTimeStringISO(coordValueDate);
       ta.setText("got date= " + coordValue);
     } catch (Exception e) {
       StringWriter sw = new StringWriter(5000);

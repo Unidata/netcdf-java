@@ -10,8 +10,9 @@ package ucar.nc2.ui.gis.shapefile;
  *
  * @author Kirk Waters
  * @author Russ Rew, 1998, added documentation
+ * @deprecated
  */
-
+@Deprecated
 public class Swap {
 
   /**

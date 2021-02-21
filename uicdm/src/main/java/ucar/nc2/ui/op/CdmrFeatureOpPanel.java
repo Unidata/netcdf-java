@@ -18,15 +18,9 @@ import java.util.Formatter;
 import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
 
-/**
- *
- */
 public class CdmrFeatureOpPanel extends OpPanel {
-  private CdmrFeaturePanel panel;
+  private final CdmrFeaturePanel panel;
 
-  /**
-   *
-   */
   public CdmrFeatureOpPanel(PreferencesExt p) {
     super(p, "file:", true, false);
     panel = new CdmrFeaturePanel(prefs);
@@ -54,7 +48,6 @@ public class CdmrFeatureOpPanel extends OpPanel {
     BAMutil.addActionToContainer(buttPanel, infoAction);
   }
 
-  /** */
   @Override
   public boolean process(Object o) {
     String command = (String) o;
@@ -76,14 +69,12 @@ public class CdmrFeatureOpPanel extends OpPanel {
     return !err;
   }
 
-  /** */
   @Override
   public void save() {
     panel.save();
     super.save();
   }
 
-  /** */
   @Override
   public void closeOpenFiles() throws IOException {
     panel.closeOpenFiles();

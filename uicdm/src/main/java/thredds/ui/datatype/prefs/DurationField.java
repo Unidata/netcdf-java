@@ -18,9 +18,7 @@ import javax.swing.text.*;
  * @author John Caron
  * @see ucar.ui.prefs.Field
  */
-
 public class DurationField extends ucar.ui.prefs.Field {
-
   protected JTextComponent tf;
 
   /**
@@ -44,7 +42,6 @@ public class DurationField extends ucar.ui.prefs.Field {
 
     if (validValue != null)
       tf.setText(validValue.toString());
-
 
     finish();
   }

@@ -39,7 +39,7 @@ public class DatasetTreeView extends JPanel {
       org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   // ui
-  private JTree tree;
+  private final JTree tree;
   private DatasetTreeModel model;
   private NetcdfFile currentDataset;
 
@@ -171,8 +171,8 @@ public class DatasetTreeView extends JPanel {
   }
 
   private class GroupNode implements TreeNode {
-    private Group group;
-    private GroupNode parent;
+    private final Group group;
+    private final GroupNode parent;
     private List<Object> children;
 
     GroupNode(GroupNode parent, Group group) {
@@ -205,18 +205,18 @@ public class DatasetTreeView extends JPanel {
     void makeChildren() {
       children = new ArrayList<>();
 
-      List dims = group.getDimensions();
-      for (Object dim : dims) {
-        children.add(new DimensionNode(this, (Dimension) dim));
+      List<Dimension> dims = group.getDimensions();
+      for (Dimension dim : dims) {
+        children.add(new DimensionNode(this, dim));
       }
 
       for (Variable var : group.getVariables()) {
         children.add(new VariableNode(this, var));
       }
 
-      List groups = group.getGroups();
-      for (Object group1 : groups) {
-        children.add(new GroupNode(this, (Group) group1));
+      List<Group> groups = group.getGroups();
+      for (Group group1 : groups) {
+        children.add(new GroupNode(this, group1));
       }
     }
 
@@ -281,8 +281,8 @@ public class DatasetTreeView extends JPanel {
   }
 
   private static class VariableNode implements TreeNode {
-    private Variable var;
-    private TreeNode parent;
+    private final Variable var;
+    private final TreeNode parent;
     private List<Object> children;
 
     VariableNode(TreeNode parent, Variable var) {
@@ -361,12 +361,12 @@ public class DatasetTreeView extends JPanel {
   }
 
   private static class DimensionNode implements TreeNode {
-    private Dimension d;
-    private TreeNode parent;
+    private final Dimension dimension;
+    private final TreeNode parent;
 
-    DimensionNode(TreeNode parent, Dimension d) {
+    DimensionNode(TreeNode parent, Dimension dimension) {
       this.parent = parent;
-      this.d = d;
+      this.dimension = dimension;
     }
 
     @Nullable
@@ -400,11 +400,11 @@ public class DatasetTreeView extends JPanel {
     }
 
     public String toString() {
-      return d.getShortName();
+      return dimension.getShortName();
     }
 
     public String getToolTipText() {
-      return d.toString();
+      return dimension.toString();
     }
   }
 

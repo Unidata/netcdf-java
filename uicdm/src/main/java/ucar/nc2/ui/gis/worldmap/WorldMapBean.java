@@ -9,7 +9,6 @@ import ucar.nc2.ui.util.Renderer;
 import ucar.ui.widget.BAMutil;
 
 /** Wraps the default WorldMap into a MapBean */
-
 public class WorldMapBean extends MapBean {
   private Renderer rend;
 

@@ -35,13 +35,14 @@ import java.util.List;
  */
 public class Grib1TablesViewer extends JPanel {
 
-  private PreferencesExt prefs;
+  private final PreferencesExt prefs;
 
-  private BeanTable codeTable, entryTable;
-  private JSplitPane split;
+  private final BeanTable<TableBean> codeTable;
+  private final BeanTable<EntryBean> entryTable;
+  private final JSplitPane split;
 
-  private TextHistoryPane infoTA;
-  private IndependentWindow infoWindow;
+  private final TextHistoryPane infoTA;
+  private final IndependentWindow infoWindow;
 
   private Grib1TableDialog showTableDialog;
   private Grib1TableCompareDialog compareTableDialog;
@@ -49,25 +50,25 @@ public class Grib1TablesViewer extends JPanel {
   public Grib1TablesViewer(PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
 
-    codeTable = new BeanTable(TableBean.class, (PreferencesExt) prefs.node("CodeTableBean"), false);
+    codeTable = new BeanTable<>(TableBean.class, (PreferencesExt) prefs.node("CodeTableBean"), false);
     codeTable.addListSelectionListener(e -> {
-      TableBean csb = (TableBean) codeTable.getSelectedBean();
-      setEntries(csb.table);
+      TableBean csb = codeTable.getSelectedBean();
+      if (csb != null) {
+        setEntries(csb.table);
+      }
     });
-
     ucar.ui.widget.PopupMenu varPopup = new PopupMenu(codeTable.getJTable(), "Options");
     varPopup.addAction("Show File contents", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        TableBean bean = (TableBean) codeTable.getSelectedBean();
-        if (bean == null)
-          return;
-        showFile(bean);
+        TableBean bean = codeTable.getSelectedBean();
+        if (bean != null) {
+          showFile(bean);
+        }
       }
     });
-
     varPopup.addAction("Compare to default WMO table", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        TableBean bean = (TableBean) codeTable.getSelectedBean();
+        TableBean bean = codeTable.getSelectedBean();
         if (bean == null)
           return;
         initTableDialog();
@@ -84,28 +85,26 @@ public class Grib1TablesViewer extends JPanel {
         compareTableDialog.setVisible(true);
       }
     });
-
     varPopup.addAction("Compare two tables", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        TableBean bean = (TableBean) codeTable.getSelectedBean();
+        TableBean bean = codeTable.getSelectedBean();
         if (bean == null)
           return;
         initTableDialog();
 
-        List list = codeTable.getSelectedBeans();
+        List<TableBean> list = codeTable.getSelectedBeans();
         if (list.size() == 2) {
-          TableBean bean1 = (TableBean) list.get(0);
-          TableBean bean2 = (TableBean) list.get(1);
+          TableBean bean1 = list.get(0);
+          TableBean bean2 = list.get(1);
           compareTableDialog.setTable1(bean1);
           compareTableDialog.setTable2(bean2);
           compareTableDialog.setVisible(true);
         }
       }
     });
-
     varPopup.addAction("Compare to all non-local tables", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        TableBean bean = (TableBean) codeTable.getSelectedBean();
+        TableBean bean = codeTable.getSelectedBean();
         if (bean == null)
           return;
         initTableDialog();
@@ -116,25 +115,16 @@ public class Grib1TablesViewer extends JPanel {
       }
     });
 
-    entryTable = new BeanTable(EntryBean.class, (PreferencesExt) prefs.node("EntryBean"), false);
-    /*
-     * entryTable.addListSelectionListener(new ListSelectionListener() {
-     * public void valueChanged(ListSelectionEvent e) {
-     * entryTable.getSelectedBean();
-     * }
-     * });
-     */
-
+    entryTable = new BeanTable<>(EntryBean.class, (PreferencesExt) prefs.node("EntryBean"), false);
     varPopup = new PopupMenu(entryTable.getJTable(), "Options");
     varPopup.addAction("Show in all tables", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        EntryBean bean = (EntryBean) entryTable.getSelectedBean();
+        EntryBean bean = entryTable.getSelectedBean();
         if (bean == null)
           return;
         showAll(bean);
       }
     });
-
 
     // the info window
     infoTA = new TextHistoryPane();
@@ -169,7 +159,6 @@ public class Grib1TablesViewer extends JPanel {
     } catch (Exception e) {
       e.printStackTrace();
     }
-
   }
 
   private void initTableDialog() {
@@ -185,14 +174,10 @@ public class Grib1TablesViewer extends JPanel {
     codeTable.saveState(false);
     entryTable.saveState(false);
     prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
-    // prefs.putBeanObject("InfoWindowBounds2", infoWindow2.getBounds());
     prefs.putInt("splitPos", split.getDividerLocation());
-    // prefs.putInt("splitPos2", split2.getDividerLocation());
-    // if (fileChooser != null) fileChooser.save();
   }
 
-
-  public void setTable(String filename) throws IOException {
+  public void setTable(String filename) {
     Grib1ParamTableReader table = new Grib1ParamTableReader(filename);
     TableBean bean = new TableBean(table);
     codeTable.addBean(bean);
@@ -202,7 +187,7 @@ public class Grib1TablesViewer extends JPanel {
   private void setEntries(Grib1ParamTableReader table) {
     Map<Integer, Grib1Parameter> map = table.getParameters();
     if (map == null) {
-      map = table.getParameters();
+      return;
     }
 
     ArrayList<Integer> params = new ArrayList<>(map.keySet());
@@ -311,7 +296,6 @@ public class Grib1TablesViewer extends JPanel {
           out.format("**No key %s (%s) in first table%n", key, d2);
       }
     }
-
   }
 
   private boolean equiv(String org1, String org2) {

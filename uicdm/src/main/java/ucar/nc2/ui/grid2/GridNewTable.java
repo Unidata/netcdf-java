@@ -100,10 +100,12 @@ public class GridNewTable extends JPanel {
     dsPopup.addAction("Show GridDataset", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         DatasetBean bean = dsTable.getSelectedBean();
-        infoTA.clear();
-        infoTA.appendLine(bean.gdataset.toString());
-        infoTA.gotoTop();
-        infoWindow.show();
+        if (bean != null) {
+          infoTA.clear();
+          infoTA.appendLine(bean.gdataset.toString());
+          infoTA.gotoTop();
+          infoWindow.show();
+        }
       }
     });
 
@@ -112,10 +114,12 @@ public class GridNewTable extends JPanel {
     csPopup.addAction("Show Grid", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         GridBean vb = covTable.getSelectedBean();
-        infoTA.clear();
-        infoTA.appendLine(vb.geogrid.toString());
-        infoTA.gotoTop();
-        infoWindow.show();
+        if (vb != null) {
+          infoTA.clear();
+          infoTA.appendLine(vb.geogrid.toString());
+          infoTA.gotoTop();
+          infoWindow.show();
+        }
       }
     });
 
@@ -124,12 +128,14 @@ public class GridNewTable extends JPanel {
     csPopup.addAction("Show GridCoordinateSystem", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         CoordSysBean bean = csysTable.getSelectedBean();
-        infoTA.clear();
-        Formatter f = new Formatter();
-        bean.gcs.show(f, false);
-        infoTA.appendLine(f.toString());
-        infoTA.gotoTop();
-        infoWindow.show();
+        if (bean != null) {
+          infoTA.clear();
+          Formatter f = new Formatter();
+          bean.gcs.show(f, false);
+          infoTA.appendLine(f.toString());
+          infoTA.gotoTop();
+          infoWindow.show();
+        }
       }
     });
 
@@ -138,22 +144,25 @@ public class GridNewTable extends JPanel {
     csPopup.addAction("Show GridAxis", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         AxisBean bean = axisTable.getSelectedBean();
-        infoTA.clear();
-        infoTA.appendLine(bean.axis.toString());
-        infoTA.gotoTop();
-        infoWindow.show();
+        if (bean != null) {
+          infoTA.clear();
+          infoTA.appendLine(bean.axis.toString());
+          infoTA.gotoTop();
+          infoWindow.show();
+        }
       }
     });
     csPopup.addAction("Show Coord Value differences", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         AxisBean bean = axisTable.getSelectedBean();
-        infoTA.clear();
-        infoTA.appendLine(bean.showCoordValueDiffs());
-        infoTA.gotoTop();
-        infoWindow.show();
+        if (bean != null) {
+          infoTA.clear();
+          infoTA.appendLine(bean.showCoordValueDiffs());
+          infoTA.gotoTop();
+          infoWindow.show();
+        }
       }
     });
-
   }
 
   public void clear() {

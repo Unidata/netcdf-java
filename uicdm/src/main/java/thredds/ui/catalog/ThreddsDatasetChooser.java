@@ -10,10 +10,7 @@ import ucar.util.prefs.PreferencesExt;
 import javax.swing.*;
 import java.awt.*;
 import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.Formatter;
-
-// import thredds.catalog.ui.tools.CatalogSearcher;
 
 /**
  * A Swing widget for THREDDS clients that combines a CatalogChooser, and optionally a QueryChooser
@@ -60,15 +57,12 @@ import java.util.Formatter;
  */
 
 public class ThreddsDatasetChooser extends JPanel {
-  private CatalogChooser catalogChooser;
-  private JTabbedPane tabbedPane;
+  private final CatalogChooser catalogChooser;
+  private final JTabbedPane tabbedPane;
 
-  private boolean doResolve; // shoul we resolve Resolver datasets?
-  private boolean pipeOut; // send results to standard out
-  private boolean messageOut; // send results to popup message
-  private JFrame frame; // need for popup messages
-
-  private boolean debugResolve;
+  private final boolean pipeOut; // send results to standard out
+  private final boolean messageOut; // send results to popup message
+  private final JFrame frame; // need for popup messages
 
   /**
    * Usual Constructor.
@@ -78,7 +72,7 @@ public class ThreddsDatasetChooser extends JPanel {
    * @param tabs add panels to this JTabbedPane, may be null if you are using as Dialog.
    */
   public ThreddsDatasetChooser(PreferencesExt prefs, JTabbedPane tabs) {
-    this(prefs, tabs, null, false, false, false);
+    this(prefs, tabs, null, false, false);
   }
 
   /**
@@ -93,7 +87,7 @@ public class ThreddsDatasetChooser extends JPanel {
    * @param messageOutput send selection to popup message
    */
   public ThreddsDatasetChooser(PreferencesExt prefs, JTabbedPane tabs, JFrame frame, boolean pipeOutput,
-      boolean messageOutput, boolean addDqc) {
+      boolean messageOutput) {
 
     this.frame = frame;
     this.pipeOut = pipeOutput;
@@ -102,19 +96,17 @@ public class ThreddsDatasetChooser extends JPanel {
     // create the catalog chooser
     PreferencesExt node = (prefs == null) ? null : (PreferencesExt) prefs.node("catChooser");
     catalogChooser = new CatalogChooser(node, true, true, true);
-    catalogChooser.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
-      public void propertyChange(java.beans.PropertyChangeEvent e) {
+    catalogChooser.addPropertyChangeListener(e -> {
 
-        if (e.getPropertyName().equals("InvAccess")) {
-          firePropertyChangeEvent(e);
-          return;
-        }
+      if (e.getPropertyName().equals("InvAccess")) {
+        firePropertyChangeEvent(e);
+        return;
+      }
 
-        // see if this dataset is really a qc
-        if (e.getPropertyName().equals("Dataset") || e.getPropertyName().equals("CoordSys")
-            || e.getPropertyName().equals("File")) {
-          firePropertyChangeEvent(e);
-        }
+      // see if this dataset is really a qc
+      if (e.getPropertyName().equals("Dataset") || e.getPropertyName().equals("CoordSys")
+          || e.getPropertyName().equals("File")) {
+        firePropertyChangeEvent(e);
       }
     });
 
@@ -132,7 +124,7 @@ public class ThreddsDatasetChooser extends JPanel {
    * If true, may throw "Datasets" event.
    */
   public void setDoResolve(boolean doResolve) {
-    this.doResolve = doResolve;
+    // shoul we resolve Resolver datasets?
   }
 
   /**
@@ -211,9 +203,9 @@ public class ThreddsDatasetChooser extends JPanel {
   }
 
   private void getAccessURLs(Formatter buff, Dataset ds) {
-    for (Access ac : ds.getAccess())
+    for (Access ac : ds.getAccess()) {
       buff.format("%s %s %n", ac.getStandardUrlName(), ac.getService().getType());
-
+    }
   }
 
   private void showDatasetInfo(Formatter buff, thredds.client.catalog.Dataset ds) {
@@ -241,11 +233,9 @@ public class ThreddsDatasetChooser extends JPanel {
       super(frame, title, modal);
 
       // L&F may change
-      UIManager.addPropertyChangeListener(new PropertyChangeListener() {
-        public void propertyChange(PropertyChangeEvent e) {
-          if (e.getPropertyName().equals("lookAndFeel"))
-            SwingUtilities.updateComponentTreeUI(ThreddsDatasetChooser.Dialog.this);
-        }
+      UIManager.addPropertyChangeListener(e -> {
+        if (e.getPropertyName().equals("lookAndFeel"))
+          SwingUtilities.updateComponentTreeUI(Dialog.this);
       });
 
       // add a dismiss button

@@ -9,22 +9,17 @@ import ucar.nc2.ui.ToolsAboutWindow;
 import ucar.nc2.ui.ToolsSplashScreen;
 import ucar.nc2.ui.ToolsUI;
 import ucar.ui.widget.BAMutil;
+
 import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 
-/**
- *
- */
 public class HelpMenu extends JMenu {
 
-  private ToolsUI toolsui;
+  private final ToolsUI toolsui;
   private ToolsAboutWindow aboutWindow;
 
-  /**
-   *
-   */
   public HelpMenu(ToolsUI tui) {
     super("Help");
     setMnemonic('H');

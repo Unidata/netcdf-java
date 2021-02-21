@@ -33,22 +33,20 @@ import java.nio.ByteOrder;
 import java.util.*;
 import java.util.List;
 
-/**
- * Describe
- *
- * @author caron
- * @since 8/12/2014
- */
+/** Show Grib1 data. */
 public class Grib1DataTable extends JPanel {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2DataPanel.class);
 
-  private PreferencesExt prefs;
+  private final PreferencesExt prefs;
 
-  private BeanTable param1BeanTable, record1BeanTable;
-  private JSplitPane split, split2;
+  private final BeanTable<Grib1ParameterBean> param1BeanTable;
+  private final BeanTable<Grib1RecordBean> record1BeanTable;
+  private final JSplitPane split;
+  private final JSplitPane split2;
 
-  private TextHistoryPane infoPopup, infoPopup2, drsInfo;
-  private IndependentWindow infoWindow, infoWindow2;
+  private final TextHistoryPane infoPopup2;
+  private final IndependentWindow infoWindow;
+  private final IndependentWindow infoWindow2;
   private FileManager fileChooser;
 
   public Grib1DataTable(PreferencesExt prefs) {
@@ -57,20 +55,20 @@ public class Grib1DataTable extends JPanel {
     PopupMenu varPopup;
 
     ////////////////
-    param1BeanTable = new BeanTable(Grib1ParameterBean.class, (PreferencesExt) prefs.node("Param1Bean"), false,
+    param1BeanTable = new BeanTable<>(Grib1ParameterBean.class, (PreferencesExt) prefs.node("Param1Bean"), false,
         "UniquePDSVariables", "from Grib2Input.getRecords()", null);
     param1BeanTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
-        Grib1ParameterBean pb = (Grib1ParameterBean) param1BeanTable.getSelectedBean();
-        if (pb != null)
+        Grib1ParameterBean pb = param1BeanTable.getSelectedBean();
+        if (pb != null) {
           record1BeanTable.setBeans(pb.getRecordBeans());
+        }
       }
     });
-
     varPopup = new PopupMenu(param1BeanTable.getJTable(), "Options");
     varPopup.addAction("Show raw PDS bytes", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        Grib1ParameterBean pb = (Grib1ParameterBean) param1BeanTable.getSelectedBean();
+        Grib1ParameterBean pb = param1BeanTable.getSelectedBean();
         if (pb != null) {
           Formatter f = new Formatter();
           Grib1CollectionPanel.showRawPds(pb.pds, f);
@@ -82,7 +80,7 @@ public class Grib1DataTable extends JPanel {
     });
     varPopup.addAction("Show processed PDS", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        Grib1ParameterBean pbean = (Grib1ParameterBean) param1BeanTable.getSelectedBean();
+        Grib1ParameterBean pbean = param1BeanTable.getSelectedBean();
         if (pbean != null) {
           Formatter f = new Formatter();
           pbean.pds.showPds(cust, f);
@@ -93,13 +91,12 @@ public class Grib1DataTable extends JPanel {
       }
     });
 
-    record1BeanTable = new BeanTable(Grib1RecordBean.class, (PreferencesExt) prefs.node("Record2Bean"), false,
+    record1BeanTable = new BeanTable<>(Grib1RecordBean.class, (PreferencesExt) prefs.node("Record2Bean"), false,
         "DataRepresentation", "from Grib2Input.getRecords()", null);
     varPopup = new PopupMenu(record1BeanTable.getJTable(), "Options");
-
     varPopup.addAction("Show raw PDS bytes", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        Grib1RecordBean bean = (Grib1RecordBean) record1BeanTable.getSelectedBean();
+        Grib1RecordBean bean = record1BeanTable.getSelectedBean();
         if (bean != null) {
           Formatter f = new Formatter();
           Grib1CollectionPanel.showRawPds(bean.pds, f);
@@ -109,10 +106,9 @@ public class Grib1DataTable extends JPanel {
         }
       }
     });
-
     varPopup.addAction("Show Complete Grib1 Record", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        Grib1RecordBean bean = (Grib1RecordBean) record1BeanTable.getSelectedBean();
+        Grib1RecordBean bean = record1BeanTable.getSelectedBean();
         if (bean != null) {
           Formatter f = new Formatter();
           String filename = fileList.get(bean.gr.getFile()).getPath();
@@ -123,10 +119,9 @@ public class Grib1DataTable extends JPanel {
         }
       }
     });
-
     varPopup.addAction("Show Data.Info", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        Grib1RecordBean bean = (Grib1RecordBean) record1BeanTable.getSelectedBean();
+        Grib1RecordBean bean = record1BeanTable.getSelectedBean();
         if (bean != null) {
           Formatter f = new Formatter();
           bean.showDataRecord(f);
@@ -136,13 +131,12 @@ public class Grib1DataTable extends JPanel {
         }
       }
     });
-
     varPopup.addAction("Compare Grib1 Records", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        List list = record1BeanTable.getSelectedBeans();
+        List<Grib1RecordBean> list = record1BeanTable.getSelectedBeans();
         if (list.size() == 2) {
-          Grib1RecordBean bean1 = (Grib1RecordBean) list.get(0);
-          Grib1RecordBean bean2 = (Grib1RecordBean) list.get(1);
+          Grib1RecordBean bean1 = list.get(0);
+          Grib1RecordBean bean2 = list.get(1);
           Formatter f = new Formatter();
           compare(bean1, bean2, f);
           infoPopup2.setText(f.toString());
@@ -151,13 +145,12 @@ public class Grib1DataTable extends JPanel {
         }
       }
     });
-
     varPopup.addAction("Compare Data", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        List list = record1BeanTable.getSelectedBeans();
+        List<Grib1RecordBean> list = record1BeanTable.getSelectedBeans();
         if (list.size() == 2) {
-          Grib1RecordBean bean1 = (Grib1RecordBean) list.get(0);
-          Grib1RecordBean bean2 = (Grib1RecordBean) list.get(1);
+          Grib1RecordBean bean1 = list.get(0);
+          Grib1RecordBean bean2 = list.get(1);
           Formatter f = new Formatter();
           compareData(bean1, bean2, f);
           infoPopup2.setText(f.toString());
@@ -166,10 +159,9 @@ public class Grib1DataTable extends JPanel {
         }
       }
     });
-
     varPopup.addAction("Show Data Max/Min", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        Grib1RecordBean bean = (Grib1RecordBean) record1BeanTable.getSelectedBean();
+        Grib1RecordBean bean = record1BeanTable.getSelectedBean();
         if (bean != null) {
           Formatter f = new Formatter();
           showMinMax(bean, GribData.InterpolationMethod.none, f);
@@ -179,10 +171,9 @@ public class Grib1DataTable extends JPanel {
         }
       }
     });
-
     varPopup.addAction("Show Data Raw", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        Grib1RecordBean bean = (Grib1RecordBean) record1BeanTable.getSelectedBean();
+        Grib1RecordBean bean = record1BeanTable.getSelectedBean();
         if (bean != null) {
           Formatter f = new Formatter();
           showData(bean, GribData.InterpolationMethod.none, f);
@@ -192,10 +183,9 @@ public class Grib1DataTable extends JPanel {
         }
       }
     });
-
     varPopup.addAction("Show Data Linear Interpretation", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        Grib1RecordBean bean = (Grib1RecordBean) record1BeanTable.getSelectedBean();
+        Grib1RecordBean bean = record1BeanTable.getSelectedBean();
         if (bean != null) {
           Formatter f = new Formatter();
           showData(bean, GribData.InterpolationMethod.linear, f);
@@ -205,10 +195,9 @@ public class Grib1DataTable extends JPanel {
         }
       }
     });
-
     varPopup.addAction("Show Data Cubic Interpolation", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        Grib1RecordBean bean = (Grib1RecordBean) record1BeanTable.getSelectedBean();
+        Grib1RecordBean bean = record1BeanTable.getSelectedBean();
         if (bean != null) {
           Formatter f = new Formatter();
           showData(bean, GribData.InterpolationMethod.cubic, f);
@@ -218,18 +207,16 @@ public class Grib1DataTable extends JPanel {
         }
       }
     });
-
     varPopup.addAction("Extract GribRecord to File", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        List beans = record1BeanTable.getSelectedBeans();
+        List<Grib1RecordBean> beans = record1BeanTable.getSelectedBeans();
         if (!beans.isEmpty())
           extractToFile(beans);
       }
     });
-
     varPopup.addAction("Show Bitmap", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        Grib1RecordBean bean = (Grib1RecordBean) record1BeanTable.getSelectedBean();
+        Grib1RecordBean bean = record1BeanTable.getSelectedBean();
         if (bean != null) {
           Formatter f = new Formatter();
           try {
@@ -243,10 +230,9 @@ public class Grib1DataTable extends JPanel {
         }
       }
     });
-
     varPopup.addAction("Compute Scale/offset of data", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        Grib1RecordBean bean = (Grib1RecordBean) record1BeanTable.getSelectedBean();
+        Grib1RecordBean bean = record1BeanTable.getSelectedBean();
         if (bean != null) {
           Formatter f = new Formatter();
           GribData.calcScaleOffset(bean, f);
@@ -257,13 +243,9 @@ public class Grib1DataTable extends JPanel {
       }
     });
 
-    // gds2Table = new BeanTable(Gds2Bean.class, (PreferencesExt) prefs.node("Gds2Bean"), false,
-    // "Grib2GridDefinitionSection", "unique from Grib1Records");
-    // varPopup = new PopupMenu(gds2Table.getJTable(), "Options");
-
     /////////////////////////////////////////
     // the info windows
-    infoPopup = new TextHistoryPane();
+    TextHistoryPane infoPopup = new TextHistoryPane();
     infoWindow = new IndependentWindow("Extra Information", BAMutil.getImage("nj22/NetcdfUI"), infoPopup);
     infoWindow.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 500, 300)));
 
@@ -271,7 +253,7 @@ public class Grib1DataTable extends JPanel {
     infoWindow2 = new IndependentWindow("Extra Information", BAMutil.getImage("nj22/NetcdfUI"), infoPopup2);
     infoWindow2.setBounds((Rectangle) prefs.getBean("InfoWindowBounds2", new Rectangle(300, 300, 500, 300)));
 
-    drsInfo = new TextHistoryPane();
+    TextHistoryPane drsInfo = new TextHistoryPane();
 
     setLayout(new BorderLayout());
 
@@ -282,7 +264,6 @@ public class Grib1DataTable extends JPanel {
     split.setDividerLocation(prefs.getInt("splitPos", 500));
 
     add(split, BorderLayout.CENTER);
-
   }
 
   public void save() {
@@ -302,7 +283,7 @@ public class Grib1DataTable extends JPanel {
   private MCollection dcm;
   private List<MFile> fileList;
   private Grib1Customizer cust;
-  private FeatureCollectionConfig config = new FeatureCollectionConfig(); // default values
+  private final FeatureCollectionConfig config = new FeatureCollectionConfig(); // default values
 
   public void setCollection(String spec) throws IOException {
     this.spec = spec;
@@ -526,7 +507,7 @@ public class Grib1DataTable extends JPanel {
     f.format("total records = %d%n", total);
   }
 
-  private void extractToFile(List beans) {
+  private void extractToFile(List<Grib1RecordBean> beans) {
 
     if (fileChooser == null)
       fileChooser = new FileManager(null, null, null, (PreferencesExt) prefs.node("FileManager"));
@@ -540,8 +521,7 @@ public class Grib1DataTable extends JPanel {
       int n = 0;
       MFile curr = null;
 
-      for (Object o : beans) {
-        Grib1RecordBean bean = (Grib1RecordBean) o;
+      for (Grib1RecordBean bean : beans) {
         MFile mfile = fileList.get(bean.gr.getFile());
         if (curr == null || curr != mfile) {
           if (raf != null)
@@ -600,10 +580,8 @@ public class Grib1DataTable extends JPanel {
       f.format("IOException %s", e.getMessage());
       return;
     }
-
     Misc.compare(data1, data2, f);
   }
-
 
   private void compare(Grib1RecordBean bean1, Grib1RecordBean bean2, Formatter f) {
     Grib1CollectionPanel.compare(bean1.gr.getPDSsection(), bean2.gr.getPDSsection(), f);
@@ -705,18 +683,15 @@ public class Grib1DataTable extends JPanel {
     Grib1Parameter param;
 
     // no-arg constructor
-
     public Grib1ParameterBean() {}
 
-    public Grib1ParameterBean(Grib1Record r) throws IOException {
+    public Grib1ParameterBean(Grib1Record r) {
       this.gr = r;
 
-      // long refTime = r.getId().getReferenceDate().getMillis();
       pds = r.getPDSsection();
       id = r.getIs();
       records = new ArrayList<>();
       param = cust.getParameter(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion(), pds.getParameterNumber());
-      // gdsKey = r.getGDSsection().calcCRC();
     }
 
     void addRecord(Grib1Record r, ucar.unidata.io.RandomAccessFile raf) throws IOException {
@@ -726,7 +701,6 @@ public class Grib1DataTable extends JPanel {
     List<Grib1RecordBean> getRecordBeans() {
       return records;
     }
-
 
     public String getName() {
       if (param == null)
@@ -822,16 +796,6 @@ public class Grib1DataTable extends JPanel {
   }
 
   ////////////////////////////////////////////////////
-
-  static void showBytes(Formatter f, byte[] buff) {
-    for (byte b : buff) {
-      int ub = (b < 0) ? b + 256 : b;
-      if (b >= 32 && b < 127)
-        f.format("%s", (char) ub);
-      else
-        f.format("(%d)", ub);
-    }
-  }
 
   public class Grib1RecordBean implements GribData.Bean {
     Grib1Record gr;

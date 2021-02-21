@@ -59,7 +59,6 @@ class PicturePane extends JComponent implements ScalablePictureListener {
    */
   public ScalablePicture sclPic = new ScalablePicture();
 
-
   /**
    * Flag that lets the object know if the mouse is in dragging mode.
    */
@@ -77,7 +76,7 @@ class PicturePane extends JComponent implements ScalablePictureListener {
    * the point inside the picture that will be put at the middle of the screen.
    * the coordinates are in x,y in the coordinate space of the picture.
    */
-  private Point focusPoint = new Point();
+  private final Point focusPoint = new Point();
 
 
   /**
@@ -95,19 +94,19 @@ class PicturePane extends JComponent implements ScalablePictureListener {
   /**
    * location of the info texts if shown
    */
-  private Point infoPoint = new Point(15, 15);
+  private final Point infoPoint = new Point(15, 15);
 
 
   /**
    * line spacing for the info text that can be superimposed on the picture
    */
-  private int lineSpacing = 12;
+  private final int lineSpacing = 12;
 
 
   /**
    * Font for the info if shown.
    */
-  private Font infoFont = new Font("Arial", Font.PLAIN, 10);
+  private final Font infoFont = new Font("Arial", Font.PLAIN, 10);
 
 
 
@@ -126,7 +125,6 @@ class PicturePane extends JComponent implements ScalablePictureListener {
   /**
    * Constructor
    **/
-
   public PicturePane() {
 
     // register an interest in mouse events
@@ -221,7 +219,7 @@ class PicturePane extends JComponent implements ScalablePictureListener {
     }
   }
 
-  private int maximumPictureSize = 5000; // was Settings
+  private final int maximumPictureSize = 5000; // was Settings
 
 
   /**

@@ -18,10 +18,6 @@ package ucar.nc2.ui.image;
 import java.util.*;
 import java.net.*;
 
-/**
- * class that manages the cache of pictures
- *
- **/
 public class PictureCache {
 
   /**
@@ -76,29 +72,6 @@ public class PictureCache {
     }
   }
 
-
-
-  /*
-   * Method that can be called when a picture is no longer needed.
-   * These pictures will be removed first from the cache when
-   * we need more space.
-   */
-  /*
-   * public static void suggestCacheRemoval( SortableDefaultMutableTreeNode node ) {
-   * if (node == null ) return;
-   * Object userObject = node.getUserObject();
-   * if ( userObject instanceof PictureInfo ) {
-   * try {
-   * removalQueue.add( ((PictureInfo) userObject ).getHighresURL().toString() );
-   * } catch ( MalformedURLException x ) {
-   * // ignore
-   * }
-   * }
-   * }
-   */
-
-
-
   /**
    * returns whether an image is in the cache.
    * <p>
@@ -114,8 +87,6 @@ public class PictureCache {
   public static synchronized boolean isInCache(String urlString) {
     return pictureCache.containsKey(urlString);
   }
-
-
 
   /**
    * store an image in the cache
@@ -145,8 +116,6 @@ public class PictureCache {
 
     if (pictureCache.size() < maxCache)
       pictureCache.put(url.toString(), sp);
-
-    // reportCache();
   }
 
 
@@ -170,7 +139,6 @@ public class PictureCache {
     return (SourcePicture) pictureCache.get(url.toString());
   }
 
-
   /**
    * clears out all images in the cache. Important after OutOfMemoryErrors
    */
@@ -178,7 +146,6 @@ public class PictureCache {
     Tools.log("PictureCache.clear: Zapping entire cache");
     pictureCache.clear();
   }
-
 
   /**
    * method to inspect the cache
@@ -193,8 +160,6 @@ public class PictureCache {
     Tools.log("  End of cache contents");
   }
 
-
-
   /**
    * method to stop all background loading
    */
@@ -204,8 +169,6 @@ public class PictureCache {
       ((SourcePicture) e.nextElement()).stopLoading();
     }
   }
-
-
 
   /**
    * method to stop all background loading except the indicated file. Returns whether the
@@ -227,7 +190,5 @@ public class PictureCache {
     }
     return inProgress;
   }
-
-
 
 }

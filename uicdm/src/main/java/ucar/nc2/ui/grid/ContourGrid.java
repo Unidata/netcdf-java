@@ -4,6 +4,7 @@
  */
 package ucar.nc2.ui.grid;
 
+import com.google.common.collect.ImmutableList;
 import ucar.ma2.*; // for Array, Index, MAMath
 import ucar.nc2.dt.GridDatatype;
 import ucar.ui.prefs.Debug;
@@ -160,23 +161,24 @@ import java.util.*; // for Iterator and ArrayList
  * @author wier
  */
 public class ContourGrid {
-  private GridDatatype geogrid;
-  private ucar.ma2.Array dataArray;
-  private Index dgIndex;
+  private final GridDatatype geogrid;
+  private final ucar.ma2.Array dataArray;
+  private final Index dgIndex;
 
-  private List<Double> contourValues = new ArrayList<>(); // contour levels
-  private List<ContourLine> contourLines = new ArrayList<>(); // the contours made here
+  private final List<Double> contourValues = new ArrayList<>(); // contour levels
+  private final List<ContourLine> contourLines = new ArrayList<>(); // the contours made here
 
-  private int[][] contourOnVertlEdge; // flag if a cell has a contour in it
-  private int[][] contourOnHorizEdge; // ditto - crossing bottom or top
-  private double[] xpositions; // list of x positions along the grid
-  private double[] ypositions; // list of y positions of the grid
+  private final int[][] contourOnVertlEdge; // flag if a cell has a contour in it
+  private final int[][] contourOnHorizEdge; // ditto - crossing bottom or top
+  private final double[] xpositions; // list of x positions along the grid
+  private final double[] ypositions; // list of y positions of the grid
+  private final int xMaxInd; // the data grid's max x index (not size)
+  private final int yMaxInd; // the data grid's max y index
+  private final int dimX;
+  private final double gridmax, gridmin;
+
   private double conLevel; // a working contour level
-  private int xMaxInd; // the data grid's max x index (not size)
-  private int yMaxInd; // the data grid's max y index
-  private int dimX;
   private int numLevel;
-  private double gridmax, gridmin;
 
   /**
    * Construct the ContourGrid object for this input data of
@@ -421,7 +423,6 @@ public class ContourGrid {
   private void setupContourCrossings() {
     int m, i, j;
     double clevel, v1, v2;
-    boolean test;
 
     // create working array of contour levels
     // to save multiple access
@@ -663,17 +664,10 @@ public class ContourGrid {
    */
   private List<Point2D.Double> followContour(char firstSide, int i, int j) {
     // the object to return:
-    ArrayList cLinePts = new ArrayList();
-
-    char heading;
-
+    ArrayList<Point2D.Double> cLinePts = new ArrayList<>();
     // for positions in main grid coordinates
     Point2D.Double mainGridPoint;
     Point2D.Double startGridPoint;
-
-    // to hold contour line coords coordinates
-    double oldx, oldy;
-
     char startSide = firstSide;
 
     if (Debug.isSet("contour/debugContours")) {
@@ -683,7 +677,6 @@ public class ContourGrid {
 
     // find position on cell edge where contour is first detected
     // in main grid units
-
     startGridPoint = contourEdgeIntersection(startSide, i, j);
 
     if (Debug.isSet("contour/debugContours"))
@@ -694,8 +687,8 @@ public class ContourGrid {
     cLinePts.add(dob);
 
     // keep hold of point found on the contour for later use
-    oldx = startGridPoint.getX();
-    oldy = startGridPoint.getY();
+    double oldx = startGridPoint.getX();
+    double oldy = startGridPoint.getY();
 
     // Note: crossing indicator is not turned off here for the first point
     // on the contour, so that closed contours can truly close on start point.
@@ -706,15 +699,13 @@ public class ContourGrid {
     // it ends on an edge or it closes on itself.
     do {
       // get the next side of the this cell where this contour crosses
-      heading = directionToGoFrom(startSide, i, j);
+      char heading = directionToGoFrom(startSide, i, j);
 
       if (heading == startSide) {
         // contour at dead end: contour entered cell surrounded by missing
         // data, or otherwise ended but not at a grid edge.
         if (cLinePts.size() <= 1) {
-          ArrayList empty = new ArrayList();
-          // System.out.println(" unexpected end of contour ");
-          return empty;
+          return ImmutableList.of();
         } else
           return cLinePts;
       }
@@ -791,7 +782,6 @@ public class ContourGrid {
         System.out.println("  END contour at " + i + ", " + j + " by match");
       if (onedge)
         System.out.println("  END contour at " + i + ", " + j + " on edge");
-      // System.out.println(" ");
     }
 
     return cLinePts;

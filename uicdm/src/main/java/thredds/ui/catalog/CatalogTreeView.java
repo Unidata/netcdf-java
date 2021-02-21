@@ -57,6 +57,9 @@ import java.util.Enumeration;
  */
 
 public class CatalogTreeView extends JPanel {
+  private static final boolean debugRef = false;
+  private static final boolean debugTree = false;
+
   private Catalog catalog;
 
   // state
@@ -64,14 +67,10 @@ public class CatalogTreeView extends JPanel {
   private boolean accessOnly = true;
   private String catalogURL = "";
   private boolean openCatalogReferences = true;
-  private boolean openDatasetScans = true;
 
   // ui
-  private JTree tree;
+  private final JTree tree;
   private InvCatalogTreeModel model;
-
-  private boolean debugRef;
-  private boolean debugTree;
 
   /**
    * Constructor.
@@ -157,7 +156,6 @@ public class CatalogTreeView extends JPanel {
    * Set whether catalog references from dataset scans are opened. default is true.
    */
   public void setOpenDatasetScans(boolean openDatasetScans) {
-    this.openDatasetScans = openDatasetScans;
   }
 
   private void firePropertyChangeEvent(DatasetNode ds) {
@@ -289,9 +287,9 @@ public class CatalogTreeView extends JPanel {
     node.makeChildren(includeCatref);
     tree.expandPath(makeTreePath(node));
 
-    Enumeration e = node.children();
+    Enumeration<InvCatalogTreeNode> e = node.children();
     while (e.hasMoreElements()) {
-      InvCatalogTreeNode child = (InvCatalogTreeNode) e.nextElement();
+      InvCatalogTreeNode child = e.nextElement();
       open(child, includeCatref);
     }
   }
@@ -416,7 +414,7 @@ public class CatalogTreeView extends JPanel {
   // defer opening catalogRefs
   private class InvCatalogTreeNode implements javax.swing.tree.TreeNode {
     DatasetNode ds;
-    private InvCatalogTreeNode parent;
+    private final InvCatalogTreeNode parent;
     private ArrayList<InvCatalogTreeNode> children;
     private boolean isReading;
 
@@ -429,11 +427,12 @@ public class CatalogTreeView extends JPanel {
       firePropertyChangeEvent(new PropertyChangeEvent(this, "TreeNode", null, ds));
     }
 
-    public Enumeration children() {
+    public Enumeration<InvCatalogTreeNode> children() {
       if (debugTree)
         System.out.println("children=" + ds.getName() + " ");
-      if (children == null)
-        return Collections.enumeration(new ArrayList<InvCatalogTreeNode>());
+      if (children == null) {
+        return Collections.enumeration(new ArrayList<>());
+      }
       return Collections.enumeration(children);
     }
 

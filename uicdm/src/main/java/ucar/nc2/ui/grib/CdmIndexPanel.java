@@ -31,12 +31,8 @@ import ucar.nc2.util.Indent;
 import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.BeanTable;
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -47,18 +43,28 @@ import java.util.List;
 public class CdmIndexPanel extends JPanel {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CdmIndexPanel.class);
 
-  private PreferencesExt prefs;
-  private BeanTable<GroupBean> groupTable;
-  private BeanTable<VarBean> varTable;
-  private BeanTable<CoordBean> coordTable;
-  private JSplitPane split, split2, split3;
+  private final PreferencesExt prefs;
+  private final BeanTable<GroupBean> groupTable;
+  private final BeanTable<VarBean> varTable;
+  private final BeanTable<CoordBean> coordTable;
+  private final JSplitPane split2, split3;
 
-  private TextHistoryPane infoTA, extraTA;
-  private IndependentWindow infoWindow, extraWindow;
-  private MFileTable fileTable;
+  private final TextHistoryPane infoTA, extraTA;
+  private final IndependentWindow infoWindow, extraWindow;
+  private final MFileTable fileTable;
 
   public CdmIndexPanel(PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
+
+    /////////////////////////////////////////
+    // the info windows
+    infoTA = new TextHistoryPane();
+    infoWindow = new IndependentWindow("Information", BAMutil.getImage("nj22/NetcdfUI"), infoTA);
+    infoWindow.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 500, 300)));
+
+    extraTA = new TextHistoryPane();
+    extraWindow = new IndependentWindow("Extra Information", BAMutil.getImage("nj22/NetcdfUI"), extraTA);
+    extraWindow.setBounds((Rectangle) prefs.getBean("ExtraWindowBounds", new Rectangle(300, 300, 500, 300)));
 
     if (buttPanel != null) {
       AbstractButton infoButton = BAMutil.makeButtcon("Information", "Show Info", false);
@@ -244,11 +250,11 @@ public class CdmIndexPanel extends JPanel {
 
     varPopup.addAction("Compare", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        List beans = coordTable.getSelectedBeans();
+        List<CoordBean> beans = coordTable.getSelectedBeans();
         if (beans.size() == 2) {
           Formatter f = new Formatter();
-          CoordBean bean1 = (CoordBean) beans.get(0);
-          CoordBean bean2 = (CoordBean) beans.get(1);
+          CoordBean bean1 = beans.get(0);
+          CoordBean bean2 = beans.get(1);
           if (bean1.coord.getType() == Coordinate.Type.time2D && bean2.coord.getType() == Coordinate.Type.time2D)
             compareCoords2D(f, (CoordinateTime2D) bean1.coord, (CoordinateTime2D) bean2.coord);
           else
@@ -283,16 +289,6 @@ public class CdmIndexPanel extends JPanel {
     fileTable.addPropertyChangeListener(
         evt -> firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue()));
 
-    /////////////////////////////////////////
-    // the info windows
-    infoTA = new TextHistoryPane();
-    infoWindow = new IndependentWindow("Information", BAMutil.getImage("nj22/NetcdfUI"), infoTA);
-    infoWindow.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 500, 300)));
-
-    extraTA = new TextHistoryPane();
-    extraWindow = new IndependentWindow("Extra Information", BAMutil.getImage("nj22/NetcdfUI"), extraTA);
-    extraWindow.setBounds((Rectangle) prefs.getBean("ExtraWindowBounds", new Rectangle(300, 300, 500, 300)));
-
     setLayout(new BorderLayout());
 
     split3 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, groupTable, varTable);
@@ -314,8 +310,6 @@ public class CdmIndexPanel extends JPanel {
     fileTable.save();
     prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
     prefs.putBeanObject("ExtraWindowBounds", extraWindow.getBounds());
-    if (split != null)
-      prefs.putInt("splitPos", split.getDividerLocation());
     if (split2 != null)
       prefs.putInt("splitPos2", split2.getDividerLocation());
     if (split3 != null)
@@ -380,7 +374,6 @@ public class CdmIndexPanel extends JPanel {
       f.format("Dataset %s%n", ds.getType());
       int bytesTotal = 0;
       int bytesSATotal = 0;
-      int coordsAllTotal = 0;
 
       for (GribCollectionImmutable.GroupGC g : ds.getGroups()) {
         f.format(" Group %s%n", g.getDescription());

@@ -12,7 +12,6 @@ import java.awt.Shape;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
-import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +23,7 @@ import java.util.List;
 public abstract class GisFeatureRenderer implements Renderer {
   private Color color = Color.blue; // default color of polylines
   protected Projection displayProject; // the current display Projection
-  protected ArrayList shapeList;
+  protected ArrayList<Shape> shapeList;
 
   ////// this is what the subclasses have to implement (besides the constructor)
   /**
@@ -34,7 +33,7 @@ public abstract class GisFeatureRenderer implements Renderer {
    */
   public abstract LatLonRect getPreferredArea();
 
-  protected abstract java.util.List getFeatures(); // collection of AbstractGisFeature
+  protected abstract java.util.List<GisFeature> getFeatures(); // collection of AbstractGisFeature
 
   // what projection is the data in? set to null if no Projection (no conversion)
   // assumes data projection doesnt change
@@ -52,10 +51,6 @@ public abstract class GisFeatureRenderer implements Renderer {
   public void setProjection(Projection project) {
     displayProject = project;
     shapeList = null;
-    // System.out.println("GisFeatureRenderer setProjection "+displayProject);
-
-    // if (Debug.isSet("event.barf") && (displayProject instanceof LatLonProjection))
-    // throw new IllegalArgumentException();
   }
 
   /**
@@ -71,9 +66,7 @@ public abstract class GisFeatureRenderer implements Renderer {
     g.setStroke(new java.awt.BasicStroke(0.0f));
 
     Rectangle2D clipRect = (Rectangle2D) g.getClip();
-    Iterator siter = getShapes(g, pixelAT);
-    while (siter.hasNext()) {
-      Shape s = (Shape) siter.next();
+    for (Shape s : getShapes(g, pixelAT)) {
       Rectangle2D shapeBounds = s.getBounds2D();
       if (shapeBounds.intersects(clipRect))
         g.draw(s);
@@ -81,9 +74,9 @@ public abstract class GisFeatureRenderer implements Renderer {
   }
 
   // get the set of shapes to draw, convert projections if need be
-  protected Iterator getShapes(java.awt.Graphics2D g, AffineTransform normal2device) {
+  protected Iterable<Shape> getShapes(java.awt.Graphics2D g, AffineTransform normal2device) {
     if (shapeList != null)
-      return shapeList.iterator();
+      return shapeList;
 
     if (Debug.isSet("projection/LatLonShift"))
       System.out.println("projection/LatLonShift GisFeatureRenderer.getShapes called");
@@ -91,9 +84,8 @@ public abstract class GisFeatureRenderer implements Renderer {
     Projection dataProject = getDataProjection();
 
     // a list of GisFeatureAdapter-s
-    List featList = getFeatures();
-
-    shapeList = new ArrayList(featList.size());
+    List<GisFeature> featList = getFeatures();
+    shapeList = new ArrayList<>(featList.size());
 
     for (Object o : featList) {
       AbstractGisFeature feature = (AbstractGisFeature) o;
@@ -103,19 +95,16 @@ public abstract class GisFeatureRenderer implements Renderer {
       } else if (dataProject.isLatLon()) {
         // always got to run it through if its lat/lon
         shape = feature.getProjectedShape(displayProject);
-        // System.out.println("getShapes dataProject.isLatLon() "+displayProject);
       } else if (dataProject == displayProject) {
         shape = feature.getShape();
-        // System.out.println("getShapes dataProject == displayProject");
       } else {
         shape = feature.getProjectedShape(dataProject, displayProject);
-        // System.out.println("getShapes dataProject != displayProject");
       }
 
       shapeList.add(shape);
     }
 
-    return shapeList.iterator();
+    return shapeList;
   }
 
 }

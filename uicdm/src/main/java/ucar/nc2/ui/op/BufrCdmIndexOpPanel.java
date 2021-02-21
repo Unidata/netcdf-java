@@ -14,22 +14,15 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import javax.swing.JOptionPane;
 
-/**
- *
- */
 public class BufrCdmIndexOpPanel extends OpPanel {
-  private BufrCdmIndexPanel table;
+  private final BufrCdmIndexPanel table;
 
-  /**
-   *
-   */
   public BufrCdmIndexOpPanel(PreferencesExt p) {
     super(p, "index file:", true, false);
     table = new BufrCdmIndexPanel(prefs, buttPanel);
     add(table, BorderLayout.CENTER);
   }
 
-  /** */
   @Override
   public boolean process(Object o) {
     String command = (String) o;
@@ -52,13 +45,11 @@ public class BufrCdmIndexOpPanel extends OpPanel {
     return !err;
   }
 
-  /** */
   @Override
   public void closeOpenFiles() throws IOException {
     // table.closeOpenFiles();
   }
 
-  /** */
   @Override
   public void save() {
     table.save();

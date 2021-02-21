@@ -30,8 +30,6 @@ import ucar.ui.prefs.Debug;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.XMLStore;
 import java.awt.event.*;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.*;
 import java.awt.*;
 import java.util.*;
@@ -50,33 +48,26 @@ public class TdsMonitor extends JPanel {
   private static PreferencesExt prefs;
   private static XMLStore store;
 
-  private ucar.util.prefs.PreferencesExt mainPrefs;
-  private JTabbedPane tabbedPane;
-  private ManagePanel managePanel;
-  private AccessLogPanel accessLogPanel;
-  private ServletLogPanel servletLogPanel;
-  private URLDumpPane urlDump;
+  private final JTabbedPane tabbedPane;
+  private final ManagePanel managePanel;
+  private final AccessLogPanel accessLogPanel;
+  private final ServletLogPanel servletLogPanel;
+  private final URLDumpPane urlDump;
 
-  private JFrame parentFrame;
-  private FileManager fileChooser;
+  private final FileManager fileChooser;
   private ManageForm manage;
-  private DnsLookup dnsLookup = new DnsLookup();
+  private final DnsLookup dnsLookup = new DnsLookup();
 
-  // private HTTPSession session;
-  // private CredentialsProvider provider;
-
-  public TdsMonitor(ucar.util.prefs.PreferencesExt prefs, JFrame parentFrame) throws HTTPException {
-    this.mainPrefs = prefs;
-    this.parentFrame = parentFrame;
+  public TdsMonitor(ucar.util.prefs.PreferencesExt prefs, JFrame parentFrame) {
 
     fileChooser = new FileManager(parentFrame, null, null, (PreferencesExt) prefs.node("FileManager"));
 
     // the top UI
     tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-    managePanel = new ManagePanel((PreferencesExt) mainPrefs.node("ManageLogs"));
-    accessLogPanel = new AccessLogPanel((PreferencesExt) mainPrefs.node("LogTable"));
-    servletLogPanel = new ServletLogPanel((PreferencesExt) mainPrefs.node("ServletLogPanel"));
-    urlDump = new URLDumpPane((PreferencesExt) mainPrefs.node("urlDump"));
+    managePanel = new ManagePanel((PreferencesExt) prefs.node("ManageLogs"));
+    accessLogPanel = new AccessLogPanel((PreferencesExt) prefs.node("LogTable"));
+    servletLogPanel = new ServletLogPanel((PreferencesExt) prefs.node("ServletLogPanel"));
+    urlDump = new URLDumpPane((PreferencesExt) prefs.node("urlDump"));
 
     tabbedPane.addTab("ManageLogs", managePanel);
     tabbedPane.addTab("AccessLogs", accessLogPanel);
@@ -139,56 +130,54 @@ public class TdsMonitor extends JPanel {
       setLayout(new BorderLayout());
       add(manage, BorderLayout.CENTER);
 
-      manage.addPropertyChangeListener(new PropertyChangeListener() {
-        public void propertyChange(PropertyChangeEvent evt) {
-          if (!evt.getPropertyName().equals("Download"))
-            return;
-          ManageForm.Data data = (ManageForm.Data) evt.getNewValue();
-          try {
-            manage.getTextArea().setText(""); // clear the text area
-            manage.getStopButton().setCancel(false); // clear the cancel state
+      manage.addPropertyChangeListener(evt -> {
+        if (!evt.getPropertyName().equals("Download"))
+          return;
+        ManageForm.Data data = (ManageForm.Data) evt.getNewValue();
+        try {
+          manage.getTextArea().setText(""); // clear the text area
+          manage.getStopButton().setCancel(false); // clear the cancel state
 
-            if (data.wantAccess) {
-              TdsDownloader logManager = new TdsDownloader(manage.getTextArea(), data, TdsDownloader.Type.access);
-              logManager.getRemoteFiles(manage.getStopButton());
-            }
-            if (data.wantServlet) {
-              TdsDownloader logManager = new TdsDownloader(manage.getTextArea(), data, TdsDownloader.Type.thredds);
-              logManager.getRemoteFiles(manage.getStopButton());
-            }
-
-            if (data.wantRoots) {
-              String urls = data.getServerPrefix() + "/thredds/admin/log/dataroots.txt";
-              File localDir = LogLocalManager.getDirectory(data.server, "");
-              boolean ok = localDir.mkdirs();
-              // if (!ok) manage.getTextArea().append("\nmkdirs failed");
-              File file = new File(localDir, "roots.txt");
-              HTTPSession session = HTTPFactory.newSession(urls);
-              // session.setCredentialsProvider(provider);
-              session.setUserAgent("TdsMonitor");
-              JTextArea ta = manage.getTextArea();
-
-              try {
-                HttpClientManager.copyUrlContentsToFile(session, urls, file);
-                String roots = IO.readFile(file.getPath());
-                ta.append("\nRoots:\n");
-                ta.append(roots);
-                LogCategorizer.setRoots(roots);
-
-              } catch (IOException ioe) {
-                StringWriter sw = new StringWriter(5000);
-                ioe.printStackTrace(new PrintWriter(sw));
-                ta.setText(sw.toString());
-              }
-            }
-
-          } catch (Throwable t) {
-            t.printStackTrace();
+          if (data.wantAccess) {
+            TdsDownloader logManager = new TdsDownloader(manage.getTextArea(), data, TdsDownloader.Type.access);
+            logManager.getRemoteFiles(manage.getStopButton());
+          }
+          if (data.wantServlet) {
+            TdsDownloader logManager = new TdsDownloader(manage.getTextArea(), data, TdsDownloader.Type.thredds);
+            logManager.getRemoteFiles(manage.getStopButton());
           }
 
-          if (manage.getStopButton().isCancel())
-            manage.getTextArea().append("\nDownload canceled by user");
+          if (data.wantRoots) {
+            String urls = data.getServerPrefix() + "/thredds/admin/log/dataroots.txt";
+            File localDir = LogLocalManager.getDirectory(data.server, "");
+            boolean ok = localDir.mkdirs();
+            // if (!ok) manage.getTextArea().append("\nmkdirs failed");
+            File file = new File(localDir, "roots.txt");
+            HTTPSession session = HTTPFactory.newSession(urls);
+            // session.setCredentialsProvider(provider);
+            session.setUserAgent("TdsMonitor");
+            JTextArea ta = manage.getTextArea();
+
+            try {
+              HttpClientManager.copyUrlContentsToFile(session, urls, file);
+              String roots = IO.readFile(file.getPath());
+              ta.append("\nRoots:\n");
+              ta.append(roots);
+              LogCategorizer.setRoots(roots);
+
+            } catch (IOException ioe) {
+              StringWriter sw = new StringWriter(5000);
+              ioe.printStackTrace(new PrintWriter(sw));
+              ta.setText(sw.toString());
+            }
+          }
+
+        } catch (Throwable t) {
+          t.printStackTrace();
         }
+
+        if (manage.getStopButton().isCancel())
+          manage.getTextArea().append("\nDownload canceled by user");
       });
 
     }
@@ -205,7 +194,7 @@ public class TdsMonitor extends JPanel {
     PreferencesExt prefs;
     TextHistoryPane ta;
     IndependentWindow infoWindow;
-    JComboBox serverCB;
+    JComboBox<String> serverCB;
     DateTimePicker dateTimePickerStart, dateTimePickerEnd;
     JPanel topPanel;
     boolean isAccess;
@@ -224,7 +213,7 @@ public class TdsMonitor extends JPanel {
       topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
 
       // which server
-      serverCB = new JComboBox();
+      serverCB = new JComboBox<>();
       serverCB.setModel(manage.getServersCB().getModel());
       serverCB.addActionListener(e -> {
         String server = (String) serverCB.getSelectedItem();
@@ -409,12 +398,10 @@ public class TdsMonitor extends JPanel {
     AccessLogPanel(PreferencesExt p) {
       super(p, true);
       logTable = new AccessLogTable(dateTimePickerStart, dateTimePickerEnd, p, dnsLookup);
-      logTable.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
-        public void propertyChange(java.beans.PropertyChangeEvent e) {
-          if (e.getPropertyName().equals("UrlDump")) {
-            String path = (String) e.getNewValue();
-            gotoUrlDump(path);
-          }
+      logTable.addPropertyChangeListener(e -> {
+        if (e.getPropertyName().equals("UrlDump")) {
+          String path = (String) e.getNewValue();
+          gotoUrlDump(path);
         }
       });
 
@@ -599,7 +586,7 @@ public class TdsMonitor extends JPanel {
 
   //////////////////////////////////////////////
 
-  public static void main(String[] args) throws HTTPException {
+  public static void main(String[] args) {
 
     // prefs storage
     try {

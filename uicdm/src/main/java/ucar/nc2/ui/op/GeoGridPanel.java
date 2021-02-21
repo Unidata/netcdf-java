@@ -195,12 +195,7 @@ public class GeoGridPanel extends OpPanel {
     }
 
     this.ds = (NetcdfDataset) gds.getNetcdfFile(); // ??
-    try {
-      dsTable.setDataset(gds);
-    } catch (IOException e) {
-      e.printStackTrace();
-      return;
-    }
+    dsTable.setDataset(gds);
     setSelectedItem(gds.getLocation());
   }
 

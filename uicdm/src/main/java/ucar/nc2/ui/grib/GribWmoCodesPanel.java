@@ -26,28 +26,28 @@ import java.util.List;
  * @since Aug 25, 2010
  */
 public class GribWmoCodesPanel extends JPanel {
-  private PreferencesExt prefs;
+  private final PreferencesExt prefs;
 
-  private BeanTable wmoTable, entryTable;
-  private JSplitPane split;
+  private final BeanTable<CodeTableBean> wmoTable;
+  private final BeanTable<EntryBean> entryTable;
+  private final JSplitPane split;
 
-  private TextHistoryPane compareTA;
-  private IndependentWindow infoWindow;
+  private final TextHistoryPane compareTA;
+  private final IndependentWindow infoWindow;
 
   public GribWmoCodesPanel(PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
 
-    wmoTable = new BeanTable(CodeTableBean.class, (PreferencesExt) prefs.node("CodeTableBean"), false);
+    wmoTable = new BeanTable<>(CodeTableBean.class, (PreferencesExt) prefs.node("CodeTableBean"), false);
     wmoTable.addListSelectionListener(e -> {
-      CodeTableBean csb = (CodeTableBean) wmoTable.getSelectedBean();
+      CodeTableBean csb = wmoTable.getSelectedBean();
       setEntries(csb.wmoTable);
     });
-
     ucar.ui.widget.PopupMenu varPopup = new PopupMenu(wmoTable.getJTable(), "Options");
     varPopup.addAction("Show table", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Formatter out = new Formatter();
-        CodeTableBean csb = (CodeTableBean) wmoTable.getSelectedBean();
+        CodeTableBean csb = wmoTable.getSelectedBean();
         csb.showTable(out);
         compareTA.setText(out.toString());
         compareTA.gotoTop();
@@ -55,7 +55,7 @@ public class GribWmoCodesPanel extends JPanel {
       }
     });
 
-    entryTable = new BeanTable(EntryBean.class, (PreferencesExt) prefs.node("EntryBean"), false);
+    entryTable = new BeanTable<>(EntryBean.class, (PreferencesExt) prefs.node("EntryBean"), false);
 
     AbstractButton dupButton = BAMutil.makeButtcon("Select", "Look for problems in this table", false);
     dupButton.addActionListener(e -> lookForProblems());

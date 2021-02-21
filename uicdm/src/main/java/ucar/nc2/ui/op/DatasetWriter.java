@@ -46,8 +46,6 @@ import java.awt.BorderLayout;
 import java.awt.Frame;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -74,24 +72,25 @@ public class DatasetWriter extends JPanel {
   private static final org.slf4j.Logger logger =
       org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  private FileManager fileChooser;
+  private final FileManager fileChooser;
 
-  private PreferencesExt prefs;
+  private final PreferencesExt prefs;
   private NetcdfFile ds;
 
-  private List<NestedTable> nestedTableList = new ArrayList<>();
-  private BeanTable attTable;
-  private BeanTable dimTable;
+  private final List<NestedTable> nestedTableList = new ArrayList<>();
+  private BeanTable<AttributeBean> attTable;
+  private final BeanTable<DimensionBean> dimTable;
 
-  private JPanel tablePanel;
-  private JSplitPane mainSplit;
+  private final JPanel tablePanel;
+  private final JSplitPane mainSplit;
 
   private JComponent currentComponent;
-  private NetcdfOutputChooser outputChooser;
 
-  private TextHistoryPane infoTA;
-  private StructureTable dataTable;
-  private IndependentWindow infoWindow, dataWindow, attWindow;
+  private final TextHistoryPane infoTA;
+  private final StructureTable dataTable;
+  private final IndependentWindow infoWindow;
+  private final IndependentWindow dataWindow;
+  private IndependentWindow attWindow;
 
   private Nc4Chunking chunker = Nc4ChunkingStrategy.factory(Nc4Chunking.Strategy.standard, 0, false);
 
@@ -102,29 +101,14 @@ public class DatasetWriter extends JPanel {
     this.fileChooser = fileChooser;
 
     // create the variable table(s)
-    dimTable = new BeanTable(DimensionBean.class, (PreferencesExt) prefs.node("DimensionBeanTable"), false,
+    dimTable = new BeanTable<>(DimensionBean.class, (PreferencesExt) prefs.node("DimensionBeanTable"), false,
         "Dimensions", null, new DimensionBean());
 
     tablePanel = new JPanel(new BorderLayout());
     setNestedTable(0, null);
 
-    /*
-     * the tree view
-     * datasetTree = new DatasetTreeView();
-     * datasetTree.addPropertyChangeListener(new PropertyChangeListener() {
-     * public void propertyChange(PropertyChangeEvent e) {
-     * setSelected((Variable) e.getNewValue());
-     * }
-     * });
-     */
-
-    outputChooser = new NetcdfOutputChooser((Frame) null);
-    outputChooser.addPropertyChangeListener("OK", new PropertyChangeListener() {
-      @Override
-      public void propertyChange(PropertyChangeEvent evt) {
-        writeFile((NetcdfOutputChooser.Data) evt.getNewValue());
-      }
-    });
+    NetcdfOutputChooser outputChooser = new NetcdfOutputChooser((Frame) null);
+    outputChooser.addPropertyChangeListener("OK", evt -> writeFile((NetcdfOutputChooser.Data) evt.getNewValue()));
     outputChooser.addEventListener(e -> {
       Nc4Chunking.Strategy strategy = (Nc4Chunking.Strategy) e.getItem();
       chunker = Nc4ChunkingStrategy.factory(strategy, 0, false);
@@ -227,9 +211,7 @@ public class DatasetWriter extends JPanel {
     }
 
     WriterTask task = new WriterTask(data);
-    ProgressMonitor pm = new ProgressMonitor(task, (e) -> {
-      logger.debug("success}");
-    });
+    ProgressMonitor pm = new ProgressMonitor(task, (e) -> logger.debug("success}"));
     pm.start(null, "Writing " + filename, ds.getVariables().size());
   }
 
@@ -243,7 +225,7 @@ public class DatasetWriter extends JPanel {
 
     public void run() {
       try {
-        List beans = nestedTableList.get(0).table.getBeans();
+        List<VariableBean> beans = nestedTableList.get(0).table.getBeans();
         BeanChunker bc = new BeanChunker(beans, data.deflate, data.shuffle);
         NetcdfFormatWriter.Builder builder =
             NetcdfFormatWriter.builder().setFormat(data.format).setLocation(data.outputFilename).setChunker(bc);
@@ -302,13 +284,10 @@ public class DatasetWriter extends JPanel {
     if (dialog == null) {
       dialog = new CompareDialog(null, fileChooser);
       dialog.pack();
-      dialog.addPropertyChangeListener("OK", new PropertyChangeListener() {
-        @Override
-        public void propertyChange(PropertyChangeEvent evt) {
-          CompareDialog.Data data = (CompareDialog.Data) evt.getNewValue();
-          // logger.debug("name={} {}", evt.getPropertyName(), data);
-          compareDataset(data);
-        }
+      dialog.addPropertyChangeListener("OK", evt -> {
+        CompareDialog.Data data = (CompareDialog.Data) evt.getNewValue();
+        // logger.debug("name={} {}", evt.getPropertyName(), data);
+        compareDataset(data);
       });
     }
     dialog.setVisible(true);
@@ -357,12 +336,12 @@ public class DatasetWriter extends JPanel {
 
     if (attTable == null) {
       // global attributes
-      attTable = new BeanTable(AttributeBean.class, (PreferencesExt) prefs.node("AttributeBeans"), false);
+      attTable = new BeanTable<>(AttributeBean.class, (PreferencesExt) prefs.node("AttributeBeans"), false);
       PopupMenu varPopup = new PopupMenu(attTable.getJTable(), "Options");
       varPopup.addAction("Show Attribute", new AbstractAction() {
         @Override
         public void actionPerformed(ActionEvent e) {
-          AttributeBean bean = (AttributeBean) attTable.getSelectedBean();
+          AttributeBean bean = attTable.getSelectedBean();
           if (bean != null) {
             infoTA.setText(bean.att.toString());
             infoTA.gotoTop();
@@ -412,7 +391,7 @@ public class DatasetWriter extends JPanel {
     }
   }
 
-  private void showDeclaration(BeanTable from, boolean isNcml) {
+  private void showDeclaration(BeanTable<VariableBean> from, boolean isNcml) {
     Variable v = getCurrentVariable(from);
     if (v == null) {
       return;
@@ -443,8 +422,8 @@ public class DatasetWriter extends JPanel {
     infoWindow.show();
   }
 
-  private void dataTable(BeanTable from) {
-    VariableBean vb = (VariableBean) from.getSelectedBean();
+  private void dataTable(BeanTable<VariableBean> from) {
+    VariableBean vb = from.getSelectedBean();
     if (vb == null) {
       return;
     }
@@ -464,8 +443,8 @@ public class DatasetWriter extends JPanel {
     dataWindow.show();
   }
 
-  private Variable getCurrentVariable(BeanTable from) {
-    VariableBean vb = (VariableBean) from.getSelectedBean();
+  private Variable getCurrentVariable(BeanTable<VariableBean> from) {
+    VariableBean vb = from.getSelectedBean();
     if (vb == null) {
       return null;
     }
@@ -536,7 +515,7 @@ public class DatasetWriter extends JPanel {
       this.level = level;
       myPrefs = (PreferencesExt) prefs.node("NestedTable" + level);
 
-      table = new BeanTable(VariableBean.class, myPrefs, false, "Variables", null, new VariableBean());
+      table = new BeanTable<>(VariableBean.class, myPrefs, false, "Variables", null, new VariableBean());
 
       JTable jtable = table.getJTable();
       PopupMenu csPopup = new PopupMenu(jtable, "Options");
@@ -551,12 +530,6 @@ public class DatasetWriter extends JPanel {
           showDeclaration(table, true);
         }
       });
-      /*
-       * csPopup.addAction("NCdump Data", "Dump", new AbstractAction() {
-       * public void actionPerformed(ActionEvent e) {
-       * dumpData(table);
-       * } });
-       */
 
       if (level == 0) {
         csPopup.addAction("Data Table", new AbstractAction() {
@@ -627,10 +600,7 @@ public class DatasetWriter extends JPanel {
     }
 
     void setSelected(Variable vs) {
-      List beans = table.getBeans();
-
-      for (Object bean1 : beans) {
-        VariableBean bean = (VariableBean) bean1;
+      for (VariableBean bean : table.getBeans()) {
         if (bean.vs == vs) {
           table.setSelectedBean(bean);
           return;
@@ -935,14 +905,10 @@ public class DatasetWriter extends JPanel {
 
     private Attribute att;
 
-    /**
-     * no-arg constructor
-     */
+    /** no-arg constructor */
     public AttributeBean() {}
 
-    /**
-     * create from an attribute
-     */
+    /** create from an attribute */
     public AttributeBean(Attribute att) {
       this.att = att;
     }

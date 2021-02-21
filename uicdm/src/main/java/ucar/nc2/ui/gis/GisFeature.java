@@ -12,8 +12,7 @@ package ucar.nc2.ui.gis;
  *
  * @author Russ Rew
  */
-
-public interface GisFeature {
+public interface GisFeature extends Iterable<GisPart> {
 
   /**
    * Get the bounding box for this feature.
@@ -35,13 +34,5 @@ public interface GisFeature {
    * @return number of parts comprising this feature.
    */
   int getNumParts();
-
-  /**
-   * Get the parts of this feature, in the form of an iterator.
-   *
-   * @return the iterator over the parts of this feature. Each part
-   *         is a GisPart.
-   */
-  java.util.Iterator getGisParts();
 
 } // GisFeature

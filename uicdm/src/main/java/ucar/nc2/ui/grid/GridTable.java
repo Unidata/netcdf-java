@@ -12,8 +12,6 @@ import ucar.ui.table.JTableSorted;
 import ucar.ui.table.TableRow;
 import ucar.ui.table.TableRowAbstract;
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import java.util.ArrayList;
 import java.util.Formatter;
 
@@ -24,12 +22,12 @@ import java.util.Formatter;
  * @see ucar.ui.event.ActionSourceListener
  */
 public class GridTable {
+  private static final boolean debug = false;
+
   private final JTableSorted table;
   private ArrayList<TableRow> tableRows;
   private final ActionSourceListener actionSource;
-
   private boolean eventOK = true;
-  private boolean debug;
 
   public GridTable(String actionName) {
     // the main delegate
@@ -55,16 +53,14 @@ public class GridTable {
     };
 
     // send event when selected row changes
-    table.addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
-        if (eventOK && !e.getValueIsAdjusting()) {
-          // new variable is selected
-          Row row = (Row) table.getSelected();
-          if (row != null) {
-            if (debug)
-              System.out.println(" GridTable new gg = " + row.gg.getFullName());
-            actionSource.fireActionValueEvent(ActionSourceListener.SELECTED, row.gg.getFullName());
-          }
+    table.addListSelectionListener(e -> {
+      if (eventOK && !e.getValueIsAdjusting()) {
+        // new variable is selected
+        Row row = (Row) table.getSelected();
+        if (row != null) {
+          if (debug)
+            System.out.println(" GridTable new gg = " + row.gg.getFullName());
+          actionSource.fireActionValueEvent(ActionSourceListener.SELECTED, row.gg.getFullName());
         }
       }
     });
@@ -95,9 +91,7 @@ public class GridTable {
     return actionSource;
   }
 
-  /// inner classes
-
-  private static String[] colName = {"Name", "Dimensions", "Units", "Long Name"};
+  private static final String[] colName = {"Name", "Dimensions", "Units", "Long Name"};
 
   private static class Row extends TableRowAbstract {
     GridDatatype gg;

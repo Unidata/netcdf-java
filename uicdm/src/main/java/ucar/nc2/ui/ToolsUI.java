@@ -185,7 +185,7 @@ public class ToolsUI extends JPanel {
     ncmlTabPane = new JTabbedPane(JTabbedPane.TOP);
 
     // Create and attach the initially visible panel in the top level tabbed pane
-    viewerPanel = new DatasetViewerPanel((PreferencesExt) mainPrefs.node("varTable"), false);
+    viewerPanel = new DatasetViewerPanel((PreferencesExt) mainPrefs.node("varTable"));
     tabbedPane.addTab("Viewer", viewerPanel);
 
     // All other panels are deferred construction for fast startup
@@ -553,7 +553,7 @@ public class ToolsUI extends JPanel {
         break;
 
       case "Netcdf4-JNI":
-        nc4viewer = new DatasetViewerPanel((PreferencesExt) mainPrefs.node("nc4viewer"), true);
+        nc4viewer = new DatasetViewerPanel((PreferencesExt) mainPrefs.node("nc4viewer"));
         c = nc4viewer;
         break;
 

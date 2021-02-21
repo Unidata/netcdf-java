@@ -13,7 +13,7 @@ import java.awt.geom.Point2D;
  * @author John Caron
  */
 public class CursorMoveEvent extends java.util.EventObject {
-  private ProjectionPoint world;
+  private final ProjectionPoint world;
 
   public CursorMoveEvent(Object source, ProjectionPoint world) {
     super(source);

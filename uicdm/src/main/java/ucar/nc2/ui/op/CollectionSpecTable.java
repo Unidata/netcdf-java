@@ -11,7 +11,6 @@ import ucar.nc2.time.CalendarDate;
 import ucar.ui.widget.BAMutil;
 import ucar.ui.widget.IndependentWindow;
 import ucar.ui.widget.TextHistoryPane;
-import ucar.nc2.util.Misc;
 import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.BeanTable;
 import javax.swing.*;
@@ -29,105 +28,22 @@ import java.util.List;
  * @since 4/9/13
  */
 public class CollectionSpecTable extends JPanel {
-  private PreferencesExt prefs;
+  private final PreferencesExt prefs;
 
-  private BeanTable ftTable;
-  private JSplitPane split;
-  private TextHistoryPane infoTA, dumpTA;
-  private IndependentWindow infoWindow;
+  private final BeanTable<Bean> ftTable;
+  private final JSplitPane split;
+  private final TextHistoryPane dumpTA;
+  private final IndependentWindow infoWindow;
 
-  private List<MFile> fileList;
   private MFileCollectionManager dcm;
 
   public CollectionSpecTable(PreferencesExt prefs) {
     this.prefs = prefs;
 
-    ftTable = new BeanTable(Bean.class, (PreferencesExt) prefs.node("FeatureDatasetBeans"), false);
-    /*
-     * ftTable.addListSelectionListener(e -> {
-     * FeatureScan.Bean ftb = (FeatureScan.Bean) ftTable.getSelectedBean();
-     * setSelectedFeatureDataset(ftb);
-     * });
-     * 
-     * /* PopupMenu varPopup = new ucar.ui.widget.PopupMenu(ftTable.getJTable(), "Options");
-     * varPopup.addAction("Open as NetcdfFile", new AbstractAction() {
-     * public void actionPerformed(ActionEvent e) {
-     * FeatureScan.Bean ftb = (FeatureScan.Bean) ftTable.getSelectedBean();
-     * if (ftb == null) return;
-     * FeatureCollectionTable.this.firePropertyChange("openNetcdfFile", null, ftb.f.getPath());
-     * }
-     * });
-     * 
-     * varPopup.addAction("Open in CoordSystems", new AbstractAction() {
-     * public void actionPerformed(ActionEvent e) {
-     * FeatureScan.Bean ftb = (FeatureScan.Bean) ftTable.getSelectedBean();
-     * if (ftb == null) return;
-     * FeatureCollectionTable.this.firePropertyChange("openCoordSystems", null, ftb.f.getPath());
-     * }
-     * });
-     * 
-     * varPopup.addAction("Open as PointDataset", new AbstractAction() {
-     * public void actionPerformed(ActionEvent e) {
-     * FeatureScan.Bean ftb = (FeatureScan.Bean) ftTable.getSelectedBean();
-     * if (ftb == null) return;
-     * FeatureCollectionTable.this.firePropertyChange("openPointFeatureDataset", null, ftb.f.getPath());
-     * }
-     * });
-     * 
-     * varPopup.addAction("Open as NcML", new AbstractAction() {
-     * public void actionPerformed(ActionEvent e) {
-     * FeatureScan.Bean ftb = (FeatureScan.Bean) ftTable.getSelectedBean();
-     * if (ftb == null) return;
-     * FeatureCollectionTable.this.firePropertyChange("openNcML", null, ftb.f.getPath());
-     * }
-     * });
-     * 
-     * varPopup.addAction("Open as GridDataset", new AbstractAction() {
-     * public void actionPerformed(ActionEvent e) {
-     * FeatureScan.Bean ftb = (FeatureScan.Bean) ftTable.getSelectedBean();
-     * if (ftb == null) return;
-     * FeatureCollectionTable.this.firePropertyChange("openGridDataset", null, ftb.f.getPath());
-     * }
-     * });
-     * 
-     * varPopup.addAction("Open as CoverageDataset", new AbstractAction() {
-     * public void actionPerformed(ActionEvent e) {
-     * FeatureScan.Bean ftb = (FeatureScan.Bean) ftTable.getSelectedBean();
-     * if (ftb == null) return;
-     * FeatureCollectionTable.this.firePropertyChange("openCoverageDataset", null, ftb.f.getPath());
-     * }
-     * });
-     * 
-     * varPopup.addAction("Open as RadialDataset", new AbstractAction() {
-     * public void actionPerformed(ActionEvent e) {
-     * FeatureScan.Bean ftb = (FeatureScan.Bean) ftTable.getSelectedBean();
-     * if (ftb == null) return;
-     * FeatureCollectionTable.this.firePropertyChange("openRadialDataset", null, ftb.f.getPath());
-     * }
-     * });
-     * 
-     * varPopup.addAction("Show Report on selected rows", new AbstractAction() {
-     * public void actionPerformed(ActionEvent e) {
-     * List<FeatureScan.Bean> selected = ftTable.getSelectedBeans();
-     * Formatter f = new Formatter();
-     * for (FeatureScan.Bean bean : selected) {
-     * bean.toString(f, false);
-     * }
-     * dumpTA.setText(f.toString());
-     * }
-     * });
-     * 
-     * varPopup.addAction("Run Coverage Classifier", new AbstractAction() {
-     * public void actionPerformed(ActionEvent e) {
-     * FeatureScan.Bean ftb = (FeatureScan.Bean) ftTable.getSelectedBean();
-     * if (ftb == null) return;
-     * dumpTA.setText(ftb.runClassifier());
-     * }
-     * });
-     */
+    ftTable = new BeanTable<>(Bean.class, (PreferencesExt) prefs.node("FeatureDatasetBeans"), false);
 
     // the info window
-    infoTA = new TextHistoryPane();
+    TextHistoryPane infoTA = new TextHistoryPane();
     infoWindow = new IndependentWindow("Extra Information", BAMutil.getImage("nj22/NetcdfUI"), infoTA);
     infoWindow.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 500, 300)));
 
@@ -149,7 +65,7 @@ public class CollectionSpecTable extends JPanel {
     prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
   }
 
-  public boolean setCollection(String spec) throws Exception {
+  public boolean setCollection(String spec) {
     spec = spec.trim();
     Formatter f = new Formatter();
 
@@ -168,7 +84,7 @@ public class CollectionSpecTable extends JPanel {
   private static final String SPEC = "spec='";
   private static final String DFM = "dateFormatMark='";
 
-  private MFileCollectionManager setCollectionElement(String elem, Formatter f) throws Exception {
+  private MFileCollectionManager setCollectionElement(String elem, Formatter f) {
     String spec = null;
     int pos1 = elem.indexOf(SPEC);
     if (pos1 > 0) {
@@ -200,7 +116,7 @@ public class CollectionSpecTable extends JPanel {
     return dcm;
   }
 
-  public void showCollection(Formatter f) throws Exception {
+  public void showCollection(Formatter f) {
     if (dcm == null)
       return;
 
@@ -215,7 +131,7 @@ public class CollectionSpecTable extends JPanel {
     try {
       dc = MFileCollectionManager.open(spec, spec, null, f);
       dc.scan(false);
-      fileList = ImmutableList.copyOf(dc.getFilesSorted());
+      List<MFile> fileList = ImmutableList.copyOf(dc.getFilesSorted());
 
       List<Bean> beans = new ArrayList<>();
       for (MFile mfile : fileList)

@@ -82,50 +82,46 @@ public class NavigatedPanel extends JPanel {
   public AbstractAction setReferenceAction;
 
   // main delegates
-  private Navigation navigate;
+  private final Navigation navigate;
   private Projection project;
 
   // ui stuff
   private BufferedImage bImage;
-  private Color backColor = Color.white;
+  private final Color backColor = Color.white;
   private JLabel statusLabel;
-  private myImageObserver imageObs = new myImageObserver();
+  private final myImageObserver imageObs = new myImageObserver();
   private NToolBar toolbar;
 
   // scheduled redraw
   private javax.swing.Timer redrawTimer;
-
-  // state flags
-  private boolean changedSinceDraw = true;
   private boolean changeable = true; // user allowed to change zoom/pan
 
   // dragging and zooming state
   private int startx, starty, deltax, deltay;
   private boolean panningMode;
   private boolean zoomingMode;
-  private Rubberband zoomRB;
+  private final Rubberband zoomRB;
 
   // track reference point
   private boolean isReferenceMode, hasReference;
   private ProjectionPoint refWorld = ProjectionPoint.create(0, 0);
   private LatLonPoint refLatLon = LatLonPoint.create(0, 0);
-  private Point2D refScreen = new Point2D.Double();
-  private int referenceSize = 12;
+  private final Point2D refScreen = new Point2D.Double();
   private Cursor referenceCursor;
   private static final int REFERENCE_CURSOR = -100;
 
   // selecting geo area state
   private ProjectionRect geoSelection;
   private boolean geoSelectionMode, moveSelectionMode;
-  private RubberbandRectangleHandles selectionRB;
+  private final RubberbandRectangleHandles selectionRB;
   private ProjectionRect homeMapArea;
 
   // event management
-  private ListenerManager lmPick;
-  private ListenerManager lmMove;
-  private ListenerManager lmMapArea;
-  private ListenerManager lmProject;
-  private ListenerManager lmGeoSelect;
+  private final ListenerManager lmPick;
+  private final ListenerManager lmMove;
+  private final ListenerManager lmMapArea;
+  private final ListenerManager lmProject;
+  private final ListenerManager lmGeoSelect;
 
   // some working objects to minimize excessive garbage collection
   private StringBuffer sbuff = new StringBuffer(100);
@@ -135,7 +131,7 @@ public class NavigatedPanel extends JPanel {
   private ProjectionRect boundingBox = new ProjectionRect();
 
   // DnD
-  private DropTarget dropTarget;
+  private final DropTarget dropTarget;
 
   // debug
   private int repaintCount;
@@ -445,11 +441,9 @@ public class NavigatedPanel extends JPanel {
 
     // initialize Timer the first time
     if (redrawTimer == null) {
-      redrawTimer = new javax.swing.Timer(0, new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          drawG();
-          redrawTimer.stop(); // one-shot timer
-        }
+      redrawTimer = new javax.swing.Timer(0, e -> {
+        drawG();
+        redrawTimer.stop(); // one-shot timer
       });
     }
     // start the timer running
@@ -682,12 +676,10 @@ public class NavigatedPanel extends JPanel {
       g.setColor(Color.red);
       g.setStroke(new BasicStroke(2.0f));
       // g.drawImage( referenceCursor.getImage(), px, py, Color.red, imageObs);
+      int referenceSize = 12;
       g.drawLine(px, py - referenceSize, px, py + referenceSize);
       g.drawLine(px - referenceSize, py, px + referenceSize, py);
     }
-
-    // clean up
-    changedSinceDraw = false;
   }
 
   private void setCursor(int what) {

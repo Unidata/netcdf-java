@@ -125,7 +125,7 @@ public class BufrReportPanel extends ReportPanel {
     accum[1] += countObs;
   }
 
-  private void show(TrackMessageTypes track, Formatter f) throws IOException {
+  private void show(TrackMessageTypes track, Formatter f) {
     List<Message> mess = new ArrayList<>(track.map.keySet());
     mess.sort(Comparator.comparing(o -> o.getLookup().getCategoryNo()));
 

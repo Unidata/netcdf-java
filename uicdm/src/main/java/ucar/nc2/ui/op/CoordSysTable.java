@@ -43,14 +43,18 @@ import javax.swing.JSplitPane;
 
 /** A Swing widget to examine Coordinate Systems. */
 public class CoordSysTable extends JPanel {
-  private PreferencesExt prefs;
-  private NetcdfDataset ds;
+  private final PreferencesExt prefs;
 
-  private BeanTable varTable, csTable, axisTable;
-  private JSplitPane split, split2;
-  private TextHistoryPane infoTA;
-  private IndependentWindow infoWindow, attWindow;
-  private Formatter parseInfo = new Formatter();
+  private final BeanTable<VariableBean> varTable;
+  private final BeanTable<CoordinateSystemBean> csTable;
+  private final BeanTable<AxisBean> axisTable;
+  private final JSplitPane split, split2;
+  private final TextHistoryPane infoTA;
+  private final IndependentWindow infoWindow;
+  private BeanTable<AttributeBean> attTable;
+
+  private IndependentWindow attWindow;
+  private NetcdfDataset ds;
 
   public CoordSysTable(PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
@@ -65,90 +69,99 @@ public class CoordSysTable extends JPanel {
       BAMutil.addActionToContainer(buttPanel, attAction);
     }
 
-    varTable = new BeanTable(VariableBean.class, (PreferencesExt) prefs.node("VariableBeans"), false);
-    varTable.addListSelectionListener(e -> {
-      VariableBean vb = (VariableBean) varTable.getSelectedBean();
-      if (null != vb.coordSysBean)
-        csTable.setSelectedBean(vb.coordSysBean);
-    });
-
-    csTable = new BeanTable(CoordinateSystemBean.class, (PreferencesExt) prefs.node("CoordinateSystemBean"), false);
+    csTable = new BeanTable<>(CoordinateSystemBean.class, (PreferencesExt) prefs.node("CoordinateSystemBean"), false);
     csTable.addListSelectionListener(e -> {
-      CoordinateSystemBean csb = (CoordinateSystemBean) csTable.getSelectedBean();
-      setSelectedCoordinateAxes(csb.coordSys);
+      CoordinateSystemBean csb = csTable.getSelectedBean();
+      if (null != csb) {
+        setSelectedCoordinateAxes(csb.coordSys);
+      }
     });
 
-    axisTable = new BeanTable(AxisBean.class, (PreferencesExt) prefs.node("CoordinateAxisBean"), false);
+    varTable = new BeanTable<>(VariableBean.class, (PreferencesExt) prefs.node("VariableBeans"), false);
+    varTable.addListSelectionListener(e -> {
+      VariableBean vb = varTable.getSelectedBean();
+      if (null != vb) {
+        csTable.setSelectedBean(vb.coordSysBean);
+      }
+    });
 
+    axisTable = new BeanTable<>(AxisBean.class, (PreferencesExt) prefs.node("CoordinateAxisBean"), false);
     PopupMenu varPopup = new PopupMenu(varTable.getJTable(), "Options");
     varPopup.addAction("Show Declaration", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        VariableBean vb = (VariableBean) varTable.getSelectedBean();
-        Variable v = ds.findVariable(vb.getName());
-        if (v == null)
-          return;
-        infoTA.clear();
-        infoTA.appendLine(((VariableEnhanced) v).toString());
-        infoTA.appendLine(showMissing(v));
-        infoTA.gotoTop();
-        infoWindow.show();
+        VariableBean vb = varTable.getSelectedBean();
+        if (vb != null) {
+          Variable v = ds.findVariable(vb.getName());
+          if (v == null)
+            return;
+          infoTA.clear();
+          infoTA.appendLine(((VariableEnhanced) v).toString());
+          infoTA.appendLine(showMissing(v));
+          infoTA.gotoTop();
+          infoWindow.show();
+        }
       }
     });
 
     varPopup.addAction("Try as Grid", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        VariableBean vb = (VariableBean) varTable.getSelectedBean();
-        VariableEnhanced v = (VariableEnhanced) ds.findVariable(vb.getName());
-        if (v == null)
-          return;
-        infoTA.clear();
-        infoTA.appendLine(tryGrid(v));
-        infoTA.gotoTop();
-        infoWindow.show();
+        VariableBean vb = varTable.getSelectedBean();
+        if (vb != null) {
+          VariableEnhanced v = (VariableEnhanced) ds.findVariable(vb.getName());
+          if (v == null)
+            return;
+          infoTA.clear();
+          infoTA.appendLine(tryGrid(v));
+          infoTA.gotoTop();
+          infoWindow.show();
+        }
       }
     });
 
     varPopup.addAction("Try as Coverage", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        VariableBean vb = (VariableBean) varTable.getSelectedBean();
-        VariableEnhanced v = (VariableEnhanced) ds.findVariable(vb.getName());
-        if (v == null)
-          return;
-        infoTA.clear();
-        infoTA.appendLine(tryCoverage(v));
-        infoTA.gotoTop();
-        infoWindow.show();
+        VariableBean vb = varTable.getSelectedBean();
+        if (vb != null) {
+          VariableEnhanced v = (VariableEnhanced) ds.findVariable(vb.getName());
+          if (v == null)
+            return;
+          infoTA.clear();
+          infoTA.appendLine(tryCoverage(v));
+          infoTA.gotoTop();
+          infoWindow.show();
+        }
       }
     });
 
     PopupMenu csPopup = new PopupMenu(csTable.getJTable(), "Options");
     csPopup.addAction("Show CoordSys", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        CoordinateSystemBean csb = (CoordinateSystemBean) csTable.getSelectedBean();
-        CoordinateSystem coordSys = csb.coordSys;
-        infoTA.clear();
-        infoTA.appendLine("Coordinate System = " + coordSys.getName());
-        for (CoordinateAxis axis : coordSys.getCoordinateAxes()) {
-          infoTA.appendLine("  " + axis.getAxisType() + " " + axis.getNameAndDimensions());
-        }
-        infoTA.appendLine(" Coordinate Transforms");
-        for (CoordinateTransform ct : coordSys.getCoordinateTransforms()) {
-          infoTA.appendLine("  " + ct.getTransformType() + ": " + ct.getName());
-          for (Attribute p : ct.getCtvAttributes()) {
-            infoTA.appendLine("    " + p);
+        CoordinateSystemBean csb = csTable.getSelectedBean();
+        if (csb != null) {
+          CoordinateSystem coordSys = csb.coordSys;
+          infoTA.clear();
+          infoTA.appendLine("Coordinate System = " + coordSys.getName());
+          for (CoordinateAxis axis : coordSys.getCoordinateAxes()) {
+            infoTA.appendLine("  " + axis.getAxisType() + " " + axis.getNameAndDimensions());
           }
-          if (ct instanceof ProjectionCT) {
-            ProjectionCT pct = (ProjectionCT) ct;
-            if (pct.getProjection() != null) {
-              infoTA.appendLine("    impl.class= " + pct.getProjection().getClass().getName());
-              // pct.getProjection();
+          infoTA.appendLine(" Coordinate Transforms");
+          for (CoordinateTransform ct : coordSys.getCoordinateTransforms()) {
+            infoTA.appendLine("  " + ct.getTransformType() + ": " + ct.getName());
+            for (Attribute p : ct.getCtvAttributes()) {
+              infoTA.appendLine("    " + p);
+            }
+            if (ct instanceof ProjectionCT) {
+              ProjectionCT pct = (ProjectionCT) ct;
+              if (pct.getProjection() != null) {
+                infoTA.appendLine("    impl.class= " + pct.getProjection().getClass().getName());
+                // pct.getProjection();
+              }
+            }
+            if (ct instanceof VerticalCT) {
+              VerticalCT vct = (VerticalCT) ct;
+              infoTA.appendLine("  VerticalCT= " + vct);
             }
           }
-          if (ct instanceof VerticalCT) {
-            VerticalCT vct = (VerticalCT) ct;
-            infoTA.appendLine("  VerticalCT= " + vct);
-          }
-
         }
         infoTA.gotoTop();
         infoWindow.show();
@@ -158,7 +171,7 @@ public class CoordSysTable extends JPanel {
     PopupMenu axisPopup = new PopupMenu(axisTable.getJTable(), "Options");
     axisPopup.addAction("Show Declaration", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        AxisBean bean = (AxisBean) axisTable.getSelectedBean();
+        AxisBean bean = axisTable.getSelectedBean();
         if (bean == null)
           return;
         VariableDS axis = (VariableDS) ds.findVariable(bean.getName());
@@ -174,7 +187,7 @@ public class CoordSysTable extends JPanel {
 
     axisPopup.addAction("Show Values", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        AxisBean bean = (AxisBean) axisTable.getSelectedBean();
+        AxisBean bean = axisTable.getSelectedBean();
         if (bean == null)
           return;
         infoTA.clear();
@@ -185,7 +198,7 @@ public class CoordSysTable extends JPanel {
     });
     axisPopup.addAction("Show Value Differences", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        AxisBean bean = (AxisBean) axisTable.getSelectedBean();
+        AxisBean bean = axisTable.getSelectedBean();
         if (bean == null)
           return;
         infoTA.clear();
@@ -197,7 +210,7 @@ public class CoordSysTable extends JPanel {
 
     axisPopup.addAction("Show Values as Date", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        AxisBean bean = (AxisBean) axisTable.getSelectedBean();
+        AxisBean bean = axisTable.getSelectedBean();
         if (bean == null)
           return;
         infoTA.clear();
@@ -230,7 +243,7 @@ public class CoordSysTable extends JPanel {
 
     for (Object varo : varTable.getBeans()) {
       VariableBean varBean = (VariableBean) varo;
-      if (varBean.getDataType().trim().equalsIgnoreCase("grid"))
+      if (varBean.getArrayType().trim().equalsIgnoreCase("grid"))
         ngrids++;
     }
     int ncoordSys = csTable.getBeans().size();
@@ -244,18 +257,16 @@ public class CoordSysTable extends JPanel {
     }
   }
 
-  private BeanTable attTable;
-
   public void showAtts() {
     if (ds == null)
       return;
     if (attTable == null) {
       // global attributes
-      attTable = new BeanTable(AttributeBean.class, (PreferencesExt) prefs.node("AttributeBeans"), false);
+      attTable = new BeanTable<>(AttributeBean.class, (PreferencesExt) prefs.node("AttributeBeans"), false);
       PopupMenu varPopup = new PopupMenu(attTable.getJTable(), "Options");
       varPopup.addAction("Show Attribute", new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
-          AttributeBean bean = (AttributeBean) attTable.getSelectedBean();
+          AttributeBean bean = attTable.getSelectedBean();
           if (bean != null) {
             infoTA.setText(bean.att.toString());
             infoTA.gotoTop();
@@ -315,7 +326,6 @@ public class CoordSysTable extends JPanel {
 
   }
 
-
   private void showValues2D(CoordinateAxis2D axis2D) {
     Formatter f = new Formatter();
 
@@ -354,8 +364,6 @@ public class CoordSysTable extends JPanel {
     infoTA.appendLine(f.toString());
   }
 
-
-
   private void showValueDiffs(CoordinateAxis axis) {
     if (!axis.isNumeric())
       return;
@@ -390,7 +398,6 @@ public class CoordSysTable extends JPanel {
         }
         infoTA.appendLine("\n\n\n");
         infoTA.appendLine(Ncdump.printArray(diffy, "diff in y", null));
-
       }
 
     } catch (Exception e1) {
@@ -481,7 +488,6 @@ public class CoordSysTable extends JPanel {
         double coordValue = coordIter.getDoubleNext();
         f.format("%3d: %s%n", count++, makeCalendarDateStringOrMissing(cdu, coordValue));
       }
-
     }
 
     infoTA.appendLine(f.toString());
@@ -561,7 +567,6 @@ public class CoordSysTable extends JPanel {
 
   public void setDataset(NetcdfDataset ds) {
     this.ds = ds;
-    parseInfo = new Formatter();
 
     List<CoordinateSystemBean> csList = getCoordinateSystemBeans(ds);
     List<VariableBean> beanList = new ArrayList<>();
@@ -598,12 +603,12 @@ public class CoordSysTable extends JPanel {
   }
 
   private void setSelectedCoordinateAxes(CoordinateSystem cs) {
-    List axesList = cs.getCoordinateAxes();
+    List<CoordinateAxis> axesList = cs.getCoordinateAxes();
     if (axesList.isEmpty())
       return;
-    CoordinateAxis axis = (CoordinateAxis) axesList.get(0);
+    CoordinateAxis axis = axesList.get(0);
 
-    List beans = axisTable.getBeans();
+    List<AxisBean> beans = axisTable.getBeans();
     for (Object bean1 : beans) {
       AxisBean bean = (AxisBean) bean1;
       if (bean.axis == axis) {
@@ -662,8 +667,6 @@ public class CoordSysTable extends JPanel {
   }
 
   public class VariableBean {
-    // static public String editableProperties() { return "title include logging freq"; }
-
     Variable v;
     VariableEnhanced ve;
     CoordinateSystemBean coordSysBean;
@@ -671,11 +674,9 @@ public class CoordSysTable extends JPanel {
     String dims, shape;
 
     // no-arg constructor
-
     public VariableBean() {}
 
     // create from a dataset
-
     public VariableBean(VariableEnhanced ve, List<CoordinateSystemBean> csList) {
       this.v = (Variable) ve;
       this.ve = ve;
@@ -741,8 +742,8 @@ public class CoordSysTable extends JPanel {
       return (coordSysBean == null) ? "" : coordSysBean.getCoordSys();
     }
 
-    public String getDataType() {
-      return v.getDataType().toString();
+    public String getArrayType() {
+      return v.getArrayType().toString();
     }
 
     public String getCoverage() {
@@ -779,15 +780,10 @@ public class CoordSysTable extends JPanel {
 
       coverageType = DtCoverageCSBuilder.describe(ds, cs, null);
 
+      Formatter parseInfo = new Formatter();
       if (GridCoordSys.isGridCoordSys(parseInfo, cs, null)) {
         addDataType("grid");
       }
-
-      /*
-       * if (RadialCoordSys.isRadialCoordSys(parseInfo, cs)) {
-       * addDataType("radial");
-       * }
-       */
 
       Formatter buff = new Formatter();
       List<CoordinateTransform> ctList = cs.getCoordinateTransforms();

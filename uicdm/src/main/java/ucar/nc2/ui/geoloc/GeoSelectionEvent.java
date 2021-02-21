@@ -10,7 +10,7 @@ package ucar.nc2.ui.geoloc;
  * @author John Caron
  */
 public class GeoSelectionEvent extends java.util.EventObject {
-  private ucar.unidata.geoloc.ProjectionRect pr;
+  private final ucar.unidata.geoloc.ProjectionRect pr;
 
   public GeoSelectionEvent(Object source, ucar.unidata.geoloc.ProjectionRect pr) {
     super(source);

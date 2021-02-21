@@ -12,7 +12,7 @@ import ucar.unidata.geoloc.ProjectionRect;
  * @author John Caron
  */
 public class NewMapAreaEvent extends java.util.EventObject {
-  private ProjectionRect mapArea;
+  private final ProjectionRect mapArea;
 
   public NewMapAreaEvent(Object source, ProjectionRect mapArea) {
     super(source);

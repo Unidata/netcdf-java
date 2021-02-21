@@ -48,13 +48,18 @@ import javax.swing.*;
  */
 public class BufrMessageViewer extends JPanel {
 
-  private PreferencesExt prefs;
+  private final PreferencesExt prefs;
 
-  private BeanTable messageTable, obsTable, ddsTable;
-  private JSplitPane split, split2;
+  private final BeanTable<MessageBean> messageTable;
+  private BeanTable<ObsBean> obsTable;
+  private BeanTable<DdsBean> ddsTable;
+  private final JSplitPane split;
+  private final JSplitPane split2;
 
-  private TextHistoryPane infoTA, infoTA2;
-  private IndependentWindow infoWindow, infoWindow2;
+  private final TextHistoryPane infoTA;
+  private TextHistoryPane infoTA2;
+  private final IndependentWindow infoWindow;
+  private IndependentWindow infoWindow2;
 
   private StructureTable dataTable;
   private IndependentWindow dataWindow;
@@ -152,12 +157,12 @@ public class BufrMessageViewer extends JPanel {
 
     ///////////////////////////////////////
 
-    messageTable = new BeanTable(MessageBean.class, (PreferencesExt) prefs.node("GridRecordBean"), false);
+    messageTable = new BeanTable<>(MessageBean.class, (PreferencesExt) prefs.node("GridRecordBean"), false);
     messageTable.addListSelectionListener(e -> {
-      ddsTable.setBeans(new ArrayList());
-      obsTable.setBeans(new ArrayList());
+      ddsTable.setBeans(new ArrayList<>());
+      obsTable.setBeans(new ArrayList<>());
 
-      MessageBean mb = (MessageBean) messageTable.getSelectedBean();
+      MessageBean mb = messageTable.getSelectedBean();
       if (mb == null)
         return;
       List<DdsBean> beanList = new ArrayList<>();
@@ -171,24 +176,13 @@ public class BufrMessageViewer extends JPanel {
       ddsTable.setBeans(beanList);
     });
 
-    obsTable = new BeanTable(ObsBean.class, (PreferencesExt) prefs.node("ObsBean"), false);
-    /*
-     * obsTable.addListSelectionListener(e -> {
-     * obsTable.getSelectedBean();
-     * });
-     */
-
-    ddsTable = new BeanTable(DdsBean.class, (PreferencesExt) prefs.node("DdsBean"), false);
-    /*
-     * ddsTable.addListSelectionListener(e -> {
-     * ddsTable.getSelectedBean();
-     * });
-     */
+    obsTable = new BeanTable<>(ObsBean.class, (PreferencesExt) prefs.node("ObsBean"), false);
+    ddsTable = new BeanTable<>(DdsBean.class, (PreferencesExt) prefs.node("DdsBean"), false);
 
     PopupMenu varPopup = new PopupMenu(messageTable.getJTable(), "Options");
     varPopup.addAction("Show DDS", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        MessageBean vb = (MessageBean) messageTable.getSelectedBean();
+        MessageBean vb = messageTable.getSelectedBean();
         if (vb == null)
           return;
         if (!seperateWindow)
@@ -224,7 +218,7 @@ public class BufrMessageViewer extends JPanel {
 
     varPopup.addAction("Data Table", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        MessageBean mb = (MessageBean) messageTable.getSelectedBean();
+        MessageBean mb = messageTable.getSelectedBean();
         if (mb == null)
           return;
         try {
@@ -247,7 +241,7 @@ public class BufrMessageViewer extends JPanel {
 
     varPopup.addAction("BitCount", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        MessageBean mb = (MessageBean) messageTable.getSelectedBean();
+        MessageBean mb = messageTable.getSelectedBean();
         if (mb == null)
           return;
         mb.checkBits();
@@ -256,7 +250,7 @@ public class BufrMessageViewer extends JPanel {
 
     varPopup.addAction("Bit Count Details", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        MessageBean mb = (MessageBean) messageTable.getSelectedBean();
+        MessageBean mb = messageTable.getSelectedBean();
         if (mb == null)
           return;
         Message m = mb.m;
@@ -294,7 +288,7 @@ public class BufrMessageViewer extends JPanel {
 
     varPopup.addAction("Read", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        MessageBean mb = (MessageBean) messageTable.getSelectedBean();
+        MessageBean mb = messageTable.getSelectedBean();
         if (mb == null)
           return;
         mb.read();
@@ -303,7 +297,7 @@ public class BufrMessageViewer extends JPanel {
 
     varPopup.addAction("Write Message", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        MessageBean mb = (MessageBean) messageTable.getSelectedBean();
+        MessageBean mb = messageTable.getSelectedBean();
         if (mb == null)
           return;
         try {
@@ -345,7 +339,7 @@ public class BufrMessageViewer extends JPanel {
 
     varPopup.addAction("Show XML", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        MessageBean mb = (MessageBean) messageTable.getSelectedBean();
+        MessageBean mb = messageTable.getSelectedBean();
         if (mb == null)
           return;
         Message m = mb.m;
@@ -376,9 +370,7 @@ public class BufrMessageViewer extends JPanel {
 
     varPopup.addAction("Compare DDS", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        List list = messageTable.getSelectedBeans();
-        for (Object beano : list) {
-          MessageBean bean = (MessageBean) beano;
+        for (MessageBean bean: messageTable.getSelectedBeans()) {
           showDDS(bean.m);
         }
       }
@@ -631,8 +623,8 @@ public class BufrMessageViewer extends JPanel {
     }
 
     messageTable.setBeans(beanList);
-    obsTable.setBeans(new ArrayList());
-    ddsTable.setBeans(new ArrayList());
+    obsTable.setBeans(new ArrayList<>());
+    ddsTable.setBeans(new ArrayList<>());
   }
 
   private NetcdfFile makeBufrMessageAsDataset(Message m) throws IOException {
@@ -645,8 +637,7 @@ public class BufrMessageViewer extends JPanel {
 
   private NetcdfFile makeBufrDataset() throws IOException {
     BufrIosp iosp = new BufrIosp();
-    NetcdfFile ncfile = NetcdfFiles.build(iosp, raf, raf.getLocation(), null);
-    return ncfile;
+    return NetcdfFiles.build(iosp, raf, raf.getLocation(), null);
   }
 
   private int setDataDescriptors(List<DdsBean> beanList, DataDescriptor dds, int seqno) {
@@ -867,9 +858,7 @@ public class BufrMessageViewer extends JPanel {
         return "override";
       return dds.isLocal() ? "true" : "false";
     }
-
   }
-
 
   public static class ObsBean {
     double lat = Double.NaN, lon = Double.NaN, height = Double.NaN, heightOfStation = Double.NaN;

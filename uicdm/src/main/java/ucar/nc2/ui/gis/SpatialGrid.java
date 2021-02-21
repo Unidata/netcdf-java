@@ -14,20 +14,21 @@ import java.awt.geom.*;
  *
  * @author caron, with design help from russ
  */
-
 public class SpatialGrid {
   private static final double MAX_DOUBLE = Double.MAX_VALUE;
+  private static final boolean debug = false;
+  private static final boolean debugMark = false;
+  private static final boolean debugClosest = false;
 
-  private GridCell[][] gridArray;
-  private int nx, ny;
+  private final GridCell[][] gridArray;
+  private final int nx;
+  private final int ny;
   private int countX, countY;
   private double gridWidth, gridHeight;
   private double offsetX, offsetY;
 
   private double scaleOverlap = 1.0;
-  private Rectangle2D result = new Rectangle2D.Double();
-
-  private boolean debug, debugMark, debugClosest;
+  private final Rectangle2D result = new Rectangle2D.Double();
 
   /**
    * Constructor
@@ -44,7 +45,6 @@ public class SpatialGrid {
       for (int x = 0; x < nx; x++)
         gridArray[y][x] = new GridCell();
     }
-
   }
 
   /**
@@ -184,7 +184,6 @@ public class SpatialGrid {
           return gtest.o;
       }
     }
-
     return null;
   }
 

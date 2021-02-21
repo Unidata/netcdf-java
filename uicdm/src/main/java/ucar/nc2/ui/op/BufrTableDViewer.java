@@ -28,13 +28,14 @@ import javax.swing.*;
  * @since Dec 1, 2009
  */
 public class BufrTableDViewer extends JPanel {
-  private PreferencesExt prefs;
+  private final PreferencesExt prefs;
 
-  private BeanTable ddsTable, variantTable;
-  private JSplitPane split;
+  private final BeanTable<DdsBean> ddsTable;
+  private final BeanTable<DdsBean> variantTable;
+  private final JSplitPane split;
 
-  private TextHistoryPane compareTA;
-  private IndependentWindow infoWindow;
+  private final TextHistoryPane compareTA;
+  private final IndependentWindow infoWindow;
 
   private TableD currTable;
 
@@ -43,25 +44,25 @@ public class BufrTableDViewer extends JPanel {
   public BufrTableDViewer(PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
 
-    ddsTable = new BeanTable(DdsBean.class, (PreferencesExt) prefs.node("DdsBean"), false);
+    // the info window
+    compareTA = new TextHistoryPane();
+    infoWindow = new IndependentWindow("Extra Information", BAMutil.getImage("nj22/NetcdfUI"), compareTA);
+    infoWindow.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 800, 600)));
+
+    ddsTable = new BeanTable<>(DdsBean.class, (PreferencesExt) prefs.node("DdsBean"), false);
     ddsTable.addListSelectionListener(e -> {
-      DdsBean csb = (DdsBean) ddsTable.getSelectedBean();
+      DdsBean csb = ddsTable.getSelectedBean();
       showVariants(csb);
     });
 
-    variantTable = new BeanTable(DdsBean.class, (PreferencesExt) prefs.node("VariantBean"), false);
-    /*
-     * variantTable.addListSelectionListener(e -> {
-     * variantTable.getSelectedBean();
-     * });
-     */
+    variantTable = new BeanTable<>(DdsBean.class, (PreferencesExt) prefs.node("VariantBean"), false);
 
     PopupMenu varPopup = new PopupMenu(ddsTable.getJTable(), "Options");
     varPopup.addAction("Show uses", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Formatter out = new Formatter();
-        DdsBean csb = (DdsBean) ddsTable.getSelectedBean();
-        if (usedDds != null) {
+        DdsBean csb = ddsTable.getSelectedBean();
+        if (usedDds != null && csb != null) {
           List<String> list = usedDds.get(csb.dds.getId());
           if (list != null) {
             for (String use : list)
@@ -78,7 +79,7 @@ public class BufrTableDViewer extends JPanel {
     varPopup.addAction("Show", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Formatter out = new Formatter();
-        DdsBean ddsBean = (DdsBean) variantTable.getSelectedBean();
+        DdsBean ddsBean = variantTable.getSelectedBean();
         if (ddsBean != null) {
           ddsBean.dds.show(out, false);
         }
@@ -111,21 +112,7 @@ public class BufrTableDViewer extends JPanel {
     });
     buttPanel.add(compareButton);
 
-    // the info window
-    compareTA = new TextHistoryPane();
-    infoWindow = new IndependentWindow("Extra Information", BAMutil.getImage("nj22/NetcdfUI"), compareTA);
-    infoWindow.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 800, 600)));
-
-    /*
-     * the info window 2
-     * infoTA2 = new TextHistoryPane();
-     * infoWindow2 = new IndependentWindow("Extra Information-2", BAMutil.getImage("nj22/NetcdfUI"), infoTA2);
-     * infoWindow2.setBounds((Rectangle) prefs.getBean("InfoWindowBounds2", new Rectangle(300, 300, 500, 300)));
-     * 
-     * split2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, ddsTable, obsTable);
-     * split2.setDividerLocation(prefs.getInt("splitPos2", 800));
-     */
-
+    ////////////////////
     split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, ddsTable, variantTable);
     split.setDividerLocation(prefs.getInt("splitPos", 500));
 
@@ -159,14 +146,11 @@ public class BufrTableDViewer extends JPanel {
   }
 
   private void compare(TableD t1, TableD t2, Formatter out) {
-    List currBeans = ddsTable.getBeans();
-
     out.format("Compare Table D%n %s %n %s %n", t1.getName(), t2.getName());
     boolean err = false;
     List<TableD.Descriptor> listDesc = new ArrayList<>(t1.getDescriptors());
     Collections.sort(listDesc);
-    for (Object bean : currBeans) {
-      DdsBean dbean = (DdsBean) bean;
+    for (DdsBean dbean : ddsTable.getBeans()) {
       dbean.diff = null;
 
       TableD.Descriptor d1 = dbean.dds;

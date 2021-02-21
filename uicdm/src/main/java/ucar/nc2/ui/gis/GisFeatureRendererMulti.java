@@ -30,13 +30,16 @@ public abstract class GisFeatureRendererMulti extends GisFeatureRenderer {
     pixelMatch = d;
   }
 
-  private ArrayList featSetList; // list of fetaureSets for progressive disclosure
+  private ArrayList<FeatureSet> featSetList; // list of featureSets for progressive disclosure
 
   ////// this is what the subclasses have to implement (besides the constructor)
+  @Override
   public abstract LatLonRect getPreferredArea();
 
-  protected abstract java.util.List getFeatures(); // collection of AbstractGisFeature
+  @Override
+  protected abstract java.util.List<GisFeature> getFeatures(); // collection of AbstractGisFeature
 
+  @Override
   protected abstract Projection getDataProjection(); // what projection is the data in?
 
   /**
@@ -44,13 +47,14 @@ public abstract class GisFeatureRendererMulti extends GisFeatureRenderer {
    *
    * @param project the new projection
    */
+  @Override
   public void setProjection(Projection project) {
     displayProject = project;
 
-    if (featSetList == null)
+    if (featSetList == null) {
       return;
-    for (Object o : featSetList) {
-      FeatureSet fs = (FeatureSet) o;
+    }
+    for (FeatureSet fs : featSetList) {
       fs.newProjection = true;
     }
   }
@@ -69,7 +73,7 @@ public abstract class GisFeatureRendererMulti extends GisFeatureRenderer {
 
   // get the set of shapes to draw.
   // we have to deal with both projections and resolution-dependence
-  protected Iterator getShapes(java.awt.Graphics2D g, AffineTransform normal2device) {
+  protected Iterator<Shape> iterator(java.awt.Graphics2D g, AffineTransform normal2device) {
     long startTime = System.currentTimeMillis();
 
     if (featSetList == null) {
@@ -78,7 +82,7 @@ public abstract class GisFeatureRendererMulti extends GisFeatureRenderer {
     }
 
     // which featureSet should we ue?
-    FeatureSet fs = (FeatureSet) featSetList.get(0);
+    FeatureSet fs = featSetList.get(0);
     if (featSetList.size() > 1) {
       // compute scale
       double scale = 1.0;
@@ -93,8 +97,9 @@ public abstract class GisFeatureRendererMulti extends GisFeatureRenderer {
       } catch (java.awt.geom.NoninvertibleTransformException e) {
         System.out.println(" GisRenderFeature: NoninvertibleTransformException on " + normal2device);
       }
-      if (!displayProject.isLatLon())
+      if (!displayProject.isLatLon()) {
         scale *= 111.0; // km/deg
+      }
       double minD = Double.MAX_VALUE;
       for (Object aFeatSetList : featSetList) {
         FeatureSet tryfs = (FeatureSet) aFeatSetList;
@@ -110,8 +115,9 @@ public abstract class GisFeatureRendererMulti extends GisFeatureRenderer {
     }
 
     // we may have deferred the actual creation of the points
-    if (fs.featureList == null)
+    if (fs.featureList == null) {
       fs.createFeatures();
+    }
 
     // ok, now see if we need to project
     if (!displayProject.equals(fs.project)) {
@@ -129,50 +135,18 @@ public abstract class GisFeatureRendererMulti extends GisFeatureRenderer {
     }
 
     // so return it, already
-    return fs.getShapes();
+    return fs.iterator();
   }
 
   // make an ArrayList of Shapes from the given featureList and current display Projection
-  private ArrayList makeShapes(Iterator featList) {
+  private ArrayList<Shape> makeShapes(Iterator<GisFeature> featList) {
     Shape shape;
-    ArrayList shapeList = new ArrayList();
+    ArrayList<Shape> shapeList = new ArrayList<>();
     Projection dataProject = getDataProjection();
 
     if (Debug.isSet("GisFeature/MapDraw")) {
       System.out.println("GisFeature/MapDraw: makeShapes with " + displayProject);
     }
-
-    /*
-     * if (Debug.isSet("bug.drawShapes")) {
-     * int count =0;
-     * // make each GisPart a seperate shape for debugging
-     * feats:while (featList.hasNext()) {
-     * AbstractGisFeature feature = (AbstractGisFeature) featList.next();
-     * java.util.Iterator pi = feature.getGisParts();
-     * while (pi.hasNext()) {
-     * GisPart gp = (GisPart) pi.next();
-     * int np = gp.getNumPoints();
-     * GeneralPath path = new GeneralPath(GeneralPath.WIND_EVEN_ODD, np);
-     * double[] xx = gp.getX();
-     * double[] yy = gp.getY();
-     * path.moveTo((float) xx[0], (float) yy[0]);
-     * if (count == 63)
-     * System.out.println("moveTo x ="+xx[0]+" y= "+yy[0]);
-     * for(int i = 1; i < np; i++) {
-     * path.lineTo((float) xx[i], (float) yy[i]);
-     * if (count == 63)
-     * System.out.println("lineTo x ="+xx[i]+" y= "+yy[i]);
-     * }
-     * shapeList.add(path);
-     * if (count == 63)
-     * break feats;
-     * count++;
-     * }
-     * }
-     * System.out.println("bug.drawShapes: #shapes =" +shapeList.size());
-     * return shapeList;
-     * }
-     */
 
     while (featList.hasNext()) {
       AbstractGisFeature feature = (AbstractGisFeature) featList.next();
@@ -190,18 +164,18 @@ public abstract class GisFeatureRendererMulti extends GisFeatureRenderer {
   }
 
   private void initFeatSetList() {
-    featSetList = new ArrayList();
+    featSetList = new ArrayList<>();
     featSetList.add(new FeatureSet(getFeatures(), 0.0)); // full resolution set
   }
 
-  private class FeatureSet {
-    List featureList;
+  private class FeatureSet implements Iterable<Shape> {
+    List<GisFeature> featureList;
     double minDist;
     Projection project;
-    ArrayList shapeList;
+    ArrayList<Shape> shapeList;
     boolean newProjection = true;
 
-    FeatureSet(List featureList, double minDist) {
+    FeatureSet(List<GisFeature> featureList, double minDist) {
       this.featureList = featureList;
       this.minDist = minDist;
     }
@@ -209,28 +183,21 @@ public abstract class GisFeatureRendererMulti extends GisFeatureRenderer {
     void setProjection(Projection project) {
       this.project = project;
       shapeList = makeShapes(featureList.iterator());
-
-      /*
-       * if (project.isLatLon()) { // why?
-       * LatLonProjection llproj = (LatLonProjection) project;
-       * }
-       */
     }
 
-    Iterator getShapes() {
+    @Override
+    public Iterator<Shape> iterator() {
       return shapeList.iterator();
     }
 
     void createFeatures() {
-      featureList = new ArrayList();
+      featureList = new ArrayList<>();
 
       for (Object o : GisFeatureRendererMulti.this.getFeatures()) {
         AbstractGisFeature feature = (AbstractGisFeature) o;
         FeatureMD featMD = new FeatureMD(minDist);
 
-        Iterator pi = feature.getGisParts();
-        while (pi.hasNext()) {
-          GisPart gp = (GisPart) pi.next();
+        for (GisPart gp : feature) {
           Part part = featMD.newPart(gp.getNumPoints());
 
           int np = gp.getNumPoints();
@@ -272,9 +239,9 @@ public abstract class GisFeatureRendererMulti extends GisFeatureRenderer {
 
   // these are derived Features based on a mimimum distance between points
   static class FeatureMD extends AbstractGisFeature {
-    private ArrayList parts = new ArrayList();
+    private final ArrayList<GisPart> parts = new ArrayList<>();
     private int total_pts;
-    private double minDist;
+    private final double minDist;
     private double minDist2;
 
     FeatureMD(double minDist) {
@@ -297,21 +264,24 @@ public abstract class GisFeatureRendererMulti extends GisFeatureRenderer {
       return (Math.rint(d / minDist) * minDist) + minDist / 2;
     }
 
-
     // implement GisFeature
+    @Override
     public java.awt.geom.Rectangle2D getBounds2D() {
       return null;
     }
 
+    @Override
     public int getNumPoints() {
       return total_pts;
     }
 
+    @Override
     public int getNumParts() {
       return parts.size();
     }
 
-    public java.util.Iterator getGisParts() {
+    @Override
+    public java.util.Iterator<GisPart> iterator() {
       return parts.iterator();
     }
 
@@ -365,20 +335,22 @@ public abstract class GisFeatureRendererMulti extends GisFeatureRenderer {
       }
 
       // implement GisPart
+      @Override
       public int getNumPoints() {
         return size;
       }
 
+      @Override
       public double[] getX() {
         return wx;
       }
 
+      @Override
       public double[] getY() {
         return wy;
       }
     }
   }
-
 
   protected double getStats(Iterator featList) {
     int total_pts = 0;
@@ -396,9 +368,7 @@ public abstract class GisFeatureRendererMulti extends GisFeatureRenderer {
       AbstractGisFeature feature = (AbstractGisFeature) featList.next();
       total_feats++;
 
-      Iterator pi = feature.getGisParts();
-      while (pi.hasNext()) {
-        GisPart gp = (GisPart) pi.next();
+      for (GisPart gp : feature) {
         total_parts++;
 
         double[] xx = gp.getX();

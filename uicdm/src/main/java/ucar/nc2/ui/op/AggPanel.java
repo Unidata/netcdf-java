@@ -12,8 +12,6 @@ import ucar.nc2.ui.OpPanel;
 import ucar.nc2.ui.ToolsUI;
 import ucar.util.prefs.PreferencesExt;
 import java.awt.BorderLayout;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -21,48 +19,45 @@ import java.io.StringWriter;
 import javax.swing.JOptionPane;
 
 public class AggPanel extends OpPanel {
-  private AggTable aggTable;
+  private final AggTable aggTable;
   private NetcdfDataset ncd;
 
   public AggPanel(PreferencesExt p) {
     super(p, "file:", true, false);
     aggTable = new AggTable(prefs, buttPanel);
-    aggTable.addPropertyChangeListener(new PropertyChangeListener() {
-      @Override
-      public void propertyChange(PropertyChangeEvent e) {
-        switch (e.getPropertyName()) {
-          case "openNetcdfFile": {
-            NetcdfFile ncfile = (NetcdfFile) e.getNewValue();
-            if (ncfile != null) {
-              ToolsUI.getToolsUI().openNetcdfFile(ncfile);
-            }
-            break;
+    aggTable.addPropertyChangeListener(e -> {
+      switch (e.getPropertyName()) {
+        case "openNetcdfFile": {
+          NetcdfFile ncfile = (NetcdfFile) e.getNewValue();
+          if (ncfile != null) {
+            ToolsUI.getToolsUI().openNetcdfFile(ncfile);
           }
-          case "openCoordSystems": {
-            NetcdfFile ncfile = (NetcdfFile) e.getNewValue();
-            if (ncfile == null) {
-              return;
-            }
-            try {
-              NetcdfDataset ncd = NetcdfDatasets.enhance(ncfile, NetcdfDataset.getDefaultEnhanceMode(), null);
-              ToolsUI.getToolsUI().openCoordSystems(ncd);
-            } catch (IOException e1) {
-              e1.printStackTrace();
-            }
-            break;
+          break;
+        }
+        case "openCoordSystems": {
+          NetcdfFile ncfile = (NetcdfFile) e.getNewValue();
+          if (ncfile == null) {
+            return;
           }
-          case "openGridDataset": {
-            NetcdfFile ncfile = (NetcdfFile) e.getNewValue();
-            if (ncfile == null)
-              return;
-            try {
-              NetcdfDataset ncd = NetcdfDatasets.enhance(ncfile, NetcdfDataset.getDefaultEnhanceMode(), null);
-              ToolsUI.getToolsUI().openGridDataset(ncd);
-            } catch (IOException e1) {
-              e1.printStackTrace();
-            }
-            break;
+          try {
+            NetcdfDataset ncd = NetcdfDatasets.enhance(ncfile, NetcdfDataset.getDefaultEnhanceMode(), null);
+            ToolsUI.getToolsUI().openCoordSystems(ncd);
+          } catch (IOException e1) {
+            e1.printStackTrace();
           }
+          break;
+        }
+        case "openGridDataset": {
+          NetcdfFile ncfile = (NetcdfFile) e.getNewValue();
+          if (ncfile == null)
+            return;
+          try {
+            NetcdfDataset ncd = NetcdfDatasets.enhance(ncfile, NetcdfDataset.getDefaultEnhanceMode(), null);
+            ToolsUI.getToolsUI().openGridDataset(ncd);
+          } catch (IOException e1) {
+            e1.printStackTrace();
+          }
+          break;
         }
       }
     });
@@ -83,7 +78,6 @@ public class AggPanel extends OpPanel {
           ioe.printStackTrace();
         }
       }
-      boolean useBuilders = ToolsUI.getToolsUI().getUseBuilders();
       ncd = NetcdfDatasets.openDataset(command);
       aggTable.setAggDataset(ncd);
     } catch (FileNotFoundException ioe) {

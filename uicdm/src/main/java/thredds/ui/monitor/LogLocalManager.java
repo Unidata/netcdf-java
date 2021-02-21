@@ -4,22 +4,14 @@
  */
 package thredds.ui.monitor;
 
-import ucar.nc2.units.DateFormatter;
+import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.util.IO;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
-import java.util.*;/*
-                    * 
-                    * /**
-                    * Manage local log files.
-                    *
-                    * @author caron
-                    * 
-                    * @since May 6, 2010
-                    */
+import java.util.*;
 
 public class LogLocalManager {
   static File topDir;
@@ -48,12 +40,12 @@ public class LogLocalManager {
 
   /////////////////////////////////////////////
   private static final String specialLog = "threddsServlet.log";
-  private String server;
-  private boolean isAccess;
-  private String where;
+  private final String server;
+  private final boolean isAccess;
+  private final String where;
 
   private List<FileDateRange> localFiles;
-  private SimpleDateFormat localFormat;
+  private final SimpleDateFormat localFormat;
 
   LogLocalManager(String server, boolean isAccess) {
     this.server = server;
@@ -176,8 +168,6 @@ public class LogLocalManager {
     return server;
   }
 
-  private DateFormatter df = new DateFormatter();
-
   public class FileDateRange {
     File f;
     Date start, end;
@@ -190,7 +180,7 @@ public class LogLocalManager {
         bad = true;
         System.out.printf(" %s == BAD FILE%n", f.getName());
       } else {
-        System.out.printf(" %s == %s%n", f.getName(), df.toDateTimeStringISO(start));
+        System.out.printf(" %s == %s%n", f.getName(), CalendarDateFormatter.toDateTimeStringISO(start));
       }
     }
 

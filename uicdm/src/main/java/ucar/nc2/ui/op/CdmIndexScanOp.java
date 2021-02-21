@@ -15,11 +15,9 @@ import ucar.util.prefs.PreferencesExt;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 
 public class CdmIndexScanOp extends OpPanel {
-  private CdmIndexScan cdmIndexScan;
+  private final CdmIndexScan cdmIndexScan;
   final FileManager dirChooser;
 
   public CdmIndexScanOp(PreferencesExt prefs, FileManager dirChooser) {
@@ -44,19 +42,14 @@ public class CdmIndexScanOp extends OpPanel {
     BAMutil.setActionProperties(fileAction, "FileChooser", "open Local dataset...", false, 'L', -1);
     BAMutil.addActionToContainer(buttPanel, fileAction);
 
-    cdmIndexScan.addPropertyChangeListener(new PropertyChangeListener() {
-      @Override
-      public void propertyChange(PropertyChangeEvent e) {
-        if (!(e.getNewValue() instanceof String))
-          return;
+    cdmIndexScan.addPropertyChangeListener(e -> {
+      if (!(e.getNewValue() instanceof String))
+        return;
 
-        String datasetName = (String) e.getNewValue();
+      String datasetName = (String) e.getNewValue();
 
-        switch (e.getPropertyName()) {
-          case "openIndexFile":
-            ToolsUI.getToolsUI().openIndexFile(datasetName);
-            break;
-        }
+      if ("openIndexFile".equals(e.getPropertyName())) {
+        ToolsUI.getToolsUI().openIndexFile(datasetName);
       }
     });
   }

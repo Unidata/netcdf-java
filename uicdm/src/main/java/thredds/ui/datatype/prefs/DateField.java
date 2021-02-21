@@ -18,7 +18,6 @@ import javax.swing.text.JTextComponent;
  * @author John Caron
  * @see ucar.ui.prefs.Field
  */
-
 public class DateField extends ucar.ui.prefs.Field {
 
   protected JTextComponent tf;

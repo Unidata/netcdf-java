@@ -6,10 +6,6 @@ package thredds.ui.monitor;
 
 import java.util.List;
 
-/**
- * @author caron
- * @since Mar 15, 2008
- */
 public interface OpenRAFMonitor {
   boolean getDebugLeaks();
 

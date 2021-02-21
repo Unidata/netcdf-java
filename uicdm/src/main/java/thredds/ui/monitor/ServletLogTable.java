@@ -22,48 +22,41 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
 
-/**
- * Class Description.
- *
- * @author caron
- * @since Mar 26, 2009
- */
 public class ServletLogTable extends JPanel {
 
-  private PreferencesExt prefs;
-  private DnsLookup dnsLookup;
+  private final PreferencesExt prefs;
 
-  private ucar.ui.prefs.BeanTable logTable, uptimeTable, mergeTable, undoneTable, miscTable;
+  private final ucar.ui.prefs.BeanTable<ServletLogParser.ServletLog> logTable;
+  private final ucar.ui.prefs.BeanTable<Uptime> uptimeTable;
+  private final ucar.ui.prefs.BeanTable<Merge> mergeTable;
+  private final ucar.ui.prefs.BeanTable<Merge> undoneTable;
+  private final ucar.ui.prefs.BeanTable<ServletLogParser.ServletLog> miscTable;
+
   private ArrayList<ServletLogParser.ServletLog> completeLogs;
   private boolean calcMerge = true;
-  private ArrayList<Merge> completeMerge;
 
-  private JTabbedPane tabbedPanel;
-  private JSplitPane split;
+  private final JTabbedPane tabbedPanel;
+  private final JSplitPane split;
 
-  private TextHistoryPane infoTA;
-  private IndependentWindow infoWindow;
+  private final TextHistoryPane infoTA;
+  private final IndependentWindow infoWindow;
 
-  // private JComboBox rootSelector, serviceSelector;
-  // private JLabel sizeLable;
-
-  private DateTimePicker dateTimePickerStart, dateTimePickerEnd;
+  private final DateTimePicker dateTimePickerStart;
+  private final DateTimePicker dateTimePickerEnd;
 
   public ServletLogTable(DateTimePicker dateTimePickerStart, DateTimePicker dateTimePickerEnd, PreferencesExt prefs,
       DnsLookup dnsLookup) {
     this.dateTimePickerStart = dateTimePickerStart;
     this.dateTimePickerEnd = dateTimePickerEnd;
     this.prefs = prefs;
-    this.dnsLookup = dnsLookup;
 
-    logTable = new BeanTable(ServletLogParser.ServletLog.class, (PreferencesExt) prefs.node("Logs"), false);
+    logTable = new BeanTable<>(ServletLogParser.ServletLog.class, (PreferencesExt) prefs.node("Logs"), false);
     logTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
-        LogReader.Log log = (LogReader.Log) logTable.getSelectedBean();
+        LogReader.Log log = logTable.getSelectedBean();
         if (log == null) {
           return;
         }
@@ -75,7 +68,7 @@ public class ServletLogTable extends JPanel {
     PopupMenu varPopup = new ucar.ui.widget.PopupMenu(logTable.getJTable(), "Options");
     varPopup.addAction("DNS Lookup", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        LogReader.Log log = (LogReader.Log) logTable.getSelectedBean();
+        LogReader.Log log = logTable.getSelectedBean();
         if (log == null) {
           return;
         }
@@ -88,10 +81,10 @@ public class ServletLogTable extends JPanel {
       }
     });
 
-    uptimeTable = new BeanTable(Uptime.class, (PreferencesExt) prefs.node("UptimeTable"), false);
+    uptimeTable = new BeanTable<>(Uptime.class, (PreferencesExt) prefs.node("UptimeTable"), false);
     uptimeTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
-        Uptime uptime = (Uptime) uptimeTable.getSelectedBean();
+        Uptime uptime = uptimeTable.getSelectedBean();
         if (uptime == null) {
           return;
         }
@@ -99,10 +92,10 @@ public class ServletLogTable extends JPanel {
       }
     });
 
-    mergeTable = new BeanTable(Merge.class, (PreferencesExt) prefs.node("MergeTable"), false);
+    mergeTable = new BeanTable<>(Merge.class, (PreferencesExt) prefs.node("MergeTable"), false);
     mergeTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
-        Merge m = (Merge) mergeTable.getSelectedBean();
+        Merge m = mergeTable.getSelectedBean();
         if (m == null) {
           return;
         }
@@ -114,7 +107,7 @@ public class ServletLogTable extends JPanel {
     PopupMenu varPopupM = new PopupMenu(mergeTable.getJTable(), "Options");
     varPopupM.addAction("DNS Lookup", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        Merge m = (Merge) mergeTable.getSelectedBean();
+        Merge m = mergeTable.getSelectedBean();
         if (m == null) {
           return;
         }
@@ -129,17 +122,17 @@ public class ServletLogTable extends JPanel {
 
     varPopupM.addAction("Remove selected logs", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        List all = mergeTable.getBeans();
-        List selected = mergeTable.getSelectedBeans();
+        List<Merge> all = mergeTable.getBeans();
+        List<Merge> selected = mergeTable.getSelectedBeans();
         all.removeAll(selected);
         mergeTable.setBeans(all);
       }
     });
 
-    undoneTable = new BeanTable(Merge.class, (PreferencesExt) prefs.node("UndoneTable"), false);
+    undoneTable = new BeanTable<>(Merge.class, (PreferencesExt) prefs.node("UndoneTable"), false);
     undoneTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
-        Merge m = (Merge) undoneTable.getSelectedBean();
+        Merge m = undoneTable.getSelectedBean();
         if (m == null) {
           return;
         }
@@ -148,10 +141,10 @@ public class ServletLogTable extends JPanel {
       }
     });
 
-    miscTable = new BeanTable(ServletLogParser.ServletLog.class, (PreferencesExt) prefs.node("Logs"), false);
+    miscTable = new BeanTable<>(ServletLogParser.ServletLog.class, (PreferencesExt) prefs.node("Logs"), false);
     miscTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
-        LogReader.Log log = (LogReader.Log) miscTable.getSelectedBean();
+        LogReader.Log log = miscTable.getSelectedBean();
         if (log == null) {
           return;
         }
@@ -250,7 +243,6 @@ public class ServletLogTable extends JPanel {
     prefs.putInt("splitPos", split.getDividerLocation());
   }
 
-  private SimpleDateFormat df = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
   private LogLocalManager manager;
   private java.util.List<LogLocalManager.FileDateRange> logFiles;
 
@@ -332,8 +324,8 @@ public class ServletLogTable extends JPanel {
     System.out.printf(" setLogFile total= %d passed=%d%n", stats.total, stats.passed);
     System.out.printf(" elapsed=%f msecs %n", elapsedTime / (1000 * 1000.0));
 
-    mergeTable.setBeans(new ArrayList());
-    undoneTable.setBeans(new ArrayList());
+    mergeTable.setBeans(new ArrayList<>());
+    undoneTable.setBeans(new ArrayList<>());
     tabbedPanel.setSelectedIndex(0);
 
     calcMerge = true;
@@ -360,7 +352,7 @@ public class ServletLogTable extends JPanel {
       f.format("  first log date= %s%n", completeLogs.get(0).getDate());
       f.format("   last log date= %s%n", completeLogs.get(n - 1).getDate());
     }
-    List restrict = mergeTable.getBeans();
+    List<Merge> restrict = mergeTable.getBeans();
     if (restrict != null && (restrict.size() != n)) {
       f.format("%nRestricted, merged logs n=%d%n", restrict.size());
     }
@@ -598,15 +590,13 @@ public class ServletLogTable extends JPanel {
       return;
     }
 
-    logs.sort(new Comparator<ServletLogParser.ServletLog>() {
-      public int compare(ServletLogParser.ServletLog o1, ServletLogParser.ServletLog o2) {
-        long d1 = o1.getDateMillisec();
-        long d2 = o2.getDateMillisec();
-        return Long.compare(d1, d2);
-      }
+    logs.sort((o1, o2) -> {
+      long d1 = o1.getDateMillisec();
+      long d2 = o2.getDateMillisec();
+      return Long.compare(d1, d2);
     });
 
-    completeMerge = new ArrayList<>(logs.size() / 2 + 100);
+    ArrayList<Merge> completeMerge = new ArrayList<>(logs.size() / 2 + 100);
     ArrayList<ServletLogParser.ServletLog> miscList = new ArrayList<>(1000);
     ArrayList<Uptime> uptimeList = new ArrayList<>(10);
     ArrayList<Merge> undoneList = new ArrayList<>(1000);
@@ -643,11 +633,7 @@ public class ServletLogTable extends JPanel {
     calcMerge = false;
   }
 
-  public class Uptime {
-
-    private int n = 10 * 1000;
-
-
+  public static class Uptime {
     public int getN() {
       return mergeList.size();
     }
@@ -688,6 +674,7 @@ public class ServletLogTable extends JPanel {
       this.startSeq = log.getReqSeq();
       this.startTime = log.getReqTime();
       this.startDate = log.getDate();
+      int n = 10 * 1000;
       mergeList = new ArrayList<>(n);
       map = new HashMap<>(n);
     }

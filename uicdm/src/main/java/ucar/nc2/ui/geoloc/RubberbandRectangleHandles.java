@@ -66,7 +66,6 @@ public class RubberbandRectangleHandles extends Rubberband {
     testDiff(p, current.x, current.y + current.height, current.x + current.width, current.y);
     testDiff(p, current.x + current.width, current.y + current.height, current.x, current.y);
 
-    // System.out.println(" anchor diff = "+minDiff);
     if (minDiff > 100)
       return false;
 
@@ -92,12 +91,10 @@ public class RubberbandRectangleHandles extends Rubberband {
 
   public void drawLast(Graphics2D graphics) {
     drawHandledRect(graphics, lastBounds(), handleSizePixels);
-    // System.out.println("==RBRH last= "+lastBounds());
   }
 
   public void drawNext(Graphics2D graphics) {
     drawHandledRect(graphics, getBounds(), handleSizePixels);
-    // System.out.println("==RBRH draw= "+getBounds());
   }
 
   public static void drawHandledRect(Graphics2D graphics, Rectangle2D rect, double handleSize) {
@@ -118,18 +115,6 @@ public class RubberbandRectangleHandles extends Rubberband {
     graphics.fill(hr);
     hr.setRect(x + w - handleSize / 2, y + h - handleSize / 2, handleSize, handleSize);
     graphics.fill(hr);
-
-    /*
-     * sides
-     * hr.setRect(x + w/2 - handleSize/2, y - handleSize/2, handleSize, handleSize);
-     * graphics.fill( hr);
-     * hr.setRect(x - handleSize/2, y + h/2 - handleSize/2, handleSize, handleSize);
-     * graphics.fill( hr);
-     * hr.setRect(x + w - handleSize/2, y + h/2 - handleSize/2, handleSize, handleSize);
-     * graphics.fill( hr);
-     * hr.setRect(x + w/2 - handleSize/2, y + h - handleSize/2, handleSize, handleSize);
-     * graphics.fill( hr);
-     */
   }
 
 }

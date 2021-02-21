@@ -21,14 +21,14 @@ import ucar.util.prefs.PreferencesExt;
  * @author John Caron
  * @version revived /20/2012
  */
-
 public class JTableProjection extends JTable {
-  private PreferencesExt store;
+  private static final boolean debug = false;
+
+  private final PreferencesExt store;
   private ProjectionTableModel model;
-  private ArrayList list;
-  private boolean debug;
+  private final ArrayList<Projection> projections;
   private int selectedRow; // JTable doesnt handle selections correctly
-  private ListenerManager lm;
+  private final ListenerManager lm;
 
   private static final String STORE_NAME = "ProjectionTableModel";
 
@@ -43,7 +43,7 @@ public class JTableProjection extends JTable {
         model = new ProjectionTableModel();
     }
 
-    list = model.getList();
+    projections = model.getProjections();
 
     setModel(model);
     setAutoResizeMode(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
@@ -94,22 +94,22 @@ public class JTableProjection extends JTable {
   }
 
   public Projection getSelected() {
-    int len = list.size();
+    int len = projections.size();
     if ((0 > selectedRow) || (len <= selectedRow))
       return null;
     else
-      return (Projection) list.get(selectedRow);
+      return projections.get(selectedRow);
   }
 
   public void deleteSelected() {
-    int len = list.size();
+    int len = projections.size();
     if ((0 > selectedRow) || (len <= selectedRow))
       return;
 
     model.deleteRow(selectedRow);
 
     // bugs in list selection code
-    len = list.size();
+    len = projections.size();
     if (len == 0) {
       clearSelection();
       selectedRow = -1;
@@ -172,12 +172,12 @@ public class JTableProjection extends JTable {
 
   // inner class must be static because JTable not Serializable
   private static class ProjectionTableModel extends AbstractTableModel implements java.io.Serializable {
-    private static String[] colName = {"Name", "Type", "Parameters", "Default Zoom"};
-    private ArrayList list = new ArrayList(20);
+    private static final String[] colName = {"Name", "Type", "Parameters", "Default Zoom"};
+    private final ArrayList<Projection> projections = new ArrayList<>(20);
 
     // AbstractTableModel methods
     public int getRowCount() {
-      return list.size();
+      return projections.size();
     }
 
     public int getColumnCount() {
@@ -189,7 +189,7 @@ public class JTableProjection extends JTable {
     }
 
     public Object getValueAt(int row, int col) {
-      Projection proj = (Projection) list.get(row);
+      Projection proj = projections.get(row);
       switch (col) {
         case 0:
           return proj.getName();
@@ -208,7 +208,7 @@ public class JTableProjection extends JTable {
     }
 
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-      Projection proj = (Projection) list.get(rowIndex);
+      Projection proj = projections.get(rowIndex);
       // proj.setName((String) aValue);
     }
 
@@ -244,8 +244,8 @@ public class JTableProjection extends JTable {
 
     // added methods
     int addProjection(Projection proj) {
-      list.add(proj);
-      int count = list.size() - 1;
+      projections.add(proj);
+      int count = projections.size() - 1;
       fireTableRowsInserted(count, count);
       return count;
     }
@@ -254,7 +254,7 @@ public class JTableProjection extends JTable {
       int rowno = search(proj);
       if (rowno < 0)
         return -1;
-      list.set(rowno, proj);
+      projections.set(rowno, proj);
       return rowno;
     }
 
@@ -265,22 +265,22 @@ public class JTableProjection extends JTable {
       }
     }
 
-    ArrayList getList() {
-      return list;
+    ArrayList<Projection> getProjections() {
+      return projections;
     }
 
     void deleteRow(int row) {
-      int len = list.size();
+      int len = projections.size();
       if (row < len)
-        list.remove(row);
+        projections.remove(row);
       else
         return;
       fireTableRowsDeleted(row, row);
     }
 
     int search(Projection proj) {
-      for (int row = 0; row < list.size(); row++) {
-        Projection test = (Projection) list.get(row);
+      for (int row = 0; row < projections.size(); row++) {
+        Projection test = projections.get(row);
         if (proj.getName().equals(test.getName()))
           return row;
       }
@@ -288,8 +288,8 @@ public class JTableProjection extends JTable {
     }
 
     int search(String projName) {
-      for (int row = 0; row < list.size(); row++) {
-        Projection test = (Projection) list.get(row);
+      for (int row = 0; row < projections.size(); row++) {
+        Projection test = projections.get(row);
         if (projName.equals(test.getName()))
           return row;
       }
@@ -298,10 +298,10 @@ public class JTableProjection extends JTable {
 
 
     void setMapArea(int row, ProjectionRect bb) {
-      int len = list.size();
+      int len = projections.size();
       if (row >= len)
         return;
-      Projection proj = (Projection) list.get(row);
+      Projection proj = (Projection) projections.get(row);
       // proj.getDefaultMapArea().setRect(bb);
       fireTableRowsUpdated(row, row);
     }

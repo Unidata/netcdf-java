@@ -164,14 +164,14 @@ public abstract class Rubberband implements Serializable {
 
   /** Get current Bounds */
   public Rectangle getBounds() {
-    return new Rectangle(stretchedPt.x < anchorPt.x ? stretchedPt.x : anchorPt.x,
-        stretchedPt.y < anchorPt.y ? stretchedPt.y : anchorPt.y, Math.abs(stretchedPt.x - anchorPt.x),
+    return new Rectangle(Math.min(stretchedPt.x, anchorPt.x),
+            Math.min(stretchedPt.y, anchorPt.y), Math.abs(stretchedPt.x - anchorPt.x),
         Math.abs(stretchedPt.y - anchorPt.y));
   }
 
   /** Get previous Bounds */
   public Rectangle lastBounds() {
-    return new Rectangle(lastPt.x < anchorPt.x ? lastPt.x : anchorPt.x, lastPt.y < anchorPt.y ? lastPt.y : anchorPt.y,
+    return new Rectangle(Math.min(lastPt.x, anchorPt.x), Math.min(lastPt.y, anchorPt.y),
         Math.abs(lastPt.x - anchorPt.x), Math.abs(lastPt.y - anchorPt.y));
   }
 }

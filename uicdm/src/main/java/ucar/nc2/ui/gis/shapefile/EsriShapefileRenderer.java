@@ -4,6 +4,8 @@
  */
 package ucar.nc2.ui.gis.shapefile;
 
+import ucar.nc2.ui.gis.AbstractGisFeature;
+import ucar.nc2.ui.gis.GisFeature;
 import ucar.nc2.ui.gis.GisFeatureRendererMulti;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.*;
@@ -99,7 +101,7 @@ public class EsriShapefileRenderer extends GisFeatureRendererMulti {
         .build();
   }
 
-  protected java.util.List getFeatures() {
+  protected java.util.List<GisFeature> getFeatures() {
     return esri.getFeatures();
   }
 

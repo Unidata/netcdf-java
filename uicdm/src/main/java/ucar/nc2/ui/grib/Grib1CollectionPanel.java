@@ -72,190 +72,25 @@ import java.util.List;
 public class Grib1CollectionPanel extends JPanel {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1CollectionPanel.class);
 
-  private PreferencesExt prefs;
+  private final PreferencesExt prefs;
 
-  private BeanTable gds1Table, param1BeanTable, record1BeanTable;
+  private final BeanTable<ParameterBean> param1BeanTable;
+  private final BeanTable<RecordBean> record1BeanTable;
+  private final BeanTable<Gds1Bean> gds1Table;
   private JSplitPane split, split2;
 
-  private TextHistoryPane infoPopup, infoPopup2, infoPopup3;
-  private IndependentWindow infoWindow, infoWindow2, infoWindow3;
+  private final TextHistoryPane infoPopup;
+  private final TextHistoryPane infoPopup2;
+  private final TextHistoryPane infoPopup3;
+  private final IndependentWindow infoWindow;
+  private final IndependentWindow infoWindow2;
+  private final IndependentWindow infoWindow3;
   private Grib1Customizer cust;
-  private FeatureCollectionConfig config = new FeatureCollectionConfig(); // default values
+  private final FeatureCollectionConfig config = new FeatureCollectionConfig(); // default values
 
   public Grib1CollectionPanel(JPanel buttPanel, PreferencesExt prefs) {
     this.prefs = prefs;
 
-    AbstractButton xmlButt = BAMutil.makeButtcon("Information", "generate gds xml", false);
-    xmlButt.addActionListener(e -> {
-      Formatter f = new Formatter();
-      generateGdsXml(f);
-      infoPopup2.setText(f.toString());
-      infoPopup2.gotoTop();
-      infoWindow2.show();
-    });
-    buttPanel.add(xmlButt);
-
-    PopupMenu varPopup;
-
-    param1BeanTable = new BeanTable(ParameterBean.class, (PreferencesExt) prefs.node("Param1Bean"), false,
-        "Grib1PDSVariables", "from Grib1Input.getRecords()", null);
-    param1BeanTable.addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
-        ParameterBean pb = (ParameterBean) param1BeanTable.getSelectedBean();
-        if (pb != null)
-          record1BeanTable.setBeans(pb.getRecordBeans());
-      }
-    });
-
-    varPopup = new PopupMenu(param1BeanTable.getJTable(), "Options");
-    varPopup.addAction("Show raw PDS bytes", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        ParameterBean pb = (ParameterBean) param1BeanTable.getSelectedBean();
-        if (pb != null) {
-          Formatter f = new Formatter();
-          showRawPds(pb.pds, f);
-          infoPopup2.setText(f.toString());
-          infoPopup2.gotoTop();
-          infoWindow2.show();
-        }
-      }
-    });
-    varPopup.addAction("Show processed PDS", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        ParameterBean pbean = (ParameterBean) param1BeanTable.getSelectedBean();
-        if (pbean != null) {
-          Formatter f = new Formatter();
-          pbean.pds.showPds(cust, f);
-          infoPopup3.setText(f.toString());
-          infoPopup3.gotoTop();
-          infoWindow3.show();
-        }
-      }
-    });
-
-    record1BeanTable = new BeanTable(RecordBean.class, (PreferencesExt) prefs.node("Record1Bean"), false, "Grib1Record",
-        "from Grib1Input.getRecords()", null);
-    varPopup = new PopupMenu(record1BeanTable.getJTable(), "Options");
-
-    varPopup.addAction("Show Complete Grib1 Record(s)", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        infoPopup3.setText("");
-        List list = record1BeanTable.getSelectedBeans();
-        for (Object beano : list) {
-          RecordBean bean = (RecordBean) beano;
-
-          Formatter f = new Formatter();
-          String filename = fileList.get(bean.gr.getFile()).getPath();
-          showCompleteRecord(cust, bean.gr, filename, f);
-          infoPopup3.appendLine(f.toString());
-        }
-        infoPopup3.gotoTop();
-        infoWindow3.show();
-      }
-    });
-
-    varPopup.addAction("Compare Grib1 Records", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        List list = record1BeanTable.getSelectedBeans();
-        if (list.size() == 2) {
-          RecordBean bean1 = (RecordBean) list.get(0);
-          RecordBean bean2 = (RecordBean) list.get(1);
-          Formatter f = new Formatter();
-          compare(bean1, bean2, f);
-          infoPopup2.setText(f.toString());
-          infoPopup2.gotoTop();
-          infoWindow2.show();
-        }
-      }
-    });
-
-    varPopup.addAction("Show Data", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        RecordBean bean = (RecordBean) record1BeanTable.getSelectedBean();
-        if (bean != null) {
-          Formatter f = new Formatter();
-          showData(bean, f);
-          infoPopup2.setText(f.toString());
-          infoPopup2.gotoTop();
-          infoWindow2.show();
-        }
-      }
-    });
-
-    varPopup.addAction("Compare Data", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        List list = record1BeanTable.getSelectedBeans();
-        if (list.size() == 2) {
-          RecordBean bean1 = (RecordBean) list.get(0);
-          RecordBean bean2 = (RecordBean) list.get(1);
-          Formatter f = new Formatter();
-          compareData(bean1, bean2, f);
-          infoPopup2.setText(f.toString());
-          infoPopup2.gotoTop();
-          infoWindow2.show();
-        }
-      }
-    });
-
-    varPopup.addAction("Show raw PDS bytes", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        RecordBean bean = (RecordBean) record1BeanTable.getSelectedBean();
-        if (bean != null) {
-          Formatter f = new Formatter();
-          showRawPds(bean.pds, f);
-          infoPopup2.setText(f.toString());
-          infoPopup2.gotoTop();
-          infoWindow2.show();
-        }
-      }
-    });
-
-    gds1Table = new BeanTable(Gds1Bean.class, (PreferencesExt) prefs.node("Gds1Bean"), false,
-        "Grib1GridDefinitionSection", "unique from Grib1Records", null);
-
-    varPopup = new PopupMenu(gds1Table.getJTable(), "Options");
-    varPopup.addAction("Show raw GDS", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        List list = gds1Table.getSelectedBeans();
-        Formatter f = new Formatter();
-        for (Object bo : list) {
-          Gds1Bean bean = (Gds1Bean) bo;
-          showRawGds(bean.gdss, f);
-        }
-        infoPopup.setText(f.toString());
-        infoWindow.setVisible(true);
-      }
-    });
-
-    varPopup.addAction("Compare GDS", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        List list = gds1Table.getSelectedBeans();
-        if (list.size() == 2) {
-          Gds1Bean bean1 = (Gds1Bean) list.get(0);
-          Gds1Bean bean2 = (Gds1Bean) list.get(1);
-          Formatter f = new Formatter();
-          compare(bean1.gdss, bean2.gdss, f);
-          infoPopup2.setText(f.toString());
-          infoPopup2.gotoTop();
-          infoWindow2.show();
-        }
-      }
-    });
-
-    varPopup.addAction("Show GDS", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        List list = gds1Table.getSelectedBeans();
-        Formatter f = new Formatter();
-        for (Object bo : list) {
-          Gds1Bean bean = (Gds1Bean) bo;
-          showGds(bean.gdss, bean.gds, f);
-        }
-        infoPopup.setText(f.toString());
-        infoWindow.setVisible(true);
-      }
-    });
-
-    /////////////////////////////////////////
     // the info windows
     infoPopup = new TextHistoryPane();
     infoWindow = new IndependentWindow("Extra Information", BAMutil.getImage("nj22/NetcdfUI"), infoPopup);
@@ -269,6 +104,164 @@ public class Grib1CollectionPanel extends JPanel {
     infoWindow3 = new IndependentWindow("Extra Information", BAMutil.getImage("nj22/NetcdfUI"), infoPopup3);
     infoWindow3.setBounds((Rectangle) prefs.getBean("InfoWindowBounds3", new Rectangle(300, 300, 500, 300)));
 
+    AbstractButton xmlButt = BAMutil.makeButtcon("Information", "generate gds xml", false);
+    xmlButt.addActionListener(e -> {
+      Formatter f = new Formatter();
+      generateGdsXml(f);
+      infoPopup2.setText(f.toString());
+      infoPopup2.gotoTop();
+      infoWindow2.show();
+    });
+    buttPanel.add(xmlButt);
+
+    PopupMenu varPopup;
+
+    param1BeanTable = new BeanTable<>(ParameterBean.class, (PreferencesExt) prefs.node("Param1Bean"), false,
+        "Grib1PDSVariables", "from Grib1Input.getRecords()", null);
+    param1BeanTable.addListSelectionListener(new ListSelectionListener() {
+      public void valueChanged(ListSelectionEvent e) {
+        ParameterBean pb = param1BeanTable.getSelectedBean();
+        if (pb != null) {
+          record1BeanTable.setBeans(pb.getRecordBeans());
+        }
+      }
+    });
+
+    varPopup = new PopupMenu(param1BeanTable.getJTable(), "Options");
+    varPopup.addAction("Show raw PDS bytes", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        ParameterBean pb = param1BeanTable.getSelectedBean();
+        if (pb != null) {
+          Formatter f = new Formatter();
+          showRawPds(pb.pds, f);
+          infoPopup2.setText(f.toString());
+          infoPopup2.gotoTop();
+          infoWindow2.show();
+        }
+      }
+    });
+    varPopup.addAction("Show processed PDS", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        ParameterBean pbean = param1BeanTable.getSelectedBean();
+        if (pbean != null) {
+          Formatter f = new Formatter();
+          pbean.pds.showPds(cust, f);
+          infoPopup3.setText(f.toString());
+          infoPopup3.gotoTop();
+          infoWindow3.show();
+        }
+      }
+    });
+
+    record1BeanTable = new BeanTable<>(RecordBean.class, (PreferencesExt) prefs.node("Record1Bean"), false, "Grib1Record",
+        "from Grib1Input.getRecords()", null);
+    varPopup = new PopupMenu(record1BeanTable.getJTable(), "Options");
+    varPopup.addAction("Show Complete Grib1 Record(s)", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        infoPopup3.setText("");
+        for (RecordBean bean : record1BeanTable.getSelectedBeans()) {
+          Formatter f = new Formatter();
+          String filename = fileList.get(bean.gr.getFile()).getPath();
+          showCompleteRecord(cust, bean.gr, filename, f);
+          infoPopup3.appendLine(f.toString());
+        }
+        infoPopup3.gotoTop();
+        infoWindow3.show();
+      }
+    });
+    varPopup.addAction("Compare Grib1 Records", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        List<RecordBean> list = record1BeanTable.getSelectedBeans();
+        if (list.size() == 2) {
+          RecordBean bean1 = list.get(0);
+          RecordBean bean2 = list.get(1);
+          Formatter f = new Formatter();
+          compare(bean1, bean2, f);
+          infoPopup2.setText(f.toString());
+          infoPopup2.gotoTop();
+          infoWindow2.show();
+        }
+      }
+    });
+    varPopup.addAction("Show Data", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        RecordBean bean = record1BeanTable.getSelectedBean();
+        if (bean != null) {
+          Formatter f = new Formatter();
+          showData(bean, f);
+          infoPopup2.setText(f.toString());
+          infoPopup2.gotoTop();
+          infoWindow2.show();
+        }
+      }
+    });
+    varPopup.addAction("Compare Data", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        List<RecordBean> list = record1BeanTable.getSelectedBeans();
+        if (list.size() == 2) {
+          RecordBean bean1 = list.get(0);
+          RecordBean bean2 = list.get(1);
+          Formatter f = new Formatter();
+          compareData(bean1, bean2, f);
+          infoPopup2.setText(f.toString());
+          infoPopup2.gotoTop();
+          infoWindow2.show();
+        }
+      }
+    });
+    varPopup.addAction("Show raw PDS bytes", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        RecordBean bean = record1BeanTable.getSelectedBean();
+        if (bean != null) {
+          Formatter f = new Formatter();
+          showRawPds(bean.pds, f);
+          infoPopup2.setText(f.toString());
+          infoPopup2.gotoTop();
+          infoWindow2.show();
+        }
+      }
+    });
+
+    gds1Table = new BeanTable<>(Gds1Bean.class, (PreferencesExt) prefs.node("Gds1Bean"), false,
+        "Grib1GridDefinitionSection", "unique from Grib1Records", null);
+    varPopup = new PopupMenu(gds1Table.getJTable(), "Options");
+    varPopup.addAction("Show raw GDS", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        Formatter f = new Formatter();
+        for (Gds1Bean bean : gds1Table.getSelectedBeans()) {
+          showRawGds(bean.gdss, f);
+        }
+        infoPopup.setText(f.toString());
+        infoWindow.setVisible(true);
+      }
+    });
+
+    varPopup.addAction("Compare GDS", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        List<Gds1Bean> list = gds1Table.getSelectedBeans();
+        if (list.size() == 2) {
+          Gds1Bean bean1 = list.get(0);
+          Gds1Bean bean2 = list.get(1);
+          Formatter f = new Formatter();
+          compare(bean1.gdss, bean2.gdss, f);
+          infoPopup2.setText(f.toString());
+          infoPopup2.gotoTop();
+          infoWindow2.show();
+        }
+      }
+    });
+
+    varPopup.addAction("Show GDS", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        Formatter f = new Formatter();
+        for (Gds1Bean bean : gds1Table.getSelectedBeans()) {
+          showGds(bean.gdss, bean.gds, f);
+        }
+        infoPopup.setText(f.toString());
+        infoWindow.setVisible(true);
+      }
+    });
+
     setLayout(new BorderLayout());
     split2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, param1BeanTable, record1BeanTable);
     split2.setDividerLocation(prefs.getInt("splitPos2", 800));
@@ -277,7 +270,6 @@ public class Grib1CollectionPanel extends JPanel {
     split.setDividerLocation(prefs.getInt("splitPos", 500));
     add(split, BorderLayout.CENTER);
   }
-
 
   ///////////////////////////////////////////////////////////////////////////
 
@@ -350,17 +342,14 @@ public class Grib1CollectionPanel extends JPanel {
    */
   public void generateGdsXml(Formatter f) {
     f.format("<gribConfig>%n");
-    List<Object> gdss = gds1Table.getBeans();
-    gdss.sort(new Comparator<Object>() {
-      public int compare(Object o1, Object o2) {
-        int h1 = ((Gds1Bean) o1).gds.hashCode();
-        int h2 = ((Gds1Bean) o2).gds.hashCode();
-        return Integer.compare(h1, h2);
-      }
+    List<Gds1Bean> gdss = gds1Table.getSelectedBeans();
+    gdss.sort((b1, b2) -> {
+      int h1 = b1.gds.hashCode();
+      int h2 = b2.gds.hashCode();
+      return Integer.compare(h1, h2);
     });
 
-    for (Object bean : gdss) {
-      Gds1Bean gbean = (Gds1Bean) bean;
+    for (Gds1Bean gbean : gdss) {
       f.format("  <gdsName hash='%d' groupName='%s'/>%n", gbean.gds.hashCode(), gbean.getGridName());
     }
     f.format("</gribConfig>%n");
@@ -604,7 +593,7 @@ public class Grib1CollectionPanel extends JPanel {
       count++;
     }
     param1BeanTable.setBeans(products);
-    record1BeanTable.setBeans(new ArrayList());
+    record1BeanTable.setBeans(new ArrayList<>());
     System.out.printf("GribRawPanel products = %d records = %d%n", products.size(), count);
 
     java.util.List<Gds1Bean> gdsList = new ArrayList<>();
