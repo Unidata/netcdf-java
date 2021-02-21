@@ -129,8 +129,7 @@ public class CoverageRenderer {
   }
 
   /* set whether contour labels should be drawn */
-  public void setDrawContourLabels(boolean drawContourLabels) {
-  }
+  public void setDrawContourLabels(boolean drawContourLabels) {}
 
   /* get what vertical level to draw */
   public int getLevel() {

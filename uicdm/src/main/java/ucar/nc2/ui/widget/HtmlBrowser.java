@@ -336,7 +336,7 @@ public class HtmlBrowser extends JPanel {
     void showDoc(HTMLDocument doc) {
       System.out.println(" Doc base=" + doc.getBase()); // +" ss="+doc.getStyleSheet());
 
-      Dictionary<Object,Object> dict = doc.getDocumentProperties();
+      Dictionary<Object, Object> dict = doc.getDocumentProperties();
       Enumeration<Object> e = dict.keys();
       System.out.println(" DocumentProperties");
       while (e.hasMoreElements()) {

@@ -31,7 +31,7 @@ public class FeatureScanPanel extends JPanel {
 
     ftTable = new BeanTable<>(FeatureScan.Bean.class, (PreferencesExt) prefs.node("FeatureDatasetBeans"), false);
     ftTable.addListSelectionListener(e -> {
-      FeatureScan.Bean ftb =  ftTable.getSelectedBean();
+      FeatureScan.Bean ftb = ftTable.getSelectedBean();
       if (ftb != null) {
         setSelectedFeatureDataset(ftb);
       }

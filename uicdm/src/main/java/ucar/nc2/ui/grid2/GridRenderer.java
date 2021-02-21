@@ -108,8 +108,7 @@ public class GridRenderer {
   }
 
   /* set the Projection to use for drawing */
-  public void setDrawBB(boolean drawBB) {
-  }
+  public void setDrawBB(boolean drawBB) {}
 
   /* set whether grid should be drawn */
   public void setDrawGridLines(boolean drawGrid) {
@@ -122,8 +121,7 @@ public class GridRenderer {
   }
 
   /* set whether contour labels should be drawn */
-  public void setDrawContourLabels(boolean drawContourLabels) {
-  }
+  public void setDrawContourLabels(boolean drawContourLabels) {}
 
   /**
    * Get the data value at this projection (x,y) point.

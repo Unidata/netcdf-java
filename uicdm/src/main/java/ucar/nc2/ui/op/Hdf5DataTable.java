@@ -54,8 +54,8 @@ public class Hdf5DataTable extends JPanel {
 
     PopupMenu varPopup;
 
-    objectTable = new BeanTable<>(VarBean.class, (PreferencesExt) prefs.node("Hdf5Object"), false, "H5header.DataObject",
-        "Level 2A data object header", null);
+    objectTable = new BeanTable<>(VarBean.class, (PreferencesExt) prefs.node("Hdf5Object"), false,
+        "H5header.DataObject", "Level 2A data object header", null);
     objectTable.addListSelectionListener(e -> {
       VarBean vb = (VarBean) objectTable.getSelectedBean();
       vb.count(true);

@@ -59,8 +59,8 @@ public class SimpleGeomTable extends JPanel {
           Variable v = vb.geogrid.getVariable();
           infoTA.clear();
           if (v == null)
-            infoTA.appendLine(
-                    "Cant find variable " + vb.getName() + " escaped= (" + NetcdfFiles.makeValidPathName(vb.getName()) + ")");
+            infoTA.appendLine("Cant find variable " + vb.getName() + " escaped= ("
+                + NetcdfFiles.makeValidPathName(vb.getName()) + ")");
           else {
             infoTA.appendLine("Variable " + v.getFullName() + " :");
             infoTA.appendLine(v.toString());

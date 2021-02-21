@@ -202,7 +202,8 @@ public class PointFeatureDatasetViewer extends JPanel {
           StringWriter sw = new StringWriter(5000);
           exc.printStackTrace(new PrintWriter(sw));
           String errMsg = sw.toString();
-          JOptionPane.showMessageDialog(null, "Error reading FeatureCollection " + fcb.fc.getName() + " error=" + errMsg);
+          JOptionPane.showMessageDialog(null,
+              "Error reading FeatureCollection " + fcb.fc.getName() + " error=" + errMsg);
           exc.printStackTrace();
         }
       }

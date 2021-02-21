@@ -13,8 +13,8 @@ import javax.swing.*;
 
 /** Slider for Vertical scale */
 public class VertScaleSlider extends JPanel {
-  private static final boolean debugEvent =false;
-  private static final boolean debugLevels =false;
+  private static final boolean debugEvent = false;
+  private static final boolean debugLevels = false;
 
   private final JSlider slider;
 

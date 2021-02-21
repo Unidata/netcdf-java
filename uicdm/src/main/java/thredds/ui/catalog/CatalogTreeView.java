@@ -155,8 +155,7 @@ public class CatalogTreeView extends JPanel {
   /**
    * Set whether catalog references from dataset scans are opened. default is true.
    */
-  public void setOpenDatasetScans(boolean openDatasetScans) {
-  }
+  public void setOpenDatasetScans(boolean openDatasetScans) {}
 
   private void firePropertyChangeEvent(DatasetNode ds) {
     PropertyChangeEvent event = new PropertyChangeEvent(this, "Dataset", null, ds);

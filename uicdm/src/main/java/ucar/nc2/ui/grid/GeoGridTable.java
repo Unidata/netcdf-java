@@ -58,8 +58,8 @@ public class GeoGridTable extends JPanel {
           Variable v = vb.geogrid.getVariable();
           infoTA.clear();
           if (v == null)
-            infoTA.appendLine(
-                    "Cant find variable " + vb.getName() + " escaped= (" + NetcdfFiles.makeValidPathName(vb.getName()) + ")");
+            infoTA.appendLine("Cant find variable " + vb.getName() + " escaped= ("
+                + NetcdfFiles.makeValidPathName(vb.getName()) + ")");
           else {
             infoTA.appendLine("Variable " + v.getFullName() + " :");
             infoTA.appendLine(v.toString());
@@ -88,7 +88,8 @@ public class GeoGridTable extends JPanel {
     // optionally show coordinate systems and axis
     Component comp = varTable;
     if (showCS) {
-      csTable = new BeanTable<>(GeoCoordinateSystemBean.class, (PreferencesExt) prefs.node("GeoCoordinateSystemBean"), false);
+      csTable =
+          new BeanTable<>(GeoCoordinateSystemBean.class, (PreferencesExt) prefs.node("GeoCoordinateSystemBean"), false);
       axisTable = new BeanTable<>(GeoAxisBean.class, (PreferencesExt) prefs.node("GeoCoordinateAxisBean"), false);
 
       split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, varTable, csTable);

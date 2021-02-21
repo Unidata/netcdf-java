@@ -32,7 +32,8 @@ public abstract class ReportPanel extends JPanel {
 
   public abstract Object[] getOptions();
 
-  public void doReport(String spec, boolean useIndex, boolean eachFile, boolean extra, Object option) throws IOException {
+  public void doReport(String spec, boolean useIndex, boolean eachFile, boolean extra, Object option)
+      throws IOException {
     Formatter f = new Formatter();
     f.format("%s on %s useIndex=%s eachFile=%s extra=%s%n", option, spec, useIndex, eachFile, extra);
     this.spec = spec;

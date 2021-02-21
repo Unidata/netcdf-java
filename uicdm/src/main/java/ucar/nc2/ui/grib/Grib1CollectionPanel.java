@@ -153,8 +153,8 @@ public class Grib1CollectionPanel extends JPanel {
       }
     });
 
-    record1BeanTable = new BeanTable<>(RecordBean.class, (PreferencesExt) prefs.node("Record1Bean"), false, "Grib1Record",
-        "from Grib1Input.getRecords()", null);
+    record1BeanTable = new BeanTable<>(RecordBean.class, (PreferencesExt) prefs.node("Record1Bean"), false,
+        "Grib1Record", "from Grib1Input.getRecords()", null);
     varPopup = new PopupMenu(record1BeanTable.getJTable(), "Options");
     varPopup.addAction("Show Complete Grib1 Record(s)", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {

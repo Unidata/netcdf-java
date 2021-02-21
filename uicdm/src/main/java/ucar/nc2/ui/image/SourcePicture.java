@@ -25,6 +25,7 @@ import javax.imageio.stream.*;
 import javax.imageio.event.*;
 import java.text.*;
 import java.awt.geom.*;
+
 /**
  * a class to load and scale a picture either immediately or in a
  * seperate thread from a URL

@@ -26,7 +26,8 @@ import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
 
 public class GridPanel extends OpPanel {
-  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  private static final org.slf4j.Logger logger =
+      org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private final GridNewTable gridNewTable;
   private GridViewer gridViewer;

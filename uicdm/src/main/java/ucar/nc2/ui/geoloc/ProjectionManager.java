@@ -74,8 +74,7 @@ public class ProjectionManager {
     this.owner = owner;
 
     // manage NewProjectionListeners
-    lm = new ListenerManager("java.beans.PropertyChangeListener",
-            "java.beans.PropertyChangeEvent", "propertyChange");
+    lm = new ListenerManager("java.beans.PropertyChangeListener", "java.beans.PropertyChangeEvent", "propertyChange");
   }
 
 

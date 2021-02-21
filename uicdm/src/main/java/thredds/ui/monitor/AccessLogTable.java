@@ -85,8 +85,8 @@ public class AccessLogTable extends JPanel {
         infoWindow.show();
       }
     });
-    PopupMenu varPopup = logTable.addPopupOption("Show Log", logTable.makeShowAction(infoTA, infoWindow,
-            b -> b.toString()));
+    PopupMenu varPopup =
+        logTable.addPopupOption("Show Log", logTable.makeShowAction(infoTA, infoWindow, b -> b.toString()));
     varPopup.addAction("DNS Lookup", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         LogReader.Log log = logTable.getSelectedBean();
@@ -443,6 +443,7 @@ public class AccessLogTable extends JPanel {
 
   public static class Client extends Accum {
     public Client() {}
+
     Client(String client) {
       super(client);
     }
@@ -522,6 +523,7 @@ public class AccessLogTable extends JPanel {
 
   public static class Dataroot extends Accum {
     public Dataroot() {}
+
     Dataroot(String name) {
       super(name);
     }
@@ -556,6 +558,7 @@ public class AccessLogTable extends JPanel {
 
   public static class Service extends Accum {
     public Service() {}
+
     Service(String name) {
       super(name);
     }

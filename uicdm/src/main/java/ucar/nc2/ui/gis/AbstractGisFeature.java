@@ -19,7 +19,9 @@ public abstract class AbstractGisFeature implements GisFeature {
 
   // subclasses must implement these methods
   public abstract java.awt.geom.Rectangle2D getBounds2D(); // may be null
+
   public abstract int getNumPoints();
+
   public abstract int getNumParts();
 
   /**

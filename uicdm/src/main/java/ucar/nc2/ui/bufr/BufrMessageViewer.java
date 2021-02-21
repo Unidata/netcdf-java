@@ -370,7 +370,7 @@ public class BufrMessageViewer extends JPanel {
 
     varPopup.addAction("Compare DDS", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        for (MessageBean bean: messageTable.getSelectedBeans()) {
+        for (MessageBean bean : messageTable.getSelectedBeans()) {
           showDDS(bean.m);
         }
       }

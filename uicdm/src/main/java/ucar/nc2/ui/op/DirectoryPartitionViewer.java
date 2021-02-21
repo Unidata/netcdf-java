@@ -84,7 +84,8 @@ public class DirectoryPartitionViewer extends JPanel {
     partitionsTable = new PartitionsTable((PreferencesExt) prefs.node("partTable"));
 
     cdmIndexTables = new CdmIndexPanel((PreferencesExt) prefs.node("cdmIdx"), buttPanel);
-    cdmIndexTables.addPropertyChangeListener(evt -> firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue()));
+    cdmIndexTables.addPropertyChangeListener(
+        evt -> firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue()));
 
     if (topPanel != null && buttPanel != null) {
 
@@ -146,7 +147,8 @@ public class DirectoryPartitionViewer extends JPanel {
 
     // file popup window
     fileTable = new MFileTable((PreferencesExt) prefs.node("MFileTable"), true);
-    fileTable.addPropertyChangeListener(evt -> firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue()));
+    fileTable.addPropertyChangeListener(
+        evt -> firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue()));
   }
 
   public void save() {

@@ -14,6 +14,7 @@
  * See http://www.gnu.org/copyleft/gpl.html for the details.
  */
 package ucar.nc2.ui.image;
+
 /**
  * a thread object that calls the ScalablePicture scalePicture method
  */

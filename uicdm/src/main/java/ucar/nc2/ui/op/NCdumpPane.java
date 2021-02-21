@@ -27,7 +27,8 @@ import javax.swing.JPanel;
 
 /** Dump data using NetcdfFile.readSection() */
 public class NCdumpPane extends TextHistoryPane {
-  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  private static final org.slf4j.Logger logger =
+      org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private final ComboBox<String> cb;
   private CommonTask task;

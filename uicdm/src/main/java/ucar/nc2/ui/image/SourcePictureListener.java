@@ -14,6 +14,7 @@
  * See http://www.gnu.org/copyleft/gpl.html for the details.
  */
 package ucar.nc2.ui.image;
+
 /**
  * This interface allows an object to inform another object that the status it is listening on has
  * changed.

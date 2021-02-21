@@ -868,6 +868,7 @@ public class Grib1ReportPanel extends ReportPanel {
     private FileCount(MFile f) {
       this.f = f;
     }
+
     MFile f;
     int countRecords;
   }
