@@ -54,9 +54,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
  lm.sendEvent(event);
  * </pre>
- *
- * 
- * @author John Caron
  */
 @ThreadSafe
 public class ListenerManager {
@@ -82,9 +79,9 @@ public class ListenerManager {
   public ListenerManager(String listener_class, String event_class, String method_name) {
 
     try {
-      Class lc = Class.forName(listener_class);
-      Class ec = Class.forName(event_class);
-      Class[] params = new Class[1];
+      Class<?> lc = Class.forName(listener_class);
+      Class<?> ec = Class.forName(event_class);
+      Class<?>[] params = new Class[1];
       params[0] = ec;
       this.method = lc.getMethod(method_name, params);
 

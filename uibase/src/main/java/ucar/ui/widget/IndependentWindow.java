@@ -10,8 +10,6 @@ import java.awt.Container;
 import java.awt.Frame;
 import java.awt.Image;
 import java.awt.Rectangle;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -36,8 +34,7 @@ import ucar.ui.util.ScreenUtils;
  * @author John Caron
  */
 public class IndependentWindow extends JFrame {
-  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(IndependentWindow.class);
-
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(IndependentWindow.class);
 
   /**
    * constructor
@@ -49,11 +46,9 @@ public class IndependentWindow extends JFrame {
     super(title);
 
     // L&F may change
-    UIManager.addPropertyChangeListener(new PropertyChangeListener() {
-      public void propertyChange(PropertyChangeEvent e) {
-        if (e.getPropertyName().equals("lookAndFeel"))
-          SwingUtilities.updateComponentTreeUI(IndependentWindow.this);
-      }
+    UIManager.addPropertyChangeListener(e -> {
+      if (e.getPropertyName().equals("lookAndFeel"))
+        SwingUtilities.updateComponentTreeUI(IndependentWindow.this);
     });
 
     if (null != iconImage)
@@ -92,11 +87,7 @@ public class IndependentWindow extends JFrame {
     setState(Frame.NORMAL); // deiconify if needed
     super.toFront();
     // need to put on event thread
-    SwingUtilities.invokeLater(new Runnable() {
-      public void run() {
-        IndependentWindow.super.show();
-      }
-    });
+    SwingUtilities.invokeLater(() -> IndependentWindow.super.show());
   }
 
   /** show if not iconified */
@@ -104,11 +95,7 @@ public class IndependentWindow extends JFrame {
     if (getState() == Frame.ICONIFIED)
       return;
     // need to put on event thread
-    SwingUtilities.invokeLater(new Runnable() {
-      public void run() {
-        IndependentWindow.super.show();
-      }
-    });
+    SwingUtilities.invokeLater(() -> IndependentWindow.super.show());
   }
 
   @Override
@@ -116,8 +103,9 @@ public class IndependentWindow extends JFrame {
     // keep window on the screen
     Rectangle screenSize = ScreenUtils.getScreenVirtualSize();
     Rectangle result = r.intersection(screenSize);
-    if (!result.isEmpty())
+    if (!result.isEmpty()) {
       super.setBounds(result);
+    }
   }
 
 }

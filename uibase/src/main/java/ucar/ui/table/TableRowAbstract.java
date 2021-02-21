@@ -125,18 +125,16 @@ public abstract class TableRowAbstract implements TableRow {
     return "";
   }
 
-  public static class Sorter implements Comparator, Serializable {
-    private int col;
-    private boolean reverse;
+  public static class Sorter implements Comparator<TableRow>, Serializable {
+    private final int col;
+    private final boolean reverse;
 
     public Sorter(int col, boolean reverse) {
       this.col = col;
       this.reverse = reverse;
     }
 
-    public int compare(Object o1, Object o2) {
-      TableRow row1 = (TableRow) o1;
-      TableRow row2 = (TableRow) o2;
+    public int compare(TableRow row1, TableRow row2) {
       return reverse ? row2.compare(row1, col) : row1.compare(row2, col);
     }
   }

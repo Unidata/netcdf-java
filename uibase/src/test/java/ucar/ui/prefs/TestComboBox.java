@@ -27,12 +27,12 @@ public class TestComboBox {
 
   @Before
   public void setup() {
-    ImmutableList<String> choices = ImmutableList.of("1", "2", "3");
+    ImmutableList<Object> choices = ImmutableList.of("1", "2", "3");
     when(prefs.getList(any(), any())).thenReturn(choices);
   }
 
   @Test
-  public void testSelection() throws IOException {
+  public void testSelection() {
     final CC vv = new CC();
 
     ComboBox<String> cb = new ComboBox<>(prefs);
@@ -60,7 +60,7 @@ public class TestComboBox {
   }
 
   @Test
-  public void testAddChangeListener() throws IOException {
+  public void testAddChangeListener() {
     final CC vv = new CC();
 
     ComboBox<String> cb = new ComboBox<>(null);
@@ -95,7 +95,7 @@ public class TestComboBox {
     assertThat(vv.wascalled).isEqualTo(4);
   }
 
-  private class CC {
+  private static class CC {
     int wascalled = 0;
   }
 

@@ -8,6 +8,7 @@ package ucar.ui.widget;
 import com.google.common.base.CharMatcher;
 import java.awt.Component;
 import java.awt.Point;
+import java.util.Formatter;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.Popup;
@@ -18,14 +19,13 @@ import javax.swing.SwingUtilities;
  * Helper class for managing javax.swing.Popup
  */
 public class PopupManager {
-  private PopupFactory factory = PopupFactory.getSharedInstance(); // LOOK
+  private final PopupFactory factory = PopupFactory.getSharedInstance(); // LOOK
   private Popup popup; // 1.4
 
-  private JPanel main;
-  private JLabel info;
+  private final JPanel main;
+  private final JLabel info;
   private boolean isShowing;
   private Object showing;
-  private StringBuffer sbuff = new StringBuffer();
 
   public PopupManager(String title) {
     main = new JPanel();
@@ -46,13 +46,10 @@ public class PopupManager {
     isShowing = true;
     showing = forWho;
 
-    sbuff.setLength(0);
-    sbuff.append("<html><body>");
-
+    Formatter out = new Formatter();
     String textSubbed = CharMatcher.is('\n').replaceFrom(text, "<br>");
-    sbuff.append(textSubbed);
-    sbuff.append("</body></html>");
-    info.setText(sbuff.toString());
+    out.format("<html><body>%s</body></html>", textSubbed);
+    info.setText(out.toString());
 
     SwingUtilities.convertPointToScreen(p, owner);
     int x = (int) (p.getX());

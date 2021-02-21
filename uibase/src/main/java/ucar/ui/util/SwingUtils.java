@@ -1,5 +1,6 @@
 package ucar.ui.util;
 
+import javax.annotation.Nullable;
 import javax.swing.*;
 import java.awt.*;
 import java.lang.reflect.InvocationTargetException;
@@ -212,9 +213,9 @@ public final class SwingUtils {
     return getComponentFromList(clazz, list, property, value);
   }
 
+  @Nullable
   private static <T extends JComponent> T getComponentFromList(Class<T> clazz, List<T> list, String property,
       Object value) throws IllegalArgumentException {
-    T retVal = null;
     Method method;
     try {
       method = clazz.getMethod("get" + property);
@@ -237,7 +238,7 @@ public final class SwingUtils {
     } catch (IllegalAccessException | SecurityException ex) {
       throw new IllegalArgumentException("Property " + property + " cannot be accessed in class " + clazz.getName());
     }
-    return retVal;
+    return null;
   }
 
   /**
@@ -287,7 +288,7 @@ public final class SwingUtils {
    * @param clazz the class of interest
    * @return the UIDefaults of the class
    */
-  public static UIDefaults getUIDefaultsOfClass(Class clazz) {
+  public static UIDefaults getUIDefaultsOfClass(Class<?> clazz) {
     String name = clazz.getName();
     name = name.substring(name.lastIndexOf(".") + 2);
     return getUIDefaultsOfClass(name);
@@ -325,7 +326,7 @@ public final class SwingUtils {
    * @param property the property to query
    * @return the UIDefault property, or null if not found
    */
-  public static Object getUIDefaultOfClass(Class clazz, String property) {
+  public static Object getUIDefaultOfClass(Class<?> clazz, String property) {
     Object retVal = null;
     UIDefaults defaults = getUIDefaultsOfClass(clazz);
     List<Object> listKeys = Collections.list(defaults.keys());
@@ -370,7 +371,7 @@ public final class SwingUtils {
     for (Method method : methods) {
       if (method.getName().matches("^(is|get).*") && method.getParameterTypes().length == 0) {
         try {
-          Class returnType = method.getReturnType();
+          Class<?> returnType = method.getReturnType();
           if (returnType != void.class && !returnType.getName().startsWith("[")
               && !setExclude.contains(method.getName())) {
             String key = method.getName();
@@ -395,7 +396,7 @@ public final class SwingUtils {
    *        determined
    * @return The nearest Swing class in the inheritance tree
    */
-  public static <T extends JComponent> Class getJClass(T component) {
+  public static <T extends JComponent> Class<?> getJClass(T component) {
     Class<?> clazz = component.getClass();
     while (!clazz.getName().matches("javax.swing.J[^.]*$")) {
       clazz = clazz.getSuperclass();

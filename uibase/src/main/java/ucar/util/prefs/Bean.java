@@ -8,7 +8,6 @@ import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -16,7 +15,7 @@ import java.util.*;
 
 class Bean {
 
-  private Object o; // the wrapped object
+  private final Object o; // the wrapped object
   private BeanParser p; // the bean parser (shared for all beans of same class)
 
   // wrap an object in a Bean
@@ -37,7 +36,7 @@ class Bean {
   }
 
   // write XML using the bean properties of the contained object
-  public void writeProperties(PrintWriter out) throws IOException {
+  public void writeProperties(PrintWriter out) {
     if (p == null)
       p = BeanParser.getParser(o.getClass());
     p.writeProperties(o, out);
@@ -53,15 +52,15 @@ class Bean {
   }
 
   static class Collection {
-    private java.util.Collection<Object> collect; // the underlying collection
+    private final java.util.Collection<Object> collect; // the underlying collection
     private Class<?> beanClass; // the class of the beans in the collection
     private BeanParser p; // the bean parser (shared for all beans of same class)
 
     // wrap a collection in a bean
-    Collection(java.util.Collection<Object> collect) {
-      this.collect = collect;
+    Collection(java.util.Collection<?> collect) {
+      this.collect = new ArrayList<>(collect); // generics, go figure!
       if (!collect.isEmpty()) {
-        Iterator iter = collect.iterator();
+        Iterator<?> iter = collect.iterator();
         beanClass = iter.next().getClass();
         p = BeanParser.getParser(beanClass);
       }
@@ -77,12 +76,12 @@ class Bean {
     }
 
     // write XML using the bean properties of the specified object
-    public void writeProperties(PrintWriter out, Object thiso) throws IOException {
+    public void writeProperties(PrintWriter out, Object thiso) {
       p.writeProperties(thiso, out);
     }
 
     // get the underlying java.util.Collection
-    public java.util.Collection getCollection() {
+    public java.util.Collection<?> getCollection() {
       return collect;
     }
 
@@ -101,8 +100,8 @@ class Bean {
   }
 
   private static class BeanParser {
-    private static boolean debugBean;
-    private static Map<Class<?>, BeanParser> parsers = new HashMap<>();
+    private static final boolean debugBean = false;
+    private static final Map<Class<?>, BeanParser> parsers = new HashMap<>();
 
     static BeanParser getParser(Class<?> beanClass) {
       BeanParser parser;
@@ -113,8 +112,8 @@ class Bean {
       return parser;
     }
 
-    private Map<String, PropertyDescriptor> properties = new TreeMap<>();
-    private Object[] args = new Object[1];
+    private final Map<String, PropertyDescriptor> properties = new TreeMap<>();
+    private final Object[] args = new Object[1];
 
     BeanParser(Class<?> beanClass) {
 
@@ -142,7 +141,7 @@ class Bean {
       }
     }
 
-    void writeProperties(Object bean, PrintWriter out) throws IOException {
+    void writeProperties(Object bean, PrintWriter out) {
       for (PropertyDescriptor pds : properties.values()) {
         Method getter = pds.getReadMethod();
         try {

@@ -111,7 +111,7 @@ public class TreeTableModelAdapter extends AbstractTableModel {
     return treeTableModel.getColumnName(column);
   }
 
-  public Class getColumnClass(int column) {
+  public Class<?> getColumnClass(int column) {
     return treeTableModel.getColumnClass(column);
   }
 
@@ -141,11 +141,7 @@ public class TreeTableModelAdapter extends AbstractTableModel {
    * processed. SwingUtilities.invokeLater is used to handle this.
    */
   protected void delayedFireTableDataChanged() {
-    SwingUtilities.invokeLater(new Runnable() {
-      public void run() {
-        fireTableDataChanged();
-      }
-    });
+    SwingUtilities.invokeLater(this::fireTableDataChanged);
   }
 }
 

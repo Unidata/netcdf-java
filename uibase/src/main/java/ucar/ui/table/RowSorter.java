@@ -16,15 +16,13 @@ package ucar.ui.table;
  *
  * @author John Caron
  */
-
-
 public interface RowSorter {
 
   /**
    * May make a copy of the Array, or return the original, but must not copy the
    * rows themselves.
    */
-  java.util.ArrayList sort(int sortCol, boolean reverse, java.util.ArrayList docs);
+  java.util.ArrayList<TableRow> sort(int sortCol, boolean reverse, java.util.List<TableRow> docs);
 
   boolean isBreak(TableRow last, TableRow current);
 

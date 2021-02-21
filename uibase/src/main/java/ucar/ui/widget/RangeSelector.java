@@ -7,8 +7,6 @@ package ucar.ui.widget;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -29,30 +27,26 @@ import ucar.ui.prefs.PrefPanel;
  */
 public class RangeSelector extends JPanel {
   private static final int SLIDER_RESOLUTION = 1000;
+  private static final boolean debugEvent = false;
 
-  private String tit, helpMessage;
-
-  private double minLimit, maxLimit, resolution;
+  private final String tit, helpMessage;
+  private final double minLimit, maxLimit;
+  private double resolution;
   private double minSelect, maxSelect;
   private int nfracDig;
 
-  private JSlider minSlider, maxSlider;
+  private final JSlider minSlider, maxSlider;
   private PrefPanel pp;
-  private Field.Double minField, maxField;
-  private Scale scale;
+  private final Field.Double minField;
+  private Field.Double maxField;
+  private final Scale scale;
   private HelpWindow helpWindow;
   private JButton helpButton;
 
   // event management
-  private ActionSourceListener actionSource;
-  private String actionName = "rangeSelection";
+  private final ActionSourceListener actionSource;
+  private final String actionName = "rangeSelection";
   private boolean eventOK = true;
-  private int incrY = 1;
-
-  // state
-  private int currentIdx = -1;
-
-  private static boolean debugEvent, debugSliderSize;
 
   public RangeSelector(String title, String min, String max, String resolutionS, String units, boolean acceptButton,
       String help, boolean pointOnly) {
@@ -197,43 +191,39 @@ public class RangeSelector extends JPanel {
       minField.setDouble(minSelect);
       eventOK = true;
 
-      if ((val > maxSelect) && (maxSlider != null))
+      if (val > maxSelect)
         maxSlider.setValue(pos); // drag max along
     });
 
-    minField.addPropertyChangeListener(new PropertyChangeListener() {
-      public void propertyChange(PropertyChangeEvent e) {
-        if (debugEvent)
-          System.out.println("minField event= " + e.getNewValue() + " " + e.getNewValue().getClass().getName());
-        if (!eventOK)
-          return;
+    minField.addPropertyChangeListener(e -> {
+      if (debugEvent)
+        System.out.println("minField event= " + e.getNewValue() + " " + e.getNewValue().getClass().getName());
+      if (!eventOK)
+        return;
 
-        double val = minField.getDouble();
-        if ((val >= minLimit) && (val <= maxLimit)) {
-          eventOK = false;
-          minSlider.setValue(scale.world2slider(val));
-          eventOK = true;
-        } else
-          minField.setDouble(minSelect);
-      }
+      double val = minField.getDouble();
+      if ((val >= minLimit) && (val <= maxLimit)) {
+        eventOK = false;
+        minSlider.setValue(scale.world2slider(val));
+        eventOK = true;
+      } else
+        minField.setDouble(minSelect);
     });
 
     if (maxField != null) {
-      maxField.addPropertyChangeListener(new PropertyChangeListener() {
-        public void propertyChange(PropertyChangeEvent e) {
-          if (debugEvent)
-            System.out.println("maxField event= " + e.getNewValue());
-          if (!eventOK)
-            return;
+      maxField.addPropertyChangeListener(e -> {
+        if (debugEvent)
+          System.out.println("maxField event= " + e.getNewValue());
+        if (!eventOK)
+          return;
 
-          double val = maxField.getDouble();
-          if ((val >= minLimit) && (val <= maxLimit)) {
-            eventOK = false;
-            maxSlider.setValue(scale.world2slider(val));
-            eventOK = true;
-          } else
-            maxField.setDouble(maxSelect);
-        }
+        double val = maxField.getDouble();
+        if ((val >= minLimit) && (val <= maxLimit)) {
+          eventOK = false;
+          maxSlider.setValue(scale.world2slider(val));
+          eventOK = true;
+        } else
+          maxField.setDouble(maxSelect);
       });
     }
 
@@ -406,7 +396,7 @@ public class RangeSelector extends JPanel {
   }
 
   private class Scale {
-    private double min, max, resolution, scale;
+    private final double min, max, resolution, scale;
 
     Scale(double min, double max, double resolution) {
       this.min = min;

@@ -21,20 +21,17 @@ import java.awt.Toolkit;
  * @author John Caron
  */
 public class FontUtil {
-  // private static GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-  // private static String fontList[] = ge.getAvailableFontFamilyNames();
-  // private static Font font[] = ge.getAvailableFonts();
+  private static final boolean debug = false;
 
   private static final int MAX_FONTS = 15;
-  private static int fontType = Font.PLAIN;
+  private static final int fontType = Font.PLAIN;
   // standard
-  private static Font[] stdFont = new Font[MAX_FONTS]; // list of fonts to use to make text bigger/smaller
-  private static FontMetrics[] stdMetrics = new FontMetrics[MAX_FONTS]; // fontMetric for each font
+  private static final Font[] stdFont = new Font[MAX_FONTS]; // list of fonts to use to make text bigger/smaller
+  private static final FontMetrics[] stdMetrics = new FontMetrics[MAX_FONTS]; // fontMetric for each font
   // mono
-  private static Font[] monoFont = new Font[MAX_FONTS]; // list of fonts to use to make text bigger/smaller
-  private static FontMetrics[] monoMetrics = new FontMetrics[MAX_FONTS]; // fontMetric for each font
+  private static final Font[] monoFont = new Font[MAX_FONTS]; // list of fonts to use to make text bigger/smaller
+  private static final FontMetrics[] monoMetrics = new FontMetrics[MAX_FONTS]; // fontMetric for each font
 
-  private static boolean debug;
   private static boolean isInit;
 
   private static void init() {
@@ -71,8 +68,8 @@ public class FontUtil {
   public static class StandardFont {
     private int currFontNo;
     private int height;
-    private Font[] fonts;
-    private FontMetrics[] fontMetrics;
+    private final Font[] fonts;
+    private final FontMetrics[] fontMetrics;
 
     StandardFont(Font[] fonts, FontMetrics[] fontMetrics, int pixel_height) {
       this.fonts = fonts;

@@ -40,6 +40,9 @@ import javax.swing.*;
  * @author John Caron
  */
 public class BAMutil {
+  private static final boolean debug = false;
+  private static final boolean debugToggle = false;
+
   /** Action Property specifies Selected icon name */
   public static final String SELECTED_ICON = "SelectedIcon";
   /** Action Property specifies is its a toggle */
@@ -71,8 +74,6 @@ public class BAMutil {
   }
 
   private static final int META_KEY = (isMacOs) ? InputEvent.META_MASK : InputEvent.CTRL_MASK;
-
-  private static boolean debug, debugToggle;
 
   /**
    * Get the named Icon from the default resource (jar file).
@@ -206,7 +207,7 @@ public class BAMutil {
     int accel = (acc == null) ? 0 : acc;
 
     return makeMenuItem((Icon) act.getValue(Action.SMALL_ICON), (Icon) act.getValue(BAMutil.SELECTED_ICON),
-        (String) act.getValue(Action.SHORT_DESCRIPTION), is_toggle, mnemonic, accel < 0 ? 0 : accel);
+        (String) act.getValue(Action.SHORT_DESCRIPTION), is_toggle, mnemonic, Math.max(accel, 0));
   }
 
 
@@ -497,36 +498,34 @@ public class BAMutil {
    * It will automatically change the button state if the action state changes.
    */
   public static class ActionToggle extends AbstractAction {
-    private Action orgAct;
-    private AbstractButton button;
+    private final Action orgAct;
+    private final AbstractButton button;
 
     public ActionToggle(Action oa, AbstractButton b) {
       this.orgAct = oa;
       this.button = b;
       orgAct.putValue(STATE, Boolean.TRUE); // state is kept with original action
 
-      orgAct.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
-        public void propertyChange(java.beans.PropertyChangeEvent e) {
-          String propertyName = e.getPropertyName();
-          if (debugToggle)
-            System.out.println("propertyChange " + propertyName + " " + e.getNewValue());
-          switch (propertyName) {
-            case Action.NAME:
-              String text = (String) e.getNewValue();
-              button.setText(text);
-              button.repaint();
-              break;
-            case "enabled":
-              Boolean enabledState = (Boolean) e.getNewValue();
-              button.setEnabled(enabledState);
-              button.repaint();
-              break;
-            case STATE:
-              Boolean state = (Boolean) e.getNewValue();
-              button.setSelected(state);
-              button.repaint();
-              break;
-          }
+      orgAct.addPropertyChangeListener(e -> {
+        String propertyName = e.getPropertyName();
+        if (debugToggle)
+          System.out.println("propertyChange " + propertyName + " " + e.getNewValue());
+        switch (propertyName) {
+          case Action.NAME:
+            String text = (String) e.getNewValue();
+            button.setText(text);
+            button.repaint();
+            break;
+          case "enabled":
+            Boolean enabledState = (Boolean) e.getNewValue();
+            button.setEnabled(enabledState);
+            button.repaint();
+            break;
+          case STATE:
+            Boolean state = (Boolean) e.getNewValue();
+            button.setSelected(state);
+            button.repaint();
+            break;
         }
       });
     }
@@ -540,7 +539,7 @@ public class BAMutil {
 
 
   private static class ToggleAction extends AbstractAction {
-    private Action orgAct;
+    private final Action orgAct;
 
     ToggleAction(Action orgAct) {
       this.orgAct = orgAct;
@@ -558,7 +557,7 @@ public class BAMutil {
   }
 
   private static class myActionChangedListener implements java.beans.PropertyChangeListener {
-    private AbstractButton button;
+    private final AbstractButton button;
 
     myActionChangedListener(AbstractButton b) {
       button = b;

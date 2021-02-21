@@ -303,8 +303,10 @@ public class GridSubset {
       req.put(timePoint, coord);
     } else if (coord instanceof CoordInterval) {
       req.put(timeIntv, coord);
+    } else if (coord instanceof CalendarDate) {
+      req.put(time, coord);
     } else {
-      throw new RuntimeException("setTimeCoord must be Number or CoordInterval " + coord);
+      throw new RuntimeException("setTimeCoord must be Number or CoordInterval " + coord.getClass().getName());
     }
     return this;
   }

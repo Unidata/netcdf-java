@@ -22,10 +22,10 @@ import ucar.ui.util.ListenerManager;
  * @author John Caron
  */
 
-// LOOK could replace with guava EventBus probably
+// LOOK could replace with guava EventBus ??
 public class ActionCoordinator implements ActionValueListener {
-  private ListenerManager lm;
-  private String eventType;
+  private final ListenerManager lm;
+  private final String eventType;
 
   public ActionCoordinator(String eventType) {
     this.eventType = eventType;

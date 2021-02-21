@@ -65,7 +65,7 @@ public interface TreeTableModel extends TreeModel {
   /**
    * Returns the type for column number <code>column</code>.
    */
-  Class getColumnClass(int column);
+  Class<?> getColumnClass(int column);
 
   /**
    * Returns the value to be displayed for node <code>node</code>,

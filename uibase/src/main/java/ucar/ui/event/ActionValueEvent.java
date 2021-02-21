@@ -8,10 +8,9 @@ package ucar.ui.event;
  * Extend ActionEvent to contain a String value.
  * 
  * @author John Caron
- * @version $Id: ActionValueEvent.java 50 2006-07-12 16:30:06Z caron $
  */
 public class ActionValueEvent extends java.awt.event.ActionEvent {
-  private Object value;
+  private final Object value;
 
   public ActionValueEvent(Object source, String command, Object value) {
     super(source, java.awt.event.ActionEvent.ACTION_PERFORMED, command);

@@ -11,21 +11,18 @@ import java.awt.*;
 /**
  * started from jroller article.
  */
-
 public class FldInputVerifier extends InputVerifier implements KeyListener {
-  private static Color color = new Color(243, 255, 159); // yaller
-  private PopupFactory popupFactory = PopupFactory.getSharedInstance();
+  private static final Color color = new Color(243, 255, 159); // yaller
+  private final PopupFactory popupFactory = PopupFactory.getSharedInstance();
   private Popup popup;
-  private Field fld;
-  private JPanel main;
-  private JLabel message = new JLabel();
-
+  private final Field fld;
+  private final JPanel main;
+  private final JLabel message = new JLabel();
 
   /**
    * @param c The Swing component to listen to.
    * @param fld The Field to be validated.
    */
-
   public FldInputVerifier(Component c, Field fld) {
     this.fld = fld;
     c.addKeyListener(this);
@@ -67,7 +64,6 @@ public class FldInputVerifier extends InputVerifier implements KeyListener {
   /**
    * @see KeyListener
    */
-
   public void keyPressed(KeyEvent e) {
     removePopup();
   }
@@ -75,7 +71,6 @@ public class FldInputVerifier extends InputVerifier implements KeyListener {
   /**
    * @see KeyListener
    */
-
   public void keyTyped(KeyEvent e) {
     removePopup();
   }
@@ -83,7 +78,6 @@ public class FldInputVerifier extends InputVerifier implements KeyListener {
   /**
    * @see KeyListener
    */
-
   public void keyReleased(KeyEvent e) {
     removePopup();
   }

@@ -6,15 +6,12 @@ package ucar.ui.table;
 
 /**
  * An interface used with JTreeTableSorted to create application-controlled sorting on
- * "threads". Threads are sequences of related messages, visallay indicated by indenting
+ * "threads". Threads are sequences of related messages, visually indicated by indenting
  * all the messages in the thread except the "top" one.
  *
  * @see TreeTableModelSorted
  * @see JTableSorted
- *
- * @author John Caron
  */
-
 public interface ThreadSorter extends RowSorter {
 
   int getIndentCol();

@@ -183,11 +183,9 @@ public abstract class TreeTableModelAbstract implements TreeTableModel {
     }
   }
 
-  //
-  // Default impelmentations for methods in the TreeTableModel interface.
-  //
+  //// Default implementations for methods in the TreeTableModel interface.
 
-  public Class getColumnClass(int column) {
+  public Class<?> getColumnClass(int column) {
     return Object.class;
   }
 

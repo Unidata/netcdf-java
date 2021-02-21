@@ -4,15 +4,11 @@
  */
 package ucar.ui.event;
 
-/**
- * Change events for UI objects.
- * 
- * @author John Caron
- */
+/** Change events for UI objects. */
 public class UIChangeEvent extends java.util.EventObject {
-  private String property;
-  private Object objectChanged;
-  private Object newValue;
+  private final String property;
+  private final Object objectChanged;
+  private final Object newValue;
 
   public UIChangeEvent(Object source, String property, Object changed, Object newValue) {
     super(source);

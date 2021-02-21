@@ -11,8 +11,8 @@ import javax.swing.*;
 
 /** helper class for PrefPanel */
 class LayoutM implements LayoutManager2 {
-  private String name;
-  private Map<Component, Object> constraintMap = new HashMap<>();
+  private final String name;
+  private final Map<Component, Object> constraintMap = new HashMap<>();
   private Rectangle globalBounds;
 
   private boolean debug, debugLayout;

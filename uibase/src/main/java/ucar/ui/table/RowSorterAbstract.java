@@ -13,25 +13,21 @@ import java.util.*;
  *
  * @see TreeTableModelSorted
  * @see ucar.ui.table.RowSorter
- *
- * @author John Caron
  */
-
 public abstract class RowSorterAbstract implements ucar.ui.table.RowSorter {
+  private static final boolean debug = false;
 
   protected String[] columnNames;
   protected int ncolumns;
 
   protected TreeTableModelSorted model;
   protected JTreeTableSorted table;
-  protected ArrayList rowList = new ArrayList();
+  protected ArrayList<TableRow> rowList = new ArrayList<>();
 
   // sorting
   private int startSort;
   protected int[] sortNext;
-  private int[] sortBreak;
-
-  private boolean debug;
+  private final int[] sortBreak;
 
   protected RowSorterAbstract(String[] colNames) {
     columnNames = colNames;
@@ -79,16 +75,14 @@ public abstract class RowSorterAbstract implements ucar.ui.table.RowSorter {
     return table.getModel();
   }
 
-  // public void saveState() { table.saveState(); }
-
   // must be an array of TableRow objects
-  protected void setRows(ArrayList list) {
+  protected void setRows(ArrayList<TableRow> list) {
     rowList = list;
     table.setRows(list);
   }
 
   // implement RowSorter
-  public java.util.ArrayList sort(int sortCol, boolean reverse, java.util.ArrayList docs) {
+  public java.util.ArrayList<TableRow> sort(int sortCol, boolean reverse, java.util.ArrayList<TableRow> docs) {
     setupSort(sortCol, reverse);
     if (startSort < 0)
       return docs;
@@ -97,12 +91,9 @@ public abstract class RowSorterAbstract implements ucar.ui.table.RowSorter {
   }
 
   public boolean isBreak(TableRow last, TableRow current) {
-    TableRow lastRow = last;
-    TableRow currentRow = current;
-
-    currentRow.setNextSort(sortBreak);
-    int ret = currentRow.compare(lastRow, startSort);
-    currentRow.setNextSort(sortNext);
+    current.setNextSort(sortBreak);
+    int ret = current.compare(last, startSort);
+    current.setNextSort(sortNext);
     return (0 != ret);
   }
 

@@ -16,8 +16,8 @@ public class SpinIcon implements javax.swing.Icon {
   public static final SpinIcon.Type TypeRight = new SpinIcon.Type();
   public static final SpinIcon.Type TypeLeft = new SpinIcon.Type();
 
-  private SpinIcon.Type type;
-  private boolean orientH;
+  private final SpinIcon.Type type;
+  private final boolean orientH;
 
   public SpinIcon(SpinIcon.Type type) {
     this.type = type;

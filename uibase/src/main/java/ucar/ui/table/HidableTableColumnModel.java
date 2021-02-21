@@ -62,16 +62,15 @@ public class HidableTableColumnModel extends DefaultTableColumnModel implements 
 
       for (TableColumn allTableColumn : allTableColumns) {
         TableColumn visibleColumn = (visibleIndex < noVisibleColumns ? tableColumns.get(visibleIndex) : null);
-        TableColumn testColumn = allTableColumn;
 
-        if (testColumn == column) {
+        if (allTableColumn == column) {
           if (visibleColumn != column) {
             super.addColumn(column);
             super.moveColumn(tableColumns.size() - 1, visibleIndex);
           }
           return; // ####################
         }
-        if (testColumn == visibleColumn) {
+        if (allTableColumn == visibleColumn) {
           ++visibleIndex;
         }
       }
@@ -157,7 +156,7 @@ public class HidableTableColumnModel extends DefaultTableColumnModel implements 
    * @see #getColumns
    */
   public int getColumnCount(boolean onlyVisible) {
-    Vector columns = (onlyVisible ? tableColumns : allTableColumns);
+    Vector<TableColumn> columns = (onlyVisible ? tableColumns : allTableColumns);
     return columns.size();
   }
 
@@ -168,8 +167,7 @@ public class HidableTableColumnModel extends DefaultTableColumnModel implements 
    * @return an <code>Enumeration</code> of the columns in the model
    */
   public Enumeration<TableColumn> getColumns(boolean onlyVisible) {
-    Vector columns = (onlyVisible ? tableColumns : allTableColumns);
-
+    Vector<TableColumn> columns = (onlyVisible ? tableColumns : allTableColumns);
     return columns.elements();
   }
 
@@ -189,9 +187,7 @@ public class HidableTableColumnModel extends DefaultTableColumnModel implements 
     } else {
       return allTableColumns.elementAt(columnIndex);
     }
-
   }
-
 
   @Override
   public void tableChanged(TableModelEvent e) {
