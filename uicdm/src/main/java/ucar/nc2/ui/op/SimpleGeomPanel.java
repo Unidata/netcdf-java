@@ -5,6 +5,8 @@
 
 package ucar.nc2.ui.op;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.dt.GridDataset;
@@ -13,7 +15,6 @@ import ucar.nc2.ui.OpPanel;
 import ucar.nc2.ui.ToolsUI;
 import ucar.nc2.ui.gis.shapefile.ShapeFileBean;
 import ucar.nc2.ui.gis.worldmap.WorldMapBean;
-// import ucar.nc2.ui.image.ImageViewPanel;
 import ucar.nc2.ui.simplegeom.SimpleGeomTable;
 import ucar.nc2.ui.simplegeom.SimpleGeomUI;
 import ucar.ui.widget.BAMutil;
@@ -29,27 +30,16 @@ import java.io.StringWriter;
 import java.util.Formatter;
 import javax.swing.AbstractButton;
 import javax.swing.JOptionPane;
-import javax.swing.JSplitPane;
 
-/**
- *
- */
 public class SimpleGeomPanel extends OpPanel {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  private static final org.slf4j.Logger logger =
-      org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
-  private SimpleGeomTable sgTable;
-  private JSplitPane split;
+  private final SimpleGeomTable sgTable;
   private IndependentWindow viewerWindow, imageWindow;
   private SimpleGeomUI sgUI;
-  // private ImageViewPanel imageViewer;
 
   private NetcdfDataset ds;
 
-  /**
-   *
-   */
   public SimpleGeomPanel(PreferencesExt prefs) {
     super(prefs, "dataset:", true, false);
     sgTable = new SimpleGeomTable(prefs, true);
@@ -87,9 +77,6 @@ public class SimpleGeomPanel extends OpPanel {
     sgTable.addExtra(buttPanel, fileChooser);
   }
 
-  /**
-   *
-   */
   private void makeSimpleGeomUI() {
     // a little tricky to get the parent right for GridUI
     viewerWindow = new IndependentWindow("Simple Geometry Viewer", BAMutil.getImage("nj22/NetcdfUI"));
@@ -111,9 +98,6 @@ public class SimpleGeomPanel extends OpPanel {
     viewerWindow.setBounds(bounds);
   }
 
-  /**
-   *
-   */
   private void makeImageWindow() {
     imageWindow = new IndependentWindow("Simple Geometry Image Viewer", BAMutil.getImage("nj22/NetcdfUI"));
     // imageViewer = new ImageViewPanel(null);
@@ -122,7 +106,6 @@ public class SimpleGeomPanel extends OpPanel {
         .setBounds((Rectangle) ToolsUI.getPrefsBean(ToolsUI.GRIDIMAGE_FRAME_SIZE, new Rectangle(77, 22, 700, 900)));
   }
 
-  /** */
   @Override
   public boolean process(Object o) {
     String command = (String) o;
@@ -154,7 +137,6 @@ public class SimpleGeomPanel extends OpPanel {
     return !err;
   }
 
-  /** */
   @Override
   public void closeOpenFiles() throws IOException {
     if (ds != null) {
@@ -167,9 +149,6 @@ public class SimpleGeomPanel extends OpPanel {
     }
   }
 
-  /**
-   *
-   */
   public void setDataset(NetcdfDataset newds) {
     if (newds == null) {
       return;
@@ -198,9 +177,6 @@ public class SimpleGeomPanel extends OpPanel {
     setSelectedItem(newds.getLocation());
   }
 
-  /**
-   *
-   */
   public void setDataset(GridDataset gds) {
     if (gds == null) {
       return;
@@ -214,16 +190,10 @@ public class SimpleGeomPanel extends OpPanel {
     }
 
     this.ds = (NetcdfDataset) gds.getNetcdfFile(); // ??
-    try {
-      sgTable.setDataset(gds);
-    } catch (IOException e) {
-      e.printStackTrace();
-      return;
-    }
+    sgTable.setDataset(gds);
     setSelectedItem(gds.getLocation());
   }
 
-  /** */
   @Override
   public void save() {
     super.save();

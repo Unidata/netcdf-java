@@ -23,10 +23,20 @@ import ucar.nc2.internal.iosp.hdf5.H5iosp;
 import ucar.nc2.internal.ncml.Aggregation;
 import ucar.nc2.internal.ncml.NcmlReader;
 import ucar.nc2.stream.CdmRemote;
+import ucar.nc2.ui.bufr.BufrCdmIndexOpPanel;
+import ucar.nc2.ui.bufr.BufrCodePanel;
+import ucar.nc2.ui.bufr.BufrPanel;
+import ucar.nc2.ui.bufr.BufrReportPanel;
+import ucar.nc2.ui.bufr.BufrTableBPanel;
+import ucar.nc2.ui.bufr.BufrTableDPanel;
 import ucar.nc2.ui.dialog.DiskCache2Form;
 import ucar.nc2.ui.grib.*;
+import ucar.nc2.ui.grid.GeoGridPanel;
+import ucar.nc2.ui.grid.GridPanel;
 import ucar.nc2.ui.menu.*;
 import ucar.nc2.ui.op.*;
+import ucar.nc2.ui.point.PointFeaturePanel;
+import ucar.nc2.ui.radial.RadialPanel;
 import ucar.nc2.ui.util.SocketMessage;
 import ucar.nc2.ui.widget.URLDumpPane;
 import ucar.nc2.ui.widget.UrlAuthenticatorDialog;
@@ -46,8 +56,6 @@ import ucar.util.prefs.XMLStore;
 import ucar.ui.prefs.Debug;
 import java.awt.*;
 import java.awt.event.*;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.*;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Proxy;
@@ -59,15 +67,12 @@ public class ToolsUI extends JPanel {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private static final String DIALOG_VERSION = "6.0";
-
   public static final String WORLD_DETAIL_MAP = "/resources/ui/maps/Countries.shp";
   public static final String US_MAP = "/resources/ui/maps/us_state.shp";
-
   public static final String FRAME_SIZE = "FrameSize";
   public static final String GRIDVIEW_FRAME_SIZE = "GridUIWindowSize";
   public static final String GRIDIMAGE_FRAME_SIZE = "GridImageWindowSize";
-
-  private static boolean debugListen = false;
+  private static final boolean debugListen = false;
 
   private static ToolsUI ui;
   private static JFrame frame;
@@ -85,14 +90,10 @@ public class ToolsUI extends JPanel {
 
   private final JTabbedPane tabbedPane;
   private final JTabbedPane iospTabPane;
-  private final JTabbedPane bufrTabPane;
   private final JTabbedPane gribTabPane;
   private final JTabbedPane grib2TabPane;
   private final JTabbedPane grib1TabPane;
-  private final JTabbedPane hdf5TabPane;
   private final JTabbedPane ftTabPane;
-  private final JTabbedPane fcTabPane;
-  private final JTabbedPane fmrcTabPane;
   private final JTabbedPane ncmlTabPane;
 
   private final PreferencesExt mainPrefs;
@@ -112,13 +113,12 @@ public class ToolsUI extends JPanel {
   private CollectionSpecPanel fcPanel;
   private CoordSysPanel coordSysPanel;
   private CoveragePanel coveragePanel;
-  private DatasetViewerPanel viewerPanel;
+  private final DatasetViewerPanel viewerPanel;
   private DatasetViewerPanel nc4viewer;
   private DatasetWriterPanel writerPanel;
   private DirectoryPartitionPanel dirPartPanel;
   private FeatureScanOpPanel ftPanel;
   private GeoGridPanel geoGridPanel;
-  // private GeotiffPanel geotiffPanel;
   private GribCodePanel gribCodePanel;
   private GribFilesOpPanel gribFilesPanel;
   private GribIndexOpPanel gribIdxPanel;
@@ -136,14 +136,12 @@ public class ToolsUI extends JPanel {
   private Hdf5ObjectPanel hdf5ObjectPanel;
   private Hdf5DataPanel hdf5DataPanel;
   private Hdf4Panel hdf4Panel;
-  // private ImagePanel imagePanel;
   private NcStreamOpPanel ncStreamPanel;
   private NCdumpPanel ncdumpPanel;
   private NcmlEditorPanel ncmlEditorPanel;
   private PointFeaturePanel pointFeaturePanel;
-  private SimpleGeomPanel simpleGeomPanel;
-  // private StationRadialPanel stationRadialPanel;
   private RadialPanel radialPanel;
+  private SimpleGeomPanel simpleGeomPanel;
   private ThreddsUI threddsUI;
   private UnitsPanel unitsPanel;
   private URLDumpPane urlPanel;
@@ -177,11 +175,10 @@ public class ToolsUI extends JPanel {
     gribTabPane = new JTabbedPane(JTabbedPane.TOP);
     grib2TabPane = new JTabbedPane(JTabbedPane.TOP);
     grib1TabPane = new JTabbedPane(JTabbedPane.TOP);
-    bufrTabPane = new JTabbedPane(JTabbedPane.TOP);
+    JTabbedPane bufrTabPane = new JTabbedPane(JTabbedPane.TOP);
     ftTabPane = new JTabbedPane(JTabbedPane.TOP);
-    fcTabPane = new JTabbedPane(JTabbedPane.TOP);
-    fmrcTabPane = new JTabbedPane(JTabbedPane.TOP);
-    hdf5TabPane = new JTabbedPane(JTabbedPane.TOP);
+    JTabbedPane fcTabPane = new JTabbedPane(JTabbedPane.TOP);
+    JTabbedPane hdf5TabPane = new JTabbedPane(JTabbedPane.TOP);
     ncmlTabPane = new JTabbedPane(JTabbedPane.TOP);
 
     // Create and attach the initially visible panel in the top level tabbed pane
@@ -195,8 +192,6 @@ public class ToolsUI extends JPanel {
     tabbedPane.addTab("CoordSys", new JLabel("CoordSys"));
     tabbedPane.addTab("FeatureTypes", ftTabPane);
     tabbedPane.addTab("THREDDS", new JLabel("THREDDS"));
-    tabbedPane.addTab("Fmrc", fmrcTabPane);
-    tabbedPane.addTab("GeoTiff", new JLabel("GeoTiff"));
     tabbedPane.addTab("Units", new JLabel("Units"));
     tabbedPane.addTab("NcML", ncmlTabPane);
     tabbedPane.addTab("URLdump", new JLabel("URLdump"));
@@ -273,7 +268,6 @@ public class ToolsUI extends JPanel {
     ftTabPane.addTab("SimpleGeometry", new JLabel("SimpleGeometry"));
     ftTabPane.addTab("WMS", new JLabel("WMS"));
     ftTabPane.addTab("PointFeature", new JLabel("PointFeature"));
-    ftTabPane.addTab("Images", new JLabel("Images"));
     ftTabPane.addTab("Radial", new JLabel("Radial"));
     ftTabPane.addTab("FeatureCollection", fcTabPane);
     addListeners(ftTabPane);
@@ -283,11 +277,6 @@ public class ToolsUI extends JPanel {
     // fcTabPane.addTab("PartitionReport", new JLabel("PartitionReport"));
     fcTabPane.addTab("CollectionSpec", new JLabel("CollectionSpec"));
     addListeners(fcTabPane);
-
-    // nested tab - fmrc
-    fmrcTabPane.addTab("Fmrc", new JLabel("Fmrc"));
-    fmrcTabPane.addTab("Collections", new JLabel("Collections"));
-    addListeners(fmrcTabPane);
 
     // nested tab - ncml
     ncmlTabPane.addTab("NcmlEditor", new JLabel("NcmlEditor"));
@@ -515,13 +504,6 @@ public class ToolsUI extends JPanel {
         c = ftPanel;
         break;
 
-      /*
-       * case "GeoTiff":
-       * geotiffPanel = new GeotiffPanel((PreferencesExt) mainPrefs.node("WCS"));
-       * c = geotiffPanel;
-       * break;
-       */
-
       case "Grids":
         geoGridPanel = new GeoGridPanel((PreferencesExt) mainPrefs.node("grid"));
         c = geoGridPanel;
@@ -548,7 +530,7 @@ public class ToolsUI extends JPanel {
         break;
 
       case "HDF5-Data":
-        hdf5DataPanel = new Hdf5DataPanel((PreferencesExt) mainPrefs.node("hdf5data"), useBuilders);
+        hdf5DataPanel = new Hdf5DataPanel((PreferencesExt) mainPrefs.node("hdf5data"));
         c = hdf5DataPanel;
         break;
 
@@ -561,20 +543,6 @@ public class ToolsUI extends JPanel {
         hdf4Panel = new Hdf4Panel((PreferencesExt) mainPrefs.node("hdf4"), useBuilders);
         c = hdf4Panel;
         break;
-
-      /*
-       * case "Images":
-       * imagePanel = new ImagePanel((PreferencesExt) mainPrefs.node("images"));
-       * c = imagePanel;
-       * break;
-       */
-
-      /*
-       * case "Fmrc":
-       * fmrcPanel = new FmrcPanel((PreferencesExt) mainPrefs.node("fmrc2"));
-       * c = fmrcPanel;
-       * break;
-       */
 
       case "NCDump":
         ncdumpPanel = new NCdumpPanel((PreferencesExt) mainPrefs.node("NCDump"));
@@ -605,17 +573,15 @@ public class ToolsUI extends JPanel {
 
       case "THREDDS":
         threddsUI = new ThreddsUI(parentFrame, (PreferencesExt) mainPrefs.node("thredds"));
-        threddsUI.addPropertyChangeListener(new PropertyChangeListener() {
-          public void propertyChange(PropertyChangeEvent e) {
-            if (e.getPropertyName().equals("InvAccess")) {
-              thredds.client.catalog.Access access = (thredds.client.catalog.Access) e.getNewValue();
-              jumptoThreddsDatatype(access);
-            }
-            if (e.getPropertyName().equals("Dataset") || e.getPropertyName().equals("CoordSys")
-                || e.getPropertyName().equals("File")) {
-              thredds.client.catalog.Dataset ds = (thredds.client.catalog.Dataset) e.getNewValue();
-              setThreddsDatatype(ds, e.getPropertyName());
-            }
+        threddsUI.addPropertyChangeListener(e -> {
+          if (e.getPropertyName().equals("InvAccess")) {
+            thredds.client.catalog.Access access = (thredds.client.catalog.Access) e.getNewValue();
+            jumptoThreddsDatatype(access);
+          }
+          if (e.getPropertyName().equals("Dataset") || e.getPropertyName().equals("CoordSys")
+              || e.getPropertyName().equals("File")) {
+            thredds.client.catalog.Dataset ds = (thredds.client.catalog.Dataset) e.getNewValue();
+            setThreddsDatatype(ds, e.getPropertyName());
           }
         });
 
@@ -700,7 +666,6 @@ public class ToolsUI extends JPanel {
     ucar.nc2.grib.collection.Grib.setDebugFlags(debugFlags);
   }
 
-
   public void setUseRecordStructure(boolean use) {
     useRecordStructure = use;
   }
@@ -774,16 +739,6 @@ public class ToolsUI extends JPanel {
     if (ftPanel != null) {
       ftPanel.save();
     }
-    /*
-     * if (fmrcPanel != null) {
-     * fmrcPanel.save();
-     * }
-     */
-    /*
-     * if (geotiffPanel != null) {
-     * geotiffPanel.save();
-     * }
-     */
     if (gribFilesPanel != null) {
       gribFilesPanel.save();
     }
@@ -838,11 +793,6 @@ public class ToolsUI extends JPanel {
     if (hdf4Panel != null) {
       hdf4Panel.save();
     }
-    /*
-     * if (imagePanel != null) {
-     * imagePanel.save();
-     * }
-     */
     if (ncdumpPanel != null) {
       ncdumpPanel.save();
     }
@@ -858,18 +808,12 @@ public class ToolsUI extends JPanel {
     if (pointFeaturePanel != null) {
       pointFeaturePanel.save();
     }
-    // if (pointObsPanel != null) pointObsPanel.save();
     if (radialPanel != null) {
       radialPanel.save();
     }
-    // if (stationObsPanel != null) stationObsPanel.save();
-    /*
-     * if (stationRadialPanel != null) {
-     * stationRadialPanel.save();
-     * }
-     */
-
-    // if (trajTablePanel != null) trajTablePanel.save();
+    if (simpleGeomPanel != null) {
+      simpleGeomPanel.save();
+    }
     if (threddsUI != null) {
       threddsUI.storePersistentData();
     }
@@ -1210,14 +1154,7 @@ public class ToolsUI extends JPanel {
         tabbedPane.setSelectedComponent(ftTabPane);
         ftTabPane.setSelectedComponent(geoGridPanel);
       }
-    } /*
-       * else if (threddsData.featureType == FeatureType.IMAGE) {
-       * makeComponent(ftTabPane, "Images");
-       * imagePanel.setImageLocation(threddsData.imageURL);
-       * tabbedPane.setSelectedComponent(ftTabPane);
-       * ftTabPane.setSelectedComponent(imagePanel);
-       * }
-       */ else if (threddsData.featureType == FeatureType.RADIAL) {
+    } else if (threddsData.featureType == FeatureType.RADIAL) {
       makeComponent(ftTabPane, "Radial");
       radialPanel.setDataset((RadialDatasetSweep) threddsData.featureDataset);
       tabbedPane.setSelectedComponent(ftTabPane);
@@ -1227,14 +1164,7 @@ public class ToolsUI extends JPanel {
       pointFeaturePanel.setPointFeatureDataset((PointDatasetImpl) threddsData.featureDataset);
       tabbedPane.setSelectedComponent(ftTabPane);
       ftTabPane.setSelectedComponent(pointFeaturePanel);
-    } /*
-       * else if (threddsData.featureType == FeatureType.STATION_RADIAL) {
-       * makeComponent(ftTabPane, "StationRadial");
-       * stationRadialPanel.setStationRadialDataset(threddsData.featureDataset);
-       * tabbedPane.setSelectedComponent(ftTabPane);
-       * ftTabPane.setSelectedComponent(stationRadialPanel);
-       * }
-       */
+    }
   }
 
   public NetcdfFile openFile(String location, boolean addCoords, CancelTask task) {

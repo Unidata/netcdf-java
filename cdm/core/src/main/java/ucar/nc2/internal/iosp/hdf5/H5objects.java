@@ -284,12 +284,6 @@ public class H5objects {
           f.format("%d,", len);
         f.format(");%n");
       }
-      /*
-       * for (MessageAttribute mess : getAttributes()) {
-       * Attribute att = mess.getNcAttribute();
-       * f.format("  :%s%n", att);
-       * }
-       */
       f.format("%n");
     }
 

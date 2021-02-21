@@ -3,9 +3,10 @@
  * See LICENSE for license information.
  */
 
-package ucar.nc2.ui.op;
+package ucar.nc2.ui.grib;
 
 import ucar.nc2.ui.OpPanel;
+import ucar.nc2.ui.grib.GribIndexPanel;
 import ucar.util.prefs.PreferencesExt;
 import java.awt.BorderLayout;
 import java.io.FileNotFoundException;
@@ -14,13 +15,13 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import javax.swing.JOptionPane;
 
-public class BufrCdmIndexOpPanel extends OpPanel {
-  private final BufrCdmIndexPanel table;
+public class GribIndexOpPanel extends OpPanel {
+  private final GribIndexPanel gribTable;
 
-  public BufrCdmIndexOpPanel(PreferencesExt p) {
+  public GribIndexOpPanel(PreferencesExt p) {
     super(p, "index file:", true, false);
-    table = new BufrCdmIndexPanel(prefs, buttPanel);
-    add(table, BorderLayout.CENTER);
+    gribTable = new GribIndexPanel(prefs, buttPanel);
+    add(gribTable, BorderLayout.CENTER);
   }
 
   @Override
@@ -29,9 +30,9 @@ public class BufrCdmIndexOpPanel extends OpPanel {
     boolean err = false;
 
     try {
-      table.setIndexFile(command);
+      gribTable.setIndexFile(command);
     } catch (FileNotFoundException ioe) {
-      JOptionPane.showMessageDialog(null, "BufrCdmIndexPanel cannot open " + command + "\n" + ioe.getMessage());
+      JOptionPane.showMessageDialog(null, "NetcdfDataset cannot open " + command + "\n" + ioe.getMessage());
       err = true;
     } catch (Exception e) {
       e.printStackTrace();
@@ -47,12 +48,12 @@ public class BufrCdmIndexOpPanel extends OpPanel {
 
   @Override
   public void closeOpenFiles() throws IOException {
-    // table.closeOpenFiles();
+    gribTable.closeOpenFiles();
   }
 
   @Override
   public void save() {
-    table.save();
+    gribTable.save();
     super.save();
   }
 }

@@ -3,7 +3,7 @@
  * See LICENSE for license information.
  */
 
-package ucar.nc2.ui.op;
+package ucar.nc2.ui.grid;
 
 import ucar.nc2.grid.GridDataset;
 import ucar.nc2.grid.GridDatasetFactory;
@@ -26,8 +26,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
 
 public class GridPanel extends OpPanel {
-  private static final org.slf4j.Logger logger =
-      org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private final GridNewTable gridNewTable;
   private GridViewer gridViewer;

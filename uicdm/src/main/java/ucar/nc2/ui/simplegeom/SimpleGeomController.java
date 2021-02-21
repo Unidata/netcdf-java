@@ -14,6 +14,7 @@ import java.awt.geom.Point2D;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
 import javax.swing.*;
@@ -31,15 +32,7 @@ import ucar.nc2.write.NcmlWriter;
 import ucar.ui.event.ActionCoordinator;
 import ucar.ui.event.ActionSourceListener;
 import ucar.ui.event.ActionValueEvent;
-import ucar.nc2.ui.geoloc.CursorMoveEvent;
-import ucar.nc2.ui.geoloc.CursorMoveEventListener;
 import ucar.nc2.ui.geoloc.NavigatedPanel;
-import ucar.nc2.ui.geoloc.NewMapAreaEvent;
-import ucar.nc2.ui.geoloc.NewMapAreaListener;
-import ucar.nc2.ui.geoloc.NewProjectionEvent;
-import ucar.nc2.ui.geoloc.NewProjectionListener;
-import ucar.nc2.ui.geoloc.PickEvent;
-import ucar.nc2.ui.geoloc.PickEventListener;
 import ucar.nc2.ui.grid.*;
 import ucar.nc2.ui.util.Renderer;
 import ucar.ui.widget.BAMutil;
@@ -65,8 +58,8 @@ public class SimpleGeomController {
   private static final String LastDatasetName = "LastDataset";
   private static final String ColorScaleName = "ColorScale";
 
-  private PreferencesExt store;
-  private SimpleGeomUI ui;
+  private final PreferencesExt store;
+  private final SimpleGeomUI ui;
 
   // delegates
   private ColorScale cs;
@@ -89,15 +82,12 @@ public class SimpleGeomController {
   private boolean hasDependentTimeAxis;
 
   // rendering
-  private AffineTransform atI = new AffineTransform(); // identity transform
-  // private MyImageObserver imageObs = new MyImageObserver();
-  // private MyPrintable printer = null;
+  private final AffineTransform atI = new AffineTransform(); // identity transform
 
   private Renderer renderMap;
   public GridRenderer renderGrid;
-  // private WindRenderer renderWind;
-  private javax.swing.Timer redrawTimer;
-  private Color mapColor = Color.black;
+  private final javax.swing.Timer redrawTimer;
+  private final Color mapColor = Color.black;
 
   // ui
   private javax.swing.JLabel dataValueLabel, posLabel;
@@ -129,7 +119,6 @@ public class SimpleGeomController {
     // set up the renderers; Maps are added by addMapBean()
     renderGrid = new GridRenderer();
     renderGrid.setColorScale(cs);
-    // renderWind = new WindRenderer();
 
     // stride
     strideSpinner = new JSpinner(new SpinnerNumberModel(1, 1, 100, 1));
@@ -141,11 +130,8 @@ public class SimpleGeomController {
     // timer
     redrawTimer = new javax.swing.Timer(0, new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        SwingUtilities.invokeLater(new Runnable() { // invoke in event thread
-          public void run() {
-            draw(false);
-          }
-        });
+        // invoke in event thread
+        SwingUtilities.invokeLater(() -> draw(false));
         redrawTimer.stop(); // one-shot timer
       }
     });
@@ -175,14 +161,6 @@ public class SimpleGeomController {
       np.setMapArea(ma);
 
     makeEventManagement();
-
-    // last thing
-    /*
-     * get last dataset filename and reopen it
-     * String filename = (String) store.get(LastDatasetName);
-     * if (filename != null)
-     * setDataset(filename);
-     */
   }
 
   void start(boolean ok) {
@@ -316,17 +294,15 @@ public class SimpleGeomController {
     // connect to the vertPanel
     levelCoordinator.addActionSourceListener(ui.vertPanel.getActionSourceListener());
     // also manage Pick events from the vertPanel
-    vertPanel.getDrawArea().addPickEventListener(new PickEventListener() {
-      public void actionPerformed(PickEvent e) {
-        int level = renderGrid.findLevelCoordElement(e.getLocation().getY());
-        if ((level != -1) && (level != currentLevel)) {
-          currentLevel = level;
-          redrawLater();
-          String selectedName = levelNames.get(currentLevel).getName();
-          if (Debug.isSet("pick/event"))
-            System.out.println("pick.event Vert: " + selectedName);
-          levelSource.fireActionValueEvent(ActionSourceListener.SELECTED, selectedName);
-        }
+    vertPanel.getDrawArea().addPickEventListener(e -> {
+      int level = renderGrid.findLevelCoordElement(e.getLocation().getY());
+      if ((level != -1) && (level != currentLevel)) {
+        currentLevel = level;
+        redrawLater();
+        String selectedName = levelNames.get(currentLevel).getName();
+        if (Debug.isSet("pick/event"))
+          System.out.println("pick.event Vert: " + selectedName);
+        levelSource.fireActionValueEvent(ActionSourceListener.SELECTED, selectedName);
       }
     });
     // heres what to do when a level changes
@@ -418,59 +394,49 @@ public class SimpleGeomController {
     ensembleCoordinator.addActionSourceListener(ensembleSource);
 
     // get Projection Events from the navigated panel
-    np.addNewProjectionListener(new NewProjectionListener() {
-      public void actionPerformed(NewProjectionEvent e) {
-        if (Debug.isSet("event/NewProjection"))
-          System.out.println("Controller got NewProjectionEvent " + np.getMapArea());
-        if (eventsOK && renderMap != null) {
-          renderMap.setProjection(e.getProjection());
-          renderGrid.setProjection(e.getProjection());
-          drawH(false);
-        }
-      }
-    });
-
-    // get NewMapAreaEvents from the navigated panel
-    np.addNewMapAreaListener(new NewMapAreaListener() {
-      public void actionPerformed(NewMapAreaEvent e) {
-        if (Debug.isSet("event/NewMapArea"))
-          System.out.println("Controller got NewMapAreaEvent " + np.getMapArea());
+    np.addNewProjectionListener(e -> {
+      if (Debug.isSet("event/NewProjection"))
+        System.out.println("Controller got NewProjectionEvent " + np.getMapArea());
+      if (eventsOK && renderMap != null) {
+        renderMap.setProjection(e.getProjection());
+        renderGrid.setProjection(e.getProjection());
         drawH(false);
       }
     });
 
+    // get NewMapAreaEvents from the navigated panel
+    np.addNewMapAreaListener(e -> {
+      if (Debug.isSet("event/NewMapArea"))
+        System.out.println("Controller got NewMapAreaEvent " + np.getMapArea());
+      drawH(false);
+    });
+
 
     // get Pick events from the navigated panel
-    np.addPickEventListener(new PickEventListener() {
-      public void actionPerformed(PickEvent e) {
-        ProjectionPoint projPoint = e.getLocation();
-        int slice = renderGrid.findSliceFromPoint(projPoint);
-        if (Debug.isSet("pick/event"))
-          System.out.println("pick.event: " + projPoint + " " + slice);
-        if ((slice >= 0) && (slice != currentSlice)) {
-          currentSlice = slice;
-          vertPanel.setSlice(currentSlice);
-          redrawLater();
-        }
+    np.addPickEventListener(e -> {
+      ProjectionPoint projPoint = e.getLocation();
+      int slice = renderGrid.findSliceFromPoint(projPoint);
+      if (Debug.isSet("pick/event"))
+        System.out.println("pick.event: " + projPoint + " " + slice);
+      if ((slice >= 0) && (slice != currentSlice)) {
+        currentSlice = slice;
+        vertPanel.setSlice(currentSlice);
+        redrawLater();
       }
     });
 
     // get Move events from the navigated panel
-    np.addCursorMoveEventListener(new CursorMoveEventListener() {
-      public void actionPerformed(CursorMoveEvent e) {
-        ProjectionPoint projPoint = e.getLocation();
-        String valueS = renderGrid.getXYvalueStr(projPoint);
-        dataValueLabel.setText(valueS);
-      }
+    np.addCursorMoveEventListener(e -> {
+      ProjectionPoint projPoint = e.getLocation();
+      String valueS = renderGrid.getXYvalueStr(projPoint);
+      dataValueLabel.setText(valueS);
     });
 
     // get Move events from the vertPanel
-    vertPanel.getDrawArea().addCursorMoveEventListener(new CursorMoveEventListener() {
-      public void actionPerformed(CursorMoveEvent e) {
-        Point2D loc = e.getLocationPoint();
-        posLabel.setText(renderGrid.getYZpositionStr(loc));
-        dataValueLabel.setText(renderGrid.getYZvalueStr(loc));
-      }
+    vertPanel.getDrawArea().addCursorMoveEventListener(e -> {
+      Point2D loc = e.getLocationPoint();
+      posLabel.setText(renderGrid.getYZpositionStr(loc));
+      dataValueLabel.setText(renderGrid.getYZvalueStr(loc));
     });
 
 
@@ -537,7 +503,7 @@ public class SimpleGeomController {
   }
 
   /** iterator returns NamedObject CHANGE TO GENERIC */
-  java.util.List getFields() {
+  java.util.List<GridDatatype> getFields() {
     if (gridDataset == null)
       return null;
     else
@@ -677,13 +643,13 @@ public class SimpleGeomController {
   boolean showDataset() {
 
     // temp kludge for initialization
-    java.util.List grids = gridDataset.getGrids();
+    java.util.List<GridDatatype> grids = gridDataset.getGrids();
     if ((grids == null) || grids.isEmpty()) {
       javax.swing.JOptionPane.showMessageDialog(null, "No gridded fields in file " + gridDataset.getTitle());
       return false;
     }
 
-    currentField = (GridDatatype) grids.get(0);
+    currentField = grids.get(0);
     currentSlice = 0;
     currentLevel = 0;
     currentTime = 0;
@@ -692,7 +658,7 @@ public class SimpleGeomController {
 
     eventsOK = false; // dont let this trigger redraw
     renderGrid.setGeoGrid(currentField);
-    ui.setFields(gridDataset.getGrids());
+    ui.setFields(new ArrayList<>(gridDataset.getGrids()));
     setField(currentField);
 
     // if possible, change the projection and the map area to one that fits this
@@ -736,7 +702,7 @@ public class SimpleGeomController {
     if (gcs.hasTimeAxis()) {
       CoordinateAxis1DTime taxis = gcs.hasTimeAxis1D() ? gcs.getTimeAxis1D() : gcs.getTimeAxisForRun(0);
       timeNames = NamedObjects.getNames(taxis);
-      if ((timeNames == null) || (currentTime >= timeNames.size()))
+      if (currentTime >= timeNames.size())
         currentTime = 0;
       hasDependentTimeAxis = !gcs.hasTimeAxis1D();
     } else

@@ -22,8 +22,6 @@ import java.util.zip.InflaterInputStream;
  * @author caron
  */
 public class HttpClientManager {
-  private static boolean debug;
-  private static int timeout;
 
   /**
    * initialize the HttpClient layer.
@@ -92,7 +90,6 @@ public class HttpClientManager {
    */
   public static int putContent(String urlencoded, String content) throws IOException {
     try (HTTPMethod m = HTTPFactory.Put(urlencoded)) {
-
       m.setRequestContent(new StringEntity(content, "application/text", CDM.UTF8));
       m.execute();
 

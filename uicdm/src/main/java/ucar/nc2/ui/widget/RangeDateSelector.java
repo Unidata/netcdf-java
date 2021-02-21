@@ -18,15 +18,12 @@ import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 import java.awt.*;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.Date;
 import ucar.ui.widget.HelpWindow;
 
 /**
  * Widget to select a point or a range from a date range.
  */
-
 public class RangeDateSelector extends JPanel implements FieldValidator {
   public static final String TIME_START = "start";
   public static final String TIME_END = "end";
@@ -34,9 +31,14 @@ public class RangeDateSelector extends JPanel implements FieldValidator {
   public static final String TIME_RESOLUTION = "resolution";
 
   private static final int SLIDER_RESOLUTION = 1000;
+  private static final String actionName = "rangeDateSelection";
 
-  private String title, helpMessage;
-  private boolean acceptButton, enableButton, isPointOnly, useLimits;
+  private final String title;
+  private final String helpMessage;
+  private boolean acceptButton;
+  private final boolean enableButton;
+  private final boolean isPointOnly;
+  private final boolean useLimits;
 
   private DateType minLimit, maxLimit; // min and max allowed values
   private DateRange dateRange; // data model
@@ -56,7 +58,6 @@ public class RangeDateSelector extends JPanel implements FieldValidator {
 
   // event management
   private ActionSourceListener actionSource;
-  private String actionName = "rangeDateSelection";
   private boolean eventOK = true;
 
   private static boolean debugEvent, debugEvent2;
@@ -245,61 +246,53 @@ public class RangeDateSelector extends JPanel implements FieldValidator {
         maxSlider.setValue(pos); // drag max along
     });
 
-    minField.addPropertyChangeListener(new PropertyChangeListener() {
-      public void propertyChange(PropertyChangeEvent e) {
-        if (debugEvent)
-          System.out.println("minField event= " + e.getNewValue() + " " + e.getNewValue().getClass().getName());
-        if (!eventOK)
-          return;
+    minField.addPropertyChangeListener(e -> {
+      if (debugEvent)
+        System.out.println("minField event= " + e.getNewValue() + " " + e.getNewValue().getClass().getName());
+      if (!eventOK)
+        return;
 
-        DateType val = (DateType) minField.getValue();
-        dateRange.setStart(val);
-        synchUI(true);
-      }
+      DateType val = (DateType) minField.getValue();
+      dateRange.setStart(val);
+      synchUI(true);
     });
 
     if (maxField != null) {
-      maxField.addPropertyChangeListener(new PropertyChangeListener() {
-        public void propertyChange(PropertyChangeEvent e) {
-          if (debugEvent)
-            System.out.println("maxField event= " + e.getNewValue());
-          if (!eventOK)
-            return;
+      maxField.addPropertyChangeListener(e -> {
+        if (debugEvent)
+          System.out.println("maxField event= " + e.getNewValue());
+        if (!eventOK)
+          return;
 
-          DateType val = (DateType) maxField.getValue();
-          dateRange.setEnd(val);
-          synchUI(true);
-        }
+        DateType val = (DateType) maxField.getValue();
+        dateRange.setEnd(val);
+        synchUI(true);
       });
     }
 
     if (durationField != null) {
-      durationField.addPropertyChangeListener(new PropertyChangeListener() {
-        public void propertyChange(PropertyChangeEvent e) {
-          if (debugEvent)
-            System.out.println("durationField event= " + e.getNewValue());
-          if (!eventOK)
-            return;
+      durationField.addPropertyChangeListener(e -> {
+        if (debugEvent)
+          System.out.println("durationField event= " + e.getNewValue());
+        if (!eventOK)
+          return;
 
-          TimeDuration val = durationField.getTimeDuration();
-          dateRange.setDuration(val);
-          synchUI(true);
-        }
+        TimeDuration val = durationField.getTimeDuration();
+        dateRange.setDuration(val);
+        synchUI(true);
       });
     }
 
     if (resolutionField != null) {
-      resolutionField.addPropertyChangeListener(new PropertyChangeListener() {
-        public void propertyChange(PropertyChangeEvent e) {
-          if (debugEvent)
-            System.out.println("resolutionField event= " + e.getNewValue());
-          if (!eventOK)
-            return;
+      resolutionField.addPropertyChangeListener(e -> {
+        if (debugEvent)
+          System.out.println("resolutionField event= " + e.getNewValue());
+        if (!eventOK)
+          return;
 
-          TimeDuration val = resolutionField.getTimeDuration();
-          dateRange.setResolution(val);
-          // synchUI(true);
-        }
+        TimeDuration val = resolutionField.getTimeDuration();
+        dateRange.setResolution(val);
+        // synchUI(true);
       });
     }
 
@@ -311,15 +304,6 @@ public class RangeDateSelector extends JPanel implements FieldValidator {
         // ?? setSelectedByName( e.getValue().toString());
       }
     };
-
-    // catch resize events on the slider
-    /*
-     * minSlider.addComponentListener( new ComponentAdapter() {
-     * public void componentResized( ComponentEvent e) {
-     * setLabels();
-     * }
-     * });
-     */
   }
 
   private DateFormatter formatter = new DateFormatter();
@@ -440,16 +424,12 @@ public class RangeDateSelector extends JPanel implements FieldValidator {
   }
 
   private static class Scale {
-    private double min; // secs
-    private double scale; // pixels / secs
+    private final double min; // secs
+    private final double scale; // pixels / secs
 
     Scale(DateRange dateRange) {
       this.min = .001 * dateRange.getStart().getDate().getTime();
-      // this.max = .001 * dateRange.getEnd().getDate().getTime();
-      // scale = SLIDER_RESOLUTION / (this.max - this.min);
-
       scale = SLIDER_RESOLUTION / dateRange.getDuration().getValueInSeconds();
-      // System.out.println("slider scale= "+scale);
     }
 
     private int world2slider(DateType val) {
@@ -459,8 +439,6 @@ public class RangeDateSelector extends JPanel implements FieldValidator {
 
     private DateType slider2world(int pval) {
       double val = pval / scale; // secs
-      // double floor = Math.floor(val / resolution);
-      // double incr = floor * resolution;
       double msecs = 1000 * (min + val);
       return new DateType(false, new java.util.Date((long) msecs));
     }

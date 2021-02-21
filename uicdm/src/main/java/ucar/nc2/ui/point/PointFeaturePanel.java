@@ -3,7 +3,7 @@
  * See LICENSE for license information.
  */
 
-package ucar.nc2.ui.op;
+package ucar.nc2.ui.point;
 
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.FeatureDataset;
@@ -23,24 +23,16 @@ import java.util.Formatter;
 import javax.swing.AbstractButton;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
-import javax.swing.JSplitPane;
 
-/**
- *
- */
 public class PointFeaturePanel extends OpPanel {
 
   private static final org.slf4j.Logger logger =
       org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  private PointFeatureDatasetViewer pfViewer;
-  private JSplitPane split;
+  private final PointFeatureDatasetViewer pfViewer;
   private FeatureDatasetPoint pfDataset;
-  private JComboBox<FeatureType> types;
+  private final JComboBox<FeatureType> types;
 
-  /**
-   *
-   */
   public PointFeaturePanel(PreferencesExt dbPrefs) {
     super(dbPrefs, "dataset:", true, false);
     pfViewer = new PointFeatureDatasetViewer(dbPrefs, buttPanel);
@@ -95,14 +87,12 @@ public class PointFeaturePanel extends OpPanel {
     buttPanel.add(xmlButton);
   }
 
-  /** */
   @Override
   public boolean process(Object o) {
     String location = (String) o;
     return setPointFeatureDataset((FeatureType) types.getSelectedItem(), location);
   }
 
-  /** */
   @Override
   public void closeOpenFiles() throws IOException {
     if (pfDataset != null) {
@@ -112,16 +102,12 @@ public class PointFeaturePanel extends OpPanel {
     pfViewer.clear();
   }
 
-  /** */
   @Override
   public void save() {
     super.save();
     pfViewer.save();
   }
 
-  /**
-   *
-   */
   public boolean setPointFeatureDataset(FeatureType type, String location) {
     if (location == null) {
       return false;
@@ -168,9 +154,6 @@ public class PointFeaturePanel extends OpPanel {
     }
   }
 
-  /**
-   *
-   */
   public boolean setPointFeatureDataset(FeatureDatasetPoint pfd) {
 
     try {
@@ -198,9 +181,6 @@ public class PointFeaturePanel extends OpPanel {
     }
   }
 
-  /**
-   *
-   */
   private String getCapabilities(FeatureDatasetPoint fdp) {
     FeatureDatasetCapabilitiesWriter xmlWriter = new FeatureDatasetCapabilitiesWriter(fdp, null);
     return xmlWriter.getCapabilities();

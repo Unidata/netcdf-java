@@ -13,14 +13,11 @@ import java.lang.reflect.Method;
  * Dynamic proxy for Debug
  */
 class DebugProxyHandler implements InvocationHandler {
-
-  /** */
   @Override
   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
     if (method.getName().equals("toString")) {
       return super.toString();
     }
-
     if (method.getName().equals("isSet")) {
       return Debug.isSet((String) args[0]);
     }

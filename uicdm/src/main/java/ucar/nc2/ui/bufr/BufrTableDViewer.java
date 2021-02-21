@@ -3,7 +3,7 @@
  * See LICENSE for license information.
  */
 
-package ucar.nc2.ui.op;
+package ucar.nc2.ui.bufr;
 
 import ucar.ui.widget.BAMutil;
 import ucar.ui.widget.IndependentWindow;

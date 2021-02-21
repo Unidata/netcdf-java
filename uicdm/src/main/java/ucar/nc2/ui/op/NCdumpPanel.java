@@ -11,7 +11,6 @@ import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.ui.GetDataRunnable;
 import ucar.nc2.ui.GetDataTask;
 import ucar.nc2.ui.OpPanel;
-import ucar.nc2.ui.ToolsUI;
 import ucar.nc2.write.Ncdump;
 import ucar.ui.widget.TextHistoryPane;
 import ucar.util.prefs.PreferencesExt;
@@ -25,7 +24,7 @@ public class NCdumpPanel extends OpPanel implements GetDataRunnable {
   private String filename;
   private String command;
   private String result;
-  private TextHistoryPane ta;
+  private final TextHistoryPane ta;
 
   public NCdumpPanel(PreferencesExt prefs) {
     super(prefs, "command:");
@@ -87,7 +86,6 @@ public class NCdumpPanel extends OpPanel implements GetDataRunnable {
 
   public void run(Object o) throws IOException {
     try {
-      boolean useBuilders = ToolsUI.getToolsUI().getUseBuilders();
       if (useCoords) {
         ncfile = NetcdfDatasets.openDataset(filename, true, null);
       } else {
@@ -117,12 +115,10 @@ public class NCdumpPanel extends OpPanel implements GetDataRunnable {
     this.ncfile = ncf;
     this.filename = ncf.getLocation();
 
-    GetDataRunnable runner = new GetDataRunnable() {
-      public void run(Object o) throws IOException {
-        StringWriter sw = new StringWriter(50000);
-        Ncdump.ncdump(ncfile, command, sw, task);
-        result = sw.toString();
-      }
+    GetDataRunnable runner = o -> {
+      StringWriter sw = new StringWriter(50000);
+      Ncdump.ncdump(ncfile, command, sw, task);
+      result = sw.toString();
     };
     task = new GetDataTask(runner, filename, null);
     stopButton.startProgressMonitorTask(task);

@@ -3,7 +3,7 @@
  * See LICENSE for license information.
  */
 
-package ucar.nc2.ui.op;
+package ucar.nc2.ui.bufr;
 
 import java.nio.charset.StandardCharsets;
 import javax.annotation.Nullable;

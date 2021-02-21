@@ -29,7 +29,7 @@ import javax.swing.JSplitPane;
 public class NcStreamPanel extends JPanel {
   private final PreferencesExt prefs;
 
-  private final BeanTable messTable;
+  private final BeanTable<MessBean> messTable;
   private final JSplitPane split;
 
   private TextHistoryPane infoTA;
@@ -42,9 +42,9 @@ public class NcStreamPanel extends JPanel {
 
     PopupMenu varPopup;
 
-    messTable = new BeanTable(MessBean.class, (PreferencesExt) prefs.node("NcStreamPanel"), false);
+    messTable = new BeanTable<>(MessBean.class, (PreferencesExt) prefs.node("NcStreamPanel"), false);
     messTable.addListSelectionListener(e -> {
-      MessBean bean = (MessBean) messTable.getSelectedBean();
+      MessBean bean = messTable.getSelectedBean();
       if (bean == null) {
         return;
       }
@@ -53,7 +53,7 @@ public class NcStreamPanel extends JPanel {
     varPopup = new PopupMenu(messTable.getJTable(), "Options");
     varPopup.addAction("Show deflate", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        MessBean bean = (MessBean) messTable.getSelectedBean();
+        MessBean bean = messTable.getSelectedBean();
         if (bean == null) {
           return;
         }
@@ -61,9 +61,7 @@ public class NcStreamPanel extends JPanel {
       }
     });
 
-    // the info windows
     infoTA = new TextHistoryPane();
-
     TextHistoryPane infoPopup2 = new TextHistoryPane();
     IndependentWindow infoWindow2 =
         new IndependentWindow("Extra Information", BAMutil.getImage("nj22/NetcdfUI"), infoPopup2);
@@ -84,7 +82,6 @@ public class NcStreamPanel extends JPanel {
 
   public void save() {
     messTable.saveState(false);
-    // prefs.putBeanObject("InfoWindowBounds3", infoWindow3.getBounds());
     if (split != null) {
       prefs.putInt("splitPos", split.getDividerLocation());
     }
@@ -132,9 +129,7 @@ public class NcStreamPanel extends JPanel {
         raf.close();
       }
     }
-
     messTable.setBeans(messages);
-    // System.out.printf("mess = %d%n", messages.size());
   }
 
   public static class MessBean {

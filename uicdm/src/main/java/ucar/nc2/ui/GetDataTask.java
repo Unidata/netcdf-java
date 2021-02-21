@@ -12,9 +12,9 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 public class GetDataTask extends ProgressMonitorTask implements CancelTask {
-  private GetDataRunnable getData;
-  private Object o;
-  private String name;
+  private final GetDataRunnable getData;
+  private final Object o;
+  private final String name;
   private String errMsg;
 
   public GetDataTask(GetDataRunnable getData, String name, Object o) {

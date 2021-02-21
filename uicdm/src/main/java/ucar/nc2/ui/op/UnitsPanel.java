@@ -11,26 +11,19 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 
-/**
- *
- */
 public class UnitsPanel extends JPanel {
-  private PreferencesExt prefs;
-  private JSplitPane split;
-  private JSplitPane split2;
-  private UnitDatasetCheck unitDataset;
-  private UnitConvert unitConvert;
-  private DateFormatMark dateFormatMark;
+  private final PreferencesExt prefs;
+  private final JSplitPane split;
+  private final JSplitPane split2;
+  private final UnitDatasetCheck unitDataset;
+  private final UnitConvert unitConvert;
 
-  /**
-   *
-   */
   public UnitsPanel(PreferencesExt prefs) {
     this.prefs = prefs;
 
     unitDataset = new UnitDatasetCheck((PreferencesExt) prefs.node("unitDataset"));
     unitConvert = new UnitConvert((PreferencesExt) prefs.node("unitConvert"));
-    dateFormatMark = new DateFormatMark((PreferencesExt) prefs.node("dateFormatMark"));
+    DateFormatMark dateFormatMark = new DateFormatMark((PreferencesExt) prefs.node("dateFormatMark"));
 
     split2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, unitConvert, dateFormatMark);
     split2.setDividerLocation(prefs.getInt("splitPos2", 500));
@@ -42,9 +35,6 @@ public class UnitsPanel extends JPanel {
     add(split, BorderLayout.CENTER);
   }
 
-  /**
-   *
-   */
   public void save() {
     prefs.putInt("splitPos", split.getDividerLocation());
     prefs.putInt("splitPos2", split2.getDividerLocation());

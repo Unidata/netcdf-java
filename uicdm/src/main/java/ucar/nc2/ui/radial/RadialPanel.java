@@ -3,7 +3,7 @@
  * See LICENSE for license information.
  */
 
-package ucar.nc2.ui.op;
+package ucar.nc2.ui.radial;
 
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.constants.FeatureType;
@@ -22,23 +22,14 @@ import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
 import javax.swing.AbstractButton;
 import javax.swing.JOptionPane;
-import javax.swing.JSplitPane;
 
-/**
- *
- */
 public class RadialPanel extends OpPanel {
   private static final org.slf4j.Logger logger =
       org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  private RadialDatasetTable dsTable;
-  private JSplitPane split;
-
+  private final RadialDatasetTable dsTable;
   private RadialDatasetSweep ds;
 
-  /**
-   *
-   */
   public RadialPanel(PreferencesExt prefs) {
     super(prefs, "dataset:", true, false);
     dsTable = new RadialDatasetTable(prefs);
@@ -59,9 +50,6 @@ public class RadialPanel extends OpPanel {
     buttPanel.add(infoButton);
   }
 
-  /**
-   *
-   */
   @Override
   public boolean process(Object o) {
     String command = (String) o;
@@ -100,9 +88,6 @@ public class RadialPanel extends OpPanel {
     return !err;
   }
 
-  /**
-   *
-   */
   public void setDataset(RadialDatasetSweep newds) {
     if (newds == null) {
       return;
@@ -121,9 +106,6 @@ public class RadialPanel extends OpPanel {
     setSelectedItem(newds.getLocation());
   }
 
-  /**
-   *
-   */
   @Override
   public void closeOpenFiles() throws IOException {
     if (ds != null) {
@@ -132,9 +114,6 @@ public class RadialPanel extends OpPanel {
     ds = null;
   }
 
-  /**
-   *
-   */
   @Override
   public void save() {
     super.save();

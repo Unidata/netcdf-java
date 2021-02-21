@@ -18,26 +18,21 @@ import javax.swing.AbstractAction;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 
-/**
- *
- */
 public class ReportOpPanel extends OpPanel {
-  private ReportPanel reportPanel;
+  private final ReportPanel reportPanel;
+  private final JComboBox<Object> reports;
+
   private boolean useIndex = true;
   private boolean eachFile;
   private boolean extra;
-  private JComboBox reports;
 
-  /**
-   *
-   */
   public ReportOpPanel(PreferencesExt p, ReportPanel reportPanel) {
     super(p, "collection:", true, false);
     this.reportPanel = reportPanel;
     add(reportPanel, BorderLayout.CENTER);
     reportPanel.addOptions(buttPanel);
 
-    reports = new JComboBox(reportPanel.getOptions());
+    reports = new JComboBox<>(reportPanel.getOptions());
     buttPanel.add(reports);
 
     AbstractAction useIndexButt = new AbstractAction() {
@@ -80,26 +75,17 @@ public class ReportOpPanel extends OpPanel {
     BAMutil.addActionToContainer(buttPanel, doitButt);
   }
 
-  /**
-   *
-   */
   @Override
   public void closeOpenFiles() {
     // Nothing to do here.
   }
 
-  /**
-   *
-   */
   @Override
   public boolean process(Object o) {
     return reportPanel.showCollection((String) o);
   }
 
-  /**
-   *
-   */
-  public boolean process() {
+  private boolean process() {
     boolean err = false;
     String command = (String) cb.getSelectedItem();
 
@@ -120,9 +106,6 @@ public class ReportOpPanel extends OpPanel {
     return !err;
   }
 
-  /**
-   *
-   */
   @Override
   public void save() {
     // reportPanel.save();

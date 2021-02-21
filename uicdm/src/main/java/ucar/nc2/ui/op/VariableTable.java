@@ -47,7 +47,7 @@ public class VariableTable extends JPanel {
 
   private final FileManager fileChooser; // for exporting
 
-  private List col0;
+  private List<Object> col0;
   private Array<?>[] data;
 
   private int col0Dim = -1;
@@ -106,16 +106,14 @@ public class VariableTable extends JPanel {
       List<Dimension> vd = v.getDimensions();
       int dimNo = 0;
       for (Dimension d : vd) {
-        // System.out.println("Dimensions " + d + " " + d.getLength());
         Variable dimVar = file.findVariable(d.getShortName());
         if (dimVar != null) {
           Attribute axis = dimVar.findAttribute("axis");
           if ((axis != null) && axis.isString() && (axis.getStringValue().compareTo("T") == 0)) {
-            // System.out.println("Time AXIS");
             CoordinateAxis1DTime tm;
             try {
               tm = CoordinateAxis1DTime.factory(fds, VariableDS.fromVar(v.getParentGroup(), dimVar, true), null);
-              col0 = tm.getCalendarDates();
+              col0 = new ArrayList<>(tm.getCalendarDates());
               col0Dim = dimNo;
               col0isDate = true;
             } catch (IOException e) {
@@ -124,12 +122,11 @@ public class VariableTable extends JPanel {
           }
         }
         dimNo++;
-        // System.out.println("Dimension Variable " + dimVar);
       }
       int[] shape = v.getShape();
 
       if (col0Dim < 0) {
-        col0 = new ArrayList();
+        col0 = new ArrayList<>();
         for (int j = 0; j < shape[0]; j++) {
           col0.add(j);
         }
@@ -163,13 +160,11 @@ public class VariableTable extends JPanel {
         } else {
           data[i] = v.readArray();
           columnNames[i + 1] = v.getShortName();
-
           Attribute unit = v.findAttribute("units");
 
           if ((unit != null) && unit.isString()) {
             columnNames[i + 1] += " (" + unit.getStringValue() + ")";
           }
-
           i++;
         }
       } catch (IOException | InvalidRangeException e) {

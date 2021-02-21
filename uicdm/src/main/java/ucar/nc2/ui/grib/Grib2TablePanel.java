@@ -3,18 +3,19 @@
  * See LICENSE for license information.
  */
 
-package ucar.nc2.ui.op;
+package ucar.nc2.ui.grib;
 
 import ucar.nc2.ui.OpPanel;
+import ucar.nc2.ui.grib.Grib2TableViewer2;
 import ucar.util.prefs.PreferencesExt;
 import java.awt.BorderLayout;
 
-public class BufrCodePanel extends OpPanel {
-  private final BufrWmoCodesPanel codeTable;
+public class Grib2TablePanel extends OpPanel {
+  private final Grib2TableViewer2 codeTable;
 
-  public BufrCodePanel(PreferencesExt p) {
-    super(p, "table:", false, false, false);
-    codeTable = new BufrWmoCodesPanel(prefs, buttPanel);
+  public Grib2TablePanel(PreferencesExt p) {
+    super(p, "table:", false, false);
+    codeTable = new Grib2TableViewer2(prefs, buttPanel);
     add(codeTable, BorderLayout.CENTER);
   }
 

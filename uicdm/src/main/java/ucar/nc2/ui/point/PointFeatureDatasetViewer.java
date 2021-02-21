@@ -3,7 +3,7 @@
  * See LICENSE for license information.
  */
 
-package ucar.nc2.ui.op;
+package ucar.nc2.ui.point;
 
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
@@ -18,8 +18,6 @@ import ucar.nc2.ogc.MarshallingUtil;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.ui.dialog.NetcdfOutputChooser;
-import ucar.nc2.ui.point.PointController;
-import ucar.nc2.ui.point.StationRegionDateChooser;
 import ucar.nc2.write.Ncdump;
 import ucar.nc2.iosp.NetcdfFileFormat;
 import ucar.ui.util.Resource;
@@ -64,29 +62,33 @@ import javax.swing.JSplitPane;
  * </p>
  */
 public class PointFeatureDatasetViewer extends JPanel {
-
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  private static final int maxCount = Integer.MAX_VALUE;
 
-  private PreferencesExt prefs;
+  private final PreferencesExt prefs;
 
   private DsgFeatureCollection selectedCollection;
   private FeatureType selectedType;
 
-  private BeanTable fcTable, profileTable, stnTable, stnProfileTable;
-  private JPanel changingPane = new JPanel(new BorderLayout());
-  private StationRegionDateChooser stationMap;
-  private StructureTable obsTable;
-  private JSplitPane splitFeatures, splitMap, splitObs;
-  private IndependentDialog infoWindow;
-  private TextHistoryPane infoTA;
+  private final BeanTable<FeatureCollectionBean> fcTable;
+  private final BeanTable<ProfileFeatureBean> profileTable;
+  private final BeanTable<StationBean> stnTable;
+  private final BeanTable<StnProfileFeatureBean> stnProfileTable;
+  private final JPanel changingPane = new JPanel(new BorderLayout());
+  private final StationRegionDateChooser stationMap;
+  private final StructureTable obsTable;
+  private final JSplitPane splitFeatures;
+  private final JSplitPane splitMap;
+  private final JSplitPane splitObs;
+  private final IndependentDialog infoWindow;
+  private final TextHistoryPane infoTA;
 
-  private PointController pointController;
+  private final PointController pointController;
   private NetcdfOutputChooser outChooser;
   private FeatureDatasetPoint pfDataset;
 
   private boolean eventsOK = true;
 
-  private int maxCount = Integer.MAX_VALUE;
 
   public PointFeatureDatasetViewer(PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
@@ -101,9 +103,7 @@ public class PointFeatureDatasetViewer extends JPanel {
       public void propertyChange(PropertyChangeEvent e) {
         if (e.getPropertyName().equals("Station")) {
           StationBean selectedStation = (StationBean) e.getNewValue();
-
           log.debug("selectedStation= {}", selectedStation.getName());
-
           eventsOK = false;
           stnTable.setSelectedBean(selectedStation);
           eventsOK = true;
@@ -192,60 +192,68 @@ public class PointFeatureDatasetViewer extends JPanel {
     BAMutil.addActionToContainer(buttPanel, netcdfAction);
 
     // feature collection table
-    fcTable = new BeanTable(FeatureCollectionBean.class, (PreferencesExt) prefs.node("FeatureCollectionBean"), false);
+    fcTable = new BeanTable<>(FeatureCollectionBean.class, (PreferencesExt) prefs.node("FeatureCollectionBean"), false);
     fcTable.addListSelectionListener(e -> {
-      FeatureCollectionBean fcb = (FeatureCollectionBean) fcTable.getSelectedBean();
-      try {
-        setFeatureCollection(fcb);
-      } catch (Exception exc) {
-        StringWriter sw = new StringWriter(5000);
-        exc.printStackTrace(new PrintWriter(sw));
-        String errMsg = sw.toString();
-        JOptionPane.showMessageDialog(null, "Error reading FeatureCollection " + fcb.fc.getName() + " error=" + errMsg);
-        exc.printStackTrace();
+      FeatureCollectionBean fcb = fcTable.getSelectedBean();
+      if (fcb != null) {
+        try {
+          setFeatureCollection(fcb);
+        } catch (Exception exc) {
+          StringWriter sw = new StringWriter(5000);
+          exc.printStackTrace(new PrintWriter(sw));
+          String errMsg = sw.toString();
+          JOptionPane.showMessageDialog(null, "Error reading FeatureCollection " + fcb.fc.getName() + " error=" + errMsg);
+          exc.printStackTrace();
+        }
       }
     });
     new BeanContextMenu(fcTable);
 
     // profile table
-    profileTable = new BeanTable(ProfileFeatureBean.class, (PreferencesExt) prefs.node("ProfileFeatureBean"), false);
+    profileTable = new BeanTable<>(ProfileFeatureBean.class, (PreferencesExt) prefs.node("ProfileFeatureBean"), false);
     profileTable.addListSelectionListener(e -> {
-      ProfileFeatureBean sb = (ProfileFeatureBean) profileTable.getSelectedBean();
-      try {
-        setProfile(sb);
-        profileTable.fireBeanDataChanged(sb);
-      } catch (IOException ioe) {
-        ioe.printStackTrace();
+      ProfileFeatureBean sb = profileTable.getSelectedBean();
+      if (sb != null) {
+        try {
+          setProfile(sb);
+          profileTable.fireBeanDataChanged(sb);
+        } catch (IOException ioe) {
+          ioe.printStackTrace();
+        }
       }
     });
     new BeanContextMenu(profileTable);
 
     // station table
-    stnTable = new BeanTable(StationBean.class, (PreferencesExt) prefs.node("StationBeans"), false);
+    stnTable = new BeanTable<>(StationBean.class, (PreferencesExt) prefs.node("StationBeans"), false);
     stnTable.addListSelectionListener(e -> {
-      StationBean sb = (StationBean) stnTable.getSelectedBean();
-      try {
-        setStation(sb, null);
-        stnTable.fireBeanDataChanged(sb);
-      } catch (IOException ioe) {
-        ioe.printStackTrace();
-      }
-      if (eventsOK) {
-        stationMap.setSelectedStation(sb.getName());
+      StationBean sb = stnTable.getSelectedBean();
+      if (sb != null) {
+        try {
+          setStation(sb, null);
+          stnTable.fireBeanDataChanged(sb);
+        } catch (IOException ioe) {
+          ioe.printStackTrace();
+        }
+        if (eventsOK) {
+          stationMap.setSelectedStation(sb.getName());
+        }
       }
     });
     new BeanContextMenu(stnTable);
 
     // station profile table
     stnProfileTable =
-        new BeanTable(StnProfileFeatureBean.class, (PreferencesExt) prefs.node("StnProfileFeatureBean"), false);
+        new BeanTable<>(StnProfileFeatureBean.class, (PreferencesExt) prefs.node("StnProfileFeatureBean"), false);
     stnProfileTable.addListSelectionListener(e -> {
-      StnProfileFeatureBean sb = (StnProfileFeatureBean) stnProfileTable.getSelectedBean();
-      try {
-        setStnProfile(sb);
-        stnProfileTable.fireBeanDataChanged(sb);
-      } catch (IOException ioe) {
-        ioe.printStackTrace();
+      StnProfileFeatureBean sb = stnProfileTable.getSelectedBean();
+      if (sb != null) {
+        try {
+          setStnProfile(sb);
+          stnProfileTable.fireBeanDataChanged(sb);
+        } catch (IOException ioe) {
+          ioe.printStackTrace();
+        }
       }
     });
     new BeanContextMenu(stnProfileTable);
@@ -270,9 +278,9 @@ public class PointFeatureDatasetViewer extends JPanel {
   }
 
   private class BeanContextMenu extends PopupMenu {
-    final BeanTable beanTable2;
+    final BeanTable<?> beanTable2;
 
-    BeanContextMenu(BeanTable beanTable) {
+    BeanContextMenu(BeanTable<?> beanTable) {
       super(beanTable.getJTable(), "Options");
       this.beanTable2 = beanTable;
 
@@ -483,7 +491,7 @@ public class PointFeatureDatasetViewer extends JPanel {
   }
 
   private void setPointCollection(PointFeatureCollection pointCollection) throws IOException {
-    List<PointObsBean> pointBeans = new ArrayList<>();
+    List<StationBean> pointBeans = new ArrayList<>();
     int count = 0;
 
     try (PointFeatureIterator iter = pointCollection.getPointFeatureIterator()) {
@@ -500,7 +508,7 @@ public class PointFeatureDatasetViewer extends JPanel {
   }
 
   private void setProfileCollection(ProfileFeatureCollection profileCollection) throws IOException {
-    List<ProfileFeatureBean> beans = new ArrayList<>();
+    List<StationBean> beans = new ArrayList<>();
     for (ProfileFeature profile : profileCollection) {
       ProfileFeatureBean bean = new ProfileFeatureBean(profile);
       if (bean.pf != null) {
@@ -516,7 +524,7 @@ public class PointFeatureDatasetViewer extends JPanel {
   }
 
   private void setTrajectoryCollection(TrajectoryFeatureCollection trajCollection) throws IOException {
-    List<TrajectoryFeatureBean> beans = new ArrayList<>();
+    List<StationBean> beans = new ArrayList<>();
     for (TrajectoryFeature traj : trajCollection) {
       TrajectoryFeatureBean trajBean = new TrajectoryFeatureBean(traj);
       if (trajBean.pf != null) {
@@ -532,7 +540,7 @@ public class PointFeatureDatasetViewer extends JPanel {
   }
 
   private void setSectionCollection(TrajectoryProfileFeatureCollection sectionCollection) throws IOException {
-    List<SectionFeatureBean> beans = new ArrayList<>();
+    List<StationBean> beans = new ArrayList<>();
 
     for (TrajectoryProfileFeature sectionFeature : sectionCollection) {
       SectionFeatureBean bean = new SectionFeatureBean(sectionFeature);

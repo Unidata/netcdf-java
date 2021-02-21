@@ -3,16 +3,14 @@
  * See LICENSE for license information.
  */
 
-package ucar.nc2.ui.op;
+package ucar.nc2.ui.grib;
 
 import ucar.nc2.ui.OpPanel;
 import ucar.nc2.ui.ToolsUI;
-import ucar.nc2.ui.grib.GribFilesPanel;
+import ucar.nc2.ui.grib.Grib1DataTable;
 import ucar.ui.widget.BAMutil;
 import ucar.util.prefs.PreferencesExt;
 import java.awt.BorderLayout;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -21,41 +19,38 @@ import java.util.Formatter;
 import javax.swing.AbstractButton;
 import javax.swing.JOptionPane;
 
-/**
- *
- */
-public class GribFilesOpPanel extends OpPanel {
-  GribFilesPanel gribTable;
+public class Grib1DataOpPanel extends OpPanel {
+  private final Grib1DataTable gribTable;
 
-  /**
-   *
-   */
-  public GribFilesOpPanel(PreferencesExt p) {
+  public Grib1DataOpPanel(PreferencesExt p) {
     super(p, "collection:", true, false);
-    gribTable = new GribFilesPanel(prefs);
+    gribTable = new Grib1DataTable(prefs);
     add(gribTable, BorderLayout.CENTER);
-    gribTable.addPropertyChangeListener(new PropertyChangeListener() {
-      @Override
-      public void propertyChange(PropertyChangeEvent e) {
-        if (e.getPropertyName().equals("openGrib1Collection")) {
-          String filename = (String) e.getNewValue();
-          ToolsUI.getToolsUI().openGrib1Collection(filename);
-        }
+
+    gribTable.addPropertyChangeListener(e -> {
+      if (e.getPropertyName().equals("openGrib1Collection")) {
+        String collectionName = (String) e.getNewValue();
+        ToolsUI.getToolsUI().openGrib1Collection(collectionName);
       }
     });
 
-    AbstractButton showButt = BAMutil.makeButtcon("Information", "Show Collection", false);
-    showButt.addActionListener(e -> {
+    AbstractButton infoButton = BAMutil.makeButtcon("Information", "Check Problems", false);
+    infoButton.addActionListener(e -> {
       Formatter f = new Formatter();
-      gribTable.showCollection(f);
+      gribTable.checkProblems(f);
       detailTA.setText(f.toString());
       detailTA.gotoTop();
       detailWindow.show();
     });
-    buttPanel.add(showButt);
+    buttPanel.add(infoButton);
   }
 
-  /** */
+  public void setCollection(String collection) {
+    if (process(collection)) {
+      cb.addItem(collection);
+    }
+  }
+
   @Override
   public boolean process(Object o) {
     String command = (String) o;
@@ -78,13 +73,11 @@ public class GribFilesOpPanel extends OpPanel {
     return !err;
   }
 
-  /** */
   @Override
   public void closeOpenFiles() throws IOException {
     // Nothing to do here.
   }
 
-  /** */
   @Override
   public void save() {
     gribTable.save();

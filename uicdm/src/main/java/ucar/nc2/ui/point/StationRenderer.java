@@ -9,7 +9,6 @@ package ucar.nc2.ui.point;
  * 
  * @author caron
  */
-
 import ucar.nc2.ui.gis.SpatialGrid;
 import ucar.nc2.ui.util.Renderer;
 import ucar.ui.widget.FontUtil;
@@ -21,24 +20,21 @@ import java.util.List;
 
 class StationRenderer implements Renderer {
   private List<StationUI> stations = new ArrayList<>(); // StationUI objects
-  private HashMap<String, StationUI> stationHash = new HashMap<>();
-  private SpatialGrid stationGrid; // for "decluttering" and closest point
+  private final HashMap<String, StationUI> stationHash = new HashMap<>();
+  private final SpatialGrid stationGrid; // for "decluttering" and closest point
   private Projection project; // display projection
   private AffineTransform world2Normal;
 
   // drawing parameters
   private Color color = Color.black;
-  private int circleRadius = 5;
-  private Rectangle2D circleBB =
+  private final int circleRadius = 5;
+  private final Rectangle2D circleBB =
       new Rectangle2D.Double(-circleRadius, -circleRadius, 2 * circleRadius, 2 * circleRadius);
   private Rectangle2D typicalBB = circleBB;
-  private FontUtil.StandardFont textFont;
+  private final FontUtil.StandardFont textFont;
 
   // pick stuff
   private StationUI selected;
-
-  // working objects to minimize excessive gc
-  private Point2D.Double ptN = new Point2D.Double();
 
   // misc state
   private boolean declutter = true;
@@ -146,6 +142,7 @@ class StationRenderer implements Renderer {
     if (world2Normal == null || pickPt == null || stations.isEmpty())
       return null;
 
+    Point2D.Double ptN = new Point2D.Double();
     world2Normal.transform(pickPt, ptN); // work in normalized coordinate space
     StationUI closest = (StationUI) stationGrid.findIntersection(ptN);
     setSelectedStation(closest);
@@ -163,6 +160,7 @@ class StationRenderer implements Renderer {
     if (world2Normal == null || pickPt == null || stations.isEmpty())
       return null;
 
+    Point2D.Double ptN = new Point2D.Double();
     world2Normal.transform(pickPt, ptN); // work in normalized coordinate space
     StationUI closest = (StationUI) stationGrid.findClosest(ptN);
 
@@ -235,10 +233,9 @@ class StationRenderer implements Renderer {
     }
 
     for (StationUI station : stations) {
-      StationUI s = station;
-      s.calcPos(world2Normal);
-      if (stationGrid.markIfClear(s.getBB(), s) || !declutter) {
-        s.draw(g);
+      station.calcPos(world2Normal);
+      if (stationGrid.markIfClear(station.getBB(), station) || !declutter) {
+        station.draw(g);
       }
     }
 
@@ -248,15 +245,15 @@ class StationRenderer implements Renderer {
   }
 
   public class StationUI {
-    private ucar.unidata.geoloc.Station ddStation;
-    private String id;
+    private final ucar.unidata.geoloc.Station ddStation;
+    private final String id;
 
-    private LatLonPoint latlonPos; // latlon pos
+    private final LatLonPoint latlonPos; // latlon pos
     private ProjectionPoint worldPos = ProjectionPoint.create(0, 0);// world pos
-    private Point2D.Double screenPos = new Point2D.Double(); // normalized screen pos
+    private final Point2D.Double screenPos = new Point2D.Double(); // normalized screen pos
 
-    private Rectangle2D bb; // bounding box, in normalized screen coords, loc = 0, 0
-    private Rectangle2D bbPos = new Rectangle2D.Double(); // bounding box, translated to current drawing pos
+    private final Rectangle2D bb; // bounding box, in normalized screen coords, loc = 0, 0
+    private final Rectangle2D bbPos = new Rectangle2D.Double(); // bounding box, translated to current drawing pos
     private boolean selected;
 
     StationUI(ucar.unidata.geoloc.Station stn) {

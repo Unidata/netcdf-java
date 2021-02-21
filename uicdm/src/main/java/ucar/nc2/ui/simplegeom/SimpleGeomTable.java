@@ -6,13 +6,13 @@
 package ucar.nc2.ui.simplegeom;
 
 import ucar.nc2.*;
+import ucar.nc2.Dimension;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.grid.GridCoordSys;
 import ucar.nc2.dataset.*;
-// import ucar.nc2.ft.fmrc.GridDatasetInv;
 import ucar.nc2.ui.dialog.NetcdfOutputChooser;
 import ucar.ui.widget.*;
 import ucar.ui.widget.PopupMenu;
@@ -21,8 +21,6 @@ import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeEvent;
 import java.util.*;
 import java.util.List;
 import java.io.IOException;
@@ -33,49 +31,56 @@ import javax.swing.*;
  *
  * @author skaymen
  */
-
 public class SimpleGeomTable extends JPanel {
-  private PreferencesExt prefs;
+  private final PreferencesExt prefs;
   private GridDataset gridDataset;
 
-  private BeanTable varTable, csTable, axisTable, simpleGeomTable;
-  private JSplitPane split, split2, split3;
-  private TextHistoryPane infoTA;
-  private IndependentWindow infoWindow;
+  private final BeanTable<GeoGridBean> varTable;
+  private BeanTable<GeoCoordinateSystemBean> csTable;
+  private BeanTable<GeoAxisBean> axisTable;
+  private BeanTable<SimpleGeomBean> simpleGeomTable;
+  private JSplitPane split;
+  private JSplitPane split2;
+  private final TextHistoryPane infoTA;
+  private final IndependentWindow infoWindow;
   private NetcdfOutputChooser outChooser;
 
   public SimpleGeomTable(PreferencesExt prefs, boolean showCS) {
     this.prefs = prefs;
 
-    varTable = new BeanTable(GeoGridBean.class, (PreferencesExt) prefs.node("GeogridBeans"), false);
+    varTable = new BeanTable<>(GeoGridBean.class, (PreferencesExt) prefs.node("GeogridBeans"), false);
     JTable jtable = varTable.getJTable();
 
     PopupMenu csPopup = new ucar.ui.widget.PopupMenu(jtable, "Options");
     csPopup.addAction("Show Declaration", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        GeoGridBean vb = (GeoGridBean) varTable.getSelectedBean();
-        Variable v = vb.geogrid.getVariable();
-        infoTA.clear();
-        if (v == null)
-          infoTA.appendLine(
-              "Cant find variable " + vb.getName() + " escaped= (" + NetcdfFiles.makeValidPathName(vb.getName()) + ")");
-        else {
-          infoTA.appendLine("Variable " + v.getFullName() + " :");
-          infoTA.appendLine(v.toString());
+        GeoGridBean vb = varTable.getSelectedBean();
+        if (vb != null) {
+          Variable v = vb.geogrid.getVariable();
+          infoTA.clear();
+          if (v == null)
+            infoTA.appendLine(
+                    "Cant find variable " + vb.getName() + " escaped= (" + NetcdfFiles.makeValidPathName(vb.getName()) + ")");
+          else {
+            infoTA.appendLine("Variable " + v.getFullName() + " :");
+            infoTA.appendLine(v.toString());
+          }
+          infoTA.gotoTop();
+          infoWindow.show();
         }
-        infoTA.gotoTop();
-        infoWindow.show();
       }
     });
 
     csPopup.addAction("Show Coordinates", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        GeoGridBean vb = (GeoGridBean) varTable.getSelectedBean();
-        Formatter f = new Formatter();
-        showCoordinates(vb, f);
-        infoTA.setText(f.toString());
-        infoTA.gotoTop();
-        infoWindow.show();
+        GeoGridBean vb = varTable.getSelectedBean();
+        if (vb != null) {
+          Formatter f = new Formatter();
+          showCoordinates(vb, f);
+          infoTA.setText(f.toString());
+          infoTA.gotoTop();
+          infoWindow.show();
+        }
       }
     });
 
@@ -88,9 +93,9 @@ public class SimpleGeomTable extends JPanel {
     Component comp = varTable;
     if (showCS) {
       csTable =
-          new BeanTable(GeoCoordinateSystemBean.class, (PreferencesExt) prefs.node("GeoCoordinateSystemBean"), false);
-      axisTable = new BeanTable(GeoAxisBean.class, (PreferencesExt) prefs.node("GeoCoordinateAxisBean"), false);
-      simpleGeomTable = new BeanTable(SimpleGeomBean.class, (PreferencesExt) prefs.node("SimpleGeomBean"), false);
+          new BeanTable<>(GeoCoordinateSystemBean.class, (PreferencesExt) prefs.node("GeoCoordinateSystemBean"), false);
+      axisTable = new BeanTable<>(GeoAxisBean.class, (PreferencesExt) prefs.node("GeoCoordinateAxisBean"), false);
+      simpleGeomTable = new BeanTable<>(SimpleGeomBean.class, (PreferencesExt) prefs.node("SimpleGeomBean"), false);
 
       split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, varTable, csTable);
       split.setDividerLocation(prefs.getInt("splitPos", 500));
@@ -98,7 +103,7 @@ public class SimpleGeomTable extends JPanel {
       split2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, split, axisTable);
       split2.setDividerLocation(prefs.getInt("splitPos2", 500));
 
-      split3 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, split2, simpleGeomTable);
+      JSplitPane split3 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, split2, simpleGeomTable);
       split3.setDividerLocation(prefs.getInt("splitPos3", 500));
 
       comp = split3;
@@ -122,23 +127,6 @@ public class SimpleGeomTable extends JPanel {
     });
     buttPanel.add(infoButton);
 
-    /*
-     * JButton invButton = new JButton("GridInv");
-     * invButton.addActionListener(e -> {
-     * if (gridDataset == null)
-     * return;
-     * GridDatasetInv inv = new GridDatasetInv((ucar.nc2.dt.grid.GridDataset) gridDataset, null);
-     * try {
-     * infoTA.setText(inv.writeXML(new Date()));
-     * infoTA.gotoTop();
-     * infoWindow.show();
-     * } catch (Exception e1) {
-     * e1.printStackTrace();
-     * }
-     * });
-     * buttPanel.add(invButton);
-     */
-
     AbstractAction netcdfAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         if (gridDataset == null)
@@ -151,10 +139,8 @@ public class SimpleGeomTable extends JPanel {
 
         if (outChooser == null) {
           outChooser = new NetcdfOutputChooser((Frame) null);
-          outChooser.addPropertyChangeListener("OK", new PropertyChangeListener() {
-            public void propertyChange(PropertyChangeEvent evt) {
-              // writeNetcdf((NetcdfOutputChooser.Data) evt.getNewValue());
-            }
+          outChooser.addPropertyChangeListener("OK", evt -> {
+            // writeNetcdf((NetcdfOutputChooser.Data) evt.getNewValue());
           });
         }
         outChooser.setOutputFilename(gridDataset.getLocation());
@@ -163,38 +149,6 @@ public class SimpleGeomTable extends JPanel {
     };
     BAMutil.setActionProperties(netcdfAction, "nj22/Netcdf", "Write netCDF-CF file", false, 'S', -1);
     BAMutil.addActionToContainer(buttPanel, netcdfAction);
-
-    /*
-     * AbstractAction writeAction = new AbstractAction() {
-     * public void actionPerformed(ActionEvent e) {
-     * if (gridDataset == null) return;
-     * List<String> gridList = getSelectedGrids();
-     * if (gridList.size() == 0) {
-     * JOptionPane.showMessageDialog(GeoGridTable.this, "No Grids are selected");
-     * return;
-     * }
-     * String location = gridDataset.getLocationURI();
-     * if (location == null) location = "test";
-     * String suffix = (location.endsWith(".nc") ? ".sub.nc" : ".nc");
-     * int pos = location.lastIndexOf(".");
-     * if (pos > 0)
-     * location = location.substring(0, pos);
-     * 
-     * String filename = fileChooser.chooseFilenameToSave(location + suffix);
-     * if (filename == null) return;
-     * 
-     * try {
-     * NetcdfCFWriter.makeFileVersioned(filename, gridDataset, gridList, null, null);
-     * JOptionPane.showMessageDialog(GeoGridTable.this, "File successfully written");
-     * } catch (Exception ioe) {
-     * JOptionPane.showMessageDialog(GeoGridTable.this, "ERROR: " + ioe.getMessage());
-     * ioe.printStackTrace();
-     * }
-     * }
-     * };
-     * BAMutil.setActionProperties(writeAction, "netcdf", "Write netCDF-CF file", false, 'W', -1);
-     * BAMutil.addActionToContainer(buttPanel, writeAction);
-     */
   }
 
   private void showCoordinates(GeoGridBean vb, Formatter f) {
@@ -208,6 +162,9 @@ public class SimpleGeomTable extends JPanel {
 
   public void save() {
     varTable.saveState(false);
+    csTable.saveState(false);
+    axisTable.saveState(false);
+    simpleGeomTable.saveState(false);
     prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
     if (split != null)
       prefs.putInt("splitPos", split.getDividerLocation());
@@ -239,8 +196,7 @@ public class SimpleGeomTable extends JPanel {
     java.util.List<GridDatatype> list2 = gridDataset.getGrids();
     for (GridDatatype g : list2)
       sgList.add(new SimpleGeomBean(g));
-    varTable.setBeans(sgList);
-
+    simpleGeomTable.setBeans(sgList);
 
     if (csTable != null) {
       List<GeoCoordinateSystemBean> csList = new ArrayList<>();
@@ -262,7 +218,7 @@ public class SimpleGeomTable extends JPanel {
     }
   }
 
-  public void setDataset(GridDataset gds) throws IOException {
+  public void setDataset(GridDataset gds) {
     this.gridDataset = gds;
 
     List<GeoGridBean> beanList = new ArrayList<>();
@@ -303,7 +259,7 @@ public class SimpleGeomTable extends JPanel {
   }
 
   public List<String> getSelectedGrids() {
-    List grids = varTable.getSelectedBeans();
+    List<GeoGridBean> grids = varTable.getSelectedBeans();
     List<String> result = new ArrayList<>();
     for (Object bean : grids) {
       GeoGridBean gbean = (GeoGridBean) bean;
@@ -314,11 +270,11 @@ public class SimpleGeomTable extends JPanel {
 
 
   public GridDatatype getGrid() {
-    GeoGridBean vb = (GeoGridBean) varTable.getSelectedBean();
+    GeoGridBean vb = varTable.getSelectedBean();
     if (vb == null) {
-      List grids = gridDataset.getGrids();
+      List<GridDatatype> grids = gridDataset.getGrids();
       if (!grids.isEmpty())
-        return (GridDatatype) grids.get(0);
+        return grids.get(0);
       else
         return null;
     }
@@ -326,8 +282,6 @@ public class SimpleGeomTable extends JPanel {
   }
 
   public static class GeoGridBean {
-    // static public String editableProperties() { return "title include logging freq"; }
-
     GridDatatype geogrid;
     String name, desc, units, csys;
     String dims, x, y, z, t, ens, rt;
@@ -347,9 +301,9 @@ public class SimpleGeomTable extends JPanel {
 
       // collect dimensions
       StringBuilder buff = new StringBuilder();
-      java.util.List dims = geogrid.getDimensions();
+      java.util.List<Dimension> dims = geogrid.getDimensions();
       for (int j = 0; j < dims.size(); j++) {
-        ucar.nc2.Dimension dim = (ucar.nc2.Dimension) dims.get(j);
+        ucar.nc2.Dimension dim = dims.get(j);
         if (j > 0)
           buff.append(",");
         buff.append(dim.getLength());
@@ -362,33 +316,6 @@ public class SimpleGeomTable extends JPanel {
       t = getAxisName(gcs.getTimeAxis());
       rt = getAxisName(gcs.getRunTimeAxis());
       ens = getAxisName(gcs.getEnsembleAxis());
-
-      /*
-       * Dimension d= geogrid.getXDimension();
-       * if (d != null) setX( d.getName());
-       * d= geogrid.getYDimension();
-       * if (d != null) setY( d.getName());
-       * d= geogrid.getZDimension();
-       * if (d != null) setZ( d.getName());
-       * 
-       * GridCoordSystem gcs = geogrid.getCoordinateSystem();
-       * 
-       * d= geogrid.getTimeDimension();
-       * if (d != null)
-       * setT( d.getName());
-       * else {
-       * CoordinateAxis taxis = gcs.getTimeAxis();
-       * if (taxis != null) setT( taxis.getName());
-       * }
-       * 
-       * CoordinateAxis1D axis = gcs.getEnsembleAxis();
-       * if (axis != null)
-       * setEns( axis.getDimension(0).getName());
-       * 
-       * axis = gcs.getRunTimeAxis();
-       * if (axis != null)
-       * setRt( axis.getDimension(0).getName());
-       */
     }
 
     public String getName() {
@@ -481,13 +408,10 @@ public class SimpleGeomTable extends JPanel {
 
       int count = 0;
       StringBuilder buff = new StringBuilder();
-      List ctList = gcs.getCoordinateTransforms();
-      for (Object o : ctList) {
-        CoordinateTransform ct = (CoordinateTransform) o;
+      for (CoordinateTransform ct : gcs.getCoordinateTransforms()) {
         if (count > 0) {
           buff.append("; ");
         }
-        // buff.append( ct.getTransformType());
         if (ct instanceof VerticalCT) {
           buff.append(((VerticalCT) ct).getVerticalTransformType());
           count++;
@@ -518,11 +442,6 @@ public class SimpleGeomTable extends JPanel {
     public boolean isGeoXY() {
       return ((GridCoordSys) gcs).isGeoXY();
     }
-
-    /*
-     * public boolean isProductSet() { return isProductSet; }
-     * public void setProductSet(boolean isProductSet) { this.isProductSet = isProductSet; }
-     */
 
     public int getDomainRank() {
       return gcs.getDomain().size();
@@ -581,9 +500,9 @@ public class SimpleGeomTable extends JPanel {
       // collect dimensions
       StringBuilder lens = new StringBuilder();
       StringBuilder names = new StringBuilder();
-      java.util.List dims = v.getDimensions();
+      java.util.List<Dimension> dims = v.getDimensions();
       for (int j = 0; j < dims.size(); j++) {
-        ucar.nc2.Dimension dim = (ucar.nc2.Dimension) dims.get(j);
+        ucar.nc2.Dimension dim = dims.get(j);
         if (j > 0) {
           lens.append(",");
           names.append(",");
@@ -761,22 +680,10 @@ public class SimpleGeomTable extends JPanel {
       super(parent instanceof Frame ? (Frame) parent : null, title, modal);
 
       // L&F may change
-      UIManager.addPropertyChangeListener(new PropertyChangeListener() {
-        public void propertyChange(PropertyChangeEvent e) {
-          if (e.getPropertyName().equals("lookAndFeel"))
-            SwingUtilities.updateComponentTreeUI(SimpleGeomTable.Dialog.this);
-        }
+      UIManager.addPropertyChangeListener(e -> {
+        if (e.getPropertyName().equals("lookAndFeel"))
+          SwingUtilities.updateComponentTreeUI(Dialog.this);
       });
-
-      /*
-       * add a dismiss button
-       * JButton dismissButton = new JButton("Dismiss");
-       * buttPanel.add(dismissButton, null);
-       * 
-       * dismissButton.addActionListener(e -> {
-       * setVisible(false);
-       * });
-       */
 
       // add it to contentPane
       Container cp = getContentPane();

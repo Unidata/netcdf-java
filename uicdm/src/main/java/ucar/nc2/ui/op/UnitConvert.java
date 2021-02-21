@@ -6,10 +6,10 @@
 package ucar.nc2.ui.op;
 
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.ui.OpPanel;
 import ucar.ui.widget.TextHistoryPane;
-import ucar.nc2.units.DateFormatter;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.units.TimeUnit;
@@ -24,17 +24,9 @@ import java.util.List;
 import java.util.StringTokenizer;
 import javax.swing.JButton;
 
-/**
- *
- */
 public class UnitConvert extends OpPanel {
-  private TextHistoryPane ta;
+  private final TextHistoryPane ta;
 
-  private DateFormatter formatter = new DateFormatter();
-
-  /**
-   *
-   */
   public UnitConvert(PreferencesExt prefs) {
     super(prefs, "unit:", false, false);
 
@@ -54,7 +46,6 @@ public class UnitConvert extends OpPanel {
     buttPanel.add(cdateButton);
   }
 
-  /** */
   @Override
   public boolean process(Object o) {
     String command = (String) o;
@@ -79,15 +70,11 @@ public class UnitConvert extends OpPanel {
     }
   }
 
-  /** */
   @Override
   public void closeOpenFiles() {
     // Nothing to do here.
   }
 
-  /**
-   *
-   */
   public void compare(Object o) {
     String command = (String) o;
     StringTokenizer stoke = new StringTokenizer(command);
@@ -116,9 +103,6 @@ public class UnitConvert extends OpPanel {
     }
   }
 
-  /**
-   *
-   */
   private void checkUdunits(Object o) {
     String command = (String) o;
 
@@ -127,15 +111,15 @@ public class UnitConvert extends OpPanel {
       DateUnit du = new DateUnit(command);
       ta.appendLine("\nFrom udunits:\n <" + command + "> isDateUnit = " + du);
       Date d = du.getDate();
-      ta.appendLine("getStandardDateString = " + formatter.toDateTimeString(d));
-      ta.appendLine("getDateOrigin = " + formatter.toDateTimeString(du.getDateOrigin()));
+      ta.appendLine("getStandardDateString = " + CalendarDateFormatter.toDateTimeString(d));
+      ta.appendLine("getDateOrigin = " + CalendarDateFormatter.toDateTimeString(du.getDateOrigin()));
       isDate = true;
 
       Date d2 = DateUnit.getStandardOrISO(command);
       if (d2 == null) {
         ta.appendLine("\nDateUnit.getStandardOrISO = false");
       } else {
-        ta.appendLine("\nDateUnit.getStandardOrISO = " + formatter.toDateTimeString(d2));
+        ta.appendLine("\nDateUnit.getStandardOrISO = " + CalendarDateFormatter.toDateTimeString(d2));
       }
     } catch (Exception e) {
       // ok to fall through
@@ -163,9 +147,6 @@ public class UnitConvert extends OpPanel {
     }
   }
 
-  /**
-   *
-   */
   private void checkCalendarDate(Object o) {
     String command = (String) o;
 
@@ -178,13 +159,6 @@ public class UnitConvert extends OpPanel {
     }
 
     try {
-      /*
-       * int pos = command.indexOf(' ');
-       * if (pos < 0) return;
-       * String valString = command.substring(0, pos).trim();
-       * String unitString = command.substring(pos+1).trim();
-       */
-
       ta.appendLine("\nParse CalendarDateUnit: <" + command + ">\n");
 
       CalendarDateUnit cdu = CalendarDateUnit.of(null, command);
@@ -208,8 +182,7 @@ public class UnitConvert extends OpPanel {
           ta.appendLine(" CalendarDate = " + cd);
           Date d = cd.toDate();
           ta.appendLine(" Date.toString() = " + d);
-          DateFormatter format = new DateFormatter();
-          ta.appendLine(" DateFormatter= " + format.toDateTimeString(cd.toDate()));
+          ta.appendLine(" DateFormatter= " + CalendarDateFormatter.toDateTimeString(cd.toDate()));
         }
       } catch (Exception ee) {
         ta.appendLine("Failed on CalendarDateUnit " + ee.getMessage());

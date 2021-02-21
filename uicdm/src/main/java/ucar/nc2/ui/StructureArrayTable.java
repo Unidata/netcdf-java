@@ -61,6 +61,9 @@ import ucar.util.prefs.PreferencesExt;
 
 /** Component "Data Table" in DatasetViewer when you have a Structure selected. */
 public class StructureArrayTable extends JPanel {
+  // TODO why is this static?
+  private static final HashMap<String, IndependentWindow> windows = new HashMap<>(); // display subtables
+
   private final PreferencesExt prefs;
   private AbstractSATableModel dataModel;
 
@@ -70,8 +73,6 @@ public class StructureArrayTable extends JPanel {
   private final TextHistoryPane dumpTA;
   private final IndependentWindow dumpWindow;
   private final EventListenerList listeners = new EventListenerList();
-  // TODO why is this static?
-  private static final HashMap<String, IndependentWindow> windows = new HashMap<>(); // display subtables
 
   public StructureArrayTable(PreferencesExt prefs) {
     this.prefs = prefs;
@@ -81,9 +82,6 @@ public class StructureArrayTable extends JPanel {
     jtable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
     ToolTipManager.sharedInstance().registerComponent(jtable);
-
-    // JScrollPane sp = new JScrollPane(jtable, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-    // JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
     add(new JScrollPane(jtable), BorderLayout.CENTER);
 
     // other widgets

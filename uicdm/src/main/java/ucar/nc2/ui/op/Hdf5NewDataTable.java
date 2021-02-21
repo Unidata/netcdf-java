@@ -38,10 +38,10 @@ import javax.swing.JSplitPane;
  * @since 6/26/12
  */
 public class Hdf5NewDataTable extends Hdf5DataTable {
-  private BeanTable<VarBean> objectTable;
-  private JSplitPane splitH;
+  private final BeanTable<VarBean> objectTable;
+  private final JSplitPane splitH;
 
-  private TextHistoryPane infoTA;
+  private final TextHistoryPane infoTA;
 
   private NetcdfFile ncfile;
   private H5iosp iosp;
@@ -51,12 +51,14 @@ public class Hdf5NewDataTable extends Hdf5DataTable {
     super(prefs, null);
     PopupMenu varPopup;
 
-    objectTable = new BeanTable(VarBean.class, (PreferencesExt) prefs.node("Hdf5Object"), false,
+    objectTable = new BeanTable<>(VarBean.class, (PreferencesExt) prefs.node("Hdf5Object"), false,
         "H5headerNew.DataObject", "Level 2A data object header", null);
     objectTable.addListSelectionListener(e -> {
       VarBean vb = objectTable.getSelectedBean();
-      vb.count(true);
-      vb.show();
+      if (vb != null) {
+        vb.count(true);
+        vb.show();
+      }
     });
 
     AbstractAction calcAction = new AbstractAction() {
@@ -70,7 +72,7 @@ public class Hdf5NewDataTable extends Hdf5DataTable {
     varPopup = new PopupMenu(objectTable.getJTable(), "Options");
     varPopup.addAction("deflate", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        VarBean mb = (VarBean) objectTable.getSelectedBean();
+        VarBean mb = objectTable.getSelectedBean();
         if (mb == null) {
           return;
         }
@@ -85,7 +87,7 @@ public class Hdf5NewDataTable extends Hdf5DataTable {
 
     varPopup.addAction("show storage", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        VarBean mb = (VarBean) objectTable.getSelectedBean();
+        VarBean mb = objectTable.getSelectedBean();
         if (mb == null) {
           return;
         }
@@ -100,7 +102,7 @@ public class Hdf5NewDataTable extends Hdf5DataTable {
 
     varPopup.addAction("show vlen", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        VarBean mb = (VarBean) objectTable.getSelectedBean();
+        VarBean mb = objectTable.getSelectedBean();
         if (mb == null) {
           return;
         }

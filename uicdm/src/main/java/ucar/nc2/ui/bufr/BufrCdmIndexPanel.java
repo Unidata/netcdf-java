@@ -3,7 +3,7 @@
  * See LICENSE for license information.
  */
 
-package ucar.nc2.ui.op;
+package ucar.nc2.ui.bufr;
 
 import javax.annotation.Nullable;
 import ucar.nc2.ft.point.bufr.BufrCdmIndex;

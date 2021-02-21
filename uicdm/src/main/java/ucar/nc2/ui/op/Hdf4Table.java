@@ -25,27 +25,27 @@ import javax.swing.JSplitPane;
 
 /** ToolsUI/Iosp/Hdf4 */
 public class Hdf4Table extends JPanel {
-  protected PreferencesExt prefs;
+  protected final PreferencesExt prefs;
 
-  private BeanTable<TagBean> tagTable;
-  private JSplitPane split;
+  private final BeanTable<TagBean> tagTable;
+  private final JSplitPane split;
 
   private TextHistoryPane dumpTA;
-
   private H4iosp iosp;
   private H4header header;
-  private String location;
 
   Hdf4Table(PreferencesExt prefs) {
     this.prefs = prefs;
 
-    tagTable = new BeanTable(TagBean.class, (PreferencesExt) prefs.node("Hdf4Object"), false);
+    tagTable = new BeanTable<>(TagBean.class, (PreferencesExt) prefs.node("Hdf4Object"), false);
     tagTable.addListSelectionListener(e -> {
       TagBean bean = tagTable.getSelectedBean();
-      dumpTA.setText("Tag=\n ");
-      dumpTA.appendLine(bean.tag.detail());
-      dumpTA.appendLine("\nVinfo=");
-      dumpTA.appendLine(bean.tag.getVinfo());
+      if (bean != null) {
+        dumpTA.setText("Tag=\n ");
+        dumpTA.appendLine(bean.tag.detail());
+        dumpTA.appendLine("\nVinfo=");
+        dumpTA.appendLine(bean.tag.getVinfo());
+      }
     });
 
     // the info window
@@ -73,9 +73,7 @@ public class Hdf4Table extends JPanel {
   void setHdf4File(RandomAccessFile raf) throws IOException {
     closeOpenFiles();
 
-    this.location = raf.getLocation();
     List<TagBean> beanList = new ArrayList<>();
-
     iosp = new H4iosp();
     NetcdfFile ncfile = NetcdfFiles.build(iosp, raf, raf.getLocation(), null);
 
@@ -88,8 +86,10 @@ public class Hdf4Table extends JPanel {
     }
 
     header = (H4header) iosp.sendIospMessage("header");
-    for (H4header.Tag tag : header.getTags()) {
-      beanList.add(new TagBean(tag));
+    if (header != null) {
+      for (H4header.Tag tag : header.getTags()) {
+        beanList.add(new TagBean(tag));
+      }
     }
 
     tagTable.setBeans(beanList);

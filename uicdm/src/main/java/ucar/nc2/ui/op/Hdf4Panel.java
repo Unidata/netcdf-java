@@ -19,8 +19,8 @@ import javax.swing.AbstractButton;
 import javax.swing.JOptionPane;
 
 public class Hdf4Panel extends OpPanel {
+  private final Hdf4Table hdf4Table;
   private RandomAccessFile raf;
-  private Hdf4Table hdf4Table;
 
   public Hdf4Panel(PreferencesExt p, boolean useBuilders) {
     super(p, "file:", true, false);

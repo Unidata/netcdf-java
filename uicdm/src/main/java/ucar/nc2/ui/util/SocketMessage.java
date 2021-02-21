@@ -151,7 +151,7 @@ public final class SocketMessage {
   } // ListenThread
 
   public class Event extends java.util.EventObject {
-    private String message;
+    private final String message;
 
     Event(String message) {
       super(SocketMessage.this);

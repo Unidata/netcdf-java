@@ -27,26 +27,17 @@ import javax.swing.JPanel;
 
 /** Dump data using NetcdfFile.readSection() */
 public class NCdumpPane extends TextHistoryPane {
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  private static final org.slf4j.Logger logger =
-      org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
-  private static final String ImageViewer_WindowSize = "ImageViewer_WindowSize";
-
-  private PreferencesExt prefs;
-  private ComboBox<String> cb;
+  private final ComboBox<String> cb;
   private CommonTask task;
-  private StopButton stopButton;
-  private FileManager fileChooser;
+  private final StopButton stopButton;
+  private final FileManager fileChooser;
 
   private NetcdfFile ds;
 
-  private IndependentWindow imageWindow;
-  // private ImageViewPanel imageView;
-
   public NCdumpPane(PreferencesExt prefs) {
     super(true);
-    this.prefs = prefs;
     fileChooser = new FileManager(null, null, null, (PreferencesExt) prefs.node("FileManager"));
 
     cb = new ComboBox<>(prefs);
@@ -59,20 +50,8 @@ public class NCdumpPane extends TextHistoryPane {
     imageButton.setToolTipText("view selected data as Image");
     imageButton.addActionListener(e -> showImage((String) cb.getSelectedItem()));
 
-    /*
-     * JButton binButton = new JButton("Write");
-     * binButton.setToolTipText("write binary data to file");
-     * binButton.addActionListener(e -> {
-     * String binaryFilePath = fileChooser.chooseFilenameToSave("data.bin");
-     * if (binaryFilePath != null) {
-     * writeBinaryData((String) cb.getSelectedItem(), new File(binaryFilePath));
-     * }
-     * });
-     */
-
     stopButton = new StopButton("stop NCdump");
     stopButton.addActionListener(e -> {
-      // logger.debug(" ncdump event={}", e.getActionCommand());
       ta.setText(task.v.toString());
       ta.append("\n data:\n");
       ta.append(task.contents);
@@ -85,7 +64,6 @@ public class NCdumpPane extends TextHistoryPane {
     JPanel buttPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
     buttPanel.add(getButton);
     buttPanel.add(imageButton);
-    // buttPanel.add(binButton);
     buttPanel.add(stopButton);
 
     JPanel topPanel = new JPanel(new BorderLayout());
@@ -93,9 +71,7 @@ public class NCdumpPane extends TextHistoryPane {
     topPanel.add(cb, BorderLayout.CENTER);
     topPanel.add(buttPanel, BorderLayout.EAST);
 
-    // setLayout( new BorderLayout());
     add(topPanel, BorderLayout.NORTH);
-    // add( new JScrollPane(ta), BorderLayout.CENTER);
   }
 
   public void setContext(NetcdfFile ds, String command) {
@@ -125,63 +101,15 @@ public class NCdumpPane extends TextHistoryPane {
       return;
     }
 
-    if (imageWindow == null) {
-      // makeImageViewer();
-    }
-
     task = new GetContentsTask(command);
     if (task.v != null) {
       stopButton.startProgressMonitorTask(task);
     }
   }
 
-  /*
-   * private void writeBinaryData(String variableSection, File name) {
-   * ParsedSectionSpec cer;
-   * try {
-   * cer = ParsedSectionSpec.parseVariableSection(ds, variableSection);
-   * if (cer.child != null) {
-   * return;
-   * }
-   * } catch (InvalidRangeException e) {
-   * e.printStackTrace();
-   * return;
-   * }
-   * 
-   * if (name == null) {
-   * return;
-   * }
-   * 
-   * try (FileOutputStream stream = new FileOutputStream(name)) {
-   * WritableByteChannel channel = stream.getChannel();
-   * cer.v.readToByteChannel(cer.section, channel);
-   * System.out.printf("Write ok to %s%n", name);
-   * } catch (InvalidRangeException | IOException e) {
-   * e.printStackTrace();
-   * }
-   * }
-   */
-
-  /*
-   * private void makeImageViewer() {
-   * imageWindow = new IndependentWindow("Image Viewer", BAMutil.getImage("nj22/ImageData"));
-   * imageView = new ImageViewPanel(null);
-   * imageWindow.setComponent(new JScrollPane(imageView));
-   * // imageWindow.setComponent( imageView);
-   * Rectangle b = (Rectangle) prefs.getBean(ImageViewer_WindowSize, new Rectangle(99, 33, 700, 900));
-   * // logger.debu("bounds in = {}", b);
-   * imageWindow.setBounds(b);
-   * }
-   */
-
   public void save() {
     cb.save();
     fileChooser.save();
-
-    if (imageWindow != null) {
-      prefs.putBeanObject(ImageViewer_WindowSize, imageWindow.getBounds());
-      // logger.debug("bounds out = {}", imageWindow.getBounds());
-    }
   }
 
   public void clear() {
@@ -234,11 +162,6 @@ public class NCdumpPane extends TextHistoryPane {
       PrintWriter ps = new PrintWriter(sw);
       try {
         data = ds.readSection(command);
-
-        if (data != null) {
-          // imageView.setImage(ImageArrayAdapter.makeGrayscaleImage(task.data, eval));
-          imageWindow.show();
-        }
       } catch (Exception e) {
         e.printStackTrace();
         e.printStackTrace(new PrintWriter(sw));

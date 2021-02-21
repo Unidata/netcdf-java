@@ -76,20 +76,22 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 
 public class UrlAuthenticatorDialog extends Authenticator implements HTTPCredentialsProvider {
+  private static final boolean debug = false;
 
   private IndependentDialog dialog;
   private UsernamePasswordCredentials pwa = null;
-  private Field.Text serverF, realmF, userF;
-  private Field.Password passwF;
-  private boolean debug;
+  private final Field.Text serverF;
+  private final Field.Text realmF;
+  private final Field.Text userF;
+  private final Field.Password passwF;
 
   public HTTPSession session = null;
 
   // Track credentials stored via setCredentials
-  private Map<AuthScope, Credentials> setcache = new ConcurrentHashMap<>();
+  private final Map<AuthScope, Credentials> setcache = new ConcurrentHashMap<>();
 
   // Track credentials stored via dialog
-  private Map<AuthScope, Credentials> dialogcache = new ConcurrentHashMap<>();
+  private final Map<AuthScope, Credentials> dialogcache = new ConcurrentHashMap<>();
 
   /**
    * constructor
@@ -115,11 +117,9 @@ public class UrlAuthenticatorDialog extends Authenticator implements HTTPCredent
     // button to dismiss
     JButton cancel = new JButton("Cancel");
     pp.addButton(cancel);
-    cancel.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent evt) {
-        pwa = null;
-        dialog.setVisible(false);
-      }
+    cancel.addActionListener(evt -> {
+      pwa = null;
+      dialog.setVisible(false);
     });
     pp.finish();
 
@@ -177,8 +177,7 @@ public class UrlAuthenticatorDialog extends Authenticator implements HTTPCredent
   public Credentials getCredentials(AuthScope scope) {
     // Search dialogcache first
     Credentials creds = null;
-    AuthScope bestMatch = null;
-    bestMatch = HTTPAuthUtil.bestmatch(scope, dialogcache.keySet());
+    AuthScope bestMatch = HTTPAuthUtil.bestmatch(scope, dialogcache.keySet());
     if (bestMatch != null) {
       creds = dialogcache.get(bestMatch);
     }

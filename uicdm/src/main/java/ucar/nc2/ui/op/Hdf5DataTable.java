@@ -37,9 +37,9 @@ import javax.swing.JSplitPane;
  * @since 6/26/12
  */
 public class Hdf5DataTable extends JPanel {
-  protected PreferencesExt prefs;
+  protected final PreferencesExt prefs;
 
-  private BeanTable objectTable;
+  private BeanTable<VarBean> objectTable;
   private JSplitPane splitH;
 
   private TextHistoryPane infoTA;
@@ -54,7 +54,7 @@ public class Hdf5DataTable extends JPanel {
 
     PopupMenu varPopup;
 
-    objectTable = new BeanTable(VarBean.class, (PreferencesExt) prefs.node("Hdf5Object"), false, "H5header.DataObject",
+    objectTable = new BeanTable<>(VarBean.class, (PreferencesExt) prefs.node("Hdf5Object"), false, "H5header.DataObject",
         "Level 2A data object header", null);
     objectTable.addListSelectionListener(e -> {
       VarBean vb = (VarBean) objectTable.getSelectedBean();
@@ -122,25 +122,12 @@ public class Hdf5DataTable extends JPanel {
     splitH = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, objectTable, infoTA);
     splitH.setDividerLocation(prefs.getInt("splitPosH", 600));
 
-    /*
-     * split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, splitH, messTable);
-     * split.setDividerLocation(prefs.getInt("splitPos", 500));
-     * 
-     * split2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, split, attTable);
-     * split2.setDividerLocation(prefs.getInt("splitPos2", 500));
-     */
-
     setLayout(new BorderLayout());
     add(splitH, BorderLayout.CENTER);
   }
 
   public void save() {
     objectTable.saveState(false);
-    // messTable.saveState(false);
-    // attTable.saveState(false);
-    // prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
-    // prefs.putInt("splitPos", split.getDividerLocation());
-    // prefs.putInt("splitPos2", split2.getDividerLocation());
     prefs.putInt("splitPosH", splitH.getDividerLocation());
   }
 

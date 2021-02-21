@@ -3,7 +3,7 @@
  * See LICENSE for license information.
  */
 
-package ucar.nc2.ui.op;
+package ucar.nc2.ui.bufr;
 
 import ucar.nc2.iosp.bufr.tables.BufrTables;
 import ucar.nc2.ui.OpPanel;
@@ -21,13 +21,13 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 
-public class BufrTableBPanel extends OpPanel {
-  private final BufrTableBViewer bufrTable;
+public class BufrTableDPanel extends OpPanel {
+  private final BufrTableDViewer bufrTable;
   private final JComboBox<BufrTables.Format> modes;
   private final JComboBox<BufrTables.TableConfig> tables;
 
-  public BufrTableBPanel(PreferencesExt p) {
-    super(p, "tableB:", false, false);
+  public BufrTableDPanel(PreferencesExt p) {
+    super(p, "tableD:", false, false);
 
     AbstractAction fileAction = new AbstractAction() {
       @Override
@@ -55,7 +55,7 @@ public class BufrTableBPanel extends OpPanel {
     buttPanel.add(tables);
     tables.addActionListener(e -> acceptTable((BufrTables.TableConfig) tables.getSelectedItem()));
 
-    bufrTable = new BufrTableBViewer(prefs, buttPanel);
+    bufrTable = new BufrTableDViewer(prefs, buttPanel);
     add(bufrTable, BorderLayout.CENTER);
   }
 
@@ -65,16 +65,17 @@ public class BufrTableBPanel extends OpPanel {
   }
 
   @Override
-  public void closeOpenFiles() {
-    // Nothing to do here.
-  }
+  public void closeOpenFiles() {}
 
   private void accept() {
     String command = (String) cb.getSelectedItem();
+    if (command == null) {
+      return;
+    }
 
     try {
-      Object format = modes.getSelectedItem();
-      bufrTable.setBufrTableB(command, (BufrTables.Format) format);
+      Object mode = modes.getSelectedItem();
+      bufrTable.setBufrTableD(command, (BufrTables.Format) mode);
     } catch (FileNotFoundException ioe) {
       JOptionPane.showMessageDialog(null, "BufrTableViewer cannot open " + command + "\n" + ioe.getMessage());
       detailTA.setText("Failed to open <" + command + ">\n" + ioe.getMessage());
@@ -90,7 +91,7 @@ public class BufrTableBPanel extends OpPanel {
 
   private void acceptTable(BufrTables.TableConfig tc) {
     try {
-      bufrTable.setBufrTableB(tc.getTableBname(), tc.getTableBformat());
+      bufrTable.setBufrTableD(tc.getTableDname(), tc.getTableDformat());
     } catch (FileNotFoundException ioe) {
       JOptionPane.showMessageDialog(null, "BufrTableViewer cannot open " + tc + "\n" + ioe.getMessage());
       detailTA.setText("Failed to open <" + tc + ">\n" + ioe.getMessage());
@@ -110,4 +111,3 @@ public class BufrTableBPanel extends OpPanel {
     super.save();
   }
 }
-

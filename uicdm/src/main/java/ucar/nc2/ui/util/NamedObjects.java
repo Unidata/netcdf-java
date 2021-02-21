@@ -11,7 +11,6 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.ft2.coverage.CoverageCoordAxis1D;
-import ucar.nc2.grid.CoordInterval;
 import ucar.nc2.grid.Grid;
 import ucar.nc2.grid.GridAxis1D;
 import ucar.nc2.grid.GridAxis1DTime;

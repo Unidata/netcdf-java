@@ -11,7 +11,7 @@ import java.awt.BorderLayout;
 import java.io.IOException;
 
 public class NcmlEditorPanel extends OpPanel {
-  private NcmlEditor editor;
+  private final NcmlEditor editor;
 
   public NcmlEditorPanel(PreferencesExt p) {
     super(p, "dataset:", true, false);

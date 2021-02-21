@@ -3,19 +3,19 @@
  * See LICENSE for license information.
  */
 
-package ucar.nc2.ui.op;
+package ucar.nc2.ui.grid;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.dt.GridDataset;
-import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.ui.OpPanel;
 import ucar.nc2.ui.ToolsUI;
 import ucar.nc2.ui.gis.shapefile.ShapeFileBean;
 import ucar.nc2.ui.gis.worldmap.WorldMapBean;
 import ucar.nc2.ui.grid.GeoGridTable;
 import ucar.nc2.ui.grid.GridUI;
-// import ucar.nc2.ui.image.ImageViewPanel;
 import ucar.ui.widget.BAMutil;
 import ucar.ui.widget.IndependentWindow;
 import ucar.util.prefs.PreferencesExt;
@@ -29,18 +29,13 @@ import java.io.StringWriter;
 import java.util.Formatter;
 import javax.swing.AbstractButton;
 import javax.swing.JOptionPane;
-import javax.swing.JSplitPane;
 
 public class GeoGridPanel extends OpPanel {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  private static final org.slf4j.Logger logger =
-      org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
-  private GeoGridTable dsTable;
-  private JSplitPane split;
-  private IndependentWindow viewerWindow, imageWindow;
+  private final GeoGridTable dsTable;
+  private IndependentWindow viewerWindow;
   private GridUI gridUI;
-  // private ImageViewPanel imageViewer;
 
   private NetcdfDataset ds;
 
@@ -61,22 +56,6 @@ public class GeoGridPanel extends OpPanel {
       }
     });
     buttPanel.add(viewButton);
-
-    AbstractButton imageButton = BAMutil.makeButtcon("VCRMovieLoop", "Image Viewer", false);
-    imageButton.addActionListener(e -> {
-      if (ds != null) {
-        GridDatatype grid = dsTable.getGrid();
-        if (grid == null) {
-          return;
-        }
-        if (imageWindow == null) {
-          // makeImageWindow();
-        }
-        // imageViewer.setImageFromGrid(grid);
-        imageWindow.show();
-      }
-    });
-    buttPanel.add(imageButton);
 
     dsTable.addExtra(buttPanel, fileChooser);
   }
@@ -102,16 +81,6 @@ public class GeoGridPanel extends OpPanel {
     viewerWindow.setBounds(bounds);
   }
 
-  /*
-   * private void makeImageWindow() {
-   * imageWindow = new IndependentWindow("Grid Image Viewer", BAMutil.getImage("nj22/NetcdfUI"));
-   * imageViewer = new ImageViewPanel(null);
-   * imageWindow.setComponent(imageViewer);
-   * imageWindow
-   * .setBounds((Rectangle) ToolsUI.getPrefsBean(ToolsUI.GRIDIMAGE_FRAME_SIZE, new Rectangle(77, 22, 700, 900)));
-   * }
-   */
-
   @Override
   public boolean process(Object o) {
     String command = (String) o;
@@ -119,7 +88,6 @@ public class GeoGridPanel extends OpPanel {
 
     NetcdfDataset newds;
     try {
-      boolean useBuilders = ToolsUI.getToolsUI().getUseBuilders();
       newds = NetcdfDatasets.openDataset(command, true, null);
       if (newds == null) {
         JOptionPane.showMessageDialog(null, "NetcdfDatasets.open cannot open " + command);
@@ -208,9 +176,6 @@ public class GeoGridPanel extends OpPanel {
     }
     if (viewerWindow != null) {
       ToolsUI.putPrefsBeanObject(ToolsUI.GRIDVIEW_FRAME_SIZE, viewerWindow.getBounds());
-    }
-    if (imageWindow != null) {
-      ToolsUI.putPrefsBeanObject(ToolsUI.GRIDIMAGE_FRAME_SIZE, imageWindow.getBounds());
     }
   }
 }

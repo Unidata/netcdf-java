@@ -13,19 +13,11 @@ import java.awt.BorderLayout;
 import javax.swing.AbstractButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JSplitPane;
 
-/**
- *
- */
 public class WmsPanel extends OpPanel {
-  private WmsViewer wmsViewer;
-  private JSplitPane split;
-  private JComboBox<String> types;
+  private final WmsViewer wmsViewer;
+  private final JComboBox<String> types;
 
-  /**
-   *
-   */
   public WmsPanel(PreferencesExt dbPrefs) {
     super(dbPrefs, "dataset:", true, false);
     wmsViewer = new WmsViewer(dbPrefs, ToolsUI.getToolsFrame());
@@ -47,20 +39,17 @@ public class WmsPanel extends OpPanel {
     buttPanel.add(infoButton);
   }
 
-  /** */
   @Override
   public boolean process(Object o) {
     String location = (String) o;
     return wmsViewer.setDataset((String) types.getSelectedItem(), location);
   }
 
-  /** */
   @Override
   public void closeOpenFiles() {
     // Nothing to do here.
   }
 
-  /** */
   @Override
   public void save() {
     super.save();
