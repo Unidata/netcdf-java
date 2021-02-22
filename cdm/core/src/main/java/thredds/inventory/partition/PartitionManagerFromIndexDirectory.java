@@ -8,7 +8,7 @@ package thredds.inventory.partition;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.filesystem.MFileOS7;
 import thredds.inventory.*;
-import thredds.inventory.CloseableIterator;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ import java.util.List;
  * @since 3/14/14
  */
 public class PartitionManagerFromIndexDirectory extends CollectionAbstract implements PartitionManager {
-  private List<File> partIndexFiles;
+  private final List<File> partIndexFiles;
   private final FeatureCollectionConfig config;
 
   public PartitionManagerFromIndexDirectory(String name, FeatureCollectionConfig config, File directory, String suffix,
@@ -39,7 +39,6 @@ public class PartitionManagerFromIndexDirectory extends CollectionAbstract imple
     }
 
     this.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
-
   }
 
   public Iterable<MCollection> makePartitions(CollectionUpdateType forceCollection) {

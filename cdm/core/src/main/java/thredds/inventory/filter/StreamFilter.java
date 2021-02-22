@@ -17,8 +17,8 @@ import java.nio.file.Path;
  * @since 1/28/14
  */
 public class StreamFilter implements DirectoryStream.Filter<Path> {
-  private Pattern pattern;
-  private boolean nameOnly;
+  private final Pattern pattern;
+  private final boolean nameOnly;
 
   public StreamFilter(Pattern pattern, boolean nameOnly) {
     this.pattern = pattern;
@@ -27,7 +27,6 @@ public class StreamFilter implements DirectoryStream.Filter<Path> {
 
   @Override
   public boolean accept(Path entry) {
-
     String matchOn = nameOnly ? entry.getName(entry.getNameCount() - 1).toString()
         : StringUtil2.replace(entry.toString(), "\\", "/");
     Matcher matcher = this.pattern.matcher(matchOn);

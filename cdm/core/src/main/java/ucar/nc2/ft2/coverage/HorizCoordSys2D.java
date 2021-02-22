@@ -148,8 +148,10 @@ public class HorizCoordSys2D extends HorizCoordSys {
 
   // assume this class is instantiated when these edges are needed
   private class Edges {
-    private ArrayDouble.D2 latEdge, lonEdge;
-    private MAMath.MinMax latMinMax, lonMinMax;
+    private final ArrayDouble.D2 latEdge;
+    private final ArrayDouble.D2 lonEdge;
+    private final MAMath.MinMax latMinMax;
+    private final MAMath.MinMax lonMinMax;
 
     Edges() {
       latEdge = (ArrayDouble.D2) latAxis2D.getCoordBoundsAsArray();

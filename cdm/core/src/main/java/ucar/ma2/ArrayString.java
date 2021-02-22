@@ -348,7 +348,7 @@ public class ArrayString extends Array {
    * Concrete implementation of Array specialized for String, rank 0.
    */
   public static class D0 extends ArrayString {
-    private Index0D ix;
+    private final Index0D ix;
 
     /**
      * Constructor.
@@ -382,7 +382,7 @@ public class ArrayString extends Array {
    * Concrete implementation of Array specialized for Strings, rank 1.
    */
   public static class D1 extends ArrayString {
-    private Index1D ix;
+    private final Index1D ix;
 
     /**
      * Constructor for array of shape {len0}.
@@ -416,7 +416,7 @@ public class ArrayString extends Array {
    * Concrete implementation of Array specialized for Strings, rank 2.
    */
   public static class D2 extends ArrayString {
-    private Index2D ix;
+    private final Index2D ix;
 
     /**
      * Constructor for array of shape {len0,len1}.
@@ -450,7 +450,7 @@ public class ArrayString extends Array {
    * Concrete implementation of Array specialized for Strings, rank 3.
    */
   public static class D3 extends ArrayString {
-    private Index3D ix;
+    private final Index3D ix;
 
     /**
      * Constructor for array of shape {len0,len1,len2}.
@@ -484,7 +484,7 @@ public class ArrayString extends Array {
    * Concrete implementation of Array specialized for Strings, rank 4.
    */
   public static class D4 extends ArrayString {
-    private Index4D ix;
+    private final Index4D ix;
 
     /**
      * Constructor for array of shape {len0,len1,len2,len3}.
@@ -518,7 +518,7 @@ public class ArrayString extends Array {
    * Concrete implementation of Array specialized for Strings, rank 5.
    */
   public static class D5 extends ArrayString {
-    private Index5D ix;
+    private final Index5D ix;
 
     /**
      * Constructor for array of shape {len0,len1,len2,len3,len4}.
@@ -552,7 +552,7 @@ public class ArrayString extends Array {
    * Concrete implementation of Array specialized for Strings, rank 6.
    */
   public static class D6 extends ArrayString {
-    private Index6D ix;
+    private final Index6D ix;
 
     /**
      * Constructor for array of shape {len0,len1,len2,len3,len4,len5,}.
@@ -586,7 +586,7 @@ public class ArrayString extends Array {
    * Concrete implementation of Array specialized for Strings, rank 7.
    */
   public static class D7 extends ArrayString {
-    private Index7D ix;
+    private final Index7D ix;
 
     /**
      * Constructor for array of shape {len0,len1,len2,len3,len4,len5,len6}.

@@ -58,10 +58,10 @@ import ucar.nc2.ft.point.standard.plug.UnidataPointObs;
  * @since Mar 20, 2008
  */
 public class TableAnalyzer {
-  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TableAnalyzer.class);
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TableAnalyzer.class);
 
   private static final List<Configurator> conventionList = new ArrayList<>();
-  private static boolean userMode;
+  private static final boolean userMode;
   private static final boolean debug = false;
 
   // search in the order added
@@ -292,11 +292,11 @@ public class TableAnalyzer {
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////
-  private TableConfigurer tc;
-  private NetcdfDataset ds;
-  private Map<String, TableConfig> tableFind = new HashMap<>();
-  private Set<TableConfig> tableSet = new HashSet<>();
-  private List<NestedTable> leaves = new ArrayList<>();
+  private final TableConfigurer tc;
+  private final NetcdfDataset ds;
+  private final Map<String, TableConfig> tableFind = new HashMap<>();
+  private final Set<TableConfig> tableSet = new HashSet<>();
+  private final List<NestedTable> leaves = new ArrayList<>();
   private FeatureType ft;
   private TableConfig configResult;
 
@@ -349,8 +349,8 @@ public class TableAnalyzer {
     return ds;
   }
 
-  private Formatter userAdvice = new Formatter();
-  private Formatter errlog = new Formatter();
+  private final Formatter userAdvice = new Formatter();
+  private final Formatter errlog = new Formatter();
 
   public String getUserAdvice() {
     return userAdvice.toString();

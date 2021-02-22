@@ -27,16 +27,10 @@ import java.util.*;
  * @since Feb 24, 2010
  */
 public class NcmlCollectionReader {
-  // static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcmlCollectionReader.class);
-
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcmlCollectionReader.class);
   private static final boolean debugURL = false, debugXML = false, showParsedXML = false;
-  // private static final boolean validate = false;
 
-  private static final Namespace ncNSHttp = thredds.client.catalog.Catalog.ncmlNS;
-  private static final Namespace ncNSHttps = thredds.client.catalog.Catalog.ncmlNSHttps;
-  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcmlCollectionReader.class);
-
-  private Namespace ncmlNS;
+  private final Namespace ncmlNS;
 
   /**
    * Read an NcML file from a String, and construct a NcmlCollectionReader from its scan or scanFmrc element.
@@ -49,8 +43,6 @@ public class NcmlCollectionReader {
    */
   @Deprecated
   public static NcmlCollectionReader readNcML(String ncmlString, Formatter errlog) throws IOException {
-    StringReader reader = new StringReader(ncmlString);
-
     org.jdom2.Document doc;
     try {
       SAXBuilder builder = new SAXBuilder();
@@ -75,8 +67,6 @@ public class NcmlCollectionReader {
    * @throws IOException on read error, or bad referencedDatasetUri URI
    */
   public static NcmlCollectionReader readNcml(String ncmlString, Formatter errlog) throws IOException {
-    StringReader reader = new StringReader(ncmlString);
-
     org.jdom2.Document doc;
     try {
       SAXBuilder builder = new SAXBuilder();
@@ -153,8 +143,7 @@ public class NcmlCollectionReader {
   }
 
   //////////////////////////////////////////////////////////////////
-  private MFileCollectionManager datasetManager;
-  private boolean hasInner, hasOuter;
+  private final MFileCollectionManager datasetManager;
   private Element netcdfElem, aggElem;
 
   NcmlCollectionReader(String ncmlLocation, Element netcdfElem) {
@@ -175,7 +164,6 @@ public class NcmlCollectionReader {
     if (scanElem == null) {
       // no directory scan going on here - look for explicitly named datasets
       Map<String, String> realLocationRunTimeMap = new HashMap<>();
-      List<String> realLocationList = new ArrayList<>();
       java.util.List<Element> ncList = aggElem.getChildren("netcdf", ncmlNS);
       for (Element netcdfElemNested : ncList) {
         String location = netcdfElemNested.getAttributeValue("location");
@@ -196,8 +184,10 @@ public class NcmlCollectionReader {
         // for example, C:\data\file.nc will become C:/data/file.nc
         // Hacky hacky hacky hack
 
-        realLocation = StringUtil2.replace(realLocation, '\\', "/");
-        realLocationRunTimeMap.put(realLocation, runTime);
+        if (realLocation != null) {
+          realLocation = StringUtil2.replace(realLocation, '\\', "/");
+          realLocationRunTimeMap.put(realLocation, runTime);
+        }
       }
       datasetManager = MFileCollectionManager.openWithRecheck(ncmlLocation, recheck);
       datasetManager.setFilesAndRunDate(realLocationRunTimeMap);
@@ -227,8 +217,8 @@ public class NcmlCollectionReader {
 
     }
 
-    hasOuter = hasMods(netcdfElem);
-    hasInner = hasMods(aggElem);
+    boolean hasOuter = hasMods(netcdfElem);
+    boolean hasInner = hasMods(aggElem);
 
     if (hasOuter)
       this.netcdfElem = netcdfElem;

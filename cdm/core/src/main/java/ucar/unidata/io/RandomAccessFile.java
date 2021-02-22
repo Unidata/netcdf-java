@@ -72,8 +72,8 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
   protected static Set<String> allFiles;
   protected static List<String> openFiles = Collections.synchronizedList(new ArrayList<>()); // could keep map on file
                                                                                              // hashcode
-  private static AtomicLong count_openFiles = new AtomicLong();
-  private static AtomicInteger maxOpenFiles = new AtomicInteger();
+  private static final AtomicLong count_openFiles = new AtomicLong();
+  private static final AtomicInteger maxOpenFiles = new AtomicInteger();
   private static AtomicInteger debug_nseeks = new AtomicInteger();
   private static AtomicLong debug_nbytes = new AtomicLong();
 
@@ -1454,8 +1454,6 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
    * The charset parameter is an extension not implemented in java.io.RandomAccessFile.
    *
    * @param charset - character encoding to use
-   * @return
-   * @throws IOException
    */
   public String readLine(Charset charset) throws IOException {
     StringBuilder input = new StringBuilder();

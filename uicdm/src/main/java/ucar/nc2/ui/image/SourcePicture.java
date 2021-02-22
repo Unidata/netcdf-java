@@ -28,7 +28,7 @@ import java.awt.geom.*;
 
 /**
  * a class to load and scale a picture either immediately or in a
- * seperate thread from a URL
+ * separate thread from a URL
  */
 public class SourcePicture implements Cloneable {
 

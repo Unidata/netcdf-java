@@ -242,9 +242,9 @@ public class NcStreamReader {
 
   private static class StreamDataIterator implements StructureDataIterator {
     private InputStream is;
-    private StructureMembers members;
+    private final StructureMembers members;
     private StructureData curr;
-    private ByteOrder bo;
+    private final ByteOrder bo;
     private int count;
     private boolean done;
 

@@ -17,7 +17,7 @@ import ucar.unidata.geoloc.LatLonPoint;
  * @since Feb 29, 2008
  */
 public abstract class ProfileFeatureImpl extends PointCollectionImpl implements ProfileFeature {
-  private LatLonPoint latlonPoint;
+  private final LatLonPoint latlonPoint;
   protected double time;
 
   public ProfileFeatureImpl(String name, CalendarDateUnit timeUnit, String altUnits, double lat, double lon,

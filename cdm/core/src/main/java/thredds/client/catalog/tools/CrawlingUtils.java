@@ -25,15 +25,15 @@ import java.util.Random;
  * @since 3/14/2015
  */
 public class CrawlingUtils {
-  private static Random random = new Random();
+  private static final Random random = new Random();
 
   // read a 2D slice out all the variables in the dataset, report stats
   // Its a Runnable, so you can put it into a Thread for mulithreaded testing
   public static class TDSdatasetReader implements Runnable {
-    private boolean showDetail;
-    private String who;
-    private String datasetUrl;
-    private CancelTask cancel;
+    private final boolean showDetail;
+    private final String who;
+    private final String datasetUrl;
+    private final CancelTask cancel;
 
     public TDSdatasetReader(String who, String datasetUrl, CancelTask cancel, boolean showDetail) {
       this.who = who;

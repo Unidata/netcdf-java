@@ -171,7 +171,7 @@ public class IndexChunker {
     long stride; // number of elements
     long maxSize; // number of elements - must be a long since we may merge
     Range want; // desired Range
-    int wantSize; // keep seperate from want so we can modify when merging
+    int wantSize; // keep separate from want so we can modify when merging
 
     Dim(long byteStride, int maxSize, Range want) {
       this.stride = byteStride;

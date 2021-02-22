@@ -123,8 +123,7 @@ public class Arrays {
    * Create Array using empty java array of T, or java primitive array, same size as shape.
    * Do not use this for Vlens or Structures.
    *
-   * @param dataType
-   * @param shape multidimensional shape;
+   * @param shape multidimensional shape
    */
   public static <T> Array<T> factory(ArrayType dataType, int[] shape) {
     switch (dataType) {
@@ -235,7 +234,7 @@ public class Arrays {
   // multiple arrays < 2G.
 
   /**
-   * Experimental: keep list of Arrays seperate. This allows length > 2Gb.
+   * Experimental: keep list of Arrays separate. This allows length > 2Gb.
    */
   public static <T> Array<T> factoryArrays(ArrayType dataType, int[] shape, List<Array<?>> dataArrays) {
     if (dataArrays.size() == 1) {
@@ -384,7 +383,7 @@ public class Arrays {
   /**
    * If there are any VLEN dimensions (length < 0), remove it and all dimensions to the right.
    *
-   * @param shape
+   * @param shape multidimensional shape
    * @return modified shape, if needed.
    */
   // TODO this implies that vlen doesnt have to be rightmost dimension. Is that true?

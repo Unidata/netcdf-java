@@ -44,7 +44,7 @@ import ucar.nc2.util.CancelTask;
  * sum of the the component lengths. The dimensions must be the outer dimension.
  */
 class AggregationExisting extends AggregationOuter {
-  private static Logger log = LoggerFactory.getLogger(AggregationExisting.class);
+  private static final Logger log = LoggerFactory.getLogger(AggregationExisting.class);
 
   AggregationExisting(NetcdfDataset.Builder<?> ncd, String dimName, String recheckS) {
     super(ncd, dimName, Type.joinExisting, recheckS);

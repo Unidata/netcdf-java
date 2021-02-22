@@ -87,8 +87,8 @@ public class DateUnit {
   ////////////////////////////////////////////////////////////////////////
   private double value;
   private String udunitString;
-  private TimeUnit timeUnit;
-  private Unit uu;
+  private final TimeUnit timeUnit;
+  private final Unit uu;
 
   public static DateUnit getUnixDateUnit() {
     try {

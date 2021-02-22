@@ -6,7 +6,7 @@
 package ucar.nc2.ft.point.writer2;
 
 import java.util.List;
-import ucar.unidata.geoloc.LatLonPoint;
+
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
 

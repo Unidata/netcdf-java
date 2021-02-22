@@ -42,11 +42,11 @@ class WriterCFTrajectoryProfileCollection extends WriterCFPointAbstract {
   private Structure trajStructure; // used for netcdf4 extended
   private HashMap<String, Integer> trajIndexMap;
 
-  private HashSet<String> trajVarMap = new HashSet<>();
+  private final HashSet<String> trajVarMap = new HashSet<>();
 
   ///////////////////////////////////////////////////
   private Structure profileStruct; // used for netcdf4 extended
-  private HashSet<String> profileVarMap = new HashSet<>();
+  private final HashSet<String> profileVarMap = new HashSet<>();
   private boolean headerDone;
 
   WriterCFTrajectoryProfileCollection(String fileOut, AttributeContainer globalAtts, List<VariableSimpleIF> dataVars,

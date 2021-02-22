@@ -46,9 +46,9 @@ import ucar.unidata.geoloc.Station;
  * @since May 19, 2009
  */
 public class CompositeStationCollection extends StationTimeSeriesCollectionImpl implements UpdateableCollection {
-  private static Logger log = LoggerFactory.getLogger(CompositeStationCollection.class);
+  private static final Logger log = LoggerFactory.getLogger(CompositeStationCollection.class);
 
-  private TimedCollection dataCollection;
+  private final TimedCollection dataCollection;
   protected List<VariableSimpleIF> dataVariables;
   private AttributeContainer globalAttributes;
 
@@ -196,7 +196,7 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
 
     // an anonymous class iterating over the stations
     return new PointFeatureCollectionIterator() {
-      Iterator<Station> stationIter = getStationHelper().getStations().iterator();
+      final Iterator<Station> stationIter = getStationHelper().getStations().iterator();
 
       @Override
       public boolean hasNext() {
@@ -216,8 +216,8 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
   // the StationTimeSeriesFeature
 
   private static class CompositeStationFeature extends StationTimeSeriesFeatureImpl {
-    private TimedCollection collForFeature;
-    private StructureData sdata;
+    private final TimedCollection collForFeature;
+    private final StructureData sdata;
 
     CompositeStationFeature(StationFeature s, CalendarDateUnit timeUnit, String altUnits, StructureData sdata,
         TimedCollection collForFeature) {
@@ -301,7 +301,7 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
 
     // the iterator over PointFeature - an iterator over iterators, one for each dataset
     private class CompositeStationFeatureIterator extends PointIteratorAbstract {
-      private Iterator<TimedCollection.Dataset> iter;
+      private final Iterator<TimedCollection.Dataset> iter;
       private FeatureDatasetPoint currentDataset;
       private PointFeatureIterator pfIter;
       private boolean finished;

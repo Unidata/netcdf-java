@@ -37,7 +37,7 @@ import ucar.nc2.ft.IOIterator;
 
 
 public class StandardSectionCollectionImpl extends SectionCollectionImpl {
-  private NestedTable ft;
+  private final NestedTable ft;
 
   StandardSectionCollectionImpl(NestedTable ft, CalendarDateUnit timeUnit, String altUnits) {
     super(ft.getName(), timeUnit, altUnits);
@@ -147,7 +147,7 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
 
   private class ProfileIterator implements PointFeatureCollectionIterator, IOIterator<PointFeatureCollection> {
     Cursor cursor;
-    private ucar.ma2.StructureDataIterator sdataIter;
+    private final ucar.ma2.StructureDataIterator sdataIter;
     StructureData profileData;
     DsgCollectionImpl prev;
     CollectionInfo calcInfo;

@@ -20,7 +20,7 @@ The GRIB Collections framework has been rewritten in CDM version 4.5, in order t
 GRIB Collections now keep track of both the reference time and valid time. The collection is partitioned by reference time.
 A collection with a single reference time will have a single partition with a single time coordinate.
 A collection with multiple reference times will have partitions for each reference time, plus a PartitionCollection that represents the entire collection. Very large collections should be partitioned by directory and/or file, creating a tree of partitions.
-A PartitionCollection has two datasets (kept in seperate groups), the TwoD and the Best dataset.
+A PartitionCollection has two datasets (kept in separate groups), the TwoD and the Best dataset.
 The TwoD dataset has two time coordinates - reference time (aka run time) and forecast time (aka valid time), corresponding to FMRC TwoD datasets. The forecast time is two dimensional, corresponding to all the times available for each reference time.
 The Best dataset has a single forecast time coordinate, the same as 4.3 GRIB Collections and FMRC Best datasets. If there are multiple GRIB records corresponding to the same forecast time, the record with the smallest offset from its reference time is used.
 Implementation notes:
@@ -30,7 +30,7 @@ For each GRIB file, a grib index is written, named <grib filename>.gbx9. Once wr
 For each reference time, a cdm index is written, named <collection.referenceTime>.ncx2. This occasionally has to be rewritten when new CDM versions are released, or if you modify your GRIB configuration.
 For each PartitionCollection, a cdm index is written named <collection name>.ncx2. This must be rewritten if any of the collection files change.
 The cdm indexing uses extension .ncx2, in order to coexist with the .ncx indexes of previous versions. If you are upgrading to 4.5, and no longer running earlier versions, remove the ncx files (save the gbx9 files).
-For large collections, especially if they change, the THREDDS Data Manager (TDM) must be run as a seperate process to update the index files. Generally it is strongly recommended to run the TDM, and configure the TDS to only read and never write the indexes.
+For large collections, especially if they change, the THREDDS Data Manager (TDM) must be run as a separate process to update the index files. Generally it is strongly recommended to run the TDM, and configure the TDS to only read and never write the indexes.
 Collections in the millions of records are now feasible. Java 7 NIO2 package is used to efficiently scan directories.
 
 ### Version 4.6
@@ -44,7 +44,7 @@ Global attributes promoted to dataset properties in the catalog
 Internal changes:
 Internal memory use has been reduced.
 Runtime objects are now immutable, which makes caching possible.
-RandomAccessFiles are kept in a seperate pool, so they can be cached independent of the Collection objects.
+RandomAccessFiles are kept in a separate pool, so they can be cached independent of the Collection objects.
 (IN PROGRESS FOR VERSION 5) DefaultServices. One can use the service name "DefaultServices" to use the default services for that Feature Type.
 If you dont specify the service name, DefaultServices is used as the default.
 DefaultServices use all enabled services appropriate to that Feature Type.
@@ -139,7 +139,7 @@ Now suppose that we modify the above example and use timePartition="directory":
 </featureCollection>
 ~~~
 
-The collection is divided into partitions. In this case, each file becomes a seperate partition. In order to use this, each file must contain GRIB records from a single runtime.
+The collection is divided into partitions. In this case, each file becomes a separate partition. In order to use this, each file must contain GRIB records from a single runtime.
 The starting time of the partition must be encoded into the filename. One must define a date extractor in the collection specification, or by using a dateFormatMark, as in this example.
 In this example, the collection is readied when the server starts up. Manual triggers for updating are enabled.
 
@@ -188,7 +188,7 @@ collection	path/collection/catalog.xml	name	path/name/collection
 partitions	path/partitionName/catalog.xml	partitionName	path/partitionName/collection
 individual files	path/partitionName/files/catalog.xml	filename	path/files/filename
 Example 3 (Multiple Groups) :
-When a Grib Collection contains multiple horizontal domains (i.e. distinct Grid Definition Sections (GDS)), each domain gets placed into a seperate group. As a rule, one can't tell if there are seperate domains without reading the files. If you open this collection through the CDM (eg using ToolsUI) you would see a dataset that contains groups. The TDS, however, separates groups into different datasets, so that each dataset has only a single (unnamed, aka root) group.
+When a Grib Collection contains multiple horizontal domains (i.e. distinct Grid Definition Sections (GDS)), each domain gets placed into a separate group. As a rule, one can't tell if there are separate domains without reading the files. If you open this collection through the CDM (eg using ToolsUI) you would see a dataset that contains groups. The TDS, however, separates groups into different datasets, so that each dataset has only a single (unnamed, aka root) group.
 
 ~~~
  <featureCollection name="RFC" featureType="GRIB" path="grib/NPVU/RFC">

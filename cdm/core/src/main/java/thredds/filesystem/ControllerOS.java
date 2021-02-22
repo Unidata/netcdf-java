@@ -49,7 +49,7 @@ import java.util.*;
 
 @ThreadSafe
 public class ControllerOS implements MController {
-  private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(ControllerOS.class);
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(ControllerOS.class);
 
   ////////////////////////////////////////
 
@@ -105,9 +105,9 @@ public class ControllerOS implements MController {
 
   // handles filtering and removing/including subdirectories
   private static class FilteredIterator implements Iterator<MFile> {
-    private Iterator<MFile> orgIter;
-    private CollectionConfig mc;
-    private boolean wantDirs;
+    private final Iterator<MFile> orgIter;
+    private final CollectionConfig mc;
+    private final boolean wantDirs;
 
     private MFile next;
 

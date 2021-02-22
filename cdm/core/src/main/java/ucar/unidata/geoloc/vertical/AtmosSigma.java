@@ -16,7 +16,6 @@ import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.units.SimpleUnit;
 import ucar.unidata.util.Parameter;
 
 /**

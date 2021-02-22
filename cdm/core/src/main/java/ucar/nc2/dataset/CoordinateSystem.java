@@ -55,7 +55,7 @@ import ucar.unidata.util.StringUtil2;
  *      TODO: make Immutable in ver7.
  */
 public class CoordinateSystem {
-  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinateSystem.class);
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinateSystem.class);
 
   /**
    * TODO needed for GridCoordSys, remove in ver7

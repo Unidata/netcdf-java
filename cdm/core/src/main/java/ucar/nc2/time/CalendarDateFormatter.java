@@ -27,15 +27,16 @@ import java.util.StringTokenizer;
 @ThreadSafe
 public class CalendarDateFormatter {
   // these are thread-safe (yeah!)
-  private static DateTimeFormatter isof = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss'Z'").withZoneUTC();
-  private static DateTimeFormatter isof_with_millis_of_second =
+  private static final DateTimeFormatter isof = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss'Z'").withZoneUTC();
+  private static final DateTimeFormatter isof_with_millis_of_second =
       DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").withZoneUTC();
-  private static DateTimeFormatter dtf = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss'Z'").withZoneUTC();
+  private static final DateTimeFormatter dtf = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss'Z'").withZoneUTC();
 
-  private static DateTimeFormatter dtf_with_millis_of_second =
+  private static final DateTimeFormatter dtf_with_millis_of_second =
       DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.SSS'Z'").withZoneUTC();
-  private static DateTimeFormatter df = DateTimeFormat.forPattern("yyyy-MM-dd").withZoneUTC();
-  private static DateTimeFormatter df_units = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.SSS 'UTC'").withZoneUTC(); // udunits
+  private static final DateTimeFormatter df = DateTimeFormat.forPattern("yyyy-MM-dd").withZoneUTC();
+  private static final DateTimeFormatter df_units =
+      DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.SSS 'UTC'").withZoneUTC(); // udunits
 
   public static String toDateTimeStringISO(CalendarDate cd) {
 

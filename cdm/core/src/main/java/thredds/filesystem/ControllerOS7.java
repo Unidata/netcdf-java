@@ -22,7 +22,7 @@ import java.util.Iterator;
  */
 @ThreadSafe
 public class ControllerOS7 implements MController {
-  private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(ControllerOS7.class);
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(ControllerOS7.class);
 
   ////////////////////////////////////////
 
@@ -139,9 +139,8 @@ public class ControllerOS7 implements MController {
 
     @Override
     public String toString() {
-      String sb = "PrintFiles{" + "countFiles=" + countFiles + ", countDirs=" + countDirs + ", countOther=" + countOther
+      return "PrintFiles{" + "countFiles=" + countFiles + ", countDirs=" + countDirs + ", countOther=" + countOther
           + ", countSyms=" + countSyms + '}';
-      return sb;
     }
   }
 

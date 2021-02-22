@@ -24,8 +24,8 @@ public abstract class PointIteratorFromStructureData extends PointIteratorAbstra
   // makeFeature may return null, if so then skip it and go to next iteration
   protected abstract PointFeature makeFeature(int recnum, StructureData sdata) throws IOException;
 
-  private PointFeatureIterator.Filter filter;
-  private StructureDataIterator structIter;
+  private final PointFeatureIterator.Filter filter;
+  private final StructureDataIterator structIter;
   private PointFeature feature; // hasNext must cache
   private boolean finished;
 

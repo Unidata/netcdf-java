@@ -426,7 +426,7 @@ public class NcmlReader {
    * <p/>
    * This is a bit tricky, because it handles several cases When targetDS == refds, we are just modifying targetDS. When
    * targetDS != refds,
-   * we keep them seperate, and copy from refds to newds.
+   * we keep them separate, and copy from refds to newds.
    * <p/>
    * The user may be defining new elements or modifying old ones. The only way to tell is by seeing if the elements
    * already exist.

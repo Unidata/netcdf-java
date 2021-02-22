@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
  * Created by rmay on 8/10/15.
  */
 public class NcStreamCompression {
-  private static Logger logger = LoggerFactory.getLogger(NcStreamCompression.class);
+  private static final Logger logger = LoggerFactory.getLogger(NcStreamCompression.class);
   NcStreamProto.Compress type;
   Object compressInfo;
 

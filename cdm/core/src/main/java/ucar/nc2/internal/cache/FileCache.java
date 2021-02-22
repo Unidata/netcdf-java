@@ -69,7 +69,7 @@ public class FileCache implements FileCacheIF {
 
   // Shared mutable data. Access to it is limited to the following 3 synchronized methods.
   private static Timer timer;
-  private static Object lock = new Object();
+  private static final Object lock = new Object();
 
   /**
    * You must call shutdown() to shut down the background threads in order to get a clean process shutdown.

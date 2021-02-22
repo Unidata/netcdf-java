@@ -501,8 +501,8 @@ public final class StructureMembers {
   ///////////////////////////////////////////////////////////////////////////////
 
   // TODO make these final and immutable in 6.
-  private String name;
-  private List<Member> members;
+  private final String name;
+  private final List<Member> members;
   private int structureSize = -1;
 
   private StructureMembers(Builder builder) {
@@ -531,7 +531,7 @@ public final class StructureMembers {
   /** A builder for StructureMembers */
   public static class Builder {
     private String name;
-    private ArrayList<MemberBuilder> members = new ArrayList<>();
+    private final ArrayList<MemberBuilder> members = new ArrayList<>();
     private int structureSize = -1;
     private boolean built;
 

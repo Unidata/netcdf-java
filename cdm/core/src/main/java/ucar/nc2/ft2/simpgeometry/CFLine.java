@@ -25,8 +25,9 @@ import ucar.nc2.ft2.simpgeometry.exception.InvalidDataseriesException;
 public class CFLine implements Line {
 
   private static final Logger cfl = LoggerFactory.getLogger(CFLine.class);
-  private List<Point> points; // a list of the constitutent points of the Line, connected in ascending order as in the
-                              // CF convention
+  private final List<Point> points; // a list of the constitutent points of the Line, connected in ascending order as in
+                                    // the
+  // CF convention
   private Line next; // if non-null, next refers to the next line part of a multi-line
   private Line prev; // if non-null, prev refers to the previous line part of a multi-line
   private Array data; // data associated with the line

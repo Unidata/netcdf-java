@@ -46,6 +46,8 @@ import java.util.*;
  * @since Mar 30, 2010
  */
 public class FeatureCollectionConfig {
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FeatureCollectionConfig.class);
+
   // keys for storing AuxInfo objects
   // static public final String AUX_GRIB_CONFIG = "gribConfig";
   public static final String AUX_CONFIG = "fcConfig";
@@ -69,8 +71,6 @@ public class FeatureCollectionConfig {
   public enum PartitionType {
     none, directory, file, timePeriod, all
   }
-
-  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FeatureCollectionConfig.class);
 
   //////////////////////////////////////////////
 
@@ -356,7 +356,7 @@ public class FeatureCollectionConfig {
 
   private static boolean regularizeDefault;
 
-  private static Set<FmrcDatasetType> defaultFmrcDatasetTypes = Collections.unmodifiableSet(
+  private static final Set<FmrcDatasetType> defaultFmrcDatasetTypes = Collections.unmodifiableSet(
       EnumSet.of(FmrcDatasetType.TwoD, FmrcDatasetType.Best, FmrcDatasetType.Files, FmrcDatasetType.Runs));
 
   public static class FmrcConfig {
@@ -420,7 +420,7 @@ public class FeatureCollectionConfig {
 
   }
 
-  private static Set<PointDatasetType> defaultPointDatasetTypes =
+  private static final Set<PointDatasetType> defaultPointDatasetTypes =
       Collections.unmodifiableSet(EnumSet.of(PointDatasetType.cdmrFeature, PointDatasetType.Files));
 
   public static class PointConfig {

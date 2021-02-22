@@ -44,7 +44,7 @@ import ucar.nc2.iosp.NetcdfFileFormat;
  * </pre>
  */
 public class NetcdfFormatWriter implements Closeable {
-  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfFormatWriter.class);
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfFormatWriter.class);
 
   /**
    * Create a new Netcdf3 file.

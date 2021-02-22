@@ -28,12 +28,13 @@ public abstract class PointIteratorMultidim implements PointFeatureIterator {
 
   protected abstract PointFeature makeFeature(int recnum, StructureData sdata);
 
-  private List<Variable> vars;
-  private StructureMembers members;
-  private int outerIndex;
+  private final List<Variable> vars;
+  private final StructureMembers members;
+  private final int outerIndex;
 
-  private Filter filter;
-  private int count, npts;
+  private final Filter filter;
+  private int count;
+  private final int npts;
   private PointFeature feature;
 
   public PointIteratorMultidim(String name, List<Variable> vars, int outerIndex, Filter filter) {

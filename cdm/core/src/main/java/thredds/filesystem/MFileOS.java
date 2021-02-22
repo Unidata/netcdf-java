@@ -104,8 +104,7 @@ public class MFileOS implements MFile {
 
   @Override
   public String toString() {
-    String sb = "MFileOS{" + "file=" + file.getPath() + ", lastModified=" + lastModified + '}';
-    return sb;
+    return "MFileOS{" + "file=" + file.getPath() + ", lastModified=" + lastModified + '}';
   }
 
   public File getFile() {

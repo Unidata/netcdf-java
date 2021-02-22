@@ -39,7 +39,7 @@ import ucar.nc2.iosp.NetcdfFileFormat;
 
 /** Static methods to write Point Feature Collections into netcdf3/4 files in CF 1.6 point obs conventions. */
 public class CFPointWriter {
-  private static boolean debug = false;
+  private static final boolean debug = false;
 
   public static int writeFeatureCollection(FeatureDatasetPoint fdpoint, String fileOut, NetcdfFileFormat format)
       throws IOException {

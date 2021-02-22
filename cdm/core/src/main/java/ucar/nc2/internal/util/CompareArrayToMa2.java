@@ -25,7 +25,7 @@ import ucar.nc2.Variable;
 import ucar.nc2.util.Misc;
 
 /**
- * Compare reading netcdf with Ma2 and same file with Array. Open seperate files to prevent them from colliding.
+ * Compare reading netcdf with Ma2 and same file with Array. Open separate files to prevent them from colliding.
  * Also use to test round trip through cmdr.
  */
 public class CompareArrayToMa2 {

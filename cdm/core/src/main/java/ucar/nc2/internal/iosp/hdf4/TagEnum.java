@@ -9,7 +9,7 @@ import javax.annotation.concurrent.Immutable;
 /** HDF4 Tags */
 @Immutable
 public class TagEnum {
-  private static java.util.Map<Short, TagEnum> hash = new java.util.HashMap<>(100);
+  private static final java.util.Map<Short, TagEnum> hash = new java.util.HashMap<>(100);
 
   public static int SPECIAL_LINKED = 1; /* Fixed-size Linked blocks */
   public static int SPECIAL_EXT = 2; /* External */

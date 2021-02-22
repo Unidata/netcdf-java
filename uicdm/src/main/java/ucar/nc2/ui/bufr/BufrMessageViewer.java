@@ -102,7 +102,7 @@ public class BufrMessageViewer extends JPanel {
         seperateWindow = (Boolean) getValue(BAMutil.STATE);
       }
     };
-    BAMutil.setActionProperties(seperateWindowAction, "nj22/DrawVert", "seperate DDS window", true, 'C', -1);
+    BAMutil.setActionProperties(seperateWindowAction, "nj22/DrawVert", "separate DDS window", true, 'C', -1);
     seperateWindowAction.putValue(BAMutil.STATE, seperateWindow);
     BAMutil.addActionToContainer(buttPanel, seperateWindowAction);
 

@@ -48,7 +48,7 @@ class WriterCFProfileCollection extends WriterCFPointAbstract {
 
   ///////////////////////////////////////////////////
   private Structure profileStruct; // used for netcdf4 extended
-  private HashSet<String> featureVarMap = new HashSet<>();
+  private final HashSet<String> featureVarMap = new HashSet<>();
   private boolean headerDone;
 
   WriterCFProfileCollection(String fileOut, AttributeContainer globalAtts, List<VariableSimpleIF> dataVars,

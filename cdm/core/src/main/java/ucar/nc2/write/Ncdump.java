@@ -142,7 +142,7 @@ public class Ncdump {
   }
 
   public static class Builder {
-    private NetcdfFile ncfile;
+    private final NetcdfFile ncfile;
     private WantValues wantValues = WantValues.none;
     private boolean ncml;
     private boolean strict;
@@ -686,7 +686,7 @@ public class Ncdump {
 
   ////////////////////////////////////////////////////////////////////////////////////////////
   // TODO use jcommander?
-  private static String usage =
+  private static final String usage =
       "usage: Ncdump <filename> [-cdl | -ncml] [-c | -vall] [-v varName1;varName2;..] [-v varName(0:1,:,12)]\n";
 
   /**

@@ -131,7 +131,7 @@ abstract class DodsBuilder<T extends DodsBuilder<T>> extends NetcdfFile.Builder<
       return;
     }
 
-    // LOOK why do we want to do the primitives seperate from compounds?
+    // LOOK why do we want to do the primitives separate from compounds?
     constructTopVariables(rootDodsV, cancelTask);
     if (cancelTask != null && cancelTask.isCancel()) {
       return;

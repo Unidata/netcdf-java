@@ -84,7 +84,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
   @GuardedBy("this")
   private long lastScanned; // last time scanned
   @GuardedBy("this")
-  private AtomicLong lastChanged = new AtomicLong(); // last time the set of files changed
+  private final AtomicLong lastChanged = new AtomicLong(); // last time the set of files changed
 
   @GuardedBy("this")
   private Map<String, String> filesRunDateMap = new HashMap<>();

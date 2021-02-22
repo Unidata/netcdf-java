@@ -65,7 +65,7 @@ import ucar.unidata.geoloc.Projection;
 public class Geostationary extends AbstractProjectionCT implements HorizTransformBuilderIF {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Geostationary.class);
 
-  private static double defaultScaleFactor = -1.0;
+  private static final double defaultScaleFactor = -1.0;
 
   public String getTransformName() {
     return CF.GEOSTATIONARY;

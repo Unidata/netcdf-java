@@ -45,8 +45,8 @@ import ucar.unidata.geoloc.Station;
 public class FeatureDatasetCapabilitiesWriter {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FeatureDatasetCapabilitiesWriter.class);
 
-  private FeatureDatasetPoint fdp;
-  private String path;
+  private final FeatureDatasetPoint fdp;
+  private final String path;
 
   public FeatureDatasetCapabilitiesWriter(FeatureDatasetPoint fdp, String path) {
     this.fdp = fdp;

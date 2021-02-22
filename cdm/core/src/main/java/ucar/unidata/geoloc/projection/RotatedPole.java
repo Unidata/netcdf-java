@@ -14,7 +14,6 @@
  */
 package ucar.unidata.geoloc.projection;
 
-import java.lang.invoke.MethodHandles;
 import javax.annotation.concurrent.Immutable;
 import ucar.nc2.constants.CF;
 import ucar.unidata.geoloc.*;

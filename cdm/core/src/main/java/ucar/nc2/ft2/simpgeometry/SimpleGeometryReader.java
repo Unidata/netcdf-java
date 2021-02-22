@@ -15,7 +15,7 @@ import ucar.nc2.internal.dataset.conv.CF1Convention;
  */
 public class SimpleGeometryReader {
 
-  private NetcdfDataset ds;
+  private final NetcdfDataset ds;
 
   /**
    * Returns a Polygon given a variable name and the geometric index. If the Polygon is not found it will return null.

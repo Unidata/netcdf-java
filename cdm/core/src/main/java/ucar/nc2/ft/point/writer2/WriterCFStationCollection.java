@@ -61,7 +61,7 @@ class WriterCFStationCollection extends WriterCFPointAbstract {
   private boolean useWmoId;
 
   private int desc_strlen = 1, wmo_strlen = 1;
-  private HashSet<String> featureVarMap = new HashSet<>();
+  private final HashSet<String> featureVarMap = new HashSet<>();
 
   WriterCFStationCollection(String fileOut, AttributeContainer atts, List<VariableSimpleIF> dataVars,
       CalendarDateUnit timeUnit, String altUnits, CFPointWriterConfig config) throws IOException {

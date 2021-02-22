@@ -55,8 +55,8 @@ public class NetcdfFiles {
   private static final int default_buffersize = 8092;
   private static final StringLocker stringLocker = new StringLocker();
   private static final List<String> possibleCompressedSuffixes = Arrays.asList("Z", "zip", "gzip", "gz", "bz2");
-  private static boolean loadWarnings = false;
-  private static boolean userLoadsFirst;
+  private static final boolean loadWarnings = false;
+  private static final boolean userLoadsFirst;
 
   // load core service providers
   static {

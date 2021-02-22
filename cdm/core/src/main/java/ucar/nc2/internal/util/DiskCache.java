@@ -74,7 +74,7 @@ import java.io.*;
  * </pre>
  */
 public class DiskCache {
-  private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("cacheLogger");
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("cacheLogger");
   private static String root;
   private static boolean standardPolicy;
   private static boolean checkExist;

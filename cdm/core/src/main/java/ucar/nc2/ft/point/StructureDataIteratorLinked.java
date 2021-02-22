@@ -16,13 +16,15 @@ import java.io.IOException;
  * @since Mar 26, 2008
  */
 public class StructureDataIteratorLinked implements StructureDataIterator {
-  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(StructureDataIteratorLinked.class);
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(StructureDataIteratorLinked.class);
 
-  private Structure s;
-  private int firstRecord, nextRecno, numRecords;
-  private String linkVarName;
+  private final Structure s;
+  private final int firstRecord;
+  private int nextRecno;
+  private final int numRecords;
+  private final String linkVarName;
   private int currRecno;
-  private boolean isContiguous;
+  private final boolean isContiguous;
 
   public StructureDataIteratorLinked(Structure s, int firstRecord, int numRecords, String linkVarName) {
     this.s = s;

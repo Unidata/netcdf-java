@@ -24,7 +24,7 @@ import java.util.*;
 
 /** GridDataset implementation wrapping a NetcdfDataset. */
 public class GridNetcdfDataset implements GridDataset {
-  private static Logger log = LoggerFactory.getLogger(GridNetcdfDataset.class);
+  private static final Logger log = LoggerFactory.getLogger(GridNetcdfDataset.class);
 
   public static Optional<GridNetcdfDataset> create(NetcdfDataset ncd, Formatter errInfo) throws IOException {
     Set<Enhance> enhance = ncd.getEnhanceMode();
@@ -127,7 +127,7 @@ public class GridNetcdfDataset implements GridDataset {
     }
   }
 
-  private class TrackGridCS {
+  private static class TrackGridCS {
     DatasetClassifier.CoordSysClassifier csc;
     GridCS gridCS;
 
@@ -206,7 +206,7 @@ public class GridNetcdfDataset implements GridDataset {
   @Override
   public FeatureType getFeatureType() {
     return featureType;
-  };
+  }
 
   @Override
   public String toString() {

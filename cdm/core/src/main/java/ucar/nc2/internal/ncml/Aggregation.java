@@ -213,15 +213,10 @@ public abstract class Aggregation {
    * Note that this just calls sync(), so structural metadata may be modified (!!)
    *
    * @return true if directory was rescanned and dataset may have been updated
-   * @throws IOException on io error
    */
   public synchronized boolean syncExtend() {
     return false; // LOOK datasetManager.isScanNeeded() && _sync();
   }
-
-  // public synchronized boolean sync() throws IOException {
-  // return datasetManager.isScanNeeded() && _sync();
-  // }
 
   public long getLastModified() {
     try {
@@ -231,29 +226,6 @@ public abstract class Aggregation {
     }
     return datasetManager.getLastChanged();
   }
-
-  /*
-   * LOOK
-   * private boolean _sync() throws IOException {
-   * if (!datasetManager.scan(true))
-   * return false; // nothing changed LOOK what about grib extention ??
-   * cacheDirty = true;
-   * makeDatasets(null);
-   * 
-   * // rebuild the metadata
-   * rebuildDataset();
-   * ncDataset.finish();
-   * if (ncDataset.getEnhanceMode().contains(NetcdfDataset.Enhance.CoordSystems)) { // force recreation of the
-   * coordinate
-   * // systems
-   * ncDataset.clearCoordinateSystems();
-   * ncDataset.enhance(ncDataset.getEnhanceMode());
-   * ncDataset.finish();
-   * }
-   * 
-   * return true;
-   * }
-   */
 
   public String getFileTypeId() { // LOOK - should cache ??
     AggDataset ds = null;
@@ -351,7 +323,6 @@ public abstract class Aggregation {
    * Make the list of Datasets, from explicit and scans.
    *
    * @param cancelTask user can cancel
-   * @throws IOException on i/o error
    */
   protected void makeDatasets(CancelTask cancelTask) {
 
@@ -471,10 +442,10 @@ public abstract class Aggregation {
   private void setDatasetAcquireProxy(AggProxyReader proxy, Group.Builder g) throws IOException {
 
     // all normal (non agg) variables must use a proxy to lock the file
-    for (Variable.Builder<?> v : g.vbuilders) {
-      if (v.proxyReader != v && v.proxyReader != null) {
+    for (Variable.Builder<?> vb : g.vbuilders) {
+      if (vb.proxyReader != null) {
         if (debugProxy)
-          System.out.println(" debugProxy: hasProxyReader " + v.shortName);
+          System.out.println(" debugProxy: hasProxyReader " + vb.shortName);
         continue; // dont mess with agg variables
       }
       /*
@@ -484,9 +455,9 @@ public abstract class Aggregation {
        * 
        * } else { // put proxy on the rest
        */
-      v.setProxyReader(proxy);
+      vb.setProxyReader(proxy);
       if (debugProxy)
-        System.out.println(" debugProxy: set proxy on " + v.shortName);
+        System.out.println(" debugProxy: set proxy on " + vb.shortName);
     }
 
     // recurse

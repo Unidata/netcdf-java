@@ -69,6 +69,4 @@ public class TimePartition extends CollectionPathMatcher implements PartitionMan
   private boolean wasRemoved(MCollection partition) {
     return removed != null && (removed.contains(partition.getCollectionName()));
   }
-
-
 }

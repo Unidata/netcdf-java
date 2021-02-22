@@ -71,7 +71,7 @@ import ucar.unidata.io.RandomAccessFile;
 
 /** Read all of the metadata of an HD5 file. */
 public class H5header implements HdfHeaderIF {
-  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5header.class);
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5header.class);
 
   // special attribute names in HDF5
   public static final String HDF5_CLASS = "CLASS";
@@ -1031,7 +1031,7 @@ public class H5header implements HdfHeaderIF {
         }
         StructureMembers.MemberBuilder mb = builder.addMember(h5sm.name, null, null, dt, dim);
 
-        if (h5sm.mdt.endian != null) // apparently each member may have seperate byte order (!!!??)
+        if (h5sm.mdt.endian != null) // apparently each member may have separate byte order (!!!??)
           mb.setDataObject(h5sm.mdt.endian);
         mb.setDataParam(h5sm.offset); // offset since start of Structure
         if (dt == DataType.STRING)

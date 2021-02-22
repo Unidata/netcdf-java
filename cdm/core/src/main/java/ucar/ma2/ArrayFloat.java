@@ -283,7 +283,7 @@ public class ArrayFloat extends Array {
 
   /** Concrete implementation of Array specialized for floats, rank 0. */
   public static class D0 extends ArrayFloat {
-    private Index0D ix;
+    private final Index0D ix;
 
     /** Constructor. */
     public D0() {
@@ -309,7 +309,7 @@ public class ArrayFloat extends Array {
 
   /** Concrete implementation of Array specialized for floats, rank 1. */
   public static class D1 extends ArrayFloat {
-    private Index1D ix;
+    private final Index1D ix;
 
     /** Constructor for array of shape {len0}. */
     public D1(int len0) {
@@ -335,7 +335,7 @@ public class ArrayFloat extends Array {
 
   /** Concrete implementation of Array specialized for floats, rank 2. */
   public static class D2 extends ArrayFloat {
-    private Index2D ix;
+    private final Index2D ix;
 
     /** Constructor for array of shape {len0,len1}. */
     public D2(int len0, int len1) {
@@ -361,7 +361,7 @@ public class ArrayFloat extends Array {
 
   /** Concrete implementation of Array specialized for floats, rank 3. */
   public static class D3 extends ArrayFloat {
-    private Index3D ix;
+    private final Index3D ix;
 
     /** Constructor for array of shape {len0,len1,len2}. */
     public D3(int len0, int len1, int len2) {
@@ -387,7 +387,7 @@ public class ArrayFloat extends Array {
 
   /** Concrete implementation of Array specialized for floats, rank 4. */
   public static class D4 extends ArrayFloat {
-    private Index4D ix;
+    private final Index4D ix;
 
     /** Constructor for array of shape {len0,len1,len2,len3}. */
     public D4(int len0, int len1, int len2, int len3) {
@@ -413,7 +413,7 @@ public class ArrayFloat extends Array {
 
   /** Concrete implementation of Array specialized for floats, rank 5. */
   public static class D5 extends ArrayFloat {
-    private Index5D ix;
+    private final Index5D ix;
 
     /** Constructor for array of shape {len0,len1,len2,len3,len4}. */
     public D5(int len0, int len1, int len2, int len3, int len4) {
@@ -439,7 +439,7 @@ public class ArrayFloat extends Array {
 
   /** Concrete implementation of Array specialized for floats, rank 6. */
   public static class D6 extends ArrayFloat {
-    private Index6D ix;
+    private final Index6D ix;
 
     /** Constructor for array of shape {len0,len1,len2,len3,len4,len5,}. */
     public D6(int len0, int len1, int len2, int len3, int len4, int len5) {
@@ -465,7 +465,7 @@ public class ArrayFloat extends Array {
 
   /** Concrete implementation of Array specialized for floats, rank 7. */
   public static class D7 extends ArrayFloat {
-    private Index7D ix;
+    private final Index7D ix;
 
     /** Constructor for array of shape {len0,len1,len2,len3,len4,len5,len6}. */
     public D7(int len0, int len1, int len2, int len3, int len4, int len5, int len6) {

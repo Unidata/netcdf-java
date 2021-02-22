@@ -15,8 +15,8 @@ import java.io.IOException;
  */
 public class StructureDataIteratorMediated implements StructureDataIterator {
 
-  private StructureDataIterator org;
-  private StructureDataMediator mod;
+  private final StructureDataIterator org;
+  private final StructureDataMediator mod;
 
   public StructureDataIteratorMediated(StructureDataIterator org, StructureDataMediator mod) {
     this.org = org;

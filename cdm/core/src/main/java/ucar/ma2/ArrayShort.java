@@ -318,7 +318,7 @@ public class ArrayShort extends Array {
    * Concrete implementation of Array specialized for shorts, rank 0.
    */
   public static class D0 extends ArrayShort {
-    private Index0D ix;
+    private final Index0D ix;
 
     public D0(boolean isUnsigned) {
       super(new int[] {}, isUnsigned);
@@ -343,7 +343,7 @@ public class ArrayShort extends Array {
    * Concrete implementation of Array specialized for shorts, rank 1.
    */
   public static class D1 extends ArrayShort {
-    private Index1D ix;
+    private final Index1D ix;
 
     public D1(int len0, boolean isUnsigned) {
       super(new int[] {len0}, isUnsigned);
@@ -368,7 +368,7 @@ public class ArrayShort extends Array {
    * Concrete implementation of Array specialized for shorts, rank 2.
    */
   public static class D2 extends ArrayShort {
-    private Index2D ix;
+    private final Index2D ix;
 
     public D2(int len0, int len1, boolean isUnsigned) {
       super(new int[] {len0, len1}, isUnsigned);
@@ -393,7 +393,7 @@ public class ArrayShort extends Array {
    * Concrete implementation of Array specialized for shorts, rank 3.
    */
   public static class D3 extends ArrayShort {
-    private Index3D ix;
+    private final Index3D ix;
 
     public D3(int len0, int len1, int len2, boolean isUnsigned) {
       super(new int[] {len0, len1, len2}, isUnsigned);
@@ -418,7 +418,7 @@ public class ArrayShort extends Array {
    * Concrete implementation of Array specialized for shorts, rank 4.
    */
   public static class D4 extends ArrayShort {
-    private Index4D ix;
+    private final Index4D ix;
 
     public D4(int len0, int len1, int len2, int len3, boolean isUnsigned) {
       super(new int[] {len0, len1, len2, len3}, isUnsigned);
@@ -443,7 +443,7 @@ public class ArrayShort extends Array {
    * Concrete implementation of Array specialized for shorts, rank 5.
    */
   public static class D5 extends ArrayShort {
-    private Index5D ix;
+    private final Index5D ix;
 
     public D5(int len0, int len1, int len2, int len3, int len4, boolean isUnsigned) {
       super(new int[] {len0, len1, len2, len3, len4}, isUnsigned);
@@ -468,7 +468,7 @@ public class ArrayShort extends Array {
    * Concrete implementation of Array specialized for shorts, rank 6.
    */
   public static class D6 extends ArrayShort {
-    private Index6D ix;
+    private final Index6D ix;
 
     public D6(int len0, int len1, int len2, int len3, int len4, int len5, boolean isUnsigned) {
       super(new int[] {len0, len1, len2, len3, len4, len5}, isUnsigned);
@@ -493,7 +493,7 @@ public class ArrayShort extends Array {
    * Concrete implementation of Array specialized for shorts, rank 7.
    */
   public static class D7 extends ArrayShort {
-    private Index7D ix;
+    private final Index7D ix;
 
     public D7(int len0, int len1, int len2, int len3, int len4, int len5, int len6, boolean isUnsigned) {
       super(new int[] {len0, len1, len2, len3, len4, len5, len6}, isUnsigned);

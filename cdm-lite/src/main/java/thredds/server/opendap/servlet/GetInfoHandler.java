@@ -32,7 +32,7 @@ import thredds.server.opendap.servlet.www.dasTools;
 
 /**
  * Default handler for OPeNDAP info requests. This class is used
- * by AbstractServlet. This code exists as a seperate class in order to alleviate
+ * by AbstractServlet. This code exists as a separate class in order to alleviate
  * code bloat in the AbstractServlet class. As such, it contains virtually no
  * state, just behaviors.
  *

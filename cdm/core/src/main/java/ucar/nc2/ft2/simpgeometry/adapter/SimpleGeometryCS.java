@@ -25,7 +25,10 @@ import ucar.nc2.ft2.simpgeometry.*;
  */
 public class SimpleGeometryCS {
 
-  private List<CoordinateAxis> simpleGeometryX, simpleGeometryY, simpleGeometryZ, simpleGeometryID;
+  private final List<CoordinateAxis> simpleGeometryX;
+  private final List<CoordinateAxis> simpleGeometryY;
+  private final List<CoordinateAxis> simpleGeometryZ;
+  private final List<CoordinateAxis> simpleGeometryID;
   SimpleGeometryCSBuilder builder;
 
   public SimpleGeometryCS(SimpleGeometryCSBuilder builder) {

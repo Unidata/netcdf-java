@@ -22,7 +22,7 @@ package ucar.ma2;
  * @author caron
  */
 public class ArraySequenceNested extends ArrayStructure {
-  private int[] sequenceLen;
+  private final int[] sequenceLen;
   private int[] sequenceOffset;
   private int total;
 

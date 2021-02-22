@@ -44,7 +44,7 @@ import ucar.unidata.geoloc.Station;
  * @since 7/14/2014
  */
 class WriterCFStationProfileCollection extends WriterCFPointAbstract {
-  private static Logger log = LoggerFactory.getLogger(WriterCFStationProfileCollection.class);
+  private static final Logger log = LoggerFactory.getLogger(WriterCFStationProfileCollection.class);
 
   private List<StationFeature> stnList;
   private Structure stationStruct; // used for netcdf4 extended
@@ -55,12 +55,12 @@ class WriterCFStationProfileCollection extends WriterCFPointAbstract {
   private boolean useWmoId;
 
   private int desc_strlen = 1, wmo_strlen = 1;
-  private HashSet<String> stationVarMap = new HashSet<>();
+  private final HashSet<String> stationVarMap = new HashSet<>();
 
   ///////////////////////////////////////////////////
   // private Formatter coordNames = new Formatter();
   private Structure profileStruct; // used for netcdf4 extended
-  private HashSet<String> profileVarMap = new HashSet<>();
+  private final HashSet<String> profileVarMap = new HashSet<>();
   private boolean headerDone;
 
   WriterCFStationProfileCollection(String fileOut, AttributeContainer globalAtts, List<VariableSimpleIF> dataVars,

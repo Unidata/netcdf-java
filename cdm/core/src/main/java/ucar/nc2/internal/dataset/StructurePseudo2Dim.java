@@ -17,7 +17,7 @@ import ucar.nc2.dataset.VariableDS;
 /** Make a collection of variables with the same 2 outer dimensions into a fake 2D Structure(outer,inner) */
 @Immutable
 public class StructurePseudo2Dim extends StructurePseudoDS {
-  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(StructurePseudo2Dim.class);
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(StructurePseudo2Dim.class);
   private static final boolean debugRecord = false;
 
   /**

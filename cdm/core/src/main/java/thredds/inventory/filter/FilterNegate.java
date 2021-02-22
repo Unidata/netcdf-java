@@ -14,14 +14,14 @@ import thredds.inventory.MFileFilter;
  * @since 1/22/2015
  */
 public class FilterNegate implements MFileFilter {
-  private MFileFilter f;
+  private final MFileFilter filter;
 
-  public FilterNegate(MFileFilter f) {
-    this.f = f;
+  public FilterNegate(MFileFilter filter) {
+    this.filter = filter;
   }
 
   @Override
   public boolean accept(MFile mfile) {
-    return !f.accept(mfile);
+    return !filter.accept(mfile);
   }
 }

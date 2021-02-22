@@ -22,13 +22,6 @@ public class CompositeMFileFilter implements MFileFilter {
   private List<MFileFilter> excludeFilters;
   private List<MFileFilter> andFilters;
 
-  /*
-   * public CompositeMFileFilter(List<MFileFilter> filters) {
-   * for (MFileFilter ff : filters)
-   * addIncludeFilter(ff);
-   * }
-   */
-
   public void addFilter(MFileFilter filter, boolean include) {
     if (include)
       addIncludeFilter(filter);

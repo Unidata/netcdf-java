@@ -248,7 +248,7 @@ public class ArraysConvert {
     ArrayVlen<Array<?>> vlen = (ArrayVlen<Array<?>>) from;
     Preconditions.checkArgument(vlen.getArrayType() == ArrayType.OPAQUE);
 
-    ucar.ma2.ArrayObject result = new ucar.ma2.ArrayObject(DataType.OPAQUE, ByteBuffer.class, true, from.getShape());;
+    ucar.ma2.ArrayObject result = new ucar.ma2.ArrayObject(DataType.OPAQUE, ByteBuffer.class, true, from.getShape());
     int count = 0;
     for (Array<?> array : vlen) {
       ArrayByte barray = (ArrayByte) array;

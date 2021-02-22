@@ -33,8 +33,8 @@ import java.util.List;
  * @since Nov 19, 2009
  */
 public class ArrayStructureComposite extends ArrayStructure {
-  private List<ArrayStructure> compose;
-  private int[] start;
+  private final List<ArrayStructure> compose;
+  private final int[] start;
 
   public ArrayStructureComposite(StructureMembers members, List<ArrayStructure> c, int total) {
     super(members, new int[total]);

@@ -8,7 +8,6 @@ import com.google.common.collect.ImmutableList;
 
 import javax.annotation.concurrent.Immutable;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * A Composite of other RangeIterators. Used for Lon Axis crossing the seam.

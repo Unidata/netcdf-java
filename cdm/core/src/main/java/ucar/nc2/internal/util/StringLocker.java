@@ -14,7 +14,7 @@ import java.util.List;
  * @author cmrose
  */
 public class StringLocker {
-  private List<String> stringList = Collections.synchronizedList(new ArrayList<>());
+  private final List<String> stringList = Collections.synchronizedList(new ArrayList<>());
   private boolean waiting;
 
   public synchronized void control(String item) {

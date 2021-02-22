@@ -365,7 +365,7 @@ public class LatLonRect {
    * Construct a lat/lon bounding box from a string, or null if format is wrong.
    *
    * @param spec "lat, lon, deltaLat, deltaLon"
-   * @see {@link LatLonRect.Builder(LatLonPoint, double, double)}
+   *        {@link LatLonRect.Builder(LatLonPoint, double, double)}
    */
   @Nullable
   public static LatLonRect fromSpec(String spec) {

@@ -4,7 +4,6 @@ import com.google.common.base.Preconditions;
 import ucar.array.Array;
 import ucar.array.ArrayType;
 import ucar.array.Arrays;
-import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.CDM;

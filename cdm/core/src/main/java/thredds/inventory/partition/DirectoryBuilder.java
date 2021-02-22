@@ -47,9 +47,7 @@ public class DirectoryBuilder {
     if (hasIndex) {
       return dpart.makeChildCollection(builder);
     } else {
-      DirectoryCollection result =
-          new DirectoryCollection(config.collectionName, topDir, isTop, config.olderThan, logger); // no index file
-      return result;
+      return new DirectoryCollection(config.collectionName, topDir, isTop, config.olderThan, logger);
     }
   }
 
@@ -67,10 +65,9 @@ public class DirectoryBuilder {
   private final FileTime dirLastModified; // directory last modified
   private Path index; // TimePartition index file (ncx2 with magic = TimePartition)
   private FileTime indexLastModified; // index last modified
-  private long indexSize; // index size
 
   private boolean childrenConstructed;
-  private List<DirectoryBuilder> children = new ArrayList<>(25);
+  private final List<DirectoryBuilder> children = new ArrayList<>(25);
   private PartitionStatus partitionStatus = PartitionStatus.unknown;
 
   public DirectoryBuilder(String topCollectionName, String dirFilename, String suffix) throws IOException {
@@ -114,7 +111,6 @@ public class DirectoryBuilder {
       this.index = indexPath;
       BasicFileAttributes attr = Files.readAttributes(indexPath, BasicFileAttributes.class);
       this.indexLastModified = attr.lastModifiedTime();
-      this.indexSize = attr.size();
       return true;
     }
     return false;

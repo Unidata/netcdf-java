@@ -23,10 +23,10 @@ import java.util.Map;
  * @since 3/24/2015
  */
 public class ThreddsMetadataAcdd {
-  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ThreddsMetadataAcdd.class);
-  private Map<String, Attribute> ncfile; // global attributes of the file
-  private Dataset ds; // info from the catalog
-  private ThreddsMetadata tmi; // extract info to here
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ThreddsMetadataAcdd.class);
+  private final Map<String, Attribute> ncfile; // global attributes of the file
+  private final Dataset ds; // info from the catalog
+  private final ThreddsMetadata tmi; // extract info to here
 
   public ThreddsMetadataAcdd(Map<String, Attribute> ncfile, DatasetBuilder dsb) {
     this.ncfile = ncfile;

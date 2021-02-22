@@ -23,10 +23,10 @@ import java.util.stream.Collectors;
 /** Coordinate System classification. TODO Here or Grid? */
 public class DatasetClassifier {
   private final Formatter infolog;
-  private ArrayList<CoordSysClassifier> coordSysUsed = new ArrayList<>();
+  private final ArrayList<CoordSysClassifier> coordSysUsed = new ArrayList<>();
 
-  private HashMap<String, CoordinateAxis> indAxes = new HashMap<>(); // eliminate duplicates
-  private HashMap<String, CoordinateAxis> depAxes = new HashMap<>(); // eliminate duplicates
+  private final HashMap<String, CoordinateAxis> indAxes = new HashMap<>(); // eliminate duplicates
+  private final HashMap<String, CoordinateAxis> depAxes = new HashMap<>(); // eliminate duplicates
   private FeatureType featureType;
 
   public DatasetClassifier(NetcdfDataset ds, Formatter infolog) {

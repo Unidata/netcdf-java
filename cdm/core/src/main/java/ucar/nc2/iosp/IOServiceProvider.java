@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Iterator;
 import javax.annotation.Nullable;
-import ucar.array.StructureData;
+
 import ucar.ma2.Section;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.StructureDataIterator;

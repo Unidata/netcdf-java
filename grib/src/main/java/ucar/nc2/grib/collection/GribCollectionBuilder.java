@@ -186,7 +186,7 @@ abstract class GribCollectionBuilder {
   }
 
   // PartitionType = all; not currently used but leave it here in case it needs to be revived
-  // creates seperate collection and index for each runtime.
+  // creates separate collection and index for each runtime.
   private boolean createAllRuntimeCollections(Formatter errlog) throws IOException {
     long start = System.currentTimeMillis();
     this.type = GribCollectionImmutable.Type.SRC;

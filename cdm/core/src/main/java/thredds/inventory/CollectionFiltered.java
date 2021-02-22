@@ -16,8 +16,8 @@ import java.util.List;
  * @since 3/12/2015
  */
 public class CollectionFiltered extends CollectionAbstract {
-  private MCollection org;
-  private MFileFilter filter;
+  private final MCollection org;
+  private final MFileFilter filter;
 
   public CollectionFiltered(String name, MCollection org, MFileFilter filter) {
     super(name, null);

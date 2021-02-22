@@ -4,7 +4,6 @@
  */
 package ucar.nc2.internal.util;
 
-import ucar.unidata.util.StringUtil2;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -15,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class AliasTranslator {
 
-  private static Map<String, String> alias = new ConcurrentHashMap<>();
+  private static final Map<String, String> alias = new ConcurrentHashMap<>();
 
   public static void addAlias(String aliasKey, String actual) {
     alias.put(aliasKey, actual.replace("\\", "/"));

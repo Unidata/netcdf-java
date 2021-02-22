@@ -486,7 +486,7 @@ public class DatasetUrl {
   // For example, here is an example 128 byte response:
   // <?xml version="1.0" encoding="UTF-8"?>\n<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2"
   // location="dods://ma
-  private static int NUM_BYTES_TO_DETERMINE_NCML = 128;
+  private static final int NUM_BYTES_TO_DETERMINE_NCML = 128;
 
   private static boolean checkIfRemoteNcml(String location) throws IOException {
     if (!location.startsWith("http")) {

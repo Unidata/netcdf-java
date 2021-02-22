@@ -9,7 +9,6 @@ import com.google.common.collect.ImmutableList;
 import ucar.array.Array;
 import ucar.array.ArrayType;
 import ucar.array.Arrays;
-import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 import ucar.ma2.RangeIterator;

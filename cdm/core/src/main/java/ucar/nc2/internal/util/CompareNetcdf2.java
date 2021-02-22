@@ -184,7 +184,7 @@ public class CompareNetcdf2 {
 
   /////////
 
-  private Formatter f;
+  private final Formatter f;
   private boolean showCompare;
   private boolean showEach;
   private boolean compareData;
@@ -613,7 +613,6 @@ public class CompareNetcdf2 {
         findEnum(org, enum1, filter);
         f.format("  ** Enum %s not in file2 %n", enum1.getShortName());
         ok = false;
-        continue;
       }
     }
 

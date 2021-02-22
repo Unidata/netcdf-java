@@ -49,10 +49,10 @@ import ucar.unidata.util.StringUtil2;
 public class CoverageAsPoint {
   private static final boolean debug = false;
 
-  private CoverageCollection gcd;
-  private List<VarData> varData;
-  private SubsetParams subset;
-  private LatLonPoint latLonPoint;
+  private final CoverageCollection gcd;
+  private final List<VarData> varData;
+  private final SubsetParams subset;
+  private final LatLonPoint latLonPoint;
   private LatLonPoint nearestLatLonPoint;
   private CalendarDateUnit dateUnit;
 

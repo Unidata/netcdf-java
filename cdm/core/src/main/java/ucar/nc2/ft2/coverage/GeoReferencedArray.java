@@ -21,12 +21,12 @@ import java.util.stream.Collectors;
  * @since 7/11/2015
  */
 public class GeoReferencedArray implements IsMissingEvaluator, CoordSysContainer {
-  private String coverageName;
-  private DataType dataType;
+  private final String coverageName;
+  private final DataType dataType;
   private Array data;
-  private CoverageCoordSys csSubset;
-  private List<CoverageCoordAxis> axes;
-  private List<CoverageTransform> transforms;
+  private final CoverageCoordSys csSubset;
+  private final List<CoverageCoordAxis> axes;
+  private final List<CoverageTransform> transforms;
 
   public GeoReferencedArray(String coverageName, DataType dataType, Array data, List<CoverageCoordAxis> axes,
       List<CoverageTransform> transforms, FeatureType type) {

@@ -44,7 +44,7 @@ import ucar.unidata.geoloc.Station;
  * @since Mar 28, 2008
  */
 public class StandardStationProfileCollectionImpl extends StationProfileCollectionImpl {
-  private NestedTable ft;
+  private final NestedTable ft;
 
   StandardStationProfileCollectionImpl(NestedTable ft, CalendarDateUnit timeUnit, String altUnits) {
     super(ft.getName(), timeUnit, altUnits);
@@ -183,8 +183,8 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
 
     // iterate over series of profiles at a given station
     private class ProfileFeatureIterator implements PointFeatureCollectionIterator, IOIterator<PointFeatureCollection> {
-      private Cursor cursor;
-      private ucar.ma2.StructureDataIterator sdataIter;
+      private final Cursor cursor;
+      private final ucar.ma2.StructureDataIterator sdataIter;
       private int count;
       private StructureData profileData;
       DsgCollectionImpl prev;
@@ -242,7 +242,7 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
   ///////////////////////////////////////////////////////////////////////////
   // a single profile in this StationProfileFeature
   private class StandardProfileFeature extends ProfileFeatureImpl {
-    private Cursor cursor;
+    private final Cursor cursor;
     StructureData profileData;
 
     StandardProfileFeature(Station s, CalendarDateUnit timeUnit, String altUnits, double time, Cursor cursor,

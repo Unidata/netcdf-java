@@ -75,7 +75,7 @@ import java.net.URL;
  * 
  */
 public class TableParser {
-  private static Logger logger = LoggerFactory.getLogger(TableParser.class);
+  private static final Logger logger = LoggerFactory.getLogger(TableParser.class);
   private static final boolean debug = false;
 
   /**
@@ -129,7 +129,7 @@ public class TableParser {
 
   /////////////////////////////////////////////////////////////////////////////////////////////////
 
-  private List<Field> fields = new ArrayList<>();
+  private final List<Field> fields = new ArrayList<>();
 
   public TableParser(String format) throws NumberFormatException {
     int start = 0;
@@ -234,14 +234,14 @@ public class TableParser {
         if (type == double.class)
           return isBlank ? 0.0 : new Double(svalue);
         if (type == int.class) {
-          Integer result = isBlank ? 0 : new Integer(svalue);
+          int result = isBlank ? 0 : Integer.parseInt(svalue);
           if (hasScale)
             return result * scale;
           else
             return result;
         }
         if (type == long.class)
-          return isBlank ? 0L : new Long(svalue);
+          return isBlank ? 0L : Long.parseLong(svalue);
 
       } catch (NumberFormatException e) {
         logger.warn("Bad line={} ", String.format("  [%d,%d) = <%s> %n", start, end, svalue));

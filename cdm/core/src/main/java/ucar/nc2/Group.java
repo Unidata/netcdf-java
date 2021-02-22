@@ -789,7 +789,7 @@ public class Group {
      *
      * @param fullNameEscaped eg "/group/subgroup/name1.name2.name".
      * @return Optional<Variable.Builder>
-     * @see {@link NetcdfFile#findVariable(String fullNameEscaped)}
+     *         {@link NetcdfFile#findVariable(String fullNameEscaped)}
      */
     public Optional<Variable.Builder<?>> findVariable(String fullNameEscaped) {
       if (fullNameEscaped == null || fullNameEscaped.isEmpty()) {

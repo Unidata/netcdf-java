@@ -27,7 +27,7 @@ public class DtCoverageCS {
 
   /////////////////////////////////////////////////////////////////////////////
   protected DtCoverageCSBuilder builder;
-  private String name;
+  private final String name;
   private Projection proj;
   private GeoGridCoordinate2D g2d;
   private boolean isLatLon;

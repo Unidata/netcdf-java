@@ -118,7 +118,7 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
           // GdsHashObject gdsHashObject = new GdsHashObject(gr.getGDS(), hashCode);
 
           CalendarDate runtimeDate = gr.getReferenceDate();
-          long runtime = singleRuntime ? runtimeDate.getMillis() : 0; // seperate Groups for each runtime, if
+          long runtime = singleRuntime ? runtimeDate.getMillis() : 0; // separate Groups for each runtime, if
                                                                       // singleRuntime is true
           GroupAndRuntime gar = new GroupAndRuntime(hashCode, runtime);
           Grib2CollectionWriter.Group g = gdsMap.get(gar);

@@ -70,7 +70,15 @@ class Gdc_To_Utm_Converter {
 
   private double A;
   private double F; // flattening
-  private double Eps2, Eps25, Epps2, CScale = .9996, poly1b, poly2b, poly3b, poly4b, poly5b;
+  private double Eps2;
+  private double Eps25;
+  private double Epps2;
+  private final double CScale = .9996;
+  private double poly1b;
+  private double poly2b;
+  private double poly3b;
+  private double poly4b;
+  private double poly5b;
   private double axlon0, axlon0_deg;
 
   /**

@@ -28,7 +28,10 @@ public class H5objects {
   private static boolean debug1, debugDetail, debugPos, debugHeap;
   private static boolean debugGroupBtree, debugDataBtree, debugBtree2;
   private static boolean debugContinueMessage, debugTracker, debugSoftLink, debugHardLink, debugSymbolTable;
-  private static boolean warnings = true, debugReference, debugRegionReference, debugCreationOrder;
+  private static final boolean warnings = true;
+  private static boolean debugReference;
+  private static boolean debugRegionReference;
+  private static boolean debugCreationOrder;
   private static boolean debugDimensionScales;
 
   private final H5header header;

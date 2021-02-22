@@ -5,6 +5,7 @@
 
 package thredds.inventory;
 
+import com.google.common.base.Preconditions;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import java.io.IOException;
@@ -20,7 +21,6 @@ import java.util.List;
  * @author caron
  * @since May 19, 2009
  */
-
 public class TimedCollection {
   private static final boolean debug = false;
 
@@ -37,12 +37,10 @@ public class TimedCollection {
    * @throws java.io.IOException on read error
    */
   public TimedCollection(MFileCollectionManager manager, Formatter errlog) throws IOException {
-    this.manager = manager;
+    this.manager = Preconditions.checkNotNull(manager);
 
     // get the inventory, sorted by path
-    if (manager != null) {
-      manager.scanIfNeeded();
-    }
+    manager.scanIfNeeded();
     update();
 
     if (debug) {
