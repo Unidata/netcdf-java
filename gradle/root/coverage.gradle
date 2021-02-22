@@ -6,7 +6,7 @@ if (!name.equals(rootProject.name)) {
 // Execution failed for task ':jacocoMerge'.
 // > Could not resolve all files for configuration ':jacocoAnt'.
 repositories {
-  jcenter()
+  mavenCentral()
 }
 
 apply plugin: 'jacoco'

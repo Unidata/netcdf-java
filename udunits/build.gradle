@@ -11,6 +11,7 @@ apply from: "$rootDir/gradle/any/java-library.gradle"
 
 dependencies {
   api enforcedPlatform(project(':netcdf-java-platform'))
+  testImplementation enforcedPlatform(project(':netcdf-java-testing-platform'))
 
   implementation 'com.google.code.findbugs:jsr305'
 

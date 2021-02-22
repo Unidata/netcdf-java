@@ -8,6 +8,8 @@ apply from: "$rootDir/gradle/any/javadoc.gradle"
 apply from: "$rootDir/gradle/any/testing.gradle"
 
 dependencies {
+  testImplementation enforcedPlatform(project(':netcdf-java-testing-platform'))
+
   testCompile project(':cdm:cdm-core')
   testCompile project(':cdm:cdm-s3')
   testCompile project(':netcdf4')
@@ -119,7 +121,7 @@ tasks.withType(PublishToRawRepoTask).all {  // Common PublishToRawRepoTask confi
   group = 'Documentation'
 
   host = 'https://artifacts.unidata.ucar.edu/'
-  repoName = 'netcdf-java-docs'
+  repoName = 'docs-netcdf-java'
 
   onlyIf {
     // Will be evaluated at task execution time, not during configuration.
@@ -219,7 +221,7 @@ import edu.ucar.build.publishing.tasks.DeleteFromNexusTask
 task deleteVersionedDocsFromNexus(group: 'Documentation', type: DeleteFromNexusTask) {
   description = 'Remove user guide and both Javadoc sets on Nexus under /major.minor/.'
   host = 'https://artifacts.unidata.ucar.edu/'
-  searchQueryParameters.repository = 'netcdf-java-docs'
+  searchQueryParameters.repository = 'docs-netcdf-java'
   searchQueryParameters.group = "/netcdf-java/$project.docVersion/*"
 
   onlyIf {
@@ -234,7 +236,7 @@ task deleteVersionedDocsFromNexus(group: 'Documentation', type: DeleteFromNexusT
 task deleteCurrentDocsFromNexus(group: 'Documentation', type: DeleteFromNexusTask) {
   description = 'Remove user guide and both Javadoc sets on Nexus under /current/.'
   host = 'https://artifacts.unidata.ucar.edu/'
-  searchQueryParameters.repository = 'netcdf-java-docs'
+  searchQueryParameters.repository = 'docs-netcdf-java'
   searchQueryParameters.group = '/netcdf-java/current/*'
 
   onlyIf {

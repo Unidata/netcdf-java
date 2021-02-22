@@ -16,9 +16,9 @@ import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.unidata.util.test.category.NotTravis;
+import ucar.unidata.util.test.category.NotPullRequest;
 
-@Category(NotTravis.class)
+@Category(NotPullRequest.class)
 public class TestNc4Iosp extends DapTestCommon {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 

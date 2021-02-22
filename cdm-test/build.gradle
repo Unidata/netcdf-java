@@ -10,6 +10,7 @@ apply from: "$rootDir/gradle/any/test-only-projects.gradle"
 
 dependencies {
   testImplementation enforcedPlatform(project(':netcdf-java-platform'))
+  testImplementation enforcedPlatform(project(':netcdf-java-testing-platform'))
 
   testImplementation project(':cdm:cdm-core')
   testImplementation project(':cdm:cdm-s3')

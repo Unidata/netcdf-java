@@ -9,6 +9,7 @@ apply plugin: 'jacoco'
 
 dependencies {
   api enforcedPlatform(project(':netcdf-java-platform'))
+  testImplementation enforcedPlatform(project(':netcdf-java-testing-platform'))
 
   compile project(':cdm:cdm-core')
   compile 'net.java.dev.jna:jna'

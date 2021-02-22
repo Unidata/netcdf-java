@@ -9,10 +9,7 @@ buildscript {
   // The buildscript {} block is odd: even though we applied dependencies.gradle above, the repositories therein
   // do not get included here. Instead, we must explicitly define the repos again. Yay for duplication.
   repositories {
-    jcenter()
-    maven {
-      url 'https://plugins.gradle.org/m2/'  // For Gradle plugins.
-    }
+    gradlePluginPortal()
     exclusiveContent {
       forRepository {
         maven {
@@ -33,7 +30,6 @@ buildscript {
     classpath buildPlugins.sonarqube
     classpath buildPlugins.spotless
     classpath buildPlugins.gretty
-    classpath buildPlugins.grgit
     classpath buildPlugins.protobuf
     classpath buildPlugins.depcheck
     classpath buildPlugins.nexus
@@ -107,6 +103,11 @@ gradle.projectsEvaluated {
   javaProjects = subprojects.findAll {
     subproject -> subproject.plugins.hasPlugin('java')
   }
+}
+
+tasks.named('wrapper') {
+  distributionType = Wrapper.DistributionType.ALL
+  gradleVersion = '6.8.2'
 }
 
 // Set up properties needed for all testing, adds "testAll" task to root
