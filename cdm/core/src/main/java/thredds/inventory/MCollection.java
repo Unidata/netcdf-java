@@ -113,10 +113,9 @@ public interface MCollection extends Closeable {
    * }
    * </pre>
    * 
-   * @return current collection of MFile as an CloseableIterator.
+   * @return current collection of MFile as an CloseableIterator. May be empty, never null.
    */
   CloseableIterator<MFile> getFileIterator() throws IOException;
-
 
   ////////////////////////////////////////////////////
   // ability to pass arbitrary information to users of the mcollection .

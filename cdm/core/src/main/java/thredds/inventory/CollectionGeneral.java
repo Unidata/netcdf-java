@@ -101,8 +101,12 @@ public class CollectionGeneral extends CollectionAbstract {
 
     // better alternative is for caller to send in callback (Visitor pattern)
     // then we could use the try-with-resource
-    public void close() throws IOException {
-      dirStream.close();
+    public void close() {
+      try {
+        dirStream.close();
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
     }
   }
 }

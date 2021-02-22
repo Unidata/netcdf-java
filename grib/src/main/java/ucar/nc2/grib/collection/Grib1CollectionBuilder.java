@@ -69,9 +69,6 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
 
     // place each record into its group
     try (CloseableIterator<MFile> iter = dcm.getFileIterator()) { // not sorted
-      if (iter == null)
-        return new ArrayList<>(); // empty
-
       while (iter.hasNext()) {
         MFile mfile = iter.next();
         Grib1Index index;
@@ -90,11 +87,6 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
         } catch (IOException ioe) {
           logger.error("Grib1CollectionBuilder " + name + " : reading/Creating gbx9 index for file " + mfile.getPath()
               + " failed", ioe);
-          continue;
-        }
-        if (index == null) {
-          logger.error("Grib1CollectionBuilder " + name + " : reading/Creating gbx9 index for file " + mfile.getPath()
-              + " failed");
           continue;
         }
 

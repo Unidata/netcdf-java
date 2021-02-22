@@ -7,6 +7,7 @@ package thredds.inventory;
 import org.slf4j.Logger;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.filesystem.MFileOS7;
+
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -16,7 +17,7 @@ import java.util.*;
 /**
  * A collection defined by the collection spec (not directory sensitive)
  * May have by regexp: or glob: (experimental)
- * 
+ *
  * @author caron
  * @since 12/23/2014
  */
@@ -70,7 +71,7 @@ public class CollectionPathMatcher extends CollectionAbstract {
       if (!current.hasNext()) {
         try {
           current.close();
-        } catch (IOException e) {
+        } catch (Exception e) {
           logger.error("Error closing dirStream", e);
         }
         current = subdirs.poll();
@@ -89,7 +90,7 @@ public class CollectionPathMatcher extends CollectionAbstract {
       throw new UnsupportedOperationException();
     }
 
-    public void close() throws IOException {
+    public void close() {
       if (current != null)
         current.close();
       current = null;
@@ -106,7 +107,7 @@ public class CollectionPathMatcher extends CollectionAbstract {
     OneDirIterator(Path dir, Queue<OneDirIterator> subdirs) throws IOException {
       this.subdirs = subdirs;
       dirStream = Files.newDirectoryStream(dir); // , new MyStreamFilter()); LOOK dont use the
-                                                 // DirectoryStream.Filter<Path>
+      // DirectoryStream.Filter<Path>
       dirStreamIterator = dirStream.iterator();
       now = System.currentTimeMillis();
     }
@@ -156,8 +157,12 @@ public class CollectionPathMatcher extends CollectionAbstract {
       throw new UnsupportedOperationException();
     }
 
-    public void close() throws IOException {
-      dirStream.close();
+    public void close() {
+      try {
+        dirStream.close();
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
     }
   }
 }

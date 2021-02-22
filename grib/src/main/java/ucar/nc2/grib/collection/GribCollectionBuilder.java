@@ -80,7 +80,7 @@ abstract class GribCollectionBuilder {
 
     CollectionManager.ChangeChecker cc = GribIndex.getChangeChecker();
     try (CloseableIterator<MFile> iter = dcm.getFileIterator()) {
-      while (iter != null && iter.hasNext()) {
+      while (iter.hasNext()) {
         MFile memberOfCollection = iter.next();
         if (cc.hasChangedSince(memberOfCollection, collectionLastModified))
           return true; // checks both data and gbx9 file

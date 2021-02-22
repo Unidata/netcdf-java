@@ -68,9 +68,6 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
     // place each record into its group
     int totalRecords = 0;
     try (CloseableIterator<MFile> iter = dcm.getFileIterator()) { // not sorted
-      if (iter == null)
-        return new ArrayList<>(); // empty
-
       while (iter.hasNext()) {
         MFile mfile = iter.next();
         Grib2Index index;

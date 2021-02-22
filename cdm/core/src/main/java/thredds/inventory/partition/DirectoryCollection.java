@@ -170,10 +170,14 @@ public class DirectoryCollection extends CollectionAbstract {
 
     // better alternative is for caller to send in callback (Visitor pattern)
     // then we could use the try-with-resource
-    public void close() throws IOException {
+    public void close() {
       if (debug)
         System.out.printf(" closed %d (%d)%n", count, debugNum);
-      dirStream.close();
+      try {
+        dirStream.close();
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
     }
   }
 

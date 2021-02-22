@@ -86,7 +86,7 @@ public class PartitionManagerFromIndexList extends CollectionAbstract implements
 
       @Override
       public void close() {
-
+        // noop
       }
     };
   }
