@@ -479,7 +479,8 @@ public class NcmlWriter {
       IndexIterator iter = a.getIndexIterator();
       boolean first = true;
       while (iter.hasNext()) {
-        if (!first) buff.append(" ");
+        if (!first)
+          buff.append(" ");
         switch (variable.getDataType()) {
           case FLOAT:
             buff.append(iter.getFloatNext());
