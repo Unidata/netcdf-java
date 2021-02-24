@@ -145,7 +145,7 @@ public class FslHrrrLocalTables extends NcepLocalTables {
           VerticalLevels, Units);
     }
 
-    String name = !WGrib2Name.equals("var") ? WGrib2Name : FieldType;
+    String name = !NCLName.equals("var") ? NCLName : FieldType;
     return new Grib2Parameter(disciplineNumber, categoryNumber, parameterNumber, name, Units, null, FieldType);
   }
 
@@ -169,7 +169,7 @@ public class FslHrrrLocalTables extends NcepLocalTables {
           categoryNumber, parameterNumber, WGrib2Name, NCLName, FieldType, Description, Units);
     }
 
-    String name = !WGrib2Name.equals("var") ? WGrib2Name : FieldType;
+    String name = !NCLName.equals("var") ? NCLName : FieldType;
     return new Grib2Parameter(disciplineNumber, categoryNumber, parameterNumber, name, Units, null, Description);
   }
 
