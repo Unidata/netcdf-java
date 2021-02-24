@@ -10,9 +10,6 @@ import org.jdom2.Element;
 import org.jdom2.Namespace;
 import org.jdom2.output.XMLOutputter;
 import thredds.client.catalog.*;
-import ucar.nc2.units.DateRange;
-import ucar.nc2.units.DateType;
-import ucar.nc2.units.TimeDuration;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -245,6 +242,8 @@ public class CatalogXmlWriter {
     }
   }
 
+  /** @deprecated use writeCalendarDate() */
+  @Deprecated
   protected Element writeDate(String name, DateType date) {
     Element dateElem = new Element(name, Catalog.defNS);
     dateElem.addContent(date.getText());
@@ -548,9 +547,9 @@ public class CatalogXmlWriter {
     if (gc != null)
       elem.addContent(writeGeospatialCoverage(gc));
 
-    DateRange tc = (DateRange) ds.getLocalField(Dataset.TimeCoverage);
-    if (tc != null)
-      elem.addContent(writeTimeCoverage(tc));
+    TimeCoverage tcnew = (TimeCoverage) ds.getLocalField(Dataset.TimeCoverageNew);
+    if (tcnew != null)
+      elem.addContent(writeTimeCoverageNew(tcnew));
 
     List<ThreddsMetadata.VariableGroup> varList =
         (List<ThreddsMetadata.VariableGroup>) ds.getLocalFieldAsList(Dataset.VariableGroups);
@@ -568,13 +567,15 @@ public class CatalogXmlWriter {
     }
   }
 
-  protected Element writeTimeCoverage(DateRange t) {
+  /** @deprecated use writeTimeCoverageNew() */
+  @Deprecated
+  protected Element writeTimeCoverage(ucar.nc2.units.DateRange t) {
     Element elem = new Element("timeCoverage", Catalog.defNS);
 
-    DateType start = t.getStart();
-    DateType end = t.getEnd();
-    TimeDuration duration = t.getDuration();
-    TimeDuration resolution = t.getResolution();
+    ucar.nc2.units.DateType start = t.getStart();
+    ucar.nc2.units.DateType end = t.getEnd();
+    ucar.nc2.units.TimeDuration duration = t.getDuration();
+    ucar.nc2.units.TimeDuration resolution = t.getResolution();
 
     if (t.useStart() && (start != null) && !start.isBlank()) {
       Element startElem = new Element("start", Catalog.defNS);
@@ -599,7 +600,40 @@ public class CatalogXmlWriter {
       telem.setText(t.getResolution().toString());
       elem.addContent(telem);
     }
+    return elem;
+  }
 
+  protected Element writeTimeCoverageNew(TimeCoverage t) {
+    Element elem = new Element("timeCoverage", Catalog.defNS);
+
+    DateType start = t.getStart();
+    DateType end = t.getEnd();
+    TimeDuration duration = t.getDuration();
+    TimeDuration resolution = t.getResolution();
+
+    if (t.fixedStart() && (start != null) && !start.isBlank()) {
+      Element startElem = new Element("start", Catalog.defNS);
+      startElem.setText(start.toString());
+      elem.addContent(startElem);
+    }
+
+    if (t.fixedEnd() && (end != null) && !end.isBlank()) {
+      Element telem = new Element("end", Catalog.defNS);
+      telem.setText(end.toString());
+      elem.addContent(telem);
+    }
+
+    if (t.fixedDuration() && (duration != null) && !duration.isBlank()) {
+      Element telem = new Element("duration", Catalog.defNS);
+      telem.setText(duration.toString());
+      elem.addContent(telem);
+    }
+
+    if (t.fixedResolution() && (resolution != null) && !resolution.isBlank()) {
+      Element telem = new Element("resolution", Catalog.defNS);
+      telem.setText(t.getResolution().toString());
+      elem.addContent(telem);
+    }
     return elem;
   }
 

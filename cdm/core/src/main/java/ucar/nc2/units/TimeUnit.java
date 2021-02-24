@@ -1,13 +1,14 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
 package ucar.nc2.units;
 
-import ucar.nc2.time.CalendarPeriod;
+import ucar.nc2.time.CalendarDate;
 import ucar.unidata.util.Format;
 import ucar.units.ConversionException;
+import ucar.units.Unit;
 import ucar.units.UnitException;
 import java.util.StringTokenizer;
 import java.util.Date;
@@ -27,6 +28,13 @@ public class TimeUnit extends SimpleUnit {
   private double value;
   private final double factor;
   private final String unitString;
+
+  private TimeUnit(Unit uu, double value, double factor, String unitString) {
+    super(uu);
+    this.value = value;
+    this.factor = factor;
+    this.unitString = unitString;
+  }
 
   /**
    * Constructor from a String.
@@ -98,11 +106,16 @@ public class TimeUnit extends SimpleUnit {
    * Set the value in the original units.
    * 
    * @param value set value, must be in units of this
-   * @deprecated do not use - will be Immutable in ver7
+   * @deprecated use newValue(double)
    */
   @Deprecated
   public void setValue(double value) {
     this.value = value;
+  }
+
+  /** Create a new TimeUnit with the given value. */
+  public TimeUnit newValue(double value) {
+    return new TimeUnit(this.uu, value, this.factor, this.unitString);
   }
 
   /** Get the "base" unit String, eg "secs" or "days" */
@@ -140,11 +153,16 @@ public class TimeUnit extends SimpleUnit {
    * Set the value, using the given number of seconds.
    * 
    * @param secs : number of seconds; convert this to the units of this TimeUnit.
-   * @deprecated do not use - will be Immutable in ver7
+   * @deprecated use newValueInSeconds(double)
    */
   @Deprecated
   public void setValueInSeconds(double secs) {
     value = secs / factor;
+  }
+
+  /** Create a new TimeUnit with the given value in seconds. */
+  public TimeUnit newValueInSeconds(double secs) {
+    return new TimeUnit(this.uu, secs / factor, this.factor, this.unitString);
   }
 
   // override
@@ -167,7 +185,7 @@ public class TimeUnit extends SimpleUnit {
    * 
    * @param d add to this Date
    * @return Date with getValueInSeconds() added to it.
-   * @deprecated use {@link ucar.nc2.time.CalendarDate#add(CalendarPeriod)}, will be removed in ver7.
+   * @deprecated use add(CalendarDate)
    */
   @Deprecated
   public Date add(Date d) {
@@ -175,6 +193,19 @@ public class TimeUnit extends SimpleUnit {
     cal.setTime(d);
     cal.add(Calendar.SECOND, (int) getValueInSeconds());
     return cal.getTime();
+  }
+
+  /**
+   * Add the time amount to the given Date, return a new Date.
+   *
+   * @param cd add to this CalendarDate
+   * @return CalendarDate with getValueInSeconds() added to it.
+   */
+  public CalendarDate add(CalendarDate cd) {
+    Calendar cal = Calendar.getInstance();
+    cal.setTime(cd.toDate());
+    cal.add(Calendar.SECOND, (int) getValueInSeconds());
+    return CalendarDate.of(cal.getTime());
   }
 
   /** TimeUnits with same value and unitString are equal */

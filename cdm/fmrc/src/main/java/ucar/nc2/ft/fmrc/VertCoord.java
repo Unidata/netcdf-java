@@ -12,7 +12,9 @@ import java.util.*;
 
 /**
  * Represents a vertical coordinate shared among variables.
+ * @deprecated DO NOT USE
  */
+@Deprecated
 public class VertCoord implements Comparable<VertCoord> {
   private String name, units;
   private int id; // unique id

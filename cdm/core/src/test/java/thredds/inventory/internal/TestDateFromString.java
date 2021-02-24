@@ -2,7 +2,7 @@
  * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-package ucar.nc2.units;
+package thredds.inventory.internal;
 
 import static com.google.common.truth.Truth.assertThat;
 
@@ -11,12 +11,14 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ucar.nc2.units.DateFormatter;
+
 import java.lang.invoke.MethodHandles;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-/** Test {@link ucar.nc2.units.DateFromString} */
+/** Test {@link DateFromString} */
 public class TestDateFromString {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 

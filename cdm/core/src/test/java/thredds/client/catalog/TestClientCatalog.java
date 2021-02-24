@@ -14,18 +14,17 @@ import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarPeriod;
-import ucar.nc2.units.DateRange;
-import ucar.nc2.units.TimeDuration;
 import ucar.nc2.units.TimeUnit;
+
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
 
+import static com.google.common.truth.Truth.assertThat;
+import static org.junit.Assert.fail;
+
 /**
  * Unit tests for client catalogs
- *
- * @author caron
- * @since 1/16/2015
  */
 public class TestClientCatalog {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -37,19 +36,19 @@ public class TestClientCatalog {
         getCatrefURI(cat.getDatasets(), "catref"));
 
     String catrefURIn = getCatrefNestedURI(cat, "top", "catref-nested");
-    assert catrefURIn.equals(ClientCatalogUtil.makeFilepath("test0.xml")) : catrefURIn;
+    assertThat(catrefURIn).isEqualTo((ClientCatalogUtil.makeFilepath("test0.xml")));
   }
 
   private CatalogRef getCatrefNested(Catalog cat, String id, String catName) {
     Dataset ds = cat.findDatasetByID(id);
-    assert ds != null;
+    assertThat(ds).isNotNull();
     return getCatref(ds.getDatasets(), catName);
   }
 
   private CatalogRef getCatref(List<Dataset> list, String name) {
     for (Dataset ds : list) {
       if (ds.getName().equals(name)) {
-        assert ds instanceof CatalogRef;
+        assertThat(ds).isInstanceOf(CatalogRef.class);
         CatalogRef catref = (CatalogRef) ds;
         logger.debug("{} = {} == {}", name, catref.getXlinkHref(), catref.getURI());
         return catref;
@@ -75,10 +74,10 @@ public class TestClientCatalog {
     Catalog cat = ClientCatalogUtil.open("testCatref.xml");
 
     CatalogRef catref = getCatref(cat.getDatasets(), "catref");
-    assert (!catref.isRead());
+    assertThat(catref.isRead()).isFalse();
 
     catref = getCatrefNested(cat, "top", "catref-nested");
-    assert (!catref.isRead());
+    assertThat(catref.isRead()).isFalse();
   }
 
   ////////////////////////
@@ -86,19 +85,19 @@ public class TestClientCatalog {
   @Test
   public void testNested() throws IOException {
     Catalog cat = ClientCatalogUtil.open("nestedServices.xml");
-    assert cat != null;
+    assertThat(cat).isNotNull();
 
     Dataset ds = cat.findDatasetByID("top");
-    assert ds != null;
-    assert ds.getServiceDefault() != null : ds.getID();
+    assertThat(ds).isNotNull();
+    assertThat(ds.getServiceDefault()).isNotNull();
 
     ds = cat.findDatasetByID("nest1");
-    assert ds != null;
-    assert ds.getServiceDefault() != null : ds.getID();
+    assertThat(ds).isNotNull();
+    assertThat(ds.getServiceDefault()).isNotNull();
 
     ds = cat.findDatasetByID("nest2");
-    assert ds != null;
-    assert ds.getServiceDefault() != null : ds.getID();
+    assertThat(ds).isNotNull();
+    assertThat(ds.getServiceDefault()).isNotNull();
 
     logger.debug("OK");
   }
@@ -108,79 +107,79 @@ public class TestClientCatalog {
   @Test
   public void testGC() throws Exception {
     Catalog cat = ClientCatalogUtil.open("MissingGCProblem.xml");
-    assert cat != null;
+    assertThat(cat).isNotNull();
 
     Dataset ds = cat.findDatasetByID("hasGC");
     ThreddsMetadata.GeospatialCoverage gc = ds.getGeospatialCoverage();
-    assert null != gc;
-    assert gc.getHeightStart() == 5.0 : gc.getHeightStart();
-    assert gc.getHeightExtent() == 47.0 : gc.getHeightExtent();
+    assertThat(gc).isNotNull();
+    assertThat(gc.getHeightStart()).isEqualTo(5.0);
+    assertThat(gc.getHeightExtent()).isEqualTo(47.0);
 
-    assert gc.getEastWestRange() == null;
-    assert gc.getNorthSouthRange() == null;
+    assertThat(gc.getEastWestRange()).isNull();
+    assertThat(gc.getNorthSouthRange()).isNull();
   }
 
   @Test
   public void testTimeCoverage() throws Exception {
     Catalog cat = ClientCatalogUtil.open("TestTimeCoverage.xml");
-    assert cat != null;
+    assertThat(cat).isNotNull();
 
     Dataset ds = cat.findDatasetByID("test1");
-    DateRange tc = ds.getTimeCoverage();
-    assert null != tc;
+    TimeCoverage tc = ds.getTimeCoverageNew();
+    assertThat(tc).isNotNull();
     logger.debug("tc = {}", tc);
-    assert tc.getEnd().isPresent();
-    assert tc.getResolution() == null;
-    assert tc.getDuration().equals(new TimeDuration("14 days"));
+    assertThat(tc.getEnd().isPresent()).isTrue();
+    assertThat(tc.getResolution()).isNull();
+    assertThat(tc.getDuration()).isEqualTo(TimeDuration.parse("14 days"));
 
     ds = cat.findDatasetByID("test2");
-    tc = ds.getTimeCoverage();
-    assert null != tc;
+    tc = ds.getTimeCoverageNew();
+    assertThat(tc).isNotNull();
     logger.debug("tc = {}", tc);
     CalendarDate got = tc.getStart().getCalendarDate();
     CalendarDate want = CalendarDateFormatter.isoStringToCalendarDate(null, "1999-11-16T12:00:00");
-    assert got.equals(want);
-    assert tc.getResolution() == null;
+    assertThat(got).isEqualTo(want);
+    assertThat(tc.getResolution()).isNull();
     TimeDuration gott = tc.getDuration();
-    TimeDuration wantt = new TimeDuration("P3M");
-    assert gott.equals(wantt);
+    TimeDuration wantt = TimeDuration.parse("P3M");
+    assertThat(gott).isEqualTo(wantt);
 
     ds = cat.findDatasetByID("test3");
-    tc = ds.getTimeCoverage();
-    assert null != tc;
+    tc = ds.getTimeCoverageNew();
+    assertThat(tc).isNotNull();
     logger.debug("tc = {}", tc);
-    assert tc.getResolution() == null;
-    assert tc.getDuration().equals(new TimeDuration("2 days"));
+    assertThat(tc.getResolution()).isNull();
+    assertThat(tc.getDuration()).isEqualTo(TimeDuration.parse("48.0 hours"));
 
     ds = cat.findDatasetByID("test4");
-    tc = ds.getTimeCoverage();
-    assert null != tc;
+    tc = ds.getTimeCoverageNew();
+    assertThat(tc).isNotNull();
     logger.debug("tc = {}", tc);
     TimeDuration r = tc.getResolution();
-    assert r != null;
-    TimeDuration r2 = new TimeDuration("3 hour");
-    assert r.equals(r2);
+    assertThat(r).isNotNull();
+    TimeDuration r2 = TimeDuration.parse("3 hour");
+    assertThat(r).isEqualTo(r2);
     TimeDuration d = tc.getDuration();
     TimeUnit tu = d.getTimeUnit();
-    assert tu.getUnitString().equals("days") : tu.getUnitString(); // LOOK should be 3 hours, or hours or ??
+    assertThat(tu.getUnitString()).isEqualTo("days"); // LOOK should be 3 hours, or hours or ??
 
     ds = cat.findDatasetByID("test5");
-    tc = ds.getTimeCoverage();
-    assert null != tc;
+    tc = ds.getTimeCoverageNew();
+    assertThat(tc).isNotNull();
     logger.debug("tc = {}", tc);
 
     CalendarDate start = tc.getStart().getCalendarDate();
-    assert start.getCalendar() == Calendar.uniform30day; // Using non-default calendar.
+    assertThat(start.getCalendar()).isEqualTo(Calendar.uniform30day); // Using non-default calendar.
 
     // This date is valid in the uniform30day calendar. If we tried it with the standard calendar, we'd get an error:
     // Illegal base time specification: '2017-02-30' Value 30 for dayOfMonth must be in the range [1,28]
-    assert CalendarDateFormatter.toDateString(start).equals("2017-02-30");
+    assertThat(CalendarDateFormatter.toDateString(start)).isEqualTo("2017-02-30");
 
     CalendarDate end = tc.getEnd().getCalendarDate();
-    assert CalendarDateFormatter.toDateString(end).equals("2017-04-01");
+    assertThat(CalendarDateFormatter.toDateString(end)).isEqualTo("2017-04-01");
 
     // In the uniform30day calendar, the difference between 2017-02-30 and 2017-04-01 is 31 days.
-    assert end.getDifference(start, CalendarPeriod.Field.Day) == 31;
+    assertThat(end.getDifference(start, CalendarPeriod.Field.Day)).isEqualTo(31);
   }
 
   /////////////
@@ -188,22 +187,22 @@ public class TestClientCatalog {
   @Test
   public void testVariables() throws IOException {
     Catalog cat = ClientCatalogUtil.open("TestHarvest.xml");
-    assert cat != null;
+    assertThat(cat).isNotNull();
 
     Dataset ds = cat.findDatasetByID("solve1.dc8");
-    assert ds != null;
+    assertThat(ds).isNotNull();
 
     List<ThreddsMetadata.VariableGroup> list = ds.getVariables();
-    assert list != null;
-    assert list.size() >= 2;
+    assertThat(list).isNotNull();
+    assertThat(list.size()).isGreaterThan(1);
 
     ThreddsMetadata.VariableGroup vars = getType(list, "CF-1.0");
-    assert vars != null;
+    assertThat(vars).isNotNull();
     checkVariable(vars, "wv", "Wind Speed");
     checkVariable(vars, "o3c", "Ozone Concentration");
 
     ThreddsMetadata.VariableGroup dif = getType(list, "DIF");
-    assert dif != null;
+    assertThat(dif).isNotNull();
     checkVariable(dif, "wind_from_direction",
         "EARTH SCIENCE > Atmosphere > Atmosphere Winds > Surface Winds > wind_from_direction");
   }
@@ -220,11 +219,11 @@ public class TestClientCatalog {
     List<ThreddsMetadata.Variable> list = vars.getVariableList();
     for (ThreddsMetadata.Variable var : list) {
       if (var.getName().equals(name)) {
-        assert var.getVocabularyName().equals(vname);
+        assertThat(var.getVocabularyName()).isEqualTo(vname);
         return;
       }
     }
-    assert false : "cant find " + name;
+    fail();
   }
 
   /////////////////
@@ -236,23 +235,23 @@ public class TestClientCatalog {
     logger.debug("{}", writer.writeXML(cat));
 
     Dataset ds = cat.findDatasetByID("testSubset");
-    assert (ds != null) : "cant find dataset 'testSubset'";
-    assert ds.getFeatureType() == FeatureType.GRID;
+    assertThat(ds).isNotNull();
+    assertThat(ds.getFeatureType()).isEqualTo(FeatureType.GRID);
 
     Catalog subsetCat = cat.subsetCatalogOnDataset(ds);
     logger.debug("{}", writer.writeXML(subsetCat));
 
     List<Dataset> dss = subsetCat.getDatasets();
-    assert dss.size() == 1;
+    assertThat(dss.size()).isEqualTo(1);
     Dataset first = dss.get(0);
-    assert first.getServiceNameDefault() != null;
-    assert first.getServiceNameDefault().equals("ACD");
+    assertThat(first.getServiceNameDefault()).isNotNull();
+    assertThat(first.getServiceNameDefault()).isEqualTo("ACD");
 
     Dataset subsetDs = subsetCat.findDatasetByID("testSubset");
-    assert subsetDs != null;
-    assert subsetDs.getServiceNameDefault() != null;
-    assert subsetDs.getServiceNameDefault().equals("ACD");
-    assert subsetDs.getFeatureTypeName() != null;
-    assert subsetDs.getFeatureTypeName().equalsIgnoreCase("Grid");
+    assertThat(subsetDs).isNotNull();
+    assertThat(subsetDs.getServiceNameDefault()).isNotNull();
+    assertThat(subsetDs.getServiceNameDefault()).isEqualTo("ACD");
+    assertThat(subsetDs.getFeatureTypeName()).isNotNull();
+    assertThat(subsetDs.getFeatureTypeName().equalsIgnoreCase("Grid")).isTrue();
   }
 }

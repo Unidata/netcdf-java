@@ -14,7 +14,7 @@ import java.text.ParseException;
  * You can use a DateType = "present" and a time duration to specify "real time" intervals, eg
  * "last 3 days" uses endDate = "present" and duration = "3 days".
  * 
- * @deprecated use {@link ucar.nc2.time.CalendarDateRange}
+ * @deprecated use {@link ucar.nc2.time.CalendarDateRange} or {@link thredds.client.catalog.TimeCoverage}
  */
 @Deprecated
 public class DateRange {

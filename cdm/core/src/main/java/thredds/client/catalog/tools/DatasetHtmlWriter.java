@@ -8,9 +8,6 @@ import com.google.common.escape.Escaper;
 import com.google.common.html.HtmlEscapers;
 import com.google.common.net.UrlEscapers;
 import thredds.client.catalog.*;
-import ucar.nc2.units.DateRange;
-import ucar.nc2.units.DateType;
-import ucar.nc2.units.TimeDuration;
 import ucar.unidata.util.Format;
 import java.util.ArrayList;
 import java.util.Formatter;
@@ -192,7 +189,7 @@ public class DatasetHtmlWriter {
       out.format("</ul>%n");
     }
 
-    java.util.List<DateType> dates = ds.getDates();
+    java.util.List<DateType> dates = ds.getDateTypes();
     if (!dates.isEmpty()) {
       out.format("<h3>Dates:</h3>%n<ul>%n");
       for (DateType d : dates) {
@@ -344,7 +341,7 @@ public class DatasetHtmlWriter {
       out.format(" </ul>%n");
     }
 
-    DateRange tc = ds.getTimeCoverage();
+    TimeCoverage tc = ds.getTimeCoverageNew();
     if (tc != null) {
       out.format("<h3>TimeCoverage:</h3>%n<ul>%n");
       DateType start = tc.getStart();

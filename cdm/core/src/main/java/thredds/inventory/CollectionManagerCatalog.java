@@ -7,10 +7,10 @@ package thredds.inventory;
 
 import thredds.client.catalog.Access;
 import thredds.client.catalog.Dataset;
+import thredds.client.catalog.DateType;
 import thredds.client.catalog.tools.CatalogCrawler;
 import thredds.client.catalog.tools.DataFactory;
 import ucar.nc2.time.CalendarDate;
-import ucar.nc2.units.DateType;
 import javax.annotation.concurrent.ThreadSafe;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -93,14 +93,11 @@ public class CollectionManagerCatalog extends CollectionManagerAbstract implemen
   private static class MFileRemote implements MFile {
     private Object info;
     private final Access access;
-    private CalendarDate lastModified;
+    private final CalendarDate lastModified;
 
     MFileRemote(Access access) {
       this.access = access;
-      for (DateType dateType : access.getDataset().getDates()) {
-        if (dateType.getType().equals("modified"))
-          lastModified = dateType.getCalendarDate();
-      }
+      this.lastModified = access.getDataset().getLastModifiedCalendarDate();
     }
 
     @Override

@@ -5,6 +5,7 @@
 
 package ucar.nc2.time;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.re2j.Matcher;
 import com.google.re2j.Pattern;
 import org.joda.time.Chronology;
@@ -12,7 +13,6 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import ucar.nc2.units.DateFormatter;
 import javax.annotation.concurrent.ThreadSafe;
 import java.util.Date;
 import java.util.StringTokenizer;
@@ -39,7 +39,6 @@ public class CalendarDateFormatter {
       DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.SSS 'UTC'").withZoneUTC(); // udunits
 
   public static String toDateTimeStringISO(CalendarDate cd) {
-
     if (cd.getDateTime().getMillisOfSecond() == 0)
       return isof.print(cd.getDateTime());
     else
@@ -120,21 +119,6 @@ public class CalendarDateFormatter {
   // reading an ISO formatted date
 
   /**
-   * Old version using DateFormatter
-   * 
-   * @param iso ISO 8601 date String
-   * @return equivilent Date
-   * 
-   * @deprecated As of 4.3.10 use {@link #isoStringToDate(String)} instead
-   * 
-   */
-  @Deprecated
-  public static Date parseISODate(String iso) {
-    DateFormatter df = new DateFormatter();
-    return df.getISODate(iso);
-  }
-
-  /**
    * Convert an ISO formatted String to a CalendarDate.
    * 
    * @param calt calendar, may be null for default calendar (Calendar.getDefault())
@@ -193,11 +177,8 @@ public class CalendarDateFormatter {
     return dt.toDate();
   }
 
-  // 1 2 3
-  public static final String isodatePatternString = "([\\+\\-?\\d]+)([ t]([\\.\\:?\\d]*)([ \\+\\-]\\S*)?z?)?$"; // public
-                                                                                                                // for
-                                                                                                                // testing
-  // private static final String isodatePatternString = "([\\+\\-\\d]+)[ Tt]([\\.\\:\\d]*)([ \\+\\-]\\S*)?z?)?$";
+  @VisibleForTesting
+  public static final String isodatePatternString = "([\\+\\-?\\d]+)([ t]([\\.\\:?\\d]*)([ \\+\\-]\\S*)?z?)?$";
   private static final Pattern isodatePattern = Pattern.compile(isodatePatternString);
 
   private static DateTime parseIsoTimeString(Calendar calt, String iso) {

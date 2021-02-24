@@ -139,8 +139,9 @@ public class CalendarDateRange {
   /**
    * Does not handle non-standard calendars
    * 
-   * @deprecated
+   * @deprecated do not use.
    */
+  @Deprecated
   public static CalendarDateRange of(DateRange dr) {
     if (dr == null)
       return null;
@@ -150,8 +151,9 @@ public class CalendarDateRange {
   /**
    * Does not handle non-standard calendars
    * 
-   * @deprecated
+   * @deprecated do not use.
    */
+  @Deprecated
   public DateRange toDateRange() {
     return new DateRange(start.toDate(), end.toDate());
   }

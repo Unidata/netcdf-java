@@ -70,7 +70,9 @@ import java.util.Set;
  *
  * @author caron
  * @since Jan 19, 2010
+ * @deprecated DO NOT USE
  */
+@Deprecated
 @ThreadSafe
 class FmrcDataset {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(FmrcDataset.class);

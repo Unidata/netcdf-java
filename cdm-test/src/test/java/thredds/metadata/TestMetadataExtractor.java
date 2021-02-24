@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.ThreddsMetadata;
+import thredds.client.catalog.TimeCoverage;
 import thredds.client.catalog.builder.CatalogBuilder;
 import thredds.client.catalog.builder.DatasetBuilder;
 import thredds.client.catalog.tools.CatalogXmlWriter;
@@ -18,7 +19,6 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.time.CalendarDate;
-import ucar.nc2.units.DateRange;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.io.IOException;
@@ -38,7 +38,7 @@ public class TestMetadataExtractor {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
-  public void testMetadataExtractorAcdd() throws IOException, URISyntaxException {
+  public void testMetadataExtractorAcdd() throws IOException {
     String filename =
         TestDir.cdmUnitTestDir + "agg/pointFeatureCollection/netCDFbuoydata/BOD001_000_20050627_20051109.nc";
     NetcdfFile ncfile = NetcdfFiles.open(filename);
@@ -67,7 +67,7 @@ public class TestMetadataExtractor {
     assert ds.getDocumentation("comment").startsWith("Supplementary information: West Coast Observing");
     assert ds.getDocumentation("rights").startsWith("Please cite Gulf of the Farallones National");
 
-    DateRange tc = ds.getTimeCoverage();
+    TimeCoverage tc = ds.getTimeCoverageNew();
     assert tc != null;
     assertEquals(tc.getStart().getCalendarDate(), CalendarDate.parseISOformat(null, "2005-06-27T21:48:00"));
     assertEquals(tc.getEnd().getCalendarDate(), CalendarDate.parseISOformat(null, "2005-11-09T00:53:59"));

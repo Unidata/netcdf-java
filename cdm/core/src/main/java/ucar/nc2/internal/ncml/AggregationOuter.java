@@ -37,8 +37,9 @@ import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateUnit;
-import ucar.nc2.units.DateUnit;
 import ucar.nc2.util.CancelTask;
+
+import javax.annotation.Nullable;
 
 /** Superclass for Aggregations on the outer dimension: joinNew, joinExisting, Fmrc, FmrcSingle */
 abstract class AggregationOuter extends Aggregation implements ProxyReader {
@@ -681,13 +682,15 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
   // data values might be specified by Dataset.coordValue
   class CoordValueVar extends CacheVar {
     String units;
-    DateUnit du;
+    @Nullable
+    CalendarDateUnit du = null;
 
     CoordValueVar(String varName, DataType dtype, String units) {
       super(varName, dtype);
       this.units = units;
       try {
-        du = new DateUnit(units);
+        // LOOK we should look for calendar attribute
+        du = CalendarDateUnit.withCalendar(null, units);
       } catch (Exception e) {
         // ok to fail - may not be a time coordinate
       }
@@ -723,7 +726,7 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
           ii.setObjectNext(dset.coordValue); // coordValueDate as a String, see setInfo()
 
         } else if (du != null) {
-          double val = du.makeValue(dset.coordValueDate.toDate());
+          double val = du.makeOffsetFromRefDate(dset.coordValueDate);
           ii.setDoubleNext(val);
         }
 
