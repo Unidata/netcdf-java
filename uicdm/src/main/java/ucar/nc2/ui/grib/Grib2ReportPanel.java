@@ -127,7 +127,7 @@ public class Grib2ReportPanel extends ReportPanel {
     counters.show(f);
   }
 
-  private void doGribIndex(Formatter fm, MFile ff, Counters counters, boolean eachFile) throws IOException {
+  private void doGribIndex(Formatter fm, MFile ff, Counters counters, boolean eachFile) {
     String path = ff.getPath();
     Grib2Index g2idx = new Grib2Index();
     g2idx.readIndex(path, 0, thredds.inventory.CollectionUpdateType.nocheck);
@@ -475,7 +475,7 @@ public class Grib2ReportPanel extends ReportPanel {
   }
 
   // keep track of all files that use this template
-  private class FileList implements Comparable<FileList> {
+  private static class FileList implements Comparable<FileList> {
     String name;
     int template;
     java.util.List<FileCount> fileList = new ArrayList<>();
@@ -652,8 +652,6 @@ public class Grib2ReportPanel extends ReportPanel {
   private void doPdsSummary(Formatter f, MFile mf, Counters counters) throws IOException {
     boolean showLevel = true;
     boolean showCoords = true;
-    int firstPtype = -1;
-    boolean shutup = false;
 
     Grib2Index index = createIndex(mf, f);
     if (index == null)
@@ -1370,40 +1368,6 @@ public class Grib2ReportPanel extends ReportPanel {
       }
     }
 
-    /*
-     * @Override
-     * public boolean equals(Object o) {
-     * if (this == o) return true;
-     * if (o == null || getClass() != o.getClass()) return false;
-     * 
-     * GridMatch gridMatch = (GridMatch) o;
-     * 
-     * if (ens != gridMatch.ens) return false;
-     * if (interval != gridMatch.interval) return false;
-     * if (isError != gridMatch.isError) return false;
-     * if (isLayer != gridMatch.isLayer) return false;
-     * if (level != gridMatch.level) return false;
-     * if (prob != gridMatch.prob) return false;
-     * if (probLimit != gridMatch.probLimit) return false;
-     * if (!Arrays.equals(param, gridMatch.param)) return false;
-     * 
-     * return true;
-     * }
-     * 
-     * @Override
-     * public int hashCode() {
-     * int result = param != null ? Arrays.hashCode(param) : 0;
-     * result = 31 * result + level;
-     * result = 31 * result + (isLayer ? 1 : 0);
-     * result = 31 * result + (isError ? 1 : 0);
-     * result = 31 * result + interval;
-     * result = 31 * result + prob;
-     * result = 31 * result + ens;
-     * result = 31 * result + probLimit;
-     * return result;
-     * }
-     */
-
     public boolean equals(Object o) {
       if (this == o)
         return true;
@@ -1524,7 +1488,7 @@ public class Grib2ReportPanel extends ReportPanel {
     return grids;
   }
 
-  private Map<Integer, GridMatch> getGridsOld(MFile ff, Formatter f) throws IOException {
+  private Map<Integer, GridMatch> getGridsOld(MFile ff, Formatter f) {
     Map<Integer, GridMatch> grids = new HashMap<>(100);
     try (NetcdfFile ncfile = NetcdfFiles.open(ff.getPath(), "ucar.nc2.iosp.grib.GribServiceProvider", -1, null, null)) {
       NetcdfDataset ncd = NetcdfDatasets.enhance(ncfile, NetcdfDataset.getDefaultEnhanceMode(), null);

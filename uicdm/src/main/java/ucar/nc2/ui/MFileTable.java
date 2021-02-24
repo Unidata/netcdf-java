@@ -19,17 +19,11 @@ import java.io.File;
 import java.util.*;
 import java.util.List;
 
-/**
- * Describe
- *
- * @author caron
- * @since 11/18/13
- */
 public class MFileTable extends JPanel {
-  private PreferencesExt prefs;
+  private final PreferencesExt prefs;
   private final boolean isPopup;
 
-  private BeanTable fileTable;
+  private final BeanTable<FileBean> fileTable;
   private IndependentWindow fileWindow;
 
   private List<String> gribCollectionFiles = new ArrayList<>();
@@ -39,13 +33,11 @@ public class MFileTable extends JPanel {
     this.prefs = prefs;
     this.isPopup = isPopup;
 
-    PopupMenu varPopup;
-
-    fileTable = new BeanTable(FileBean.class, (PreferencesExt) prefs.node("FileBean"), false, "Files", "Files", null);
-    varPopup = new PopupMenu(fileTable.getJTable(), "Options");
+    fileTable = new BeanTable<>(FileBean.class, (PreferencesExt) prefs.node("FileBean"), false, "Files", "Files", null);
+    PopupMenu varPopup = new PopupMenu(fileTable.getJTable(), "Options");
     varPopup.addAction("Open this file in Grib2Collection", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        FileBean bean = (FileBean) fileTable.getSelectedBean();
+        FileBean bean = fileTable.getSelectedBean();
         if (bean == null)
           return;
         if (MFileTable.this.isPopup)
@@ -58,7 +50,7 @@ public class MFileTable extends JPanel {
     });
     varPopup.addAction("Add Files to Collection", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        List<FileBean> beans = (List<FileBean>) fileTable.getSelectedBeans();
+        List<FileBean> beans = fileTable.getSelectedBeans();
         if (beans == null || beans.isEmpty())
           return;
         for (FileBean bean : beans)

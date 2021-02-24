@@ -15,7 +15,6 @@ import java.awt.Shape;
  * @author Russ Rew
  * @author John Caron
  */
-
 public abstract class AbstractGisFeature implements GisFeature {
 
   // subclasses must implement these methods
@@ -24,8 +23,6 @@ public abstract class AbstractGisFeature implements GisFeature {
   public abstract int getNumPoints();
 
   public abstract int getNumParts();
-
-  public abstract java.util.Iterator getGisParts();
 
   /**
    * Convert this GisFeature to a java.awt.Shape, using the default
@@ -38,9 +35,7 @@ public abstract class AbstractGisFeature implements GisFeature {
     int npts = getNumPoints();
     GeneralPath path = new GeneralPath(GeneralPath.WIND_EVEN_ODD, npts);
 
-    java.util.Iterator pi = getGisParts();
-    while (pi.hasNext()) {
-      GisPart gp = (GisPart) pi.next();
+    for (GisPart gp : this) {
       double[] xx = gp.getX();
       double[] yy = gp.getY();
       int np = gp.getNumPoints();
@@ -66,9 +61,7 @@ public abstract class AbstractGisFeature implements GisFeature {
     boolean showPts = ucar.ui.prefs.Debug.isSet("projection/showPoints");
 
     ProjectionPoint lastW = ProjectionPoint.create(0, 0);
-    java.util.Iterator pi = getGisParts();
-    while (pi.hasNext()) {
-      GisPart gp = (GisPart) pi.next();
+    for (GisPart gp : this) {
       double[] xx = gp.getX();
       double[] yy = gp.getY();
       boolean skipPrev = false;
@@ -120,9 +113,7 @@ public abstract class AbstractGisFeature implements GisFeature {
 
     boolean showPts = ucar.ui.prefs.Debug.isSet("projection/showPoints");
 
-    java.util.Iterator pi = getGisParts();
-    while (pi.hasNext()) {
-      GisPart gp = (GisPart) pi.next();
+    for (GisPart gp : this) {
       double[] xx = gp.getX();
       double[] yy = gp.getY();
       boolean skipPrev = false;

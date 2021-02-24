@@ -25,11 +25,10 @@ import java.util.ArrayList;
  * 
  * @author John Caron
  */
-
 public class WorldMap extends GisFeatureRenderer {
   private static final String WORLD_MAP = "/resources/ui/maps/cil_100km.mapr";
   private static final double SECS_PER_DEG = 3600.0;
-  private static boolean debug, debugTime;
+  private static final boolean debugTime = false;
 
   private static WorldMapFeature worldMapFeature;
   private static ArrayList<GisFeature> gisList;
@@ -97,7 +96,7 @@ public class WorldMap extends GisFeatureRenderer {
       return partList.size();
     }
 
-    public java.util.Iterator<GisPart> getGisParts() {
+    public java.util.Iterator<GisPart> iterator() {
       return partList.iterator();
     }
   }
@@ -145,7 +144,7 @@ public class WorldMap extends GisFeatureRenderer {
     dataProjection = new LatLonProjection("Cylindrical Equidistant");
   }
 
-  private LatLonRect defaultLLBB = new LatLonRect.Builder(LatLonPoint.create(-180., -90.), 360., 180.).build();
+  private final LatLonRect defaultLLBB = new LatLonRect(LatLonPoint.create(-180., -90.), 360., 180.);
 
   public LatLonRect getPreferredArea() {
     return defaultLLBB;

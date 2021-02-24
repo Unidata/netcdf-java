@@ -73,14 +73,14 @@ public class CdmIndexReportPanel extends ReportPanel {
   protected void doDupAndMissing(Formatter f, MCollection dcm, boolean eachFile, boolean extra) throws IOException {
     Accum total = new Accum();
     try (CloseableIterator<MFile> iter = dcm.getFileIterator()) { // not sorted
-      while (iter != null && iter.hasNext()) {
+      while (iter.hasNext()) {
         doDupAndMissingEach(f, iter.next(), eachFile, extra, total);
       }
     }
     f.format("%n Grand Total %s%n", total);
   }
 
-  // seperate report for each file in collection
+  // separate report for each file in collection
   private void doDupAndMissingEach(Formatter f, MFile mfile, boolean each, boolean extra, Accum accum)
       throws IOException {
 
@@ -138,26 +138,23 @@ public class CdmIndexReportPanel extends ReportPanel {
       throws IOException {
 
     if (eachFile) {
-
       Set<String> filenames = new HashSet<>();
       try (CloseableIterator<MFile> iter = dcm.getFileIterator()) { // not sorted
-        while (iter != null && iter.hasNext()) {
+        while (iter.hasNext()) {
           doMisplacedFieldsEach(f, iter.next(), filenames, extra);
         }
       }
-
       f.format("%nAll files%n");
-      for (String filename : filenames)
+      for (String filename : filenames) {
         f.format("  %s%n", filename);
-
+      }
 
     } else { // eachFile false
       doMisplacedFields(f, dcm, extra);
-
     }
   }
 
-  // seperate report for each file in collection
+  // separate report for each file in collection
   private void doMisplacedFieldsEach(Formatter f2, MFile mfile, Set<String> filenames, boolean extra)
       throws IOException {
     Formatter f = new Formatter(System.out);

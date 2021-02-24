@@ -14,15 +14,13 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.invoke.MethodHandles;
-import javax.swing.JSplitPane;
 
 public class DatasetWriterPanel extends OpPanel {
 
   private static final org.slf4j.Logger logger =
       org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  private DatasetWriter dsWriter;
-  private JSplitPane split;
+  private final DatasetWriter dsWriter;
   private NetcdfFile ncfile;
 
   public DatasetWriterPanel(PreferencesExt dbPrefs) {

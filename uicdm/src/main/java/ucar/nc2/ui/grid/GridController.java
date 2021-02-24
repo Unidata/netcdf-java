@@ -6,7 +6,6 @@ package ucar.nc2.ui.grid;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.geom.AffineTransform;
@@ -65,8 +64,8 @@ public class GridController {
   private static final String LastDatasetName = "LastDataset";
   private static final String ColorScaleName = "ColorScale";
 
-  private PreferencesExt store;
-  private GridUI ui;
+  private final PreferencesExt store;
+  private final GridUI ui;
 
   // delegates
   private ColorScale cs;
@@ -89,15 +88,12 @@ public class GridController {
   private boolean hasDependentTimeAxis;
 
   // rendering
-  private AffineTransform atI = new AffineTransform(); // identity transform
-  // private MyImageObserver imageObs = new MyImageObserver();
-  // private MyPrintable printer = null;
+  private final AffineTransform atI = new AffineTransform(); // identity transform
 
   private Renderer renderMap;
-  private GridRenderer renderGrid;
-  // private WindRenderer renderWind;
+  private final GridRenderer renderGrid;
   private javax.swing.Timer redrawTimer;
-  private Color mapColor = Color.black;
+  private final Color mapColor = Color.black;
 
   // ui
   private javax.swing.JLabel dataValueLabel, posLabel;
@@ -129,7 +125,6 @@ public class GridController {
     // set up the renderers; Maps are added by addMapBean()
     renderGrid = new GridRenderer();
     renderGrid.setColorScale(cs);
-    // renderWind = new WindRenderer();
 
     // stride
     strideSpinner = new JSpinner(new SpinnerNumberModel(1, 1, 100, 1));
@@ -139,15 +134,13 @@ public class GridController {
     });
 
     // timer
-    redrawTimer = new javax.swing.Timer(0, new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        SwingUtilities.invokeLater(new Runnable() { // invoke in event thread
-          public void run() {
-            draw(false);
-          }
-        });
-        redrawTimer.stop(); // one-shot timer
-      }
+    redrawTimer = new javax.swing.Timer(0, e -> {
+      SwingUtilities.invokeLater(new Runnable() { // invoke in event thread
+        public void run() {
+          draw(false);
+        }
+      });
+      redrawTimer.stop(); // one-shot timer
     });
     redrawTimer.setInitialDelay(DELAY_DRAW_AFTER_DATA_EVENT);
     redrawTimer.setRepeats(false);
@@ -264,22 +257,9 @@ public class GridController {
     state = store.getBoolean("showContourLabelsAction", false);
     showContourLabelsAction.putValue(BAMutil.STATE, state);
     renderGrid.setDrawContourLabels(state);
-
-    /*
-     * winds
-     * showWindsAction = new AbstractAction() {
-     * public void actionPerformed(ActionEvent e) {
-     * Boolean state = (Boolean) getValue(BAMutil.STATE);
-     * drawWinds = state.booleanValue();
-     * draw(true, false, false);
-     * }
-     * };
-     * BAMutil.setActionProperties( showWindsAction, "ShowWinds", "show wind", true, 'W', 0);
-     */
   }
 
   private void makeEventManagement() {
-
     //// manage field selection events
     String actionName = "field";
     ActionCoordinator fieldCoordinator = new ActionCoordinator(actionName);
@@ -309,17 +289,15 @@ public class GridController {
     // connect to the vertPanel
     levelCoordinator.addActionSourceListener(ui.vertPanel.getActionSourceListener());
     // also manage Pick events from the vertPanel
-    vertPanel.getDrawArea().addPickEventListener(new PickEventListener() {
-      public void actionPerformed(PickEvent e) {
-        int level = renderGrid.findLevelCoordElement(e.getLocation().getY());
-        if ((level != -1) && (level != currentLevel)) {
-          currentLevel = level;
-          redrawLater();
-          String selectedName = levelNames.get(currentLevel).getName();
-          if (Debug.isSet("pick/event"))
-            System.out.println("pick.event Vert: " + selectedName);
-          levelSource.fireActionValueEvent(ActionSourceListener.SELECTED, selectedName);
-        }
+    vertPanel.getDrawArea().addPickEventListener(e -> {
+      int level = renderGrid.findLevelCoordElement(e.getLocation().getY());
+      if ((level != -1) && (level != currentLevel)) {
+        currentLevel = level;
+        redrawLater();
+        String selectedName = levelNames.get(currentLevel).getName();
+        if (Debug.isSet("pick/event"))
+          System.out.println("pick.event Vert: " + selectedName);
+        levelSource.fireActionValueEvent(ActionSourceListener.SELECTED, selectedName);
       }
     });
     // heres what to do when a level changes
@@ -503,11 +481,9 @@ public class GridController {
     return "";
   }
 
-
   String getNcML() {
     if (gridDataset == null)
       return "Null gridset";
-
     NcmlWriter ncmlWriter = new NcmlWriter();
     Element netcdfElement = ncmlWriter.makeNetcdfElement(gridDataset.getNetcdfFile(), null);
     return ncmlWriter.writeToString(netcdfElement);
@@ -534,7 +510,7 @@ public class GridController {
   }
 
   /** iterator returns NamedObject CHANGE TO GENERIC */
-  java.util.List getFields() {
+  java.util.List<GridDatatype> getFields() {
     if (gridDataset == null)
       return null;
     else
@@ -674,13 +650,13 @@ public class GridController {
   boolean showDataset() {
 
     // temp kludge for initialization
-    java.util.List grids = gridDataset.getGrids();
+    java.util.List<GridDatatype> grids = gridDataset.getGrids();
     if ((grids == null) || grids.isEmpty()) {
       javax.swing.JOptionPane.showMessageDialog(null, "No gridded fields in file " + gridDataset.getTitle());
       return false;
     }
 
-    currentField = (GridDatatype) grids.get(0);
+    currentField = grids.get(0);
     currentSlice = 0;
     currentLevel = 0;
     currentTime = 0;
@@ -728,7 +704,7 @@ public class GridController {
     // set levels
     CoordinateAxis1D vaxis = gcs.getVerticalAxis();
     levelNames = NamedObjects.getNames(vaxis);
-    if ((levelNames == null) || (currentLevel >= levelNames.size()))
+    if (currentLevel >= levelNames.size())
       currentLevel = 0;
     vertPanel.setCoordSys(currentField.getCoordinateSystem(), currentLevel);
 
@@ -736,7 +712,7 @@ public class GridController {
     if (gcs.hasTimeAxis()) {
       CoordinateAxis1DTime taxis = gcs.hasTimeAxis1D() ? gcs.getTimeAxis1D() : gcs.getTimeAxisForRun(0);
       timeNames = NamedObjects.getNames(taxis);
-      if ((timeNames == null) || (currentTime >= timeNames.size()))
+      if (currentTime >= timeNames.size())
         currentTime = 0;
       hasDependentTimeAxis = !gcs.hasTimeAxis1D();
     } else
@@ -845,18 +821,6 @@ public class GridController {
         System.out.println("timing/MapDraw: " + tookTime * .001 + " seconds");
       }
     }
-
-    /*
-     * draw Winds
-     * if (drawWinds) {
-     * startTime = System.currentTimeMillis();
-     * renderWind.draw(gNP, currentLevel, currentTime);
-     * if (Debug.isSet("timing/WindsDraw")) {
-     * tookTime = System.currentTimeMillis() - startTime;
-     * System.out.println("timing.WindsDraw: " + tookTime*.001 + " seconds");
-     * }
-     * }
-     */
 
     // copy buffer to the screen
     if (immediate)

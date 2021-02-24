@@ -21,7 +21,7 @@ import java.util.ArrayList;
 
 /** Helper methods for IOSP's for reading data. */
 public class IospHelper {
-  private static boolean showLayoutTypes = false;
+  private static final boolean showLayoutTypes = false;
 
   /**
    * Read data subset from RandomAccessFile, create primitive array of size Layout.getTotalNelems.

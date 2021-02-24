@@ -10,7 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.iosp.IospHelper;
-import ucar.nc2.util.Misc;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -25,7 +25,7 @@ import java.util.List;
  * @since 10/30/2015.
  */
 public class NcStreamDataCol {
-  private static Logger logger = LoggerFactory.getLogger(NcStreamDataCol.class);
+  private static final Logger logger = LoggerFactory.getLogger(NcStreamDataCol.class);
 
   /*
    * message DataCol {

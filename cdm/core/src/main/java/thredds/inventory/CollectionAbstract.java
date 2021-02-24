@@ -55,7 +55,7 @@ import java.util.*;
  * @since 11/20/13
  */
 public abstract class CollectionAbstract implements MCollection {
-  private static org.slf4j.Logger defaultLog = org.slf4j.LoggerFactory.getLogger("featureCollectionScan");
+  private static final org.slf4j.Logger defaultLog = org.slf4j.LoggerFactory.getLogger("featureCollectionScan");
 
   public static final String CATALOG = "catalog:";
   public static final String DIR = "directory:";

@@ -10,7 +10,6 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis2D;
 import ucar.nc2.util.Indent;
 import java.util.Optional;
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
@@ -27,7 +26,7 @@ public class LatLonAxis2D extends CoverageCoordAxis {
 
   // can only be set once
   private int[] shape; // y, x
-  private Object userObject;
+  private final Object userObject;
   private final List<RangeIterator> ranges; // holds a section describing the subset of a 2D axis
 
   public LatLonAxis2D(CoverageCoordAxisBuilder builder) {

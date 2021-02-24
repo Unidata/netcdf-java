@@ -17,7 +17,6 @@ import javax.swing.filechooser.FileFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.net.URISyntaxException;
 import java.util.Formatter;
 
@@ -57,25 +56,24 @@ import java.util.Formatter;
  *
  * @author John Caron
  */
-
 public class CatalogChooser extends JPanel {
   private static final String HDIVIDER = "HSplit_Divider";
-  private static final String FILECHOOSER_DEFAULTDIR = "FileChooserDefaultDir";
-  private PreferencesExt prefs;
+  private static final boolean debugEvents = false;
+  private static final boolean showHTML = false;
 
+  private final PreferencesExt prefs;
   private String eventType;
 
   // ui
   private ComboBox<String> catListBox;
   private CatalogTreeView tree;
-  private HtmlBrowser htmlViewer;
+  private final HtmlBrowser htmlViewer;
   private FileManager fileChooser;
 
-  private JSplitPane split;
-  private JLabel statusLabel;
-  private JPanel buttPanel;
-  private JLabel sourceText;
-  private RootPaneContainer parent;
+  private final JSplitPane split;
+  private final JLabel statusLabel;
+  private final JPanel buttPanel;
+  private final JLabel sourceText;
 
   private boolean datasetEvents = true;
   private boolean catrefEvents;
@@ -83,10 +81,6 @@ public class CatalogChooser extends JPanel {
 
   // private boolean catgenShow = true;
   private FileManager catgenFileChooser;
-
-  private boolean debugEvents;
-  // private boolean debugTree = false;
-  private boolean showHTML;
 
   /**
    * Constructor, with control over whether a comboBox of previous catalogs is shown.
@@ -162,44 +156,42 @@ public class CatalogChooser extends JPanel {
 
     // the catalog tree
     tree = new CatalogTreeView();
-    tree.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
-      public void propertyChange(java.beans.PropertyChangeEvent e) {
-        if (debugEvents)
-          System.out.println("CatalogChooser propertyChange name=" + e.getPropertyName() + "=");
+    tree.addPropertyChangeListener(e -> {
+      if (debugEvents)
+        System.out.println("CatalogChooser propertyChange name=" + e.getPropertyName() + "=");
 
-        if (e.getPropertyName().equals("Catalog")) {
-          String catalogURL = (String) e.getNewValue();
-          setCurrentURL(catalogURL);
-          if (catListBox != null)
-            catListBox.addItem(catalogURL);
-          firePropertyChangeEvent(e);
+      if (e.getPropertyName().equals("Catalog")) {
+        String catalogURL = (String) e.getNewValue();
+        setCurrentURL(catalogURL);
+        if (catListBox != null)
+          catListBox.addItem(catalogURL);
+        firePropertyChangeEvent(e);
 
-        } else if (e.getPropertyName().equals("Selection")) {
-          DatasetNode ds = tree.getSelectedDataset();
-          if (ds == null)
-            return;
+      } else if (e.getPropertyName().equals("Selection")) {
+        DatasetNode ds = tree.getSelectedDataset();
+        if (ds == null)
+          return;
 
-          if (ds instanceof Dataset)
-            showDatasetInfo((Dataset) ds);
+        if (ds instanceof Dataset)
+          showDatasetInfo((Dataset) ds);
 
-          if (ds instanceof CatalogRef) {
-            CatalogRef ref = (CatalogRef) ds;
-            String href = ref.getXlinkHref();
-            if (href != null) {
-              try {
-                java.net.URI uri = ref.getParentCatalog().resolveUri(href);
-                setCurrentURL(uri.toString());
-              } catch (URISyntaxException ee) {
-                throw new RuntimeException(ee);
-              }
+        if (ds instanceof CatalogRef) {
+          CatalogRef ref = (CatalogRef) ds;
+          String href = ref.getXlinkHref();
+          if (href != null) {
+            try {
+              java.net.URI uri = ref.getParentCatalog().resolveUri(href);
+              setCurrentURL(uri.toString());
+            } catch (URISyntaxException ee) {
+              throw new RuntimeException(ee);
             }
-          } else if (ds.getParent() == null) { // top
-            setCurrentURL(tree.getCatalogURL());
           }
-
-        } else if (e.getNewValue() instanceof Dataset) { // Dataset or File
-          firePropertyChangeEvent((Dataset) e.getNewValue(), e.getPropertyName());
+        } else if (ds.getParent() == null) { // top
+          setCurrentURL(tree.getCatalogURL());
         }
+
+      } else if (e.getNewValue() instanceof Dataset) { // Dataset or File
+        firePropertyChangeEvent((Dataset) e.getNewValue(), e.getPropertyName());
       }
     });
 
@@ -353,8 +345,6 @@ public class CatalogChooser extends JPanel {
     buttPanel.revalidate();
   }
 
-  // public void useDQCpopup( boolean use) { tree.useDQCpopup( use); }
-
   /**
    * Whether to throw events only if dataset has an Access.
    * 
@@ -377,15 +367,6 @@ public class CatalogChooser extends JPanel {
   public void setDatasetEvents(boolean datasetEvents) {
     this.datasetEvents = datasetEvents;
   }
-
-  /*
-   * Set the factory to create catalogs.
-   * If you do not set this, it will use the default factory.
-   * 
-   * @param factory : read XML with this factory
-   *
-   * public void setCatalogFactory(InvCatalogFactory factory) { tree.setCatalogFactory(factory); }
-   */
 
   /**
    * Set the string value in the combo box
@@ -479,7 +460,6 @@ public class CatalogChooser extends JPanel {
    * @param modal is modal
    */
   public JDialog makeDialog(RootPaneContainer parent, String title, boolean modal) {
-    this.parent = parent;
     return new Dialog(parent, title, modal);
   }
 
@@ -489,11 +469,9 @@ public class CatalogChooser extends JPanel {
       super(parent instanceof Frame ? (Frame) parent : null, title, modal);
 
       // L&F may change
-      UIManager.addPropertyChangeListener(new PropertyChangeListener() {
-        public void propertyChange(PropertyChangeEvent e) {
-          if (e.getPropertyName().equals("lookAndFeel"))
-            SwingUtilities.updateComponentTreeUI(CatalogChooser.Dialog.this);
-        }
+      UIManager.addPropertyChangeListener(e -> {
+        if (e.getPropertyName().equals("lookAndFeel"))
+          SwingUtilities.updateComponentTreeUI(Dialog.this);
       });
 
       // add a dismiss button

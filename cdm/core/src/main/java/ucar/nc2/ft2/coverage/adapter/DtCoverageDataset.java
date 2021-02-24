@@ -78,9 +78,9 @@ public class DtCoverageDataset implements Closeable {
   private NetcdfDataset ncd;
   private FeatureType coverageType;
 
-  private ArrayList<DtCoverage> grids = new ArrayList<>();
-  private Map<String, Gridset> gridsetHash = new HashMap<>();
-  private List<Gridset> gridSets = new ArrayList<>();
+  private final ArrayList<DtCoverage> grids = new ArrayList<>();
+  private final Map<String, Gridset> gridsetHash = new HashMap<>();
+  private final List<Gridset> gridSets = new ArrayList<>();
 
   private LatLonRect llbbMax;
   private CalendarDateRange dateRangeMax;
@@ -418,8 +418,8 @@ public class DtCoverageDataset implements Closeable {
    */
   public static class Gridset {
 
-    private DtCoverageCS gcc;
-    private List<DtCoverage> grids = new ArrayList<>();
+    private final DtCoverageCS gcc;
+    private final List<DtCoverage> grids = new ArrayList<>();
 
     private Gridset(DtCoverageCS gcc) {
       this.gcc = gcc;

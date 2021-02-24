@@ -42,25 +42,16 @@ import java.util.List;
 public class GribRewritePanel extends JPanel {
   private static final Logger logger = LoggerFactory.getLogger(GribRewritePanel.class);
 
-  private PreferencesExt prefs;
+  private final PreferencesExt prefs;
 
-  private BeanTable ftTable;
-  private JSplitPane split;
-  private TextHistoryPane dumpTA;
-  private IndependentWindow infoWindow;
+  private final BeanTable<FileBean> ftTable;
+  private final JSplitPane split;
+  private final TextHistoryPane dumpTA;
+  private final IndependentWindow infoWindow;
 
   public GribRewritePanel(PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
-
-    ftTable = new BeanTable(FileBean.class, (PreferencesExt) prefs.node("FeatureDatasetBeans"), false);
-    /*
-     * ftTable.addListSelectionListener(new ListSelectionListener() {
-     * public void valueChanged(ListSelectionEvent e) {
-     * FileBean ftb = (FileBean) ftTable.getSelectedBean();
-     * setSelectedFeatureDataset(ftb);
-     * }
-     * });
-     */
+    ftTable = new BeanTable<>(FileBean.class, (PreferencesExt) prefs.node("FeatureDatasetBeans"), false);
 
     AbstractAction calcAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
@@ -69,38 +60,34 @@ public class GribRewritePanel extends JPanel {
     };
     BAMutil.setActionProperties(calcAction, "nj22/Dataset", "calc storage", false, 'C', -1);
     BAMutil.addActionToContainer(buttPanel, calcAction);
-
     PopupMenu varPopup = new PopupMenu(ftTable.getJTable(), "Options");
     varPopup.addAction("Open as NetcdfFile", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        FileBean ftb = (FileBean) ftTable.getSelectedBean();
+        FileBean ftb = ftTable.getSelectedBean();
         if (ftb == null)
           return;
         GribRewritePanel.this.firePropertyChange("openNetcdfFile", null, ftb.getPath());
       }
     });
-
     varPopup.addAction("Open as GridDataset", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        FileBean ftb = (FileBean) ftTable.getSelectedBean();
+        FileBean ftb = ftTable.getSelectedBean();
         if (ftb == null)
           return;
         GribRewritePanel.this.firePropertyChange("openGridDataset", null, ftb.getPath());
       }
     });
-
     varPopup.addAction("Open in Grib2Data", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        FileBean ftb = (FileBean) ftTable.getSelectedBean();
+        FileBean ftb = ftTable.getSelectedBean();
         if (ftb == null)
           return;
         GribRewritePanel.this.firePropertyChange("openGrib2Data", null, ftb.getPath());
       }
     });
-
     varPopup.addAction("Open in Grib1Data", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        FileBean ftb = (FileBean) ftTable.getSelectedBean();
+        FileBean ftb = ftTable.getSelectedBean();
         if (ftb == null)
           return;
         GribRewritePanel.this.firePropertyChange("openGrib1Data", null, ftb.getPath());
@@ -152,13 +139,12 @@ public class GribRewritePanel extends JPanel {
   }
 
   public void clear() {
-    ftTable.setBeans(new ArrayList()); // clear
+    ftTable.setBeans(new ArrayList<>()); // clear
   }
 
   public boolean setScanDirectory(String dirName) {
     clear();
 
-    // repaint();
     Formatter errlog = new Formatter();
     List<FileBean> beans = scan(dirName, errlog);
     if (beans.isEmpty()) {
@@ -167,7 +153,6 @@ public class GribRewritePanel extends JPanel {
     }
 
     ftTable.setBeans(beans);
-    // repaint();
     return true;
   }
 
@@ -349,15 +334,6 @@ public class GribRewritePanel extends JPanel {
 
     public double getGribSizeM() {
       return ((double) f.length()) / 1000 / 1000;
-      /*
-       * Formatter fm = new Formatter();
-       * //long size = f.length();
-       * //if (size > 10 * 1000 * 1000) fm.format("%6.1f M", ((float) size) / 1000 / 1000);
-       * //else if (size > 10 * 1000) fm.format("%6.1f K", ((float) size) / 1000);
-       * //else fm.format("%d", size);
-       * fm.format("%,-15d", f.length() / 1000);
-       * return fm.toString();
-       */
     }
 
     public long getCdmData2D() {
@@ -420,9 +396,6 @@ public class GribRewritePanel extends JPanel {
         for (GribCollectionImmutable.Dataset ds : gc.getDatasets())
           for (GribCollectionImmutable.GroupGC group : ds.getGroups())
             for (GribCollectionImmutable.VariableIndex vi : group.getVariables()) {
-              // vi.calcTotalSize();
-              // nrecords += vi.nrecords;
-              // ndups += vi.ndups;
               nvars++;
             }
       }

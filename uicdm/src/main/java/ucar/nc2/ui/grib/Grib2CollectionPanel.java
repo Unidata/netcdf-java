@@ -57,8 +57,6 @@ import ucar.unidata.geoloc.LatLonPoint;
 import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.BeanTable;
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.beans.BeanInfo;
@@ -80,11 +78,18 @@ public class Grib2CollectionPanel extends JPanel {
 
   private final PreferencesExt prefs;
 
-  private BeanTable param2BeanTable, record2BeanTable, gds2Table;
-  private JSplitPane split, split2;
+  private final BeanTable<Grib2ParameterBean> param2BeanTable;
+  private BeanTable<Grib2RecordBean> record2BeanTable;
+  private final BeanTable<Gds2Bean> gds2Table;
+  private final JSplitPane split;
+  private final JSplitPane split2;
 
-  private TextHistoryPane infoPopup, infoPopup2, infoPopup3;
-  private IndependentWindow infoWindow, infoWindow2, infoWindow3;
+  private final TextHistoryPane infoPopup;
+  private TextHistoryPane infoPopup2;
+  private final TextHistoryPane infoPopup3;
+  private final IndependentWindow infoWindow;
+  private IndependentWindow infoWindow2;
+  private final IndependentWindow infoWindow3;
   private FileManager fileChooser;
 
   public Grib2CollectionPanel(PreferencesExt prefs, JPanel buttPanel) {
@@ -103,22 +108,19 @@ public class Grib2CollectionPanel extends JPanel {
     buttPanel.add(xmlButt);
 
     ////////////////
-    param2BeanTable = new BeanTable(Grib2ParameterBean.class, (PreferencesExt) prefs.node("Param2Bean"), false,
+    param2BeanTable = new BeanTable<>(Grib2ParameterBean.class, (PreferencesExt) prefs.node("Param2Bean"), false,
         "Grib2PDSVariables", "from Grib2Input.getRecords()", null);
-    param2BeanTable.addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
-        Grib2ParameterBean pb = (Grib2ParameterBean) param2BeanTable.getSelectedBean();
-        if (pb != null) {
-          makeRecordTable(pb.pds);
-          record2BeanTable.setBeans(pb.getRecordBeans());
-        }
+    param2BeanTable.addListSelectionListener(e -> {
+      Grib2ParameterBean pb = param2BeanTable.getSelectedBean();
+      if (pb != null) {
+        makeRecordTable(pb.pds);
+        record2BeanTable.setBeans(pb.getRecordBeans());
       }
     });
-
     varPopup = new PopupMenu(param2BeanTable.getJTable(), "Options");
     varPopup.addAction("Show PDS", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        Grib2ParameterBean pb = (Grib2ParameterBean) param2BeanTable.getSelectedBean();
+        Grib2ParameterBean pb = param2BeanTable.getSelectedBean();
         if (pb != null) {
           Formatter f = new Formatter();
           Grib2Show.showPdsTemplate(pb.gr.getPDSsection(), f, cust);
@@ -130,7 +132,7 @@ public class Grib2CollectionPanel extends JPanel {
     });
     varPopup.addAction("Show processed PDS", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        Grib2ParameterBean pb = (Grib2ParameterBean) param2BeanTable.getSelectedBean();
+        Grib2ParameterBean pb = param2BeanTable.getSelectedBean();
         if (pb != null) {
           infoPopup3.setText(pb.toProcessedString());
           infoPopup3.gotoTop();
@@ -138,13 +140,12 @@ public class Grib2CollectionPanel extends JPanel {
         }
       }
     });
-
     varPopup.addAction("Compare PDS", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        List list = param2BeanTable.getSelectedBeans();
+        List<Grib2ParameterBean> list = param2BeanTable.getSelectedBeans();
         if (list.size() == 2) {
-          Grib2ParameterBean bean1 = (Grib2ParameterBean) list.get(0);
-          Grib2ParameterBean bean2 = (Grib2ParameterBean) list.get(1);
+          Grib2ParameterBean bean1 = list.get(0);
+          Grib2ParameterBean bean2 = list.get(1);
           Formatter f = new Formatter();
           compare(bean1.gr.getPDSsection(), bean2.gr.getPDSsection(), f);
           infoPopup2.setText(f.toString());
@@ -153,13 +154,10 @@ public class Grib2CollectionPanel extends JPanel {
         }
       }
     });
-
     varPopup.addAction("Extract GribRecords to File", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         List<Grib2RecordBean> allRecords = new ArrayList<>();
-        List list = param2BeanTable.getSelectedBeans();
-        for (Object bean : list) {
-          Grib2ParameterBean param = (Grib2ParameterBean) bean;
+        for (Grib2ParameterBean param : param2BeanTable.getSelectedBeans()) {
           allRecords.addAll(param.records);
         }
         if (!allRecords.isEmpty())
@@ -167,19 +165,17 @@ public class Grib2CollectionPanel extends JPanel {
       }
     });
 
-    Class useClass = Grib2RecordBean.class;
-    record2BeanTable = new BeanTable(useClass, (PreferencesExt) prefs.node(useClass.getName()), false,
+    Class<Grib2RecordBean> useClass = Grib2RecordBean.class;
+    record2BeanTable = new BeanTable<>(Grib2RecordBean.class, (PreferencesExt) prefs.node(useClass.getName()), false,
         useClass.getName(), "from Grib2Input.getRecords()", null);
 
-    gds2Table = new BeanTable(Gds2Bean.class, (PreferencesExt) prefs.node("Gds2Bean"), false,
+    gds2Table = new BeanTable<>(Gds2Bean.class, (PreferencesExt) prefs.node("Gds2Bean"), false,
         "Grib2GridDefinitionSection", "unique from Grib2Records", null);
     varPopup = new PopupMenu(gds2Table.getJTable(), "Options");
-
     varPopup.addAction("Show GDS", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Formatter f = new Formatter();
-        for (Object o : gds2Table.getSelectedBeans()) {
-          Gds2Bean bean = (Gds2Bean) o;
+        for (Gds2Bean bean : gds2Table.getSelectedBeans()) {
           Grib2Gds ggds = bean.gdss.getGDS();
           f.format("GDS hash=%d crc=%d%n", ggds.hashCode(), bean.gdss.calcCRC());
           Grib2Show.showGdsTemplate(bean.gdss, f, cust);
@@ -189,13 +185,12 @@ public class Grib2CollectionPanel extends JPanel {
         infoWindow2.show();
       }
     });
-
     varPopup.addAction("Compare GDS", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        List list = gds2Table.getSelectedBeans();
+        List<Gds2Bean> list = gds2Table.getSelectedBeans();
         if (list.size() == 2) {
-          Gds2Bean bean1 = (Gds2Bean) list.get(0);
-          Gds2Bean bean2 = (Gds2Bean) list.get(1);
+          Gds2Bean bean1 = list.get(0);
+          Gds2Bean bean2 = list.get(1);
           Formatter f = new Formatter();
           compare(bean1.gdss, bean2.gdss, f);
           infoPopup3.setText(f.toString());
@@ -204,13 +199,10 @@ public class Grib2CollectionPanel extends JPanel {
         }
       }
     });
-
     varPopup.addAction("Show raw GDS bytes", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Formatter f = new Formatter();
-        List list = gds2Table.getSelectedBeans();
-        for (Object aList : list) {
-          Gds2Bean bean = (Gds2Bean) aList;
+        for (Gds2Bean bean : gds2Table.getSelectedBeans()) {
           bean.toRawGdsString(f);
         }
         infoPopup.setText(f.toString());
@@ -218,18 +210,16 @@ public class Grib2CollectionPanel extends JPanel {
         infoWindow.show();
       }
     });
-
     varPopup.addAction("Show Files that use this GDS", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        Gds2Bean want = (Gds2Bean) gds2Table.getSelectedBean();
+        Gds2Bean want = gds2Table.getSelectedBean();
         if (want == null)
           return;
         SortedSet<Integer> files = new TreeSet<>();
 
-        for (Object o : param2BeanTable.getBeans()) {
-          Grib2ParameterBean p = (Grib2ParameterBean) o;
-          if (p.getGDS() == want.getGDShash()) {
-            for (Grib2RecordBean r : p.getRecordBeans())
+        for (Grib2ParameterBean bean : param2BeanTable.getBeans()) {
+          if (bean.getGDS() == want.getGDShash()) {
+            for (Grib2RecordBean r : bean.getRecordBeans())
               files.add(r.gr.getFile());
           }
         }
@@ -246,7 +236,7 @@ public class Grib2CollectionPanel extends JPanel {
 
     varPopup.addAction("Restrict to this GDS", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        Gds2Bean want = (Gds2Bean) gds2Table.getSelectedBean();
+        Gds2Bean want = gds2Table.getSelectedBean();
         if (want == null)
           return;
         java.util.List<Grib2ParameterBean> params = new ArrayList<>();
@@ -261,7 +251,7 @@ public class Grib2CollectionPanel extends JPanel {
 
     varPopup.addAction("Test GDS Projection", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        Gds2Bean bean = (Gds2Bean) gds2Table.getSelectedBean();
+        Gds2Bean bean = gds2Table.getSelectedBean();
         if (bean == null)
           return;
         Formatter f = new Formatter();
@@ -305,13 +295,13 @@ public class Grib2CollectionPanel extends JPanel {
     BeanInfo info = new PdsBeanInfo(pds);
 
     String prefsName = pds.getClass().getName();
-    record2BeanTable = new BeanTable(Grib2RecordBean.class, (PreferencesExt) prefs.node(prefsName), prefsName,
+    record2BeanTable = new BeanTable<>(Grib2RecordBean.class, (PreferencesExt) prefs.node(prefsName), prefsName,
         "from Grib2Input.getRecords()", info);
     PopupMenu varPopup = new PopupMenu(record2BeanTable.getJTable(), "Options");
 
     varPopup.addAction("Show complete GridRecord", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        Grib2RecordBean bean = (Grib2RecordBean) record2BeanTable.getSelectedBean();
+        Grib2RecordBean bean = record2BeanTable.getSelectedBean();
         if (bean != null) {
           Formatter f = new Formatter();
           Grib2Show.showCompleteGribRecord(f, fileList.get(bean.gr.getFile()).getPath(), bean.gr, cust);
@@ -321,13 +311,10 @@ public class Grib2CollectionPanel extends JPanel {
         }
       }
     });
-
     varPopup.addAction("Show Processed GridRecord", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        List list = record2BeanTable.getSelectedBeans();
         Formatter f = new Formatter();
-        for (Object o : list) {
-          Grib2RecordBean bean = (Grib2RecordBean) o;
+        for (Grib2RecordBean bean : record2BeanTable.getSelectedBeans()) {
           bean.showProcessedGridRecord(f);
         }
         infoPopup2.setText(f.toString());
@@ -338,10 +325,10 @@ public class Grib2CollectionPanel extends JPanel {
 
     varPopup.addAction("Compare GridRecord", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        List list = record2BeanTable.getSelectedBeans();
+        List<Grib2RecordBean> list = record2BeanTable.getSelectedBeans();
         if (list.size() == 2) {
-          Grib2RecordBean bean1 = (Grib2RecordBean) list.get(0);
-          Grib2RecordBean bean2 = (Grib2RecordBean) list.get(1);
+          Grib2RecordBean bean1 = list.get(0);
+          Grib2RecordBean bean2 = list.get(1);
           Formatter f = new Formatter();
           compare(bean1, bean2, f);
           infoPopup2.setText(f.toString());
@@ -350,13 +337,10 @@ public class Grib2CollectionPanel extends JPanel {
         }
       }
     });
-
     varPopup.addAction("Show raw PDS bytes", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Formatter f = new Formatter();
-        List list = record2BeanTable.getSelectedBeans();
-        for (Object aList : list) {
-          Grib2RecordBean bean = (Grib2RecordBean) aList;
+        for (Grib2RecordBean bean : record2BeanTable.getSelectedBeans()) {
           bean.toRawPdsString(f);
         }
         infoPopup.setText(f.toString());
@@ -364,13 +348,10 @@ public class Grib2CollectionPanel extends JPanel {
         infoWindow.show();
       }
     });
-
     varPopup.addAction("Show raw Local Use Section bytes", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Formatter f = new Formatter();
-        List list = record2BeanTable.getSelectedBeans();
-        for (Object aList : list) {
-          Grib2RecordBean bean = (Grib2RecordBean) aList;
+        for (Grib2RecordBean bean : record2BeanTable.getSelectedBeans()) {
           bean.toRawLUString(f);
         }
         infoPopup.setText(f.toString());
@@ -378,13 +359,12 @@ public class Grib2CollectionPanel extends JPanel {
         infoWindow.show();
       }
     });
-
     varPopup.addAction("Compare Data", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        List list = record2BeanTable.getSelectedBeans();
+        List<Grib2RecordBean> list = record2BeanTable.getSelectedBeans();
         if (list.size() == 2) {
-          Grib2RecordBean bean1 = (Grib2RecordBean) list.get(0);
-          Grib2RecordBean bean2 = (Grib2RecordBean) list.get(1);
+          Grib2RecordBean bean1 = list.get(0);
+          Grib2RecordBean bean2 = list.get(1);
           Formatter f = new Formatter();
           compareData(bean1, bean2, f);
           infoPopup2.setText(f.toString());
@@ -393,10 +373,9 @@ public class Grib2CollectionPanel extends JPanel {
         }
       }
     });
-
     varPopup.addAction("Show Data", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        Grib2RecordBean bean = (Grib2RecordBean) record2BeanTable.getSelectedBean();
+        Grib2RecordBean bean = record2BeanTable.getSelectedBean();
         if (bean != null) {
           Formatter f = new Formatter();
           showData(bean, f);
@@ -406,18 +385,16 @@ public class Grib2CollectionPanel extends JPanel {
         }
       }
     });
-
     varPopup.addAction("Extract GribRecord to File", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        List beans = record2BeanTable.getSelectedBeans();
+        List<Grib2RecordBean> beans = record2BeanTable.getSelectedBeans();
         if (!beans.isEmpty())
           writeToFile(beans);
       }
     });
-
     varPopup.addAction("Consistency checks on GribRecord", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        Grib2RecordBean bean = (Grib2RecordBean) record2BeanTable.getSelectedBean();
+        Grib2RecordBean bean = record2BeanTable.getSelectedBean();
         if (bean != null) {
           Formatter f = new Formatter();
           check(bean, f);
@@ -463,22 +440,17 @@ public class Grib2CollectionPanel extends JPanel {
 
   public void generateGdsXml(Formatter f) {
     f.format("<gribConfig>%n");
-    List<Object> gdss = new ArrayList<>(gds2Table.getBeans());
-    gdss.sort(new Comparator<Object>() {
-      public int compare(Object o1, Object o2) {
-        int h1 = ((Gds2Bean) o1).gds.hashCode();
-        int h2 = ((Gds2Bean) o2).gds.hashCode();
-        return Integer.compare(h1, h2);
-      }
+    List<Gds2Bean> gdss = new ArrayList<>(gds2Table.getBeans());
+    gdss.sort((o1, o2) -> {
+      int h1 = o1.gds.hashCode();
+      int h2 = o2.gds.hashCode();
+      return Integer.compare(h1, h2);
     });
-
-    for (Object bean : gdss) {
-      Gds2Bean gbean = (Gds2Bean) bean;
+    for (Gds2Bean gbean : gdss) {
       f.format("  <gdsName hash='%d' groupName='%s'/>%n", gbean.gds.hashCode(), gbean.getGroupName());
     }
     f.format("</gribConfig>%n");
   }
-
 
   public void setCollection(String spec) throws IOException {
     closeOpenFiles();
@@ -960,74 +932,6 @@ public class Grib2CollectionPanel extends JPanel {
     f.format("%s", Ncdump.printArray(arr));
   }
 
-  ////////////////////////////////////////////////////////////////////////////////////////////////
-
-  /*
-   * /* private String doAccumAlgo(Grib2ParameterBean pb) {
-   * List<Grib2RecordBean> all = new ArrayList<Grib2RecordBean>(pb.getRecordBeans());
-   * List<Grib2RecordBean> hourAccum = new ArrayList<Grib2RecordBean>(all.size());
-   * List<Grib2RecordBean> runAccum = new ArrayList<Grib2RecordBean>(all.size());
-   *
-   * Set<Integer> ftimes = new HashSet<Integer>();
-   *
-   * for (Grib2RecordBean rb : pb.getRecordBeans()) {
-   * int ftime = rb.getForecastTime();
-   * ftimes.add(ftime);
-   *
-   * int start = rb.getStartInterval();
-   * int end = rb.getEndInterval();
-   * if (end - start == 1) hourAccum.add(rb);
-   * if (start == 0) runAccum.add(rb);
-   * }
-   *
-   * int n = ftimes.size();
-   *
-   * Formatter f = new Formatter();
-   * f.format("      all: ");
-   * showList(all, f);
-   * f.format("%n");
-   *
-   * if (hourAccum.size() > n - 2) {
-   * for (Grib2RecordBean rb : hourAccum) all.remove(rb);
-   * f.format("hourAccum: ");
-   * showList(hourAccum, f);
-   * f.format("%n");
-   * }
-   *
-   * if (runAccum.size() > n - 2) {
-   * for (Grib2RecordBean rb : runAccum) all.remove(rb);
-   * f.format(" runAccum: ");
-   * showList(runAccum, f);
-   * f.format("%n");
-   * }
-   *
-   * if (all.size() > 0) {
-   * boolean same = true;
-   * int intv = -1;
-   * for (Grib2RecordBean rb : all) {
-   * int start = rb.getStartInterval();
-   * int end = rb.getEndInterval();
-   * int intv2 = end - start;
-   * if (intv < 0) intv = intv2;
-   * else same = (intv == intv2);
-   * if (!same) break;
-   * }
-   *
-   * f.format("remaining: ");
-   * showList(all, f);
-   * f.format("%s %n", same ? " Interval=" + intv : " Mixed");
-   * }
-   *
-   * return f.toString();
-   * }
-   *
-   * private void showList(List<Grib2RecordBean> list, Formatter f) {
-   * f.format("(%d) ", list.size());
-   * for (Grib2RecordBean rb : list)
-   * f.format(" %d-%d", rb.getStartInterval(), rb.getEndInterval());
-   * }
-   */
-
   /////////////////////////////////////////////////////////
 
   public class Gds2Bean implements Comparable<Gds2Bean> {
@@ -1120,7 +1024,7 @@ public class Grib2CollectionPanel extends JPanel {
 
     public Grib2ParameterBean() {}
 
-    public Grib2ParameterBean(Grib2Record r, Grib2Variable gv) throws IOException {
+    public Grib2ParameterBean(Grib2Record r, Grib2Variable gv) {
       this.gr = r;
       this.gv = gv;
 
@@ -1297,7 +1201,7 @@ public class Grib2CollectionPanel extends JPanel {
 
     public Grib2RecordBean() {}
 
-    public Grib2RecordBean(Grib2Record m) throws IOException {
+    public Grib2RecordBean(Grib2Record m) {
       this.gr = m;
       this.pds = gr.getPDS();
     }
@@ -1501,7 +1405,7 @@ public class Grib2CollectionPanel extends JPanel {
     PdsBeanInfo(Grib2Pds pds) {
       ArrayList<PropertyDescriptor> props = new ArrayList<>(40);
 
-      Class cl = Grib2RecordBean.class;
+      Class<Grib2RecordBean> cl = Grib2RecordBean.class;
       try {
         props.add(new PropertyDescriptor("startPos", cl, "getStartPos", null));
         props.add(new PropertyDescriptor("file", cl, "getFile", null));

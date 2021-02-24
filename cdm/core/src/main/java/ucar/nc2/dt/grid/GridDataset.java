@@ -56,8 +56,8 @@ import ucar.unidata.geoloc.ProjectionRect;
 
 public class GridDataset implements ucar.nc2.dt.GridDataset, FeatureDataset {
   private NetcdfDataset ncd;
-  private ArrayList<GeoGrid> grids = new ArrayList<>();
-  private Map<String, Gridset> gridsetHash = new HashMap<>();
+  private final ArrayList<GeoGrid> grids = new ArrayList<>();
+  private final Map<String, Gridset> gridsetHash = new HashMap<>();
 
   /**
    * Open a netcdf dataset, using NetcdfDataset.defaultEnhanceMode plus CoordSystems
@@ -438,8 +438,8 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, FeatureDataset {
    */
   public static class Gridset implements ucar.nc2.dt.GridDataset.Gridset {
 
-    private GridCoordSys gcc;
-    private List<GridDatatype> grids = new ArrayList<>();
+    private final GridCoordSys gcc;
+    private final List<GridDatatype> grids = new ArrayList<>();
 
     private Gridset(GridCoordSys gcc) {
       this.gcc = gcc;

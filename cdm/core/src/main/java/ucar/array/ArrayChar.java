@@ -7,7 +7,6 @@ package ucar.array;
 import com.google.common.base.Preconditions;
 import java.util.Iterator;
 import javax.annotation.concurrent.Immutable;
-import ucar.ma2.DataType;
 
 /** Concrete implementation of Array specialized for Char. */
 @Immutable
@@ -72,8 +71,6 @@ public final class ArrayChar extends Array<Character> {
    * Create a String out of this rank zero or one ArrayChar.
    * If there is a null (zero) value in the ArrayChar array, the String will end there.
    * The null is not returned as part of the String.
-   *
-   * @throws Exception if rank > 1
    */
   public String makeStringFromChar() {
     Preconditions.checkArgument(getRank() < 2);

@@ -51,7 +51,7 @@ import ucar.unidata.io.RandomAccessFile;
  * </pre>
  */
 public class NetcdfFormatUpdater implements Closeable {
-  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfFormatUpdater.class);
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfFormatUpdater.class);
 
   /**
    * Open an existing Netcdf format file for writing data.

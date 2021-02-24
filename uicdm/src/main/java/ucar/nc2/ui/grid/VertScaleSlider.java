@@ -11,18 +11,16 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
-/**
- * Slider for Vertical scale
- *
- * @author caron
- */
-
+/** Slider for Vertical scale */
 public class VertScaleSlider extends JPanel {
-  private JSlider slider;
+  private static final boolean debugEvent = false;
+  private static final boolean debugLevels = false;
+
+  private final JSlider slider;
 
   // event management
-  private ActionSourceListener actionSource;
-  private String actionName = "level";
+  private final ActionSourceListener actionSource;
+  private final String actionName = "level";
   private boolean eventOK = true;
   private int incrY = 1;
 
@@ -30,8 +28,6 @@ public class VertScaleSlider extends JPanel {
   private int currentIdx = -1;
   private double min, max, scale = 1.0;
   private CoordinateAxis1D zAxis;
-
-  private static boolean debugEvent, debugLevels;
 
   public VertScaleSlider() {
 
@@ -130,7 +126,7 @@ public class VertScaleSlider extends JPanel {
     if (debugEvent)
       System.out.println(" scale= " + scale + " incrY = " + incrY);
 
-    java.util.Hashtable labelTable = new java.util.Hashtable();
+    java.util.Hashtable<Integer, JLabel> labelTable = new java.util.Hashtable<>();
 
     if (zAxis == null)
       return;
@@ -167,11 +163,9 @@ public class VertScaleSlider extends JPanel {
     return pval / scale + min;
   }
 
-  private int pos = -1; // optimization
-
   private int slider2index(int pval) {
-    pos = zAxis.findCoordElement(slider2world(pval));
-    return pos;
+    // optimization
+    return zAxis.findCoordElement(slider2world(pval));
   }
 
   private void setSelectedByName(String name) {

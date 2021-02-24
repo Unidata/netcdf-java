@@ -48,16 +48,15 @@ import org.jdom2.input.SAXBuilder;
 
 /** View WMS datasets */
 public class WmsViewer extends JPanel {
+  private static final Namespace wmsNamespace = Namespace.getNamespace("http://www.opengis.net/wms");
 
-  private Namespace wmsNamespace = Namespace.getNamespace("http://www.opengis.net/wms");
+  private final PreferencesExt prefs;
 
-  private PreferencesExt prefs;
+  private final JPanel imagePanel;
+  private final SuperComboBox crsChooser, formatChooser, styleChooser, timeChooser, levelChooser;
+  private final BeanTable<LayerBean> ftTable;
 
-  private JPanel imagePanel;
-  private SuperComboBox crsChooser, formatChooser, styleChooser, timeChooser, levelChooser;
-  private BeanTable<LayerBean> ftTable;
-
-  private JSplitPane split;
+  private final JSplitPane split;
   private Formatter info = new Formatter();
 
   private String version;
@@ -93,15 +92,29 @@ public class WmsViewer extends JPanel {
         if (null == timeChooser.getSelectedObject()) {
           return;
         }
-        LayerBean ftb = (LayerBean) ftTable.getSelectedBean();
-        getMap(ftb);
+        LayerBean ftb = ftTable.getSelectedBean();
+        if (ftb != null) {
+          getMap(ftb);
+        }
+      }
+    });
+
+    ftTable = new BeanTable<>(LayerBean.class, (PreferencesExt) prefs.node("LayerBeans"), false);
+    ftTable.addListSelectionListener(e -> {
+      LayerBean ftb = ftTable.getSelectedBean();
+      if (ftb != null) {
+        styleChooser.setCollection(ftb.styles.iterator());
+        timeChooser.setCollection(ftb.times.iterator());
+        levelChooser.setCollection(ftb.levels.iterator());
       }
     });
 
     AbstractButton mapButton = BAMutil.makeButtcon("nj22/WorldDetailMap", "getMap", false);
     mapButton.addActionListener(e -> {
-      LayerBean ftb = (LayerBean) ftTable.getSelectedBean();
-      getMap(ftb);
+      LayerBean ftb = ftTable.getSelectedBean();
+      if (ftb != null) {
+        getMap(ftb);
+      }
     });
     chooserPanel.add(mapButton);
 
@@ -110,15 +123,6 @@ public class WmsViewer extends JPanel {
     chooserPanel.add(redrawButton);
 
     imagePanel = new JPanel();
-
-    ftTable = new BeanTable<LayerBean>(LayerBean.class, (PreferencesExt) prefs.node("LayerBeans"), false);
-    ftTable.addListSelectionListener(e -> {
-      LayerBean ftb = (LayerBean) ftTable.getSelectedBean();
-      styleChooser.setCollection(ftb.styles.iterator());
-      timeChooser.setCollection(ftb.times.iterator());
-      levelChooser.setCollection(ftb.levels.iterator());
-    });
-    ftTable.setBeans(new ArrayList());
 
     split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, false, ftTable, imagePanel);
     split.setDividerLocation(prefs.getInt("splitPos", 500));
@@ -290,9 +294,9 @@ public class WmsViewer extends JPanel {
               contents = null;
 
               try (ZipFile zfile = new ZipFile(temp)) {
-                Enumeration entries = zfile.entries();
+                Enumeration<? extends ZipEntry> entries = zfile.entries();
                 while (entries.hasMoreElements()) {
-                  ZipEntry entry = (ZipEntry) entries.nextElement();
+                  ZipEntry entry = entries.nextElement();
                   info.format(" entry= %s%n", entry);
                   if (entry.getName().endsWith(".kml")) {
                     try (InputStream kml = zfile.getInputStream(entry)) {
@@ -329,7 +333,6 @@ public class WmsViewer extends JPanel {
   }
 
   public class LayerBean {
-
     String name;
     String title;
     String CRS;
@@ -345,9 +348,6 @@ public class WmsViewer extends JPanel {
     List<String> levels = new ArrayList<>();
     List<String> times = new ArrayList<>();
 
-    /**
-     * no-arg constructor
-     */
     public LayerBean() {}
 
     LayerBean(Element layer3Elem) {

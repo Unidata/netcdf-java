@@ -14,7 +14,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import ucar.nc2.util.IO;
 
-/** Network utilities */
+/** Network utilities needed by uicdm. */
 public class HttpUtils {
 
   /**

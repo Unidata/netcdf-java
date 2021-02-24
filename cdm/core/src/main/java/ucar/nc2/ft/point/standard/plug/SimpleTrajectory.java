@@ -12,9 +12,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ft.point.standard.PointConfigXML;
 import ucar.nc2.ft.point.standard.TableConfig;
 import ucar.nc2.ft.point.standard.TableConfigurerImpl;
-import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateUnit;
-import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.SimpleUnit;
 import java.io.IOException;
 import java.util.Formatter;
@@ -31,11 +29,11 @@ import java.util.List;
 
 public class SimpleTrajectory extends TableConfigurerImpl {
 
-  private static String timeDimName = "time";
-  private static String timeVarName = "time";
-  private static String latVarName = "latitude";
-  private static String lonVarName = "longitude";
-  private static String elevVarName = "altitude";
+  private static final String timeDimName = "time";
+  private static final String timeVarName = "time";
+  private static final String latVarName = "latitude";
+  private static final String lonVarName = "longitude";
+  private static final String elevVarName = "altitude";
 
   public boolean isMine(FeatureType wantFeatureType, NetcdfDataset ds) {
     List<Dimension> list = ds.getRootGroup().getDimensions();

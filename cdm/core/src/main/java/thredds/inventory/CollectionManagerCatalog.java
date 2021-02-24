@@ -25,9 +25,10 @@ import java.util.List;
  */
 @ThreadSafe
 public class CollectionManagerCatalog extends CollectionManagerAbstract implements CatalogCrawler.Listener {
+  private static final boolean debug = false;
+
   private final String catalogUrl;
   private long lastScanned;
-  private boolean debug;
   private List<MFile> mfiles;
 
   public CollectionManagerCatalog(String collectionName, String collectionSpec, String olderThan, Formatter errlog) {

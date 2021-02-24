@@ -34,7 +34,7 @@ import ucar.unidata.geoloc.LatLonRect;
  * @since May 19, 2009
  */
 public class CompositePointCollection extends PointCollectionImpl implements UpdateableCollection {
-  private TimedCollection pointCollections;
+  private final TimedCollection pointCollections;
   protected List<VariableSimpleIF> dataVariables;
   protected AttributeContainer globalAttributes;
 
@@ -106,7 +106,7 @@ public class CompositePointCollection extends PointCollectionImpl implements Upd
 
   private class CompositePointFeatureIterator extends PointIteratorAbstract {
     private boolean finished;
-    private Iterator<TimedCollection.Dataset> iter;
+    private final Iterator<TimedCollection.Dataset> iter;
     private FeatureDatasetPoint currentDataset;
     private PointFeatureIterator pfIter;
 

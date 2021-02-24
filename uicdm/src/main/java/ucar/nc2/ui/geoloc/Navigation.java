@@ -18,7 +18,11 @@ import java.awt.geom.Point2D;
  **/
 
 public class Navigation {
-  private NavigatedPanel np;
+  private static final boolean debug = false;
+  private static final boolean debugZoom = false;
+  private static final boolean debugRecalc = false;
+
+  private final NavigatedPanel np;
 
   // fundamental quantities
   private double pwidth, pheight; // current display size
@@ -27,14 +31,11 @@ public class Navigation {
 
   // derived
   private ProjectionRect bb; // current world bounding box
-  private AffineTransform at; // affine transform for graphics2D
+  private final AffineTransform at; // affine transform for graphics2D
   // misc
   private boolean mapAreaIsSet; // cant initialize until screen size is known
   private boolean screenSizeIsSet; // and initial bounding box is known
-  private ZoomStack zoom = new ZoomStack();
-
-  private static boolean debug, debugZoom, debugTransform;
-  private static boolean debugRecalc;
+  private final ZoomStack zoom = new ZoomStack();
 
   Navigation(NavigatedPanel np) {
     this.np = np;
@@ -334,7 +335,7 @@ public class Navigation {
 
   // keep stack of previous zooms
   // this should probably be made into a circular buffer
-  private class ZoomStack extends java.util.ArrayList {
+  private class ZoomStack extends java.util.ArrayList<ZoomStack.Zoom> {
     private int current = -1;
 
     ZoomStack() {
@@ -349,7 +350,7 @@ public class Navigation {
     void pop() {
       if (current < 0)
         return;
-      Zoom zoom = (Zoom) get(current);
+      Zoom zoom = get(current);
       pix_per_world = zoom.pix_per_world;
       pix_x0 = zoom.pix_x0;
       pix_y0 = zoom.pix_y0;

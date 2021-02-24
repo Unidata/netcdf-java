@@ -14,7 +14,6 @@ import javax.swing.border.EtchedBorder;
 import java.awt.geom.AffineTransform;
 import java.awt.*;
 import java.util.ArrayList;
-import java.beans.PropertyChangeListener;
 
 /**
  * A superclass for Navigated Panel controllers
@@ -22,16 +21,15 @@ import java.beans.PropertyChangeListener;
  * @author John Caron
  */
 public class NPController extends JPanel {
+  private static final boolean debug = false;
+
   protected NavigatedPanel np;
-  protected ArrayList renderers = new ArrayList(); // thredds.viewer.ui.Renderer
+  protected ArrayList<Renderer> renderers = new ArrayList<>(); // thredds.viewer.ui.Renderer
   protected Projection project;
   protected AffineTransform atI = new AffineTransform(); // identity transform
   protected boolean eventOk = true;
 
   protected JPanel toolPanel;
-
-  // debugging
-  private boolean debug;
 
   public NPController() {
     // here's where the map will be drawn:
@@ -42,32 +40,24 @@ public class NPController extends JPanel {
     addRenderer(render);
 
     // get Projection Events from the navigated panel
-    np.addNewProjectionListener(new NewProjectionListener() {
-      public void actionPerformed(NewProjectionEvent e) {
-        Projection p = e.getProjection();
-        for (Object renderer : renderers) {
-          Renderer r = (Renderer) renderer;
-          r.setProjection(p);
-        }
-        redraw(true);
+    np.addNewProjectionListener(e -> {
+      Projection p = e.getProjection();
+      for (Object renderer : renderers) {
+        Renderer r = (Renderer) renderer;
+        r.setProjection(p);
       }
+      redraw(true);
     });
 
     // get NewMapAreaEvents from the navigated panel
-    np.addNewMapAreaListener(new NewMapAreaListener() {
-      public void actionPerformed(NewMapAreaEvent e) {
-        redraw(true);
-      }
-    });
+    np.addNewMapAreaListener(e -> redraw(true));
 
-    ucar.ui.widget.PopupMenu mapBeanMenu = MapBean.getStandardMapSelectButton(new PropertyChangeListener() {
-      public void propertyChange(java.beans.PropertyChangeEvent e) {
-        if (e.getPropertyName().equals("Renderer")) {
-          Renderer mapRender = (Renderer) e.getNewValue();
-          mapRender.setProjection(np.getProjectionImpl());
-          renderers.set(0, mapRender); // always first
-          redraw(true);
-        }
+    ucar.ui.widget.PopupMenu mapBeanMenu = MapBean.getStandardMapSelectButton(e -> {
+      if (e.getPropertyName().equals("Renderer")) {
+        Renderer mapRender = (Renderer) e.getNewValue();
+        mapRender.setProjection(np.getProjectionImpl());
+        renderers.set(0, mapRender); // always first
+        redraw(true);
       }
     });
 

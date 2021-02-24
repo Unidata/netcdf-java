@@ -3,7 +3,7 @@
  * See LICENSE for license information.
  */
 
-package ucar.nc2.ui.op;
+package ucar.nc2.ui.bufr;
 
 import java.nio.charset.StandardCharsets;
 import javax.annotation.Nullable;
@@ -23,8 +23,6 @@ import ucar.ui.prefs.BeanTable;
 import ucar.unidata.io.RandomAccessFile;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.*;
 import java.util.List;
 import java.io.*;
@@ -36,16 +34,15 @@ import javax.swing.*;
  * @author caron
  * @since Dec 1, 2009
  */
-
-
 public class BufrTableBViewer extends JPanel {
-  private PreferencesExt prefs;
+  private final PreferencesExt prefs;
 
-  private BeanTable ddsTable, variantTable;
-  private JSplitPane split;
+  private final BeanTable<DdsBean> ddsTable;
+  private final BeanTable<DdsBean> variantTable;
+  private final JSplitPane split;
 
-  private TextHistoryPane compareTA;
-  private IndependentWindow infoWindow;
+  private final TextHistoryPane compareTA;
+  private final IndependentWindow infoWindow;
 
   private TableB currTable, refTable;
 
@@ -54,25 +51,20 @@ public class BufrTableBViewer extends JPanel {
   public BufrTableBViewer(PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
 
-    ddsTable = new BeanTable(DdsBean.class, (PreferencesExt) prefs.node("DdsBean"), false);
+    ddsTable = new BeanTable<>(DdsBean.class, (PreferencesExt) prefs.node("DdsBean"), false);
     ddsTable.addListSelectionListener(e -> {
-      DdsBean csb = (DdsBean) ddsTable.getSelectedBean();
+      DdsBean csb = ddsTable.getSelectedBean();
       showVariants(csb);
     });
 
-    variantTable = new BeanTable(DdsBean.class, (PreferencesExt) prefs.node("VariantBean"), false);
-    /*
-     * variantTable.addListSelectionListener(e -> {
-     * variantTable.getSelectedBean();
-     * });
-     */
+    variantTable = new BeanTable<>(DdsBean.class, (PreferencesExt) prefs.node("VariantBean"), false);
 
     PopupMenu varPopup = new PopupMenu(ddsTable.getJTable(), "Options");
     varPopup.addAction("Show uses", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Formatter out = new Formatter();
-        DdsBean csb = (DdsBean) ddsTable.getSelectedBean();
-        if (usedDds != null) {
+        DdsBean csb = ddsTable.getSelectedBean();
+        if (usedDds != null && csb != null) {
           List<Message> list = usedDds.get(csb.getId());
           if (list != null) {
             for (Message use : list)
@@ -215,7 +207,7 @@ public class BufrTableBViewer extends JPanel {
     setBufrTableB(tableB);
   }
 
-  private void setBufrTableB(TableB tb) throws IOException {
+  private void setBufrTableB(TableB tb) {
     String location = tb.getLocation();
     int pos = location.lastIndexOf("/");
     String src = (pos > 0) ? location.substring(pos + 1) : location;
@@ -293,8 +285,8 @@ public class BufrTableBViewer extends JPanel {
     out.flush();
   }
 
-  private char[] remove = {'(', ')', ' ', '"', ',', '*', '-'};
-  private String[] replace = {"", "", "", "", "", "", ""};
+  private final char[] remove = {'(', ')', ' ', '"', ',', '*', '-'};
+  private final String[] replace = {"", "", "", "", "", "", ""};
 
   private boolean equiv(String org1, String org2) {
     String s1 = StringUtil2.replace(org1, remove, replace).toLowerCase();
@@ -330,11 +322,7 @@ public class BufrTableBViewer extends JPanel {
     if (dialog == null) {
       dialog = new BufrBCompare(null);
       dialog.pack();
-      dialog.addPropertyChangeListener("OK", new PropertyChangeListener() {
-        public void propertyChange(PropertyChangeEvent evt) {
-          compareToStandard((BufrBCompare.Data) evt.getNewValue());
-        }
-      });
+      dialog.addPropertyChangeListener("OK", evt -> compareToStandard((BufrBCompare.Data) evt.getNewValue()));
     }
     dialog.setVisible(true);
   }

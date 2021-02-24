@@ -66,6 +66,7 @@ public class ContourFeature extends AbstractGisFeature {
 
   // implement GisFeature methods:
 
+  @Override
   public java.awt.geom.Rectangle2D getBounds2D() {
     // Get the bounding box for this feature. from java.awt.geom.Rectangle2D
     double x0 = lines.get(0).getX()[0];
@@ -95,14 +96,17 @@ public class ContourFeature extends AbstractGisFeature {
     return rect;
   }
 
-  public java.util.Iterator getGisParts() {
-    return lines.iterator();
+  @Override
+  public java.util.Iterator<GisPart> iterator() {
+    return new ArrayList<GisPart>(lines).iterator();
   }
 
+  @Override
   public int getNumParts() {
     return numparts;
   }
 
+  @Override
   public int getNumPoints() {
     return npts;
   }

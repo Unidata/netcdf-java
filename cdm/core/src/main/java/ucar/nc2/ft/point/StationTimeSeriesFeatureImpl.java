@@ -80,7 +80,7 @@ public abstract class StationTimeSeriesFeatureImpl extends PointCollectionImpl i
 
   public static class StationFeatureSubset extends StationTimeSeriesFeatureImpl {
     private final StationTimeSeriesFeatureImpl from;
-    private CalendarDateRange filter_date;
+    private final CalendarDateRange filter_date;
 
     public StationFeatureSubset(StationTimeSeriesFeatureImpl from, CalendarDateRange filter_date) {
       super(from.stationFeature, from.getTimeUnit(), from.getAltUnits(), -1);

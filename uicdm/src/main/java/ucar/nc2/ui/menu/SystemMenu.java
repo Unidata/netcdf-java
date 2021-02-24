@@ -20,7 +20,7 @@ import javax.swing.AbstractAction;
 import javax.swing.JMenu;
 
 public class SystemMenu extends JMenu {
-  private ToolsUI toolsui;
+  private final ToolsUI toolsui;
   private static boolean isCacheInit;
 
   public SystemMenu(ToolsUI tui) {

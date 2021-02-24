@@ -5,11 +5,9 @@
 package ucar.nc2.grid;
 
 import com.google.auto.value.AutoValue;
-import com.google.common.base.CharMatcher;
 import com.google.common.base.Splitter;
 import com.google.common.math.DoubleMath;
 import ucar.unidata.util.Format;
-import ucar.unidata.util.StringUtil2;
 
 import javax.annotation.Nullable;
 import java.util.List;

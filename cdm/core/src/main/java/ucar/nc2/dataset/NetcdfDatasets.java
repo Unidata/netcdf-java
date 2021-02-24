@@ -36,7 +36,7 @@ public class NetcdfDatasets {
   // NetcdfFile caching
 
   private static ucar.nc2.internal.cache.FileCache netcdfFileCache;
-  private static ucar.nc2.internal.cache.FileFactory defaultNetcdfFileFactory = new StandardFileFactory();
+  private static final ucar.nc2.internal.cache.FileFactory defaultNetcdfFileFactory = new StandardFileFactory();
 
   // no state, so a singleton is ok
   private static class StandardFileFactory implements ucar.nc2.internal.cache.FileFactory {

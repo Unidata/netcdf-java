@@ -5,6 +5,7 @@
 
 package ucar.nc2.ui.widget;
 
+import java.awt.*;
 import java.nio.charset.StandardCharsets;
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
@@ -24,7 +25,6 @@ import ucar.ui.widget.ProgressMonitorTask;
 import ucar.ui.widget.TextHistoryPane;
 import ucar.util.prefs.PreferencesExt;
 import javax.swing.event.EventListenerList;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.ByteArrayInputStream;
@@ -33,40 +33,34 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A text widget that does get and put to a web URL.
  *
  * @author John Caron
  */
-
 public class TextGetPutPane extends TextHistoryPane {
-  private PreferencesExt prefs;
-  private JComboBox cb;
-  private JPanel buttPanel;
+  private final PreferencesExt prefs;
+  private final JComboBox<String> cb;
+  private final JPanel buttPanel;
 
-  private boolean addFileButton = true;
   private AbstractAction fileAction;
   private FileManager fileChooserReader;
-
   private GetContentsTask task;
-  // private HttpSession httpSession;
 
   public TextGetPutPane(PreferencesExt prefs) {
     super(true);
 
     this.prefs = prefs;
-    /*
-     * ta = new JTextArea();
-     * ta.setFont( new Font("Monospaced", Font.PLAIN, 12));
-     */
-
     // combo box holds a list of urls
-    cb = new JComboBox();
+    cb = new JComboBox<>();
     cb.setEditable(true);
-    if (prefs != null)
-      setList((ArrayList) prefs.getBean("list", null));
+    if (prefs != null) {
+      setUrls((List<String>) prefs.getBean("list", null));
+    }
 
+    boolean addFileButton = true;
     if (addFileButton) {
       fileChooserReader = new FileManager(null, null, "xml", "THREDDS catalogs",
           (prefs == null) ? null : (PreferencesExt) prefs.node("fileChooserReader"));
@@ -131,7 +125,7 @@ public class TextGetPutPane extends TextHistoryPane {
     buttPanel.add(c);
   }
 
-  private EventListenerList listenerList = new EventListenerList();
+  private final EventListenerList listenerList = new EventListenerList();
 
   public void addPutActionListener(ActionListener listener) {
     listenerList.add(ActionListener.class, listener);
@@ -174,7 +168,7 @@ public class TextGetPutPane extends TextHistoryPane {
       ta.setText(task.contents);
 
       // add to combobox
-      ArrayList list = getList();
+      ArrayList<String> list = getUrls();
       if (!list.contains(task.urlString))
         cb.addItem(task.urlString);
       cb.setSelectedItem(task.urlString);
@@ -184,7 +178,7 @@ public class TextGetPutPane extends TextHistoryPane {
 
   public void setCatalog(String urlString, Catalog cat) throws IOException {
     // add URL to combobox
-    ArrayList list = getList();
+    ArrayList<String> list = getUrls();
     if (!list.contains(urlString))
       cb.addItem(urlString);
     cb.setSelectedItem(urlString);
@@ -244,18 +238,18 @@ public class TextGetPutPane extends TextHistoryPane {
     }
   }
 
-  void setList(ArrayList list) {
+  void setUrls(List<String> list) {
     if (list == null)
       return;
     cb.removeAllItems();
-    for (Object o : list) {
+    for (String o : list) {
       cb.addItem(o);
     }
     cb.revalidate();
   }
 
-  ArrayList getList() {
-    ArrayList list = new ArrayList();
+  ArrayList<String> getUrls() {
+    ArrayList<String> list = new ArrayList<>();
     for (int i = 0; i < cb.getItemCount(); i++)
       list.add(cb.getItemAt(i));
     return list;
@@ -263,7 +257,7 @@ public class TextGetPutPane extends TextHistoryPane {
 
   public void save() {
     if (prefs != null)
-      prefs.putBeanObject("list", getList());
+      prefs.putBeanObject("list", getUrls());
   }
 
   public void clear() {

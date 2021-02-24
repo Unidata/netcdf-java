@@ -445,8 +445,8 @@ public class VariableDS extends Variable implements EnhanceScaleMissingUnsigned,
     return scaleMissingUnsignedProxy.hasValidData();
   }
 
-  @Override
   /** @deprecated do not use */
+  @Override
   @Deprecated
   public double getValidMin() {
     return scaleMissingUnsignedProxy.getValidMin();
@@ -480,8 +480,8 @@ public class VariableDS extends Variable implements EnhanceScaleMissingUnsigned,
     return scaleMissingUnsignedProxy.getFillValue();
   }
 
-  @Override
   /** @deprecated do not use */
+  @Override
   @Deprecated
   public boolean isFillValue(double val) {
     return scaleMissingUnsignedProxy.isFillValue(val);
@@ -544,8 +544,8 @@ public class VariableDS extends Variable implements EnhanceScaleMissingUnsigned,
     return scaleMissingUnsignedProxy.applyScaleOffset(data);
   }
 
-  @Override
   /** @deprecated do not use */
+  @Override
   @Deprecated
   public Number convertUnsigned(Number value) {
     return scaleMissingUnsignedProxy.convertUnsigned(value);
@@ -572,8 +572,8 @@ public class VariableDS extends Variable implements EnhanceScaleMissingUnsigned,
     return scaleMissingUnsignedProxy.convertMissing(in);
   }
 
-  @Override
   /** @deprecated do not use */
+  @Override
   @Deprecated
   public ucar.ma2.Array convert(ucar.ma2.Array in, boolean convertUnsigned, boolean applyScaleOffset,
       boolean convertMissing) {

@@ -36,7 +36,12 @@ public class GeoGrid implements ucar.nc2.dt.GridDatatype {
   private final GridDataset dataset;
   private final GridCoordSys gcs;
   private final VariableDS vs;
-  private int xDimOrgIndex, yDimOrgIndex, zDimOrgIndex = -1, tDimOrgIndex = -1, eDimOrgIndex = -1, rtDimOrgIndex = -1;
+  private final int xDimOrgIndex;
+  private final int yDimOrgIndex;
+  private int zDimOrgIndex = -1;
+  private int tDimOrgIndex = -1;
+  private int eDimOrgIndex = -1;
+  private int rtDimOrgIndex = -1;
   private int xDimNewIndex = -1, yDimNewIndex = -1, zDimNewIndex = -1, tDimNewIndex = -1, eDimNewIndex = -1,
       rtDimNewIndex = -1;
   private final List<Dimension> mydims;

@@ -15,8 +15,6 @@ public class ProjectionParamPanel extends JPanel {
 
   ProjectionParamPanel() {
     setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-    // setLayout(new FlowLayout());
-    // setProjection("ucar.unidata.geoloc.projection.Stereographic");
   }
 
   // construct input fields based on Projection Class

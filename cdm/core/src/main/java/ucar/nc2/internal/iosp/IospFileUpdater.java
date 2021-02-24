@@ -15,7 +15,6 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.util.CancelTask;
-import ucar.unidata.io.RandomAccessFile;
 
 /** This is an interface to Netcdf-3 and Netcdf-4 file updating. */
 public interface IospFileUpdater extends Closeable {

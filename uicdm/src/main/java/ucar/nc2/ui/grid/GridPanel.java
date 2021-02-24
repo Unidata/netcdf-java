@@ -3,7 +3,7 @@
  * See LICENSE for license information.
  */
 
-package ucar.nc2.ui.op;
+package ucar.nc2.ui.grid;
 
 import ucar.nc2.grid.GridDataset;
 import ucar.nc2.grid.GridDatasetFactory;

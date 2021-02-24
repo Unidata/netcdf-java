@@ -86,9 +86,10 @@ public class CoordsSet implements Iterable<SubsetParams> {
   }
 
   private class CoordIterator implements Iterator<SubsetParams> {
-    private int[] odo = new int[getRank()];
-    private int[] shape = getShape();
-    private long done, total;
+    private final int[] odo = new int[getRank()];
+    private final int[] shape = getShape();
+    private long done;
+    private final long total;
 
     CoordIterator() {
       done = 0;

@@ -57,15 +57,25 @@ import ucar.unidata.geoloc.EarthLocation;
  * @since Mar 28, 2008
  */
 public class NestedTable {
-  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NestedTable.class);
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NestedTable.class);
 
-  private NetcdfDataset ds;
-  private Formatter errlog;
-  private Table leaf, root;
+  private final NetcdfDataset ds;
+  private final Formatter errlog;
+  private final Table leaf;
+  private final Table root;
   private FeatureType featureType;
 
-  private CoordVarExtractor timeVE, nomTimeVE, latVE, lonVE, altVE;
-  private CoordVarExtractor stnVE, stnDescVE, wmoVE, stnAltVE, idVE, missingVE;
+  private final CoordVarExtractor timeVE;
+  private final CoordVarExtractor nomTimeVE;
+  private final CoordVarExtractor latVE;
+  private final CoordVarExtractor lonVE;
+  private final CoordVarExtractor altVE;
+  private final CoordVarExtractor stnVE;
+  private final CoordVarExtractor stnDescVE;
+  private final CoordVarExtractor wmoVE;
+  private final CoordVarExtractor stnAltVE;
+  private final CoordVarExtractor idVE;
+  private final CoordVarExtractor missingVE;
   private List<Variable> extras;
 
   private int nlevels;

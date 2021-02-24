@@ -23,6 +23,8 @@ import java.beans.PropertyChangeEvent;
  * @author caron
  */
 public class ThreddsUI extends JPanel {
+  private static final boolean debugSelection = false;
+
   // store keys
   private static final String VIEWER_SIZE = "ViewerSize";
   private static final String SOURCE_WINDOW_SIZE = "SourceWindowSize";
@@ -30,8 +32,7 @@ public class ThreddsUI extends JPanel {
 
   // tabs
 
-  private PreferencesExt store;
-  private Component parent;
+  private final PreferencesExt store;
 
   // the main components
   private ThreddsDatasetChooser datasetChooser;
@@ -39,7 +40,6 @@ public class ThreddsUI extends JPanel {
   // UI components that need global scope
   private TextGetPutPane sourcePane;
   private JTabbedPane tabbedPane;
-  // private JMenu debugMenu;
 
   private TextHistoryPane xmlPane;
   private IndependentDialog xmlWindow;
@@ -48,17 +48,11 @@ public class ThreddsUI extends JPanel {
   // the various managers and dialog boxes
   FileManager fileChooser; // shared with component viewers
 
-  // private JDialog datasetChooserDialog;
-  // private IndependentDialog datasetURLDialog = null;
-
   // debugging
   // private boolean debugBeans = false, debugChooser = false, debugPrint = false, debugHelp = false;
-  private boolean debugSelection;
-  private boolean debugTab;
 
   public ThreddsUI(JFrame parent, PreferencesExt store) {
     this.store = store;
-    this.parent = parent;
     // parent = topLevel.getRootPaneContainer().getRootPane();
 
     enableEvents(AWTEvent.WINDOW_EVENT_MASK);
@@ -85,7 +79,7 @@ public class ThreddsUI extends JPanel {
     fileChooser = new FileManager(parent, null, filters, fcPrefs);
   }
 
-  private void makeUI() throws Exception {
+  private void makeUI() {
     tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 
     /// catalog, DQC, query choosers
@@ -116,32 +110,29 @@ public class ThreddsUI extends JPanel {
     // if (Debug.isSet("System/filterDataset"))
     // datasetChooser.setDatasetFilter(new DatasetFilter.ByServiceType(ServiceType.DODS));
 
-    datasetChooser.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+    datasetChooser.addPropertyChangeListener(e -> {
+      if (e.getPropertyName().equals("InvAccess")) {
+        firePropertyChangeEvent(e);
+        return;
+      }
 
-      public void propertyChange(java.beans.PropertyChangeEvent e) {
-        if (e.getPropertyName().equals("InvAccess")) {
-          firePropertyChangeEvent(e);
-          return;
-        }
-
-        if (e.getPropertyName().equals("Dataset") || e.getPropertyName().equals("CoordSys")
-            || e.getPropertyName().equals("File")) {
-          // intercept XML, ASCII return types
-          Dataset ds = (Dataset) e.getNewValue();
-          Access access = ds.getAccess(ServiceType.HTTPServer);
-          if (access != null) {
-            DataFormatType format = access.getDataFormatType();
-            if (format == DataFormatType.PLAIN || format == DataFormatType.XML) {
-              String urlString = access.getWrappedUrlName();
-              ReadFromUrl.readURLcontents(urlString);
-              xmlPane.setText(ReadFromUrl.readURLcontents(urlString));
-              xmlPane.gotoTop();
-              xmlWindow.setVisible(true);
-              return;
-            }
+      if (e.getPropertyName().equals("Dataset") || e.getPropertyName().equals("CoordSys")
+          || e.getPropertyName().equals("File")) {
+        // intercept XML, ASCII return types
+        Dataset ds = (Dataset) e.getNewValue();
+        Access access = ds.getAccess(ServiceType.HTTPServer);
+        if (access != null) {
+          DataFormatType format = access.getDataFormatType();
+          if (format == DataFormatType.PLAIN || format == DataFormatType.XML) {
+            String urlString = access.getWrappedUrlName();
+            ReadFromUrl.readURLcontents(urlString);
+            xmlPane.setText(ReadFromUrl.readURLcontents(urlString));
+            xmlPane.gotoTop();
+            xmlWindow.setVisible(true);
+            return;
           }
-          firePropertyChangeEvent(e);
         }
+        firePropertyChangeEvent(e);
       }
     });
 

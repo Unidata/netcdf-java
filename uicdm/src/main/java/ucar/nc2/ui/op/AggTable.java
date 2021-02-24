@@ -43,18 +43,23 @@ import javax.swing.JSplitPane;
  * @since Aug 15, 2008
  */
 public class AggTable extends JPanel {
-  private PreferencesExt prefs;
+  private final PreferencesExt prefs;
 
-  private BeanTable<DatasetBean> datasetTable;
-  private JSplitPane split;
+  private final BeanTable<DatasetBean> datasetTable;
+  private final JSplitPane split;
 
-  private TextHistoryPane infoTA, aggTA;
+  private final TextHistoryPane infoTA, aggTA;
   private IndependentWindow infoWindow;
 
   private NetcdfDataset current;
 
   AggTable(PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
+
+    // the info window
+    infoTA = new TextHistoryPane();
+    infoWindow = new IndependentWindow("Extra Information", BAMutil.getImage("nj22/NetcdfUI"), infoTA);
+    infoWindow.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 500, 300)));
 
     datasetTable = new BeanTable<>(DatasetBean.class, (PreferencesExt) prefs.node("DatasetBean"), false);
 
@@ -103,11 +108,6 @@ public class AggTable extends JPanel {
       infoWindow.show();
     });
     buttPanel.add(compareButton);
-
-    // the info window
-    infoTA = new TextHistoryPane();
-    infoWindow = new IndependentWindow("Extra Information", BAMutil.getImage("nj22/NetcdfUI"), infoTA);
-    infoWindow.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 500, 300)));
 
     aggTA = new TextHistoryPane();
 

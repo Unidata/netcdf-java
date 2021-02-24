@@ -34,12 +34,13 @@ import ucar.unidata.geoloc.LatLonRect;
  */
 
 public class CompositeStationCollectionFlattened extends PointCollectionImpl {
-  private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CompositeStationCollectionFlattened.class);
+  private static final org.slf4j.Logger logger =
+      org.slf4j.LoggerFactory.getLogger(CompositeStationCollectionFlattened.class);
 
-  private TimedCollection stnCollections;
+  private final TimedCollection stnCollections;
   private LatLonRect bbSubset;
   private List<String> stationsSubset;
-  private CalendarDateRange dateRange;
+  private final CalendarDateRange dateRange;
   private List<VariableSimpleIF> varList;
   private boolean wantStationsubset;
 
@@ -70,7 +71,7 @@ public class CompositeStationCollectionFlattened extends PointCollectionImpl {
 
   private class PointIterator extends PointIteratorAbstract {
     private boolean finished;
-    private Iterator<TimedCollection.Dataset> iter;
+    private final Iterator<TimedCollection.Dataset> iter;
     private FeatureDatasetPoint currentDataset;
     private PointFeatureIterator pfIter;
 

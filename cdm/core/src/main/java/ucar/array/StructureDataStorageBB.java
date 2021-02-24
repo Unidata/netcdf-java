@@ -20,7 +20,7 @@ import ucar.nc2.iosp.IospHelper;
  * The StructureData are manufactured on the fly, referencing the ByteBuffer and heap for data.
  */
 public final class StructureDataStorageBB implements Storage<StructureData> {
-  private static Logger log = LoggerFactory.getLogger(StructureDataStorageBB.class);
+  private static final Logger log = LoggerFactory.getLogger(StructureDataStorageBB.class);
 
   private static final boolean debug = false;
   private final StructureMembers members;

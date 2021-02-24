@@ -29,24 +29,17 @@ import javax.swing.*;
 import javax.swing.border.EtchedBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
 
-/**
- * This is the thredds Data Viewer application User Interface for Grids.
- *
- * @author caron
- */
+/** This is the thredds Data Viewer application User Interface for Grids. */
 public class GridUI extends JPanel {
-  private static final String DATASET_URL = "DatasetURL";
   private static final String GEOTIFF_FILECHOOSER_DEFAULTDIR = "geotiffDefDir";
-
   // private TopLevel topLevel;
-  private PreferencesExt store;
-  private FileManager fileChooser;
+  private final PreferencesExt store;
+  private final FileManager fileChooser;
 
   // Package private access
   SuperComboBox fieldChooser, levelChooser, timeChooser, ensembleChooser, runtimeChooser;
@@ -72,7 +65,6 @@ public class GridUI extends JPanel {
 
   // the various managers and dialog boxes
   private ProjectionManager projManager;
-  // private ColorScaleManager csManager;
   private IndependentWindow infoWindow;
   private IndependentWindow ncmlWindow;
   private IndependentWindow gtWindow;
@@ -83,7 +75,6 @@ public class GridUI extends JPanel {
   private JPanel fieldPanel, toolPanel;
   private JToolBar navToolbar, moveToolbar;
   private AbstractAction navToolbarAction, moveToolbarAction;
-  private JMenu configMenu;
 
   // actions
   private AbstractAction redrawAction;
@@ -101,8 +92,7 @@ public class GridUI extends JPanel {
   private int mapBeanCount;
 
   // debugging
-  private boolean debugBeans, debugChooser, debugPrint, debugHelp;
-  private boolean debugTask;
+
 
   public GridUI(PreferencesExt pstore, RootPaneContainer root, FileManager fileChooser, int defaultHeight) {
     // this.topUI = topUI;
@@ -110,7 +100,7 @@ public class GridUI extends JPanel {
     this.fileChooser = fileChooser;
 
     try {
-      choosers = new ArrayList();
+      choosers = new ArrayList<>();
       fieldChooser = new SuperComboBox(root, "field", true, null);
       choosers.add(new Chooser("field", fieldChooser, true));
       runtimeChooser = new SuperComboBox(root, "runtime", false, null);
@@ -179,7 +169,6 @@ public class GridUI extends JPanel {
     showNcMLAction.setEnabled(b);
     showNetcdfDatasetAction.setEnabled(b);
     showGridDatasetInfoAction.setEnabled(b);
-    // showNetcdfXMLAction.setEnabled( b);
 
     navToolbarAction.setEnabled(b);
     moveToolbarAction.setEnabled(b);
@@ -210,11 +199,9 @@ public class GridUI extends JPanel {
     }
     mapBeanCount++;
 
-    mb.addPropertyChangeListener(new PropertyChangeListener() {
-      public void propertyChange(java.beans.PropertyChangeEvent e) {
-        if (e.getPropertyName().equals("Renderer")) {
-          setMapRenderer((Renderer) e.getNewValue());
-        }
+    mb.addPropertyChangeListener(e -> {
+      if (e.getPropertyName().equals("Renderer")) {
+        setMapRenderer((Renderer) e.getNewValue());
       }
     });
   }
@@ -251,16 +238,11 @@ public class GridUI extends JPanel {
     gridTable.setDataset(controller.getFields());
   }
 
-  void setFields(java.util.List fields) {
+  void setFields(java.util.List<GridDatatype> fields) {
     fieldChooser.setCollection(fields.iterator());
   }
 
   void setField(GridDatatype field) {
-    /*
-     * int idx = fieldChooser.setSelectedByName(field.toString());
-     * if (idx < 0)
-     * fieldChooser.setSelectedByIndex(0);
-     */
     fieldChooser.setToolTipText(field.getName());
 
     GridCoordSystem gcs = field.getCoordinateSystem();
@@ -482,52 +464,6 @@ public class GridUI extends JPanel {
     };
     BAMutil.setActionProperties(showNetcdfDatasetAction, "nj22/Netcdf", "NetcdfDataset Table Info...", false, 'D', -1);
 
-    /*
-     * write geotiff file
-     * geotiffAction = new AbstractAction() {
-     * public void actionPerformed(ActionEvent e) {
-     * GeoGrid grid = controller.getCurrentField();
-     * ucar.ma2.Array data = controller.getCurrentHorizDataSlice();
-     * if ((grid == null) || (data == null)) return;
-     * 
-     * String filename = geotiffFileChooser.chooseFilename();
-     * if (filename == null) return;
-     * 
-     * GeoTiff geotiff = null;
-     * try {
-     * /* System.out.println("write to= "+filename);
-     * ucar.nc2.geotiff.Writer.write2D(grid, data, filename+".tfw");
-     * geotiff = new GeoTiff(filename); // read back in
-     * geotiff.read();
-     * System.out.println( geotiff.showInfo());
-     * //geotiff.testReadData();
-     * geotiff.close(); * /
-     * 
-     * // write two
-     * ucar.nc2.geotiff.GeotiffWriter writer = new ucar.nc2.geotiff.GeotiffWriter(filename);
-     * writer.writeGrid(grid, data, false);
-     * geotiff = new GeoTiff(filename); // read back in
-     * geotiff.read();
-     * System.out.println( "*************************************");
-     * System.out.println( geotiff.showInfo());
-     * //geotiff.testReadData();
-     * geotiff.close();
-     * 
-     * 
-     * } catch (IOException ioe) {
-     * ioe.printStackTrace();
-     * 
-     * } finally {
-     * try {
-     * if (geotiff != null) geotiff.close();
-     * } catch (IOException ioe) { }
-     * }
-     * 
-     * }
-     * };
-     * BAMutil.setActionProperties( geotiffAction, "Geotiff", "Write Geotiff file", false, 'G', -1);
-     */
-
     minmaxHorizAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         csDataMinMax.setSelectedItem(ColorScale.MinMaxType.horiz);
@@ -544,16 +480,6 @@ public class GridUI extends JPanel {
     };
     BAMutil.setActionProperties(minmaxLogAction, null, "log horiz plane", false, 'V', 0);
 
-    /*
-     * minmaxVolAction = new AbstractAction() {
-     * public void actionPerformed(ActionEvent e) {
-     * csDataMinMax.setSelectedIndex(GridRenderer.VOL_MinMaxType);
-     * controller.setDataMinMaxType(GridRenderer.MinMaxType.vert;
-     * }
-     * };
-     * BAMutil.setActionProperties( minmaxVolAction, null, "Grid volume", false, 'G', 0);
-     */
-
     minmaxHoldAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         csDataMinMax.setSelectedItem(ColorScale.MinMaxType.hold);
@@ -568,7 +494,6 @@ public class GridUI extends JPanel {
   }
 
   private void makeActionsToolbars() {
-
     navToolbarAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Boolean state = (Boolean) getValue(BAMutil.STATE);
@@ -663,7 +588,7 @@ public class GridUI extends JPanel {
     // menus
     JMenu dataMenu = new JMenu("Dataset");
     dataMenu.setMnemonic('D');
-    configMenu = new JMenu("Configure");
+    JMenu configMenu = new JMenu("Configure");
     configMenu.setMnemonic('C');
     JMenu toolMenu = new JMenu("Controls");
     toolMenu.setMnemonic('T');
@@ -749,7 +674,7 @@ public class GridUI extends JPanel {
     setDrawHorizAndVert(controller.drawHorizOn, controller.drawVertOn);
   }
 
-  private ArrayList choosers;
+  private ArrayList<Chooser> choosers;
 
   private void setChoosers() {
     fieldPanel.removeAll();

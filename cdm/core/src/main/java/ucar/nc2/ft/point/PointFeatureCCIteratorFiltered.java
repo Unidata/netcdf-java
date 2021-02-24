@@ -17,8 +17,8 @@ import ucar.nc2.ft.IOIterator;
  */
 public class PointFeatureCCIteratorFiltered implements PointFeatureCCIterator, IOIterator<PointFeatureCC> {
 
-  private PointFeatureCCIterator npfciter;
-  private PointFeatureCCIterator.Filter filter;
+  private final PointFeatureCCIterator npfciter;
+  private final PointFeatureCCIterator.Filter filter;
 
   private PointFeatureCC pointFeatureCollection;
   private boolean done;

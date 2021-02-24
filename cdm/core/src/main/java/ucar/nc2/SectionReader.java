@@ -12,7 +12,7 @@ import java.io.IOException;
 /**
  * A ProxyReader for logical sections of a Variable.
  * 
- * @see {@link Variable#section(Section)}
+ * {@link Variable#section(Section)}
  */
 @Immutable
 class SectionReader implements ProxyReader {

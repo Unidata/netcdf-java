@@ -38,7 +38,7 @@ import ucar.unidata.geoloc.EarthLocation;
  */
 class WriterCFTrajectoryCollection extends WriterCFPointAbstract {
   private Structure featureStruct; // used for netcdf4 extended
-  private HashSet<String> featureVarMap = new HashSet<>();
+  private final HashSet<String> featureVarMap = new HashSet<>();
   private boolean headerDone;
 
   WriterCFTrajectoryCollection(String fileOut, AttributeContainer globalAtts, List<VariableSimpleIF> dataVars,

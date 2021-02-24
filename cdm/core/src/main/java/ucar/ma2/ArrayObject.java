@@ -310,7 +310,7 @@ public class ArrayObject extends Array {
 
   /** Concrete implementation of Array specialized for Objects, rank 0. */
   public static class D0 extends ArrayObject {
-    private Index0D ix;
+    private final Index0D ix;
 
     /** Constructor. */
     public D0(DataType dtype, Class elemType, boolean isVlen) {
@@ -336,7 +336,7 @@ public class ArrayObject extends Array {
 
   /** Concrete implementation of Array specialized for Objects, rank 1. */
   public static class D1 extends ArrayObject {
-    private Index1D ix;
+    private final Index1D ix;
 
     /** Constructor for array of shape {len0}. */
     public D1(DataType dtype, Class elemType, boolean isVlen, int len0) {
@@ -362,7 +362,7 @@ public class ArrayObject extends Array {
 
   /** Concrete implementation of Array specialized for Objects, rank 2. */
   public static class D2 extends ArrayObject {
-    private Index2D ix;
+    private final Index2D ix;
 
     /** Constructor for array of shape {len0,len1}. */
     public D2(DataType dtype, Class elemType, boolean isVlen, int len0, int len1) {
@@ -388,7 +388,7 @@ public class ArrayObject extends Array {
 
   /** Concrete implementation of Array specialized for Objects, rank 3. */
   public static class D3 extends ArrayObject {
-    private Index3D ix;
+    private final Index3D ix;
 
     /** Constructor for array of shape {len0,len1,len2}. */
     public D3(DataType dtype, Class elemType, boolean isVlen, int len0, int len1, int len2) {
@@ -414,7 +414,7 @@ public class ArrayObject extends Array {
 
   /** Concrete implementation of Array specialized for Objects, rank 4. */
   public static class D4 extends ArrayObject {
-    private Index4D ix;
+    private final Index4D ix;
 
     /** Constructor for array of shape {len0,len1,len2,len3}. */
     public D4(DataType dtype, Class elemType, boolean isVlen, int len0, int len1, int len2, int len3) {
@@ -440,7 +440,7 @@ public class ArrayObject extends Array {
 
   /** Concrete implementation of Array specialized for Objects, rank 5. */
   public static class D5 extends ArrayObject {
-    private Index5D ix;
+    private final Index5D ix;
 
     /** Constructor for array of shape {len0,len1,len2,len3,len4}. */
     public D5(DataType dtype, Class elemType, boolean isVlen, int len0, int len1, int len2, int len3, int len4) {
@@ -466,7 +466,7 @@ public class ArrayObject extends Array {
 
   /** Concrete implementation of Array specialized for Objects, rank 6. */
   public static class D6 extends ArrayObject {
-    private Index6D ix;
+    private final Index6D ix;
 
     /** Constructor for array of shape {len0,len1,len2,len3,len4,len5,}. */
     public D6(DataType dtype, Class elemType, boolean isVlen, int len0, int len1, int len2, int len3, int len4,
@@ -493,7 +493,7 @@ public class ArrayObject extends Array {
 
   /** Concrete implementation of Array specialized for Objects, rank 7. */
   public static class D7 extends ArrayObject {
-    private Index7D ix;
+    private final Index7D ix;
 
     /** Constructor for array of shape {len0,len1,len2,len3,len4,len5,len6}. */
     public D7(DataType dtype, Class elemType, boolean isVlen, int len0, int len1, int len2, int len3, int len4,

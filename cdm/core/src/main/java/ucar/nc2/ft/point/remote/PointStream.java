@@ -194,7 +194,7 @@ public class PointStream {
 
   static class ProtobufPointFeatureMaker implements FeatureMaker {
     private CalendarDateUnit dateUnit;
-    private StructureMembers sm;
+    private final StructureMembers sm;
 
     ProtobufPointFeatureMaker(PointStreamProto.PointFeatureCollection pfc) {
       try {

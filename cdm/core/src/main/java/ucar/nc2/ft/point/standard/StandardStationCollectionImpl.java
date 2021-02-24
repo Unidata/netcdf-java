@@ -29,7 +29,7 @@ import ucar.nc2.time.CalendarDateUnit;
  * @since Mar 28, 2008
  */
 public class StandardStationCollectionImpl extends StationTimeSeriesCollectionImpl {
-  private NestedTable ft;
+  private final NestedTable ft;
 
   StandardStationCollectionImpl(NestedTable ft, CalendarDateUnit timeUnit, String altUnits) {
     super(ft.getName(), timeUnit, altUnits);

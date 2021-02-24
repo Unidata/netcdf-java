@@ -26,19 +26,16 @@ import javax.swing.*;
  *
  * @author caron
  */
-
 public class ColorScale implements Cloneable, java.io.Serializable {
   public enum MinMaxType {
     horiz, log, hold
   }
 
   public static final int VERTICAL = 0;
-  public static final int HORIZONTAL = 1;
 
   private static final long serialVersionUID = -1L; // disconnect java version checking
   private static final int objectVersion = 1; // our version control
   private static final boolean debugColors = false;
-  private static int sigfig = 4;
 
   // this is all that needs to be serialized
   private String name;
@@ -252,15 +249,6 @@ public class ColorScale implements Cloneable, java.io.Serializable {
   public Color getMissingDataColor() {
     return missingDataColor;
   }
-
-  /*
-   * public String getLabel(int i) {
-   * if (i >=0 && i < ncolors)
-   * return label[i];
-   * else
-   * throw new IllegalArgumentException("Color Scale getLabel "+i);
-   * }
-   */
 
   /**
    * Get which color interval this value lies in.
@@ -498,6 +486,7 @@ public class ColorScale implements Cloneable, java.io.Serializable {
     }
 
     private void calcLabels() {
+      int sigfig = 4;
       label[0] = "<" + Format.d(cs.getEdge(0), sigfig);
       for (int i = 1; i < nColorInterval - 1; i++) {
         label[i] = Format.d(cs.getEdge(i), sigfig);

@@ -86,7 +86,7 @@ public class CompositeDatasetFactory {
   }
 
   private static class CompositePointDataset extends PointDatasetImpl implements UpdateableCollection {
-    private DsgFeatureCollection pfc;
+    private final DsgFeatureCollection pfc;
     private List<Attribute> globalAttributes;
 
     public CompositePointDataset(String location, FeatureType featureType, DsgFeatureCollection pfc,

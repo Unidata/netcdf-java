@@ -19,10 +19,10 @@ import javax.swing.AbstractButton;
 import javax.swing.JOptionPane;
 
 public class Hdf5DataPanel extends OpPanel {
+  private final Hdf5NewDataTable hdf5Table;
   private RandomAccessFile raf;
-  private Hdf5NewDataTable hdf5Table;
 
-  public Hdf5DataPanel(PreferencesExt p, boolean useBuilders) {
+  public Hdf5DataPanel(PreferencesExt p) {
     super(p, "file:", true, false);
     hdf5Table = new Hdf5NewDataTable(prefs, buttPanel);
     add(hdf5Table, BorderLayout.CENTER);

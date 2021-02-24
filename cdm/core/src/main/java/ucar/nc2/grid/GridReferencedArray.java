@@ -7,7 +7,6 @@ package ucar.nc2.grid;
 import com.google.auto.value.AutoValue;
 import ucar.array.Array;
 import ucar.array.ArrayType;
-import ucar.ma2.DataType;
 
 /** A data array with GeoReferencing. */
 @AutoValue

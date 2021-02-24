@@ -36,7 +36,7 @@ import ucar.nc2.stream.NcStreamReader;
  * @since 5/5/2015
  */
 public class CdmrCoverageReader implements CoverageReader, CoordAxisReader {
-  private Escaper urlParamEscaper = UrlEscapers.urlFormParameterEscaper();
+  private final Escaper urlParamEscaper = UrlEscapers.urlFormParameterEscaper();
 
   String endpoint;
   HTTPSession httpClient;

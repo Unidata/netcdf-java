@@ -51,7 +51,6 @@ import ucar.ui.prefs.ComboBox;
  * @author John Caron
  * @see UrlAuthenticatorDialog
  */
-
 public class URLDumpPane extends TextHistoryPane {
   private enum Library {
     UcarHttpservices, java
@@ -61,8 +60,8 @@ public class URLDumpPane extends TextHistoryPane {
     GET, PUT, HEAD, OPTIONS
   }
 
-  private ComboBox<String> cb;
-  private JComboBox<Library> implCB;
+  private final ComboBox<String> cb;
+  private final JComboBox<Library> implCB;
   private HttpURLConnection currentConnection;
 
   public URLDumpPane(PreferencesExt prefs) {

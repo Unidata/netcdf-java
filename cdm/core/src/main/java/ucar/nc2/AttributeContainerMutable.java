@@ -18,7 +18,7 @@ public class AttributeContainerMutable implements AttributeContainer {
   }
 
   private @Nullable String name;
-  private ArrayList<Attribute> atts;
+  private final ArrayList<Attribute> atts;
 
   /** Constructor with container name. */
   public AttributeContainerMutable(@Nullable String name) {

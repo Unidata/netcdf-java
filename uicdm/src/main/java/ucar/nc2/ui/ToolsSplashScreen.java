@@ -16,14 +16,11 @@ import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.lang.invoke.MethodHandles;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JWindow;
 
 public class ToolsSplashScreen extends JWindow {
-  private static final org.slf4j.Logger logger =
-      org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   private static ToolsSplashScreen instance;
 
   public static ToolsSplashScreen getSharedInstance() {

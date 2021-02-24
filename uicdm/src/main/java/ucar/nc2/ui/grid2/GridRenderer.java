@@ -31,12 +31,12 @@ import java.util.Optional;
  * more or less the view in MVC
  */
 public class GridRenderer {
+  private static boolean debugPts = false;
+
   // draw state
-  private boolean drawGrid = true;
+  private final boolean drawGrid = true;
   private boolean drawGridLines = true;
   private boolean drawContours;
-  private boolean drawContourLabels;
-  private boolean drawBB;
   private boolean isNewField = true;
 
   private ColorScale colorScale;
@@ -49,12 +49,11 @@ public class GridRenderer {
   private GridReferencedArray geodata;
 
   // drawing optimization
-  private boolean useModeForProjections; // use colorMode optimization for different projections
+  private boolean useModeForProjections = false; // use colorMode optimization for different projections
   private boolean sameProjection = true;
   private LatLonProjection projectll; // special handling for LatLonProjection
 
   private static final boolean debugHorizDraw = false, debugMiss = false;
-  private boolean debugPts, debugPathShape = true;
 
   /**
    * constructor
@@ -109,9 +108,7 @@ public class GridRenderer {
   }
 
   /* set the Projection to use for drawing */
-  public void setDrawBB(boolean drawBB) {
-    this.drawBB = drawBB;
-  }
+  public void setDrawBB(boolean drawBB) {}
 
   /* set whether grid should be drawn */
   public void setDrawGridLines(boolean drawGrid) {
@@ -124,9 +121,7 @@ public class GridRenderer {
   }
 
   /* set whether contour labels should be drawn */
-  public void setDrawContourLabels(boolean drawContourLabels) {
-    this.drawContourLabels = drawContourLabels;
-  }
+  public void setDrawContourLabels(boolean drawContourLabels) {}
 
   /**
    * Get the data value at this projection (x,y) point.
@@ -255,13 +250,6 @@ public class GridRenderer {
         drawGridHoriz(g, dataArr);
       }
     }
-
-    // if (drawContours)
-    // drawContours(g, dataH.transpose(0, 1), dFromN);
-    // if (drawGridLines)
-    // drawGridLines(g, dataH);
-    // if (drawBB)
-    // drawGridBB(g, this.dataState.GridDataset.getLatlonBoundingBox());
   }
 
   private boolean drawGridBB(Graphics2D g, LatLonRect latLonRect) {
@@ -465,15 +453,6 @@ public class GridRenderer {
     GridAxis2D lat2D = hcsys2D.getLatAxis();
     GridAxis2D lon2D = hcsys2D.getLonAxis();
 
-    /*
-     * not implemented
-     * String stag = hcsys2D.getHorizStaggerType();
-     * if (CDM.ARAKAWA_E.equals(stag)) {
-     * drawGridHorizRotated(g, data, lon2D, lat2D);
-     * return;
-     * }
-     */
-
     GeneralPath gp = new GeneralPath(GeneralPath.WIND_EVEN_ODD, 5);
     int[] shape = hcsys2D.getShape(); // should both be the same
     int ny = shape[0];
@@ -494,51 +473,5 @@ public class GridRenderer {
       }
     }
   }
-
 }
-
-/*
- * private void drawGridLines(Graphics2D g, GridCoordSystem geocs) {
- * LatLonAxis2D lataxis = geocs.getHorizCoordSys().getLatAxis2D();
- * LatLonAxis2D lonaxis = geocs.getHorizCoordSys().getLonAxis2D();
- *
- * if (lataxis == null || lonaxis == null)
- * return;
- *
- * Array<Double> edgex = (Array<Double>) lonaxis.getCoordBoundsAsArray();
- * Array<Double> edgey = (Array<Double>) lataxis.getCoordBoundsAsArray();
- *
- * GeneralPath gp = new GeneralPath(GeneralPath.WIND_EVEN_ODD, 5);
- * g.setColor(Color.BLACK);
- *
- * int[] shape = lataxis.getShape(); // should both be the same
- * int ny = shape[0];
- * int nx = shape[1];
- *
- * for (int y = 0; y < ny + 1; y += 10) {
- * gp.reset();
- * for (int x = 0; x < nx + 1; x++) {
- * if (x == 0) {
- * gp.moveTo(edgex.get(y, x), edgey.get(y, x));
- * } else {
- * gp.lineTo(edgex.get(y, x), edgey.get(y, x));
- * }
- * }
- * g.draw(gp);
- * }
- *
- * for (int x = 0; x < nx + 1; x += 10) {
- * gp.reset();
- * for (int y = 0; y < ny + 1; y++) {
- * if (y == 0) {
- * gp.moveTo(edgex.get(y, x), edgey.get(y, x));
- * } else {
- * gp.lineTo(edgex.get(y, x), edgey.get(y, x));
- * }
- * }
- * g.draw(gp);
- * }
- *
- * }
- */
 

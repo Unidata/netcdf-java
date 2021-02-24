@@ -36,7 +36,6 @@ public class CdmIndexScan extends JPanel {
   private final JSplitPane split;
   private final TextHistoryPane dumpTA;
   private final IndependentWindow infoWindow;
-  private boolean subdirs = true;
 
   public CdmIndexScan(PreferencesExt prefs) {
     this.prefs = prefs;
@@ -53,7 +52,6 @@ public class CdmIndexScan extends JPanel {
         }
       }
     });
-
 
     // the info window
     TextHistoryPane infoTA = new TextHistoryPane();
@@ -150,11 +148,9 @@ public class CdmIndexScan extends JPanel {
       }
     }
 
-    if (subdirs) {
-      for (File f : fila) {
-        if (f.isDirectory() && !f.getName().equals("exclude")) {
-          scanDirectory(f, result, info);
-        }
+    for (File f : fila) {
+      if (f.isDirectory() && !f.getName().equals("exclude")) {
+        scanDirectory(f, result, info);
       }
     }
   }

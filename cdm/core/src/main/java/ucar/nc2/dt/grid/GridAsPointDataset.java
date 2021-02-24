@@ -24,7 +24,7 @@ import ucar.unidata.geoloc.LatLonPoint;
  * @author caron
  */
 public class GridAsPointDataset {
-  private List<CalendarDate> dates;
+  private final List<CalendarDate> dates;
 
   public GridAsPointDataset(List<GridDatatype> grids) {
     HashSet<CalendarDate> dateHash = new HashSet<>();

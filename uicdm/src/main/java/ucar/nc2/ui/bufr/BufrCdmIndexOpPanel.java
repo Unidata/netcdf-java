@@ -3,10 +3,9 @@
  * See LICENSE for license information.
  */
 
-package ucar.nc2.ui.op;
+package ucar.nc2.ui.bufr;
 
 import ucar.nc2.ui.OpPanel;
-import ucar.unidata.io.RandomAccessFile;
 import ucar.util.prefs.PreferencesExt;
 import java.awt.BorderLayout;
 import java.io.FileNotFoundException;
@@ -15,37 +14,24 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import javax.swing.JOptionPane;
 
-/**
- *
- */
-public class BufrPanel extends OpPanel {
-  private RandomAccessFile raf;
-  private BufrMessageViewer bufrTable;
+public class BufrCdmIndexOpPanel extends OpPanel {
+  private final BufrCdmIndexPanel table;
 
-  /**
-   *
-   */
-  public BufrPanel(PreferencesExt p) {
-    super(p, "file:", true, false);
-    bufrTable = new BufrMessageViewer(prefs, buttPanel);
-    add(bufrTable, BorderLayout.CENTER);
+  public BufrCdmIndexOpPanel(PreferencesExt p) {
+    super(p, "index file:", true, false);
+    table = new BufrCdmIndexPanel(prefs, buttPanel);
+    add(table, BorderLayout.CENTER);
   }
 
-  /** */
   @Override
   public boolean process(Object o) {
     String command = (String) o;
     boolean err = false;
 
     try {
-      if (raf != null) {
-        raf.close();
-      }
-      raf = new RandomAccessFile(command, "r");
-
-      bufrTable.setBufrFile(raf);
+      table.setIndexFile(command);
     } catch (FileNotFoundException ioe) {
-      JOptionPane.showMessageDialog(null, "NetcdfDataset cannot open " + command + "\n" + ioe.getMessage());
+      JOptionPane.showMessageDialog(null, "BufrCdmIndexPanel cannot open " + command + "\n" + ioe.getMessage());
       err = true;
     } catch (Exception e) {
       e.printStackTrace();
@@ -59,19 +45,14 @@ public class BufrPanel extends OpPanel {
     return !err;
   }
 
-  /** */
   @Override
   public void closeOpenFiles() throws IOException {
-    if (raf != null) {
-      raf.close();
-    }
-    raf = null;
+    // table.closeOpenFiles();
   }
 
-  /** */
   @Override
   public void save() {
-    bufrTable.save();
+    table.save();
     super.save();
   }
 }

@@ -38,7 +38,7 @@ import ucar.unidata.io.RandomAccessFile;
  * Proof of concept for making ncStream-encoded file into a version of the netcdf format.
  */
 public class NcStreamIosp extends AbstractIOServiceProvider {
-  private static Logger logger = LoggerFactory.getLogger(NcStreamIosp.class);
+  private static final Logger logger = LoggerFactory.getLogger(NcStreamIosp.class);
   private static final boolean debug = false;
 
   public boolean isValidFile(RandomAccessFile raf) throws IOException {

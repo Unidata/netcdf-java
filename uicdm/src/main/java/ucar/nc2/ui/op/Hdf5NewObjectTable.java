@@ -35,41 +35,44 @@ import javax.swing.JSplitPane;
 
 /** ToolsUI/Iosp/Hdf5 raw file objects */
 public class Hdf5NewObjectTable extends Hdf5ObjectTable {
-  private BeanTable<ObjectBean> objectTable;
+  private final BeanTable<ObjectBean> objectTable;
   private BeanTable<MessageBean> messTable;
   private BeanTable<AttributeBean> attTable;
-  private JSplitPane splitH, split, split2;
+  private final JSplitPane splitH;
+  private final JSplitPane split;
+  private final JSplitPane split2;
 
-  private TextHistoryPane dumpTA, infoTA;
+  private final TextHistoryPane dumpTA;
+  private TextHistoryPane infoTA;
   private IndependentWindow infoWindow;
-
   private H5iosp iosp;
-  private String location;
 
   public Hdf5NewObjectTable(PreferencesExt prefs) {
     super(prefs);
-    PopupMenu varPopup;
+    dumpTA = new TextHistoryPane();
 
-    objectTable = new BeanTable(ObjectBean.class, (PreferencesExt) prefs.node("Hdf5Object"), false,
+    objectTable = new BeanTable<>(ObjectBean.class, (PreferencesExt) prefs.node("Hdf5Object"), false,
         "H5headerNew.DataObject", "Level 2A data object header", null);
     objectTable.addListSelectionListener(e -> {
       messTable.setBeans(new ArrayList<>());
 
       ArrayList<MessageBean> beans = new ArrayList<>();
       ObjectBean ob = objectTable.getSelectedBean();
-      for (H5objects.HeaderMessage m : ob.m.getMessages()) {
-        beans.add(new MessageBean(m));
-      }
-      messTable.setBeans(beans);
+      if (ob != null) {
+        for (H5objects.HeaderMessage m : ob.m.getMessages()) {
+          beans.add(new MessageBean(m));
+        }
+        messTable.setBeans(beans);
 
-      ArrayList<AttributeBean> attBeans = new ArrayList<>();
-      for (H5objects.MessageAttribute m : ob.m.getAttributes()) {
-        attBeans.add(new AttributeBean(m));
+        ArrayList<AttributeBean> attBeans = new ArrayList<>();
+        for (H5objects.MessageAttribute m : ob.m.getAttributes()) {
+          attBeans.add(new AttributeBean(m));
+        }
+        attTable.setBeans(attBeans);
       }
-      attTable.setBeans(attBeans);
     });
 
-    varPopup = new PopupMenu(objectTable.getJTable(), "Options");
+    PopupMenu varPopup = new PopupMenu(objectTable.getJTable(), "Options");
     varPopup.addAction("show", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         ObjectBean mb = objectTable.getSelectedBean();
@@ -90,11 +93,13 @@ public class Hdf5NewObjectTable extends Hdf5ObjectTable {
     });
 
 
-    messTable = new BeanTable(MessageBean.class, (PreferencesExt) prefs.node("MessBean"), false,
+    messTable = new BeanTable<>(MessageBean.class, (PreferencesExt) prefs.node("MessBean"), false,
         "H5headerNew.HeaderMessage", "Level 2A1 and 2A2 (part of Data Object)", null);
     messTable.addListSelectionListener(e -> {
       MessageBean mb = messTable.getSelectedBean();
-      dumpTA.setText(mb.m.toString());
+      if (mb != null) {
+        dumpTA.setText(mb.m.toString());
+      }
     });
 
     varPopup = new PopupMenu(messTable.getJTable(), "Options");
@@ -115,17 +120,16 @@ public class Hdf5NewObjectTable extends Hdf5ObjectTable {
       }
     });
 
-    attTable = new BeanTable(AttributeBean.class, (PreferencesExt) prefs.node("AttBean"), false,
+    attTable = new BeanTable<>(AttributeBean.class, (PreferencesExt) prefs.node("AttBean"), false,
         "H5headerNew.HeaderAttribute", "Message Type 12/0xC : define an Atribute", null);
     attTable.addListSelectionListener(e -> {
       AttributeBean mb = attTable.getSelectedBean();
-      Formatter f = new Formatter();
-      mb.show(f);
-      dumpTA.setText(f.toString());
+      if (mb != null) {
+        Formatter f = new Formatter();
+        mb.show(f);
+        dumpTA.setText(f.toString());
+      }
     });
-
-    // the info window
-    dumpTA = new TextHistoryPane();
 
     splitH = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, false, objectTable, dumpTA);
     splitH.setDividerLocation(prefs.getInt("splitPosH", 600));
@@ -175,9 +179,6 @@ public class Hdf5NewObjectTable extends Hdf5ObjectTable {
   public void setHdf5File(RandomAccessFile raf) throws IOException {
     closeOpenFiles();
 
-    this.location = raf.getLocation();
-    List<ObjectBean> beanList = new ArrayList<>();
-
     iosp = new H5iosp();
     try {
       NetcdfFile ncfile = NetcdfFiles.build(iosp, raf, raf.getLocation(), null);
@@ -189,15 +190,17 @@ public class Hdf5NewObjectTable extends Hdf5ObjectTable {
       dumpTA.setText(sw.toString());
     }
 
+    List<ObjectBean> beanList = new ArrayList<>();
     H5header header = iosp.getHeader();
-    for (H5objects.DataObject dataObj : header.getDataObjects()) {
-      beanList.add(new ObjectBean(dataObj));
+    if (header != null) {
+      for (H5objects.DataObject dataObj : header.getDataObjects()) {
+        beanList.add(new ObjectBean(dataObj));
+      }
     }
-
     objectTable.setBeans(beanList);
   }
 
-  public void showInfo(Formatter f) throws IOException {
+  public void showInfo(Formatter f) {
     if (iosp == null) {
       return;
     }

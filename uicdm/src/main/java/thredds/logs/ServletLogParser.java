@@ -203,7 +203,7 @@ public class ServletLogParser implements LogReader.LogParser {
   }
 
   // 2010-04-21T13:05:22.006 -0600
-  private SimpleDateFormat df = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+  private final SimpleDateFormat df = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
   private long convertDate(String accessDateFormat) {
     // 30/Sep/2009:23:50:47 -0600
@@ -215,7 +215,6 @@ public class ServletLogParser implements LogReader.LogParser {
     }
     return -1;
   }
-
 
   private int parse(String s) {
     s = s.trim();

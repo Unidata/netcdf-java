@@ -23,31 +23,34 @@ import java.util.List;
  * @since Aug 25, 2010
  */
 public class WmoCommonCodesPanel extends JPanel {
-  private PreferencesExt prefs;
+  private final PreferencesExt prefs;
 
-  private BeanTable codeTable, entryTable;
-  private JSplitPane split;
+  private final BeanTable<TableBean> codeTable;
+  private final BeanTable<EntryBean> entryTable;
+  private final JSplitPane split;
 
-  private TextHistoryPane compareTA;
-  private IndependentWindow infoWindow;
+  private final TextHistoryPane compareTA;
+  private final IndependentWindow infoWindow;
 
   public WmoCommonCodesPanel(PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
 
-    codeTable = new BeanTable(TableBean.class, (PreferencesExt) prefs.node("CodeTableBean"), false);
+    codeTable = new BeanTable<>(TableBean.class, (PreferencesExt) prefs.node("CodeTableBean"), false);
     codeTable.addListSelectionListener(e -> {
-      TableBean csb = (TableBean) codeTable.getSelectedBean();
-      CommonCodeTable cct = CommonCodeTable.getTable(csb.t.getTableNo());
-      setEntries(cct);
+      TableBean csb = codeTable.getSelectedBean();
+      if (csb != null) {
+        CommonCodeTable cct = CommonCodeTable.getTable(csb.t.getTableNo());
+        setEntries(cct);
+      }
     });
 
-    entryTable = new BeanTable(EntryBean.class, (PreferencesExt) prefs.node("EntryBean"), false);
+    entryTable = new BeanTable<>(EntryBean.class, (PreferencesExt) prefs.node("EntryBean"), false);
 
     PopupMenu varPopup = new PopupMenu(codeTable.getJTable(), "Options");
     varPopup.addAction("Show", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Formatter out = new Formatter();
-        TableBean csb = (TableBean) codeTable.getSelectedBean();
+        TableBean csb = codeTable.getSelectedBean();
         if (csb == null)
           return;
         CommonCodeTable cct = CommonCodeTable.getTable(csb.t.getTableNo());

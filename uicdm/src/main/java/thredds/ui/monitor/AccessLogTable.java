@@ -25,7 +25,6 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -38,11 +37,15 @@ import java.util.concurrent.Executors;
  * @since Mar 26, 2009
  */
 public class AccessLogTable extends JPanel {
-  private PreferencesExt prefs;
-  private DnsLookup dnsLookup;
+  private final PreferencesExt prefs;
+  private final DnsLookup dnsLookup;
 
-  private ucar.ui.prefs.BeanTable logTable, userTable, datarootTable, serviceTable, clientTable;
-  private JPanel timeSeriesPanel;
+  private final BeanTable<LogReader.Log> logTable;
+  private final BeanTable<User> userTable;
+  private final BeanTable<Dataroot> datarootTable;
+  private final BeanTable<Service> serviceTable;
+  private final BeanTable<Client> clientTable;
+  private final JPanel timeSeriesPanel;
 
   private ArrayList<LogReader.Log> completeLogs;
   private ArrayList<LogReader.Log> restrictLogs;
@@ -52,12 +55,13 @@ public class AccessLogTable extends JPanel {
   private boolean calcService = true;
   private boolean calcClient = true;
 
-  private JTabbedPane tabbedPanel;
+  private final JTabbedPane tabbedPanel;
 
-  private TextHistoryPane infoTA;
-  private IndependentWindow infoWindow;
+  private final TextHistoryPane infoTA;
+  private final IndependentWindow infoWindow;
 
-  private DateTimePicker dateTimePickerStart, dateTimePickerEnd;
+  private final DateTimePicker dateTimePickerStart;
+  private final DateTimePicker dateTimePickerEnd;
 
   public AccessLogTable(DateTimePicker dateTimePickerStart, DateTimePicker dateTimePickerEnd, PreferencesExt prefs,
       DnsLookup dnsLookup) {
@@ -65,33 +69,27 @@ public class AccessLogTable extends JPanel {
     this.dateTimePickerEnd = dateTimePickerEnd;
     this.prefs = prefs;
     this.dnsLookup = dnsLookup;
-    PopupMenu varPopup;
 
-    logTable = new BeanTable(LogReader.Log.class, (PreferencesExt) prefs.node("Logs"), false);
+    // the info window
+    infoTA = new TextHistoryPane();
+    infoWindow = new IndependentWindow("Extra Information", BAMutil.getImage("nj22/NetcdfUI"), infoTA);
+    infoWindow.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 800, 100)));
+
+    logTable = new BeanTable<>(LogReader.Log.class, (PreferencesExt) prefs.node("Logs"), false);
     logTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
-        LogReader.Log log = (LogReader.Log) logTable.getSelectedBean();
+        LogReader.Log log = logTable.getSelectedBean();
         if (log == null)
           return;
         infoTA.setText(log.toString());
         infoWindow.show();
       }
     });
-    varPopup = new PopupMenu(logTable.getJTable(), "Options");
-    varPopup.addAction("Show", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        LogReader.Log log = (LogReader.Log) logTable.getSelectedBean();
-        if (log == null)
-          return;
-        Formatter f = new Formatter();
-        log.toString(f);
-        infoTA.setText(f.toString());
-        infoWindow.show();
-      }
-    });
+    PopupMenu varPopup =
+        logTable.addPopupOption("Show Log", logTable.makeShowAction(infoTA, infoWindow, b -> b.toString()));
     varPopup.addAction("DNS Lookup", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        LogReader.Log log = (LogReader.Log) logTable.getSelectedBean();
+        LogReader.Log log = logTable.getSelectedBean();
         if (log == null)
           return;
         try {
@@ -104,7 +102,7 @@ public class AccessLogTable extends JPanel {
     });
     varPopup.addAction("Resend URL", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        LogReader.Log log = (LogReader.Log) logTable.getSelectedBean();
+        LogReader.Log log = logTable.getSelectedBean();
         if (log == null)
           return;
         String urlString = log.getPath();
@@ -113,26 +111,24 @@ public class AccessLogTable extends JPanel {
     });
     varPopup.addAction("Remove selected logs", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        List all = logTable.getBeans();
-        List selected = logTable.getSelectedBeans();
+        List<LogReader.Log> all = logTable.getBeans();
+        List<LogReader.Log> selected = logTable.getSelectedBeans();
         all.removeAll(selected);
         logTable.setBeans(all);
       }
     });
 
-    userTable = new BeanTable(User.class, (PreferencesExt) prefs.node("LogUser"), false);
-    userTable.addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
-        User accum = (User) userTable.getSelectedBean();
-        if (accum == null)
-          return;
-        accum.run();
-      }
+    userTable = new BeanTable<>(User.class, (PreferencesExt) prefs.node("LogUser"), false);
+    userTable.addListSelectionListener(e -> {
+      User accum = userTable.getSelectedBean();
+      if (accum == null)
+        return;
+      accum.run();
     });
     PopupMenu varPopupU = new PopupMenu(userTable.getJTable(), "Options");
     varPopupU.addAction("User requests", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        Accum accum = (Accum) userTable.getSelectedBean();
+        Accum accum = userTable.getSelectedBean();
         if (accum == null)
           return;
         logTable.setBeans(accum.logs);
@@ -140,18 +136,16 @@ public class AccessLogTable extends JPanel {
       }
     });
 
-    datarootTable = new BeanTable(Dataroot.class, (PreferencesExt) prefs.node("DataRoot"), false);
-    datarootTable.addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
-        Dataroot accum = (Dataroot) datarootTable.getSelectedBean();
-        if (accum == null)
-          return;
-      }
+    datarootTable = new BeanTable<>(Dataroot.class, (PreferencesExt) prefs.node("DataRoot"), false);
+    datarootTable.addListSelectionListener(e -> {
+      Dataroot accum = datarootTable.getSelectedBean();
+      if (accum == null)
+        return;
     });
     PopupMenu varPopupR = new PopupMenu(datarootTable.getJTable(), "Options");
     varPopupR.addAction("User requests", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        Accum accum = (Accum) datarootTable.getSelectedBean();
+        Accum accum = datarootTable.getSelectedBean();
         if (accum == null)
           return;
         logTable.setBeans(accum.logs);
@@ -159,18 +153,16 @@ public class AccessLogTable extends JPanel {
       }
     });
 
-    serviceTable = new BeanTable(Service.class, (PreferencesExt) prefs.node("Service"), false);
-    serviceTable.addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
-        Service accum = (Service) serviceTable.getSelectedBean();
-        if (accum == null)
-          return;
-      }
+    serviceTable = new BeanTable<>(Service.class, (PreferencesExt) prefs.node("Service"), false);
+    serviceTable.addListSelectionListener(e -> {
+      Service accum = serviceTable.getSelectedBean();
+      if (accum == null)
+        return;
     });
     ucar.ui.widget.PopupMenu varPopupS = new PopupMenu(serviceTable.getJTable(), "Options");
     varPopupS.addAction("User requests", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        Accum accum = (Accum) serviceTable.getSelectedBean();
+        Accum accum = serviceTable.getSelectedBean();
         if (accum == null)
           return;
         logTable.setBeans(accum.logs);
@@ -178,18 +170,16 @@ public class AccessLogTable extends JPanel {
       }
     });
 
-    clientTable = new BeanTable(Service.class, (PreferencesExt) prefs.node("Service"), false);
-    clientTable.addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
-        Client accum = (Client) clientTable.getSelectedBean();
-        if (accum == null)
-          return;
-      }
+    clientTable = new BeanTable<>(Client.class, (PreferencesExt) prefs.node("Service"), false);
+    clientTable.addListSelectionListener(e -> {
+      Client accum = clientTable.getSelectedBean();
+      if (accum == null)
+        return;
     });
     ucar.ui.widget.PopupMenu varPopupC = new PopupMenu(clientTable.getJTable(), "Options");
     varPopupC.addAction("User requests", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        Accum accum = (Accum) clientTable.getSelectedBean();
+        Accum accum = clientTable.getSelectedBean();
         if (accum == null)
           return;
         logTable.setBeans(accum.logs);
@@ -198,13 +188,7 @@ public class AccessLogTable extends JPanel {
     });
 
     timeSeriesPanel = new JPanel();
-    // timeSeriesPanel.setLayout(new GridLayout(2, 2));
     timeSeriesPanel.setLayout(new BorderLayout());
-
-    // the info window
-    infoTA = new TextHistoryPane();
-    infoWindow = new IndependentWindow("Extra Information", BAMutil.getImage("nj22/NetcdfUI"), infoTA);
-    infoWindow.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 800, 100)));
 
     // tabbed panes
     tabbedPanel = new JTabbedPane(JTabbedPane.TOP);
@@ -234,7 +218,6 @@ public class AccessLogTable extends JPanel {
     });
 
     setLayout(new BorderLayout());
-    // add(topPanel, BorderLayout.NORTH);
     add(tabbedPanel, BorderLayout.CENTER);
   }
 
@@ -250,8 +233,6 @@ public class AccessLogTable extends JPanel {
     prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
   }
 
-
-  private SimpleDateFormat df = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
   private LogLocalManager manager;
   private java.util.List<LogLocalManager.FileDateRange> accessLogFiles;
 
@@ -307,7 +288,7 @@ public class AccessLogTable extends JPanel {
       f.format("  first log date= %s%n", completeLogs.get(0).getDate());
       f.format("   last log date= %s%n", completeLogs.get(n - 1).getDate());
     }
-    List restrict = logTable.getBeans();
+    List<LogReader.Log> restrict = logTable.getBeans();
     if (restrict != null && (restrict.size() != n)) {
       f.format("%nRestricted logs n=%d%n", restrict.size());
     }
@@ -323,8 +304,8 @@ public class AccessLogTable extends JPanel {
     logTable.setBeans(completeLogs);
     tabbedPanel.setSelectedIndex(0);
 
-    userTable.setBeans(new ArrayList());
-    datarootTable.setBeans(new ArrayList());
+    userTable.setBeans(new ArrayList<>());
+    datarootTable.setBeans(new ArrayList<>());
     calcUser = true;
     calcRoot = true;
     calcService = true;
@@ -341,7 +322,6 @@ public class AccessLogTable extends JPanel {
   }
 
   void restrictLogs(String restrict) {
-
     restrictLogs = new ArrayList<>(1000);
     for (LogReader.Log log : completeLogs) {
       String ip = log.getIp();
@@ -353,8 +333,8 @@ public class AccessLogTable extends JPanel {
     logTable.setBeans(restrictLogs);
     tabbedPanel.setSelectedIndex(0);
 
-    userTable.setBeans(new ArrayList());
-    datarootTable.setBeans(new ArrayList());
+    userTable.setBeans(new ArrayList<>());
+    datarootTable.setBeans(new ArrayList<>());
     calcUser = true;
     calcRoot = true;
     calcService = true;
@@ -461,14 +441,12 @@ public class AccessLogTable extends JPanel {
     }
   }
 
-  public class Client extends Accum {
-
+  public static class Client extends Accum {
     public Client() {}
 
     Client(String client) {
       super(client);
     }
-
   }
 
   void initClientLogs(ArrayList<LogReader.Log> logs) {
@@ -491,11 +469,11 @@ public class AccessLogTable extends JPanel {
       accum.add(log);
     }
 
-    clientTable.setBeans(new ArrayList(map.values()));
+    clientTable.setBeans(new ArrayList<>(map.values()));
     calcClient = false;
   }
 
-  private boolean showDNStime;
+  private boolean showDNStime = false;
 
   void initUserLogs(ArrayList<LogReader.Log> logs) {
     if (!calcUser)
@@ -514,7 +492,7 @@ public class AccessLogTable extends JPanel {
       accum.add(log);
     }
 
-    userTable.setBeans(new ArrayList(map.values()));
+    userTable.setBeans(new ArrayList<>(map.values()));
     calcUser = false;
   }
 
@@ -543,13 +521,12 @@ public class AccessLogTable extends JPanel {
 
   ////////////////////////////////////////////////
 
-  public class Dataroot extends Accum {
+  public static class Dataroot extends Accum {
     public Dataroot() {}
 
     Dataroot(String name) {
       super(name);
     }
-
   }
 
   void initDatarootLogs(ArrayList<LogReader.Log> logs) {
@@ -579,8 +556,7 @@ public class AccessLogTable extends JPanel {
 
   ////////////////////////////////////////////////
 
-  public class Service extends Accum {
-
+  public static class Service extends Accum {
     public Service() {}
 
     Service(String name) {

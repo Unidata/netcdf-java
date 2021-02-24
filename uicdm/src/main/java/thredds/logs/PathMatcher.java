@@ -20,7 +20,6 @@ import java.util.Comparator;
  * @since Mar 24, 2009
  */
 public class PathMatcher {
-
   private final TreeMap<String, Match> treeMap;
 
   public static class Match {
@@ -64,7 +63,7 @@ public class PathMatcher {
    * 
    * @return iterator
    */
-  public Iterator iterator() {
+  public Iterator<Match> iterator() {
     return treeMap.values().iterator();
   }
 
@@ -90,15 +89,12 @@ public class PathMatcher {
       if (StringUtil2.match(path, key) == 0)
         break;
     }
-
     return null;
   }
 
-
   private static class PathComparator implements Comparator<String>, Serializable {
     public int compare(String o1, String o2) {
-      int compare = -1 * o1.compareTo(o2); // reverse sort
-      return compare;
+      return -1 * o1.compareTo(o2);
     }
   }
 

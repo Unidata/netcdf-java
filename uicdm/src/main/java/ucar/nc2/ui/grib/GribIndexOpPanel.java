@@ -3,7 +3,7 @@
  * See LICENSE for license information.
  */
 
-package ucar.nc2.ui.op;
+package ucar.nc2.ui.grib;
 
 import ucar.nc2.ui.OpPanel;
 import ucar.nc2.ui.grib.GribIndexPanel;
@@ -15,22 +15,15 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import javax.swing.JOptionPane;
 
-/**
- *
- */
 public class GribIndexOpPanel extends OpPanel {
-  private GribIndexPanel gribTable;
+  private final GribIndexPanel gribTable;
 
-  /**
-   *
-   */
   public GribIndexOpPanel(PreferencesExt p) {
     super(p, "index file:", true, false);
     gribTable = new GribIndexPanel(prefs, buttPanel);
     add(gribTable, BorderLayout.CENTER);
   }
 
-  /** */
   @Override
   public boolean process(Object o) {
     String command = (String) o;
@@ -53,13 +46,11 @@ public class GribIndexOpPanel extends OpPanel {
     return !err;
   }
 
-  /** */
   @Override
   public void closeOpenFiles() throws IOException {
     gribTable.closeOpenFiles();
   }
 
-  /** */
   @Override
   public void save() {
     gribTable.save();

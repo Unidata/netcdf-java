@@ -18,7 +18,7 @@ import java.util.*;
  * @since Apr 10, 2008
  */
 public class LogReader {
-  private static SimpleDateFormat df = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+  private static final SimpleDateFormat df = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
   public interface LogParser {
     Log nextLog(BufferedReader reader) throws IOException;
@@ -75,8 +75,9 @@ public class LogReader {
     }
 
     public String toString() {
-      return ip + " [" + getDate() + "] " + verb + " " + getPath() + " " + http + " " + returnCode + " " + sizeBytes
-          + " " + referrer + " " + client + " " + msecs;
+      Formatter f = new Formatter();
+      toString(f);
+      return f.toString();
     }
 
     public void toString(Formatter f) {
@@ -103,13 +104,10 @@ public class LogReader {
   public interface Closure {
     void process(Log log) throws IOException;
   }
-
-
   public static class Stats {
     public long total;
     public long passed;
   }
-
   ////////////////////////////////////////////////////////////
 
   public interface LogFilter {
@@ -127,11 +125,10 @@ public class LogReader {
     }
 
     public boolean pass(LogReader.Log log) {
-      if (chain != null && !chain.pass(log))
+      if (chain != null && !chain.pass(log)) {
         return false;
-
+      }
       return (log.date >= start) && (log.date <= end);
-
     }
   }
 
@@ -145,12 +142,15 @@ public class LogReader {
     }
 
     public boolean pass(LogReader.Log log) {
-      if (chain != null && !chain.pass(log))
+      if (chain != null && !chain.pass(log)) {
         return false;
+      }
 
-      for (String s : match)
-        if (log.getIp().startsWith(s))
+      for (String s : match) {
+        if (log.getIp().startsWith(s)) {
           return false;
+        }
+      }
 
       return true;
     }
@@ -166,10 +166,8 @@ public class LogReader {
     public boolean pass(LogReader.Log log) {
       if (chain != null && !chain.pass(log))
         return false;
-
       int status = log.getStatus();
       return (status >= 400) && (status < 1000);
-
     }
   }
 
@@ -180,8 +178,7 @@ public class LogReader {
   }
   /////////////////////////////////////////////////////////////////////
 
-  private int maxLines = -1;
-  private LogParser parser;
+  private final LogParser parser;
 
   public LogReader(LogParser parser) {
     this.parser = parser;
@@ -232,15 +229,14 @@ public class LogReader {
       BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, StandardCharsets.UTF_8), 40 * 1000);
       int total = 0;
       int count = 0;
+      int maxLines = -1;
       while ((maxLines < 0) || (count < maxLines)) {
         Log log = parser.nextLog(dataIS);
         if (log == null)
           break;
         total++;
-
         if ((logf != null) && !logf.pass(log))
           continue;
-
         closure.process(log);
         count++;
       }
@@ -249,7 +245,6 @@ public class LogReader {
         stat.total += total;
         stat.passed += count;
       }
-
       System.out.printf("----- %s total requests=%d passed=%d %n", file.getPath(), total, count);
     }
   }

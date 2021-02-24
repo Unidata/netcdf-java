@@ -3,7 +3,7 @@
  * See LICENSE for license information.
  */
 
-package ucar.nc2.ui.op;
+package ucar.nc2.ui.bufr;
 
 import javax.annotation.Nullable;
 import ucar.nc2.ft.point.bufr.BufrCdmIndex;
@@ -32,17 +32,16 @@ public class BufrCdmIndexPanel extends JPanel {
   private static final org.slf4j.Logger logger =
       org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  private PreferencesExt prefs;
+  private final PreferencesExt prefs;
 
-  private BeanTable stationTable, fldTable;
-  private JSplitPane split, split2, split3;
+  private final BeanTable<StationBean> stationTable;
+  private BeanTable<FieldBean> fldTable;
+  private final JSplitPane split;
 
-  private TextHistoryPane infoPopup, detailTA;
-  private IndependentWindow infoWindow, detailWindow;
+  private TextHistoryPane detailTA;
+  private final IndependentWindow infoWindow;
+  private IndependentWindow detailWindow;
 
-  /**
-   *
-   */
   public BufrCdmIndexPanel(PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
 
@@ -79,22 +78,10 @@ public class BufrCdmIndexPanel extends JPanel {
     });
     buttPanel.add(writeButton);
 
-    /*
-     * AbstractButton filesButton = BAMutil.makeButtcon("Information", "Show Files", false);
-     * filesButton.addActionListener(e -> {
-     * Formatter f = new Formatter();
-     * showFiles(f);
-     * detailTA.setText(f.toString());
-     * detailTA.gotoTop();
-     * detailWindow.show();
-     * });
-     * buttPanel.add(filesButton);
-     */
-
     ////////////////
-    stationTable = new BeanTable(StationBean.class, (PreferencesExt) prefs.node("StationBean"), false, "stations",
+    stationTable = new BeanTable<>(StationBean.class, (PreferencesExt) prefs.node("StationBean"), false, "stations",
         "BufrCdmIndexProto.Station", null);
-    fldTable = new BeanTable(FieldBean.class, (PreferencesExt) prefs.node("FldBean"), false, "Fields",
+    fldTable = new BeanTable<>(FieldBean.class, (PreferencesExt) prefs.node("FldBean"), false, "Fields",
         "BufrCdmIndexProto.Field", new FieldBean());
 
     JTable table = fldTable.getJTable();
@@ -113,7 +100,7 @@ public class BufrCdmIndexPanel extends JPanel {
 
     /////////////////////////////////////////
     // the info windows
-    infoPopup = new TextHistoryPane();
+    TextHistoryPane infoPopup = new TextHistoryPane();
     infoWindow = new IndependentWindow("Extra Information", BAMutil.getImage("nj22/NetcdfUI"), infoPopup);
     infoWindow.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 500, 300)));
 
@@ -127,10 +114,8 @@ public class BufrCdmIndexPanel extends JPanel {
     split.setDividerLocation(prefs.getInt("splitPos", 800));
 
     add(split, BorderLayout.CENTER);
-
   }
 
-  /** */
   public void save() {
     stationTable.saveState(false);
     fldTable.saveState(false);
@@ -138,10 +123,6 @@ public class BufrCdmIndexPanel extends JPanel {
     prefs.putBeanObject("DetailWindowBounds", detailWindow.getBounds());
     if (split != null)
       prefs.putInt("splitPos", split.getDividerLocation());
-    if (split2 != null)
-      prefs.putInt("splitPos2", split2.getDividerLocation());
-    if (split3 != null)
-      prefs.putInt("splitPos3", split3.getDividerLocation());
   }
 
   ///////////////////////////////////////////////
@@ -372,9 +353,7 @@ public class BufrCdmIndexPanel extends JPanel {
     public List<? extends BufrField> getChildren() {
       return children;
     }
-
   }
-
 }
 
 

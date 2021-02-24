@@ -46,8 +46,8 @@ import ucar.unidata.util.Parameter;
 public class GridDatasetInfo {
   private static final Logger logger = LoggerFactory.getLogger(GridDatasetInfo.class);
 
-  private ucar.nc2.dt.GridDataset gds;
-  private String path;
+  private final ucar.nc2.dt.GridDataset gds;
+  private final String path;
 
   public GridDatasetInfo(ucar.nc2.dt.GridDataset gds, String path) {
     this.gds = gds;

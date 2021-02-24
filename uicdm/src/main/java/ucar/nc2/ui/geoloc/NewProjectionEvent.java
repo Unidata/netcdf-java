@@ -12,7 +12,7 @@ import ucar.unidata.geoloc.Projection;
  * @author John Caron
  */
 public class NewProjectionEvent extends java.util.EventObject {
-  private Projection project;
+  private final Projection project;
 
   public NewProjectionEvent(Object source, Projection proj) {
     super(source);

@@ -26,8 +26,8 @@ import java.util.*;
  * Can be used as a standalone program, which is why its here and not in uicdm module.
  */
 public class FeatureScan {
-  private String top;
-  private boolean subdirs;
+  private final String top;
+  private final boolean subdirs;
 
   public FeatureScan(String top, boolean subdirs) {
     this.top = top;

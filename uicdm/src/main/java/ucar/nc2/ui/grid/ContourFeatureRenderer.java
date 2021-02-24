@@ -88,11 +88,9 @@ public class ContourFeatureRenderer extends GisFeatureRenderer {
     g.setStroke(new java.awt.BasicStroke(0.0f));
 
     Rectangle2D clipRect = (Rectangle2D) g.getClip();
-    Iterator siter = getShapes(g, deviceFromNormalAT);
 
     // draw the contours
-    while (siter.hasNext()) {
-      Shape s = (Shape) siter.next();
+    for (Shape s : getShapes(g, deviceFromNormalAT)) {
       Rectangle2D shapeBounds = s.getBounds2D();
       if (shapeBounds.intersects(clipRect))
         g.draw(s);
@@ -120,13 +118,11 @@ public class ContourFeatureRenderer extends GisFeatureRenderer {
       g.setTransform(deviceFromNormalAT); // so g now wants "normal coords"
       g.setFont(f);
 
-      siter = getShapes(g, deviceFromNormalAT);
       Iterator CViter = contourList.iterator();
       Point2D worldPt = new Point2D.Double();
       Point2D normalPt = new Point2D.Double();
       float[] coords = new float[6];
-      while (siter.hasNext()) {
-        Shape s = (Shape) siter.next();
+      for (Shape s : getShapes(g, deviceFromNormalAT)) {
         double contValue = ((ContourFeature) CViter.next()).getContourValue();
 
         // get position xpos,ypos on this contour where to put label

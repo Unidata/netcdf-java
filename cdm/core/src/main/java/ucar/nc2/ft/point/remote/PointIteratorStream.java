@@ -22,9 +22,9 @@ import ucar.nc2.stream.NcStreamProto;
  */
 public class PointIteratorStream extends PointIteratorAbstract {
 
-  private DsgFeatureCollection dsg;
+  private final DsgFeatureCollection dsg;
   private InputStream in;
-  private FeatureMaker featureMaker;
+  private final FeatureMaker featureMaker;
 
   private PointFeature pf;
   private boolean finished;

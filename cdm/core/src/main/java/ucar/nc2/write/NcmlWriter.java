@@ -341,9 +341,9 @@ public class NcmlWriter {
     varElem.setAttribute("name", var.getShortName());
 
     StringBuilder buff = new StringBuilder();
-    List dims = var.getDimensions();
+    List<Dimension> dims = var.getDimensions();
     for (int i = 0; i < dims.size(); i++) {
-      Dimension dim = (Dimension) dims.get(i);
+      Dimension dim = dims.get(i);
       if (i > 0)
         buff.append(" ");
       if (dim.isShared())
@@ -484,12 +484,23 @@ public class NcmlWriter {
       }
 
       // not regular
-      boolean isRealType = (variable.getDataType() == DataType.DOUBLE) || (variable.getDataType() == DataType.FLOAT);
       IndexIterator iter = a.getIndexIterator();
-      buff.append(isRealType ? iter.getDoubleNext() : iter.getIntNext());
+      boolean first = true;
       while (iter.hasNext()) {
-        buff.append(" ");
-        buff.append(isRealType ? iter.getDoubleNext() : iter.getIntNext());
+        if (!first)
+          buff.append(" ");
+        switch (variable.getArrayType()) {
+          case FLOAT:
+            buff.append(iter.getFloatNext());
+            break;
+          case DOUBLE:
+            buff.append(iter.getDoubleNext());
+            break;
+          default:
+            buff.append(iter.getIntNext());
+            break;
+        }
+        first = false;
       }
       elem.setText(buff.toString());
 

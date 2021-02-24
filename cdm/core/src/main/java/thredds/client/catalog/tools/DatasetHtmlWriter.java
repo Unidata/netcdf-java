@@ -22,9 +22,9 @@ import java.util.Formatter;
  * @since 1/8/2015
  */
 public class DatasetHtmlWriter {
-  private Escaper htmlEscaper = HtmlEscapers.htmlEscaper();
-  private Escaper urlPathEscaper = UrlEscapers.urlPathSegmentEscaper();
-  private Escaper urlParamEscaper = UrlEscapers.urlFormParameterEscaper();
+  private final Escaper htmlEscaper = HtmlEscapers.htmlEscaper();
+  private final Escaper urlPathEscaper = UrlEscapers.urlPathSegmentEscaper();
+  private final Escaper urlParamEscaper = UrlEscapers.urlFormParameterEscaper();
 
   /**
    * Write an Html representation of the given dataset.

@@ -18,7 +18,7 @@ import ucar.nc2.Variable;
 import ucar.nc2.util.Misc;
 
 /**
- * Compare reading netcdf with Ma2 and same file with Array. Open seperate files to prevent them from colliding.
+ * Compare reading netcdf with Ma2 and same file with Array. Open separate files to prevent them from colliding.
  * Also use to test round trip through cmdr.
  */
 public class CompareArrayToArray {
@@ -74,7 +74,7 @@ public class CompareArrayToArray {
     }
 
     if (org.getArrayType() != array.getArrayType()) {
-      f.format(" WARN  %s: dataType %d !== %d%n", name, org.getArrayType(), array.getArrayType());
+      f.format(" WARN  %s: dataType %s !== %s%n", name, org.getArrayType(), array.getArrayType());
       // ok = false;
     }
 
@@ -222,7 +222,7 @@ public class CompareArrayToArray {
             ok = false;
           }
           for (int idx = 0; idx < v1.length() && idx < v2.length(); idx++) {
-            if (v1.get(idx) != v2.get(idx)) {
+            if (!v1.get(idx).equals(v2.get(idx))) {
               f.format(createNumericDataDiffMessage(dt, name, v1.get(idx), v2.get(idx), idx));
               ok = false;
               if (justOne)

@@ -43,7 +43,7 @@ public class ToolsAboutWindow extends JWindow {
         + "<li><b>ADDE/VisAD</b>: Bill Hibbard, Don Murray, Tom Whittaker, et al (http://visad.ssec.wisc.edu/)</li>"
         + "<li><b>Apache HTTP Components</b> libraries: (http://hc.apache.org/)</li>"
         + "<li><b>Guava</b> library: Google (https://github.com/google/guava)</li>"
-        + "<li><b>IDV:</b> Yuan Ho, Julien Chastang, Don Murray, Jeff McWhirter, Yuan H (https://www.unidata.ucar.edu/software/IDV/)</li>"
+        + "<li><b>IDV:</b> Yuan Ho, Julien Chastang, Don Murray, Jeff McWhirter (https://www.unidata.ucar.edu/software/IDV/)</li>"
         + "<li><b>Java Native Access (JNA)</b> Todd Fast and Timothy Wall et al. (https://github.com/java-native-access/jna)</li>"
         + "<li><b>Joda Time</b> library: Stephen Colebourne (http://www.joda.org/joda-time/)</li>"
         + "<li><b>JDOM</b> library: Jason Hunter, Brett McLaughlin et al (www.jdom.org)</li>"

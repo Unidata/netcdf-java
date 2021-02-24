@@ -8,11 +8,7 @@ import java.util.Formatter;
 import java.util.List;
 
 import com.google.common.base.Splitter;
-import ucar.nc2.grid.CoordInterval;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.util.Format;
-import ucar.unidata.util.StringUtil2;
 
 import javax.annotation.Nullable;
 

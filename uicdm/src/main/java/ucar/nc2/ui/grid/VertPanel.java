@@ -24,16 +24,16 @@ import java.awt.*;
  */
 
 public class VertPanel extends JPanel {
-  private ScaledPanel drawArea;
-  private VertScaleSlider vslider;
-  private JLabel leftScale, midScale, rightScale, vertUnitsLabel;
+  private static final boolean debugBounds = false;
+
+  private final ScaledPanel drawArea;
+  private final VertScaleSlider vslider;
+  private final JLabel leftScale, midScale, rightScale, vertUnitsLabel;
 
   private double yleft, ymid, yright;
   private boolean isLatLon = true;
   private Projection proj;
   private CoordinateAxis xaxis;
-
-  private static boolean debugBounds, debugLevels;
 
   public VertPanel() {
     setLayout(new BorderLayout());
@@ -91,7 +91,6 @@ public class VertPanel extends JPanel {
      * to the upper right corner. Therefore if coords decrease as you go up, world.Height()
      * should be negetive.
      */
-
     CoordinateAxis yaxis = geocs.getYHorizAxis();
     if ((yaxis == null) || (zaxis == null))
       return;

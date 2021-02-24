@@ -25,36 +25,36 @@ import java.util.List;
  * @since Aug 27, 2010
  */
 public class GribWmoTemplatesPanel extends JPanel {
-  private PreferencesExt prefs;
+  private final PreferencesExt prefs;
 
-  private BeanTable codeTable, entryTable;
-  private JSplitPane split;
+  private final BeanTable<TemplateBean> codeTable;
+  private final BeanTable<EntryBean> entryTable;
+  private final JSplitPane split;
 
-  private TextHistoryPane compareTA;
-  private IndependentWindow infoWindow;
+  private final TextHistoryPane compareTA;
+  private final IndependentWindow infoWindow;
 
   public GribWmoTemplatesPanel(PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
 
-    codeTable = new BeanTable(TemplateBean.class, (PreferencesExt) prefs.node("CodeTableBean"), false);
+    codeTable = new BeanTable<>(TemplateBean.class, (PreferencesExt) prefs.node("CodeTableBean"), false);
     codeTable.addListSelectionListener(e -> {
-      TemplateBean csb = (TemplateBean) codeTable.getSelectedBean();
+      TemplateBean csb = codeTable.getSelectedBean();
       setEntries(csb.template);
     });
-
-    entryTable = new BeanTable(EntryBean.class, (PreferencesExt) prefs.node("EntryBean"), false);
-
     ucar.ui.widget.PopupMenu varPopup = new ucar.ui.widget.PopupMenu(codeTable.getJTable(), "Options");
     varPopup.addAction("Show table", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Formatter out = new Formatter();
-        TemplateBean csb = (TemplateBean) codeTable.getSelectedBean();
+        TemplateBean csb = codeTable.getSelectedBean();
         csb.showTable(out);
         compareTA.setText(out.toString());
         compareTA.gotoTop();
         infoWindow.setVisible(true);
       }
     });
+
+    entryTable = new BeanTable<>(EntryBean.class, (PreferencesExt) prefs.node("EntryBean"), false);
 
     // the info window
     compareTA = new TextHistoryPane();

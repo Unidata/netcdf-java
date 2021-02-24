@@ -355,7 +355,7 @@ public class GribCdmIndex implements IndexReader {
       return false;
 
     boolean changed;
-    if (isGrib1) { // existing case handles correctly - make seperate index for each runtime (OR) partition == runtime
+    if (isGrib1) { // existing case handles correctly - make separate index for each runtime (OR) partition == runtime
       Grib1CollectionBuilder builder = new Grib1CollectionBuilder(dcm.getCollectionName(), dcm, logger);
       changed = builder.updateNeeded(updateType) && builder.createIndex(ptype, errlog);
     } else {

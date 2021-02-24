@@ -21,7 +21,7 @@ import ucar.unidata.geoloc.LatLonRect;
  * @since Mar 19, 2008
  */
 public class PointIteratorFlatten extends PointIteratorAbstract {
-  private IOIterator<PointFeatureCollection> collectionIter;
+  private final IOIterator<PointFeatureCollection> collectionIter;
   private Filter filter;
 
   private PointFeatureCollection currCollection;

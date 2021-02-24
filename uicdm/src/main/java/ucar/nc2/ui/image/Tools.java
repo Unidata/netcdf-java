@@ -4,10 +4,6 @@
  */
 package ucar.nc2.ui.image;
 
-/**
- *
- * @author caron
- */
 public class Tools {
   private static boolean debug;
 

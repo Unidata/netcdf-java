@@ -164,7 +164,6 @@ public class H5iospArrays extends H5iosp {
    * @param fillValue fill value as a wrapped primitive
    * @return primitive array or Array with data read in
    * @throws IOException if read error
-   * @throws InvalidRangeException if invalid section
    */
   private Object readArrayOrPrimitive(H5header.Vinfo vinfo, Variable v, Layout layout, DataType dataType, int[] shape,
       Object fillValue, ByteOrder endian) throws IOException {

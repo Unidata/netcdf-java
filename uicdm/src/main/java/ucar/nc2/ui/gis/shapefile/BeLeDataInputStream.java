@@ -18,13 +18,15 @@ import java.net.URL;
  * big- and little-endian representations.
  *
  * @author Russ Rew
+ * @deprecated
  */
+@Deprecated
 public class BeLeDataInputStream extends DataInputStream {
-
-  private byte[] w = new byte[8]; // work array for buffering bytes
   private static final int kLongs = 128; // arbitrary, probably big enough
-  private long[] longWorkSpace = new long[kLongs];
-  private byte[] byteWorkSpace = new byte[8 * kLongs];
+
+  private final byte[] working = new byte[8]; // work array for buffering bytes
+  private final long[] longWorkSpace = new long[kLongs];
+  private final byte[] byteWorkSpace = new byte[8 * kLongs];
 
   /**
    * Construct a bigEndian-littleEndian input stream from an input stream.
@@ -45,7 +47,6 @@ public class BeLeDataInputStream extends DataInputStream {
     this(new BufferedInputStream(new FileInputStream(filename)));
   }
 
-
   /**
    * Construct a bigEndian-littleEndian input stream from a URL.
    *
@@ -62,8 +63,8 @@ public class BeLeDataInputStream extends DataInputStream {
    * @return int created from next 4 bytes in stream, in littleEndian order
    */
   public int readLEInt() throws IOException {
-    readFully(w, 0, 4);
-    return (w[3] & 0xff) << 24 | (w[2] & 0xff) << 16 | (w[1] & 0xff) << 8 | (w[0] & 0xff);
+    readFully(working, 0, 4);
+    return (working[3] & 0xff) << 24 | (working[2] & 0xff) << 16 | (working[1] & 0xff) << 8 | (working[0] & 0xff);
   }
 
   /**
@@ -107,10 +108,10 @@ public class BeLeDataInputStream extends DataInputStream {
    * @return long from next 8 bytes in stream, littleEndian order
    */
   public long readLELong() throws IOException {
-    readFully(w, 0, 8);
-    return (long) (w[7] & 0xff) << 56 | (long) (w[6] & 0xff) << 48 | (long) (w[5] & 0xff) << 40
-        | (long) (w[4] & 0xff) << 32 | (long) (w[3] & 0xff) << 24 | (long) (w[2] & 0xff) << 16
-        | (long) (w[1] & 0xff) << 8 | (long) (w[0] & 0xff);
+    readFully(working, 0, 8);
+    return (long) (working[7] & 0xff) << 56 | (long) (working[6] & 0xff) << 48 | (long) (working[5] & 0xff) << 40
+        | (long) (working[4] & 0xff) << 32 | (long) (working[3] & 0xff) << 24 | (long) (working[2] & 0xff) << 16
+        | (long) (working[1] & 0xff) << 8 | (long) (working[0] & 0xff);
   }
 
 

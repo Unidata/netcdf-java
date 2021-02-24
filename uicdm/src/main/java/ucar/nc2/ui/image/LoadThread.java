@@ -1,5 +1,3 @@
-
-
 /*
  * LoadThread.java: class that calls the loadPicture method of a SourcePicture in a thread
  * 
@@ -17,19 +15,11 @@
  * The license is in gpl.txt.
  * See http://www.gnu.org/copyleft/gpl.html for the details.
  */
-
 package ucar.nc2.ui.image;
 
-
-
-/**
- * a class that moves all pictures of a group to a target directory
- */
-
+/** a class that moves all pictures of a group to a target directory */
 public class LoadThread extends Thread {
-
-  private SourcePicture srcPic;
-
+  private final SourcePicture srcPic;
 
   /**
    * This class serves to create threads that load a SourcePicture.
@@ -44,7 +34,6 @@ public class LoadThread extends Thread {
     this.srcPic = srcPic;
   }
 
-
   /**
    * method that is invoked by the thread which fires off the loadPicture
    * method in the srcPic object.
@@ -52,8 +41,6 @@ public class LoadThread extends Thread {
   public void run() {
     srcPic.loadPicture();
   }
-
-
 }
 
 

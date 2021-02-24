@@ -41,38 +41,26 @@ import java.awt.geom.Rectangle2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
-import java.io.IOException;
 import ucar.ui.widget.FontUtil;
 
-/**
- * Describe
- *
- * @author caron
- * @since Nov 17, 2009
- */
 public class PointRenderer implements Renderer {
-
   private java.util.List<ObservationUI> obsUIlist = new ArrayList<>(); // ObservationUI objects
   private Projection project; // display projection
 
   // drawing parameters
   private Color color = Color.black;
-  private Color selectedColor = Color.magenta;
-  private int circleRadius = 3;
-  private Rectangle2D circleBB =
+  private final Color selectedColor = Color.magenta;
+  private final int circleRadius = 3;
+  private final Rectangle2D circleBB =
       new Rectangle2D.Double(-circleRadius, -circleRadius, 2 * circleRadius, 2 * circleRadius);
-  private FontUtil.StandardFont textFont;
+  private final FontUtil.StandardFont textFont;
   private boolean drawConnectingLine;
-
-  // working objects to minimize excessive gc
-  // private Point2D.Double ptN = new Point2D.Double();
 
   private ObservationUI selected;
 
   // misc state
   private boolean declutter = true;
   private boolean posWasCalc;
-  // private boolean debug = false;
 
   /** constructor */
   public PointRenderer() {
@@ -99,7 +87,7 @@ public class PointRenderer implements Renderer {
     return null;
   }
 
-  public void setPointFeatures(java.util.List<PointFeature> obs) throws IOException {
+  public void setPointFeatures(java.util.List<PointFeature> obs) {
     obsUIlist = new ArrayList<>(obs.size());
     for (PointFeature ob : obs) {
       ObservationUI sui = new ObservationUI(ob); // wrap in a StationUI
@@ -117,9 +105,8 @@ public class PointRenderer implements Renderer {
   public void setSelected(PointFeature obs) {
     selected = null;
     for (ObservationUI observationUI : obsUIlist) {
-      ObservationUI s = observationUI;
-      if (testPointObsDatatype(s.obs, obs)) {
-        selected = s;
+      if (testPointObsDatatype(observationUI.obs, obs)) {
+        selected = observationUI;
         break;
       }
     }
@@ -152,69 +139,10 @@ public class PointRenderer implements Renderer {
     if (project == null)
       return;
     for (ObservationUI observationUI : obsUIlist) {
-      ObservationUI s = observationUI;
-      s.worldPos = project.latLonToProj(s.latlonPos);
+      observationUI.worldPos = project.latLonToProj(observationUI.latlonPos);
     }
     posWasCalc = true;
   }
-
-  ///////////////// pickable stuff
-
-  /*
-   * Find station that contains this point. If it exists, make it the
-   * "selected" station.
-   * 
-   * @param pickPt: world coordinates
-   * 
-   * @return station that contains this point, or null if none.
-   *
-   * public PointObsDatatype pick(Point2D pickPt) {
-   * if (world2Normal == null || pickPt == null || obsUIlist.isEmpty()) return null;
-   * 
-   * world2Normal.transform(pickPt, ptN); // work in normalized coordinate space
-   * ObservationUI closest = (ObservationUI) stationGrid.findIntersection(ptN);
-   * setSelectedStation( closest);
-   * 
-   * return getSelectedStation();
-   * }
-   * 
-   * /*
-   * Find station closest to this point. Make it the "selected" station.
-   * 
-   * @param pickPt: world coordinates
-   * 
-   * @return station that contains this point, or null if none.
-   *
-   * public PointObsDatatype pickClosest(Point2D pickPt) {
-   * if (world2Normal == null || pickPt == null || obsUIlist.isEmpty()) return null;
-   * 
-   * world2Normal.transform(pickPt, ptN); // work in normalized coordinate space
-   * ObservationUI closest = (ObservationUI) stationGrid.findClosest(ptN);
-   * 
-   * if (debug) System.out.println("closest= " +closest);
-   * setSelectedStation( closest);
-   * 
-   * return getSelectedStation();
-   * }
-   * 
-   * /**
-   * Get the selected station, or null.
-   *
-   * public PointObsDatatype getSelectedStation() {
-   * return (selected != null) ? selected.getObservation() : null;
-   * }
-   * 
-   * /**
-   * Is this point contained in a Station bounding box?
-   * 
-   * @param p: normalized coords.
-   * 
-   * @return Station containing pt, or null.
-   *
-   * public ObservationUI isOnStation( Point p) {
-   * return (ObservationUI) stationGrid.findIntersection (p);
-   * }
-   */
 
   public void draw(java.awt.Graphics2D g, java.awt.geom.AffineTransform normal2Device) {
     if ((project == null) || !posWasCalc)
@@ -242,23 +170,6 @@ public class PointRenderer implements Renderer {
     // g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
     // RenderingHints.VALUE_ANTIALIAS_ON);
     g.setStroke(new java.awt.BasicStroke(1.0f));
-
-    /*
-     * set up the grid
-     * Rectangle2D bbox = (Rectangle2D) g.getClip(); // clipping area in normal coords
-     * // clear the grid = "no stations are drawn"
-     * stationGrid.clear();
-     * // set the grid size based on typical bounding box
-     * stationGrid.setGrid(bbox, typicalBB.getWidth(), typicalBB.getHeight());
-     * 
-     * 
-     * // always draw selected
-     * if (selected != null) {
-     * selected.calcPos( world2Normal);
-     * stationGrid.markIfClear( selected.getBB(), selected);
-     * selected.draw(g);
-     * }
-     */
 
     g.setFont(textFont.getFont());
     g.setColor(color);
@@ -375,14 +286,6 @@ public class PointRenderer implements Renderer {
       int y = (int) (loc.getY() - circleRadius);
       g.fillOval(x, y, 2 * circleRadius, 2 * circleRadius);
     }
-
-    /*
-     * private void drawText( Graphics2D g, Point2D loc, String text) {
-     * int x = (int) (loc.getX() - circleRadius);
-     * int y = (int) (loc.getY() - circleRadius);
-     * g.drawString( text, x, y);
-     * }
-     */
 
   } // end inner class ObservationUI
 

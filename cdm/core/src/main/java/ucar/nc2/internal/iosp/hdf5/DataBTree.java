@@ -32,7 +32,7 @@ public class DataBTree {
   private static final boolean debugDataBtree = false;
   private static final boolean debugDataChunk = false;
   private static final boolean debugChunkOrder = false;
-  private static java.io.PrintStream debugOut = System.out;
+  private static final java.io.PrintStream debugOut = System.out;
 
   private final H5header h5;
   private final RandomAccessFile raf;

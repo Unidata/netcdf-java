@@ -78,64 +78,60 @@ public class SimpleGeometryFeature implements VariableSimpleIF {
     // Find the name of the axes specific to this geometry
     axesStrList = coordSysName.split(" ");
 
-    List<String> axesStrActualList = new ArrayList<>();
     int shapeLength = 0;
 
-    if (axesStrList != null) {
+    List<String> axesStrActualList = new ArrayList<>(Arrays.asList(axesStrList));
 
-      axesStrActualList.addAll(Arrays.asList(axesStrList));
+    // Set up x Axis
+    for (CoordinateAxis xAx : coordSys.getSimpleGeometryX()) {
+      if (axesStrActualList.contains(NetcdfFiles.makeFullName(xAx))) {
+        xAxis = xAx;
+        shapeLength++;
+      }
+    }
 
-      // Set up x Axis
-      for (CoordinateAxis xAx : coordSys.getSimpleGeometryX()) {
-        if (axesStrActualList.contains(NetcdfFiles.makeFullName(xAx))) {
-          xAxis = xAx;
-          shapeLength++;
-        }
+    // Set up y Axis
+    for (CoordinateAxis yAx : coordSys.getSimpleGeometryY()) {
+      if (axesStrActualList.contains(NetcdfFiles.makeFullName(yAx))) {
+        yAxis = yAx;
+        shapeLength++;
       }
+    }
 
-      // Set up y Axis
-      for (CoordinateAxis yAx : coordSys.getSimpleGeometryY()) {
-        if (axesStrActualList.contains(NetcdfFiles.makeFullName(yAx))) {
-          yAxis = yAx;
-          shapeLength++;
-        }
+    // Set up z Axis
+    for (CoordinateAxis zAx : coordSys.getSimpleGeometryZ()) {
+      if (axesStrActualList.contains(NetcdfFiles.makeFullName(zAx))) {
+        zAxis = zAx;
+        shapeLength++;
       }
+    }
 
-      // Set up z Axis
-      for (CoordinateAxis zAx : coordSys.getSimpleGeometryZ()) {
-        if (axesStrActualList.contains(NetcdfFiles.makeFullName(zAx))) {
-          zAxis = zAx;
-          shapeLength++;
-        }
+    // Set up ID axis
+    for (CoordinateAxis idAx : coordSys.getSimpleGeometryID()) {
+      if (axesStrActualList.contains(NetcdfFiles.makeFullName(idAx))) {
+        IDAxis = idAx;
+        shapeLength++;
       }
+    }
 
-      // Set up ID axis
-      for (CoordinateAxis idAx : coordSys.getSimpleGeometryID()) {
-        if (axesStrActualList.contains(NetcdfFiles.makeFullName(idAx))) {
-          IDAxis = idAx;
-          shapeLength++;
-        }
-      }
+    shapes = new int[shapeLength];
 
-      shapes = new int[shapeLength];
-
-      int shapeIndex = 0;
-      if (xAxis != null) {
-        shapes[shapeIndex] = (int) xAxis.getSize();
-        shapeIndex++;
-      }
-      if (yAxis != null) {
-        shapes[shapeIndex] = (int) yAxis.getSize();
-        shapeIndex++;
-      }
-      if (zAxis != null) {
-        shapes[shapeIndex] = (int) zAxis.getSize();
-        shapeIndex++;
-      }
-      if (IDAxis != null) {
-        shapes[shapeIndex] = (int) IDAxis.getSize();
-        shapeIndex++;
-      }
+    int shapeIndex = 0;
+    if (xAxis != null) {
+      shapes[shapeIndex] = (int) xAxis.getSize();
+      shapeIndex++;
+    }
+    if (yAxis != null) {
+      shapes[shapeIndex] = (int) yAxis.getSize();
+      shapeIndex++;
+    }
+    if (zAxis != null) {
+      shapes[shapeIndex] = (int) zAxis.getSize();
+      shapeIndex++;
+    }
+    if (IDAxis != null) {
+      shapes[shapeIndex] = (int) IDAxis.getSize();
+      shapeIndex++;
     }
   }
 

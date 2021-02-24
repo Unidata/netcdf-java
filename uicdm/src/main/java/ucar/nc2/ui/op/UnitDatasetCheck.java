@@ -17,7 +17,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class UnitDatasetCheck extends OpPanel {
-  private TextHistoryPane ta;
+  private final TextHistoryPane ta;
 
   UnitDatasetCheck(PreferencesExt p) {
     super(p, "dataset:");

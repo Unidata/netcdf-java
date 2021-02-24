@@ -36,11 +36,11 @@ import java.util.*;
  * @since 1/8/2015
  */
 public class CatalogBuilder {
-  private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CatalogBuilder.class);
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CatalogBuilder.class);
 
   //////////////////////////////////////////////////////////////////////////////////
   // used when reading from XML
-  private Map<String, Service> serviceMap = new HashMap<>(); // LOOK why not instead of services ?
+  private final Map<String, Service> serviceMap = new HashMap<>(); // LOOK why not instead of services ?
   protected Formatter errlog = new Formatter();
   protected boolean fatalError;
 

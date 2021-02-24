@@ -130,7 +130,7 @@ public class FmrInv implements Comparable<FmrInv> {
 
   /**
    * A grid variable for an fmr (one run)
-   * A collection of GridDatasetInv.Grid, one for each seperate dataset. All have the same runDate.
+   * A collection of GridDatasetInv.Grid, one for each separate dataset. All have the same runDate.
    * The time and vert coord of the GridVariable is the union of the GridDatasetInv.Grid time and vert coords.
    * 
    * @author caron

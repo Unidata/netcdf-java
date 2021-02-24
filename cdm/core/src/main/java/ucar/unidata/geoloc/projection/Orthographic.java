@@ -19,12 +19,13 @@ public class Orthographic extends AbstractProjection {
   private final double R; // radius
 
   /** constants from Snyder's equations */
-  private double lon0Degrees;
-  private double cosLat0, sinLat0;
+  private final double lon0Degrees;
+  private final double cosLat0;
+  private final double sinLat0;
 
   // values passed in through the constructor
   // need for constructCopy
-  private double _lat0;
+  private final double _lat0;
 
   @Override
   public Projection constructCopy() {

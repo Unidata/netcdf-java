@@ -16,8 +16,8 @@ import ucar.nc2.ft.PointFeatureCollectionIterator;
  */
 public class PointCollectionIteratorFiltered implements PointFeatureCollectionIterator {
 
-  private PointFeatureCollectionIterator pfciter;
-  private PointFeatureCollectionIterator.Filter filter;
+  private final PointFeatureCollectionIterator pfciter;
+  private final PointFeatureCollectionIterator.Filter filter;
 
   private PointFeatureCollection pointFeatureCollection;
   private boolean done;

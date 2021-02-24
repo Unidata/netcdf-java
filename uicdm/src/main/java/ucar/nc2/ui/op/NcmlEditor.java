@@ -34,8 +34,6 @@ import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -62,22 +60,20 @@ import javax.swing.text.PlainDocument;
 public class NcmlEditor extends JPanel {
   private static final boolean debugNcmlWrite = false;
 
+  private final PreferencesExt prefs;
   private NetcdfDataset ds;
   private String ncmlLocation;
   private JEditorPane editor;
-  private Map<String, String> protoMap = new HashMap<>(10);
-  private ComboBox<String> protoChooser;
+  private final Map<String, String> protoMap = new HashMap<>(10);
+  private final ComboBox<String> protoChooser;
 
   private TextHistoryPane infoTA;
   private IndependentWindow infoWindow;
-  private FileManager fileChooser;
+  private final FileManager fileChooser;
   private NetcdfOutputChooser outChooser;
 
   private final AbstractButton coordButt;
   private boolean addCoords;
-
-  private PreferencesExt prefs;
-
 
   public NcmlEditor(JPanel buttPanel, PreferencesExt prefs) {
     this.prefs = prefs;
@@ -168,11 +164,7 @@ public class NcmlEditor extends JPanel {
       public void actionPerformed(ActionEvent e) {
         if (outChooser == null) {
           outChooser = new NetcdfOutputChooser((Frame) null);
-          outChooser.addPropertyChangeListener("OK", new PropertyChangeListener() {
-            public void propertyChange(PropertyChangeEvent evt) {
-              writeNetcdf((NetcdfOutputChooser.Data) evt.getNewValue());
-            }
-          });
+          outChooser.addPropertyChangeListener("OK", evt -> writeNetcdf((NetcdfOutputChooser.Data) evt.getNewValue()));
         }
 
         String location = (ds == null) ? ncmlLocation : ds.getLocation();

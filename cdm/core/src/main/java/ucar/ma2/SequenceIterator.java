@@ -12,8 +12,10 @@ package ucar.ma2;
  */
 @Deprecated
 public class SequenceIterator implements StructureDataIterator {
-  private int start, size, count;
-  private ArrayStructure abb;
+  private final int start;
+  private final int size;
+  private int count;
+  private final ArrayStructure abb;
 
   public SequenceIterator(int start, int size, ArrayStructure abb) {
     this.start = start;

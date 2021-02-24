@@ -8,12 +8,6 @@ package ucar.nc2.ui.coverage2;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.ft2.coverage.*;
 
-/**
- * Describe
- *
- * @author caron
- * @since 7/21/2015
- */
 class DataState {
   CoverageCollection coverageDataset;
   Coverage grid;

@@ -54,15 +54,13 @@ class CoverageSubsetter2 {
     }
 
     // here are the objects we need to make the subsetted dataset
-    List<CoverageCoordSys> coordSys = new ArrayList<>();
-    List<CoverageCoordAxis> coordAxes = new ArrayList<>();
     List<Coverage> coverages = new ArrayList<>();
     List<CoverageTransform> coordTransforms = new ArrayList<>();
 
-    coordSys.addAll(subsetCFCoordSys.values());
+    List<CoverageCoordSys> coordSys = new ArrayList<>(subsetCFCoordSys.values());
 
     // must use a copy, because of setDataset()
-    coordAxes.addAll(subsetCoordAxes.values());
+    List<CoverageCoordAxis> coordAxes = new ArrayList<>(subsetCoordAxes.values());
 
     for (Coverage orgCov : orgCoverages) {
       // must substitute subsetCS

@@ -311,8 +311,8 @@ public class CDLWriter {
     indent.decr();
   }
 
-  private static char[] org = {'\b', '\f', '\n', '\r', '\t', '\\', '\'', '\"'};
-  private static String[] replace = {"\\b", "\\f", "\\n", "\\r", "\\t", "\\\\", "\\\'", "\\\""};
+  private static final char[] org = {'\b', '\f', '\n', '\r', '\t', '\\', '\'', '\"'};
+  private static final String[] replace = {"\\b", "\\f", "\\n", "\\r", "\\t", "\\\\", "\\\'", "\\\""};
 
   /**
    * Replace special characters '\t', '\n', '\f', '\r', for CDL

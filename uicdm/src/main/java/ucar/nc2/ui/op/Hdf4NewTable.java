@@ -1,7 +1,6 @@
 /* Copyright Unidata */
 package ucar.nc2.ui.op;
 
-import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.internal.iosp.hdf4.H4header;
 import ucar.nc2.internal.iosp.hdf4.H4iosp;
@@ -20,25 +19,25 @@ import javax.swing.JSplitPane;
 
 /** ToolsUI/Iosp/Hdf4 */
 public class Hdf4NewTable extends Hdf4Table {
-  private BeanTable<TagBean> tagTable;
-  private JSplitPane split;
+  private final BeanTable<TagBean> tagTable;
+  private final JSplitPane split;
 
   private TextHistoryPane dumpTA;
-
   private H4iosp iosp;
   private H4header header;
-  private String location;
 
   Hdf4NewTable(PreferencesExt prefs) {
     super(prefs);
 
-    tagTable = new BeanTable(TagBean.class, (PreferencesExt) prefs.node("Hdf4Object"), false);
+    tagTable = new BeanTable<>(TagBean.class, (PreferencesExt) prefs.node("Hdf4Object"), false);
     tagTable.addListSelectionListener(e -> {
       TagBean bean = tagTable.getSelectedBean();
-      dumpTA.setText("Tag=\n ");
-      dumpTA.appendLine(bean.tag.detail());
-      dumpTA.appendLine("\nVinfo=");
-      dumpTA.appendLine(bean.tag.getVinfo());
+      if (bean != null) {
+        dumpTA.setText("Tag=\n ");
+        dumpTA.appendLine(bean.tag.detail());
+        dumpTA.appendLine("\nVinfo=");
+        dumpTA.appendLine(bean.tag.getVinfo());
+      }
     });
 
     // the info window
@@ -66,24 +65,22 @@ public class Hdf4NewTable extends Hdf4Table {
   void setHdf4File(RandomAccessFile raf) throws IOException {
     closeOpenFiles();
 
-    this.location = raf.getLocation();
-    List<TagBean> beanList = new ArrayList<>();
-
     iosp = new H4iosp();
-
     try {
-      NetcdfFile ncfile = NetcdfFiles.build(iosp, raf, raf.getLocation(), null);
+      NetcdfFiles.build(iosp, raf, raf.getLocation(), null);
     } catch (Throwable t) {
       StringWriter sw = new StringWriter(20000);
       t.printStackTrace(new PrintWriter(sw));
       dumpTA.setText(sw.toString());
     }
 
+    List<TagBean> beanList = new ArrayList<>();
     header = (H4header) iosp.sendIospMessage("header");
-    for (H4header.Tag tag : header.getTags()) {
-      beanList.add(new TagBean(tag));
+    if (header != null) {
+      for (H4header.Tag tag : header.getTags()) {
+        beanList.add(new TagBean(tag));
+      }
     }
-
     tagTable.setBeans(beanList);
   }
 

@@ -17,8 +17,9 @@ import java.util.List;
  */
 class BoundingBoxHelper {
 
-  private double maxR, maxR2;
-  private Projection proj;
+  private final double maxR;
+  private final double maxR2;
+  private final Projection proj;
 
   BoundingBoxHelper(Projection proj, double maxR) {
     this.proj = proj;

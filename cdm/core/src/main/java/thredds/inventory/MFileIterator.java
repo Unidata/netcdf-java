@@ -14,8 +14,8 @@ import java.util.NoSuchElementException;
  * @since 11/20/13
  */
 public class MFileIterator implements CloseableIterator<MFile> {
-  private Iterator<MFile> iter;
-  private MFileFilter filter;
+  private final Iterator<MFile> iter;
+  private final MFileFilter filter;
   private MFile nextMfile;
 
   /**

@@ -7,7 +7,6 @@ package ucar.nc2.internal.dataset.transform.vertical;
 
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VerticalCT;
 
 import java.util.Formatter;

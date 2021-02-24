@@ -9,7 +9,7 @@ import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
-import java.util.Optional;
+
 import javax.annotation.concurrent.Immutable;
 import java.util.*;
 import ucar.unidata.geoloc.LatLonPoint;

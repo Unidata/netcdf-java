@@ -48,7 +48,7 @@ import ucar.nc2.ft.point.StructureDataIteratorLinked;
  * @since Jan 20, 2009
  */
 public abstract class Table {
-  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Table.class);
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Table.class);
 
   public enum CoordName {
     Lat, Lon, Elev, Time, TimeNominal, StnId, StnDesc, WmoId, StnAlt, FeatureId, MissingVar
@@ -65,7 +65,7 @@ public abstract class Table {
       case ArrayStructure: // given array of StructureData, stored in config.as
         return new TableArrayStructure(ds, config);
 
-      case Construct: // construct the table from its children - theres no seperate station table, stn info is
+      case Construct: // construct the table from its children - theres no separate station table, stn info is
                       // duplicated in the obs structure.
         return new TableConstruct(ds, config);
 
@@ -404,7 +404,7 @@ public abstract class Table {
   ///////////////////////////////////////////////////////
 
   /**
-   * When theres no seperate station table, but info is duplicated in the obs structure.
+   * When theres no separate station table, but info is duplicated in the obs structure.
    * Must have a ParentId child table
    * No variables are added to cols.
    * <p>
@@ -443,10 +443,10 @@ public abstract class Table {
    * CFPointObs
    */
   public static class TableContiguous extends TableStructure {
-    private String startVarName; // variable name holding the starting index in parent
-    private String numRecordsVarName; // variable name holding the number of children in parent
+    private final String startVarName; // variable name holding the starting index in parent
+    private final String numRecordsVarName; // variable name holding the number of children in parent
     private int[] startIndex, numRecords;
-    private NetcdfDataset ds;
+    private final NetcdfDataset ds;
     private boolean isInit;
 
     TableContiguous(NetcdfDataset ds, TableConfig config) {
@@ -525,8 +525,8 @@ public abstract class Table {
    * CFPointObs
    */
   public static class TableParentIndex extends TableStructure {
-    private Map<Integer, List<Integer>> indexMap;
-    private String parentIndexName;
+    private final Map<Integer, List<Integer>> indexMap;
+    private final String parentIndexName;
 
     TableParentIndex(NetcdfDataset ds, TableConfig config) {
       super(ds, config);
@@ -584,8 +584,8 @@ public abstract class Table {
    * CFPointObs
    */
   public static class TableParentId extends TableStructure {
-    private ParentInfo[] indexMap;
-    private String parentIdName;
+    private final ParentInfo[] indexMap;
+    private final String parentIdName;
 
     TableParentId(NetcdfDataset ds, TableConfig config) {
       super(ds, config);
@@ -689,8 +689,8 @@ public abstract class Table {
    * UnidataPointObs
    */
   public static class TableLinkedList extends TableStructure {
-    private String start; // variable name holding the starting index in parent
-    private String next; // variable name holding the next index in child
+    private final String start; // variable name holding the starting index in parent
+    private final String next; // variable name holding the next index in child
 
     TableLinkedList(NetcdfDataset ds, TableConfig config) {
       super(ds, config);
@@ -1193,7 +1193,7 @@ public abstract class Table {
   // not ok for sdata to be null
   private static class SingletonStructureDataIterator implements StructureDataIterator {
     private int count;
-    private StructureData sdata;
+    private final StructureData sdata;
 
     SingletonStructureDataIterator(StructureData sdata) {
       this.sdata = sdata;

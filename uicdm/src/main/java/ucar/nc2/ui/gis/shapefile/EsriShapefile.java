@@ -5,6 +5,7 @@
 package ucar.nc2.ui.gis.shapefile;
 
 import ucar.nc2.ui.gis.AbstractGisFeature;
+import ucar.nc2.ui.gis.GisFeature;
 import ucar.nc2.ui.gis.GisPart;
 import java.awt.geom.Rectangle2D;
 import java.io.BufferedInputStream;
@@ -28,6 +29,8 @@ import java.util.zip.ZipInputStream;
  * @author Russ Rew
  */
 public class EsriShapefile {
+  private static final boolean debug = false;
+
   // these are only shape types handled by this package, so far
   enum Type {
     none, point, polyline, polygon, multipoint
@@ -36,14 +39,13 @@ public class EsriShapefile {
   private static final int SHAPEFILE_CODE = 9994; // shapefile magic number
   private static final double defaultCoarseness = 0.0;
 
-  private BeLeDataInputStream bdis; // the shapefile data stream
+  private final BeLeDataInputStream bdis; // the shapefile data stream
   private int fileBytes; // bytes in file, according to header
   private int bytesSeen; // so far, in bytes.
   private int version; // of shapefile format (currently 1000)
   private Type type;
-  private boolean debug;
 
-  private List<EsriFeature> features; // EsriFeatures in List
+  private List<GisFeature> features; // EsriFeatures in List
   private Rectangle2D listBounds; // bounds from shapefile
   private double resolution; // computed from coarseness
 
@@ -277,7 +279,6 @@ public class EsriShapefile {
   }
 
   private Rectangle2D readBoundingBox() throws IOException {
-
     double xMin = readLEDouble();
     double yMin = readLEDouble();
     double xMax = readLEDouble();
@@ -364,7 +365,7 @@ public class EsriShapefile {
    *
    * @return a List of features
    */
-  public java.util.List getFeatures() {
+  public java.util.List<GisFeature> getFeatures() {
     return features;
   }
 
@@ -381,12 +382,12 @@ public class EsriShapefile {
    * @return a new list of features in the shapefile whose bounding
    *         boxes intersect the specified bounding box.
    */
-  public List<EsriFeature> getFeatures(Rectangle2D bBox) {
+  public List<GisFeature> getFeatures(Rectangle2D bBox) {
     if (bBox == null)
       return features;
 
-    List<EsriFeature> list = new ArrayList<>();
-    for (EsriFeature gf : features) {
+    List<GisFeature> list = new ArrayList<>();
+    for (GisFeature gf : features) {
       if (gf.getBounds2D().intersects(bBox))
         list.add(gf);
     }
@@ -446,7 +447,7 @@ public class EsriShapefile {
      * @return the iterator over the parts of this feature. Each part
      *         is a GisPart.
      */
-    public java.util.Iterator getGisParts() {
+    public java.util.Iterator<GisPart> iterator() {
       return partsList.iterator();
     }
 
@@ -708,7 +709,7 @@ public class EsriShapefile {
     f.format("Type=%s version=%d bounds=%s resolution=%f%n", type, version, listBounds, resolution);
     f.format("#Features = %d%n", features.size());
     if (debug) {
-      for (EsriFeature ft : features)
+      for (GisFeature ft : features)
         f.format(" %s%n", ft);
     }
     return f.toString();

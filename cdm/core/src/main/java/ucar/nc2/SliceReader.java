@@ -12,11 +12,11 @@ import java.io.IOException;
 /**
  * A ProxyReader for slices.
  * 
- * @see {@link Variable#slice(int, int)}
+ * {@link Variable#slice(int, int)}
  */
 @Immutable
 class SliceReader implements ProxyReader {
-  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(SliceReader.class);
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(SliceReader.class);
 
   private final Variable orgClient;
   private final Group parentGroup;

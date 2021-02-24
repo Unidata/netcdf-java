@@ -96,7 +96,7 @@ public class DbaseData {
         break;
       case 'F': /* binary floating point */
         if (desc.FieldLength == 4) {
-          numeric[n] = (double) Swap.swapFloat(field, 0);
+          numeric[n] = Swap.swapFloat(field, 0);
         } else {
           numeric[n] = Swap.swapDouble(field, 0);
         }

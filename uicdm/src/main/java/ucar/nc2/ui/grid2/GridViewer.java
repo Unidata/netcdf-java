@@ -65,7 +65,7 @@ public class GridViewer extends JPanel {
   // UI components that need global scope
   private TextHistoryPane datasetInfoTA;
   private JPanel drawingPanel;
-  private JComboBox csDataMinMax;
+  private JComboBox<ColorScale.MinMaxType> csDataMinMax;
   private PopupMenu mapBeanMenu;
   private JSpinner strideSpinner;
 
@@ -97,8 +97,7 @@ public class GridViewer extends JPanel {
   private Grid currentField;
   private Projection project;
 
-  // state
-  private List<NamedObject> levelNames, timeNames, ensembleNames, runtimeNames;
+  private List<NamedObject> timeNames;
   private boolean drawHorizOn = true;
   private boolean drawVertOn;
   private boolean eventsOK = true;
@@ -136,7 +135,7 @@ public class GridViewer extends JPanel {
         colorScale = (ColorScale) store.getBean(ColorScaleName, null);
 
       colorScalePanel = new ColorScale.Panel(this, colorScale);
-      csDataMinMax = new JComboBox(ColorScale.MinMaxType.values());
+      csDataMinMax = new JComboBox<>(ColorScale.MinMaxType.values());
       csDataMinMax.setToolTipText("ColorScale Min/Max setting");
       csDataMinMax.addActionListener(e -> {
         gridRenderer.setDataMinMaxType((ColorScale.MinMaxType) csDataMinMax.getSelectedItem());
@@ -150,8 +149,7 @@ public class GridViewer extends JPanel {
 
       strideSpinner = new JSpinner(new SpinnerNumberModel(1, 1, 100, 1));
       strideSpinner.addChangeListener(e -> {
-        Integer val = (Integer) strideSpinner.getValue();
-        dataState.horizStride = val;
+        dataState.horizStride = (Integer) strideSpinner.getValue();
       });
 
       makeActionsDataset();
@@ -560,11 +558,13 @@ public class GridViewer extends JPanel {
     ActionSourceListener levelSource = new ActionSourceListener(actionName) {
       public void actionPerformed(ActionValueEvent e) {
         NamedObject selected = (NamedObject) levelChooser.getSelectedObject();
-        if (dataState.setVertCoord(selected.getValue())) {
-          if (e.getActionCommand().equals("redrawImmediate")) {
-            draw(true);
-          } else
-            redrawLater();
+        if (selected != null) {
+          if (dataState.setVertCoord(selected.getValue())) {
+            if (e.getActionCommand().equals("redrawImmediate")) {
+              draw(true);
+            } else
+              redrawLater();
+          }
         }
       }
     };
@@ -579,11 +579,13 @@ public class GridViewer extends JPanel {
       public void actionPerformed(ActionValueEvent e) {
         NamedObject selected = (NamedObject) timeChooser.getSelectedObject();
         if (dataState.setTimeCoord(selected.getValue())) {
-          if (e.getActionCommand().equals("redrawImmediate")) {
-            draw(true);
-            // colorScalePanel.paintImmediately(colorScalePanel.getBounds()); // kludgerino
-          } else
-            redrawLater();
+          if (selected != null) {
+            if (e.getActionCommand().equals("redrawImmediate")) {
+              draw(true);
+              // colorScalePanel.paintImmediately(colorScalePanel.getBounds()); // kludgerino
+            } else
+              redrawLater();
+          }
         }
       }
     };
@@ -628,11 +630,13 @@ public class GridViewer extends JPanel {
     ActionSourceListener ensembleSource = new ActionSourceListener(actionName) {
       public void actionPerformed(ActionValueEvent e) {
         NamedObject selected = (NamedObject) ensembleChooser.getSelectedObject();
-        if (dataState.setEnsCoord(selected.getValue())) {
-          if (e.getActionCommand().equals("redrawImmediate")) {
-            draw(true);
-          } else
-            redrawLater();
+        if (selected != null) {
+          if (dataState.setEnsCoord(selected.getValue())) {
+            if (e.getActionCommand().equals("redrawImmediate")) {
+              draw(true);
+            } else
+              redrawLater();
+          }
         }
       }
     };
@@ -664,7 +668,6 @@ public class GridViewer extends JPanel {
       String valueS = gridRenderer.getXYvalueStr(e.getLocation());
       dataValueLabel.setText(valueS);
     });
-
   }
 
   private int findIndexFromName(List<NamedObject> list, String name) {
@@ -734,9 +737,8 @@ public class GridViewer extends JPanel {
     setField(currentField);
 
     // LOOK if possible, change the projection and the map area to one that fits this dataset
-    Projection dataProjection = p;
-    if (dataProjection != null) {
-      setProjection(dataProjection);
+    if (p != null) {
+      setProjection(p);
     }
     ProjectionRect fieldBB = currentField.getCoordinateSystem().getHorizCoordSystem().getBoundingBox();
     if (fieldBB != null) {
@@ -793,6 +795,7 @@ public class GridViewer extends JPanel {
     currentField = gg;
 
     // set runtimes
+    List<NamedObject> runtimeNames;
     if (this.dataState.rtaxis != null) {
       runtimeNames = NamedObjects.getTimeNames(this.dataState.rtaxis);
       runtimeChooser.setCollection(runtimeNames.iterator(), true);
@@ -806,14 +809,13 @@ public class GridViewer extends JPanel {
       setChooserWanted("runtime", true);
 
     } else {
-      runtimeNames = new ArrayList<>();
       setChooserWanted("runtime", false);
       dataState.setRuntimeCoord(null);
     }
 
     // set times: only one of taxis, toaxis, toaxisReg is used
     if (this.dataState.toaxisReg != null) {
-      GridAxis1D toaxis1D = dataState.toaxisReg.getTimeOffsetAxisForRun((CalendarDate) dataState.runtimeCoord);
+      GridAxis1D toaxis1D = dataState.toaxisReg.getTimeOffsetAxisForRun(dataState.runtimeCoord);
       timeNames = NamedObjects.getCoordNames(toaxis1D);
       timeChooser.setCollection(timeNames.iterator(), true);
       NamedObject no = getNamedObject(timeNames, dataState.timeCoord);
@@ -856,6 +858,7 @@ public class GridViewer extends JPanel {
     }
 
     // set ensembles
+    List<NamedObject> ensembleNames;
     if (this.dataState.ensaxis != null) {
       ensembleNames = NamedObjects.getCoordNames(this.dataState.ensaxis);
       ensembleChooser.setCollection(ensembleNames.iterator(), true);
@@ -869,12 +872,13 @@ public class GridViewer extends JPanel {
       setChooserWanted("ensemble", true);
 
     } else {
-      ensembleNames = new ArrayList<>();
       setChooserWanted("ensemble", false);
       dataState.setEnsCoord(null);
     }
 
     // set levels
+    // state
+    List<NamedObject> levelNames;
     if (this.dataState.zaxis != null) {
       levelNames = NamedObjects.getCoordNames(this.dataState.zaxis);
       levelChooser.setCollection(levelNames.iterator(), true);
@@ -888,7 +892,6 @@ public class GridViewer extends JPanel {
       setChooserWanted("level", true);
 
     } else {
-      levelNames = new ArrayList<>();
       setChooserWanted("level", false);
       dataState.setVertCoord(null);
     }
@@ -948,8 +951,6 @@ public class GridViewer extends JPanel {
     if (drawHorizOn) {
       drawH(immediate);
     }
-    // if (drawVertOn)
-    // drawV(immediate);
   }
 
   private void drawH(boolean immediate) {

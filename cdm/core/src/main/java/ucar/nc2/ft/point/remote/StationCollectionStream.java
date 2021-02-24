@@ -31,7 +31,7 @@ import ucar.unidata.geoloc.LatLonRect;
  * @author caron
  */
 public class StationCollectionStream extends StationTimeSeriesCollectionImpl {
-  private String uri;
+  private final String uri;
   protected LatLonRect boundingBoxSubset;
   protected CalendarDateRange dateRangeSubset;
 

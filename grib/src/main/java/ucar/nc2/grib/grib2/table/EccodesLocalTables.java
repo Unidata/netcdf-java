@@ -93,7 +93,7 @@ public class EccodesLocalTables extends LocalTables {
 
   private final Map<Integer, EccodesParamTable> tableMap = new HashMap<>(30);
 
-  // Each of the centers using eccodes has a seperate EccodesLocalTables with its own Grib2TableConfig, and center
+  // Each of the centers using eccodes has a separate EccodesLocalTables with its own Grib2TableConfig, and center
   // value.
   EccodesLocalTables(Grib2TableConfig config) {
     super(config);

@@ -20,11 +20,8 @@ import java.util.ArrayList;
  *
  * @author John Caron
  **/
-
-
 public abstract class MapBean {
-  private EventListenerList listenerList = new EventListenerList();
-
+  private final EventListenerList listenerList = new EventListenerList();
 
   public abstract javax.swing.ImageIcon getIcon();
 
@@ -120,15 +117,14 @@ public abstract class MapBean {
     BAMutil.setActionProperties(mapSelectAction, "nj22/WorldMap", "select map", false, 'M', -1);
     AbstractButton mapSelectButton = BAMutil.makeButtconFromAction(mapSelectAction);
 
-    PopupMenu mapPopup = new PopupMenu(mapSelectButton, "Select Map", true);
-    return mapPopup;
+    return new PopupMenu(mapSelectButton, "Select Map", true);
   }
 
   public static PopupMenu getStandardMapSelectButton(PropertyChangeListener pcl) {
     PopupMenu mapBeanMenu = makeMapSelectButton();
 
     // standard maps
-    ArrayList standardMaps = new ArrayList();
+    ArrayList<MapBean> standardMaps = new ArrayList<>();
     standardMaps.add(new WorldMapBean());
     standardMaps.add(new ShapeFileBean("WorldDetailMap", "Global Detailed Map", "nj22/WorldDetailMap",
         "/resources/ui/maps/Countries.shp"));

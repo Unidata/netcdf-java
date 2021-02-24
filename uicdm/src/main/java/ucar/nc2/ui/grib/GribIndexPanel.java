@@ -34,18 +34,29 @@ import java.util.List;
  * @since 12/10/12
  */
 public class GribIndexPanel extends JPanel {
-  private PreferencesExt prefs;
+  private final PreferencesExt prefs;
 
-  private BeanTable recordTable, gds1Table, gds2Table;
-  private JSplitPane split;
+  private final BeanTable<RecordBean> recordTable;
+  private final BeanTable<Gds1Bean> gds1Table;
+  private final BeanTable<Gds2Bean> gds2Table;
+  private final JSplitPane split;
 
-  private TextHistoryPane infoPopup, detailTA;
-  private IndependentWindow infoWindow, detailWindow;
+  private final TextHistoryPane infoPopup, detailTA;
+  private final IndependentWindow infoWindow, detailWindow;
 
   private String indexFile;
 
   public GribIndexPanel(PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
+
+    // the info windows
+    infoPopup = new TextHistoryPane();
+    infoWindow = new IndependentWindow("Extra Information", BAMutil.getImage("nj22/NetcdfUI"), infoPopup);
+    infoWindow.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 500, 300)));
+
+    detailTA = new TextHistoryPane();
+    detailWindow = new IndependentWindow("Extra Information", BAMutil.getImage("nj22/NetcdfUI"), detailTA);
+    detailWindow.setBounds((Rectangle) prefs.getBean("DetailWindowBounds", new Rectangle(300, 300, 500, 300)));
 
     AbstractButton infoButton = BAMutil.makeButtcon("Information", "Show Info", false);
     infoButton.addActionListener(e -> {
@@ -57,29 +68,11 @@ public class GribIndexPanel extends JPanel {
     });
     buttPanel.add(infoButton);
 
-
-    /*
-     * AbstractButton filesButton = BAMutil.makeButtcon("Information", "Show Files", false);
-     * filesButton.addActionListener(e -> {
-     * Formatter f = new Formatter();
-     * showFiles(f);
-     * detailTA.setText(f.toString());
-     * detailTA.gotoTop();
-     * detailWindow.show();
-     * });
-     * buttPanel.add(filesButton);
-     */
-
-    ////////////////////////////
-
-    PopupMenu popup;
-
-    recordTable = new BeanTable(RecordBean.class, (PreferencesExt) prefs.node("Grib2RecordBean"), false);
-
-    popup = new PopupMenu(recordTable.getJTable(), "Options");
+    recordTable = new BeanTable<>(RecordBean.class, (PreferencesExt) prefs.node("Grib2RecordBean"), false);
+    PopupMenu popup = new PopupMenu(recordTable.getJTable(), "Options");
     popup.addAction("Show Record", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        RecordBean bean = (RecordBean) recordTable.getSelectedBean();
+        RecordBean bean = recordTable.getSelectedBean();
         if (bean != null) {
           Formatter f = new Formatter();
           bean.show(f);
@@ -90,15 +83,14 @@ public class GribIndexPanel extends JPanel {
       }
     });
 
-    gds1Table = new BeanTable(Gds1Bean.class, (PreferencesExt) prefs.node("GdsRecordBean"), false);
+    gds1Table = new BeanTable<>(Gds1Bean.class, (PreferencesExt) prefs.node("GdsRecordBean"), false);
     PopupMenu varPopup = new PopupMenu(gds1Table.getJTable(), "Options");
-
     varPopup.addAction("Compare Raw GDS Bytes", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        List list = gds1Table.getSelectedBeans();
+        List<Gds1Bean> list = gds1Table.getSelectedBeans();
         if (list.size() == 2) {
-          Gds1Bean bean1 = (Gds1Bean) list.get(0);
-          Gds1Bean bean2 = (Gds1Bean) list.get(1);
+          Gds1Bean bean1 = list.get(0);
+          Gds1Bean bean2 = list.get(1);
           Formatter f = new Formatter();
           compareData(bean1, bean2, f);
           infoPopup.setText(f.toString());
@@ -108,15 +100,15 @@ public class GribIndexPanel extends JPanel {
       }
     });
 
-    gds2Table = new BeanTable(Gds2Bean.class, (PreferencesExt) prefs.node("Gds2RecordBean"), false);
+    gds2Table = new BeanTable<>(Gds2Bean.class, (PreferencesExt) prefs.node("Gds2RecordBean"), false);
     varPopup = new PopupMenu(gds2Table.getJTable(), "Options");
 
     varPopup.addAction("Compare Raw GDS Bytes", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        List list = gds2Table.getSelectedBeans();
+        List<Gds2Bean> list = gds2Table.getSelectedBeans();
         if (list.size() == 2) {
-          Gds2Bean bean1 = (Gds2Bean) list.get(0);
-          Gds2Bean bean2 = (Gds2Bean) list.get(1);
+          Gds2Bean bean1 = list.get(0);
+          Gds2Bean bean2 = list.get(1);
           Formatter f = new Formatter();
           compareData(bean1, bean2, f);
           infoPopup.setText(f.toString());
@@ -126,22 +118,9 @@ public class GribIndexPanel extends JPanel {
       }
     });
 
-
-    /////////////////////////////////////////
-    // the info windows
-    infoPopup = new TextHistoryPane();
-    infoWindow = new IndependentWindow("Extra Information", BAMutil.getImage("nj22/NetcdfUI"), infoPopup);
-    infoWindow.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 500, 300)));
-
-    detailTA = new TextHistoryPane();
-    detailWindow = new IndependentWindow("Extra Information", BAMutil.getImage("nj22/NetcdfUI"), detailTA);
-    detailWindow.setBounds((Rectangle) prefs.getBean("DetailWindowBounds", new Rectangle(300, 300, 500, 300)));
-
     setLayout(new BorderLayout());
-
     split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, recordTable, gds1Table);
     split.setDividerLocation(prefs.getInt("splitPos", 500));
-
     add(split, BorderLayout.CENTER);
   }
 
@@ -157,7 +136,6 @@ public class GribIndexPanel extends JPanel {
   }
 
   public void closeOpenFiles() throws IOException {
-    // if (gc != null) gc.close();
     gc = null;
   }
 
@@ -178,10 +156,9 @@ public class GribIndexPanel extends JPanel {
       } else
         throw new IOException("Not a grib index file =" + magic);
     }
-
   }
 
-  public void readIndex1(String filename) throws IOException {
+  public void readIndex1(String filename) {
     Grib1Index g1idx = new Grib1Index();
     g1idx.readIndex(filename, 0, thredds.inventory.CollectionUpdateType.nocheck);
 

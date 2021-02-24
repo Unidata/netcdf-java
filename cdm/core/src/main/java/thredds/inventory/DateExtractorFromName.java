@@ -19,8 +19,8 @@ import java.util.Date;
  */
 public class DateExtractorFromName implements DateExtractor {
 
-  private String dateFormatMark;
-  private boolean useName;
+  private final String dateFormatMark;
+  private final boolean useName;
 
   /**
    * Ctor

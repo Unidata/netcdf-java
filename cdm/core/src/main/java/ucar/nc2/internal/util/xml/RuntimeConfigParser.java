@@ -172,7 +172,7 @@ public class RuntimeConfigParser {
             Method m = c.getMethod("addParameterTableLookup", String.class);
             Boolean ok = (Boolean) m.invoke(null, filename);
             if (!ok) {
-              errlog.format("GribParameterTable.addParameterTableLookup() can't open the file%n", filename);
+              errlog.format("GribParameterTable.addParameterTableLookup() can't open the file %s%n", filename);
             } else {
               errlog.format("GribParameterTable.addParameterTableLookup() added %s%n", filename);
             }

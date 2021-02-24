@@ -496,7 +496,7 @@ public class ArrayChar extends Array implements Iterable<String> {
    * Concrete implementation of Array specialized for char, rank 0.
    */
   public static class D0 extends ArrayChar {
-    private Index0D ix;
+    private final Index0D ix;
 
     /**
      * Constructor.
@@ -530,7 +530,7 @@ public class ArrayChar extends Array implements Iterable<String> {
    * Concrete implementation of Array specialized for char, rank 1.
    */
   public static class D1 extends ArrayChar {
-    private Index1D ix;
+    private final Index1D ix;
 
     /**
      * Constructor for array of shape {len0}.
@@ -564,7 +564,7 @@ public class ArrayChar extends Array implements Iterable<String> {
    * Concrete implementation of Array specialized for char, rank 2.
    */
   public static class D2 extends ArrayChar {
-    private Index2D ix;
+    private final Index2D ix;
 
     /**
      * Constructor for array of shape {len0,len1}.
@@ -598,7 +598,7 @@ public class ArrayChar extends Array implements Iterable<String> {
    * Concrete implementation of Array specialized for char, rank 3.
    */
   public static class D3 extends ArrayChar {
-    private Index3D ix;
+    private final Index3D ix;
 
     /**
      * Constructor for array of shape {len0,len1,len2}.
@@ -632,7 +632,7 @@ public class ArrayChar extends Array implements Iterable<String> {
    * Concrete implementation of Array specialized for char, rank 4.
    */
   public static class D4 extends ArrayChar {
-    private Index4D ix;
+    private final Index4D ix;
 
     /**
      * Constructor for array of shape {len0,len1,len2,len3}.
@@ -666,7 +666,7 @@ public class ArrayChar extends Array implements Iterable<String> {
    * Concrete implementation of Array specialized for char, rank 5.
    */
   public static class D5 extends ArrayChar {
-    private Index5D ix;
+    private final Index5D ix;
 
     /**
      * Constructor for array of shape {len0,len1,len2,len3,len4}.
@@ -700,7 +700,7 @@ public class ArrayChar extends Array implements Iterable<String> {
    * Concrete implementation of Array specialized for char, rank 6.
    */
   public static class D6 extends ArrayChar {
-    private Index6D ix;
+    private final Index6D ix;
 
     /**
      * Constructor for array of shape {len0,len1,len2,len3,len4,len5,}.
@@ -734,7 +734,7 @@ public class ArrayChar extends Array implements Iterable<String> {
    * Concrete implementation of Array specialized for char, rank 7.
    */
   public static class D7 extends ArrayChar {
-    private Index7D ix;
+    private final Index7D ix;
 
     /**
      * Constructor for array of shape {len0,len1,len2,len3,len4,len5,len6}.
@@ -798,9 +798,9 @@ public class ArrayChar extends Array implements Iterable<String> {
    * rank must be > 0
    */
   public class StringIterator implements Iterator<String> {
-    private IndexIterator ii = getIndexIterator();
-    private int strLen;
-    private char[] carray;
+    private final IndexIterator ii = getIndexIterator();
+    private final int strLen;
+    private final char[] carray;
 
     StringIterator() {
       if (rank == 0)

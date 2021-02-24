@@ -17,7 +17,7 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.internal.util.Counters;
 import ucar.nc2.util.Misc;
 import ucar.unidata.util.StringUtil2;
-import java.util.ArrayList;
+
 import java.util.Collections;
 import java.util.List;
 

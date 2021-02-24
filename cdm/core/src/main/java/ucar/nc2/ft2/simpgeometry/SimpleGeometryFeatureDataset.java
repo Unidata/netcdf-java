@@ -19,7 +19,7 @@ import java.util.*;
 
 public class SimpleGeometryFeatureDataset implements FeatureDataset {
 
-  private NetcdfDataset ncd;
+  private final NetcdfDataset ncd;
 
   /**
    * Open a netcdf dataset, using NetcdfDataset.defaultEnhanceMode plus CoordSystems
@@ -186,8 +186,8 @@ public class SimpleGeometryFeatureDataset implements FeatureDataset {
    */
   public static class SimpleGeometryCovSet {
 
-    private SimpleGeometryCS gcc;
-    private List<SimpleGeometryFeature> covs = new ArrayList<>();
+    private final SimpleGeometryCS gcc;
+    private final List<SimpleGeometryFeature> covs = new ArrayList<>();
 
 
     private SimpleGeometryCovSet(SimpleGeometryCS gcc) {

@@ -13,9 +13,9 @@ import java.util.zip.DeflaterOutputStream;
  * Created by rmay on 8/13/15.
  */
 public class NcStreamCompressedOutputStream extends DataOutputStream {
-  private OutputStream writer;
-  private DeflaterOutputStream dout;
-  private ByteArrayOutputStream buffer;
+  private final OutputStream writer;
+  private final DeflaterOutputStream dout;
+  private final ByteArrayOutputStream buffer;
 
   public NcStreamCompressedOutputStream(OutputStream out, int bufferSize, int level) {
     super(out);

@@ -19,8 +19,8 @@ import javax.swing.AbstractButton;
 import javax.swing.JOptionPane;
 
 public class Hdf5ObjectPanel extends OpPanel {
+  final Hdf5ObjectTable hdf5Table;
   RandomAccessFile raf;
-  Hdf5ObjectTable hdf5Table;
 
   public Hdf5ObjectPanel(PreferencesExt p, boolean useBuilders) {
     super(p, "file:", true, false);
@@ -30,15 +30,7 @@ public class Hdf5ObjectPanel extends OpPanel {
     AbstractButton infoButton = BAMutil.makeButtcon("Information", "Compact Representation", false);
     infoButton.addActionListener(e -> {
       Formatter f = new Formatter();
-      try {
-        hdf5Table.showInfo(f);
-      } catch (IOException ioe) {
-        StringWriter sw = new StringWriter(5000);
-        ioe.printStackTrace(new PrintWriter(sw));
-        detailTA.setText(sw.toString());
-        detailWindow.show();
-        return;
-      }
+      hdf5Table.showInfo(f);
       detailTA.setText(f.toString());
       detailTA.gotoTop();
       detailWindow.show();
@@ -78,7 +70,6 @@ public class Hdf5ObjectPanel extends OpPanel {
       }
     });
     buttPanel.add(eosdump);
-
   }
 
   @Override

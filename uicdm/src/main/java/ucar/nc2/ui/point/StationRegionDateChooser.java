@@ -14,7 +14,6 @@ import ucar.ui.widget.IndependentDialog;
 import ucar.ui.widget.PopupManager;
 import ucar.nc2.ui.widget.RangeDateSelector;
 import ucar.nc2.units.DateRange;
-import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPoints;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionRect;
@@ -58,7 +57,7 @@ import java.beans.PropertyChangeListener;
  * do we want to remove actionSource ? we have setSelectedStation instead.
  */
 public class StationRegionDateChooser extends NPController {
-  private boolean regionSelect, stationSelect, dateSelect;
+  private final boolean regionSelect, stationSelect, dateSelect;
 
   // station
   private StationRenderer stnRender;
@@ -68,8 +67,7 @@ public class StationRegionDateChooser extends NPController {
   private ProjectionRect geoBounds;
   private ProjectionRect geoSelection = new ProjectionRect();
   private boolean geoSelectionMode;
-  private Color outlineColor = Color.black;
-  private int nfracDig = 3;
+  private final Color outlineColor = Color.black;
 
   // date
   private RangeDateSelector dateSelector;
@@ -84,8 +82,7 @@ public class StationRegionDateChooser extends NPController {
   private ActionSourceListener actionSource;
 
   // local caches
-  private PopupManager popupInfo = new PopupManager("Station Info");
-  private StringBuffer sbuff = new StringBuffer();
+  private final PopupManager popupInfo = new PopupManager("Station Info");
 
   // debugging
   private boolean debugEvent;
@@ -118,14 +115,12 @@ public class StationRegionDateChooser extends NPController {
       addRenderer(stnRender);
 
       // get Pick events from the navigated panel: mouse click
-      np.addPickEventListener(new PickEventListener() {
-        public void actionPerformed(PickEvent e) {
-          selectedStation = stnRender.pick(e.getLocationPoint());
-          if (selectedStation != null) {
-            redraw();
-            firePropertyChangeEvent(selectedStation, "Station");
-            actionSource.fireActionValueEvent(ActionSourceListener.SELECTED, selectedStation);
-          }
+      np.addPickEventListener(e -> {
+        selectedStation = stnRender.pick(e.getLocationPoint());
+        if (selectedStation != null) {
+          redraw();
+          firePropertyChangeEvent(selectedStation, "Station");
+          actionSource.fireActionValueEvent(ActionSourceListener.SELECTED, selectedStation);
         }
       });
 
@@ -135,10 +130,9 @@ public class StationRegionDateChooser extends NPController {
         public void mouseMoved(MouseEvent e) {
           Point p = e.getPoint();
           StationRenderer.StationUI sui = stnRender.isOnStation(p);
-
+          StringBuilder sbuff = new StringBuilder();
           if (sui != null) {
             ucar.unidata.geoloc.Station s = sui.getStation();
-            sbuff.setLength(0);
             sbuff.append(s.getName());
             sbuff.append(" ");
             sbuff.append("\n");
@@ -176,35 +170,6 @@ public class StationRegionDateChooser extends NPController {
           redraw();
         }
       };
-    }
-
-    if (regionSelect) {
-      /*
-       * LOOK
-       * double defArea = 1.0 / 8; // default area is 1/4 total
-       * LatLonRect llbb = np.getProjectionImpl().getDefaultMapAreaLL();
-       * LatLonPoint left = llbb.getLowerLeftPoint();
-       * LatLonPoint right = llbb.getUpperRightPoint();
-       * double centerLon = llbb.getCenterLon();
-       * double width = llbb.getWidth();
-       * double centerLat = (right.getLatitude() + left.getLatitude()) / 2;
-       * double height = right.getLatitude() - left.getLatitude();
-       * right = LatLonPoint.create(centerLat + height * defArea, centerLon + width * defArea);
-       * left = LatLonPoint.create(centerLat - height * defArea, centerLon - width * defArea);
-       * LatLonRect selected = new LatLonRect(left, right);
-       * setGeoSelection(selected);
-       * 
-       * // get GeoSelectionEvents from the navigated panel
-       * np.addGeoSelectionListener(new GeoSelectionListener() {
-       * public void actionPerformed(GeoSelectionEvent e) {
-       * setGeoSelection(e.getProjectionRect());
-       * if (debugEvent)
-       * System.out.println("GeoSelectionEvent=" + geoSelection);
-       * firePropertyChangeEvent(geoSelection, "GeoRegion");
-       * redraw();
-       * }
-       * });
-       */
     }
 
     if (dateSelect) {
@@ -264,6 +229,7 @@ public class StationRegionDateChooser extends NPController {
     // the fields use a PrefPanel
     if (regionSelect) {
       minmaxPP = new PrefPanel(null, null);
+      int nfracDig = 3;
       minLonField = minmaxPP.addDoubleField("minLon", "minLon", geoSelection.getMinX(), nfracDig, 0, 0, null);
       maxLonField = minmaxPP.addDoubleField("maxLon", "maxLon", geoSelection.getMaxX(), nfracDig, 2, 0, null);
       minLatField = minmaxPP.addDoubleField("minLat", "minLat", geoSelection.getMinY(), nfracDig, 4, 0, null);
@@ -345,11 +311,6 @@ public class StationRegionDateChooser extends NPController {
   // better way to do event management
   public ActionSourceListener getActionSourceListener() {
     return actionSource;
-  }
-
-  public void setMapArea(ProjectionRect ma) {
-    // np.getProjectionImpl().setDefaultMapArea(ma);
-    // np.setMapArea(ma);
   }
 
   /**
@@ -485,7 +446,6 @@ public class StationRegionDateChooser extends NPController {
   public void setGeoBounds(ProjectionRect bb) {
     geoBounds = bb;
     np.setMapArea(bb);
-    // np.getProjectionImpl().setDefaultMapArea(geoBounds);
   }
 
   public void setGeoSelection(LatLonRect llbb) {

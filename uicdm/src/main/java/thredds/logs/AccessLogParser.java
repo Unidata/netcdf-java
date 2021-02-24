@@ -36,7 +36,7 @@ public class AccessLogParser implements LogReader.LogParser {
   // 127.0.0.1 - - [17/Jun/2015:13:48:32 -0600] "GET /thredds/ HTTP/1.1" 302 -
 
   // 30/Sep/2009:23:50:47 -0600
-  private SimpleDateFormat formatFrom = new SimpleDateFormat("dd/MMM/yyyy:HH:mm:ss Z");
+  private static final SimpleDateFormat formatFrom = new SimpleDateFormat("dd/MMM/yyyy:HH:mm:ss Z");
 
   static Pattern regPattern =
       // 1 2 3 4 5 6 7 8 9 5 6 7 8 9
@@ -44,7 +44,7 @@ public class AccessLogParser implements LogReader.LogParser {
           .compile("^(\\d+\\.\\d+\\.\\d+\\.\\d+) - (.*) \\[(.*)] \"(.*)\" (\\d+) ([\\-\\d]+) \"(.*)\" \"(.*)\" (\\d+)");
 
   // pattern without the extra fields at the end 1 2 3 4 5 6 5 6 7 8 9
-  private static Pattern regPattern2 =
+  private static final Pattern regPattern2 =
       Pattern.compile("^(\\d+\\.\\d+\\.\\d+\\.\\d+) - (.*) \\[(.*)] \"(.*)\" (\\d+) ([\\-\\d]+)");
 
   public LogReader.Log nextLog(BufferedReader dataIS) throws IOException {
@@ -60,7 +60,7 @@ public class AccessLogParser implements LogReader.LogParser {
     }
   }
 
-  LogReader.Log parseLog(String line) throws IOException {
+  LogReader.Log parseLog(String line) {
     try {
       // the enhanced log
       Matcher m = regPattern.matcher(line);

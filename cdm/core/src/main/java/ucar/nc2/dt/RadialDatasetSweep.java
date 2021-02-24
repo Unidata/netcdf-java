@@ -245,10 +245,10 @@ public interface RadialDatasetSweep extends FeatureDataset {
    * A Type of RadialSweep.
    */
   final class Type {
-    private static java.util.List<Type> members = new java.util.ArrayList<>(20);
+    private static final java.util.List<Type> members = new java.util.ArrayList<>(20);
     public static final Type NONE = new Type("");
 
-    private String name;
+    private final String name;
 
     private Type(String s) {
       this.name = s;

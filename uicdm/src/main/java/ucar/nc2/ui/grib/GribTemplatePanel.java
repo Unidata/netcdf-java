@@ -3,7 +3,7 @@
  * See LICENSE for license information.
  */
 
-package ucar.nc2.ui.op;
+package ucar.nc2.ui.grib;
 
 import ucar.nc2.grib.grib2.table.WmoTemplateTables;
 import ucar.nc2.ui.OpPanel;
@@ -15,9 +15,6 @@ import javax.swing.JComboBox;
 public class GribTemplatePanel extends OpPanel {
   private GribWmoTemplatesPanel codeTable;
 
-  /**
-   *
-   */
   public GribTemplatePanel(PreferencesExt p) {
     super(p, "table:", false, false, false);
 
@@ -30,20 +27,17 @@ public class GribTemplatePanel extends OpPanel {
     add(codeTable, BorderLayout.CENTER);
   }
 
-  /** */
   @Override
   public boolean process(Object command) {
     return true;
   }
 
-  /** */
   @Override
   public void save() {
     codeTable.save();
     super.save();
   }
 
-  /** */
   @Override
   public void closeOpenFiles() {
     // Nothing to do here.

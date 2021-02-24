@@ -92,7 +92,7 @@ public class CollectionGlob extends CollectionAbstract {
   }
 
   // from http://blog.eyallupu.com/2011/11/java-7-working-with-directories.html
-  public static DirectoryStream newDirectoryStream(Path dir, String glob) throws IOException {
+  public static DirectoryStream<Path> newDirectoryStream(Path dir, String glob) throws IOException {
     FileSystem fs = dir.getFileSystem();
     PathMatcher matcher = fs.getPathMatcher("glob:" + glob);
     DirectoryStream.Filter<Path> filter = entry -> matcher.matches(entry.getFileName());
@@ -165,10 +165,14 @@ public class CollectionGlob extends CollectionAbstract {
 
     // better alternative is for caller to send in callback (Visitor pattern)
     // then we could use the try-with-resource
-    public void close() throws IOException {
+    public void close() {
       if (debug)
         System.out.printf("  OK=%d total=%d%n ", count, total);
-      dirStream.close();
+      try {
+        dirStream.close();
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
     }
   }
 }

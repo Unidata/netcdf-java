@@ -3,16 +3,13 @@
  * See LICENSE for license information.
  */
 
-package ucar.nc2.ui.op;
+package ucar.nc2.ui.grib;
 
 import ucar.nc2.ui.OpPanel;
-import ucar.nc2.ui.ToolsUI;
-import ucar.nc2.ui.grib.Grib1DataTable;
+import ucar.nc2.ui.grib.Grib1CollectionPanel;
 import ucar.ui.widget.BAMutil;
 import ucar.util.prefs.PreferencesExt;
 import java.awt.BorderLayout;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -21,50 +18,49 @@ import java.util.Formatter;
 import javax.swing.AbstractButton;
 import javax.swing.JOptionPane;
 
-/**
- *
- */
-public class Grib1DataOpPanel extends OpPanel {
-  private Grib1DataTable gribTable;
+/** Raw grib access - dont go through the IOSP */
+public class Grib1CollectionOpPanel extends OpPanel {
+  private final Grib1CollectionPanel gribTable;
 
-  /**
-   *
-   */
-  public Grib1DataOpPanel(PreferencesExt p) {
+  public Grib1CollectionOpPanel(PreferencesExt p) {
     super(p, "collection:", true, false);
-    gribTable = new Grib1DataTable(prefs);
+
+    gribTable = new Grib1CollectionPanel(buttPanel, prefs);
     add(gribTable, BorderLayout.CENTER);
 
-    gribTable.addPropertyChangeListener(new PropertyChangeListener() {
-      public void propertyChange(PropertyChangeEvent e) {
-        if (e.getPropertyName().equals("openGrib1Collection")) {
-          String collectionName = (String) e.getNewValue();
-          ToolsUI.getToolsUI().openGrib1Collection(collectionName);
-        }
-      }
-    });
-
-    AbstractButton infoButton = BAMutil.makeButtcon("Information", "Check Problems", false);
-    infoButton.addActionListener(e -> {
+    AbstractButton showButt = BAMutil.makeButtcon("Information", "Show Collection", false);
+    showButt.addActionListener(e -> {
       Formatter f = new Formatter();
-      gribTable.checkProblems(f);
+      gribTable.showCollection(f);
       detailTA.setText(f.toString());
       detailTA.gotoTop();
       detailWindow.show();
     });
-    buttPanel.add(infoButton);
+    buttPanel.add(showButt);
+
+    AbstractButton writeButton = BAMutil.makeButtcon("nj22/Netcdf", "Write index", false);
+    writeButton.addActionListener(e -> {
+      Formatter f = new Formatter();
+      try {
+        if (!gribTable.writeIndex(f)) {
+          return;
+        }
+      } catch (IOException e1) {
+        e1.printStackTrace();
+      }
+      detailTA.setText(f.toString());
+      detailTA.gotoTop();
+      detailWindow.show();
+    });
+    buttPanel.add(writeButton);
   }
 
-  /**
-   *
-   */
   public void setCollection(String collection) {
     if (process(collection)) {
       cb.addItem(collection);
     }
   }
 
-  /** */
   @Override
   public boolean process(Object o) {
     String command = (String) o;
@@ -87,13 +83,11 @@ public class Grib1DataOpPanel extends OpPanel {
     return !err;
   }
 
-  /** */
   @Override
   public void closeOpenFiles() throws IOException {
-    // Nothing to do here.
+    gribTable.closeOpenFiles();
   }
 
-  /** */
   @Override
   public void save() {
     gribTable.save();

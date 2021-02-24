@@ -3,7 +3,7 @@
  * See LICENSE for license information.
  */
 
-package ucar.nc2.ui.op;
+package ucar.nc2.ui.radial;
 
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
@@ -39,24 +39,24 @@ import javax.swing.JTable;
  */
 
 public class RadialDatasetTable extends JPanel {
-
   private static final org.slf4j.Logger logger =
       org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  private PreferencesExt prefs;
+  private final PreferencesExt prefs;
   private RadialDatasetSweep radialDataset;
 
-  private BeanTable varTable, sweepTable;
-  private JSplitPane split;
-  private TextHistoryPane infoTA;
-  private IndependentWindow infoWindow;
+  private final BeanTable<VariableBean> varTable;
+  private final BeanTable<SweepBean> sweepTable;
+  private final JSplitPane split;
+  private final TextHistoryPane infoTA;
+  private final IndependentWindow infoWindow;
 
   public RadialDatasetTable(PreferencesExt prefs) {
     this.prefs = prefs;
 
-    varTable = new BeanTable(VariableBean.class, (PreferencesExt) prefs.node("VariableBeans"), false);
+    varTable = new BeanTable<>(VariableBean.class, (PreferencesExt) prefs.node("VariableBeans"), false);
     varTable.addListSelectionListener(e -> {
-      VariableBean vb = (VariableBean) varTable.getSelectedBean();
+      VariableBean vb = varTable.getSelectedBean();
       if (vb != null)
         setVariable(vb);
     });
@@ -66,7 +66,7 @@ public class RadialDatasetTable extends JPanel {
     PopupMenu csPopup = new PopupMenu(jtable, "Options");
     csPopup.addAction("Show Declaration", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        VariableBean vb = (VariableBean) varTable.getSelectedBean();
+        VariableBean vb = varTable.getSelectedBean();
         if (vb == null)
           return;
         VariableSimpleIF v = radialDataset.getDataVariable(vb.getName());
@@ -80,7 +80,7 @@ public class RadialDatasetTable extends JPanel {
     });
     csPopup.addAction("Show Info", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        VariableBean vb = (VariableBean) varTable.getSelectedBean();
+        VariableBean vb = varTable.getSelectedBean();
         if (vb == null)
           return;
         Formatter f = new Formatter();
@@ -97,12 +97,12 @@ public class RadialDatasetTable extends JPanel {
     infoWindow = new IndependentWindow("Variable Information", BAMutil.getImage("nj22/NetcdfUI"), infoTA);
     infoWindow.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 500, 300)));
 
-    sweepTable = new BeanTable(SweepBean.class, (PreferencesExt) prefs.node("SweepBean"), false);
+    sweepTable = new BeanTable<>(SweepBean.class, (PreferencesExt) prefs.node("SweepBean"), false);
 
     PopupMenu sweepPopup = new PopupMenu(sweepTable.getJTable(), "Options");
     sweepPopup.addAction("Show Image", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        showImage((SweepBean) sweepTable.getSelectedBean());
+        showImage(sweepTable.getSelectedBean());
       }
     });
 
@@ -127,16 +127,14 @@ public class RadialDatasetTable extends JPanel {
   }
 
   public void clear() {
-    varTable.setBeans(new ArrayList());
-    sweepTable.setBeans(new ArrayList());
+    varTable.setBeans(new ArrayList<>());
+    sweepTable.setBeans(new ArrayList<>());
   }
 
   public void setDataset(RadialDatasetSweep rds) {
     this.radialDataset = rds;
-    // dateUnit = rds.getTimeUnits();
-
     varTable.setBeans(getVariableBeans(rds));
-    sweepTable.setBeans(new ArrayList());
+    sweepTable.setBeans(new ArrayList<>());
   }
 
   public RadialDatasetSweep getRadialDataset() {
@@ -145,8 +143,8 @@ public class RadialDatasetTable extends JPanel {
 
   public List<VariableBean> getVariableBeans(RadialDatasetSweep rds) {
     List<VariableBean> vlist = new ArrayList<>();
-    List list = rds.getDataVariables();
-    for (Object aList : list) {
+    List<VariableSimpleIF> list = rds.getDataVariables();
+    for (VariableSimpleIF aList : list) {
       RadialDatasetSweep.RadialVariable v = (RadialDatasetSweep.RadialVariable) aList;
       vlist.add(new VariableBean(v));
     }
@@ -204,13 +202,10 @@ public class RadialDatasetTable extends JPanel {
 
 
   public static class VariableBean {
-    // static public String editableProperties() { return "title include logging freq"; }
-
     RadialDatasetSweep.RadialVariable v;
 
     private String name, desc, units, dataType;
     String dims, r, t;
-    // private boolean isCoordVar, isRadial, axis;
 
     // no-arg constructor
     public VariableBean() {}

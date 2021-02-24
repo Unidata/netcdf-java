@@ -275,11 +275,12 @@ public class BeanTable<T> extends JPanel {
 
   private ucar.ui.widget.PopupMenu varPopup;
 
-  public void addPopupOption(String title, Action act) {
+  public ucar.ui.widget.PopupMenu addPopupOption(String title, Action act) {
     if (this.varPopup == null) {
       this.varPopup = new PopupMenu(this.getJTable(), "Options");
     }
     this.varPopup.addAction(title, act);
+    return this.varPopup;
   }
 
   public Action makeShowAction(TextHistoryPane infoTA, IndependentWindow infoWindow, Function<Object, String> show) {

@@ -17,7 +17,7 @@ import java.util.Map;
  */
 public class DnsLookup {
   // just local for the duration of the program - could make persistent
-  private Map<String, String> map = new HashMap<>();
+  private final Map<String, String> map = new HashMap<>();
 
   String reverseDNS(String ip) throws UnknownHostException {
     String cacheElem = map.get(ip);

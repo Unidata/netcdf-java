@@ -27,18 +27,18 @@ import java.awt.image.ImageObserver;
  *
  * @author John Caron
  */
-
 public class ScaledPanel extends JPanel {
-  private Color backColor = Color.white;
-  private Rectangle2D screenBounds = new Rectangle2D.Double();
-  private ScaledPanel.Bounds worldBounds = new ScaledPanel.Bounds();
-  private Point2D worldPt = new Point2D.Double();
+  private final Color backColor = Color.white;
+  private final Rectangle2D screenBounds = new Rectangle2D.Double();
+  private final ScaledPanel.Bounds worldBounds = new ScaledPanel.Bounds();
+  private final Point2D worldPt = new Point2D.Double();
 
   private AffineTransform transform = new AffineTransform();
   private BufferedImage bImage;
-  private MyImageObserver imageObs = new MyImageObserver();
+  private final MyImageObserver imageObs = new MyImageObserver();
 
-  private ListenerManager lmPick, lmMove;
+  private final ListenerManager lmPick;
+  private final ListenerManager lmMove;
 
   private boolean debugDraw, debugTransform, debugBounds;
 

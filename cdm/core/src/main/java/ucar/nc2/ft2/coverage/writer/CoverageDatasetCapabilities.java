@@ -25,7 +25,6 @@ import ucar.nc2.ft2.coverage.CoverageCoordSys;
 import ucar.nc2.ft2.coverage.CoverageCollection;
 import ucar.nc2.ft2.coverage.CoverageTransform;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.util.Misc;
 import ucar.nc2.write.NcmlWriter;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionRect;

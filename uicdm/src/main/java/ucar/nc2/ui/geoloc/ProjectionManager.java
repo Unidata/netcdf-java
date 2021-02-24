@@ -33,7 +33,9 @@ import ucar.unidata.geoloc.*;
  * @version revived 9/20/2012
  */
 public class ProjectionManager {
-  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ProjectionManager.class);
+  private static final boolean debugBeans = false;
+
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ProjectionManager.class);
   private static final int min_sigfig = 6;
   private static final Object[] voidObjectArg = {};
 
@@ -54,9 +56,6 @@ public class ProjectionManager {
       "ucar.unidata.geoloc.projection.proj4.StereographicAzimuthalProjection",
       "ucar.unidata.geoloc.projection.proj4.TransverseMercatorProjection",};
 
-  private PreferencesExt store;
-  private boolean eventsOK;
-
   // GUI stuff that needs class scope
   // private JTableProjection projTable;
   // private NPController npViewControl;
@@ -64,67 +63,18 @@ public class ProjectionManager {
   // private PersistentDataDialog viewDialog;
   // private NewProjectionDialog newDialog = null;
 
-  private Frame owner;
+  private final Frame owner;
   private NewProjectionDialog dialog; // created in JFormDesigner
-  private ListenerManager lm;
-
-  // misc
-  private boolean debug, debugBeans;
+  private final ListenerManager lm;
 
   /**
    * default constructor
    */
   public ProjectionManager(Frame owner, PreferencesExt store) {
     this.owner = owner;
-    this.store = store;
 
     // manage NewProjectionListeners
     lm = new ListenerManager("java.beans.PropertyChangeListener", "java.beans.PropertyChangeEvent", "propertyChange");
-
-
-    /*
-     * // the actual list is a JTable subclass
-     * projTable = new JTableProjection(store);
-     * 
-     * // empty table : populate it
-     * if (projTable.isEmpty()) {
-     * for (String aProjClassName : projClassName) {
-     * try {
-     * ProjectionClass pc = new ProjectionClass(aProjClassName);
-     * ProjectionImpl pi = pc.makeDefaultProjection();
-     * pi.setName("Default " + pi.getClassName());
-     * projTable.addProjection(pi);
-     * 
-     * } catch (ClassNotFoundException ee) {
-     * System.err.println("ProjectionManager failed on " + aProjClassName + " " + ee);
-     * } catch (IntrospectionException ee) {
-     * System.err.println("ProjectionManager failed on " + aProjClassName + " " + ee);
-     * }
-     * }
-     * }
-     * 
-     * // put it together in the viewDialog
-     * // viewDialog = new PersistentDataDialog(parent, false, "Projection", mapViewPanel, new JScrollPane(projTable),
-     * this);
-     * 
-     * // default current and working projection
-     * if (null != (current = projTable.getSelected())) {
-     * setWorkingProjection(current);
-     * projTable.setCurrentProjection(current);
-     * }
-     * 
-     * // listen for new working Projections from projTable
-     * projTable.addNewProjectionListener(new NewProjectionListener() {
-     * public void actionPerformed(NewProjectionEvent e) {
-     * if (e.getProjection() != null) {
-     * if (debug) System.out.println("NewProjectionListener from ProjTable " + e.getProjection());
-     * setWorkingProjection(e.getProjection());
-     * }
-     * }
-     * });
-     */
-
-    eventsOK = true;
   }
 
 
@@ -203,7 +153,7 @@ public class ProjectionManager {
    * 
    * 
    * public void saveProjection(ProjectionImpl proj) {
-   * //setVisible(true); how to make this work? seperate Thread ?
+   * //setVisible(true); how to make this work? separate Thread ?
    * 
    * // force new name
    * ProjectionImpl newProj = proj.constructCopy();
@@ -365,7 +315,7 @@ public class ProjectionManager {
 
   // inner class ProjectionClass: parsed projection classes
   class ProjectionClass {
-    Class projClass;
+    Class<Projection> projClass;
     Projection projInstance;
     String name;
     java.util.List<ProjectionParam> paramList = new ArrayList<>();
@@ -375,12 +325,12 @@ public class ProjectionManager {
     }
 
     ProjectionClass(String className) throws ClassNotFoundException, IntrospectionException {
-      projClass = Class.forName(className);
+      projClass = (Class<Projection>) Class.forName(className);
 
       // eliminate common properties with "stop class" for getBeanInfo()
-      Class stopClass;
+      Class<?> stopClass;
       try {
-        stopClass = Class.forName("ucar.unidata.geoloc.projection.ProjectionImpl");
+        stopClass = Class.forName("ucar.unidata.geoloc.Projection");
       } catch (Exception ee) {
         System.err.println("constructParamInput failed ");
         stopClass = null;
@@ -417,7 +367,7 @@ public class ProjectionManager {
         return;
       }
 
-      Class[] voidClassArg = {};
+      Class<?>[] voidClassArg = {};
       Object[] voidObjectArg = {};
 
       // invoke the toClassName method
@@ -438,12 +388,12 @@ public class ProjectionManager {
     }
 
     Projection makeDefaultProjection() {
-      Class[] voidClassArg = {};
+      Class<?>[] voidClassArg = {};
       Object[] voidObjectArg = {};
 
       // the default constructor
       try {
-        Constructor c = projClass.getConstructor(voidClassArg);
+        Constructor<?> c = projClass.getConstructor(voidClassArg);
         projInstance = (Projection) c.newInstance(voidObjectArg);
         return projInstance;
 
@@ -469,10 +419,10 @@ public class ProjectionManager {
     Method reader;
     Method writer;
     String name;
-    Class paramType;
+    Class<?> paramType;
     JTextField tf; // edit field component
 
-    ProjectionParam(String name, Method reader, Method writer, Class paramType) {
+    ProjectionParam(String name, Method reader, Method writer, Class<?> paramType) {
       this.name = name;
       this.reader = reader;
       this.writer = writer;
@@ -508,7 +458,7 @@ public class ProjectionManager {
     private void setProjFromDialog(ProjectionClass projClass, Projection proj) {
       try {
         String valstr = tf.getText();
-        Double valdub = new Double(valstr);
+        double valdub = Double.parseDouble(valstr);
         Object[] args = {valdub};
         if (debugBeans)
           System.out.println("Projection setProjFromDialog invoke writer on " + name);

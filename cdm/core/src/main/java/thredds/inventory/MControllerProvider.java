@@ -22,7 +22,7 @@ public interface MControllerProvider {
   /**
    * Creates an instance of
    * 
-   * @return An {@link MController} that scans locations to filter and provide a set of {@linik MFile}s defining to
+   * @return An {@link MController} that scans locations to filter and provide a set of {@link MFile}s defining to
    *         be used to define a collection.
    */
   MController create();

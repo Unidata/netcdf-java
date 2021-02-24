@@ -20,7 +20,6 @@ import ucar.unidata.geoloc.ProjectionRect;
 import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.Formatter;
-import java.util.List;
 
 /**
  * Coverage - aka Grid or GeoGrid.

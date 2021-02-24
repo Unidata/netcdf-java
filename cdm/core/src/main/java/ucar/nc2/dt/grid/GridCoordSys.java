@@ -33,7 +33,6 @@ import ucar.unidata.geoloc.projection.sat.Geostationary;
 import ucar.ma2.*;
 import java.util.*;
 import java.io.IOException;
-import ucar.unidata.geoloc.VerticalTransform;
 
 /**
  * A georeferencing "gridded" CoordinateSystem. This describes a "grid" of coordinates, which

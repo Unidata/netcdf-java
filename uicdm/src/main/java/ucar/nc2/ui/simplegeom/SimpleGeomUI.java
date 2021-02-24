@@ -41,12 +41,11 @@ import java.util.List;
  * @author skaymen
  */
 public class SimpleGeomUI extends JPanel {
-  private static final String DATASET_URL = "DatasetURL";
   private static final String GEOTIFF_FILECHOOSER_DEFAULTDIR = "geotiffDefDir";
 
   // private TopLevel topLevel;
-  private PreferencesExt store;
-  private FileManager fileChooser;
+  private final PreferencesExt store;
+  private final FileManager fileChooser;
 
   // Package private access
   SuperComboBox fieldChooser, levelChooser, timeChooser, ensembleChooser, runtimeChooser;
@@ -65,16 +64,13 @@ public class SimpleGeomUI extends JPanel {
   private TextHistoryPane datasetInfoTA, ncmlTA;
   private JPanel drawingPanel;
   private JSplitPane splitDraw;
-  private JComboBox csDataMinMax;
+  private JComboBox<ColorScale.MinMaxType> csDataMinMax;
   private PopupMenu mapBeanMenu;
 
   private JLabel datasetNameLabel;
-  // private Field.TextCombo gridUrlIF;
-  // private PrefPanel gridPP;
 
   // the various managers and dialog boxes
   private ProjectionManager projManager;
-  // private ColorScaleManager csManager;
   private IndependentWindow infoWindow;
   private IndependentWindow ncmlWindow;
   private IndependentWindow gtWindow;
@@ -85,7 +81,6 @@ public class SimpleGeomUI extends JPanel {
   private JPanel fieldPanel, toolPanel;
   private JToolBar navToolbar, moveToolbar;
   private AbstractAction navToolbarAction, moveToolbarAction;
-  private JMenu configMenu;
 
   // actions
   private AbstractAction redrawAction;
@@ -107,12 +102,11 @@ public class SimpleGeomUI extends JPanel {
   private boolean debugTask;
 
   public SimpleGeomUI(PreferencesExt pstore, RootPaneContainer root, FileManager fileChooser, int defaultHeight) {
-    // this.topUI = topUI;
     this.store = pstore;
     this.fileChooser = fileChooser;
 
     try {
-      choosers = new ArrayList();
+      choosers = new ArrayList<>();
       fieldChooser = new SuperComboBox(root, "field", true, null);
       choosers.add(new Chooser("field", fieldChooser, true));
       runtimeChooser = new SuperComboBox(root, "runtime", false, null);
@@ -237,11 +231,9 @@ public class SimpleGeomUI extends JPanel {
     }
     mapBeanCount++;
 
-    mb.addPropertyChangeListener(new PropertyChangeListener() {
-      public void propertyChange(java.beans.PropertyChangeEvent e) {
-        if (e.getPropertyName().equals("Renderer")) {
-          setMapRenderer((Renderer) e.getNewValue());
-        }
+    mb.addPropertyChangeListener(e -> {
+      if (e.getPropertyName().equals("Renderer")) {
+        setMapRenderer((Renderer) e.getNewValue());
       }
     });
   }
@@ -265,7 +257,7 @@ public class SimpleGeomUI extends JPanel {
       gridTable.setDataset(controller.getFields());
       datasetNameLabel.setText("Dataset:  " + controller.getDatasetUrlString());
       setSelected(true);
-      gtWindow.hide();
+      gtWindow.setVisible(false);
     });
     pm.start(this, "Open Dataset " + ds.getName(), 100);
   }
@@ -278,16 +270,11 @@ public class SimpleGeomUI extends JPanel {
     gridTable.setDataset(controller.getFields());
   }
 
-  void setFields(java.util.List fields) {
+  void setFields(java.util.List<Object> fields) {
     fieldChooser.setCollection(fields.iterator());
   }
 
   void setField(GridDatatype field) {
-    /*
-     * int idx = fieldChooser.setSelectedByName(field.toString());
-     * if (idx < 0)
-     * fieldChooser.setSelectedByIndex(0);
-     */
     fieldChooser.setToolTipText(field.getName());
 
     GridCoordSystem gcs = field.getCoordinateSystem();
@@ -509,52 +496,6 @@ public class SimpleGeomUI extends JPanel {
     };
     BAMutil.setActionProperties(showNetcdfDatasetAction, "nj22/Netcdf", "NetcdfDataset Table Info...", false, 'D', -1);
 
-    /*
-     * write geotiff file
-     * geotiffAction = new AbstractAction() {
-     * public void actionPerformed(ActionEvent e) {
-     * GeoGrid grid = controller.getCurrentField();
-     * ucar.ma2.Array data = controller.getCurrentHorizDataSlice();
-     * if ((grid == null) || (data == null)) return;
-     * 
-     * String filename = geotiffFileChooser.chooseFilename();
-     * if (filename == null) return;
-     * 
-     * GeoTiff geotiff = null;
-     * try {
-     * /* System.out.println("write to= "+filename);
-     * ucar.nc2.geotiff.Writer.write2D(grid, data, filename+".tfw");
-     * geotiff = new GeoTiff(filename); // read back in
-     * geotiff.read();
-     * System.out.println( geotiff.showInfo());
-     * //geotiff.testReadData();
-     * geotiff.close(); * /
-     * 
-     * // write two
-     * ucar.nc2.geotiff.GeotiffWriter writer = new ucar.nc2.geotiff.GeotiffWriter(filename);
-     * writer.writeGrid(grid, data, false);
-     * geotiff = new GeoTiff(filename); // read back in
-     * geotiff.read();
-     * System.out.println( "*************************************");
-     * System.out.println( geotiff.showInfo());
-     * //geotiff.testReadData();
-     * geotiff.close();
-     * 
-     * 
-     * } catch (IOException ioe) {
-     * ioe.printStackTrace();
-     * 
-     * } finally {
-     * try {
-     * if (geotiff != null) geotiff.close();
-     * } catch (IOException ioe) { }
-     * }
-     * 
-     * }
-     * };
-     * BAMutil.setActionProperties( geotiffAction, "Geotiff", "Write Geotiff file", false, 'G', -1);
-     */
-
     minmaxHorizAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         csDataMinMax.setSelectedItem(ColorScale.MinMaxType.horiz);
@@ -570,17 +511,6 @@ public class SimpleGeomUI extends JPanel {
       }
     };
     BAMutil.setActionProperties(minmaxLogAction, null, "log horiz plane", false, 'V', 0);
-
-    /*
-     * minmaxVolAction = new AbstractAction() {
-     * public void actionPerformed(ActionEvent e) {
-     * csDataMinMax.setSelectedIndex(GridRenderer.VOL_MinMaxType);
-     * controller.setDataMinMaxType(GridRenderer.MinMaxType.vert;
-     * }
-     * };
-     * BAMutil.setActionProperties( minmaxVolAction, null, "Grid volume", false, 'G', 0);
-     */
-
     minmaxHoldAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         csDataMinMax.setSelectedItem(ColorScale.MinMaxType.hold);
@@ -651,14 +581,10 @@ public class SimpleGeomUI extends JPanel {
       return projManager;
 
     projManager = new ProjectionManager(null, store);
-    projManager.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
-      public void propertyChange(java.beans.PropertyChangeEvent e) {
-        if (e.getPropertyName().equals("ProjectionImpl")) {
-          Projection p = (Projection) e.getNewValue();
-          // p = p.constructCopy();
-          // System.out.println("UI: new Projection "+p);
-          controller.setProjection(p);
-        }
+    projManager.addPropertyChangeListener(e -> {
+      if (e.getPropertyName().equals("ProjectionImpl")) {
+        Projection p = (Projection) e.getNewValue();
+        controller.setProjection(p);
       }
     });
 
@@ -690,7 +616,7 @@ public class SimpleGeomUI extends JPanel {
     // menus
     JMenu dataMenu = new JMenu("Dataset");
     dataMenu.setMnemonic('D');
-    configMenu = new JMenu("Configure");
+    JMenu configMenu = new JMenu("Configure");
     configMenu.setMnemonic('C');
     JMenu toolMenu = new JMenu("Controls");
     toolMenu.setMnemonic('T');
@@ -752,7 +678,7 @@ public class SimpleGeomUI extends JPanel {
 
     // colorscale panel
     colorScalePanel = new ColorScale.Panel(this, controller.getColorScale());
-    csDataMinMax = new JComboBox(ColorScale.MinMaxType.values());
+    csDataMinMax = new JComboBox<>(ColorScale.MinMaxType.values());
     csDataMinMax.setToolTipText("ColorScale Min/Max setting");
     csDataMinMax.addActionListener(new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
@@ -779,7 +705,7 @@ public class SimpleGeomUI extends JPanel {
     setDrawHorizAndVert(controller.drawHorizOn, controller.drawVertOn);
   }
 
-  private ArrayList choosers;
+  private ArrayList<Chooser> choosers;
 
   private void setChoosers() {
     fieldPanel.removeAll();

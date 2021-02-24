@@ -3,7 +3,7 @@
  * See LICENSE for license information.
  */
 
-package ucar.nc2.ui.op;
+package ucar.nc2.ui.bufr;
 
 import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
@@ -125,7 +125,7 @@ public class BufrReportPanel extends ReportPanel {
     accum[1] += countObs;
   }
 
-  private void show(TrackMessageTypes track, Formatter f) throws IOException {
+  private void show(TrackMessageTypes track, Formatter f) {
     List<Message> mess = new ArrayList<>(track.map.keySet());
     mess.sort(Comparator.comparing(o -> o.getLookup().getCategoryNo()));
 

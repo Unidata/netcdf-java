@@ -42,6 +42,7 @@ import java.io.IOException;
 @Immutable
 public class Variable implements VariableSimpleIF, ProxyReader {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Variable.class);
+  private static final boolean showSize = false;
 
   /**
    * Globally permit or prohibit caching. For use during testing and debugging.
@@ -51,11 +52,9 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    */
   public static boolean permitCaching = true; // TODO
 
-  private static int defaultSizeToCache = 4000; // bytes cache any variable whose size() < defaultSizeToCache
-  private static int defaultCoordsSizeToCache = 40 * 1000; // bytes cache coordinate variable whose size() <
-                                                           // defaultSizeToCache
-  private static boolean debugCaching = false;
-  private static boolean showSize = false;
+  private static final int defaultSizeToCache = 4000; // bytes cache any variable whose size() < defaultSizeToCache
+  private static final int defaultCoordsSizeToCache = 40 * 1000; // bytes cache coordinate variable whose size() <
+  // defaultSizeToCache
 
   /**
    * Find the index of the named Dimension in this Variable.

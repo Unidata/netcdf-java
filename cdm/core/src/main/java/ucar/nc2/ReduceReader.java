@@ -19,7 +19,7 @@ import java.util.List;
 /**
  * A ProxyReader that allows dimensions of length 1 to be removed.
  * 
- * @see {@link Variable#reduce(List<Dimension>)}
+ * {@link Variable#reduce(List)}
  */
 @Immutable
 class ReduceReader implements ProxyReader {

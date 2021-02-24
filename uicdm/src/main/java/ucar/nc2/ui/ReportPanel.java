@@ -10,11 +10,9 @@ import java.util.*;
 
 /** Superclass for report panels */
 public abstract class ReportPanel extends JPanel {
-
   protected PreferencesExt prefs;
   protected TextHistoryPane reportPane;
   protected String spec;
-  // protected JPanel buttPanel;
 
   protected ReportPanel(PreferencesExt prefs) {
     this.prefs = prefs;
@@ -57,12 +55,6 @@ public abstract class ReportPanel extends JPanel {
 
       reportPane.setText(f.toString());
       reportPane.gotoTop();
-
-    } catch (IOException ioe) {
-      StringWriter sw = new StringWriter(50000);
-      ioe.printStackTrace(new PrintWriter(sw));
-      f.format(sw.toString());
-      ioe.printStackTrace();
     }
   }
 
@@ -94,15 +86,12 @@ public abstract class ReportPanel extends JPanel {
   MCollection getCollection(String spec, Formatter f) {
     try {
       MCollection org = CollectionAbstract.open(spec, spec, null, f);
-      CollectionFiltered filteredCollection = new CollectionFiltered("GribReportPanel", org, new MFileFilter() {
-        public boolean accept(MFile mfile) {
-          String suffix = mfile.getName();
-          // if (suffix.contains(".ncx")) TODO how to control this??
-          // return false;
-          return !suffix.contains(".gbx");
-        }
+      return new CollectionFiltered("GribReportPanel", org, mfile -> {
+        String suffix = mfile.getName();
+        // if (suffix.contains(".ncx")) TODO how to control this??
+        // return false;
+        return !suffix.contains(".gbx");
       });
-      return filteredCollection;
 
     } catch (IOException e) {
       StringWriter sw = new StringWriter(10000);

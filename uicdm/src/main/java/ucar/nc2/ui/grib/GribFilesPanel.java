@@ -39,13 +39,15 @@ import java.util.List;
  */
 public class GribFilesPanel extends JPanel {
 
-  private PreferencesExt prefs;
+  private final PreferencesExt prefs;
 
-  private BeanTable grib1Table, grib2Table, collectionTable;
-  private JSplitPane split2;
+  private final BeanTable<Grib1Bean> grib1Table;
+  private final BeanTable<Grib2Bean> grib2Table;
+  private final BeanTable<CollectionBean> collectionTable;
+  private final JSplitPane split2;
 
-  private TextHistoryPane infoPopup;
-  private IndependentWindow infoWindow;
+  private final TextHistoryPane infoPopup;
+  private final IndependentWindow infoWindow;
 
   public GribFilesPanel(PreferencesExt prefs) {
     this.prefs = prefs;
@@ -53,21 +55,11 @@ public class GribFilesPanel extends JPanel {
     PopupMenu varPopup;
 
     ////////////////
-    collectionTable = new BeanTable(CollectionBean.class, (PreferencesExt) prefs.node("CollectionBean"), true);
-    /*
-     * collectionTable.addListSelectionListener(new ListSelectionListener() {
-     * public void valueChanged(ListSelectionEvent e) {
-     * CollectionBean pb = (CollectionBean) collectionTable.getSelectedBean();
-     * if (pb != null)
-     * showFilesInCollection(pb);
-     * }
-     * });
-     */
-
+    collectionTable = new BeanTable<>(CollectionBean.class, (PreferencesExt) prefs.node("CollectionBean"), true);
     varPopup = new PopupMenu(collectionTable.getJTable(), "Options");
     varPopup.addAction("Show Files in Collection", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        CollectionBean pb = (CollectionBean) collectionTable.getSelectedBean();
+        CollectionBean pb = collectionTable.getSelectedBean();
         Formatter f = new Formatter();
         showFilesInCollection(pb, f);
         infoPopup.setText(f.toString());
@@ -78,26 +70,16 @@ public class GribFilesPanel extends JPanel {
 
     varPopup.addAction("Read Files", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        List list = collectionTable.getSelectedBeans();
-        readFiles((List<CollectionBean>) list);
+        List<CollectionBean> list = collectionTable.getSelectedBeans();
+        readFiles(list);
       }
     });
 
-    /*
-     * varPopup.addAction("Open in Grib2n", new AbstractAction() {
-     * public void actionPerformed(ActionEvent e) {
-     * CollectionBean pb = (CollectionBean) collectionTable.getSelectedBean();
-     * if (pb == null) return;
-     * GribFilesPanel.this.firePropertyChange("openGrib2n", null, pb.getSpec());
-     * }
-     * });
-     */
-
-    grib1Table = new BeanTable(Grib1Bean.class, (PreferencesExt) prefs.node("Grib1Bean"), false);
+    grib1Table = new BeanTable<>(Grib1Bean.class, (PreferencesExt) prefs.node("Grib1Bean"), false);
     varPopup = new PopupMenu(grib1Table.getJTable(), "Options");
     varPopup.addAction("Open in Grib1-Collection", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        Grib1Bean pb = (Grib1Bean) grib1Table.getSelectedBean();
+        Grib1Bean pb = grib1Table.getSelectedBean();
         if (pb == null) {
           return;
         }
@@ -105,12 +87,12 @@ public class GribFilesPanel extends JPanel {
       }
     });
 
-    grib2Table = new BeanTable(Grib2Bean.class, (PreferencesExt) prefs.node("Grib2Bean"), false);
+    grib2Table = new BeanTable<>(Grib2Bean.class, (PreferencesExt) prefs.node("Grib2Bean"), false);
     varPopup = new PopupMenu(grib2Table.getJTable(), "Options");
 
     varPopup.addAction("Show complete GridRecord", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        Grib2Bean bean = (Grib2Bean) grib2Table.getSelectedBean();
+        Grib2Bean bean = grib2Table.getSelectedBean();
         if (bean != null) {
           Formatter f = new Formatter();
           bean.showComplete(f);
@@ -123,7 +105,7 @@ public class GribFilesPanel extends JPanel {
 
     varPopup.addAction("Open in Grib2collecion", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        Grib2Bean pb = (Grib2Bean) grib2Table.getSelectedBean();
+        Grib2Bean pb = grib2Table.getSelectedBean();
         if (pb == null) {
           return;
         }
@@ -178,20 +160,20 @@ public class GribFilesPanel extends JPanel {
 
   private List<CollectionBean> collections = new ArrayList<>();
 
-  public void setCollection(String spec) throws IOException {
+  public void setCollection(String spec) throws FileNotFoundException {
     collections.add(new CollectionBean(spec));
     collectionTable.setBeans(collections);
   }
 
   private void readFiles(List<CollectionBean> beans) {
-    List<Object> files = new ArrayList<>();
+    List<Grib1Bean> files = new ArrayList<>();
     for (CollectionBean bean : beans) {
       for (MFile mfile : bean.fileList) {
         String path = mfile.getPath();
         if (path.endsWith(".gbx8") || path.endsWith(".gbx9") || path.endsWith(".ncx")) {
           continue;
         }
-        Object gbean = getGribBean(mfile);
+        Grib1Bean gbean = getGribBean(mfile);
         if (gbean != null) {
           files.add(gbean);
         }
@@ -200,7 +182,7 @@ public class GribFilesPanel extends JPanel {
     grib1Table.setBeans(files);
   }
 
-  private Object getGribBean(MFile ff) {
+  private Grib1Bean getGribBean(MFile ff) {
     String path = ff.getPath();
     try (RandomAccessFile raf = new ucar.unidata.io.RandomAccessFile(path, "r")) {
       raf.order(ucar.unidata.io.RandomAccessFile.BIG_ENDIAN);
@@ -215,8 +197,6 @@ public class GribFilesPanel extends JPanel {
       if (edition == 1) {
         return getFirstGrib1Bean(ff, raf);
       }
-      // else if (edition == 2)
-      // setGribFile2(raf);
 
     } catch (Throwable ioe) {
       System.out.printf("Failed on %s%n", path);
@@ -228,12 +208,11 @@ public class GribFilesPanel extends JPanel {
   }
 
   @Nullable
-  Object getFirstGrib1Bean(MFile mf, RandomAccessFile raf) throws IOException {
+  Grib1Bean getFirstGrib1Bean(MFile mf, RandomAccessFile raf) throws IOException {
     Grib1Record first = null;
     Grib1RecordScanner reader = new Grib1RecordScanner(raf);
-    while (reader.hasNext()) {
+    if (reader.hasNext()) {
       first = reader.next();
-      break;
     }
 
     if (first == null) {
@@ -255,7 +234,7 @@ public class GribFilesPanel extends JPanel {
 
     public CollectionBean() {}
 
-    public CollectionBean(String spec) throws IOException {
+    public CollectionBean(String spec) {
       this.spec = spec;
 
       Formatter f = new Formatter();
@@ -332,9 +311,7 @@ public class GribFilesPanel extends JPanel {
     public int getTableKey() {
       return (table == null) ? -1 : table.getKey();
     }
-
   }
-
 
   public static class Grib2Bean {
 

@@ -24,9 +24,10 @@ import ucar.nc2.ft2.simpgeometry.exception.InvalidDataseriesException;
  */
 public class CFPolygon implements Polygon {
 
-  private Logger cfpl = LoggerFactory.getLogger(CFPolygon.class);
-  private List<Point> points; // a list of the constitutent points of the Polygon, connected in ascending order as in
-                              // the CF convention
+  private final Logger cfpl = LoggerFactory.getLogger(CFPolygon.class);
+  private final List<Point> points; // a list of the constitutent points of the Polygon, connected in ascending order as
+                                    // in
+  // the CF convention
   private Polygon next; // if non-null, next refers to the next line part of a multi-polygon
   private Polygon prev; // if non-null, prev refers to the previous line part of a multi-polygon
   private boolean isInteriorRing; // true is an interior ring polygon otherwise false

@@ -6,7 +6,7 @@ package thredds.inventory.partition;
 
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.*;
-import thredds.inventory.CloseableIterator;
+
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
@@ -77,7 +77,7 @@ public class DirectoryPartition extends CollectionAbstract implements PartitionM
     }
 
     // sort collection by name
-    result.sort((o1, o2) -> o1.getCollectionName().compareTo(o2.getCollectionName()));
+    result.sort(Comparator.comparing(MCollection::getCollectionName));
 
     return result;
   }

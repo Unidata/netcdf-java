@@ -3,7 +3,7 @@
  * See LICENSE for license information.
  */
 
-package ucar.nc2.ui.op;
+package ucar.nc2.ui.grib;
 
 import ucar.nc2.ui.OpPanel;
 import ucar.nc2.ui.ToolsUI;
@@ -11,8 +11,6 @@ import ucar.nc2.ui.grib.Grib2CollectionPanel;
 import ucar.ui.widget.BAMutil;
 import ucar.util.prefs.PreferencesExt;
 import java.awt.BorderLayout;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -21,26 +19,18 @@ import java.util.Formatter;
 import javax.swing.AbstractButton;
 import javax.swing.JOptionPane;
 
-/**
- *
- */
 public class Grib2CollectionOpPanel extends OpPanel {
-  private Grib2CollectionPanel gribTable;
+  private final Grib2CollectionPanel gribTable;
 
-  /**
-   *
-   */
   public Grib2CollectionOpPanel(PreferencesExt p) {
     super(p, "collection:", true, false);
     gribTable = new Grib2CollectionPanel(prefs, buttPanel);
     add(gribTable, BorderLayout.CENTER);
 
-    gribTable.addPropertyChangeListener(new PropertyChangeListener() {
-      public void propertyChange(PropertyChangeEvent e) {
-        if (e.getPropertyName().equals("openGrib2Collection")) {
-          String collectionName = (String) e.getNewValue();
-          ToolsUI.getToolsUI().openGrib2Collection(collectionName);
-        }
+    gribTable.addPropertyChangeListener(e -> {
+      if (e.getPropertyName().equals("openGrib2Collection")) {
+        String collectionName = (String) e.getNewValue();
+        ToolsUI.getToolsUI().openGrib2Collection(collectionName);
       }
     });
 
@@ -92,16 +82,12 @@ public class Grib2CollectionOpPanel extends OpPanel {
     buttPanel.add(writeButton);
   }
 
-  /**
-   *
-   */
   public void setCollection(String collection) {
     if (process(collection)) {
       cb.addItem(collection);
     }
   }
 
-  /** */
   @Override
   public boolean process(Object o) {
     String command = (String) o;
@@ -124,13 +110,11 @@ public class Grib2CollectionOpPanel extends OpPanel {
     return !err;
   }
 
-  /** */
   @Override
   public void closeOpenFiles() throws IOException {
     gribTable.closeOpenFiles();
   }
 
-  /** */
   @Override
   public void save() {
     gribTable.save();

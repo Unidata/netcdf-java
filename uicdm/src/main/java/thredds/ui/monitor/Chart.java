@@ -21,19 +21,10 @@ import org.jfree.data.time.*;
 import org.jfree.ui.*;
 import org.jfree.util.UnitType;
 
-/**
- * Class Description.
- *
- * @author caron
- * @since Apr 9, 2009
- */
 public class Chart extends JPanel {
 
   // Holds the data
-  private TimeSeriesCollection dataset = new TimeSeriesCollection();
-  private TimeSeriesCollection datasetOpenClose = new TimeSeriesCollection();
-  private TimeSeriesCollection datasetHighLow = new TimeSeriesCollection();
-
+  private final TimeSeriesCollection dataset = new TimeSeriesCollection();
   private String stockSymbol;
 
   public Chart(String title, String timeAxis, String valueAxis, TimeSeries data) {
@@ -102,8 +93,10 @@ public class Chart extends JPanel {
       dataset.addSeries(close);
       dataset.addSeries(low);
       dataset.addSeries(high);
+      TimeSeriesCollection datasetOpenClose = new TimeSeriesCollection();
       datasetOpenClose.addSeries(open);
       datasetOpenClose.addSeries(close);
+      TimeSeriesCollection datasetHighLow = new TimeSeriesCollection();
       datasetHighLow.addSeries(high);
       datasetHighLow.addSeries(low);
 

@@ -45,9 +45,9 @@ import java.util.ServiceLoader;
  * @since Mar 19, 2008
  */
 public class FeatureDatasetFactoryManager {
-  private static List<Factory> factoryList = new ArrayList<>();
-  private static boolean userMode;
-  private static boolean debug = false;
+  private static final List<Factory> factoryList = new ArrayList<>();
+  private static final boolean userMode;
+  private static final boolean debug = false;
 
   // search in the order added
   static {

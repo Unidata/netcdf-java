@@ -29,13 +29,13 @@ public class TdsDownloader {
     access, thredds
   }
 
-  private ManageForm.Data config;
-  private Type type;
+  private final ManageForm.Data config;
+  private final Type type;
 
-  private File localDir;
-  private JTextArea ta;
+  private final File localDir;
+  private final JTextArea ta;
   private CancelTask cancel;
-  private HTTPSession session;
+  private final HTTPSession session;
 
   TdsDownloader(JTextArea ta, ManageForm.Data config, Type type) throws IOException {
     this.ta = ta;
@@ -47,7 +47,6 @@ public class TdsDownloader {
     localDir = LogLocalManager.getDirectory(config.server, type.toString());
     if (!localDir.exists() && !localDir.mkdirs()) {
       ta.setText(String.format("Failed to create local directory in = %s%n%n", localDir));
-      return;
     }
   }
 
@@ -78,10 +77,10 @@ public class TdsDownloader {
 
     // update text area in background http://technobuz.com/2009/05/update-jtextarea-dynamically/
     String list = contents;
-    SwingWorker worker = new SwingWorker<String, Void>() {
+    SwingWorker<String, Void> worker = new SwingWorker<String, Void>() {
 
       @Override
-      protected String doInBackground() throws Exception {
+      protected String doInBackground() {
         try {
           ta.append(String.format("Local log files stored in = %s%n%n", localDir));
           String[] lines = list.split("\n");

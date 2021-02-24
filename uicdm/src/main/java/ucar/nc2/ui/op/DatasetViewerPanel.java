@@ -24,13 +24,11 @@ public class DatasetViewerPanel extends OpPanel {
   private static final org.slf4j.Logger logger =
       org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  private DatasetViewer dsViewer;
+  private final DatasetViewer dsViewer;
   private NetcdfFile ncfile;
-  private boolean jni;
 
-  public DatasetViewerPanel(PreferencesExt dbPrefs, boolean jni) {
+  public DatasetViewerPanel(PreferencesExt dbPrefs) {
     super(dbPrefs, "dataset:");
-    this.jni = jni;
 
     dsViewer = new DatasetViewer(dbPrefs, fileChooser);
     dsViewer.setUseCoords(this.useCoords);

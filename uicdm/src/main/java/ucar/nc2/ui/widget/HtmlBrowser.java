@@ -11,7 +11,6 @@ import java.awt.FlowLayout;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -29,13 +28,11 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
-import javax.swing.text.EditorKit;
 import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.HTMLFrameHyperlinkEvent;
 
 import ucar.ui.widget.BAMutil;
-import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.ComboBox;
 import ucar.ui.prefs.Debug;
 
@@ -45,19 +42,16 @@ import ucar.ui.prefs.Debug;
  * @author John Caron
  */
 public class HtmlBrowser extends JPanel {
-  private static EditorKit kit = JEditorPane.createEditorKitForContentType("text/html");
-  private PreferencesExt prefs;
-  private RootPaneContainer parent;
   private boolean eventsOK = true;
 
   // ui
-  private JEditorPane htmlViewer;
-  private ComboBox cbox;
-  private JLabel statusText;
-  private JPanel topButtons;
-  private AbstractAction backAction, forwardAction;
+  private final JEditorPane htmlViewer;
+  private final ComboBox<Page> cbox;
+  private final JLabel statusText;
+  private final JPanel topButtons;
+  private final AbstractAction backAction, forwardAction;
 
-  private ArrayList nav = new ArrayList(); // list of Page objetcs
+  private ArrayList<Page> nav = new ArrayList<>(); // list of Page objetcs
   private int currentPage = -1;
 
   private boolean debug, debugDoc, showEvent;
@@ -204,9 +198,10 @@ public class HtmlBrowser extends JPanel {
   private void addNewPage(Page page) {
     // if not at end, chop off extra when new page arrives
     if (currentPage < nav.size() - 1) {
-      ArrayList nn = new ArrayList();
-      for (int i = 0; i <= currentPage; i++)
+      ArrayList<Page> nn = new ArrayList<>();
+      for (int i = 0; i <= currentPage; i++) {
         nn.add(nav.get(i));
+      }
       nav = nn;
     }
 
@@ -233,7 +228,7 @@ public class HtmlBrowser extends JPanel {
   }
 
   private void showCurrentPage() {
-    Page p = (Page) nav.get(currentPage);
+    Page p = nav.get(currentPage);
     p.show();
     if (debug)
       System.out.println("showCurrentPage current=" + currentPage + " " + p);
@@ -341,8 +336,8 @@ public class HtmlBrowser extends JPanel {
     void showDoc(HTMLDocument doc) {
       System.out.println(" Doc base=" + doc.getBase()); // +" ss="+doc.getStyleSheet());
 
-      Dictionary dict = doc.getDocumentProperties();
-      Enumeration e = dict.keys();
+      Dictionary<Object, Object> dict = doc.getDocumentProperties();
+      Enumeration<Object> e = dict.keys();
       System.out.println(" DocumentProperties");
       while (e.hasMoreElements()) {
         Object key = e.nextElement();
@@ -361,7 +356,6 @@ public class HtmlBrowser extends JPanel {
    * @param modal is modal
    */
   public JDialog makeDialog(RootPaneContainer parent, String title, boolean modal) {
-    this.parent = parent;
     return new Dialog(parent, title, modal);
   }
 
@@ -371,11 +365,9 @@ public class HtmlBrowser extends JPanel {
       super(parent instanceof Frame ? (Frame) parent : null, title, modal);
 
       // L&F may change
-      UIManager.addPropertyChangeListener(new PropertyChangeListener() {
-        public void propertyChange(PropertyChangeEvent e) {
-          if (e.getPropertyName().equals("lookAndFeel"))
-            SwingUtilities.updateComponentTreeUI(HtmlBrowser.Dialog.this);
-        }
+      UIManager.addPropertyChangeListener(e -> {
+        if (e.getPropertyName().equals("lookAndFeel"))
+          SwingUtilities.updateComponentTreeUI(Dialog.this);
       });
 
       // add a dismiss button

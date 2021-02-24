@@ -3,7 +3,7 @@
  * See LICENSE for license information.
  */
 
-package ucar.nc2.ui.op;
+package ucar.nc2.ui.grib;
 
 import ucar.nc2.grib.grib2.table.WmoCodeFlagTables;
 import ucar.nc2.ui.OpPanel;

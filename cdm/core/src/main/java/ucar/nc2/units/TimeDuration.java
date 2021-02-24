@@ -252,7 +252,7 @@ public class TimeDuration {
     return to.getValueInSeconds() == getValueInSeconds();
   }
 
-  /** @deprecated, , will be removed in ver7. */
+  /** @deprecated will be removed in ver7. */
   @Deprecated
   public Date add(Date d) {
     return timeUnit.add(d);

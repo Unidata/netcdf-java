@@ -3,9 +3,10 @@
  * See LICENSE for license information.
  */
 
-package ucar.nc2.ui.op;
+package ucar.nc2.ui.bufr;
 
 import ucar.nc2.ui.OpPanel;
+import ucar.unidata.io.RandomAccessFile;
 import ucar.util.prefs.PreferencesExt;
 import java.awt.BorderLayout;
 import java.io.FileNotFoundException;
@@ -14,31 +15,30 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import javax.swing.JOptionPane;
 
-/**
- *
- */
-public class BufrCdmIndexOpPanel extends OpPanel {
-  private BufrCdmIndexPanel table;
+public class BufrPanel extends OpPanel {
+  private RandomAccessFile raf;
+  private final BufrMessageViewer bufrTable;
 
-  /**
-   *
-   */
-  public BufrCdmIndexOpPanel(PreferencesExt p) {
-    super(p, "index file:", true, false);
-    table = new BufrCdmIndexPanel(prefs, buttPanel);
-    add(table, BorderLayout.CENTER);
+  public BufrPanel(PreferencesExt p) {
+    super(p, "file:", true, false);
+    bufrTable = new BufrMessageViewer(prefs, buttPanel);
+    add(bufrTable, BorderLayout.CENTER);
   }
 
-  /** */
   @Override
   public boolean process(Object o) {
     String command = (String) o;
     boolean err = false;
 
     try {
-      table.setIndexFile(command);
+      if (raf != null) {
+        raf.close();
+      }
+      raf = new RandomAccessFile(command, "r");
+
+      bufrTable.setBufrFile(raf);
     } catch (FileNotFoundException ioe) {
-      JOptionPane.showMessageDialog(null, "BufrCdmIndexPanel cannot open " + command + "\n" + ioe.getMessage());
+      JOptionPane.showMessageDialog(null, "NetcdfDataset cannot open " + command + "\n" + ioe.getMessage());
       err = true;
     } catch (Exception e) {
       e.printStackTrace();
@@ -52,16 +52,17 @@ public class BufrCdmIndexOpPanel extends OpPanel {
     return !err;
   }
 
-  /** */
   @Override
   public void closeOpenFiles() throws IOException {
-    // table.closeOpenFiles();
+    if (raf != null) {
+      raf.close();
+    }
+    raf = null;
   }
 
-  /** */
   @Override
   public void save() {
-    table.save();
+    bufrTable.save();
     super.save();
   }
 }

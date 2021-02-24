@@ -17,7 +17,7 @@ import ucar.nc2.time.CalendarDateUnit;
  * @since Mar 28, 2008
  */
 public class StandardPointCollectionImpl extends PointCollectionImpl {
-  private NestedTable ft;
+  private final NestedTable ft;
 
   StandardPointCollectionImpl(NestedTable ft, CalendarDateUnit timeUnit, String altUnits) {
     super(ft.getName(), timeUnit, altUnits);

@@ -33,13 +33,11 @@ import javax.swing.*;
  * @since Oct 25, 2010
  */
 public class CdmrFeaturePanel extends JPanel {
-  private PreferencesExt prefs;
+  private final PreferencesExt prefs;
 
-  private BeanTable messTable;
-  private JSplitPane split;
-
-  private TextHistoryPane infoTA, infoPopup2, infoPopup3;
-  private IndependentWindow infoWindow2, infoWindow3;
+  private final BeanTable<MessBean> messTable;
+  private final JSplitPane split;
+  private final TextHistoryPane infoTA = new TextHistoryPane();
 
   private NetcdfFile ncd;
 
@@ -48,9 +46,9 @@ public class CdmrFeaturePanel extends JPanel {
 
     PopupMenu varPopup;
 
-    messTable = new BeanTable(MessBean.class, (PreferencesExt) prefs.node("CdmMessage"), false);
+    messTable = new BeanTable<>(MessBean.class, (PreferencesExt) prefs.node("CdmMessage"), false);
     messTable.addListSelectionListener(e -> {
-      MessBean bean = (MessBean) messTable.getSelectedBean();
+      MessBean bean = messTable.getSelectedBean();
       if (bean == null)
         return;
       infoTA.setText(bean.getDesc());
@@ -58,7 +56,7 @@ public class CdmrFeaturePanel extends JPanel {
     varPopup = new PopupMenu(messTable.getJTable(), "Options");
     varPopup.addAction("Show record -> variable data assignments", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        MessBean bean = (MessBean) messTable.getSelectedBean();
+        MessBean bean = messTable.getSelectedBean();
         if (bean == null)
           return;
         infoTA.setText(bean.getDesc());
@@ -66,14 +64,15 @@ public class CdmrFeaturePanel extends JPanel {
     });
 
     // the info windows
-    infoTA = new TextHistoryPane();
 
-    infoPopup2 = new TextHistoryPane();
-    infoWindow2 = new IndependentWindow("Extra Information", BAMutil.getImage("nj22/NetcdfUI"), infoPopup2);
+    TextHistoryPane infoPopup2 = new TextHistoryPane();
+    IndependentWindow infoWindow2 =
+        new IndependentWindow("Extra Information", BAMutil.getImage("nj22/NetcdfUI"), infoPopup2);
     infoWindow2.setBounds((Rectangle) prefs.getBean("InfoWindowBounds2", new Rectangle(300, 300, 500, 300)));
 
-    infoPopup3 = new TextHistoryPane();
-    infoWindow3 = new IndependentWindow("Extra Information", BAMutil.getImage("nj22/NetcdfUI"), infoPopup3);
+    TextHistoryPane infoPopup3 = new TextHistoryPane();
+    IndependentWindow infoWindow3 =
+        new IndependentWindow("Extra Information", BAMutil.getImage("nj22/NetcdfUI"), infoPopup3);
     infoWindow3.setBounds((Rectangle) prefs.getBean("InfoWindowBounds3", new Rectangle(300, 300, 500, 300)));
 
     setLayout(new BorderLayout());
