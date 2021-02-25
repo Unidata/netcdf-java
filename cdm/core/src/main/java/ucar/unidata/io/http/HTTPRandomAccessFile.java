@@ -151,7 +151,7 @@ public final class HTTPRandomAccessFile extends RemoteRandomAccessFile {
       return;
     System.out.println(title);
     for (Map.Entry<String, String> entry : headers) {
-      System.out.printf("  %s = %s" + entry.getKey() + "%n", entry.getValue());
+      System.out.printf(" %s = %s%n", entry.getKey(), entry.getValue());
     }
   }
 
