@@ -21,9 +21,7 @@ public abstract class ReportPanel extends JPanel {
     add(reportPane, BorderLayout.CENTER);
   }
 
-  public void addOptions(JPanel buttPanel) {
-
-  }
+  public void addOptions(JPanel buttPanel) {}
 
   public void save() {}
 
@@ -38,7 +36,7 @@ public abstract class ReportPanel extends JPanel {
     f.format("%s on %s useIndex=%s eachFile=%s extra=%s%n", option, spec, useIndex, eachFile, extra);
     this.spec = spec;
 
-    try (MCollection dcm = getCollection(spec, f)) {
+    try (MCollection dcm = getCollectionUnfiltered(spec, f)) {
       if (dcm == null) {
         return;
       }
@@ -58,13 +56,12 @@ public abstract class ReportPanel extends JPanel {
     }
   }
 
-
   public boolean showCollection(String spec) {
     Formatter f = new Formatter();
     f.format("collection = %s%n", spec);
     boolean hasFiles = false;
 
-    try (MCollection dcm = getCollection(spec, f)) {
+    try (MCollection dcm = getCollectionUnfiltered(spec, f)) {
       if (dcm == null)
         return false;
 
@@ -104,7 +101,6 @@ public abstract class ReportPanel extends JPanel {
   protected MCollection getCollectionUnfiltered(String spec, Formatter f) {
     try {
       return CollectionAbstract.open(spec, spec, null, f);
-
     } catch (IOException e) {
       StringWriter sw = new StringWriter(10000);
       e.printStackTrace(new PrintWriter(sw));

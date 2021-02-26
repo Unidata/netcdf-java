@@ -29,6 +29,7 @@ import ucar.nc2.grib.GribUtils;
 import ucar.nc2.grib.collection.Grib;
 import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.grib.collection.GribCollectionImmutable;
+import ucar.nc2.grib.coord.TimeCoordIntvDateValue;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.nc2.grib.grib2.table.WmoParamTable;
@@ -356,7 +357,7 @@ public class Grib2ReportPanel extends ReportPanel {
 
       }
     }
-    fm.format("total=%d not operational = %d local = %d missing = %d%n", total, nonop, local, miss);
+    fm.format("total files=%d not operational = %d local = %d missing = %d%n", total, nonop, local, miss);
     accum[0] += total;
     accum[1] += nonop;
     accum[2] += local;
@@ -451,14 +452,14 @@ public class Grib2ReportPanel extends ReportPanel {
   private void doUniqueTemplates(MFile mf, Map<Integer, FileList> gdsSet, Map<Integer, FileList> pdsSet,
       Map<Integer, FileList> drsSet, Formatter f) {
     String path = mf.getPath();
-    Grib2Index g1idx = new Grib2Index();
-    boolean ok = g1idx.readIndex(path, 0, thredds.inventory.CollectionUpdateType.nocheck);
+    Grib2Index gribIndex = new Grib2Index();
+    boolean ok = gribIndex.readIndex(path, 0, thredds.inventory.CollectionUpdateType.nocheck);
     if (!ok) {
       f.format("**Cant open %s%n", path);
       return;
     }
 
-    for (Grib2Record gr : g1idx.getRecords()) {
+    for (Grib2Record gr : gribIndex.getRecords()) {
       int template = gr.getGDSsection().getGDSTemplateNumber();
       gdsSet.computeIfAbsent(template, k -> new FileList(k, gr.getGDSsection().getGDS().getNameShort()));
       gdsSet.get(template).findAndAdd(mf);
@@ -595,19 +596,27 @@ public class Grib2ReportPanel extends ReportPanel {
 
         att = dt.findAttributeIgnoreCase(Grib.GRIB_STAT_TYPE);
         if (att != null) {
-          int statType = att.getNumericValue().intValue();
-          if ((statType == 7) || (statType == 9)) {
-            fm.format("  %s (STAT type %s) desc=%s %n", currName, statType, dt.getDescription());
-            prob++;
+          if (att.getNumericValue() == null) {
+            System.out.printf("HEY expect number for %s%n", att.getName());
+          } else {
+            int statType = att.getNumericValue().intValue();
+            if ((statType == 7) || (statType == 9)) {
+              fm.format("  %s (STAT type %s) desc=%s %n", currName, statType, dt.getDescription());
+              prob++;
+            }
           }
         }
 
         att = dt.findAttributeIgnoreCase("Grib_Ensemble_Derived_Type");
         if (att != null) {
-          int type = att.getNumericValue().intValue();
-          if ((type > 9)) {
-            fm.format("  %s (DERIVED type %s) desc=%s %n", currName, type, dt.getDescription());
-            prob++;
+          if (att.getNumericValue() == null) {
+            System.out.printf("HEY expect number for %s%n", att.getName());
+          } else {
+            int type = att.getNumericValue().intValue();
+            if ((type > 9)) {
+              fm.format("  %s (DERIVED type %s) desc=%s %n", currName, type, dt.getDescription());
+              prob++;
+            }
           }
         }
 
@@ -1002,8 +1011,8 @@ public class Grib2ReportPanel extends ReportPanel {
 
 
   private int doTimeCoord(Formatter f, MFile mf, Counters counters) throws IOException {
-    boolean showTinvDiffers = true;
-    boolean showNint = true;
+    boolean showTinvDiffers = false;
+    boolean showNint = false;
     boolean shutup = false;
 
     Grib2Index index = createIndex(mf, f);
@@ -1040,14 +1049,26 @@ public class Grib2ReportPanel extends ReportPanel {
           shutup = true;
         }
 
-        if (cust == null)
+        if (cust == null) {
           cust = Grib2Tables.factory(gr);
+        }
         double len = cust.getForecastTimeIntervalSizeInHours(pds);
         counters.count("TimeIntervalsLength", (int) len);
         int[] intv = cust.getForecastTimeIntervalOffset(gr);
         if (intv != null && (intv[0] == 0) && (intv[1] == 0)) {
           f.format("  TimeInterval [0,0] = %s file=%s%n  ", getId(gr), mf.getName());
         }
+
+        TimeCoordIntvDateValue intvDateOld = cust.getForecastTimeIntervalOld(gr);
+        TimeCoordIntvDateValue intvDate = cust.getForecastTimeInterval(gr);
+        TimeCoordIntvDateValue intvDateNew = cust.getForecastTimeIntervalNew(gr);
+        if (!intvDateOld.equals(intvDateNew)) {
+          f.format("  intvDateOld %s%n", intvDateOld);
+          f.format("  intvDate    %s%n", intvDate);
+          f.format("  intvDateNew %s%n%n", intvDateNew);
+        }
+        counters.count("TimeIntvDatesDiffer", intvDateOld.equals(intvDateNew) ? 0 : 1);
+        counters.count("TimeIntvDatesStillDiffer", intvDate.equals(intvDateNew) ? 0 : 1);
       }
 
       count++;

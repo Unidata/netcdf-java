@@ -42,7 +42,7 @@ public class ReportOpPanel extends OpPanel {
       }
     };
     useIndexButt.putValue(BAMutil.STATE, useIndex);
-    BAMutil.setActionProperties(useIndexButt, "nj22/Doit", "use Index", true, 'C', -1);
+    BAMutil.setActionProperties(useIndexButt, "nj22/Doit", "use gbx Index", true, 'C', -1);
     BAMutil.addActionToContainer(buttPanel, useIndexButt);
 
     AbstractAction eachFileButt = new AbstractAction() {
