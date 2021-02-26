@@ -38,14 +38,16 @@ public class MFileIterator implements CloseableIterator<MFile> {
         return false;
       }
       nextMfile = iter.next();
-      if (filter == null || filter.accept(nextMfile))
+      if (filter == null || filter.accept(nextMfile)) {
         return true;
+      }
     }
   }
 
   public MFile next() {
-    if (nextMfile == null)
+    if (nextMfile == null) {
       throw new NoSuchElementException();
+    }
     return nextMfile;
   }
 

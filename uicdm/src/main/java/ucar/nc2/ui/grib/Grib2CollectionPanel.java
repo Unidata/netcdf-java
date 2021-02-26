@@ -1108,23 +1108,8 @@ public class Grib2CollectionPanel extends JPanel {
         return cust.getForecastTimeIntervalSizeInHours(pds); // LOOK using an Hour here, but will need to make this
                                                              // configurable
       }
-
       return -1;
     }
-
-    /*
-     * public long getIntvHash() {
-     * if (pds.isTimeInterval()) {
-     * long sum = 0;
-     * for (Grib2RecordBean bean : records) {
-     * Grib2Pds.PdsInterval pdsi = (Grib2Pds.PdsInterval) bean.pds;
-     * sum += pdsi.getIntervalHash();
-     * }
-     * return sum;
-     * }
-     * return 0;
-     * }
-     */
 
     public String toString() {
       Formatter f = new Formatter();
@@ -1210,8 +1195,8 @@ public class Grib2CollectionPanel extends JPanel {
       return gr.getReferenceDate().toString();
     }
 
-    public final String getForecastDate() {
-      CalendarDate cd = cust.getForecastDate(gr);
+    public final String getForecastBeg() {
+      CalendarDate cd = cust.getForecastDateBeg(gr);
       return cd == null ? null : cd.toString();
     }
 
@@ -1330,6 +1315,11 @@ public class Grib2CollectionPanel extends JPanel {
       return pdsi.getIntervalHash();
     }
 
+    public String getIntervalEnd() {
+      Grib2Pds.PdsInterval pdsi = (Grib2Pds.PdsInterval) pds;
+      return pdsi.getIntervalTimeEnd().toString();
+    }
+
     /////////////////////////////
     // Aerosols
 
@@ -1399,6 +1389,7 @@ public class Grib2CollectionPanel extends JPanel {
 
   }
 
+  // Heres how we customize the table depending on the PDS subclass.
   private static class PdsBeanInfo extends SimpleBeanInfo {
     PropertyDescriptor[] properties;
 
@@ -1409,7 +1400,7 @@ public class Grib2CollectionPanel extends JPanel {
       try {
         props.add(new PropertyDescriptor("startPos", cl, "getStartPos", null));
         props.add(new PropertyDescriptor("file", cl, "getFile", null));
-        props.add(new PropertyDescriptor("forecastDate", cl, "getForecastDate", null));
+        props.add(new PropertyDescriptor("forecastDate", cl, "getForecastBeg", null));
         props.add(new PropertyDescriptor("forecastTime", cl, "getForecastTime", null));
         props.add(new PropertyDescriptor("processType", cl, "getGenProcessType", null));
         props.add(new PropertyDescriptor("header", cl, "getHeader", null));
@@ -1437,6 +1428,7 @@ public class Grib2CollectionPanel extends JPanel {
           props.add(new PropertyDescriptor("intv", cl, "getIntv", null));
           props.add(new PropertyDescriptor("intv2", cl, "getIntv2", null));
           props.add(new PropertyDescriptor("intvHash", cl, "getIntvHash", null));
+          props.add(new PropertyDescriptor("endDate", cl, "getIntervalEnd", null));
         }
 
         if (pds instanceof Grib2Pds.PdsProbability) {
@@ -1455,7 +1447,6 @@ public class Grib2CollectionPanel extends JPanel {
       properties = new PropertyDescriptor[props.size()];
       props.toArray(properties);
     }
-
 
     @Override
     public PropertyDescriptor[] getPropertyDescriptors() {
