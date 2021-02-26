@@ -9,7 +9,7 @@ import java.util.Set;
 import java.util.TimeZone;
 
 /**
- * Encapsulate TimeZone functionality.
+ * Encapsulate DateTimeZone functionality.
  *
  * @author caron
  * @since 10/28/12

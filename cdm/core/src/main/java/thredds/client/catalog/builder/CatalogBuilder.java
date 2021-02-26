@@ -15,9 +15,6 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
-import ucar.nc2.units.DateRange;
-import ucar.nc2.units.DateType;
-import ucar.nc2.units.TimeDuration;
 import ucar.nc2.internal.util.URLnaming;
 import ucar.unidata.util.StringUtil2;
 import javax.annotation.Nullable;
@@ -681,6 +678,11 @@ public class CatalogBuilder {
       DatasetBuilder.addToList(flds, Dataset.Dates, readDate(e, null));
     }
 
+    list = parent.getChildren("date", Catalog.defNS);
+    for (Element e : list) {
+      DatasetBuilder.addToList(flds, Dataset.DateTypes, readDateType(e, null));
+    }
+
     // look for documentation
     list = parent.getChildren("documentation", Catalog.defNS);
     for (Element e : list) {
@@ -730,9 +732,15 @@ public class CatalogBuilder {
       flds.put(Dataset.GeospatialCoverage, gc);
     }
 
-    DateRange tc = readTimeCoverage(parent.getChild("timeCoverage", Catalog.defNS));
+    // remove in ver7
+    ucar.nc2.units.DateRange tc = readTimeCoverage(parent.getChild("timeCoverage", Catalog.defNS));
     if (tc != null) {
       flds.put(Dataset.TimeCoverage, tc);
+    }
+
+    TimeCoverage tcnew = readTimeCoverageNew(parent.getChild("timeCoverage", Catalog.defNS));
+    if (tcnew != null) {
+      flds.put(Dataset.TimeCoverageNew, tcnew);
     }
 
     Element serviceNameElem = parent.getChild("serviceName", Catalog.defNS);
@@ -1108,20 +1116,45 @@ public class CatalogBuilder {
    * </xsd:restriction>
    * </xsd:simpleType>
    */
-  protected DateRange readTimeCoverage(Element tElem) {
+  /** @deprecated use readTimeCoverageNew() */
+  @Deprecated
+  @Nullable
+  protected ucar.nc2.units.DateRange readTimeCoverage(Element tElem) {
     if (tElem == null) {
       return null;
     }
 
     Calendar calendar = readCalendar(tElem.getAttributeValue("calendar"));
-    DateType start = readDate(tElem.getChild("start", Catalog.defNS), calendar);
-    DateType end = readDate(tElem.getChild("end", Catalog.defNS), calendar);
+    ucar.nc2.units.DateType start = readDate(tElem.getChild("start", Catalog.defNS), calendar);
+    ucar.nc2.units.DateType end = readDate(tElem.getChild("end", Catalog.defNS), calendar);
 
-    TimeDuration duration = readDuration(tElem.getChild("duration", Catalog.defNS));
-    TimeDuration resolution = readDuration(tElem.getChild("resolution", Catalog.defNS));
+    ucar.nc2.units.TimeDuration duration = readDuration(tElem.getChild("duration", Catalog.defNS));
+    ucar.nc2.units.TimeDuration resolution = readDuration(tElem.getChild("resolution", Catalog.defNS));
 
     try {
-      return new DateRange(start, end, duration, resolution);
+      return new ucar.nc2.units.DateRange(start, end, duration, resolution);
+    } catch (java.lang.IllegalArgumentException e) {
+      errlog.format(" ** warning: TimeCoverage error ='%s'%n", e.getMessage());
+      logger.debug(" ** warning: TimeCoverage error ='{}'", e.getMessage());
+      return null;
+    }
+  }
+
+  @Nullable
+  protected TimeCoverage readTimeCoverageNew(Element tElem) {
+    if (tElem == null) {
+      return null;
+    }
+
+    Calendar calendar = readCalendar(tElem.getAttributeValue("calendar"));
+    DateType start = readDateType(tElem.getChild("start", Catalog.defNS), calendar);
+    DateType end = readDateType(tElem.getChild("end", Catalog.defNS), calendar);
+
+    TimeDuration duration = readTimeDuration(tElem.getChild("duration", Catalog.defNS));
+    TimeDuration resolution = readTimeDuration(tElem.getChild("resolution", Catalog.defNS));
+
+    try {
+      return TimeCoverage.create(start, end, duration, resolution);
     } catch (java.lang.IllegalArgumentException e) {
       errlog.format(" ** warning: TimeCoverage error ='%s'%n", e.getMessage());
       logger.debug(" ** warning: TimeCoverage error ='{}'", e.getMessage());
@@ -1144,7 +1177,9 @@ public class CatalogBuilder {
     return calendar;
   }
 
-  protected DateType readDate(Element elem, Calendar calendar) {
+  /** @deprecated use readDateType() */
+  @Deprecated
+  protected ucar.nc2.units.DateType readDate(Element elem, Calendar calendar) {
     if (elem == null) {
       return null;
     }
@@ -1153,26 +1188,65 @@ public class CatalogBuilder {
     return makeDateType(elem.getText(), format, type, calendar);
   }
 
-  protected DateType makeDateType(String text, String format, String type, Calendar calendar) {
+  protected DateType readDateType(Element elem, Calendar calendar) {
+    if (elem == null) {
+      return null;
+    }
+    String format = elem.getAttributeValue("format");
+    String type = elem.getAttributeValue("type");
+    return makeDateTypeNew(elem.getText(), format, type, calendar);
+  }
+
+  /** @deprecated use makeDateTypeNew() */
+  @Deprecated
+  protected ucar.nc2.units.DateType makeDateType(String text, String format, String type, Calendar calendar) {
     if (text == null) {
       return null;
     }
     try {
-      return new DateType(text, format, type, calendar);
+      return new ucar.nc2.units.DateType(text, format, type, calendar);
     } catch (java.text.ParseException e) {
       errlog.format(" ** Parse error: Bad date format = '%s'%n", text);
       return null;
     }
   }
 
-  protected TimeDuration readDuration(Element elem) {
+  protected DateType makeDateTypeNew(String text, String format, String type, Calendar calendar) {
+    if (text == null) {
+      return null;
+    }
+    try {
+      return DateType.parse(text, format, type, calendar);
+    } catch (java.text.ParseException e) {
+      errlog.format(" ** Parse error: Bad date format = '%s'%n", text);
+      return null;
+    }
+  }
+
+  /** @deprecated use readTimeDuration() */
+  @Deprecated
+  protected ucar.nc2.units.TimeDuration readDuration(Element elem) {
     if (elem == null) {
       return null;
     }
     String text = null;
     try {
       text = elem.getText();
-      return new TimeDuration(text);
+      return new ucar.nc2.units.TimeDuration(text);
+    } catch (java.text.ParseException e) {
+      errlog.format(" ** Parse error: Bad duration format = '%s'%n", text);
+      return null;
+    }
+  }
+
+  protected TimeDuration readTimeDuration(Element elem) {
+    if (elem == null) {
+      return null;
+    }
+    String text = null;
+    try {
+      text = elem.getText();
+      return TimeDuration.parse(text);
     } catch (java.text.ParseException e) {
       errlog.format(" ** Parse error: Bad duration format = '%s'%n", text);
       return null;

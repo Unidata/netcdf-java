@@ -2,22 +2,22 @@
 package thredds.client.catalog.tools;
 
 import thredds.client.catalog.Dataset;
+import thredds.client.catalog.DateType;
 import thredds.client.catalog.Documentation;
 import thredds.client.catalog.ThreddsMetadata;
+import thredds.client.catalog.TimeCoverage;
+import thredds.client.catalog.TimeDuration;
 import thredds.client.catalog.builder.DatasetBuilder;
 import ucar.nc2.Attribute;
 import ucar.nc2.constants.ACDD;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.units.DateRange;
-import ucar.nc2.units.DateType;
-import ucar.nc2.units.TimeDuration;
+
 import java.util.Map;
 
 /**
- * This uses global attributes (presumably from an netcdf File) and extracts ACDD metadata to add to a dataset's
- * metadata.
- * Will not ovveride metadata already in the dataset
+ * This uses global attributes to extract ACDD metadata to add to a dataset's metadata.
+ * Will not override metadata already in the dataset
  *
  * @author caron
  * @since 3/24/2015
@@ -44,9 +44,11 @@ public class ThreddsMetadataAcdd {
     Attribute att = ncfile.get(ACDD.keywords);
     if (att != null) {
       String keywordList = att.getStringValue();
-      Attribute att2 = ncfile.get(ACDD.keywords_vocabulary);
-      String keywords_vocabulary = (att2 == null) ? null : att2.getStringValue();
-      addKeywords(keywordList, keywords_vocabulary);
+      if (keywordList != null) {
+        Attribute att2 = ncfile.get(ACDD.keywords_vocabulary);
+        String keywords_vocabulary = (att2 == null) ? null : att2.getStringValue();
+        addKeywords(keywordList, keywords_vocabulary);
+      }
     }
 
     if (ds.getAuthority() == null) { // thredds metadata takes precedence
@@ -60,16 +62,18 @@ public class ThreddsMetadataAcdd {
       att = ncfile.get(ACDD.cdm_data_type);
       if (att != null && att.isString()) {
         String val = att.getStringValue();
-        FeatureType ft = FeatureType.getType(val);
-        if (ft == null) {
-          CF.FeatureType cf = CF.FeatureType.getFeatureType(val);
-          if (cf != null)
-            ft = CF.FeatureType.convert(cf);
+        if (val != null) {
+          FeatureType ft = FeatureType.getType(val);
+          if (ft == null) {
+            CF.FeatureType cf = CF.FeatureType.getFeatureType(val);
+            if (cf != null)
+              ft = CF.FeatureType.convert(cf);
+          }
+          if (ft != null)
+            tmi.set(Dataset.FeatureType, ft.name());
+          else
+            tmi.set(Dataset.FeatureType, val);
         }
-        if (ft != null)
-          tmi.set(Dataset.FeatureType, ft.name());
-        else
-          tmi.set(Dataset.FeatureType, val);
       }
     }
 
@@ -96,14 +100,16 @@ public class ThreddsMetadataAcdd {
     if (startTimeAtt == null && endTimeAtt == null && durationAtt == null)
       return;
 
-    String dateValue = null;
+    String text = null;
     DateType start = null;
     if (startTimeAtt != null) {
       try {
-        dateValue = startTimeAtt.getStringValue();
-        start = new DateType(dateValue, null, null);
+        text = startTimeAtt.getStringValue();
+        if (text != null) {
+          start = DateType.parse(text);
+        }
       } catch (Exception e) {
-        log.warn("MetadataExtractorAcdd Cant Parse start date '{}' for {} message= {}", dateValue, ds.getName(),
+        log.warn("MetadataExtractorAcdd Cant Parse start date '{}' for {} message= {}", text, ds.getName(),
             e.getMessage());
       }
     }
@@ -111,10 +117,12 @@ public class ThreddsMetadataAcdd {
     DateType end = null;
     if (endTimeAtt != null) {
       try {
-        dateValue = endTimeAtt.getStringValue();
-        end = new DateType(dateValue, null, null);
+        text = endTimeAtt.getStringValue();
+        if (text != null) {
+          end = DateType.parse(text);
+        }
       } catch (Exception e) {
-        log.warn("MetadataExtractorAcdd Cant Parse end date '{}' for {} message= {}", dateValue, ds.getName(),
+        log.warn("MetadataExtractorAcdd Cant Parse end date '{}' for {} message= {}", text, ds.getName(),
             e.getMessage());
       }
     }
@@ -122,10 +130,12 @@ public class ThreddsMetadataAcdd {
     TimeDuration duration = null;
     if (durationAtt != null) {
       try {
-        dateValue = durationAtt.getStringValue();
-        duration = new TimeDuration(dateValue);
+        text = durationAtt.getStringValue();
+        if (text != null) {
+          duration = TimeDuration.parse(text);
+        }
       } catch (Exception e) {
-        log.warn("MetadataExtractorAcdd Cant Parse duration '{}' for {} message= {}", dateValue, ds.getName(),
+        log.warn("MetadataExtractorAcdd Cant Parse duration '{}' for {} message= {}", text, ds.getName(),
             e.getMessage());
       }
     }
@@ -133,17 +143,19 @@ public class ThreddsMetadataAcdd {
     TimeDuration resolution = null;
     if (resAtt != null) {
       try {
-        dateValue = resAtt.getStringValue();
-        resolution = new TimeDuration(dateValue);
+        text = resAtt.getStringValue();
+        if (text != null) {
+          resolution = TimeDuration.parse(text);
+        }
       } catch (Exception e) {
-        log.warn("MetadataExtractorAcdd Cant Parse resolution '{}' for {} message= {}", dateValue, ds.getName(),
+        log.warn("MetadataExtractorAcdd Cant Parse resolution '{}' for {} message= {}", text, ds.getName(),
             e.getMessage());
       }
     }
 
     try {
-      DateRange tc = new DateRange(start, end, duration, resolution);
-      tmi.set(Dataset.TimeCoverage, tc);
+      TimeCoverage tc = TimeCoverage.create(start, end, duration, resolution);
+      tmi.set(Dataset.TimeCoverageNew, tc);
 
     } catch (Exception e) {
       log.warn("MetadataExtractorAcdd Cant Calculate DateRange for {} message= {}", ds.getName(), e.getMessage());
@@ -234,9 +246,10 @@ public class ThreddsMetadataAcdd {
     Attribute att = ncfile.get(dateType);
     if (att != null) {
       String dateValue = att.getStringValue();
-
       try {
-        tmi.addToList(Dataset.Dates, new DateType(dateValue, null, dateType));
+        if (dateValue != null) {
+          tmi.addToList(Dataset.DateTypes, DateType.parse(dateValue, null, dateType, null));
+        }
       } catch (Exception e) {
         log.warn("MetadataExtractorAcdd Cant Parse {} date '{}' for {} message= {}", dateType, dateValue, ds.getName(),
             e.getMessage());

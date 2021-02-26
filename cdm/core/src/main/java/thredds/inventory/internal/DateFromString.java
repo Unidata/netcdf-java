@@ -2,25 +2,23 @@
  * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-package ucar.nc2.units;
+package thredds.inventory.internal;
 
 import com.google.re2j.Matcher;
 import com.google.re2j.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
-import java.text.SimpleDateFormat;
-import java.text.ParseException;
 
 /**
  * Convenience routines for parsing a String to produce a Date.
  * Used in thredds date extraction, also in aggregation configuration DateFormatMark.
- * 
- * @deprecated do not use, will move to internal only in version 7
  */
-@Deprecated
 public class DateFromString {
   private static final Logger logger = LoggerFactory.getLogger(DateFromString.class);
 

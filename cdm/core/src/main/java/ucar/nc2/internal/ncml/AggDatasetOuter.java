@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.StringTokenizer;
 import javax.annotation.Nullable;
 import thredds.inventory.MFile;
+import thredds.inventory.internal.DateFromString;
+
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
@@ -21,7 +23,6 @@ import ucar.nc2.internal.ncml.Aggregation.Type;
 import ucar.nc2.internal.ncml.AggregationOuter.CacheVar;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
-import ucar.nc2.units.DateFromString;
 import ucar.nc2.util.CancelTask;
 
 /** Encapsulates a NetcdfFile that is a component of the aggregation. */

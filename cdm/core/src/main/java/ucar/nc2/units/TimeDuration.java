@@ -34,7 +34,7 @@ import java.util.Date;
  *
  * @author john caron
  * @see "https://www.unidata.ucar.edu/projects/THREDDS/tech/catalog/InvCatalogSpec.html#durationType"
- * @deprecated do not use: will move in version 7
+ * @deprecated use thredds.client.catalog.TimeDuration
  */
 @Deprecated
 public class TimeDuration {

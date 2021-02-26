@@ -34,7 +34,9 @@ import ucar.nc2.write.NcmlWriter;
  *
  * @author caron
  * @since Jan 11, 2010
+ * @deprecated DO NOT USE
  */
+@Deprecated
 @ThreadSafe
 public class Fmrc implements Closeable {
   private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Fmrc.class);

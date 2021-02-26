@@ -9,7 +9,7 @@ import thredds.client.catalog.Dataset;
 import thredds.client.catalog.Service;
 
 /**
- * build immutable access element
+ * Build immutable Access object
  *
  * @author caron
  * @since 1/8/2015

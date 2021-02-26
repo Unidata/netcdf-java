@@ -5,7 +5,6 @@
 
 package thredds.inventory;
 
-import ucar.nc2.units.TimeDuration;
 import java.io.IOException;
 import java.util.*;
 
@@ -28,7 +27,8 @@ public abstract class CollectionManagerAbstract extends CollectionAbstract imple
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  TimeDuration recheck;
+  ucar.nc2.units.TimeDuration recheck;
+  thredds.client.catalog.TimeDuration recheckEvery;
   private boolean isStatic; // true if theres no update element. It means dont scan if index already exists
 
   CollectionManagerAbstract(String collectionName, org.slf4j.Logger logger) {
@@ -45,8 +45,13 @@ public abstract class CollectionManagerAbstract extends CollectionAbstract imple
   }
 
   @Override
-  public TimeDuration getRecheck() {
+  public ucar.nc2.units.TimeDuration getRecheck() {
     return recheck;
+  }
+
+  @Override
+  public thredds.client.catalog.TimeDuration getRecheckEvery() {
+    return recheckEvery;
   }
 
   // fake default implementation
@@ -83,12 +88,5 @@ public abstract class CollectionManagerAbstract extends CollectionAbstract imple
   public void removeEventListener(TriggerListener l) {
     listeners.remove(l);
   }
-
-  /*
-   * private void createListenerManager() {
-   * lm = new ListenerManager("thredds.inventory.CollectionManager$TriggerListener",
-   * "thredds.inventory.CollectionManager$TriggerEvent", "handleCollectionEvent");
-   * }
-   */
 
 }

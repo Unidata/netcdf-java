@@ -10,7 +10,6 @@ import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.ui.OpPanel;
 import ucar.ui.widget.TextHistoryPane;
-import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.units.TimeUnit;
 import ucar.ui.prefs.Debug;
@@ -20,6 +19,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Formatter;
 import java.util.List;
 import java.util.StringTokenizer;
 import javax.swing.JButton;
@@ -108,19 +108,18 @@ public class UnitConvert extends OpPanel {
 
     boolean isDate = false;
     try {
-      DateUnit du = new DateUnit(command);
-      ta.appendLine("\nFrom udunits:\n <" + command + "> isDateUnit = " + du);
-      Date d = du.getDate();
-      ta.appendLine("getStandardDateString = " + CalendarDateFormatter.toDateTimeString(d));
-      ta.appendLine("getDateOrigin = " + CalendarDateFormatter.toDateTimeString(du.getDateOrigin()));
-      isDate = true;
-
-      Date d2 = DateUnit.getStandardOrISO(command);
-      if (d2 == null) {
-        ta.appendLine("\nDateUnit.getStandardOrISO = false");
+      Formatter f2 = new Formatter();
+      CalendarDateUnit cdu = CalendarDate.parseUdunitsUnit(null, command);
+      f2.format("%nFrom udunits: '%s' CalendarDateUnit = '%s'%n", command, cdu);
+      f2.format("getBaseCalendarDate = %s%n", CalendarDateFormatter.toDateTimeString(cdu.getBaseCalendarDate()));
+      CalendarDate cd = CalendarDate.parseUdunitsOrIso(null, command);
+      if (cd != null) {
+        f2.format("parseUdunitsOrIso = %s%n", CalendarDateFormatter.toDateTimeString(cd));
+        isDate = true;
       } else {
-        ta.appendLine("\nDateUnit.getStandardOrISO = " + CalendarDateFormatter.toDateTimeString(d2));
+        f2.format("parseUdunitsOrIso is null%n");
       }
+      ta.appendLine(f2.toString());
     } catch (Exception e) {
       // ok to fall through
     }

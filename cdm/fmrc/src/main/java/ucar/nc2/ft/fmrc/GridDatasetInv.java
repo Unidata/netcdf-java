@@ -48,7 +48,9 @@ import thredds.inventory.MFile;
  *
  * @author caron
  * @since Jan 11, 2010
+ * @deprecated DO NOT USE
  */
+@Deprecated
 public class GridDatasetInv {
   private static final Logger logger = LoggerFactory.getLogger(GridDatasetInv.class);
   private static final int REQ_VERSION = 2; // minimum required version, else regenerate XML

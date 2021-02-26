@@ -24,6 +24,8 @@ import java.util.Objects;
           "days" | "day" | "d"
  * </pre>
  *
+ * Note that a DateUnit allowed a [number] when parsing.
+ *
  * "months since base_date by calendar field"
  * "years since base_date by calendar field"
  *
@@ -73,7 +75,7 @@ public class CalendarDateUnit {
    * @param calt use this Calendar, or null for default calendar
    * @param udunitString "unit since calendarDate"
    * @return CalendarDateUnit
-   * @throws IllegalArgumentException if udunitString is not paresable
+   * @throws IllegalArgumentException if udunitString is not parseable
    */
   public static CalendarDateUnit withCalendar(Calendar calt, String udunitString) {
     if (calt == null)

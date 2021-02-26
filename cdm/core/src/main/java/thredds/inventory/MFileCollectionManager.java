@@ -13,7 +13,6 @@ import thredds.inventory.filter.RegExpMatchOnName;
 import thredds.inventory.filter.WildcardMatchOnName;
 import thredds.inventory.filter.WildcardMatchOnPath;
 import ucar.nc2.time.CalendarDate;
-import ucar.nc2.units.TimeDuration;
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
 import java.io.IOException;
@@ -132,7 +131,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
       protoChoice = config.protoConfig.choice;
 
     if (config.updateConfig != null) {
-      this.recheck = makeRecheck(config.updateConfig.recheckAfter);
+      makeRecheck(config.updateConfig.recheckAfter);
 
       // static means never rescan on checkState; let it be externally triggered.
       if ((config.updateConfig.recheckAfter == null) && (config.updateConfig.rescan == null)
@@ -149,7 +148,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
   private long parseOlderThanFilter(String olderThan) {
     if (olderThan != null) {
       try {
-        TimeDuration tu = new TimeDuration(olderThan);
+        thredds.client.catalog.TimeDuration tu = thredds.client.catalog.TimeDuration.parse(olderThan);
         return (long) (1000 * tu.getValueInSeconds());
       } catch (Exception e) {
         logger.error(collectionName + ": Invalid time unit for olderThan = {}", olderThan);
@@ -158,15 +157,15 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
     return -1;
   }
 
-  private TimeDuration makeRecheck(String recheckS) {
+  private void makeRecheck(String recheckS) {
     if (recheckS != null) {
       try {
-        return new TimeDuration(recheckS);
+        this.recheck = new ucar.nc2.units.TimeDuration(recheckS);
+        this.recheckEvery = thredds.client.catalog.TimeDuration.parse(recheckS);
       } catch (Exception e) {
         logger.error(collectionName + ": Invalid time unit for recheckEvery = {}", recheckS);
       }
     }
-    return null;
   }
 
   // for subclasses
@@ -220,7 +219,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
    */
   private MFileCollectionManager(String collectionName, String recheckS) {
     super(collectionName, null);
-    this.recheck = makeRecheck(recheckS);
+    makeRecheck(recheckS);
     this.olderThanInMsecs = -1;
     this.protoChoice = FeatureCollectionConfig.ProtoChoice.Penultimate;
   }
@@ -247,7 +246,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
 
     if (olderS != null) {
       try {
-        TimeDuration tu = new TimeDuration(olderS);
+        thredds.client.catalog.TimeDuration tu = thredds.client.catalog.TimeDuration.parse(olderS);
         filters.addAndFilter(new LastModifiedLimit((long) (1000 * tu.getValueInSeconds())));
       } catch (Exception e) {
         logger.error(collectionName + ": Invalid time unit for olderThan = {}", olderS);

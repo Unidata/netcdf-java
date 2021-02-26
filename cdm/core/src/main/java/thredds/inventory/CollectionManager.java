@@ -5,7 +5,6 @@
 
 package thredds.inventory;
 
-import ucar.nc2.units.TimeDuration;
 import java.io.IOException;
 
 /**
@@ -70,7 +69,7 @@ import java.io.IOException;
  */
 public interface CollectionManager extends MCollection {
   /**
-   * static means doesnt need to be monitored for changes; can be externally triggered, or read in at startup.
+   * Static means doesnt need to be monitored for changes; can be externally triggered, or read in at startup.
    * true if no recheckAfter and no update.rescan
    * 
    * @return if static
@@ -95,8 +94,17 @@ public interface CollectionManager extends MCollection {
    * Get how often to rescan
    *
    * @return time duration of rescan period, or null if none.
+   * @deprecated use getRecheckEvery()
    */
-  TimeDuration getRecheck();
+  @Deprecated
+  ucar.nc2.units.TimeDuration getRecheck();
+
+  /**
+   * Get how often to rescan
+   *
+   * @return time duration of rescan period, or null if none.
+   */
+  thredds.client.catalog.TimeDuration getRecheckEvery();
 
   /**
    * Compute whether rescan is needed, based on getRecheck(), and the LastScanned value.

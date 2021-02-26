@@ -7,10 +7,13 @@ package ucar.nc2.ui.widget;
 
 import thredds.ui.datatype.prefs.DateField;
 import thredds.ui.datatype.prefs.DurationField;
+import ucar.nc2.time.CalendarDateFormatter;
+import ucar.nc2.units.DateRange;
+import ucar.nc2.units.DateType;
+import ucar.nc2.units.TimeDuration;
 import ucar.ui.event.ActionSourceListener;
 import ucar.ui.event.ActionValueEvent;
 import ucar.ui.event.ActionValueListener;
-import ucar.nc2.units.*;
 import ucar.ui.prefs.Field;
 import ucar.ui.prefs.FieldValidator;
 import ucar.ui.prefs.PrefPanel;
@@ -92,7 +95,9 @@ public class RangeDateSelector extends JPanel implements FieldValidator {
    * @param enableButton add an enable Button
    * @param help optional help text
    * @param pointOnly if user can only select one point, otherwise can select a range of dates.
+   * @deprecated use ?
    */
+  @Deprecated
   public RangeDateSelector(String title, DateRange range, boolean enableButton, boolean acceptButton, String help,
       boolean pointOnly, boolean useLimits) {
     this.title = title;
@@ -306,8 +311,6 @@ public class RangeDateSelector extends JPanel implements FieldValidator {
     };
   }
 
-  private DateFormatter formatter = new DateFormatter();
-
   public boolean validate(Field fld, Object editValue, StringBuffer errMessages) {
     if (!useLimits)
       return true;
@@ -327,7 +330,7 @@ public class RangeDateSelector extends JPanel implements FieldValidator {
     Date d = checkVal.getDate();
     if (d.after(maxLimit.getDate()) || d.before(minLimit.getDate())) {
       errMessages.append("Date ");
-      errMessages.append(formatter.toDateTimeString(d));
+      errMessages.append(CalendarDateFormatter.toDateTimeString(d));
       errMessages.append(" must be between ");
       errMessages.append(minLimit.getText());
       errMessages.append(" and ");

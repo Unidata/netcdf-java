@@ -25,7 +25,9 @@ import ucar.nc2.util.Misc;
 /**
  * Represents a list of offset times shared among variables
  * Tracks a list of variables that all have the same list of offset times.
+ * @deprecated DO NOT USE
  */
+@Deprecated
 public class TimeCoord implements Comparable<TimeCoord> {
   public static final TimeCoord EMPTY = new TimeCoord(CalendarDate.of(new Date()), new double[0]);
 

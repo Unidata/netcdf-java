@@ -7,8 +7,9 @@ package thredds.client.catalog;
 import com.google.common.collect.ImmutableSet;
 import thredds.client.catalog.builder.AccessBuilder;
 import thredds.client.catalog.builder.DatasetBuilder;
-import ucar.nc2.units.DateRange;
-import ucar.nc2.units.DateType;
+import ucar.nc2.time.CalendarDate;
+
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,7 +33,10 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
   public static final String DataFormatType = "DataFormatType"; // String
   public static final String Datasets = "Datasets"; // unmodifiable List<Dataset>
   public static final String DataSize = "DataSize"; // Long
-  public static final String Dates = "Dates"; // DateType or List of DateType
+  @Deprecated
+  public static final String Dates = "Dates"; // ucar.nc2.units.DateType or List<ucar.nc2.units.DateType>
+  public static final String DateTypes = "DateTypes"; // thredds.client.catalog.DateType or
+                                                      // List<thredds.client.catalog.DateType>
   public static final String Documentation = "Documentation"; // Documentation or List of Documentation
   public static final String FeatureType = "FeatureType"; // String
   public static final String GeospatialCoverage = "GeospatialCoverage"; // ThreddsMetadata.GeospatialCoverage
@@ -47,7 +51,9 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
   public static final String RestrictAccess = "RestrictAccess"; // String
   public static final String ServiceName = "ServiceName"; // String
   public static final String ThreddsMetadataInheritable = "ThreddsMetadataInheritable"; // ThreddsMetadata
-  public static final String TimeCoverage = "TimeCoverage"; // DateRange
+  @Deprecated
+  public static final String TimeCoverage = "TimeCoverage"; // ucar.nc2.units.DateRange
+  public static final String TimeCoverageNew = "TimeCoverageNew"; // TimeCoverage
   public static final String VariableGroups = "VariableGroups"; // VariableGroup or List of VariableGroup
   public static final String VariableMapLinkURI = "VariableMapLinkURI"; // ThreddsMetadata.UriResolved
   public static final String UrlPath = "UrlPath"; // String
@@ -136,6 +142,7 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
     }
   }
 
+  @Nullable
   public Access getAccess(ServiceType type) {
     for (Access acc : getAccess())
       if (acc.getService().getType() == type)
@@ -169,6 +176,7 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
    *
    * @return URL to this dataset.
    */
+  @Nullable
   public String getCatalogUrl() {
     Catalog parent = getParentCatalog();
     if (parent == null)
@@ -181,6 +189,7 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
 
   /////////////////////////////////////////////////////
   // non-inheritable metadata
+  @Nullable
   public String getCollectionType() {
     return (String) flds.get(CollectionType);
   }
@@ -194,23 +203,28 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
     return (result != null) && result;
   }
 
+  @Nullable
   public String getId() {
     return (String) flds.get(Id);
   }
 
+  @Nullable
   public String getID() {
     return getId();
   }
 
+  @Nullable
   public String getUrlPath() {
     return (String) flds.get(UrlPath);
   }
 
+  @Nullable
   public String getIdOrPath() {
     String id = getId();
     return (id != null) ? id : getUrlPath();
   }
 
+  @Nullable
   public org.jdom2.Element getNcmlElement() {
     return (org.jdom2.Element) getLocalField(Dataset.Ncml);
   }
@@ -219,10 +233,12 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
   // inheritable metadata
 
   @Override
+  @Nullable
   public Object getLocalField(String fldName) {
     return flds.get(fldName);
   }
 
+  @Nullable
   Object getInheritedOnlyField(String fldName) {
     ThreddsMetadata tmi = (ThreddsMetadata) flds.get(ThreddsMetadataInheritable);
     if (tmi != null) {
@@ -234,6 +250,7 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
     return (parent == null) ? null : parent.getInheritedOnlyField(fldName);
   }
 
+  @Nullable
   Object getInheritedField(String fldName) {
     Object value = flds.get(fldName);
     if (value != null)
@@ -241,14 +258,17 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
     return getInheritedOnlyField(fldName);
   }
 
+  @Nullable
   public String getAuthority() {
     return (String) getInheritedField(Authority);
   }
 
+  @Nullable
   public String getDataFormatName() {
     return (String) getInheritedField(DataFormatType);
   }
 
+  @Nullable
   public ucar.nc2.constants.DataFormatType getDataFormatType() {
     String name = getDataFormatName();
     if (name == null)
@@ -270,6 +290,7 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
     return (size != null) && size > 0;
   }
 
+  @Nullable
   public ucar.nc2.constants.FeatureType getFeatureType() {
     String name = getFeatureTypeName();
     try {
@@ -279,18 +300,22 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
     }
   }
 
+  @Nullable
   public String getFeatureTypeName() {
     return (String) getInheritedField(FeatureType);
   }
 
+  @Nullable
   public ThreddsMetadata.GeospatialCoverage getGeospatialCoverage() {
     return (ThreddsMetadata.GeospatialCoverage) getInheritedField(GeospatialCoverage);
   }
 
+  @Nullable
   public String getServiceNameDefault() {
     return (String) getInheritedField(ServiceName);
   }
 
+  @Nullable
   public Service getServiceDefault() {
     Catalog cat = getParentCatalog();
     if (cat == null)
@@ -302,10 +327,19 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
     return (String) getInheritedField(RestrictAccess);
   }
 
-  public DateRange getTimeCoverage() {
-    return (DateRange) getInheritedField(TimeCoverage);
+  /** @deprecated use getTimeCoverageNew() */
+  @Deprecated
+  @Nullable
+  public ucar.nc2.units.DateRange getTimeCoverage() {
+    return (ucar.nc2.units.DateRange) getInheritedField(TimeCoverage);
   }
 
+  @Nullable
+  public TimeCoverage getTimeCoverageNew() {
+    return (TimeCoverage) getInheritedField(TimeCoverageNew);
+  }
+
+  @Nullable
   public ThreddsMetadata.UriResolved getVariableMapLink() {
     return (ThreddsMetadata.UriResolved) getInheritedField(VariableMapLinkURI);
   }
@@ -351,9 +385,15 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
     return (List<ThreddsMetadata.Contributor>) getInheritedFieldAsList(Dataset.Contributors);
   }
 
-  public List<DateType> getDates() {
-    return (List<DateType>) getInheritedFieldAsList(Dates);
+  /** @deprecated use getDateTypes() */
+  @Deprecated
+  public List<ucar.nc2.units.DateType> getDates() {
+    return (List<ucar.nc2.units.DateType>) getInheritedFieldAsList(Dates);
   } // prob only one type
+
+  public List<thredds.client.catalog.DateType> getDateTypes() {
+    return (List<thredds.client.catalog.DateType>) getInheritedFieldAsList(DateTypes);
+  }
 
   public List<Documentation> getDocumentation() {
     return (List<Documentation>) getInheritedFieldAsList(Documentation);
@@ -386,6 +426,7 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
   }
 
   // find the first property with that name
+  @Nullable
   public String findProperty(String name) {
     Property result = null;
     for (Property p : getProperties()) {
@@ -411,6 +452,7 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
     return (List<ThreddsMetadata.VariableGroup>) getInheritedFieldAsList(Dataset.VariableGroups);
   }
 
+  @Nullable
   public String getDocumentation(String type) {
     for (Documentation doc : getDocumentation()) {
       String dtype = doc.getType();
@@ -423,6 +465,7 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
   /**
    * @return specific type of documentation = history
    */
+  @Nullable
   public String getHistory() {
     return getDocumentation("history");
   }
@@ -430,6 +473,7 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
   /**
    * @return specific type of documentation = processing_level
    */
+  @Nullable
   public String getProcessing() {
     return getDocumentation("processing_level");
   }
@@ -437,6 +481,7 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
   /**
    * @return specific type of documentation = rights
    */
+  @Nullable
   public String getRights() {
     return getDocumentation("rights");
   }
@@ -444,14 +489,29 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
   /**
    * @return specific type of documentation = summary
    */
+  @Nullable
   public String getSummary() {
     return getDocumentation("summary");
   }
 
-  public DateType getLastModifiedDate() {
-    for (DateType dateType : getDates()) {
+  /** @deprecated use getLastModifiedCalendarDate */
+  @Deprecated
+  @Nullable
+  public ucar.nc2.units.DateType getLastModifiedDate() {
+    for (ucar.nc2.units.DateType dateType : getDates()) {
       if ((dateType.getType() != null) && dateType.getType().equals("modified")) {
         return dateType;
+      }
+    }
+    return null;
+  }
+
+  /** Find a DateType with type "modified", return it as a CalendarDate. */
+  @Nullable
+  public CalendarDate getLastModifiedCalendarDate() {
+    for (DateType dateType : getDateTypes()) {
+      if ((dateType.getType() != null) && dateType.getType().equals("modified")) {
+        return dateType.getCalendarDate();
       }
     }
     return null;

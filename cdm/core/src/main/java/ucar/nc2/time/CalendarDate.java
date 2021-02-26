@@ -5,6 +5,8 @@
 package ucar.nc2.time;
 
 import java.util.GregorianCalendar;
+
+import com.google.common.base.Preconditions;
 import org.joda.time.Chronology;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeFieldType;
@@ -16,6 +18,7 @@ import javax.annotation.concurrent.Immutable;
  * A Calendar Date. Replaces java.util.Date.
  * Allows non-standard calendars. Default is Calendar.gregorian.
  * Always in UTC time zone.
+ * LOOK should a CalendarDate have a CalendarDateUnit?
  *
  * @author caron
  * @since 3/21/11
@@ -149,8 +152,9 @@ public class CalendarDate implements Comparable<CalendarDate> {
    */
   public static CalendarDate parseISOformat(String calendarName, String isoDateString) throws IllegalArgumentException {
     Calendar cal = Calendar.get(calendarName);
-    if (cal == null)
+    if (cal == null) {
       cal = Calendar.getDefault();
+    }
     return CalendarDateFormatter.isoStringToCalendarDate(cal, isoDateString);
   }
 
@@ -158,19 +162,33 @@ public class CalendarDate implements Comparable<CalendarDate> {
    * Get CalendarDate from udunit date string
    * 
    * @param calendarName get Calendar from Calendar.get(calendarName). may be null
-   * @param udunits must be value (space) udunits string
+   * @param udunitString must be valid udunits string
    * @return CalendarDate
+   * @throws IllegalArgumentException if udunitString is not parseable
    */
-  public static CalendarDate parseUdunits(String calendarName, String udunits) {
-    int pos = udunits.indexOf(' ');
+  public static CalendarDate parseUdunits(String calendarName, String udunitString) {
+    int pos = udunitString.indexOf(' ');
     if (pos < 0)
       return null;
-    String valString = udunits.substring(0, pos).trim();
-    String unitString = udunits.substring(pos + 1).trim();
+    String valString = udunitString.substring(0, pos).trim();
+    String unitString = udunitString.substring(pos + 1).trim();
 
     CalendarDateUnit cdu = CalendarDateUnit.of(calendarName, unitString);
     double val = Double.parseDouble(valString);
     return cdu.makeCalendarDate(val);
+  }
+
+  /**
+   * Get CalendarDateUnit from udunit date string, by throwing away the value if it exists.
+   *
+   * @param calendarName get Calendar from Calendar.get(calendarName). may be null
+   * @param udunits must be value (space) udunits string
+   * @return CalendarDate
+   */
+  public static CalendarDateUnit parseUdunitsUnit(String calendarName, String udunits) {
+    int pos = udunits.indexOf(' ');
+    String unitString = udunits.substring(pos < 0 ? 0 : pos + 1).trim();
+    return CalendarDateUnit.of(calendarName, unitString);
   }
 
   // internal use only
@@ -183,9 +201,9 @@ public class CalendarDate implements Comparable<CalendarDate> {
   private final DateTime dateTime;
   private final Calendar cal;
 
-  CalendarDate(Calendar cal, DateTime dateTime) {
+  CalendarDate(@Nullable Calendar cal, DateTime dateTime) {
     this.cal = cal == null ? Calendar.getDefault() : cal;
-    this.dateTime = dateTime;
+    this.dateTime = Preconditions.checkNotNull(dateTime);
   }
 
   public Calendar getCalendar() {

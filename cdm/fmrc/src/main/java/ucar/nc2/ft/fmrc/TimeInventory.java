@@ -11,7 +11,9 @@ package ucar.nc2.ft.fmrc;
  *
  * @author caron
  * @since Apr 15, 2010
+ * @deprecated DO NOT USE
  */
+@Deprecated
 public interface TimeInventory {
   String getName();
 

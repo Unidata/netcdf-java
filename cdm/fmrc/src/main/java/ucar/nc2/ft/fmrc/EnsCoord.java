@@ -14,7 +14,9 @@ import java.util.ArrayList;
  *
  * @author caron
  * @since Jan 12, 2010
+ * @deprecated DO NOT USE
  */
+@Deprecated
 public class EnsCoord implements Comparable {
   private String name; // , units;
   private int id; // unique id for XML

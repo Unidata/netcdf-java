@@ -25,7 +25,9 @@ import java.util.*;
  *
  * @author caron
  * @since Jan 11, 2010
+ * @deprecated DO NOT USE
  */
+@Deprecated
 @Immutable
 public class FmrcInv {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FmrcInv.class);

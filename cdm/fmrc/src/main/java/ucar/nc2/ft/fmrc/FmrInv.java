@@ -21,7 +21,9 @@ import java.util.*;
  * 
  * @author caron
  * @since Jan 11, 2010
+ * @deprecated DO NOT USE
  */
+@Deprecated
 public class FmrInv implements Comparable<FmrInv> {
   private final List<TimeCoord> timeCoords = new ArrayList<>(); // list of unique TimeCoord
   private final List<EnsCoord> ensCoords = new ArrayList<>(); // list of unique EnsCoord

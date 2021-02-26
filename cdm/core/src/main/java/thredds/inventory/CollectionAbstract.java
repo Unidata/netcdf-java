@@ -5,11 +5,11 @@
 
 package thredds.inventory;
 
+import thredds.client.catalog.TimeDuration;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.filesystem.MFileOS7;
 import thredds.inventory.partition.DirectoryCollection;
 import ucar.nc2.time.CalendarDate;
-import ucar.nc2.units.TimeDuration;
 import ucar.unidata.util.StringUtil2;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -278,7 +278,8 @@ public abstract class CollectionAbstract implements MCollection {
   protected long parseOlderThanString(String olderThan) {
     if (olderThan != null) {
       try {
-        TimeDuration tu = new TimeDuration(olderThan);
+        // LOOK Probably should use something in nc2.time
+        TimeDuration tu = TimeDuration.parse(olderThan);
         return (long) (1000 * tu.getValueInSeconds());
       } catch (Exception e) {
         logger.error(collectionName + ": Invalid time unit for olderThan = {}", olderThan);
