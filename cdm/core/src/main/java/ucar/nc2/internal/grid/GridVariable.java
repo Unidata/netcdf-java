@@ -53,11 +53,6 @@ public class GridVariable implements Grid {
   }
 
   @Override
-  public AttributeContainer attributes() {
-    return vds.attributes();
-  }
-
-  @Override
   public ArrayType getArrayType() {
     return vds.getArrayType();
   }

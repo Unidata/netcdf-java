@@ -417,7 +417,7 @@ public class TestGridSubset {
       GridCoordSystem gcs2 = grid_section.getCoordinateSystem();
       assert null != gcs2;
 
-      System.out.printf("result lat/lon bbox = %s%n", gcs2.getLatLonBoundingBox().toStringSpec());
+      System.out.printf("result lat/lon bbox = %s%n", gcs2.getLatLonBoundingBox().toString());
       System.out.printf("result bbox = %s%n", gcs2.getBoundingBox().toString());
 
       LatLonRect expectLBB = new LatLonRect.Builder("-0.043318, -0.043487, 21.202380, 44.559265").build();

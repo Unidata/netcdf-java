@@ -12,8 +12,11 @@ import ucar.array.ArrayType;
 @AutoValue
 public abstract class GridReferencedArray {
   public abstract String gridName();
-  public abstract DataType dataType();
+
+  public abstract ArrayType arrayType();
+
   public abstract Array<Number> data(); // not reduced
+
   public abstract GridCoordinateSystem csSubset();
 
   public static GridReferencedArray create(String gridName, ArrayType arrayType, Array<Number> data,
