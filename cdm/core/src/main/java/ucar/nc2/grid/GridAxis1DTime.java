@@ -241,7 +241,6 @@ public class GridAxis1DTime extends GridAxis1D {
         if (rundate != null) {
           return helper.subsetClosest(rundate);
         }
-
         if (params.getRunTimeAll()) {
           break;
         }

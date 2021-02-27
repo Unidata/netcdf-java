@@ -5,16 +5,13 @@
 package ucar.nc2.grid;
 
 import com.google.common.collect.Iterables;
-import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.spi.GridDatasetProvider;
 import ucar.nc2.internal.grid.GridNetcdfDataset;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.Formatter;
 import java.util.Optional;
-import java.util.ServiceLoader;
 
 /** Open Grid Datasets. */
 public class GridDatasetFactory {
@@ -22,15 +19,6 @@ public class GridDatasetFactory {
   /** Open a NetcdfDataset and wrap as a GridDataset. Return null if its not a gridDataset. */
   @Nullable
   public static GridDataset openGridDataset(String endpoint, Formatter errLog) throws IOException {
-
-    // look for dynamically loaded GridDatasetProvider (eg cdmr)
-    for (GridDatasetProvider provider : ServiceLoader.load(GridDatasetProvider.class)) {
-      DatasetUrl durl = DatasetUrl.findDatasetUrl(endpoint);
-      if (provider.isOwnerOf(durl)) {
-        return provider.open(durl.getTrueurl(), null);
-      }
-    }
-
     // Otherwise, wrap a NetcdfDataset
     NetcdfDataset ds = ucar.nc2.dataset.NetcdfDatasets.openDataset(endpoint);
     Optional<GridNetcdfDataset> result =
@@ -43,5 +31,4 @@ public class GridDatasetFactory {
 
     return result.get();
   }
-
 }

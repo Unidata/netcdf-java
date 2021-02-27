@@ -354,7 +354,7 @@ public class TestGridSubset {
       LatLonRect expectLBB = new LatLonRect.Builder("-0.043318, -0.043487, 21.202380, 44.559265").build();
       assert (expectLBB.nearlyEquals(gcs2.getLatLonBoundingBox()));
 
-      ProjectionRect expectBB = new ProjectionRect("-4.502221, -4.570379, 3925.936303, 2148.077947");
+      ProjectionRect expectBB = ProjectionRect.fromSpec("-4.502221, -4.570379, 3925.936303, 2148.077947");
       assert (expectBB.nearlyEquals(gcs2.getBoundingBox()));
     }
   }
@@ -387,7 +387,7 @@ public class TestGridSubset {
       LatLonRect expectLBB = new LatLonRect.Builder("46.992792, -103.156421, 0.540102, 14.635361").build();
       assert (expectLBB.nearlyEquals(gcs2.getLatLonBoundingBox()));
 
-      ProjectionRect expectBB = new ProjectionRect("-25.000000, -25.000000, 1250.000000, 50.000000");
+      ProjectionRect expectBB = ProjectionRect.fromSpec("-25.000000, -25.000000, 1250.000000, 50.000000");
       assert (expectBB.nearlyEquals(gcs2.getBoundingBox()));
 
       CoordinateAxis xaxis = gcs.getXHorizAxis();
@@ -423,7 +423,7 @@ public class TestGridSubset {
       LatLonRect expectLBB = new LatLonRect.Builder("-0.043318, -0.043487, 21.202380, 44.559265").build();
       assert (expectLBB.nearlyEquals(gcs2.getLatLonBoundingBox()));
 
-      ProjectionRect expectBB = new ProjectionRect("-4.502221, -4.570379, 2148.077947, 3925.936303");
+      ProjectionRect expectBB = ProjectionRect.fromSpec("-4.502221, -4.570379, 2148.077947, 3925.936303");
       assert (expectBB.nearlyEquals(gcs2.getBoundingBox()));
     }
   }

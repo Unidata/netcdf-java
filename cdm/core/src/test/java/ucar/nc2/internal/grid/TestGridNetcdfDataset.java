@@ -33,6 +33,8 @@ public class TestGridNetcdfDataset {
         fail();
       }
       GridNetcdfDataset gridDataset = result.get();
+      assertThat(gridDataset.getGridCoordinateSystems()).hasSize(4);
+      assertThat(gridDataset.getGridCoordinateSystems()).hasSize(4);
       assertThat(gridDataset.getGridAxes()).hasSize(10);
       assertThat(gridDataset.getGridCoordinateSystems()).hasSize(4);
       assertThat(gridDataset.getGrids()).hasSize(4);

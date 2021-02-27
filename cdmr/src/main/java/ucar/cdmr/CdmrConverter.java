@@ -13,17 +13,32 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import ucar.array.*;
+import ucar.array.ArrayByte;
+import ucar.array.ArrayType;
+import ucar.array.ArrayVlen;
+import ucar.array.Arrays;
+import ucar.array.StructureData;
+import ucar.array.StructureDataArray;
+import ucar.array.StructureDataStorageBB;
+import ucar.array.StructureMembers;
 import ucar.array.StructureMembers.Member;
 import ucar.array.StructureMembers.MemberBuilder;
 import ucar.cdmr.CdmrNetcdfProto.Data;
 import ucar.cdmr.CdmrNetcdfProto.StructureDataProto;
 import ucar.cdmr.CdmrNetcdfProto.StructureMemberProto;
+import ucar.array.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 import ucar.ma2.Section;
-import ucar.nc2.*;
+import ucar.nc2.Attribute;
+import ucar.nc2.AttributeContainer;
+import ucar.nc2.AttributeContainerMutable;
+import ucar.nc2.Dimension;
+import ucar.nc2.EnumTypedef;
+import ucar.nc2.Group;
+import ucar.nc2.Sequence;
+import ucar.nc2.Structure;
+import ucar.nc2.Variable;
 
 /** Convert between CdmRemote Protos and Netcdf objects, using ucar.ma2.Array for data. */
 public class CdmrConverter {

@@ -21,8 +21,8 @@ public class GridSubset {
 
   public static final String latlonBB = "latlonBB"; // value = LatLonRect
   public static final String projBB = "projBB"; // value = ProjectionRect
-  public static final String latlonPoint = "latlonPoint"; // value = LatLonPoint
   public static final String horizStride = "horizStride"; // value = Integer
+  public static final String latlonPoint = "latlonPoint"; // value = LatLonPoint
 
   public static final String runtime = "runtime"; // value = CalendarDate
   public static final String runtimeLatest = "runtimeLatest"; // value = Boolean
@@ -52,10 +52,6 @@ public class GridSubset {
   //////////////////////////////////////////////////////////////////////////////////////////////////////
 
   private final Map<String, Object> req = new HashMap<>();
-
-  public Set<Map.Entry<String, Object>> getEntries() {
-    return req.entrySet();
-  }
 
   @Nullable
   private Object get(String key) {
@@ -114,7 +110,6 @@ public class GridSubset {
     throw new RuntimeException(key + " not a CalendarDateRange " + val);
   }
 
-  @Nullable
   private CoordInterval getCoordInterval(String key) {
     Object val = req.get(key);
     if (val == null) {
@@ -161,6 +156,12 @@ public class GridSubset {
     return this;
   }
 
+  public Set<Map.Entry<String, Object>> getEntries() {
+    return req.entrySet();
+  }
+
+  ////////////////////////////////////////////////////
+
   @Nullable
   public Integer getHorizStride() {
     return getInteger(horizStride);
@@ -172,7 +173,7 @@ public class GridSubset {
   }
 
   public GridSubset setEnsCoord(Object coord) {
-    Preconditions.checkArgument(coord instanceof Number);
+    Preconditions.checkArgument(coord instanceof Double);
     req.put(ensCoord, coord);
     return this;
   }
@@ -303,10 +304,8 @@ public class GridSubset {
       req.put(timePoint, coord);
     } else if (coord instanceof CoordInterval) {
       req.put(timeIntv, coord);
-    } else if (coord instanceof CalendarDate) {
-      req.put(time, coord);
     } else {
-      throw new RuntimeException("setTimeCoord must be Number or CoordInterval " + coord.getClass().getName());
+      throw new RuntimeException("setTimeCoord must be Number or CoordInterval " + coord);
     }
     return this;
   }

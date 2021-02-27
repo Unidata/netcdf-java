@@ -358,6 +358,7 @@ public class GridCS implements GridCoordinateSystem {
     private Projection projection;
     private ArrayList<GridAxis> axes = new ArrayList<>();
     private List<String> axesNames;
+    private List<String> transformNames;
 
     private boolean built;
 

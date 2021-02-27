@@ -17,7 +17,6 @@ import java.util.Formatter;
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.fail;
 
-/** Test reading {@link GridDataset} from files. */
 public class TestReadGridDataset {
 
   @Test
