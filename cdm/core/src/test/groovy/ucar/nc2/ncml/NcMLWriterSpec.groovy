@@ -136,7 +136,7 @@ recordsGroup/recordsStruct = UNREADABLE
   <dimension name="time" length="3" isUnlimited="true" />
   <variable name="dessert" shape="time" type="enum2" typedef="dessertType">
     <attribute name="zero" type="ulong" />
-    <values>18.0 268.0 3284.0</values>
+    <values>18 268 3284</values>
   </variable>
   <variable name="time" shape="time" type="short">
     <values start="4.0" increment="1.0" npts="3" />

@@ -476,12 +476,23 @@ public class NcmlWriter {
       }
 
       // not regular
-      boolean isRealType = (variable.getDataType() == DataType.DOUBLE) || (variable.getDataType() == DataType.FLOAT);
       IndexIterator iter = a.getIndexIterator();
-      buff.append(isRealType ? iter.getDoubleNext() : iter.getIntNext());
+      boolean first = true;
       while (iter.hasNext()) {
-        buff.append(" ");
-        buff.append(isRealType ? iter.getDoubleNext() : iter.getIntNext());
+        if (!first)
+          buff.append(" ");
+        switch (variable.getDataType()) {
+          case FLOAT:
+            buff.append(iter.getFloatNext());
+            break;
+          case DOUBLE:
+            buff.append(iter.getDoubleNext());
+            break;
+          default:
+            buff.append(iter.getIntNext());
+            break;
+        }
+        first = false;
       }
       elem.setText(buff.toString());
 
