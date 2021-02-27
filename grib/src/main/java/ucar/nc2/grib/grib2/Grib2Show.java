@@ -13,6 +13,7 @@ import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.nc2.grib.grib2.table.WmoTemplateTables;
 import ucar.nc2.grib.grib2.table.WmoTemplateTables.TemplateTable;
 import ucar.nc2.internal.wmo.CommonCodeTable;
+
 import java.util.Formatter;
 
 /**
@@ -94,10 +95,9 @@ public class Grib2Show {
     showPdsTemplate(pdss, f, cust);
     if (pds.getExtraCoordinatesCount() > 0) {
       float[] coords = pds.getExtraCoordinates();
-      if (coords != null) {
-        f.format("Hybrid Coordinates (%d) %n  ", coords.length);
-        for (float fc : coords)
-          f.format("%10.5f ", fc);
+      f.format("Hybrid Coordinates (%d) %n  ", coords.length);
+      for (float fc : coords) {
+        f.format("%10.5f ", fc);
       }
       f.format("%n%n");
     }
@@ -176,20 +176,21 @@ public class Grib2Show {
     f.format("  Level=%f/%f %s; level name =  (%s)%n", pds.getLevelValue1(), pds.getLevelValue1(), levelUnit.getUnits(),
         cust.getLevelNameShort(pds.getLevelType1()));
 
-    String intvName = "none";
+    f.format("  Time Unit=%s%n", Grib2Utils.getCalendarPeriod(pds.getTimeUnit()));
+    f.format("  ReferenceDate  =%s%n", gr.getReferenceDate());
+    f.format("  ForecastDate   =%s%n", cust.getForecastDate(gr));
+    f.format("  ForecastDateBeg=%s%n", cust.getForecastDateBeg(gr));
+
     if (pds instanceof Grib2Pds.PdsInterval) {
       Grib2Pds.PdsInterval pdsi = (Grib2Pds.PdsInterval) pds;
+      f.format("  TimeIntervalEnd=%s%n", pdsi.getIntervalTimeEnd());
       Grib2Pds.TimeInterval[] ti = pdsi.getTimeIntervals();
       int statType = ti[0].statProcessType;
-      intvName = cust.getStatisticNameShort(statType);
+      String intvName = cust.getStatisticNameShort(statType);
+      f.format("%n  TimeInterval Stat=%s%n", intvName);
+      f.format("  TimeInterval   =%s%n", cust.getForecastTimeInterval(gr));
+      f.format("  TimeIntervalNew=%s%n", cust.getForecastTimeIntervalNew(gr));
     }
-
-    f.format("  Time Unit=%s; Stat=%s%n", Grib2Utils.getCalendarPeriod(pds.getTimeUnit()), intvName);
-    f.format("  ReferenceDate=%s%n", gr.getReferenceDate());
-    f.format("  ForecastDate=%s%n", cust.getForecastDate(gr));
-    TimeCoordIntvDateValue intv = cust.getForecastTimeInterval(gr);
-    if (intv != null)
-      f.format("  TimeInterval=%s%n", intv);
     f.format("%n");
     pds.show(f);
 

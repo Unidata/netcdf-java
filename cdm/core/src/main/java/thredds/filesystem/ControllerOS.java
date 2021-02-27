@@ -103,7 +103,7 @@ public class ControllerOS implements MController {
 
   ////////////////////////////////////////////////////////////
 
-  // handles filtering and removing/including subdirectories
+  // handles filtering and removing/including subdirectories LOOK use AbstractIterator
   private static class FilteredIterator implements Iterator<MFile> {
     private final Iterator<MFile> orgIter;
     private final CollectionConfig mc;
