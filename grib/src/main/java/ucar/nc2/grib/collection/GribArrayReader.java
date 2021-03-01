@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
 import ucar.array.Array;
 import ucar.array.ArrayType;
 import ucar.array.Arrays;
-import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.RangeIterator;
 import ucar.ma2.Section;
@@ -181,6 +180,8 @@ public abstract class GribArrayReader {
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // Coordinate based subsetting for Coverage
 
+  /** @deprecated FeatureDatasets will move to legacy in ver7, this class will not be public. */
+  @Deprecated
   public Array<?> readData2(CoordsSet want, RangeIterator yRange, RangeIterator xRange) throws IOException {
     if (vindex instanceof PartitionCollectionImmutable.VariableIndexPartitioned)
       return readDataFromPartition2((PartitionCollectionImmutable.VariableIndexPartitioned) vindex, want, yRange,

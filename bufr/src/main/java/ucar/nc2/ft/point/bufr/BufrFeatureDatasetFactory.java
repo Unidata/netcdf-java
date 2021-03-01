@@ -49,10 +49,10 @@ import ucar.unidata.geoloc.LatLonRect;
 
 /**
  * Use BufrConfig to make BUFR files into PointFeatureDataset
- *
- * @author caron
- * @since 8/14/13
+ * 
+ * @deprecated FeatureDatasets will move to legacy in ver7, this class will not be available here.
  */
+@Deprecated
 public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BufrFeatureDatasetFactory.class);
   private static CalendarDateUnit bufrDateUnits = CalendarDateUnit.of(null, "msecs since 1970-01-01T00:00:00");

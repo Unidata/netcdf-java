@@ -1120,13 +1120,16 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
   public abstract ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(Dataset ds, GroupGC group, String filename,
       FeatureCollectionConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException;
 
+  /** @deprecated FeatureDatasets will move to legacy in ver7, this method will not be available. */
+  @Deprecated
   @Nullable
   public abstract ucar.nc2.dt.grid.GridDataset getGridDataset(Dataset ds, GroupGC group, String filename,
       FeatureCollectionConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException;
 
+  /** @deprecated FeatureDatasets will move to legacy in ver7, this method will not be available. */
+  @Deprecated
   @Nullable
   public abstract CoverageCollection getGridCoverage(Dataset ds, GroupGC group, String filename,
       FeatureCollectionConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException;
-
 
 }
