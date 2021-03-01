@@ -8,7 +8,7 @@ package ucar.ma2;
 /**
  * Creates a StructureDataIterator by wrapping a section of a ArrayStructure.
  * 
- * @deprecated do not use.
+ * @deprecated do not use. LOOK move to BUFR if needed.
  */
 @Deprecated
 public class SequenceIterator implements StructureDataIterator {

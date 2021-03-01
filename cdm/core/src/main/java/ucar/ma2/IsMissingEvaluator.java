@@ -3,7 +3,7 @@ package ucar.ma2;
 /**
  * A mix-in interface for evaluating if a value is missing.
  * 
- * @deprecated will move to ucar.array in ver7.
+ * @deprecated use ucar.array.IsMissingEvaluator.
  */
 @Deprecated
 public interface IsMissingEvaluator {

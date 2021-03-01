@@ -7,7 +7,10 @@ package ucar.ma2;
 /**
  * Thrown for an attempt to make a forbidden conversion on primitive data values,
  * eg boolean to double.
+ *
+ * @deprecated use RuntimeException
  */
+@Deprecated
 public final class ForbiddenConversionException extends RuntimeException {
   public ForbiddenConversionException() {}
 

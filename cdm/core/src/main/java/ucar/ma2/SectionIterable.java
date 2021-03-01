@@ -13,8 +13,8 @@ import java.util.List;
  * A Section composed of List<RangeIterator> instead of List<Range>.
  * SectionIterable knows the fullShape of which it is a section.
  * The iteration is over the elements in the section, returning 1D index into the full shape.
- * 
- * @deprecated will move in ver7. TODO could be moved to Grib?
+ *
+ * @deprecated will move to ucar.array in ver7.
  */
 @Deprecated
 @Immutable

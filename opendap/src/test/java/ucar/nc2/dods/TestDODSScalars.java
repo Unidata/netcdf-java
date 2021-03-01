@@ -163,7 +163,7 @@ public class TestDODSScalars {
       double val = v.readScalarDouble();
       assert false;
     } catch (Exception e) {
-      assert e instanceof ucar.ma2.ForbiddenConversionException : e.getClass().getName();
+      assert e instanceof RuntimeException : e.getClass().getName();
     }
 
   }

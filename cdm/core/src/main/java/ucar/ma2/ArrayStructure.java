@@ -70,9 +70,7 @@ import java.util.List;
  * 
  * where XXX is Double or Float
  *
- * @author caron
- * @see Array
- * @see StructureData
+ * @deprecated use ucar.array.StructureDataArray.
  */
 public abstract class ArrayStructure extends Array implements Iterable<StructureData> {
 
