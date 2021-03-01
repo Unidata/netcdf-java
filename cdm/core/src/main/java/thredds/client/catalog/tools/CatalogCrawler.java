@@ -26,10 +26,10 @@ import ucar.nc2.write.Ncdump;
 
 /**
  * Crawl client catalogs
- *
- * @author caron
- * @since 1/11/2015
+ * 
+ * @deprecated FeatureDatasets will move to legacy in ver7, this class will not be available here.
  */
+@Deprecated
 public class CatalogCrawler {
 
   public interface Listener {
