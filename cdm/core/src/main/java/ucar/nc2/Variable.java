@@ -608,7 +608,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    *
    * @throws IOException if theres an IO Error
    * @throws UnsupportedOperationException if not a scalar Variable or one-dimensional of length 1.
-   * @throws ucar.ma2.ForbiddenConversionException if data type not convertible to byte
+   * @throws RuntimeException if data type not convertible to byte
    * @deprecated use (byte) readArray().getScalar();
    */
   @Deprecated
@@ -622,7 +622,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    *
    * @throws IOException if theres an IO Error
    * @throws UnsupportedOperationException if not a scalar Variable or one-dimensional of length 1.
-   * @throws ucar.ma2.ForbiddenConversionException if data type not convertible to byte
+   * @throws RuntimeException if data type not convertible to byte
    * @deprecated use (short) readArray().getScalar();
    */
   @Deprecated
@@ -636,7 +636,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    *
    * @throws IOException if theres an IO Error
    * @throws UnsupportedOperationException if not a scalar Variable or one-dimensional of length 1.
-   * @throws ucar.ma2.ForbiddenConversionException if data type not convertible to byte
+   * @throws RuntimeException if data type not convertible to byte
    * @deprecated use (int) readArray().getScalar();
    */
   @Deprecated
@@ -650,7 +650,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    *
    * @throws IOException if theres an IO Error
    * @throws UnsupportedOperationException if not a scalar Variable
-   * @throws ucar.ma2.ForbiddenConversionException if data type not convertible to byte
+   * @throws RuntimeException if data type not convertible to byte
    * @deprecated use (long) readArray().getScalar();
    */
   @Deprecated
@@ -664,7 +664,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    *
    * @throws IOException if theres an IO Error
    * @throws UnsupportedOperationException if not a scalar Variable or one-dimensional of length 1.
-   * @throws ucar.ma2.ForbiddenConversionException if data type not convertible to byte
+   * @throws RuntimeException if data type not convertible to byte
    * @deprecated use (float) readArray().getScalar();
    */
   @Deprecated
@@ -678,7 +678,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    *
    * @throws IOException if theres an IO Error
    * @throws UnsupportedOperationException if not a scalar Variable or one-dimensional of length 1.
-   * @throws ucar.ma2.ForbiddenConversionException if data type not convertible to byte
+   * @throws RuntimeException if data type not convertible to byte
    * @deprecated use (double) readArray().getScalar();
    */
   @Deprecated

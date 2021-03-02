@@ -27,7 +27,7 @@ import java.util.Iterator;
  *  }
  * </pre>
  * 
- * @deprecated will move in ver7.
+ * @deprecated will move to ucar.array in ver7.
  */
 @Deprecated
 @Immutable

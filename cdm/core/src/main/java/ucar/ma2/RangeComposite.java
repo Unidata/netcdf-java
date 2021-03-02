@@ -13,7 +13,7 @@ import java.util.*;
  * A Composite of other RangeIterators. Used for Lon Axis crossing the seam.
  * Iterate over list in sequence.
  * 
- * @deprecated will move in ver7.
+ * @deprecated not used in ver7.
  */
 @Immutable
 public class RangeComposite implements RangeIterator {

@@ -7,7 +7,7 @@ import java.util.Iterator;
 /**
  * A Range of indices describes by a list, rather than start:stop:stride.
  * 
- * @deprecated will move in ver7. TODO used?
+ * @deprecated do not use.
  */
 @Deprecated
 @Immutable

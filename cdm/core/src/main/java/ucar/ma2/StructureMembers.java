@@ -16,8 +16,10 @@ import ucar.nc2.util.Indent;
 
 /**
  * A Collection of members contained in a StructureData.
- * TODO make immutable
+ * 
+ * @deprecated use ucar.array.StructureMembers.
  */
+@Deprecated
 public final class StructureMembers {
 
   /** @deprecated use Builder */

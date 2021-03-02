@@ -64,11 +64,9 @@ import java.util.List;
  * 
  * where XXX is Double or Float
  *
- * 
- * @author caron
- * @see ArrayStructure
+ * @deprecated use ucar.array.StructureData.
  */
-
+@Deprecated
 public abstract class StructureData {
   public static final StructureData EMPTY = new StructureDataW(StructureMembers.builder().setName("empty").build());
 

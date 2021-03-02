@@ -10,10 +10,9 @@ import java.util.*;
 
 /**
  * Abstract superclass for implementations of CollectionManager.
- *
- * @author caron
- * @since Jan 19, 2010
+ * NOTE: CATALOG will not be supported in ver7 here.
  */
+@Deprecated
 public abstract class CollectionManagerAbstract extends CollectionAbstract implements CollectionManager {
 
   // called from Aggregation, Fmrc, FeatureDatasetFactoryManager
@@ -26,7 +25,6 @@ public abstract class CollectionManagerAbstract extends CollectionAbstract imple
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
   ucar.nc2.units.TimeDuration recheck;
   thredds.client.catalog.TimeDuration recheckEvery;
   private boolean isStatic; // true if theres no update element. It means dont scan if index already exists

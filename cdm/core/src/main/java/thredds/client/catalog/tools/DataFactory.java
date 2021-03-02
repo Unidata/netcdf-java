@@ -54,7 +54,10 @@ public class DataFactory {
    * If fatalError is true, the operation failed, errLog should indicate why.
    * Otherwise, the FeatureType and FeatureDataset is valid.
    * There may still be warning or diagnostic errors in errLog.
+   * 
+   * @deprecated FeatureDatasets will move to legacy in ver7, this class will become private.
    */
+  @Deprecated
   public static class Result implements Closeable {
     public boolean fatalError;
     public Formatter errLog = new Formatter();
@@ -94,7 +97,9 @@ public class DataFactory {
    * @param task may be null
    * @return ThreddsDataFactory.Result check fatalError for validity
    * @throws java.io.IOException on read error
+   * @deprecated FeatureDatasets will move to legacy in ver7, this method will not be available here.
    */
+  @Deprecated
   public DataFactory.Result openFeatureDataset(String urlString, ucar.nc2.util.CancelTask task) throws IOException {
 
     DataFactory.Result result = new DataFactory.Result();
@@ -113,7 +118,9 @@ public class DataFactory {
    * @param task may be null
    * @return ThreddsDataFactory.Result check fatalError for validity
    * @throws java.io.IOException on read error
+   * @deprecated FeatureDatasets will move to legacy in ver7, this method will not be available here.
    */
+  @Deprecated
   public DataFactory.Result openFeatureDataset(FeatureType wantFeatureType, String urlString,
       ucar.nc2.util.CancelTask task) throws IOException {
     DataFactory.Result result = new DataFactory.Result();
@@ -176,12 +183,16 @@ public class DataFactory {
    * @param task allow user to cancel; may be null
    * @return ThreddsDataFactory.Result check fatalError for validity
    * @throws IOException on read error
+   * @deprecated FeatureDatasets will move to legacy in ver7, this method will not be available here.
    */
+  @Deprecated
   @Nonnull
   public DataFactory.Result openFeatureDataset(Dataset Dataset, ucar.nc2.util.CancelTask task) throws IOException {
     return openFeatureDataset(null, Dataset, task, new Result());
   }
 
+  /** @deprecated FeatureDatasets will move to legacy in ver7, this method will not be available here. */
+  @Deprecated
   @Nonnull
   public DataFactory.Result openFeatureDataset(FeatureType wantFeatureType, Dataset ds, ucar.nc2.util.CancelTask task,
       Result result) throws IOException {
@@ -244,7 +255,9 @@ public class DataFactory {
    * @param task may be null
    * @return ThreddsDataFactory.Result check fatalError for validity
    * @throws IOException on read error
+   * @deprecated FeatureDatasets will move to legacy in ver7, this method will not be available here.
    */
+  @Deprecated
   public DataFactory.Result openFeatureDataset(Access access, ucar.nc2.util.CancelTask task) throws IOException {
     Dataset ds = access.getDataset();
     DataFactory.Result result = new Result();

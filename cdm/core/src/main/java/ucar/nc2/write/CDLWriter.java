@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
 import ucar.ma2.DataType;
-import ucar.ma2.ForbiddenConversionException;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.EnumTypedef;
@@ -198,7 +197,7 @@ public class CDLWriter {
         String econst = att.getStringValue(i);
         Integer ecint = en.lookupEnumInt(econst);
         if (ecint == null) {
-          throw new ForbiddenConversionException("Illegal enum constant: " + econst);
+          throw new RuntimeException("Illegal enum constant: " + econst);
         }
         out.format("\"%s\"", encodeString(econst));
       }

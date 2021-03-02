@@ -257,34 +257,41 @@ public class CoordTransformFactory {
     return vb.build(ds.getRootGroup());
   }
 
+  @Nullable
+  public static Class<?> getBuilderClassFor(String transformName) {
+    // do we have a transform registered for this ?
+    for (Transform transform : transformList) {
+      if (transform.transName.equals(transformName)) {
+        return transform.transClass;
+      }
+    }
+    return null;
+  }
+
   /**
    * Make a Projection object from the parameters in a CoverageTransform
-   * 
+   *
    * @param errInfo pass back error information.
    * @return CoordinateTransform, or null if failure.
+   * @deprecated use CoverageTransform.makeProjection().
    */
+  @Deprecated
   @Nullable
   public static Projection makeProjection(CoverageTransform gct, Formatter errInfo) {
     // standard name
-    String transform_name = gct.attributes().findAttributeString(CF.GRID_MAPPING_NAME, null);
+    String transformName = gct.attributes().findAttributeString(CF.GRID_MAPPING_NAME, null);
 
-    if (null == transform_name) {
+    if (null == transformName) {
       errInfo.format("**Failed to find Coordinate Transform name from GridCoordTransform= %s%n", gct);
       return null;
     }
 
-    transform_name = transform_name.trim();
+    transformName = transformName.trim();
 
     // do we have a transform registered for this ?
-    Class<?> builderClass = null;
-    for (Transform transform : transformList) {
-      if (transform.transName.equals(transform_name)) {
-        builderClass = transform.transClass;
-        break;
-      }
-    }
+    Class<?> builderClass = CoordTransformFactory.getBuilderClassFor(transformName);
     if (null == builderClass) {
-      errInfo.format("**Failed to find CoordTransBuilder name= %s from GridCoordTransform= %s%n", transform_name, gct);
+      errInfo.format("**Failed to find CoordTransBuilder name= %s from GridCoordTransform= %s%n", transformName, gct);
       return null;
     }
 

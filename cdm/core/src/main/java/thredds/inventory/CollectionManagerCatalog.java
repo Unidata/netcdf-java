@@ -7,7 +7,6 @@ package thredds.inventory;
 
 import thredds.client.catalog.Access;
 import thredds.client.catalog.Dataset;
-import thredds.client.catalog.DateType;
 import thredds.client.catalog.tools.CatalogCrawler;
 import thredds.client.catalog.tools.DataFactory;
 import ucar.nc2.time.CalendarDate;
@@ -19,10 +18,10 @@ import java.util.List;
 
 /**
  * CollectionManager of datasets from a catalog.
- *
- * @author caron
- * @since Jan 14, 2010
+ * 
+ * @deprecated FeatureDatasets will move to legacy in ver7, this class will not be available here.
  */
+@Deprecated
 @ThreadSafe
 public class CollectionManagerCatalog extends CollectionManagerAbstract implements CatalogCrawler.Listener {
   private static final boolean debug = false;

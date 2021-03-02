@@ -44,10 +44,9 @@ import java.nio.*;
  * except for the possibility of non-atomic read/write on long/doubles. If this is the case, you should probably
  * synchronize your calls. Presumably 64-bit CPUs will make those operations atomic also.
  *
- * @author caron
- * @see Index
- * @see IndexIterator
+ * @deprecated use ucar.array.Array.
  */
+@Deprecated
 public abstract class Array {
 
   /**

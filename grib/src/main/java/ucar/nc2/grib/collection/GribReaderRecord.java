@@ -8,9 +8,8 @@ import javax.annotation.Nonnull;
 import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.nc2.grib.GdsHorizCoordSys;
 
-/**
- * Describe {@link Class}
- */
+/** @deprecated FeatureDatasets will move to legacy in ver7, this class will not be public. */
+@Deprecated
 class GribReaderRecord implements Comparable<GribReaderRecord> {
   int resultIndex; // index into the result array
   final GribCollectionImmutable.Record record;

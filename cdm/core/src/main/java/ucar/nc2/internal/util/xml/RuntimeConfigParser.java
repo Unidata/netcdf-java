@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
 import ucar.nc2.internal.dataset.CoordTransformFactory;
-import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.internal.dataset.CoordSystemFactory;
 
 /**
@@ -101,13 +100,17 @@ public class RuntimeConfigParser {
             continue;
           }
           try {
-            boolean ok = FeatureDatasetFactoryManager.registerFactory(featureType, className);
+            Class<?> c =
+                RuntimeConfigParser.class.getClassLoader().loadClass("ucar.nc2.ft.FeatureDatasetFactoryManager");
+            Method m = c.getMethod("registerFactory", FeatureType.class, String.class);
+            boolean ok = (Boolean) m.invoke(null, featureType, className);
             if (!ok) {
               errlog.format("FeatureDatasetFactory %s not loaded; check your classpath%n", className);
             } else {
               errlog.format("FeatureDatasetFactory added %s%n", className);
             }
           } catch (Exception e) {
+            e.printStackTrace();
             errlog.format("FeatureDatasetFactory %s error='%s'%n", className, e.getMessage());
           }
           break;

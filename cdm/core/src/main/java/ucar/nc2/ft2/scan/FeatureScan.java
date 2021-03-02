@@ -24,7 +24,10 @@ import java.util.*;
 /**
  * Scan a directory, try to open files in various ways.
  * Can be used as a standalone program, which is why its here and not in uicdm module.
+ * 
+ * @deprecated will move to uicdm in ver7.
  */
+@Deprecated
 public class FeatureScan {
   private final String top;
   private final boolean subdirs;

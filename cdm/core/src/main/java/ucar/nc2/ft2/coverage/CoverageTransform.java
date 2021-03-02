@@ -6,9 +6,15 @@ package ucar.nc2.ft2.coverage;
 
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
+import ucar.nc2.constants.CDM;
+import ucar.nc2.constants.CF;
+import ucar.nc2.dataset.ProjectionCT;
 import ucar.nc2.internal.dataset.CoordTransformFactory;
+import ucar.nc2.internal.dataset.transform.horiz.HorizTransformBuilderIF;
 import ucar.nc2.util.Indent;
 import ucar.unidata.geoloc.Projection;
+
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.Formatter;
 
@@ -21,6 +27,7 @@ import java.util.Formatter;
  */
 @Immutable
 public class CoverageTransform {
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoverageTransform.class);
 
   private final String name;
   private final AttributeContainer attributes;
@@ -40,7 +47,7 @@ public class CoverageTransform {
   public Projection getProjection() {
     synchronized (this) {
       if (projection == null && isHoriz) {
-        projection = CoordTransformFactory.makeProjection(this, new Formatter());
+        projection = makeProjection(this, new Formatter());
       }
       return projection;
     }
@@ -74,6 +81,50 @@ public class CoverageTransform {
   /** The attributes contained by this CoverageTransform. */
   public AttributeContainer attributes() {
     return attributes;
+  }
+
+  /**
+   * Make a Projection object from the parameters in a CoverageTransform
+   *
+   * @param errInfo pass back error information.
+   * @return CoordinateTransform, or null if failure.
+   */
+  @Nullable
+  public static Projection makeProjection(CoverageTransform gct, Formatter errInfo) {
+    // standard name
+    String transformName = gct.attributes().findAttributeString(CF.GRID_MAPPING_NAME, null);
+
+    if (null == transformName) {
+      errInfo.format("**Failed to find Coordinate Transform name from GridCoordTransform= %s%n", gct);
+      return null;
+    }
+
+    transformName = transformName.trim();
+
+    // do we have a transform registered for this ?
+    Class<?> builderClass = CoordTransformFactory.getBuilderClassFor(transformName);
+    if (null == builderClass) {
+      errInfo.format("**Failed to find CoordTransBuilder name= %s from GridCoordTransform= %s%n", transformName, gct);
+      return null;
+    }
+
+    // get an instance of that class
+    HorizTransformBuilderIF builder;
+    try {
+      builder = (HorizTransformBuilderIF) builderClass.newInstance();
+    } catch (InstantiationException | IllegalAccessException e) {
+      log.error("Cant create new instance " + builderClass.getName(), e);
+      return null;
+    }
+
+    String units = gct.attributes().findAttributeString(CDM.UNITS, null);
+    builder.setErrorBuffer(errInfo);
+    ProjectionCT.Builder<?> ct = builder.makeCoordinateTransform(gct.attributes(), units);
+    if (ct == null) {
+      return null;
+    }
+
+    return ct.build().getProjection();
   }
 
 }

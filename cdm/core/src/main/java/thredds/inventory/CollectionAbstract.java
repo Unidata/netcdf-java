@@ -57,6 +57,8 @@ import java.util.*;
 public abstract class CollectionAbstract implements MCollection {
   private static final org.slf4j.Logger defaultLog = org.slf4j.LoggerFactory.getLogger("featureCollectionScan");
 
+  /** @deprecated FeatureDatasets will move to legacy in ver7, CATALOG will not be supported in ver7 here. */
+  @Deprecated
   public static final String CATALOG = "catalog:";
   public static final String DIR = "directory:";
   public static final String FILE = "file:";
