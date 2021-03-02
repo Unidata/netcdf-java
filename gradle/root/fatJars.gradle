@@ -7,9 +7,7 @@ buildscript {
 
   repositories {
     mavenCentral()
-    maven {
-      url 'https://plugins.gradle.org/m2/'  // For Gradle plugins.
-    }
+    gradlePluginPortal()
   }
   dependencies {
     classpath buildPlugins.shadow // We want to import the ShadowJar class.
