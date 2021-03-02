@@ -1593,6 +1593,22 @@ public class Variable implements VariableSimpleIF, ProxyReader {
       return self();
     }
 
+    /**
+     * @param cacheData
+     * @param isMetadata
+     * @deprecated Use setSourceData(ucar.array.Array<?> srcData)
+     */
+    @Deprecated
+    public T setCachedData(Array cacheData, boolean isMetadata) {
+      this.cache.srcData = ucar.array.ArraysConvert.convertToArray(cacheData);
+      return self();
+    }
+
+    /**
+     * @param srcData
+     * @deprecated Use setSourceData(ucar.array.Array<?> srcData)
+     */
+    @Deprecated
     public T setSourceData(Array srcData) {
       this.cache.srcData = ucar.array.ArraysConvert.convertToArray(srcData);
       return self();
