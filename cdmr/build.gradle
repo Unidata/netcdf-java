@@ -26,9 +26,9 @@ dependencies {
   testImplementation enforcedPlatform(project(':netcdf-java-testing-platform'))
   testImplementation project(':cdm-test-utils')
   testImplementation 'com.google.truth:truth'
-  testImplementation "junit:junit:${depVersion.junit}"
+  testImplementation 'junit:junit'
   testImplementation 'commons-io:commons-io'
-  testImplementation "org.mockito:mockito-core:${depVersion.mockito}"
+  testImplementation "org.mockito:mockito-core"
   testImplementation "io.grpc:grpc-testing:${depVersion.grpc}"
 
   testRuntimeOnly 'ch.qos.logback:logback-classic'
@@ -42,6 +42,10 @@ protobuf {
   generateProtoTasks {
     all()*.plugins { grpc {} }
   }
+}
+
+application {
+  mainClass = 'ucar.cdmr.server.CdmrServer'
 }
 
 // Inform IDEs like IntelliJ IDEA, Eclipse or NetBeans about the generated code.

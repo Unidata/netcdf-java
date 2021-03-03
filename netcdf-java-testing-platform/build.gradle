@@ -12,10 +12,11 @@ dependencies {
     // netcdf-java testing //
     /////////////////////////
 
-    api 'junit:junit:4.13.1'
+    api "junit:junit:${depVersion.junit}"
     api 'commons-io:commons-io:2.5'
 
     // Fluent assertions for Java
+    api 'com.google.truth:truth:1.0'
     api 'com.google.truth:truth:1.0'
 
     // These two are for Spock.
@@ -23,7 +24,7 @@ dependencies {
     api 'org.codehaus.groovy:groovy-all:2.5.12'
 
     //mockito
-    api "org.mockito:mockito-core:${depVersion.mockito}"
+    api 'org.mockito:mockito-core:2.28.2'
 
     // opendap
     api 'pl.pragmatists:JUnitParams:1.0.5'

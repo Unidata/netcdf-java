@@ -10,7 +10,7 @@ apply from: "$rootDir/gradle/any/gretty.gradle"
 
 dependencies {
   api enforcedPlatform(project(':netcdf-java-platform'))
-  api enforcedPlatform('org.springframework:spring-framework-bom:5.3.2')
+  api enforcedPlatform('org.springframework:spring-framework-bom:5.3.4')
   testImplementation enforcedPlatform(project(':netcdf-java-testing-platform'))
 
   api project(':cdm:cdm-core')

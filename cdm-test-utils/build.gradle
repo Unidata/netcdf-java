@@ -12,7 +12,7 @@ dependencies {
 
   implementation project(':httpservices')
 
-  implementation 'junit:junit'
+  implementation "junit:junit:${depVersion.junit}"
   implementation 'org.slf4j:slf4j-api'
   implementation 'com.google.re2j:re2j'
 
