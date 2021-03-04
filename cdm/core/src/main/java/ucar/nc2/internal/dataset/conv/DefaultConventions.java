@@ -7,9 +7,9 @@ import java.util.StringTokenizer;
 import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ucar.array.ArrayType;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayObject;
-import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
@@ -207,7 +207,7 @@ public class DefaultConventions extends CoordSystemBuilder {
       }
     }
 
-    if (vname.equalsIgnoreCase("time") && vb.dataType == DataType.STRING) {
+    if (vname.equalsIgnoreCase("time") && vb.dataType == ArrayType.STRING) {
       if (vb.orgVar != null) {
         try {
           Array firstValue = vb.orgVar.read("0");

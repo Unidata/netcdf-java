@@ -29,8 +29,8 @@ import org.jdom2.output.XMLOutputter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import thredds.client.catalog.Catalog;
+import ucar.array.ArrayType;
 import ucar.ma2.Array;
-import ucar.ma2.DataType;
 import ucar.ma2.Index;
 import ucar.ma2.IndexIterator;
 import ucar.nc2.Attribute;
@@ -356,7 +356,7 @@ public class NcmlWriter {
     // if (buff.length() > 0)
     varElem.setAttribute("shape", buff.toString());
 
-    DataType dt = var.getDataType();
+    ArrayType dt = var.getArrayType();
     if (dt != null) {
       varElem.setAttribute("type", dt.toString());
       if (dt.isEnum())
@@ -391,8 +391,8 @@ public class NcmlWriter {
     Element attElem = new Element("attribute", namespace);
     attElem.setAttribute("name", attribute.getShortName());
 
-    DataType dt = attribute.getDataType();
-    if ((dt != null) && (dt != DataType.STRING))
+    ArrayType dt = attribute.getArrayType();
+    if ((dt != null) && (dt != ArrayType.STRING))
       attElem.setAttribute("type", dt.toString());
 
     if (attribute.getLength() == 0) {
@@ -446,10 +446,10 @@ public class NcmlWriter {
     StringBuilder buff = new StringBuilder();
     Array a = variable.read();
 
-    if (variable.getDataType() == DataType.CHAR) {
+    if (variable.getArrayType() == ArrayType.CHAR) {
       char[] data = (char[]) a.getStorage();
       elem.setText(new String(data));
-    } else if (variable.getDataType() == DataType.STRING) {
+    } else if (variable.getArrayType() == ArrayType.STRING) {
       elem.setAttribute("separator", "|");
       int count = 0;
 

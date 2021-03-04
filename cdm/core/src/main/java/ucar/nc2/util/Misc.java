@@ -5,8 +5,9 @@
 
 package ucar.nc2.util;
 
+import ucar.array.ArrayType;
+
 import java.util.Formatter;
-import ucar.ma2.DataType;
 
 /** Miscellaneous static routines. */
 public class Misc {
@@ -120,7 +121,7 @@ public class Misc {
     try (Formatter f = new Formatter()) {
       int count = 0;
       for (byte b : bytes) {
-        short s = DataType.unsignedByteToShort(b);
+        short s = ArrayType.unsignedByteToShort(b);
         f.format("%8s", Long.toBinaryString(s));
         if (++count % 10 == 0)
           f.format("%n");

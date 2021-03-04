@@ -165,7 +165,7 @@ public class NUWGConvention extends CoordSystemBuilder {
 
       if (ncvars.size() == 1) {
         Variable.Builder<?> ncvar = ncvars.get(0);
-        if (ncvar.dataType == DataType.STRUCTURE)
+        if (ncvar.dataType == ArrayType.STRUCTURE)
           continue; // cant be a structure
         if (makeCoordinateAxis(ncvar, dim)) {
           parseInfo.format("Added referential coordAxis = %s%n", ncvar.shortName);
@@ -395,7 +395,7 @@ public class NUWGConvention extends CoordSystemBuilder {
     NavInfo(VariableDS.Builder<?> vb) throws IOException {
       this.vb = vb;
       this.orgVar = vb.orgVar;
-      valueType = vb.dataType;
+      valueType = vb.dataType.getDataType();
       try {
         if ((valueType == DataType.CHAR) || (valueType == DataType.STRING))
           svalue = orgVar.readScalarString();

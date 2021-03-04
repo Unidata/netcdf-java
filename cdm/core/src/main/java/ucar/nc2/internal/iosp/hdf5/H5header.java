@@ -25,6 +25,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+
+import ucar.array.ArrayType;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayChar;
 import ucar.ma2.ArrayObject;
@@ -1299,9 +1301,9 @@ public class H5header implements HdfHeaderIF {
         return null;
 
       // special case of variable length strings
-      if (vb.dataType == DataType.STRING)
+      if (vb.dataType == ArrayType.STRING)
         vb.setElementSize(16); // because the array has elements that are HeapIdentifier
-      else if (vb.dataType == DataType.OPAQUE) // special case of opaque
+      else if (vb.dataType == ArrayType.OPAQUE) // special case of opaque
         vb.setElementSize(facade.dobj.mdt.getBaseSize());
     }
 
@@ -1447,9 +1449,9 @@ public class H5header implements HdfHeaderIF {
       makeVariableShapeAndType(parentGroup, vb, mdt, null, vinfo, null);
 
       // special case of variable length strings
-      if (vb.dataType == DataType.STRING)
+      if (vb.dataType == ArrayType.STRING)
         vb.setElementSize(16); // because the array has elements that are HeapIdentifier
-      else if (vb.dataType == DataType.OPAQUE) // special case of opaque
+      else if (vb.dataType == ArrayType.OPAQUE) // special case of opaque
         vb.setElementSize(mdt.getBaseSize());
 
       vb.setSPobject(vinfo);

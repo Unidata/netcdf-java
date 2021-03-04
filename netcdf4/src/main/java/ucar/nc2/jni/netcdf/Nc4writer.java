@@ -24,6 +24,8 @@ import java.util.Formatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import ucar.array.ArrayType;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayStructure;
 import ucar.ma2.ArrayStructureBB;
@@ -194,7 +196,7 @@ public class Nc4writer extends Nc4reader implements IospFileCreator {
     // a type must be created for each structure.
     // LOOK we should look for variables with the same structure type.
     for (Variable.Builder<?> v : g4.g.vbuilders) {
-      if (v.dataType == DataType.STRUCTURE) {
+      if (v.dataType == ArrayType.STRUCTURE) {
         createCompoundType(g4, (Structure.Builder<?>) v);
       }
     }
@@ -248,7 +250,7 @@ public class Nc4writer extends Nc4reader implements IospFileCreator {
       typid = ut.typeid;
       vinfo = new Vinfo(g4, -1, typid);
 
-    } else if (v.dataType == DataType.OPAQUE) {
+    } else if (v.dataType == ArrayType.OPAQUE) {
       // nc_def_opaque(ncid, BASE_SIZE, TYPE_NAME, &xtype)
       typid = convertDataType(v.dataType);
       if (typid < 0) {
@@ -318,7 +320,7 @@ public class Nc4writer extends Nc4reader implements IospFileCreator {
     }
   }
 
-  private int convertDataType(DataType dt) {
+  private int convertDataType(ArrayType dt) {
     switch (dt) {
       case BYTE:
         return Nc4prototypes.NC_BYTE;
@@ -452,7 +454,7 @@ public class Nc4writer extends Nc4reader implements IospFileCreator {
     int fldidx = 0;
     long offset = 0;
     for (Variable.Builder<?> v : s.vbuilders) {
-      if (v.dataType == DataType.STRING) {
+      if (v.dataType == ArrayType.STRING) {
         continue;
       }
 
@@ -525,7 +527,8 @@ public class Nc4writer extends Nc4reader implements IospFileCreator {
       for (Attribute att : m.getAttributeContainer()) {
         // add the fields to the member_atts_t
         String memberName = m.shortName + ":" + att.getShortName();
-        int field_typeid = att.isString() ? Nc4prototypes.NC_CHAR : convertDataType(att.getDataType()); // LOOK override
+        int field_typeid = att.isString() ? Nc4prototypes.NC_CHAR : convertDataType(att.getArrayType()); // LOOK
+                                                                                                         // override
         // String with
         // CHAR
 
@@ -665,10 +668,10 @@ public class Nc4writer extends Nc4reader implements IospFileCreator {
         log.warn("_FillValue length must be one on var = {}", v.getFullName());
         return;
       }
-      if (att.getDataType() != v.dataType) {
+      if (att.getArrayType() != v.dataType) {
         // Special case hack for _FillValue type match for char typed variables
-        if (att.getDataType() != DataType.STRING || v.dataType != DataType.CHAR) {
-          log.warn("_FillValue type ({}) does not agree with variable '{}' type ({}).", att.getDataType(), v.shortName,
+        if (att.getArrayType() != ArrayType.STRING || v.dataType != ArrayType.CHAR) {
+          log.warn("_FillValue type ({}) does not agree with variable '{}' type ({}).", att.getArrayType(), v.shortName,
               v.dataType);
           return;
         } // else char typed variable with string typed _FillValue
@@ -699,7 +702,7 @@ public class Nc4writer extends Nc4reader implements IospFileCreator {
     switch (att.getDataType()) {
       case STRING: // problem may be that we are mapping char * atts to string type
         if (v != null && att.getShortName().equals(CDM.FILL_VALUE) && att.getLength() == 1
-            && v.dataType == DataType.CHAR) {
+            && v.dataType == ArrayType.CHAR) {
           // special handling of _FillValue if v.getDataType() == CHAR
           byte[] svalb = att.getStringValue().getBytes(StandardCharsets.UTF_8);
           // if svalb is a zero length array, force it to be the null char

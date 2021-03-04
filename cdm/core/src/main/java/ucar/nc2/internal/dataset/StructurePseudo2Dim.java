@@ -7,7 +7,15 @@ package ucar.nc2.internal.dataset;
 
 import com.google.common.collect.ImmutableList;
 import javax.annotation.concurrent.Immutable;
-import ucar.ma2.*;
+
+import ucar.array.ArrayType;
+
+import ucar.ma2.Array;
+import ucar.ma2.ArrayStructureMA;
+import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Range;
+import ucar.ma2.Section;
+import ucar.ma2.StructureMembers;
 import ucar.nc2.*;
 import java.util.List;
 import java.util.ArrayList;
@@ -139,7 +147,7 @@ public class StructurePseudo2Dim extends StructurePseudoDS {
       if (built)
         throw new IllegalStateException("already built");
       built = true;
-      this.setDataType(DataType.STRUCTURE);
+      this.setArrayType(ArrayType.STRUCTURE);
       return new StructurePseudo2Dim(this, parentGroup);
     }
   }

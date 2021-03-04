@@ -6,6 +6,8 @@ package ucar.nc2;
 
 import com.google.common.collect.ImmutableList;
 import javax.annotation.Nullable;
+
+import ucar.array.ArrayType;
 import ucar.ma2.DataType;
 
 /** A lightweight abstraction of a Variable. */
@@ -34,8 +36,16 @@ public interface VariableSimpleIF extends Comparable<VariableSimpleIF> {
   /** Dimension List. empty for a scalar variable. */
   ImmutableList<Dimension> getDimensions();
 
-  /** Variable's data type */
+  /**
+   * Variable's data type.
+   * 
+   * @deprecated use getArrayType
+   */
+  @Deprecated
   DataType getDataType();
+
+  /** Variable's array type */
+  ArrayType getArrayType();
 
   /** Attributes for the variable. */
   AttributeContainer attributes();

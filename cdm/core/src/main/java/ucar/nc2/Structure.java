@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+
+import ucar.array.ArrayType;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayObject;
 import ucar.ma2.ArrayStructure;
@@ -412,7 +414,7 @@ public class Structure extends Variable {
       buf.format("%s", indent);
       att.writeCDL(buf, strict, getShortName());
       buf.format(";");
-      if (!strict && (att.getDataType() != DataType.STRING))
+      if (!strict && (att.getArrayType() != ArrayType.STRING))
         buf.format(" // %s", att.getDataType());
       buf.format("%n");
     }
@@ -480,9 +482,18 @@ public class Structure extends Variable {
       return self();
     }
 
-    /** Add a Variable to the root group. */
+    /** @deprecated use addMemberVariable(String, ArrayType, String) */
+    @Deprecated
     public T addMemberVariable(String shortName, DataType dataType, String dimString) {
       Variable.Builder<?> vb = Variable.builder().setName(shortName).setDataType(dataType)
+          .setParentGroupBuilder(this.parentBuilder).setDimensionsByName(dimString);
+      addMemberVariable(vb);
+      return self();
+    }
+
+    /** Add a Variable to the root group. */
+    public T addMemberVariable(String shortName, ArrayType dataType, String dimString) {
+      Variable.Builder<?> vb = Variable.builder().setName(shortName).setArrayType(dataType)
           .setParentGroupBuilder(this.parentBuilder).setDimensionsByName(dimString);
       addMemberVariable(vb);
       return self();
@@ -519,7 +530,7 @@ public class Structure extends Variable {
       if (built)
         throw new IllegalStateException("already built");
       built = true;
-      this.setDataType(DataType.STRUCTURE);
+      this.setArrayType(ArrayType.STRUCTURE);
       return new Structure(this, parentGroup);
     }
   }

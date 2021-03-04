@@ -15,7 +15,6 @@ import javax.annotation.Nullable;
 
 import ucar.array.ArrayType;
 import ucar.array.Arrays;
-import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.Group;
@@ -77,7 +76,7 @@ public class CoordSystemBuilder {
    */
   public static boolean isCoordinateVariable(Variable.Builder<?> vb) {
     // Structures and StructureMembers cant be coordinate variables
-    if ((vb.dataType == DataType.STRUCTURE) || vb.getParentStructureBuilder() != null)
+    if ((vb.dataType == ArrayType.STRUCTURE) || vb.getParentStructureBuilder() != null)
       return false;
 
     int rank = vb.getRank();
@@ -90,7 +89,7 @@ public class CoordSystemBuilder {
     if (rank == 2) { // two dimensional
       String firstd = vb.getFirstDimensionName();
       // must be char valued (then its really a String)
-      return vb.shortName.equals(firstd) && (vb.dataType == DataType.CHAR);
+      return vb.shortName.equals(firstd) && (vb.dataType == ArrayType.CHAR);
     }
 
     return false;
@@ -138,7 +137,7 @@ public class CoordSystemBuilder {
 
     // a CHAR variable must really be a STRING, so leave out the last (string length) dimension
     int checkDims = axis.getRank();
-    if (axis.dataType == DataType.CHAR)
+    if (axis.dataType == ArrayType.CHAR)
       checkDims--;
     for (int i = 0; i < checkDims; i++) {
       Dimension axisDim = axis.getDimension(i);
@@ -745,7 +744,7 @@ public class CoordSystemBuilder {
    * @return the Coordinate Transform Variable. You must add it to the dataset.
    */
   public VariableDS.Builder<?> makeCoordinateTransformVariable(CoordinateTransform ct) {
-    VariableDS.Builder<?> v = VariableDS.builder().setName(ct.getName()).setDataType(DataType.CHAR);
+    VariableDS.Builder<?> v = VariableDS.builder().setName(ct.getName()).setArrayType(ArrayType.CHAR);
     v.addAttributes(ct.getCtvAttributes());
     v.addAttribute(new Attribute(_Coordinate.TransformType, ct.getTransformType().toString()));
 

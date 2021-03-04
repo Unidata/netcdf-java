@@ -8,6 +8,8 @@ import opendap.dap.*;
 import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
+
+import ucar.array.ArrayType;
 import ucar.ma2.*;
 import ucar.nc2.Variable;
 
@@ -115,19 +117,19 @@ class ConvertD2N {
     // arrays
     if ((dataV.darray != null) && (dataV.bt instanceof DString)) {
 
-      if (v.getDataType() == DataType.STRING)
+      if (v.getArrayType() == ArrayType.STRING)
         return convertStringArray(data, v);
-      else if (v.getDataType() == DataType.CHAR)
+      else if (v.getArrayType() == ArrayType.CHAR)
         return convertStringArrayToChar(dataV.darray, v, section);
       else {
-        String mess = "DODSVariable convertArray String invalid dataType= " + v.getDataType();
+        String mess = "DODSVariable convertArray String invalid ArrayType= " + v.getArrayType();
         logger.error(mess);
         throw new IllegalArgumentException(mess);
       }
 
     }
 
-    if ((dataV.bt instanceof DString) && (v.getDataType() == DataType.CHAR)) {
+    if ((dataV.bt instanceof DString) && (v.getArrayType() == ArrayType.CHAR)) {
       // special case: convert String back to CHAR
       return convertStringToChar(data, v);
     }
@@ -161,8 +163,7 @@ class ConvertD2N {
         return structArray;
 
       } else { // scalar
-        DataType dtype = dataV.getDataType();
-        Array scalarData = Array.factory(dtype, new int[0]);
+        Array scalarData = Array.factory(dataV.getDataType(), new int[0]);
         IndexIterator scalarIndex = scalarData.getIndexIterator();
         iconvertDataPrimitiveScalar(dataV.bt, scalarIndex);
         return scalarData;
@@ -183,8 +184,7 @@ class ConvertD2N {
       // create the array, using DODS internal array so there's no copying
       PrimitiveVector pv = dataV.darray.getPrimitiveVector();
       Object storage = pv.getInternalStorage();
-      DataType dtype = dataV.getDataType();
-      return Array.factory(dtype, makeShape(dataV.darray), storage);
+      return Array.factory(dataV.getDataType(), makeShape(dataV.darray), storage);
     }
   }
 
@@ -403,12 +403,12 @@ class ConvertD2N {
 
     } else if (dodsScalar instanceof DUInt32) {
       int ival = ((DUInt32) dodsScalar).getValue();
-      long lval = DataType.unsignedIntToLong(ival); // LOOK unsigned
+      long lval = ArrayType.unsignedIntToLong(ival); // LOOK unsigned
       ii.setLongNext(lval);
 
     } else if (dodsScalar instanceof DUInt16) {
       short sval = ((DUInt16) dodsScalar).getValue(); // LOOK unsigned
-      int ival = DataType.unsignedShortToInt(sval);
+      int ival = ArrayType.unsignedShortToInt(sval);
       ii.setIntNext(ival);
 
     } else if (dodsScalar instanceof DFloat32)
@@ -423,7 +423,7 @@ class ConvertD2N {
       ii.setByteNext(((DByte) dodsScalar).getValue());
     else
       throw new IllegalArgumentException(
-          "DODSVariable extractScalar invalid dataType= " + dodsScalar.getClass().getName());
+          "DODSVariable extractScalar invalid ArrayType= " + dodsScalar.getClass().getName());
   }
 
   // convert a DODS scalar value
@@ -442,14 +442,14 @@ class ConvertD2N {
       UInt32PrimitiveVector bpv = (UInt32PrimitiveVector) pv;
       for (int row = 0; row < bpv.getLength(); row++) {
         int ival = bpv.getValue(row);
-        long lval = DataType.unsignedIntToLong(ival); // LOOK unsigned
+        long lval = ArrayType.unsignedIntToLong(ival); // LOOK unsigned
         ii.setLongNext(lval);
       }
     } else if (bt instanceof DUInt16) {
       UInt16PrimitiveVector bpv = (UInt16PrimitiveVector) pv;
       for (int row = 0; row < bpv.getLength(); row++) {
         short sval = bpv.getValue(row); // LOOK unsigned
-        int ival = DataType.unsignedShortToInt(sval);
+        int ival = ArrayType.unsignedShortToInt(sval);
         ii.setIntNext(ival);
       }
     } else if (bt instanceof DFloat32) {
@@ -478,7 +478,7 @@ class ConvertD2N {
         ii.setByteNext(bpv.getValue(row));
 
     } else
-      throw new IllegalArgumentException("DODSVariable extractScalar invalid dataType= " + bt.getClass().getName());
+      throw new IllegalArgumentException("DODSVariable extractScalar invalid ArrayType= " + bt.getClass().getName());
   }
 
   private Array convertStringArray(DArray dv) {

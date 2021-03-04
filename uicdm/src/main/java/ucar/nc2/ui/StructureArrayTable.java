@@ -38,7 +38,6 @@ import javax.swing.table.TableModel;
 
 import ucar.array.*;
 import ucar.array.StructureMembers.Member;
-import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
 import ucar.nc2.Sequence;
@@ -143,7 +142,7 @@ public class StructureArrayTable extends JPanel {
   }
 
   public void setStructure(Structure s) {
-    if (s.getDataType() == DataType.SEQUENCE)
+    if (s.getArrayType() == ArrayType.SEQUENCE)
       dataModel = new SequenceModel((Sequence) s, true);
     else
       dataModel = new StructureModel(s);

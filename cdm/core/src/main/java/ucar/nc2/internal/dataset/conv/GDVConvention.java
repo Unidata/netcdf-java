@@ -7,7 +7,8 @@ package ucar.nc2.internal.dataset.conv;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.StringTokenizer;
-import ucar.ma2.DataType;
+
+import ucar.array.ArrayType;
 import ucar.nc2.Attribute;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
@@ -68,7 +69,7 @@ public class GDVConvention extends CSMConvention {
       if (vp.isCoordinateVariable)
         continue;
 
-      if (vp.vb.dataType == DataType.STRUCTURE)
+      if (vp.vb.dataType == ArrayType.STRUCTURE)
         continue; // cant be a structure
 
       String dimName = findAlias(vp.vb);
@@ -103,7 +104,7 @@ public class GDVConvention extends CSMConvention {
     for (VarProcess vp : varList) {
       if (vp.isCoordinateVariable)
         continue;
-      if (vp.vb.dataType == DataType.STRUCTURE)
+      if (vp.vb.dataType == ArrayType.STRUCTURE)
         continue; // cant be a structure
 
       AxisType atype = getAxisType(vp.vb);

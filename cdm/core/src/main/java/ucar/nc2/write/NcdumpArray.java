@@ -21,7 +21,6 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import org.jdom2.Element;
 import ucar.array.*;
-import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
@@ -405,7 +404,7 @@ public class NcdumpArray {
         // has signed types. If it's large enough ( >= 2^(BIT_WIDTH-1) ), its most-significant bit will be interpreted
         // as the sign bit, which will result in an invalid (negative) value being printed. To prevent that, we're
         // going to widen the number before printing it, but only if the unsigned number is being seen as negative.
-        value = DataType.widenNumberIfNegative((Number) value);
+        value = ArrayType.widenNumberIfNegative((Number) value);
       }
 
       out.format("%s", value);
@@ -423,7 +422,7 @@ public class NcdumpArray {
 
         if (ma.getArrayType().isUnsigned()) {
           assert value instanceof Number : "A data type being unsigned implies that it is numeric.";
-          value = DataType.widenNumberIfNegative((Number) value);
+          value = ArrayType.widenNumberIfNegative((Number) value);
         }
 
         if (ii > 0)

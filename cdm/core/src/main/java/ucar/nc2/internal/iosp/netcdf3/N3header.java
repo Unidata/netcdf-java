@@ -6,6 +6,8 @@ package ucar.nc2.internal.iosp.netcdf3;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+
+import ucar.array.ArrayType;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.iosp.NetcdfFileFormat;
@@ -280,8 +282,8 @@ public class N3header {
     // Example TestDir.cdmLocalTestDataDir + "byteArrayRecordVarPaddingTest-bad.nc"
     if (uvars.size() == 1) {
       Variable.Builder<?> uvar = uvars.get(0);
-      DataType dtype = uvar.dataType;
-      if ((dtype == DataType.CHAR) || (dtype == DataType.BYTE) || (dtype == DataType.SHORT)) {
+      ArrayType dtype = uvar.dataType;
+      if ((dtype == ArrayType.CHAR) || (dtype == ArrayType.BYTE) || (dtype == ArrayType.SHORT)) {
         long vsize = dtype.getSize(); // works for all netcdf-3 data types
         List<Dimension> dims = uvar.getDimensions();
         for (Dimension curDim : dims) {

@@ -504,8 +504,15 @@ public class Attribute {
       return this;
     }
 
+    /** @deprecated use setArrayType() */
+    @Deprecated
     public Builder setDataType(DataType dataType) {
       this.dataType = dataType;
+      return this;
+    }
+
+    public Builder setArrayType(ArrayType dataType) {
+      this.dataType = dataType.getDataType();
       return this;
     }
 

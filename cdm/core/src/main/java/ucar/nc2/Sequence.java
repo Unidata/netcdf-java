@@ -7,6 +7,8 @@ package ucar.nc2;
 import java.io.IOException;
 import java.util.Iterator;
 import javax.annotation.concurrent.Immutable;
+
+import ucar.array.ArrayType;
 import ucar.array.ArraysConvert;
 import ucar.ma2.*;
 import java.util.List;
@@ -147,7 +149,8 @@ public class Sequence extends Structure implements Iterable<ucar.array.Structure
       if (built)
         throw new IllegalStateException("already built");
       built = true;
-      this.setDataType(DataType.SEQUENCE);
+      // LOOK mutable!
+      this.setArrayType(ArrayType.SEQUENCE);
       return new Sequence(this, parentGroup);
     }
   }

@@ -20,6 +20,7 @@ import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 import ucar.array.Array;
+import ucar.array.ArrayType;
 import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
@@ -376,6 +377,11 @@ public class FeatureDatasetCapabilitiesWriter {
     @Override
     public DataType getDataType() {
       return dt;
+    }
+
+    @Override
+    public ArrayType getArrayType() {
+      return dt.getArrayType();
     }
 
     @Override

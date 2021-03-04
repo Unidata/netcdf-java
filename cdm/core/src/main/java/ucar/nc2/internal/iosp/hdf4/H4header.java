@@ -22,6 +22,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nullable;
+
+import ucar.array.ArrayType;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayStructure;
 import ucar.ma2.DataType;
@@ -1121,7 +1123,7 @@ public class H4header implements HdfHeaderIF {
 
     void setFillValue(Attribute att) {
       // see IospHelper.makePrimitiveArray(int size, DataType dataType, Object fillValue)
-      fillValue = (v.dataType == DataType.STRING) ? att.getStringValue() : att.getNumericValue();
+      fillValue = (v.dataType == ArrayType.STRING) ? att.getStringValue() : att.getNumericValue();
     }
 
     // make sure needed info is present : call this when variable needs to be read

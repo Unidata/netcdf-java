@@ -5,17 +5,14 @@
 
 package ucar.array;
 
-import ucar.ma2.Array;
 import ucar.ma2.DataType;
-import ucar.ma2.StructureData;
-import ucar.ma2.StructureDataIterator;
 
-import javax.annotation.Nullable;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
+import java.util.Iterator;
 
 /**
- * Type-safe enumeration of data types.
+ * Type-safe enumeration of Array data types.
  */
 public enum ArrayType {
   BOOLEAN("boolean", 1, boolean.class, false), //
@@ -28,9 +25,9 @@ public enum ArrayType {
   DOUBLE("double", 8, double.class, false), //
 
   // object types
-  SEQUENCE("Sequence", 4, StructureDataIterator.class, false), // 32-bit index
+  SEQUENCE("Sequence", 4, Iterator.class, false), // 32-bit index
   STRING("String", 4, String.class, false), // 32-bit index
-  STRUCTURE("Structure", 0, ucar.ma2.StructureData.class, false), // size unknown
+  STRUCTURE("Structure", 0, StructureData.class, false), // size unknown
 
   ENUM1("enum1", 1, byte.class, false), // byte
   ENUM2("enum2", 2, short.class, false), // short
@@ -71,7 +68,7 @@ public enum ArrayType {
     this.signedness = signedness;
   }
 
-  /** The DataType name, eg "byte", "float", "String". */
+  /** The ArrayType name, eg "byte", "float", "String". */
   public String toString() {
     return niceName;
   }
@@ -165,19 +162,19 @@ public enum ArrayType {
   }
 
   /**
-   * Returns a DataType that is related to {@code this}, but with the specified signedness.
+   * Returns a ArrayType that is related to {@code this}, but with the specified signedness.
    * This method is only meaningful for {@link #isIntegral() integral} data types; if it is called on a non-integral
    * type, then {@code this} is simply returned. Examples:
    * 
    * <pre>
-   * assert DataType.INT.withSignedness(DataType.Signedness.UNSIGNED) == DataType.UINT; // INT to UINT
-   * assert DataType.ULONG.withSignedness(DataType.Signedness.SIGNED) == DataType.LONG; // ULONG to LONG
-   * assert DataType.SHORT.withSignedness(DataType.Signedness.SIGNED) == DataType.SHORT; // this: Same signs
-   * assert DataType.STRING.withSignedness(DataType.Signedness.UNSIGNED) == DataType.STRING; // this: Non-integral
+   * assert ArrayType.INT.withSignedness(ArrayType.Signedness.UNSIGNED) == ArrayType.UINT; // INT to UINT
+   * assert ArrayType.ULONG.withSignedness(ArrayType.Signedness.SIGNED) == ArrayType.LONG; // ULONG to LONG
+   * assert ArrayType.SHORT.withSignedness(ArrayType.Signedness.SIGNED) == ArrayType.SHORT; // this: Same signs
+   * assert ArrayType.STRING.withSignedness(ArrayType.Signedness.UNSIGNED) == ArrayType.STRING; // this: Non-integral
    * </pre>
    *
-   * @param signedness the desired signedness of the returned DataType.
-   * @return a DataType that is related to {@code this}, but with the specified signedness.
+   * @param signedness the desired signedness of the returned ArrayType.
+   * @return a ArrayType that is related to {@code this}, but with the specified signedness.
    */
   public ArrayType withSignedness(Signedness signedness) {
     switch (this) {
@@ -215,7 +212,7 @@ public enum ArrayType {
     return false;
   }
 
-  /** @deprecated do not use. */
+  /** @deprecated do not use if possible. */
   @Deprecated
   public DataType getDataType() {
     return DataType.valueOf(this.name());
@@ -241,10 +238,10 @@ public enum ArrayType {
   }
 
   /**
-   * Find the DataType that matches this name.
+   * Find the ArrayType that matches this name.
    *
-   * @param name find DataType with this name.
-   * @return DataType or null if no match.
+   * @param name find ArrayType with this name.
+   * @return ArrayType or null if no match.
    */
   public static ArrayType getType(String name) {
     if (name == null)
@@ -254,45 +251,6 @@ public enum ArrayType {
     } catch (IllegalArgumentException e) { // lame!
       return null;
     }
-  }
-
-  public static ArrayType getType(Array arr) {
-    return getType(arr.getElementType(), arr.isUnsigned());
-  }
-
-  /**
-   * Find the DataType that matches this class.
-   * 
-   * @param c primitive or object class, eg float.class or Float.class
-   * @return DataType or null if no match.
-   */
-  @Nullable
-  public static ArrayType getType(Class<?> c, boolean isUnsigned) {
-    if ((c == float.class) || (c == Float.class))
-      return ArrayType.FLOAT;
-    if ((c == double.class) || (c == Double.class))
-      return ArrayType.DOUBLE;
-    if ((c == short.class) || (c == Short.class))
-      return isUnsigned ? ArrayType.USHORT : ArrayType.SHORT;
-    if ((c == int.class) || (c == Integer.class))
-      return isUnsigned ? ArrayType.UINT : ArrayType.INT;
-    if ((c == byte.class) || (c == Byte.class))
-      return isUnsigned ? ArrayType.UBYTE : ArrayType.BYTE;
-    if ((c == char.class) || (c == Character.class))
-      return ArrayType.CHAR;
-    if ((c == boolean.class) || (c == Boolean.class))
-      return ArrayType.BOOLEAN;
-    if ((c == long.class) || (c == Long.class))
-      return isUnsigned ? ArrayType.ULONG : ArrayType.LONG;
-    if (c == String.class)
-      return ArrayType.STRING;
-    if (c == StructureData.class)
-      return ArrayType.STRUCTURE;
-    if (c == StructureDataIterator.class)
-      return ArrayType.SEQUENCE;
-    if (c == ByteBuffer.class)
-      return ArrayType.OPAQUE;
-    return ArrayType.OBJECT;
   }
 
   /**

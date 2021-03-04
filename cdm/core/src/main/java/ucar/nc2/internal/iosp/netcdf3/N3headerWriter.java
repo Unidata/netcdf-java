@@ -393,7 +393,7 @@ class N3headerWriter extends N3header {
       writeAtts(var.getAttributeContainer());
 
       // data type, variable size, beginning file position
-      DataType dtype = var.dataType;
+      DataType dtype = var.dataType.getDataType();
       int type = getType(dtype);
       raf.writeInt(type);
 

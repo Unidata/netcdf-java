@@ -5,8 +5,8 @@
 
 package ucar.nc2;
 
+import ucar.array.ArrayType;
 import ucar.nc2.internal.util.EscapeStrings;
-import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 import ucar.ma2.Section;
@@ -93,7 +93,7 @@ public class ParsedSectionSpec {
     if (v == null)
       throw new IllegalArgumentException(" cant find variable: " + varNameEsc + " in selector=" + selector);
 
-    if (v.getDataType() == DataType.SEQUENCE)
+    if (v.getArrayType() == ArrayType.SEQUENCE)
       indexSelect = null; // ignore whatever was sent
 
     // get the selected Ranges, or all, and add to the list
@@ -123,7 +123,7 @@ public class ParsedSectionSpec {
     if (debugSelector)
       System.out.println(" parseVariableSection <" + selector + "> = <" + varNameEsc + ">, <" + indexSelect + ">");
 
-    if (v.getDataType() == DataType.SEQUENCE) {
+    if (v.getArrayType() == ArrayType.SEQUENCE) {
       indexSelect = null; // ignore whatever was sent
     }
 

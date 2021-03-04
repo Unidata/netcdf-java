@@ -14,7 +14,8 @@ import java.util.Formatter;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
-import ucar.ma2.DataType;
+
+import ucar.array.ArrayType;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.EnumTypedef;
@@ -159,8 +160,8 @@ public class CDLWriter {
         out.format("%s", indent);
         writeCDL(att, null);
         out.format(";");
-        if (!strict && (att.getDataType() != DataType.STRING))
-          out.format(" // %s", att.getDataType());
+        if (!strict && (att.getArrayType() != ArrayType.STRING))
+          out.format(" // %s", att.getArrayType());
         out.format("%n");
       }
     }
@@ -207,14 +208,14 @@ public class CDLWriter {
         if (i != 0)
           out.format(", ");
 
-        DataType dataType = att.getDataType();
+        ArrayType dataType = att.getArrayType();
         Number number = att.getNumericValue(i);
         if (dataType.isUnsigned()) {
           // 'number' is unsigned, but will be treated as signed when we print it below, because Java only has signed
           // types. If it is large enough ( >= 2^(BIT_WIDTH-1) ), its most-significant bit will be interpreted as the
           // sign bit, which will result in an invalid (negative) value being printed. To prevent that, we're going
           // to widen the number before printing it.
-          number = DataType.widenNumber(number);
+          number = ArrayType.widenNumber(number);
         }
         out.format("%s", number);
 
@@ -222,13 +223,13 @@ public class CDLWriter {
           out.format("U");
         }
 
-        if (dataType == DataType.FLOAT)
+        if (dataType == ArrayType.FLOAT)
           out.format("f");
-        else if (dataType == DataType.SHORT || dataType == DataType.USHORT) {
+        else if (dataType == ArrayType.SHORT || dataType == ArrayType.USHORT) {
           out.format("S");
-        } else if (dataType == DataType.BYTE || dataType == DataType.UBYTE) {
+        } else if (dataType == ArrayType.BYTE || dataType == ArrayType.UBYTE) {
           out.format("B");
-        } else if (dataType == DataType.LONG || dataType == DataType.ULONG) {
+        } else if (dataType == ArrayType.LONG || dataType == ArrayType.ULONG) {
           out.format("L");
         }
       }
@@ -281,7 +282,7 @@ public class CDLWriter {
 
   private void writeCDL(Variable v, Indent indent, boolean useFullName) {
     out.format("%s", indent);
-    DataType dataType = v.getDataType();
+    ArrayType dataType = v.getArrayType();
     if (dataType == null)
       out.format("Unknown");
     else if (dataType.isEnum()) {
@@ -303,7 +304,7 @@ public class CDLWriter {
       out.format("%s", indent);
       writeCDL(att, v.getShortName());
       out.format(";");
-      if (!strict && (att.getDataType() != DataType.STRING))
+      if (!strict && (att.getArrayType() != ArrayType.STRING))
         out.format(" // %s", att.getDataType());
       out.format("%n");
     }
@@ -324,7 +325,7 @@ public class CDLWriter {
   }
 
   private void writeCDL(Structure s, Indent indent, boolean useFullName) {
-    out.format("%s%s {%n", indent, s.getDataType());
+    out.format("%s%s {%n", indent, s.getArrayType());
 
     indent.incr();
     for (Variable v : s.getVariables()) {
@@ -345,8 +346,8 @@ public class CDLWriter {
       out.format("%s", indent);
       writeCDL(att, s.getShortName());
       out.format(";");
-      if (!strict && (att.getDataType() != DataType.STRING))
-        out.format(" // %s", att.getDataType());
+      if (!strict && (att.getArrayType() != ArrayType.STRING))
+        out.format(" // %s", att.getArrayType());
       out.format("%n");
     }
   }

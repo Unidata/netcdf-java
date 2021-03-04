@@ -9,34 +9,67 @@ import com.google.common.collect.ImmutableList;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.concurrent.Immutable;
+
+import ucar.array.ArrayType;
 import ucar.ma2.DataType;
-import ucar.ma2.StructureMembers;
 import ucar.nc2.constants.CDM;
 
 /** Builder for VariableSimpleIF, makes true immutable objects. */
 @Immutable
 public class VariableSimpleBuilder {
 
-  public static VariableSimpleBuilder fromMember(StructureMembers.Member m) {
+  /** @deprecated use fromMember(ucar.array.StructureMembers.Member m) */
+  public static VariableSimpleBuilder fromMember(ucar.ma2.StructureMembers.Member m) {
     return new VariableSimpleBuilder(m.getName(), m.getDescription(), m.getUnitsString(), m.getDataType(),
         Dimensions.makeDimensionsAnon(m.getShape()));
   }
 
+  public static VariableSimpleBuilder fromMember(ucar.array.StructureMembers.Member m) {
+    return new VariableSimpleBuilder(m.getName(), m.getDescription(), m.getUnitsString(), m.getArrayType(),
+        Dimensions.makeDimensionsAnon(m.getShape()));
+  }
+
+  /** @deprecated use makeScalar(String name, String desc, String units, ArrayType dt) */
+  @Deprecated
   public static VariableSimpleBuilder makeScalar(String name, String desc, String units, DataType dt) {
+    return new VariableSimpleBuilder(name, desc, units, dt, null);
+  }
+
+  public static VariableSimpleBuilder makeScalar(String name, String desc, String units, ArrayType dt) {
     return new VariableSimpleBuilder(name, desc, units, dt, null);
   }
 
   public static VariableSimpleBuilder makeString(String name, String desc, String units, int str_len) {
     Dimension d = Dimension.builder(name + "_strlen", str_len).setIsShared(false).build();
-    return new VariableSimpleBuilder(name, desc, units, DataType.CHAR, Collections.singletonList(d));
+    return new VariableSimpleBuilder(name, desc, units, ArrayType.CHAR, Collections.singletonList(d));
   }
 
   private final String name, desc, units;
-  private final DataType dt;
+  private final ArrayType dt;
   private final AttributeContainerMutable atts;
   private final ImmutableList<Dimension> dims;
 
+  /**
+   * @deprecated use VariableSimpleBuilder(String name, String desc, String units, ArrayType dt, List<Dimension> dims)
+   */
+  @Deprecated
   public VariableSimpleBuilder(String name, String desc, String units, DataType dt, List<Dimension> dims) {
+    this.name = name;
+    this.desc = desc;
+    this.units = units;
+    this.dt = dt.getArrayType();
+    this.dims = (dims == null || dims.size() == 0) ? ImmutableList.of() : ImmutableList.copyOf(dims);
+    this.atts = new AttributeContainerMutable(name);
+
+    if (units != null) {
+      atts.addAttribute(new Attribute(CDM.UNITS, units));
+    }
+    if (desc != null) {
+      atts.addAttribute(new Attribute(CDM.LONG_NAME, desc));
+    }
+  }
+
+  public VariableSimpleBuilder(String name, String desc, String units, ArrayType dt, List<Dimension> dims) {
     this.name = name;
     this.desc = desc;
     this.units = units;
@@ -69,7 +102,7 @@ public class VariableSimpleBuilder {
   @Immutable
   private static class VariableSimple implements VariableSimpleIF {
     private final String name, desc, units;
-    private final DataType dt;
+    private final ArrayType dt;
     private final AttributeContainer atts;
     private final ImmutableList<Dimension> dims;
 
@@ -119,6 +152,11 @@ public class VariableSimpleBuilder {
 
     @Override
     public DataType getDataType() {
+      return dt.getDataType();
+    }
+
+    @Override
+    public ArrayType getArrayType() {
       return dt;
     }
 

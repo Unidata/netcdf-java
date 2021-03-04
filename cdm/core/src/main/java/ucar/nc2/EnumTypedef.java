@@ -8,6 +8,8 @@ package ucar.nc2;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import javax.annotation.Nullable;
+
+import ucar.array.ArrayType;
 import ucar.ma2.DataType;
 import ucar.nc2.util.Indent;
 import javax.annotation.concurrent.Immutable;
@@ -25,17 +27,30 @@ public class EnumTypedef {
 
   private final String name;
   private final ImmutableMap<Integer, String> map;
-  private final DataType basetype;
+  private final ArrayType basetype;
 
   /** Make an EnumTypedef with base type ENUM4. */
   public EnumTypedef(String name, Map<Integer, String> map) {
-    this(name, map, DataType.ENUM4); // default basetype
+    this(name, map, ArrayType.ENUM4); // default basetype
   }
 
-  /** Make an EnumTypedef setting the base type (must be ENUM1, ENUM2, ENUM4). */
+  /** @deprecated use EnumTypedef(String name, Map<Integer, String> map, ArrayType basetype) */
+  @Deprecated
   public EnumTypedef(String name, Map<Integer, String> map, DataType basetype) {
     this.name = name;
     Preconditions.checkArgument(basetype == DataType.ENUM1 || basetype == DataType.ENUM2 || basetype == DataType.ENUM4);
+    this.basetype = basetype.getArrayType();
+
+    Preconditions.checkNotNull(map);
+    Preconditions.checkArgument(validateMap(map, this.basetype));
+    this.map = ImmutableMap.copyOf(map);
+  }
+
+  /** Make an EnumTypedef setting the base type (must be ENUM1, ENUM2, ENUM4). */
+  public EnumTypedef(String name, Map<Integer, String> map, ArrayType basetype) {
+    this.name = name;
+    Preconditions
+        .checkArgument(basetype == ArrayType.ENUM1 || basetype == ArrayType.ENUM2 || basetype == ArrayType.ENUM4);
     this.basetype = basetype;
 
     Preconditions.checkNotNull(map);
@@ -43,8 +58,14 @@ public class EnumTypedef {
     this.map = ImmutableMap.copyOf(map);
   }
 
-  /** One of DataType.ENUM1, DataType.ENUM2, or DataType.ENUM4. */
+  /** @deprecated use getBaseArrayType() */
+  @Deprecated
   public DataType getBaseType() {
+    return this.basetype.getDataType();
+  }
+
+  /** One of ArrayType.ENUM1, ArrayType.ENUM2, or ArrayType.ENUM4. */
+  public ArrayType getBaseArrayType() {
     return this.basetype;
   }
 
@@ -56,7 +77,7 @@ public class EnumTypedef {
     return map;
   }
 
-  private boolean validateMap(Map<Integer, String> map, DataType basetype) {
+  private boolean validateMap(Map<Integer, String> map, ArrayType basetype) {
     for (Integer i : map.keySet()) {
       // WARNING, we do not have signed/unsigned info available
       switch (basetype) {

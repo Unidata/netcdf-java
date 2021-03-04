@@ -14,7 +14,7 @@ import java.util.Optional;
 import java.util.StringTokenizer;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import ucar.ma2.DataType;
+import ucar.array.ArrayType;
 import ucar.nc2.internal.util.EscapeStrings;
 import ucar.nc2.util.Indent;
 import java.util.ArrayList;
@@ -387,7 +387,7 @@ public class Group {
         out.format("%s", indent);
         att.writeCDL(out, strict, null);
         out.format(";");
-        if (!strict && (att.getDataType() != DataType.STRING))
+        if (!strict && (att.getArrayType() != ArrayType.STRING))
           out.format(" // %s", att.getDataType());
         out.format("%n");
       }

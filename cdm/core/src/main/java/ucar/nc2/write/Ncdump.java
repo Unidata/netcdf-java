@@ -43,7 +43,10 @@ import ucar.nc2.util.Indent;
  * A difference with ncdump is that the nesting of multidimensional array data is represented by nested brackets,
  * so the output is not legal CDL that can be used as input for ncgen. Also, the default is header only (-h).
  * Moved from ucar.nc2.NCdumpW
+ * 
+ * @deprecated use NcdumpArray
  */
+@Deprecated
 @Immutable
 public class Ncdump {
 

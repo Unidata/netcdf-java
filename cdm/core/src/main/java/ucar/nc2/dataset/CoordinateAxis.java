@@ -7,8 +7,9 @@ package ucar.nc2.dataset;
 
 import com.google.common.base.Preconditions;
 import javax.annotation.Nullable;
+
+import ucar.array.ArrayType;
 import ucar.ma2.Array;
-import ucar.ma2.DataType;
 import ucar.ma2.MAMath;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
@@ -51,7 +52,7 @@ public class CoordinateAxis extends VariableDS {
    */
   public static CoordinateAxis.Builder<?> fromVariableDS(VariableDS.Builder<?> vdsBuilder) {
     if ((vdsBuilder.getRank() == 0) || (vdsBuilder.getRank() == 1)
-        || (vdsBuilder.getRank() == 2 && vdsBuilder.dataType == DataType.CHAR)) {
+        || (vdsBuilder.getRank() == 2 && vdsBuilder.dataType == ArrayType.CHAR)) {
       return CoordinateAxis1D.builder().copyFrom(vdsBuilder);
     } else if (vdsBuilder.getRank() == 2) {
       return CoordinateAxis2D.builder().copyFrom(vdsBuilder);

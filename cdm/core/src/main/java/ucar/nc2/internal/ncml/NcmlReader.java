@@ -905,7 +905,7 @@ public class NcmlReader {
         aggDs.setOriginalName(nameInFile);
       }
       agg.setParentGroupBuilder(groupBuilder);
-      DataType reallyFinalDtype = finalDtype != null ? finalDtype : agg.dataType;
+      DataType reallyFinalDtype = finalDtype != null ? finalDtype : agg.dataType.getDataType();
       augmentVariableNew(agg, reallyFinalDtype, varElem);
     });
   }

@@ -8,7 +8,7 @@ import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
 import javax.annotation.Nullable;
 
-import ucar.ma2.DataType;
+import ucar.array.ArrayType;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
 import ucar.unidata.geoloc.*;
@@ -477,7 +477,7 @@ public class CoordinateSystem {
 
       // a CHAR variable must really be a STRING, so leave out the last (string length) dimension
       int checkDims = axis.getRank();
-      if (axis.getDataType() == DataType.CHAR) {
+      if (axis.getArrayType() == ArrayType.CHAR) {
         checkDims--;
       }
       for (int i = 0; i < checkDims; i++) {

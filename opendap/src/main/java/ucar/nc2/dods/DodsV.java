@@ -10,6 +10,8 @@ import java.util.StringTokenizer;
 import java.util.List;
 import java.io.IOException;
 import java.io.PrintStream;
+
+import ucar.array.ArrayType;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.nc2.AttributeContainerMutable;
@@ -292,6 +294,10 @@ class DodsV implements Comparable {
 
   String getType() {
     return bt == null ? "" : bt.getTypeName();
+  }
+
+  ArrayType getArrayType() {
+    return getDataType().getArrayType();
   }
 
   DataType getDataType() {

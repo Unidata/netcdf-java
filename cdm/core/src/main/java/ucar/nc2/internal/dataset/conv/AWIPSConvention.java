@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 import javax.annotation.Nullable;
+
+import ucar.array.ArrayType;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayChar;
 import ucar.ma2.DataType;
@@ -112,7 +114,7 @@ public class AWIPSConvention extends CoordSystemBuilder {
         VariableDS.Builder<?> levelVar = (VariableDS.Builder<?>) rootGroup.findVariableLocal(levelName).get();
         if (levelVar.getRank() != 2)
           continue;
-        if (levelVar.dataType != DataType.CHAR)
+        if (levelVar.dataType != ArrayType.CHAR)
           continue;
 
         try {
@@ -328,7 +330,7 @@ public class AWIPSConvention extends CoordSystemBuilder {
 
       String name = ncVar.shortName + "-" + dim.getShortName();
       VariableDS.Builder<?> varNew =
-          VariableDS.builder().setName(name).setOriginalVariable(varSection).setDataType(ncVar.dataType);
+          VariableDS.builder().setName(name).setOriginalVariable(varSection).setArrayType(ncVar.dataType);
       dims.set(newDimIndex, dim);
       varNew.addDimensions(dims);
       varNew.addAttributes(ncVar.getAttributeContainer());

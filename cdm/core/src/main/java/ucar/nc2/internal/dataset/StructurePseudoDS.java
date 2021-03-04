@@ -6,6 +6,8 @@ package ucar.nc2.internal.dataset;
 
 import com.google.common.collect.ImmutableList;
 import javax.annotation.concurrent.Immutable;
+
+import ucar.array.ArrayType;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.dataset.StructureDS;
@@ -57,7 +59,7 @@ public class StructurePseudoDS extends StructureDS {
       List<Variable> vars = group.getVariables();
       varNames = new ArrayList<>(vars.size());
       for (Variable orgV : vars) {
-        if (orgV.getDataType() == DataType.STRUCTURE)
+        if (orgV.getArrayType() == ArrayType.STRUCTURE)
           continue;
 
         Dimension dim0 = orgV.getDimension(0);
@@ -192,7 +194,7 @@ public class StructurePseudoDS extends StructureDS {
       if (built)
         throw new IllegalStateException("already built");
       built = true;
-      this.setDataType(DataType.STRUCTURE);
+      this.setArrayType(ArrayType.STRUCTURE);
       return new StructurePseudoDS(this, parentGroup);
     }
   }
