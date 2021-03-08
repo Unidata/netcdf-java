@@ -41,7 +41,6 @@ dependencies {
   ncIdv project(':cdm:cdm-misc')
   ncIdv project(':bufr')
   ncIdv project(':grib')
-  ncIdv project(':netcdf4')
   ncIdv project(':opendap')
   ncIdv project(':visad:cdm-mcidas')
   ncIdv project(':visad:cdm-vis5d')
