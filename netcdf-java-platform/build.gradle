@@ -4,17 +4,11 @@ apply from: "$rootDir/gradle/any/publishing.gradle"
 
 // All dependencies used by the netCDF-Java library are defined here
 
-javaPlatform {
-  allowDependencies()
-}
+//javaPlatform {
+//  allowDependencies()
+//}
 
 dependencies {
-  // Results in upgrading jackson-databind to 2.10.5.1, which contains a fix for
-  // CVE-2020-25649 (https://nvd.nist.gov/vuln/detail/CVE-2020-25649)
-  // See https://github.com/FasterXML/jackson-databind/issues/2589#issuecomment-736973925
-  // jackson-databind is pulled in by AWS SDK (true as of version 2.15.40), so once they update to
-  // a newer version, we can get rid of this (and the javaPlatform allowDependencies() block above).
-  api enforcedPlatform('com.fasterxml.jackson:jackson-bom:2.10.5.20201202')
   constraints {
     // Note: The depVersion variable is defined in gradle/any/shared-mvn-coords.gradle and is used for dependencies
     // that are used in different configurations of a build that need access to the full maven coordinates.
@@ -52,10 +46,8 @@ dependencies {
     api 'edu.wisc.ssec:visad:2.0-20130124'
 
     // cdm-s3 (S3RandomAccessFile)
-    // If updating from 2.15.40, see note the note at the top of this dependencies block regarding
-    // the use of jackson-databind enforcedPlatform.
-    api 'software.amazon.awssdk:s3:2.15.46'
-    api 'software.amazon.awssdk:apache-client:2.15.46'
+    api 'software.amazon.awssdk:s3:2.16.9'
+    api 'software.amazon.awssdk:apache-client:2.16.9'
 
     // apache httpclient
     api 'org.apache.httpcomponents:httpclient:4.5.13'
@@ -66,39 +58,16 @@ dependencies {
     api "org.slf4j:jcl-over-slf4j:${depVersion.slf4j}"
 
     // waterml xml beans
-    api 'org.apache.xmlbeans:xmlbeans:2.6.0'
-    api 'org.n52.sensorweb:52n-xml-waterML-v20:2.0.0'
-    api 'org.n52.sensorweb:52n-xml-gml-v321:2.0.0'
-    api 'org.n52.sensorweb:52n-xml-sweCommon-v20:2.0.0'
-    api 'org.n52.sensorweb:52n-xml-om-v20:2.0.0'
-    api 'org.n52.sensorweb:52n-xml-sampling-v20:2.0.0'
+    api 'org.apache.xmlbeans:xmlbeans:3.1.0'
+    api 'org.n52.sensorweb:52n-xml-waterML-v20:2.7.0'
+    api 'org.n52.sensorweb:52n-xml-gml-v321:2.7.0'
+    api 'org.n52.sensorweb:52n-xml-sweCommon-v20:2.7.0'
+    api 'org.n52.sensorweb:52n-xml-om-v20:2.7.0'
+    api 'org.n52.sensorweb:52n-xml-sampling-v20:2.7.0'
 
     // netcdf-java logging
     api "org.slf4j:slf4j-api:${depVersion.slf4j}"
     runtime 'ch.qos.logback:logback-classic:1.2.3'
-
-    //////////////////////////
-    // netcdf-java testing //
-    //////////////////////////
-
-    api 'junit:junit:4.13.1'
-    api 'commons-io:commons-io:2.5'
-
-    // Fluent assertions for Java
-    api 'com.google.truth:truth:1.0'
-
-    // These two are for Spock.
-    api 'org.spockframework:spock-core:1.3-groovy-2.5'
-    api 'org.codehaus.groovy:groovy-all:2.5.12'
-
-    //mockito
-    api "org.mockito:mockito-core:${depVersion.mockito}"
-
-    // opendap
-    api 'pl.pragmatists:JUnitParams:1.0.5'
-
-    // cdm-test (GRIB related testing)
-    api 'org.apache.commons:commons-compress:1.12'
 
     ///////////////////////
     // toolsUI GUI stuff //

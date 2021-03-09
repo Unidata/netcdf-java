@@ -15,8 +15,8 @@ ext {
   jenkinsEnvVar = 'JENKINS_URL'
   isJenkins = System.env[jenkinsEnvVar] as boolean  // We only care if prop is defined, not its actual value.
 
-  travisEnvVar = 'TRAVIS'
-  isTravis = System.env[travisEnvVar] as boolean  // We only care if prop is defined, not its actual value.
+  pullRequestEnvVar = 'GITHUB_ACTIONS'
+  isPullRequestCheck = System.env[pullRequestEnvVar] as boolean  // We only care if prop is defined, not its actual value.
 
   contentRootKey = 'tds.content.root.path'
   isContentRootAvailable = isSystemPropertyAValidDirectory contentRootKey
@@ -24,15 +24,16 @@ ext {
   testdataDirKey = 'unidata.testdata.path'
   isCdmUnitTestDirAvailable = isSystemPropertyAValidDirectory testdataDirKey
 
-  runSlowTests = System.properties['runSlowTests'] as boolean // We only care if prop is defined, not its actual value.
+  // We only care if props are defined, not their actual value.
+  runSlowTests = System.properties['runSlowTests'] as boolean
   isRdaDataAvailable = System.properties['rdaDataAvailable'] as boolean
-  // We only care if prop is defined, not its actual value.
   isUcarNetworkAvailable = System.properties['ucarNetworkAvailable'] as boolean
-  // We only care if prop is defined, not its actual value.
 
   // Option to run all tests regardless of environment or resource availability
   runAllTests = System.properties['runAllTestExceptIgnored'] as boolean
-  // We only care if prop is defined, not its actual value.
+
+  // If not a release, the version will contain a -SNAPSHOT, -beta, etc.
+  isRelease = "${version}".split('-').length == 1
 
   if (runAllTests) {
     logger.warn 'Running all tests except those explicitly annotated with @Ignore.'
@@ -41,8 +42,8 @@ ext {
       logger.warn 'Skipping all NotJenkins tests: detected that we\'re running in the Jenkins environment.'
     }
 
-    if (isTravis) {
-      logger.warn 'Skipping all NotTravis tests: detected that we\'re running in the Travis environment.'
+    if (isPullRequestCheck) {
+      logger.warn 'Skipping all NotPullRequest tests: detected that we\'re running in the GitHub Actions environment.'
     }
 
     if (!isContentRootAvailable && !isJenkins) {  // Don't skip tests on Jenkins, except NotJenkins ones.
@@ -125,15 +126,7 @@ gradle.projectsEvaluated {
     // All Test tasks will be finalized by this task. As a result, this task needn't be invoked directly.
     subprojectTestTasks*.finalizedBy it
 
-    // :buildSrc:test always runs and produces a binary results directory, no matter what.
-    assert file('buildSrc/build/test-results/test/binary').exists() : "Can't find :buildSrc test result dir."
-
-    // Add test results of the :buildSrc project. Note that by this time in the 'thredds' config,
-    // :buildSrc has already run as a *separate* build (see http://stackoverflow.com/questions/26597147),
-    // so we cannot programmatically access its Project object to retrieve this paths.
-    reportOn file('buildSrc/build/test-results/test/binary')
-
-    // We could also do "reportOn subprojectTestTasks" here, but that would cause this task to be dependent on
+    // We could do "reportOn subprojectTestTasks" here, but that would cause this task to be dependent on
     // all subproject Tests. So, we couldn't do something like ":grib:test" and expect only GRIB tests to run
     // because:
     //     ":grib:test" --finalizedBy--> ":rootTestReport" --dependsOn--> "all_subproject_Tests"

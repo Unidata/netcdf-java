@@ -837,3 +837,6 @@ Conflicts=0 extra=3 udunits=0
 
 06/16/2020 sarms
   - updated ncep grib2 tables to v23.0.0 using grib/src/test/java/ucar/nc2/grib/grib2/table/NcepHtmlScraper.java
+
+02/02/2021 sarms
+  - checked ncep grib2 tables, current version is still v23.0.0.

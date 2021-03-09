@@ -1,0 +1,16 @@
+convert_mrms_table.py
+
+Will read in the csv table of GRIB 2 parameters and ouput a block of text that can be used in the init method of
+grib/src/main/java/ucar/nc2/grib/grib2/table/MrmsLocalTables.java.
+
+The script does some simple processing (fixing spelling typos, units like "table", etc.). The csv version of the
+table can be found at:
+
+https://www.nssl.noaa.gov/projects/mrms/operational/tables.php
+
+The actual file is currently is hosted on an ftp server:
+
+ftp://ftp.nssl.noaa.gov/projects/MRMS/GRIB2_TABLES/UserTable_MRMS_v12.0.csv
+
+2021-02-02 sarms
+  - Updated to version 12.0 of the MRMS GRIB2 parameter table.

@@ -5,10 +5,13 @@ tasks.withType(Test).all {
   // Propagates system properties set on the Gradle process to the test executors.
   addFilteredSysProps(systemProperties)
 
-  if (isJenkins) {
-    ignoreFailures = true   // On Jenkins, don't let test failures abort the build; we want the full test report.
+  if (isJenkins && !isRelease) {
+    // On Jenkins, don't let test failures fail the build unless we are doing we release; we want
+    // the full test report.
+    ignoreFailures = true
   } else {
-    ignoreFailures = false  // Otherwise, abort at the first sign of failure.
+    // Otherwise, fail the build at the first sign of failure.
+    ignoreFailures = false
   }
 
   useJUnit {
@@ -18,8 +21,8 @@ tasks.withType(Test).all {
         excludeCategories 'ucar.unidata.util.test.category.NotJenkins'
       }
 
-      if (isTravis) {
-        excludeCategories 'ucar.unidata.util.test.category.NotTravis'
+      if (isPullRequestCheck) {
+        excludeCategories 'ucar.unidata.util.test.category.NotPullRequest'
         excludeCategories 'ucar.unidata.util.test.category.NeedsExternalResource'
       }
 

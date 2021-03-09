@@ -1,6 +1,6 @@
 plugins {
   id 'base' // Adds 'assemble', 'check', 'build', and 'clean' tasks.
-  id 'jekyll' // comes from buildSrc/
+  id 'edu.ucar.unidata.site.jekyll'
 }
 
 //////////////////////////////////////////////// Javadoc ////////////////////////////////////////////////
@@ -8,6 +8,8 @@ apply from: "$rootDir/gradle/any/javadoc.gradle"
 apply from: "$rootDir/gradle/any/testing.gradle"
 
 dependencies {
+  testImplementation enforcedPlatform(project(':netcdf-java-testing-platform'))
+
   testCompile project(':cdm:cdm-core')
   testCompile project(':cdm:cdm-s3')
   testCompile project(':netcdf4')
@@ -18,7 +20,6 @@ dependencies {
   testCompile 'com.google.truth:truth'
 
   testRuntimeOnly 'ch.qos.logback:logback-classic'
-
 }
 
 java {
@@ -94,13 +95,13 @@ gradle.projectsEvaluated {  // Several statements below rely upon all subproject
 
 apply from: "$rootDir/gradle/any/properties.gradle"  // For Nexus credential properties.
 
-import edu.ucar.build.publishing.PublishToRawRepoTask
+import edu.ucar.build.publishing.tasks.PublishToRawRepoTask
 
 tasks.withType(PublishToRawRepoTask).all {  // Common PublishToRawRepoTask config.
   group = 'Documentation'
 
   host = 'https://artifacts.unidata.ucar.edu/'
-  repoName = 'netcdf-java-docs'
+  repoName = 'docs-netcdf-java'
 
   onlyIf {
     // Will be evaluated at task execution time, not during configuration.
@@ -111,18 +112,20 @@ tasks.withType(PublishToRawRepoTask).all {  // Common PublishToRawRepoTask confi
   }
 }
 
-task publishAsVersionedUserGuide(type: PublishToRawRepoTask, dependsOn: buildJekyllSite) {
+tasks.register('publishAsVersionedUserGuide', PublishToRawRepoTask) {
   description = 'Publish user guide (versioned) to Nexus under /major.minor/.'
 
-  publishSrc = jekyllDestinationDir
+  publishSrc = buildJekyllSite.destinationDirectory.get()
   destPath = "netcdf-java/$project.docVersion/userguide/"
+  dependsOn tasks.getByName('buildJekyllSite')
 }
 
-task publishAsCurrentUserGuide(type: PublishToRawRepoTask, dependsOn: buildJekyllSite) {
+tasks.register('publishAsCurrentUserGuide', PublishToRawRepoTask) {
   description = 'Publish the user guide to Nexus under /current/.'
 
-  publishSrc = jekyllDestinationDir
+  publishSrc = buildJekyllSite.destinationDirectory.get()
   destPath = 'netcdf-java/current/userguide/'
+  dependsOn tasks.getByName('buildJekyllSite')
 }
 
 gradle.projectsEvaluated {
@@ -175,14 +178,14 @@ gradle.projectsEvaluated {
   }
 }
 
-import edu.ucar.build.publishing.DeleteFromNexusTask
+import edu.ucar.build.publishing.tasks.DeleteFromNexusTask
 
 // By default, this will perform a dry run, which simply prints the components that the query matched.
 // To actually delete those components, do:  ./gradlew :docs:deleteFromNexus --dryRun=false
 task deleteVersionedDocsFromNexus(group: 'Documentation', type: DeleteFromNexusTask) {
   description = 'Remove user guide and both Javadoc sets on Nexus under /major.minor/.'
   host = 'https://artifacts.unidata.ucar.edu/'
-  searchQueryParameters.repository = 'netcdf-java-docs'
+  searchQueryParameters.repository = 'docs-netcdf-java'
   searchQueryParameters.group = "/netcdf-java/$project.docVersion/*"
 
   onlyIf {
@@ -197,7 +200,7 @@ task deleteVersionedDocsFromNexus(group: 'Documentation', type: DeleteFromNexusT
 task deleteCurrentDocsFromNexus(group: 'Documentation', type: DeleteFromNexusTask) {
   description = 'Remove user guide and both Javadoc sets on Nexus under /current/.'
   host = 'https://artifacts.unidata.ucar.edu/'
-  searchQueryParameters.repository = 'netcdf-java-docs'
+  searchQueryParameters.repository = 'docs-netcdf-java'
   searchQueryParameters.group = '/netcdf-java/current/*'
 
   onlyIf {

@@ -6,12 +6,13 @@ apply from: "$rootDir/gradle/any/java-library.gradle"
 
 dependencies {
   api enforcedPlatform(project(':netcdf-java-platform'))
+  testImplementation enforcedPlatform(project(':netcdf-java-testing-platform'))
 
   api project(':cdm:cdm-core')
 
   implementation project(':httpservices')
 
-  implementation 'junit:junit'
+  implementation "junit:junit:${depVersion.junit}"
   implementation 'org.slf4j:slf4j-api'
   implementation 'com.google.re2j:re2j'
 

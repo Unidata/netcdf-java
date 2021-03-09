@@ -31,8 +31,6 @@ jobs:
           path: tds_build_dir
       - name: Modify, build, and test the TDS
         shell: bash
-        env:
-          TRAVIS: 'true'
         run: |
           echo "Find netcdf-java version as specified in the PR"
           NCJ_VERSION=$(./gradlew properties -q | grep "^version:" | awk '{print $2}')
@@ -85,8 +83,6 @@ jobs:
           path: tds_build_dir
       - name: Modify, build, and test the TDS
         shell: bash
-        env:
-          TRAVIS: 'true'
         run: |
           echo "Find netcdf-java version as specified in the PR"
           NCJ_VERSION=$(./gradlew properties -q | grep "^version:" | awk '{print $2}')
