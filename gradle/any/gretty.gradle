@@ -71,10 +71,10 @@ gretty {
 farm {
   jvmArgs = ["-Dlog4j.configurationFile=$rootDir/gradle/gretty/log4j2Config.xml"]
   // used by :dap4 test
-  webapp 'edu.ucar:d4ts:5.0.0-SNAPSHOT@war', contextPath: '/d4ts'
+  webapp 'edu.ucar:d4ts:5.0.0-beta8@war', contextPath: '/d4ts'
 
   // :opendap and :httpservices test.
-  webapp 'edu.ucar:dtswar:5.0.0-SNAPSHOT@war', contextPath: '/dts'
+  webapp 'edu.ucar:dtswar:5.0.0-beta8@war', contextPath: '/dts'
   integrationTestTask = 'test'
 
   // Enable TLS
