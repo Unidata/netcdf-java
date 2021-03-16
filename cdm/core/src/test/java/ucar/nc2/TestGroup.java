@@ -403,7 +403,7 @@ public class TestGroup {
     assertThat(uncle).isNotNull();
 
     assertThat(gramps.toString()).startsWith(String.format("dimensions:%n" + "  mid = 1;%n" + "variables:%n"
-        + "  String vatt(mid=1);%n" + "    :findme = \"findmevalue\";%n" + "%n" + "group: parent {%n" + "  types:%n"
+        + "  String vatt(mid=1);%n" + "    :findme = \"findmevalue\"; // String%n" + "%n" + "group: parent {%n" + "  types:%n"
         + "    enum low { 'name1' = 1, 'name2' = 2, 'name3' = 3};%n" + "%n" + "  dimensions:%n" + "    low = 1;%n"
         + "  variables:%n" + "    String v(low=1);%n" + "%n" + "  // group attributes:%n"
         + "  :groupAtt = \"groupVal\";%n" + "}"));

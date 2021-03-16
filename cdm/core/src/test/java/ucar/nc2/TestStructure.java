@@ -4,6 +4,7 @@ import static com.google.common.truth.Truth.assertThat;
 import static ucar.nc2.TestUtils.makeDummyGroup;
 import com.google.common.collect.ImmutableList;
 import org.junit.Test;
+import ucar.array.ArrayType;
 import ucar.ma2.DataType;
 import ucar.ma2.StructureMembers;
 
@@ -131,6 +132,6 @@ public class TestStructure {
 
     Variable.Builder<?> vb = structb.findMemberVariable("two").orElse(null);
     assertThat(vb).isNotNull();
-    assertThat(vb.dataType).isEqualTo(DataType.FLOAT);
+    assertThat(vb.dataType).isEqualTo(ArrayType.FLOAT);
   }
 }
