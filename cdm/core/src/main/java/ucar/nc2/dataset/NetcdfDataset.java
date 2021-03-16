@@ -18,7 +18,7 @@ import java.util.*;
 
 /**
  * <p>
- * {@code NetcdfDataset} extends the netCDF API, adding standard attribute parsing such as
+ * An "enhanced" NetcdfFile, adding standard attribute parsing such as
  * scale and offset, and explicit support for Coordinate Systems.
  * A {@code NetcdfDataset} wraps a {@code NetcdfFile}, or is defined by an NcML document.
  * </p>

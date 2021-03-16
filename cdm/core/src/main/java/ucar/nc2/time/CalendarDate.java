@@ -15,7 +15,7 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 /**
- * A Calendar Date. Replaces java.util.Date.
+ * A Calendar Date, replaces java.util.Date, currently wraps joda.time.
  * Allows non-standard calendars. Default is Calendar.gregorian.
  * Always in UTC time zone.
  * LOOK should a CalendarDate have a CalendarDateUnit?

@@ -17,11 +17,11 @@ import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.unidata.util.StringUtil2;
 
 /**
- * A CoordinateSystem specifies the coordinates of a Variable's values.
+ * Specifies the coordinates of a Variable's values.
  *
- * Mathematically it is a vector function F from index space to Sn:
- * 
+ *
  * <pre>
+ * Mathematically it is a vector function F from index space to Sn:
  *  F(i,j,k,...) -> (S1, S2, ...Sn)
  *  where i,j,k are integers, and S is the set of reals (R) or Strings.
  * </pre>

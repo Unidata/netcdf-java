@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-/** A set of boolena flags. */
+/** A set of boolean flags. */
 public interface DebugFlags {
 
   /**

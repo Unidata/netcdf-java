@@ -22,15 +22,16 @@ import java.io.IOException;
 import java.util.Formatter;
 
 /**
- * A Coordinate Axis is a Variable that specifies one of the coordinates of a CoordinateSystem.
- * Mathematically it is a scalar function F from index space to S:
+ * A Variable that specifies one of the coordinates of a CoordinateSystem.
+ * <p/>
  * 
  * <pre>
+ * Mathematically it is a scalar function F from index space to S:
  *  F:D -> S
  *  where D is a product set of dimensions (aka <i>index space</i>), and S is the set of reals (R) or Strings.
  * </pre>
  * <p/>
- * If its element type is char, it is considered a string-valued Coordinate Axis and rank is reduced by one,
+ * If its element type is CHAR, it is considered a string-valued Coordinate Axis and rank is reduced by one,
  * since the outermost dimension is considered the string length: v(i, j, .., strlen).
  * If its element type is String, it is a string-valued Coordinate Axis.
  * Otherwise it is numeric-valued, and <i>isNumeric()</i> is true.

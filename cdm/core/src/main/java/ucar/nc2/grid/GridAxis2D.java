@@ -8,7 +8,7 @@ import java.util.Formatter;
 import java.util.Iterator;
 import java.util.Optional;
 
-/** Used for curvilinear lat(i, j) and lon(i, j). No intervals. */
+/** A 2 dimensional GridAxis, used for curvilinear lat(i, j) and lon(i, j). No intervals. */
 public class GridAxis2D extends GridAxis {
   private int nx, ny;
 

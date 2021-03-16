@@ -5,7 +5,7 @@
 
 package ucar.nc2.dataset;
 
-/** Enumeration of CoordinateTransform Types. */
+/** Enumeration of CoordinateTransform types. */
 public enum TransformType {
   Projection, Vertical
 }

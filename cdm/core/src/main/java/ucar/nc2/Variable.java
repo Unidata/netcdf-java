@@ -32,8 +32,8 @@ import java.util.*;
 import java.io.IOException;
 
 /**
- * A Variable is a logical container for data. It has a dataType, a set of Dimensions that define its array shape,
- * and optionally a set of Attributes.
+ * A logical container for data, with a dataType, a set of Dimensions that define its array shape,
+ * and a set of Attributes.
  * <p/>
  * The data is a multidimensional array of primitive types, Strings, or Structures.
  * Data access is done through the read() methods, which return a memory resident Array.

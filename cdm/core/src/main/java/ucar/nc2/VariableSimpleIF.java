@@ -10,7 +10,7 @@ import javax.annotation.Nullable;
 import ucar.array.ArrayType;
 import ucar.ma2.DataType;
 
-/** A lightweight abstraction of a Variable. */
+/** A lightweight abstraction of an immutable Variable. */
 public interface VariableSimpleIF extends Comparable<VariableSimpleIF> {
 
   /** full, backslash escaped name of the data Variable */

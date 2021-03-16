@@ -9,13 +9,10 @@ import ucar.units.*;
 /**
  * Convenience routines on top of ucar.units package.
  * <p/>
- * The ucar.units package handles
- * <ol>
- * <li>scientific units, which are factors of the fundamental
- * dimensions such as length, time, mass, etc
- * <li>dates, represented as "n units of time since reference date" eg
- * "1203 days since 1970-01-01 00:00:00"
- * </ol>
+ * The ucar.units package handles scientific units, which are factors of the fundamental
+ * dimensions such as length, time, mass, etc.
+ * <p/>
+ * CDM does not use udunits date methods.
  * TODO: 8/12/2020 make Immutable in version 7
  */
 public class SimpleUnit {

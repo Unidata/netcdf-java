@@ -267,7 +267,6 @@ public final class StructureMembers implements Iterable<StructureMembers.Member>
     }
   }
 
-  /** A builder for StructureMembers.Member */
   public static class MemberBuilder {
     private String name, desc, units;
     private ArrayType dataType;
@@ -406,7 +405,6 @@ public final class StructureMembers implements Iterable<StructureMembers.Member>
     return new MemberBuilder();
   }
 
-  /** A builder for StructureMembers */
   public static class Builder {
     private String name;
     private final ArrayList<MemberBuilder> members = new ArrayList<>();

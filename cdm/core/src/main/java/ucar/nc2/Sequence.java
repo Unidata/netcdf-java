@@ -14,7 +14,7 @@ import ucar.ma2.*;
 import java.util.List;
 
 /**
- * Sequence is a one-dimensional Structure with indeterminate length, possibly 0.
+ * A one-dimensional Structure with indeterminate length, possibly 0.
  * The only data access is through getStructureIterator().
  */
 @Immutable

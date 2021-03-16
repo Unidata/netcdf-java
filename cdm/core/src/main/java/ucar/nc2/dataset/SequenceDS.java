@@ -23,7 +23,7 @@ import ucar.nc2.internal.dataset.SequenceArrayEnhancer;
 
 import javax.annotation.concurrent.Immutable;
 
-/** Enhanced sequence */
+/** An "enhanced" Sequence */
 @Immutable
 public class SequenceDS extends Sequence implements StructureEnhanced {
 

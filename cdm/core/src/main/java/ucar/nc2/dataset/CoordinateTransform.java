@@ -15,8 +15,7 @@ import ucar.unidata.util.Parameter;
 import javax.annotation.concurrent.Immutable;
 
 /**
- * A CoordinateTransform is an abstraction of a function from a CoordinateSystem to a
- * "reference" CoordinateSystem.
+ * An abstraction of a function from a CoordinateSystem to a "reference" CoordinateSystem.
  *
  * CoordinateTransform is the superclass for ProjectionCT and VerticalCT.
  * It contains the Attributes/Parameters needed to make a "Coordinate Transform Variable".
