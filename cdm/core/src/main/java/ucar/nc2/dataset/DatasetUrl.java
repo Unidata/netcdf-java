@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.dataset;
@@ -11,6 +11,8 @@ import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 import com.google.common.annotations.VisibleForTesting;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+
+import com.google.common.base.Preconditions;
 import thredds.client.catalog.ServiceType;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
@@ -21,9 +23,10 @@ import java.io.*;
 import java.util.*;
 
 /**
- * Detection of the protocol from a location string.
- * TODO: Review and refactor as needed.
+ * Detection of the protocol from a location string. Contacts the server if necessary to disambiguate, eg opendap
+ * from plain http.
  *
+ * @see "DatasetUrls.md"
  * @author caron
  * @since 10/20/2015.
  */
@@ -37,66 +40,10 @@ public class DatasetUrl {
       ServiceType.THREDDS, ServiceType.THREDDS, ServiceType.NCML};
 
   /**
-   * Return the set of leading protocols for a url; may be more than one.
-   * Watch out for Windows paths starting with a drive letter => protocol
-   * names must all have a length > 1.
-   * Watch out for '::'
-   * Each captured protocol is saved without trailing ':'
-   * Assume: the protocols MUST be terminated by the occurrence of '/'.
-   *
-   * @param url the url whose protocols to return
-   * @return list of leading protocols without the trailing :
+   * This creates a DatasetUrl, figures out the ServiceType if possible, and canonicalizes the URL string.
+   * 
+   * @param orgLocation TODO define syntax.
    */
-  @VisibleForTesting
-  static List<String> getProtocols(String url) {
-    List<String> allprotocols = new ArrayList<>(); // all leading protocols upto path or host
-
-    // Note, we cannot use split because of the context sensitivity
-    // This code is quite ugly because of all the confounding cases
-    // (e.g. windows path, embedded colons, etc.).
-    // Specifically, the 'file:' protocol is a problem because
-    // it has so many non-standard forms such as file:x/y file://x/y file:///x/y.
-    StringBuilder buf = new StringBuilder(url);
-    // If there are any leading protocols, then they must stop at the first '/'.
-    int slashpos = buf.indexOf("/");
-    // Check special case of file:<path> with no slashes after file:
-    if (url.startsWith("file:") && "/\\".indexOf(url.charAt(5)) < 0) {
-      allprotocols.add("file");
-    } else if (slashpos >= 0) {
-      // Remove everything after the first slash
-      buf.delete(slashpos + 1, buf.length());
-      int index = buf.indexOf(":");
-      while (index > 0) {
-        // Validate protocol
-        if (!validateProtocol(buf, 0, index))
-          break;
-        String protocol = buf.substring(0, index); // not including trailing ':'
-        allprotocols.add(protocol);
-        buf.delete(0, index + 1); // remove the leading protocol
-        index = buf.indexOf(":");
-      }
-    }
-    return allprotocols;
-  }
-
-  // Eliminate windows drive letters.
-  // "protocol:" must be followed by alpha or "/"
-  private static boolean validateProtocol(StringBuilder buf, int startpos, int endpos) {
-    int len = endpos - startpos;
-    if (len == 0) {
-      return false;
-    }
-    char cs = buf.charAt(startpos);
-    char ce1 = buf.charAt(endpos + 1);
-    if (len == 1 && alpha.indexOf(cs) >= 0 && (ce1 == '/' || ce1 == '\\')) {
-      return false; // looks like windows drive letter
-    }
-    // If trailing colon is not followed by alpha or /, then assume not url
-    return slashalpha.indexOf(ce1) >= 0;
-  }
-
-  /////////////////////////////////////////////////////////////////////////////////////
-
   public static DatasetUrl findDatasetUrl(String orgLocation) throws IOException {
     ServiceType serviceType = null;
 
@@ -188,6 +135,65 @@ public class DatasetUrl {
       trueUrl = buf.toString();
     }
     return DatasetUrl.create(serviceType, trueUrl);
+  }
+
+  /**
+   * Return the set of leading protocols for a url; may be more than one.
+   * Watch out for Windows paths starting with a drive letter => protocol
+   * names must all have a length > 1.
+   * Watch out for '::'
+   * Each captured protocol is saved without trailing ':'
+   * Assume: the protocols MUST be terminated by the occurrence of '/'.
+   *
+   * @param url the url whose protocols to return
+   * @return list of leading protocols without the trailing :
+   */
+  @VisibleForTesting
+  static List<String> getProtocols(String url) {
+    List<String> allprotocols = new ArrayList<>(); // all leading protocols upto path or host
+
+    // Note, we cannot use split because of the context sensitivity
+    // This code is quite ugly because of all the confounding cases
+    // (e.g. windows path, embedded colons, etc.).
+    // Specifically, the 'file:' protocol is a problem because
+    // it has so many non-standard forms such as file:x/y file://x/y file:///x/y.
+    StringBuilder buf = new StringBuilder(url);
+    // If there are any leading protocols, then they must stop at the first '/'.
+    int slashpos = buf.indexOf("/");
+    // Check special case of file:<path> with no slashes after file:
+    if (url.startsWith("file:") && "/\\".indexOf(url.charAt(5)) < 0) {
+      allprotocols.add("file");
+    } else if (slashpos >= 0) {
+      // Remove everything after the first slash
+      buf.delete(slashpos + 1, buf.length());
+      int index = buf.indexOf(":");
+      while (index > 0) {
+        // Validate protocol
+        if (!validateProtocol(buf, 0, index))
+          break;
+        String protocol = buf.substring(0, index); // not including trailing ':'
+        allprotocols.add(protocol);
+        buf.delete(0, index + 1); // remove the leading protocol
+        index = buf.indexOf(":");
+      }
+    }
+    return allprotocols;
+  }
+
+  // Eliminate windows drive letters.
+  // "protocol:" must be followed by alpha or "/"
+  private static boolean validateProtocol(StringBuilder buf, int startpos, int endpos) {
+    int len = endpos - startpos;
+    if (len == 0) {
+      return false;
+    }
+    char cs = buf.charAt(startpos);
+    char ce1 = buf.charAt(endpos + 1);
+    if (len == 1 && alpha.indexOf(cs) >= 0 && (ce1 == '/' || ce1 == '\\')) {
+      return false; // looks like windows drive letter
+    }
+    // If trailing colon is not followed by alpha or /, then assume not url
+    return slashalpha.indexOf(ce1) >= 0;
   }
 
   /**
@@ -544,15 +550,14 @@ public class DatasetUrl {
   }
 
   /////////////////////////////////////////////////////////////////////
-  // TODO this could be an @AutoValue
-  private final ServiceType serviceType;
+  private final @Nullable ServiceType serviceType;
   private final String trueurl;
 
   /**
    * Create a DatasetUrl, which annotates a url with its service type.
    * 
    * @param serviceType The serviceType, may be null if not known.
-   * @param trueurl The actual URL
+   * @param trueurl The actual URL string.
    */
   public static DatasetUrl create(@Nullable ServiceType serviceType, String trueurl) {
     return new DatasetUrl(serviceType, trueurl);
@@ -560,7 +565,7 @@ public class DatasetUrl {
 
   private DatasetUrl(ServiceType serviceType, String trueurl) {
     this.serviceType = serviceType;
-    this.trueurl = trueurl;
+    this.trueurl = Preconditions.checkNotNull(trueurl);
   }
 
   @Override
@@ -580,10 +585,13 @@ public class DatasetUrl {
     return Objects.hash(serviceType, trueurl);
   }
 
+  /** The ServiceType, or null if not known. */
+  @Nullable
   public ServiceType getServiceType() {
     return serviceType;
   }
 
+  /** The actual URL string which you give to the service specified by getServiceType(). */
   public String getTrueurl() {
     return trueurl;
   }

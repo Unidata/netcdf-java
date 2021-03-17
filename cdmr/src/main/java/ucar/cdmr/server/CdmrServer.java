@@ -206,7 +206,7 @@ public class CdmrServer {
 
       String spec = varSection.makeSectionSpecString();
       Sequence seq = (Sequence) varSection.getVariable();
-      StructureMembers.Builder membersb = StructureMembers.makeStructureMembers(seq);
+      StructureMembers.Builder membersb = seq.makeStructureMembersBuilder();
       membersb.setStandardOffsets(false);
       StructureMembers members = membersb.build();
 

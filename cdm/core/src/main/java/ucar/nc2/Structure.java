@@ -90,7 +90,7 @@ public class Structure extends Variable {
    * directly from the StructureData or ArrayStructure.
    *
    * @return a StructureMembers object that describes this Structure.
-   * @deprecated use StructureMembers().makeStructureMembers(Structure structure)
+   * @deprecated use makeStructureMembersBuilder()
    */
   @Deprecated
   public StructureMembers makeStructureMembers() {
@@ -103,6 +103,19 @@ public class Structure extends Variable {
       }
     }
     return builder.build();
+  }
+
+  public ucar.array.StructureMembers.Builder makeStructureMembersBuilder() {
+    ucar.array.StructureMembers.Builder builder = ucar.array.StructureMembers.builder().setName(this.getShortName());
+    for (Variable v2 : this.getVariables()) {
+      ucar.array.StructureMembers.MemberBuilder m = builder.addMember(v2.getShortName(), v2.getDescription(),
+          v2.getUnitsString(), v2.getArrayType(), v2.getShape());
+      if (v2 instanceof Structure) {
+        Structure s2 = (Structure) v2;
+        m.setStructureMembers(s2.makeStructureMembersBuilder());
+      }
+    }
+    return builder;
   }
 
   /**
@@ -140,7 +153,7 @@ public class Structure extends Variable {
 
   /** Calculation of size of one element of this structure - equals the sum of sizes of its members. */
   private int calcElementSize() {
-    return ucar.array.StructureMembers.makeStructureMembers(this).getStorageSizeBytes(false);
+    return makeStructureMembersBuilder().getStorageSizeBytes(false);
   }
 
   //////////////////////////////////////////////////////////////////////////////////////

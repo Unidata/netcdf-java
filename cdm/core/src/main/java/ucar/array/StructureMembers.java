@@ -15,26 +15,10 @@ import java.util.Iterator;
 import java.util.List;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import ucar.nc2.Structure;
-import ucar.nc2.Variable;
 
 /** A collection of members contained in StructureData. */
 @Immutable
 public final class StructureMembers implements Iterable<StructureMembers.Member> {
-
-  public static StructureMembers.Builder makeStructureMembers(Structure structure) {
-    Builder builder = builder().setName(structure.getShortName());
-    for (Variable v2 : structure.getVariables()) {
-      MemberBuilder m = builder.addMember(v2.getShortName(), v2.getDescription(), v2.getUnitsString(),
-          v2.getArrayType(), v2.getShape());
-      if (v2 instanceof Structure) {
-        m.setStructureMembers(makeStructureMembers((Structure) v2));
-      }
-    }
-    return builder;
-  }
-
-  ////////////////////////////////////////////////////////////////////////
 
   /** Get the StructureMembers' name. */
   @Nullable

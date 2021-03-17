@@ -6,6 +6,7 @@
 package ucar.array;
 
 import ucar.ma2.DataType;
+import ucar.ma2.StructureDataIterator;
 
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
@@ -251,6 +252,35 @@ public enum ArrayType {
     } catch (IllegalArgumentException e) { // lame!
       return null;
     }
+  }
+
+  /** Find the ArrayType used for this primitive class type. */
+  public static ArrayType forPrimitiveClass(Class<?> c, boolean isUnsigned) {
+    if ((c == float.class) || (c == Float.class))
+      return ArrayType.FLOAT;
+    if ((c == double.class) || (c == Double.class))
+      return ArrayType.DOUBLE;
+    if ((c == short.class) || (c == Short.class))
+      return isUnsigned ? ArrayType.USHORT : ArrayType.SHORT;
+    if ((c == int.class) || (c == Integer.class))
+      return isUnsigned ? ArrayType.UINT : ArrayType.INT;
+    if ((c == byte.class) || (c == Byte.class))
+      return isUnsigned ? ArrayType.UBYTE : ArrayType.BYTE;
+    if ((c == char.class) || (c == Character.class))
+      return ArrayType.CHAR;
+    if ((c == boolean.class) || (c == Boolean.class))
+      return ArrayType.BOOLEAN;
+    if ((c == long.class) || (c == Long.class))
+      return isUnsigned ? ArrayType.ULONG : ArrayType.LONG;
+    if (c == String.class)
+      return ArrayType.STRING;
+    if (c == ucar.ma2.StructureData.class || c == ucar.array.StructureData.class)
+      return ArrayType.STRUCTURE;
+    if (c == StructureDataIterator.class) // LOOK
+      return ArrayType.SEQUENCE;
+    if (c == ByteBuffer.class) // LOOK
+      return ArrayType.OPAQUE;
+    return ArrayType.OBJECT; // LOOK
   }
 
   /**

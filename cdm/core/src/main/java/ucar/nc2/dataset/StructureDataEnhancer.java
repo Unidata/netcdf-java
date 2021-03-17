@@ -21,7 +21,12 @@ import ucar.ma2.StructureDataW;
 import ucar.ma2.StructureMembers;
 import ucar.nc2.Variable;
 
-/** Enhance StructureData, for both StructureDS and SequenceDS. TODO move to internal. */
+/**
+ * Enhance StructureData, for both StructureDS and SequenceDS.
+ *
+ * @deprecated will move to internal in ver7
+ */
+@Deprecated
 class StructureDataEnhancer {
   private static final Logger logger = LoggerFactory.getLogger(StructureDataEnhancer.class);
   private final StructureEnhanced topStructure;

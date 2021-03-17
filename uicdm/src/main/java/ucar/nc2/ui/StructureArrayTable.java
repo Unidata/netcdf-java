@@ -464,7 +464,7 @@ public class StructureArrayTable extends JPanel {
 
     StructureModel(Structure s) {
       this.struct = s;
-      this.members = StructureMembers.makeStructureMembers(s).build();
+      this.members = s.makeStructureMembersBuilder().build();
       for (Variable v : s.getVariables()) {
         if (v instanceof Structure) {
           subtables.add(v.getShortName());

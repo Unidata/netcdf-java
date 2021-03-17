@@ -251,7 +251,7 @@ public class H4iosp extends AbstractIOServiceProvider {
     int recsize = vinfo.elemSize;
 
     // create the StructureMembers
-    ucar.array.StructureMembers.Builder membersb = ucar.array.StructureMembers.makeStructureMembers(s);
+    ucar.array.StructureMembers.Builder membersb = s.makeStructureMembersBuilder();
     for (ucar.array.StructureMembers.MemberBuilder m : membersb.getStructureMembers()) {
       Variable v2 = s.findVariable(m.getName());
       H4header.Minfo minfo = (H4header.Minfo) v2.getSPobject();
