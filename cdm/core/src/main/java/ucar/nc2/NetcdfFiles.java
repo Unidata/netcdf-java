@@ -381,6 +381,8 @@ public class NetcdfFiles {
     copy(raf, new FileOutputStream(uriString), 1 << 20);
     try {
       String uncompressedFileName = makeUncompressed(uriString);
+      // LOOK - this will only return one type of RandomAccessFile, which is OK for now,
+      // but needs to be addressed with RandomAccessDirectory
       return ucar.unidata.io.RandomAccessFile.acquire(uncompressedFileName, buffer_size);
     } catch (Exception e) {
       throw new IOException();
@@ -396,7 +398,7 @@ public class NetcdfFiles {
 
     for (RandomAccessFileProvider provider : registeredRandomAccessFileProviders) {
       if (provider.isOwnerOf(location)) {
-        raf = provider.open(location);
+        raf = provider.open(location, buffer_size);
         // might cause issues if the end of a resource location string
         // cannot be reliably used to determine compression
         if (looksCompressed(uriString)) {
@@ -410,7 +412,7 @@ public class NetcdfFiles {
       // look for dynamically loaded RandomAccessFile Providers
       for (RandomAccessFileProvider provider : ServiceLoader.load(RandomAccessFileProvider.class)) {
         if (provider.isOwnerOf(location)) {
-          raf = provider.open(location);
+          raf = provider.open(location, buffer_size);
           // might cause issues if the end of a resource location string
           // cannot be used to determine compression
           if (looksCompressed(uriString)) {

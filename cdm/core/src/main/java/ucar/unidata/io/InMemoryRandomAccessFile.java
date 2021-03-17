@@ -45,7 +45,7 @@ public class InMemoryRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
     return dataEnd;
   }
 
-  // @Override LOOK weird error
+  @Override
   public void setBufferSize(int bufferSize) {
     // do nothing
   }
@@ -87,5 +87,5 @@ public class InMemoryRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
       return new InMemoryRandomAccessFile(location, contents.get());
     }
   }
-
 }
+
