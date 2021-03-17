@@ -15,7 +15,6 @@ import java.util.Optional;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
-import ucar.unidata.io.InMemoryRandomAccessFile;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.io.RemoteRandomAccessFile;
 import ucar.unidata.io.spi.RandomAccessFileProvider;
