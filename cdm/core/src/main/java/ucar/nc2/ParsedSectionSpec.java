@@ -6,6 +6,7 @@
 package ucar.nc2;
 
 import ucar.array.ArrayType;
+import ucar.array.ArraysConvert;
 import ucar.nc2.internal.util.EscapeStrings;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
@@ -196,8 +197,14 @@ public class ParsedSectionSpec {
     return variable;
   }
 
+  /** @deprecated use getArraySection() */
+  @Deprecated
   public Section getSection() {
     return section;
+  }
+
+  public ucar.array.Section getArraySection() {
+    return ArraysConvert.convertSection(section);
   }
 
   public ParsedSectionSpec getChild() {

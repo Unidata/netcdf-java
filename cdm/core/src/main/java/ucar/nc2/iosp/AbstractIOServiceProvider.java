@@ -92,8 +92,8 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
   }
 
   @Override
-  public ucar.array.Array<?> readArrayData(Variable v2, Section section)
-      throws java.io.IOException, ucar.ma2.InvalidRangeException {
+  public ucar.array.Array<?> readArrayData(Variable v2, ucar.array.Section section)
+      throws java.io.IOException, ucar.array.InvalidRangeException {
     return null;
   }
 

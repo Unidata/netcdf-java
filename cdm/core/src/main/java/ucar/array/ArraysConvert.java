@@ -7,6 +7,7 @@ package ucar.array;
 import com.google.common.base.Preconditions;
 import java.nio.ByteBuffer;
 import ucar.array.StructureMembers.Member;
+
 import ucar.ma2.ArrayObject;
 import ucar.ma2.ArrayStructure;
 import ucar.ma2.DataType;
@@ -308,5 +309,28 @@ public class ArraysConvert {
     return sdata;
   }
 
+  public static ucar.ma2.Section convertSection(ucar.array.Section section) {
+    ucar.ma2.Section.Builder builder = ucar.ma2.Section.builder();
+    section.getRanges().forEach(r -> {
+      try {
+        builder.appendRange(new ucar.ma2.Range(r.getName(), r.first(), r.last(), r.stride()));
+      } catch (ucar.ma2.InvalidRangeException e) {
+        throw new RuntimeException(e); // not possible haha
+      }
+    });
+    return builder.build();
+  }
+
+  public static ucar.array.Section convertSection(ucar.ma2.Section section) {
+    ucar.array.Section.Builder builder = ucar.array.Section.builder();
+    section.getRanges().forEach(r -> {
+      try {
+        builder.appendRange(new ucar.array.Range(r.getName(), r.first(), r.last(), r.stride()));
+      } catch (InvalidRangeException e) {
+        throw new RuntimeException(e); // not possible haha
+      }
+    });
+    return builder.build();
+  }
 
 }

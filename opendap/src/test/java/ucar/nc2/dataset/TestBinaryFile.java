@@ -127,10 +127,10 @@ public class TestBinaryFile {
   }
 
   @Test
-  public void testVarReadSection() throws IOException, InvalidRangeException {
+  public void testVarReadSection() throws IOException, ucar.array.InvalidRangeException {
     try (NetcdfFile ncf = NetcdfDatasets.openFile(filename, null)) {
       Variable temperature = ncf.findVariable(varname1);
-      Section section = Section.builder().appendRange(0).appendRange(0).appendRange(0, 4).build();
+      ucar.array.Section section = ucar.array.Section.builder().appendRange(0).appendRange(0).appendRange(0, 4).build();
       Array<?> temperatureData = temperature.readArray(section);
       assertThat(temperatureData.getShape()).isEqualTo(section.getShape());
     }

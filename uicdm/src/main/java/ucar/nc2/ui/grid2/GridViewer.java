@@ -5,7 +5,7 @@
 
 package ucar.nc2.ui.grid2;
 
-import ucar.ma2.InvalidRangeException;
+import ucar.array.InvalidRangeException;
 import ucar.nc2.grid.Grid;
 import ucar.nc2.grid.GridAxis1D;
 import ucar.nc2.grid.GridDataset;

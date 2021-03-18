@@ -2,17 +2,14 @@
  * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-package ucar.ma2;
+package ucar.array;
 
 import java.util.Iterator;
 
 /**
  * Generalization of Range (which is restricted to (start:stop:stride).
  * RangeIterator is over an arbitrary set of integers from the set {0..fullSize-1}.
- * 
- * @deprecated will move to ucar.array in ver7.
  */
-@Deprecated
 public interface RangeIterator extends Iterable<Integer> {
 
   @Override

@@ -4,15 +4,10 @@
  */
 package ucar.array;
 
+import com.google.common.base.Preconditions;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.google.common.base.Preconditions;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Range;
-import ucar.ma2.Section;
-
-import javax.annotation.Nullable;
 
 /** Static helper classes for {@link Array} */
 public class Arrays {

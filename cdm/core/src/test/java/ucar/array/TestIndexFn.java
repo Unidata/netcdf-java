@@ -8,11 +8,7 @@ import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.fail;
 
 import com.google.common.collect.ImmutableList;
-import java.util.List;
 import org.junit.Test;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Range;
-import ucar.ma2.Section;
 
 /** Test {@link IndexFn} */
 public class TestIndexFn {

@@ -11,7 +11,6 @@ import java.nio.ByteOrder;
 
 import ucar.array.*;
 import ucar.ma2.DataType;
-import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
 import ucar.nc2.Group;
 import ucar.nc2.Structure;
@@ -19,6 +18,7 @@ import ucar.nc2.Variable;
 import ucar.nc2.internal.iosp.hdf4.HdfEos;
 import ucar.nc2.internal.iosp.hdf5.H5objects.GlobalHeap;
 import ucar.nc2.internal.iosp.hdf5.H5objects.HeapIdentifier;
+import ucar.nc2.iosp.IospArrayHelper;
 import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.iosp.Layout;
 import ucar.nc2.iosp.LayoutBB;
@@ -52,8 +52,8 @@ public class H5iospArrays extends H5iosp {
   }
 
   @Override
-  public ucar.array.Array<?> readArrayData(Variable v2, Section section)
-      throws java.io.IOException, ucar.ma2.InvalidRangeException {
+  public ucar.array.Array<?> readArrayData(Variable v2, ucar.array.Section section)
+      throws java.io.IOException, ucar.array.InvalidRangeException {
     H5header.Vinfo vinfo = (H5header.Vinfo) v2.getSPobject();
     Preconditions.checkNotNull(vinfo);
     if (debugRead) {
@@ -63,77 +63,84 @@ public class H5iospArrays extends H5iosp {
   }
 
   // all the work is here, so it can be called recursively
-  private ucar.array.Array<?> readArrayData(Variable v2, long dataPos, Section wantSection)
-      throws IOException, InvalidRangeException {
+  private ucar.array.Array<?> readArrayData(Variable v2, long dataPos, ucar.array.Section wantSection)
+      throws IOException, ucar.array.InvalidRangeException {
     H5header.Vinfo vinfo = (H5header.Vinfo) v2.getSPobject();
-    DataType dataType = v2.getDataType();
+    ArrayType dataType = v2.getArrayType();
     Object data;
     Layout layout;
 
     if (vinfo.useFillValue) { // fill value only
-      Object pa = IospHelper.makePrimitiveArray((int) wantSection.computeSize(), dataType, vinfo.getFillValue());
-      if (dataType == DataType.CHAR) {
-        pa = IospHelper.convertByteToChar((byte[]) pa);
+      Object pa = IospArrayHelper.makePrimitiveArray((int) wantSection.computeSize(), dataType, vinfo.getFillValue());
+      if (dataType == ArrayType.CHAR) {
+        pa = IospArrayHelper.convertByteToChar((byte[]) pa);
       }
-      return Arrays.factory(dataType.getArrayType(), wantSection.getShape(), pa);
+      return Arrays.factory(dataType, wantSection.getShape(), pa);
     }
 
-    if (vinfo.mfp != null) { // filtered
-      if (debugFilter)
-        System.out.println("read variable filtered " + v2.getFullName() + " vinfo = " + vinfo);
-      assert vinfo.isChunked;
-      ByteOrder bo = vinfo.typeInfo.endian;
-      layout = new H5tiledLayoutBB(v2, wantSection, raf, vinfo.mfp.getFilters(), bo);
-      if (vinfo.typeInfo.isVString) {
-        data = readFilteredStringData((LayoutBB) layout);
-      } else {
-        data = IospHelper.readDataFill((LayoutBB) layout, v2.getDataType(), vinfo.getFillValue());
+    try {
+      if (vinfo.mfp != null) { // filtered
+        if (debugFilter)
+          System.out.println("read variable filtered " + v2.getFullName() + " vinfo = " + vinfo);
+        assert vinfo.isChunked;
+        ByteOrder bo = vinfo.typeInfo.endian;
+        Section oldSection = ArraysConvert.convertSection(wantSection);
+        layout = new H5tiledLayoutBB(v2, oldSection, raf, vinfo.mfp.getFilters(), bo);
+        if (vinfo.typeInfo.isVString) {
+          data = readFilteredStringData((LayoutBB) layout);
+        } else {
+          data = IospHelper.readDataFill((LayoutBB) layout, v2.getDataType(), vinfo.getFillValue());
+        }
+
+      } else { // normal case
+        if (debug)
+          System.out.println("read variable " + v2.getFullName() + " vinfo = " + vinfo);
+
+        DataType readDtype = v2.getDataType();
+        int elemSize = v2.getElementSize();
+        Object fillValue = vinfo.getFillValue();
+        ByteOrder endian = vinfo.typeInfo.endian;
+
+        // fill in the wantSection
+        wantSection = ucar.array.Section.fill(wantSection, v2.getShape());
+
+        if (vinfo.typeInfo.hdfType == 2) { // time
+          readDtype = vinfo.mdt.timeType;
+          elemSize = readDtype.getSize();
+          fillValue = NetcdfFormatUtils.getFillValueDefault(readDtype);
+
+        } else if (vinfo.typeInfo.hdfType == 8) { // enum
+          H5header.TypeInfo baseInfo = vinfo.typeInfo.base;
+          readDtype = baseInfo.dataType;
+          elemSize = readDtype.getSize();
+          fillValue = NetcdfFormatUtils.getFillValueDefault(readDtype);
+          endian = baseInfo.endian;
+
+        } else if (vinfo.typeInfo.hdfType == 9) { // vlen
+          elemSize = vinfo.typeInfo.byteSize;
+          endian = vinfo.typeInfo.endian;
+          // wantSection = wantSection.removeVlen(); // remove vlen dimension
+        }
+
+        Section oldSection = ArraysConvert.convertSection(wantSection);
+        if (vinfo.isChunked) {
+          layout = new H5tiledLayout((H5header.Vinfo) v2.getSPobject(), readDtype, oldSection);
+        } else {
+          layout = new LayoutRegular(dataPos, elemSize, v2.getShape(), oldSection);
+        }
+        data = readArrayOrPrimitive(vinfo, v2, layout, readDtype, wantSection.getShape(), fillValue, endian);
       }
 
-    } else { // normal case
-      if (debug)
-        System.out.println("read variable " + v2.getFullName() + " vinfo = " + vinfo);
+      if (data instanceof ucar.array.Array)
+        return (ucar.array.Array<?>) data;
+      else if (dataType == ArrayType.STRUCTURE) // LOOK does this ever happen?
+        return makeStructureDataArray((Structure) v2, layout, wantSection.getShape(), (byte[]) data); // LOOK
+      else
+        return Arrays.factory(dataType, wantSection.getShape(), data);
 
-      DataType readDtype = v2.getDataType();
-      int elemSize = v2.getElementSize();
-      Object fillValue = vinfo.getFillValue();
-      ByteOrder endian = vinfo.typeInfo.endian;
-
-      // fill in the wantSection
-      wantSection = Section.fill(wantSection, v2.getShape());
-
-      if (vinfo.typeInfo.hdfType == 2) { // time
-        readDtype = vinfo.mdt.timeType;
-        elemSize = readDtype.getSize();
-        fillValue = NetcdfFormatUtils.getFillValueDefault(readDtype);
-
-      } else if (vinfo.typeInfo.hdfType == 8) { // enum
-        H5header.TypeInfo baseInfo = vinfo.typeInfo.base;
-        readDtype = baseInfo.dataType;
-        elemSize = readDtype.getSize();
-        fillValue = NetcdfFormatUtils.getFillValueDefault(readDtype);
-        endian = baseInfo.endian;
-
-      } else if (vinfo.typeInfo.hdfType == 9) { // vlen
-        elemSize = vinfo.typeInfo.byteSize;
-        endian = vinfo.typeInfo.endian;
-        // wantSection = wantSection.removeVlen(); // remove vlen dimension
-      }
-
-      if (vinfo.isChunked) {
-        layout = new H5tiledLayout((H5header.Vinfo) v2.getSPobject(), readDtype, wantSection);
-      } else {
-        layout = new LayoutRegular(dataPos, elemSize, v2.getShape(), wantSection);
-      }
-      data = readArrayOrPrimitive(vinfo, v2, layout, readDtype, wantSection.getShape(), fillValue, endian);
+    } catch (ucar.ma2.InvalidRangeException e) {
+      throw new ucar.array.InvalidRangeException(e);
     }
-
-    if (data instanceof ucar.array.Array)
-      return (ucar.array.Array<?>) data;
-    else if (dataType == DataType.STRUCTURE) // LOOK does this ever happen?
-      return makeStructureDataArray((Structure) v2, layout, wantSection.getShape(), (byte[]) data); // LOOK
-    else
-      return Arrays.factory(dataType.getArrayType(), wantSection.getShape(), data);
   }
 
   private String[] readFilteredStringData(LayoutBB layout) throws IOException {

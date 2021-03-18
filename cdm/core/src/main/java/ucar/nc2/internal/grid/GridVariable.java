@@ -2,7 +2,6 @@ package ucar.nc2.internal.grid;
 
 import ucar.array.Array;
 import ucar.array.ArrayType;
-import ucar.ma2.*;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.grid.Grid;
@@ -73,31 +72,31 @@ public class GridVariable implements Grid {
   }
 
   @Override
-  public GridReferencedArray readData(GridSubset subset) throws IOException, InvalidRangeException {
+  public GridReferencedArray readData(GridSubset subset) throws IOException, ucar.array.InvalidRangeException {
     Formatter errlog = new Formatter();
     Optional<GridCoordinateSystem> opt = this.cs.subset(subset, errlog);
     if (!opt.isPresent()) {
-      throw new InvalidRangeException(errlog.toString());
+      throw new ucar.array.InvalidRangeException(errlog.toString());
     }
 
     GridCoordinateSystem subsetCoordSys = opt.get();
-    List<RangeIterator> rangeIters = ((GridCS) subsetCoordSys).getRanges();
-    List<Range> ranges = new ArrayList<>();
+    List<ucar.array.RangeIterator> rangeIters = subsetCoordSys.getRanges();
+    List<ucar.array.Range> ranges = new ArrayList<>();
 
     boolean hasComposite = false;
-    for (RangeIterator ri : rangeIters) {
-      if (ri instanceof RangeComposite) // TODO
-        hasComposite = true;
-      else
-        ranges.add((Range) ri);
+    for (ucar.array.RangeIterator ri : rangeIters) {
+      // if (ri instanceof ucar.array.RangeComposite) // TODO LOOK
+      // hasComposite = true;
+      // else
+      ranges.add((ucar.array.Range) ri);
     }
 
-    if (!hasComposite) {
-      Array<Number> data = readDataSection(new Section(ranges), true);
-      return GridReferencedArray.create(getName(), getArrayType(), data, subsetCoordSys);
-    }
+    // if (!hasComposite) {
+    Array<Number> data = readDataSection(new ucar.array.Section(ranges), true);
+    return GridReferencedArray.create(getName(), getArrayType(), data, subsetCoordSys);
+    // }
 
-    throw new UnsupportedOperationException();
+    // throw new UnsupportedOperationException();
   }
 
   /**
@@ -108,8 +107,8 @@ public class GridVariable implements Grid {
    *
    * @return data[rt, e, t, z, y, x], eliminating missing dimensions. length=1 not eliminated
    */
-  private Array<Number> readDataSection(Section subset, boolean canonicalOrder)
-      throws InvalidRangeException, IOException {
+  private Array<Number> readDataSection(ucar.array.Section subset, boolean canonicalOrder)
+      throws ucar.array.InvalidRangeException, IOException {
     // read it
     Array<?> dataVolume = vds.readArray(this.permuter.permute(subset));
 

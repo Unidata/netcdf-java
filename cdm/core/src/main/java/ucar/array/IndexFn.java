@@ -10,9 +10,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.concurrent.Immutable;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Range;
-import ucar.ma2.Section;
 
 /** Translate between multidimensional index and 1-d arrays. */
 @Immutable

@@ -25,8 +25,8 @@ import ucar.cdmr.CdmrNetcdfProto.Header;
 import ucar.cdmr.CdmrNetcdfProto.HeaderRequest;
 import ucar.cdmr.CdmrNetcdfProto.HeaderResponse;
 import ucar.cdmr.CdmrConverter;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Section;
+import ucar.array.InvalidRangeException;
+import ucar.array.Section;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.ParsedSectionSpec;
 import ucar.nc2.Sequence;
@@ -134,7 +134,7 @@ public class CdmrServer {
         if (var instanceof Sequence) {
           size = getSequenceData(ncfile, varSection, responseObserver);
         } else {
-          Section wantSection = varSection.getSection();
+          Section wantSection = varSection.getArraySection();
           size = var.getElementSize() * wantSection.getSize();
           getNetcdfData(ncfile, varSection, responseObserver);
         }
@@ -157,7 +157,7 @@ public class CdmrServer {
     private void getNetcdfData(NetcdfFile ncfile, ParsedSectionSpec varSection,
         StreamObserver<DataResponse> responseObserver) throws IOException, InvalidRangeException {
       Variable var = varSection.getVariable();
-      Section wantSection = varSection.getSection();
+      Section wantSection = varSection.getArraySection();
       long size = var.getElementSize() * wantSection.getSize();
       if (size > MAX_MESSAGE) {
         getDataInChunks(ncfile, varSection, responseObserver);
@@ -177,7 +177,8 @@ public class CdmrServer {
         int[] chunkOrigin = index.getCurrentCounter();
         int[] chunkShape = index.computeChunkShape(maxChunkElems);
         Section section = new Section(chunkOrigin, chunkShape);
-        getOneChunk(ncfile, new ParsedSectionSpec(var, section), responseObserver);
+        ucar.ma2.Section oldSection = ArraysConvert.convertSection(section);
+        getOneChunk(ncfile, new ParsedSectionSpec(var, oldSection), responseObserver);
         index.setCurrentCounter(index.currentElement() + (int) Arrays.computeSize(chunkShape));
       }
     }
@@ -187,7 +188,7 @@ public class CdmrServer {
 
       String spec = varSection.makeSectionSpecString();
       Variable var = varSection.getVariable();
-      Section wantSection = varSection.getSection();
+      Section wantSection = varSection.getArraySection();
 
       DataResponse.Builder response = DataResponse.newBuilder().setLocation(ncfile.getLocation()).setVariableSpec(spec)
           .setVarFullName(var.getFullName()).setSection(CdmrConverter.encodeSection(wantSection));

@@ -7,7 +7,6 @@ package ucar.array;
 import com.google.common.base.Objects;
 import java.util.Iterator;
 import javax.annotation.concurrent.Immutable;
-import ucar.ma2.Section;
 
 /** Superclass for implementations of multidimensional arrays. */
 @Immutable
