@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 1998-2021 University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
 package ucar.array;
 
 /** A mix-in interface for evaluating if a value is missing. */

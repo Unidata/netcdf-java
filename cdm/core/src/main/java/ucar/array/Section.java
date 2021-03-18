@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -73,8 +73,8 @@ public class Section {
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  // Cant use ImmutableList because doesnt allow nulls.
-  private final List<Range> ranges;
+  // Cant use ImmutableList because that doesnt allow nulls.
+  private final List<Range> ranges; // unmodifiableList
 
   /**
    * Create Section from a shape array, assumes 0 origin.
@@ -413,10 +413,8 @@ public class Section {
       if (!base.intersects(r))
         return false;
     }
-
     return true;
   }
-
 
   /**
    * See if this Section contains another Section. ignores strides
@@ -437,10 +435,8 @@ public class Section {
       if (base.last() < r.last())
         return false;
     }
-
     return true;
   }
-
 
   /**
    * Convert List of Ranges to String Spec.
@@ -448,6 +444,7 @@ public class Section {
    *
    * @return index section String specification
    */
+  @Override
   public String toString() {
     Formatter sbuff = new Formatter();
     for (int i = 0; i < ranges.size(); i++) {
@@ -483,7 +480,7 @@ public class Section {
   /**
    * No-arg Constructor
    */
-  public Section() {
+  private Section() {
     ranges = new ArrayList<>();
   }
 
@@ -505,17 +502,18 @@ public class Section {
     return new Section(newList);
   }
 
-  /** Create a new Section from this one. */
+  /** Create a new Section from this one by using the Range subList(fromIndex, endExclusive). */
   public Section subSection(int fromIndex, int endExclusive) {
     return new Section(ranges.subList(fromIndex, endExclusive));
   }
 
-  /** Create a new Section from this one. */
+  /** Create a new Section from this one by removing the first n ranges. */
   public Section removeFirst(Section parentSection) {
     int parentSize = parentSection.getRank();
     assert parentSize <= ranges.size();
-    if (parentSize == ranges.size())
+    if (parentSize == ranges.size()) {
       return new Section(); // scalar
+    }
     return subSection(parentSize, ranges.size());
   }
 
@@ -533,18 +531,6 @@ public class Section {
       if (aFrom == Range.VLEN)
         return true;
     return false;
-  }
-
-  /**
-   * @deprecated dont assume evenly strided
-   */
-  @Deprecated
-  public boolean isStrided() {
-    for (Range r : ranges) {
-      if (r != null && r.stride() != 1)
-        return false;
-    }
-    return true;
   }
 
   /**
@@ -577,7 +563,6 @@ public class Section {
    * Get stride array using the Range.stride() values.
    *
    * @return int[] stride
-   * @deprecated dont assume evenly strided
    */
   public int[] getStride() {
     int[] result = new int[ranges.size()];
@@ -612,7 +597,6 @@ public class Section {
    *
    * @param i index of Range
    * @return stride of ith Range
-   * @deprecated dont assume evenly strided
    */
   public int getStride(int i) {
     return ranges.get(i).stride();
@@ -673,7 +657,7 @@ public class Section {
     return product;
   }
 
-  /** Get the immutable list of Ranges. */
+  /** Get an unmodifyable list of Ranges. */
   public List<Range> getRanges() {
     return ranges;
   }
@@ -712,8 +696,9 @@ public class Section {
    * @return error message if illegal, null if all ok
    */
   public String checkInRange(int[] shape) {
-    if (ranges.size() != shape.length)
+    if (ranges.size() != shape.length) {
       return "Number of ranges in section (" + ranges.size() + ") must be = " + shape.length;
+    }
 
     for (int i = 0; i < ranges.size(); i++) {
       Range r = ranges.get(i);
@@ -916,17 +901,7 @@ public class Section {
   public static class Builder {
     List<Range> ranges = new ArrayList<>();
 
-    /** Append a Range to the Section meaning "all" */
-    public Builder appendRangeAll() {
-      ranges.add(null);
-      return this;
-    }
-
-    /**
-     * Append a Range to the Section
-     * 
-     * @param range not null.
-     */
+    /** Append a Range to the Section, may be null. */
     public Builder appendRange(Range range) {
       ranges.add(range);
       return this;
@@ -988,21 +963,13 @@ public class Section {
       return this;
     }
 
-    /**
-     * Append Ranges to the Section
-     * 
-     * @param ranges not null.
-     */
+    /** Append Ranges to the Section */
     public Builder appendRanges(List<Range> ranges) {
       this.ranges.addAll(ranges);
       return this;
     }
 
-    /**
-     * Create Section from a shape array, assumes 0 origin.
-     *
-     * @param shape array of lengths for each Range. 0 = EMPTY, < 0 = VLEN
-     */
+    /** Append Ranges to the Section, Range(shape[i]) for each i. */
     public Builder appendRanges(int[] shape) {
       for (int aShape : shape) {
         if (aShape > 0)

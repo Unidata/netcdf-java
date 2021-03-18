@@ -1,10 +1,10 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-
 package ucar.array;
 
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.Iterator;
 
@@ -17,6 +17,7 @@ import java.util.Iterator;
  * <p>
  * Elements must be nonnegative and unique.
  * EMPTY is the empty Range.
+ * ONE is the set {0}.
  * VLEN is for variable length dimensions.
  * <p>
  * Standard iteration is
@@ -116,7 +117,7 @@ public class Range implements RangeIterator {
   }
 
   /**
-   * Create a range with a specified values.
+   * Create a range with a specified first, last, stride.
    *
    * @param first first value in range
    * @param last last value in range, inclusive
@@ -128,7 +129,7 @@ public class Range implements RangeIterator {
   }
 
   /**
-   * Create a named range with a specified name and values.
+   * Create a named range with a specified name, first, last, stride.
    *
    * @param name name of Range
    * @param first first value in range
@@ -152,7 +153,7 @@ public class Range implements RangeIterator {
     assert stride != 1 || this.last == last;
   }
 
-  protected Range(String name, int first, int last, int stride, int length) throws InvalidRangeException {
+  private Range(String name, int first, int last, int stride, int length) throws InvalidRangeException {
     if (first < 0)
       throw new InvalidRangeException("first (" + first + ") must be >= 0");
     if (last < first)
@@ -167,12 +168,6 @@ public class Range implements RangeIterator {
     this.last = last;
     this.stride = stride;
     this.length = length;
-  }
-
-  /** @deprecated use copyWithStride() */
-  @Deprecated
-  public Range setStride(int stride) throws InvalidRangeException {
-    return new Range(this.first(), this.last(), stride);
   }
 
   /** Make a copy with a different stride. */
@@ -194,38 +189,30 @@ public class Range implements RangeIterator {
     }
   }
 
-  /**
-   * @return name, or null if none
-   */
+  /** @return name, or null if none */
+  @Nullable
+  @Override
   public String getName() {
     return name;
   }
 
-  /**
-   * @return first in range
-   */
+  /** @return first value in range */
   public int first() {
     return first;
   }
 
-  /**
-   * @return last in range, inclusive
-   */
+  /** @return last value in range, inclusive */
   public int last() {
     return last;
   }
 
-  /**
-   * @return the number of elements in the range.
-   */
+  /** @return the number of elements in the range. */
+  @Override
   public int length() {
     return length;
   }
 
-  /**
-   * @return stride, must be >= 1 when evenly strided, -1 if not
-   *         // * @deprecated use iterator(), dont assume evenly strided
-   */
+  /** @return stride, must be >= 1. */
   public int stride() {
     return stride;
   }
@@ -437,7 +424,7 @@ public class Range implements RangeIterator {
    * @return true if first() > want.last()
    */
   public boolean past(Range want) {
-    return (first() > want.last());
+    return first() > want.last();
   }
 
   /**
@@ -504,6 +491,7 @@ public class Range implements RangeIterator {
     return first + i * stride;
   }
 
+  @Override
   public String toString() {
     if (this.length == 0)
       return ":"; // EMPTY
@@ -516,6 +504,7 @@ public class Range implements RangeIterator {
   /**
    * Range elements with same first, last, stride are equal.
    */
+  @Override
   public boolean equals(Object o) {
     if (this == o)
       return true;
@@ -532,6 +521,7 @@ public class Range implements RangeIterator {
   /**
    * Override Object.hashCode() to implement equals.
    */
+  @Override
   public int hashCode() {
     int result = first;
     result = 37 * result + last;
@@ -542,28 +532,20 @@ public class Range implements RangeIterator {
 
   /////////////////////////////////////////////////////////
 
-  /**
-   * Iterate over Range index
-   *
-   * @return Iterator over element indices
-   * @deprecated use iterator() or foreach
-   */
-  public Iterator<Integer> getIterator() {
-    return new MyIterator();
-  }
-
   @Override
   public Iterator<Integer> iterator() {
-    return new MyIterator();
+    return new InternalIterator();
   }
 
-  private class MyIterator implements Iterator<Integer> {
+  private class InternalIterator implements Iterator<Integer> {
     private int current;
 
+    @Override
     public boolean hasNext() {
       return current < length;
     }
 
+    @Override
     public Integer next() {
       return elementNC(current++);
     }
