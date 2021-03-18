@@ -12,7 +12,7 @@ import ucar.nc2.AttributeContainer;
 import java.io.IOException;
 
 /** A georeferenced Field of data. */
-public interface Grid extends IsMissingEvaluator {
+public interface Grid extends IsMissingEvaluator, ucar.ma2.IsMissingEvaluator {
 
   String getName();
 

@@ -1,7 +1,7 @@
 package ucar.array;
 
 /** A mix-in interface for evaluating if a value is missing. */
-public interface IsMissingEvaluator extends ucar.ma2.IsMissingEvaluator {
+public interface IsMissingEvaluator {
   /** true if there may be missing data */
   boolean hasMissing();
 
