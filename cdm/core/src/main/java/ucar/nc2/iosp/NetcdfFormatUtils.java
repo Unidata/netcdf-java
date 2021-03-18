@@ -4,6 +4,7 @@
  */
 package ucar.nc2.iosp;
 
+import ucar.array.ArrayType;
 import ucar.ma2.DataType;
 
 /** Utilities and Constants specific to the Netcdf file format (Netcdf-3 and Netcdf-4) */
@@ -45,28 +46,34 @@ public class NetcdfFormatUtils {
   // appended to variable when it conflicts with dimension scale
   public static final String NETCDF4_NON_COORD = "_nc4_non_coord_";
 
+  /** @deprecated use getFillValueDefault(ArrayType) */
+  @Deprecated
   public static Number getFillValueDefault(DataType dtype) {
-    if ((dtype == DataType.BYTE) || (dtype == DataType.ENUM1))
+    return getFillValueDefault(dtype.getArrayType());
+  }
+
+  public static Number getFillValueDefault(ArrayType dtype) {
+    if ((dtype == ArrayType.BYTE) || (dtype == ArrayType.ENUM1))
       return NC_FILL_BYTE;
-    if (dtype == DataType.UBYTE)
+    if (dtype == ArrayType.UBYTE)
       return NC_FILL_UBYTE;
-    if (dtype == DataType.CHAR)
+    if (dtype == ArrayType.CHAR)
       return (byte) 0;
-    if ((dtype == DataType.SHORT) || (dtype == DataType.ENUM2))
+    if ((dtype == ArrayType.SHORT) || (dtype == ArrayType.ENUM2))
       return NC_FILL_SHORT;
-    if (dtype == DataType.USHORT)
+    if (dtype == ArrayType.USHORT)
       return NC_FILL_USHORT;
-    if ((dtype == DataType.INT) || (dtype == DataType.ENUM4))
+    if ((dtype == ArrayType.INT) || (dtype == ArrayType.ENUM4))
       return NC_FILL_INT;
-    if (dtype == DataType.UINT)
+    if (dtype == ArrayType.UINT)
       return NC_FILL_UINT;
-    if (dtype == DataType.LONG)
+    if (dtype == ArrayType.LONG)
       return NC_FILL_INT64;
-    if (dtype == DataType.ULONG)
+    if (dtype == ArrayType.ULONG)
       return NC_FILL_UINT64;
-    if (dtype == DataType.FLOAT)
+    if (dtype == ArrayType.FLOAT)
       return NC_FILL_FLOAT;
-    if (dtype == DataType.DOUBLE)
+    if (dtype == ArrayType.DOUBLE)
       return NC_FILL_DOUBLE;
     return null;
   }

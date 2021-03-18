@@ -8,8 +8,10 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Formatter;
 import javax.annotation.Nullable;
-import ucar.ma2.DataType;
+
+import ucar.array.ArrayType;
 import ucar.ma2.Array;
+import ucar.ma2.DataType;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.Attribute;
 import ucar.nc2.constants.CDM;
@@ -246,7 +248,7 @@ public class CoordTransformFactory {
    * @return the Coordinate Transform Variable. You must add it to the dataset.
    */
   public static VariableDS makeDummyTransformVariable(NetcdfDataset ds, CoordinateTransform ct) {
-    VariableDS.Builder<?> vb = VariableDS.builder().setName(ct.getName()).setDataType(DataType.CHAR);
+    VariableDS.Builder<?> vb = VariableDS.builder().setName(ct.getName()).setArrayType(ArrayType.CHAR);
     vb.addAttributes(ct.getCtvAttributes());
     vb.addAttribute(new Attribute(_Coordinate.TransformType, ct.getTransformType().toString()));
 

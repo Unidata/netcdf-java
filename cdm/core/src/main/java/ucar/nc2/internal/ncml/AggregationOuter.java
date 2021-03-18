@@ -17,6 +17,7 @@ import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
 import thredds.inventory.MFile;
+import ucar.array.ArrayType;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.Index;
@@ -224,12 +225,12 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
     // Might not be right
     int[] shape = {dateList.size()};
 
-    DataType coordType = (timeAxis.dataType == DataType.STRING) ? DataType.STRING : DataType.DOUBLE;
+    DataType coordType = (timeAxis.dataType == ArrayType.STRING) ? DataType.STRING : DataType.DOUBLE;
     Array timeCoordVals = Array.factory(coordType, shape);
     IndexIterator ii = timeCoordVals.getIndexIterator();
 
     // check if its a String or a udunit
-    if (timeAxis.dataType == DataType.STRING) {
+    if (timeAxis.dataType == ArrayType.STRING) {
       for (CalendarDate date : dateList) {
         ii.setObjectNext(date.toString());
       }

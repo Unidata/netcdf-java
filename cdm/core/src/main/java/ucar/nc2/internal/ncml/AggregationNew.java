@@ -62,7 +62,8 @@ public class AggregationNew extends AggregationOuter {
       // if speced externally, this variable will get replaced
       // LOOK was CacheVar cv = new CoordValueVar(joinAggCoordVar.getFullName(), joinAggCoordVar.dataType,
       // joinAggCoordVar.units);
-      CacheVar cv = new CoordValueVar(joinAggCoordVar.shortName, joinAggCoordVar.dataType, joinAggCoordVar.getUnits());
+      CacheVar cv = new CoordValueVar(joinAggCoordVar.shortName, joinAggCoordVar.dataType.getDataType(),
+          joinAggCoordVar.getUnits());
       joinAggCoordVar.setSPobject(cv);
       cacheList.add(cv);
     } else {
@@ -102,7 +103,7 @@ public class AggregationNew extends AggregationOuter {
 
       // construct new variable, replace old one LOOK what about Structures?
       // LOOK was Group.Builder newGroup = BuilderHelper.findGroup(ncDataset, aggVar.getParentGroup());
-      VariableDS.Builder<?> vagg = VariableDS.builder().setName(aggVar.shortName).setDataType(aggVar.dataType)
+      VariableDS.Builder<?> vagg = VariableDS.builder().setName(aggVar.shortName).setArrayType(aggVar.dataType)
           .setParentGroupBuilder(root).setDimensionsByName(dimName + " " + aggVar.makeDimensionsString());
       vagg.setProxyReader(this);
       BuilderHelper.transferAttributes(aggVar.getAttributeContainer(), vagg.getAttributeContainer());

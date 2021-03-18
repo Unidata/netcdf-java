@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.EnumSet;
 import java.util.Optional;
 import java.util.Set;
-import ucar.ma2.DataType;
+import ucar.array.ArrayType;
 import ucar.nc2.Group;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -192,9 +192,8 @@ public class DatasetEnhancer {
     // }
 
     if (varEnhance.contains(Enhance.ConvertEnums) && vb.dataType.isEnum()) {
-      vb.setDataType(DataType.STRING);
+      vb.setArrayType(ArrayType.STRING);
     }
-
     vb.addEnhanceMode(varEnhance);
   }
 }

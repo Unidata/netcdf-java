@@ -25,7 +25,6 @@ import ucar.cdmr.CdmrNetcdfProto.Header;
 import ucar.cdmr.CdmrNetcdfProto.HeaderRequest;
 import ucar.cdmr.CdmrNetcdfProto.HeaderResponse;
 import ucar.cdmr.CdmrConverter;
-import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
 import ucar.nc2.NetcdfFile;
@@ -207,7 +206,7 @@ public class CdmrServer {
 
       String spec = varSection.makeSectionSpecString();
       Sequence seq = (Sequence) varSection.getVariable();
-      StructureMembers.Builder membersb = StructureMembers.makeStructureMembers(seq);
+      StructureMembers.Builder membersb = seq.makeStructureMembersBuilder();
       membersb.setStandardOffsets(false);
       StructureMembers members = membersb.build();
 

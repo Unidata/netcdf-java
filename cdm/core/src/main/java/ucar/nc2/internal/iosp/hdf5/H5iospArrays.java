@@ -370,7 +370,7 @@ public class H5iospArrays extends H5iosp {
       byte[] byteArray) throws IOException {
 
     // create the StructureMembers
-    ucar.array.StructureMembers.Builder mb = ucar.array.StructureMembers.makeStructureMembers(s);
+    ucar.array.StructureMembers.Builder mb = s.makeStructureMembersBuilder();
 
     // set offsets and byteOrders
     boolean hasHeap = augmentStructureMembers(s, mb);

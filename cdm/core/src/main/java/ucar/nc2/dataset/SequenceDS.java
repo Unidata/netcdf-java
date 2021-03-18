@@ -7,9 +7,10 @@ package ucar.nc2.dataset;
 
 import com.google.common.collect.ImmutableList;
 import java.util.Iterator;
+
+import ucar.array.ArrayType;
 import ucar.array.StructureData;
 import ucar.ma2.ArrayStructure;
-import ucar.ma2.DataType;
 import ucar.nc2.Group;
 import ucar.ma2.StructureDataIterator;
 import ucar.ma2.Array;
@@ -22,7 +23,7 @@ import ucar.nc2.internal.dataset.SequenceArrayEnhancer;
 
 import javax.annotation.concurrent.Immutable;
 
-/** Enhanced sequence */
+/** An "enhanced" Sequence */
 @Immutable
 public class SequenceDS extends Sequence implements StructureEnhanced {
 
@@ -139,7 +140,7 @@ public class SequenceDS extends Sequence implements StructureEnhanced {
       if (built)
         throw new IllegalStateException("already built");
       built = true;
-      this.setDataType(DataType.SEQUENCE);
+      this.setArrayType(ArrayType.SEQUENCE);
       return new SequenceDS(this, parentGroup);
     }
   }

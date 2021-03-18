@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.array;
@@ -11,6 +11,8 @@ import com.google.common.base.Preconditions;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 import ucar.ma2.Section;
+
+import javax.annotation.Nullable;
 
 /** Static helper classes for {@link Array} */
 public class Arrays {
@@ -497,9 +499,10 @@ public class Arrays {
     return factory(ArrayType.DOUBLE, array.getShape(), storage);
   }
 
-  public static MinMax getMinMaxSkipMissingData(Array<? extends Number> a, IsMissingEvaluator eval) {
+  /** Get the min and max of the array, skipping missing data if eval.hasMissing(). */
+  public static MinMax getMinMaxSkipMissingData(Array<? extends Number> a, @Nullable IsMissingEvaluator eval) {
     Preconditions.checkNotNull(a);
-    boolean hasEval = (eval == null || !eval.hasMissing());
+    boolean hasEval = (eval != null && eval.hasMissing());
     double max = -Double.MAX_VALUE;
     double min = Double.MAX_VALUE;
     if (a instanceof ArrayDouble) {

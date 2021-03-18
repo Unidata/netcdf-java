@@ -32,8 +32,8 @@ import java.util.*;
 import java.io.IOException;
 
 /**
- * A Variable is a logical container for data. It has a dataType, a set of Dimensions that define its array shape,
- * and optionally a set of Attributes.
+ * A logical container for data, with a dataType, a set of Dimensions that define its array shape,
+ * and a set of Attributes.
  * <p/>
  * The data is a multidimensional array of primitive types, Strings, or Structures.
  * Data access is done through the read() methods, which return a memory resident Array.
@@ -84,14 +84,15 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    * @deprecated use getArrayType()
    */
   @Deprecated
+  @Override
   public DataType getDataType() {
-    return dataType;
+    return dataType.getDataType();
   }
 
-
   /** Get the data type of the Variable. */
+  @Override
   public ArrayType getArrayType() {
-    return dataType.getArrayType();
+    return dataType;
   }
 
   /**
@@ -101,6 +102,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    *
    * @return description, or null if not found.
    */
+  @Override
   public String getDescription() {
     String desc = null;
     Attribute att = attributes.findAttributeIgnoreCase(CDM.LONG_NAME);
@@ -133,6 +135,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    * The most slowly varying (leftmost for Java and C programmers) dimension is first.
    * For scalar variables, the list is empty.
    */
+  @Override
   public ImmutableList<Dimension> getDimensions() {
     return dimensions;
   }
@@ -222,11 +225,13 @@ public class Variable implements VariableSimpleIF, ProxyReader {
   }
 
   /** Get the number of dimensions of the Variable, aka the rank. */
+  @Override
   public int getRank() {
     return shape.length;
   }
 
   /** Get the shape: length of Variable in each dimension. A scalar (rank 0) will have an int[0] shape. */
+  @Override
   public int[] getShape() {
     int[] result = new int[shape.length]; // optimization over clone()
     System.arraycopy(shape, 0, result, 0, shape.length);
@@ -248,6 +253,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
   }
 
   /** The short name of the variable */
+  @Override
   public String getShortName() {
     return this.shortName;
   }
@@ -271,6 +277,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    * @return unit string, or null if not found.
    */
   @Nullable
+  @Override
   public String getUnitsString() {
     String units = null;
     Attribute att = attributes().findAttributeIgnoreCase(CDM.UNITS);
@@ -289,7 +296,8 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    * @return true if a coordinate variable.
    */
   public boolean isCoordinateVariable() {
-    if ((dataType == DataType.STRUCTURE) || isMemberOfStructure()) // Structures and StructureMembers cant be coordinate
+    if ((getArrayType() == ArrayType.STRUCTURE) || isMemberOfStructure()) // Structures and StructureMembers cant be
+                                                                          // coordinate
       // variables
       return false;
 
@@ -304,7 +312,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
       Dimension firstd = dimensions.get(0);
       // must be char valued (really a String)
       return shortName.equals(firstd.getShortName()) && // short names match
-          (getDataType() == DataType.CHAR);
+          (getArrayType() == ArrayType.CHAR);
     }
 
     return false;
@@ -699,9 +707,9 @@ public class Variable implements VariableSimpleIF, ProxyReader {
   @Deprecated
   public String readScalarString() throws IOException {
     Array data = _readScalarData();
-    if (dataType == DataType.STRING)
+    if (getArrayType() == ArrayType.STRING)
       return (String) data.getObject(Index.scalarIndexImmutable);
-    else if (dataType == DataType.CHAR) {
+    else if (getArrayType() == ArrayType.CHAR) {
       ArrayChar dataC = (ArrayChar) data;
       return dataC.getString();
     } else
@@ -791,7 +799,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     Array scalarData = read();
     scalarData = scalarData.reduce();
 
-    if ((scalarData.getRank() == 0) || ((scalarData.getRank() == 1) && dataType == DataType.CHAR))
+    if ((scalarData.getRank() == 0) || ((scalarData.getRank() == 1) && getArrayType() == ArrayType.CHAR))
       return scalarData;
     throw new java.lang.UnsupportedOperationException("not a scalar variable =" + this);
   }
@@ -938,7 +946,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
       buf.format("%s", indent);
       att.writeCDL(buf, strict, getShortName());
       buf.format(";");
-      if (!strict && (att.getDataType() != DataType.STRING))
+      if (!strict && (att.getArrayType() == ArrayType.STRING))
         buf.format(" // %s", att.getDataType());
       buf.format("%n");
     }
@@ -1191,7 +1199,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
   protected boolean isVariableLength;
   protected int elementSize; // set in Structure
 
-  protected DataType dataType; // TODO not final, so VariableDS can override, is there a better solution?
+  protected ArrayType dataType; // TODO not final, so VariableDS can override, is there a better solution?
   protected Cache cache;
 
   protected Variable(Builder<?> builder, Group parentGroup) {
@@ -1260,7 +1268,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     this.dimensions = ImmutableList.copyOf(dims);
     if (builder.autoGen != null) {
       // LOOK could keep Autogen as part of cache
-      this.cache.srcData = builder.autoGen.makeDataArray(this.dataType, this.dimensions);
+      this.cache.srcData = builder.autoGen.makeDataArray(getArrayType(), this.dimensions);
     }
 
     // calculated fields
@@ -1299,7 +1307,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
   // build() replaces parentGroup always.
   protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> builder) {
     builder.setName(this.shortName).setNcfile(this.ncfile).setParentStructure(this.getParentStructure())
-        .setDataType(this.dataType).setEnumTypeName(this.enumTypedef != null ? this.enumTypedef.getShortName() : null)
+        .setArrayType(this.dataType).setEnumTypeName(this.enumTypedef != null ? this.enumTypedef.getShortName() : null)
         .addDimensions(this.dimensions).addAttributes(this.attributes).setSPobject(this.spiObject);
 
     // Only set ProxyReader if its not this
@@ -1331,7 +1339,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
 
   public static abstract class Builder<T extends Builder<T>> {
     public String shortName;
-    public DataType dataType;
+    public ArrayType dataType;
     protected int elementSize;
 
     public NetcdfFile ncfile; // set in Group build() if null
@@ -1512,7 +1520,14 @@ public class Variable implements VariableSimpleIF, ProxyReader {
       return Dimensions.getSize(dimensions);
     }
 
+    /** @deprecated use setArrayType() */
+    @Deprecated
     public T setDataType(DataType dataType) {
+      this.dataType = dataType.getArrayType();
+      return self();
+    }
+
+    public T setArrayType(ArrayType dataType) {
       this.dataType = dataType;
       return self();
     }
@@ -1680,7 +1695,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
       addAttributes(builder.attributes); // copy
       this.autoGen = builder.autoGen;
       this.cache = builder.cache;
-      setDataType(builder.dataType);
+      setArrayType(builder.dataType);
       addDimensions(builder.dimensions);
       this.elementSize = builder.elementSize;
       setEnumTypeName(builder.getEnumTypeName());
@@ -1718,10 +1733,10 @@ public class Variable implements VariableSimpleIF, ProxyReader {
       this.incr = incr;
     }
 
-    private ucar.array.Array<?> makeDataArray(DataType dtype, List<Dimension> dimensions) {
+    private ucar.array.Array<?> makeDataArray(ArrayType dtype, List<Dimension> dimensions) {
       Section section = Dimensions.makeSectionFromDimensions(dimensions).build();
-      return ArraysConvert
-          .convertToArray(Array.makeArray(dtype, (int) section.getSize(), start, incr).reshape(section.getShape()));
+      return ArraysConvert.convertToArray(
+          Array.makeArray(dtype.getDataType(), (int) section.getSize(), start, incr).reshape(section.getShape()));
     }
   }
 

@@ -406,7 +406,6 @@ public class LatLonRect {
     this.width = builder.width;
   }
 
-  /** A builder of LatLonRect. */
   public static class Builder {
     double llLat;
     double llLon;

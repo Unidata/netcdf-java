@@ -23,7 +23,7 @@ import java.util.*;
 
 import static ucar.nc2.grid.GridAxis.Spacing.discontiguousInterval;
 
-/** Grid CoordAxis 1D concrete case. */
+/** A 1 dimensional GridAxis. */
 @Immutable
 public class GridAxis1D extends GridAxis {
 

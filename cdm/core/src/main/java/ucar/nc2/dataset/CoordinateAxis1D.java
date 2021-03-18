@@ -5,6 +5,7 @@
 
 package ucar.nc2.dataset;
 
+import ucar.array.ArrayType;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayChar;
 import ucar.ma2.DataType;
@@ -636,7 +637,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
       else
         isAscending = getCoordValue(0) < getCoordValue(1);
       // calcIsRegular(); */
-    } else if (getDataType() == DataType.STRING) {
+    } else if (getArrayType() == ArrayType.STRING) {
       readStringValues();
       wasRead = true;
     } else {

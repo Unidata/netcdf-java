@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+
+import ucar.array.ArrayType;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayObject;
 import ucar.ma2.ArrayStructure;
@@ -88,7 +90,7 @@ public class Structure extends Variable {
    * directly from the StructureData or ArrayStructure.
    *
    * @return a StructureMembers object that describes this Structure.
-   * @deprecated use StructureMembers().makeStructureMembers(Structure structure)
+   * @deprecated use makeStructureMembersBuilder()
    */
   @Deprecated
   public StructureMembers makeStructureMembers() {
@@ -101,6 +103,19 @@ public class Structure extends Variable {
       }
     }
     return builder.build();
+  }
+
+  public ucar.array.StructureMembers.Builder makeStructureMembersBuilder() {
+    ucar.array.StructureMembers.Builder builder = ucar.array.StructureMembers.builder().setName(this.getShortName());
+    for (Variable v2 : this.getVariables()) {
+      ucar.array.StructureMembers.MemberBuilder m = builder.addMember(v2.getShortName(), v2.getDescription(),
+          v2.getUnitsString(), v2.getArrayType(), v2.getShape());
+      if (v2 instanceof Structure) {
+        Structure s2 = (Structure) v2;
+        m.setStructureMembers(s2.makeStructureMembersBuilder());
+      }
+    }
+    return builder;
   }
 
   /**
@@ -138,7 +153,7 @@ public class Structure extends Variable {
 
   /** Calculation of size of one element of this structure - equals the sum of sizes of its members. */
   private int calcElementSize() {
-    return ucar.array.StructureMembers.makeStructureMembers(this).getStorageSizeBytes(false);
+    return makeStructureMembersBuilder().getStorageSizeBytes(false);
   }
 
   //////////////////////////////////////////////////////////////////////////////////////
@@ -412,7 +427,7 @@ public class Structure extends Variable {
       buf.format("%s", indent);
       att.writeCDL(buf, strict, getShortName());
       buf.format(";");
-      if (!strict && (att.getDataType() != DataType.STRING))
+      if (!strict && (att.getArrayType() != ArrayType.STRING))
         buf.format(" // %s", att.getDataType());
       buf.format("%n");
     }
@@ -480,9 +495,18 @@ public class Structure extends Variable {
       return self();
     }
 
-    /** Add a Variable to the root group. */
+    /** @deprecated use addMemberVariable(String, ArrayType, String) */
+    @Deprecated
     public T addMemberVariable(String shortName, DataType dataType, String dimString) {
       Variable.Builder<?> vb = Variable.builder().setName(shortName).setDataType(dataType)
+          .setParentGroupBuilder(this.parentBuilder).setDimensionsByName(dimString);
+      addMemberVariable(vb);
+      return self();
+    }
+
+    /** Add a Variable to the root group. */
+    public T addMemberVariable(String shortName, ArrayType dataType, String dimString) {
+      Variable.Builder<?> vb = Variable.builder().setName(shortName).setArrayType(dataType)
           .setParentGroupBuilder(this.parentBuilder).setDimensionsByName(dimString);
       addMemberVariable(vb);
       return self();
@@ -519,7 +543,7 @@ public class Structure extends Variable {
       if (built)
         throw new IllegalStateException("already built");
       built = true;
-      this.setDataType(DataType.STRUCTURE);
+      this.setArrayType(ArrayType.STRUCTURE);
       return new Structure(this, parentGroup);
     }
   }

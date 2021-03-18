@@ -10,6 +10,8 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutionException;
+
+import ucar.array.ArrayType;
 import ucar.ma2.ArraySequence;
 import ucar.ma2.ArrayStructure;
 import ucar.ma2.DataType;
@@ -131,7 +133,7 @@ public class StructureTable extends JPanel {
   }
 
   public void setStructure(Structure s) {
-    if (s.getDataType() == DataType.SEQUENCE)
+    if (s.getArrayType() == ArrayType.SEQUENCE)
       dataModel = new SequenceModel(s, true);
     else
       dataModel = new StructureModel(s);

@@ -2,7 +2,7 @@ package ucar.nc2.internal.grid;
 
 import com.google.common.base.Preconditions;
 import ucar.array.ArrayChar;
-import ucar.ma2.DataType;
+import ucar.array.ArrayType;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.*;
 import ucar.nc2.time.CalendarDate;
@@ -21,14 +21,14 @@ class CoordinateAxis1DTimeExtractor {
   final List<CalendarDate> cdates; // non null only if its a string or char coordinate
 
   CoordinateAxis1DTimeExtractor(CoordinateAxis coordAxis) {
-    Preconditions.checkArgument(coordAxis.getDataType() == DataType.CHAR || coordAxis.getRank() < 2);
+    Preconditions.checkArgument(coordAxis.getArrayType() == ArrayType.CHAR || coordAxis.getRank() < 2);
     this.timeHelper = TimeHelper.factory(coordAxis.getUnitsString(), coordAxis.attributes());
 
     Formatter errMessages = new Formatter();
     try {
-      if (coordAxis.getDataType() == DataType.CHAR) {
+      if (coordAxis.getArrayType() == ArrayType.CHAR) {
         cdates = makeTimesFromChar(coordAxis, errMessages);
-      } else if (coordAxis.getDataType() == DataType.STRING) {
+      } else if (coordAxis.getArrayType() == ArrayType.STRING) {
         cdates = makeTimesFromStrings(coordAxis, errMessages);
       } else {
         cdates = null;
@@ -39,7 +39,7 @@ class CoordinateAxis1DTimeExtractor {
   }
 
   private List<CalendarDate> makeTimesFromChar(Variable org, Formatter errMessages) throws IOException {
-    Preconditions.checkArgument(org.getDataType() == DataType.CHAR);
+    Preconditions.checkArgument(org.getArrayType() == ArrayType.CHAR);
     List<CalendarDate> result = new ArrayList<>();
 
     ArrayChar data = (ArrayChar) org.readArray();
@@ -52,7 +52,7 @@ class CoordinateAxis1DTimeExtractor {
   }
 
   private List<CalendarDate> makeTimesFromStrings(Variable org, Formatter errMessages) throws IOException {
-    Preconditions.checkArgument(org.getDataType() == DataType.STRING);
+    Preconditions.checkArgument(org.getArrayType() == ArrayType.STRING);
     int ncoords = (int) org.getSize();
     List<CalendarDate> result = new ArrayList<>(ncoords);
 

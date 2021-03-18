@@ -11,7 +11,7 @@ import ucar.nc2.util.Indent;
 import java.util.Formatter;
 
 /**
- * A Dimension is used to define the array shape of a Variable.
+ * A Dimension defines the array shape of a Variable.
  * A Variable can be thought of as a sampled function with Domain its Dimensions.
  * A Dimension may be shared among Variables, which provides a simple yet powerful way of associating Variables.
  * When a Dimension is shared, it has a unique name within its Group.

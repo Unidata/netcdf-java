@@ -544,7 +544,10 @@ public class NetcdfFile implements FileCacheable, Closeable {
    * @throws InvalidRangeException if variableSection is invalid
    * @see <a href=
    *      "https://www.unidata.ucar.edu/software/netcdf-java/reference/SectionSpecification.html">SectionSpecification</a>
+   *
+   * @deprecated use readSectionArray()
    */
+  @Deprecated
   public Array readSection(String variableSection) throws IOException, InvalidRangeException {
     ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(this, variableSection);
     if (cer.getChild() == null) {
@@ -563,7 +566,6 @@ public class NetcdfFile implements FileCacheable, Closeable {
     if (cer.getChild() == null) {
       return cer.getVariable().readArray(cer.getSection());
     }
-
     throw new UnsupportedOperationException();
   }
 

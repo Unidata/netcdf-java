@@ -7,8 +7,9 @@ package ucar.nc2.dataset;
 
 import com.google.common.base.Preconditions;
 import javax.annotation.Nullable;
+
+import ucar.array.ArrayType;
 import ucar.ma2.Array;
-import ucar.ma2.DataType;
 import ucar.ma2.MAMath;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
@@ -21,15 +22,16 @@ import java.io.IOException;
 import java.util.Formatter;
 
 /**
- * A Coordinate Axis is a Variable that specifies one of the coordinates of a CoordinateSystem.
- * Mathematically it is a scalar function F from index space to S:
+ * A Variable that specifies one of the coordinates of a CoordinateSystem.
+ * <p/>
  * 
  * <pre>
+ * Mathematically it is a scalar function F from index space to S:
  *  F:D -> S
  *  where D is a product set of dimensions (aka <i>index space</i>), and S is the set of reals (R) or Strings.
  * </pre>
  * <p/>
- * If its element type is char, it is considered a string-valued Coordinate Axis and rank is reduced by one,
+ * If its element type is CHAR, it is considered a string-valued Coordinate Axis and rank is reduced by one,
  * since the outermost dimension is considered the string length: v(i, j, .., strlen).
  * If its element type is String, it is a string-valued Coordinate Axis.
  * Otherwise it is numeric-valued, and <i>isNumeric()</i> is true.
@@ -51,7 +53,7 @@ public class CoordinateAxis extends VariableDS {
    */
   public static CoordinateAxis.Builder<?> fromVariableDS(VariableDS.Builder<?> vdsBuilder) {
     if ((vdsBuilder.getRank() == 0) || (vdsBuilder.getRank() == 1)
-        || (vdsBuilder.getRank() == 2 && vdsBuilder.dataType == DataType.CHAR)) {
+        || (vdsBuilder.getRank() == 2 && vdsBuilder.dataType == ArrayType.CHAR)) {
       return CoordinateAxis1D.builder().copyFrom(vdsBuilder);
     } else if (vdsBuilder.getRank() == 2) {
       return CoordinateAxis2D.builder().copyFrom(vdsBuilder);

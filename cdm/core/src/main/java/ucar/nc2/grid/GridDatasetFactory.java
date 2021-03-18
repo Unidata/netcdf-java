@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.util.Formatter;
 import java.util.Optional;
 
-/** Open Grid Datasets. */
+/** A factory of Grid Datasets. */
 public class GridDatasetFactory {
 
   /** Open a NetcdfDataset and wrap as a GridDataset. Return null if its not a gridDataset. */

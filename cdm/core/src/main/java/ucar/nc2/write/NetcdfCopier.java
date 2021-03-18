@@ -10,9 +10,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Formatter;
 import javax.annotation.Nullable;
+
+import ucar.array.ArrayType;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayChar;
-import ucar.ma2.DataType;
 import ucar.ma2.Index;
 import ucar.ma2.IndexIterator;
 import ucar.ma2.InvalidRangeException;
@@ -165,13 +166,13 @@ public class NetcdfCopier implements Closeable {
 
     convertAttributes(vb.getAttributeContainer());
 
-    if (vb.dataType == DataType.STRUCTURE) {
+    if (vb.dataType == ArrayType.STRUCTURE) {
       Structure.Builder<?> sb = (Structure.Builder<?>) vb;
       for (Variable.Builder<?> nested : sb.vbuilders) {
         convertVariable(parent, nested);
       }
     } else {
-      if (!extended && vb.dataType == DataType.STRING) {
+      if (!extended && vb.dataType == ArrayType.STRING) {
         // find maximum length
         Array data = readDataFromOriginal(vb);
         IndexIterator ii = data.getIndexIterator();
@@ -186,7 +187,7 @@ public class NetcdfCopier implements Closeable {
         Dimension strlenDim = Dimension.builder(strlenDimName, max_len).setIsShared(false).build();
         parent.addDimension(strlenDim);
         vb.addDimension(strlenDim);
-        vb.setDataType(DataType.CHAR);
+        vb.setArrayType(ArrayType.CHAR);
       }
     }
 
@@ -260,7 +261,7 @@ public class NetcdfCopier implements Closeable {
   private void copyAll(NetcdfFormatWriter ncwriter, Variable oldVar, Variable newVar) throws IOException {
     Array data = oldVar.read();
     try {
-      if (!extended && oldVar.getDataType() == DataType.STRING) {
+      if (!extended && oldVar.getArrayType() == ArrayType.STRING) {
         data = convertDataToChar(newVar, data);
       }
       if (data.getSize() > 0) { // zero when record dimension = 0
@@ -296,7 +297,7 @@ public class NetcdfCopier implements Closeable {
         int[] chunkShape = index.computeChunkShape(maxChunkElems);
 
         Array data = oldVar.read(chunkOrigin, chunkShape);
-        if (!getOutputFormat().isNetdf4format() && oldVar.getDataType() == DataType.STRING) {
+        if (!getOutputFormat().isNetdf4format() && oldVar.getArrayType() == ArrayType.STRING) {
           data = convertDataToChar(newVar, data);
         }
 
@@ -322,7 +323,7 @@ public class NetcdfCopier implements Closeable {
   }
 
   private Array convertDataToChar(Variable newVar, Array oldData) {
-    ArrayChar newData = (ArrayChar) Array.factory(DataType.CHAR, newVar.getShape());
+    ArrayChar newData = (ArrayChar) Array.factory(ucar.ma2.DataType.CHAR, newVar.getShape());
     Index ima = newData.getIndex();
     IndexIterator ii = oldData.getIndexIterator();
     while (ii.hasNext()) {

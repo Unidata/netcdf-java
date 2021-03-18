@@ -10,7 +10,6 @@ import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import org.junit.Before;
 import org.junit.Test;
-import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 
@@ -320,6 +319,37 @@ public class TestArrays {
       total += val;
     }
     assertThat(total).isEqualTo(21.0);
+  }
+
+  @Test
+  public void testMinMax() {
+    MinMax minmax = Arrays.getMinMaxSkipMissingData(array, null);
+    assertThat(minmax.min()).isEqualTo(1.0);
+    assertThat(minmax.max()).isEqualTo(6.0);
+
+    MinMax minmax2 = Arrays.getMinMaxSkipMissingData(array, new IsMissingEvaluator() {
+      public boolean hasMissing() {
+        return false;
+      }
+
+      public boolean isMissing(double val) {
+        return val == 1.0 || val == 6.0;
+      }
+    });
+    assertThat(minmax2.min()).isEqualTo(1.0);
+    assertThat(minmax2.max()).isEqualTo(6.0);
+
+    MinMax minmax3 = Arrays.getMinMaxSkipMissingData(array, new IsMissingEvaluator() {
+      public boolean hasMissing() {
+        return true;
+      }
+
+      public boolean isMissing(double val) {
+        return val == 1.0 || val == 6.0;
+      }
+    });
+    assertThat(minmax3.min()).isEqualTo(2.0);
+    assertThat(minmax3.max()).isEqualTo(5.0);
   }
 
 }

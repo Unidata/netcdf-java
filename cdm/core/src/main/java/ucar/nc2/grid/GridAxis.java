@@ -23,7 +23,7 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.*;
 
-/** A GridAxis is a Coordinate Axis for Grids. */
+/** A Coordinate Axis for Grids. */
 @Immutable
 public abstract class GridAxis implements Iterable<Object> {
   private static final Logger logger = LoggerFactory.getLogger(GridAxis.class);

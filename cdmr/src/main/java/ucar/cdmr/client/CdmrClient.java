@@ -21,7 +21,6 @@ import ucar.cdmr.CdmrNetcdfProto.HeaderResponse;
 import ucar.cdmr.CdmrNetcdfProto.Variable;
 import ucar.cdmr.CdmrConverter;
 import ucar.array.Array;
-import ucar.ma2.DataType;
 import ucar.ma2.Section;
 
 /** A simple client that makes a Netcdf request from CdmrServer. Used for testing. */

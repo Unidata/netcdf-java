@@ -7,6 +7,7 @@ package ucar.nc2.dataset;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
+import ucar.array.ArrayType;
 import ucar.array.ArraysConvert;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
@@ -113,13 +114,18 @@ public class VariableDS extends Variable implements EnhanceScaleMissingUnsigned,
     return orgVar;
   }
 
-  /**
-   * When this wraps another Variable, get the original Variable's DataType.
-   *
-   * @return original Variable's DataType, or current data type if it doesnt wrap another variable
-   */
+  /** @deprecated use getOriginalArrayType() */
   public DataType getOriginalDataType() {
-    return orgDataType != null ? orgDataType : getDataType();
+    return getOriginalArrayType().getDataType();
+  }
+
+  /**
+   * When this wraps another Variable, get the original Variable's ArrayType.
+   * 
+   * @return original Variable's ArrayType, or current data type if it doesnt wrap another variable
+   */
+  public ArrayType getOriginalArrayType() {
+    return orgDataType != null ? orgDataType : getArrayType();
   }
 
   /**
@@ -587,7 +593,7 @@ public class VariableDS extends Variable implements EnhanceScaleMissingUnsigned,
   private final DataEnhancer dataEnhancer;
 
   protected final @Nullable Variable orgVar; // wrap this Variable : use it for the I/O
-  protected final DataType orgDataType; // keep separate for the case where there is no orgVar. TODO @Nullable?
+  protected final ArrayType orgDataType; // keep separate for the case where there is no orgVar. TODO @Nullable?
   protected final @Nullable String orgName; // in case Variable was renamed, and we need to keep track of the original
                                             // name
   final String orgFileTypeId; // the original fileTypeId. TODO @Nullable?
@@ -620,17 +626,17 @@ public class VariableDS extends Variable implements EnhanceScaleMissingUnsigned,
     this.scaleMissingUnsignedProxy.setMissingDataIsMissing(builder.missingDataIsMissing);
 
     if (this.enhanceMode.contains(Enhance.ConvertEnums) && dataType.isEnum()) {
-      this.dataType = DataType.STRING; // LOOK promote enum data type to STRING ????
+      this.dataType = ArrayType.STRING; // LOOK promote enum data type to STRING ????
     }
 
     if (this.enhanceMode.contains(Enhance.ConvertUnsigned) && !dataType.isEnum()) {
       // We may need a larger data type to hold the results of the unsigned conversion.
-      this.dataType = scaleMissingUnsignedProxy.getUnsignedConversionType();
+      this.dataType = scaleMissingUnsignedProxy.getUnsignedConversionType().getArrayType();
     }
 
-    if (this.enhanceMode.contains(Enhance.ApplyScaleOffset) && (dataType.isNumeric() || dataType == DataType.CHAR)
+    if (this.enhanceMode.contains(Enhance.ApplyScaleOffset) && (dataType.isNumeric() || dataType == ArrayType.CHAR)
         && scaleMissingUnsignedProxy.hasScaleOffset()) {
-      this.dataType = scaleMissingUnsignedProxy.getScaledOffsetType();
+      this.dataType = scaleMissingUnsignedProxy.getScaledOffsetType().getArrayType();
     }
 
     // We have to complete this after the NetcdfDataset is built.
@@ -643,7 +649,7 @@ public class VariableDS extends Variable implements EnhanceScaleMissingUnsigned,
 
   // Add local fields to the passed - in builder.
   protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> builder) {
-    builder.setOriginalVariable(this.orgVar).setOriginalDataType(this.orgDataType).setOriginalName(this.orgName)
+    builder.setOriginalVariable(this.orgVar).setOriginalArrayType(this.orgDataType).setOriginalName(this.orgName)
         .setOriginalFileTypeId(this.orgFileTypeId).setEnhanceMode(this.enhanceMode)
         .setUnits(this.enhanceProxy.getUnitsString()).setDesc(this.enhanceProxy.getDescription());
 
@@ -673,7 +679,7 @@ public class VariableDS extends Variable implements EnhanceScaleMissingUnsigned,
   public static abstract class Builder<T extends Builder<T>> extends Variable.Builder<T> {
     public Set<Enhance> enhanceMode = EnumSet.noneOf(Enhance.class);
     public Variable orgVar; // wrap this Variable : use it for the I/O
-    public DataType orgDataType; // keep separate for the case where there is no orgVar.
+    public ArrayType orgDataType; // keep separate for the case where there is no orgVar.
     public String orgFileTypeId; // the original fileTypeId.
     String orgName; // in case Variable was renamed, and we need to keep track of the original name
     private String units;
@@ -702,7 +708,14 @@ public class VariableDS extends Variable implements EnhanceScaleMissingUnsigned,
       return self();
     }
 
+    /** @deprecated use setOriginalArrayType() */
+    @Deprecated
     public T setOriginalDataType(DataType orgDataType) {
+      this.orgDataType = orgDataType.getArrayType();
+      return self();
+    }
+
+    public T setOriginalArrayType(ArrayType orgDataType) {
       this.orgDataType = orgDataType;
       return self();
     }
@@ -759,7 +772,7 @@ public class VariableDS extends Variable implements EnhanceScaleMissingUnsigned,
       setSPobject(null);
       // resetCache();
       setOriginalVariable(orgVar);
-      setOriginalDataType(orgVar.getDataType());
+      setOriginalArrayType(orgVar.getArrayType());
       setOriginalName(orgVar.getShortName());
 
       this.orgFileTypeId = orgVar.getFileTypeId();

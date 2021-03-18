@@ -5,6 +5,7 @@
 
 package ucar.nc2.ui.bufr;
 
+import ucar.array.ArrayType;
 import ucar.ui.widget.BAMutil;
 import ucar.ui.widget.IndependentWindow;
 import ucar.ui.widget.PopupMenu;
@@ -13,7 +14,6 @@ import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.BeanTable;
 import ucar.nc2.iosp.bufr.tables.BufrTables;
 import ucar.nc2.iosp.bufr.tables.TableD;
-import ucar.ma2.DataType;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.*;
@@ -324,7 +324,7 @@ public class BufrTableDViewer extends JPanel {
     }
 
     public int getId() {
-      return DataType.unsignedShortToInt(dds.getId());
+      return ArrayType.unsignedShortToInt(dds.getId());
     }
 
     public String getSource() {

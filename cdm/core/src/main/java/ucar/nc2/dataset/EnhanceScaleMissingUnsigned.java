@@ -10,8 +10,8 @@ import ucar.ma2.IsMissingEvaluator;
 import javax.annotation.Nullable;
 
 /**
- * A Variable decorator that handles unsigned data, scale/offset packed data, and missing data. Specifically, it
- * handles:
+ * A Variable decorator that handles unsigned data, scale/offset packed data, and missing data.
+ * Specifically, it handles:
  * <ul>
  * <li>unsigned data using {@code _Unsigned}</li>
  * <li>packed data using {@code scale_factor} and {@code add_offset}</li>

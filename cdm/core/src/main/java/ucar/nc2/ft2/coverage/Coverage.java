@@ -5,6 +5,7 @@
 package ucar.nc2.ft2.coverage;
 
 import com.google.common.collect.ImmutableList;
+import ucar.array.ArrayType;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.IsMissingEvaluator;
@@ -77,6 +78,11 @@ public class Coverage implements VariableSimpleIF, IsMissingEvaluator {
   @Override
   public DataType getDataType() {
     return dataType;
+  }
+
+  @Override
+  public ArrayType getArrayType() {
+    return dataType.getArrayType();
   }
 
   @Override

@@ -36,7 +36,7 @@ public interface LayoutBB extends Layout {
   LayoutBB.Chunk next(); // covariant return.
 
   /**
-   * A chunk of data that is contiguous in both the source and destination.
+   * A contiguous chunk of data as a ByteBuffer.
    * Read nelems from ByteBuffer at filePos, store in destination at startElem.
    */
   interface Chunk extends Layout.Chunk {

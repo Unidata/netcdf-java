@@ -11,9 +11,8 @@ import ucar.ma2.Section;
 import ucar.nc2.util.CancelTask; // ??
 import java.io.IOException;
 
-/** Something that knows how to read the data for a Variable. */
+/** Reader of the data for a Variable. */
 public interface ProxyReader {
-
   /**
    * Read all the data for a Variable.
    * 

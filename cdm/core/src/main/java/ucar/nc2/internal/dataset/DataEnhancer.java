@@ -5,6 +5,8 @@
 package ucar.nc2.internal.dataset;
 
 import java.util.Set;
+
+import ucar.array.ArrayType;
 import ucar.array.ArraysConvert;
 import ucar.ma2.DataType;
 import ucar.ma2.IndexIterator;
@@ -15,14 +17,14 @@ import ucar.nc2.dataset.VariableDS;
 /** Does enhancemnets to a VariableDS' data. */
 public class DataEnhancer {
   private final VariableDS variableDS;
-  private final DataType dataType;
-  private final DataType orgDataType;
+  private final ArrayType dataType;
+  private final ArrayType orgDataType;
   private final EnhanceScaleMissingUnsignedImpl scaleMissingUnsignedProxy;
 
   public DataEnhancer(VariableDS variableDS, EnhanceScaleMissingUnsignedImpl scaleMissingUnsignedProxy) {
     this.variableDS = variableDS;
-    this.dataType = variableDS.getDataType();
-    this.orgDataType = variableDS.getOriginalDataType();
+    this.dataType = variableDS.getArrayType();
+    this.orgDataType = variableDS.getOriginalArrayType();
     this.scaleMissingUnsignedProxy = scaleMissingUnsignedProxy;
   }
 

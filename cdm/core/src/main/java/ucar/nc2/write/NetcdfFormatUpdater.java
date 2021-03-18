@@ -14,10 +14,11 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nullable;
+
+import ucar.array.ArrayType;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayChar;
 import ucar.ma2.ArrayObject;
-import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
 import ucar.ma2.StructureData;
@@ -207,23 +208,35 @@ public class NetcdfFormatUpdater implements Closeable {
       return this;
     }
 
+    /** @deprecated use addVariable(String shortName, ArrayType dataType, String dimString) */
+    @Deprecated
+    public Variable.Builder<?> addVariable(String shortName, ucar.ma2.DataType dataType, String dimString) {
+      return addVariable(shortName, dataType.getArrayType(), dimString);
+    }
+
     /** Add a Variable to the root group. */
-    public Variable.Builder<?> addVariable(String shortName, DataType dataType, String dimString) {
+    public Variable.Builder<?> addVariable(String shortName, ArrayType dataType, String dimString) {
       if (!useJna) {
         throw new UnsupportedOperationException("Cant add variable to existing netcdf-3 files");
       }
-      Variable.Builder<?> vb = Variable.builder().setName(shortName).setDataType(dataType)
+      Variable.Builder<?> vb = Variable.builder().setName(shortName).setArrayType(dataType)
           .setParentGroupBuilder(rootGroup).setDimensionsByName(dimString);
       rootGroup.addVariable(vb);
       return vb;
     }
 
+    /** @deprecated use addVariable(String shortName, ArrayType dataType, List<Dimension> dims) */
+    @Deprecated
+    public Variable.Builder<?> addVariable(String shortName, ucar.ma2.DataType dataType, List<Dimension> dims) {
+      return addVariable(shortName, dataType.getArrayType(), dims);
+    }
+
     /** Add a Variable to the root group. */
-    public Variable.Builder<?> addVariable(String shortName, DataType dataType, List<Dimension> dims) {
+    public Variable.Builder<?> addVariable(String shortName, ArrayType dataType, List<Dimension> dims) {
       if (!useJna) {
         throw new UnsupportedOperationException("Cant add variable to existing netcdf-3 files");
       }
-      Variable.Builder<?> vb = Variable.builder().setName(shortName).setDataType(dataType)
+      Variable.Builder<?> vb = Variable.builder().setName(shortName).setArrayType(dataType)
           .setParentGroupBuilder(rootGroup).setDimensions(dims);
       rootGroup.addVariable(vb);
       return vb;
@@ -438,7 +451,7 @@ public class NetcdfFormatUpdater implements Closeable {
     if (values.getElementType() != String.class)
       throw new IllegalArgumentException("values must be an ArrayObject of String ");
 
-    if (v.getDataType() != DataType.CHAR)
+    if (v.getArrayType() != ArrayType.CHAR)
       throw new IllegalArgumentException("variable " + v.getFullName() + " is not type CHAR");
 
     int rank = v.getRank();

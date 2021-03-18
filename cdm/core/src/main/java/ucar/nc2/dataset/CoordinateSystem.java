@@ -8,7 +8,7 @@ import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
 import javax.annotation.Nullable;
 
-import ucar.ma2.DataType;
+import ucar.array.ArrayType;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
 import ucar.unidata.geoloc.*;
@@ -17,11 +17,11 @@ import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.unidata.util.StringUtil2;
 
 /**
- * A CoordinateSystem specifies the coordinates of a Variable's values.
+ * Specifies the coordinates of a Variable's values.
  *
- * Mathematically it is a vector function F from index space to Sn:
- * 
+ *
  * <pre>
+ * Mathematically it is a vector function F from index space to Sn:
  *  F(i,j,k,...) -> (S1, S2, ...Sn)
  *  where i,j,k are integers, and S is the set of reals (R) or Strings.
  * </pre>
@@ -477,7 +477,7 @@ public class CoordinateSystem {
 
       // a CHAR variable must really be a STRING, so leave out the last (string length) dimension
       int checkDims = axis.getRank();
-      if (axis.getDataType() == DataType.CHAR) {
+      if (axis.getArrayType() == ArrayType.CHAR) {
         checkDims--;
       }
       for (int i = 0; i < checkDims; i++) {

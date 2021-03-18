@@ -26,7 +26,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 
 /**
- * A class intended as drop-in replacement for java.io.RandomAccessFile, with some notable extensions:
+ * A drop-in replacement for java.io.RandomAccessFile with extensions.
  * <ul>
  * <li>Buffered I/O: instances of this class realise substantial speed increases over
  * * java.io.RandomAccessFile through the use of buffering.</li>
@@ -34,11 +34,6 @@ import java.util.concurrent.atomic.AtomicLong;
  * <li>Support for both big and little endiannness on reads and write: users may specify the byte order for I/O
  * operations.</li>
  * </ul>
- * This is a subclass of Object, as it was not possible to subclass
- * java.io.RandomAccessFile because many of the methods are
- * final. However, if it is necessary to use RandomAccessFile and
- * java.io.RandomAccessFile interchangeably, both classes implement the
- * DataInput and DataOutput interfaces.
  * <p/>
  * <p>
  * By Russ Rew, based on

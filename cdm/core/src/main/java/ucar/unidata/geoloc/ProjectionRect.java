@@ -441,7 +441,6 @@ public class ProjectionRect {
     return new Builder().setWidth(width).setHeight(height).setX(wx0 - width / 2).setY(wy0 - height / 2);
   }
 
-  /** A builder of ProjectionRect. */
   public static class Builder {
     private double x;
     private double y;

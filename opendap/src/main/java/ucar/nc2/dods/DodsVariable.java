@@ -4,6 +4,7 @@
  */
 package ucar.nc2.dods;
 
+import ucar.array.ArrayType;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import opendap.dap.*;
@@ -24,12 +25,12 @@ class DodsVariable extends ucar.nc2.Variable implements DodsNode {
 
     // check for netcdf char array
     Dimension strlenDim;
-    if ((builder.dataType == DataType.STRING) && (null != (strlenDim = dodsBuilder.getNetcdfStrlenDim(builder)))) {
+    if ((builder.dataType == ArrayType.STRING) && (null != (strlenDim = dodsBuilder.getNetcdfStrlenDim(builder)))) {
       List<Dimension> dims = new ArrayList<>();
       if (strlenDim.getLength() != 0)
         dims.add(dodsBuilder.getSharedDimension(parentGroup, strlenDim));
       builder.setDimensions(dims);
-      builder.setDataType(DataType.CHAR);
+      builder.setArrayType(ArrayType.CHAR);
     }
 
     return builder;
@@ -45,10 +46,10 @@ class DodsVariable extends ucar.nc2.Variable implements DodsNode {
 
     // check for netcdf char array
     Dimension strlenDim;
-    if ((builder.dataType == DataType.STRING) && (null != (strlenDim = dodsBuilder.getNetcdfStrlenDim(builder)))) {
+    if ((builder.dataType == ArrayType.STRING) && (null != (strlenDim = dodsBuilder.getNetcdfStrlenDim(builder)))) {
       if (strlenDim.getLength() != 0)
         dims.add(dodsBuilder.getSharedDimension(parentGroup, strlenDim));
-      builder.setDataType(DataType.CHAR);
+      builder.setArrayType(ArrayType.CHAR);
     }
 
     builder.setDimensions(dims);

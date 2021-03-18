@@ -9,7 +9,7 @@ import java.util.Set;
 import java.util.TimeZone;
 
 /**
- * Encapsulate DateTimeZone functionality.
+ * Encapsulate org.joda.time.DateTimeZone functionality.
  *
  * @author caron
  * @since 10/28/12

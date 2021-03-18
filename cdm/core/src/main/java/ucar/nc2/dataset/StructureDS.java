@@ -9,6 +9,7 @@ import com.google.common.collect.ImmutableList;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
+import ucar.array.ArrayType;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.internal.dataset.CoordinatesHelper;
@@ -27,9 +28,15 @@ public class StructureDS extends ucar.nc2.Structure implements StructureEnhanced
     return orgVar;
   }
 
-  /** When this wraps another Variable, get the original Variable's DataType. */
+  /** @deprecated use getOriginalArrayType() */
+  @Deprecated
   public DataType getOriginalDataType() {
     return DataType.STRUCTURE;
+  }
+
+  /** When this wraps another Variable, get the original Variable's ArrayType. */
+  public ArrayType getOriginalArrayType() {
+    return ArrayType.STRUCTURE;
   }
 
   /** When this wraps another Variable, get the original Variable's name. */
@@ -236,7 +243,7 @@ public class StructureDS extends ucar.nc2.Structure implements StructureEnhanced
       if (built)
         throw new IllegalStateException("already built");
       built = true;
-      this.setDataType(DataType.STRUCTURE);
+      this.setArrayType(ArrayType.STRUCTURE);
       return new StructureDS(this, parentGroup);
     }
   }

@@ -93,7 +93,7 @@ class MessageArrayUncompressedReader {
     this.f = f;
 
     // allocate ArrayStructureBB for outer structure
-    StructureMembers.Builder membersb = StructureMembers.makeStructureMembers(s);
+    StructureMembers.Builder membersb = s.makeStructureMembersBuilder();
     membersb.setStandardOffsets(structuresOnHeap);
     this.members = membersb.build();
 
@@ -276,7 +276,7 @@ class MessageArrayUncompressedReader {
     Preconditions.checkNotNull(seq);
 
     // Create nested StructureDataArray
-    StructureMembers.Builder membersb = StructureMembers.makeStructureMembers(seq);
+    StructureMembers.Builder membersb = seq.makeStructureMembersBuilder();
     membersb.setStandardOffsets(structuresOnHeap);
     StructureMembers nestedMembers = membersb.build();
 
