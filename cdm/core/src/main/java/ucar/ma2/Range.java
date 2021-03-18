@@ -26,10 +26,7 @@ import java.util.Iterator;
  *    ...
  *  }
  * </pre>
- * 
- * @deprecated will move to ucar.array in ver7.
  */
-@Deprecated
 @Immutable
 public class Range implements RangeIterator {
   public static final Range EMPTY = new Range(); // used for unlimited dimension = 0
