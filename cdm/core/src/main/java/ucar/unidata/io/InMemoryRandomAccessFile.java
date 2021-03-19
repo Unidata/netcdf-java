@@ -85,5 +85,5 @@ public class InMemoryRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
       return new InMemoryRandomAccessFile(location, contents.get());
     }
   }
-
 }
+
