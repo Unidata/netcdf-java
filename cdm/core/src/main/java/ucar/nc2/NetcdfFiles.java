@@ -356,7 +356,7 @@ public class NetcdfFiles {
     // look for registered RandomAccessFile Providers
     for (RandomAccessFileProvider provider : registeredRandomAccessFileProviders) {
       if (provider.isOwnerOf(location)) {
-        raf = provider.open(location);
+        raf = provider.open(location, buffer_size);
         Preconditions.checkNotNull(raf);
         // TODO what if resource location cannot be reliably used to determine compression
         // TODO can provider tell if it owns it if compressed?
@@ -371,7 +371,7 @@ public class NetcdfFiles {
       // look for dynamically loaded RandomAccessFile Providers
       for (RandomAccessFileProvider provider : ServiceLoader.load(RandomAccessFileProvider.class)) {
         if (provider.isOwnerOf(location)) {
-          raf = provider.open(location);
+          raf = provider.open(location, buffer_size);
           Preconditions.checkNotNull(raf);
           // TODO what if resource location cannot be reliably used to determine compression
           if (looksCompressed(uriString)) {

@@ -241,11 +241,16 @@ public final class HTTPRandomAccessFile extends RemoteRandomAccessFile {
 
     @Override
     public RandomAccessFile open(String location) throws IOException {
+      return this.open(location, httpBufferSize);
+    }
+
+    @Override
+    public RandomAccessFile open(String location, int bufferSize) throws IOException {
       String scheme = location.split(":")[0];
       if (!scheme.equalsIgnoreCase("https") && !scheme.equalsIgnoreCase("http")) {
         location = location.replace(scheme, "http");
       }
-      return new HTTPRandomAccessFile(location);
+      return new HTTPRandomAccessFile(location, bufferSize, httpMaxCacheSize);
     }
   }
 }
