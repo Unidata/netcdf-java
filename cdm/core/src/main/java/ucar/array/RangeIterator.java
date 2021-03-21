@@ -19,7 +19,7 @@ public interface RangeIterator extends Iterable<Integer> {
   int length();
 
   /** The name of this Range iterator. */
-  String getName();
+  String name();
 
   /** Make a copy with a different name. */
   RangeIterator copyWithName(String name);

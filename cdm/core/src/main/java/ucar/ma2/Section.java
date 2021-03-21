@@ -400,7 +400,6 @@ public class Section {
    * @param other another section
    * @return true if intersection is non-empty
    * @throws InvalidRangeException if want.getRank() not equal to this.getRank(),
-   *
    */
   public boolean intersects(Section other) throws InvalidRangeException {
     if (!compatibleRank(other))

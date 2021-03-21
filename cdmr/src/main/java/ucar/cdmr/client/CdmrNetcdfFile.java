@@ -29,7 +29,7 @@ import ucar.ma2.Section;
 import ucar.ma2.StructureDataIterator;
 import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.ParsedSectionSpec;
+import ucar.nc2.ParsedArraySectionSpec;
 import ucar.nc2.Sequence;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
@@ -61,7 +61,7 @@ public class CdmrNetcdfFile extends NetcdfFile {
   @Override
   public Iterator<ucar.array.StructureData> getStructureDataArrayIterator(Sequence s, int bufferSize)
       throws IOException {
-    ucar.array.Array<?> data = readArrayData(s, s.getShapeAsSection());
+    ucar.array.Array<?> data = readArrayData(s, s.getShapeAsArraySection());
     Preconditions.checkNotNull(data);
     Preconditions.checkArgument(data instanceof StructureDataArray);
     StructureDataArray sdata = (StructureDataArray) data;
@@ -69,8 +69,8 @@ public class CdmrNetcdfFile extends NetcdfFile {
   }
 
   @Nullable
-  protected ucar.array.Array<?> readArrayData(Variable v, Section sectionWanted) throws IOException {
-    String spec = ParsedSectionSpec.makeSectionSpecString(v, sectionWanted.getRanges());
+  protected ucar.array.Array<?> readArrayData(Variable v, ucar.array.Section sectionWanted) throws IOException {
+    String spec = ParsedArraySectionSpec.makeSectionSpecString(v, sectionWanted);
     if (showRequest)
       System.out.printf("CdmrNetcdfFile data request forspec=(%s)%n url='%s'%n path='%s'%n", spec, this.remoteURI,
           this.path);

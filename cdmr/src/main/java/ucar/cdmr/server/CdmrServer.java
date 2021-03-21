@@ -28,7 +28,7 @@ import ucar.cdmr.CdmrConverter;
 import ucar.array.InvalidRangeException;
 import ucar.array.Section;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.ParsedSectionSpec;
+import ucar.nc2.ParsedArraySectionSpec;
 import ucar.nc2.Sequence;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDatasets;
@@ -129,7 +129,7 @@ public class CdmrServer {
       long size = -1;
 
       try (NetcdfFile ncfile = NetcdfDatasets.openFile(req.getLocation(), null)) { // LOOK cache ncfile?
-        ParsedSectionSpec varSection = ParsedSectionSpec.parseVariableSection(ncfile, req.getVariableSpec());
+        ParsedArraySectionSpec varSection = ParsedArraySectionSpec.parseVariableSection(ncfile, req.getVariableSpec());
         Variable var = varSection.getVariable();
         if (var instanceof Sequence) {
           size = getSequenceData(ncfile, varSection, responseObserver);
@@ -154,7 +154,7 @@ public class CdmrServer {
       System.out.printf(" ** size=%d took=%s%n", size, stopwatch.stop());
     }
 
-    private void getNetcdfData(NetcdfFile ncfile, ParsedSectionSpec varSection,
+    private void getNetcdfData(NetcdfFile ncfile, ParsedArraySectionSpec varSection,
         StreamObserver<DataResponse> responseObserver) throws IOException, InvalidRangeException {
       Variable var = varSection.getVariable();
       Section wantSection = varSection.getArraySection();
@@ -166,7 +166,7 @@ public class CdmrServer {
       }
     }
 
-    private void getDataInChunks(NetcdfFile ncfile, ParsedSectionSpec varSection,
+    private void getDataInChunks(NetcdfFile ncfile, ParsedArraySectionSpec varSection,
         StreamObserver<DataResponse> responseObserver) throws IOException, InvalidRangeException {
 
       Variable var = varSection.getVariable();
@@ -177,13 +177,12 @@ public class CdmrServer {
         int[] chunkOrigin = index.getCurrentCounter();
         int[] chunkShape = index.computeChunkShape(maxChunkElems);
         Section section = new Section(chunkOrigin, chunkShape);
-        ucar.ma2.Section oldSection = ArraysConvert.convertSection(section);
-        getOneChunk(ncfile, new ParsedSectionSpec(var, oldSection), responseObserver);
+        getOneChunk(ncfile, new ParsedArraySectionSpec(var, section), responseObserver);
         index.setCurrentCounter(index.currentElement() + (int) Arrays.computeSize(chunkShape));
       }
     }
 
-    private void getOneChunk(NetcdfFile ncfile, ParsedSectionSpec varSection,
+    private void getOneChunk(NetcdfFile ncfile, ParsedArraySectionSpec varSection,
         StreamObserver<DataResponse> responseObserver) throws IOException, InvalidRangeException {
 
       String spec = varSection.makeSectionSpecString();
@@ -202,7 +201,7 @@ public class CdmrServer {
     }
 
 
-    private long getSequenceData(NetcdfFile ncfile, ParsedSectionSpec varSection,
+    private long getSequenceData(NetcdfFile ncfile, ParsedArraySectionSpec varSection,
         StreamObserver<DataResponse> responseObserver) throws InvalidRangeException {
 
       String spec = varSection.makeSectionSpecString();

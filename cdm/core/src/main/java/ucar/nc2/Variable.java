@@ -502,7 +502,8 @@ public class Variable implements VariableSimpleIF, ProxyReader {
   // _read(Section section)
   // _readNestedData(Section section, boolean flatten)
 
-  /** Read variable data to a stream. Support for NcStreamWriter. */
+  /** @deprecated do not use. */
+  @Deprecated
   public long readToStream(Section section, OutputStream out) throws IOException, InvalidRangeException {
     if ((ncfile == null) || hasCachedData())
       return IospHelper.copyToOutputStream(read(section), out);
@@ -793,7 +794,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
       if (cache.getData() == null) {
         cache.setCachedData(readArray()); // read and cache entire array
       }
-      return Arrays.section(cache.getData(), section.getRanges()); // subset it
+      return Arrays.section(cache.getData(), section); // subset it
     }
     // not caching
     return proxyReader.proxyReadArray(this, section, null);

@@ -17,9 +17,8 @@ public class TestReadArrayProblem {
 
   @Test
   public void testProblem() throws IOException {
-    String filename = TestDir.cdmTestDataDirFromCore + "ucar/nc2/bufr/IUPT02_KBBY_281400_522246081.bufr.2018032814";
-    TestReadSequenceCompare.compareSequence(filename);
-    TestReadSequenceCompare.compareDataset(filename);
+    String filename = TestDir.cdmUnitTestDir + "formats/netcdf3/longOffset.nc";
+    TestReadArrayCompare.compareNetcdfDataset(filename);
   }
 
   @Test
@@ -41,6 +40,13 @@ public class TestReadArrayProblem {
     // the ma2 version fails to convert sequence nested in a Structure.
     String filename = TestDir.cdmUnitTestDir + "formats/netcdf4/vlen/IntTimSciSamp.nc";
     TestReadArrayCompare.compareNetcdfDataset(filename);
+  }
+
+  @Test
+  public void testBufrProblem2() throws IOException {
+    String filename = TestDir.cdmTestDataDirFromCore + "ucar/nc2/bufr/IUPT02_KBBY_281400_522246081.bufr.2018032814";
+    TestReadSequenceCompare.compareSequence(filename);
+    TestReadSequenceCompare.compareDataset(filename);
   }
 
   @Test

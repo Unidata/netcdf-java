@@ -153,4 +153,12 @@ public class TestArraysConvert {
     return new StructureDataArray(members, new int[] {nrows}, storage);
   }
 
+  @Test
+  public void testConvertSection() throws InvalidRangeException {
+    Section sa = Section.builder().appendRange(2).appendRange(null).appendRange(Range.EMPTY).appendRange(Range.SCALAR)
+        .appendRange(Range.VLEN).appendRange("test", 3, 4, 2).build();
+    ucar.ma2.Section sb = ArraysConvert.convertSection(sa);
+    assertThat(ArraysConvert.convertSection(sb)).isEqualTo(sa);
+  }
+
 }

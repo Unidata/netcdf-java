@@ -5,6 +5,9 @@
 package ucar.array;
 
 import com.google.common.base.Preconditions;
+import ucar.ma2.DataType;
+import ucar.ma2.IndexIterator;
+
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
@@ -176,8 +179,7 @@ public class Arrays {
   }
 
   private static <T> Object combine(ArrayType dataType, int[] shape, List<Array<T>> dataArrays) {
-    Section section = new Section(shape);
-    long size = section.getSize();
+    long size = Arrays.computeSize(shape);
     if (size > Integer.MAX_VALUE) {
       throw new OutOfMemoryError();
     }
@@ -322,14 +324,13 @@ public class Arrays {
    * Vlen is transferred over unchanged.
    *
    * @param org original Array
-   * @param ranges list of Ranges that specify the array subset.
+   * @param section list of Ranges that specify the array subset.
    *        Must be same rank as original Array.
    *        A particular Range: 1) may be a subset, or 2) may be null, meaning use entire Range.
    * @return the new Array
-   * @throws InvalidRangeException if ranges is invalid
    */
-  public static <T> Array<T> section(Array<T> org, List<Range> ranges) throws InvalidRangeException {
-    return org.createView(org.indexFn().section(ranges));
+  public static <T> Array<T> section(Array<T> org, Section section) throws InvalidRangeException {
+    return org.createView(org.indexFn().section(section));
   }
 
   /**
@@ -342,11 +343,29 @@ public class Arrays {
    * @return a new Array, with reduced rank.
    */
   public static <T> Array<T> slice(Array<T> org, int dim, int value) throws InvalidRangeException {
-    ArrayList<Range> ranges = new ArrayList<>(org.getSection().getRanges());
-    ranges.set(dim, new Range(value, value));
-    Array<T> s = section(org, ranges);
+    // all nulls except the specified dimension
+    Section.Builder sb = Section.builder();
+    for (int i = 0; i < org.getSection().getRank(); i++) {
+      sb.appendRange(null);
+    }
+    sb.replaceRange(dim, new Range(value, value));
+    Array<T> s = section(org, sb.build());
     return reduce(s, dim);
   }
+
+  /*
+   * public static <T> Array<T> slice(Array<T> org, int dim, int value) {
+   * int[] origin = new int[rank];
+   * int[] shape = getShape();
+   * origin[dim] = value;
+   * shape[dim] = 1;
+   * try {
+   * return sectionNoReduce(origin, shape, null).reduce(dim); // preserve other dim 1
+   * } catch (InvalidRangeException e) {
+   * throw new IllegalArgumentException();
+   * }
+   * }
+   */
 
   /**
    * Create a new Array using same backing store as the org Array, by
@@ -524,5 +543,21 @@ public class Arrays {
       }
     }
     return MinMax.create(min, max);
+  }
+
+  /**
+   * Make a double array from a start and incr.
+   *
+   * @param shape shape of ressultinf array
+   * @param npts number of points
+   * @param start starting value
+   * @param incr increment
+   */
+  public static Array<Double> makeArray(int[] shape, int npts, double start, double incr) {
+    double[] vals = new double[npts];
+    for (int i = 0; i < npts; i++) {
+      vals[i] = start + i * incr;
+    }
+    return factory(ArrayType.DOUBLE, shape, vals);
   }
 }

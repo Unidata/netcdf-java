@@ -93,10 +93,13 @@ public class Index {
    * @throws ArrayIndexOutOfBoundsException if index.length != rank.
    */
   public Index set(int... index) {
-    if (index.length != current.length)
-      throw new ArrayIndexOutOfBoundsException();
-    if (current.length == 0)
+    if (index.length != current.length) {
+      throw new ArrayIndexOutOfBoundsException(
+          String.format("Number of indices (%d) must equal rank (%d)", index.length, current.length));
+    }
+    if (current.length == 0) {
       return this;
+    }
     System.arraycopy(index, 0, current, 0, index.length);
     return this;
   }

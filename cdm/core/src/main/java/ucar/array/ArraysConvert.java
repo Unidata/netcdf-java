@@ -312,10 +312,18 @@ public class ArraysConvert {
   public static ucar.ma2.Section convertSection(ucar.array.Section section) {
     ucar.ma2.Section.Builder builder = ucar.ma2.Section.builder();
     section.getRanges().forEach(r -> {
-      try {
-        builder.appendRange(new ucar.ma2.Range(r.getName(), r.first(), r.last(), r.stride()));
-      } catch (ucar.ma2.InvalidRangeException e) {
-        throw new RuntimeException(e); // not possible haha
+      if (r == null) {
+        builder.appendRange(null);
+      } else if (r.length() == 0) {
+        builder.appendRange(ucar.ma2.Range.EMPTY);
+      } else if (r.length() < 0) {
+        builder.appendRange(ucar.ma2.Range.VLEN);
+      } else {
+        try {
+          builder.appendRange(new ucar.ma2.Range(r.name(), r.first(), r.last(), r.stride()));
+        } catch (ucar.ma2.InvalidRangeException e) {
+          throw new RuntimeException(e); // not possible haha
+        }
       }
     });
     return builder.build();
@@ -324,10 +332,18 @@ public class ArraysConvert {
   public static ucar.array.Section convertSection(ucar.ma2.Section section) {
     ucar.array.Section.Builder builder = ucar.array.Section.builder();
     section.getRanges().forEach(r -> {
-      try {
-        builder.appendRange(new ucar.array.Range(r.getName(), r.first(), r.last(), r.stride()));
-      } catch (InvalidRangeException e) {
-        throw new RuntimeException(e); // not possible haha
+      if (r == null) {
+        builder.appendRange(null);
+      } else if (r.length() == 0) {
+        builder.appendRange(Range.EMPTY);
+      } else if (r.length() < 0) {
+        builder.appendRange(Range.VLEN);
+      } else {
+        try {
+          builder.appendRange(new ucar.array.Range(r.getName(), r.first(), r.last(), r.stride()));
+        } catch (InvalidRangeException e) {
+          throw new RuntimeException(e); // not possible haha
+        }
       }
     });
     return builder.build();

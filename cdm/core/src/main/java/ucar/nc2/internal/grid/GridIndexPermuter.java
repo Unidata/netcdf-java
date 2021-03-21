@@ -53,7 +53,7 @@ class GridIndexPermuter {
     // get the ranges list in the order of the variable; a null range means "all" to vs.read()
     ucar.array.Range[] varRange = new ucar.array.Range[this.shape.length];
     for (ucar.array.Range r : subset.getRanges()) {
-      AxisType type = AxisType.valueOf(r.getName());
+      AxisType type = AxisType.valueOf(r.name());
       switch (type) {
         case Lon:
         case GeoX:

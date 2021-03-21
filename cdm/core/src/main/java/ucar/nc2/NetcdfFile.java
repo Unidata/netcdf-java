@@ -21,7 +21,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.array.StructureData;
 import ucar.ma2.Array;
-import ucar.ma2.InvalidRangeException;
 import ucar.ma2.StructureDataIterator;
 import ucar.nc2.internal.iosp.netcdf3.N3header;
 import ucar.nc2.internal.iosp.netcdf3.N3iosp;
@@ -563,12 +562,7 @@ public class NetcdfFile implements FileCacheable, Closeable {
 
   public ucar.array.Array<?> readSectionArray(String variableSection)
       throws IOException, ucar.array.InvalidRangeException {
-    ParsedSectionSpec cer = null;
-    try {
-      cer = ParsedSectionSpec.parseVariableSection(this, variableSection);
-    } catch (ucar.ma2.InvalidRangeException e) {
-      throw new ucar.array.InvalidRangeException(e);
-    }
+    ParsedArraySectionSpec cer = ParsedArraySectionSpec.parseVariableSection(this, variableSection);
     if (cer.getChild() == null) {
       return cer.getVariable().readArray(cer.getArraySection());
     }

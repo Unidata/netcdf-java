@@ -257,7 +257,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
       Time2Dinfo info = (Time2Dinfo) v2.getSPobject();
       ucar.array.Array<?> data = Time2DLazyCoordinate.makeLazyCoordinateArray(v2, info, gribCollection);
       ucar.array.Section sectionFilled = ucar.array.Section.fill(section, v2.getShape());
-      return Arrays.section(data, sectionFilled.getRanges());
+      return Arrays.section(data, sectionFilled);
     }
 
     try {

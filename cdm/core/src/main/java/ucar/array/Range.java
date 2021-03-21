@@ -4,20 +4,20 @@
  */
 package ucar.array;
 
+import com.google.common.base.Preconditions;
+
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.Iterator;
+import java.util.Objects;
 
 /**
- * Represents a set of integers, used to indicate a subset of a 1-d array.
- * No duplicates are allowed.
- * It should be considered as a subset of the interval of integers [first(), last()] inclusive.
+ * A strided subset of the interval of positive integers [first(), last()] inclusive.
  * For example Range(1:11:3) represents the set of integers {1,4,7,10}
- * Note that Range no longer is always strided or monotonic.
  * <p>
  * Elements must be nonnegative and unique.
  * EMPTY is the empty Range.
- * ONE is the set {0}.
+ * SCALAR is the set {0}.
  * VLEN is for variable length dimensions.
  * <p>
  * Standard iteration is
@@ -31,7 +31,7 @@ import java.util.Iterator;
 @Immutable
 public class Range implements RangeIterator {
   public static final Range EMPTY = new Range(); // used for unlimited dimension = 0
-  public static final Range ONE = new Range("ONE", 1);
+  public static final Range SCALAR = new Range("SCALAR", 1);
   public static final Range VLEN = new Range("VLEN", -1);
 
   /** Make a named Range from 0 to len-1. */
@@ -64,7 +64,7 @@ public class Range implements RangeIterator {
   private Range() {
     this.length = 0;
     this.first = 0;
-    this.last = 0;
+    this.last = -1;
     this.stride = 1;
     this.name = "EMPTY";
   }
@@ -172,27 +172,29 @@ public class Range implements RangeIterator {
 
   /** Make a copy with a different stride. */
   public Range copyWithStride(int stride) throws InvalidRangeException {
-    if (stride == this.stride)
+    if (stride == this.stride) {
       return this;
+    }
     return new Range(this.first(), this.last(), stride);
   }
 
   /** Make a copy with a different name. */
   @Override
   public Range copyWithName(String name) {
-    if (name.equals(this.getName()))
+    if (name.equals(this.name())) {
       return this;
+    }
     try {
       return new Range(name, first, last, stride, length);
     } catch (InvalidRangeException e) {
-      throw new RuntimeException(e); // cant happen
+      throw new RuntimeException(e); // can happen if you call this on EMPTY or VLEN
     }
   }
 
   /** @return name, or null if none */
   @Nullable
   @Override
-  public String getName() {
+  public String name() {
     return name;
   }
 
@@ -237,19 +239,18 @@ public class Range implements RangeIterator {
 
   /**
    * Create a new Range by composing a Range that is reletive to this Range.
-   * Revised 2013/04/19 by Dennis Heimbigner to handle edge cases.
-   * See the commentary associated with the netcdf-c file dceconstraints.h,
-   * function dceslicecompose().
-   *
-   * @param r range reletive to base
+   * 
+   * @param r range elements are reletive to this
    * @return combined Range, may be EMPTY
    * @throws InvalidRangeException elements must be nonnegative, 0 <= first <= last
    */
   public Range compose(Range r) throws InvalidRangeException {
-    if ((length() == 0) || (r.length() == 0))
+    if ((length() == 0) || (r.length() == 0)) {
       return EMPTY;
-    if (this == VLEN || r == VLEN)
+    }
+    if (this == VLEN || r == VLEN) {
       return VLEN;
+    }
     /*
      * if(false) {// Original version
      * // Note that this version assumes that range r is
@@ -264,7 +265,6 @@ public class Range implements RangeIterator {
     int sr_first = element(r.first()); // MAP(this,i) == element(i)
     int lastx = element(r.last());
     int sr_last = Math.min(last(), lastx);
-    // unused int sr_length = (sr_last + 1) - sr_first;
     return new Range(name, sr_first, sr_last, sr_stride);
   }
 
@@ -291,16 +291,18 @@ public class Range implements RangeIterator {
    * @throws InvalidRangeException i must be: 0 <= i < length
    */
   public int element(int i) throws InvalidRangeException {
-    if (i < 0)
-      throw new InvalidRangeException("i must be >= 0");
-    if (i >= length)
-      throw new InvalidRangeException("i must be < length");
+    if (i < 0) {
+      throw new InvalidRangeException("element idx (" + i + ") must be >= 0");
+    }
+    if (i >= length) {
+      throw new InvalidRangeException("element idx (" + i + ") must be < length");
+    }
 
     return first + i * stride;
   }
 
   /**
-   * Get the index for this element: inverse of element
+   * Given an element in the Range, find its index in the array of elements.
    *
    * @param want the element of the range
    * @return index
@@ -316,153 +318,57 @@ public class Range implements RangeIterator {
   }
 
   /**
-   * Create a new Range by intersecting with a Range using same interval as this Range.
-   * NOTE: we dont yet support intersection when both Ranges have strides
+   * Create a new Range by intersecting with another Range that must have stride 1.
    *
-   * @param r range to intersect
+   * @param other range to intersect, must have stride 1.
    * @return intersected Range, may be EMPTY
    * @throws InvalidRangeException elements must be nonnegative
    */
-  public Range intersect(Range r) throws InvalidRangeException {
-    if ((length() == 0) || (r.length() == 0))
+  public Range intersect(Range other) throws InvalidRangeException {
+    if ((length() == 0) || (other.length() == 0)) {
       return EMPTY;
-    if (this == VLEN || r == VLEN)
+    }
+    if (this == VLEN || other == VLEN) {
       return VLEN;
+    }
+    Preconditions.checkArgument(other.stride == 1, "other stride must be 1");
 
-    int last = Math.min(this.last(), r.last());
-    int resultStride = stride * r.stride();
+    int first = Math.max(this.first(), other.first());
+    int last = Math.min(this.last(), other.last());
 
-    int useFirst;
-    if (resultStride == 1) { // both strides are 1
-      useFirst = Math.max(this.first(), r.first());
-
-    } else if (stride == 1) { // then r has a stride
-
-      if (r.first() >= first())
-        useFirst = r.first();
-      else {
-        int incr = (first() - r.first()) / resultStride;
-        useFirst = r.first() + incr * resultStride;
-        if (useFirst < first())
-          useFirst += resultStride;
-      }
-
-    } else if (r.stride == 1) { // then this has a stride
-
-      if (first() >= r.first())
-        useFirst = first();
-      else {
-        int incr = (r.first() - first()) / resultStride;
-        useFirst = first() + incr * resultStride;
-        if (useFirst < r.first())
-          useFirst += resultStride;
-      }
-
-    } else {
-      throw new UnsupportedOperationException("Intersection when both ranges have a stride");
+    if (first > last) {
+      return EMPTY;
     }
 
-    if (useFirst > last)
-      return EMPTY;
-    return new Range(name, useFirst, last, resultStride);
+    if (first() < other.first()) {
+      int incr = (other.first() - first()) / this.stride;
+      first = first() + incr * this.stride;
+      if (first < other.first()) {
+        first += this.stride;
+      }
+    }
+
+    return new Range(name, first, last, this.stride);
   }
 
   /**
-   * Determine if a given Range intersects this one.
-   * NOTE: we dont yet support intersection when both Ranges have strides
+   * Determine if a given Range interval intersects this one. Strides are ignored, only first() and last() matter.
    *
-   * @param r range to intersect
-   * @return true if they intersect
-   * @throws UnsupportedOperationException if both Ranges have strides
+   * @param other range to intersect
+   * @return true if their intervals intersect, ignoring stride.
    */
-  public boolean intersects(Range r) {
-    if ((length() == 0) || (r.length() == 0))
+  public boolean intersects(Range other) {
+    if ((length() == 0) || (other.length() == 0)) {
       return false;
-    if (this == VLEN || r == VLEN)
+    }
+    if (this == VLEN || other == VLEN) {
       return true;
-
-    int last = Math.min(this.last(), r.last());
-    int resultStride = stride * r.stride();
-
-    int useFirst;
-    if (resultStride == 1) { // both strides are 1
-      useFirst = Math.max(this.first(), r.first());
-
-    } else if (stride == 1) { // then r has a stride
-
-      if (r.first() >= first())
-        useFirst = r.first();
-      else {
-        int incr = (first() - r.first()) / resultStride;
-        useFirst = r.first() + incr * resultStride;
-        if (useFirst < first())
-          useFirst += resultStride;
-      }
-
-    } else if (r.stride() == 1) { // then this has a stride
-
-      if (first() >= r.first())
-        useFirst = first();
-      else {
-        int incr = (r.first() - first()) / resultStride;
-        useFirst = first() + incr * resultStride;
-        if (useFirst < r.first())
-          useFirst += resultStride;
-      }
-
-    } else {
-      throw new UnsupportedOperationException("Intersection when both ranges have a stride");
     }
 
-    return (useFirst <= last);
-  }
+    int first = Math.max(this.first(), other.first());
+    int last = Math.min(this.last(), other.last());
 
-  /**
-   * If this range is completely past the wanted range
-   *
-   * @param want desired range
-   * @return true if first() > want.last()
-   */
-  public boolean past(Range want) {
-    return first() > want.last();
-  }
-
-  /**
-   * Create a new Range shifting this range by a constant factor.
-   *
-   * @param origin subtract this from each element
-   * @return shifted range
-   * @throws InvalidRangeException elements must be nonnegative, 0 <= first <= last
-   */
-  public Range shiftOrigin(int origin) throws InvalidRangeException {
-    if (this == VLEN)
-      return VLEN;
-
-    int first = first() - origin;
-    int last = last() - origin;
-    return new Range(name, first, last, stride);
-  }
-
-  /**
-   * Create a new Range by making the union with a Range using same interval as this Range.
-   * NOTE: no strides
-   *
-   * @param r range to add
-   * @return intersected Range, may be EMPTY
-   * @throws InvalidRangeException elements must be nonnegative
-   */
-  public Range union(Range r) throws InvalidRangeException {
-    if (length() == 0)
-      return r;
-    if (this == VLEN || r == VLEN)
-      return VLEN;
-
-    if (r.length() == 0)
-      return this;
-
-    int first = Math.min(this.first(), r.first());
-    int last = Math.max(this.last(), r.last());
-    return new Range(name, first, last);
+    return (first <= last);
   }
 
   /**
@@ -479,12 +385,15 @@ public class Range implements RangeIterator {
    * @return first in interval, else -1 if there is no such element.
    */
   public int getFirstInInterval(int start) {
-    if (start > last())
+    if (start > last()) {
       return -1;
-    if (start <= first)
+    }
+    if (start <= first) {
       return first;
-    if (stride == 1)
+    }
+    if (stride == 1) {
       return start;
+    }
     int offset = start - first;
     int i = offset / stride;
     i = (offset % stride == 0) ? i : i + 1; // round up
@@ -501,33 +410,20 @@ public class Range implements RangeIterator {
       return first + ":" + last() + (stride > 1 ? ":" + stride : "");
   }
 
-  /**
-   * Range elements with same first, last, stride are equal.
-   */
   @Override
   public boolean equals(Object o) {
     if (this == o)
       return true;
-    if (!(o instanceof Range))
-      return false; // this catches nulls
-    Range or = (Range) o;
-
-    if ((length == 0) && (or.length == 0)) // empty ranges are equal
-      return true;
-
-    return (or.first == first) && (or.length == length) && (or.stride == stride) && (or.last == last);
+    if (o == null || getClass() != o.getClass())
+      return false;
+    Range integers = (Range) o;
+    return length == integers.length && first == integers.first && last == integers.last && stride == integers.stride
+        && Objects.equals(name, integers.name);
   }
 
-  /**
-   * Override Object.hashCode() to implement equals.
-   */
   @Override
   public int hashCode() {
-    int result = first;
-    result = 37 * result + last;
-    result = 37 * result + stride;
-    result = 37 * result + length;
-    return result;
+    return Objects.hash(length, first, last, stride, name);
   }
 
   /////////////////////////////////////////////////////////

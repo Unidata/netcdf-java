@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.array;
@@ -166,24 +166,25 @@ final class IndexFn implements Iterable<Integer> {
   /**
    * Create a new Strides based on a subsection of this one.
    *
-   * @param ranges list of Ranges that specify the array subset.
+   * @param section list of Ranges that specify the array subset.
    *        Must be same rank as original Array.
    *        A particular Range: 1) may be a subset; 2) may be null, meaning use entire Range.
    * @return new Index, with same rank as original.
    * @throws InvalidRangeException if ranges dont match current shape
    */
-  IndexFn section(List<Range> ranges) throws InvalidRangeException {
-    Preconditions.checkArgument(ranges.size() == rank);
+  IndexFn section(Section section) throws InvalidRangeException {
+    Preconditions.checkArgument(section.getRank() == rank);
     for (int ii = 0; ii < rank; ii++) {
-      Range r = ranges.get(ii);
-      if (r == null)
+      Range r = section.getRange(ii);
+      if (r == null || r == Range.VLEN) {
         continue;
-      if (r == Range.VLEN)
-        continue;
-      if ((r.first() < 0) || (r.first() >= shape[ii]))
+      }
+      if ((r.first() < 0) || (r.first() >= shape[ii])) {
         throw new InvalidRangeException("Bad range starting value at index " + ii + " == " + r.first());
-      if ((r.last() < 0) || (r.last() >= shape[ii]))
+      }
+      if ((r.last() < 0) || (r.last() >= shape[ii])) {
         throw new InvalidRangeException("Bad range ending value at index " + ii + " == " + r.last());
+      }
     }
 
     // allocate
@@ -194,7 +195,7 @@ final class IndexFn implements Iterable<Integer> {
     // calc shape, size, and index transformations
     // calc strides into original (backing) store
     for (int ii = 0; ii < rank; ii++) {
-      Range r = ranges.get(ii);
+      Range r = section.getRange(ii);
       if (r == null) { // null range means use the whole original dimension
         newindex.shape[ii] = shape[ii];
         newstride[ii] = stride[ii];

@@ -6,11 +6,11 @@
 package ucar.nc2;
 
 import ucar.array.ArrayType;
-import ucar.array.ArraysConvert;
+import ucar.array.Range;
+import ucar.array.Section;
 import ucar.nc2.internal.util.EscapeStrings;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Range;
-import ucar.ma2.Section;
+
+import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -33,11 +33,8 @@ import java.util.List;
  * <p/>
  * Nonterminals are in lower case, terminals are in upper case, literals are in single quotes.
  * Optional components are enclosed between square braces '[' and ']'.
- * 
- * @deprecated use ParsedArraySectionSpec
  */
-@Deprecated
-public class ParsedSectionSpec {
+public class ParsedArraySectionSpec {
   private static final boolean debugSelector = false;
 
   /**
@@ -47,19 +44,19 @@ public class ParsedSectionSpec {
    * @param variableSection the string to parse, eg "record(12).wind(1:20,:,3)"
    * @return return ParsedSectionSpec, parsed representation of the variableSection String
    * @throws IllegalArgumentException when token is misformed, or variable name doesnt exist in ncfile
-   * @throws ucar.ma2.InvalidRangeException if section does not match variable shape
+   * @throws ucar.array.InvalidRangeException if section does not match variable shape
    */
-  public static ParsedSectionSpec parseVariableSection(NetcdfFile ncfile, String variableSection)
-      throws InvalidRangeException {
+  public static ParsedArraySectionSpec parseVariableSection(NetcdfFile ncfile, String variableSection)
+      throws ucar.array.InvalidRangeException {
     List<String> tokes = EscapeStrings.tokenizeEscapedName(variableSection);
     if (tokes.isEmpty())
       throw new IllegalArgumentException("empty sectionSpec = " + variableSection);
 
     String selector = tokes.get(0);
-    ParsedSectionSpec outerV = parseSelector(ncfile, selector);
+    ParsedArraySectionSpec outerV = parseSelector(ncfile, selector);
 
     // parse each selector, find the inner variable
-    ParsedSectionSpec current = outerV;
+    ParsedArraySectionSpec current = outerV;
     for (int i = 1; i < tokes.size(); i++) {
       selector = tokes.get(i);
       current.child = parseSelector(current.getVariable(), selector);
@@ -71,7 +68,8 @@ public class ParsedSectionSpec {
 
   // selector := varFullNameEsc(indexSelect) or memberNameEsc(indexSelect)
   // parse variable name and index selector out of the selector String. variable name must be escaped
-  private static ParsedSectionSpec parseSelector(Object parent, String selector) throws InvalidRangeException {
+  private static ParsedArraySectionSpec parseSelector(Object parent, String selector)
+      throws ucar.array.InvalidRangeException {
     String varNameEsc, indexSelect = null;
 
     int pos1 = EscapeStrings.indexOf(selector, '(');
@@ -101,18 +99,19 @@ public class ParsedSectionSpec {
       indexSelect = null; // ignore whatever was sent
 
     // get the selected Ranges, or all, and add to the list
-    Section section;
+    ucar.array.Section section;
     if (indexSelect != null) {
-      section = new Section(indexSelect);
-      section = Section.fill(section, v.getShape()); // Check section has no nulls, set from shape array.
+      section = new ucar.array.Section(indexSelect);
+      section = ucar.array.Section.fill(section, v.getShape()); // Check section has no nulls, set from shape array.
     } else {
-      section = v.getShapeAsSection(); // all
+      section = v.getShapeAsArraySection(); // all
     }
 
-    return new ParsedSectionSpec(v, section);
+    return new ParsedArraySectionSpec(v, section);
   }
 
-  public static ParsedSectionSpec makeFromVariable(Variable v, String selector) throws InvalidRangeException {
+  public static ParsedArraySectionSpec makeFromVariable(Variable v, String selector)
+      throws ucar.array.InvalidRangeException {
     String varNameEsc;
     String indexSelect = null;
 
@@ -132,39 +131,39 @@ public class ParsedSectionSpec {
     }
 
     // get the selected Ranges, or all, and add to the list
-    Section section;
+    ucar.array.Section section;
     if (indexSelect != null) {
-      section = new Section(indexSelect);
-      section = Section.fill(section, v.getShape()); // Check section has no nulls, set from shape array.
+      section = new ucar.array.Section(indexSelect);
+      section = ucar.array.Section.fill(section, v.getShape()); // Check section has no nulls, set from shape array.
     } else {
-      section = v.getShapeAsSection(); // all
+      section = v.getShapeAsArraySection(); // all
     }
 
-    return new ParsedSectionSpec(v, section);
+    return new ParsedArraySectionSpec(v, section);
   }
 
   /**
-   * Make section specification String from a range list for a Variable.
-   * 
+   * Make section specification String from a ucar.array.Section for a Variable.
+   *
    * @param v for this Variable.
-   * @param ranges list of Range. Must includes all parent structures. The list be null, meaning use all.
+   * @param section list of Range. Must includes all parent structures. May be null, meaning use all.
    *        Individual ranges may be null, meaning all for that dimension.
    * @return section specification String.
    */
-  public static String makeSectionSpecString(Variable v, List<Range> ranges) {
+  public static String makeSectionSpecString(Variable v, @Nullable ucar.array.Section section) {
     StringBuilder sb = new StringBuilder();
-    makeSpec(sb, v, ranges);
+    makeSpec(sb, v, section);
     return sb.toString();
   }
 
-  private static List<Range> makeSpec(StringBuilder sb, Variable v, List<Range> orgRanges) {
+  private static ucar.array.Section makeSpec(StringBuilder sb, Variable v, ucar.array.Section orgSection) {
     if (v.isMemberOfStructure()) {
       assert v.getParentStructure() != null;
-      orgRanges = makeSpec(sb, v.getParentStructure(), orgRanges);
+      orgSection = makeSpec(sb, v.getParentStructure(), orgSection);
       sb.append('.');
     }
 
-    List<Range> ranges = (orgRanges == null) ? v.getRanges() : orgRanges;
+    ucar.array.Section vsection = (orgSection == null) ? v.getShapeAsArraySection() : orgSection;
 
     sb.append(v.isMemberOfStructure() ? NetcdfFiles.makeValidSectionSpecName(v.getShortName())
         : NetcdfFiles.makeFullNameSectionSpec(v));
@@ -172,9 +171,9 @@ public class ParsedSectionSpec {
     if (!v.isVariableLength() && !v.isScalar()) { // sequences cant be sectioned
       sb.append('(');
       for (int count = 0; count < v.getRank(); count++) {
-        Range r = ranges.get(count);
+        ucar.array.Range r = vsection.getRange(count);
         if (r == null)
-          r = new Range(v.getDimension(count).getLength());
+          r = new ucar.array.Range(v.getDimension(count).getLength());
         if (count > 0)
           sb.append(", ");
         sb.append(r);
@@ -182,16 +181,22 @@ public class ParsedSectionSpec {
       sb.append(')');
     }
 
-    return (orgRanges == null) ? null : ranges.subList(v.getRank(), ranges.size());
+    if (orgSection == null) {
+      return null;
+    }
+
+    // return (orgRanges == null) ? null : ranges.subList(v.getRank(), ranges.size());
+    List<Range> ranges = vsection.getRanges();
+    return new Section(ranges.subList(v.getRank(), vsection.getRank()));
   }
 
   ///////////////////////////////////////////////////////////////////////////
   // Modify to allow setting after creation
   private final Variable variable; // the variable
-  private final Section section; // section for this variable, filled in from variable if needed
-  private ParsedSectionSpec child; // if not null, variable is a Structure, and this is one of its members
+  private final ucar.array.Section section; // section for this variable, filled in from variable if needed
+  private ParsedArraySectionSpec child; // if not null, variable is a Structure, and this is one of its members
 
-  public ParsedSectionSpec(Variable variable, Section section) {
+  public ParsedArraySectionSpec(Variable variable, ucar.array.Section section) {
     this.variable = variable;
     this.section = section;
   }
@@ -200,17 +205,11 @@ public class ParsedSectionSpec {
     return variable;
   }
 
-  /** @deprecated use getArraySection() */
-  @Deprecated
-  public Section getSection() {
+  public ucar.array.Section getArraySection() {
     return section;
   }
 
-  public ucar.array.Section getArraySection() {
-    return ArraysConvert.convertSection(section);
-  }
-
-  public ParsedSectionSpec getChild() {
+  public ParsedArraySectionSpec getChild() {
     return child;
   }
 
@@ -220,7 +219,7 @@ public class ParsedSectionSpec {
   }
 
   public String makeSectionSpecString() {
-    return ParsedSectionSpec.makeSectionSpecString(this.variable, this.section.getRanges());
+    return ParsedArraySectionSpec.makeSectionSpecString(this.variable, this.section);
   }
 
 }
