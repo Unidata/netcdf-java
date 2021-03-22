@@ -22,6 +22,7 @@ import java.util.List;
 /**
  * An Attribute is a name and a value, used for associating arbitrary metadata with another object.
  * The value can be a one dimensional array of Strings or numeric values.
+ * LOOK: support for OPAQUE attributes?
  */
 @Immutable
 public class Attribute {

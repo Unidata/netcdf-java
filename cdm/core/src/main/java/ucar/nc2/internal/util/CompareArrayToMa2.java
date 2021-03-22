@@ -31,6 +31,10 @@ import ucar.nc2.util.Misc;
 public class CompareArrayToMa2 {
 
   public static boolean compareFiles(NetcdfFile ma2File, NetcdfFile arrayFile) throws IOException {
+    return compareFiles(ma2File, arrayFile, true);
+  }
+
+  public static boolean compareFiles(NetcdfFile ma2File, NetcdfFile arrayFile, boolean justOne) throws IOException {
     Stopwatch stopwatchAll = Stopwatch.createStarted();
     // Just the header
     Formatter errlog = new Formatter();
@@ -41,34 +45,45 @@ public class CompareArrayToMa2 {
     }
 
     for (Variable v : ma2File.getVariables()) {
-      if (v.getDataType() == DataType.SEQUENCE) {
-        System.out.printf("  read sequence %s %s%n", v.getDataType(), v.getShortName());
-        Sequence s = (Sequence) v;
-        StructureDataIterator orgSeq = s.getStructureIterator(-1);
-        Sequence copyv = (Sequence) arrayFile.findVariable(v.getFullName());
-        Iterator<ucar.array.StructureData> array = copyv.iterator();
-        Formatter f = new Formatter();
-        boolean ok1 = CompareArrayToMa2.compareSequence(f, v.getShortName(), orgSeq, array);
-        if (!ok1) {
-          System.out.printf("%s%n", f);
-        }
-        ok &= ok1;
-
-      } else {
-        ucar.ma2.Array org = v.read();
-        Variable cdmrVar = arrayFile.findVariable(v.getFullName());
-        Array<?> array = cdmrVar.readArray();
-        System.out.printf("  check %s %s%n", v.getDataType(), v.getNameAndDimensions());
-        Formatter f = new Formatter();
-        boolean ok1 = CompareArrayToMa2.compareData(f, v.getShortName(), org, array, false, true);
-        if (!ok1) {
-          System.out.printf("%s%n", f);
-        }
-        ok &= ok1;
-      }
+      ok &= compareVariable(ma2File, arrayFile, v.getFullName(), justOne);
     }
     System.out.printf("*** took %s%n", stopwatchAll.stop());
     return ok;
+  }
+
+  public static boolean compareVariable(NetcdfFile ma2File, NetcdfFile arrayFile, String varName, boolean justOne)
+      throws IOException {
+    Variable vorg = ma2File.findVariable(varName);
+    Variable vnew = arrayFile.findVariable(varName);
+    if (vnew == null) {
+      System.out.printf("  Cant find variable %s in %s%n", varName, arrayFile.getLocation());
+      return false;
+    }
+
+    if (vorg.getDataType() == DataType.SEQUENCE) {
+      System.out.printf("  read sequence %s %s%n", vorg.getDataType(), vorg.getShortName());
+      Sequence s = (Sequence) vnew;
+      StructureDataIterator orgSeq = s.getStructureIterator(-1);
+      Sequence copyv = (Sequence) arrayFile.findVariable(vorg.getFullName());
+      Iterator<ucar.array.StructureData> array = copyv.iterator();
+      Formatter f = new Formatter();
+      boolean ok1 = CompareArrayToMa2.compareSequence(f, vorg.getShortName(), orgSeq, array);
+      if (!ok1) {
+        System.out.printf("%s%n", f);
+        return false;
+      }
+    } else {
+      ucar.ma2.Array org = vorg.read();
+      Array<?> array = vnew.readArray();
+      System.out.printf("  read cariable %s %s%n", vorg.getDataType(), vorg.getNameAndDimensions());
+      Formatter f = new Formatter();
+      boolean ok1 = CompareArrayToMa2.compareData(f, vorg.getShortName(), org, array, justOne, true);
+      if (!ok1) {
+        System.out.printf("%s%n", f);
+        return false;
+      }
+    }
+    return true;
   }
 
   public static boolean compareData(Formatter f, String name, ucar.ma2.Array org, Array<?> array, boolean justOne,
@@ -91,9 +106,16 @@ public class CompareArrayToMa2 {
       // ok = false;
     }
 
-    if (testTypes && org.getDataType() != array.getArrayType().getDataType()) {
-      f.format(" WARN %s: data type %s !== %s%n", name, org.getDataType(), array.getArrayType());
-      ok = false;
+    if (testTypes && org.getDataType().getArrayType() != array.getArrayType()) {
+      if (array.getArrayType().isEnum()) {
+        if (org.getDataType().getArrayType().getSize() != array.getArrayType().getSize()) {
+          f.format(" WARN %s: data type %s !== %s%n", name, org.getDataType(), array.getArrayType());
+          ok = false;
+        }
+      } else {
+        f.format(" WARN %s: data type %s !== %s%n", name, org.getDataType(), array.getArrayType());
+        ok = false;
+      }
     }
 
     if (!ok) {

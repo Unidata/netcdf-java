@@ -65,7 +65,7 @@ public class CdmrServer {
     });
 
     logger.info("Server started, listening on " + port);
-    System.out.println("Server started, listening on " + port);
+    System.out.println("---> Server started, listening on " + port);
   }
 
   private void stop() throws InterruptedException {
@@ -177,7 +177,8 @@ public class CdmrServer {
         int[] chunkOrigin = index.getCurrentCounter();
         int[] chunkShape = index.computeChunkShape(maxChunkElems);
         Section section = new Section(chunkOrigin, chunkShape);
-        getOneChunk(ncfile, new ParsedArraySectionSpec(var, section), responseObserver);
+        ParsedArraySectionSpec spec = new ParsedArraySectionSpec(var, section);
+        getOneChunk(ncfile, spec, responseObserver);
         index.setCurrentCounter(index.currentElement() + (int) Arrays.computeSize(chunkShape));
       }
     }

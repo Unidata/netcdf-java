@@ -72,8 +72,7 @@ public abstract class Array<T> implements Iterable<T> {
     return indexFn.length();
   }
 
-  @Override
-  public String toString() {
+  public String show() {
     StringBuilder sbuff = new StringBuilder();
     boolean first = true;
     for (T value : this) {
@@ -84,6 +83,11 @@ public abstract class Array<T> implements Iterable<T> {
       first = false;
     }
     return sbuff.toString();
+  }
+
+  @Override
+  public String toString() {
+    return "Array{" + "arrayType=" + arrayType + ", indexFn=" + indexFn + ", rank=" + rank + '}';
   }
 
   /** Equal if the type and indexFn are equal, doesnt test the contents. TODO */

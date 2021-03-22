@@ -5,7 +5,6 @@
 package ucar.array;
 
 import ucar.ma2.DataType;
-import ucar.ma2.StructureDataIterator;
 
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
@@ -13,6 +12,10 @@ import java.util.Iterator;
 
 /**
  * Type-safe enumeration of Array data types.
+ * <p>
+ * OPAQUE: Byte blobs, where length of blobs may be different. Usually stored as a vlen of Array\<Byte\>.
+ * If theres only one, may be just an Array\<Byte\>.
+ * </p>
  */
 public enum ArrayType {
   BOOLEAN("boolean", 1, boolean.class, false), //
@@ -34,7 +37,7 @@ public enum ArrayType {
   ENUM4("enum4", 4, int.class, false), // int
 
   OPAQUE("opaque", 1, ByteBuffer.class, false), // size unknown, byte blobs;
-  OBJECT("object", 1, Object.class, false), // size unknown, use with ucar.ma2.Array
+  OBJECT("object", 1, Object.class, false), // legacy: size unknown, use with ucar.ma2.Array
 
   UBYTE("ubyte", 1, byte.class, true), // unsigned byte
   USHORT("ushort", 2, short.class, true), // unsigned short
@@ -273,13 +276,11 @@ public enum ArrayType {
       return isUnsigned ? ArrayType.ULONG : ArrayType.LONG;
     if (c == String.class)
       return ArrayType.STRING;
-    if (c == ucar.ma2.StructureData.class || c == ucar.array.StructureData.class)
+    if (c == ucar.array.StructureData.class)
       return ArrayType.STRUCTURE;
-    if (c == StructureDataIterator.class) // LOOK
+    if (c == Iterator.class)
       return ArrayType.SEQUENCE;
-    if (c == ByteBuffer.class) // LOOK
-      return ArrayType.OPAQUE;
-    return ArrayType.OBJECT; // LOOK
+    throw new RuntimeException("Unsupported primitive class " + c.getName());
   }
 
   /**
