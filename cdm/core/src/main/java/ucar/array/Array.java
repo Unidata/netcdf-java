@@ -42,7 +42,7 @@ public abstract class Array<T> implements Iterable<T> {
     return this.arrayType;
   }
 
-  /** Is variable length and will be represented by Vlen\<T\> */
+  /** Is variable length and will be represented by Vlen&lt;T&gt; */
   public boolean isVlen() {
     return false;
   }

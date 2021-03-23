@@ -16,6 +16,7 @@ import java.util.StringTokenizer;
 /**
  * A section of multidimensional array indices.
  * Represented as List<Range>.
+ * <p/>
  * TODO evaluate use of null in ver7
  */
 @Immutable
@@ -272,8 +273,9 @@ public class Section {
    * @throws InvalidRangeException if want.getRank() not equal to this.getRank(), or invalid component Range
    */
   public Section intersect(Section other) throws InvalidRangeException {
-    if (!compatibleRank(other))
+    if (!compatibleRank(other)) {
       throw new InvalidRangeException("Invalid Section rank");
+    }
 
     // check individual nulls
     List<Range> results = new ArrayList<>(getRank());
@@ -319,22 +321,25 @@ public class Section {
    *
    */
   public boolean intersects(Section other) throws InvalidRangeException {
-    if (!compatibleRank(other))
+    if (!compatibleRank(other)) {
       throw new InvalidRangeException("Invalid Section rank");
+    }
 
     for (int j = 0; j < ranges.size(); j++) {
       Range base = ranges.get(j);
       Range r = other.getRange(j);
-      if (base == Range.VLEN || r == Range.VLEN)
+      if (base == Range.VLEN || r == Range.VLEN) {
         continue;
-      if (!base.intersects(r))
+      }
+      if (!base.intersects(r)) {
         return false;
+      }
     }
     return true;
   }
 
   /**
-   * Convert List of Ranges to String Spec.
+   * Convert List of Ranges to String sectionSpec.
    * Inverse of new Section(String sectionSpec)
    *
    * @return index section String specification
@@ -355,25 +360,7 @@ public class Section {
     return sbuff.toString();
   }
 
-  public String show() {
-    Formatter sbuff = new Formatter();
-    for (int i = 0; i < ranges.size(); i++) {
-      Range r = ranges.get(i);
-      if (i > 0) {
-        sbuff.format("%n");
-      }
-      if (r == null) {
-        sbuff.format(":");
-      } else {
-        if (r.name() != null) {
-          sbuff.format("%s=", r.name());
-        }
-        sbuff.format("%s", r.toString());
-      }
-    }
-    return sbuff.toString();
-  }
-
+  /** Does this contain a VLEN range? */
   public boolean isVariableLength() {
     for (Range aFrom : ranges) {
       if (aFrom == Range.VLEN) {
@@ -422,38 +409,19 @@ public class Section {
     return result;
   }
 
-  /**
-   * Get origin of the ith Range
-   *
-   * @param i index of Range
-   * @return origin of ith Range
-   */
+  /** Get origin of the ith Range */
   public int getOrigin(int i) {
     return ranges.get(i).first();
   }
 
-  /**
-   * Get length of the ith Range
-   *
-   * @param i index of Range
-   * @return length of ith Range
-   */
+  /** Get length of the ith Range */
   public int getShape(int i) {
     return ranges.get(i).length();
   }
 
-  /**
-   * Get stride of the ith Range
-   *
-   * @param i index of Range
-   * @return stride of ith Range
-   */
+  /** Get stride of the ith Range */
   public int getStride(int i) {
     return ranges.get(i).stride();
-  }
-
-  public long getSize() {
-    return ucar.ma2.Index.computeSize(getShape());
   }
 
   /** Get rank = number of Ranges. */
@@ -467,25 +435,17 @@ public class Section {
 
   /**
    * Compute total number of elements represented by the section.
-   * Any VLEN or EMPTY Ranges are skipped.
+   * Any null, VLEN or EMPTY Ranges are skipped.
    *
    * @return total number of elements
    */
   public long computeSize() {
     long product = 1;
     for (Range r : ranges) {
-      if (r == Range.VLEN) {
+      if (r == null || r.length() <= 0) {
         continue;
       }
       product *= r.length();
-    }
-    return product;
-  }
-
-  public static long computeSize(int[] shape) {
-    long product = 1;
-    for (int len : shape) {
-      product *= len;
     }
     return product;
   }

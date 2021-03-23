@@ -135,7 +135,7 @@ public class CdmrServer {
           size = getSequenceData(ncfile, varSection, responseObserver);
         } else {
           Section wantSection = varSection.getArraySection();
-          size = var.getElementSize() * wantSection.getSize();
+          size = var.getElementSize() * wantSection.computeSize();
           getNetcdfData(ncfile, varSection, responseObserver);
         }
         responseObserver.onCompleted();
@@ -158,7 +158,7 @@ public class CdmrServer {
         StreamObserver<DataResponse> responseObserver) throws IOException, InvalidRangeException {
       Variable var = varSection.getVariable();
       Section wantSection = varSection.getArraySection();
-      long size = var.getElementSize() * wantSection.getSize();
+      long size = var.getElementSize() * wantSection.computeSize();
       if (size > MAX_MESSAGE) {
         getDataInChunks(ncfile, varSection, responseObserver);
       } else {

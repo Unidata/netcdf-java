@@ -47,7 +47,7 @@ public class TestSection {
   public void testSection() {
     Section sec = A.getSection();
     assertThat(sec.getRank()).isEqualTo(3);
-    assertThat(sec.getSize()).isEqualTo(m * n * p);
+    assertThat(sec.computeSize()).isEqualTo(m * n * p);
     int[] shape = sec.getShape();
     assertThat(shape[0]).isEqualTo(m);
     assertThat(shape[1]).isEqualTo(n);
@@ -374,17 +374,6 @@ public class TestSection {
     String spec = 1 + ":" + (m - 2) + ",0:" + (n - 2) + ",1:" + (p - 1) + ":2";
     Section s = new Section(spec);
     assertThat(s.toString()).isEqualTo(spec);
-    assertThat(s.show()).isEqualTo("1:2\n0:3\n1:5:2");
-  }
-
-  @Test
-  public void testShow() throws InvalidRangeException {
-    String spec = 1 + ":" + (m - 2) + ",0:" + (n - 2) + ",1:" + (p - 1);
-    Section s = new Section(spec);
-    assertThat(s.show()).isEqualTo("1:2\n0:3\n1:5");
-
-    Section s2 = Section.builder().appendRange(99).appendRange(new Range("anda", 99, 100)).build();
-    assertThat(s2.show()).isEqualTo("0:98\nanda=99:100");
   }
 
   @Test

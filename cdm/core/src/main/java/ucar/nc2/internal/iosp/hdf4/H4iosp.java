@@ -268,7 +268,7 @@ public class H4iosp extends AbstractIOServiceProvider {
     }
     membersb.setStructureSize(recsize);
 
-    int nrecs = (int) section.getSize();
+    int nrecs = (int) section.computeSize();
     byte[] result = new byte[(int) (nrecs * recsize)];
 
     try {
@@ -305,7 +305,7 @@ public class H4iosp extends AbstractIOServiceProvider {
 
     ucar.array.StructureMembers members = membersb.build();
     Storage<StructureData> storage =
-        new ucar.array.StructureDataStorageBB(members, ByteBuffer.wrap(result), (int) section.getSize());
+        new ucar.array.StructureDataStorageBB(members, ByteBuffer.wrap(result), (int) section.computeSize());
     return new ucar.array.StructureDataArray(members, section.getShape(), storage);
   }
 
