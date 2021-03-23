@@ -12,6 +12,7 @@ import java.util.Iterator;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.regions.Region;
@@ -20,10 +21,12 @@ import thredds.inventory.MFile;
 import ucar.unidata.io.s3.CdmS3Uri;
 import ucar.unidata.io.s3.S3TestsCommon;
 import ucar.unidata.io.s3.TestS3Read;
+import ucar.unidata.util.test.category.NeedsExternalResource;
 
 /**
  * Tests for ControllerS3 using AWS, GCS, and OSDC object stores
  */
+@Category(NeedsExternalResource.class)
 public class TestControllerS3 {
 
   private static final Logger logger = LoggerFactory.getLogger(TestS3Read.class);
