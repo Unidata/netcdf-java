@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.array;
@@ -29,7 +29,7 @@ public class TestArray {
     assertThat(array.getShape()).isEqualTo(new int[] {1, 2, 3});
     assertThat(array.length()).isEqualTo(6);
     assertThat(array.getIndex().getCurrentIndex()).isEqualTo(new int[3]);
-    assertThat(array.toString()).isEqualTo("1.0, 2.0, 3.0, 4.0, 5.0, 6.0");
+    assertThat(array.show()).isEqualTo("1.0, 2.0, 3.0, 4.0, 5.0, 6.0");
 
     Section expected = Section.builder().appendRange(1).appendRange(2).appendRange(3).build();
     assertThat(array.getSection()).isEqualTo(expected);
