@@ -2,7 +2,6 @@
  * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-
 package thredds.client.catalog;
 
 import ucar.nc2.units.TimeUnit;
@@ -16,7 +15,7 @@ import java.util.Calendar;
 import java.util.Objects;
 
 /**
- * Implements the thredds "duration" XML element type: specifies a length of time.
+ * The thredds "duration" XML element type: specifies a length of time.
  * This is really the same as a ucar.nc2.units.TimeUnit, but it allows xsd:duration syntax as well
  * as udunits syntax. It also keeps track if the text is empty.
  * <p/>

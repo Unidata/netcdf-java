@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
 package thredds.featurecollection;
 
 import ucar.nc2.constants.FeatureType;

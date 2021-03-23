@@ -2,7 +2,6 @@
  * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-
 package thredds.client.catalog;
 
 import com.google.common.base.Preconditions;
@@ -16,7 +15,7 @@ import javax.annotation.concurrent.Immutable;
 import java.util.Objects;
 
 /**
- * Implements the thredds "dateType" and "dateTypeFormatted" XML element types.
+ * The thredds "dateType" and "dateTypeFormatted" XML element types.
  * This is mostly a general way to specify dates in a string.
  * It allows a date to mean "present". <strong>"Present" always sorts after any date, including dates in the
  * future.</strong>
