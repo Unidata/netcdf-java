@@ -76,6 +76,14 @@ public class CoordsSet implements Iterable<SubsetParams> {
     return result;
   }
 
+  public int[] getShape(ucar.array.RangeIterator y, ucar.array.RangeIterator x) {
+    int[] result = new int[getRank() + 2];
+    System.arraycopy(shape, 0, result, 0, shape.length);
+    result[shape.length] = y.length();
+    result[shape.length + 1] = x.length();
+    return result;
+  }
+
   public int getRank() {
     return shape.length;
   }

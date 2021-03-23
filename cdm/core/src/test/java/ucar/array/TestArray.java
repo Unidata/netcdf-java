@@ -9,8 +9,6 @@ import static org.junit.Assert.fail;
 
 import org.junit.Before;
 import org.junit.Test;
-import ucar.ma2.DataType;
-import ucar.ma2.Section;
 
 /** Test {@link Array} */
 public class TestArray {

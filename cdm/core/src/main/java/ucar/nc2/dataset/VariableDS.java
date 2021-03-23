@@ -9,9 +9,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import ucar.array.ArrayType;
 import ucar.array.ArraysConvert;
-import ucar.ma2.DataType;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Section;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.NetcdfDataset.Enhance;
@@ -115,7 +112,7 @@ public class VariableDS extends Variable implements EnhanceScaleMissingUnsigned,
   }
 
   /** @deprecated use getOriginalArrayType() */
-  public DataType getOriginalDataType() {
+  public ucar.ma2.DataType getOriginalDataType() {
     return getOriginalArrayType().getDataType();
   }
 
@@ -233,7 +230,7 @@ public class VariableDS extends Variable implements EnhanceScaleMissingUnsigned,
   // section of regular Variable
   @Override
   @Deprecated
-  protected ucar.ma2.Array _read(Section section) throws IOException, InvalidRangeException {
+  protected ucar.ma2.Array _read(ucar.ma2.Section section) throws IOException, ucar.ma2.InvalidRangeException {
     // really a full read
     if ((null == section) || section.computeSize() == getSize()) {
       return _read();
@@ -250,8 +247,8 @@ public class VariableDS extends Variable implements EnhanceScaleMissingUnsigned,
 
   @Override
   @Deprecated
-  public ucar.ma2.Array reallyRead(Variable client, Section section, CancelTask cancelTask)
-      throws IOException, InvalidRangeException {
+  public ucar.ma2.Array reallyRead(Variable client, ucar.ma2.Section section, CancelTask cancelTask)
+      throws IOException, ucar.ma2.InvalidRangeException {
     // see if its really a full read
     if ((null == section) || section.computeSize() == getSize()) {
       return reallyRead(client, cancelTask);
@@ -265,7 +262,8 @@ public class VariableDS extends Variable implements EnhanceScaleMissingUnsigned,
   }
 
   @Override
-  public ucar.array.Array<?> readArray(Section section) throws IOException, InvalidRangeException {
+  public ucar.array.Array<?> readArray(ucar.array.Section section)
+      throws IOException, ucar.array.InvalidRangeException {
     // really a full read
     if ((null == section) || section.computeSize() == getSize()) {
       return readArray();
@@ -282,8 +280,8 @@ public class VariableDS extends Variable implements EnhanceScaleMissingUnsigned,
   }
 
   @Override
-  public ucar.array.Array<?> proxyReadArray(Variable client, Section section, CancelTask cancelTask)
-      throws IOException, InvalidRangeException {
+  public ucar.array.Array<?> proxyReadArray(Variable client, ucar.array.Section section, CancelTask cancelTask)
+      throws IOException, ucar.array.InvalidRangeException {
     // see if its really a full read
     if ((null == section) || section.computeSize() == getSize()) {
       return proxyReadArray(client, cancelTask);
@@ -298,7 +296,8 @@ public class VariableDS extends Variable implements EnhanceScaleMissingUnsigned,
   }
 
   @Override
-  public long readToStream(Section section, OutputStream out) throws IOException, InvalidRangeException {
+  public long readToStream(ucar.ma2.Section section, OutputStream out)
+      throws IOException, ucar.ma2.InvalidRangeException {
     if (orgVar == null)
       return super.readToStream(section, out);
 
@@ -518,21 +517,21 @@ public class VariableDS extends Variable implements EnhanceScaleMissingUnsigned,
   @Override
   @Deprecated
   @Nullable
-  public DataType getScaledOffsetType() {
+  public ucar.ma2.DataType getScaledOffsetType() {
     return scaleMissingUnsignedProxy.getScaledOffsetType();
   }
 
   /** @deprecated do not use */
   @Override
   @Deprecated
-  public DataType getUnsignedConversionType() {
+  public ucar.ma2.DataType getUnsignedConversionType() {
     return scaleMissingUnsignedProxy.getUnsignedConversionType();
   }
 
   /** @deprecated do not use */
   @Override
   @Deprecated
-  public DataType.Signedness getSignedness() {
+  public ucar.ma2.DataType.Signedness getSignedness() {
     return scaleMissingUnsignedProxy.getSignedness();
   }
 
@@ -710,7 +709,7 @@ public class VariableDS extends Variable implements EnhanceScaleMissingUnsigned,
 
     /** @deprecated use setOriginalArrayType() */
     @Deprecated
-    public T setOriginalDataType(DataType orgDataType) {
+    public T setOriginalDataType(ucar.ma2.DataType orgDataType) {
       this.orgDataType = orgDataType.getArrayType();
       return self();
     }

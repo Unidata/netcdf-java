@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.array;
@@ -7,6 +7,7 @@ package ucar.array;
 import com.google.common.base.Preconditions;
 import java.nio.ByteBuffer;
 import ucar.array.StructureMembers.Member;
+
 import ucar.ma2.ArrayObject;
 import ucar.ma2.ArrayStructure;
 import ucar.ma2.DataType;
@@ -308,5 +309,44 @@ public class ArraysConvert {
     return sdata;
   }
 
+  public static ucar.ma2.Section convertSection(ucar.array.Section section) {
+    ucar.ma2.Section.Builder builder = ucar.ma2.Section.builder();
+    section.getRanges().forEach(r -> {
+      if (r == null) {
+        builder.appendRange(null);
+      } else if (r.length() == 0) {
+        builder.appendRange(ucar.ma2.Range.EMPTY);
+      } else if (r.length() < 0) {
+        builder.appendRange(ucar.ma2.Range.VLEN);
+      } else {
+        try {
+          builder.appendRange(new ucar.ma2.Range(r.name(), r.first(), r.last(), r.stride()));
+        } catch (ucar.ma2.InvalidRangeException e) {
+          throw new RuntimeException(e); // not possible haha
+        }
+      }
+    });
+    return builder.build();
+  }
+
+  public static ucar.array.Section convertSection(ucar.ma2.Section section) {
+    ucar.array.Section.Builder builder = ucar.array.Section.builder();
+    section.getRanges().forEach(r -> {
+      if (r == null) {
+        builder.appendRange(null);
+      } else if (r.length() == 0) {
+        builder.appendRange(Range.EMPTY);
+      } else if (r.length() < 0) {
+        builder.appendRange(Range.VLEN);
+      } else {
+        try {
+          builder.appendRange(new ucar.array.Range(r.getName(), r.first(), r.last(), r.stride()));
+        } catch (InvalidRangeException e) {
+          throw new RuntimeException(e); // not possible haha
+        }
+      }
+    });
+    return builder.build();
+  }
 
 }

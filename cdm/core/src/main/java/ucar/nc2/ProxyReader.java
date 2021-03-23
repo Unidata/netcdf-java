@@ -45,9 +45,15 @@ public interface ProxyReader {
   }
 
   /** Read a section of the data for a Variable, returning ucar.array.Array. */
-  default ucar.array.Array<?> proxyReadArray(Variable client, Section section, CancelTask cancelTask)
-      throws IOException, InvalidRangeException {
-    return ArraysConvert.convertToArray(reallyRead(client, section, cancelTask));
+  default ucar.array.Array<?> proxyReadArray(Variable client, ucar.array.Section section, CancelTask cancelTask)
+      throws IOException, ucar.array.InvalidRangeException {
+
+    ucar.ma2.Section oldSection = ArraysConvert.convertSection(section);
+    try {
+      return ArraysConvert.convertToArray(reallyRead(client, oldSection, cancelTask));
+    } catch (InvalidRangeException e) {
+      throw new ucar.array.InvalidRangeException(e);
+    }
   }
 
 }

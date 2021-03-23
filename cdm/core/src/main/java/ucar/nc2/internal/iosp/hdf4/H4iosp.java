@@ -13,6 +13,7 @@ import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Optional;
 import ucar.array.Arrays;
+import ucar.array.ArraysConvert;
 import ucar.array.Storage;
 import ucar.array.StructureData;
 import ucar.ma2.Array;
@@ -106,12 +107,20 @@ public class H4iosp extends AbstractIOServiceProvider {
   }
 
   @Override
-  public ucar.array.Array<?> readArrayData(Variable v, Section section) throws IOException, InvalidRangeException {
+  public ucar.array.Array<?> readArrayData(Variable v, ucar.array.Section section)
+      throws IOException, ucar.array.InvalidRangeException {
     if (v instanceof Structure) {
       return readStructureDataArray((Structure) v, section);
     }
 
-    Object data = readDataObject(v, section);
+    Object data = null;
+    try {
+      Section oldSection = ArraysConvert.convertSection(section);
+      data = readDataObject(v, oldSection);
+    } catch (InvalidRangeException e) {
+      e.printStackTrace();
+    }
+
     if (data != null) {
       return Arrays.factory(v.getArrayType(), section.getShape(), data);
     }
@@ -244,8 +253,8 @@ public class H4iosp extends AbstractIOServiceProvider {
     return structureArray;
   }
 
-  private ucar.array.Array<ucar.array.StructureData> readStructureDataArray(Structure s, Section section)
-      throws IOException, InvalidRangeException {
+  private ucar.array.Array<ucar.array.StructureData> readStructureDataArray(Structure s, ucar.array.Section section)
+      throws IOException, ucar.array.InvalidRangeException {
     H4header.Vinfo vinfo = (H4header.Vinfo) s.getSPobject();
     vinfo.setLayoutInfo(this.ncfile); // make sure needed info is present
     int recsize = vinfo.elemSize;
@@ -262,31 +271,36 @@ public class H4iosp extends AbstractIOServiceProvider {
     int nrecs = (int) section.getSize();
     byte[] result = new byte[(int) (nrecs * recsize)];
 
-    if (!vinfo.isLinked && !vinfo.isCompressed) {
-      Layout layout = new LayoutRegular(vinfo.start, recsize, s.getShape(), section);
-      IospHelper.readData(raf, layout, DataType.STRUCTURE, result, null, true);
+    try {
+      Section oldSection = ArraysConvert.convertSection(section);
+      if (!vinfo.isLinked && !vinfo.isCompressed) {
+        Layout layout = new LayoutRegular(vinfo.start, recsize, s.getShape(), oldSection);
+        IospHelper.readData(raf, layout, DataType.STRUCTURE, result, null, true);
 
-      // option 2
-    } else if (vinfo.isLinked && !vinfo.isCompressed) {
-      InputStream is = new LinkedInputStream(vinfo);
-      PositioningDataInputStream dataSource = new PositioningDataInputStream(is);
-      Layout layout = new LayoutRegular(0, recsize, s.getShape(), section);
-      IospHelper.readData(dataSource, layout, DataType.STRUCTURE, result);
+        // option 2
+      } else if (vinfo.isLinked && !vinfo.isCompressed) {
+        InputStream is = new LinkedInputStream(vinfo);
+        PositioningDataInputStream dataSource = new PositioningDataInputStream(is);
+        Layout layout = new LayoutRegular(0, recsize, s.getShape(), oldSection);
+        IospHelper.readData(dataSource, layout, DataType.STRUCTURE, result);
 
-    } else if (!vinfo.isLinked && vinfo.isCompressed) {
-      InputStream is = getCompressedInputStream(vinfo);
-      PositioningDataInputStream dataSource = new PositioningDataInputStream(is);
-      Layout layout = new LayoutRegular(0, recsize, s.getShape(), section);
-      IospHelper.readData(dataSource, layout, DataType.STRUCTURE, result);
+      } else if (!vinfo.isLinked && vinfo.isCompressed) {
+        InputStream is = getCompressedInputStream(vinfo);
+        PositioningDataInputStream dataSource = new PositioningDataInputStream(is);
+        Layout layout = new LayoutRegular(0, recsize, s.getShape(), oldSection);
+        IospHelper.readData(dataSource, layout, DataType.STRUCTURE, result);
 
-    } else if (vinfo.isLinked && vinfo.isCompressed) {
-      InputStream is = getLinkedCompressedInputStream(vinfo);
-      PositioningDataInputStream dataSource = new PositioningDataInputStream(is);
-      Layout layout = new LayoutRegular(0, recsize, s.getShape(), section);
-      IospHelper.readData(dataSource, layout, DataType.STRUCTURE, result);
+      } else if (vinfo.isLinked && vinfo.isCompressed) {
+        InputStream is = getLinkedCompressedInputStream(vinfo);
+        PositioningDataInputStream dataSource = new PositioningDataInputStream(is);
+        Layout layout = new LayoutRegular(0, recsize, s.getShape(), oldSection);
+        IospHelper.readData(dataSource, layout, DataType.STRUCTURE, result);
 
-    } else {
-      throw new IllegalStateException();
+      } else {
+        throw new IllegalStateException();
+      }
+    } catch (InvalidRangeException e) {
+      throw new ucar.array.InvalidRangeException(e);
     }
 
     ucar.array.StructureMembers members = membersb.build();

@@ -243,13 +243,19 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     return shape[index];
   }
 
+  /** @deprecated use getShapeAsArraySection() */
+  @Deprecated
+  public Section getShapeAsSection() {
+    return this.shapeAsSection;
+  }
+
   /**
    * Get shape as a Section object.
    *
    * @return Section containing List<Range>, one for each Dimension.
    */
-  public Section getShapeAsSection() {
-    return this.shapeAsSection;
+  public ucar.array.Section getShapeAsArraySection() {
+    return ArraysConvert.convertSection(this.shapeAsSection);
   }
 
   /** The short name of the variable */
@@ -496,7 +502,8 @@ public class Variable implements VariableSimpleIF, ProxyReader {
   // _read(Section section)
   // _readNestedData(Section section, boolean flatten)
 
-  /** Read variable data to a stream. Support for NcStreamWriter. */
+  /** @deprecated do not use. */
+  @Deprecated
   public long readToStream(Section section, OutputStream out) throws IOException, InvalidRangeException {
     if ((ncfile == null) || hasCachedData())
       return IospHelper.copyToOutputStream(read(section), out);
@@ -777,8 +784,8 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     return proxyReader.reallyRead(this, section, null);
   }
 
-  public ucar.array.Array<?> readArray(ucar.ma2.Section section)
-      throws java.io.IOException, ucar.ma2.InvalidRangeException {
+  public ucar.array.Array<?> readArray(ucar.array.Section section)
+      throws java.io.IOException, ucar.array.InvalidRangeException {
     if ((null == section) || section.computeSize() == getSize()) {
       return readArray();
     }
@@ -787,7 +794,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
       if (cache.getData() == null) {
         cache.setCachedData(readArray()); // read and cache entire array
       }
-      return Arrays.section(cache.getData(), section.getRanges()); // subset it
+      return Arrays.section(cache.getData(), section); // subset it
     }
     // not caching
     return proxyReader.proxyReadArray(this, section, null);
@@ -834,8 +841,8 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     }
 
     try {
-      return ncfile.readArrayData(this, getShapeAsSection());
-    } catch (InvalidRangeException e) {
+      return ncfile.readArrayData(this, getShapeAsArraySection());
+    } catch (ucar.array.InvalidRangeException e) {
       e.printStackTrace();
       throw new IOException(e.getMessage()); // cant happen haha
     }
@@ -855,8 +862,8 @@ public class Variable implements VariableSimpleIF, ProxyReader {
 
   /** public by accident, do not call directly. */
   @Override
-  public ucar.array.Array<?> proxyReadArray(Variable client, Section section, CancelTask cancelTask)
-      throws IOException, InvalidRangeException {
+  public ucar.array.Array<?> proxyReadArray(Variable client, ucar.array.Section section, CancelTask cancelTask)
+      throws IOException, ucar.array.InvalidRangeException {
     if (isMemberOfStructure()) {
       throw new UnsupportedOperationException("Cannot directly read section of Member Variable=" + getFullName());
     }
@@ -947,7 +954,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
       att.writeCDL(buf, strict, getShortName());
       buf.format(";");
       if (!strict && (att.getArrayType() == ArrayType.STRING))
-        buf.format(" // %s", att.getDataType());
+        buf.format(" // %s", att.getArrayType());
       buf.format("%n");
     }
     indent.decr();

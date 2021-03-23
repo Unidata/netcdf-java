@@ -1,8 +1,8 @@
 package ucar.nc2.internal.grid;
 
 import ucar.array.MinMax;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Range;
+import ucar.array.InvalidRangeException;
+import ucar.array.Range;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.grid.*;

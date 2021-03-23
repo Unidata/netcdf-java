@@ -38,8 +38,6 @@ import javax.swing.table.TableModel;
 
 import ucar.array.*;
 import ucar.array.StructureMembers.Member;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Section;
 import ucar.nc2.Sequence;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
@@ -347,7 +345,7 @@ public class StructureArrayTable extends JPanel {
 
     try {
       return dataModel.getStructureData(modelRowIndex);
-    } catch (InvalidRangeException e) {
+    } catch (ucar.array.InvalidRangeException e) {
       e.printStackTrace();
     } catch (IOException e) {
       JOptionPane.showMessageDialog(this, "ERROR: " + e.getMessage());
@@ -364,7 +362,7 @@ public class StructureArrayTable extends JPanel {
 
     try {
       return dataModel.getRow(modelRowIndex);
-    } catch (InvalidRangeException | IOException e) {
+    } catch (ucar.array.InvalidRangeException | IOException e) {
       JOptionPane.showMessageDialog(this, "ERROR: " + e.getMessage());
       e.printStackTrace();
     }
@@ -383,7 +381,7 @@ public class StructureArrayTable extends JPanel {
           public StructureData load(Integer row) {
             try {
               return getStructureData(row);
-            } catch (InvalidRangeException | IOException e) {
+            } catch (ucar.array.InvalidRangeException | IOException e) {
               throw new IllegalStateException(e.getCause());
             }
           }
@@ -399,7 +397,7 @@ public class StructureArrayTable extends JPanel {
     }
 
     // subclasses implement these
-    public abstract StructureData getStructureData(int row) throws InvalidRangeException, IOException;
+    public abstract StructureData getStructureData(int row) throws ucar.array.InvalidRangeException, IOException;
 
     // remove all data
     public abstract void clear();
@@ -413,7 +411,7 @@ public class StructureArrayTable extends JPanel {
       return null;
     }
 
-    public Object getRow(int row) throws InvalidRangeException, IOException {
+    public Object getRow(int row) throws ucar.array.InvalidRangeException, IOException {
       return getStructureData(row);
     }
 
@@ -480,8 +478,8 @@ public class StructureArrayTable extends JPanel {
     }
 
     @Override
-    public StructureData getStructureData(int row) throws InvalidRangeException, IOException {
-      ucar.array.Array<?> array = struct.readArray(Section.builder().appendRange(row, row).build());
+    public StructureData getStructureData(int row) throws ucar.array.InvalidRangeException, IOException {
+      ucar.array.Array<?> array = struct.readArray(ucar.array.Section.builder().appendRange(row, row).build());
       return (StructureData) array.getScalar();
     }
 

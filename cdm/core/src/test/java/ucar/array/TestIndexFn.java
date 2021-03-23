@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.array;
@@ -7,12 +7,7 @@ package ucar.array;
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.fail;
 
-import com.google.common.collect.ImmutableList;
-import java.util.List;
 import org.junit.Test;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Range;
-import ucar.ma2.Section;
 
 /** Test {@link IndexFn} */
 public class TestIndexFn {
@@ -60,9 +55,9 @@ public class TestIndexFn {
   @Test
   public void testSection() throws InvalidRangeException {
     int[] shape = new int[] {100};
-    IndexFn index = IndexFn.builder(shape).build();
+    IndexFn indexFn = IndexFn.builder(shape).build();
 
-    IndexFn subset = index.section(ImmutableList.of(new Range(11, 15)));
+    IndexFn subset = indexFn.section(Section.builder().appendRange(new Range(11, 15)).build());
     assertThat(subset.toString2()).isEqualTo("11, 12, 13, 14, 15");
     assertThat(subset.getRank()).isEqualTo(1);
     assertThat(subset.getShape()).isEqualTo(new int[] {5});

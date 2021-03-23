@@ -21,7 +21,6 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import org.jdom2.Element;
 import ucar.array.*;
-import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDatasets;

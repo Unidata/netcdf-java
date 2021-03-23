@@ -15,7 +15,6 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.internal.dataset.CoordinatesHelper;
 import ucar.nc2.internal.dataset.StructureDataArrayEnhancer;
 import ucar.nc2.util.CancelTask;
-import ucar.ma2.*;
 import java.io.IOException;
 
 /** An "enhanced" Structure. */
@@ -30,8 +29,8 @@ public class StructureDS extends ucar.nc2.Structure implements StructureEnhanced
 
   /** @deprecated use getOriginalArrayType() */
   @Deprecated
-  public DataType getOriginalDataType() {
-    return DataType.STRUCTURE;
+  public ucar.ma2.DataType getOriginalDataType() {
+    return ucar.ma2.DataType.STRUCTURE;
   }
 
   /** When this wraps another Variable, get the original Variable's ArrayType. */
@@ -46,8 +45,8 @@ public class StructureDS extends ucar.nc2.Structure implements StructureEnhanced
 
   @Override
   @Deprecated
-  public Array reallyRead(Variable client, CancelTask cancelTask) throws IOException {
-    Array result;
+  public ucar.ma2.Array reallyRead(Variable client, CancelTask cancelTask) throws IOException {
+    ucar.ma2.Array result;
 
     if (hasCachedData())
       result = super.reallyRead(client, cancelTask);
@@ -60,7 +59,7 @@ public class StructureDS extends ucar.nc2.Structure implements StructureEnhanced
     }
 
     StructureDataEnhancer enhancer = new StructureDataEnhancer(this);
-    return enhancer.enhance((ArrayStructure) result, null);
+    return enhancer.enhance((ucar.ma2.ArrayStructure) result, null);
   }
 
   @Override
@@ -83,13 +82,13 @@ public class StructureDS extends ucar.nc2.Structure implements StructureEnhanced
 
   @Override
   @Deprecated
-  public Array reallyRead(Variable client, Section section, CancelTask cancelTask)
-      throws IOException, InvalidRangeException {
+  public ucar.ma2.Array reallyRead(Variable client, ucar.ma2.Section section, CancelTask cancelTask)
+      throws IOException, ucar.ma2.InvalidRangeException {
     if (section.computeSize() == getSize()) {
       return _read();
     }
 
-    Array result;
+    ucar.ma2.Array result;
     if (hasCachedData()) {
       result = super.reallyRead(client, section, cancelTask);
     } else if (orgVar != null) {
@@ -102,12 +101,12 @@ public class StructureDS extends ucar.nc2.Structure implements StructureEnhanced
 
     // do any needed conversions (enum/scale/offset/missing/unsigned, etc)
     StructureDataEnhancer enhancer = new StructureDataEnhancer(this);
-    return enhancer.enhance((ArrayStructure) result, section);
+    return enhancer.enhance((ucar.ma2.ArrayStructure) result, section);
   }
 
   @Override
-  public ucar.array.Array<?> proxyReadArray(Variable client, Section section, CancelTask cancelTask)
-      throws IOException, InvalidRangeException {
+  public ucar.array.Array<?> proxyReadArray(Variable client, ucar.array.Section section, CancelTask cancelTask)
+      throws IOException, ucar.array.InvalidRangeException {
     if (section.computeSize() == getSize()) {
       return proxyReadArray(client, cancelTask);
     }

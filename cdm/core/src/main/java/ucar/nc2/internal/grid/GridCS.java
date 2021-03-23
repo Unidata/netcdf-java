@@ -192,8 +192,8 @@ public class GridCS implements GridCoordinateSystem {
   }
 
   @Override
-  public List<RangeIterator> getRanges() {
-    List<RangeIterator> result = new ArrayList<>();
+  public List<ucar.array.RangeIterator> getRanges() {
+    List<ucar.array.RangeIterator> result = new ArrayList<>();
     for (GridAxis axis : axes) {
       if (axis.getDependenceType() == GridAxis.DependenceType.independent) {
         result.add(axis.getRangeIterator());

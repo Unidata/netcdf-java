@@ -10,7 +10,6 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import ucar.ma2.InvalidRangeException;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.ft2.coverage.*;
@@ -156,7 +155,7 @@ public class TestReadGridCompare {
   }
 
   private static boolean doOne(Grid grid, ucar.nc2.dt.grid.GeoGrid geogrid, GridSubset subset, int timeIdx, int vertIdx)
-      throws IOException, InvalidRangeException {
+      throws IOException, ucar.array.InvalidRangeException {
     GridReferencedArray geoArray = grid.readData(subset);
     ucar.ma2.Array org = geogrid.readDataSlice(timeIdx, vertIdx, -1, -1);
     Formatter f = new Formatter();
@@ -259,7 +258,7 @@ public class TestReadGridCompare {
   }
 
   private static boolean doOne(Grid grid, Coverage coverage, GridSubset subset, SubsetParams subsetp)
-      throws IOException, InvalidRangeException {
+      throws IOException, ucar.array.InvalidRangeException, ucar.ma2.InvalidRangeException {
     GridReferencedArray gridArray = grid.readData(subset);
     GeoReferencedArray covArray = coverage.readData(subsetp);
     Formatter f = new Formatter();

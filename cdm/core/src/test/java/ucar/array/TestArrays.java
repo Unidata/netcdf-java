@@ -10,8 +10,6 @@ import static org.junit.Assert.fail;
 import java.util.ArrayList;
 import org.junit.Before;
 import org.junit.Test;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Range;
 
 /** Test {@link Arrays} */
 public class TestArrays {
@@ -195,11 +193,11 @@ public class TestArrays {
 
   @Test
   public void testSection() throws InvalidRangeException {
-    ArrayList<Range> ranges = new ArrayList<>();
-    ranges.add(null);
-    ranges.add(null);
-    ranges.add(new Range(2));
-    Array<Double> pArray = Arrays.section(array, ranges);
+    Section.Builder sb = Section.builder();
+    sb.appendRange(null);
+    sb.appendRange(null);
+    sb.appendRange(new Range(2));
+    Array<Double> pArray = Arrays.section(array, sb.build());
     assertThat(pArray.getShape()).isEqualTo(new int[] {1, 2, 2});
 
     assertThat(pArray.get(0, 0, 0)).isEqualTo(1);
@@ -239,11 +237,11 @@ public class TestArrays {
 
   @Test
   public void testSectionStrided() throws InvalidRangeException {
-    ArrayList<Range> ranges = new ArrayList<>();
-    ranges.add(null);
-    ranges.add(null);
-    ranges.add(new Range(0, 2, 2));
-    Array<Double> pArray = Arrays.section(array, ranges);
+    Section.Builder sb = Section.builder();
+    sb.appendRange(null);
+    sb.appendRange(null);
+    sb.appendRange(new Range(0, 2, 2));
+    Array<Double> pArray = Arrays.section(array, sb.build());
     assertThat(pArray.getShape()).isEqualTo(new int[] {1, 2, 2});
 
     assertThat(pArray.get(0, 0, 0)).isEqualTo(1);

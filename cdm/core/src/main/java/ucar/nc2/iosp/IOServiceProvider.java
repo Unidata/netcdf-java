@@ -15,6 +15,7 @@ import ucar.ma2.InvalidRangeException;
 import ucar.ma2.StructureDataIterator;
 import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.ParsedArraySectionSpec;
 import ucar.nc2.ParsedSectionSpec;
 import ucar.nc2.Sequence;
 import ucar.nc2.Structure;
@@ -62,24 +63,21 @@ public interface IOServiceProvider extends Closeable {
   /** Sometimes the builder needs access to the finished objects. This is called when ncfile is finished being built. */
   void buildFinish(NetcdfFile ncfile);
 
+  /** @deprecated use readArrayData */
+  @Deprecated
+  ucar.ma2.Array readData(Variable v2, Section section) throws java.io.IOException, ucar.ma2.InvalidRangeException;
+
   /**
    * Read data from a top level Variable and return a memory resident Array. This Array has the same element type as the
-   * Variable, and the
-   * requested shape.
+   * Variable, and the requested shape.
    *
    * @param v2 a top-level Variable
    * @param section the section of data to read. There must be a Range for each Dimension in the variable, in order.
-   *        Note: no nulls allowed.
-   *        IOSP may not modify.
+   *        Note: no nulls allowed. IOSP may not modify.
    * @return the requested data in a memory-resident Array
-   * @throws java.io.IOException if read error
-   * @throws ucar.ma2.InvalidRangeException if invalid section
-   * @see ucar.ma2.Range
    */
-  ucar.ma2.Array readData(Variable v2, Section section) throws java.io.IOException, ucar.ma2.InvalidRangeException;
-
-  ucar.array.Array<?> readArrayData(Variable v2, Section section)
-      throws java.io.IOException, ucar.ma2.InvalidRangeException;
+  ucar.array.Array<?> readArrayData(Variable v2, ucar.array.Section section)
+      throws java.io.IOException, ucar.array.InvalidRangeException;
 
   /**
    * Read data from a top level Variable and send data to a OutputStream.
@@ -95,31 +93,27 @@ public interface IOServiceProvider extends Closeable {
    * @return the number of bytes written to the channel
    * @throws java.io.IOException if read error
    * @throws ucar.ma2.InvalidRangeException if invalid section
+   * @deprecated do not use.
    */
+  @Deprecated
   long readToOutputStream(Variable v2, Section section, OutputStream out)
       throws java.io.IOException, ucar.ma2.InvalidRangeException;
 
-  /**
-   * Allows reading sections of nested variables
-   * 
-   * @param cer section specification : what data is wanted
-   * @return requested data array
-   * @throws IOException on read error
-   * @throws InvalidRangeException if section spec is invalid
-   */
+  /** @deprecated do not use. */
+  @Deprecated
   ucar.ma2.Array readSection(ParsedSectionSpec cer) throws IOException, InvalidRangeException;
 
-  /**
-   * Get the structure iterator. iosps with top level sequences must override.
-   * Not threadsafe; do not use multiple StructureDataIterator for the same iosp.
-   *
-   * @param s the Structure
-   * @param bufferSize the buffersize
-   * @return the data iterator
-   * @throws java.io.IOException if problem reading data
-   */
+  /** @deprecated use getStructureDataArrayIterator */
+  @Deprecated
   StructureDataIterator getStructureIterator(Structure s, int bufferSize) throws java.io.IOException;
 
+  /**
+   * Get the structure iterator. Iosps with top level sequences must override.
+   *
+   * @param s the Structure
+   * @param bufferSize the buffersize, may be -1 for default.
+   * @return an iterator over the StructureData
+   */
   Iterator<ucar.array.StructureData> getStructureDataArrayIterator(Sequence s, int bufferSize);
 
   /**

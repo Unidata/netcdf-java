@@ -17,12 +17,13 @@ import java.util.HashMap;
 import java.util.List;
 import javax.annotation.Nullable;
 import ucar.array.Arrays;
+import ucar.array.Section;
 import ucar.array.StructureDataArray;
 import ucar.array.StructureDataStorageBB;
 import ucar.array.StructureMembers;
 import ucar.array.StructureMembers.Member;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Range;
+import ucar.array.InvalidRangeException;
+import ucar.array.Range;
 import ucar.nc2.Sequence;
 import ucar.nc2.Structure;
 import ucar.nc2.iosp.BitReader;
@@ -459,8 +460,8 @@ public class MessageArrayCompressedReader {
     int count = 0;
     for (int dataset = 0; dataset < this.ndatasets; dataset++) {
       try {
-        List<Range> ranges = ImmutableList.of(new Range(count, count + nestedNrows - 1));
-        StructureDataArray nestedRow = (StructureDataArray) Arrays.section(nested, ranges);
+        Section s = Section.builder().appendRange(new Range(count, count + nestedNrows - 1)).build();
+        StructureDataArray nestedRow = (StructureDataArray) Arrays.section(nested, s);
         int index = req.storageBB.putOnHeap(nestedRow);
         int pos = dataset * req.getDatasetSize() + member.getOffset();
         req.bb.position(pos);

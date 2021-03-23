@@ -6,7 +6,7 @@ package ucar.nc2.grid;
 
 import javax.annotation.Nullable;
 
-import ucar.ma2.RangeIterator;
+import ucar.array.RangeIterator;
 
 import java.util.*;
 

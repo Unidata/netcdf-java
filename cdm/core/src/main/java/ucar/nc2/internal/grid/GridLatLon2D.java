@@ -1,8 +1,8 @@
 package ucar.nc2.internal.grid;
 
 import com.google.common.base.Preconditions;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Range;
+import ucar.array.InvalidRangeException;
+import ucar.array.Range;
 import ucar.nc2.grid.GridAxis2D;
 import ucar.nc2.util.Misc;
 import ucar.unidata.geoloc.*;

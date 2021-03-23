@@ -1,7 +1,7 @@
 package ucar.nc2.grid;
 
 import ucar.array.Array;
-import ucar.ma2.RangeIterator;
+import ucar.array.RangeIterator;
 
 import javax.annotation.Nullable;
 import java.util.Formatter;

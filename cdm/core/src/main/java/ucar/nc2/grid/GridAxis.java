@@ -9,7 +9,6 @@ import com.google.common.collect.ImmutableList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.array.Array;
-import ucar.ma2.RangeIterator;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.AttributeContainerMutable;
@@ -92,7 +91,7 @@ public abstract class GridAxis implements Iterable<Object> {
   public abstract Optional<GridAxis> subsetDependent(GridAxis1D subsetIndAxis, Formatter errlog);
 
   // Iterator over which coordinates wanted. TODO only in axis1d? Only for subset??
-  public abstract RangeIterator getRangeIterator();
+  public abstract ucar.array.RangeIterator getRangeIterator();
 
   /////////////////////////////////////////////////////
 

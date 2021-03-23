@@ -1,8 +1,5 @@
 package ucar.nc2.internal.grid;
 
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Range;
-import ucar.ma2.Section;
 import ucar.nc2.Dimension;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.VariableDS;
@@ -52,11 +49,11 @@ class GridIndexPermuter {
     return -1;
   }
 
-  Section permute(Section subset) {
+  ucar.array.Section permute(ucar.array.Section subset) {
     // get the ranges list in the order of the variable; a null range means "all" to vs.read()
-    Range[] varRange = new Range[this.shape.length];
-    for (Range r : subset.getRanges()) {
-      AxisType type = AxisType.valueOf(r.getName());
+    ucar.array.Range[] varRange = new ucar.array.Range[this.shape.length];
+    for (ucar.array.Range r : subset.getRanges()) {
+      AxisType type = AxisType.valueOf(r.name());
       switch (type) {
         case Lon:
         case GeoX:
@@ -87,12 +84,12 @@ class GridIndexPermuter {
           throw new RuntimeException("Unknown axis type " + type);
       }
     }
-    Section s = new Section(Arrays.asList(varRange));
+    ucar.array.Section s = new ucar.array.Section(Arrays.asList(varRange));
 
     // LOOK could check that unfilled dimensions are length 1
     try {
-      return Section.fill(s, shape);
-    } catch (InvalidRangeException e) {
+      return ucar.array.Section.fill(s, shape);
+    } catch (ucar.array.InvalidRangeException e) {
       throw new RuntimeException(e); // cant happen
     }
   }

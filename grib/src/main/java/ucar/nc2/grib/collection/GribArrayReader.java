@@ -17,10 +17,10 @@ import org.slf4j.LoggerFactory;
 import ucar.array.Array;
 import ucar.array.ArrayType;
 import ucar.array.Arrays;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.RangeIterator;
-import ucar.ma2.Section;
-import ucar.ma2.SectionIterable;
+import ucar.array.InvalidRangeException;
+import ucar.array.RangeIterator;
+import ucar.array.Section;
+import ucar.array.SectionIterable;
 import ucar.nc2.ft2.coverage.CoordsSet;
 import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.nc2.grib.GdsHorizCoordSys;
@@ -80,7 +80,7 @@ public abstract class GribArrayReader {
    * @param want which data do you want?
    * @return data as an Array<?>
    */
-  public Array<?> readData(SectionIterable want) throws IOException, InvalidRangeException {
+  public Array<?> readData(ucar.array.SectionIterable want) throws IOException, InvalidRangeException {
     if (vindex instanceof PartitionCollectionImmutable.VariableIndexPartitioned)
       return readDataFromPartition((PartitionCollectionImmutable.VariableIndexPartitioned) vindex, want);
     else
@@ -130,11 +130,12 @@ public abstract class GribArrayReader {
    * want.getShape() indicates the result Array shape.
    */
   private Array<?> readDataFromPartition(PartitionCollectionImmutable.VariableIndexPartitioned vindexP,
-      SectionIterable section) throws IOException {
+      ucar.array.SectionIterable section) throws IOException {
 
     int rank = section.getRank();
-    SectionIterable sectionWanted = section.subSection(0, rank - 2); // all but x, y
-    SectionIterable.SectionIterator iterWanted = sectionWanted.getIterator(); // iterator over wanted indices in vindexP
+    ucar.array.SectionIterable sectionWanted = section.subSection(0, rank - 2); // all but x, y
+    ucar.array.SectionIterable.SectionIterator iterWanted = sectionWanted.getIterator(); // iterator over wanted indices
+                                                                                         // in vindexP
     int[] indexWanted = new int[rank - 2]; // place to put the iterator result
     int[] useIndex = indexWanted;
 

@@ -10,6 +10,8 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.Formatter;
 import java.util.Optional;
+
+import ucar.array.ArraysConvert;
 import ucar.array.Storage;
 import ucar.array.StructureData;
 import ucar.ma2.Array;
@@ -221,14 +223,19 @@ public class N3iosp extends AbstractIOServiceProvider implements IOServiceProvid
   }
 
   @Override
-  public ucar.array.Array<?> readArrayData(Variable v2, Section section)
-      throws java.io.IOException, ucar.ma2.InvalidRangeException {
+  public ucar.array.Array<?> readArrayData(Variable v2, ucar.array.Section section)
+      throws java.io.IOException, ucar.array.InvalidRangeException {
     if (v2 instanceof Structure) {
       return readStructureDataArray((Structure) v2, section);
     }
 
-    Object data = readDataObject(v2, section);
-    return ucar.array.Arrays.factory(v2.getArrayType(), section.getShape(), data);
+    try {
+      Section oldSection = ArraysConvert.convertSection(section);
+      Object data = readDataObject(v2, oldSection);
+      return ucar.array.Arrays.factory(v2.getArrayType(), section.getShape(), data);
+    } catch (InvalidRangeException e) {
+      throw new ucar.array.InvalidRangeException(e);
+    }
   }
 
   /** Read data subset from file for a variable, create primitive array. */
@@ -298,11 +305,11 @@ public class N3iosp extends AbstractIOServiceProvider implements IOServiceProvid
     return structureArray;
   }
 
-  private ucar.array.Array<ucar.array.StructureData> readStructureDataArray(ucar.nc2.Structure s, Section section)
-      throws java.io.IOException {
+  private ucar.array.Array<ucar.array.StructureData> readStructureDataArray(ucar.nc2.Structure s,
+      ucar.array.Section section) throws java.io.IOException {
     // has to be 1D
     Preconditions.checkArgument(section.getRank() == 1);
-    Range recordRange = section.getRange(0);
+    ucar.array.Range recordRange = section.getRange(0);
 
     // create the StructureMembers
     ucar.array.StructureMembers.Builder membersb = s.makeStructureMembersBuilder();

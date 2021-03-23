@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.array;
@@ -7,7 +7,6 @@ package ucar.array;
 import com.google.common.base.Objects;
 import java.util.Iterator;
 import javax.annotation.concurrent.Immutable;
-import ucar.ma2.Section;
 
 /** Superclass for implementations of multidimensional arrays. */
 @Immutable

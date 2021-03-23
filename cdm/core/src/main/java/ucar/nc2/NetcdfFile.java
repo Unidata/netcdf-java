@@ -21,8 +21,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.array.StructureData;
 import ucar.ma2.Array;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Section;
 import ucar.ma2.StructureDataIterator;
 import ucar.nc2.internal.iosp.netcdf3.N3header;
 import ucar.nc2.internal.iosp.netcdf3.N3iosp;
@@ -514,7 +512,7 @@ public class NetcdfFile implements FileCacheable, Closeable {
    * @deprecated use readArrayData()
    */
   @Deprecated
-  protected Array readData(Variable v, Section ranges) throws IOException, InvalidRangeException {
+  protected Array readData(Variable v, ucar.ma2.Section ranges) throws IOException, ucar.ma2.InvalidRangeException {
     if (iosp == null) {
       throw new IOException("iosp is null, perhaps file has been closed. Trying to read variable " + v.getFullName());
     }
@@ -526,7 +524,8 @@ public class NetcdfFile implements FileCacheable, Closeable {
    * Ranges must be filled (no nulls)
    */
   @Nullable
-  protected ucar.array.Array<?> readArrayData(Variable v, Section ranges) throws IOException, InvalidRangeException {
+  protected ucar.array.Array<?> readArrayData(Variable v, ucar.array.Section ranges)
+      throws IOException, ucar.array.InvalidRangeException {
     if (iosp == null) {
       throw new IOException("iosp is null, perhaps file has been closed. Trying to read variable " + v.getFullName());
     }
@@ -541,14 +540,14 @@ public class NetcdfFile implements FileCacheable, Closeable {
    * @param variableSection the constraint expression.
    * @return data requested
    * @throws IOException if error
-   * @throws InvalidRangeException if variableSection is invalid
+   * @throws ucar.ma2.InvalidRangeException if variableSection is invalid
    * @see <a href=
    *      "https://www.unidata.ucar.edu/software/netcdf-java/reference/SectionSpecification.html">SectionSpecification</a>
    *
    * @deprecated use readSectionArray()
    */
   @Deprecated
-  public Array readSection(String variableSection) throws IOException, InvalidRangeException {
+  public Array readSection(String variableSection) throws IOException, ucar.ma2.InvalidRangeException {
     ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(this, variableSection);
     if (cer.getChild() == null) {
       return cer.getVariable().read(cer.getSection());
@@ -561,16 +560,17 @@ public class NetcdfFile implements FileCacheable, Closeable {
       return iosp.readSection(cer);
   }
 
-  public ucar.array.Array<?> readSectionArray(String variableSection) throws IOException, InvalidRangeException {
-    ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(this, variableSection);
+  public ucar.array.Array<?> readSectionArray(String variableSection)
+      throws IOException, ucar.array.InvalidRangeException {
+    ParsedArraySectionSpec cer = ParsedArraySectionSpec.parseVariableSection(this, variableSection);
     if (cer.getChild() == null) {
-      return cer.getVariable().readArray(cer.getSection());
+      return cer.getVariable().readArray(cer.getArraySection());
     }
     throw new UnsupportedOperationException();
   }
 
-  protected long readToOutputStream(Variable v, Section section, OutputStream out)
-      throws IOException, InvalidRangeException {
+  protected long readToOutputStream(Variable v, ucar.ma2.Section section, OutputStream out)
+      throws IOException, ucar.ma2.InvalidRangeException {
 
     if ((iosp == null) || v.hasCachedData())
       return IospHelper.copyToOutputStream(v.read(section), out);
