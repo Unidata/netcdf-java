@@ -2,6 +2,16 @@
  * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
+/*
+ * This software is provided by the National Aeronatics and Space
+ * Administration Goddard Institute for Space Studies (NASA GISS) for full,
+ * free and open release. It is understood by the recipient/user that NASA
+ * assumes no liability for any errors contained in the code. Although this
+ * software is released without conditions or restrictions in its use, it is
+ * expected that appropriate credit be given to its author and to NASA GISS
+ * should the software be included by the recipient in acknowledgments or
+ * credits in other product development.
+ */
 package ucar.unidata.geoloc.projection;
 
 import javax.annotation.concurrent.Immutable;
