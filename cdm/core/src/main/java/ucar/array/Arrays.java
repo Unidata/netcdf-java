@@ -5,11 +5,7 @@
 package ucar.array;
 
 import com.google.common.base.Preconditions;
-import ucar.ma2.DataType;
-import ucar.ma2.IndexIterator;
-
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.List;
 
 /** Static helper classes for {@link Array} */
