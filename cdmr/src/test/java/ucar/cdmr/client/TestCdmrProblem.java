@@ -19,22 +19,46 @@ import ucar.unidata.util.test.category.NotJenkins;
 @Category({NeedsExternalResource.class, NotJenkins.class}) // Needs CmdrServer to be started up
 public class TestCdmrProblem {
 
-  private final String filename;
-  private final String cdmrUrl;
-
-  public TestCdmrProblem() {
-    String localFilename = "dataset/SimpleGeos/hru_soil_moist_vlen_3hru_5timestep.nc";
-    this.filename = TestDir.cdmLocalFromTestDataDir + localFilename;
-    // LOOK kludge for now. Also, need to auto start up CmdrServer
-    this.cdmrUrl = "cdmr://localhost:16111/" + TestDir.cdmLocalFromTop + localFilename;
+  // Send one chunk u(0:2, 0:39, 0:90997) size=43679040 bytes
+  // Send one chunk u(3:5, 0:39, 0:90997) size=43679040 bytes
+  // Send one chunk u(6:8, 0:39, 0:90997) size=43679040 bytes
+  // Send one chunk u(0:0, 0:39, 0:90997) size=14559680 bytes
+  @Test
+  public void testChunkProblem() throws Exception {
+    String localFilename = "formats/netcdf4/multiDimscale.nc4";
+    doOne(TestDir.cdmUnitTestDir + localFilename, "u");
   }
 
   @Test
-  public void doOne() throws Exception {
+  public void testOpaqueDataType() throws Exception {
+    String localFilename = "hdf5/test_atomic_types.nc";
+    doOne(TestDir.cdmLocalFromTestDataDir + localFilename);
+  }
+
+  @Test
+  public void testCdmrProblem2() throws Exception {
+    String localFilename = "dataset/SimpleGeos/hru_soil_moist_vlen_3hru_5timestep.nc";
+    doOne(TestDir.cdmLocalFromTestDataDir + localFilename);
+  }
+
+  public void doOne(String filename) throws Exception {
+    // LOOK kludge for now. Also, need to auto start up CmdrServer
+    String cdmrUrl = "cdmr://localhost:16111/" + filename;
     try (NetcdfFile ncfile = NetcdfDatasets.openFile(filename, null);
         CdmrNetcdfFile cdmrFile = CdmrNetcdfFile.builder().setRemoteURI(cdmrUrl).build()) {
 
       boolean ok = CompareArrayToMa2.compareFiles(ncfile, cdmrFile);
+      assertThat(ok).isTrue();
+    }
+  }
+
+  public void doOne(String filename, String varName) throws Exception {
+    // LOOK kludge for now. Also, need to auto start up CmdrServer
+    String cdmrUrl = "cdmr://localhost:16111/" + filename;
+    try (NetcdfFile ma2File = NetcdfDatasets.openFile(filename, null);
+        CdmrNetcdfFile arrayFile = CdmrNetcdfFile.builder().setRemoteURI(cdmrUrl).build()) {
+
+      boolean ok = CompareArrayToMa2.compareVariable(ma2File, arrayFile, varName, true);
       assertThat(ok).isTrue();
     }
   }

@@ -93,14 +93,14 @@ public class Section {
   public Section(int[] origin, int[] shape) throws InvalidRangeException {
     ArrayList<Range> builder = new ArrayList<>();
     for (int i = 0; i < shape.length; i++) {
-      if (shape[i] > 1) {
-        builder.add(new Range(origin[i], origin[i] + shape[i] - 1));
+      if (shape[i] < 0) {
+        builder.add(Range.VLEN);
       } else if (shape[i] == 0) {
         builder.add(Range.EMPTY);
-      } else if (shape[i] == 1) {
+      } else if (origin[i] == 0 && shape[i] == 1) {
         builder.add(Range.SCALAR);
       } else {
-        builder.add(Range.VLEN);
+        builder.add(new Range(origin[i], origin[i] + shape[i] - 1));
       }
     }
     this.ranges = Collections.unmodifiableList(builder);
@@ -759,15 +759,7 @@ public class Section {
     /** Append Ranges to the Section, Range(shape[i]) for each i. */
     public Builder appendRanges(int[] shape) {
       for (int aShape : shape) {
-        if (aShape > 1)
-          ranges.add(new Range(aShape));
-        else if (aShape == 1)
-          ranges.add(Range.SCALAR);
-        else if (aShape == 0)
-          ranges.add(Range.EMPTY);
-        else {
-          ranges.add(Range.VLEN);
-        }
+        appendRange(aShape);
       }
       return this;
     }

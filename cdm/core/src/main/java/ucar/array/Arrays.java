@@ -418,6 +418,7 @@ public class Arrays {
     ArrayType dataType = data.getArrayType();
     int idx = 0;
     switch (dataType) {
+      case OPAQUE:
       case ENUM1:
       case UBYTE:
       case BYTE: {

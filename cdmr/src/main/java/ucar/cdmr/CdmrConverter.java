@@ -305,6 +305,7 @@ public class CdmrConverter {
     encodeShape(builder, data.getShape());
 
     switch (dataType) {
+      case OPAQUE:
       case ENUM1:
       case UBYTE:
       case BYTE: {
@@ -365,6 +366,19 @@ public class CdmrConverter {
         sdata.forEach(val -> builder.addSdata(val));
         break;
       }
+      /*
+       * case OPAQUE: {
+       * // location: "cdm/core/src/test/data/hdf5/test_atomic_types.nc" variableSpec: "vo"
+       * if (data instanceof ArrayByte) {
+       * ArrayByte bdata = (ArrayByte) data;
+       * builder.addBdata(bdata.getByteString());
+       * } else {
+       * Array<ByteBuffer> bdata = (Array<ByteBuffer>) data; // LOOK does this happen?
+       * bdata.forEach(val -> builder.addBdata(ByteString.copyFrom(val.array())));
+       * }
+       * break;
+       * }
+       */
       default:
         throw new IllegalStateException("Unkown datatype " + dataType);
     }
@@ -594,6 +608,7 @@ public class CdmrConverter {
     ArrayType dataType = convertDataType(data.getDataType());
     int[] shape = decodeShape(data);
     switch (dataType) {
+      case OPAQUE:
       case ENUM1:
       case UBYTE:
       case BYTE: {
@@ -682,16 +697,23 @@ public class CdmrConverter {
         }
         return Arrays.factory(dataType, shape, array);
       }
-      case OPAQUE: { // LOOK WRONG
-        int i = 0;
-        Object[] array = new Object[data.getBdataCount()];
-        for (ByteString val : data.getBdataList()) {
-          array[i++] = ByteBuffer.wrap(val.toByteArray());
-        }
-        return Arrays.factory(dataType, shape, array);
-      }
+      /*
+       * case OPAQUE: {
+       * if (data.getBdataCount() == 1) {
+       * byte[] array = data.getBdata(0).toByteArray();
+       * return Arrays.factory(dataType, shape, array);
+       * }
+       * // LOOK PROBABLY WRONG
+       * int count = 0;
+       * Object[] array = new Object[data.getBdataCount()];
+       * for (ByteString val : data.getBdataList()) {
+       * array[count++] = ByteBuffer.wrap(val.toByteArray());
+       * }
+       * return Arrays.factory(dataType, shape, array);
+       * }
+       */
       default:
-        throw new IllegalStateException("Unkown datatype " + dataType);
+        throw new IllegalStateException("Unknown datatype " + dataType);
     }
   }
 
