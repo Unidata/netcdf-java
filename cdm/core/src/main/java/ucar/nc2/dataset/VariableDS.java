@@ -593,8 +593,7 @@ public class VariableDS extends Variable implements EnhanceScaleMissingUnsigned,
 
   protected final @Nullable Variable orgVar; // wrap this Variable : use it for the I/O
   protected final ArrayType orgDataType; // keep separate for the case where there is no orgVar. TODO @Nullable?
-  protected final @Nullable String orgName; // in case Variable was renamed, and we need to keep track of the original
-                                            // name
+  protected final @Nullable String orgName; // Variable was renamed, must keep track of the original name
   final String orgFileTypeId; // the original fileTypeId. TODO @Nullable?
 
   // Not technically immutable because of this

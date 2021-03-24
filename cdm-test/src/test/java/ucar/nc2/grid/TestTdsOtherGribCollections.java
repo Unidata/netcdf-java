@@ -42,7 +42,7 @@ public class TestTdsOtherGribCollections {
        * Unidata TDS separated these into “Derived Fields” and “Model Fields”, see
        * https://thredds.ucar.edu/thredds/catalog/grib/CMC/RDPS/NA_15km/catalog.html
        */
-      result.add(new Object[] {topDir + "CMC/RDPS/NA_15km/CMC_RDPS_ps15km_20201027_0000.grib2.ncx4", 58, 17, 24});
+      // result.add(new Object[] {topDir + "CMC/RDPS/NA_15km/CMC_RDPS_ps15km_20201027_0000.grib2.ncx4", 58, 17, 24});
 
       // fnmoc
       result.add(new Object[] {topDir + "FNMOC/WW3/Global_1p0deg/FNMOC_WW3_Global_1p0deg.ncx4", 15, 1, 4});

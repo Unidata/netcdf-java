@@ -68,7 +68,7 @@ public class CoordinatesHelper {
   }
 
   // TODO this assumes that the CoordinateAxis have been added to the NetcdfDataset
-  // TODO and appears to ignore builder.axes
+  // and appears to ignore builder.axes
   private static void addAxes(Group group, List<CoordinateAxis> axes) {
     for (Variable v : group.getVariables()) {
       if (v instanceof CoordinateAxis) {

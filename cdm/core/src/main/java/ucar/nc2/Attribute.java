@@ -396,7 +396,6 @@ public class Attribute {
       return nvalue.equals(att.nvalue);
     }
 
-    // TODO Array doesnt have equals() !
     if (values != null) {
       for (int i = 0; i < getLength(); i++) {
         int r1 = isString() ? getStringValue(i).hashCode() : getNumericValue(i).hashCode();

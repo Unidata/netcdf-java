@@ -198,7 +198,7 @@ public class DatasetUrl {
 
   /**
    * Given a location, find markers indicated which protocol to use
-   * TODO: what use case is this handling ?
+   * LOOK: what use case is this handling ?
    *
    * @param fragment the fragment is to be examined
    * @return The discovered ServiceType, or null

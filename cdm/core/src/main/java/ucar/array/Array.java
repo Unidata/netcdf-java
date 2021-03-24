@@ -90,7 +90,7 @@ public abstract class Array<T> implements Iterable<T> {
     return "Array{" + "arrayType=" + arrayType + ", indexFn=" + indexFn + ", rank=" + rank + '}';
   }
 
-  /** Equal if the type and indexFn are equal, doesnt test the contents. TODO */
+  /** Equal if the type and indexFn are equal, doesnt test the contents. */
   @Override
   public boolean equals(Object o) {
     if (this == o) {

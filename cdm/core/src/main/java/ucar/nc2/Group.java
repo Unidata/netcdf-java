@@ -401,7 +401,7 @@ public class Group {
     return buf.toString();
   }
 
-  // TODO using just the name seems wrong.
+  // LOOK using just the name seems wrong.
   @Override
   public boolean equals(Object oo) {
     if (this == oo)
