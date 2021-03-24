@@ -4,7 +4,7 @@ import com.google.common.collect.Iterables;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import ucar.ma2.Range;
+import ucar.array.Range;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;

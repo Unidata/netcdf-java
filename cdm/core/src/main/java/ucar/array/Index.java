@@ -10,7 +10,7 @@ import com.google.common.base.Preconditions;
  * Indexes for Arrays. An Index refers to a particular element of an array.
  * This is a generalization of index as int[].
  * TODO: Some of these methods, maybe the whole class is to ease the transition from earlier versions.
- * TODO: evaluate how useful this is.
+ * evaluate how useful this is.
  */
 public class Index {
   private int[] current; // current element's index

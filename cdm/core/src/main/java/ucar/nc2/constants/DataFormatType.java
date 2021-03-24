@@ -8,7 +8,7 @@ import javax.annotation.Nullable;
 
 /**
  * Redo thredds.catalog.DataFormatType as enum in order to break dependency of ucar.nc2 on server catalog.
- * TODO should use standard Mime type ??
+ * LOOK could use standard Mime type ??
  */
 public enum DataFormatType {
   BUFR(null), //

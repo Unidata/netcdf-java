@@ -410,6 +410,7 @@ public class Range implements RangeIterator {
       return first + ":" + last() + (stride > 1 ? ":" + stride : "");
   }
 
+  /** Does not include the name. */
   @Override
   public boolean equals(Object o) {
     if (this == o)
@@ -417,13 +418,12 @@ public class Range implements RangeIterator {
     if (o == null || getClass() != o.getClass())
       return false;
     Range integers = (Range) o;
-    return length == integers.length && first == integers.first && last == integers.last && stride == integers.stride
-        && Objects.equals(name, integers.name);
+    return length == integers.length && first == integers.first && last == integers.last && stride == integers.stride;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(length, first, last, stride, name);
+    return Objects.hash(length, first, last, stride);
   }
 
   /////////////////////////////////////////////////////////
