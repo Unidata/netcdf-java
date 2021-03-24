@@ -58,7 +58,7 @@ public class TestRemoteCoverage {
 
       int[] shape = geoCoordsys.getShape();
       logger.debug("grid_section.getShape = {}", new Section(shape));
-      int[] expectShape = new int[] {1, 31, 241, 480};
+      int[] expectShape = new int[] {1, 41, 241, 480};
       Assert.assertArrayEquals("subset shape", expectShape, shape);
     }
   }
