@@ -1,11 +1,11 @@
 syntax = "proto3";
 
+import "ucar/cdmr/cdmrNetcdf.proto";
+import "ucar/cdmr/cdmrGrid.proto";
+
 package ucar.cdmr;
 option java_package = "ucar.cdmr";
 option java_outer_classname = "CdmrServerProto";
-
-import "cdmrNetcdf.proto";
-import "cdmrGrid.proto";
 
 service CdmRemote {
   rpc GetNetcdfHeader (HeaderRequest) returns (HeaderResponse) {}
