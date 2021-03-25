@@ -64,11 +64,16 @@ public class TestLightningExampleTutorial {
   public void testImplementReadMethodsTutorial()
       throws IOException, NumberFormatException, ParseException {
     assertThat(LightningExampleTutorial.implementReadMethods(raf)).isEqualTo(nRecords);
-    assertThat(Arrays.computeSize(LightningExampleTutorial.dateArray.getShape())).isEqualTo(nRecords);
-    assertThat(Arrays.computeSize(LightningExampleTutorial.latArray.getShape())).isEqualTo(nRecords);
-    assertThat(Arrays.computeSize(LightningExampleTutorial.lonArray.getShape())).isEqualTo(nRecords);
-    assertThat(Arrays.computeSize(LightningExampleTutorial.ampArray.getShape())).isEqualTo(nRecords);
-    assertThat(Arrays.computeSize(LightningExampleTutorial.nstrokesArray.getShape())).isEqualTo(nRecords);
+    assertThat(Arrays.computeSize(LightningExampleTutorial.dateArray.getShape()))
+        .isEqualTo(nRecords);
+    assertThat(Arrays.computeSize(LightningExampleTutorial.latArray.getShape()))
+        .isEqualTo(nRecords);
+    assertThat(Arrays.computeSize(LightningExampleTutorial.lonArray.getShape()))
+        .isEqualTo(nRecords);
+    assertThat(Arrays.computeSize(LightningExampleTutorial.ampArray.getShape()))
+        .isEqualTo(nRecords);
+    assertThat(Arrays.computeSize(LightningExampleTutorial.nstrokesArray.getShape()))
+        .isEqualTo(nRecords);
   }
 
   @Test
@@ -79,7 +84,8 @@ public class TestLightningExampleTutorial {
 
     Array<Integer> dateArray = Arrays.factory(ArrayType.INT, new int[] {nRecords});
     Array<Double> latArray = Arrays.factory(ArrayType.DOUBLE, new int[] {nRecords});
-    LightningExampleTutorial.setSourceData(builder, dim, (ArrayInteger)dateArray, (ArrayDouble)latArray);
+    LightningExampleTutorial.setSourceData(builder, dim, (ArrayInteger) dateArray,
+        (ArrayDouble) latArray);
     Group group = builder.build();
 
     Variable var1 = group.findVariableLocal("date");
@@ -96,8 +102,8 @@ public class TestLightningExampleTutorial {
     Array<Integer> dateArray = Arrays.factory(ArrayType.INT, new int[] {nRecords});
     Array<Double> latArray = Arrays.factory(ArrayType.DOUBLE, new int[] {nRecords});
     Array<Double> lonArray = Arrays.factory(ArrayType.DOUBLE, new int[] {nRecords});
-    LightningExampleTutorial.addCoordSystemsAndTypedDatasets(builder, dim, (ArrayInteger)dateArray, (ArrayDouble)latArray,
-            (ArrayDouble)lonArray);
+    LightningExampleTutorial.addCoordSystemsAndTypedDatasets(builder, dim, (ArrayInteger) dateArray,
+        (ArrayDouble) latArray, (ArrayDouble) lonArray);
   }
 
   @Test(expected = ClassNotFoundException.class)

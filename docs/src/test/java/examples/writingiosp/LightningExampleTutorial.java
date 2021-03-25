@@ -190,10 +190,11 @@ public class LightningExampleTutorial {
         .addDimension(dim).addAttribute(new Attribute("long_name", "longitude"))
         .addAttribute(new Attribute("units", "degrees_east")));
 
-    rootGroup.addVariable(Variable.builder().setName("strikeAmplitude").setArrayType(ArrayType.DOUBLE)
-        .addDimension(dim).addAttribute(new Attribute("long_name", "amplitude of strike"))
-        .addAttribute(new Attribute("units", "kAmps"))
-        .addAttribute(new Attribute("missing_value", new Double(999))));
+    rootGroup
+        .addVariable(Variable.builder().setName("strikeAmplitude").setArrayType(ArrayType.DOUBLE)
+            .addDimension(dim).addAttribute(new Attribute("long_name", "amplitude of strike"))
+            .addAttribute(new Attribute("units", "kAmps"))
+            .addAttribute(new Attribute("missing_value", new Double(999))));
 
     rootGroup.addVariable(Variable.builder().setName("strokeCount").setArrayType(ArrayType.INT)
         .addDimension(dim).addAttribute(new Attribute("long_name", "number of strokes per flash"))
@@ -253,7 +254,7 @@ public class LightningExampleTutorial {
         }
 
         // 4) After reading the data, we can convert the primitive arrays to Array types for convenience
-        int[] shape = new int[]{n};
+        int[] shape = new int[] {n};
         dateArray = Arrays.factory(ArrayType.INT, shape, dates);
         latArray = Arrays.factory(ArrayType.DOUBLE, shape, lats);
         lonArray = Arrays.factory(ArrayType.DOUBLE, shape, lons);
@@ -273,7 +274,7 @@ public class LightningExampleTutorial {
    * @param dim
    */
   public static void setSourceData(Group.Builder rootGroup, Dimension dim, ArrayInteger dateArray,
-                                   ArrayDouble latArray) {
+      ArrayDouble latArray) {
     // ...
     rootGroup.addVariable(Variable.builder().setName("date").setArrayType(ArrayType.INT)
         .addDimension(dim).addAttribute(new Attribute("long_name", "date of strike"))
@@ -324,8 +325,8 @@ public class LightningExampleTutorial {
     // 3) The Point data type also requires that the time range and lat/lon bounding box be specified as shown
     // in global attributes.
     MinMax mm = Arrays.getMinMaxSkipMissingData(dateArray, null);
-    rootGroup.addAttribute(
-        new Attribute("time_coverage_start", ((int) mm.min()) + "seconds since 1970-01-01 00:00;00"));
+    rootGroup.addAttribute(new Attribute("time_coverage_start",
+        ((int) mm.min()) + "seconds since 1970-01-01 00:00;00"));
     rootGroup.addAttribute(
         new Attribute("time_coverage_end", ((int) mm.max()) + "seconds since 1970-01-01 00:00;00"));
 
