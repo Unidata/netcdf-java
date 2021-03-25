@@ -3,7 +3,9 @@ package tests.writingiosp;
 import examples.writingiosp.OtherClassesIospTutorial;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import ucar.ma2.DataType;
+import ucar.array.Array;
+import ucar.array.ArrayType;
+import ucar.array.Arrays;
 import ucar.nc2.Dimension;
 import ucar.nc2.Group;
 import ucar.nc2.Variable;
@@ -14,7 +16,7 @@ import java.io.IOException;
 public class TestOtherClassesIospTutorial {
 
   private final static String testFilePath =
-      "src/public/userguide/files/netcdfJava_tutorial/writingiosp/lightningData.txt";
+      "src/site/files/netcdfJava_tutorial/writingiosp/lightningData.txt";
 
   private static RandomAccessFile raf;
 
@@ -30,9 +32,9 @@ public class TestOtherClassesIospTutorial {
     Dimension d2 = Dimension.builder("j", 5).build();
     rootGroup.addDimension(d2);
     Group parent = rootGroup.build();
-    varShort = Variable.builder().setName("short_var").setDataType(DataType.SHORT).addDimension(d1)
+    varShort = Variable.builder().setName("short_var").setArrayType(ArrayType.SHORT).addDimension(d1)
         .addDimension(d2).build(parent);
-    varDouble = Variable.builder().setName("double_var").setDataType(DataType.DOUBLE)
+    varDouble = Variable.builder().setName("double_var").setArrayType(ArrayType.DOUBLE)
         .addDimension(d1).addDimension(d2).build(parent);
   }
 
@@ -42,20 +44,14 @@ public class TestOtherClassesIospTutorial {
   }
 
   @Test
-  public void testArrayIndexIterator() throws IOException {
-    raf.seek(0);
-    OtherClassesIospTutorial.arrayIndexIterator(raf, varShort);
+  public void testArrayIterator() {
+    Array<Float> data = Arrays.factory(ArrayType.FLOAT, new int[]{10});
+    OtherClassesIospTutorial.arrayIterator(data);
   }
 
   @Test
-  public void testArrayIndex() throws IOException {
-    raf.seek(0);
-    OtherClassesIospTutorial.arrayIndex(raf);
-  }
-
-  @Test
-  public void testArrayRankAndType() throws IOException {
-    raf.seek(0);
-    OtherClassesIospTutorial.arrayRankAndType(raf);
+  public void testArrayIndices() {
+    Array<Float> data = Arrays.factory(ArrayType.FLOAT, new int[]{10});
+    OtherClassesIospTutorial.arrayIndices(data);
   }
 }

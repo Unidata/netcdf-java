@@ -1,9 +1,9 @@
 ---
-title: ArrayStructures
+title: StructureDataArrays
 last_updated: 2018-10-22
 sidebar: netcdfJavaTutorial_sidebar
 toc: false
-permalink: arraystructures_ref.html
+permalink: structureDataArrays_ref.html
 ---
 ### Array Structures
 

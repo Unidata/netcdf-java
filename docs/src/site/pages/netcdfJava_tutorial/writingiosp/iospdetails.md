@@ -165,7 +165,7 @@ It is often convenient for IOSPs to set the data values of coordinate (or other)
 {% endcapture %}
 {{ rmd | markdownify }}
 
-Here, `Array.makeArray` is a convenience method that generates an evenly spaced array of length 180, starting at 90.0 and incrementing -1.0. 
+Here, `Arrays.makeArray` is a convenience method that generates an evenly spaced array of length 180, starting at 90.0 and incrementing -1.0. 
 That array is then cached in the `Variable`, and used whenever a client asks for data from the `Variable`. If a `Variable` has cached data, 
 then `readData` will never be called for it.
 
@@ -173,12 +173,12 @@ then `readData` will never be called for it.
 
 ~~~java
   // Read data from a top level Variable and return a memory resident Array.
-  public ucar.ma2.Array readData(Variable v2, Section section) throws IOException, InvalidRangeException;
+  public ucar.array.Array readArrayData(Variable v2, Section section) throws IOException, InvalidRangeException;
 ~~~
 
 When a client asks to read data from a `Variable`, the data is taken from the `Variable`'s data cache, if it exists, or the `readData` method of the IOSP is called. 
 The client may ask for all of the data, or it may ask for a `hyperslab` of data described by the `Section` parameter. The `Section` contains a `java.util.List` of 
-`ucar.ma2.Range` objects, one for each `Dimension` in the `Variable`, in order of the `Variable`'s `Dimensions`.
+`ucar.array.Range` objects, one for each `Dimension` in the `Variable`, in order of the `Variable`'s `Dimensions`.
 
 Here is an example, that assume the data starts at the start of the file, is in big-endian format, and is stored as a regular array of 16-bit integers on disk:
 
@@ -189,7 +189,7 @@ Here is an example, that assume the data starts at the start of the file, is in 
 {% endcapture %}
 {{ rmd | markdownify }}
 
-The `RandomAccessFile` reads 16-bit integers, advancing automatically. The `Array.section` method creates a logical section of the data array, 
+The `RandomAccessFile` reads 16-bit integers, advancing automatically. The `Arrays.section` method creates a logical section of the data array, 
 returning just the section requested.
 
 For large arrays, reading in all of the data can be too expensive. If your data has a regular layout, you can use `LayoutRegular` helper object:
