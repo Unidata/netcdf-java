@@ -1,8 +1,6 @@
 package examples.writingiosp;
 
 import ucar.array.*;
-import ucar.ma2.*;
-import ucar.ma2.Array;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants._Coordinate;
@@ -21,11 +19,11 @@ public class LightningExampleTutorial {
   private static final String token = "USPLN-LIGHTNING";
 
   // state vars
-  public static ucar.array.Array<Integer> dateArray;
-  public static ucar.array.ArrayDouble latArray;
-  public static ucar.array.ArrayDouble lonArray;
-  public static ucar.array.ArrayDouble ampArray;
-  public static ArrayInteger nstrokesArray;
+  public static Array<Integer> dateArray;
+  public static Array<Double> latArray;
+  public static Array<Double> lonArray;
+  public static Array<Double> ampArray;
+  public static Array<Integer> nstrokesArray;
 
   /**
    * Code snippet for creating an IOSP
@@ -47,7 +45,7 @@ public class LightningExampleTutorial {
         // TO BE IMPLEMENTED
       }
 
-      public Array readData(Variable v2, Section section)
+      public Array readArrayData(Variable v2, Section section)
           throws IOException, InvalidRangeException {
         // NOT IMPLEMENTED IN THIS EXAMPLE
         return null;
@@ -210,11 +208,11 @@ public class LightningExampleTutorial {
    * Code snippet to create data structures to hold read data
    */
   public static void createDataArrays() {
-    /* INSERT private */ucar.array.ArrayInteger dateArray;
-    /* INSERT private */ucar.array.ArrayDouble latArray;
-    /* INSERT private */ucar.array.ArrayDouble lonArray;
-    /* INSERT private */ucar.array.ArrayDouble ampArray;
-    /* INSERT private */ucar.array.ArrayInteger nstrokesArray;
+    /* INSERT private */ucar.array.Array<Integer> dateArray;
+    /* INSERT private */ucar.array.Array<Double> latArray;
+    /* INSERT private */ucar.array.Array<Double> lonArray;
+    /* INSERT private */ucar.array.Array<Double> ampArray;
+    /* INSERT private */ucar.array.Array<Integer> nstrokesArray;
   }
 
   /**
@@ -237,25 +235,30 @@ public class LightningExampleTutorial {
         // ...
         records = getRecords(raf, records); /* DOCS-IGNORE */
         int n = records.size();
-        int[] shape = new int[] {n};
-        // 2) Once we know how many records there are, we create a 1D Array of that length.
-        // For convenience we cast them to the rank and type specific Array subclass.
-
-        dateArray = Arrays.factory(ArrayType.INT, shape);
-        latArray = (ArrayDouble) Arrays.factory(ArrayType.DOUBLE, shape);
-        lonArray = (ArrayDouble) Arrays.factory(ArrayType.DOUBLE, shape);
-        ampArray = (ArrayDouble) Arrays.factory(ArrayType.DOUBLE, shape);
-        nstrokesArray = (ArrayInteger) Arrays.factory(ArrayType.INT, shape);
+        // 2) Once we know how many records there are, we create a 1D primitive of that length.
+        int[] dates = new int[n];
+        double[] lats = new double[n];
+        double[] lons = new double[n];
+        double[] amps = new double[n];
+        int[] nStrokes = new int[n];
 
         // 3) Loop through all the records and transfer the data into the corresponding Arrays.
-        for (int i = 0; i < records.size(); i++) {
+        for (int i = 0; i < n; i++) {
           Strike strike = (Strike) records.get(i);
-          dateArray.set(i, strike.d);
-          latArray.set(i, strike.lat);
-          lonArray.set(i, strike.lon);
-          ampArray.set(i, strike.amp);
-          nstrokesArray.set(i, strike.n);
+          dates[i] = strike.d;
+          lats[i] = strike.lat;
+          lons[i] = strike.lon;
+          amps[i] = strike.amp;
+          nStrokes[i] = strike.n;
         }
+
+        // 4) After reading the data, we can convert the primitive arrays to Array types for convenience
+        int[] shape = new int[]{n};
+        dateArray = Arrays.factory(ArrayType.INT, shape, dates);
+        latArray = Arrays.factory(ArrayType.DOUBLE, shape, lats);
+        lonArray = Arrays.factory(ArrayType.DOUBLE, shape, lons);
+        ampArray = Arrays.factory(ArrayType.DOUBLE, shape, amps);
+        nstrokesArray = Arrays.factory(ArrayType.INT, shape, nStrokes);
 
         return n;
       }
@@ -269,8 +272,8 @@ public class LightningExampleTutorial {
    * @param rootGroup
    * @param dim
    */
-  public static void setSourceData(Group.Builder rootGroup, Dimension dim, ArrayInt.D1 dateArray,
-                                   ArrayDouble.D1 latArray) {
+  public static void setSourceData(Group.Builder rootGroup, Dimension dim, ArrayInteger dateArray,
+                                   ArrayDouble latArray) {
     // ...
     rootGroup.addVariable(Variable.builder().setName("date").setArrayType(ArrayType.INT)
         .addDimension(dim).addAttribute(new Attribute("long_name", "date of strike"))
@@ -291,7 +294,7 @@ public class LightningExampleTutorial {
    * @param dim
    */
   public static void addCoordSystemsAndTypedDatasets(Group.Builder rootGroup, Dimension dim,
-      ArrayInt.D1 dateArray, ArrayDouble.D1 latArray, ArrayDouble.D1 lonArray) {
+      ArrayInteger dateArray, ArrayDouble latArray, ArrayDouble lonArray) {
     // ...
     // 1) Add attributes on time, lat, and lon variables that identify them as coordinate axes
     rootGroup.addVariable(Variable.builder().setName("date").setArrayType(ArrayType.INT)
@@ -320,19 +323,19 @@ public class LightningExampleTutorial {
 
     // 3) The Point data type also requires that the time range and lat/lon bounding box be specified as shown
     // in global attributes.
-    MAMath.MinMax mm = MAMath.getMinMax(dateArray);
+    MinMax mm = Arrays.getMinMaxSkipMissingData(dateArray, null);
     rootGroup.addAttribute(
-        new Attribute("time_coverage_start", ((int) mm.min) + "seconds since 1970-01-01 00:00;00"));
+        new Attribute("time_coverage_start", ((int) mm.min()) + "seconds since 1970-01-01 00:00;00"));
     rootGroup.addAttribute(
-        new Attribute("time_coverage_end", ((int) mm.max) + "seconds since 1970-01-01 00:00;00"));
+        new Attribute("time_coverage_end", ((int) mm.max()) + "seconds since 1970-01-01 00:00;00"));
 
-    mm = MAMath.getMinMax(latArray);
-    rootGroup.addAttribute(new Attribute("geospatial_lat_min", new Double(mm.min)));
-    rootGroup.addAttribute(new Attribute("geospatial_lat_max", new Double(mm.max)));
+    mm = Arrays.getMinMaxSkipMissingData(latArray, null);
+    rootGroup.addAttribute(new Attribute("geospatial_lat_min", new Double(mm.min())));
+    rootGroup.addAttribute(new Attribute("geospatial_lat_max", new Double(mm.max())));
 
-    mm = MAMath.getMinMax(lonArray);
-    rootGroup.addAttribute(new Attribute("geospatial_lon_min", new Double(mm.min)));
-    rootGroup.addAttribute(new Attribute("geospatial_lon_max", new Double(mm.max)));
+    mm = Arrays.getMinMaxSkipMissingData(lonArray, null);
+    rootGroup.addAttribute(new Attribute("geospatial_lon_min", new Double(mm.min())));
+    rootGroup.addAttribute(new Attribute("geospatial_lon_max", new Double(mm.max())));
   }
 
   /**

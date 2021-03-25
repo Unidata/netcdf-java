@@ -1,15 +1,13 @@
 package examples.writingiosp;
 
-import ucar.ma2.Array;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Section;
-import ucar.ma2.StructureDataIterator;
+import ucar.array.*;
 import ucar.nc2.*;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.IOException;
+import java.util.Iterator;
 
 public class OverviewIospTutorial {
 
@@ -29,8 +27,8 @@ public class OverviewIospTutorial {
         return false; /* DOCS-IGNORE */
       }
 
-      public Array readData(Variable v2, Section section)
-          throws IOException, InvalidRangeException {
+      public Array readArrayData(Variable v2, Section section)
+          throws IOException, ucar.array.InvalidRangeException {
         // Data will be read from Variable through this call. The Section defines the requested data subset.
         return null; /* DOCS-IGNORE */
       }
@@ -71,25 +69,10 @@ public class OverviewIospTutorial {
         return null; /* DOCS-IGNORE */
       }
 
-      public ucar.ma2.Array readSection(ParsedSectionSpec cer)
-          throws IOException, InvalidRangeException {
-        // If you use Structures, data for Variables that are members of Structures are read through this method.
-        // If you dont override, the default implementation in AbstractIOServiceProvider is used.
-        // Override in order to improve performance.
-        return null; /* DOCS-IGNORE */
-      }
-
-      public StructureDataIterator getStructureIterator(Structure s, int bufferSize) {
+      public Iterator<StructureData> getStructureDataArrayIterator(Sequence s, int bufferSize) {
         // If any of your top-level variables (not inside of a Structure) are Sequences,
         // this is how the data in them will be accessed, and you must implement it.
         return null; /* DOCS-IGNORE */
-      }
-
-      public boolean syncExtend() throws IOException {
-        // If the file may change since it was opened, you may optionally implement this routine.
-        // The changes must not affect any of the structural metadata.
-        // For example, in the NetCDF-3 IOSP, we check to see if the record dimension has grown.
-        return false; /* DOCS-IGNORE */
       }
 
       public Object sendIospMessage(Object message) {

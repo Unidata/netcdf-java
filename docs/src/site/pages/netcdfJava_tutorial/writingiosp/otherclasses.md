@@ -10,7 +10,7 @@ toc: false
 To implement an IOSP, you will likely need to be familiar with the following classes:
 * [`RandomAccessFile`](#randomaccessfile)
 * [`Array`](#array)
-* [`DataType`](#datatype)
+* [`ArrayType`](#arraytype)
 
 ### RandomAccessFile
 
@@ -77,141 +77,112 @@ public class ucar.unidata.io.RandomAccessFile {
 ~~~
 
 ### Array
-A `ucar.ma2.Array` is a way to work with multidimensional arrays in a type and rank general way.
+A `ucar.array.Array` is an abstract, immutable object which allows working with multidimensional arrays in a type and rank general way.  
+It replaces the deprecated `ucar.ma2.array` package.    
+It is implemented by `ArrayByte`, `ArrayChar`, `ArrayDouble`, `ArrayFloat`, `ArrayInteger`, `ArrayLong`, `ArrayShort`, and `ArrayString`.  
+Some useful `Array` methods include:
 
 ~~~java
-public abstract class Array {
+public abstract class Array<T> implements Iterable<T> {
+    public abstract T get(int... index); // Get the element indicated by the list of multidimensional indices.
+    public abstract T get(Index index); // Get the element indicated by Index    
+    public T getScalar(); // Get the first element of the Array
 
-    public static Array factory(ucar.ma2.DataType type, int[] shape);
-    public static Array factory(java.lang.Class class, int[] shape);
-    public static Array factory(java.lang.Class class, int[] shape, java.lang.Object jarray);
-    public static Array factory(java.lang.Object jarray);
-
+    public ArrayType getArrayType(); // Get the datatype for this array
+    public boolean isVlen();
+    public Index getIndex(); // Get an Index that can be used instead of an int[]
+    
     public int getRank();
     public int[] getShape();
-    public long getSize();
-    public abstract java.lang.Class getElementType();
-    public abstract java.lang.Object getStorage();
-
-    public ucar.ma2.Index getIndex();
-    public ucar.ma2.IndexIterator getIndexIterator();
-
-    public static void arraycopy(Array, int, Array, int, int);
-    public Array copy();
-    public java.lang.Object get1DJavaArray(java.lang.Class);
-    public java.lang.Object copyTo1DJavaArray();
-    public java.lang.Object copyToNDJavaArray();
-
-    public Array flip(int);
-    public Array transpose(int, int);
-    public Array permute(int[]);
-    public Array reshape(int[]);
-    public Array reduce();
-    public Array reduce(int);
-    public Array section(java.util.List<Range> section) throws InvalidRangeException;
-    public Array sectionNoReduce(java.util.List<Range> section) throws InvalidRangeException;
-    public Array slice(int, int);
-
-    public abstract double getDouble(ucar.ma2.Index);
-    public abstract void setDouble(ucar.ma2.Index, double);
-    public abstract float getFloat(ucar.ma2.Index);
-    public abstract void setFloat(ucar.ma2.Index, float);
-    public abstract long getLong(ucar.ma2.Index);
-    public abstract void setLong(ucar.ma2.Index, long);
-    public abstract int getInt(ucar.ma2.Index);
-    public abstract void setInt(ucar.ma2.Index, int);
-    public abstract short getShort(ucar.ma2.Index);
-    public abstract void setShort(ucar.ma2.Index, short);
-    public abstract byte getByte(ucar.ma2.Index);
-    public abstract void setByte(ucar.ma2.Index, byte);
-    public abstract char getChar(ucar.ma2.Index);
-    public abstract void setChar(ucar.ma2.Index, char);
-    public abstract boolean getBoolean(ucar.ma2.Index);
-    public abstract void setBoolean(ucar.ma2.Index, boolean);
-    public abstract java.lang.Object getObject(ucar.ma2.Index);
-    public abstract void setObject(ucar.ma2.Index, java.lang.Object);
+    public Section getSection(); // Returns a list of Ranges, one for each dimenstion
+    public long length(); // Get the total number of elements in the array. Excludes vlen dimensions.
 }
 ~~~
-Typically an IOSP will create the underlying primitive Java array, then wrap it in an `Array` using `Array.factory`, for example:
+
+The `ucar.array.Arrays` class contains an number of static function for creating and using `Array` objects:
+
+~~~java
+    public static <T> Array<T> factory(ArrayType dataType, int[] shape, Storage<T> storage);
+    public static <T> Array<T> factory(ArrayType dataType, int[] shape, Object dataArray);
+    public static <T> Array<T> factory(ArrayType dataType, int[] shape);
+    public static <T> Array<T> factoryCopy(ArrayType dataType, int[] shape, List<Array<t>> dataArrays);
+    public static <T> Object combine(ArrayType dataType, int[] shape, Object dataArray);
+    public static <T> Array<T> factoryArrays(ArrayType dataType, int[] shape, List<Array<?>> dataArrays);
+
+    public static <T> Array<T> flip(Array<t> org, int dim);
+    public static Array transpose(<T> Array<T> org, int dim1, int dim2);
+    public static Array <T> permute(<T> Array<T> org, int[]) dims;
+    public static <T> Array<T> reshape(<T> Array<T> org, int[] shape);
+    public static Array <T> reduce(<T> Array<T> org, );
+    public static Array <T> reduce<T>(<T> Array<T> org, int dim);
+    public static Array <T> section(<T> Array<T> org, Section section) throws InvalidRangeException;
+    public static Array <T> slice(<T> Array<T> org, int dim, int value);
+
+    public static long computerSize(int[] shape);
+    public static int[] removeVlen(int[] shape);
+    public static Array<Double> toDouble(Array<?> array);
+    public static MinMax getMinMaxSkipMissingData(Array<? extends Number> a, @Nullable IsMissingEvaluator eval);
+    public static Array<Double> makeArray(int[] shape, int npts, double start, double incr);
+}
+~~~
+Typically an IOSP will create the underlying primitive Java array, then wrap it in an `Array` using `Arrays.factory`, for example:
 
 {% capture rmd %}
 {% includecodeblock netcdf-java&docs/src/test/java/examples/writingiosp/OtherClassesIospTutorial.java&makeArray %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
-A `Section` is a container for a `List` of `Range` objects:
+A `ucar.array.Section` is an immutable container for a `List` of `Range` objects, replacing the deprecated `ucar.ma2.Section` package. 
+A section can be used to read only wanted data, using `Arrays.section(Array<T> org, Section section)`.
+
+
+Once you have an `Array`, you can iterate over each element using the built-in `iterator`:
+
+{% capture rmd %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/writingiosp/OtherClassesIospTutorial.java&arrayIterator %}
+{% endcapture %}
+{{ rmd | markdownify }}
+
+You can also access `Array` values by index:
+
+{% capture rmd %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/writingiosp/OtherClassesIospTutorial.java&arrayIndices %}
+{% endcapture %}
+{{ rmd | markdownify }}
+
+There is also `StructureDataArray`, but this is handled differently from the numeric and `String` types. 
+See [StructureDataArrays](structureDataArrays_ref.html).
+
+### ArrayType
+
+The class `ucar.array.ArrayType` is a type-safe enumeration of data types for the CDM and include the following types:
 
 ~~~java
- public class ucar.ma2.Section {
-   public List<Range> getRanges();
-   public int[] getOrigin();
-   public int[] getShape();
-   public int[] getStride();
-   ...
- }
-~~~
+public enum ArrayType {
+  BOOLEAN("boolean", 1, boolean.class, false), //
+  BYTE("byte", 1, byte.class, false), //
+  CHAR("char", 1, char.class, false), //
+  SHORT("short", 2, short.class, false), //
+  INT("int", 4, int.class, false), //
+  LONG("long", 8, long.class, false), //
+  FLOAT("float", 4, float.class, false), //
+  DOUBLE("double", 8, double.class, false), //
 
-When you do end up working with an `Array`, you will get an `Index` or `IndexIterator` from the `Array` to access individual elements of 
-the `Array`. An `IndexIterator` iterates over each element of the `Array` in canonical order.
+  // object types
+  SEQUENCE("Sequence", 4, Iterator.class, false), // 32-bit index
+  STRING("String", 4, String.class, false), // 32-bit index
+  STRUCTURE("Structure", 0, StructureData.class, false), // size unknown
 
-{% capture rmd %}
-{% includecodeblock netcdf-java&docs/src/test/java/examples/writingiosp/OtherClassesIospTutorial.java&arrayIndexIterator %}
-{% endcapture %}
-{{ rmd | markdownify }}
+  ENUM1("enum1", 1, byte.class, false), // byte
+  ENUM2("enum2", 2, short.class, false), // short
+  ENUM4("enum4", 4, int.class, false), // int
 
-Or, using an `Index`:
+  OPAQUE("opaque", 1, ByteBuffer.class, false), // size unknown, byte blobs;
+  OBJECT("object", 1, Object.class, false), // size unknown, use with ucar.ma2.Array
 
-{% capture rmd %}
-{% includecodeblock netcdf-java&docs/src/test/java/examples/writingiosp/OtherClassesIospTutorial.java&arrayIndex %}
-{% endcapture %}
-{{ rmd | markdownify }}
-
-If you know the rank and type of the `Array`, it is both convenient and more efficient to use the rank and type specific subclasses:
-
-{% capture rmd %}
-{% includecodeblock netcdf-java&docs/src/test/java/examples/writingiosp/OtherClassesIospTutorial.java&arrayRankAndType %}
-{% endcapture %}
-{{ rmd | markdownify }}
-
-The type specific Arrays are:  
-`ArrayBoolean`, `ArrayByte`, `ArrayChar`, `ArrayDouble`, `ArrayFloat`, `ArrayInt`, `ArrayLong`, `ArrayObject` and `ArrayShort`.  
-`ArrayObject` is used for the `String` `DataType`.
-
-Each of these have rank specific subtypes rank 0 through rank 7, so for example:  
-`ArrayDouble.D0`, `ArrayDouble.D1`, `ArrayDouble.D2`, `ArrayDouble.D3`, `ArrayDouble.D4`, `ArrayDouble.D5`, `ArrayDouble.D6`, `ArrayDouble.D7`.
-
-There is also `ArrayStructure`, but this is handled differently from the numeric and `String` types. 
-See [ArrayStructures](arraystructures_ref.html).
-
-### DataType
-
-The class `ucar.ma2.DataType` is a type-safe enumeration of data types for the CDM and include the following types:
-
-~~~java
-public class ucar.ma2.DataType extends java.lang.Object{
-    public static final ucar.ma2.DataType BOOLEAN;
-    public static final ucar.ma2.DataType BYTE;
-    public static final ucar.ma2.DataType CHAR;
-    public static final ucar.ma2.DataType SHORT;
-    public static final ucar.ma2.DataType INT;
-    public static final ucar.ma2.DataType LONG;
-    public static final ucar.ma2.DataType FLOAT;
-    public static final ucar.ma2.DataType DOUBLE;
-
-    public static final ucar.ma2.DataType SEQUENCE;
-    public static final ucar.ma2.DataType STRING;
-    public static final ucar.ma2.DataType STRUCTURE;
-
-    public static final ucar.ma2.DataType ENUM1; // byte
-    public static final ucar.ma2.DataType ENUM2; // short
-    public static final ucar.ma2.DataType ENUM3; // int
-
-    public static final ucar.ma2.DataType OPAQUE; // byte blobs
-    public static final ucar.ma2.DataType OBJECT;
-
-    public static final ucar.ma2.DataType UBYTE;
-    public static final ucar.ma2.DataType USHORT;
-    public static final ucar.ma2.DataType UINT;
-    public static final ucar.ma2.DataType ULONG;
+  UBYTE("ubyte", 1, byte.class, true), // unsigned byte
+  USHORT("ushort", 2, short.class, true), // unsigned short
+  UINT("uint", 4, int.class, true), // unsigned int
+  ULONG("ulong", 8, long.class, true); // unsigned long
 }
 ~~~

@@ -3,10 +3,10 @@ package tests.writingiosp;
 import examples.writingiosp.IospDetailsTutorial;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import ucar.ma2.Array;
-import ucar.ma2.DataType;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Section;
+import ucar.array.Array;
+import ucar.array.ArrayType;
+import ucar.array.InvalidRangeException;
+import ucar.array.Section;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.Group;
@@ -19,7 +19,7 @@ import static com.google.common.truth.Truth.assertThat;
 
 public class TestIospDetailsTutorial {
   private final static String testFilePath =
-      "src/public/userguide/files/netcdfJava_tutorial/writingiosp/lightningData.txt";
+      "src/site/files/netcdfJava_tutorial/writingiosp/lightningData.txt";
 
   private static RandomAccessFile raf;
 
@@ -75,7 +75,7 @@ public class TestIospDetailsTutorial {
 
   @Test
   public void testUnsignedAttribute() {
-    Variable.Builder var = Variable.builder().setName("variable").setDataType(DataType.INT);
+    Variable.Builder var = Variable.builder().setName("variable").setArrayType(ArrayType.INT);
     IospDetailsTutorial.unsignedAttribute(var);
     Variable v = var.build(Group.builder().build());
     assertThat(v.findAttribute("_Unsigned")).isNotNull();
@@ -87,7 +87,7 @@ public class TestIospDetailsTutorial {
     Group.Builder group = Group.builder().addDimension(Dimension.builder("lat", 190).build())
         .addDimension(Dimension.builder("lon", 360).build());
     IospDetailsTutorial.createVariable(group);
-    assertThat((Iterable<?>) group.build().findVariableLocal("elevation")).isNotNull();
+    assertThat(group.build().findVariableLocal("elevation")).isNotNull();
   }
 
   @Test
@@ -95,7 +95,7 @@ public class TestIospDetailsTutorial {
     Group.Builder group = Group.builder().addDimension(Dimension.builder("lat", 190).build());
     IospDetailsTutorial.createCoordinateVariable(group);
     Variable var = group.build().findVariableLocal("lat");
-    assertThat((Iterable<?>) var).isNotNull();
+    assertThat(var).isNotNull();
     assertThat(var.getShortName()).isEqualTo(var.getDimension(0).getShortName());
   }
 
@@ -103,7 +103,7 @@ public class TestIospDetailsTutorial {
   public void testSetVariableData() {
     Group.Builder group = Group.builder().addDimension(Dimension.builder("lat", 190).build());
     Variable.Builder lat =
-        Variable.builder().setParentGroupBuilder(group).setName("lat").setDataType(DataType.FLOAT)
+        Variable.builder().setParentGroupBuilder(group).setName("lat").setArrayType(ArrayType.FLOAT)
             .setDimensionsByName("lat").addAttribute(new Attribute("units", "degrees_north"));
     IospDetailsTutorial.setVariableData(lat);
     assertThat(lat.build(group.build()).hasCachedData()).isTrue();
@@ -117,7 +117,7 @@ public class TestIospDetailsTutorial {
     Dimension d2 = Dimension.builder("j", 5).build();
     group.addDimension(d2);
     Group parent = group.build();
-    Variable var = Variable.builder().setName("var").setDataType(DataType.INT).addDimension(d1)
+    Variable var = Variable.builder().setName("var").setArrayType(ArrayType.INT).addDimension(d1)
         .addDimension(d2).build(parent);
     Array data = IospDetailsTutorial.readExample1(raf, var,
         Section.builder().appendRange(0, 189).appendRange(0, 4).build());
@@ -125,14 +125,14 @@ public class TestIospDetailsTutorial {
   }
 
   @Test
-  public void testReadExample2() throws IOException, InvalidRangeException {
+  public void testReadExample2() throws IOException, ucar.ma2.InvalidRangeException {
     Group.Builder group = Group.builder();
     Dimension d1 = Dimension.builder("i", 190).build();
     group.addDimension(d1);
     Dimension d2 = Dimension.builder("j", 5).build();
     group.addDimension(d2);
     Group parent = group.build();
-    Variable var = Variable.builder().setName("var").setDataType(DataType.INT).addDimension(d1)
+    Variable var = Variable.builder().setName("var").setArrayType(ArrayType.INT).addDimension(d1)
         .addDimension(d2).build(parent);
     Array data = IospDetailsTutorial.readExample2(raf, var, null);
     assertThat(data).isNotNull();

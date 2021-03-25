@@ -3,10 +3,7 @@ package tests.writingiosp;
 import examples.writingiosp.LightningExampleTutorial;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import ucar.ma2.Array;
-import ucar.ma2.ArrayDouble;
-import ucar.ma2.ArrayInt;
-import ucar.ma2.DataType;
+import ucar.array.*;
 import ucar.nc2.Dimension;
 import ucar.nc2.Group;
 import ucar.nc2.Variable;
@@ -20,7 +17,7 @@ import static com.google.common.truth.Truth.assertThat;
 public class TestLightningExampleTutorial {
 
   private final static String testFilePath =
-      "src/public/userguide/files/netcdfJava_tutorial/writingiosp/lightningData.txt";
+      "src/site/files/netcdfJava_tutorial/writingiosp/lightningData.txt";
 
   private static RandomAccessFile raf;
 
@@ -53,7 +50,7 @@ public class TestLightningExampleTutorial {
     Group group = builder.build();
 
     assertThat(group.findDimension("record")).isNotNull();
-    assertThat((Iterable<?>) group.findVariableLocal("date")).isNotNull();
+    assertThat(group.findVariableLocal("date")).isNotNull();
     assertThat(group.findAttribute("title")).isNotNull();
   }
 
@@ -67,21 +64,22 @@ public class TestLightningExampleTutorial {
   public void testImplementReadMethodsTutorial()
       throws IOException, NumberFormatException, ParseException {
     assertThat(LightningExampleTutorial.implementReadMethods(raf)).isEqualTo(nRecords);
-    assertThat(LightningExampleTutorial.dateArray.getSize()).isEqualTo(nRecords);
-    assertThat(LightningExampleTutorial.latArray.getSize()).isEqualTo(nRecords);
-    assertThat(LightningExampleTutorial.lonArray.getSize()).isEqualTo(nRecords);
-    assertThat(LightningExampleTutorial.ampArray.getSize()).isEqualTo(nRecords);
-    assertThat(LightningExampleTutorial.nstrokesArray.getSize()).isEqualTo(nRecords);
+    assertThat(Arrays.computeSize(LightningExampleTutorial.dateArray.getShape())).isEqualTo(nRecords);
+    assertThat(Arrays.computeSize(LightningExampleTutorial.latArray.getShape())).isEqualTo(nRecords);
+    assertThat(Arrays.computeSize(LightningExampleTutorial.lonArray.getShape())).isEqualTo(nRecords);
+    assertThat(Arrays.computeSize(LightningExampleTutorial.ampArray.getShape())).isEqualTo(nRecords);
+    assertThat(Arrays.computeSize(LightningExampleTutorial.nstrokesArray.getShape())).isEqualTo(nRecords);
   }
 
   @Test
-  public void testSetCachedDataTutorial() {
+  public void testSetSourceDataTutorial() {
     Group.Builder builder = Group.builder();
     Dimension dim = Dimension.builder("record", nRecords).build();
     builder.addDimension(dim);
-    ArrayInt.D1 dateArray = (ArrayInt.D1) Array.factory(DataType.INT, new int[] {nRecords});
-    ArrayDouble.D1 latArray = (ArrayDouble.D1) Array.factory(DataType.DOUBLE, new int[] {nRecords});
-    LightningExampleTutorial.setSourceData(builder, dim, dateArray, latArray);
+
+    Array<Integer> dateArray = Arrays.factory(ArrayType.INT, new int[] {nRecords});
+    Array<Double> latArray = Arrays.factory(ArrayType.DOUBLE, new int[] {nRecords});
+    LightningExampleTutorial.setSourceData(builder, dim, (ArrayInteger)dateArray, (ArrayDouble)latArray);
     Group group = builder.build();
 
     Variable var1 = group.findVariableLocal("date");
@@ -95,11 +93,11 @@ public class TestLightningExampleTutorial {
     Group.Builder builder = Group.builder();
     Dimension dim = Dimension.builder("record", nRecords).build();
     builder.addDimension(dim);
-    ArrayInt.D1 dateArray = (ArrayInt.D1) Array.factory(DataType.INT, new int[] {nRecords});
-    ArrayDouble.D1 latArray = (ArrayDouble.D1) Array.factory(DataType.DOUBLE, new int[] {nRecords});
-    ArrayDouble.D1 lonArray = (ArrayDouble.D1) Array.factory(DataType.DOUBLE, new int[] {nRecords});
-    LightningExampleTutorial.addCoordSystemsAndTypedDatasets(builder, dim, dateArray, latArray,
-        lonArray);
+    Array<Integer> dateArray = Arrays.factory(ArrayType.INT, new int[] {nRecords});
+    Array<Double> latArray = Arrays.factory(ArrayType.DOUBLE, new int[] {nRecords});
+    Array<Double> lonArray = Arrays.factory(ArrayType.DOUBLE, new int[] {nRecords});
+    LightningExampleTutorial.addCoordSystemsAndTypedDatasets(builder, dim, (ArrayInteger)dateArray, (ArrayDouble)latArray,
+            (ArrayDouble)lonArray);
   }
 
   @Test(expected = ClassNotFoundException.class)

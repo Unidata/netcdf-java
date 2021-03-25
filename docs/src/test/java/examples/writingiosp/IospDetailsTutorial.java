@@ -1,10 +1,6 @@
 package examples.writingiosp;
 
-import ucar.array.ArrayType;
-import ucar.ma2.Array;
-import ucar.ma2.DataType;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Section;
+import ucar.array.*;
 import ucar.nc2.*;
 import ucar.nc2.iosp.Layout;
 import ucar.nc2.iosp.LayoutRegular;
@@ -133,8 +129,8 @@ public class IospDetailsTutorial {
    */
   public static void addVarAttribute() {
     Variable.Builder var = Variable.builder().setName("variable");
-    var.addAttribute(Attribute.builder("missing_value").setDataType(DataType.DOUBLE)
-        .setValues(Array.factory(DataType.DOUBLE, new int[] {1, 2}, new double[] {999.0, -999.0}))
+    var.addAttribute(Attribute.builder("missing_value").setArrayType(ArrayType.DOUBLE)
+        .setArrayValues(Arrays.factory(ArrayType.DOUBLE, new int[] {1, 2}, new double[] {999.0, -999.0}))
         .build());
   }
 
@@ -188,8 +184,7 @@ public class IospDetailsTutorial {
    * @param lat
    */
   public static void setVariableData(Variable.Builder lat) {
-    ucar.array.Array data = new ucar.array.Array(ArrayType.FLOAT, )
-            Array.makeArray(DataType.FLOAT, 180, 90.0, -1.0);
+    ucar.array.Array data = Arrays.makeArray(new int[]{180}, 180, 90.0, -1.0);
     lat.setSourceData(data);
   }
 
@@ -203,7 +198,7 @@ public class IospDetailsTutorial {
    * @throws IOException
    * @throws InvalidRangeException
    */
-  public static ucar.array.Array readExample1(RandomAccessFile raf, Variable v2, Section wantSection)
+  public static ucar.array.Array readExample1(RandomAccessFile raf, Variable v2, ucar.array.Section wantSection)
       throws IOException, InvalidRangeException {
     raf.seek(0);
     raf.order(RandomAccessFile.BIG_ENDIAN);
@@ -214,8 +209,10 @@ public class IospDetailsTutorial {
     while (count < size)
       arr[count++] = raf.readShort(); // copy into primitive array
 
-    Array data = Array.factory(DataType.SHORT, v2.getShape(), arr);
-    return data.section(wantSection.getRanges());
+    // convert to Array type
+    ucar.array.Array data = Arrays.factory(ArrayType.SHORT, v2.getShape(), arr);
+    // use static method to get wanted section of data
+    return Arrays.section(data, wantSection);
   }
 
   /**
@@ -226,9 +223,10 @@ public class IospDetailsTutorial {
    * @param wantSection
    * @throws IOException
    * @throws InvalidRangeException
+   * note: LayoutRegular (and other classes within ucar.nc2.iosp) use ucar.ma2 Sections and InvalidRangeExceptions
    */
-  public static Array readExample2(RandomAccessFile raf, Variable v2, Section wantSection)
-      throws IOException, InvalidRangeException {
+  public static ucar.array.Array readExample2(RandomAccessFile raf, Variable v2, ucar.ma2.Section wantSection)
+      throws IOException, ucar.ma2.InvalidRangeException {
     raf.seek(0);
     raf.order(RandomAccessFile.BIG_ENDIAN);
     int size = (int) v2.getSize();
@@ -240,7 +238,7 @@ public class IospDetailsTutorial {
       raf.seek(chunk.getSrcPos());
       raf.readInt(arr, (int) chunk.getDestElem(), chunk.getNelems()); // copy into primitive array
     }
-    return Array.factory(DataType.INT, v2.getShape(), arr);
+    return Arrays.factory(ArrayType.INT, v2.getShape(), arr);
   }
 
   public static void readExample3(RandomAccessFile raf, Group.Builder rootGroup)
@@ -258,7 +256,7 @@ public class IospDetailsTutorial {
         // save RandomAccessFile as instance variable
         this.raf = raf;
         // ...
-        Variable.Builder elev = Variable.builder().setName("elevation").setDataType(DataType.SHORT);
+        Variable.Builder elev = Variable.builder().setName("elevation").setArrayType(ArrayType.SHORT);
         // .. add Variable attributes as above
 
         VarInfo vinfo = new VarInfo();
@@ -281,12 +279,12 @@ public class IospDetailsTutorial {
         int[] arr = new int[size];
         // ...
 
-        return Array.factory(DataType.INT, v2.getShape(), arr);
+        return Arrays.factory(ArrayType.INT, v2.getShape(), arr);
       }
     }
-    nestedClass obj = new nestedClass(); /* DOC-IGNORE */
-    obj.build(raf, rootGroup, null); /* DOC-IGNORE */
-    obj.readData(rootGroup.build().findVariableLocal("elevation"), null); /* DOC-IGNORE */
+    nestedClass obj = new nestedClass(); /* DOCS-IGNORE */
+    obj.build(raf, rootGroup, null); /* DOCS-IGNORE */
+    obj.readData(rootGroup.build().findVariableLocal("elevation"), null); /* DOCS-IGNORE */
   }
 
   /****************

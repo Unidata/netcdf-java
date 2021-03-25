@@ -151,8 +151,8 @@ entries:
     output: web, pdf
     folderitems:
 
-    - title: ArrayStructures
-      url: /arraystructures_ref.html
+    - title: Structure Data Arrays
+      url: /structureDataArrays_ref.html
       output: web, pdf
 
     - title: BUFR Files
