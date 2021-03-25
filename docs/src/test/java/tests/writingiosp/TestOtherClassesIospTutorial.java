@@ -32,8 +32,8 @@ public class TestOtherClassesIospTutorial {
     Dimension d2 = Dimension.builder("j", 5).build();
     rootGroup.addDimension(d2);
     Group parent = rootGroup.build();
-    varShort = Variable.builder().setName("short_var").setArrayType(ArrayType.SHORT).addDimension(d1)
-        .addDimension(d2).build(parent);
+    varShort = Variable.builder().setName("short_var").setArrayType(ArrayType.SHORT)
+        .addDimension(d1).addDimension(d2).build(parent);
     varDouble = Variable.builder().setName("double_var").setArrayType(ArrayType.DOUBLE)
         .addDimension(d1).addDimension(d2).build(parent);
   }
@@ -45,13 +45,13 @@ public class TestOtherClassesIospTutorial {
 
   @Test
   public void testArrayIterator() {
-    Array<Float> data = Arrays.factory(ArrayType.FLOAT, new int[]{10});
+    Array<Float> data = Arrays.factory(ArrayType.FLOAT, new int[] {10});
     OtherClassesIospTutorial.arrayIterator(data);
   }
 
   @Test
   public void testArrayIndices() {
-    Array<Float> data = Arrays.factory(ArrayType.FLOAT, new int[]{10});
+    Array<Float> data = Arrays.factory(ArrayType.FLOAT, new int[] {10});
     OtherClassesIospTutorial.arrayIndices(data);
   }
 }
