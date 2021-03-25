@@ -130,7 +130,8 @@ public class IospDetailsTutorial {
   public static void addVarAttribute() {
     Variable.Builder var = Variable.builder().setName("variable");
     var.addAttribute(Attribute.builder("missing_value").setArrayType(ArrayType.DOUBLE)
-        .setArrayValues(Arrays.factory(ArrayType.DOUBLE, new int[] {1, 2}, new double[] {999.0, -999.0}))
+        .setArrayValues(
+            Arrays.factory(ArrayType.DOUBLE, new int[] {1, 2}, new double[] {999.0, -999.0}))
         .build());
   }
 
@@ -184,7 +185,7 @@ public class IospDetailsTutorial {
    * @param lat
    */
   public static void setVariableData(Variable.Builder lat) {
-    ucar.array.Array data = Arrays.makeArray(new int[]{180}, 180, 90.0, -1.0);
+    ucar.array.Array data = Arrays.makeArray(new int[] {180}, 180, 90.0, -1.0);
     lat.setSourceData(data);
   }
 
@@ -198,8 +199,8 @@ public class IospDetailsTutorial {
    * @throws IOException
    * @throws InvalidRangeException
    */
-  public static ucar.array.Array readExample1(RandomAccessFile raf, Variable v2, ucar.array.Section wantSection)
-      throws IOException, InvalidRangeException {
+  public static ucar.array.Array readExample1(RandomAccessFile raf, Variable v2,
+      ucar.array.Section wantSection) throws IOException, InvalidRangeException {
     raf.seek(0);
     raf.order(RandomAccessFile.BIG_ENDIAN);
     int size = (int) v2.getSize();
@@ -223,10 +224,10 @@ public class IospDetailsTutorial {
    * @param wantSection
    * @throws IOException
    * @throws InvalidRangeException
-   * note: LayoutRegular (and other classes within ucar.nc2.iosp) use ucar.ma2 Sections and InvalidRangeExceptions
+   *         note: LayoutRegular (and other classes within ucar.nc2.iosp) use ucar.ma2 Sections and InvalidRangeExceptions
    */
-  public static ucar.array.Array readExample2(RandomAccessFile raf, Variable v2, ucar.ma2.Section wantSection)
-      throws IOException, ucar.ma2.InvalidRangeException {
+  public static ucar.array.Array readExample2(RandomAccessFile raf, Variable v2,
+      ucar.ma2.Section wantSection) throws IOException, ucar.ma2.InvalidRangeException {
     raf.seek(0);
     raf.order(RandomAccessFile.BIG_ENDIAN);
     int size = (int) v2.getSize();
@@ -256,7 +257,8 @@ public class IospDetailsTutorial {
         // save RandomAccessFile as instance variable
         this.raf = raf;
         // ...
-        Variable.Builder elev = Variable.builder().setName("elevation").setArrayType(ArrayType.SHORT);
+        Variable.Builder elev =
+            Variable.builder().setName("elevation").setArrayType(ArrayType.SHORT);
         // .. add Variable attributes as above
 
         VarInfo vinfo = new VarInfo();

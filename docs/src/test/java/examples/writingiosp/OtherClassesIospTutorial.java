@@ -16,9 +16,9 @@ public class OtherClassesIospTutorial {
     Array data = Arrays.factory(v.getArrayType(), v.getShape(), jarray);
   }
 
-  public static void arrayIterator(Array<Float> data){
+  public static void arrayIterator(Array<Float> data) {
     Iterator<Float> it = data.iterator();
-    while(it.hasNext()) {
+    while (it.hasNext()) {
       float val = it.next();
       // do something
     }
