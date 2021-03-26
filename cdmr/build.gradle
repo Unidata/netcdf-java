@@ -1,7 +1,10 @@
+import com.github.psxpaul.task.JavaExecFork
+
 plugins {
   // Provide convenience executables for testing
   id 'application'
   id "com.google.protobuf"
+  id 'com.github.psxpaul.execfork' version '0.1.13'
 }
 
 description = 'CDM remote access using gRPC.'
@@ -59,3 +62,16 @@ sourceSets {
     }
   }
 }
+
+task startDaemon(type: JavaExecFork) {
+  classpath = sourceSets.main.runtimeClasspath
+  main = 'ucar.cdmr.server.CdmrServer'
+  jvmArgs = [ '-Xmx512m', '-Djava.awt.headless=true' ]
+  standardOutput = "$buildDir/cdmr_logs/cdmr.log"
+  errorOutput = "$buildDir/cdmr_logs/cdmr-error.log"
+  stopAfter = test
+  waitForPort = 16111
+  waitForOutput = 'Server started, listening on 16111'
+}
+
+test.dependsOn(startDaemon)
