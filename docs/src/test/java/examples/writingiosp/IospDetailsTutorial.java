@@ -282,9 +282,9 @@ public class IospDetailsTutorial {
         return Array.factory(DataType.INT, v2.getShape(), arr);
       }
     }
-    nestedClass obj = new nestedClass(); /* DOC-IGNORE */
-    obj.build(raf, rootGroup, null); /* DOC-IGNORE */
-    obj.readData(rootGroup.build().findVariableLocal("elevation"), null); /* DOC-IGNORE */
+    nestedClass obj = new nestedClass(); /* DOCS-IGNORE */
+    obj.build(raf, rootGroup, null); /* DOCS-IGNORE */
+    obj.readData(rootGroup.build().findVariableLocal("elevation"), null); /* DOCS-IGNORE */
   }
 
   /****************
