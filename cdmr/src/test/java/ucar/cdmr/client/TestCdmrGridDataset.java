@@ -1,12 +1,11 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.cdmr.client;
 
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.array.InvalidRangeException;
@@ -14,8 +13,6 @@ import ucar.nc2.grid.*;
 import ucar.nc2.internal.util.CompareArrayToArray;
 import ucar.nc2.time.CalendarDate;
 import ucar.unidata.util.test.TestDir;
-import ucar.unidata.util.test.category.NeedsExternalResource;
-import ucar.unidata.util.test.category.NotJenkins;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,7 +25,6 @@ import static com.google.common.truth.Truth.assertWithMessage;
 
 /** Test {@link CdmrNetcdfFile} */
 @RunWith(Parameterized.class)
-@Category({NeedsExternalResource.class, NotJenkins.class}) // Needs CmdrServer to be started up
 public class TestCdmrGridDataset {
   @Parameterized.Parameters(name = "{0}")
   public static List<Object[]> getTestParameters() {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.cdmr.client;
@@ -14,11 +14,9 @@ import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.internal.util.CompareArrayToMa2;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
-import ucar.unidata.util.test.category.NeedsExternalResource;
-import ucar.unidata.util.test.category.NotJenkins;
 
 /** Test {@link CdmrNetcdfFile} */
-@Category({NeedsExternalResource.class, NotJenkins.class, NeedsCdmUnitTest.class}) // Needs CmdrServer to be started up
+@Category(NeedsCdmUnitTest.class)
 public class TestCdmrProblemNeeds {
   private final String filename;
   private final String cdmrUrl;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.cdmr.client;
@@ -12,11 +12,9 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.internal.util.CompareArrayToMa2;
 import ucar.unidata.util.test.TestDir;
-import ucar.unidata.util.test.category.NeedsExternalResource;
-import ucar.unidata.util.test.category.NotJenkins;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 /** Test {@link CdmrNetcdfFile} */
-@Category({NeedsExternalResource.class, NotJenkins.class}) // Needs CmdrServer to be started up
 public class TestCdmrProblem {
 
   // Send one chunk u(0:2, 0:39, 0:90997) size=43679040 bytes
@@ -24,6 +22,7 @@ public class TestCdmrProblem {
   // Send one chunk u(6:8, 0:39, 0:90997) size=43679040 bytes
   // Send one chunk u(0:0, 0:39, 0:90997) size=14559680 bytes
   @Test
+  @Category(NeedsCdmUnitTest.class)
   public void testChunkProblem() throws Exception {
     String localFilename = "formats/netcdf4/multiDimscale.nc4";
     doOne(TestDir.cdmUnitTestDir + localFilename, "u");
