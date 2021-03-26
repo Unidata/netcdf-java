@@ -10,7 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * A Section composed of List<RangeIterator> instead of List<Range>.
+ * A Section composed of List&lt;RangeIterator&gt; rather than List&t;Range&gt;.
  * SectionIterable knows the fullShape of which it is a section.
  * The iteration is over the elements in the section, returning 1D index into the full shape.
  */

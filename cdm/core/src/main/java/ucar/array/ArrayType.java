@@ -6,6 +6,7 @@ package ucar.array;
 
 import ucar.ma2.DataType;
 
+import javax.annotation.Nullable;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.util.Iterator;
@@ -13,8 +14,8 @@ import java.util.Iterator;
 /**
  * Type-safe enumeration of Array data types.
  * <p>
- * OPAQUE: Byte blobs, where length of blobs may be different. Usually stored as a vlen of Array\<Byte\>.
- * If theres only one, may be just an Array\<Byte\>.
+ * OPAQUE: Byte blobs, where length of blobs may be different. Usually stored as a vlen of Array&lt;Byte&gt;.
+ * If theres only one, may be just an Array&lt;Byte&gt;.
  * </p>
  */
 public enum ArrayType {
@@ -87,13 +88,8 @@ public enum ArrayType {
     return size;
   }
 
-  /**
-   * The primitive class type: char, byte, float, double, short, int, long, boolean, String, StructureData,
-   * StructureDataIterator, ByteBuffer.
-   *
-   * @return the primitive class type
-   */
-  public Class<?> getPrimitiveClassType() {
+  /** The primitive Java class type, inverse of forPrimitiveClass() */
+  public Class<?> getPrimitiveClass() {
     return primitiveClass;
   }
 
@@ -165,7 +161,7 @@ public enum ArrayType {
   }
 
   /**
-   * Returns a ArrayType that is related to {@code this}, but with the specified signedness.
+   * Returns an ArrayType that is related to {@code this}, but with the specified signedness.
    * This method is only meaningful for {@link #isIntegral() integral} data types; if it is called on a non-integral
    * type, then {@code this} is simply returned. Examples:
    * 
@@ -197,24 +193,6 @@ public enum ArrayType {
     return this;
   }
 
-  public boolean isEnumCompatible(ArrayType inferred) {
-    if (inferred == null)
-      return false;
-    if (this == inferred)
-      return true;
-    switch (this) {
-      case ENUM1:
-        return inferred == ArrayType.BYTE || inferred == ArrayType.STRING;
-      case ENUM2:
-        return inferred == ArrayType.SHORT || inferred == ArrayType.STRING;
-      case ENUM4:
-        return inferred == ArrayType.INT || inferred == ArrayType.STRING;
-      default:
-        break;
-    }
-    return false;
-  }
-
   /** @deprecated do not use if possible. */
   @Deprecated
   public DataType getDataType() {
@@ -223,32 +201,17 @@ public enum ArrayType {
 
   ///////////////////////////////////////////////////////////////////////////////////////////////
 
-  public static ArrayType enumTypeize(ArrayType dt) {
-    switch (dt) {
-      case BYTE:
-      case UBYTE:
-        return ENUM1;
-      case SHORT:
-      case USHORT:
-        return ENUM2;
-      case INT:
-      case UINT:
-        return ENUM4;
-      default:
-        break;
-    }
-    return dt;
-  }
-
   /**
    * Find the ArrayType that matches this name.
    *
    * @param name find ArrayType with this name.
    * @return ArrayType or null if no match.
    */
-  public static ArrayType getType(String name) {
-    if (name == null)
+  @Nullable
+  public static ArrayType getTypeByName(String name) {
+    if (name == null) {
       return null;
+    }
     try {
       return valueOf(name.toUpperCase());
     } catch (IllegalArgumentException e) { // lame!

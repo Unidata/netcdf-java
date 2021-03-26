@@ -2,7 +2,6 @@
  * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-
 package thredds.client.catalog;
 
 import javax.annotation.Nullable;
@@ -11,7 +10,7 @@ import java.text.ParseException;
 import ucar.nc2.time.CalendarDate;
 
 /**
- * Encapsulates a range of dates, using DateType start/end, and/or a TimeDuration.
+ * A range of dates, using DateType start/end, and/or a TimeDuration.
  * You can use a DateType = "present" and a time duration to specify "real time" intervals, eg
  * "last 3 days" uses endDate = "present" and duration = "3 days".
  * <p>

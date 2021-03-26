@@ -11,7 +11,7 @@ import javax.annotation.concurrent.Immutable;
 
 /**
  * Concrete implementation of Array specialized for StructureData.
- * Not really immutable, since Storage\<StructureData\> may not be, but thats hidden to the consumer.
+ * Not really immutable, since Storage&lt;StructureData&gt; may not be, but thats hidden to the consumer.
  */
 @Immutable
 public final class StructureDataArray extends Array<StructureData> {

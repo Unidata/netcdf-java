@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package thredds.client.catalog;
@@ -83,6 +83,7 @@ public enum ServiceType {
     return this.accessType.name;
   }
 
+  /** Access Type enums */
   public enum AccessType {
     Catalog("Catalog"), Metadata("Metadata"), DataAccess("Data Access"), Unknown("Unknown");
 

@@ -1,14 +1,7 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-//
-// Filename: Gdc_To_Utm_Converter.java
-//
-// Author: Dan Toms, SRI International
-//
-// Package: GeoTransform <http://www.ai.sri.com/geotransformtest/>
-//
 // Acknowledgements:
 // The algorithms used in the package were created by Ralph Toms and
 // first appeared as part of the SEDRIS Coordinate Transformation API.
@@ -28,10 +21,7 @@
 // under the License.
 //
 // Portions are Copyright (c) SRI International, 1998.
-//
-
 package ucar.unidata.geoloc.projection;
-
 
 import ucar.unidata.geoloc.EarthEllipsoid;
 import ucar.unidata.geoloc.LatLonPoints;

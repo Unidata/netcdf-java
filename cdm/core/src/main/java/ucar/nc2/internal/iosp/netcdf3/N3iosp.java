@@ -347,7 +347,7 @@ public class N3iosp extends AbstractIOServiceProvider implements IOServiceProvid
 
     ucar.array.StructureMembers members = membersb.build();
     Storage<StructureData> storage =
-        new ucar.array.StructureDataStorageBB(members, ByteBuffer.wrap(result), (int) section.getSize());
+        new ucar.array.StructureDataStorageBB(members, ByteBuffer.wrap(result), (int) section.computeSize());
     return new ucar.array.StructureDataArray(members, section.getShape(), storage);
   }
 }

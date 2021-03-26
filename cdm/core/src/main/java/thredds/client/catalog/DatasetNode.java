@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package thredds.client.catalog;
@@ -11,12 +11,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-/**
- * node in a tree of datasets, superclass of Catalog and Dataset
- *
- * @author caron
- * @since 1/8/2015
- */
+/** A node in a tree of datasets, superclass of Catalog and Dataset */
 @Immutable
 public class DatasetNode {
   protected final DatasetNode parent;

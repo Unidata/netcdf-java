@@ -385,8 +385,9 @@ public class Arrays {
   public static long computeSize(int[] shape) {
     long product = 1;
     for (int aShape : shape) {
-      if (aShape < 0)
+      if (aShape < 0) {
         break; // stop at vlen
+      }
       product *= aShape;
     }
     return product;

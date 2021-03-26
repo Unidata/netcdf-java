@@ -363,7 +363,7 @@ public abstract class GribArrayReader {
       this.xRange = xRange;
       this.horizSize = yRange.length() * xRange.length();
 
-      long len = Section.computeSize(shape);
+      long len = Arrays.computeSize(shape);
       if (len > 100 * 1000 * 1000 * 4) { // LOOK make configurable
         logger.debug("Len greater that 100MB shape={}%n{}", java.util.Arrays.toString(shape),
             Throwables.getStackTraceAsString(new Throwable()));

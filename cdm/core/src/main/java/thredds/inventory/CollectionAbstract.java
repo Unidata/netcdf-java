@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 1998-2017 University Corporation for Atmospheric Research/Unidata
- * See LICENSE.txt for license information.
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
  */
-
 package thredds.inventory;
 
 import thredds.client.catalog.TimeDuration;
