@@ -477,10 +477,6 @@ public class DataFactory {
         : NetcdfDatasets.openDataset(durl, null, -1, task, null);
 
     result.accessUsed = access;
-    // ncd.setId(datasetId);
-    // ncd.setTitle(title);
-    // TODO annotate(ds, ncd);
-
     return ncd;
   }
 

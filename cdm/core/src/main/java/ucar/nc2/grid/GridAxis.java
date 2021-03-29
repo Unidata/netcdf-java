@@ -90,7 +90,7 @@ public abstract class GridAxis implements Iterable<Object> {
   // called only on dependent axes. pass in the subsetted independent axis
   public abstract Optional<GridAxis> subsetDependent(GridAxis1D subsetIndAxis, Formatter errlog);
 
-  // Iterator over which coordinates wanted. TODO only in axis1d? Only for subset??
+  // Iterator over which coordinates wanted. TODO only in axis1d? Only for subset?? RangeIterator vs Range?
   public abstract ucar.array.RangeIterator getRangeIterator();
 
   /////////////////////////////////////////////////////

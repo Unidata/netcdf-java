@@ -103,7 +103,7 @@ public class SectionIterable implements Iterable<Integer> {
 
   public class SectionIterator implements Iterator<Integer> {
     private final int[] odo = new int[getRank()]; // odometer - the current element
-                                                  // TODO could use Index, but must upgrade to using Range
+                                                  // LOOK could use Index, but must upgrade to using Range
     private final List<Iterator<Integer>> rangeIterList = new ArrayList<>();
     private final int[] stride = new int[getRank()];
     private final long total;

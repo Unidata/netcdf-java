@@ -12,6 +12,7 @@ import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.util.Formatter;
+import java.util.HashSet;
 
 import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
@@ -19,6 +20,39 @@ import static com.google.common.truth.Truth.assertWithMessage;
 @Category(NeedsCdmUnitTest.class)
 public class TestTdsGribProblems {
   private static final String indexDir = TestDir.cdmUnitTestDir + "tds_index/";
+
+  @Test
+  public void checkCmcRdps() throws Exception {
+    String filename = indexDir + "CMC/RDPS/NA_15km/CMC_RDPS_ps15km_20201027_0000.grib2.ncx4";
+    checkGridDataset(filename, 58, 17, 24, 23);
+  }
+
+  private void checkGridDataset(String filename, int ngrids, int ncoordSys, int nAxes, int uniqueAxes)
+      throws Exception {
+    Formatter errlog = new Formatter();
+    try (GridDataset gridDataset = GridDatasetFactory.openGridDataset(filename, errlog)) {
+      if (gridDataset == null) {
+        System.out.printf("Cant open as GridDataset: %s%n", filename);
+        return;
+      }
+      System.out.printf("%ncheckGridDataset: %s%n", gridDataset.getLocation());
+      assertThat(gridDataset.getGridCoordinateSystems()).hasSize(ncoordSys);
+      assertThat(gridDataset.getGridAxes()).hasSize(nAxes);
+      assertThat(gridDataset.getGrids()).hasSize(ngrids);
+
+      // checks that all gridAxes are used in a grid and are unique
+      HashSet<GridCoordinateSystem> csysSet = new HashSet<>();
+      HashSet<GridAxis> axisSet = new HashSet<>();
+      for (Grid grid : gridDataset.getGrids()) {
+        csysSet.add(grid.getCoordinateSystem());
+        for (GridAxis axis : grid.getCoordinateSystem().getGridAxes()) {
+          axisSet.add(axis);
+        }
+      }
+      assertThat(csysSet).hasSize(ncoordSys);
+      assertThat(axisSet).hasSize(uniqueAxes);
+    }
+  }
 
   /*
    * All NCEP/NBM/Ocean/National_Blend_Ocean_20201010_0000.grib2.ncx4

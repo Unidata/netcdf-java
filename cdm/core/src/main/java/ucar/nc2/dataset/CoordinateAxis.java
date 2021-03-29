@@ -277,7 +277,6 @@ public class CoordinateAxis extends VariableDS {
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////
-  // TODO make these final and immutable in 6.
   protected final NetcdfDataset ncd; // remove
   protected final AxisType axisType;
   protected final String positive; // remove

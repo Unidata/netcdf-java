@@ -28,8 +28,12 @@ public abstract class CoordinateTransform implements Comparable<CoordinateTransf
     return name;
   }
 
-  /** The naming authority. */
-  // TODO is this needed? candidate for deprecation and removal
+  /**
+   * The naming authority.
+   * 
+   * @deprecated do not use
+   */
+  @Deprecated
   public String getAuthority() {
     return authority;
   }
