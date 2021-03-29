@@ -16,7 +16,7 @@ import java.util.Formatter;
 /** Convert between CdmrGrid Protos and GridDataset objects. */
 public class CdmrGridConverter {
 
-  public static FeatureType convertFeatureType(CdmrGridProto.FeatureType proto) {
+  public static FeatureType convertFeatureType(CdmrGridProto.GridDataset.FeatureType proto) {
     switch (proto) {
       case Gridded:
         return FeatureType.GRID;
@@ -24,46 +24,46 @@ public class CdmrGridConverter {
     throw new IllegalArgumentException();
   }
 
-  public static AxisType convertAxisType(CdmrGridProto.AxisType proto) {
+  public static AxisType convertAxisType(CdmrGridProto.GridAxis.AxisType proto) {
     if (proto == null) {
       return null;
     }
     return AxisType.getType(proto.name());
   }
 
-  public static CdmrGridProto.AxisType convertAxisType(AxisType axis) {
+  public static CdmrGridProto.GridAxis.AxisType convertAxisType(AxisType axis) {
     if (axis == null) {
       return null;
     }
-    return CdmrGridProto.AxisType.valueOf(axis.name());
+    return CdmrGridProto.GridAxis.AxisType.valueOf(axis.name());
   }
 
-  public static GridAxis.Spacing convertAxisSpacing(CdmrGridProto.AxisSpacing proto) {
+  public static GridAxis.Spacing convertAxisSpacing(CdmrGridProto.GridAxis.AxisSpacing proto) {
     if (proto == null) {
       return null;
     }
     return GridAxis.Spacing.valueOf(proto.name());
   }
 
-  public static CdmrGridProto.AxisSpacing convertAxisSpacing(GridAxis.Spacing spacing) {
+  public static CdmrGridProto.GridAxis.AxisSpacing convertAxisSpacing(GridAxis.Spacing spacing) {
     if (spacing == null) {
       return null;
     }
-    return CdmrGridProto.AxisSpacing.valueOf(spacing.name());
+    return CdmrGridProto.GridAxis.AxisSpacing.valueOf(spacing.name());
   }
 
-  public static GridAxis.DependenceType convertAxisDependenceType(CdmrGridProto.DependenceType proto) {
+  public static GridAxis.DependenceType convertAxisDependenceType(CdmrGridProto.GridAxis.DependenceType proto) {
     if (proto == null) {
       return null;
     }
     return GridAxis.DependenceType.valueOf(proto.name());
   }
 
-  public static CdmrGridProto.DependenceType convertAxisDependenceType(GridAxis.DependenceType dtype) {
+  public static CdmrGridProto.GridAxis.DependenceType convertAxisDependenceType(GridAxis.DependenceType dtype) {
     if (dtype == null) {
       return null;
     }
-    return CdmrGridProto.DependenceType.valueOf(dtype.name());
+    return CdmrGridProto.GridAxis.DependenceType.valueOf(dtype.name());
   }
 
   public static void decodeDataset(CdmrGridProto.GridDataset proto, CdmrGridDataset.Builder builder, Formatter errlog) {
@@ -79,7 +79,7 @@ public class CdmrGridConverter {
   }
 
   public static GridAxis.Builder<?> decodeGridAxis(CdmrGridProto.GridAxis proto) {
-    CdmrGridProto.GridAxisType gridAxisType = proto.getGridAxisType();
+    CdmrGridProto.GridAxis.GridAxisType gridAxisType = proto.getGridAxisType();
 
     GridAxis.Builder<?> axisb;
     switch (gridAxisType) {
@@ -162,7 +162,7 @@ public class CdmrGridConverter {
     CdmrGridProto.GridDataset.Builder builder = CdmrGridProto.GridDataset.newBuilder();
     builder.setName(org.getName());
     builder.setLocation(org.getLocation());
-    builder.setFeatureType(CdmrGridProto.FeatureType.Gridded);
+    builder.setFeatureType(CdmrGridProto.GridDataset.FeatureType.Gridded);
     builder.addAllAttributes(CdmrConverter.encodeAttributes(org.attributes()));
 
     for (GridAxis axis : org.getGridAxes()) {
@@ -205,13 +205,13 @@ public class CdmrGridConverter {
     CdmrGridProto.GridAxis.Builder builder = CdmrGridProto.GridAxis.newBuilder();
 
     if (axis instanceof GridAxis1DTime) {
-      builder.setGridAxisType(CdmrGridProto.GridAxisType.Axis1DTime);
+      builder.setGridAxisType(CdmrGridProto.GridAxis.GridAxisType.Axis1DTime);
     } else if (axis instanceof GridAxisOffsetTimeRegular) {
-      builder.setGridAxisType(CdmrGridProto.GridAxisType.TimeOffsetRegular);
+      builder.setGridAxisType(CdmrGridProto.GridAxis.GridAxisType.TimeOffsetRegular);
     } else if (axis instanceof GridAxis2D) {
-      builder.setGridAxisType(CdmrGridProto.GridAxisType.Axis2D);
+      builder.setGridAxisType(CdmrGridProto.GridAxis.GridAxisType.Axis2D);
     } else {
-      builder.setGridAxisType(CdmrGridProto.GridAxisType.Axis1D);
+      builder.setGridAxisType(CdmrGridProto.GridAxis.GridAxisType.Axis1D);
     }
 
     builder.setName(axis.getName());

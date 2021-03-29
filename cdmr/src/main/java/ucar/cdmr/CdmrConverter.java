@@ -46,82 +46,82 @@ public class CdmrConverter {
   public static CdmrNetcdfProto.DataType convertDataType(ArrayType dtype) {
     switch (dtype) {
       case CHAR:
-        return CdmrNetcdfProto.DataType.CHAR;
+        return CdmrNetcdfProto.DataType.DATA_TYPE_CHAR;
       case BYTE:
-        return CdmrNetcdfProto.DataType.BYTE;
+        return CdmrNetcdfProto.DataType.DATA_TYPE_BYTE;
       case SHORT:
-        return CdmrNetcdfProto.DataType.SHORT;
+        return CdmrNetcdfProto.DataType.DATA_TYPE_SHORT;
       case INT:
-        return CdmrNetcdfProto.DataType.INT;
+        return CdmrNetcdfProto.DataType.DATA_TYPE_INT;
       case LONG:
-        return CdmrNetcdfProto.DataType.LONG;
+        return CdmrNetcdfProto.DataType.DATA_TYPE_LONG;
       case FLOAT:
-        return CdmrNetcdfProto.DataType.FLOAT;
+        return CdmrNetcdfProto.DataType.DATA_TYPE_FLOAT;
       case DOUBLE:
-        return CdmrNetcdfProto.DataType.DOUBLE;
+        return CdmrNetcdfProto.DataType.DATA_TYPE_DOUBLE;
       case STRING:
-        return CdmrNetcdfProto.DataType.STRING;
+        return CdmrNetcdfProto.DataType.DATA_TYPE_STRING;
       case STRUCTURE:
-        return CdmrNetcdfProto.DataType.STRUCTURE;
+        return CdmrNetcdfProto.DataType.DATA_TYPE_STRUCTURE;
       case SEQUENCE:
-        return CdmrNetcdfProto.DataType.SEQUENCE;
+        return CdmrNetcdfProto.DataType.DATA_TYPE_SEQUENCE;
       case ENUM1:
-        return CdmrNetcdfProto.DataType.ENUM1;
+        return CdmrNetcdfProto.DataType.DATA_TYPE_ENUM1;
       case ENUM2:
-        return CdmrNetcdfProto.DataType.ENUM2;
+        return CdmrNetcdfProto.DataType.DATA_TYPE_ENUM2;
       case ENUM4:
-        return CdmrNetcdfProto.DataType.ENUM4;
+        return CdmrNetcdfProto.DataType.DATA_TYPE_ENUM4;
       case OPAQUE:
-        return CdmrNetcdfProto.DataType.OPAQUE;
+        return CdmrNetcdfProto.DataType.DATA_TYPE_OPAQUE;
       case UBYTE:
-        return CdmrNetcdfProto.DataType.UBYTE;
+        return CdmrNetcdfProto.DataType.DATA_TYPE_UBYTE;
       case USHORT:
-        return CdmrNetcdfProto.DataType.USHORT;
+        return CdmrNetcdfProto.DataType.DATA_TYPE_USHORT;
       case UINT:
-        return CdmrNetcdfProto.DataType.UINT;
+        return CdmrNetcdfProto.DataType.DATA_TYPE_UINT;
       case ULONG:
-        return CdmrNetcdfProto.DataType.ULONG;
+        return CdmrNetcdfProto.DataType.DATA_TYPE_ULONG;
     }
     throw new IllegalStateException("illegal data type " + dtype);
   }
 
   public static ArrayType convertDataType(CdmrNetcdfProto.DataType dtype) {
     switch (dtype) {
-      case CHAR:
+      case DATA_TYPE_CHAR:
         return ArrayType.CHAR;
-      case BYTE:
+      case DATA_TYPE_BYTE:
         return ArrayType.BYTE;
-      case SHORT:
+      case DATA_TYPE_SHORT:
         return ArrayType.SHORT;
-      case INT:
+      case DATA_TYPE_INT:
         return ArrayType.INT;
-      case LONG:
+      case DATA_TYPE_LONG:
         return ArrayType.LONG;
-      case FLOAT:
+      case DATA_TYPE_FLOAT:
         return ArrayType.FLOAT;
-      case DOUBLE:
+      case DATA_TYPE_DOUBLE:
         return ArrayType.DOUBLE;
-      case STRING:
+      case DATA_TYPE_STRING:
         return ArrayType.STRING;
-      case STRUCTURE:
+      case DATA_TYPE_STRUCTURE:
         return ArrayType.STRUCTURE;
-      case SEQUENCE:
+      case DATA_TYPE_SEQUENCE:
         return ArrayType.SEQUENCE;
-      case ENUM1:
+      case DATA_TYPE_ENUM1:
         return ArrayType.ENUM1;
-      case ENUM2:
+      case DATA_TYPE_ENUM2:
         return ArrayType.ENUM2;
-      case ENUM4:
+      case DATA_TYPE_ENUM4:
         return ArrayType.ENUM4;
-      case OPAQUE:
+      case DATA_TYPE_OPAQUE:
         return ArrayType.OPAQUE;
-      case UBYTE:
+      case DATA_TYPE_UBYTE:
         return ArrayType.UBYTE;
-      case USHORT:
+      case DATA_TYPE_USHORT:
         return ArrayType.USHORT;
-      case UINT:
+      case DATA_TYPE_UINT:
         return ArrayType.UINT;
-      case ULONG:
+      case DATA_TYPE_ULONG:
         return ArrayType.ULONG;
     }
     throw new IllegalStateException("illegal data type " + dtype);
@@ -497,7 +497,7 @@ public class CdmrConverter {
 
   private static Structure.Builder<?> decodeStructure(CdmrNetcdfProto.Structure s) {
     Structure.Builder<?> ncvar =
-        (s.getDataType() == CdmrNetcdfProto.DataType.SEQUENCE) ? Sequence.builder() : Structure.builder();
+        (s.getDataType() == CdmrNetcdfProto.DataType.DATA_TYPE_SEQUENCE) ? Sequence.builder() : Structure.builder();
 
     ncvar.setName(s.getName()).setDataType(convertDataType(s.getDataType()).getDataType());
 

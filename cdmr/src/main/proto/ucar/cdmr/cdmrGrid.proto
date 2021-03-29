@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package ucar.cdmr;
 
-import "cdmrNetcdf.proto";
+import "ucar/cdmr/cdmrNetcdf.proto";
 
 option java_package = "ucar.cdmr";
 option java_outer_classname = "CdmrGridProto";
@@ -20,63 +20,46 @@ message GridDatasetResponse {
 ////////////////////////////////////////////////////////////////////
 // GridDataset
 
-enum AxisType {  // same as ucar.nc2.constants.AxisType
-  RunTime=0;
-  Ensemble=1;
-  Time=2;
-  GeoX=3;
-  GeoY=4;
-  GeoZ=5;
-  Lat=6;
-  Lon=7;
-  Height=8;
-  Pressure=9;
-  TimeOffset=14;
-}
-
-enum AxisSpacing {  // same as GridAxis.Spacing
-  regularPoint=0;
-  irregularPoint=1;
-  regularInterval=3;
-  contiguousInterval=4;
-  discontiguousInterval=5;
-}
-
-enum Calendar {  // same as ucar.nc2.time.Calendar
-  proleptic_gregorian=0;
-  gregorian=1;
-  noleap=2;
-  all_leap=3;
-  uniform30day=4;
-  julian=5;
-  none=6;
-}
-
-enum DependenceType {  // same as GridAxis.DependenceType
-  independent=0;     // has its own dimension, is a coordinate variable, eg x(x)
-  dependent=1;       // aux coordinate, reftime(time) or time_bounds(time);
-  scalar=2;          // reftime
-  twoD=3;            // lat(x,y)
-  fmrcReg=4;         // time(reftime, hourOfDay)
-  dimension=5;       // swath(scan, scanAcross)
-}
-
-enum FeatureType {
-  General=0;
-  Curvilinear=1;
-  Gridded=2;
-  Swath=3;
-  Fmrc=4;
-}
-
-enum GridAxisType {
-  Axis1D=0;
-  Axis1DTime=1;
-  TimeOffsetRegular=2;
-  Axis2D=3;
-}
-
 message GridAxis {
+
+  enum AxisType {  // same as ucar.nc2.constants.AxisType
+    RunTime=0;
+    Ensemble=1;
+    Time=2;
+    GeoX=3;
+    GeoY=4;
+    GeoZ=5;
+    Lat=6;
+    Lon=7;
+    Height=8;
+    Pressure=9;
+    TimeOffset=14;
+  }
+
+  enum AxisSpacing {  // same as GridAxis.Spacing
+    regularPoint=0;
+    irregularPoint=1;
+    regularInterval=3;
+    contiguousInterval=4;
+    discontiguousInterval=5;
+  }
+
+  enum DependenceType {  // same as GridAxis.DependenceType
+    independent=0;     // has its own dimension, is a coordinate variable, eg x(x)
+    dependent=1;       // aux coordinate, reftime(time) or time_bounds(time);
+    scalar=2;          // reftime
+    twoD=3;            // lat(x,y)
+    fmrcReg=4;         // time(reftime, hourOfDay)
+    dimension=5;       // swath(scan, scanAcross)
+  }
+
+  enum GridAxisType {
+    Axis1D=0;
+    Axis1DTime=1;
+    TimeOffsetRegular=2;
+    Axis2D=3;
+  }
+
   GridAxisType gridAxisType = 1;
 
   string name = 2;
@@ -126,6 +109,14 @@ message Grid {
 }
 
 message GridDataset {
+  enum FeatureType {
+    General=0;
+    Curvilinear=1;
+    Gridded=2;
+    Swath=3;
+    Fmrc=4;
+  }
+
   string name = 1;
   string location = 2;
   FeatureType featureType = 3;
@@ -152,7 +143,18 @@ message GridDataResponse {
   GridReferencedArray data = 5;
 }
 
+
 message CalendarDateRange {
+  enum Calendar {  // same as ucar.nc2.time.Calendar
+    proleptic_gregorian=0;
+    gregorian=1;
+    noleap=2;
+    all_leap=3;
+    uniform30day=4;
+    julian=5;
+    none=6;
+  }
+
   int64 start = 1;
   int64 end = 2;
   Calendar calendar = 3;

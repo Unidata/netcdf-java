@@ -1,6 +1,7 @@
 plugins {
   // Provide convenience executables for testing
   id 'application'
+  id "com.google.protobuf"
 }
 
 description = 'CDM remote access using gRPC.'
