@@ -61,7 +61,7 @@ entries:
       url: /netcdf_dataset.html
       output: web, pdf
 
-    - title: writing netCDF-3 and netCDF-4 Files (CDM 4.3+)
+    - title: Writing netCDF-3 and netCDF-4 Files (CDM 4.3+)
       url:  /writing_netcdf.html
       output: web, pdf
 
@@ -83,20 +83,16 @@ entries:
       url: /writing_iosp.html
       output: web, pdf
 
-    - title: Example - Lightning data
-      url: /lightning_example.html
-      output: web, pdf
-
-    - title: Example - DMSP data
-      url: /dmsp_example.html
-      output: web, pdf
-
     - title: IOSP details
       url: /iosp_details.html
       output: web, pdf
 
-    - title: Other Classes Needed when writing an IOSP
+    - title: Other classes needed when writing an IOSP
       url: /other_classes.html
+      output: web, pdf
+
+    - title: Example - Lightning data
+      url: /lightning_example.html
       output: web, pdf
 
   - title: Coordinate Systems
@@ -155,8 +151,8 @@ entries:
     output: web, pdf
     folderitems:
 
-    - title: ArrayStructures
-      url: /arraystructures_ref.html
+    - title: Structure Data Arrays
+      url: /structureDataArrays_ref.html
       output: web, pdf
 
     - title: BUFR Files

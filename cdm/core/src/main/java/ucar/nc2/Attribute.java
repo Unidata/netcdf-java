@@ -615,7 +615,12 @@ public class Attribute {
       return setArrayValues(Arrays.factory(this.dataType, new int[] {n}, pa));
     }
 
-    /** Set the values from an Array, and the DataType from values.getElementType(). */
+    /**
+     * Set the values from an Array, and the DataType from values.getElementType().
+     * 
+     * @deprecated use Builder.setArrayValues(Array<?> arr)
+     */
+    @Deprecated
     public Builder setValues(ucar.ma2.Array arr) {
       if (arr == null) {
         dataType = ArrayType.STRING;

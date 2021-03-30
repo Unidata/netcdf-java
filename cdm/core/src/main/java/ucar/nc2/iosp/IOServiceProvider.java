@@ -65,7 +65,12 @@ public interface IOServiceProvider extends Closeable {
 
   /** @deprecated use readArrayData */
   @Deprecated
-  ucar.ma2.Array readData(Variable v2, Section section) throws java.io.IOException, ucar.ma2.InvalidRangeException;
+  default ucar.ma2.Array readData(Variable v2, Section section)
+      throws java.io.IOException, ucar.ma2.InvalidRangeException {
+    // default implementation; users should not have to implement a deprecated method
+    // LOOK is there a static method to convert ucar.ma2.Section to ucar.array.Section to wrap readArrayData?
+    return null;
+  }
 
   /**
    * Read data from a top level Variable and return a memory resident Array. This Array has the same element type as the

@@ -1,6 +1,6 @@
-package tests;
+package tests.cdmdatasets;
 
-import examples.NetcdfDatasetTutorial;
+import examples.cdmdatasets.NetcdfDatasetTutorial;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import ucar.ma2.DataType;
@@ -17,7 +17,8 @@ import static com.google.common.truth.Truth.assertThat;
 
 public class TestNetcdfDatasetTutorial {
 
-  private static String dataPathStr = TestDir.cdmLocalFromTestDataDir +  "ncml/enhance/testStandaloneEnhance.ncml";
+  private static String dataPathStr =
+      TestDir.cdmLocalFromTestDataDir + "ncml/enhance/testStandaloneEnhance.ncml";
   private static DatasetUrl datasetUrl;
 
   @BeforeClass
@@ -34,7 +35,8 @@ public class TestNetcdfDatasetTutorial {
 
     // test open fail
     NetcdfDatasetTutorial.openNCFile("");
-    assertThat(NetcdfDatasetTutorial.logger.getLastLogMsg()).isEqualTo(NetcdfDatasetTutorial.yourOpenNetCdfFileErrorMsgTxt);
+    assertThat(NetcdfDatasetTutorial.logger.getLastLogMsg())
+        .isEqualTo(NetcdfDatasetTutorial.yourOpenNetCdfFileErrorMsgTxt);
   }
 
   @Test
@@ -46,12 +48,13 @@ public class TestNetcdfDatasetTutorial {
 
     // test open fail
     NetcdfDatasetTutorial.openEnhancedDataset("");
-    assertThat(NetcdfDatasetTutorial.logger.getLastLogMsg()).isEqualTo(NetcdfDatasetTutorial.yourOpenNetCdfFileErrorMsgTxt);
+    assertThat(NetcdfDatasetTutorial.logger.getLastLogMsg())
+        .isEqualTo(NetcdfDatasetTutorial.yourOpenNetCdfFileErrorMsgTxt);
   }
 
 
   @Test
-  public void testUnpackDataTutorial() throws IOException{
+  public void testUnpackDataTutorial() throws IOException {
     try (NetcdfFile ncfile = NetcdfDatasets.openDataset(dataPathStr, true, null)) {
       // get packed var
       Variable scaledvar = ncfile.findVariable("scaledvar");
@@ -63,7 +66,8 @@ public class TestNetcdfDatasetTutorial {
       assertThat(scaledvar.attributes().hasAttribute("add_offset")).isTrue();
       double add_offset = scaledvar.attributes().findAttributeDouble("add_offset", 1.0);
 
-      double unpacked_data = NetcdfDatasetTutorial.unpackData(scaledvar.readScalarShort(), scale_factor, add_offset);
+      double unpacked_data =
+          NetcdfDatasetTutorial.unpackData(scaledvar.readScalarShort(), scale_factor, add_offset);
       assertThat(unpacked_data).isNotNaN();
     }
   }
@@ -77,7 +81,8 @@ public class TestNetcdfDatasetTutorial {
 
   @Test
   public void testOpenEnhancedDatasetOptionsTutorial() throws IOException {
-    try (NetcdfDataset ncd = NetcdfDatasetTutorial.openEnhancedDatasetOptions(datasetUrl, null, -1, null, null)) {
+    try (NetcdfDataset ncd =
+        NetcdfDatasetTutorial.openEnhancedDatasetOptions(datasetUrl, null, -1, null, null)) {
       assertThat(ncd).isNotNull();
     }
   }
