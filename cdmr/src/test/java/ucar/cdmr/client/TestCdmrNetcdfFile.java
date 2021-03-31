@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.cdmr.client;
@@ -11,19 +11,15 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.internal.util.CompareArrayToMa2;
 import ucar.unidata.util.test.TestDir;
-import ucar.unidata.util.test.category.NeedsExternalResource;
-import ucar.unidata.util.test.category.NotJenkins;
 
 /** Test {@link CdmrNetcdfFile} */
 @RunWith(Parameterized.class)
-@Category({NeedsExternalResource.class, NotJenkins.class}) // Needs CmdrServer to be started up
 public class TestCdmrNetcdfFile {
   @Parameterized.Parameters(name = "{0}")
   public static List<Object[]> getTestParameters() {

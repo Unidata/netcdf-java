@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.cdmr.client;
@@ -15,13 +15,10 @@ import ucar.array.Array;
 import ucar.nc2.Variable;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
-import ucar.unidata.util.test.category.NeedsExternalResource;
-import ucar.unidata.util.test.category.NotJenkins;
 import ucar.unidata.util.test.category.Slow;
 
 /** Time {@link CdmrNetcdfFile} takes ~ 3 minutes */
-@Category({NeedsCdmUnitTest.class, Slow.class, NeedsExternalResource.class, NotJenkins.class}) // Needs CmdrServer to be
-                                                                                               // started up
+@Category({NeedsCdmUnitTest.class, Slow.class})
 public class TimeCdmr {
   String localFilename =
       TestDir.cdmUnitTestDir + "formats/netcdf4/e562p1_fp.inst3_3d_asm_Nv.20100907_00z+20100909_1200z.nc4";
