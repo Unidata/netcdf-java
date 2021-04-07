@@ -3,7 +3,6 @@ plugins {
   id 'edu.ucar.unidata.site.jekyll'
 }
 
-//////////////////////////////////////////////// Javadoc ////////////////////////////////////////////////
 apply from: "$rootDir/gradle/any/javadoc.gradle"
 apply from: "$rootDir/gradle/any/testing.gradle"
 

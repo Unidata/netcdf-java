@@ -1,0 +1,285 @@
+plugins {
+    id 'base' // Adds 'assemble', 'check', 'build', and 'clean' tasks.
+    id 'edu.ucar.unidata.site.jekyll'
+}
+
+//////////////////////////////////////////////// Javadoc ////////////////////////////////////////////////
+apply from: "$rootDir/gradle/any/javadoc.gradle"
+
+gradle.projectsEvaluated {  // Several statements below rely upon all subprojects having been evaluated.
+
+    task buildJavadocPublicApi(type: Javadoc) {
+        description = 'Generate Javadoc for the CDM subproject.'
+
+        title = "NetCDF-Java CDM Public API v${version}"
+        destinationDir = file("$buildDir/javadocCdm/")
+
+        options.showFromPublic()
+        options.noDeprecated()
+
+        SourceSet cdmCoreSourceSet = rootProject.project(':cdm:cdm-core').sourceSets.main
+        source cdmCoreSourceSet.allJava
+
+        classpath = files([cdmCoreSourceSet.compileClasspath, cdmCoreSourceSet.output])
+        // This is the public interface. Future changes to the API will attempt to remain backwards compatible with it.
+        include 'thredds/client/catalog/*.java'
+        include 'thredds/client/catalog/builder/*.java'
+        include 'ucar/array/*.java'
+        include 'ucar/nc2/*.java'
+        include 'ucar/nc2/constants/*.java'
+        include 'ucar/nc2/dataset/*.java'
+        include 'ucar/nc2/dataset/spi/*.java'
+        include 'ucar/nc2/grid/*.java'
+        include 'ucar/nc2/iosp/*.java'
+        include 'ucar/nc2/time/*.java'
+        include 'ucar/nc2/units/*.java'
+        include 'ucar/nc2/util/*.java'
+        include 'ucar/nc2/write/*.java'
+        include 'ucar/unidata/geoloc/*.java'
+        include 'ucar/unidata/io/*.java'
+        include 'ucar/unidata/io/spi/*.java'
+    }
+
+    task buildJavadocPublicApiWithDeps(type: Javadoc) {
+        description = 'Generate Javadoc for the CDM subproject - included deprecated classes and methods.'
+
+        title = "NetCDF-Java CDM Public API v${version} - with deprecations"
+        destinationDir = file("$buildDir/javadocCdmWithDeps/")
+
+        SourceSet cdmCoreSourceSet = rootProject.project(':cdm:cdm-core').sourceSets.main
+        source cdmCoreSourceSet.allJava
+
+        classpath = files([cdmCoreSourceSet.compileClasspath, cdmCoreSourceSet.output])
+
+        // This is the public interface. Future changes to the API will attempt to remain backwards compatible with it.
+        include 'thredds/client/catalog/*.java'
+        include 'thredds/client/catalog/builder/*.java'
+        include 'ucar/array/*.java'
+        include 'ucar/ma2/*.java'
+        include 'ucar/nc2/*.java'
+        include 'ucar/nc2/constants/*.java'
+        include 'ucar/nc2/dataset/*.java'
+        include 'ucar/nc2/dataset/spi/*.java'
+        include 'ucar/nc2/iosp/*.java'
+        include 'ucar/nc2/time/*.java'
+        include 'ucar/nc2/units/*.java'
+        include 'ucar/nc2/util/*.java'
+        include 'ucar/nc2/write/*.java'
+        include 'ucar/unidata/geoloc/*.java'
+        include 'ucar/unidata/io/*.java'
+        include 'ucar/unidata/io/spi/*.java'
+    }
+
+    task buildJavadocAll(type: Javadoc) {
+        description = 'Generate Javadoc for all Java subprojects.'
+
+        title = "NetCDF-Java All API v${version}"
+        destinationDir = file("$buildDir/javadocAll/")
+
+        source javaProjects.collect {
+            project -> project.sourceSets.main.allJava
+        }
+
+        classpath = files(javaProjects.collect {project ->
+            [project.sourceSets.main.compileClasspath, project.sourceSets.main.output]
+        })
+    }
+
+    tasks.build {
+        // Aggregates the individual "build*" tasks.
+        dependsOn buildJekyllSite, buildJavadocPublicApi, buildJavadocAll
+    }
+}
+
+//////////////////////////////////////////////// Nexus ////////////////////////////////////////////////
+
+apply from: "$rootDir/gradle/any/properties.gradle"  // For Nexus credential properties.
+
+import edu.ucar.build.publishing.tasks.PublishToRawRepoTask
+
+tasks.withType(PublishToRawRepoTask).all {  // Common PublishToRawRepoTask config.
+    group = 'Documentation'
+
+    host = 'https://artifacts.unidata.ucar.edu/'
+    repoName = 'docs-netcdf-java'
+
+    onlyIf {
+        // Will be evaluated at task execution time, not during configuration.
+        // Fails the build if the specified properties haven't been provided.
+        username = getPropertyOrFailBuild NEXUS_USERNAME_KEY
+        password = getPropertyOrFailBuild NEXUS_PASSWORD_KEY
+        return true
+    }
+}
+
+gradle.projectsEvaluated {
+    // These tasks must be in a "projectsEvaluated" block because they depend on tasks that are also in a
+    // "projectsEvaluated" block.
+
+    task publishAsVersionedJavadocPublicApi(type: PublishToRawRepoTask, dependsOn: buildJavadocPublicApi) {
+        description = 'Publish Javadoc for the CDM subproject to Nexus under /major.minor/.'
+
+        publishSrc = tasks.buildJavadocPublicApi.destinationDir
+        destPath = "netcdf-java/$project.docVersion/javadoc/"
+    }
+
+    task publishAsCurrentJavadocPublicApi(type: PublishToRawRepoTask, dependsOn: buildJavadocPublicApi) {
+        description = 'Publish Javadoc for the CDM subproject to Nexus under /current/.'
+
+        publishSrc = tasks.buildJavadocPublicApi.destinationDir
+        destPath = 'netcdf-java/current/javadoc/'
+    }
+
+    task publishAsVersionedJavadocPublicApiWithDeps(type: PublishToRawRepoTask, dependsOn: buildJavadocPublicApiWithDeps) {
+        description = 'Publish Javadoc for the CDM subproject to Nexus under /major.minor/.'
+
+        publishSrc = tasks.buildJavadocPublicApi.destinationDir
+        destPath = "netcdf-java/$project.docVersion/javadoc-with-deprecations/"
+    }
+
+    task publishAsCurrentJavadocPublicApiWithDeps(type: PublishToRawRepoTask, dependsOn: buildJavadocPublicApiWithDeps) {
+        description = 'Publish Javadoc for the CDM subproject to Nexus under /current/.'
+
+        publishSrc = tasks.buildJavadocPublicApi.destinationDir
+        destPath = 'netcdf-java/current/javadoc-with-deprecations/'
+    }
+
+    task publishAsVersionedJavadocAll(type: PublishToRawRepoTask, dependsOn: buildJavadocAll) {
+        description = 'Publish Javadoc for all Java subprojects to Nexus under /major.minor/.'
+
+        publishSrc = tasks.buildJavadocAll.destinationDir
+        destPath = "netcdf-java/$project.docVersion/javadocAll/"
+    }
+
+    task publishAsCurrentJavadocAll(type: PublishToRawRepoTask, dependsOn: buildJavadocAll) {
+        description = 'Publish Javadoc for all Java subprojects to Nexus under /current/.'
+
+        publishSrc = tasks.buildJavadocAll.destinationDir
+        destPath = 'netcdf-java/current/javadocAll/'
+    }
+
+    // We're deliberately NOT naming this task "publish", because we don't want it running when we do a:
+    //     ./gradlew publish
+    // from the root directory. It simply takes too long.
+    task publishDocsAsVersioned(group: 'Documentation') {
+        description = 'Publish all Javadoc sets to Nexus under /major.minor/.'
+
+        // Aggregates the individual "publish*" tasks.
+        dependsOn publishAsVersionedJavadocPublicApi, publishAsVersionedJavadocPublicApiWithDeps, publishAsVersionedJavadocAll
+    }
+
+    task publishDocsAsCurrent(group: 'Documentation') {
+        description = 'Publish all Javadoc sets to Nexus under /current/.'
+
+        // Aggregates the individual "publish*" tasks.
+        dependsOn publishAsCurrentJavadocPublicApi, publishAsCurrentJavadocPublicApiWithDeps, publishAsCurrentJavadocAll
+    }
+}
+
+import edu.ucar.build.publishing.tasks.DeleteFromNexusTask
+
+// By default, this will perform a dry run, which simply prints the components that the query matched.
+// To actually delete those components, do:  ./gradlew :docs:deleteFromNexus --dryRun=false
+task deleteVersionedJavadocPublicApiFromNexus(group: 'Documentation', type: DeleteFromNexusTask) {
+    description = 'Remove Javadoc for the CDM subproject on Nexus under /major.minor/.'
+    host = 'https://artifacts.unidata.ucar.edu/'
+    searchQueryParameters.repository = 'docs-netcdf-java'
+    searchQueryParameters.group = "/netcdf-java/$project.docVersion/javadoc/*"
+
+    onlyIf {
+        // Will be evaluated at task execution time, not during configuration.
+        // Fails the build if the specified properties haven't been provided.
+        username = getPropertyOrFailBuild NEXUS_USERNAME_KEY
+        password = getPropertyOrFailBuild NEXUS_PASSWORD_KEY
+        return true
+    }
+}
+
+task deleteCurrentJavadocPublicApiFromNexus(group: 'Documentation', type: DeleteFromNexusTask) {
+    description = 'Remove Javadoc for the CDM subproject on Nexus under /current/.'
+    host = 'https://artifacts.unidata.ucar.edu/'
+    searchQueryParameters.repository = 'docs-netcdf-java'
+    searchQueryParameters.group = '/netcdf-java/current/javadoc/*'
+
+    onlyIf {
+        // Will be evaluated at task execution time, not during configuration.
+        // Fails the build if the specified properties haven't been provided.
+        username = getPropertyOrFailBuild NEXUS_USERNAME_KEY
+        password = getPropertyOrFailBuild NEXUS_PASSWORD_KEY
+        return true
+    }
+}
+
+task deleteVersionedJavadocPublicApiWithDepsFromNexus(group: 'Documentation', type: DeleteFromNexusTask) {
+    description = 'Remove Javadoc for the CDM subproject on Nexus under /major.minor/.'
+    host = 'https://artifacts.unidata.ucar.edu/'
+    searchQueryParameters.repository = 'docs-netcdf-java'
+    searchQueryParameters.group = "/netcdf-java/$project.docVersion/javadoc-with-deprecations/*"
+
+    onlyIf {
+        // Will be evaluated at task execution time, not during configuration.
+        // Fails the build if the specified properties haven't been provided.
+        username = getPropertyOrFailBuild NEXUS_USERNAME_KEY
+        password = getPropertyOrFailBuild NEXUS_PASSWORD_KEY
+        return true
+    }
+}
+
+task deleteCurrentJavadocPublicApiWithDepsFromNexus(group: 'Documentation', type: DeleteFromNexusTask) {
+    description = 'Remove Javadoc for the CDM subproject on Nexus under /current/.'
+    host = 'https://artifacts.unidata.ucar.edu/'
+    searchQueryParameters.repository = 'docs-netcdf-java'
+    searchQueryParameters.group = '/netcdf-java/current/javadoc-with-deprecations/*'
+
+    onlyIf {
+        // Will be evaluated at task execution time, not during configuration.
+        // Fails the build if the specified properties haven't been provided.
+        username = getPropertyOrFailBuild NEXUS_USERNAME_KEY
+        password = getPropertyOrFailBuild NEXUS_PASSWORD_KEY
+        return true
+    }
+}
+
+task deleteVersionedJavadocAllFromNexus(group: 'Documentation', type: DeleteFromNexusTask) {
+    description = 'Remove Javadoc for all Java subprojects on Nexus under /major.minor/.'
+    host = 'https://artifacts.unidata.ucar.edu/'
+    searchQueryParameters.repository = 'docs-netcdf-java'
+    searchQueryParameters.group = "/netcdf-java/$project.docVersion/javadocAll/*"
+
+    onlyIf {
+        // Will be evaluated at task execution time, not during configuration.
+        // Fails the build if the specified properties haven't been provided.
+        username = getPropertyOrFailBuild NEXUS_USERNAME_KEY
+        password = getPropertyOrFailBuild NEXUS_PASSWORD_KEY
+        return true
+    }
+}
+
+task deleteCurrentJavadocAllFromNexus(group: 'Documentation', type: DeleteFromNexusTask) {
+    description = 'Remove Javadoc for all Java subprojects on Nexus under /current/.'
+    host = 'https://artifacts.unidata.ucar.edu/'
+    searchQueryParameters.repository = 'docs-netcdf-java'
+    searchQueryParameters.group = '/netcdf-java/current/javadocAll/*'
+
+    onlyIf {
+        // Will be evaluated at task execution time, not during configuration.
+        // Fails the build if the specified properties haven't been provided.
+        username = getPropertyOrFailBuild NEXUS_USERNAME_KEY
+        password = getPropertyOrFailBuild NEXUS_PASSWORD_KEY
+        return true
+    }
+}
+
+task deleteVersionedDocsFromNexus(group: 'Documentation', type: DeleteFromNexusTask) {
+    description = 'Remove all Javadoc sets on Nexus under /major.minor/.'
+
+    // aggregates individial "deleteVersioned*" tasks.
+    dependsOn deleteVersionedJavadocPublicApiFromNexus, deleteVersionedJavadocPublicApiWithDepsFromNexus, deleteVersionedJavadocAllFromNexus
+}
+
+task deleteCurrentDocsFromNexus(group: 'Documentation', type: DeleteFromNexusTask) {
+    description = 'Remove all Javadoc sets on Nexus under /current/.'
+
+    // aggregates individual "deleteCurrent*" tasks.
+    dependsOn deleteCurrentJavadocPublicApiFromNexus, deleteCurrentJavadocPublicApiWithDepsFromNexus, deleteCurrentJavadocAllFromNexus
+}

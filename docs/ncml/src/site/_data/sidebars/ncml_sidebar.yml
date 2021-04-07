@@ -1,0 +1,51 @@
+# This is your sidebar TOC. The sidebar code loops through sections here and provides the appropriate formatting.
+
+entries:
+- title: Sidebar
+  product: Tutorial and Reference Documentation
+  folders:
+
+  - title:
+    output: pdf
+    type: frontmatter
+    folderitems:
+    - title:
+      url: /titlepage
+      output: pdf
+      type: frontmatter
+    - title:
+      url: /tocpage
+      output: pdf
+      type: frontmatter
+
+  - title: Overview
+    output: web, pdf
+    folderitems:
+
+    - title: NcML Overview
+      url: /ncml_overview.html
+      output: web, pdf
+
+    - title: Annotated Schema for NcML
+      url: /annotated_ncml_schema.html
+      output: web, pdf
+
+  - title: Tutorial
+    output: web, pdf
+    folderitems:
+
+    - title: Modifying existing files
+      url: /basic_ncml_tutorial.html
+      output: web, pdf
+
+    - title: Aggregation
+      url: /ncml_aggregation.html
+      output: web, pdf
+
+    - title:  Forecast Model Run Collection
+      url: /fmrc_ref.html
+      output: web, pdf
+
+    - title: NcML Cookbook
+      url: /ncml_cookbook.html
+      output: web, pdf

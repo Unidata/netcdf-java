@@ -1,0 +1,52 @@
+plugins {
+  id 'base' // Adds 'assemble', 'check', 'build', and 'clean' tasks.
+  id 'edu.ucar.unidata.site.jekyll'
+}
+
+//////////////////////////////////////////////// Nexus ////////////////////////////////////////////////
+
+apply from: "$rootDir/gradle/any/properties.gradle"  // For Nexus credential properties.
+
+import edu.ucar.build.publishing.tasks.PublishToRawRepoTask
+
+tasks.withType(PublishToRawRepoTask).all {  // Common PublishToRawRepoTask config.
+  group = 'Documentation'
+
+  host = 'https://artifacts.unidata.ucar.edu/'
+  repoName = 'docs-cdm'
+
+  onlyIf {
+    // Will be evaluated at task execution time, not during configuration.
+    // Fails the build if the specified properties haven't been provided.
+    username = getPropertyOrFailBuild NEXUS_USERNAME_KEY
+    password = getPropertyOrFailBuild NEXUS_PASSWORD_KEY
+    return true
+  }
+}
+
+tasks.register('publishAsVersionedDocs', PublishToRawRepoTask) {
+  description = 'Publish cdm docs to Nexus under /major.minor/.'
+
+  publishSrc = buildJekyllSite.destinationDirectory.get()
+  destPath = "cdm/$project.docVersion/"
+  dependsOn tasks.getByName('buildJekyllSite')
+}
+
+import edu.ucar.build.publishing.tasks.DeleteFromNexusTask
+
+// By default, this will perform a dry run, which simply prints the components that the query matched.
+// To actually delete those components, do:  ./gradlew :docs:deleteFromNexus --dryRun=false
+task deleteVersionedDocsFromNexus(group: 'Documentation', type: DeleteFromNexusTask) {
+  description = 'Remove cdm docs on Nexus under /major.minor/.'
+  host = 'https://artifacts.unidata.ucar.edu/'
+  searchQueryParameters.repository = 'docs-cdm'
+  searchQueryParameters.group = "/cdm/$project.docVersion/*"
+
+  onlyIf {
+    // Will be evaluated at task execution time, not during configuration.
+    // Fails the build if the specified properties haven't been provided.
+    username = getPropertyOrFailBuild NEXUS_USERNAME_KEY
+    password = getPropertyOrFailBuild NEXUS_PASSWORD_KEY
+    return true
+  }
+}
