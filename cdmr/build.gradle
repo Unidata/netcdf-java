@@ -3,7 +3,6 @@ import com.github.psxpaul.task.JavaExecFork
 plugins {
   // Provide convenience executables for testing
   id 'application'
-  id "com.google.protobuf"
   id 'com.github.psxpaul.execfork' version '0.1.13'
 }
 
@@ -15,17 +14,19 @@ apply from: "$rootDir/gradle/any/java-library.gradle"
 apply from: "$rootDir/gradle/any/protobuf.gradle"
 
 dependencies {
+  api enforcedPlatform("io.grpc:grpc-bom:${depVersion.grpc}")
+
   api project(':cdm:cdm-core')
 
   // for CdmrServer: we should just add on the classpath?
   api project(':bufr')
   api project(':grib')
 
-  implementation "io.grpc:grpc-protobuf:${depVersion.grpc}"
-  implementation "io.grpc:grpc-stub:${depVersion.grpc}"
+  implementation 'io.grpc:grpc-protobuf'
+  implementation 'io.grpc:grpc-stub'
   compileOnly 'org.apache.tomcat:annotations-api:6.0.53'
 
-  runtimeOnly "io.grpc:grpc-netty-shaded:${depVersion.grpc}"
+  runtimeOnly 'io.grpc:grpc-netty-shaded'
 
   testImplementation enforcedPlatform(project(':netcdf-java-testing-platform'))
   testImplementation project(':cdm-test-utils')
@@ -33,7 +34,7 @@ dependencies {
   testImplementation 'junit:junit'
   testImplementation 'commons-io:commons-io'
   testImplementation "org.mockito:mockito-core"
-  testImplementation "io.grpc:grpc-testing:${depVersion.grpc}"
+  testImplementation 'io.grpc:grpc-testing'
 
   testRuntimeOnly 'ch.qos.logback:logback-classic'
 }

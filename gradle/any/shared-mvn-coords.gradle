@@ -31,6 +31,9 @@ ext {
   depVersion.junit = '4.13.2'
   // need to define the versions of protobuf and grpc here because they are needed in the protobuf configuration
   // closure, and the version defined in eiter the java platform cannot be accessed from within the closure.
+  // grpc pulls in protobuf (currently 3.12.0, which is three minor versions behind the latest). I assume we
+  // should try to keep within the same major.minor version of the versions grpc needs, but that differences in
+  // point releases are ok.
   depVersion.protobuf = '3.12.4'
-  depVersion.grpc = '1.36.0'
+  depVersion.grpc = '1.36.1'
 }

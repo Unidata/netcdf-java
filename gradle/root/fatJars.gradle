@@ -35,6 +35,7 @@ configurations {
 
 dependencies {
   toolsUI enforcedPlatform(project(':netcdf-java-platform'))
+  toolsUI platform("io.grpc:grpc-bom:${depVersion.grpc}")
   toolsUI project(':uicdm')
   toolsUI 'ch.qos.logback:logback-classic'
 }
