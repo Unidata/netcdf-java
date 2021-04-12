@@ -20,14 +20,8 @@ import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
 import ucar.ma2.StructureData;
-import ucar.nc2.Attribute;
-import ucar.nc2.Dimension;
-import ucar.nc2.Dimensions;
-import ucar.nc2.Group;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.NetcdfFileWriter;
-import ucar.nc2.Structure;
-import ucar.nc2.Variable;
+import ucar.nc2.*;
+import ucar.nc2.internal.iosp.netcdf3.N3iospNew;
 import ucar.nc2.internal.iosp.netcdf3.N3iospWriter;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.iosp.IOServiceProviderWriter;
@@ -316,7 +310,7 @@ public class NetcdfFormatWriter implements Closeable {
       }
       spiw = spi;
     } else {
-      spiw = new N3iospWriter(builder.getIosp());
+      spiw = new N3iospWriter(new N3iospNew());
     }
 
     // If anything fails, make sure that resources are closed.
