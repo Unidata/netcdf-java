@@ -355,6 +355,9 @@ public class NetcdfFiles {
    * @return a canonical URI string.
    */
   public static String canonicalizeUriString(String location) {
+    if (location == null) {
+      return null;
+    }
     // get rid of file prefix, if any
     String uriString = location.trim();
     if (uriString.startsWith("file://"))

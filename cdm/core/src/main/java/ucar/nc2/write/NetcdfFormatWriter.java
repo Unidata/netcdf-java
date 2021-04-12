@@ -26,7 +26,6 @@ import ucar.nc2.Dimensions;
 import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileWriter;
-import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.internal.iosp.netcdf3.N3iospWriter;
@@ -59,11 +58,8 @@ public class NetcdfFormatWriter implements Closeable {
    * @return existing file that can be written to
    * @throws IOException on I/O error
    */
-  public static NetcdfFormatWriter.Builder openExisting(String location) throws IOException {
-    try (NetcdfFile ncfile = NetcdfFiles.open(location)) {
-      Group.Builder root = ncfile.getRootGroup().toBuilder();
-      return builder().setRootGroup(root).setLocation(location).setIosp(ncfile.getIosp());
-    }
+  public static NetcdfFormatWriter.Builder openExisting(String location) {
+    return builder().setNewFile(false).setLocation(location);
   }
 
   /**
@@ -289,7 +285,7 @@ public class NetcdfFormatWriter implements Closeable {
     this.chunker = builder.chunker;
     this.useJna = builder.useJna || format.isNetdf4format();
 
-    this.ncout = NetcdfFile.builder().setRootGroup(builder.rootGroup).build();
+    this.ncout = NetcdfFile.builder().setRootGroup(builder.rootGroup).setLocation(builder.location).build();
     this.rootGroup = this.ncout.getRootGroup();
 
     if (!isNewFile) {
