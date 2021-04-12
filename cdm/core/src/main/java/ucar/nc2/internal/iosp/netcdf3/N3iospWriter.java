@@ -18,11 +18,7 @@ import ucar.ma2.Range;
 import ucar.ma2.Section;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureMembers;
-import ucar.nc2.Attribute;
-import ucar.nc2.Dimension;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.Structure;
-import ucar.nc2.Variable;
+import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.iosp.IOServiceProviderWriter;
@@ -65,9 +61,11 @@ public class N3iospWriter extends N3iospNew implements IOServiceProviderWriter {
     }
 
     raf.order(RandomAccessFile.BIG_ENDIAN);
-    N3headerWriter headerw = new N3headerWriter(this, raf, ncfile);
-    headerw.initFromExisting((N3iospNew) this.iosp); // hack-a-whack
-    this.header = headerw;
+    this.header = new N3headerWriter(this, raf, ncfile);
+    Group.Builder rootGroup = Group.builder().setName("").setNcfile(ncfile);
+    header.read(raf, rootGroup, null);
+    ncfile.setRootGroup(rootGroup.build());
+    ncfile.finish();
   }
 
   @Override
