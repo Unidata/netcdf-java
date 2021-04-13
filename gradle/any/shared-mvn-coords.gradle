@@ -32,5 +32,5 @@ ext {
   // need to define the versions of protobuf and grpc here because they are needed in the protobuf configuration
   // closure, and the version defined in eiter the java platform cannot be accessed from within the closure.
   depVersion.protobuf = '3.12.4'
-  depVersion.grpc = '1.36.0'
+  depVersion.grpc = '1.36.1'
 }
