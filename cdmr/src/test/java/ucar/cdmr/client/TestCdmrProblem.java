@@ -14,6 +14,9 @@ import ucar.nc2.internal.util.CompareArrayToMa2;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 /** Test {@link CdmrNetcdfFile} */
 public class TestCdmrProblem {
 
@@ -24,26 +27,29 @@ public class TestCdmrProblem {
   @Test
   @Category(NeedsCdmUnitTest.class)
   public void testChunkProblem() throws Exception {
-    String localFilename = "formats/netcdf4/multiDimscale.nc4";
-    doOne(TestDir.cdmUnitTestDir + localFilename, "u");
+    String localFilename = TestDir.cdmUnitTestDir + "formats/netcdf4/multiDimscale.nc4";
+    Path path = Paths.get(localFilename);
+    doOne(path, "u");
   }
 
   @Test
   public void testOpaqueDataType() throws Exception {
-    String localFilename = "hdf5/test_atomic_types.nc";
-    doOne(TestDir.cdmLocalFromTestDataDir + localFilename);
+    String localFilename = TestDir.cdmLocalFromTestDataDir + "hdf5/test_atomic_types.nc";
+    Path path = Paths.get(localFilename);
+    doOne(path);
   }
 
   @Test
   public void testCdmrProblem2() throws Exception {
-    String localFilename = "dataset/SimpleGeos/hru_soil_moist_vlen_3hru_5timestep.nc";
-    doOne(TestDir.cdmLocalFromTestDataDir + localFilename);
+    String localFilename = TestDir.cdmLocalFromTestDataDir + "dataset/SimpleGeos/hru_soil_moist_vlen_3hru_5timestep.nc";
+    Path path = Paths.get(localFilename);
+    doOne(path);
   }
 
-  public void doOne(String filename) throws Exception {
+  public void doOne(Path path) throws Exception {
     // LOOK kludge for now. Also, need to auto start up CmdrServer
-    String cdmrUrl = "cdmr://localhost:16111/" + filename;
-    try (NetcdfFile ncfile = NetcdfDatasets.openFile(filename, null);
+    String cdmrUrl = "cdmr://localhost:16111/" + path.toAbsolutePath();
+    try (NetcdfFile ncfile = NetcdfDatasets.openFile(path.toString(), null);
         CdmrNetcdfFile cdmrFile = CdmrNetcdfFile.builder().setRemoteURI(cdmrUrl).build()) {
 
       boolean ok = CompareArrayToMa2.compareFiles(ncfile, cdmrFile);
@@ -51,10 +57,10 @@ public class TestCdmrProblem {
     }
   }
 
-  public void doOne(String filename, String varName) throws Exception {
+  public void doOne(Path path, String varName) throws Exception {
     // LOOK kludge for now. Also, need to auto start up CmdrServer
-    String cdmrUrl = "cdmr://localhost:16111/" + filename;
-    try (NetcdfFile ma2File = NetcdfDatasets.openFile(filename, null);
+    String cdmrUrl = "cdmr://localhost:16111/" + path.toAbsolutePath();
+    try (NetcdfFile ma2File = NetcdfDatasets.openFile(path.toString(), null);
         CdmrNetcdfFile arrayFile = CdmrNetcdfFile.builder().setRemoteURI(cdmrUrl).build()) {
 
       boolean ok = CompareArrayToMa2.compareVariable(ma2File, arrayFile, varName, true);

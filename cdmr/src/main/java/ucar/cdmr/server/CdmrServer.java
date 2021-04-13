@@ -84,6 +84,12 @@ public class CdmrServer {
   /** Main launches the server from the command line. */
   public static void main(String[] args) throws IOException, InterruptedException {
     System.out.println("Working Directory = " + System.getProperty("user.dir"));
+    String classpath = System.getProperty("java.class.path");
+    System.out.printf("Classpath =%n");
+    for (String cp : classpath.split(":")) {
+      System.out.printf("  %s%n", cp);
+    }
+
     final CdmrServer server = new CdmrServer();
     server.start();
     server.blockUntilShutdown();

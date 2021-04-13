@@ -202,4 +202,13 @@ public class Misc {
       f.format("Misc.compare %d ints, %d are different%n", len, ndiff);
     return ok;
   }
+
+  public static void showClassPath() {
+    System.out.println("Working Directory = " + System.getProperty("user.dir"));
+    String classpath = System.getProperty("java.class.path");
+    System.out.printf("Classpath =%n");
+    for (String cp : classpath.split(":")) {
+      System.out.printf("  %s%n", cp);
+    }
+  }
 }

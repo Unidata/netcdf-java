@@ -73,7 +73,6 @@ public class TestDir {
   private static final String testdataDirPropName = "unidata.testdata.path";
 
   /** Path to the Unidata test data. see "https://github.com/Unidata/thredds-test-data". */
-  // -Dunidata.testdata.path=D:/testData/thredds-test-data/local/thredds-test-data/
   private static String testdataDir;
 
   /** Unidata test data for the CDM. testdataDir + CdmUnitTest. */
