@@ -24,7 +24,7 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
           restore-keys: ${{ runner.os }}-gradle
       - name: Build and test with Gradle
-        run: ./gradlew --info --stacktrace testAll
+        run: sudo netstat -tulpn && ./gradlew --info --stacktrace testAll
       - uses: actions/upload-artifact@v2
         if: failure()
         with:
