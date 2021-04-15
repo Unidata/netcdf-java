@@ -1,22 +1,21 @@
-on:
-  pull_request:
+on: [pull_request]
 
 jobs:
-  check-doc-build:
-    name: netCDF-Java Documentation Code Deprecation Check
+  check-style:
+    name: Code Style Check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Setup Java 8
+      - name: Set up JDK 11
         uses: actions/setup-java@v2
         with:
-          distribution: 'zulu'
-          java-version: '8'
+          distribution: 'adopt'
+          java-version: '11'
       - name: Cache Gradle packages
         uses: actions/cache@v1
         with:
           path: ~/.gradle/caches
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
           restore-keys: ${{ runner.os }}-gradle
-      - name: Check netCDF-Java documentation for deprecations warnings
-        run: './gradlew :docs:testClasses |& (! grep -F "warning: [deprecation]")'
+      - name: Code Style Check with Gradle and Spotless
+        run: ./gradlew clean spotlessCheck
