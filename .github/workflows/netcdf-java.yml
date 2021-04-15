@@ -10,21 +10,13 @@ jobs:
         java: [ 8, 11 ]
     steps:
       - uses: actions/checkout@v2
-      - name: Setup java ${{ matrix.java }}
-        uses: actions/setup-java@v1
+      - uses: Unidata/thredds-test-action@master
+        name: Build and test with Gradle
         with:
+          java-vendor: 'zulu'
           java-version: ${{ matrix.java }}
-          architecture: x64
-      - name: Install netCDF-C
-        run: sudo apt update && sudo apt-get install libnetcdf-dev
-      - name: Cache Gradle packages
-        uses: actions/cache@v1
-        with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
-          restore-keys: ${{ runner.os }}-gradle
-      - name: Build and test with Gradle
-        run: ./gradlew --info --stacktrace testAll
+          build-tool: 'gradlew'
+          test-command: '--info --stacktrace testAll'
       - uses: actions/upload-artifact@v2
         if: failure()
         with:
@@ -40,26 +32,13 @@ jobs:
         java: [ 8, 11, 14 ]
     steps:
       - uses: actions/checkout@v2
-      - name: Fetch latest Adoptium JDK ${{ matrix.java }} (hotspot) built for linux
-        run: curl -L "https://api.adoptopenjdk.net/v3/binary/latest/${{ matrix.java }}/ga/linux/x64/jdk/hotspot/normal/adoptopenjdk" -o aojdk${{ matrix.java }}-hs.tar.gz
-      - name: Setup Latest Adoptium JDK (hotspot) ${{ matrix.java }}
-        uses: actions/setup-java@master
+      - uses: Unidata/thredds-test-action@master
+        name: Build and test with Gradle
         with:
+          java-vendor: 'temurin'
           java-version: ${{ matrix.java }}
-          architecture: x64
-          jdkFile: ./aojdk${{ matrix.java }}-hs.tar.gz
-      - name: Print java version
-        run: java -version
-      - name: Install netCDF-C
-        run: sudo apt update && sudo apt-get install libnetcdf-dev
-      - name: Cache Gradle packages
-        uses: actions/cache@v1
-        with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-${{ matrix.java }}-gradle-${{ hashFiles('**/*.gradle') }}
-          restore-keys: ${{ runner.os }}-${{ matrix.java }}-gradle
-      - name: Build and test with Gradle
-        run: ./gradlew --info --stacktrace testAll
+          build-tool: 'gradlew'
+          test-command: '--info --stacktrace testAll'
       - uses: actions/upload-artifact@v2
         if: failure()
         with:
@@ -71,18 +50,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Fetch latest Adoptium JDK (hotspot) built for linux
-        run: curl -L "https://api.adoptopenjdk.net/v3/binary/latest/11/ga/linux/x64/jdk/hotspot/normal/adoptopenjdk" -o aojdk11-hs.tar.gz
-      - name: Setup Latest Adoptium JDK (hotspot)
-        uses: actions/setup-java@master
+      - uses: Unidata/thredds-test-action@master
+        name: Build with Gradle
         with:
-          java-version: 11
-          architecture: x64
-          jdkFile: ./aojdk11-hs.tar.gz
-      - name: Print java version
-        run: java -version
-      - name: Build with Gradle
-        run: ./gradlew assemble --refresh-dependencies
+          java-vendor: 'temurin'
+          java-version: ${{ matrix.java }}
+          build-tool: 'gradlew'
+          test-command: 'assemble --refresh-dependencies'
 
   spotless:
     name: Code Style Check
