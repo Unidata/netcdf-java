@@ -11,10 +11,12 @@ import java.io.IOException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import thredds.inventory.MFile;
 import ucar.unidata.io.s3.S3TestsCommon;
+import ucar.unidata.util.test.category.NotPullRequest;
 
 public class TestMFileS3 {
 
@@ -104,6 +106,7 @@ public class TestMFileS3 {
   }
 
   @Test
+  @Category(NotPullRequest.class)
   public void bucketAndKeyOsdc() throws IOException {
     long lastModified = 1611593614000L;
     checkWithBucketAndKey(OSDC_G16_S3_OBJECT_1, OSDC_G16_OBJECT_KEY_1, null, lastModified);

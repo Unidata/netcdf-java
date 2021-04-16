@@ -1,0 +1,25 @@
+on: [pull_request]
+
+jobs:
+  netcdf-java-tests:
+    name: netCDF-Java Tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # test against latest 8, 11, 14 of zulu and temurin java
+        java-version: [ 8, 11, 14 ]
+        java-vendor: [ 'zulu', 'temurin' ]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build and test with Gradle (${{ matrix.java-vendor }} ${{ matrix.java-version }})
+        uses: Unidata/thredds-test-action@v1
+        with:
+          java-vendor: ${{ matrix.java-vendor }}
+          java-version: ${{ matrix.java-version }}
+          build-tool: 'gradlew'
+          test-command: '--info --stacktrace testAll'
+      - if: failure()
+        uses: actions/upload-artifact@v2
+        with:
+          name: netCDF-Java_JUnit_Results_${{ github.sha }}_${{ matrix.java-vendor }}-${{ matrix.java-version }}
+          path: build/reports/allTests
