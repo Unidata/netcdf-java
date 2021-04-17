@@ -78,7 +78,6 @@ public class NetcdfFormatWriter implements Closeable {
    * @param chunker used only for netcdf4, or null for default chunking algorithm
    */
   public static Builder<?> createNewNetcdf4(NetcdfFileFormat format, String location, @Nullable Nc4Chunking chunker) {
-
     return builder().setFormat(format).setLocation(location).setChunker(chunker);
   }
 
@@ -485,13 +484,12 @@ public class NetcdfFormatWriter implements Closeable {
 
   }
 
-  // LOOK doesnt work yet
   private IospFileWriter openJna(String className) {
     IospFileWriter spi;
     try {
-      Class iospClass = this.getClass().getClassLoader().loadClass(className);
-      Constructor<IospFileWriter> ctor = iospClass.getConstructor(format.getClass());
-      spi = ctor.newInstance(format);
+      Class<?> iospClass = this.getClass().getClassLoader().loadClass(className);
+      Constructor<?> ctor = iospClass.getConstructor(format.getClass());
+      spi = (IospFileWriter) ctor.newInstance(format);
 
       Method method = iospClass.getMethod("setChunker", Nc4Chunking.class);
       method.invoke(spi, chunker);

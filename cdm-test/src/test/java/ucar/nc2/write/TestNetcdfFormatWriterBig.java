@@ -140,7 +140,7 @@ public class TestNetcdfFormatWriterBig {
     System.out.println("File size  (B)  = " + approxSize);
     System.out.println("File size~ (MB) = " + Math.round(approxSize / Math.pow(2, 20)));
 
-    String fileName = "/home/snake/tmp/testBigFormatFails.nc"; // tempFolder.newFile().getAbsolutePath();
+    String fileName = tempFolder.newFile().getAbsolutePath();
     NetcdfFormatWriter.Builder<?> writerb =
         NetcdfFormatWriter.createNewNetcdf3(fileName).setFill(false).setPreallocateSize(approxSize);
     setDimension(writerb, "time", timeUnits, timeSize);
