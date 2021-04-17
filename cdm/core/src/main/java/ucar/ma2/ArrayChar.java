@@ -910,4 +910,32 @@ public class ArrayChar extends Array implements Iterable<String> {
     return (ArrayChar) carr;
   }
 
+  /**
+   * Create an ArrayChar from array of Strings.
+   * 
+   * @param values array of String
+   * @param shape resulting shape
+   * @return equivilent ArrayChar. Unused are zero filled.
+   */
+  public static ArrayChar makeFromStringArray(String[] values, int[] shape) {
+    // create shape for equivilent charArray
+    Section section = new Section(shape);
+    long size = section.computeSize();
+    int strlen = shape[shape.length - 1];
+
+    // populate char array
+    char[] cdata = new char[(int) size];
+    int start = 0;
+    for (String s : values) {
+      for (int k = 0; k < s.length() && k < strlen; k++) {
+        cdata[start + k] = s.charAt(k);
+      }
+      start += strlen;
+    }
+
+    // ready to create the char Array
+    Array carr = Array.factory(DataType.CHAR, shape, cdata);
+    return (ArrayChar) carr;
+  }
+
 }

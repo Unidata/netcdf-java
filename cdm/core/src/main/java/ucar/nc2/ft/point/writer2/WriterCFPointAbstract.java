@@ -28,7 +28,7 @@ import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.Dimension;
 import ucar.nc2.Dimensions;
-import ucar.nc2.NetcdfFile;
+import ucar.nc2.Group;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.VariableSimpleIF;
@@ -435,15 +435,15 @@ abstract class WriterCFPointAbstract implements Closeable {
 
   @Nullable
   Structure findStructure(String name) {
-    NetcdfFile outputFile = writer.getOutputFile();
-    Variable s = outputFile.getVariables().stream().filter(v -> v.getShortName().equals(name)).findFirst().orElse(null);
+    Group rootGroup = writer.getRootGroup();
+    Variable s = rootGroup.findVariableLocal(name);
     return (s instanceof Structure) ? (Structure) s : null;
   }
 
   @Nullable
   private Variable findVariable(String name) {
-    NetcdfFile outputFile = writer.getOutputFile();
-    return outputFile.getVariables().stream().filter(v -> v.getShortName().equals(name)).findFirst().orElse(null);
+    Group rootGroup = writer.getRootGroup();
+    return rootGroup.findVariableLocal(name);
   }
 
   private void writeExtraVariables() throws IOException {
@@ -451,8 +451,8 @@ abstract class WriterCFPointAbstract implements Closeable {
       return;
 
     for (Variable v : extra) {
-      NetcdfFile ncfile = writer.getOutputFile();
-      Variable mv = ncfile.findVariable(v.getFullName());
+      Group rootGroup = writer.getRootGroup();
+      Variable mv = rootGroup.findVariableLocal(v.getFullName());
       if (mv == null)
         continue; // may be removed
       try {

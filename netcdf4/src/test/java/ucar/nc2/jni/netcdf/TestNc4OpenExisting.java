@@ -33,7 +33,6 @@ import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import ucar.nc2.ffi.netcdf.NetcdfClibrary;
 import ucar.nc2.iosp.NetcdfFileFormat;
-import ucar.nc2.write.NetcdfFormatUpdater;
 import ucar.nc2.write.NetcdfFormatWriter;
 import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.TestDir;
@@ -70,8 +69,8 @@ public class TestNc4OpenExisting {
       writer.write("time", data);
     }
 
-    NetcdfFormatUpdater.Builder existingb = NetcdfFormatUpdater.openExisting(location);
-    try (NetcdfFormatUpdater existing = existingb.build()) {
+    NetcdfFormatWriter.Builder existingb = NetcdfFormatWriter.openExisting(location);
+    try (NetcdfFormatWriter existing = existingb.build()) {
       Variable time = existing.findVariable("time");
       int[] origin = new int[1];
       origin[0] = (int) time.getSize();
@@ -112,12 +111,12 @@ public class TestNc4OpenExisting {
     String newAttrValue = "Long name changed!";
     Array orgData;
 
-    NetcdfFormatUpdater.Builder writerb = NetcdfFormatUpdater.openExisting(filename).setFill(false);
+    NetcdfFormatWriter.Builder writerb = NetcdfFormatWriter.openExisting(filename).setFill(false);
     Optional<Variable.Builder<?>> newVar = writerb.renameVariable(oldVarName, newVarName);
     newVar.ifPresent(vb -> vb.addAttribute(new Attribute(attrToChange, newAttrValue)));
 
     // write the above changes to the file
-    try (NetcdfFormatUpdater writer = writerb.build()) {
+    try (NetcdfFormatWriter writer = writerb.build()) {
       Variable var = writer.findVariable(newVarName);
       orgData = var.read();
     }

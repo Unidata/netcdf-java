@@ -25,9 +25,8 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.internal.iosp.IospFileUpdater;
+import ucar.nc2.internal.iosp.IospFileWriter;
 import ucar.nc2.iosp.IOServiceProvider;
-import ucar.nc2.internal.iosp.IospFileCreator;
 import ucar.nc2.iosp.Layout;
 import ucar.nc2.iosp.LayoutRegular;
 import ucar.nc2.iosp.LayoutRegularSegmented;
@@ -36,13 +35,18 @@ import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
 
 /** IOServiceProviderWriter for Netcdf3 files. */
-public class N3iospWriter extends N3iosp implements IospFileCreator, IospFileUpdater {
+public class N3iospWriter extends N3iosp implements IospFileWriter {
   private boolean fill = true;
   private final IOServiceProvider iosp;
   private N3headerWriter headerw;
 
+  public N3iospWriter() {
+    this.iosp = null;
+  }
+
+  // open existing only. mapbe problem is using N3iospWriter for both cases.
   public N3iospWriter(IOServiceProvider iosp) {
-    this.iosp = iosp; // WHY ?
+    this.iosp = iosp;
   }
 
   @Override
@@ -318,8 +322,10 @@ public class N3iospWriter extends N3iosp implements IospFileCreator, IospFileUpd
   public void flush() throws java.io.IOException {
     if (raf != null) {
       raf.flush();
-      ((N3headerWriter) header).writeNumrecs();
-      raf.flush();
+      if (header != null) {
+        ((N3headerWriter) header).writeNumrecs();
+        raf.flush();
+      }
     }
   }
 
