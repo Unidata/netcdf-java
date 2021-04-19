@@ -12,7 +12,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import ucar.array.ArrayType;
-import ucar.array.Arrays;
 import ucar.array.Section;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
@@ -81,7 +80,7 @@ public class TestNetcdfFormatWriterBig {
     System.out.println("File size  (B)  = " + approxSize);
     System.out.println("File size~ (MB) = " + Math.round(approxSize / Math.pow(2, 20)));
 
-    String fileName = tempFolder.newFile().getAbsolutePath();
+    String fileName = "/home/snake/tmp/testBigFormat1.nc"; // tempFolder.newFile().getAbsolutePath();
     NetcdfFormatWriter.Builder<?> writerb =
         NetcdfFormatWriter.createNewNetcdf3(fileName).setFill(false).setPreallocateSize(approxSize);
     writerb.setFormat(NetcdfFileFormat.NETCDF3_64BIT_OFFSET);
@@ -176,9 +175,8 @@ public class TestNetcdfFormatWriterBig {
       }
       // write the last value
       float[] prim = new float[] {lastVal};
-      Variable v = writer.findVariable(varName);
-      writer.write(v, new int[] {timeSize - 1, latSize - 1, lonSize - 1},
-          Arrays.factory(ArrayType.FLOAT, new int[] {1, 1, 1}, prim));
+      writer.writer().forVariable(varName).withOrigin(new int[] {timeSize - 1, latSize - 1, lonSize - 1})
+          .withPrimitiveArray(prim).withShape(1, 1, 1).write();
     }
 
     try (NetcdfFile ncfile = NetcdfFiles.open(fileName)) {
