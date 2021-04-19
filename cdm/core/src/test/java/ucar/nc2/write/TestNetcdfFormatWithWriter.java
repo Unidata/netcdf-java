@@ -6,13 +6,12 @@ package ucar.nc2.write;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import org.junit.*;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import ucar.array.Array;
 import ucar.array.ArrayType;
 import ucar.array.Arrays;
-import java.io.IOException;
-
 import ucar.array.Index;
 import ucar.array.InvalidRangeException;
 import ucar.nc2.Attribute;
@@ -23,10 +22,12 @@ import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.internal.util.CompareArrayToArray;
 
+import java.io.IOException;
+
 import static com.google.common.truth.Truth.assertThat;
 
 /** Test NetcdfFormatWriter */
-public class TestNetcdfFormatWriter {
+public class TestNetcdfFormatWithWriter {
   @Rule
   public TemporaryFolder tempFolder = new TemporaryFolder();
 
@@ -68,13 +69,13 @@ public class TestNetcdfFormatWriter {
             Attribute.builder(CDM.VALID_RANGE).setValues(ImmutableList.of((short) 0, (short) 254), false).build());
 
     try (NetcdfFormatWriter writer = writerb.build()) {
-      ucar.array.Index index = ucar.array.Index.ofRank(1);
+      Index index = Index.ofRank(1);
       byte[] data = new byte[1];
       for (int time = 0; time < 256; time++) {
         data[0] = (byte) time;
-        writer.writeOriginPrimitive("time", index, data, 1);
-        writer.writeOriginPrimitive("Band1", index, data, 1);
-        writer.writeOriginPrimitive("Band2", index, data, 1);
+        writer.writer().forVariable("time").withOrigin(index).withPrimitiveArray(data).withShape(1).write();
+        writer.writer().forVariable("Band1").withOrigin(index).withPrimitiveArray(data).withShape(1).write();
+        writer.writer().forVariable("Band2").withOrigin(index).withPrimitiveArray(data).withShape(1).write();
         index.incr(0);
       }
     }
@@ -106,7 +107,7 @@ public class TestNetcdfFormatWriter {
       Array<?> data = Arrays.makeArray(ArrayType.DOUBLE, 4, 0, 1);
       Variable time = writer.findVariable("time"); // ?? immutable ??
       assertThat(time).isNotNull();
-      writer.write(time, data);
+      writer.writer().forVariable(time).withArray(data).write();
       assertThat(time.getSize()).isEqualTo(4);
     }
 
@@ -143,8 +144,8 @@ public class TestNetcdfFormatWriter {
 
     try (NetcdfFormatWriter writer = writerb.build()) {
       // write out the non-record variables
-      writer.writeWithPrimitive("lat", new float[] {41, 40, 39});
-      writer.writeWithPrimitive("lon", new float[] {-109, -107, -105, -103});
+      writer.writer().forVariable("lat").withPrimitiveArray(new float[] {41, 40, 39}).write();
+      writer.writer().forVariable("lon").withPrimitiveArray(new float[] {-109, -107, -105, -103}).write();
 
       Index timeOrigin = Index.ofRank(1);
       Index recordOrigin = Index.ofRank(3);
@@ -162,10 +163,9 @@ public class TestNetcdfFormatWriter {
         Array<?> tData = Arrays.makeArray(ArrayType.DOUBLE, 12, 99 * timeIdx, (1 + timeIdx) / 3.14159, 1, 3, 4);
 
         // write the data
-        writer.write("T", recordOrigin, tData);
-        writer.write("rh", recordOrigin, rhData);
-        writer.writeOriginPrimitive(timeVar, timeOrigin, timeValue, 1);
-
+        writer.writer().forVariable("T").withOrigin(recordOrigin).withArray(tData).write();
+        writer.writer().forVariable("rh").withOrigin(recordOrigin).withArray(rhData).write();
+        writer.writer().forVariable(timeVar).withOrigin(timeOrigin).withPrimitiveArray(timeValue).withShape(1).write();
         timeOrigin.incr(0);
         recordOrigin.incr(0);
       } // loop over record
@@ -198,7 +198,7 @@ public class TestNetcdfFormatWriter {
 
       for (int time = 0; time < size; time++) {
         Array<?> timeData = Arrays.factory(ArrayType.INT, new int[] {1}, new int[] {time * 12});
-        writer.write("time", timeOrigin, timeData);
+        writer.writer().forVariable("time").withOrigin(timeOrigin).withArray(timeData).write();
         timeOrigin.incr(0);
       }
     }
@@ -210,7 +210,7 @@ public class TestNetcdfFormatWriter {
   }
 
   @Test
-  public void testStringWriting() throws IOException, ucar.array.InvalidRangeException {
+  public void testStringWriting() throws IOException, InvalidRangeException {
     String filename = tempFolder.newFile().getAbsolutePath();
     int strlen = 25;
 
@@ -223,20 +223,22 @@ public class TestNetcdfFormatWriter {
       Variable time = writer.findVariable("time");
       assertThat(time).isNotNull();
 
-      ucar.array.Index index = ucar.array.Index.ofRank(time.getRank());
-      writer.writeStringData(time, index, "This is the first string.");
-      writer.writeStringData(time, index, "Shorty");
-      writer.writeStringData(time, index, "This is too long so it will get truncated");
+      // Note that origin is incremented.
+      Index index = Index.ofRank(time.getRank());
+      writer.writer().forVariable(time).withOrigin(index).withString("This is the first string.").write();
+      writer.writer().forVariable(time).withOrigin(index).withString("Shorty").write();
+      writer.writer().forVariable(time).withOrigin(index).withString("This is too long so it will get truncated")
+          .write();
     }
 
     try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
       Variable time = ncfile.findVariable("time");
       assertThat(time).isNotNull();
-      ucar.array.Array<?> timeData = time.readArray();
+      Array<?> timeData = time.readArray();
 
       assertThat(timeData.getArrayType()).isEqualTo(ArrayType.CHAR);
       ucar.array.ArrayChar timecData = (ucar.array.ArrayChar) timeData;
-      ucar.array.Array<String> achar3Data = timecData.makeStringsFromChar();
+      Array<String> achar3Data = timecData.makeStringsFromChar();
 
       assertThat(achar3Data.get(0)).isEqualTo("This is the first string.");
       assertThat(achar3Data.get(1)).isEqualTo("Shorty");

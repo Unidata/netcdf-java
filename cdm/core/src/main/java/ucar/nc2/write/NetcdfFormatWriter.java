@@ -168,74 +168,6 @@ public class NetcdfFormatWriter implements Closeable {
     }
   }
 
-  public void write(String varName, ucar.array.Index origin, ucar.array.Array<?> values)
-      throws IOException, InvalidRangeException {
-    Variable v = findVariable(varName);
-    Preconditions.checkNotNull(v);
-    write(v, origin, values);
-  }
-
-  /**
-   * Write to Variable with ucar.array.Array, origin assumed 0.
-   * 
-   * @param v write to this variable
-   * @param values write this array; must be same type and shape as Variable
-   */
-  public void write(Variable v, ucar.array.Array<?> values) throws IOException, InvalidRangeException {
-    write(v, Index.ofRank(v.getRank()), values);
-  }
-
-  public void write(String varName, ucar.array.Array<?> values) throws IOException, InvalidRangeException {
-    Variable v = findVariable(varName);
-    Preconditions.checkNotNull(v);
-    write(v, values);
-  }
-
-  /**
-   * Write to Variable with a primitive java array
-   * LOOK: Need a different name because overload is confused with (Variable v, Index origin, Array array)
-   * 
-   * @param v write to this variable
-   * @param origin offset within the variable to start writing.
-   * @param primArray must be java primitive array of type compatible with v.
-   * @param shape the data shape, same rank as v, with product equal to primArray. If not set, use v.getShape().
-   */
-  public void writeOriginPrimitive(Variable v, Index origin, Object primArray, int... shape)
-      throws IOException, InvalidRangeException {
-    if (shape.length == 0) {
-      shape = v.getShape();
-    }
-    ucar.array.Array<?> values = Arrays.factory(v.getArrayType(), shape, primArray);
-    write(v, origin, values);
-  }
-
-  public void writeOriginPrimitive(String varName, Index origin, Object primArray, int... shape)
-      throws IOException, InvalidRangeException {
-    Variable v = findVariable(varName);
-    Preconditions.checkNotNull(v);
-    writeOriginPrimitive(v, origin, primArray, shape);
-  }
-
-  /**
-   * Write to Variable with a primitive java array, origin assumed 0.
-   * LOOK: Need a different name because overload is confused with (Variable v, Index origin, Object primArray) when
-   * primArray is an int[].
-   * 
-   * @param v write to this variable
-   * @param primArray must be java primitive array of type compatible with v.
-   * @param shape the data shape, same rank as v, with product equal to primArray. If rank = 0, use v.getShape().
-   */
-  public void writeWithPrimitive(Variable v, Object primArray, int... shape) throws IOException, InvalidRangeException {
-    writeOriginPrimitive(v, Index.ofRank(v.getRank()), primArray, shape);
-  }
-
-  public void writeWithPrimitive(String varName, Object primArray, int... shape)
-      throws IOException, InvalidRangeException {
-    Variable v = findVariable(varName);
-    Preconditions.checkNotNull(v);
-    writeWithPrimitive(v, primArray, shape);
-  }
-
   /**
    * Write String value to a CHAR Variable.
    * Truncated or zero extended as needed to fit into last dimension of v.
@@ -248,11 +180,10 @@ public class NetcdfFormatWriter implements Closeable {
    * </pre>
    * 
    * @param v write to this variable, must be of type CHAR.
-   * @param origin offset within the variable to start writing. This is incremented.
+   * @param origin offset within the variable to start writing.
    * @param data The String to write.
-   * @return incremented Index offset.
    */
-  public Index writeStringData(Variable v, Index origin, String data) throws IOException, InvalidRangeException {
+  public void writeStringData(Variable v, Index origin, String data) throws IOException, InvalidRangeException {
     Preconditions.checkArgument(v.getArrayType() == ArrayType.CHAR);
     Preconditions.checkArgument(v.getRank() > 0);
     int rank = v.getRank();
@@ -267,8 +198,10 @@ public class NetcdfFormatWriter implements Closeable {
     } catch (ucar.ma2.InvalidRangeException e) {
       throw new InvalidRangeException(e);
     }
-    // return incremented origin, if possible
-    return rank > 1 ? origin.incr(rank - 2) : origin;
+    // increment origin, if possible
+    if (rank > 1) {
+      origin.incr(rank - 2); // LOOK this is wrong when rank > 2
+    }
   }
 
   public int appendStructureData(Structure s, ucar.array.StructureData sdata)
@@ -293,7 +226,7 @@ public class NetcdfFormatWriter implements Closeable {
    * @param values write this array; must be same type and rank as Variable
    * @throws IOException if I/O error
    * @throws ucar.ma2.InvalidRangeException if values Array has illegal shape
-   * @deprecated use {@link NetcdfFormatWriter#write(Variable, ucar.array.Array)}
+   * @deprecated use {@link NetcdfFormatWriter#write(Variable, ucar.array.Index, ucar.array.Array)}
    */
   @Deprecated
   public void write(Variable v, ucar.ma2.Array values) throws IOException, ucar.ma2.InvalidRangeException {
@@ -302,8 +235,8 @@ public class NetcdfFormatWriter implements Closeable {
 
   /**
    * Write data to the named variable, origin assumed to be 0.
-   * 
-   * @deprecated use {@link NetcdfFormatWriter#write(Variable, ucar.array.Array)}
+   *
+   * @deprecated use {@link NetcdfFormatWriter#write(Variable, ucar.array.Index, ucar.array.Array)}
    */
   @Deprecated
   public void write(String varName, ucar.ma2.Array values) throws IOException, ucar.ma2.InvalidRangeException {
@@ -336,7 +269,7 @@ public class NetcdfFormatWriter implements Closeable {
    * @param values write this array; must be same type and rank as Variable
    * @throws IOException if I/O error
    * @throws ucar.ma2.InvalidRangeException if values Array has illegal shape
-   * @deprecated use {@link NetcdfFormatWriter#write(String, Index, ucar.array.Array)}
+   * @deprecated use {@link NetcdfFormatWriter#write(Variable, ucar.array.Index, ucar.array.Array)}
    */
   @Deprecated
   public void write(String varName, int[] origin, ucar.ma2.Array values)
@@ -369,7 +302,7 @@ public class NetcdfFormatWriter implements Closeable {
    * @param values write this array; must be ArrayObject of String
    * @throws IOException if I/O error
    * @throws ucar.ma2.InvalidRangeException if values Array has illegal shape
-   * @deprecated use {@link NetcdfFormatWriter#write(Variable, Index, ucar.array.Array)}
+   * @deprecated use {@link NetcdfFormatWriter#writeStringData(Variable, Index, String)}
    */
   @Deprecated
   public void writeStringDataToChar(Variable v, int[] origin, ucar.ma2.Array values)
@@ -696,6 +629,92 @@ public class NetcdfFormatWriter implements Closeable {
     /** Once this is called, do not use the Builder again. */
     public NetcdfFormatWriter build() throws IOException {
       return new NetcdfFormatWriter(this);
+    }
+  }
+
+  public Writer writer() {
+    return new Writer();
+  }
+
+  /** Fluid API for writing. */
+  public class Writer {
+    Variable v;
+    String varName;
+    Index origin;
+    Object primArray;
+    ucar.array.Array<?> values;
+    int[] shape;
+    String sval;
+
+    public Writer forVariable(Variable v) {
+      this.v = v;
+      return this;
+    }
+
+    public Writer forVariable(String varName) {
+      this.varName = varName;
+      return this;
+    }
+
+    public Writer withOrigin(Index origin) {
+      this.origin = origin;
+      return this;
+    }
+
+    public Writer withOrigin(int[] origin) {
+      this.origin = Index.of(origin);
+      return this;
+    }
+
+    public Writer withArray(ucar.array.Array<?> values) {
+      this.values = values;
+      return this;
+    }
+
+    public Writer withPrimitiveArray(Object primArray) {
+      this.primArray = primArray;
+      return this;
+    }
+
+    public Writer withShape(int... shape) {
+      this.shape = shape;
+      return this;
+    }
+
+    public Writer withString(String sval) {
+      this.sval = sval;
+      return this;
+    }
+
+    public void write() throws IOException, InvalidRangeException {
+      if (this.v == null && this.varName == null) {
+        throw new IllegalArgumentException("Must set Variable");
+      }
+      if (v == null) {
+        this.v = findVariable(this.varName);
+        if (this.v == null) {
+          throw new IllegalArgumentException("Unknown Variable " + this.varName);
+        }
+      }
+      if (this.origin == null) {
+        this.origin = Index.ofRank(v.getRank());
+      }
+
+      if (sval != null) {
+        NetcdfFormatWriter.this.writeStringData(this.v, this.origin, sval);
+        return;
+      }
+
+      if (this.values == null) {
+        if (this.primArray == null) {
+          throw new IllegalArgumentException("Must set Array or PrimitiveArray");
+        }
+        if (this.shape == null) {
+          this.shape = v.getShape();
+        }
+        this.values = Arrays.factory(v.getArrayType(), this.shape, this.primArray);
+      }
+      NetcdfFormatWriter.this.write(this.v, this.origin, this.values);
     }
   }
 }
