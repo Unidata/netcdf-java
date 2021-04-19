@@ -185,7 +185,7 @@ public class IospDetailsTutorial {
    * @param lat
    */
   public static void setVariableData(Variable.Builder<?> lat) {
-    ucar.array.Array<?> data = Arrays.makeArray(180, 90.0, -1.0);
+    ucar.array.Array<?> data = Arrays.makeArray(ArrayType.FLOAT, 180, 90.0, -1.0);
     lat.setSourceData(data);
   }
 
