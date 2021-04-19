@@ -68,7 +68,9 @@ public interface IospFileWriter extends Closeable {
    * @param values data to write. The shape must match section.getShape().
    * @throws IOException if I/O error
    * @throws InvalidRangeException if invalid section
+   * @deprecated will change to using ucar.array in ver7.
    */
+  @Deprecated
   void writeData(Variable v2, Section section, ucar.ma2.Array values) throws IOException, InvalidRangeException;
 
   /**
@@ -77,7 +79,9 @@ public interface IospFileWriter extends Closeable {
    * @param s belongs to this structure
    * @param sdata the stuctureData to append
    * @return the recnum where it was written
+   * @deprecated will change to using ucar.array in ver7.
    */
+  @Deprecated
   int appendStructureData(Structure s, StructureData sdata) throws IOException, InvalidRangeException;
 
   /**
@@ -95,6 +99,5 @@ public interface IospFileWriter extends Closeable {
   void updateAttribute(Variable v2, Attribute att) throws IOException;
 
   void updateAttribute(Group g, Attribute att) throws IOException;
-
 
 }

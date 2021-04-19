@@ -22,7 +22,9 @@ public final class ArrayInteger extends Array<Integer> {
   /** Create an Array of type Integer and the given shape and storage. */
   public ArrayInteger(ArrayType dtype, int[] shape, Storage<Integer> storage) {
     super(dtype, shape);
-    Preconditions.checkArgument(indexFn.length() <= storage.length());
+    if (indexFn.length() > storage.length()) {
+      throw new IllegalArgumentException(String.format("shape %d > storage %d", indexFn.length(), storage.length()));
+    }
     this.storage = storage;
   }
 

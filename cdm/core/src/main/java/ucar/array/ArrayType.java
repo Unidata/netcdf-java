@@ -193,7 +193,7 @@ public enum ArrayType {
     return this;
   }
 
-  /** @deprecated do not use if possible. */
+  /** @deprecated do not use. */
   @Deprecated
   public DataType getDataType() {
     return DataType.valueOf(this.name());

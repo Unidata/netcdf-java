@@ -102,7 +102,7 @@ public class TestNetcdfWriteArrayAndUpdate {
 
       Variable v = writer.findVariable("temperature");
       try {
-        writer.write(v, A, latDim.getLength(), lonDim.getLength());
+        writer.writeWithPrimitive(v, A, latDim.getLength(), lonDim.getLength());
       } catch (IOException e) {
         System.err.println("ERROR writing file");
         fail();
@@ -120,8 +120,9 @@ public class TestNetcdfWriteArrayAndUpdate {
       }
 
       v = writer.findVariable("svar");
+      assertThat(v).isNotNull();
       try {
-        writer.write(v, ac, svar_len.getLength());
+        writer.writeWithPrimitive(v, ac, svar_len.getLength());
       } catch (IOException e) {
         System.err.println("ERROR writing Achar");
         fail();
@@ -132,6 +133,7 @@ public class TestNetcdfWriteArrayAndUpdate {
 
       // write byte variable
       Variable bvar = writer.findVariable("bvar");
+      assertThat(bvar).isNotNull();
       byte[] barray = new byte[latDim.getLength()];
       long start = -bvar.getSize() / 2;
       count = 0;
@@ -140,7 +142,7 @@ public class TestNetcdfWriteArrayAndUpdate {
       }
 
       try {
-        writer.write(bvar, barray);
+        writer.writeWithPrimitive(bvar, barray);
       } catch (IOException e) {
         System.err.println("ERROR writing bvar");
         fail();
@@ -152,7 +154,8 @@ public class TestNetcdfWriteArrayAndUpdate {
       // write char variable as String
       try {
         v = writer.findVariable("svar2");
-        writer.writeStringData(v, "Two pairs of ladies stockings!");
+        assertThat(v).isNotNull();
+        writer.writeStringData(v, Index.ofRank(v.getRank()), "Two pairs of ladies stockings!");
       } catch (IOException e) {
         System.err.println("ERROR writing svar2");
         fail();
@@ -163,12 +166,12 @@ public class TestNetcdfWriteArrayAndUpdate {
 
       // write String array
       try {
-        String[] ac2 = new String[names.getLength()];
-        ac2[0] = "No pairs of ladies stockings!";
-        ac2[1] = "One pair of ladies stockings!";
-        ac2[2] = "Two pairs of ladies stockings!";
         v = writer.findVariable("names");
-        writer.writeStringData(v, ac2);
+        assertThat(v).isNotNull();
+        Index index = Index.ofRank(v.getRank());
+        writer.writeStringData(v, index, "No pairs of ladies stockings!");
+        writer.writeStringData(v, index, "One pairs of ladies stockings!");
+        writer.writeStringData(v, index, "Two pairs of ladies stockings!");
       } catch (IOException e) {
         System.err.println("ERROR writing Achar3");
         fail();
@@ -181,7 +184,7 @@ public class TestNetcdfWriteArrayAndUpdate {
       try {
         double[] data = new double[] {222.333};
         v = writer.findVariable("scalar");
-        writer.write(v, data);
+        writer.writeWithPrimitive(v, data);
       } catch (IOException e) {
         System.err.println("ERROR writing scalar");
         fail();
@@ -283,7 +286,7 @@ public class TestNetcdfWriteArrayAndUpdate {
       Array<String> achar3Data = achar3.makeStringsFromChar();
 
       assertThat(achar3Data.get(0)).isEqualTo("No pairs of ladies stockings!");
-      assertThat(achar3Data.get(1)).isEqualTo("One pair of ladies stockings!");
+      assertThat(achar3Data.get(1)).isEqualTo("One pairs of ladies stockings!");
       assertThat(achar3Data.get(2)).isEqualTo("Two pairs of ladies stockings!");
 
       // read String Array - 2
@@ -293,11 +296,11 @@ public class TestNetcdfWriteArrayAndUpdate {
 
       assertThat(a.getArrayType()).isEqualTo(ArrayType.CHAR);
       ArrayChar achar4 = (ArrayChar) a;
-      Array<String> achar4Data = achar3.makeStringsFromChar();
+      Array<String> achar4Data = achar4.makeStringsFromChar();
 
-      assertThat(achar4Data.get(0).equals("0 pairs of ladies stockings!"));
+      assertThat(achar4Data.get(0).equals("0 pair of ladies stockings!"));
       assertThat(achar4Data.get(1).equals("1 pair of ladies stockings!"));
-      assertThat(achar4Data.get(2).equals("2 pairs of ladies stockings!"));
+      assertThat(achar4Data.get(2).equals("2 pair of ladies stockings!"));
 
       // read scalar data
       Variable ss = ncfile.findVariable("scalar");
@@ -326,7 +329,7 @@ public class TestNetcdfWriteArrayAndUpdate {
       }
 
       try {
-        writer.write(v, new int[2], A);
+        writer.writeWithPrimitive(v, A);
       } catch (IOException e) {
         System.err.println("ERROR writing file");
         fail();
@@ -347,7 +350,7 @@ public class TestNetcdfWriteArrayAndUpdate {
       }
 
       try {
-        writer.write(v, ac);
+        writer.writeWithPrimitive(v, ac);
       } catch (IOException e) {
         System.err.println("ERROR writing Achar");
         fail();
@@ -358,7 +361,7 @@ public class TestNetcdfWriteArrayAndUpdate {
 
       // write byte variable
       v = writer.findVariable("bvar");
-      assertThat(v);
+      assertThat(v).isNotNull();
       shape = v.getShape();
       int len = shape[0];
       byte[] barray = new byte[len];
@@ -369,7 +372,7 @@ public class TestNetcdfWriteArrayAndUpdate {
       }
 
       try {
-        writer.write(v, barray);
+        writer.writeWithPrimitive(v, barray);
       } catch (IOException e) {
         System.err.println("ERROR writing bvar");
         fail();
@@ -382,7 +385,7 @@ public class TestNetcdfWriteArrayAndUpdate {
       try {
         v = writer.findVariable("svar2");
         assertThat(v).isNotNull();
-        writer.writeStringData(v, "Twelve pairs of ladies stockings!");
+        writer.writeStringData(v, Index.ofRank(v.getRank()), "Twelve pairs of ladies stockings!");
       } catch (IOException e) {
         System.err.println("ERROR writing svar2");
         fail();
@@ -394,11 +397,11 @@ public class TestNetcdfWriteArrayAndUpdate {
       // write String array
       try {
         v = writer.findVariable("names");
-        String[] ac2 = new String[3];
-        ac2[0] = "0 pairs of ladies stockings!";
-        ac2[1] = "1 pair of ladies stockings!";
-        ac2[2] = "2 pairs of ladies stockings!";
-        writer.writeStringData(v, ac2);
+        assertThat(v).isNotNull();
+        Index index = Index.ofRank(v.getRank());
+        writer.writeStringData(v, index, "0 pairs of ladies stockings!");
+        writer.writeStringData(v, index, "1 pairs of ladies stockings!");
+        writer.writeStringData(v, index, "2 pairs of ladies stockings!");
       } catch (IOException e) {
         System.err.println("ERROR writing Achar3");
         fail();
@@ -411,7 +414,7 @@ public class TestNetcdfWriteArrayAndUpdate {
       try {
         double[] data = new double[] {23.32};
         v = writer.findVariable("scalar");
-        writer.write(v, data);
+        writer.writeWithPrimitive(v, data);
       } catch (IOException e) {
         System.err.println("ERROR writing scalar");
         fail();
@@ -514,7 +517,7 @@ public class TestNetcdfWriteArrayAndUpdate {
       Array<String> achar3Data = achar3.makeStringsFromChar();
 
       assertThat(achar3Data.get(0)).isEqualTo("0 pairs of ladies stockings!");
-      assertThat(achar3Data.get(1)).isEqualTo("1 pair of ladies stockings!");
+      assertThat(achar3Data.get(1)).isEqualTo("1 pairs of ladies stockings!");
       assertThat(achar3Data.get(2)).isEqualTo("2 pairs of ladies stockings!");
 
       // read String Array - 2
@@ -526,9 +529,9 @@ public class TestNetcdfWriteArrayAndUpdate {
       ArrayChar achar4 = (ArrayChar) a;
       Array<String> achar4Data = achar3.makeStringsFromChar();
 
-      assertThat(achar4Data.get(0).equals("0 pairs of ladies stockings!"));
+      assertThat(achar4Data.get(0).equals("0 pair of ladies stockings!"));
       assertThat(achar4Data.get(1).equals("1 pair of ladies stockings!"));
-      assertThat(achar4Data.get(2).equals("2 pairs of ladies stockings!"));
+      assertThat(achar4Data.get(2).equals("2 pair of ladies stockings!"));
 
       // read scalar data
       Variable ss = ncfile.findVariable("scalar");

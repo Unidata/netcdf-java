@@ -294,7 +294,7 @@ public class TestSection {
 
   @Test
   public void testSlice3D() throws InvalidRangeException {
-    Array<Double> a3 = Arrays.makeArray(new int[] {10, 10, 10}, 1000, 0.0, 1.0);
+    Array<Double> a3 = Arrays.makeArray(ArrayType.DOUBLE, 1000, 0.0, 1.0, 10, 10, 10);
     Array<Double> a2 = Arrays.slice(a3, 0, 1);
     Array<Double> a1 = Arrays.slice(a2, 0, 1);
 

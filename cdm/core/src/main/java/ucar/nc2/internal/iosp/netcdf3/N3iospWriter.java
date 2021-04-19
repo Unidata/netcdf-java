@@ -124,9 +124,11 @@ public class N3iospWriter extends N3iosp implements IospFileWriter {
     N3header.Vinfo vinfo = (N3header.Vinfo) v2.getSPobject();
     DataType dataType = v2.getDataType();
 
+    int[] varShape = v2.getShape();
     if (v2.isUnlimited()) {
       Range firstRange = section.getRange(0);
-      setNumrecs(firstRange.last() + 1);
+      int n = setNumrecs(firstRange.last() + 1);
+      varShape[0] = n;
     }
 
     if (v2 instanceof Structure) {
@@ -143,8 +145,8 @@ public class N3iospWriter extends N3iosp implements IospFileWriter {
       writeRecordData((Structure) v2, section, (ArrayStructure) values);
 
     } else {
-      Layout layout = (!v2.isUnlimited()) ? new LayoutRegular(vinfo.begin, v2.getElementSize(), v2.getShape(), section)
-          : new LayoutRegularSegmented(vinfo.begin, v2.getElementSize(), header.recsize, v2.getShape(), section);
+      Layout layout = (!v2.isUnlimited()) ? new LayoutRegular(vinfo.begin, v2.getElementSize(), varShape, section)
+          : new LayoutRegularSegmented(vinfo.begin, v2.getElementSize(), header.recsize, varShape, section);
       writeData(values, layout, dataType);
     }
   }
@@ -276,9 +278,10 @@ public class N3iospWriter extends N3iosp implements IospFileWriter {
     throw new IllegalStateException("dataType= " + dataType);
   }
 
-  private void setNumrecs(int n) throws IOException, InvalidRangeException {
-    if (n <= header.numrecs)
-      return;
+  private int setNumrecs(int n) throws IOException, InvalidRangeException {
+    if (n <= header.numrecs) {
+      return header.numrecs;
+    }
     int startRec = header.numrecs;
 
     ((N3headerWriter) header).setNumrecs(n);
@@ -286,16 +289,19 @@ public class N3iospWriter extends N3iosp implements IospFileWriter {
     // need to let all unlimited variables know of new shape
     for (Variable v : ncfile.getVariables()) {
       if (v.isUnlimited()) {
-        v.resetShape(); // LOOK
+        v.resetShape(); // LOOK this doesnt work.
         v.invalidateCache();
       }
     }
 
     // extend file, handle filling
-    if (fill)
+    if (fill) {
       fillRecordVariables(startRec, n);
-    else
+    } else {
       raf.setMinLength(header.calcFileSize());
+    }
+
+    return n;
   }
 
   /**

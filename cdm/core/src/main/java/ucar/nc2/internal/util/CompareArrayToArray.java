@@ -18,7 +18,7 @@ import ucar.nc2.Variable;
 import ucar.nc2.util.Misc;
 
 /**
- * Compare reading netcdf with Ma2 and same file with Array. Open separate files to prevent them from colliding.
+ * Compare reading netcdf with Array. Open separate files to prevent them from colliding.
  * Also use to test round trip through cmdr.
  */
 public class CompareArrayToArray {
@@ -61,6 +61,15 @@ public class CompareArrayToArray {
       }
     }
     System.out.printf("*** took %s%n", stopwatchAll.stop());
+    return ok;
+  }
+
+  public static boolean compareData(String name, Array<?> org, Array<?> array) throws IOException {
+    Formatter f = new Formatter();
+    boolean ok = compareData(f, name, org, array, false, true);
+    if (f.toString().isEmpty()) {
+      System.out.printf("%s%n", f);
+    }
     return ok;
   }
 

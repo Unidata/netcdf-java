@@ -8,7 +8,8 @@ import com.google.common.base.Preconditions;
 import ucar.array.ArrayType;
 import ucar.array.Arrays;
 import ucar.array.ArraysConvert;
-import ucar.ma2.InvalidRangeException;
+import ucar.array.InvalidRangeException;
+import ucar.array.Index;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.Dimensions;
@@ -154,38 +155,53 @@ public class NetcdfFormatWriter implements Closeable {
    * 
    * @param v variable to write to
    * @param origin offset within the variable to start writing.
-   * @param values write this array; must be same type and rank as Variable
+   * @param values write this array; must have compatible type and shape with Variable
    */
-  public void write(Variable v, int[] origin, ucar.array.Array<?> values)
-      throws IOException, ucar.array.InvalidRangeException {
+  public void write(Variable v, Index origin, ucar.array.Array<?> values) throws IOException, InvalidRangeException {
+    Preconditions.checkArgument(v.getArrayType() == values.getArrayType()); // LOOK do something better?
+    Preconditions.checkArgument(v.getRank() == values.getRank()); // LOOK do something better: contains?
     ucar.ma2.Array oldArray = ArraysConvert.convertFromArray(values);
     try {
-      write(v, origin, oldArray);
-    } catch (InvalidRangeException e) {
-      throw new ucar.array.InvalidRangeException(e);
+      write(v, origin.getCurrentIndex(), oldArray);
+    } catch (ucar.ma2.InvalidRangeException e) {
+      throw new InvalidRangeException(e);
     }
+  }
+
+  public void write(String varName, ucar.array.Index origin, ucar.array.Array<?> values)
+      throws IOException, InvalidRangeException {
+    Variable v = findVariable(varName);
+    Preconditions.checkNotNull(v);
+    write(v, origin, values);
   }
 
   /**
    * Write to Variable with ucar.array.Array, origin assumed 0.
    * 
    * @param v write to this variable
-   * @param values write this array; must be same type and rank as Variable
+   * @param values write this array; must be same type and shape as Variable
    */
-  public void write(Variable v, ucar.array.Array<?> values) throws IOException, ucar.array.InvalidRangeException {
-    write(v, new int[values.getRank()], values);
+  public void write(Variable v, ucar.array.Array<?> values) throws IOException, InvalidRangeException {
+    write(v, Index.ofRank(v.getRank()), values);
+  }
+
+  public void write(String varName, ucar.array.Array<?> values) throws IOException, InvalidRangeException {
+    Variable v = findVariable(varName);
+    Preconditions.checkNotNull(v);
+    write(v, values);
   }
 
   /**
    * Write to Variable with a primitive java array
+   * LOOK: Need a different name because overload is confused with (Variable v, Index origin, Array array)
    * 
    * @param v write to this variable
    * @param origin offset within the variable to start writing.
    * @param primArray must be java primitive array of type compatible with v.
-   * @param shape the data shape, same rank as v, with product equal to primArray. If rank = 0, use v.getShape().
+   * @param shape the data shape, same rank as v, with product equal to primArray. If not set, use v.getShape().
    */
-  public void write(Variable v, int[] origin, Object primArray, int... shape)
-      throws IOException, ucar.array.InvalidRangeException {
+  public void writeOriginPrimitive(Variable v, Index origin, Object primArray, int... shape)
+      throws IOException, InvalidRangeException {
     if (shape.length == 0) {
       shape = v.getShape();
     }
@@ -193,81 +209,76 @@ public class NetcdfFormatWriter implements Closeable {
     write(v, origin, values);
   }
 
+  public void writeOriginPrimitive(String varName, Index origin, Object primArray, int... shape)
+      throws IOException, InvalidRangeException {
+    Variable v = findVariable(varName);
+    Preconditions.checkNotNull(v);
+    writeOriginPrimitive(v, origin, primArray, shape);
+  }
+
   /**
    * Write to Variable with a primitive java array, origin assumed 0.
+   * LOOK: Need a different name because overload is confused with (Variable v, Index origin, Object primArray) when
+   * primArray is an int[].
    * 
    * @param v write to this variable
    * @param primArray must be java primitive array of type compatible with v.
    * @param shape the data shape, same rank as v, with product equal to primArray. If rank = 0, use v.getShape().
    */
-  public void write(Variable v, Object primArray, int... shape) throws IOException, ucar.array.InvalidRangeException {
-    write(v, new int[v.getRank()], primArray, shape);
+  public void writeWithPrimitive(Variable v, Object primArray, int... shape) throws IOException, InvalidRangeException {
+    writeOriginPrimitive(v, Index.ofRank(v.getRank()), primArray, shape);
+  }
+
+  public void writeWithPrimitive(String varName, Object primArray, int... shape)
+      throws IOException, InvalidRangeException {
+    Variable v = findVariable(varName);
+    Preconditions.checkNotNull(v);
+    writeWithPrimitive(v, primArray, shape);
   }
 
   /**
-   * Write String values to a CHAR or STRING Variable.
+   * Write String value to a CHAR Variable.
+   * Truncated or zero extended as needed to fit into last dimension of v.
    * 
-   * @param v write to this variable, must be of type CHAR or STRING.
-   * @param origin offset within the variable to start writing.
-   * @param data The String or String[] to write.
+   * <pre>
+   * Index index = Index.ofRank(v.getRank());
+   * writer.writeStringData(v, index, "This is the first string.");
+   * writer.writeStringData(v, index, "Shorty");
+   * writer.writeStringData(v, index, "This is too long so it will get truncated");
+   * </pre>
+   * 
+   * @param v write to this variable, must be of type CHAR.
+   * @param origin offset within the variable to start writing. This is incremented.
+   * @param data The String to write.
+   * @return incremented Index offset.
    */
-  public void writeStringData(Variable v, int[] origin, Object data)
-      throws IOException, ucar.array.InvalidRangeException {
-    if (v.getArrayType() == ArrayType.STRING) {
-      writeStringDataToString(v, origin, data);
-    } else if (v.getArrayType() == ArrayType.CHAR) {
-      writeStringDataToChar(v, origin, data);
-    } else {
-      throw new IllegalArgumentException();
+  public Index writeStringData(Variable v, Index origin, String data) throws IOException, InvalidRangeException {
+    Preconditions.checkArgument(v.getArrayType() == ArrayType.CHAR);
+    Preconditions.checkArgument(v.getRank() > 0);
+    int rank = v.getRank();
+    int[] offset = origin.getCurrentIndex();
+    ucar.ma2.Array cvalues = ucar.ma2.ArrayChar.makeFromString(data, v.getShape(rank - 1));
+    if (rank > 1) {
+      // LOOK: rather do this in ucar.array, but must convert all iosp's to use array; will do in ver7
+      cvalues = cvalues.extend(rank);
     }
-  }
-
-  public void writeStringData(Variable v, Object data) throws IOException, ucar.array.InvalidRangeException {
-    writeStringData(v, new int[v.getRank()], data);
-  }
-
-  private void writeStringDataToChar(Variable v, int[] origin, Object data)
-      throws IOException, ucar.array.InvalidRangeException {
-    String[] sarray;
-    if (data instanceof String) {
-      sarray = new String[] {(String) data};
-    } else if (data instanceof String[]) {
-      sarray = (String[]) data;
-    } else {
-      throw new IllegalArgumentException();
-    }
-
-    ucar.ma2.Array cvalues = ucar.ma2.ArrayChar.makeFromStringArray(sarray, v.getShape());
     try {
-      write(v, origin, cvalues);
-    } catch (InvalidRangeException e) {
-      throw new ucar.array.InvalidRangeException(e);
+      write(v, offset, cvalues);
+    } catch (ucar.ma2.InvalidRangeException e) {
+      throw new InvalidRangeException(e);
     }
-  }
-
-  private void writeStringDataToString(Variable v, int[] origin, Object data)
-      throws IOException, ucar.array.InvalidRangeException {
-    throw new UnsupportedOperationException();
-  }
-
-  public void writeStringData(Variable v, int[] origin, ucar.array.Array<?> values)
-      throws IOException, ucar.array.InvalidRangeException {
-    ucar.ma2.Array oldArray = ArraysConvert.convertFromArray(values);
-    try {
-      writeStringDataToChar(v, origin, oldArray);
-    } catch (InvalidRangeException e) {
-      throw new ucar.array.InvalidRangeException(e);
-    }
+    // return incremented origin, if possible
+    return rank > 1 ? origin.incr(rank - 2) : origin;
   }
 
   public int appendStructureData(Structure s, ucar.array.StructureData sdata)
-      throws IOException, ucar.array.InvalidRangeException {
+      throws IOException, InvalidRangeException {
     ucar.ma2.StructureMembers membersMa2 = s.makeStructureMembers(); // ??
     ucar.ma2.StructureData oldStructure = ArraysConvert.convertStructureData(membersMa2, sdata);
     try {
       return appendStructureData(s, oldStructure);
-    } catch (InvalidRangeException e) {
-      throw new ucar.array.InvalidRangeException(e);
+    } catch (ucar.ma2.InvalidRangeException e) {
+      throw new InvalidRangeException(e);
     }
   }
 
@@ -281,11 +292,11 @@ public class NetcdfFormatWriter implements Closeable {
    * @param v variable to write to
    * @param values write this array; must be same type and rank as Variable
    * @throws IOException if I/O error
-   * @throws InvalidRangeException if values Array has illegal shape
+   * @throws ucar.ma2.InvalidRangeException if values Array has illegal shape
    * @deprecated use {@link NetcdfFormatWriter#write(Variable, ucar.array.Array)}
    */
   @Deprecated
-  public void write(Variable v, ucar.ma2.Array values) throws IOException, InvalidRangeException {
+  public void write(Variable v, ucar.ma2.Array values) throws IOException, ucar.ma2.InvalidRangeException {
     write(v, new int[values.getRank()], values);
   }
 
@@ -295,7 +306,7 @@ public class NetcdfFormatWriter implements Closeable {
    * @deprecated use {@link NetcdfFormatWriter#write(Variable, ucar.array.Array)}
    */
   @Deprecated
-  public void write(String varName, ucar.ma2.Array values) throws IOException, InvalidRangeException {
+  public void write(String varName, ucar.ma2.Array values) throws IOException, ucar.ma2.InvalidRangeException {
     Variable v = findVariable(varName);
     Preconditions.checkNotNull(v);
     write(v, values);
@@ -308,11 +319,12 @@ public class NetcdfFormatWriter implements Closeable {
    * @param origin offset within the variable to start writing.
    * @param values write this array; must be same type and rank as Variable
    * @throws IOException if I/O error
-   * @throws InvalidRangeException if values Array has illegal shape
-   * @deprecated use {@link NetcdfFormatWriter#write(Variable, int[], ucar.array.Array)}
+   * @throws ucar.ma2.InvalidRangeException if values Array has illegal shape
+   * @deprecated use {@link NetcdfFormatWriter#write(Variable, Index, ucar.array.Array)}
    */
   @Deprecated
-  public void write(Variable v, int[] origin, ucar.ma2.Array values) throws IOException, InvalidRangeException {
+  public void write(Variable v, int[] origin, ucar.ma2.Array values)
+      throws IOException, ucar.ma2.InvalidRangeException {
     spiw.writeData(v, new ucar.ma2.Section(origin, values.getShape()), values);
   }
 
@@ -323,11 +335,12 @@ public class NetcdfFormatWriter implements Closeable {
    * @param origin offset within the variable to start writing.
    * @param values write this array; must be same type and rank as Variable
    * @throws IOException if I/O error
-   * @throws InvalidRangeException if values Array has illegal shape
-   * @deprecated use {@link NetcdfFormatWriter#write(Variable, int[], ucar.array.Array)}
+   * @throws ucar.ma2.InvalidRangeException if values Array has illegal shape
+   * @deprecated use {@link NetcdfFormatWriter#write(String, Index, ucar.array.Array)}
    */
   @Deprecated
-  public void write(String varName, int[] origin, ucar.ma2.Array values) throws IOException, InvalidRangeException {
+  public void write(String varName, int[] origin, ucar.ma2.Array values)
+      throws IOException, ucar.ma2.InvalidRangeException {
     Variable v = findVariable(varName);
     Preconditions.checkNotNull(v);
     write(v, origin, values);
@@ -339,11 +352,12 @@ public class NetcdfFormatWriter implements Closeable {
    * @param v variable to write to
    * @param values write this array; must be ArrayObject of String
    * @throws IOException if I/O error
-   * @throws InvalidRangeException if values Array has illegal shape
-   * @deprecated use {@link NetcdfFormatWriter#writeStringData(Variable, int[], ucar.array.Array)}
+   * @throws ucar.ma2.InvalidRangeException if values Array has illegal shape
+   * @deprecated use {@link NetcdfFormatWriter#write(Variable, Index, ucar.array.Array)}
    */
   @Deprecated
-  public void writeStringDataToChar(Variable v, ucar.ma2.Array values) throws IOException, InvalidRangeException {
+  public void writeStringDataToChar(Variable v, ucar.ma2.Array values)
+      throws IOException, ucar.ma2.InvalidRangeException {
     writeStringDataToChar(v, new int[values.getRank()], values);
   }
 
@@ -354,12 +368,12 @@ public class NetcdfFormatWriter implements Closeable {
    * @param origin offset to start writing, ignore the strlen dimension.
    * @param values write this array; must be ArrayObject of String
    * @throws IOException if I/O error
-   * @throws InvalidRangeException if values Array has illegal shape
-   * @deprecated use {@link NetcdfFormatWriter#writeStringData(Variable, int[], ucar.array.Array)}
+   * @throws ucar.ma2.InvalidRangeException if values Array has illegal shape
+   * @deprecated use {@link NetcdfFormatWriter#write(Variable, Index, ucar.array.Array)}
    */
   @Deprecated
   public void writeStringDataToChar(Variable v, int[] origin, ucar.ma2.Array values)
-      throws IOException, InvalidRangeException {
+      throws IOException, ucar.ma2.InvalidRangeException {
     if (values.getElementType() != String.class)
       throw new IllegalArgumentException("values must be an ArrayObject of String ");
 
@@ -382,7 +396,8 @@ public class NetcdfFormatWriter implements Closeable {
    * @deprecated use {@link NetcdfFormatWriter#appendStructureData(Structure, ucar.array.StructureData)}
    */
   @Deprecated
-  public int appendStructureData(Structure s, ucar.ma2.StructureData sdata) throws IOException, InvalidRangeException {
+  public int appendStructureData(Structure s, ucar.ma2.StructureData sdata)
+      throws IOException, ucar.ma2.InvalidRangeException {
     return spiw.appendStructureData(s, sdata);
   }
 
