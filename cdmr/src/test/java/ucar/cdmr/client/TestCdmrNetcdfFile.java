@@ -15,7 +15,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.nc2.internal.util.CompareArrayToMa2;
+import ucar.nc2.internal.util.CompareArrayToArray;
 import ucar.unidata.util.test.TestDir;
 
 /** Test {@link CdmrNetcdfFile} */
@@ -53,7 +53,7 @@ public class TestCdmrNetcdfFile {
     try (NetcdfFile ncfile = NetcdfDatasets.openFile(filename, null);
         CdmrNetcdfFile cdmrFile = CdmrNetcdfFile.builder().setRemoteURI(cdmrUrl).build()) {
 
-      boolean ok = CompareArrayToMa2.compareFiles(ncfile, cdmrFile);
+      boolean ok = CompareArrayToArray.compareFiles(ncfile, cdmrFile);
       assertThat(ok).isTrue();
     }
   }

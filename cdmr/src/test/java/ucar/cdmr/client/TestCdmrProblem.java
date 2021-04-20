@@ -10,7 +10,9 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDatasets;
+import ucar.nc2.internal.util.CompareArrayToArray;
 import ucar.nc2.internal.util.CompareArrayToMa2;
+import ucar.nc2.util.Misc;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
@@ -33,10 +35,17 @@ public class TestCdmrProblem {
   }
 
   @Test
+  @Category(NeedsCdmUnitTest.class)
+  public void testShowClassPath() throws Exception {
+    Misc.showClassPath();
+  }
+
+  @Test
   public void testOpaqueDataType() throws Exception {
     String localFilename = TestDir.cdmLocalFromTestDataDir + "hdf5/test_atomic_types.nc";
     Path path = Paths.get(localFilename);
     doOne(path);
+    doTwo(path);
   }
 
   @Test
@@ -47,12 +56,21 @@ public class TestCdmrProblem {
   }
 
   public void doOne(Path path) throws Exception {
-    // LOOK kludge for now. Also, need to auto start up CmdrServer
     String cdmrUrl = "cdmr://localhost:16111/" + path.toAbsolutePath();
     try (NetcdfFile ncfile = NetcdfDatasets.openFile(path.toString(), null);
         CdmrNetcdfFile cdmrFile = CdmrNetcdfFile.builder().setRemoteURI(cdmrUrl).build()) {
 
       boolean ok = CompareArrayToMa2.compareFiles(ncfile, cdmrFile);
+      assertThat(ok).isTrue();
+    }
+  }
+
+  public void doTwo(Path path) throws Exception {
+    String cdmrUrl = "cdmr://localhost:16111/" + path.toAbsolutePath();
+    try (NetcdfFile ncfile = NetcdfDatasets.openFile(path.toString(), null);
+        CdmrNetcdfFile cdmrFile = CdmrNetcdfFile.builder().setRemoteURI(cdmrUrl).build()) {
+
+      boolean ok = CompareArrayToArray.compareFiles(ncfile, cdmrFile);
       assertThat(ok).isTrue();
     }
   }

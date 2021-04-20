@@ -33,6 +33,7 @@ import ucar.nc2.Sequence;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.grid.*;
+import ucar.nc2.util.Misc;
 import ucar.nc2.write.ChunkingIndex;
 
 /** Server that manages startup/shutdown of a Cdm Remote server. */
@@ -83,13 +84,7 @@ public class CdmrServer {
 
   /** Main launches the server from the command line. */
   public static void main(String[] args) throws IOException, InterruptedException {
-    System.out.println("Working Directory = " + System.getProperty("user.dir"));
-    String classpath = System.getProperty("java.class.path");
-    System.out.printf("Classpath =%n");
-    for (String cp : classpath.split(":")) {
-      System.out.printf("  %s%n", cp);
-    }
-
+    Misc.showClassPath();
     final CdmrServer server = new CdmrServer();
     server.start();
     server.blockUntilShutdown();
