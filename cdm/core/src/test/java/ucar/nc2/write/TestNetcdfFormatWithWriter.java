@@ -73,9 +73,9 @@ public class TestNetcdfFormatWithWriter {
       byte[] data = new byte[1];
       for (int time = 0; time < 256; time++) {
         data[0] = (byte) time;
-        writer.writer().forVariable("time").withOrigin(index).withPrimitiveArray(data).withShape(1).write();
-        writer.writer().forVariable("Band1").withOrigin(index).withPrimitiveArray(data).withShape(1).write();
-        writer.writer().forVariable("Band2").withOrigin(index).withPrimitiveArray(data).withShape(1).write();
+        writer.config().forVariable("time").withOrigin(index).withPrimitiveArray(data).withShape(1).write();
+        writer.config().forVariable("Band1").withOrigin(index).withPrimitiveArray(data).withShape(1).write();
+        writer.config().forVariable("Band2").withOrigin(index).withPrimitiveArray(data).withShape(1).write();
         index.incr(0);
       }
     }
@@ -107,7 +107,7 @@ public class TestNetcdfFormatWithWriter {
       Array<?> data = Arrays.makeArray(ArrayType.DOUBLE, 4, 0, 1);
       Variable time = writer.findVariable("time"); // ?? immutable ??
       assertThat(time).isNotNull();
-      writer.writer().forVariable(time).withArray(data).write();
+      writer.config().forVariable(time).withArray(data).write();
       assertThat(time.getSize()).isEqualTo(4);
     }
 
@@ -144,8 +144,8 @@ public class TestNetcdfFormatWithWriter {
 
     try (NetcdfFormatWriter writer = writerb.build()) {
       // write out the non-record variables
-      writer.writer().forVariable("lat").withPrimitiveArray(new float[] {41, 40, 39}).write();
-      writer.writer().forVariable("lon").withPrimitiveArray(new float[] {-109, -107, -105, -103}).write();
+      writer.config().forVariable("lat").withPrimitiveArray(new float[] {41, 40, 39}).write();
+      writer.config().forVariable("lon").withPrimitiveArray(new float[] {-109, -107, -105, -103}).write();
 
       Index timeOrigin = Index.ofRank(1);
       Index recordOrigin = Index.ofRank(3);
@@ -163,9 +163,9 @@ public class TestNetcdfFormatWithWriter {
         Array<?> tData = Arrays.makeArray(ArrayType.DOUBLE, 12, 99 * timeIdx, (1 + timeIdx) / 3.14159, 1, 3, 4);
 
         // write the data
-        writer.writer().forVariable("T").withOrigin(recordOrigin).withArray(tData).write();
-        writer.writer().forVariable("rh").withOrigin(recordOrigin).withArray(rhData).write();
-        writer.writer().forVariable(timeVar).withOrigin(timeOrigin).withPrimitiveArray(timeValue).withShape(1).write();
+        writer.config().forVariable("T").withOrigin(recordOrigin).withArray(tData).write();
+        writer.config().forVariable("rh").withOrigin(recordOrigin).withArray(rhData).write();
+        writer.config().forVariable(timeVar).withOrigin(timeOrigin).withPrimitiveArray(timeValue).withShape(1).write();
         timeOrigin.incr(0);
         recordOrigin.incr(0);
       } // loop over record
@@ -198,7 +198,7 @@ public class TestNetcdfFormatWithWriter {
 
       for (int time = 0; time < size; time++) {
         Array<?> timeData = Arrays.factory(ArrayType.INT, new int[] {1}, new int[] {time * 12});
-        writer.writer().forVariable("time").withOrigin(timeOrigin).withArray(timeData).write();
+        writer.config().forVariable("time").withOrigin(timeOrigin).withArray(timeData).write();
         timeOrigin.incr(0);
       }
     }
@@ -225,9 +225,9 @@ public class TestNetcdfFormatWithWriter {
 
       // Note that origin is incremented.
       Index index = Index.ofRank(time.getRank());
-      writer.writer().forVariable(time).withOrigin(index).withString("This is the first string.").write();
-      writer.writer().forVariable(time).withOrigin(index).withString("Shorty").write();
-      writer.writer().forVariable(time).withOrigin(index).withString("This is too long so it will get truncated")
+      writer.config().forVariable(time).withOrigin(index).withString("This is the first string.").write();
+      writer.config().forVariable(time).withOrigin(index).withString("Shorty").write();
+      writer.config().forVariable(time).withOrigin(index).withString("This is too long so it will get truncated")
           .write();
     }
 

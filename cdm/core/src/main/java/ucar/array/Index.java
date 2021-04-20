@@ -36,6 +36,12 @@ public class Index {
     this.indexFn = from.indexFn; // Immutable
   }
 
+  /**
+   * Increment the ith dimension.
+   * 
+   * @param dim which dimension
+   * @return the incremented Index.
+   */
   public Index incr(int dim) {
     Preconditions.checkArgument(dim < this.current.length);
     setDim(dim, this.current[dim] + 1);
@@ -54,7 +60,7 @@ public class Index {
   }
 
   /**
-   * set current element at dimension dim to v
+   * Set current element at dimension dim
    *
    * @param dim set this dimension
    * @param value to this value

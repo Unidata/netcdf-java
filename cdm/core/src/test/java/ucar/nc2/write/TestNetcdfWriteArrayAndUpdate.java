@@ -102,7 +102,7 @@ public class TestNetcdfWriteArrayAndUpdate {
 
       Variable v = writer.findVariable("temperature");
       try {
-        writer.writer().forVariable(v).withPrimitiveArray(A).withShape(latDim.getLength(), lonDim.getLength()).write();
+        writer.config().forVariable(v).withPrimitiveArray(A).withShape(latDim.getLength(), lonDim.getLength()).write();
       } catch (IOException e) {
         System.err.println("ERROR writing file");
         fail();
@@ -122,7 +122,7 @@ public class TestNetcdfWriteArrayAndUpdate {
       v = writer.findVariable("svar");
       assertThat(v).isNotNull();
       try {
-        writer.writer().forVariable(v).withPrimitiveArray(ac).withShape(svar_len.getLength()).write();
+        writer.config().forVariable(v).withPrimitiveArray(ac).withShape(svar_len.getLength()).write();
       } catch (IOException e) {
         System.err.println("ERROR writing Achar");
         fail();
@@ -142,7 +142,7 @@ public class TestNetcdfWriteArrayAndUpdate {
       }
 
       try {
-        writer.writer().forVariable(bvar).withPrimitiveArray(barray).write();
+        writer.config().forVariable(bvar).withPrimitiveArray(barray).write();
       } catch (IOException e) {
         System.err.println("ERROR writing bvar");
         fail();
@@ -155,7 +155,7 @@ public class TestNetcdfWriteArrayAndUpdate {
       try {
         v = writer.findVariable("svar2");
         assertThat(v).isNotNull();
-        writer.writer().forVariable(v).withString("Two pairs of ladies stockings!").write();
+        writer.config().forVariable(v).withString("Two pairs of ladies stockings!").write();
       } catch (IOException e) {
         System.err.println("ERROR writing svar2");
         fail();
@@ -169,9 +169,9 @@ public class TestNetcdfWriteArrayAndUpdate {
         v = writer.findVariable("names");
         assertThat(v).isNotNull();
         Index origin = Index.ofRank(v.getRank());
-        writer.writer().forVariable(v).withOrigin(origin).withString("No pairs of ladies stockings!").write();
-        writer.writer().forVariable(v).withOrigin(origin).withString("One pairs of ladies stockings!").write();
-        writer.writer().forVariable(v).withOrigin(origin).withString("Two pairs of ladies stockings!").write();
+        writer.config().forVariable(v).withOrigin(origin).withString("No pairs of ladies stockings!").write();
+        writer.config().forVariable(v).withOrigin(origin).withString("One pairs of ladies stockings!").write();
+        writer.config().forVariable(v).withOrigin(origin).withString("Two pairs of ladies stockings!").write();
       } catch (IOException e) {
         System.err.println("ERROR writing Achar3");
         fail();
@@ -184,7 +184,7 @@ public class TestNetcdfWriteArrayAndUpdate {
       try {
         double[] data = new double[] {222.333};
         v = writer.findVariable("scalar");
-        writer.writer().forVariable(v).withPrimitiveArray(data).write();
+        writer.config().forVariable(v).withPrimitiveArray(data).write();
       } catch (IOException e) {
         System.err.println("ERROR writing scalar");
         fail();
@@ -329,7 +329,7 @@ public class TestNetcdfWriteArrayAndUpdate {
       }
 
       try {
-        writer.writer().forVariable(v).withPrimitiveArray(A).write();
+        writer.config().forVariable(v).withPrimitiveArray(A).write();
       } catch (IOException e) {
         System.err.println("ERROR writing file");
         fail();
@@ -350,7 +350,7 @@ public class TestNetcdfWriteArrayAndUpdate {
       }
 
       try {
-        writer.writer().forVariable(v).withPrimitiveArray(ac).write();
+        writer.config().forVariable(v).withPrimitiveArray(ac).write();
       } catch (IOException e) {
         System.err.println("ERROR writing Achar");
         fail();
@@ -372,7 +372,7 @@ public class TestNetcdfWriteArrayAndUpdate {
       }
 
       try {
-        writer.writer().forVariable(v).withPrimitiveArray(barray).write();
+        writer.config().forVariable(v).withPrimitiveArray(barray).write();
       } catch (IOException e) {
         System.err.println("ERROR writing bvar");
         fail();
@@ -414,7 +414,7 @@ public class TestNetcdfWriteArrayAndUpdate {
       try {
         double[] data = new double[] {23.32};
         v = writer.findVariable("scalar");
-        writer.writer().forVariable(v).withPrimitiveArray(data).write();
+        writer.config().forVariable(v).withPrimitiveArray(data).write();
       } catch (IOException e) {
         System.err.println("ERROR writing scalar");
         fail();

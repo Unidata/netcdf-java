@@ -32,26 +32,25 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.List;
-import java.util.Optional;
 
 import static ucar.nc2.NetcdfFile.IOSP_MESSAGE_GET_NETCDF_FILE_FORMAT;
 
 /**
- * Writes new Netcdf 3 or 4 formatted files to disk.
- *
+ * Creates new Netcdf 3/4 format files. Writes data to new or existing files.
+ * <p/>
+ * LOOK in ver7, netcdf3 and netcdf4 will be seperate, so they can have different functionality.
+ * <p/>
+ * 
  * <pre>
  * NetcdfFormatWriter.Builder writerb = NetcdfFormatWriter.createNewNetcdf3(testFile.getPath());
  * writerb.addDimension(Dimension.builder().setName("vdim").setIsUnlimited(true).build());
  * writerb.addVariable("v", DataType.BYTE, "vdim");
  * try (NetcdfFormatWriter writer = writerb.build()) {
- *   writer.write("v", dataArray);
+ *   writer.config().forVariable("v").withArray(dataArray).write();
  * }
  * </pre>
- * 
- * LOOK consider making netcdf3 and netcdf4 seperate, so they can have different functionality.
  */
 public class NetcdfFormatWriter implements Closeable {
-  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfFormatWriter.class);
 
   /**
    * Create a new Netcdf3 file.
@@ -98,8 +97,9 @@ public class NetcdfFormatWriter implements Closeable {
           "Can only modify Netcdf-3 or Netcdf-4 files");
       Group.Builder root = ncfile.getRootGroup().toBuilder();
       NetcdfFileFormat format = (NetcdfFileFormat) iosp.sendIospMessage(IOSP_MESSAGE_GET_NETCDF_FILE_FORMAT);
-      if (format == null && !format.isNetdf3format() && !format.isNetdf4format()) {
-        throw new IllegalArgumentException(String.format("%s is not a netcdf-3 or netcdf-4 file", format));
+      if (format != null && !format.isNetdf3format() && !format.isNetdf4format()) {
+        throw new IllegalArgumentException(
+            String.format("%s is not a netcdf-3 or netcdf-4 file (%s)", location, format));
       }
       return builder().setRootGroup(root).setLocation(location).setIosp(iosp).setFormat(format).setIsExisting();
     }
@@ -107,30 +107,39 @@ public class NetcdfFormatWriter implements Closeable {
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  /** The output file root group. */
+  /** The output file's root group. */
   public Group getRootGroup() {
     return ncout.getRootGroup();
   }
 
+  /** The output file's format. */
   public NetcdfFileFormat getFormat() {
     return this.format;
   }
 
+  /** Find the named Variable in the output file. */
   @Nullable
   public Variable findVariable(String fullNameEscaped) {
     return ncout.findVariable(fullNameEscaped);
   }
 
+  /** Find the named Dimension in the output file. */
   @Nullable
   public Dimension findDimension(String dimName) {
     return ncout.findDimension(dimName);
   }
 
+  /** Find the named global attribute in the output file. */
   @Nullable
   public Attribute findGlobalAttribute(String attName) {
     return getRootGroup().findAttribute(attName);
   }
 
+  /**
+   * An estimate of the size of the file when written to disk. Ignores compression for netcdf4.
+   * 
+   * @return estimated file size in bytes.
+   */
   public long calcSize() {
     return calcSize(getRootGroup());
   }
@@ -190,7 +199,7 @@ public class NetcdfFormatWriter implements Closeable {
     int[] offset = origin.getCurrentIndex();
     ucar.ma2.Array cvalues = ucar.ma2.ArrayChar.makeFromString(data, v.getShape(rank - 1));
     if (rank > 1) {
-      // LOOK: rather do this in ucar.array, but must convert all iosp's to use array; will do in ver7
+      // LOOK: rather do this in ucar.array, but must convert all iosp's to use array first; will do in ver7
       cvalues = cvalues.extend(rank);
     }
     try {
@@ -204,6 +213,12 @@ public class NetcdfFormatWriter implements Closeable {
     }
   }
 
+  /**
+   * Write StructureData along the unlimited dimension.
+   * 
+   * @return the recnum where it was written.
+   */
+  // TODO does this work?
   public int appendStructureData(Structure s, ucar.array.StructureData sdata)
       throws IOException, InvalidRangeException {
     ucar.ma2.StructureMembers membersMa2 = s.makeStructureMembers(); // ??
@@ -214,7 +229,6 @@ public class NetcdfFormatWriter implements Closeable {
       throw new InvalidRangeException(e);
     }
   }
-
 
   ////////////////////////////////////////////
   //// deprecated
@@ -286,7 +300,7 @@ public class NetcdfFormatWriter implements Closeable {
    * @param values write this array; must be ArrayObject of String
    * @throws IOException if I/O error
    * @throws ucar.ma2.InvalidRangeException if values Array has illegal shape
-   * @deprecated use {@link NetcdfFormatWriter#write(Variable, Index, ucar.array.Array)}
+   * @deprecated use {@link NetcdfFormatWriter#writeStringData(Variable, Index, String)}
    */
   @Deprecated
   public void writeStringDataToChar(Variable v, ucar.ma2.Array values)
@@ -352,7 +366,7 @@ public class NetcdfFormatWriter implements Closeable {
     spiw.updateAttribute(v2, att);
   }
 
-  /** close the file. */
+  /** Close the file. */
   @Override
   public synchronized void close() throws IOException {
     if (!isClosed) {
@@ -413,7 +427,7 @@ public class NetcdfFormatWriter implements Closeable {
       this.ncout = spi.getOutputFile();
       this.spiw = spi;
 
-    } else {
+    } else { // create file
       this.format = builder.format;
 
       this.useJna = builder.useJna || format.isNetdf4format();
@@ -449,7 +463,7 @@ public class NetcdfFormatWriter implements Closeable {
   }
 
   /////////////////////////////////////////////////////////////////////////////
-  /** Obtain a Builder to set custom options */
+  /** Obtain a mutable Builder to create or modify the file metadata. */
   public static Builder<?> builder() {
     return new Builder2();
   }
@@ -615,16 +629,18 @@ public class NetcdfFormatWriter implements Closeable {
       return vb;
     }
 
-    // TODO doesnt work yet
-    public Optional<Variable.Builder<?>> renameVariable(String oldName, String newName) {
-      Optional<Variable.Builder<?>> vbOpt = getRootGroup().findVariableLocal(oldName);
-      vbOpt.ifPresent(vb -> {
-        rootGroup.removeVariable(oldName);
-        vb.setName(newName);
-        rootGroup.addVariable(vb);
-      });
-      return vbOpt;
-    }
+    /*
+     * TODO doesnt work yet
+     * public Optional<Variable.Builder<?>> renameVariable(String oldName, String newName) {
+     * Optional<Variable.Builder<?>> vbOpt = getRootGroup().findVariableLocal(oldName);
+     * vbOpt.ifPresent(vb -> {
+     * rootGroup.removeVariable(oldName);
+     * vb.setName(newName);
+     * rootGroup.addVariable(vb);
+     * });
+     * return vbOpt;
+     * }
+     */
 
     /** Once this is called, do not use the Builder again. */
     public NetcdfFormatWriter build() throws IOException {
@@ -632,12 +648,13 @@ public class NetcdfFormatWriter implements Closeable {
     }
   }
 
-  public Writer writer() {
-    return new Writer();
+  /** Obtain a WriteConfig to configure data writing. */
+  public WriteConfig config() {
+    return new WriteConfig();
   }
 
   /** Fluid API for writing. */
-  public class Writer {
+  public class WriteConfig {
     Variable v;
     String varName;
     Index origin;
@@ -646,47 +663,69 @@ public class NetcdfFormatWriter implements Closeable {
     int[] shape;
     String sval;
 
-    public Writer forVariable(Variable v) {
+    /** Write to this Variable. */
+    public WriteConfig forVariable(Variable v) {
       this.v = v;
       return this;
     }
 
-    public Writer forVariable(String varName) {
+    /** Write to this named Variable. */
+    public WriteConfig forVariable(String varName) {
       this.varName = varName;
       return this;
     }
 
-    public Writer withOrigin(Index origin) {
+    /** If not set, assume all zeroes. */
+    public WriteConfig withOrigin(Index origin) {
       this.origin = origin;
       return this;
     }
 
-    public Writer withOrigin(int[] origin) {
+    /** If not set, assume all zeroes. */
+    public WriteConfig withOrigin(int... origin) {
       this.origin = Index.of(origin);
       return this;
     }
 
-    public Writer withArray(ucar.array.Array<?> values) {
+    /** The values to write. ArrayType must match the Variable. */
+    public WriteConfig withArray(ucar.array.Array<?> values) {
       this.values = values;
       return this;
     }
 
-    public Writer withPrimitiveArray(Object primArray) {
+    /**
+     * The values to write as a 1D java primitive array, eg float[].
+     * 
+     * @see Arrays#factory(ArrayType type, int[] shape, Object primArray)
+     */
+    public WriteConfig withPrimitiveArray(Object primArray) {
       this.primArray = primArray;
       return this;
     }
 
-    public Writer withShape(int... shape) {
+    /** Shape of primitive array, not needed for Array. If not set, assume v.getShape(). */
+    public WriteConfig withShape(int... shape) {
       this.shape = shape;
       return this;
     }
 
-    public Writer withString(String sval) {
+    /**
+     * For writing a String into a CHAR Variable.
+     * 
+     * @see NetcdfFormatWriter#writeStringData(Variable, Index, String)
+     */
+    public WriteConfig withString(String sval) {
       this.sval = sval;
       return this;
     }
 
-    public void write() throws IOException, InvalidRangeException {
+    /**
+     * Do the write to the file.
+     * 
+     * @throws IllegalArgumentException when not configured correctly.
+     * @see NetcdfFormatWriter#write(Variable, ucar.array.Index, ucar.array.Array)
+     */
+    public void write() throws IOException, InvalidRangeException, IllegalArgumentException {
       if (this.v == null && this.varName == null) {
         throw new IllegalArgumentException("Must set Variable");
       }
@@ -707,7 +746,7 @@ public class NetcdfFormatWriter implements Closeable {
 
       if (this.values == null) {
         if (this.primArray == null) {
-          throw new IllegalArgumentException("Must set Array or PrimitiveArray");
+          throw new IllegalArgumentException("Must set Array or primitive array");
         }
         if (this.shape == null) {
           this.shape = v.getShape();
