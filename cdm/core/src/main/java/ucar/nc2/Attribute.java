@@ -344,7 +344,7 @@ public class Attribute {
           // types. If it is large enough ( >= 2^(BIT_WIDTH-1) ), its most-significant bit will be interpreted as the
           // sign bit, which will result in an invalid (negative) value being printed. To prevent that, we're going
           // to widen the number before printing it.
-          number = DataType.widenNumber(number);
+          number = ArrayType.widenNumber(number);
         }
         f.format("%s", number);
 
@@ -638,7 +638,7 @@ public class Attribute {
       }
 
       if (arr.getArrayType() == ArrayType.CHAR) { // turn CHAR into STRING
-        ucar.array.ArrayChar carr = (ucar.array.ArrayChar) arr;
+        ucar.array.ArrayByte carr = (ucar.array.ArrayByte) arr;
         if (carr.getRank() < 2) { // common case
           svalue = carr.makeStringFromChar();
           this.nelems = 1;

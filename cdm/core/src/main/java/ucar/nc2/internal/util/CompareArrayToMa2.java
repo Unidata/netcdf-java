@@ -167,11 +167,11 @@ public class CompareArrayToMa2 {
       }
 
       case CHAR: {
-        Iterator<Character> iter2 = (Iterator<Character>) array.iterator();
+        Iterator<Byte> iter2 = (Iterator<Byte>) array.iterator();
         while (iter1.hasNext() && iter2.hasNext()) {
-          char v1 = iter1.getCharNext();
-          char v2 = iter2.next();
-          if (!Misc.nearlyEquals(v1, v2)) {
+          byte v1 = (byte) iter1.getCharNext();
+          byte v2 = iter2.next();
+          if (v1 != v2) {
             f.format(" DIFF %s %s: %s != %s;  count = %s%n", dt, name, v1, v2, iter1);
             ok = false;
             if (justOne)

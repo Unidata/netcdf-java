@@ -19,7 +19,7 @@ import java.math.BigInteger;
 public enum ArrayType {
   BOOLEAN("boolean", 1, Byte.class, false), //
   BYTE("byte", 1, Byte.class, false), //
-  CHAR("char", 1, Character.class, false), // LOOK shouldnt size be 2?
+  CHAR("char", 1, Byte.class, false), //
   SHORT("short", 2, Short.class, false), //
   INT("int", 4, Integer.class, false), //
   LONG("long", 8, Long.class, false), //

@@ -41,13 +41,11 @@ public final class ArrayVlen<T> extends Array<Array<T>> {
     switch (dataType) {
       case BOOLEAN:
       case BYTE:
+      case CHAR:
       case ENUM1:
       case OPAQUE:
       case UBYTE:
         result = new StorageVByte(dataType, (byte[][]) dataArray);
-        break;
-      case CHAR:
-        result = new StorageVChar((char[][]) dataArray);
         break;
       case DOUBLE:
         result = new StorageVDouble((double[][]) dataArray);
@@ -83,12 +81,11 @@ public final class ArrayVlen<T> extends Array<Array<T>> {
     switch (dataType) {
       case BOOLEAN:
       case BYTE:
+      case CHAR:
       case ENUM1:
       case OPAQUE:
       case UBYTE:
         return new byte[length][];
-      case CHAR:
-        return new char[length][];
       case DOUBLE:
         return new double[length][];
       case FLOAT:
@@ -260,60 +257,6 @@ public final class ArrayVlen<T> extends Array<Array<T>> {
       public final Array<Byte> next() {
         byte[] p = primitiveArray[count++];
         return (p == null) ? null : Arrays.factory(primitiveArrayType, new int[] {p.length}, p);
-      }
-    }
-  }
-
-  // standard storage using ragged array char[fixed][]
-  @Immutable
-  static class StorageVChar implements StorageMutable<Array<Character>> {
-    private final char[][] primitiveArray;
-
-    StorageVChar(char[][] primitiveArray) {
-      this.primitiveArray = primitiveArray;
-    }
-
-    @Override
-    public long length() {
-      return primitiveArray.length;
-    }
-
-    @Override
-    public Array<Character> get(long elem) {
-      char[] p = primitiveArray[(int) elem];
-      return Arrays.factory(ArrayType.CHAR, new int[] {p.length}, p);
-    }
-
-    @Override
-    public void arraycopy(int srcPos, Object dest, int destPos, long length) {
-      System.arraycopy(primitiveArray, srcPos, dest, destPos, (int) length);
-    }
-
-    @Override
-    public Iterator<Array<Character>> iterator() {
-      return new StorageIter();
-    }
-
-    @Override
-    public void set(int index, Object value) {
-      if (value instanceof ArrayChar) {
-        value = Arrays.copyPrimitiveArray((ArrayChar) value);
-      }
-      primitiveArray[index] = (char[]) value;
-    }
-
-    private final class StorageIter implements Iterator<Array<Character>> {
-      private int count = 0;
-
-      @Override
-      public final boolean hasNext() {
-        return count < primitiveArray.length;
-      }
-
-      @Override
-      public final Array<Character> next() {
-        char[] p = primitiveArray[count++];
-        return (p == null) ? null : Arrays.factory(ArrayType.CHAR, new int[] {p.length}, p);
       }
     }
   }

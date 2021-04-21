@@ -33,7 +33,7 @@ public class TestWriteMiscProblems {
   @Test
   public void testWriteBigString() throws IOException {
     String filename = tempFolder.newFile().getAbsolutePath();
-    NetcdfFormatWriter.Builder writerb = NetcdfFormatWriter.createNewNetcdf3(filename);
+    NetcdfFormatWriter.Builder<?> writerb = NetcdfFormatWriter.createNewNetcdf3(filename);
     int len = 120000;
     ArrayChar.D1 arrayCharD1 = new ArrayChar.D1(len);
     for (int i = 0; i < len; i++)

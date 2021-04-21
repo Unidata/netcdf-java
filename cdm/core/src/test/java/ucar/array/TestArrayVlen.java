@@ -100,9 +100,9 @@ public class TestArrayVlen {
     assertThat(Iterables.size(array)).isEqualTo(11);
     assertThat(array.get(array.getIndex())).isNotNull();
 
-    ArrayVlen<Character> carray = ArrayVlen.factory(ArrayType.CHAR, new int[] {12});
-    Storage<Array<Character>> cstorage = carray.storage();
-    carray.set(0, new char[] {1});
+    ArrayVlen<Byte> carray = ArrayVlen.factory(ArrayType.CHAR, new int[] {12});
+    Storage<Array<Byte>> cstorage = carray.storage();
+    carray.set(0, new byte[] {1});
     assertThat(cstorage.getClass()).isAssignableTo(StorageMutable.class);
     assertThat(cstorage.length()).isEqualTo(12);
     assertThat(Iterables.size(carray)).isEqualTo(12);

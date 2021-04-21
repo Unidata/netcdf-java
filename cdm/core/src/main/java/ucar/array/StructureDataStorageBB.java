@@ -100,6 +100,7 @@ public final class StructureDataStorageBB implements Storage<StructureData> {
 
     ArrayType dataType = data.getArrayType();
     switch (dataType) {
+      case CHAR:
       case ENUM1:
       case UBYTE:
       case BYTE: {
@@ -112,13 +113,6 @@ public final class StructureDataStorageBB implements Storage<StructureData> {
       case OPAQUE: {
         int index = this.putOnHeap(data);
         bbuffer.putInt(index);
-        return;
-      }
-      case CHAR: {
-        Array<Character> cdata = (Array<Character>) data;
-        for (char val : cdata) {
-          bbuffer.put((byte) val);
-        }
         return;
       }
       case ENUM2:
@@ -233,6 +227,7 @@ public final class StructureDataStorageBB implements Storage<StructureData> {
 
       switch (dataType) {
         case BOOLEAN:
+        case CHAR:
         case UBYTE:
         case ENUM1:
         case BYTE: {
@@ -241,15 +236,6 @@ public final class StructureDataStorageBB implements Storage<StructureData> {
             array[count] = bbuffer.get(pos + count);
           }
           return new ArrayByte(dataType, m.getShape(), new ucar.array.ArrayByte.StorageS(array));
-        }
-
-        case CHAR: {
-          // char is stored in a single byte
-          byte[] array = new byte[length];
-          for (int count = 0; count < length; count++) {
-            array[count] = bbuffer.get(pos + count);
-          }
-          return new ArrayChar(m.getShape(), new ucar.array.ArrayChar.StorageS(IospHelper.convertByteToChar(array)));
         }
 
         case DOUBLE: {
