@@ -8,8 +8,6 @@ import ucar.ma2.DataType;
 
 import javax.annotation.Nullable;
 import java.math.BigInteger;
-import java.nio.ByteBuffer;
-import java.util.Iterator;
 
 /**
  * Type-safe enumeration of Array data types.
@@ -19,31 +17,34 @@ import java.util.Iterator;
  * </p>
  */
 public enum ArrayType {
-  BOOLEAN("boolean", 1, boolean.class, false), //
-  BYTE("byte", 1, byte.class, false), //
-  CHAR("char", 1, char.class, false), //
-  SHORT("short", 2, short.class, false), //
-  INT("int", 4, int.class, false), //
-  LONG("long", 8, long.class, false), //
-  FLOAT("float", 4, float.class, false), //
-  DOUBLE("double", 8, double.class, false), //
+  BOOLEAN("boolean", 1, Byte.class, false), //
+  BYTE("byte", 1, Byte.class, false), //
+  CHAR("char", 1, Character.class, false), // LOOK shouldnt size be 2?
+  SHORT("short", 2, Short.class, false), //
+  INT("int", 4, Integer.class, false), //
+  LONG("long", 8, Long.class, false), //
+  FLOAT("float", 4, Float.class, false), //
+  DOUBLE("double", 8, Double.class, false), //
 
-  // object types
-  SEQUENCE("Sequence", 4, Iterator.class, false), // 32-bit index
-  STRING("String", 4, String.class, false), // 32-bit index
-  STRUCTURE("Structure", 0, StructureData.class, false), // size unknown
+  UBYTE("ubyte", 1, Byte.class, true), // unsigned byte
+  USHORT("ushort", 2, Short.class, true), // unsigned short
+  UINT("uint", 4, Integer.class, true), // unsigned int
+  ULONG("ulong", 8, Long.class, true), // unsigned long
 
   ENUM1("enum1", 1, byte.class, false), // byte
   ENUM2("enum2", 2, short.class, false), // short
   ENUM4("enum4", 4, int.class, false), // int
 
-  OPAQUE("opaque", 1, ByteBuffer.class, false), // size unknown, byte blobs;
-  OBJECT("object", 1, Object.class, false), // legacy: size unknown, use with ucar.ma2.Array
+  // object types are variable length, they have 32 bit indices onto a heap inside of a Structure
+  STRING("String", 4, String.class, false), // Java String
+  STRUCTURE("Structure", 0, StructureData.class, false), // compact storage of heterogeneous fields
+  SEQUENCE("Sequence", 4, StructureData.class, false), // Iterator<StructureData>
+  OPAQUE("opaque", 1, Array.class, false), // Array<Array<Byte>>, an array of variable length byte arrays
 
-  UBYTE("ubyte", 1, byte.class, true), // unsigned byte
-  USHORT("ushort", 2, short.class, true), // unsigned short
-  UINT("uint", 4, int.class, true), // unsigned int
-  ULONG("ulong", 8, long.class, true); // unsigned long
+  /** @deprecated legacy, do not use. */
+  @Deprecated
+  OBJECT("object", 1, Object.class, false), // legacy: size unknown, use with ucar.ma2.Array
+  ;
 
   /**
    * A property of {@link #isIntegral() integral} data types that determines whether they can represent both
@@ -72,6 +73,7 @@ public enum ArrayType {
     this.signedness = signedness;
   }
 
+  // LOOK CDL name?
   /** The ArrayType name, eg "byte", "float", "String". */
   public String toString() {
     return niceName;
@@ -241,8 +243,6 @@ public enum ArrayType {
       return ArrayType.STRING;
     if (c == ucar.array.StructureData.class)
       return ArrayType.STRUCTURE;
-    if (c == Iterator.class)
-      return ArrayType.SEQUENCE;
     throw new RuntimeException("Unsupported primitive class " + c.getName());
   }
 

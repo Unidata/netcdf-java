@@ -377,6 +377,8 @@ public class Arrays {
     return org.createView(org.indexFn().transpose(dim1, dim2));
   }
 
+  /////////////////////////////////////////////////////////////////////////////////////////
+
   /**
    * Compute total number of elements in the array. Stop at vlen.
    *

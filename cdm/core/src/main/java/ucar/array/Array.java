@@ -37,7 +37,7 @@ public abstract class Array<T> implements Iterable<T> {
     return this.get(this.getIndex());
   }
 
-  /** The datatype for this array */
+  /** The ArrayType for this Array */
   public ArrayType getArrayType() {
     return this.arrayType;
   }
