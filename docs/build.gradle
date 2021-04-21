@@ -3,8 +3,15 @@ plugins {
   id 'edu.ucar.unidata.site.jekyll'
 }
 
+apply from: "$rootDir/gradle/any/dependencies.gradle"
 apply from: "$rootDir/gradle/any/javadoc.gradle"
 apply from: "$rootDir/gradle/any/testing.gradle"
+apply from: "$rootDir/gradle/any/properties.gradle"  // For Nexus credential properties.
+apply plugin: 'com.diffplug.gradle.spotless'
+
+import edu.ucar.build.publishing.tasks.PublishToRawRepoTask
+import edu.ucar.build.publishing.tasks.DeleteFromNexusTask
+import edu.ucar.unidata.site.jekyll.tasks.ServeTask
 
 dependencies {
   testImplementation enforcedPlatform(project(':netcdf-java-testing-platform'))
@@ -21,18 +28,130 @@ dependencies {
   testRuntimeOnly 'ch.qos.logback:logback-classic'
 }
 
+/////////////////////
+// Userguide Tests //
+/////////////////////
+
+sourceSets {
+  test {
+    java {
+      srcDirs = ['userguide/src/test/java']
+    }
+    resources {
+      srcDirs = ['userguide/src/test/resources']
+    }
+  }
+}
+
 java {
   sourceCompatibility = JavaVersion.VERSION_1_8
   targetCompatibility = JavaVersion.VERSION_1_8
 }
 
+// Will apply to "compileJava", "compileTestJava", "compileSourceSetJava", etc.
+tasks.withType(JavaCompile).all {
+  options.encoding = 'UTF-8'
+
+  // show deprecation details
+  options.compilerArgs = ['-Xlint:deprecation']
+}
+
+
+spotless {
+  java {
+    // target java files in the test directory
+    target 'src/test/java/**/*.java'
+    eclipse().configFile("$rootDir/project-files/code-styles/eclipse-style-guide.xml",
+            'userguide/src/test/style/style-override.properties')
+    encoding 'UTF-8'
+  }
+}
+
+////////////////////////
+// Jekyll Sites Build //
+////////////////////////
+
+// Names of the directories that contain a jekyll documentation set
+def docSets = ['cdm', 'developer', 'ncml', 'userguide']
+
+// disable tasks added by plugin...we need custom tasks, one for each docset
+buildJekyllSite.enabled(false)
+serveJekyllSite.enabled(false)
+
+static def makeBuildTaskName(docSet) {
+  def taskName = docSet.capitalize()
+  taskName = taskName.replace('guide', 'Guide')
+  return taskName
+}
+
+def nexusPathVersioned = "netcdf-java/$project.docVersion"
+def nexusPathCurrent = "netcdf-java/current"
+
+// aggregator task (aggregate individual doc set builds)
+def buildSiteTask = tasks.create(name: "buildAllJekyllSites") {
+  group = 'Documentation'
+  description = 'Build all jekyll sites.'
+}
+
+// setup build and publish tasks associated with each individual documentation set
+docSets.each { docSet ->
+  def taskName = docSet.substring(0,1).toUpperCase() + docSet.substring(1)
+  taskName = taskName.replace('guide', 'Guide')
+
+  def buildTask = tasks.create(name: "build${taskName}", type: edu.ucar.unidata.site.jekyll.tasks.BuildTask) {
+    group = 'Documentation-Set'
+    script = 'jekyll'
+    description = "Build $docSet jekyll site."
+    sourceDirectory.set(layout.projectDirectory.dir("$docSet/src/site"))
+    destinationDirectory.set(layout.buildDirectory.dir("site/$docSet/"))
+  }
+  buildTask.dependsOn('unpackGemJar')
+
+  def serveTask = tasks.create(name: "serve${taskName}", type: ServeTask) {
+    group = 'Documentation-Set'
+    script = 'jekyll'
+    description = "Serve $docSet jekyll site."
+    // org.gradle.api.file.DirectoryProperty
+    sourceDirectory.set(layout.projectDirectory.dir("$docSet/src/site"))
+    destinationDirectory.set(layout.buildDirectory.dir("site/$docSet/"))
+  }
+
+  serveTask.dependsOn('unpackGemJar')
+
+  // register tasks with the aggregator build task
+  buildSiteTask.dependsOn("build${taskName}")
+}
+
+///////////////////
+// Javadoc Build //
+///////////////////
+
+// This is the public interface. Future changes to the API will attempt to remain backwards compatible with it.
+def publicApiDef = [
+        'thredds/client/catalog/*.java',
+        'thredds/client/catalog/builder/*.java',
+        'ucar/array/*.java',
+        'ucar/nc2/*.java',
+        'ucar/nc2/constants/*.java',
+        'ucar/nc2/dataset/*.java',
+        'ucar/nc2/dataset/spi/*.java',
+        'ucar/nc2/grid/*.java',
+        'ucar/nc2/iosp/*.java',
+        'ucar/nc2/time/*.java',
+        'ucar/nc2/units/*.java',
+        'ucar/nc2/util/*.java',
+        'ucar/nc2/write/*.java',
+        'ucar/unidata/geoloc/*.java',
+        'ucar/unidata/io/*.java',
+        'ucar/unidata/io/spi/*.java'
+]
+
 gradle.projectsEvaluated {  // Several statements below rely upon all subprojects having been evaluated.
-
   task buildJavadocPublicApi(type: Javadoc) {
-    description = 'Generate Javadoc for the CDM subproject.'
-
-    title = "NetCDF-Java CDM Public API v${version}"
-    destinationDir = file("$buildDir/javadocCdm/")
+    group = 'Documentation-set'
+    description = 'Generate Javadoc for the Public API.'
+    title = "NetCDF-Java Public API v${version}"
+    destinationDir = file("$buildDir/javadoc/")
 
     options.showFromPublic()
     options.noDeprecated()
@@ -41,29 +160,26 @@ gradle.projectsEvaluated {  // Several statements below rely upon all subproject
     source cdmCoreSourceSet.allJava
 
     classpath = files([cdmCoreSourceSet.compileClasspath, cdmCoreSourceSet.output])
+    include publicApiDef
+  }
 
-    // This is the public interface. Future changes to the API will attempt to remain backwards compatible with it.
-    include 'thredds/client/catalog/*.java'
-    include 'thredds/client/catalog/builder/*.java'
-    include 'ucar/array/*.java'
-    include 'ucar/nc2/*.java'
-    include 'ucar/nc2/constants/*.java'
-    include 'ucar/nc2/dataset/*.java'
-    include 'ucar/nc2/dataset/spi/*.java'
-    include 'ucar/nc2/grid/*.java'
-    include 'ucar/nc2/iosp/*.java'
-    include 'ucar/nc2/time/*.java'
-    include 'ucar/nc2/units/*.java'
-    include 'ucar/nc2/util/*.java'
-    include 'ucar/nc2/write/*.java'
-    include 'ucar/unidata/geoloc/*.java'
-    include 'ucar/unidata/io/*.java'
-    include 'ucar/unidata/io/spi/*.java'
+  task buildJavadocPublicApiWithDeps(type: Javadoc) {
+    group = 'Documentation-set'
+    description = 'Generate Javadoc for the Public API - included deprecated classes and methods.'
+    title = "NetCDF-Java Public API v${version} - with deprecations"
+    destinationDir = file("$buildDir/javadocWithDeps/")
+
+    SourceSet cdmCoreSourceSet = rootProject.project(':cdm:cdm-core').sourceSets.main
+    source cdmCoreSourceSet.allJava
+
+    classpath = files([cdmCoreSourceSet.compileClasspath, cdmCoreSourceSet.output])
+
+    include publicApiDef
   }
 
   task buildJavadocAll(type: Javadoc) {
+    group = 'Documentation-set'
     description = 'Generate Javadoc for all Java subprojects.'
-
     title = "NetCDF-Java All API v${version}"
     destinationDir = file("$buildDir/javadocAll/")
 
@@ -76,108 +192,178 @@ gradle.projectsEvaluated {  // Several statements below rely upon all subproject
     })
   }
 
+  task buildAllJavadocs {
+    group 'Documentation'
+    dependsOn buildJavadocPublicApi, buildJavadocPublicApiWithDeps, buildJavadocAll
+  }
+
+  javadoc.dependsOn buildAllJavadocs
+
   tasks.build {
-    // Aggregates the individual "build*" tasks.
-    dependsOn buildJekyllSite, buildJavadocPublicApi, buildJavadocAll
+    // Aggregates the individual "build*" aggregation tasks.
+    dependsOn buildSiteTask, buildAllJavadocs
   }
 }
 
-//////////////////////////////////////////////// Nexus ////////////////////////////////////////////////
+/////////////////////////////////////////////
+// Nexus Repository Publication Management //
+/////////////////////////////////////////////
 
-apply from: "$rootDir/gradle/any/properties.gradle"  // For Nexus credential properties.
+static def makeNexusTaskName(docType, docSet) {
+  def taskName = makeBuildTaskName(docSet)
+  taskName += docType.capitalize()
+  return taskName
+}
 
-import edu.ucar.build.publishing.tasks.PublishToRawRepoTask
+def nexusUrl = 'https://artifacts.unidata.ucar.edu/'
+def rawRepoName = 'docs-netcdf-java'
+def publishInfoByDocType = [
+        current: [
+                nexusPath: "${nexusPathCurrent}",
+                descriptionPath: '/current/'
+        ],
+        versioned: [
+                nexusPath: "${nexusPathVersioned}",
+                descriptionPath: '/major.minor/'
+        ]
+]
 
-tasks.withType(PublishToRawRepoTask).all {  // Common PublishToRawRepoTask config.
-  group = 'Documentation'
+// aggregator tasks (aggregate individual doc set publishing tasks)
+def publishVersionedJekyllSitesTask = tasks.create(name: "publishAllJekyllSitesVersioned") {
+  group = 'Publishing'
+  description = 'Publish all jekyll sites (versioned).'
+}
 
-  host = 'https://artifacts.unidata.ucar.edu/'
-  repoName = 'docs-netcdf-java'
+def publishCurrentJekyllSitesTask = tasks.create(name: "publishAllJekyllSitesCurrent") {
+  group = 'Publishing'
+  description = 'Publish all jekyll sites (current).'
+}
 
-  onlyIf {
-    // Will be evaluated at task execution time, not during configuration.
-    // Fails the build if the specified properties haven't been provided.
-    username = getPropertyOrFailBuild NEXUS_USERNAME_KEY
-    password = getPropertyOrFailBuild NEXUS_PASSWORD_KEY
-    return true
+def deleteAllVersionedDocsTask = tasks.create(name: "deleteAllVersionedDocsTask") {
+  group = 'Publishing'
+  description = 'Remove all versioned docs on Nexus under /major.minor/.'
+}
+
+def deleteAllCurrentDocsTask = tasks.create(name: "deleteAllCurrentDocsTask") {
+  group = 'Publishing'
+  description = 'Remove all current docs on Nexus under /current/.'
+}
+
+publishVersionedJekyllSitesTask.dependsOn(buildSiteTask)
+publishCurrentJekyllSitesTask.dependsOn(buildSiteTask)
+
+docSets.each { docSet ->
+  publishInfoByDocType.each { docType, publishInfo ->
+    def destination = file("$buildDir/site/$docSet/")
+    def buildTaskName = makeBuildTaskName(docType)
+    def nexusTaskName = makeNexusTaskName(docType, docSet)
+
+    tasks.create(name: "publishAs${nexusTaskName}", type: PublishToRawRepoTask, dependsOn: "build${buildTaskName}") {
+      description  "Publish $docSet to Nexus under ${publishInfo.descriptionPath}."
+
+      publishSrc = destination.absolutePath
+      destPath = "${publishInfo.nexusPath}/$docSet/"
+    }
+
+    tasks.create(name: "delete${nexusTaskName}", type: DeleteFromNexusTask) {
+      description = "Remove $docSet on Nexus under ${publishInfo.descriptionPath}."
+      searchQueryParameters.group = "/${publishInfo.nexusPath}/$docSet/*"
+    }
+
+    // register tasks with the appropriate aggregator tasks
+    if (docType == 'current') {
+      publishCurrentJekyllSitesTask.dependsOn("publishAs${nexusTaskName}")
+      deleteAllCurrentDocsTask.dependsOn("delete{nexusTaskName}")
+    } else {
+      publishVersionedJekyllSitesTask.dependsOn("publishAs${nexusTaskName}")
+      deleteAllVersionedDocsTask.dependsOn("delete{nexusTaskName}")
+    }
   }
 }
 
-tasks.register('publishAsVersionedUserGuide', PublishToRawRepoTask) {
-  description = 'Publish user guide (versioned) to Nexus under /major.minor/.'
-
-  publishSrc = buildJekyllSite.destinationDirectory.get()
-  destPath = "netcdf-java/$project.docVersion/userguide/"
-  dependsOn tasks.getByName('buildJekyllSite')
+// We're deliberately NOT naming this task "publish", because we don't want it running when we do a:
+//     ./gradlew publish
+// from the root directory. It simply takes too long.
+def pubAllJavadocsVersioned = tasks.create(name: 'publishAllJavadocsAsVersioned', group: 'Publishing') {
+  description = 'Publish all Javadoc sets to Nexus under /major.minor/.'
 }
 
-tasks.register('publishAsCurrentUserGuide', PublishToRawRepoTask) {
-  description = 'Publish the user guide to Nexus under /current/.'
-
-  publishSrc = buildJekyllSite.destinationDirectory.get()
-  destPath = 'netcdf-java/current/userguide/'
-  dependsOn tasks.getByName('buildJekyllSite')
+def pubAllJavadocsCurrent = tasks.create(name: 'publishAllJavadocsAsCurrent', group: 'Publishing') {
+  description = 'Publish all Javadoc sets to Nexus under /current/.'
 }
 
 gradle.projectsEvaluated {
   // These tasks must be in a "projectsEvaluated" block because they depend on tasks that are also in a
   // "projectsEvaluated" block.
+  publishInfoByDocType.each { docType, publishInfo ->
+    def taskType = docType.capitalize()
 
-  task publishAsVersionedJavadocPublicApi(type: PublishToRawRepoTask, dependsOn: buildJavadocPublicApi) {
-    description = 'Publish Javadoc for the CDM subproject to Nexus under /major.minor/.'
+    def pubPub = tasks.create(name: "publishAs${taskType}JavadocPublicApi", type: PublishToRawRepoTask, dependsOn: buildJavadocPublicApi) {
+      description = "Publish Javadoc for the netCDF-Java Public API to Nexus under ${publishInfo.descriptionPath}."
+      publishSrc = tasks.buildJavadocPublicApi.destinationDir
+      destPath = "${publishInfo.nexusPath}/javadoc/"
+    }
 
-    publishSrc = tasks.buildJavadocPublicApi.destinationDir
-    destPath = "netcdf-java/$project.docVersion/javadoc/"
-  }
+    def pubPubDeps = tasks.create(name: "publishAs${taskType}JavadocPublicApiWithDeps", type: PublishToRawRepoTask, dependsOn: buildJavadocPublicApiWithDeps) {
+      description = "Publish Javadoc for the netCDF-Java Public API (with deprecations) to Nexus under ${publishInfo.descriptionPath}."
+      publishSrc = tasks.buildJavadocPublicApiWithDeps.destinationDir
+      destPath = "${publishInfo.nexusPath}/javadoc-with-deprecations/"
+    }
 
-  task publishAsCurrentJavadocPublicApi(type: PublishToRawRepoTask, dependsOn: buildJavadocPublicApi) {
-    description = 'Publish Javadoc for the CDM subproject to Nexus under /current/.'
+    def pubAll = tasks.create(name: "publishAs${taskType}JavadocAll", type: PublishToRawRepoTask, dependsOn: buildJavadocAll) {
+      description = "Publish Javadoc for all netCDF-Java subprojects to Nexus under ${publishInfo.descriptionPath}."
+      publishSrc = tasks.buildJavadocAll.destinationDir
+      destPath = "${publishInfo.nexusPath}/javadocAll/"
+    }
 
-    publishSrc = tasks.buildJavadocPublicApi.destinationDir
-    destPath = 'netcdf-java/current/javadoc/'
-  }
+    // register tasks with the appropriate aggregator tasks
+    def aggTask = docType == 'current' ? pubAllJavadocsCurrent : pubAllJavadocsVersioned
+    aggTask.dependsOn(pubPub)
+    aggTask.dependsOn(pubPubDeps)
+    aggTask.dependsOn(pubAll)
 
-  task publishAsVersionedJavadocAll(type: PublishToRawRepoTask, dependsOn: buildJavadocAll) {
-    description = 'Publish Javadoc for all Java subprojects to Nexus under /major.minor/.'
-
-    publishSrc = tasks.buildJavadocAll.destinationDir
-    destPath = "netcdf-java/$project.docVersion/javadocAll/"
-  }
-
-  task publishAsCurrentJavadocAll(type: PublishToRawRepoTask, dependsOn: buildJavadocAll) {
-    description = 'Publish Javadoc for all Java subprojects to Nexus under /current/.'
-
-    publishSrc = tasks.buildJavadocAll.destinationDir
-    destPath = 'netcdf-java/current/javadocAll/'
-  }
-
-  // We're deliberately NOT naming this task "publish", because we don't want it running when we do a:
-  //     ./gradlew publish
-  // from the root directory. It simply takes too long.
-  task publishAllDocsAsVersioned(group: 'Documentation') {
-    description = 'Publish user guide and both Javadoc sets to Nexus under /major.minor/.'
-
-    // Aggregates the individual "publish*" tasks.
-    dependsOn publishAsVersionedUserGuide, publishAsVersionedJavadocPublicApi, publishAsVersionedJavadocAll
-  }
-
-  task publishAllDocsAsCurrent(group: 'Documentation') {
-    description = 'Publish user guide and both Javadoc sets to Nexus under /current/.'
-
-    // Aggregates the individual "publish*" tasks.
-    dependsOn publishAsCurrentUserGuide, publishAsCurrentJavadocPublicApi, publishAsCurrentJavadocAll
   }
 }
 
-import edu.ucar.build.publishing.tasks.DeleteFromNexusTask
+def deleteAllVersionedJavaDocs = tasks.create(name: "deleteAllVersionedJavaDocsFromNexus", type: DeleteFromNexusTask) {
+  description = 'Remove all Javadoc sets on Nexus under /major.minor/.'
+}
 
-// By default, this will perform a dry run, which simply prints the components that the query matched.
-// To actually delete those components, do:  ./gradlew :docs:deleteFromNexus --dryRun=false
-task deleteVersionedDocsFromNexus(group: 'Documentation', type: DeleteFromNexusTask) {
-  description = 'Remove user guide and both Javadoc sets on Nexus under /major.minor/.'
-  host = 'https://artifacts.unidata.ucar.edu/'
-  searchQueryParameters.repository = 'docs-netcdf-java'
-  searchQueryParameters.group = "/netcdf-java/$project.docVersion/*"
+def deleteAllCurrentJavaDocs = tasks.create(name: "deleteAllCurrentJavaDocsFromNexus", type: DeleteFromNexusTask) {
+  description = 'Remove all Javadoc sets on Nexus under /current/.'
+}
+
+publishInfoByDocType.each { docType, publishInfo ->
+  def taskType = docType.capitalize()
+  def deletePub = tasks.create(name: "delete${taskType}JavadocPublicApiFromNexus", type: DeleteFromNexusTask) {
+    description = "Remove Javadoc for the CDM subproject on Nexus under ${publishInfo.descriptionPath}."
+    searchQueryParameters.group = "/${publishInfo.nexusPath}/javadoc/*"
+  }
+
+  def deletePubDeps = tasks.create(name: "delete${taskType}JavadocPublicApiWithDepsFromNexus", type: DeleteFromNexusTask) {
+    description = "Remove Javadoc (with deprecations) for the CDM subproject on Nexus under ${publishInfo.descriptionPath}."
+    searchQueryParameters.group = "/${publishInfo.nexusPath}/javadoc-with-deprecations/*"
+  }
+
+  def deleteAll = tasks.create(name: "delete${taskType}JavadocAllFromNexus", type: DeleteFromNexusTask) {
+    description = "Remove Javadoc for all Java subprojects on Nexus under ${publishInfo.descriptionPath}."
+    searchQueryParameters.group = "/${publishInfo.nexusPath}/javadocAll/*"
+  }
+  // register tasks with the appropriate aggregator tasks
+  def aggTask = docType == 'current' ? deleteAllCurrentJavaDocs : deleteAllVersionedJavaDocs
+  aggTask.dependsOn(deletePub)
+  aggTask.dependsOn(deletePubDeps)
+  aggTask.dependsOn(deleteAll)
+}
+
+// add delete javadoc tasks to aggregator delete task
+deleteAllVersionedDocsTask.dependsOn(deleteAllVersionedJavaDocs)
+deleteAllCurrentDocsTask.dependsOn(deleteAllCurrentJavaDocs)
+
+tasks.withType(PublishToRawRepoTask).all {  // Common PublishToRawRepoTask config.
+  group = 'Publishing'
+  host = "${nexusUrl}"
+  repoName = "${rawRepoName}"
 
   onlyIf {
     // Will be evaluated at task execution time, not during configuration.
@@ -188,11 +374,10 @@ task deleteVersionedDocsFromNexus(group: 'Documentation', type: DeleteFromNexusT
   }
 }
 
-task deleteCurrentDocsFromNexus(group: 'Documentation', type: DeleteFromNexusTask) {
-  description = 'Remove user guide and both Javadoc sets on Nexus under /current/.'
-  host = 'https://artifacts.unidata.ucar.edu/'
+tasks.withType(DeleteFromNexusTask).all {  // Common DeleteFromNexusTask config.
+  group = 'Publishing'
+  host = "${nexusUrl}"
   searchQueryParameters.repository = 'docs-netcdf-java'
-  searchQueryParameters.group = '/netcdf-java/current/*'
 
   onlyIf {
     // Will be evaluated at task execution time, not during configuration.
@@ -200,24 +385,5 @@ task deleteCurrentDocsFromNexus(group: 'Documentation', type: DeleteFromNexusTas
     username = getPropertyOrFailBuild NEXUS_USERNAME_KEY
     password = getPropertyOrFailBuild NEXUS_PASSWORD_KEY
     return true
-  }
-}
-
-// Will apply to "compileJava", "compileTestJava", "compileSourceSetJava", etc.
-tasks.withType(JavaCompile).all {
-  options.encoding = 'UTF-8'
-
-  // show deprecation details
-  options.compilerArgs = ['-Xlint:deprecation']
-}
-
-apply plugin: 'com.diffplug.gradle.spotless'
-spotless {
-  java {
-    // target java files in the test directory
-    target 'src/test/java/**/*.java'
-    eclipse().configFile("$rootDir/project-files/code-styles/eclipse-style-guide.xml",
-            'src/test/style/style-override.properties')
-    encoding 'UTF-8'
   }
 }

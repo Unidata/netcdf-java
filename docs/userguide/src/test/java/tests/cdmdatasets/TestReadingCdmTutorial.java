@@ -22,9 +22,8 @@ import java.util.List;
 
 public class TestReadingCdmTutorial {
 
-  private static String scalarDataPathStr =
-      "../" + TestDir.cdmTestDataDir + "thredds/public/testdata/testData.nc";
-  private static String exampleDataPathStr = "../" + TestDir.cdmLocalFromTestDataDir + "jan.nc";
+  private static String scalarDataPathStr = TestDir.cdmTestDataDir + "thredds/public/testdata/testData.nc";
+  private static String exampleDataPathStr = TestDir.cdmLocalFromTestDataDir + "jan.nc";
 
   private static NetcdfFile scalarNcfile;
   private static NetcdfFile exampleNcfile;
