@@ -16,7 +16,7 @@ import javax.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** An abstract superclass for remote RandomAccessFile */
+/** An abstract superclass for remote RandomAccessFile. */
 // not immutable because RandomAccessFile is not immutable.
 public abstract class RemoteRandomAccessFile extends ucar.unidata.io.RandomAccessFile implements ReadableRemoteFile {
   private static final Logger logger = LoggerFactory.getLogger(RemoteRandomAccessFile.class);

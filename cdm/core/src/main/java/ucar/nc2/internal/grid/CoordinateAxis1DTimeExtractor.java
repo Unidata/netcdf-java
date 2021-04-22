@@ -1,7 +1,7 @@
 package ucar.nc2.internal.grid;
 
 import com.google.common.base.Preconditions;
-import ucar.array.ArrayChar;
+import ucar.array.ArrayByte;
 import ucar.array.ArrayType;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.*;
@@ -42,7 +42,7 @@ class CoordinateAxis1DTimeExtractor {
     Preconditions.checkArgument(org.getArrayType() == ArrayType.CHAR);
     List<CalendarDate> result = new ArrayList<>();
 
-    ArrayChar data = (ArrayChar) org.readArray();
+    ArrayByte data = (ArrayByte) org.readArray();
     ucar.array.Array<String> dateStrings = data.makeStringsFromChar();
     for (String coordValue : dateStrings) {
       CalendarDate cd = makeCalendarDateFromStringCoord(coordValue, org, errMessages);

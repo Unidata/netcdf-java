@@ -11,6 +11,8 @@ import java.util.List;
 /** Static helper classes for {@link Array} */
 public class Arrays {
 
+  private Arrays() {}
+
   /**
    * Create Array using java array of T, or java primitive array, as storage.
    * Do not use this for Vlens or Structures.
@@ -24,12 +26,10 @@ public class Arrays {
       case OPAQUE:
       case BOOLEAN:
       case BYTE:
+      case CHAR:
       case ENUM1:
       case UBYTE: {
         return (Array<T>) new ArrayByte(dataType, shape, (Storage<Byte>) storage);
-      }
-      case CHAR: {
-        return (Array<T>) new ArrayChar(shape, (Storage<Character>) storage);
       }
       case DOUBLE: {
         return (Array<T>) new ArrayDouble(shape, (Storage<Double>) storage);
@@ -69,6 +69,11 @@ public class Arrays {
    */
   public static <T> Array<T> factory(ArrayType dataType, int[] shape, Object dataArray) {
     switch (dataType) {
+      case CHAR:
+        if (dataArray instanceof char[]) {
+          dataArray = ArraysConvert.convertCharToByte((char[]) dataArray);
+        }
+        // fall through
       case OPAQUE:
       case BOOLEAN:
       case BYTE:
@@ -76,10 +81,6 @@ public class Arrays {
       case UBYTE: {
         Storage<Byte> storageS = new ArrayByte.StorageS((byte[]) dataArray);
         return (Array<T>) new ArrayByte(dataType, shape, storageS);
-      }
-      case CHAR: {
-        Storage<Character> storageS = new ArrayChar.StorageS((char[]) dataArray);
-        return (Array<T>) new ArrayChar(shape, storageS);
       }
       case DOUBLE: {
         Storage<Double> storageD = new ArrayDouble.StorageD((double[]) dataArray);
@@ -126,12 +127,10 @@ public class Arrays {
     switch (dataType) {
       case BOOLEAN:
       case BYTE:
+      case CHAR:
       case ENUM1:
       case UBYTE: {
         return (Array<T>) new ArrayByte(dataType, shape);
-      }
-      case CHAR: {
-        return (Array<T>) new ArrayChar(shape);
       }
       case DOUBLE: {
         return (Array<T>) new ArrayDouble(shape);

@@ -11,7 +11,8 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runners.MethodSorters;
 import ucar.array.Array;
-import ucar.array.ArrayChar;
+import ucar.array.ArrayByte;
+import ucar.array.ArrayByte;
 import ucar.array.ArrayType;
 import ucar.array.Arrays;
 import ucar.array.Index;
@@ -251,7 +252,7 @@ public class TestNetcdfWriteArrayAndUpdate {
       assertThat(c).isNotNull();
       Array<?> a = c.readArray();
       assertThat(a.getArrayType()).isEqualTo(ArrayType.CHAR);
-      ArrayChar achar = (ArrayChar) a;
+      ArrayByte achar = (ArrayByte) a;
       String sval = achar.makeStringFromChar();
       assertThat(sval).isEqualTo("Testing 1-2-3");
 
@@ -261,7 +262,7 @@ public class TestNetcdfWriteArrayAndUpdate {
       a = c2.readArray();
 
       assertThat(a.getArrayType()).isEqualTo(ArrayType.CHAR);
-      ArrayChar achar2 = (ArrayChar) a;
+      ArrayByte achar2 = (ArrayByte) a;
       Array<String> achar2Data = achar2.makeStringsFromChar();
       assertThat(achar2Data.get(0)).isEqualTo("Two pairs of ladies stockings!");
 
@@ -282,7 +283,7 @@ public class TestNetcdfWriteArrayAndUpdate {
       a = c3.readArray();
 
       assertThat(a.getArrayType()).isEqualTo(ArrayType.CHAR);
-      ArrayChar achar3 = (ArrayChar) a;
+      ArrayByte achar3 = (ArrayByte) a;
       Array<String> achar3Data = achar3.makeStringsFromChar();
 
       assertThat(achar3Data.get(0)).isEqualTo("No pairs of ladies stockings!");
@@ -295,7 +296,7 @@ public class TestNetcdfWriteArrayAndUpdate {
       a = c4.readArray();
 
       assertThat(a.getArrayType()).isEqualTo(ArrayType.CHAR);
-      ArrayChar achar4 = (ArrayChar) a;
+      ArrayByte achar4 = (ArrayByte) a;
       Array<String> achar4Data = achar4.makeStringsFromChar();
 
       assertThat(achar4Data.get(0).equals("0 pair of ladies stockings!"));
@@ -482,7 +483,7 @@ public class TestNetcdfWriteArrayAndUpdate {
       assertThat(c).isNotNull();
       Array<?> a = c.readArray();
       assertThat(a.getArrayType()).isEqualTo(ArrayType.CHAR);
-      ArrayChar achar = (ArrayChar) a;
+      ArrayByte achar = (ArrayByte) a;
       String sval = achar.makeStringFromChar();
       assertThat(sval).isEqualTo("Testing 1-2-many");
 
@@ -492,7 +493,7 @@ public class TestNetcdfWriteArrayAndUpdate {
       a = c2.readArray();
 
       assertThat(a.getArrayType()).isEqualTo(ArrayType.CHAR);
-      ArrayChar achar2 = (ArrayChar) a;
+      ArrayByte achar2 = (ArrayByte) a;
       Array<String> achar2Data = achar2.makeStringsFromChar();
       assertThat(achar2Data.get(0)).isEqualTo("Twelve pairs of ladies stockings!");
 
@@ -513,7 +514,7 @@ public class TestNetcdfWriteArrayAndUpdate {
       a = c3.readArray();
 
       assertThat(a.getArrayType()).isEqualTo(ArrayType.CHAR);
-      ArrayChar achar3 = (ArrayChar) a;
+      ArrayByte achar3 = (ArrayByte) a;
       Array<String> achar3Data = achar3.makeStringsFromChar();
 
       assertThat(achar3Data.get(0)).isEqualTo("0 pairs of ladies stockings!");
@@ -526,7 +527,7 @@ public class TestNetcdfWriteArrayAndUpdate {
       a = c4.readArray();
 
       assertThat(a.getArrayType()).isEqualTo(ArrayType.CHAR);
-      ArrayChar achar4 = (ArrayChar) a;
+      ArrayByte achar4 = (ArrayByte) a;
       Array<String> achar4Data = achar3.makeStringsFromChar();
 
       assertThat(achar4Data.get(0).equals("0 pair of ladies stockings!"));

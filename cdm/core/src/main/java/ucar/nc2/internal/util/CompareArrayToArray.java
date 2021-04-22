@@ -119,6 +119,7 @@ public class CompareArrayToArray {
     }
 
     switch (dt) {
+      case CHAR:
       case OPAQUE:
       case BYTE:
       case ENUM1:
@@ -130,22 +131,6 @@ public class CompareArrayToArray {
           byte v2 = iter2.next();
           if (v1 != v2) {
             f.format(createNumericDataDiffMessage(dt, name, v1, v2, 0));
-            ok = false;
-            if (justOne)
-              break;
-          }
-        }
-        break;
-      }
-
-      case CHAR: {
-        Iterator<Character> iter1 = (Iterator<Character>) org.iterator();
-        Iterator<Character> iter2 = (Iterator<Character>) array.iterator();
-        while (iter1.hasNext() && iter2.hasNext()) {
-          char v1 = iter1.next();
-          char v2 = iter2.next();
-          if (!Misc.nearlyEquals(v1, v2)) {
-            f.format(" DIFF %s %s: %s != %s;  count = %s%n", dt, name, v1, v2, iter1);
             ok = false;
             if (justOne)
               break;

@@ -11,6 +11,7 @@ import java.nio.charset.Charset;
 import java.util.Formatter;
 import java.util.Optional;
 
+import ucar.array.ArrayType;
 import ucar.array.ArraysConvert;
 import ucar.array.Storage;
 import ucar.array.StructureData;
@@ -232,6 +233,9 @@ public class N3iosp extends AbstractIOServiceProvider implements IOServiceProvid
     try {
       Section oldSection = ArraysConvert.convertSection(section);
       Object data = readDataObject(v2, oldSection);
+      if (v2.getArrayType() == ArrayType.CHAR) {
+        data = ArraysConvert.convertCharToByte((char[]) data);
+      }
       return ucar.array.Arrays.factory(v2.getArrayType(), section.getShape(), data);
     } catch (InvalidRangeException e) {
       throw new ucar.array.InvalidRangeException(e);

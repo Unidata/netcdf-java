@@ -33,6 +33,13 @@ import java.util.*;
  */
 public class VariableDS extends Variable implements EnhanceScaleMissingUnsigned, VariableEnhanced {
 
+  /**
+   * Create a VariableDS from orgVar, with default enhancements if requested.
+   * 
+   * @param group Reparent to this Group.
+   * @param orgVar Wrap this Variable.
+   * @param enhance opriona default enhancements.
+   */
   public static VariableDS fromVar(Group group, Variable orgVar, boolean enhance) {
     Preconditions.checkArgument(!(orgVar instanceof Structure),
         "VariableDS must not wrap a Structure; name=" + orgVar.getFullName());
@@ -54,6 +61,7 @@ public class VariableDS extends Variable implements EnhanceScaleMissingUnsigned,
     return getParentGroup() == null ? null : getParentGroup().getNetcdfFile();
   }
 
+  /** Does data need to be converted? */
   public boolean convertNeeded() {
     if (enhanceMode.contains(Enhance.ConvertEnums)
         && (dataType.isEnum() || (orgDataType != null && orgDataType.isEnum()))) {
@@ -85,6 +93,7 @@ public class VariableDS extends Variable implements EnhanceScaleMissingUnsigned,
     return dataEnhancer.convert(data, enhancements);
   }
 
+  /** Convert the data using the VariableDS enhancements. Generally the user does not have to call this. */
   public ucar.array.Array<?> convertArray(ucar.array.Array<?> data) {
     return dataEnhancer.convertArray(data, enhanceMode);
   }
@@ -195,6 +204,7 @@ public class VariableDS extends Variable implements EnhanceScaleMissingUnsigned,
     return convert(result);
   }
 
+  @Override
   public ucar.array.Array<?> readArray() throws IOException {
     ucar.array.Array<?> result;
 
@@ -296,6 +306,8 @@ public class VariableDS extends Variable implements EnhanceScaleMissingUnsigned,
   }
 
   @Override
+  /** @deprecated do not use. */
+  @Deprecated
   public long readToStream(ucar.ma2.Section section, OutputStream out)
       throws IOException, ucar.ma2.InvalidRangeException {
     if (orgVar == null)

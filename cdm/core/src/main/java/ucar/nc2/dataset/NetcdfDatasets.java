@@ -35,6 +35,8 @@ import ucar.nc2.internal.cache.FileFactory;
  */
 public class NetcdfDatasets {
 
+  private NetcdfDatasets() {}
+
   ////////////////////////////////////////////////////////////////////////////////////
   // NetcdfFile caching
 

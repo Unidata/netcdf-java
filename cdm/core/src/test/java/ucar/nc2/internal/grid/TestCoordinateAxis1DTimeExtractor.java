@@ -114,19 +114,19 @@ public class TestCoordinateAxis1DTimeExtractor {
         .addDimension(new Dimension("dim2", 27));
 
     int count = 1;
-    char[] chars = new char[ndates * nchars];
+    byte[] chars = new byte[ndates * nchars];
     for (int i = 0; i < ndates; i++) {
       String date = CalendarDate.of(null, 2020, 2, count++, 0, 0, 0).toString();
       int pos = i * nchars;
       for (int c = 0; c < date.length(); c++) {
-        chars[pos++] = date.charAt(c);
+        chars[pos++] = (byte) date.charAt(c);
       }
     }
 
     Array<String> values = Arrays.factory(ArrayType.CHAR, new int[] {ndates, nchars}, chars);
 
     VariableDS.Builder<?> vdsBuilder =
-        VariableDS.builder().setName("name").setDataType(DataType.CHAR).setUnits(units).setDesc("desc")
+        VariableDS.builder().setName("name").setArrayType(ArrayType.CHAR).setUnits(units).setDesc("desc")
             .setEnhanceMode(NetcdfDataset.getEnhanceAll()).addAttribute(new Attribute("missing_value", 0.0f))
             .setParentGroupBuilder(parent).setDimensionsByName("dim1 " + nchars).setSourceData(values);
     parent.addVariable(vdsBuilder);

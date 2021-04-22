@@ -307,16 +307,11 @@ public class CdmrConverter {
     switch (dataType) {
       case OPAQUE:
       case ENUM1:
+      case CHAR:
       case UBYTE:
       case BYTE: {
         ArrayByte bdata = (ArrayByte) data;
         builder.addBdata(bdata.getByteString());
-        break;
-      }
-      case CHAR: { // LOOK unsigned short better?
-        // char is unsigned, can be converted to/from an int. protobuf stores as vlen, so no real size penalty.
-        Array<Character> idata = (Array<Character>) data;
-        idata.forEach(val -> builder.addIdata(val));
         break;
       }
       case SHORT: {
@@ -608,19 +603,12 @@ public class CdmrConverter {
     ArrayType dataType = convertDataType(data.getDataType());
     int[] shape = decodeShape(data);
     switch (dataType) {
+      case CHAR:
       case OPAQUE:
       case ENUM1:
       case UBYTE:
       case BYTE: {
         byte[] array = data.getBdata(0).toByteArray();
-        return Arrays.factory(dataType, shape, array);
-      }
-      case CHAR: {
-        int i = 0;
-        char[] array = new char[data.getIdataCount()];
-        for (int val : data.getIdataList()) {
-          array[i++] = (char) val;
-        }
         return Arrays.factory(dataType, shape, array);
       }
       case SHORT: {

@@ -35,9 +35,23 @@ public class ArraysConvert {
     } else if (dtype == ArrayType.STRUCTURE) {
       return convertArrayStructure(from);
 
+    } else if (dtype == ArrayType.CHAR) {
+      return convertChar((ucar.ma2.ArrayChar) from);
+
     } else {
       return Arrays.factory(dtype, from.getShape(), from.get1DJavaArray(from.getDataType()));
     }
+  }
+
+  // ArrayChar should be phased out - assume its an ascii byte
+  private static Array<?> convertChar(ucar.ma2.ArrayChar from) {
+    byte[] primArray = new byte[(int) from.getSize()];
+    int count = 0;
+    IndexIterator ii = from.getIndexIterator();
+    while (ii.hasNext()) {
+      primArray[count++] = ii.getByteNext();
+    }
+    return Arrays.factory(ArrayType.CHAR, from.getShape(), primArray);
   }
 
   // Opaque is Vlen of byte
@@ -217,6 +231,9 @@ public class ArraysConvert {
     if (from.getArrayType() == ArrayType.STRUCTURE || from.getArrayType() == ArrayType.SEQUENCE) {
       return convertStructureDataArray(from);
     }
+    if (from.getArrayType() == ArrayType.CHAR) {
+      return convertChar((Array<Byte>) from);
+    }
     if (from.isVlen()) {
       return convertVlen(from);
     }
@@ -227,6 +244,16 @@ public class ArraysConvert {
       values.setObject(count++, val);
     }
     return values;
+  }
+
+  // ArrayChar should be phased out - assume its an ascii byte
+  private static ucar.ma2.Array convertChar(Array<Byte> from) {
+    char[] primArray = new char[(int) from.length()];
+    int count = 0;
+    for (byte bval : from) {
+      primArray[count++] = (char) bval;
+    }
+    return ucar.ma2.Array.factory(DataType.CHAR, from.getShape(), primArray);
   }
 
   private static ucar.ma2.Array convertVlen(Array<?> from) {
@@ -347,6 +374,25 @@ public class ArraysConvert {
       }
     });
     return builder.build();
+  }
+
+  /////////////////////////////////////////////////////////////////////////
+  public static char[] convertByteToChar(byte[] from) {
+    char[] result = new char[(int) from.length];
+    int count = 0;
+    for (byte bval : from) {
+      result[count++] = (char) bval;
+    }
+    return result;
+  }
+
+  public static byte[] convertCharToByte(char[] from) {
+    byte[] result = new byte[(int) from.length];
+    int count = 0;
+    for (char bval : from) {
+      result[count++] = (byte) bval;
+    }
+    return result;
   }
 
 }

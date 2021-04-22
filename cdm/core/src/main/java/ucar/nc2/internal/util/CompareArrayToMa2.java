@@ -12,6 +12,7 @@ import java.util.Formatter;
 import java.util.Iterator;
 
 import ucar.array.Array;
+import ucar.array.ArrayType;
 import ucar.array.ArrayVlen;
 import ucar.ma2.ArraySequence;
 import ucar.ma2.DataType;
@@ -60,7 +61,7 @@ public class CompareArrayToMa2 {
       return false;
     }
 
-    if (vorg.getDataType() == DataType.SEQUENCE) {
+    if (vorg.getArrayType() == ArrayType.SEQUENCE) {
       System.out.printf("  read sequence %s %s%n", vorg.getDataType(), vorg.getShortName());
       Sequence s = (Sequence) vnew;
       StructureDataIterator orgSeq = s.getStructureIterator(-1);
@@ -167,11 +168,11 @@ public class CompareArrayToMa2 {
       }
 
       case CHAR: {
-        Iterator<Character> iter2 = (Iterator<Character>) array.iterator();
+        Iterator<Byte> iter2 = (Iterator<Byte>) array.iterator();
         while (iter1.hasNext() && iter2.hasNext()) {
-          char v1 = iter1.getCharNext();
-          char v2 = iter2.next();
-          if (!Misc.nearlyEquals(v1, v2)) {
+          byte v1 = (byte) iter1.getCharNext();
+          byte v2 = iter2.next();
+          if (v1 != v2) {
             f.format(" DIFF %s %s: %s != %s;  count = %s%n", dt, name, v1, v2, iter1);
             ok = false;
             if (justOne)

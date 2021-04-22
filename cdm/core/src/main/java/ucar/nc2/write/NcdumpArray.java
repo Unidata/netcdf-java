@@ -353,8 +353,8 @@ public class NcdumpArray {
       return;
     }
 
-    if ((array instanceof ArrayChar) && (array.getRank() > 0)) {
-      printStringArray(out, (ArrayChar) array, ilev, cancel);
+    if (array.getArrayType() == ArrayType.CHAR) {
+      printStringArray(out, (ArrayByte) array, ilev, cancel);
 
     } else if (array.getArrayType() == ArrayType.STRING) {
       printStringArray(out, (ArrayString) array, ilev, cancel);
@@ -424,11 +424,13 @@ public class NcdumpArray {
           value = ArrayType.widenNumberIfNegative((Number) value);
         }
 
-        if (ii > 0)
+        if (ii > 0) {
           out.format(", ");
+        }
         out.format("%s", value);
-        if (cancel != null && cancel.isCancel())
+        if (cancel != null && cancel.isCancel()) {
           return;
+        }
       }
       out.format("}");
       return;
@@ -436,24 +438,26 @@ public class NcdumpArray {
 
     indent.incr();
     for (int ii = 0; ii < last; ii++) {
-      Array slice = null;
+      Array<?> slice = null;
       try {
         slice = Arrays.slice(ma, 0, ii);
       } catch (InvalidRangeException e) {
         e.printStackTrace();
       }
-      if (ii > 0)
+      if (ii > 0) {
         out.format(",");
+      }
       printArray(out, slice, indent, cancel);
-      if (cancel != null && cancel.isCancel())
+      if (cancel != null && cancel.isCancel()) {
         return;
+      }
     }
     indent.decr();
 
     out.format("%n%s}", indent);
   }
 
-  private static void printStringArray(Formatter out, ArrayChar ma, Indent indent, CancelTask cancel) {
+  private static void printStringArray(Formatter out, ArrayByte ma, Indent indent, CancelTask cancel) {
     if (cancel != null && cancel.isCancel())
       return;
 
@@ -484,9 +488,9 @@ public class NcdumpArray {
     out.format("%n%s{", indent);
     indent.incr();
     for (int ii = 0; ii < last; ii++) {
-      ArrayChar slice = null;
+      ArrayByte slice = null;
       try {
-        slice = (ArrayChar) Arrays.slice(ma, 0, ii);
+        slice = (ArrayByte) Arrays.slice(ma, 0, ii);
       } catch (InvalidRangeException e) {
         e.printStackTrace();
       }
@@ -587,8 +591,8 @@ public class NcdumpArray {
     Formatter out = new Formatter();
     for (StructureMembers.Member m : sdata.getStructureMembers()) {
       Array<?> memData = sdata.getMemberData(m);
-      if (memData instanceof ArrayChar) {
-        out.format("%s", ((ArrayChar) memData).makeStringFromChar());
+      if (memData instanceof ArrayByte) {
+        out.format("%s", ((ArrayByte) memData).makeStringFromChar());
       } else {
         printArray(out, memData, null, null, new Indent(2), null);
       }
@@ -600,7 +604,7 @@ public class NcdumpArray {
   private static void printStructureData(Formatter out, StructureData sdata, Indent indent, CancelTask cancel) {
     indent.incr();
     for (StructureMembers.Member m : sdata.getStructureMembers()) {
-      Array sdataArray = sdata.getMemberData(m);
+      Array<?> sdataArray = sdata.getMemberData(m);
       printArray(out, sdataArray, m.getName(), m.getUnitsString(), indent, cancel);
       if (cancel != null && cancel.isCancel())
         return;

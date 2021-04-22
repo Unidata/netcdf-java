@@ -28,7 +28,6 @@ import ucar.array.ArrayType;
 import ucar.array.Arrays;
 import ucar.array.Array;
 import ucar.array.ArraysConvert;
-import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.AttributeContainerMutable;
@@ -638,11 +637,14 @@ public class NcmlReader {
           String unS = attElem.getAttributeValue("isUnsigned"); // deprecated but must deal with
           boolean isUnsignedSet = "true".equalsIgnoreCase(unS);
           String typeS = attElem.getAttributeValue("type");
-          DataType dtype = typeS == null ? DataType.STRING : DataType.getType(typeS);
-          if (isUnsignedSet) {
-            dtype = dtype.withSignedness(DataType.Signedness.UNSIGNED);
+          ArrayType dtype = typeS == null ? ArrayType.STRING : ArrayType.getTypeByName(typeS);
+          if (dtype == null) {
+            dtype = ArrayType.STRING;
           }
-          dest.addAttribute(Attribute.builder(name).setDataType(dtype).build());
+          if (isUnsignedSet) {
+            dtype = dtype.withSignedness(ArrayType.Signedness.UNSIGNED);
+          }
+          dest.addAttribute(Attribute.builder(name).setArrayType(dtype).build());
         }
       }
 
@@ -676,24 +678,24 @@ public class NcmlReader {
       throw new IllegalArgumentException("No value specified");
     }
 
-    String type = s.getAttributeValue("type");
-    DataType dtype = (type == null) ? DataType.STRING : DataType.getType(type);
-    if (dtype == DataType.CHAR) {
-      dtype = DataType.STRING;
+    String typeS = s.getAttributeValue("type");
+    ArrayType dtype = typeS == null ? ArrayType.STRING : ArrayType.getTypeByName(typeS);
+    if (dtype == null || dtype == ArrayType.CHAR) {
+      dtype = ArrayType.STRING;
     }
 
     // backwards compatibility with deprecated isUnsigned attribute
     String unS = s.getAttributeValue("isUnsigned");
     boolean isUnsignedSet = "true".equalsIgnoreCase(unS);
     if (isUnsignedSet && dtype.isIntegral() && !dtype.isUnsigned()) {
-      dtype = dtype.withSignedness(DataType.Signedness.UNSIGNED);
+      dtype = dtype.withSignedness(ArrayType.Signedness.UNSIGNED);
     }
 
     String sep = s.getAttributeValue("separator");
-    if ((sep == null) && (dtype == DataType.STRING)) {
+    if ((sep == null) && (dtype == ArrayType.STRING)) {
       List<String> list = new ArrayList<>();
       list.add(valString);
-      ucar.ma2.Array old = ucar.ma2.Array.makeArray(dtype, list);
+      ucar.ma2.Array old = ucar.ma2.Array.makeArray(dtype.getDataType(), list);
       return ArraysConvert.convertToArray(old);
     }
 
@@ -707,7 +709,7 @@ public class NcmlReader {
       stringValues.add(tokn.nextToken());
     }
 
-    ucar.ma2.Array old = ucar.ma2.Array.makeArray(dtype, stringValues);
+    ucar.ma2.Array old = ucar.ma2.Array.makeArray(dtype.getDataType(), stringValues);
     return ArraysConvert.convertToArray(old);
   }
 
@@ -820,7 +822,10 @@ public class NcmlReader {
       return;
     }
     String typeS = etdElem.getAttributeValue("type");
-    DataType baseType = (typeS == null) ? DataType.ENUM1 : DataType.getType(typeS);
+    ArrayType baseType = typeS == null ? ArrayType.ENUM1 : ArrayType.getTypeByName(typeS);
+    if (baseType == null) {
+      baseType = ArrayType.ENUM1;
+    }
 
     Map<Integer, String> map = new HashMap<>(100);
     for (Element e : etdElem.getChildren("enum", ncNS)) {
@@ -861,12 +866,11 @@ public class NcmlReader {
     }
     String nameInFile = Optional.ofNullable(varElem.getAttributeValue("orgName")).orElse(name);
 
-    DataType dtype = null;
+    ArrayType dtype = null;
     String typeS = varElem.getAttributeValue("type");
     if (typeS != null) {
-      dtype = DataType.getType(typeS);
+      dtype = ArrayType.getTypeByName(typeS);
     }
-
     // see if it already exists
     Variable refv = (refGroup == null) ? null : refGroup.findVariableLocal(nameInFile);
     Optional<Variable.Builder<?>> addedFromAgg = groupBuilder.findVariableLocal(nameInFile);
@@ -875,7 +879,7 @@ public class NcmlReader {
         errlog.format("NcML Variable dtype is required for new variable (%s)%n", name);
         return;
       }
-      if (dtype == DataType.STRUCTURE || dtype == DataType.SEQUENCE) {
+      if (dtype == ArrayType.STRUCTURE || dtype == ArrayType.SEQUENCE) {
         groupBuilder.addVariable(readStructureNew(groupBuilder, varElem));
       } else {
         groupBuilder.addVariable(readVariableNew(groupBuilder, dtype, varElem));
@@ -886,9 +890,9 @@ public class NcmlReader {
     // refv exists
     if (refv != null) {
       if (dtype == null) {
-        dtype = refv.getDataType();
+        dtype = refv.getArrayType();
       }
-      if (dtype == DataType.STRUCTURE || dtype == DataType.SEQUENCE) {
+      if (dtype == ArrayType.STRUCTURE || dtype == ArrayType.SEQUENCE) {
         readStructureExisting(groupBuilder, null, dtype, (Structure) refv, varElem)
             .ifPresent(groupBuilder::addVariable);
       } else {
@@ -898,20 +902,20 @@ public class NcmlReader {
     }
 
     // refv does not exist, but addedFromAgg may be present
-    DataType finalDtype = dtype;
+    ArrayType finalDtype = dtype;
     addedFromAgg.ifPresent(agg -> {
       if (agg instanceof VariableDS.Builder<?>) {
         VariableDS.Builder<?> aggDs = (VariableDS.Builder<?>) agg;
         aggDs.setOriginalName(nameInFile);
       }
       agg.setParentGroupBuilder(groupBuilder);
-      DataType reallyFinalDtype = finalDtype != null ? finalDtype : agg.dataType.getDataType();
+      ArrayType reallyFinalDtype = finalDtype != null ? finalDtype : agg.dataType;
       augmentVariableNew(agg, reallyFinalDtype, varElem);
     });
   }
 
   private Optional<Variable.Builder<?>> readVariableExisting(Group.Builder groupBuilder,
-      @Nullable Structure.Builder<?> parentStructure, DataType dtype, Variable refv, Element varElem) {
+      @Nullable Structure.Builder<?> parentStructure, ArrayType dtype, Variable refv, Element varElem) {
     String name = varElem.getAttributeValue("name");
     String typedefS = dtype.isEnum() ? varElem.getAttributeValue("typedef") : null;
     String nameInFile = Optional.ofNullable(varElem.getAttributeValue("orgName")).orElse(name);
@@ -929,7 +933,7 @@ public class NcmlReader {
       }
     }
     vb.setParentGroupBuilder(groupBuilder);
-    vb.setName(name).setDataType(dtype);
+    vb.setName(name).setArrayType(dtype);
     if (typedefS != null) {
       vb.setEnumTypeName(typedefS);
     }
@@ -949,8 +953,8 @@ public class NcmlReader {
     Attribute att = vb.getAttributeContainer().findAttribute(CDM.UNSIGNED);
     boolean isUnsignedSet = att != null && att.getStringValue().equalsIgnoreCase("true");
     if (isUnsignedSet) {
-      dtype = dtype.withSignedness(DataType.Signedness.UNSIGNED);
-      vb.setDataType(dtype);
+      dtype = dtype.withSignedness(ArrayType.Signedness.UNSIGNED);
+      vb.setArrayType(dtype);
     }
 
     // process remove command
@@ -973,8 +977,8 @@ public class NcmlReader {
      * } catch (IOException e) {
      * throw new IllegalStateException(e.getMessage());
      * }
-     * if (data.getClass() != v.getDataType().getPrimitiveClassType()) {
-     * Array newData = Array.factory(v.getDataType(), v.getShape());
+     * if (data.getClass() != v.getArrayType().getPrimitiveClassType()) {
+     * Array newData = Array.factory(v.getArrayType(), v.getShape());
      * MAMath.copy(newData, data);
      * v.setCachedData(newData, false);
      * }
@@ -995,9 +999,10 @@ public class NcmlReader {
    * @param varElem ncml variable element
    * @return return new Variable.Builder
    */
-  private VariableDS.Builder<?> readVariableNew(Group.Builder groupBuilder, DataType dtype, Element varElem) {
+  private VariableDS.Builder<?> readVariableNew(Group.Builder groupBuilder, ArrayType dtype, Element varElem) {
     String name = varElem.getAttributeValue("name");
-    VariableDS.Builder<?> v = VariableDS.builder().setName(name).setDataType(dtype).setParentGroupBuilder(groupBuilder);
+    VariableDS.Builder<?> v =
+        VariableDS.builder().setName(name).setArrayType(dtype).setParentGroupBuilder(groupBuilder);
 
     // list of dimension names
     String dimNames = varElem.getAttributeValue("shape");
@@ -1023,9 +1028,9 @@ public class NcmlReader {
     return v;
   }
 
-  private void augmentVariableNew(Variable.Builder<?> addedFromAgg, DataType dtype, Element varElem) {
+  private void augmentVariableNew(Variable.Builder<?> addedFromAgg, ArrayType dtype, Element varElem) {
     String name = varElem.getAttributeValue("name");
-    addedFromAgg.setName(name).setDataType(dtype);
+    addedFromAgg.setName(name).setArrayType(dtype);
 
     // list of dimension names
     String dimNames = varElem.getAttributeValue("shape");
@@ -1050,13 +1055,13 @@ public class NcmlReader {
   }
 
   private Optional<Structure.Builder<?>> readStructureExisting(Group.Builder groupBuilder,
-      @Nullable Structure.Builder<?> parentStructure, DataType dtype, Structure refStructure, Element varElem) {
+      @Nullable Structure.Builder<?> parentStructure, ArrayType dtype, Structure refStructure, Element varElem) {
     String name = varElem.getAttributeValue("name");
     String nameInFile = Optional.ofNullable(varElem.getAttributeValue("orgName")).orElse(name);
 
     Structure.Builder<?> structBuilder;
     if (this.explicit) { // all metadata is in the ncml, do not copy
-      if (dtype == DataType.STRUCTURE) {
+      if (dtype == ArrayType.STRUCTURE) {
         structBuilder = StructureDS.builder().setName(name).setOriginalVariable(refStructure);
       } else {
         structBuilder = SequenceDS.builder().setName(name).setOriginalSequence((Sequence) refStructure);
@@ -1101,8 +1106,7 @@ public class NcmlReader {
   private Structure.Builder<?> readStructureNew(Group.Builder groupBuilder, Element varElem) {
     String name = varElem.getAttributeValue("name");
     String type = varElem.getAttributeValue("type");
-    DataType dtype = DataType.getType(type);
-
+    ArrayType dtype = ArrayType.getTypeByName(type);
     // list of dimension names
     String dimNames = varElem.getAttributeValue("shape");
     if (dimNames == null) {
@@ -1111,7 +1115,7 @@ public class NcmlReader {
     List<Dimension> varDims = groupBuilder.makeDimensionsList(dimNames);
 
     Structure.Builder<?> structBuilder;
-    if (dtype == DataType.STRUCTURE) {
+    if (dtype == ArrayType.STRUCTURE) {
       structBuilder = StructureDS.builder().setName(name).addDimensions(varDims);
     } else {
       structBuilder = SequenceDS.builder().setName(name);
@@ -1140,12 +1144,11 @@ public class NcmlReader {
     }
     String nameInFile = Optional.ofNullable(varElem.getAttributeValue("orgName")).orElse(name);
 
-    DataType dtype = null;
+    ArrayType dtype = null;
     String typeS = varElem.getAttributeValue("type");
     if (typeS != null) {
-      dtype = DataType.getType(typeS);
+      dtype = ArrayType.getTypeByName(typeS);
     }
-
     // see if it already exists
     Variable refv = (refParentStructure == null) ? null : refParentStructure.findVariable(nameInFile);
     if (refv == null) { // new
@@ -1153,7 +1156,7 @@ public class NcmlReader {
         errlog.format("NcML Variable dtype is required for new (nested) variable (%s)%n", name);
         return;
       }
-      if (dtype == DataType.STRUCTURE || dtype == DataType.SEQUENCE) {
+      if (dtype == ArrayType.STRUCTURE || dtype == ArrayType.SEQUENCE) {
         parentStructure.addMemberVariable(readStructureNew(groupBuilder, varElem));
       } else {
         parentStructure.addMemberVariable(readVariableNew(groupBuilder, dtype, varElem));
@@ -1163,10 +1166,10 @@ public class NcmlReader {
 
     // refv exists
     if (dtype == null) {
-      dtype = refv.getDataType();
+      dtype = refv.getArrayType();
     }
 
-    if (dtype == DataType.STRUCTURE || dtype == DataType.SEQUENCE) {
+    if (dtype == ArrayType.STRUCTURE || dtype == ArrayType.SEQUENCE) {
       readStructureExisting(groupBuilder, parentStructure, dtype, (Structure) refv, varElem)
           .ifPresent(parentStructure::addMemberVariable);
     } else {
@@ -1175,7 +1178,7 @@ public class NcmlReader {
     }
   }
 
-  private void readValues(Variable.Builder<?> v, DataType dtype, Element varElem, Element valuesElem) {
+  private void readValues(Variable.Builder<?> v, ArrayType dtype, Element varElem, Element valuesElem) {
     try {
       // check if values are specified by attribute
       String fromAttribute = valuesElem.getAttributeValue("fromAttribute");
@@ -1232,19 +1235,20 @@ public class NcmlReader {
       String values = varElem.getChildText("values", ncNS);
       String sep = valuesElem.getAttributeValue("separator");
 
-      if (dtype == DataType.CHAR) {
+      if (dtype == ArrayType.CHAR) { // LOOK get rid of uses of ArrayType.CHAR
+        byte[] have = values.getBytes();
         int nhave = values.length();
         int nwant = (int) Dimensions.getSize(v.getDimensions());
-        char[] data = new char[nwant];
+        byte[] data = new byte[nwant];
         for (int i = 0; i < nhave && i < nwant; i++) {
-          data[i] = values.charAt(i);
+          data[i] = have[i];
         }
         ucar.array.Array<?> dataArray = Arrays.factory(ArrayType.CHAR, Dimensions.makeShape(v.getDimensions()), data);
         v.setSourceData(dataArray);
 
       } else {
         List<String> valList = getTokens(values, sep);
-        ucar.ma2.Array data = ucar.ma2.Array.makeArray(dtype, valList);
+        ucar.ma2.Array data = ucar.ma2.Array.makeArray(dtype.getDataType(), valList);
         if (v.getDimensions().size() != 1) { // dont have to reshape for rank 1
           data = data.reshape(Dimensions.makeShape(v.getDimensions()));
         }

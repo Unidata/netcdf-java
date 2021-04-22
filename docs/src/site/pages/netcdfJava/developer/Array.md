@@ -7,7 +7,6 @@ An **Array\<T>** is a container for data of Java class T, implementing Iterable\
 The possible values for the Java class T are 
 
 * Byte
-* Character
 * Short
 * Integer
 * Long
@@ -25,7 +24,7 @@ An Array\<T> is associated with a CDM type by having an **ArrayType** enum:
 1. Numeric Types
     * BOOLEAN("boolean", 1, Byte.class, false), // zero or non zero
     * BYTE("byte", 1, Byte.class, false), // signed byte
-    * CHAR("char", 1, Character.class, false), // java char 
+    * CHAR("char", 1, Byte.class, false), // usually ascii
     * SHORT("short", 2, Short.class, false), // signed short
     * INT("int", 4, Integer.class, false), // signed int
     * LONG("long", 8, Long.class, false), // signed long

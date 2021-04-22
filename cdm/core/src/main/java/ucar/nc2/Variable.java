@@ -186,6 +186,12 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     return enumTypedef;
   }
 
+  /**
+   * Get the file type id for the underlying data source.
+   *
+   * @return registered id of the file type
+   * @see "https://www.unidata.ucar.edu/software/netcdf-java/formats/FileTypes.html"
+   */
   @Nullable
   public String getFileTypeId() {
     return ncfile == null ? null : ncfile.getFileTypeId();
@@ -745,6 +751,10 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     return data;
   }
 
+  /**
+   * Read all the data for this Variable and return a memory resident Array.
+   * The Array has the same element type and shape as the Variable.
+   */
   public ucar.array.Array<?> readArray() throws IOException {
     if (cache.getData() != null) {
       return cache.getData();
@@ -784,7 +794,18 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     return proxyReader.reallyRead(this, section, null);
   }
 
-  public ucar.array.Array<?> readArray(ucar.array.Section section)
+  /**
+   * Read a section of the data for this Variable from the netcdf file and return a memory resident Array.
+   * The Array has the same element type as the Variable, and the requested shape.
+   * Note that this does not do rank reduction, so the returned Array has the same rank
+   * as the Variable. Use Array.reduce() for rank reduction.
+   *
+   * @param section The section of data to read.
+   *        Must be null or same rank as variable.
+   *        If list is null, assume all data.
+   *        Each Range corresponds to a Dimension. If the Range object is null, it means use the entire dimension.
+   */
+  public ucar.array.Array<?> readArray(@Nullable ucar.array.Section section)
       throws java.io.IOException, ucar.array.InvalidRangeException {
     if ((null == section) || section.computeSize() == getSize()) {
       return readArray();

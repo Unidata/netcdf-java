@@ -4,6 +4,7 @@
  */
 package ucar.array;
 
+import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
 import com.google.protobuf.ByteString;
 import java.nio.ByteBuffer;
@@ -95,6 +96,71 @@ public final class ArrayByte extends Array<Byte> {
     return result;
   }
 
+  /**
+   * Create a String out of this rank zero or one Array.
+   * If there is a null (zero) value in the array, the String will end there.
+   * The null is not returned as part of the String.
+   */
+  public String makeStringFromChar() {
+    Preconditions.checkArgument(getRank() < 2);
+    int count = 0;
+    for (byte c : this) {
+      if (c == 0) {
+        break;
+      }
+      count++;
+    }
+    byte[] carr = new byte[count];
+    int idx = 0;
+    for (byte c : this) {
+      if (c == 0) {
+        break;
+      }
+      carr[idx++] = c;
+    }
+    return new String(carr, Charsets.UTF_8);
+  }
+
+  /**
+   * Create an Array of Strings out of this Array of any rank.
+   * If there is a null (zero) value in the Array array, the String will end there.
+   * The null is not returned as part of the String.
+   *
+   * @return Array of Strings of rank - 1.
+   */
+  public Array<String> makeStringsFromChar() {
+    if (getRank() < 2) {
+      return Arrays.factory(ArrayType.STRING, new int[] {1}, new String[] {makeStringFromChar()});
+    }
+    int innerLength = this.indexFn.getShape(this.rank - 1);
+    int outerLength = (int) this.length() / innerLength;
+    int[] outerShape = new int[this.rank - 1];
+    System.arraycopy(this.getShape(), 0, outerShape, 0, this.rank - 1);
+
+    String[] result = new String[outerLength];
+    byte[] carr = new byte[innerLength];
+
+    int cidx = 0;
+    int sidx = 0;
+
+    Index index = getIndex(); // have to do this because maybe its a view
+    while (sidx < outerLength) {
+      int idx = sidx * innerLength + cidx;
+      byte c = get(index.setElem(idx));
+      if (c == 0) {
+        result[sidx++] = new String(carr, 0, cidx, Charsets.UTF_8);
+        cidx = 0;
+        continue;
+      }
+      carr[cidx++] = c;
+      if (cidx == innerLength) {
+        result[sidx++] = new String(carr, Charsets.UTF_8);
+        cidx = 0;
+      }
+    }
+    return Arrays.factory(ArrayType.STRING, outerShape, result);
+  }
+
   @Override
   Storage<Byte> storage() {
     return storage;
@@ -137,7 +203,7 @@ public final class ArrayByte extends Array<Byte> {
 
     @Override
     public Byte get(long elem) {
-      return storage[(byte) elem];
+      return storage[(int) elem];
     }
 
     @Override

@@ -7,12 +7,15 @@ import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.junit.Ignore;
 import org.junit.Test;
 import ucar.unidata.util.StringUtil2;
 
 /** Test {@link CodeFlagTables} */
 public class CodeFlagTablesTest {
 
+  @Ignore("too verbose")
   @Test
   public void testCompareTables() throws IOException {
     HashMap<Short, CodeFlagTables> tableMap1 = new HashMap<>(300);
@@ -25,9 +28,9 @@ public class CodeFlagTablesTest {
     for (Map.Entry<Short, CodeFlagTables> ent : tableMap1.entrySet()) {
       CodeFlagTables t = ent.getValue();
       CodeFlagTables t2 = tableMap2.get(ent.getKey());
-      if (t2 == null)
+      if (t2 == null) {
         System.out.printf(" NOT FOUND in 2: %s (%d)%n", t.fxy(), t.getId());
-      else {
+      } else {
         for (int no : t.getMap().keySet()) {
           String name1 = t.getMap().get(no);
           String name2 = t2.getMap().get(no);
@@ -43,9 +46,9 @@ public class CodeFlagTablesTest {
     for (Map.Entry<Short, CodeFlagTables> ent : tableMap2.entrySet()) {
       CodeFlagTables t = ent.getValue();
       CodeFlagTables t1 = tableMap1.get(ent.getKey());
-      if (t1 == null)
+      if (t1 == null) {
         System.out.printf(" NOT FOUND in 1: %s (%d)%n", t.fxy(), t.getId());
-      else {
+      } else {
         for (int no : t.getMap().keySet()) {
           String name = t.getMap().get(no);
           String name1 = t1.getMap().get(no);
