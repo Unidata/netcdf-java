@@ -243,7 +243,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     return shape[index];
   }
 
-  /** @deprecated use getShapeAsArraySection() */
+  /** @deprecated use getSection() */
   @Deprecated
   public Section getShapeAsSection() {
     return this.shapeAsSection;
@@ -252,9 +252,9 @@ public class Variable implements VariableSimpleIF, ProxyReader {
   /**
    * Get shape as a Section object.
    *
-   * @return Section containing List<Range>, one for each Dimension.
+   * @return Section describing this Variable's shape.
    */
-  public ucar.array.Section getShapeAsArraySection() {
+  public ucar.array.Section getSection() {
     return ArraysConvert.convertSection(this.shapeAsSection);
   }
 
@@ -841,7 +841,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     }
 
     try {
-      return ncfile.readArrayData(this, getShapeAsArraySection());
+      return ncfile.readArrayData(this, getSection());
     } catch (ucar.array.InvalidRangeException e) {
       e.printStackTrace();
       throw new IOException(e.getMessage()); // cant happen haha

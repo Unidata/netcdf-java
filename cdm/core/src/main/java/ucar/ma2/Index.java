@@ -4,6 +4,8 @@
  */
 package ucar.ma2;
 
+import com.google.common.base.Preconditions;
+
 import java.util.List;
 
 /**
@@ -325,6 +327,19 @@ public class Index implements Cloneable {
         return newc.reduce(); // any more to do?
       }
     return c;
+  }
+
+  Index extend(int rank) {
+    int newDims = rank - this.rank;
+    if (newDims == 0) {
+      return this;
+    }
+    Preconditions.checkArgument(newDims > 0);
+    int[] newShape = new int[rank];
+    for (int ii = 0; ii < rank; ii++) {
+      newShape[ii] = (ii < newDims) ? 1 : this.shape[ii - newDims];
+    }
+    return new Index(newShape);
   }
 
   /**

@@ -14,7 +14,6 @@ import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.iosp.NetcdfFileFormat;
 import ucar.nc2.internal.util.CompareNetcdf2;
 import ucar.nc2.write.Nc4Chunking;
-import ucar.nc2.write.NetcdfFormatUpdater;
 import ucar.nc2.write.NetcdfFormatWriter;
 
 import java.io.IOException;
@@ -85,7 +84,7 @@ public class TestWritingNetcdfTutorial {
   @Test
   public void testOpenNCFileForWriteTutorial() throws IOException, InvalidRangeException {
     // open writer to existing file
-    NetcdfFormatUpdater returnedWriter = WritingNetcdfTutorial.openNCFileForWrite(existingFilePath);
+    NetcdfFormatWriter returnedWriter = WritingNetcdfTutorial.openNCFileForWrite(existingFilePath);
     assertThat(returnedWriter).isNotNull();
 
     // write with writer

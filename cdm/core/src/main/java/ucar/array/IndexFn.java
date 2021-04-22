@@ -7,7 +7,6 @@ package ucar.array;
 import com.google.common.base.Preconditions;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 import javax.annotation.concurrent.Immutable;
 
@@ -28,7 +27,10 @@ final class IndexFn implements Iterable<Integer> {
     Preconditions.checkArgument(this.rank == index.length);
     int value = offset;
     for (int ii = 0; ii < rank; ii++) {
-      Preconditions.checkArgument(index[ii] >= 0 && index[ii] < shape[ii]);
+      if (index[ii] < 0 || index[ii] >= shape[ii]) {
+        throw new IllegalArgumentException(String.format("IndexFn.get(%s) not inside of shape '%s'",
+            java.util.Arrays.toString(index), java.util.Arrays.toString(shape)));
+      }
       if (shape[ii] < 0) {
         break; // vlen
       }

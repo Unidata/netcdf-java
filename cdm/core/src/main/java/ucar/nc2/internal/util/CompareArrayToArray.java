@@ -18,7 +18,7 @@ import ucar.nc2.Variable;
 import ucar.nc2.util.Misc;
 
 /**
- * Compare reading netcdf with Ma2 and same file with Array. Open separate files to prevent them from colliding.
+ * Compare reading netcdf with Array. Open separate files to prevent them from colliding.
  * Also use to test round trip through cmdr.
  */
 public class CompareArrayToArray {
@@ -61,6 +61,15 @@ public class CompareArrayToArray {
       }
     }
     System.out.printf("*** took %s%n", stopwatchAll.stop());
+    return ok;
+  }
+
+  public static boolean compareData(String name, Array<?> org, Array<?> array) throws IOException {
+    Formatter f = new Formatter();
+    boolean ok = compareData(f, name, org, array, false, true);
+    if (f.toString().isEmpty()) {
+      System.out.printf("%s%n", f);
+    }
     return ok;
   }
 
@@ -110,6 +119,7 @@ public class CompareArrayToArray {
     }
 
     switch (dt) {
+      case OPAQUE:
       case BYTE:
       case ENUM1:
       case UBYTE: {
@@ -211,27 +221,30 @@ public class CompareArrayToArray {
         break;
       }
 
-      case OPAQUE: {
-        Iterator<Object> iter1 = (Iterator<Object>) org.iterator();
-        Iterator<Object> iter2 = (Iterator<Object>) array.iterator();
-        while (iter1.hasNext() && iter2.hasNext()) {
-          Array<Byte> v1 = (Array<Byte>) iter1.next();
-          Array<Byte> v2 = (Array<Byte>) iter2.next();
-          if (v1.length() != v2.length()) {
-            f.format(" DIFF %s: opaque sizes differ %d != %d%n", name, v1.length(), v2.length());
-            ok = false;
-          }
-          for (int idx = 0; idx < v1.length() && idx < v2.length(); idx++) {
-            if (!v1.get(idx).equals(v2.get(idx))) {
-              f.format(createNumericDataDiffMessage(dt, name, v1.get(idx), v2.get(idx), idx));
-              ok = false;
-              if (justOne)
-                break;
-            }
-          }
-        }
-        break;
-      }
+      /*
+       * case OPAQUE: {
+       * Iterator<Object> iter1 = (Iterator<Object>) org.iterator();
+       * Iterator<Object> iter2 = (Iterator<Object>) array.iterator();
+       * while (iter1.hasNext() && iter2.hasNext()) {
+       * // Weve already unwrapped the VLEN part.
+       * Array<Byte> v1 = (Array<Byte>) iter1.next();
+       * Array<Byte> v2 = (Array<Byte>) iter2.next();
+       * if (v1.length() != v2.length()) {
+       * f.format(" DIFF %s: opaque sizes differ %d != %d%n", name, v1.length(), v2.length());
+       * ok = false;
+       * }
+       * for (int idx = 0; idx < v1.length() && idx < v2.length(); idx++) {
+       * if (!v1.get(idx).equals(v2.get(idx))) {
+       * f.format(createNumericDataDiffMessage(dt, name, v1.get(idx), v2.get(idx), idx));
+       * ok = false;
+       * if (justOne)
+       * break;
+       * }
+       * }
+       * }
+       * break;
+       * }
+       */
 
       case SHORT:
       case ENUM2:

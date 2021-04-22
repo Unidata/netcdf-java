@@ -918,6 +918,17 @@ public abstract class Array {
     return createView(indexCalc.reduce(dim));
   }
 
+  /**
+   * Create a new Array using same backing store as this Array, with new rank,
+   * by adding dimensions with length one.
+   * 
+   * @param rank new rank, must be >= old rank
+   * @return the new Array, or the same array if no extension was done
+   */
+  public Array extend(int rank) {
+    return createView(indexCalc.extend(rank));
+  }
+
   //////////////////////////////////////////////////////////////
 
   /**

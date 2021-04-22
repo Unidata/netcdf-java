@@ -28,7 +28,10 @@ public final class StructureDataArray extends Array<StructureData> {
   /** Create an Array of type StructureData and the given shape and storage. */
   public StructureDataArray(StructureMembers members, int[] shape, Storage<StructureData> storage) {
     super(ArrayType.STRUCTURE, shape);
-    Preconditions.checkArgument(indexFn.length() == storage.length());
+    if (indexFn.length() != storage.length()) {
+      throw new IllegalArgumentException(
+          String.format("indexFn.length %d != %d storage.length", indexFn.length(), storage.length()));
+    }
     this.members = members;
     this.storage = storage;
   }

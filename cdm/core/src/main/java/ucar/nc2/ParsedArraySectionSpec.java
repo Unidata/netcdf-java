@@ -103,7 +103,7 @@ public class ParsedArraySectionSpec {
       section = new ucar.array.Section(indexSelect);
       section = ucar.array.Section.fill(section, v.getShape()); // Check section has no nulls, set from shape array.
     } else {
-      section = v.getShapeAsArraySection(); // all
+      section = v.getSection(); // all
     }
 
     return new ParsedArraySectionSpec(v, section);
@@ -135,7 +135,7 @@ public class ParsedArraySectionSpec {
       section = new ucar.array.Section(indexSelect);
       section = ucar.array.Section.fill(section, v.getShape()); // Check section has no nulls, set from shape array.
     } else {
-      section = v.getShapeAsArraySection(); // all
+      section = v.getSection(); // all
     }
 
     return new ParsedArraySectionSpec(v, section);
@@ -162,7 +162,7 @@ public class ParsedArraySectionSpec {
       sb.append('.');
     }
 
-    ucar.array.Section vsection = (orgSection == null) ? v.getShapeAsArraySection() : orgSection;
+    ucar.array.Section vsection = (orgSection == null) ? v.getSection() : orgSection;
 
     sb.append(v.isMemberOfStructure() ? NetcdfFiles.makeValidSectionSpecName(v.getShortName())
         : NetcdfFiles.makeFullNameSectionSpec(v));

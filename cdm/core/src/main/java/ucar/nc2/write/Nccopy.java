@@ -171,7 +171,7 @@ public class Nccopy {
     CancelTask cancel = CancelTask.create();
     try (NetcdfFile ncfileIn = ucar.nc2.dataset.NetcdfDatasets.openFile(datasetIn, cancel)) {
 
-      NetcdfFormatWriter.Builder builder = NetcdfFormatWriter.builder().setFormat(getFormat(cmdLine))
+      NetcdfFormatWriter.Builder<?> builder = NetcdfFormatWriter.builder().setFormat(getFormat(cmdLine))
           .setLocation(datasetOut).setChunker(cmdLine.getNc4Chunking()).setUseJna(cmdLine.useJna);
       try (NetcdfCopier copier = NetcdfCopier.create(ncfileIn, builder)) {
         copier.write(cancel);

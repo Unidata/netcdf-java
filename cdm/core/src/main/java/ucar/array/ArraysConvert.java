@@ -297,7 +297,7 @@ public class ArraysConvert {
     return builder;
   }
 
-  private static ucar.ma2.StructureData convertStructureData(ucar.ma2.StructureMembers membersMa2, StructureData from) {
+  public static ucar.ma2.StructureData convertStructureData(ucar.ma2.StructureMembers membersMa2, StructureData from) {
     StructureDataW sdata = new StructureDataW(membersMa2);
     StructureMembers members = from.getStructureMembers();
     for (int i = 0; i < members.getMembers().size(); i++) {

@@ -52,16 +52,16 @@ public class NetcdfCopier implements Closeable {
 
   //////////////////////////////////////////////////////////////////////////////////////
   private final NetcdfFile fileIn;
-  private final NetcdfFormatWriter.Builder writerb;
+  private final NetcdfFormatWriter.Builder<?> writerb;
   private final boolean extended;
 
-  public static NetcdfCopier create(NetcdfFile fileIn, NetcdfFormatWriter.Builder ncwriter) {
+  public static NetcdfCopier create(NetcdfFile fileIn, NetcdfFormatWriter.Builder<?> ncwriter) {
     Preconditions.checkNotNull(fileIn);
     Preconditions.checkNotNull(ncwriter);
     return new NetcdfCopier(fileIn, ncwriter);
   }
 
-  private NetcdfCopier(NetcdfFile fileIn, NetcdfFormatWriter.Builder writerb) {
+  private NetcdfCopier(NetcdfFile fileIn, NetcdfFormatWriter.Builder<?> writerb) {
     this.fileIn = fileIn;
     this.writerb = writerb;
     this.extended = getOutputFormat().isExtendedModel();
@@ -73,7 +73,7 @@ public class NetcdfCopier implements Closeable {
   }
 
   private NetcdfFileFormat getOutputFormat() {
-    return writerb.getFormat();
+    return writerb.format;
   }
 
   /**
@@ -101,7 +101,7 @@ public class NetcdfCopier implements Closeable {
       }
 
       Count counter = new Count();
-      copyVariableData(ncwriter, fileIn.getRootGroup(), ncwriter.getOutputFile().getRootGroup(), counter, cancel);
+      copyVariableData(ncwriter, fileIn.getRootGroup(), ncwriter.getRootGroup(), counter, cancel);
       if (cancel.isCancel()) {
         return;
       }

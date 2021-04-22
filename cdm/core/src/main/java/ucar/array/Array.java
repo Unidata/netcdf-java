@@ -37,7 +37,7 @@ public abstract class Array<T> implements Iterable<T> {
     return this.get(this.getIndex());
   }
 
-  /** The datatype for this array */
+  /** The ArrayType for this Array */
   public ArrayType getArrayType() {
     return this.arrayType;
   }
@@ -49,7 +49,7 @@ public abstract class Array<T> implements Iterable<T> {
 
   /** An Index that can be used instead of int[], with the same rank as this Array. */
   public Index getIndex() {
-    return new Index(this.rank, this.indexFn);
+    return new Index(new int[this.rank], this.indexFn);
   }
 
   /** Get the number of dimensions of the array. */

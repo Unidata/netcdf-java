@@ -9,16 +9,43 @@ import com.google.common.base.Preconditions;
 /**
  * Indexes for Arrays. An Index refers to a particular element of an array.
  * This is a generalization of index as int[].
- * TODO: Some of these methods, maybe the whole class is to ease the transition from earlier versions.
- * evaluate how useful this is.
+ * Mutable.
  */
 public class Index {
+  public static Index ofRank(int rank) {
+    return new Index(new int[rank], IndexFn.builder(rank).build());
+  }
+
+  public static Index of(int[] index) {
+    return new Index(index, IndexFn.builder(index.length).build());
+  }
+
+  /////////////////////////////////////////////////////
   private int[] current; // current element's index
   private final IndexFn indexFn;
 
-  protected Index(int rank, IndexFn indexFn) {
-    current = new int[rank];
+  Index(int[] index, IndexFn indexFn) {
+    this.current = index;
     this.indexFn = indexFn;
+  }
+
+  // Copy constructor.
+  public Index(Index from) {
+    this.current = new int[from.current.length];
+    System.arraycopy(from.current, 0, this.current, 0, from.current.length);
+    this.indexFn = from.indexFn; // Immutable
+  }
+
+  /**
+   * Increment the ith dimension.
+   * 
+   * @param dim which dimension
+   * @return the incremented Index.
+   */
+  public Index incr(int dim) {
+    Preconditions.checkArgument(dim < this.current.length);
+    setDim(dim, this.current[dim] + 1);
+    return this;
   }
 
   /** Get the current index as int[] . */
@@ -33,7 +60,7 @@ public class Index {
   }
 
   /**
-   * set current element at dimension dim to v
+   * Set current element at dimension dim
    *
    * @param dim set this dimension
    * @param value to this value

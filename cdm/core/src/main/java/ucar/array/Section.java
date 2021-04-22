@@ -435,14 +435,14 @@ public class Section {
 
   /**
    * Compute total number of elements represented by the section.
-   * Any null, VLEN or EMPTY Ranges are skipped.
+   * Any null or VLEN Ranges are skipped.
    *
    * @return total number of elements
    */
   public long computeSize() {
     long product = 1;
     for (Range r : ranges) {
-      if (r == null || r.length() <= 0) {
+      if (r == null || r.length() < 0) {
         continue;
       }
       product *= r.length();

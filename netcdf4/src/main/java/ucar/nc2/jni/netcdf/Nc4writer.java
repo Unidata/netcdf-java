@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import ucar.array.ArrayType;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayStructure;
@@ -45,14 +46,16 @@ import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.ffi.netcdf.NetcdfClibrary;
 import ucar.nc2.internal.iosp.IospFileCreator;
+import ucar.nc2.internal.iosp.IospFileWriter;
 import ucar.nc2.internal.iosp.hdf5.H5header;
 import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.iosp.NetcdfFileFormat;
+import ucar.nc2.util.CancelTask;
 import ucar.nc2.write.Nc4Chunking;
 import ucar.nc2.write.Nc4ChunkingDefault;
 
 /** IOSP for writing netcdf files through JNA interface to netcdf C library */
-public class Nc4writer extends Nc4reader implements IospFileCreator {
+public class Nc4writer extends Nc4reader implements IospFileWriter {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Nc4writer.class);
 
   // Define reserved attributes (see Nc4DSP)
@@ -79,6 +82,16 @@ public class Nc4writer extends Nc4reader implements IospFileCreator {
   public void setChunker(Nc4Chunking chunker) {
     if (chunker != null)
       this.chunker = chunker;
+  }
+
+  @Override
+  public void openForWriting(String location, Group.Builder rootGroup, CancelTask cancelTask) throws IOException {
+    throw new NotImplementedException();
+  }
+
+  @Override
+  public NetcdfFile getOutputFile() {
+    throw new NotImplementedException();
   }
 
   // * Create new file, populate it from the objects in ncfileb.

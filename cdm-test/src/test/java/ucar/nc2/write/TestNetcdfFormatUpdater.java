@@ -8,7 +8,7 @@ package ucar.nc2.write;
 import com.google.common.collect.ImmutableList;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
-import org.junit.Ignore;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -45,7 +45,7 @@ public class TestNetcdfFormatUpdater {
   public void testOpenExisting() throws IOException, InvalidRangeException {
     String filename = tempFolder.newFile().getAbsolutePath();
 
-    NetcdfFormatWriter.Builder writerb = NetcdfFormatWriter.createNewNetcdf3(filename).setFill(false);
+    NetcdfFormatWriter.Builder<?> writerb = NetcdfFormatWriter.createNewNetcdf3(filename).setFill(false);
     writerb.addUnlimitedDimension("time");
     writerb.addAttribute(new Attribute("name", "value"));
 
@@ -61,7 +61,7 @@ public class TestNetcdfFormatUpdater {
     }
 
     // open existing, add data along unlimited dimension
-    try (NetcdfFormatUpdater writer = NetcdfFormatUpdater.openExisting(filename).setFill(false).build()) {
+    try (NetcdfFormatWriter writer = NetcdfFormatWriter.openExisting(filename).setFill(false).build()) {
       Variable time = writer.findVariable("time");
       assert time.getSize() == 4 : time.getSize();
 
@@ -81,7 +81,7 @@ public class TestNetcdfFormatUpdater {
     }
 
     // open existing, add more data along unlimited dimension
-    try (NetcdfFormatUpdater writer = NetcdfFormatUpdater.openExisting(filename).setFill(false).build()) {
+    try (NetcdfFormatWriter writer = NetcdfFormatWriter.openExisting(filename).setFill(false).build()) {
       Variable time = writer.findVariable("time");
       assert time.getSize() == 7 : time.getSize();
 

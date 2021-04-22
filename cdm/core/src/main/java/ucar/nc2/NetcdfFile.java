@@ -601,8 +601,9 @@ public class NetcdfFile implements FileCacheable, Closeable {
       return gotit || makeRecordStructure();
     }
 
-    if (iosp != null)
+    if (iosp != null) {
       return iosp.sendIospMessage(message);
+    }
     return null;
   }
 
