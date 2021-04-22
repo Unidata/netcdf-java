@@ -7,12 +7,12 @@ package ucar.unidata.io;
 import java.io.Closeable;
 import java.io.IOException;
 
-/** A remote file that can be read from. */
+/** A remote file that can be read. */
 public interface ReadableRemoteFile extends Closeable {
 
   /**
    * Read directly from the remote service. For HTTP based access, this is where "Accept-Ranges" HTTP requests are
-   * called to do random access
+   * called to do random access.
    *
    * @param pos start here in the file
    * @param buff put data into this buffer
@@ -25,7 +25,6 @@ public interface ReadableRemoteFile extends Closeable {
 
   /**
    * Close any resources used to enable remote reading.
-   *
    * For example, HTTPSession from httpservices, or S3Client from the AWS SDK
    */
   void closeRemote();

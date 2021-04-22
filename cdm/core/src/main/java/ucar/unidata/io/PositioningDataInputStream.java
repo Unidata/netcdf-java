@@ -8,8 +8,8 @@ import java.io.*;
 
 /**
  * Similar to a DataInputStream that keeps track of position.
- * position must always increase, no going backwards.
- * cant handle byte order yet - assume big endian(?).
+ * The position must always increase, no going backwards.
+ * Note cant handle byte order yet - assume big endian(?).
  */
 public class PositioningDataInputStream {
   private final DataInputStream delegate;

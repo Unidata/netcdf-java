@@ -97,14 +97,17 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   private static final Set<Enhance> EnhanceNone = Collections.unmodifiableSet(EnumSet.noneOf(Enhance.class));
   private static Set<Enhance> defaultEnhanceMode = EnhanceAll;
 
+  /** The set of all enhancements. */
   public static Set<Enhance> getEnhanceAll() {
     return EnhanceAll;
   }
 
+  /** The set of no enhancements. */
   public static Set<Enhance> getEnhanceNone() {
     return EnhanceNone;
   }
 
+  /** The set of default enhancements. */
   public static Set<Enhance> getDefaultEnhanceMode() {
     return defaultEnhanceMode;
   }

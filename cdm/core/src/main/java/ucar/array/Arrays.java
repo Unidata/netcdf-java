@@ -11,6 +11,8 @@ import java.util.List;
 /** Static helper classes for {@link Array} */
 public class Arrays {
 
+  private Arrays() {}
+
   /**
    * Create Array using java array of T, or java primitive array, as storage.
    * Do not use this for Vlens or Structures.

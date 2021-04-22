@@ -560,6 +560,15 @@ public class NetcdfFile implements FileCacheable, Closeable {
       return iosp.readSection(cer);
   }
 
+  /**
+   * Read a variable using the given section specification.
+   * The result is always an array of the type of the innermost variable.
+   * Its shape is the accumulation of all the shapes of its parent structures.
+   *
+   * @param variableSection the constraint expression.
+   * @see <a href=
+   *      "https://www.unidata.ucar.edu/software/netcdf-java/reference/SectionSpecification.html">SectionSpecification</a>
+   */
   public ucar.array.Array<?> readSectionArray(String variableSection)
       throws IOException, ucar.array.InvalidRangeException {
     ParsedArraySectionSpec cer = ParsedArraySectionSpec.parseVariableSection(this, variableSection);
