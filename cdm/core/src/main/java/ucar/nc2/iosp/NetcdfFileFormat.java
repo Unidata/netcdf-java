@@ -160,6 +160,10 @@ public enum NetcdfFileFormat {
     return this == NETCDF4 || this == NCSTREAM;
   }
 
+  public boolean isLargeFile() {
+    return this == NETCDF3_64BIT_OFFSET;
+  }
+
   public boolean isClassicModel() {
     return this == NETCDF3 || this == NETCDF3_64BIT_OFFSET || this == NETCDF4_CLASSIC || this == NETCDF3_64BIT_DATA;
   }

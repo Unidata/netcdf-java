@@ -118,6 +118,7 @@ public class Arrays {
   /**
    * Create Array using empty java array of T, or java primitive array, same size as shape.
    * Do not use this for Vlens or Structures.
+   * LOOK what is this used for?
    *
    * @param shape multidimensional shape
    */
@@ -376,6 +377,8 @@ public class Arrays {
     return org.createView(org.indexFn().transpose(dim1, dim2));
   }
 
+  /////////////////////////////////////////////////////////////////////////////////////////
+
   /**
    * Compute total number of elements in the array. Stop at vlen.
    *
@@ -544,18 +547,73 @@ public class Arrays {
   }
 
   /**
-   * Make a double array from a start and incr.
+   * Make a numeric array from a start and incr.
    *
-   * @param shape shape of ressultinf array
+   * @param type type of array
    * @param npts number of points
    * @param start starting value
    * @param incr increment
+   * @param shape shape of resulting array. if not set, use 1 dim array of length npts.
    */
-  public static Array<Double> makeArray(int[] shape, int npts, double start, double incr) {
-    double[] vals = new double[npts];
-    for (int i = 0; i < npts; i++) {
-      vals[i] = start + i * incr;
+  public static <T> Array<T> makeArray(ArrayType type, int npts, double start, double incr, int... shape) {
+    Preconditions.checkArgument(type.isNumeric());
+    if (shape.length == 0) {
+      shape = new int[] {npts};
     }
-    return factory(ArrayType.DOUBLE, shape, vals);
+
+    Object pvals;
+    switch (type) {
+      case BYTE: {
+        byte[] bvals = new byte[npts];
+        for (int i = 0; i < npts; i++) {
+          bvals[i] = (byte) (start + i * incr);
+        }
+        pvals = bvals;
+        break;
+      }
+      case DOUBLE: {
+        double[] dvals = new double[npts];
+        for (int i = 0; i < npts; i++) {
+          dvals[i] = (float) (start + i * incr);
+        }
+        pvals = dvals;
+        break;
+      }
+      case FLOAT: {
+        float[] fvals = new float[npts];
+        for (int i = 0; i < npts; i++) {
+          fvals[i] = (float) (start + i * incr);
+        }
+        pvals = fvals;
+        break;
+      }
+      case INT: {
+        int[] ivals = new int[npts];
+        for (int i = 0; i < npts; i++) {
+          ivals[i] = (int) (start + i * incr);
+        }
+        pvals = ivals;
+        break;
+      }
+      case SHORT: {
+        short[] svals = new short[npts];
+        for (int i = 0; i < npts; i++) {
+          svals[i] = (short) (start + i * incr);
+        }
+        pvals = svals;
+        break;
+      }
+      case LONG: {
+        long[] lvals = new long[npts];
+        for (int i = 0; i < npts; i++) {
+          lvals[i] = (long) (start + i * incr);
+        }
+        pvals = lvals;
+        break;
+      }
+      default:
+        throw new IllegalArgumentException("makeArray od type " + type);
+    }
+    return factory(type, shape, pvals);
   }
 }

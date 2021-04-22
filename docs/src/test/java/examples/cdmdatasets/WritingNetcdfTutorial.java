@@ -106,8 +106,8 @@ public class WritingNetcdfTutorial {
    * @return NetcdfFormatWriter
    * @throws IOException
    */
-  public static NetcdfFormatUpdater openNCFileForWrite(String filePathStr) throws IOException {
-    NetcdfFormatUpdater updater = NetcdfFormatUpdater.openExisting(filePathStr).build();
+  public static NetcdfFormatWriter openNCFileForWrite(String filePathStr) throws IOException {
+    NetcdfFormatWriter updater = NetcdfFormatWriter.openExisting(filePathStr).build();
     return updater; /* DOCS-IGNORE */
   }
 

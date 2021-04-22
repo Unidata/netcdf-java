@@ -67,7 +67,7 @@ public class IospArrayHelper {
     if (showLayoutTypes)
       System.out.println("***RAF LayoutType=" + layout.getClass().getName());
 
-    if (ArrayType.getPrimitiveClass() == byte.class || ArrayType == ArrayType.CHAR) {
+    if (ArrayType.getPrimitiveClass() == Byte.class || ArrayType == ArrayType.CHAR) {
       byte[] pa = (byte[]) arr;
       while (layout.hasNext()) {
         Layout.Chunk chunk = layout.next();
@@ -80,7 +80,7 @@ public class IospArrayHelper {
       else
         return pa; // javac ternary compile error
 
-    } else if (ArrayType.getPrimitiveClass() == short.class) {
+    } else if (ArrayType.getPrimitiveClass() == Short.class) {
       short[] pa = (short[]) arr;
       while (layout.hasNext()) {
         Layout.Chunk chunk = layout.next();
@@ -90,7 +90,7 @@ public class IospArrayHelper {
       }
       return pa;
 
-    } else if (ArrayType.getPrimitiveClass() == int.class) {
+    } else if (ArrayType.getPrimitiveClass() == Integer.class) {
       int[] pa = (int[]) arr;
       while (layout.hasNext()) {
         Layout.Chunk chunk = layout.next();
@@ -120,7 +120,7 @@ public class IospArrayHelper {
       }
       return pa;
 
-    } else if (ArrayType.getPrimitiveClass() == long.class) {
+    } else if (ArrayType.getPrimitiveClass() == Long.class) {
       long[] pa = (long[]) arr;
       while (layout.hasNext()) {
         Layout.Chunk chunk = layout.next();
@@ -195,7 +195,7 @@ public class IospArrayHelper {
     if (showLayoutTypes)
       System.out.println("***PositioningDataInputStream LayoutType=" + index.getClass().getName());
 
-    if (ArrayType.getPrimitiveClass() == byte.class || ArrayType == ArrayType.CHAR) {
+    if (ArrayType.getPrimitiveClass() == Byte.class || ArrayType == ArrayType.CHAR) {
       byte[] pa = (byte[]) arr;
       while (index.hasNext()) {
         Layout.Chunk chunk = index.next();
@@ -207,7 +207,7 @@ public class IospArrayHelper {
       else
         return pa;
 
-    } else if (ArrayType.getPrimitiveClass() == short.class) {
+    } else if (ArrayType.getPrimitiveClass() == Short.class) {
       short[] pa = (short[]) arr;
       while (index.hasNext()) {
         Layout.Chunk chunk = index.next();
@@ -215,7 +215,7 @@ public class IospArrayHelper {
       }
       return pa;
 
-    } else if (ArrayType.getPrimitiveClass() == int.class) {
+    } else if (ArrayType.getPrimitiveClass() == Integer.class) {
       int[] pa = (int[]) arr;
       while (index.hasNext()) {
         Layout.Chunk chunk = index.next();
@@ -239,7 +239,7 @@ public class IospArrayHelper {
       }
       return pa;
 
-    } else if (ArrayType.getPrimitiveClass() == long.class) {
+    } else if (ArrayType.getPrimitiveClass() == Long.class) {
       long[] pa = (long[]) arr;
       while (index.hasNext()) {
         Layout.Chunk chunk = index.next();
@@ -296,7 +296,7 @@ public class IospArrayHelper {
     if (showLayoutTypes)
       System.out.println("***BB LayoutType=" + layout.getClass().getName());
 
-    if (ArrayType.getPrimitiveClass() == byte.class || (ArrayType == ArrayType.CHAR)) {
+    if (ArrayType.getPrimitiveClass() == Byte.class || (ArrayType == ArrayType.CHAR)) {
       byte[] pa = (byte[]) arr;
       while (layout.hasNext()) {
         LayoutBB.Chunk chunk = layout.next();
@@ -312,7 +312,7 @@ public class IospArrayHelper {
       else
         return pa;
 
-    } else if (ArrayType.getPrimitiveClass() == short.class) {
+    } else if (ArrayType.getPrimitiveClass() == Short.class) {
       short[] pa = (short[]) arr;
       while (layout.hasNext()) {
         LayoutBB.Chunk chunk = layout.next();
@@ -324,7 +324,7 @@ public class IospArrayHelper {
       }
       return pa;
 
-    } else if (ArrayType.getPrimitiveClass() == int.class) {
+    } else if (ArrayType.getPrimitiveClass() == Integer.class) {
       int[] pa = (int[]) arr;
       while (layout.hasNext()) {
         LayoutBB.Chunk chunk = layout.next();
@@ -360,7 +360,7 @@ public class IospArrayHelper {
       }
       return pa;
 
-    } else if (ArrayType.getPrimitiveClass() == long.class) {
+    } else if (ArrayType.getPrimitiveClass() == Long.class) {
       long[] pa = (long[]) arr;
       while (layout.hasNext()) {
         LayoutBB.Chunk chunk = layout.next();
@@ -399,17 +399,17 @@ public class IospArrayHelper {
   public static Object makePrimitiveArray(int size, ArrayType ArrayType) {
     Object arr = null;
 
-    if ((ArrayType.getPrimitiveClass() == byte.class) || (ArrayType == ArrayType.CHAR)
+    if ((ArrayType.getPrimitiveClass() == Byte.class) || (ArrayType == ArrayType.CHAR)
         || (ArrayType == ArrayType.OPAQUE) || (ArrayType == ArrayType.STRUCTURE)) {
       arr = new byte[size];
 
-    } else if (ArrayType.getPrimitiveClass() == short.class) {
+    } else if (ArrayType.getPrimitiveClass() == Short.class) {
       arr = new short[size];
 
-    } else if (ArrayType.getPrimitiveClass() == int.class) {
+    } else if (ArrayType.getPrimitiveClass() == Integer.class) {
       arr = new int[size];
 
-    } else if (ArrayType.getPrimitiveClass() == long.class) {
+    } else if (ArrayType.getPrimitiveClass() == Long.class) {
       arr = new long[size];
 
     } else if (ArrayType == ArrayType.FLOAT) {
@@ -437,7 +437,7 @@ public class IospArrayHelper {
    */
   public static Object makePrimitiveArray(int size, ArrayType ArrayType, Object fillValue) {
 
-    if (ArrayType.getPrimitiveClass() == byte.class || (ArrayType == ArrayType.CHAR)) {
+    if (ArrayType.getPrimitiveClass() == Byte.class || (ArrayType == ArrayType.CHAR)) {
       byte[] pa = new byte[size];
       byte val = ((Number) fillValue).byteValue();
       if (val != 0)
@@ -449,7 +449,7 @@ public class IospArrayHelper {
     } else if (ArrayType == ArrayType.OPAQUE) {
       return new byte[size];
 
-    } else if (ArrayType.getPrimitiveClass() == short.class) {
+    } else if (ArrayType.getPrimitiveClass() == Short.class) {
       short[] pa = new short[size];
       short val = ((Number) fillValue).shortValue();
       if (val != 0)
@@ -457,7 +457,7 @@ public class IospArrayHelper {
           pa[i] = val;
       return pa;
 
-    } else if (ArrayType.getPrimitiveClass() == int.class) {
+    } else if (ArrayType.getPrimitiveClass() == Integer.class) {
       int[] pa = new int[size];
       int val = ((Number) fillValue).intValue();
       if (val != 0)
@@ -465,7 +465,7 @@ public class IospArrayHelper {
           pa[i] = val;
       return pa;
 
-    } else if (ArrayType.getPrimitiveClass() == long.class) {
+    } else if (ArrayType.getPrimitiveClass() == Long.class) {
       long[] pa = new long[size];
       long val = ((Number) fillValue).longValue();
       if (val != 0)

@@ -11,6 +11,7 @@ import javax.annotation.concurrent.Immutable;
 /** Concrete implementation of Array specialized for Char. */
 @Immutable
 public final class ArrayChar extends Array<Character> {
+
   private final Storage<Character> storage;
 
   /** Create an empty Array of type Char and the given shape. */
@@ -110,13 +111,21 @@ public final class ArrayChar extends Array<Character> {
 
     String[] result = new String[outerLength];
     char[] carr = new char[innerLength];
-    int sidx = 0;
+
     int cidx = 0;
-    int idx = 0;
-    for (char c : this) {
+    int sidx = 0;
+
+    Index index = getIndex(); // have to do this because maybe its a view
+    while (sidx < outerLength) {
+      int idx = sidx * innerLength + cidx;
+      char c = get(index.setElem(idx));
+      if (c == 0) {
+        result[sidx++] = String.valueOf(carr, 0, cidx);
+        cidx = 0;
+        continue;
+      }
       carr[cidx++] = c;
-      idx++;
-      if (idx % innerLength == 0) {
+      if (cidx == innerLength) {
         result[sidx++] = String.valueOf(carr);
         cidx = 0;
       }

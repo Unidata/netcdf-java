@@ -75,7 +75,7 @@ public class CompareArrayToMa2 {
     } else {
       ucar.ma2.Array org = vorg.read();
       Array<?> array = vnew.readArray();
-      System.out.printf("  read cariable %s %s%n", vorg.getDataType(), vorg.getNameAndDimensions());
+      System.out.printf("  read variable %s %s%n", vorg.getDataType(), vorg.getNameAndDimensions());
       Formatter f = new Formatter();
       boolean ok1 = CompareArrayToMa2.compareData(f, vorg.getShortName(), org, array, justOne, true);
       if (!ok1) {

@@ -25,9 +25,8 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.internal.iosp.IospFileUpdater;
+import ucar.nc2.internal.iosp.IospFileWriter;
 import ucar.nc2.iosp.IOServiceProvider;
-import ucar.nc2.internal.iosp.IospFileCreator;
 import ucar.nc2.iosp.Layout;
 import ucar.nc2.iosp.LayoutRegular;
 import ucar.nc2.iosp.LayoutRegularSegmented;
@@ -36,13 +35,18 @@ import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
 
 /** IOServiceProviderWriter for Netcdf3 files. */
-public class N3iospWriter extends N3iosp implements IospFileCreator, IospFileUpdater {
+public class N3iospWriter extends N3iosp implements IospFileWriter {
   private boolean fill = true;
   private final IOServiceProvider iosp;
   private N3headerWriter headerw;
 
+  public N3iospWriter() {
+    this.iosp = null;
+  }
+
+  // open existing only.
   public N3iospWriter(IOServiceProvider iosp) {
-    this.iosp = iosp; // WHY ?
+    this.iosp = iosp;
   }
 
   @Override
@@ -120,9 +124,11 @@ public class N3iospWriter extends N3iosp implements IospFileCreator, IospFileUpd
     N3header.Vinfo vinfo = (N3header.Vinfo) v2.getSPobject();
     DataType dataType = v2.getDataType();
 
+    int[] varShape = v2.getShape();
     if (v2.isUnlimited()) {
       Range firstRange = section.getRange(0);
-      setNumrecs(firstRange.last() + 1);
+      int n = setNumrecs(firstRange.last() + 1);
+      varShape[0] = n;
     }
 
     if (v2 instanceof Structure) {
@@ -139,8 +145,8 @@ public class N3iospWriter extends N3iosp implements IospFileCreator, IospFileUpd
       writeRecordData((Structure) v2, section, (ArrayStructure) values);
 
     } else {
-      Layout layout = (!v2.isUnlimited()) ? new LayoutRegular(vinfo.begin, v2.getElementSize(), v2.getShape(), section)
-          : new LayoutRegularSegmented(vinfo.begin, v2.getElementSize(), header.recsize, v2.getShape(), section);
+      Layout layout = (!v2.isUnlimited()) ? new LayoutRegular(vinfo.begin, v2.getElementSize(), varShape, section)
+          : new LayoutRegularSegmented(vinfo.begin, v2.getElementSize(), header.recsize, varShape, section);
       writeData(values, layout, dataType);
     }
   }
@@ -272,9 +278,10 @@ public class N3iospWriter extends N3iosp implements IospFileCreator, IospFileUpd
     throw new IllegalStateException("dataType= " + dataType);
   }
 
-  private void setNumrecs(int n) throws IOException, InvalidRangeException {
-    if (n <= header.numrecs)
-      return;
+  private int setNumrecs(int n) throws IOException, InvalidRangeException {
+    if (n <= header.numrecs) {
+      return header.numrecs;
+    }
     int startRec = header.numrecs;
 
     ((N3headerWriter) header).setNumrecs(n);
@@ -282,16 +289,19 @@ public class N3iospWriter extends N3iosp implements IospFileCreator, IospFileUpd
     // need to let all unlimited variables know of new shape
     for (Variable v : ncfile.getVariables()) {
       if (v.isUnlimited()) {
-        v.resetShape(); // LOOK
+        v.resetShape(); // LOOK this doesnt work.
         v.invalidateCache();
       }
     }
 
     // extend file, handle filling
-    if (fill)
+    if (fill) {
       fillRecordVariables(startRec, n);
-    else
+    } else {
       raf.setMinLength(header.calcFileSize());
+    }
+
+    return n;
   }
 
   /**
@@ -318,8 +328,10 @@ public class N3iospWriter extends N3iosp implements IospFileCreator, IospFileUpd
   public void flush() throws java.io.IOException {
     if (raf != null) {
       raf.flush();
-      ((N3headerWriter) header).writeNumrecs();
-      raf.flush();
+      if (header != null) {
+        ((N3headerWriter) header).writeNumrecs();
+        raf.flush();
+      }
     }
   }
 

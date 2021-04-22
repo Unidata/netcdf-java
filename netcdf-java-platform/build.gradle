@@ -68,6 +68,7 @@ dependencies {
     // netcdf-java logging
     api "org.slf4j:slf4j-api:${depVersion.slf4j}"
     runtime 'ch.qos.logback:logback-classic:1.2.3'
+    runtime "org.slf4j:slf4j-jdk14:${depVersion.slf4j}"
 
     ///////////////////////
     // toolsUI GUI stuff //

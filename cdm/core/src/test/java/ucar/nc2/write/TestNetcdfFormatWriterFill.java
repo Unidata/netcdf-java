@@ -22,7 +22,7 @@ import java.lang.invoke.MethodHandles;
 /**
  * Test writing with fill values
  */
-public class TestWriteFill {
+public class TestNetcdfFormatWriterFill {
 
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 

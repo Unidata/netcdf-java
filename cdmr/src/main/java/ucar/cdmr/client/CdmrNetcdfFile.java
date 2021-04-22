@@ -61,7 +61,7 @@ public class CdmrNetcdfFile extends NetcdfFile {
   @Override
   public Iterator<ucar.array.StructureData> getStructureDataArrayIterator(Sequence s, int bufferSize)
       throws IOException {
-    ucar.array.Array<?> data = readArrayData(s, s.getShapeAsArraySection());
+    ucar.array.Array<?> data = readArrayData(s, s.getSection());
     Preconditions.checkNotNull(data);
     Preconditions.checkArgument(data instanceof StructureDataArray);
     StructureDataArray sdata = (StructureDataArray) data;

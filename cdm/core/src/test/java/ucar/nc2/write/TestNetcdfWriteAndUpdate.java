@@ -4,22 +4,35 @@
  */
 package ucar.nc2.write;
 
-import org.junit.*;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
+import org.junit.FixMethodOrder;
+import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runners.MethodSorters;
-import ucar.ma2.*;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import ucar.ma2.Array;
+import ucar.ma2.ArrayByte;
+import ucar.ma2.ArrayChar;
+import ucar.ma2.ArrayDouble;
+import ucar.ma2.DataType;
+import ucar.ma2.Index;
+import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 
-/** Test NetcdfFormatWriter */
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.google.common.truth.Truth.assertThat;
+import static org.junit.Assert.fail;
+
+/** Test successive NetcdfFormat Writint and updating */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class TestWrite {
+public class TestNetcdfWriteAndUpdate {
   @ClassRule
   public static TemporaryFolder tempFolder = new TemporaryFolder();
 
@@ -29,7 +42,7 @@ public class TestWrite {
   public static void setupClass() throws IOException {
     writerLocation = tempFolder.newFile().getAbsolutePath();
 
-    NetcdfFormatWriter.Builder writerb = NetcdfFormatWriter.createNewNetcdf3(writerLocation);
+    NetcdfFormatWriter.Builder<?> writerb = NetcdfFormatWriter.createNewNetcdf3(writerLocation);
 
     // add dimensions
     Dimension latDim = writerb.addDimension("lat", 64);
@@ -71,9 +84,9 @@ public class TestWrite {
     try {
       Array bad = Array.makeObjectArray(DataType.OBJECT, ArrayList.class, new int[] {1}, null);
       writerb.addAttribute(Attribute.fromArray("versionB", bad));
-      assert (false);
+      fail();
     } catch (Exception e) {
-      assert (true);
+      assertThat(e.getMessage()).contains("Unimplemented ArrayType");
     }
 
     try (NetcdfFormatWriter writer = writerb.build()) {
@@ -94,10 +107,10 @@ public class TestWrite {
         writer.write(v, origin, A);
       } catch (IOException e) {
         System.err.println("ERROR writing file");
-        assert (false);
+        fail();
       } catch (InvalidRangeException e) {
         e.printStackTrace();
-        assert (false);
+        fail();
       }
 
       // write char variable
@@ -114,10 +127,10 @@ public class TestWrite {
         writer.write(v, origin1, ac);
       } catch (IOException e) {
         System.err.println("ERROR writing Achar");
-        assert (false);
+        fail();
       } catch (InvalidRangeException e) {
         e.printStackTrace();
-        assert (false);
+        fail();
       }
 
       // write char variable
@@ -132,10 +145,10 @@ public class TestWrite {
         writer.write(v, barray);
       } catch (IOException e) {
         System.err.println("ERROR writing bvar");
-        assert (false);
+        fail();
       } catch (InvalidRangeException e) {
         e.printStackTrace();
-        assert (false);
+        fail();
       }
 
       // write char variable as String
@@ -146,10 +159,10 @@ public class TestWrite {
         writer.write(v, origin1, ac2);
       } catch (IOException e) {
         System.err.println("ERROR writing Achar2");
-        assert (false);
+        fail();
       } catch (InvalidRangeException e) {
         e.printStackTrace();
-        assert (false);
+        fail();
       }
 
       // write String array
@@ -163,10 +176,10 @@ public class TestWrite {
         writer.write(v, origin, ac2);
       } catch (IOException e) {
         System.err.println("ERROR writing Achar3");
-        assert (false);
+        fail();
       } catch (InvalidRangeException e) {
         e.printStackTrace();
-        assert (false);
+        fail();
       }
 
       // write String array
@@ -179,10 +192,10 @@ public class TestWrite {
         writer.write(v, origin, ac2);
       } catch (IOException e) {
         System.err.println("ERROR writing Achar4");
-        assert (false);
+        fail();
       } catch (InvalidRangeException e) {
         e.printStackTrace();
-        assert (false);
+        fail();
       }
 
       // write scalar data
@@ -194,10 +207,10 @@ public class TestWrite {
         writer.write(v, datas);
       } catch (IOException e) {
         System.err.println("ERROR writing scalar");
-        assert (false);
+        fail();
       } catch (InvalidRangeException e) {
         e.printStackTrace();
-        assert (false);
+        fail();
       }
     }
   }
@@ -208,17 +221,17 @@ public class TestWrite {
 
       // read entire array
       Variable temp = ncfile.findVariable("temperature");
-      assert (null != temp);
+      assertThat(temp).isNotNull();
 
       Array tA = temp.read();
-      assert (tA.getRank() == 2);
+      assertThat(tA.getRank()).isEqualTo(2);
 
       Index ima = tA.getIndex();
       int[] shape = tA.getShape();
 
       for (int i = 0; i < shape[0]; i++) {
         for (int j = 0; j < shape[1]; j++) {
-          assert (tA.getDouble(ima.set(i, j)) == (double) (i * 1000000 + j * 1000));
+          assertThat(tA.getDouble(ima.set(i, j))).isEqualTo(i * 1000000 + j * 1000);
         }
       }
 
@@ -231,92 +244,92 @@ public class TestWrite {
         tA = temp.read(origin2, shape2);
       } catch (InvalidRangeException e) {
         System.err.println("ERROR reading file " + e);
-        assert (false);
+        fail();
         return;
       } catch (IOException e) {
         System.err.println("ERROR reading file");
-        assert (false);
+        fail();
         return;
       }
-      assert (tA.getRank() == 2);
+      assertThat(tA.getRank()).isEqualTo(2);
 
       for (int j = 0; j < shape2[1]; j++) {
-        assert (tA.getDouble(ima.set(0, j)) == (double) (j * 1000));
+        assertThat(tA.getDouble(ima.set(0, j))).isEqualTo(j * 1000);
       }
 
       // rank reduction
       Array Areduce = tA.reduce();
       Index ima2 = Areduce.getIndex();
-      assert (Areduce.getRank() == 1);
+      assertThat(Areduce.getRank()).isEqualTo(1);
 
       for (int j = 0; j < shape2[1]; j++) {
-        assert (Areduce.getDouble(ima2.set(j)) == (double) (j * 1000));
+        assertThat(Areduce.getDouble(ima2.set(j))).isEqualTo(j * 1000);
       }
 
       // read char variable
       Variable c = ncfile.findVariable("svar");
-      Assert.assertNotNull(c);
+      assertThat(c).isNotNull();
       try {
         tA = c.read();
       } catch (IOException e) {
-        assert (false);
+        fail();
       }
-      assert (tA instanceof ArrayChar);
+      assertThat(tA).isInstanceOf(ArrayChar.class);
       ArrayChar achar = (ArrayChar) tA;
       String sval = achar.getString(achar.getIndex());
-      assert sval.equals("Testing 1-2-3") : sval;
+      assertThat(sval).isEqualTo("Testing 1-2-3");
       // System.out.println( "val = "+ val);
 
       // read char variable 2
       Variable c2 = ncfile.findVariable("svar2");
-      Assert.assertNotNull(c2);
+      assertThat(c2).isNotNull();
       try {
         tA = c2.read();
       } catch (IOException e) {
-        assert (false);
+        fail();
       }
-      assert (tA instanceof ArrayChar);
+      assertThat(tA).isInstanceOf(ArrayChar.class);
       ArrayChar ac2 = (ArrayChar) tA;
-      Assert.assertEquals("Two pairs of ladies stockings!", ac2.getString());
+      assertThat(ac2.getString()).isEqualTo("Two pairs of ladies stockings!");
 
       // read String Array
       Variable c3 = ncfile.findVariable("names");
-      Assert.assertNotNull(c3);
+      assertThat(c3).isNotNull();
       try {
         tA = c3.read();
       } catch (IOException e) {
-        assert (false);
+        fail();
       }
-      assert (tA instanceof ArrayChar);
+      assertThat(tA).isInstanceOf(ArrayChar.class);
       ArrayChar ac3 = (ArrayChar) tA;
       ima = ac3.getIndex();
 
-      assert (ac3.getString(ima.set(0)).equals("No pairs of ladies stockings!"));
-      assert (ac3.getString(ima.set(1)).equals("One pair of ladies stockings!"));
-      assert (ac3.getString(ima.set(2)).equals("Two pairs of ladies stockings!"));
+      assertThat(ac3.getString(ima.set(0)).equals("No pairs of ladies stockings!"));
+      assertThat(ac3.getString(ima.set(1)).equals("One pair of ladies stockings!"));
+      assertThat(ac3.getString(ima.set(2)).equals("Two pairs of ladies stockings!"));
 
       // read String Array - 2
       Variable c4 = ncfile.findVariable("names2");
-      Assert.assertNotNull(c4);
+      assertThat(c4).isNotNull();
       try {
         tA = c4.read();
       } catch (IOException e) {
-        assert (false);
+        fail();
       }
-      assert (tA instanceof ArrayChar);
+      assertThat(tA).isInstanceOf(ArrayChar.class);
       ArrayChar ac4 = (ArrayChar) tA;
 
-      assert (ac4.getString(0).equals("0 pairs of ladies stockings!"));
-      assert (ac4.getString(1).equals("1 pair of ladies stockings!"));
-      assert (ac4.getString(2).equals("2 pairs of ladies stockings!"));
+      assertThat(ac4.getString(0).equals("0 pairs of ladies stockings!"));
+      assertThat(ac4.getString(1).equals("1 pair of ladies stockings!"));
+      assertThat(ac4.getString(2).equals("2 pairs of ladies stockings!"));
     }
   }
 
   @Test
   public void testNC3WriteExisting() throws IOException, InvalidRangeException {
-    try (NetcdfFormatUpdater writer = NetcdfFormatUpdater.openExisting(writerLocation).build()) {
+    try (NetcdfFormatWriter writer = NetcdfFormatWriter.openExisting(writerLocation).build()) {
       Variable v = writer.findVariable("temperature");
-      Assert.assertNotNull(v);
+      assertThat(v).isNotNull();
       int[] shape = v.getShape();
       ArrayDouble A = new ArrayDouble.D2(shape[0], shape[1]);
       int i, j;
@@ -332,15 +345,15 @@ public class TestWrite {
         writer.write(v, origin, A);
       } catch (IOException e) {
         System.err.println("ERROR writing file");
-        assert (false);
+        fail();
       } catch (InvalidRangeException e) {
         e.printStackTrace();
-        assert (false);
+        fail();
       }
 
       // write char variable
       v = writer.findVariable("svar");
-      Assert.assertNotNull(v);
+      assertThat(v).isNotNull();
       shape = v.getShape();
       int[] origin1 = new int[1];
       ArrayChar ac = new ArrayChar.D1(shape[0]);
@@ -354,15 +367,15 @@ public class TestWrite {
         writer.write(v, origin1, ac);
       } catch (IOException e) {
         System.err.println("ERROR writing Achar");
-        assert (false);
+        fail();
       } catch (InvalidRangeException e) {
         e.printStackTrace();
-        assert (false);
+        fail();
       }
 
       // write char variable
       v = writer.findVariable("bvar");
-      Assert.assertNotNull(v);
+      assertThat(v);
       shape = v.getShape();
       int len = shape[0];
       ArrayByte.D1 barray = new ArrayByte.D1(len, false);
@@ -375,15 +388,15 @@ public class TestWrite {
         writer.write("bvar", barray);
       } catch (IOException e) {
         System.err.println("ERROR writing bvar");
-        assert (false);
+        fail();
       } catch (InvalidRangeException e) {
         e.printStackTrace();
-        assert (false);
+        fail();
       }
 
       // write char variable as String
       v = writer.findVariable("svar2");
-      Assert.assertNotNull(v);
+      assertThat(v);
       shape = v.getShape();
       len = shape[0];
       try {
@@ -392,15 +405,15 @@ public class TestWrite {
         writer.write(v, ac2);
       } catch (IOException e) {
         System.err.println("ERROR writing Achar2");
-        assert (false);
+        fail();
       } catch (InvalidRangeException e) {
         e.printStackTrace();
-        assert (false);
+        fail();
       }
 
       // write char variable using writeStringDataToChar
       v = writer.findVariable("names");
-      Assert.assertNotNull(v);
+      assertThat(v);
       shape = new int[] {v.getDimension(0).getLength()};
       Array data = Array.factory(DataType.STRING, shape);
       ima = data.getIndex();
@@ -411,7 +424,7 @@ public class TestWrite {
 
       // write another String array
       v = writer.findVariable("names2");
-      Assert.assertNotNull(v);
+      assertThat(v);
       shape = v.getShape();
       ArrayChar ac2 = new ArrayChar.D2(shape[0], shape[1]);
       ac2.setString(0, "0 pairs of ladies stockings!");
@@ -424,14 +437,14 @@ public class TestWrite {
         ArrayDouble.D0 datas = new ArrayDouble.D0();
         datas.set(222.333);
         v = writer.findVariable("scalar");
-        Assert.assertNotNull(v);
+        assertThat(v);
         writer.write(v, datas);
       } catch (IOException e) {
         System.err.println("ERROR writing scalar");
-        assert (false);
+        fail();
       } catch (InvalidRangeException e) {
         e.printStackTrace();
-        assert (false);
+        fail();
       }
     }
   }
@@ -442,17 +455,17 @@ public class TestWrite {
     try (NetcdfFile ncfile = NetcdfFiles.open(writerLocation)) {
       // read entire array
       Variable temp = ncfile.findVariable("temperature");
-      assert (null != temp);
+      assertThat(temp).isNotNull();
 
       Array tA = temp.read();
-      assert (tA.getRank() == 2);
+      assertThat(tA.getRank()).isEqualTo(2);
 
       Index ima = tA.getIndex();
       int[] shape = tA.getShape();
 
       for (int i = 0; i < shape[0]; i++) {
         for (int j = 0; j < shape[1]; j++) {
-          assert (tA.getDouble(ima.set(i, j)) == (double) (i * 1000000 + j * 1000));
+          assertThat(tA.getDouble(ima.set(i, j))).isEqualTo(i * 1000000 + j * 1000);
         }
       }
 
@@ -465,172 +478,84 @@ public class TestWrite {
         tA = temp.read(origin2, shape2);
       } catch (InvalidRangeException e) {
         System.err.println("ERROR reading file " + e);
-        assert (false);
+        fail();
         return;
       } catch (IOException e) {
         System.err.println("ERROR reading file");
-        assert (false);
+        fail();
         return;
       }
-      assert (tA.getRank() == 2);
+      assertThat(tA.getRank()).isEqualTo(2);
 
       for (int j = 0; j < shape2[1]; j++) {
-        assert (tA.getDouble(ima.set(0, j)) == (double) (j * 1000));
+        assertThat(tA.getDouble(ima.set(0, j))).isEqualTo(j * 1000);
       }
 
       // rank reduction
       Array Areduce = tA.reduce();
       Index ima2 = Areduce.getIndex();
-      assert (Areduce.getRank() == 1);
+      assertThat(Areduce.getRank()).isEqualTo(1);
 
       for (int j = 0; j < shape2[1]; j++) {
-        assert (Areduce.getDouble(ima2.set(j)) == (double) (j * 1000));
+        assertThat(Areduce.getDouble(ima2.set(j))).isEqualTo(j * 1000);
       }
 
       // read char variable
       Variable c = ncfile.findVariable("svar");
-      Assert.assertNotNull(c);
+      assertThat(c);
       try {
         tA = c.read();
       } catch (IOException e) {
-        assert (false);
+        fail();
       }
-      assert (tA instanceof ArrayChar);
+      assertThat(tA).isInstanceOf(ArrayChar.class);
       ArrayChar achar = (ArrayChar) tA;
       String sval = achar.getString(achar.getIndex());
-      assert sval.equals("Testing 1-2-3") : sval;
+      assertThat(sval).isEqualTo("Testing 1-2-3");
       // System.out.println( "val = "+ val);
 
       // read char variable 2
       Variable c2 = ncfile.findVariable("svar2");
-      Assert.assertNotNull(c2);
+      assertThat(c2);
       try {
         tA = c2.read();
       } catch (IOException e) {
-        assert (false);
+        fail();
       }
-      assert (tA instanceof ArrayChar);
+      assertThat(tA).isInstanceOf(ArrayChar.class);
       ArrayChar ac2 = (ArrayChar) tA;
-      assert (ac2.getString().equals("Two pairs of ladies stockings!"));
+      assertThat(ac2.getString()).isEqualTo("Two pairs of ladies stockings!");
 
       // read String Array
       Variable c3 = ncfile.findVariable("names");
-      Assert.assertNotNull(c3);
+      assertThat(c3);
       try {
         tA = c3.read();
       } catch (IOException e) {
-        assert (false);
+        fail();
       }
-      assert (tA instanceof ArrayChar);
+      assertThat(tA).isInstanceOf(ArrayChar.class);
       ArrayChar ac3 = (ArrayChar) tA;
       ima = ac3.getIndex();
 
-      assert (ac3.getString(ima.set(0)).equals("No pairs of ladies stockings!"));
-      assert (ac3.getString(ima.set(1)).equals("One pair of ladies stockings!"));
-      assert (ac3.getString(ima.set(2)).equals("Two pairs of ladies stockings!"));
+      assertThat(ac3.getString(ima.set(0))).isEqualTo("No pairs of ladies stockings!");
+      assertThat(ac3.getString(ima.set(1))).isEqualTo("One pair of ladies stockings!");
+      assertThat(ac3.getString(ima.set(2))).isEqualTo("Two pairs of ladies stockings!");
 
       // read String Array - 2
       Variable c4 = ncfile.findVariable("names2");
-      Assert.assertNotNull(c4);
+      assertThat(c4);
       try {
         tA = c4.read();
       } catch (IOException e) {
-        assert (false);
+        fail();
       }
-      assert (tA instanceof ArrayChar);
+      assertThat(tA).isInstanceOf(ArrayChar.class);
       ArrayChar ac4 = (ArrayChar) tA;
 
-      assert (ac4.getString(0).equals("0 pairs of ladies stockings!"));
-      assert (ac4.getString(1).equals("1 pair of ladies stockings!"));
-      assert (ac4.getString(2).equals("2 pairs of ladies stockings!"));
-    }
-  }
-
-  @Test
-  public void testWriteRecordOneAtaTime() throws IOException, InvalidRangeException {
-    String filename = tempFolder.newFile().getAbsolutePath();
-
-    NetcdfFormatWriter.Builder writerb = NetcdfFormatWriter.createNewNetcdf3(filename);
-    // define dimensions, including unlimited
-    Dimension latDim = writerb.addDimension("lat", 3);
-    Dimension lonDim = writerb.addDimension("lon", 4);
-    writerb.addDimension(Dimension.builder().setName("time").setIsUnlimited(true).build());
-
-    // define Variables
-    writerb.addVariable("lat", DataType.FLOAT, "lat").addAttribute(new Attribute("units", "degrees_north"));
-    writerb.addVariable("lon", DataType.FLOAT, "lon").addAttribute(new Attribute("units", "degrees_east"));
-    writerb.addVariable("rh", DataType.INT, "time lat lon")
-        .addAttribute(new Attribute("long_name", "relative humidity")).addAttribute(new Attribute("units", "percent"));
-    writerb.addVariable("T", DataType.DOUBLE, "time lat lon")
-        .addAttribute(new Attribute("long_name", "surface temperature")).addAttribute(new Attribute("units", "degC"));
-    writerb.addVariable("time", DataType.INT, "time").addAttribute(new Attribute("units", "hours since 1990-01-01"));
-
-    try (NetcdfFormatWriter writer = writerb.build()) {
-      // write out the non-record variables
-      writer.write("lat", Array.makeFromJavaArray(new float[] {41, 40, 39}, false));
-      writer.write("lon", Array.makeFromJavaArray(new float[] {-109, -107, -105, -103}, false));
-
-      //// heres where we write the record variables
-      // different ways to create the data arrays.
-      // Note the outer dimension has shape 1, since we will write one record at a time
-      ArrayInt rhData = new ArrayInt.D3(1, latDim.getLength(), lonDim.getLength(), false);
-      ArrayDouble.D3 tempData = new ArrayDouble.D3(1, latDim.getLength(), lonDim.getLength());
-      Array timeData = Array.factory(DataType.INT, new int[] {1});
-      Index ima = rhData.getIndex();
-
-      int[] origin = new int[] {0, 0, 0};
-      int[] time_origin = new int[] {0};
-
-      // loop over each record
-      for (int timeIdx = 0; timeIdx < 10; timeIdx++) {
-        // make up some data for this record, using different ways to fill the data arrays.
-        timeData.setInt(timeData.getIndex(), timeIdx * 12);
-
-        for (int latIdx = 0; latIdx < latDim.getLength(); latIdx++) {
-          for (int lonIdx = 0; lonIdx < lonDim.getLength(); lonIdx++) {
-            rhData.setInt(ima.set(0, latIdx, lonIdx), timeIdx * latIdx * lonIdx);
-            tempData.set(0, latIdx, lonIdx, timeIdx * latIdx * lonIdx / 3.14159);
-          }
-        }
-        // write the data out for one record
-        // set the origin here
-        time_origin[0] = timeIdx;
-        origin[0] = timeIdx;
-        writer.write("rh", origin, rhData);
-        writer.write("T", origin, tempData);
-        writer.write("time", time_origin, timeData);
-      } // loop over record
-    }
-  }
-
-  // fix for bug introduced 2/9/10, reported by Christian Ward-Garrison cwardgar@usgs.gov
-  @Test
-  public void testRecordSizeBug() throws IOException, InvalidRangeException {
-    String filename = tempFolder.newFile().getAbsolutePath();
-    int size = 10;
-    Array timeDataAll = Array.factory(DataType.INT, new int[] {size});
-
-    NetcdfFormatWriter.Builder writerb = NetcdfFormatWriter.createNewNetcdf3(filename).setFill(false);
-    writerb.addUnlimitedDimension("time");
-    writerb.addVariable("time", DataType.INT, "time").addAttribute(new Attribute("units", "hours since 1990-01-01"));
-
-    try (NetcdfFormatWriter writer = writerb.build()) {
-      IndexIterator iter = timeDataAll.getIndexIterator();
-      Array timeData = Array.factory(DataType.INT, new int[] {1});
-      int[] time_origin = new int[] {0};
-
-      for (int time = 0; time < size; time++) {
-        int val = time * 12;
-        iter.setIntNext(val);
-        timeData.setInt(timeData.getIndex(), val);
-        time_origin[0] = time;
-        writer.write("time", time_origin, timeData);
-      }
-    }
-
-    try (NetcdfFile ncFile = NetcdfFiles.open(filename)) {
-      Array result = ncFile.readSection("time");
-      Assert.assertEquals("0 12 24 36 48 60 72 84 96 108", result.toString().trim());
+      assertThat(ac4.getString(0)).isEqualTo("0 pairs of ladies stockings!");
+      assertThat(ac4.getString(1)).isEqualTo("1 pair of ladies stockings!");
+      assertThat(ac4.getString(2)).isEqualTo("2 pairs of ladies stockings!");
     }
   }
 }
