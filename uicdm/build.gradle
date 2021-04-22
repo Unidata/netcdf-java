@@ -10,17 +10,12 @@ dependencies {
 
   // todo: a lot of these could probably be runtimeOnly
   compile project(':cdm:cdm-core')
-  // compile project(':cdm:cdm-fmrc')
-  // compile project(':cdm:cdm-image')    // things that depend on java.awt
-  // compile project(':cdm:cdm-misc')     // misc iosps
-  // compile project(':cdm:cdm-radial')   // radial data
   compile project(':bufr')
   compile project(':grib')
   compile project(':httpservices')
   runtime project(':netcdf4')
-  // compile project(':opendap')
+  compile project(':opendap')
   compile project(':uibase')
-  // compile project(':visad:cdm-mcidas') // For Gempak IOSPs.
   compile project(':waterml')
 
   // Used by NcmlEditor. Abandoned, no updates since 2013. https://sourceforge.net/projects/bounce/

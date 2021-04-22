@@ -1,7 +1,0 @@
-description = 'Visad based IOSPs.'
-ext.title = 'Visad based IOSPs'
-
-subprojects {
-  // TODO: Give the subprojects real titles.
-  ext.title = "visad: $name"
-}
