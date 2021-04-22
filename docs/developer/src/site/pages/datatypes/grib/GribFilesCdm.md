@@ -17,7 +17,7 @@ A THREDDS Data Server (TDS) can make GRIB datasets remotely accessible, e.g. thr
 The CDM can only read GRIB files, it cannot write them.
 It can, however, rewrite GRIB into netCDF using CF Conventions.
 Before version 4.3.13, it can only write netCDF-3 format files, which are typically 4-20 times larger than GRIB.
-As of 4.3.13, the CDM can [write to netCDF-4](netcdf4_c_library.html) format, with file sizes comparable to GRIB, typically within a factor of two.
+As of 4.3.13, the CDM can [write to netCDF-4](../userguide/netcdf4_c_library.html){:target="_blank"} format, with file sizes comparable to GRIB, typically within a factor of two.
 
 A GRIB collection must follow these _homogeneity constraints_:
 
@@ -112,7 +112,7 @@ If you do need to move the data files, its best to recreate the Collection index
 
 ### Creating a GRIB Collection Index
 
-You can use a [command line tool](cdm_utility_programs.html) that uses a complete [GRIB `<featureCollection>` element](grib_feature_collections_ref.html) to define the GRIB Collection, and generates the CDM index (ncx4) file.
+You can use a [command line tool](../userguide/cdm_utility_programs.html){:target="_blank"} that uses a complete [GRIB `<featureCollection>` element](grib_feature_collections_ref.html) to define the GRIB Collection, and generates the CDM index (ncx4) file.
 
 For simple cases, you can create the ncx4 file based on a collection spec using ToolsUI: `IOSP/GRIB1(2)/GribCollection`.
 Enter the collection spec and hit Enter.

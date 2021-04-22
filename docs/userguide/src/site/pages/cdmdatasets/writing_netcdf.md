@@ -10,7 +10,7 @@ toc: false
 
 You can programmatically create, edit, and add data to *netCDF-3* and *netCDF-4* files, using `NetcdfFormatWriter`.
 To copy an existing CDM dataset, you can use the [CDM nccopy application](cdm_utility_programs.html). 
-By combining `nccopy` and NcML, you can copy just parts of an existing dataset, as well as [make modifications to it with NcML](ncml_overview.html).
+By combining `nccopy` and NcML, you can copy just parts of an existing dataset, as well as [make modifications to it with NcML](ncml/indexhtml){:target="_blank"}.
 
 ### Requirements to Write netCDF files
 CDM version 4.3 and above supports writing netCDF files. Writing netCDF-3 files is included in the core netCDF-Java API. 

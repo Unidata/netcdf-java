@@ -12,10 +12,10 @@ The overarching goal of Unidata's Thematic Real-time Environmental Distributed D
 
 ## What is netCDF-Java?
 
-The netCDF-Java library implements a [Common Data Model (CDM)](common_data_model_overview.html){:target="_blank"}, a generalization of the netCDF, OpenDAP and HDF5 data models.
+The netCDF-Java library implements a [Common Data Model (CDM)](../cdm/index.html){:target="_blank"}, a generalization of the netCDF, OpenDAP and HDF5 data models.
 The netCDF-Java library is a 100% Java framework for _reading_ netCDF and other file formats into the CDM, as well as _writing_ to the netCDF-3 file format.
 Writing to the netCDF-4 file format requires installing the [netCDF C library](netcdf4_c_library.html).
-The netCDF-Java library also implements [NcML](ncml_overview.html){:target="_blank"}, which allows you to add metadata to CDM datasets, as well as to create virtual datasets through aggregation.
+The netCDF-Java library also implements [NcML](../ncml/index.html){:target="_blank"}, which allows you to add metadata to CDM datasets, as well as to create virtual datasets through aggregation.
 The [THREDDS Data Server (TDS)](https://www.unidata.ucar.edu/software/thredds/current/tds/){:target="_blank"} is built on top of the netCDF-Java library.
 
 NetCDF-Java is Free and Open Source Software, and is hosted on [GitHub](https://github.com/unidata/netcdf-java){:target="_blank"}.

@@ -1,7 +1,7 @@
---
+---
 title: Forecast Model Run Collection Aggregation
 last_updated: 2020-04-18
-sidebar: netcdfJavaTutorial_sidebar
+sidebar: ncml_sidebar
 toc: false
 permalink: fmrc_ref.html
 ---

@@ -223,7 +223,7 @@ The `setSPobject` and `getSPobject` methods on the `Variable` are for the exclus
 ~~~
  
 ### Adding Coordinate System Information
-Adding [coordinate system](common_data_model_overview.html) information is the single most useful thing you can do to your datasets, 
+Adding [coordinate system](cdm/index.html){:target="_blank"} information is the single most useful thing you can do to your datasets, 
 to make them accessible to other programmers. As the IOSP writer, you are in the best position to understand the data in the file and 
 correctly interpret it. You should, in fact, understand what the coordinate systems are at the same time you are deciding what the 
 `Dimension`, `Variables`, and `Attribute` objects are.

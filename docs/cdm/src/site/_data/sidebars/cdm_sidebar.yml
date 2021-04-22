@@ -23,7 +23,7 @@ entries:
     folderitems:
 
     - title: The Common Data Model
-      url: /common_data_model_overview.html
+      url: /index.html
       output: web, pdf
 
   - title: NetCDF mapping

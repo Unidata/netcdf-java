@@ -8,38 +8,44 @@
 
 # Documentation version menu
 topnav_docvermenu:
-- title: Version
-  id: docmenu
-  folderitems:
-    - title: Menu Loading...
-      url:
-      id: remove
+  - title: Version
+    id: docmenu
+    folderitems:
+      - title: Menu Loading...
+        url:
+        id: remove
 
 #Topnav dropdowns
 topnav_dropdowns:
-- title: Topnav dropdowns
-  folders:
-    - title: THREDDS Source
-      folderitems:
-        - title: netCDF-Java Github Repo
-          external_url: https://github.com/Unidata/netcdf-java
-        - title: THREDDS Data Server Github Repo
-          external_url: https://github.com/Unidata/tds
-        - title: Rosetta Github Repo
-          external_url: https://github.com/Unidata/Rosetta
-        - title: Siphon Github Repo
-          external_url: https://github.com/Unidata/siphon
+  - title: Topnav dropdowns
+    folders:
+      - title: THREDDS Projects
+        folderitems:
+          - title: THREDDS Data Server
+            external_url: https://docs.unidata.ucar.edu/tds/5.0/userguide/index.html
+          - title: Rosetta
+            external_url: https://www.unidata.ucar.edu/software/rosetta/docs/
+          - title: Siphon
+            external_url: https://unidata.github.io/siphon/latest/
 
-    - title: Javadocs
-      folderitems:
-        - title: netCDF-Java Public Javadocs
-          external_url: ../javadoc/
+      - title: netCDF-Java Documentation
+        folderitems:
+          - title: User guide
+            external_url: https://docs.unidata.ucar.edu/netcdf-java/current/userguide/index.html
+          - title: Developer guide
+            external_url: https://docs.unidata.ucar.edu/netcdf-java/current/developer/index.html
+          - title: NcML
+            external_url: https://docs.unidata.ucar.edu/netcdf-java/2.2/ncml/index.html
+          - title: CDM
+            external_url: https://docs.unidata.ucar.edu/netcdf-java/4.0/cdm/index.html
 
-    - title: External Docs
-      folderitems:
-        - title: THREDDS Data Server
-          external_url: https://docs.unidata.ucar.edu/tds/5.0/userguide/index.html
-        - title: Rosetta
-          external_url: https://www.unidata.ucar.edu/software/rosetta/docs/
-        - title: Siphon
-          external_url: https://unidata.github.io/siphon/latest/
+      - title: Find it on GitHub
+        folderitems:
+          - title: netCDF-Java
+            external_url: https://github.com/Unidata/netcdf-java
+          - title: THREDDS Data Server
+            external_url: https://github.com/Unidata/tds
+          - title: Rosetta
+            external_url: https://github.com/Unidata/Rosetta
+          - title: Siphon
+            external_url: https://github.com/Unidata/siphon

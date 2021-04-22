@@ -75,7 +75,7 @@ ucar.nc2.grib.grib1.tables.Grib1ParamTables.addParameterTable(int center, int su
 ~~~
 
 This registers a single table for the given center/subcenter/version.
-See [GribTables](grib_tables.html) for more information about parameter tables.
+See [GribTables](../developer/grib_tables.html){:target="_blank"} for more information about parameter tables.
 *Note:* GRIB2 table handling is still being developed.
 
 ### Register a GRIB1 lookup table (4.3):
@@ -84,7 +84,7 @@ ucar.nc2.grib.grib1.tables.Grib1ParamTables.addParameterTableLookup(String looku
 ~~~
 
 This registers one or more tables for different center/subcenter/versions.
-See [GribTables](grib_tables.html) for more information about lookup tables.
+See [GribTables](../developer/grib_tables.html){:target="_blank"} for more information about lookup tables.
 
 *NOTE:* GRIB2 table handling is still being developed.
 
@@ -93,7 +93,7 @@ See [GribTables](grib_tables.html) for more information about lookup tables.
 ucar.nc2.iosp.bufr.tables.BufrTables.addLookupFile( String filename) throws throws FileNotFoundException;
 ~~~
 
-The file must be a [BUFR table lookup file](bufr_tables.html).
+The file must be a [BUFR table lookup file](../developer/bufr_tables.html){:target="_blank"}.
 
 ## Runtime Configuration
 
@@ -124,11 +124,11 @@ The configuration file looks like this:
 2. Loads a `CoordSysBuilderIF` with the given class name, which looks for the given `Convention` attribute value.
 3. Loads a `CoordTransBuilderIF` with the given class name, which looks for the given `transformName` in the dataset. The type must be vertical or projection.
 4. Loads a `FeatureDatasetFactory` with the given class name which open `FeatureDatasets` of the given `featureType`.
-5. Load a [GRIB-1 parameter table](grib_tables.html) (as of version 4.3)
-6. Load a [GRIB-1 parameter table lookup](grib_tables.html) (as of version 4.3)
-7. Load a [BUFR table lookup](bufr_tables.html) file.
-8. Turn [strict GRIB1 table handling](grib_tables.html#strict) off.
-9. Configure how the [NetCDF-4 C library](netcdf4_c_library.html) is discovered and used.
+5. Load a [GRIB-1 parameter table](../developer/grib_tables.html){:target="_blank"} (as of version 4.3)
+6. Load a [GRIB-1 parameter table lookup](../developer/grib_tables.html){:target="_blank"} (as of version 4.3)
+7. Load a [BUFR table lookup](../developer/bufr_tables.html){:target="_blank"} file.
+8. Turn [strict GRIB1 table handling](../developer/grib_tables.html#strict){:target="_blank"} off.
+9. Configure how the [NetCDF-4 C library](../developer/netcdf4_c_library.html) is discovered and used.
     * `libraryPath`: The directory in which the native library is installed.
     * `libraryName`: The name of the native library. This will be used to locate the proper `.DLL`, `.SO`, or `.DYLIB` file within the `libraryPath` directory.
     * `useForReading`: By default, the native library is only used for writing NetCDF-4 files; a pure-Java layer is responsible for reading them. 

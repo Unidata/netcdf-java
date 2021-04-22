@@ -17,7 +17,7 @@ The **Reference URL**(s) in this table are informational, and may change as need
 
 To support this functionality, `getFileTypeId()`, `getFileTypeVersion()`, and `getFileTypeDescription()` methods have been added to the IOServiceProvider interface as of version 4.0.46.
 You will need to add these methods to your IOServiceProvider implementations. To use an IOSP implementation, you must include its module in your netCDF-java build.
-For more information on including modules in your build, see [here](using_netcdf_java_artifacts.html).
+For more information on including modules in your build, see [here](../userguide/using_netcdf_java_artifacts.html){:target="_blank"}.
 
 To register your format/IOServiceProvider, or to send corrections and additions to this table, please send email to <support-netcdf-java@unidata.ucar.edu>.
 

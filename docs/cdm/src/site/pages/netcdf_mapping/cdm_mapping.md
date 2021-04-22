@@ -1,9 +1,9 @@
---
+---
 title: CDM NetCDF mapping
 last_updated: 2018-10-23
 sidebar: cdm_sidebar
-toc: false
 permalink: cdm_netcdf_mapping.html
+toc: false
 ---
 
 ## Mapping between the CDM and NetCDF-4 Data Models
@@ -30,7 +30,7 @@ NetCDF-4 intentionally supports a simpler data model than HDF5, which means ther
 
 * A CDM array of Opaque may have a different length for each Opaque object. May have to read to find maximum length.
 * A CDM Structure may have member Variables that use shared dimensions. NetCDF4 / HDF5 does not support shared dimensions in Compound fields. If writing CDM to netCDF4, currently we just anonymize the shared dimensions.
-* A CDM Structure member Variables may have attributes. NetCDF4 / HDF5 does not support attributes on fields in Compound fields. The CDM uses [these conventions](netcdf_compound_attrs.html) for specifying attributes on compound fields.
+* A CDM Structure member Variables may have attributes. NetCDF4 / HDF5 does not support attributes on fields in Compound fields. The CDM uses [these conventions](../developer/netcdf_compound_attrs.html){:target="_blank"} for specifying attributes on compound fields.
 
 #### Type Definitions
 
@@ -113,13 +113,13 @@ could define ArrayRagged which maps to C multidim arrays.
 
 It is natural to map:
 
-~~~
+~~~java
  int data(x,y,*) -> int(*) data(x,y)
 ~~~
 
 but it doesn't generalize well to nested vlens. nc4 solution is to declare each type separately and chain them:
 
-~~~
+~~~java
  int(*) type1;
  type1(*) type2;
  type2 data(x,y);
@@ -127,7 +127,7 @@ but it doesn't generalize well to nested vlens. nc4 solution is to declare each 
 
 Array.isVariableLength(). IOSP might return ArrayInteger from int data(*). Needs to return ArrayObject for int data(3,*), with Array.isVariableLength() true.
 
-~~~
+~~~java
 int(*)     returns ArrayInt
 int(3,*)   returns ArrayObject(3) with ArrayInt(*) inside
 int(*,3)  returns Array(n,3), whatever n happens to be.
@@ -146,7 +146,7 @@ this is getting out of control
 
 3) attributes : n4 can be user defined types, cdm: 1 dim array of primitive or String.
 
-~~~
+~~~java
 netcdf tst_enums {
   types:
     ubyte enum Bradys {Mike = 8, Carol = 7, Greg = 6, Marsha = 5, Peter = 4, Jan = 3, Bobby = 2, Whats-her-face = 1, Alice = 0} ;

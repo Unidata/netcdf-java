@@ -1,9 +1,9 @@
 ---
 title: NcML Overview
 last_updated: 2020-04-06
-sidebar: netcdfJavaTutorial_sidebar
+sidebar: ncml_sidebar
 toc: false
-permalink: ncml_overview.html
+permalink: index.html
 ---
 
 ## Overview

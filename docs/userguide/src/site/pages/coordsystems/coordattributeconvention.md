@@ -8,7 +8,7 @@ toc: false
  
 {% include image.html file="coordsystems/CoordSys.png" alt="Coordinate Systems UML" caption="Coordinate Systems UML" %}
 
-For an overview, see: [CDM Object Model]( /common_data_model_overview.html). The Coordinate Axes for a Variable must use a subset of the Variables's dimensions.
+For an overview, see: [CDM Object Model](../cdm/index.html){:target="_blank"}. The Coordinate Axes for a Variable must use a subset of the Variables's dimensions.
 
 ## Goals of _Coordinate Attribute Convention
 

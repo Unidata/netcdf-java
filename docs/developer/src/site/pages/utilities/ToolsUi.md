@@ -73,7 +73,7 @@ The Writer tab takes a dataset in any format that NetCDF-Java can understand and
 * netcdf3c64
 * ncstream
 
-Note: to write to NetCDF-4, you must have the [C library loaded](netcdf4_c_library.html).
+Note: to write to NetCDF-4, you must have the [C library loaded](../userguide/netcdf4_c_library.html){:target="_blank"}.
 
 {% include image.html file="utilities/writer1.png" alt="Writer tab" caption="" %}
 
@@ -131,6 +131,6 @@ The difference is that when you select a dataset in the left window and then cli
 ## NcML
 
 When you open a dataset in the NcML tab, an NcML document containing all its metadata will be generated.
-From here, it’s easy to modify the dataset using the [powers of NcML](basic_ncml_tutorial.html) and write the document out to disk.
+From here, it’s easy to modify the dataset using the [powers of NcML](../ncml/basic_ncml_tutorial.html){:target="_blank"} and write the document out to disk.
 
 {% include image.html file="utilities/ncml1.png" alt="NcML tab" caption="" %}

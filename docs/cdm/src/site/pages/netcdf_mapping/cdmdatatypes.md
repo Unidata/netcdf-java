@@ -14,7 +14,7 @@ This document explains how CDM data types are mapped into Netcdf-Java objects.
 
 An <b>_Array_</b> contains the actual data for a Variable after it is read from the disk or network. Data access can be done in a general way through the method
 
-~~~
+~~~java
  Array data = Variable.read();
 ~~~
  
@@ -22,13 +22,13 @@ The one exception to this is <b>_Sequences_</b>, which must be accessed through 
 
 For Variables that are members of a Structure, data is accessed generally through the method
 
-~~~
+~~~java
     Array data = StructureData.getArray( memberName);
 ~~~
 
 When a Variable has a variable length dimension, <b>_Variable.isVariableLength()_</b> is true and a <b>_ArrayObject_</b> with the appropriate element type is returned. You cannot subset on the variable length dimension, all of it is always read. For example:
 
-~~~
+~~~java
 CDL:
   short levels(acqtime=10, *);
 
@@ -53,7 +53,7 @@ Java:
 
 You cannot use the older style <b>_read(origin, shape)_</b> interface:
 
-~~~
+~~~java
   // fail
   int[] origin = new int[] {0, 0};
   int[] size = new int[] {3, -1};
@@ -101,7 +101,7 @@ You may use static methods in <b>_ucar.ma2.DataType_</b> to convert one value at
 
 You may use this static method in <b>_ucar.ma2.MAMath_</b> to widen all the values in an Array:
 
-~~~
+~~~java
  public static Array convertUnsigned( Array unsigned);
 ~~~
 
@@ -109,7 +109,7 @@ Theres not much to do in a general way with unsigned longs, as there is no primi
 
 <b>_ArrayByte_</b>, <b>_ArrayShort_</b> and <b>_ArrayInt_</b> will widen an unsigned value when casting to wider type like float or double. For example, calling
 
-~~~
+~~~java
   data.getDouble()
 ~~~
 
@@ -133,7 +133,7 @@ The member data of a Structure is returned in a StructureData object. Since a St
 
 or type specific access:
 
-~~~
+~~~java
     StructureData.getScalarXXX( memberName);
     StructureData.getJavaArrayXXX( memberName);
 ~~~
@@ -142,7 +142,7 @@ For nested Structure and Sequences (that is, Structure members that are themselv
 
 StructureData data = StructureData.getScalarStructure( memberName);
 
-~~~
+~~~java
   ArrayStructure data = StructureData.getArrayStructure( memberName);
   ArraySequence data = StructureData.getArraySequence( memberName);
 ~~~
@@ -157,7 +157,7 @@ An enum type is an mapping of integer values to Strings. The mapping itself is s
 
 A enumeration Variable will have DataType <b>_ENUM1_</b>, <b>_ENUM2_</b>, or <b>_ENUM4_</b>, depending on whether the the enum value is stored in 1, 2, or 4 bytes. The raw values are returned in a byte, short, or integer array. One can convert these raw values to the corresponding String _enumeration values_ in a way that does not depend on their internal representation, for example:
 
-~~~
+~~~java
  if (var.getDataType().isEnum()) {
     Array rawValues = var.read();
     Array enumValues = Array.factory(DataType.STRING, rawValues.getShape());

@@ -48,17 +48,17 @@ entries:
         - title: grib
           output: web, pdf
           subfolderitems:
-            - - title: GRIB Files in CDM
-                url: /grib_files_cdm.html
-                output: web, pdf
+            - title: GRIB Files in CDM
+              url: /grib_files_cdm.html
+              output: web, pdf
 
-              - title: GRIB Tables in CDM
-                url: /grib_tables.html
-                output: web, pdf
+            - title: GRIB Tables in CDM
+              url: /grib_tables.html
+              output: web, pdf
 
-              - title: GRIB Collection Specification
-                url: /grib_feature_collections_ref.html
-                output: web, pdf
+            - title: GRIB Collection Specification
+              url: /grib_feature_collections_ref.html
+              output: web, pdf
 
   - title: Properties
     output: web, pdf
@@ -69,7 +69,7 @@ entries:
       output: web, pdf
 
     - title: NetCDF4 Compound Attributes
-      url: /cdm_netcdf_mapping.html
+      url: /netcdf_compound_attrs.html
       output: web, pdf
 
     - title: CF DSG Encoding Table

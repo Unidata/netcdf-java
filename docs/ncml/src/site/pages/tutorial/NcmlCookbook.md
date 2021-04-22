@@ -1,7 +1,7 @@
 ---
 title: NcML Cookbook
 last_updated: 2018-10-09
-sidebar: netcdfJavaTutorial_sidebar
+sidebar: ncml_sidebar
 toc: false
 permalink: ncml_cookbook.html
 ---
@@ -149,7 +149,7 @@ Create **union** of all datasets ending in `mean.nc` located in the directory `n
 </netcdf>
 ~~~
 
-See [Dataset URLs](dataset_urls.html) for more information on the location attribute.
+See [Dataset URLs](../userguide/dataset_urls.html){:target="_blank"} for more information on the location attribute.
 
 ## JoinNew Aggregation
 

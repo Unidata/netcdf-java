@@ -20,7 +20,7 @@ This document summarizes the various encodings. To transform between them, trans
 * [CDL](#cdl)
 * [NcML](#ncml)
 * [CDM](#cdm)
-* OPeNDAP
+* [OPeNDAP](#opendap)
 
 ## netCDF-3 and netCDF-4 file format Identifiers
 
@@ -42,9 +42,7 @@ which says:
 * Subsequent characters may be anything except control characters, forward slash '/', and del. A UTF-8 multibyte encoding always has the high order bit set. So the excluded byte values are 0-31, 47, and 127.
 * Names that have trailing space characters are also not permitted
 
-Also See:
-
-<https://www.unidata.ucar.edu/software/netcdf/docs/file_format_specifications.html>
+Also see: <https://www.unidata.ucar.edu/software/netcdf/docs/file_format_specifications.html>
 
 ## CDL
 
@@ -65,7 +63,7 @@ idescaped =[ !"#$%&'()*,:;<=>?\[\\\]^`{|}~]
 
 ## NcML
 
-An [NcML (netCDF Markup Language)](ncml_overview.html) document uses [standard XML encoding and escaping](https://www.w3.org/TR/xml/#charsets){:target="_blank"}.
+An [NcML (netCDF Markup Language)](../ncml/ncml_overview.html){:target="_blank"} document uses [standard XML encoding and escaping](https://www.w3.org/TR/xml/#charsets){:target="_blank"}.
 
 The chars `&`, `<`, `>` must be replaced by these [entity references](https://en.wikipedia.org/wiki/XML#Entity_references){:target="_blank"}: `&amp;`, `&lt;`, `&gt;`.
 In some places the single and double quote must be replaced by `&apos;` and `&quot;`, respectively.

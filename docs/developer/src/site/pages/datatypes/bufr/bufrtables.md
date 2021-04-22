@@ -65,5 +65,5 @@ A _standard table_ is a BUFR parameter table that is automatically used by the C
 ###  Adding a user-defined standard table map
 A user can programmatically add another lookup table by calling ucar.nc2.iosp.bufr.tables.BufrTables.addLookupFile(). It must be in the same csv format as above. It will be searched first.
 
-This can also be done through the [runtime configuration](runtime_loading.html) XML file.
+This can also be done through the [runtime configuration](../userguide/runtime_loading.html){:target="_blank"} XML file.
 

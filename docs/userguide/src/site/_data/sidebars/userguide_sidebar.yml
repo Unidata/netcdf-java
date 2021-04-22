@@ -104,7 +104,7 @@ entries:
   - title: Writing an I/O Service Provider
     output: web, pdf
     folderitems:
-    - title: Implementing an IOSP - overview
+    - title: Writing an IOSP - overview
       url: /writing_iosp.html
       output: web, pdf
 

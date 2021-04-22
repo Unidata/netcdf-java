@@ -29,7 +29,7 @@ you only have to implement a few methods:
 {{ rmd | markdownify }}
 
 You must define your file type and assign your IOSP a unique id with the `getFileTypeId`, `getFileTypeDescription`, and 
-`getFileTypeDescription` methods. See the [CDM File Types documentation](file_types.html) for more information.
+`getFileTypeDescription` methods. See the [CDM File Types documentation](../developer/file_types.html){:target="_blank"} for more information.
 
 *Note:* As of netCDF-Java version 5, IOSPs utilize a Builder design pattern to create immutable `NetcdfFile` objects. 
 The Builder pattern replaces `open` and `close` with `build` and `buildFinish`. The `isBuilder` method indicates whether an IOSP is 

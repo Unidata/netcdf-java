@@ -5,9 +5,14 @@ sidebar: cdm_sidebar
 permalink: index.html
 toc: false
 ---
-## Unidiata's Common Data Model Version 4file formats
+## Unidiata's Common Data Model (Version 4)
 
-Unidata’s Common Data Model (CDM) is an abstract <a href="https://en.wikipedia.org/wiki/Data_model" target="_blank">data model</a> for scientific datasets. It merges the <a href="https://www.unidata.ucar.edu/software/netcdf/" target="_blank">netCDF</a>, <a href="http://www.opendap.org" target="_blank">OPeNDAP</a>, and <a href="https://portal.hdfgroup.org/display/support/" target="_blank">HDF5</a> data models to create a common API for many types of scientific data. The NetCDF Java library is an implementation of the CDM which can read many file types. Unidata’s Common Data Model (CDM) is an abstract <a href="https://en.wikipedia.org/wiki/Data_model" target="_blank">data model</a> for scientific datasets. It merges the <a href="https://www.unidata.ucar.edu/software/netcdf/" target="_blank">netCDF</a>, <a href="http://www.opendap.org" target="_blank">OPeNDAP</a>, and <a href="https://portal.hdfgroup.org/display/support/" target="_blank">HDF5</a> data models to create a common API for many types of scientific data. The NetCDF Java library is an implementation of the CDM which can read many [file formats](file_types.html) besides netCDF. We call these CDM files, a shorthand for files that can be read by the NetCDF Java library and accessed through the CDM data model.
+Unidata’s Common Data Model (CDM) is an abstract <a href="https://en.wikipedia.org/wiki/Data_model" target="_blank">data model</a> for scientific datasets. 
+It merges the <a href="https://www.unidata.ucar.edu/software/netcdf/" target="_blank">netCDF</a>, 
+<a href="http://www.opendap.org" target="_blank">OPeNDAP</a>, and <a href="https://portal.hdfgroup.org/display/support/" target="_blank">HDF5</a> 
+data models to create a common API for many types of scientific data. 
+The NetCDF Java library is an implementation of the CDM which can read many [file formats](../developer/file_types.html){:target="_blank"} besides netCDF. 
+We call these CDM files, a shorthand for files that can be read by the NetCDF Java library and accessed through the CDM data model.
 
 The Common Data Model has three layers, which build on top of each other to add successively richer semantics:
 
@@ -115,7 +120,7 @@ These are the rules which restrict which Variables can be used as Coordinate Axe
 2. <b>_Structures and nested Structures_</b>: When a variable is part of a Structure, the dimensions used by the parent Structure(s) are considered to be part of the nested Variable. Therefore, all dimensions used by the parent Structure(s) of a Coordinate Axis must be shared with the data variable.
 3. <b>_Variable length dimensions and Sequences_</b>: A variable length dimension is always a private (non-shared) dimension, and therefore cannot be used by a Coordinate Axis, except when the data variable and coordinate variable are in the same Structure. For example, a Sequence is a variable length array of Structures, and the following examples are legitimate uses of coordinate axes.
 
-~~~
+~~~java
 Structure {
   float lat;
   float lon;
@@ -147,7 +152,7 @@ Neither NetCDF, HDF5, or OPeNDAP have Coordinate Systems as part of their APIs a
 
 NetCDF has long had the convention of specifying a 1-dimensional CoordinateAxis with a coordinate variable, which is a Variable with the same name as its single dimension. This is a natural and elegant way to specify a 1-dimensional CoordinateAxis, since there is an automatic association of the Coordinate Variable with any Varaible that uses its dimension. Unfortunately there are not similarly elegant ways to specify a multidimensional CoordinateAxis, and so various attribute conventions have sprung up, that typically list the CoordinateAxis variables, for example the CF Conventions has:
 
-~~~
+~~~java
   float lat(y,x);
   float lon(y,x);
   float temperature(y,x);
@@ -163,9 +168,3 @@ The <b>_ucar.nc2.dataset_</b> layer reads various Conventions and extracts the C
 Scientific Feature Types are a way to categorize scientific data. The CDM Feature Type layer turns CDM datasets into collections of Feature Type objects, and allows a user to extract subsets of the Feature Types "in coordinate space" i.e. using spatial and temporal bounding boxes. In contrast, the CDM Data Access layer provides array index space subsetting, and the client application must know how to map array indices into coordinate values.
 
 With these Feature Types objects, mapping into other data models like ISO/OGC becomes possible.
-
-Feature Type definitions, APIU, and encodings are still being developed, so applications using these must be able to evolve along with the APIs.
-
-* [Feature Dataset API](feature_datasets.html)
-* [CDM Point Feature Types](pointfeature_ref.html)
-* {% include link_file.html file="CDMfeatures.doc" text="CDM Feature Types-draft" %}

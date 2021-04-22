@@ -1,7 +1,7 @@
 ---
 title: NcML Aggregation
 last_updated: 2018-04-02
-sidebar: netcdfJavaTutorial_sidebar
+sidebar: ncml_sidebar
 toc: false
 permalink: ncml_aggregation.html
 ---

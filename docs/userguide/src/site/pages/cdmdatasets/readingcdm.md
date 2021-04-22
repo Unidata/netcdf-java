@@ -12,7 +12,7 @@ Use the static `NetcdfFiles.open` methods to open a netCDF file, an HDF5 file, o
 Use [`NetcdfDataset.openFile`](netcdf_dataset.html) for more general reading capabilities, including **OPeNDAP**, **NcML**, and **THREDDS** datasets.
 
 Read access for some file types is provided through optional modules and must be included in your netCDF build as [artifacts](using_netcdf_java_artifacts.html).
-To see what module you will need to include for your data, read more about [CDM file types](file_types.html).
+To see what module you will need to include for your data, read more about [CDM file types](../developer/file_types.html){:target="_blank"}.
 
 ## Opening a NetcdfFile
 
@@ -24,7 +24,7 @@ A simple way to open a NetcdfFile:
 {{ rmd | markdownify }}
 
 The `NetcdfFiles` class will open local files for which an `IOServiceProvider` implementation exists.
-The current set of files that can be opened by the CDM are [here](file_types.html).
+The current set of files that can be opened by the CDM are [here](../developer/file_types.html){:target="_blank"}.
 
 When you open any of these files, the IOSP populates the `NetcdfFile` with a set of `Variable`, `Dimension`, `Attribute`, and possibly `Group`, `Structure`, and `EnumTypedef` objects that describe what data is available for reading from the file. 
 These objects are called the *structural metadata* of the dataset, and they are read into memory at the time the file is opened. The data itself is not read until requested.

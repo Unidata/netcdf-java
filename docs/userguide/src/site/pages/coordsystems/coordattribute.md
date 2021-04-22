@@ -10,7 +10,7 @@ toc: false
 {% include image.html file="coordsystems/CoordSys.png" alt="Coord Sys Object Model" caption="Coordinate Systems UML" %}
 
 ### See Also:
-* <a href="common_data_model_overview.html">CDM Object Model</a>
+* [CDM Object Model](../cdm/index.html){:target="_blank"}
 * _Coordinate Attribute <a href="coord_attr_conv.html">Reference</a>
 
 ### Contents
