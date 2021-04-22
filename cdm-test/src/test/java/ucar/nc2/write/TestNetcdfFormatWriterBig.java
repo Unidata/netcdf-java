@@ -10,6 +10,7 @@ package ucar.nc2.write;
 import com.google.common.base.Stopwatch;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.rules.TemporaryFolder;
 import ucar.array.ArrayType;
 import ucar.array.Section;
@@ -22,6 +23,7 @@ import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.NetcdfFileFormat;
+import ucar.unidata.util.test.category.NotPullRequest;
 
 import java.io.IOException;
 import java.util.Random;
@@ -32,6 +34,7 @@ import static org.junit.Assert.fail;
 import static ucar.nc2.NetcdfFile.IOSP_MESSAGE_GET_NETCDF_FILE_FORMAT;
 
 /** Test write a Netcdf-3 file larger than 2 Gb. Takes a few minutes, so leave out of cdm unit tests. */
+@Category(NotPullRequest.class)
 public class TestNetcdfFormatWriterBig {
   private static Random random = new Random();
 

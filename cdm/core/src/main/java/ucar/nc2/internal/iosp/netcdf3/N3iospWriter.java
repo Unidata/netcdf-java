@@ -44,7 +44,7 @@ public class N3iospWriter extends N3iosp implements IospFileWriter {
     this.iosp = null;
   }
 
-  // open existing only. mapbe problem is using N3iospWriter for both cases.
+  // open existing only.
   public N3iospWriter(IOServiceProvider iosp) {
     this.iosp = iosp;
   }
