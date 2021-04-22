@@ -32,6 +32,7 @@ public class TestCdmrProblem {
     String localFilename = TestDir.cdmUnitTestDir + "formats/netcdf4/multiDimscale.nc4";
     Path path = Paths.get(localFilename);
     doOne(path, "u");
+    doTwo(path);
   }
 
   @Test
@@ -53,6 +54,7 @@ public class TestCdmrProblem {
     String localFilename = TestDir.cdmLocalFromTestDataDir + "dataset/SimpleGeos/hru_soil_moist_vlen_3hru_5timestep.nc";
     Path path = Paths.get(localFilename);
     doOne(path);
+    doTwo(path);
   }
 
   public void doOne(Path path) throws Exception {

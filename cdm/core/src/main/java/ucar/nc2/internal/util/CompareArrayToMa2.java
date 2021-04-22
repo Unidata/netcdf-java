@@ -12,6 +12,7 @@ import java.util.Formatter;
 import java.util.Iterator;
 
 import ucar.array.Array;
+import ucar.array.ArrayType;
 import ucar.array.ArrayVlen;
 import ucar.ma2.ArraySequence;
 import ucar.ma2.DataType;
@@ -60,7 +61,7 @@ public class CompareArrayToMa2 {
       return false;
     }
 
-    if (vorg.getDataType() == DataType.SEQUENCE) {
+    if (vorg.getArrayType() == ArrayType.SEQUENCE) {
       System.out.printf("  read sequence %s %s%n", vorg.getDataType(), vorg.getShortName());
       Sequence s = (Sequence) vnew;
       StructureDataIterator orgSeq = s.getStructureIterator(-1);
