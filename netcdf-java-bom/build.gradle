@@ -14,21 +14,14 @@ dependencies {
   constraints {
     api project(':bufr')
     api project(':cdm:cdm-core')
-//    api project(':cdm:cdm-fmrc')
-//    api project(':cdm:cdm-image')
-//    api project(':cdm:cdm-misc')
-//    api project(':cdm:cdm-radial')
     api project(':cdm:cdm-s3')
     api project(':cdm-test-utils')
     api project(':grib')
     api project(':httpservices')
     api project(':netcdf4')
-//    api project(':opendap')
+    api project(':opendap')
     api project(':udunits')
     api project(':uibase')
-//    api project(':uicdm')
-//    api project(':visad:cdm-mcidas')
-//    api project(':visad:cdm-vis5d')
     api project(':waterml')
   }
 }

@@ -1,8 +1,0 @@
-ucar.nc2.iosp.misc.GtopoIosp
-ucar.nc2.iosp.misc.NmcObsLegacy
-ucar.nc2.iosp.misc.Uspln
-ucar.nc2.iosp.misc.Nldn
-ucar.nc2.iosp.noaa.Ghcnm2
-ucar.nc2.iosp.noaa.IgraPor
-ucar.nc2.iosp.dmsp.DMSPiosp
-ucar.nc2.iosp.grads.GradsBinaryGridServiceProvider
