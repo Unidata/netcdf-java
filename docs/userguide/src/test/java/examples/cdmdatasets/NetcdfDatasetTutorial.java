@@ -58,9 +58,8 @@ public class NetcdfDatasetTutorial {
    * @param add_offset
    * @return
    */
-  public static double unpackData(short packed_data_value, double scale_factor, double add_offset) {
-    double unpacked_data_value; /* DOCS-IGNORE */
-    unpacked_data_value = packed_data_value * scale_factor + add_offset;
+  public static double unpackData(float packed_data_value, double scale_factor, double add_offset) {
+    double unpacked_data_value = packed_data_value * scale_factor + add_offset;
     return unpacked_data_value; /* DOCS-IGNORE */
   }
 

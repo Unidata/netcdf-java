@@ -65,8 +65,9 @@ public class TestNetcdfDatasetTutorial {
       assertThat(scaledvar.attributes().hasAttribute("add_offset")).isTrue();
       double add_offset = scaledvar.attributes().findAttributeDouble("add_offset", 1.0);
 
+      Object packed_data = scaledvar.readArray().getScalar();
       double unpacked_data =
-          NetcdfDatasetTutorial.unpackData(scaledvar.readScalarShort(), scale_factor, add_offset);
+          NetcdfDatasetTutorial.unpackData((float)packed_data, scale_factor, add_offset);
       assertThat(unpacked_data).isNotNaN();
     }
   }
