@@ -132,29 +132,7 @@ lists of `Ranges` and origin, shape arrays. To create a `Section` from a list of
 {% endcapture %}
 {{ rmd | markdownify }}
 
-## Reading Scalar Data
-
-To read scalar variables, you can use the convenience routine `getScalar()`:
-
-{% capture rmd %}
-{% includecodeblock netcdf-java&docs/userguide/src/test/java/examples/cdmdatasets/ReadingCdmTutorial.java&readScalars %}
-{% endcapture %}
-{{ rmd | markdownify }}
- 
-Scalar values can then be cast to the appropriate data type, if known:
-
-{% capture rmd %}
-{% includecodeblock netcdf-java&docs/userguide/src/test/java/examples/cdmdatasets/ReadingCdmTutorial.java&readStringScalar %}
-{% endcapture %}
-{{ rmd | markdownify }}
- 
-can be used on scalar `String` or `char`, as well as 1D `char` variables of any size, such as:
-
-~~~
- char varname(name_strlen=77); 
-~~~
-
-## Manipulating data in Arrays
+## Iterating data in Arrays
 
 Once you have read the data in, you usually have an `Array` object to work with.
 The shape of the `Array` will match the shape of the `Variable` (if all data was read) or the shape of the `Section` (if a subset was read).

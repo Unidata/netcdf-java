@@ -5,7 +5,6 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import ucar.nc2.internal.util.DiskCache;
-import ucar.nc2.write.Ncdump;
 import ucar.nc2.write.NcdumpArray;
 import ucar.unidata.util.test.TestLogger;
 
@@ -192,21 +191,6 @@ public class ReadingCdmTutorial {
     int[] origins = section.getOrigin();
     int[] shape = section.getShape();
     return Arrays.asList(origins, shape); /* DOCS-IGNORE */
-  }
-
-  /**
-   * Tutorial code snippet to read scalar
-   * 
-   * @param v: variable to be read
-   * @return array scalar values as double, float, and int types
-   * @throws IOException
-   */
-  public static List<Object> readScalars(Variable v) throws IOException {
-    double dval = (double)v.readArray().getScalar();
-    float fval = (float)v.readArray().getScalar();
-    int ival = (int)v.readArray().getScalar();
-    String sval = (String)v.readArray().getScalar();
-    return Arrays.asList(dval, fval, ival, sval); /* DOCS-IGNORE */
   }
 
   /**

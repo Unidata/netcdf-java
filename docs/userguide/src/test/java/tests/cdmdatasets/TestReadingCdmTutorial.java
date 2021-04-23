@@ -107,7 +107,6 @@ public class TestReadingCdmTutorial {
     Array data = ReadingCdmTutorial.readByOriginAndSize(var3d);
     assertThat(data).isNotNull();
     assertThat(data.getArrayType()).isEqualTo(ArrayType.DOUBLE);
-    assertThat(data.getRank()).isEqualTo(2);
   }
 
   @Test
@@ -165,16 +164,6 @@ public class TestReadingCdmTutorial {
     int ndims = var3d.getRank();
     assertThat(args.get(0)).hasLength(ndims);
     assertThat(args.get(1)).hasLength(ndims);
-  }
-
-  @Test
-  public void testReadScalarTutorial() throws IOException {
-    // test double, float, and int scalars
-    List data = ReadingCdmTutorial.readScalars(varScalar);
-    assertThat(data.get(0)).isInstanceOf(Double.class);
-    assertThat(data.get(1)).isInstanceOf(Float.class);
-    assertThat(data.get(2)).isInstanceOf(Integer.class);
-    assertThat(data.get(3)).isInstanceOf(String.class);
   }
 
   @Test
