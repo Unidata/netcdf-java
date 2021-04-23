@@ -1,6 +1,6 @@
 package examples.cdmdatasets;
 
-import ucar.ma2.*;
+import ucar.array.*;
 import ucar.nc2.*;
 import ucar.nc2.iosp.NetcdfFileFormat;
 import ucar.nc2.write.*;
@@ -48,27 +48,27 @@ public class WritingNetcdfTutorial {
 
     // 3) Create a builder for a Variable named temperature, or type double, with shape (lat, lon), and add to the root
     // group
-    Variable.Builder t = builder.addVariable("temperature", DataType.DOUBLE, dims);
+    Variable.Builder t = builder.addVariable("temperature", ArrayType.DOUBLE, dims);
 
     // 4) Add a string Attribute to the temperature Variable, with name units and value K
     t.addAttribute(new Attribute("units", "K"));
 
     // 5) Create a 1D integer Array Attribute using Attribute.Builder,with name scale and value (1,2,3)
     // and add to the temperature Variables
-    Array data = Array.factory(DataType.INT, new int[] {3}, new int[] {1, 2, 3});
-    t.addAttribute(Attribute.builder("scale").setValues(data).build());
+    Array data = Arrays.factory(ArrayType.INT, new int[] {3}, new int[] {1, 2, 3});
+    t.addAttribute(Attribute.builder("scale").setArrayValues(data).build());
 
     // 6) Create a Variable named svar or type character with length 80
     Dimension svar_len = builder.addDimension("svar_len", 80);
-    builder.addVariable("svar", DataType.CHAR, "svar_len");
+    builder.addVariable("svar", ArrayType.CHAR, "svar_len");
 
     // 7) Create a 2D Variable names names of type character with length 80
     Dimension names = builder.addDimension("names", 3);
-    builder.addVariable("names", DataType.CHAR, "names svar_len");
+    builder.addVariable("names", ArrayType.CHAR, "names svar_len");
 
     // 8) Create a scalar Variable names scalar or type double.
     // Note that the empty ArrayList means that it is a scalar, i.e. has no dimensions
-    builder.addVariable("scalar", DataType.DOUBLE, new ArrayList<Dimension>());
+    builder.addVariable("scalar", ArrayType.DOUBLE, new ArrayList<Dimension>());
 
     // 9) Create various global Attributes of different types
     builder.addAttribute(new Attribute("versionStr", "v"));
@@ -118,22 +118,24 @@ public class WritingNetcdfTutorial {
    * @param varName
    */
   public static void writeDoubleData(NetcdfFormatWriter writer, String varName) {
-    // 1) Create a 2D Array of the same shape as temperature(lat, lon) and fill it with some values
+    // 1) Create a primitive array of the same shape as temperature(lat, lon) and fill it with some values
     Variable v = writer.findVariable(varName);
     int[] shape = v.getShape();
-    ArrayDouble A = new ArrayDouble.D2(shape[0], shape[1]);
-    Index ima = A.getIndex();
+    double[][] a = new double[shape[0]][shape[1]];
     for (int i = 0; i < shape[0]; i++) {
       for (int j = 0; j < shape[1]; j++) {
-        A.setDouble(ima.set(i, j), (double) (i * 1000000 + j * 1000));
+        a[i][j] = (double) (i * 1000000 + j * 1000);
       }
     }
+
+    // 2) Create an Array of doubles from the primitive array
+    Array<Double> A = Arrays.factory(ArrayType.DOUBLE, shape, a);
 
     // 2) Write the data to the temperature Variable, with origin all zeros.
     // Shape is taken from the data Array.
     int[] origin = new int[2]; // initialized to zeros
     try {
-      writer.write(v, origin, A);
+      writer.write(v, new Index(origin), A);
     } catch (IOException | InvalidRangeException e) {
       logger.log(yourWriteNetcdfFileErrorMsgTxt);
     }
@@ -154,7 +156,7 @@ public class WritingNetcdfTutorial {
     // 1) The ArrayChar class has special methods to make it convenient to work with Strings.
     // Note that we use the type and rank specific constructor ArrayChar.D1.
     // The setString(String val) method is for rank one ArrayChar objects.
-    ArrayChar ac = new ArrayChar.D1(len);
+    ArrayByte ac = new ArrayByte(len);
     ac.setString(someStringValue);
 
     // 2) Write the data. Since we dont pass in an origin parameter, it is assumed to be all zeroes.

@@ -6,14 +6,11 @@ import examples.cdmdatasets.ReadingCdmTutorial;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import ucar.ma2.Array;
-import ucar.ma2.DataType;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Range;
+import ucar.array.*;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
-import ucar.nc2.write.Ncdump;
+import ucar.nc2.write.NcdumpArray;
 import ucar.unidata.util.test.TestDir;
 
 import java.io.IOException;
@@ -102,14 +99,14 @@ public class TestReadingCdmTutorial {
   public void testReadAllVarDataTutorial() throws IOException {
     Array data = ReadingCdmTutorial.readAllVarData(var3d);
     assertThat(data).isNotNull();
-    assertThat(data.getDataType()).isEqualTo(DataType.DOUBLE);
+    assertThat(data.getArrayType()).isEqualTo(ArrayType.DOUBLE);
   }
 
   @Test
   public void testReadByOriginAndSizeTutorial() throws IOException, InvalidRangeException {
     Array data = ReadingCdmTutorial.readByOriginAndSize(var3d);
     assertThat(data).isNotNull();
-    assertThat(data.getDataType()).isEqualTo(DataType.DOUBLE);
+    assertThat(data.getArrayType()).isEqualTo(ArrayType.DOUBLE);
     assertThat(data.getRank()).isEqualTo(2);
   }
 
@@ -124,7 +121,7 @@ public class TestReadingCdmTutorial {
   public void testReadSubset() throws IOException, InvalidRangeException {
     Array data = ReadingCdmTutorial.readSubset(var3d);
     assertThat(data).isNotNull();
-    assertThat(data.getDataType()).isEqualTo(DataType.DOUBLE);
+    assertThat(data.getArrayType()).isEqualTo(ArrayType.DOUBLE);
     assertThat(data.getRank()).isEqualTo(var3d.getRank());
     assertThat(data.getShape()).isNotEqualTo(var3d.getShape());
   }
@@ -134,18 +131,18 @@ public class TestReadingCdmTutorial {
     // test read with String range
     Array data1 = ReadingCdmTutorial.readByStride(var3d);
     assertThat(data1).isNotNull();
-    assertThat(data1.getDataType()).isEqualTo(DataType.DOUBLE);
+    assertThat(data1.getArrayType()).isEqualTo(ArrayType.DOUBLE);
     assertThat(data1.getRank()).isEqualTo(var3d.getRank());
 
     // test read with Range object
     Array data2 = ReadingCdmTutorial.readByRange(var3d);
     assertThat(data2).isNotNull();
-    assertThat(data2.getDataType()).isEqualTo(DataType.DOUBLE);
+    assertThat(data2.getArrayType()).isEqualTo(ArrayType.DOUBLE);
     assertThat(data2.getRank()).isEqualTo(var3d.getRank());
 
     // convert to strings to check equality
-    String dataStr1 = Ncdump.printArray(data1, "data", null);
-    String dataStr2 = Ncdump.printArray(data2, "data", null);
+    String dataStr1 = NcdumpArray.printArray(data1, "data", null);
+    String dataStr2 = NcdumpArray.printArray(data2, "data", null);
     assertThat(dataStr1).isEqualTo(dataStr2);
   }
 
@@ -164,7 +161,7 @@ public class TestReadingCdmTutorial {
     ranges.add(new Range(0, varShape[1] - 1, 2));
     ranges.add(new Range(0, varShape[2] - 1, 2));
 
-    List<int[]> args = ReadingCdmTutorial.convertRangesToSection(var3d, ranges);
+    List<int[]> args = ReadingCdmTutorial.convertRangesToSection(ranges);
     int ndims = var3d.getRank();
     assertThat(args.get(0)).hasLength(ndims);
     assertThat(args.get(1)).hasLength(ndims);
@@ -177,11 +174,7 @@ public class TestReadingCdmTutorial {
     assertThat(data.get(0)).isInstanceOf(Double.class);
     assertThat(data.get(1)).isInstanceOf(Float.class);
     assertThat(data.get(2)).isInstanceOf(Integer.class);
-
-    // test string scalar
-    String sval = ReadingCdmTutorial.readStringScalar(varString);
-    assertThat(sval).isNotEmpty();
-    assertThat(sval).isInstanceOf(String.class);
+    assertThat(data.get(3)).isInstanceOf(String.class);
   }
 
   @Test
@@ -192,13 +185,7 @@ public class TestReadingCdmTutorial {
 
   @Test
   public void testIndexIteratorTutorial() throws IOException, InvalidRangeException {
-    double sum = ReadingCdmTutorial.indexIterator(var3d);
-    assertThat(sum).isNotNaN();
-  }
-
-  @Test
-  public void testRangeIteratorTutorial() throws IOException, InvalidRangeException {
-    double sum = ReadingCdmTutorial.rangeIterator(var3d);
+    double sum = ReadingCdmTutorial.dataIterator(var3d);
     assertThat(sum).isNotNaN();
   }
 
@@ -206,23 +193,6 @@ public class TestReadingCdmTutorial {
   public void testCastDataArrayTutorial() throws IOException {
     List list = ReadingCdmTutorial.castDataArray(var3d);
     assertThat(list.size()).isEqualTo(var3d.getSize());
-  }
-
-  @Test
-  public void testIndexManipulationTutorial() throws IOException, InvalidRangeException {
-    // just test it runs without errors or deprecation warnings
-    Array data = var3d.read();
-    int[] origin = new int[] {0, 0, 0};
-    int[] shape = new int[] {31, 1, 1};
-    int[] stride = new int[] {1, 1, 1};
-    ReadingCdmTutorial.indexManipulation(data, origin, shape, stride);
-  }
-
-  @Test
-  public void testGetFlatArrayTutorial() throws IOException {
-    Array data = var3d.read();
-    double[] data1D = ReadingCdmTutorial.get1DArray(data);
-    assertThat(data1D).hasLength((int) data.getSize());
   }
 
   @Test
