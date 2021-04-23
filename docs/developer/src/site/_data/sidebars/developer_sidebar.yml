@@ -1,0 +1,101 @@
+# This is your sidebar TOC. The sidebar code loops through sections here and provides the appropriate formatting.
+
+entries:
+- title: Sidebar
+  product: Tutorial and Reference Documentation
+  folders:
+
+  - title:
+    output: pdf
+    type: frontmatter
+    folderitems:
+    - title:
+      url: /titlepage
+      output: pdf
+      type: frontmatter
+    - title:
+      url: /tocpage
+      output: pdf
+      type: frontmatter
+
+  - title: Overview
+    output: web, pdf
+    folderitems:
+
+    - title: NetCDF-Java introduction
+      url: /index.html
+      output: web, pdf
+
+  - title: Data Types
+    output: web, pdf
+    folderitems:
+
+    - title: CDM File Types
+      url: file_types.html
+      output: web, pdf
+
+      subfolders:
+        - title: bufr
+          output: web, pdf
+          subfolderitems:
+            - title: BUFR Files
+              url: /bufr_processing.html
+              output: web, pdf
+
+            - title: BUFR Tables
+              url: /bufr_tables.html
+              output: web, pdf
+        - title: grib
+          output: web, pdf
+          subfolderitems:
+            - title: GRIB Files in CDM
+              url: /grib_files_cdm.html
+              output: web, pdf
+
+            - title: GRIB Tables in CDM
+              url: /grib_tables.html
+              output: web, pdf
+
+            - title: GRIB Collection Specification
+              url: /grib_feature_collections_ref.html
+              output: web, pdf
+
+  - title: Properties
+    output: web, pdf
+    folderitems:
+
+    - title: CDM Calendar Date Handling
+      url: /cdm_calendar_date_time_ref.html
+      output: web, pdf
+
+    - title: NetCDF4 Compound Attributes
+      url: /netcdf_compound_attrs.html
+      output: web, pdf
+
+    - title: CF DSG Encoding Table
+      url: /cf_dsg_encoding_ref.html
+      output: web, pdf
+
+  - title: Reading CDM
+    output: web, pdf
+    folderitems:
+
+      - title: CDM - OPeNDAP Interface
+        url: /cdm_opendap_interface.html
+        output: web, pdf
+
+      - title : Read over HTTP
+        url: /read_over_http.html
+        output: web, pdf
+
+  - title: Utilities
+    output: web, pdf
+    folderitems:
+
+    - title: CDM Disk Caching
+      url: /disk_caching.html
+      output: web, pdf
+
+    - title: ToolsUI Reference
+      url: /toolsui_ref.html
+      output: web, pdf

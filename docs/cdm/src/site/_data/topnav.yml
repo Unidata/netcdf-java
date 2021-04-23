@@ -1,0 +1,51 @@
+## Topnav single links
+## if you want to list an external url, use external_url instead of url. the theme will apply a different link base.
+#topnav:
+#- title: Topnav
+#  items:
+#    - title: Introduction
+#      url: /index.html
+
+# Documentation version menu
+topnav_docvermenu:
+- title: Version
+  id: docmenu
+  folderitems:
+    - title: Menu Loading...
+      url:
+      id: remove
+
+#Topnav dropdowns
+topnav_dropdowns:
+- title: Topnav dropdowns
+  folders:
+    - title: THREDDS Projects
+      folderitems:
+        - title: THREDDS Data Server
+          external_url: https://docs.unidata.ucar.edu/tds/5.0/userguide/index.html
+        - title: Rosetta
+          external_url: https://www.unidata.ucar.edu/software/rosetta/docs/
+        - title: Siphon
+          external_url: https://unidata.github.io/siphon/latest/
+
+    - title: netCDF-Java Documentation
+      folderitems:
+        - title: User guide
+          external_url: https://docs.unidata.ucar.edu/netcdf-java/current/userguide/index.html
+        - title: Developer guide
+          external_url: https://docs.unidata.ucar.edu/netcdf-java/current/developer/index.html
+        - title: NcML
+          external_url: https://docs.unidata.ucar.edu/netcdf-java/2.2/ncml/index.html
+        - title: CDM
+          external_url: https://docs.unidata.ucar.edu/netcdf-java/4.0/cdm/index.html
+
+    - title: Find it on GitHub
+      folderitems:
+        - title: netCDF-Java
+          external_url: https://github.com/Unidata/netcdf-java
+        - title: THREDDS Data Server
+          external_url: https://github.com/Unidata/tds
+        - title: Rosetta
+          external_url: https://github.com/Unidata/Rosetta
+        - title: Siphon
+          external_url: https://github.com/Unidata/siphon

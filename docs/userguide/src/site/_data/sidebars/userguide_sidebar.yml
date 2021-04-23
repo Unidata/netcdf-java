@@ -1,0 +1,144 @@
+# This is your sidebar TOC. The sidebar code loops through sections here and provides the appropriate formatting.
+
+entries:
+- title: Sidebar
+  product: Tutorial and Reference Documentation
+  folders:
+
+  - title:
+    output: pdf
+    type: frontmatter
+    folderitems:
+    - title:
+      url: /titlepage
+      output: pdf
+      type: frontmatter
+    - title:
+      url: /tocpage
+      output: pdf
+      type: frontmatter
+
+  - title: Overview
+    output: web, pdf
+    folderitems:
+
+    - title: NetCDF-Java overview
+      url: /index.html
+      output: web, pdf
+
+    - title: Building from source
+      url: /building_from_source.html
+      output: web, pdf
+
+    - title: Using netCDF-Java Maven artifacts
+      url: /using_netcdf_java_artifacts.html
+      output: web, pdf
+
+  - title: Working with CDM datasets
+    output: web, pdf
+    folderitems:
+    - title: NetcdfFile - reading CDM files
+      url: /reading_cdm.html
+      output: web, pdf
+
+    - title: NetcdfDataset - enhanced files, coordinate systems
+      url: /netcdf_dataset.html
+      output: web, pdf
+
+    - title: Writing netCDF-3 and netCDF-4 Files (CDM 4.3+)
+      url:  /writing_netcdf.html
+      output: web, pdf
+
+    - title: Dataset URLs
+      url: /dataset_urls.html
+      output: web, pdf
+
+    - title: StructureDataArrays
+      url: /structureDataArrays_ref.html
+      output: web, pdf
+
+    - title: CDM utility programs
+      url: cdm_utility_programs.html
+      output: web, pdf
+
+  - title: Coordinate Systems
+    output: web, pdf
+    folderitems:
+
+      - title: Coordinate attribute convention
+        url: /coord_attr_conv.html
+        output: web, pdf
+
+      - title: Coordinate attribute examples
+        url: /coord_attribute_ex.html
+        output: web, pdf
+
+      - title: Coordinate system builder
+        url: /coord_system_builder.html
+        output: web, pdf
+
+      - title: Coordinate transforms - projections and vertical transforms
+        url: /coord_transform.html
+        output: web, pdf
+
+      - title: Standard horizontal coordinate transforms
+        url: /std_horizonal_coord_transforms.html
+        output: web, pdf
+
+      - title: Standard vertical coordinate transforms
+        url: /std_vertical_coord_transforms.html
+        output: web, pdf
+
+
+  - title: Scientific Feature Types
+    output: web, pdf
+    folderitems:
+      - title: Coverage datasets
+        url: /coverage_feature.html
+        output: web, pdf
+
+      - title: Grid datasets
+        url: /grid_datasets.html
+        output: web, pdf
+
+  - title: Writing an I/O Service Provider
+    output: web, pdf
+    folderitems:
+    - title: Writing an IOSP - overview
+      url: /writing_iosp.html
+      output: web, pdf
+
+    - title: Writing an IOSP - details
+      url: /iosp_details.html
+      output: web, pdf
+
+    - title: Writing an IOSP - other classes
+      url: /other_classes.html
+      output: web, pdf
+
+    - title: Writing an IOSP - lightning example
+      url: /lightning_example.html
+      output: web, pdf
+
+  - title: Runtime Configuration
+    output: web, pdf
+    folderitems:
+    - title: Runtime loading
+      url: /runtime_loading.html
+      output: web, pdf
+
+    - title: Unidata-defined system properties
+      url: /systemproperties.html
+      output: web, pdf
+
+    - title: netCDF C Library
+      url: /netcdf4_c_library.html
+      output: web, pdf
+
+
+  - title: Upgrading NetCDF-Java
+    output: web, pdf
+    folderitems:
+    - title: Upgrading to NetCDF-Java 6.x
+      url: /upgrade.html
+      output: web, pdf
