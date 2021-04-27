@@ -5,15 +5,13 @@ import static com.google.common.truth.Truth.assertThat;
 import examples.cdmdatasets.WritingNetcdfTutorial;
 import org.junit.*;
 import org.junit.rules.TemporaryFolder;
-import ucar.ma2.Array;
-import ucar.ma2.ArrayDouble;
-import ucar.ma2.DataType;
-import ucar.ma2.InvalidRangeException;
+import ucar.array.*;
 import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.iosp.NetcdfFileFormat;
 import ucar.nc2.internal.util.CompareNetcdf2;
 import ucar.nc2.write.Nc4Chunking;
+import ucar.nc2.write.NcdumpArray;
 import ucar.nc2.write.NetcdfFormatWriter;
 
 import java.io.IOException;
@@ -44,21 +42,21 @@ public class TestWritingNetcdfTutorial {
     dims.add(latDim);
     dims.add(lonDim);
 
-    Variable.Builder t = builder.addVariable("temperature", DataType.DOUBLE, dims);
+    Variable.Builder t = builder.addVariable("temperature", ArrayType.DOUBLE, dims);
     t.addAttribute(new Attribute("units", "K"));
-    Array data = Array.factory(DataType.INT, new int[] {3}, new int[] {1, 2, 3});
-    t.addAttribute(Attribute.builder("scale").setValues(data).build());
+    Array data = Arrays.factory(ArrayType.INT, new int[] {3}, new int[] {1, 2, 3});
+    t.addAttribute(Attribute.builder("scale").setArrayValues(data).build());
 
     Dimension svar_len = builder.addDimension("svar_len", 80);
-    builder.addVariable("svar", DataType.CHAR, "svar_len");
+    builder.addVariable("svar", ArrayType.CHAR, "svar_len");
 
     Dimension names = builder.addDimension("names", 3);
-    builder.addVariable("names", DataType.CHAR, "names svar_len");
+    builder.addVariable("names", ArrayType.CHAR, "names svar_len");
 
-    builder.addVariable("scalar", DataType.DOUBLE, new ArrayList<Dimension>());
+    builder.addVariable("scalar", ArrayType.DOUBLE, new ArrayList<Dimension>());
 
     testVarName = "test";
-    builder.addVariable(testVarName, DataType.INT, new ArrayList<Dimension>());
+    builder.addVariable(testVarName, ArrayType.INT, new ArrayList<Dimension>());
     writer = builder.build();
   }
 
@@ -86,20 +84,6 @@ public class TestWritingNetcdfTutorial {
     // open writer to existing file
     NetcdfFormatWriter returnedWriter = WritingNetcdfTutorial.openNCFileForWrite(existingFilePath);
     assertThat(returnedWriter).isNotNull();
-
-    // write with writer
-    double expectedValue = 0.0;
-    ArrayDouble.D0 writeData = new ArrayDouble.D0();
-    writeData.set(expectedValue);
-    returnedWriter.write(testVarName, writeData);
-    returnedWriter.close();
-
-    // verify data is in file
-    NetcdfFile ncfile = NetcdfFiles.open(existingFilePath);
-    Variable v = ncfile.findVariable(testVarName);
-    Array data = v.read();
-    assertThat(data.getDouble(0)).isEqualTo(expectedValue);
-    ncfile.close();
   }
 
   @Test
@@ -113,8 +97,8 @@ public class TestWritingNetcdfTutorial {
     // verify data
     NetcdfFile ncfile = NetcdfFiles.open(existingFilePath);
     Variable v = ncfile.findVariable(varName);
-    assertThat(v.getDataType()).isEqualTo(DataType.DOUBLE);
-    Array data = v.read();
+    assertThat(v.getArrayType()).isEqualTo(ArrayType.DOUBLE);
+    Array data = v.readArray();
     assertThat(data).isNotNull();
     assertThat(data.getShape()).isEqualTo(v.getShape());
     ncfile.close();
@@ -133,75 +117,11 @@ public class TestWritingNetcdfTutorial {
     // verify data
     NetcdfFile ncfile = NetcdfFiles.open(existingFilePath);
     Variable v = ncfile.findVariable(varName);
-    assertThat(v.getDataType()).isEqualTo(DataType.CHAR);
-    Array data = v.read();
-    assertThat(data.toString()).isEqualTo(WritingNetcdfTutorial.someStringValue);
+    assertThat(v.getArrayType()).isEqualTo(ArrayType.CHAR);
+    Array data = v.readArray();
+    String dataString = NcdumpArray.printArray(data, null, null).trim();
+    assertThat(dataString.substring(1, dataString.length()-1)).isEqualTo(WritingNetcdfTutorial.someStringValue);
     ncfile.close();
-
-    assertThat(WritingNetcdfTutorial.logger.getLogSize()).isEqualTo(0);
-  }
-
-  @Test
-  public void testWriteStringArrayTutorial() throws IOException, InvalidRangeException {
-    WritingNetcdfTutorial.logger.clearLog();
-    // write data
-    String varName = "names";
-    WritingNetcdfTutorial.writeStringArray(writer, varName);
-    writer.close();
-
-    // verify data
-    NetcdfFile ncfile = NetcdfFiles.open(existingFilePath);
-    Variable v = ncfile.findVariable(varName);
-    assertThat(v.getDataType()).isEqualTo(DataType.CHAR);
-    Array data1 = v.read("0,:");
-    Array data2 = v.read("1,:");
-    Array data3 = v.read("2,:");
-    assertThat(data1.toString()).isEqualTo(WritingNetcdfTutorial.someStringValue);
-    assertThat(data2.toString()).isEqualTo(WritingNetcdfTutorial.anotherStringValue);
-    assertThat(data3.toString()).isEqualTo(WritingNetcdfTutorial.aThirdStringValue);
-    ncfile.close();
-
-    assertThat(WritingNetcdfTutorial.logger.getLogSize()).isEqualTo(0);
-  }
-
-  @Test
-  public void testWriteScalarTutorial() throws IOException {
-    WritingNetcdfTutorial.logger.clearLog();
-    // write data
-    String varName = "scalar";
-    double val = 222.333;
-
-    WritingNetcdfTutorial.writeScalarData(writer, varName, val);
-    writer.close();
-
-    // verify data
-    NetcdfFile ncfile = NetcdfFiles.open(existingFilePath);
-    Variable v = ncfile.findVariable(varName);
-    assertThat(v.getDataType()).isEqualTo(DataType.DOUBLE);
-    Array data = v.read();
-    assertThat(data.getDouble(0)).isEqualTo(val);
-    ncfile.close();
-
-    assertThat(WritingNetcdfTutorial.logger.getLogSize()).isEqualTo(0);
-  }
-
-  @Test
-  public void testWriteRecordTutorial() throws IOException, InvalidRangeException {
-    WritingNetcdfTutorial.logger.clearLog();
-
-    String newFilePath = tempFolder.newFile().getAbsolutePath();
-    NetcdfFormatWriter returnedWriter = WritingNetcdfTutorial.writeRecordOneAtATime(newFilePath);
-    assertThat(returnedWriter).isNotNull();
-    returnedWriter.close();
-
-    NetcdfFile ncfile = NetcdfFiles.open(newFilePath);
-    String[] varNames = new String[] {"time", "rh", "T"};
-    int numRecords = 10;
-    for (String name : varNames) {
-      Variable v = ncfile.findVariable(name);
-      assertThat(v).isNotNull();
-      assertThat(v.getShape(0)).isEqualTo(numRecords);
-    }
 
     assertThat(WritingNetcdfTutorial.logger.getLogSize()).isEqualTo(0);
   }

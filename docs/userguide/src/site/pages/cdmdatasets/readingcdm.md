@@ -84,9 +84,6 @@ and you want to extract the third time step, and all lat and lon points, then us
 {% includecodeblock netcdf-java&docs/userguide/src/test/java/examples/cdmdatasets/ReadingCdmTutorial.java&readByOriginAndSize %}
 {% endcapture %}
 {{ rmd | markdownify }}
-  
-Notice that the result of reading a 3D Variable is a 3D Array.
-To make it a 2D array call Array.reduce(), which removes any dimensions of length 1.
 
 Or suppose you want to loop over all time steps, and make it general to handle any sized 3 dimensional variable:
 
@@ -94,8 +91,6 @@ Or suppose you want to loop over all time steps, and make it general to handle a
 {% includecodeblock netcdf-java&docs/userguide/src/test/java/examples/cdmdatasets/ReadingCdmTutorial.java&readInLoop %}
 {% endcapture %}
 {{ rmd | markdownify }}
- 
-In this case, we call reduce(0), to reduce dimension 0, which we know has length one, but leave the other two dimensions alone.
 
 Note that `varShape` holds the total number of elements that can be read from the variable; `origin` is the starting index, and `size` is the number of elements to read.
 This is different from the Fortran 90 array syntax, which uses the starting and ending array indices (inclusive):
@@ -137,37 +132,7 @@ lists of `Ranges` and origin, shape arrays. To create a `Section` from a list of
 {% endcapture %}
 {{ rmd | markdownify }}
 
-## Reading Scalar Data
-
-There are convenience routines in the `Variable` class for reading scalar variables:
-
-{% capture rmd %}
-{% includecodeblock netcdf-java&docs/userguide/src/test/java/examples/cdmdatasets/ReadingCdmTutorial.java&readScalars %}
-{% endcapture %}
-{{ rmd | markdownify }}
-
-The `readScalarDouble()` routine, for example, will read a scalar variable's single value as a double, converting it to double if needed.
-This can also be used for 1D variables with dimension length = 1, e.g.:
-
-~~~
- double height_above_ground(level=1);
-~~~
- 
-Scalar routines are available in for data types: `byte`, `double`, `float`, `int`, `long`, `short`, and `String`.
-The `String` scalar method:
-
-{% capture rmd %}
-{% includecodeblock netcdf-java&docs/userguide/src/test/java/examples/cdmdatasets/ReadingCdmTutorial.java&readStringScalar %}
-{% endcapture %}
-{{ rmd | markdownify }}
- 
-can be used on scalar `String` or `char`, as well as 1D `char` variables of any size, such as:
-
-~~~
- char varname(name_strlen=77); 
-~~~
-
-## Manipulating data in Arrays
+## Iterating data in Arrays
 
 Once you have read the data in, you usually have an `Array` object to work with.
 The shape of the `Array` will match the shape of the `Variable` (if all data was read) or the shape of the `Section` (if a subset was read).
@@ -179,22 +144,12 @@ Here is an example of accessing data in a 3D array, keeping track of index:
 {% endcapture %}
 {{ rmd | markdownify }}
 
-If you want to iterate over all the data in a variable of any rank, without keeping track of the indices, you can use the `IndexIterator`:
+If you want to iterate over all the data in a variable of any rank, without keeping track of the indices, you can use the `Array.iterator`:
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&docs/userguide/src/test/java/examples/cdmdatasets/ReadingCdmTutorial.java&indexIterator %}
+{% includecodeblock netcdf-java&docs/userguide/src/test/java/examples/cdmdatasets/ReadingCdmTutorial.java&dataIterator %}
 {% endcapture %}
 {{ rmd | markdownify }}
-
-You can also just iterate over a subset of the data defined by a `List` of `Ranges` use the `RangeIterator`.
-The following iterates over every 5th point of each dimension in an `Array` of arbitrary rank:
-
-{% capture rmd %}
-{% includecodeblock netcdf-java&docs/userguide/src/test/java/examples/cdmdatasets/ReadingCdmTutorial.java&rangeIterator %}
-{% endcapture %}
-{{ rmd | markdownify }}
-    
-In these examples, the data will be converted to double if needed.
 
 If you know the Array's rank and type, you can cast to the appropriate subclass and use the `get()` and `set()` methods, for example:
 
@@ -202,23 +157,6 @@ If you know the Array's rank and type, you can cast to the appropriate subclass 
 {% includecodeblock netcdf-java&docs/userguide/src/test/java/examples/cdmdatasets/ReadingCdmTutorial.java&castDataArray %}
 {% endcapture %}
 {{ rmd | markdownify }}
-
-There are a number of *index reordering* methods that operate on an `Array`, and return another `Array` with the same backing data storage, but with the indices modified in various ways:
-
-{% capture rmd %}
-{% includecodeblock netcdf-java&docs/userguide/src/test/java/examples/cdmdatasets/ReadingCdmTutorial.java&indexManipulation %}
-{% endcapture %}
-{{ rmd | markdownify }}
-
-The backing data storage for an `Array` is a 1D Java array of the corresponding type (`double[]` for `ArrayDouble`, etc) with length `Array.getSize()`.
-You can work directly with the Java array by extracting it from the `Array`:
-
-{% capture rmd %}
-{% includecodeblock netcdf-java&docs/userguide/src/test/java/examples/cdmdatasets/ReadingCdmTutorial.java&get1DArray %}
-{% endcapture %}
-{{ rmd | markdownify }}
-
-If the `Array` has the same type as the request, and the indices have not been reordered, this will return the backing array, otherwise it will return a copy with the requested type and correct index ordering.
 
 ## Writing temporary files to the disk cache
 

@@ -1,6 +1,7 @@
 package examples.cdmdatasets;
 
-import ucar.ma2.*;
+import ucar.array.*;
+import ucar.ma2.ArrayInt;
 import ucar.nc2.*;
 import ucar.nc2.iosp.NetcdfFileFormat;
 import ucar.nc2.write.*;
@@ -48,27 +49,27 @@ public class WritingNetcdfTutorial {
 
     // 3) Create a builder for a Variable named temperature, or type double, with shape (lat, lon), and add to the root
     // group
-    Variable.Builder t = builder.addVariable("temperature", DataType.DOUBLE, dims);
+    Variable.Builder t = builder.addVariable("temperature", ArrayType.DOUBLE, dims);
 
     // 4) Add a string Attribute to the temperature Variable, with name units and value K
     t.addAttribute(new Attribute("units", "K"));
 
     // 5) Create a 1D integer Array Attribute using Attribute.Builder,with name scale and value (1,2,3)
     // and add to the temperature Variables
-    Array data = Array.factory(DataType.INT, new int[] {3}, new int[] {1, 2, 3});
-    t.addAttribute(Attribute.builder("scale").setValues(data).build());
+    Array data = Arrays.factory(ArrayType.INT, new int[] {3}, new int[] {1, 2, 3});
+    t.addAttribute(Attribute.builder("scale").setArrayValues(data).build());
 
     // 6) Create a Variable named svar or type character with length 80
     Dimension svar_len = builder.addDimension("svar_len", 80);
-    builder.addVariable("svar", DataType.CHAR, "svar_len");
+    builder.addVariable("svar", ArrayType.CHAR, "svar_len");
 
     // 7) Create a 2D Variable names names of type character with length 80
     Dimension names = builder.addDimension("names", 3);
-    builder.addVariable("names", DataType.CHAR, "names svar_len");
+    builder.addVariable("names", ArrayType.CHAR, "names svar_len");
 
     // 8) Create a scalar Variable names scalar or type double.
     // Note that the empty ArrayList means that it is a scalar, i.e. has no dimensions
-    builder.addVariable("scalar", DataType.DOUBLE, new ArrayList<Dimension>());
+    builder.addVariable("scalar", ArrayType.DOUBLE, new ArrayList<Dimension>());
 
     // 9) Create various global Attributes of different types
     builder.addAttribute(new Attribute("versionStr", "v"));
@@ -118,22 +119,22 @@ public class WritingNetcdfTutorial {
    * @param varName
    */
   public static void writeDoubleData(NetcdfFormatWriter writer, String varName) {
-    // 1) Create a 2D Array of the same shape as temperature(lat, lon) and fill it with some values
+    // 1) Create a primitive array of the same shape as temperature(lat, lon) and fill it with some values
     Variable v = writer.findVariable(varName);
     int[] shape = v.getShape();
-    ArrayDouble A = new ArrayDouble.D2(shape[0], shape[1]);
-    Index ima = A.getIndex();
-    for (int i = 0; i < shape[0]; i++) {
-      for (int j = 0; j < shape[1]; j++) {
-        A.setDouble(ima.set(i, j), (double) (i * 1000000 + j * 1000));
-      }
+    double[] a = new double[shape[0] * shape[1]];
+    for (int i = 0; i < a.length; i++) {
+      a[i] = (i * 1000000);
     }
 
+    // 2) Create an Array of doubles from the primitive array
+    Array<Double> A = Arrays.factory(ArrayType.DOUBLE, shape, a);
+
     // 2) Write the data to the temperature Variable, with origin all zeros.
-    // Shape is taken from the data Array.
+    // origin array is coeverted ti immutable Index with `Index.of`
     int[] origin = new int[2]; // initialized to zeros
     try {
-      writer.write(v, origin, A);
+      writer.write(v, Index.of(origin), A);
     } catch (IOException | InvalidRangeException e) {
       logger.log(yourWriteNetcdfFileErrorMsgTxt);
     }
@@ -149,151 +150,16 @@ public class WritingNetcdfTutorial {
     // write char variable as String
     Variable v = writer.findVariable(varName);
     int[] shape = v.getShape();
-    int len = shape[0];
 
-    // 1) The ArrayChar class has special methods to make it convenient to work with Strings.
-    // Note that we use the type and rank specific constructor ArrayChar.D1.
-    // The setString(String val) method is for rank one ArrayChar objects.
-    ArrayChar ac = new ArrayChar.D1(len);
-    ac.setString(someStringValue);
+    // 1) Create an Array of Chars
+    Array<Character> ac = Arrays.factory(ArrayType.CHAR, new int[]{someStringValue.length()}, someStringValue.toCharArray());
 
-    // 2) Write the data. Since we dont pass in an origin parameter, it is assumed to be all zeroes.
+    // 2) Write the data. The origin parameter is initilized with zeros using the rank of the variable
     try {
-      writer.write(v, ac);
+      writer.write(v, Index.ofRank(shape.length), ac);
     } catch (IOException | InvalidRangeException e) {
       logger.log(yourWriteNetcdfFileErrorMsgTxt);
     }
-  }
-
-  /**
-   * Tutorial code snippet to write a string array
-   * 
-   * @param writer
-   * @param varName
-   */
-  public static void writeStringArray(NetcdfFormatWriter writer, String varName) {
-    Variable v = writer.findVariable("names");
-    int[] shape = v.getShape();
-
-    // 1) The setString(int index, String val) method is for rank two ArrayChar objects.
-    ArrayChar ac = new ArrayChar.D2(shape[0], shape[1]);
-    Index ima = ac.getIndex();
-    ac.setString(ima.set(0), someStringValue);
-    ac.setString(ima.set(1), anotherStringValue);
-    ac.setString(ima.set(2), aThirdStringValue);
-
-    // 2) Write the data
-    try {
-      writer.write(v, ac);
-    } catch (IOException | InvalidRangeException e) {
-      logger.log(yourWriteNetcdfFileErrorMsgTxt);
-    }
-  }
-
-  /**
-   * Tutorial code snippet to write a scalar
-   * 
-   * @param writer
-   * @param varName
-   * @param val
-   */
-  public static void writeScalarData(NetcdfFormatWriter writer, String varName, double val) {
-    Variable v = writer.findVariable("scalar");
-
-    // 1) Working with type and rank specific Array objects provides convenient set() methods.
-    // Here, we have a rank-0 (scalar) double Array, whose set() methods sets the scalar value.
-    ArrayDouble.D0 datas = new ArrayDouble.D0();
-    datas.set(val);
-
-    // 2) Write the data
-    try {
-      writer.write(v, datas);
-    } catch (IOException | InvalidRangeException e) {
-      logger.log(yourWriteNetcdfFileErrorMsgTxt);
-    }
-  }
-
-  /**
-   * Tutorial code snippet to write data, one at a time, along a record dimension
-   * 
-   * @param pathAndFilenameStr
-   * @return NetcdfFormatWriter
-   * @throws IOException
-   * @throws InvalidRangeException
-   */
-  public static NetcdfFormatWriter writeRecordOneAtATime(String pathAndFilenameStr)
-      throws IOException, InvalidRangeException {
-    // 1) Create a new netCDF-3 file builder with the given path and file name
-    NetcdfFormatWriter.Builder builder = NetcdfFormatWriter.createNewNetcdf3(pathAndFilenameStr);
-
-    // 2) Define the dimensions, variables, and attributes.
-    // Note the use of NetcdfFileWriter.addUnlimitedDimension() to add a record dimension.
-    Dimension latDim = builder.addDimension("lat", 3);
-    Dimension lonDim = builder.addDimension("lon", 4);
-    Dimension timeDim = builder.addUnlimitedDimension("time");
-
-    // 3) Define Variables
-    builder.addVariable("lat", DataType.FLOAT, "lat")
-        .addAttribute(new Attribute("units", "degrees_north"));
-    builder.addVariable("lon", DataType.FLOAT, "lon")
-        .addAttribute(new Attribute("units", "degrees_east"));
-    builder.addVariable("rh", DataType.INT, "time lat lon")
-        .addAttribute(new Attribute("long_name", "relative humidity"))
-        .addAttribute(new Attribute("units", "percent"));
-    builder.addVariable("T", DataType.DOUBLE, "time lat lon")
-        .addAttribute(new Attribute("long_name", "surface temperature"))
-        .addAttribute(new Attribute("units", "degC"));
-    builder.addVariable("time", DataType.INT, "time")
-        .addAttribute(new Attribute("units", "hours since 1990-01-01"));
-
-    // 4) Create the file
-    try (NetcdfFormatWriter writer = builder.build()) {
-      // 5) Write the non-record Variables
-      writer.write("lat", Array.makeFromJavaArray(new float[] {41, 40, 39}, false));
-      writer.write("lon", Array.makeFromJavaArray(new float[] {-109, -107, -105, -103}, false));
-
-      // 6) Write the record Variables (unlimited dimensions)
-      // Create the arrays to hold the data.
-      // Note that the outer dimension has shape of 1, since we will write only one record at a time.
-      ArrayInt rhData = new ArrayInt.D3(1, latDim.getLength(), lonDim.getLength(), true);
-      ArrayDouble.D3 tempData = new ArrayDouble.D3(1, latDim.getLength(), lonDim.getLength());
-      Array timeData = Array.factory(DataType.INT, new int[] {1});
-      Index ima = rhData.getIndex();
-
-      int[] origin = new int[] {0, 0, 0};
-      int[] time_origin = new int[] {0};
-
-      // 7) Loop over the unlimited (record) dimension. Each loop will write one record.
-      for (int timeIdx = 0; timeIdx < 10; timeIdx++) {
-        // 8) Set the data for this record, using three different ways to fill the data arrays.
-        // In all cases the first dimension has index = 0.
-
-        // 8.1) Array.setInt(Index ima, int value) : timeData.getIndex() returns an Index initialized to zero.
-        timeData.setInt(timeData.getIndex(), timeIdx * 12);
-
-        for (int latIdx = 0; latIdx < latDim.getLength(); latIdx++) {
-          for (int lonIdx = 0; lonIdx < lonDim.getLength(); lonIdx++) {
-            // 8.2) Array.setInt(Index ima, int value) : ima.set(0, lat, lon) explicitly sets the dimension indices
-            rhData.setInt(ima.set(0, latIdx, lonIdx), timeIdx * latIdx * lonIdx);
-            // 8.3) ArrayDouble.D3.set(int i, int j, int k, double value):
-            // by using a type and rank specific Array class (ArrayDouble.D3), we don’t need to use an Index.
-            tempData.set(0, latIdx, lonIdx, timeIdx * latIdx * lonIdx / 3.14159);
-          }
-        }
-
-        // 9) Set the origin to the current record number. The other dimensions have origin 0.
-        time_origin[0] = timeIdx;
-        origin[0] = timeIdx;
-        // 10) Write the data at the specified origin.
-        writer.write("rh", origin, rhData);
-        writer.write("T", origin, tempData);
-        writer.write("time", time_origin, timeData);
-      }
-      return writer; /* DOCS-IGNORE */
-    } catch (IOException e) {
-      logger.log(yourCreateNetcdfFileErrorMsgTxt);
-    }
-    return null; /* DOCS-IGNORE */
   }
 
   /**

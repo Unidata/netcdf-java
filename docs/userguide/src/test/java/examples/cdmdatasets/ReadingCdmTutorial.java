@@ -1,15 +1,16 @@
 package examples.cdmdatasets;
 
-import ucar.ma2.*;
+import ucar.array.*;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import ucar.nc2.internal.util.DiskCache;
-import ucar.nc2.write.Ncdump;
+import ucar.nc2.write.NcdumpArray;
 import ucar.unidata.util.test.TestLogger;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.Arrays;
 
 public class ReadingCdmTutorial {
   // logs error/info message in memory and can be accessed from test functions
@@ -52,8 +53,8 @@ public class ReadingCdmTutorial {
       return;
     try {
       // sectionSpec is string specifying a range of data, eg ":,1:2,0:3"
-      Array data = v.read(sectionSpec);
-      String arrayStr = Ncdump.printArray(data, varName, null);
+      Array data = v.readArray(new Section(sectionSpec));
+      String arrayStr = NcdumpArray.printArray(data, varName, null);
       logger.log(arrayStr);
     } catch (IOException | InvalidRangeException e) {
       logger.log(yourReadVarErrorMsgTxt, e);
@@ -68,7 +69,7 @@ public class ReadingCdmTutorial {
    * @throws IOException
    */
   public static Array readAllVarData(Variable v) throws IOException {
-    Array data = v.read();
+    Array data = v.readArray();
     return data; /* DOCS-IGNORE */
   }
 
@@ -83,10 +84,8 @@ public class ReadingCdmTutorial {
   public static Array readByOriginAndSize(Variable v) throws IOException, InvalidRangeException {
     int[] origin = new int[] {2, 0, 0};
     int[] size = new int[] {1, 3, 4};
-    Array data3D = v.read(origin, size);
-    // remove dimensions of length 1
-    Array data2D = data3D.reduce();
-    return data2D; /* DOCS-IGNORE */
+    Array data = v.readArray(new Section(origin, size));
+    return data; /* DOCS-IGNORE */
   }
 
   /**
@@ -104,8 +103,8 @@ public class ReadingCdmTutorial {
     // read each time step, one at a time
     for (int i = 0; i < varShape[0]; i++) {
       origin[0] = i;
-      Array data2D = v.read(origin, size).reduce(0);
-      logger.log(Ncdump.printArray(data2D, "T", null));
+      Array data = v.readArray(new Section(origin, size));
+      logger.log(NcdumpArray.printArray(data, "T", null));
     }
   }
 
@@ -118,7 +117,7 @@ public class ReadingCdmTutorial {
    * @throws InvalidRangeException
    */
   public static Array readSubset(Variable v) throws IOException, InvalidRangeException {
-    Array data = v.read("2,0:2,1:3");
+    Array data = v.readArray(new Section("2,0:2,1:3"));
     return data; /* DOCS-IGNORE */
   }
 
@@ -131,7 +130,7 @@ public class ReadingCdmTutorial {
    * @throws InvalidRangeException
    */
   public static Array readByStride(Variable v) throws IOException, InvalidRangeException {
-    Array data = v.read("2,0:2,0:3:2");
+    Array data = v.readArray(new Section("2,0:2,0:3:2"));
     return data; /* DOCS-IGNORE */
   }
 
@@ -149,7 +148,7 @@ public class ReadingCdmTutorial {
     ranges.add(new Range(2, 2));
     ranges.add(new Range(0, 2));
     ranges.add(new Range(0, 3, 2));
-    Array data = v.read(ranges);
+    Array data = v.readArray(new Section(ranges));
     return data; /* DOCS-IGNORE */
   }
 
@@ -172,8 +171,8 @@ public class ReadingCdmTutorial {
     // loop time steps
     for (int i = 0; i < varShape[0]; i++) {
       ranges.set(0, new Range(i, i));
-      Array data2D = v.read(ranges).reduce(0);
-      logger.log(Ncdump.printArray(data2D, "T", null));
+      Array data = v.readArray(new Section(ranges));
+      logger.log(NcdumpArray.printArray(data, "T", null));
     }
   }
 
@@ -185,43 +184,13 @@ public class ReadingCdmTutorial {
    * @throws IOException
    * @throws InvalidRangeException
    */
-  public static List<int[]> convertRangesToSection(Variable v, List<Range> ranges)
-      throws IOException, InvalidRangeException {
-    // a builder is used to create or modify a section
-    Section.Builder builder = new Section.Builder();
-    builder.appendRanges(ranges);
-    Section section = builder.build();
+  public static List<int[]> convertRangesToSection(List<Range> rangeList) {
+    Section section = new Section(rangeList);
 
     // convert section to equivalent origin, size arrays
     int[] origins = section.getOrigin();
     int[] shape = section.getShape();
     return Arrays.asList(origins, shape); /* DOCS-IGNORE */
-  }
-
-  /**
-   * Tutorial code snippet to read numeric scalar
-   * 
-   * @param v: variable to be read
-   * @return array scalar values as double, float, and int types
-   * @throws IOException
-   */
-  public static List<Object> readScalars(Variable v) throws IOException {
-    double dval = v.readScalarDouble();
-    float fval = v.readScalarFloat();
-    int ival = v.readScalarInt();
-    return Arrays.asList(dval, fval, ival); /* DOCS-IGNORE */
-  }
-
-  /**
-   * Tutorial code snippet to read string scalar
-   * 
-   * @param v: variable to be read
-   * @return string variable
-   * @throws IOException
-   */
-  public static String readStringScalar(Variable v) throws IOException {
-    String sval = v.readScalarString();
-    return sval; /* DOCS-IGNORE */
   }
 
   /**
@@ -232,7 +201,7 @@ public class ReadingCdmTutorial {
    * @throws IOException
    */
   public static List iterateForLoop(Variable v) throws IOException {
-    Array data = v.read();
+    Array data = v.readArray();
     List list = new ArrayList<Double>(); /* DOCS-IGNORE */
 
     int[] shape = data.getShape();
@@ -240,7 +209,7 @@ public class ReadingCdmTutorial {
     for (int i = 0; i < shape[0]; i++) {
       for (int j = 0; j < shape[1]; j++) {
         for (int k = 0; k < shape[2]; k++) {
-          double dval = data.getDouble(index.set(i, j, k));
+          double dval = (double)data.get(index.set(i, j, k));
           list.add(dval); /* DOCS-IGNORE */
         }
       }
@@ -255,36 +224,13 @@ public class ReadingCdmTutorial {
    * @return sum of iterated data
    * @throws IOException
    */
-  public static double indexIterator(Variable v) throws IOException, InvalidRangeException {
-    Array data = v.read();
+  public static double dataIterator(Variable v) throws IOException, InvalidRangeException {
+    Array data = v.readArray();
     double sum = 0.0;
 
-    IndexIterator ii = data.getIndexIterator();
+    Iterator ii = data.iterator();
     while (ii.hasNext()) {
-      sum += ii.getDoubleNext();
-    }
-    return sum; /* DOCS-IGNORE */
-  }
-
-  /**
-   * Tutorial code snippet to iterate data using a list of ranges
-   * 
-   * @param v: variable to be read
-   * @return sum of iterated data
-   * @throws IOException
-   */
-  public static double rangeIterator(Variable v) throws IOException, InvalidRangeException {
-    Array data = v.read();
-    int[] dataShape = data.getShape();
-    List ranges = new ArrayList();
-    for (int i = 0; i < dataShape.length; i++) {
-      ranges.add(new Range(0, dataShape[i] - 1, 5));
-    }
-
-    double sum = 0.0;
-    IndexIterator ii = data.getRangeIterator(ranges);
-    while (ii.hasNext()) {
-      sum += ii.getDoubleNext();
+      sum += (double)ii.next();
     }
     return sum; /* DOCS-IGNORE */
   }
@@ -297,7 +243,7 @@ public class ReadingCdmTutorial {
    * @throws IOException
    */
   public static List castDataArray(Variable v) throws IOException {
-    ArrayDouble.D3 data = (ArrayDouble.D3) v.read();
+    ArrayDouble data = (ArrayDouble) v.readArray();
     List list = new ArrayList<Double>(); /* DOCS-IGNORE */
 
     int[] shape = data.getShape();
@@ -311,44 +257,6 @@ public class ReadingCdmTutorial {
       }
     }
     return list; /* DOCS-IGNORE */
-  }
-
-  /**
-   * Tutorial code snippet reorder Array indices
-   * 
-   * @param data
-   * @param origin
-   * @param shape
-   * @param stride
-   * @throws InvalidRangeException
-   */
-  public static void indexManipulation(Array data, int[] origin, int[] shape, int[] stride)
-      throws InvalidRangeException {
-    // public Array flip(int dim);
-    Array reversedData = data.flip(0); // reverse time dimension
-    // public Array permute(int[] dims);
-    Array permutedData = data.permute(new int[] {1, 2, 0}); // time becomes last dimension
-    // public Array section(int[] origin, int[] shape, int[] stride);
-    Array data1D = data.section(origin, shape, stride); // 1D array of measurements at first lat/lon
-    // public Array sectionNoReduce(int[] origin, int[] , int[] stride);
-    Array data3D = data.sectionNoReduce(origin, shape, stride); // 3D array of measurements
-    // public Array reduce();
-    Array reducedData = data3D.reduce(); // same as data1D
-    // public Array slice(int dim, int val);
-    Array slideData = data.slice(0, 10); // 2D array of measurements for 10th time step
-    // public Array transpose( int dim1, int dim2);
-    Array transposedData = data.transpose(1, 2); // transpose lat and lon dimensions
-  }
-
-  /**
-   * Tutorial code snippet to get backing array of data
-   * 
-   * @param data
-   * @return 1D java array
-   */
-  public static double[] get1DArray(Array data) {
-    double[] javaArray = (double[]) data.get1DJavaArray(DataType.DOUBLE);
-    return javaArray; /* DOCS-IGNORE */
   }
 
   /**

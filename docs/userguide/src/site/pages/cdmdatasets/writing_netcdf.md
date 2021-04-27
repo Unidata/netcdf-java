@@ -93,26 +93,7 @@ The following examples demonstrate several ways to write data to an opened file.
 {% endcapture %}
 {{ rmd | markdownify }}
 
-3) Writing a String array:
-
-{% capture rmd %}
-{% includecodeblock netcdf-java&docs/userguide/src/test/java/examples/cdmdatasets/WritingNetcdfTutorial.java&writeStringArray %}
-{% endcapture %}
-{{ rmd | markdownify }}
-
-4) Writing scalar data:
-
-{% capture rmd %}
-{% includecodeblock netcdf-java&docs/userguide/src/test/java/examples/cdmdatasets/WritingNetcdfTutorial.java&writeScalarData %}
-{% endcapture %}
-{{ rmd | markdownify }}
- 
-5) Netcdf files may include unlimited (record) dimensions. To write one record at a time along the record dimentsion:
-
-{% capture rmd %}
-{% includecodeblock netcdf-java&docs/userguide/src/test/java/examples/cdmdatasets/WritingNetcdfTutorial.java&writeRecordOneAtATime %}
-{% endcapture %}
-{{ rmd | markdownify }}
+*Note* that because `Arrays` are immutable, writing record variables (unlimited dimensions) will require multiple write operations.
 
 #### Writing to a netCDF-4 file with compression (version 4.5)
 

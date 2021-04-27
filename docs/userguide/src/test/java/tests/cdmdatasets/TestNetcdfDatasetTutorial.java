@@ -3,7 +3,7 @@ package tests.cdmdatasets;
 import examples.cdmdatasets.NetcdfDatasetTutorial;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import ucar.ma2.DataType;
+import ucar.array.*;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.DatasetUrl;
@@ -58,15 +58,16 @@ public class TestNetcdfDatasetTutorial {
       // get packed var
       Variable scaledvar = ncfile.findVariable("scaledvar");
       assertThat((Object) scaledvar).isNotNull();
-      assertThat(scaledvar.getDataType()).isEqualTo(DataType.FLOAT);
+      assertThat(scaledvar.getArrayType()).isEqualTo(ArrayType.FLOAT);
 
       assertThat(scaledvar.attributes().hasAttribute("scale_factor")).isTrue();
       double scale_factor = scaledvar.attributes().findAttributeDouble("scale_factor", 1.0);
       assertThat(scaledvar.attributes().hasAttribute("add_offset")).isTrue();
       double add_offset = scaledvar.attributes().findAttributeDouble("add_offset", 1.0);
 
+      Object packed_data = scaledvar.readArray().getScalar();
       double unpacked_data =
-          NetcdfDatasetTutorial.unpackData(scaledvar.readScalarShort(), scale_factor, add_offset);
+          NetcdfDatasetTutorial.unpackData((float)packed_data, scale_factor, add_offset);
       assertThat(unpacked_data).isNotNaN();
     }
   }
