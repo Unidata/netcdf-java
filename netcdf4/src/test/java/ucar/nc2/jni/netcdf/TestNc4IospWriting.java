@@ -16,6 +16,8 @@ import ucar.ma2.InvalidRangeException;
 import ucar.nc2.*;
 import ucar.nc2.ffi.netcdf.NetcdfClibrary;
 import ucar.nc2.util.CompareNetcdf2;
+import ucar.nc2.write.NetcdfFileFormat;
+import ucar.nc2.write.NetcdfFormatWriter;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import java.io.*;
@@ -202,4 +204,40 @@ public class TestNc4IospWriting {
     }
   }
 
+  @Test
+  public void testOpenExisting() throws IOException, InvalidRangeException {
+    String filename = tempFolder.newFile().getAbsolutePath();
+
+    NetcdfFormatWriter.Builder writerb =
+        NetcdfFormatWriter.createNewNetcdf4(NetcdfFileFormat.NETCDF4, filename, null).setFill(false);
+    writerb.addUnlimitedDimension("time");
+    writerb.addVariable("time", DataType.INT, "time");
+
+    // write
+    try (NetcdfFormatWriter writer = writerb.build()) {
+      Array data = Array.makeFromJavaArray(new int[] {0, 1, 2, 3});
+      writer.write("time", data);
+    }
+
+    // open existing, add data along unlimited dimension
+    try (NetcdfFormatWriter writer =
+        NetcdfFormatWriter.openExisting(filename).setFormat(NetcdfFileFormat.NETCDF4).setFill(false).build()) {
+      Variable time = writer.findVariable("time");
+      assert time.getSize() == 4 : time.getSize();
+
+      Array data = Array.makeFromJavaArray(new int[] {4, 5, 6});
+      int[] origin = new int[] {(int) time.getSize()};
+      writer.write("time", origin, data);
+    }
+
+    // read it back
+    try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
+      Variable vv = ncfile.getRootGroup().findVariableLocal("time");
+      assert vv.getSize() == 7 : vv.getSize();
+
+      Array expected = Array.makeArray(DataType.INT, 7, 0, 1);
+      Array data = vv.read();
+      assert CompareNetcdf2.compareData("time", expected, data);
+    }
+  }
 }

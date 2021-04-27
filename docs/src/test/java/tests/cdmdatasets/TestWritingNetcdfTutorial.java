@@ -214,7 +214,7 @@ public class TestWritingNetcdfTutorial {
 
     String datasetOut = tempFolder.newFile().getAbsolutePath();
     NetcdfFile ncOut = WritingNetcdfTutorial.writeWithCompression(ncIn, datasetOut,
-        Nc4Chunking.Strategy.standard, 0, false, NetcdfFileFormat.NETCDF4);
+        Nc4Chunking.Strategy.standard, 0, false);
 
     assertThat(ncOut).isNotNull();
     assertThat(new CompareNetcdf2().compare(ncIn, ncOut)).isTrue();

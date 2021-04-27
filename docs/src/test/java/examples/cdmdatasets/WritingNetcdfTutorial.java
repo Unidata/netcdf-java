@@ -303,11 +303,10 @@ public class WritingNetcdfTutorial {
    * @param strategyType
    * @param dl
    * @param shfl
-   * @param nc4format
    * @return created netCDF-4 file
    */
   public static NetcdfFile writeWithCompression(NetcdfFile inFile, String outFilePath,
-      Nc4Chunking.Strategy strategyType, int dl, boolean shfl, NetcdfFileFormat nc4format) {
+      Nc4Chunking.Strategy strategyType, int dl, boolean shfl) {
     // 1) Create an Nc4Chunking object
     Nc4Chunking.Strategy type = strategyType;
     int deflateLevel = dl;
@@ -315,7 +314,6 @@ public class WritingNetcdfTutorial {
     Nc4Chunking chunker = Nc4ChunkingStrategy.factory(type, deflateLevel, shuffle);
 
     // 3) Create a new netCDF-4 file builder with the given path and file name and Nc4Chunking object
-    NetcdfFileFormat format = nc4format;
     NetcdfFormatWriter.Builder builder =
         NetcdfFormatWriter.createNewNetcdf4(NetcdfFileFormat.NETCDF4, outFilePath, chunker);
 
