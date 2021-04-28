@@ -131,6 +131,6 @@ The difference is that when you select a dataset in the left window and then cli
 ## NcML
 
 When you open a dataset in the NcML tab, an NcML document containing all its metadata will be generated.
-From here, it’s easy to modify the dataset using the [powers of NcML](../ncml/basic_ncml_tutorial.html){:target="_blank"} and write the document out to disk.
+From here, it’s easy to modify the dataset using the [powers of NcML](/thredds/ncml/current/basic_ncml_tutorial.html){:target="_blank"} and write the document out to disk.
 
 {% include image.html file="utilities/ncml1.png" alt="NcML tab" caption="" %}

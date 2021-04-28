@@ -63,7 +63,7 @@ idescaped =[ !"#$%&'()*,:;<=>?\[\\\]^`{|}~]
 
 ## NcML
 
-An [NcML (netCDF Markup Language)](../ncml/ncml_overview.html){:target="_blank"} document uses [standard XML encoding and escaping](https://www.w3.org/TR/xml/#charsets){:target="_blank"}.
+An [NcML (netCDF Markup Language)](/thredds/ncml/current/index.html){:target="_blank"} document uses [standard XML encoding and escaping](https://www.w3.org/TR/xml/#charsets){:target="_blank"}.
 
 The chars `&`, `<`, `>` must be replaced by these [entity references](https://en.wikipedia.org/wiki/XML#Entity_references){:target="_blank"}: `&amp;`, `&lt;`, `&gt;`.
 In some places the single and double quote must be replaced by `&apos;` and `&quot;`, respectively.

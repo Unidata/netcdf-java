@@ -15,7 +15,7 @@ The `ucar.nc2.dataset` classes are an extension to the NetCDF API that provide s
 * remote access to OpenDAP, ADDE and THREDDS datasets.
 
 NcML is an XML document format that allows you to create "virtual" netCDF datasets, including combining multiple netCDF files into one dataset. 
-The [NcML](../ncml/basic_ncml_tutorial.html){:target="_blank"} tutorial explains how to create virtual datasets.
+The [NcML](/thredds/ncml/current/basic_ncml_tutorial.html){:target="_blank"} tutorial explains how to create virtual datasets.
 
 #### Using NetcdfDataset.openFile to open a NetcdfFile
 
