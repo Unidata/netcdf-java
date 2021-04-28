@@ -60,3 +60,6 @@ thredds.tgz
 
 # dependency check NVD files
 project-files/owasp-dependency-check/nvd
+
+# copies of shared files used by documentation build
+docs/**/_data/topnav.yml

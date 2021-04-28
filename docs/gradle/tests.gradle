@@ -1,0 +1,38 @@
+apply from: "$rootDir/gradle/any/testing.gradle"
+
+dependencies {
+  testImplementation enforcedPlatform(project(':netcdf-java-testing-platform'))
+
+  testCompile project(':cdm:cdm-core')
+  testCompile project(':cdm:cdm-s3')
+  testCompile project(':netcdf4')
+  testCompile project(':opendap')
+  testCompile project(':cdm-test-utils')
+  testCompile 'org.slf4j:slf4j-api'
+  testCompile 'junit:junit'
+  testCompile 'com.google.truth:truth'
+
+  testRuntimeOnly 'ch.qos.logback:logback-classic'
+}
+
+/////////////////////
+// Userguide Tests //
+/////////////////////
+
+sourceSets {
+  test.java.srcDirs = ['userguide/src/test/java']
+  test.resources.srcDirs = ['userguide/src/test/resources']
+}
+
+java {
+  sourceCompatibility = JavaVersion.VERSION_1_8
+  targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+// Will apply to "compileJava", "compileTestJava", "compileSourceSetJava", etc.
+tasks.withType(JavaCompile).all {
+  options.encoding = 'UTF-8'
+
+  // show deprecation details
+  options.compilerArgs = ['-Xlint:deprecation']
+}

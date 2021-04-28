@@ -1,9 +1,7 @@
 on:
   pull_request:
     paths:
-      - 'docs/src/site/**'
-      - 'docs/build.gradle'
-      - 'gradle/**'
+      - 'docs/**'
 
 jobs:
   check-doc-build:
@@ -23,7 +21,7 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
           restore-keys: ${{ runner.os }}-gradle
       - name: Build docs using Gradle
-        run: ./gradlew buildJekyllSite
+        run: ./gradlew buildAllJekyllSites
       - if: success()
         name: Upload a preview of the rendered html
         uses: actions/upload-artifact@v2
