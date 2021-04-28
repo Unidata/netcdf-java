@@ -10,12 +10,9 @@ apply plugin: 'org.sonarqube'
 
 apply from: "$rootDir/gradle/any/properties.gradle"  // For SonarQube user token.
 
-def branchName = 'unknown_branch'
-// If this is a git repo, grab the branch name to tag the sonarcloud analysis
-def headFile = Paths.get( "$rootDir", ".git", "HEAD" ).toFile()
-if(headFile.exists()) {
-  String head = headFile.getText('UTF-8')
-  branchName = head.split('refs/heads/').last()
+def branchName = getBranchName()
+if (branchName == '') {
+  branchName = 'unknown_branch'
 }
 
 gradle.projectsEvaluated {
@@ -100,7 +97,7 @@ gradle.projectsEvaluated {
             properties['sonar.java.test.libraries'] ?: []).flatten()
         properties['sonar.java.libraries'] = nukeDupesAndNonExistent(libraries)
         properties['sonar.java.test.libraries'] = ''
-        properties['sonar.branch.name'] = branchName
+        properties['sonar.branch.name'] = getBranchName()
       }
     }
   }

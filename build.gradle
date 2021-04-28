@@ -53,7 +53,22 @@ allprojects {
 // Matches Maven's "project.description".
 description = 'The Unidata netCDF-Java library (aka CDM).'
 
+
+import java.nio.file.Paths
 import java.text.SimpleDateFormat
+
+def getBranchName(mustExist=false) {
+  def branchName = ''
+  // If this is a git repo, grab the branch name to tag the sonarcloud analysis
+  def headFile = Paths.get("$rootDir", ".git", "HEAD").toFile()
+  if (headFile.exists()) {
+    String head = headFile.getText('UTF-8')
+    branchName = head.split('refs/heads/').last()
+  } else if (mustExist) {
+    throw new FileNotFoundException("The task calling this function requires that it be ran from a git repository. Cannot find ${headFile}.")
+  }
+  return branchName
+}
 
 // These will be inherited by subprojects: http://goo.gl/5mvqf7
 // After declaration, they should NOT be referred to using the "ext" namespace, instead preferring e.g.
