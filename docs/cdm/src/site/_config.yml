@@ -13,9 +13,6 @@ site_title: CDM Documentation
 # this appears in the footer
 site_topic: CDM Documentation
 
-# if you're using Github, provide the basepath to the branch you've created for reviews. If not, leave this value blank.
-github_editme_path:
-
 # if you have google-analytics ID, put it in. if not, edit this value to blank.
 # e.g. google_analytics: UA-92978945-1
 google_analytics: UA-92978945-1
@@ -24,12 +21,7 @@ google_analytics: UA-92978945-1
 host: 127.0.0.1
 
 # the port where the preview is rendered. You can leave this as is unless you have other Jekyll builds using this same port that might cause conflicts. in that case, use another port such as 4006.
-port: 4005
-
-# these are the files and directories that jekyll will exclude from the build
-#exclude:
-#  - Gemfile.lock
-
+port: 4007
 
 # used as a contact email and subject line for the Feedback link in the top navigation bar
 feedback_email: support-netcdf-java@unidata.ucar.edu
@@ -75,13 +67,10 @@ sidebars:
   - cdm_sidebar
 
 # project logo (32x32), name, main landing page  (currently used in the footer)
-project_logo: https://www.unidata.ucar.edu/images/logos/thredds_netcdf-32x32.png
-project_name: netCDF-Java
-project_landing_page: https://unidata.ucar.edu/software/netcdf-java/
+project_logo: https://www.unidata.ucar.edu/images/logos/cdm-32x32.png
+project_name: Common Data Model
+project_landing_page: https://www.unidata.ucar.edu/projects/index.html#cdm
 
-# the description is used in the feed.xml file
-description: "This is a documentation site for the CDM, which is related to the THREDDS Project."
-
-# needed for sitemap.xml file only
+# needed for sitemap.xml
 # must include trailing slash, leave off the version :-)
-base_docs_url: https://docs.unidata.ucar.edu/cdm/
+base_docs_url: https://docs.unidata.ucar.edu/thredds/cdm/
