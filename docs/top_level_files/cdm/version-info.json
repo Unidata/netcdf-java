@@ -1,0 +1,9 @@
+{
+  "releases" : [
+    {
+      "version" : "4.0 (current)",
+      "include" : "1",
+      "docURL" : "https://docs.unidata.ucar.edu/thredds/cdm/current/index.html"
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "releases" : [
+    {
+      "version" : "2.2 (current)",
+      "include" : "1",
+      "docURL" : "https://docs.unidata.ucar.edu/thredds/ncml/current/index.html"
+    }
+  ]
+}
