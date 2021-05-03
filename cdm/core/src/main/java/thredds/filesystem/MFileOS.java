@@ -52,14 +52,10 @@ public class MFileOS implements MFile {
   }
 
   @Override
-  public long getLastModified() {
-    return lastModified;
-  }
+  public long getLastModified() { return lastModified; }
 
   @Override
-  public long getLength() {
-    return file.length();
-  }
+  public long getLength() { return file.length(); }
 
   @Override
   public boolean isDirectory() {

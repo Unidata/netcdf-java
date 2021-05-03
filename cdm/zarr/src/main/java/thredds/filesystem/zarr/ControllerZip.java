@@ -22,18 +22,18 @@ public class ControllerZip extends ControllerOS implements MController {
 
   @Override
   public Iterator<MFile> getInventoryAll(CollectionConfig mc, boolean recheck) {
-   String path = mc.getDirectoryName();
-   if (path.startsWith(prefix)) {
-     path = path.substring(prefix.length());
-   }
+    String path = mc.getDirectoryName();
+    if (path.startsWith(prefix)) {
+      path = path.substring(prefix.length());
+    }
 
-   try {
-     MFileZip mfile = new MFileZip(path);
-     return new MFileIteratorLeaves(mfile);
-   } catch (IOException ioe) {
-     logger.warn(ioe.getMessage(), ioe);
-     return null;
-   }
+    try {
+      MFileZip mfile = new MFileZip(path);
+      return new MFileIteratorLeaves(mfile);
+    } catch (IOException ioe) {
+      logger.warn(ioe.getMessage(), ioe);
+      return null;
+    }
   }
 
   @Override
@@ -103,7 +103,7 @@ public class ControllerZip extends ControllerOS implements MController {
           continue;
         }
         // get truncate path to one level below current path
-        Path childPath = entryPath.subpath(0, relativePath.getNameCount()+1);
+        Path childPath = entryPath.subpath(0, relativePath.getNameCount() + 1);
         fileNames.add(childPath);
       }
 

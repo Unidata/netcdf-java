@@ -113,10 +113,14 @@ public class MFileZip implements MFile {
   }
 
   @Override
-  public String getPath() { return rootPath.toString() + relativePath.toString(); }
+  public String getPath() {
+    return rootPath.toString() + relativePath.toString();
+  }
 
   @Override
-  public String getName() { return relativePath.toString(); }
+  public String getName() {
+    return relativePath.toString();
+  }
 
   @Override
   public MFile getParent() throws IOException {
@@ -129,18 +133,30 @@ public class MFileZip implements MFile {
   }
 
   @Override
-  public Object getAuxInfo() { return auxInfo; }
+  public Object getAuxInfo() {
+    return auxInfo;
+  }
 
   @Override
-  public void setAuxInfo(Object info) { auxInfo = info; }
+  public void setAuxInfo(Object info) {
+    auxInfo = info;
+  }
 
-  public ZipFile getRoot() { return root; }
+  public ZipFile getRoot() {
+    return root;
+  }
 
-  public Path getRootPath() { return rootPath; }
+  public Path getRootPath() {
+    return rootPath;
+  }
 
-  public Path getRelativePath() { return relativePath; }
+  public Path getRelativePath() {
+    return relativePath;
+  }
 
-  public List<ZipEntry> getLeafEntries() { return leafEntries; }
+  public List<ZipEntry> getLeafEntries() {
+    return leafEntries;
+  }
 
   public static class Provider implements MFileProvider {
 
