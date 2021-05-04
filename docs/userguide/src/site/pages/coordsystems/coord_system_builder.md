@@ -12,7 +12,7 @@ In order to use a dataset at the scientific datatype layer, the dataset's coordi
 
 {% include image.html file="coordsystems/CoordSys.png" alt="Coord Sys Object Model" caption="" %}
 
-For more details, see the [CDM Object Model](/thredds/cdm/current/index.html){:target="_blank"}.
+For more details, see the [CDM Object Model](../developer/cdm_overview.html){:target="_blank"}.
 
 A CoordSysBuilderIF class must be created for each type of dataset that encodes their coordinate systems differently. This obviously is burdensome, and data providers are encouraged to use <a href="https://www.unidata.ucar.edu/software/netcdf/conventions.html" target="_blank">existing Conventions</a> for writing their datasets. If those are inadequate, then the next best thing is to define and document a new Convention in collaboration with others with similar needs. If you do so, read <a href="https://www.unidata.ucar.edu/software/netcdf/documentation/NUG/_best_practices.html" target="_blank">Writing NetCDF Files: Best Practices</a>, look at other Convention examples, and get feedback form others before committing to it. Send us a URL to your documentation, and we will add it to the <a href="https://www.unidata.ucar.edu/software/netcdf/docs/conventions.html" target="_blank">NetCDF Conventions page</a>.
 

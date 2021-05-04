@@ -21,12 +21,6 @@ import edu.ucar.unidata.site.jekyll.tasks.ServeTask
 ////////////////////////
 
 final def docSetsInfo = [
-  cdm: [
-    rawRepoName: 'docs-cdm',
-    version: '4.0',
-    isDocSet: false,
-    hasDocVersionFile: true
-  ],
   developer: [
     rawRepoName: 'docs-netcdf-java',
     version: "$project.docVersion",
@@ -249,7 +243,6 @@ docVersionTypes.each {docVersionType ->
 }
 
 docSetsInfo.each { docSet, docSetInfo ->
-  def docVersionFileTaskAdded = false
   docVersionTypes.each { docType ->
     def nexusTaskName = makeNexusTaskName(docType, docSet)
     def versioned = docType != 'current'
@@ -261,7 +254,6 @@ docSetsInfo.each { docSet, docSetInfo ->
     }
     def descriptionPath = getPathForDescription(docSetInfo, versioned)
     def nexusRawRepoName = getRawRepoName(docSetInfo)
-    def topLevelRawRepoDir = getTopLevelRawRepoDir(docSetInfo)
 
     def pubAsTask = tasks.register("publishAs${nexusTaskName}", PublishToRawRepoTask) {
       description  "Publish ${docSet} to Nexus under ${descriptionPath}."
@@ -279,25 +271,29 @@ docSetsInfo.each { docSet, docSetInfo ->
       searchQueryParameters.name = "${nexusPath}/*"
     }
 
-    if ((docSetInfo.hasDocVersionFile) && (!docVersionFileTaskAdded)) {
-      def pubTopLevelVersionFilesTaskName = "update${topLevelRawRepoDir.capitalize()}TopLevelVersionFiles"
-      pubTopLevelVersionFilesTaskName = pubTopLevelVersionFilesTaskName.replace('-java', 'Java')
-      def pubTopLevelVersionFilesTask = tasks.register("${pubTopLevelVersionFilesTaskName}", PublishToRawRepoTask) {
-        description "Publish ${topLevelRawRepoDir}_doc_versions.json and index.html to Nexus directly under ${topLevelRawRepoDir}/ of the ${nexusRawRepoName} repository."
-        group 'Publishing-docset'
-        repoName = "${nexusRawRepoName}"
-        publishSrc = file("${projectDir}/top_level_files/${topLevelRawRepoDir}/")
-        destPath "${topLevelRawRepoDir}/"
-      }
-      // add to both publish tasks to ensure the top level files are updated
-      tasks.named(getPublishAllTaskName('jekyll', 'current')).configure({dependsOn pubTopLevelVersionFilesTask})
-      tasks.named(getPublishAllTaskName('jekyll', 'versioned')).configure({dependsOn pubTopLevelVersionFilesTask})
-      docVersionFileTaskAdded = true
-    }
-
     // register tasks with the appropriate aggregator tasks
     tasks.named(getPublishAllTaskName('jekyll', docType)).configure({dependsOn pubAsTask})
     tasks.named(getDeleteAllTaskName('jekyll', docType)).configure({dependsOn deleteTask})
+  }
+}
+
+// publish version-info.json files to the top level of the appropriate documentation raw repository
+docSetsInfo.each { docSet, docSetInfo ->
+  if (docSetInfo.hasDocVersionFile) {
+    def topLevelRawRepoDir = getTopLevelRawRepoDir(docSetInfo)
+    def nexusRawRepoName = getRawRepoName(docSetInfo)
+    def pubTopLevelVersionFilesTaskName = "update${topLevelRawRepoDir.capitalize()}TopLevelVersionFiles"
+    pubTopLevelVersionFilesTaskName = pubTopLevelVersionFilesTaskName.replace('-java', 'Java')
+    def pubTopLevelVersionFilesTask = tasks.register("${pubTopLevelVersionFilesTaskName}", PublishToRawRepoTask) {
+      description "Publish ${topLevelRawRepoDir}_doc_versions.json Nexus directly under ${topLevelRawRepoDir}/ of the ${nexusRawRepoName} repository."
+      group 'Publishing-docset'
+      repoName = "${nexusRawRepoName}"
+      publishSrc = file("${projectDir}/${docSet}/top_level_repo_files/")
+      destPath "${topLevelRawRepoDir}/"
+    }
+    // add to both publish tasks to ensure the top level files are updated
+    tasks.named(getPublishAllTaskName('jekyll', 'current')).configure({ dependsOn pubTopLevelVersionFilesTask })
+    tasks.named(getPublishAllTaskName('jekyll', 'versioned')).configure({ dependsOn pubTopLevelVersionFilesTask })
   }
 }
 
@@ -340,7 +336,7 @@ gradle.projectsEvaluated {
     def taskType = docVersionType.capitalize()
     def versioned = docVersionType != 'current'
     // since this is for javadoc publishing, just pick a docSetInfo object that is versioned
-    // following netCDF-java (i.e. not cdm or ncml)
+    // following netCDF-java (so not ncml)
     def docSetInfo = docSetsInfo.get('userguide')
     def nexusPath = getNexusPath(docSetInfo, versioned)
     def descriptionPath = getPathForDescription(docSetInfo, versioned)
@@ -353,7 +349,7 @@ gradle.projectsEvaluated {
         dependsOn tasks.named("build${javadocSet}")
         repoName = "${nexusRawRepoName}"
         publishSrc = tasks.findByPath("build${javadocSet}").destinationDir
-        destPath "${nexusPath}/${javadocSetInfo.name}/"
+        destPath = "${nexusPath}/${javadocSetInfo.javadocsetName}/"
       }
 
       def deleteJavadocTask = tasks.register("delete${taskType}${javadocSet}FromNexus", DeleteFromNexusTask) {

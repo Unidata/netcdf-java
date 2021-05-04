@@ -1,7 +1,7 @@
 ---
 title: CDM NetCDF mapping
 last_updated: 2018-10-23
-sidebar: cdm_sidebar
+sidebar: developer_sidebar
 permalink: cdm_netcdf_mapping.html
 toc: false
 ---

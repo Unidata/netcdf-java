@@ -1,7 +1,7 @@
 ---
 title: CDM Object Names
 last_updated: 2019-07-22
-sidebar: cdm_sidebar 
+sidebar: developer_sidebar
 permalink: cdm_objectnames.html
 toc: false
 ---

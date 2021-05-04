@@ -58,7 +58,7 @@ def getNexusPath(docSetInfo, versioned = true) {
   // if netcdf-java docset, publish docs on develop branch under 'dev' instead of 'current'.
   // ncml and cdm do not have a 'dev' concept at the moment
   if (topLevelRawRepoDir == 'netcdf-java') {
-    persistentNameNexus = branchName == 'develop' ? 'dev' : 'current'
+    persistentNameNexus = branchName != 'develop' ? 'dev' : 'current'
   }
   def nexusVersion = versioned ? "${docSetInfo.version}" : "${persistentNameNexus}"
   "${topLevelRawRepoDir}/${nexusVersion}"

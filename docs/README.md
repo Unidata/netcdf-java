@@ -4,14 +4,6 @@ All gradle commands shown below must be run from the top level of the netCDF-Jav
 
 ## Jekyll-based documentation
 
-* Common Data Model
-  * docset_name: `cdm`
-  * location: `cdm/`, `top_level_files/cdm/`
-  * raw repository name: `docs-cdm`
-  * version: `4.0` (not tied to netCDF-java)
-  * versioned top level url: `https://docs.unidata.ucar.edu/thredds/cdm/4.0/index.html`
-  * types: `versioned` or `current`
-
 * netCDF Markup Language
   * docset_name: `ncml`
   * location: `ncml/`, `top_level_files/ncml/`
@@ -44,7 +36,6 @@ All gradle commands shown below must be run from the top level of the netCDF-Jav
 ### Gradle Tasks
 
 * Build
-  * `cdm`: `./gradlew :docs:buildCdm`
   * `developer`: `./gradlew :docs:buildDeveloper`
   * `ncml`: `./gradlew :docs:buildNcml`
   * `userguide`: `./gradlew :docs:buildUserGuide`
