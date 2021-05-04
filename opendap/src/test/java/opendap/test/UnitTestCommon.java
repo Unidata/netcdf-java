@@ -23,7 +23,7 @@ public abstract class UnitTestCommon {
   static final boolean DEBUG = false;
 
   // Look for these to verify we have found the thredds root
-  static final String[] DEFAULTSUBDIRS = {"httpservices", "cdm", "opendap"};
+  static final String[] DEFAULTSUBDIRS = {"httpservices", "cdm-core", "opendap"};
 
   static String threddsroot;
   static String threddsServer;
@@ -82,6 +82,7 @@ public abstract class UnitTestCommon {
           root = root.replace('\\', '/'); // only use forward slash
           return root;
         } catch (IOException ioe) {
+          System.out.println(ioe);
         }
       }
     }

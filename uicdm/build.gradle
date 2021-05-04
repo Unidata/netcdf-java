@@ -9,7 +9,7 @@ dependencies {
   testImplementation enforcedPlatform(project(':netcdf-java-testing-platform'))
 
   // todo: a lot of these could probably be runtimeOnly
-  compile project(':cdm:cdm-core')
+  compile project(':cdm-core')
   compile project(':bufr')
   compile project(':grib')
   compile project(':httpservices')
@@ -39,7 +39,7 @@ dependencies {
   testImplementation 'junit:junit'
 
   runtimeOnly project(':cdmr')
-  runtimeOnly project(':cdm:cdm-s3')
+  runtimeOnly project(':cdm-s3')
 
   // constrained by netcdf-java-platform
   runtimeOnly 'ch.qos.logback:logback-classic'

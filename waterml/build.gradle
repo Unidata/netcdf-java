@@ -8,7 +8,7 @@ dependencies {
   api enforcedPlatform(project(':netcdf-java-platform'))
   testImplementation enforcedPlatform(project(':netcdf-java-testing-platform'))
 
-  api project(':cdm:cdm-core')
+  api project(':cdm-core')
 
   compile('org.n52.sensorweb:52n-xml-waterML-v20') {
     exclude group: 'stax', module: 'stax-api'

@@ -55,9 +55,9 @@ public class TestS3Read {
   private static final String AWS_SHARED_CREDENTIALS_FILE_PROP =
       ProfileFileSystemSetting.AWS_SHARED_CREDENTIALS_FILE.property();
   private static final String CUSTOM_AWS_SHARED_CREDENTIALS_FILE_GOOD_DEFAULT =
-      "s3test_shared_credentials_file_good_default";
+          "s3test_shared_credentials_file_good_default";
   private static final String CUSTOM_AWS_SHARED_CREDENTIALS_FILE_BAD_DEFAULT =
-      "s3test_shared_credentials_file_bad_default";
+          "s3test_shared_credentials_file_bad_default";
   private static final String GOOD_PROFILE_NAME = "goes-profile";
   private static final String BAD_PROFILE_NAME = "no-goes-profile";
 

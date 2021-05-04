@@ -54,7 +54,7 @@ configurations.all {
     // converts every JCL call to an slf4j call. We can see the first-level dependencies that drag in
     // "commons-logging" by commenting-out the rule below and running:
     //
-    //    >./gradlew -q :cdm:cdm-core:dependencyInsight --configuration compileClasspath --dependency commons-logging
+    //    >./gradlew -q :cdm-core:dependencyInsight --configuration compileClasspath --dependency commons-logging
     //
     //    commons-logging:commons-logging:1.2
     //    +--- org.apache.httpcomponents:httpclient:4.5.12

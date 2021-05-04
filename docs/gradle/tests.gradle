@@ -3,8 +3,8 @@ apply from: "$rootDir/gradle/any/testing.gradle"
 dependencies {
   testImplementation enforcedPlatform(project(':netcdf-java-testing-platform'))
 
-  testCompile project(':cdm:cdm-core')
-  testCompile project(':cdm:cdm-s3')
+  testCompile project(':cdm-core')
+  testCompile project(':cdm-s3')
   testCompile project(':netcdf4')
   testCompile project(':opendap')
   testCompile project(':cdm-test-utils')

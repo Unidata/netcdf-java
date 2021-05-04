@@ -21,7 +21,7 @@ dependencies {
   // http://www.jgoodies.com/. Latest version is 1.9.0, but there is breakage when we try to upgrade.
   compile 'com.jgoodies:jgoodies-forms:1.6.0'
 
-  testImplementation project(':cdm:cdm-core')
+  testImplementation project(':cdm-core')
   testImplementation project(':cdm-test-utils')
 
   testImplementation 'org.codehaus.groovy:groovy-all' // for spock
