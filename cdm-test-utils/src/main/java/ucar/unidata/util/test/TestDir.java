@@ -9,7 +9,6 @@ import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import ucar.nc2.internal.util.AliasTranslator;
 import ucar.unidata.io.RandomAccessFile;
-import ucar.unidata.util.StringUtil2;
 import java.io.*;
 import java.lang.invoke.MethodHandles;
 import java.util.*;
@@ -56,8 +55,8 @@ import java.util.*;
  *        <tr>
  *        <td>cdmLocalTestDataDir
  *        <td>NA
- *        <td>../cdm/src/test/data
- *        <td>Level 1 test data directory (distributed with code and MAY be used in Unidata nightly testing).
+ *        <td>../cdm-core/src/test/data/
+ *        <td>Level 1 test data directory (distributed with code and MAY be used in PR testing on GitHub).
  *        <tr>
  *        <td>remoteTestServer
  *        <td>remotetestserver
@@ -78,24 +77,11 @@ public class TestDir {
   /** Unidata test data for the CDM. testdataDir + CdmUnitTest. */
   public static String cdmUnitTestDir;
 
-  /** The cdm-core local test data, use from any cdm submodule. */
-  public static String cdmLocalTestDataDir = "../core/src/test/data/";
+  /** The cdm-core local test data, use from any top level gradle subproject. */
+  public static String cdmLocalTestDataDir = "../cdm-core/src/test/data/";
 
-  /** The cdm-core local test data, use from cdm-test submodule. */
-  public static String cdmLocalFromTestDataDir = "../cdm/core/src/test/data/";
-
-  /** The cdm-core local test data, use from cdm-test submodule. */
-  public static String cdmLocalFromTop = "cdm/core/src/test/data/";
-
-  /** The module local test directory. Assumes pwd = top of module. TODO used in cdm-radial */
-  @Deprecated
-  public static String localTestDataDir = "src/test/data/";
-
-  /** cdm-test data directory (distributed with code but depends on data not in github) */
+  /** cdm-test data directory (distributed with code but can depend on data not in github (e.g. NcML files can reference data not in github) */
   public static String cdmTestDataDir = "../cdm-test/src/test/data/";
-
-  /** cdm-test data directory from cdm-core */
-  public static String cdmTestDataDirFromCore = "../../cdm-test/src/test/data/";
 
   //////////////////////////////////////////////////////////////////////
   // Various Test Server machines

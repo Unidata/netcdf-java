@@ -29,7 +29,7 @@ import java.util.List;
 @RunWith(Parameterized.class)
 public class TestCfDocDsgExamples {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-  private static final String cfDocDsgExamplesDir = TestDir.cdmLocalFromTestDataDir + "cfDocDsgExamples/";
+  private static final String cfDocDsgExamplesDir = TestDir.cdmLocalTestDataDir + "cfDocDsgExamples/";
 
   private static List<Object[]> getPointDatasets() {
     List<Object[]> result = new ArrayList<>();

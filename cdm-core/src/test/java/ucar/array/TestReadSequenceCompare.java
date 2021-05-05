@@ -42,7 +42,7 @@ public class TestReadSequenceCompare {
     try {
       TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "formats/bufr/userExamples", ff, result, false);
       result.add(
-          new Object[] {TestDir.cdmTestDataDirFromCore + "ucar/nc2/bufr/IUPT02_KBBY_281400_522246081.bufr.2018032814"});
+          new Object[] {TestDir.cdmTestDataDir + "ucar/nc2/bufr/IUPT02_KBBY_281400_522246081.bufr.2018032814"});
     } catch (IOException e) {
       e.printStackTrace();
     }

@@ -43,7 +43,7 @@ public class TestCdmrProblem {
 
   @Test
   public void testOpaqueDataType() throws Exception {
-    String localFilename = TestDir.cdmLocalFromTestDataDir + "hdf5/test_atomic_types.nc";
+    String localFilename = TestDir.cdmLocalTestDataDir + "hdf5/test_atomic_types.nc";
     Path path = Paths.get(localFilename);
     doOne(path);
     doTwo(path);
@@ -51,7 +51,7 @@ public class TestCdmrProblem {
 
   @Test
   public void testCdmrProblem2() throws Exception {
-    String localFilename = TestDir.cdmLocalFromTestDataDir + "dataset/SimpleGeos/hru_soil_moist_vlen_3hru_5timestep.nc";
+    String localFilename = TestDir.cdmLocalTestDataDir + "dataset/SimpleGeos/hru_soil_moist_vlen_3hru_5timestep.nc";
     Path path = Paths.get(localFilename);
     doOne(path);
     doTwo(path);

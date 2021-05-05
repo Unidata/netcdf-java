@@ -32,7 +32,7 @@ public class TestNestedStructuresEnhancement {
   @Ignore("cant deal with BUFR at the moment")
   @Test
   public void testNestedTable() throws IOException, InvalidRangeException {
-    String filename = TestDir.cdmLocalFromTestDataDir + "dataset/nestedTable.bufr";
+    String filename = TestDir.cdmLocalTestDataDir + "dataset/nestedTable.bufr";
     try (NetcdfFile ncfile = ucar.nc2.dataset.NetcdfDatasets.openFile(filename, null)) {
       logger.debug("Open {}", ncfile.getLocation());
       Sequence outer = (Sequence) ncfile.findVariable(BufrIosp.obsRecordName);
@@ -57,7 +57,7 @@ public class TestNestedStructuresEnhancement {
   @Ignore("cant deal with BUFR at the moment")
   @Test
   public void testNestedTableEnhanced() throws IOException, InvalidRangeException {
-    String filename = TestDir.cdmLocalFromTestDataDir + "dataset/nestedTable.bufr";
+    String filename = TestDir.cdmLocalTestDataDir + "dataset/nestedTable.bufr";
     try (NetcdfFile ncfile = ucar.nc2.dataset.NetcdfDatasets.openDataset(filename)) {
       logger.debug("Open {}", ncfile.getLocation());
       SequenceDS outer = (SequenceDS) ncfile.findVariable(BufrIosp.obsRecordName);

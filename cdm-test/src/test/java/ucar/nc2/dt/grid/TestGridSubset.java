@@ -432,7 +432,7 @@ public class TestGridSubset {
   @Test
   public void testSubsetCoordEdges() throws Exception {
     try (NetcdfDataset fooDataset =
-        NetcdfDatasets.openDataset(TestDir.cdmLocalFromTestDataDir + "ncml/subsetCoordEdges.ncml")) {
+        NetcdfDatasets.openDataset(TestDir.cdmLocalTestDataDir + "ncml/subsetCoordEdges.ncml")) {
       System.out.printf("testSubsetCoordEdges %s%n", fooDataset.getLocation());
       CompareNetcdf2 compare = new CompareNetcdf2();
       boolean ok = true;

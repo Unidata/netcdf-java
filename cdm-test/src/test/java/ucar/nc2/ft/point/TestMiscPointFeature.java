@@ -67,7 +67,7 @@ public class TestMiscPointFeature {
   // need a place to test individual datasets
   @Test
   public void testProblemProfile() throws IOException {
-    String location = TestDir.cdmLocalFromTestDataDir + "point/profileMultidimZJoin.ncml";
+    String location = TestDir.cdmLocalTestDataDir + "point/profileMultidimZJoin.ncml";
     CheckPointFeatureDataset checker = new CheckPointFeatureDataset(location, FeatureType.PROFILE, true);
     Assert.assertEquals("npoints", 50, checker.check());
   }
@@ -82,14 +82,14 @@ public class TestMiscPointFeature {
 
   @Test
   public void testProblemStation() throws IOException {
-    String location = TestDir.cdmLocalFromTestDataDir + "cfDocDsgExamples/H.2.4.1.ncml";
+    String location = TestDir.cdmLocalTestDataDir + "cfDocDsgExamples/H.2.4.1.ncml";
     CheckPointFeatureDataset checker = new CheckPointFeatureDataset(location, FeatureType.STATION, true);
     Assert.assertEquals("npoints", 100, checker.check());
   }
 
   @Test
   public void testProblemStation2() throws IOException {
-    String location = TestDir.cdmLocalFromTestDataDir + "point/stationMultidimUnlimited.nc";
+    String location = TestDir.cdmLocalTestDataDir + "point/stationMultidimUnlimited.nc";
     CheckPointFeatureDataset checker = new CheckPointFeatureDataset(location, FeatureType.STATION, true);
     Assert.assertEquals("npoints", 15, checker.check());
   }
@@ -97,21 +97,21 @@ public class TestMiscPointFeature {
   @Test
   @Ignore("Dont support multiple lat/lon coordinates for now")
   public void testProblemStationWithPreciseCoords() throws IOException {
-    String location = TestDir.cdmLocalFromTestDataDir + "cfDocDsgExamples/H.2.3.2.ncml";
+    String location = TestDir.cdmLocalTestDataDir + "cfDocDsgExamples/H.2.3.2.ncml";
     CheckPointFeatureDataset checker = new CheckPointFeatureDataset(location, FeatureType.STATION, true);
     Assert.assertEquals("npoints", 100, checker.check());
   }
 
   @Test
   public void testProblemStationProfile() throws IOException {
-    String location = TestDir.cdmLocalFromTestDataDir + "point/stationProfileSingle.ncml";
+    String location = TestDir.cdmLocalTestDataDir + "point/stationProfileSingle.ncml";
     CheckPointFeatureDataset checker = new CheckPointFeatureDataset(location, FeatureType.STATION_PROFILE, true);
     Assert.assertEquals("npoints", 9, checker.check());
   }
 
   @Test
   public void testProblemSection() throws IOException {
-    String location = TestDir.cdmLocalFromTestDataDir + "cfDocDsgExamples/H.6.3.1.ncml";
+    String location = TestDir.cdmLocalTestDataDir + "cfDocDsgExamples/H.6.3.1.ncml";
     CheckPointFeatureDataset checker = new CheckPointFeatureDataset(location, FeatureType.TRAJECTORY_PROFILE, true);
     Assert.assertEquals("npoints", 145, checker.check());
   }
@@ -126,7 +126,7 @@ public class TestMiscPointFeature {
 
   @Test
   public void testStationVarLevels() throws Exception {
-    String file = TestDir.cdmLocalFromTestDataDir + "point/stationData2Levels.ncml";
+    String file = TestDir.cdmLocalTestDataDir + "point/stationData2Levels.ncml";
     Formatter buf = new Formatter();
     try (FeatureDatasetPoint pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager
         .open(ucar.nc2.constants.FeatureType.STATION, file, null, buf)) {
@@ -179,7 +179,7 @@ public class TestMiscPointFeature {
 
   @Test
   public void testStationVarSingle() throws Exception {
-    String file = TestDir.cdmLocalFromTestDataDir + "point/stationSingle.ncml";
+    String file = TestDir.cdmLocalTestDataDir + "point/stationSingle.ncml";
     Formatter buf = new Formatter();
     try (FeatureDatasetPoint pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager
         .open(ucar.nc2.constants.FeatureType.STATION, file, null, buf)) {
@@ -202,7 +202,7 @@ public class TestMiscPointFeature {
 
   @Test
   public void testStationVarRagged() throws Exception {
-    String file = TestDir.cdmLocalFromTestDataDir + "point/stationRaggedContig.ncml";
+    String file = TestDir.cdmLocalTestDataDir + "point/stationRaggedContig.ncml";
     Formatter buf = new Formatter();
     try (FeatureDatasetPoint pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager
         .open(ucar.nc2.constants.FeatureType.STATION, file, null, buf)) {
@@ -226,7 +226,7 @@ public class TestMiscPointFeature {
 
   @Test
   public void testProfileSingleId() throws Exception {
-    String file = TestDir.cdmLocalFromTestDataDir + "point/profileSingle.ncml";
+    String file = TestDir.cdmLocalTestDataDir + "point/profileSingle.ncml";
     Formatter buf = new Formatter();
     try (FeatureDatasetPoint pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager
         .open(ucar.nc2.constants.FeatureType.PROFILE, file, null, buf)) {
@@ -248,7 +248,7 @@ public class TestMiscPointFeature {
 
   @Test
   public void testStationVarMulti() throws Exception {
-    String file = TestDir.cdmLocalFromTestDataDir + "point/stationMultidim.ncml";
+    String file = TestDir.cdmLocalTestDataDir + "point/stationMultidim.ncml";
     Formatter buf = new Formatter();
     try (FeatureDatasetPoint pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager
         .open(ucar.nc2.constants.FeatureType.STATION, file, null, buf)) {
@@ -271,7 +271,7 @@ public class TestMiscPointFeature {
 
   @Test
   public void testDataVars() throws Exception {
-    String file = TestDir.cdmLocalFromTestDataDir + "point/stationSingle.ncml";
+    String file = TestDir.cdmLocalTestDataDir + "point/stationSingle.ncml";
     Formatter buf = new Formatter();
     try (FeatureDatasetPoint pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager
         .open(ucar.nc2.constants.FeatureType.STATION, file, null, buf)) {
@@ -286,7 +286,7 @@ public class TestMiscPointFeature {
 
   @Test
   public void testAltUnits() throws Exception {
-    String file = TestDir.cdmLocalFromTestDataDir + "point/stationRaggedContig.ncml";
+    String file = TestDir.cdmLocalTestDataDir + "point/stationRaggedContig.ncml";
     Formatter buf = new Formatter();
     try (FeatureDatasetPoint pods = (FeatureDatasetPoint) FeatureDatasetFactoryManager
         .open(ucar.nc2.constants.FeatureType.STATION, file, null, buf)) {
@@ -302,7 +302,7 @@ public class TestMiscPointFeature {
   // make sure that try/with tolerates a null return from FeatureDatasetFactoryManager
   @Test
   public void testTryWith() throws IOException {
-    String location = TestDir.cdmLocalFromTestDataDir + "testWrite.nc";
+    String location = TestDir.cdmLocalTestDataDir + "testWrite.nc";
     Formatter errlog = new Formatter();
     try (FeatureDataset fdataset = FeatureDatasetFactoryManager.open(null, location, null, errlog)) {
       assert (fdataset == null);
@@ -311,7 +311,7 @@ public class TestMiscPointFeature {
 
   @Test
   public void testTryWithWrap() throws IOException {
-    String location = TestDir.cdmLocalFromTestDataDir + "testWrite.nc";
+    String location = TestDir.cdmLocalTestDataDir + "testWrite.nc";
     try (NetcdfDataset ncd = NetcdfDatasets.openDataset(location)) {
       Formatter errlog = new Formatter();
       try (FeatureDataset fdataset = FeatureDatasetFactoryManager.wrap(null, ncd, null, errlog)) {
@@ -351,7 +351,7 @@ public class TestMiscPointFeature {
   public void testFlatten() throws IOException { // kunicki
     Formatter formatter = new Formatter(System.err);
     try (FeatureDataset fd = FeatureDatasetFactoryManager.open(FeatureType.STATION,
-        TestDir.cdmLocalFromTestDataDir + "pointPre1.6/StandardPointFeatureIteratorIssue.ncml", null, formatter)) {
+        TestDir.cdmLocalTestDataDir + "pointPre1.6/StandardPointFeatureIteratorIssue.ncml", null, formatter)) {
       if (fd != null && fd instanceof FeatureDatasetPoint) {
         FeatureDatasetPoint fdp = (FeatureDatasetPoint) fd;
         DsgFeatureCollection fc = fdp.getPointFeatureCollectionList().get(0);

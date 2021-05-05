@@ -35,9 +35,9 @@ public class TestNcmlReaderProblems {
     // compare("file:" + TestCFPointDatasets.CFpointObs_topdir + "stationData2Levels.ncml");
     // compareDS("file:" + TestCFPointDatasets.CFpointObs_topdir + "stationData2Levels.ncml");
 
-    // compare("file:" + TestDir.cdmLocalFromTestDataDir + "cfDocDsgExamples/H.2.1.1.ncml");
-    compare("file:" + TestDir.cdmLocalFromTestDataDir + "point//stationData2Levels.ncml");
-    // compareVarData("file:" + TestDir.cdmLocalFromTestDataDir + "point//stationData2Levels.ncml", "trajectory");
+    // compare("file:" + TestDir.cdmLocalTestDataDir + "cfDocDsgExamples/H.2.1.1.ncml");
+    compare("file:" + TestDir.cdmLocalTestDataDir + "point//stationData2Levels.ncml");
+    // compareVarData("file:" + TestDir.cdmLocalTestDataDir + "point//stationData2Levels.ncml", "trajectory");
   }
 
   private void compare(String ncmlLocation) throws IOException {

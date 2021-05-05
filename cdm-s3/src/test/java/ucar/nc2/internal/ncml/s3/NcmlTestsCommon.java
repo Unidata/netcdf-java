@@ -12,26 +12,27 @@ public class NcmlTestsCommon {
   ///////////////////////////
   // comparable aggregations
   // explicitly aggregate individual objects
-  static final String joinNewNcmlExplicit = TestDir.localTestDataDir + "ncml/joinNewExplicit/S3JoinNewAggExplicit.ncml";
+  private static final String localTestDataDir = "src/test/data/";
+  static final String joinNewNcmlExplicit = localTestDataDir + "ncml/joinNewExplicit/S3JoinNewAggExplicit.ncml";
   // join new, scan
   // extract date from object name, filter object path on suffix
-  static final String joinNewNcmlScanSuffixDelim = TestDir.localTestDataDir + "ncml/joinNewScan/suffix/S3Delim.ncml";
+  static final String joinNewNcmlScanSuffixDelim = localTestDataDir + "ncml/joinNewScan/suffix/S3Delim.ncml";
   static final String joinNewNcmlScanSuffixNoDelim =
-      TestDir.localTestDataDir + "ncml/joinNewScan/suffix/S3NoDelim.ncml";
+      localTestDataDir + "ncml/joinNewScan/suffix/S3NoDelim.ncml";
   // same, but add enhance="all" to netcdf element
   static final String joinNewNcmlScanEnhanced =
-      TestDir.localTestDataDir + "ncml/joinNewScan/suffix/S3DelimEnhanced.ncml";
+      localTestDataDir + "ncml/joinNewScan/suffix/S3DelimEnhanced.ncml";
   // join new, scan
   // extract date from object name, filter object name using regular expression
-  static final String joinNewNcmlScanRegExpDelim = TestDir.localTestDataDir + "ncml/joinNewScan/regExp/S3Delim.ncml";
+  static final String joinNewNcmlScanRegExpDelim = localTestDataDir + "ncml/joinNewScan/regExp/S3Delim.ncml";
   static final String joinNewNcmlScanRegExpNoDelim =
-      TestDir.localTestDataDir + "ncml/joinNewScan/regExp/S3NoDelim.ncml";
+      localTestDataDir + "ncml/joinNewScan/regExp/S3NoDelim.ncml";
   // join new, scan
   // promote global attribute in each component file to a variable to create time variable, filter filter object path
   // on suffix
-  static final String joinNewNcmlScanPromoteDelim = TestDir.localTestDataDir + "ncml/joinNewScan/promote/S3Delim.ncml";
+  static final String joinNewNcmlScanPromoteDelim = localTestDataDir + "ncml/joinNewScan/promote/S3Delim.ncml";
   static final String joinNewNcmlScanPromoteNoDelim =
-      TestDir.localTestDataDir + "ncml/joinNewScan/promote/S3NoDelim.ncml";
+      localTestDataDir + "ncml/joinNewScan/promote/S3NoDelim.ncml";
 
   static final int expectedNumberOfTimesInAgg = 12;
   static final int expectedNumberOfTimesInAggRegExp = 2;

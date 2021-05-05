@@ -30,9 +30,9 @@ public class TestCdmrGridDataset {
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>(500);
     try {
-      TestDir.actOnAllParameterized(TestDir.cdmLocalFromTestDataDir, new SuffixFileFilter(".nc"), result, true);
+      TestDir.actOnAllParameterized(TestDir.cdmLocalTestDataDir, new SuffixFileFilter(".nc"), result, true);
 
-      // result.add(new Object[] {TestDir.cdmLocalFromTestDataDir + "permuteTest.nc"});
+      // result.add(new Object[] {TestDir.cdmLocalTestDataDir + "permuteTest.nc"});
 
     } catch (Exception e) {
       e.printStackTrace();

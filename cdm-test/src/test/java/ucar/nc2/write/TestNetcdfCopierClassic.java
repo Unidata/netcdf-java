@@ -40,7 +40,7 @@ public class TestNetcdfCopierClassic {
     result.add(new Object[] {TestDir.cdmUnitTestDir + "formats/grib2/200508041200.ngrid_gfs", true});
     result.add(new Object[] {TestDir.cdmUnitTestDir + "formats/hdf5/dimScales.h5", false});
     result.add(new Object[] {TestDir.cdmUnitTestDir + "formats/hdf4/f13_owsa_04010_09A.hdf", false});
-    result.add(new Object[] {"file:" + TestDir.cdmLocalFromTestDataDir + "point/stationData2Levels.ncml", false});
+    result.add(new Object[] {"file:" + TestDir.cdmLocalTestDataDir + "point/stationData2Levels.ncml", false});
 
     // result.add(new Object[]{TestDir.cdmUnitTestDir + "formats/dmsp/F14200307192230.n.OIS", true});
 

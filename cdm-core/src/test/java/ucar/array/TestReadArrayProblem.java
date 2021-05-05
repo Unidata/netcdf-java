@@ -44,7 +44,7 @@ public class TestReadArrayProblem {
 
   @Test
   public void testBufrProblem2() throws IOException {
-    String filename = TestDir.cdmTestDataDirFromCore + "ucar/nc2/bufr/IUPT02_KBBY_281400_522246081.bufr.2018032814";
+    String filename = TestDir.cdmTestDataDir + "ucar/nc2/bufr/IUPT02_KBBY_281400_522246081.bufr.2018032814";
     TestReadSequenceCompare.compareSequence(filename);
     TestReadSequenceCompare.compareDataset(filename);
   }

@@ -39,8 +39,8 @@ public class TestNcmlWriteAndCompareLocal {
 
     // try everything from these directories
     try {
-      TestDir.actOnAllParameterized(TestDir.cdmLocalFromTestDataDir + "point/", new SuffixFileFilter(".ncml"), result);
-      TestDir.actOnAllParameterized(TestDir.cdmLocalFromTestDataDir + "ncml/standalone/", new SuffixFileFilter(".ncml"),
+      TestDir.actOnAllParameterized(TestDir.cdmLocalTestDataDir + "point/", new SuffixFileFilter(".ncml"), result);
+      TestDir.actOnAllParameterized(TestDir.cdmLocalTestDataDir + "ncml/standalone/", new SuffixFileFilter(".ncml"),
           result);
 
     } catch (IOException e) {
