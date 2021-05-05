@@ -4,9 +4,9 @@ search: exclude
 ---
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  {% assign userguide_name = "/developer" %}
+  {% capture this_docset_name %}{{ "/" | append: site.docset_name }}{% endcapture %}
   {% capture sitemap_version_url %}{{ site.base_docs_url | append: site.docset_version }}{% endcapture %}
-  {% capture sitemap_url_prefix %}{{ sitemap_version_url | append: userguide_name}}{% endcapture %}
+  {% capture sitemap_url_prefix %}{{ sitemap_version_url | append: this_docset_name}}{% endcapture %}
   {% for post in site.posts %}
   {% unless post.search == "exclude" %}
   <url>

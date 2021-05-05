@@ -1,7 +1,7 @@
 ---
 title: CDM Data Types
 last_updated: 2019-07-17
-sidebar: cdm_sidebar 
+sidebar: developer_sidebar 
 permalink: cdm_datatypes.html
 toc: false
 ---

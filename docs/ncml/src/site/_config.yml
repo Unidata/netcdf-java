@@ -13,9 +13,6 @@ site_title: NcML Documentation
 # this appears in the footer
 site_topic: NcML Documentation
 
-# if you're using Github, provide the basepath to the branch you've created for reviews. If not, leave this value blank.
-github_editme_path:
-
 # if you have google-analytics ID, put it in. if not, edit this value to blank.
 # e.g. google_analytics: UA-92978945-1
 google_analytics: UA-92978945-1
@@ -24,7 +21,7 @@ google_analytics: UA-92978945-1
 host: 127.0.0.1
 
 # the port where the preview is rendered. You can leave this as is unless you have other Jekyll builds using this same port that might cause conflicts. in that case, use another port such as 4006.
-port: 4005
+port: 4008
 
 # these are the files and directories that jekyll will exclude from the build
 #exclude:
@@ -75,13 +72,10 @@ sidebars:
   - ncml_sidebar
 
 # project logo (32x32), name, main landing page  (currently used in the footer)
-project_logo: https://www.unidata.ucar.edu/images/logos/thredds_netcdf-32x32.png
-project_name: netCDF-Java
-project_landing_page: https://unidata.ucar.edu/software/netcdf-java/
+project_logo: https://www.unidata.ucar.edu/images/logos/thredds_no_text-32x32.png
+project_name: netCDF Markup Language
+project_landing_page: https://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2
 
-# the description is used in the feed.xml file
-description: "This is a documentation site for the netCDF-Java, which is part of the THREDDS Project."
-
-# needed for sitemap.xml file only
+# needed for sitemap.xml file
 # must include trailing slash, leave off the version :-)
-base_docs_url: https://docs.unidata.ucar.edu/netcdf-java/
+base_docs_url: https://docs.unidata.ucar.edu/thredds/ncml/

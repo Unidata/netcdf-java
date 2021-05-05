@@ -1,8 +1,8 @@
 ---
 title: The Common Data Model
 last_updated: 2020-04-18
-sidebar: cdm_sidebar 
-permalink: index.html
+sidebar: developer_sidebar
+permalink: cdm_overview.html
 toc: false
 ---
 ## Unidiata's Common Data Model (Version 4)

@@ -1,8 +1,6 @@
-# This is your sidebar TOC. The sidebar code loops through sections here and provides the appropriate formatting.
-
 entries:
 - title: Sidebar
-  product: Tutorial and Reference Documentation
+  product: NetCDF-Java Developer Documentation
   folders:
 
   - title:
@@ -26,16 +24,32 @@ entries:
       url: /index.html
       output: web, pdf
 
-  - title: Data Types
+  - title: Common Data Model
     output: web, pdf
     folderitems:
 
+    - title: CDM Overview
+      url: /cdm_overview.html
+      output: web, pdf
+
+    - title: CDM NetCDF mapping
+      url: /cdm_netcdf_mapping.html
+      output: web, pdf
+
+    - title: CDM Data Types
+      url: /cdm_datatypes.html
+      output: web, pdf
+
+    - title: CDM Object Names
+      url: /cdm_objectnames.html
+      output: web, pdf
+
     - title: CDM File Types
-      url: file_types.html
+      url: /file_types.html
       output: web, pdf
 
       subfolders:
-        - title: bufr
+        - title: BUFR Details
           output: web, pdf
           subfolderitems:
             - title: BUFR Files
@@ -45,7 +59,7 @@ entries:
             - title: BUFR Tables
               url: /bufr_tables.html
               output: web, pdf
-        - title: grib
+        - title: GRIB Details
           output: web, pdf
           subfolderitems:
             - title: GRIB Files in CDM
