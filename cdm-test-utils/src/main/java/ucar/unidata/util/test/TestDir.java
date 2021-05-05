@@ -80,7 +80,10 @@ public class TestDir {
   /** The cdm-core local test data, use from any top level gradle subproject. */
   public static String cdmLocalTestDataDir = "../cdm-core/src/test/data/";
 
-  /** cdm-test data directory (distributed with code but can depend on data not in github (e.g. NcML files can reference data not in github) */
+  /**
+   * cdm-test data directory (distributed with code but can depend on data not in github (e.g. NcML files can reference
+   * data not in github)
+   */
   public static String cdmTestDataDir = "../cdm-test/src/test/data/";
 
   //////////////////////////////////////////////////////////////////////

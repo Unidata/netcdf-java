@@ -17,22 +17,18 @@ public class NcmlTestsCommon {
   // join new, scan
   // extract date from object name, filter object path on suffix
   static final String joinNewNcmlScanSuffixDelim = localTestDataDir + "ncml/joinNewScan/suffix/S3Delim.ncml";
-  static final String joinNewNcmlScanSuffixNoDelim =
-      localTestDataDir + "ncml/joinNewScan/suffix/S3NoDelim.ncml";
+  static final String joinNewNcmlScanSuffixNoDelim = localTestDataDir + "ncml/joinNewScan/suffix/S3NoDelim.ncml";
   // same, but add enhance="all" to netcdf element
-  static final String joinNewNcmlScanEnhanced =
-      localTestDataDir + "ncml/joinNewScan/suffix/S3DelimEnhanced.ncml";
+  static final String joinNewNcmlScanEnhanced = localTestDataDir + "ncml/joinNewScan/suffix/S3DelimEnhanced.ncml";
   // join new, scan
   // extract date from object name, filter object name using regular expression
   static final String joinNewNcmlScanRegExpDelim = localTestDataDir + "ncml/joinNewScan/regExp/S3Delim.ncml";
-  static final String joinNewNcmlScanRegExpNoDelim =
-      localTestDataDir + "ncml/joinNewScan/regExp/S3NoDelim.ncml";
+  static final String joinNewNcmlScanRegExpNoDelim = localTestDataDir + "ncml/joinNewScan/regExp/S3NoDelim.ncml";
   // join new, scan
   // promote global attribute in each component file to a variable to create time variable, filter filter object path
   // on suffix
   static final String joinNewNcmlScanPromoteDelim = localTestDataDir + "ncml/joinNewScan/promote/S3Delim.ncml";
-  static final String joinNewNcmlScanPromoteNoDelim =
-      localTestDataDir + "ncml/joinNewScan/promote/S3NoDelim.ncml";
+  static final String joinNewNcmlScanPromoteNoDelim = localTestDataDir + "ncml/joinNewScan/promote/S3NoDelim.ncml";
 
   static final int expectedNumberOfTimesInAgg = 12;
   static final int expectedNumberOfTimesInAggRegExp = 2;
