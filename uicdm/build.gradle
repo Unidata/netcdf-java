@@ -16,7 +16,6 @@ dependencies {
   runtime project(':netcdf4')
   compile project(':opendap')
   compile project(':uibase')
-  compile project(':waterml')
 
   // Used by NcmlEditor. Abandoned, no updates since 2013. https://sourceforge.net/projects/bounce/
   // https://sourceforge.net/p/bounce/svn/HEAD/tree/src/main/java/org/bounce/

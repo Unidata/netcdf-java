@@ -18,7 +18,6 @@ include 'opendap'
 include 'udunits'
 include 'uibase'
 include 'uicdm'
-include 'waterml'
 
 include 'cdm-lite'
 include 'cdmr'
