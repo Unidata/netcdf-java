@@ -49,7 +49,7 @@ entries:
       output: web, pdf
 
       subfolders:
-        - title: BURF Details
+        - title: BUFR Details
           output: web, pdf
           subfolderitems:
             - title: BUFR Files
