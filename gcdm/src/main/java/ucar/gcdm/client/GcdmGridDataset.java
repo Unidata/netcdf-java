@@ -5,7 +5,7 @@ import com.google.common.collect.ImmutableList;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
-import ucar.cdmr.*;
+import ucar.gcdm.*;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
@@ -35,12 +35,12 @@ public class GcdmGridDataset implements GridDataset {
 
   @Override
   public AttributeContainer attributes() {
-    return CdmrConverter.decodeAttributes(getName(), proto.getAttributesList());
+    return GcdmConverter.decodeAttributes(getName(), proto.getAttributesList());
   }
 
   @Override
   public FeatureType getFeatureType() {
-    return CdmrGridConverter.convertFeatureType(proto.getFeatureType());
+    return GcdmGridConverter.convertFeatureType(proto.getFeatureType());
   }
 
   @Override
@@ -90,9 +90,9 @@ public class GcdmGridDataset implements GridDataset {
   private final String remoteURI;
   private final String path;
   private final ManagedChannel channel;
-  private final CdmRemoteGrpc.CdmRemoteBlockingStub blockingStub;
+  private final GcdmGrpc.GcdmBlockingStub blockingStub;
 
-  private final CdmrGridProto.GridDataset proto;
+  private final GcdmGridProto.GridDataset proto;
   private final ImmutableList<GridAxis> axes;
   private final ImmutableList<GridCoordinateSystem> coordsys;
   private final ImmutableList<Grid> grids;
@@ -139,7 +139,7 @@ public class GcdmGridDataset implements GridDataset {
 
   GridReferencedArray readData(GridSubset subset) throws IOException {
     log.info("GcdmGridDataset request data subset " + subset);
-    CdmrGridProto.GridDataRequest.Builder requestb = CdmrGridProto.GridDataRequest.newBuilder().setLocation(path);
+    GcdmGridProto.GridDataRequest.Builder requestb = GcdmGridProto.GridDataRequest.newBuilder().setLocation(path);
     for (Map.Entry<String, Object> entry : subset.getEntries()) {
       requestb.putSubset(entry.getKey(), entry.getValue().toString());
     }
@@ -148,15 +148,15 @@ public class GcdmGridDataset implements GridDataset {
     List<GridReferencedArray> results = new ArrayList<>();
 
     try {
-      Iterator<CdmrGridProto.GridDataResponse> responses =
+      Iterator<GcdmGridProto.GridDataResponse> responses =
           blockingStub.withDeadlineAfter(MAX_DATA_WAIT_SECONDS, TimeUnit.SECONDS).getGridData(requestb.build());
 
       // while (responses.hasNext()) {
-      CdmrGridProto.GridDataResponse response = responses.next();
+      GcdmGridProto.GridDataResponse response = responses.next();
       if (response.hasError()) {
         throw new IOException(response.getError().getMessage());
       }
-      GridReferencedArray result = CdmrGridConverter.decodeGridReferencedArray(response.getData(), getGridAxes());
+      GridReferencedArray result = GcdmGridConverter.decodeGridReferencedArray(response.getData(), getGridAxes());
       results.add(result);
       size += result.data().length();
       // }
@@ -195,9 +195,9 @@ public class GcdmGridDataset implements GridDataset {
   public static class Builder {
     private String remoteURI;
     private ManagedChannel channel;
-    private CdmRemoteGrpc.CdmRemoteBlockingStub blockingStub;
+    private GcdmGrpc.GcdmBlockingStub blockingStub;
     private String path;
-    private CdmrGridProto.GridDataset proto;
+    private GcdmGridProto.GridDataset proto;
     private ArrayList<GridAxis.Builder<?>> axes = new ArrayList<>();
     private ArrayList<GridCS.Builder<?>> coordsys = new ArrayList<>();
     private ArrayList<GcdmGrid.Builder> grids = new ArrayList<>();
@@ -252,7 +252,7 @@ public class GcdmGridDataset implements GridDataset {
           .build();
       Formatter errlog = new Formatter();
       try {
-        this.blockingStub = CdmRemoteGrpc.newBlockingStub(channel);
+        this.blockingStub = GcdmGrpc.newBlockingStub(channel);
         readDataset(errlog);
 
       } catch (Exception e) {
@@ -267,20 +267,20 @@ public class GcdmGridDataset implements GridDataset {
         }
         e.printStackTrace();
         System.out.printf("%nerrlog = %s%n", errlog);
-        throw new RuntimeException("Cant open CdmRemote url " + this.remoteURI, e);
+        throw new RuntimeException("Cant open Gcdm url " + this.remoteURI, e);
       }
     }
 
     private void readDataset(Formatter errlog) {
       log.info("GcdmGridDataset request header for " + path);
-      CdmrGridProto.GridDatasetRequest request =
-          CdmrGridProto.GridDatasetRequest.newBuilder().setLocation(path).build();
-      CdmrGridProto.GridDatasetResponse response = blockingStub.getGridDataset(request);
+      GcdmGridProto.GridDatasetRequest request =
+          GcdmGridProto.GridDatasetRequest.newBuilder().setLocation(path).build();
+      GcdmGridProto.GridDatasetResponse response = blockingStub.getGridDataset(request);
       if (response.hasError()) {
         throw new RuntimeException(response.getError().getMessage());
       } else {
         this.proto = response.getDataset();
-        CdmrGridConverter.decodeDataset(this.proto, this, errlog);
+        GcdmGridConverter.decodeDataset(this.proto, this, errlog);
       }
     }
   }

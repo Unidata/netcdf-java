@@ -3,8 +3,8 @@ package ucar.gcdm.client;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.array.ArrayType;
-import ucar.cdmr.CdmrGridProto;
-import ucar.cdmr.CdmrConverter;
+import ucar.gcdm.GcdmGridProto;
+import ucar.gcdm.GcdmConverter;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.grid.Grid;
 import ucar.nc2.grid.GridCoordinateSystem;
@@ -35,12 +35,12 @@ public class GcdmGrid implements Grid {
 
   @Override
   public AttributeContainer attributes() {
-    return CdmrConverter.decodeAttributes(getName(), proto.getAttributesList());
+    return GcdmConverter.decodeAttributes(getName(), proto.getAttributesList());
   }
 
   @Override
   public ArrayType getArrayType() {
-    return CdmrConverter.convertDataType(proto.getDataType());
+    return GcdmConverter.convertDataType(proto.getDataType());
   }
 
   @Override
@@ -67,7 +67,7 @@ public class GcdmGrid implements Grid {
   ////////////////////////////////////////////////////////////////////////////////////////////
 
   private final GcdmGridDataset gcdmGridDataset;
-  private final CdmrGridProto.Grid proto;
+  private final GcdmGridProto.Grid proto;
   private final GridCoordinateSystem coordsys;
 
   private GcdmGrid(Builder builder, List<GridCoordinateSystem> coordsys) {
@@ -96,7 +96,7 @@ public class GcdmGrid implements Grid {
 
   public static class Builder {
     private GcdmGridDataset gcdmGridDataset;
-    private CdmrGridProto.Grid proto;
+    private GcdmGridProto.Grid proto;
     private boolean built;
 
     public Builder setDataset(GcdmGridDataset gcdmGridDataset) {
@@ -104,7 +104,7 @@ public class GcdmGrid implements Grid {
       return this;
     }
 
-    public Builder setProto(CdmrGridProto.Grid proto) {
+    public Builder setProto(GcdmGridProto.Grid proto) {
       this.proto = proto;
       return this;
     }

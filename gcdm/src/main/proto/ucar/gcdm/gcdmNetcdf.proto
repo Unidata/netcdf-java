@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-package ucar.cdmr;
-option java_package = "ucar.cdmr";
-option java_outer_classname = "CdmrNetcdfProto";
+package ucar.gcdm;
+option java_package = "ucar.gcdm";
+option java_outer_classname = "GcdmNetcdfProto";
 
 message HeaderRequest {
   string location = 1;

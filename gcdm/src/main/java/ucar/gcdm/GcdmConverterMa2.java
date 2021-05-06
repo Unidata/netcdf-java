@@ -2,7 +2,7 @@
  * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-package ucar.cdmr;
+package ucar.gcdm;
 
 import static ucar.nc2.iosp.IospHelper.convertByteToChar;
 import static ucar.nc2.iosp.IospHelper.convertCharToByte;
@@ -17,8 +17,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nonnull;
-import ucar.gcdm.CdmrNetcdfProto.Data;
-import ucar.gcdm.CdmrNetcdfProto.StructureMemberProto;
+import ucar.gcdm.GcdmNetcdfProto.Data;
+import ucar.gcdm.GcdmNetcdfProto.StructureMemberProto;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayObject;
 import ucar.ma2.ArrayStructure;
@@ -40,10 +40,10 @@ import ucar.nc2.Sequence;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 
-/** Convert between CdmRemote Protos and Netcdf objects, using ucar.ma2.Array for data. */
-public class CdmrConverterMa2 {
-  public static CdmrNetcdfProto.Group.Builder encodeGroup(Group g, int sizeToCache) throws IOException {
-    CdmrNetcdfProto.Group.Builder groupBuilder = CdmrNetcdfProto.Group.newBuilder();
+/** Convert between Gcdm Protos and Netcdf objects, using ucar.ma2.Array for data. */
+public class GcdmConverterMa2 {
+  public static GcdmNetcdfProto.Group.Builder encodeGroup(Group g, int sizeToCache) throws IOException {
+    GcdmNetcdfProto.Group.Builder groupBuilder = GcdmNetcdfProto.Group.newBuilder();
     groupBuilder.setName(g.getShortName());
 
     for (Dimension dim : g.getDimensions())
@@ -68,8 +68,8 @@ public class CdmrConverterMa2 {
     return groupBuilder;
   }
 
-  public static CdmrNetcdfProto.Attribute.Builder encodeAtt(Attribute att) {
-    CdmrNetcdfProto.Attribute.Builder attBuilder = CdmrNetcdfProto.Attribute.newBuilder();
+  public static GcdmNetcdfProto.Attribute.Builder encodeAtt(Attribute att) {
+    GcdmNetcdfProto.Attribute.Builder attBuilder = GcdmNetcdfProto.Attribute.newBuilder();
     attBuilder.setName(att.getShortName());
     attBuilder.setDataType(convertDataType(att.getDataType()));
     attBuilder.setLength(att.getLength());
@@ -92,8 +92,8 @@ public class CdmrConverterMa2 {
     return attBuilder;
   }
 
-  private static CdmrNetcdfProto.Dimension.Builder encodeDim(Dimension dim) {
-    CdmrNetcdfProto.Dimension.Builder dimBuilder = CdmrNetcdfProto.Dimension.newBuilder();
+  private static GcdmNetcdfProto.Dimension.Builder encodeDim(Dimension dim) {
+    GcdmNetcdfProto.Dimension.Builder dimBuilder = GcdmNetcdfProto.Dimension.newBuilder();
     if (dim.getShortName() != null)
       dimBuilder.setName(dim.getShortName());
     if (!dim.isVariableLength())
@@ -104,13 +104,13 @@ public class CdmrConverterMa2 {
     return dimBuilder;
   }
 
-  private static CdmrNetcdfProto.EnumTypedef.Builder encodeEnumTypedef(EnumTypedef enumType) {
-    CdmrNetcdfProto.EnumTypedef.Builder builder = CdmrNetcdfProto.EnumTypedef.newBuilder();
+  private static GcdmNetcdfProto.EnumTypedef.Builder encodeEnumTypedef(EnumTypedef enumType) {
+    GcdmNetcdfProto.EnumTypedef.Builder builder = GcdmNetcdfProto.EnumTypedef.newBuilder();
 
     builder.setName(enumType.getShortName());
     builder.setBaseType(convertDataType(enumType.getBaseType()));
     Map<Integer, String> map = enumType.getMap();
-    CdmrNetcdfProto.EnumTypedef.EnumType.Builder b2 = CdmrNetcdfProto.EnumTypedef.EnumType.newBuilder();
+    GcdmNetcdfProto.EnumTypedef.EnumType.Builder b2 = GcdmNetcdfProto.EnumTypedef.EnumType.newBuilder();
     for (int code : map.keySet()) {
       b2.clear();
       b2.setCode(code);
@@ -120,8 +120,8 @@ public class CdmrConverterMa2 {
     return builder;
   }
 
-  private static CdmrNetcdfProto.Variable.Builder encodeVar(Variable var, int sizeToCache) throws IOException {
-    CdmrNetcdfProto.Variable.Builder builder = CdmrNetcdfProto.Variable.newBuilder();
+  private static GcdmNetcdfProto.Variable.Builder encodeVar(Variable var, int sizeToCache) throws IOException {
+    GcdmNetcdfProto.Variable.Builder builder = GcdmNetcdfProto.Variable.newBuilder();
     builder.setName(var.getShortName());
     builder.setDataType(convertDataType(var.getDataType()));
     if (var.getDataType().isEnum()) {
@@ -149,8 +149,8 @@ public class CdmrConverterMa2 {
     return builder;
   }
 
-  private static CdmrNetcdfProto.Structure.Builder encodeStructure(Structure s) throws IOException {
-    CdmrNetcdfProto.Structure.Builder builder = CdmrNetcdfProto.Structure.newBuilder();
+  private static GcdmNetcdfProto.Structure.Builder encodeStructure(Structure s) throws IOException {
+    GcdmNetcdfProto.Structure.Builder builder = GcdmNetcdfProto.Structure.newBuilder();
     builder.setName(s.getShortName());
     builder.setDataType(convertDataType(s.getDataType()));
 
@@ -162,7 +162,7 @@ public class CdmrConverterMa2 {
 
     for (Variable v : s.getVariables()) {
       if (v instanceof Structure)
-        builder.addStructs(CdmrConverterMa2.encodeStructure((Structure) v));
+        builder.addStructs(GcdmConverterMa2.encodeStructure((Structure) v));
       else
         builder.addVars(encodeVar(v, -1));
     }
@@ -170,8 +170,8 @@ public class CdmrConverterMa2 {
     return builder;
   }
 
-  public static CdmrNetcdfProto.Error encodeErrorMessage(String message) {
-    CdmrNetcdfProto.Error.Builder builder = CdmrNetcdfProto.Error.newBuilder();
+  public static GcdmNetcdfProto.Error encodeErrorMessage(String message) {
+    GcdmNetcdfProto.Error.Builder builder = GcdmNetcdfProto.Error.newBuilder();
     builder.setMessage(message);
     return builder.build();
   }
@@ -314,10 +314,10 @@ public class CdmrConverterMa2 {
     return builder.build();
   }
 
-  public static CdmrNetcdfProto.Section encodeSection(Section section) {
-    CdmrNetcdfProto.Section.Builder sbuilder = CdmrNetcdfProto.Section.newBuilder();
+  public static GcdmNetcdfProto.Section encodeSection(Section section) {
+    GcdmNetcdfProto.Section.Builder sbuilder = GcdmNetcdfProto.Section.newBuilder();
     for (Range r : section.getRanges()) {
-      CdmrNetcdfProto.Range.Builder rbuilder = CdmrNetcdfProto.Range.newBuilder();
+      GcdmNetcdfProto.Range.Builder rbuilder = GcdmNetcdfProto.Range.newBuilder();
       rbuilder.setStart(r.first());
       rbuilder.setSize(r.length());
       rbuilder.setStride(r.stride());
@@ -344,8 +344,8 @@ public class CdmrConverterMa2 {
     return builder.build();
   }
 
-  public static CdmrNetcdfProto.StructureDataProto encodeStructureData(StructureData structData) {
-    CdmrNetcdfProto.StructureDataProto.Builder builder = CdmrNetcdfProto.StructureDataProto.newBuilder();
+  public static GcdmNetcdfProto.StructureDataProto encodeStructureData(StructureData structData) {
+    GcdmNetcdfProto.StructureDataProto.Builder builder = GcdmNetcdfProto.StructureDataProto.newBuilder();
     for (Member member : structData.getMembers()) {
       Array data = structData.getArray(member);
       builder.addMemberData(encodeData(member.getDataType(), data));
@@ -355,48 +355,48 @@ public class CdmrConverterMa2 {
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  private static Dimension decodeDim(CdmrNetcdfProto.Dimension dim) {
+  private static Dimension decodeDim(GcdmNetcdfProto.Dimension dim) {
     String name = (dim.getName().isEmpty() ? null : dim.getName());
     int dimLen = dim.getIsVlen() ? -1 : (int) dim.getLength();
     return Dimension.builder().setName(name).setIsShared(!dim.getIsPrivate()).setIsUnlimited(dim.getIsUnlimited())
         .setIsVariableLength(dim.getIsVlen()).setLength(dimLen).build();
   }
 
-  public static void decodeGroup(CdmrNetcdfProto.Group proto, Group.Builder g) {
+  public static void decodeGroup(GcdmNetcdfProto.Group proto, Group.Builder g) {
 
-    for (CdmrNetcdfProto.Dimension dim : proto.getDimsList())
-      g.addDimension(CdmrConverterMa2.decodeDim(dim)); // always added to group? what if private ??
+    for (GcdmNetcdfProto.Dimension dim : proto.getDimsList())
+      g.addDimension(GcdmConverterMa2.decodeDim(dim)); // always added to group? what if private ??
 
-    for (CdmrNetcdfProto.Attribute att : proto.getAttsList())
-      g.addAttribute(CdmrConverterMa2.decodeAtt(att));
+    for (GcdmNetcdfProto.Attribute att : proto.getAttsList())
+      g.addAttribute(GcdmConverterMa2.decodeAtt(att));
 
-    for (CdmrNetcdfProto.EnumTypedef enumType : proto.getEnumTypesList())
-      g.addEnumTypedef(CdmrConverterMa2.decodeEnumTypedef(enumType));
+    for (GcdmNetcdfProto.EnumTypedef enumType : proto.getEnumTypesList())
+      g.addEnumTypedef(GcdmConverterMa2.decodeEnumTypedef(enumType));
 
-    for (CdmrNetcdfProto.Variable var : proto.getVarsList())
-      g.addVariable(CdmrConverterMa2.decodeVar(var));
+    for (GcdmNetcdfProto.Variable var : proto.getVarsList())
+      g.addVariable(GcdmConverterMa2.decodeVar(var));
 
-    for (CdmrNetcdfProto.Structure s : proto.getStructsList())
-      g.addVariable(CdmrConverterMa2.decodeStructure(s));
+    for (GcdmNetcdfProto.Structure s : proto.getStructsList())
+      g.addVariable(GcdmConverterMa2.decodeStructure(s));
 
-    for (CdmrNetcdfProto.Group gp : proto.getGroupsList()) {
+    for (GcdmNetcdfProto.Group gp : proto.getGroupsList()) {
       Group.Builder ng = Group.builder().setName(gp.getName());
       g.addGroup(ng);
       decodeGroup(gp, ng);
     }
   }
 
-  private static EnumTypedef decodeEnumTypedef(CdmrNetcdfProto.EnumTypedef enumType) {
-    List<CdmrNetcdfProto.EnumTypedef.EnumType> list = enumType.getMapList();
+  private static EnumTypedef decodeEnumTypedef(GcdmNetcdfProto.EnumTypedef enumType) {
+    List<GcdmNetcdfProto.EnumTypedef.EnumType> list = enumType.getMapList();
     Map<Integer, String> map = new HashMap<>(2 * list.size());
-    for (CdmrNetcdfProto.EnumTypedef.EnumType et : list) {
+    for (GcdmNetcdfProto.EnumTypedef.EnumType et : list) {
       map.put(et.getCode(), et.getValue());
     }
     DataType basetype = convertDataType(enumType.getBaseType());
     return new EnumTypedef(enumType.getName(), map, basetype);
   }
 
-  public static Attribute decodeAtt(CdmrNetcdfProto.Attribute attp) {
+  public static Attribute decodeAtt(GcdmNetcdfProto.Attribute attp) {
     DataType dtUse = convertDataType(attp.getDataType());
     int len = attp.getLength();
     if (len == 0) { // deal with empty attribute
@@ -423,7 +423,7 @@ public class CdmrConverterMa2 {
     }
   }
 
-  private static Variable.Builder<?> decodeVar(CdmrNetcdfProto.Variable var) {
+  private static Variable.Builder<?> decodeVar(GcdmNetcdfProto.Variable var) {
     DataType varType = convertDataType(var.getDataType());
     Variable.Builder<?> ncvar = Variable.builder().setName(var.getName()).setDataType(varType);
 
@@ -436,13 +436,13 @@ public class CdmrConverterMa2 {
     // so that has to wait until build().
     List<Dimension> dims = new ArrayList<>(6);
     Section.Builder section = Section.builder();
-    for (CdmrNetcdfProto.Dimension dim : var.getShapeList()) {
+    for (GcdmNetcdfProto.Dimension dim : var.getShapeList()) {
       dims.add(decodeDim(dim));
       section.appendRange((int) dim.getLength());
     }
     ncvar.addDimensions(dims);
 
-    for (CdmrNetcdfProto.Attribute att : var.getAttsList())
+    for (GcdmNetcdfProto.Attribute att : var.getAttsList())
       ncvar.addAttribute(decodeAtt(att));
 
     if (var.hasData()) {
@@ -453,27 +453,27 @@ public class CdmrConverterMa2 {
     return ncvar;
   }
 
-  private static Structure.Builder<?> decodeStructure(CdmrNetcdfProto.Structure s) {
+  private static Structure.Builder<?> decodeStructure(GcdmNetcdfProto.Structure s) {
     Structure.Builder<?> ncvar =
-        (s.getDataType() == CdmrNetcdfProto.DataType.DATA_TYPE_SEQUENCE) ? Sequence.builder() : Structure.builder();
+        (s.getDataType() == GcdmNetcdfProto.DataType.DATA_TYPE_SEQUENCE) ? Sequence.builder() : Structure.builder();
 
     ncvar.setName(s.getName()).setDataType(convertDataType(s.getDataType()));
 
     List<Dimension> dims = new ArrayList<>(6);
-    for (CdmrNetcdfProto.Dimension dim : s.getShapeList()) {
+    for (GcdmNetcdfProto.Dimension dim : s.getShapeList()) {
       dims.add(decodeDim(dim));
     }
     ncvar.addDimensions(dims);
 
-    for (CdmrNetcdfProto.Attribute att : s.getAttsList()) {
+    for (GcdmNetcdfProto.Attribute att : s.getAttsList()) {
       ncvar.addAttribute(decodeAtt(att));
     }
 
-    for (CdmrNetcdfProto.Variable vp : s.getVarsList()) {
+    for (GcdmNetcdfProto.Variable vp : s.getVarsList()) {
       ncvar.addMemberVariable(decodeVar(vp));
     }
 
-    for (CdmrNetcdfProto.Structure sp : s.getStructsList()) {
+    for (GcdmNetcdfProto.Structure sp : s.getStructsList()) {
       ncvar.addMemberVariable(decodeStructure(sp));
     }
 
@@ -481,10 +481,10 @@ public class CdmrConverterMa2 {
   }
 
   @Nonnull
-  public static Section decodeSection(CdmrNetcdfProto.Section proto) {
+  public static Section decodeSection(GcdmNetcdfProto.Section proto) {
     Section.Builder section = Section.builder();
 
-    for (CdmrNetcdfProto.Range pr : proto.getRangeList()) {
+    for (GcdmNetcdfProto.Range pr : proto.getRangeList()) {
       try {
         long stride = pr.getStride();
         if (stride == 0)
@@ -497,7 +497,7 @@ public class CdmrConverterMa2 {
         }
 
       } catch (InvalidRangeException e) {
-        throw new RuntimeException("Bad Section in CdmRemote", e);
+        throw new RuntimeException("Bad Section in Gcdm", e);
       }
     }
     return section.build();
@@ -738,49 +738,49 @@ public class CdmrConverterMa2 {
 
   ////////////////////////////////////////////////////////////////
 
-  public static CdmrNetcdfProto.DataType convertDataType(DataType dtype) {
+  public static GcdmNetcdfProto.DataType convertDataType(DataType dtype) {
     switch (dtype) {
       case CHAR:
-        return CdmrNetcdfProto.DataType.DATA_TYPE_CHAR;
+        return GcdmNetcdfProto.DataType.DATA_TYPE_CHAR;
       case BYTE:
-        return CdmrNetcdfProto.DataType.DATA_TYPE_BYTE;
+        return GcdmNetcdfProto.DataType.DATA_TYPE_BYTE;
       case SHORT:
-        return CdmrNetcdfProto.DataType.DATA_TYPE_SHORT;
+        return GcdmNetcdfProto.DataType.DATA_TYPE_SHORT;
       case INT:
-        return CdmrNetcdfProto.DataType.DATA_TYPE_INT;
+        return GcdmNetcdfProto.DataType.DATA_TYPE_INT;
       case LONG:
-        return CdmrNetcdfProto.DataType.DATA_TYPE_LONG;
+        return GcdmNetcdfProto.DataType.DATA_TYPE_LONG;
       case FLOAT:
-        return CdmrNetcdfProto.DataType.DATA_TYPE_FLOAT;
+        return GcdmNetcdfProto.DataType.DATA_TYPE_FLOAT;
       case DOUBLE:
-        return CdmrNetcdfProto.DataType.DATA_TYPE_DOUBLE;
+        return GcdmNetcdfProto.DataType.DATA_TYPE_DOUBLE;
       case STRING:
-        return CdmrNetcdfProto.DataType.DATA_TYPE_STRING;
+        return GcdmNetcdfProto.DataType.DATA_TYPE_STRING;
       case STRUCTURE:
-        return CdmrNetcdfProto.DataType.DATA_TYPE_STRUCTURE;
+        return GcdmNetcdfProto.DataType.DATA_TYPE_STRUCTURE;
       case SEQUENCE:
-        return CdmrNetcdfProto.DataType.DATA_TYPE_SEQUENCE;
+        return GcdmNetcdfProto.DataType.DATA_TYPE_SEQUENCE;
       case ENUM1:
-        return CdmrNetcdfProto.DataType.DATA_TYPE_ENUM1;
+        return GcdmNetcdfProto.DataType.DATA_TYPE_ENUM1;
       case ENUM2:
-        return CdmrNetcdfProto.DataType.DATA_TYPE_ENUM2;
+        return GcdmNetcdfProto.DataType.DATA_TYPE_ENUM2;
       case ENUM4:
-        return CdmrNetcdfProto.DataType.DATA_TYPE_ENUM4;
+        return GcdmNetcdfProto.DataType.DATA_TYPE_ENUM4;
       case OPAQUE:
-        return CdmrNetcdfProto.DataType.DATA_TYPE_OPAQUE;
+        return GcdmNetcdfProto.DataType.DATA_TYPE_OPAQUE;
       case UBYTE:
-        return CdmrNetcdfProto.DataType.DATA_TYPE_UBYTE;
+        return GcdmNetcdfProto.DataType.DATA_TYPE_UBYTE;
       case USHORT:
-        return CdmrNetcdfProto.DataType.DATA_TYPE_USHORT;
+        return GcdmNetcdfProto.DataType.DATA_TYPE_USHORT;
       case UINT:
-        return CdmrNetcdfProto.DataType.DATA_TYPE_UINT;
+        return GcdmNetcdfProto.DataType.DATA_TYPE_UINT;
       case ULONG:
-        return CdmrNetcdfProto.DataType.DATA_TYPE_ULONG;
+        return GcdmNetcdfProto.DataType.DATA_TYPE_ULONG;
     }
     throw new IllegalStateException("illegal data type " + dtype);
   }
 
-  public static DataType convertDataType(CdmrNetcdfProto.DataType dtype) {
+  public static DataType convertDataType(GcdmNetcdfProto.DataType dtype) {
     switch (dtype) {
       case DATA_TYPE_CHAR:
         return DataType.CHAR;
@@ -841,7 +841,7 @@ public class CdmrConverterMa2 {
      * ArrayStructureW result = new ArrayStructureW(members, section.getShape());
      * // row oriented
      * int index = 0;
-     * for (CdmrNetcdfProto.StructureDataProto row : arrayStructureProto.getRowsList()) {
+     * for (GcdmNetcdfProto.StructureDataProto row : arrayStructureProto.getRowsList()) {
      * result.setStructureData(decodeStructureData(row, members), index);
      * index++;
      * }
@@ -850,7 +850,7 @@ public class CdmrConverterMa2 {
     return null;
   }
 
-  public static StructureData decodeStructureData(CdmrNetcdfProto.StructureDataProto structDataProto,
+  public static StructureData decodeStructureData(GcdmNetcdfProto.StructureDataProto structDataProto,
       StructureMembers members) {
     StructureDataW sdata = new StructureDataW(members);
     for (int i = 0; i < structDataProto.getMemberDataCount(); i++) {

@@ -15,16 +15,16 @@ import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
 import ucar.array.*;
-import ucar.cdmr.CdmRemoteGrpc.CdmRemoteImplBase;
-import ucar.cdmr.CdmrGridConverter;
-import ucar.cdmr.CdmrGridProto;
-import ucar.cdmr.CdmrNetcdfProto;
-import ucar.cdmr.CdmrNetcdfProto.DataRequest;
-import ucar.cdmr.CdmrNetcdfProto.DataResponse;
-import ucar.cdmr.CdmrNetcdfProto.Header;
-import ucar.cdmr.CdmrNetcdfProto.HeaderRequest;
-import ucar.cdmr.CdmrNetcdfProto.HeaderResponse;
-import ucar.cdmr.CdmrConverter;
+import ucar.gcdm.GcdmGrpc.GcdmImplBase;
+import ucar.gcdm.GcdmGridConverter;
+import ucar.gcdm.GcdmGridProto;
+import ucar.gcdm.GcdmNetcdfProto;
+import ucar.gcdm.GcdmNetcdfProto.DataRequest;
+import ucar.gcdm.GcdmNetcdfProto.DataResponse;
+import ucar.gcdm.GcdmNetcdfProto.Header;
+import ucar.gcdm.GcdmNetcdfProto.HeaderRequest;
+import ucar.gcdm.GcdmNetcdfProto.HeaderResponse;
+import ucar.gcdm.GcdmConverter;
 import ucar.array.InvalidRangeException;
 import ucar.array.Section;
 import ucar.nc2.NetcdfFile;
@@ -103,7 +103,7 @@ public class GcdmServer {
     }
   }
 
-  static class GcdmImpl extends CdmRemoteImplBase {
+  static class GcdmImpl extends GcdmImplBase {
 
     @Override
     public void getNetcdfHeader(HeaderRequest req, StreamObserver<HeaderResponse> responseObserver) {
@@ -111,7 +111,7 @@ public class GcdmServer {
       HeaderResponse.Builder response = HeaderResponse.newBuilder();
       try (NetcdfFile ncfile = NetcdfDatasets.openFile(req.getLocation(), null)) {
         Header.Builder header = Header.newBuilder().setLocation(req.getLocation())
-            .setRoot(CdmrConverter.encodeGroup(ncfile.getRootGroup(), 100).build());
+            .setRoot(GcdmConverter.encodeGroup(ncfile.getRootGroup(), 100).build());
         response.setHeader(header);
         responseObserver.onNext(response.build());
         responseObserver.onCompleted();
@@ -119,7 +119,7 @@ public class GcdmServer {
       } catch (Throwable t) {
         logger.warn("GcdmServer getHeader failed ", t);
         t.printStackTrace();
-        response.setError(CdmrNetcdfProto.Error.newBuilder().setMessage(t.getMessage()).build());
+        response.setError(GcdmNetcdfProto.Error.newBuilder().setMessage(t.getMessage()).build());
       }
     }
 
@@ -148,7 +148,7 @@ public class GcdmServer {
         DataResponse.Builder response =
             DataResponse.newBuilder().setLocation(req.getLocation()).setVariableSpec(req.getVariableSpec());
         response.setError(
-            CdmrNetcdfProto.Error.newBuilder().setMessage(t.getMessage() == null ? "N/A" : t.getMessage()).build());
+            GcdmNetcdfProto.Error.newBuilder().setMessage(t.getMessage() == null ? "N/A" : t.getMessage()).build());
         responseObserver.onNext(response.build());
       }
 
@@ -192,10 +192,10 @@ public class GcdmServer {
       Section wantSection = varSection.getArraySection();
 
       DataResponse.Builder response = DataResponse.newBuilder().setLocation(ncfile.getLocation()).setVariableSpec(spec)
-          .setVarFullName(var.getFullName()).setSection(CdmrConverter.encodeSection(wantSection));
+          .setVarFullName(var.getFullName()).setSection(GcdmConverter.encodeSection(wantSection));
 
       Array<?> data = var.readArray(wantSection);
-      response.setData(CdmrConverter.encodeData(data.getArrayType(), data));
+      response.setData(GcdmConverter.encodeData(data.getArrayType(), data));
 
       responseObserver.onNext(response.build());
       System.out.printf(" Send one chunk %s size=%d bytes%n", spec,
@@ -223,8 +223,8 @@ public class GcdmServer {
           StructureDataArray sdataArray = new StructureDataArray(members, new int[] {count}, sdata);
           Section section = Section.builder().appendRange(start, start + count).build();
           DataResponse.Builder response = DataResponse.newBuilder().setLocation(ncfile.getLocation())
-              .setVariableSpec(spec).setVarFullName(seq.getFullName()).setSection(CdmrConverter.encodeSection(section));
-          response.setData(CdmrConverter.encodeData(ArrayType.SEQUENCE, sdataArray));
+              .setVariableSpec(spec).setVarFullName(seq.getFullName()).setSection(GcdmConverter.encodeSection(section));
+          response.setData(GcdmConverter.encodeData(ArrayType.SEQUENCE, sdataArray));
           responseObserver.onNext(response.build());
           start = count;
           count = 0;
@@ -237,13 +237,13 @@ public class GcdmServer {
     // GridDataset
 
     @Override
-    public void getGridDataset(CdmrGridProto.GridDatasetRequest request,
-        io.grpc.stub.StreamObserver<CdmrGridProto.GridDatasetResponse> responseObserver) {
+    public void getGridDataset(GcdmGridProto.GridDatasetRequest request,
+        io.grpc.stub.StreamObserver<GcdmGridProto.GridDatasetResponse> responseObserver) {
       System.out.printf("GcdmServer getGridDataset open %s%n", request.getLocation());
-      CdmrGridProto.GridDatasetResponse.Builder response = CdmrGridProto.GridDatasetResponse.newBuilder();
+      GcdmGridProto.GridDatasetResponse.Builder response = GcdmGridProto.GridDatasetResponse.newBuilder();
       Formatter errlog = new Formatter();
       try (GridDataset gridDataset = GridDatasetFactory.openGridDataset(request.getLocation(), errlog)) {
-        response.setDataset(CdmrGridConverter.encodeDataset(gridDataset));
+        response.setDataset(GcdmGridConverter.encodeDataset(gridDataset));
         responseObserver.onNext(response.build());
         responseObserver.onCompleted();
         logger.info("GcdmServer getGridDataset " + request.getLocation());
@@ -251,16 +251,16 @@ public class GcdmServer {
         System.out.printf("GcdmServer getGridDataset failed %s %n%s%n", t.getMessage(), errlog);
         logger.warn("GcdmServer getGridDataset failed ", t);
         t.printStackTrace();
-        response.setError(CdmrNetcdfProto.Error.newBuilder().setMessage(t.getMessage()).build());
+        response.setError(GcdmNetcdfProto.Error.newBuilder().setMessage(t.getMessage()).build());
       }
     }
 
     @Override
-    public void getGridData(CdmrGridProto.GridDataRequest request,
-        io.grpc.stub.StreamObserver<ucar.cdmr.CdmrGridProto.GridDataResponse> responseObserver) {
+    public void getGridData(GcdmGridProto.GridDataRequest request,
+        io.grpc.stub.StreamObserver<ucar.gcdm.GcdmGridProto.GridDataResponse> responseObserver) {
 
       System.out.printf("GcdmServer getData %s %s%n", request.getLocation(), request.getSubsetMap());
-      CdmrGridProto.GridDataResponse.Builder response = CdmrGridProto.GridDataResponse.newBuilder();
+      GcdmGridProto.GridDataResponse.Builder response = GcdmGridProto.GridDataResponse.newBuilder();
       response.setLocation(request.getLocation()).putAllSubset(request.getSubsetMap());
       final Stopwatch stopwatch = Stopwatch.createStarted();
 
@@ -283,7 +283,7 @@ public class GcdmServer {
                 String.format("GridDataset '%s' does not have Grid '%s", request.getLocation(), wantGridName));
           } else {
             GridReferencedArray geoReferencedArray = wantGrid.readData(gridSubset);
-            response.setData(CdmrGridConverter.encodeGridReferencedArray(geoReferencedArray));
+            response.setData(GcdmGridConverter.encodeGridReferencedArray(geoReferencedArray));
             System.out.printf(" ** size=%d shape=%s%n", geoReferencedArray.data().length(),
                 java.util.Arrays.toString(geoReferencedArray.data().getShape()));
 
@@ -300,8 +300,8 @@ public class GcdmServer {
       System.out.printf(" ** took=%s%n", stopwatch.stop());
     }
 
-    void makeError(CdmrGridProto.GridDataResponse.Builder response, String message) {
-      response.setError(CdmrNetcdfProto.Error.newBuilder().setMessage(message).build());
+    void makeError(GcdmGridProto.GridDataResponse.Builder response, String message) {
+      response.setError(GcdmNetcdfProto.Error.newBuilder().setMessage(message).build());
     }
 
   } // GcdmImpl

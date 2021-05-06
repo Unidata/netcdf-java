@@ -9,7 +9,7 @@ import ucar.nc2.util.CancelTask;
 public class GcdmGridDatasetProvider implements GridDatasetProvider {
   @Override
   public String getProtocol() {
-    return "cdmr";
+    return "gcdm";
   }
 
   @Override

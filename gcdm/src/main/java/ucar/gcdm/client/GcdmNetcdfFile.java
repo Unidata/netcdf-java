@@ -18,13 +18,13 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
 import ucar.array.Arrays;
 import ucar.array.StructureDataArray;
-import ucar.cdmr.CdmRemoteGrpc;
-import ucar.cdmr.CdmrNetcdfProto.DataRequest;
-import ucar.cdmr.CdmrNetcdfProto.DataResponse;
-import ucar.cdmr.CdmrNetcdfProto.Header;
-import ucar.cdmr.CdmrNetcdfProto.HeaderRequest;
-import ucar.cdmr.CdmrNetcdfProto.HeaderResponse;
-import ucar.cdmr.CdmrConverter;
+import ucar.gcdm.GcdmGrpc;
+import ucar.gcdm.GcdmNetcdfProto.DataRequest;
+import ucar.gcdm.GcdmNetcdfProto.DataResponse;
+import ucar.gcdm.GcdmNetcdfProto.Header;
+import ucar.gcdm.GcdmNetcdfProto.HeaderRequest;
+import ucar.gcdm.GcdmNetcdfProto.HeaderResponse;
+import ucar.gcdm.GcdmConverter;
 import ucar.ma2.Section;
 import ucar.ma2.StructureDataIterator;
 import ucar.nc2.Group;
@@ -41,11 +41,11 @@ public class GcdmNetcdfFile extends NetcdfFile {
   private static final int MAX_MESSAGE = 51 * 1000 * 1000; // 51 Mb
   private static boolean showRequest = true;
 
-  public static final String PROTOCOL = "cdmr";
+  public static final String PROTOCOL = "gcdm";
   public static final String SCHEME = PROTOCOL + ":";
 
   public static void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
-    showRequest = debugFlag.isSet("CdmRemote/showRequest");
+    showRequest = debugFlag.isSet("Gcdm/showRequest");
   }
 
   @Override
@@ -87,8 +87,8 @@ public class GcdmNetcdfFile extends NetcdfFile {
         if (response.hasError()) {
           throw new IOException(response.getError().getMessage());
         }
-        // Section sectionReturned = CdmrConverter.decodeSection(response.getSection());
-        ucar.array.Array<?> result = CdmrConverter.decodeData(response.getData());
+        // Section sectionReturned = GcdmConverter.decodeSection(response.getSection());
+        ucar.array.Array<?> result = GcdmConverter.decodeData(response.getData());
         results.add(result);
         size += result.length();
       }
@@ -136,7 +136,7 @@ public class GcdmNetcdfFile extends NetcdfFile {
   private final String remoteURI;
   private final String path;
   private final ManagedChannel channel;
-  private final CdmRemoteGrpc.CdmRemoteBlockingStub blockingStub;
+  private final GcdmGrpc.GcdmBlockingStub blockingStub;
 
   private GcdmNetcdfFile(Builder<?> builder) {
     super(builder);
@@ -169,7 +169,7 @@ public class GcdmNetcdfFile extends NetcdfFile {
   public static abstract class Builder<T extends Builder<T>> extends NetcdfFile.Builder<T> {
     private String remoteURI;
     private ManagedChannel channel;
-    private CdmRemoteGrpc.CdmRemoteBlockingStub blockingStub;
+    private GcdmGrpc.GcdmBlockingStub blockingStub;
     private String path;
     private boolean built;
 
@@ -207,7 +207,7 @@ public class GcdmNetcdfFile extends NetcdfFile {
           .maxInboundMessageSize(MAX_MESSAGE) //
           .build();
       try {
-        this.blockingStub = CdmRemoteGrpc.newBlockingStub(channel);
+        this.blockingStub = GcdmGrpc.newBlockingStub(channel);
         readHeader(path);
 
       } catch (Exception e) {
@@ -221,7 +221,7 @@ public class GcdmNetcdfFile extends NetcdfFile {
           // fall through
         }
         e.printStackTrace();
-        throw new RuntimeException("Cant open CdmRemote url " + this.remoteURI, e);
+        throw new RuntimeException("Cant open Gcdm url " + this.remoteURI, e);
       }
     }
 
@@ -238,7 +238,7 @@ public class GcdmNetcdfFile extends NetcdfFile {
         setLocation(SCHEME + header.getLocation());
 
         this.rootGroup = Group.builder().setName("");
-        CdmrConverter.decodeGroup(header.getRoot(), this.rootGroup);
+        GcdmConverter.decodeGroup(header.getRoot(), this.rootGroup);
       }
     }
 

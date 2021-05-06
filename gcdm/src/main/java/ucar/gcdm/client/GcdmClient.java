@@ -12,14 +12,14 @@ import java.util.concurrent.TimeUnit;
 
 import ucar.array.ArrayType;
 import ucar.array.Arrays;
-import ucar.cdmr.CdmRemoteGrpc;
-import ucar.cdmr.CdmrNetcdfProto.DataRequest;
-import ucar.cdmr.CdmrNetcdfProto.DataResponse;
-import ucar.cdmr.CdmrNetcdfProto.Header;
-import ucar.cdmr.CdmrNetcdfProto.HeaderRequest;
-import ucar.cdmr.CdmrNetcdfProto.HeaderResponse;
-import ucar.cdmr.CdmrNetcdfProto.Variable;
-import ucar.cdmr.CdmrConverter;
+import ucar.gcdm.GcdmGrpc;
+import ucar.gcdm.GcdmNetcdfProto.DataRequest;
+import ucar.gcdm.GcdmNetcdfProto.DataResponse;
+import ucar.gcdm.GcdmNetcdfProto.Header;
+import ucar.gcdm.GcdmNetcdfProto.HeaderRequest;
+import ucar.gcdm.GcdmNetcdfProto.HeaderResponse;
+import ucar.gcdm.GcdmNetcdfProto.Variable;
+import ucar.gcdm.GcdmConverter;
 import ucar.array.Array;
 import ucar.ma2.Section;
 
@@ -28,14 +28,14 @@ public class GcdmClient {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GcdmClient.class);
   private static final int MAX_MESSAGE = 51 * 1000 * 1000; // 51 Mb
 
-  private final CdmRemoteGrpc.CdmRemoteBlockingStub blockingStub;
+  private final GcdmGrpc.GcdmBlockingStub blockingStub;
   private static final String cdmUnitTestDir = "D:/testData/thredds-test-data/local/thredds-test-data/cdmUnitTest/";
   private static final String localFilename =
       cdmUnitTestDir + "formats/netcdf4/e562p1_fp.inst3_3d_asm_Nv.20100907_00z+20100909_1200z.nc4";
 
   /** Construct client for accessing HelloWorld server using the existing channel. */
   public GcdmClient(Channel channel) {
-    blockingStub = CdmRemoteGrpc.newBlockingStub(channel);
+    blockingStub = GcdmGrpc.newBlockingStub(channel);
   }
 
   private Header getHeader(String location) {
@@ -54,8 +54,8 @@ public class GcdmClient {
   }
 
   private <T> Array<T> getData(String location, Variable v) {
-    ArrayType dataType = CdmrConverter.convertDataType(v.getDataType());
-    Section section = CdmrConverter.decodeSection(v);
+    ArrayType dataType = GcdmConverter.convertDataType(v.getDataType());
+    Section section = GcdmConverter.decodeSection(v);
     System.out.printf("Data request %s %s (%s)%n", v.getDataType(), v.getName(), section);
     if (dataType != ArrayType.DOUBLE && dataType != ArrayType.FLOAT) {
       System.out.printf("***skip%n");
@@ -68,7 +68,7 @@ public class GcdmClient {
       List<Array<T>> results = new ArrayList<>();
       while (responses.hasNext()) {
         DataResponse response = responses.next();
-        results.add(CdmrConverter.decodeData(response.getData()));
+        results.add(GcdmConverter.decodeData(response.getData()));
       }
       return Arrays.factoryCopy(dataType, section.getShape(), results);
     } catch (Throwable e) {

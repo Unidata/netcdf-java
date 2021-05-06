@@ -17,7 +17,7 @@ apply from: "$rootDir/gradle/any/protobuf.gradle"
 dependencies {
   api project(':cdm-core')
 
-  // for CdmrServer: we should just add on the classpath?
+  // for GcdmServer: we should just add on the classpath?
   api project(':bufr')
   api project(':grib')
 

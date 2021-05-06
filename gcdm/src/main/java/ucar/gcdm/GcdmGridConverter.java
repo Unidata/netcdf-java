@@ -1,4 +1,4 @@
-package ucar.cdmr;
+package ucar.gcdm;
 
 import com.google.common.collect.ImmutableList;
 import ucar.array.Array;
@@ -14,9 +14,9 @@ import ucar.unidata.geoloc.Projection;
 import java.util.Formatter;
 
 /** Convert between GcdmGrid Protos and GridDataset objects. */
-public class CdmrGridConverter {
+public class GcdmGridConverter {
 
-  public static FeatureType convertFeatureType(CdmrGridProto.GridDataset.FeatureType proto) {
+  public static FeatureType convertFeatureType(GcdmGridProto.GridDataset.FeatureType proto) {
     switch (proto) {
       case Gridded:
         return FeatureType.GRID;
@@ -24,62 +24,62 @@ public class CdmrGridConverter {
     throw new IllegalArgumentException();
   }
 
-  public static AxisType convertAxisType(CdmrGridProto.GridAxis.AxisType proto) {
+  public static AxisType convertAxisType(GcdmGridProto.GridAxis.AxisType proto) {
     if (proto == null) {
       return null;
     }
     return AxisType.getType(proto.name());
   }
 
-  public static CdmrGridProto.GridAxis.AxisType convertAxisType(AxisType axis) {
+  public static GcdmGridProto.GridAxis.AxisType convertAxisType(AxisType axis) {
     if (axis == null) {
       return null;
     }
-    return CdmrGridProto.GridAxis.AxisType.valueOf(axis.name());
+    return GcdmGridProto.GridAxis.AxisType.valueOf(axis.name());
   }
 
-  public static GridAxis.Spacing convertAxisSpacing(CdmrGridProto.GridAxis.AxisSpacing proto) {
+  public static GridAxis.Spacing convertAxisSpacing(GcdmGridProto.GridAxis.AxisSpacing proto) {
     if (proto == null) {
       return null;
     }
     return GridAxis.Spacing.valueOf(proto.name());
   }
 
-  public static CdmrGridProto.GridAxis.AxisSpacing convertAxisSpacing(GridAxis.Spacing spacing) {
+  public static GcdmGridProto.GridAxis.AxisSpacing convertAxisSpacing(GridAxis.Spacing spacing) {
     if (spacing == null) {
       return null;
     }
-    return CdmrGridProto.GridAxis.AxisSpacing.valueOf(spacing.name());
+    return GcdmGridProto.GridAxis.AxisSpacing.valueOf(spacing.name());
   }
 
-  public static GridAxis.DependenceType convertAxisDependenceType(CdmrGridProto.GridAxis.DependenceType proto) {
+  public static GridAxis.DependenceType convertAxisDependenceType(GcdmGridProto.GridAxis.DependenceType proto) {
     if (proto == null) {
       return null;
     }
     return GridAxis.DependenceType.valueOf(proto.name());
   }
 
-  public static CdmrGridProto.GridAxis.DependenceType convertAxisDependenceType(GridAxis.DependenceType dtype) {
+  public static GcdmGridProto.GridAxis.DependenceType convertAxisDependenceType(GridAxis.DependenceType dtype) {
     if (dtype == null) {
       return null;
     }
-    return CdmrGridProto.GridAxis.DependenceType.valueOf(dtype.name());
+    return GcdmGridProto.GridAxis.DependenceType.valueOf(dtype.name());
   }
 
-  public static void decodeDataset(CdmrGridProto.GridDataset proto, GcdmGridDataset.Builder builder, Formatter errlog) {
-    for (CdmrGridProto.GridAxis axis : proto.getGridAxesList()) {
+  public static void decodeDataset(GcdmGridProto.GridDataset proto, GcdmGridDataset.Builder builder, Formatter errlog) {
+    for (GcdmGridProto.GridAxis axis : proto.getGridAxesList()) {
       builder.addGridAxis(decodeGridAxis(axis));
     }
-    for (CdmrGridProto.GridCoordinateSystem coordsys : proto.getCoordSysList()) {
+    for (GcdmGridProto.GridCoordinateSystem coordsys : proto.getCoordSysList()) {
       builder.addCoordSys(decodeCoordSys(coordsys, errlog));
     }
-    for (CdmrGridProto.Grid grid : proto.getGridsList()) {
+    for (GcdmGridProto.Grid grid : proto.getGridsList()) {
       builder.addGrid(decodeGrid(grid));
     }
   }
 
-  public static GridAxis.Builder<?> decodeGridAxis(CdmrGridProto.GridAxis proto) {
-    CdmrGridProto.GridAxis.GridAxisType gridAxisType = proto.getGridAxisType();
+  public static GridAxis.Builder<?> decodeGridAxis(GcdmGridProto.GridAxis proto) {
+    GcdmGridProto.GridAxis.GridAxisType gridAxisType = proto.getGridAxisType();
 
     GridAxis.Builder<?> axisb;
     switch (gridAxisType) {
@@ -100,7 +100,7 @@ public class CdmrGridConverter {
     axisb.setDescription(proto.getDescription());
     axisb.setUnits(proto.getUnits());
     axisb.setAxisType(convertAxisType(proto.getAxisType()));
-    axisb.setAttributes(CdmrConverter.decodeAttributes(proto.getName(), proto.getAttributesList()));
+    axisb.setAttributes(GcdmConverter.decodeAttributes(proto.getName(), proto.getAttributesList()));
     axisb.setSpacing(convertAxisSpacing(proto.getSpacing()));
     axisb.setDependenceType(convertAxisDependenceType(proto.getDependenceType()));
     axisb.setDependsOn(proto.getDependsOnList());
@@ -129,7 +129,7 @@ public class CdmrGridConverter {
     return axisb;
   }
 
-  public static GridCS.Builder<?> decodeCoordSys(CdmrGridProto.GridCoordinateSystem proto, Formatter errlog) {
+  public static GridCS.Builder<?> decodeCoordSys(GcdmGridProto.GridCoordinateSystem proto, Formatter errlog) {
     GridCS.Builder<?> builder = GridCS.builder();
     builder.setName(proto.getName());
     builder.setFeatureType(FeatureType.GRID);
@@ -139,31 +139,31 @@ public class CdmrGridConverter {
     return builder;
   }
 
-  public static GcdmGrid.Builder decodeGrid(CdmrGridProto.Grid proto) {
+  public static GcdmGrid.Builder decodeGrid(GcdmGridProto.Grid proto) {
     return GcdmGrid.builder().setProto(proto);
   }
 
-  public static Projection decodeProjection(CdmrGridProto.Projection proto, Formatter errlog) {
-    AttributeContainer ctv = CdmrConverter.decodeAttributes(proto.getName(), proto.getAttributesList());
+  public static Projection decodeProjection(GcdmGridProto.Projection proto, Formatter errlog) {
+    AttributeContainer ctv = GcdmConverter.decodeAttributes(proto.getName(), proto.getAttributesList());
     return ucar.nc2.internal.dataset.transform.horiz.ProjectionFactory.makeProjection(ctv, proto.getGeoUnits(), errlog);
   }
 
-  public static GridReferencedArray decodeGridReferencedArray(CdmrGridProto.GridReferencedArray proto,
+  public static GridReferencedArray decodeGridReferencedArray(GcdmGridProto.GridReferencedArray proto,
       ImmutableList<GridAxis> axes) {
     Formatter errlog = new Formatter();
     GridCS.Builder<?> cs = decodeCoordSys(proto.getCsSubset(), errlog);
-    Array<Number> data = CdmrConverter.decodeData(proto.getData());
+    Array<Number> data = GcdmConverter.decodeData(proto.getData());
     return GridReferencedArray.create(proto.getGridName(), data.getArrayType(), data, cs.build(axes));
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  public static CdmrGridProto.GridDataset encodeDataset(GridDataset org) {
-    CdmrGridProto.GridDataset.Builder builder = CdmrGridProto.GridDataset.newBuilder();
+  public static GcdmGridProto.GridDataset encodeDataset(GridDataset org) {
+    GcdmGridProto.GridDataset.Builder builder = GcdmGridProto.GridDataset.newBuilder();
     builder.setName(org.getName());
     builder.setLocation(org.getLocation());
-    builder.setFeatureType(CdmrGridProto.GridDataset.FeatureType.Gridded);
-    builder.addAllAttributes(CdmrConverter.encodeAttributes(org.attributes()));
+    builder.setFeatureType(GcdmGridProto.GridDataset.FeatureType.Gridded);
+    builder.addAllAttributes(GcdmConverter.encodeAttributes(org.attributes()));
 
     for (GridAxis axis : org.getGridAxes()) {
       builder.addGridAxes(encodeGridAxis(axis));
@@ -178,8 +178,8 @@ public class CdmrGridConverter {
     return builder.build();
   }
 
-  public static CdmrGridProto.GridCoordinateSystem encodeCoordSys(GridCoordinateSystem csys) {
-    CdmrGridProto.GridCoordinateSystem.Builder builder = CdmrGridProto.GridCoordinateSystem.newBuilder();
+  public static GcdmGridProto.GridCoordinateSystem encodeCoordSys(GridCoordinateSystem csys) {
+    GcdmGridProto.GridCoordinateSystem.Builder builder = GcdmGridProto.GridCoordinateSystem.newBuilder();
     builder.setName(csys.getName());
     for (GridAxis axis : csys.getGridAxes()) {
       builder.addAxisNames(axis.getName());
@@ -190,35 +190,35 @@ public class CdmrGridConverter {
     return builder.build();
   }
 
-  public static CdmrGridProto.Projection encodeProjection(Projection projection, String geoUnits) {
-    CdmrGridProto.Projection.Builder builder = CdmrGridProto.Projection.newBuilder();
+  public static GcdmGridProto.Projection encodeProjection(Projection projection, String geoUnits) {
+    GcdmGridProto.Projection.Builder builder = GcdmGridProto.Projection.newBuilder();
     builder.setName(projection.getName());
     if (geoUnits != null) {
       builder.setGeoUnits(geoUnits);
     }
-    builder.addAllAttributes(CdmrConverter.encodeAttributes(projection.getProjectionAttributes()));
+    builder.addAllAttributes(GcdmConverter.encodeAttributes(projection.getProjectionAttributes()));
 
     return builder.build();
   }
 
-  public static CdmrGridProto.GridAxis encodeGridAxis(GridAxis axis) {
-    CdmrGridProto.GridAxis.Builder builder = CdmrGridProto.GridAxis.newBuilder();
+  public static GcdmGridProto.GridAxis encodeGridAxis(GridAxis axis) {
+    GcdmGridProto.GridAxis.Builder builder = GcdmGridProto.GridAxis.newBuilder();
 
     if (axis instanceof GridAxis1DTime) {
-      builder.setGridAxisType(CdmrGridProto.GridAxis.GridAxisType.Axis1DTime);
+      builder.setGridAxisType(GcdmGridProto.GridAxis.GridAxisType.Axis1DTime);
     } else if (axis instanceof GridAxisOffsetTimeRegular) {
-      builder.setGridAxisType(CdmrGridProto.GridAxis.GridAxisType.TimeOffsetRegular);
+      builder.setGridAxisType(GcdmGridProto.GridAxis.GridAxisType.TimeOffsetRegular);
     } else if (axis instanceof GridAxis2D) {
-      builder.setGridAxisType(CdmrGridProto.GridAxis.GridAxisType.Axis2D);
+      builder.setGridAxisType(GcdmGridProto.GridAxis.GridAxisType.Axis2D);
     } else {
-      builder.setGridAxisType(CdmrGridProto.GridAxis.GridAxisType.Axis1D);
+      builder.setGridAxisType(GcdmGridProto.GridAxis.GridAxisType.Axis1D);
     }
 
     builder.setName(axis.getName());
     builder.setDescription(axis.getDescription());
     builder.setUnits(axis.getUnits());
     builder.setAxisType(convertAxisType(axis.getAxisType()));
-    builder.addAllAttributes(CdmrConverter.encodeAttributes(axis.attributes()));
+    builder.addAllAttributes(GcdmConverter.encodeAttributes(axis.attributes()));
     builder.setSpacing(convertAxisSpacing(axis.getSpacing()));
     builder.setDependenceType(convertAxisDependenceType(axis.getDependenceType()));
     builder.addAllDependsOn(axis.getDependsOn());
@@ -263,24 +263,24 @@ public class CdmrGridConverter {
     return builder.build();
   }
 
-  public static CdmrGridProto.Grid encodeGrid(Grid grid) {
-    CdmrGridProto.Grid.Builder builder = CdmrGridProto.Grid.newBuilder();
+  public static GcdmGridProto.Grid encodeGrid(Grid grid) {
+    GcdmGridProto.Grid.Builder builder = GcdmGridProto.Grid.newBuilder();
     builder.setName(grid.getName());
     builder.setDescription(grid.getDescription());
     builder.setUnits(grid.getUnits());
-    builder.setDataType(CdmrConverter.convertDataType(grid.getArrayType()));
-    builder.addAllAttributes(CdmrConverter.encodeAttributes(grid.attributes()));
+    builder.setDataType(GcdmConverter.convertDataType(grid.getArrayType()));
+    builder.addAllAttributes(GcdmConverter.encodeAttributes(grid.attributes()));
     builder.setCoordSys(grid.getCoordinateSystem().getName());
     builder.setHasMissing(grid.hasMissing());
 
     return builder.build();
   }
 
-  public static CdmrGridProto.GridReferencedArray encodeGridReferencedArray(GridReferencedArray geoArray) {
-    CdmrGridProto.GridReferencedArray.Builder builder = CdmrGridProto.GridReferencedArray.newBuilder();
+  public static GcdmGridProto.GridReferencedArray encodeGridReferencedArray(GridReferencedArray geoArray) {
+    GcdmGridProto.GridReferencedArray.Builder builder = GcdmGridProto.GridReferencedArray.newBuilder();
     builder.setGridName(geoArray.gridName());
     builder.setCsSubset(encodeCoordSys(geoArray.csSubset()));
-    builder.setData(CdmrConverter.encodeData(geoArray.arrayType(), geoArray.data()));
+    builder.setData(GcdmConverter.encodeData(geoArray.arrayType(), geoArray.data()));
     return builder.build();
   }
 

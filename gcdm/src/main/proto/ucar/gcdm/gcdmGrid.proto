@@ -1,11 +1,11 @@
 syntax = "proto3";
 
-package ucar.cdmr;
+package ucar.gcdm;
 
-import "ucar/gcdm/cdmrNetcdf.proto";
+import "ucar/gcdm/gcdmNetcdf.proto";
 
-option java_package = "ucar.cdmr";
-option java_outer_classname = "CdmrGridProto";
+option java_package = "ucar.gcdm";
+option java_outer_classname = "GcdmGridProto";
 
 message GridDatasetRequest {
   string location = 1;
