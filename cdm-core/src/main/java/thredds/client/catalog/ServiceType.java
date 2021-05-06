@@ -17,6 +17,7 @@ public enum ServiceType {
   DODS, // deprecated
   File, // deprecated
   FTP, //
+  GCDM("CDM Remote Procedure Calls based on gRPC", AccessType.DataAccess, "gcdm"), //
   GRIDFTP, //
   H5Service, //
   HTTPServer("HTTP file download.", AccessType.DataAccess, "httpserver"), //
