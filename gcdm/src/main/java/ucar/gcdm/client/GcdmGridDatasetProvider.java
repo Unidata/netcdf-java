@@ -14,7 +14,7 @@ public class GcdmGridDatasetProvider implements GridDatasetProvider {
 
   @Override
   public boolean isOwnerOf(DatasetUrl url) {
-    return url.getServiceType() == ServiceType.Cdmr;
+    return url.getServiceType() == ServiceType.GCDM;
   }
 
   @Override
