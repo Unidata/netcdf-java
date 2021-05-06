@@ -42,7 +42,7 @@ public class TestGcdmGridDataset {
   }
 
   private final String filename;
-  private final String cdmrUrl;
+  private final String gcdmUrl;
 
   public TestGcdmGridDataset(String filename) throws IOException {
     this.filename = filename.replace("\\", "/");
@@ -51,7 +51,7 @@ public class TestGcdmGridDataset {
     System.out.printf("getCanonicalPath %s%n", file.getCanonicalPath());
 
     // LOOK kludge for now. Also, need to auto start up CmdrServer
-    this.cdmrUrl = "cdmr://localhost:16111/" + file.getCanonicalPath();
+    this.gcdmUrl = "gcdm://localhost:16111/" + file.getCanonicalPath();
   }
 
   @Test
@@ -63,7 +63,7 @@ public class TestGcdmGridDataset {
         return;
       }
       System.out.printf("TestGcdmNetcdfFile call server for %s%n", filename);
-      try (GridDataset remote = GridDatasetFactory.openGridDataset(cdmrUrl, info)) {
+      try (GridDataset remote = GridDatasetFactory.openGridDataset(gcdmUrl, info)) {
         assertThat(remote).isNotNull();
         boolean ok = compareGridDataset(local, remote);
         if (!ok) {

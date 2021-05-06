@@ -39,22 +39,22 @@ public class TestGcdmNetcdfFile {
   }
 
   private final String filename;
-  private final String cdmrUrl;
+  private final String gcdmUrl;
 
   public TestGcdmNetcdfFile(String filename) {
     this.filename = filename.replace("\\", "/");
 
     // LOOK kludge for now. Also, need to auto start up CmdrServer
-    this.cdmrUrl = "cdmr://localhost:16111/" + this.filename;
+    this.gcdmUrl = "gcdm://localhost:16111/" + this.filename;
   }
 
   @Test
   public void doOne() throws Exception {
     System.out.printf("TestGcdmNetcdfFile %s%n", filename);
     try (NetcdfFile ncfile = NetcdfDatasets.openFile(filename, null);
-        GcdmNetcdfFile cdmrFile = GcdmNetcdfFile.builder().setRemoteURI(cdmrUrl).build()) {
+        GcdmNetcdfFile gcdmFile = GcdmNetcdfFile.builder().setRemoteURI(gcdmUrl).build()) {
 
-      boolean ok = CompareArrayToArray.compareFiles(ncfile, cdmrFile);
+      boolean ok = CompareArrayToArray.compareFiles(ncfile, gcdmFile);
       assertThat(ok).isTrue();
     }
   }

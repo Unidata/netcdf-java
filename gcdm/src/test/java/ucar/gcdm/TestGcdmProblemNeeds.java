@@ -20,13 +20,13 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 @Category(NeedsCdmUnitTest.class)
 public class TestGcdmProblemNeeds {
   private final String filename;
-  private final String cdmrUrl;
+  private final String gcdmUrl;
 
   public TestGcdmProblemNeeds() {
     String localFilename = "formats/netcdf4/e562p1_fp.inst3_3d_asm_Nv.20100907_00z+20100909_1200z.nc4";
     this.filename = TestDir.cdmUnitTestDir + localFilename;
     // LOOK kludge for now. Also, need to auto start up CmdrServer
-    this.cdmrUrl = "cdmr://localhost:16111/" + TestDir.cdmUnitTestDir + localFilename;
+    this.gcdmUrl = "gcdm://localhost:16111/" + TestDir.cdmUnitTestDir + localFilename;
   }
 
   @Test
@@ -34,9 +34,9 @@ public class TestGcdmProblemNeeds {
     System.out.printf("TestGcdmProblem %s%n", filename);
     Stopwatch stopwatch = Stopwatch.createStarted();
     try (NetcdfFile ncfile = NetcdfDatasets.openFile(filename, null);
-        GcdmNetcdfFile cdmrFile = GcdmNetcdfFile.builder().setRemoteURI(cdmrUrl).build()) {
+        GcdmNetcdfFile gcdmFile = GcdmNetcdfFile.builder().setRemoteURI(gcdmUrl).build()) {
 
-      boolean ok = CompareArrayToMa2.compareFiles(ncfile, cdmrFile);
+      boolean ok = CompareArrayToMa2.compareFiles(ncfile, gcdmFile);
       assertThat(ok).isTrue();
     }
     System.out.printf("*** That took %s%n", stopwatch.stop());

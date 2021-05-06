@@ -26,14 +26,14 @@ public class TimeGcdm {
 
   @Test
   public void readCmdrArray() throws IOException {
-    String cdmrUrl = "cdmr://localhost:16111/" + localFilename;
+    String gcdmUrl = "gcdm://localhost:16111/" + localFilename;
 
     long total = 0;
     Stopwatch stopwatchAll = Stopwatch.createStarted();
-    try (GcdmNetcdfFile cdmrFile = GcdmNetcdfFile.builder().setRemoteURI(cdmrUrl).build()) {
-      System.out.println("Test input: " + cdmrFile.getLocation());
+    try (GcdmNetcdfFile gcdmFile = GcdmNetcdfFile.builder().setRemoteURI(gcdmUrl).build()) {
+      System.out.println("Test input: " + gcdmFile.getLocation());
       boolean ok = true;
-      for (Variable v : cdmrFile.getVariables()) {
+      for (Variable v : gcdmFile.getVariables()) {
         System.out.printf("  read variable though array : %s %s", v.getDataType(), v.getShortName());
         Stopwatch stopwatch = Stopwatch.createStarted();
         Array<?> data = v.readArray();

@@ -54,20 +54,20 @@ public class TestGcdmNetcdf4 {
   }
 
   private final String filename;
-  private final String cdmrUrl;
+  private final String gcdmUrl;
 
   public TestGcdmNetcdf4(String filename) {
     this.filename = filename;
     // LOOK kludge for now. Also, need to auto start up CmdrServer
-    this.cdmrUrl = "cdmr://localhost:16111/" + filename;
+    this.gcdmUrl = "gcdm://localhost:16111/" + filename;
   }
 
   @Test
   public void doOne() throws Exception {
     try (NetcdfFile ncfile = NetcdfDatasets.openFile(filename, null);
-        GcdmNetcdfFile cdmrFile = GcdmNetcdfFile.builder().setRemoteURI(cdmrUrl).build()) {
+        GcdmNetcdfFile gcdmFile = GcdmNetcdfFile.builder().setRemoteURI(gcdmUrl).build()) {
 
-      boolean ok = CompareArrayToMa2.compareFiles(ncfile, cdmrFile);
+      boolean ok = CompareArrayToMa2.compareFiles(ncfile, gcdmFile);
       assertThat(ok).isTrue();
     }
   }

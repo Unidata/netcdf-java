@@ -51,7 +51,7 @@ public class TestGcdmProblem {
   }
 
   @Test
-  public void testCdmrProblem2() throws Exception {
+  public void testGcdmProblem2() throws Exception {
     String localFilename = TestDir.cdmLocalTestDataDir + "dataset/SimpleGeos/hru_soil_moist_vlen_3hru_5timestep.nc";
     Path path = Paths.get(localFilename);
     doOne(path);
@@ -59,30 +59,30 @@ public class TestGcdmProblem {
   }
 
   public void doOne(Path path) throws Exception {
-    String cdmrUrl = "cdmr://localhost:16111/" + path.toAbsolutePath();
+    String gcdmUrl = "gcdm://localhost:16111/" + path.toAbsolutePath();
     try (NetcdfFile ncfile = NetcdfDatasets.openFile(path.toString(), null);
-        GcdmNetcdfFile cdmrFile = GcdmNetcdfFile.builder().setRemoteURI(cdmrUrl).build()) {
+        GcdmNetcdfFile gcdmFile = GcdmNetcdfFile.builder().setRemoteURI(gcdmUrl).build()) {
 
-      boolean ok = CompareArrayToMa2.compareFiles(ncfile, cdmrFile);
+      boolean ok = CompareArrayToMa2.compareFiles(ncfile, gcdmFile);
       assertThat(ok).isTrue();
     }
   }
 
   public void doTwo(Path path) throws Exception {
-    String cdmrUrl = "cdmr://localhost:16111/" + path.toAbsolutePath();
+    String gcdmUrl = "gcdm://localhost:16111/" + path.toAbsolutePath();
     try (NetcdfFile ncfile = NetcdfDatasets.openFile(path.toString(), null);
-        GcdmNetcdfFile cdmrFile = GcdmNetcdfFile.builder().setRemoteURI(cdmrUrl).build()) {
+        GcdmNetcdfFile gcdmFile = GcdmNetcdfFile.builder().setRemoteURI(gcdmUrl).build()) {
 
-      boolean ok = CompareArrayToArray.compareFiles(ncfile, cdmrFile);
+      boolean ok = CompareArrayToArray.compareFiles(ncfile, gcdmFile);
       assertThat(ok).isTrue();
     }
   }
 
   public void doOne(Path path, String varName) throws Exception {
     // LOOK kludge for now. Also, need to auto start up CmdrServer
-    String cdmrUrl = "cdmr://localhost:16111/" + path.toAbsolutePath();
+    String gcdmUrl = "gcdm://localhost:16111/" + path.toAbsolutePath();
     try (NetcdfFile ma2File = NetcdfDatasets.openFile(path.toString(), null);
-        GcdmNetcdfFile arrayFile = GcdmNetcdfFile.builder().setRemoteURI(cdmrUrl).build()) {
+        GcdmNetcdfFile arrayFile = GcdmNetcdfFile.builder().setRemoteURI(gcdmUrl).build()) {
 
       boolean ok = CompareArrayToMa2.compareVariable(ma2File, arrayFile, varName, true);
       assertThat(ok).isTrue();
