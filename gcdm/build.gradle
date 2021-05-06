@@ -1,41 +1,48 @@
-import com.github.psxpaul.task.JavaExecFork
-
 plugins {
   // Provide convenience executables for testing
   id 'application'
-  id "com.google.protobuf"
   id 'com.github.psxpaul.execfork' version '0.1.13'
+}
+
+import com.github.psxpaul.task.JavaExecFork
+
+repositories {
+  gradlePluginPortal()
+  maven {
+    // For jj2000
+    url 'https://artifacts.unidata.ucar.edu/repository/unidata-releases/'
+  }
 }
 
 description = 'gRPC client and server implementation of CDM Remote Procedure Calls (gCDM).'
 ext.title = 'CDM Remote Procedure Calls'
 
-apply from: "$rootDir/gradle/any/dependencies.gradle"
 apply from: "$rootDir/gradle/any/java-library.gradle"
 apply from: "$rootDir/gradle/any/protobuf.gradle"
+apply from: "$rootDir/gradle/any/shared-mvn-coords.gradle"
 
 dependencies {
   api project(':cdm-core')
 
-  // for GcdmServer: we should just add on the classpath?
-  api project(':bufr')
-  api project(':grib')
-
   implementation "io.grpc:grpc-protobuf:${depVersion.grpc}"
   implementation "io.grpc:grpc-stub:${depVersion.grpc}"
+
   compileOnly 'org.apache.tomcat:annotations-api:6.0.53'
 
+  runtimeOnly project(':bufr')
+  runtimeOnly project(':grib')
   runtimeOnly "io.grpc:grpc-netty-shaded:${depVersion.grpc}"
-  runtimeOnly "org.slf4j:slf4j-jdk14"
+  runtimeOnly 'org.slf4j:slf4j-jdk14'
 
-  testRuntimeOnly "org.slf4j:slf4j-jdk14:${depVersion.slf4j}"
   testImplementation enforcedPlatform(project(':netcdf-java-testing-platform'))
   testImplementation project(':cdm-test-utils')
   testImplementation 'com.google.truth:truth'
   testImplementation 'junit:junit'
   testImplementation 'commons-io:commons-io'
-  testImplementation "org.mockito:mockito-core"
+  testImplementation 'org.mockito:mockito-core'
   testImplementation "io.grpc:grpc-testing:${depVersion.grpc}"
+
+  testRuntimeOnly "org.slf4j:slf4j-jdk14:${depVersion.slf4j}"
 }
 
 protobuf {
