@@ -12,6 +12,7 @@ tds/content/
 *.iws
 .idea/
 atlassian-ide-plugin.xml
+.run/
 
 # ignore intellij compile directories
 # `module`/out/ (i.e. tds/out)
