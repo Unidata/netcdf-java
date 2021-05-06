@@ -37,7 +37,7 @@ dependencies {
   testImplementation project(':cdm-test-utils')
   testImplementation 'junit:junit'
 
-  runtimeOnly project(':cdmr')
+  runtimeOnly project(':gcdm')
   runtimeOnly project(':cdm-s3')
 
   // constrained by netcdf-java-platform

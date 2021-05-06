@@ -20,4 +20,4 @@ include 'uibase'
 include 'uicdm'
 
 include 'cdm-lite'
-include 'cdmr'
+include 'gcdm'
