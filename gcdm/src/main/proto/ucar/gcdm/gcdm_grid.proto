@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package ucar.gcdm;
 
-import "ucar/gcdm/gcdmNetcdf.proto";
+import "ucar/gcdm/gcdm_netcdf.proto";
 
 option java_package = "ucar.gcdm";
 option java_outer_classname = "GcdmGridProto";
