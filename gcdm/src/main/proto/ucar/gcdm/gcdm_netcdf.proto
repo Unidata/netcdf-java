@@ -88,7 +88,7 @@ message EnumTypedef {
   }
   string name = 1;
   DataType base_type = 2;
-  repeated EnumType map = 3;
+  repeated EnumType maps = 3;
 }
 
 message Group {
@@ -112,7 +112,7 @@ message Header {
 message Structure {
   string name = 1;                // short name
   DataType data_type = 2;         // STRUCTURE or SEQUENCE
-  repeated Dimension shape = 3;   // actual dimension instead of reference
+  repeated Dimension shapes = 3;   // actual dimension instead of reference
   repeated Attribute atts = 4;
   repeated Variable vars = 5;     // members that are not structs
   repeated Structure structs = 6; // struct members that are structs
@@ -121,7 +121,7 @@ message Structure {
 message Variable {
   string name = 1; // short name
   DataType data_type = 2;
-  repeated Dimension shape = 3;   // actual dimension instead of reference
+  repeated Dimension shapes = 3;   // actual dimension instead of reference
   repeated Attribute atts = 4;
   string enum_type = 5;   // EnumTypedef name, only for enum types
   Data data = 6;        // "immediate" - store small data in header
@@ -136,12 +136,12 @@ message Range {
 }
 
 message Section {
-  repeated Range range = 1;
+  repeated Range ranges = 1;
 }
 
 message Data {
   DataType data_type = 1;
-  repeated uint32 shape = 2;
+  repeated uint32 shapes = 2;
 
   // oneof, depends on data_type
   repeated bytes bdata = 3;   // ENUM1, BYTE, OPAQUE
@@ -171,6 +171,6 @@ message StructureMembersProto {
 message StructureMemberProto {
   string name = 1;
   DataType data_type = 2;
-  repeated int32 shape = 3;
+  repeated int32 shapes = 3;
   StructureMembersProto members = 4;
 }
