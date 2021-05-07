@@ -11,7 +11,7 @@ dependencies {
   api enforcedPlatform(project(':netcdf-java-platform'))
   testImplementation enforcedPlatform(project(':netcdf-java-testing-platform'))
 
-  compile project(':cdm:cdm-core')
+  compile project(':cdm-core')
   compile 'net.java.dev.jna:jna'
   compile 'org.slf4j:slf4j-api'
 

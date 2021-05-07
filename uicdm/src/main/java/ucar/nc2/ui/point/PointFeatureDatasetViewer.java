@@ -8,13 +8,11 @@ package ucar.nc2.ui.point;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
-import org.apache.xmlbeans.XmlException;
 import ucar.ma2.StructureData;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.StationFeature;
 import ucar.nc2.ft.point.writer2.CFPointWriter;
-import ucar.nc2.ogc.MarshallingUtil;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.ui.dialog.NetcdfOutputChooser;
@@ -167,7 +165,6 @@ public class PointFeatureDatasetViewer extends JPanel {
     };
     BAMutil.setActionProperties(getallAction, "GetAll", "get ALL data", false, 'A', -1);
     stationMap.addToolbarAction(getallAction);
-    stationMap.addToolbarAction(new WaterMLConverterAction());
 
     AbstractAction netcdfAction = new AbstractAction() {
       @Override
@@ -297,50 +294,6 @@ public class PointFeatureDatasetViewer extends JPanel {
           infoWindow.setVisible(true);
         }
       });
-    }
-  }
-
-  // I'd like to offload this class into its own file, but it needs to read the pfDataset field, whose value may change
-  // during execution. I could still do it if I added the necessary event listener machinery, but meh.
-  private class WaterMLConverterAction extends AbstractAction {
-
-    private WaterMLConverterAction() {
-      putValue(NAME, "WaterML 2.0 Writer");
-      putValue(SMALL_ICON, Resource.getIcon(BAMutil.getResourcePath() + "nj22/drop_24.png", true));
-      putValue(SHORT_DESCRIPTION, "Write timeseries as an OGC WaterML v2.0 document.");
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      if (pfDataset == null) {
-        return;
-      }
-
-      if (pfDataset.getFeatureType() != FeatureType.STATION) {
-        Component parentComponent = PointFeatureDatasetViewer.this;
-        Object message = "Currently, only the STATION feature type is supported, not " + pfDataset.getFeatureType();
-        String title = "Invalid feature type";
-        int messageType = JOptionPane.ERROR_MESSAGE;
-
-        JOptionPane.showMessageDialog(parentComponent, message, title, messageType);
-        return;
-      }
-
-      try {
-        ByteArrayOutputStream outStream = new ByteArrayOutputStream(5000);
-        MarshallingUtil.marshalPointDataset(pfDataset, pfDataset.getDataVariables(), outStream);
-
-        infoTA.setText(outStream.toString(StandardCharsets.UTF_8.name()));
-        infoTA.gotoTop();
-        infoWindow.setVisible(true);
-      } catch (IOException | XmlException ex) {
-        StringWriter sw = new StringWriter(5000);
-        ex.printStackTrace(new PrintWriter(sw));
-
-        infoTA.setText(sw.toString());
-        infoTA.gotoTop();
-        infoWindow.setVisible(true);
-      }
     }
   }
 

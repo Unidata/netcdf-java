@@ -1,0 +1,172 @@
+syntax = "proto3";
+
+package ucar.gcdm;
+option java_package = "ucar.gcdm";
+option java_outer_classname = "GcdmNetcdfProto";
+
+message HeaderRequest {
+  string location = 1;
+}
+
+message HeaderResponse {
+  Error error = 1;  // non-empty on error
+  uint32 version = 2; // response version
+  Header header = 3;
+}
+
+message DataRequest {
+  string location = 1;
+  string variableSpec = 2;
+}
+
+message DataResponse {
+  Error error = 1;    // non-empty on error
+  uint32 version = 2; // response version
+
+  string location = 3;
+  string variableSpec = 4;     // the requested variableSpec
+  string varFullName = 5;      // Variable full name
+  Section section = 6;         // this is the Section of the entire variable. Its shape matches the data.
+
+  Data data = 7;
+}
+
+message Error {
+  string message = 1;
+  uint32 code = 2;
+}
+
+/////////////////////////////////////////////////////////////////////////////
+
+message Attribute {
+  string name = 1;
+  DataType dataType = 2;   // cant use STRUCTURE or SEQUENCE or OPAQUE or ENUM; CHAR deprecated, use STRING
+  uint32 length = 3;
+  Data data = 4;
+}
+
+enum DataType {
+  DATA_TYPE_UNDEFINED = 0;
+  DATA_TYPE_BYTE = 1;
+  DATA_TYPE_SHORT = 2;
+  DATA_TYPE_INT = 3;
+  DATA_TYPE_LONG = 4;
+  DATA_TYPE_FLOAT = 5;
+  DATA_TYPE_DOUBLE = 6;
+  DATA_TYPE_STRING = 7;
+  DATA_TYPE_STRUCTURE = 8;
+  DATA_TYPE_SEQUENCE = 9;
+  DATA_TYPE_ENUM1 = 10;
+  DATA_TYPE_ENUM2 = 11;
+  DATA_TYPE_ENUM4 = 12;
+  DATA_TYPE_OPAQUE = 13;
+
+  DATA_TYPE_UBYTE = 14;
+  DATA_TYPE_USHORT = 15;
+  DATA_TYPE_UINT = 16;
+  DATA_TYPE_ULONG = 17;
+
+  DATA_TYPE_CHAR = 18; // prefer String
+}
+
+message Dimension {
+  string name = 1;   // short name - optional when private
+  uint64 length = 2; // optional when vlen, may be zero if unlimited
+  bool isUnlimited = 3;
+  bool isVlen = 4;
+  bool isPrivate = 5;
+}
+
+message EnumTypedef {
+  message EnumType {
+    uint32 code = 1;
+    string value = 2;
+  }
+  string name = 1;
+  DataType baseType = 2;
+  repeated EnumType map = 3;
+}
+
+message Group {
+  string name = 1;                // short name
+  repeated Dimension dims = 2;
+  repeated Variable vars = 3;
+  repeated Structure structs = 4;
+  repeated Attribute atts = 5;
+  repeated Group groups = 6;
+  repeated EnumTypedef enumTypes = 7;
+}
+
+message Header {
+  string location = 1;
+  string title = 2;  // ??
+  string id = 3;     // ??
+
+  Group root = 4;
+}
+
+message Structure {
+  string name = 1;                // short name
+  DataType dataType = 2;          // STRUCTURE or SEQUENCE
+  repeated Dimension shape = 3;   // actual dimension instead of reference
+  repeated Attribute atts = 4;
+  repeated Variable vars = 5;     // members that are not structs
+  repeated Structure structs = 6; // struct members that are structs
+}
+
+message Variable {
+  string name = 1; // short name
+  DataType dataType = 2;
+  repeated Dimension shape = 3;   // actual dimension instead of reference
+  repeated Attribute atts = 4;
+  string enumType = 5;   // EnumTypedef name, only for enum types
+  Data data = 6;        // "immediate" - store small data in header
+}
+
+//////////////////////////////////
+
+message Range {
+  uint64 start = 1;
+  uint64 size = 2;
+  uint64 stride = 3;
+}
+
+message Section {
+  repeated Range range = 1;
+}
+
+message Data {
+  DataType dataType = 1;
+  repeated uint32 shape = 2;
+
+  // oneof, depends on dataType
+  repeated bytes bdata = 3;   // ENUM1, BYTE, OPAQUE
+  repeated sint32 idata = 4;  // SHORT, INT, CHAR
+  repeated uint32 uidata = 5; // ENUM2, USHORT, ENUM4, UINT
+  repeated sint64 ldata = 6;  // LONG
+  repeated uint64 uldata = 7; // ULONG
+  repeated float fdata = 8;   // FLOAT
+  repeated double ddata = 9;  // DOUBLE
+  repeated string sdata = 10;  // STRING
+  repeated Data vlen = 11;  // VLEN
+
+  // STRUCTURE, SEQUENCE
+  StructureMembersProto members = 12;
+  repeated StructureDataProto rows = 13;  // row oriented: one for each row
+}
+
+message StructureDataProto {
+  repeated Data memberData = 1;  // one for each memeber
+}
+
+message StructureMembersProto {
+  string name = 1;
+  repeated StructureMemberProto members = 12;
+}
+
+message StructureMemberProto {
+  string name = 1;
+  DataType dataType = 2;
+  repeated int32 shape = 3;
+  StructureMembersProto members = 4;
+}

@@ -7,7 +7,7 @@ package ucar.unidata.util.test.category;
  *
  * To enable these tests, set the ucarNetworkAvailable system property, for example
  *
- * ./gradlew -DucarNetworkAvailable=true :cdm:cdm-s3:test --tests ucar.unidata.io.s3.TestS3Read
+ * ./gradlew -DucarNetworkAvailable=true :cdm-s3:test --tests ucar.unidata.io.s3.TestS3Read
  *
  * See gradle/root/testing.gradle
  *

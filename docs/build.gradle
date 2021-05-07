@@ -138,7 +138,7 @@ gradle.projectsEvaluated {  // Several statements below rely upon all subproject
     options.showFromPublic()
     options.noDeprecated()
 
-    SourceSet cdmCoreSourceSet = rootProject.project(':cdm:cdm-core').sourceSets.main
+    SourceSet cdmCoreSourceSet = rootProject.project(':cdm-core').sourceSets.main
     source cdmCoreSourceSet.allJava
 
     classpath = files([cdmCoreSourceSet.compileClasspath, cdmCoreSourceSet.output])
@@ -151,7 +151,7 @@ gradle.projectsEvaluated {  // Several statements below rely upon all subproject
     title = "NetCDF-Java Public API v${version} - with deprecations"
     destinationDir = file("${buildDir}/javadocWithDeps/")
 
-    SourceSet cdmCoreSourceSet = rootProject.project(':cdm:cdm-core').sourceSets.main
+    SourceSet cdmCoreSourceSet = rootProject.project(':cdm-core').sourceSets.main
     source cdmCoreSourceSet.allJava
 
     classpath = files([cdmCoreSourceSet.compileClasspath, cdmCoreSourceSet.output])

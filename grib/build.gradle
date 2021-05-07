@@ -9,7 +9,7 @@ dependencies {
   api enforcedPlatform(project(':netcdf-java-platform'))
   testImplementation enforcedPlatform(project(':netcdf-java-testing-platform'))
 
-  api project(':cdm:cdm-core')
+  api project(':cdm-core')
 
   compile 'com.google.protobuf:protobuf-java'
   compile 'org.jdom:jdom2'

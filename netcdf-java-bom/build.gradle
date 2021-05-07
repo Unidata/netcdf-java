@@ -13,16 +13,13 @@ dependencies {
   api enforcedPlatform(project(':netcdf-java-platform'))
   constraints {
     api project(':bufr')
-    api project(':cdm:cdm-core')
-    api project(':cdm:cdm-s3')
-    api project(':cdm-test-utils')
+    api project(':cdm-core')
+    api project(':cdm-s3')
     api project(':grib')
     api project(':httpservices')
     api project(':netcdf4')
     api project(':opendap')
     api project(':udunits')
-    api project(':uibase')
-    api project(':waterml')
   }
 }
 

@@ -2,40 +2,51 @@
 <br>
 <br>
 
-# netCDF-Java/CDM
+# netCDF-Java
+
+Welcome to the development branch of the netCDF-Java library (currently version _6.x_)!
+
+> Looking for the `5.x` line of development?
+See branch [maint-5.x](https://github.com/unidata/netcdf-java/tree/maint-5.x).
+Version `4.6` is no longer supported outside of the context of the THREDDS Data Server (TDS).
+If you are looking for that codebase, it can be found at <https://github.com/Unidata/thredds/tree/main>.
 
 The netCDF Java library provides an interface for scientific data access.
-It can be used to read scientific data from a variety of file formats including netCDF, HDF, GRIB, BUFR, and many others.
+It can be used to read scientific data from a variety of file formats including netCDF, HDF, GRIB, and BUFR.
 By itself, the netCDF-Java library can only write netCDF-3 files.
-It can write netCDF-4 files by using JNI to call the netCDF-C library.
-It also implements Unidata's Common Data Model (CDM) to provide data geolocation capabilities.
+It can write netCDF-4 files by using JNA to call the netCDF-C library.
+The library implements [Unidata's Common Data Model (CDM)](https://docs.unidata.ucar.edu/netcdf-java/current/userguide/common_data_model_overview.html) to provide data geolocation capabilities.
 
-For more information about netCDF-Java/CDM, see the netCDF-Java web page at
+Documentation can be found at <https://docs.unidata.ucar.edu/netcdf-java/>.
+The [User's Guide](https://docs.unidata.ucar.edu/netcdf-java/6.0/userguide/index.html) contains information on how to use the library in your project, a tutorial, and useful upgrade tips.
 
-* https://www.unidata.ucar.edu/software/netcdf-java/
+## Requirements
 
-and the CDM web page at
+* Java 8 or above
 
-https://docs.unidata.ucar.edu/netcdf-java/current/userguide/common_data_model_overview.html
+Each pull requests runs a subset of tests using Java 8, 11, and 14 (`AdoptOpenJDK` and `Zulu`).
+Currently, netCDF-C version 4.7.4 is used by our netCDF-4 write tests.
+The full test suite runs nightly (this take a little over an hour).
+More information on our test environment can be found at <https://github.com/unidata/thredds-test-environment#thredds-test-environment-highlights>.
 
-You can obtain a copy of the latest released version of netCDF-Java software from
+## Using netCDF-Java in your project
 
-* https://www.unidata.ucar.edu/downloads/netcdf-java/
+The latest release and snapshot artifacts are available from Unidata's Nexus repository.
+To use the netCDF-Java artifacts as dependencies using maven or gradle, follow [these instructions](https://docs.unidata.ucar.edu/netcdf-java/dev/userguide/using_netcdf_java_artifacts.html).
+At a minimum, you will need to reference the Unidata artifacts server (`https://artifacts.unidata.ucar.edu/repository/unidata-all/`) and use the `cdm-core` artifact, which has a `groupId` of `edu.ucar` and an `artifactId` of `cdm-core`.
+We also provide a maven BOM (`groupId`: `edu.ucar`, `artifactId`: `netcdf-java-bom`) and a Gradle Java Platform (`groupId`: `edu.ucar`, `artifactId`: `netcdf-java-platform`) for convenience.
+To build netCDF-java from this repository, follow [this tutorial](https://docs.unidata.ucar.edu/netcdf-java/dev/userguide/building_from_source.html).
 
-More documentation can be found at
+## Participation
 
-* https://docs.unidata.ucar.edu/netcdf-java/current/userguide/index.html
-
-A mailing list, netcdf-java@unidata.ucar.edu, exists for discussion of all things netCDF-Java/CDM including announcements about netCDF-Java/CDM bugs, fixes, enhancements, and releases.
-For information about how to subscribe, see the "Subscribe" link on this page
-
-* https://www.unidata.ucar.edu/mailing_lists/archives/netcdf-java/
-
-For more general netCDF discussion, see the netcdfgroup@unidata.ucar.edu email list.
+As contributors, creators, stewards, and maintainers of software managed by the Unidata Program Center, we agree to follow the UCAR [Codes of Conduct](https://www.ucar.edu/who-we-are/ethics-integrity/codes-conduct) to foster a safe, productive, welcoming and inclusive experience for everyone.
+Please familiarize yourself with these Codes of Conduct, especially the [Contributor Code of Conduct](https://github.com/Unidata/.github/blob/3d84135b64c6aae4b329b8801fb3d11ddd9d09a9/CODE_OF_CONDUCT.md#contributor-code-of-conduct).
+In the coming weeks, we'll be opening the GitHub Discussions area on this repository as a place for discussion of all things netCDF-Java.
+Unidata will continue to host community mailing list, netcdf-java@unidata.ucar.edu, as a secondary outlet for release announcements, and as a place for those who do not wish to use GitHub.
 
 We appreciate feedback from users of this package.
-Please send comments and suggestions to <support-netcdf-java@unidata.ucar.edu>.
-For bug reports, feel free to open an issue on this repository, or contact us at the address above.
+The GitHub Discussions area (once active) will be a great place to post comments and suggestions, and discuss the future direction of the library.
+For bug reports, please open an issue on this repository.
 Please identify the version of the package as well as the version/vendor of Java you are using.
 For potential security issues, please contact security@unidata.ucar.edu directly.
 
@@ -45,53 +56,9 @@ Are you looking to contribute to the netCDF-Java efforts?
 That's great!
 Please see our [contributors guide](https://github.com/Unidata/netcdf-java/blob/develop/.github/CONTRIBUTING.md) for more information!
 
-## NetCDF Markup Language (NcML)
+## Older versions
 
-NcML is an XML representation of netCDF metadata, it approximates the header information one gets from a netCDF file with the "ncdump -h" command.
-NcML is similar to the netCDF CDL (network Common data form Description Language), except, of course, it uses XML syntax.
-
-Beyond simply describing a netCDF file, it can also be used to describe changes to existing netCDF files.
-A limited number of tools, mainly netCDF-Java based tools, support these features of NcML.
-
-For more information about NcML, see the NcML web page at
-
-https://docs.unidata.ucar.edu/netcdf-java/current/userguide/ncml_overview.html
-
-## THREDDS Catalogs
-
-THREDDS Catalogs can be thought of as representing logical directories of on-line data resources.
-They are encoded as XML and provide a place for annotations and other metadata about the data resources.
-While the THREDDS Data Server (TDS) generates THREDDS Catalogs, THREDDS Catalogs are not limited to those produced by the TDS.
-These XML documents are how THREDDS-enabled data consumers find out what data is available from data providers.
-
-THREDDS Catalog documentation (including the specification) is available at
-
-* https://docs.unidata.ucar.edu/tds/5.0/userguide/basic_client_catalog.html
-
-## Licensing
-
-netCDF-Java is released under the BSD-3 licence, which can be found [here](https://github.com/Unidata/netcdf-java/blob/develop/LICENSE).
-
-Furthermore, this project includes code from third-party open-source software components:
-* [Gretty](https://github.com/akhikhl/gretty): for details, see `buildSrc/README.md`
-* [ERDDAP](https://coastwatch.pfeg.noaa.gov/erddap/index.html): for details, see `waterml/README.md`
-* [JUnit](https://github.com/junit-team/junit4): for details, see `testUtil/README.md`
-
-Each of these software components have their own license.
-Please see `docs/src/private/licenses/third-party/`.
-
-## How to use
-
-The latest released and snapshot software artifacts (e.g. `.jar` files) are available from Unidata's Nexus repository:
-
-* https://artifacts.unidata.ucar.edu/#browse/browse:unidata-all
-
-To build netCDF-java from this repository, follow [this tutorial](https://docs.unidata.ucar.edu/netcdf-java/current/userguide/building_from_source.html).
-
-To use the netCDF-Java library as a dependency using maven or gradle, follow [these instructions](https://docs.unidata.ucar.edu/netcdf-java/current/userguide/using_netcdf_java_artifacts.html).
-
-## Previous releases
-
-Prior to `v5.0.0`, the netCDF-Java/CDM library and the THREDDS Data Server (TDS) have been built and released together.
-Starting with version 5, these two packages have been decoupled, allowing new features or bug fixes to be implemented in each package separately, and released independently.
-Releases prior to `v5.0.0` were managed at <https://github.com/unidata/thredds>, which holds the combined code based used by `v4.6` and earlier.
+Prior to `v5.0.0`, the netCDF-Java library and the THREDDS Data Server (TDS) were built and released together.
+Starting with version 5, the two packages were decoupled, allowing new features and bug fixes to be implemented in each package separately, and released independently.
+Releases prior to `v5.0.0` were managed at <https://github.com/unidata/thredds>, which holds the combined code based used by `v4.6.x` and earlier.
+If you are looking for the TDS, its new home is located at <https://github.com/unidata/tds>.

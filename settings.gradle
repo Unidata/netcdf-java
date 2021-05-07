@@ -3,8 +3,8 @@ rootProject.name = 'netcdf-java'
 
 // These all refer to subdirectory names.
 include 'bufr'
-include 'cdm:core'
-include 'cdm:s3'
+include 'cdm-core'
+include 'cdm-s3'
 include 'cdm-test'
 include 'cdm-test-utils'
 include 'docs'
@@ -18,11 +18,6 @@ include 'opendap'
 include 'udunits'
 include 'uibase'
 include 'uicdm'
-include 'waterml'
 
 include 'cdm-lite'
-include 'cdmr'
-
-// Set name of cdm submodules
-project(':cdm:core').name = 'cdm-core'
-project(':cdm:s3').name = 'cdm-s3'
+include 'gcdm'

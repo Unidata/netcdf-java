@@ -17,7 +17,7 @@ import static com.google.common.truth.Truth.assertThat;
 
 public class TestNetcdfDatasetTutorial {
 
-  private static String dataPathStr = TestDir.cdmLocalFromTestDataDir + "ncml/enhance/testStandaloneEnhance.ncml";
+  private static String dataPathStr = TestDir.cdmLocalTestDataDir + "ncml/enhance/testStandaloneEnhance.ncml";
   private static DatasetUrl datasetUrl;
 
   @BeforeClass

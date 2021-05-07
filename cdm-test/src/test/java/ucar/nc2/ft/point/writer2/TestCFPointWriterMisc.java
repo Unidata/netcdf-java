@@ -56,27 +56,27 @@ public class TestCFPointWriterMisc {
   @Category(NeedsCdmUnitTest.class)
   public void testPointProblem() throws IOException {
     CFPointWriterConfig config = CFPointWriterConfig.builder().build();
-    String filename = TestDir.cdmLocalFromTestDataDir + "point/stationMultidimUnlimited.nc";
+    String filename = TestDir.cdmLocalTestDataDir + "point/stationMultidimUnlimited.nc";
     TestCFPointWriter.writeDataset(filename, FeatureType.STATION, config, false, tempFolder.newFile());
   }
 
   @Test
   public void testProfileProblem() throws IOException {
     CFPointWriterConfig config = CFPointWriterConfig.builder().build();
-    String filename = TestDir.cdmLocalFromTestDataDir + "point/profileMultidimZJoin.ncml";
+    String filename = TestDir.cdmLocalTestDataDir + "point/profileMultidimZJoin.ncml";
     TestCFPointWriter.writeDataset(filename, FeatureType.PROFILE, config, false, tempFolder.newFile());
   }
 
   @Test
   public void testStationProfileProblem() throws IOException {
     CFPointWriterConfig config = CFPointWriterConfig.builder().build();
-    String filename = TestDir.cdmLocalFromTestDataDir + "point/stationProfileSingle.ncml";
+    String filename = TestDir.cdmLocalTestDataDir + "point/stationProfileSingle.ncml";
     TestCFPointWriter.writeDataset(filename, FeatureType.STATION_PROFILE, config, false, tempFolder.newFile());
   }
 
   @Test
   public void testProfileInnerTime() throws Exception {
-    String file = TestDir.cdmLocalFromTestDataDir + "point/profileMultidimTimePrecise.ncml";
+    String file = TestDir.cdmLocalTestDataDir + "point/profileMultidimTimePrecise.ncml";
     Formatter buf = new Formatter();
     try (FeatureDatasetPoint pods =
         (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(FeatureType.PROFILE, file, null, buf)) {
@@ -138,7 +138,7 @@ public class TestCFPointWriterMisc {
     // Ignore this test if NetCDF-4 isn't present.
     // Assume.assumeTrue("NetCDF-4 C library not present.", NetcdfClibrary.isLibraryPresent());
 
-    String file = TestDir.cdmLocalFromTestDataDir + "point/stationRaggedContig.ncml";
+    String file = TestDir.cdmLocalTestDataDir + "point/stationRaggedContig.ncml";
     Formatter buf = new Formatter();
     try (FeatureDatasetPoint pods =
         (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(FeatureType.STATION, file, null, buf)) {
@@ -163,7 +163,7 @@ public class TestCFPointWriterMisc {
   @Test
   // the z coordinate doesnt fit into the structures, but must be transferred to the rewritten dataset
   public void testPointZCoord() throws Exception {
-    String file = TestDir.cdmLocalFromTestDataDir + "point/pointUnlimited.nc";
+    String file = TestDir.cdmLocalTestDataDir + "point/pointUnlimited.nc";
     Formatter buf = new Formatter();
     try (FeatureDatasetPoint fdpoint =
         (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(FeatureType.POINT, file, null, buf)) {
@@ -194,7 +194,7 @@ public class TestCFPointWriterMisc {
   @Test
   // the z coordinate doesnt fit into the structures, but must be transferred to the rewritten dataset
   public void testStationMultidimZCoord() throws Exception {
-    String file = TestDir.cdmLocalFromTestDataDir + "point/stationMultidim.ncml";
+    String file = TestDir.cdmLocalTestDataDir + "point/stationMultidim.ncml";
     Formatter buf = new Formatter();
     try (FeatureDatasetPoint fdpoint =
         (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(FeatureType.STATION, file, null, buf)) {

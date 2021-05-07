@@ -11,8 +11,8 @@ dependencies {
   testImplementation enforcedPlatform(project(':netcdf-java-platform'))
   testImplementation enforcedPlatform(project(':netcdf-java-testing-platform'))
 
-  testImplementation project(':cdm:cdm-core')
-  testImplementation project(':cdm:cdm-s3')
+  testImplementation project(':cdm-core')
+  testImplementation project(':cdm-s3')
   testImplementation project(':bufr')
   testImplementation project(':grib')
   testImplementation project(':netcdf4')

@@ -40,7 +40,7 @@ public class BytePaddingTest {
   @Test
   public void checkReadOfFileWrittenWithIncorrectPaddingOfOneDimByteArrayOnlyRecordVar() throws IOException {
     // File testDataDir = new File( TestDir.cdmLocalTestDataDir, "ucar/nc2/iosp/netcdf3");
-    File testFile = new File(TestDir.cdmLocalFromTestDataDir, "byteArrayRecordVarPaddingTest-bad.nc");
+    File testFile = new File(TestDir.cdmLocalTestDataDir, "byteArrayRecordVarPaddingTest-bad.nc");
     assertTrue(testFile.exists());
     assertTrue(testFile.canRead());
 
