@@ -60,27 +60,27 @@ message GridAxis {
     Axis2D=3;
   }
 
-  GridAxisType gridAxisType = 1;
+  GridAxisType grid_axis_type = 1;
 
   string name = 2;
   string description = 3;
   string units = 4;
-  AxisType axisType = 5;
-  repeated Attribute attributes = 6;       // find calendar attribute here?
+  AxisType axis_type = 5;
+  repeated Attribute attributes = 6; // find calendar attribute here?
   AxisSpacing spacing = 7;
-  DependenceType dependenceType = 8;
-  repeated string dependsOn = 9;    // depends on these axes, only for non-independent axes
+  DependenceType dependence_type = 8;
+  repeated string depends_on = 9;    // depends on these axes, only for non-independent axes
 
   uint32 ncoords = 11;
-  double startValue = 12;
-  double endValue = 13;
+  double start_value = 12;
+  double end_value = 13;
   double resolution = 14;
   repeated double values = 15;
 
-  string dateUnits = 16;             // for TimeHelper
+  string date_units = 16;           // for TimeHelper
 
-  string runtimeAxisName = 17;      // for TimeOffsetRegular
-  repeated int32 hourOffsets = 18;  // for TimeOffsetRegular
+  string runtime_axis_name = 17;    // for TimeOffsetRegular
+  repeated int32 hour_offsets = 18; // for TimeOffsetRegular
   repeated double midpoints = 19;   // for TimeOffsetRegular
   repeated double bounds = 20;      // for TimeOffsetRegular
   repeated uint32 shape = 21 ;      // for TimeOffsetRegular
@@ -88,24 +88,24 @@ message GridAxis {
 
 message Projection {
   string name = 1;
-  string geoUnits = 2;
+  string geo_units = 2;
   repeated Attribute attributes = 3;
 }
 
 message GridCoordinateSystem {
   string name = 1;
-  repeated string axisNames = 2;
+  repeated string axis_names = 2;
   Projection projection = 3;
 }
 
 message Grid {
-  string name = 1;               // short name, unique within dataset
+  string name = 1; // short name, unique within dataset
   string units = 2;
   string description = 3;
-  DataType dataType = 4;
+  DataType data_type = 4;
   repeated Attribute attributes = 5;
-  string coordSys = 6;
-  bool hasMissing = 7;
+  string coord_sys = 6;
+  bool has_missing = 7;
 }
 
 message GridDataset {
@@ -119,10 +119,10 @@ message GridDataset {
 
   string name = 1;
   string location = 2;
-  FeatureType featureType = 3;
+  FeatureType feature_type = 3;
   repeated Attribute attributes = 4;
-  repeated GridAxis gridAxes = 5;
-  repeated GridCoordinateSystem coordSys = 6;
+  repeated GridAxis grid_axes = 5;
+  repeated GridCoordinateSystem coord_sys = 6;
   repeated Grid grids = 7;
 }
 
@@ -168,7 +168,7 @@ message Rectangle {
 }
 
 message GridReferencedArray {
-  string gridName = 1;
+  string grid_name = 1;
   Data data = 2;
-  GridCoordinateSystem csSubset = 3;
+  GridCoordinateSystem cs_subset = 3;
 }
