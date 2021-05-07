@@ -30,7 +30,7 @@ public class GcdmGrid implements Grid {
 
   @Override
   public String getUnits() {
-    return proto.getUnits();
+    return proto.getUnit();
   }
 
   @Override
@@ -74,11 +74,11 @@ public class GcdmGrid implements Grid {
     this.gcdmGridDataset = builder.gcdmGridDataset;
     this.proto = builder.proto;
     Optional<GridCoordinateSystem> csopt =
-        coordsys.stream().filter(cs -> cs.getName().equals(proto.getCoordSys())).findFirst();
+        coordsys.stream().filter(cs -> cs.getName().equals(proto.getCoordSystem())).findFirst();
     if (csopt.isPresent()) {
       this.coordsys = csopt.get();
     } else {
-      throw new IllegalStateException("Cant find coordinate system " + proto.getCoordSys());
+      throw new IllegalStateException("Cant find coordinate system " + proto.getCoordSystem());
     }
   }
 

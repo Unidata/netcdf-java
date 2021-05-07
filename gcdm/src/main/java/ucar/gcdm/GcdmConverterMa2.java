@@ -115,7 +115,7 @@ public class GcdmConverterMa2 {
       b2.clear();
       b2.setCode(code);
       b2.setValue(map.get(code));
-      builder.addMap(b2);
+      builder.addMaps(b2);
     }
     return builder;
   }
@@ -131,7 +131,7 @@ public class GcdmConverterMa2 {
     }
 
     for (Dimension dim : var.getDimensions()) {
-      builder.addShape(encodeDim(dim));
+      builder.addShapes(encodeDim(dim));
     }
 
     for (Attribute att : var.attributes()) {
@@ -155,7 +155,7 @@ public class GcdmConverterMa2 {
     builder.setDataType(convertDataType(s.getDataType()));
 
     for (Dimension dim : s.getDimensions())
-      builder.addShape(encodeDim(dim));
+      builder.addShapes(encodeDim(dim));
 
     for (Attribute att : s.attributes())
       builder.addAtts(encodeAtt(att));
@@ -321,7 +321,7 @@ public class GcdmConverterMa2 {
       rbuilder.setStart(r.first());
       rbuilder.setSize(r.length());
       rbuilder.setStride(r.stride());
-      sbuilder.addRange(rbuilder);
+      sbuilder.addRanges(rbuilder);
     }
     return sbuilder.build();
   }
@@ -333,7 +333,7 @@ public class GcdmConverterMa2 {
     StructureMembers sm = arrayStructure.getStructureMembers();
     for (Member member : sm.getMembers()) {
       StructureMemberProto.Builder smBuilder = StructureMemberProto.newBuilder().setName(member.getName())
-          .setDataType(convertDataType(member.getDataType())).addAllShape(Ints.asList(member.getShape()));
+          .setDataType(convertDataType(member.getDataType())).addAllShapes(Ints.asList(member.getShape()));
       // builder.addMembers(smBuilder);
     }
 
@@ -387,7 +387,7 @@ public class GcdmConverterMa2 {
   }
 
   private static EnumTypedef decodeEnumTypedef(GcdmNetcdfProto.EnumTypedef enumType) {
-    List<GcdmNetcdfProto.EnumTypedef.EnumType> list = enumType.getMapList();
+    List<GcdmNetcdfProto.EnumTypedef.EnumType> list = enumType.getMapsList();
     Map<Integer, String> map = new HashMap<>(2 * list.size());
     for (GcdmNetcdfProto.EnumTypedef.EnumType et : list) {
       map.put(et.getCode(), et.getValue());
@@ -436,7 +436,7 @@ public class GcdmConverterMa2 {
     // so that has to wait until build().
     List<Dimension> dims = new ArrayList<>(6);
     Section.Builder section = Section.builder();
-    for (GcdmNetcdfProto.Dimension dim : var.getShapeList()) {
+    for (GcdmNetcdfProto.Dimension dim : var.getShapesList()) {
       dims.add(decodeDim(dim));
       section.appendRange((int) dim.getLength());
     }
@@ -460,7 +460,7 @@ public class GcdmConverterMa2 {
     ncvar.setName(s.getName()).setDataType(convertDataType(s.getDataType()));
 
     List<Dimension> dims = new ArrayList<>(6);
-    for (GcdmNetcdfProto.Dimension dim : s.getShapeList()) {
+    for (GcdmNetcdfProto.Dimension dim : s.getShapesList()) {
       dims.add(decodeDim(dim));
     }
     ncvar.addDimensions(dims);
@@ -484,7 +484,7 @@ public class GcdmConverterMa2 {
   public static Section decodeSection(GcdmNetcdfProto.Section proto) {
     Section.Builder section = Section.builder();
 
-    for (GcdmNetcdfProto.Range pr : proto.getRangeList()) {
+    for (GcdmNetcdfProto.Range pr : proto.getRangesList()) {
       try {
         long stride = pr.getStride();
         if (stride == 0)

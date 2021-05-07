@@ -70,7 +70,7 @@ public class GcdmGridConverter {
     for (GcdmGridProto.GridAxis axis : proto.getGridAxesList()) {
       builder.addGridAxis(decodeGridAxis(axis));
     }
-    for (GcdmGridProto.GridCoordinateSystem coordsys : proto.getCoordSysList()) {
+    for (GcdmGridProto.GridCoordinateSystem coordsys : proto.getCoordSystemsList()) {
       builder.addCoordSys(decodeCoordSys(coordsys, errlog));
     }
     for (GcdmGridProto.Grid grid : proto.getGridsList()) {
@@ -98,7 +98,7 @@ public class GcdmGridConverter {
 
     axisb.setName(proto.getName());
     axisb.setDescription(proto.getDescription());
-    axisb.setUnits(proto.getUnits());
+    axisb.setUnits(proto.getUnit());
     axisb.setAxisType(convertAxisType(proto.getAxisType()));
     axisb.setAttributes(GcdmConverter.decodeAttributes(proto.getName(), proto.getAttributesList()));
     axisb.setSpacing(convertAxisSpacing(proto.getSpacing()));
@@ -107,7 +107,7 @@ public class GcdmGridConverter {
 
     if (axisb instanceof GridAxis1D.Builder) {
       GridAxis1D.Builder<?> axis1b = (GridAxis1D.Builder<?>) axisb;
-      axis1b.setRegular(proto.getNcoords(), proto.getStartValue(), proto.getEndValue(), proto.getResolution());
+      axis1b.setRegular(proto.getNcoord(), proto.getStartValue(), proto.getEndValue(), proto.getResolution());
 
       if (proto.getValuesCount() > 0) {
         axis1b.setValues(proto.getValuesList());
@@ -116,14 +116,14 @@ public class GcdmGridConverter {
 
     if (axisb instanceof GridAxis1DTime.Builder) {
       GridAxis1DTime.Builder<?> axis1b = (GridAxis1DTime.Builder<?>) axisb;
-      axis1b.setDateUnits(proto.getDateUnits());
+      axis1b.setDateUnits(proto.getDateUnit());
     }
 
     if (axisb instanceof GridAxisOffsetTimeRegular.Builder) {
       GridAxisOffsetTimeRegular.Builder<?> axisReg = (GridAxisOffsetTimeRegular.Builder<?>) axisb;
       axisReg.setRuntimeAxisName(proto.getRuntimeAxisName());
       axisReg.setHourOffsets(proto.getHourOffsetsList());
-      axisReg.setMidpointsBounds(proto.getShapeList(), proto.getMidpointsList(), proto.getBoundsList());
+      axisReg.setMidpointsBounds(proto.getShapesList(), proto.getMidpointsList(), proto.getBoundsList());
     }
 
     return axisb;
@@ -145,7 +145,7 @@ public class GcdmGridConverter {
 
   public static Projection decodeProjection(GcdmGridProto.Projection proto, Formatter errlog) {
     AttributeContainer ctv = GcdmConverter.decodeAttributes(proto.getName(), proto.getAttributesList());
-    return ucar.nc2.internal.dataset.transform.horiz.ProjectionFactory.makeProjection(ctv, proto.getGeoUnits(), errlog);
+    return ucar.nc2.internal.dataset.transform.horiz.ProjectionFactory.makeProjection(ctv, proto.getGeoUnit(), errlog);
   }
 
   public static GridReferencedArray decodeGridReferencedArray(GcdmGridProto.GridReferencedArray proto,
@@ -169,7 +169,7 @@ public class GcdmGridConverter {
       builder.addGridAxes(encodeGridAxis(axis));
     }
     for (GridCoordinateSystem coordsys : org.getGridCoordinateSystems()) {
-      builder.addCoordSys(encodeCoordSys(coordsys));
+      builder.addCoordSystems(encodeCoordSys(coordsys));
     }
     for (Grid grid : org.getGrids()) {
       builder.addGrids(encodeGrid(grid));
@@ -194,7 +194,7 @@ public class GcdmGridConverter {
     GcdmGridProto.Projection.Builder builder = GcdmGridProto.Projection.newBuilder();
     builder.setName(projection.getName());
     if (geoUnits != null) {
-      builder.setGeoUnits(geoUnits);
+      builder.setGeoUnit(geoUnits);
     }
     builder.addAllAttributes(GcdmConverter.encodeAttributes(projection.getProjectionAttributes()));
 
@@ -216,7 +216,7 @@ public class GcdmGridConverter {
 
     builder.setName(axis.getName());
     builder.setDescription(axis.getDescription());
-    builder.setUnits(axis.getUnits());
+    builder.setUnit(axis.getUnits());
     builder.setAxisType(convertAxisType(axis.getAxisType()));
     builder.addAllAttributes(GcdmConverter.encodeAttributes(axis.attributes()));
     builder.setSpacing(convertAxisSpacing(axis.getSpacing()));
@@ -225,7 +225,7 @@ public class GcdmGridConverter {
 
     if (axis instanceof GridAxis1D) {
       GridAxis1D axis1 = (GridAxis1D) axis;
-      builder.setNcoords(axis1.getNcoords());
+      builder.setNcoord(axis1.getNcoords());
       builder.setStartValue(axis1.getStartValue());
       builder.setEndValue(axis1.getEndValue());
       builder.setResolution(axis1.getResolution());
@@ -240,7 +240,7 @@ public class GcdmGridConverter {
 
     if (axis instanceof GridAxis1DTime) {
       GridAxis1DTime axis1t = (GridAxis1DTime) axis;
-      builder.setDateUnits(axis1t.getTimeHelper().getUdUnit());
+      builder.setDateUnit(axis1t.getTimeHelper().getUdUnit());
     }
 
     if (axis instanceof GridAxisOffsetTimeRegular) {
@@ -256,7 +256,7 @@ public class GcdmGridConverter {
         builder.addBounds(bound);
       }
       for (int shape : axisReg.getCoordsAsArray().getShape()) {
-        builder.addShape(shape);
+        builder.addShapes(shape);
       }
     }
 
@@ -267,10 +267,10 @@ public class GcdmGridConverter {
     GcdmGridProto.Grid.Builder builder = GcdmGridProto.Grid.newBuilder();
     builder.setName(grid.getName());
     builder.setDescription(grid.getDescription());
-    builder.setUnits(grid.getUnits());
+    builder.setUnit(grid.getUnits());
     builder.setDataType(GcdmConverter.convertDataType(grid.getArrayType()));
     builder.addAllAttributes(GcdmConverter.encodeAttributes(grid.attributes()));
-    builder.setCoordSys(grid.getCoordinateSystem().getName());
+    builder.setCoordSystem(grid.getCoordinateSystem().getName());
     builder.setHasMissing(grid.hasMissing());
 
     return builder.build();

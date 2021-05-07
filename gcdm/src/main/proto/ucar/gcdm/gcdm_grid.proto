@@ -67,31 +67,31 @@ message GridAxis {
 
   string name = 2;
   string description = 3;
-  string units = 4;
+  string unit = 4;
   AxisType axis_type = 5;
   repeated Attribute attributes = 6; // find calendar attribute here?
   AxisSpacing spacing = 7;
   DependenceType dependence_type = 8;
   repeated string depends_on = 9;    // depends on these axes, only for non-independent axes
 
-  uint32 ncoords = 11;
+  uint32 ncoord = 11; // number of coordinate values in axis
   double start_value = 12;
   double end_value = 13;
   double resolution = 14;
   repeated double values = 15;
 
-  string date_units = 16;           // for TimeHelper
+  string date_unit = 16;           // for TimeHelper
 
   string runtime_axis_name = 17;    // for TimeOffsetRegular
   repeated int32 hour_offsets = 18; // for TimeOffsetRegular
   repeated double midpoints = 19;   // for TimeOffsetRegular
   repeated double bounds = 20;      // for TimeOffsetRegular
-  repeated uint32 shape = 21 ;      // for TimeOffsetRegular
+  repeated uint32 shapes = 21 ;     // for TimeOffsetRegular
 }
 
 message Projection {
   string name = 1;
-  string geo_units = 2;
+  string geo_unit = 2;
   repeated Attribute attributes = 3;
 }
 
@@ -103,11 +103,11 @@ message GridCoordinateSystem {
 
 message Grid {
   string name = 1; // short name, unique within dataset
-  string units = 2;
+  string unit = 2;
   string description = 3;
   DataType data_type = 4;
   repeated Attribute attributes = 5;
-  string coord_sys = 6;
+  string coord_system = 6;
   bool has_missing = 7;
 }
 
@@ -125,7 +125,7 @@ message GridDataset {
   FeatureType feature_type = 3;
   repeated Attribute attributes = 4;
   repeated GridAxis grid_axes = 5;
-  repeated GridCoordinateSystem coord_sys = 6;
+  repeated GridCoordinateSystem coord_systems = 6;
   repeated Grid grids = 7;
 }
 
@@ -164,10 +164,10 @@ message CalendarDateRange {
 }
 
 message Rectangle {
-  double startx = 1;
-  double starty = 2;
-  double incx = 3;
-  double incy = 4;
+  double start_x = 1;
+  double start_y = 2;
+  double inc_x = 3;
+  double inc_y = 4;
 }
 
 message GridReferencedArray {
