@@ -178,8 +178,7 @@ public class ReadingCdmTutorial {
 
   /**
    * Tutorial code snippet to convert Range to origin and size
-   * 
-   * @param v: variable to be read
+   *
    * @return array of read data
    * @throws IOException
    * @throws InvalidRangeException
@@ -191,6 +190,20 @@ public class ReadingCdmTutorial {
     int[] origins = section.getOrigin();
     int[] shape = section.getShape();
     return Arrays.asList(origins, shape); /* DOCS-IGNORE */
+  }
+
+  /**
+   * Tutorial code snippet to read numeric scalar
+   *
+   * @param intVar
+   * @param doubleVar
+   * @return array scalar values as double, float, and int types
+   * @throws IOException
+   */
+  public static List<Object> readScalars(Variable intVar, Variable doubleVar) throws IOException {
+    int ival = ((Array<Integer>)intVar.readArray()).getScalar();
+    double dval = ((Array<Double>)doubleVar.readArray()).getScalar();
+    return Arrays.asList(ival, dval); /* DOCS-IGNORE */
   }
 
   /**
@@ -257,6 +270,17 @@ public class ReadingCdmTutorial {
       }
     }
     return list; /* DOCS-IGNORE */
+  }
+
+  /**
+   * Tutorial code snippet to copy array data
+   */
+  public static double[] copyData(Variable v) throws IOException {
+    Array<Double> dataSrc = (Array<Double>) v.readArray(); // data to be copied
+    double[] dest = (double[])ucar.array.Arrays.copyPrimitiveArray(dataSrc);
+    // do something with copied data here
+    // ...
+    return dest; /* DOCS-IGNORE */
   }
 
   /**
