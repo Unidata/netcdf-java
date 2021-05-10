@@ -13,17 +13,17 @@ import javax.annotation.concurrent.Immutable;
 
 /** Concrete implementation of Array specialized for Byte. */
 @Immutable
-public final class ArrayByte extends Array<Byte> {
+final class ArrayByte extends Array<Byte> {
   private final Storage<Byte> storage;
 
   /** Create an empty Array of type Byte and the given shape. */
-  public ArrayByte(ArrayType dtype, int[] shape) {
+  ArrayByte(ArrayType dtype, int[] shape) {
     super(dtype, shape);
     storage = new StorageS(new byte[(byte) indexFn.length()]);
   }
 
   /** Create an Array of type Byte and the given shape and storage. */
-  public ArrayByte(ArrayType dtype, int[] shape, Storage<Byte> storage) {
+  ArrayByte(ArrayType dtype, int[] shape, Storage<Byte> storage) {
     super(dtype, shape);
     Preconditions.checkArgument(indexFn.length() <= storage.length());
     this.storage = storage;
@@ -71,7 +71,7 @@ public final class ArrayByte extends Array<Byte> {
   }
 
   /** Convert the Array into a ByteString. */
-  public ByteString getByteString() {
+  ByteString getByteString() {
     if (indexFn.isCanonicalOrder()) {
       ByteString.copyFrom(((StorageS) storage).storage);
     }
@@ -85,7 +85,7 @@ public final class ArrayByte extends Array<Byte> {
   }
 
   /** Convert the Array into a ByteBuffer. */
-  public ByteBuffer getByteBuffer() {
+  ByteBuffer getByteBuffer() {
     if (indexFn.isCanonicalOrder()) {
       return ByteBuffer.wrap(((StorageS) storage).storage);
     }
@@ -101,7 +101,7 @@ public final class ArrayByte extends Array<Byte> {
    * If there is a null (zero) value in the array, the String will end there.
    * The null is not returned as part of the String.
    */
-  public String makeStringFromChar() {
+  String makeStringFromChar() {
     Preconditions.checkArgument(getRank() < 2);
     int count = 0;
     for (byte c : this) {
@@ -128,7 +128,7 @@ public final class ArrayByte extends Array<Byte> {
    *
    * @return Array of Strings of rank - 1.
    */
-  public Array<String> makeStringsFromChar() {
+  Array<String> makeStringsFromChar() {
     if (getRank() < 2) {
       return Arrays.factory(ArrayType.STRING, new int[] {1}, new String[] {makeStringFromChar()});
     }

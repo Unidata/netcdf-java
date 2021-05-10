@@ -10,17 +10,17 @@ import javax.annotation.concurrent.Immutable;
 
 /** Concrete implementation of Array specialized for Integer. */
 @Immutable
-public final class ArrayInteger extends Array<Integer> {
+class ArrayInteger extends Array<Integer> {
   private final Storage<Integer> storage;
 
   /** Create an empty Array of type Integer and the given shape. */
-  public ArrayInteger(ArrayType dtype, int[] shape) {
+  ArrayInteger(ArrayType dtype, int[] shape) {
     super(dtype, shape);
     storage = new StorageS(new int[(int) indexFn.length()]);
   }
 
   /** Create an Array of type Integer and the given shape and storage. */
-  public ArrayInteger(ArrayType dtype, int[] shape, Storage<Integer> storage) {
+  ArrayInteger(ArrayType dtype, int[] shape, Storage<Integer> storage) {
     super(dtype, shape);
     if (indexFn.length() > storage.length()) {
       throw new IllegalArgumentException(String.format("shape %d > storage %d", indexFn.length(), storage.length()));

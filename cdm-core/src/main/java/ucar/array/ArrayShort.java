@@ -10,17 +10,17 @@ import javax.annotation.concurrent.Immutable;
 
 /** Concrete implementation of Array specialized for Short. */
 @Immutable
-public final class ArrayShort extends Array<Short> {
+final class ArrayShort extends Array<Short> {
   private final Storage<Short> storage;
 
   /** Create an empty Array of type Short and the given shape. */
-  public ArrayShort(ArrayType dtype, int[] shape) {
+  ArrayShort(ArrayType dtype, int[] shape) {
     super(dtype, shape);
     storage = new StorageS(new short[(int) indexFn.length()]);
   }
 
   /** Create an Array of type Short and the given shape and storage. */
-  public ArrayShort(ArrayType dtype, int[] shape, Storage<Short> storage) {
+  ArrayShort(ArrayType dtype, int[] shape, Storage<Short> storage) {
     super(dtype, shape);
     Preconditions.checkArgument(indexFn.length() <= storage.length());
     this.storage = storage;

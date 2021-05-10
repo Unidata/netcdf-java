@@ -638,15 +638,14 @@ public class Attribute {
       }
 
       if (arr.getArrayType() == ArrayType.CHAR) { // turn CHAR into STRING
-        ucar.array.ArrayByte carr = (ucar.array.ArrayByte) arr;
-        if (carr.getRank() < 2) { // common case
-          svalue = carr.makeStringFromChar();
+        if (arr.getRank() < 2) { // common case
+          svalue = Arrays.makeStringFromChar((Array<Byte>) arr);
           this.nelems = 1;
           this.dataType = ArrayType.STRING;
           return this;
         }
         // otherwise its an array of Strings
-        arr = carr.makeStringsFromChar();
+        arr = Arrays.makeStringsFromChar((Array<Byte>) arr);
       }
 
       if (arr.length() == 1) {

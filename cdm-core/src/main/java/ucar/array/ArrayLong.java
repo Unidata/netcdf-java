@@ -10,17 +10,17 @@ import javax.annotation.concurrent.Immutable;
 
 /** Concrete implementation of Array specialized for Long. */
 @Immutable
-public final class ArrayLong extends Array<Long> {
+final class ArrayLong extends Array<Long> {
   private final Storage<Long> storage;
 
   /** Create an empty Array of type Long and the given shape. */
-  public ArrayLong(ArrayType dtype, int[] shape) {
+  ArrayLong(ArrayType dtype, int[] shape) {
     super(dtype, shape);
     storage = new StorageS(new long[(int) indexFn.length()]);
   }
 
   /** Create an Array of type Long and the given shape and storage. */
-  public ArrayLong(ArrayType dtype, int[] shape, Storage<Long> storage) {
+  ArrayLong(ArrayType dtype, int[] shape, Storage<Long> storage) {
     super(dtype, shape);
     Preconditions.checkArgument(indexFn.length() <= storage.length());
     this.storage = storage;

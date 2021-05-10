@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import ucar.array.ArrayByte;
 import ucar.array.ArrayType;
 import ucar.array.ArrayVlen;
 import ucar.array.Arrays;
@@ -310,8 +309,7 @@ public class GcdmConverter {
       case CHAR:
       case UBYTE:
       case BYTE: {
-        ArrayByte bdata = (ArrayByte) data;
-        builder.addBdata(bdata.getByteString());
+        builder.addBdata(Arrays.getByteString((Array<Byte>) data));
         break;
       }
       case SHORT: {

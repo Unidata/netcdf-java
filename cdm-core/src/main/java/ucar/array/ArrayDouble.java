@@ -14,17 +14,17 @@ import javax.annotation.concurrent.Immutable;
 
 /** Concrete implementation of Array specialized for doubles. */
 @Immutable
-public final class ArrayDouble extends ucar.array.Array<Double> {
+final class ArrayDouble extends ucar.array.Array<Double> {
   private final Storage<Double> storageD;
 
   /** Create an empty Array of type double and the given shape. */
-  public ArrayDouble(int[] shape) {
+  ArrayDouble(int[] shape) {
     super(ArrayType.DOUBLE, shape);
     storageD = new StorageD(new double[(int) indexFn.length()]);
   }
 
   /** Create an Array of type double and the given shape and storage. */
-  public ArrayDouble(int[] shape, Storage<Double> storageD) {
+  ArrayDouble(int[] shape, Storage<Double> storageD) {
     super(ArrayType.DOUBLE, shape);
     Preconditions.checkArgument(indexFn.length() <= storageD.length());
     this.storageD = storageD;

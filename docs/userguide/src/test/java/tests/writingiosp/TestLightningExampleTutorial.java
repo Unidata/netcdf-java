@@ -81,8 +81,7 @@ public class TestLightningExampleTutorial {
 
     Array<Integer> dateArray = Arrays.factory(ArrayType.INT, new int[] {nRecords});
     Array<Double> latArray = Arrays.factory(ArrayType.DOUBLE, new int[] {nRecords});
-    LightningExampleTutorial.setSourceData(builder, dim, (ArrayInteger) dateArray,
-        (ArrayDouble) latArray);
+    LightningExampleTutorial.setSourceData(builder, dim, dateArray, latArray);
     Group group = builder.build();
 
     Variable var1 = group.findVariableLocal("date");
@@ -99,8 +98,7 @@ public class TestLightningExampleTutorial {
     Array<Integer> dateArray = Arrays.factory(ArrayType.INT, new int[] {nRecords});
     Array<Double> latArray = Arrays.factory(ArrayType.DOUBLE, new int[] {nRecords});
     Array<Double> lonArray = Arrays.factory(ArrayType.DOUBLE, new int[] {nRecords});
-    LightningExampleTutorial.addCoordSystemsAndTypedDatasets(builder, dim, (ArrayInteger) dateArray,
-        (ArrayDouble) latArray, (ArrayDouble) lonArray);
+    LightningExampleTutorial.addCoordSystemsAndTypedDatasets(builder, dim, dateArray, latArray, lonArray);
   }
 
   @Test(expected = ClassNotFoundException.class)

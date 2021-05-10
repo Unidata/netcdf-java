@@ -237,8 +237,7 @@ public class TestNetcdfFormatWithWriter {
       Array<?> timeData = time.readArray();
 
       assertThat(timeData.getArrayType()).isEqualTo(ArrayType.CHAR);
-      ucar.array.ArrayByte timecData = (ucar.array.ArrayByte) timeData;
-      Array<String> achar3Data = timecData.makeStringsFromChar();
+      Array<String> achar3Data = Arrays.makeStringsFromChar((ucar.array.Array<Byte>) timeData);
 
       assertThat(achar3Data.get(0)).isEqualTo("This is the first string.");
       assertThat(achar3Data.get(1)).isEqualTo("Shorty");

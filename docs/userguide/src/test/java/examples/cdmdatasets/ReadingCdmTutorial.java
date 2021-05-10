@@ -243,7 +243,7 @@ public class ReadingCdmTutorial {
    * @throws IOException
    */
   public static List castDataArray(Variable v) throws IOException {
-    ArrayDouble data = (ArrayDouble) v.readArray();
+    Array<Double> data = (Array<Double>) v.readArray();
     List list = new ArrayList<Double>(); /* DOCS-IGNORE */
 
     int[] shape = data.getShape();

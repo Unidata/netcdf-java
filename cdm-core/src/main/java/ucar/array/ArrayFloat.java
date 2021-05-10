@@ -14,18 +14,18 @@ import javax.annotation.concurrent.Immutable;
 
 /** Concrete implementation of Array specialized for floats. */
 @Immutable
-public final class ArrayFloat extends Array<Float> {
+final class ArrayFloat extends Array<Float> {
   private final Storage<Float> storageF;
 
   // LOOK whats the point if you cant change the storage?
   /** Create an empty Array of type float and the given shape. */
-  public ArrayFloat(int[] shape) {
+  ArrayFloat(int[] shape) {
     super(ArrayType.FLOAT, shape);
     storageF = new StorageF(new float[(int) indexFn.length()]);
   }
 
   /** Create an Array of type float and the given shape and storage. */
-  public ArrayFloat(int[] shape, Storage<Float> storageF) {
+  ArrayFloat(int[] shape, Storage<Float> storageF) {
     super(ArrayType.FLOAT, shape);
     Preconditions.checkArgument(indexFn.length() <= storageF.length());
     this.storageF = storageF;
