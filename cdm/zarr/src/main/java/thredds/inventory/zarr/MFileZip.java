@@ -16,7 +16,7 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 
 /**
- * Implements thredds.inventory.MFile for ZipFiles
+ * Implements thredds.inventory.MFile for ZipFiles and ZipEntries
  */
 public class MFileZip implements MFile {
 
@@ -28,6 +28,7 @@ public class MFileZip implements MFile {
   private Object auxInfo;
 
   private final List<ZipEntry> leafEntries;
+  private ZipEntry entry;
 
   public MFileZip(ZipFile file) throws IOException {
     if (file == null) {
@@ -65,6 +66,9 @@ public class MFileZip implements MFile {
         // skip entries outside or equal to our current path
         Path entryPath = Paths.get(File.separator + entry.getName());
         if (!entryPath.startsWith(relativePath) || entryPath.equals(relativePath)) {
+          if (entryPath.equals(relativePath)) {
+            this.entry = entry;
+          }
           zipIn.closeEntry();
           entry = zipIn.getNextEntry();
           continue;
@@ -82,23 +86,12 @@ public class MFileZip implements MFile {
 
   @Override
   public long getLastModified() {
-    long lastMod = Long.MAX_VALUE;
-    for (ZipEntry entry : leafEntries) {
-      long lm = entry.getLastModifiedTime().toMillis();
-      if (lm < lastMod) {
-        lastMod = lm;
-      }
-    }
-    return lastMod;
+    return this.entry == null ? 0 : this.entry.getLastModifiedTime().toMillis();
   }
 
   @Override
   public long getLength() {
-    long size = 0;
-    for (ZipEntry entry : leafEntries) {
-      size += entry.getSize();
-    }
-    return size;
+    return this.entry == null ? 0 : this.entry.getSize();
   }
 
   @Override
@@ -140,10 +133,6 @@ public class MFileZip implements MFile {
   @Override
   public void setAuxInfo(Object info) {
     auxInfo = info;
-  }
-
-  public ZipFile getRoot() {
-    return root;
   }
 
   public Path getRootPath() {

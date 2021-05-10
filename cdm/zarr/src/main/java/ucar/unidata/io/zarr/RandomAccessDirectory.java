@@ -34,6 +34,8 @@ public class RandomAccessDirectory extends ucar.unidata.io.RandomAccessFile impl
   private static final String WRITES_NOT_IMPLEMENTED_MESSAGE =
       "Method not implemented: writes are not implemented in RandomAccessDirectory";
 
+  private static RandomAccessFile currentFile = null;
+
   public RandomAccessDirectory(String location) throws IOException {
     this(location, RandomAccessFile.defaultBufferSize, new ArrayList<>());
   }
@@ -60,7 +62,7 @@ public class RandomAccessDirectory extends ucar.unidata.io.RandomAccessFile impl
     List<RandomAccessDirectoryItem> items = new ArrayList<>();
 
     // add subdirs
-    Iterator<MFile> subdirs = controller.getSubdirs(cc, false);
+    Iterator<MFile> subdirs = sortIterator(controller.getSubdirs(cc, false));
     if (subdirs != null) {
       subdirs.forEachRemaining(mfile -> {
         try {
@@ -72,7 +74,7 @@ public class RandomAccessDirectory extends ucar.unidata.io.RandomAccessFile impl
       });
     }
     // add files
-    Iterator<MFile> files = controller.getInventoryTop(cc, false);
+    Iterator<MFile> files = sortIterator(controller.getInventoryTop(cc, false));
     if (files != null) {
       files.forEachRemaining(mfile -> {
         items.add(new VirtualRandomAccessFile(mfile.getPath(), mfile.getLength(), mfile.getLastModified()));
@@ -82,8 +84,18 @@ public class RandomAccessDirectory extends ucar.unidata.io.RandomAccessFile impl
     return items;
   }
 
+  private static Iterator<MFile> sortIterator(Iterator<MFile> mfiles) {
+    List list = new ArrayList();
+    while (mfiles.hasNext()) {
+      list.add(mfiles.next());
+    }
+    Collections.sort(list);
+    return list.iterator();
+  }
+
   // returns a RandomAccessFile for the child file or directory containing position pos
   protected RandomAccessFile getFileAtPos(long pos) throws IOException {
+    // TODO - speed up performance
     long tempPos = 0;
     for (RandomAccessDirectoryItem item : this.children) {
       long rafLength = item.length();
@@ -107,6 +119,7 @@ public class RandomAccessDirectory extends ucar.unidata.io.RandomAccessFile impl
 
   // returns the position, relative to the directory structure, of the first byte of a file
   protected long getFileStartPos(RandomAccessFile child) {
+    // TODO - speed up performance
     long startPos = 0;
     for (RandomAccessDirectoryItem item : this.children) {
       RandomAccessFile raf = item.getRaf();
@@ -168,6 +181,7 @@ public class RandomAccessDirectory extends ucar.unidata.io.RandomAccessFile impl
   public long readToByteChannel(WritableByteChannel dest, long offset, long nbytes) throws IOException {
     long n = 0;
     while (n < nbytes) {
+
       RandomAccessFile raf = getFileAtPos(offset + n);
       if (raf == null) {
         break;

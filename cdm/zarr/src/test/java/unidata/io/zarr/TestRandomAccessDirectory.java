@@ -69,14 +69,14 @@ public class TestRandomAccessDirectory {
   public static void setUpTests() throws IOException {
     directoryStore = NetcdfFiles.getRaf(DIRECTORY_STORE_URI, TEST_BUFFER_SIZE);
     objectStore = NetcdfFiles.getRaf(OBJECT_STORE_ZARR_URI, TEST_BUFFER_SIZE);
-    // zipStore = NetcdfFiles.getRaf(ZIP_STORE_URI, TEST_BUFFER_SIZE);
+    zipStore = NetcdfFiles.getRaf(ZIP_STORE_URI, TEST_BUFFER_SIZE);
   }
 
   @AfterClass
   public static void cleanUpTests() throws IOException {
     directoryStore.close();
     objectStore.close();
-    // zipStore.close();
+    zipStore.close();
   }
 
   @Test
@@ -91,14 +91,14 @@ public class TestRandomAccessDirectory {
     // directory store types
     assertThat(directoryStore).isInstanceOf(RandomAccessDirectory.class);
     assertThat(objectStore).isInstanceOf(RandomAccessDirectory.class);
-    // assertThat(zipStore).isInstanceOf(RandomAccessDirectory.class);
+    assertThat(zipStore).isInstanceOf(RandomAccessDirectory.class);
   }
 
   @Test
   public void testSetBufferSize() {
     _testSetBufferSize(directoryStore);
     _testSetBufferSize(objectStore);
-    // _testSetBufferSize(zipStore);
+    _testSetBufferSize(zipStore);
   }
 
   private void _testSetBufferSize(RandomAccessFile raf) {
@@ -123,11 +123,11 @@ public class TestRandomAccessDirectory {
     objectStore.seek(0);
     assertThat(objectStore.isAtEndOfFile()).isFalse();
 
-    // // zip store
-    // zipStore.seek(EXPECTED_SIZE);
-    // assertThat(zipStore.isAtEndOfFile()).isTrue();
-    // zipStore.seek(0);
-    // assertThat(zipStore.isAtEndOfFile()).isFalse();
+     // zip store
+     zipStore.seek(EXPECTED_SIZE);
+     assertThat(zipStore.isAtEndOfFile()).isTrue();
+     zipStore.seek(0);
+     assertThat(zipStore.isAtEndOfFile()).isFalse();
   }
 
   @Test
@@ -139,12 +139,16 @@ public class TestRandomAccessDirectory {
     // object store
     objectStore.seek(pos);
     assertThat(objectStore.getFilePointer()).isEqualTo(pos);
+    // zip store
+    zipStore.seek(pos);
+    assertThat(zipStore.getFilePointer()).isEqualTo(pos);
   }
 
   @Test
   public void testByteOrder() throws IOException {
     _testByteOrder(directoryStore);
     _testByteOrder(objectStore);
+    _testByteOrder(zipStore);
   }
 
   private void _testByteOrder(RandomAccessFile raf) throws IOException {
@@ -165,12 +169,14 @@ public class TestRandomAccessDirectory {
   public void testLength() throws IOException {
     assertThat(directoryStore.length()).isEqualTo(EXPECTED_SIZE);
     assertThat(objectStore.length()).isEqualTo(EXPECTED_SIZE);
+    assertThat(zipStore.length()).isEqualTo(EXPECTED_SIZE);
   }
 
   @Test
   public void testRead() throws IOException {
     _testRead(directoryStore);
     _testRead(objectStore);
+    _testRead(zipStore);
   }
 
   private void _testRead(RandomAccessFile raf) throws IOException {
@@ -212,7 +218,8 @@ public class TestRandomAccessDirectory {
   @Test
   public void testReadToByteChannel() throws IOException {
     _testReadToByteChannel(directoryStore);
-    // _testReadToByteChannel(objectStore);
+    _testReadToByteChannel(objectStore);
+    _testReadToByteChannel(zipStore);
   }
 
   private void _testReadToByteChannel(RandomAccessFile raf) throws IOException {
@@ -251,6 +258,7 @@ public class TestRandomAccessDirectory {
     // TODO: RemoteRandomAccessFile is throwing this exception - should probably be caught and turned into
     //      EOFException somewhere
     _testReadFully(objectStore, com.google.common.util.concurrent.UncheckedExecutionException.class);
+    _testReadFully(zipStore, EOFException.class);
   }
 
   private void _testReadFully(RandomAccessFile raf, Class exceptionclass) throws IOException {
@@ -276,6 +284,7 @@ public class TestRandomAccessDirectory {
   public void testSearchForward() throws IOException {
     _testSearchForward(directoryStore);
     _testSearchForward(objectStore);
+    _testSearchForward(zipStore);
   }
 
   private void _testSearchForward(RandomAccessFile raf) throws IOException {
@@ -290,12 +299,13 @@ public class TestRandomAccessDirectory {
   }
 
   @Test
-  public void testGetLastModified() {
-
+  public void testLazyLoad() {
+    _testLazyLoad(directoryStore);
+    _testLazyLoad(objectStore);
+    _testLazyLoad(zipStore);
   }
 
-  @Test
-  public void testLazyLoad() {
+  private void _testLazyLoad(RandomAccessFile raf) {
 
   }
 

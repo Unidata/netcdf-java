@@ -17,12 +17,10 @@ import java.net.URI;
 import java.net.URL;
 import java.nio.channels.FileLock;
 import java.nio.channels.OverlappingFileLockException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.ServiceLoader;
+import java.util.*;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import javax.annotation.Nullable;
 import ucar.nc2.internal.iosp.netcdf3.N3headerNew;
@@ -405,7 +403,7 @@ public class NetcdfFiles {
         raf = provider.open(location, buffer_size);
         // might cause issues if the end of a resource location string
         // cannot be reliably used to determine compression
-        if (looksCompressed(uriString)) {
+        if (looksCompressed(uriString) && !raf.isDirectory()) {  // do not decompress directories all at once
           raf = downloadAndDecompress(raf, uriString, buffer_size);
         }
         break;
@@ -468,21 +466,27 @@ public class NetcdfFiles {
   }
 
   private static boolean looksCompressed(String filename) {
-    int pos = filename.lastIndexOf('.');
-    boolean looksCompressed = false;
-    if (pos > 0) {
-      String suffix = filename.substring(pos + 1).toLowerCase();
-      looksCompressed =
-          possibleCompressedSuffixes.stream().anyMatch(compressedSuffix -> suffix.equalsIgnoreCase(compressedSuffix));
+    // return true if filename ends with a compressed suffix or contains a compressed suffix followed by a delimiter (i.e. path to a compressed entry)
+    return possibleCompressedSuffixes.stream().anyMatch(compressedSuffix -> filename.endsWith("." + compressedSuffix))  ||
+                  possibleCompressedSuffixes.stream().anyMatch(compressedSuffix -> filename.contains("." + compressedSuffix + "/"));
+  }
+
+  private static String findCompressedSuffix(String filename) {
+    if (possibleCompressedSuffixes.stream().anyMatch(compressedSuffix -> filename.endsWith("." + compressedSuffix))) {
+      return filename.substring(filename.lastIndexOf('.')+1);
     }
-    return looksCompressed;
+    return possibleCompressedSuffixes.stream().filter(compressedSuffix -> filename.contains("." + compressedSuffix + "/")).findFirst().orElse("");
   }
 
   private static String makeUncompressed(String filename) throws Exception {
-
-    int pos = filename.lastIndexOf('.');
-    String suffix = filename.substring(pos + 1);
-    String uncompressedFilename = filename.substring(0, pos);
+    String suffix = findCompressedSuffix(filename);
+    int pos = filename.lastIndexOf(suffix);
+    String basepath = filename.substring(0, pos - 1);
+    String itempath = filename.substring(pos + suffix.length());
+    // rebuild filepath without suffix (same as base path if there is not item path)
+    String uncompressedFilename = basepath + itempath;
+    // name of parent file
+    String baseFilename = basepath + "." + suffix;
 
     // coverity claims resource leak, but attempts to fix break. so beware
     // see if already decompressed, check in cache as needed
@@ -522,7 +526,7 @@ public class NetcdfFiles {
 
     // ok gonna write it
     // make sure compressed file exists
-    File file = new File(filename);
+    File file = new File(baseFilename);
     if (!file.exists()) {
       return null; // bail out */
     }
@@ -546,33 +550,40 @@ public class NetcdfFiles {
 
       try {
         if (suffix.equalsIgnoreCase("Z")) {
-          try (InputStream in = new UncompressInputStream(new FileInputStream(filename))) {
+          // Z file can only contain one file - copy the whole thing
+          try (InputStream in = new UncompressInputStream(new FileInputStream(baseFilename))) {
             copy(in, fout, 100000);
           }
           if (NetcdfFile.debugCompress)
             log.info("uncompressed {} to {}", filename, uncompressedFile);
-
         } else if (suffix.equalsIgnoreCase("zip")) {
-          try (ZipInputStream zin = new ZipInputStream(new FileInputStream(filename))) {
+          // find specified zip entry, if it exists
+          try (ZipInputStream zin = new ZipInputStream(new FileInputStream(baseFilename))) {
             ZipEntry ze = zin.getNextEntry();
-            if (ze != null) {
-              copy(zin, fout, 100000);
-              if (NetcdfFile.debugCompress)
-                log.info("unzipped {} entry {} to {}", filename, ze.getName(), uncompressedFile);
+            String itemName = itempath.substring(1); // remove initial /
+            while (ze != null) {
+              if(itempath.isEmpty() || ze.getName().equals(itemName)) {
+                copy(zin, fout, 100000);
+                if (NetcdfFile.debugCompress)
+                  log.info("unzipped {} entry {} to {}", filename, ze.getName(), uncompressedFile);
+                break;
+              }
+              zin.closeEntry();
               ze = zin.getNextEntry();
             }
           }
 
         } else if (suffix.equalsIgnoreCase("bz2")) {
-          try (InputStream in = new CBZip2InputStream(new FileInputStream(filename), true)) {
+          // bz2 can only contain one file - copy the whole thing
+          try (InputStream in = new CBZip2InputStream(new FileInputStream(baseFilename), true)) {
             copy(in, fout, 100000);
           }
           if (NetcdfFile.debugCompress)
             log.info("unbzipped {} to {}", filename, uncompressedFile);
 
         } else if (suffix.equalsIgnoreCase("gzip") || suffix.equalsIgnoreCase("gz")) {
-
-          try (InputStream in = new GZIPInputStream(new FileInputStream(filename))) {
+          // gzip/gz concatenates streams - copy the whole thing
+          try (InputStream in = new GZIPInputStream(new FileInputStream(baseFilename))) {
             copy(in, fout, 100000);
           }
 
