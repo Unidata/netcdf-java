@@ -354,10 +354,10 @@ public class NcdumpArray {
     }
 
     if (array.getArrayType() == ArrayType.CHAR) {
-      printStringArray(out, (ArrayByte) array, ilev, cancel);
+      printCharArray(out, (Array<Byte>) array, ilev, cancel);
 
     } else if (array.getArrayType() == ArrayType.STRING) {
-      printStringArray(out, (ArrayString) array, ilev, cancel);
+      printStringArray(out, (Array<String>) array, ilev, cancel);
 
     } else if (array instanceof StructureDataArray) {
       printStructureDataArray(out, (StructureDataArray) array, ilev, cancel);
@@ -367,8 +367,7 @@ public class NcdumpArray {
       int count = 0;
       for (Array<Byte> inner : vlen) {
         out.format("%s%n", (count == 0) ? "," : ";"); // peek ahead
-        ArrayByte barray = (ArrayByte) inner;
-        printByteBuffer(out, barray.getByteBuffer(), ilev);
+        printByteBuffer(out, Arrays.getByteBuffer(inner), ilev);
         if (cancel != null && cancel.isCancel())
           return;
         count++;
@@ -457,20 +456,20 @@ public class NcdumpArray {
     out.format("%n%s}", indent);
   }
 
-  private static void printStringArray(Formatter out, ArrayByte ma, Indent indent, CancelTask cancel) {
+  private static void printCharArray(Formatter out, Array<Byte> ma, Indent indent, CancelTask cancel) {
     if (cancel != null && cancel.isCancel())
       return;
 
     int rank = ma.getRank();
 
     if (rank == 1) {
-      out.format("  \"%s\"", ma.makeStringFromChar());
+      out.format("  \"%s\"", Arrays.makeStringFromChar(ma));
       return;
     }
 
     if (rank == 2) {
       boolean first = true;
-      Array<String> strings = ma.makeStringsFromChar();
+      Array<String> strings = Arrays.makeStringsFromChar(ma);
       for (String s : strings) {
         if (!first)
           out.format(", ");
@@ -488,15 +487,15 @@ public class NcdumpArray {
     out.format("%n%s{", indent);
     indent.incr();
     for (int ii = 0; ii < last; ii++) {
-      ArrayByte slice = null;
+      Array<Byte> slice = null;
       try {
-        slice = (ArrayByte) Arrays.slice(ma, 0, ii);
+        slice = Arrays.slice(ma, 0, ii);
       } catch (InvalidRangeException e) {
         e.printStackTrace();
       }
       if (ii > 0)
         out.format(",");
-      printStringArray(out, slice, indent, cancel);
+      printCharArray(out, slice, indent, cancel);
       if (cancel != null && cancel.isCancel())
         return;
     }
@@ -516,7 +515,7 @@ public class NcdumpArray {
       }
   }
 
-  private static void printStringArray(Formatter out, ArrayString ma, Indent indent, CancelTask cancel) {
+  private static void printStringArray(Formatter out, Array<String> ma, Indent indent, CancelTask cancel) {
     if (cancel != null && cancel.isCancel())
       return;
 
@@ -544,9 +543,9 @@ public class NcdumpArray {
     out.format("%n%s{", indent);
     indent.incr();
     for (int ii = 0; ii < last; ii++) {
-      ArrayString slice = null;
+      Array<String> slice = null;
       try {
-        slice = (ArrayString) Arrays.slice(ma, 0, ii);
+        slice = Arrays.slice(ma, 0, ii);
       } catch (InvalidRangeException e) {
         e.printStackTrace();
       }
@@ -591,8 +590,8 @@ public class NcdumpArray {
     Formatter out = new Formatter();
     for (StructureMembers.Member m : sdata.getStructureMembers()) {
       Array<?> memData = sdata.getMemberData(m);
-      if (memData instanceof ArrayByte) {
-        out.format("%s", ((ArrayByte) memData).makeStringFromChar());
+      if (memData.getArrayType() == ArrayType.CHAR) {
+        out.format("%s", Arrays.makeStringFromChar((Array<Byte>) memData));
       } else {
         printArray(out, memData, null, null, new Indent(2), null);
       }

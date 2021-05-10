@@ -10,17 +10,17 @@ import javax.annotation.concurrent.Immutable;
 
 /** Concrete implementation of Array specialized for Strings. */
 @Immutable
-public final class ArrayString extends Array<String> {
+final class ArrayString extends Array<String> {
   private final Storage<String> storage;
 
   /** Create an empty Array of type String and the given shape. */
-  public ArrayString(int[] shape) {
+  ArrayString(int[] shape) {
     super(ArrayType.STRING, shape);
     storage = new StorageS(new String[(int) indexFn.length()]);
   }
 
   /** Create an Array of type String and the given shape and storage. */
-  public ArrayString(int[] shape, Storage<String> storage) {
+  ArrayString(int[] shape, Storage<String> storage) {
     super(ArrayType.STRING, shape);
     Preconditions.checkArgument(indexFn.length() <= storage.length());
     this.storage = storage;

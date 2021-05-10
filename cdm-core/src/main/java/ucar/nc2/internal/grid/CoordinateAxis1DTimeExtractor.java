@@ -1,8 +1,9 @@
 package ucar.nc2.internal.grid;
 
 import com.google.common.base.Preconditions;
-import ucar.array.ArrayByte;
+import ucar.array.Array;
 import ucar.array.ArrayType;
+import ucar.array.Arrays;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.*;
 import ucar.nc2.time.CalendarDate;
@@ -42,8 +43,8 @@ class CoordinateAxis1DTimeExtractor {
     Preconditions.checkArgument(org.getArrayType() == ArrayType.CHAR);
     List<CalendarDate> result = new ArrayList<>();
 
-    ArrayByte data = (ArrayByte) org.readArray();
-    ucar.array.Array<String> dateStrings = data.makeStringsFromChar();
+    Array<?> data = org.readArray();
+    ucar.array.Array<String> dateStrings = Arrays.makeStringsFromChar((ucar.array.Array<Byte>) data);
     for (String coordValue : dateStrings) {
       CalendarDate cd = makeCalendarDateFromStringCoord(coordValue, org, errMessages);
       result.add(cd);

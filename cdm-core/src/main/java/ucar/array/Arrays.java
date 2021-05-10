@@ -5,7 +5,10 @@
 package ucar.array;
 
 import com.google.common.base.Preconditions;
+import com.google.protobuf.ByteString;
+
 import javax.annotation.Nullable;
+import java.nio.ByteBuffer;
 import java.util.List;
 
 /** Static helper classes for {@link Array} */
@@ -614,5 +617,38 @@ public class Arrays {
         throw new IllegalArgumentException("makeArray od type " + type);
     }
     return factory(type, shape, pvals);
+  }
+
+  /////////////////////////////////////////////////
+  // static methods on Array<Byte>
+
+  /**
+   * Create an Array of Strings out of an Array\<Byte> of any rank.
+   * If there is a null (zero) value in from, the String will end there.
+   * The null is not returned as part of the String.
+   *
+   * @return Array of Strings of rank - 1.
+   */
+  public static Array<String> makeStringsFromChar(Array<Byte> from) {
+    return ((ArrayByte) from).makeStringsFromChar();
+  }
+
+  /**
+   * Create a String out of an Array\<Byte> of rank zero or one.
+   * If there is a null (zero) value in from, the String will end there.
+   * The null is not returned as part of the String.
+   */
+  public static String makeStringFromChar(Array<Byte> from) {
+    return ((ArrayByte) from).makeStringFromChar();
+  }
+
+  /** Convert an Array\<Byte> into a ByteBuffer. */
+  public static ByteBuffer getByteBuffer(Array<Byte> from) {
+    return ((ArrayByte) from).getByteBuffer();
+  }
+
+  /** Convert the Array into a ByteString. */
+  public static ByteString getByteString(Array<Byte> from) {
+    return ((ArrayByte) from).getByteString();
   }
 }

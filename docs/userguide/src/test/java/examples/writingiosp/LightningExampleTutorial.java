@@ -194,7 +194,7 @@ public class LightningExampleTutorial {
         .addVariable(Variable.builder().setName("strikeAmplitude").setArrayType(ArrayType.DOUBLE)
             .addDimension(dim).addAttribute(new Attribute("long_name", "amplitude of strike"))
             .addAttribute(new Attribute("units", "kAmps"))
-            .addAttribute(new Attribute("missing_value", new Double(999))));
+            .addAttribute(new Attribute("missing_value", 999d)));
 
     rootGroup.addVariable(Variable.builder().setName("strokeCount").setArrayType(ArrayType.INT)
         .addDimension(dim).addAttribute(new Attribute("long_name", "number of strokes per flash"))
@@ -273,8 +273,8 @@ public class LightningExampleTutorial {
    * @param rootGroup
    * @param dim
    */
-  public static void setSourceData(Group.Builder rootGroup, Dimension dim, ArrayInteger dateArray,
-      ArrayDouble latArray) {
+  public static void setSourceData(Group.Builder rootGroup, Dimension dim, Array<Integer> dateArray,
+      Array<Double> latArray) {
     // ...
     rootGroup.addVariable(Variable.builder().setName("date").setArrayType(ArrayType.INT)
         .addDimension(dim).addAttribute(new Attribute("long_name", "date of strike"))
@@ -295,7 +295,7 @@ public class LightningExampleTutorial {
    * @param dim
    */
   public static void addCoordSystemsAndTypedDatasets(Group.Builder rootGroup, Dimension dim,
-      ArrayInteger dateArray, ArrayDouble latArray, ArrayDouble lonArray) {
+      Array<Integer> dateArray, Array<Double> latArray, Array<Double> lonArray) {
     // ...
     // 1) Add attributes on time, lat, and lon variables that identify them as coordinate axes
     rootGroup.addVariable(Variable.builder().setName("date").setArrayType(ArrayType.INT)
@@ -331,12 +331,12 @@ public class LightningExampleTutorial {
         new Attribute("time_coverage_end", ((int) mm.max()) + "seconds since 1970-01-01 00:00;00"));
 
     mm = Arrays.getMinMaxSkipMissingData(latArray, null);
-    rootGroup.addAttribute(new Attribute("geospatial_lat_min", new Double(mm.min())));
-    rootGroup.addAttribute(new Attribute("geospatial_lat_max", new Double(mm.max())));
+    rootGroup.addAttribute(new Attribute("geospatial_lat_min", mm.min()));
+    rootGroup.addAttribute(new Attribute("geospatial_lat_max", mm.max()));
 
     mm = Arrays.getMinMaxSkipMissingData(lonArray, null);
-    rootGroup.addAttribute(new Attribute("geospatial_lon_min", new Double(mm.min())));
-    rootGroup.addAttribute(new Attribute("geospatial_lon_max", new Double(mm.max())));
+    rootGroup.addAttribute(new Attribute("geospatial_lon_min", mm.min()));
+    rootGroup.addAttribute(new Attribute("geospatial_lon_max", mm.max()));
   }
 
   /**

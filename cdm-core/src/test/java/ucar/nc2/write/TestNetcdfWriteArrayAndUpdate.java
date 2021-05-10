@@ -11,8 +11,6 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runners.MethodSorters;
 import ucar.array.Array;
-import ucar.array.ArrayByte;
-import ucar.array.ArrayByte;
 import ucar.array.ArrayType;
 import ucar.array.Arrays;
 import ucar.array.Index;
@@ -252,8 +250,8 @@ public class TestNetcdfWriteArrayAndUpdate {
       assertThat(c).isNotNull();
       Array<?> a = c.readArray();
       assertThat(a.getArrayType()).isEqualTo(ArrayType.CHAR);
-      ArrayByte achar = (ArrayByte) a;
-      String sval = achar.makeStringFromChar();
+      Array<Byte> achar = (Array<Byte>) a;
+      String sval = Arrays.makeStringFromChar(achar);
       assertThat(sval).isEqualTo("Testing 1-2-3");
 
       // read char variable 2
@@ -262,8 +260,8 @@ public class TestNetcdfWriteArrayAndUpdate {
       a = c2.readArray();
 
       assertThat(a.getArrayType()).isEqualTo(ArrayType.CHAR);
-      ArrayByte achar2 = (ArrayByte) a;
-      Array<String> achar2Data = achar2.makeStringsFromChar();
+      Array<Byte> achar2 = (Array<Byte>) a;
+      Array<String> achar2Data = Arrays.makeStringsFromChar(achar2);
       assertThat(achar2Data.get(0)).isEqualTo("Two pairs of ladies stockings!");
 
       // read byte variable
@@ -283,8 +281,8 @@ public class TestNetcdfWriteArrayAndUpdate {
       a = c3.readArray();
 
       assertThat(a.getArrayType()).isEqualTo(ArrayType.CHAR);
-      ArrayByte achar3 = (ArrayByte) a;
-      Array<String> achar3Data = achar3.makeStringsFromChar();
+      Array<Byte> achar3 = (Array<Byte>) a;
+      Array<String> achar3Data = Arrays.makeStringsFromChar(achar3);
 
       assertThat(achar3Data.get(0)).isEqualTo("No pairs of ladies stockings!");
       assertThat(achar3Data.get(1)).isEqualTo("One pairs of ladies stockings!");
@@ -296,8 +294,8 @@ public class TestNetcdfWriteArrayAndUpdate {
       a = c4.readArray();
 
       assertThat(a.getArrayType()).isEqualTo(ArrayType.CHAR);
-      ArrayByte achar4 = (ArrayByte) a;
-      Array<String> achar4Data = achar4.makeStringsFromChar();
+      Array<Byte> achar4 = (Array<Byte>) a;
+      Array<String> achar4Data = Arrays.makeStringsFromChar(achar4);
 
       assertThat(achar4Data.get(0).equals("0 pair of ladies stockings!"));
       assertThat(achar4Data.get(1).equals("1 pair of ladies stockings!"));
@@ -483,8 +481,8 @@ public class TestNetcdfWriteArrayAndUpdate {
       assertThat(c).isNotNull();
       Array<?> a = c.readArray();
       assertThat(a.getArrayType()).isEqualTo(ArrayType.CHAR);
-      ArrayByte achar = (ArrayByte) a;
-      String sval = achar.makeStringFromChar();
+      Array<Byte> achar = (Array<Byte>) a;
+      String sval = Arrays.makeStringFromChar(achar);
       assertThat(sval).isEqualTo("Testing 1-2-many");
 
       // read char variable 2
@@ -493,8 +491,8 @@ public class TestNetcdfWriteArrayAndUpdate {
       a = c2.readArray();
 
       assertThat(a.getArrayType()).isEqualTo(ArrayType.CHAR);
-      ArrayByte achar2 = (ArrayByte) a;
-      Array<String> achar2Data = achar2.makeStringsFromChar();
+      Array<Byte> achar2 = (Array<Byte>) a;
+      Array<String> achar2Data = Arrays.makeStringsFromChar(achar2);
       assertThat(achar2Data.get(0)).isEqualTo("Twelve pairs of ladies stockings!");
 
       // read byte variable
@@ -514,8 +512,8 @@ public class TestNetcdfWriteArrayAndUpdate {
       a = c3.readArray();
 
       assertThat(a.getArrayType()).isEqualTo(ArrayType.CHAR);
-      ArrayByte achar3 = (ArrayByte) a;
-      Array<String> achar3Data = achar3.makeStringsFromChar();
+      Array<Byte> achar3 = (Array<Byte>) a;
+      Array<String> achar3Data = Arrays.makeStringsFromChar(achar3);
 
       assertThat(achar3Data.get(0)).isEqualTo("0 pairs of ladies stockings!");
       assertThat(achar3Data.get(1)).isEqualTo("1 pairs of ladies stockings!");
@@ -527,8 +525,8 @@ public class TestNetcdfWriteArrayAndUpdate {
       a = c4.readArray();
 
       assertThat(a.getArrayType()).isEqualTo(ArrayType.CHAR);
-      ArrayByte achar4 = (ArrayByte) a;
-      Array<String> achar4Data = achar3.makeStringsFromChar();
+      Array<Byte> achar4 = (Array<Byte>) a;
+      Array<String> achar4Data = Arrays.makeStringsFromChar(achar4);
 
       assertThat(achar4Data.get(0).equals("0 pair of ladies stockings!"));
       assertThat(achar4Data.get(1).equals("1 pair of ladies stockings!"));
