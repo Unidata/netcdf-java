@@ -48,6 +48,18 @@ enum CdmFeatureType {
   CDM_FEATURE_TYPE_FMRC = 5;
 }
 
+// CURRENTLY UNUSED
+enum CdmCalendar { // related to  ucar.nc2.time.Calendar
+  CDM_CALENDAR_UNSPECIFIED = 0;
+  CDM_CALENDAR_PROLEPTIC_GREGORIAN = 1;
+  CDM_CALENDAR_GREGORIAN = 2;
+  CDM_CALENDAR_NO_LEAP = 3;
+  CDM_CALENDAR_ALL_LEAP = 4;
+  CDM_CALENDAR_UNIFORM_30_DAY = 5;
+  CDM_CALENDAR_JULIAN = 6;
+  CDM_CALENDAR_NONE = 7;
+}
+
 ////////////////////////////////////////////////////////////////////
 // GridDataset
 
@@ -159,23 +171,14 @@ message GridDataResponse {
   GridReferencedArray data = 5;
 }
 
-
+// CURRENTLY UNUSED
 message CalendarDateRange {
-  enum Calendar {  // same as ucar.nc2.time.Calendar
-    proleptic_gregorian=0;
-    gregorian=1;
-    noleap=2;
-    all_leap=3;
-    uniform30day=4;
-    julian=5;
-    none=6;
-  }
-
   int64 start = 1;
   int64 end = 2;
-  Calendar calendar = 3;
+  CdmCalendar calendar = 3;
 }
 
+// CURRENTLY UNUSED
 message Rectangle {
   double start_x = 1;
   double start_y = 2;

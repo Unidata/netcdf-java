@@ -22,7 +22,9 @@ import java.util.Map;
  * @since 3/22/11
  */
 public enum Calendar {
-  gregorian, proleptic_gregorian, noleap, all_leap, uniform30day, julian, none; // do not change order, used in protobuf
+  // If making changes, update ucar.gcdm.GcdmGridConverter#convertAxisType(AxisType)
+  // and consider if need for addition to gcdm_grid.proto.
+  gregorian, proleptic_gregorian, noleap, all_leap, uniform30day, julian, none;
 
   public static Calendar get(String s) {
     if (s == null)
