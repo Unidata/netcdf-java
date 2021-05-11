@@ -29,6 +29,8 @@ public abstract class GridAxis implements Iterable<Object> {
 
   /** The spacing of the coordinate values, used for 1D axes. */
   public enum Spacing {
+    // If making changes, update ucar.gcdm.GcdmGridConverter#convertAxisSpacing(GridAxis.Spacing)
+    // and consider adding to gcdm_grid.proto.
     /**
      * Regularly spaced points (start, end, npts); start and end are midpoints, edges halfway between midpoints,
      * resol = (start - end) / (npts-1)

@@ -41,14 +41,18 @@ enum CdmAxisType {  // related to ucar.nc2.constants.AxisType
 ////////////////////////////////////////////////////////////////////
 // GridDataset
 
+// could be more generic CdmAxisSpacing, as could apply to other scientific
+// feature types?
+enum GridAxisSpacing {  // currently related to GridAxis.Spacing
+  GRID_AXIS_SPACING_UNSPECIFIED=0;
+  GRID_AXIS_SPACING_REGULAR_POINT=1;
+  GRID_AXIS_SPACING_IRREGULAR_POINT=2;
+  GRID_AXIS_SPACING_REGULAR_INTERVAL=3;
+  GRID_AXIS_SPACING_CONTIGUOUS_INTERVAL=4;
+  GRID_AXIS_SPACING_DISCONTIGUOUS_INTERVAL=5;
+}
+
 message GridAxis {
-  enum AxisSpacing {  // same as GridAxis.Spacing
-    regularPoint=0;
-    irregularPoint=1;
-    regularInterval=3;
-    contiguousInterval=4;
-    discontiguousInterval=5;
-  }
 
   enum DependenceType {  // same as GridAxis.DependenceType
     independent=0;     // has its own dimension, is a coordinate variable, eg x(x)
@@ -73,7 +77,7 @@ message GridAxis {
   string unit = 4;
   CdmAxisType cdm_axis_type = 5;
   repeated Attribute attributes = 6; // find calendar attribute here?
-  AxisSpacing spacing = 7;
+  GridAxisSpacing spacing = 7;
   DependenceType dependence_type = 8;
   repeated string depends_on = 9;    // depends on these axes, only for non-independent axes
 
