@@ -63,9 +63,9 @@ application {
 sourceSets {
   main {
     java {
-      // not needed for proto generated source
+      // only needed for grpc (proto/main/java taken care of by
+      // $rootDir/gradle/any/protobuf.gradle)
       srcDirs 'build/generated/source/proto/main/grpc'
-      srcDirs 'build/generated/source/proto/main/java'
     }
   }
 }
