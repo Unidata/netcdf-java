@@ -1,8 +1,13 @@
+plugins {
+  id 'com.github.johnrengelman.shadow' version '6.1.0'
+}
+
 description = 'Provides a graphical interface to the CDM library.'
 ext.title = 'ToolsUI'
 
 apply from: "$rootDir/gradle/any/dependencies.gradle"
 apply from: "$rootDir/gradle/any/java-library.gradle"
+//apply plugin: 'com.github.johnrengelman.shadow'
 
 dependencies {
   compile enforcedPlatform(project(':netcdf-java-platform'))
@@ -44,4 +49,53 @@ dependencies {
   runtimeOnly 'ch.qos.logback:logback-classic'
 }
 
-jar.manifest.attributes 'Main-Class': 'ucar.nc2.ui.ToolsUI'
+/////////////////
+// toolsUI jar
+
+shadowJar {
+  archiveBaseName.set('toolsUI')
+  archiveClassifier.set('')
+  group = 'shadow'
+
+  // Filter out crap from various other packages.
+  exclude 'AUTHORS'
+  exclude 'DATE'
+  exclude 'LICENCE'
+  exclude 'LICENSE'
+  exclude 'NOTICE'
+  exclude '*.txt'
+  exclude 'META-INF/INDEX.LIST'
+  exclude 'META-INF/DEPENDENCIES'
+  exclude 'META-INF/LICENSE'
+  exclude 'META-INF/NOTICE'
+  exclude 'META-INF/*.SF'
+  exclude 'META-INF/*.DSA'
+  exclude 'META-INF/*.RSA'
+  exclude 'META-INF/*.txt'
+  exclude 'META-INF/*.xml'
+
+  // Transformations
+  append('META-INF/spring.handlers')
+  append('META-INF/spring.schemas')
+  mergeServiceFiles()
+
+  manifest.attributes 'Main-Class': 'ucar.nc2.ui.ToolsUI'
+}
+
+publishing {
+  publications {
+    shadow(MavenPublication) { publication ->
+      publication.groupId = 'edu.ucar'
+      publication.artifactId = 'toolsUI'
+      project.shadow.component(publication)
+    }
+  }
+}
+
+// make sure we only end up with one slf4j binding on the classpath
+configurations.all {
+  resolutionStrategy.dependencySubstitution {
+    // Replace 'org.slf4j:slf4j-jdk14' from gcdm with logback-classic
+    substitute module('org.slf4j:slf4j-jdk14') because 'we only want one slf4j binding' with module("ch.qos.logback:logback-classic:${depVersion.logback}")
+  }
+}
