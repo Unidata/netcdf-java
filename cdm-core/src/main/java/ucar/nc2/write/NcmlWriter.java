@@ -304,7 +304,7 @@ public class NcmlWriter {
   public Element makeEnumTypedefElement(EnumTypedef etd) {
     Element typeElem = new Element("enumTypedef", namespace);
     typeElem.setAttribute("name", etd.getShortName());
-    typeElem.setAttribute("type", etd.getBaseType().toString());
+    typeElem.setAttribute("type", etd.getBaseArrayType().toNcml());
 
     // Use a TreeMap so that the key-value pairs are emitted in a consistent order.
     TreeMap<Integer, String> map = new TreeMap<>(etd.getMap());
@@ -358,7 +358,7 @@ public class NcmlWriter {
 
     ArrayType dt = var.getArrayType();
     if (dt != null) {
-      varElem.setAttribute("type", dt.toString());
+      varElem.setAttribute("type", dt.toNcml());
       if (dt.isEnum())
         varElem.setAttribute("typedef", var.getEnumTypedef().getShortName());
     }
@@ -393,7 +393,7 @@ public class NcmlWriter {
 
     ArrayType dt = attribute.getArrayType();
     if ((dt != null) && (dt != ArrayType.STRING))
-      attElem.setAttribute("type", dt.toString());
+      attElem.setAttribute("type", dt.toNcml());
 
     if (attribute.getLength() == 0) {
       // if (attribute.isUnsigned())

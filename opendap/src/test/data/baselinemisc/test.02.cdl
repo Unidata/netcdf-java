@@ -14,8 +14,8 @@ netcdf dods://localhost:8080/dts/test.02 {
 
     double f64(25);
 
-    String s(25);
+    string s(25);
 
-    String u(25);
+    string u(25);
 
 }

@@ -388,7 +388,7 @@ public class Group {
         att.writeCDL(out, strict, null);
         out.format(";");
         if (!strict && (att.getArrayType() != ArrayType.STRING))
-          out.format(" // %s", att.getDataType());
+          out.format(" // %s", att.getArrayType().toCdl());
         out.format("%n");
       }
     }

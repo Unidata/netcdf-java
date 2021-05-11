@@ -71,13 +71,13 @@ public class TestNetcdfFile {
 
     NetcdfFile ncfile = builder.build();
     assertThat(ncfile.toString()).isEqualTo(String.format("netcdf location.nc {%n" + "  dimensions:%n"
-        + "    dimName = 42;%n" + "  variables:%n" + "    String varName;%n" + "%n" + "  group: child {%n" + "  }%n"
+        + "    dimName = 42;%n" + "  variables:%n" + "    string varName;%n" + "%n" + "  group: child {%n" + "  }%n"
         + "%n" + "  // global attributes:%n" + "  :attName = \"value\";%n" + "}%n"));
 
     Formatter f = new Formatter();
     ncfile.writeCDL(f, new Indent(2), true);
     assertThat(f.toString()).isEqualTo(String.format("netcdf location {%n" + "  dimensions:%n" + "    dimName = 42;%n"
-        + "  variables:%n" + "    String varName;%n" + "%n" + "  group: child {%n" + "  }%n" + "%n"
+        + "  variables:%n" + "    string varName;%n" + "%n" + "  group: child {%n" + "  }%n" + "%n"
         + "  // global attributes:%n" + "  string :attName = \"value\";%n" + "}%n"));
 
     assertThat(ncfile.getDetailInfo()).isNotNull();
