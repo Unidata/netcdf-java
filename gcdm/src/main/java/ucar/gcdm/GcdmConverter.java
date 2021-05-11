@@ -760,6 +760,7 @@ public class GcdmConverter {
 
     ArrayType dataType = convertDataType(data.getDataType());
     switch (dataType) {
+      case CHAR:
       case ENUM1:
       case UBYTE:
       case BYTE: {
@@ -774,12 +775,6 @@ public class GcdmConverter {
           ByteString bs = data.getBdata(i);
           // LOOK cant count on these being the same size
         }
-      }
-      case CHAR: {
-        for (int val : data.getIdataList()) {
-          bb.put((byte) val);
-        }
-        return;
       }
       case SHORT: {
         for (int val : data.getIdataList()) {

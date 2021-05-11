@@ -23,6 +23,20 @@ import java.nio.file.Paths;
 /** Test {@link GcdmNetcdfFile} */
 public class TestGcdmProblem {
 
+  // media/snake/0B681ADF0B681ADF/thredds-test-data/local/thredds-test-data/cdmUnitTest/formats/bufr/userExamples/test1.bufr
+  // media/snake/0B681ADF0B681ADF/thredds-test-data/local/thredds-test-data/cdmUnitTest/formats/bufr/userExamples/test1.bufr
+  // media/snake/0B681ADF0B681ADF/thredds-test-data/local/thredds-test-data/cdmUnitTest/formats/netcdf4/multiDimscale.nc4
+
+  // char variables from BUFR are incorrect
+  @Test
+  @Category(NeedsCdmUnitTest.class)
+  public void testCharProblem() throws Exception {
+    String localFilename = TestDir.cdmUnitTestDir + "formats/bufr/userExamples/test1.bufr";
+    Path path = Paths.get(localFilename);
+    doOne(path, "obs");
+    doTwo(path);
+  }
+
   // Send one chunk u(0:2, 0:39, 0:90997) size=43679040 bytes
   // Send one chunk u(3:5, 0:39, 0:90997) size=43679040 bytes
   // Send one chunk u(6:8, 0:39, 0:90997) size=43679040 bytes

@@ -27,7 +27,6 @@ import ucar.nc2.util.Misc;
 
 /**
  * Compare reading netcdf with Ma2 and same file with Array. Open separate files to prevent them from colliding.
- * Also use to test round trip through cmdr.
  */
 public class CompareArrayToMa2 {
 
@@ -55,6 +54,10 @@ public class CompareArrayToMa2 {
   public static boolean compareVariable(NetcdfFile ma2File, NetcdfFile arrayFile, String varName, boolean justOne)
       throws IOException {
     Variable vorg = ma2File.findVariable(varName);
+    if (vorg == null) {
+      System.out.printf("  Cant find variable %s in %s%n", varName, ma2File.getLocation());
+      return false;
+    }
     Variable vnew = arrayFile.findVariable(varName);
     if (vnew == null) {
       System.out.printf("  Cant find variable %s in %s%n", varName, arrayFile.getLocation());
@@ -63,12 +66,12 @@ public class CompareArrayToMa2 {
 
     if (vorg.getArrayType() == ArrayType.SEQUENCE) {
       System.out.printf("  read sequence %s %s%n", vorg.getDataType(), vorg.getShortName());
-      Sequence s = (Sequence) vnew;
-      StructureDataIterator orgSeq = s.getStructureIterator(-1);
-      Sequence copyv = (Sequence) arrayFile.findVariable(vorg.getFullName());
-      Iterator<ucar.array.StructureData> array = copyv.iterator();
+      Sequence sorg = (Sequence) vorg;
+      StructureDataIterator orgIter = sorg.getStructureIterator(-1);
+      Sequence sarray = (Sequence) vnew;
+      Iterator<ucar.array.StructureData> arrayIter = sarray.iterator();
       Formatter f = new Formatter();
-      boolean ok1 = CompareArrayToMa2.compareSequence(f, vorg.getShortName(), orgSeq, array);
+      boolean ok1 = CompareArrayToMa2.compareSequence(f, vorg.getShortName(), orgIter, arrayIter);
       if (!ok1) {
         System.out.printf("%s%n", f);
         return false;
@@ -370,10 +373,15 @@ public class CompareArrayToMa2 {
       Iterator<ucar.array.StructureData> array) throws IOException {
     boolean ok = true;
     int obsrow = 0;
-    System.out.printf(" compareSequence %s%n", name);
     while (org.hasNext() && array.hasNext()) {
+      System.out.printf(" compareSequence %s row %d%n", name, obsrow);
       ok &= compareStructureData(f, org.next(), array.next(), false);
       obsrow++;
+    }
+    if (org.hasNext() != array.hasNext()) {
+      System.out.printf(" mismatch length of sequense %s row %d: %s != %s%n", name, obsrow, org.hasNext(),
+          array.hasNext());
+      ok = false;
     }
     return ok;
   }

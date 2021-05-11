@@ -1,15 +1,12 @@
 package ucar.nc2.iosp.bufr;
 
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Collection;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
@@ -17,8 +14,7 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 @Category(NeedsCdmUnitTest.class)
 @RunWith(Parameterized.class)
 public class TestBufrReadAllData {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-  private static String testDir = TestDir.cdmUnitTestDir + "/formats/bufr/userExamples";
+  private static final String testDir = TestDir.cdmUnitTestDir + "/formats/bufr/userExamples";
 
   @Parameterized.Parameters(name = "{0}")
   public static Collection<Object[]> getTestParameters() {
@@ -31,7 +27,7 @@ public class TestBufrReadAllData {
     return filenames;
   }
 
-  private String filename;
+  private final String filename;
 
   public TestBufrReadAllData(String filename) {
     this.filename = filename;
