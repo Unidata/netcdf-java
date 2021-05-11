@@ -11,6 +11,7 @@ import ucar.nc2.grid.*;
 import ucar.nc2.internal.grid.GridCS;
 import ucar.unidata.geoloc.Projection;
 
+import javax.annotation.Nullable;
 import java.util.Formatter;
 
 /** Convert between GcdmGrid Protos and GridDataset objects. */
@@ -24,18 +25,111 @@ public class GcdmGridConverter {
     throw new IllegalArgumentException();
   }
 
-  public static AxisType convertAxisType(GcdmGridProto.GridAxis.AxisType proto) {
-    if (proto == null) {
-      return null;
+  @Nullable
+  public static AxisType convertAxisType(GcdmGridProto.CdmAxisType proto) {
+    AxisType axisType = null;
+    if (proto != null) {
+      switch (proto) {
+        case CDM_AXIS_TYPE_RUN_TIME: // 1
+          axisType = AxisType.RunTime;
+          break;
+        case CDM_AXIS_TYPE_ENSEMBLE:
+          axisType = AxisType.Ensemble; // 2
+          break;
+        case CDM_AXIS_TYPE_TIME: // 3
+          axisType = AxisType.Time;
+          break;
+        case CDM_AXIS_TYPE_GEO_X: // 4
+          axisType = AxisType.GeoX;
+          break;
+        case CDM_AXIS_TYPE_GEO_Y: // 5
+          axisType = AxisType.GeoY;
+          break;
+        case CDM_AXIS_TYPE_GEO_Z: // 6
+          axisType = AxisType.GeoZ;
+          break;
+        case CDM_AXIS_TYPE_LAT: // 7
+          axisType = AxisType.Lat;
+          break;
+        case CDM_AXIS_TYPE_LON: // 8
+          axisType = AxisType.Lon;
+          break;
+        case CDM_AXIS_TYPE_HEIGHT: // 9
+          axisType = AxisType.Height;
+          break;
+        case CDM_AXIS_TYPE_PRESSURE: // 10
+          axisType = AxisType.Pressure;
+          break;
+        case CDM_AXIS_TYPE_TIME_OFFSET: // 11
+          axisType = AxisType.TimeOffset;
+          break;
+        case CDM_AXIS_TYPE_UNSPECIFIED: // 0
+          throw new UnsupportedOperationException("CDM Axis Type is UNSPECIFIED. Cannot convert to AxisType.");
+        default:
+          // I am not sure we'll get here if the enum value is not defined in the version of the proto files used
+          // to generate the stub code. but, just in case...
+          throw new UnsupportedOperationException("CdmAxisType not understood.");
+      }
     }
-    return AxisType.getType(proto.name());
+    return axisType;
   }
 
-  public static GcdmGridProto.GridAxis.AxisType convertAxisType(AxisType axis) {
-    if (axis == null) {
-      return null;
+  public static GcdmGridProto.CdmAxisType convertAxisType(AxisType axis) {
+    GcdmGridProto.CdmAxisType cdmAxisType = GcdmGridProto.CdmAxisType.CDM_AXIS_TYPE_UNSPECIFIED;
+    if (axis != null) {
+      switch (axis) {
+        case RunTime: // 0
+          cdmAxisType = GcdmGridProto.CdmAxisType.CDM_AXIS_TYPE_RUN_TIME;
+          break;
+        case Ensemble: // 1
+          cdmAxisType = GcdmGridProto.CdmAxisType.CDM_AXIS_TYPE_ENSEMBLE;
+          break;
+        case Time: // 2
+          cdmAxisType = GcdmGridProto.CdmAxisType.CDM_AXIS_TYPE_TIME;
+          break;
+        case GeoX: // 3
+          cdmAxisType = GcdmGridProto.CdmAxisType.CDM_AXIS_TYPE_GEO_X;
+          break;
+        case GeoY: // 4
+          cdmAxisType = GcdmGridProto.CdmAxisType.CDM_AXIS_TYPE_GEO_Y;
+          break;
+        case GeoZ: // 5
+          cdmAxisType = GcdmGridProto.CdmAxisType.CDM_AXIS_TYPE_GEO_Z;
+          break;
+        case Lat: // 6
+          cdmAxisType = GcdmGridProto.CdmAxisType.CDM_AXIS_TYPE_LAT;
+          break;
+        case Lon: // 7
+          cdmAxisType = GcdmGridProto.CdmAxisType.CDM_AXIS_TYPE_LON;
+          break;
+        case Height: // 8
+          cdmAxisType = GcdmGridProto.CdmAxisType.CDM_AXIS_TYPE_HEIGHT;
+          break;
+        case Pressure: // 9
+          cdmAxisType = GcdmGridProto.CdmAxisType.CDM_AXIS_TYPE_PRESSURE;
+          break;
+        case TimeOffset: // 14
+          cdmAxisType = GcdmGridProto.CdmAxisType.CDM_AXIS_TYPE_TIME_OFFSET;
+          break;
+        case RadialAzimuth: // 10
+        case RadialDistance: // 11
+        case RadialElevation: // 12
+        case Spectral: // 13
+        case Dimension: // 15
+        case SimpleGeometryX: // 16
+        case SimpleGeometryY:  // 17
+        case SimpleGeometryZ: // 18
+        case SimpleGeometryID: // 19
+          cdmAxisType = GcdmGridProto.CdmAxisType.CDM_AXIS_TYPE_UNSPECIFIED;
+          break;
+        default:
+          cdmAxisType = GcdmGridProto.CdmAxisType.CDM_AXIS_TYPE_UNSPECIFIED;
+          break;
+      }
     }
-    return GcdmGridProto.GridAxis.AxisType.valueOf(axis.name());
+    // todo: LOOK - should we catch case of CDM_AXIS_TYPE_UNSPECIFIED and throw
+    //  an error to prevent sending a bad message?
+    return cdmAxisType;
   }
 
   public static GridAxis.Spacing convertAxisSpacing(GcdmGridProto.GridAxis.AxisSpacing proto) {
@@ -99,7 +193,7 @@ public class GcdmGridConverter {
     axisb.setName(proto.getName());
     axisb.setDescription(proto.getDescription());
     axisb.setUnits(proto.getUnit());
-    axisb.setAxisType(convertAxisType(proto.getAxisType()));
+    axisb.setAxisType(convertAxisType(proto.getCdmAxisType()));
     axisb.setAttributes(GcdmConverter.decodeAttributes(proto.getName(), proto.getAttributesList()));
     axisb.setSpacing(convertAxisSpacing(proto.getSpacing()));
     axisb.setDependenceType(convertAxisDependenceType(proto.getDependenceType()));
@@ -217,7 +311,7 @@ public class GcdmGridConverter {
     builder.setName(axis.getName());
     builder.setDescription(axis.getDescription());
     builder.setUnit(axis.getUnits());
-    builder.setAxisType(convertAxisType(axis.getAxisType()));
+    builder.setCdmAxisType(convertAxisType(axis.getAxisType()));
     builder.addAllAttributes(GcdmConverter.encodeAttributes(axis.attributes()));
     builder.setSpacing(convertAxisSpacing(axis.getSpacing()));
     builder.setDependenceType(convertAxisDependenceType(axis.getDependenceType()));

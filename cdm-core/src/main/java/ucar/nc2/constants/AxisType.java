@@ -6,10 +6,11 @@ package ucar.nc2.constants;
 
 /**
  * Enumeration of Coordinate Axis types. These are used for tagging georeferencing axes.
- * Do not change the ordering of these enums, as they are used in protobuf messages, only add new ones onto the end.
  * TODO: remove dependency on ordering in ver7.
  */
 public enum AxisType {
+  // If making changes, update ucar.gcdm.GcdmGridConverter#convertAxisType(AxisType)
+  // and consider if need for addition to gcdm_grid.proto.
   RunTime(0, "R"), // runtime / reference time
   Ensemble(2, "E"), //
   Time(1, "T"), // udunits: numerical offset from fixed calendar date, stored in the units string.

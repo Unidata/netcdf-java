@@ -20,25 +20,28 @@ message GridDatasetResponse {
   GridDataset dataset = 3;
 }
 
+////////////////////////////////////////////////
+// Gcdm General (could be in more generic proto)
+
+enum CdmAxisType {  // related to ucar.nc2.constants.AxisType
+  CDM_AXIS_TYPE_UNSPECIFIED=0;
+  CDM_AXIS_TYPE_RUN_TIME=1;
+  CDM_AXIS_TYPE_ENSEMBLE=2;
+  CDM_AXIS_TYPE_TIME=3;
+  CDM_AXIS_TYPE_GEO_X=4;
+  CDM_AXIS_TYPE_GEO_Y=5;
+  CDM_AXIS_TYPE_GEO_Z=6;
+  CDM_AXIS_TYPE_LAT=7;
+  CDM_AXIS_TYPE_LON=8;
+  CDM_AXIS_TYPE_HEIGHT=9;
+  CDM_AXIS_TYPE_PRESSURE=10;
+  CDM_AXIS_TYPE_TIME_OFFSET=11;
+}
+
 ////////////////////////////////////////////////////////////////////
 // GridDataset
 
 message GridAxis {
-
-  enum AxisType {  // same as ucar.nc2.constants.AxisType
-    RunTime=0;
-    Ensemble=1;
-    Time=2;
-    GeoX=3;
-    GeoY=4;
-    GeoZ=5;
-    Lat=6;
-    Lon=7;
-    Height=8;
-    Pressure=9;
-    TimeOffset=14;
-  }
-
   enum AxisSpacing {  // same as GridAxis.Spacing
     regularPoint=0;
     irregularPoint=1;
@@ -68,7 +71,7 @@ message GridAxis {
   string name = 2;
   string description = 3;
   string unit = 4;
-  AxisType axis_type = 5;
+  CdmAxisType cdm_axis_type = 5;
   repeated Attribute attributes = 6; // find calendar attribute here?
   AxisSpacing spacing = 7;
   DependenceType dependence_type = 8;
