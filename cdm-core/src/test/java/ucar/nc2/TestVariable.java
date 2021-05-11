@@ -116,7 +116,7 @@ public class TestVariable {
     Variable.Builder<?> vattb = Variable.builder().setName("vatt").setDataType(DataType.STRING)
         .setParentGroupBuilder(parentg).setDimensionsByName("mid").addAttribute(new Attribute("findme", "findmevalue"));
     grampsb.addVariable(vattb);
-    assertThat(vattb.toString()).isEqualTo("String vatt");
+    assertThat(vattb.toString()).isEqualTo("string vatt");
 
     Group root = Group.builder().addGroup(grampsb).addGroup(uncleb).addDimension(high).build();
     Variable vatt = root.findVariableByAttribute("findme", "findmevalue");

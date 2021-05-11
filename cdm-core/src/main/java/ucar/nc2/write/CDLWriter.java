@@ -29,8 +29,9 @@ import ucar.unidata.util.StringUtil2;
 
 /**
  * Common Data Language (CDL) writer.
- * 
- * @see "https://www.unidata.ucar.edu/software/netcdf/docs/netcdf_utilities_guide.html#cdl_guide"
+ *
+ * @see "https://www.unidata.ucar.edu/software/netcdf/docs/index.html"
+ *      TODO strict mode for valid CDL
  */
 public class CDLWriter {
   /**
@@ -283,15 +284,15 @@ public class CDLWriter {
   private void writeCDL(Variable v, Indent indent, boolean useFullName) {
     out.format("%s", indent);
     ArrayType dataType = v.getArrayType();
-    if (dataType == null)
-      out.format("Unknown");
-    else if (dataType.isEnum()) {
-      if (v.getEnumTypedef() == null)
+    if (dataType.isEnum()) {
+      if (v.getEnumTypedef() == null) {
         out.format("enum UNKNOWN");
-      else
+      } else {
         out.format("enum %s", NetcdfFiles.makeValidCDLName(v.getEnumTypedef().getShortName()));
-    } else
-      out.format("%s", dataType.toString());
+      }
+    } else {
+      out.format("%s", dataType.toCdl());
+    }
 
     // if (isVariableLength) out.append("(*)"); // LOOK
     out.format(" ");
@@ -304,8 +305,9 @@ public class CDLWriter {
       out.format("%s", indent);
       writeCDL(att, v.getShortName());
       out.format(";");
-      if (!strict && (att.getArrayType() != ArrayType.STRING))
+      if (!strict && (att.getArrayType() != ArrayType.STRING)) {
         out.format(" // %s", att.getDataType());
+      }
       out.format("%n");
     }
     indent.decr();

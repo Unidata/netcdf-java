@@ -959,7 +959,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
       else
         buf.format("enum %s", NetcdfFiles.makeValidCDLName(enumTypedef.getShortName()));
     } else
-      buf.format("%s", dataType.toString());
+      buf.format("%s", dataType.toCdl());
 
     // if (isVariableLength) buf.append("(*)"); // LOOK
     buf.format(" ");
@@ -975,7 +975,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
       att.writeCDL(buf, strict, getShortName());
       buf.format(";");
       if (!strict && (att.getArrayType() == ArrayType.STRING))
-        buf.format(" // %s", att.getArrayType());
+        buf.format(" // %s", att.getArrayType().toCdl());
       buf.format("%n");
     }
     indent.decr();
@@ -1739,7 +1739,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
 
     @Override
     public String toString() {
-      return dataType + " " + shortName;
+      return dataType.toCdl() + " " + shortName;
     }
 
     /** Normally this is called by Group.build() */

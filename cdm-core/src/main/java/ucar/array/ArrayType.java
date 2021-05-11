@@ -17,33 +17,36 @@ import java.math.BigInteger;
  * </p>
  */
 public enum ArrayType {
-  BOOLEAN("boolean", 1, Byte.class, false), //
-  BYTE("byte", 1, Byte.class, false), //
-  CHAR("char", 1, Byte.class, false), //
-  SHORT("short", 2, Short.class, false), //
-  INT("int", 4, Integer.class, false), //
-  LONG("long", 8, Long.class, false), //
-  FLOAT("float", 4, Float.class, false), //
-  DOUBLE("double", 8, Double.class, false), //
+  BOOLEAN("boolean", "boolean", 1, Byte.class, false), //
+  BYTE("byte", "byte", 1, Byte.class, false), //
+  CHAR("char", "char", 1, Byte.class, false), //
+  SHORT("short", "short", 2, Short.class, false), //
+  INT("int", "int", 4, Integer.class, false), //
+  LONG("long", "int64", 8, Long.class, false), //
+  FLOAT("float", "float", 4, Float.class, false), //
+  DOUBLE("double", "double", 8, Double.class, false), //
 
-  UBYTE("ubyte", 1, Byte.class, true), // unsigned byte
-  USHORT("ushort", 2, Short.class, true), // unsigned short
-  UINT("uint", 4, Integer.class, true), // unsigned int
-  ULONG("ulong", 8, Long.class, true), // unsigned long
+  UBYTE("ubyte", "ubyte", 1, Byte.class, true), // unsigned byte
+  USHORT("ushort", "ushort", 2, Short.class, true), // unsigned short
+  UINT("uint", "uint", 4, Integer.class, true), // unsigned int
+  ULONG("ulong", "uint64", 8, Long.class, true), // unsigned long
 
-  ENUM1("enum1", 1, byte.class, false), // byte
-  ENUM2("enum2", 2, short.class, false), // short
-  ENUM4("enum4", 4, int.class, false), // int
+  ENUM1("enum1", "enum1", 1, byte.class, false), // byte
+  ENUM2("enum2", "enum2", 2, short.class, false), // short
+  ENUM4("enum4", "enum4", 4, int.class, false), // int
 
   // object types are variable length, they have 32 bit indices onto a heap inside of a Structure
-  STRING("String", 4, String.class, false), // Java String
-  STRUCTURE("Structure", 0, StructureData.class, false), // compact storage of heterogeneous fields
-  SEQUENCE("Sequence", 4, StructureData.class, false), // Iterator<StructureData>
-  OPAQUE("opaque", 1, Array.class, false), // Array<Array<Byte>>, an array of variable length byte arrays
+  STRING("String", "string", 4, String.class, false), // Java String
+  STRUCTURE("Structure", "Structure", 0, StructureData.class, false), // compact storage of heterogeneous fields
+  SEQUENCE("Sequence", "Sequence", 4, StructureData.class, false), // Iterator<StructureData>
+
+  // OPAQUE: Byte blobs, where length of blobs may be different. Stored as a vlen of Array&lt;Byte&gt;.
+  // LOOK: is this true? If theres only one, may be just an Array&lt;Byte&gt;.
+  OPAQUE("opaque", "opaque", 1, Array.class, false), // Array<Array<Byte>>, an array of variable length byte arrays
 
   /** @deprecated legacy, do not use. */
   @Deprecated
-  OBJECT("object", 1, Object.class, false), // legacy: size unknown, use with ucar.ma2.Array
+  OBJECT("object", "object", 1, Object.class, false), // legacy: size unknown, use with ucar.ma2.Array
   ;
 
   /**
@@ -57,26 +60,37 @@ public enum ArrayType {
     UNSIGNED
   }
 
-  private final String niceName;
+  private final String name;
+  private final String cdlName;
   private final int size;
   private final Class<?> primitiveClass;
   private final Signedness signedness;
 
-  ArrayType(String s, int size, Class<?> primitiveClass, boolean isUnsigned) {
-    this(s, size, primitiveClass, isUnsigned ? Signedness.UNSIGNED : Signedness.SIGNED);
+  ArrayType(String name, String cdlName, int size, Class<?> primitiveClass, boolean isUnsigned) {
+    this(name, cdlName, size, primitiveClass, isUnsigned ? Signedness.UNSIGNED : Signedness.SIGNED);
   }
 
-  ArrayType(String s, int size, Class<?> primitiveClass, Signedness signedness) {
-    this.niceName = s;
+  ArrayType(String name, String cdlName, int size, Class<?> primitiveClass, Signedness signedness) {
+    this.name = name;
+    this.cdlName = cdlName;
     this.size = size;
     this.primitiveClass = primitiveClass;
     this.signedness = signedness;
   }
 
-  // LOOK CDL name?
-  /** The ArrayType name, eg "byte", "float", "String". */
+  @Override
   public String toString() {
-    return niceName;
+    return name;
+  }
+
+  /** The name used for Ncml. */
+  public String toNcml() {
+    return name;
+  }
+
+  /** The name used for CDL */
+  public String toCdl() {
+    return cdlName;
   }
 
   /**
