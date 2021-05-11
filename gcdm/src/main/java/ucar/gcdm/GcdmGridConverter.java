@@ -264,19 +264,21 @@ public class GcdmGridConverter {
   }
 
   public static GridAxis.Builder<?> decodeGridAxis(GcdmGridProto.GridAxis proto) {
-    GcdmGridProto.GridAxis.GridAxisType gridAxisType = proto.getGridAxisType();
+    GcdmGridProto.GridAxisType gridAxisType = proto.getGridAxisType();
 
     GridAxis.Builder<?> axisb;
     switch (gridAxisType) {
-      case Axis1D:
+      case GRID_AXIS_TYPE_AXIS_1D: // 1
         axisb = GridAxis1D.builder();
         break;
-      case Axis1DTime:
+      case GRID_AXIS_TYPE_AXIS_1D_TIME: // 2
         axisb = GridAxis1DTime.builder();
         break;
-      case TimeOffsetRegular:
+      case GRID_AXIS_TYPE_TIME_OFFSET_REGULAR: // 3
         axisb = GridAxisOffsetTimeRegular.builder();
         break;
+      case GRID_AXIS_TYPE_UNSPECIFIED: // 0
+        throw new UnsupportedOperationException("Grid Axis Type is UNSPECIFIED. Cannot decode.");
       default:
         throw new UnsupportedOperationException();
     }
@@ -390,13 +392,13 @@ public class GcdmGridConverter {
     GcdmGridProto.GridAxis.Builder builder = GcdmGridProto.GridAxis.newBuilder();
 
     if (axis instanceof GridAxis1DTime) {
-      builder.setGridAxisType(GcdmGridProto.GridAxis.GridAxisType.Axis1DTime);
+      builder.setGridAxisType(GcdmGridProto.GridAxisType.GRID_AXIS_TYPE_AXIS_1D_TIME);
     } else if (axis instanceof GridAxisOffsetTimeRegular) {
-      builder.setGridAxisType(GcdmGridProto.GridAxis.GridAxisType.TimeOffsetRegular);
+      builder.setGridAxisType(GcdmGridProto.GridAxisType.GRID_AXIS_TYPE_TIME_OFFSET_REGULAR);
     } else if (axis instanceof GridAxis2D) {
-      builder.setGridAxisType(GcdmGridProto.GridAxis.GridAxisType.Axis2D);
+      builder.setGridAxisType(GcdmGridProto.GridAxisType.GRID_AXIS_TYPE_AXIS_2D);
     } else {
-      builder.setGridAxisType(GcdmGridProto.GridAxis.GridAxisType.Axis1D);
+      builder.setGridAxisType(GcdmGridProto.GridAxisType.GRID_AXIS_TYPE_AXIS_1D);
     }
 
     builder.setName(axis.getName());
