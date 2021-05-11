@@ -38,6 +38,16 @@ enum CdmAxisType {  // related to ucar.nc2.constants.AxisType
   CDM_AXIS_TYPE_TIME_OFFSET=11;
 }
 
+// could be related to java.ucar.nc2.constants.FeatureType
+enum CdmFeatureType {
+  CDM_FEATURE_TYPE_UNSPECIFIED = 0;
+  CDM_FEATURE_TYPE_GENERAL = 1;
+  CDM_FEATURE_TYPE_CURVILINEAR = 2;
+  CDM_FEATURE_TYPE_GRIDDED = 3;
+  CDM_FEATURE_TYPE_SWATH = 4;
+  CDM_FEATURE_TYPE_FMRC = 5;
+}
+
 ////////////////////////////////////////////////////////////////////
 // GridDataset
 
@@ -123,17 +133,9 @@ message Grid {
 }
 
 message GridDataset {
-  enum FeatureType {
-    General=0;
-    Curvilinear=1;
-    Gridded=2;
-    Swath=3;
-    Fmrc=4;
-  }
-
   string name = 1;
   string location = 2;
-  FeatureType feature_type = 3;
+  CdmFeatureType feature_type = 3;
   repeated Attribute attributes = 4;
   repeated GridAxis grid_axes = 5;
   repeated GridCoordinateSystem coord_systems = 6;

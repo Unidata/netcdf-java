@@ -17,9 +17,9 @@ import java.util.Formatter;
 /** Convert between GcdmGrid Protos and GridDataset objects. */
 public class GcdmGridConverter {
 
-  public static FeatureType convertFeatureType(GcdmGridProto.GridDataset.FeatureType proto) {
+  public static FeatureType convertFeatureType(GcdmGridProto.CdmFeatureType proto) {
     switch (proto) {
-      case Gridded:
+      case CDM_FEATURE_TYPE_GRIDDED:
         return FeatureType.GRID;
     }
     throw new IllegalArgumentException();
@@ -349,7 +349,7 @@ public class GcdmGridConverter {
     GcdmGridProto.GridDataset.Builder builder = GcdmGridProto.GridDataset.newBuilder();
     builder.setName(org.getName());
     builder.setLocation(org.getLocation());
-    builder.setFeatureType(GcdmGridProto.GridDataset.FeatureType.Gridded);
+    builder.setFeatureType(GcdmGridProto.CdmFeatureType.CDM_FEATURE_TYPE_GRIDDED);
     builder.addAllAttributes(GcdmConverter.encodeAttributes(org.attributes()));
 
     for (GridAxis axis : org.getGridAxes()) {
