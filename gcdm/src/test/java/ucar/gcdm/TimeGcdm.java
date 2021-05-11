@@ -34,7 +34,7 @@ public class TimeGcdm {
       System.out.println("Test input: " + gcdmFile.getLocation());
       boolean ok = true;
       for (Variable v : gcdmFile.getVariables()) {
-        System.out.printf("  read variable though array : %s %s", v.getDataType(), v.getShortName());
+        System.out.printf("  read variable though array : %s %s", v.getArrayType(), v.getShortName());
         Stopwatch stopwatch = Stopwatch.createStarted();
         Array<?> data = v.readArray();
         stopwatch.stop();
