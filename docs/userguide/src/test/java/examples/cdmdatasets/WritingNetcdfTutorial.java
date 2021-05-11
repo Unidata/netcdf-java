@@ -127,11 +127,15 @@ public class WritingNetcdfTutorial {
       a[i] = (i * 1000000);
     }
 
-    // 2) Create an Array of doubles from the primitive array
+    // 2) Create an immutable Array<Double> from the primitive array
     Array<Double> A = Arrays.factory(ArrayType.DOUBLE, shape, a);
 
-    // 2) Write the data to the temperature Variable, with origin all zeros.
-    // origin array is coeverted ti immutable Index with `Index.of`
+    // 3) Or create an evenly spaced Array of doubles
+    // public Array<T> makeArray(ArrayType type, int npts, double start, double incr, int... shape)
+    Array<Double> A2 = Arrays.makeArray(ArrayType.DOUBLE, 20, 0, 5, 4,5 );
+
+    // 4) Write the data to the temperature Variable, with origin all zeros.
+    // origin array is converted to an immutable Index with `Index.of`
     int[] origin = new int[2]; // initialized to zeros
     try {
       writer.write(v, Index.of(origin), A);
@@ -149,14 +153,13 @@ public class WritingNetcdfTutorial {
   public static void writeCharData(NetcdfFormatWriter writer, String varName) {
     // write char variable as String
     Variable v = writer.findVariable(varName);
-    int[] shape = v.getShape();
 
-    // 1) Create an Array of Chars
+    // 1) Create an immutable Array<char>> from primitive strings
     Array<Character> ac = Arrays.factory(ArrayType.CHAR, new int[]{someStringValue.length()}, someStringValue.toCharArray());
 
     // 2) Write the data. The origin parameter is initilized with zeros using the rank of the variable
     try {
-      writer.write(v, Index.ofRank(shape.length), ac);
+      writer.write(v, Index.ofRank(v.getRank()), ac);
     } catch (IOException | InvalidRangeException e) {
       logger.log(yourWriteNetcdfFileErrorMsgTxt);
     }

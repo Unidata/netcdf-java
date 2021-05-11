@@ -77,6 +77,11 @@ To open an existing CDM file for writing:
 #### Writing data to a new or existing file
 
 In both cases (new and existing files) the data writing is the same. 
+
+*Note:* As of netCDF-Java 6.0, all objects used by read and writes are immutable, to ensure you data is not changed. 
+The `ucar.ma2.Array` has been deprecated and replaced by the immutable `ucar.array.Array` class, which does not support data manipulation (e.g. permute, transpose, etc.). 
+This means that users must handle data manipulation prior to beginning write operations, as the netCDF-Java library expects to be given a `ucar.array.Array` object that is ready to be written. 
+
 The following examples demonstrate several ways to write data to an opened file.
 
 1) Writing numeric data:

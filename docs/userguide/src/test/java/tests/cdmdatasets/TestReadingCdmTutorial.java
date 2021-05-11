@@ -146,6 +146,14 @@ public class TestReadingCdmTutorial {
   }
 
   @Test
+  public void testReadScalarTutorial() throws IOException {
+    // test double, float, and int scalars
+    List data = ReadingCdmTutorial.readScalars(varScalar, var3d);
+    assertThat(data.get(0)).isInstanceOf(Integer.class);
+    assertThat(data.get(1)).isInstanceOf(Double.class);
+  }
+
+  @Test
   public void testReadInLoopRangesTutorial() throws IOException, InvalidRangeException {
     ReadingCdmTutorial.logger.clearLog();
     ReadingCdmTutorial.readInLoopRanges(var3d);
@@ -182,6 +190,13 @@ public class TestReadingCdmTutorial {
   public void testCastDataArrayTutorial() throws IOException {
     List list = ReadingCdmTutorial.castDataArray(var3d);
     assertThat(list.size()).isEqualTo(var3d.getSize());
+  }
+
+  @Test
+  public void testCopyToPrimitiveTutorial() throws IOException {
+    double[] data = ReadingCdmTutorial.copyData(var3d);
+    assertThat(data).isNotEmpty();
+    assertThat(data.length).isEqualTo(var3d.getSize());
   }
 
   @Test
