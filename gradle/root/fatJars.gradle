@@ -27,16 +27,11 @@ apply plugin: 'com.github.johnrengelman.shadow'
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 configurations {
-  // ncIdv
-  // netcdfAll
   toolsUI
-  // dap4lib
 }
 
 dependencies {
-  toolsUI enforcedPlatform(project(':netcdf-java-platform'))
-  toolsUI project(':uicdm')
-  toolsUI 'ch.qos.logback:logback-classic'
+  toolsUI project(':toolsui:uicdm')
 }
 
 def fatJarTasks = []
@@ -47,7 +42,7 @@ fatJarTasks << tasks.create(name: 'buildToolsUI', type: ShadowJar) {
   configurations = [project.configurations.toolsUI]
 
   doFirst {
-    manifest.attributes project(':uicdm').tasks.jar.manifest.attributes
+    manifest.attributes 'Main-Class': 'ucar.nc2.ui.ToolsUI'
   }
 }
 
