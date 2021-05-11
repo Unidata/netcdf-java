@@ -42,7 +42,7 @@ enum CdmAxisType {  // related to ucar.nc2.constants.AxisType
 // GridDataset
 
 // could be more generic CdmAxisSpacing, as could apply to other scientific
-// feature types?
+// feature type axes?
 enum GridAxisSpacing {  // currently related to GridAxis.Spacing
   GRID_AXIS_SPACING_UNSPECIFIED=0;
   GRID_AXIS_SPACING_REGULAR_POINT=1;
@@ -52,6 +52,8 @@ enum GridAxisSpacing {  // currently related to GridAxis.Spacing
   GRID_AXIS_SPACING_DISCONTIGUOUS_INTERVAL=5;
 }
 
+// could be more generic CdmAxisDependenceType, as could apply to other scientific
+// feature type axes?
 enum GridAxisDependenceType { // currently related to GridAxis.DependenceType
   GRID_AXIS_DEPENDENCE_TYPE_UNSPECIFIED = 0;
   GRID_AXIS_DEPENDENCE_TYPE_INDEPENDENT = 1; // has its own dimension, is a coordinate variable, eg x(x)
@@ -62,14 +64,15 @@ enum GridAxisDependenceType { // currently related to GridAxis.DependenceType
   GRID_AXIS_DEPENDENCE_TYPE_DIMENSION = 6;   // swath(scan, scanAcross)
 }
 
-message GridAxis {
+enum GridAxisType {
+  GRID_AXIS_TYPE_UNSPECIFIED = 0;
+  GRID_AXIS_TYPE_AXIS_1D = 1;
+  GRID_AXIS_TYPE_AXIS_1D_TIME = 2;
+  GRID_AXIS_TYPE_TIME_OFFSET_REGULAR = 3;
+  GRID_AXIS_TYPE_AXIS_2D = 4;
+}
 
-  enum GridAxisType {
-    Axis1D=0;
-    Axis1DTime=1;
-    TimeOffsetRegular=2;
-    Axis2D=3;
-  }
+message GridAxis {
 
   GridAxisType grid_axis_type = 1;
 
