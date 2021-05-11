@@ -188,18 +188,67 @@ public class GcdmGridConverter {
     return gridAxisSpacing;
   }
 
-  public static GridAxis.DependenceType convertAxisDependenceType(GcdmGridProto.GridAxis.DependenceType proto) {
-    if (proto == null) {
-      return null;
+  @Nullable
+  public static GridAxis.DependenceType convertAxisDependenceType(GcdmGridProto.GridAxisDependenceType proto) {
+    GridAxis.DependenceType dependenceType = null;
+    if (proto != null) {
+      switch(proto) {
+        case GRID_AXIS_DEPENDENCE_TYPE_INDEPENDENT: // 1
+          dependenceType = GridAxis.DependenceType.independent;
+          break;
+        case GRID_AXIS_DEPENDENCE_TYPE_DEPENDENT: // 2
+          dependenceType = GridAxis.DependenceType.dependent;
+          break;
+        case GRID_AXIS_DEPENDENCE_TYPE_SCALAR: // 3
+          dependenceType = GridAxis.DependenceType.scalar;
+          break;
+        case GRID_AXIS_DEPENDENCE_TYPE_TWO_D: // 4
+          dependenceType = GridAxis.DependenceType.twoD;
+          break;
+        case GRID_AXIS_DEPENDENCE_TYPE_FMRC_REG: // 5
+          dependenceType = GridAxis.DependenceType.fmrcReg;
+          break;
+        case GRID_AXIS_DEPENDENCE_TYPE_DIMENSION: // 6
+          dependenceType = GridAxis.DependenceType.dimension;
+          break;
+        case GRID_AXIS_DEPENDENCE_TYPE_UNSPECIFIED: // 0
+          throw new UnsupportedOperationException("Grid Axis Dependence Type is UNSPECIFIED. Cannot convert to GridAxis.DependenceType");
+      }
     }
-    return GridAxis.DependenceType.valueOf(proto.name());
+    return dependenceType;
   }
 
-  public static GcdmGridProto.GridAxis.DependenceType convertAxisDependenceType(GridAxis.DependenceType dtype) {
-    if (dtype == null) {
-      return null;
+  public static GcdmGridProto.GridAxisDependenceType convertAxisDependenceType(GridAxis.DependenceType dtype) {
+    GcdmGridProto.GridAxisDependenceType gridAxisDependenceType =
+            GcdmGridProto.GridAxisDependenceType.GRID_AXIS_DEPENDENCE_TYPE_UNSPECIFIED;
+    if (dtype != null) {
+      switch (dtype) {
+        case independent: // 0
+          gridAxisDependenceType = GcdmGridProto.GridAxisDependenceType.GRID_AXIS_DEPENDENCE_TYPE_INDEPENDENT;
+          break;
+        case dependent: // 1
+          gridAxisDependenceType = GcdmGridProto.GridAxisDependenceType.GRID_AXIS_DEPENDENCE_TYPE_DEPENDENT;
+          break;
+        case scalar: // 2
+          gridAxisDependenceType = GcdmGridProto.GridAxisDependenceType.GRID_AXIS_DEPENDENCE_TYPE_SCALAR;
+          break;
+        case twoD: // 3
+          gridAxisDependenceType = GcdmGridProto.GridAxisDependenceType.GRID_AXIS_DEPENDENCE_TYPE_TWO_D;
+          break;
+        case fmrcReg: // 4
+          gridAxisDependenceType = GcdmGridProto.GridAxisDependenceType.GRID_AXIS_DEPENDENCE_TYPE_FMRC_REG;
+          break;
+        case dimension: // 5
+          gridAxisDependenceType = GcdmGridProto.GridAxisDependenceType.GRID_AXIS_DEPENDENCE_TYPE_DIMENSION;
+          break;
+        default:
+          gridAxisDependenceType = GcdmGridProto.GridAxisDependenceType.GRID_AXIS_DEPENDENCE_TYPE_UNSPECIFIED;
+          break;
+      }
     }
-    return GcdmGridProto.GridAxis.DependenceType.valueOf(dtype.name());
+    // todo: LOOK - should we catch case of GRID_AXIS_DEPENDENCE_TYPE_UNSPECIFIED and throw
+    //  an error to prevent sending a bad message?
+    return gridAxisDependenceType;
   }
 
   public static void decodeDataset(GcdmGridProto.GridDataset proto, GcdmGridDataset.Builder builder, Formatter errlog) {

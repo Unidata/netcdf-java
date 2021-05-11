@@ -52,16 +52,17 @@ enum GridAxisSpacing {  // currently related to GridAxis.Spacing
   GRID_AXIS_SPACING_DISCONTIGUOUS_INTERVAL=5;
 }
 
-message GridAxis {
+enum GridAxisDependenceType { // currently related to GridAxis.DependenceType
+  GRID_AXIS_DEPENDENCE_TYPE_UNSPECIFIED = 0;
+  GRID_AXIS_DEPENDENCE_TYPE_INDEPENDENT = 1; // has its own dimension, is a coordinate variable, eg x(x)
+  GRID_AXIS_DEPENDENCE_TYPE_DEPENDENT = 2;   // aux coordinate, reftime(time) or time_bounds(time);
+  GRID_AXIS_DEPENDENCE_TYPE_SCALAR = 3;      // reftime
+  GRID_AXIS_DEPENDENCE_TYPE_TWO_D = 4;       // lat(x,y)
+  GRID_AXIS_DEPENDENCE_TYPE_FMRC_REG = 5;    // time(reftime, hourOfDay)
+  GRID_AXIS_DEPENDENCE_TYPE_DIMENSION = 6;   // swath(scan, scanAcross)
+}
 
-  enum DependenceType {  // same as GridAxis.DependenceType
-    independent=0;     // has its own dimension, is a coordinate variable, eg x(x)
-    dependent=1;       // aux coordinate, reftime(time) or time_bounds(time);
-    scalar=2;          // reftime
-    twoD=3;            // lat(x,y)
-    fmrcReg=4;         // time(reftime, hourOfDay)
-    dimension=5;       // swath(scan, scanAcross)
-  }
+message GridAxis {
 
   enum GridAxisType {
     Axis1D=0;
@@ -78,7 +79,7 @@ message GridAxis {
   CdmAxisType cdm_axis_type = 5;
   repeated Attribute attributes = 6; // find calendar attribute here?
   GridAxisSpacing spacing = 7;
-  DependenceType dependence_type = 8;
+  GridAxisDependenceType dependence_type = 8;
   repeated string depends_on = 9;    // depends on these axes, only for non-independent axes
 
   uint32 ncoord = 11; // number of coordinate values in axis
