@@ -127,23 +127,65 @@ public class GcdmGridConverter {
           break;
       }
     }
-    // todo: LOOK - should we catch case of CDM_AXIS_TYPE_UNSPECIFIED and throw
+    // todo: LOOK - should we catch case of CDM_AXIS_TYPE_UNDEFINED and throw
     //  an error to prevent sending a bad message?
     return cdmAxisType;
   }
 
-  public static GridAxis.Spacing convertAxisSpacing(GcdmGridProto.GridAxis.AxisSpacing proto) {
-    if (proto == null) {
-      return null;
+  @Nullable
+  public static GridAxis.Spacing convertAxisSpacing(GcdmGridProto.GridAxisSpacing proto) {
+    GridAxis.Spacing gridAxisSpacing = null;
+    if (proto != null) {
+      switch(proto) {
+        case GRID_AXIS_SPACING_REGULAR_POINT: // 1
+          gridAxisSpacing = GridAxis.Spacing.regularPoint;
+          break;
+        case GRID_AXIS_SPACING_IRREGULAR_POINT: // 2
+          gridAxisSpacing = GridAxis.Spacing.irregularPoint;
+          break;
+        case GRID_AXIS_SPACING_REGULAR_INTERVAL: // 3
+          gridAxisSpacing = GridAxis.Spacing.regularInterval;
+          break;
+        case GRID_AXIS_SPACING_CONTIGUOUS_INTERVAL: // 4
+          gridAxisSpacing = GridAxis.Spacing.contiguousInterval;
+          break;
+        case GRID_AXIS_SPACING_DISCONTIGUOUS_INTERVAL: // 5
+          gridAxisSpacing = GridAxis.Spacing.discontiguousInterval;
+          break;
+        case GRID_AXIS_SPACING_UNSPECIFIED: // 0
+          throw new UnsupportedOperationException("CDM Axis Spacing is UNSPECIFIED. Cannot convert to GridAxis.Spacing.");
+      }
     }
-    return GridAxis.Spacing.valueOf(proto.name());
+    return gridAxisSpacing;
   }
 
-  public static GcdmGridProto.GridAxis.AxisSpacing convertAxisSpacing(GridAxis.Spacing spacing) {
-    if (spacing == null) {
-      return null;
+  public static GcdmGridProto.GridAxisSpacing convertAxisSpacing(GridAxis.Spacing spacing) {
+    GcdmGridProto.GridAxisSpacing gridAxisSpacing = GcdmGridProto.GridAxisSpacing.GRID_AXIS_SPACING_UNSPECIFIED;
+    if (spacing != null) {
+      switch (spacing) {
+        case regularPoint: // 0
+          gridAxisSpacing = GcdmGridProto.GridAxisSpacing.GRID_AXIS_SPACING_REGULAR_POINT;
+          break;
+        case irregularPoint: // 1
+          gridAxisSpacing = GcdmGridProto.GridAxisSpacing.GRID_AXIS_SPACING_IRREGULAR_POINT;
+          break;
+        case regularInterval: // 2
+          gridAxisSpacing = GcdmGridProto.GridAxisSpacing.GRID_AXIS_SPACING_REGULAR_INTERVAL;
+          break;
+        case contiguousInterval: // 3
+          gridAxisSpacing = GcdmGridProto.GridAxisSpacing.GRID_AXIS_SPACING_CONTIGUOUS_INTERVAL;
+          break;
+        case discontiguousInterval: // 4
+          gridAxisSpacing = GcdmGridProto.GridAxisSpacing.GRID_AXIS_SPACING_DISCONTIGUOUS_INTERVAL;
+          break;
+        default:
+          gridAxisSpacing = GcdmGridProto.GridAxisSpacing.GRID_AXIS_SPACING_UNSPECIFIED;
+          break;
+      }
     }
-    return GcdmGridProto.GridAxis.AxisSpacing.valueOf(spacing.name());
+    // todo: LOOK - should we catch case of GcdmGridProto.GridAxisSpacing.CDM_AXIS_SPACING_UNSPECIFIED and throw
+    //  an error to prevent sending a bad message?
+    return gridAxisSpacing;
   }
 
   public static GridAxis.DependenceType convertAxisDependenceType(GcdmGridProto.GridAxis.DependenceType proto) {
