@@ -117,7 +117,7 @@ public class GcdmGridConverter {
         case Spectral: // 13
         case Dimension: // 15
         case SimpleGeometryX: // 16
-        case SimpleGeometryY:  // 17
+        case SimpleGeometryY: // 17
         case SimpleGeometryZ: // 18
         case SimpleGeometryID: // 19
           cdmAxisType = GcdmGridProto.CdmAxisType.CDM_AXIS_TYPE_UNSPECIFIED;
@@ -128,7 +128,7 @@ public class GcdmGridConverter {
       }
     }
     // todo: LOOK - should we catch case of CDM_AXIS_TYPE_UNDEFINED and throw
-    //  an error to prevent sending a bad message?
+    // an error to prevent sending a bad message?
     return cdmAxisType;
   }
 
@@ -136,7 +136,7 @@ public class GcdmGridConverter {
   public static GridAxis.Spacing convertAxisSpacing(GcdmGridProto.GridAxisSpacing proto) {
     GridAxis.Spacing gridAxisSpacing = null;
     if (proto != null) {
-      switch(proto) {
+      switch (proto) {
         case GRID_AXIS_SPACING_REGULAR_POINT: // 1
           gridAxisSpacing = GridAxis.Spacing.regularPoint;
           break;
@@ -153,7 +153,8 @@ public class GcdmGridConverter {
           gridAxisSpacing = GridAxis.Spacing.discontiguousInterval;
           break;
         case GRID_AXIS_SPACING_UNSPECIFIED: // 0
-          throw new UnsupportedOperationException("CDM Axis Spacing is UNSPECIFIED. Cannot convert to GridAxis.Spacing.");
+          throw new UnsupportedOperationException(
+              "CDM Axis Spacing is UNSPECIFIED. Cannot convert to GridAxis.Spacing.");
       }
     }
     return gridAxisSpacing;
@@ -184,7 +185,7 @@ public class GcdmGridConverter {
       }
     }
     // todo: LOOK - should we catch case of GcdmGridProto.GridAxisSpacing.CDM_AXIS_SPACING_UNSPECIFIED and throw
-    //  an error to prevent sending a bad message?
+    // an error to prevent sending a bad message?
     return gridAxisSpacing;
   }
 
@@ -192,7 +193,7 @@ public class GcdmGridConverter {
   public static GridAxis.DependenceType convertAxisDependenceType(GcdmGridProto.GridAxisDependenceType proto) {
     GridAxis.DependenceType dependenceType = null;
     if (proto != null) {
-      switch(proto) {
+      switch (proto) {
         case GRID_AXIS_DEPENDENCE_TYPE_INDEPENDENT: // 1
           dependenceType = GridAxis.DependenceType.independent;
           break;
@@ -212,7 +213,8 @@ public class GcdmGridConverter {
           dependenceType = GridAxis.DependenceType.dimension;
           break;
         case GRID_AXIS_DEPENDENCE_TYPE_UNSPECIFIED: // 0
-          throw new UnsupportedOperationException("Grid Axis Dependence Type is UNSPECIFIED. Cannot convert to GridAxis.DependenceType");
+          throw new UnsupportedOperationException(
+              "Grid Axis Dependence Type is UNSPECIFIED. Cannot convert to GridAxis.DependenceType");
       }
     }
     return dependenceType;
@@ -220,7 +222,7 @@ public class GcdmGridConverter {
 
   public static GcdmGridProto.GridAxisDependenceType convertAxisDependenceType(GridAxis.DependenceType dtype) {
     GcdmGridProto.GridAxisDependenceType gridAxisDependenceType =
-            GcdmGridProto.GridAxisDependenceType.GRID_AXIS_DEPENDENCE_TYPE_UNSPECIFIED;
+        GcdmGridProto.GridAxisDependenceType.GRID_AXIS_DEPENDENCE_TYPE_UNSPECIFIED;
     if (dtype != null) {
       switch (dtype) {
         case independent: // 0
@@ -247,7 +249,7 @@ public class GcdmGridConverter {
       }
     }
     // todo: LOOK - should we catch case of GRID_AXIS_DEPENDENCE_TYPE_UNSPECIFIED and throw
-    //  an error to prevent sending a bad message?
+    // an error to prevent sending a bad message?
     return gridAxisDependenceType;
   }
 
