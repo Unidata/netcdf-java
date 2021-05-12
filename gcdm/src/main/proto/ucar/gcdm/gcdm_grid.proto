@@ -1,3 +1,6 @@
+// Copyright (c) 2020-2021 John Caron and University Corporation for Atmospheric Research/Unidata
+// See LICENSE for license information.
+
 syntax = "proto3";
 
 package ucar.gcdm;
