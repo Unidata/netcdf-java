@@ -73,7 +73,7 @@ final class ArrayByte extends Array<Byte> {
   /** Convert the Array into a ByteString. */
   ByteString getByteString() {
     if (indexFn.isCanonicalOrder()) {
-      ByteString.copyFrom(((StorageS) storage).storage);
+      return ByteString.copyFrom(((StorageS) storage).storage);
     }
 
     byte[] raw = new byte[(int) length()];

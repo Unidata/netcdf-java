@@ -24,7 +24,7 @@ public class TestBufrModuleRead {
   private static final boolean show = false;
   private static final String unitDir = "../bufr/src/test/data/";
 
-  class MyFileFilter implements java.io.FileFilter {
+  static class MyFileFilter implements java.io.FileFilter {
     public boolean accept(File pathname) {
       if (pathname.getPath().indexOf("exclude") > 0)
         return false;
@@ -39,22 +39,16 @@ public class TestBufrModuleRead {
   @Test
   public void bitCountAllInUnitTestDir() throws IOException {
     int count = 0;
-    count += TestDir.actOnAll(unitDir, new MyFileFilter(), new TestDir.Act() {
-      public int doAct(String filename) throws IOException {
-        return bitCount(filename);
-      }
-    }, true);
+    count += TestDir.actOnAll(unitDir, new MyFileFilter(), filename -> bitCount(filename), true);
     System.out.println("***BitCount " + count + " records");
   }
 
   @Test
   public void openAllInUnitTestDir() throws IOException {
     int count = 0;
-    count += TestDir.actOnAll(unitDir, new MyFileFilter(), new TestDir.Act() {
-      public int doAct(String filename) throws IOException {
-        openNetcdf(filename);
-        return 1;
-      }
+    count += TestDir.actOnAll(unitDir, new MyFileFilter(), filename -> {
+      openNetcdf(filename);
+      return 1;
     }, true);
     System.out.println("***Opened " + count + " files");
   }
@@ -63,9 +57,7 @@ public class TestBufrModuleRead {
     System.out.printf("%n***bitCount bufr %s%n", filename);
     int count = 0;
     int totalObs = 0;
-    RandomAccessFile raf = null;
-    try {
-      raf = new RandomAccessFile(filename, "r");
+    try (RandomAccessFile raf = new RandomAccessFile(filename, "r")) {
 
       MessageScanner scan = new MessageScanner(raf, 0, true);
       while (scan.hasNext()) {
@@ -103,9 +95,6 @@ public class TestBufrModuleRead {
 
       }
 
-    } finally {
-      if (raf != null)
-        raf.close();
     }
 
     return totalObs;
