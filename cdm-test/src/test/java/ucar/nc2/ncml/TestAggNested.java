@@ -6,7 +6,6 @@ package ucar.nc2.ncml;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -24,7 +23,6 @@ import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
 /** Test opening nested NcML with and without use of NetcdfDataset.initNetcdfFileCache. */
-@Ignore("Nested aggreations are not working")
 @Category(NeedsCdmUnitTest.class)
 @RunWith(JUnit4.class)
 public class TestAggNested {

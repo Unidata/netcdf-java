@@ -343,19 +343,18 @@ public class NcmlReader {
   private final Formatter errlog = new Formatter();
 
   /**
-   * This sets up the target dataset and the referenced dataset. only place that iospParam is processed, so everything
-   * must go through here
+   * This sets up the target dataset and the referenced dataset.
+   * This is only place that iospParam is processed, so everything must go through here
    *
    * @param ncmlLocation the URL location string of the NcML document, used to resolve reletive path of the referenced
-   *        dataset, or
-   *        may be just a unique name for caching purposes.
+   *        dataset, or may be just a unique name for caching purposes.
    * @param referencedDatasetUri refers to this dataset (may be null)
    * @param netcdfElem JDOM netcdf element
    * @param cancelTask allow user to cancel the task; may be null
    * @return NetcdfDataset the constructed dataset
    * @throws IOException on read error, or bad referencedDatasetUri URI
    */
-  private NetcdfDataset.Builder<?> readNcml(String ncmlLocation, @Nullable String referencedDatasetUri,
+  NetcdfDataset.Builder<?> readNcml(String ncmlLocation, @Nullable String referencedDatasetUri,
       Element netcdfElem, @Nullable CancelTask cancelTask) throws IOException {
 
     // get ncml namespace and set namespace variable
@@ -1320,76 +1319,6 @@ public class NcmlReader {
     } else if (type.equalsIgnoreCase("union")) {
       agg = new AggregationUnion(builder, dimName, recheck);
 
-      /*
-       * } else if (type.equalsIgnoreCase("tiled")) {
-       * agg = new AggregationTiled(builder, dimName, recheck);
-       *
-       * } else if (type.equalsIgnoreCase("forecastModelRunCollection")
-       * || type.equalsIgnoreCase("forecastModelRunSingleCollection")) {
-       * AggregationFmrc aggc = new AggregationFmrc(newds, dimName, recheck);
-       * agg = aggc;
-       *
-       * // nested scanFmrc elements
-       * java.util.List<Element> scan2List = aggElem.getChildren("scanFmrc", ncNS);
-       * for (Element scanElem : scan2List) {
-       * String dirLocation = scanElem.getAttributeValue("location");
-       * if (dirLocation != null)
-       * dirLocation = AliasTranslator.translateAlias(dirLocation);
-       * String regexpPatternString = scanElem.getAttributeValue("regExp");
-       * String suffix = scanElem.getAttributeValue("suffix");
-       * String subdirs = scanElem.getAttributeValue("subdirs");
-       * String olderS = scanElem.getAttributeValue("olderThan");
-       *
-       * String runMatcher = scanElem.getAttributeValue("runDateMatcher");
-       * String forecastMatcher = scanElem.getAttributeValue("forecastDateMatcher");
-       * String offsetMatcher = scanElem.getAttributeValue("forecastOffsetMatcher");
-       *
-       * // possible relative location
-       * dirLocation = URLnaming.resolve(ncmlLocation, dirLocation);
-       *
-       * if (dirLocation != null) {
-       * aggc.addDirectoryScanFmrc(dirLocation, suffix, regexpPatternString, subdirs, olderS, runMatcher,
-       * forecastMatcher, offsetMatcher);
-       * }
-       *
-       * if ((cancelTask != null) && cancelTask.isCancel())
-       * return agg;
-       * if (debugAggDetail)
-       * System.out.println(" debugAgg: nested dirLocation = " + dirLocation);
-       * }
-       *
-       * // add explicit files to the agg (i.e. not from a scanned directory)
-       * Map<String, String> realLocationRunTimeMap = new HashMap<>();
-       * List<String> realLocationList = new ArrayList<>();
-       * java.util.List<Element> ncList = aggElem.getChildren("netcdf", ncNS);
-       * for (Element netcdfElemNested : ncList) {
-       * String location = netcdfElemNested.getAttributeValue("location");
-       * if (location == null)
-       * location = netcdfElemNested.getAttributeValue("url");
-       * if (location != null)
-       * location = AliasTranslator.translateAlias(location);
-       *
-       * String runTime = netcdfElemNested.getAttributeValue("coordValue");
-       * if (runTime == null) {
-       * Formatter f = new Formatter();
-       * f.format("runtime must be explicitly defined for each netcdf element using the attribute coordValue");
-       * log.error(f.toString());
-       * }
-       *
-       * String realLocation = URLnaming.resolveFile(ncmlLocation, location);
-       * realLocationRunTimeMap.put(realLocation, runTime);
-       * realLocationList.add(realLocation);
-       *
-       * if ((cancelTask != null) && cancelTask.isCancel())
-       * return aggc;
-       * if (debugAggDetail)
-       * System.out.println(" debugAgg: nested dataset = " + location);
-       * }
-       *
-       * if (!realLocationRunTimeMap.isEmpty()) {
-       * aggc.addExplicitFilesAndRunTimes(realLocationRunTimeMap);
-       * }
-       */
     } else {
       throw new IllegalArgumentException("Unsupported aggregation type=" + type);
     }
@@ -1535,28 +1464,6 @@ public class NcmlReader {
     }
 
     return agg;
-  }
-
-  private class NcmlElementReader implements ucar.nc2.internal.cache.FileFactory {
-    private final Element netcdfElem;
-    private final String ncmlLocation;
-    private final String location;
-
-    NcmlElementReader(String ncmlLocation, String location, Element netcdfElem) {
-      this.ncmlLocation = ncmlLocation;
-      this.location = location;
-      this.netcdfElem = netcdfElem;
-    }
-
-    public NetcdfFile open(DatasetUrl cacheName, int buffer_size, CancelTask cancelTask, Object spiObject)
-        throws IOException {
-      if (debugAggDetail) {
-        System.out.println(" NcmlElementReader open nested dataset " + cacheName);
-      }
-      NetcdfFile.Builder<?> result = readNcml(ncmlLocation, location, netcdfElem, cancelTask);
-      result.setLocation(ncmlLocation + "#" + location);
-      return result.build();
-    }
   }
 
   /////////////////////////////////////////////

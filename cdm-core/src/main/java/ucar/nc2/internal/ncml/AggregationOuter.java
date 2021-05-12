@@ -42,7 +42,7 @@ import ucar.nc2.util.CancelTask;
 
 import javax.annotation.Nullable;
 
-/** Superclass for Aggregations on the outer dimension: joinNew, joinExisting, Fmrc, FmrcSingle */
+/** Superclass for Aggregations on the outer dimension: joinNew, joinExisting */
 abstract class AggregationOuter extends Aggregation implements ProxyReader {
   protected static boolean debugCache, debugInvocation, debugStride;
   public static int invocation; // debugging
@@ -304,46 +304,6 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
       promotedVar.setSPobject(pv);
     }
   }
-
-  /*
-   * protected void rebuildDataset() throws IOException {
-   * buildCoords(null);
-   * Group.Builder rootGroup = ncDataset.rootGroup;
-   * 
-   * // reset dimension length
-   * rootGroup.resetDimensionLength(dimName, getTotalCoords());
-   * 
-   * // reset coordinate var
-   * Variable.Builder joinAggCoord = rootGroup.findVariable(dimName).orElseThrow(IllegalStateException::new);
-   * joinAggCoord.setDimensionsByName(dimName); // reset its dimension LOOK is this needed?
-   * joinAggCoord.resetCache(); // get rid of any cached data, since its now wrong
-   * 
-   * // reset agg variables LOOK is this needed?
-   * for (Variable.Builder aggVar : aggVars) {
-   * // aggVar.setDimensions(dimName); // reset its dimension
-   * aggVar.resetDimensions(); // reset its dimensions
-   * aggVar.invalidateCache(); // get rid of any cached data, since its now wrong
-   * }
-   * 
-   * // reset the typical dataset, where non-agg variables live
-   * AggDataset typicalDataset = getTypicalDataset();
-   * for (Variable.Builder var : rootGroup.vbuilders) {
-   * if (aggVars.contains(var) || dimName.equals(var.shortName))
-   * continue;
-   * AggProxyReader proxy = new AggProxyReader(typicalDataset);
-   * var.setProxyReader(proxy);
-   * }
-   * 
-   * // reset cacheVars
-   * for (CacheVar cv : cacheList) {
-   * cv.reset();
-   * }
-   * 
-   * if (timeUnitsChange) {
-   * readTimeCoordinates(joinAggCoord, null);
-   * }
-   * }
-   */
 
   /////////////////////////////////////////////////////////////////////////////////////
 
@@ -899,7 +859,5 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
     for (Variable.Builder<?> v : ncDataset.rootGroup.vbuilders) {
       f.format("   %20s proxy %s%n", v.shortName, v.proxyReader == null ? "" : v.proxyReader.getClass().getName());
     }
-
-
   }
 }

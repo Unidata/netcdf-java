@@ -20,7 +20,7 @@ import java.util.*;
 import java.util.concurrent.Executor;
 
 /**
- * Superclass for NcML Aggregation Builder.
+ * Superclass for NcML Aggregation Builders.
  * An Aggregation acts as a ProxyReader for VariableDS. That, is it must implement:
  * 
  * <pre>
@@ -439,7 +439,7 @@ public abstract class Aggregation {
     setDatasetAcquireProxy(proxy, newds.rootGroup);
   }
 
-  private void setDatasetAcquireProxy(AggProxyReader proxy, Group.Builder g) throws IOException {
+  private void setDatasetAcquireProxy(AggProxyReader proxy, Group.Builder g) {
 
     // all normal (non agg) variables must use a proxy to lock the file
     for (Variable.Builder<?> vb : g.vbuilders) {

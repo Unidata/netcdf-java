@@ -118,7 +118,7 @@ public class DatasetUrl {
     if (serviceType == ServiceType.NCML) { // ??
       // If lead protocol was null, then pretend it was a file
       // Note that technically, this should be 'file://'
-      trueUrl = (allProtocols.isEmpty() ? "file:" + trueUrl : location);
+      trueUrl = (allProtocols.isEmpty() ? "file:" + trueUrl : trueUrl);
     }
 
     // Add back the query and fragment (if any)
