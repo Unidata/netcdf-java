@@ -1,6 +1,6 @@
 /*
- *  Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
- *  See LICENSE for license information.
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
  */
 
 package ucar.nc2.internal.ncml;
@@ -23,8 +23,9 @@ class NcmlElementReader extends NcmlReader implements ucar.nc2.internal.cache.Fi
     this.netcdfElem = netcdfElem;
   }
 
+  @Override
   public NetcdfFile open(DatasetUrl cacheName, int buffer_size, CancelTask cancelTask, Object spiObject)
-          throws IOException {
+      throws IOException {
     NetcdfFile.Builder<?> result = readNcml(ncmlLocation, location, netcdfElem, cancelTask);
     result.setLocation(cacheName.getTrueurl());
     return result.build();

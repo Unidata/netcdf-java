@@ -189,8 +189,7 @@ class AggDatasetOuter extends AggDataset {
           throw new IllegalArgumentException("Dimension not found= " + aggregationOuter.dimName);
 
         if (debugOpenFile)
-          System.out.printf("  --getNcoords for location %s getNcoords %d%n",
-                this.cacheLocation, ncoord);
+          System.out.printf("  --getNcoords for location %s getNcoords %d%n", this.cacheLocation, ncoord);
       }
     }
     return ncoord;

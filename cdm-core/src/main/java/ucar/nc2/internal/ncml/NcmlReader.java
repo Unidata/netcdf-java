@@ -223,7 +223,7 @@ public class NcmlReader {
    * @param ncmlElem parent element - usually the aggregation element of the ncml
    * @return new dataset with the merged info
    */
-  public static NetcdfDataset.Builder<?> mergeNcml(NetcdfFile ref, @Nullable Element ncmlElem) {
+  static NetcdfDataset.Builder<?> mergeNcml(NetcdfFile ref, @Nullable Element ncmlElem) {
     NetcdfDataset.Builder<?> targetDS = NetcdfDataset.builder().copyFrom(ref).setOrgFile(ref);
     if (ncmlElem != null) {
       NcmlReader reader = new NcmlReader();
@@ -354,8 +354,8 @@ public class NcmlReader {
    * @return NetcdfDataset the constructed dataset
    * @throws IOException on read error, or bad referencedDatasetUri URI
    */
-  NetcdfDataset.Builder<?> readNcml(String ncmlLocation, @Nullable String referencedDatasetUri,
-      Element netcdfElem, @Nullable CancelTask cancelTask) throws IOException {
+  NetcdfDataset.Builder<?> readNcml(String ncmlLocation, @Nullable String referencedDatasetUri, Element netcdfElem,
+      @Nullable CancelTask cancelTask) throws IOException {
 
     // get ncml namespace and set namespace variable
     this.ncNS = ncNSHttp;
