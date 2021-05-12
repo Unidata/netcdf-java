@@ -24,18 +24,18 @@ message GridDatasetResponse {
 // Gcdm General (could be in more generic proto)
 
 enum CdmAxisType {  // related to ucar.nc2.constants.AxisType
-  CDM_AXIS_TYPE_UNSPECIFIED=0;
-  CDM_AXIS_TYPE_RUN_TIME=1;
-  CDM_AXIS_TYPE_ENSEMBLE=2;
-  CDM_AXIS_TYPE_TIME=3;
-  CDM_AXIS_TYPE_GEO_X=4;
-  CDM_AXIS_TYPE_GEO_Y=5;
-  CDM_AXIS_TYPE_GEO_Z=6;
-  CDM_AXIS_TYPE_LAT=7;
-  CDM_AXIS_TYPE_LON=8;
-  CDM_AXIS_TYPE_HEIGHT=9;
-  CDM_AXIS_TYPE_PRESSURE=10;
-  CDM_AXIS_TYPE_TIME_OFFSET=11;
+  CDM_AXIS_TYPE_UNSPECIFIED = 0;
+  CDM_AXIS_TYPE_RUN_TIME = 1;
+  CDM_AXIS_TYPE_ENSEMBLE = 2;
+  CDM_AXIS_TYPE_TIME = 3;
+  CDM_AXIS_TYPE_GEO_X = 4;
+  CDM_AXIS_TYPE_GEO_Y = 5;
+  CDM_AXIS_TYPE_GEO_Z = 6;
+  CDM_AXIS_TYPE_LAT = 7;
+  CDM_AXIS_TYPE_LON = 8;
+  CDM_AXIS_TYPE_HEIGHT = 9;
+  CDM_AXIS_TYPE_PRESSURE = 10;
+  CDM_AXIS_TYPE_TIME_OFFSET = 11;
 }
 
 // could be related to java.ucar.nc2.constants.FeatureType
@@ -66,12 +66,12 @@ enum CdmCalendar { // related to  ucar.nc2.time.Calendar
 // could be more generic CdmAxisSpacing, as could apply to other scientific
 // feature type axes?
 enum GridAxisSpacing {  // currently related to GridAxis.Spacing
-  GRID_AXIS_SPACING_UNSPECIFIED=0;
-  GRID_AXIS_SPACING_REGULAR_POINT=1;
-  GRID_AXIS_SPACING_IRREGULAR_POINT=2;
-  GRID_AXIS_SPACING_REGULAR_INTERVAL=3;
-  GRID_AXIS_SPACING_CONTIGUOUS_INTERVAL=4;
-  GRID_AXIS_SPACING_DISCONTIGUOUS_INTERVAL=5;
+  GRID_AXIS_SPACING_UNSPECIFIED = 0;
+  GRID_AXIS_SPACING_REGULAR_POINT = 1;
+  GRID_AXIS_SPACING_IRREGULAR_POINT = 2;
+  GRID_AXIS_SPACING_REGULAR_INTERVAL = 3;
+  GRID_AXIS_SPACING_CONTIGUOUS_INTERVAL = 4;
+  GRID_AXIS_SPACING_DISCONTIGUOUS_INTERVAL = 5;
 }
 
 // could be more generic CdmAxisDependenceType, as could apply to other scientific
