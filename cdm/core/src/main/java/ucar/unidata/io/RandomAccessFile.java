@@ -160,7 +160,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
     }
   };
 
-  protected static FileCacheIF cache;
+  private static FileCacheIF cache;
 
   public static synchronized void enableDefaultGlobalFileCache() {
     if (cache != null)
@@ -210,7 +210,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
    * File location
    */
   protected String location;
-  protected int cacheState; // 0 - not in cache, 1 = in cache && in use, 2 = in cache but not in use
+  private int cacheState; // 0 - not in cache, 1 = in cache && in use, 2 = in cache but not in use
 
   /**
    * The underlying java.io.RandomAccessFile.

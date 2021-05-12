@@ -129,7 +129,7 @@ public class ControllerZip extends ControllerOS implements MController {
       List<ZipEntry> entries = file.getLeafEntries();
       for (ZipEntry entry : entries) {
         try {
-          this.files.add(new MFileZip(files.get(count++).getName()));
+          this.files.add(new MFileZip(file.getRootPath() + File.separator + entry.getName()));
         } catch (IOException ioe) {
           logger.error(ioe.getMessage(), ioe);
         }

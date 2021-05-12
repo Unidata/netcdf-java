@@ -12,7 +12,7 @@ permalink: upgrade_to_50.html
 
 ## Overview
 
-A number of API enhancements have been made to take advantage of evolution in the Java language, for example: _try-with-resource_ and _foreach_ constructs.
+A number of API enhancements have been made to take advantage of evolution in the Java language, for example _try-with-resource_ and _foreach_ constructs.
 The use of these make code simpler and more reliable.
 
 Deprecated classes and methods have been removed, and the module structure and third-party jar use has been improved.

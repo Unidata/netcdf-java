@@ -6,7 +6,6 @@ package thredds.inventory.s3;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.Iterator;
 import java.util.Objects;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
@@ -16,8 +15,6 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
 import software.amazon.awssdk.services.s3.model.HeadObjectRequest.Builder;
 import software.amazon.awssdk.services.s3.model.HeadObjectResponse;
-import thredds.filesystem.s3.ControllerS3;
-import thredds.inventory.CollectionConfig;
 import thredds.inventory.MFile;
 import thredds.inventory.MFileProvider;
 import ucar.unidata.io.s3.CdmS3Client;

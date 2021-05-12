@@ -59,6 +59,7 @@ public class ControllerOS implements MController {
     if (path.startsWith("file:")) {
       path = path.substring(5);
     }
+
     File cd = new File(path);
     if (!cd.exists())
       return null;
@@ -103,14 +104,14 @@ public class ControllerOS implements MController {
   ////////////////////////////////////////////////////////////
 
   // handles filtering and removing/including subdirectories
-  protected static class FilteredIterator implements Iterator<MFile> {
+  private static class FilteredIterator implements Iterator<MFile> {
     private Iterator<MFile> orgIter;
     private CollectionConfig mc;
     private boolean wantDirs;
 
     private MFile next;
 
-    public FilteredIterator(CollectionConfig mc, Iterator<MFile> iter, boolean wantDirs) {
+    FilteredIterator(CollectionConfig mc, Iterator<MFile> iter, boolean wantDirs) {
       this.orgIter = iter;
       this.mc = mc;
       this.wantDirs = wantDirs;
@@ -148,7 +149,7 @@ public class ControllerOS implements MController {
   }
 
   // returns everything in the current directory
-  protected static class MFileIterator implements Iterator<MFile> {
+  private static class MFileIterator implements Iterator<MFile> {
     List<File> files;
     int count;
 
@@ -180,7 +181,7 @@ public class ControllerOS implements MController {
   }
 
   // recursively scans everything in the directory and in subdirectories, depth first (leaves before subdirs)
-  protected static class MFileIteratorAll implements Iterator<MFile> {
+  private static class MFileIteratorAll implements Iterator<MFile> {
     Queue<Traversal> traverse;
     Traversal currTraversal;
     Iterator<MFile> currIter;

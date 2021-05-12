@@ -146,6 +146,7 @@ public final class S3RandomAccessFile extends RemoteRandomAccessFile implements 
 
     @Override
     public boolean isOwnerOf(String location) {
+      // if mfile is directory, owner should be RandomAccessDirectory
       try {
         if (MFiles.create(location).isDirectory()) {
           return false;

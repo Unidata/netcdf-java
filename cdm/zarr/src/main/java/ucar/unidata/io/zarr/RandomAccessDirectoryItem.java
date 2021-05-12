@@ -9,13 +9,9 @@ public interface RandomAccessDirectoryItem {
 
   String getLocation();
 
-  boolean isDirectory();
-
   long length();
 
   long getLastModified();
-
-  List<RandomAccessDirectoryItem> getChildren();
 
   RandomAccessFile getRaf();
 

@@ -17,10 +17,12 @@ import java.net.URI;
 import java.net.URL;
 import java.nio.channels.FileLock;
 import java.nio.channels.OverlappingFileLockException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.ServiceLoader;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import javax.annotation.Nullable;
 import ucar.nc2.internal.iosp.netcdf3.N3headerNew;
@@ -382,7 +384,6 @@ public class NetcdfFiles {
     copy(raf, new FileOutputStream(uriString), 1 << 20);
     try {
       String uncompressedFileName = makeUncompressed(uriString);
-
       // LOOK - this will only return one type of RandomAccessFile, which is OK for now,
       // but needs to be addressed with RandomAccessDirectory
       return ucar.unidata.io.RandomAccessFile.acquire(uncompressedFileName, buffer_size);
