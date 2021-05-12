@@ -15,7 +15,7 @@ dependencies {
   compile project(':httpservices')
   runtime project(':netcdf4')
   compile project(':opendap')
-  compile project(':uibase')
+  compile project(':toolsui:uibase')
 
   // Used by NcmlEditor. Abandoned, no updates since 2013. https://sourceforge.net/projects/bounce/
   // https://sourceforge.net/p/bounce/svn/HEAD/tree/src/main/java/org/bounce/
@@ -44,4 +44,10 @@ dependencies {
   runtimeOnly 'ch.qos.logback:logback-classic'
 }
 
-jar.manifest.attributes 'Main-Class': 'ucar.nc2.ui.ToolsUI'
+// make sure we only end up with one slf4j binding on the classpath
+configurations.all {
+  resolutionStrategy.dependencySubstitution {
+    // Replace 'org.slf4j:slf4j-jdk14' from gcdm with logback-classic
+    substitute module('org.slf4j:slf4j-jdk14') because 'we only want one slf4j binding' with module("ch.qos.logback:logback-classic:${depVersion.logback}")
+  }
+}
