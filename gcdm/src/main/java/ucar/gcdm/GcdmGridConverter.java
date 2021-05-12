@@ -127,7 +127,7 @@ public class GcdmGridConverter {
           break;
       }
     }
-    // todo: LOOK - should we catch case of CDM_AXIS_TYPE_UNDEFINED and throw
+    // todo: LOOK - should we catch case of CDM_AXIS_TYPE_UNSPECIFIED and throw
     // an error to prevent sending a bad message?
     return cdmAxisType;
   }
