@@ -27,6 +27,8 @@ import ucar.nc2.util.CancelTask;
 
 /** Encapsulates a NetcdfFile that is a component of the aggregation. */
 class AggDatasetOuter extends AggDataset {
+  private static final boolean debugOpenFile = true;
+
   private final AggregationOuter aggregationOuter;
   @Nullable
   final String coordValue; // if theres a coordValue on the netcdf element - may be multiple, blank seperated
@@ -185,6 +187,9 @@ class AggDatasetOuter extends AggDataset {
           ncoord = d.getLength();
         else
           throw new IllegalArgumentException("Dimension not found= " + aggregationOuter.dimName);
+
+        if (debugOpenFile)
+          System.out.printf("  --getNcoords for location %s getNcoords %d%n", this.cacheLocation, ncoord);
       }
     }
     return ncoord;

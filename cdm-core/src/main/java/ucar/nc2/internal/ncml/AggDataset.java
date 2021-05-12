@@ -31,9 +31,9 @@ public class AggDataset implements Comparable<AggDataset> {
   private static final boolean debugOpenFile = false;
   private static final boolean debugRead = false;
 
-  private final MFile mfile;
-  private final Set<Enhance> enhance; // used by Fmrc to read enhanced datasets
   @Nullable
+  protected final MFile mfile;
+  private final Set<Enhance> enhance; // used by Fmrc to read enhanced datasets
   protected final String cacheLocation;
   @Nullable
   private final String id; // id attribute on the netcdf element
@@ -44,7 +44,7 @@ public class AggDataset implements Comparable<AggDataset> {
   @Nullable
   protected final Object spiObject; // pass to NetcdfFiles.open()
 
-  // deferred opening LOOK
+  // deferred opening LOOK not immutable
   protected DatasetUrl durl;
 
   protected AggDataset(MFile mfile, @Nullable Object spiObject, @Nullable Element ncmlElem) {
@@ -69,10 +69,10 @@ public class AggDataset implements Comparable<AggDataset> {
    * @param wantEnhance open dataset in enhance mode, may be null
    * @param reader factory for reading this netcdf dataset; if null, use NetcdfDatasets.open( location)
    */
-  protected AggDataset(String cacheLocation, String location, @Nullable String id,
+  protected AggDataset(String cacheLocation, @Nullable String location, @Nullable String id,
       @Nullable EnumSet<Enhance> wantEnhance, @Nullable ucar.nc2.internal.cache.FileFactory reader,
       @Nullable Object spiObject, @Nullable Element ncmlElem) {
-    this.mfile = MFiles.create(location); // may be null
+    this.mfile = location == null ? null : MFiles.create(location);
     this.cacheLocation = cacheLocation;
     this.id = id;
     this.enhance = (wantEnhance == null) ? NetcdfDataset.getEnhanceNone() : wantEnhance;
@@ -102,14 +102,14 @@ public class AggDataset implements Comparable<AggDataset> {
   }
 
   public NetcdfFile acquireFile(CancelTask cancelTask) throws IOException {
-    if (debugOpenFile)
-      System.out.println(" try to acquire " + cacheLocation);
     long start = System.currentTimeMillis();
 
     if (durl == null) {
       // cache the ServiceType so we dont have to keep figuring it out
       durl = DatasetUrl.findDatasetUrl(cacheLocation);
     }
+    if (debugOpenFile)
+      System.out.printf("    try to acquire durl %s%n", durl.getTrueurl());
 
     NetcdfFile ncfile = NetcdfDatasets.acquireFile(reader, null, durl, -1, cancelTask, spiObject);
     if (ncmlElem == null && (enhance.isEmpty()))
