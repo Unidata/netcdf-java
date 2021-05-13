@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021 University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
+
 package ucar.unidata.io.zarr;
 
 import org.slf4j.Logger;
@@ -21,11 +26,11 @@ public class RandomAccessDirectory extends ucar.unidata.io.RandomAccessFile impl
 
   private static final Logger logger = LoggerFactory.getLogger(RandomAccessDirectory.class);
 
-  protected List<RandomAccessDirectoryItem> children;
+  protected List<RandomAccessDirectoryItem> children; // all files within the store
 
-  private RandomAccessFile currentFile;
+  private RandomAccessFile currentFile; // file currently containing the file pointer
 
-  private long currentFileStartPos = -1;
+  private long currentFileStartPos = -1; // start position of current file, relative to the directory/store
 
   protected int bufferSize;
 
@@ -39,20 +44,28 @@ public class RandomAccessDirectory extends ucar.unidata.io.RandomAccessFile impl
   public RandomAccessDirectory(String location, int bufferSize) throws IOException {
     super(bufferSize);
     this.bufferSize = bufferSize;
-    this.location = location.replace("\\", "/");
+    this.location = location.replace("\\", "/"); // standardize path
     this.readonly = true; // RandomAccessDirectory does not support writes
 
+    // build children list
     this.children = new ArrayList<>();
     MController controller = MControllers.create(location);
     CollectionConfig cc = new CollectionConfig("children", location, false, null, null);
-    Iterator<MFile> files = sortIterator(controller.getInventoryAll(cc, false));
+    Iterator<MFile> files = sortIterator(controller.getInventoryAll(cc, false)); // standardize order
     if (files != null) {
       files.forEachRemaining(mfile -> {
-        this.children.add(new VirtualRandomAccessFile(mfile.getPath().replace("\\", "/"), mfile.getLength(), mfile.getLastModified()));
+        this.children.add(new VirtualRandomAccessFile(mfile.getPath().replace("\\", "/"), mfile.getLength(),
+            mfile.getLastModified()));
       });
     }
   }
 
+  /**
+   * Sorts items in an iterator
+   * 
+   * @param mfiles
+   * @return sorted iterator
+   */
   private static Iterator<MFile> sortIterator(Iterator<MFile> mfiles) {
     List list = new ArrayList();
     while (mfiles.hasNext()) {
@@ -62,22 +75,39 @@ public class RandomAccessDirectory extends ucar.unidata.io.RandomAccessFile impl
     return list.iterator();
   }
 
-  public RandomAccessFile getCurrentFile() { return this.currentFile; }
+  /**
+   * @return RandomAccessFile containing the current file pointer
+   */
+  public RandomAccessFile getCurrentFile() {
+    return this.currentFile;
+  }
 
+  /**
+   * Find all files in the store that fall under the given path
+   * 
+   * @param path
+   * @return list of files in path
+   * @throws IOException
+   */
   public List<RandomAccessFile> getFilesByName(String path) throws IOException {
     List<RandomAccessFile> files = new ArrayList<>();
     for (RandomAccessDirectoryItem item : this.children) {
       String location = item.getLocation();
       if (location.contains(path)) {
         RandomAccessFile raf = item.getRaf();
-        files.add(raf == null? NetcdfFiles.getRaf(location, this.bufferSize) : raf);
+        files.add(raf == null ? NetcdfFiles.getRaf(location, this.bufferSize) : raf);
       }
     }
     return files;
   }
 
-  // sets current RandomAccessFile to that containing pos
-  // saves start position on current RAF
+  /**
+   * sets current RandomAccessFile to that containing pos
+   * saves start position on current RAF
+   * 
+   * @param pos
+   * @throws IOException
+   */
   protected void setFileToPos(long pos) throws IOException {
     long tempPos = 0;
     for (RandomAccessDirectoryItem item : this.children) {
@@ -99,11 +129,6 @@ public class RandomAccessDirectory extends ucar.unidata.io.RandomAccessFile impl
     this.currentFileStartPos = -1;
   }
 
-  /**
-   * Set the bufferSize of the directory and its children
-   * 
-   * @param bufferSize length in bytes
-   */
   @Override
   public void setBufferSize(int bufferSize) {
     this.bufferSize = bufferSize;
@@ -149,13 +174,16 @@ public class RandomAccessDirectory extends ucar.unidata.io.RandomAccessFile impl
   public long readToByteChannel(WritableByteChannel dest, long offset, long nbytes) throws IOException {
     long n = 0;
     while (n < nbytes) {
-      if (this.currentFile == null || offset + n  < this.currentFileStartPos || offset + n >= this.currentFileStartPos + this.currentFile.length()) {
+      // find new file if offset is outside current file
+      if (this.currentFile == null || offset + n < this.currentFileStartPos
+          || offset + n >= this.currentFileStartPos + this.currentFile.length()) {
         setFileToPos(offset + n);
         if (this.currentFile == null) {
           break;
         }
       }
 
+      // read from current file
       long count = this.currentFile.readToByteChannel(dest, offset + n - this.currentFileStartPos, nbytes - n);
       n += count;
     }
@@ -166,17 +194,23 @@ public class RandomAccessDirectory extends ucar.unidata.io.RandomAccessFile impl
   protected int read_(long pos, byte[] b, int offset, int len) throws IOException {
     int n = 0;
     while (n < len) {
-      if (this.currentFile == null || pos < this.currentFileStartPos || pos >= this.currentFileStartPos + this.currentFile.length()) {
+      // find new file if offset is outside current file
+      if (this.currentFile == null || pos < this.currentFileStartPos
+          || pos >= this.currentFileStartPos + this.currentFile.length()) {
         setFileToPos(pos);
         if (this.currentFile == null) {
           break;
         }
       }
+
+      // rad from current file
       this.currentFile.seek(pos - this.currentFileStartPos);
       int count = this.currentFile.read(b, offset + n, len - n);
       if (count < 0) {
         break;
       }
+
+      // update position
       n += count;
       pos += count;
     }
@@ -185,23 +219,23 @@ public class RandomAccessDirectory extends ucar.unidata.io.RandomAccessFile impl
 
   /**
    * Not implemented - use write methods on the leaf RandomAccessFile
-   * 
-   * @param b write this byte
+   * e.g. getCurrentFile().write()
    */
   @Override
   public void write(int b) {
+    // RandomAccessDirectory.write would not know whether to append or prepend on writes at the end of a file
+    // Look - possible to create a new write signature that includes a append/prepend parameter
     logger.error(WRITES_NOT_IMPLEMENTED_MESSAGE);
   }
 
   /**
    * Not implemented - use write methods on the leaf RandomAccessFile
-   * 
-   * @param b the array containing the data.
-   * @param off the offset in the array to the data.
-   * @param len the length of the data.
+   * e.g. getCurrentFile().write()
    */
   @Override
   public void writeBytes(byte[] b, int off, int len) {
+    // RandomAccessDirectory.write would not know whether to append or prepend on writes at the end of a file
+    // Look - possible to create a new write signature that includes a append/prepend parameter
     logger.error(WRITES_NOT_IMPLEMENTED_MESSAGE);
   }
 

@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021 University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
+
 package ucar.unidata.io.zarr;
 
 import ucar.unidata.io.RandomAccessFile;
@@ -7,6 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.OptionalLong;
 
+/**
+ * A wrapper for a RandomAccessFile that allows lazy loading
+ */
 public class VirtualRandomAccessFile implements RandomAccessDirectoryItem {
   private String location;
   private long length;

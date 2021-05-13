@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021 University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
+
 package ucar.nc2.iosp.zarr;
 
 import ucar.ma2.Array;
@@ -13,6 +18,10 @@ import ucar.unidata.io.zarr.RandomAccessDirectory;
 
 import java.io.IOException;
 
+/**
+ * Stubbed Zarr Iosp with only isValidFile implemented
+ * Other methods under construction
+ */
 public class ZarrIosp extends AbstractIOServiceProvider {
   private static final String fileTypeId = "Zarr";
   private static final String fileTypeDescription = "Zarr dataset";
@@ -21,8 +30,8 @@ public class ZarrIosp extends AbstractIOServiceProvider {
 
   // TODO
   @Override
-  public boolean isValidFile(RandomAccessFile raf) throws IOException {
-    return raf instanceof RandomAccessDirectory;
+  public boolean isValidFile(RandomAccessFile raf) {
+    return raf.isDirectory();
   }
 
   // TODO
@@ -50,15 +59,8 @@ public class ZarrIosp extends AbstractIOServiceProvider {
   @Override
   public void build(RandomAccessFile raf, Group.Builder rootGroup, CancelTask cancelTask) throws IOException {
     this.raf = raf;
-    // dimensions
-
-    // variables
-
-    // attributes
   }
 
   @Override
-  public void buildFinish(NetcdfFile ncfile) {
-    // No op
-  }
+  public void buildFinish(NetcdfFile ncfile) {}
 }

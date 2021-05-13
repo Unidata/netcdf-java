@@ -404,7 +404,7 @@ public class NetcdfFiles {
         raf = provider.open(location, buffer_size);
         // might cause issues if the end of a resource location string
         // cannot be reliably used to determine compression
-        if (looksCompressed(uriString) && !raf.isDirectory()) {  // do not decompress directories all at once
+        if (looksCompressed(uriString) && !raf.isDirectory()) { // do not decompress directories all at once
           raf = downloadAndDecompress(raf, uriString, buffer_size);
         }
         break;
@@ -467,16 +467,19 @@ public class NetcdfFiles {
   }
 
   private static boolean looksCompressed(String filename) {
-    // return true if filename ends with a compressed suffix or contains a compressed suffix followed by a delimiter (i.e. path to a compressed entry)
-    return possibleCompressedSuffixes.stream().anyMatch(compressedSuffix -> filename.endsWith("." + compressedSuffix))  ||
-                  possibleCompressedSuffixes.stream().anyMatch(compressedSuffix -> filename.contains("." + compressedSuffix + "/"));
+    // return true if filename ends with a compressed suffix or contains a compressed suffix followed by a delimiter
+    // (i.e. path to a compressed entry)
+    return possibleCompressedSuffixes.stream().anyMatch(compressedSuffix -> filename.endsWith("." + compressedSuffix))
+        || possibleCompressedSuffixes.stream()
+            .anyMatch(compressedSuffix -> filename.contains("." + compressedSuffix + "/"));
   }
 
   private static String findCompressedSuffix(String filename) {
     if (possibleCompressedSuffixes.stream().anyMatch(compressedSuffix -> filename.endsWith("." + compressedSuffix))) {
-      return filename.substring(filename.lastIndexOf('.')+1);
+      return filename.substring(filename.lastIndexOf('.') + 1);
     }
-    return possibleCompressedSuffixes.stream().filter(compressedSuffix -> filename.contains("." + compressedSuffix + "/")).findFirst().orElse("");
+    return possibleCompressedSuffixes.stream()
+        .filter(compressedSuffix -> filename.contains("." + compressedSuffix + "/")).findFirst().orElse("");
   }
 
   private static String makeUncompressed(String filename) throws Exception {
@@ -563,7 +566,7 @@ public class NetcdfFiles {
             ZipEntry ze = zin.getNextEntry();
             String itemName = itempath.substring(1); // remove initial /
             while (ze != null) {
-              if(itempath.isEmpty() || ze.getName().equals(itemName)) {
+              if (itempath.isEmpty() || ze.getName().equals(itemName)) {
                 copy(zin, fout, 100000);
                 if (NetcdfFile.debugCompress)
                   log.info("unzipped {} entry {} to {}", filename, ze.getName(), uncompressedFile);

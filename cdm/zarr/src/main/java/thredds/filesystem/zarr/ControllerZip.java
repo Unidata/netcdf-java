@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021 University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
+
 package thredds.filesystem.zarr;
 
 import thredds.filesystem.ControllerOS;
@@ -14,6 +19,10 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.zip.ZipEntry;
 
+
+/**
+ * Implements an MController for tracking ZipEntries within a ZipFile
+ */
 public class ControllerZip extends ControllerOS implements MController {
 
   private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(ControllerZip.class);
@@ -72,7 +81,7 @@ public class ControllerZip extends ControllerOS implements MController {
   public void close() {} // NOOP
 
   protected static class MFileIterator implements Iterator<MFile> {
-    List<MFileZip> files = new ArrayList<MFileZip>();
+    List<MFileZip> files = new ArrayList<>();
     int count = 0;
 
     public MFile next() {
@@ -88,7 +97,7 @@ public class ControllerZip extends ControllerOS implements MController {
     }
   }
 
-  // returns everything in the current directory
+  // iterates all entries in the current directory
   protected static class FilteredIterator extends MFileIterator implements Iterator<MFile> {
 
     FilteredIterator(MFileZip file, boolean wantDirs) throws IOException {
@@ -102,7 +111,7 @@ public class ControllerZip extends ControllerOS implements MController {
           logger.warn(entryPath.toString() + " is not an entry in " + relativePath.toString());
           continue;
         }
-        // get truncate path to one level below current path
+        // truncate path to one level below current path (i.e. direct child)
         Path childPath = entryPath.subpath(0, relativePath.getNameCount() + 1);
         fileNames.add(childPath);
       }
@@ -123,7 +132,7 @@ public class ControllerZip extends ControllerOS implements MController {
     }
   }
 
-  // returns all leaf "files" under current path in zip file
+  // returns all leaf entries under current path in zip file
   protected static class MFileIteratorLeaves extends MFileIterator implements Iterator<MFile> {
     MFileIteratorLeaves(MFileZip file) {
       List<ZipEntry> entries = file.getLeafEntries();

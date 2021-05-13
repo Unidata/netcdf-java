@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021 University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
+
 package thredds.inventory.zarr;
 
 import thredds.filesystem.MFileOS;
@@ -22,13 +27,13 @@ public class MFileZip implements MFile {
 
   private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(MFileZip.class);
 
-  private final ZipFile root;
-  private final Path rootPath;
-  private final Path relativePath;
+  private final ZipFile root; // ZipFile container
+  private final Path rootPath; // Path to the main Zip
+  private final Path relativePath; // Path from main Zip to current ZipEntry
   private Object auxInfo;
 
-  private final List<ZipEntry> leafEntries;
-  private ZipEntry entry;
+  private final List<ZipEntry> leafEntries; // all entries contained in current path
+  private ZipEntry entry; // current entry or null if not a leaf
 
   public MFileZip(ZipFile file) throws IOException {
     if (file == null) {
@@ -41,7 +46,7 @@ public class MFileZip implements MFile {
   }
 
   public MFileZip(String filename) throws IOException {
-    // Check whether we're given root or path within the zip
+    // Split filename into zipfile path and internal path
     int split = filename.indexOf(Provider.ext);
     if (split < 0) {
       throw new IOException(filename + " is not a zip file");
@@ -57,6 +62,10 @@ public class MFileZip implements MFile {
     this.leafEntries = this.getEntries();
   }
 
+  /**
+   *
+   * @return all ZipEntries that fall under this internal path
+   */
   private List<ZipEntry> getEntries() {
     List<ZipEntry> entries = new ArrayList<>();
     try {
@@ -66,6 +75,7 @@ public class MFileZip implements MFile {
         // skip entries outside or equal to our current path
         Path entryPath = Paths.get(File.separator + entry.getName());
         if (!entryPath.startsWith(relativePath) || entryPath.equals(relativePath)) {
+          // if equal, save as this.entry
           if (entryPath.equals(relativePath)) {
             this.entry = entry;
           }
@@ -116,7 +126,7 @@ public class MFileZip implements MFile {
   }
 
   @Override
-  public MFile getParent() throws IOException {
+  public MFile getParent() {
     return MFileOS.getExistingFile(Paths.get(root.getName()).getParent().toString());
   }
 

@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021 University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
+
 package unidata.io.zarr;
 
 import org.junit.AfterClass;
@@ -111,11 +116,11 @@ public class TestRandomAccessDirectory {
     objectStore.seek(0);
     assertThat(objectStore.isAtEndOfFile()).isFalse();
 
-     // zip store
-     zipStore.seek(EXPECTED_SIZE);
-     assertThat(zipStore.isAtEndOfFile()).isTrue();
-     zipStore.seek(0);
-     assertThat(zipStore.isAtEndOfFile()).isFalse();
+    // zip store
+    zipStore.seek(EXPECTED_SIZE);
+    assertThat(zipStore.isAtEndOfFile()).isTrue();
+    zipStore.seek(0);
+    assertThat(zipStore.isAtEndOfFile()).isFalse();
   }
 
   @Test
@@ -150,6 +155,7 @@ public class TestRandomAccessDirectory {
     assertThat(raf.readInt()).isEqualTo(LE_int);
     raf.order(ByteOrder.BIG_ENDIAN);
     raf.seek(pos);
+    // check is read as big endian
     assertThat(raf.readInt()).isEqualTo(BE_int);
   }
 
@@ -244,7 +250,7 @@ public class TestRandomAccessDirectory {
   public void testReadFully() throws IOException {
     _testReadFully(directoryStore, EOFException.class);
     // TODO: RemoteRandomAccessFile is throwing this exception - should probably be caught and turned into
-    //      EOFException somewhere
+    // EOFException somewhere
     _testReadFully(objectStore, ArrayIndexOutOfBoundsException.class);
     _testReadFully(zipStore, EOFException.class);
   }
@@ -289,9 +295,9 @@ public class TestRandomAccessDirectory {
 
   @Test
   public void testGetFiles() throws IOException {
-    _testGetFiles((RandomAccessDirectory)directoryStore);
-    _testGetFiles((RandomAccessDirectory)objectStore);
-    _testGetFiles((RandomAccessDirectory)zipStore);
+    _testGetFiles((RandomAccessDirectory) directoryStore);
+    _testGetFiles((RandomAccessDirectory) objectStore);
+    _testGetFiles((RandomAccessDirectory) zipStore);
   }
 
   private void _testGetFiles(RandomAccessDirectory raf) throws IOException {
