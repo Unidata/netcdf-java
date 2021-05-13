@@ -40,6 +40,7 @@ import ucar.nc2.util.IO;
 import ucar.unidata.io.http.ReadFromUrl;
 import ucar.unidata.util.test.category.NeedsExternalResource;
 import ucar.unidata.util.test.category.NeedsUcarNetwork;
+import ucar.unidata.util.test.category.Slow;
 
 @Category(NeedsExternalResource.class)
 public class TestS3Read {
@@ -374,6 +375,7 @@ public class TestS3Read {
   }
 
   @Test
+  @Category(Slow.class)
   public void compareStores() throws IOException {
     System.setProperty(S3TestsCommon.AWS_REGION_PROP_NAME, S3TestsCommon.AWS_G16_REGION);
     try (NetcdfFile osdc = NetcdfFiles.open(OSDC_G16_S3_URI);
@@ -390,6 +392,7 @@ public class TestS3Read {
   }
 
   @Test
+  @Category(Slow.class)
   public void compareAgainstLocal() throws IOException {
     System.setProperty(S3TestsCommon.AWS_REGION_PROP_NAME, S3TestsCommon.AWS_G16_REGION);
     try (NetcdfFile osdc = NetcdfFiles.open(OSDC_G16_S3_URI);

@@ -20,6 +20,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Dimension;
@@ -37,7 +38,9 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.time.CalendarPeriod.Field;
 import ucar.unidata.io.s3.S3TestsCommon;
+import ucar.unidata.util.test.category.Slow;
 
+@Category(Slow.class)
 public class S3JoinNew {
 
   @BeforeClass
