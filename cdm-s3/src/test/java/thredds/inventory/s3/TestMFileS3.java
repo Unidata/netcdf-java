@@ -93,24 +93,21 @@ public class TestMFileS3 {
   //
   @Test
   public void bucketAndKeyAws() throws IOException {
-    long lastModified = 1532465845000L;
-    checkWithBucketAndKey(AWS_G16_S3_OBJECT_1, G16_OBJECT_KEY_1, null, lastModified);
-    checkWithBucketAndKey(AWS_G16_S3_OBJECT_1 + DELIMITER_FRAGMENT, G16_NAME_1, "/", lastModified);
+    checkWithBucketAndKey(AWS_G16_S3_OBJECT_1, G16_OBJECT_KEY_1, null);
+    checkWithBucketAndKey(AWS_G16_S3_OBJECT_1 + DELIMITER_FRAGMENT, G16_NAME_1, "/");
   }
 
   @Test
   public void bucketAndKeyGcs() throws IOException {
-    long lastModified = 1504051532000L;
-    checkWithBucketAndKey(GCS_G16_S3_OBJECT_1, G16_OBJECT_KEY_1, null, lastModified);
-    checkWithBucketAndKey(GCS_G16_S3_OBJECT_1 + DELIMITER_FRAGMENT, G16_NAME_1, "/", lastModified);
+    checkWithBucketAndKey(GCS_G16_S3_OBJECT_1, G16_OBJECT_KEY_1, null);
+    checkWithBucketAndKey(GCS_G16_S3_OBJECT_1 + DELIMITER_FRAGMENT, G16_NAME_1, "/");
   }
 
   @Test
   @Category(NotPullRequest.class)
   public void bucketAndKeyOsdc() throws IOException {
-    long lastModified = 1611593614000L;
-    checkWithBucketAndKey(OSDC_G16_S3_OBJECT_1, OSDC_G16_OBJECT_KEY_1, null, lastModified);
-    checkWithBucketAndKey(OSDC_G16_S3_OBJECT_1 + DELIMITER_FRAGMENT, G16_NAME_1, "/", lastModified);
+    checkWithBucketAndKey(OSDC_G16_S3_OBJECT_1, OSDC_G16_OBJECT_KEY_1, null);
+    checkWithBucketAndKey(OSDC_G16_S3_OBJECT_1 + DELIMITER_FRAGMENT, G16_NAME_1, "/");
   }
 
   @Test
@@ -184,7 +181,7 @@ public class TestMFileS3 {
     assertThat(parent).isNull();
   }
 
-  private void checkWithBucketAndKey(String cdmS3Uri, String expectedName, String delimiter, long expectedLastModified)
+  private void checkWithBucketAndKey(String cdmS3Uri, String expectedName, String delimiter)
       throws IOException {
     logger.info("Checking {}", cdmS3Uri);
     MFile mFile = new MFileS3(cdmS3Uri);
@@ -197,7 +194,6 @@ public class TestMFileS3 {
       assertThat(mFile.getParent()).isNull();
     }
     assertThat(mFile.isDirectory()).isFalse();
-    assertThat(mFile.getLastModified()).isEqualTo(expectedLastModified);
     assertThat(mFile.getLength()).isEqualTo(G16_OBJECT_1_SIZE);
   }
 
