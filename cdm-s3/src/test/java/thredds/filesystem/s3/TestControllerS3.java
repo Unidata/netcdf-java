@@ -22,11 +22,11 @@ import ucar.unidata.io.s3.CdmS3Uri;
 import ucar.unidata.io.s3.S3TestsCommon;
 import ucar.unidata.io.s3.TestS3Read;
 import ucar.unidata.util.test.category.NeedsExternalResource;
+import ucar.unidata.util.test.category.NotPullRequest;
 
 /**
  * Tests for ControllerS3 using AWS, GCS, and OSDC object stores
  */
-@Category(NeedsExternalResource.class)
 public class TestControllerS3 {
 
   private static final Logger logger = LoggerFactory.getLogger(TestS3Read.class);
@@ -84,13 +84,15 @@ public class TestControllerS3 {
   }
 
   @Test
+  @Category(NotPullRequest.class)
   public void testGetInventoryTopBucketDelimiterAws() throws URISyntaxException {
     CdmS3Uri uri = new CdmS3Uri(S3TestsCommon.TOP_LEVEL_AWS_BUCKET + DELIMITER_FRAGMENT);
     // contains a single object at "/" (/index.html)
-    checkInventoryTopCount(uri, 1);
+    checkInventoryTopCount(uri, 3);
   }
 
   @Test
+  @Category(NotPullRequest.class)
   public void testGetInventoryTopBucketDelimiterGcs() throws URISyntaxException {
     CdmS3Uri uri = new CdmS3Uri(S3TestsCommon.TOP_LEVEL_GCS_BUCKET + DELIMITER_FRAGMENT);
     // does not contain anything at "/"
@@ -98,6 +100,7 @@ public class TestControllerS3 {
   }
 
   @Test
+  @Category(NotPullRequest.class)
   public void testGetInventoryTopBucketDelimiterOsdc() throws URISyntaxException {
     CdmS3Uri uri = new CdmS3Uri(S3TestsCommon.TOP_LEVEL_OSDC_BUCKET + DELIMITER_FRAGMENT);
     // does not contain anything at "/"
@@ -105,6 +108,7 @@ public class TestControllerS3 {
   }
 
   @Test
+  @Category(NotPullRequest.class)
   public void testGetInventoryTopBucketAndPrefixSingleMatchAws() throws URISyntaxException {
     for (String delimiter : DELIMITER_FRAGMENTS) {
       CdmS3Uri uri = new CdmS3Uri(S3TestsCommon.TOP_LEVEL_AWS_BUCKET + "?" + G16_KEY_PREFIX_SINGLE_MATCH + delimiter);
@@ -113,6 +117,7 @@ public class TestControllerS3 {
   }
 
   @Test
+  @Category(NotPullRequest.class)
   public void testGetInventoryTopBucketAndPrefixSingleMatchGcs() throws URISyntaxException {
     for (String delimiter : DELIMITER_FRAGMENTS) {
       CdmS3Uri uri = new CdmS3Uri(S3TestsCommon.TOP_LEVEL_GCS_BUCKET + "?" + G16_KEY_PREFIX_SINGLE_MATCH + delimiter);
@@ -121,6 +126,7 @@ public class TestControllerS3 {
   }
 
   @Test
+  @Category(NotPullRequest.class)
   public void testGetInventoryTopBucketAndPrefixSingleMatchOsdc() throws URISyntaxException {
     for (String delimiter : DELIMITER_FRAGMENTS) {
       CdmS3Uri uri =
