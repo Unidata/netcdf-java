@@ -181,8 +181,7 @@ public class TestMFileS3 {
     assertThat(parent).isNull();
   }
 
-  private void checkWithBucketAndKey(String cdmS3Uri, String expectedName, String delimiter)
-      throws IOException {
+  private void checkWithBucketAndKey(String cdmS3Uri, String expectedName, String delimiter) throws IOException {
     logger.info("Checking {}", cdmS3Uri);
     MFile mFile = new MFileS3(cdmS3Uri);
     assertThat(mFile.getPath()).isEqualTo(cdmS3Uri);
