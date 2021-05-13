@@ -1,6 +1,10 @@
+// Copyright (c) 2020-2021 John Caron and University Corporation for Atmospheric Research/Unidata
+// See LICENSE for license information.
+
 syntax = "proto3";
 
 package ucar.gcdm;
+
 option java_package = "ucar.gcdm";
 option java_outer_classname = "GcdmNetcdfProto";
 
@@ -16,7 +20,7 @@ message HeaderResponse {
 
 message DataRequest {
   string location = 1;
-  string variableSpec = 2;
+  string variable_spec = 2;
 }
 
 message DataResponse {
@@ -24,8 +28,8 @@ message DataResponse {
   uint32 version = 2; // response version
 
   string location = 3;
-  string variableSpec = 4;     // the requested variableSpec
-  string varFullName = 5;      // Variable full name
+  string variable_spec = 4;    // the requested variableSpec
+  string var_full_name = 5;    // Variable full name
   Section section = 6;         // this is the Section of the entire variable. Its shape matches the data.
 
   Data data = 7;
@@ -40,13 +44,13 @@ message Error {
 
 message Attribute {
   string name = 1;
-  DataType dataType = 2;   // cant use STRUCTURE or SEQUENCE or OPAQUE or ENUM; CHAR deprecated, use STRING
+  DataType data_type = 2; // cant use STRUCTURE or SEQUENCE or OPAQUE or ENUM; CHAR deprecated, use STRING
   uint32 length = 3;
   Data data = 4;
 }
 
 enum DataType {
-  DATA_TYPE_UNDEFINED = 0;
+  DATA_TYPE_UNSPECIFIED = 0;
   DATA_TYPE_BYTE = 1;
   DATA_TYPE_SHORT = 2;
   DATA_TYPE_INT = 3;
@@ -72,9 +76,9 @@ enum DataType {
 message Dimension {
   string name = 1;   // short name - optional when private
   uint64 length = 2; // optional when vlen, may be zero if unlimited
-  bool isUnlimited = 3;
-  bool isVlen = 4;
-  bool isPrivate = 5;
+  bool is_unlimited = 3;
+  bool is_vlen = 4;
+  bool is_private = 5;
 }
 
 message EnumTypedef {
@@ -83,8 +87,8 @@ message EnumTypedef {
     string value = 2;
   }
   string name = 1;
-  DataType baseType = 2;
-  repeated EnumType map = 3;
+  DataType base_type = 2;
+  repeated EnumType maps = 3;
 }
 
 message Group {
@@ -94,7 +98,7 @@ message Group {
   repeated Structure structs = 4;
   repeated Attribute atts = 5;
   repeated Group groups = 6;
-  repeated EnumTypedef enumTypes = 7;
+  repeated EnumTypedef enum_types = 7;
 }
 
 message Header {
@@ -107,8 +111,8 @@ message Header {
 
 message Structure {
   string name = 1;                // short name
-  DataType dataType = 2;          // STRUCTURE or SEQUENCE
-  repeated Dimension shape = 3;   // actual dimension instead of reference
+  DataType data_type = 2;         // STRUCTURE or SEQUENCE
+  repeated Dimension shapes = 3;   // actual dimension instead of reference
   repeated Attribute atts = 4;
   repeated Variable vars = 5;     // members that are not structs
   repeated Structure structs = 6; // struct members that are structs
@@ -116,10 +120,10 @@ message Structure {
 
 message Variable {
   string name = 1; // short name
-  DataType dataType = 2;
-  repeated Dimension shape = 3;   // actual dimension instead of reference
+  DataType data_type = 2;
+  repeated Dimension shapes = 3;   // actual dimension instead of reference
   repeated Attribute atts = 4;
-  string enumType = 5;   // EnumTypedef name, only for enum types
+  string enum_type = 5;   // EnumTypedef name, only for enum types
   Data data = 6;        // "immediate" - store small data in header
 }
 
@@ -132,31 +136,31 @@ message Range {
 }
 
 message Section {
-  repeated Range range = 1;
+  repeated Range ranges = 1;
 }
 
 message Data {
-  DataType dataType = 1;
-  repeated uint32 shape = 2;
+  DataType data_type = 1;
+  repeated uint32 shapes = 2;
 
-  // oneof, depends on dataType
-  repeated bytes bdata = 3;   // ENUM1, BYTE, OPAQUE
-  repeated sint32 idata = 4;  // SHORT, INT, CHAR
+  // oneof, depends on data_type
+  repeated bytes bdata = 3;   // ENUM1, BYTE, OPAQUE, CHAR
+  repeated sint32 idata = 4;  // SHORT, INT
   repeated uint32 uidata = 5; // ENUM2, USHORT, ENUM4, UINT
   repeated sint64 ldata = 6;  // LONG
   repeated uint64 uldata = 7; // ULONG
   repeated float fdata = 8;   // FLOAT
   repeated double ddata = 9;  // DOUBLE
-  repeated string sdata = 10;  // STRING
-  repeated Data vlen = 11;  // VLEN
+  repeated string sdata = 10; // STRING
+  repeated Data vlen = 11;    // VLEN
 
   // STRUCTURE, SEQUENCE
   StructureMembersProto members = 12;
-  repeated StructureDataProto rows = 13;  // row oriented: one for each row
+  repeated StructureDataProto rows = 13; // row oriented: one for each row
 }
 
 message StructureDataProto {
-  repeated Data memberData = 1;  // one for each memeber
+  repeated Data member_data = 1; // one for each member
 }
 
 message StructureMembersProto {
@@ -166,7 +170,7 @@ message StructureMembersProto {
 
 message StructureMemberProto {
   string name = 1;
-  DataType dataType = 2;
-  repeated int32 shape = 3;
+  DataType data_type = 2;
+  repeated int32 shapes = 3;
   StructureMembersProto members = 4;
 }

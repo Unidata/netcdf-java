@@ -29,6 +29,8 @@ public abstract class GridAxis implements Iterable<Object> {
 
   /** The spacing of the coordinate values, used for 1D axes. */
   public enum Spacing {
+    // If making changes, update ucar.gcdm.GcdmGridConverter#convertAxisSpacing(GridAxis.Spacing)
+    // and consider if need for addition to gcdm_grid.proto.
     /**
      * Regularly spaced points (start, end, npts); start and end are midpoints, edges halfway between midpoints,
      * resol = (start - end) / (npts-1)
@@ -64,6 +66,8 @@ public abstract class GridAxis implements Iterable<Object> {
 
   /** The way that the Axis depends on other axes. */
   public enum DependenceType {
+    // If making changes, update ucar.gcdm.GcdmGridConverter#convertAxisDependenceType(GridAxis.DependenceType)
+    // and consider if need for addition to gcdm_grid.proto.
     /** Has its own dimension, so is a coordinate variable, eg x(x). */
     independent, //
     /** Auxilary coordinate, eg reftime(time) or time_bounds(time). */

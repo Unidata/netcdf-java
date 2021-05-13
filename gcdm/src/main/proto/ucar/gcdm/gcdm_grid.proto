@@ -1,0 +1,193 @@
+// Copyright (c) 2020-2021 John Caron and University Corporation for Atmospheric Research/Unidata
+// See LICENSE for license information.
+
+syntax = "proto3";
+
+package ucar.gcdm;
+
+import "ucar/gcdm/gcdm_netcdf.proto";
+
+option java_package = "ucar.gcdm";
+option java_outer_classname = "GcdmGridProto";
+
+message GridDatasetRequest {
+  string location = 1;
+}
+
+message GridDatasetResponse {
+  Error error = 1;  // non-empty on error
+  uint32 version = 2; // response version
+  GridDataset dataset = 3;
+}
+
+////////////////////////////////////////////////
+// Gcdm General (could be in more generic proto)
+
+enum CdmAxisType {  // related to ucar.nc2.constants.AxisType
+  CDM_AXIS_TYPE_UNSPECIFIED = 0;
+  CDM_AXIS_TYPE_RUN_TIME = 1;
+  CDM_AXIS_TYPE_ENSEMBLE = 2;
+  CDM_AXIS_TYPE_TIME = 3;
+  CDM_AXIS_TYPE_GEO_X = 4;
+  CDM_AXIS_TYPE_GEO_Y = 5;
+  CDM_AXIS_TYPE_GEO_Z = 6;
+  CDM_AXIS_TYPE_LAT = 7;
+  CDM_AXIS_TYPE_LON = 8;
+  CDM_AXIS_TYPE_HEIGHT = 9;
+  CDM_AXIS_TYPE_PRESSURE = 10;
+  CDM_AXIS_TYPE_TIME_OFFSET = 11;
+}
+
+// could be related to java.ucar.nc2.constants.FeatureType
+enum CdmFeatureType {
+  CDM_FEATURE_TYPE_UNSPECIFIED = 0;
+  CDM_FEATURE_TYPE_GENERAL = 1;
+  CDM_FEATURE_TYPE_CURVILINEAR = 2;
+  CDM_FEATURE_TYPE_GRIDDED = 3;
+  CDM_FEATURE_TYPE_SWATH = 4;
+  CDM_FEATURE_TYPE_FMRC = 5;
+}
+
+// CURRENTLY UNUSED
+enum CdmCalendar { // related to  ucar.nc2.time.Calendar
+  CDM_CALENDAR_UNSPECIFIED = 0;
+  CDM_CALENDAR_PROLEPTIC_GREGORIAN = 1;
+  CDM_CALENDAR_GREGORIAN = 2;
+  CDM_CALENDAR_NO_LEAP = 3;
+  CDM_CALENDAR_ALL_LEAP = 4;
+  CDM_CALENDAR_UNIFORM_30_DAY = 5;
+  CDM_CALENDAR_JULIAN = 6;
+  CDM_CALENDAR_NONE = 7;
+}
+
+////////////////////////////////////////////////////////////////////
+// GridDataset
+
+// could be more generic CdmAxisSpacing, as could apply to other scientific
+// feature type axes?
+enum GridAxisSpacing {  // currently related to GridAxis.Spacing
+  GRID_AXIS_SPACING_UNSPECIFIED = 0;
+  GRID_AXIS_SPACING_REGULAR_POINT = 1;
+  GRID_AXIS_SPACING_IRREGULAR_POINT = 2;
+  GRID_AXIS_SPACING_REGULAR_INTERVAL = 3;
+  GRID_AXIS_SPACING_CONTIGUOUS_INTERVAL = 4;
+  GRID_AXIS_SPACING_DISCONTIGUOUS_INTERVAL = 5;
+}
+
+// could be more generic CdmAxisDependenceType, as could apply to other scientific
+// feature type axes?
+enum GridAxisDependenceType { // currently related to GridAxis.DependenceType
+  GRID_AXIS_DEPENDENCE_TYPE_UNSPECIFIED = 0;
+  GRID_AXIS_DEPENDENCE_TYPE_INDEPENDENT = 1; // has its own dimension, is a coordinate variable, eg x(x)
+  GRID_AXIS_DEPENDENCE_TYPE_DEPENDENT = 2;   // aux coordinate, reftime(time) or time_bounds(time);
+  GRID_AXIS_DEPENDENCE_TYPE_SCALAR = 3;      // reftime
+  GRID_AXIS_DEPENDENCE_TYPE_TWO_D = 4;       // lat(x,y)
+  GRID_AXIS_DEPENDENCE_TYPE_FMRC_REG = 5;    // time(reftime, hourOfDay)
+  GRID_AXIS_DEPENDENCE_TYPE_DIMENSION = 6;   // swath(scan, scanAcross)
+}
+
+enum GridAxisType {
+  GRID_AXIS_TYPE_UNSPECIFIED = 0;
+  GRID_AXIS_TYPE_AXIS_1D = 1;
+  GRID_AXIS_TYPE_AXIS_1D_TIME = 2;
+  GRID_AXIS_TYPE_TIME_OFFSET_REGULAR = 3;
+  GRID_AXIS_TYPE_AXIS_2D = 4;
+}
+
+message GridAxis {
+
+  GridAxisType grid_axis_type = 1;
+
+  string name = 2;
+  string description = 3;
+  string unit = 4;
+  CdmAxisType cdm_axis_type = 5;
+  repeated Attribute attributes = 6; // find calendar attribute here?
+  GridAxisSpacing spacing = 7;
+  GridAxisDependenceType dependence_type = 8;
+  repeated string depends_on = 9;    // depends on these axes, only for non-independent axes
+
+  uint32 ncoord = 11; // number of coordinate values in axis
+  double start_value = 12;
+  double end_value = 13;
+  double resolution = 14;
+  repeated double values = 15;
+
+  string date_unit = 16;           // for TimeHelper
+
+  string runtime_axis_name = 17;    // for TimeOffsetRegular
+  repeated int32 hour_offsets = 18; // for TimeOffsetRegular
+  repeated double midpoints = 19;   // for TimeOffsetRegular
+  repeated double bounds = 20;      // for TimeOffsetRegular
+  repeated uint32 shapes = 21 ;     // for TimeOffsetRegular
+}
+
+message Projection {
+  string name = 1;
+  string geo_unit = 2;
+  repeated Attribute attributes = 3;
+}
+
+message GridCoordinateSystem {
+  string name = 1;
+  repeated string axis_names = 2;
+  Projection projection = 3;
+}
+
+message Grid {
+  string name = 1; // short name, unique within dataset
+  string unit = 2;
+  string description = 3;
+  DataType data_type = 4;
+  repeated Attribute attributes = 5;
+  string coord_system = 6;
+  bool has_missing = 7;
+}
+
+message GridDataset {
+  string name = 1;
+  string location = 2;
+  CdmFeatureType feature_type = 3;
+  repeated Attribute attributes = 4;
+  repeated GridAxis grid_axes = 5;
+  repeated GridCoordinateSystem coord_systems = 6;
+  repeated Grid grids = 7;
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// GridData
+
+message GridDataRequest {
+  string location = 1;
+  map<string, string> subset = 2;
+}
+
+message GridDataResponse {
+  Error error = 1;    // non-empty on error
+  uint32 version = 2; // response version
+
+  string location = 3;
+  map<string, string> subset = 4;
+  GridReferencedArray data = 5;
+}
+
+// CURRENTLY UNUSED
+message CalendarDateRange {
+  int64 start = 1;
+  int64 end = 2;
+  CdmCalendar calendar = 3;
+}
+
+// CURRENTLY UNUSED
+message Rectangle {
+  double start_x = 1;
+  double start_y = 2;
+  double inc_x = 3;
+  double inc_y = 4;
+}
+
+message GridReferencedArray {
+  string grid_name = 1;
+  Data data = 2;
+  GridCoordinateSystem cs_subset = 3;
+}
