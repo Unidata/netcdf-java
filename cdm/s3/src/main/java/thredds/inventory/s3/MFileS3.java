@@ -239,9 +239,11 @@ public class MFileS3 implements MFile {
 
   public static class Provider implements MFileProvider {
 
+    private static String protocol = CdmS3Uri.SCHEME_CDM_S3;
+
     @Override
     public String getProtocol() {
-      return null;
+      return protocol;
     }
 
     @Nullable

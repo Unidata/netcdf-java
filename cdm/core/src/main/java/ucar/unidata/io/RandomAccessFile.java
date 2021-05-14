@@ -33,6 +33,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * <li>Read String methods support user-specified Charsets (default UTF-8).</li>
  * <li>Support for both big and little endiannness on reads and write: users may specify the byte order for I/O
  * operations.</li>
+ * <li>Support for distributed file access through the RandomAccessDirectory subclass.</li>
  * </ul>
  * This is a subclass of Object, as it was not possible to subclass
  * java.io.RandomAccessFile because many of the methods are
@@ -153,7 +154,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
   private static final ucar.nc2.util.cache.FileFactory factory = new FileFactory() {
     public FileCacheable open(DatasetUrl durl, int buffer_size, CancelTask cancelTask, Object iospMessage)
         throws IOException {
-      String location = StringUtil2.replace(durl.trueurl, "\\", "/"); // canonicalize the name
+      String location = StringUtil2.replace(durl.getTrueurl(), "\\", "/"); // canonicalize the name
       RandomAccessFile result = new RandomAccessFile(location, "r", buffer_size);
       result.cacheState = 1; // in use
       return result;
@@ -266,7 +267,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
   /**
    * True if the data in the buffer has been modified.
    */
-  boolean bufferModified;
+  protected boolean bufferModified;
 
   /**
    * make sure file is at least this long when closed
@@ -327,7 +328,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
         } catch (InterruptedException e) {
           e.printStackTrace();
         }
-        this.file = new java.io.RandomAccessFile(location, mode); // Windows having troublke keeping up ??
+        this.file = new java.io.RandomAccessFile(location, mode); // Windows having trouble keeping up ??
       } else {
         throw ioe;
       }
@@ -459,13 +460,14 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
     return file.lastModified();
   }
 
-  /**
-   * Return true if file pointer is at end of file.
-   *
-   * @return true if file pointer is at end of file
-   */
+  /** Returns true if file pointer is at end of file. */
   public boolean isAtEndOfFile() {
     return endOfFile;
+  }
+
+  /** Returns true if RandomAccessFile represents a directory structure */
+  public boolean isDirectory() {
+    return false;
   }
 
   /**

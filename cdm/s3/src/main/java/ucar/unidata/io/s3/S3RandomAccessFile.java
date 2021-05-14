@@ -17,6 +17,7 @@ import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
 import software.amazon.awssdk.services.s3.model.HeadObjectResponse;
+import thredds.inventory.MFiles;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.io.ReadableRemoteFile;
 import ucar.unidata.io.RemoteRandomAccessFile;
@@ -68,10 +69,10 @@ public final class S3RandomAccessFile extends RemoteRandomAccessFile implements 
     client = CdmS3Client.acquire(uri);
 
     // request HEAD for the object
-    HeadObjectRequest headdObjectRequest =
+    HeadObjectRequest headObjectRequest =
         HeadObjectRequest.builder().bucket(uri.getBucket()).key(uri.getKey().get()).build();
 
-    objectHeadResponse = client.headObject(headdObjectRequest);
+    objectHeadResponse = client.headObject(headObjectRequest);
   }
 
   public void closeRemote() {
@@ -145,6 +146,13 @@ public final class S3RandomAccessFile extends RemoteRandomAccessFile implements 
 
     @Override
     public boolean isOwnerOf(String location) {
+      // if mfile is directory, owner should be RandomAccessDirectory
+      try {
+        if (MFiles.create(location).isDirectory()) {
+          return false;
+        }
+      } catch (Exception ex) {
+      } // NOOP
       return location.startsWith("cdms3:") || location.startsWith("s3:");
     }
 
