@@ -392,6 +392,13 @@ public class NetcdfFiles {
     }
   }
 
+  /**
+   * Get the appropriate RandomAccessFile for accessing an object at the provided location
+   * 
+   * @param location a URI string.
+   * @param buffer_size size of the RandomAccessFileBuffer
+   * @return RandomAccessFile for the object at location
+   */
   public static ucar.unidata.io.RandomAccessFile getRaf(String location, int buffer_size) throws IOException {
     String uriString = location.trim();
     if (buffer_size <= 0)

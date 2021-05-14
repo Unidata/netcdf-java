@@ -12,13 +12,13 @@ dependencies {
     api project(':cdm:cdm-core')
     api project(':cdm:cdm-s3')
 
-    compile 'org.jdom:jdom2'
-    compile 'com.google.code.findbugs:jsr305'
-    compile 'com.beust:jcommander'
-    compile 'com.google.protobuf:protobuf-java'
-    compile 'com.google.re2j:re2j'
-    compile 'org.slf4j:slf4j-api'
-    compile 'com.google.guava:guava'
+    implementation 'org.jdom:jdom2'
+    implementation 'com.google.code.findbugs:jsr305'
+    implementation 'com.beust:jcommander'
+    implementation 'com.google.protobuf:protobuf-java'
+    implementation 'com.google.re2j:re2j'
+    implementation 'org.slf4j:slf4j-api'
+    implementation 'com.google.guava:guava'
 
     implementation('software.amazon.awssdk:s3') {
         // exclude netty nio client due to open CVEs. See

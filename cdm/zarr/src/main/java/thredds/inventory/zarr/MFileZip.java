@@ -25,7 +25,7 @@ import java.util.zip.ZipInputStream;
  */
 public class MFileZip implements MFile {
 
-  private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(MFileZip.class);
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(MFileZip.class);
 
   private final ZipFile root; // ZipFile container
   private final Path rootPath; // Path to the main Zip

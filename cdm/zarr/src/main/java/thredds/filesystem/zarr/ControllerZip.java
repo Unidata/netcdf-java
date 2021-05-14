@@ -25,7 +25,7 @@ import java.util.zip.ZipEntry;
  */
 public class ControllerZip extends ControllerOS implements MController {
 
-  private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(ControllerZip.class);
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(ControllerZip.class);
 
   private static final String prefix = "file:";
 

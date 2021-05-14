@@ -33,6 +33,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * <li>Read String methods support user-specified Charsets (default UTF-8).</li>
  * <li>Support for both big and little endiannness on reads and write: users may specify the byte order for I/O
  * operations.</li>
+ * <li>Support for distributed file access through the RandomAccessDirectory subclass.</li>
  * </ul>
  * This is a subclass of Object, as it was not possible to subclass
  * java.io.RandomAccessFile because many of the methods are
@@ -459,20 +460,12 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
     return file.lastModified();
   }
 
-  /**
-   * Return true if file pointer is at end of file.
-   *
-   * @return true if file pointer is at end of file
-   */
+  /** Returns true if file pointer is at end of file. */
   public boolean isAtEndOfFile() {
     return endOfFile;
   }
 
-  /**
-   * Return true if RandomAccessFile is a directory structure
-   *
-   * @return true if RandomAccessFile is a directory structure
-   */
+  /** Returns true if RandomAccessFile represents a directory structure */
   public boolean isDirectory() {
     return false;
   }
