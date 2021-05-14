@@ -18,6 +18,7 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
@@ -29,7 +30,9 @@ import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.unidata.io.s3.S3TestsCommon;
+import ucar.unidata.util.test.category.Slow;
 
+@Category(Slow.class)
 public class S3AggScan {
 
   private static final Logger logger = LoggerFactory.getLogger(S3AggScan.class);
