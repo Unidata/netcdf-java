@@ -19,6 +19,8 @@ dependencies {
     implementation 'com.google.re2j:re2j'
     implementation 'org.slf4j:slf4j-api'
     implementation 'com.google.guava:guava'
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.8.8'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.8.8'
 
     implementation('software.amazon.awssdk:s3') {
         // exclude netty nio client due to open CVEs. See

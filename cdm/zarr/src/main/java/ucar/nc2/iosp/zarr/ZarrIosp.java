@@ -5,6 +5,8 @@
 
 package ucar.nc2.iosp.zarr;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
@@ -19,25 +21,20 @@ import ucar.unidata.io.zarr.RandomAccessDirectory;
 import java.io.IOException;
 
 /**
- * Stubbed Zarr Iosp with only isValidFile implemented
- * Other methods under construction
+ * IOSP for reading/writing Zarr/NCZarr formats
  */
 public class ZarrIosp extends AbstractIOServiceProvider {
+
+  private static final Logger logger = LoggerFactory.getLogger(ZarrIosp.class);
+
   private static final String fileTypeId = "Zarr";
-  private static final String fileTypeDescription = "Zarr dataset";
+  private static final String fileTypeDescription = "Zarr v2 formatted dataset";
 
-  private RandomAccessFile raf;
+  private ZarrHeader header;
 
-  // TODO
   @Override
   public boolean isValidFile(RandomAccessFile raf) {
     return raf.isDirectory();
-  }
-
-  // TODO
-  @Override
-  public Array readData(Variable v2, Section section) throws IOException, InvalidRangeException {
-    return null;
   }
 
   @Override
@@ -55,12 +52,19 @@ public class ZarrIosp extends AbstractIOServiceProvider {
     return true;
   }
 
-  // TODO
   @Override
   public void build(RandomAccessFile raf, Group.Builder rootGroup, CancelTask cancelTask) throws IOException {
-    this.raf = raf;
+    super.open(raf, null, cancelTask);
+    header = new ZarrHeader((RandomAccessDirectory) raf, rootGroup);
+    header.read(); // build CDM from Zarr
   }
 
   @Override
-  public void buildFinish(NetcdfFile ncfile) {}
+  public void buildFinish(NetcdfFile ncfile) {} // NO-OP
+
+  // TODO: to be implemented
+  @Override
+  public Array readData(Variable v2, Section section) throws IOException, InvalidRangeException {
+    return null;
+  }
 }

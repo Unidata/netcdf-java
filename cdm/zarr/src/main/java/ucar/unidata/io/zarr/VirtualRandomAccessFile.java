@@ -5,6 +5,7 @@
 
 package ucar.unidata.io.zarr;
 
+import ucar.nc2.NetcdfFiles;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.IOException;
@@ -16,20 +17,28 @@ import java.util.OptionalLong;
  * A wrapper for a RandomAccessFile that allows lazy loading
  */
 public class VirtualRandomAccessFile implements RandomAccessDirectoryItem {
-  private String location;
+  private final String location;
+  private long startIndex;
   private long length;
   private long lastModified;
   private RandomAccessFile raf;
+  private final int bufferSize;
 
-  public VirtualRandomAccessFile(String location, long length, long lastModified) {
+  public VirtualRandomAccessFile(String location, long startIndex, long length, long lastModified, int bufferSize) {
     this.location = location;
+    this.startIndex = startIndex;
     this.length = length;
     this.lastModified = lastModified;
     this.raf = null;
+    this.bufferSize = bufferSize;
   }
 
   public String getLocation() {
     return this.location;
+  }
+
+  public long startIndex() {
+    return this.startIndex;
   }
 
   public long length() {
@@ -48,7 +57,10 @@ public class VirtualRandomAccessFile implements RandomAccessDirectoryItem {
     return this.raf;
   }
 
-  public void setRaf(RandomAccessFile raf) {
-    this.raf = raf;
+  public RandomAccessFile getOrOpenRaf() throws IOException {
+    if (this.raf == null) {
+      this.raf = NetcdfFiles.getRaf(this.location, this.bufferSize);
+    }
+    return this.raf;
   }
 }
