@@ -277,26 +277,6 @@ docSetsInfo.each { docSet, docSetInfo ->
   }
 }
 
-// publish version-info.json files to the top level of the appropriate documentation raw repository
-docSetsInfo.each { docSet, docSetInfo ->
-  if (docSetInfo.hasDocVersionFile) {
-    def topLevelRawRepoDir = getTopLevelRawRepoDir(docSetInfo)
-    def nexusRawRepoName = getRawRepoName(docSetInfo)
-    def pubTopLevelVersionFilesTaskName = "update${topLevelRawRepoDir.capitalize()}TopLevelVersionFiles"
-    pubTopLevelVersionFilesTaskName = pubTopLevelVersionFilesTaskName.replace('-java', 'Java')
-    def pubTopLevelVersionFilesTask = tasks.register("${pubTopLevelVersionFilesTaskName}", PublishToRawRepoTask) {
-      description "Publish ${topLevelRawRepoDir}_doc_versions.json Nexus directly under ${topLevelRawRepoDir}/ of the ${nexusRawRepoName} repository."
-      group 'Publishing-docset'
-      repoName = "${nexusRawRepoName}"
-      publishSrc = file("${projectDir}/${docSet}/top_level_repo_files/")
-      destPath "${topLevelRawRepoDir}/"
-    }
-    // add to both publish tasks to ensure the top level files are updated
-    tasks.named(getPublishAllTaskName('jekyll', 'current')).configure({ dependsOn pubTopLevelVersionFilesTask })
-    tasks.named(getPublishAllTaskName('jekyll', 'versioned')).configure({ dependsOn pubTopLevelVersionFilesTask })
-  }
-}
-
 //
 // Publish Javadoc Docsets
 //
