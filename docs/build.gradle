@@ -156,6 +156,7 @@ gradle.projectsEvaluated {  // Several statements below rely upon all subproject
 
     classpath = files([cdmCoreSourceSet.compileClasspath, cdmCoreSourceSet.output])
     include publicApiDef
+    include 'ucar/ma2/*.java'
   }
 
   task buildJavadocAll(type: Javadoc) {
