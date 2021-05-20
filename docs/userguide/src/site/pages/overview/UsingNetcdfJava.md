@@ -1,6 +1,6 @@
 ---
 title: Using netCDF-Java Maven artifacts
-last_updated: 2019-07-23
+last_updated: 2021-05-20
 sidebar: userguide_sidebar
 permalink: using_netcdf_java_artifacts.html
 toc: false
@@ -78,13 +78,6 @@ For example, in Maven and Gradle:
 
 <dependency>
   <groupId>edu.ucar</groupId>
-  <artifactId>cdm-image</artifactId>
-  <version>${netcdfJavaVersion}</version>
-  <scope>runtime</scope>
-</dependency>
-
-<dependency>
-  <groupId>edu.ucar</groupId>
   <artifactId>grib</artifactId>
   <version>${netcdfJavaVersion}</version>
   <scope>runtime</scope>
@@ -103,33 +96,25 @@ For example, in Maven and Gradle:
   <version>${netcdfJavaVersion}</version>
   <scope>runtime</scope>
 </dependency>
-
-<dependency>
-  <groupId>edu.ucar</groupId>
-  <artifactId>cdm-mcidas</artifactId>
-  <version>${netcdfJavaVersion}</version>
-  <scope>runtime</scope>
-</dependency>
 ~~~
 
 ~~~groovy
 // In Gradle
 dependencies {
   runtime "edu.ucar:bufr:${netcdfJavaVersion}"
-  runtime "edu.ucar:cdm-image:${netcdfJavaVersion}"
   runtime "edu.ucar:grib:${netcdfJavaVersion}"
   runtime "edu.ucar:netcdf4:${netcdfJavaVersion}"
   runtime "edu.ucar:opendap:${netcdfJavaVersion}"
-  runtime "edu.ucar:cdm-mcidas:${netcdfJavaVersion}"
 }
 ~~~
 ## Building with netcdfAll
 
 This is the appropriate option if you’re not using a dependency management tool like Maven or Gradle and you don’t care about jar size or compatibility with other libraries. Simply include netcdfAll-${netcdfJavaVersion}.jar on the classpath when you run your program.
 You’ll also need a logger.
-Currently does not include `cdm-s3` due to the size of the AWS S3 SDK dependency.
+Currently, does not include `cdm-s3` due to the size of the AWS S3 SDK dependency.
 
 ## Logging
+
 The netCDF-Java library uses the SLF4J logging facade.
 This allows applications to choose their own logging implementation, by including the appropriate jar file on the classpath at runtime.
 Common choices are `JDK logging` and `Log4J 2`:
@@ -137,18 +122,14 @@ Common choices are `JDK logging` and `Log4J 2`:
 ### JDK Logging
 
 You must include the SLF4J-to-JDK Logging interface jar: `slf4j-jdk14-${slf4jVersion}.jar`.
-
 The actual logging is implemented in the java.util.log package, part of the Java runtime.
 
 #### To configure JDK logging:
 
 Modify the file `$JAVA_HOME/jre/lib/logging.properties`.
 Or, create you own logging properties file and specify it with the `java.util.logging.config.file` system property.
-
 Possible log levels are `SEVERE`, `WARNING`, `INFO`, `CONFIG`, `FINE`, `FINER`, `FINEST`, and `ALL`.
-
 To show only `SEVERE` messages for all loggers, use: `.level= SEVERE`
-
 You can also set the configuration by using `java.util.logging.LogManager` in your application, most likely by creating your own properties file or resources and calling:
 
 ~~~java
@@ -160,7 +141,6 @@ lm.readConfiguration(inputStream);
 ### Log4j 2
 
 You must include the Log4j 2 SLF4J Binding (`log4j-slf4j-impl-${log4j2Version}.jar`) and the Log4j 2 implementation (`log4j-core-${log4j2Version}.jar`) on the classpath.
-
 You should then configure the logging by adding a `log4j2.xml` config file to your classpath.
 A minimal version is:
 

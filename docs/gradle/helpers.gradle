@@ -26,12 +26,6 @@ static def getRawRepoName(Map<String, String> docSetInfo) {
   docSetInfo.get('rawRepoName')
 }
 
-// extract the top level directory used to store the documentation on nexus from an entry in docSetsInfo
-static def getTopLevelRawRepoDir(Map<String, String> docSetInfo) {
-  def rawRepo = getRawRepoName(docSetInfo)
-  rawRepo.replace('docs-', '')
-}
-
 // extract the version part of the path under which the documentation is stored on nexus from an entry in docSetsInfo
 def getPathForDescription(docSetInfo, versioned = true) {
   def nexusPath = getNexusPath(docSetInfo, versioned)
@@ -52,7 +46,8 @@ def getDeleteAllTaskName(String docsetFlavor, String versionType) {
 
 // extract the path from docSetsInfo under which a docset should be published on nexus
 def getNexusPath(docSetInfo, versioned = true) {
-  def topLevelRawRepoDir = getTopLevelRawRepoDir(docSetInfo)
+  def topLevelRawRepoDir = getRawRepoName(docSetInfo)
+  topLevelRawRepoDir.replace('docs-', '')
   def branchName = getBranchName()
   def persistentNameNexus = 'current'
   // if netcdf-java docset, publish docs on develop branch under 'dev' instead of 'current'.
@@ -93,5 +88,4 @@ ext {
   getNexusPath = this.&getNexusPath
   getPathForDescription = this.&getPathForDescription
   getRawRepoName = this.&getRawRepoName
-  getTopLevelRawRepoDir = this.&getTopLevelRawRepoDir
 }
