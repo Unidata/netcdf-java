@@ -47,7 +47,7 @@ def getDeleteAllTaskName(String docsetFlavor, String versionType) {
 // extract the path from docSetsInfo under which a docset should be published on nexus
 def getNexusPath(docSetInfo, versioned = true) {
   def topLevelRawRepoDir = getRawRepoName(docSetInfo)
-  topLevelRawRepoDir.replace('docs-', '')
+  topLevelRawRepoDir = topLevelRawRepoDir.replace('docs-', '')
   def branchName = getBranchName()
   def persistentNameNexus = 'current'
   // if netcdf-java docset, publish docs on develop branch under 'dev' instead of 'current'.
