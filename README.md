@@ -4,7 +4,7 @@
 
 # netCDF-Java
 
-Welcome to the development branch of the netCDF-Java library (currently version _6.x_)!
+Welcome to the `6.x` line of development of the netCDF-Java library!
 
 > Looking for the `5.x` line of development?
 See branch [maint-5.x](https://github.com/unidata/netcdf-java/tree/maint-5.x).
