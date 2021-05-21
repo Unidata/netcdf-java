@@ -93,7 +93,7 @@ docSetsInfo.each { docSet, docSetInfo ->
 
   tasks.register("serve${partialTaskName}", ServeTask) {
     group 'documentation-set'
-    script 'jekyll'
+    script = 'jekyll'
     description "Serve $docSet jekyll site."
     sourceDirectory.set(layout.projectDirectory.dir("${docSet}/src/site"))
     destinationDirectory.set(layout.buildDirectory.dir("site/${docSet}/"))
