@@ -32,6 +32,7 @@ dependencies {
   testImplementation project(':bufr')
   testImplementation project(':grib')
   testImplementation 'com.google.truth:truth'
+  testImplementation 'com.google.truth.extensions:truth-java8-extension'
   testImplementation 'commons-io:commons-io'
   testImplementation 'junit:junit'
   testImplementation 'org.codehaus.groovy:groovy-all' // for Spock.
