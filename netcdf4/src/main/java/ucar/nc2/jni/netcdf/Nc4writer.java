@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import ucar.array.ArrayType;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayStructure;
@@ -45,7 +44,6 @@ import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.ffi.netcdf.NetcdfClibrary;
-import ucar.nc2.internal.iosp.IospFileCreator;
 import ucar.nc2.internal.iosp.IospFileWriter;
 import ucar.nc2.internal.iosp.hdf5.H5header;
 import ucar.nc2.iosp.IospHelper;
@@ -64,6 +62,7 @@ public class Nc4writer extends Nc4reader implements IospFileWriter {
   private static final boolean debugCompound = false;
   private static final boolean debugDim = false;
   private static final boolean debugWrite = false;
+  private static final String notImplementedMessage = "Functionality not implemented.";
 
   private boolean fill = true;
   private Nc4Chunking chunker = new Nc4ChunkingDefault();
@@ -86,12 +85,12 @@ public class Nc4writer extends Nc4reader implements IospFileWriter {
 
   @Override
   public void openForWriting(String location, Group.Builder rootGroup, CancelTask cancelTask) throws IOException {
-    throw new NotImplementedException();
+    throw new UnsupportedOperationException(notImplementedMessage);
   }
 
   @Override
   public NetcdfFile getOutputFile() {
-    throw new NotImplementedException();
+    throw new UnsupportedOperationException(notImplementedMessage);
   }
 
   // * Create new file, populate it from the objects in ncfileb.

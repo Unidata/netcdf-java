@@ -4,9 +4,11 @@
 
 # netCDF-Java
 
-Welcome to the development branch of the netCDF-Java library (currently version _6.x_)!
+Welcome to the development branch of the netCDF-Java library (currently version _7.x_)!
 
-> Looking for the `5.x` line of development?
+> Looking for the `6.x` line of development?
+See branch [6.x](https://github.com/unidata/netcdf-java/tree/6.x).
+Looking for the `5.x` line of development?
 See branch [maint-5.x](https://github.com/unidata/netcdf-java/tree/maint-5.x).
 Version `4.6` is no longer supported outside of the context of the THREDDS Data Server (TDS).
 If you are looking for that codebase, it can be found at <https://github.com/Unidata/thredds/tree/main>.
@@ -18,13 +20,13 @@ It can write netCDF-4 files by using JNA to call the netCDF-C library.
 The library implements [Unidata's Common Data Model (CDM)](https://docs.unidata.ucar.edu/netcdf-java/current/userguide/common_data_model_overview.html) to provide data geolocation capabilities.
 
 Documentation can be found at <https://docs.unidata.ucar.edu/netcdf-java/>.
-The [User's Guide](https://docs.unidata.ucar.edu/netcdf-java/6.0/userguide/index.html) contains information on how to use the library in your project, a tutorial, and useful upgrade tips.
+The [User's Guide](https://docs.unidata.ucar.edu/netcdf-java/current/userguide/index.html) contains information on how to use the library in your project, a tutorial, and useful upgrade tips.
 
 ## Requirements
 
-* Java 8 or above
+* Java 11 or above
 
-Each pull requests runs a subset of tests using Java 8, 11, and 14 (`AdoptOpenJDK` and `Zulu`).
+Each pull requests runs a subset of tests using Java 11 and 14 (`AdoptOpenJDK` and `Zulu`).
 Currently, netCDF-C version 4.7.4 is used by our netCDF-4 write tests.
 The full test suite runs nightly (this take a little over an hour).
 More information on our test environment can be found at <https://github.com/unidata/thredds-test-environment#thredds-test-environment-highlights>.

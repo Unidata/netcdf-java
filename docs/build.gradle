@@ -93,7 +93,7 @@ docSetsInfo.each { docSet, docSetInfo ->
 
   tasks.register("serve${partialTaskName}", ServeTask) {
     group 'documentation-set'
-    script 'jekyll'
+    script = 'jekyll'
     description "Serve $docSet jekyll site."
     sourceDirectory.set(layout.projectDirectory.dir("${docSet}/src/site"))
     destinationDirectory.set(layout.buildDirectory.dir("site/${docSet}/"))
@@ -180,7 +180,7 @@ gradle.projectsEvaluated {  // Several statements below rely upon all subproject
     options.encoding = 'UTF-8'
     options.docEncoding = 'UTF-8'
     options.charSet = 'UTF-8'
-    options.links('https://docs.oracle.com/javase/8/docs/api/')
+    options.links('https://docs.oracle.com/en/java/javase/11/docs/api/')
 
     if (JavaVersion.current().isJava8Compatible()) {
       // doclint="all" (the default) will identify 100s of errors in our docs and cause no Javadoc to be generated.

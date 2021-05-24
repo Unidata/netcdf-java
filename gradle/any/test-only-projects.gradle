@@ -4,8 +4,8 @@ apply from: "$rootDir/gradle/any/coverage.gradle"
 apply from: "$rootDir/gradle/any/spotless.gradle"
 
 java {
-  sourceCompatibility = JavaVersion.VERSION_1_8
-  targetCompatibility = JavaVersion.VERSION_1_8
+  sourceCompatibility = JavaVersion.VERSION_11
+  targetCompatibility = JavaVersion.VERSION_11
 }
 
 // Will apply to "compileJava", "compileTestJava", "compileSourceSetJava", etc.

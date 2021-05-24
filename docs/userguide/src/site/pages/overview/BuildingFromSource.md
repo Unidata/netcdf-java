@@ -10,7 +10,7 @@ toc: false
 
 The netCDF-Java source code is hosted on GitHub, and — as of v4.6.1 — we use Gradle to build it.
 Ant and Maven builds are no longer supported.
-To build, you need Git and at least JDK 8 installed (building with JDK >15 is not yet supported by the version of gradle used by our build).
+To build, you need Git and at least JDK 11 installed (building with JDK >15 is not yet supported by the version of gradle used by our build).
 
 First, clone the netCDF-Java repository from Github:
 
@@ -28,11 +28,6 @@ cd netcdf-java
 ~~~
 
 By default, the current branch head is set to develop, which is our main development branch.
-If you’d like to build the latest version of the 5.x line instead, you’ll need to checkout the `maint-5.x` branch instead:
-
-~~~bash
-git checkout maint-5.x
-~~~
 
 Next, use the Gradle wrapper to execute the assemble task:
 
