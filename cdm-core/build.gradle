@@ -19,6 +19,7 @@ dependencies {
   compile 'com.google.protobuf:protobuf-java'
   compile 'com.google.re2j:re2j'
   compile 'joda-time:joda-time'
+  compile 'org.threeten:threeten-extra'
   compile 'org.jdom:jdom2'
   compile 'org.slf4j:slf4j-api'
 

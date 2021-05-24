@@ -23,7 +23,6 @@ import java.util.Objects;
  */
 @Immutable
 public class CalendarPeriod {
-  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CalendarPeriod.class);
   private static final Cache<CalendarPeriod, CalendarPeriod> cache = CacheBuilder.newBuilder().maximumSize(100).build();
 
   public static final CalendarPeriod Hour = CalendarPeriod.of(1, Field.Hour);

@@ -14,8 +14,8 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
- * A Calendar Date Unit: "unit since date".
- * Its main job is to convert "value unit since date" to a CalendarDate.
+ * A Calendar Date Unit: "unit since baseDate".
+ * Its main job is to convert "value unit since baseDate" to a CalendarDate.
  */
 @Immutable
 public class CalendarDateUnit {
@@ -63,36 +63,45 @@ public class CalendarDateUnit {
     this.isCalendarField = isCalendarField;
   }
 
-  /* Find the offset of date in this unit (secs, days, etc) from the baseDate. inverse of makeCalendarDate. */
-  public long makeOffsetFromRefDate(CalendarDate date) {
-    if (date.equals(baseDate)) {
-      return 0;
-    }
-    return date.since(baseDate, period);
-  }
-
-  public CalendarDate makeCalendarDate(long value) {
-    return baseDate.add(value, period);
-  }
-
   public CalendarDate getBaseDateTime() {
     return baseDate;
-  }
-
-  public CalendarPeriod getCalendarPeriod() {
-    return period;
-  }
-
-  public CalendarPeriod.Field getCalendarField() {
-    return periodField;
   }
 
   public Calendar getCalendar() {
     return cal;
   }
 
+  public CalendarPeriod.Field getCalendarField() {
+    return periodField;
+  }
+
+  public CalendarPeriod getCalendarPeriod() {
+    return period;
+  }
+
   public boolean isCalendarField() {
     return isCalendarField;
+  }
+
+  /**
+   * Add the given (value * period) to the baseDateTime to make a new CalendarDate.
+   * 
+   * @param value number of periods to add. May be negative.
+   */
+  public CalendarDate makeCalendarDate(long value) {
+    return baseDate.add(value, period);
+  }
+
+  /**
+   * Find the offset of date in this unit (secs, days, etc) from the baseDateTime.
+   * Inverse of makeCalendarDate.
+   * LOOK not working when period is month.
+   */
+  public long makeOffsetFromRefDate(CalendarDate date) {
+    if (date.equals(baseDate)) {
+      return 0;
+    }
+    return date.since(baseDate, period);
   }
 
   /////////////////////////////////////

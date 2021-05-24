@@ -103,7 +103,7 @@ public class CalendarDate implements Comparable<CalendarDate> {
   }
 
   // internal use only
-  static CalendarDate of(Calendar cal, OffsetDateTime dateTime) {
+  static CalendarDate of(@Nullable Calendar cal, OffsetDateTime dateTime) {
     return new CalendarDate(cal, dateTime);
   }
 
