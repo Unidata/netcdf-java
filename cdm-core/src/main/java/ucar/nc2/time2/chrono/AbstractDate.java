@@ -25,6 +25,7 @@ import static java.time.temporal.ChronoField.YEAR;
  *
  * <h3>Implementation Requirements</h3>
  * Implementations must be immutable and thread-safe.
+ * from org.threeten.extra.chrono.AbstractDate
  */
 abstract class AbstractDate implements ChronoLocalDate {
 

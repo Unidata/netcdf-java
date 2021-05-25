@@ -84,17 +84,18 @@ public class TestCalendarDateUnit {
 
   @Test
   public void testBasics() {
-    CalendarDateUnit cdu = CalendarDateUnit.fromUdunitString(Calendar.julian, "years since 1970-01-01").orElseThrow();
-    assertThat(cdu.getCalendar()).isEqualTo(Calendar.julian);
+    CalendarDateUnit cdu =
+        CalendarDateUnit.fromUdunitString(Calendar.proleptic_gregorian, "years since 1970-01-01").orElseThrow();
+    assertThat(cdu.getCalendar()).isEqualTo(Calendar.proleptic_gregorian);
     assertThat(cdu.getCalendarPeriod()).isEqualTo(CalendarPeriod.of("years"));
     assertThat(cdu.getCalendarField()).isEqualTo(CalendarPeriod.fromUnitString("years"));
     assertThat(cdu.isCalendarField()).isEqualTo(false);
 
-    CalendarDate refDate = CalendarDate.fromUdunitIsoDate("julian", "1970-01-01").orElseThrow();
+    CalendarDate refDate = CalendarDate.fromUdunitIsoDate("proleptic_gregorian", "1970-01-01").orElseThrow();
     assertThat(cdu.getBaseDateTime()).isEqualTo(refDate);
 
-    CalendarDateUnit cdu2 = CalendarDateUnit.of(cdu.getCalendar(), cdu.getCalendarField(), refDate.getOffsetDateTime(),
-        cdu.isCalendarField());
+    CalendarDateUnit cdu2 =
+        CalendarDateUnit.of(cdu.getCalendar(), cdu.getCalendarField(), cdu.isCalendarField(), refDate);
     assertThat(cdu2).isEqualTo(cdu);
     assertThat(cdu2.hashCode()).isEqualTo(cdu.hashCode());
   }

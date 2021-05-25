@@ -147,14 +147,14 @@ public class TestUdunitDateParser {
 
   private void claimString(String s, String expected) {
     OffsetDateTime zdt = UdunitDateParser.parseUdunitIsoDate(s).orElseThrow();
-    CalendarDate result = CalendarDate.of(null, zdt);
+    CalendarDate result = new CalendarDateIso(zdt);
     System.out.printf("%s == %s%n", s, result);
     assertThat(result.toString()).isEqualTo(expected);
   }
 
   private void claimSameString(String s) {
     OffsetDateTime zdt = UdunitDateParser.parseUdunitIsoDate(s).orElseThrow();
-    CalendarDate result = CalendarDate.of(null, zdt);
+    CalendarDate result = new CalendarDateIso(zdt);
     System.out.printf("%s == %s%n", s, result);
     assertThat(result.toString()).isEqualTo(s);
   }

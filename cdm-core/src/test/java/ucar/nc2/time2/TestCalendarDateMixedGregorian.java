@@ -28,22 +28,6 @@ public class TestCalendarDateMixedGregorian {
 
   UnitFormat format = UnitFormatManager.instance();
 
-  /*
-   * http://www.w3.org/TR/NOTE-datetime.html
-   * Year:
-   * YYYY (eg 1997)
-   * Year and month:
-   * YYYY-MM (eg 1997-07)
-   * Complete date:
-   * YYYY-MM-DD (eg 1997-07-16)
-   * Complete date plus hours and minutes:
-   * YYYY-MM-DDThh:mmTZD (eg 1997-07-16T19:20+01:00)
-   * Complete date plus hours, minutes and seconds:
-   * YYYY-MM-DDThh:mm:ssTZD (eg 1997-07-16T19:20:30+01:00)
-   * Complete date plus hours, minutes, seconds and a decimal fraction of a
-   * second
-   * YYYY-MM-DDThh:mm:ss.sTZD (eg 1997-07-16T19:20:30.45+01:00)
-   */
   @Parameterized.Parameters(name = "{0}: {2}")
   public static Collection params() {
     Object[][] data = new Object[][] {{"ChangeoverDate", null, "secs since 1582-10-01"},
@@ -73,8 +57,8 @@ public class TestCalendarDateMixedGregorian {
     CalendarDate base = CalendarDate.of(getUdunitBase(datestring));
     Calendar cal = Calendar.get(calendar).orElse(Calendar.getDefault());
     CalendarDateUnit cdu = CalendarDateUnit.fromUdunitString(cal, datestring).orElseThrow();
-    assertThat(cdu.getBaseDateTime()).isNotEqualTo(base.getOffsetDateTime());
-    System.out.printf("CalendarDateUnit '%s' vs udunits '%s'%n", cdu.getBaseDateTime(), base.getOffsetDateTime());
+    assertThat(cdu.getBaseDateTime()).isNotEqualTo(base);
+    System.out.printf("CalendarDateUnit '%s' vs udunits '%s'%n", cdu.getBaseDateTime(), base);
   }
 
   private Date getUdunitBase(String s) throws Exception {

@@ -49,7 +49,7 @@ public final class Uniform30DayDate extends AbstractDate implements ChronoLocalD
   /**
    * The proleptic year.
    */
-  private final int prolepticYear;
+  private final int year;
   /**
    * The month of the year.
    */
@@ -239,12 +239,12 @@ public final class Uniform30DayDate extends AbstractDate implements ChronoLocalD
   /**
    * Creates an instance from validated data.
    *
-   * @param prolepticYear the Uniform30Day proleptic-year
+   * @param year the Uniform30Day proleptic-year
    * @param month the Uniform30Day month, from 1 to 12
    * @param dayOfMonth the Uniform30Day day-of-month, from 1 to 30
    */
-  private Uniform30DayDate(int prolepticYear, int month, int dayOfMonth) {
-    this.prolepticYear = prolepticYear;
+  private Uniform30DayDate(int year, int month, int dayOfMonth) {
+    this.year = year;
     this.month = month;
     this.day = dayOfMonth;
     this.dayOfYear = DAYS_IN_MONTH * (month - 1) + dayOfMonth;
@@ -256,13 +256,13 @@ public final class Uniform30DayDate extends AbstractDate implements ChronoLocalD
    * @return Uniform30DayDate the resolved date, not null
    */
   private Object readResolve() {
-    return Uniform30DayDate.of(prolepticYear, month, day);
+    return Uniform30DayDate.of(year, month, day);
   }
 
   // -----------------------------------------------------------------------
   @Override
   int getProlepticYear() {
-    return prolepticYear;
+    return year;
   }
 
   @Override
@@ -383,7 +383,7 @@ public final class Uniform30DayDate extends AbstractDate implements ChronoLocalD
    */
   @Override
   public IsoEra getEra() {
-    return (prolepticYear >= 1 ? IsoEra.CE : IsoEra.BCE);
+    return (year >= 1 ? IsoEra.CE : IsoEra.BCE);
   }
 
   /**
@@ -436,18 +436,18 @@ public final class Uniform30DayDate extends AbstractDate implements ChronoLocalD
         case DAY_OF_WEEK:
           range(f).checkValidValue(newValue, field);
           int dom = ((getDayOfMonth() - 1) / DAYS_IN_WEEK) * DAYS_IN_WEEK;
-          return resolvePreviousValid(prolepticYear, month, dom + nval);
+          return resolvePreviousValid(year, month, dom + nval);
         case ALIGNED_WEEK_OF_MONTH:
           range(f).checkValidValue(newValue, field);
           int d = day % DAYS_IN_WEEK;
-          return resolvePreviousValid(prolepticYear, month, (nval - 1) * DAYS_IN_WEEK + d);
+          return resolvePreviousValid(year, month, (nval - 1) * DAYS_IN_WEEK + d);
         case ALIGNED_WEEK_OF_YEAR:
           range(f).checkValidValue(newValue, field);
           int newMonth = 1 + ((nval - 1) / WEEKS_IN_MONTH);
           int newDay = ((nval - 1) % WEEKS_IN_MONTH) * DAYS_IN_WEEK + 1 + ((day - 1) % DAYS_IN_WEEK);
-          return resolvePreviousValid(prolepticYear, newMonth, newDay);
+          return resolvePreviousValid(year, newMonth, newDay);
         case DAY_OF_MONTH:
-          return create(prolepticYear, month, nval);
+          return create(year, month, nval);
         default:
           break;
       }
@@ -457,7 +457,7 @@ public final class Uniform30DayDate extends AbstractDate implements ChronoLocalD
 
   @Override
   Uniform30DayDate withDayOfYear(int value) {
-    return ofYearDay(prolepticYear, value);
+    return ofYearDay(year, value);
   }
 
   // -----------------------------------------------------------------------
@@ -501,8 +501,8 @@ public final class Uniform30DayDate extends AbstractDate implements ChronoLocalD
    *         LOOK WTF?
    */
   long yearsUntil(Uniform30DayDate end) {
-    long startYear = this.prolepticYear * 512L + this.getDayOfYear();
-    long endYear = end.prolepticYear * 512L + end.getDayOfYear();
+    long startYear = this.year * 512L + this.getDayOfYear();
+    long endYear = end.year * 512L + end.getDayOfYear();
     return (endYear - startYear) / 512L;
   }
 
@@ -538,7 +538,7 @@ public final class Uniform30DayDate extends AbstractDate implements ChronoLocalD
   // -----------------------------------------------------------------------
   @Override
   public long toEpochDay() {
-    long epochDay = (long) (this.prolepticYear - 1) * DAYS_IN_YEAR + this.dayOfYear - DAYS_0001_TO_1970 - 1;
+    long epochDay = (long) (this.year - 1) * DAYS_IN_YEAR + this.dayOfYear - DAYS_0001_TO_1970 - 1;
 
     return epochDay;
   }

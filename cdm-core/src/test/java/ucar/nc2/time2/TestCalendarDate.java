@@ -13,7 +13,7 @@ public class TestCalendarDate {
 
   @Test
   public void testBasics() {
-    assertThat(CalendarDate.present(Calendar.getDefault()).getCalendar()).isEqualTo(Calendar.getDefault());
+    assertThat(CalendarDate.present().getCalendar()).isEqualTo(Calendar.getDefault());
   }
 
   @Test
@@ -33,8 +33,8 @@ public class TestCalendarDate {
 
   @Test
   public void testDoy() {
-    CalendarDate first = CalendarDate.of(null, 1999, 1, 1, 1, 1, 1);
-    CalendarDate doy = CalendarDate.ofDoy(null, 1999, 1, 1, 1, 1);
+    CalendarDate first = CalendarDate.of(null, 1999, 1, 1, 1, 1, 1, 1, null);
+    CalendarDate doy = CalendarDate.ofDoy(1999, 1, 1, 1, 1, 1);
 
     assertThat(first).isEqualTo(doy);
     assertThat(first.hashCode()).isEqualTo(doy.hashCode());
@@ -55,8 +55,8 @@ public class TestCalendarDate {
 
   @Test
   public void testOrdering() {
-    CalendarDate first = CalendarDate.of(null, 1999, 1, 1, 1, 1, 1);
-    CalendarDate second = CalendarDate.of(null, 1999, 1, 2, 1, 1, 1);
+    CalendarDate first = CalendarDate.of(null, 1999, 1, 1, 1, 1, 1, 1, null);
+    CalendarDate second = CalendarDate.of(null, 1999, 1, 2, 1, 1, 1, 1, null);
     assertThat(first.isBefore(second)).isTrue();
     assertThat(first.isAfter(second)).isFalse();
     assertThat(second.isBefore(first)).isFalse();
@@ -68,7 +68,7 @@ public class TestCalendarDate {
 
   @Test
   public void testGetFields() {
-    CalendarDate cd = CalendarDate.of(null, 1999, 1, 2, 3, 4, 5);
+    CalendarDate cd = CalendarDate.of(null, 1999, 1, 2, 3, 4, 5, 6, null);
 
     assertThat(cd.getCalendar()).isEqualTo(Calendar.getDefault());
     assertThat(cd.getDayOfMonth()).isEqualTo(2);
@@ -80,7 +80,6 @@ public class TestCalendarDate {
     assertThat(cd.getFieldValue(CalendarPeriod.Field.Hour)).isEqualTo(3);
     assertThat(cd.getFieldValue(CalendarPeriod.Field.Minute)).isEqualTo(4);
     assertThat(cd.getFieldValue(CalendarPeriod.Field.Second)).isEqualTo(5);
-    // TODO cant set millisecs in CalendarDate
     assertThat(cd.getFieldValue(CalendarPeriod.Field.Millisec)).isEqualTo(0);
   }
 
@@ -180,7 +179,7 @@ public class TestCalendarDate {
 
   @Test
   public void testTruncate() {
-    CalendarDate baseDate = CalendarDate.of(null, 2000, 1, 2, 3, 4, 5);
+    CalendarDate baseDate = CalendarDate.of(null, 2000, 1, 2, 3, 4, 5, 0, null);
 
     CalendarDate result = baseDate.truncate(CalendarPeriod.Field.Millisec);
     assertThat(result.toString()).isEqualTo("2000-01-02T03:04:05Z");
@@ -206,8 +205,8 @@ public class TestCalendarDate {
 
   @Test
   public void testGetDifference() {
-    CalendarDate baseDate = CalendarDate.of(null, 2000, 1, 2, 3, 4, 5);
-    CalendarDate diffDate = CalendarDate.of(null, 2001, 2, 3, 4, 5, 6);
+    CalendarDate baseDate = CalendarDate.of(null, 2000, 1, 2, 3, 4, 5, 0, null);
+    CalendarDate diffDate = CalendarDate.of(null, 2001, 2, 3, 4, 5, 6, 0, null);
 
     assertThat(diffDate.since(baseDate, CalendarPeriod.Field.Year)).isEqualTo(1);
     assertThat(diffDate.since(baseDate, CalendarPeriod.Field.Month)).isEqualTo(13);
@@ -217,7 +216,7 @@ public class TestCalendarDate {
     assertThat(diffDate.since(baseDate, CalendarPeriod.Field.Second)).isEqualTo(34390861);
     assertThat(diffDate.since(baseDate, CalendarPeriod.Field.Millisec)).isEqualTo(34390861000L);
 
-    CalendarDate diffDate2 = CalendarDate.of(null, 2001, 1, 2, 3, 4, 5);
+    CalendarDate diffDate2 = CalendarDate.of(null, 2001, 1, 2, 3, 4, 5, 0, null);
     assertThat(diffDate2.since(baseDate, CalendarPeriod.Field.Year)).isEqualTo(1);
     assertThat(diffDate2.since(baseDate, CalendarPeriod.Field.Month)).isEqualTo(12);
     assertThat(diffDate2.since(baseDate, CalendarPeriod.Field.Day)).isEqualTo(366);
@@ -226,7 +225,7 @@ public class TestCalendarDate {
     assertThat(diffDate2.since(baseDate, CalendarPeriod.Field.Second)).isEqualTo(366 * 24 * 60 * 60);
     assertThat(diffDate2.since(baseDate, CalendarPeriod.Field.Millisec)).isEqualTo(31622400000L);
 
-    CalendarDate diffDate3 = CalendarDate.of(null, 2000, 1, 2, 3, 4, 5);
+    CalendarDate diffDate3 = CalendarDate.of(null, 2000, 1, 2, 3, 4, 5, 0, null);
     assertThat(diffDate3.since(baseDate, CalendarPeriod.Field.Year)).isEqualTo(0);
     assertThat(diffDate3.since(baseDate, CalendarPeriod.Field.Month)).isEqualTo(0);
     assertThat(diffDate3.since(baseDate, CalendarPeriod.Field.Day)).isEqualTo(0);

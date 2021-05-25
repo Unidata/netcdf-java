@@ -26,7 +26,7 @@ public class CalendarDateFormatter {
       DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS 'UTC'").withZone(ZoneOffset.UTC); // udunits
 
   public static String toDateTimeStringISO(CalendarDate cd) {
-    return cd.getOffsetDateTime().toString();
+    return cd.toString();
   }
 
   public static String toDateTimeStringISO(Date d) {
@@ -38,16 +38,15 @@ public class CalendarDateFormatter {
   }
 
   public static String toDateTimeString(CalendarDate cd) {
-    OffsetDateTime datetime = cd.getOffsetDateTime();
-    if (datetime.getNano() == 0) {
-      return datetime.format(dtf);
+    if (cd.getMillis() == 0) {
+      return cd.format(dtf);
     } else {
-      return datetime.format(dtf_with_millis_of_second);
+      return cd.format(dtf_with_millis_of_second);
     }
   }
 
   public static String toDateTimeStringShort(CalendarDate cd) {
-    return cd.getOffsetDateTime().format(dtf);
+    return cd.format(dtf);
   }
 
   public static String toDateTimeString(Date date) {
@@ -55,7 +54,7 @@ public class CalendarDateFormatter {
   }
 
   public static String toDateString(CalendarDate cd) {
-    return cd.getOffsetDateTime().format(df);
+    return cd.format(df);
   }
 
   /////////////////////////////////////////////
@@ -111,11 +110,11 @@ public class CalendarDateFormatter {
   }
 
   public String toString(CalendarDate cd) {
-    return cd.getOffsetDateTime().format(dflocal);
+    return cd.format(dflocal);
   }
 
   public CalendarDate parse(String timeString) {
     OffsetDateTime dt = OffsetDateTime.parse(timeString, dflocal);
-    return new CalendarDate(null, dt);
+    return new CalendarDateIso(dt);
   }
 }

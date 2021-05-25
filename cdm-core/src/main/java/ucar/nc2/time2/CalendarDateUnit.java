@@ -19,8 +19,9 @@ import java.util.Optional;
  */
 @Immutable
 public class CalendarDateUnit {
-  public static final CalendarDateUnit unixDateUnit = CalendarDateUnit.of(null, CalendarPeriod.Field.Second,
-      OffsetDateTime.ofInstant(Instant.EPOCH, ZoneOffset.UTC), false);
+  // "seconds since the Unix epoch".
+  public static final CalendarDateUnit unixDateUnit = CalendarDateUnit.of(null, CalendarPeriod.Field.Second, false,
+      new CalendarDateIso(OffsetDateTime.ofInstant(Instant.EPOCH, ZoneOffset.UTC)));
 
   /**
    * Create a CalendarDateUnit from a calendar and a udunit string = "unit since calendarDate"
@@ -30,8 +31,15 @@ public class CalendarDateUnit {
    * @return CalendarDateUnit or empty if udunitString is not parseable
    */
   public static Optional<CalendarDateUnit> fromUdunitString(@Nullable Calendar calt, String udunitString) {
-    Optional<UdunitDateParser> udunit = UdunitDateParser.parseUnitString(udunitString);
-    return udunit.map(u -> new CalendarDateUnit(calt, u.periodField, u.baseDate, u.isCalendarField));
+    Optional<UdunitCalendarDateParser> udunit = UdunitCalendarDateParser.parseUnitString(udunitString);
+    if (udunit.isEmpty()) {
+      return Optional.empty();
+    }
+    UdunitCalendarDateParser ud = udunit.get();
+    UdunitCalendarDateParser.ComponentFields flds = ud.flds;
+    CalendarDate baseDate = CalendarDate.of(calt, flds.year, flds.monthOfYear, flds.dayOfMonth, flds.hourOfDay,
+        flds.minuteOfHour, flds.secondOfMinute, flds.nanoOfSecond, flds.zoneId);
+    return Optional.of(CalendarDateUnit.of(calt, ud.periodField, ud.isCalendarField, baseDate));
   }
 
   /**
@@ -42,9 +50,9 @@ public class CalendarDateUnit {
    * @param baseDate "since baseDate"
    * @return CalendarDateUnit
    */
-  public static CalendarDateUnit of(Calendar calt, CalendarPeriod.Field periodField, OffsetDateTime baseDate,
-      boolean isCalendarField) {
-    return new CalendarDateUnit(calt, periodField, baseDate, isCalendarField);
+  public static CalendarDateUnit of(Calendar calt, CalendarPeriod.Field periodField, boolean isCalendarField,
+      CalendarDate baseDate) {
+    return new CalendarDateUnit(calt, periodField, isCalendarField, baseDate);
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////
@@ -54,12 +62,12 @@ public class CalendarDateUnit {
   private final CalendarDate baseDate;
   private final boolean isCalendarField;
 
-  private CalendarDateUnit(@Nullable Calendar calt, CalendarPeriod.Field periodField, OffsetDateTime baseDate,
-      boolean isCalendarField) {
+  private CalendarDateUnit(@Nullable Calendar calt, CalendarPeriod.Field periodField, boolean isCalendarField,
+      CalendarDate baseDate) {
     this.cal = calt == null ? Calendar.getDefault() : calt;
     this.periodField = periodField;
     this.period = CalendarPeriod.of(1, periodField);
-    this.baseDate = new CalendarDate(calt, baseDate);
+    this.baseDate = baseDate;
     this.isCalendarField = isCalendarField;
   }
 
