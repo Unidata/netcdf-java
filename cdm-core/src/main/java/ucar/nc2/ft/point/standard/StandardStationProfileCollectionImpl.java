@@ -26,8 +26,8 @@ import ucar.nc2.ft.point.StationFeature;
 import ucar.nc2.ft.point.StationHelper;
 import ucar.nc2.ft.point.StationProfileCollectionImpl;
 import ucar.nc2.ft.point.StationProfileFeatureImpl;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateUnit;
+import ucar.nc2.time2.CalendarDate;
+import ucar.nc2.time2.CalendarDateUnit;
 import ucar.nc2.ft.IOIterator;
 import ucar.unidata.geoloc.Station;
 
@@ -247,8 +247,8 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
 
     StandardProfileFeature(Station s, CalendarDateUnit timeUnit, String altUnits, double time, Cursor cursor,
         StructureData profileData) {
-      super(timeUnit.makeCalendarDate(time).toString(), timeUnit, altUnits, s.getLatitude(), s.getLongitude(), time,
-          -1);
+      super(timeUnit.makeCalendarDate((int) time).toString(), timeUnit, altUnits, s.getLatitude(), s.getLongitude(),
+          time, -1);
       this.cursor = cursor;
       this.profileData = profileData;
 
@@ -258,7 +258,7 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
           if (iter.hasNext()) {
             PointFeature pf = iter.next();
             this.time = pf.getObservationTime();
-            this.name = timeUnit.makeCalendarDate(this.time).toString();
+            this.name = timeUnit.makeCalendarDate((int) this.time).toString();
           } else {
             this.name = "empty";
           }
@@ -279,7 +279,7 @@ public class StandardStationProfileCollectionImpl extends StationProfileCollecti
     @Nonnull
     @Override
     public CalendarDate getTime() {
-      return timeUnit.makeCalendarDate(time);
+      return timeUnit.makeCalendarDate((int) time);
     }
 
     @Nonnull

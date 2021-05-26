@@ -20,7 +20,7 @@ import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.PointFeatureCC;
 import ucar.nc2.ft.PointFeatureCollection;
 import ucar.nc2.ft.point.PointDatasetImpl;
-import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.time2.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
 
 /**

@@ -7,7 +7,7 @@ package ucar.nc2.ft.point;
 
 import javax.annotation.Nonnull;
 import ucar.nc2.ft.PointFeatureIterator;
-import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.time2.CalendarDateRange;
 
 /**
  * A flattened StationTimeSeriesCollection.

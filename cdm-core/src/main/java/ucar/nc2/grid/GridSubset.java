@@ -5,12 +5,14 @@
 package ucar.nc2.grid;
 
 import com.google.common.base.Preconditions;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateRange;
+import com.google.common.base.Splitter;
+import ucar.nc2.time2.CalendarDate;
+import ucar.nc2.time2.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPoints;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionRect;
+import ucar.unidata.util.StringUtil2;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -83,12 +85,9 @@ public class GridSubset {
     } else if (val instanceof CalendarDate) {
       return (CalendarDate) val;
     } else if (val instanceof String) {
-      try {
-        // TODO calendar
-        return CalendarDate.parseISOformat(null, (String) val);
-      } catch (Exception e) {
-        throw new RuntimeException(key + " cant parse as Iso CalendarDate " + val);
-      }
+      // TODO calendar
+      return CalendarDate.fromUdunitIsoDate(null, (String) val)
+          .orElseThrow(() -> new RuntimeException(key + " cant parse as Iso CalendarDate " + val));
     }
     throw new RuntimeException(key + " not a CalendarDate " + val);
   }
@@ -102,12 +101,29 @@ public class GridSubset {
       return (CalendarDateRange) val;
     } else if (val instanceof String) {
       try {
-        return CalendarDateRange.parse((String) val);
+        return parse((String) val);
       } catch (Exception e) {
         throw new RuntimeException(key + " cant parse as CalendarDateRange " + val);
       }
     }
     throw new RuntimeException(key + " not a CalendarDateRange " + val);
+  }
+
+  private static CalendarDateRange parse(String source) {
+    StringBuilder sourceb = new StringBuilder(source);
+    StringUtil2.removeAll(sourceb, "[]");
+    List<String> ss = Splitter.on(',').omitEmptyStrings().trimResults().splitToList(sourceb);
+    if (ss.size() != 2) {
+      return null;
+    }
+    CalendarDate start = CalendarDate.fromUdunitIsoDate(null, ss.get(0)).orElse(null);
+    CalendarDate end = CalendarDate.fromUdunitIsoDate(null, ss.get(1)).orElse(null);
+
+    try {
+      return CalendarDateRange.of(start, end);
+    } catch (Exception e) {
+      return null;
+    }
   }
 
   private CoordInterval getCoordInterval(String key) {

@@ -2,8 +2,8 @@ package ucar.nc2.grib.coord;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarPeriod;
+import ucar.nc2.time2.CalendarDate;
+import ucar.nc2.time2.CalendarPeriod;
 import ucar.nc2.internal.util.Counters;
 import ucar.nc2.util.Indent;
 import java.lang.invoke.MethodHandles;
@@ -35,7 +35,7 @@ public class TestCoordinate implements Coordinate {
       case runtime:
         List<Long> cd = new ArrayList<>(nvals);
         for (int i = 0; i < nvals; i++)
-          cd.add(CalendarDate.of(null, 1953, 11, i + 1, 9, i + 1, 0).getMillis());
+          cd.add(CalendarDate.of(1953, 11, i + 1, 9, i + 1, 0).getMillis());
         return new CoordinateRuntime(cd, period);
       case time:
         List<Integer> vals = new ArrayList<>(nvals);

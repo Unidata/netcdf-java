@@ -8,7 +8,7 @@ package ucar.nc2.ft.point.standard;
 import java.io.IOException;
 import ucar.nc2.ft.PointFeatureIterator;
 import ucar.nc2.ft.point.PointCollectionImpl;
-import ucar.nc2.time.CalendarDateUnit;
+import ucar.nc2.time2.CalendarDateUnit;
 
 /**
  * Implementation of PointFeatureCollection using a NestedTable

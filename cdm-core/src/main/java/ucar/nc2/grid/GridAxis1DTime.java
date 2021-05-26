@@ -16,8 +16,8 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.internal.grid.GridAxis1DHelper;
 import ucar.nc2.internal.grid.TimeHelper;
-import ucar.nc2.time.*;
-import ucar.nc2.time.Calendar;
+import ucar.nc2.time2.*;
+import ucar.nc2.time2.Calendar;
 import ucar.nc2.util.Indent;
 
 import javax.annotation.Nullable;
@@ -97,14 +97,14 @@ public class GridAxis1DTime extends GridAxis1D {
   /** Get the bounds of the ith coordinate as a CalendarDate[2]. */
   public CalendarDate[] getCoordBoundsDate(int i) {
     CalendarDate[] e = new CalendarDate[2];
-    e[0] = timeHelper.makeCalendarDateFromOffset(getCoordEdge1(i));
-    e[1] = timeHelper.makeCalendarDateFromOffset(getCoordEdge2(i));
+    e[0] = timeHelper.makeCalendarDateFromOffset((int) getCoordEdge1(i));
+    e[1] = timeHelper.makeCalendarDateFromOffset((int) getCoordEdge2(i));
     return e;
   }
 
   /** Get the midpoint of the ith coordinate as a CalendarDate. */
   public CalendarDate getCoordBoundsMidpointDate(int i) {
-    return timeHelper.makeCalendarDateFromOffset(getCoordMidpoint(i));
+    return timeHelper.makeCalendarDateFromOffset((int) getCoordMidpoint(i));
   }
 
 
@@ -145,7 +145,7 @@ public class GridAxis1DTime extends GridAxis1D {
   }
 
   /** Use the CalendarDateUnit to make a CalendarDate from a value. */
-  public CalendarDate makeDate(double value) {
+  public CalendarDate makeDate(long value) {
     return timeHelper.makeDate(value);
   }
 
@@ -264,7 +264,7 @@ public class GridAxis1DTime extends GridAxis1D {
     if (ncoords < 7) {
       Formatter f = new Formatter();
       for (int i = 0; i < ncoords; i++) {
-        CalendarDate cd = timeHelper.makeDate(getCoordMidpoint(i));
+        CalendarDate cd = timeHelper.makeDate((long) getCoordMidpoint(i)); // LOOK
         if (i > 0)
           f.format(", ");
         f.format("%s", cd);
@@ -273,9 +273,9 @@ public class GridAxis1DTime extends GridAxis1D {
     }
 
     Formatter f = new Formatter();
-    CalendarDate start = timeHelper.makeDate(getStartValue());
+    CalendarDate start = timeHelper.makeDate((long) getStartValue());
     f.format("start=%s", start);
-    CalendarDate end = timeHelper.makeDate(getEndValue());
+    CalendarDate end = timeHelper.makeDate((long) getEndValue());
     f.format(", end=%s", end);
     f.format(" (npts=%d spacing=%s)", getNcoords(), getSpacing());
 
@@ -331,7 +331,7 @@ public class GridAxis1DTime extends GridAxis1D {
   private ImmutableList<CalendarDate> makeCalendarDateFromValues() {
     ArrayList<CalendarDate> result = new ArrayList<>(getNcoords());
     for (double val : getCoordsAsArray()) {
-      result.add(timeHelper.makeCalendarDateFromOffset(val));
+      result.add(timeHelper.makeCalendarDateFromOffset((long) val));
     }
     return ImmutableList.copyOf(result);
   }

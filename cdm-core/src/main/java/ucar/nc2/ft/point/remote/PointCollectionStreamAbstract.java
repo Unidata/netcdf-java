@@ -2,6 +2,8 @@ package ucar.nc2.ft.point.remote;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.ft.PointFeatureIterator;
@@ -9,7 +11,7 @@ import ucar.nc2.ft.point.PointCollectionImpl;
 import ucar.nc2.ft.point.PointIteratorEmpty;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.stream.NcStreamProto;
-import ucar.nc2.time.CalendarDateUnit;
+import ucar.nc2.time2.CalendarDateUnit;
 
 /**
  * Abstract superclass for creating a {@link ucar.nc2.ft.PointFeatureCollection} from a point stream.
@@ -71,17 +73,17 @@ public abstract class PointCollectionStreamAbstract extends PointCollectionImpl 
         PointStreamProto.PointFeatureCollection pfc = PointStreamProto.PointFeatureCollection.parseFrom(data);
 
         if (needUnits) {
-          try {
-            this.altUnits = !pfc.getAltUnit().isEmpty() ? pfc.getAltUnit() : null;
-            this.timeUnit = CalendarDateUnit.of(null, pfc.getTimeUnit());
-          } catch (IllegalArgumentException e) {
-            String message = String.format("Invalid time unit found in stream (%s). Using default (%s).",
-                pfc.getTimeUnit(), this.timeUnit.getUdUnit());
-            logger.error(message, e);
+          this.altUnits = !pfc.getAltUnit().isEmpty() ? pfc.getAltUnit() : null;
+          Optional<CalendarDateUnit> newUnits = CalendarDateUnit.fromUdunitString(null, pfc.getTimeUnit());
+          if (newUnits.isPresent()) {
+            this.timeUnit = newUnits.get();
+            needUnits = false;
+          } else {
             // Default value for timeUnit will remain.
+            String message = String.format("Invalid time unit found in stream (%s). Using default (%s).",
+                pfc.getTimeUnit(), pfc.getTimeUnit());
+            logger.error(message);
           }
-
-          needUnits = false;
         }
 
         PointFeatureIterator iter = new PointIteratorStream(this, in, new PointStream.ProtobufPointFeatureMaker(pfc));

@@ -6,8 +6,8 @@ package ucar.nc2.ft2.coverage;
 
 import ucar.ma2.*;
 import ucar.nc2.constants.AxisType;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.time2.CalendarDate;
+import ucar.nc2.time2.CalendarDateRange;
 import ucar.nc2.util.Indent;
 import java.util.Optional;
 import javax.annotation.concurrent.Immutable;

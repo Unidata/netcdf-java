@@ -24,9 +24,9 @@ import ucar.nc2.Variable;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.internal.util.CompareNetcdf2;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.time.CalendarDateUnit;
+import ucar.nc2.time2.CalendarDate;
+import ucar.nc2.time2.CalendarDateRange;
+import ucar.nc2.time2.CalendarDateUnit;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.util.test.TestDir;
@@ -60,14 +60,18 @@ public class TestCoverageSubsetCurvilinear {
   private final LatLonPoint subsetLatLon2 = LatLonPoint.create(subsetLat2, subsetLon2);
   private final String subsetTimeIsoStart = "2012-04-26T09:23:01";
   private final String subsetTimeIsoEnd = "2012-04-26T19:56:10Z";
-  private final CalendarDate subsetCalendarDateStart = CalendarDate.parseISOformat(null, subsetTimeIsoStart);
-  private final CalendarDate subsetCalendarDateEnd = CalendarDate.parseISOformat(null, subsetTimeIsoEnd);
+  private final CalendarDate subsetCalendarDateStart =
+      CalendarDate.fromUdunitIsoDate(null, subsetTimeIsoStart).orElseThrow();
+  private final CalendarDate subsetCalendarDateEnd =
+      CalendarDate.fromUdunitIsoDate(null, subsetTimeIsoEnd).orElseThrow();
 
   // closest time, lat, and lon values to the subset time, lat, and lon from the the dataset
   private final int closestTimeStart = 75600;
   private final int closestTimeEnd = 115200;
-  private final CalendarDate closestCalendarDateStart = CalendarDate.parseISOformat(null, "2012-04-26T09:00:00");
-  private final CalendarDate closestCalendarDateEnd = CalendarDate.parseISOformat(null, "2012-04-26T20:00:00");
+  private final CalendarDate closestCalendarDateStart =
+      CalendarDate.fromUdunitIsoDate(null, "2012-04-26T09:00:00").orElseThrow();
+  private final CalendarDate closestCalendarDateEnd =
+      CalendarDate.fromUdunitIsoDate(null, "2012-04-26T20:00:00").orElseThrow();
   private final double closestLat1 = 43.42203903198242;
   private final double closestLon1 = -8.24138069152832;
   private final LatLonPoint closestLatLon1 = LatLonPoint.create(closestLat1, closestLon1);
@@ -141,7 +145,7 @@ public class TestCoverageSubsetCurvilinear {
     Array timeValues = time.read();
     testTimeIndex.set(new int[] {closestIndex});
     int actualTime = timeValues.getInt(testTimeIndex);
-    CalendarDateUnit cdu = CalendarDateUnit.of(null, time.getUnitsString());
+    CalendarDateUnit cdu = CalendarDateUnit.fromUdunitString(null, time.getUnitsString()).orElseThrow();
     CalendarDate actualCalendarDate = cdu.makeCalendarDate(actualTime);
     assertThat(actualTime).isEqualTo(closestTime);
     assertThat(actualCalendarDate).isEqualTo(closestCalendarDate);
@@ -149,7 +153,7 @@ public class TestCoverageSubsetCurvilinear {
     // Check that we have the correct "closest" date / time
     // Should not be impacted by being a curvilinear grid, but why not
     // go ahead and test it out (not pretending to be a unit test here).
-    CalendarDate subsetCalendarDate = CalendarDate.parseISOformat(null, subsetIsoString);
+    CalendarDate subsetCalendarDate = CalendarDate.fromUdunitIsoDate(null, subsetIsoString).orElseThrow();
     double subsetTime = cdu.makeOffsetFromRefDate(subsetCalendarDate);
     for (int i = closestIndex - 1; i <= closestIndex + 1; i = i + 2) {
       testTimeIndex.set(new int[] {i});
@@ -163,7 +167,7 @@ public class TestCoverageSubsetCurvilinear {
 
     CalendarDate actualCalendarDate = cdu.makeCalendarDate(actualOffsetTime);
     CalendarDate neighborCalendarDate = cdu.makeCalendarDate(offsetTimeValues.getInt(neighborIndex));
-    CalendarDate subsetCalendarDate = cdu.makeCalendarDate(subsetOffsetTime);
+    CalendarDate subsetCalendarDate = cdu.makeCalendarDate((long) subsetOffsetTime);
     double diffActualCalendar = Math.abs(subsetCalendarDate.getDifferenceInMsecs(actualCalendarDate));
     double diffNeighbor = Math.abs(subsetCalendarDate.getDifferenceInMsecs(neighborCalendarDate));
     assertThat(diffActualCalendar).isLessThan(diffNeighbor);

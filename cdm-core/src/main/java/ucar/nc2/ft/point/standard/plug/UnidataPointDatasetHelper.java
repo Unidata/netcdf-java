@@ -6,8 +6,8 @@
 package ucar.nc2.ft.point.standard.plug;
 
 import ucar.nc2.*;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateUnit;
+import ucar.nc2.time2.CalendarDate;
+import ucar.nc2.time2.CalendarDateUnit;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants._Coordinate;
@@ -39,14 +39,14 @@ public class UnidataPointDatasetHelper {
 
     CalendarDate result;
     if (att.getDataType() == DataType.STRING) {
-      result = CalendarDate.parseUdunitsOrIso(null, att.getStringValue());
+      result = CalendarDate.fromUdunitIsoDate(null, att.getStringValue()).orElse(null);
       if (result == null && timeUnit != null) {
         double val = Double.parseDouble(att.getStringValue());
-        result = timeUnit.makeCalendarDate(val);
+        result = timeUnit.makeCalendarDate((int) val);
       }
     } else if (timeUnit != null) {
       double val = att.getNumericValue().doubleValue();
-      result = timeUnit.makeCalendarDate(val);
+      result = timeUnit.makeCalendarDate((int) val);
 
     } else {
       throw new IllegalArgumentException(attName + " must be a ISO or udunit date string");

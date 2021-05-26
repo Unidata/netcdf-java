@@ -12,9 +12,8 @@ import thredds.client.catalog.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.time.Calendar;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateFormatter;
+import ucar.nc2.time2.Calendar;
+import ucar.nc2.time2.CalendarDate;
 import ucar.nc2.internal.util.URLnaming;
 import ucar.unidata.util.StringUtil2;
 import javax.annotation.Nullable;
@@ -366,11 +365,10 @@ public class CatalogBuilder {
 
     CalendarDate expires = null;
     if (expiresS != null) {
-      try {
-        expires = CalendarDateFormatter.isoStringToCalendarDate(null, expiresS);
-      } catch (Exception e) {
-        errlog.format("bad expires date '%s' err='%s'%n", expiresS, e.getMessage());
-        logger.debug("bad expires date '{}' err='{}'%n", expiresS, e.getMessage());
+      expires = CalendarDate.fromUdunitIsoDate(null, expiresS).orElse(null);
+      if (expires == null) {
+        errlog.format("bad expires date '%s'%n", expiresS);
+        logger.debug("bad expires date '{}'%n", expiresS);
       }
     }
 
@@ -675,11 +673,6 @@ public class CatalogBuilder {
     // look for dates
     list = parent.getChildren("date", Catalog.defNS);
     for (Element e : list) {
-      DatasetBuilder.addToList(flds, Dataset.Dates, readDate(e, null));
-    }
-
-    list = parent.getChildren("date", Catalog.defNS);
-    for (Element e : list) {
       DatasetBuilder.addToList(flds, Dataset.DateTypes, readDateType(e, null));
     }
 
@@ -733,11 +726,6 @@ public class CatalogBuilder {
     }
 
     // remove in ver7
-    ucar.nc2.units.DateRange tc = readTimeCoverage(parent.getChild("timeCoverage", Catalog.defNS));
-    if (tc != null) {
-      flds.put(Dataset.TimeCoverage, tc);
-    }
-
     TimeCoverage tcnew = readTimeCoverageNew(parent.getChild("timeCoverage", Catalog.defNS));
     if (tcnew != null) {
       flds.put(Dataset.TimeCoverageNew, tcnew);
@@ -1116,29 +1104,6 @@ public class CatalogBuilder {
    * </xsd:restriction>
    * </xsd:simpleType>
    */
-  /** @deprecated use readTimeCoverageNew() */
-  @Deprecated
-  @Nullable
-  protected ucar.nc2.units.DateRange readTimeCoverage(Element tElem) {
-    if (tElem == null) {
-      return null;
-    }
-
-    Calendar calendar = readCalendar(tElem.getAttributeValue("calendar"));
-    ucar.nc2.units.DateType start = readDate(tElem.getChild("start", Catalog.defNS), calendar);
-    ucar.nc2.units.DateType end = readDate(tElem.getChild("end", Catalog.defNS), calendar);
-
-    ucar.nc2.units.TimeDuration duration = readDuration(tElem.getChild("duration", Catalog.defNS));
-    ucar.nc2.units.TimeDuration resolution = readDuration(tElem.getChild("resolution", Catalog.defNS));
-
-    try {
-      return new ucar.nc2.units.DateRange(start, end, duration, resolution);
-    } catch (java.lang.IllegalArgumentException e) {
-      errlog.format(" ** warning: TimeCoverage error ='%s'%n", e.getMessage());
-      logger.debug(" ** warning: TimeCoverage error ='{}'", e.getMessage());
-      return null;
-    }
-  }
 
   @Nullable
   protected TimeCoverage readTimeCoverageNew(Element tElem) {
@@ -1167,7 +1132,7 @@ public class CatalogBuilder {
       return Calendar.getDefault();
     }
 
-    Calendar calendar = Calendar.get(calendarAttribValue);
+    Calendar calendar = Calendar.get(calendarAttribValue).orElse(null);
     if (calendar == null) {
       errlog.format(" ** Parse error: Bad calendar name = '%s'%n", calendarAttribValue);
       logger.debug(" ** Parse error: Bad calendar name = '{}}'", calendarAttribValue);
@@ -1177,17 +1142,6 @@ public class CatalogBuilder {
     return calendar;
   }
 
-  /** @deprecated use readDateType() */
-  @Deprecated
-  protected ucar.nc2.units.DateType readDate(Element elem, Calendar calendar) {
-    if (elem == null) {
-      return null;
-    }
-    String format = elem.getAttributeValue("format");
-    String type = elem.getAttributeValue("type");
-    return makeDateType(elem.getText(), format, type, calendar);
-  }
-
   protected DateType readDateType(Element elem, Calendar calendar) {
     if (elem == null) {
       return null;
@@ -1195,20 +1149,6 @@ public class CatalogBuilder {
     String format = elem.getAttributeValue("format");
     String type = elem.getAttributeValue("type");
     return makeDateTypeNew(elem.getText(), format, type, calendar);
-  }
-
-  /** @deprecated use makeDateTypeNew() */
-  @Deprecated
-  protected ucar.nc2.units.DateType makeDateType(String text, String format, String type, Calendar calendar) {
-    if (text == null) {
-      return null;
-    }
-    try {
-      return new ucar.nc2.units.DateType(text, format, type, calendar);
-    } catch (java.text.ParseException e) {
-      errlog.format(" ** Parse error: Bad date format = '%s'%n", text);
-      return null;
-    }
   }
 
   protected DateType makeDateTypeNew(String text, String format, String type, Calendar calendar) {

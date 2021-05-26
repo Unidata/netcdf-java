@@ -164,6 +164,10 @@ public class CalendarPeriod {
     this.field = field;
   }
 
+  public CalendarPeriod withValue(int value) {
+    return new CalendarPeriod(value, this.field);
+  }
+
   /*
    * Multiply the period by an integer
    * 

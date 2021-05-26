@@ -4,8 +4,8 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarPeriod;
+import ucar.nc2.time2.CalendarDate;
+import ucar.nc2.time2.CalendarPeriod;
 
 @RunWith(JUnit4.class)
 public class TestTimeCoord {

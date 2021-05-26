@@ -6,7 +6,7 @@
 package ucar.nc2.ui;
 
 import thredds.inventory.MFile;
-import ucar.nc2.time.CalendarDateFormatter;
+import ucar.nc2.time2.CalendarDateFormatter;
 import ucar.ui.widget.BAMutil;
 import ucar.ui.widget.IndependentWindow;
 import ucar.ui.widget.PopupMenu;

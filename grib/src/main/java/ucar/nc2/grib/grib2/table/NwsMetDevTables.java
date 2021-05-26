@@ -9,8 +9,8 @@ import ucar.nc2.grib.coord.TimeCoordIntvDateValue;
 import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.grib.grib2.Grib2Utils;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarPeriod;
+import ucar.nc2.time2.CalendarDate;
+import ucar.nc2.time2.CalendarPeriod;
 
 /**
  * Center = (7) US National Weather Service, National Centres for Environmental Prediction (NCEP)

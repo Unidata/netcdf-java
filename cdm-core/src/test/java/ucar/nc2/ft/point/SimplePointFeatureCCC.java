@@ -5,7 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.PointFeatureCC;
-import ucar.nc2.time.CalendarDateUnit;
+import ucar.nc2.time2.CalendarDateUnit;
 import ucar.nc2.ft.IOIterator;
 
 /**

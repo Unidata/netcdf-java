@@ -16,7 +16,7 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.internal.dataset.conv.CF1Convention;
-import ucar.nc2.time.Calendar;
+import ucar.nc2.time2.Calendar;
 import java.io.IOException;
 import java.util.Formatter;
 
@@ -251,13 +251,13 @@ public class CoordinateAxis extends VariableDS {
 
   /** Figure out what calendar to use from the axis' attributes. */
   // needed by time coordinates
-  public ucar.nc2.time.Calendar getCalendarFromAttribute() {
+  public Calendar getCalendarFromAttribute() {
     return getCalendarFromAttribute(ncd, attributes);
   }
 
   /** Figure out what calendar to use from the given attributes. */
-  public static ucar.nc2.time.Calendar getCalendarFromAttribute(@Nullable NetcdfDataset ncd,
-      AttributeContainer attributes) {
+  @Nullable
+  public static Calendar getCalendarFromAttribute(@Nullable NetcdfDataset ncd, AttributeContainer attributes) {
     String cal = attributes.findAttributeString(CF.CALENDAR, null);
     if (cal == null) { // default for CF and COARDS
       Attribute convention = (ncd == null) ? null : ncd.getRootGroup().findAttribute(CDM.CONVENTIONS);
@@ -273,7 +273,7 @@ public class CoordinateAxis extends VariableDS {
           return Calendar.gregorian;
       }
     }
-    return ucar.nc2.time.Calendar.get(cal);
+    return Calendar.get(cal).orElse(null);
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////

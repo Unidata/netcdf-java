@@ -1,8 +1,8 @@
 package ucar.nc2.grid;
 
 import org.junit.Test;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.time2.CalendarDate;
+import ucar.nc2.time2.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionRect;
@@ -111,7 +111,7 @@ public class TestGridSubset {
     assertThat(subset.getRunTime()).isEqualTo(cd1);
     assertThat(subset.getRunTime() == cd1).isTrue();
 
-    CalendarDate cd2 = CalendarDate.of(null, 2020, 7, 17, 11, 11, 11);
+    CalendarDate cd2 = CalendarDate.of(2020, 7, 17, 11, 11, 11);
     subset.setRunTimeCoord(cd2);
     assertThat(subset.getRunTime()).isEqualTo(cd2);
     assertThat(subset.getRunTime() == cd2).isTrue();
@@ -225,7 +225,7 @@ public class TestGridSubset {
     CalendarDateRange cd = subset.getTimeRange();
     assertThat(cd).isNull();
 
-    CalendarDate start = CalendarDate.of(null, 2020, 7, 17, 11, 11, 11);
+    CalendarDate start = CalendarDate.of(2020, 7, 17, 11, 11, 11);
     CalendarDateRange range = new CalendarDateRange(start, 3600);
     subset.setTimeRange(range);
     assertThat(subset.getTimeRange()).isEqualTo(range);
@@ -304,7 +304,7 @@ public class TestGridSubset {
     CoordInterval offsetv = CoordInterval.create(34.5, 78.9);
     subset.setVertCoord(offsetv); // CoordInterval
 
-    CalendarDate cd1 = CalendarDate.of(null, 2020, 7, 17, 11, 11, 11);
+    CalendarDate cd1 = CalendarDate.of(2020, 7, 17, 11, 11, 11);
     subset.setRunTime(cd1); // CalendarDate
 
     subset.setEnsCoord(999.0); // Double
@@ -312,7 +312,7 @@ public class TestGridSubset {
     subset.setRunTimeLatest(); // Boolean
     subset.setGridName("gridName"); // String
 
-    CalendarDate start = CalendarDate.of(null, 2020, 7, 17, 11, 11, 11);
+    CalendarDate start = CalendarDate.of(2020, 7, 17, 11, 11, 11);
     CalendarDateRange range = new CalendarDateRange(start, 3600);
     subset.setTimeRange(range); // CalendarDateRange
 

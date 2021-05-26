@@ -18,7 +18,7 @@ import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.grib.collection.GribDataReader;
-import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time2.CalendarDate;
 import ucar.nc2.internal.util.CompareNetcdf2;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
@@ -171,14 +171,14 @@ public class TestDtWithCoverageReadingP {
       int time_idx = 0;
       while (timeVals.hasNext()) {
         double timeVal = timeVals.nextDouble();
-        readAllEnsembles(cover, dt, rt_val, rt_idx, helper.makeDate(timeVal), time_idx++, ensAxis, vertAxis);
+        readAllEnsembles(cover, dt, rt_val, rt_idx, helper.makeDate((int) timeVal), time_idx++, ensAxis, vertAxis);
       }
 
     } else {
       Index index = timeVals.getIndex();
       for (int i = 0; i < shape[0]; i++) {
         double timeVal = (timeVals.getDouble(index.set(i, 0)) + timeVals.getDouble(index.set(i, 1))) / 2;
-        readAllEnsembles(cover, dt, rt_val, rt_idx, helper.makeDate(timeVal), i, ensAxis, vertAxis);
+        readAllEnsembles(cover, dt, rt_val, rt_idx, helper.makeDate((int) timeVal), i, ensAxis, vertAxis);
       }
     }
   }

@@ -9,7 +9,7 @@ import thredds.client.catalog.builder.AccessBuilder;
 import thredds.client.catalog.builder.CatalogBuilder;
 import thredds.client.catalog.builder.CatalogRefBuilder;
 import thredds.client.catalog.builder.DatasetBuilder;
-import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time2.CalendarDate;
 import ucar.nc2.internal.util.URLnaming;
 import javax.annotation.concurrent.Immutable;
 import java.net.URI;

@@ -16,10 +16,9 @@ import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.dataset.VariableDS;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateFormatter;
-import ucar.nc2.time.CalendarPeriod;
-import ucar.nc2.time.CalendarTimeZone;
+import ucar.nc2.time2.CalendarDate;
+import ucar.nc2.time2.CalendarDateFormatter;
+import ucar.nc2.time2.CalendarPeriod;
 import ucar.ui.widget.FileManager;
 import ucar.util.prefs.PreferencesExt;
 import java.awt.BorderLayout;
@@ -256,7 +255,7 @@ public class VariableTable extends JPanel {
       return;
     }
 
-    CalendarDateFormatter printForm = new CalendarDateFormatter("yyyy-MM-dd HH:mm:ss", CalendarTimeZone.UTC);
+    CalendarDateFormatter printForm = new CalendarDateFormatter("yyyy-MM-dd HH:mm:ss");
 
     try (FileOutputStream fos = new FileOutputStream(filename);
         OutputStreamWriter osw = new OutputStreamWriter(fos, StandardCharsets.UTF_8);
@@ -315,8 +314,8 @@ public class VariableTable extends JPanel {
 
     DateRenderer() {
 
-      oldForm = new CalendarDateFormatter("yyyy-MM-dd HH:mm:ss", CalendarTimeZone.UTC);
-      newForm = new CalendarDateFormatter("dd MMM HH:mm:ss", CalendarTimeZone.UTC);
+      oldForm = new CalendarDateFormatter("yyyy-MM-dd HH:mm:ss");
+      newForm = new CalendarDateFormatter("dd MMM HH:mm:ss");
 
       CalendarDate now = CalendarDate.present();
       cutoff = now.add(-1, CalendarPeriod.Field.Year); // "now" time format within a year

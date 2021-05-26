@@ -8,7 +8,7 @@ package ucar.nc2.ft.point.bufr;
 import java.nio.charset.StandardCharsets;
 import ucar.nc2.iosp.bufr.BufrConfig;
 import ucar.nc2.stream.NcStream;
-import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time2.CalendarDate;
 import ucar.unidata.geoloc.Station;
 import ucar.unidata.io.RandomAccessFile;
 import java.io.File;

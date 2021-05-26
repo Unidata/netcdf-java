@@ -15,8 +15,8 @@ import ucar.nc2.ft.PointFeatureCollection;
 import ucar.nc2.ft.PointFeatureCollectionIterator;
 import ucar.nc2.ft.StationTimeSeriesFeature;
 import ucar.nc2.ft.StationTimeSeriesFeatureCollection;
-import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.time.CalendarDateUnit;
+import ucar.nc2.time2.CalendarDateRange;
+import ucar.nc2.time2.CalendarDateUnit;
 import ucar.nc2.ft.IOIterator;
 import ucar.unidata.geoloc.LatLonRect;
 

@@ -7,7 +7,7 @@ package ucar.nc2.ui.widget;
 
 import thredds.ui.datatype.prefs.DateField;
 import thredds.ui.datatype.prefs.DurationField;
-import ucar.nc2.time.CalendarDateFormatter;
+import ucar.nc2.time2.CalendarDateFormatter;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
 import ucar.nc2.units.TimeDuration;

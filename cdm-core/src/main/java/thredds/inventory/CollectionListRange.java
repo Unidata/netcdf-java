@@ -6,7 +6,7 @@ package thredds.inventory;
 
 import com.google.common.base.MoreObjects;
 import org.slf4j.Logger;
-import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time2.CalendarDate;
 import java.util.ArrayList;
 import java.util.List;
 

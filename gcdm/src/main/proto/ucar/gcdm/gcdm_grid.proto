@@ -49,7 +49,7 @@ enum CdmFeatureType {
 }
 
 // CURRENTLY UNUSED
-enum CdmCalendar { // related to  ucar.nc2.time.Calendar
+enum CdmCalendar { // related to  ucar.nc2.time2.Calendar
   CDM_CALENDAR_UNSPECIFIED = 0;
   CDM_CALENDAR_PROLEPTIC_GREGORIAN = 1;
   CDM_CALENDAR_GREGORIAN = 2;

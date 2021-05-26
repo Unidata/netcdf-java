@@ -15,10 +15,10 @@ import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.grib.grib2.Grib2Utils;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.time.CalendarDateUnit;
-import ucar.nc2.time.CalendarPeriod;
+import ucar.nc2.time2.CalendarDate;
+import ucar.nc2.time2.CalendarDateRange;
+import ucar.nc2.time2.CalendarDateUnit;
+import ucar.nc2.time2.CalendarPeriod;
 import ucar.nc2.internal.util.Counters;
 import ucar.nc2.util.Indent;
 import javax.annotation.concurrent.Immutable;
@@ -85,8 +85,8 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
   }
 
   @Override
-  public CalendarDateRange makeCalendarDateRange(ucar.nc2.time.Calendar cal) {
-    CalendarDateUnit cdu = CalendarDateUnit.withCalendar(cal, periodName + " since " + refDate);
+  public CalendarDateRange makeCalendarDateRange() {
+    CalendarDateUnit cdu = CalendarDateUnit.fromUdunitString(null, periodName + " since " + refDate).orElseThrow();
     CalendarDate start = cdu.makeCalendarDate(timeUnit.getValue() * offsetSorted.get(0));
     CalendarDate end = cdu.makeCalendarDate(timeUnit.getValue() * offsetSorted.get(getSize() - 1));
     return CalendarDateRange.of(start, end);
@@ -194,8 +194,9 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
           logger.warn("Cant find period for time unit=" + tuInRecord);
           return offset;
         }
-        CalendarDate validDate = refDate.add(period.multiply(offset));
-        return timeUnit.getOffset(refDate, validDate);
+        CalendarDate validDate = refDate.add(offset, period);
+        // long since(CalendarDate base, CalendarPeriod period);
+        return validDate.since(refDate, timeUnit);
       }
     }
 
@@ -212,7 +213,7 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
   public static class Builder1 extends CoordinateBuilderImpl<Grib1Record> {
     final Grib1Customizer cust;
     final int code; // pdsFirst.getTimeUnit()
-    final CalendarPeriod timeUnit;
+    final CalendarPeriod timeUnit; // LOOK could be a CalendarDateUnit
     final CalendarDate refDate;
 
     public Builder1(Grib1Customizer cust, int code, CalendarPeriod timeUnit, CalendarDate refDate) {
@@ -234,7 +235,7 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
 
       } else {
         CalendarDate validDate = GribUtils.getValidTime(refDate, tuInRecord, offset);
-        return timeUnit.getOffset(refDate, validDate);
+        return validDate.since(refDate, timeUnit);
       }
 
     }

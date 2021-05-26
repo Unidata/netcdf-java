@@ -33,10 +33,10 @@ import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.dataset.VariableDS;
-import ucar.nc2.time.Calendar;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarPeriod;
-import ucar.nc2.time.CalendarPeriod.Field;
+import ucar.nc2.time2.Calendar;
+import ucar.nc2.time2.CalendarDate;
+import ucar.nc2.time2.CalendarPeriod;
+import ucar.nc2.time2.CalendarPeriod.Field;
 import ucar.unidata.io.s3.S3TestsCommon;
 import ucar.unidata.util.test.category.Slow;
 
@@ -96,7 +96,8 @@ public class S3JoinNew {
       CoordinateAxis timeAxis = cs.getTaxis();
       assertThat(timeAxis instanceof CoordinateAxis1D).isTrue();
       CoordinateAxis1DTime timeAxis1d = CoordinateAxis1DTime.factory(ncd, timeAxis, null);
-      CalendarDate baseDate = CalendarDate.parseISOformat(Calendar.gregorian.name(), "2017-08-30 00:00");
+      CalendarDate baseDate =
+          CalendarDate.fromUdunitIsoDate(Calendar.gregorian.name(), "2017-08-30 00:00").orElseThrow();
       List<CalendarDate> aggCalDates = timeAxis1d.getCalendarDates();
       for (int i = 0; i < aggCalDates.size(); i++) {
         assertThat(aggCalDates.get(i)).isEqualTo(baseDate.add(CalendarPeriod.of(2 + i * 5, Field.Minute)));

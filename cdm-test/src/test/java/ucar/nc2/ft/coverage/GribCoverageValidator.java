@@ -17,7 +17,7 @@ import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.grib.grib2.Grib2RecordScanner;
 import ucar.nc2.grib.grib2.Grib2Utils;
 import ucar.nc2.grib.grib2.table.Grib2Tables;
-import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time2.CalendarDate;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.test.Assert2;
 import java.io.IOException;

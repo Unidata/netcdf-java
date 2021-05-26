@@ -5,7 +5,7 @@
 package ucar.nc2.ft;
 
 import ucar.ma2.StructureData;
-import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.time2.CalendarDateRange;
 import javax.annotation.Nonnull;
 
 /**

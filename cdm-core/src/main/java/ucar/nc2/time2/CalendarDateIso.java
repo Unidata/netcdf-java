@@ -204,18 +204,4 @@ class CalendarDateIso implements CalendarDate {
     return new java.util.Date(getMillis());
   }
 
-  //////////////////////////////////////////////////////
-
-  /**
-   * Get difference between two CalendarDateIso in millisecs
-   * 
-   * @param o other calendar date
-   * @return (this minus o) difference in millisecs
-   */
-  public long getDifferenceInMsecs(CalendarDateIso o) {
-    return getMillis() - o.getMillis();
-  }
-
-
-
 }

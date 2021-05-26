@@ -29,9 +29,9 @@ import ucar.nc2.grib.grib2.Grib2Index;
 import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.grib.grib2.table.Grib2Tables;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateUnit;
-import ucar.nc2.time.CalendarPeriod;
+import ucar.nc2.time2.CalendarDate;
+import ucar.nc2.time2.CalendarDateUnit;
+import ucar.nc2.time2.CalendarPeriod;
 import ucar.nc2.internal.util.Counters;
 import ucar.nc2.util.Misc;
 import java.io.FileNotFoundException;
@@ -277,13 +277,13 @@ public class GribCoordsMatchGbx {
             timeBounds[0] = timeCoord2DBoundsArray.get(rtIndex, t, 0);
             timeBounds[1] = timeCoord2DBoundsArray.get(rtIndex, t, 1);
             CalendarDate[] timeBoundsDate = new CalendarDate[2];
-            timeBoundsDate[0] = helper.makeCalendarDateFromOffset(timeBounds[0]);
-            timeBoundsDate[1] = helper.makeCalendarDateFromOffset(timeBounds[1]);
+            timeBoundsDate[0] = helper.makeCalendarDateFromOffset((int) timeBounds[0]);
+            timeBoundsDate[1] = helper.makeCalendarDateFromOffset((int) timeBounds[1]);
             dtCoords.setTimeOffsetIntv(timeBounds);
             dtCoords.set("timeDateIntv", timeBoundsDate);
           } else {
             double timeCoord = tcoord2D.getCoordValue(rtIndex, t);
-            CalendarDate timeCoordDate = helper.makeCalendarDateFromOffset(timeCoord);
+            CalendarDate timeCoordDate = helper.makeCalendarDateFromOffset((int) timeCoord);
             dtCoords.setTime(timeCoordDate);
           }
           readVert(gdt, rtIndex, t, zDim);
@@ -450,14 +450,14 @@ public class GribCoordsMatchGbx {
 
   public CalendarDate getForecastDate(Grib1SectionProductDefinition pds, Grib1ParamTime ptime) {
     CalendarPeriod period = GribUtils.getCalendarPeriod(pds.getTimeUnit());
-    CalendarDateUnit unit = CalendarDateUnit.of(null, period.getField(), pds.getReferenceDate());
+    CalendarDateUnit unit = CalendarDateUnit.of(period.getField(), false, pds.getReferenceDate());
     int timeCoord = ptime.getForecastTime();
     return unit.makeCalendarDate(period.getValue() * timeCoord);
   }
 
   public CalendarDate[] getForecastInterval(Grib1SectionProductDefinition pds, Grib1ParamTime ptime) {
     CalendarPeriod period = GribUtils.getCalendarPeriod(pds.getTimeUnit());
-    CalendarDateUnit unit = CalendarDateUnit.of(null, period.getField(), pds.getReferenceDate());
+    CalendarDateUnit unit = CalendarDateUnit.of(period.getField(), false, pds.getReferenceDate());
     int[] intv = ptime.getInterval();
     return new CalendarDate[] {unit.makeCalendarDate(period.getValue() * intv[0]),
         unit.makeCalendarDate(period.getValue() * intv[1])};

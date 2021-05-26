@@ -43,9 +43,9 @@ import ucar.nc2.grib.GribUtils;
 import ucar.nc2.grib.collection.Grib1Iosp;
 import ucar.nc2.grib.grib1.*;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateUnit;
-import ucar.nc2.time.CalendarPeriod;
+import ucar.nc2.time2.CalendarDate;
+import ucar.nc2.time2.CalendarDateUnit;
+import ucar.nc2.time2.CalendarPeriod;
 import ucar.ui.widget.*;
 import ucar.ui.widget.PopupMenu;
 import ucar.nc2.util.Misc;
@@ -812,7 +812,7 @@ public class Grib1CollectionPanel extends JPanel {
 
     public CalendarDate getForecastDate() {
       CalendarPeriod period = GribUtils.getCalendarPeriod(pds.getTimeUnit());
-      CalendarDateUnit unit = CalendarDateUnit.of(null, period.getField(), getReferenceDate());
+      CalendarDateUnit unit = CalendarDateUnit.of(period.getField(), false, getReferenceDate()); // LOOK
       int timeCoord;
       if (ptime.isInterval()) {
         int[] intv = ptime.getInterval();

@@ -130,8 +130,4 @@ class CalendarDateChrono extends CalendarDateIso implements CalendarDate, Compar
     throw new IllegalArgumentException("Must be a ChronoDate");
   }
 
-  public long getDifferenceInMsecs(CalendarDateChrono o) {
-    return getMillis() - o.getMillis();
-  }
-
 }

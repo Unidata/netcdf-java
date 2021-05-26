@@ -4,7 +4,7 @@
  */
 package ucar.nc2.iosp.bufr;
 
-import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time2.CalendarDate;
 import ucar.unidata.io.RandomAccessFile;
 import javax.annotation.concurrent.Immutable;
 import java.io.IOException;
@@ -254,7 +254,7 @@ public class BufrIdentificationSection {
    */
   public final CalendarDate getReferenceTime() {
     int sec = (second < 0 || second > 59) ? 0 : second;
-    return CalendarDate.of(null, year, month, day, hour, minute, sec);
+    return CalendarDate.of(year, month, day, hour, minute, sec);
   }
 
   public final int getCategory() {

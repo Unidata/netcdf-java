@@ -6,7 +6,7 @@
 package ucar.nc2.ui.grid2;
 
 import ucar.nc2.grid.*;
-import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time2.CalendarDate;
 
 import javax.annotation.Nullable;
 

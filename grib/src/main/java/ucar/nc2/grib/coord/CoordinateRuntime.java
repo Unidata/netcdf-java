@@ -4,12 +4,16 @@
  */
 package ucar.nc2.grib.coord;
 
+import ucar.nc2.grib.GribUtils;
 import ucar.nc2.grib.grib1.Grib1Record;
 import ucar.nc2.grib.grib2.Grib2Record;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarPeriod;
+import ucar.nc2.time2.CalendarDate;
+import ucar.nc2.time2.CalendarDateUnit;
+import ucar.nc2.time2.CalendarPeriod;
 import ucar.nc2.internal.util.Counters;
 import ucar.nc2.util.Indent;
+
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.*;
 
@@ -23,29 +27,41 @@ import java.util.*;
 @Immutable
 public class CoordinateRuntime implements Coordinate {
   private final long[] runtimes;
-  final CalendarDate firstDate;
-  final CalendarPeriod timeUnit;
+  private final CalendarDate firstDate;
+  final CalendarPeriod timePeriod;
+  private final CalendarDateUnit calendarDateUnit;
   final String periodName;
   private String name = "reftime"; // yeah yeah, not final, bugger off
 
-  public CoordinateRuntime(List<Long> runtimeSorted, CalendarPeriod timeUnit) {
+  /**
+   * LOOK doesnt work for month, year.
+   * 
+   * @param runtimeSorted millis from epoch. LOOK probably should be offsets in timeUnit
+   * @param timeUnit default is Hours. trying to preserve original semantics
+   */
+  public CoordinateRuntime(List<Long> runtimeSorted, @Nullable CalendarPeriod timeUnit) {
     this.runtimes = new long[runtimeSorted.size()];
     int idx = 0;
-    for (long val : runtimeSorted)
+    for (long val : runtimeSorted) {
       this.runtimes[idx++] = val;
+    }
 
     this.firstDate = CalendarDate.of(runtimeSorted.get(0));
-    this.timeUnit = timeUnit == null ? CalendarPeriod.Hour : timeUnit;
+    this.timePeriod = timeUnit == null ? CalendarPeriod.Hour : timeUnit;
+    CalendarPeriod.Field cf = this.timePeriod.getField();
 
-    CalendarPeriod.Field cf = this.timeUnit.getField();
-    if (cf == CalendarPeriod.Field.Month || cf == CalendarPeriod.Field.Year)
-      this.periodName = "calendar " + cf;
-    else
+    // LOOK
+    boolean isCalendarField = (cf == CalendarPeriod.Field.Month || cf == CalendarPeriod.Field.Year);
+    this.calendarDateUnit = CalendarDateUnit.of(this.timePeriod, isCalendarField, this.firstDate);
+    if (isCalendarField) {
+      this.periodName = "calendar " + cf; // LOOK maybe Period should know about isCalendarField ??
+    } else {
       this.periodName = cf.toString();
+    }
   }
 
   public CalendarPeriod getTimeUnits() {
-    return timeUnit;
+    return timePeriod;
   }
 
   public CalendarDate getRuntimeDate(int idx) {
@@ -72,13 +88,16 @@ public class CoordinateRuntime implements Coordinate {
     for (int idx = 0; idx < runtimes.length; idx++) {
       double runtime = (double) getRuntime(idx);
       double msecs = (runtime - start);
-      result.add(msecs / timeUnit.getValueInMillisecs());
+      // LOOK doesnt work for month, year.
+      // since runtimes is in millis, have no choice but to use fixed time period intervals.
+      result.add(msecs / GribUtils.getValueInMillisecs(timePeriod));
     }
     return result;
   }
 
   public double getOffsetInTimeUnits(CalendarDate start) {
-    return timeUnit.getOffset(start, getFirstDate());
+    return start.since(getFirstDate(), timePeriod);
+    // return timeUnit.getOffset(start, getFirstDate());
   }
 
   @Override

@@ -23,7 +23,7 @@ import ucar.nc2.dataset.ProjectionCT;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.internal.dataset.CoordSystemBuilder;
 import ucar.nc2.dataset.spi.CoordSystemBuilderFactory;
-import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time2.CalendarDate;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.geoloc.Projection;
@@ -214,7 +214,7 @@ public class DefaultConventions extends CoordSystemBuilder {
           if (firstValue instanceof ArrayObject.D1) {
             ArrayObject.D1 sarry = (ArrayObject.D1) firstValue;
             String firstStringValue = (String) sarry.get(0);
-            if (CalendarDate.parseISOformat(null, firstStringValue) != null) { // valid iso date string LOOK
+            if (CalendarDate.fromUdunitIsoDate(null, firstStringValue).isPresent()) { // valid iso date string LOOK
               return AxisType.Time;
             }
           }

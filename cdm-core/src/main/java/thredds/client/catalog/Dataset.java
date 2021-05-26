@@ -7,7 +7,7 @@ package thredds.client.catalog;
 import com.google.common.collect.ImmutableSet;
 import thredds.client.catalog.builder.AccessBuilder;
 import thredds.client.catalog.builder.DatasetBuilder;
-import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time2.CalendarDate;
 
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;

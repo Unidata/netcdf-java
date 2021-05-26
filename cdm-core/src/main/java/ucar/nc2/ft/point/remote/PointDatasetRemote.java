@@ -6,10 +6,10 @@ package ucar.nc2.ft.point.remote;
 
 import ucar.nc2.ft.point.PointDatasetImpl;
 import ucar.nc2.ft.remote.CdmrFeatureDataset;
-import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.time2.CalendarDateRange;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.VariableSimpleIF;
-import ucar.nc2.time.CalendarDateUnit;
+import ucar.nc2.time2.CalendarDateUnit;
 import ucar.unidata.geoloc.LatLonRect;
 import java.util.ArrayList;
 import java.util.List;

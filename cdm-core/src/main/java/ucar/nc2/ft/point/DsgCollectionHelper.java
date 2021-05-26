@@ -11,8 +11,8 @@ import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.PointFeatureCC;
 import ucar.nc2.ft.PointFeatureCCC;
 import ucar.nc2.ft.PointFeatureCollection;
-import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.time.CalendarDateUnit;
+import ucar.nc2.time2.CalendarDateRange;
+import ucar.nc2.time2.CalendarDateUnit;
 import ucar.nc2.ft.IOIterator;
 import ucar.unidata.geoloc.LatLonRect;
 
@@ -69,7 +69,8 @@ public class DsgCollectionHelper {
     }
 
     CalendarDateUnit cdu = dsg.getTimeUnit();
-    CalendarDateRange dateRange = CalendarDateRange.of(cdu.makeCalendarDate(minTime), cdu.makeCalendarDate(maxTime));
+    CalendarDateRange dateRange =
+        CalendarDateRange.of(cdu.makeCalendarDate((int) minTime), cdu.makeCalendarDate((int) maxTime));
     return new CollectionInfo(bbox.build(), dateRange, count, count);
   }
 

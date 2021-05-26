@@ -6,7 +6,7 @@ import ucar.array.ArrayType;
 import ucar.array.Arrays;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.*;
-import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time2.CalendarDate;
 
 import javax.annotation.Nullable;
 import java.io.IOException;

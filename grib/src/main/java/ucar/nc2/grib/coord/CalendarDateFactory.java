@@ -4,7 +4,7 @@
  */
 package ucar.nc2.grib.coord;
 
-import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time2.CalendarDate;
 import java.util.HashMap;
 import java.util.Map;
 

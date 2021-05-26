@@ -7,7 +7,7 @@ package thredds.client.catalog;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.text.ParseException;
-import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time2.CalendarDate;
 
 /**
  * A range of dates, using DateType start/end, and/or a TimeDuration.

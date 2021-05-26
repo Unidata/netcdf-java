@@ -20,7 +20,8 @@ import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 import ucar.nc2.Group;
 import ucar.nc2.constants.AxisType;
-import ucar.nc2.time.*;
+import ucar.nc2.time2.CalendarDate;
+import ucar.nc2.time2.CalendarDateRange;
 import ucar.nc2.units.TimeUnit;
 import ucar.nc2.Dimension;
 import java.util.*;
@@ -106,8 +107,9 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
     for (int i = 0; i < ncoords; i++) {
       double val = ii.getDoubleNext();
       if (Double.isNaN(val))
-        continue; // WTF ??
-      result.add(helper.makeCalendarDateFromOffset(val));
+        continue; // LOOK ??
+      // LOOK
+      result.add(helper.makeCalendarDateFromOffset((int) val));
       count++;
     }
 
@@ -245,22 +247,23 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
   public CalendarDate[] getCoordBoundsDate(int i) {
     double[] intv = getCoordBounds(i);
     CalendarDate[] e = new CalendarDate[2];
-    e[0] = helper.makeCalendarDateFromOffset(intv[0]);
-    e[1] = helper.makeCalendarDateFromOffset(intv[1]);
+    e[0] = helper.makeCalendarDateFromOffset((int) intv[0]);
+    e[1] = helper.makeCalendarDateFromOffset((int) intv[1]);
     return e;
   }
 
   public CalendarDate getCoordBoundsMidpointDate(int i) {
     double[] intv = getCoordBounds(i);
     double midpoint = (intv[0] + intv[1]) / 2;
-    return helper.makeCalendarDateFromOffset(midpoint);
+    return helper.makeCalendarDateFromOffset((int) midpoint);
   }
 
   @Override
   protected void readValues() {
     // if DataType is not numeric, handle special
     if (!this.dataType.isNumeric()) {
-      this.coords = cdates.stream().mapToDouble(cdate -> (double) cdate.getDifferenceInMsecs(cdates.get(0))).toArray();
+      long base = cdates.get(0).getMillis();
+      this.coords = cdates.stream().mapToDouble(cdate -> (double) (cdate.getMillis() - base)).toArray();
       // make sure we don't try to read from the orgVar again
       this.wasRead = true;
     } else {

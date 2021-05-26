@@ -5,6 +5,7 @@
 package ucar.nc2.grib.coord;
 
 import java.util.Arrays;
+
 import ucar.nc2.grib.GribUtils;
 import ucar.nc2.grib.grib1.Grib1ParamTime;
 import ucar.nc2.grib.grib1.Grib1Record;
@@ -13,10 +14,10 @@ import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.grib.grib2.table.Grib2Tables;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.time.CalendarDateUnit;
-import ucar.nc2.time.CalendarPeriod;
+import ucar.nc2.time2.CalendarDate;
+import ucar.nc2.time2.CalendarDateRange;
+import ucar.nc2.time2.CalendarDateUnit;
+import ucar.nc2.time2.CalendarPeriod;
 import ucar.nc2.internal.util.Counters;
 import ucar.nc2.util.Indent;
 import javax.annotation.concurrent.Immutable;
@@ -103,12 +104,11 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
   /**
    * Make calendar date range, using the first and last ending bounds
    * 
-   * @param cal optional calendar, may be null
    * @return calendar date range
    */
   @Override
-  public CalendarDateRange makeCalendarDateRange(ucar.nc2.time.Calendar cal) {
-    CalendarDateUnit cdu = CalendarDateUnit.of(cal, timeUnit.getField(), refDate);
+  public CalendarDateRange makeCalendarDateRange() {
+    CalendarDateUnit cdu = CalendarDateUnit.of(timeUnit, false, refDate);
     CalendarDate start = cdu.makeCalendarDate(timeUnit.getValue() * timeIntervals.get(0).getBounds2());
     CalendarDate end = cdu.makeCalendarDate(timeUnit.getValue() * timeIntervals.get(getSize() - 1).getBounds2());
     return CalendarDateRange.of(start, end);

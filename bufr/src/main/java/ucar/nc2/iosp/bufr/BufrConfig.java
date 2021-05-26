@@ -16,7 +16,7 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.point.bufr.BufrCdmIndexProto;
 import ucar.nc2.ft.point.bufr.BufrField;
 import ucar.nc2.ft.point.bufr.StandardFields;
-import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time2.CalendarDate;
 import ucar.nc2.util.Indent;
 import ucar.unidata.geoloc.Station;
 import ucar.unidata.io.RandomAccessFile;

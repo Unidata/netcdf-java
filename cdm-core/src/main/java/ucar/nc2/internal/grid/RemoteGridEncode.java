@@ -4,8 +4,8 @@ import com.google.common.base.Splitter;
 import com.google.common.escape.Escaper;
 import com.google.common.net.UrlEscapers;
 import ucar.nc2.grid.GridSubset;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.time2.CalendarDate;
+import ucar.nc2.time2.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionRect;
@@ -123,7 +123,7 @@ public class RemoteGridEncode {
       } else {
         CalendarDate cd;
         try {
-          cd = CalendarDate.parseISOformat(null, svalue); // TODO calendar?
+          cd = CalendarDate.fromUdunitIsoDate(null, svalue).orElseThrow(); // TODO calendar?
           subset.setRunTime(cd);
         } catch (Exception e) {
           // fall through
@@ -164,11 +164,6 @@ public class RemoteGridEncode {
     if (svalue == null) {
       return null;
     }
-    CalendarDate value;
-    try {
-      return CalendarDate.parseISOformat(null, svalue); // TODO calendar?
-    } catch (Exception e) {
-      return null;
-    }
+    return CalendarDate.fromUdunitIsoDate(null, svalue).orElse(null); // TODO calendar?
   }
 }

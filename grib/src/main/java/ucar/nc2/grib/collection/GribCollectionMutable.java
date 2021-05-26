@@ -24,10 +24,9 @@ import ucar.nc2.grib.grib1.Grib1Variable;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.grib2.table.Grib2Tables;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateFormatter;
-import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.time.CalendarTimeZone;
+import ucar.nc2.time2.CalendarDate;
+import ucar.nc2.time2.CalendarDateFormatter;
+import ucar.nc2.time2.CalendarDateRange;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Parameter;
 import ucar.unidata.util.StringUtil2;
@@ -57,8 +56,7 @@ public class GribCollectionMutable implements Closeable {
                                                                                        // can it be added later?
   }
 
-  private static final CalendarDateFormatter cf =
-      new CalendarDateFormatter("yyyyMMdd-HHmmss", new CalendarTimeZone("UTC"));
+  private static final CalendarDateFormatter cf = new CalendarDateFormatter("yyyyMMdd-HHmmss");
 
   static String makeName(String collectionName, CalendarDate runtime) {
     String nameNoBlanks = StringUtil2.replace(collectionName, ' ', "_");
@@ -371,7 +369,7 @@ public class GribCollectionMutable implements Closeable {
             case timeIntv:
             case time2D:
               CoordinateTimeAbstract time = (CoordinateTimeAbstract) coord;
-              CalendarDateRange range = time.makeCalendarDateRange(null);
+              CalendarDateRange range = time.makeCalendarDateRange();
               if (result == null)
                 result = range;
               else

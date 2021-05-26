@@ -16,7 +16,7 @@ import ucar.ma2.Section;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.grib.collection.Grib;
-import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time2.CalendarDate;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.category.NeedsExternalResource;
@@ -190,7 +190,7 @@ public class TestCoverageHorizSubset {
       CoverageCollection coverageCollection = featureDatasetCoverage.findCoverageDataset(FeatureType.GRID);
       Coverage coverage = coverageCollection.findCoverageByAttribute(Grib.VARIABLE_ID_ATTNAME, gribId);
 
-      final CalendarDate validTime = CalendarDate.parseISOformat(null, "2010-09-21T00:00:00Z");
+      final CalendarDate validTime = CalendarDate.fromUdunitIsoDate(null, "2010-09-21T00:00:00Z").orElseThrow();
 
       HorizCoordSys origHcs = coverage.getCoordSys().getHorizCoordSys();
 

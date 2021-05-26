@@ -94,8 +94,7 @@ public class TestCalendarDateUnit {
     CalendarDate refDate = CalendarDate.fromUdunitIsoDate("proleptic_gregorian", "1970-01-01").orElseThrow();
     assertThat(cdu.getBaseDateTime()).isEqualTo(refDate);
 
-    CalendarDateUnit cdu2 =
-        CalendarDateUnit.of(cdu.getCalendar(), cdu.getCalendarField(), cdu.isCalendarField(), refDate);
+    CalendarDateUnit cdu2 = CalendarDateUnit.of(cdu.getCalendarField(), cdu.isCalendarField(), refDate);
     assertThat(cdu2).isEqualTo(cdu);
     assertThat(cdu2.hashCode()).isEqualTo(cdu.hashCode());
   }

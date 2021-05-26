@@ -14,13 +14,13 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
- * A Calendar Date Unit: "unit since baseDate".
+ * A Calendar Date Unit: "[CALENDAR] unit SINCE baseDate"
  * Its main job is to convert "value unit since baseDate" to a CalendarDate.
  */
 @Immutable
 public class CalendarDateUnit {
   // "seconds since the Unix epoch".
-  public static final CalendarDateUnit unixDateUnit = CalendarDateUnit.of(null, CalendarPeriod.Field.Second, false,
+  public static final CalendarDateUnit unixDateUnit = CalendarDateUnit.of(CalendarPeriod.Field.Second, false,
       new CalendarDateIso(OffsetDateTime.ofInstant(Instant.EPOCH, ZoneOffset.UTC)));
 
   /**
@@ -39,34 +39,31 @@ public class CalendarDateUnit {
     UdunitCalendarDateParser.ComponentFields flds = ud.flds;
     CalendarDate baseDate = CalendarDate.of(calt, flds.year, flds.monthOfYear, flds.dayOfMonth, flds.hourOfDay,
         flds.minuteOfHour, flds.secondOfMinute, flds.nanoOfSecond, flds.zoneId);
-    return Optional.of(CalendarDateUnit.of(calt, ud.periodField, ud.isCalendarField, baseDate));
+    return Optional.of(CalendarDateUnit.of(ud.periodField, ud.isCalendarField, baseDate));
   }
 
   /**
-   * Create a CalendarDateUnit from a calendar, a CalendarPeriod.Field, and a base date
+   * Create a CalendarDateUnit from a CalendarPeriod.Field, and a base date
    * 
-   * @param calt use this Calendar, or null for default calendar
    * @param periodField a CalendarPeriod.Field like Hour or second
    * @param baseDate "since baseDate"
    * @return CalendarDateUnit
    */
-  public static CalendarDateUnit of(Calendar calt, CalendarPeriod.Field periodField, boolean isCalendarField,
-      CalendarDate baseDate) {
-    return new CalendarDateUnit(calt, periodField, isCalendarField, baseDate);
+  public static CalendarDateUnit of(CalendarPeriod.Field periodField, boolean isCalendarField, CalendarDate baseDate) {
+    return new CalendarDateUnit(CalendarPeriod.of(1, periodField), isCalendarField, baseDate);
+  }
+
+  public static CalendarDateUnit of(CalendarPeriod period, boolean isCalendarField, CalendarDate baseDate) {
+    return new CalendarDateUnit(period, isCalendarField, baseDate);
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////
-  private final Calendar cal;
   private final CalendarPeriod period;
-  private final CalendarPeriod.Field periodField;
   private final CalendarDate baseDate;
   private final boolean isCalendarField;
 
-  private CalendarDateUnit(@Nullable Calendar calt, CalendarPeriod.Field periodField, boolean isCalendarField,
-      CalendarDate baseDate) {
-    this.cal = calt == null ? Calendar.getDefault() : calt;
-    this.periodField = periodField;
-    this.period = CalendarPeriod.of(1, periodField);
+  private CalendarDateUnit(CalendarPeriod period, boolean isCalendarField, CalendarDate baseDate) {
+    this.period = period;
     this.baseDate = baseDate;
     this.isCalendarField = isCalendarField;
   }
@@ -76,11 +73,11 @@ public class CalendarDateUnit {
   }
 
   public Calendar getCalendar() {
-    return cal;
+    return baseDate.getCalendar();
   }
 
   public CalendarPeriod.Field getCalendarField() {
-    return periodField;
+    return period.getField();
   }
 
   public CalendarPeriod getCalendarPeriod() {
@@ -114,6 +111,7 @@ public class CalendarDateUnit {
 
   /////////////////////////////////////
 
+
   @Override
   public boolean equals(Object o) {
     if (this == o)
@@ -121,13 +119,12 @@ public class CalendarDateUnit {
     if (o == null || getClass() != o.getClass())
       return false;
     CalendarDateUnit that = (CalendarDateUnit) o;
-    return isCalendarField == that.isCalendarField && cal == that.cal && period.equals(that.period)
-        && periodField == that.periodField && baseDate.equals(that.baseDate);
+    return isCalendarField == that.isCalendarField && period.equals(that.period) && baseDate.equals(that.baseDate);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(cal, period, periodField, baseDate, isCalendarField);
+    return Objects.hash(period, baseDate, isCalendarField);
   }
 
   @Override
@@ -136,7 +133,7 @@ public class CalendarDateUnit {
     if (isCalendarField) {
       f.format("%s", UdunitDateParser.byCalendarString);
     }
-    f.format("%s since %s", periodField, baseDate);
+    f.format("%s since %s", getCalendarPeriod(), baseDate);
     return f.toString();
   }
 

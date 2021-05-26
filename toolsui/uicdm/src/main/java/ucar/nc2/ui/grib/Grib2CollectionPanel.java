@@ -48,7 +48,7 @@ import ucar.nc2.grib.collection.GribCollectionImmutable;
 import ucar.nc2.grib.coord.TimeCoordIntvDateValue;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.grib2.table.Grib2Tables;
-import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time2.CalendarDate;
 import ucar.nc2.write.Ncdump;
 import ucar.ui.widget.*;
 import ucar.ui.widget.PopupMenu;

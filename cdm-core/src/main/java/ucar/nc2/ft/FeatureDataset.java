@@ -10,8 +10,8 @@ import java.util.List;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.time2.CalendarDate;
+import ucar.nc2.time2.CalendarDateRange;
 import ucar.nc2.internal.cache.FileCacheable;
 import javax.annotation.Nullable;
 

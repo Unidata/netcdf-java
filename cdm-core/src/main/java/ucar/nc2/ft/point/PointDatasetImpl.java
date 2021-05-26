@@ -12,7 +12,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ft.DsgFeatureCollection;
 import ucar.nc2.ft.FeatureDatasetImpl;
 import ucar.nc2.ft.FeatureDatasetPoint;
-import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.time2.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
 
 /**

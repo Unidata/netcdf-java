@@ -4,8 +4,8 @@
  */
 package ucar.nc2.ft.point;
 
-import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.time.CalendarDateUnit;
+import ucar.nc2.time2.CalendarDateRange;
+import ucar.nc2.time2.CalendarDateUnit;
 import ucar.unidata.geoloc.LatLonRect;
 
 /**
@@ -53,7 +53,8 @@ public class CollectionInfo {
     if (dateRange != null)
       return dateRange;
     if (timeUnit != null && minTime <= maxTime) {
-      dateRange = CalendarDateRange.of(timeUnit.makeCalendarDate(minTime), timeUnit.makeCalendarDate(maxTime));
+      dateRange =
+          CalendarDateRange.of(timeUnit.makeCalendarDate((int) minTime), timeUnit.makeCalendarDate((int) maxTime));
     }
     return dateRange;
   }

@@ -19,8 +19,8 @@ import ucar.nc2.grib.coord.CoordinateTime2D;
 import ucar.nc2.grib.coord.CoordinateTimeAbstract;
 import ucar.nc2.grib.GribIndex;
 import ucar.nc2.grib.GribIndexCache;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.time2.CalendarDate;
+import ucar.nc2.time2.CalendarDateRange;
 import thredds.inventory.CloseableIterator;
 import ucar.unidata.util.StringUtil2;
 import java.io.File;
@@ -149,7 +149,7 @@ abstract class GribCollectionBuilder {
           }
         }
         if (coord instanceof CoordinateTimeAbstract) {
-          CalendarDateRange calendarDateRange = ((CoordinateTimeAbstract) coord).makeCalendarDateRange(null);
+          CalendarDateRange calendarDateRange = ((CoordinateTimeAbstract) coord).makeCalendarDateRange();
           if (calendarDateRangeAll == null)
             calendarDateRangeAll = calendarDateRange;
           else
@@ -223,7 +223,7 @@ abstract class GribCollectionBuilder {
       CalendarDateRange calendarDateRangeAll = null;
       for (Coordinate coord : g.getCoordinates()) {
         if (coord instanceof CoordinateTimeAbstract) {
-          CalendarDateRange calendarDateRange = ((CoordinateTimeAbstract) coord).makeCalendarDateRange(null);
+          CalendarDateRange calendarDateRange = ((CoordinateTimeAbstract) coord).makeCalendarDateRange();
           if (calendarDateRangeAll == null)
             calendarDateRangeAll = calendarDateRange;
           else

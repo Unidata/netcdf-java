@@ -144,6 +144,7 @@ public class GridAxis1D extends GridAxis {
     throw new IllegalStateException("Unknown spacing=" + spacing);
   }
 
+  // LOOK double vs int
   public double getCoordEdge1(int index) {
     if (index < 0 || index >= getNcoords())
       throw new IllegalArgumentException("Index out of range=" + index);

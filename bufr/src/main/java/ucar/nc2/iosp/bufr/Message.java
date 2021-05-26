@@ -9,7 +9,7 @@ import com.google.re2j.Pattern;
 import java.io.IOException;
 import java.util.Formatter;
 import java.util.List;
-import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time2.CalendarDate;
 import ucar.unidata.io.RandomAccessFile;
 
 /**

@@ -7,7 +7,7 @@ package ucar.nc2.grib.collection;
 
 import javax.annotation.Nullable;
 import thredds.featurecollection.FeatureCollectionConfig;
-import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time2.CalendarDate;
 import ucar.unidata.io.RandomAccessFile;
 import java.util.List;
 

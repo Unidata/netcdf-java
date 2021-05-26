@@ -12,7 +12,7 @@ import ucar.array.InvalidRangeException;
 import ucar.gcdm.client.GcdmNetcdfFile;
 import ucar.nc2.grid.*;
 import ucar.nc2.internal.util.CompareArrayToArray;
-import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time2.CalendarDate;
 import ucar.unidata.util.test.TestDir;
 
 import java.io.File;

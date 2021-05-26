@@ -18,7 +18,7 @@ import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageCSBuilder;
-import ucar.nc2.time.*;
+import ucar.nc2.time2.*;
 import ucar.nc2.write.Ncdump;
 import ucar.ui.widget.BAMutil;
 import ucar.ui.widget.IndependentWindow;
@@ -409,7 +409,8 @@ public class CoordSysTable extends JPanel {
   private void showValuesAsDates(CoordinateAxis axis) {
     String units = axis.getUnitsString();
     String cal = getCalendarAttribute(axis);
-    CalendarDateUnit cdu = CalendarDateUnit.of(cal, units);
+    Calendar calt = Calendar.get(cal).orElse(null);
+    CalendarDateUnit cdu = CalendarDateUnit.fromUdunitString(calt, units).orElseThrow();
 
     try {
       infoTA.appendLine(units);
@@ -496,7 +497,7 @@ public class CoordSysTable extends JPanel {
   private String makeCalendarDateStringOrMissing(CalendarDateUnit cdu, double value) {
     if (Double.isNaN(value))
       return "missing";
-    return cdu.makeCalendarDate(value).toString();
+    return cdu.makeCalendarDate((long) value).toString(); // LOOK
   }
 
   private String getCalendarAttribute(Variable vds) {
@@ -510,14 +511,15 @@ public class CoordSysTable extends JPanel {
         if (Double.isNaN(val))
           infoTA.appendLine(" N/A");
         else
-          infoTA.appendLine(" " + cdu.makeCalendarDate(val));
+          infoTA.appendLine(" " + cdu.makeCalendarDate((long) val)); // LOOK
       }
     } else { // is interval
       Formatter f = new Formatter();
       double[] b1 = axis1D.getBound1();
       double[] b2 = axis1D.getBound2();
       for (int i = 0; i < b1.length; i++)
-        f.format(" (%f, %f) == (%s, %s)%n", b1[i], b2[i], cdu.makeCalendarDate((b1[i])), cdu.makeCalendarDate((b2[i])));
+        f.format(" (%f, %f) == (%s, %s)%n", b1[i], b2[i], cdu.makeCalendarDate((long) b1[i]),
+            cdu.makeCalendarDate((long) b2[i])); // LOOK
       infoTA.appendLine(f.toString());
     }
   }

@@ -5,7 +5,7 @@
 package thredds.client.catalog;
 
 import org.junit.Test;
-import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time2.CalendarDate;
 
 import java.text.ParseException;
 import java.util.Calendar;

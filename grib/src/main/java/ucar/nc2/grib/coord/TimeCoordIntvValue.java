@@ -3,8 +3,8 @@ package ucar.nc2.grib.coord;
 import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarPeriod;
+import ucar.nc2.time2.CalendarDate;
+import ucar.nc2.time2.CalendarPeriod;
 
 // use for time intervals
 @Immutable
@@ -30,10 +30,12 @@ public class TimeCoordIntvValue implements Comparable<TimeCoordIntvValue> {
 
   public TimeCoordIntvValue convertReferenceDate(CalendarDate fromDate, CalendarPeriod fromUnit, CalendarDate toDate,
       CalendarPeriod toUnit) {
-    CalendarDate start = fromDate.add(fromUnit.multiply(b1));
-    CalendarDate end = fromDate.add(fromUnit.multiply(b2));
-    int startOffset = toUnit.getOffset(toDate, start);
-    int endOffset = toUnit.getOffset(toDate, end);
+    CalendarDate start = fromDate.add(b1, fromUnit);
+    CalendarDate end = fromDate.add(b2, fromUnit);
+    int startOffset = (int) toDate.since(start, toUnit);
+    // int startOffset = toUnit.getOffset(toDate, start);
+    int endOffset = (int) toDate.since(end, toUnit);
+    // int endOffset = toUnit.getOffset(toDate, end);
     return new TimeCoordIntvValue(startOffset, endOffset);
   }
 

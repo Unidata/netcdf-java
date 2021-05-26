@@ -4,7 +4,7 @@
  */
 package thredds.inventory;
 
-import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time2.CalendarDate;
 import thredds.inventory.internal.DateFromString;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -32,8 +32,6 @@ public class DateExtractorFromName implements DateExtractor {
     this.useName = useName;
   }
 
-  /** @deprecated use getCalendarDate() */
-  @Deprecated
   @Override
   public Date getDate(MFile mfile) {
     if (useName)

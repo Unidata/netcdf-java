@@ -7,7 +7,7 @@ package thredds.inventory;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.List;
-import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time2.CalendarDate;
 
 /**
  * Collection of MFiles

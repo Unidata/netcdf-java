@@ -39,9 +39,9 @@ import ucar.nc2.ft.PointFeatureCollection;
 import ucar.nc2.ft.PointFeatureIterator;
 import ucar.nc2.ft.point.*;
 import ucar.nc2.iosp.bufr.BufrIosp;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.time.CalendarDateUnit;
+import ucar.nc2.time2.CalendarDate;
+import ucar.nc2.time2.CalendarDateRange;
+import ucar.nc2.time2.CalendarDateUnit;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.Indent;
 import ucar.unidata.geoloc.EarthLocation;
@@ -55,7 +55,7 @@ import ucar.unidata.geoloc.LatLonRect;
 @Deprecated
 public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BufrFeatureDatasetFactory.class);
-  private static CalendarDateUnit bufrDateUnits = CalendarDateUnit.of(null, "msecs since 1970-01-01T00:00:00");
+  private static CalendarDateUnit bufrDateUnits = CalendarDateUnit.unixDateUnit;
   private static String bufrAltUnits = "m"; // LOOK fake
 
   @Override

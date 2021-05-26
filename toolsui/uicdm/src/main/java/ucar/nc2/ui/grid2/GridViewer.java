@@ -9,7 +9,7 @@ import ucar.array.InvalidRangeException;
 import ucar.nc2.grid.Grid;
 import ucar.nc2.grid.GridAxis1D;
 import ucar.nc2.grid.GridDataset;
-import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time2.CalendarDate;
 import ucar.nc2.ui.geoloc.NavigatedPanel;
 import ucar.nc2.ui.geoloc.ProjectionManager;
 import ucar.nc2.ui.gis.MapBean;

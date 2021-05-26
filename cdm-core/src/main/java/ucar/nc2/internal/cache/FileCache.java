@@ -5,8 +5,8 @@
 package ucar.nc2.internal.cache;
 
 import ucar.nc2.dataset.DatasetUrl;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateFormatter;
+import ucar.nc2.time2.CalendarDate;
+import ucar.nc2.time2.CalendarDateFormatter;
 import ucar.nc2.util.CancelTask;
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;

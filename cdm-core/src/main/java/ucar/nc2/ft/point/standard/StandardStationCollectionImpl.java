@@ -15,7 +15,7 @@ import ucar.nc2.ft.point.StationFeature;
 import ucar.nc2.ft.point.StationHelper;
 import ucar.nc2.ft.point.StationTimeSeriesCollectionImpl;
 import ucar.nc2.ft.point.StationTimeSeriesFeatureImpl;
-import ucar.nc2.time.CalendarDateUnit;
+import ucar.nc2.time2.CalendarDateUnit;
 
 /**
  * Object Heirarchy for StationFeatureCollection:

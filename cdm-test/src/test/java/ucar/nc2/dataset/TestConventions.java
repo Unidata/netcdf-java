@@ -28,9 +28,9 @@ import ucar.nc2.ft2.coverage.CoverageCoordSys;
 import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
 import ucar.nc2.ft2.coverage.FeatureDatasetCoverage;
 import ucar.nc2.ft2.coverage.HorizCoordSys;
-import ucar.nc2.time.Calendar;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateFormatter;
+import ucar.nc2.time2.Calendar;
+import ucar.nc2.time2.CalendarDate;
+import ucar.nc2.time2.CalendarDateFormatter;
 import java.util.Optional;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
@@ -76,10 +76,12 @@ public class TestConventions {
       assert time != null;
 
       CalendarDate first = time.getCalendarDate(0);
-      CalendarDate cd = CalendarDateFormatter.isoStringToCalendarDate(Calendar.gregorian, "2002-01-01T00:00:00Z");
+      CalendarDate cd =
+          CalendarDate.fromUdunitIsoDate(Calendar.gregorian.toString(), "2002-01-01T00:00:00Z").orElseThrow();
       assert first.equals(cd) : first + " != " + cd;
       CalendarDate last = time.getCalendarDate((int) time.getSize() - 1);
-      CalendarDate cd2 = CalendarDateFormatter.isoStringToCalendarDate(Calendar.gregorian, "2012-12-02T00:00:00Z");
+      CalendarDate cd2 =
+          CalendarDate.fromUdunitIsoDate(Calendar.gregorian.toString(), "2012-12-02T00:00:00Z").orElseThrow();
       assert last.equals(cd2) : last + " != " + cd2;
     }
   }

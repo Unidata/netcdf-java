@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import thredds.filesystem.MFileOS7;
 import thredds.inventory.*;
 import thredds.inventory.filter.WildcardMatchOnName;
-import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time2.CalendarDate;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.io.File;
@@ -19,12 +19,6 @@ import java.lang.invoke.MethodHandles;
 import java.nio.file.Paths;
 import java.util.Formatter;
 
-/**
- * Describe
- *
- * @author caron
- * @since 12/3/2014
- */
 public class TestFeatureCollectionConfig {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 

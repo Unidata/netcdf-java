@@ -23,7 +23,7 @@ import java.util.Optional;
  * A Calendar Date is always composed of year, month, day, hour, min, sec, nano integer fields.
  */
 @Immutable
-interface CalendarDate extends Comparable<CalendarDate> {
+public interface CalendarDate extends Comparable<CalendarDate> {
   CalendarDate unixEpoch = new CalendarDateIso(OffsetDateTime.ofInstant(Instant.EPOCH, ZoneOffset.UTC));
 
   /** Get a CalendarDate representing the present moment in ISO8601 UTC */
@@ -50,15 +50,32 @@ interface CalendarDate extends Comparable<CalendarDate> {
   }
 
   /**
-   * Get Calendar date from fields.
-   * 
-   * @param cal calendar to use, or null for default
+   * Get ISO Calendar date from fields, using UTC
+   *
    * @param year any integer
    * @param monthOfYear 1-12
    * @param dayOfMonth 1-31
    * @param hourOfDay 0-23
    * @param minuteOfHour 0-59
    * @param secondOfMinute 0-59
+   * @return CalendarDate
+   */
+  static CalendarDate of(int year, int monthOfYear, int dayOfMonth, int hourOfDay, int minuteOfHour,
+      int secondOfMinute) {
+    return of(null, year, monthOfYear, dayOfMonth, hourOfDay, minuteOfHour, secondOfMinute, 0, null);
+  }
+
+  /**
+   * Get Calendar date from fields.
+   *
+   * @param cal calendar to use, or null for default
+   * @param year any integer
+   * @param monthOfYear 1-12
+   * @param dayOfMonth may depend on calendar, but typically 1-31
+   * @param hourOfDay 0-23
+   * @param minuteOfHour 0-59
+   * @param secondOfMinute 0-59
+   * @param nanoOfSecond from 0 to 999,999,999
    * @param zoneId may be null, indicating ZoneOffset.UTC
    * @return CalendarDate
    */
@@ -138,6 +155,11 @@ interface CalendarDate extends Comparable<CalendarDate> {
   /** Get the day of the month field for this chronology. */
   default int getDayOfMonth() {
     return getFieldValue(CalendarPeriod.Field.Day);
+  }
+
+  /** Get difference between two CalendarDates in millisecs. */
+  default long getDifferenceInMsecs(CalendarDate o) {
+    return getMillis() - o.getMillis();
   }
 
   /** Get the equivilent java.util.Date */

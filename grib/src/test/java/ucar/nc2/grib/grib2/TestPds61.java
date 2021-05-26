@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.util.List;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time2.CalendarDate;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -48,12 +48,14 @@ public class TestPds61 {
 
   @Test
   public void checkModelVersionDate() {
-    assertEquals(pds.calcTime(38), CalendarDate.parseISOformat("proleptic_gregorian", "2011-03-01T00:00:00"));
+    assertEquals(pds.calcTime(38),
+        CalendarDate.fromUdunitIsoDate("proleptic_gregorian", "2011-03-01T00:00:00").orElseThrow());
   }
 
   @Test
   public void checkEndOfOverallIntervalDate() {
-    assertEquals(pds.calcTime(45), CalendarDate.parseISOformat("proleptic_gregorian", "2010-12-29T06:00:00"));
+    assertEquals(pds.calcTime(45),
+        CalendarDate.fromUdunitIsoDate("proleptic_gregorian", "2010-12-29T06:00:00").orElseThrow());
   }
 
   @Test

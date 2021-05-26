@@ -8,7 +8,7 @@ import java.util.NoSuchElementException;
 import com.google.common.base.Preconditions;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.PointFeatureIterator;
-import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.time2.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
 
 /**

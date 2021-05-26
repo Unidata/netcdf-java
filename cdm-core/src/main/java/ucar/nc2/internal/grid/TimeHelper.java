@@ -4,10 +4,11 @@
  */
 package ucar.nc2.internal.grid;
 
+import com.google.common.base.Preconditions;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
-import ucar.nc2.time.*;
+import ucar.nc2.time2.*;
 
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
@@ -28,7 +29,7 @@ public class TimeHelper {
     Calendar cal = atts == null ? null : getCalendarFromAttribute(atts);
 
     CalendarDateUnit dateUnit;
-    dateUnit = CalendarDateUnit.withCalendar(cal, units); // this will throw exception on failure
+    dateUnit = CalendarDateUnit.fromUdunitString(cal, units).orElseThrow();
     return new TimeHelper(dateUnit);
   }
 
@@ -42,12 +43,13 @@ public class TimeHelper {
 
   // copy on modify
   public TimeHelper changeReferenceDate(CalendarDate refDate) {
-    CalendarDateUnit cdUnit = CalendarDateUnit.of(dateUnit.getCalendar(), dateUnit.getCalendarField(), refDate);
+    Preconditions.checkArgument(dateUnit.getCalendar() == refDate.getCalendar());
+    CalendarDateUnit cdUnit = CalendarDateUnit.of(dateUnit.getCalendarPeriod(), false, refDate);
     return new TimeHelper(cdUnit);
   }
 
   public String getUdUnit() {
-    return dateUnit.getUdUnit();
+    return dateUnit.toString();
   }
 
   // get offset from runDate, in units of dateUnit
@@ -56,32 +58,32 @@ public class TimeHelper {
   }
 
   public CalendarDate getRefDate() {
-    return dateUnit.getBaseCalendarDate();
+    return dateUnit.getBaseDateTime();
   }
 
-  public CalendarDate makeDate(double value) {
+  public CalendarDate makeDate(long value) {
     return dateUnit.makeCalendarDate(value);
   }
 
-  public CalendarDateRange getDateRange(double startValue, double endValue) {
+  public CalendarDateRange getDateRange(int startValue, int endValue) {
     CalendarDate start = makeDate(startValue);
     CalendarDate end = makeDate(endValue);
     return CalendarDateRange.of(start, end);
   }
 
   public double getOffsetInTimeUnits(CalendarDate start, CalendarDate end) {
-    return dateUnit.getCalendarPeriod().getOffset(start, end);
+    return start.since(end, dateUnit.getCalendarPeriod());
+    // return dateUnit.getCalendarPeriod().getOffset(start, end);
   }
 
   public CalendarDate makeDateInTimeUnits(CalendarDate start, double addTo) {
     return start.add(CalendarPeriod.of((int) addTo, dateUnit.getCalendarField()));
   }
 
+  @Nullable
   public static Calendar getCalendarFromAttribute(AttributeContainer atts) {
     String cal = atts.findAttributeString(CF.CALENDAR, null);
-    if (cal == null)
-      return null;
-    return Calendar.get(cal);
+    return Calendar.get(cal).orElse(null);
   }
 
   public Calendar getCalendar() {
@@ -92,12 +94,13 @@ public class TimeHelper {
     return dateUnit;
   }
 
-  public CalendarDate makeCalendarDateFromOffset(double offset) {
+  public CalendarDate makeCalendarDateFromOffset(long offset) {
     return dateUnit.makeCalendarDate(offset);
   }
 
   public CalendarDate makeCalendarDateFromOffset(String offset) {
-    return CalendarDateFormatter.isoStringToCalendarDate(dateUnit.getCalendar(), offset);
+    long val = Long.parseLong(offset);
+    return dateUnit.makeCalendarDate(val);
   }
 
   @Override

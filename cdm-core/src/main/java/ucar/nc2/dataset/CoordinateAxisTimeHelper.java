@@ -5,10 +5,9 @@
 
 package ucar.nc2.dataset;
 
-import ucar.nc2.time.Calendar;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateFormatter;
-import ucar.nc2.time.CalendarDateUnit;
+import ucar.nc2.time2.Calendar;
+import ucar.nc2.time2.CalendarDate;
+import ucar.nc2.time2.CalendarDateUnit;
 
 /**
  * Helper class for time coordinates
@@ -17,7 +16,7 @@ import ucar.nc2.time.CalendarDateUnit;
  */
 @Deprecated
 public class CoordinateAxisTimeHelper {
-  private final ucar.nc2.time.Calendar calendar;
+  private final Calendar calendar;
   private final CalendarDateUnit dateUnit;
 
   public CoordinateAxisTimeHelper(Calendar calendar, String unitString) {
@@ -26,18 +25,18 @@ public class CoordinateAxisTimeHelper {
       this.dateUnit = null;
       return;
     }
-    this.dateUnit = CalendarDateUnit.withCalendar(calendar, unitString); // this will throw exception on failure
+    this.dateUnit = CalendarDateUnit.fromUdunitString(calendar, unitString).orElseThrow();
   }
 
-  public CalendarDate makeCalendarDateFromOffset(double offset) {
+  public CalendarDate makeCalendarDateFromOffset(int offset) {
     return dateUnit.makeCalendarDate(offset);
   }
 
   public CalendarDate makeCalendarDateFromOffset(String offset) {
-    return CalendarDateFormatter.isoStringToCalendarDate(calendar, offset);
+    return CalendarDate.fromUdunitIsoDate(calendar.toString(), offset).orElseThrow();
   }
 
-  public double offsetFromRefDate(CalendarDate date) {
+  public long offsetFromRefDate(CalendarDate date) {
     return dateUnit.makeOffsetFromRefDate(date);
   }
 

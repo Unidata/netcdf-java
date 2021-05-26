@@ -24,8 +24,8 @@ import ucar.nc2.dataset.NetcdfDataset.Enhance;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.ft.FeatureDataset;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.time2.CalendarDate;
+import ucar.nc2.time2.CalendarDateRange;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.internal.cache.FileCacheIF;
 import ucar.unidata.geoloc.LatLonRect;
@@ -209,27 +209,6 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, FeatureDataset {
 
   public String getLocation() {
     return (ncd != null) ? ncd.getLocation() : "";
-  }
-
-  /** @deprecated use getCalendarDateRange */
-  @Deprecated
-  public DateRange getDateRange() {
-    CalendarDateRange cdr = getCalendarDateRange();
-    return (cdr != null) ? cdr.toDateRange() : null;
-  }
-
-  /** @deprecated use getStartCalendarDate */
-  @Deprecated
-  public Date getStartDate() {
-    DateRange dr = getDateRange();
-    return (dr != null) ? dr.getStart().getDate() : null;
-  }
-
-  /** @deprecated use getEndCalendarDate */
-  @Deprecated
-  public Date getEndDate() {
-    DateRange dr = getDateRange();
-    return (dr != null) ? dr.getEnd().getDate() : null;
   }
 
   public CalendarDateRange getCalendarDateRange() {

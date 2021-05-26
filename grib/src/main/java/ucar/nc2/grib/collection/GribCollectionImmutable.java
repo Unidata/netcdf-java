@@ -31,8 +31,8 @@ import ucar.nc2.grib.coord.VertCoordValue;
 import ucar.nc2.grib.grib1.Grib1Variable;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib2.table.Grib2Tables;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.time2.CalendarDate;
+import ucar.nc2.time2.CalendarDateRange;
 import ucar.nc2.internal.cache.FileCacheIF;
 import ucar.nc2.internal.cache.FileCacheable;
 import ucar.nc2.internal.wmo.CommonCodeTable;
@@ -424,7 +424,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
           case timeIntv:
           case time2D:
             CoordinateTimeAbstract time = (CoordinateTimeAbstract) coord;
-            CalendarDateRange range = time.makeCalendarDateRange(null);
+            CalendarDateRange range = time.makeCalendarDateRange();
             if (result == null)
               result = range;
             else

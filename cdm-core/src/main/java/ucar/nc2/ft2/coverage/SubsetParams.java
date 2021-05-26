@@ -6,9 +6,9 @@ package ucar.nc2.ft2.coverage;
 
 import com.google.common.escape.Escaper;
 import com.google.common.net.UrlEscapers;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.time.CalendarPeriod;
+import ucar.nc2.time2.CalendarDate;
+import ucar.nc2.time2.CalendarDateRange;
+import ucar.nc2.time2.CalendarPeriod;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionRect;

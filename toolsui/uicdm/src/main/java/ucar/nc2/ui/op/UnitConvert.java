@@ -5,9 +5,9 @@
 
 package ucar.nc2.ui.op;
 
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateFormatter;
-import ucar.nc2.time.CalendarDateUnit;
+import ucar.nc2.time2.CalendarDate;
+import ucar.nc2.time2.CalendarDateFormatter;
+import ucar.nc2.time2.CalendarDateUnit;
 import ucar.nc2.ui.OpPanel;
 import ucar.ui.widget.TextHistoryPane;
 import ucar.nc2.units.SimpleUnit;
@@ -18,9 +18,9 @@ import java.awt.BorderLayout;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Formatter;
 import java.util.List;
+import java.util.Optional;
 import java.util.StringTokenizer;
 import javax.swing.JButton;
 
@@ -41,9 +41,9 @@ public class UnitConvert extends OpPanel {
     dateButton.addActionListener(e -> checkUdunits(cb.getSelectedItem()));
     buttPanel.add(dateButton);
 
-    JButton cdateButton = new JButton("CalendarDate");
-    cdateButton.addActionListener(e -> checkCalendarDate(cb.getSelectedItem()));
-    buttPanel.add(cdateButton);
+    // JButton cdateButton = new JButton("CalendarDate");
+    // cdateButton.addActionListener(e -> checkCalendarDate(cb.getSelectedItem()));
+    // buttPanel.add(cdateButton);
   }
 
   @Override
@@ -109,15 +109,21 @@ public class UnitConvert extends OpPanel {
     boolean isDate = false;
     try {
       Formatter f2 = new Formatter();
-      CalendarDateUnit cdu = CalendarDate.parseUdunitsUnit(null, command);
-      f2.format("%nFrom udunits: '%s' CalendarDateUnit = '%s'%n", command, cdu);
-      f2.format("getBaseCalendarDate = %s%n", CalendarDateFormatter.toDateTimeString(cdu.getBaseCalendarDate()));
-      CalendarDate cd = CalendarDate.parseUdunitsOrIso(null, command);
-      if (cd != null) {
-        f2.format("parseUdunitsOrIso = %s%n", CalendarDateFormatter.toDateTimeString(cd));
-        isDate = true;
+      Optional<CalendarDateUnit> cduO = CalendarDateUnit.fromUdunitString(null, command);
+      if (cduO.isEmpty()) {
+        f2.format("CalendarDateUnit.fromUdunitString cant parse %s%n", command);
       } else {
-        f2.format("parseUdunitsOrIso is null%n");
+        CalendarDateUnit cdu = cduO.get();
+        f2.format("%nFrom udunits: '%s' CalendarDateUnit = '%s'%n", command, cdu);
+        f2.format("getBaseCalendarDate = %s%n", CalendarDateFormatter.toDateTimeString(cdu.getBaseDateTime()));
+      }
+
+      Optional<CalendarDate> cdO = CalendarDate.fromUdunitIsoDate(null, command);
+      if (cdO.isEmpty()) {
+        f2.format("CalendarDate.fromUdunitIsoDate cant parse %s%n", command);
+      } else {
+        f2.format("CalendarDate.fromUdunitIsoDate = %s%n", CalendarDateFormatter.toDateTimeString(cdO.get()));
+        isDate = true;
       }
       ta.appendLine(f2.toString());
     } catch (Exception e) {
@@ -146,46 +152,48 @@ public class UnitConvert extends OpPanel {
     }
   }
 
-  private void checkCalendarDate(Object o) {
-    String command = (String) o;
-
-    try {
-      ta.setText("\nParse CalendarDate: <" + command + ">\n");
-      CalendarDate cd = CalendarDate.parseUdunits(null, command);
-      ta.appendLine("CalendarDate = " + cd);
-    } catch (Throwable t) {
-      ta.appendLine("not a CalendarDateUnit= " + t.getMessage());
-    }
-
-    try {
-      ta.appendLine("\nParse CalendarDateUnit: <" + command + ">\n");
-
-      CalendarDateUnit cdu = CalendarDateUnit.of(null, command);
-      ta.appendLine("CalendarDateUnit = " + cdu);
-      ta.appendLine(" Calendar        = " + cdu.getCalendar());
-      ta.appendLine(" PeriodField     = " + cdu.getCalendarPeriod().getField());
-      ta.appendLine(" PeriodValue     = " + cdu.getCalendarPeriod().getValue());
-      ta.appendLine(" Base            = " + cdu.getBaseCalendarDate());
-      ta.appendLine(" isCalendarField = " + cdu.isCalendarField());
-    } catch (Exception e) {
-      ta.appendLine("not a CalendarDateUnit= " + e.getMessage());
-
-      try {
-        String[] s = command.split("%");
-        if (s.length == 2) {
-          double val = Double.parseDouble(s[0].trim());
-          ta.appendLine("\nval= " + val + " unit=" + s[1]);
-          CalendarDateUnit cdu = CalendarDateUnit.of(null, s[1].trim());
-          ta.appendLine("CalendarDateUnit= " + cdu);
-          CalendarDate cd = cdu.makeCalendarDate(val);
-          ta.appendLine(" CalendarDate = " + cd);
-          Date d = cd.toDate();
-          ta.appendLine(" Date.toString() = " + d);
-          ta.appendLine(" DateFormatter= " + CalendarDateFormatter.toDateTimeString(cd.toDate()));
-        }
-      } catch (Exception ee) {
-        ta.appendLine("Failed on CalendarDateUnit " + ee.getMessage());
-      }
-    }
-  }
+  /*
+   * private void checkCalendarDate(Object o) {
+   * String command = (String) o;
+   * 
+   * try {
+   * ta.setText("\nParse CalendarDate: <" + command + ">\n");
+   * CalendarDate cd = CalendarDate.parseUdunits(null, command);
+   * ta.appendLine("CalendarDate = " + cd);
+   * } catch (Throwable t) {
+   * ta.appendLine("not a CalendarDateUnit= " + t.getMessage());
+   * }
+   * 
+   * try {
+   * ta.appendLine("\nParse CalendarDateUnit: <" + command + ">\n");
+   * 
+   * CalendarDateUnit cdu = CalendarDateUnit.of(null, command);
+   * ta.appendLine("CalendarDateUnit = " + cdu);
+   * ta.appendLine(" Calendar        = " + cdu.getCalendar());
+   * ta.appendLine(" PeriodField     = " + cdu.getCalendarPeriod().getField());
+   * ta.appendLine(" PeriodValue     = " + cdu.getCalendarPeriod().getValue());
+   * ta.appendLine(" Base            = " + cdu.getBaseCalendarDate());
+   * ta.appendLine(" isCalendarField = " + cdu.isCalendarField());
+   * } catch (Exception e) {
+   * ta.appendLine("not a CalendarDateUnit= " + e.getMessage());
+   * 
+   * try {
+   * String[] s = command.split("%");
+   * if (s.length == 2) {
+   * double val = Double.parseDouble(s[0].trim());
+   * ta.appendLine("\nval= " + val + " unit=" + s[1]);
+   * CalendarDateUnit cdu = CalendarDateUnit.of(null, s[1].trim());
+   * ta.appendLine("CalendarDateUnit= " + cdu);
+   * CalendarDate cd = cdu.makeCalendarDate(val);
+   * ta.appendLine(" CalendarDate = " + cd);
+   * Date d = cd.toDate();
+   * ta.appendLine(" Date.toString() = " + d);
+   * ta.appendLine(" DateFormatter= " + CalendarDateFormatter.toDateTimeString(cd.toDate()));
+   * }
+   * } catch (Exception ee) {
+   * ta.appendLine("Failed on CalendarDateUnit " + ee.getMessage());
+   * }
+   * }
+   * }
+   */
 }

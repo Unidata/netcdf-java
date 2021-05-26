@@ -6,9 +6,9 @@ package thredds.inventory.partition;
 
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.*;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateFormatter;
-import ucar.nc2.time.CalendarPeriod;
+import ucar.nc2.time2.CalendarDate;
+import ucar.nc2.time2.CalendarDateFormatter;
+import ucar.nc2.time2.CalendarPeriod;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +28,22 @@ public class TimePartition extends CollectionPathMatcher implements PartitionMan
   public TimePartition(FeatureCollectionConfig config, CollectionSpecParser specp, org.slf4j.Logger logger) {
     super(config, specp, logger);
     timePeriod = config.timePeriod;
-    cdf = CalendarDateFormatter.factory(timePeriod);
+    cdf = factory(timePeriod);
+  }
+
+  public static CalendarDateFormatter factory(CalendarPeriod period) {
+    switch (period.getField()) {
+      case Year:
+        return new CalendarDateFormatter("yyyy");
+      case Month:
+        return new CalendarDateFormatter("yyyy-MM");
+      case Day:
+        return new CalendarDateFormatter("yyyy-MM-dd");
+      case Hour:
+        return new CalendarDateFormatter("yyyy-MM-ddTHH");
+      default:
+        return new CalendarDateFormatter("yyyy-MM-ddTHH:mm:ss");
+    }
   }
 
   public Iterable<MCollection> makePartitions(CollectionUpdateType forceCollection) throws IOException {
