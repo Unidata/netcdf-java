@@ -24,12 +24,11 @@ public class TestCalendarDateFormatter {
 
     System.out.printf("%s%n", cd);
     System.out.printf("  toDateTimeStringISO=%s%n", CalendarDateFormatter.toDateTimeStringISO(cd));
-    System.out.printf("     toDateTimeString=%s%n", CalendarDateFormatter.toDateTimeString(cd));
-    System.out.printf("toDateTimeStringShort=%s%n", CalendarDateFormatter.toDateTimeStringShort(cd));
+    System.out.printf("toDateTimeStringShort=%s%n", CalendarDateFormatter.toDateTimeString(cd));
     System.out.printf("        toDateString=%s%n", CalendarDateFormatter.toDateString(cd));
     System.out.printf("===============================%n");
     Date d = cd.toDate();
-    System.out.printf("cd.toDate()=%s%n", CalendarDateFormatter.toDateTimeString(d));
+    System.out.printf("cd.toDate()=%s%n", d);
 
     SimpleDateFormat udunitDF = (SimpleDateFormat) DateFormat.getDateInstance(DateFormat.SHORT, Locale.US);
     udunitDF.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -38,8 +37,7 @@ public class TestCalendarDateFormatter {
 
     assertThat(CalendarDateFormatter.toDateTimeStringISO(cd)).isEqualTo("1950-01-01T12:34:56.123Z");
     assertThat(CalendarDateFormatter.toDateTimeStringISO(0)).isEqualTo(CalendarDate.unixEpoch.toString());
-    assertThat(CalendarDateFormatter.toDateTimeString(cd)).isEqualTo("1950-01-01 12:34:56.123Z");
-    assertThat(CalendarDateFormatter.toDateTimeStringShort(cd)).isEqualTo("1950-01-01 12:34:56Z");
+    assertThat(CalendarDateFormatter.toDateTimeString(cd)).isEqualTo("1950-01-01T12:34:56Z");
     assertThat(CalendarDateFormatter.toDateString(cd)).isEqualTo("1950-01-01");
 
     assertThat(CalendarDateFormatter.toDateTimeStringISO(d)).isEqualTo("1950-01-01T12:34:56.123Z");
@@ -53,7 +51,14 @@ public class TestCalendarDateFormatter {
     CalendarDate cd = CalendarDate.fromUdunitIsoDate(null, isoDate).orElseThrow();
 
     assertThat(cdf.toString(cd)).isEqualTo("1950-01-01");
-    // LOOK assertThat(cdf.parse("1950-01-01")).isNotNull();
+    assertThat(cdf.parse("1950-01-01")).isNotNull();
+  }
+
+  @Test
+  public void testParseDateString() {
+    String dateOnly = "1950-01-01";
+    CalendarDate cd = CalendarDateFormatter.parseDateString(dateOnly);
+    assertThat(CalendarDateFormatter.toDateString(cd)).isEqualTo("1950-01-01");
   }
 
 

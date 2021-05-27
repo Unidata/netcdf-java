@@ -115,14 +115,14 @@ public class UnitConvert extends OpPanel {
       } else {
         CalendarDateUnit cdu = cduO.get();
         f2.format("%nFrom udunits: '%s' CalendarDateUnit = '%s'%n", command, cdu);
-        f2.format("getBaseCalendarDate = %s%n", CalendarDateFormatter.toDateTimeString(cdu.getBaseDateTime()));
+        f2.format("getBaseCalendarDate = %s%n", cdu.getBaseDateTime());
       }
 
       Optional<CalendarDate> cdO = CalendarDate.fromUdunitIsoDate(null, command);
       if (cdO.isEmpty()) {
         f2.format("CalendarDate.fromUdunitIsoDate cant parse %s%n", command);
       } else {
-        f2.format("CalendarDate.fromUdunitIsoDate = %s%n", CalendarDateFormatter.toDateTimeString(cdO.get()));
+        f2.format("CalendarDate.fromUdunitIsoDate = %s%n", cdO.get());
         isDate = true;
       }
       ta.appendLine(f2.toString());

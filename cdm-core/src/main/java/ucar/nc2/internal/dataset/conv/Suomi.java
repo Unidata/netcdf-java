@@ -63,19 +63,9 @@ public class Suomi extends CoordSystemBuilder {
 
     CalendarDateFormatter formatter = new CalendarDateFormatter("yyyy.DDD.HH.mm.ss"); // "2006.105.00.00.00"
     CalendarDate start = formatter.parse(start_date);
-    /*
-     * was
-     * SimpleDateFormat df = new SimpleDateFormat("yyyy.DDD.HH.mm.ss"); // "2006.105.00.00.00"
-     * Date start;
-     * try {
-     * start = df.parse(start_date);
-     * } catch (ParseException e) {
-     * throw new RuntimeException("Cant read start_date=" + start_date);
-     * }
-     */
 
-    rootGroup.findVariableLocal("time_offset").ifPresent(v -> v
-        .addAttribute(new Attribute(CDM.UNITS, "seconds since " + CalendarDateFormatter.toDateTimeString(start))));
+    rootGroup.findVariableLocal("time_offset")
+        .ifPresent(v -> v.addAttribute(new Attribute(CDM.UNITS, "seconds since " + start)));
 
     rootGroup.addAttribute(new Attribute(CDM.CONVENTIONS, "Suomi-Station-CDM"));
   }

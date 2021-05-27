@@ -72,7 +72,7 @@ public class TimedCollection {
           Dataset d2 = datasets.get(i + 1);
           d1.setDateRange(CalendarDateRange.of(d1.start, d2.start));
           if (i == datasets.size() - 2) // last one
-            d2.setDateRange(new CalendarDateRange(d2.start, d1.getDateRange().getDurationInSecs()));
+            d2.setDateRange(CalendarDateRange.of(d2.start, d1.getDateRange().getDurationInSecs()));
         }
 
         Dataset first = datasets.get(0);

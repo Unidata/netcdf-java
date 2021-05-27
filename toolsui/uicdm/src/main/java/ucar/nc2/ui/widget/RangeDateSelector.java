@@ -7,6 +7,7 @@ package ucar.nc2.ui.widget;
 
 import thredds.ui.datatype.prefs.DateField;
 import thredds.ui.datatype.prefs.DurationField;
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time2.CalendarDateFormatter;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
@@ -327,10 +328,10 @@ public class RangeDateSelector extends JPanel implements FieldValidator {
       checkVal = (DateType) editValue; // otherwise its one of the dates
 
     // have to be inside the limits
-    Date d = checkVal.getDate();
-    if (d.after(maxLimit.getDate()) || d.before(minLimit.getDate())) {
+    CalendarDate d = checkVal.getCalendarDate();
+    if (d.isAfter(maxLimit.getCalendarDate()) || d.isBefore(minLimit.getCalendarDate())) {
       errMessages.append("Date ");
-      errMessages.append(CalendarDateFormatter.toDateTimeString(d));
+      errMessages.append(d.toString());
       errMessages.append(" must be between ");
       errMessages.append(minLimit.getText());
       errMessages.append(" and ");

@@ -6,6 +6,7 @@
 package ucar.nc2.ui;
 
 import thredds.inventory.MFile;
+import ucar.nc2.time2.CalendarDate;
 import ucar.nc2.time2.CalendarDateFormatter;
 import ucar.ui.widget.BAMutil;
 import ucar.ui.widget.IndependentWindow;
@@ -134,7 +135,11 @@ public class MFileTable extends JPanel {
     }
 
     public String getLastModified() {
-      return CalendarDateFormatter.toDateTimeString(new Date(mfile.getLastModified()));
+      if (mfile.getLastModified() == -1) {
+        return "N/A";
+      } else {
+        return CalendarDate.of(mfile.getLastModified()).toString();
+      }
     }
   }
 }

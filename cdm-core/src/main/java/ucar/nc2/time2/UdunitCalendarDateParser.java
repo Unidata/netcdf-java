@@ -11,6 +11,7 @@ import com.google.re2j.Pattern;
 
 import javax.annotation.concurrent.Immutable;
 import java.time.ZoneOffset;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.StringTokenizer;
 
@@ -355,6 +356,30 @@ class UdunitCalendarDateParser {
     int secondOfMinute = 0;
     int nanoOfSecond = 0;
     ZoneOffset zoneId = ZoneOffset.UTC;
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o)
+        return true;
+      if (o == null || getClass() != o.getClass())
+        return false;
+      ComponentFields that = (ComponentFields) o;
+      return year == that.year && monthOfYear == that.monthOfYear && dayOfMonth == that.dayOfMonth
+          && hourOfDay == that.hourOfDay && minuteOfHour == that.minuteOfHour && secondOfMinute == that.secondOfMinute
+          && nanoOfSecond == that.nanoOfSecond && zoneId.equals(that.zoneId);
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(year, monthOfYear, dayOfMonth, hourOfDay, minuteOfHour, secondOfMinute, nanoOfSecond, zoneId);
+    }
+
+    @Override
+    public String toString() {
+      return "ComponentFields{" + "year=" + year + ", monthOfYear=" + monthOfYear + ", dayOfMonth=" + dayOfMonth
+          + ", hourOfDay=" + hourOfDay + ", minuteOfHour=" + minuteOfHour + ", secondOfMinute=" + secondOfMinute
+          + ", nanoOfSecond=" + nanoOfSecond + ", zoneId=" + zoneId + '}';
+    }
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////

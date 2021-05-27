@@ -226,7 +226,7 @@ public class TestGridSubset {
     assertThat(cd).isNull();
 
     CalendarDate start = CalendarDate.of(2020, 7, 17, 11, 11, 11);
-    CalendarDateRange range = new CalendarDateRange(start, 3600);
+    CalendarDateRange range = CalendarDateRange.of(start, 3600);
     subset.setTimeRange(range);
     assertThat(subset.getTimeRange()).isEqualTo(range);
     assertThat(subset.getTimeRange() == range).isTrue();
@@ -313,7 +313,7 @@ public class TestGridSubset {
     subset.setGridName("gridName"); // String
 
     CalendarDate start = CalendarDate.of(2020, 7, 17, 11, 11, 11);
-    CalendarDateRange range = new CalendarDateRange(start, 3600);
+    CalendarDateRange range = CalendarDateRange.of(start, 3600);
     subset.setTimeRange(range); // CalendarDateRange
 
     subset.setLatLonPoint(LatLonPoint.create(99.0, .5)); // LatLonPoint

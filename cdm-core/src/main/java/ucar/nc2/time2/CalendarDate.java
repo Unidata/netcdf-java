@@ -11,6 +11,7 @@ import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.chrono.ChronoLocalDateTime;
+import java.time.chrono.ChronoZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 import javax.annotation.Nullable;
@@ -34,17 +35,29 @@ public interface CalendarDate extends Comparable<CalendarDate> {
   /**
    * Get a CalendarDate from an ISO date string, with extensions for udunit backward compatibility.
    *
-   * @param calendarName get Calendar from Calendar.get(calendarName). may be null
-   * @param isoDateString ISO date string
+   * @param calendarName get Calendar from Calendar.get(calendarName). Must be null, or a valid calendar name.
+   * @param udunitString udunit ISO date string
    *
    * @return CalendarDate or empty if the String is not a valid ISO 8601 date
    */
-  static Optional<CalendarDate> fromUdunitIsoDate(@Nullable String calendarName, String isoDateString)
+  static Optional<CalendarDate> fromUdunitIsoDate(@Nullable String calendarName, String udunitString)
       throws IllegalArgumentException {
-    Calendar cal = Calendar.get(calendarName).orElse(Calendar.getDefault());
-    Optional<UdunitCalendarDateParser.ComponentFields> udunit =
-        UdunitCalendarDateParser.parseUdunitIsoDate(isoDateString);
+    if (udunitString == null || udunitString.isEmpty()) {
+      return Optional.empty();
+    }
+    Calendar cal;
+    if (calendarName == null) {
+      cal = Calendar.getDefault();
+    } else {
+      Optional<Calendar> calO = Calendar.get(calendarName);
+      if (calO.isEmpty()) {
+        return Optional.empty();
+      }
+      cal = calO.get();
+    }
 
+    Optional<UdunitCalendarDateParser.ComponentFields> udunit =
+        UdunitCalendarDateParser.parseUdunitIsoDate(udunitString);
     return udunit.map(flds -> CalendarDate.of(cal, flds.year, flds.monthOfYear, flds.dayOfMonth, flds.hourOfDay,
         flds.minuteOfHour, flds.secondOfMinute, flds.nanoOfSecond, flds.zoneId));
   }
@@ -90,10 +103,8 @@ public interface CalendarDate extends Comparable<CalendarDate> {
       Uniform30DayDate chronoDate = Uniform30DayDate.of(year, monthOfYear, dayOfMonth);
       LocalTime localTime = LocalTime.of(hourOfDay, minuteOfHour, secondOfMinute, nanoOfSecond);
       ChronoLocalDateTime<Uniform30DayDate> dt = chronoDate.atTime(localTime);
-      // LOOK if (zoneId != ZoneOffset.UTC) {
-      // dt = dt.withOffsetSameInstant(ZoneOffset.UTC);
-      // }
-      return new CalendarDateChrono(cal, dt);
+      ChronoZonedDateTime<Uniform30DayDate> dtz = dt.atZone(zoneId);
+      return new CalendarDateChrono(cal, dtz);
     } else {
       OffsetDateTime dt = OffsetDateTime.of(year, monthOfYear, dayOfMonth, hourOfDay, minuteOfHour, secondOfMinute,
           nanoOfSecond, zoneId);
@@ -146,9 +157,19 @@ public interface CalendarDate extends Comparable<CalendarDate> {
 
   int getFieldValue(CalendarPeriod.Field fld);
 
-  /** Get the hour of day field for this chronology. */
-  default int getHourOfDay() {
-    return getFieldValue(CalendarPeriod.Field.Hour);
+  ZoneOffset getZoneOffset();
+
+  /** Get the equivilent java.util.Date */
+  java.util.Date toDate();
+
+  /** Get the year field for this chronology. */
+  default int getYear() {
+    return getFieldValue(CalendarPeriod.Field.Year);
+  }
+
+  /** Get the month of year field for this chronology. */
+  default int getMonthOfYear() {
+    return getFieldValue(CalendarPeriod.Field.Month);
   }
 
   /** Get the day of the month field for this chronology. */
@@ -156,13 +177,30 @@ public interface CalendarDate extends Comparable<CalendarDate> {
     return getFieldValue(CalendarPeriod.Field.Day);
   }
 
+  /** Get the hour of day field for this chronology. */
+  default int getHourOfDay() {
+    return getFieldValue(CalendarPeriod.Field.Hour);
+  }
+
+  /** Get the hour of day field for this chronology. */
+  default int getMinuteOfHour() {
+    return getFieldValue(CalendarPeriod.Field.Minute);
+  }
+
+  /** Get the hour of day field for this chronology. */
+  default int getSecondOfMinute() {
+    return getFieldValue(CalendarPeriod.Field.Second);
+  }
+
+  /** Get the hour of day field for this chronology. */
+  default int getMillisOfSecond() {
+    return getFieldValue(CalendarPeriod.Field.Millisec);
+  }
+
   /** Get difference between two CalendarDates in millisecs. */
   default long getDifferenceInMsecs(CalendarDate o) {
     return getMillis() - o.getMillis();
   }
-
-  /** Get the equivilent java.util.Date */
-  java.util.Date toDate();
 
   /**
    * Truncate the CalendarDate, by zeroing all the fields that are less than the named field.
@@ -171,9 +209,26 @@ public interface CalendarDate extends Comparable<CalendarDate> {
    * @param fld set to 0 all fields less than this one
    * @return truncated result
    */
-  CalendarDate truncate(CalendarPeriod.Field fld);
+  default CalendarDate truncate(CalendarPeriod.Field fld) {
+    switch (fld) {
+      case Minute:
+        return CalendarDate.of(getCalendar(), getYear(), getMonthOfYear(), getDayOfMonth(), getHourOfDay(),
+            getMinuteOfHour(), 0, 0, getZoneOffset());
+      case Hour:
+        return CalendarDate.of(getCalendar(), getYear(), getMonthOfYear(), getDayOfMonth(), getHourOfDay(), 0, 0, 0,
+            getZoneOffset());
+      case Day:
+        return CalendarDate.of(getCalendar(), getYear(), getMonthOfYear(), getDayOfMonth(), 0, 0, 0, 0,
+            getZoneOffset());
+      case Month:
+        return CalendarDate.of(getCalendar(), getYear(), getMonthOfYear(), 1, 0, 0, 0, 0, getZoneOffset());
+      case Year:
+        return CalendarDate.of(getCalendar(), getYear(), 1, 1, 0, 0, 0, 0, getZoneOffset());
+    }
+    return this;
+  }
 
-  /** String in ISO8601 format (yyyy-MM-ddTHH:mm:ss.SSSZ) */
+  /** String in ISO8601 format */
   @Override
   String toString();
 

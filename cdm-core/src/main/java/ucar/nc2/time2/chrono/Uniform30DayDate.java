@@ -177,8 +177,8 @@ public final class Uniform30DayDate extends AbstractDate implements ChronoLocalD
     }
 
     dayOfYear--;
-    int month = dayOfYear / DAYS_IN_YEAR;
-    int day = dayOfYear % DAYS_IN_YEAR;
+    int month = dayOfYear / DAYS_IN_MONTH;
+    int day = dayOfYear % DAYS_IN_MONTH;
     return new Uniform30DayDate(prolepticYear, month + 1, day + 1);
   }
 

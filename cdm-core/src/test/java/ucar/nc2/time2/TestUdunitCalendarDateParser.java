@@ -7,7 +7,6 @@ package ucar.nc2.time2;
 
 import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth8.assertThat;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import java.lang.invoke.MethodHandles;
@@ -26,8 +25,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** Test {@link ucar.nc2.time2.UdunitDateParser} */
-public class TestUdunitDateParser {
+/** Test {@link ucar.nc2.time2.UdunitCalendarDateParser} */
+public class TestUdunitCalendarDateParser {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
@@ -117,54 +116,23 @@ public class TestUdunitDateParser {
     claimGood("1992-10-8 7 +6:00");
   }
 
-  @Test
-  public void shouldBeSameTime() {
-    String isoCET = "2012-04-27T16:00:00+0200";
-    OffsetDateTime cetDate = UdunitDateParser.parseUdunitIsoDate(isoCET).orElseThrow();
-    String isoMST = "2012-04-27T08:00:00-0600";
-    OffsetDateTime mstDate = UdunitDateParser.parseUdunitIsoDate(isoMST).orElseThrow();
-    String isoUTC = "2012-04-27T14:00Z";
-    OffsetDateTime utcDate = UdunitDateParser.parseUdunitIsoDate(isoUTC).orElseThrow();
-    assertEquals(mstDate, cetDate); // This passes -> times with offset are ok
-    assertEquals(mstDate, utcDate); // This fails!!
-  }
-
-  @Test
-  public void shouldHandleOffsetWithoutColon() {
-    String isoCET = "2012-04-27T16:00:00+0200";
-    OffsetDateTime cetDate = UdunitDateParser.parseUdunitIsoDate(isoCET).orElseThrow(); // We get
-                                                                                        // 2012-04-19T02:00:00-0600 and
-                                                                                        // is
-    String isoMST = "2012-04-27T08:00:00-0600";
-    // Fails here, unable to create a date with 600 hours of offset!!!
-    OffsetDateTime mstDate = UdunitDateParser.parseUdunitIsoDate(isoMST).orElseThrow();
-    String isoUTC = "2012-04-27T14:00Z";
-    OffsetDateTime utcDate = UdunitDateParser.parseUdunitIsoDate(isoUTC).orElseThrow();
-
-    assertEquals(mstDate, cetDate); // This fails because offset
-    assertEquals(mstDate, utcDate); // This fails!!
-  }
-
   private void claimString(String s, String expected) {
-    OffsetDateTime zdt = UdunitDateParser.parseUdunitIsoDate(s).orElseThrow();
-    CalendarDate result = new CalendarDateIso(zdt);
+    CalendarDate result = CalendarDate.fromUdunitIsoDate(null, s).orElseThrow();
     System.out.printf("%s == %s%n", s, result);
     assertThat(result.toString()).isEqualTo(expected);
   }
 
   private void claimSameString(String s) {
-    OffsetDateTime zdt = UdunitDateParser.parseUdunitIsoDate(s).orElseThrow();
-    CalendarDate result = new CalendarDateIso(zdt);
+    CalendarDate result = CalendarDate.fromUdunitIsoDate(null, s).orElseThrow();
     System.out.printf("%s == %s%n", s, result);
     assertThat(result.toString()).isEqualTo(s);
   }
 
   private void claimGood(String s) {
     try {
-      OffsetDateTime result = UdunitDateParser.parseUdunitIsoDate(s).orElseThrow();
+      CalendarDate result = CalendarDate.fromUdunitIsoDate(null, s).orElseThrow();
       System.out.printf("%s == %s%n", s, result);
     } catch (Exception e) {
-      logger.error("FAIL %s%n", s);
       e.printStackTrace();
       fail();
     }
@@ -172,11 +140,11 @@ public class TestUdunitDateParser {
 
   private void claimBad(String s) {
     try {
-      OffsetDateTime result = UdunitDateParser.parseUdunitIsoDate(s).orElseThrow();
-      System.out.printf("FAIL %s%n", s);
+      CalendarDate result = CalendarDate.fromUdunitIsoDate(null, s).orElseThrow();
+      System.out.printf("%s = %s should have failed%n", s, result);
       fail();
     } catch (Exception e) {
-      logger.debug("Expected fail = %s%n", s);
+      System.out.printf("expected fail = %s%n", s);
     }
   }
 
@@ -186,11 +154,10 @@ public class TestUdunitDateParser {
 
     System.out.printf("%s%n", cd);
     System.out.printf("toDateTimeStringISO=%s%n", CalendarDateFormatter.toDateTimeStringISO(cd));
-    System.out.printf("   toDateTimeString=%s%n", CalendarDateFormatter.toDateTimeString(cd));
     System.out.printf("       toDateString=%s%n", CalendarDateFormatter.toDateString(cd));
     System.out.printf("===============================%n");
     Date d = cd.toDate();
-    System.out.printf("cd.toDate()=%s%n", CalendarDateFormatter.toDateTimeString(d));
+    System.out.printf("cd.toDate()=%s%n", d);
 
     SimpleDateFormat udunitDF = (SimpleDateFormat) DateFormat.getDateInstance(DateFormat.SHORT, Locale.US);
     udunitDF.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -201,27 +168,30 @@ public class TestUdunitDateParser {
   @Test
   public void testParse() {
     String base = "2012-04-27T16:00:00+0200";
-    OffsetDateTime basedate = UdunitDateParser.parseUdunitIsoDate(base).orElseThrow(); // We get
-                                                                                       // 2012-04-19T02:00:00-0600 and
-                                                                                       // is
+    CalendarDate basedate = CalendarDate.fromUdunitIsoDate(null, base).orElseThrow();
 
-    // "[CALENDAR] unit SINCE date"
-    UdunitDateParser parsed = UdunitDateParser.parseUnitString("days since " + base).orElseThrow();
-    assertThat(parsed.baseDate).isEqualTo(basedate);
+    UdunitCalendarDateParser parsed = UdunitCalendarDateParser.parseUnitString("days since " + base).orElseThrow();
+    CalendarDate parsedDate =
+        CalendarDate.of(null, parsed.flds.year, parsed.flds.monthOfYear, parsed.flds.dayOfMonth, parsed.flds.hourOfDay,
+            parsed.flds.minuteOfHour, parsed.flds.secondOfMinute, parsed.flds.nanoOfSecond, parsed.flds.zoneId);
+    assertThat(parsedDate).isEqualTo(basedate);
     assertThat(parsed.periodField).isEqualTo(CalendarPeriod.Field.Day);
     assertThat(parsed.period).isEqualTo(CalendarPeriod.of(1, CalendarPeriod.Field.Day));
     assertThat(parsed.isCalendarField).isFalse();
 
-    parsed = UdunitDateParser.parseUnitString("calendar months since " + base).orElseThrow();
-    assertThat(parsed.baseDate).isEqualTo(basedate);
+    parsed = UdunitCalendarDateParser.parseUnitString("calendar months since " + base).orElseThrow();
+    parsedDate =
+        CalendarDate.of(null, parsed.flds.year, parsed.flds.monthOfYear, parsed.flds.dayOfMonth, parsed.flds.hourOfDay,
+            parsed.flds.minuteOfHour, parsed.flds.secondOfMinute, parsed.flds.nanoOfSecond, parsed.flds.zoneId);
+    assertThat(parsedDate).isEqualTo(basedate);
     assertThat(parsed.periodField).isEqualTo(CalendarPeriod.Field.Month);
     assertThat(parsed.period).isEqualTo(CalendarPeriod.of(1, CalendarPeriod.Field.Month));
     assertThat(parsed.isCalendarField).isTrue();
 
-    assertThat(UdunitDateParser.parseUnitString("days before 2012-04-27T16:00:00+0200")).isEmpty();
-    assertThat(UdunitDateParser.parseUnitString("calendar days before 2012-04-27T16:00:00+0200")).isEmpty();
-    assertThat(UdunitDateParser.parseUnitString("dates since 2012-04-27T16:00:00+0200")).isEmpty();
-    assertThat(UdunitDateParser.parseUnitString("calendar dates since 2012-04-27T16:00:00+0200")).isEmpty();
+    assertThat(UdunitCalendarDateParser.parseUnitString("days before 2012-04-27T16:00:00+0200")).isEmpty();
+    assertThat(UdunitCalendarDateParser.parseUnitString("calendar days before 2012-04-27T16:00:00+0200")).isEmpty();
+    assertThat(UdunitCalendarDateParser.parseUnitString("dates since 2012-04-27T16:00:00+0200")).isEmpty();
+    assertThat(UdunitCalendarDateParser.parseUnitString("calendar dates since 2012-04-27T16:00:00+0200")).isEmpty();
   }
 
   @Test
@@ -267,10 +237,13 @@ public class TestUdunitDateParser {
   private void testSO(String s) {
     System.out.printf("'%s': ", s);
     try {
-      OffsetDateTime result = UdunitDateParser.parseUdunitIsoDate(s).orElseThrow();
+      CalendarDate isoDate = CalendarDate.fromUdunitIsoDate(null, s).orElseThrow();
+      assertThat(isoDate).isInstanceOf(CalendarDateIso.class);
+      OffsetDateTime isoOffset = ((CalendarDateIso) isoDate).dateTime();
+
       OffsetDateTime resultSO = parseSO(s);
-      System.out.printf("%s == %s%n", resultSO, result);
-      assertThat(resultSO).isEqualTo(result);
+      System.out.printf("%s == %s%n", resultSO, isoOffset);
+      assertThat(resultSO).isEqualTo(isoOffset);
     } catch (Exception e) {
       logger.error("FAIL %s%n", s);
       e.printStackTrace();

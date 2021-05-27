@@ -11,7 +11,7 @@ import javax.annotation.concurrent.Immutable;
 import java.util.Date;
 import java.util.Objects;
 
-/** A range of CalendarDates. */
+/** A range of CalendarDates: the half open interval [start, end) */
 @Immutable
 public class CalendarDateRange {
   private final CalendarDate start, end;
@@ -24,6 +24,10 @@ public class CalendarDateRange {
     return new CalendarDateRange(CalendarDate.of(start), CalendarDate.of(end));
   }
 
+  public static CalendarDateRange of(CalendarDate start, long durationInSecs) {
+    return new CalendarDateRange(start, durationInSecs);
+  }
+
   private CalendarDateRange(CalendarDate start, CalendarDate end) {
     Preconditions.checkNotNull(start);
     Preconditions.checkNotNull(end);
@@ -32,7 +36,7 @@ public class CalendarDateRange {
     assert start.getCalendar() == end.getCalendar();
   }
 
-  public CalendarDateRange(CalendarDate start, long durationInSecs) {
+  private CalendarDateRange(CalendarDate start, long durationInSecs) {
     this.start = start;
     this.end = start.add((int) durationInSecs, CalendarPeriod.Field.Second);
   }
@@ -69,7 +73,7 @@ public class CalendarDateRange {
 
   public CalendarDateRange intersect(CalendarDateRange clip) {
     CalendarDate cs = clip.getStart();
-    CalendarDate s = start.isBefore(cs) ? cs : cs; // later one
+    CalendarDate s = start.isBefore(cs) ? cs : start; // later one
 
     CalendarDate ce = clip.getEnd();
     CalendarDate e = end.isBefore(ce) ? end : ce; // earlier one

@@ -8,6 +8,7 @@ import com.google.common.base.Preconditions;
 
 import javax.annotation.concurrent.Immutable;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
 import java.util.Objects;
@@ -74,11 +75,6 @@ class CalendarDateIso implements CalendarDate {
     return Objects.hash(dateTime);
   }
 
-  /**
-   * ISO formatted string
-   * 
-   * @return ISO8601 format (yyyy-MM-ddTHH:mm:ss.SSSZ)
-   */
   @Override
   public String toString() {
     return dateTime.toString();
@@ -110,19 +106,9 @@ class CalendarDateIso implements CalendarDate {
     throw new IllegalArgumentException("unimplemented " + fld);
   }
 
-  /**
-   * Get the hour of day (0-23) field for this chronology.
-   *
-   * @return hour of day (0-23)
-   */
   @Override
-  public int getHourOfDay() {
-    return dateTime.getHour();
-  }
-
-  @Override
-  public int getDayOfMonth() {
-    return dateTime.getDayOfMonth();
+  public ZoneOffset getZoneOffset() {
+    return ZoneOffset.UTC;
   }
 
   @Override
@@ -170,38 +156,15 @@ class CalendarDateIso implements CalendarDate {
     return iso.dateTime.until(this.dateTime, period.getChronoUnit());
   }
 
-  /**
-   * truncate the CalendarDate, by zeroing all the fields that are less than the field.
-   * So 2013-03-01T19:30 becomes 2013-03-01T00:00 if the field is "day"
-   * 
-   * @param fld set to 0 all fields less than this one
-   * @return truncated result
-   */
-  @Override
-  public CalendarDate truncate(CalendarPeriod.Field fld) {
-    switch (fld) {
-      case Minute:
-        return CalendarDate.of(getCalendar(), dateTime.getYear(), dateTime.getMonthValue(), dateTime.getDayOfMonth(),
-            dateTime.getHour(), dateTime.getMinute(), 0, 0, dateTime.getOffset());
-      case Hour:
-        return CalendarDate.of(getCalendar(), dateTime.getYear(), dateTime.getMonthValue(), dateTime.getDayOfMonth(),
-            dateTime.getHour(), 0, 0, 0, dateTime.getOffset());
-      case Day:
-        return CalendarDate.of(getCalendar(), dateTime.getYear(), dateTime.getMonthValue(), dateTime.getDayOfMonth(), 0,
-            0, 0, 0, dateTime.getOffset());
-      case Month:
-        return CalendarDate.of(getCalendar(), dateTime.getYear(), dateTime.getMonthValue(), 1, 0, 0, 0, 0,
-            dateTime.getOffset());
-      case Year:
-        return CalendarDate.of(getCalendar(), dateTime.getYear(), 1, 1, 0, 0, 0, 0, dateTime.getOffset());
-    }
-    return this;
-  }
-
   /** Get the equivilent java.util.Date */
   @Override
   public java.util.Date toDate() {
     return new java.util.Date(getMillis());
   }
 
+  //// visible for testing
+
+  OffsetDateTime dateTime() {
+    return dateTime;
+  }
 }

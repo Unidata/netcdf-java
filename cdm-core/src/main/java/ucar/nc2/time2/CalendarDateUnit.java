@@ -134,7 +134,7 @@ public class CalendarDateUnit {
   public String toString() {
     Formatter f = new Formatter();
     if (isCalendarField) {
-      f.format("%s", UdunitDateParser.byCalendarString);
+      f.format("%s", UdunitCalendarDateParser.byCalendarString);
     }
     f.format("%s since %s", getCalendarField(), baseDate);
     return f.toString();

@@ -5,19 +5,21 @@
 
 package ucar.nc2.time2;
 
-import java.time.ZoneOffset;
+import java.time.OffsetDateTime;
 import java.time.chrono.ChronoLocalDate;
-import java.time.chrono.ChronoLocalDateTime;
+import java.time.chrono.ChronoZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
+import java.util.Objects;
+
 
 /** A CalendarDate using java.time.chrono.ChronoLocalDateTime. */
 class CalendarDateChrono extends CalendarDateIso implements CalendarDate, Comparable<CalendarDate> {
   private final Calendar cal;
-  private final ChronoLocalDateTime<? extends ChronoLocalDate> chronoLocalDateTime;
+  private final ChronoZonedDateTime<? extends ChronoLocalDate> chronoLocalDateTime;
 
-  CalendarDateChrono(Calendar cal, ChronoLocalDateTime<? extends ChronoLocalDate> dateTime) {
+  CalendarDateChrono(Calendar cal, ChronoZonedDateTime<? extends ChronoLocalDate> dateTime) {
     this.cal = cal;
     this.chronoLocalDateTime = dateTime;
   }
@@ -29,7 +31,7 @@ class CalendarDateChrono extends CalendarDateIso implements CalendarDate, Compar
 
   @Override
   public long getMillis() {
-    return chronoLocalDateTime.toInstant(ZoneOffset.UTC).toEpochMilli();
+    return chronoLocalDateTime.toInstant().toEpochMilli();
   }
 
   @Override
@@ -57,11 +59,6 @@ class CalendarDateChrono extends CalendarDateIso implements CalendarDate, Compar
       return chronoLocalDateTime.isBefore(co.chronoLocalDateTime);
     }
     throw new IllegalArgumentException("Must be a ChronoDate");
-  }
-
-  @Override
-  public String toString() {
-    return chronoLocalDateTime.toString();
   }
 
   @Override
@@ -130,4 +127,41 @@ class CalendarDateChrono extends CalendarDateIso implements CalendarDate, Compar
     throw new IllegalArgumentException("Must be a ChronoDate");
   }
 
+  /////////////////////////////////////////////
+
+  @Override
+  public String toString() {
+    if (chronoLocalDateTime.get(ChronoField.MILLI_OF_SECOND) == 0) {
+      if (chronoLocalDateTime.get(ChronoField.SECOND_OF_MINUTE) == 0) {
+        return CalendarDateFormatter.toDateTimeStringNoSecs(this);
+      } else {
+        return CalendarDateFormatter.toDateTimeString(this);
+      }
+    } else {
+      return CalendarDateFormatter.toDateTimeStringWithMillis(this);
+    }
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
+    if (!super.equals(o))
+      return false;
+    CalendarDateChrono that = (CalendarDateChrono) o;
+    return cal == that.cal && chronoLocalDateTime.equals(that.chronoLocalDateTime);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(super.hashCode(), cal, chronoLocalDateTime);
+  }
+
+  //// visible for testing
+
+  ChronoZonedDateTime chronoDateTime() {
+    return chronoLocalDateTime;
+  }
 }

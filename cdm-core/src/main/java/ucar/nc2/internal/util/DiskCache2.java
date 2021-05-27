@@ -449,7 +449,7 @@ public class DiskCache2 {
     File dir = new File(root);
     for (File file : dir.listFiles()) {
       f.format("%10s %20s %s%n", Format.formatByteSize(file.length()),
-          CalendarDateFormatter.toDateTimeStringShort(CalendarDate.of(file.lastModified())), file.getName());
+          CalendarDateFormatter.toDateTimeString(CalendarDate.of(file.lastModified())), file.getName());
     }
   }
 

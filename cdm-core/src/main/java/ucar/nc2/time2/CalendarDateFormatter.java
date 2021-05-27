@@ -19,10 +19,13 @@ import java.util.Date;
 public class CalendarDateFormatter {
   private static final DateTimeFormatter isof = DateTimeFormatter.ISO_OFFSET_DATE_TIME.withZone(ZoneOffset.UTC);
 
+  private static final DateTimeFormatter dtfNoSecs =
+      DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm'Z'").withZone(ZoneOffset.UTC);
   private static final DateTimeFormatter dtf =
-      DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss'Z'").withZone(ZoneOffset.UTC);
+      DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'").withZone(ZoneOffset.UTC);
   private static final DateTimeFormatter dtf_with_millis_of_second =
-      DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS'Z'").withZone(ZoneOffset.UTC);
+      DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").withZone(ZoneOffset.UTC);
+
   private static final DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd").withZone(ZoneOffset.UTC);
   private static final DateTimeFormatter df_units =
       DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS 'UTC'").withZone(ZoneOffset.UTC); // udunits
@@ -39,24 +42,39 @@ public class CalendarDateFormatter {
     return toDateTimeStringISO(CalendarDate.of(millisecs));
   }
 
-  public static String toDateTimeString(CalendarDate cd) {
-    if (cd.getMillis() == 0) {
-      return cd.format(dtf);
+  public static String toDateTimeStringNoSecs(CalendarDate cd) {
+    if (cd.getCalendar().getChronology() == null) {
+      return cd.format(dtfNoSecs);
     } else {
-      return cd.format(dtf_with_millis_of_second);
+      return cd.format(dtfNoSecs.withChronology(cd.getCalendar().getChronology()));
     }
   }
 
-  public static String toDateTimeStringShort(CalendarDate cd) {
-    return cd.format(dtf);
+  public static String toDateTimeStringWithMillis(CalendarDate cd) {
+    if (cd.getCalendar().getChronology() == null) {
+      return cd.format(dtf_with_millis_of_second);
+    } else {
+      return cd.format(dtf_with_millis_of_second.withChronology(cd.getCalendar().getChronology()));
+    }
   }
 
-  public static String toDateTimeString(Date date) {
-    return toDateTimeString(CalendarDate.of(date));
+  public static String toDateTimeString(CalendarDate cd) {
+    if (cd.getCalendar().getChronology() == null) {
+      return cd.format(dtf);
+    } else {
+      return cd.format(dtf.withChronology(cd.getCalendar().getChronology()));
+    }
   }
 
   public static String toDateString(CalendarDate cd) {
     return cd.format(df);
+  }
+
+  /** Parse a date only in the form "yyyy-MM-dd". */
+  public static CalendarDate parseDateString(String dateOnly) {
+    LocalDate date = LocalDate.parse(dateOnly, df);
+    OffsetDateTime dt = OffsetDateTime.of(date, LocalTime.of(0, 0), ZoneOffset.UTC);
+    return new CalendarDateIso(dt);
   }
 
   /////////////////////////////////////////////

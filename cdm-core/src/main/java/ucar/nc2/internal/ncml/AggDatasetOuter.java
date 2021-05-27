@@ -161,10 +161,12 @@ class AggDatasetOuter extends AggDataset {
 
   public void show(Formatter f) {
     f.format("   %s", getLocation());
-    if (coordValue != null)
+    if (coordValue != null) {
       f.format(" coordValue='%s'", coordValue);
-    if (coordValueDate != null)
-      f.format(" coordValueDate='%s'", CalendarDateFormatter.toDateTimeString(coordValueDate));
+    }
+    if (coordValueDate != null) {
+      f.format(" coordValueDate='%s'", coordValueDate);
+    }
     f.format(" range=[%d:%d) (%d)%n", aggStart, aggEnd, ncoord);
   }
 

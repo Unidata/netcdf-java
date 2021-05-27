@@ -4,6 +4,9 @@
  */
 package ucar.nc2.time2;
 
+import ucar.nc2.time2.chrono.Uniform30DayChronology;
+
+import java.time.chrono.Chronology;
 import java.util.Optional;
 
 /** Implements CF calendar attribute. See notes at the bottom. */
@@ -37,6 +40,10 @@ public enum Calendar {
 
   public static Calendar getDefault() {
     return proleptic_gregorian;
+  }
+
+  public Chronology getChronology() {
+    return (this == uniform30day) ? Uniform30DayChronology.INSTANCE : null;
   }
 
 }
