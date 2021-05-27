@@ -84,7 +84,7 @@ public class TestAggExistingPromote {
     // DateUnit du = new DateUnit(units);
     // DateFormatter df = new DateFormatter();
 
-    String[] result = new String[] {"2006-06-07T12:00:00Z", "2006-06-07T13:00:00Z", "2006-06-07T14:00:00Z"};
+    String[] result = new String[] {"2006-06-07T12:00Z", "2006-06-07T13:00Z", "2006-06-07T14:00Z"};
     try {
       Array data = time.read();
       assert data.getRank() == 1;

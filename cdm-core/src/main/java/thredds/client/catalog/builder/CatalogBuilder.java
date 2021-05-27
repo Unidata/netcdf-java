@@ -725,7 +725,6 @@ public class CatalogBuilder {
       flds.put(Dataset.GeospatialCoverage, gc);
     }
 
-    // remove in ver7
     TimeCoverage tcnew = readTimeCoverageNew(parent.getChild("timeCoverage", Catalog.defNS));
     if (tcnew != null) {
       flds.put(Dataset.TimeCoverageNew, tcnew);

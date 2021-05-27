@@ -91,6 +91,7 @@ public class TestCoverageSubsetCurvilinear {
   public static void readDataset() throws IOException {
     covDs = CoverageDatasetFactory.open(curvilinearGrid);
     ncf = NetcdfDatasets.openFile(curvilinearGrid, null);
+    System.out.printf("curvilinearGrid = %s%n", curvilinearGrid);
   }
 
   /////////////////////////////////////////////////

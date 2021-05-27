@@ -537,7 +537,7 @@ public class CatalogXmlWriter {
       elem.addContent(writeSource("publisher", p));
     }
 
-    List<DateType> dateList = (List<DateType>) ds.getLocalFieldAsList(Dataset.Dates);
+    List<DateType> dateList = (List<DateType>) ds.getLocalFieldAsList(Dataset.DateTypes);
     for (DateType d : dateList) {
       elem.addContent(writeDate("date", d));
     }

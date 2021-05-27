@@ -29,7 +29,7 @@ import java.util.Optional;
  * <li>an xsd:dateTime with form "CCYY-MM-DDThh:mm:ss"
  * <li>a valid udunits date string
  * <li>the string "present"
- * <li>a date string that is parsed by a formatter string, passed in as format
+ * <li>a date string that is parsed by a formatter string, passed in as format LOOK cant do this now
  * </ol>
  *
  * @author john caron
@@ -85,20 +85,12 @@ public class DateType {
 
     // see if its a udunits string
     String calName = calendar == null ? null : calendar.name();
-    if (text.indexOf("since") > 0) {
-      Optional<CalendarDate> date = CalendarDate.fromUdunitIsoDate(calName, text);
-      if (date.isPresent()) {
-        return new DateType(text, format, type, date.get());
-      }
+    Optional<CalendarDate> date = CalendarDate.fromUdunitIsoDate(calName, text);
+    if (date.isPresent()) {
+      return new DateType(text, format, type, date.get());
     }
 
     return null;
-
-    // LOOK
-
-    // otherwise, it should be an iso formatted string
-    // CalendarDate date = CalendarDate.parseISOformat(calName, text);
-    // return new DateType(text, format, type, date);
   }
 
   //////////////////////////////////////////////////////////

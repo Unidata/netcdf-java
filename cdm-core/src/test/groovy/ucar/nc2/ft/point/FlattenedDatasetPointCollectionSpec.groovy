@@ -5,8 +5,8 @@ import org.slf4j.LoggerFactory
 import spock.lang.Specification
 import ucar.nc2.constants.FeatureType
 import ucar.nc2.ft.*
-import ucar.nc2.time.CalendarDateRange
-import ucar.nc2.time.CalendarDateUnit
+import ucar.nc2.time2.CalendarDateRange
+import ucar.nc2.time2.CalendarDateUnit
 import ucar.unidata.geoloc.EarthLocation
 import ucar.unidata.geoloc.LatLonRect
 
@@ -25,7 +25,7 @@ class FlattenedDatasetPointCollectionSpec extends Specification {
 
     def setup() {   // run before every feature method
         setup: "create point features"
-        CalendarDateUnit dateUnit = CalendarDateUnit.of(null, "days since 1970-01-01 00:00:00")
+        CalendarDateUnit dateUnit = CalendarDateUnit.fromUdunitString(null, "days since 1970-01-01 00:00:00").orElseThrow()
         DsgFeatureCollection dummyDsg = new SimplePointFeatureCollection("dummy", dateUnit, "m")
 
         pf1 = makePointFeat(dummyDsg, -75, -70,  630,   23,  dateUnit)
@@ -55,7 +55,7 @@ class FlattenedDatasetPointCollectionSpec extends Specification {
         def flattenedDatasetCol = new FlattenedDatasetPointCollection(fdPoint);
 
         then: "the default unitsString and altUnits are used"
-        flattenedDatasetCol.timeUnit.udUnit == CalendarDateUnit.unixDateUnit.udUnit
+        flattenedDatasetCol.timeUnit == CalendarDateUnit.unixDateUnit
         flattenedDatasetCol.altUnits == null
 
         when: "get empty collection's iterator"
@@ -68,9 +68,9 @@ class FlattenedDatasetPointCollectionSpec extends Specification {
 
     def "metadata of aggregate collection is taken from the first collection"() {
         setup: "create CalendarDateUnits"
-        CalendarDateUnit calDateUnitAlpha = CalendarDateUnit.of(null, "d since 1970-01-01 00:00:00")
-        CalendarDateUnit calDateUnitBeta  = CalendarDateUnit.of(null, "day since 1970-01-01 00:00:00")
-        CalendarDateUnit dateUnitGamma    = CalendarDateUnit.of(null, "days since 1970-01-01 00:00:00")
+        CalendarDateUnit calDateUnitAlpha = CalendarDateUnit.fromUdunitString(null, "d since 1970-01-01 00:00:00").orElseThrow()
+        CalendarDateUnit calDateUnitBeta  = CalendarDateUnit.fromUdunitString(null, "day since 1970-01-01 00:00:00").orElseThrow()
+        CalendarDateUnit dateUnitGamma    = CalendarDateUnit.fromUdunitString(null, "days since 1970-01-01 00:00:00").orElseThrow()
 
         and: "create PointFeatureCollections"
         PointFeatureCollection pointFeatColAlpha = new SimplePointFeatureCollection("Alpha", calDateUnitAlpha, "yard");
@@ -81,7 +81,7 @@ class FlattenedDatasetPointCollectionSpec extends Specification {
         fdPoint.getPointFeatureCollectionList() >> [pointFeatColAlpha, pointFeatColBeta, pointFeatColGamma]
 
         when: "we flatten our dataset containing 3 collections into one collection"
-        def flattenedDatasetCol = new FlattenedDatasetPointCollection(fdPoint);
+        def flattenedDatasetCol = new FlattenedDatasetPointCollection(fdPoint)
 
         then: "flattenedDatasetCol metadata objects are same as pointFeatColAlpha's"
         flattenedDatasetCol.timeUnit.is pointFeatColAlpha.timeUnit
@@ -154,7 +154,7 @@ class FlattenedDatasetPointCollectionSpec extends Specification {
         pfcc3.add(pfc7)
 
         and: "create PointFeatureCCC"
-        CalendarDateUnit dateUnit = CalendarDateUnit.of(null, "d since 1970-01-01 00:00:00")
+        CalendarDateUnit dateUnit = CalendarDateUnit.fromUdunitString(null, "d since 1970-01-01 00:00:00").orElseThrow()
         PointFeatureCCC pfccc = new SimplePointFeatureCCC("pfccc", dateUnit, "m", FeatureType.POINT)
         pfccc.add(pfcc1)
         pfccc.add(pfcc2)

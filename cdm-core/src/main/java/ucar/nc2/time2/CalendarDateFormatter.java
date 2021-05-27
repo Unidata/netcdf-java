@@ -5,6 +5,8 @@
 package ucar.nc2.time2;
 
 import javax.annotation.concurrent.ThreadSafe;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -114,7 +116,14 @@ public class CalendarDateFormatter {
   }
 
   public CalendarDate parse(String timeString) {
-    OffsetDateTime dt = OffsetDateTime.parse(timeString, dflocal);
+    try {
+      OffsetDateTime dt = OffsetDateTime.parse(timeString, dflocal);
+      return new CalendarDateIso(dt);
+    } catch (Exception e) {
+      // continue
+    }
+    LocalDate date = LocalDate.parse(timeString, dflocal);
+    OffsetDateTime dt = OffsetDateTime.of(date, LocalTime.of(0, 0), ZoneOffset.UTC);
     return new CalendarDateIso(dt);
   }
 }

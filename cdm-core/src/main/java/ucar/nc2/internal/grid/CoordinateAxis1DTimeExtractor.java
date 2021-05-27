@@ -68,7 +68,7 @@ class CoordinateAxis1DTimeExtractor {
   private CalendarDate makeCalendarDateFromStringCoord(String coordValue, Variable org, Formatter errMessages) {
     try {
       return timeHelper.makeCalendarDateFromOffset(coordValue);
-    } catch (IllegalArgumentException e) {
+    } catch (Exception e) {
       errMessages.format("Bad time coordinate '%s' in dataset '%s'%n", coordValue, org.getDatasetLocation());
       log.info("Bad time coordinate '{}' in dataset '{}'", coordValue, org.getDatasetLocation());
       throw new RuntimeException(errMessages.toString(), e);

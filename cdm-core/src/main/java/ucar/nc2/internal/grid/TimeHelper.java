@@ -98,9 +98,9 @@ public class TimeHelper {
     return dateUnit.makeCalendarDate(offset);
   }
 
+  // LOOK misnamed
   public CalendarDate makeCalendarDateFromOffset(String offset) {
-    long val = Long.parseLong(offset);
-    return dateUnit.makeCalendarDate(val);
+    return CalendarDate.fromUdunitIsoDate(null, offset).orElseThrow();
   }
 
   @Override

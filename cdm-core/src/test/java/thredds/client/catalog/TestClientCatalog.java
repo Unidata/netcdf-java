@@ -13,7 +13,6 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.time2.Calendar;
 import ucar.nc2.time2.CalendarDate;
 import ucar.nc2.time2.CalendarDateFormatter;
-import ucar.nc2.time2.CalendarPeriod;
 import ucar.nc2.units.TimeUnit;
 
 import java.io.IOException;

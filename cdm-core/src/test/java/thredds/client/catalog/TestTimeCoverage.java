@@ -77,11 +77,15 @@ public class TestTimeCoverage {
     assertThat(endDate).isNotEqualTo(endDate2);
   }
 
-  @Test
-  public void testDuration() throws ParseException {
-    TimeCoverage tc =
-        TimeCoverage.create(DateType.parse("2005-05-12 00:52:56"), DateType.parse("2005-05-14 12:52:56"), null, null);
-    assertThat(tc.getResolution()).isNull();
-    assertThat(tc.getDuration()).isEqualTo(TimeDuration.parse("60.0 hours"));
-  }
+  /*
+   * LOOK
+   * 
+   * @Test
+   * public void testDuration() throws ParseException {
+   * TimeCoverage tc =
+   * TimeCoverage.create(DateType.parse("2005-05-12 00:52:56"), DateType.parse("2005-05-14 12:52:56"), null, null);
+   * assertThat(tc.getResolution()).isNull();
+   * assertThat(tc.getDuration()).isEqualTo(TimeDuration.parse("60.0 hours"));
+   * }
+   */
 }

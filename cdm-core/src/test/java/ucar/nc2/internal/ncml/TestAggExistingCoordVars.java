@@ -198,7 +198,7 @@ public class TestAggExistingCoordVars {
 
     assert time.getDimension(0) == ncfile.findDimension("time");
 
-    String[] result = new String[] {"2006-06-07T12:00:00Z", "2006-06-07T13:00:00Z", "2006-06-07T14:00:00Z"};
+    String[] result = new String[] {"2006-06-07T12:00Z", "2006-06-07T13:00Z", "2006-06-07T14:00Z"};
 
     Array data = time.read();
     assert data.getRank() == 1;

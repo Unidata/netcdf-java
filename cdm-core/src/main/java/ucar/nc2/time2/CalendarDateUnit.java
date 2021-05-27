@@ -31,6 +31,9 @@ public class CalendarDateUnit {
    * @return CalendarDateUnit or empty if udunitString is not parseable
    */
   public static Optional<CalendarDateUnit> fromUdunitString(@Nullable Calendar calt, String udunitString) {
+    if (udunitString == null || udunitString.isEmpty()) {
+      return Optional.empty();
+    }
     Optional<UdunitCalendarDateParser> udunit = UdunitCalendarDateParser.parseUnitString(udunitString);
     if (udunit.isEmpty()) {
       return Optional.empty();
@@ -133,7 +136,7 @@ public class CalendarDateUnit {
     if (isCalendarField) {
       f.format("%s", UdunitDateParser.byCalendarString);
     }
-    f.format("%s since %s", getCalendarPeriod(), baseDate);
+    f.format("%s since %s", getCalendarField(), baseDate);
     return f.toString();
   }
 

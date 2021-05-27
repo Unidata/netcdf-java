@@ -86,15 +86,7 @@ public interface CalendarDate extends Comparable<CalendarDate> {
       zoneId = ZoneOffset.UTC;
     }
 
-    if (cal == null || cal.equals(Calendar.getDefault())) {
-      OffsetDateTime dt = OffsetDateTime.of(year, monthOfYear, dayOfMonth, hourOfDay, minuteOfHour, secondOfMinute,
-          nanoOfSecond, zoneId);
-      if (zoneId != ZoneOffset.UTC) {
-        dt = dt.withOffsetSameInstant(ZoneOffset.UTC);
-      }
-      return new CalendarDateIso(dt);
-
-    } else if (cal == Calendar.uniform30day) {
+    if (cal == Calendar.uniform30day) {
       Uniform30DayDate chronoDate = Uniform30DayDate.of(year, monthOfYear, dayOfMonth);
       LocalTime localTime = LocalTime.of(hourOfDay, minuteOfHour, secondOfMinute, nanoOfSecond);
       ChronoLocalDateTime<Uniform30DayDate> dt = chronoDate.atTime(localTime);
@@ -102,8 +94,15 @@ public interface CalendarDate extends Comparable<CalendarDate> {
       // dt = dt.withOffsetSameInstant(ZoneOffset.UTC);
       // }
       return new CalendarDateChrono(cal, dt);
+    } else {
+      OffsetDateTime dt = OffsetDateTime.of(year, monthOfYear, dayOfMonth, hourOfDay, minuteOfHour, secondOfMinute,
+          nanoOfSecond, zoneId);
+      if (zoneId != ZoneOffset.UTC) {
+        dt = dt.withOffsetSameInstant(ZoneOffset.UTC);
+      }
+      return new CalendarDateIso(dt);
     }
-    throw new UnsupportedOperationException("Unsupported calendar = " + cal);
+    // throw new UnsupportedOperationException("Unsupported calendar = " + cal);
   }
 
   static CalendarDate ofDoy(int year, int doy, int hourOfDay, int minuteOfHour, int secondOfMinute, int nanoOfSecond) {

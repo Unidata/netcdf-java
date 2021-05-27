@@ -99,9 +99,9 @@ public class TestCoordinateAxis1DTimeExtractor {
       new CoordinateAxis1DTimeExtractor(axis);
       fail();
     } catch (Exception e) {
+      e.printStackTrace();
       assertThat(e).isInstanceOf(RuntimeException.class);
       assertThat(e.getMessage()).contains("badenoff");
-      e.printStackTrace();
     }
   }
 
