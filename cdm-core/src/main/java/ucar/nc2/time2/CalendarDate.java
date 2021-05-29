@@ -4,6 +4,8 @@
  */
 package ucar.nc2.time2;
 
+import ucar.nc2.time2.chrono.LeapYearChronology;
+import ucar.nc2.time2.chrono.LeapYearDate;
 import ucar.nc2.time2.chrono.Uniform30DayDate;
 
 import java.time.Instant;
@@ -16,6 +18,7 @@ import java.time.format.DateTimeFormatter;
 
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import java.time.temporal.ChronoField;
 import java.util.Optional;
 
 /**
@@ -63,7 +66,7 @@ public interface CalendarDate extends Comparable<CalendarDate> {
   }
 
   /**
-   * Get ISO Calendar date from fields, using UTC
+   * Get Calendar date from fields, using UTC
    *
    * @param year any integer
    * @param monthOfYear 1-12
@@ -76,6 +79,13 @@ public interface CalendarDate extends Comparable<CalendarDate> {
   static CalendarDate of(int year, int monthOfYear, int dayOfMonth, int hourOfDay, int minuteOfHour,
       int secondOfMinute) {
     return of(null, year, monthOfYear, dayOfMonth, hourOfDay, minuteOfHour, secondOfMinute, 0, null);
+  }
+
+  /**
+   * Get Calendar date from Instant.
+   */
+  static CalendarDate of(@Nullable Calendar cal, Instant instant) {
+    return of(instant.getLong(ChronoField.INSTANT_SECONDS) * 1000 + instant.getLong(ChronoField.MILLI_OF_SECOND));
   }
 
   /**
@@ -94,24 +104,39 @@ public interface CalendarDate extends Comparable<CalendarDate> {
    */
   static CalendarDate of(@Nullable Calendar cal, int year, int monthOfYear, int dayOfMonth, int hourOfDay,
       int minuteOfHour, int secondOfMinute, int nanoOfSecond, @Nullable ZoneOffset zoneId) {
-
+    if (cal == null) {
+      cal = Calendar.getDefault();
+    }
     if (zoneId == null) {
       zoneId = ZoneOffset.UTC;
     }
 
-    if (cal == Calendar.uniform30day) {
-      Uniform30DayDate chronoDate = Uniform30DayDate.of(year, monthOfYear, dayOfMonth);
-      LocalTime localTime = LocalTime.of(hourOfDay, minuteOfHour, secondOfMinute, nanoOfSecond);
-      ChronoLocalDateTime<Uniform30DayDate> dt = chronoDate.atTime(localTime);
-      ChronoZonedDateTime<Uniform30DayDate> dtz = dt.atZone(zoneId);
-      return new CalendarDateChrono(cal, dtz);
-    } else {
-      OffsetDateTime dt = OffsetDateTime.of(year, monthOfYear, dayOfMonth, hourOfDay, minuteOfHour, secondOfMinute,
-          nanoOfSecond, zoneId);
-      if (zoneId != ZoneOffset.UTC) {
-        dt = dt.withOffsetSameInstant(ZoneOffset.UTC);
+    switch (cal) {
+      case uniform30day: {
+        Uniform30DayDate chronoDate = Uniform30DayDate.of(year, monthOfYear, dayOfMonth);
+        LocalTime localTime = LocalTime.of(hourOfDay, minuteOfHour, secondOfMinute, nanoOfSecond);
+        ChronoLocalDateTime<Uniform30DayDate> dt = chronoDate.atTime(localTime);
+        ChronoZonedDateTime<Uniform30DayDate> dtz = dt.atZone(zoneId);
+        return new CalendarDateChrono(cal, dtz);
       }
-      return new CalendarDateIso(dt);
+      case noleap:
+      case all_leap: {
+        LeapYearChronology chronology =
+            cal == Calendar.all_leap ? LeapYearChronology.INSTANCE_ALL_LEAP : LeapYearChronology.INSTANCE_NO_LEAP;
+        LeapYearDate leapYearDate = LeapYearDate.of(chronology, year, monthOfYear, dayOfMonth);
+        LocalTime localTime = LocalTime.of(hourOfDay, minuteOfHour, secondOfMinute, nanoOfSecond);
+        ChronoLocalDateTime<LeapYearDate> dt = leapYearDate.atTime(localTime);
+        ChronoZonedDateTime<LeapYearDate> dtz = dt.atZone(zoneId);
+        return new CalendarDateChrono(cal, dtz);
+      }
+      default: {
+        OffsetDateTime dt = OffsetDateTime.of(year, monthOfYear, dayOfMonth, hourOfDay, minuteOfHour, secondOfMinute,
+            nanoOfSecond, zoneId);
+        if (zoneId != ZoneOffset.UTC) {
+          dt = dt.withOffsetSameInstant(ZoneOffset.UTC);
+        }
+        return new CalendarDateIso(dt);
+      }
     }
     // throw new UnsupportedOperationException("Unsupported calendar = " + cal);
   }
@@ -136,8 +161,7 @@ public interface CalendarDate extends Comparable<CalendarDate> {
   }
 
   /**
-   * Create CalendarDate from msecs since epoch.
-   * Uses ISO8601 UTC.
+   * Create CalendarDate from msecs since epoch, using ISO8601 UTC.
    * 
    * @param msecs milliseconds from 1970-01-01T00:00:00Z
    * @return ISO8601 CalendarDate in UTC
@@ -250,5 +274,7 @@ public interface CalendarDate extends Comparable<CalendarDate> {
   long since(CalendarDate base, CalendarPeriod.Field field);
 
   long since(CalendarDate base, CalendarPeriod period);
+
+  Instant toInstant();
 
 }

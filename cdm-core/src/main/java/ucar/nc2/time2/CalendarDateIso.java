@@ -7,6 +7,7 @@ package ucar.nc2.time2;
 import com.google.common.base.Preconditions;
 
 import javax.annotation.concurrent.Immutable;
+import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -166,5 +167,9 @@ class CalendarDateIso implements CalendarDate {
 
   OffsetDateTime dateTime() {
     return dateTime;
+  }
+
+  public Instant toInstant() {
+    return dateTime.toInstant();
   }
 }

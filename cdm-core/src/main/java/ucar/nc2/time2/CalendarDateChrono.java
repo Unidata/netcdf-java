@@ -5,7 +5,7 @@
 
 package ucar.nc2.time2;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 import java.time.chrono.ChronoLocalDate;
 import java.time.chrono.ChronoZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -161,7 +161,12 @@ class CalendarDateChrono extends CalendarDateIso implements CalendarDate, Compar
 
   //// visible for testing
 
-  ChronoZonedDateTime chronoDateTime() {
+  ChronoZonedDateTime<?> chronoDateTime() {
     return chronoLocalDateTime;
   }
+
+  public Instant toInstant() {
+    return chronoLocalDateTime.toInstant();
+  }
+
 }

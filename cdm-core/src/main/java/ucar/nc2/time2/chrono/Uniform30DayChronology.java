@@ -12,7 +12,6 @@ import java.time.ZoneId;
 import java.time.chrono.AbstractChronology;
 import java.time.chrono.ChronoLocalDateTime;
 import java.time.chrono.ChronoZonedDateTime;
-import java.time.chrono.Chronology;
 import java.time.chrono.Era;
 import java.time.chrono.IsoEra;
 import java.time.temporal.ChronoField;
@@ -24,19 +23,16 @@ import java.util.List;
 /**
  * CF Calendar uniform30day or 360_day: All years are 360 days long. Each year consists of 12 months, and each month is
  * 30 days long.
- * LOOK: initial implementation based on ISO8601, not Gregorian. ??
+ * LOOK: initial implementation based on ISO8601, not Gregorian.
  * Adapted from org.threeten.extra.chrono.Symmetry454Chronology
  * <p>
  * The fields are defined as follows:
  * <ul>
- * <li>era - Same eras as used in the Gregorian calendar: 'Before Common Era' (BCE) and 'Common Era' (CE).
- * <li>year-of-era - The year-of-era for the current era increases uniformly from the epoch at year 1.
- * <li>proleptic-year - The proleptic year is the same as the year-of-era for the current era.
+ * <li>proleptic-year - The proleptic year is a continuously numbered value extended from the current era.
  * <li>month-of-year - There are 12 months in a year, numbered from 1 to 12.
  * <li>day-of-month - There are 30 days in all months, numbered from 1 to 30.
  * <li>day-of-year - There are 360 days in a year, numbered from 1 to 360.
  * <li>leap-year - There are no leap years.
- * <li>Week day - every month starts on a Monday. There are no days outside of the week or month.
  * </ul>
  *
  * <h3>Implementation Requirements</h3>
@@ -66,10 +62,6 @@ public final class Uniform30DayChronology extends AbstractChronology implements 
    */
   static final int WEEKS_IN_MONTH_LONG = 5;
   /**
-   * Days in quarter, (4 + 5 + 4) * 7 = 91
-   */
-  static final int DAYS_IN_QUARTER = (WEEKS_IN_MONTH + WEEKS_IN_MONTH_LONG + WEEKS_IN_MONTH) * DAYS_IN_WEEK;
-  /**
    * Days in year, 8 months of 28 days plus 4 months of 35 days, or 364 days in a normal year.
    */
   static final int DAYS_IN_YEAR = 360;
@@ -81,14 +73,6 @@ public final class Uniform30DayChronology extends AbstractChronology implements 
    * 52 weeks in a normal year.
    */
   static final int WEEKS_IN_YEAR = DAYS_IN_YEAR / DAYS_IN_WEEK;
-  /**
-   * Number of years in a cycle.
-   */
-  private static final int YEARS_IN_CYCLE = 293;
-  /**
-   * Number of days in a cycle.
-   */
-  static final int DAYS_PER_CYCLE = YEARS_IN_CYCLE * DAYS_IN_YEAR + WEEKS_IN_YEAR * DAYS_IN_WEEK; // == 294 full years!
   /**
    * Highest year in the range.
    */
@@ -128,15 +112,6 @@ public final class Uniform30DayChronology extends AbstractChronology implements 
    */
   static final ValueRange ERA_RANGE = ValueRange.of(0, 1);
 
-  /**
-   * Resolve singleton.
-   *
-   * @return the singleton instance, not null
-   */
-  private Object readResolve() {
-    return INSTANCE;
-  }
-
   @Override
   public String getId() {
     return "CF_uniform30day";
@@ -148,23 +123,6 @@ public final class Uniform30DayChronology extends AbstractChronology implements 
   }
 
   // -----------------------------------------------------------------------
-  /**
-   * Obtains a local date in Uniform30Day calendar system from the
-   * era, year-of-era, month-of-year and day-of-month fields.
-   *
-   * @param era the Uniform30Day era, not null
-   * @param yearOfEra the year-of-era
-   * @param month the month-of-year
-   * @param dayOfMonth the day-of-month
-   * @return the Uniform30Day local date, not null
-   * @throws DateTimeException if unable to create the date
-   * @throws ClassCastException if the {@code era} is not a {@code IsoEra}
-   */
-  @Override
-  public Uniform30DayDate date(Era era, int yearOfEra, int month, int dayOfMonth) {
-    return date(prolepticYear(era, yearOfEra), month, dayOfMonth);
-  }
-
   /**
    * Obtains a local date in Uniform30Day calendar system from the
    * proleptic-year, month-of-year and day-of-month fields.
@@ -332,28 +290,13 @@ public final class Uniform30DayChronology extends AbstractChronology implements 
     return false;
   }
 
-  // -----------------------------------------------------------------------
-  /**
-   * Creates the chronology era object from the numeric value.
-   * <p>
-   * The list of eras is shared with {@link IsoEra}.
-   *
-   * @param eraValue the era value
-   * @return the calendar system era, not null
-   * @throws DateTimeException if unable to create the era
-   */
+  /** Do not use Eras with this Chronology */
   @Override
   public IsoEra eraOf(int eraValue) {
     return IsoEra.of(eraValue);
   }
 
-  /**
-   * Gets the list of eras for the chronology.
-   * <p>
-   * The list of eras is shared with {@link IsoEra}.
-   *
-   * @return the list of eras for the chronology, may be immutable, not null
-   */
+  /** Do not use Eras with this Chronology */
   @Override
   public List<Era> eras() {
     return Arrays.asList(IsoEra.values());
@@ -391,24 +334,13 @@ public final class Uniform30DayChronology extends AbstractChronology implements 
     }
   }
 
+  /** Do not use Eras with this Chronology */
   @Override
   public int prolepticYear(Era era, int yearOfEra) {
     if (!(era instanceof IsoEra)) {
       throw new ClassCastException("Invalid era: " + era);
     }
-
     YEAR_RANGE.checkValidIntValue(yearOfEra, ChronoField.YEAR_OF_ERA);
-
     return yearOfEra;
-  }
-
-  /**
-   * Get the count of leap years since CE 1.
-   *
-   * @param prolepticYear the year
-   * @return the number of leap years since CE 1
-   */
-  public static long getLeapYearsBefore(long prolepticYear) {
-    return 0;
   }
 }

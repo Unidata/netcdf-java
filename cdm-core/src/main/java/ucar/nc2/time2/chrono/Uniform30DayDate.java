@@ -4,7 +4,6 @@
  */
 package ucar.nc2.time2.chrono;
 
-import java.io.Serializable;
 import java.time.Clock;
 import java.time.DateTimeException;
 import java.time.LocalDate;
@@ -44,19 +43,10 @@ import static ucar.nc2.time2.chrono.Uniform30DayChronology.YEAR_RANGE;
  * A date in the Uniform30Day calendar system.
  * Adapted from org.threeten.extra.chrono.Symmetry454Date
  */
-public final class Uniform30DayDate extends AbstractDate implements ChronoLocalDate, Serializable {
+public final class Uniform30DayDate extends AbstractDate implements ChronoLocalDate {
 
-  /**
-   * The proleptic year.
-   */
-  private final int year;
-  /**
-   * The month of the year.
-   */
+  private final int prolepticYear;
   private final int month;
-  /**
-   * The day of the month.
-   */
   private final int day;
   /**
    * The day of year.
@@ -130,7 +120,6 @@ public final class Uniform30DayDate extends AbstractDate implements ChronoLocalD
     return create(prolepticYear, month, dayOfMonth);
   }
 
-  // -----------------------------------------------------------------------
   /**
    * Obtains a {@code Uniform30DayDate} from a temporal object.
    * <p>
@@ -155,7 +144,6 @@ public final class Uniform30DayDate extends AbstractDate implements ChronoLocalD
     return Uniform30DayDate.ofEpochDay(temporal.getLong(ChronoField.EPOCH_DAY));
   }
 
-  // -----------------------------------------------------------------------
   /**
    * Obtains a {@code Uniform30DayDate} representing a date in the Uniform30Day calendar
    * system from the proleptic-year and day-of-year fields.
@@ -239,30 +227,21 @@ public final class Uniform30DayDate extends AbstractDate implements ChronoLocalD
   /**
    * Creates an instance from validated data.
    *
-   * @param year the Uniform30Day proleptic-year
+   * @param prolepticYear the Uniform30Day proleptic-year
    * @param month the Uniform30Day month, from 1 to 12
    * @param dayOfMonth the Uniform30Day day-of-month, from 1 to 30
    */
-  private Uniform30DayDate(int year, int month, int dayOfMonth) {
-    this.year = year;
+  private Uniform30DayDate(int prolepticYear, int month, int dayOfMonth) {
+    this.prolepticYear = prolepticYear;
     this.month = month;
     this.day = dayOfMonth;
     this.dayOfYear = DAYS_IN_MONTH * (month - 1) + dayOfMonth;
   }
 
-  /**
-   * Validates the object.
-   *
-   * @return Uniform30DayDate the resolved date, not null
-   */
-  private Object readResolve() {
-    return Uniform30DayDate.of(year, month, day);
-  }
-
   // -----------------------------------------------------------------------
   @Override
   int getProlepticYear() {
-    return year;
+    return prolepticYear;
   }
 
   @Override
@@ -361,55 +340,23 @@ public final class Uniform30DayDate extends AbstractDate implements ChronoLocalD
   }
 
   // -----------------------------------------------------------------------
-  /**
-   * Gets the chronology of this date, which is the Uniform30Day calendar system.
-   * <p>
-   * The {@code Chronology} represents the calendar system in use.
-   * The era and other fields in {@link ChronoField} are defined by the chronology.
-   *
-   * @return the Uniform30Day chronology, not null
-   */
+
   @Override
   public Uniform30DayChronology getChronology() {
     return INSTANCE;
   }
 
-  /**
-   * Gets the era applicable at this date.
-   * <p>
-   * The Uniform30Day calendar system uses {@link IsoEra}.
-   *
-   * @return the era applicable at this date, not null
-   */
+  /** Do not use Eras with this Chronology */
   @Override
   public IsoEra getEra() {
-    return (year >= 1 ? IsoEra.CE : IsoEra.BCE);
+    return (prolepticYear >= 1 ? IsoEra.CE : IsoEra.BCE);
   }
 
-  /**
-   * Returns the length of the month represented by this date.
-   * <p>
-   * This returns the length of the month in days.
-   * Month lengths do not match those of the ISO calendar system.
-   * <p>
-   * Most months have 28 days, except for February, May, August, November, and
-   * December in a leap year, each has 35 days.
-   *
-   * @return the length of the month in days
-   */
   @Override
   public int lengthOfMonth() {
     return DAYS_IN_MONTH;
   }
 
-  /**
-   * Returns the length of the year represented by this date.
-   * <p>
-   * This returns the length of the year in days.
-   * Year lengths do NOT match those of the ISO calendar system.
-   *
-   * @return the length of the year in days: 364 or 371
-   */
   @Override
   public int lengthOfYear() {
     return DAYS_IN_YEAR;
@@ -436,18 +383,18 @@ public final class Uniform30DayDate extends AbstractDate implements ChronoLocalD
         case DAY_OF_WEEK:
           range(f).checkValidValue(newValue, field);
           int dom = ((getDayOfMonth() - 1) / DAYS_IN_WEEK) * DAYS_IN_WEEK;
-          return resolvePreviousValid(year, month, dom + nval);
+          return resolvePreviousValid(prolepticYear, month, dom + nval);
         case ALIGNED_WEEK_OF_MONTH:
           range(f).checkValidValue(newValue, field);
           int d = day % DAYS_IN_WEEK;
-          return resolvePreviousValid(year, month, (nval - 1) * DAYS_IN_WEEK + d);
+          return resolvePreviousValid(prolepticYear, month, (nval - 1) * DAYS_IN_WEEK + d);
         case ALIGNED_WEEK_OF_YEAR:
           range(f).checkValidValue(newValue, field);
           int newMonth = 1 + ((nval - 1) / WEEKS_IN_MONTH);
           int newDay = ((nval - 1) % WEEKS_IN_MONTH) * DAYS_IN_WEEK + 1 + ((day - 1) % DAYS_IN_WEEK);
-          return resolvePreviousValid(year, newMonth, newDay);
+          return resolvePreviousValid(prolepticYear, newMonth, newDay);
         case DAY_OF_MONTH:
-          return create(year, month, nval);
+          return create(prolepticYear, month, nval);
         default:
           break;
       }
@@ -457,7 +404,7 @@ public final class Uniform30DayDate extends AbstractDate implements ChronoLocalD
 
   @Override
   Uniform30DayDate withDayOfYear(int value) {
-    return ofYearDay(year, value);
+    return ofYearDay(prolepticYear, value);
   }
 
   // -----------------------------------------------------------------------
@@ -493,19 +440,6 @@ public final class Uniform30DayDate extends AbstractDate implements ChronoLocalD
     return until(Uniform30DayDate.from(endExclusive), unit);
   }
 
-  /**
-   * Get the number of years from this date to the given day.
-   *
-   * @param end The end date.
-   * @return The number of years from this date to the given day.
-   *         LOOK WTF?
-   */
-  long yearsUntil(Uniform30DayDate end) {
-    long startYear = this.year * 512L + this.getDayOfYear();
-    long endYear = end.year * 512L + end.getDayOfYear();
-    return (endYear - startYear) / 512L;
-  }
-
   @Override
   public ChronoPeriod until(ChronoLocalDate endDateExclusive) {
     Uniform30DayDate end = Uniform30DayDate.from(endDateExclusive);
@@ -515,6 +449,19 @@ public final class Uniform30DayDate extends AbstractDate implements ChronoLocalD
     int months = (int) sameYearEnd.monthsUntil(end);
     int days = (int) sameYearEnd.plusMonths(months).daysUntil(end);
     return getChronology().period(years, months, days);
+  }
+
+  /**
+   * Get the number of years from this date to the given day.
+   *
+   * @param end The end date.
+   * @return The number of years from this date to the given day.
+   *         LOOK WTF?
+   */
+  long yearsUntil(Uniform30DayDate end) {
+    long startYear = this.prolepticYear * 512L + this.getDayOfYear();
+    long endYear = end.prolepticYear * 512L + end.getDayOfYear();
+    return (endYear - startYear) / 512L;
   }
 
   /** LOOK WTF? */
@@ -535,11 +482,9 @@ public final class Uniform30DayDate extends AbstractDate implements ChronoLocalD
     return (monthEnd - monthStart) / 64L;
   }
 
-  // -----------------------------------------------------------------------
   @Override
   public long toEpochDay() {
-    long epochDay = (long) (this.year - 1) * DAYS_IN_YEAR + this.dayOfYear - DAYS_0001_TO_1970 - 1;
-
+    long epochDay = (long) (this.prolepticYear - 1) * DAYS_IN_YEAR + this.dayOfYear - DAYS_0001_TO_1970 - 1;
     return epochDay;
   }
 

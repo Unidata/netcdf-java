@@ -22,9 +22,6 @@ import static java.time.temporal.ChronoField.YEAR;
 
 /**
  * An abstract date based on a year, month and day.
- *
- * <h3>Implementation Requirements</h3>
- * Implementations must be immutable and thread-safe.
  * from org.threeten.extra.chrono.AbstractDate
  */
 abstract class AbstractDate implements ChronoLocalDate {
