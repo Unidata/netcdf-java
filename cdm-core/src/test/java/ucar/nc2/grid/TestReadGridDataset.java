@@ -57,7 +57,8 @@ public class TestReadGridDataset {
       assertThat(f.toString()).contains("time (GridAxis1DTime) 715511");
 
       GridSubset subset = new GridSubset();
-      CalendarDate wantDate = CalendarDate.fromUdunitIsoDate(null, "1960-01-01T00:00:00Z").orElseThrow();
+      // LOOK this was "1960-01-01T00:00:00Z" in mixed gregorian
+      CalendarDate wantDate = CalendarDate.fromUdunitIsoDate(null, "1960-01-03T00:00:00Z").orElseThrow();
       subset.setTime(wantDate);
       GridReferencedArray geoArray = grid.readData(subset);
       Array<Number> data = geoArray.data();

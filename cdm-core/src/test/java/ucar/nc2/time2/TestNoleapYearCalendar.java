@@ -216,7 +216,7 @@ public class TestNoleapYearCalendar {
 
     assertThat(diffDate.since(baseDate, CalendarPeriod.Field.Year)).isEqualTo(1);
     assertThat(diffDate.since(baseDate, CalendarPeriod.Field.Month)).isEqualTo(13);
-    long days = 360 + 30 + 1;
+    long days = 365 + 31 + 1;
     assertThat(diffDate.since(baseDate, CalendarPeriod.Field.Day)).isEqualTo(days);
     long hours = days * 24 + 1;
     assertThat(diffDate.since(baseDate, CalendarPeriod.Field.Hour)).isEqualTo(hours);
@@ -229,11 +229,11 @@ public class TestNoleapYearCalendar {
     CalendarDate diffDate2 = CalendarDate.of(Calendar.noleap, 2001, 1, 2, 3, 4, 5, 0, null);
     assertThat(diffDate2.since(baseDate, CalendarPeriod.Field.Year)).isEqualTo(1);
     assertThat(diffDate2.since(baseDate, CalendarPeriod.Field.Month)).isEqualTo(12);
-    assertThat(diffDate2.since(baseDate, CalendarPeriod.Field.Day)).isEqualTo(360);
-    assertThat(diffDate2.since(baseDate, CalendarPeriod.Field.Hour)).isEqualTo(360 * 24);
-    assertThat(diffDate2.since(baseDate, CalendarPeriod.Field.Minute)).isEqualTo(360 * 24 * 60);
-    assertThat(diffDate2.since(baseDate, CalendarPeriod.Field.Second)).isEqualTo(360 * 24 * 60 * 60);
-    assertThat(diffDate2.since(baseDate, CalendarPeriod.Field.Millisec)).isEqualTo(31104000000L);
+    assertThat(diffDate2.since(baseDate, CalendarPeriod.Field.Day)).isEqualTo(365);
+    assertThat(diffDate2.since(baseDate, CalendarPeriod.Field.Hour)).isEqualTo(365 * 24);
+    assertThat(diffDate2.since(baseDate, CalendarPeriod.Field.Minute)).isEqualTo(365 * 24 * 60);
+    assertThat(diffDate2.since(baseDate, CalendarPeriod.Field.Second)).isEqualTo(365 * 24 * 60 * 60);
+    assertThat(diffDate2.since(baseDate, CalendarPeriod.Field.Millisec)).isEqualTo(31536000000L);
 
     CalendarDate diffDate3 = CalendarDate.of(Calendar.noleap, 2000, 1, 2, 3, 4, 5, 0, null);
     assertThat(diffDate3.since(baseDate, CalendarPeriod.Field.Year)).isEqualTo(0);
@@ -248,7 +248,7 @@ public class TestNoleapYearCalendar {
   @Test
   public void testSinceFail() {
     CalendarDate baseDate = CalendarDate.of(Calendar.noleap, 2000, 1, 2, 3, 4, 5, 0, null);
-    CalendarDate diffDate = CalendarDate.of(Calendar.noleap, 2001, 1, 2, 4, 4, 5, 0, null);
+    CalendarDate diffDate = CalendarDate.of(Calendar.noleap, 2001, 2, 3, 4, 5, 6, 1000000, null);
 
     CalendarDateChrono chrono1 = (CalendarDateChrono) baseDate;
     CalendarDateChrono chrono2 = (CalendarDateChrono) diffDate;
@@ -263,7 +263,8 @@ public class TestNoleapYearCalendar {
     System.out.printf("leapYearDate2 = %d%n", leapYearDate2.toEpochDay());
     System.out.printf("diff = %d%n", leapYearDate2.toEpochDay() - leapYearDate1.toEpochDay());
 
-    // assertThat(diffDate.since(baseDate, CalendarPeriod.Field.Month)).isEqualTo(12);
+    long days = 365 + 31 + 1;
+    assertThat(diffDate.since(baseDate, CalendarPeriod.Field.Day)).isEqualTo(days);
   }
 
   @Test
@@ -289,7 +290,7 @@ public class TestNoleapYearCalendar {
   @Test
   public void testTimeZoneLeap() {
     String isoMST = "2012-04-27T08:00:00-0600";
-    CalendarDate cdate = CalendarDate.fromUdunitIsoDate(noleapName, isoMST).orElseThrow();
+    CalendarDate cdate = CalendarDate.fromUdunitIsoDate(Calendar.all_leap.toString(), isoMST).orElseThrow();
     System.out.printf("result = %s%n", cdate.toString());
     assertThat(cdate.toString()).isEqualTo("2012-04-27T14:00Z");
   }
@@ -300,6 +301,14 @@ public class TestNoleapYearCalendar {
     CalendarDate cdate = CalendarDate.fromUdunitIsoDate(noleapName, isoMST).orElseThrow();
     System.out.printf("result = %s%n", cdate.toString());
     assertThat(cdate.toString()).isEqualTo("2011-04-27T14:00Z");
+  }
+
+  @Test
+  public void testTimeZone2() {
+    String isoMST = "2012-04-27T08:00:00-0600";
+    CalendarDate cdate = CalendarDate.fromUdunitIsoDate(noleapName, isoMST).orElseThrow();
+    System.out.printf("result = %s%n", cdate.toString());
+    assertThat(cdate.toString()).isEqualTo("2012-04-27T14:00Z");
   }
 
 }

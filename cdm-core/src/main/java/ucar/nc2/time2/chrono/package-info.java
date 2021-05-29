@@ -3,5 +3,5 @@
  * See LICENSE for license information.
  */
 
-/** Public API for Calendar Date handling, using java.time. */
-package ucar.nc2.time2;
+/** Non-ISO Calendar Date handling. Not public API */
+package ucar.nc2.time2.chrono;

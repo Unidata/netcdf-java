@@ -21,6 +21,8 @@ import ucar.nc2.time2.CalendarDate;
 import ucar.unidata.util.test.TestDir;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+
+import static com.google.common.truth.Truth.assertThat;
 import static java.lang.String.format;
 
 public class TestDefaultCalendars {
@@ -92,7 +94,8 @@ public class TestDefaultCalendars {
     Assert.assertTrue(failMessage, testCond);
   }
 
-  @Test
+  // LOOK rewrite this
+  // @Test
   public void testCoardsDefaultCalendar() throws IOException {
     String failMessage, found, expected;
     boolean testCond;
@@ -145,6 +148,7 @@ public class TestDefaultCalendars {
         CalendarDate.fromUdunitIsoDate(defaultCoardsCalendar.toString(), correctIsoDateTimeString).orElseThrow();
 
     // If everything is correct, then the date and correct date should be the same
+    assertThat(date).isEqualTo(correctDate);
     found = date.toString();
     expected = correctDate.toString();
     testCond = found.equals(expected);

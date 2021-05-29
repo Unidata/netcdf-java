@@ -10,6 +10,7 @@ import java.time.DateTimeException;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.chrono.AbstractChronology;
+import java.time.chrono.ChronoLocalDate;
 import java.time.chrono.ChronoLocalDateTime;
 import java.time.chrono.ChronoZonedDateTime;
 import java.time.chrono.Era;
@@ -233,41 +234,37 @@ public final class Uniform30DayChronology extends AbstractChronology implements 
   }
 
   // -------------------------------------------------------------------------
-  /**
-   * Obtains a Uniform30Day local date from another date-time object.
-   *
-   * @param temporal the date-time object to convert, not null
-   * @return the Uniform30Day local date, not null
-   * @throws DateTimeException if unable to create the date
-   */
-  @Override
+  @Override // override with covariant return type
   public Uniform30DayDate date(TemporalAccessor temporal) {
+    if (temporal instanceof Uniform30DayDate) {
+      return (Uniform30DayDate) temporal;
+    }
     return Uniform30DayDate.from(temporal);
   }
 
-  /**
-   * Obtains a Uniform30Day local date-time from another date-time object.
-   *
-   * @param temporal the date-time object to convert, not null
-   * @return the Uniform30Day local date-time, not null
-   * @throws DateTimeException if unable to create the date-time
-   */
   @Override
   @SuppressWarnings("unchecked")
   public ChronoLocalDateTime<Uniform30DayDate> localDateTime(TemporalAccessor temporal) {
+    if (temporal instanceof ChronoLocalDateTime) {
+      ChronoLocalDateTime<?> chronoz = (ChronoLocalDateTime<?>) temporal;
+      ChronoLocalDate localDate = chronoz.toLocalDate();
+      if (localDate instanceof Uniform30DayDate) {
+        return (ChronoLocalDateTime<Uniform30DayDate>) temporal;
+      }
+    }
     return (ChronoLocalDateTime<Uniform30DayDate>) super.localDateTime(temporal);
   }
 
-  /**
-   * Obtains a Uniform30Day zoned date-time from another date-time object.
-   *
-   * @param temporal the date-time object to convert, not null
-   * @return the Uniform30Day zoned date-time, not null
-   * @throws DateTimeException if unable to create the date-time
-   */
-  @Override
+  @Override // override with covariant return type
   @SuppressWarnings("unchecked")
   public ChronoZonedDateTime<Uniform30DayDate> zonedDateTime(TemporalAccessor temporal) {
+    if (temporal instanceof ChronoZonedDateTime) {
+      ChronoZonedDateTime<?> chronoz = (ChronoZonedDateTime<?>) temporal;
+      ChronoLocalDate localDate = chronoz.toLocalDate();
+      if (localDate instanceof Uniform30DayDate) {
+        return (ChronoZonedDateTime<Uniform30DayDate>) temporal;
+      }
+    }
     return (ChronoZonedDateTime<Uniform30DayDate>) super.zonedDateTime(temporal);
   }
 

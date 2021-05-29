@@ -61,6 +61,45 @@ abstract class AbstractDate implements ChronoLocalDate {
   }
 
   // -----------------------------------------------------------------------
+  /*
+   * Obtains an instance from a local date-time using the preferred offset if possible.
+   *
+   * @param localDateTime the local date-time, not null
+   * 
+   * @param zone the zone identifier, not null
+   * 
+   * @param preferredOffset the zone offset, null if no preference
+   * 
+   * @return the zoned date-time, not null
+   *
+   * ChronoZonedDateTime<D> atZone(ZoneId zone) {
+   * Objects.requireNonNull(zone, "zone");
+   * if (zone instanceof ZoneOffset) {
+   * return new ChronoZonedDateTimeImpl<>(localDateTime, (ZoneOffset) zone, zone);
+   * }
+   * ZoneRules rules = zone.getRules();
+   * LocalDateTime isoLDT = LocalDateTime.from(localDateTime);
+   * List<ZoneOffset> validOffsets = rules.getValidOffsets(isoLDT);
+   * ZoneOffset offset;
+   * if (validOffsets.size() == 1) {
+   * offset = validOffsets.get(0);
+   * } else if (validOffsets.size() == 0) {
+   * ZoneOffsetTransition trans = rules.getTransition(isoLDT);
+   * localDateTime = localDateTime.plusSeconds(trans.getDuration().getSeconds());
+   * offset = trans.getOffsetAfter();
+   * } else {
+   * if (preferredOffset != null && validOffsets.contains(preferredOffset)) {
+   * offset = preferredOffset;
+   * } else {
+   * offset = validOffsets.get(0);
+   * }
+   * }
+   * Objects.requireNonNull(offset, "offset"); // protect against bad ZoneRules
+   * return new ChronoZonedDateTimeImpl<>(localDateTime, offset, zone);
+   * }
+   */
+
+  // -----------------------------------------------------------------------
   @Override
   public ValueRange range(TemporalField field) {
     if (field instanceof ChronoField) {
@@ -291,9 +330,13 @@ abstract class AbstractDate implements ChronoLocalDate {
   }
 
   long monthsUntil(AbstractDate end) {
+    long monthd = end.getProlepticMonth() - getProlepticMonth();
+    long dayd = end.getDayOfMonth() - getDayOfMonth();
+
     long packed1 = getProlepticMonth() * 256L + getDayOfMonth(); // no overflow
     long packed2 = end.getProlepticMonth() * 256L + end.getDayOfMonth(); // no overflow
-    return (packed2 - packed1) / 256L;
+    long result = (packed2 - packed1) / 256L;
+    return result;
   }
 
   ChronoPeriod doUntil(AbstractDate end) {

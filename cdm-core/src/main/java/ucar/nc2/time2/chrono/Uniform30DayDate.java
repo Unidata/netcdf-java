@@ -23,6 +23,7 @@ import java.time.temporal.TemporalQuery;
 import java.time.temporal.TemporalUnit;
 import java.time.temporal.UnsupportedTemporalTypeException;
 import java.time.temporal.ValueRange;
+import java.util.Objects;
 
 import static ucar.nc2.time2.chrono.Uniform30DayChronology.DAYS_0001_TO_1970;
 import static ucar.nc2.time2.chrono.Uniform30DayChronology.DAYS_IN_MONTH;
@@ -121,30 +122,6 @@ public final class Uniform30DayDate extends AbstractDate implements ChronoLocalD
   }
 
   /**
-   * Obtains a {@code Uniform30DayDate} from a temporal object.
-   * <p>
-   * This obtains a date in the Uniform30Day calendar system based on the specified temporal.
-   * A {@code TemporalAccessor} represents an arbitrary set of date and time information,
-   * which this factory converts to an instance of {@code Uniform30DayDate}.
-   * <p>
-   * The conversion typically uses the {@link ChronoField#EPOCH_DAY EPOCH_DAY}
-   * field, which is standardized across calendar systems.
-   * <p>
-   * This method matches the signature of the functional interface {@link TemporalQuery}
-   * allowing it to be used as a query via method reference, {@code Uniform30DayDate::from}.
-   *
-   * @param temporal the temporal object to convert, not null
-   * @return the date in the Uniform30Day calendar system, not null
-   * @throws DateTimeException if unable to convert to a {@code Uniform30DayDate}
-   */
-  public static Uniform30DayDate from(TemporalAccessor temporal) {
-    if (temporal instanceof Uniform30DayDate) {
-      return (Uniform30DayDate) temporal;
-    }
-    return Uniform30DayDate.ofEpochDay(temporal.getLong(ChronoField.EPOCH_DAY));
-  }
-
-  /**
    * Obtains a {@code Uniform30DayDate} representing a date in the Uniform30Day calendar
    * system from the proleptic-year and day-of-year fields.
    * <p>
@@ -187,6 +164,48 @@ public final class Uniform30DayDate extends AbstractDate implements ChronoLocalD
   }
 
   /**
+   * Obtains a {@code Uniform30DayDate} from a temporal object.
+   * <p>
+   * This obtains a date in the Uniform30Day calendar system based on the specified temporal.
+   * A {@code TemporalAccessor} represents an arbitrary set of date and time information,
+   * which this factory converts to an instance of {@code Uniform30DayDate}.
+   * <p>
+   * The conversion typically uses the {@link ChronoField#EPOCH_DAY EPOCH_DAY}
+   * field, which is standardized across calendar systems.
+   * <p>
+   * This method matches the signature of the functional interface {@link TemporalQuery}
+   * allowing it to be used as a query via method reference, {@code Uniform30DayDate::from}.
+   *
+   * @param temporal the temporal object to convert, not null
+   * @return the date in the Uniform30Day calendar system, not null
+   * @throws DateTimeException if unable to convert to a {@code Uniform30DayDate}
+   */
+  public static Uniform30DayDate from(TemporalAccessor temporal) {
+    if (temporal instanceof Uniform30DayDate) {
+      return (Uniform30DayDate) temporal;
+    }
+    return Uniform30DayDate.ofEpochDay(temporal.getLong(ChronoField.EPOCH_DAY));
+  }
+
+  /**
+   * Factory method, validates the given triplet year, month and dayOfMonth.
+   *
+   * @param prolepticYear the Uniform30Day proleptic-year
+   * @param month the Uniform30Day month, from 1 to 12
+   * @param dayOfMonth the Uniform30Day day-of-month, from 1 to 28, or 1 to 35 in February, May, August, November
+   *        and December in a Leap Year
+   * @return the Uniform30Day date
+   * @throws DateTimeException if the date is invalid
+   */
+  static Uniform30DayDate create(int prolepticYear, int month, int dayOfMonth) {
+    YEAR_RANGE.checkValidValue(prolepticYear, ChronoField.YEAR_OF_ERA);
+    MONTH_OF_YEAR_RANGE.checkValidValue(month, ChronoField.MONTH_OF_YEAR);
+    DAY_OF_MONTH_RANGE.checkValidValue(dayOfMonth, ChronoField.DAY_OF_MONTH);
+
+    return new Uniform30DayDate(prolepticYear, month, dayOfMonth);
+  }
+
+  /**
    * Consistency check for dates manipulations after calls to
    * {@link #plus(long, TemporalUnit)},
    * {@link #minus(long, TemporalUnit)},
@@ -206,25 +225,6 @@ public final class Uniform30DayDate extends AbstractDate implements ChronoLocalD
 
   // -----------------------------------------------------------------------
   /**
-   * Factory method, validates the given triplet year, month and dayOfMonth.
-   *
-   * @param prolepticYear the Uniform30Day proleptic-year
-   * @param month the Uniform30Day month, from 1 to 12
-   * @param dayOfMonth the Uniform30Day day-of-month, from 1 to 28, or 1 to 35 in February, May, August, November
-   *        and December in a Leap Year
-   * @return the Uniform30Day date
-   * @throws DateTimeException if the date is invalid
-   */
-  static Uniform30DayDate create(int prolepticYear, int month, int dayOfMonth) {
-    YEAR_RANGE.checkValidValue(prolepticYear, ChronoField.YEAR_OF_ERA);
-    MONTH_OF_YEAR_RANGE.checkValidValue(month, ChronoField.MONTH_OF_YEAR);
-    DAY_OF_MONTH_RANGE.checkValidValue(dayOfMonth, ChronoField.DAY_OF_MONTH);
-
-    return new Uniform30DayDate(prolepticYear, month, dayOfMonth);
-  }
-
-  // -----------------------------------------------------------------------
-  /**
    * Creates an instance from validated data.
    *
    * @param prolepticYear the Uniform30Day proleptic-year
@@ -239,59 +239,7 @@ public final class Uniform30DayDate extends AbstractDate implements ChronoLocalD
   }
 
   // -----------------------------------------------------------------------
-  @Override
-  int getProlepticYear() {
-    return prolepticYear;
-  }
 
-  @Override
-  int getMonth() {
-    return month;
-  }
-
-  @Override
-  int getDayOfMonth() {
-    return day;
-  }
-
-  @Override
-  int getDayOfYear() {
-    return dayOfYear;
-  }
-
-  @Override
-  int lengthOfYearInMonths() {
-    return MONTHS_IN_YEAR;
-  }
-
-  @Override
-  int getAlignedDayOfWeekInMonth() {
-    return getDayOfWeek();
-  }
-
-  @Override
-  int getAlignedDayOfWeekInYear() {
-    return getDayOfWeek();
-  }
-
-  @Override
-  int getAlignedWeekOfMonth() {
-    return ((day - 1) / DAYS_IN_WEEK) + 1;
-  }
-
-  @Override
-  int getAlignedWeekOfYear() {
-    return ((dayOfYear - 1) / DAYS_IN_WEEK) + 1;
-  }
-
-  @Override
-  int getDayOfWeek() {
-    return ((day - 1) % DAYS_IN_WEEK) + 1;
-  }
-
-  long getProlepticWeek() {
-    return getProlepticMonth() * WEEKS_IN_MONTH + ((getDayOfMonth() - 1) / DAYS_IN_WEEK) - 1;
-  }
 
   // -----------------------------------------------------------------------
   @Override
@@ -360,6 +308,65 @@ public final class Uniform30DayDate extends AbstractDate implements ChronoLocalD
   @Override
   public int lengthOfYear() {
     return DAYS_IN_YEAR;
+  }
+
+  @Override
+  int getProlepticYear() {
+    return prolepticYear;
+  }
+
+  @Override
+  int getMonth() {
+    return month;
+  }
+
+  @Override
+  int getDayOfMonth() {
+    return day;
+  }
+
+  @Override
+  int getDayOfYear() {
+    return dayOfYear;
+  }
+
+  @Override
+  int lengthOfYearInMonths() {
+    return MONTHS_IN_YEAR;
+  }
+
+  @Override
+  int getAlignedDayOfWeekInMonth() {
+    return getDayOfWeek();
+  }
+
+  @Override
+  int getAlignedDayOfWeekInYear() {
+    return getDayOfWeek();
+  }
+
+  @Override
+  int getAlignedWeekOfMonth() {
+    return ((day - 1) / DAYS_IN_WEEK) + 1;
+  }
+
+  @Override
+  int getAlignedWeekOfYear() {
+    return ((dayOfYear - 1) / DAYS_IN_WEEK) + 1;
+  }
+
+  @Override
+  int getDayOfWeek() {
+    return ((day - 1) % DAYS_IN_WEEK) + 1;
+  }
+
+  long getProlepticWeek() {
+    return getProlepticMonth() * WEEKS_IN_MONTH + ((getDayOfMonth() - 1) / DAYS_IN_WEEK) - 1;
+  }
+
+  @Override
+  public boolean isLeapYear() {
+    return false;
   }
 
   // -------------------------------------------------------------------------
@@ -488,11 +495,27 @@ public final class Uniform30DayDate extends AbstractDate implements ChronoLocalD
     return epochDay;
   }
 
-  /**
-   * Display the date in human-readable format.
-   *
-   * @return the string representation
+  /*
+   * -----------------------------------------------------------------------
+   * 
+   * @Override
+   * public boolean equals(Object o) {
+   * if (this == o) return true;
+   * if (o == null || getClass() != o.getClass()) return false;
+   * if (!super.equals(o)) return false;
+   * Uniform30DayDate that = (Uniform30DayDate) o;
+   * return prolepticYear == that.prolepticYear &&
+   * month == that.month &&
+   * day == that.day &&
+   * dayOfYear == that.dayOfYear;
+   * }
+   * 
+   * @Override
+   * public int hashCode() {
+   * return Objects.hash(super.hashCode(), prolepticYear, month, day, dayOfYear);
+   * }
    */
+
   @Override
   public String toString() {
     StringBuilder buf = new StringBuilder(30);
