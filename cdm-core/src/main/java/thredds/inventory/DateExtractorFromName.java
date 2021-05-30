@@ -12,12 +12,8 @@ import java.util.Date;
 
 /**
  * Extract Date from filename, using DateFromString.getDateUsingSimpleDateFormat on the name or path
- *
- * @author caron
- * @since Jun 26, 2009
  */
 public class DateExtractorFromName implements DateExtractor {
-
   private final String dateFormatMark;
   private final boolean useName;
 
