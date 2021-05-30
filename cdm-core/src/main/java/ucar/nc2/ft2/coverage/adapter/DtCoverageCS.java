@@ -8,7 +8,7 @@ import ucar.nc2.Attribute;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.*;
-import ucar.nc2.time2.CalendarDateRange;
+import ucar.nc2.calendar.CalendarDateRange;
 import ucar.nc2.write.Ncdump;
 import ucar.unidata.geoloc.*;
 import java.io.IOException;

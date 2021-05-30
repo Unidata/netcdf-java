@@ -33,10 +33,10 @@ import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.dataset.VariableDS;
-import ucar.nc2.time2.Calendar;
-import ucar.nc2.time2.CalendarDate;
-import ucar.nc2.time2.CalendarPeriod;
-import ucar.nc2.time2.CalendarPeriod.Field;
+import ucar.nc2.calendar.Calendar;
+import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.calendar.CalendarPeriod;
+import ucar.nc2.calendar.CalendarPeriod.Field;
 import ucar.unidata.io.s3.S3TestsCommon;
 import ucar.unidata.util.test.category.Slow;
 

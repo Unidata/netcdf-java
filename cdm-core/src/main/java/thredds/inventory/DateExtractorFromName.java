@@ -4,7 +4,7 @@
  */
 package thredds.inventory;
 
-import ucar.nc2.time2.CalendarDate;
+import ucar.nc2.calendar.CalendarDate;
 import thredds.inventory.internal.DateFromString;
 import java.nio.file.Path;
 import java.nio.file.Paths;

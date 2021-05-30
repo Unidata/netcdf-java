@@ -5,7 +5,7 @@ import org.junit.experimental.categories.Category;
 import ucar.array.Array;
 import ucar.array.ArrayType;
 import ucar.array.InvalidRangeException;
-import ucar.nc2.time2.CalendarDate;
+import ucar.nc2.calendar.CalendarDate;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 

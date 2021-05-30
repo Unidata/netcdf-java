@@ -5,9 +5,8 @@
 
 package ucar.nc2.ui.op;
 
-import ucar.nc2.time2.CalendarDate;
-import ucar.nc2.time2.CalendarDateFormatter;
-import ucar.nc2.time2.CalendarDateUnit;
+import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.calendar.CalendarDateUnit;
 import ucar.nc2.ui.OpPanel;
 import ucar.ui.widget.TextHistoryPane;
 import ucar.nc2.units.SimpleUnit;

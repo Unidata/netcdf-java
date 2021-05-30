@@ -27,9 +27,8 @@ import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.point.StationFeature;
 import ucar.nc2.ft.point.StationFeatureImpl;
-import ucar.nc2.time2.CalendarDate;
-import ucar.nc2.time2.CalendarDateFormatter;
-import ucar.nc2.time2.CalendarDateUnit;
+import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.calendar.CalendarDateUnit;
 import ucar.unidata.geoloc.EarthLocation;
 
 /**

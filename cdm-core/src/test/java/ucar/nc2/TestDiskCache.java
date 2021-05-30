@@ -8,7 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import org.junit.Test;
 import ucar.nc2.internal.util.DiskCache;
-import ucar.nc2.time2.CalendarDate;
+import ucar.nc2.calendar.CalendarDate;
 
 /** Test DiskCache */
 public class TestDiskCache {

@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.util.List;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-import ucar.nc2.time2.CalendarDate;
+import ucar.nc2.calendar.CalendarDate;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 

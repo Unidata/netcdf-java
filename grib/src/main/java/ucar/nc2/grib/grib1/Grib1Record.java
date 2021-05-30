@@ -9,7 +9,7 @@ import ucar.nc2.grib.GribData;
 import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.grib.QuasiRegular;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
-import ucar.nc2.time2.CalendarDate;
+import ucar.nc2.calendar.CalendarDate;
 import ucar.unidata.io.RandomAccessFile;
 import java.io.IOException;
 import java.util.Formatter;

@@ -29,7 +29,7 @@ import ucar.nc2.ft.PointFeatureIterator;
 import ucar.nc2.ft.point.PointFeatureImpl;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.stream.NcStreamProto;
-import ucar.nc2.time2.CalendarDateUnit;
+import ucar.nc2.calendar.CalendarDateUnit;
 import ucar.unidata.geoloc.EarthLocation;
 import ucar.unidata.geoloc.Station;
 

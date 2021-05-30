@@ -43,9 +43,9 @@ import ucar.nc2.ft2.coverage.adapter.DtCoverage;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageCS;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageDataset;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageDataset.Gridset;
-import ucar.nc2.time2.Calendar;
-import ucar.nc2.time2.CalendarDate;
-import ucar.nc2.time2.CalendarDateRange;
+import ucar.nc2.calendar.Calendar;
+import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.calendar.CalendarDateRange;
 import ucar.unidata.io.s3.S3TestsCommon;
 
 public class S3AggScanFeatureType {

@@ -28,7 +28,7 @@ import ucar.nc2.grib.coord.CoordinateTimeAbstract;
 import ucar.nc2.grib.coord.CoordinateTimeIntv;
 import ucar.nc2.grib.coord.CoordinateVert;
 import ucar.nc2.stream.NcStream;
-import ucar.nc2.time2.CalendarDateRange;
+import ucar.nc2.calendar.CalendarDateRange;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.StringUtil2;
 import java.io.File;

@@ -8,7 +8,6 @@ package ucar.nc2.ui.widget;
 import thredds.ui.datatype.prefs.DateField;
 import thredds.ui.datatype.prefs.DurationField;
 import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time2.CalendarDateFormatter;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
 import ucar.nc2.units.TimeDuration;
@@ -22,7 +21,7 @@ import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 import java.awt.*;
-import java.util.Date;
+
 import ucar.ui.widget.HelpWindow;
 
 /**

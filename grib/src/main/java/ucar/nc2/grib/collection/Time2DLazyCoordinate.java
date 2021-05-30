@@ -19,7 +19,7 @@ import ucar.nc2.grib.coord.CoordinateTime2D;
 import ucar.nc2.grib.coord.CoordinateTimeAbstract;
 import ucar.nc2.grib.coord.CoordinateTimeIntv;
 import ucar.nc2.grib.coord.TimeCoordIntvValue;
-import ucar.nc2.time2.CalendarPeriod;
+import ucar.nc2.calendar.CalendarPeriod;
 
 /** Make Time2D coordinates when requested. */
 class Time2DLazyCoordinate {

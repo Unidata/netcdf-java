@@ -10,7 +10,7 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
-import ucar.nc2.time2.CalendarDate;
+import ucar.nc2.calendar.CalendarDate;
 
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.fail;

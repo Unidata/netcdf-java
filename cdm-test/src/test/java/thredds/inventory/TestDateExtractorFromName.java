@@ -3,7 +3,7 @@ package thredds.inventory;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import ucar.nc2.time2.CalendarDate;
+import ucar.nc2.calendar.CalendarDate;
 import java.util.ArrayList;
 import java.util.List;
 

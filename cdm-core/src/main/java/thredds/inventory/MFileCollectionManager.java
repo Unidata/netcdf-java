@@ -11,7 +11,7 @@ import thredds.inventory.filter.LastModifiedLimit;
 import thredds.inventory.filter.RegExpMatchOnName;
 import thredds.inventory.filter.WildcardMatchOnName;
 import thredds.inventory.filter.WildcardMatchOnPath;
-import ucar.nc2.time2.CalendarDate;
+import ucar.nc2.calendar.CalendarDate;
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
 import java.io.IOException;

@@ -16,7 +16,7 @@ import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.grib.GribIndexCache;
-import ucar.nc2.time2.CalendarDate;
+import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.internal.cache.FileCacheable;
 import ucar.nc2.internal.cache.FileFactory;

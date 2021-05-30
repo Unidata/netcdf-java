@@ -14,7 +14,7 @@ import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft2.coverage.*;
-import ucar.nc2.time2.CalendarDate;
+import ucar.nc2.calendar.CalendarDate;
 import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;

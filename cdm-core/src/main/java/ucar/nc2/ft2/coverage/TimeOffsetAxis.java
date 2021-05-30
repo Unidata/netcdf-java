@@ -5,8 +5,8 @@
 package ucar.nc2.ft2.coverage;
 
 import java.util.Formatter;
-import ucar.nc2.time2.CalendarDate;
-import ucar.nc2.time2.CalendarDateRange;
+import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.calendar.CalendarDateRange;
 import java.util.Optional;
 
 /**

@@ -7,7 +7,7 @@ package ucar.nc2.ft2.coverage;
 import ucar.ma2.Index;
 import ucar.ma2.RangeIterator;
 import ucar.nc2.constants.AxisType;
-import ucar.nc2.time2.CalendarDate;
+import ucar.nc2.calendar.CalendarDate;
 import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
 import java.util.Iterator;

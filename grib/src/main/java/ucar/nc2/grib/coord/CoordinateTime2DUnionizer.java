@@ -7,8 +7,8 @@ package ucar.nc2.grib.coord;
 import com.google.common.collect.ImmutableList;
 import javax.annotation.Nullable;
 import org.slf4j.LoggerFactory;
-import ucar.nc2.time2.CalendarDate;
-import ucar.nc2.time2.CalendarPeriod;
+import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.calendar.CalendarPeriod;
 import java.util.*;
 
 /**

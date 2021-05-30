@@ -23,8 +23,8 @@ import ucar.nc2.ft.point.NestedCollectionIteratorAdapter;
 import ucar.nc2.ft.point.ProfileFeatureImpl;
 import ucar.nc2.ft.point.SectionCollectionImpl;
 import ucar.nc2.ft.point.SectionFeatureImpl;
-import ucar.nc2.time2.CalendarDate;
-import ucar.nc2.time2.CalendarDateUnit;
+import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.calendar.CalendarDateUnit;
 import ucar.nc2.ft.IOIterator;
 
 /**

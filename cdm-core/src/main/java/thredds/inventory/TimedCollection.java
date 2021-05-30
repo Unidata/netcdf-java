@@ -5,8 +5,8 @@
 package thredds.inventory;
 
 import com.google.common.base.Preconditions;
-import ucar.nc2.time2.CalendarDate;
-import ucar.nc2.time2.CalendarDateRange;
+import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.calendar.CalendarDateRange;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Formatter;

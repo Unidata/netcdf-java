@@ -6,7 +6,7 @@
 package ucar.nc2.grib.grib2;
 
 import ucar.nc2.grib.GribNumbers;
-import ucar.nc2.time2.CalendarDate;
+import ucar.nc2.calendar.CalendarDate;
 import ucar.unidata.io.RandomAccessFile;
 import javax.annotation.concurrent.Immutable;
 import java.io.IOException;

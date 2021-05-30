@@ -6,8 +6,8 @@
 package ucar.nc2.ft.point.standard.plug;
 
 import ucar.nc2.*;
-import ucar.nc2.time2.CalendarDate;
-import ucar.nc2.time2.CalendarDateUnit;
+import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.calendar.CalendarDateUnit;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants._Coordinate;

@@ -14,7 +14,7 @@ import ucar.nc2.Variable;
 import ucar.nc2.iosp.bufr.BufrIosp;
 import ucar.nc2.iosp.bufr.DataDescriptor;
 import ucar.nc2.iosp.bufr.Message;
-import ucar.nc2.time2.CalendarDate;
+import ucar.nc2.calendar.CalendarDate;
 import java.util.*;
 
 /**

@@ -16,8 +16,8 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.internal.grid.GridAxis1DHelper;
 import ucar.nc2.internal.grid.TimeHelper;
-import ucar.nc2.time2.*;
-import ucar.nc2.time2.Calendar;
+import ucar.nc2.calendar.*;
+import ucar.nc2.calendar.Calendar;
 import ucar.nc2.util.Indent;
 
 import javax.annotation.Nullable;

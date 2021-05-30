@@ -43,7 +43,7 @@ import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.dataset.VariableDS;
-import ucar.nc2.time2.CalendarDate;
+import ucar.nc2.calendar.CalendarDate;
 import ucar.util.prefs.PreferencesExt;
 
 /**

@@ -16,7 +16,7 @@ import ucar.ma2.Section;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.grib.collection.Grib;
-import ucar.nc2.time2.CalendarDate;
+import ucar.nc2.calendar.CalendarDate;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.category.NeedsExternalResource;

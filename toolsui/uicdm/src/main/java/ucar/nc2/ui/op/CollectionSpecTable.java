@@ -7,7 +7,7 @@ package ucar.nc2.ui.op;
 
 import com.google.common.collect.ImmutableList;
 import thredds.inventory.*;
-import ucar.nc2.time2.CalendarDate;
+import ucar.nc2.calendar.CalendarDate;
 import ucar.ui.widget.BAMutil;
 import ucar.ui.widget.IndependentWindow;
 import ucar.ui.widget.TextHistoryPane;

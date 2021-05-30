@@ -7,7 +7,7 @@ package ucar.nc2.grib.coord;
 import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.nc2.grib.collection.GribCollectionMutable;
 import ucar.nc2.grib.collection.PartitionCollectionMutable;
-import ucar.nc2.time2.CalendarDate;
+import ucar.nc2.calendar.CalendarDate;
 import java.util.*;
 
 /**

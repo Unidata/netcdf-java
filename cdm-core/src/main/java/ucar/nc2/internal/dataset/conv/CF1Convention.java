@@ -24,7 +24,7 @@ import ucar.nc2.dataset.TransformType;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.internal.dataset.CoordSystemBuilder;
 import ucar.nc2.dataset.spi.CoordSystemBuilderFactory;
-import ucar.nc2.time2.CalendarDateUnit;
+import ucar.nc2.calendar.CalendarDateUnit;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.util.CancelTask;
 

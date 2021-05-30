@@ -9,7 +9,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
-import ucar.nc2.time2.CalendarDate;
+import ucar.nc2.calendar.CalendarDate;
 import ucar.unidata.io.RandomAccessFile;
 
 @RunWith(Parameterized.class)

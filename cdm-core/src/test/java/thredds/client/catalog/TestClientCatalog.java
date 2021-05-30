@@ -10,9 +10,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import thredds.client.catalog.tools.CatalogXmlWriter;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.time2.Calendar;
-import ucar.nc2.time2.CalendarDate;
-import ucar.nc2.time2.CalendarDateFormatter;
+import ucar.nc2.calendar.Calendar;
+import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.calendar.CalendarDateFormatter;
 import ucar.nc2.units.TimeUnit;
 
 import java.io.IOException;

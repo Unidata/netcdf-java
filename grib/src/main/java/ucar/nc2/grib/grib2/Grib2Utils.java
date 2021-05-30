@@ -9,7 +9,7 @@ import javax.annotation.Nullable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.grib2.table.WmoParamTable;
-import ucar.nc2.time2.CalendarPeriod;
+import ucar.nc2.calendar.CalendarPeriod;
 import ucar.unidata.util.StringUtil2;
 
 /**

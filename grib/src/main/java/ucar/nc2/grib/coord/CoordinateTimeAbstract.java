@@ -5,9 +5,9 @@
 
 package ucar.nc2.grib.coord;
 
-import ucar.nc2.time2.CalendarDate;
-import ucar.nc2.time2.CalendarDateRange;
-import ucar.nc2.time2.CalendarPeriod;
+import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.calendar.CalendarDateRange;
+import ucar.nc2.calendar.CalendarPeriod;
 import javax.annotation.concurrent.Immutable;
 
 /**

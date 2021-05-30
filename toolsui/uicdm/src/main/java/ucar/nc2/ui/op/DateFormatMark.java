@@ -6,7 +6,7 @@
 package ucar.nc2.ui.op;
 
 import thredds.inventory.internal.DateFromString;
-import ucar.nc2.time2.CalendarDateFormatter;
+import ucar.nc2.calendar.CalendarDateFormatter;
 import ucar.nc2.ui.OpPanel;
 import ucar.ui.widget.TextHistoryPane;
 import ucar.util.prefs.PreferencesExt;

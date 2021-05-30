@@ -22,10 +22,10 @@ import ucar.nc2.Variable;
 import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.nc2.time2.Calendar;
-import ucar.nc2.time2.CalendarDate;
-import ucar.nc2.time2.CalendarDateUnit;
-import ucar.nc2.time2.CalendarPeriod.Field;
+import ucar.nc2.calendar.Calendar;
+import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.calendar.CalendarDateUnit;
+import ucar.nc2.calendar.CalendarPeriod.Field;
 import ucar.unidata.util.test.Assert2;
 
 /** Test TestNcml - AggExisting in the JUnit framework. */

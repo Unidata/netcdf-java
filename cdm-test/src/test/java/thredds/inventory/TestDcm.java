@@ -43,7 +43,7 @@ import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.filter.StreamFilter;
 import thredds.inventory.partition.DirectoryCollection;
-import ucar.nc2.time2.CalendarDate;
+import ucar.nc2.calendar.CalendarDate;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.io.File;

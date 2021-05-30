@@ -8,7 +8,7 @@ import ucar.nc2.grib.grib2.table.EccodesCodeTable;
 import ucar.nc2.grib.grib2.table.Grib2CodeTableInterface;
 import ucar.nc2.grib.grib2.table.WmoCodeFlagTables;
 import ucar.nc2.grib.grib2.table.WmoCodeFlagTables.TableType;
-import ucar.nc2.time2.CalendarDate;
+import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.internal.wmo.Util;
 
 public class EcmwfCodeTableCompare {

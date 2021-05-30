@@ -6,9 +6,9 @@ package thredds.inventory.partition;
 
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.*;
-import ucar.nc2.time2.CalendarDate;
-import ucar.nc2.time2.CalendarDateFormatter;
-import ucar.nc2.time2.CalendarPeriod;
+import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.calendar.CalendarDateFormatter;
+import ucar.nc2.calendar.CalendarPeriod;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;

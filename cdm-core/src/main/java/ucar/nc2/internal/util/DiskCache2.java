@@ -4,8 +4,8 @@
  */
 package ucar.nc2.internal.util;
 
-import ucar.nc2.time2.CalendarDate;
-import ucar.nc2.time2.CalendarDateFormatter;
+import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.calendar.CalendarDateFormatter;
 import ucar.unidata.util.Format;
 import ucar.unidata.util.StringUtil2;
 import java.io.*;

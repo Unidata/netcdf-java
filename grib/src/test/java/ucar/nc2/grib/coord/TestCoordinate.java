@@ -2,8 +2,8 @@ package ucar.nc2.grib.coord;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.nc2.time2.CalendarDate;
-import ucar.nc2.time2.CalendarPeriod;
+import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.calendar.CalendarPeriod;
 import ucar.nc2.internal.util.Counters;
 import ucar.nc2.util.Indent;
 import java.lang.invoke.MethodHandles;

@@ -21,8 +21,8 @@ import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset.Enhance;
 import ucar.nc2.internal.ncml.Aggregation.Type;
 import ucar.nc2.internal.ncml.AggregationOuter.CacheVar;
-import ucar.nc2.time2.CalendarDate;
-import ucar.nc2.time2.CalendarDateFormatter;
+import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.calendar.CalendarDateFormatter;
 import ucar.nc2.util.CancelTask;
 
 /** Encapsulates a NetcdfFile that is a component of the aggregation. */

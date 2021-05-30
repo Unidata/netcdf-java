@@ -8,7 +8,7 @@ import com.google.common.base.Preconditions;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
-import ucar.nc2.time2.*;
+import ucar.nc2.calendar.*;
 
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;

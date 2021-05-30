@@ -2,7 +2,7 @@ package ucar.nc2.ft.point;
 
 import ucar.ma2.StructureData;
 import ucar.nc2.ft.DsgFeatureCollection;
-import ucar.nc2.time2.CalendarDateUnit;
+import ucar.nc2.calendar.CalendarDateUnit;
 
 /**
  * @author cwardgar

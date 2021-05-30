@@ -23,7 +23,7 @@ import ucar.nc2.dataset.ProjectionCT;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.internal.dataset.CoordSystemBuilder;
 import ucar.nc2.dataset.spi.CoordSystemBuilderFactory;
-import ucar.nc2.time2.CalendarDate;
+import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.geoloc.Projection;

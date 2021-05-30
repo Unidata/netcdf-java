@@ -5,9 +5,9 @@
 package thredds.client.catalog;
 
 import com.google.common.base.Preconditions;
-import ucar.nc2.time2.CalendarDate;
-import ucar.nc2.time2.CalendarDateFormatter;
-import ucar.nc2.time2.CalendarPeriod;
+import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.calendar.CalendarDateFormatter;
+import ucar.nc2.calendar.CalendarPeriod;
 import ucar.nc2.units.TimeUnit;
 
 import javax.annotation.Nullable;
@@ -64,7 +64,7 @@ public class DateType {
    */
   @Nullable
   public static DateType parse(@Nullable String text, @Nullable String format, @Nullable String type,
-      @Nullable ucar.nc2.time2.Calendar calendar) throws java.text.ParseException {
+      @Nullable ucar.nc2.calendar.Calendar calendar) throws java.text.ParseException {
     text = (text == null) ? "" : text.trim();
 
     if (text.isEmpty()) {

@@ -1,8 +1,8 @@
 package ucar.nc2.grid;
 
 import org.junit.Test;
-import ucar.nc2.time2.CalendarDate;
-import ucar.nc2.time2.CalendarDateRange;
+import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.calendar.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionRect;

@@ -4,7 +4,7 @@
  */
 package thredds.inventory;
 
-import ucar.nc2.time2.CalendarDate;
+import ucar.nc2.calendar.CalendarDate;
 import java.util.Date;
 
 /** Always returns null */

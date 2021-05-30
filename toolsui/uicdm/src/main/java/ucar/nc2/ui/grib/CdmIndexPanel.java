@@ -21,7 +21,7 @@ import ucar.nc2.grib.coord.SparseArray;
 import ucar.nc2.grib.coord.TimeCoordIntvValue;
 import ucar.nc2.grib.coord.VertCoordValue;
 import ucar.nc2.internal.util.Counters;
-import ucar.nc2.time2.*;
+import ucar.nc2.calendar.*;
 import ucar.nc2.ui.MFileTable;
 import ucar.ui.widget.BAMutil;
 import ucar.ui.widget.IndependentWindow;

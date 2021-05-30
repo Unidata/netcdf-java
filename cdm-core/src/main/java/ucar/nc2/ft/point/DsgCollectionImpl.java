@@ -6,8 +6,8 @@ package ucar.nc2.ft.point;
 
 import ucar.nc2.Variable;
 import ucar.nc2.ft.DsgFeatureCollection;
-import ucar.nc2.time2.CalendarDateRange;
-import ucar.nc2.time2.CalendarDateUnit;
+import ucar.nc2.calendar.CalendarDateRange;
+import ucar.nc2.calendar.CalendarDateUnit;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;

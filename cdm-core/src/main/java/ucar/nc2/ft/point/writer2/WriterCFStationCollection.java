@@ -28,8 +28,8 @@ import ucar.nc2.constants.CF;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.point.StationFeature;
 import ucar.nc2.ft.point.StationPointFeature;
-import ucar.nc2.time2.CalendarDate;
-import ucar.nc2.time2.CalendarDateUnit;
+import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.calendar.CalendarDateUnit;
 import ucar.unidata.geoloc.Station;
 
 /**

@@ -16,7 +16,7 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.internal.dataset.conv.CF1Convention;
-import ucar.nc2.time2.Calendar;
+import ucar.nc2.calendar.Calendar;
 import java.io.IOException;
 import java.util.Formatter;
 

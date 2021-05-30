@@ -8,7 +8,7 @@ import org.junit.experimental.categories.Category;
 import thredds.filesystem.MFileOS7;
 import thredds.inventory.*;
 import thredds.inventory.filter.WildcardMatchOnName;
-import ucar.nc2.time2.CalendarDate;
+import ucar.nc2.calendar.CalendarDate;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.io.File;

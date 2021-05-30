@@ -17,7 +17,7 @@ import ucar.nc2.ft.point.PointIteratorFromStructureData;
 import ucar.nc2.ft.point.StationFeature;
 import ucar.nc2.ft.point.StationFeatureHas;
 import ucar.nc2.ft.point.StationPointFeature;
-import ucar.nc2.time2.CalendarDateUnit;
+import ucar.nc2.calendar.CalendarDateUnit;
 
 /**
  * A PointFeatureIterator which uses a NestedTable to implement makeFeature().

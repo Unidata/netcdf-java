@@ -7,7 +7,7 @@ package ucar.nc2.ft2.coverage.adapter;
 
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
-import ucar.nc2.time2.CalendarDateRange;
+import ucar.nc2.calendar.CalendarDateRange;
 
 /**
  * Grid Coordinate System Implementation

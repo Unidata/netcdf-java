@@ -18,7 +18,7 @@ import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageCSBuilder;
-import ucar.nc2.time2.*;
+import ucar.nc2.calendar.*;
 import ucar.nc2.write.Ncdump;
 import ucar.ui.widget.BAMutil;
 import ucar.ui.widget.IndependentWindow;

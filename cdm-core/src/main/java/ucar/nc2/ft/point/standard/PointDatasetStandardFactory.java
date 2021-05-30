@@ -17,7 +17,7 @@ import ucar.nc2.ft.DsgFeatureCollection;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactory;
 import ucar.nc2.ft.point.PointDatasetImpl;
-import ucar.nc2.time2.CalendarDateUnit;
+import ucar.nc2.calendar.CalendarDateUnit;
 
 /**
  * Standard handler for Point obs dataset based on a NetcdfDataset object.

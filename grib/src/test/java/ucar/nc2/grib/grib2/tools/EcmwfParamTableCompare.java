@@ -7,7 +7,7 @@ import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.grib2.table.EccodesParamTable;
 import ucar.nc2.grib.grib2.table.Grib2ParamTableInterface;
 import ucar.nc2.grib.grib2.table.WmoCodeFlagTables;
-import ucar.nc2.time2.CalendarDate;
+import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.internal.wmo.Util;
 

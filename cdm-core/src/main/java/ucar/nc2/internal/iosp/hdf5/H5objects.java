@@ -16,7 +16,7 @@ import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Dimension;
-import ucar.nc2.time2.CalendarDate;
+import ucar.nc2.calendar.CalendarDate;
 import ucar.unidata.io.RandomAccessFile;
 
 /** The low-level HDF5 data objects. */

@@ -16,7 +16,7 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.grib.collection.GribDataReader;
-import ucar.nc2.time2.CalendarDate;
+import ucar.nc2.calendar.CalendarDate;
 import java.util.Optional;
 import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;

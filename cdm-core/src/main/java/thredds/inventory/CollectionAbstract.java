@@ -8,7 +8,7 @@ import thredds.client.catalog.TimeDuration;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.filesystem.MFileOS7;
 import thredds.inventory.partition.DirectoryCollection;
-import ucar.nc2.time2.CalendarDate;
+import ucar.nc2.calendar.CalendarDate;
 import ucar.unidata.util.StringUtil2;
 import java.io.FileNotFoundException;
 import java.io.IOException;

@@ -8,7 +8,7 @@ import thredds.client.catalog.Access;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.tools.CatalogCrawler;
 import thredds.client.catalog.tools.DataFactory;
-import ucar.nc2.time2.CalendarDate;
+import ucar.nc2.calendar.CalendarDate;
 import javax.annotation.concurrent.ThreadSafe;
 import java.io.IOException;
 import java.util.ArrayList;

@@ -7,7 +7,7 @@ package thredds.featurecollection;
 import org.jdom2.Element;
 import org.jdom2.Namespace;
 import thredds.inventory.*;
-import ucar.nc2.time2.CalendarPeriod;
+import ucar.nc2.calendar.CalendarPeriod;
 import ucar.unidata.util.StringUtil2;
 import java.util.*;
 

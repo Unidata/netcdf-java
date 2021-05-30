@@ -4,7 +4,7 @@
  */
 package ucar.nc2.iosp.bufr;
 
-import ucar.nc2.time2.CalendarDate;
+import ucar.nc2.calendar.CalendarDate;
 import ucar.unidata.io.RandomAccessFile;
 import javax.annotation.concurrent.Immutable;
 import java.io.IOException;

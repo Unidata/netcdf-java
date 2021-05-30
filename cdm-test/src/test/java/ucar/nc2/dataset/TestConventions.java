@@ -28,9 +28,9 @@ import ucar.nc2.ft2.coverage.CoverageCoordSys;
 import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
 import ucar.nc2.ft2.coverage.FeatureDatasetCoverage;
 import ucar.nc2.ft2.coverage.HorizCoordSys;
-import ucar.nc2.time2.Calendar;
-import ucar.nc2.time2.CalendarDate;
-import ucar.nc2.time2.CalendarDateFormatter;
+import ucar.nc2.calendar.Calendar;
+import ucar.nc2.calendar.CalendarDate;
+
 import java.util.Optional;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;

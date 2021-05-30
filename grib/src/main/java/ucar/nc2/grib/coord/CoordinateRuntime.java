@@ -7,9 +7,9 @@ package ucar.nc2.grib.coord;
 import ucar.nc2.grib.GribUtils;
 import ucar.nc2.grib.grib1.Grib1Record;
 import ucar.nc2.grib.grib2.Grib2Record;
-import ucar.nc2.time2.CalendarDate;
-import ucar.nc2.time2.CalendarDateUnit;
-import ucar.nc2.time2.CalendarPeriod;
+import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.calendar.CalendarDateUnit;
+import ucar.nc2.calendar.CalendarPeriod;
 import ucar.nc2.internal.util.Counters;
 import ucar.nc2.util.Indent;
 

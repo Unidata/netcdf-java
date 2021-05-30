@@ -11,7 +11,7 @@ import ucar.nc2.ft.point.PointCollectionImpl;
 import ucar.nc2.ft.point.PointIteratorEmpty;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.stream.NcStreamProto;
-import ucar.nc2.time2.CalendarDateUnit;
+import ucar.nc2.calendar.CalendarDateUnit;
 
 /**
  * Abstract superclass for creating a {@link ucar.nc2.ft.PointFeatureCollection} from a point stream.
