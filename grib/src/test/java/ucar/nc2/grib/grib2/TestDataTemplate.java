@@ -14,6 +14,8 @@ import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import java.io.IOException;
 
+import static com.google.common.truth.Truth.assertThat;
+
 @RunWith(JUnit4.class)
 public class TestDataTemplate {
   // Tests reading data using template 5.0
@@ -22,6 +24,7 @@ public class TestDataTemplate {
     final String testfile = "../grib/src/test/data/Eumetsat.VerticalPerspective.grib2";
     try (NetcdfFile nc = NetcdfFiles.open(testfile)) {
       Variable var = nc.findVariable("Pixel_scene_type");
+      assertThat(var).isNotNull();
       float[] data = (float[]) var.read().get1DJavaArray(DataType.FLOAT);
 
       Assert.assertTrue(Float.isNaN(data[0]));
@@ -35,6 +38,7 @@ public class TestDataTemplate {
     final String testfile = "../grib/src/test/data/ds.snow.grib2";
     try (NetcdfFile nc = NetcdfFiles.open(testfile)) {
       Variable var = nc.findVariable("Total_snowfall_surface_6_Hour_Accumulation");
+      assertThat(var).isNotNull();
       float[] data = (float[]) var.read().get1DJavaArray(DataType.FLOAT);
 
       Assert.assertTrue(Float.isNaN(data[0]));
@@ -48,6 +52,7 @@ public class TestDataTemplate {
     final String testfile = "../grib/src/test/data/ds.sky.grib2";
     try (NetcdfFile nc = NetcdfFiles.open(testfile)) {
       Variable var = nc.findVariable("Total_cloud_cover_surface");
+      assertThat(var).isNotNull();
       float[] data = (float[]) var.read().get1DJavaArray(DataType.FLOAT);
 
       Assert.assertTrue(Float.isNaN(data[0]));
@@ -61,6 +66,7 @@ public class TestDataTemplate {
     final String testfile = "../grib/src/test/data/pdsScale.pds1.grib2";
     try (NetcdfFile nc = NetcdfFiles.open(testfile)) {
       Variable var = nc.findVariable("Temperature_isobaric_ens");
+      assertThat(var).isNotNull();
       float[] data = (float[]) var.read().get1DJavaArray(DataType.FLOAT);
 
       Assert.assertEquals(263.57705688, data[0], 1e-6);
@@ -74,6 +80,7 @@ public class TestDataTemplate {
     final String testfile = "../grib/src/test/data/MRMS_LowLevelCompositeReflectivity_00.50_20141207-072038.grib2";
     try (NetcdfFile nc = NetcdfFiles.open(testfile)) {
       Variable var = nc.findVariable("LowLevelCompositeReflectivity_altitude_above_msl");
+      assertThat(var).isNotNull();
       float[] data = (float[]) var.read().get1DJavaArray(DataType.FLOAT);
 
       Assert.assertEquals(-99., data[15], 1e-6);
@@ -87,6 +94,7 @@ public class TestDataTemplate {
     final String testfile = "../grib/src/test/data/HLYA10.grib2";
     try (NetcdfFile nc = NetcdfFiles.open(testfile)) {
       Variable var = nc.findVariable("VAR0-19-223_FROM_7-212--1_isobaric");
+      assertThat(var).isNotNull();
       float[] data = (float[]) var.read().get1DJavaArray(DataType.FLOAT);
 
       Assert.assertEquals(0.36976, data[13], 1e-5);

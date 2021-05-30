@@ -32,7 +32,7 @@ public class TestGrib1Records {
     result.add(new Object[] {"airtmp_zht_000002_000000_1a0061x0061_2010011200_00240000_fcstfld.grib1", 1, 11, 3721,
         CalendarDate.fromUdunitIsoDate("ISO8601", "2010-01-12T00:00:00Z").orElseThrow()});
     result.add(new Object[] {"radar_national.grib1", 3, 201, 400000,
-        CalendarDate.fromUdunitIsoDate("ISO8601", "2005-01-20T02:15:00Z")});
+        CalendarDate.fromUdunitIsoDate("ISO8601", "2005-01-20T02:15:00Z").orElseThrow()});
     result.add(new Object[] {"jma.grib1", 3, 2, 83525,
         CalendarDate.fromUdunitIsoDate("ISO8601", "2006-08-14T00:00:00Z").orElseThrow()});
     result.add(new Object[] {"complex_packing.grib1", 4, 122, 131072,
@@ -52,13 +52,13 @@ public class TestGrib1Records {
   }
 
   String filename;
-  boolean check;
   int gdsTemplate;
   int param;
   long datalen;
   CalendarDate refdate;
+  boolean check;
 
-  public TestGrib1Records(String ds, int gdsTemplate, int param, long datalen, CalendarDate refdate) {
+  public TestGrib1Records(String ds, int gdsTemplate, int param, int datalen, CalendarDate refdate) {
     this.filename = "../grib/src/test/data/" + ds;
     this.gdsTemplate = gdsTemplate;
     this.param = param;
