@@ -5,6 +5,7 @@
 package ucar.nc2.calendar;
 
 import org.junit.Test;
+import ucar.nc2.grib.coord.TimeCoordIntvValue;
 
 import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth8.assertThat;
@@ -241,5 +242,34 @@ public class TestCalendarDate {
     assertThat(mstDate).isEqualTo(cetDate);
     assertThat(mstDate).isEqualTo(utcDate);
   }
+
+  @Test
+  public void testSubtractFail() {
+    CalendarDate refTime = CalendarDate.fromUdunitIsoDate(null, "2005-09-01T15:00Z").orElseThrow(); // Start of forecast
+    CalendarDate forecastTimeEnd = CalendarDate.fromUdunitIsoDate(null, "2005-09-01T18:00Z").orElseThrow();
+    CalendarPeriod timeUnit = CalendarPeriod.of(1, CalendarPeriod.Field.Hour);
+    int forecastTime = 3;
+    int timeLength = 6;
+
+    // forecastTimeEnd - 6
+    CalendarDate forecastTimeStart = CalendarDate.fromUdunitIsoDate(null, "2005-09-01T12:00Z").orElseThrow(); // Start
+                                                                                                              // of
+                                                                                                              // forecast
+
+    // so forecast interval is (-3,3) ? has (3, -3)
+
+    // period.getOffset(CalendarDate start, CalendarDate end)
+    // end.since(CalendarDate start, CalendarPeriod period);
+    int startOffset = (int) forecastTimeStart.since(refTime, timeUnit);
+    // int startOffset = timeUnit.getOffset(refDate, start); // LOOK wrong - not dealing with value ??
+    int endOffset = (int) forecastTimeEnd.since(refTime, timeUnit);
+    // int endOffset = timeUnit.getOffset(refDate, end);
+
+    System.out.printf("start, end = (%d, %d)", startOffset, endOffset);
+    assertThat(startOffset).isEqualTo(-3);
+    assertThat(endOffset).isEqualTo(3);
+
+  }
+
 
 }

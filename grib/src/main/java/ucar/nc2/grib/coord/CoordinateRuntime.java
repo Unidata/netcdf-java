@@ -96,7 +96,7 @@ public class CoordinateRuntime implements Coordinate {
   }
 
   public double getOffsetInTimeUnits(CalendarDate start) {
-    return start.since(getFirstDate(), timePeriod);
+    return getFirstDate().since(start, timePeriod);
     // return timeUnit.getOffset(start, getFirstDate());
   }
 

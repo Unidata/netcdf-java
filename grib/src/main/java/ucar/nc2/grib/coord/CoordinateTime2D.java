@@ -175,7 +175,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     for (int idx = 0; idx < nruns; idx++) {
       CoordinateTimeAbstract coordTime = (CoordinateTimeAbstract) orgTimes.get(idx);
       CalendarPeriod period = coordTime.getTimeUnit(); // LOOK are we assuming all have same period ??
-      offsets[idx] = (int) firstDate.since(runtime.getRuntimeDate(idx), period); // LOOK possible loss of precision
+      offsets[idx] = (int) runtime.getRuntimeDate(idx).since(firstDate, period); // LOOK possible loss of precision
       // offsets[idx] = period.getOffset(firstDate, runtime.getRuntimeDate(idx)); // LOOK possible loss of precision
     }
     return offsets;
@@ -185,7 +185,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     CalendarDate firstDate = runtime.getFirstDate();
     int[] offsets = new int[nruns];
     for (int idx = 0; idx < nruns; idx++) {
-      offsets[idx] = (int) firstDate.since(runtime.getRuntimeDate(idx), period); // LOOK possible loss of precision
+      offsets[idx] = (int) runtime.getRuntimeDate(idx).since(firstDate, period); // LOOK possible loss of precision
       // offsets[idx] = period.getOffset(firstDate, runtime.getRuntimeDate(idx)); // LOOK possible loss of precision
     }
     return offsets;
@@ -542,7 +542,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
    */
   public int matchTimeCoordinate(int runIdx, CoordinateTime2D.Time2D value) {
     CoordinateTimeAbstract time = getTimeCoordinate(runIdx);
-    int offset = (int) getRefDate(runIdx).since(value.getRefDate(), timeUnit);
+    int offset = (int) value.getRefDate().since(getRefDate(runIdx), timeUnit);
     // int offset = timeUnit.getOffset(getRefDate(runIdx), value.getRefDate());
 
     Object valueWithOffset;

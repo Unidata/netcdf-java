@@ -289,16 +289,6 @@ public final class LeapYearChronology extends AbstractChronology implements Seri
     return List.of(IsoEra.values());
   }
 
-  // -----------------------------------------------------------------------
-  /*
-   * LOOK see Uniform30DayChronology range(), why different?
-   * 
-   * @Override
-   * public ValueRange range(ChronoField field) {
-   * return field.range();
-   * }
-   */
-
   @Override
   public ValueRange range(ChronoField field) {
     switch (field) {

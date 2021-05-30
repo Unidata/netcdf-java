@@ -112,9 +112,6 @@ public class CalendarDateUnit {
     return date.since(baseDate, period);
   }
 
-  /////////////////////////////////////
-
-
   @Override
   public boolean equals(Object o) {
     if (this == o)

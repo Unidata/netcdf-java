@@ -81,9 +81,7 @@ public interface CalendarDate extends Comparable<CalendarDate> {
     return of(null, year, monthOfYear, dayOfMonth, hourOfDay, minuteOfHour, secondOfMinute, 0, null);
   }
 
-  /**
-   * Get Calendar date from Instant.
-   */
+  /** Get Calendar date from Instant. */
   static CalendarDate of(@Nullable Calendar cal, Instant instant) {
     return of(instant.getLong(ChronoField.INSTANT_SECONDS) * 1000 + instant.getLong(ChronoField.MILLI_OF_SECOND));
   }
@@ -271,9 +269,9 @@ public interface CalendarDate extends Comparable<CalendarDate> {
 
   boolean isBefore(CalendarDate o);
 
-  long since(CalendarDate base, CalendarPeriod.Field field);
+  long since(CalendarDate start, CalendarPeriod.Field field);
 
-  long since(CalendarDate base, CalendarPeriod period);
+  long since(CalendarDate start, CalendarPeriod period);
 
   Instant toInstant();
 

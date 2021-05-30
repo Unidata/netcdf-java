@@ -32,6 +32,20 @@ public class TestDataTemplate {
     }
   }
 
+  // generate new ncx4
+  @Test
+  public void testGenNcx() throws IOException {
+    final String testfile = "/home/snake/tmp/ds.snow.grib2";
+    try (NetcdfFile nc = NetcdfFiles.open(testfile)) {
+      Variable var = nc.findVariable("Total_snowfall_surface_6_Hour_Accumulation");
+      assertThat(var).isNotNull();
+      float[] data = (float[]) var.read().get1DJavaArray(DataType.FLOAT);
+
+      Assert.assertTrue(Float.isNaN(data[0]));
+      Assert.assertTrue(Float.isNaN(data[1234]));
+    }
+  }
+
   // Tests reading data using template 5.2
   @Test
   public void testDrs2() throws IOException {
@@ -45,6 +59,7 @@ public class TestDataTemplate {
       Assert.assertTrue(Float.isNaN(data[1234]));
     }
   }
+
 
   // Tests reading data using template 5.3
   @Test

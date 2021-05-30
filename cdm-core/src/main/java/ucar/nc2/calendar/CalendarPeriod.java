@@ -168,18 +168,6 @@ public class CalendarPeriod {
     return new CalendarPeriod(value, this.field);
   }
 
-  /*
-   * Multiply the period by an integer
-   * 
-   * @param value multiply by this
-   * 
-   * @return new period
-   *
-   * public CalendarPeriod multiply(int value) {
-   * return CalendarPeriod.of(this.value * value, this.field);
-   * }
-   */
-
   public int getValue() {
     return value;
   }

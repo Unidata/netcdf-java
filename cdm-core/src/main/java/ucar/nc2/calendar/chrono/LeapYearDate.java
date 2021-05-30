@@ -145,7 +145,6 @@ public final class LeapYearDate extends AbstractDate implements Temporal, Tempor
     return ofYearDay(chronology, (int) year + 1, (int) doy + 1);
   }
 
-  // -----------------------------------------------------------------------
   /**
    * LOOK
    * Obtains an instance of {@code LeapYearDate} from a temporal object.
@@ -165,29 +164,8 @@ public final class LeapYearDate extends AbstractDate implements Temporal, Tempor
       return (LeapYearDate) temporal;
     }
     return ofEpochDay(chronology, temporal.getLong(ChronoField.EPOCH_DAY));
-
-    /*
-     * return LeapYearDate.from(chronology, temporal);
-     * 
-     * /*
-     * if (temporal instanceof ChronoLocalDate) {
-     * ChronoLocalDate localDate = (ChronoLocalDate) temporal;
-     * // return LeapYearDate.ofEpochDay(localDate.getLong(ChronoField.EPOCH_DAY));
-     * return LeapYearDate.of(chronology, localDate.get(YEAR), localDate.get(MONTH_OF_YEAR),
-     * localDate.get(DAY_OF_MONTH));
-     * 
-     * } else if (temporal instanceof ChronoLocalDateTime) {
-     * ChronoLocalDateTime<?> localDateTime = (ChronoLocalDateTime<?>) temporal;
-     * // LOOK maybe have to turn it back to instance and reparse ??
-     * return LeapYearDate.of(chronology, localDateTime.get(YEAR), localDateTime.get(MONTH_OF_YEAR),
-     * localDateTime.get(DAY_OF_MONTH));
-     * }
-     * throw new DateTimeException("Unable to obtain LeapYearDate from TemporalAccessor: " + temporal + " of type "
-     * + temporal.getClass().getName());
-     */
   }
 
-  // -----------------------------------------------------------------------
   /**
    * Creates a local date from the year, month and day fields.
    *
@@ -240,7 +218,6 @@ public final class LeapYearDate extends AbstractDate implements Temporal, Tempor
     this.day = (short) dayOfMonth;
   }
 
-  // -----------------------------------------------------------------------
   /**
    * LOOK
    * Gets the range of valid values for the specified field.
@@ -286,122 +263,6 @@ public final class LeapYearDate extends AbstractDate implements Temporal, Tempor
     }
     return field.rangeRefinedBy(this);
   }
-
-  // ----------------------------------------------------------------------------------------
-  // LOOK 30Day doesnt have any get or getLong or get0
-  /*
-   * Gets the value of the specified field from this date as an {@code int}.
-   * <p>
-   * This queries this date for the value of the specified field.
-   * The returned value will always be within the valid range of values for the field.
-   * If it is not possible to return the value, because the field is not supported
-   * or for some other reason, an exception is thrown.
-   * <p>
-   * If the field is a {@link ChronoField} then the query is implemented here.
-   * The {@link #isSupported(TemporalField) supported fields} will return valid
-   * values based on this date, except {@code EPOCH_DAY} and {@code PROLEPTIC_MONTH}
-   * which are too large to fit in an {@code int} and throw an {@code UnsupportedTemporalTypeException}.
-   * All other {@code ChronoField} instances will throw an {@code UnsupportedTemporalTypeException}.
-   * <p>
-   * If the field is not a {@code ChronoField}, then the result of this method
-   * is obtained by invoking {@code TemporalField.getFrom(TemporalAccessor)}
-   * passing {@code this} as the argument. Whether the value can be obtained,
-   * and what the value represents, is determined by the field.
-   *
-   * @param field the field to get, not null
-   * 
-   * @return the value for the field
-   * 
-   * @throws DateTimeException if a value for the field cannot be obtained or
-   * the value is outside the range of valid values for the field
-   * 
-   * @throws UnsupportedTemporalTypeException if the field is not supported or
-   * the range of values exceeds an {@code int}
-   * 
-   * @throws ArithmeticException if numeric overflow occurs
-   *
-   * @Override // override for Javadoc and performance
-   * public int get(TemporalField field) {
-   * if (field instanceof ChronoField) {
-   * return get0(field);
-   * }
-   * return super.get(field);
-   * }
-   * 
-   * /*
-   * Gets the value of the specified field from this date as a {@code long}.
-   * <p>
-   * This queries this date for the value of the specified field.
-   * If it is not possible to return the value, because the field is not supported
-   * or for some other reason, an exception is thrown.
-   * <p>
-   * If the field is a {@link ChronoField} then the query is implemented here.
-   * The {@link #isSupported(TemporalField) supported fields} will return valid
-   * values based on this date.
-   * All other {@code ChronoField} instances will throw an {@code UnsupportedTemporalTypeException}.
-   * <p>
-   * If the field is not a {@code ChronoField}, then the result of this method
-   * is obtained by invoking {@code TemporalField.getFrom(TemporalAccessor)}
-   * passing {@code this} as the argument. Whether the value can be obtained,
-   * and what the value represents, is determined by the field.
-   *
-   * @param field the field to get, not null
-   * 
-   * @return the value for the field
-   * 
-   * @throws DateTimeException if a value for the field cannot be obtained
-   * 
-   * @throws UnsupportedTemporalTypeException if the field is not supported
-   * 
-   * @throws ArithmeticException if numeric overflow occurs
-   *
-   * @Override
-   * public long getLong(TemporalField field) {
-   * if (field instanceof ChronoField) {
-   * if (field == EPOCH_DAY) {
-   * return toEpochDay();
-   * }
-   * if (field == PROLEPTIC_MONTH) {
-   * return getProlepticMonth();
-   * }
-   * return get0(field);
-   * }
-   * return field.getFrom(this);
-   * }
-   * 
-   * private int get0(TemporalField field) {
-   * switch ((ChronoField) field) {
-   * case DAY_OF_WEEK:
-   * return getDayOfWeekField().getValue();
-   * case ALIGNED_DAY_OF_WEEK_IN_MONTH:
-   * return ((day - 1) % 7) + 1;
-   * case ALIGNED_DAY_OF_WEEK_IN_YEAR:
-   * return ((getDayOfYear() - 1) % 7) + 1;
-   * case DAY_OF_MONTH:
-   * return day;
-   * case DAY_OF_YEAR:
-   * return getDayOfYear();
-   * case EPOCH_DAY:
-   * throw new UnsupportedTemporalTypeException("Invalid field 'EpochDay' for get() method, use getLong() instead");
-   * case ALIGNED_WEEK_OF_MONTH:
-   * return ((day - 1) / 7) + 1;
-   * case ALIGNED_WEEK_OF_YEAR:
-   * return ((getDayOfYear() - 1) / 7) + 1;
-   * case MONTH_OF_YEAR:
-   * return month;
-   * case PROLEPTIC_MONTH:
-   * throw new UnsupportedTemporalTypeException(
-   * "Invalid field 'ProlepticMonth' for get() method, use getLong() instead");
-   * case YEAR_OF_ERA:
-   * return (prolepticYear >= 1 ? prolepticYear : 1 - prolepticYear);
-   * case YEAR:
-   * return prolepticYear;
-   * case ERA:
-   * return (prolepticYear >= 1 ? 1 : 0);
-   * }
-   * throw new UnsupportedTemporalTypeException("Unsupported field: " + field);
-   * }
-   */
 
   @Override
   public LeapYearChronology getChronology() {
@@ -526,7 +387,6 @@ public final class LeapYearDate extends AbstractDate implements Temporal, Tempor
     return (isLeapYear() ? 366 : 365);
   }
 
-  // -----------------------------------------------------------------------
   // LOOK not sure all of with() is needed - see uniform30 and AbstractDate
   @Override
   public LeapYearDate with(TemporalAdjuster adjuster) {
@@ -594,91 +454,6 @@ public final class LeapYearDate extends AbstractDate implements Temporal, Tempor
     return new LeapYearDate(chronology, year, month, day);
   }
 
-  /*
-   * @Override
-   * public LeapYearDate with(TemporalField field, long newValue) {
-   * if (field instanceof ChronoField) {
-   * ChronoField f = (ChronoField) field;
-   * f.checkValidValue(newValue);
-   * switch (f) {
-   * case DAY_OF_WEEK:
-   * return plusDays(newValue - getDayOfWeekField().getValue());
-   * case ALIGNED_DAY_OF_WEEK_IN_MONTH:
-   * return plusDays(newValue - getLong(ALIGNED_DAY_OF_WEEK_IN_MONTH));
-   * case ALIGNED_DAY_OF_WEEK_IN_YEAR:
-   * return plusDays(newValue - getLong(ALIGNED_DAY_OF_WEEK_IN_YEAR));
-   * case DAY_OF_MONTH:
-   * return withDayOfMonth((int) newValue);
-   * case DAY_OF_YEAR:
-   * return withDayOfYear((int) newValue);
-   * case EPOCH_DAY:
-   * return chronology.dateEpochDay(newValue);
-   * case ALIGNED_WEEK_OF_MONTH:
-   * return plusWeeks(newValue - getLong(ALIGNED_WEEK_OF_MONTH));
-   * case ALIGNED_WEEK_OF_YEAR:
-   * return plusWeeks(newValue - getLong(ALIGNED_WEEK_OF_YEAR));
-   * case MONTH_OF_YEAR:
-   * return withMonth((int) newValue);
-   * case PROLEPTIC_MONTH:
-   * return plusMonths(newValue - getProlepticMonth());
-   * case YEAR_OF_ERA:
-   * return withYear((int) (prolepticYear >= 1 ? newValue : 1 - newValue));
-   * case YEAR:
-   * return withYear((int) newValue);
-   * case ERA:
-   * return (getLong(ERA) == newValue ? this : withYear(1 - prolepticYear));
-   * }
-   * throw new UnsupportedTemporalTypeException("Unsupported field: " + field);
-   * }
-   * return field.adjustInto(this, newValue);
-   * }
-   * 
-   * private LeapYearDate withYear(int year) {
-   * if (this.prolepticYear == year) {
-   * return this;
-   * }
-   * YEAR.checkValidValue(year);
-   * return resolvePreviousValid(chronology, year, month, day);
-   * }
-   * 
-   * private LeapYearDate withMonth(int month) {
-   * if (this.month == month) {
-   * return this;
-   * }
-   * MONTH_OF_YEAR.checkValidValue(month);
-   * return resolvePreviousValid(chronology, prolepticYear, month, day);
-   * }
-   * 
-   * private LeapYearDate withDayOfMonth(int dayOfMonth) {
-   * if (this.day == dayOfMonth) {
-   * return this;
-   * }
-   * return of(chronology, prolepticYear, month, dayOfMonth);
-   * }
-   * 
-   * /**
-   * Returns a copy of this {@code LeapYearDate} with the day-of-year altered.
-   * <p>
-   * If the resulting date is invalid, an exception is thrown.
-   * <p>
-   * This instance is immutable and unaffected by this method call.
-   *
-   * @param dayOfYear the day-of-year to set in the result, from 1 to 365-366
-   * 
-   * @return a {@code LeapYearDate} based on this date with the requested day, not null
-   * 
-   * @throws DateTimeException if the day-of-year value is invalid,
-   * or if the day-of-year is invalid for the year
-   *
-   * public LeapYearDate withDayOfYear(int dayOfYear) {
-   * if (this.getDayOfYear() == dayOfYear) {
-   * return this;
-   * }
-   * return ofYearDay(chronology, prolepticYear, dayOfYear);
-   * }
-   * 
-   */
-
   @Override
   ValueRange rangeAlignedWeekOfMonth() {
     // never invoked LOOK can we remove from superclass?
@@ -692,7 +467,6 @@ public final class LeapYearDate extends AbstractDate implements Temporal, Tempor
     return create(this.chronology, prolepticYear, monthR, dayR);
   }
 
-  // -----------------------------------------------------------------------
   @Override
   public LeapYearDate plus(TemporalAmount amount) {
     return (LeapYearDate) amount.addTo(this);
@@ -712,146 +486,6 @@ public final class LeapYearDate extends AbstractDate implements Temporal, Tempor
   public LeapYearDate minus(long amountToSubtract, TemporalUnit unit) {
     return (LeapYearDate) super.minus(amountToSubtract, unit);
   }
-
-  // -----------------------------------------------------------------------
-  /*
-   * LOOK not sure all of plus() and minus() is needed - see uniform30 and AbstractDate
-   * 
-   * @Override
-   * public LeapYearDate plus(TemporalAmount amountToAdd) {
-   * if (amountToAdd instanceof Period) {
-   * Period periodToAdd = (Period) amountToAdd;
-   * return plusMonths(periodToAdd.toTotalMonths()).plusDays(periodToAdd.getDays());
-   * }
-   * Objects.requireNonNull(amountToAdd, "amountToAdd");
-   * return (LeapYearDate) amountToAdd.addTo(this);
-   * }
-   * 
-   * @Override
-   * public LeapYearDate plus(long amountToAdd, TemporalUnit unit) {
-   * if (unit instanceof ChronoUnit) {
-   * ChronoUnit f = (ChronoUnit) unit;
-   * switch (f) {
-   * case DAYS:
-   * return plusDays(amountToAdd);
-   * case WEEKS:
-   * return plusWeeks(amountToAdd);
-   * case MONTHS:
-   * return plusMonths(amountToAdd);
-   * case YEARS:
-   * return plusYears(amountToAdd);
-   * case DECADES:
-   * return plusYears(Math.multiplyExact(amountToAdd, 10));
-   * case CENTURIES:
-   * return plusYears(Math.multiplyExact(amountToAdd, 100));
-   * case MILLENNIA:
-   * return plusYears(Math.multiplyExact(amountToAdd, 1000));
-   * case ERAS:
-   * return with(ERA, Math.addExact(getLong(ERA), amountToAdd));
-   * }
-   * throw new UnsupportedTemporalTypeException("Unsupported unit: " + unit);
-   * }
-   * return unit.addTo(this, amountToAdd);
-   * }
-   * 
-   * public LeapYearDate plusYears(long yearsToAdd) {
-   * if (yearsToAdd == 0) {
-   * return this;
-   * }
-   * int newYear = YEAR.checkValidIntValue(prolepticYear + yearsToAdd); // safe overflow
-   * return resolvePreviousValid(newYear, month, day);
-   * }
-   * 
-   * 
-   * public LeapYearDate plusWeeks(long weeksToAdd) {
-   * return plusDays(Math.multiplyExact(weeksToAdd, 7));
-   * }
-   * 
-   * public LeapYearDate plusDays(long daysToAdd) {
-   * if (daysToAdd == 0) {
-   * return this;
-   * }
-   * long dom = day + daysToAdd;
-   * if (dom > 0) {
-   * if (dom <= 28) {
-   * return new LeapYearDate(this.chronology, prolepticYear, month, (int) dom);
-   * } else if (dom <= 59) { // 59th Jan is 28th Feb, 59th Feb is 31st Mar
-   * long monthLen = lengthOfMonth();
-   * if (dom <= monthLen) {
-   * return new LeapYearDate(this.chronology, prolepticYear, month, (int) dom);
-   * } else if (month < 12) {
-   * return new LeapYearDate(this.chronology, prolepticYear, month + 1, (int) (dom - monthLen));
-   * } else {
-   * YEAR.checkValidValue(prolepticYear + 1);
-   * return new LeapYearDate(this.chronology, prolepticYear + 1, 1, (int) (dom - monthLen));
-   * }
-   * }
-   * }
-   * 
-   * long mjDay = Math.addExact(toEpochDay(), daysToAdd);
-   * return chronology.dateEpochDay(mjDay);
-   * }
-   * 
-   * 
-   * @Override
-   * public LeapYearDate minus(TemporalAmount amountToSubtract) {
-   * if (amountToSubtract instanceof Period) {
-   * Period periodToSubtract = (Period) amountToSubtract;
-   * return minusMonths(periodToSubtract.toTotalMonths()).minusDays(periodToSubtract.getDays());
-   * }
-   * Objects.requireNonNull(amountToSubtract, "amountToSubtract");
-   * return (LeapYearDate) amountToSubtract.subtractFrom(this);
-   * }
-   * 
-   * 
-   * @Override
-   * public LeapYearDate minus(long amountToSubtract, TemporalUnit unit) {
-   * return (amountToSubtract == Long.MIN_VALUE ? plus(Long.MAX_VALUE, unit).plus(1, unit)
-   * : plus(-amountToSubtract, unit));
-   * }
-   * 
-   * 
-   * public LeapYearDate minusYears(long yearsToSubtract) {
-   * return (yearsToSubtract == Long.MIN_VALUE ? plusYears(Long.MAX_VALUE).plusYears(1) : plusYears(-yearsToSubtract));
-   * }
-   * 
-   * 
-   * public LeapYearDate minusMonths(long monthsToSubtract) {
-   * return (monthsToSubtract == Long.MIN_VALUE ? plusMonths(Long.MAX_VALUE).plusMonths(1)
-   * : plusMonths(-monthsToSubtract));
-   * }
-   * 
-   * 
-   * public LeapYearDate minusWeeks(long weeksToSubtract) {
-   * return (weeksToSubtract == Long.MIN_VALUE ? plusWeeks(Long.MAX_VALUE).plusWeeks(1) : plusWeeks(-weeksToSubtract));
-   * }
-   * 
-   * 
-   * public LeapYearDate minusDays(long daysToSubtract) {
-   * return (daysToSubtract == Long.MIN_VALUE ? plusDays(Long.MAX_VALUE).plusDays(1) : plusDays(-daysToSubtract));
-   * }
-   * 
-   */
-
-  // -----------------------------------------------------------------------
-  /*
-   * @SuppressWarnings("unchecked")
-   * 
-   * @Override
-   * public <R> R query(TemporalQuery<R> query) {
-   * if (query == TemporalQueries.localDate()) {
-   * return (R) this;
-   * }
-   * return super.query(query);
-   * }
-   * 
-   * 
-   * @Override // override for Javadoc
-   * public Temporal adjustInto(Temporal temporal) {
-   * return super.adjustInto(temporal);
-   * }
-   * 
-   */
 
   @Override
   public long until(Temporal endExclusive, TemporalUnit unit) {
@@ -888,77 +522,12 @@ public final class LeapYearDate extends AbstractDate implements Temporal, Tempor
     return resolvePreviousValid(newYear, newMonth, day);
   }
 
-  /*
-   * long daysUntil(LeapYearDate end) {
-   * return end.toEpochDay() - toEpochDay(); // no overflow
-   * }
-   * 
-   * private long monthsUntil(LeapYearDate end) {
-   * long packed1 = getProlepticMonth() * 32L + getDayOfMonth(); // no overflow
-   * long packed2 = end.getProlepticMonth() * 32L + end.getDayOfMonth(); // no overflow
-   * return (packed2 - packed1) / 32;
-   * }
-   * 
-   * /*
-   * public Stream<LeapYearDate> datesUntil(LeapYearDate endExclusive) {
-   * long end = endExclusive.toEpochDay();
-   * long start = toEpochDay();
-   * if (end < start) {
-   * throw new IllegalArgumentException(endExclusive + " < " + this);
-   * }
-   * return LongStream.range(start, end).mapToObj(wtf -> chronology.dateEpochDay(wtf));
-   * }
-   * 
-   * public Stream<LeapYearDate> datesUntil(LeapYearDate endExclusive, Period step) {
-   * if (step.isZero()) {
-   * throw new IllegalArgumentException("step is zero");
-   * }
-   * long end = endExclusive.toEpochDay();
-   * long start = toEpochDay();
-   * long until = end - start;
-   * long months = step.toTotalMonths();
-   * long days = step.getDays();
-   * if ((months < 0 && days > 0) || (months > 0 && days < 0)) {
-   * throw new IllegalArgumentException("period months and days are of opposite sign");
-   * }
-   * if (until == 0) {
-   * return Stream.empty();
-   * }
-   * int sign = months > 0 || days > 0 ? 1 : -1;
-   * if (sign < 0 ^ until < 0) {
-   * throw new IllegalArgumentException(endExclusive + (sign < 0 ? " > " : " < ") + this);
-   * }
-   * if (months == 0) {
-   * long steps = (until - sign) / days; // non-negative
-   * return LongStream.rangeClosed(0, steps).mapToObj(n -> chronology.dateEpochDay(start + n * days));
-   * }
-   * // 48699/1600 = 365.2425/12, no overflow, non-negative result
-   * long steps = until * 1600 / (months * 48699 + days * 1600) + 1;
-   * long addMonths = months * steps;
-   * long addDays = days * steps;
-   * long maxAddMonths = months > 0 ? chronology.MAX_DATE.getProlepticMonth() - getProlepticMonth()
-   * : getProlepticMonth() - chronology.MIN_DATE.getProlepticMonth();
-   * // adjust steps estimation
-   * if (addMonths * sign > maxAddMonths || (plusMonths(addMonths).toEpochDay() + addDays) * sign >= end * sign) {
-   * steps--;
-   * addMonths -= months;
-   * addDays -= days;
-   * if (addMonths * sign > maxAddMonths || (plusMonths(addMonths).toEpochDay() + addDays) * sign >= end * sign) {
-   * steps--;
-   * }
-   * }
-   * return LongStream.rangeClosed(0, steps).mapToObj(n -> this.plusMonths(months * n).plusDays(days * n));
-   * }
-   * 
-   */
-
   @Override // for covariant return type
   @SuppressWarnings("unchecked")
   public ChronoLocalDateTime<LeapYearDate> atTime(LocalTime localTime) {
     return (ChronoLocalDateTime<LeapYearDate>) super.atTime(localTime);
   }
 
-  // -----------------------------------------------------------------------
   @Override
   public long toEpochDay() {
     return chronology.toEpochDay(this);
@@ -999,47 +568,6 @@ public final class LeapYearDate extends AbstractDate implements Temporal, Tempor
     return cmp;
   }
 
-  /*
-   * @Override // override for Javadoc and performance
-   * public boolean isAfter(ChronoLocalDate other) {
-   * if (other instanceof LeapYearDate) {
-   * return compareTo0((LeapYearDate) other) > 0;
-   * }
-   * return super.isAfter(other);
-   * }
-   * 
-   * @Override // override for Javadoc and performance
-   * public boolean isBefore(ChronoLocalDate other) {
-   * if (other instanceof LeapYearDate) {
-   * return compareTo0((LeapYearDate) other) < 0;
-   * }
-   * return super.isBefore(other);
-   * }
-   * 
-   */
-
-  /**
-   * Checks if this date is equal to the specified date.
-   * <p>
-   * This checks to see if this date represents the same point on the
-   * local time-line as the other date.
-   * 
-   * <pre>
-   *   LeapYearDate a = LeapYearDate.of(2012, 6, 30);
-   *   LeapYearDate b = LeapYearDate.of(2012, 7, 1);
-   *   a.isEqual(b) == false
-   *   a.isEqual(a) == true
-   *   b.isEqual(a) == false
-   * </pre>
-   * <p>
-   * This method only considers the position of the two dates on the local time-line.
-   * It does not take into account the chronology, or calendar system.
-   * This is different from the comparison in {@link #compareTo(ChronoLocalDate)}
-   * but is the same approach as {@link ChronoLocalDate#timeLineOrder()}.
-   *
-   * @param other the other date to compare to, not null
-   * @return true if this date is equal to the specified date
-   */
   @Override // override for Javadoc and performance
   public boolean isEqual(ChronoLocalDate other) {
     if (other instanceof LeapYearDate) {
@@ -1047,8 +575,6 @@ public final class LeapYearDate extends AbstractDate implements Temporal, Tempor
     }
     return super.isEqual(other);
   }
-
-  // -----------------------------------------------------------------------
 
   @Override
   public boolean equals(Object o) {
@@ -1067,7 +593,6 @@ public final class LeapYearDate extends AbstractDate implements Temporal, Tempor
   public int hashCode() {
     return Objects.hash(super.hashCode(), chronology, prolepticYear, month, day);
   }
-
 
   @Override
   public String toString() {

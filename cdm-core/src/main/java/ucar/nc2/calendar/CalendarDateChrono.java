@@ -109,9 +109,9 @@ class CalendarDateChrono extends CalendarDateIso implements CalendarDate, Compar
   }
 
   @Override
-  public long since(CalendarDate base, CalendarPeriod.Field field) {
-    if (base instanceof CalendarDateChrono) {
-      CalendarDateChrono co = (CalendarDateChrono) base;
+  public long since(CalendarDate start, CalendarPeriod.Field field) {
+    if (start instanceof CalendarDateChrono) {
+      CalendarDateChrono co = (CalendarDateChrono) start;
       return co.chronoLocalDateTime.until(this.chronoLocalDateTime, field.chronoUnit);
     }
     throw new IllegalArgumentException("Must be a ChronoDate");
@@ -119,9 +119,9 @@ class CalendarDateChrono extends CalendarDateIso implements CalendarDate, Compar
 
   // LOOK what about period.value ?
   @Override
-  public long since(CalendarDate base, CalendarPeriod period) {
-    if (base instanceof CalendarDateChrono) {
-      CalendarDateChrono co = (CalendarDateChrono) base;
+  public long since(CalendarDate start, CalendarPeriod period) {
+    if (start instanceof CalendarDateChrono) {
+      CalendarDateChrono co = (CalendarDateChrono) start;
       return co.chronoLocalDateTime.until(this.chronoLocalDateTime, period.getChronoUnit());
     }
     throw new IllegalArgumentException("Must be a ChronoDate");

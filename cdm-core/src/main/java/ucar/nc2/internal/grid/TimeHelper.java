@@ -72,7 +72,7 @@ public class TimeHelper {
   }
 
   public double getOffsetInTimeUnits(CalendarDate start, CalendarDate end) {
-    return start.since(end, dateUnit.getCalendarPeriod());
+    return end.since(start, dateUnit.getCalendarPeriod());
     // return dateUnit.getCalendarPeriod().getOffset(start, end);
   }
 

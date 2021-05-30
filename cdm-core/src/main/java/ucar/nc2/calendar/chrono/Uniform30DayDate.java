@@ -23,6 +23,7 @@ import java.time.temporal.TemporalQuery;
 import java.time.temporal.TemporalUnit;
 import java.time.temporal.UnsupportedTemporalTypeException;
 import java.time.temporal.ValueRange;
+import java.util.Objects;
 
 import static ucar.nc2.calendar.chrono.Uniform30DayChronology.DAYS_0001_TO_1970;
 import static ucar.nc2.calendar.chrono.Uniform30DayChronology.DAYS_IN_MONTH;
@@ -222,7 +223,6 @@ public final class Uniform30DayDate extends AbstractDate implements ChronoLocalD
     return create(prolepticYear, monthR, dayR);
   }
 
-  // -----------------------------------------------------------------------
   /**
    * Creates an instance from validated data.
    *
@@ -237,10 +237,6 @@ public final class Uniform30DayDate extends AbstractDate implements ChronoLocalD
     this.dayOfYear = DAYS_IN_MONTH * (month - 1) + dayOfMonth;
   }
 
-  // -----------------------------------------------------------------------
-
-
-  // -----------------------------------------------------------------------
   @Override
   public ValueRange range(TemporalField field) {
     if (field instanceof ChronoField) {
@@ -285,8 +281,6 @@ public final class Uniform30DayDate extends AbstractDate implements ChronoLocalD
   Uniform30DayDate resolvePrevious(int newYear, int newMonth, int dayOfMonth) {
     return resolvePreviousValid(newYear, newMonth, dayOfMonth);
   }
-
-  // -----------------------------------------------------------------------
 
   @Override
   public Uniform30DayChronology getChronology() {
@@ -368,7 +362,6 @@ public final class Uniform30DayDate extends AbstractDate implements ChronoLocalD
     return false;
   }
 
-  // -------------------------------------------------------------------------
   @Override
   public Uniform30DayDate with(TemporalAdjuster adjuster) {
     return (Uniform30DayDate) adjuster.adjustInto(this);
@@ -413,7 +406,6 @@ public final class Uniform30DayDate extends AbstractDate implements ChronoLocalD
     return ofYearDay(prolepticYear, value);
   }
 
-  // -----------------------------------------------------------------------
   @Override
   public Uniform30DayDate plus(TemporalAmount amount) {
     return (Uniform30DayDate) amount.addTo(this);
@@ -434,7 +426,6 @@ public final class Uniform30DayDate extends AbstractDate implements ChronoLocalD
     return (Uniform30DayDate) super.minus(amountToSubtract, unit);
   }
 
-  // -------------------------------------------------------------------------
   @Override // for covariant return type
   @SuppressWarnings("unchecked")
   public ChronoLocalDateTime<Uniform30DayDate> atTime(LocalTime localTime) {
@@ -494,26 +485,22 @@ public final class Uniform30DayDate extends AbstractDate implements ChronoLocalD
     return epochDay;
   }
 
-  /*
-   * -----------------------------------------------------------------------
-   * 
-   * @Override
-   * public boolean equals(Object o) {
-   * if (this == o) return true;
-   * if (o == null || getClass() != o.getClass()) return false;
-   * if (!super.equals(o)) return false;
-   * Uniform30DayDate that = (Uniform30DayDate) o;
-   * return prolepticYear == that.prolepticYear &&
-   * month == that.month &&
-   * day == that.day &&
-   * dayOfYear == that.dayOfYear;
-   * }
-   * 
-   * @Override
-   * public int hashCode() {
-   * return Objects.hash(super.hashCode(), prolepticYear, month, day, dayOfYear);
-   * }
-   */
+  @Override
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
+    if (!super.equals(o))
+      return false;
+    Uniform30DayDate that = (Uniform30DayDate) o;
+    return prolepticYear == that.prolepticYear && month == that.month && day == that.day && dayOfYear == that.dayOfYear;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(super.hashCode(), prolepticYear, month, day, dayOfYear);
+  }
 
   @Override
   public String toString() {

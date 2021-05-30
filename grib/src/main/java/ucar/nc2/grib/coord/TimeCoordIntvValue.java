@@ -32,9 +32,9 @@ public class TimeCoordIntvValue implements Comparable<TimeCoordIntvValue> {
       CalendarPeriod toUnit) {
     CalendarDate start = fromDate.add(b1, fromUnit);
     CalendarDate end = fromDate.add(b2, fromUnit);
-    int startOffset = (int) toDate.since(start, toUnit);
+    int startOffset = (int) start.since(toDate, toUnit);
     // int startOffset = toUnit.getOffset(toDate, start);
-    int endOffset = (int) toDate.since(end, toUnit);
+    int endOffset = (int) end.since(toDate, toUnit);
     // int endOffset = toUnit.getOffset(toDate, end);
     return new TimeCoordIntvValue(startOffset, endOffset);
   }

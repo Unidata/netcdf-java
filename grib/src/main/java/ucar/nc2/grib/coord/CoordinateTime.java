@@ -195,7 +195,7 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
           return offset;
         }
         CalendarDate validDate = refDate.add(offset, period);
-        // long since(CalendarDate base, CalendarPeriod period);
+        // timeUnit.getOffset(refDate, validDate);
         return validDate.since(refDate, timeUnit);
       }
     }
@@ -235,6 +235,7 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
 
       } else {
         CalendarDate validDate = GribUtils.getValidTime(refDate, tuInRecord, offset);
+        // timeUnit.getOffset(refDate, validDate);
         return validDate.since(refDate, timeUnit);
       }
 

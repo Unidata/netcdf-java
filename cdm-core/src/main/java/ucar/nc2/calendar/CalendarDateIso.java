@@ -14,7 +14,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
 import java.util.Objects;
 
-/** A CalendarDate using java.time.OffsetDateTime. */
+/** A CalendarDate using java.time.OffsetDateTime (ISO8601). */
 @Immutable
 class CalendarDateIso implements CalendarDate {
   private final OffsetDateTime dateTime;
@@ -145,15 +145,15 @@ class CalendarDateIso implements CalendarDate {
   }
 
   @Override
-  public long since(CalendarDate base, CalendarPeriod.Field field) {
-    CalendarDateIso iso = (CalendarDateIso) base;
+  public long since(CalendarDate start, CalendarPeriod.Field field) {
+    CalendarDateIso iso = (CalendarDateIso) start;
     return iso.dateTime.until(this.dateTime, field.chronoUnit);
   }
 
   // LOOK what about period.value ?
   @Override
-  public long since(CalendarDate base, CalendarPeriod period) {
-    CalendarDateIso iso = (CalendarDateIso) base;
+  public long since(CalendarDate start, CalendarPeriod period) {
+    CalendarDateIso iso = (CalendarDateIso) start;
     return iso.dateTime.until(this.dateTime, period.getChronoUnit());
   }
 

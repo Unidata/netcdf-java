@@ -80,7 +80,8 @@ public class TimeHelper {
   }
 
   public long getOffsetInTimeUnits(CalendarDate start, CalendarDate end) {
-    return start.since(end, dateUnit.getCalendarPeriod());
+    // dateUnit.getCalendarPeriod().getOffset(start, end)
+    return end.since(start, dateUnit.getCalendarPeriod());
   }
 
   public CalendarDate makeDateInTimeUnits(CalendarDate start, double addTo) {
