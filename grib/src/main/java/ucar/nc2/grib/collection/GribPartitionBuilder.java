@@ -567,8 +567,8 @@ abstract class GribPartitionBuilder {
       indexBuilder.setGenProcessType(pc.genProcessType);
       indexBuilder.setBackProcessId(pc.backProcessId);
 
-      indexBuilder.setStartTime(pc.dateRange.getStart().getMillis());
-      indexBuilder.setEndTime(pc.dateRange.getEnd().getMillis());
+      indexBuilder.setStartTime(pc.dateRange.getStart().getMillisFromEpoch());
+      indexBuilder.setEndTime(pc.dateRange.getEnd().getMillisFromEpoch());
 
       indexBuilder.setMasterRuntime(writer.writeCoordProto(pc.masterRuntime));
 
@@ -781,7 +781,7 @@ abstract class GribPartitionBuilder {
     b.setLastModified(p.lastModified);
     b.setLength(p.fileSize);
     if (p.partitionDate != null)
-      b.setPartitionDate(p.partitionDate.getMillis()); // LOOK what about calendar ??
+      b.setPartitionDate(p.partitionDate.getMillisFromEpoch()); // LOOK what about calendar ??
 
     return b.build();
   }

@@ -146,8 +146,8 @@ public class CdmrfWriter {
   CdmrFeatureProto.CalendarDateRange.Builder encodeDateRange(CalendarDateRange dateRange) {
     CdmrFeatureProto.CalendarDateRange.Builder builder = CdmrFeatureProto.CalendarDateRange.newBuilder();
 
-    builder.setStart(dateRange.getStart().getMillis());
-    builder.setEnd(dateRange.getEnd().getMillis());
+    builder.setStart(dateRange.getStart().getMillisFromEpoch());
+    builder.setEnd(dateRange.getEnd().getMillisFromEpoch());
     Calendar cal = dateRange.getStart().getCalendar();
     builder.setCalendar(convertCalendar(cal));
     return builder;

@@ -215,8 +215,8 @@ class Grib1CollectionWriter extends GribCollectionWriter {
       indexBuilder.setMaster(0);
       indexBuilder.setGenProcessId(pds.getGenProcess());
 
-      indexBuilder.setStartTime(dateRange.getStart().getMillis());
-      indexBuilder.setEndTime(dateRange.getEnd().getMillis());
+      indexBuilder.setStartTime(dateRange.getStart().getMillisFromEpoch());
+      indexBuilder.setEndTime(dateRange.getEnd().getMillisFromEpoch());
 
       GribCollectionProto.GribCollection index = indexBuilder.build();
       byte[] b = index.toByteArray();

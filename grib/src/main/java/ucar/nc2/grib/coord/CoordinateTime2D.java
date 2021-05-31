@@ -169,6 +169,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     this.vals = (vals == null) ? null : Collections.unmodifiableList(vals);
   }
 
+  // LOOK do we need long?
   private int[] makeOffsets(List<Coordinate> orgTimes) {
     CalendarDate firstDate = runtime.getFirstDate();
     int[] offsets = new int[nruns];
@@ -181,6 +182,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     return offsets;
   }
 
+  // LOOK do we need long?
   private int[] makeOffsets(CalendarPeriod period) {
     CalendarDate firstDate = runtime.getFirstDate();
     int[] offsets = new int[nruns];
@@ -828,7 +830,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     TimeCoordIntvValue tinv;
 
     public Time2D(CalendarDate refDate, Integer time, TimeCoordIntvValue tinv) {
-      this.refDate = refDate.getMillis();
+      this.refDate = refDate.getMillisFromEpoch();
       this.time = time;
       this.tinv = tinv;
     }

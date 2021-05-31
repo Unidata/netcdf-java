@@ -30,7 +30,7 @@ class CalendarDateChrono extends CalendarDateIso implements CalendarDate, Compar
   }
 
   @Override
-  public long getMillis() {
+  public long getMillisFromEpoch() {
     return chronoLocalDateTime.toInstant().toEpochMilli();
   }
 

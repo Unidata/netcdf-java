@@ -49,7 +49,7 @@ public class CalendarDateRange {
   }
 
   public long getDurationInSecs() {
-    return (end.getMillis() - start.getMillis()) / 1000;
+    return (end.getMillisFromEpoch() - start.getMillisFromEpoch()) / 1000;
   }
 
   public CalendarDateRange extend(CalendarDateRange other) {

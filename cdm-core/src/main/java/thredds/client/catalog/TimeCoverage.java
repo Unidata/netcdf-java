@@ -142,8 +142,8 @@ public class TimeCoverage {
    */
   public TimeDuration getDuration() {
     if (isMoving && !useDuration) {
-      long min = start.getCalendarDate().getMillis();
-      long max = end.getCalendarDate().getMillis();
+      long min = start.getCalendarDate().getMillisFromEpoch();
+      long max = end.getCalendarDate().getMillisFromEpoch();
       double secs = .001 * (max - min);
       if (secs < 0) {
         secs = 0;
@@ -449,8 +449,8 @@ public class TimeCoverage {
 
     // assumes not moving
     private void recalcDuration() {
-      long min = start.getCalendarDate().getMillis();
-      long max = end.getCalendarDate().getMillis();
+      long min = start.getCalendarDate().getMillisFromEpoch();
+      long max = end.getCalendarDate().getMillisFromEpoch();
       double secs = .001 * (max - min);
       if (secs < 0)
         secs = 0;

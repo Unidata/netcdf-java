@@ -711,7 +711,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
 
       // identify the master index for this runtime
       CalendarDate runtime = coords.getRunTime();
-      int masterIdx = masterRuntime.getIndex(runtime.getMillis());
+      int masterIdx = masterRuntime.getIndex(runtime.getMillisFromEpoch());
       // LOOK ok to use Best like this (see other getDataRecord) ?
 
       if (masterIdx < 0) { // means that the runtie is not in the masterRuntime list

@@ -187,9 +187,9 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
             if (!stationId.equals(stationFeature.getStation().getName()))
               return null;
             CalendarDate date = extract.makeCalendarDate();
-            return new BufrStationPoint(stationFeature.getStation(), date.getMillis(), 0, munger.munge(sdata)); // LOOK
-                                                                                                                // obsTime,
-                                                                                                                // nomTime
+            return new BufrStationPoint(stationFeature.getStation(), date.getMillisFromEpoch(), 0, munger.munge(sdata)); // LOOK
+            // obsTime,
+            // nomTime
           }
         }
 
@@ -266,7 +266,7 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
               return null;
             CalendarDate date = extract.makeCalendarDate();
             countHere++;
-            return new BufrPoint(want, date.getMillis(), 0, munger.munge(sdata));
+            return new BufrPoint(want, date.getMillisFromEpoch(), 0, munger.munge(sdata));
           }
 
           @Override

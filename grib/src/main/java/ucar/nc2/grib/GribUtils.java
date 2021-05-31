@@ -62,13 +62,9 @@ public class GribUtils {
     }
   }
 
-  // LOOK temporary
+  // LOOK cant use Month, Year
   public static long getValueInMillisecs(CalendarPeriod period) {
     switch (period.getField()) {
-      case Year:
-        return 365L * 30 * 24 * 60 * 60 * 1000 * period.getValue();
-      case Month:
-        return 30L * 24 * 60 * 60 * 1000 * period.getValue();
       case Day:
         return 24L * 60 * 60 * 1000 * period.getValue();
       case Hour:
@@ -84,7 +80,7 @@ public class GribUtils {
     }
   }
 
-  // LOOK temporary
+  // LOOK should be int
   public static double getConvertFactor(CalendarPeriod from, CalendarPeriod to) {
     return (double) getValueInMillisecs(from) / getValueInMillisecs(to);
   }

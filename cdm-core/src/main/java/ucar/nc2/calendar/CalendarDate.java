@@ -4,6 +4,7 @@
  */
 package ucar.nc2.calendar;
 
+import com.google.common.annotations.VisibleForTesting;
 import ucar.nc2.calendar.chrono.LeapYearChronology;
 import ucar.nc2.calendar.chrono.LeapYearDate;
 import ucar.nc2.calendar.chrono.Uniform30DayDate;
@@ -30,13 +31,13 @@ import java.util.Optional;
 public interface CalendarDate extends Comparable<CalendarDate> {
   CalendarDate unixEpoch = new CalendarDateIso(OffsetDateTime.ofInstant(Instant.EPOCH, ZoneOffset.UTC));
 
-  /** Get a CalendarDate representing the present moment in ISO8601 UTC */
+  /** Create a CalendarDate representing the present moment in ISO8601 UTC */
   static CalendarDate present() {
     return new CalendarDateIso(OffsetDateTime.now());
   }
 
   /**
-   * Get a CalendarDate from an ISO date string, with extensions for udunit backward compatibility.
+   * Create a CalendarDate from an ISO date string, with extensions for udunit backward compatibility.
    *
    * @param calendarName get Calendar from Calendar.get(calendarName). Must be null, or a valid calendar name.
    * @param udunitString udunit ISO date string
@@ -66,7 +67,7 @@ public interface CalendarDate extends Comparable<CalendarDate> {
   }
 
   /**
-   * Get Calendar date from fields, using UTC
+   * Create Calendar date from fields, using UTC and ISO8601 calendar.
    *
    * @param year any integer
    * @param monthOfYear 1-12
@@ -81,13 +82,8 @@ public interface CalendarDate extends Comparable<CalendarDate> {
     return of(null, year, monthOfYear, dayOfMonth, hourOfDay, minuteOfHour, secondOfMinute, 0, null);
   }
 
-  /** Get Calendar date from Instant. */
-  static CalendarDate of(@Nullable Calendar cal, Instant instant) {
-    return of(instant.getLong(ChronoField.INSTANT_SECONDS) * 1000 + instant.getLong(ChronoField.MILLI_OF_SECOND));
-  }
-
   /**
-   * Get Calendar date from fields.
+   * Create Calendar date from fields.
    *
    * @param cal calendar to use, or null for default
    * @param year any integer
@@ -139,10 +135,22 @@ public interface CalendarDate extends Comparable<CalendarDate> {
     // throw new UnsupportedOperationException("Unsupported calendar = " + cal);
   }
 
-  static CalendarDate ofDoy(int year, int doy, int hourOfDay, int minuteOfHour, int secondOfMinute, int nanoOfSecond) {
+  /**
+   * Create Calendar date from dayOfYear and other fields, using UTC and ISO8601 calendar.
+   *
+   * @param year any integer
+   * @param dayOfYear 1-366
+   * @param hourOfDay 0-23
+   * @param minuteOfHour 0-59
+   * @param secondOfMinute 0-59
+   * @param nanoOfSecond from 0 to 999,999,999
+   * @return CalendarDate
+   */
+  static CalendarDate ofDoy(int year, int dayOfYear, int hourOfDay, int minuteOfHour, int secondOfMinute,
+      int nanoOfSecond) {
     OffsetDateTime dt =
         OffsetDateTime.of(year, 1, 1, hourOfDay, minuteOfHour, secondOfMinute, nanoOfSecond, ZoneOffset.UTC);
-    dt = dt.withDayOfYear(doy);
+    dt = dt.withDayOfYear(dayOfYear);
     return new CalendarDateIso(dt);
   }
 
@@ -171,17 +179,16 @@ public interface CalendarDate extends Comparable<CalendarDate> {
 
   ////////////////////////////////////////////////
 
-  /** The Calendar used by this CalendarDate. */
+  /** Get the Calendar used by this CalendarDate. */
   Calendar getCalendar();
 
   /** Get the milliseconds of the datetime instant from the Java epoch of 1970-01-01T00:00:00Z. */
-  long getMillis();
+  long getMillisFromEpoch();
 
+  /** Get the value of the given field, eg Year, Month, Day, Hour... */
   int getFieldValue(CalendarPeriod.Field fld);
 
-  ZoneOffset getZoneOffset();
-
-  /** Get the equivilent java.util.Date */
+  /** Get the equivilent java.util.Date. Must be in ISO calendar. */
   java.util.Date toDate();
 
   /** Get the year field for this chronology. */
@@ -219,9 +226,9 @@ public interface CalendarDate extends Comparable<CalendarDate> {
     return getFieldValue(CalendarPeriod.Field.Millisec);
   }
 
-  /** Get difference between two CalendarDates in millisecs. */
+  /** Get difference between two CalendarDates in millisecs. Must be same Calendar. */
   default long getDifferenceInMsecs(CalendarDate o) {
-    return getMillis() - o.getMillis();
+    return getMillisFromEpoch() - o.getMillisFromEpoch();
   }
 
   /**
@@ -235,17 +242,16 @@ public interface CalendarDate extends Comparable<CalendarDate> {
     switch (fld) {
       case Minute:
         return CalendarDate.of(getCalendar(), getYear(), getMonthOfYear(), getDayOfMonth(), getHourOfDay(),
-            getMinuteOfHour(), 0, 0, getZoneOffset());
+            getMinuteOfHour(), 0, 0, ZoneOffset.UTC);
       case Hour:
         return CalendarDate.of(getCalendar(), getYear(), getMonthOfYear(), getDayOfMonth(), getHourOfDay(), 0, 0, 0,
-            getZoneOffset());
+            ZoneOffset.UTC);
       case Day:
-        return CalendarDate.of(getCalendar(), getYear(), getMonthOfYear(), getDayOfMonth(), 0, 0, 0, 0,
-            getZoneOffset());
+        return CalendarDate.of(getCalendar(), getYear(), getMonthOfYear(), getDayOfMonth(), 0, 0, 0, 0, ZoneOffset.UTC);
       case Month:
-        return CalendarDate.of(getCalendar(), getYear(), getMonthOfYear(), 1, 0, 0, 0, 0, getZoneOffset());
+        return CalendarDate.of(getCalendar(), getYear(), getMonthOfYear(), 1, 0, 0, 0, 0, ZoneOffset.UTC);
       case Year:
-        return CalendarDate.of(getCalendar(), getYear(), 1, 1, 0, 0, 0, 0, getZoneOffset());
+        return CalendarDate.of(getCalendar(), getYear(), 1, 1, 0, 0, 0, 0, ZoneOffset.UTC);
     }
     return this;
   }
@@ -259,20 +265,36 @@ public interface CalendarDate extends Comparable<CalendarDate> {
 
   //////////////////////////////////////////////////////////
 
+  /** Add the given period to this CalendarDate, return a new one. */
   CalendarDate add(CalendarPeriod period);
 
-  CalendarDate add(long value, CalendarPeriod period);
+  /** Multiply the given period and add to this CalendarDate, return a new one. */
+  CalendarDate add(long multiply, CalendarPeriod period);
 
+  /** Add the given period (value and unit) to this CalendarDate, return a new one. */
   CalendarDate add(long value, CalendarPeriod.Field unit);
 
+  /** Return true if this CalendarDate is after the given one. Must be same Calendar. */
   boolean isAfter(CalendarDate o);
 
+  /** Return true if this CalendarDate is before the given one. Must be same Calendar. */
   boolean isBefore(CalendarDate o);
 
+  /** Return value of (this - start) in the given Field units. Must be same Calendar. */
   long since(CalendarDate start, CalendarPeriod.Field field);
 
+  /** Return value of (this - start) in the given CalendarPeriod units. Must be same Calendar. */
   long since(CalendarDate start, CalendarPeriod period);
 
+  ////////////////////////////////////////////////////////////////////////////////////
+  // experimental - not working yet
+
+  @VisibleForTesting
   Instant toInstant();
+
+  @VisibleForTesting
+  static CalendarDate ofInstant(@Nullable Calendar cal, Instant instant) {
+    return of(instant.getLong(ChronoField.INSTANT_SECONDS) * 1000 + instant.getLong(ChronoField.MILLI_OF_SECOND));
+  }
 
 }

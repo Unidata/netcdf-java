@@ -100,7 +100,7 @@ public class CollectionManagerCatalog extends CollectionManagerAbstract implemen
 
     @Override
     public long getLastModified() {
-      return lastModified == null ? -1 : lastModified.getMillis();
+      return lastModified == null ? -1 : lastModified.getMillisFromEpoch();
     }
 
     @Override

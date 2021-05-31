@@ -566,7 +566,7 @@ public class NestedTable {
         log.error("Cant parse date - not ISO formatted, = " + timeString);
         return 0.0;
       }
-      return dateO.get().getMillis();
+      return dateO.get().getMillisFromEpoch();
 
     } else {
       return cve.getCoordValue(tableData);

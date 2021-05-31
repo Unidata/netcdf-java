@@ -1105,8 +1105,7 @@ public class Grib2CollectionPanel extends JPanel {
 
     public double getIntvHours() {
       if (pds.isTimeInterval()) {
-        return cust.getForecastTimeIntervalSizeInHours(pds); // LOOK using an Hour here, but will need to make this
-                                                             // configurable
+        return cust.getForecastTimeIntervalSizeInHours(pds);
       }
       return -1;
     }

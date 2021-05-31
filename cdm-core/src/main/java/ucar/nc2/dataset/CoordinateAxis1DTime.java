@@ -262,8 +262,8 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
   protected void readValues() {
     // if DataType is not numeric, handle special
     if (!this.dataType.isNumeric()) {
-      long base = cdates.get(0).getMillis();
-      this.coords = cdates.stream().mapToDouble(cdate -> (double) (cdate.getMillis() - base)).toArray();
+      long base = cdates.get(0).getMillisFromEpoch();
+      this.coords = cdates.stream().mapToDouble(cdate -> (double) (cdate.getMillisFromEpoch() - base)).toArray();
       // make sure we don't try to read from the orgVar again
       this.wasRead = true;
     } else {

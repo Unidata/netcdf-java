@@ -347,7 +347,7 @@ public final class Grib1SectionProductDefinition {
 
   private String makeTimeCoord(Grib1ParamTime ptime) {
     CalendarPeriod period = GribUtils.getCalendarPeriod(getTimeUnit());
-    CalendarDateUnit unit = CalendarDateUnit.of(period.getField(), false, getReferenceDate()); // LOOK
+    CalendarDateUnit unit = CalendarDateUnit.of(period, false, getReferenceDate());
     int timeCoord;
     if (ptime.isInterval()) {
       int[] intv = ptime.getInterval();

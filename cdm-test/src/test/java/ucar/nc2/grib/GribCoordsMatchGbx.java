@@ -83,7 +83,7 @@ public class GribCoordsMatchGbx {
   }
 
   boolean nearlyEquals(CalendarDate date1, CalendarDate date2) {
-    return Math.abs(date1.getMillis() - date2.getMillis()) < 5000; // 5 secs
+    return Math.abs(date1.getMillisFromEpoch() - date2.getMillisFromEpoch()) < 5000; // 5 secs
   }
 
   ///////////////////////////////////////////////////////////

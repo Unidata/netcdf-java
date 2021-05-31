@@ -85,7 +85,7 @@ class GribCollectionWriter {
     b.setAxisType(convertAxisType(coord.getType()));
     b.setCode(coord.getCode());
     b.setUnit(coord.getTimeUnit().toString());
-    b.addMsecs(coord.getRefDate().getMillis());
+    b.addMsecs(coord.getRefDate().getMillisFromEpoch());
     for (Integer offset : coord.getOffsetSorted())
       b.addValues(offset);
 
@@ -102,7 +102,7 @@ class GribCollectionWriter {
     b.setAxisType(convertAxisType(coord.getType()));
     b.setCode(coord.getCode());
     b.setUnit(coord.getTimeUnit().toString());
-    b.addMsecs(coord.getRefDate().getMillis());
+    b.addMsecs(coord.getRefDate().getMillisFromEpoch());
 
     for (TimeCoordIntvValue tinv : coord.getTimeIntervals()) {
       b.addValues(tinv.getBounds1());

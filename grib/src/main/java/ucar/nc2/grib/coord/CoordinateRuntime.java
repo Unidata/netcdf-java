@@ -80,9 +80,10 @@ public class CoordinateRuntime implements Coordinate {
    * Get offsets from firstDate, in units of timeUnit
    * 
    * @return for each runtime, a list of values from firstdate
+   *         LOOK Double
    */
   public List<Double> getOffsetsInTimeUnits() {
-    double start = firstDate.getMillis();
+    double start = firstDate.getMillisFromEpoch();
 
     List<Double> result = new ArrayList<>(runtimes.length);
     for (int idx = 0; idx < runtimes.length; idx++) {
@@ -95,6 +96,7 @@ public class CoordinateRuntime implements Coordinate {
     return result;
   }
 
+  // LOOK Double
   public double getOffsetInTimeUnits(CalendarDate start) {
     return getFirstDate().since(start, timePeriod);
     // return timeUnit.getOffset(start, getFirstDate());
@@ -162,7 +164,7 @@ public class CoordinateRuntime implements Coordinate {
     long want;
 
     if (val instanceof CalendarDate)
-      want = ((CalendarDate) val).getMillis();
+      want = ((CalendarDate) val).getMillisFromEpoch();
     else if (val instanceof Number)
       want = ((Number) val).longValue();
     else
@@ -246,7 +248,7 @@ public class CoordinateRuntime implements Coordinate {
 
     @Override
     public Object extract(Grib2Record gr) {
-      return gr.getReferenceDate().getMillis();
+      return gr.getReferenceDate().getMillisFromEpoch();
     }
 
     @Override
@@ -268,7 +270,7 @@ public class CoordinateRuntime implements Coordinate {
 
     @Override
     public Object extract(Grib1Record gr) {
-      return gr.getReferenceDate().getMillis();
+      return gr.getReferenceDate().getMillisFromEpoch();
     }
 
     @Override

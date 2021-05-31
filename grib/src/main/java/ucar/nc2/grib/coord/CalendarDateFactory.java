@@ -22,15 +22,15 @@ public class CalendarDateFactory {
     map = new HashMap<>(master.getSize() * 2);
     for (Object valo : master.getValues()) {
       CalendarDate cd = CalendarDate.of((Long) valo);
-      map.put(cd.getMillis(), cd);
+      map.put(cd.getMillisFromEpoch(), cd);
     }
   }
 
   public CalendarDate get(CalendarDate cd) {
-    CalendarDate cdc = map.get(cd.getMillis());
+    CalendarDate cdc = map.get(cd.getMillisFromEpoch());
     if (cdc != null)
       return cdc;
-    map.put(cd.getMillis(), cd);
+    map.put(cd.getMillisFromEpoch(), cd);
     return cd;
   }
 }

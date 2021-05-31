@@ -1,9 +1,71 @@
+# Calendar Date handling in version 7
+
+As of version 7, julian and mixed Gregorian calendars are no longer supported. For CF encoded datasets, julian, gregorian, and 
+proleptic_gregorian are all mapped to the ISO8601 calendar. The noleap, all_leap, and uniform30day are each 
+implemented and we believe them to work correctly.
+
+The decision to stop supporting julian and mixed Gregorian calendars is based on balancing the long term maintainablilty 
+of the netcdf-java library with the actual needs of these calendars in real world scientific datasets.
+
+If you have a real world dataset that is adversely affected by this, please contact us and we will evaluate.
+
+### Background
+
+1. The choice of the mixed Gregorian calendar by CF was mostly motivated by the fact that the udunit library used it.
+While this was a reasonable choice at the time it was made, subsequent standardization of the ISO8601 standard makes it 
+a burden.
+
+2. A ISO8601 library is available in all major programming languages. Julian and mixed Gregorian calendars are not
+available in the standara Java libraries.
+
+3. The julian and mixed Gregorian calendars are "real world historical calendars", that is, they are used in some contexts
+to express historical dates. These differ from ISO before some cutoff. Udunits uses a cutoff date in 1582, when the gregorian
+calendar was first introduced. It was adopted at different times in different places. For example, The British started 
+using it in 1752. So there is is at least this cutoff date that needs to be specified to be correct.
+
+4. We believe that most CF datasets that are depending on mixed gregorian datasets are doing so inadvertantly. 
+In the case where they are modeling climate before 1582, they will be much better served using a non-standard calendar,
+or of using the continuous ISO calendar. That is to say, they have no need to skip 10 days in 1582 to match one arbitrary 
+encoding of historical dates.
+
+5. We beleive that most if not all users of netcdf and cdm do not need this feature and are better served using ISO dates. 
+The CF/udunits specification for dates leaves out the cutoff date. There may be other subtleties of historical encodings
+best left to specialists. In short, its better for a library to not do something, than to do it wrong.
+
+6. If you have a need to store historical encoded dates, we suggest that you:
+  1. Code the historical dates as strings, and process these dates yourself. 
+  2. Also perhaps map your historical dates to ISO in some way that meets your needs and allows you to 
+  use the standard ISO libaries. 
+
+### Java
+
+1. The java.time library does not support julian and mixed Gregorian calendars.
+
+2. The julian calendar is supported by threeten-extra. A variant of the mixed Gregorian calendar (BritishCutoverChronology) is supported.
+
+````
+ * The British calendar system follows the rules of the Julian calendar
+ * until 1752 and the rules of the Gregorian (ISO) calendar since then.
+ * The Julian differs from the Gregorian only in terms of the leap year rule.
+ * <p>
+ * The Julian and Gregorian calendar systems are linked to Rome and the Vatican
+ * with the Julian preceding the Gregorian. The Gregorian was introduced to
+ * handle the drift of the seasons through the year due to the inaccurate
+ * Julian leap year rules. When first introduced by the Vatican in 1582,
+ * the cutover resulted in a "gap" of 10 days.
+ * <p>
+ * While the calendar was introduced in 1582, it was not adopted everywhere.
+ * Britain did not adopt it until the 1752, when Wednesday 2nd September 1752
+ * was followed by Thursday 14th September 1752.
+````
+
+3. The difficulty of supporting non-standard calendars. 
 
 The designers of the java.time API strongly recommend against user-facing alternate Chronologies.
 
-From [ChronoLocalDate javadoc](https://docs.oracle.com/javase/8/docs/api/java/time/chrono/ChronoLocalDate.html):
+These are snippets from [ChronoLocalDate javadoc](https://docs.oracle.com/javase/8/docs/api/java/time/chrono/ChronoLocalDate.html):
 
-### When to use this interface
+#### When to use this interface
 The design of the API encourages the use of LocalDate rather than this interface, even in the case where the application needs to deal with multiple calendar systems.
 This concept can seem surprising at first, as the natural way to globalize an application might initially appear to be to abstract the calendar system. However, as explored below, abstracting the calendar system is usually the wrong approach, resulting in logic errors and hard to find bugs. As such, it should be considered an application-wide architectural decision to choose to use this interface as opposed to LocalDate.
 
@@ -38,21 +100,3 @@ Code that assumes that because the year of date1 is greater than the year of dat
 Code that treats month-of-year one and day-of-month one as the start of the year is invalid. Not all calendar systems start the year when the month value is one.
 
 In general, manipulating a date, and even querying a date, is wide open to bugs when the calendar system is unknown at development time. This is why it is essential that code using this interface is subjected to additional code reviews. It is also why an architectural decision to avoid this interface type is usually the correct one.
-
-### Using LocalDate instead
-The primary alternative to using this interface throughout your application is as follows.
-Declare all method signatures referring to dates in terms of LocalDate.
-Either store the chronology (calendar system) in the user profile or lookup the chronology from the user locale
-Convert the ISO LocalDate to and from the user's preferred calendar system during printing and parsing
-This approach treats the problem of globalized calendar systems as a localization issue and confines it to the UI layer. This approach is in keeping with other localization issues in the java platform.
-As discussed above, performing calculations on a date where the rules of the calendar system are pluggable requires skill and is not recommended. Fortunately, the need to perform calculations on a date in an arbitrary calendar system is extremely rare. For example, it is highly unlikely that the business rules of a library book rental scheme will allow rentals to be for one month, where meaning of the month is dependent on the user's preferred calendar system.
-
-A key use case for calculations on a date in an arbitrary calendar system is producing a month-by-month calendar for display and user interaction. Again, this is a UI issue, and use of this interface solely within a few methods of the UI layer may be justified.
-
-In any other part of the system, where a date must be manipulated in a calendar system other than ISO, the use case will generally specify the calendar system to use. For example, an application may need to calculate the next Islamic or Hebrew holiday which may require manipulating the date. This kind of use case can be handled as follows:
-
-start from the ISO LocalDate being passed to the method
-convert the date to the alternate calendar system, which for this use case is known rather than arbitrary
-perform the calculation
-convert back to LocalDate
-Developers writing low-level frameworks or libraries should also avoid this interface. Instead, one of the two general purpose access interfaces should be used. Use TemporalAccessor if read-only access is required, or use Temporal if read-write access is required.

@@ -74,8 +74,8 @@ public class TestCalendarDateUnit {
 
   @Test
   public void testCalendarUnit() {
-    testCalendarUnit("days", CalendarPeriod.Field.Day);
     testCalendarUnit("hours", CalendarPeriod.Field.Hour);
+    testCalendarUnit("days", CalendarPeriod.Field.Day);
     testCalendarUnit("months", CalendarPeriod.Field.Month);
     testCalendarUnit("years", CalendarPeriod.Field.Year);
   }
@@ -108,7 +108,6 @@ public class TestCalendarDateUnit {
       assertThat(cd).isEqualTo(expected);
       long offset = cdu.makeOffsetFromRefDate(cd);
       System.out.printf(" (%d) %s%n", offset, offset == i * 10 ? "" : "***");
-
       // assertThat(cdu.makeOffsetFromRefDate(cd)).isEqualTo(i * 10);
     }
     System.out.printf("%n");

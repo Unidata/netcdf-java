@@ -596,6 +596,7 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter 
       return null;
     }
     CalendarPeriod havePeriod = Grib2Utils.getCalendarPeriod(convertTimeUnit(intvu.timeUnitIntv));
+    // LOOK needs to be an int
     double fac2 = intvu.timeRange * GribUtils.getConvertFactor(havePeriod, wantPeriod);
     CalendarPeriod period = wantPeriod.withValue((int) fac2 * wantPeriod.getValue()); // LOOK needs to be an int
 
@@ -640,6 +641,7 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter 
       return null;
     }
     CalendarPeriod havePeriod = Grib2Utils.getCalendarPeriod(convertTimeUnit(intvu.timeUnitIntv));
+    // LOOK needs to be an int
     double fac2 = intvu.timeRange * GribUtils.getConvertFactor(havePeriod, wantPeriod); // wantPeriod.getConvertFactor(havePeriod);
     CalendarPeriod range = wantPeriod.withValue((int) fac2 * wantPeriod.getValue()); // LOOK needs to be an int
 
@@ -663,11 +665,13 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter 
   /**
    * Get interval size in units of hours.
    * Only use in GribVariable to decide on variable identity when intvMerge = false.
+   * Move to GribVariable?
    * 
    * @param pds must be a Grib2Pds.PdsInterval
    * @return interval size in units of hours
    *         LOOK generalize this to return a size and unit?
    */
+  // LOOK can this be an int?
   public double getForecastTimeIntervalSizeInHours(Grib2Pds pds) {
     Grib2Pds.PdsInterval pdsIntv = (Grib2Pds.PdsInterval) pds;
 
@@ -682,6 +686,7 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter 
       return intvu.timeRange;
 
     // LOOK leave this until we fix getConvertFactor()
+    // LOOK needs to be an int
     double fac;
     if (timeUnitPeriod.getField() == CalendarPeriod.Field.Month) {
       fac = 30.0 * 24.0; // nominal hours in a month

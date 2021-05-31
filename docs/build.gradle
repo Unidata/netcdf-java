@@ -114,6 +114,7 @@ def publicApiDef = [
         'thredds/client/catalog/builder/*.java',
         'ucar/array/*.java',
         'ucar/nc2/*.java',
+        'ucar/nc2/calendar/*.java',
         'ucar/nc2/constants/*.java',
         'ucar/nc2/dataset/*.java',
         'ucar/nc2/dataset/spi/*.java',

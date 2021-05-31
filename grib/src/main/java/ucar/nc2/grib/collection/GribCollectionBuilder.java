@@ -199,7 +199,7 @@ abstract class GribCollectionBuilder {
     // gather into collections with a single runtime
     Map<Long, List<Group>> runGroups = new HashMap<>();
     for (Group g : groups) {
-      List<Group> runGroup = runGroups.computeIfAbsent(g.getRuntime().getMillis(), k -> new ArrayList<>());
+      List<Group> runGroup = runGroups.computeIfAbsent(g.getRuntime().getMillisFromEpoch(), k -> new ArrayList<>());
       runGroup.add(g);
     }
 
@@ -217,7 +217,7 @@ abstract class GribCollectionBuilder {
 
       // create the master runtimes, consisting of the single runtime
       List<Long> runtimes = new ArrayList<>(1);
-      runtimes.add(g.getRuntime().getMillis());
+      runtimes.add(g.getRuntime().getMillisFromEpoch());
       CoordinateRuntime masterRuntimes = new CoordinateRuntime(runtimes, null);
 
       CalendarDateRange calendarDateRangeAll = null;

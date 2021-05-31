@@ -103,7 +103,7 @@ public class CalendarDateUnit {
   /**
    * Find the offset of date in this unit (secs, days, etc) from the baseDateTime.
    * Inverse of makeCalendarDate.
-   * LOOK not working when period is month.
+   * LOOK not working when period is month, see TestCalendarDateUnit
    */
   public long makeOffsetFromRefDate(CalendarDate date) {
     if (date.equals(baseDate)) {

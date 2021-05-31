@@ -35,7 +35,7 @@ public class TestCoordinate implements Coordinate {
       case runtime:
         List<Long> cd = new ArrayList<>(nvals);
         for (int i = 0; i < nvals; i++)
-          cd.add(CalendarDate.of(1953, 11, i + 1, 9, i + 1, 0).getMillis());
+          cd.add(CalendarDate.of(1953, 11, i + 1, 9, i + 1, 0).getMillisFromEpoch());
         return new CoordinateRuntime(cd, period);
       case time:
         List<Integer> vals = new ArrayList<>(nvals);

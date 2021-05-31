@@ -5,7 +5,6 @@
 package ucar.nc2.calendar;
 
 import org.junit.Test;
-import ucar.nc2.grib.coord.TimeCoordIntvValue;
 
 import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth8.assertThat;
@@ -60,7 +59,7 @@ public class TestCalendarDate {
 
     assertThat(first).isEqualTo(doy);
     assertThat(first.hashCode()).isEqualTo(doy.hashCode());
-    assertThat(first.getMillis()).isEqualTo(doy.getMillis());
+    assertThat(first.getMillisFromEpoch()).isEqualTo(doy.getMillisFromEpoch());
   }
 
   @Test
@@ -72,7 +71,7 @@ public class TestCalendarDate {
 
     assertThat(zero).isEqualTo(zeroEpoch);
     assertThat(zero.hashCode()).isEqualTo(zeroEpoch.hashCode());
-    assertThat(zero.getMillis()).isEqualTo(zeroEpoch.getMillis());
+    assertThat(zero.getMillisFromEpoch()).isEqualTo(zeroEpoch.getMillisFromEpoch());
   }
 
   @Test

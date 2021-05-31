@@ -254,7 +254,7 @@ public class BufrConfig {
             if (Math.abs(date.getDifferenceInMsecs(today)) > 1000L * 3600 * 24 * 100) {
               extract.makeCalendarDate();
             }
-            long msecs = date.getMillis();
+            long msecs = date.getMillisFromEpoch();
             if (this.start > msecs) {
               this.start = msecs;
             }

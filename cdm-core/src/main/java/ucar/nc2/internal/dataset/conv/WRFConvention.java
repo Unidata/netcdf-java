@@ -660,7 +660,7 @@ public class WRFConvention extends CoordSystemBuilder {
         }
 
         if (cd != null) {
-          values.set(count++, (double) cd.getMillis() / 1000);
+          values.set(count++, (double) cd.getMillisFromEpoch() / 1000);
         } else {
           parseInfo.format("ERROR: cant parse Time string = <%s>%n", dateS);
 
@@ -669,7 +669,7 @@ public class WRFConvention extends CoordSystemBuilder {
           if ((nt == 1) && (null != startAtt)) {
             try {
               cd = CalendarDate.fromUdunitIsoDate(null, startAtt).orElseThrow();
-              values.set(0, (double) cd.getMillis() / 1000);
+              values.set(0, (double) cd.getMillisFromEpoch() / 1000);
             } catch (Exception e2) {
               parseInfo.format("ERROR: cant parse global attribute START_DATE = <%s> err=%s%n", startAtt,
                   e2.getMessage());
@@ -683,7 +683,7 @@ public class WRFConvention extends CoordSystemBuilder {
         String dateS = (String) iter.next();
         try {
           CalendarDate cd = CalendarDate.fromUdunitIsoDate(null, dateS).orElseThrow();
-          values.set(count++, (double) cd.getMillis() / 1000);
+          values.set(count++, (double) cd.getMillisFromEpoch() / 1000);
         } catch (IllegalArgumentException e) {
           parseInfo.format("ERROR: cant parse Time string = %s%n", dateS);
         }

@@ -9,7 +9,6 @@ import com.google.common.base.Preconditions;
 import javax.annotation.concurrent.Immutable;
 import java.time.Instant;
 import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
 import java.util.Objects;
@@ -32,14 +31,8 @@ class CalendarDateIso implements CalendarDate {
     return Calendar.proleptic_gregorian;
   }
 
-  /**
-   * Gets the milliseconds of the datetime instant from the Java epoch
-   * of 1970-01-01T00:00:00Z. LOOK
-   *
-   * @return the number of milliseconds since 1970-01-01T00:00:00Z
-   */
   @Override
-  public long getMillis() {
+  public long getMillisFromEpoch() {
     return dateTime.toInstant().toEpochMilli();
   }
 
@@ -108,18 +101,13 @@ class CalendarDateIso implements CalendarDate {
   }
 
   @Override
-  public ZoneOffset getZoneOffset() {
-    return ZoneOffset.UTC;
-  }
-
-  @Override
   public CalendarDate add(CalendarPeriod period) {
     return add(period.getValue(), period.getField());
   }
 
   @Override
-  public CalendarDate add(long value, CalendarPeriod period) {
-    return add(value * period.getValue(), period.getField());
+  public CalendarDate add(long multiply, CalendarPeriod period) {
+    return add(multiply * period.getValue(), period.getField());
   }
 
   // LOOK why does OffsetDateTime also have minus() ?
@@ -157,13 +145,12 @@ class CalendarDateIso implements CalendarDate {
     return iso.dateTime.until(this.dateTime, period.getChronoUnit());
   }
 
-  /** Get the equivilent java.util.Date */
   @Override
   public java.util.Date toDate() {
-    return new java.util.Date(getMillis());
+    return new java.util.Date(getMillisFromEpoch());
   }
 
-  //// visible for testing
+  ////// visible for testing
 
   OffsetDateTime dateTime() {
     return dateTime;
