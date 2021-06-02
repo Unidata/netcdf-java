@@ -63,7 +63,6 @@ public class GridDatasetsTutorial {
 
     }
     public static void readingData(GridSubset subsetAsGridSubset, Grid yourGrid) throws java.io.IOException, InvalidRangeException {
-        // read a specified subset of data, return result as a Georeferenced Array
         GridReferencedArray data = yourGrid.readData( subsetAsGridSubset);
     }
     public static void CallMakeSubset(Map<String, String> stringMap) throws java.io.IOException {
