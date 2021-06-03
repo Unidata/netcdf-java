@@ -1,22 +1,10 @@
 package tests.featuretypes;
-
-import examples.cdmdatasets.ReadingCdmTutorial;
 import examples.featuretypes.GridDatasetsTutorial;
 import org.junit.Assert;
 import org.junit.Test;
-import ucar.array.Array;
-import ucar.array.ArrayType;
 import ucar.array.InvalidRangeException;
-import ucar.nc2.constants.FeatureType;
-import ucar.nc2.ft.NoFactoryFoundException;
-import ucar.nc2.grid.Grid;
-import ucar.nc2.util.CancelTask;
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
-
-import static com.google.common.truth.Truth.assertThat;
-
 public class TestGridDatasetsTutorial {
 
     @Test
