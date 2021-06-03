@@ -2,7 +2,6 @@ package tests.featuretypes;
 
 import examples.cdmdatasets.ReadingCdmTutorial;
 import examples.featuretypes.GridDatasetsTutorial;
-import examples.runtime.RunTimeLoadingTutorial;
 import org.junit.Assert;
 import org.junit.Test;
 import ucar.array.Array;
