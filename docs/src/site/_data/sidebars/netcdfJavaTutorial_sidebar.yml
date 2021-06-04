@@ -47,7 +47,7 @@ entries:
       output: web, pdf
 
     - title: 5.x Changes
-      url: /upgrade_to_50.html
+      url: /upgrade.html
       output: web, pdf
 
   - title: Working with CDM datasets

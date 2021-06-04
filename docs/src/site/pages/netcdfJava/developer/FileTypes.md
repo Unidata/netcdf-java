@@ -39,7 +39,7 @@ To register your format/IOServiceProvider, or to send corrections and additions 
 | McIDASArea| McIDAS area file | `cdm-mcidas` | <http://www.ssec.wisc.edu/mcidas/doc/misc_doc/area2.html> |
 | McIDASGrid | McIDAS grid file | `cdm-mcidas` | <http://www.ssec.wisc.edu/mcidas/doc/prog_man/2006>  <http://www.ssec.wisc.edu/mcidas/doc/prog_man/2006/formats-20.html#22077> |
 | netCDF | NetCDF classic format | `cdm-core` | <https://www.unidata.ucar.edu/software/netcdf/index.html> |
-| netCDF-4 | NetCDF-4 format on HDF-5 | `netcdf4` | <https://www.unidata.ucar.edu/software/netcdf/index.html> |
+| netCDF-4 | NetCDF-4 format on HDF-5 | `cdm-core` | <https://www.unidata.ucar.edu/software/netcdf/index.html> |
 | NEXRAD-2 | NEXRAD Level-II Base Data | `cdm-radial` | <http://www.ncdc.noaa.gov/oa/radar/radarresources.html> <http://www.tsc.com/SETS/_3TDWR.htm> |
 | NEXRAD-3 | NEXRAD Level-III Products | `cdm-radial` | <http://www.ncdc.noaa.gov/oa/radar/radarresources.html> |
 | NLDN | National Lightning Detection Network | `cdm-misc` | <http://www.vaisala.com/weather/products/aboutnldn.html> |
