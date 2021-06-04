@@ -945,7 +945,7 @@ public class CdmIndexPanel extends JPanel {
       if (coord instanceof CoordinateRuntime) {
         CoordinateRuntime runtime = (CoordinateRuntime) coord;
         List<Double> offsets = runtime.getOffsetsInTimeUnits();
-        double offsetFromMaster = runtime.getOffsetInTimeUnits(gc.getMasterFirstDate());
+        long offsetFromMaster = runtime.getOffsetFrom(gc.getMasterFirstDate());
 
         int n = offsets.size();
         start = offsets.get(0) + offsetFromMaster;

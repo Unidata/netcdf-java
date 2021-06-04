@@ -523,13 +523,11 @@ public class CF1Convention extends CSMConvention {
       }
     }
 
-    try {
-      String units = vb.getUnits();
-      CalendarDateUnit.fromUdunitString(null, units);
-      // parsed successfully, what could go wrong?
+    // Check time units
+    String units = vb.getUnits();
+    // parsed successfully, what could go wrong?
+    if (CalendarDateUnit.fromUdunitString(null, units).isPresent()) {
       return AxisType.Time;
-    } catch (Throwable t) {
-      // ignore
     }
 
     // dunno

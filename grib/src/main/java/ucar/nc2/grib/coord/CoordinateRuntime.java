@@ -26,7 +26,7 @@ import java.util.*;
  */
 @Immutable
 public class CoordinateRuntime implements Coordinate {
-  private final long[] runtimes;
+  private final long[] runtimes; // msecs since epoch, using ISO8601 UTC.
   private final CalendarDate firstDate;
   final CalendarPeriod timePeriod;
   private final CalendarDateUnit calendarDateUnit;
@@ -96,9 +96,18 @@ public class CoordinateRuntime implements Coordinate {
     return result;
   }
 
-  // LOOK Double
-  public double getOffsetInTimeUnits(CalendarDate start) {
-    return getFirstDate().since(start, timePeriod);
+  public List<Long> getRuntimeOffsetsInTimeUnits() {
+    List<Long> result = new ArrayList<>(runtimes.length);
+    for (int idx = 0; idx < runtimes.length; idx++) {
+      CalendarDate runtime = getRuntimeDate(idx);
+      result.add(runtime.since(firstDate, timePeriod));
+    }
+    return result;
+  }
+
+  // Get the offset of the runtime dates from the given one
+  public long getOffsetFrom(CalendarDate start) {
+    return firstDate.since(start, timePeriod);
     // return timeUnit.getOffset(start, getFirstDate());
   }
 

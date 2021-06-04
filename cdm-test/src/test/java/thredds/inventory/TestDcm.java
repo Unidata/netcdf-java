@@ -52,11 +52,10 @@ import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
 import java.util.List;
 
+import static com.google.common.truth.Truth.assertThat;
+
 /**
  * Test CollectionManager implementations
- *
- * @author caron
- * @since 6/20/11
  */
 @Category(NeedsCdmUnitTest.class)
 public class TestDcm {
@@ -70,15 +69,15 @@ public class TestDcm {
         TestDir.cdmUnitTestDir + "agg/narr/narr-a_221_#yyyyMMdd_HHmm#.*grb$", null, f);
     dcm.scan(true);
     List<MFile> fileList = ImmutableList.copyOf(dcm.getFilesSorted());
-    assert fileList.size() == 3 : dcm;
+    assertThat(fileList.size()).isEqualTo(3);
 
     // check date extractor
     int count = 0;
-    String[] result = new String[] {"2000-01-18T12:00:00", "2000-01-19T00:00:00", "2000-01-20T12:00:00"};
+    String[] result = new String[] {"2000-01-18T12:00", "2000-01-19T00:00", "2000-01-20T12:00"};
     for (MFile mfile : dcm.getFilesSorted()) {
       CalendarDate de = dcm.extractDate(mfile);
       System.out.printf("  %s == %s%n", mfile.getPath(), de);
-      assert de.toString().startsWith(result[count]);
+      assertThat(de.toString()).startsWith(result[count]);
       count++;
     }
   }
@@ -91,14 +90,14 @@ public class TestDcm {
         MFileCollectionManager.open("testScanOlderThan", TestDir.cdmUnitTestDir + "agg/updating/.*nc$", null, f);
     dcm.scan(true);
     List<MFile> fileList = ImmutableList.copyOf(dcm.getFilesSorted());
-    assert fileList.size() == 3 : dcm;
+    assertThat(fileList.size()).isEqualTo(3);
 
-    assert touch(TestDir.cdmUnitTestDir + "agg/updating/extra.nc");
+    assertThat(touch(TestDir.cdmUnitTestDir + "agg/updating/extra.nc")).isTrue();
 
     dcm = MFileCollectionManager.open("testScanOlderThan", TestDir.cdmUnitTestDir + "agg/updating/.*nc$", "10 sec", f);
     dcm.scan(true);
     fileList = ImmutableList.copyOf(dcm.getFilesSorted());
-    assert fileList.size() == 2 : dcm;
+    assertThat(fileList.size()).isEqualTo(2);
   }
 
   @Test
@@ -115,14 +114,14 @@ public class TestDcm {
     FeatureCollectionConfig config = new FeatureCollectionConfig("testScanFromConfig", "path",
         FeatureCollectionType.FMRC, TestDir.cdmUnitTestDir + "agg/updating/.*nc$", null, null, "10 sec", null, null);
 
-    assert touch(TestDir.cdmUnitTestDir + "agg/updating/extra.nc");
+    assertThat(touch(TestDir.cdmUnitTestDir + "agg/updating/extra.nc")).isTrue();
 
     // count scanned files
     Formatter f = new Formatter(System.out);
     MFileCollectionManager dcm = new MFileCollectionManager(config, f, null);
     dcm.scan(true);
     List<MFile> fileList = ImmutableList.copyOf(dcm.getFilesSorted());
-    assert fileList.size() == 2 : dcm;
+    assertThat(fileList.size()).isEqualTo(2);
   }
 
   @Test
@@ -140,7 +139,7 @@ public class TestDcm {
     CollectionSpecParser specp = new CollectionSpecParser(config.spec, errlog);
 
     String fileToTouch = specp.getRootDir() + "/NDFD_CONUS_5km_20131213_1200.grib2";
-    assert touch(fileToTouch);
+    assertThat(touch(fileToTouch)).isTrue();
 
     // count scanned files
     // String topCollectionName, String topDirS, String olderThan, org.slf4j.Logger logger
@@ -151,13 +150,13 @@ public class TestDcm {
     List<String> fileList = dcm.getFilenames();
     for (String name : fileList)
       System.out.printf("%s%n", name);
-    assert fileList.size() == 3 : fileList.size() + " !=  3 in " + specp.getRootDir();
+    assertThat(fileList.size()).isEqualTo(3);
   }
 
 
   boolean touch(String who) {
     File file = new File(who);
-    assert file.exists();
+    assertThat(file.exists()).isTrue();
     boolean ok = file.setLastModified(System.currentTimeMillis()); // touch
     if (!ok)
       System.out.printf("**Cant touch %s%n", who);

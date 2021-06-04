@@ -549,7 +549,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
   private CoverageCoordAxis1D makeRuntimeCoord(CoordinateRuntime runtime) {
     String units = runtime.getPeriodName() + " since " + gribCollection.getMasterFirstDate();
 
-    List<Double> offsets = runtime.getOffsetsInTimeUnits();
+    List<Long> offsets = runtime.getRuntimeOffsetsInTimeUnits();
     int n = offsets.size();
 
     // CoordinateRuntime master = gribCollection.getMasterRuntime();
@@ -559,8 +559,9 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
 
     double[] values = new double[n];
     int count = 0;
-    for (Double offset : runtime.getOffsetsInTimeUnits())
+    for (long offset : offsets) {
       values[count++] = offset;
+    }
 
     AttributeContainerMutable atts = new AttributeContainerMutable(runtime.getName());
     atts.addAttribute(new Attribute(CDM.UNITS, units));

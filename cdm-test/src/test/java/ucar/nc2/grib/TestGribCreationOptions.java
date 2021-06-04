@@ -18,12 +18,6 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.lang.invoke.MethodHandles;
 
-/**
- * Describe
- *
- * @author caron
- * @since 3/11/2015
- */
 @Category(NeedsCdmUnitTest.class)
 public class TestGribCreationOptions {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());

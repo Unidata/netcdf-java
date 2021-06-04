@@ -37,8 +37,6 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 /**
  * Test specific files for CoordSys Conventions
- *
- * @author caron
  */
 @Category(NeedsCdmUnitTest.class)
 public class TestConventions {
@@ -46,8 +44,8 @@ public class TestConventions {
 
   @Test
   public void testProblem() throws IOException {
-    String problem = TestDir.cdmUnitTestDir + "conventions/nuwg/03061219_ruc.nc";
-    System.out.printf("DtCoverageCSBuilder.classify %s%n", problem);
+    String problem = TestDir.cdmUnitTestDir + "conventions/cf/cf1_rap.nc";
+    System.out.printf("FeatureDatasetFactoryManager.open %s%n", problem);
     try (FeatureDataset fd = FeatureDatasetFactoryManager.open(FeatureType.GRID, problem, null, new Formatter())) {
       assertThat(fd).isNotNull();
       assertThat(fd.getFeatureType().isCoverageFeatureType()).isTrue();
@@ -67,22 +65,44 @@ public class TestConventions {
   }
 
   @Test
-  public void testCOARDSdefaultCalendar() throws IOException {
+  // double time(time=3989);
+  // :units = "hours since 1-1-1 00:00:0.0"; // string
+  public void testCOARDSCalendarInVer5() throws IOException {
     try (GridDataset ds = GridDataset.open(TestDir.cdmUnitTestDir + "conventions/coards/olr.day.mean.nc")) {
       GeoGrid grid = ds.findGridByName("olr");
-      assert grid != null;
+      assertThat(grid).isNotNull();
       GridCoordSystem gcs = grid.getCoordinateSystem();
       CoordinateAxis1DTime time = gcs.getTimeAxis1D();
-      assert time != null;
+      assertThat(time).isNotNull();
 
       CalendarDate first = time.getCalendarDate(0);
       CalendarDate cd =
           CalendarDate.fromUdunitIsoDate(Calendar.gregorian.toString(), "2002-01-01T00:00:00Z").orElseThrow();
-      assert first.equals(cd) : first + " != " + cd;
+      assertThat(first).isNotEqualTo(cd);
       CalendarDate last = time.getCalendarDate((int) time.getSize() - 1);
       CalendarDate cd2 =
           CalendarDate.fromUdunitIsoDate(Calendar.gregorian.toString(), "2012-12-02T00:00:00Z").orElseThrow();
-      assert last.equals(cd2) : last + " != " + cd2;
+      assertThat(last).isNotEqualTo(cd2);
+    }
+  }
+
+  @Test
+  public void testCOARDSCalendarInVer7() throws IOException {
+    try (GridDataset ds = GridDataset.open(TestDir.cdmUnitTestDir + "conventions/coards/olr.day.mean.nc")) {
+      GeoGrid grid = ds.findGridByName("olr");
+      assertThat(grid).isNotNull();
+      GridCoordSystem gcs = grid.getCoordinateSystem();
+      CoordinateAxis1DTime time = gcs.getTimeAxis1D();
+      assertThat(time).isNotNull();
+
+      CalendarDate first = time.getCalendarDate(0);
+      CalendarDate cd =
+          CalendarDate.fromUdunitIsoDate(Calendar.gregorian.toString(), "2002-01-03T00:00:00Z").orElseThrow();
+      assertThat(first).isEqualTo(cd);
+      CalendarDate last = time.getCalendarDate((int) time.getSize() - 1);
+      CalendarDate cd2 =
+          CalendarDate.fromUdunitIsoDate(Calendar.gregorian.toString(), "2012-12-04T00:00:00Z").orElseThrow();
+      assertThat(last).isEqualTo(cd2);
     }
   }
 

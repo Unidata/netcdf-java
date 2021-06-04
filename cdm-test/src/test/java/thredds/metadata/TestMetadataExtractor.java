@@ -18,12 +18,11 @@ import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.time.CalendarDate;
+import ucar.nc2.calendar.CalendarDate;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
-import java.net.URISyntaxException;
 import java.util.List;
 import static org.junit.Assert.assertEquals;
 
@@ -69,8 +68,10 @@ public class TestMetadataExtractor {
 
     TimeCoverage tc = ds.getTimeCoverageNew();
     assert tc != null;
-    assertEquals(tc.getStart().getCalendarDate(), CalendarDate.parseISOformat(null, "2005-06-27T21:48:00"));
-    assertEquals(tc.getEnd().getCalendarDate(), CalendarDate.parseISOformat(null, "2005-11-09T00:53:59"));
+    assertEquals(tc.getStart().getCalendarDate(),
+        CalendarDate.fromUdunitIsoDate(null, "2005-06-27T21:48:00").orElseThrow());
+    assertEquals(tc.getEnd().getCalendarDate(),
+        CalendarDate.fromUdunitIsoDate(null, "2005-11-09T00:53:59").orElseThrow());
 
     ThreddsMetadata.GeospatialCoverage geo = ds.getGeospatialCoverage();
     assert geo != null;

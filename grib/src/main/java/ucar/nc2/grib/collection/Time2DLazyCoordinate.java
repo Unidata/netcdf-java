@@ -58,7 +58,7 @@ class Time2DLazyCoordinate {
       case reftime:
         CoordinateRuntime rtc = (CoordinateRuntime) info.time1D;
         int count = 0;
-        for (double val : rtc.getOffsetsInTimeUnits()) {
+        for (double val : rtc.getRuntimeOffsetsInTimeUnits()) {
           data[count++] = val;
         }
         return data;
