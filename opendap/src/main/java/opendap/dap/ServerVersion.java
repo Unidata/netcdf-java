@@ -44,8 +44,8 @@ import com.google.common.escape.Escaper;
 import com.google.common.html.HtmlEscapers;
 import java.net.URLConnection;
 
+import java.net.http.HttpHeaders;
 import java.util.Optional;
-import ucar.httpservices.HTTPMethod;
 
 /**
  * Aprses and holds the Server Version information returned by a DAP server.
@@ -122,14 +122,13 @@ public class ServerVersion implements java.io.Serializable {
    * Determines Server (Protocol) Version based on the headers associated
    * with the passed GetMethod.
    *
-   * @param method The GetMethod containing the DAP2 headers.
-   * @throws DAP2Exception When bad things happen (like the headers are
-   *         missing or incorrectly constructed.
+   * @param responseHeaders The GetMethod containing the DAP2 headers.
+   * @throws DAP2Exception When bad things happen (like the headers are missing or incorrectly constructed.
    */
-  public ServerVersion(HTTPMethod method) throws DAP2Exception {
+  public ServerVersion(HttpHeaders responseHeaders) throws DAP2Exception {
 
     // Did the Server send an XDAP header?
-    Optional<String> xdapOpt = method.getResponseHeaderValue("XDAP");
+    Optional<String> xdapOpt = responseHeaders.firstValue("XDAP");
     if (xdapOpt.isPresent()) {
       versionString = xdapOpt.get();
       processXDAPVersion(versionString);
@@ -137,7 +136,7 @@ public class ServerVersion implements java.io.Serializable {
     }
 
     // Did the Server send an XDODS-Server header?
-    Optional<String> xdodsOpt = method.getResponseHeaderValue("XDODS-Server");
+    Optional<String> xdodsOpt = responseHeaders.firstValue("XDODS-Server");
     if (xdodsOpt.isPresent()) {
       versionString = xdodsOpt.get();
       processXDODSServerVersion(versionString);

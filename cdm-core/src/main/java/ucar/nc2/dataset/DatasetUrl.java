@@ -4,22 +4,20 @@
  */
 package ucar.nc2.dataset;
 
-import static java.net.HttpURLConnection.HTTP_FORBIDDEN;
-import static java.net.HttpURLConnection.HTTP_NOT_ACCEPTABLE;
-import static java.net.HttpURLConnection.HTTP_OK;
-import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 import com.google.common.annotations.VisibleForTesting;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 import com.google.common.base.Preconditions;
 import thredds.client.catalog.ServiceType;
-import ucar.httpservices.HTTPFactory;
-import ucar.httpservices.HTTPMethod;
 import ucar.nc2.internal.util.EscapeStrings;
+import ucar.nc2.internal.http.HttpService;
 import ucar.unidata.util.StringUtil2;
 import ucar.unidata.util.Urlencoded;
 import java.io.*;
+import java.net.http.HttpHeaders;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.*;
 
 /**
@@ -134,7 +132,7 @@ public class DatasetUrl {
       }
       trueUrl = buf.toString();
     }
-    return DatasetUrl.create(serviceType, trueUrl);
+    return create(serviceType, trueUrl);
   }
 
   /**
@@ -248,7 +246,7 @@ public class DatasetUrl {
    */
   private static Map<String, String> parseFragment(String fragment) {
     Map<String, String> map = new HashMap<>();
-    if (fragment != null && fragment.length() >= 0) {
+    if (fragment != null && fragment.length() > 0) {
       if (fragment.charAt(0) == '#') {
         fragment = fragment.substring(1);
       }
@@ -361,131 +359,73 @@ public class DatasetUrl {
   @Urlencoded
   private static ServiceType disambiguateHttp(String location) throws IOException {
     boolean checkDap2 = false;
-    boolean checkDap4 = false;
     boolean checkCdmr = false;
 
     if (!location.startsWith("http")) {
       return null;
     }
 
-    // some TDS specific tests
+    ////// TDS specific tests
     if (location.contains("cdmremote")) {
-      ServiceType result = checkIfCdmr(location);
-      if (result != null)
-        return result;
+      Optional<ServiceType> result = checkIfCdmr(location);
+      if (result.isPresent()) {
+        return result.get();
+      }
       checkCdmr = true;
     }
     if (location.contains("dodsC")) {
-      ServiceType result = checkIfDods(location);
-      if (result != null)
-        return result;
+      Optional<ServiceType> result = checkIfDods(location);
+      if (result.isPresent()) {
+        return result.get();
+      }
       checkDap2 = true;
     }
 
-    if (location.contains("dap4")) {
-      ServiceType result = checkIfDap4(location);
-      if (result != null)
-        return result;
-      checkDap4 = true;
-    }
-
+    ////// non - TDS specific tests
     if (!checkDap2) {
-      ServiceType result = checkIfDods(location);
-      if (result != null)
-        return result;
-    }
-
-    if (!checkDap4) {
-      ServiceType result = checkIfDap4(location);
-      if (result != null)
-        return result;
+      Optional<ServiceType> result = checkIfDods(location);
+      if (result.isPresent()) {
+        return result.get();
+      }
     }
 
     if (!checkCdmr) {
-      ServiceType result = checkIfCdmr(location);
-      return result;
+      Optional<ServiceType> result = checkIfCdmr(location);
+      if (result.isPresent()) {
+        return result.get();
+      }
     }
     return null;
   }
 
   // cdmremote
-  private static ServiceType checkIfCdmr(String location) throws IOException {
-    try (HTTPMethod method = HTTPFactory.Head(location + "?req=header")) {
-      int statusCode = method.execute();
-      if (statusCode >= 300) {
-        if (statusCode == HTTP_UNAUTHORIZED || statusCode == HTTP_FORBIDDEN)
-          throw new IOException("Unauthorized to open dataset " + location);
-        else
-          throw new IOException(location + " is not a valid URL, return status=" + statusCode);
-      }
+  private static Optional<ServiceType> checkIfCdmr(String location) throws IOException {
+    HttpRequest request = HttpService.standardGetRequestBuilder(location + "?req=header").build();
+    HttpResponse<InputStream> response = HttpService.standardRequest(request);
+    HttpHeaders responseHeaders = response.headers();
 
-      Optional<String> value = method.getResponseHeaderValue("Content-Description");
-      return value.map(v -> v.equalsIgnoreCase("ncstream") ? ServiceType.CdmRemote : null).orElse(null);
-    }
+    Optional<String> contentDescriptionO = responseHeaders.firstValue("Content-Description");
+    return contentDescriptionO.map(v -> v.equalsIgnoreCase("ncstream") ? ServiceType.CdmRemote : null);
   }
 
   // not sure what other opendap servers do, so fall back on check for dds
-  private static ServiceType checkIfDods(String location) throws IOException {
+  private static Optional<ServiceType> checkIfDods(String location) throws IOException {
     int len = location.length();
     // Strip off any trailing .dds, .das, or .dods
-    if (location.endsWith(".dds"))
+    if (location.endsWith(".dds")) {
       location = location.substring(0, len - ".dds".length());
-    if (location.endsWith(".das"))
+    } else if (location.endsWith(".das")) {
       location = location.substring(0, len - ".das".length());
-    if (location.endsWith(".dods"))
+    } else if (location.endsWith(".dods")) {
       location = location.substring(0, len - ".dods".length());
-
-    // Opendap assumes that the caller has properly escaped the url
-    try (
-        // For some reason, the head method is not using credentials
-        // method = session.newMethodHead(location + ".dds");
-        HTTPMethod method = HTTPFactory.Get(location + ".dds")) {
-
-      int status = method.execute();
-      if (status == HTTP_OK) {
-        Optional<String> value = method.getResponseHeaderValue("Content-Description");
-        if (value.isPresent()) {
-          String v = value.get();
-          if (v.equalsIgnoreCase("dods-dds") || v.equalsIgnoreCase("dods_dds"))
-            return ServiceType.OPENDAP;
-          else
-            throw new IOException("OPeNDAP Server Error= " + method.getResponseAsString());
-        }
-      }
-      if (status == HTTP_UNAUTHORIZED || status == HTTP_FORBIDDEN)
-        throw new IOException("Unauthorized to open dataset " + location);
-
-      // not dods
-      return null;
     }
-  }
 
-  // check for dmr
-  private static ServiceType checkIfDap4(String location) throws IOException {
-    // Strip off any trailing DAP4 prefix
-    if (location.endsWith(".dap"))
-      location = location.substring(0, location.length() - ".dap".length());
-    else if (location.endsWith(".dmr"))
-      location = location.substring(0, location.length() - ".dmr".length());
-    else if (location.endsWith(".dmr.xml"))
-      location = location.substring(0, location.length() - ".dmr.xml".length());
-    else if (location.endsWith(".dsr"))
-      location = location.substring(0, location.length() - ".dsr".length());
-    try (HTTPMethod method = HTTPFactory.Get(location + ".dmr.xml")) {
-      int status = method.execute();
-      if (status == HTTP_OK) {
-        Optional<String> value = method.getResponseHeaderValue("Content-Type");
-        if (value.isPresent()) {
-          if (value.get().startsWith("application/vnd.opendap.org"))
-            return ServiceType.DAP4;
-        }
-      }
-      if (status == HTTP_UNAUTHORIZED || status == HTTP_FORBIDDEN)
-        throw new IOException("Unauthorized to open dataset " + location);
-
-      // not dods
-      return null;
-    }
+    HttpRequest request = HttpService.standardGetRequestBuilder(location + ".dds").build();
+    HttpResponse<InputStream> response = HttpService.standardRequest(request);
+    HttpHeaders responseHeaders = response.headers();
+    Optional<String> contentDescriptionO = responseHeaders.firstValue("Content-Description");
+    return contentDescriptionO
+        .map(v -> v.equalsIgnoreCase("dods-dds") || v.equalsIgnoreCase("dods_dds") ? ServiceType.OPENDAP : null);
   }
 
   // The first 128 bytes should contain enough info to tell if this looks like an actual ncml file or not.
@@ -504,24 +444,10 @@ public class DatasetUrl {
       // if the ncml file is being served up via http by a remote server,
       // we should be able to read the first bit of it and see if it even
       // looks like an ncml file.
-      try (HTTPMethod method = HTTPFactory.Get(location)) {
-        method.setRange(0, NUM_BYTES_TO_DETERMINE_NCML);
-        method.setRequestHeader("accept-encoding", "identity");
-        int statusCode = method.execute();
-        if (statusCode >= 300) {
-          if (statusCode == HTTP_UNAUTHORIZED) {
-            throw new IOException("Unauthorized to open dataset " + location);
-          } else if (statusCode == HTTP_NOT_ACCEPTABLE) {
-            String msg = location + " - this server does not support returning content without any encoding.";
-            msg = msg + " Please download the file locally. Return status=" + statusCode;
-            throw new IOException(msg);
-          } else {
-            throw new IOException(location + " is not a valid URL, return status=" + statusCode);
-          }
-        }
-
-        return checkIfNcml(method.getResponseAsString());
-      }
+      HttpRequest request = HttpService.standardGetRequestBuilder(location).header("accept-encoding", "identity")
+          .header("Range", String.format("bytes=%d-%d", 0, NUM_BYTES_TO_DETERMINE_NCML)).build();
+      HttpResponse<String> response = HttpService.standardRequestForString(request);
+      return checkIfNcml(response.toString());
     }
 
     return false;

@@ -34,7 +34,7 @@ public class PointCollectionStreamRemote extends PointCollectionStreamAbstract i
 
   @Override
   public InputStream getInputStream() throws IOException {
-    return CdmRemote.sendQuery(null, uri, queryMaker.makeQuery());
+    return CdmRemote.sendQuery(uri, queryMaker.makeQuery());
   }
 
   // Must override default subsetting implementation for efficiency.

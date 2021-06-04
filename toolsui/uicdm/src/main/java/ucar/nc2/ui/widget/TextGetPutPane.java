@@ -232,9 +232,9 @@ public class TextGetPutPane extends TextHistoryPane {
       IO.writeToFile(contents, path);
 
     } else {
-
-      int status = HttpClientManager.putContent(uriString, contents);
-      javax.swing.JOptionPane.showMessageDialog(this, "Status code= " + status);
+      // LOOK not implemented
+      // int status = HttpClientManager.putContent(uriString, contents);
+      // javax.swing.JOptionPane.showMessageDialog(this, "Status code= " + status);
     }
   }
 
@@ -286,7 +286,7 @@ public class TextGetPutPane extends TextHistoryPane {
 
     public void run() {
       try {
-        contents = HttpClientManager.getContentAsString(null, urlString);
+        contents = HttpClientManager.getContentAsString(urlString);
 
       } catch (Exception e) {
         setError(e.getMessage());

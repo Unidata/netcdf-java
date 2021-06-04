@@ -76,8 +76,7 @@ public class TestConvertD2N {
     testArray(server + url);
   }
 
-  static DataDDS testDataDDSfromServer(String urlName, String CE)
-      throws IOException, opendap.dap.DAP2Exception, InvalidRangeException {
+  static DataDDS testDataDDSfromServer(String urlName, String CE) throws IOException, opendap.dap.DAP2Exception {
 
     System.out.println("--DConnect =" + urlName);
     DConnect2 dodsConnection = new DConnect2(urlName, true);

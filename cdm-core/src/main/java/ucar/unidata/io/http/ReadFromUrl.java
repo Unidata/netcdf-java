@@ -11,15 +11,18 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
-import ucar.nc2.constants.CDM;
 import ucar.nc2.util.IO;
 
-/** Static utility methods that read from URLs */
+/**
+ * LOOK Move to ToolsUI, or remove alltogether. Note checks for gzip. Shouldnt that be handled automatically?
+ * Static utility methods that read from URLs, using URLConnection.
+ * Could replace with java.net.http.HttpClient. Only used in ToolUI?
+ */
 public class ReadFromUrl {
-
   private static final boolean showStackTrace = false;
   private static final boolean showHeaders = false;
 
@@ -216,31 +219,16 @@ public class ReadFromUrl {
   }
 
   /**
-   * Read the contents from the named URL and place into a String,
-   * with any error messages put in the return String.
-   *
-   * @param urlString the URL to read from.
-   * @return String holding the contents, or an error message.
-   */
-  public static String readURLcontents(String urlString) {
-    try {
-      return readURLcontentsWithException(urlString);
-    } catch (IOException e) {
-      return e.getMessage();
-    }
-  }
-
-  /**
    * Read the contents from the named URL and place into a String.
    *
    * @param urlString the URL to read from.
    * @return String holding the contents.
    * @throws IOException if fails
    */
-  private static String readURLcontentsWithException(String urlString) throws IOException {
+  public static String readURLcontents(String urlString) throws IOException {
     ByteArrayOutputStream bout = new ByteArrayOutputStream(20000);
     copyUrlB(urlString, bout, 20000);
-    return bout.toString(CDM.UTF8);
+    return bout.toString(StandardCharsets.UTF_8);
   }
 
 }

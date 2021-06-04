@@ -7,4 +7,4 @@
  * INTERNAL CLASSES DO NOT USE: Make a file on an HTTP server look like a RandomAccessFile, by using HTTP 1.1 byte range
  * header.
  */
-package ucar.unidata.io.http;
+package ucar.nc2.internal.http;

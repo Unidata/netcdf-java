@@ -23,9 +23,8 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
-
 /**
- * A drop-in replacement for java.io.RandomAccessFile with extensions.
+ * A drop-in replacement for java.io.RandomAccessFile with extensions. Mutable.
  * <ul>
  * <li>Buffered I/O: instances of this class realise substantial speed increases over
  * * java.io.RandomAccessFile through the use of buffering.</li>
@@ -41,16 +40,12 @@ import java.util.concurrent.atomic.AtomicLong;
  * this derives, see his <a href="http://www.aber.ac.uk/~agm/Java.html">
  * Freeware Java Classes</a>.
  * <p/>
- * Must be thread confined - that is, can only be used by a single thread at a time..
+ * Mutable, must be thread confined - that is, can only be used by a single thread at a time.
  *
  * @author Alex McManus
  * @author Russ Rew
  * @author john caron
- * @see java.io.DataInput
- * @see java.io.DataOutput
- * @see java.io.RandomAccessFile
  */
-
 @NotThreadSafe
 public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, Closeable {
 

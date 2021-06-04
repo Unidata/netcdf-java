@@ -5,10 +5,12 @@
 
 package thredds.ui.monitor;
 
-import ucar.httpservices.*;
+import ucar.nc2.internal.http.HttpService;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.net.HttpClientManager;
 import java.io.*;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import javax.swing.*;
 
 /**
@@ -35,14 +37,11 @@ public class TdsDownloader {
   private final File localDir;
   private final JTextArea ta;
   private CancelTask cancel;
-  private final HTTPSession session;
 
-  TdsDownloader(JTextArea ta, ManageForm.Data config, Type type) throws IOException {
+  TdsDownloader(JTextArea ta, ManageForm.Data config, Type type) {
     this.ta = ta;
     this.config = config;
     this.type = type;
-
-    session = HTTPFactory.newSession(config.getServerPrefix());
 
     localDir = LogLocalManager.getDirectory(config.server, type.toString());
     if (!localDir.exists() && !localDir.mkdirs()) {
@@ -57,12 +56,13 @@ public class TdsDownloader {
     String urls = config.getServerPrefix() + "/thredds/admin/log/" + type + "/";
     ta.append(String.format("Download URL = %s%n", urls));
 
-    String contents = null;
-    try (HTTPMethod method = HTTPFactory.Get(session, urls)) {
-      int statusCode = method.execute();
-      if (statusCode == 200)
-        contents = method.getResponseAsString();
+    HttpService httpService = HttpService.STANDARD;
+    HttpRequest request = HttpService.standardGetRequestBuilder(urls).build();
 
+    String contents = null;
+    try {
+      HttpResponse<String> responseAsString = HttpService.standardRequestForString(request);
+      contents = responseAsString.body();
       if ((contents == null) || (contents.isEmpty())) {
         ta.append(String.format("Failed to get logs at URL = %s%n%n", urls));
         return;
@@ -77,7 +77,7 @@ public class TdsDownloader {
 
     // update text area in background http://technobuz.com/2009/05/update-jtextarea-dynamically/
     String list = contents;
-    SwingWorker<String, Void> worker = new SwingWorker<String, Void>() {
+    SwingWorker<String, Void> worker = new SwingWorker<>() {
 
       @Override
       protected String doInBackground() {
@@ -138,14 +138,14 @@ public class TdsDownloader {
     void read() throws IOException {
       String urls = config.getServerPrefix() + "/thredds/admin/log/" + type + "/" + name;
       ta.append(String.format(" reading %s to %s%n", urls, localFile.getPath()));
-      HttpClientManager.copyUrlContentsToFile(session, urls, localFile);
+      HttpClientManager.copyUrlContentsToFile(urls, localFile);
     }
 
     void append() throws IOException {
       String urls = config.getServerPrefix() + "/thredds/admin/log/" + type + "/" + name;
       long start = localFile.length();
       long want = size - start;
-      long got = HttpClientManager.appendUrlContentsToFile(session, urls, localFile, start, size);
+      long got = HttpClientManager.appendUrlContentsToFile(urls, localFile, start, size);
       if (want == got)
         ta.append(String.format(" append %d bytes to %s %n", got, localFile.getPath()));
       else
