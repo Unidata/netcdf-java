@@ -6,11 +6,13 @@
 package ucar.nc2.grib;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.dataset.VariableDS;
 import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.IOException;
 import java.util.Formatter;
@@ -23,6 +25,7 @@ import static com.google.common.truth.Truth8.assertThat;
  * double time(time=1);
  * :units = "calendar months since 2004-12-30T00:00Z"; // string
  */
+@Category(NeedsCdmUnitTest.class)
 public class TestGribCalendarProblem {
   private static final String vname =
       "Volumetric_soil_moisture_content_layer_between_two_depths_below_surface_layer_1_Month_Average";

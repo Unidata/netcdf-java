@@ -61,45 +61,6 @@ abstract class AbstractDate implements ChronoLocalDate {
   }
 
   // -----------------------------------------------------------------------
-  /*
-   * Obtains an instance from a local date-time using the preferred offset if possible.
-   *
-   * @param localDateTime the local date-time, not null
-   * 
-   * @param zone the zone identifier, not null
-   * 
-   * @param preferredOffset the zone offset, null if no preference
-   * 
-   * @return the zoned date-time, not null
-   *
-   * ChronoZonedDateTime<D> atZone(ZoneId zone) {
-   * Objects.requireNonNull(zone, "zone");
-   * if (zone instanceof ZoneOffset) {
-   * return new ChronoZonedDateTimeImpl<>(localDateTime, (ZoneOffset) zone, zone);
-   * }
-   * ZoneRules rules = zone.getRules();
-   * LocalDateTime isoLDT = LocalDateTime.from(localDateTime);
-   * List<ZoneOffset> validOffsets = rules.getValidOffsets(isoLDT);
-   * ZoneOffset offset;
-   * if (validOffsets.size() == 1) {
-   * offset = validOffsets.get(0);
-   * } else if (validOffsets.size() == 0) {
-   * ZoneOffsetTransition trans = rules.getTransition(isoLDT);
-   * localDateTime = localDateTime.plusSeconds(trans.getDuration().getSeconds());
-   * offset = trans.getOffsetAfter();
-   * } else {
-   * if (preferredOffset != null && validOffsets.contains(preferredOffset)) {
-   * offset = preferredOffset;
-   * } else {
-   * offset = validOffsets.get(0);
-   * }
-   * }
-   * Objects.requireNonNull(offset, "offset"); // protect against bad ZoneRules
-   * return new ChronoZonedDateTimeImpl<>(localDateTime, offset, zone);
-   * }
-   */
-
-  // -----------------------------------------------------------------------
   @Override
   public ValueRange range(TemporalField field) {
     if (field instanceof ChronoField) {

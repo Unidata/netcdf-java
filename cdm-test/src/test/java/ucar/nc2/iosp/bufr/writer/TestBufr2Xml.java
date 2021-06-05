@@ -3,6 +3,7 @@ package ucar.nc2.iosp.bufr.writer;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -11,8 +12,10 @@ import ucar.nc2.iosp.bufr.Message;
 import ucar.nc2.iosp.bufr.MessageScanner;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 /** Sanity check writing lots of BUFR types to XML. */
+@Category(NeedsCdmUnitTest.class)
 public class TestBufr2Xml {
 
   @Test

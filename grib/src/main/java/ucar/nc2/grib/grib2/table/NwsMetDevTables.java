@@ -77,7 +77,7 @@ public class NwsMetDevTables extends NcepLocalTables {
     if (!needOverride) {
       return super.getForecastTimeIntervalSizeInHours(pds);
     }
-    // LOOK barf
+    // LOOK this is some kind of hack for Center 7 subcenter 14.
     return 12.0;
   }
 
