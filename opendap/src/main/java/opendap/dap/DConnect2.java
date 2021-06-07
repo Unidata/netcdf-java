@@ -48,6 +48,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import com.google.common.net.UrlEscapers;
 import opendap.dap.parsers.ParseException;
 import ucar.nc2.internal.http.HttpService;
 
@@ -221,6 +223,7 @@ public class DConnect2 implements Closeable {
    * @throws DAP2Exception if the DODS server returned an error.
    */
   private void openConnection(String urlString, Command command) throws IOException, DAP2Exception {
+    System.out.printf("DConnect2.openConnection %s%n", urlString);
     HttpRequest request = HttpService.standardGetRequestBuilder(urlString).build();
     HttpResponse<InputStream> response = HttpService.standardRequest(request);
     HttpHeaders responseHeaders = response.headers();
@@ -595,11 +598,13 @@ public class DConnect2 implements Closeable {
   private String getCompleteCE(String CE) {
     String localProjString;
     String localSelString;
-    if (CE == null)
+    if (CE == null) {
       return "";
+    }
     // remove any leading '?'
-    if (CE.startsWith("?"))
+    if (CE.startsWith("?")) {
       CE = CE.substring(1);
+    }
     int selIndex = CE.indexOf('&');
     if (selIndex == 0) {
       localProjString = "";
@@ -615,8 +620,9 @@ public class DConnect2 implements Closeable {
     String ce = projString;
 
     if (!localProjString.equals("")) {
-      if (!ce.equals("") && localProjString.indexOf(',') != 0)
+      if (!ce.equals("") && localProjString.indexOf(',') != 0) {
         ce += ",";
+      }
       ce += localProjString;
     }
 
@@ -627,13 +633,15 @@ public class DConnect2 implements Closeable {
     }
 
     if (!localSelString.equals("")) {
-      if (localSelString.indexOf('&') != 0)
+      if (localSelString.indexOf('&') != 0) {
         ce += "&";
+      }
       ce += localSelString;
     }
 
-    if (ce.length() > 0)
+    if (ce.length() > 0) {
       ce = "?" + ce;
+    }
 
     return ce; // escaping will happen elsewhere
   }
@@ -831,11 +839,15 @@ public class DConnect2 implements Closeable {
    */
   public DataDDS getData(String CE, StatusUI statusUI, BaseTypeFactory btf)
       throws MalformedURLException, IOException, ParseException, DDSException, DAP2Exception {
-    if (CE != null && CE.trim().length() == 0)
+
+    if (CE != null && CE.trim().length() == 0) {
       CE = null;
+    }
     DataDDS dds = new DataDDS(ver, btf);
     DataDDSCommand command = new DataDDSCommand(dds, statusUI);
-    command.setURL(urlString + (CE == null ? "" : "?" + CE));
+    // command.setURL(urlString + (CE == null ? "" : "?" + CE));
+    command.setURL(urlString + (CE == null ? "" : "?" + UrlEscapers.urlFragmentEscaper().escape(CE)));
+
     if (filePath != null) { // url is file:
       File dodspath = new File(filePath + ".dods");
       // See if the dods file exists
@@ -848,7 +860,15 @@ public class DConnect2 implements Closeable {
     } else if (stream != null) {
       command.process(stream);
     } else {
-      String urls = urlString + ".dods" + (CE == null ? "" : getCompleteCE(CE));
+      // String urls = urlString + ".dods" + (CE == null ? "" : getCompleteCE(CE));
+      String urls;
+      if (CE == null) {
+        urls = urlString + ".dods";
+      } else {
+        String CEcomplete = getCompleteCE(CE);
+        String CEescape = UrlEscapers.urlFragmentEscaper().escape(CEcomplete);
+        urls = urlString + ".dods" + CEescape;
+      }
       openConnection(urls, command);
     }
     return command.dds;
@@ -868,8 +888,6 @@ public class DConnect2 implements Closeable {
     public void setURL(String url) {
       this.url = url;
     }
-
-    ;
 
     public void process(InputStream is) throws ParseException, DAP2Exception, IOException {
       if (!dds.parse(is))
