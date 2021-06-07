@@ -11,7 +11,7 @@ See branch [6.x](https://github.com/unidata/netcdf-java/tree/6.x).
 Looking for the `5.x` line of development?
 See branch [maint-5.x](https://github.com/unidata/netcdf-java/tree/maint-5.x).
 Version `4.6` is no longer supported outside of the context of the THREDDS Data Server (TDS).
-If you are looking for that codebase, it can be found at <https://github.com/Unidata/thredds/tree/main>.
+If you are looking for that codebase, it can be found at <https://github.com/Unidata/thredds/tree/4.6.x>.
 
 The netCDF Java library provides an interface for scientific data access.
 It can be used to read scientific data from a variety of file formats including netCDF, HDF, GRIB, and BUFR.
