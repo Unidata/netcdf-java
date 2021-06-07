@@ -14,9 +14,9 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dataset.spi.CoordSystemBuilderFactory;
 import ucar.nc2.internal.dataset.CoordSystemBuilder;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateFormatter;
-import ucar.nc2.time.CalendarDateUnit;
+import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.calendar.CalendarDateFormatter;
+import ucar.nc2.calendar.CalendarDateUnit;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.util.StringUtil2;
 
@@ -71,7 +71,7 @@ public class Nimbus extends CoardsConventions {
           VariableDS.Builder<?> base = (VariableDS.Builder<?>) rootGroup.findVariableLocal("base_time")
               .orElseThrow(() -> new IllegalStateException("Cant find variable base_time"));
           int base_time = base.orgVar.readScalarInt();
-          CalendarDateUnit cdunit = CalendarDateUnit.withCalendar(null, "seconds since 1970-01-01 00:00");
+          CalendarDateUnit cdunit = CalendarDateUnit.unixDateUnit;
           CalendarDate cdate = cdunit.makeCalendarDate(base_time);
           String time_units = "seconds since " + CalendarDateFormatter.toDateTimeStringISO(cdate);
 

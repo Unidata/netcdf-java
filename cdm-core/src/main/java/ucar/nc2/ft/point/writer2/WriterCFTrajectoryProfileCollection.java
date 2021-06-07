@@ -28,7 +28,7 @@ import ucar.nc2.constants.CF;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.ProfileFeature;
 import ucar.nc2.ft.TrajectoryProfileFeature;
-import ucar.nc2.time.CalendarDateUnit;
+import ucar.nc2.calendar.CalendarDateUnit;
 
 /**
  * Write a CF "Discrete Sample" trajectory profile (section) collection file.
@@ -164,7 +164,7 @@ class WriterCFTrajectoryProfileCollection extends WriterCFPointAbstract {
     profileVars
         .add(VariableSimpleBuilder.makeScalar(lonName, "profile longitude", CDM.LON_UNITS, DataType.DOUBLE).build());
     profileVars.add(VariableSimpleBuilder
-        .makeScalar(profileTimeName, "nominal time of profile", timeUnit.getUdUnit(), DataType.DOUBLE)
+        .makeScalar(profileTimeName, "nominal time of profile", timeUnit.toString(), DataType.DOUBLE)
         .addAttribute(CF.CALENDAR, timeUnit.getCalendar().toString()).build());
 
     profileVars.add(

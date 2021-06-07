@@ -23,7 +23,7 @@ public class GridDatasetFactory {
     NetcdfDataset ds = ucar.nc2.dataset.NetcdfDatasets.openDataset(endpoint);
     Optional<GridNetcdfDataset> result =
         GridNetcdfDataset.create(ds, errLog).filter(gds -> !Iterables.isEmpty(gds.getGrids()));
-    if (!result.isPresent()) {
+    if (result.isEmpty()) {
       errLog.format("Could not open as GridDataset: %s", endpoint);
       ds.close();
       return null;

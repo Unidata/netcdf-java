@@ -27,7 +27,7 @@ import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dataset.spi.CoordSystemBuilderFactory;
 import ucar.nc2.internal.dataset.CoordSystemBuilder;
 import ucar.nc2.internal.iosp.hdf4.HdfEos;
-import ucar.nc2.time.CalendarDate;
+import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.geoloc.projection.Sinusoidal;
 
@@ -172,7 +172,7 @@ public class HdfEosModisConvention extends CoordSystemBuilder {
     try {
       int year = Integer.parseInt(yearS);
       int jday = Integer.parseInt(jdayS);
-      return CalendarDate.withDoy(null, year, jday, 0, 0, 0);
+      return CalendarDate.ofDoy(year, jday, 0, 0, 0, 0);
     } catch (Exception e) {
       return null;
     }

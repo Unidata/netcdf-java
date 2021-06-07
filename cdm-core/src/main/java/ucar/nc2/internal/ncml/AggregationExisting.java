@@ -35,7 +35,7 @@ import ucar.nc2.constants.CF;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
-import ucar.nc2.time.CalendarDate;
+import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.util.CancelTask;
 
 /**

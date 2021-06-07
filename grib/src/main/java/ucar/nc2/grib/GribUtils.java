@@ -5,8 +5,8 @@
 
 package ucar.nc2.grib;
 
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarPeriod;
+import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.calendar.CalendarPeriod;
 import ucar.unidata.util.StringUtil2;
 
 /**
@@ -62,9 +62,32 @@ public class GribUtils {
     }
   }
 
+  // LOOK cant use Month, Year
+  public static long getValueInMillisecs(CalendarPeriod period) {
+    switch (period.getField()) {
+      case Day:
+        return 24L * 60 * 60 * 1000 * period.getValue();
+      case Hour:
+        return 60L * 60 * 1000 * period.getValue();
+      case Minute:
+        return 60L * 1000 * period.getValue();
+      case Second:
+        return 1000 * period.getValue();
+      case Millisec:
+        return period.getValue();
+      default:
+        throw new IllegalStateException("Illegal period = " + period);
+    }
+  }
+
+  // LOOK should be int
+  public static double getConvertFactor(CalendarPeriod from, CalendarPeriod to) {
+    return (double) getValueInMillisecs(from) / getValueInMillisecs(to);
+  }
+
   public static CalendarDate getValidTime(CalendarDate refDate, int timeUnit, int offset) {
     CalendarPeriod period = GribUtils.getCalendarPeriod(timeUnit);
-    return refDate.add(period.multiply(offset));
+    return refDate.add(offset, period);
   }
 
   public static String cleanupUnits(String unit) {

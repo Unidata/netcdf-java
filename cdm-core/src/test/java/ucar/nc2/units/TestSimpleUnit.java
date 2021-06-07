@@ -11,7 +11,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.lang.invoke.MethodHandles;
-import ucar.nc2.time.CalendarDateFormatter;
+import ucar.nc2.calendar.CalendarDateFormatter;
 import ucar.units.ScaledUnit;
 import ucar.units.UnitException;
 

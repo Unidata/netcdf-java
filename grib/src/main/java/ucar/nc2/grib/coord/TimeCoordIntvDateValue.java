@@ -3,8 +3,8 @@ package ucar.nc2.grib.coord;
 import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarPeriod;
+import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.calendar.CalendarPeriod;
 
 /**
  * Time intervals represented by start and end CalendarDate.
@@ -16,7 +16,7 @@ public class TimeCoordIntvDateValue implements Comparable<TimeCoordIntvDateValue
 
   public TimeCoordIntvDateValue(CalendarPeriod period, CalendarDate end) {
     this.end = end;
-    this.start = end.subtract(period);
+    this.start = end.add(-1, period);
   }
 
   public TimeCoordIntvDateValue(CalendarDate start, CalendarPeriod period) {
@@ -59,8 +59,10 @@ public class TimeCoordIntvDateValue implements Comparable<TimeCoordIntvDateValue
     if (timeUnit == null) {
       throw new IllegalArgumentException("null time unit");
     }
-    int startOffset = timeUnit.getOffset(refDate, start); // LOOK wrong - not dealing with value ??
-    int endOffset = timeUnit.getOffset(refDate, end);
+    int startOffset = (int) start.since(refDate, timeUnit);
+    // int startOffset = timeUnit.getOffset(refDate, start); // LOOK wrong - not dealing with value ??
+    int endOffset = (int) end.since(refDate, timeUnit);
+    // int endOffset = timeUnit.getOffset(refDate, end);
     return new TimeCoordIntvValue(startOffset, endOffset);
   }
 

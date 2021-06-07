@@ -22,10 +22,9 @@ import ucar.ma2.StructureMembers;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.ft.PointFeature;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateFormatter;
-import ucar.nc2.time.CalendarPeriod;
-import ucar.nc2.time.CalendarTimeZone;
+import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.calendar.CalendarDateFormatter;
+import ucar.nc2.calendar.CalendarPeriod;
 import ucar.nc2.write.Ncdump;
 import ucar.ui.table.*;
 import ucar.ui.widget.*;
@@ -711,8 +710,8 @@ public class StructureTable extends JPanel {
 
     DateRenderer() {
 
-      oldForm = new CalendarDateFormatter("yyyy MMM dd HH:mm", CalendarTimeZone.UTC);
-      newForm = new CalendarDateFormatter("MMM dd, HH:mm", CalendarTimeZone.UTC);
+      oldForm = new CalendarDateFormatter("yyyy MMM dd HH:mm");
+      newForm = new CalendarDateFormatter("MMM dd, HH:mm");
 
       CalendarDate now = CalendarDate.present();
       cutoff = now.add(-1, CalendarPeriod.Field.Year); // "now" time format within a year

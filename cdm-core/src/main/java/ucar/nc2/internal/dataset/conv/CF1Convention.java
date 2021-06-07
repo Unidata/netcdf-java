@@ -24,7 +24,7 @@ import ucar.nc2.dataset.TransformType;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.internal.dataset.CoordSystemBuilder;
 import ucar.nc2.dataset.spi.CoordSystemBuilderFactory;
-import ucar.nc2.time.CalendarDateUnit;
+import ucar.nc2.calendar.CalendarDateUnit;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.util.CancelTask;
 
@@ -523,13 +523,11 @@ public class CF1Convention extends CSMConvention {
       }
     }
 
-    try {
-      String units = vb.getUnits();
-      CalendarDateUnit.of(null, units);
-      // parsed successfully, what could go wrong?
+    // Check time units
+    String units = vb.getUnits();
+    // parsed successfully, what could go wrong?
+    if (CalendarDateUnit.fromUdunitString(null, units).isPresent()) {
       return AxisType.Time;
-    } catch (Throwable t) {
-      // ignore
     }
 
     // dunno

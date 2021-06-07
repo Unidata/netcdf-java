@@ -35,9 +35,9 @@ import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
-import ucar.nc2.time.Calendar;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateUnit;
+import ucar.nc2.calendar.Calendar;
+import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.calendar.CalendarDateUnit;
 import ucar.nc2.util.CancelTask;
 
 import javax.annotation.Nullable;
@@ -236,11 +236,8 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
       }
     } else {
       timeAxis.setDataType(DataType.DOUBLE); // otherwise fractional values get lost
-      // if calendar is null, maintain the null for the string name, and let
-      // CalendarDateUnit handle it.
-      String calendarName = calendar != null ? calendar.name() : null;
-      calendarDateUnit = CalendarDateUnit.of(calendarName, timeUnits);
-      timeAxis.addAttribute(new Attribute(CDM.UNITS, calendarDateUnit.getUdUnit()));
+      calendarDateUnit = CalendarDateUnit.fromUdunitString(calendar, timeUnits).orElseThrow();
+      timeAxis.addAttribute(new Attribute(CDM.UNITS, calendarDateUnit.toString()));
       timeAxis.addAttribute(new Attribute(CF.CALENDAR, calendarDateUnit.getCalendar().name()));
       for (CalendarDate date : dateList) {
         double val = calendarDateUnit.makeOffsetFromRefDate(date);
@@ -644,17 +641,13 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
   class CoordValueVar extends CacheVar {
     String units;
     @Nullable
-    CalendarDateUnit du = null;
+    CalendarDateUnit du;
 
     CoordValueVar(String varName, DataType dtype, String units) {
       super(varName, dtype);
       this.units = units;
-      try {
-        // LOOK we should look for calendar attribute
-        du = CalendarDateUnit.withCalendar(null, units);
-      } catch (Exception e) {
-        // ok to fail - may not be a time coordinate
-      }
+      // LOOK we should look for calendar attribute
+      this.du = CalendarDateUnit.fromUdunitString(null, units).orElse(null);
     }
 
     // these deal with possible setting of the coord values in the NcML

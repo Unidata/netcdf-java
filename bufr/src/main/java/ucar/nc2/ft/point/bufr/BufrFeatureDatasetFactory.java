@@ -39,9 +39,9 @@ import ucar.nc2.ft.PointFeatureCollection;
 import ucar.nc2.ft.PointFeatureIterator;
 import ucar.nc2.ft.point.*;
 import ucar.nc2.iosp.bufr.BufrIosp;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.time.CalendarDateUnit;
+import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.calendar.CalendarDateRange;
+import ucar.nc2.calendar.CalendarDateUnit;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.Indent;
 import ucar.unidata.geoloc.EarthLocation;
@@ -55,7 +55,7 @@ import ucar.unidata.geoloc.LatLonRect;
 @Deprecated
 public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
   private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BufrFeatureDatasetFactory.class);
-  private static CalendarDateUnit bufrDateUnits = CalendarDateUnit.of(null, "msecs since 1970-01-01T00:00:00");
+  private static CalendarDateUnit bufrDateUnits = CalendarDateUnit.unixDateUnit;
   private static String bufrAltUnits = "m"; // LOOK fake
 
   @Override
@@ -187,9 +187,9 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
             if (!stationId.equals(stationFeature.getStation().getName()))
               return null;
             CalendarDate date = extract.makeCalendarDate();
-            return new BufrStationPoint(stationFeature.getStation(), date.getMillis(), 0, munger.munge(sdata)); // LOOK
-                                                                                                                // obsTime,
-                                                                                                                // nomTime
+            return new BufrStationPoint(stationFeature.getStation(), date.getMillisFromEpoch(), 0, munger.munge(sdata)); // LOOK
+            // obsTime,
+            // nomTime
           }
         }
 
@@ -266,7 +266,7 @@ public class BufrFeatureDatasetFactory implements FeatureDatasetFactory {
               return null;
             CalendarDate date = extract.makeCalendarDate();
             countHere++;
-            return new BufrPoint(want, date.getMillis(), 0, munger.munge(sdata));
+            return new BufrPoint(want, date.getMillisFromEpoch(), 0, munger.munge(sdata));
           }
 
           @Override

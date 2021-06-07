@@ -4,12 +4,16 @@
  */
 package ucar.nc2.grib.coord;
 
+import ucar.nc2.grib.GribUtils;
 import ucar.nc2.grib.grib1.Grib1Record;
 import ucar.nc2.grib.grib2.Grib2Record;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarPeriod;
+import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.calendar.CalendarDateUnit;
+import ucar.nc2.calendar.CalendarPeriod;
 import ucar.nc2.internal.util.Counters;
 import ucar.nc2.util.Indent;
+
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.*;
 
@@ -22,30 +26,42 @@ import java.util.*;
  */
 @Immutable
 public class CoordinateRuntime implements Coordinate {
-  private final long[] runtimes;
-  final CalendarDate firstDate;
-  final CalendarPeriod timeUnit;
+  private final long[] runtimes; // msecs since epoch, using ISO8601 UTC.
+  private final CalendarDate firstDate;
+  final CalendarPeriod timePeriod;
+  private final CalendarDateUnit calendarDateUnit;
   final String periodName;
   private String name = "reftime"; // yeah yeah, not final, bugger off
 
-  public CoordinateRuntime(List<Long> runtimeSorted, CalendarPeriod timeUnit) {
+  /**
+   * LOOK doesnt work for month, year.
+   * 
+   * @param runtimeSorted millis from epoch. LOOK probably should be offsets in timeUnit
+   * @param timeUnit default is Hours. trying to preserve original semantics
+   */
+  public CoordinateRuntime(List<Long> runtimeSorted, @Nullable CalendarPeriod timeUnit) {
     this.runtimes = new long[runtimeSorted.size()];
     int idx = 0;
-    for (long val : runtimeSorted)
+    for (long val : runtimeSorted) {
       this.runtimes[idx++] = val;
+    }
 
     this.firstDate = CalendarDate.of(runtimeSorted.get(0));
-    this.timeUnit = timeUnit == null ? CalendarPeriod.Hour : timeUnit;
+    this.timePeriod = timeUnit == null ? CalendarPeriod.Hour : timeUnit;
+    CalendarPeriod.Field cf = this.timePeriod.getField();
 
-    CalendarPeriod.Field cf = this.timeUnit.getField();
-    if (cf == CalendarPeriod.Field.Month || cf == CalendarPeriod.Field.Year)
-      this.periodName = "calendar " + cf;
-    else
+    // LOOK
+    boolean isCalendarField = (cf == CalendarPeriod.Field.Month || cf == CalendarPeriod.Field.Year);
+    this.calendarDateUnit = CalendarDateUnit.of(this.timePeriod, isCalendarField, this.firstDate);
+    if (isCalendarField) {
+      this.periodName = "calendar " + cf; // LOOK maybe Period should know about isCalendarField ??
+    } else {
       this.periodName = cf.toString();
+    }
   }
 
   public CalendarPeriod getTimeUnits() {
-    return timeUnit;
+    return timePeriod;
   }
 
   public CalendarDate getRuntimeDate(int idx) {
@@ -64,21 +80,35 @@ public class CoordinateRuntime implements Coordinate {
    * Get offsets from firstDate, in units of timeUnit
    * 
    * @return for each runtime, a list of values from firstdate
+   *         LOOK Double
    */
   public List<Double> getOffsetsInTimeUnits() {
-    double start = firstDate.getMillis();
+    double start = firstDate.getMillisFromEpoch();
 
     List<Double> result = new ArrayList<>(runtimes.length);
     for (int idx = 0; idx < runtimes.length; idx++) {
       double runtime = (double) getRuntime(idx);
       double msecs = (runtime - start);
-      result.add(msecs / timeUnit.getValueInMillisecs());
+      // LOOK doesnt work for month, year.
+      // since runtimes is in millis, have no choice but to use fixed time period intervals.
+      result.add(msecs / GribUtils.getValueInMillisecs(timePeriod));
     }
     return result;
   }
 
-  public double getOffsetInTimeUnits(CalendarDate start) {
-    return timeUnit.getOffset(start, getFirstDate());
+  public List<Long> getRuntimeOffsetsInTimeUnits() {
+    List<Long> result = new ArrayList<>(runtimes.length);
+    for (int idx = 0; idx < runtimes.length; idx++) {
+      CalendarDate runtime = getRuntimeDate(idx);
+      result.add(runtime.since(firstDate, timePeriod));
+    }
+    return result;
+  }
+
+  // Get the offset of the runtime dates from the given one
+  public long getOffsetFrom(CalendarDate start) {
+    return firstDate.since(start, timePeriod);
+    // return timeUnit.getOffset(start, getFirstDate());
   }
 
   @Override
@@ -143,7 +173,7 @@ public class CoordinateRuntime implements Coordinate {
     long want;
 
     if (val instanceof CalendarDate)
-      want = ((CalendarDate) val).getMillis();
+      want = ((CalendarDate) val).getMillisFromEpoch();
     else if (val instanceof Number)
       want = ((Number) val).longValue();
     else
@@ -227,7 +257,7 @@ public class CoordinateRuntime implements Coordinate {
 
     @Override
     public Object extract(Grib2Record gr) {
-      return gr.getReferenceDate().getMillis();
+      return gr.getReferenceDate().getMillisFromEpoch();
     }
 
     @Override
@@ -249,7 +279,7 @@ public class CoordinateRuntime implements Coordinate {
 
     @Override
     public Object extract(Grib1Record gr) {
-      return gr.getReferenceDate().getMillis();
+      return gr.getReferenceDate().getMillisFromEpoch();
     }
 
     @Override

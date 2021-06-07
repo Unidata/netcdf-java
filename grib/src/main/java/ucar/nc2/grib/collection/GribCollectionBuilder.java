@@ -19,8 +19,8 @@ import ucar.nc2.grib.coord.CoordinateTime2D;
 import ucar.nc2.grib.coord.CoordinateTimeAbstract;
 import ucar.nc2.grib.GribIndex;
 import ucar.nc2.grib.GribIndexCache;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.calendar.CalendarDateRange;
 import thredds.inventory.CloseableIterator;
 import ucar.unidata.util.StringUtil2;
 import java.io.File;
@@ -149,7 +149,7 @@ abstract class GribCollectionBuilder {
           }
         }
         if (coord instanceof CoordinateTimeAbstract) {
-          CalendarDateRange calendarDateRange = ((CoordinateTimeAbstract) coord).makeCalendarDateRange(null);
+          CalendarDateRange calendarDateRange = ((CoordinateTimeAbstract) coord).makeCalendarDateRange();
           if (calendarDateRangeAll == null)
             calendarDateRangeAll = calendarDateRange;
           else
@@ -199,7 +199,7 @@ abstract class GribCollectionBuilder {
     // gather into collections with a single runtime
     Map<Long, List<Group>> runGroups = new HashMap<>();
     for (Group g : groups) {
-      List<Group> runGroup = runGroups.computeIfAbsent(g.getRuntime().getMillis(), k -> new ArrayList<>());
+      List<Group> runGroup = runGroups.computeIfAbsent(g.getRuntime().getMillisFromEpoch(), k -> new ArrayList<>());
       runGroup.add(g);
     }
 
@@ -217,13 +217,13 @@ abstract class GribCollectionBuilder {
 
       // create the master runtimes, consisting of the single runtime
       List<Long> runtimes = new ArrayList<>(1);
-      runtimes.add(g.getRuntime().getMillis());
+      runtimes.add(g.getRuntime().getMillisFromEpoch());
       CoordinateRuntime masterRuntimes = new CoordinateRuntime(runtimes, null);
 
       CalendarDateRange calendarDateRangeAll = null;
       for (Coordinate coord : g.getCoordinates()) {
         if (coord instanceof CoordinateTimeAbstract) {
-          CalendarDateRange calendarDateRange = ((CoordinateTimeAbstract) coord).makeCalendarDateRange(null);
+          CalendarDateRange calendarDateRange = ((CoordinateTimeAbstract) coord).makeCalendarDateRange();
           if (calendarDateRangeAll == null)
             calendarDateRangeAll = calendarDateRange;
           else

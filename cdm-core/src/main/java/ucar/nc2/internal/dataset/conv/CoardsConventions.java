@@ -10,7 +10,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.internal.dataset.CoordSystemBuilder;
 import ucar.nc2.dataset.spi.CoordSystemBuilderFactory;
-import ucar.nc2.time.Calendar;
+import ucar.nc2.calendar.Calendar;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.util.CancelTask;
 

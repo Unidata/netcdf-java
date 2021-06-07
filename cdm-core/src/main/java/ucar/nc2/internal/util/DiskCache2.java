@@ -4,8 +4,8 @@
  */
 package ucar.nc2.internal.util;
 
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateFormatter;
+import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.calendar.CalendarDateFormatter;
 import ucar.unidata.util.Format;
 import ucar.unidata.util.StringUtil2;
 import java.io.*;
@@ -449,7 +449,7 @@ public class DiskCache2 {
     File dir = new File(root);
     for (File file : dir.listFiles()) {
       f.format("%10s %20s %s%n", Format.formatByteSize(file.length()),
-          CalendarDateFormatter.toDateTimeStringShort(CalendarDate.of(file.lastModified())), file.getName());
+          CalendarDateFormatter.toDateTimeString(CalendarDate.of(file.lastModified())), file.getName());
     }
   }
 

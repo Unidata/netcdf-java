@@ -19,7 +19,7 @@ import ucar.nc2.grib.coord.CoordinateTime2D;
 import ucar.nc2.grib.coord.CoordinateTimeAbstract;
 import ucar.nc2.grib.coord.CoordinateTimeIntv;
 import ucar.nc2.grib.coord.TimeCoordIntvValue;
-import ucar.nc2.time.CalendarPeriod;
+import ucar.nc2.calendar.CalendarPeriod;
 
 /** Make Time2D coordinates when requested. */
 class Time2DLazyCoordinate {
@@ -58,7 +58,7 @@ class Time2DLazyCoordinate {
       case reftime:
         CoordinateRuntime rtc = (CoordinateRuntime) info.time1D;
         int count = 0;
-        for (double val : rtc.getOffsetsInTimeUnits()) {
+        for (double val : rtc.getRuntimeOffsetsInTimeUnits()) {
           data[count++] = val;
         }
         return data;

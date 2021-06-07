@@ -22,9 +22,9 @@ import ucar.nc2.grib.coord.EnsCoordValue;
 import ucar.nc2.grib.coord.TimeCoordIntvValue;
 import ucar.nc2.grib.coord.VertCoordValue;
 import ucar.nc2.stream.NcStream;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateUnit;
-import ucar.nc2.time.CalendarPeriod;
+import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.calendar.CalendarDateUnit;
+import ucar.nc2.calendar.CalendarPeriod;
 import ucar.unidata.io.RandomAccessFile;
 import java.io.IOException;
 import java.util.*;
@@ -364,14 +364,16 @@ abstract class GribCollectionBuilderFromIndex {
     Coordinate.Type type = convertAxisType(pc.getAxisType());
     int code = pc.getCode();
     String unit = pc.getUnit();
-    if (unit.isEmpty())
+    if (unit.isEmpty()) {
       unit = null; // LOOK may be null
+    }
 
     switch (type) {
       case runtime:
-        if (unit == null)
+        if (unit == null) {
           throw new IllegalStateException("Null units");
-        CalendarDateUnit cdUnit = CalendarDateUnit.of(null, unit);
+        }
+        CalendarDateUnit cdUnit = CalendarDateUnit.fromUdunitString(null, unit).orElseThrow(IllegalStateException::new);
         return new CoordinateRuntime(pc.getMsecsList(), cdUnit.getCalendarPeriod());
 
       case time:

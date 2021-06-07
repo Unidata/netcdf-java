@@ -5,7 +5,7 @@ import org.junit.experimental.categories.Category;
 import ucar.array.Array;
 import ucar.array.ArrayType;
 import ucar.array.InvalidRangeException;
-import ucar.nc2.time.CalendarDate;
+import ucar.nc2.calendar.CalendarDate;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
@@ -57,7 +57,8 @@ public class TestReadGridDataset {
       assertThat(f.toString()).contains("time (GridAxis1DTime) 715511");
 
       GridSubset subset = new GridSubset();
-      CalendarDate wantDate = CalendarDate.parseISOformat(null, "1960-01-01T00:00:00Z");
+      // LOOK this was "1960-01-01T00:00:00Z" in mixed gregorian
+      CalendarDate wantDate = CalendarDate.fromUdunitIsoDate(null, "1960-01-03T00:00:00Z").orElseThrow();
       subset.setTime(wantDate);
       GridReferencedArray geoArray = grid.readData(subset);
       Array<Number> data = geoArray.data();
@@ -115,7 +116,7 @@ public class TestReadGridDataset {
       }
 
       GridSubset subset = new GridSubset();
-      CalendarDate wantDate = CalendarDate.parseISOformat(null, "2009-08-02T12:00:00Z");
+      CalendarDate wantDate = CalendarDate.fromUdunitIsoDate(null, "2009-08-02T12:00:00Z").orElseThrow();
       subset.setTime(wantDate);
       subset.setVertCoord(700.0);
       GridReferencedArray geoArray = grid.readData(subset);
@@ -180,7 +181,7 @@ public class TestReadGridDataset {
       }
 
       GridSubset subset = new GridSubset();
-      CalendarDate wantDate = CalendarDate.parseISOformat(null, "2009-08-02T12:00:00Z");
+      CalendarDate wantDate = CalendarDate.fromUdunitIsoDate(null, "2009-08-02T12:00:00Z").orElseThrow();
       subset.setTime(wantDate);
       subset.setVertCoord(725.0);
       GridReferencedArray geoArray = grid.readData(subset);
@@ -239,7 +240,7 @@ public class TestReadGridDataset {
       }
 
       GridSubset subset = new GridSubset();
-      CalendarDate wantDate = CalendarDate.parseISOformat(null, "2003-02-14T06:00:00Z");
+      CalendarDate wantDate = CalendarDate.fromUdunitIsoDate(null, "2003-02-14T06:00:00Z").orElseThrow();
       subset.setTime(wantDate);
       subset.setVertCoord(725.);
       GridReferencedArray geoArray = grid.readData(subset);

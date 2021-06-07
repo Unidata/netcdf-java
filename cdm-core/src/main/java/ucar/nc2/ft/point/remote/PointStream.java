@@ -29,7 +29,7 @@ import ucar.nc2.ft.PointFeatureIterator;
 import ucar.nc2.ft.point.PointFeatureImpl;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.stream.NcStreamProto;
-import ucar.nc2.time.CalendarDateUnit;
+import ucar.nc2.calendar.CalendarDateUnit;
 import ucar.unidata.geoloc.EarthLocation;
 import ucar.unidata.geoloc.Station;
 
@@ -197,13 +197,7 @@ public class PointStream {
     private final StructureMembers sm;
 
     ProtobufPointFeatureMaker(PointStreamProto.PointFeatureCollection pfc) {
-      try {
-        // LOOK No calendar
-        dateUnit = CalendarDateUnit.of(null, pfc.getTimeUnit());
-      } catch (Exception e) {
-        e.printStackTrace();
-        dateUnit = CalendarDateUnit.unixDateUnit;
-      }
+      dateUnit = CalendarDateUnit.fromUdunitString(null, pfc.getTimeUnit()).orElse(CalendarDateUnit.unixDateUnit);
 
       StructureMembers.Builder builder = StructureMembers.builder().setName(pfc.getName());
       for (PointStreamProto.PointFeatureMember m : pfc.getMembersList()) {
@@ -261,7 +255,7 @@ public class PointStream {
 
   public static int write(PointFeatureCollection pointFeatCol, File outFile) throws IOException {
     String name = outFile.getCanonicalPath();
-    String timeUnitString = pointFeatCol.getTimeUnit().getUdUnit();
+    String timeUnitString = pointFeatCol.getTimeUnit().toString();
     String altUnits = pointFeatCol.getAltUnits();
 
     try (PointFeatureIterator pointFeatIter = pointFeatCol.getPointFeatureIterator();

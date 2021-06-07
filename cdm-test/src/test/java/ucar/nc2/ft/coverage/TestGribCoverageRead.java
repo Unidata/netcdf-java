@@ -14,8 +14,7 @@ import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft2.coverage.*;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.util.Misc;
+import ucar.nc2.calendar.CalendarDate;
 import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
@@ -33,7 +32,7 @@ import java.lang.invoke.MethodHandles;
 public class TestGribCoverageRead {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  CalendarDate useDate = CalendarDate.parseISOformat(null, "2014-10-27T06:00:00Z");
+  CalendarDate useDate = CalendarDate.fromUdunitIsoDate(null, "2014-10-27T06:00:00Z").orElseThrow();
 
   @Test
   public void TestTwoDRead() throws IOException, InvalidRangeException {
@@ -213,8 +212,9 @@ public class TestGribCoverageRead {
       long size = cover.getSizeInBytes();
       Assert.assertEquals(6 * 35 * 9 * 65 * 93 * 4, size);
 
-      SubsetParams subset = new SubsetParams().setRunTime(CalendarDate.parseISOformat(null, "2014-10-24T12:00:00Z"))
-          .setTimeOffset(42).setVertCoord(500);
+      SubsetParams subset =
+          new SubsetParams().setRunTime(CalendarDate.fromUdunitIsoDate(null, "2014-10-24T12:00:00Z").orElseThrow())
+              .setTimeOffset(42).setVertCoord(500);
       GeoReferencedArray geo = cover.readData(subset);
       Array data = geo.getData();
       logger.debug("{}", Arrays.toString(data.getShape()));

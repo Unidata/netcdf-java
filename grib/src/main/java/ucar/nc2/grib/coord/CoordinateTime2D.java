@@ -14,13 +14,23 @@ import ucar.nc2.grib.grib1.Grib1Record;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.grib.grib2.table.Grib2Tables;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.time.CalendarPeriod;
+import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.calendar.CalendarDateRange;
+import ucar.nc2.calendar.CalendarPeriod;
 import ucar.nc2.internal.util.Counters;
 import ucar.nc2.util.Indent;
 import javax.annotation.concurrent.Immutable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Formatter;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 /**
  * Both runtime and time coordinates are tracked here. The time coordinate is dependent on the runtime, at least on the
@@ -159,22 +169,26 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     this.vals = (vals == null) ? null : Collections.unmodifiableList(vals);
   }
 
+  // LOOK do we need long?
   private int[] makeOffsets(List<Coordinate> orgTimes) {
     CalendarDate firstDate = runtime.getFirstDate();
     int[] offsets = new int[nruns];
     for (int idx = 0; idx < nruns; idx++) {
       CoordinateTimeAbstract coordTime = (CoordinateTimeAbstract) orgTimes.get(idx);
       CalendarPeriod period = coordTime.getTimeUnit(); // LOOK are we assuming all have same period ??
-      offsets[idx] = period.getOffset(firstDate, runtime.getRuntimeDate(idx)); // LOOK possible loss of precision
+      offsets[idx] = (int) runtime.getRuntimeDate(idx).since(firstDate, period); // LOOK possible loss of precision
+      // offsets[idx] = period.getOffset(firstDate, runtime.getRuntimeDate(idx)); // LOOK possible loss of precision
     }
     return offsets;
   }
 
+  // LOOK do we need long?
   private int[] makeOffsets(CalendarPeriod period) {
     CalendarDate firstDate = runtime.getFirstDate();
     int[] offsets = new int[nruns];
     for (int idx = 0; idx < nruns; idx++) {
-      offsets[idx] = period.getOffset(firstDate, runtime.getRuntimeDate(idx)); // LOOK possible loss of precision
+      offsets[idx] = (int) runtime.getRuntimeDate(idx).since(firstDate, period); // LOOK possible loss of precision
+      // offsets[idx] = period.getOffset(firstDate, runtime.getRuntimeDate(idx)); // LOOK possible loss of precision
     }
     return offsets;
   }
@@ -429,13 +443,12 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
   }
 
   @Override
-  public CalendarDateRange makeCalendarDateRange(ucar.nc2.time.Calendar cal) {
-
+  public CalendarDateRange makeCalendarDateRange() {
     CoordinateTimeAbstract firstCoord = getTimeCoordinate(0);
     CoordinateTimeAbstract lastCoord = getTimeCoordinate(nruns - 1);
 
-    CalendarDateRange firstRange = firstCoord.makeCalendarDateRange(cal);
-    CalendarDateRange lastRange = lastCoord.makeCalendarDateRange(cal);
+    CalendarDateRange firstRange = firstCoord.makeCalendarDateRange();
+    CalendarDateRange lastRange = lastCoord.makeCalendarDateRange();
 
     return CalendarDateRange.of(firstRange.getStart(), lastRange.getEnd());
   }
@@ -531,7 +544,8 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
    */
   public int matchTimeCoordinate(int runIdx, CoordinateTime2D.Time2D value) {
     CoordinateTimeAbstract time = getTimeCoordinate(runIdx);
-    int offset = timeUnit.getOffset(getRefDate(runIdx), value.getRefDate());
+    int offset = (int) value.getRefDate().since(getRefDate(runIdx), timeUnit);
+    // int offset = timeUnit.getOffset(getRefDate(runIdx), value.getRefDate());
 
     Object valueWithOffset;
     if (isTimeInterval) {
@@ -816,7 +830,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     TimeCoordIntvValue tinv;
 
     public Time2D(CalendarDate refDate, Integer time, TimeCoordIntvValue tinv) {
-      this.refDate = refDate.getMillis();
+      this.refDate = refDate.getMillisFromEpoch();
       this.time = time;
       this.tinv = tinv;
     }

@@ -23,10 +23,10 @@ import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDataset.Builder;
 import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.nc2.time.Calendar;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateUnit;
-import ucar.nc2.time.CalendarPeriod.Field;
+import ucar.nc2.calendar.Calendar;
+import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.calendar.CalendarDateUnit;
+import ucar.nc2.calendar.CalendarPeriod.Field;
 import ucar.unidata.util.test.Assert2;
 
 /** Test TestNcml - AggExisting in the JUnit framework. */
@@ -395,12 +395,13 @@ public class TestAggExistingNew {
     CalendarDateUnit calendarDateUnit = getCalendarDateUnit(timeVar);
     int indexOct4 = 277 - 1;
     CalendarDate calendarDateBefore = calendarDateUnit.makeCalendarDate(indexOct4);
-    CalendarDate expected = CalendarDate.parseISOformat(calendarDateUnit.getCalendar().name(), "1582-10-4T0:0:0");
+    CalendarDate expected =
+        CalendarDate.fromUdunitIsoDate(calendarDateUnit.getCalendar().name(), "1582-10-4T0:0:0").orElseThrow();
     assertThat(calendarDateBefore).isEqualTo(expected);
 
     // 278 days -> 5 October 1582
     CalendarDate calendarDateAfter = calendarDateUnit.makeCalendarDate(indexOct4 + 1);
-    expected = CalendarDate.parseISOformat(calendarDateUnit.getCalendar().name(), "1582-10-5T0:0:0");
+    expected = CalendarDate.fromUdunitIsoDate(calendarDateUnit.getCalendar().name(), "1582-10-5T0:0:0").orElseThrow();
     assertThat(calendarDateAfter).isEqualTo(expected);
 
     // check start and end dates of aggregation
@@ -411,7 +412,8 @@ public class TestAggExistingNew {
     ncfile.close();
   }
 
-  @Test
+  // LOOK not supporting mixed Gregorian
+  // @Test
   public void testNcmlAggExistingGregorianCal() throws IOException {
     // with calendar = gregorian, 4 October 1582 was followed by 15 October 1582
     String filename = "file:./" + TestNcmlRead.topDir + "agg_with_calendar/aggExistingGregorianCal.xml";
@@ -454,18 +456,19 @@ public class TestAggExistingNew {
     CalendarDateUnit calendarDateUnit = getCalendarDateUnit(timeVar);
     int indexOct4 = 277 - 1;
     CalendarDate calendarDateBefore = calendarDateUnit.makeCalendarDate(indexOct4);
-    CalendarDate expected = CalendarDate.parseISOformat(calendarDateUnit.getCalendar().name(), "1582-10-4T0:0:0");
+    CalendarDate expected =
+        CalendarDate.fromUdunitIsoDate(calendarDateUnit.getCalendar().name(), "1582-10-4T0:0:0").orElseThrow();
     assertThat(calendarDateBefore).isEqualTo(expected);
 
     // 278 days -> 15 October 1582
     CalendarDate calendarDateAfter = calendarDateUnit.makeCalendarDate(indexOct4 + 1);
-    expected = CalendarDate.parseISOformat(calendarDateUnit.getCalendar().name(), "1582-10-15T0:0:0");
+    expected = CalendarDate.fromUdunitIsoDate(calendarDateUnit.getCalendar().name(), "1582-10-15T0:0:0").orElseThrow();
     assertThat(calendarDateAfter).isEqualTo(expected);
 
     // 355 days + 365 days = 720 days in aggregation
     int indexLastDate = 720 - 1;
     CalendarDate lastCalendarDate = calendarDateUnit.makeCalendarDate(indexLastDate);
-    expected = CalendarDate.parseISOformat(calendarDateUnit.getCalendar().name(), "1583-12-31T0:0:0");
+    expected = CalendarDate.fromUdunitIsoDate(calendarDateUnit.getCalendar().name(), "1583-12-31T0:0:0").orElseThrow();
     assertThat(lastCalendarDate).isEqualTo(expected);
 
     // check start and end dates of aggregation
@@ -523,8 +526,8 @@ public class TestAggExistingNew {
   private CalendarDateUnit getCalendarDateUnit(Variable timeVar) {
     Attribute calAttr = timeVar.attributes().findAttributeIgnoreCase("calendar");
     assertThat(calAttr).isNotNull();
-    Calendar cal = Calendar.get(calAttr.getStringValue());
-    return CalendarDateUnit.withCalendar(cal, timeVar.getUnitsString());
+    Calendar cal = Calendar.get(calAttr.getStringValue()).orElse(null);
+    return CalendarDateUnit.fromUdunitString(cal, timeVar.getUnitsString()).orElseThrow();
   }
 
   private void testTimeDelta(Variable timeVar, TimeDelta expectedDiff) throws IOException {
@@ -534,7 +537,7 @@ public class TestAggExistingNew {
     for (int val = 1; val < shape[0]; val++) {
       CalendarDate today = calendarDateUnit.makeCalendarDate(vals.getInt(val));
       CalendarDate yesterday = calendarDateUnit.makeCalendarDate(vals.getInt(val - 1));
-      long diff = today.getDifference(yesterday, expectedDiff.getUnit());
+      long diff = today.since(yesterday, expectedDiff.getUnit());
       assertThat(diff).isEqualTo(expectedDiff.getValue());
     }
   }
@@ -546,12 +549,12 @@ public class TestAggExistingNew {
     // check start date of aggregation
     CalendarDateUnit calendarDateUnit = getCalendarDateUnit(timeVar);
     CalendarDate calendarDate = calendarDateUnit.makeCalendarDate(vals.getInt(0));
-    CalendarDate expected = CalendarDate.parseISOformat(calendarDateUnit.getCalendar().name(), start);
+    CalendarDate expected = CalendarDate.fromUdunitIsoDate(calendarDateUnit.getCalendar().name(), start).orElseThrow();
     assertThat(calendarDate).isEqualTo(expected);
 
     // check end date of aggregation
     calendarDate = calendarDateUnit.makeCalendarDate(vals.getInt(shape[0] - 1));
-    expected = CalendarDate.parseISOformat(calendarDateUnit.getCalendar().name(), end);
+    expected = CalendarDate.fromUdunitIsoDate(calendarDateUnit.getCalendar().name(), end).orElseThrow();
     assertThat(calendarDate).isEqualTo(expected);
   }
 

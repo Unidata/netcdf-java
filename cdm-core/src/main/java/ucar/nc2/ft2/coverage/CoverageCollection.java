@@ -7,7 +7,8 @@ package ucar.nc2.ft2.coverage;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.calendar.Calendar;
+import ucar.nc2.calendar.CalendarDateRange;
 import ucar.nc2.util.Indent;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionRect;
@@ -157,10 +158,10 @@ public class CoverageCollection implements Closeable, CoordSysContainer {
     return calendarDateRange;
   }
 
-  public ucar.nc2.time.Calendar getCalendar() {
+  public Calendar getCalendar() {
     if (calendarDateRange != null)
       return calendarDateRange.getStart().getCalendar(); // LOOK
-    return ucar.nc2.time.Calendar.getDefault();
+    return Calendar.getDefault();
   }
 
   public Iterable<Coverage> getCoverages() {

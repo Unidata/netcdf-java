@@ -23,8 +23,8 @@ import ucar.nc2.ft.point.NestedCollectionIteratorAdapter;
 import ucar.nc2.ft.point.ProfileFeatureImpl;
 import ucar.nc2.ft.point.SectionCollectionImpl;
 import ucar.nc2.ft.point.SectionFeatureImpl;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateUnit;
+import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.calendar.CalendarDateUnit;
 import ucar.nc2.ft.IOIterator;
 
 /**
@@ -213,7 +213,7 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
           if (iter.hasNext()) {
             PointFeature pf = iter.next();
             this.time = pf.getObservationTime();
-            this.name = timeUnit.makeCalendarDate(this.time).toString();
+            this.name = timeUnit.makeCalendarDate((int) this.time).toString();
           } else {
             this.name = "empty";
           }
@@ -233,7 +233,7 @@ public class StandardSectionCollectionImpl extends SectionCollectionImpl {
     @Nonnull
     @Override
     public CalendarDate getTime() {
-      return timeUnit.makeCalendarDate(time);
+      return timeUnit.makeCalendarDate((int) time);
     }
 
     @Nonnull

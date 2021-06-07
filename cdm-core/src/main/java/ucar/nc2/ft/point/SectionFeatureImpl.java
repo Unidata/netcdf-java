@@ -10,7 +10,7 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.PointFeatureCollectionIterator;
 import ucar.nc2.ft.ProfileFeature;
 import ucar.nc2.ft.TrajectoryProfileFeature;
-import ucar.nc2.time.CalendarDateUnit;
+import ucar.nc2.calendar.CalendarDateUnit;
 
 /**
  * Abstract superclass for implementations of SectionFeature.

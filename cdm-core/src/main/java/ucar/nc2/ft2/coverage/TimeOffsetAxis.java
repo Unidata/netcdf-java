@@ -5,8 +5,8 @@
 package ucar.nc2.ft2.coverage;
 
 import java.util.Formatter;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.calendar.CalendarDateRange;
 import java.util.Optional;
 
 /**
@@ -68,7 +68,7 @@ public class TimeOffsetAxis extends CoverageCoordAxis1D {
 
   public CalendarDate makeDate(CalendarDate runDate, double val) {
     double offset = timeHelper.getOffsetInTimeUnits(timeHelper.getRefDate(), runDate);
-    return timeHelper.makeDate(offset + val);
+    return timeHelper.makeDate((int) (offset + val));
   }
 
   @Override

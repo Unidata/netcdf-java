@@ -11,7 +11,7 @@ import thredds.inventory.filter.LastModifiedLimit;
 import thredds.inventory.filter.RegExpMatchOnName;
 import thredds.inventory.filter.WildcardMatchOnName;
 import thredds.inventory.filter.WildcardMatchOnPath;
-import ucar.nc2.time.CalendarDate;
+import ucar.nc2.calendar.CalendarDate;
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
 import java.io.IOException;
@@ -524,7 +524,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
     if (result == null)
       if (!this.filesRunDateMap.isEmpty()) {
         String dateString = filesRunDateMap.get(mfile.getPath());
-        result = CalendarDate.parseISOformat(null, dateString);
+        result = CalendarDate.fromUdunitIsoDate(null, dateString).orElseThrow();
       }
     if (result == null)
       logger.error("Failed to find a run date associated with file {}", mfile.getPath());

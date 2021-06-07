@@ -4,7 +4,7 @@ import java.io.IOException;
 import javax.annotation.Nonnull;
 import ucar.ma2.StructureData;
 import ucar.nc2.ft.DsgFeatureCollection;
-import ucar.nc2.time.CalendarDateUnit;
+import ucar.nc2.calendar.CalendarDateUnit;
 import ucar.unidata.geoloc.EarthLocation;
 
 /**

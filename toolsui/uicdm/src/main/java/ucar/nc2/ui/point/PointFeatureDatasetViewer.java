@@ -5,7 +5,6 @@
 
 package ucar.nc2.ui.point;
 
-import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import ucar.ma2.StructureData;
@@ -13,12 +12,10 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.StationFeature;
 import ucar.nc2.ft.point.writer2.CFPointWriter;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.ui.dialog.NetcdfOutputChooser;
 import ucar.nc2.write.Ncdump;
 import ucar.nc2.iosp.NetcdfFileFormat;
-import ucar.ui.util.Resource;
 import ucar.ui.widget.BAMutil;
 import ucar.ui.widget.IndependentDialog;
 import ucar.ui.widget.PopupMenu;
@@ -31,13 +28,11 @@ import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.BeanTable;
 import ucar.nc2.ui.StructureTable;
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Frame;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -136,8 +131,8 @@ public class PointFeatureDatasetViewer extends JPanel {
         try {
           if (selectedStation != null) {
             setStation(selectedStation, dateRange);
-          } else if (useRegion || (dateRange != null)) {
-            subset(geoRegion, dateRange);
+            // } else if (useRegion || (dateRange != null)) {
+            // subset(geoRegion, dateRange);
           } else {
             JOptionPane.showMessageDialog(null, "You must subset in space and/or time ");
           }
@@ -355,10 +350,10 @@ public class PointFeatureDatasetViewer extends JPanel {
     infoTA.clear();
 
     // set the date range if possible
-    CalendarDateRange dr = dataset.getCalendarDateRange();
-    if (dr != null) {
-      stationMap.setDateRange(dr.toDateRange());
-    }
+    // CalendarDateRange dr = dataset.getCalendarDateRange();
+    // if (dr != null) {
+    // stationMap.setDateRange(dr.toDateRange());
+    // }
 
     // set the bounding box if possible
     LatLonRect bb = dataset.getBoundingBox();
@@ -510,37 +505,26 @@ public class PointFeatureDatasetViewer extends JPanel {
     stnTable.clearSelectedCells();
   }
 
-  private void subset(LatLonRect geoRegion, DateRange dateRange) throws IOException {
-    PointFeatureCollection pc = null;
-    CalendarDateRange cdr = CalendarDateRange.of(dateRange);
-
-    if (selectedType == FeatureType.POINT) {
-      PointFeatureCollection ptCollection = (PointFeatureCollection) selectedCollection;
-      pc = ptCollection.subset(geoRegion, cdr);
-
-    } else if (selectedType == FeatureType.STATION) {
-      StationTimeSeriesFeatureCollection stationCollection = (StationTimeSeriesFeatureCollection) selectedCollection;
-      /*
-       * if (geoRegion != null) {
-       * StationTimeSeriesFeatureCollection stationSubset = stationCollection.subset(geoRegion);
-       * setStations( stationSubset);
-       * return;
-       * } else {
-       */
-      pc = stationCollection.flatten(geoRegion, cdr);
-      // } LOOK
-    }
-    /*
-     * else if (selectedType == FeatureType.STATION_PROFILE) {
-     * StationProfileFeatureCollection stationProfileCollection = (StationProfileFeatureCollection) selectedCollection;
-     * pc = stationProfileCollection.flatten(geoRegion, cdr);
-     * }
-     */
-
-    if (null != pc) {
-      setObservations(pc);
-    }
-  }
+  /*
+   * private void subset(LatLonRect geoRegion, DateRange dateRange) throws IOException {
+   * PointFeatureCollection pc = null;
+   * CalendarDateRange cdr = CalendarDateRange.of(dateRange);
+   * 
+   * if (selectedType == FeatureType.POINT) {
+   * PointFeatureCollection ptCollection = (PointFeatureCollection) selectedCollection;
+   * pc = ptCollection.subset(geoRegion, cdr);
+   * 
+   * } else if (selectedType == FeatureType.STATION) {
+   * StationTimeSeriesFeatureCollection stationCollection = (StationTimeSeriesFeatureCollection) selectedCollection;
+   * pc = stationCollection.flatten(geoRegion, cdr);
+   * // } LOOK
+   * }
+   * 
+   * if (null != pc) {
+   * setObservations(pc);
+   * }
+   * }
+   */
 
   private void setStation(StationBean sb, DateRange dr) throws IOException {
     if (selectedType == FeatureType.POINT) {
@@ -561,9 +545,9 @@ public class PointFeatureDatasetViewer extends JPanel {
     } else if (selectedType == FeatureType.STATION) {
       StationTimeSeriesFeatureCollection stationCollection = (StationTimeSeriesFeatureCollection) selectedCollection;
       StationTimeSeriesFeature feature = stationCollection.getStationTimeSeriesFeature(sb.stnFeat);
-      if (dr != null) {
-        feature = feature.subset(CalendarDateRange.of(dr));
-      }
+      // if (dr != null) {
+      // feature = feature.subset(CalendarDateRange.of(dr));
+      // }
       setObservations(feature);
 
       // iterator may count points

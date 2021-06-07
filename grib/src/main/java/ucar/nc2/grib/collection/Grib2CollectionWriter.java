@@ -18,8 +18,8 @@ import ucar.nc2.grib.coord.CoordinateVert;
 import ucar.nc2.grib.coord.SparseArray;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.stream.NcStream;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.calendar.CalendarDateRange;
 import ucar.unidata.io.RandomAccessFile;
 import java.io.*;
 import java.util.*;
@@ -214,8 +214,8 @@ class Grib2CollectionWriter extends GribCollectionWriter {
       indexBuilder.setGenProcessId(pds.getGenProcessId());
       indexBuilder.setBackProcessId(pds.getBackProcessId());
 
-      indexBuilder.setStartTime(dateRange.getStart().getMillis());
-      indexBuilder.setEndTime(dateRange.getEnd().getMillis());
+      indexBuilder.setStartTime(dateRange.getStart().getMillisFromEpoch());
+      indexBuilder.setEndTime(dateRange.getEnd().getMillisFromEpoch());
 
       GribCollectionProto.GribCollection index = indexBuilder.build();
       byte[] b = index.toByteArray();

@@ -14,8 +14,8 @@ import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.stream.NcStreamDataCol;
 import ucar.nc2.stream.NcStreamProto;
-import ucar.nc2.time.Calendar;
-import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.calendar.Calendar;
+import ucar.nc2.calendar.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionRect;
@@ -146,8 +146,8 @@ public class CdmrfWriter {
   CdmrFeatureProto.CalendarDateRange.Builder encodeDateRange(CalendarDateRange dateRange) {
     CdmrFeatureProto.CalendarDateRange.Builder builder = CdmrFeatureProto.CalendarDateRange.newBuilder();
 
-    builder.setStart(dateRange.getStart().getMillis());
-    builder.setEnd(dateRange.getEnd().getMillis());
+    builder.setStart(dateRange.getStart().getMillisFromEpoch());
+    builder.setEnd(dateRange.getEnd().getMillisFromEpoch());
     Calendar cal = dateRange.getStart().getCalendar();
     builder.setCalendar(convertCalendar(cal));
     return builder;

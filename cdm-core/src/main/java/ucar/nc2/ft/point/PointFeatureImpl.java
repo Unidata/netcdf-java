@@ -8,8 +8,8 @@ import javax.annotation.Nonnull;
 import com.google.common.base.Preconditions;
 import ucar.nc2.ft.DsgFeatureCollection;
 import ucar.nc2.ft.PointFeature;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateUnit;
+import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.calendar.CalendarDateUnit;
 import ucar.unidata.geoloc.EarthLocation;
 
 /**
@@ -68,13 +68,13 @@ public abstract class PointFeatureImpl implements PointFeature, Comparable<Point
   @Nonnull
   @Override
   public CalendarDate getObservationTimeAsCalendarDate() {
-    return timeUnit.makeCalendarDate(getObservationTime());
+    return timeUnit.makeCalendarDate((int) getObservationTime());
   }
 
   @Nonnull
   @Override
   public CalendarDate getNominalTimeAsCalendarDate() {
-    return timeUnit.makeCalendarDate(getNominalTime());
+    return timeUnit.makeCalendarDate((int) getNominalTime());
   }
 
   @Override

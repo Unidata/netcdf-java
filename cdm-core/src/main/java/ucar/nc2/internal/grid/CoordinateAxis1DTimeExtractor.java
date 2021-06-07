@@ -6,7 +6,7 @@ import ucar.array.ArrayType;
 import ucar.array.Arrays;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.*;
-import ucar.nc2.time.CalendarDate;
+import ucar.nc2.calendar.CalendarDate;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -68,7 +68,7 @@ class CoordinateAxis1DTimeExtractor {
   private CalendarDate makeCalendarDateFromStringCoord(String coordValue, Variable org, Formatter errMessages) {
     try {
       return timeHelper.makeCalendarDateFromOffset(coordValue);
-    } catch (IllegalArgumentException e) {
+    } catch (Exception e) {
       errMessages.format("Bad time coordinate '%s' in dataset '%s'%n", coordValue, org.getDatasetLocation());
       log.info("Bad time coordinate '{}' in dataset '{}'", coordValue, org.getDatasetLocation());
       throw new RuntimeException(errMessages.toString(), e);

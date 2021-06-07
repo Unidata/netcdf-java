@@ -28,8 +28,8 @@ import ucar.nc2.ft2.coverage.GeoReferencedArray;
 import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.nc2.ft2.coverage.TimeOffsetAxis;
 import ucar.nc2.grib.collection.GribDataReader;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.calendar.CalendarDateRange;
 import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
@@ -66,7 +66,7 @@ public class TestCoverageSubsetTime {
       Assert.assertNotNull(covName, cover);
 
       SubsetParams params = new SubsetParams();
-      CalendarDate runtime = CalendarDate.parseISOformat(null, "2015-03-01T12:00:00Z");
+      CalendarDate runtime = CalendarDate.fromUdunitIsoDate(null, "2015-03-01T12:00:00Z").orElseThrow();
       params.set(SubsetParams.runtime, runtime);
       double offsetVal = 51.0; // should fail
       params.set(SubsetParams.timeOffset, offsetVal);
@@ -95,7 +95,7 @@ public class TestCoverageSubsetTime {
       Assert.assertNotNull(covName, cover);
 
       SubsetParams params = new SubsetParams();
-      CalendarDate runtime = CalendarDate.parseISOformat(null, "2015-03-01T06:00:00Z");
+      CalendarDate runtime = CalendarDate.fromUdunitIsoDate(null, "2015-03-01T06:00:00Z").orElseThrow();
       params.set(SubsetParams.runtime, runtime);
       double offsetVal = 205.0;
       params.set(SubsetParams.timeOffset, offsetVal);
@@ -126,9 +126,9 @@ public class TestCoverageSubsetTime {
       Assert.assertNotNull(covName, cover);
 
       SubsetParams params = new SubsetParams();
-      CalendarDate runtime = CalendarDate.parseISOformat(null, "2015-03-01T00:00:00Z");
+      CalendarDate runtime = CalendarDate.fromUdunitIsoDate(null, "2015-03-01T00:00:00Z").orElseThrow();
       params.set(SubsetParams.runtime, runtime);
-      CalendarDate time = CalendarDate.parseISOformat(null, "2015-03-06T19:30:00Z"); // (6,12), (12,18)
+      CalendarDate time = CalendarDate.fromUdunitIsoDate(null, "2015-03-06T19:30:00Z").orElseThrow(); // (6,12), (12,18)
       params.set(SubsetParams.time, time);
       logger.debug("  subset {}", params);
 
@@ -160,9 +160,9 @@ public class TestCoverageSubsetTime {
       Assert.assertNotNull(covName, cover);
 
       SubsetParams params = new SubsetParams();
-      CalendarDate runtime = CalendarDate.parseISOformat(null, "2015-03-01T06:00:00Z");
+      CalendarDate runtime = CalendarDate.fromUdunitIsoDate(null, "2015-03-01T06:00:00Z").orElseThrow();
       params.set(SubsetParams.runtime, runtime);
-      CalendarDate time = CalendarDate.parseISOformat(null, "2015-03-01T11:00:00Z"); // (6,12), (12,18)
+      CalendarDate time = CalendarDate.fromUdunitIsoDate(null, "2015-03-01T11:00:00Z").orElseThrow(); // (6,12), (12,18)
       params.set(SubsetParams.time, time);
       logger.debug("  subset {}", params);
 
@@ -193,9 +193,9 @@ public class TestCoverageSubsetTime {
       Assert.assertNotNull(covName, cover);
 
       SubsetParams params = new SubsetParams();
-      CalendarDate runtime = CalendarDate.parseISOformat(null, "2015-03-01T06:00:00Z");
+      CalendarDate runtime = CalendarDate.fromUdunitIsoDate(null, "2015-03-01T06:00:00Z").orElseThrow();
       params.set(SubsetParams.runtime, runtime);
-      CalendarDate time = CalendarDate.parseISOformat(null, "2015-03-01T12:00:00Z");
+      CalendarDate time = CalendarDate.fromUdunitIsoDate(null, "2015-03-01T12:00:00Z").orElseThrow();
       params.set(SubsetParams.time, time);
       logger.debug("  subset {}", params);
 
@@ -224,7 +224,7 @@ public class TestCoverageSubsetTime {
       Assert.assertNotNull(covName, cover);
 
       SubsetParams params = new SubsetParams();
-      CalendarDate runtime = CalendarDate.parseISOformat(null, "2015-03-01T12:00:00Z");
+      CalendarDate runtime = CalendarDate.fromUdunitIsoDate(null, "2015-03-01T12:00:00Z").orElseThrow();
       params.set(SubsetParams.runtime, runtime);
       logger.debug("  subset {}", params);
 
@@ -311,7 +311,7 @@ public class TestCoverageSubsetTime {
       Assert.assertNotNull(covName, cover);
 
       SubsetParams params = new SubsetParams();
-      CalendarDate time = CalendarDate.parseISOformat(null, "2015-03-01T15:00:00Z");
+      CalendarDate time = CalendarDate.fromUdunitIsoDate(null, "2015-03-01T15:00:00Z").orElseThrow();
       params.set(SubsetParams.time, time);
       params.set(SubsetParams.runtimeAll, true);
       logger.debug("  subset {}", params);
@@ -441,7 +441,7 @@ public class TestCoverageSubsetTime {
       Assert.assertNotNull(covName, cover);
 
       SubsetParams params = new SubsetParams();
-      params.setTime(CalendarDate.parseISOformat(null, "2015-03-03T00:00:00Z"));
+      params.setTime(CalendarDate.fromUdunitIsoDate(null, "2015-03-03T00:00:00Z").orElseThrow());
       params.setVertCoord(3658.0);
       logger.debug("  subset {}", params);
 
@@ -565,9 +565,9 @@ public class TestCoverageSubsetTime {
       assertThat(coverage).isNotNull();
       SubsetParams params = new SubsetParams();
 
-      CalendarDate runTime = CalendarDate.parseISOformat(null, "2015-03-01T00:00:00Z");
+      CalendarDate runTime = CalendarDate.fromUdunitIsoDate(null, "2015-03-01T00:00:00Z").orElseThrow();
       params.setRunTime(runTime);
-      CalendarDate validTime = CalendarDate.parseISOformat(null, "2015-03-02T06:00:00Z");
+      CalendarDate validTime = CalendarDate.fromUdunitIsoDate(null, "2015-03-02T06:00:00Z").orElseThrow();
       params.setTime(validTime);
       logger.debug("  subset {}", params);
       // expect: any interval [start, stop] containing the requested time
@@ -590,7 +590,7 @@ public class TestCoverageSubsetTime {
       // multiple matches
       params = new SubsetParams();
       params.setRunTime(runTime);
-      validTime = CalendarDate.parseISOformat(null, "2015-03-02T7:00:00Z");
+      validTime = CalendarDate.fromUdunitIsoDate(null, "2015-03-02T7:00:00Z").orElseThrow();
       params.setTime(validTime);
       expectedStartIndex = 10;
       expectedEndIndex = 11;
@@ -619,7 +619,7 @@ public class TestCoverageSubsetTime {
       assertThat(coverage).isNotNull();
       SubsetParams params = new SubsetParams();
 
-      CalendarDate runTime = CalendarDate.parseISOformat(null, "2015-03-01T00:00:00Z");
+      CalendarDate runTime = CalendarDate.fromUdunitIsoDate(null, "2015-03-01T00:00:00Z").orElseThrow();
       params.setRunTime(runTime);
       double intervalStart = 30;
       double intervalStop = 33;
@@ -684,7 +684,7 @@ public class TestCoverageSubsetTime {
       assertThat(coverage).isNotNull();
       SubsetParams params = new SubsetParams();
 
-      CalendarDate runTime = CalendarDate.parseISOformat(null, "2015-03-01T00:00:00Z");
+      CalendarDate runTime = CalendarDate.fromUdunitIsoDate(null, "2015-03-01T00:00:00Z").orElseThrow();
       params.setRunTime(runTime);
       double intervalStart = 30;
       double intervalStop = 39;
@@ -730,11 +730,11 @@ public class TestCoverageSubsetTime {
       assertThat(coverage).isNotNull();
       SubsetParams params = new SubsetParams();
 
-      CalendarDate runTime = CalendarDate.parseISOformat(null, "2015-03-01T00:00:00Z");
+      CalendarDate runTime = CalendarDate.fromUdunitIsoDate(null, "2015-03-01T00:00:00Z").orElseThrow();
       params.setRunTime(runTime);
 
-      CalendarDate subsetTimeStart = CalendarDate.parseISOformat(null, "2015-03-02T06:00:00Z");
-      CalendarDate subsetTimeEnd = CalendarDate.parseISOformat(null, "2015-03-02T12:00:00Z");
+      CalendarDate subsetTimeStart = CalendarDate.fromUdunitIsoDate(null, "2015-03-02T06:00:00Z").orElseThrow();
+      CalendarDate subsetTimeEnd = CalendarDate.fromUdunitIsoDate(null, "2015-03-02T12:00:00Z").orElseThrow();
       // expect: any interval containing or ending on the start or end times
       // idx keep interval
       // 08 N (24.000000, 27.000000) == (2015-03-02T00:00:00Z, 2015-03-02T03:00:00Z)

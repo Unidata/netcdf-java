@@ -48,7 +48,7 @@ import ucar.nc2.grib.collection.GribCollectionImmutable;
 import ucar.nc2.grib.coord.TimeCoordIntvDateValue;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.grib2.table.Grib2Tables;
-import ucar.nc2.time.CalendarDate;
+import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.write.Ncdump;
 import ucar.ui.widget.*;
 import ucar.ui.widget.PopupMenu;
@@ -1105,8 +1105,7 @@ public class Grib2CollectionPanel extends JPanel {
 
     public double getIntvHours() {
       if (pds.isTimeInterval()) {
-        return cust.getForecastTimeIntervalSizeInHours(pds); // LOOK using an Hour here, but will need to make this
-                                                             // configurable
+        return cust.getForecastTimeIntervalSizeInHours(pds);
       }
       return -1;
     }

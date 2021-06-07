@@ -72,7 +72,7 @@ public class TestRotatedPole {
       Assert.assertEquals(1, timeVar.getDimensions().size());
       Assert.assertEquals(timeDim, timeVar.getDimensions().get(0));
       Assert.assertEquals("time", timeVar.findAttribute("standard_name").getStringValue());
-      Assert.assertEquals("Hour since 2016-04-25T22:00:00Z", timeVar.findAttribute("units").getStringValue());
+      Assert.assertEquals("hours since 2016-04-25T22:00Z", timeVar.findAttribute("units").getStringValue());
       Assert.assertArrayEquals(new double[] {0}, (double[]) timeVar.read().copyTo1DJavaArray(), DELTA);
       // check projection variable
       Variable projVar = nc.findVariable("RotatedLatLon32769_Projection");
@@ -138,7 +138,7 @@ public class TestRotatedPole {
       Assert.assertEquals(1, timeVar.getDimensions().size());
       Assert.assertEquals(timeDim, timeVar.getDimensions().get(0));
       Assert.assertEquals("time", timeVar.findAttribute("standard_name").getStringValue());
-      Assert.assertEquals("Hour since 2010-03-29T00:00:00Z", timeVar.findAttribute("units").getStringValue());
+      Assert.assertEquals("hours since 2010-03-29T00:00Z", timeVar.findAttribute("units").getStringValue());
       Assert.assertArrayEquals(new double[] {0}, (double[]) timeVar.read().copyTo1DJavaArray(), DELTA);
       // check projection variable
       Variable projVar = nc.findVariable("RotatedLatLon_Projection");

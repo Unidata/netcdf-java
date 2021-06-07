@@ -31,7 +31,7 @@ import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.ProfileFeature;
 import ucar.nc2.ft.StationProfileFeature;
 import ucar.nc2.ft.point.StationFeature;
-import ucar.nc2.time.CalendarDateUnit;
+import ucar.nc2.calendar.CalendarDateUnit;
 import ucar.unidata.geoloc.Station;
 
 /**
@@ -218,7 +218,7 @@ class WriterCFStationProfileCollection extends WriterCFPointAbstract {
             .addAttribute(CF.SAMPLE_DIMENSION, recordDimName).build()); // rowSize:sample_dimension = "obs"
 
     profileVars.add(VariableSimpleBuilder
-        .makeScalar(profileTimeName, "nominal time of profile", timeUnit.getUdUnit(), DataType.DOUBLE)
+        .makeScalar(profileTimeName, "nominal time of profile", timeUnit.toString(), DataType.DOUBLE)
         .addAttribute(CF.CALENDAR, timeUnit.getCalendar().toString()).build());
 
     profileVars

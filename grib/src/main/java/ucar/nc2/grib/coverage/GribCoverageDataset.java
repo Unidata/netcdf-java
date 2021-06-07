@@ -33,8 +33,9 @@ import ucar.nc2.grib.coord.EnsCoordValue;
 import ucar.nc2.grib.coord.TimeCoordIntvValue;
 import ucar.nc2.grib.coord.VertCoordValue;
 import ucar.nc2.grib.grib2.Grib2Utils;
-import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.time.CalendarPeriod;
+import ucar.nc2.calendar.Calendar;
+import ucar.nc2.calendar.CalendarDateRange;
+import ucar.nc2.calendar.CalendarPeriod;
 import ucar.nc2.units.SimpleUnit;
 import java.util.Optional;
 import ucar.unidata.io.RandomAccessFile;
@@ -351,7 +352,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
   }
 
   private List<CoverageCoordAxis> makeTime2DCoordinates(CoordinateTime2D time2D) {
-    trackDateRange(time2D.makeCalendarDateRange(null)); // default calendar
+    trackDateRange(time2D.makeCalendarDateRange()); // default calendar
 
     List<CoverageCoordAxis> result = new ArrayList<>();
     CoverageCoordAxis covTime;
@@ -548,7 +549,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
   private CoverageCoordAxis1D makeRuntimeCoord(CoordinateRuntime runtime) {
     String units = runtime.getPeriodName() + " since " + gribCollection.getMasterFirstDate();
 
-    List<Double> offsets = runtime.getOffsetsInTimeUnits();
+    List<Long> offsets = runtime.getRuntimeOffsetsInTimeUnits();
     int n = offsets.size();
 
     // CoordinateRuntime master = gribCollection.getMasterRuntime();
@@ -558,14 +559,15 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
 
     double[] values = new double[n];
     int count = 0;
-    for (Double offset : runtime.getOffsetsInTimeUnits())
+    for (long offset : offsets) {
       values[count++] = offset;
+    }
 
     AttributeContainerMutable atts = new AttributeContainerMutable(runtime.getName());
     atts.addAttribute(new Attribute(CDM.UNITS, units));
     atts.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME_REFERENCE));
     atts.addAttribute(new Attribute(CDM.LONG_NAME, "GRIB reference time"));
-    atts.addAttribute(new Attribute(CF.CALENDAR, ucar.nc2.time.Calendar.proleptic_gregorian.toString()));
+    atts.addAttribute(new Attribute(CF.CALENDAR, Calendar.proleptic_gregorian.toString()));
 
     CoverageCoordAxisBuilder builder = new CoverageCoordAxisBuilder(runtime.getName(), units, "GRIB reference time",
         DataType.DOUBLE, AxisType.RunTime, atts, dependence, null, null, n, 0.0, 0.0, 0.0, values, this);
@@ -597,7 +599,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     atts.addAttribute(new Attribute(CDM.UNITS, time2D.getTimeUdUnit()));
     atts.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME_REFERENCE));
     atts.addAttribute(new Attribute(CDM.LONG_NAME, Grib.GRIB_RUNTIME));
-    atts.addAttribute(new Attribute(CF.CALENDAR, ucar.nc2.time.Calendar.proleptic_gregorian.toString()));
+    atts.addAttribute(new Attribute(CF.CALENDAR, Calendar.proleptic_gregorian.toString()));
 
     CoverageCoordAxisBuilder builder = new CoverageCoordAxisBuilder(refName, time2D.getTimeUdUnit(), Grib.GRIB_RUNTIME,
         DataType.DOUBLE, AxisType.RunTime, atts, dependence, time2D.getName(), null, ntimes, 0, 0, 0, values, this);
@@ -629,7 +631,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     atts.addAttribute(new Attribute(CDM.UNITS, time.getTimeUdUnit()));
     atts.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME_REFERENCE));
     atts.addAttribute(new Attribute(CDM.LONG_NAME, Grib.GRIB_RUNTIME));
-    atts.addAttribute(new Attribute(CF.CALENDAR, ucar.nc2.time.Calendar.proleptic_gregorian.toString()));
+    atts.addAttribute(new Attribute(CF.CALENDAR, Calendar.proleptic_gregorian.toString()));
 
     CoverageCoordAxisBuilder builder =
         new CoverageCoordAxisBuilder(refName, master.getUnit(), Grib.GRIB_RUNTIME, DataType.DOUBLE, AxisType.RunTime,
@@ -640,7 +642,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
   }
 
   private CoverageCoordAxis makeCoordAxis(CoordinateTime time) {
-    trackDateRange(time.makeCalendarDateRange(null)); // default calendar
+    trackDateRange(time.makeCalendarDateRange()); // default calendar
 
     List<Integer> offsets = time.getOffsetSorted();
     int n = offsets.size();
@@ -654,7 +656,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     atts.addAttribute(new Attribute(CDM.UNITS, time.getUnit()));
     atts.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME));
     atts.addAttribute(new Attribute(CDM.LONG_NAME, Grib.GRIB_VALID_TIME));
-    atts.addAttribute(new Attribute(CF.CALENDAR, ucar.nc2.time.Calendar.proleptic_gregorian.toString()));
+    atts.addAttribute(new Attribute(CF.CALENDAR, Calendar.proleptic_gregorian.toString()));
 
     CoverageCoordAxisBuilder builder =
         new CoverageCoordAxisBuilder(time.getName(), time.getTimeUdUnit(), Grib.GRIB_VALID_TIME, DataType.DOUBLE,
@@ -664,7 +666,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
   }
 
   private CoverageCoordAxis makeCoordAxis(CoordinateTimeIntv time) {
-    trackDateRange(time.makeCalendarDateRange(null)); // default calendar
+    trackDateRange(time.makeCalendarDateRange()); // default calendar
 
     List<TimeCoordIntvValue> offsets = time.getTimeIntervals();
     int n = offsets.size();
@@ -680,7 +682,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     atts.addAttribute(new Attribute(CDM.UNITS, time.getUnit()));
     atts.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME));
     atts.addAttribute(new Attribute(CDM.LONG_NAME, Grib.GRIB_VALID_TIME));
-    atts.addAttribute(new Attribute(CF.CALENDAR, ucar.nc2.time.Calendar.proleptic_gregorian.toString()));
+    atts.addAttribute(new Attribute(CF.CALENDAR, Calendar.proleptic_gregorian.toString()));
 
     CoverageCoordAxisBuilder builder =
         new CoverageCoordAxisBuilder(time.getName(), time.getTimeUdUnit(), Grib.GRIB_VALID_TIME, DataType.DOUBLE,

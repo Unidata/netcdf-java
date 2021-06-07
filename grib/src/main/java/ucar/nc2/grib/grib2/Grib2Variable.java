@@ -101,6 +101,8 @@ public class Grib2Variable {
       return false;
     if (pds.isTimeInterval()) {
       if (!intvMerge) {
+        // LOOK only used to decide on variable identity, so why do we need to make into a hour, just compare in millis
+        // ??
         double size = cust.getForecastTimeIntervalSizeInHours(pds); // only used to decide on variable identity
         double size2 = cust.getForecastTimeIntervalSizeInHours(pds2);
         if (size != size2)
@@ -191,8 +193,11 @@ public class Grib2Variable {
 
     if (pds.isTimeInterval()) {
       if (!intvMerge) {
-        double size = cust.getForecastTimeIntervalSizeInHours(pds); // LOOK using an Hour here, but will need to make
-                                                                    // this configurable
+        // LOOK only used to decide on variable identity, so why do we need to make into a hour, just compare in millis
+        // ??
+        // LOOK using an Hour here, but can we make this configurable
+        // LOOK if you change the hashCode, I think you mess up the existing indices ??
+        double size = cust.getForecastTimeIntervalSizeInHours(pds);
         result += result * (int) (31 + (1000 * size)); // create new variable for each interval size - default not
       }
       result += result * 31 + pds.getStatisticalProcessType(); // create new variable for each stat type

@@ -21,8 +21,8 @@ import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset.Enhance;
 import ucar.nc2.internal.ncml.Aggregation.Type;
 import ucar.nc2.internal.ncml.AggregationOuter.CacheVar;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateFormatter;
+import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.calendar.CalendarDateFormatter;
 import ucar.nc2.util.CancelTask;
 
 /** Encapsulates a NetcdfFile that is a component of the aggregation. */
@@ -161,10 +161,12 @@ class AggDatasetOuter extends AggDataset {
 
   public void show(Formatter f) {
     f.format("   %s", getLocation());
-    if (coordValue != null)
+    if (coordValue != null) {
       f.format(" coordValue='%s'", coordValue);
-    if (coordValueDate != null)
-      f.format(" coordValueDate='%s'", CalendarDateFormatter.toDateTimeString(coordValueDate));
+    }
+    if (coordValueDate != null) {
+      f.format(" coordValueDate='%s'", coordValueDate);
+    }
     f.format(" range=[%d:%d) (%d)%n", aggStart, aggEnd, ncoord);
   }
 

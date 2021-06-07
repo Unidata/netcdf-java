@@ -43,7 +43,7 @@ import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.dataset.VariableDS;
-import ucar.nc2.time.CalendarDate;
+import ucar.nc2.calendar.CalendarDate;
 import ucar.util.prefs.PreferencesExt;
 
 /**
@@ -253,7 +253,7 @@ public class VariablePlot extends JPanel {
             min = Math.min(min, f);
           }
           if (xIsTime) {
-            Date ts = new Date(dates.get(i).getMillis());
+            Date ts = new Date(dates.get(i).getMillisFromEpoch());
             ((TimeSeries) s1).addOrUpdate(new Second(ts), f);
           } else if (hasXdim) {
             ((XYSeries) s1).addOrUpdate(varXarray.getDouble(i), f);

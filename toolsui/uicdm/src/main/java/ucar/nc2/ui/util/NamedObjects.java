@@ -14,8 +14,8 @@ import ucar.nc2.ft2.coverage.CoverageCoordAxis1D;
 import ucar.nc2.grid.Grid;
 import ucar.nc2.grid.GridAxis1D;
 import ucar.nc2.grid.GridAxis1DTime;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateFormatter;
+import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.calendar.CalendarDateFormatter;
 import ucar.ui.util.NamedObject;
 import ucar.unidata.util.Format;
 

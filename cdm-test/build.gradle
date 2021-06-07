@@ -25,6 +25,7 @@ dependencies {
   testImplementation 'com.google.guava:guava'
   testImplementation 'software.amazon.awssdk:s3'
   testImplementation 'com.google.truth:truth'
+  testImplementation 'com.google.truth.extensions:truth-java8-extension'
   testImplementation 'org.slf4j:slf4j-api'
 
   testRuntimeOnly 'ch.qos.logback:logback-classic'

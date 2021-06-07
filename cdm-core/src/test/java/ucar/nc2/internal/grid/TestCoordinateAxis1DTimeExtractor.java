@@ -10,7 +10,7 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
-import ucar.nc2.time.CalendarDate;
+import ucar.nc2.calendar.CalendarDate;
 
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.fail;
@@ -46,7 +46,7 @@ public class TestCoordinateAxis1DTimeExtractor {
     int count = 1;
     String[] strings = new String[n];
     for (int i = 0; i < n; i++) {
-      strings[i] = CalendarDate.of(null, 2020, 2, count++, 0, 0, 0).toString();
+      strings[i] = CalendarDate.of(2020, 2, count++, 0, 0, 0).toString();
     }
 
     Array<String> values = Arrays.factory(ArrayType.STRING, new int[] {n}, strings);
@@ -81,7 +81,7 @@ public class TestCoordinateAxis1DTimeExtractor {
     int count = 1;
     String[] strings = new String[n];
     for (int i = 0; i < n; i++) {
-      strings[i] = CalendarDate.of(null, 2020, 2, count++, 0, 0, 0).toString();
+      strings[i] = CalendarDate.of(2020, 2, count++, 0, 0, 0).toString();
     }
     strings[10] = "badenoff";
 
@@ -99,9 +99,9 @@ public class TestCoordinateAxis1DTimeExtractor {
       new CoordinateAxis1DTimeExtractor(axis);
       fail();
     } catch (Exception e) {
+      e.printStackTrace();
       assertThat(e).isInstanceOf(RuntimeException.class);
       assertThat(e.getMessage()).contains("badenoff");
-      e.printStackTrace();
     }
   }
 
@@ -116,7 +116,7 @@ public class TestCoordinateAxis1DTimeExtractor {
     int count = 1;
     byte[] chars = new byte[ndates * nchars];
     for (int i = 0; i < ndates; i++) {
-      String date = CalendarDate.of(null, 2020, 2, count++, 0, 0, 0).toString();
+      String date = CalendarDate.of(2020, 2, count++, 0, 0, 0).toString();
       int pos = i * nchars;
       for (int c = 0; c < date.length(); c++) {
         chars[pos++] = (byte) date.charAt(c);

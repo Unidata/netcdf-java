@@ -6,9 +6,12 @@
 package ucar.nc2.ncml;
 
 import static com.google.common.truth.Truth.assertThat;
+import static com.google.common.truth.Truth8.assertThat;
 import java.io.IOException;
 import java.io.StringReader;
 import java.lang.invoke.MethodHandles;
+import java.util.Optional;
+
 import junit.framework.TestCase;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
@@ -19,7 +22,7 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.nc2.time.CalendarDateUnit;
+import ucar.nc2.calendar.CalendarDateUnit;
 import ucar.nc2.write.Ncdump;
 import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.TestDir;
@@ -42,13 +45,16 @@ public class TestOffAggExistingTimeUnitsChange extends TestCase {
 
     try (NetcdfFile ncfile = NetcdfDatasets.openFile(location, null)) {
       Variable v = ncfile.findVariable("time");
-      assert v != null;
+      assertThat(v).isNotNull();
       assertThat(v.getDataType()).isEqualTo(DataType.DOUBLE);
 
       String units = v.getUnitsString();
-      assert units != null;
-      CalendarDateUnit expectedCalendarDateUnit = CalendarDateUnit.of(null, "hours since 2006-09-25T06:00:00Z");
-      assertThat(units).ignoringCase().isEqualTo(expectedCalendarDateUnit.getUdUnit());
+      assertThat(units).isNotNull();
+      Optional<CalendarDateUnit> expectedCalendarDateUnit =
+          CalendarDateUnit.fromUdunitString(null, "hours since 2006-09-25T06:00:00Z");
+
+      assertThat(expectedCalendarDateUnit).isPresent();
+      assertThat(units).ignoringCase().isEqualTo(expectedCalendarDateUnit.get().toString());
 
       int count = 0;
       Array data = v.read();
@@ -73,12 +79,12 @@ public class TestOffAggExistingTimeUnitsChange extends TestCase {
     logger.debug(" TestOffAggExistingTimeUnitsChange.testNarrGrib={}\n{}", location, ncml);
     try (NetcdfDataset ncfile = NetcdfDatasets.openNcmlDataset(new StringReader(ncml), location, null)) {
       Variable v = ncfile.findVariable("time");
-      assert v != null;
+      assertThat(v).isNotNull();
       assert v.getDataType() == DataType.DOUBLE;
 
       String units = v.getUnitsString();
-      assert units != null;
-      assert units.equalsIgnoreCase("Hour since 2007-04-11T00:00:00Z") : units; // Hour since 2007-04-11T00:00:00.000Z
+      assertThat(units).isNotNull();
+      assertThat(units).isEqualTo("hours since 2007-04-11T00:00Z");
 
       int count = 0;
       Array data = v.read();

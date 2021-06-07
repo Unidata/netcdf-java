@@ -40,9 +40,9 @@ import ucar.nc2.ft.TrajectoryProfileFeature;
 import ucar.nc2.ft.TrajectoryProfileFeatureCollection;
 import ucar.nc2.ft.point.CollectionInfo;
 import ucar.nc2.ft.point.DsgCollectionHelper;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.time.CalendarDateUnit;
+import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.calendar.CalendarDateRange;
+import ucar.nc2.calendar.CalendarDateUnit;
 import ucar.nc2.ft.IOIterator;
 import ucar.nc2.write.Ncdump;
 import ucar.unidata.geoloc.EarthLocation;
@@ -411,10 +411,11 @@ public class CheckPointFeatureDataset {
     Assert.assertNotNull("PointFeature dataAll", pobs.getDataAll());
     Assert.assertNotNull("PointFeature featureData", pobs.getFeatureData());
 
-    Assert.assertEquals("PointFeature makeCalendarDate", timeUnit.makeCalendarDate(pobs.getObservationTime()),
+    // LOOK
+    Assert.assertEquals("PointFeature makeCalendarDate", timeUnit.makeCalendarDate((long) pobs.getObservationTime()),
         pobs.getObservationTimeAsCalendarDate());
 
-    assert timeUnit.makeCalendarDate(pobs.getObservationTime()).equals(pobs.getObservationTimeAsCalendarDate());
+    assert timeUnit.makeCalendarDate((long) pobs.getObservationTime()).equals(pobs.getObservationTimeAsCalendarDate());
     checkData(pobs.getDataAll());
   }
 

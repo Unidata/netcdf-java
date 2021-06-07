@@ -9,7 +9,7 @@ import java.io.IOException;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.PointFeatureCollection;
 import ucar.nc2.ft.PointFeatureIterator;
-import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.calendar.CalendarDateRange;
 import ucar.nc2.ft.IOIterator;
 import ucar.unidata.geoloc.LatLonRect;
 

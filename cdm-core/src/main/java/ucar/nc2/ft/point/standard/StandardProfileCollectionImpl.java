@@ -22,9 +22,9 @@ import ucar.nc2.ft.point.CollectionIteratorAdapter;
 import ucar.nc2.ft.point.PointCollectionIteratorFiltered;
 import ucar.nc2.ft.point.PointFeatureCCImpl;
 import ucar.nc2.ft.point.ProfileFeatureImpl;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.time.CalendarDateUnit;
+import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.calendar.CalendarDateRange;
+import ucar.nc2.calendar.CalendarDateUnit;
 import ucar.nc2.ft.IOIterator;
 import ucar.unidata.geoloc.LatLonRect;
 
@@ -69,7 +69,7 @@ public class StandardProfileCollectionImpl extends PointFeatureCCImpl implements
       this.profileData = profileData;
 
       if (name.equalsIgnoreCase("unknown"))
-        name = timeUnit.makeCalendarDate(time).toString(); // use time as the name
+        name = timeUnit.makeCalendarDate((int) time).toString(); // use time as the name
 
       if (Double.isNaN(time)) { // gotta read an obs to get the time
         try {
@@ -78,7 +78,7 @@ public class StandardProfileCollectionImpl extends PointFeatureCCImpl implements
             PointFeature pf = iter.next();
             this.time = pf.getObservationTime();
             if (name == null)
-              this.name = timeUnit.makeCalendarDate(this.time).toString();
+              this.name = timeUnit.makeCalendarDate((int) this.time).toString();
           } else {
             if (name == null)
               this.name = "empty";
@@ -106,7 +106,7 @@ public class StandardProfileCollectionImpl extends PointFeatureCCImpl implements
     @Nonnull
     @Override
     public CalendarDate getTime() {
-      return timeUnit.makeCalendarDate(time);
+      return timeUnit.makeCalendarDate((int) time);
     }
 
     private class StandardProfileFeatureIterator extends StandardPointFeatureIterator {

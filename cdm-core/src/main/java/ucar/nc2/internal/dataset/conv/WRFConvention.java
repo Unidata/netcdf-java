@@ -32,8 +32,7 @@ import ucar.nc2.dataset.spi.CoordSystemBuilderFactory;
 import ucar.nc2.internal.dataset.TransformBuilder;
 import ucar.nc2.internal.dataset.transform.vertical.VerticalCTBuilder;
 import ucar.nc2.internal.dataset.transform.vertical.WRFEtaTransformBuilder;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateFormatter;
+import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.geoloc.LatLonPoint;
@@ -653,26 +652,25 @@ public class WRFConvention extends CoordSystemBuilder {
 
       while (iter.hasNext()) {
         String dateS = iter.next();
-        try {
-          CalendarDate cd;
-          if (isCanonicalIsoStr) {
-            cd = CalendarDateFormatter.isoStringToCalendarDate(null, dateS);
-          } else {
-            cd = CalendarDateFormatter.isoStringToCalendarDate(null, dateS.replaceFirst("_", "T"));
-          }
+        CalendarDate cd;
+        if (isCanonicalIsoStr) {
+          cd = CalendarDate.fromUdunitIsoDate(null, dateS).orElse(null);
+        } else {
+          cd = CalendarDate.fromUdunitIsoDate(null, dateS.replaceFirst("_", "T")).orElse(null);
+        }
 
-          values.set(count++, (double) cd.getMillis() / 1000);
-
-        } catch (IllegalArgumentException e) {
-          parseInfo.format("ERROR: cant parse Time string = <%s> err= %s%n", dateS, e.getMessage());
+        if (cd != null) {
+          values.set(count++, (double) cd.getMillisFromEpoch() / 1000);
+        } else {
+          parseInfo.format("ERROR: cant parse Time string = <%s>%n", dateS);
 
           // one more try
           String startAtt = rootGroup.getAttributeContainer().findAttributeString("START_DATE", null);
           if ((nt == 1) && (null != startAtt)) {
             try {
-              CalendarDate cd = CalendarDateFormatter.isoStringToCalendarDate(null, startAtt);
-              values.set(0, (double) cd.getMillis() / 1000);
-            } catch (IllegalArgumentException e2) {
+              cd = CalendarDate.fromUdunitIsoDate(null, startAtt).orElseThrow();
+              values.set(0, (double) cd.getMillisFromEpoch() / 1000);
+            } catch (Exception e2) {
               parseInfo.format("ERROR: cant parse global attribute START_DATE = <%s> err=%s%n", startAtt,
                   e2.getMessage());
             }
@@ -684,8 +682,8 @@ public class WRFConvention extends CoordSystemBuilder {
       while (iter.hasNext()) {
         String dateS = (String) iter.next();
         try {
-          CalendarDate cd = CalendarDateFormatter.isoStringToCalendarDate(null, dateS);
-          values.set(count++, (double) cd.getMillis() / 1000);
+          CalendarDate cd = CalendarDate.fromUdunitIsoDate(null, dateS).orElseThrow();
+          values.set(count++, (double) cd.getMillisFromEpoch() / 1000);
         } catch (IllegalArgumentException e) {
           parseInfo.format("ERROR: cant parse Time string = %s%n", dateS);
         }

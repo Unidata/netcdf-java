@@ -17,7 +17,7 @@ import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.grib.collection.GribDataReader;
-import ucar.nc2.time.CalendarDate;
+import ucar.nc2.calendar.CalendarDate;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.io.IOException;
@@ -130,9 +130,9 @@ public class TestDtWithCoverageReadingSingleP {
     this.type = type;
     this.covName = covName;
     this.gridName = (type == FeatureType.FMRC) ? "TwoD/" + covName : "Best/" + covName;
-    this.rt_val = rt_val == null ? null : CalendarDate.parseISOformat(null, rt_val);
+    this.rt_val = rt_val == null ? null : CalendarDate.fromUdunitIsoDate(null, rt_val).orElseThrow();
     this.ens_val = ens_val;
-    this.time_val = time_val == null ? null : CalendarDate.parseISOformat(null, time_val);
+    this.time_val = time_val == null ? null : CalendarDate.fromUdunitIsoDate(null, time_val).orElseThrow();
     this.vert_val = vert_val;
     this.time_idx = time_idx;
   }

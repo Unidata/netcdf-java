@@ -22,6 +22,8 @@ import java.util.Collections;
 import java.util.Formatter;
 import java.util.List;
 
+import static com.google.common.truth.Truth.assertThat;
+
 @Category(NeedsCdmUnitTest.class)
 @RunWith(Parameterized.class)
 public class TestConventionFeatureTypes {
@@ -69,7 +71,7 @@ public class TestConventionFeatureTypes {
     for (File f : getAllFilesInDirectoryStandardFilter(dir)) {
       System.out.printf("Open FeatureDataset %s%n", f.getPath());
       try (FeatureDataset fd = FeatureDatasetFactoryManager.open(type, f.getPath(), null, new Formatter())) {
-        Assert.assertNotNull(f.getPath(), fd);
+        assertThat(fd).isNotNull();
         if (type == FeatureType.GRID)
           Assert.assertTrue(f.getPath(), fd.getFeatureType().isCoverageFeatureType());
         else if (type == FeatureType.POINT)

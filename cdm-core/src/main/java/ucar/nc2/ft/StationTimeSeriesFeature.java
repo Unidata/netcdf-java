@@ -5,7 +5,7 @@
 package ucar.nc2.ft;
 
 import ucar.nc2.ft.point.StationFeature;
-import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.calendar.CalendarDateRange;
 
 /**
  * Time series of PointFeature at a named location aka 'station'.

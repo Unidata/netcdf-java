@@ -4,7 +4,7 @@
  */
 package thredds.ui.monitor;
 
-import ucar.nc2.time.CalendarDateFormatter;
+import ucar.nc2.calendar.CalendarDateFormatter;
 import ucar.nc2.util.IO;
 import java.io.File;
 import java.io.IOException;

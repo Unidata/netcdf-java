@@ -6,7 +6,7 @@
 package ucar.nc2.ft;
 
 import java.io.IOException;
-import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.calendar.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
 
 /**

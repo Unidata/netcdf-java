@@ -5,7 +5,7 @@
 package ucar.nc2.ft.point;
 
 import ucar.nc2.ft.*;
-import ucar.nc2.time.CalendarDateUnit;
+import ucar.nc2.calendar.CalendarDateUnit;
 import ucar.nc2.constants.FeatureType;
 import javax.annotation.Nonnull;
 

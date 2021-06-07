@@ -13,7 +13,7 @@ import ucar.ma2.Range;
 import ucar.nc2.Group;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CF;
-import ucar.nc2.time.CalendarDate;
+import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.util.Misc;
 import java.io.IOException;
 import java.util.ArrayList;

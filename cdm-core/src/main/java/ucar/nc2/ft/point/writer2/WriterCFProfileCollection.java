@@ -26,7 +26,7 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.ProfileFeature;
-import ucar.nc2.time.CalendarDateUnit;
+import ucar.nc2.calendar.CalendarDateUnit;
 
 /**
  * Write a CF "Discrete Sample" profile collection file.
@@ -116,7 +116,7 @@ class WriterCFProfileCollection extends WriterCFPointAbstract {
             .addAttribute(CF.SAMPLE_DIMENSION, recordDimName).build()); // rowSize:sample_dimension = "obs"
 
     profileVars.add(VariableSimpleBuilder
-        .makeScalar(profileTimeName, "nominal time of profile", timeUnit.getUdUnit(), DataType.DOUBLE)
+        .makeScalar(profileTimeName, "nominal time of profile", timeUnit.toString(), DataType.DOUBLE)
         .addAttribute(CF.CALENDAR, timeUnit.getCalendar().toString()).build());
 
 

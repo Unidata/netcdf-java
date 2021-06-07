@@ -7,7 +7,7 @@ package thredds.client.catalog;
 import com.google.common.collect.ImmutableSet;
 import thredds.client.catalog.builder.AccessBuilder;
 import thredds.client.catalog.builder.DatasetBuilder;
-import ucar.nc2.time.CalendarDate;
+import ucar.nc2.calendar.CalendarDate;
 
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
@@ -33,8 +33,6 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
   public static final String DataFormatType = "DataFormatType"; // String
   public static final String Datasets = "Datasets"; // unmodifiable List<Dataset>
   public static final String DataSize = "DataSize"; // Long
-  @Deprecated
-  public static final String Dates = "Dates"; // ucar.nc2.units.DateType or List<ucar.nc2.units.DateType>
   public static final String DateTypes = "DateTypes"; // thredds.client.catalog.DateType or
                                                       // List<thredds.client.catalog.DateType>
   public static final String Documentation = "Documentation"; // Documentation or List of Documentation
@@ -51,8 +49,6 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
   public static final String RestrictAccess = "RestrictAccess"; // String
   public static final String ServiceName = "ServiceName"; // String
   public static final String ThreddsMetadataInheritable = "ThreddsMetadataInheritable"; // ThreddsMetadata
-  @Deprecated
-  public static final String TimeCoverage = "TimeCoverage"; // ucar.nc2.units.DateRange
   public static final String TimeCoverageNew = "TimeCoverageNew"; // TimeCoverage
   public static final String VariableGroups = "VariableGroups"; // VariableGroup or List of VariableGroup
   public static final String VariableMapLinkURI = "VariableMapLinkURI"; // ThreddsMetadata.UriResolved
@@ -61,8 +57,8 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
 
   public static final String NotAThreddsDataset = "NotAThreddsDataset"; // used to set Property in catalog
 
-  public static final ImmutableSet<String> listFlds = ImmutableSet.of(Access, Contributors, Creators, Dates,
-      Documentation, Keywords, MetadataOther, Projects, Properties, Publishers, VariableGroups);
+  public static final ImmutableSet<String> listFlds = ImmutableSet.of(Access, Contributors, Creators, Documentation,
+      Keywords, MetadataOther, Projects, Properties, Publishers, VariableGroups);
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -327,13 +323,6 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
     return (String) getInheritedField(RestrictAccess);
   }
 
-  /** @deprecated use getTimeCoverageNew() */
-  @Deprecated
-  @Nullable
-  public ucar.nc2.units.DateRange getTimeCoverage() {
-    return (ucar.nc2.units.DateRange) getInheritedField(TimeCoverage);
-  }
-
   @Nullable
   public TimeCoverage getTimeCoverageNew() {
     return (TimeCoverage) getInheritedField(TimeCoverageNew);
@@ -384,12 +373,6 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
   public List<ThreddsMetadata.Contributor> getContributors() {
     return (List<ThreddsMetadata.Contributor>) getInheritedFieldAsList(Dataset.Contributors);
   }
-
-  /** @deprecated use getDateTypes() */
-  @Deprecated
-  public List<ucar.nc2.units.DateType> getDates() {
-    return (List<ucar.nc2.units.DateType>) getInheritedFieldAsList(Dates);
-  } // prob only one type
 
   public List<thredds.client.catalog.DateType> getDateTypes() {
     return (List<thredds.client.catalog.DateType>) getInheritedFieldAsList(DateTypes);
@@ -492,18 +475,6 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
   @Nullable
   public String getSummary() {
     return getDocumentation("summary");
-  }
-
-  /** @deprecated use getLastModifiedCalendarDate */
-  @Deprecated
-  @Nullable
-  public ucar.nc2.units.DateType getLastModifiedDate() {
-    for (ucar.nc2.units.DateType dateType : getDates()) {
-      if ((dateType.getType() != null) && dateType.getType().equals("modified")) {
-        return dateType;
-      }
-    }
-    return null;
   }
 
   /** Find a DateType with type "modified", return it as a CalendarDate. */

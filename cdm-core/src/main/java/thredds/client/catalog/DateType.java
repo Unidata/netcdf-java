@@ -5,14 +5,15 @@
 package thredds.client.catalog;
 
 import com.google.common.base.Preconditions;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateFormatter;
-import ucar.nc2.time.CalendarPeriod;
+import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.calendar.CalendarDateFormatter;
+import ucar.nc2.calendar.CalendarPeriod;
 import ucar.nc2.units.TimeUnit;
 
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * The thredds "dateType" and "dateTypeFormatted" XML element types.
@@ -28,7 +29,7 @@ import java.util.Objects;
  * <li>an xsd:dateTime with form "CCYY-MM-DDThh:mm:ss"
  * <li>a valid udunits date string
  * <li>the string "present"
- * <li>a date string that is parsed by a formatter string, passed in as format
+ * <li>a date string that is parsed by a formatter string, passed in as format LOOK cant do this now
  * </ol>
  *
  * @author john caron
@@ -61,8 +62,9 @@ public class DateType {
    * @param calendar the calendar, or null for default
    * @throws java.text.ParseException or IllegalArgumentException if error parsing text
    */
+  @Nullable
   public static DateType parse(@Nullable String text, @Nullable String format, @Nullable String type,
-      @Nullable ucar.nc2.time.Calendar calendar) throws java.text.ParseException {
+      @Nullable ucar.nc2.calendar.Calendar calendar) throws java.text.ParseException {
     text = (text == null) ? "" : text.trim();
 
     if (text.isEmpty()) {
@@ -83,14 +85,12 @@ public class DateType {
 
     // see if its a udunits string
     String calName = calendar == null ? null : calendar.name();
-    if (text.indexOf("since") > 0) {
-      CalendarDate date = CalendarDate.parseUdunits(calName, text);
-      return new DateType(text, format, type, date);
+    Optional<CalendarDate> date = CalendarDate.fromUdunitIsoDate(calName, text);
+    if (date.isPresent()) {
+      return new DateType(text, format, type, date.get());
     }
 
-    // otherwise, it should be an iso formatted string
-    CalendarDate date = CalendarDate.parseISOformat(calName, text);
-    return new DateType(text, format, type, date);
+    return null;
   }
 
   //////////////////////////////////////////////////////////

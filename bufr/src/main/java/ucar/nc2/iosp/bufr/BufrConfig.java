@@ -16,7 +16,7 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.point.bufr.BufrCdmIndexProto;
 import ucar.nc2.ft.point.bufr.BufrField;
 import ucar.nc2.ft.point.bufr.StandardFields;
-import ucar.nc2.time.CalendarDate;
+import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.util.Indent;
 import ucar.unidata.geoloc.Station;
 import ucar.unidata.io.RandomAccessFile;
@@ -254,7 +254,7 @@ public class BufrConfig {
             if (Math.abs(date.getDifferenceInMsecs(today)) > 1000L * 3600 * 24 * 100) {
               extract.makeCalendarDate();
             }
-            long msecs = date.getMillis();
+            long msecs = date.getMillisFromEpoch();
             if (this.start > msecs) {
               this.start = msecs;
             }

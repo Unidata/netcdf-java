@@ -28,7 +28,7 @@ import ucar.nc2.grib.coord.CoordinateTimeAbstract;
 import ucar.nc2.grib.coord.CoordinateTimeIntv;
 import ucar.nc2.grib.coord.CoordinateVert;
 import ucar.nc2.stream.NcStream;
-import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.calendar.CalendarDateRange;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.StringUtil2;
 import java.io.File;
@@ -567,8 +567,8 @@ abstract class GribPartitionBuilder {
       indexBuilder.setGenProcessType(pc.genProcessType);
       indexBuilder.setBackProcessId(pc.backProcessId);
 
-      indexBuilder.setStartTime(pc.dateRange.getStart().getMillis());
-      indexBuilder.setEndTime(pc.dateRange.getEnd().getMillis());
+      indexBuilder.setStartTime(pc.dateRange.getStart().getMillisFromEpoch());
+      indexBuilder.setEndTime(pc.dateRange.getEnd().getMillisFromEpoch());
 
       indexBuilder.setMasterRuntime(writer.writeCoordProto(pc.masterRuntime));
 
@@ -781,7 +781,7 @@ abstract class GribPartitionBuilder {
     b.setLastModified(p.lastModified);
     b.setLength(p.fileSize);
     if (p.partitionDate != null)
-      b.setPartitionDate(p.partitionDate.getMillis()); // LOOK what about calendar ??
+      b.setPartitionDate(p.partitionDate.getMillisFromEpoch()); // LOOK what about calendar ??
 
     return b.build();
   }

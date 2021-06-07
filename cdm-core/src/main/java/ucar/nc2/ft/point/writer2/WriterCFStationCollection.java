@@ -28,8 +28,8 @@ import ucar.nc2.constants.CF;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.ft.point.StationFeature;
 import ucar.nc2.ft.point.StationPointFeature;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateUnit;
+import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.calendar.CalendarDateUnit;
 import ucar.unidata.geoloc.Station;
 
 /**
@@ -105,7 +105,7 @@ class WriterCFStationCollection extends WriterCFPointAbstract {
     StructureData obsData = spf.getFeatureData();
 
     List<VariableSimpleIF> coords = new ArrayList<>();
-    coords.add(VariableSimpleBuilder.makeScalar(timeName, "time of measurement", timeUnit.getUdUnit(), DataType.DOUBLE)
+    coords.add(VariableSimpleBuilder.makeScalar(timeName, "time of measurement", timeUnit.toString(), DataType.DOUBLE)
         .addAttribute(CF.CALENDAR, timeUnit.getCalendar().toString()).build());
 
     coords.add(VariableSimpleBuilder

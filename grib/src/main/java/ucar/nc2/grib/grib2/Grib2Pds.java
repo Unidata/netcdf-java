@@ -5,9 +5,8 @@
 
 package ucar.nc2.grib.grib2;
 
-import javax.annotation.Nullable;
 import ucar.nc2.grib.GribNumbers;
-import ucar.nc2.time.CalendarDate;
+import ucar.nc2.calendar.CalendarDate;
 import ucar.unidata.util.Format;
 import ucar.unidata.util.StringUtil2;
 import javax.annotation.concurrent.Immutable;
@@ -33,7 +32,6 @@ public abstract class Grib2Pds {
    * @param input raw bytes
    * @return Grib2Pds or null on error
    */
-  @Nullable
   public static Grib2Pds factory(int template, byte[] input) {
     switch (template) {
       case 0:
@@ -309,7 +307,7 @@ public abstract class Grib2Pds {
 
   protected double getScaledValue(int start) {
     int scale = getOctetSigned(start++);
-    int value = GribNumbers.int4(getOctet(start++), getOctet(start++), getOctet(start++), getOctet(start++));
+    int value = GribNumbers.int4(getOctet(start++), getOctet(start++), getOctet(start++), getOctet(start));
     return applyScaleFactor(scale, value);
   }
 
@@ -347,6 +345,8 @@ public abstract class Grib2Pds {
     int getStatisticalProcessType();
 
     CalendarDate getIntervalTimeEnd();
+
+    boolean hasUnknownIntervalEnd();
 
     int getForecastTime();
 
@@ -620,6 +620,11 @@ public abstract class Grib2Pds {
       return calcTime(38);
     }
 
+    @Override
+    public boolean hasUnknownIntervalEnd() {
+      return hasUnknownTime(38);
+    }
+
     /**
      * number of time range specifications describing the time intervals used to calculate the statistically-processed
      * field
@@ -692,6 +697,11 @@ public abstract class Grib2Pds {
      */
     public CalendarDate getIntervalTimeEnd() {
       return calcTime(45);
+    }
+
+    @Override
+    public boolean hasUnknownIntervalEnd() {
+      return hasUnknownTime(45);
     }
 
     /**
@@ -803,6 +813,11 @@ public abstract class Grib2Pds {
      */
     public CalendarDate getIntervalTimeEnd() {
       return calcTime(37);
+    }
+
+    @Override
+    public boolean hasUnknownIntervalEnd() {
+      return hasUnknownTime(37);
     }
 
     /**
@@ -1101,8 +1116,14 @@ public abstract class Grib2Pds {
      *
      * @return End of overall time interval
      */
+    @Override
     public CalendarDate getIntervalTimeEnd() {
       return calcTime(48);
+    }
+
+    @Override
+    public boolean hasUnknownIntervalEnd() {
+      return hasUnknownTime(48);
     }
 
     /*
@@ -1179,6 +1200,10 @@ public abstract class Grib2Pds {
     @Override
     public CalendarDate getIntervalTimeEnd() {
       return calcTime(35);
+    }
+
+    public boolean hasUnknownIntervalEnd() {
+      return hasUnknownTime(35);
     }
 
     /**
@@ -1279,6 +1304,11 @@ public abstract class Grib2Pds {
      */
     public CalendarDate getIntervalTimeEnd() {
       return calcTime(36);
+    }
+
+    @Override
+    public boolean hasUnknownIntervalEnd() {
+      return hasUnknownTime(36);
     }
 
     /**
@@ -1717,10 +1747,7 @@ public abstract class Grib2Pds {
     int day = getOctet(startIndex++);
     int hour = getOctet(startIndex++);
     int minute = getOctet(startIndex++);
-    int second = getOctet(startIndex++);
-
-    if ((year == 0) && (month == 0) && (day == 0) && (hour == 0) && (minute == 0) && (second == 0))
-      return CalendarDate.UNKNOWN;
+    int second = getOctet(startIndex);
 
     // href.t00z.prob.f36.grib2
     if (hour > 23) {
@@ -1728,7 +1755,18 @@ public abstract class Grib2Pds {
       hour = hour % 24;
     }
 
-    return CalendarDate.of(null, year, month, day, hour, minute, second);
+    return CalendarDate.of(year, month, day, hour, minute, second);
+  }
+
+  boolean hasUnknownTime(int startIndex) {
+    int year = GribNumbers.int2(getOctet(startIndex++), getOctet(startIndex++));
+    int month = getOctet(startIndex++);
+    int day = getOctet(startIndex++);
+    int hour = getOctet(startIndex++);
+    int minute = getOctet(startIndex++);
+    int second = getOctet(startIndex);
+
+    return (year == 0) && (month == 0) && (day == 0) && (hour == 0) && (minute == 0) && (second == 0);
   }
 
   /**

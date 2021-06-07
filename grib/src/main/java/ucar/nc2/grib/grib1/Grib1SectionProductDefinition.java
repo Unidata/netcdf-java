@@ -9,9 +9,9 @@ import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.grib.GribUtils;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib1.tables.Grib1ParamTableReader;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateUnit;
-import ucar.nc2.time.CalendarPeriod;
+import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.calendar.CalendarDateUnit;
+import ucar.nc2.calendar.CalendarPeriod;
 import ucar.nc2.internal.wmo.CommonCodeTable;
 import ucar.unidata.io.RandomAccessFile;
 import javax.annotation.concurrent.Immutable;
@@ -168,7 +168,7 @@ public final class Grib1SectionProductDefinition {
     int day = getOctet(15);
     int hour = getOctet(16);
     int minute = getOctet(17);
-    return CalendarDate.of(null, century * 100 + year, month, day, hour, minute, 0);
+    return CalendarDate.of(century * 100 + year, month, day, hour, minute, 0);
   }
 
   /**
@@ -347,7 +347,7 @@ public final class Grib1SectionProductDefinition {
 
   private String makeTimeCoord(Grib1ParamTime ptime) {
     CalendarPeriod period = GribUtils.getCalendarPeriod(getTimeUnit());
-    CalendarDateUnit unit = CalendarDateUnit.of(null, period.getField(), getReferenceDate());
+    CalendarDateUnit unit = CalendarDateUnit.of(period, false, getReferenceDate());
     int timeCoord;
     if (ptime.isInterval()) {
       int[] intv = ptime.getInterval();

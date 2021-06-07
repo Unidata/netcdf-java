@@ -21,7 +21,7 @@ import ucar.nc2.grib.coord.SparseArray;
 import ucar.nc2.grib.coord.TimeCoordIntvValue;
 import ucar.nc2.grib.coord.VertCoordValue;
 import ucar.nc2.internal.util.Counters;
-import ucar.nc2.time.*;
+import ucar.nc2.calendar.*;
 import ucar.nc2.ui.MFileTable;
 import ucar.ui.widget.BAMutil;
 import ucar.ui.widget.IndependentWindow;
@@ -945,7 +945,7 @@ public class CdmIndexPanel extends JPanel {
       if (coord instanceof CoordinateRuntime) {
         CoordinateRuntime runtime = (CoordinateRuntime) coord;
         List<Double> offsets = runtime.getOffsetsInTimeUnits();
-        double offsetFromMaster = runtime.getOffsetInTimeUnits(gc.getMasterFirstDate());
+        long offsetFromMaster = runtime.getOffsetFrom(gc.getMasterFirstDate());
 
         int n = offsets.size();
         start = offsets.get(0) + offsetFromMaster;
@@ -1031,7 +1031,7 @@ public class CdmIndexPanel extends JPanel {
 
       } else if (coord instanceof CoordinateTime2D) {
         CoordinateTime2D coord2D = (CoordinateTime2D) coord;
-        CalendarDateRange dr = coord2D.makeCalendarDateRange(null); // default calendar
+        CalendarDateRange dr = coord2D.makeCalendarDateRange();
         f.format("%s %s", dr.getStart(), dr.getEnd());
 
       } else {

@@ -9,8 +9,8 @@ import ucar.nc2.grib.coord.TimeCoordIntvDateValue;
 import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.grib.grib2.Grib2Utils;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarPeriod;
+import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.calendar.CalendarPeriod;
 
 /**
  * Center = (7) US National Weather Service, National Centres for Environmental Prediction (NCEP)
@@ -63,6 +63,7 @@ public class NwsMetDevTables extends NcepLocalTables {
    * Only use in GribVariable to decide on variable identity when intvMerge = false.
    * By returning a constant, we dont intvMerge = false.
    * Problem is we cant reconstruct interval length without reference time, which is not in the pds.
+   * LOOK can it be an int ?
    */
   @Override
   public double getForecastTimeIntervalSizeInHours(Grib2Pds pds) {
@@ -73,10 +74,10 @@ public class NwsMetDevTables extends NcepLocalTables {
     for (Grib2Pds.TimeInterval ti : pdsIntv.getTimeIntervals()) {
       needOverride = (ti.timeRangeUnit == 255);
     }
-    if (!needOverride)
+    if (!needOverride) {
       return super.getForecastTimeIntervalSizeInHours(pds);
-
-
+    }
+    // LOOK this is some kind of hack for Center 7 subcenter 14.
     return 12.0;
   }
 

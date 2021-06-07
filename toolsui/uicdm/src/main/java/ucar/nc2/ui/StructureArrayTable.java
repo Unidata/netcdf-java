@@ -41,7 +41,7 @@ import ucar.array.StructureMembers.Member;
 import ucar.nc2.Sequence;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
-import ucar.nc2.time.CalendarDate;
+import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.ui.StructureTable.DateRenderer;
 import ucar.nc2.write.NcdumpArray;
 import ucar.ui.table.ColumnWidthsResizer;

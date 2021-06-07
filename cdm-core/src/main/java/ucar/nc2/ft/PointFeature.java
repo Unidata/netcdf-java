@@ -6,7 +6,7 @@ package ucar.nc2.ft;
 
 import javax.annotation.Nonnull;
 import ucar.ma2.StructureData;
-import ucar.nc2.time.CalendarDate;
+import ucar.nc2.calendar.CalendarDate;
 import ucar.unidata.geoloc.EarthLocation;
 
 /**

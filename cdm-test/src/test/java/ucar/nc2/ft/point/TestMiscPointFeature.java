@@ -52,9 +52,8 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.ft.*;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateRange;
-import ucar.unidata.geoloc.LatLonPoint;
+import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.calendar.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
 import ucar.unidata.util.test.CheckPointFeatureDataset;
@@ -359,8 +358,9 @@ public class TestMiscPointFeature {
           StationTimeSeriesFeatureCollection stsfc = (StationTimeSeriesFeatureCollection) fc;
           // subset criteria not important, just want to get data
           // into flattened representation
-          PointFeatureCollection pfc = stsfc.flatten(new LatLonRect(-90, -180, 90, 180), CalendarDateRange
-              .of(CalendarDate.parseISOformat(null, "1900-01-01"), CalendarDate.parseISOformat(null, "2100-01-01")));
+          PointFeatureCollection pfc = stsfc.flatten(new LatLonRect(-90, -180, 90, 180),
+              CalendarDateRange.of(CalendarDate.fromUdunitIsoDate(null, "1900-01-01").orElseThrow(),
+                  CalendarDate.fromUdunitIsoDate(null, "2100-01-01").orElseThrow()));
 
           for (PointFeature pf : pfc) {
             // the call to cursor.getParentStructure() in

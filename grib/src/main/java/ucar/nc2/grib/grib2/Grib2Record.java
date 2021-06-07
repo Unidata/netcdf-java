@@ -9,7 +9,7 @@ import com.google.common.base.MoreObjects;
 import javax.annotation.Nullable;
 import ucar.nc2.grib.GribData;
 import ucar.nc2.grib.QuasiRegular;
-import ucar.nc2.time.CalendarDate;
+import ucar.nc2.calendar.CalendarDate;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.StringUtil2;
 import java.io.IOException;

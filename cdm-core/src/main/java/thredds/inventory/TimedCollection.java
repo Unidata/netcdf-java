@@ -5,8 +5,8 @@
 package thredds.inventory;
 
 import com.google.common.base.Preconditions;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.calendar.CalendarDateRange;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Formatter;
@@ -72,7 +72,7 @@ public class TimedCollection {
           Dataset d2 = datasets.get(i + 1);
           d1.setDateRange(CalendarDateRange.of(d1.start, d2.start));
           if (i == datasets.size() - 2) // last one
-            d2.setDateRange(new CalendarDateRange(d2.start, d1.getDateRange().getDurationInSecs()));
+            d2.setDateRange(CalendarDateRange.of(d2.start, d1.getDateRange().getDurationInSecs()));
         }
 
         Dataset first = datasets.get(0);

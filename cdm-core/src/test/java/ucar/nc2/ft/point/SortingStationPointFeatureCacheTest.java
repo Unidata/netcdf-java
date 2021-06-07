@@ -24,7 +24,7 @@ import ucar.nc2.ft.DsgFeatureCollection;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.NoFactoryFoundException;
 import ucar.nc2.ft.PointFeatureIterator;
-import ucar.nc2.time.CalendarDateUnit;
+import ucar.nc2.calendar.CalendarDateUnit;
 
 public class SortingStationPointFeatureCacheTest {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -42,7 +42,7 @@ public class SortingStationPointFeatureCacheTest {
 
     StationFeature stationFeat = new StationFeatureImpl("Foo", "Bar", "123", 30, 60, 5000, 4, stationData);
 
-    CalendarDateUnit timeUnit = CalendarDateUnit.of(null, "days since 1970-01-01");
+    CalendarDateUnit timeUnit = CalendarDateUnit.fromUdunitString(null, "days since 1970-01-01").orElseThrow();
     DsgFeatureCollection dummyDsg = new SimplePointFeatureCC("dummy", timeUnit, "m", FeatureType.STATION);
 
     List<StationPointFeature> spfList = new ArrayList<>();
@@ -68,8 +68,8 @@ public class SortingStationPointFeatureCacheTest {
   private static StationPointFeature makeStationPointFeature(DsgFeatureCollection dsg, StationFeature stationFeat,
       CalendarDateUnit timeUnit, double obsTime, double nomTime, double tasmax) {
     StructureMembers.Builder smb = StructureMembers.builder().setName("StationPointFeature");
-    smb.addMemberScalar("obsTime", "Observation time", timeUnit.getUdUnit(), DataType.DOUBLE, obsTime);
-    smb.addMemberScalar("nomTime", "Nominal time", timeUnit.getUdUnit(), DataType.DOUBLE, nomTime);
+    smb.addMemberScalar("obsTime", "Observation time", timeUnit.toString(), DataType.DOUBLE, obsTime);
+    smb.addMemberScalar("nomTime", "Nominal time", timeUnit.toString(), DataType.DOUBLE, nomTime);
     smb.addMemberScalar("tasmax", "Max temperature", "Celsius", DataType.DOUBLE, tasmax);
     StructureData featureData = new StructureDataFromMember(smb.build());
 

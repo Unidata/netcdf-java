@@ -13,8 +13,8 @@ import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 import ucar.ma2.RangeIterator;
 import ucar.nc2.constants.AxisType;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.calendar.CalendarDateRange;
 
 /**
  * Helper class for CoverageCoordAxis1D for subsetting and searching.

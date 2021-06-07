@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Formatter;
 import java.util.List;
+import java.util.Optional;
+
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureDataFactory;
 import ucar.ma2.StructureDataIterator;
@@ -25,9 +27,8 @@ import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.point.StationFeature;
 import ucar.nc2.ft.point.StationFeatureImpl;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateFormatter;
-import ucar.nc2.time.CalendarDateUnit;
+import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.calendar.CalendarDateUnit;
 import ucar.unidata.geoloc.EarthLocation;
 
 /**
@@ -479,11 +480,9 @@ public class NestedTable {
   }
 
   public CalendarDateUnit getTimeUnit() {
-    try {
-      return CalendarDateUnit.of(null, timeVE.getUnitsString()); // LOOK dont know the calendar
-    } catch (Exception e) {
-      throw new IllegalArgumentException("Error on time string = " + timeVE.getUnitsString() + " == " + e.getMessage());
-    }
+    // LOOK dont know the calendar
+    return CalendarDateUnit.fromUdunitString(null, timeVE.getUnitsString())
+        .orElseThrow(() -> new IllegalArgumentException("Error on time string = " + timeVE.getUnitsString()));
   }
 
   public String getAltUnits() {
@@ -562,12 +561,12 @@ public class NestedTable {
 
     if (cve.isString()) {
       String timeString = timeVE.getCoordValueString(tableData);
-      CalendarDate date = CalendarDateFormatter.isoStringToCalendarDate(null, timeString);
-      if (date == null) {
+      Optional<CalendarDate> dateO = CalendarDate.fromUdunitIsoDate(null, timeString);
+      if (dateO.isEmpty()) {
         log.error("Cant parse date - not ISO formatted, = " + timeString);
         return 0.0;
       }
-      return date.getMillis();
+      return dateO.get().getMillisFromEpoch();
 
     } else {
       return cve.getCoordValue(tableData);

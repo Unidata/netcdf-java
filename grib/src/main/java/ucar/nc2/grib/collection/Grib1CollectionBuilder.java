@@ -24,9 +24,9 @@ import ucar.nc2.grib.coord.GribRecordStats;
 import ucar.nc2.grib.grib1.*;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib2.Grib2Utils;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.time.CalendarPeriod;
+import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.calendar.CalendarDateRange;
+import ucar.nc2.calendar.CalendarPeriod;
 import thredds.inventory.CloseableIterator;
 import java.io.File;
 import java.io.IOException;
@@ -111,8 +111,8 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
           // GdsHashObject gdsHashObject = new GdsHashObject(gr.getGDS(), hashOverride);
 
           CalendarDate runtimeDate = gr.getReferenceDate();
-          long runtime = singleRuntime ? runtimeDate.getMillis() : 0; // separate Groups for each runtime, if
-                                                                      // singleRuntime is true
+          long runtime = singleRuntime ? runtimeDate.getMillisFromEpoch() : 0; // separate Groups for each runtime, if
+          // singleRuntime is true
           GroupAndRuntime gar = new GroupAndRuntime(hashCode, runtime);
           Grib1CollectionWriter.Group g = gdsMap.get(gar);
           if (g == null) {
@@ -120,7 +120,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
             gdsMap.put(gar, g);
           }
           g.records.add(gr);
-          g.runtimes.add(runtimeDate.getMillis());
+          g.runtimes.add(runtimeDate.getMillisFromEpoch());
         }
         fileno++;
         statsAll.recordsTotal += index.getRecords().size();

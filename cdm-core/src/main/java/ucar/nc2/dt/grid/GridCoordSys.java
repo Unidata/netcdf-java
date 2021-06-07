@@ -16,9 +16,8 @@ import ucar.nc2.dataset.CoordinateTransform;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dataset.VariableEnhanced;
 import ucar.nc2.dataset.VerticalCT;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateFormatter;
-import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.calendar.CalendarDateRange;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.units.SimpleUnit;
@@ -1476,7 +1475,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
         Array data = tAxis.read();
         data.resetLocalIterator();
         while (data.hasNext()) {
-          Date d = CalendarDateFormatter.isoStringToDate((String) data.next());
+          Date d = CalendarDate.fromUdunitIsoDate(null, (String) data.next()).map(CalendarDate::toDate).orElseThrow();
           dates.add(d);
         }
 
@@ -1484,7 +1483,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
         ArrayChar data = (ArrayChar) tAxis.read();
         ArrayChar.StringIterator iter = data.getStringIterator();
         while (iter.hasNext()) {
-          Date d = CalendarDateFormatter.isoStringToDate(iter.next());
+          Date d = CalendarDate.fromUdunitIsoDate(null, iter.next()).map(CalendarDate::toDate).orElseThrow();
           dates.add(d);
         }
 

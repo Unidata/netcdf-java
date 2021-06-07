@@ -7,7 +7,7 @@ package thredds.client.catalog;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.text.ParseException;
-import ucar.nc2.time.CalendarDate;
+import ucar.nc2.calendar.CalendarDate;
 
 /**
  * A range of dates, using DateType start/end, and/or a TimeDuration.
@@ -142,8 +142,8 @@ public class TimeCoverage {
    */
   public TimeDuration getDuration() {
     if (isMoving && !useDuration) {
-      long min = start.getCalendarDate().getMillis();
-      long max = end.getCalendarDate().getMillis();
+      long min = start.getCalendarDate().getMillisFromEpoch();
+      long max = end.getCalendarDate().getMillisFromEpoch();
       double secs = .001 * (max - min);
       if (secs < 0) {
         secs = 0;
@@ -449,8 +449,8 @@ public class TimeCoverage {
 
     // assumes not moving
     private void recalcDuration() {
-      long min = start.getCalendarDate().getMillis();
-      long max = end.getCalendarDate().getMillis();
+      long min = start.getCalendarDate().getMillisFromEpoch();
+      long max = end.getCalendarDate().getMillisFromEpoch();
       double secs = .001 * (max - min);
       if (secs < 0)
         secs = 0;

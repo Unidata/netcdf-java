@@ -16,9 +16,9 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.stream.NcStreamProto;
-import ucar.nc2.time.Calendar;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.calendar.Calendar;
+import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.calendar.CalendarDateRange;
 import ucar.unidata.geoloc.*;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -171,9 +171,9 @@ public class CdmrfReader {
   }
 
   CalendarDateRange decodeDateRange(CdmrFeatureProto.CalendarDateRange proto) {
-    ucar.nc2.time.Calendar cal = convertCalendar(proto.getCalendar());
-    CalendarDate start = CalendarDate.of(cal, proto.getStart());
-    CalendarDate end = CalendarDate.of(cal, proto.getEnd());
+    ucar.nc2.calendar.Calendar cal = convertCalendar(proto.getCalendar());
+    CalendarDate start = CalendarDate.of(proto.getStart());
+    CalendarDate end = CalendarDate.of(proto.getEnd());
     return CalendarDateRange.of(start, end);
   }
 

@@ -5,9 +5,9 @@
 
 package ucar.nc2.grib.coord;
 
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.time.CalendarPeriod;
+import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.calendar.CalendarDateRange;
+import ucar.nc2.calendar.CalendarPeriod;
 import javax.annotation.concurrent.Immutable;
 
 /**
@@ -24,7 +24,7 @@ public abstract class CoordinateTimeAbstract implements Coordinate {
 
   final String periodName; // used to create the udunit
   protected final int code; // unit of time (Grib1 table 4, Grib2 table 4.4), eg hour, day, month
-  protected final CalendarPeriod timeUnit; // time duration, based on code
+  protected final CalendarPeriod timeUnit; // time duration, based on code LOOK could be CalendarDateUnit
   protected final CalendarDate refDate; // used to create the udunit
   protected final int[] time2runtime; // for each time, which runtime is used; index into master runtime
 
@@ -94,7 +94,8 @@ public abstract class CoordinateTimeAbstract implements Coordinate {
   }
 
   public double getOffsetInTimeUnits(CalendarDate start) {
-    return timeUnit.getOffset(start, getRefDate());
+    // return timeUnit.getOffset(start, getRefDate());
+    return refDate.since(start, timeUnit);
   }
 
   @Override
@@ -128,6 +129,6 @@ public abstract class CoordinateTimeAbstract implements Coordinate {
 
   protected abstract CoordinateTimeAbstract makeBestFromComplete(int[] best, int n);
 
-  public abstract CalendarDateRange makeCalendarDateRange(ucar.nc2.time.Calendar cal);
+  public abstract CalendarDateRange makeCalendarDateRange();
 
 }

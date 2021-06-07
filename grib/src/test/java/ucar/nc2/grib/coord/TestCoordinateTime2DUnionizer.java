@@ -5,8 +5,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.grib.grib1.Grib1Record;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarPeriod;
+import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.calendar.CalendarPeriod;
 import ucar.nc2.util.Indent;
 import java.lang.invoke.MethodHandles;
 import java.util.*;
@@ -22,7 +22,7 @@ public class TestCoordinateTime2DUnionizer {
 
   static int code = 0;
   static CalendarPeriod timeUnit = CalendarPeriod.of("1 hour");
-  static CalendarDate startDate = CalendarDate.parseISOformat(null, "1970-01-01T00:00:00");
+  static CalendarDate startDate = CalendarDate.fromUdunitIsoDate(null, "1970-01-01T00:00:00").orElseThrow();
 
   @Test
   public void testOrthogonalization() {

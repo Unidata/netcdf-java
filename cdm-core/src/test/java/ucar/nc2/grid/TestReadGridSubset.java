@@ -4,7 +4,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.array.Arrays;
 import ucar.array.InvalidRangeException;
-import ucar.nc2.time.CalendarDate;
+import ucar.nc2.calendar.CalendarDate;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
@@ -23,7 +23,7 @@ public class TestReadGridSubset {
     Formatter infoLog = new Formatter();
     try (GridDataset gridDataset = GridDatasetFactory.openGridDataset(filename, infoLog)) {
       System.out.println("readGridDataset: " + gridDataset.getLocation());
-
+      // float Convective_Hazard_Outlook_surface_24_hours_Average(
       Grid grid = gridDataset.findGrid("Convective_Hazard_Outlook_surface_24_Hour_Average")
           .orElseThrow(() -> new RuntimeException("Cant find grid"));
 

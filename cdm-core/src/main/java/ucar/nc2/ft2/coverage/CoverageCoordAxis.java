@@ -10,10 +10,10 @@ import ucar.ma2.*;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.AxisType;
-import ucar.nc2.time.Calendar;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.time.CalendarDateUnit;
+import ucar.nc2.calendar.Calendar;
+import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.calendar.CalendarDateRange;
+import ucar.nc2.calendar.CalendarDateUnit;
 import ucar.nc2.util.Indent;
 import java.util.Optional;
 import java.io.IOException;
@@ -313,11 +313,11 @@ public abstract class CoverageCoordAxis implements Comparable<CoverageCoordAxis>
   }
 
   public CalendarDate makeDate(double value) {
-    return timeHelper.makeDate(value);
+    return timeHelper.makeDate((int) value);
   }
 
   public CalendarDateRange getDateRange() {
-    return timeHelper.getDateRange(startValue, endValue);
+    return timeHelper.getDateRange((int) startValue, (int) endValue);
   }
 
   public double getOffsetInTimeUnits(CalendarDate start, CalendarDate end) {

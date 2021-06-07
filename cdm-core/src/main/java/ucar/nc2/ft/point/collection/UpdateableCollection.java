@@ -5,7 +5,7 @@
 
 package ucar.nc2.ft.point.collection;
 
-import ucar.nc2.time.CalendarDateRange;
+import ucar.nc2.calendar.CalendarDateRange;
 import java.io.IOException;
 
 /**

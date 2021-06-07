@@ -12,7 +12,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ft.point.standard.PointConfigXML;
 import ucar.nc2.ft.point.standard.TableConfig;
 import ucar.nc2.ft.point.standard.TableConfigurerImpl;
-import ucar.nc2.time.CalendarDateUnit;
+import ucar.nc2.calendar.CalendarDateUnit;
 import ucar.nc2.units.SimpleUnit;
 import java.io.IOException;
 import java.util.Formatter;
@@ -63,8 +63,9 @@ public class SimpleTrajectory extends TableConfigurerImpl {
       return false;
     }
     String units = timeVar.findAttributeString("units", "");
+    // check that it parses
     try {
-      CalendarDateUnit.withCalendar(null, units);
+      CalendarDateUnit.fromUdunitString(null, units);
     } catch (IllegalArgumentException e) {
       return false;
     }

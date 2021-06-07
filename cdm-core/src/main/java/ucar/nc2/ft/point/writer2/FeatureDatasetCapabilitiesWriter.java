@@ -34,10 +34,10 @@ import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.StationTimeSeriesFeatureCollection;
 import ucar.nc2.ft.point.StationFeature;
 import ucar.nc2.internal.ncml.NcmlReader;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateFormatter;
-import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.time.CalendarDateUnit;
+import ucar.nc2.calendar.Calendar;
+import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.calendar.CalendarDateRange;
+import ucar.nc2.calendar.CalendarDateUnit;
 import ucar.nc2.write.NcmlWriter;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
@@ -152,8 +152,8 @@ public class FeatureDatasetCapabilitiesWriter {
       Element drElem = new Element("TimeSpan"); // from KML
       drElem.addContent(new Element("begin").addContent(dateRange.getStart().toString()));
       drElem.addContent(new Element("end").addContent(dateRange.getEnd().toString()));
-      if (dateRange.getResolution() != null)
-        drElem.addContent(new Element("resolution").addContent(dateRange.getResolution().toString()));
+      // if (dateRange.getResolution() != null)
+      // drElem.addContent(new Element("resolution").addContent(dateRange.getResolution().toString()));
 
       rootElem.addContent(drElem);
     }
@@ -163,7 +163,7 @@ public class FeatureDatasetCapabilitiesWriter {
 
   private Element writeTimeUnit(CalendarDateUnit dateUnit) {
     Element elem = new Element("TimeUnit");
-    elem.addContent(dateUnit.getUdUnit());
+    elem.addContent(dateUnit.toString());
     elem.setAttribute("calendar", dateUnit.getCalendar().toString());
     return elem;
   }
@@ -251,8 +251,8 @@ public class FeatureDatasetCapabilitiesWriter {
       return null;
 
     try {
-      CalendarDate start = CalendarDateFormatter.isoStringToCalendarDate(null, beginS);
-      CalendarDate end = CalendarDateFormatter.isoStringToCalendarDate(null, endS);
+      CalendarDate start = CalendarDate.fromUdunitIsoDate(null, beginS).orElse(null);
+      CalendarDate end = CalendarDate.fromUdunitIsoDate(null, endS).orElse(null);
       if ((start == null) || (end == null)) {
         return null;
       }
@@ -275,15 +275,15 @@ public class FeatureDatasetCapabilitiesWriter {
     if (timeUnitE == null)
       return null;
 
-    String cal = timeUnitE.getAttributeValue("calendar");
+    String calS = timeUnitE.getAttributeValue("calendar");
+    Calendar cal = Calendar.get(calS).orElse(null);
     String timeUnitS = timeUnitE.getTextNormalize();
+    CalendarDateUnit result = CalendarDateUnit.fromUdunitString(cal, timeUnitS).orElse(null);
 
-    try {
-      return CalendarDateUnit.of(cal, timeUnitS);
-    } catch (Exception e) {
+    if (result == null) {
       log.error("Illegal date unit {} in FeatureDatasetCapabilitiesXML", timeUnitS);
-      return null;
     }
+    return result;
   }
 
   public static String getAltUnits(Document doc) {

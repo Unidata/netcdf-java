@@ -22,7 +22,7 @@ import ucar.nc2.ft.point.bufr.BufrCdmIndexProto;
 import ucar.nc2.ft.point.bufr.StandardFields;
 import ucar.nc2.iosp.bufr.*;
 import ucar.nc2.iosp.bufr.writer.Bufr2Xml;
-import ucar.nc2.time.CalendarDate;
+import ucar.nc2.calendar.CalendarDate;
 import ucar.ui.widget.*;
 import ucar.ui.widget.PopupMenu;
 import ucar.unidata.io.RandomAccessFile;

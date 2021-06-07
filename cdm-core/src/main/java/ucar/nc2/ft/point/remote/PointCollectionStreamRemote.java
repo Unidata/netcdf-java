@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import ucar.nc2.ft.PointFeatureCollection;
 import ucar.nc2.stream.CdmRemote;
-import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.time.CalendarDateUnit;
+import ucar.nc2.calendar.CalendarDateRange;
+import ucar.nc2.calendar.CalendarDateUnit;
 import ucar.unidata.geoloc.LatLonRect;
 
 /**

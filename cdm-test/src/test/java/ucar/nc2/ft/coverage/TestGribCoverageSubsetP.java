@@ -16,7 +16,7 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.grib.collection.GribDataReader;
-import ucar.nc2.time.CalendarDate;
+import ucar.nc2.calendar.CalendarDate;
 import java.util.Optional;
 import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
@@ -85,8 +85,8 @@ public class TestGribCoverageSubsetP {
       Double vert_level) {
     this.endpoint = endpoint;
     this.covName = covName;
-    this.rt_val = (rt_val == null) ? null : CalendarDate.parseISOformat(null, rt_val);
-    this.time_val = (time_val == null) ? null : CalendarDate.parseISOformat(null, time_val);
+    this.rt_val = (rt_val == null) ? null : CalendarDate.fromUdunitIsoDate(null, rt_val).orElseThrow();
+    this.time_val = (time_val == null) ? null : CalendarDate.fromUdunitIsoDate(null, time_val).orElseThrow();
     this.time_offset = time_offset;
     this.vert_level = vert_level;
   }

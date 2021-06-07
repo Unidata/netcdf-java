@@ -7,8 +7,8 @@ package ucar.nc2.ft;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import ucar.nc2.Variable;
-import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.time.CalendarDateUnit;
+import ucar.nc2.calendar.CalendarDateRange;
+import ucar.nc2.calendar.CalendarDateUnit;
 import java.util.List;
 
 /**

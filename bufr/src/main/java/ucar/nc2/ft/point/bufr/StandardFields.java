@@ -14,7 +14,7 @@ import ucar.nc2.Variable;
 import ucar.nc2.iosp.bufr.BufrIosp;
 import ucar.nc2.iosp.bufr.DataDescriptor;
 import ucar.nc2.iosp.bufr.Message;
-import ucar.nc2.time.CalendarDate;
+import ucar.nc2.calendar.CalendarDate;
 import java.util.*;
 
 /**
@@ -24,10 +24,10 @@ import java.util.*;
  * @since 8/7/13
  */
 public class StandardFields {
-  private static int nflds = 50;
-  private static Map<BufrCdmIndexProto.FldType, List<String>> type2Flds = new HashMap<>(2 * nflds);
-  private static Map<String, TypeAndOrder> fld2type = new HashMap<>(2 * nflds);
-  private static Map<Integer, Map<String, BufrCdmIndexProto.FldType>> locals = new HashMap<>(10);
+  private static final int nflds = 50;
+  private static final Map<BufrCdmIndexProto.FldType, List<String>> type2Flds = new HashMap<>(2 * nflds);
+  private static final Map<String, TypeAndOrder> fld2type = new HashMap<>(2 * nflds);
+  private static final Map<Integer, Map<String, BufrCdmIndexProto.FldType>> locals = new HashMap<>(10);
 
   static {
     // first choice
@@ -338,11 +338,11 @@ public class StandardFields {
       if (hasField(BufrCdmIndexProto.FldType.month) && hasField(BufrCdmIndexProto.FldType.day)) {
         int month = getFieldValue(BufrCdmIndexProto.FldType.month);
         int day = getFieldValue(BufrCdmIndexProto.FldType.day);
-        return CalendarDate.of(null, year, month, day, hour, minute, sec);
+        return CalendarDate.of(year, month, day, hour, minute, sec);
 
       } else if (hasField(BufrCdmIndexProto.FldType.doy)) {
         int doy = getFieldValue(BufrCdmIndexProto.FldType.doy);
-        return CalendarDate.withDoy(null, year, doy, hour, minute, sec);
+        return CalendarDate.ofDoy(year, doy, hour, minute, sec, 0);
       }
 
       return null;
