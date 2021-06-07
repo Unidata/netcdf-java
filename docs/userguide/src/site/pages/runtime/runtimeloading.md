@@ -12,8 +12,8 @@ These are the various classes that can be plugged in at runtime:
 ### Register an IOServiceProvider
 
 1) The recommended way is to use the [Service Provider](https://docs.oracle.com/javase/tutorial/ext/basics/spi.html){:target="_blank"}
-mechanism and include your IOSP in a jar on the classpath, where it is dynamically loaded at runtime. In your
-jar, include a file named `META-INF/services/ucar.nc2.iosp.IOServiceProvider` containing the
+mechanism and include your IOSP in a JAR on the classpath, where it is dynamically loaded at runtime. In your
+JAR, include a file named `META-INF/services/ucar.nc2.iosp.IOServiceProvider` containing the
 name(s) of your implementations, eg:
 
 ~~~
@@ -23,12 +23,13 @@ ucar.nc2.iosp.gini.Giniiosp
 
 2) Alternatively, from your code, register your IOSP by calling:
 
-~~~java
-ucar.nc2.NetcdfFile.registerIOProvider( String className);
-~~~
+{% capture rmd %}
+{% includecodeblock netcdf-java&docs/userguide/src/test/java/examples/runtime/runtimeLoadingTutorial.java&register %}
+{% endcapture %}
+{{ rmd | markdownify }}
 
-In both cases, your class must implement `ucar.nc2.IOServiceProvider`. 
-When a `NetcdfFiles.open` or `NetcdfDatasets.open` is called, we loop through the `IOServiceProvider` classes and call
+In both cases, your class must implement `ucar.nc2.iosp.IOServiceProvider`. 
+When a `NetcdfFiles.open` is called, we loop through the `IOServiceProvider` classes and call
 
 ~~~java
 boolean isValidFile( ucar.unidata.io.RandomAccessFile raf)
