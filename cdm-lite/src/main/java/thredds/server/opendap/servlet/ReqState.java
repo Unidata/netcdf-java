@@ -11,7 +11,6 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import opendap.dap.DAP2Exception;
-import ucar.httpservices.HTTPUtil;
 import ucar.unidata.util.StringUtil2;
 
 /**
@@ -267,11 +266,11 @@ public class ReqState {
     String dir = getInitParameter(which);
     if (dir == null)
       dir = dfalt;
-    if (HTTPUtil.isAbsolutePath(dir))
-      dir = HTTPUtil.canonicalpath(dir);
+    if (HttpUtil.isAbsolutePath(dir))
+      dir = HttpUtil.canonicalpath(dir);
     else
-      dir = HTTPUtil.relpath(dir);
-    dir = HTTPUtil.canonjoin(realpath, dir);
+      dir = HttpUtil.relpath(dir);
+    dir = HttpUtil.canonjoin(realpath, dir);
     if (!dir.endsWith("/"))
       dir += "/";
     return (dir);
@@ -432,17 +431,17 @@ public class ReqState {
 
   protected void processDodsURL() {
 
-    String cxtpath = HTTPUtil.canonicalpath(myHttpRequest.getContextPath());
+    String cxtpath = HttpUtil.canonicalpath(myHttpRequest.getContextPath());
     if (cxtpath != null && cxtpath.length() == 0)
       cxtpath = null;
     if (cxtpath == null)
       cxtpath = "/"; // we are running as webapps/ROOT
 
-    String servletpath = HTTPUtil.canonicalpath(myHttpRequest.getServletPath());
+    String servletpath = HttpUtil.canonicalpath(myHttpRequest.getServletPath());
     if (servletpath != null && servletpath.length() == 0)
       servletpath = null;
 
-    this.dataSetName = HTTPUtil.canonicalpath(myHttpRequest.getPathInfo());
+    this.dataSetName = HttpUtil.canonicalpath(myHttpRequest.getPathInfo());
     if (this.dataSetName != null && this.dataSetName.length() == 0)
       this.dataSetName = null;
 
@@ -504,7 +503,6 @@ public class ReqState {
 
     boolean isTiny;
 
-    isTiny = false;
     String encoding = this.myHttpRequest.getHeader("Accept-Encoding");
 
     if (encoding != null)
@@ -517,13 +515,6 @@ public class ReqState {
 
   /**
    * ***********************************************************************
-   */
-
-
-  /*
-   * public Enumeration getInitParameterNames() {
-   * return (myServletConfig.getInitParameterNames());
-   * }
    */
 
   public String getInitParameter(String name) {
@@ -575,19 +566,6 @@ public class ReqState {
     ts.append("\n");
 
     ts.append("  InitParameters:\n");
-    /*
-     * Enumeration e = getInitParameterNames();
-     * while (e.hasMoreElements()) {
-     * String name = (String) e.nextElement();
-     * String value = getInitParameter(name);
-     * ts.append("    ");
-     * ts.append(name);
-     * ts.append(": '");
-     * ts.append(value);
-     * ts.append("'\n");
-     * }
-     */
-
     return (ts.toString());
   }
 
