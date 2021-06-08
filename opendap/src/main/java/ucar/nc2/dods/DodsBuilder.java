@@ -12,8 +12,6 @@ import java.util.StringTokenizer;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 
-import com.google.common.base.Splitter;
-import com.google.common.net.UrlEscapers;
 import opendap.dap.AttributeTable;
 import opendap.dap.BaseType;
 import opendap.dap.DAP2Exception;
@@ -45,7 +43,11 @@ import ucar.nc2.constants._Coordinate;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.util.StringUtil2;
 
-/** DODSNetcdfFile builder */
+/**
+ * DODSNetcdfFile builder.
+ * Note that we do not supporting constraint expressions in the dataset URL.
+ * This hasnt worked, ever.
+ */
 @NotThreadSafe
 abstract class DodsBuilder<T extends DodsBuilder<T>> extends NetcdfFile.Builder<T> {
 
@@ -75,11 +77,13 @@ abstract class DodsBuilder<T extends DodsBuilder<T>> extends NetcdfFile.Builder<
       throw new java.net.MalformedURLException(datasetUrl + " must start with dods: or http: or file:");
     }
 
-    // escape the query fragment
-    List<String> ss = Splitter.on('?').trimResults().splitToList(urlName);
-    if (ss.size() == 2) {
-      urlName = ss.get(0) + "?" + UrlEscapers.urlFragmentEscaper().escape(ss.get(1));
-    }
+    /*
+     * escape the query fragment
+     * List<String> ss = Splitter.on('?').trimResults().splitToList(urlName);
+     * if (ss.size() == 2) {
+     * urlName = ss.get(0) + "?" + UrlEscapers.urlFragmentEscaper().escape(ss.get(1));
+     * }
+     */
 
     if (DodsNetcdfFiles.debugServerCall) {
       System.out.println("DConnect to = <" + urlName + ">");

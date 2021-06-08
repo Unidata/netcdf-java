@@ -32,7 +32,7 @@ public class TestDODSSubset {
     assert v.getDataType() == DataType.INT;
     a = v.read();
     assert a.getRank() == 1;
-    assert a.getSize() == 25; // LOOK
+    assert a.getSize() == 25; // LOOK: We dont support CE in dataset url
     assert a.getElementType() == int.class;
     assert a instanceof ArrayInt.D1;
 
