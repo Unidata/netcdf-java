@@ -14,6 +14,7 @@ import ucar.nc2.Variable;
 import java.io.IOException;
 
 import static com.google.common.truth.Truth.assertThat;
+import static org.junit.Assert.fail;
 
 public class TestDodsBuilderWithTestServer {
   private static final String testUrl =
@@ -25,6 +26,7 @@ public class TestDodsBuilderWithTestServer {
   public void testSubset() throws IOException {
     String datasetUrl = testUrl + "?" + testCE;
     try (DodsNetcdfFile dodsfile = DodsNetcdfFile.builder().build(datasetUrl, null)) {
+      fail();
       // DodsNetcdfFile dodsfile = TestDODSRead.open("test.02?i32[1:10],f64[2:2:10]");
 
       // int32
@@ -78,6 +80,8 @@ public class TestDodsBuilderWithTestServer {
        * Assert2.assertNearlyEquals(val, tFloat64[i], 1.0e-9);
        * }
        */
+    } catch (IllegalArgumentException e) {
+      // expected
     }
   }
 
