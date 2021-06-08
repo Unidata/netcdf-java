@@ -157,7 +157,7 @@ public enum NetcdfFileFormat {
   }
 
   public boolean isExtendedModel() {
-    return this == NETCDF4; //  || this == NCSTREAM;
+    return this == NETCDF4; // || this == NCSTREAM;
   }
 
   public boolean isLargeFile() {
