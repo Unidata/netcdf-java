@@ -1,7 +1,6 @@
 package examples.runtime;
 import ucar.array.ArrayType;
 import ucar.array.InvalidRangeException;
-import ucar.ma2.DataType;
 import ucar.nc2.Dimension;
 import ucar.nc2.iosp.NetcdfFileFormat;
 import ucar.nc2.write.Nc4Chunking;
