@@ -1,0 +1,24 @@
+---
+layout: none
+search: exclude
+---
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  {% assign userguide_name = "/userguide" %}
+  {% capture sitemap_version_url %}{{ site.base_docs_url | append: "current" }}{% endcapture %}
+  {% capture sitemap_url_prefix %}{{ sitemap_version_url | append: userguide_name}}{% endcapture %}
+  {% for post in site.posts %}
+  {% unless post.search == "exclude" %}
+  <url>
+    <loc>{{ sitemap_url_prefix | append: post.url }}</loc>
+  </url>
+  {% endunless %}
+  {% endfor %}
+  {% for page in site.pages %}
+  {% unless page.search == "exclude" %}
+  <url>
+    <loc>{{ sitemap_url_prefix | append: page.url }}</loc>
+  </url>
+  {% endunless %}
+  {% endfor %}
+</urlset>
