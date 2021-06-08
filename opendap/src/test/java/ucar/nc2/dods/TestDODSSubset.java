@@ -4,6 +4,7 @@
  */
 package ucar.nc2.dods;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +19,7 @@ public class TestDODSSubset {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
+  @Ignore("We dont support CE in dataset url")
   public void testArraySubset() throws IOException {
     DodsNetcdfFile dodsfile = TestDODSRead.open("test.02?i32[1:10],f64[2:2:10]");
 

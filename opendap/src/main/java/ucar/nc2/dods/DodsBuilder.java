@@ -51,7 +51,7 @@ import ucar.unidata.util.StringUtil2;
 @NotThreadSafe
 abstract class DodsBuilder<T extends DodsBuilder<T>> extends NetcdfFile.Builder<T> {
 
-  private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DodsBuilder.class);
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DodsBuilder.class);
 
   HashSet<Dimension> sharedDimensions = new HashSet<>();
   DConnect2 dodsConnection;
@@ -77,13 +77,9 @@ abstract class DodsBuilder<T extends DodsBuilder<T>> extends NetcdfFile.Builder<
       throw new java.net.MalformedURLException(datasetUrl + " must start with dods: or http: or file:");
     }
 
-    /*
-     * escape the query fragment
-     * List<String> ss = Splitter.on('?').trimResults().splitToList(urlName);
-     * if (ss.size() == 2) {
-     * urlName = ss.get(0) + "?" + UrlEscapers.urlFragmentEscaper().escape(ss.get(1));
-     * }
-     */
+    if (urlName.indexOf('?') >= 0) {
+      throw new IllegalArgumentException("Constraint expression not allowed in Dataset URL");
+    }
 
     if (DodsNetcdfFiles.debugServerCall) {
       System.out.println("DConnect to = <" + urlName + ">");
@@ -244,8 +240,10 @@ abstract class DodsBuilder<T extends DodsBuilder<T>> extends NetcdfFile.Builder<
         for (String attName : attTable) {
           if (attName.equals("Unlimited_Dimension")) {
             opendap.dap.Attribute att = attTable.getAttribute(attName);
-            Attribute ncatt = DODSAttribute.create(attName, att);
-            setUnlimited(ncatt.getStringValue());
+            if (att != null) {
+              Attribute ncatt = DODSAttribute.create(attName, att);
+              setUnlimited(ncatt.getStringValue());
+            }
           } else {
             logger.warn(" Unknown DODS_EXTRA attribute = " + attName + " " + location);
           }
@@ -254,9 +252,11 @@ abstract class DodsBuilder<T extends DodsBuilder<T>> extends NetcdfFile.Builder<
       } else if (tableName.equals("EXTRA_DIMENSION")) {
         for (String attName : attTable) {
           opendap.dap.Attribute att = attTable.getAttribute(attName);
-          Attribute ncatt = DODSAttribute.create(attName, att);
-          int length = ncatt.getNumericValue().intValue();
-          rootGroup.addDimension(new Dimension(attName, length));
+          if (att != null) {
+            Attribute ncatt = DODSAttribute.create(attName, att);
+            int length = ncatt.getNumericValue().intValue();
+            rootGroup.addDimension(new Dimension(attName, length));
+          }
         }
       }
     }
