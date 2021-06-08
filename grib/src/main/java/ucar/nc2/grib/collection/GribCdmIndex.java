@@ -21,7 +21,7 @@ import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.grib.grib1.Grib1RecordScanner;
 import ucar.nc2.grib.grib2.Grib2RecordScanner;
-import ucar.nc2.stream.NcStream;
+import ucar.nc2.internal.io.Streams;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.internal.cache.FileCacheIF;
 import ucar.nc2.internal.cache.FileCacheable;
@@ -954,7 +954,7 @@ public class GribCdmIndex implements IndexReader {
       }
       indexRaf.skipBytes(recordLength);
 
-      int size = NcStream.readVInt(indexRaf);
+      int size = Streams.readVInt(indexRaf);
       if ((size < 0) || (size > 100 * 1000 * 1000)) {
         logger.warn("GribCdmIndex {}: invalid index size {}", indexRaf.getLocation(), size);
         return false;

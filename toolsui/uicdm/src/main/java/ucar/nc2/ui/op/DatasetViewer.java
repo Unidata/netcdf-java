@@ -26,7 +26,6 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.ParsedSectionSpec;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
-import ucar.nc2.stream.NcStreamWriter;
 import ucar.nc2.ui.ToolsUI;
 import ucar.nc2.ui.dialog.CompareDialog;
 import ucar.nc2.ui.dialog.NetcdfOutputChooser;
@@ -35,7 +34,6 @@ import ucar.nc2.write.NcdumpArray;
 import ucar.nc2.write.NetcdfCopier;
 import ucar.nc2.write.Ncdump;
 import ucar.nc2.write.NcmlWriter;
-import ucar.nc2.iosp.NetcdfFileFormat;
 import ucar.nc2.write.NetcdfFormatWriter;
 import ucar.ui.widget.BAMutil;
 import ucar.ui.widget.FileManager;
@@ -161,11 +159,6 @@ public class DatasetViewer extends JPanel {
   ///////////////////////////////////////
 
   private void writeNetcdf(NetcdfOutputChooser.Data data) {
-    if (data.format == NetcdfFileFormat.NCSTREAM) {
-      writeNcstream(data.outputFilename);
-      return;
-    }
-
     try {
       NetcdfFormatWriter.Builder builder =
           NetcdfFormatWriter.builder().setFormat(data.format).setLocation(data.outputFilename)
@@ -176,32 +169,6 @@ public class DatasetViewer extends JPanel {
         JOptionPane.showMessageDialog(this, "File successfully written");
       }
 
-    } catch (Exception ioe) {
-      JOptionPane.showMessageDialog(this, "ERROR: " + ioe.getMessage());
-      ioe.printStackTrace();
-    }
-  }
-
-  void writeNcstream(String filename) {
-    try {
-      NcStreamWriter writer = new NcStreamWriter(ds, null);
-      try (OutputStream fos = new BufferedOutputStream(new FileOutputStream(filename), 50 * 1000)) {
-        writer.streamAll(fos);
-      }
-      JOptionPane.showMessageDialog(this, "File successfully written");
-    } catch (Exception ioe) {
-      JOptionPane.showMessageDialog(this, "ERROR: " + ioe.getMessage());
-      ioe.printStackTrace();
-    }
-  }
-
-  void writeNcstreamHeader(String filename) {
-    try {
-      NcStreamWriter writer = new NcStreamWriter(ds, null);
-      try (FileOutputStream fos = new FileOutputStream(filename)) {
-        writer.sendHeader(fos);
-      }
-      JOptionPane.showMessageDialog(this, "File successfully written");
     } catch (Exception ioe) {
       JOptionPane.showMessageDialog(this, "ERROR: " + ioe.getMessage());
       ioe.printStackTrace();

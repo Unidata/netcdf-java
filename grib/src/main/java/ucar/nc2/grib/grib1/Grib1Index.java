@@ -10,7 +10,7 @@ import java.nio.charset.StandardCharsets;
 import thredds.inventory.CollectionUpdateType;
 import ucar.nc2.grib.GribIndex;
 import ucar.nc2.grib.GribIndexCache;
-import ucar.nc2.stream.NcStream;
+import ucar.nc2.internal.io.Streams;
 import ucar.unidata.io.RandomAccessFile;
 import java.io.File;
 import java.io.FileInputStream;
@@ -59,7 +59,6 @@ public class Grib1Index extends GribIndex {
 
   public static final String MAGIC_START = "Grib1Index";
   private static final int version = 5;
-  private static final boolean debug = false;
 
   ////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -97,12 +96,12 @@ public class Grib1Index extends GribIndex {
 
     try (FileInputStream fin = new FileInputStream(idxFile)) {
       //// check header is ok
-      if (!NcStream.readAndTest(fin, MAGIC_START.getBytes(StandardCharsets.UTF_8))) {
+      if (!Streams.readAndTest(fin, MAGIC_START.getBytes(StandardCharsets.UTF_8))) {
         logger.info("Bad magic number of grib index, on file = {}", idxFile);
         return false;
       }
 
-      int v = NcStream.readVInt(fin);
+      int v = Streams.readVInt(fin);
       if (v != version) {
         if ((v == 0) || (v > version))
           throw new IOException("Grib1Index found version " + v + ", want version " + version + " on " + filename);
@@ -111,14 +110,14 @@ public class Grib1Index extends GribIndex {
         return false;
       }
 
-      int size = NcStream.readVInt(fin);
+      int size = Streams.readVInt(fin);
       if (size <= 0 || size > 100 * 1000 * 1000) { // try to catch garbage
         logger.warn("Grib1Index bad size = {} for {} ", size, filename);
         return false;
       }
 
       byte[] m = new byte[size];
-      NcStream.readFully(fin, m);
+      Streams.readFully(fin, m);
 
       Grib1IndexProto.Grib1Index proto = Grib1IndexProto.Grib1Index.parseFrom(m);
       logger.debug("{} for {}", proto.getFilename(), filename);
@@ -175,7 +174,7 @@ public class Grib1Index extends GribIndex {
     try (FileOutputStream fout = new FileOutputStream(idxFileTmp)) {
       //// header message
       fout.write(MAGIC_START.getBytes(StandardCharsets.UTF_8));
-      NcStream.writeVInt(fout, version);
+      Streams.writeVInt(fout, version);
 
       Map<Long, Integer> gdsMap = new HashMap<>();
       gdsList = new ArrayList<>();
@@ -214,7 +213,7 @@ public class Grib1Index extends GribIndex {
 
       ucar.nc2.grib.grib1.Grib1IndexProto.Grib1Index index = rootBuilder.build();
       byte[] b = index.toByteArray();
-      NcStream.writeVInt(fout, b.length); // message size
+      Streams.writeVInt(fout, b.length); // message size
       fout.write(b); // message - all in one gulp
       logger.debug("  made gbx9 index for {} size={}", filename, b.length);
       return true;

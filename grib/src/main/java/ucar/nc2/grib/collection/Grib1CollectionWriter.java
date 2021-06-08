@@ -18,7 +18,7 @@ import ucar.nc2.grib.coord.CoordinateTimeIntv;
 import ucar.nc2.grib.coord.CoordinateVert;
 import ucar.nc2.grib.coord.SparseArray;
 import ucar.nc2.grib.grib1.*;
-import ucar.nc2.stream.NcStream;
+import ucar.nc2.internal.io.Streams;
 import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.calendar.CalendarDateRange;
 import ucar.unidata.io.RandomAccessFile;
@@ -220,7 +220,7 @@ class Grib1CollectionWriter extends GribCollectionWriter {
 
       GribCollectionProto.GribCollection index = indexBuilder.build();
       byte[] b = index.toByteArray();
-      NcStream.writeVInt(raf, b.length); // message size
+      Streams.writeVInt(raf, b.length); // message size
       raf.write(b); // message - all in one gulp
 
       logger.debug("  write GribCollectionIndex= {} bytes", b.length);

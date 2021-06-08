@@ -19,7 +19,7 @@ import ucar.ma2.Array;
 import ucar.ma2.ArrayObject;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
-import ucar.nc2.stream.NcStream;
+import ucar.nc2.internal.io.Streams;
 
 /** Test {@link ucar.nc2.iosp.IospHelper} */
 public class TestIospHelper {
@@ -91,9 +91,9 @@ public class TestIospHelper {
     ByteArrayInputStream bas = new ByteArrayInputStream(bos.toByteArray());
     DataInputStream dox = new DataInputStream(bas);
 
-    assertThat(NcStream.readString(dox)).isEqualTo("yes");
-    assertThat(NcStream.readString(dox)).isEqualTo("no");
-    assertThat(NcStream.readString(dox)).isEqualTo("maybe");
+    assertThat(Streams.readString(dox)).isEqualTo("yes");
+    assertThat(Streams.readString(dox)).isEqualTo("no");
+    assertThat(Streams.readString(dox)).isEqualTo("maybe");
     assertThat(dox.available()).isEqualTo(0);
   }
 
@@ -111,9 +111,9 @@ public class TestIospHelper {
     ByteArrayInputStream bas = new ByteArrayInputStream(bos.toByteArray());
     DataInputStream dox = new DataInputStream(bas);
 
-    assertThat(NcStream.readByteBuffer(dox)).isEqualTo(data[0]);
-    assertThat(NcStream.readByteBuffer(dox)).isEqualTo(data[1]);
-    assertThat(NcStream.readByteBuffer(dox)).isEqualTo(data[2]);
+    assertThat(Streams.readByteBuffer(dox)).isEqualTo(data[0]);
+    assertThat(Streams.readByteBuffer(dox)).isEqualTo(data[1]);
+    assertThat(Streams.readByteBuffer(dox)).isEqualTo(data[2]);
     assertThat(dox.available()).isEqualTo(0);
   }
 
@@ -131,9 +131,9 @@ public class TestIospHelper {
     ByteArrayInputStream bas = new ByteArrayInputStream(bos.toByteArray());
     DataInputStream dox = new DataInputStream(bas);
 
-    assertThat(NcStream.readByteBuffer(dox)).isEqualTo(data[0].getDataAsByteBuffer());
-    assertThat(NcStream.readByteBuffer(dox)).isEqualTo(data[1].getDataAsByteBuffer());
-    assertThat(NcStream.readByteBuffer(dox)).isEqualTo(data[2].getDataAsByteBuffer());
+    assertThat(Streams.readByteBuffer(dox)).isEqualTo(data[0].getDataAsByteBuffer());
+    assertThat(Streams.readByteBuffer(dox)).isEqualTo(data[1].getDataAsByteBuffer());
+    assertThat(Streams.readByteBuffer(dox)).isEqualTo(data[2].getDataAsByteBuffer());
     assertThat(dox.available()).isEqualTo(0);
   }
 

@@ -21,7 +21,7 @@ import ucar.nc2.grib.coord.CoordinateVert;
 import ucar.nc2.grib.coord.EnsCoordValue;
 import ucar.nc2.grib.coord.TimeCoordIntvValue;
 import ucar.nc2.grib.coord.VertCoordValue;
-import ucar.nc2.stream.NcStream;
+import ucar.nc2.internal.io.Streams;
 import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.calendar.CalendarDateUnit;
 import ucar.nc2.calendar.CalendarPeriod;
@@ -70,9 +70,9 @@ abstract class GribCollectionBuilderFromIndex {
       raf.seek(0);
 
       //// header message
-      if (!NcStream.readAndTest(raf, getMagicStart().getBytes(StandardCharsets.UTF_8))) {
+      if (!Streams.readAndTest(raf, getMagicStart().getBytes(StandardCharsets.UTF_8))) {
         raf.seek(0);
-        NcStream.readAndTest(raf, getMagicStart().getBytes(StandardCharsets.UTF_8)); // debug
+        Streams.readAndTest(raf, getMagicStart().getBytes(StandardCharsets.UTF_8)); // debug
         logger.warn("GribCollectionBuilderFromIndex {}: invalid index raf={}", gc.getName(), raf.getLocation());
         throw new IllegalStateException(); // temp debug
         // return false;
@@ -92,7 +92,7 @@ abstract class GribCollectionBuilderFromIndex {
       raf.skipBytes(skip);
       logger.debug("GribCollectionBuilderFromIndex {} ({}) records len = {}", raf.getLocation(), getMagicStart(), skip);
 
-      int size = NcStream.readVInt(raf);
+      int size = Streams.readVInt(raf);
       if ((size < 0) || (size > 300 * 1000 * 1000)) { // ncx bigger than 300 MB?
         logger.warn("GribCollectionBuilderFromIndex {}: invalid index size on file {}", gc.getName(),
             raf.getLocation());

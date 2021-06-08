@@ -27,7 +27,7 @@ import ucar.nc2.grib.coord.CoordinateTime2D;
 import ucar.nc2.grib.coord.CoordinateTimeAbstract;
 import ucar.nc2.grib.coord.CoordinateTimeIntv;
 import ucar.nc2.grib.coord.CoordinateVert;
-import ucar.nc2.stream.NcStream;
+import ucar.nc2.internal.io.Streams;
 import ucar.nc2.calendar.CalendarDateRange;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.StringUtil2;
@@ -588,7 +588,7 @@ abstract class GribPartitionBuilder {
       // write it out
       GribCollectionProto.GribCollection index = indexBuilder.build();
       byte[] b = index.toByteArray();
-      NcStream.writeVInt(raf, b.length); // message size
+      Streams.writeVInt(raf, b.length); // message size
       raf.write(b); // message - all in one gulp
       f.format("Grib2PartitionIndex= %d bytes file size =  %d bytes%n%n", b.length, raf.length());
     }

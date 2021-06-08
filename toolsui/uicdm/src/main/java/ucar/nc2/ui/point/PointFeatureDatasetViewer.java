@@ -319,10 +319,6 @@ public class PointFeatureDatasetViewer extends JPanel {
   }
 
   private void writeNetcdf(NetcdfOutputChooser.Data data) {
-    if (data.format == NetcdfFileFormat.NCSTREAM) {
-      return;
-    }
-
     try {
       int count = CFPointWriter.writeFeatureCollection(pfDataset, data.outputFilename, data.format);
       JOptionPane.showMessageDialog(this, count + " records written");

@@ -17,15 +17,12 @@ import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.Variable.Builder;
 import ucar.nc2.dataset.NetcdfDatasets;
-// import ucar.nc2.ffi.netcdf.NetcdfClibrary;
-import ucar.nc2.stream.NcStreamWriter;
 import ucar.nc2.ui.dialog.CompareDialog;
 import ucar.nc2.ui.dialog.NetcdfOutputChooser;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.write.NetcdfCopier;
 import ucar.nc2.write.Ncdump;
 import ucar.nc2.write.NcmlWriter;
-import ucar.nc2.iosp.NetcdfFileFormat;
 import ucar.nc2.write.NetcdfFormatWriter;
 import ucar.ui.widget.BAMutil;
 import ucar.ui.widget.FileManager;
@@ -195,11 +192,6 @@ public class DatasetWriter extends JPanel {
       return;
     }
 
-    if (data.format == NetcdfFileFormat.NCSTREAM) {
-      writeNcstream(data.outputFilename);
-      return;
-    }
-
     if (data.format.isNetdf4format()) {
       return;
       /*
@@ -251,28 +243,6 @@ public class DatasetWriter extends JPanel {
         success = !cancel && !isError();
         done = true; // do last!
       }
-    }
-  }
-
-  void writeNcstream(String filename) {
-    try (OutputStream fos = new BufferedOutputStream(new FileOutputStream(filename), 50 * 1000)) {
-      NcStreamWriter writer = new NcStreamWriter(ds, null);
-      writer.streamAll(fos);
-      JOptionPane.showMessageDialog(this, "File successfully written");
-    } catch (Exception ioe) {
-      JOptionPane.showMessageDialog(this, "ERROR: " + ioe.getMessage());
-      ioe.printStackTrace();
-    }
-  }
-
-  void writeNcstreamHeader(String filename) {
-    try (FileOutputStream fos = new FileOutputStream(filename)) {
-      NcStreamWriter writer = new NcStreamWriter(ds, null);
-      writer.sendHeader(fos);
-      JOptionPane.showMessageDialog(this, "File successfully written");
-    } catch (Exception ioe) {
-      JOptionPane.showMessageDialog(this, "ERROR: " + ioe.getMessage());
-      ioe.printStackTrace();
     }
   }
 

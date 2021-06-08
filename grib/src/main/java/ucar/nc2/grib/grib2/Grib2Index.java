@@ -10,7 +10,7 @@ import java.nio.charset.StandardCharsets;
 import thredds.inventory.CollectionUpdateType;
 import ucar.nc2.grib.GribIndex;
 import ucar.nc2.grib.GribIndexCache;
-import ucar.nc2.stream.NcStream;
+import ucar.nc2.internal.io.Streams;
 import ucar.unidata.io.RandomAccessFile;
 import java.io.File;
 import java.io.FileInputStream;
@@ -60,7 +60,6 @@ public class Grib2Index extends GribIndex {
   public static final String MAGIC_START = "Grib2Index";
   public static final int ScanModeMissing = 9999;
 
-  private static final boolean debug = false;
   private static final int version = 6; // index must be this version, or else rewrite.
 
   /*
@@ -101,12 +100,12 @@ public class Grib2Index extends GribIndex {
 
     try (FileInputStream fin = new FileInputStream(idxFile)) {
       //// check header is ok
-      if (!NcStream.readAndTest(fin, MAGIC_START.getBytes(StandardCharsets.UTF_8))) {
+      if (!Streams.readAndTest(fin, MAGIC_START.getBytes(StandardCharsets.UTF_8))) {
         logger.info("Bad magic number of grib index on file= {}", idxFile);
         return false;
       }
 
-      int v = NcStream.readVInt(fin);
+      int v = Streams.readVInt(fin);
       if (v != version) { // here we insist that the version match. so cant use it to detect proto3 without forcing a
                           // rewrite.
         if ((v == 0) || (v > version))
@@ -116,14 +115,14 @@ public class Grib2Index extends GribIndex {
         return false;
       }
 
-      int size = NcStream.readVInt(fin);
+      int size = Streams.readVInt(fin);
       if (size <= 0 || size > 100 * 1000 * 1000) { // try to catch garbage
         logger.warn("Grib2Index bad size = " + size + " for " + filename + " index = " + idxFile.getPath());
         return false;
       }
 
       byte[] m = new byte[size];
-      NcStream.readFully(fin, m);
+      Streams.readFully(fin, m);
 
       Grib2IndexProto.Grib2Index proto = Grib2IndexProto.Grib2Index.parseFrom(m);
       logger.debug("{} for {}", proto.getFilename(), filename);
@@ -211,7 +210,7 @@ public class Grib2Index extends GribIndex {
     try (FileOutputStream fout = new FileOutputStream(idxFileTmp)) {
       //// header message
       fout.write(MAGIC_START.getBytes(StandardCharsets.UTF_8));
-      NcStream.writeVInt(fout, version);
+      Streams.writeVInt(fout, version);
 
       Map<Long, Integer> gdsMap = new HashMap<>();
       gdsList = new ArrayList<>();
@@ -248,7 +247,7 @@ public class Grib2Index extends GribIndex {
 
       Grib2IndexProto.Grib2Index index = rootBuilder.build();
       byte[] b = index.toByteArray();
-      NcStream.writeVInt(fout, b.length); // message size
+      Streams.writeVInt(fout, b.length); // message size
       fout.write(b); // message - all in one gulp
       logger.debug("  made gbx9 index for {} size={}", filename, b.length);
 

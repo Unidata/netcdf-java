@@ -120,9 +120,9 @@ public enum NetcdfFileFormat {
   NETCDF3_64BIT_OFFSET(2, "netcdf-3 64bit-offset"), //
   NETCDF4(3, "NetCDF-4"), // This is really just HDF-5, dont know yet if its written by netcdf4.
   NETCDF4_CLASSIC(4, "netcdf-4 classic"), // psuedo format I think
-  NETCDF3_64BIT_DATA(5, "netcdf-5"), // from PnetCDF project
+  NETCDF3_64BIT_DATA(5, "netcdf-5"); // from PnetCDF project
 
-  NCSTREAM(42, "ncstream"); // No assigned version, not part of C library.
+  // NCSTREAM(42, "ncstream"); // No assigned version, not part of C library.
 
   private static final int MAGIC_NUMBER_LEN = 8;
   private static final long MAXHEADERPOS = 50000; // header's gotta be within this range
@@ -157,7 +157,7 @@ public enum NetcdfFileFormat {
   }
 
   public boolean isExtendedModel() {
-    return this == NETCDF4 || this == NCSTREAM;
+    return this == NETCDF4; //  || this == NCSTREAM;
   }
 
   public boolean isLargeFile() {
@@ -182,8 +182,6 @@ public enum NetcdfFileFormat {
       // return NetcdfFileFormat.NETCDF3_64BIT_OFFSET;
       case "netcdf3c64":
         return NetcdfFileFormat.NETCDF3_64BIT_OFFSET;
-      case "ncstream":
-        return NetcdfFileFormat.NCSTREAM;
       default:
         return null;
     }
