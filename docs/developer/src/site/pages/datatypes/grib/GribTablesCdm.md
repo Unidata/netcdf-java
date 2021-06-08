@@ -68,7 +68,7 @@ You can view all the standard tables used by the CDM in ToolsUI, using the `IOSP
 1. Each row contains the center, subcenter and table version, and the table filename, with a colon (:) separating the fields.
 2. The center, subcenter and table ids are read from each GRIB record, and the list of tables is searched for a match. The first exact match is used.
 3. If there is no exact match, then a wildcard match is used, where a "-1" for the subcenter or version id matches any id. The first wildcard match is used.
-4. Center 0 is the WMO standard table, called the **default table. It is set internally and cannot be overridden by the user.
+4. Center 0 is the WMO standard table, called the **default table**. It is set internally and cannot be overridden by the user.
 5. If a table is not matched, the default table is used.
 6. If a parameter is not found then "Unknown Parameter center-subcenter-version-param" is used as the name, and an empty string for the units.
 7. If **strictMode** is on, then
