@@ -78,6 +78,7 @@ public class TestDODSSubset {
 
 
   @Test
+  @Ignore("We dont support CE in dataset url")
   public void testSubset() throws IOException {
     DodsNetcdfFile dodsfile = TestDODSRead.open("test.05?types.integers");
 
