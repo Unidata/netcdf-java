@@ -5,11 +5,14 @@
 
 package ucar.nc2.ui.op;
 
+import java.net.http.HttpHeaders;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
-import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
-import ucar.httpservices.*;
+
+import ucar.nc2.internal.http.HttpService;
 import ucar.ui.event.ActionValueEvent;
 import ucar.ui.event.ActionValueListener;
 import ucar.ui.widget.BAMutil;
@@ -25,7 +28,6 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -178,25 +180,20 @@ public class WmsViewer extends JPanel {
     info = new Formatter();
     info.format("%s%n", url);
 
-    try (HTTPSession session = HTTPFactory.newSession(url); HTTPMethod method = HTTPFactory.Get(session, url)) {
-      int statusCode = method.execute();
+    try {
+      HttpRequest request = HttpService.standardGetRequestBuilder(url).build();
+      HttpResponse<InputStream> response = HttpService.standardRequest(request);
+      HttpHeaders responseHeaders = response.headers();
 
-      info.format(" Status = %d %s%n", method.getStatusCode(), method.getStatusText());
-      info.format(" Status Line = %s%n", method.getStatusLine());
-      printHeaders(" Response Headers", method.getResponseHeaders().entries());
+      info.format(" Status = %d%n", response.statusCode());
+      printHeaders(" Response Headers", responseHeaders);
       info.format("GetCapabilities:%n%n");
 
-      if (statusCode == 404) {
-        throw new FileNotFoundException(method.getPath() + " " + method.getStatusLine());
-      }
-      if (statusCode >= 300) {
-        throw new IOException(method.getPath() + " " + method.getStatusLine());
-      }
-
       SAXBuilder builder = new SAXBuilder();
-      Document tdoc = builder.build(method.getResponseAsStream());
+      Document tdoc = builder.build(response.body());
       Element root = tdoc.getRootElement();
       parseGetCapabilities(root);
+
     } catch (Exception e) {
       info.format("%s%n", e.getMessage());
       JOptionPane.showMessageDialog(this, "Failed " + e.getMessage());
@@ -254,62 +251,54 @@ public class WmsViewer extends JPanel {
     info.format("%s%n", url);
 
     try {
-      try (HTTPMethod method = HTTPFactory.Get(url)) {
-        int statusCode = method.execute();
+      HttpRequest request = HttpService.standardGetRequestBuilder(url).build();
+      HttpResponse<InputStream> response = HttpService.standardRequest(request);
+      HttpHeaders responseHeaders = response.headers();
 
-        info.format(" Status = %d %s%n", method.getStatusCode(), method.getStatusText());
-        info.format(" Status Line = %s%n", method.getStatusLine());
-        printHeaders(" Response Headers", method.getResponseHeaders().entries());
+      info.format(" Status = %d%n", response.statusCode());
+      printHeaders(" Response Headers", responseHeaders);
 
-        if (statusCode == 404) {
-          throw new FileNotFoundException(method.getPath() + " " + method.getStatusLine());
-        }
 
-        if (statusCode >= 300) {
-          throw new IOException(method.getPath() + " " + method.getStatusLine());
-        }
+      String mimeType = "";
+      Optional<String> contentTypeOpt = responseHeaders.firstValue("Content-Type");
+      if (contentTypeOpt.isPresent()) {
+        mimeType = contentTypeOpt.get();
+        info.format(" mimeType = %s%n", mimeType);
+      }
 
-        String mimeType = "";
-        Optional<String> contentTypeOpt = method.getResponseHeaderValue("Content-Type");
-        if (contentTypeOpt.isPresent()) {
-          mimeType = contentTypeOpt.get();
-          info.format(" mimeType = %s%n", mimeType);
-        }
+      try (InputStream isFromHttp = response.body()) {
+        byte[] contents = IO.readContentsToByteArray(isFromHttp);
+        info.format(" content len = %s%n", contents.length);
 
-        try (InputStream isFromHttp = method.getResponseBodyAsStream()) {
-          byte[] contents = IO.readContentsToByteArray(isFromHttp);
-          info.format(" content len = %s%n", contents.length);
+        ByteArrayInputStream is = new ByteArrayInputStream(contents);
 
-          ByteArrayInputStream is = new ByteArrayInputStream(contents);
+        BufferedImage img = ImageIO.read(is);
+        showImage(img);
 
-          BufferedImage img = ImageIO.read(is);
-          showImage(img);
+        if (img == null) {
+          info.format("getMap:%n%n");
+          if (mimeType.equals("application/vnd.google-earth.kmz")) {
+            File temp = File.createTempFile("Temp", ".kmz");
+            // File temp = new File("C:/temp/temp.kmz");
+            IO.writeToFile(contents, temp);
+            contents = null;
 
-          if (img == null) {
-            info.format("getMap:%n%n");
-            if (mimeType.equals("application/vnd.google-earth.kmz")) {
-              File temp = File.createTempFile("Temp", ".kmz");
-              // File temp = new File("C:/temp/temp.kmz");
-              IO.writeToFile(contents, temp);
-              contents = null;
-
-              try (ZipFile zfile = new ZipFile(temp)) {
-                Enumeration<? extends ZipEntry> entries = zfile.entries();
-                while (entries.hasMoreElements()) {
-                  ZipEntry entry = entries.nextElement();
-                  info.format(" entry= %s%n", entry);
-                  if (entry.getName().endsWith(".kml")) {
-                    try (InputStream kml = zfile.getInputStream(entry)) {
-                      contents = IO.readContentsToByteArray(kml);
-                    }
+            try (ZipFile zfile = new ZipFile(temp)) {
+              Enumeration<? extends ZipEntry> entries = zfile.entries();
+              while (entries.hasMoreElements()) {
+                ZipEntry entry = entries.nextElement();
+                info.format(" entry= %s%n", entry);
+                if (entry.getName().endsWith(".kml")) {
+                  try (InputStream kml = zfile.getInputStream(entry)) {
+                    contents = IO.readContentsToByteArray(kml);
                   }
                 }
               }
             }
+          }
 
-            if (contents != null) {
-              info.format("%s%n", new String(contents, StandardCharsets.UTF_8));
-            }
+          if (contents != null) {
+            info.format("%s%n", new String(contents, StandardCharsets.UTF_8));
           }
         }
       }
@@ -322,11 +311,9 @@ public class WmsViewer extends JPanel {
     return true;
   }
 
-  private void printHeaders(String title, Collection<Map.Entry<String, String>> headers) {
-    if (headers.isEmpty())
-      return;
+  private void printHeaders(String title, HttpHeaders responseHeaders) {
     info.format("%s%n", title);
-    for (Map.Entry<String, String> entry : headers) {
+    for (Map.Entry<String, List<String>> entry : responseHeaders.map().entrySet()) {
       info.format("  %s = %s" + entry.getKey(), entry.getValue());
     }
     info.format("%n");

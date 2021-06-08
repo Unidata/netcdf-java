@@ -15,13 +15,10 @@ import com.github.lgooddatepicker.zinternaltools.DateVetoPolicyMinimumMaximumDat
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import org.apache.http.client.CredentialsProvider;
-import org.apache.http.client.config.AuthSchemes;
-import ucar.httpservices.*;
 import thredds.logs.LogReader;
 import thredds.logs.LogCategorizer;
+import ucar.nc2.internal.http.HttpService;
 import ucar.nc2.ui.widget.URLDumpPane;
-import ucar.nc2.ui.widget.UrlAuthenticatorDialog;
 import ucar.ui.widget.*;
 import ucar.nc2.util.IO;
 import ucar.nc2.util.net.HttpClientManager;
@@ -78,13 +75,9 @@ public class TdsMonitor extends JPanel {
     setLayout(new BorderLayout());
     add(tabbedPane, BorderLayout.CENTER);
 
-    CredentialsProvider provider = new UrlAuthenticatorDialog(null);
-    try {
-      HTTPSession.setGlobalCredentialsProvider(provider, AuthSchemes.BASIC);
-    } catch (HTTPException e) {
-      System.err.println("Failed to set credentials");
-    }
-    HTTPSession.setGlobalUserAgent("TdsMonitor");
+    // CredentialsProvider provider = new UrlAuthenticatorDialog(null);
+    // HTTPSession.setGlobalCredentialsProvider(provider, AuthSchemes.BASIC);
+    HttpService.STANDARD.setUserAgent("TdsMonitor");
   }
 
   public void exit() {
@@ -153,13 +146,13 @@ public class TdsMonitor extends JPanel {
             boolean ok = localDir.mkdirs();
             // if (!ok) manage.getTextArea().append("\nmkdirs failed");
             File file = new File(localDir, "roots.txt");
-            HTTPSession session = HTTPFactory.newSession(urls);
-            // session.setCredentialsProvider(provider);
-            session.setUserAgent("TdsMonitor");
+            // CredentialsProvider provider = new UrlAuthenticatorDialog(null);
+            // HTTPSession.setGlobalCredentialsProvider(provider, AuthSchemes.BASIC);
+            HttpService.STANDARD.setUserAgent("TdsMonitor");
             JTextArea ta = manage.getTextArea();
 
             try {
-              HttpClientManager.copyUrlContentsToFile(session, urls, file);
+              HttpClientManager.copyUrlContentsToFile(urls, file);
               String roots = IO.readFile(file.getPath());
               ta.append("\nRoots:\n");
               ta.append(roots);

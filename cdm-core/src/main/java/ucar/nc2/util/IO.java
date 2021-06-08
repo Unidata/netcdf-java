@@ -212,8 +212,7 @@ public class IO {
   }
 
   /**
-   * Read the contents from the inputStream and place into a byte array,
-   * with any error messages put in the return String.
+   * Read the contents from the inputStream and place into a byte array.
    *
    * @param is the inputStream to read from.
    * @return byte[] holding the contents, or an error message.

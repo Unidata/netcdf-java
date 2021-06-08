@@ -10,7 +10,8 @@ import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.unidata.io.RandomAccessFile;
-import ucar.unidata.io.http.HTTPRandomAccessFile;
+import ucar.nc2.internal.http.RafHttp;
+
 import java.io.IOException;
 import java.util.Formatter;
 
@@ -188,7 +189,7 @@ public class Grib2Iosp extends GribIosp {
   // accept grib2 or ncx files
   @Override
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
-    if (raf instanceof HTTPRandomAccessFile) { // only do remote if memory resident
+    if (raf instanceof RafHttp) { // only do remote if memory resident
       if (raf.length() > raf.getBufferSize())
         return false;
 

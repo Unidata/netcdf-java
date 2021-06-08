@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
+
 import opendap.dap.AttributeTable;
 import opendap.dap.BaseType;
 import opendap.dap.DAP2Exception;
@@ -42,11 +43,15 @@ import ucar.nc2.constants._Coordinate;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.util.StringUtil2;
 
-/** DODSNetcdfFile builder */
+/**
+ * DODSNetcdfFile builder.
+ * Note that we do not supporting constraint expressions in the dataset URL.
+ * This hasnt worked, ever.
+ */
 @NotThreadSafe
 abstract class DodsBuilder<T extends DodsBuilder<T>> extends NetcdfFile.Builder<T> {
 
-  private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DodsBuilder.class);
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DodsBuilder.class);
 
   HashSet<Dimension> sharedDimensions = new HashSet<>();
   DConnect2 dodsConnection;
@@ -70,6 +75,10 @@ abstract class DodsBuilder<T extends DodsBuilder<T>> extends NetcdfFile.Builder<
       this.location = datasetUrl;
     } else {
       throw new java.net.MalformedURLException(datasetUrl + " must start with dods: or http: or file:");
+    }
+
+    if (urlName.indexOf('?') >= 0) {
+      throw new IllegalArgumentException("Constraint expression not allowed in Dataset URL");
     }
 
     if (DodsNetcdfFiles.debugServerCall) {
@@ -231,8 +240,10 @@ abstract class DodsBuilder<T extends DodsBuilder<T>> extends NetcdfFile.Builder<
         for (String attName : attTable) {
           if (attName.equals("Unlimited_Dimension")) {
             opendap.dap.Attribute att = attTable.getAttribute(attName);
-            Attribute ncatt = DODSAttribute.create(attName, att);
-            setUnlimited(ncatt.getStringValue());
+            if (att != null) {
+              Attribute ncatt = DODSAttribute.create(attName, att);
+              setUnlimited(ncatt.getStringValue());
+            }
           } else {
             logger.warn(" Unknown DODS_EXTRA attribute = " + attName + " " + location);
           }
@@ -241,9 +252,11 @@ abstract class DodsBuilder<T extends DodsBuilder<T>> extends NetcdfFile.Builder<
       } else if (tableName.equals("EXTRA_DIMENSION")) {
         for (String attName : attTable) {
           opendap.dap.Attribute att = attTable.getAttribute(attName);
-          Attribute ncatt = DODSAttribute.create(attName, att);
-          int length = ncatt.getNumericValue().intValue();
-          rootGroup.addDimension(new Dimension(attName, length));
+          if (att != null) {
+            Attribute ncatt = DODSAttribute.create(attName, att);
+            int length = ncatt.getNumericValue().intValue();
+            rootGroup.addDimension(new Dimension(attName, length));
+          }
         }
       }
     }

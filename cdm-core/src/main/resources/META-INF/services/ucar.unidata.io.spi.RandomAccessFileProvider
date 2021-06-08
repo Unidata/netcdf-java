@@ -1,0 +1,2 @@
+ucar.nc2.internal.http.InMemoryRafHttpProvider
+ucar.nc2.internal.http.RafHttp$Provider

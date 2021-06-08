@@ -235,8 +235,12 @@ public class NcmlEditor extends JPanel {
         cmd = "file:" + cmd;
       }
       ncmlLocation = cmd;
-      String text = ReadFromUrl.readURLcontents(cmd);
-      editor.setText(text);
+      try {
+        String text = ReadFromUrl.readURLcontents(cmd);
+        editor.setText(text);
+      } catch (IOException ioe) {
+        editor.setText(ioe.getMessage());
+      }
     } else {
       writeNcml(cmd);
     }

@@ -1,25 +1,25 @@
 ---
 title: Dataset URLs
-last_updated: 2020-04-06
+last_updated: 2020-06-02
 sidebar: userguide_sidebar
-toc: false
+toc: true
 permalink: dataset_urls.html
 ---
 
 The netCDF-Java library can read datasets from a variety of sources.
 The dataset is named using a Uniform Resource Location (URL).
-This page summarizes the netCDF-Java API use of URLs.
+This page summarizes the netCDF-Java API use of Dataset URLs.
 
 
 Special Note: When working with remote data services, it's important to note that not all servers handle encoded URLs.
 By default, netCDF-Java will encode illegal URI characters using percent encoding (e.g. `[` will become `%5B`).
 If you find you are having trouble accessing a remote dataset due to the encoding, set the java System Property `httpservices.urlencode` to `"false"` using, for example `System.setProperty("httpservices.urlencode", "false");`.
 
-## `ucar.nc2.NetcdfFile.open(String location)`
+## `ucar.nc2.NetcdfFiles.open(String location)`
 
 ### Local Files
 
-`NetcdfFile` can work with local files, e.g:
+`NetcdfFiles` can work with local files, e.g:
 
 * `/usr/share/data/model.nc`
 * `file:/usr/share/data/model.nc`
@@ -31,7 +31,7 @@ When using a file location that has an embedded `:` char, eg `C:/share/data/mode
 ### Remote Files
 
 #### HTTP
-`NetcdfFile` can open HTTP remote files, [served over HTTP](../developer/read_over_http.html){:target="_blank"}, for example:
+`NetcdfFiles` can open HTTP remote files, [served over HTTP](../developer/read_over_http.html){:target="_blank"}, for example:
 
 * https://www.unidata.ucar.edu/software/netcdf-java/testdata/mydata1.nc
 

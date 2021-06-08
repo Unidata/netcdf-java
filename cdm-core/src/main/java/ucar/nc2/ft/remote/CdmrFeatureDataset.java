@@ -121,7 +121,7 @@ public class CdmrFeatureDataset {
 
   private static org.jdom2.Document getCapabilities(String endpoint) throws IOException {
     org.jdom2.Document doc;
-    try (InputStream in = CdmRemote.sendQuery(null, endpoint, "req=capabilities")) {
+    try (InputStream in = CdmRemote.sendQuery(endpoint, "req=capabilities")) {
       SAXBuilder builder = new SAXBuilder();
       doc = builder.build(in); // LOOK closes in when done ??
 

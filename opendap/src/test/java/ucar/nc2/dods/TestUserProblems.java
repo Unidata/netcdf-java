@@ -4,6 +4,7 @@
  */
 package ucar.nc2.dods;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +20,7 @@ import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
 
+@Ignore("Not supporting httpservices.urlencode yet")
 public class TestUserProblems {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 

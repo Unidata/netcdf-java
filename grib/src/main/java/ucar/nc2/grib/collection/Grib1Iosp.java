@@ -12,7 +12,8 @@ import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib1.tables.Grib1ParamTables;
 import ucar.nc2.grib.*;
 import ucar.unidata.io.RandomAccessFile;
-import ucar.unidata.io.http.HTTPRandomAccessFile;
+import ucar.nc2.internal.http.RafHttp;
+
 import java.io.IOException;
 import java.util.Formatter;
 
@@ -170,7 +171,7 @@ public class Grib1Iosp extends GribIosp {
 
   @Override
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
-    if (raf instanceof HTTPRandomAccessFile) { // only do remote if memory resident
+    if (raf instanceof RafHttp) { // only do remote if memory resident
       if (raf.length() > raf.getBufferSize())
         return false;
 

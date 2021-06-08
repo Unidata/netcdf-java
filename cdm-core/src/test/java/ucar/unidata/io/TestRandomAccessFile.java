@@ -4,7 +4,6 @@ import org.junit.*;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.ByteArrayOutputStream;
-import java.io.EOFException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -13,7 +12,9 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 import static com.google.common.truth.Truth.assertThat;
+import static org.junit.Assert.fail;
 
+/** Test {@link RandomAccessFile} */
 public class TestRandomAccessFile {
   // Test public methods of RandomAccessFile
   // NOTE: Does not test cache methods
@@ -220,9 +221,12 @@ public class TestRandomAccessFile {
     testFile.seek(0);
     len = (int) TEST_FILE_LENGTH + 1;
     byte[] finalBuff = new byte[len];
-    Assert.assertThrows(EOFException.class, () -> {
+    try {
       testFile.readFully(finalBuff);
-    });
+      fail();
+    } catch (Exception ioe) {
+      // expected.
+    }
 
     // read fully with offset
     testFile.seek(0);
@@ -874,10 +878,12 @@ public class TestRandomAccessFile {
     }
 
     @Override
-    public int write(ByteBuffer src) throws IOException {
+    public int write(ByteBuffer src) {
       byte[] out = src.array();
-      dest.write(out);
-      return out.length;
+      int start = src.position();
+      int length = src.limit();
+      dest.write(out, start, length);
+      return length;
     }
 
     @Override

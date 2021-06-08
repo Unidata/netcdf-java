@@ -15,6 +15,7 @@ import javax.swing.filechooser.FileFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
+import java.io.IOException;
 
 /**
  * This is the THREDDS User Interface for ToolsUI.
@@ -125,8 +126,12 @@ public class ThreddsUI extends JPanel {
           DataFormatType format = access.getDataFormatType();
           if (format == DataFormatType.PLAIN || format == DataFormatType.XML) {
             String urlString = access.getWrappedUrlName();
-            ReadFromUrl.readURLcontents(urlString);
-            xmlPane.setText(ReadFromUrl.readURLcontents(urlString));
+            try {
+              ReadFromUrl.readURLcontents(urlString);
+              xmlPane.setText(ReadFromUrl.readURLcontents(urlString));
+            } catch (IOException ioe) {
+              xmlPane.setText(ioe.getMessage());
+            }
             xmlPane.gotoTop();
             xmlWindow.setVisible(true);
             return;

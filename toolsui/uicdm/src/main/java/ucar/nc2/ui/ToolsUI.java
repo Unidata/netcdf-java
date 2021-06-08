@@ -8,8 +8,6 @@ import java.util.Formatter;
 import thredds.client.catalog.ServiceType;
 import thredds.client.catalog.tools.DataFactory;
 import thredds.ui.catalog.ThreddsUI;
-import ucar.httpservices.HTTPException;
-import ucar.httpservices.HTTPSession;
 import ucar.nc2.*;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.*;
@@ -19,6 +17,7 @@ import ucar.nc2.ft.point.PointDatasetImpl;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.grib.collection.GribCdmIndex;
+import ucar.nc2.internal.http.HttpService;
 import ucar.nc2.internal.iosp.hdf5.H5iosp;
 import ucar.nc2.internal.ncml.Aggregation;
 import ucar.nc2.internal.ncml.NcmlReader;
@@ -66,13 +65,13 @@ import javax.swing.filechooser.FileFilter;
 public class ToolsUI extends JPanel {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  private static final String DIALOG_VERSION = "6.0";
+  private static final String DIALOG_VERSION = "7.0";
+
   public static final String WORLD_DETAIL_MAP = "/resources/ui/maps/Countries.shp";
   public static final String US_MAP = "/resources/ui/maps/us_state.shp";
   public static final String FRAME_SIZE = "FrameSize";
   public static final String GRIDVIEW_FRAME_SIZE = "GridUIWindowSize";
   public static final String GRIDIMAGE_FRAME_SIZE = "GridImageWindowSize";
-  private static final boolean debugListen = false;
 
   private static ToolsUI ui;
   private static JFrame frame;
@@ -157,6 +156,7 @@ public class ToolsUI extends JPanel {
 
   // debugging
   private final DebugFlags debugFlags;
+  private static final boolean debugListen = false;
 
   private ToolsUI(PreferencesExt prefs, JFrame parentFrame) {
     this.mainPrefs = prefs;
@@ -1171,6 +1171,7 @@ public class ToolsUI extends JPanel {
 
     NetcdfFile ncfile = null;
     Object iospMessage = useRecordStructure ? NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE : null;
+
     try {
       DatasetUrl durl = DatasetUrl.findDatasetUrl(location);
       if (addCoords) {
@@ -1401,13 +1402,15 @@ public class ToolsUI extends JPanel {
   }
 
   public static void main(String[] args) {
-    if (debugListen) {
-      System.out.println("Arguments:");
-      for (String arg : args) {
-        System.out.println(" " + arg);
-      }
-      HTTPSession.setInterceptors(true);
-    }
+    /**
+     * if (debugListen) {
+     * System.out.println("Arguments:");
+     * for (String arg : args) {
+     * System.out.println(" " + arg);
+     * }
+     * HTTPSession.setInterceptors(true);
+     * }
+     */
 
     // handle multiple versions of ToolsUI, along with passing a dataset name
     // first, if there were command-line arguments
@@ -1448,13 +1451,15 @@ public class ToolsUI extends JPanel {
       }
     }
 
-    if (debugListen) {
-      System.out.println("Arguments:");
-      for (String arg : args) {
-        System.out.println(" " + arg);
-      }
-      HTTPSession.setInterceptors(true);
-    }
+    /*
+     * if (debugListen) {
+     * System.out.println("Arguments:");
+     * for (String arg : args) {
+     * System.out.println(" " + arg);
+     * }
+     * HTTPSession.setInterceptors(true);
+     * }
+     */
 
     // look for command-line arguments
     boolean configRead = false;
@@ -1546,12 +1551,8 @@ public class ToolsUI extends JPanel {
     // Name HTTP user agent and set Authentication for accessing password protected services
     SwingUtilities.invokeLater(() -> {
       UrlAuthenticatorDialog provider = new UrlAuthenticatorDialog(frame);
-      try {
-        HTTPSession.setGlobalCredentialsProvider(provider);
-      } catch (HTTPException e) {
-        log.error("Failed to set global credentials");
-      }
-      HTTPSession.setGlobalUserAgent("ToolsUI v6.0");
+      // HttpService.INSTANCE.setCredentialsProvider(provider);
+      HttpService.STANDARD.setUserAgent("ToolsUI v7.0");
 
       java.net.Authenticator.setDefault(provider);
     });

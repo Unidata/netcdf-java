@@ -14,8 +14,6 @@ import ucar.httpservices.HTTPSession;
 import ucar.ui.prefs.Field;
 import ucar.ui.prefs.PrefPanel;
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
 import ucar.ui.widget.IndependentDialog;

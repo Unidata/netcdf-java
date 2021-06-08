@@ -40,19 +40,19 @@
 
 package opendap.dap;
 
-import static java.net.HttpURLConnection.HTTP_NOT_FOUND;
-import static java.net.HttpURLConnection.HTTP_UNAVAILABLE;
-
 import com.google.common.io.Files;
-import java.net.HttpURLConnection;
+import java.net.http.HttpHeaders;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import com.google.common.net.UrlEscapers;
 import opendap.dap.parsers.ParseException;
-import ucar.httpservices.HTTPException;
-import ucar.httpservices.HTTPFactory;
-import ucar.httpservices.HTTPMethod;
-import ucar.httpservices.HTTPSession;
+import ucar.nc2.internal.http.HttpService;
+
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -60,58 +60,36 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.InflaterInputStream;
 
 /**
- * Need more robust redirect and authentication.
- * <p>
  * This class provides support for common DODS client-side operations such as
  * dereferencing a OPeNDAP URL, communicating network activity status
  * to the user and reading local OPeNDAP objects.
- * <p>
- * Unlike its C++ counterpart, this class does not store instances of the DAS,
- * DDS, etc. objects. Rather, the methods <code>getDAS</code>, etc. return
- * instances of those objects.
- *
- * @author jehamby
  */
 public class DConnect2 implements Closeable {
-
   private static boolean allowSessions = false;
-  private static boolean showCompress = false;
 
   public static synchronized void setAllowSessions(boolean b) {
     allowSessions = b;
   }
 
-
   private String urlString; // The current DODS URL without Constraint Expression
   private String filePath = null; // if url is file://
   private InputStream stream = null; // if reading from a stream
 
-  /**
-   * The projection portion of the current DODS CE (including leading "?").
-   */
+  /** The projection portion of the current DODS CE (including leading "?"). */
   private String projString;
 
-  /**
-   * The selection portion of the current DODS CE (including leading "&").
-   */
+  /** The selection portion of the current DODS CE (including leading "&"). */
   private String selString;
 
-  /**
-   * Whether to accept compressed documents.
-   */
+  /** Whether to accept compressed documents. */
   private boolean acceptCompress;
 
   // various stuff that comes from the HTTP headers
   private String lastModified = null;
   private String lastExtended = null;
   private String lastModifiedInvalid = null;
-  private boolean hasSession = true;
-  protected HTTPSession _session = null;
 
   private ServerVersion ver; // The OPeNDAP server version.
-
-  private boolean debugHeaders = false;
-
 
   public void setServerVersion(int major, int minor) {
     ver = new ServerVersion(major, minor);
@@ -124,7 +102,7 @@ public class DConnect2 implements Closeable {
    * @throws FileNotFoundException thrown if <code>urlString</code> is not
    *         a valid URL, or a filename which exists on the system.
    */
-  public DConnect2(String urlString) throws HTTPException {
+  public DConnect2(String urlString) throws IOException {
     this(urlString, true);
   }
 
@@ -138,7 +116,7 @@ public class DConnect2 implements Closeable {
    * @throws FileNotFoundException thrown if <code>urlString</code> is not
    *         a valid URL, or a filename which exists on the system.
    */
-  public DConnect2(String urlString, boolean acceptCompress) throws HTTPException {
+  public DConnect2(String urlString, boolean acceptCompress) throws IOException {
     int ceIndex = urlString.indexOf('?');
     if (ceIndex >= 0) {
       this.urlString = urlString.substring(0, ceIndex);
@@ -170,23 +148,21 @@ public class DConnect2 implements Closeable {
           // remove "." plus the extension
           filePath = filePath.substring(0, extIndex - 1);
         } else {
-          throw new HTTPException("cannot determine the extension on: file:" + filePath + ". Must be .dods");
+          throw new IOException("cannot determine the extension on: file:" + filePath + ". Must be .dods");
         }
 
         // Make sure .dods files exist and is readable
         File f = new File(filePath + ".dods");
         if (!f.canRead()) {
-          throw new HTTPException("file not readable: file:" + filePath + ".dods");
+          throw new IOException("file not readable: file:" + filePath + ".dods");
         }
-      } else {
-        _session = HTTPFactory.newSession(this.urlString);
       }
       /* Set the server version cause we won't get it from anywhere */
       ver = new ServerVersion(ServerVersion.DAP2_PROTOCOL_VERSION, ServerVersion.XDAP);
     } catch (DAP2Exception ex) {
-      throw new HTTPException("Cannot set server version");
+      throw new IOException("Cannot set server version");
     } catch (MalformedURLException e) {
-      throw new HTTPException("Malformed URL: " + urlString);
+      throw new IOException("Malformed URL: " + urlString);
     }
   }
 
@@ -239,15 +215,6 @@ public class DConnect2 implements Closeable {
   }
 
   /**
-   * Return the session associated with this connection
-   *
-   * @return this connections session (or null)
-   */
-  public HTTPSession getSession() {
-    return _session;
-  }
-
-  /**
    * Open a connection to the DODS server.
    *
    * @param urlString the URL to open; assume already properly encoded
@@ -256,68 +223,40 @@ public class DConnect2 implements Closeable {
    * @throws DAP2Exception if the DODS server returned an error.
    */
   private void openConnection(String urlString, Command command) throws IOException, DAP2Exception {
-    InputStream is = null;
+    System.out.printf("DConnect2.openConnection %s%n", urlString);
+    HttpRequest request = HttpService.standardGetRequestBuilder(urlString).build();
+    HttpResponse<InputStream> response = HttpService.standardRequest(request);
+    HttpHeaders responseHeaders = response.headers();
 
-    try {
-      try (HTTPMethod method = HTTPFactory.Get(_session, urlString)) {
+    try (InputStream is = response.body()) { // does this have to be closed ??
 
-        if (acceptCompress)
-          method.setCompression("deflate,gzip");
-
-        // enable sessions
-        if (allowSessions)
-          method.setUseSessions(true);
-        int statusCode;
-        for (;;) {
-          statusCode = method.execute();
-          if (statusCode != HTTP_UNAVAILABLE)
-            break;
-          Thread.sleep(5000);
-          System.err.println("Service Unavailable");
+      Optional<String> contentDescriptionO = responseHeaders.firstValue("Content-Description");
+      if (contentDescriptionO.isPresent()) {
+        String contentDescription = contentDescriptionO.get();
+        if (contentDescription.equalsIgnoreCase("dods-error") || contentDescription.equalsIgnoreCase("dods_error")) {
+          // parse the Error object from stream and throw it
+          DAP2Exception ds = new DAP2Exception();
+          ds.parse(is);
+          throw ds;
         }
-
-        if (statusCode == HTTP_NOT_FOUND) {
-          throw new DAP2Exception(DAP2Exception.NO_SUCH_FILE, method.getStatusText() + ": " + urlString);
-        }
-
-        if (statusCode != HttpURLConnection.HTTP_OK) {
-          throw new DAP2Exception("Method failed:" + method.getStatusText() + " on URL= " + urlString);
-        }
-
-        // Get the response body.
-        is = method.getResponseAsStream();
-
-        // check if its an error
-        Optional<String> value = method.getResponseHeaderValue("Content-Description");
-        if (value.isPresent()) {
-          String v = value.get();
-          if (v.equals("dods-error") || v.equals("dods_error")) {
-            // parse the Error object from stream and throw it
-            DAP2Exception ds = new DAP2Exception();
-            ds.parse(is);
-            throw ds;
-          }
-        }
-
-        ver = new ServerVersion(method);
-
-        checkHeaders(method);
-
-        // check for deflator
-        Optional<String> encodingOpt = method.getResponseHeaderValue("content-encoding");
-        if (encodingOpt.isPresent()) {
-          String encoding = encodingOpt.get();
-          if (encoding.equals("deflate")) {
-            is = new BufferedInputStream(new InflaterInputStream(is), 1000);
-          } else if (encoding.equals("gzip")) {
-            is = new BufferedInputStream(new GZIPInputStream(is), 1000);
-          }
-          if (showCompress)
-            System.out.printf("%s %s%n", encoding, urlString);
-        }
-
-        command.process(is);
       }
+
+      ver = new ServerVersion(responseHeaders);
+      checkHeaders(responseHeaders);
+
+      // check for deflator, switch input stream processing
+      InputStream useInputStream = is;
+      Optional<String> encodingOpt = responseHeaders.firstValue("content-encoding");
+      if (encodingOpt.isPresent()) {
+        String encoding = encodingOpt.get();
+        if (encoding.equals("deflate")) {
+          useInputStream = new BufferedInputStream(new InflaterInputStream(is), 1000);
+        } else if (encoding.equals("gzip")) {
+          useInputStream = new BufferedInputStream(new GZIPInputStream(is), 1000);
+        }
+      }
+
+      command.process(useInputStream);
 
     } catch (IOException | DAP2Exception e) {
       throw e;
@@ -329,8 +268,85 @@ public class DConnect2 implements Closeable {
     }
   }
 
+  /*
+   * private void openConnectionOld(String urlString, Command command) throws IOException, DAP2Exception {
+   * InputStream is = null;
+   * 
+   * try {
+   * try (HTTPMethod method = HTTPFactory.Get(session, urlString)) {
+   * 
+   * if (acceptCompress)
+   * method.setCompression("deflate,gzip");
+   * 
+   * // enable sessions
+   * if (allowSessions)
+   * method.setUseSessions(true);
+   * int statusCode;
+   * for (;;) {
+   * statusCode = method.execute();
+   * if (statusCode != HTTP_UNAVAILABLE)
+   * break;
+   * Thread.sleep(5000);
+   * System.err.println("Service Unavailable");
+   * }
+   * 
+   * if (statusCode == HTTP_NOT_FOUND) {
+   * throw new DAP2Exception(DAP2Exception.NO_SUCH_FILE, method.getStatusText() + ": " + urlString);
+   * }
+   * 
+   * if (statusCode != HttpURLConnection.HTTP_OK) {
+   * throw new DAP2Exception("Method failed:" + method.getStatusText() + " on URL= " + urlString);
+   * }
+   * 
+   * // Get the response body.
+   * is = method.getResponseAsStream();
+   * 
+   * // check if its an error
+   * Optional<String> value = method.getResponseHeaderValue("Content-Description");
+   * if (value.isPresent()) {
+   * String v = value.get();
+   * if (v.equals("dods-error") || v.equals("dods_error")) {
+   * // parse the Error object from stream and throw it
+   * DAP2Exception ds = new DAP2Exception();
+   * ds.parse(is);
+   * throw ds;
+   * }
+   * }
+   * 
+   * ver = new ServerVersion(method);
+   * 
+   * checkHeaders(method);
+   * 
+   * // check for deflator
+   * Optional<String> encodingOpt = method.getResponseHeaderValue("content-encoding");
+   * if (encodingOpt.isPresent()) {
+   * String encoding = encodingOpt.get();
+   * if (encoding.equals("deflate")) {
+   * is = new BufferedInputStream(new InflaterInputStream(is), 1000);
+   * } else if (encoding.equals("gzip")) {
+   * is = new BufferedInputStream(new GZIPInputStream(is), 1000);
+   * }
+   * if (showCompress)
+   * System.out.printf("%s %s%n", encoding, urlString);
+   * }
+   * 
+   * command.process(is);
+   * }
+   * 
+   * } catch (IOException | DAP2Exception e) {
+   * throw e;
+   * 
+   * } catch (Exception e) {
+   * Util.check(e);
+   * // e.printStackTrace();
+   * throw new DAP2Exception(e);
+   * }
+   * }
+   */
+
   public void close() {
     try {
+      boolean hasSession = true;
       if (allowSessions && hasSession) {
         openConnection(urlString + ".close", new Command() {
           public void process(InputStream is) throws IOException {
@@ -338,8 +354,6 @@ public class DConnect2 implements Closeable {
           }
         });
       }
-      if (_session != null)
-        _session.close();
     } catch (Throwable t) {
       // ignore
     }
@@ -445,22 +459,22 @@ public class DConnect2 implements Closeable {
     return lastExtended;
   }
 
-  private void checkHeaders(HTTPMethod method) {
-    for (Map.Entry<String, String> entry : method.getResponseHeaders().entries()) {
+  private void checkHeaders(HttpHeaders responseHeaders) {
+    for (Map.Entry<String, List<String>> entry : responseHeaders.map().entrySet()) {
       String name = entry.getKey();
-      String value = entry.getValue();
+      for (String value : entry.getValue()) {
+        switch (name) {
+          case "Last-Modified":
+            lastModified = value;
+            break;
 
-      switch (name) {
-        case "Last-Modified":
-          lastModified = value;
-          break;
+          case "X-Last-Extended":
+            lastExtended = value;
+            break;
 
-        case "X-Last-Extended":
-          lastExtended = value;
-          break;
-
-        case "X-Last-Modified-Invalid":
-          lastModifiedInvalid = value;
+          case "X-Last-Modified-Invalid":
+            lastModifiedInvalid = value;
+        }
       }
     }
   }
@@ -582,13 +596,15 @@ public class DConnect2 implements Closeable {
    *         with integrated with the clients)
    */
   private String getCompleteCE(String CE) {
-    String localProjString = null;
-    String localSelString = null;
-    if (CE == null)
+    String localProjString;
+    String localSelString;
+    if (CE == null) {
       return "";
+    }
     // remove any leading '?'
-    if (CE.startsWith("?"))
+    if (CE.startsWith("?")) {
       CE = CE.substring(1);
+    }
     int selIndex = CE.indexOf('&');
     if (selIndex == 0) {
       localProjString = "";
@@ -604,8 +620,9 @@ public class DConnect2 implements Closeable {
     String ce = projString;
 
     if (!localProjString.equals("")) {
-      if (!ce.equals("") && localProjString.indexOf(',') != 0)
+      if (!ce.equals("") && localProjString.indexOf(',') != 0) {
         ce += ",";
+      }
       ce += localProjString;
     }
 
@@ -616,21 +633,16 @@ public class DConnect2 implements Closeable {
     }
 
     if (!localSelString.equals("")) {
-      if (localSelString.indexOf('&') != 0)
+      if (localSelString.indexOf('&') != 0) {
         ce += "&";
+      }
       ce += localSelString;
     }
 
-    if (ce.length() > 0)
+    if (ce.length() > 0) {
       ce = "?" + ce;
-
-    if (false) {
-      DAPNode.log.debug("projString: '" + projString + "'");
-      DAPNode.log.debug("localProjString: '" + localProjString + "'");
-      DAPNode.log.debug("selString: '" + selString + "'");
-      DAPNode.log.debug("localSelString: '" + localSelString + "'");
-      DAPNode.log.debug("Complete CE: " + ce);
     }
+
     return ce; // escaping will happen elsewhere
   }
 
@@ -827,11 +839,15 @@ public class DConnect2 implements Closeable {
    */
   public DataDDS getData(String CE, StatusUI statusUI, BaseTypeFactory btf)
       throws MalformedURLException, IOException, ParseException, DDSException, DAP2Exception {
-    if (CE != null && CE.trim().length() == 0)
+
+    if (CE != null && CE.trim().length() == 0) {
       CE = null;
+    }
     DataDDS dds = new DataDDS(ver, btf);
     DataDDSCommand command = new DataDDSCommand(dds, statusUI);
-    command.setURL(urlString + (CE == null ? "" : "?" + CE));
+    // command.setURL(urlString + (CE == null ? "" : "?" + CE));
+    command.setURL(urlString + (CE == null ? "" : "?" + UrlEscapers.urlFragmentEscaper().escape(CE)));
+
     if (filePath != null) { // url is file:
       File dodspath = new File(filePath + ".dods");
       // See if the dods file exists
@@ -844,7 +860,15 @@ public class DConnect2 implements Closeable {
     } else if (stream != null) {
       command.process(stream);
     } else {
-      String urls = urlString + ".dods" + (CE == null ? "" : getCompleteCE(CE));
+      // String urls = urlString + ".dods" + (CE == null ? "" : getCompleteCE(CE));
+      String urls;
+      if (CE == null) {
+        urls = urlString + ".dods";
+      } else {
+        String CEcomplete = getCompleteCE(CE);
+        String CEescape = UrlEscapers.urlFragmentEscaper().escape(CEcomplete);
+        urls = urlString + ".dods" + CEescape;
+      }
       openConnection(urls, command);
     }
     return command.dds;
@@ -864,8 +888,6 @@ public class DConnect2 implements Closeable {
     public void setURL(String url) {
       this.url = url;
     }
-
-    ;
 
     public void process(InputStream is) throws ParseException, DAP2Exception, IOException {
       if (!dds.parse(is))
