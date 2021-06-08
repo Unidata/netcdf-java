@@ -61,9 +61,6 @@ public class TestMisc extends UnitTestCommon {
       testcases.add(new Testcase("TestDODSArrayPrimitiveExample", "dods://" + testserver + "/dts/test.02",
           "file://" + threddsRoot + "/opendap/src/test/data/baselinemisc/test.02.cdl"));
     } else {
-      testcases
-          .add(new Testcase("Constrained access", "dods://" + testserver + "/dts/test.22?exp.ThreeD[5:1:7][5:8][1:3]",
-              "file://" + threddsRoot + "/opendap/src/test/data/baselinemisc/test.22ce.cdl"));
       testcases.add(new Testcase("TestDODSArrayPrimitiveExample", "dods://" + testserver + "/dts/test.02",
           "file://" + threddsRoot + "/opendap/src/test/data/baselinemisc/test.02.cdl"));
     }
