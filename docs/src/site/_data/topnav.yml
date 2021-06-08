@@ -17,9 +17,11 @@ topnav_dropdowns:
             external_url: https://www.unidata.ucar.edu/software/netcdf-java/
           - title: GitHub
             external_url: https://github.com/Unidata/netcdf-java
-          - title: User guide
-            external_url: https://docs.unidata.ucar.edu/netcdf-java/current/userguide/index.html
-          - title: Developer guide
+          - title: User's Guide
+            external_url: https://docs.unidata.ucar.edu/netcdf-java/5.2/userguide/index.html
+          - title: Public API
+            external_url: https://docs.unidata.ucar.edu/netcdf-java/5.2/javadoc/index.html
+          - title: Current Developer's Guide
             external_url: https://docs.unidata.ucar.edu/netcdf-java/current/developer/index.html
           - title: NcML
             external_url: https://docs.unidata.ucar.edu/thredds/current/2.2/index.html
@@ -31,7 +33,7 @@ topnav_dropdowns:
           - title: GitHub
             external_url: https://github.com/Unidata/tds
           - title: Documentation
-            external_url: https://docs.unidata.ucar.edu/tds/5.0/userguide/index.html
+            external_url: https://docs.unidata.ucar.edu/tds/current/adminguide/index.html
 
       - title: Rosetta
         folderitems:
@@ -39,7 +41,7 @@ topnav_dropdowns:
             external_url: https://www.unidata.ucar.edu/software/rosetta/
           - title: GitHub
             external_url: https://github.com/Unidata/Rosetta
-          - title: User guide
+          - title: User's guide
             external_url: https://docs.unidata.ucar.edu/rosetta/current/userguide/index.html
 
       - title: Siphon
