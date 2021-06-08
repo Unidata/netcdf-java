@@ -61,7 +61,13 @@ libraries["sonarqube-gradle-plugin"] = "org.sonarsource.scanner.gradle:sonarqube
 
 libraries["license-gradle-plugin"] = "gradle.plugin.nl.javadude.gradle.plugins:license-gradle-plugin:0.13.1"
 
+//libraries["jruby-gradle-plugin"] = "com.github.jruby-gradle:jruby-gradle-plugin:1.7.0"
+
+libraries["spotless"] = "com.diffplug.spotless:spotless-plugin-gradle:3.22.0"
 libraries["jruby-gradle-plugin"] = "com.github.jruby-gradle:jruby-gradle-plugin:1.5.0"
+
+libraries["nexus"] = "edu.ucar.unidata:unidata-nexus-gradle:0.0.1"
+libraries["jekyll"] = "edu.ucar.unidata.site:jekyll-plugin:0.0.4"
 
 //////////////////////////////////////////// Spring //////////////////////////////////////////
 
