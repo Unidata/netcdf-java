@@ -32,7 +32,7 @@ public class TestDODSSubset {
     assert v.getDataType() == DataType.INT;
     a = v.read();
     assert a.getRank() == 1;
-    assert a.getSize() == 25;
+    assert a.getSize() == 25; // LOOK
     assert a.getElementType() == int.class;
     assert a instanceof ArrayInt.D1;
 

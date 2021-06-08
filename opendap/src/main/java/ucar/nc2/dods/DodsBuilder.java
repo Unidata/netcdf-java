@@ -11,6 +11,9 @@ import java.util.List;
 import java.util.StringTokenizer;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
+
+import com.google.common.base.Splitter;
+import com.google.common.net.UrlEscapers;
 import opendap.dap.AttributeTable;
 import opendap.dap.BaseType;
 import opendap.dap.DAP2Exception;
@@ -70,6 +73,12 @@ abstract class DodsBuilder<T extends DodsBuilder<T>> extends NetcdfFile.Builder<
       this.location = datasetUrl;
     } else {
       throw new java.net.MalformedURLException(datasetUrl + " must start with dods: or http: or file:");
+    }
+
+    // escape the query fragment
+    List<String> ss = Splitter.on('?').trimResults().splitToList(urlName);
+    if (ss.size() == 2) {
+      urlName = ss.get(0) + "?" + UrlEscapers.urlFragmentEscaper().escape(ss.get(1));
     }
 
     if (DodsNetcdfFiles.debugServerCall) {
