@@ -6,7 +6,7 @@ toc: false
 permalink: netcdf4_c_library.html
 ---
 
-In order to write netCDF-4 files, you must have the [NetCDF-4 C library](https://www.unidata.ucar.edu/software/netcdf/) (`libnetcdf`) - version 4.3.1 or above - available on your system, along with all supporting libraries (`libhdf5`, `libz`, etc).
+In order to write netCDF-4 files, you must have the [NetCDF-4 C library](https://www.unidata.ucar.edu/software/netcdf/){:target="_blank"} (`libnetcdf`) - version 4.3.1 or above - available on your system, along with all supporting libraries (`libhdf5`, `libz`, etc).
 The details of this differ for each operating system, and our experiences (so far) are documented below.
 
 ## Installation
@@ -38,10 +38,10 @@ As with Linux, a package manager is usually the easiest option.
 The package name you want is usually \"netcdf\".
 
 #### Windows
-Pre-built binaries are [available here](https://www.unidata.ucar.edu/software/netcdf/docs/winbin.html).
+Pre-built binaries are [available here](https://www.unidata.ucar.edu/software/netcdf/docs/winbin.html){:target="_blank"}.
 
 ### Build from source
-Instructions for how to build `libnetcdf` from source can be [found here](https://www.unidata.ucar.edu/software/netcdf/docs/netCDF-CMake.html).
+Instructions for how to build `libnetcdf` from source can be [found here](https://www.unidata.ucar.edu/software/netcdf/docs/netCDF-CMake.html){:target="_blank"}.
 
 ## Loading
 
