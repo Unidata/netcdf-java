@@ -18,10 +18,8 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.*;
-import ucar.nc2.ft2.coverage.CoverageTransform;
 import ucar.nc2.internal.dataset.transform.horiz.*;
 import ucar.nc2.internal.dataset.transform.vertical.*;
-import ucar.unidata.geoloc.Projection;
 
 /** Factory for Coordinate Transforms. */
 public class CoordTransformFactory {
@@ -268,52 +266,6 @@ public class CoordTransformFactory {
       }
     }
     return null;
-  }
-
-  /**
-   * Make a Projection object from the parameters in a CoverageTransform
-   *
-   * @param errInfo pass back error information.
-   * @return CoordinateTransform, or null if failure.
-   * @deprecated use CoverageTransform.makeProjection().
-   */
-  @Deprecated
-  @Nullable
-  public static Projection makeProjection(CoverageTransform gct, Formatter errInfo) {
-    // standard name
-    String transformName = gct.attributes().findAttributeString(CF.GRID_MAPPING_NAME, null);
-
-    if (null == transformName) {
-      errInfo.format("**Failed to find Coordinate Transform name from GridCoordTransform= %s%n", gct);
-      return null;
-    }
-
-    transformName = transformName.trim();
-
-    // do we have a transform registered for this ?
-    Class<?> builderClass = CoordTransformFactory.getBuilderClassFor(transformName);
-    if (null == builderClass) {
-      errInfo.format("**Failed to find CoordTransBuilder name= %s from GridCoordTransform= %s%n", transformName, gct);
-      return null;
-    }
-
-    // get an instance of that class
-    HorizTransformBuilderIF builder;
-    try {
-      builder = (HorizTransformBuilderIF) builderClass.newInstance();
-    } catch (InstantiationException | IllegalAccessException e) {
-      log.error("Cant create new instance " + builderClass.getName(), e);
-      return null;
-    }
-
-    String units = gct.attributes().findAttributeString(CDM.UNITS, null);
-    builder.setErrorBuffer(errInfo);
-    ProjectionCT.Builder<?> ct = builder.makeCoordinateTransform(gct.attributes(), units);
-    if (ct == null) {
-      return null;
-    }
-
-    return ct.build().getProjection();
   }
 
 }

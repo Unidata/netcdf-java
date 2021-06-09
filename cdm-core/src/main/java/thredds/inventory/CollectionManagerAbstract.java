@@ -7,20 +7,13 @@ package thredds.inventory;
 import java.io.IOException;
 import java.util.*;
 
-/**
- * Abstract superclass for implementations of CollectionManager.
- * NOTE: CATALOG will not be supported in ver7 here.
- */
-@Deprecated
+/** Abstract superclass for implementations of CollectionManager. */
 public abstract class CollectionManagerAbstract extends CollectionAbstract implements CollectionManager {
 
   // called from Aggregation, Fmrc, FeatureDatasetFactoryManager
   public static CollectionManager open(String collectionName, String collectionSpec, String olderThan,
       Formatter errlog) {
-    if (collectionSpec.startsWith(CATALOG))
-      return new CollectionManagerCatalog(collectionName, collectionSpec, olderThan, errlog);
-    else
-      return MFileCollectionManager.open(collectionName, collectionSpec, olderThan, errlog);
+    return MFileCollectionManager.open(collectionName, collectionSpec, olderThan, errlog);
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

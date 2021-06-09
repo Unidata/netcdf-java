@@ -56,9 +56,6 @@ import java.util.*;
 public abstract class CollectionAbstract implements MCollection {
   private static final org.slf4j.Logger defaultLog = org.slf4j.LoggerFactory.getLogger("featureCollectionScan");
 
-  /** @deprecated FeatureDatasets will move to legacy in ver7, CATALOG will not be supported in ver7 here. */
-  @Deprecated
-  public static final String CATALOG = "catalog:";
   public static final String DIR = "directory:";
   public static final String FILE = "file:";
   public static final String LIST = "list:";
@@ -67,11 +64,8 @@ public abstract class CollectionAbstract implements MCollection {
   // called from Aggregation, Fmrc, FeatureDatasetFactoryManager
   public static MCollection open(String collectionName, String collectionSpec, String olderThan, Formatter errlog)
       throws IOException {
-    if (collectionSpec.startsWith(CATALOG))
-      return new CollectionManagerCatalog(collectionName, collectionSpec.substring(CATALOG.length()), olderThan,
-          errlog);
 
-    else if (collectionSpec.startsWith(DIR))
+    if (collectionSpec.startsWith(DIR))
       return new DirectoryCollection(collectionName, collectionSpec.substring(DIR.length()), true, olderThan, null);
 
     else if (collectionSpec.startsWith(FILE)) {

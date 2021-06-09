@@ -10,8 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.grib.coord.CoordinateTime2D;
 import ucar.ma2.*;
-import ucar.nc2.ft2.coverage.CoordsSet;
-import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.grib.coord.TimeCoordIntvDateValue;
 import ucar.nc2.grib.grib1.Grib1ParamTime;
@@ -22,6 +20,7 @@ import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.grib.grib2.Grib2RecordScanner;
 import ucar.nc2.grib.grib2.table.Grib2Tables;
+import ucar.nc2.grid.GridSubset;
 import ucar.unidata.io.RandomAccessFile;
 import javax.annotation.concurrent.Immutable;
 import java.io.IOException;
@@ -169,61 +168,6 @@ public abstract class GribDataReader {
     return dataReceiver.getArray();
   }
 
-  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  // Coordinate based subsetting for Coverage
-
-  public Array readData2(CoordsSet want, RangeIterator yRange, RangeIterator xRange) throws IOException {
-    if (vindex instanceof PartitionCollectionImmutable.VariableIndexPartitioned)
-      return readDataFromPartition2((PartitionCollectionImmutable.VariableIndexPartitioned) vindex, want, yRange,
-          xRange);
-    else
-      return readDataFromCollection2(vindex, want, yRange, xRange);
-  }
-
-  private Array readDataFromCollection2(GribCollectionImmutable.VariableIndex vindex, CoordsSet want,
-      RangeIterator yRange, RangeIterator xRange) throws IOException {
-    // first time, read records and keep in memory
-    vindex.readRecords();
-
-    // collect all the records that need to be read
-    int resultIndex = 0;
-    for (SubsetParams coords : want) {
-      GribCollectionImmutable.Record record = vindex.getRecordAt(coords);
-      if (record != null) {
-        GribReaderRecord dr = new GribReaderRecord(resultIndex, record, vindex.group.getGdsHorizCoordSys());
-        if (GribDataReader.validator != null)
-          dr.validation = coords;
-        records.add(dr);
-      }
-      resultIndex++;
-    }
-
-    DataReceiverIF dataReceiver = new DataReceiver(want.getShape(yRange, xRange), yRange, xRange);
-    read(dataReceiver);
-    return dataReceiver.getArray();
-  }
-
-  private Array readDataFromPartition2(PartitionCollectionImmutable.VariableIndexPartitioned vindexP, CoordsSet want,
-      RangeIterator yRange, RangeIterator xRange) throws IOException {
-
-    // collect all the records that need to be read
-    int resultPos = 0;
-    for (SubsetParams coords : want) {
-      PartitionCollectionImmutable.DataRecord record = vindexP.getDataRecord(coords);
-      if (record != null) {
-        record.resultIndex = resultPos;
-        records.add(record);
-      }
-      resultPos++;
-    }
-
-    // sort by file and position, then read
-    DataReceiverIF dataReceiver = new DataReceiver(want.getShape(yRange, xRange), yRange, xRange);
-    readPartitioned(dataReceiver);
-
-    return dataReceiver.getArray();
-  }
-
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   /**
@@ -279,7 +223,7 @@ public abstract class GribDataReader {
     }
   }
 
-  private void show(SubsetParams validation) {
+  private void show(GridSubset validation) {
     if (validation == null)
       return;
     System.out.printf("Coords wanted%n %s", validation);

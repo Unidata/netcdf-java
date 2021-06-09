@@ -16,13 +16,10 @@ import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.MFile;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.ft2.coverage.CoverageCollection;
 import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.grib.GribTables;
-import ucar.nc2.grib.coverage.GribCoverageDataset;
 import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.unidata.io.RandomAccessFile;
-import ucar.unidata.util.StringUtil2;
 import java.io.IOException;
 import java.util.Formatter;
 
@@ -61,60 +58,6 @@ public class Grib2Collection extends GribCollectionImmutable {
         RandomAccessFile raf = (RandomAccessFile) iosp.sendIospMessage(NetcdfFile.IOSP_MESSAGE_RANDOM_ACCESS_FILE);
         NetcdfFile ncfile = NetcdfFiles.build(iosp, raf, getLocation(), null);
         return NetcdfDatasets.enhance(ncfile, NetcdfDataset.getDefaultEnhanceMode(), null);
-      }
-      return null;
-    }
-  }
-
-  @Override
-  @Nullable
-  public ucar.nc2.dt.grid.GridDataset getGridDataset(Dataset ds, GroupGC group, String filename,
-      FeatureCollectionConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException {
-
-    if (filename == null) {
-      Grib2Iosp iosp = new Grib2Iosp(group, ds.getType());
-      RandomAccessFile raf = (RandomAccessFile) iosp.sendIospMessage(NetcdfFile.IOSP_MESSAGE_RANDOM_ACCESS_FILE);
-      NetcdfFile ncfile = NetcdfFiles.build(iosp, raf, getLocation() + "#" + group.getId(), null);
-      NetcdfDataset ncd = NetcdfDatasets.enhance(ncfile, NetcdfDataset.getDefaultEnhanceMode(), null);
-      return new ucar.nc2.dt.grid.GridDataset(ncd); // LOOK - replace with custom GridDataset??
-
-    } else {
-      MFile wantFile = findMFileByName(filename);
-      if (wantFile != null) {
-        GribCollectionImmutable gc = GribCdmIndex.openGribCollectionFromDataFile(false, wantFile,
-            CollectionUpdateType.nocheck, gribConfig, errlog, logger); // LOOK thread-safety : creating ncx
-        if (gc == null)
-          return null;
-
-        Grib2Iosp iosp = new Grib2Iosp(gc);
-        RandomAccessFile raf = (RandomAccessFile) iosp.sendIospMessage(NetcdfFile.IOSP_MESSAGE_RANDOM_ACCESS_FILE);
-        NetcdfFile ncfile = NetcdfFiles.build(iosp, raf, getLocation(), null);
-        NetcdfDataset ncd = NetcdfDatasets.enhance(ncfile, NetcdfDataset.getDefaultEnhanceMode(), null);
-        return new ucar.nc2.dt.grid.GridDataset(ncd); // LOOK - replace with custom GridDataset??
-      }
-      return null;
-    }
-  }
-
-  @Override
-  @Nullable
-  public CoverageCollection getGridCoverage(Dataset ds, GroupGC group, String filename,
-      FeatureCollectionConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException {
-
-    if (filename == null) {
-      GribCoverageDataset gribCov = new GribCoverageDataset(this, ds, group);
-      return gribCov.createCoverageCollection();
-
-    } else {
-      MFile wantFile = findMFileByName(filename);
-      if (wantFile != null) {
-        GribCollectionImmutable gc = GribCdmIndex.openGribCollectionFromDataFile(false, wantFile,
-            CollectionUpdateType.nocheck, gribConfig, errlog, logger); // LOOK thread-safety : creating ncx
-        if (gc == null)
-          return null;
-
-        GribCoverageDataset gribCov = new GribCoverageDataset(gc, null, null);
-        return gribCov.createCoverageCollection();
       }
       return null;
     }

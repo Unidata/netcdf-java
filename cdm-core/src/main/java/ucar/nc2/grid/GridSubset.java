@@ -47,7 +47,7 @@ public class GridSubset {
   public static final String vertIntv = "vertIntv"; // value = CoordInterval
   public static final String ensCoord = "ensCoord"; // value = Double
 
-  // cant use these for selecting, used for validation
+  // cant use these for selecting, used for validation LOOK not being set
   public static final String timeOffsetDate = "timeOffsetDate"; // value = CalendarDate
   public static final String timeOffsetUnit = "timeOffsetUnit"; // value = CalendarDateUnit
 
@@ -380,6 +380,11 @@ public class GridSubset {
 
   public boolean getTimeOffsetFirst() {
     return isTrue(timeOffsetFirst);
+  }
+
+  // LOOK not set - used in grib validation
+  public CalendarDate getTimeOffsetDate() {
+    return (CalendarDate) get(timeOffsetDate);
   }
 
   public GridSubset setTimeOffsetFirst() {
