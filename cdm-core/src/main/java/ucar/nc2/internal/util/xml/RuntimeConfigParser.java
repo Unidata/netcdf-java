@@ -20,18 +20,15 @@ import ucar.nc2.internal.dataset.CoordSystemFactory;
 
 /**
  * Read Runtime Configuration.
- * <p/>
- * 
+ *
  * <pre>
  * <runtimeConfig>
  *   <ioServiceProvider  class="edu.univ.ny.stuff.FooFiles"/>
  *   <coordSystemFactory convention="foo" class="test.Foo"/>
  *   <coordTransBuilder name="atmos_ln_sigma_coordinates" type="vertical" class="my.stuff.atmosSigmaLog"/>
- *   <typedDatasetFactory datatype="Point" class="gov.noaa.obscure.file.Flabulate"/>
  * </runtimeConfig>
  * </pre>
- *
- * @author caron
+ * 
  */
 public class RuntimeConfigParser {
 
@@ -87,31 +84,6 @@ public class RuntimeConfigParser {
             errlog.format("CoordTransBuilder class %s not found; check your classpath%n", className);
           } catch (Exception e) {
             errlog.format("CoordTransBuilder %s error='%s'%n", className, e.getMessage());
-          }
-          break;
-        }
-
-        case "featureDatasetFactory": {
-          String typeName = elem.getAttributeValue("featureType");
-          String className = elem.getAttributeValue("class");
-          FeatureType featureType = FeatureType.getType(typeName.toUpperCase());
-          if (null == featureType) {
-            errlog.format("FeatureDatasetFactory %s unknown datatype='%s'%n", className, typeName);
-            continue;
-          }
-          try {
-            Class<?> c =
-                RuntimeConfigParser.class.getClassLoader().loadClass("ucar.nc2.ft.FeatureDatasetFactoryManager");
-            Method m = c.getMethod("registerFactory", FeatureType.class, String.class);
-            boolean ok = (Boolean) m.invoke(null, featureType, className);
-            if (!ok) {
-              errlog.format("FeatureDatasetFactory %s not loaded; check your classpath%n", className);
-            } else {
-              errlog.format("FeatureDatasetFactory added %s%n", className);
-            }
-          } catch (Exception e) {
-            e.printStackTrace();
-            errlog.format("FeatureDatasetFactory %s error='%s'%n", className, e.getMessage());
           }
           break;
         }

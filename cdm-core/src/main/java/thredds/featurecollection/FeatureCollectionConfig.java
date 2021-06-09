@@ -13,9 +13,9 @@ import java.util.*;
 
 /**
  * FeatureCollection configuration
- *
- * @author caron
- * @since Mar 30, 2010
+ * This is part of Thredds Server side configuration.
+ * Allows the TDS admin to group files into a logical collection.
+ * Can also be used on the client, which is why its in cdm-core.
  */
 public class FeatureCollectionConfig {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FeatureCollectionConfig.class);
