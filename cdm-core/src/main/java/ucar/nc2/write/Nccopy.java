@@ -29,11 +29,11 @@ public class Nccopy {
     File outputFile;
 
     @Parameter(names = {"-f", "--format"}, description = "Output file format (DEPRECATED use --outformat). "
-        + "Allowed values = [netcdf3, netcdf4, netcdf4_classic, netcdf3c, netcdf3c64, ncstream]")
+        + "Allowed values = [netcdf3, netcdf4, netcdf4_classic, netcdf3c, netcdf3c64]")
     String formatLegacy = null;
 
     @Parameter(names = {"-outf", "--outformat"}, description = "Output file format. Allowed values = "
-        + "[netcdf3, netcdf4, netcdf4_classic, netcdf3_64bit_offset,  ncstream] (See NetcdfFileFormat enum values)")
+        + "[netcdf3, netcdf4, netcdf4_classic, netcdf3_64bit_offset] (See NetcdfFileFormat enum values)")
     NetcdfFileFormat format = NetcdfFileFormat.NETCDF3;
 
     @Parameter(names = {"-st", "--strategy"},
@@ -125,9 +125,6 @@ public class Nccopy {
         case "netcdf3c64":
           result = NetcdfFileFormat.NETCDF3_64BIT_OFFSET;
           cmdLine.useJna = true;
-          break;
-        case "ncstream":
-          result = NetcdfFileFormat.NCSTREAM;
           break;
       }
     }

@@ -6,8 +6,9 @@
 package ucar.nc2.ft.point.bufr;
 
 import java.nio.charset.StandardCharsets;
+
+import ucar.nc2.internal.io.Streams;
 import ucar.nc2.iosp.bufr.BufrConfig;
-import ucar.nc2.stream.NcStream;
 import ucar.nc2.calendar.CalendarDate;
 import ucar.unidata.geoloc.Station;
 import ucar.unidata.io.RandomAccessFile;
@@ -24,7 +25,7 @@ import java.util.*;
  * @since 8/14/13
  */
 public class BufrCdmIndex {
-  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BufrCdmIndex.class);
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BufrCdmIndex.class);
 
   public static final String MAGIC_START = "BufrCdmIndex";
   public static final String NCX_IDX = ".ncx";
@@ -102,7 +103,7 @@ public class BufrCdmIndex {
       // write it
       BufrCdmIndexProto.BufrIndex index = indexBuilder.build();
       byte[] b = index.toByteArray();
-      NcStream.writeVInt(raf, b.length); // message size
+      Streams.writeVInt(raf, b.length); // message size
       raf.write(b); // message - all in one gulp
 
       log.debug("  file size = {} bytes", raf.length());
@@ -141,7 +142,7 @@ public class BufrCdmIndex {
       // write it
       BufrCdmIndexProto.BufrIndex indexOut = indexBuilder.build();
       byte[] b = indexOut.toByteArray();
-      NcStream.writeVInt(raf, b.length); // message size
+      Streams.writeVInt(raf, b.length); // message size
       raf.write(b); // message - all in one gulp
       log.debug("  write BufrCdmIndexProto= {} bytes", b.length);
 
@@ -219,7 +220,7 @@ public class BufrCdmIndex {
       raf.seek(0);
 
       //// header message
-      if (!NcStream.readAndTest(raf, MAGIC_START.getBytes(StandardCharsets.UTF_8))) {
+      if (!Streams.readAndTest(raf, MAGIC_START.getBytes(StandardCharsets.UTF_8))) {
         log.error("BufrCdmIndex {}: invalid index", raf.getLocation());
         return false;
       }
@@ -231,7 +232,7 @@ public class BufrCdmIndex {
         return false;
       }
 
-      int size = NcStream.readVInt(raf);
+      int size = Streams.readVInt(raf);
       if ((size < 0) || (size > 100 * 1000 * 1000)) {
         log.warn("BufrCdmIndex {}: invalid or empty index ", raf.getLocation());
         return false;

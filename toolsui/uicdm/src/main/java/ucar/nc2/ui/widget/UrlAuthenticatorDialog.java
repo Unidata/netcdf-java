@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
+ * LOOK not done yet.
  * This can be used both for java.net authentication:
  * java.net.Authenticator.setDefault(new thredds.ui.UrlAuthenticatorDialog(frame));
  * <p>

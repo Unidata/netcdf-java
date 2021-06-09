@@ -7,13 +7,13 @@ package ucar.nc2.iosp;
 import java.nio.charset.StandardCharsets;
 
 import ucar.array.ArrayType;
+import ucar.nc2.internal.io.Streams;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.io.PositioningDataInputStream;
 import ucar.ma2.*;
 import ucar.nc2.ParsedSectionSpec;
 import ucar.nc2.Variable;
 import ucar.nc2.Structure;
-import ucar.nc2.stream.NcStream;
 import java.io.OutputStream;
 import java.nio.*;
 import java.io.DataOutputStream;
@@ -415,12 +415,6 @@ public class IospHelper {
     else
       dataOut = new DataOutputStream(out);
 
-    /*
-     * if (data instanceof ArrayStructure) { // use NcStream encoding
-     * return NcStream.encodeArrayStructure((ArrayStructure) data, null, dataOut);
-     * }
-     */
-
     IndexIterator iterA = data.getIndexIterator();
 
     if (classType == double.class) {
@@ -459,7 +453,7 @@ public class IospHelper {
       long size = 0;
       while (iterA.hasNext()) {
         String s = (String) iterA.getObjectNext();
-        size += NcStream.writeString(dataOut, s);
+        size += Streams.writeString(dataOut, s);
       }
       return size;
 
@@ -467,17 +461,16 @@ public class IospHelper {
       long size = 0;
       while (iterA.hasNext()) {
         ByteBuffer bb = (ByteBuffer) iterA.getObjectNext();
-        size += NcStream.writeByteBuffer(dataOut, bb);
+        size += Streams.writeByteBuffer(dataOut, bb);
       }
       return size;
 
     } else if (data instanceof ArrayObject) { // vlen
       long size = 0;
-      // size += NcStream.writeVInt(outStream, (int) data.getSize()); // nelems already written
       while (iterA.hasNext()) {
         Array row = (Array) iterA.getObjectNext();
         ByteBuffer bb = row.getDataAsByteBuffer();
-        size += NcStream.writeByteBuffer(dataOut, bb);
+        size += Streams.writeByteBuffer(dataOut, bb);
       }
       return size;
 

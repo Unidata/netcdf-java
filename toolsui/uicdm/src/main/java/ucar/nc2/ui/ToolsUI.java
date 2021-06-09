@@ -21,7 +21,6 @@ import ucar.nc2.internal.http.HttpService;
 import ucar.nc2.internal.iosp.hdf5.H5iosp;
 import ucar.nc2.internal.ncml.Aggregation;
 import ucar.nc2.internal.ncml.NcmlReader;
-import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.ui.bufr.BufrCdmIndexOpPanel;
 import ucar.nc2.ui.bufr.BufrCodePanel;
 import ucar.nc2.ui.bufr.BufrPanel;
@@ -105,7 +104,6 @@ public class ToolsUI extends JPanel {
   private ReportOpPanel bufrReportPanel;
   private BufrCdmIndexOpPanel bufrCdmIndexPanel;
   private BufrCodePanel bufrCodePanel;
-  private CdmrFeatureOpPanel cdmremotePanel;
   private CdmIndexOpPanel cdmIndexPanel;
   private CdmIndexScanOp cdmIndexScanOp;
   private ReportOpPanel cdmIndexReportPanel;
@@ -135,7 +133,6 @@ public class ToolsUI extends JPanel {
   private Hdf5ObjectPanel hdf5ObjectPanel;
   private Hdf5DataPanel hdf5DataPanel;
   private Hdf4Panel hdf4Panel;
-  private NcStreamOpPanel ncStreamPanel;
   private NCdumpPanel ncdumpPanel;
   private NcmlEditorPanel ncmlEditorPanel;
   private PointFeaturePanel pointFeaturePanel;
@@ -215,8 +212,6 @@ public class ToolsUI extends JPanel {
     iospTabPane.addTab("GRIB1", grib1TabPane);
     iospTabPane.addTab("HDF5", hdf5TabPane);
     iospTabPane.addTab("HDF4", new JLabel("HDF4"));
-    iospTabPane.addTab("NcStream", new JLabel("NcStream"));
-    iospTabPane.addTab("CdmrFeature", new JLabel("CdmrFeature"));
     addListeners(iospTabPane);
 
     // nested-2 tab - bufr
@@ -370,11 +365,6 @@ public class ToolsUI extends JPanel {
         c = bufrCodePanel;
         break;
 
-      case "CdmrFeature":
-        cdmremotePanel = new CdmrFeatureOpPanel((PreferencesExt) mainPrefs.node("CdmrFeature"));
-        c = cdmremotePanel;
-        break;
-
       case "CollectionSpec":
         fcPanel = new CollectionSpecPanel((PreferencesExt) mainPrefs.node("collSpec"));
         c = fcPanel;
@@ -383,11 +373,6 @@ public class ToolsUI extends JPanel {
       case "DirectoryPartition":
         dirPartPanel = new DirectoryPartitionPanel((PreferencesExt) mainPrefs.node("dirPartition"));
         c = dirPartPanel;
-        break;
-
-      case "NcStream":
-        ncStreamPanel = new NcStreamOpPanel((PreferencesExt) mainPrefs.node("NcStream"));
-        c = ncStreamPanel;
         break;
 
       case "GRIB1collection":
@@ -657,7 +642,6 @@ public class ToolsUI extends JPanel {
     H5iosp.setDebugFlags(debugFlags);
     NcmlReader.setDebugFlags(debugFlags);
     // DODSNetcdfFile.setDebugFlags(debugFlags);
-    CdmRemote.setDebugFlags(debugFlags);
     // Nc4Iosp.setDebugFlags(debugFlags);
     DataFactory.setDebugFlags(debugFlags);
 
@@ -723,9 +707,6 @@ public class ToolsUI extends JPanel {
     }
     if (cdmIndexReportPanel != null) {
       cdmIndexReportPanel.save();
-    }
-    if (cdmremotePanel != null) {
-      cdmremotePanel.save();
     }
     if (dirPartPanel != null) {
       dirPartPanel.save();
@@ -795,9 +776,6 @@ public class ToolsUI extends JPanel {
     }
     if (ncdumpPanel != null) {
       ncdumpPanel.save();
-    }
-    if (ncStreamPanel != null) {
-      ncStreamPanel.save();
     }
     if (nc4viewer != null) {
       nc4viewer.save();
@@ -1438,28 +1416,15 @@ public class ToolsUI extends JPanel {
       if (sm.isAlreadyRunning()) {
         System.out.println("ToolsUI already running - start up another copy");
       } else {
-        sm.addEventListener(new SocketMessage.EventListener() {
-          @Override
-          public void setMessage(SocketMessage.Event event) {
-            wantDataset = event.getMessage();
-            if (debugListen) {
-              System.out.println(" got message= '" + wantDataset);
-            }
-            setDataset();
+        sm.addEventListener(event -> {
+          wantDataset = event.getMessage();
+          if (debugListen) {
+            System.out.println(" got message= '" + wantDataset);
           }
+          setDataset();
         });
       }
     }
-
-    /*
-     * if (debugListen) {
-     * System.out.println("Arguments:");
-     * for (String arg : args) {
-     * System.out.println(" " + arg);
-     * }
-     * HTTPSession.setInterceptors(true);
-     * }
-     */
 
     // look for command-line arguments
     boolean configRead = false;
