@@ -90,7 +90,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
   private MFileCollectionManager(String collectionName, String collectionSpec, String olderThan, Formatter errlog) {
     super(collectionName, null);
     CollectionSpecParser sp = new CollectionSpecParser(collectionSpec, errlog);
-    this.recheck = null;
+    this.recheckEvery = null;
     this.protoChoice = FeatureCollectionConfig.ProtoChoice.Penultimate; // default
     this.root = sp.getRootDir();
 
@@ -159,7 +159,6 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
   private void makeRecheck(String recheckS) {
     if (recheckS != null) {
       try {
-        this.recheck = new ucar.nc2.units.TimeDuration(recheckS);
         this.recheckEvery = thredds.client.catalog.TimeDuration.parse(recheckS);
       } catch (Exception e) {
         logger.error(collectionName + ": Invalid time unit for recheckEvery = {}", recheckS);
@@ -170,7 +169,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
   // for subclasses
   protected MFileCollectionManager(String name, org.slf4j.Logger logger) {
     super(name, logger);
-    this.recheck = null;
+    this.recheckEvery = null;
     this.olderThanInMsecs = -1;
     this.protoChoice = FeatureCollectionConfig.ProtoChoice.Penultimate; // default
   }
@@ -190,7 +189,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
         : new DateExtractorFromName(sp.getDateFormatMark(), true);
     scanList.add(new CollectionConfig(sp.getRootDir(), sp.getRootDir(), sp.wantSubdirs(), filters, null));
 
-    this.recheck = null;
+    this.recheckEvery = null;
     this.protoChoice = FeatureCollectionConfig.ProtoChoice.Penultimate; // default
     this.olderThanInMsecs = -1;
   }
@@ -202,7 +201,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
     this.scanList.add(mc);
 
     this.root = mc.getDirectoryName();
-    this.recheck = null;
+    this.recheckEvery = null;
     this.protoChoice = FeatureCollectionConfig.ProtoChoice.Penultimate; // default
     this.olderThanInMsecs = -1;
   }
@@ -295,15 +294,15 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
 
   /**
    * Compute if synchronous scan is needed.
-   * True if recheck is true and enough time has elapsed.
+   * True if recheckEvery is true and enough time has elapsed.
    * 
    * @return true if rescan is needed
    */
   @Override
   public boolean isScanNeeded() {
-    // see if we need to recheck
-    if (recheck == null) {
-      logger.debug("{}: scan not needed, recheck null", collectionName);
+    // see if we need to recheckEvery
+    if (recheckEvery == null) {
+      logger.debug("{}: scan not needed, recheckEvery null", collectionName);
       return false;
     }
 
@@ -321,7 +320,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
 
     CalendarDate now = CalendarDate.present();
     CalendarDate lastCheckedDate = CalendarDate.of(getLastScanned());
-    CalendarDate need = CalendarDate.of(recheck.add(lastCheckedDate.toDate())); // LOOK
+    CalendarDate need = lastCheckedDate.add(recheckEvery.toCalendarPeriod());
     if (now.isBefore(need)) {
       logger.debug("{}: scan not needed, last scanned={}, now={}", collectionName, lastCheckedDate, now);
       return false;
@@ -357,7 +356,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
     if ((!hasScans())) {
       // if no directory scans, the map of files should not change
       // but we should still make a new map to see if the files
-      // have been updated since the last recheck
+      // have been updated since the last recheckEvery
       for (String file : oldMap.keySet()) {
         newMap.put(file, MFiles.create(file));
       }
@@ -539,7 +538,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
     for (CollectionConfig mc : scanList) {
       long start = System.currentTimeMillis();
 
-      // lOOK: are there any circumstances where we dont need to recheck against OS, ie always use cached values?
+      // lOOK: are there any circumstances where we dont need to recheckEvery against OS, ie always use cached values?
       Iterator<MFile> iter =
           (mc.wantSubdirs()) ? controller.getInventoryAll(mc, true) : controller.getInventoryTop(mc, true); /// NCDC
                                                                                                             /// wants
@@ -574,7 +573,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
   @Override
   public String toString() {
     Formatter f = new Formatter();
-    f.format("DatasetCollectionManager{ collectionName='%s' recheck=%s ", collectionName, recheck);
+    f.format("DatasetCollectionManager{ collectionName='%s' recheckEvery=%s ", collectionName, recheckEvery);
     for (CollectionConfig mc : scanList) {
       f.format("%n dir=%s filter=%s", mc.getDirectoryName(), mc.getFileFilter());
     }

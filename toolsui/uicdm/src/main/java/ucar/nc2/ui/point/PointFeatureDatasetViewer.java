@@ -7,6 +7,8 @@ package ucar.nc2.ui.point;
 
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
+
+import thredds.client.catalog.TimeCoverage;
 import ucar.ma2.StructureData;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.*;
@@ -15,12 +17,10 @@ import ucar.nc2.ft.point.writer2.CFPointWriter;
 import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.ui.dialog.NetcdfOutputChooser;
 import ucar.nc2.write.Ncdump;
-import ucar.nc2.iosp.NetcdfFileFormat;
 import ucar.ui.widget.BAMutil;
 import ucar.ui.widget.IndependentDialog;
 import ucar.ui.widget.PopupMenu;
 import ucar.ui.widget.TextHistoryPane;
-import ucar.nc2.units.DateRange;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
@@ -113,11 +113,11 @@ public class PointFeatureDatasetViewer extends JPanel {
         }
 
         // is the date window showing ?
-        DateRange dateRange = stationMap.getDateRange();
+        TimeCoverage dateRange = stationMap.getDateRange();
         log.debug("date range={}", dateRange);
 
         // is the geoRegion mode true ?
-        LatLonRect geoRegion = null;
+        LatLonRect geoRegion;
         StationBean selectedStation = null;
 
         boolean useRegion = stationMap.getGeoSelectionMode();
@@ -130,7 +130,7 @@ public class PointFeatureDatasetViewer extends JPanel {
 
         try {
           if (selectedStation != null) {
-            setStation(selectedStation, dateRange);
+            setStation(selectedStation);
             // } else if (useRegion || (dateRange != null)) {
             // subset(geoRegion, dateRange);
           } else {
@@ -223,7 +223,7 @@ public class PointFeatureDatasetViewer extends JPanel {
       StationBean sb = stnTable.getSelectedBean();
       if (sb != null) {
         try {
-          setStation(sb, null);
+          setStation(sb);
           stnTable.fireBeanDataChanged(sb);
         } catch (IOException ioe) {
           ioe.printStackTrace();
@@ -299,7 +299,7 @@ public class PointFeatureDatasetViewer extends JPanel {
     stnProfileTable.clearBeans();
 
     infoTA.clear();
-    stationMap.setStations(new ArrayList());
+    stationMap.setStations(new ArrayList<>());
     obsTable.clear();
     selectedCollection = null;
   }
@@ -522,7 +522,7 @@ public class PointFeatureDatasetViewer extends JPanel {
    * }
    */
 
-  private void setStation(StationBean sb, DateRange dr) throws IOException {
+  private void setStation(StationBean sb) throws IOException {
     if (selectedType == FeatureType.POINT) {
       PointObsBean pobsBean = (PointObsBean) sb;
       List<PointFeature> obsList = new ArrayList<>();

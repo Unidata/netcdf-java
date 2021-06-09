@@ -47,8 +47,8 @@ public class TestTimeCoverage {
 
   private void checkValuesAfterDelay(TimeCoverage dr) {
     long d = Calendar.getInstance().getTimeInMillis();
-    CalendarDate startDate = dr.getStart().getCalendarDate();
-    CalendarDate endDate = dr.getEnd().getCalendarDate();
+    CalendarDate startDate = dr.getStart().toCalendarDate();
+    CalendarDate endDate = dr.getEnd().toCalendarDate();
     System.out.println("Current : " + d);
     System.out.println("Start   :  [" + startDate + "].");
     System.out.println("End     :  [" + endDate + "].");
@@ -67,8 +67,8 @@ public class TestTimeCoverage {
     }
 
     long d2 = Calendar.getInstance().getTimeInMillis();
-    CalendarDate startDate2 = dr.getStart().getCalendarDate();
-    CalendarDate endDate2 = dr.getEnd().getCalendarDate();
+    CalendarDate startDate2 = dr.getStart().toCalendarDate();
+    CalendarDate endDate2 = dr.getEnd().toCalendarDate();
     System.out.println("\nCurrent : " + d2);
     System.out.println("Start   : [" + startDate2 + "].");
     System.out.println("End     : [" + endDate2 + "].");

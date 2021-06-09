@@ -93,15 +93,6 @@ public interface CollectionManager extends MCollection {
    * Get how often to rescan
    *
    * @return time duration of rescan period, or null if none.
-   * @deprecated use getRecheckEvery()
-   */
-  @Deprecated
-  ucar.nc2.units.TimeDuration getRecheck();
-
-  /**
-   * Get how often to rescan
-   *
-   * @return time duration of rescan period, or null if none.
    */
   thredds.client.catalog.TimeDuration getRecheckEvery();
 

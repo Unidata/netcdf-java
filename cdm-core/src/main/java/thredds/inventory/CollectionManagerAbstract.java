@@ -17,7 +17,7 @@ public abstract class CollectionManagerAbstract extends CollectionAbstract imple
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  ucar.nc2.units.TimeDuration recheck;
+  // ucar.nc2.units.TimeDuration recheck;
   thredds.client.catalog.TimeDuration recheckEvery;
   private boolean isStatic; // true if theres no update element. It means dont scan if index already exists
 
@@ -32,11 +32,6 @@ public abstract class CollectionManagerAbstract extends CollectionAbstract imple
 
   public void setStatic(boolean aStatic) {
     isStatic = aStatic;
-  }
-
-  @Override
-  public ucar.nc2.units.TimeDuration getRecheck() {
-    return recheck;
   }
 
   @Override

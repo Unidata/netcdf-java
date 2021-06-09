@@ -7,9 +7,11 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import org.junit.Test;
+import thredds.client.catalog.DateType;
+import thredds.client.catalog.TimeCoverage;
+import thredds.client.catalog.TimeDuration;
 import ucar.nc2.ui.widget.RangeDateSelector;
-import ucar.nc2.units.DateRange;
-import ucar.nc2.units.DateUnit;
+import ucar.nc2.units.TimeUnit;
 
 public class TestRangeDateSelector {
 
@@ -38,16 +40,16 @@ public class TestRangeDateSelector {
 
 
       // simulate what we do in PointObsViewer
-      DateRange range = null;
+      TimeCoverage range = null;
       try {
-        range = new DateRange(); // phony
+        range = TimeCoverage.builder(DateType.present(), null, new TimeDuration(new TimeUnit(1, "day")), null).build();
       } catch (Exception e) {
-        e.printStackTrace(); // To change body of catch statement use File | Settings | File Templates.
+        e.printStackTrace();
       }
       RangeDateSelector rs6 = new RangeDateSelector(null, range, false, true, null, false, false);
-      DateUnit start = new DateUnit("0 secs since 2005-05-02 23:00:00");
-      DateUnit end = new DateUnit("0 secs since 2005-05-02 23:59:59");
-      rs6.setDateRange(new DateRange(start.getDate(), end.getDate()));
+      DateType start = DateType.parse("0 secs since 2005-05-02 23:00:00");
+      DateType end = DateType.parse("0 secs since 2005-05-02 23:59:59");
+      rs6.setDateRange(TimeCoverage.create(start, end, null, null));
 
       Box main = new Box(BoxLayout.Y_AXIS);
 

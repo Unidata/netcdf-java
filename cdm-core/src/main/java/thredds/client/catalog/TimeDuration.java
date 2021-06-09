@@ -4,6 +4,7 @@
  */
 package thredds.client.catalog;
 
+import ucar.nc2.calendar.CalendarPeriod;
 import ucar.nc2.units.TimeUnit;
 import ucar.units.ConversionException;
 import ucar.units.UnitException;
@@ -154,6 +155,10 @@ public class TimeDuration {
     } catch (UnitException e) {
       throw new IllegalArgumentException(e);
     }
+  }
+
+  public CalendarPeriod toCalendarPeriod() {
+    return CalendarPeriod.of((int) getValueInSeconds(), CalendarPeriod.Field.Second);
   }
 
   /** Get the duration in seconds */

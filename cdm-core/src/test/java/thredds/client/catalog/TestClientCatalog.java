@@ -135,7 +135,7 @@ public class TestClientCatalog {
     tc = ds.getTimeCoverageNew();
     assertThat(tc).isNotNull();
     logger.debug("tc = {}", tc);
-    CalendarDate got = tc.getStart().getCalendarDate();
+    CalendarDate got = tc.getStart().toCalendarDate();
     CalendarDate want = CalendarDate.fromUdunitIsoDate(null, "1999-11-16T12:00:00").orElseThrow();
     assertThat(got).isEqualTo(want);
     assertThat(tc.getResolution()).isNull();
@@ -167,14 +167,14 @@ public class TestClientCatalog {
     assertThat(tc).isNotNull();
     logger.debug("tc = {}", tc);
 
-    CalendarDate start = tc.getStart().getCalendarDate();
+    CalendarDate start = tc.getStart().toCalendarDate();
     assertThat(start.getCalendar()).isEqualTo(Calendar.uniform30day); // Using non-default calendar.
 
     // This date is valid in the uniform30day calendar. If we tried it with the standard calendar, we'd get an error:
     // Illegal base time specification: '2017-02-30' Value 30 for dayOfMonth must be in the range [1,28]
     assertThat(CalendarDateFormatter.toDateString(start)).isEqualTo("2017-02-30");
 
-    CalendarDate end = tc.getEnd().getCalendarDate();
+    CalendarDate end = tc.getEnd().toCalendarDate();
     assertThat(CalendarDateFormatter.toDateString(end)).isEqualTo("2017-04-01");
 
     // In the uniform30day calendar, the difference between 2017-02-30 and 2017-04-01 is 31 days.

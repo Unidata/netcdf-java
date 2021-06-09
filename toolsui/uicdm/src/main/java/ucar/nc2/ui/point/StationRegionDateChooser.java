@@ -4,6 +4,10 @@
  */
 package ucar.nc2.ui.point;
 
+import thredds.client.catalog.DateType;
+import thredds.client.catalog.TimeCoverage;
+import thredds.client.catalog.TimeDuration;
+import ucar.nc2.units.TimeUnit;
 import ucar.ui.event.ActionSourceListener;
 import ucar.ui.event.ActionValueEvent;
 import ucar.ui.event.ActionValueListener;
@@ -13,7 +17,6 @@ import ucar.ui.widget.BAMutil;
 import ucar.ui.widget.IndependentDialog;
 import ucar.ui.widget.PopupManager;
 import ucar.nc2.ui.widget.RangeDateSelector;
-import ucar.nc2.units.DateRange;
 import ucar.unidata.geoloc.LatLonPoints;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionRect;
@@ -173,10 +176,9 @@ public class StationRegionDateChooser extends NPController {
     }
 
     if (dateSelect) {
-      // date selection
-      DateRange range = null;
+      TimeCoverage range = null;
       try {
-        range = new DateRange(); // phony
+        range = TimeCoverage.builder(DateType.present(), null, new TimeDuration(new TimeUnit(1, "day")), null).build();
       } catch (Exception e) {
         e.printStackTrace();
       }
@@ -476,13 +478,13 @@ public class StationRegionDateChooser extends NPController {
     return geoSelectionMode;
   }
 
-  public DateRange getDateRange() {
+  public TimeCoverage getDateRange() {
     if (!dateSelect || !dateWindow.isShowing() || !dateSelector.isEnabled())
       return null;
     return dateSelector.getDateRange();
   }
 
-  public void setDateRange(DateRange range) {
+  public void setDateRange(TimeCoverage range) {
     dateSelector.setDateRange(range);
   }
 

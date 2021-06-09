@@ -482,7 +482,7 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
   public CalendarDate getLastModifiedCalendarDate() {
     for (DateType dateType : getDateTypes()) {
       if ((dateType.getType() != null) && dateType.getType().equals("modified")) {
-        return dateType.getCalendarDate();
+        return dateType.toCalendarDate();
       }
     }
     return null;

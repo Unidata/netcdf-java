@@ -1162,22 +1162,6 @@ public class CatalogBuilder {
     }
   }
 
-  /** @deprecated use readTimeDuration() */
-  @Deprecated
-  protected ucar.nc2.units.TimeDuration readDuration(Element elem) {
-    if (elem == null) {
-      return null;
-    }
-    String text = null;
-    try {
-      text = elem.getText();
-      return new ucar.nc2.units.TimeDuration(text);
-    } catch (java.text.ParseException e) {
-      errlog.format(" ** Parse error: Bad duration format = '%s'%n", text);
-      return null;
-    }
-  }
-
   protected TimeDuration readTimeDuration(Element elem) {
     if (elem == null) {
       return null;

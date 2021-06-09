@@ -24,7 +24,7 @@ public class TestReadGridSubset {
     try (GridDataset gridDataset = GridDatasetFactory.openGridDataset(filename, infoLog)) {
       System.out.println("readGridDataset: " + gridDataset.getLocation());
       // float Convective_Hazard_Outlook_surface_24_hours_Average(
-      Grid grid = gridDataset.findGrid("Convective_Hazard_Outlook_surface_24_Hour_Average")
+      Grid grid = gridDataset.findGrid("TwoD/Convective_Hazard_Outlook_surface_24_Hour_Average")
           .orElseThrow(() -> new RuntimeException("Cant find grid"));
 
       GridCoordinateSystem csys = grid.getCoordinateSystem();
@@ -51,8 +51,8 @@ public class TestReadGridSubset {
     try (GridDataset gridDataset = GridDatasetFactory.openGridDataset(filename, infoLog)) {
       System.out.println("readGridDataset: " + gridDataset.getLocation());
 
-      Grid grid =
-          gridDataset.findGrid("Sunshine_Duration_surface").orElseThrow(() -> new RuntimeException("Cant find grid"));
+      Grid grid = gridDataset.findGrid("TwoD/Sunshine_Duration_surface")
+          .orElseThrow(() -> new RuntimeException("Cant find grid"));
 
       GridCoordinateSystem csys = grid.getCoordinateSystem();
       GridAxis1DTime runtimeAxis = csys.getRunTimeAxis();
