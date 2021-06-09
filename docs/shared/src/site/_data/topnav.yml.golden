@@ -1,52 +1,54 @@
 # Documentation version menu
 topnav_docvermenu:
-- title: Version
-  id: docmenu
-  folderitems:
-    - title: Menu Loading...
-      url:
-      id: remove
+  - title: Version
+    id: docmenu
+    folderitems:
+      - title: Menu Loading...
+        url:
+        id: remove
 
 #Topnav dropdowns
 topnav_dropdowns:
-- title: Topnav dropdowns
-  folders:
-    - title: netCDF-Java
-      folderitems:
-        - title: Unidata Homepage
-          external_url: https://www.unidata.ucar.edu/software/netcdf-java/
-        - title: GitHub
-          external_url: https://github.com/Unidata/netcdf-java
-        - title: User guide
-          external_url: https://docs.unidata.ucar.edu/netcdf-java/6.0/userguide/index.html
-        - title: Developer guide
-          external_url: https://docs.unidata.ucar.edu/netcdf-java/6.0/developer/index.html
-        - title: NcML
-          external_url: https://docs.unidata.ucar.edu/thredds/current/2.2/index.html
+  - title: Topnav dropdowns
+    folders:
+      - title: netCDF-Java
+        folderitems:
+          - title: Unidata Homepage
+            external_url: https://www.unidata.ucar.edu/software/netcdf-java/
+          - title: GitHub
+            external_url: https://github.com/Unidata/netcdf-java
+          - title: User's Guide
+            external_url: https://docs.unidata.ucar.edu/netcdf-java/6.0/userguide/index.html
+          - title: Public API
+            external_url: https://docs.unidata.ucar.edu/netcdf-java/6.0/javadoc/index.html
+          - title: Current Developer's Guide
+            external_url: https://docs.unidata.ucar.edu/netcdf-java/current/developer/index.html
+          - title: NcML
+            external_url: https://docs.unidata.ucar.edu/thredds/current/2.2/index.html
 
-    - title: TDS
-      folderitems:
-        - title: Unidata Homepage
-          external_url: https://www.unidata.ucar.edu/software/tds/
-        - title: GitHub
-          external_url: https://github.com/Unidata/tds
-        - title: Documentation
-          external_url: https://docs.unidata.ucar.edu/tds/5.0/userguide/index.html
+      - title: TDS
+        folderitems:
+          - title: Unidata Homepage
+            external_url: https://www.unidata.ucar.edu/software/tds/
+          - title: GitHub
+            external_url: https://github.com/Unidata/tds
+          - title: Documentation
+            external_url: https://docs.unidata.ucar.edu/tds/current/adminguide/index.html
 
-    - title: Rosetta
-      folderitems:
-        - title: Unidata Homepage
-          external_url: https://www.unidata.ucar.edu/software/rosetta/
-        - title: GitHub
-          external_url: https://github.com/Unidata/Rosetta
-        - title: User guide
-          external_url: https://docs.unidata.ucar.edu/rosetta/current/userguide/index.html
+      - title: Rosetta
+        folderitems:
+          - title: Unidata Homepage
+            external_url: https://www.unidata.ucar.edu/software/rosetta/
+          - title: GitHub
+            external_url: https://github.com/Unidata/Rosetta
+          - title: User's guide
+            external_url: https://docs.unidata.ucar.edu/rosetta/current/userguide/index.html
 
-    - title: Siphon
-      folderitems:
-        - title: Unidata Homepage
-          external_url: https://www.unidata.ucar.edu/software/siphon/
-        - title: GitHub
-          external_url: https://github.com/Unidata/siphon
-        - title: Documentation
-          external_url: https://unidata.github.io/siphon/latest/
+      - title: Siphon
+        folderitems:
+          - title: Unidata Homepage
+            external_url: https://www.unidata.ucar.edu/software/siphon/
+          - title: GitHub
+            external_url: https://github.com/Unidata/siphon
+          - title: Documentation
+            external_url: https://unidata.github.io/siphon/latest/
