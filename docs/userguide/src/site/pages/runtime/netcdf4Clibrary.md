@@ -29,7 +29,7 @@ For TDS administrators, this can often happen in the NetCDF Subset Service (NCSS
 ### Pre-built Installation
 
 #### Linux
-The easiest way to get `libnetcdf` is through a package management program, such as rpm, yum, adept, and others.
+The easiest way to get `libnetcdf` is through a package management program, such as rpm, yum, apt, and others.
 Details will vary with each program but "netcdf" is usually the package name you want.
 
 #### Mac

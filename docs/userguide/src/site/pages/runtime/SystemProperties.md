@@ -19,7 +19,6 @@ The netcdf-Java library defines several Java System Properties for runtime confi
 | "nj22.cache" | Set the root directory for the cache | user.home or user.dir + "/.unidata/cache/" | ucar.nc1.util.DiskCache2
 | "nj22.cachePersistRoot" | Set the root directory for the cache | user.home or user.dir + "/" | ucar.nc1.util.DiskCache2 
 | "ucar.unidata.io.http.httpBufferSize" | The buffer size when reading over http | 262144 (256 KiB) | ucar.unidata.io.http.HttpRandomAccessFile
-| "ucar.unidata.io.http.defaultRemoteFileBufferSize" | The default buffer size when reading over http | 262144 (256 KiB) | ucar.unidata.io.http.HttpRandomAccessFile
 | "ucar.unidata.io.http.maxReadCacheSize" | The read cache size in bytes | 10485760 (10 MiB)| ucar.unidata.io.http.HttpRandomAccessFile
 | "httpservices.urlencode" | Encode the url passed to the HTTPMethod constructor | True | ucar.httpservices.HTTPMethod
 | "store" | Key store path | None | ucar.httpservices.HTTPSession

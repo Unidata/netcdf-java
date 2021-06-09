@@ -27,7 +27,6 @@ import ucar.unidata.util.Urlencoded;
  *
  */
 public final class HTTPRandomAccessFile extends RemoteRandomAccessFile {
-  // deprecate ucar.unidata.io.http.maxHttpBufferSize in ver 5. Use defaultRemoteFileBufferSize instead.
 
   private static final int httpBufferSize = Integer
       .parseInt(System.getProperty("ucar.unidata.io.http.httpBufferSize", String.valueOf(defaultRemoteFileBufferSize)));
