@@ -27,15 +27,13 @@ import ucar.unidata.util.Urlencoded;
  *
  */
 public final class HTTPRandomAccessFile extends RemoteRandomAccessFile {
+  // deprecate ucar.unidata.io.http.maxHttpBufferSize in ver 5. Use defaultRemoteFileBufferSize instead.
 
-  // deprecate ucar.unidata.io.http.maxHttpBufferSize
-  // simplifies determination of buffer size, which might not need to be
-  // so complex now that we have a read cache.
-  // however, if it is set, use it (but change default to defaultRemoteFileBufferSize)
+  private static final int httpBufferSize = Integer
+      .parseInt(System.getProperty("ucar.unidata.io.http.httpBufferSize", String.valueOf(defaultRemoteFileBufferSize)));
 
-  private static final int httpBufferSize =
-          Integer.parseInt(System.getProperty("ucar.unidata.io.http.httpBufferSize", String.valueOf(defaultRemoteFileBufferSize)));
-  private static final long httpMaxCacheSize = Long.parseLong(System.getProperty("ucar.unidata.io.http.maxReadCacheSize", String.valueOf(defaultMaxReadCacheSize)));
+  private static final long httpMaxCacheSize = Long
+      .parseLong(System.getProperty("ucar.unidata.io.http.maxReadCacheSize", String.valueOf(defaultMaxReadCacheSize)));
 
   private static final boolean debug = false, debugDetails = false;
 
