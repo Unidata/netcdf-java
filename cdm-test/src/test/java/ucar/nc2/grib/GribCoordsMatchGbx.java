@@ -9,18 +9,9 @@ import javax.annotation.Nullable;
 import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionUpdateType;
-import ucar.ma2.ArrayDouble;
-import ucar.ma2.InvalidRangeException;
-import ucar.nc2.Dimension;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.constants.DataFormatType;
-import ucar.nc2.dataset.*;
-import ucar.nc2.dt.GridDatatype;
-import ucar.nc2.dt.grid.GridDataset;
-import ucar.nc2.dt.GridCoordSystem;
-import ucar.nc2.ft2.coverage.*;
+import ucar.array.InvalidRangeException;
+import ucar.nc2.calendar.CalendarDateRange;
 import ucar.nc2.grib.collection.*;
 import ucar.nc2.grib.coord.TimeCoordIntvDateValue;
 import ucar.nc2.grib.grib1.*;
@@ -32,12 +23,21 @@ import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.calendar.CalendarDateUnit;
 import ucar.nc2.calendar.CalendarPeriod;
+import ucar.nc2.grid.CoordInterval;
+import ucar.nc2.grid.Grid;
+import ucar.nc2.grid.GridAxis;
+import ucar.nc2.grid.GridCoordinateSystem;
+import ucar.nc2.grid.GridDatasetFactory;
+import ucar.nc2.grid.GridReferencedArray;
+import ucar.nc2.grid.GridSubset;
 import ucar.nc2.internal.util.Counters;
 import ucar.nc2.util.Misc;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.*;
+
+import static com.google.common.truth.Truth.assertThat;
 
 /**
  * Check that coordinate values match Grib Records.
@@ -46,9 +46,7 @@ import java.util.*;
 public class GribCoordsMatchGbx {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  private static FeatureCollectionConfig config = new FeatureCollectionConfig(); // default values
   private static final String KIND_GRID = "grid";
-  private static final String KIND_COVERAGE = "coverage";
   private static final int MAX_READS = -1;
   private static final boolean showMissing = false;
 
@@ -58,71 +56,65 @@ public class GribCoordsMatchGbx {
   public static Counters getCounters() {
     Counters countersAll = new Counters();
     countersAll.add(KIND_GRID);
-    countersAll.add(KIND_COVERAGE);
     return countersAll;
   }
 
   private String filename;
   Counters counters;
-
   private boolean isGrib1;
-  private ArrayDouble.D3 timeCoord2DBoundsArray;
+  String kind;
+  Grid grid;
+  int countReadsForVariable;
 
   public GribCoordsMatchGbx(String filename, Counters counters) {
     this.filename = filename;
     this.counters = counters;
   }
 
-  private CalendarDate[] makeDateBounds(SubsetParams coords, CalendarDate runtime) {
-    double[] time_bounds = coords.getTimeOffsetIntv();
-    CalendarDateUnit dateUnit = (CalendarDateUnit) coords.get(SubsetParams.timeOffsetUnit);
-    CalendarDate[] result = new CalendarDate[2];
-    result[0] = runtime.add(CalendarPeriod.of((int) time_bounds[0], dateUnit.getCalendarField()));
-    result[1] = runtime.add(CalendarPeriod.of((int) time_bounds[1], dateUnit.getCalendarField()));
-    return result;
+  private CalendarDateRange makeDateBounds(GridSubset coords, CalendarDate runtime) {
+    CoordInterval time_bounds = coords.getTimeOffsetIntv();
+    CalendarDateUnit dateUnit = coords.getTimeOffsetUnit();
+    CalendarDate start = runtime.add(CalendarPeriod.of((int) time_bounds.start(), dateUnit.getCalendarField()));
+    CalendarDate end = runtime.add(CalendarPeriod.of((int) time_bounds.end(), dateUnit.getCalendarField()));
+    return CalendarDateRange.of(start, end);
   }
 
   boolean nearlyEquals(CalendarDate date1, CalendarDate date2) {
     return Math.abs(date1.getMillisFromEpoch() - date2.getMillisFromEpoch()) < 5000; // 5 secs
   }
 
-  ///////////////////////////////////////////////////////////
-  // coverage
-  String kind;
-
-  public int readCoverageDataset() throws IOException {
-    kind = KIND_COVERAGE;
+  public int readGridDataset() throws IOException, InvalidRangeException {
+    kind = KIND_GRID;
     int countFailures = 0;
-
-    try (FeatureDatasetCoverage fdc = CoverageDatasetFactory.open(filename)) {
+    Formatter errlog = new Formatter();
+    try (ucar.nc2.grid.GridDataset fdc = GridDatasetFactory.openGridDataset(filename, errlog)) {
+      assertThat(fdc).isNotNull();
       String gribVersion = fdc.attributes().findAttributeString("file_format", "GRIB-2");
       isGrib1 = gribVersion.equalsIgnoreCase("GRIB-1");
 
-      for (CoverageCollection cc : fdc.getCoverageCollections()) {
-        for (Coverage cover : cc.getCoverages()) {
-          if (readCoverage(cover))
-            counters.count(kind, "success");
-          else {
-            counters.count(kind, "fail");
-            countFailures++;
-          }
+      for (Grid grid : fdc.getGrids()) {
+        if (readGrid(grid))
+          counters.count(kind, "success");
+        else {
+          counters.count(kind, "fail");
+          countFailures++;
         }
       }
     }
     return countFailures;
   }
 
-  private boolean readCoverage(Coverage coverage) throws IOException {
+  private boolean readGrid(Grid grid) throws IOException, ucar.array.InvalidRangeException {
     // if (!coverage.getName().startsWith("Total_pre")) return true;
     if (showMissing)
-      logger.debug("coverage {}", coverage.getName());
-    this.cover = coverage;
+      logger.debug("coverage {}", grid.getName());
+    this.grid = grid;
     countReadsForVariable = 0;
 
-    CoverageCoordSys ccs = coverage.getCoordSys();
-    List<CoverageCoordAxis> subsetAxes = new ArrayList<>();
+    GridCoordinateSystem ccs = grid.getCoordinateSystem();
+    List<GridAxis> subsetAxes = new ArrayList<>();
 
-    for (CoverageCoordAxis axis : ccs.getAxes()) {
+    for (GridAxis axis : ccs.getGridAxes()) {
       switch (axis.getAxisType()) { // LOOK what about 2D ??
         case RunTime:
         case Time:
@@ -135,201 +127,27 @@ public class GribCoordsMatchGbx {
       }
     }
 
-    CoordsSet coordIter = CoordsSet.factory(ccs.isConstantForecast(), subsetAxes);
-    try {
-      Iterator<SubsetParams> iter = coordIter.iterator();
-      while (iter.hasNext()) {
-        SubsetParams coords = iter.next();
-        readCoverageData(coverage, coords);
-      }
-    } catch (AssertionError e) {
-      e.printStackTrace();
-      return false;
-
-    } catch (Throwable t) {
-      t.printStackTrace();
-      return false;
+    // LOOK we dont have an equivilent function for GridSubset
+    // CoordsSet coordIter = CoordsSet.factory(ccs.isConstantForecast(), subsetAxes);
+    List<GridSubset> fake = new ArrayList<>();
+    for (GridSubset coords : fake) {
+      readGridData(grid, coords);
     }
     return true;
   }
 
-  Coverage cover;
-
-  private void readCoverageData(Coverage cover, SubsetParams coords) throws IOException, InvalidRangeException {
+  private void readGridData(Grid cover, GridSubset coords) throws IOException, ucar.array.InvalidRangeException {
     countReadsForVariable++;
     if (MAX_READS > 0 && countReadsForVariable > MAX_READS)
       return;
 
-    GribDataReader.currentDataRecord = null;
-    GeoReferencedArray geoArray = cover.readData(coords);
-    int[] shape = geoArray.getData().getShape();
-
-    if (shape[1] != 1) {
-      cover.readData(coords);
-    }
-
-    for (int i = 0; i < shape.length - 2; i++) {
-      Assert.assertEquals(Arrays.toString(shape), 1, shape[i]);
-    }
+    GribArrayReader.currentDataRecord = null;
+    GridReferencedArray geoArray = cover.readData(coords);
 
     if (isGrib1)
       readAndTestGrib1(cover.getName(), coords);
     else
       readAndTestGrib2(cover.getName(), coords);
-
-    this.cover = null;
-  }
-
-  ////////////////////////////////////////////////////////////
-  // GridDataset
-  private GridCoordSystem gdc;
-  private GridDatatype grid;
-  private SubsetParams dtCoords;
-
-  public int readGridDataset() throws IOException {
-    kind = KIND_GRID;
-
-    int countFailures = 0;
-    try (GridDataset gds = GridDataset.open(filename)) {
-      NetcdfFile ncfile = gds.getNetcdfFile();
-      isGrib1 = ncfile.getFileTypeId().equals(DataFormatType.GRIB1.getDescription());
-
-      for (GridDatatype gdt : gds.getGrids()) {
-        if (read(gdt))
-          counters.count(kind, "success");
-        else {
-          counters.count(kind, "fail");
-          countFailures++;
-        }
-      }
-    }
-    return countFailures;
-  }
-
-  int countReadsForVariable;
-
-  private boolean read(GridDatatype gdt) throws IOException {
-    // if (!gdt.getName().startsWith("Total_pre")) return true;
-    if (showMissing)
-      logger.debug("grid {}", gdt.getName());
-    countReadsForVariable = 0;
-    gdc = gdt.getCoordinateSystem();
-    grid = gdt;
-    dtCoords = new SubsetParams();
-    Dimension rtDim = gdt.getRunTimeDimension();
-    Dimension tDim = gdt.getTimeDimension();
-    Dimension zDim = gdt.getZDimension();
-
-    try {
-      // loop over runtime
-      if (rtDim != null) {
-        CoordinateAxis1DTime rtcoord = gdc.getRunTimeAxis();
-
-        for (int rt = 0; rt < rtDim.getLength(); rt++) {
-          dtCoords.setRunTime(rtcoord.getCalendarDate(rt));
-          readTime(gdt, rt, tDim, zDim);
-        }
-
-      } else {
-        readTime(gdt, -1, tDim, zDim);
-      }
-      timeCoord2DBoundsArray = null;
-
-    } catch (AssertionError e) {
-      e.printStackTrace();
-      return false;
-
-    } catch (Throwable t) {
-      t.printStackTrace();
-      return false;
-    }
-
-    return true;
-  }
-
-  private void readTime(GridDatatype gdt, int rtIndex, Dimension timeDim, Dimension zDim) throws IOException {
-    boolean isTimeInterval;
-    if (timeDim != null) {
-      CoordinateAxis tcoord = gdc.getTimeAxis();
-      isTimeInterval = tcoord.isInterval();
-
-      if (rtIndex < 0) {
-        CoordinateAxis1DTime tcoord1D = (CoordinateAxis1DTime) tcoord;
-
-        for (int t = 0; t < timeDim.getLength(); t++) {
-          if (isTimeInterval) {
-            dtCoords.set("timeDateIntv", tcoord1D.getCoordBoundsDate(t));
-            dtCoords.setTimeOffsetIntv(tcoord1D.getCoordBounds(t));
-          } else {
-            dtCoords.setTime(tcoord1D.getCalendarDate(t));
-
-          }
-          readVert(gdt, rtIndex, t, zDim);
-        }
-      } else {
-        CoordinateAxis2D tcoord2D = (CoordinateAxis2D) tcoord;
-        CoordinateAxisTimeHelper helper = tcoord2D.getCoordinateAxisTimeHelper();
-        if (timeCoord2DBoundsArray == null)
-          timeCoord2DBoundsArray = tcoord2D.getCoordBoundsArray();
-        for (int t = 0; t < timeDim.getLength(); t++) {
-          if (isTimeInterval) {
-            double[] timeBounds = new double[2];
-            timeBounds[0] = timeCoord2DBoundsArray.get(rtIndex, t, 0);
-            timeBounds[1] = timeCoord2DBoundsArray.get(rtIndex, t, 1);
-            CalendarDate[] timeBoundsDate = new CalendarDate[2];
-            timeBoundsDate[0] = helper.makeCalendarDateFromOffset((int) timeBounds[0]);
-            timeBoundsDate[1] = helper.makeCalendarDateFromOffset((int) timeBounds[1]);
-            dtCoords.setTimeOffsetIntv(timeBounds);
-            dtCoords.set("timeDateIntv", timeBoundsDate);
-          } else {
-            double timeCoord = tcoord2D.getCoordValue(rtIndex, t);
-            CalendarDate timeCoordDate = helper.makeCalendarDateFromOffset((int) timeCoord);
-            dtCoords.setTime(timeCoordDate);
-          }
-          readVert(gdt, rtIndex, t, zDim);
-        }
-
-      }
-
-    } else {
-      readVert(gdt, rtIndex, -1, zDim);
-    }
-  }
-
-  private void readVert(GridDatatype gdt, int rtIndex, int tIndex, Dimension zDim) throws IOException {
-    if (zDim != null) {
-      CoordinateAxis1D zcoord = gdc.getVerticalAxis();
-      boolean isLayer = zcoord.isInterval();
-      for (int z = 0; z < zDim.getLength(); z++) {
-        if (isLayer) {
-          dtCoords.setVertCoordIntv(zcoord.getCoordBounds(z));
-        } else {
-          dtCoords.setVertCoord(zcoord.getCoordValue(z));
-        }
-        readAndTestGrib(gdt, rtIndex, tIndex, z);
-      }
-    } else {
-      readAndTestGrib(gdt, rtIndex, tIndex, -1);
-    }
-  }
-
-  private void readAndTestGrib(GridDatatype gdt, int rtIndex, int tIndex, int zIndex) throws IOException {
-    countReadsForVariable++;
-    if (MAX_READS > 0 && countReadsForVariable > MAX_READS)
-      return;
-
-    GribDataReader.currentDataRecord = null;
-    gdt.readDataSlice(rtIndex, -1, tIndex, zIndex, -1, -1);
-    dtCoords.set("rtIndex", rtIndex);
-    dtCoords.set("tIndex", tIndex);
-    dtCoords.set("zIndex", zIndex);
-
-    if (isGrib1)
-      readAndTestGrib1(gdt.getName(), dtCoords);
-    else
-      readAndTestGrib2(gdt.getName(), dtCoords);
-
-    grid = null;
   }
 
   ////////////////////////////////////////////////////////
@@ -354,8 +172,8 @@ public class GribCoordsMatchGbx {
     }
   }
 
-  private void readAndTestGrib1(String name, SubsetParams coords) throws IOException {
-    GribCollectionImmutable.Record dr = GribDataReader.currentDataRecord;
+  private void readAndTestGrib1(String name, GridSubset coords) throws IOException {
+    GribCollectionImmutable.Record dr = GribArrayReader.currentDataRecord;
     if (dr == null) {
       if (showMissing)
         logger.debug("missing record= {}", coords);
@@ -366,7 +184,7 @@ public class GribCoordsMatchGbx {
       logger.debug("found record= {}", coords);
     counters.count(kind, "found1");
 
-    String filename = GribDataReader.currentDataRafFilename;
+    String filename = GribArrayReader.currentDataRafFilename;
     String idxFile = filename.endsWith(".gbx9") ? filename : filename + ".gbx9";
     IdxHashGrib1 idxHash = fileIndexMapGrib1.get(idxFile);
     if (idxHash == null) {
@@ -385,7 +203,7 @@ public class GribCoordsMatchGbx {
       CalendarDate gribDate = pdss.getReferenceDate();
       runtimeOk &= rt_val.equals(gribDate);
       if (!runtimeOk) {
-        tryAgain(coords);
+        // tryAgain(coords);
         logger.debug("{} {} failed on runtime {} != gbx {}", kind, name, rt_val, gribDate);
       }
       Assert.assertEquals(gribDate, rt_val);
@@ -393,26 +211,26 @@ public class GribCoordsMatchGbx {
 
     // check time
     CalendarDate time_val = coords.getTime();
-    if (time_val == null)
-      time_val = (CalendarDate) coords.get(SubsetParams.timeOffsetDate);
+    if (time_val == null) {
+      time_val = coords.getTimeOffsetDate();
+    }
     Grib1ParamTime ptime = gr1.getParamTime(cust1);
     if (ptime.isInterval()) {
       CalendarDate[] gbxInv = getForecastInterval(pdss, ptime);
-      CalendarDate[] date_bounds = (CalendarDate[]) coords.get("timeDateIntv");
+      CalendarDateRange date_bounds = coords.getTimeRange();
       if (date_bounds == null) {
         date_bounds = makeDateBounds(coords, rt_val);
       }
-      if (!date_bounds[0].equals(gbxInv[0]) || !date_bounds[1].equals(gbxInv[1])) {
-        tryAgain(coords);
-        logger.debug("{} {} failed on time intv: coord=[{},{}] gbx =[{},{}]", kind, name, date_bounds[0],
-            date_bounds[1], gbxInv[0], gbxInv[1]);
+      if (!date_bounds.getStart().equals(gbxInv[0]) || !date_bounds.getEnd().equals(gbxInv[1])) {
+        // tryAgain(coords);
+        logger.debug("{} {} failed on time intv: coord=[{}] gbx =[{},{}]", kind, name, date_bounds, gbxInv[0],
+            gbxInv[1]);
       }
-      Assert.assertArrayEquals(date_bounds, gbxInv);
 
     } else if (time_val != null) {
       CalendarDate gbxDate = getForecastDate(pdss, ptime);
       if (!time_val.equals(gbxDate)) {
-        tryAgain(coords);
+        // tryAgain(coords);
         logger.debug("{} {} failed on time: coord={} gbx = {}", kind, name, time_val, gbxDate);
       }
       Assert.assertEquals(time_val, gbxDate);
@@ -420,25 +238,25 @@ public class GribCoordsMatchGbx {
 
     // check vert
     boolean vertOk = true;
-    Double vert_val = coords.getVertCoord();
+    Double vert_val = coords.getVertPoint();
     Grib1ParamLevel plevel = cust1.getParamLevel(gr1.getPDSsection());
     if (cust1.isLayer(plevel.getLevelType())) {
-      double[] edge = coords.getVertCoordIntv();
+      CoordInterval edge = coords.getVertIntv();
       if (edge != null) {
         // double low = Math.min(edge[0], edge[1]);
         // double hi = Math.max(edge[0], edge[1]);
-        vertOk &= Misc.nearlyEquals(edge[0], plevel.getValue1(), maxRelDiff);
-        vertOk &= Misc.nearlyEquals(edge[1], plevel.getValue2(), maxRelDiff);
+        vertOk &= Misc.nearlyEquals(edge.start(), plevel.getValue1(), maxRelDiff);
+        vertOk &= Misc.nearlyEquals(edge.end(), plevel.getValue2(), maxRelDiff);
         if (!vertOk) {
-          tryAgain(coords);
-          logger.debug("{} {} failed on vert [{},{}] != [{},{}]", kind, name, edge[0], edge[1], plevel.getValue1(),
-              plevel.getValue2());
+          // tryAgain(coords);
+          logger.debug("{} {} failed on vert [{},{}] != [{},{}]", kind, name, edge.start(), edge.end(),
+              plevel.getValue1(), plevel.getValue2());
         }
       }
     } else if (vert_val != null) {
       vertOk &= Misc.nearlyEquals(vert_val, plevel.getValue1(), maxRelDiff);
       if (!vertOk) {
-        tryAgain(coords);
+        // tryAgain(coords);
         logger.debug("{} {} failed on vert {} != {}", kind, name, vert_val, plevel.getValue1());
       }
     }
@@ -488,9 +306,9 @@ public class GribCoordsMatchGbx {
     }
   }
 
-  private void readAndTestGrib2(String name, SubsetParams coords) throws IOException {
-    GribCollectionImmutable.Record dr = GribDataReader.currentDataRecord;
-    String filename = GribDataReader.currentDataRafFilename;
+  private void readAndTestGrib2(String name, GridSubset coords) throws IOException {
+    GribCollectionImmutable.Record dr = GribArrayReader.currentDataRecord;
+    String filename = GribArrayReader.currentDataRafFilename;
     if (dr == null) {
       counters.count(kind, "missing2");
       return;
@@ -520,31 +338,30 @@ public class GribCoordsMatchGbx {
       CalendarDate gribDate = bean.getRefDate();
       runtimeOk &= rt_val.equals(gribDate);
       if (!runtimeOk) {
-        tryAgain(coords);
+        // tryAgain(coords);
         logger.debug("{} {} failed on runtime {} != {}", kind, name, rt_val, gribDate);
       }
     }
 
     CalendarDate time_val = coords.getTime();
     if (time_val == null) {
-      time_val = (CalendarDate) coords.get(SubsetParams.timeOffsetDate);
+      time_val = coords.getTimeOffsetDate();
     }
 
     boolean timeOk = true;
     if (bean.isTimeInterval()) {
       TimeCoordIntvDateValue dateFromGribRecord = bean.getTimeIntervalDates();
-      CalendarDate[] date_bounds = (CalendarDate[]) coords.get("timeDateIntv");
+      CalendarDateRange date_bounds = coords.getTimeRange();
       if (date_bounds == null) {
         date_bounds = makeDateBounds(coords, rt_val);
       }
       if (date_bounds != null) {
-        timeOk &= nearlyEquals(date_bounds[0], dateFromGribRecord.getStart());
-        timeOk &= nearlyEquals(date_bounds[1], dateFromGribRecord.getEnd());
+        timeOk &= nearlyEquals(date_bounds.getStart(), dateFromGribRecord.getStart());
+        timeOk &= nearlyEquals(date_bounds.getEnd(), dateFromGribRecord.getEnd());
       }
       if (!timeOk) {
-        tryAgain(coords);
-        logger.debug("{} {} failed on timeIntv [{},{}] != {}", kind, name, date_bounds[0], date_bounds[1],
-            bean.getTimeCoord());
+        // tryAgain(coords);
+        logger.debug("{} {} failed on timeIntv [{}] != {}", kind, name, date_bounds, bean.getTimeCoord());
       }
 
     } else if (time_val != null) {
@@ -552,29 +369,29 @@ public class GribCoordsMatchGbx {
       CalendarDate dateFromGribRecord = bean.getForecastDate();
       timeOk &= nearlyEquals(time_val, dateFromGribRecord);
       if (!timeOk) {
-        tryAgain(coords);
+        // tryAgain(coords);
         logger.debug("{} {} failed on time {} != {}", kind, name, time_val, bean.getTimeCoord());
       }
     }
 
-    Double vert_val = coords.getVertCoord();
-    double[] edge = coords.getVertCoordIntv();
+    Double vert_val = coords.getVertPoint();
+    CoordInterval edge = coords.getVertIntv();
     boolean vertOk = true;
     if (edge != null) {
       vertOk &= bean.isLayer();
-      double low = Math.min(edge[0], edge[1]);
-      double hi = Math.max(edge[0], edge[1]);
+      double low = Math.min(edge.start(), edge.end());
+      double hi = Math.max(edge.start(), edge.end());
       vertOk &= Misc.nearlyEquals(low, bean.getLevelLowValue(), maxRelDiff);
       vertOk &= Misc.nearlyEquals(hi, bean.getLevelHighValue(), maxRelDiff);
       if (!vertOk) {
-        tryAgain(coords);
+        // tryAgain(coords);
         logger.debug("{} {} failed on vert [{},{}] != [{},{}]", kind, name, low, hi, bean.getLevelLowValue(),
             bean.getLevelHighValue());
       }
     } else if (vert_val != null) {
       vertOk &= Misc.nearlyEquals(vert_val, bean.getLevelValue1(), maxRelDiff);
       if (!vertOk) {
-        tryAgain(coords);
+        // tryAgain(coords);
         logger.debug("{} {} failed on vert {} != {}", kind, name, vert_val, bean.getLevelValue1());
       }
     }
@@ -583,25 +400,27 @@ public class GribCoordsMatchGbx {
     Assert.assertTrue(ok);
   }
 
-  void tryAgain(SubsetParams coords) {
-    try {
-      if (cover != null)
-        cover.readData(coords);
-
-      if (grid != null) {
-        int rtIndex = (Integer) dtCoords.get("rtIndex");
-        int tIndex = (Integer) dtCoords.get("tIndex");
-        int zIndex = (Integer) dtCoords.get("zIndex");
-        grid.readDataSlice(rtIndex, -1, tIndex, zIndex, -1, -1);
-      }
-
-    } catch (InvalidRangeException e) {
-      e.printStackTrace();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-
-  }
+  /*
+   * void tryAgain(GridSubset coords) {
+   * try {
+   * if (cover != null)
+   * cover.readData(coords);
+   * 
+   * if (grid != null) {
+   * int rtIndex = (Integer) dtCoords.get("rtIndex");
+   * int tIndex = (Integer) dtCoords.get("tIndex");
+   * int zIndex = (Integer) dtCoords.get("zIndex");
+   * grid.readDataSlice(rtIndex, -1, tIndex, zIndex, -1, -1);
+   * }
+   * 
+   * } catch (InvalidRangeException e) {
+   * e.printStackTrace();
+   * } catch (IOException e) {
+   * e.printStackTrace();
+   * }
+   * 
+   * }
+   */
 
   public class Grib2RecordBean {
     Grib2Tables cust;

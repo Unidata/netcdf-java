@@ -10,6 +10,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ucar.array.InvalidRangeException;
 import ucar.nc2.grib.collection.Grib;
 import ucar.nc2.internal.util.Counters;
 import ucar.nc2.util.DebugFlags;
@@ -93,8 +94,12 @@ public class TestCoordinatesMatchGbxP {
     System.out.printf("%s%n", endpoint);
     Counters fileCounters = GribCoordsMatchGbx.getCounters();
     GribCoordsMatchGbx helper = new GribCoordsMatchGbx(endpoint, fileCounters);
-    int fail = helper.readGridDataset();
-    fail += helper.readCoverageDataset();
+    int fail = 0;
+    try {
+      fail = helper.readGridDataset();
+    } catch (InvalidRangeException e) {
+      e.printStackTrace();
+    }
     if (showFileCounters)
       System.out.printf("fileCounters= %s%n", fileCounters);
     countersAll.addTo(fileCounters);

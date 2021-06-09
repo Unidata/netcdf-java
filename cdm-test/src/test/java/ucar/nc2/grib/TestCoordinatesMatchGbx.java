@@ -9,6 +9,7 @@ import org.junit.*;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ucar.array.InvalidRangeException;
 import ucar.nc2.Variable;
 import ucar.nc2.grib.collection.Grib;
 import ucar.nc2.internal.util.Counters;
@@ -157,31 +158,28 @@ public class TestCoordinatesMatchGbx {
    * https://github.com/Unidata/thredds/issues/584
    */
   @Ignore("Overlapping time interval")
-  public void testNonUniqueTimeCoordsProblem() throws IOException {
+  public void testNonUniqueTimeCoordsProblem() throws IOException, InvalidRangeException {
     Counters counters = GribCoordsMatchGbx.getCounters();
     String filename = TestDir.cdmUnitTestDir + "formats/grib1/problem/QPE.20101005.009.157";
     GribCoordsMatchGbx helper = new GribCoordsMatchGbx(filename, counters);
     helper.readGridDataset();
-    helper.readCoverageDataset();
     logger.debug("counters= {}", counters);
   }
 
-  public void testProblem2() throws IOException {
+  public void testProblem2() throws IOException, InvalidRangeException {
     Counters counters = GribCoordsMatchGbx.getCounters();
     String filename = "D:/work/rdavm/ds084.3/2015/20150201/ds084.3-20150201.ncx4";
     GribCoordsMatchGbx helper = new GribCoordsMatchGbx(filename, counters);
-    // helper.readGridDataset();
-    helper.readCoverageDataset();
+    helper.readGridDataset();
     logger.debug("counters= {}", counters);
   }
 
   @Test
-  public void testRdaPofP() throws IOException {
+  public void testRdaPofP() throws IOException, InvalidRangeException {
     Counters counters = GribCoordsMatchGbx.getCounters();
     String filename = TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2/PofP/ds083.2-pofp.ncx4";
     GribCoordsMatchGbx helper = new GribCoordsMatchGbx(filename, counters);
     helper.readGridDataset();
-    helper.readCoverageDataset();
     logger.debug("counters= {}", counters);
   }
 
@@ -214,8 +212,11 @@ public class TestCoordinatesMatchGbx {
       int fail2 = 0;
       Counters fileCounters = counterCurrent.makeSubCounters();
       GribCoordsMatchGbx helper = new GribCoordsMatchGbx(filename, fileCounters);
-      fail = helper.readGridDataset();
-      fail2 = helper.readCoverageDataset();
+      try {
+        fail = helper.readGridDataset();
+      } catch (InvalidRangeException e) {
+        e.printStackTrace();
+      }
       if (showFileCounters)
         logger.debug("fileCounters= {}", fileCounters);
       counterCurrent.addTo(fileCounters);

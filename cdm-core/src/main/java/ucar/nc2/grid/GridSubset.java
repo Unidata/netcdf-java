@@ -8,6 +8,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.calendar.CalendarDateRange;
+import ucar.nc2.calendar.CalendarDateUnit;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPoints;
 import ucar.unidata.geoloc.LatLonRect;
@@ -385,6 +386,11 @@ public class GridSubset {
   // LOOK not set - used in grib validation
   public CalendarDate getTimeOffsetDate() {
     return (CalendarDate) get(timeOffsetDate);
+  }
+
+  // LOOK not set - used in grib validation
+  public CalendarDateUnit getTimeOffsetUnit() {
+    return (CalendarDateUnit) get(timeOffsetUnit);
   }
 
   public GridSubset setTimeOffsetFirst() {
