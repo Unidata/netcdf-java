@@ -32,11 +32,6 @@ import java.util.ServiceLoader;
  * Manager of factories for FeatureDatasets opened as NetcdfDatasets.
  * <p>
  * Grids, FMRC, Swaths are using GridDatasetStandardFactory
- * </p>
- * <p>
- * Radial data uses RadialDatasetStandardFactory
- * </p>
- * <p>
  * All point datasets are going through PointDatasetStandardFactory, which uses TableAnalyzer to deal
  * with specific dataset conventions.
  *
@@ -64,9 +59,6 @@ public class FeatureDatasetFactoryManager {
     registerFactory(FeatureType.GRID, GridDatasetStandardFactory.class);
     registerFactory(FeatureType.FMRC, GridDatasetStandardFactory.class);
     registerFactory(FeatureType.CURVILINEAR, GridDatasetStandardFactory.class);
-
-    // registerFactory(FeatureType.RADIAL, RadialDatasetStandardFactory.class);
-    // registerFactory(FeatureType.STATION_RADIAL, RadialDatasetStandardFactory.class);
 
     registerFactory(FeatureType.UGRID, "ucar.nc2.ft.ugrid.UGridDatasetStandardFactory");
     registerFactory(FeatureType.SIMPLE_GEOMETRY, SimpleGeometryStandardFactory.class);

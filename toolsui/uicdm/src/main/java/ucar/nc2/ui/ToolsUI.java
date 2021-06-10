@@ -31,7 +31,6 @@ import ucar.nc2.ui.grid.GridPanel;
 import ucar.nc2.ui.menu.*;
 import ucar.nc2.ui.op.*;
 import ucar.nc2.ui.point.PointFeaturePanel;
-import ucar.nc2.ui.radial.RadialPanel;
 import ucar.nc2.ui.util.SocketMessage;
 import ucar.nc2.ui.widget.URLDumpPane;
 import ucar.nc2.ui.widget.UrlAuthenticatorDialog;
@@ -133,7 +132,6 @@ public class ToolsUI extends JPanel {
   private NCdumpPanel ncdumpPanel;
   private NcmlEditorPanel ncmlEditorPanel;
   private PointFeaturePanel pointFeaturePanel;
-  private RadialPanel radialPanel;
   private SimpleGeomPanel simpleGeomPanel;
   private ThreddsUI threddsUI;
   private UnitsPanel unitsPanel;
@@ -260,7 +258,6 @@ public class ToolsUI extends JPanel {
     ftTabPane.addTab("SimpleGeometry", new JLabel("SimpleGeometry"));
     ftTabPane.addTab("WMS", new JLabel("WMS"));
     ftTabPane.addTab("PointFeature", new JLabel("PointFeature"));
-    ftTabPane.addTab("Radial", new JLabel("Radial"));
     ftTabPane.addTab("FeatureCollection", fcTabPane);
     addListeners(ftTabPane);
 
@@ -541,18 +538,6 @@ public class ToolsUI extends JPanel {
         c = pointFeaturePanel;
         break;
 
-      case "Radial":
-        radialPanel = new RadialPanel((PreferencesExt) mainPrefs.node("radial"));
-        c = radialPanel;
-        break;
-
-      /*
-       * case "StationRadial":
-       * stationRadialPanel = new StationRadialPanel((PreferencesExt) mainPrefs.node("stationRadar"));
-       * c = stationRadialPanel;
-       * break;
-       */
-
       case "THREDDS":
         threddsUI = new ThreddsUI(parentFrame, (PreferencesExt) mainPrefs.node("thredds"));
         threddsUI.addPropertyChangeListener(e -> {
@@ -783,9 +768,6 @@ public class ToolsUI extends JPanel {
     if (pointFeaturePanel != null) {
       pointFeaturePanel.save();
     }
-    if (radialPanel != null) {
-      radialPanel.save();
-    }
     if (simpleGeomPanel != null) {
       simpleGeomPanel.save();
     }
@@ -979,13 +961,6 @@ public class ToolsUI extends JPanel {
     ftTabPane.setSelectedComponent(geoGridPanel);
   }
 
-  public void openRadialDataset(String datasetName) {
-    makeComponent(ftTabPane, "Radial");
-    radialPanel.doit(datasetName);
-    tabbedPane.setSelectedComponent(ftTabPane);
-    ftTabPane.setSelectedComponent(radialPanel);
-  }
-
   private void openWMSDataset(String datasetName) {
     makeComponent(ftTabPane, "WMS");
     wmsPanel.doit(datasetName);
@@ -1022,7 +997,6 @@ public class ToolsUI extends JPanel {
         // make sure its enhanced
         ncd = NetcdfDatasets.enhance(ncd, NetcdfDataset.getDefaultEnhanceMode(), null);
         openCoordSystems(ncd);
-        return;
       }
 
     } catch (IOException ioe) {
