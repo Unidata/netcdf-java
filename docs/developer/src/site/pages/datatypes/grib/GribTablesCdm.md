@@ -21,12 +21,12 @@ In principle, if everything is done right, the reader ends up using the table th
 ### Writing Grib Files
 #### Encoding the center and subcenter id
 
-You must encode a center and subcenter id, in order for software to correctly match any local tables used in the message. If there is no subcenter in use, use id =0 ("no subcenter:), although 255 ("missing") is acceptable but ambiguous.
+You must encode a center and subcenter id, in order for software to correctly match any local tables used in the message. If there is no subcenter in use, use `id =0` ("no subcenter"), although 255 ("missing") is acceptable but ambiguous.
 
 #### Encoding the version number(s)
-<b>_GRIB-1_</b> : (octet 4 of the PDS) If you are only using WMO standard tables (all parameter ids < 128) then you should use version number = 1, 2, or 3, corresponding to the WMO standard table version. The <a href="https://www.wmo.int/pages/prog/www/WMOCodes/WMO306_vI1/Publications/2017update/WMO306_vI1_2011UP2017_en.pdf">Current WMO GRIB-1 table version</a> is 3. Using only parameters from the standard tables is best practice for the _international exchange of GRIB messages_. If you are using non-standard (aka local) parameters, then you should use a version number in the range 128-254, which names your version of the tables.
+**GRIB-1** : (octet 4 of the PDS) If you are only using WMO standard tables (all parameter ids < 128) then you should use version number = 1, 2, or 3, corresponding to the WMO standard table version. The [Current WMO GRIB-1 table version](https://community.wmo.int/activity-areas/wmo-codes/manual-codes/latest-version){:target="_blank"} is 3. Using only parameters from the standard tables is best practice for the _international exchange of GRIB messages_. If you are using non-standard (aka local) parameters, then you should use a version number in the range 128-254, which names your version of the tables.
 
-<b>_GRIB-2_</b>: Use the correct version of the Master table in octect 10 of the Identification section. All parameters with numbers in the range 0-191 will be taken from that table. If you use any local tables, encode the version of your local table in octect 11 of the Identification section, otherwise set the local version to 0. _"In any case, the use of Local tables in messages intended for non-local or international exchange is strongly discouraged."_ from <a href="https://www.wmo.int/pages/prog/www/WMOCodes/WMO306_vI1/Publications/2017update/WMO306_vI1_2011UP2017_en.pdf">WMO Manual on Codes</a>.
+**GRIB-2**: Use the correct version of the Master table in octect 10 of the Identification section. All parameters with numbers in the range 0-191 will be taken from that table. If you use any local tables, encode the version of your local table in octect 11 of the Identification section, otherwise set the local version to 0. _"In any case, the use of Local tables in messages intended for non-local or international exchange is strongly discouraged."_ from [WMO Manual on Codes](https://library.wmo.int/doc_num.php?explnum_id=10235){:target="_blank"}.
 
 #### Using local tables
 If you use local parameters, you must do the following:
@@ -49,9 +49,9 @@ Best practice for local table use includes the following:
 
 #### Standard table mapping
 
-A standard table is a GRIB parameter table that is automatically used by the CDM. A _standard table map_ is an association of a standard table with a center/subcenter/version id. The CDM internally loads several table maps, from <b>_resources/grib1/lookupTables.txt_</b> and its subdirectories <b>_resources/grib1/*/lookupTables.txt_</b>. These are stored in the <b>_grib.jar_</b>, and referenced in <b>_ucar.nc2.grib.grib1.tables.Grib1ParamTables_</b>.
+A standard table is a GRIB parameter table that is automatically used by the CDM. A _standard table map_ is an association of a standard table with a center/subcenter/version id. The CDM internally loads several table maps, from `resources/grib1/lookupTables.txt` and its subdirectories `resources/grib1/*/lookupTables.txt`. These are stored in the `grib.jar`, and referenced in `ucar.nc2.grib.grib1.tables.Grib1ParamTables`.
 
-You can view all the standard tables used by the CDM in ToolsUI, using the <b>_IOSP/GRIB-1/GRIB1-TABLES_</b> tab. A standard table map looks like this:
+You can view all the standard tables used by the CDM in ToolsUI, using the `IOSP/GRIB-1/GRIB1-TABLES` tab. A standard table map looks like this:
 
 ~~~
 # resources\grib1\lookupTables.txt
@@ -68,37 +68,37 @@ You can view all the standard tables used by the CDM in ToolsUI, using the <b>_I
 1. Each row contains the center, subcenter and table version, and the table filename, with a colon (:) separating the fields.
 2. The center, subcenter and table ids are read from each GRIB record, and the list of tables is searched for a match. The first exact match is used.
 3. If there is no exact match, then a wildcard match is used, where a "-1" for the subcenter or version id matches any id. The first wildcard match is used.
-4. Center 0 is the WMO standard table, called the <b>_default table_</b>. It is set internally and cannot be overridden by the user.
+4. Center 0 is the WMO standard table, called the **default table**. It is set internally and cannot be overridden by the user.
 5. If a table is not matched, the default table is used.
 6. If a parameter is not found then "Unknown Parameter center-subcenter-version-param" is used as the name, and an empty string for the units.
-7. If <b>_strictMode_</b> is on, then
-* If (param < 128 and version < 128) the default table is <b>_always_</b> used.
+7. If **strictMode** is on, then
+* If (param < 128 and version < 128) the default table is **always** used.
 * If (param > 127 or version > 127) a table must be found for all parameters, or else the file will fail to open.
-8. You can set strictMode programatically via <b>_ucar.nc2.grib.grib1.tables.Grib1StandardTables.setStrict(true)_</b>; or in the [RunTime configuration file](../userguide/runtime_loading.html){:target="_blank"} by adding
+8. You can set strictMode programmatically via `ucar.nc2.grib.grib1.tables.Grib1StandardTables.setStrict(true)`; or in the [RunTime configuration file](../userguide/runtime_loading.html) by adding
 
-~~~
+~~~xml
 <grib1Table strict="true"/>
 ~~~
 
-If <b>_strict=true_</b>, when a table is not matched, and local parameters are used, the GRIB file will fail to open. At that point you will need to add the correct parameter table, as described below.
+If `strict=true`, when a table is not matched, and local parameters are used, the GRIB file will fail to open. At that point you will need to add the correct parameter table, as described below.
 
 #### GRIB parameter table formats
 
 The CDM can read GRIB parameter tables in several formats:
 
-A <b>_file ending in .xml_</b>: an ad-hoc [XML format](#xml-schema-for-defining-grib-1-parameters) we made up.
-A <b>_file ending in .tab_</b>: the <a href="ftp://ftp.cpc.ncep.noaa.gov/wd51we/wgrib/usertables.txt">format</a> that <a href="http://www.cpc.ncep.noaa.gov/products/wesley/wgrib.html">wgrib</a> uses.
+A **file ending in .xml**: an ad-hoc [XML format](#xml-schema-for-defining-grib-1-parameters) we made up.
+A **file ending in .tab**: the <a href="ftp://ftp.cpc.ncep.noaa.gov/wd51we/wgrib/usertables.txt">format</a> that <a href="http://www.cpc.ncep.noaa.gov/products/wesley/wgrib.html">wgrib</a> uses.
 {::comment}
-A <b>_file starting with "table_2_" or "local_table_2_"_</b>: the format the <a href="http://www.ecmwf.int/products/data/software/grib.html">ECMWF software</a> uses.
+A **file starting with "table_2_" or "local_table_2_"**: the format the <a href="http://www.ecmwf.int/products/data/software/grib.html">ECMWF software</a> uses.
 {:/comment}
 
 #### Adding to the standard table mapping
 When the CDM does not have a table for a center, subcenter and table version that a GRIB file uses, you must track down the corrrect table and add it to the CDM at runtime. (Also, send it to us so we can include it in the next release). To add a table at runtime:
 
-1. Use [Runtime Loading](../userguide/runtime_loading.html){:target="_blank"} to add your own table programmatically within your application, or by using the Runtime configuration file.
+1. Use [Runtime Loading](../userguide/runtime_loading.html) to add your own table programmatically within your application, or by using the Runtime configuration file.
 2. Tables that are added at runtime take precedence over the standard tables, and are searched first in the order of being added. However, the default WMO table cannot be overidden.
 3. Parameters that are not present in your table are taken from the default WMO table, if they exist.
-   <a name="strict"></a>Unless <b>_strictMode_</b> is on, your table may override entries in the default table.
+   <a name="strict"></a>Unless `strictMode` is on, your table may override entries in the default table.
 4. If a parameter is not found then "Unknown Parameter center-subcenter-version-param" is used as the name, and an empty string for the units.
 
 #### Specifying a table for a particular dataset
@@ -108,7 +108,7 @@ Many GRIB datasets have an incorrect center/subcenter/version id, which means th
 ##### Directly embed table in NcML
 You can directly embed the table in NcML, using the [XML schema for declaring Grib-1 Parameters](#xml-schema-for-defining-grib-1-parameters). Place the table inside of a <iospParam> element. For example:
 
-~~~
+~~~xml
 <?xml version="1.0" encoding="UTF-8"?>
 <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="cldc.mean.grib1">
  <iospParam>
@@ -133,9 +133,9 @@ You can directly embed the table in NcML, using the [XML schema for declaring Gr
 
 ##### Reference to a Grib Parameter table in NcML
 
-You can reference the table in NcML, with the table being in any {:: comment} this is broken at http://www.ecmwf.int/products/data/software/grib.html {:/comment} GRIB parameter table format that that CDM recognizes. To do so, you pass the string <b>_"GribParameterTable=<absolute file path to table>"_</b> in the iospParam attribute of the netcdf element:
+You can reference the table in NcML, with the table being in any {:: comment} this is broken at http://www.ecmwf.int/products/data/software/grib.html {:/comment} GRIB parameter table format that that CDM recognizes. To do so, you pass the string `GribParameterTable=<absolute file path to table>` in the iospParam attribute of the netcdf element:
 
-~~~
+~~~xml
 <?xml version="1.0" encoding="UTF-8"?>
 <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="cldc.mean.grib1"
   iospParam="gribParameterTable=/data/NCEP/grib1/version123.tab">
@@ -143,16 +143,16 @@ You can reference the table in NcML, with the table being in any {:: comment} th
 ~~~
 
 ##### Reference to a Grib Parameter table lookup in NcML
-You can reference a [table map](#grib-1-table-handling) in NcML by passing the string <b>_"GribParameterTableLookup=<absolute file path to table map>"_</b> in the iospParam attribute of the netcdf element:
+You can reference a [table map](#grib-1-table-handling) in NcML by passing the string `"GribParameterTableLookup=<absolute file path to table map>"` in the iospParam attribute of the netcdf element:
 
-~~~
+~~~xml
 <?xml version="1.0" encoding="UTF-8"?>
 <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="cldc.mean.grib1"
   iospParam="gribParameterTableLookup=/data/NCEP/grib1/lookupTable.txt">
 </netcdf>
 ~~~
 
-You can specify a parameterMap or an iospParam, but not both.
+You can specify a `parameterMap` or an `iospParam`, but not both.
 
 ### Correcting Grib-1 files in a GRIB Feature Collection in a THREDDS Data Server
 
@@ -160,9 +160,9 @@ The above methods of adding or referencing tables in NcML will not work for GRIB
 
 ##### Directly embed table in featureCollection element of the TDS configuration catalog
 
-You can directly embed an XML table (use the [standard XML schema](#xml-schema-for-defining-grib-1-parameters)) in a featureCollection element of type GRIB in a TDS configuration catalog:
+You can directly embed an XML table (use the [standard XML schema](#xml-schema-for-defining-grib-1-parameters)) in a `featureCollection` element of type GRIB in a TDS configuration catalog:
 
-~~~
+~~~xml
 <featureCollection name="NCEP-GFS-Global_0p5deg" featureType="GRIB" harvest="true" path="grib/NCEP/GFS/Global_0p5deg">
   <collection spec="/NCEP/GFS/Global_0p5deg/GFS_Global_0p5deg_#yyyyMMdd_HHmm#.grib2$" name="GFS_Global_0p5deg" />
   <gribConfig>
@@ -189,9 +189,9 @@ You can directly embed an XML table (use the [standard XML schema](#xml-schema-f
 
 ##### Reference a table in featureCollection element of the TDS configuration catalog
 
-You can add a table in a featureCollection element of type GRIB in a TDS configuration catalog:
+You can add a table in a `featureCollection` element of type GRIB in a TDS configuration catalog:
 
-~~~
+~~~xml
 <featureCollection name="NCEP-GFS-Global_0p5deg" featureType="GRIB" harvest="true" path="grib/NCEP/GFS/Global_0p5deg">
   <collection spec="/NCEP/GFS/Global_0p5deg/GFS_Global_0p5deg_#yyyyMMdd_HHmm#.grib2$"  name="GFS_Global_0p5deg" />
   <gribConfig>
@@ -202,9 +202,9 @@ You can add a table in a featureCollection element of type GRIB in a TDS configu
 
 ##### Reference a table map in featureCollection element of the TDS configuration catalog:
 
-You can add a table lookup in a featureCollection element of type GRIB in a TDS configuration catalog:
+You can add a table lookup in a `featureCollection` element of type GRIB in a TDS configuration catalog:
 
-~~~
+~~~xml
 <featureCollection name="NCEP-GFS-Global_0p5deg" featureType="GRIB" harvest="true" path="grib/NCEP/GFS/Global_0p5deg">
   <collection spec="/NCEP/GFS/Global_0p5deg/GFS_Global_0p5deg_#yyyyMMdd_HHmm#.grib2$"  name="GFS_Global_0p5deg" />
   <gribConfig>
@@ -219,7 +219,7 @@ In all these cases, the table that you specify will take precedence over any sta
 
 Derived from NCAR DSS format with additional "name" element.
 
-~~~
+~~~xml
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
   <xs:element name="parameterMap">
@@ -261,7 +261,7 @@ Derived from NCAR DSS format with additional "name" element.
    
 Example:
 
-~~~
+~~~xml
 <?xml version="1.0" ?>
 
 <parameterMap>
@@ -320,7 +320,7 @@ So the rules for GRIB-1 seem to be in actual practice:
 * If param id < 128 and table version < 128, use the standard WMO table.
 * If param id > 127 or table version > 127, use the version bytes as the local table version for the named center and subcenter.
 
-GRIB-2 expanded this to include a separate byte for the local table version, as well as a Discipline:
+GRIB-2 expanded this to include a separate byte for the local table version, as well as a discipline:
 
 ~~~
     7:  Discipline – GRIB  Master table number (see Code table 0.0)

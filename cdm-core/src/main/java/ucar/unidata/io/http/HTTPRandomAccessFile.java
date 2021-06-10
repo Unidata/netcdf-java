@@ -24,18 +24,12 @@ import ucar.unidata.util.Urlencoded;
  * Gives access to files over HTTP, using "Accept-Ranges" HTTP header to do random access.
  *
  * @author John Caron, based on work by Donald Denbo
+ *
  */
 public final class HTTPRandomAccessFile extends RemoteRandomAccessFile {
 
-  // deprecate ucar.unidata.io.http.maxHttpBufferSize
-  // simplifies determination of buffer size, which might not need to be
-  // so complex now that we have a read cache.
-  // however, if it is set, use it (but change default to defaultRemoteFileBufferSize)
-  private static final int maxHttpBufferSize = Integer.parseInt(
-      System.getProperty("ucar.unidata.io.http.maxHttpBufferSize", String.valueOf(defaultRemoteFileBufferSize)));
-  // if ucar.unidata.io.http.httpBufferSize is set, use it over the deprecated ucar.unidata.io.http.maxHttpBufferSize
-  private static final int httpBufferSize =
-      Integer.parseInt(System.getProperty("ucar.unidata.io.http.httpBufferSize", String.valueOf(maxHttpBufferSize)));
+  private static final int httpBufferSize = Integer
+      .parseInt(System.getProperty("ucar.unidata.io.http.httpBufferSize", String.valueOf(defaultRemoteFileBufferSize)));
 
   private static final long httpMaxCacheSize = Long
       .parseLong(System.getProperty("ucar.unidata.io.http.maxReadCacheSize", String.valueOf(defaultMaxReadCacheSize)));
