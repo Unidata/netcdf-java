@@ -4,13 +4,12 @@
  */
 package ucar.nc2.units;
 
-import ucar.nc2.time.CalendarDate;
+import ucar.nc2.calendar.CalendarDate;
 import ucar.unidata.util.Format;
 import ucar.units.ConversionException;
 import ucar.units.Unit;
 import ucar.units.UnitException;
 import java.util.StringTokenizer;
-import java.util.Date;
 import java.util.Calendar;
 
 /**
@@ -21,7 +20,7 @@ import java.util.Calendar;
  * This is a wrapper around ucar.units.
  * The underlying ucar.units.Unit always has a value of "1.0", ie is a base unit.
  *
- * TODO: 8/12/2020 make Immutable in version 7
+ * TODO: make Immutable in version 7
  */
 public class TimeUnit extends SimpleUnit {
   private double value;
@@ -103,7 +102,7 @@ public class TimeUnit extends SimpleUnit {
 
   /**
    * Set the value in the original units.
-   * 
+   *
    * @param value set value, must be in units of this
    * @deprecated use newValue(double)
    */
@@ -177,21 +176,6 @@ public class TimeUnit extends SimpleUnit {
    */
   public double convertTo(double value, TimeUnit outputUnit) throws ConversionException {
     return uu.convertTo(value, outputUnit.uu);
-  }
-
-  /**
-   * Add the time amount to the given Date, return a new Date.
-   * 
-   * @param d add to this Date
-   * @return Date with getValueInSeconds() added to it.
-   * @deprecated use add(CalendarDate)
-   */
-  @Deprecated
-  public Date add(Date d) {
-    Calendar cal = Calendar.getInstance();
-    cal.setTime(d);
-    cal.add(Calendar.SECOND, (int) getValueInSeconds());
-    return cal.getTime();
   }
 
   /**

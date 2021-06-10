@@ -2,13 +2,10 @@ package ucar.nc2.internal.dataset;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import ucar.nc2.Variable;
 import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dataset.CoordinateTransform;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
-import ucar.nc2.grid.Grid;
-import ucar.nc2.grid.GridCoordinateSystem;
 import ucar.nc2.internal.grid.GridNetcdfDataset;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
