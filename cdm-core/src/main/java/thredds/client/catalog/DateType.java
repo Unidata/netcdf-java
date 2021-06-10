@@ -143,7 +143,7 @@ public class DateType {
    * Get the CalendarDate, may be null if isBlank().
    */
   @Nullable
-  public CalendarDate getCalendarDate() {
+  public CalendarDate toCalendarDate() {
     return isPresent() ? CalendarDate.present() : date;
   }
 
@@ -186,12 +186,12 @@ public class DateType {
 
   /** Same as CalendarDateFormatter.toDateString */
   public String toDateString() {
-    return CalendarDateFormatter.toDateString(getCalendarDate());
+    return CalendarDateFormatter.toDateString(toCalendarDate());
   }
 
   /** Same as CalendarDateFormatter.toDateTimeStringISO */
   public String toDateTimeString() {
-    return CalendarDateFormatter.toDateTimeStringISO(getCalendarDate());
+    return CalendarDateFormatter.toDateTimeStringISO(toCalendarDate());
   }
 
   @Override
@@ -230,10 +230,10 @@ public class DateType {
     if (this.date == null) {
       return false;
     }
-    if (d.getCalendarDate() == null) {
+    if (d.toCalendarDate() == null) {
       return false;
     }
-    return this.date.isBefore(d.getCalendarDate());
+    return this.date.isBefore(d.toCalendarDate());
   }
 
   public DateType add(TimeDuration d) {
@@ -241,7 +241,7 @@ public class DateType {
   }
 
   public DateType add(TimeUnit d) {
-    CalendarDate useDate = getCalendarDate();
+    CalendarDate useDate = toCalendarDate();
     CalendarDate result = useDate.add((int) d.getValueInSeconds(), CalendarPeriod.Field.Second);
     return new DateType(result);
   }
@@ -251,7 +251,7 @@ public class DateType {
   }
 
   public DateType subtract(TimeUnit d) {
-    CalendarDate useDate = getCalendarDate();
+    CalendarDate useDate = toCalendarDate();
     CalendarDate result = useDate.add((int) -d.getValueInSeconds(), CalendarPeriod.Field.Second);
     return new DateType(result);
   }

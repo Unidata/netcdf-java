@@ -31,7 +31,7 @@ public class TestRemoteCoverage {
   public void testCdmRemoteCoverage() throws Exception {
     String ds = "https://thredds-test.unidata.ucar.edu/thredds/catalog/grib/NCEP/GFS/Global_0p25deg_ana/latest.xml";
 
-    try (DataFactory.Result result = new DataFactory().openFeatureDataset("thredds:resolve:" + ds, null)) {
+    try (DataFactory.Result result = new DataFactory().openThreddsDataset("thredds:resolve:" + ds, null)) {
       logger.debug("result errlog = {}", result.errLog);
       assert !result.fatalError;
       assert result.featureType == FeatureType.GRID;

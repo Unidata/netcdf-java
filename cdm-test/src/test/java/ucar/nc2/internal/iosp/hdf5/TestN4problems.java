@@ -6,31 +6,33 @@
 package ucar.nc2.internal.iosp.hdf5;
 
 import org.junit.AfterClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.Array;
-import ucar.ma2.InvalidRangeException;
+import ucar.array.Array;
+import ucar.array.ArrayType;
+import ucar.array.Section;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.nc2.dt.GridDatatype;
-import ucar.nc2.dt.grid.GridDataset;
+import ucar.nc2.grid.Grid;
+import ucar.nc2.grid.GridDatasetFactory;
+import ucar.nc2.grid.GridReferencedArray;
+import ucar.nc2.grid.GridSubset;
 import ucar.nc2.util.DebugFlags;
-import ucar.nc2.write.Ncdump;
+import ucar.nc2.write.NcdumpArray;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+import java.util.Formatter;
 
-/**
- * Miscellaneous test on HDF5
- *
- * @author caron
- * @since 6/9/14
- */
+import static com.google.common.truth.Truth.assertThat;
+
+/** Miscellaneous test on HDF5 iosp */
 @Category(NeedsCdmUnitTest.class)
 public class TestN4problems {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -40,22 +42,14 @@ public class TestN4problems {
     H5header.setDebugFlags(DebugFlags.create("")); // make sure debug flags are off
   }
 
-  /*
-   * @Test
-   * public void readProblem() throws IOException {
-   * String filename = TestDir.cdmUnitTestDir + "/formats/netcdf4/files/tst_grps.nc4.ncml";
-   * TestDir.readAll(filename);
-   * }
-   */
-
   @Test
-  public void testTiling2() throws IOException, InvalidRangeException {
+  public void testTilingNetcdfFile() throws IOException, ucar.array.InvalidRangeException {
     // java.lang.AssertionError: shape[2] (385) >= pt[2] (390)
     String filename = TestN4reading.testDir + "UpperDeschutes_t4p10_swemelt.nc";
     try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
       Variable v = ncfile.getRootGroup().findVariableLocal("UpperDeschutes_t4p10_swemelt");
-      Array data = v.read("8087, 150:155, 150:155");
-      assert data != null;
+      Array<?> data = v.readArray(new Section("8087, 150:155, 150:155"));
+      assertThat(data).isNotNull();
     }
   }
 
@@ -63,47 +57,54 @@ public class TestN4problems {
   // I really don't think this is a problem with your code
   // may be bug in HDF5 1.8.4-patch1
   @Test
-  public void testTiling() throws IOException {
+  public void testTilingGridDataset() throws IOException, ucar.array.InvalidRangeException {
     // Global Heap 1t 13059 runs out with no heap id = 0
     String filename = TestN4reading.testDir + "tiling.nc4";
-    try (GridDataset gridDataset = GridDataset.open(filename)) {
-      GridDatatype grid = gridDataset.findGridByName("Turbulence_SIGMET_AIRMET");
+    String vname = "Turbulence_SIGMET_AIRMET";
+    Formatter errlog = new Formatter();
+    try (ucar.nc2.grid.GridDataset gds = GridDatasetFactory.openGridDataset(filename, errlog)) {
+      Grid grid = gds.findGrid(vname).orElseThrow();
       System.out.printf("grid=%s%n", grid);
-      Array data = grid.readDataSlice(4, 13, 176, 216); // FAILS
-      assert data != null;
+      GridReferencedArray data = grid.readData(new GridSubset());
+      assertThat(data.data()).isNotNull();
     }
   }
 
 
-  // @Test
+  @Test
+  @Ignore("user types not correct")
   public void utestEnum() throws IOException {
     H5header.setDebugFlags(DebugFlags.create("H5header/header"));
     String filename = TestN4reading.testDir + "nc4/tst_enum_data.nc";
-    NetcdfFile ncfile = NetcdfFiles.open(filename);
-    Variable v = ncfile.findVariable("primary_cloud");
-    Array data = v.read();
-    System.out.println("\n**** testReadNetcdf4 done\n\n" + ncfile);
-    logger.debug(Ncdump.printArray(data, "primary_cloud", null));
-    ncfile.close();
+    try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
+      Variable v = ncfile.findVariable("primary_cloud");
+      assertThat(v).isNotNull();
+
+      Array<?> data = v.readArray();
+      System.out.println("\n**** testReadNetcdf4 done\n\n" + ncfile);
+      logger.debug(NcdumpArray.printArray(data, "primary_cloud", null));
+    }
     H5header.setDebugFlags(DebugFlags.create(""));
   }
 
-  // @Test
-  public void utestEnum2() throws InvalidRangeException, IOException {
-    NetcdfFile ncfile = NetcdfDatasets.openFile("D:/netcdf4/tst_enum_data.nc", null);
-    Variable v2 = ncfile.findVariable("primary_cloud");
-    assert v2 != null;
+  @Test
+  @Ignore("user types not correct")
+  public void utestEnum2() throws IOException {
+    try (NetcdfFile ncfile = NetcdfDatasets.openFile("D:/netcdf4/tst_enum_data.nc", null)) {
+      Variable v = ncfile.findVariable("primary_cloud");
+      assertThat(v).isNotNull();
 
-    Array data = v2.read();
-    assert data.getElementType() == byte.class;
+      Array<?> data = v.readArray();
+      assertThat(data.getArrayType()).isEqualTo(ArrayType.BYTE);
+    }
 
-    NetcdfDataset ncd = NetcdfDatasets.openDataset("D:/netcdf4/tst_enum_data.nc");
-    v2 = ncd.findVariable("primary_cloud");
-    assert v2 != null;
+    try (NetcdfDataset ncd = NetcdfDatasets.openDataset("D:/netcdf4/tst_enum_data.nc")) {
+      Variable v2 = ncd.findVariable("primary_cloud");
+      assertThat(v2).isNotNull();
 
-    data = v2.read();
-    assert data.getElementType() == String.class;
-    ncfile.close();
+      Array<?> data2 = v2.readArray();
+      assertThat(data2.getArrayType()).isEqualTo(ArrayType.STRING);
+    }
   }
 
 }

@@ -227,8 +227,8 @@ class AggregationExisting extends AggregationOuter {
       if (dimName != null) {
         out.print("dimName='" + dimName + "' ");
       }
-      if (datasetManager.getRecheck() != null) {
-        out.print("recheckEvery='" + datasetManager.getRecheck() + "' ");
+      if (datasetManager.getRecheckEvery() != null) {
+        out.print("recheckEvery='" + datasetManager.getRecheckEvery() + "' ");
       }
       out.print(">\n");
 

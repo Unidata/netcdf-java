@@ -68,9 +68,9 @@ public class TestMetadataExtractor {
 
     TimeCoverage tc = ds.getTimeCoverageNew();
     assert tc != null;
-    assertEquals(tc.getStart().getCalendarDate(),
+    assertEquals(tc.getStart().toCalendarDate(),
         CalendarDate.fromUdunitIsoDate(null, "2005-06-27T21:48:00").orElseThrow());
-    assertEquals(tc.getEnd().getCalendarDate(),
+    assertEquals(tc.getEnd().toCalendarDate(),
         CalendarDate.fromUdunitIsoDate(null, "2005-11-09T00:53:59").orElseThrow());
 
     ThreddsMetadata.GeospatialCoverage geo = ds.getGeospatialCoverage();

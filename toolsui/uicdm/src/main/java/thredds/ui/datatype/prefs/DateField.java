@@ -5,8 +5,8 @@
 
 package thredds.ui.datatype.prefs;
 
+import thredds.client.catalog.DateType;
 import ucar.ui.widget.MultilineTooltip;
-import ucar.nc2.units.DateType;
 import ucar.util.prefs.PersistenceManager;
 import ucar.ui.prefs.FldInputVerifier;
 import javax.swing.*;
@@ -60,7 +60,7 @@ public class DateField extends ucar.ui.prefs.Field {
   @Override
   protected boolean _validate(StringBuffer buff) {
     try {
-      new DateType(tf.getText(), null, null);
+      DateType.parse(tf.getText());
       return true;
     } catch (java.text.ParseException e) {
       if (null != buff)
@@ -73,7 +73,7 @@ public class DateField extends ucar.ui.prefs.Field {
   @Override
   protected Object getEditValue() {
     try {
-      return new DateType(tf.getText(), null, null);
+      return DateType.parse(tf.getText());
     } catch (java.text.ParseException e) {
       return null;
     }
@@ -96,8 +96,9 @@ public class DateField extends ucar.ui.prefs.Field {
   @Override
   protected void setStoreValue(Object value) {
     if (storeData != null) {
-      if (value != null)
-        storeData.putObject(name, new DateType((DateType) value));
+      if (value != null) {
+        storeData.putObject(name, (DateType) value);
+      }
     }
   }
 
@@ -106,11 +107,13 @@ public class DateField extends ucar.ui.prefs.Field {
     Object value = defValue;
     if (storeData != null) {
       Object value2 = storeData.getObject(name);
-      if (value2 != null)
+      if (value2 != null) {
         value = value2;
+      }
     }
-    if (value == null)
+    if (value == null) {
       return null;
-    return new DateType((DateType) value);
+    }
+    return (DateType) value;
   }
 }

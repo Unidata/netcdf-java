@@ -72,7 +72,7 @@ public class TimeCoverage {
    * @return true if ranges intersect
    */
   public boolean intersects(TimeCoverage other) {
-    return intersects(other.getStart().getCalendarDate(), other.getEnd().getCalendarDate());
+    return intersects(other.getStart().toCalendarDate(), other.getEnd().toCalendarDate());
   }
 
   /**
@@ -142,8 +142,8 @@ public class TimeCoverage {
    */
   public TimeDuration getDuration() {
     if (isMoving && !useDuration) {
-      long min = start.getCalendarDate().getMillisFromEpoch();
-      long max = end.getCalendarDate().getMillisFromEpoch();
+      long min = start.toCalendarDate().getMillisFromEpoch();
+      long max = end.toCalendarDate().getMillisFromEpoch();
       double secs = .001 * (max - min);
       if (secs < 0) {
         secs = 0;
@@ -273,10 +273,6 @@ public class TimeCoverage {
     return new Builder(start, end, duration, resolution).build();
   }
 
-  static Builder builder() {
-    return new Builder();
-  }
-
   public static Builder builder(@Nullable DateType start, @Nullable DateType end, @Nullable TimeDuration duration,
       @Nullable TimeDuration resolution) {
     return new Builder(start, end, duration, resolution);
@@ -294,6 +290,10 @@ public class TimeCoverage {
     this.useEnd = builder.useEnd;
     this.useDuration = builder.useDuration;
     this.useResolution = builder.useResolution;
+  }
+
+  public Builder toBuilder() {
+    return new Builder(start, end, duration, resolution);
   }
 
   public static class Builder {
@@ -377,7 +377,7 @@ public class TimeCoverage {
      *
      * @param duration duration of the interval
      */
-    public void setDuration(TimeDuration duration) {
+    public Builder setDuration(TimeDuration duration) {
       this.duration = duration;
       useDuration = true;
 
@@ -391,6 +391,7 @@ public class TimeCoverage {
         this.start = this.end.subtract(duration);
       }
       checkIfEmpty();
+      return this;
     }
 
     /**
@@ -399,7 +400,7 @@ public class TimeCoverage {
      *
      * @param end ending Date
      */
-    public void setEnd(DateType end) {
+    public Builder setEnd(DateType end) {
       this.end = end;
       useEnd = true;
 
@@ -413,6 +414,7 @@ public class TimeCoverage {
         this.start = this.end.subtract(duration);
       }
       checkIfEmpty();
+      return this;
     }
 
     /**
@@ -420,9 +422,10 @@ public class TimeCoverage {
      *
      * @param resolution the time resolution
      */
-    public void setResolution(TimeDuration resolution) {
+    public Builder setResolution(TimeDuration resolution) {
       this.resolution = resolution;
       useResolution = true;
+      return this;
     }
 
     /**
@@ -431,7 +434,7 @@ public class TimeCoverage {
      *
      * @param start starting Date
      */
-    public void setStart(DateType start) {
+    public Builder setStart(DateType start) {
       this.start = start;
       useStart = true;
 
@@ -445,12 +448,13 @@ public class TimeCoverage {
         this.end = this.start.add(duration);
       }
       checkIfEmpty();
+      return this;
     }
 
     // assumes not moving
     private void recalcDuration() {
-      long min = start.getCalendarDate().getMillisFromEpoch();
-      long max = end.getCalendarDate().getMillisFromEpoch();
+      long min = start.toCalendarDate().getMillisFromEpoch();
+      long max = end.toCalendarDate().getMillisFromEpoch();
       double secs = .001 * (max - min);
       if (secs < 0)
         secs = 0;

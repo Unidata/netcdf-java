@@ -31,4 +31,16 @@ public class GridDatasetFactory {
 
     return result.get();
   }
+
+  /** Wrap a NetcdfDataset as a GridDataset if possible. Return null if its not a gridDataset. */
+  @Nullable
+  public static GridDataset wrapGridDataset(NetcdfDataset ds, Formatter errLog) throws IOException {
+    Optional<GridNetcdfDataset> result =
+        GridNetcdfDataset.create(ds, errLog).filter(gds -> !Iterables.isEmpty(gds.getGrids()));
+    if (result.isEmpty()) {
+      errLog.format("Could not open as GridDataset: %s", ds.getLocation());
+      return null;
+    }
+    return result.get();
+  }
 }

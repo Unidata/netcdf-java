@@ -9,18 +9,14 @@ import static com.google.common.truth.Truth.assertThat;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ucar.nc2.units.DateFormatter;
+import ucar.nc2.calendar.CalendarDate;
 
-import java.lang.invoke.MethodHandles;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /** Test {@link DateFromString} */
 public class TestDateFromString {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private final String fileName = "xzy_tds_20051129_1235_junk.grib";
   private final String dateAsISOString = "2005-11-29T12:35";
@@ -84,21 +80,23 @@ public class TestDateFromString {
 
   @Test
   public void testGetDateUsingDemarkatedMatch() {
-    DateFormatter formatter = new DateFormatter();
     Date result = DateFromString.getDateUsingDemarkatedMatch(
         "/data/anything/2006070611/wrfout_d01_2006-07-06_080000.nc", "#wrfout_d01_#yyyy-MM-dd_HHmm", '#');
     assertThat(result).isNotNull();
-    assertThat(formatter.toDateTimeStringISO(result)).isEqualTo("2006-07-06T08:00:00Z");
+    CalendarDate cd = CalendarDate.of(result);
+    assertThat(cd.toString()).isEqualTo("2006-07-06T08:00Z");
 
     result = DateFromString.getDateUsingDemarkatedMatch("C:\\data\\nomads\\gfs-hi\\gfs_3_20061129_0600",
         "#gfs_3_#yyyyMMdd_HH", '#');
     assertThat(result).isNotNull();
-    assertThat(formatter.toDateTimeStringISO(result)).isEqualTo("2006-11-29T06:00:00Z");
+    cd = CalendarDate.of(result);
+    assertThat(cd.toString()).isEqualTo("2006-11-29T06:00Z");
 
     result = DateFromString.getDateUsingDemarkatedMatch("/data/anything/2006070611/wrfout_d01_2006-07-06_080000.nc",
         "yyyyMMddHH#/wrfout_d01_#", '#');
     assertThat(result).isNotNull();
-    assertThat(formatter.toDateTimeStringISO(result)).isEqualTo("2006-07-06T11:00:00Z");
+    cd = CalendarDate.of(result);
+    assertThat(cd.toString()).isEqualTo("2006-07-06T11:00Z");
   }
 
   @Test

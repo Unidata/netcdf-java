@@ -9,6 +9,7 @@ import com.github.lgooddatepicker.components.DateTimePicker;
 import java.time.ZoneId;
 import org.jfree.data.time.Minute;
 import org.jfree.data.time.TimeSeries;
+import thredds.client.catalog.TimeDuration;
 import thredds.logs.AccessLogParser;
 import thredds.logs.LogCategorizer;
 import thredds.logs.LogReader;
@@ -16,7 +17,6 @@ import ucar.ui.widget.BAMutil;
 import ucar.ui.widget.IndependentWindow;
 import ucar.ui.widget.PopupMenu;
 import ucar.ui.widget.TextHistoryPane;
-import ucar.nc2.units.TimeDuration;
 import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.BeanTable;
 import javax.swing.*;
@@ -604,7 +604,7 @@ public class AccessLogTable extends JPanel {
     // if (intervalS.length() == 0) intervalS = "5 minute";
     long period = 1000 * 60 * 5;
     try {
-      TimeDuration tu = new TimeDuration(intervalS);
+      TimeDuration tu = TimeDuration.parse(intervalS);
       period = (long) (1000 * tu.getValueInSeconds());
     } catch (Exception e) {
       System.out.printf("Illegal Time interval=%s %n", intervalS);

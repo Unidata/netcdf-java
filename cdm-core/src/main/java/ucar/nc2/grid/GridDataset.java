@@ -30,6 +30,7 @@ public interface GridDataset extends Closeable {
 
   ImmutableList<Grid> getGrids();
 
+  /** Find grid using its full name. */
   Optional<Grid> findGrid(String name);
 
   default void toString(Formatter buf) {

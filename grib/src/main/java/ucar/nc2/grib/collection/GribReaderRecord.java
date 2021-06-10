@@ -5,16 +5,15 @@
 package ucar.nc2.grib.collection;
 
 import javax.annotation.Nonnull;
-import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.nc2.grib.GdsHorizCoordSys;
+import ucar.nc2.grid.GridSubset;
 
-/** @deprecated FeatureDatasets will move to legacy in ver7, this class will not be public. */
-@Deprecated
+/** internal class for debugging. */
 class GribReaderRecord implements Comparable<GribReaderRecord> {
   int resultIndex; // index into the result array
   final GribCollectionImmutable.Record record;
   final GdsHorizCoordSys hcs;
-  SubsetParams validation;
+  GridSubset validation;
 
   GribReaderRecord(int resultIndex, GribCollectionImmutable.Record record, GdsHorizCoordSys hcs) {
     this.resultIndex = resultIndex;

@@ -7,32 +7,26 @@ package ucar.nc2.internal.iosp.hdf4;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
-import ucar.nc2.dt.grid.GeoGrid;
-import ucar.nc2.dt.grid.GridDataset;
+import ucar.nc2.grid.Grid;
+import ucar.nc2.grid.GridDataset;
+import ucar.nc2.grid.GridDatasetFactory;
 import ucar.nc2.internal.util.CompareNetcdf2;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
+import java.util.Formatter;
 
-/**
- * Test reading HDF4 EOS files.
- *
- * @author caron
- * @since Oct 15, 2008
- */
+import static com.google.common.truth.Truth.assertThat;
+
+/** Test reading HDF4 EOS files. */
 @Category(NeedsCdmUnitTest.class)
 public class TestH4eos {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
   static public String testDir = TestDir.cdmUnitTestDir + "formats/hdf4/eos/";
 
   // test the coordSysBuilder - check if grid exists
@@ -44,22 +38,21 @@ public class TestH4eos {
     // SINUSOIDAL
     testGridExists(testDir + "modis/MOD13Q1.A2012321.h00v08.005.2012339011757.hdf",
         "MODIS_Grid_16DAY_250m_500m_VI/Data_Fields/250m_16_days_NIR_reflectance");
-
   }
 
   private void testGridExists(String filename, String vname) throws IOException, InvalidRangeException {
     try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
       Variable v = ncfile.findVariable(vname);
-      assert v != null : filename + " " + vname;
+      assertThat(v).isNotNull();
     }
 
-    try (GridDataset gds = GridDataset.open(filename)) {
-      GeoGrid v = gds.findGridByName(vname);
-      assert v != null : filename + " " + vname;
+    Formatter errlog = new Formatter();
+    try (GridDataset gds = GridDatasetFactory.openGridDataset(filename, errlog)) {
+      Grid v = gds.findGrid(vname).orElseThrow();
+      assertThat(v).isNotNull();
     }
 
   }
-
 
   @Test
   public void testSpecificVariableSection() throws InvalidRangeException, IOException {

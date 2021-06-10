@@ -3,41 +3,23 @@
  * See LICENSE for license information.
  */
 
-package ucar.nc2.ft;
+package ucar.nc2.internal.feature;
 
-import javax.annotation.Nullable;
-import thredds.client.catalog.tools.DataFactory;
-import thredds.inventory.MFileCollectionManager;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.nc2.ft.point.standard.PointDatasetStandardFactory;
-import ucar.nc2.ft.point.collection.CompositeDatasetFactory;
-// import ucar.nc2.ft.radial.RadialDatasetStandardFactory;
-import ucar.nc2.ft.remote.CdmrFeatureDataset;
-import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
-import ucar.nc2.ft2.coverage.CoverageDatasetFactory.GribCoverageOpenAttempt;
-import java.util.Optional;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Formatter;
+
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Formatter;
+import java.util.List;
 import java.util.ServiceLoader;
 
 /**
  * Manager of factories for FeatureDatasets opened as NetcdfDatasets.
- * <p>
- * Grids, FMRC, Swaths are using GridDatasetStandardFactory
- * All point datasets are going through PointDatasetStandardFactory, which uses TableAnalyzer to deal
- * with specific dataset conventions.
- *
- * @author caron
- * @see FeatureDatasetFactory
- * @since Mar 19, 2008
  */
 public class FeatureDatasetFactoryManager {
   private static final List<Factory> factoryList = new ArrayList<>();
@@ -50,18 +32,6 @@ public class FeatureDatasetFactoryManager {
     for (FeatureDatasetFactory csb : ServiceLoader.load(FeatureDatasetFactory.class)) {
       registerFactory(csb.getClass());
     }
-
-    registerFactory(FeatureType.ANY_POINT, PointDatasetStandardFactory.class);
-
-    registerFactory(FeatureType.COVERAGE, GridDatasetStandardFactory.class); // LOOK - why not use FeatureType[]
-                                                                             // getFeatureType(
-    registerFactory(FeatureType.SWATH, GridDatasetStandardFactory.class);
-    registerFactory(FeatureType.GRID, GridDatasetStandardFactory.class);
-    registerFactory(FeatureType.FMRC, GridDatasetStandardFactory.class);
-    registerFactory(FeatureType.CURVILINEAR, GridDatasetStandardFactory.class);
-
-    registerFactory(FeatureType.UGRID, "ucar.nc2.ft.ugrid.UGridDatasetStandardFactory");
-    registerFactory(FeatureType.SIMPLE_GEOMETRY, SimpleGeometryStandardFactory.class);
 
     // further calls to registerFactory are by the user
     userMode = true;
@@ -181,78 +151,70 @@ public class FeatureDatasetFactoryManager {
     }
   }
 
-  public static FeatureDataset open(String location) throws IOException {
-    return open(null, location, null, new Formatter());
-  }
-
-  /**
-   * @deprecated use open(FeatureType wantFeatureType, String location, ucar.nc2.util.CancelTask task, Formatter errlog)
-   */
-  public static FeatureDataset open(FeatureType wantFeatureType, String location, ucar.nc2.util.CancelTask task)
-      throws IOException, NoFactoryFoundException {
-
-    Formatter errlog = new Formatter();
-    FeatureDataset fd = FeatureDatasetFactoryManager.open(wantFeatureType, location, task, errlog);
-
-    if (fd == null) {
-      throw new NoFactoryFoundException(errlog.toString());
-    } else {
-      return fd;
-    }
-  }
-
-  /**
+  /*
+   * public static FeatureDataset open(String location) throws IOException {
+   * return open(null, location, null, new Formatter());
+   * }
+   * 
+   * /*
    * Open a dataset as a FeatureDataset.
    *
    * @param wantFeatureType open this kind of FeatureDataset; may be null, which means search all factories.
-   *        If datatype is not null, only return correct FeatureDataset (eg PointFeatureDataset for DataType.POINT).
+   * If datatype is not null, only return correct FeatureDataset (eg PointFeatureDataset for DataType.POINT).
+   * 
    * @param location URL or file location of the dataset. This may be a
-   *        <ol>
-   *        <li>thredds catalog#dataset (with a thredds: prefix)
-   *        <li>cdmrFeature dataset (with a cdmrFeature: prefix)
-   *        <li>cdmremote dataset (with a cdmremote: prefix)
-   *        <li>collection dataset (with a collection: prefix)
-   *        <li>file location for a CDM dataset opened with NetcdfDataset.acquireDataset()
-   *        </ol>
+   * <ol>
+   * <li>thredds catalog#dataset (with a thredds: prefix)
+   * <li>cdmrFeature dataset (with a cdmrFeature: prefix)
+   * <li>cdmremote dataset (with a cdmremote: prefix)
+   * <li>collection dataset (with a collection: prefix)
+   * <li>file location for a CDM dataset opened with NetcdfDataset.acquireDataset()
+   * </ol>
+   * 
    * @param task user may cancel
+   * 
    * @param errlog place errors here, may not be null
+   * 
    * @return a subclass of FeatureDataset, or null if no suitable factory was found, message in errlog
-   * @throws java.io.IOException on io error
+   * 
+   * @throws IOException on io error
+   *
+   * @Nullable
+   * public static FeatureDataset open(@Nullable FeatureType wantFeatureType, String location,
+   * ucar.nc2.util.CancelTask task, Formatter errlog) throws IOException {
+   * 
+   * if (location.startsWith(CdmrFeatureDataset.SCHEME)) {
+   * Optional<FeatureDataset> opt = CdmrFeatureDataset.factory(wantFeatureType, location, errlog);
+   * return opt.orElse(null);
+   * 
+   * // special processing for collection: datasets
+   * } else if (location.startsWith(CompositeDatasetFactory.SCHEME)) {
+   * String spec = location.substring(CompositeDatasetFactory.SCHEME.length());
+   * MFileCollectionManager dcm = MFileCollectionManager.open(spec, spec, null, errlog); // LOOK we dont have a name
+   * return CompositeDatasetFactory.factory(location, wantFeatureType, dcm, errlog);
+   * }
+   * 
+   * DatasetUrl durl = DatasetUrl.findDatasetUrl(location); // Cache ServiceType so we don't have to keep figuring it
+   * out
+   * if (durl.getServiceType() == null) { // skip GRIB check for anything not a plain ole file
+   * // check if its GRIB, may not have to go through NetcdfDataset
+   * GribCoverageOpenAttempt gribCoverage = CoverageDatasetFactory.openGrib(location, errlog);
+   * if (gribCoverage.isGrib) {
+   * return gribCoverage.coverage;
+   * }
+   * }
+   * 
+   * // otherwise open as NetcdfDataset and run it through the FeatureDatasetFactories
+   * NetcdfDataset ncd = NetcdfDatasets.acquireDataset(durl, task); // Open with enhancements
+   * if (wantFeatureType != null && wantFeatureType.isPointFeatureType()) {
+   * ncd = NetcdfDatasets.addNetcdf3RecordStructure(ncd);
+   * }
+   * FeatureDataset fd = wrap(wantFeatureType, ncd, task, errlog);
+   * if (fd == null)
+   * ncd.close();
+   * return fd;
+   * }
    */
-  @Nullable
-  public static FeatureDataset open(@Nullable FeatureType wantFeatureType, String location,
-      ucar.nc2.util.CancelTask task, Formatter errlog) throws IOException {
-
-    if (location.startsWith(CdmrFeatureDataset.SCHEME)) {
-      Optional<FeatureDataset> opt = CdmrFeatureDataset.factory(wantFeatureType, location, errlog);
-      return opt.orElse(null);
-
-      // special processing for collection: datasets
-    } else if (location.startsWith(ucar.nc2.ft.point.collection.CompositeDatasetFactory.SCHEME)) {
-      String spec = location.substring(CompositeDatasetFactory.SCHEME.length());
-      MFileCollectionManager dcm = MFileCollectionManager.open(spec, spec, null, errlog); // LOOK we dont have a name
-      return CompositeDatasetFactory.factory(location, wantFeatureType, dcm, errlog);
-    }
-
-    DatasetUrl durl = DatasetUrl.findDatasetUrl(location); // Cache ServiceType so we don't have to keep figuring it out
-    if (durl.getServiceType() == null) { // skip GRIB check for anything not a plain ole file
-      // check if its GRIB, may not have to go through NetcdfDataset
-      GribCoverageOpenAttempt gribCoverage = CoverageDatasetFactory.openGrib(location, errlog);
-      if (gribCoverage.isGrib) {
-        return gribCoverage.coverage;
-      }
-    }
-
-    // otherwise open as NetcdfDataset and run it through the FeatureDatasetFactories
-    NetcdfDataset ncd = NetcdfDatasets.acquireDataset(durl, task); // Open with enhancements
-    if (wantFeatureType != null && wantFeatureType.isPointFeatureType()) {
-      ncd = NetcdfDatasets.addNetcdf3RecordStructure(ncd);
-    }
-    FeatureDataset fd = wrap(wantFeatureType, ncd, task, errlog);
-    if (fd == null)
-      ncd.close();
-    return fd;
-  }
 
   /**
    * Wrap a NetcdfDataset as a FeatureDataset.
@@ -263,7 +225,7 @@ public class FeatureDatasetFactoryManager {
    * @param task user may cancel
    * @param errlog place errors here, may not be null
    * @return a subclass of FeatureDataset, or null if no suitable factory was found
-   * @throws java.io.IOException on io error
+   * @throws IOException on io error
    */
   public static FeatureDataset wrap(@Nullable FeatureType wantFeatureType, NetcdfDataset ncd,
       ucar.nc2.util.CancelTask task, Formatter errlog) throws IOException {

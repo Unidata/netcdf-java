@@ -5,12 +5,12 @@
 
 package ucar.nc2.ui.widget;
 
+import thredds.client.catalog.DateType;
+import thredds.client.catalog.TimeCoverage;
+import thredds.client.catalog.TimeDuration;
 import thredds.ui.datatype.prefs.DateField;
 import thredds.ui.datatype.prefs.DurationField;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.units.DateRange;
-import ucar.nc2.units.DateType;
-import ucar.nc2.units.TimeDuration;
+import ucar.nc2.calendar.CalendarDate;
 import ucar.ui.event.ActionSourceListener;
 import ucar.ui.event.ActionValueEvent;
 import ucar.ui.event.ActionValueListener;
@@ -43,8 +43,8 @@ public class RangeDateSelector extends JPanel implements FieldValidator {
   private final boolean isPointOnly;
   private final boolean useLimits;
 
-  private DateType minLimit, maxLimit; // min and max allowed values
-  private DateRange dateRange; // data model
+  private thredds.client.catalog.DateType minLimit, maxLimit; // min and max allowed values
+  private thredds.client.catalog.TimeCoverage dateRange; // data model
   private Scale scale;
 
   // various widgets to manipulate the model
@@ -80,10 +80,11 @@ public class RangeDateSelector extends JPanel implements FieldValidator {
   public RangeDateSelector(String title, String start, String end, String durationS, String minInterval,
       boolean enableButton, boolean acceptButton, String help, boolean pointOnly) throws Exception {
 
-    this(title, new DateRange((start == null) ? null : new DateType(start, null, null),
-        (end == null) ? null : new DateType(end, null, null), (durationS == null) ? null : new TimeDuration(durationS),
-        (minInterval == null) ? null : new TimeDuration(minInterval)), enableButton, acceptButton, help, pointOnly,
-        true);
+    this(title,
+        TimeCoverage.create((start == null) ? null : DateType.parse(start), (end == null) ? null : DateType.parse(end),
+            (durationS == null) ? null : TimeDuration.parse(durationS),
+            (minInterval == null) ? null : TimeDuration.parse(minInterval)),
+        enableButton, acceptButton, help, pointOnly, true);
   }
 
   /**
@@ -95,10 +96,8 @@ public class RangeDateSelector extends JPanel implements FieldValidator {
    * @param enableButton add an enable Button
    * @param help optional help text
    * @param pointOnly if user can only select one point, otherwise can select a range of dates.
-   * @deprecated use ?
    */
-  @Deprecated
-  public RangeDateSelector(String title, DateRange range, boolean enableButton, boolean acceptButton, String help,
+  public RangeDateSelector(String title, TimeCoverage range, boolean enableButton, boolean acceptButton, String help,
       boolean pointOnly, boolean useLimits) {
     this.title = title;
     this.dateRange = range;
@@ -230,7 +229,7 @@ public class RangeDateSelector extends JPanel implements FieldValidator {
         return;
 
       int pos = maxSlider.getValue();
-      dateRange.setEnd(scale.slider2world(pos));
+      dateRange = dateRange.toBuilder().setEnd(scale.slider2world(pos)).build();
       synchUI(false);
 
       if (dateRange.isPoint())
@@ -244,7 +243,7 @@ public class RangeDateSelector extends JPanel implements FieldValidator {
         return;
 
       int pos = minSlider.getValue();
-      dateRange.setStart(scale.slider2world(pos));
+      dateRange = dateRange.toBuilder().setStart(scale.slider2world(pos)).build();
       synchUI(false);
 
       if (dateRange.isPoint() && !isPointOnly)
@@ -258,7 +257,7 @@ public class RangeDateSelector extends JPanel implements FieldValidator {
         return;
 
       DateType val = (DateType) minField.getValue();
-      dateRange.setStart(val);
+      dateRange = dateRange.toBuilder().setStart(val).build();
       synchUI(true);
     });
 
@@ -270,7 +269,7 @@ public class RangeDateSelector extends JPanel implements FieldValidator {
           return;
 
         DateType val = (DateType) maxField.getValue();
-        dateRange.setEnd(val);
+        dateRange = dateRange.toBuilder().setEnd(val).build();
         synchUI(true);
       });
     }
@@ -283,7 +282,7 @@ public class RangeDateSelector extends JPanel implements FieldValidator {
           return;
 
         TimeDuration val = durationField.getTimeDuration();
-        dateRange.setDuration(val);
+        dateRange = dateRange.toBuilder().setDuration(val).build();
         synchUI(true);
       });
     }
@@ -296,8 +295,7 @@ public class RangeDateSelector extends JPanel implements FieldValidator {
           return;
 
         TimeDuration val = resolutionField.getTimeDuration();
-        dateRange.setResolution(val);
-        // synchUI(true);
+        dateRange = dateRange.toBuilder().setResolution(val).build();
       });
     }
 
@@ -312,23 +310,26 @@ public class RangeDateSelector extends JPanel implements FieldValidator {
   }
 
   public boolean validate(Field fld, Object editValue, StringBuffer errMessages) {
-    if (!useLimits)
+    if (!useLimits) {
       return true;
+    }
 
     DateType checkVal;
 
     if (fld == durationField) {
       TimeDuration duration = (TimeDuration) editValue;
-      if (dateRange.getEnd().isPresent())
+      if (dateRange.getEnd().isPresent()) {
         checkVal = dateRange.getEnd().subtract(duration);
-      else
+      } else {
         checkVal = dateRange.getStart().add(duration);
-    } else
+      }
+    } else {
       checkVal = (DateType) editValue; // otherwise its one of the dates
+    }
 
     // have to be inside the limits
-    CalendarDate d = checkVal.getCalendarDate();
-    if (d.isAfter(maxLimit.getCalendarDate()) || d.isBefore(minLimit.getCalendarDate())) {
+    CalendarDate d = checkVal.toCalendarDate();
+    if (d.isAfter(maxLimit.toCalendarDate()) || d.isBefore(minLimit.toCalendarDate())) {
       errMessages.append("Date ");
       errMessages.append(d.toString());
       errMessages.append(" must be between ");
@@ -360,11 +361,11 @@ public class RangeDateSelector extends JPanel implements FieldValidator {
     eventOK = true;
   }
 
-  public void setDateRange(DateRange dateRange) {
+  public void setDateRange(TimeCoverage dateRange) {
     this.dateRange = dateRange;
 
-    this.minLimit = new DateType(dateRange.getStart());
-    this.maxLimit = new DateType(dateRange.getEnd());
+    this.minLimit = dateRange.getStart();
+    this.maxLimit = dateRange.getEnd();
     this.scale = new Scale(dateRange);
 
     minLabel.setText(" " + minLimit.getText() + " ");
@@ -400,7 +401,7 @@ public class RangeDateSelector extends JPanel implements FieldValidator {
     return (null == disableButton) || !disableButton.getModel().isSelected();
   }
 
-  public DateRange getDateRange() {
+  public TimeCoverage getDateRange() {
     if (!pp.accept())
       return null;
     return dateRange;
@@ -430,20 +431,20 @@ public class RangeDateSelector extends JPanel implements FieldValidator {
     private final double min; // secs
     private final double scale; // pixels / secs
 
-    Scale(DateRange dateRange) {
-      this.min = .001 * dateRange.getStart().getDate().getTime();
+    Scale(TimeCoverage dateRange) {
+      this.min = .001 * dateRange.getStart().toCalendarDate().getMillisFromEpoch();
       scale = SLIDER_RESOLUTION / dateRange.getDuration().getValueInSeconds();
     }
 
     private int world2slider(DateType val) {
-      double msecs = .001 * val.getDate().getTime() - min;
+      double msecs = .001 * val.toCalendarDate().getMillisFromEpoch() - min;
       return (int) (scale * msecs);
     }
 
     private DateType slider2world(int pval) {
       double val = pval / scale; // secs
       double msecs = 1000 * (min + val);
-      return new DateType(false, new java.util.Date((long) msecs));
+      return new DateType(CalendarDate.of((long) msecs));
     }
   }
 

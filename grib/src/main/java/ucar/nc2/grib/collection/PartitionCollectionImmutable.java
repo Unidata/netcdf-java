@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.nc2.grib.coord.*;
 import ucar.nc2.dataset.DatasetUrl;
-import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.calendar.CalendarDate;
@@ -45,8 +44,8 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
         throws IOException {
       try (RandomAccessFile raf = RandomAccessFile.acquire(durl.getTrueurl())) {
         Partition p = (Partition) iospMessage;
-        return GribCdmIndex.openGribCollectionFromIndexFile(raf, p.getConfig(), p.getLogger()); // do we know its a
-                                                                                                // partition ?
+        // do we know its a partition ?
+        return GribCdmIndex.openGribCollectionFromIndexFile(raf, p.getConfig(), p.getLogger());
 
       } catch (Throwable t) {
         RandomAccessFile.eject(durl.getTrueurl());
@@ -702,52 +701,6 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
       if (val == null)
         return -1;
       return part.getIndex(val);
-    }
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // experimental coord based
-    @Nullable
-    DataRecord getDataRecord(SubsetParams coords) throws IOException {
-
-      // identify the master index for this runtime
-      CalendarDate runtime = coords.getRunTime();
-      int masterIdx = masterRuntime.getIndex(runtime.getMillisFromEpoch());
-      // LOOK ok to use Best like this (see other getDataRecord) ?
-
-      if (masterIdx < 0) { // means that the runtie is not in the masterRuntime list
-        throw new RuntimeException("masterRuntime does not contain runtime " + runtime);
-      }
-
-      // each runtime is mapped to a partition
-      int partno = run2part[masterIdx];
-      if (partno < 0)
-        return null; // LOOK is this possible?
-
-      // find the 2D vi in that partition
-      GribCollectionImmutable.VariableIndex compVindex2D = getVindex2D(partno); // the 2D component variable in the
-                                                                                // partno partition
-      if (compVindex2D == null)
-        return null; // missing
-      if (Grib.debugRead)
-        logger.debug("  compVindex2D = {}", compVindex2D.toStringFrom());
-
-      if (isPartitionOfPartitions) {
-        VariableIndexPartitioned compVindex2Dp = (VariableIndexPartitioned) compVindex2D;
-        return compVindex2Dp.getDataRecord(coords);
-      }
-
-      // otherwise its a GribCollection
-      GribCollectionImmutable.Record record = compVindex2D.getRecordAt(coords);
-      if (record == null)
-        return null;
-
-      if (Grib.debugRead)
-        logger.debug("  result success: partno={} fileno={}", partno, record.fileno);
-      DataRecord dr =
-          new DataRecord(PartitionCollectionImmutable.this, partno, compVindex2D.group.getGdsHorizCoordSys(), record);
-      if (GribDataReader.validator != null)
-        dr.validation = coords;
-      return dr;
     }
 
   }

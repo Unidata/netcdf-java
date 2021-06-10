@@ -33,7 +33,7 @@ public class GridVariable implements Grid {
 
   @Override
   public String getName() {
-    return vds.getShortName();
+    return vds.getFullName();
   }
 
   @Override

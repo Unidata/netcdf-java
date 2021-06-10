@@ -12,9 +12,6 @@ import ucar.nc2.*;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.*;
 import ucar.nc2.dt.GridDataset;
-import ucar.nc2.dt.RadialDatasetSweep;
-import ucar.nc2.ft.point.PointDatasetImpl;
-import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.internal.http.HttpService;
@@ -34,7 +31,6 @@ import ucar.nc2.ui.grid.GridPanel;
 import ucar.nc2.ui.menu.*;
 import ucar.nc2.ui.op.*;
 import ucar.nc2.ui.point.PointFeaturePanel;
-import ucar.nc2.ui.radial.RadialPanel;
 import ucar.nc2.ui.util.SocketMessage;
 import ucar.nc2.ui.widget.URLDumpPane;
 import ucar.nc2.ui.widget.UrlAuthenticatorDialog;
@@ -136,7 +132,6 @@ public class ToolsUI extends JPanel {
   private NCdumpPanel ncdumpPanel;
   private NcmlEditorPanel ncmlEditorPanel;
   private PointFeaturePanel pointFeaturePanel;
-  private RadialPanel radialPanel;
   private SimpleGeomPanel simpleGeomPanel;
   private ThreddsUI threddsUI;
   private UnitsPanel unitsPanel;
@@ -263,7 +258,6 @@ public class ToolsUI extends JPanel {
     ftTabPane.addTab("SimpleGeometry", new JLabel("SimpleGeometry"));
     ftTabPane.addTab("WMS", new JLabel("WMS"));
     ftTabPane.addTab("PointFeature", new JLabel("PointFeature"));
-    ftTabPane.addTab("Radial", new JLabel("Radial"));
     ftTabPane.addTab("FeatureCollection", fcTabPane);
     addListeners(ftTabPane);
 
@@ -544,18 +538,6 @@ public class ToolsUI extends JPanel {
         c = pointFeaturePanel;
         break;
 
-      case "Radial":
-        radialPanel = new RadialPanel((PreferencesExt) mainPrefs.node("radial"));
-        c = radialPanel;
-        break;
-
-      /*
-       * case "StationRadial":
-       * stationRadialPanel = new StationRadialPanel((PreferencesExt) mainPrefs.node("stationRadar"));
-       * c = stationRadialPanel;
-       * break;
-       */
-
       case "THREDDS":
         threddsUI = new ThreddsUI(parentFrame, (PreferencesExt) mainPrefs.node("thredds"));
         threddsUI.addPropertyChangeListener(e -> {
@@ -786,9 +768,6 @@ public class ToolsUI extends JPanel {
     if (pointFeaturePanel != null) {
       pointFeaturePanel.save();
     }
-    if (radialPanel != null) {
-      radialPanel.save();
-    }
     if (simpleGeomPanel != null) {
       simpleGeomPanel.save();
     }
@@ -824,7 +803,6 @@ public class ToolsUI extends JPanel {
     return ui;
   }
 
-
   public static JFrame getToolsFrame() {
     return ui.getFramePriv();
   }
@@ -832,16 +810,6 @@ public class ToolsUI extends JPanel {
   private JFrame getFramePriv() {
     return parentFrame;
   }
-
-
-  public static DataFactory getThreddsDataFactory() {
-    return ui.getThreddsDataFactoryPriv();
-  }
-
-  private DataFactory getThreddsDataFactoryPriv() {
-    return threddsDataFactory;
-  }
-
 
   public static FileManager getBufrFileChooser() {
     return ui.getBufrFileChooserPriv();
@@ -851,7 +819,6 @@ public class ToolsUI extends JPanel {
     if (bufrFileChooser == null) {
       bufrFileChooser = new FileManager(parentFrame, null, null, (PreferencesExt) mainPrefs.node("bufrFileManager"));
     }
-
     return bufrFileChooser;
   }
 
@@ -994,13 +961,6 @@ public class ToolsUI extends JPanel {
     ftTabPane.setSelectedComponent(geoGridPanel);
   }
 
-  public void openRadialDataset(String datasetName) {
-    makeComponent(ftTabPane, "Radial");
-    radialPanel.doit(datasetName);
-    tabbedPane.setSelectedComponent(ftTabPane);
-    ftTabPane.setSelectedComponent(radialPanel);
-  }
-
   private void openWMSDataset(String datasetName) {
     makeComponent(ftTabPane, "WMS");
     wmsPanel.doit(datasetName);
@@ -1016,9 +976,7 @@ public class ToolsUI extends JPanel {
     gribTabPane.setSelectedComponent(cdmIndexPanel);
   }
 
-  /**
-   * Jump to the appropriate tab based on datatype of InvDataset
-   */
+  /** Jump to the appropriate tab based on datatype of catalog.Dataset */
   private void setThreddsDatatype(thredds.client.catalog.Dataset invDataset, String wants) {
     if (invDataset == null) {
       return;
@@ -1039,16 +997,7 @@ public class ToolsUI extends JPanel {
         // make sure its enhanced
         ncd = NetcdfDatasets.enhance(ncd, NetcdfDataset.getDefaultEnhanceMode(), null);
         openCoordSystems(ncd);
-        return;
       }
-
-      // otherwise do the datatype thing
-      DataFactory.Result threddsData = threddsDataFactory.openFeatureDataset(invDataset, null);
-      if (threddsData.fatalError) {
-        JOptionPane.showMessageDialog(null, "Failed to open err=" + threddsData.errLog);
-        return;
-      }
-      jumptoThreddsDatatype(threddsData);
 
     } catch (IOException ioe) {
       JOptionPane.showMessageDialog(null, "Error on setThreddsDatatype = " + ioe.getMessage());
@@ -1090,14 +1039,14 @@ public class ToolsUI extends JPanel {
       return;
     }
 
-    DataFactory.Result threddsData;
+    DataFactory.Result threddsDataset;
     try {
-      threddsData = threddsDataFactory.openFeatureDataset(invAccess, null);
-      if (threddsData.fatalError) {
-        JOptionPane.showMessageDialog(null, "Failed to open err=" + threddsData.errLog);
+      threddsDataset = threddsDataFactory.openThreddsDataset(ds, null);
+      if (threddsDataset.fatalError) {
+        JOptionPane.showMessageDialog(null, "Failed to open err=" + threddsDataset.errLog);
         return;
       }
-      jumptoThreddsDatatype(threddsData);
+      jumptoThreddsDatatype(threddsDataset);
     } catch (IOException ioe) {
       ioe.printStackTrace();
       JOptionPane.showMessageDialog(null, "Error on setThreddsDatatype = " + ioe.getMessage());
@@ -1121,27 +1070,10 @@ public class ToolsUI extends JPanel {
     }
 
     if (threddsData.featureType.isCoverageFeatureType()) {
-      if (threddsData.featureDataset instanceof FeatureDatasetCoverage) {
-        makeComponent(ftTabPane, "Coverages");
-        coveragePanel.setDataset(threddsData.featureDataset);
-        tabbedPane.setSelectedComponent(ftTabPane);
-        ftTabPane.setSelectedComponent(coveragePanel);
-      } else if (threddsData.featureDataset instanceof GridDataset) {
-        makeComponent(ftTabPane, "Grids");
-        geoGridPanel.setDataset((GridDataset) threddsData.featureDataset);
-        tabbedPane.setSelectedComponent(ftTabPane);
-        ftTabPane.setSelectedComponent(geoGridPanel);
-      }
-    } else if (threddsData.featureType == FeatureType.RADIAL) {
-      makeComponent(ftTabPane, "Radial");
-      radialPanel.setDataset((RadialDatasetSweep) threddsData.featureDataset);
+      makeComponent(ftTabPane, "Grids");
+      gridPanel.setDataset(threddsData.featureDataset);
       tabbedPane.setSelectedComponent(ftTabPane);
-      ftTabPane.setSelectedComponent(radialPanel);
-    } else if (threddsData.featureType.isPointFeatureType()) {
-      makeComponent(ftTabPane, "PointFeature");
-      pointFeaturePanel.setPointFeatureDataset((PointDatasetImpl) threddsData.featureDataset);
-      tabbedPane.setSelectedComponent(ftTabPane);
-      ftTabPane.setSelectedComponent(pointFeaturePanel);
+      ftTabPane.setSelectedComponent(gridPanel);
     }
   }
 

@@ -7,24 +7,17 @@ package thredds.inventory;
 import java.io.IOException;
 import java.util.*;
 
-/**
- * Abstract superclass for implementations of CollectionManager.
- * NOTE: CATALOG will not be supported in ver7 here.
- */
-@Deprecated
+/** Abstract superclass for implementations of CollectionManager. */
 public abstract class CollectionManagerAbstract extends CollectionAbstract implements CollectionManager {
 
   // called from Aggregation, Fmrc, FeatureDatasetFactoryManager
   public static CollectionManager open(String collectionName, String collectionSpec, String olderThan,
       Formatter errlog) {
-    if (collectionSpec.startsWith(CATALOG))
-      return new CollectionManagerCatalog(collectionName, collectionSpec, olderThan, errlog);
-    else
-      return MFileCollectionManager.open(collectionName, collectionSpec, olderThan, errlog);
+    return MFileCollectionManager.open(collectionName, collectionSpec, olderThan, errlog);
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  ucar.nc2.units.TimeDuration recheck;
+  // ucar.nc2.units.TimeDuration recheck;
   thredds.client.catalog.TimeDuration recheckEvery;
   private boolean isStatic; // true if theres no update element. It means dont scan if index already exists
 
@@ -39,11 +32,6 @@ public abstract class CollectionManagerAbstract extends CollectionAbstract imple
 
   public void setStatic(boolean aStatic) {
     isStatic = aStatic;
-  }
-
-  @Override
-  public ucar.nc2.units.TimeDuration getRecheck() {
-    return recheck;
   }
 
   @Override

@@ -14,7 +14,6 @@ import java.util.TimeZone;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.nc2.units.DateFormatter;
 
 /** Test {@link ucar.nc2.time.CalendarDateFormatter} */
 public class TestCalendarDateFormatter {
@@ -170,13 +169,6 @@ public class TestCalendarDateFormatter {
     udunitDF.setTimeZone(TimeZone.getTimeZone("UTC"));
     udunitDF.applyPattern("yyyy-MM-dd HH:mm:ss.SSS 'UTC'");
     System.out.printf("           udunitDF=%s%n", udunitDF.format(d));
-
-    System.out.printf("===============================%n");
-    DateFormatter df = new DateFormatter();
-    System.out.printf("     toTimeUnits(date)=%s%n", toTimeUnits(cd));
-    System.out.printf("toDateTimeString(date)=%s%n", df.toDateTimeString(d));
-    System.out.printf("toDateOnlyString(date)=%s%n", df.toDateOnlyString(d));
-
   }
 
 

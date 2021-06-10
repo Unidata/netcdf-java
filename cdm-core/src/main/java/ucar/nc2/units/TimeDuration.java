@@ -9,7 +9,6 @@ import ucar.units.ConversionException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
 import java.util.Calendar;
-import java.util.Date;
 
 /**
  * Implements the thredds "duration" XML element type: specifies a length of time.
@@ -250,11 +249,5 @@ public class TimeDuration {
 
     TimeDuration to = (TimeDuration) o;
     return to.getValueInSeconds() == getValueInSeconds();
-  }
-
-  /** @deprecated will be removed in ver7. */
-  @Deprecated
-  public Date add(Date d) {
-    return timeUnit.add(d);
   }
 }

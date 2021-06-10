@@ -130,6 +130,8 @@ public class TestGridNetcdfDataset {
   @Category(NeedsCdmUnitTest.class)
   public void testOffsetRegularCoordinate() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "tds_index/NCEP/NDFD/SPC/NDFD-SPC.ncx4";
+    String gname = "TwoD/Total_Probability_of_Severe_Thunderstorms_surface_24_Hour_Average_probability_above_0";
+    System.out.printf("filename %s%n", filename);
 
     try (NetcdfDataset ds = ucar.nc2.dataset.NetcdfDatasets.openDataset(filename)) {
       Formatter infoLog = new Formatter();
@@ -139,9 +141,7 @@ public class TestGridNetcdfDataset {
         fail();
       }
       GridNetcdfDataset gridDataset = result.get();
-      Grid grid =
-          gridDataset.findGrid("Total_Probability_of_Severe_Thunderstorms_surface_24_Hour_Average_probability_above_0")
-              .orElseThrow(() -> new RuntimeException("Cant find grid"));
+      Grid grid = gridDataset.findGrid(gname).orElseThrow();
       GridCoordinateSystem csys = grid.getCoordinateSystem();
       GridAxisOffsetTimeRegular timeAxis = (GridAxisOffsetTimeRegular) csys.getTimeOffsetAxis();
       assertThat(timeAxis).isNotNull();

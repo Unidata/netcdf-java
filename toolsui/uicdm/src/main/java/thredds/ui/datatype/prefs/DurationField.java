@@ -5,8 +5,8 @@
 
 package thredds.ui.datatype.prefs;
 
+import thredds.client.catalog.TimeDuration;
 import ucar.ui.widget.MultilineTooltip;
-import ucar.nc2.units.*;
 import ucar.util.prefs.PersistenceManager;
 import ucar.ui.prefs.FldInputVerifier;
 import javax.swing.*;
@@ -62,7 +62,7 @@ public class DurationField extends ucar.ui.prefs.Field {
       return true; // empty ok
 
     try {
-      new TimeDuration(tf.getText());
+      TimeDuration.parse(tf.getText());
       return true;
     } catch (java.text.ParseException e) {
       buff.append(label).append(": ").append(e.getMessage());
@@ -77,7 +77,7 @@ public class DurationField extends ucar.ui.prefs.Field {
       return null; // empty ok
 
     try {
-      return new TimeDuration(editValue);
+      return TimeDuration.parse(editValue);
     } catch (java.text.ParseException e) {
       return null;
     }
