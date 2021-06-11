@@ -17,12 +17,17 @@ import ucar.nc2.AttributeContainerMutable;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.ft2.coverage.CoverageCollection;
+import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.coord.Coordinate;
+import ucar.nc2.grib.coord.CoordinateEns;
 import ucar.nc2.grib.coord.CoordinateRuntime;
 import ucar.nc2.grib.coord.CoordinateTime2D;
 import ucar.nc2.grib.coord.CoordinateTimeAbstract;
 import ucar.nc2.grib.coord.SparseArray;
+import ucar.nc2.grib.coord.TimeCoordIntvValue;
+import ucar.nc2.grib.coord.VertCoordValue;
 import ucar.nc2.grib.grib1.Grib1Variable;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib2.table.Grib2Tables;
@@ -528,6 +533,89 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
       return sa.getContent(sourceIndex);
     }
 
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // coord based record finding. note only one record at a time
+    @Nullable
+    synchronized Record getRecordAt(SubsetParams coords) {
+      int[] want = new int[getRank()];
+      int count = 0;
+      int runIdx = -1;
+      for (Coordinate coord : getCoordinates()) {
+        int idx = -1;
+        switch (coord.getType()) {
+          case runtime:
+            CalendarDate runtimeCooord = coords.getRunTime();
+            idx = coord.getIndex(runtimeCooord);
+            runIdx = idx;
+            break;
+
+          case timeIntv:
+            double[] timeIntv = coords.getTimeOffsetIntv();
+            idx = coord.getIndex(new TimeCoordIntvValue((int) timeIntv[0], (int) timeIntv[1]));
+            break;
+
+          case time:
+            Double timeOffset = coords.getTimeOffset(); // Double
+            int coordInt = timeOffset.intValue();
+            idx = coord.getIndex(coordInt);
+            break;
+
+          case time2D:
+            timeIntv = coords.getTimeOffsetIntv();
+            if (timeIntv != null) {
+              TimeCoordIntvValue coordTinv = new TimeCoordIntvValue((int) timeIntv[0], (int) timeIntv[1]);
+              idx = ((CoordinateTime2D) coord).findTimeIndexFromVal(runIdx, coordTinv); // LOOK can only use if
+              // orthogonal
+              break;
+            }
+            Double timeCoord = coords.getTimeOffset();
+            if (timeCoord != null) {
+              coordInt = timeCoord.intValue();
+              idx = ((CoordinateTime2D) coord).findTimeIndexFromVal(runIdx, coordInt);
+              break;
+            }
+
+            // the OneTime case
+            CoordinateTime2D coord2D = (CoordinateTime2D) coord;
+            if (coord2D.getNtimes() == 1) {
+              idx = 0;
+              break;
+            }
+            throw new IllegalStateException("time2D must have timeOffset ot timeOffsetIntv coordinare");
+
+          case vert:
+            double[] vertIntv = coords.getVertCoordIntv();
+            if (vertIntv != null) {
+              VertCoordValue coordVert = new VertCoordValue(vertIntv[0], vertIntv[1]);
+              idx = coord.getIndex(coordVert);
+              break;
+            }
+            Double vertCoord = coords.getVertCoord();
+            if (vertCoord != null) {
+              VertCoordValue coordVert = new VertCoordValue(vertCoord);
+              idx = coord.getIndex(coordVert);
+            }
+            break;
+
+          case ens:
+            Double ensVal = coords.getEnsCoord();
+            idx = ((CoordinateEns) coord).getIndexByMember(ensVal);
+            break;
+
+          default:
+            logger.warn("GribCollectionImmutable: missing CoordVal for {}%n", coord.getName());
+        }
+
+        if (idx < 0) {
+          logger.debug("Cant find index for value in axis {} in variable {}", coord.getName(), name);
+          return null;
+        }
+
+        want[count++] = idx;
+      }
+      return sa.getContent(want);
+    }
+
     public List<Coordinate> getCoordinates() {
       List<Coordinate> result = new ArrayList<>(coordIndex.size());
       for (int idx : coordIndex)
@@ -1030,6 +1118,12 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
   // stuff needed by InvDatasetFcGrib
   @Nullable
   public abstract ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(Dataset ds, GroupGC group, String filename,
+      FeatureCollectionConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException;
+
+  /** @deprecated FeatureDatasets will move to legacy in ver7, this method will not be available. */
+  @Deprecated
+  @Nullable
+  public abstract CoverageCollection getGridCoverage(Dataset ds, GroupGC group, String filename,
       FeatureCollectionConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException;
 
 }

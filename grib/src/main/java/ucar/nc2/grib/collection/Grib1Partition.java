@@ -11,9 +11,12 @@ import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
+import ucar.nc2.ft2.coverage.CoverageCollection;
 import ucar.nc2.grib.GribUtils;
 import java.io.IOException;
 import java.util.Formatter;
+
+import ucar.nc2.grib.coverage.GribCoverageDataset;
 import ucar.unidata.io.RandomAccessFile;
 
 /**
@@ -36,6 +39,14 @@ public class Grib1Partition extends PartitionCollectionImmutable {
     RandomAccessFile raf = (RandomAccessFile) iosp.sendIospMessage(NetcdfFile.IOSP_MESSAGE_RANDOM_ACCESS_FILE);
     NetcdfFile ncfile = NetcdfFiles.build(iosp, raf, getLocation(), null);
     return NetcdfDatasets.enhance(ncfile, NetcdfDataset.getDefaultEnhanceMode(), null);
+  }
+
+  @Override
+  public CoverageCollection getGridCoverage(Dataset ds, GroupGC group, String filename, FeatureCollectionConfig config,
+      Formatter errlog, org.slf4j.Logger logger) {
+
+    GribCoverageDataset gribCov = new GribCoverageDataset(this, ds, group);
+    return gribCov.createCoverageCollection();
   }
 
   @Override
