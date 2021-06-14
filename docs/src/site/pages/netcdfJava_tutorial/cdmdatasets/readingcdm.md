@@ -19,7 +19,7 @@ To see what module you will need to include for your data, read more about [CDM 
 A simple way to open a NetcdfFile:
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&docs/src/test/java/examples/cdmdatasets/ReadingCdmTutorial.java&openNCFile %}
+{% includecodeblock netcdf-java&src/test/java/examples/cdmdatasets/ReadingCdmTutorial.java&openNCFile %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
@@ -58,7 +58,7 @@ The first dimension includes all the elements from 12 to 22 inclusive, the secon
 The following code to dump data from your program is equivalent to the above ToolsUI actions:
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&docs/src/test/java/examples/cdmdatasets/ReadingCdmTutorial.java&toolsUIDataDump %}
+{% includecodeblock netcdf-java&src/test/java/examples/cdmdatasets/ReadingCdmTutorial.java&toolsUIDataDump %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
@@ -67,7 +67,7 @@ The following code to dump data from your program is equivalent to the above Too
 If you want all the data in a variable, use:
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&docs/src/test/java/examples/cdmdatasets/ReadingCdmTutorial.java&readAllVarData %}
+{% includecodeblock netcdf-java&src/test/java/examples/cdmdatasets/ReadingCdmTutorial.java&readAllVarData %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
@@ -81,7 +81,7 @@ double T(time=31, lat=3, lon=4);
 and you want to extract the third time step, and all lat and lon points, then use:
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&docs/src/test/java/examples/cdmdatasets/ReadingCdmTutorial.java&readByOriginAndSize %}
+{% includecodeblock netcdf-java&src/test/java/examples/cdmdatasets/ReadingCdmTutorial.java&readByOriginAndSize %}
 {% endcapture %}
 {{ rmd | markdownify }}
   
@@ -91,7 +91,7 @@ To make it a 2D array call Array.reduce(), which removes any dimensions of lengt
 Or suppose you want to loop over all time steps, and make it general to handle any sized 3 dimensional variable:
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&docs/src/test/java/examples/cdmdatasets/ReadingCdmTutorial.java&readInLoop %}
+{% includecodeblock netcdf-java&src/test/java/examples/cdmdatasets/ReadingCdmTutorial.java&readInLoop %}
 {% endcapture %}
 {{ rmd | markdownify }}
  
@@ -101,14 +101,14 @@ Note that `varShape` holds the total number of elements that can be read from th
 This is different from the Fortran 90 array syntax, which uses the starting and ending array indices (inclusive):
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&docs/src/test/java/examples/cdmdatasets/ReadingCdmTutorial.java&readSubset %}
+{% includecodeblock netcdf-java&src/test/java/examples/cdmdatasets/ReadingCdmTutorial.java&readSubset %}
 {% endcapture %}
 {{ rmd | markdownify }}
   
 If you want strided access, you can use the Fortran 90 string routine:
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&docs/src/test/java/examples/cdmdatasets/ReadingCdmTutorial.java&readByStride %}
+{% includecodeblock netcdf-java&src/test/java/examples/cdmdatasets/ReadingCdmTutorial.java&readByStride %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
@@ -118,14 +118,14 @@ For general programing, use the read method that takes a `List` of `ucar.ma2.Ran
 A `Range` follows the Fortran 90 array syntax, taking the starting and ending indices (inclusive), and an optional stride:
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&docs/src/test/java/examples/cdmdatasets/ReadingCdmTutorial.java&readByRange %}
+{% includecodeblock netcdf-java&src/test/java/examples/cdmdatasets/ReadingCdmTutorial.java&readByRange %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
 For example, to loop over all time steps of the 3D variable `T`, taking every second lat and every second lon point:
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&docs/src/test/java/examples/cdmdatasets/ReadingCdmTutorial.java&readInLoopRanges %}
+{% includecodeblock netcdf-java&src/test/java/examples/cdmdatasets/ReadingCdmTutorial.java&readInLoopRanges %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
@@ -133,7 +133,7 @@ The `Section` class encapsulates a list of `Range` objects and contains a number
 lists of `Ranges` and origin, shape arrays. To create a `Section` from a list of `Ranges`: 
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&docs/src/test/java/examples/cdmdatasets/ReadingCdmTutorial.java&convertRangesToSection %}
+{% includecodeblock netcdf-java&src/test/java/examples/cdmdatasets/ReadingCdmTutorial.java&convertRangesToSection %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
@@ -142,7 +142,7 @@ lists of `Ranges` and origin, shape arrays. To create a `Section` from a list of
 There are convenience routines in the `Variable` class for reading scalar variables:
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&docs/src/test/java/examples/cdmdatasets/ReadingCdmTutorial.java&readScalars %}
+{% includecodeblock netcdf-java&src/test/java/examples/cdmdatasets/ReadingCdmTutorial.java&readScalars %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
@@ -157,7 +157,7 @@ Scalar routines are available in for data types: `byte`, `double`, `float`, `int
 The `String` scalar method:
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&docs/src/test/java/examples/cdmdatasets/ReadingCdmTutorial.java&readStringScalar %}
+{% includecodeblock netcdf-java&src/test/java/examples/cdmdatasets/ReadingCdmTutorial.java&readStringScalar %}
 {% endcapture %}
 {{ rmd | markdownify }}
  
@@ -175,14 +175,14 @@ There are a number of ways to access data in the `Array`.
 Here is an example of accessing data in a 3D array, keeping track of index:
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&docs/src/test/java/examples/cdmdatasets/ReadingCdmTutorial.java&iterateForLoop %}
+{% includecodeblock netcdf-java&src/test/java/examples/cdmdatasets/ReadingCdmTutorial.java&iterateForLoop %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
 If you want to iterate over all the data in a variable of any rank, without keeping track of the indices, you can use the `IndexIterator`:
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&docs/src/test/java/examples/cdmdatasets/ReadingCdmTutorial.java&indexIterator %}
+{% includecodeblock netcdf-java&src/test/java/examples/cdmdatasets/ReadingCdmTutorial.java&indexIterator %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
@@ -190,7 +190,7 @@ You can also just iterate over a subset of the data defined by a `List` of `Rang
 The following iterates over every 5th point of each dimension in an `Array` of arbitrary rank:
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&docs/src/test/java/examples/cdmdatasets/ReadingCdmTutorial.java&rangeIterator %}
+{% includecodeblock netcdf-java&src/test/java/examples/cdmdatasets/ReadingCdmTutorial.java&rangeIterator %}
 {% endcapture %}
 {{ rmd | markdownify }}
     
@@ -199,14 +199,14 @@ In these examples, the data will be converted to double if needed.
 If you know the Array's rank and type, you can cast to the appropriate subclass and use the `get()` and `set()` methods, for example:
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&docs/src/test/java/examples/cdmdatasets/ReadingCdmTutorial.java&castDataArray %}
+{% includecodeblock netcdf-java&src/test/java/examples/cdmdatasets/ReadingCdmTutorial.java&castDataArray %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
 There are a number of *index reordering* methods that operate on an `Array`, and return another `Array` with the same backing data storage, but with the indices modified in various ways:
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&docs/src/test/java/examples/cdmdatasets/ReadingCdmTutorial.java&indexManipulation %}
+{% includecodeblock netcdf-java&src/test/java/examples/cdmdatasets/ReadingCdmTutorial.java&indexManipulation %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
@@ -214,7 +214,7 @@ The backing data storage for an `Array` is a 1D Java array of the corresponding 
 You can work directly with the Java array by extracting it from the `Array`:
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&docs/src/test/java/examples/cdmdatasets/ReadingCdmTutorial.java&get1DArray %}
+{% includecodeblock netcdf-java&src/test/java/examples/cdmdatasets/ReadingCdmTutorial.java&get1DArray %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
@@ -242,7 +242,7 @@ To scour the cache, call `DiskCache.cleanCache()`.
 For long-running applications, you might want to do this periodically in a background timer thread, as in the following example.
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&docs/src/test/java/examples/cdmdatasets/ReadingCdmTutorial.java&scourCache %}
+{% includecodeblock netcdf-java&src/test/java/examples/cdmdatasets/ReadingCdmTutorial.java&scourCache %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
