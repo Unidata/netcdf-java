@@ -46,7 +46,7 @@ public class TestMetadataExtractor {
     DatasetBuilder dsb = new DatasetBuilder(null);
     dsb.setName("testAcdd");
     dsb.put(Dataset.Id, "testAcdd");
-    ThreddsMetadataAcdd acdd = new ThreddsMetadataAcdd(makeMap(ncfile.getGlobalAttributes()), dsb);
+    ThreddsMetadataAcdd acdd = new ThreddsMetadataAcdd(makeMap(ncfile.getRootGroup().attributes()), dsb);
     acdd.extract();
     ncfile.close();
 
@@ -98,13 +98,14 @@ public class TestMetadataExtractor {
     assert voc.getVocabulary().startsWith("GCMD Earth Science Keywords. Version 5.3.3");
   }
 
-  public static Map<String, Attribute> makeMap(List<Attribute> atts) {
-    int size = (atts == null) ? 1 : atts.size();
-    Map<String, Attribute> result = new HashMap<>(size);
-    if (atts == null)
+  public static Map<String, Attribute> makeMap(Iterable<Attribute> atts) {
+    Map<String, Attribute> result = new HashMap<>();
+    if (atts == null) {
       return result;
-    for (Attribute att : atts)
+    }
+    for (Attribute att : atts) {
       result.put(att.getShortName(), att);
+    }
     return result;
   }
 }

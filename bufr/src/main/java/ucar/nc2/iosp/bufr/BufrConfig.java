@@ -201,7 +201,7 @@ public class BufrConfig {
       hasDate = standardFields.hasTime();
 
       ncd = NetcdfFiles.open(raf.getLocation()); // LOOK opening another raf
-      Attribute centerAtt = ncd.findGlobalAttribute(BufrIosp.centerId);
+      Attribute centerAtt = ncd.findAttribute(BufrIosp.centerId);
       int center = (centerAtt == null) ? 0 : centerAtt.getNumericValue().intValue();
 
       Sequence seq = (Sequence) ncd.getRootGroup().findVariableLocal(BufrIosp.obsRecordName);

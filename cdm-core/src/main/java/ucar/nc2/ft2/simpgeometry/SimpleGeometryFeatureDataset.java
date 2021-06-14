@@ -113,18 +113,6 @@ public class SimpleGeometryFeatureDataset implements FeatureDataset {
     return ncd.getRootGroup().attributes();
   }
 
-  /** @deprecated use attributes() */
-  @Deprecated
-  public List<Attribute> getGlobalAttributes() {
-    return ncd.getGlobalAttributes();
-  }
-
-  /** @deprecated use attributes() */
-  @Deprecated
-  public Attribute findGlobalAttributeIgnoreCase(String name) {
-    return ncd.findGlobalAttributeIgnoreCase(name);
-  }
-
   @Override
   public List<VariableSimpleIF> getDataVariables() {
     return null;

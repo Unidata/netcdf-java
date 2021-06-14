@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
 import javax.swing.*;
+
+import ucar.nc2.Group;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.ui.StructureArrayTable;
@@ -291,11 +293,18 @@ public class DatasetViewer extends JPanel {
     }
 
     List<AttributeBean> attlist = new ArrayList<>();
-    for (Attribute att : ds.getGlobalAttributes()) {
-      attlist.add(new AttributeBean(att));
-    }
+    addAttributes(attlist, ds.getRootGroup());
     attTable.setBeans(attlist);
     attWindow.show();
+  }
+
+  private void addAttributes(List<AttributeBean> attlist, Group g) {
+    for (Attribute att : g.attributes()) {
+      attlist.add(new AttributeBean(g, att));
+    }
+    for (Group nested : g.getGroups()) {
+      addAttributes(attlist, nested);
+    }
   }
 
   public NetcdfFile getDataset() {
@@ -816,15 +825,17 @@ public class DatasetViewer extends JPanel {
   }
 
   public static class AttributeBean {
+    private final Group group;
     private final Attribute att;
 
     // create from a dataset
-    public AttributeBean(Attribute att) {
+    public AttributeBean(Group group, Attribute att) {
+      this.group = group;
       this.att = att;
     }
 
     public String getName() {
-      return att.getShortName();
+      return group.isRoot() ? att.getName() : group.getFullName() + "/" + att.getName();
     }
 
     public String getValue() {
@@ -832,7 +843,6 @@ public class DatasetViewer extends JPanel {
       return NcdumpArray.printArray(value, null, null);
     }
   }
-
 
   /*
    * public class StructureBean {

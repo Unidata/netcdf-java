@@ -40,7 +40,7 @@ public class TestNcmlModifyAtts {
 
   @Test
   public void testGlobalAtt() {
-    Attribute att = ncfile.findGlobalAttribute("Conventions");
+    Attribute att = ncfile.findAttribute("Conventions");
     assert null != att;
     assert !att.isArray();
     assert att.isString();
@@ -76,7 +76,7 @@ public class TestNcmlModifyAtts {
 
   @Test
   public void testStructure() {
-    Attribute att = ncfile.findGlobalAttribute("title");
+    Attribute att = ncfile.findAttribute("title");
     assert null == att;
 
     Dimension latDim = ncfile.findDimension("lat");

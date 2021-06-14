@@ -35,8 +35,8 @@ public class SimpleGeometryReader {
     Polygon poly = null;
 
     // CFConvention
-    if (ds.findGlobalAttribute(CF.CONVENTIONS) != null)
-      if (CF1Convention.getVersion(ds.findGlobalAttribute(CF.CONVENTIONS).getStringValue()) >= 8)
+    if (ds.findAttribute(CF.CONVENTIONS) != null)
+      if (CF1Convention.getVersion(ds.findAttribute(CF.CONVENTIONS).getStringValue()) >= 8)
         poly = new CFPolygon();
 
     if (poly == null)
@@ -62,8 +62,8 @@ public class SimpleGeometryReader {
     Line line = null;
 
     // CFConvention
-    if (ds.findGlobalAttribute(CF.CONVENTIONS) != null)
-      if (CF1Convention.getVersion(ds.findGlobalAttribute(CF.CONVENTIONS).getStringValue()) >= 8)
+    if (ds.findAttribute(CF.CONVENTIONS) != null)
+      if (CF1Convention.getVersion(ds.findAttribute(CF.CONVENTIONS).getStringValue()) >= 8)
         line = new CFLine();
 
     if (line == null)
@@ -89,8 +89,8 @@ public class SimpleGeometryReader {
     Point pt = null;
 
     // CFConvention
-    if (ds.findGlobalAttribute(CF.CONVENTIONS) != null)
-      if (CF1Convention.getVersion(ds.findGlobalAttribute(CF.CONVENTIONS).getStringValue()) >= 8)
+    if (ds.findAttribute(CF.CONVENTIONS) != null)
+      if (CF1Convention.getVersion(ds.findAttribute(CF.CONVENTIONS).getStringValue()) >= 8)
         pt = new CFPoint();
 
     if (pt == null)
@@ -112,8 +112,8 @@ public class SimpleGeometryReader {
       return null;
 
     // CFConvention
-    if (ds.findGlobalAttribute(CF.CONVENTIONS) != null)
-      if (CF1Convention.getVersion(ds.findGlobalAttribute(CF.CONVENTIONS).getStringValue()) >= 8) {
+    if (ds.findAttribute(CF.CONVENTIONS) != null)
+      if (CF1Convention.getVersion(ds.findAttribute(CF.CONVENTIONS).getStringValue()) >= 8) {
         Attribute geometryTypeAttr;
         String geometry_type;
 

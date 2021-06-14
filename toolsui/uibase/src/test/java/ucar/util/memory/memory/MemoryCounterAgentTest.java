@@ -128,8 +128,9 @@ public class MemoryCounterAgentTest {
       }
     }
 
-    for (Attribute att : ncfile.getGlobalAttributes())
+    for (Attribute att : ncfile.getRootGroup().attributes()) {
       measureSize(att.getShortName(), att, null, false);
+    }
 
     Group root = ncfile.getRootGroup();
     measureSize("rootGroup", root, null, false);

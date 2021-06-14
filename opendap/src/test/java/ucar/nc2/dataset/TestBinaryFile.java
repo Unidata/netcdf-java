@@ -12,6 +12,7 @@ import org.junit.Test;
 import ucar.array.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
+import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 
@@ -39,7 +40,8 @@ public class TestBinaryFile {
   @Test
   public void testGlobalMetadata() throws IOException {
     try (NetcdfFile ncf = NetcdfDatasets.openFile(filename, null)) {
-      assertThat(ncf.findGlobalAttributeIgnoreCase("conventions")).isNotNull();
+      Attribute conv = ncf.getRootGroup().attributes().findAttributeIgnoreCase("conventions");
+      assertThat(conv).isNotNull();
     }
   }
 
