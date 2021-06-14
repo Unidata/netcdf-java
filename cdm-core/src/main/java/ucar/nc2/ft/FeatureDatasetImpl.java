@@ -137,22 +137,6 @@ public abstract class FeatureDatasetImpl implements FeatureDataset {
         : new AttributeContainerMutable(title).toImmutable();
   }
 
-  /** @deprecated use attributes() */
-  @Deprecated
-  public List<Attribute> getGlobalAttributes() {
-    if (netcdfDataset == null)
-      return new ArrayList<>();
-    return netcdfDataset.getGlobalAttributes();
-  }
-
-  /** @deprecated use attributes() */
-  @Deprecated
-  public Attribute findGlobalAttributeIgnoreCase(String name) {
-    if (netcdfDataset == null)
-      return null;
-    return netcdfDataset.findGlobalAttributeIgnoreCase(name);
-  }
-
   public void getDetailInfo(java.util.Formatter sf) {
     sf.format("FeatureDataset on location= %s%n", getLocation());
     sf.format("  featureType= %s%n", getFeatureType());

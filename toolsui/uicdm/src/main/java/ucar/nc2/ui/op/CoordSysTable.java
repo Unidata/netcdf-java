@@ -14,12 +14,14 @@ import ucar.ma2.DataType;
 import ucar.ma2.IndexIterator;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
+import ucar.nc2.Group;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageCSBuilder;
 import ucar.nc2.calendar.*;
 import ucar.nc2.write.Ncdump;
+import ucar.nc2.write.NcdumpArray;
 import ucar.ui.widget.BAMutil;
 import ucar.ui.widget.IndependentWindow;
 import ucar.ui.widget.PopupMenu;
@@ -279,11 +281,18 @@ public class CoordSysTable extends JPanel {
     }
 
     List<AttributeBean> attlist = new ArrayList<>();
-    for (Attribute att : ds.getGlobalAttributes()) {
-      attlist.add(new AttributeBean(att));
-    }
+    addAttributes(attlist, ds.getRootGroup());
     attTable.setBeans(attlist);
     attWindow.show();
+  }
+
+  private void addAttributes(List<AttributeBean> attlist, Group g) {
+    for (Attribute att : g.attributes()) {
+      attlist.add(new AttributeBean(g, att));
+    }
+    for (Group nested : g.getGroups()) {
+      addAttributes(attlist, nested);
+    }
   }
 
   private void showValues(CoordinateAxis axis) {
@@ -881,25 +890,23 @@ public class CoordSysTable extends JPanel {
   }
 
   public static class AttributeBean {
-    private Attribute att;
-
-    // no-arg constructor
-    public AttributeBean() {}
+    private final Group group;
+    private final Attribute att;
 
     // create from a dataset
-    public AttributeBean(Attribute att) {
+    public AttributeBean(Group group, Attribute att) {
+      this.group = group;
       this.att = att;
     }
 
     public String getName() {
-      return att.getShortName();
+      return group.isRoot() ? att.getName() : group.getFullName() + "/" + att.getName();
     }
 
     public String getValue() {
-      Array value = att.getValues();
-      return Ncdump.printArray(value, null, null);
+      ucar.array.Array<?> value = att.getArrayValues();
+      return NcdumpArray.printArray(value, null, null);
     }
-
   }
 
   public static class AxisBean {

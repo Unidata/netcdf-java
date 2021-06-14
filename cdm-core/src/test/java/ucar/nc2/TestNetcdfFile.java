@@ -149,7 +149,8 @@ public class TestNetcdfFile {
     assertThat(att.getStringValue()).isEqualTo("rootGroup");
 
     att = ncfile.findAttribute("attName");
-    assertThat(att).isNull();
+    assertThat(att).isNotNull();
+    assertThat(att.getStringValue()).isEqualTo("rootGroup");
 
     att = ncfile.findAttribute("/child/@attName");
     assertThat(att).isNotNull();

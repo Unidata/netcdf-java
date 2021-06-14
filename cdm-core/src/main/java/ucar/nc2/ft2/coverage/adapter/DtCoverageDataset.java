@@ -13,6 +13,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import com.google.common.collect.ImmutableList;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
@@ -243,7 +245,7 @@ public class DtCoverageDataset implements Closeable {
   }
 
   public List<Attribute> getGlobalAttributes() {
-    return ncd.getGlobalAttributes();
+    return ImmutableList.copyOf(ncd.getRootGroup().attributes());
   }
 
   public Dimension findDimension(String name) {

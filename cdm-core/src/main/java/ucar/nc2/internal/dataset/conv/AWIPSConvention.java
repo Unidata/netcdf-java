@@ -60,7 +60,7 @@ public class AWIPSConvention extends CoordSystemBuilder {
 
     @Override
     public boolean isMine(NetcdfFile ncfile) {
-      return (null != ncfile.findGlobalAttribute("projName")) && (null != ncfile.findDimension("charsPerLevel"))
+      return (null != ncfile.findAttribute("projName")) && (null != ncfile.findDimension("charsPerLevel"))
           && (null != ncfile.findDimension("x")) && (null != ncfile.findDimension("y"));
     }
 

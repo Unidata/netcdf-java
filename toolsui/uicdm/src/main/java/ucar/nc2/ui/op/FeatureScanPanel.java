@@ -4,7 +4,6 @@
  */
 package ucar.nc2.ui.op;
 
-import ucar.nc2.ft2.scan.FeatureScan;
 import ucar.ui.widget.BAMutil;
 import ucar.ui.widget.IndependentWindow;
 import ucar.ui.widget.PopupMenu;

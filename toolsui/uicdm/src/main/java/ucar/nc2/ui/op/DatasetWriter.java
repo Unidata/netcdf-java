@@ -8,9 +8,9 @@ package ucar.nc2.ui.op;
 import static ucar.nc2.internal.util.CompareNetcdf2.IDENTITY_FILTER;
 
 import com.google.common.base.Stopwatch;
-import ucar.ma2.Array;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
+import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Structure;
@@ -20,8 +20,8 @@ import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.ui.dialog.CompareDialog;
 import ucar.nc2.ui.dialog.NetcdfOutputChooser;
 import ucar.nc2.util.CancelTask;
+import ucar.nc2.write.NcdumpArray;
 import ucar.nc2.write.NetcdfCopier;
-import ucar.nc2.write.Ncdump;
 import ucar.nc2.write.NcmlWriter;
 import ucar.nc2.write.NetcdfFormatWriter;
 import ucar.ui.widget.BAMutil;
@@ -324,11 +324,18 @@ public class DatasetWriter extends JPanel {
     }
 
     List<AttributeBean> attlist = new ArrayList<>();
-    for (Attribute att : ds.getGlobalAttributes()) {
-      attlist.add(new AttributeBean(att));
-    }
+    addAttributes(attlist, ds.getRootGroup());
     attTable.setBeans(attlist);
     attWindow.show();
+  }
+
+  private void addAttributes(List<AttributeBean> attlist, Group g) {
+    for (Attribute att : g.attributes()) {
+      attlist.add(new AttributeBean(g, att));
+    }
+    for (Group nested : g.getGroups()) {
+      addAttributes(attlist, nested);
+    }
   }
 
   public NetcdfFile getDataset() {
@@ -872,24 +879,22 @@ public class DatasetWriter extends JPanel {
   }
 
   public static class AttributeBean {
+    private final Group group;
+    private final Attribute att;
 
-    private Attribute att;
-
-    /** no-arg constructor */
-    public AttributeBean() {}
-
-    /** create from an attribute */
-    public AttributeBean(Attribute att) {
+    // create from a dataset
+    public AttributeBean(Group group, Attribute att) {
+      this.group = group;
       this.att = att;
     }
 
     public String getName() {
-      return att.getShortName();
+      return group.isRoot() ? att.getName() : group.getFullName() + "/" + att.getName();
     }
 
     public String getValue() {
-      Array value = att.getValues();
-      return Ncdump.printArray(value, null, null);
+      ucar.array.Array<?> value = att.getArrayValues();
+      return NcdumpArray.printArray(value, null, null);
     }
   }
 }

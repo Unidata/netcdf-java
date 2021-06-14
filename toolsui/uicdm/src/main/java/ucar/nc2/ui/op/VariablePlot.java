@@ -132,7 +132,7 @@ public class VariablePlot extends JPanel {
     Dimension dim = v.getDimension(0);
     String dimName = dim.getShortName();
 
-    Attribute title = file.findGlobalAttribute("title");
+    Attribute title = file.findAttribute("title");
     if (title != null)
       chart.setTitle(title.getStringValue());
 

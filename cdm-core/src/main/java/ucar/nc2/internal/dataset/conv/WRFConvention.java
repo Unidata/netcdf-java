@@ -141,7 +141,7 @@ public class WRFConvention extends CoordSystemBuilder {
         if (!gridType.equalsIgnoreCase("null") && !gridType.equalsIgnoreCase("C") && !gridType.equalsIgnoreCase("E"))
           return false;
       }
-      return ncfile.findGlobalAttribute("MAP_PROJ") != null;
+      return ncfile.findAttribute("MAP_PROJ") != null;
     }
 
     @Override

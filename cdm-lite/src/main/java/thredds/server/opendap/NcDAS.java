@@ -43,7 +43,7 @@ public class NcDAS extends opendap.dap.DAS {
 
     // Global attributes
     opendap.dap.AttributeTable gtable = new opendap.dap.AttributeTable("NC_GLOBAL");
-    int count = addAttributes(gtable, null, ncfile.getGlobalAttributes());
+    int count = addAttributes(gtable, null, ncfile.getRootGroup().attributes());
     if (count > 0)
       try {
         addAttributeTable("NC_GLOBAL", gtable);

@@ -755,7 +755,7 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
       if (data != null)
         return data;
 
-      Attribute att = ncfile.findGlobalAttribute(gattName);
+      Attribute att = ncfile.findAttribute(gattName);
       if (att == null)
         throw new IllegalArgumentException("Unknown attribute name= " + gattName);
       data = att.getValues();
@@ -806,7 +806,7 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
 
       List<Object> vals = new ArrayList<>();
       for (String gattName : gattNames) {
-        Attribute att = ncfile.findGlobalAttribute(gattName);
+        Attribute att = ncfile.findAttribute(gattName);
         if (att == null)
           throw new IllegalArgumentException("Unknown attribute name= " + gattName);
         vals.add(att.getValue(0));

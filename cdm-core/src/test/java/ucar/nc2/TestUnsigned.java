@@ -169,7 +169,7 @@ public class TestUnsigned {
         + "</netcdf>";
 
     try (NetcdfDataset ncd = NetcdfDatasets.openNcmlDataset(new StringReader(ncml), null, null)) {
-      Attribute att = ncd.findGlobalAttribute("gatt");
+      Attribute att = ncd.findAttribute("gatt");
       Assert.assertNotNull(att);
       Assert.assertEquals(DataType.UBYTE, att.getDataType());
 
@@ -194,7 +194,7 @@ public class TestUnsigned {
         + "  <attribute name='gatt' type='byte' isUnsigned='true'>1 0 -1</attribute>" + "</netcdf>";
 
     try (NetcdfDataset ncd = NetcdfDatasets.openNcmlDataset(new StringReader(ncml), null, null)) {
-      Attribute att = ncd.findGlobalAttribute("gatt");
+      Attribute att = ncd.findAttribute("gatt");
       Assert.assertNotNull(att);
       Assert.assertEquals(DataType.UBYTE, att.getDataType());
 
@@ -219,7 +219,7 @@ public class TestUnsigned {
         + "</netcdf>";
 
     try (NetcdfDataset ncd = NetcdfDatasets.openNcmlDataset(new StringReader(ncml), null, null)) {
-      Attribute att = ncd.findGlobalAttribute("gatt");
+      Attribute att = ncd.findAttribute("gatt");
       Assert.assertNotNull(att);
       Assert.assertEquals(DataType.UBYTE, att.getDataType());
 

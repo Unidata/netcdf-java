@@ -5,6 +5,7 @@
 package ucar.nc2;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import java.io.Closeable;
 import java.io.IOException;
@@ -148,28 +149,33 @@ public class NetcdfFile implements FileCacheable, Closeable {
   //////////////////////////////////////////////////////////////////////////////////////
 
   /**
-   * Find an attribute, with the specified (escaped full) name. It may possibly be nested in multiple groups and/or
-   * structures. An embedded
-   * "." is interpreted as structure.member. An embedded "/" is interpreted as group/group or group/variable. An
-   * embedded "@" is interpreted
-   * as variable@attribute If the name actually has a ".", you must escape it (call
-   * NetcdfFiles.makeValidPathName(varname)) Any other chars
-   * may also be escaped, as they are removed before testing.
+   * Find an attribute, with the specified (escaped full) name. It may be nested in multiple groups and/or structures.
+   * An embedded "." is interpreted as structure.member.
+   * An embedded "/" is interpreted as group/group or group/variable.
+   * An embedded "@" is interpreted as variable@attribute.
+   * A name without an "@" is interpreted as an attribute in the root group.
+   * If the name actually has a ".", you must escape it (call NetcdfFiles.makeValidPathName(varname)). LOOK
+   * Any other chars may also be escaped, as they are removed before testing. LOOK
    *
-   * @param fullNameEscaped eg "@attName", "/group/subgroup/@attName" or "/group/subgroup/varname.name2.name@attName"
+   * @param fullNameEscaped eg "attName", "@attName", "var@attname", "struct.member.@attName",
+   *        "/group/subgroup/@attName", "/group/subgroup/var@attName", or "/group/subgroup/struct.member@attName"
    * @return Attribute or null if not found.
    */
   @Nullable
   public Attribute findAttribute(String fullNameEscaped) {
-    if (fullNameEscaped == null || fullNameEscaped.isEmpty()) {
+    if (Strings.isNullOrEmpty(fullNameEscaped)) {
       return null;
     }
 
     int posAtt = fullNameEscaped.indexOf('@');
-    if (posAtt < 0 || posAtt >= fullNameEscaped.length() - 1)
-      return null;
+    if (posAtt < 0) {
+      return rootGroup.findAttribute(fullNameEscaped);
+    }
     if (posAtt == 0) {
-      return findGlobalAttribute(fullNameEscaped.substring(1));
+      return rootGroup.findAttribute(fullNameEscaped.substring(1));
+    }
+    if (posAtt == fullNameEscaped.length() - 1) {
+      return null;
     }
 
     String path = fullNameEscaped.substring(0, posAtt);
@@ -185,31 +191,37 @@ public class NetcdfFile implements FileCacheable, Closeable {
       while (stoke.hasMoreTokens()) {
         String token = NetcdfFiles.makeNameUnescaped(stoke.nextToken());
         g = g.findGroupLocal(token);
-        if (g == null)
+        if (g == null) {
           return null;
+        }
       }
     }
-    if (varName == null) // group attribute
+    if (varName == null) { // group attribute
       return g.findAttribute(attName);
+    }
 
     // heres var.var - tokenize respecting the possible escaped '.'
     List<String> snames = EscapeStrings.tokenizeEscapedName(varName);
-    if (snames.isEmpty())
+    if (snames.isEmpty()) {
       return null;
+    }
 
     String varShortName = NetcdfFiles.makeNameUnescaped(snames.get(0));
     Variable v = g.findVariableLocal(varShortName);
-    if (v == null)
+    if (v == null) {
       return null;
+    }
 
     int memberCount = 1;
     while (memberCount < snames.size()) {
-      if (!(v instanceof Structure))
+      if (!(v instanceof Structure)) {
         return null;
+      }
       String name = NetcdfFiles.makeNameUnescaped(snames.get(memberCount++));
       v = ((Structure) v).findVariable(name);
-      if (v == null)
+      if (v == null) {
         return null;
+      }
     }
 
     return v.findAttribute(attName);
@@ -261,27 +273,40 @@ public class NetcdfFile implements FileCacheable, Closeable {
    *
    * @param attName the name of the attribute
    * @return the first Group attribute with given name, or null if not found
+   * @deprecated use #findAttribute
    */
+  @Deprecated
   @Nullable
   public Attribute findGlobalAttribute(String attName) {
-    for (Attribute a : allAttributes) {
-      if (attName.equals(a.getShortName()))
-        return a;
-    }
-    return null;
+    return findGlobalAttribute(rootGroup, attName, false);
   }
 
   /**
    * Look up an Attribute by (short) name in the root Group or nested Groups, ignore case.
    *
-   * @param name the name of the attribute
-   * @return the first group attribute with given Attribute name, ignoronmg case, or null if not found
+   * @param attName the name of the attribute
+   * @return the first group attribute with given Attribute name, ignoring case, or null if not found
+   * @deprecated use #findAttribute
    */
-  @Nullable
-  public Attribute findGlobalAttributeIgnoreCase(String name) {
-    for (Attribute a : allAttributes) {
-      if (name.equalsIgnoreCase(a.getShortName()))
+  @Deprecated
+  public Attribute findGlobalAttributeIgnoreCase(String attName) {
+    return findGlobalAttribute(rootGroup, attName, true);
+  }
+
+  private Attribute findGlobalAttribute(Group group, String attName, boolean ignore) {
+    for (Attribute a : group.attributes()) {
+      if (attName.equals(a.getShortName())) {
         return a;
+      }
+      if (ignore && attName.equalsIgnoreCase(a.getShortName())) {
+        return a;
+      }
+    }
+    for (Group g : group.getGroups()) {
+      Attribute a = findGlobalAttribute(g, attName, ignore);
+      if (a != null) {
+        return a;
+      }
     }
     return null;
   }
@@ -414,7 +439,10 @@ public class NetcdfFile implements FileCacheable, Closeable {
   /**
    * Returns the set of global attributes associated with this file, which are the attributes associated
    * with the root group, or any subgroup. Alternatively, use groups.
+   * 
+   * @deprecated get attributes recursively through the root group, so that you know what group they belong to
    */
+  @Deprecated
   public ImmutableList<Attribute> getGlobalAttributes() {
     return allAttributes;
   }
