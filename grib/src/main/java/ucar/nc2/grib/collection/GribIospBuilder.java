@@ -72,6 +72,7 @@ class GribIospBuilder {
     } else {
       g = parent;
     }
+    g.addAttribute(new Attribute("GribCollectionType", gctype.toString()));
 
     makeGroup(g, group, gctype);
   }

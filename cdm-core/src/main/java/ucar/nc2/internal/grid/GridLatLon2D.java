@@ -28,6 +28,7 @@ public class GridLatLon2D extends GridHorizCS {
     this.lat2D = yaxis;
   }
 
+  @Override
   public int[] getShape() {
     return lon2D.getShape();
   }

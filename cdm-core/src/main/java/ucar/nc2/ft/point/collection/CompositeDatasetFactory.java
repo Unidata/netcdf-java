@@ -119,7 +119,6 @@ public class CompositeDatasetFactory {
       return dataVariables;
     }
 
-    @Override
     public List<Attribute> getGlobalAttributes() {
       if (globalAttributes == null) {
         if (pfc instanceof CompositePointCollection)

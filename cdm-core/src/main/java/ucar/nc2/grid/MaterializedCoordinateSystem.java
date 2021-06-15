@@ -4,23 +4,21 @@
  */
 package ucar.nc2.grid;
 
-import javax.annotation.Nullable;
-
 import ucar.array.RangeIterator;
 
-import java.util.*;
+import javax.annotation.Nullable;
+import java.util.Formatter;
+import java.util.List;
+import java.util.Optional;
 
-/** A Coordinate System for gridded data. */
-public interface GridCoordinateSystem {
+/** A Coordinate System for materialized gridded data. */
+public interface MaterializedCoordinateSystem {
 
   /** The name of the Grid Coordinate System. */
   String getName();
 
   /** the GridAxes that constitute this Coordinate System */
   Iterable<GridAxis> getGridAxes();
-
-  /** Find the named axis. */
-  Optional<GridAxis> findAxis(String axisName);
 
   /** Get the ensemble axis. */
   @Nullable
@@ -51,11 +49,14 @@ public interface GridCoordinateSystem {
   /** Get the Horizontal CoordinateSystem. */
   GridHorizCoordinateSystem getHorizCoordSystem();
 
-  /** Function description, eg f:D(4)->R(5) */
-  String showFnSummary();
-
   void show(Formatter f, boolean showCoords);
 
-  /** Nominal shape, may differ from materialized shape. */
-  int[] getNominalShape();
+  /** Subset each axis based on the given parameters. */
+  Optional<MaterializedCoordinateSystem> subset(GridSubset params, Formatter errLog);
+
+  /** The index ranges in this array. */
+  List<RangeIterator> getRanges();
+
+  /** The shape of this array. */
+  int[] getMaterializedShape();
 }

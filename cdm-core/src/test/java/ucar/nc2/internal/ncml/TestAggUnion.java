@@ -156,7 +156,7 @@ public class TestAggUnion {
   public void testMetadata() {
     logger.debug("TestNested = \n{}", ncfile);
 
-    Attribute att = ncfile.findGlobalAttribute("title");
+    Attribute att = ncfile.findAttribute("title");
     assert null != att;
     assert !att.isArray();
     assert att.isString();

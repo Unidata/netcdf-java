@@ -90,7 +90,7 @@ public class RemoteGridEncode {
         keyValueMap.put(keyvalue.get(0), null);
       }
     }
-    GridSubset subset = new GridSubset();
+    GridSubset subset = GridSubset.createNew();
 
     // horiz subsetting
     List<Double> params = getParameters(keyValueMap, "north", "south", "east", "west");

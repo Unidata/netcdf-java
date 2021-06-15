@@ -865,7 +865,7 @@ public class Grib2DataReader {
   }
 
   // Loosely based on code by earl.barker.ctr AT us.af.mil, but moved from
-  // anceient version of Grib support.
+  // ancient version of Grib support.
   // Code taken from esupport ticket ZVT-415274
   private float[] getData41(RandomAccessFile raf, Grib2Drs.Type0 gdrs) throws IOException {
     int nb = gdrs.numberOfBits;

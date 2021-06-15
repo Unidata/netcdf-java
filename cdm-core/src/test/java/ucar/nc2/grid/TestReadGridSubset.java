@@ -65,9 +65,7 @@ public class TestReadGridSubset {
       assertThat(runtimeAxis.getNcoords()).isEqualTo(4);
       CalendarDate wantRuntime = runtimeAxis.getCalendarDate(1);
       double wantOffset = runtimeAxis.getCoordMidpoint(1);
-      GridSubset subset = new GridSubset().setRunTime(wantRuntime).setTimeOffsetCoord(wantOffset);
-
-      GridReferencedArray geoArray = grid.readData(subset);
+      GridReferencedArray geoArray = grid.getReader().setRunTime(wantRuntime).setTimeOffsetCoord(wantOffset).read();
       testGeoArray(geoArray, 2);
     }
   }
@@ -76,7 +74,7 @@ public class TestReadGridSubset {
     assertThat(Arrays.reduce(geoArray.data()).getRank()).isEqualTo(expected);
     int[] shape = geoArray.data().getShape();
     int count = 0;
-    for (GridAxis axis : geoArray.csSubset().getGridAxes()) {
+    for (GridAxis axis : geoArray.getMaterializedCoordinateSystem().getGridAxes()) {
       if (axis instanceof GridAxis1D) { // awkward
         assertThat(((GridAxis1D) axis).getNcoords()).isEqualTo(shape[count]);
       }

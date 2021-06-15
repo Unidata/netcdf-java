@@ -65,7 +65,7 @@ public class TestN4problems {
     try (ucar.nc2.grid.GridDataset gds = GridDatasetFactory.openGridDataset(filename, errlog)) {
       Grid grid = gds.findGrid(vname).orElseThrow();
       System.out.printf("grid=%s%n", grid);
-      GridReferencedArray data = grid.readData(new GridSubset());
+      GridReferencedArray data = grid.getReader().read();
       assertThat(data.data()).isNotNull();
     }
   }

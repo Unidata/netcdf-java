@@ -477,7 +477,7 @@ public class TestS3Read {
     String key = "netcdf-java/test/GFS_Global_0p25deg_20200326_1200_apparent_temperature.nc4";
     String s3Uri = "cdms3://" + NCAR_PROFILE_NAME + "@" + host + "/" + bucket + "?" + key;
     try (NetcdfFile ncfile = NetcdfFiles.open(s3Uri)) {
-      Attribute conv = ncfile.findGlobalAttributeIgnoreCase("Conventions");
+      Attribute conv = ncfile.getRootGroup().attributes().findAttributeIgnoreCase("Conventions");
       assertThat(conv).isNotNull();
       assertThat(conv.getStringValue()).ignoringCase().isEqualTo("CF-1.6");
     }
@@ -492,7 +492,7 @@ public class TestS3Read {
     String key = "ds262.0/CERFACS/uo_Omon_NEMO3-2_FRCCORE2_f_r1i1p1_199801-200712.nc";
     String s3Uri = "cdms3://" + host + "/" + bucket + "?" + key;
     try (NetcdfFile ncfile = NetcdfFiles.open(s3Uri)) {
-      Attribute conv = ncfile.findGlobalAttributeIgnoreCase("Conventions");
+      Attribute conv = ncfile.getRootGroup().attributes().findAttributeIgnoreCase("Conventions");
       assertThat(conv).isNotNull();
       assertThat(conv.getStringValue()).ignoringCase().isEqualTo("CF-1.4");
     }

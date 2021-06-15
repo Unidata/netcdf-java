@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2019 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -10,7 +10,6 @@ import com.google.common.collect.Iterables;
 import ucar.array.ArrayType;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.grid.*;
-import ucar.nc2.internal.grid.GridLatLon2D;
 import ucar.ui.util.NamedObject;
 import ucar.ui.prefs.BeanTable;
 import ucar.ui.widget.BAMutil;
@@ -334,27 +333,7 @@ public class GridNewTable extends JPanel {
     }
 
     public String getShape() {
-      int n = Iterables.size(geogrid.getCoordinateSystem().getGridAxes());
-      int[] shape = new int[n];
-      int count = 0;
-      for (GridAxis gridAxis : geogrid.getCoordinateSystem().getGridAxes()) {
-        int ncoords = -1;
-        if (gridAxis instanceof GridAxis1D) {
-          ncoords = ((GridAxis1D) gridAxis).getNcoords();
-        } else if (gridAxis instanceof GridAxisOffsetTimeRegular) {
-          ncoords = ((GridAxisOffsetTimeRegular) gridAxis).getNOffsetPerRun();
-        }
-        shape[count++] = ncoords;
-      }
-      // awkward
-      if (geogrid.getCoordinateSystem().getHorizCoordSystem() instanceof GridLatLon2D) {
-        GridLatLon2D hcs = (GridLatLon2D) geogrid.getCoordinateSystem().getHorizCoordSystem();
-        int[] hshape = hcs.getShape();
-        shape[count++] = hshape[0];
-        shape[count++] = hshape[1];
-
-      }
-      return Arrays.toString(shape);
+      return Arrays.toString(geogrid.getCoordinateSystem().getNominalShape());
     }
   }
 

@@ -62,7 +62,7 @@ public class IFPSConvention extends CoordSystemBuilder {
       // check that there is a global attribute called fileFormatVersion, and that it has one
       // of two known values
       boolean fileFormatCheck;
-      Attribute ff = ncfile.findGlobalAttributeIgnoreCase("fileFormatVersion");
+      Attribute ff = ncfile.findAttribute("fileFormatVersion");
       if (ff != null && ff.getStringValue() != null) {
         String ffValue = ff.getStringValue();
         // two possible values (as of now)

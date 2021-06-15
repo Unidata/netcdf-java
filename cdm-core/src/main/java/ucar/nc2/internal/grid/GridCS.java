@@ -7,6 +7,7 @@ package ucar.nc2.internal.grid;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMultimap;
+import ucar.array.RangeIterator;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.*;
@@ -21,7 +22,7 @@ import java.util.stream.Collectors;
 
 /** Implementation of GridCoordinateSystem. */
 @Immutable
-public class GridCS implements GridCoordinateSystem {
+public class GridCS implements GridCoordinateSystem, MaterializedCoordinateSystem {
 
   @Override
   public String getName() {
@@ -193,12 +194,23 @@ public class GridCS implements GridCoordinateSystem {
   @Override
   public List<ucar.array.RangeIterator> getRanges() {
     List<ucar.array.RangeIterator> result = new ArrayList<>();
-    for (GridAxis axis : axes) {
+    for (GridAxis axis : axes) { // LOOK what order are these in?
       if (axis.getDependenceType() == GridAxis.DependenceType.independent) {
         result.add(axis.getRangeIterator());
       }
     }
     return result;
+  }
+
+  @Override
+  public int[] getMaterializedShape() {
+    List<Integer> sizes = getRanges().stream().map(RangeIterator::length).collect(Collectors.toList());
+    return sizes.stream().mapToInt(i -> i).toArray();
+  }
+
+  @Override
+  public int[] getNominalShape() {
+    return getMaterializedShape();
   }
 
   @Override
@@ -223,7 +235,7 @@ public class GridCS implements GridCoordinateSystem {
   /////////////////////////////////////////////////////////////////////////////////////////
 
   @Override
-  public Optional<GridCoordinateSystem> subset(GridSubset params, Formatter errlog) {
+  public Optional<MaterializedCoordinateSystem> subset(GridSubset params, Formatter errlog) {
     Formatter errMessages = new Formatter();
 
     Builder<?> builder = this.toBuilder();
@@ -261,7 +273,7 @@ public class GridCS implements GridCoordinateSystem {
 
   ////////////////////////////////////////////////////////////////////////////////////////////
 
-  private final ImmutableList<GridAxis> axes;
+  private final ImmutableList<GridAxis> axes; // LOOK what order are these in?
   private final FeatureType featureType; // TODO redo FeatureType
   private final String name;
   private final GridHorizCoordinateSystem horizCsys;

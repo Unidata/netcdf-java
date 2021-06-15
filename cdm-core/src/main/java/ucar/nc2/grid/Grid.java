@@ -28,4 +28,9 @@ public interface Grid extends IsMissingEvaluator, ucar.ma2.IsMissingEvaluator {
 
   /** Read the specified subset of data, return result as a Georeferenced Array. */
   GridReferencedArray readData(GridSubset subset) throws IOException, ucar.array.InvalidRangeException;
+
+  default GridReader getReader() {
+    return new GridReader(this);
+  }
+
 }

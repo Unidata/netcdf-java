@@ -171,7 +171,7 @@ public class TestWriteRecord {
 
     try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
       /* Get the value of the global attribute named "title" */
-      Attribute title = ncfile.findGlobalAttribute("title");
+      Attribute title = ncfile.findAttribute("title");
       assert title != null;
       assert title.getStringValue().equals("Example Data") : title;
 

@@ -54,10 +54,10 @@ public class AWIPSSatConvention extends AWIPSConvention {
 
     @Override
     public boolean isMine(NetcdfFile ncfile) {
-      return (null != ncfile.findGlobalAttribute("projName")) && (null != ncfile.findGlobalAttribute("lon00"))
-          && (null != ncfile.findGlobalAttribute("lat00")) && (null != ncfile.findGlobalAttribute("lonNxNy"))
-          && (null != ncfile.findGlobalAttribute("latNxNy")) && (null != ncfile.findGlobalAttribute("centralLon"))
-          && (null != ncfile.findGlobalAttribute("centralLat")) && (null != ncfile.findDimension("x"))
+      return (null != ncfile.findAttribute("projName")) && (null != ncfile.findAttribute("lon00"))
+          && (null != ncfile.findAttribute("lat00")) && (null != ncfile.findAttribute("lonNxNy"))
+          && (null != ncfile.findAttribute("latNxNy")) && (null != ncfile.findAttribute("centralLon"))
+          && (null != ncfile.findAttribute("centralLat")) && (null != ncfile.findDimension("x"))
           && (null != ncfile.findDimension("y")) && (null != ncfile.findVariable("image"));
     }
 

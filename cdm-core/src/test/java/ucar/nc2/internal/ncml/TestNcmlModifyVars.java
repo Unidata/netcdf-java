@@ -48,7 +48,7 @@ public class TestNcmlModifyVars {
   @Test
   public void testReplaceAtt() {
     // System.out.println("\nncfile = "+ncfile);
-    Attribute att = ncfile.findGlobalAttribute("title");
+    Attribute att = ncfile.findAttribute("title");
     assert null != att;
     assert !att.isArray();
     assert att.isString();

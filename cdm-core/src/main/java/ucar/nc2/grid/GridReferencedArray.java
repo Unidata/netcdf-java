@@ -17,10 +17,10 @@ public abstract class GridReferencedArray {
 
   public abstract Array<Number> data(); // not reduced
 
-  public abstract GridCoordinateSystem csSubset();
+  public abstract MaterializedCoordinateSystem getMaterializedCoordinateSystem();
 
   public static GridReferencedArray create(String gridName, ArrayType arrayType, Array<Number> data,
-      GridCoordinateSystem csSubset) {
+      MaterializedCoordinateSystem csSubset) {
     return new AutoValue_GridReferencedArray(gridName, arrayType, data, csSubset);
   }
 

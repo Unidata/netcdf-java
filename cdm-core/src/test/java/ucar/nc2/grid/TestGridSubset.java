@@ -325,7 +325,7 @@ public class TestGridSubset {
       smap.put(entry.getKey(), entry.getValue().toString());
     }
 
-    GridSubset copy = new GridSubset(smap);
+    GridSubset copy = GridSubset.fromStringMap(smap);
     assertThat(subset.getVertIntv()).isEqualTo(copy.getVertIntv());
     assertThat(subset.getRunTime()).isEqualTo(copy.getRunTime());
     assertThat(subset.getEnsCoord()).isEqualTo(copy.getEnsCoord());

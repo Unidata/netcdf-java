@@ -33,6 +33,16 @@ public interface GridDataset extends Closeable {
   /** Find grid using its full name. */
   Optional<Grid> findGrid(String name);
 
+  /** Find first grid whose name and String value match those given. */
+  default Optional<Grid> findGridByAttribute(String attName, String attValue) {
+    for (Grid cov : getGrids()) {
+      for (Attribute att : cov.attributes())
+        if (attName.equals(att.getShortName()) && attValue.equals(att.getStringValue()))
+          return Optional.of(cov);
+    }
+    return Optional.empty();
+  }
+
   default void toString(Formatter buf) {
     buf.format("name = %s%n", getName());
     buf.format("location = %s%n", getLocation());

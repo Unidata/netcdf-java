@@ -56,6 +56,22 @@ public class GridSubset {
 
   private final Map<String, Object> req = new HashMap<>();
 
+  public static GridSubset createNew() {
+    return new GridSubset();
+  }
+
+  public static GridSubset fromStringMap(Map<String, String> stringMap) {
+    Map<String, Object> req = new HashMap<>();
+    for (Map.Entry<String, String> entry : stringMap.entrySet()) {
+      req.put(entry.getKey(), entry.getValue());
+    }
+    return new GridSubset(req);
+  }
+
+  public GridSubset(Map<String, Object> req) {
+    this.req.putAll(req);
+  }
+
   @Nullable
   private Object get(String key) {
     return req.get(key);
@@ -437,13 +453,7 @@ public class GridSubset {
     return this;
   }
 
-  public GridSubset() {}
-
-  public GridSubset(Map<String, String> stringMap) {
-    for (Map.Entry<String, String> entry : stringMap.entrySet()) {
-      req.put(entry.getKey(), entry.getValue());
-    }
-  }
+  GridSubset() {}
 
   @Override
   public boolean equals(Object o) {

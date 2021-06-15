@@ -74,8 +74,7 @@ public class TestDatasetClassifier {
       assertThat(gcs.getYHorizAxis()).isNotNull();
       assertThat(gcs.getXHorizAxis()).isNotNull();
 
-      assertThat(gcs.getRanges()).containsExactly(new Range(65), new Range(21), new Range(1), new Range(181),
-          new Range(360));
+      assertThat(gcs.getNominalShape()).isEqualTo(new int[] {65, 21, 1, 181, 360});
     }
   }
 
@@ -112,7 +111,7 @@ public class TestDatasetClassifier {
       assertThat(gcs.getYHorizAxis()).isNotNull();
       assertThat(gcs.getXHorizAxis()).isNotNull();
 
-      assertThat(gcs.getRanges()).containsExactly(new Range(5), new Range(10), new Range(77), new Range(97));
+      assertThat(gcs.getNominalShape()).isEqualTo(new int[] {5, 10, 77, 97});
     }
   }
 
@@ -153,7 +152,7 @@ public class TestDatasetClassifier {
       assertThat(gcs.getYHorizAxis()).isNotNull();
       assertThat(gcs.getXHorizAxis()).isNotNull();
 
-      assertThat(gcs.getRanges()).containsExactly(new Range(124), new Range(7), new Range(576), new Range(1152));
+      assertThat(gcs.getNominalShape()).isEqualTo(new int[] {124, 7, 576, 1152});
     }
   }
 

@@ -59,9 +59,9 @@ public class M3IOConvention extends CoordSystemBuilder {
 
     @Override
     public boolean isMine(NetcdfFile ncfile) {
-      return (null != ncfile.findGlobalAttribute("XORIG")) && (null != ncfile.findGlobalAttribute("YORIG"))
-          && (null != ncfile.findGlobalAttribute("XCELL")) && (null != ncfile.findGlobalAttribute("YCELL"))
-          && (null != ncfile.findGlobalAttribute("NCOLS")) && (null != ncfile.findGlobalAttribute("NROWS"));
+      return (null != ncfile.findAttribute("XORIG")) && (null != ncfile.findAttribute("YORIG"))
+          && (null != ncfile.findAttribute("XCELL")) && (null != ncfile.findAttribute("YCELL"))
+          && (null != ncfile.findAttribute("NCOLS")) && (null != ncfile.findAttribute("NROWS"));
     }
 
     @Override

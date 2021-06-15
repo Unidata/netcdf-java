@@ -46,7 +46,7 @@ public class TestH5Vlength {
   @Test
   public void testVlengthAttribute() throws IOException {
     try (NetcdfFile ncfile = TestH5.openH5("support/vlstra.h5")) {
-      Attribute att = ncfile.findGlobalAttribute("test_scalar");
+      Attribute att = ncfile.findAttribute("test_scalar");
       assert (null != att);
       assert (!att.isArray());
       assert (att.isString());

@@ -2,9 +2,11 @@
  * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-package ucar.nc2.ft2.scan;
+package ucar.nc2.ui.op;
 
 import com.google.common.collect.Iterables;
+import ucar.nc2.Attribute;
+import ucar.nc2.Group;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
@@ -19,15 +21,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Formatter;
+import java.util.List;
+import java.util.Optional;
 
-/**
- * Scan a directory, try to open files in various ways.
- * Can be used as a standalone program, which is why its here and not in uicdm module.
- * 
- * @deprecated will move to uicdm in ver7.
- */
-@Deprecated
+/** Scan a directory, try to open files in various ways. */
 public class FeatureScan {
   private final String top;
   private final boolean subdirs;
@@ -37,7 +37,7 @@ public class FeatureScan {
     this.subdirs = subdirs;
   }
 
-  public java.util.List<FeatureScan.Bean> scan(Formatter errlog) {
+  public List<Bean> scan(Formatter errlog) {
     List<Bean> result = new ArrayList<>();
     File topFile = new File(top);
     if (!topFile.exists()) {
@@ -54,7 +54,7 @@ public class FeatureScan {
     return result;
   }
 
-  private void scanDirectory(File dir, java.util.List<FeatureScan.Bean> result) {
+  private void scanDirectory(File dir, List<Bean> result) {
     if ((dir.getName().equals("exclude")) || (dir.getName().equals("problem"))) {
       return;
     }
@@ -140,8 +140,8 @@ public class FeatureScan {
     String coordMap;
     FeatureType featureType, ftFromMetadata;
     String ftype;
+    Formatter gribType = new Formatter();
     StringBuilder info = new StringBuilder();
-    String ftImpl;
     Throwable problem;
     DtCoverageCSBuilder builder; // LOOK replace with CoverageDataset
     GridCoordinateSystem gridCoordinateSystem;
@@ -163,6 +163,7 @@ public class FeatureScan {
         setCoordMap();
 
         ftFromMetadata = FeatureDatasetFactoryManager.findFeatureType(ds);
+        findGribType(ds.getRootGroup(), gribType);
 
         try {
           // new
@@ -189,7 +190,6 @@ public class FeatureScan {
             featureType = featureDataset.getFeatureType();
             if (featureType != null)
               ftype = featureType.toString();
-            ftImpl = featureDataset.getImplementationName();
             Formatter infof = new Formatter();
             featureDataset.getDetailInfo(infof);
             // info.append(infof);
@@ -209,6 +209,15 @@ public class FeatureScan {
       }
     }
 
+    private void findGribType(Group group, Formatter f) {
+      Attribute att = group.findAttribute("GribCollectionType");
+      if (att != null) {
+        f.format("%s ", att.getStringValue());
+      }
+      for (Group nested : group.getGroups()) {
+        findGribType(nested, f);
+      }
+    }
 
     public String getName() {
       String path = f.getPath();
@@ -256,11 +265,9 @@ public class FeatureScan {
       return ftype;
     }
 
-    /*
-     * public String getFeatureImpl() {
-     * return ftImpl;
-     * }
-     */
+    public String getGribType() {
+      return gribType.toString();
+    }
 
     public String getCoverage() {
       return builder == null ? "" : builder.showSummary();
@@ -328,7 +335,7 @@ public class FeatureScan {
     FeatureScan scanner = new FeatureScan(arg[0], subdirs);
 
     System.out.printf(" %-60s %-20s %-10s %-10s%n", "name", "fileType", "featureType", "featureImpl");
-    List<FeatureScan.Bean> beans = scanner.scan(new Formatter());
+    List<Bean> beans = scanner.scan(new Formatter());
     for (Bean b : beans)
       System.out.printf(" %-60s %-20s %n", b.getName(), b.getFileType());
   }

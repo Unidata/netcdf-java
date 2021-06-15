@@ -127,8 +127,7 @@ abstract class GribPartitionBuilder {
     }
     result.sortPartitions(); // after this the partition list is immutable
 
-    // choose the "canonical" partition, aka prototype
-    // only used in copyInfo
+    // choose the "canonical" partition, aka prototype, only used in copyInfo
     int n = result.getPartitionSize();
     if (n == 0) {
       errlog.format("ERR Nothing in this partition = %s%n", result.showLocation());

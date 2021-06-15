@@ -7,8 +7,11 @@ import com.google.common.base.Preconditions;
 import java.nio.charset.StandardCharsets;
 import opendap.dap.*;
 import opendap.dap.parsers.ParseException;
+import ucar.array.ArraysConvert;
 import ucar.ma2.*;
 import ucar.nc2.*;
+
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -298,8 +301,20 @@ public class DodsNetcdfFile extends ucar.nc2.NetcdfFile {
     return readData(cer.getVariable(), cer.getSection());
   }
 
+  protected ucar.array.Array<?> readArrayData(Variable v, ucar.array.Section section)
+      throws IOException, ucar.array.InvalidRangeException {
+    ucar.ma2.Section sectionOld = ArraysConvert.convertSection(section);
+    try {
+      ucar.ma2.Array result = readData(v, sectionOld);
+      return ArraysConvert.convertToArray(result);
+    } catch (InvalidRangeException e) {
+      throw new ucar.array.InvalidRangeException(e);
+    }
+  }
+
   @Override
-  protected Array readData(ucar.nc2.Variable v, Section section) throws IOException, InvalidRangeException {
+  protected ucar.ma2.Array readData(ucar.nc2.Variable v, ucar.ma2.Section section)
+      throws IOException, InvalidRangeException {
     // if (unlocked)
     // throw new IllegalStateException("File is unlocked - cannot use");
 

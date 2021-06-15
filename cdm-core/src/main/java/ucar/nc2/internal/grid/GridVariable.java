@@ -8,6 +8,7 @@ import ucar.nc2.grid.Grid;
 import ucar.nc2.grid.GridCoordinateSystem;
 import ucar.nc2.grid.GridReferencedArray;
 import ucar.nc2.grid.GridSubset;
+import ucar.nc2.grid.MaterializedCoordinateSystem;
 
 import javax.annotation.concurrent.Immutable;
 import java.io.IOException;
@@ -16,7 +17,7 @@ import java.util.*;
 /** Wraps a VariableDS, turns into a Grid */
 @Immutable
 public class GridVariable implements Grid {
-  private final GridCoordinateSystem cs;
+  private final GridCS cs;
   private final VariableDS vds;
   private final GridIndexPermuter permuter;
 
@@ -74,12 +75,12 @@ public class GridVariable implements Grid {
   @Override
   public GridReferencedArray readData(GridSubset subset) throws IOException, ucar.array.InvalidRangeException {
     Formatter errlog = new Formatter();
-    Optional<GridCoordinateSystem> opt = this.cs.subset(subset, errlog);
-    if (!opt.isPresent()) {
+    Optional<MaterializedCoordinateSystem> opt = this.cs.subset(subset, errlog);
+    if (opt.isEmpty()) {
       throw new ucar.array.InvalidRangeException(errlog.toString());
     }
 
-    GridCoordinateSystem subsetCoordSys = opt.get();
+    MaterializedCoordinateSystem subsetCoordSys = opt.get();
     List<ucar.array.RangeIterator> rangeIters = subsetCoordSys.getRanges();
     List<ucar.array.Range> ranges = new ArrayList<>();
 
@@ -93,6 +94,7 @@ public class GridVariable implements Grid {
 
     // if (!hasComposite) {
     Array<Number> data = readDataSection(new ucar.array.Section(ranges), true);
+    // LOOK
     return GridReferencedArray.create(getName(), getArrayType(), data, subsetCoordSys);
     // }
 

@@ -46,7 +46,7 @@ public class TestNcmlRenameVar {
 
   @Test
   public void testStructure() {
-    Attribute att = ncfile.findGlobalAttribute("title");
+    Attribute att = ncfile.findAttribute("title");
     assert null != att;
     assert !att.isArray();
     assert att.isString();
@@ -55,7 +55,7 @@ public class TestNcmlRenameVar {
     assert att.getNumericValue() == null;
     assert att.getNumericValue(3) == null;
 
-    att = ncfile.findGlobalAttribute("testFloat");
+    att = ncfile.findAttribute("testFloat");
     assert null != att;
     assert att.isArray();
     assert !att.isString();
