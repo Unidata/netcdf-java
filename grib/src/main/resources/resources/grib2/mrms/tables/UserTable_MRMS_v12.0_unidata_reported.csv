@@ -1,0 +1,9 @@
+Discipline,Category,Parameter,Name,Frequency,Unit,Missing,Range Folded,No Coverage,Description,Notes
+209,12,0,FLASH_CREST_MAXUNITSTREAMFLOW,10-min,m^3/s/km^2,-9999,n/a,-999,FLASH QPE-CREST Unit Streamflow,
+209,12,1,FLASH_CREST_MAXSTREAMFLOW,10-min,m^3/s,-9999,n/a,-999,FLASH QPE-CREST Streamflow,
+209,12,2,FLASH_CREST_MAXSOILSAT,10-min,%,-9999,n/a,-999,FLASH QPE-CREST Soil Saturation,
+209,12,4,FLASH_SAC_MAXUNITSTREAMFLOW,10-min,m^3/s/km^2,-9999,n/a,-999,FLASH QPE-SAC Unit Streamflow,
+209,12,5,FLASH_SAC_MAXSTREAMFLOW,10-min,m^3/s,-9999,n/a,-999,FLASH QPE-SAC Streamflow,
+209,12,6,FLASH_SAC_MAXSOILSAT,10-min,%,-9999,n/a,-999,FLASH QPE-SAC Soil Saturation,
+209,12,39,FLASH_HP_MAXUNITSTREAMFLOW,10-min,m^3/s/km^2,-9999,n/a,-999,FLASH QPE-Hydrophobic Unit Streamflow,
+209,12,40,FLASH_HP_MAXSTREAMFLOW,10-min,m^3/s,-9999,n/a,-999,FLASH QPE-Hydrophobic Streamflow,
