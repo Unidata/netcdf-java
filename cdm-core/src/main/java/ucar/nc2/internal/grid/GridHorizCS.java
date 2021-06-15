@@ -1,5 +1,6 @@
 package ucar.nc2.internal.grid;
 
+import com.google.common.base.Preconditions;
 import ucar.array.MinMax;
 import ucar.array.InvalidRangeException;
 import ucar.array.Range;
@@ -202,13 +203,15 @@ public class GridHorizCS implements GridHorizCoordinateSystem {
 
     } else if (llbb != null && isLatLon()) { // TODO LatLonRect only used for isLatlon = true?
       GridAxis1DHelper yhelper = new GridAxis1DHelper(yaxis);
-      yhelper.subset(projbb.getMinY(), projbb.getMaxY(), horizStride, errlog).ifPresent(b -> result.add(b.build()));
+      yhelper.subset(llbb.getLatMin(), llbb.getLatMax(), horizStride, errlog).ifPresent(b -> result.add(b.build()));
 
       // TODO longitude wrapping
       GridAxis1DHelper xhelper = new GridAxis1DHelper(xaxis);
-      xhelper.subset(projbb.getMinX(), projbb.getMaxX(), horizStride, errlog).ifPresent(b -> result.add(b.build()));
+      xhelper.subset(llbb.getLonMin(), llbb.getLonMax(), horizStride, errlog).ifPresent(b -> result.add(b.build()));
 
     } else if (horizStride > 1) { // no bounding box, just horiz stride
+      Preconditions.checkNotNull(yaxis);
+      Preconditions.checkNotNull(xaxis);
       try {
         Range yRange = yaxis.getRange().copyWithStride(horizStride);
         result.add(yaxis.toBuilder().setRange(yRange).build());

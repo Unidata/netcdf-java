@@ -177,28 +177,28 @@ public class GridRenderer {
     }
 
     // get the data slice
-    GridSubset subset = new GridSubset();
+    GridReader reader = dataState.grid.getReader();
     if (dataState.vertCoord != null) {
-      subset.setVertCoord(dataState.vertCoord);
+      reader.setVertCoord(dataState.vertCoord);
     }
     if (dataState.timeCoord != null) {
       if (dataState.taxis != null) {
-        subset.setTimeCoord(dataState.timeCoord);
+        reader.setTimeCoord(dataState.timeCoord);
       } else {
-        subset.setTimeOffsetCoord(dataState.timeCoord);
+        reader.setTimeOffsetCoord(dataState.timeCoord);
       }
     }
     if (dataState.runtimeCoord != null) {
-      subset.setRunTime(dataState.runtimeCoord);
+      reader.setRunTime(dataState.runtimeCoord);
     }
     if (dataState.ensCoord != null) {
-      subset.setEnsCoord(dataState.ensCoord);
+      reader.setEnsCoord(dataState.ensCoord);
     }
     if (dataState.horizStride != 1) {
-      subset.setHorizStride(dataState.horizStride);
+      reader.setHorizStride(dataState.horizStride);
     }
 
-    geodata = dataState.grid.readData(subset);
+    geodata = reader.read();
     dataState.saveState();
     return geodata;
   }

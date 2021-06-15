@@ -264,7 +264,7 @@ public class GcdmServer {
       response.setLocation(request.getLocation()).putAllSubset(request.getSubsetMap());
       final Stopwatch stopwatch = Stopwatch.createStarted();
 
-      GridSubset gridSubset = new GridSubset(request.getSubsetMap());
+      GridSubset gridSubset = GridSubset.fromStringMap(request.getSubsetMap());
       if (gridSubset.getGridName() == null) {
         makeError(response, "GridName is not set");
         responseObserver.onNext(response.build());

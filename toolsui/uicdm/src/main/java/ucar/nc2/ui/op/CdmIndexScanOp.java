@@ -24,7 +24,7 @@ public class CdmIndexScanOp extends OpPanel {
     super(prefs, "dir:", false, false);
     this.dirChooser = dirChooser;
 
-    cdmIndexScan = new CdmIndexScan(prefs);
+    cdmIndexScan = new CdmIndexScan(prefs, buttPanel);
     add(cdmIndexScan, BorderLayout.CENTER);
 
     dirChooser.getFileChooser().setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);

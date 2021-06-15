@@ -114,7 +114,7 @@ public class TestGcdmGridDataset {
   }
 
   private static boolean compareGrid(Grid local, Grid remote) {
-    GridSubset subset = new GridSubset();
+    GridSubset subset = GridSubset.createNew();
     try {
       return doRunTime(local, remote, subset);
     } catch (Exception e) {
@@ -172,8 +172,8 @@ public class TestGcdmGridDataset {
   private static boolean doSubset(Grid local, Grid remote, GridSubset subset)
       throws IOException, InvalidRangeException {
     System.out.printf(" Grid %s subset %s %n", local.getName(), subset);
-    GridReferencedArray localArray = local.readData(subset);
-    GridReferencedArray remoteArray = remote.readData(subset);
+    GridReferencedArray localArray = local.getReader().read();
+    GridReferencedArray remoteArray = remote.getReader().read();
     Formatter f = new Formatter();
     boolean ok1 =
         CompareArrayToArray.compareData(f, local.getName(), localArray.data(), remoteArray.data(), true, true);

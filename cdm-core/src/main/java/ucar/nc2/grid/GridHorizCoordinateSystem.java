@@ -16,6 +16,10 @@ public interface GridHorizCoordinateSystem {
   @Nullable
   GridAxis1D getYHorizAxis();
 
+  default int[] getShape() {
+    return new int[] {getYHorizAxis().ncoords, getXHorizAxis().ncoords};
+  }
+
   /** True if both X and Y axes are 1 dimensional and are regularly spaced. */
   boolean isRegular();
 
@@ -53,8 +57,7 @@ public interface GridHorizCoordinateSystem {
 
     @Override
     public String toString() {
-      return "CoordReturn{" + "xindex=" + xindex + ", yindex=" + yindex + ", xcoord=" + xcoord + ", ycoord=" + ycoord
-          + '}';
+      return String.format("CoordReturn{xindex=%d, yindex=%d, xcoord=%f, ycoord=%f", xindex, yindex, xcoord, ycoord);
     }
   }
 

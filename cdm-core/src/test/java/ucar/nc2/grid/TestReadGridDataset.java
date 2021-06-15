@@ -56,11 +56,9 @@ public class TestReadGridDataset {
       gcs.show(f, true);
       assertThat(f.toString()).contains("time (GridAxis1DTime) 715511");
 
-      GridSubset subset = new GridSubset();
       // LOOK this was "1960-01-01T00:00:00Z" in mixed gregorian
       CalendarDate wantDate = CalendarDate.fromUdunitIsoDate(null, "1960-01-03T00:00:00Z").orElseThrow();
-      subset.setTime(wantDate);
-      GridReferencedArray geoArray = grid.readData(subset);
+      GridReferencedArray geoArray = grid.getReader().setTime(wantDate).read();
       Array<Number> data = geoArray.data();
       assertThat(data.getArrayType()).isEqualTo(ArrayType.FLOAT);
       assertThat(data.getRank()).isEqualTo(3);
@@ -115,11 +113,8 @@ public class TestReadGridDataset {
         }
       }
 
-      GridSubset subset = new GridSubset();
       CalendarDate wantDate = CalendarDate.fromUdunitIsoDate(null, "2009-08-02T12:00:00Z").orElseThrow();
-      subset.setTime(wantDate);
-      subset.setVertCoord(700.0);
-      GridReferencedArray geoArray = grid.readData(subset);
+      GridReferencedArray geoArray = grid.getReader().setTime(wantDate).setVertCoord(700.0).read();
       Array<Number> data = geoArray.data();
       assertThat(data.getArrayType()).isEqualTo(ArrayType.FLOAT);
       assertThat(data.getRank()).isEqualTo(4);
@@ -180,11 +175,8 @@ public class TestReadGridDataset {
         }
       }
 
-      GridSubset subset = new GridSubset();
       CalendarDate wantDate = CalendarDate.fromUdunitIsoDate(null, "2009-08-02T12:00:00Z").orElseThrow();
-      subset.setTime(wantDate);
-      subset.setVertCoord(725.0);
-      GridReferencedArray geoArray = grid.readData(subset);
+      GridReferencedArray geoArray = grid.getReader().setTime(wantDate).setVertCoord(725.0).read();
       Array<Number> data = geoArray.data();
       assertThat(data.getArrayType()).isEqualTo(ArrayType.FLOAT);
       assertThat(data.getRank()).isEqualTo(3);
@@ -239,11 +231,8 @@ public class TestReadGridDataset {
         }
       }
 
-      GridSubset subset = new GridSubset();
       CalendarDate wantDate = CalendarDate.fromUdunitIsoDate(null, "2003-02-14T06:00:00Z").orElseThrow();
-      subset.setTime(wantDate);
-      subset.setVertCoord(725.);
-      GridReferencedArray geoArray = grid.readData(subset);
+      GridReferencedArray geoArray = grid.getReader().setTime(wantDate).setVertCoord(725.0).read();
       Array<Number> data = geoArray.data();
       assertThat(data.getArrayType()).isEqualTo(ArrayType.FLOAT);
       assertThat(data.getRank()).isEqualTo(4);

@@ -65,9 +65,7 @@ public class TestReadGridSubset {
       assertThat(runtimeAxis.getNcoords()).isEqualTo(4);
       CalendarDate wantRuntime = runtimeAxis.getCalendarDate(1);
       double wantOffset = runtimeAxis.getCoordMidpoint(1);
-      GridSubset subset = new GridSubset().setRunTime(wantRuntime).setTimeOffsetCoord(wantOffset);
-
-      GridReferencedArray geoArray = grid.readData(subset);
+      GridReferencedArray geoArray = grid.getReader().setRunTime(wantRuntime).setTimeOffsetCoord(wantOffset).read();
       testGeoArray(geoArray, 2);
     }
   }

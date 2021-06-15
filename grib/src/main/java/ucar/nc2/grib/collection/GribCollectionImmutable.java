@@ -86,6 +86,10 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     public boolean isTwoD() {
       return this == MRC || this == TwoD;
     }
+
+    public boolean isPartition() {
+      return this == TwoD || this == MRUTP;
+    }
   }
 
   ////////////////////////////////////////////////////////////////

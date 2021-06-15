@@ -17,6 +17,9 @@ public abstract class GridReferencedArray {
 
   public abstract Array<Number> data(); // not reduced
 
+  // LOOK seems like a GridCoordinateSystem from a GridReferencedArray should always have a shape.
+  // but there is no GridCoordinateSystem.getShape()
+  // if theres a shape, is there a Dimension for each shape?
   public abstract GridCoordinateSystem csSubset();
 
   public static GridReferencedArray create(String gridName, ArrayType arrayType, Array<Number> data,

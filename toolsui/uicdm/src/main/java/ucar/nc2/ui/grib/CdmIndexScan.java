@@ -36,8 +36,10 @@ public class CdmIndexScan extends JPanel {
   private final JSplitPane split;
   private final TextHistoryPane dumpTA;
   private final IndependentWindow infoWindow;
+  private final AbstractButton filterButt;
+  private boolean filterSRC;
 
-  public CdmIndexScan(PreferencesExt prefs) {
+  public CdmIndexScan(PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
 
     indexBeanTable = new BeanTable<>(IndexScanBean.class, (PreferencesExt) prefs.node("IndexScanBeans"), false);
@@ -64,6 +66,20 @@ public class CdmIndexScan extends JPanel {
 
     setLayout(new BorderLayout());
     add(split, BorderLayout.CENTER);
+
+    AbstractAction filterAction = new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        filterSRC = (Boolean) getValue(BAMutil.STATE);
+        String tooltip = filterSRC ? "dont include SRC" : "include type SRC";
+        filterButt.setToolTipText(tooltip);
+      }
+    };
+    String tooltip = filterSRC ? "dont include type SRC" : "include type SRC";
+    BAMutil.setActionProperties(filterAction, "nj22/AddCoords", tooltip, true, 'C', -1);
+    filterAction.putValue(BAMutil.STATE, filterSRC);
+    filterButt = BAMutil.addActionToContainer(buttPanel, filterAction);
+    buttPanel.add(filterButt);
   }
 
   public PreferencesExt getPrefs() {
@@ -171,6 +187,9 @@ public class CdmIndexScan extends JPanel {
         int groupno = 0;
         for (GribCollectionImmutable.GroupGC g : ds.getGroups()) {
           if (g.getType() == GribCollectionImmutable.Type.Best) {
+            continue; // Best is deprecated.
+          }
+          if (filterSRC && g.getType() == GribCollectionImmutable.Type.SRC) {
             continue; // Best is deprecated.
           }
           Formatter localInfo = new Formatter();
