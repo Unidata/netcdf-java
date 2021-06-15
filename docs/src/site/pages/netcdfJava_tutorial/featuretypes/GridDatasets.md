@@ -15,7 +15,7 @@ All Scientific Feature Types have georeferencing coordinate systems, from which 
 Each adds special data subsetting methods which cannot be done efficiently or at all in the general case of `NetcdfDataset` objects.
 
 The Scientific Feature Type interface is currently undergoing significant change; this page serves as an overview of a conceptual goal, rather than documentation. For more information see the overview of
-[Scientific Feature Types.](https://docs.unidata.ucar.edu/netcdf-java/current/userguide/feature_datasets.html )
+[Scientific Feature Types.](feature_datasets.html )
 
 ### The Grid Feature Type
 A `GridCoordSystem` at a minimum has a `Lat` and `Lon` coordinate axis, or a `GeoX` and `GeoY` coordinate axis plus a `Projection` that maps x, y to lat, lon.

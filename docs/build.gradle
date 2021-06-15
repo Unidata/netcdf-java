@@ -15,6 +15,8 @@ dependencies {
   testCompile project(':netcdf4')
   testCompile project(':opendap')
   testCompile project(':cdm-test-utils')
+  testCompile project(':bufr')
+  testCompile project(':grib')
   testCompile 'org.slf4j:slf4j-api'
   testCompile 'junit:junit'
   testCompile 'com.google.truth:truth'

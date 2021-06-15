@@ -4,6 +4,7 @@ import examples.featuretypes.GridDatasetsTutorial;
 import org.junit.Assert;
 import org.junit.Test;
 import ucar.ma2.InvalidRangeException;
+import ucar.nc2.ft.NoFactoryFoundException;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -13,7 +14,7 @@ public class TestGridDatasetsTutorial {
   @Test
   public void testGridDatasetFormat() {
     // test open success
-    Assert.assertThrows(FileNotFoundException.class, () -> {
+    Assert.assertThrows(NoFactoryFoundException.class, () -> {
       GridDatasetsTutorial.gridDatasetFormat(null, "yourLocationAsString", null);
     });
   }
