@@ -64,23 +64,23 @@ public class TestReadGridDataset {
       assertThat(data.getRank()).isEqualTo(3);
       assertThat(data.getShape()).isEqualTo(new int[] {1, 21, 360});
 
-      GridCoordinateSystem csSubset = geoArray.csSubset();
-      assertThat(csSubset).isNotNull();
-      assertThat(csSubset.getHorizCoordSystem().isLatLon()).isTrue();
-      assertThat(csSubset.getXHorizAxis()).isNotNull();
-      assertThat(csSubset.getYHorizAxis()).isNotNull();
-      assertThat(csSubset.getTimeAxis()).isNotNull();
-      assertThat(csSubset.getGridAxes()).hasSize(3);
-      for (GridAxis axis : csSubset.getGridAxes()) {
+      MaterializedCoordinateSystem mcs = geoArray.getMaterializedCoordinateSystem();
+      assertThat(mcs).isNotNull();
+      assertThat(mcs.getHorizCoordSystem().isLatLon()).isTrue();
+      assertThat(mcs.getXHorizAxis()).isNotNull();
+      assertThat(mcs.getYHorizAxis()).isNotNull();
+      assertThat(mcs.getTimeAxis()).isNotNull();
+      assertThat(mcs.getGridAxes()).hasSize(3);
+      for (GridAxis axis : mcs.getGridAxes()) {
         assertThat(axis).isInstanceOf(GridAxis1D.class);
         if (axis.getAxisType().isTime()) {
           assertThat(axis).isInstanceOf(GridAxis1DTime.class);
         }
       }
 
-      assertThat(csSubset.getXHorizAxis()).isEqualTo(gcs.getXHorizAxis());
-      assertThat(csSubset.getYHorizAxis()).isEqualTo(gcs.getYHorizAxis());
-      GridAxis1DTime time = csSubset.getTimeAxis();
+      assertThat(mcs.getXHorizAxis()).isEqualTo(gcs.getXHorizAxis());
+      assertThat(mcs.getYHorizAxis()).isEqualTo(gcs.getYHorizAxis());
+      GridAxis1DTime time = mcs.getTimeAxis();
       assertThat(time.getNcoords()).isEqualTo(1);
       CalendarDate cd = time.getCalendarDate(0);
       // gregorian != proleptic_gregorian
@@ -120,28 +120,28 @@ public class TestReadGridDataset {
       assertThat(data.getRank()).isEqualTo(4);
       assertThat(data.getShape()).isEqualTo(new int[] {1, 1, 39, 45});
 
-      GridCoordinateSystem csSubset = geoArray.csSubset();
-      assertThat(csSubset).isNotNull();
-      assertThat(csSubset.getHorizCoordSystem().isLatLon()).isFalse();
-      assertThat(csSubset.getXHorizAxis()).isNotNull();
-      assertThat(csSubset.getYHorizAxis()).isNotNull();
+      MaterializedCoordinateSystem mcs = geoArray.getMaterializedCoordinateSystem();
+      assertThat(mcs).isNotNull();
+      assertThat(mcs.getHorizCoordSystem().isLatLon()).isFalse();
+      assertThat(mcs.getXHorizAxis()).isNotNull();
+      assertThat(mcs.getYHorizAxis()).isNotNull();
       assertThat(gcs.getVerticalAxis()).isNotNull();
-      assertThat(csSubset.getTimeAxis()).isNotNull();
-      assertThat(csSubset.getGridAxes()).hasSize(4);
-      for (GridAxis axis : csSubset.getGridAxes()) {
+      assertThat(mcs.getTimeAxis()).isNotNull();
+      assertThat(mcs.getGridAxes()).hasSize(4);
+      for (GridAxis axis : mcs.getGridAxes()) {
         assertThat(axis).isInstanceOf(GridAxis1D.class);
         if (axis.getAxisType().isTime()) {
           assertThat(axis).isInstanceOf(GridAxis1DTime.class);
         }
       }
 
-      assertThat(csSubset.getXHorizAxis()).isEqualTo(gcs.getXHorizAxis());
-      assertThat(csSubset.getYHorizAxis()).isEqualTo(gcs.getYHorizAxis());
-      GridAxis1D vert = csSubset.getVerticalAxis();
+      assertThat(mcs.getXHorizAxis()).isEqualTo(gcs.getXHorizAxis());
+      assertThat(mcs.getYHorizAxis()).isEqualTo(gcs.getYHorizAxis());
+      GridAxis1D vert = mcs.getVerticalAxis();
       assertThat(vert.getNcoords()).isEqualTo(1);
       assertThat(vert.getCoordMidpoint(0)).isEqualTo(700.0);
 
-      GridAxis1DTime time = csSubset.getTimeAxis();
+      GridAxis1DTime time = mcs.getTimeAxis();
       assertThat(time.getNcoords()).isEqualTo(1);
       CalendarDate cd = time.getCalendarDate(0);
       // gregorian != proleptic_gregorian
@@ -182,24 +182,24 @@ public class TestReadGridDataset {
       assertThat(data.getRank()).isEqualTo(3);
       assertThat(data.getShape()).isEqualTo(new int[] {1, 50, 50});
 
-      GridCoordinateSystem csSubset = geoArray.csSubset();
-      assertThat(csSubset).isNotNull();
-      assertThat(csSubset.getHorizCoordSystem().isLatLon()).isTrue();
-      assertThat(csSubset.getXHorizAxis()).isNotNull();
-      assertThat(csSubset.getYHorizAxis()).isNotNull();
+      MaterializedCoordinateSystem mcs = geoArray.getMaterializedCoordinateSystem();
+      assertThat(mcs).isNotNull();
+      assertThat(mcs.getHorizCoordSystem().isLatLon()).isTrue();
+      assertThat(mcs.getXHorizAxis()).isNotNull();
+      assertThat(mcs.getYHorizAxis()).isNotNull();
       assertThat(gcs.getVerticalAxis()).isNotNull();
-      assertThat(csSubset.getTimeAxis()).isNull();
-      assertThat(csSubset.getGridAxes()).hasSize(3);
-      for (GridAxis axis : csSubset.getGridAxes()) {
+      assertThat(mcs.getTimeAxis()).isNull();
+      assertThat(mcs.getGridAxes()).hasSize(3);
+      for (GridAxis axis : mcs.getGridAxes()) {
         assertThat(axis).isInstanceOf(GridAxis1D.class);
         if (axis.getAxisType().isTime()) {
           assertThat(axis).isInstanceOf(GridAxis1DTime.class);
         }
       }
 
-      assertThat(csSubset.getXHorizAxis()).isEqualTo(gcs.getXHorizAxis());
-      assertThat(csSubset.getYHorizAxis()).isEqualTo(gcs.getYHorizAxis());
-      GridAxis1D vert = csSubset.getVerticalAxis();
+      assertThat(mcs.getXHorizAxis()).isEqualTo(gcs.getXHorizAxis());
+      assertThat(mcs.getYHorizAxis()).isEqualTo(gcs.getYHorizAxis());
+      GridAxis1D vert = mcs.getVerticalAxis();
       assertThat(vert.getNcoords()).isEqualTo(1);
       assertThat(vert.getCoordMidpoint(0)).isEqualTo(725);
     }
@@ -238,24 +238,24 @@ public class TestReadGridDataset {
       assertThat(data.getRank()).isEqualTo(4);
       assertThat(data.getShape()).isEqualTo(new int[] {1, 1, 73, 73});
 
-      GridCoordinateSystem csSubset = geoArray.csSubset();
-      assertThat(csSubset).isNotNull();
-      assertThat(csSubset.getHorizCoordSystem().isLatLon()).isEqualTo(gcs.getHorizCoordSystem().isLatLon());
-      assertThat(csSubset.getXHorizAxis()).isNotNull();
-      assertThat(csSubset.getYHorizAxis()).isNotNull();
+      MaterializedCoordinateSystem mcs = geoArray.getMaterializedCoordinateSystem();
+      assertThat(mcs).isNotNull();
+      assertThat(mcs.getHorizCoordSystem().isLatLon()).isEqualTo(gcs.getHorizCoordSystem().isLatLon());
+      assertThat(mcs.getXHorizAxis()).isNotNull();
+      assertThat(mcs.getYHorizAxis()).isNotNull();
       assertThat(gcs.getVerticalAxis()).isNotNull();
-      assertThat(csSubset.getTimeAxis()).isNotNull();
-      assertThat(csSubset.getGridAxes()).hasSize(4);
-      for (GridAxis axis : csSubset.getGridAxes()) {
+      assertThat(mcs.getTimeAxis()).isNotNull();
+      assertThat(mcs.getGridAxes()).hasSize(4);
+      for (GridAxis axis : mcs.getGridAxes()) {
         assertThat(axis).isInstanceOf(GridAxis1D.class);
         if (axis.getAxisType().isTime()) {
           assertThat(axis).isInstanceOf(GridAxis1DTime.class);
         }
       }
 
-      assertThat(csSubset.getXHorizAxis()).isEqualTo(gcs.getXHorizAxis());
-      assertThat(csSubset.getYHorizAxis()).isEqualTo(gcs.getYHorizAxis());
-      GridAxis1D vert = csSubset.getVerticalAxis();
+      assertThat(mcs.getXHorizAxis()).isEqualTo(gcs.getXHorizAxis());
+      assertThat(mcs.getYHorizAxis()).isEqualTo(gcs.getYHorizAxis());
+      GridAxis1D vert = mcs.getVerticalAxis();
       assertThat(vert.getNcoords()).isEqualTo(1);
       assertThat(vert.getCoordMidpoint(0)).isEqualTo(700.);
     }

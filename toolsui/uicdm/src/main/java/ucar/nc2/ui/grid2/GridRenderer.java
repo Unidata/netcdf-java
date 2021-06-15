@@ -261,7 +261,7 @@ public class GridRenderer {
   }
 
   private void drawGridHorizRegular(Graphics2D g, GridReferencedArray referencedArray) {
-    GridCoordinateSystem gsys = referencedArray.csSubset();
+    MaterializedCoordinateSystem gsys = referencedArray.getMaterializedCoordinateSystem();
     Array<Number> data = referencedArray.data();
     data = Arrays.reduce(data);
 
@@ -446,7 +446,7 @@ public class GridRenderer {
 
   //// 2D case
   private void drawGridHoriz(java.awt.Graphics2D g, GridReferencedArray referencedArray) {
-    GridLatLon2D hcsys2D = (GridLatLon2D) referencedArray.csSubset().getHorizCoordSystem();
+    GridLatLon2D hcsys2D = (GridLatLon2D) referencedArray.getMaterializedCoordinateSystem().getHorizCoordSystem();
     Array<Number> data = referencedArray.data();
     data = Arrays.reduce(data);
 

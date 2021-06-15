@@ -468,9 +468,22 @@ public class GcdmGridConverter {
   public static GcdmGridProto.GridReferencedArray encodeGridReferencedArray(GridReferencedArray geoArray) {
     GcdmGridProto.GridReferencedArray.Builder builder = GcdmGridProto.GridReferencedArray.newBuilder();
     builder.setGridName(geoArray.gridName());
-    builder.setCsSubset(encodeCoordSys(geoArray.csSubset()));
+    builder.setCsSubset(encodeMaterializedCoordSys(geoArray.getMaterializedCoordinateSystem()));
     builder.setData(GcdmConverter.encodeData(geoArray.arrayType(), geoArray.data()));
     return builder.build();
   }
+
+  public static GcdmGridProto.GridCoordinateSystem encodeMaterializedCoordSys(MaterializedCoordinateSystem csys) {
+    GcdmGridProto.GridCoordinateSystem.Builder builder = GcdmGridProto.GridCoordinateSystem.newBuilder();
+    builder.setName(csys.getName());
+    for (GridAxis axis : csys.getGridAxes()) {
+      builder.addAxisNames(axis.getName());
+    }
+    GridHorizCoordinateSystem horizCS = csys.getHorizCoordSystem();
+    builder.setProjection(encodeProjection(horizCS.getProjection(), horizCS.getGeoUnits()));
+
+    return builder.build();
+  }
+
 
 }

@@ -22,7 +22,10 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.*;
 
-/** A Coordinate Axis for Grids. */
+/**
+ * A Coordinate Axis for Grids.
+ * LOOK this is really a copy of CoverageAxis. still has a definite shape!
+ */
 @Immutable
 public abstract class GridAxis implements Iterable<Object> {
   private static final Logger logger = LoggerFactory.getLogger(GridAxis.class);
@@ -82,12 +85,14 @@ public abstract class GridAxis implements Iterable<Object> {
     dimension //
   }
 
+  // LOOK heres the shape! materializing the values. What about regular?
   public abstract Array<Double> getCoordsAsArray();
 
   public abstract Array<Double> getCoordBoundsAsArray();
 
   /** Create a subset of this axis based on the SubsetParams. */
   // TODO throw an Exception when subset fails?
+  // TODO TimeCoordinate ??
   @Nullable
   public abstract GridAxis subset(GridSubset params, Formatter errlog);
 

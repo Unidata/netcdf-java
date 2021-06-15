@@ -48,9 +48,9 @@ public class TestGridFromDodsNetcdfFile {
     System.out.printf(" constrain bbox= %s width=%f%n", bbox.toString2(), bbox.getWidth());
 
     GridReferencedArray garray = coverage.getReader().setLatLonBoundingBox(bbox).setTimePresent().read();
-    GridCoordinateSystem gcs2 = garray.csSubset();
-    assertThat(gcs2).isNotNull();
-    GridHorizCoordinateSystem hcs2 = gcs2.getHorizCoordSystem();
+    MaterializedCoordinateSystem mcs = garray.getMaterializedCoordinateSystem();
+    assertThat(mcs).isNotNull();
+    GridHorizCoordinateSystem hcs2 = mcs.getHorizCoordSystem();
     assertThat(hcs2).isNotNull();
     System.out.printf(" data cs shape=%s%n", Arrays.toString(hcs2.getShape()));
     assertThat(hcs2.getShape()).isEqualTo(expectedShape);

@@ -62,7 +62,7 @@ public class TestGridHorizSubset {
       GridReferencedArray geo = coverage.getReader().setLatLonBoundingBox(bbox).read();
 
       int[] expectedShape = new int[] {363, 479};
-      assertThat(geo.csSubset().getHorizCoordSystem().getShape()).isEqualTo(expectedShape);
+      assertThat(geo.getMaterializedCoordinateSystem().getHorizCoordSystem().getShape()).isEqualTo(expectedShape);
     }
   }
 
@@ -171,16 +171,16 @@ public class TestGridHorizSubset {
           .setHorizStride(stride).read();
 
       // Check that TimeAxis is 1D, has one coordinate, and it's equal to the time we requested
-      GridCoordinateSystem dataCS = geoArray.csSubset();
-      assertThat(dataCS).isNotNull();
-      GridAxis1DTime timeAxis1d = dataCS.getTimeAxis();
+      MaterializedCoordinateSystem mcs = geoArray.getMaterializedCoordinateSystem();
+      assertThat(mcs).isNotNull();
+      GridAxis1DTime timeAxis1d = mcs.getTimeAxis();
       assertThat(timeAxis1d).isNotNull();
       assertThat(timeAxis1d.getNcoords()).isEqualTo(1);
       assertThat(timeAxis1d.getCalendarDates().get(0)).isEqualTo(validTime);
 
       // make sure the bounding box requested by subset is contained within the
       // horizontal coordinate system of the GeoReferencedArray produced by the subset
-      GridHorizCoordinateSystem subsetHcs = dataCS.getHorizCoordSystem();
+      GridHorizCoordinateSystem subsetHcs = mcs.getHorizCoordSystem();
       assertThat(subsetLatLonRequest.containedIn(subsetHcs.getLatLonBoundingBox())).isTrue();
 
       // make sure resolution of the lat and lon grids of the subset take into account the stride
@@ -230,9 +230,9 @@ public class TestGridHorizSubset {
     System.out.printf(" constrain bbox= %s width=%f%n", bbox.toString2(), bbox.getWidth());
 
     GridReferencedArray geoArray = coverage.getReader().setLatLonBoundingBox(bbox).setTimePresent().read();
-    GridCoordinateSystem gcs2 = geoArray.csSubset();
-    assertThat(gcs2).isNotNull();
-    GridHorizCoordinateSystem hcs2 = gcs2.getHorizCoordSystem();
+    MaterializedCoordinateSystem mcs = geoArray.getMaterializedCoordinateSystem();
+    assertThat(mcs).isNotNull();
+    GridHorizCoordinateSystem hcs2 = mcs.getHorizCoordSystem();
     assertThat(hcs2).isNotNull();
     System.out.printf(" data cs shape=%s%n", java.util.Arrays.toString(hcs2.getShape()));
     System.out.printf(" data shape=%s%n", java.util.Arrays.toString(geoArray.data().getShape()));

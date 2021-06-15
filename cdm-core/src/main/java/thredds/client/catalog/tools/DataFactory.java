@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
+import java.util.Optional;
+
 import thredds.client.catalog.Access;
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Dataset;
@@ -19,7 +21,6 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.grid.GridDataset;
 import ucar.nc2.grid.GridDatasetFactory;
 import ucar.nc2.util.CancelTask;
@@ -136,9 +137,9 @@ public class DataFactory {
       // otherwise, try to open as GridDataset,
       NetcdfDataset ncd = openDataset(ds, true, task, result);
       if (null != ncd) {
-        GridDataset gridDataset = GridDatasetFactory.wrapGridDataset(ncd, result.errLog);
-        if (gridDataset != null) {
-          result.featureDataset = gridDataset;
+        Optional<GridDataset> gridDataset = GridDatasetFactory.wrapGridDataset(ncd, result.errLog);
+        if (gridDataset.isPresent()) {
+          result.featureDataset = gridDataset.get();
           result.location = result.featureDataset.getLocation();
           result.featureType = result.featureDataset.getFeatureType();
         }

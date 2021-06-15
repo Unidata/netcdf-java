@@ -74,7 +74,7 @@ public class TestReadGridSubset {
     assertThat(Arrays.reduce(geoArray.data()).getRank()).isEqualTo(expected);
     int[] shape = geoArray.data().getShape();
     int count = 0;
-    for (GridAxis axis : geoArray.csSubset().getGridAxes()) {
+    for (GridAxis axis : geoArray.getMaterializedCoordinateSystem().getGridAxes()) {
       if (axis instanceof GridAxis1D) { // awkward
         assertThat(((GridAxis1D) axis).getNcoords()).isEqualTo(shape[count]);
       }

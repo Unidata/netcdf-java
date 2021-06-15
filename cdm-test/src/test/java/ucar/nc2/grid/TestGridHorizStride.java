@@ -53,11 +53,11 @@ public class TestGridHorizStride {
       assertThat(hcs).isNotNull();
 
       GridReferencedArray geoArray = coverage.getReader().setHorizStride(2).read();
-      GridCoordinateSystem gcs2 = geoArray.csSubset();
-      assertThat(gcs2).isNotNull();
+      MaterializedCoordinateSystem mcs = geoArray.getMaterializedCoordinateSystem();
+      assertThat(mcs).isNotNull();
       System.out.printf(" data shape=%s%n", java.util.Arrays.toString(geoArray.data().getShape()));
 
-      GridHorizCoordinateSystem hcs2 = gcs2.getHorizCoordSystem();
+      GridHorizCoordinateSystem hcs2 = mcs.getHorizCoordSystem();
       assertThat(hcs2).isNotNull();
       System.out.printf(" data hcs shape=%s%n", java.util.Arrays.toString(hcs2.getShape()));
 
