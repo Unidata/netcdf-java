@@ -930,6 +930,7 @@ public class NetcdfFiles {
       return EscapeStrings.backslashEscape(g.getShortName(), reservedFullName);
     StringBuilder sbuff = new StringBuilder();
     appendGroupName(sbuff, parent, reservedFullName);
+    sbuff.append(EscapeStrings.backslashEscape(g.getShortName(), reservedFullName));
     return sbuff.toString();
   }
 
