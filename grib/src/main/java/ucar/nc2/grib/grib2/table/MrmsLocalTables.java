@@ -34,15 +34,20 @@ public class MrmsLocalTables extends LocalTables {
    * Copy/paste from grib/src/main/resources/resources/grib2/mrms/MergedTableCode.txt
    */
   private void init() {
-    add(209, 2, 0, "NLDN_CG_001min_AvgDensity", "CG Average Lightning Density 1-min - NLDN", "flashes/km^2/min", -3, -1); // v12.0
-    add(209, 2, 1, "NLDN_CG_005min_AvgDensity", "CG Average Lightning Density 5-min - NLDN", "flashes/km^2/min", -3, -1); // v12.0
-    add(209, 2, 2, "NLDN_CG_015min_AvgDensity", "CG Average Lightning Density 15-min - NLDN", "flashes/km^2/min", -3, -1); // v12.0
-    add(209, 2, 3, "NLDN_CG_030min_AvgDensity", "CG Average Lightning Density 30-min - NLDN", "flashes/km^2/min", -3, -1); // v12.0
+    add(209, 2, 0, "NLDN_CG_001min_AvgDensity", "CG Average Lightning Density 1-min - NLDN", "flashes/km^2/min", -3,
+        -1); // v12.0
+    add(209, 2, 1, "NLDN_CG_005min_AvgDensity", "CG Average Lightning Density 5-min - NLDN", "flashes/km^2/min", -3,
+        -1); // v12.0
+    add(209, 2, 2, "NLDN_CG_015min_AvgDensity", "CG Average Lightning Density 15-min - NLDN", "flashes/km^2/min", -3,
+        -1); // v12.0
+    add(209, 2, 3, "NLDN_CG_030min_AvgDensity", "CG Average Lightning Density 30-min - NLDN", "flashes/km^2/min", -3,
+        -1); // v12.0
     add(209, 2, 4, "LightningProbabilityNext30min", "Lightning Probability 0-30 minutes - NLDN", "%", 0, 0); // v11.5.5
     add(209, 2, 5, "LightningProbabilityNext30minGrid", "Lightning Probability 0-30 minutes - NLDN", "%", 0, 0); // v12.0
     add(209, 2, 6, "LightningProbabilityNext60minGrid", "Lightning Probability 0-30 minutes - NLDN", "%", 0, 0); // v12.0
     add(209, 2, 7, "LightningJumpGrid", "Rapid lightning increases and decreases ", "dimensionless", -99903, -99900); // v12.0
-    add(209, 2, 8, "LightningJumpGrid_Max_005min", "Rapid lightning increases and decreases over 5-minutes ", "dimensionless", -99903, -99900); // v12.0
+    add(209, 2, 8, "LightningJumpGrid_Max_005min", "Rapid lightning increases and decreases over 5-minutes ",
+        "dimensionless", -99903, -99900); // v12.0
     add(209, 3, 0, "MergedAzShear0to2kmAGL", "Azimuth Shear 0-2km AGL", "0.001/s", 0, 0); // v12.0
     add(209, 3, 1, "MergedAzShear3to6kmAGL", "Azimuth Shear 3-6km AGL", "0.001/s", 0, 0); // v12.0
     add(209, 3, 2, "RotationTrack30min", "Rotation Track 0-2km AGL 30-min", "0.001/s", 0, 0); // v12.0
@@ -84,13 +89,16 @@ public class MrmsLocalTables extends LocalTables {
     add(209, 3, 54, "Reflectivity_-10C", "Isothermal Reflectivity at -10C", "dBZ", -999, -99); // v12.0
     add(209, 3, 55, "Reflectivity_-15C", "Isothermal Reflectivity at -15C", "dBZ", -999, -99); // v12.0
     add(209, 3, 56, "Reflectivity_-20C", "Isothermal Reflectivity at -20C", "dBZ", -999, -99); // v12.0
-    add(209, 3, 57, "ReflectivityAtLowestAltitude5km", "ReflectivityAtLowestAltitude resampled from 1 to 5km resolution", "dBZ", -999, -99); // v12.0
-    add(209, 3, 58, "MergedReflectivityAtLowestAltitude", "Non Quality Controlled Reflectivity At Lowest Altitude", "dBZ", -999, -99); // v12.0
+    add(209, 3, 57, "ReflectivityAtLowestAltitude5km",
+        "ReflectivityAtLowestAltitude resampled from 1 to 5km resolution", "dBZ", -999, -99); // v12.0
+    add(209, 3, 58, "MergedReflectivityAtLowestAltitude", "Non Quality Controlled Reflectivity At Lowest Altitude",
+        "dBZ", -999, -99); // v12.0
     add(209, 4, 0, "IRband4", "Infrared (E/W blend)", "K", -999, -99); // v11.5.5
     add(209, 4, 1, "Visible", "Visible (E/W blend)", "dimensionless", -3, -1); // v11.5.5
     add(209, 4, 2, "WaterVapor", "Water Vapor (E/W blend)", "K", -999, -99); // v11.5.5
     add(209, 4, 3, "CloudCover", "Cloud Cover", "K", -999, -99); // v11.5.5
-    add(209, 6, 0, "PrecipFlag", "Surface Precipitation Type (Convective, Stratiform, Tropical, Hail, Snow)", "dimensionless", -3, -1); // v12.0
+    add(209, 6, 0, "PrecipFlag", "Surface Precipitation Type (Convective, Stratiform, Tropical, Hail, Snow)",
+        "dimensionless", -3, -1); // v12.0
     add(209, 6, 1, "PrecipRate", "Radar Precipitation Rate", "mm/hr", -3, -1); // v12.0
     add(209, 6, 2, "RadarOnly_QPE_01H", "Radar precipitation accumulation 1-hour", "mm", -3, -1); // v12.0
     add(209, 6, 3, "RadarOnly_QPE_03H", "Radar precipitation accumulation 3-hour", "mm", -3, -1); // v12.0
@@ -99,13 +107,20 @@ public class MrmsLocalTables extends LocalTables {
     add(209, 6, 6, "RadarOnly_QPE_24H", "Radar precipitation accumulation 24-hour", "mm", -3, -1); // v12.0
     add(209, 6, 7, "RadarOnly_QPE_48H", "Radar precipitation accumulation 48-hour", "mm", -3, -1); // v12.0
     add(209, 6, 8, "RadarOnly_QPE_72H", "Radar precipitation accumulation 72-hour", "mm", -3, -1); // v12.0
-    add(209, 6, 9, "GaugeCorrQPE01H", "Local gauge bias corrected radar precipitation accumulation 1-hour", "mm", -3, -1); // v11.5.5
-    add(209, 6, 10, "GaugeCorrQPE03H", "Local gauge bias corrected radar precipitation accumulation 3-hour", "mm", -3, -1); // v11.5.5
-    add(209, 6, 11, "GaugeCorrQPE06H", "Local gauge bias corrected radar precipitation accumulation 6-hour", "mm", -3, -1); // v11.5.5
-    add(209, 6, 12, "GaugeCorrQPE12H", "Local gauge bias corrected radar precipitation accumulation 12-hour", "mm", -3, -1); // v11.5.5
-    add(209, 6, 13, "GaugeCorrQPE24H", "Local gauge bias corrected radar precipitation accumulation 24-hour", "mm", -3, -1); // v11.5.5
-    add(209, 6, 14, "GaugeCorrQPE48H", "Local gauge bias corrected radar precipitation accumulation 48-hour", "mm", -3, -1); // v11.5.5
-    add(209, 6, 15, "GaugeCorrQPE72H", "Local gauge bias corrected radar precipitation accumulation 72-hour", "mm", -3, -1); // v11.5.5
+    add(209, 6, 9, "GaugeCorrQPE01H", "Local gauge bias corrected radar precipitation accumulation 1-hour", "mm", -3,
+        -1); // v11.5.5
+    add(209, 6, 10, "GaugeCorrQPE03H", "Local gauge bias corrected radar precipitation accumulation 3-hour", "mm", -3,
+        -1); // v11.5.5
+    add(209, 6, 11, "GaugeCorrQPE06H", "Local gauge bias corrected radar precipitation accumulation 6-hour", "mm", -3,
+        -1); // v11.5.5
+    add(209, 6, 12, "GaugeCorrQPE12H", "Local gauge bias corrected radar precipitation accumulation 12-hour", "mm", -3,
+        -1); // v11.5.5
+    add(209, 6, 13, "GaugeCorrQPE24H", "Local gauge bias corrected radar precipitation accumulation 24-hour", "mm", -3,
+        -1); // v11.5.5
+    add(209, 6, 14, "GaugeCorrQPE48H", "Local gauge bias corrected radar precipitation accumulation 48-hour", "mm", -3,
+        -1); // v11.5.5
+    add(209, 6, 15, "GaugeCorrQPE72H", "Local gauge bias corrected radar precipitation accumulation 72-hour", "mm", -3,
+        -1); // v11.5.5
     add(209, 6, 16, "GaugeOnlyQPE01H", "Gauge only precipitation accumulation 1-hour", "mm", -3, -1); // v11.5.5
     add(209, 6, 17, "GaugeOnlyQPE03H", "Gauge only precipitation accumulation 3-hour", "mm", -3, -1); // v11.5.5
     add(209, 6, 18, "GaugeOnlyQPE06H", "Gauge only precipitation accumulation 6-hour", "mm", -3, -1); // v11.5.5
@@ -134,7 +149,8 @@ public class MrmsLocalTables extends LocalTables {
     add(209, 6, 41, "MultiSensor_QPE_24H_Pass2", "Multi-sensor accumulation 24-hour (2-hour latency)", "mm", -3, -1); // v12.0
     add(209, 6, 42, "MultiSensor_QPE_48H_Pass2", "Multi-sensor accumulation 48-hour (2-hour latency)", "mm", -3, -1); // v12.0
     add(209, 6, 43, "MultiSensor_QPE_72H_Pass2", "Multi-sensor accumulation 72-hour (2-hour latency)", "mm", -3, -1); // v12.0
-    add(209, 6, 44, "SyntheticPrecipRateID", "Method IDs for blended single and dual-pol derived precip rates ", "dimensionless", -3, -1); // v12.0
+    add(209, 6, 44, "SyntheticPrecipRateID", "Method IDs for blended single and dual-pol derived precip rates ",
+        "dimensionless", -3, -1); // v12.0
     add(209, 6, 45, "RadarOnly_QPE_15M", "Radar precipitation accumulation 15-minute", "mm", -3, -1); // v12.0
     add(209, 7, 0, "Model_SurfaceTemp", "Model Surface temperature", "degree_Celsius", -999, -99); // v12.0
     add(209, 7, 1, "Model_WetBulbTemp", "Model Surface wet bulb temperature", "degree_Celsius", -999, -99); // v12.0
@@ -143,43 +159,73 @@ public class MrmsLocalTables extends LocalTables {
     add(209, 7, 4, "BrightBandTopHeight", "Brightband Top Height AGL", "m", -3, -1); // v12.0
     add(209, 7, 5, "BrightBandBottomHeight", "Brightband Bottom Height AGL", "m", -3, -1); // v12.0
     add(209, 8, 0, "RadarQualityIndex", "Radar Quality Index", "dimensionless", -3, -1); // v12.0
-    add(209, 8, 1, "GaugeInflIndex_01H_Pass1", "Gauge Influence Index for 1-hour QPE (1-hour latency)", "dimensionless", -3, -1); // v12.0
-    add(209, 8, 2, "GaugeInflIndex_03H_Pass1", "Gauge Influence Index for 3-hour QPE (1-hour latency)", "dimensionless", -3, -1); // v12.0
-    add(209, 8, 3, "GaugeInflIndex_06H_Pass1", "Gauge Influence Index for 6-hour QPE (1-hour latency)", "dimensionless", -3, -1); // v12.0
-    add(209, 8, 4, "GaugeInflIndex_12H_Pass1", "Gauge Influence Index for 12-hour QPE (1-hour latency)", "dimensionless", -3, -1); // v12.0
-    add(209, 8, 5, "GaugeInflIndex_24H_Pass1", "Gauge Influence Index for 24-hour QPE (1-hour latency)", "dimensionless", -3, -1); // v12.0
-    add(209, 8, 6, "GaugeInflIndex_48H_Pass1", "Gauge Influence Index for 48-hour QPE (1-hour latency)", "dimensionless", -3, -1); // v12.0
-    add(209, 8, 7, "GaugeInflIndex_72H_Pass1", "Gauge Influence Index for 72-hour QPE (1-hour latency)", "dimensionless", -3, -1); // v12.0
+    add(209, 8, 1, "GaugeInflIndex_01H_Pass1", "Gauge Influence Index for 1-hour QPE (1-hour latency)", "dimensionless",
+        -3, -1); // v12.0
+    add(209, 8, 2, "GaugeInflIndex_03H_Pass1", "Gauge Influence Index for 3-hour QPE (1-hour latency)", "dimensionless",
+        -3, -1); // v12.0
+    add(209, 8, 3, "GaugeInflIndex_06H_Pass1", "Gauge Influence Index for 6-hour QPE (1-hour latency)", "dimensionless",
+        -3, -1); // v12.0
+    add(209, 8, 4, "GaugeInflIndex_12H_Pass1", "Gauge Influence Index for 12-hour QPE (1-hour latency)",
+        "dimensionless", -3, -1); // v12.0
+    add(209, 8, 5, "GaugeInflIndex_24H_Pass1", "Gauge Influence Index for 24-hour QPE (1-hour latency)",
+        "dimensionless", -3, -1); // v12.0
+    add(209, 8, 6, "GaugeInflIndex_48H_Pass1", "Gauge Influence Index for 48-hour QPE (1-hour latency)",
+        "dimensionless", -3, -1); // v12.0
+    add(209, 8, 7, "GaugeInflIndex_72H_Pass1", "Gauge Influence Index for 72-hour QPE (1-hour latency)",
+        "dimensionless", -3, -1); // v12.0
     add(209, 8, 8, "SeamlessHSR", "Seamless Hybrid Scan Reflectivity with VPR correction", "dBZ", -999, -99); // v12.0
     add(209, 8, 9, "SeamlessHSRHeight", "Height of Seamless Hybrid Scan Reflectivity AGL", "km", -3, -1); // v12.0
-    add(209, 8, 10, "RadarAccumulationQualityIndex_01H", "Radar 1-hour QPE Accumulation Quality", "dimensionless", -3, -1); // v12.0
-    add(209, 8, 11, "RadarAccumulationQualityIndex_03H", "Radar 3-hour QPE Accumulation Quality", "dimensionless", -3, -1); // v12.0
-    add(209, 8, 12, "RadarAccumulationQualityIndex_06H", "Radar 6-hour QPE Accumulation Quality", "dimensionless", -3, -1); // v12.0
-    add(209, 8, 13, "RadarAccumulationQualityIndex_12H", "Radar 12-hour QPE Accumulation Quality", "dimensionless", -3, -1); // v12.0
-    add(209, 8, 14, "RadarAccumulationQualityIndex_24H", "Radar 24-hour QPE Accumulation Quality", "dimensionless", -3, -1); // v12.0
-    add(209, 8, 15, "RadarAccumulationQualityIndex_48H", "Radar 48-hour QPE Accumulation Quality", "dimensionless", -3, -1); // v12.0
-    add(209, 8, 16, "RadarAccumulationQualityIndex_72H", "Radar 72-hour QPE Accumulation Quality", "dimensionless", -3, -1); // v12.0
-    add(209, 8, 17, "GaugeInflIndex_01H_Pass2", "Gauge Influence Index for 1-hour QPE (2-hour latency)", "dimensionless", -3, -1); // v12.0
-    add(209, 8, 18, "GaugeInflIndex_03H_Pass2", "Gauge Influence Index for 3-hour QPE (2-hour latency)", "dimensionless", -3, -1); // v12.0
-    add(209, 8, 19, "GaugeInflIndex_06H_Pass2", "Gauge Influence Index for 6-hour QPE (2-hour latency)", "dimensionless", -3, -1); // v12.0
-    add(209, 8, 20, "GaugeInflIndex_12H_Pass2", "Gauge Influence Index for 12-hour QPE (2-hour latency)", "dimensionless", -3, -1); // v12.0
-    add(209, 8, 21, "GaugeInflIndex_24H_Pass2", "Gauge Influence Index for 24-hour QPE (2-hour latency)", "dimensionless", -3, -1); // v12.0
-    add(209, 8, 22, "GaugeInflIndex_48H_Pass2", "Gauge Influence Index for 48-hour QPE (2-hour latency)", "dimensionless", -3, -1); // v12.0
-    add(209, 8, 23, "GaugeInflIndex_72H_Pass2", "Gauge Influence Index for 72-hour QPE (2-hour latency)", "dimensionless", -3, -1); // v12.0
+    add(209, 8, 10, "RadarAccumulationQualityIndex_01H", "Radar 1-hour QPE Accumulation Quality", "dimensionless", -3,
+        -1); // v12.0
+    add(209, 8, 11, "RadarAccumulationQualityIndex_03H", "Radar 3-hour QPE Accumulation Quality", "dimensionless", -3,
+        -1); // v12.0
+    add(209, 8, 12, "RadarAccumulationQualityIndex_06H", "Radar 6-hour QPE Accumulation Quality", "dimensionless", -3,
+        -1); // v12.0
+    add(209, 8, 13, "RadarAccumulationQualityIndex_12H", "Radar 12-hour QPE Accumulation Quality", "dimensionless", -3,
+        -1); // v12.0
+    add(209, 8, 14, "RadarAccumulationQualityIndex_24H", "Radar 24-hour QPE Accumulation Quality", "dimensionless", -3,
+        -1); // v12.0
+    add(209, 8, 15, "RadarAccumulationQualityIndex_48H", "Radar 48-hour QPE Accumulation Quality", "dimensionless", -3,
+        -1); // v12.0
+    add(209, 8, 16, "RadarAccumulationQualityIndex_72H", "Radar 72-hour QPE Accumulation Quality", "dimensionless", -3,
+        -1); // v12.0
+    add(209, 8, 17, "GaugeInflIndex_01H_Pass2", "Gauge Influence Index for 1-hour QPE (2-hour latency)",
+        "dimensionless", -3, -1); // v12.0
+    add(209, 8, 18, "GaugeInflIndex_03H_Pass2", "Gauge Influence Index for 3-hour QPE (2-hour latency)",
+        "dimensionless", -3, -1); // v12.0
+    add(209, 8, 19, "GaugeInflIndex_06H_Pass2", "Gauge Influence Index for 6-hour QPE (2-hour latency)",
+        "dimensionless", -3, -1); // v12.0
+    add(209, 8, 20, "GaugeInflIndex_12H_Pass2", "Gauge Influence Index for 12-hour QPE (2-hour latency)",
+        "dimensionless", -3, -1); // v12.0
+    add(209, 8, 21, "GaugeInflIndex_24H_Pass2", "Gauge Influence Index for 24-hour QPE (2-hour latency)",
+        "dimensionless", -3, -1); // v12.0
+    add(209, 8, 22, "GaugeInflIndex_48H_Pass2", "Gauge Influence Index for 48-hour QPE (2-hour latency)",
+        "dimensionless", -3, -1); // v12.0
+    add(209, 8, 23, "GaugeInflIndex_72H_Pass2", "Gauge Influence Index for 72-hour QPE (2-hour latency)",
+        "dimensionless", -3, -1); // v12.0
     add(209, 9, 0, "MergedReflectivityQC", "3D Reflectivity Mosaic - 33 CAPPIS (500-19000m)", "dBZ", -999, -99); // v12.0
-    add(209, 9, 1, "ConusPlusMergedReflectivityQC", "All Radar 3D Reflectivity Mosaic - 33 CAPPIS (500-19000m)", "dBZ", -999, -99); // v11.5.5
+    add(209, 9, 1, "ConusPlusMergedReflectivityQC", "All Radar 3D Reflectivity Mosaic - 33 CAPPIS (500-19000m)", "dBZ",
+        -999, -99); // v11.5.5
     add(209, 9, 3, "MergedRhoHV", "3D RhoHV Mosaic - 33 CAPPIS (500-19000m)", "dimensionless", -999, -99); // v12.0
     add(209, 9, 4, "MergedZdr", "3D Zdr Mosaic - 33 CAPPIS (500-19000m)", "dB", -999, -99); // v12.0
-    add(209, 10, 0, "MergedReflectivityQCComposite5km", "Composite Reflectivity Mosaic (optimal method) resampled from 1 to 5km", "dBZ", -999, -99); // v12.0
-    add(209, 10, 1, "HeightCompositeReflectivity", "Height of Composite Reflectivity Mosaic (optimal method) MSL", "m", -3, -1); // v12.0
-    add(209, 10, 2, "LowLevelCompositeReflectivity", "Low-Level Composite Reflectivity Mosaic (0-4km)", "dBZ", -999, -99); // v12.0
-    add(209, 10, 3, "HeightLowLevelCompositeReflectivity", "Height of Low-Level Composite Reflectivity Mosaic (0-4km) MSL", "m", -3, -1); // v12.0
-    add(209, 10, 4, "LayerCompositeReflectivity_Low", "Layer Composite Reflectivity Mosaic 0-24kft (low altitude)", "dBZ", -999, -99); // v12.0
-    add(209, 10, 5, "LayerCompositeReflectivity_High", "Layer Composite Reflectivity Mosaic 24-60 kft (highest altitude)", "dBZ", -999, -99); // v12.0
-    add(209, 10, 6, "LayerCompositeReflectivity_Super", "Layer Composite Reflectivity Mosaic 33-60 kft (super high altitude)", "dBZ", -999, -99); // v12.0
+    add(209, 10, 0, "MergedReflectivityQCComposite5km",
+        "Composite Reflectivity Mosaic (optimal method) resampled from 1 to 5km", "dBZ", -999, -99); // v12.0
+    add(209, 10, 1, "HeightCompositeReflectivity", "Height of Composite Reflectivity Mosaic (optimal method) MSL", "m",
+        -3, -1); // v12.0
+    add(209, 10, 2, "LowLevelCompositeReflectivity", "Low-Level Composite Reflectivity Mosaic (0-4km)", "dBZ", -999,
+        -99); // v12.0
+    add(209, 10, 3, "HeightLowLevelCompositeReflectivity",
+        "Height of Low-Level Composite Reflectivity Mosaic (0-4km) MSL", "m", -3, -1); // v12.0
+    add(209, 10, 4, "LayerCompositeReflectivity_Low", "Layer Composite Reflectivity Mosaic 0-24kft (low altitude)",
+        "dBZ", -999, -99); // v12.0
+    add(209, 10, 5, "LayerCompositeReflectivity_High",
+        "Layer Composite Reflectivity Mosaic 24-60 kft (highest altitude)", "dBZ", -999, -99); // v12.0
+    add(209, 10, 6, "LayerCompositeReflectivity_Super",
+        "Layer Composite Reflectivity Mosaic 33-60 kft (super high altitude)", "dBZ", -999, -99); // v12.0
     add(209, 10, 7, "CREF_1HR_MAX", "Composite Reflectivity Hourly Maximum", "dBZ", -999, -99); // v12.0
     add(209, 10, 8, "ReflectivityMaxAboveM10C", "Maximum Reflectivity at -10 deg C height and above", "dBZ", -999, -99); // v10.0.1
-    add(209, 10, 9, "LayerCompositeReflectivity_ANC", "Layer Composite Reflectivity Mosaic (2-4.5km) (for ANC)", "dBZ", -999, -99); // v12.0
+    add(209, 10, 9, "LayerCompositeReflectivity_ANC", "Layer Composite Reflectivity Mosaic (2-4.5km) (for ANC)", "dBZ",
+        -999, -99); // v12.0
     add(209, 10, 10, "BREF_1HR_MAX", "Base Reflectivity Hourly Maximum", "dBZ", -999, -99); // v12.0
     add(209, 11, 0, "MergedBaseReflectivityQC", "Base Reflectivity Mosaic (optimal method)", "dBZ", -999, -99); // v12.0
     add(209, 11, 1, "MergedReflectivityComposite", "Raw Composite Reflectivity Mosaic (max ref)", "dBZ", -999, -99); // v12.0
