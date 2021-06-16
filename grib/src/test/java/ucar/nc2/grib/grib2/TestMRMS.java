@@ -20,7 +20,7 @@ public class TestMRMS {
       "../grib/src/test/data/MRMS_LowLevelCompositeReflectivity_00.50_20141207-072038.grib2.gz";
 
   static final String testfile24BitPng =
-          "../grib/src/test/data/pngEncoding/24-bit/MRMS_FLASH_HP_MAXUNITSTREAMFLOW_00.00_20210615-190000.grib2";
+      "../grib/src/test/data/pngEncoding/24-bit/MRMS_FLASH_HP_MAXUNITSTREAMFLOW_00.00_20210615-190000.grib2";
 
   @Test
   public void checkVariable() throws IOException {

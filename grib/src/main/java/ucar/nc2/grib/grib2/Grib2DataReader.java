@@ -913,7 +913,7 @@ public class Grib2DataReader {
         data[i] = (R + gridValue * EE) / DD;
       }
     } else {
-      //LOOK: Might not work for 24-bit or 32-bit depths - we do not have an example to test.
+      // LOOK: Might not work for 24-bit or 32-bit depths - we do not have an example to test.
       // What does bitmap look like for these cases? Is it totalNPoints length, or dataNPoints length?
       // This code assumes that if there is a bitmap, then it has a length of dataNPoints.
       for (int bitPt = 0, dataPt = 0; bitPt < totalNPoints; bitPt++) {
@@ -932,26 +932,26 @@ public class Grib2DataReader {
 
   private int decodePng(int numBands, int offset, DataBuffer db) throws IOException {
     int red, green, blue, gridValue = 0;
-    switch(numBands) {
-      case 1: //grayscale
+    switch (numBands) {
+      case 1: // grayscale
         gridValue = db.getElem(offset);
         break;
       case 3: // RGB
       case 4: // RGBA
         // java.awt.image.IndexColorModel$getDataElement pixel value from components:
-        //    (components[offset+0]<<16) | (components[offset+1]<<8) |
-        //    (components[offset+2]) | (components[offset + 3] << 24)"
+        // (components[offset+0]<<16) | (components[offset+1]<<8) |
+        // (components[offset+2]) | (components[offset + 3] << 24)"
         //
         // java.awt.image.IndexColorModel$getDataElements components from pixel value
-        //    int red = (rgb>>16) & 0xff;
-        //    int green = (rgb>>8) & 0xff;
-        //    int blue  = rgb & 0xff;
-        //    int alpha = (rgb>>>24);
+        // int red = (rgb>>16) & 0xff;
+        // int green = (rgb>>8) & 0xff;
+        // int blue = rgb & 0xff;
+        // int alpha = (rgb>>>24);
         //
         // with this information, we can feel pretty confident that what we need is:
-        red = Byte.toUnsignedInt((byte)db.getElem(offset));
-        green = Byte.toUnsignedInt((byte)db.getElem(offset+1));
-        blue = Byte.toUnsignedInt((byte)db.getElem(offset+2));
+        red = Byte.toUnsignedInt((byte) db.getElem(offset));
+        green = Byte.toUnsignedInt((byte) db.getElem(offset + 1));
+        blue = Byte.toUnsignedInt((byte) db.getElem(offset + 2));
         if (numBands == 3) {
           // based on order in java.awt.image.IndexColorModel$getDataElements
           gridValue = GribNumbers.uint3(blue, green, red);
