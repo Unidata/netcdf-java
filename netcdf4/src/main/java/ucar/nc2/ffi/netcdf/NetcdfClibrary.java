@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -7,8 +7,6 @@ package ucar.nc2.ffi.netcdf;
 
 import com.google.common.base.Strings;
 import com.sun.jna.Native;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import javax.annotation.Nullable;
 import ucar.nc2.jni.netcdf.Nc4prototypes;
 import ucar.nc2.jni.netcdf.Nc4wrapper;
@@ -120,15 +118,6 @@ public class NetcdfClibrary {
   private static Nc4prototypes load() {
     if (nc4 == null) {
       if (jnaPath == null) {
-        // netCDF-C will return strings encoded as UTF-8 (not default C behavior).
-        // JNA assumes c code is returning using the system encoding by default
-        // So, if the system encoding isn't UTF_8 (hello, windows!), set the jna
-        // encoding to utf_8. LOOK: This might hose other application use JNA and
-        // not expect their c code to return UTF-8
-        if (!Charset.defaultCharset().equals(StandardCharsets.UTF_8)) {
-          log.info("Setting System Property jna.encoding to UTF8");
-          // System.setProperty("jna.encoding", StandardCharsets.UTF_8.name());
-        }
         setLibraryNameAndPath(null, null);
       }
       try {

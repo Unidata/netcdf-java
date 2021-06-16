@@ -58,6 +58,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   public static final String TRANSLATE_NONE = "none";
   public static final String TRANSLATE_NC4 = "nc4";
 
+  private static Nc4prototypes nc4 = NetcdfClibrary.getForeignFunctionInterface();
+
   // Define reserved attributes (see Nc4DSP)
   public static final String UCARTAGOPAQUE = "_edu.ucar.opaque.size";
   // Not yet implemented
@@ -104,7 +106,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   /** @deprecated use NetcdfClibrary.getNativeInterface */
   @Deprecated
   public static synchronized Nc4prototypes getCLibrary() {
-    return NetcdfClibrary.getForeignFunctionInterface();
+    return nc4;
   }
 
   /**
@@ -129,7 +131,6 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   //////////////////////////////////////////////////
   // Instance Variables
 
-  private Nc4prototypes nc4;
   private NetcdfFileWriter.Version version; // can use c library to create these different version files
   private boolean fill = true;
   private int ncid = -1; // file id
@@ -243,7 +244,6 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     if (!isClibraryPresent()) {
       throw new UnsupportedOperationException("Couldn't load NetCDF C library (see log for details).");
     }
-    this.nc4 = NetcdfClibrary.getForeignFunctionInterface();
 
     if (raf != null)
       raf.close(); // not used
@@ -2345,7 +2345,6 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     if (!isClibraryPresent()) {
       throw new UnsupportedOperationException("Couldn't load NetCDF C library (see log for details).");
     }
-    this.nc4 = NetcdfClibrary.getForeignFunctionInterface();
 
     this.ncfile = ncfile;
 
