@@ -368,7 +368,7 @@ would be written like this:
 ~~~md
 {% raw %}
 {% capture rmd %}
-{% includecodeblock netcdf-java&docs/src/test/java/examples/cdmdatasets/ReadingCdmTutorial.java&openNCFile %}
+{% includecodeblock netcdf-java&src/test/java/examples/cdmdatasets/ReadingCdmTutorial.java&openNCFile %}
 {% endcapture %}
 {{ rmd | markdownify }}
 {% endraw %}
@@ -376,7 +376,7 @@ would be written like this:
 
 The markdownified text would look like this:
 {% capture rmd %}
-{% includecodeblock netcdf-java&docs/src/test/java/examples/cdmdatasets/ReadingCdmTutorial.java&openNCFile %}
+{% includecodeblock netcdf-java&src/test/java/examples/cdmdatasets/ReadingCdmTutorial.java&openNCFile %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
@@ -384,7 +384,7 @@ Alternatively, to include the same code snippet by line number:
 ~~~md
 {% raw %}
 {% capture rmd %}
-{% includecodeblock netcdf-java&docs/src/test/java/examples/cdmdatasets/ReadingCdmTutorial.java&33&38 %}
+{% includecodeblock netcdf-java&src/test/java/examples/cdmdatasets/ReadingCdmTutorial.java&33&38 %}
 {% endcapture %}
 {{ rmd | markdownify }}
 {% endraw %}
@@ -408,7 +408,7 @@ For example, the following function:
 will render as:
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&docs/src/test/java/examples/cdmdatasets/ReadingCdmTutorial.java&readAllVarData %}
+{% includecodeblock netcdf-java&src/test/java/examples/cdmdatasets/ReadingCdmTutorial.java&readAllVarData %}
 {% endcapture %}
 {{ rmd | markdownify }}
 

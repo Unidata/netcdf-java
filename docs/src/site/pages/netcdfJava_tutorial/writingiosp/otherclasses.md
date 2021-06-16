@@ -134,7 +134,7 @@ public abstract class Array {
 Typically an IOSP will create the underlying primitive Java array, then wrap it in an `Array` using `Array.factory`, for example:
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&docs/src/test/java/examples/writingiosp/OtherClassesIospTutorial.java&makeArray %}
+{% includecodeblock netcdf-java&src/test/java/examples/writingiosp/OtherClassesIospTutorial.java&makeArray %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
@@ -154,21 +154,21 @@ When you do end up working with an `Array`, you will get an `Index` or `IndexIte
 the `Array`. An `IndexIterator` iterates over each element of the `Array` in canonical order.
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&docs/src/test/java/examples/writingiosp/OtherClassesIospTutorial.java&arrayIndexIterator %}
+{% includecodeblock netcdf-java&src/test/java/examples/writingiosp/OtherClassesIospTutorial.java&arrayIndexIterator %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
 Or, using an `Index`:
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&docs/src/test/java/examples/writingiosp/OtherClassesIospTutorial.java&arrayIndex %}
+{% includecodeblock netcdf-java&src/test/java/examples/writingiosp/OtherClassesIospTutorial.java&arrayIndex %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
 If you know the rank and type of the `Array`, it is both convenient and more efficient to use the rank and type specific subclasses:
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&docs/src/test/java/examples/writingiosp/OtherClassesIospTutorial.java&arrayRankAndType %}
+{% includecodeblock netcdf-java&src/test/java/examples/writingiosp/OtherClassesIospTutorial.java&arrayRankAndType %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
