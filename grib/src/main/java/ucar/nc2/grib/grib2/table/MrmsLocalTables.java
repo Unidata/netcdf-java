@@ -232,12 +232,12 @@ public class MrmsLocalTables extends LocalTables {
     add(209, 11, 2, "MergedReflectivityQComposite", "Composite Reflectivity Mosaic (max ref)", "dBZ", -999, -99); // v12.0
     add(209, 11, 3, "MergedBaseReflectivity", "Raw Base Reflectivity Mosaic (optimal method)", "dBZ", -999, -99); // v12.0
     add(209, 11, 4, "Merged_LVL3_BaseDHC", "Level III Base HCA Mosaic (nearest neighbor)", "dimensionless", -3, -1); // v11.5.5
-    add(209, 12, 0, "FLASH_CREST_MAXUNITSTREAMFLOW", "FLASH QPE-CREST Unit Streamflow", "m^3/s/km^2", -999, -999); // v12.0
-    add(209, 12, 1, "FLASH_CREST_MAXSTREAMFLOW", "FLASH QPE-CREST Streamflow", "m^3/s", -999, -999); // v12.0
-    add(209, 12, 2, "FLASH_CREST_MAXSOILSAT", "FLASH QPE-CREST Soil Saturation", "%", -999, -999); // v12.0
-    add(209, 12, 4, "FLASH_SAC_MAXUNITSTREAMFLOW", "FLASH QPE-SAC Unit Streamflow", "m^3/s/km^2", -999, -999); // v12.0
-    add(209, 12, 5, "FLASH_SAC_MAXSTREAMFLOW", "FLASH QPE-SAC Streamflow", "m^3/s", -999, -999); // v12.0
-    add(209, 12, 6, "FLASH_SAC_MAXSOILSAT", "FLASH QPE-SAC Soil Saturation", "%", -999, -999); // v12.0
+    add(209, 12, 0, "FLASH_CREST_MAXUNITSTREAMFLOW", "FLASH QPE-CREST Unit Streamflow", "m^3/s/km^2", -999, -9999); // v12.0_unidata_reported
+    add(209, 12, 1, "FLASH_CREST_MAXSTREAMFLOW", "FLASH QPE-CREST Streamflow", "m^3/s", -999, -9999); // v12.0_unidata_reported
+    add(209, 12, 2, "FLASH_CREST_MAXSOILSAT", "FLASH QPE-CREST Soil Saturation", "%", -999, -9999); // v12.0_unidata_reported
+    add(209, 12, 4, "FLASH_SAC_MAXUNITSTREAMFLOW", "FLASH QPE-SAC Unit Streamflow", "m^3/s/km^2", -999, -9999); // v12.0_unidata_reported
+    add(209, 12, 5, "FLASH_SAC_MAXSTREAMFLOW", "FLASH QPE-SAC Streamflow", "m^3/s", -999, -9999); // v12.0_unidata_reported
+    add(209, 12, 6, "FLASH_SAC_MAXSOILSAT", "FLASH QPE-SAC Soil Saturation", "%", -999, -9999); // v12.0_unidata_reported
     add(209, 12, 14, "FLASH_QPE_ARI30M", "FLASH QPE Average Recurrence Interval 30-min", "year", -999, -999); // v12.0
     add(209, 12, 15, "FLASH_QPE_ARI01H", "FLASH QPE Average Recurrence Interval 01H", "year", -999, -999); // v12.0
     add(209, 12, 16, "FLASH_QPE_ARI03H", "FLASH QPE Average Recurrence Interval 03H", "year", -999, -999); // v12.0
@@ -249,8 +249,8 @@ public class MrmsLocalTables extends LocalTables {
     add(209, 12, 27, "FLASH_QPE_FFG03H", "FLASH QPE-to-FFG Ratio 03H", "dimensionless", -999, -999); // v12.0
     add(209, 12, 28, "FLASH_QPE_FFG06H", "FLASH QPE-to-FFG Ratio 06H", "dimensionless", -999, -999); // v12.0
     add(209, 12, 29, "FLASH_QPE_FFGMAX", "FLASH QPE-to-FFG Ratio Maximum", "dimensionless", -999, -999); // v12.0
-    add(209, 12, 39, "FLASH_HP_MAXUNITSTREAMFLOW", "FLASH QPE-Hydrophobic Unit Streamflow", "m^3/s/km^2", -999, -999); // v12.0
-    add(209, 12, 40, "FLASH_HP_MAXSTREAMFLOW", "FLASH QPE-Hydrophobic Streamflow", "m^3/s", -999, -999); // v12.0
+    add(209, 12, 39, "FLASH_HP_MAXUNITSTREAMFLOW", "FLASH QPE-Hydrophobic Unit Streamflow", "m^3/s/km^2", -999, -9999); // v12.0_unidata_reported
+    add(209, 12, 40, "FLASH_HP_MAXSTREAMFLOW", "FLASH QPE-Hydrophobic Streamflow", "m^3/s", -999, -9999); // v12.0_unidata_reported
     add(209, 13, 0, "ANC_ConvectiveLikelihood", "Likelihood of convection over the next 01H", "dimensionless", 0, 0); // v12.0
     add(209, 13, 1, "ANC_FinalForecast", "01H reflectivity forecast", "dBZ", 0, 0); // v12.0
     add(209, 14, 0, "LVL3_HREET", "Level III High Resolution Enhanced Echo Top mosaic", "kft", -3, -1); // v12.0
