@@ -863,12 +863,13 @@ public class NetcdfFiles {
 
   /** Create a Groups's full name with appropriate backslash escaping. */
   public static String makeFullName(Group g) {
-    // return makeFullName(g, reservedFullName);
     Group parent = g.getParentGroup();
+    String groupName = EscapeStrings.backslashEscape(g.getShortName(), reservedFullName);
     if ((parent == null) || parent.isRoot()) // common case?
-      return EscapeStrings.backslashEscape(g.getShortName(), reservedFullName);
+      return groupName;
     StringBuilder sbuff = new StringBuilder();
     appendGroupName(sbuff, parent, reservedFullName);
+    sbuff.append(groupName);
     return sbuff.toString();
   }
 
