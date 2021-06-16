@@ -12,6 +12,7 @@ import dap4.core.util.Convert;
 import dap4.core.util.DapContext;
 import dap4.core.util.DapException;
 import dap4.core.util.DapUtil;
+import ucar.nc2.ffi.netcdf.NetcdfClibrary;
 import ucar.nc2.jni.netcdf.Nc4prototypes;
 import ucar.nc2.jni.netcdf.SizeTByReference;
 import static ucar.nc2.jni.netcdf.Nc4prototypes.*;
@@ -44,6 +45,8 @@ public class Nc4DMRCompiler {
   static int NC_POINTER_BYTES = (Native.POINTER_SIZE);
   static int NC_SIZET_BYTES = (Native.SIZE_T_SIZE);
 
+  protected static Nc4prototypes nc4 = NetcdfClibrary.getForeignFunctionInterface();
+
   //////////////////////////////////////////////////
   // Static methods
 
@@ -65,8 +68,6 @@ public class Nc4DMRCompiler {
   //////////////////////////////////////////////////
   // Instance Variables
 
-  protected Nc4prototypes nc4 = null;
-
   protected boolean trace = false;
   protected boolean closed = false;
 
@@ -86,7 +87,6 @@ public class Nc4DMRCompiler {
 
   public Nc4DMRCompiler(Nc4DSP dsp, int ncid, DMRFactory factory) throws DapException {
     this.dsp = dsp;
-    this.nc4 = dsp.getJNI();
     this.path = dsp.getLocation();
     this.ncid = ncid;
     this.factory = factory;
