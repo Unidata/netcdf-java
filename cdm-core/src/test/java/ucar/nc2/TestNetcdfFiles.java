@@ -137,5 +137,33 @@ public class TestNetcdfFiles {
     }
   }
 
+  @Test
+  public void testMakeFullNameGroup() {
+    // root
+    // parent
+    // child
+    // grandchild
+    Group.Builder parent = Group.builder().setName("parent");
+    Group.Builder child = Group.builder().setName("child");
+    parent.addGroup(child);
+    Group.Builder grandchild = Group.builder().setName("grandchild");
+    child.addGroup(grandchild);
 
+    Group root = Group.builder().addGroup(parent).build();
+
+    assertThat(NetcdfFiles.makeFullName(root)).isEqualTo("");
+
+    assertThat(root.getGroups()).hasSize(1);
+    Group parentGroup = root.getGroups().get(0);
+    assertThat(NetcdfFiles.makeFullName(parentGroup)).isEqualTo("parent");
+
+    assertThat(parentGroup.getGroups()).hasSize(1);
+    Group childGroup = parentGroup.getGroups().get(0);
+    assertThat(NetcdfFiles.makeFullName(childGroup)).isEqualTo("parent/child");
+
+    assertThat(childGroup.getGroups()).hasSize(1);
+    Group grandchildGroup = childGroup.getGroups().get(0);
+    assertThat(NetcdfFiles.makeFullName(grandchildGroup)).isEqualTo("parent/child/grandchild");
+
+  }
 }
