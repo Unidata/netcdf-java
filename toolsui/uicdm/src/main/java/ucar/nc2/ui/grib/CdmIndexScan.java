@@ -169,7 +169,7 @@ public class CdmIndexScan extends JPanel {
 
   private String makeReport() {
     Formatter result = new Formatter();
-    result.format("%s%n", this.topdir);
+    result.format("# %s%n", this.topdir);
     for (IndexScanBean bean : indexBeanTable.getBeans()) {
       result.format("%s%n", bean.report);
     }
@@ -229,11 +229,11 @@ public class CdmIndexScan extends JPanel {
           Formatter report = new Formatter();
           localInfo.format(" %s%n", relpath);
           if (groupno == 0) {
-            report.format(" %s%n", relpath);
+            report.format("### %s%n", relpath);
           }
           Accum groupAccum = new Accum();
           localInfo.format("  Group %s%n", g.getDescription());
-          report.format("  %sGroup %s%n", groupno == 0 ? "" : "***", g.getDescription());
+          report.format("  **%s** %sGroup %s%n", g.getType(), groupno == 0 ? "" : "***", g.getDescription());
           for (GribCollectionImmutable.VariableIndex vi : g.getVariables()) {
             localInfo.format("   %s%n", vi.toStringFrom());
             groupAccum.add(vi);
