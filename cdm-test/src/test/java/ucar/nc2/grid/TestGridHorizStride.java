@@ -36,9 +36,9 @@ public class TestGridHorizStride {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
-  public void testBestStride() throws IOException, ucar.array.InvalidRangeException {
+  public void testHorizStride() throws IOException, ucar.array.InvalidRangeException {
     String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4";
-    String covName = "TwoD/Ozone_Mixing_Ratio_isobaric";
+    String covName = "Ozone_Mixing_Ratio_isobaric";
     System.out.printf("Test Dataset %s%n", endpoint);
 
     Formatter errlog = new Formatter();
@@ -51,29 +51,26 @@ public class TestGridHorizStride {
       assertThat(cs).isNotNull();
       GridHorizCoordinateSystem hcs = cs.getHorizCoordSystem();
       assertThat(hcs).isNotNull();
+      assertThat(hcs.getShape()).isEqualTo(new int[] {73, 144});
 
       GridReferencedArray geoArray = coverage.getReader().setHorizStride(2).read();
       MaterializedCoordinateSystem mcs = geoArray.getMaterializedCoordinateSystem();
       assertThat(mcs).isNotNull();
+
       System.out.printf(" data shape=%s%n", java.util.Arrays.toString(geoArray.data().getShape()));
+      assertThat(geoArray.data().getShape()).isEqualTo(new int[] {1, 93, 12, 37, 72});
 
       GridHorizCoordinateSystem hcs2 = mcs.getHorizCoordSystem();
       assertThat(hcs2).isNotNull();
       System.out.printf(" data hcs shape=%s%n", java.util.Arrays.toString(hcs2.getShape()));
-
-      int[] expectedShape = geoArray.data().getShape();
-      int n = expectedShape.length;
-      expectedShape[n - 1] = (expectedShape[n - 1] + 1) / 2;
-      expectedShape[n - 2] = (expectedShape[n - 2] + 1) / 2;
-
-      assertThat(hcs2.getShape()).isEqualTo(expectedShape);
+      assertThat(hcs2.getShape()).isEqualTo(new int[] {37, 72});
     }
   }
 
   @Test
   public void TestGribCurvilinearHorizStride() throws IOException, InvalidRangeException {
-    String endpoint = TestDir.cdmUnitTestDir + "ft/fmrc/rtofs/ofs.20091122/ofs_atl.t00z.F024.grb.grib2"; // GRIB
-                                                                                                         // Curvilinear
+    // GRIB Curvilinear
+    String endpoint = TestDir.cdmUnitTestDir + "ft/fmrc/rtofs/ofs.20091122/ofs_atl.t00z.F024.grb.grib2";
     System.out.printf("open %s%n", endpoint);
 
     try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {

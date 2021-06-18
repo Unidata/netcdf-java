@@ -36,7 +36,7 @@ public class TestTdsNCEPGribCollections {
       // gefs
       result.add(new Object[] {
           TestDir.cdmUnitTestDir + "ncss/GEFS/Global_1p0deg_Ensemble/member/GEFS-Global_1p0deg_Ensemble-members.ncx4",
-          35, 11, 14});
+          35, 11, 17});
       // result.add(new Object[] {
       // topDir + "NCEP/GEFS/Global_1p0deg_Ensemble/derived/GEFS-Global_1p0deg_Ensemble-derived_products.ncx4", 72, 12,
       // 14});

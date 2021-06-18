@@ -232,9 +232,9 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
 
   public AttributeContainer getGlobalAttributes() {
     AttributeContainerMutable result = new AttributeContainerMutable(name);
-    String val = CommonCodeTable.getCenterName(getCenter(), 2);
-    result.addAttribute(new Attribute(GribUtils.CENTER, val == null ? Integer.toString(getCenter()) : val));
-    val = cust.getSubCenterName(getCenter(), getSubcenter());
+    String centerName = CommonCodeTable.getCenterName(getCenter(), 2);
+    result.addAttribute(new Attribute(GribUtils.CENTER, centerName));
+    String val = cust.getSubCenterName(getCenter(), getSubcenter());
     result.addAttribute(new Attribute(GribUtils.SUBCENTER, val == null ? Integer.toString(getSubcenter()) : val));
     result.addAttribute(new Attribute(GribUtils.TABLE_VERSION, getMaster() + "," + getLocal())); // LOOK
 
@@ -763,7 +763,8 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
         sb.format(", intvType=%d", info.intvType);
         sb.format(", nrecords=%d", nrecords);
         sb.format(", ndups=%d", ndups);
-        sb.format(", nmiss=%d}", nmissing);
+        sb.format(", nmiss=%d", nmissing);
+        sb.format(", shortfall=%d}", (getSize() - nrecords));
         return sb.toString();
       }
     }

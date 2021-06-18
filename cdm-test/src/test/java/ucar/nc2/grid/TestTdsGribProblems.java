@@ -22,6 +22,13 @@ public class TestTdsGribProblems {
   private static final String indexDir = TestDir.cdmUnitTestDir + "tds_index/";
 
   @Test
+  public void checkGEFSensemble() throws Exception {
+    String filename =
+        TestDir.cdmUnitTestDir + "ncss/GEFS/Global_1p0deg_Ensemble/member/GEFS-Global_1p0deg_Ensemble-members.ncx4";
+    checkGridDataset(filename, 35, 11, 17, 17);
+  }
+
+  @Test
   public void checkCmcRdps() throws Exception {
     String filename = indexDir + "CMC/RDPS/NA_15km/CMC_RDPS_ps15km_20201027_0000.grib2.ncx4";
     checkGridDataset(filename, 58, 17, 24, 23);

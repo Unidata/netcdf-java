@@ -1,22 +1,16 @@
 package ucar.nc2.grib.coord;
 
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ucar.unidata.util.test.Assert2;
-import java.lang.invoke.MethodHandles;
+import ucar.nc2.util.Misc;
+
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
 
-/**
- * Test SparseArray class.
- *
- * @author caron
- * @since 12/12/13
- */
+import static com.google.common.truth.Truth.assertThat;
+
+/** Test SparseArray class. */
 public class TestSparseArray {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
   public void testInfo() {
@@ -32,8 +26,8 @@ public class TestSparseArray {
 
     Formatter info = new Formatter();
     sa.showInfo(info, null);
-    logger.debug(info.toString());
+    System.out.printf("%s%n", info.toString());
 
-    Assert2.assertNearlyEquals(sa.getDensity(), 0.906667f);
+    assertThat(sa.getDensity()).isWithin(Misc.defaultMaxRelativeDiffFloat).of(0.906667f);
   }
 }

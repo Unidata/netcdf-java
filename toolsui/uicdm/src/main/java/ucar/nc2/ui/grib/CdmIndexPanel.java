@@ -1165,6 +1165,10 @@ public class CdmIndexPanel extends JPanel {
     }
 
     public int getNmissing() {
+      return v.getNmissing();
+    }
+
+    public int getRectMissing() {
       int n = v.getSize();
       return n - v.getNrecords();
     }
@@ -1178,6 +1182,7 @@ public class CdmIndexPanel extends JPanel {
     }
 
     private void showSparseArray(Formatter f) {
+      f.format("%s%n", getName());
       try {
         if (v instanceof PartitionCollectionImmutable.VariableIndexPartitioned) {
           PartitionCollectionImmutable.VariableIndexPartitioned vip =
