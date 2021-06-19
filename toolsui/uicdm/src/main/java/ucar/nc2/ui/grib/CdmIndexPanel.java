@@ -637,13 +637,13 @@ public class CdmIndexPanel extends JPanel {
   // regular means that all the times for each offset from 0Z can be made into a single time coordinate (FMRC algo)
   private boolean testRegular(Formatter f, Coordinate c) {
     if (!(c instanceof CoordinateTime2D)) {
-      f.format("testOrthogonal only on CoordinateTime2D%n");
+      f.format("testRegular only on CoordinateTime2D%n");
       return false;
     }
     CoordinateTime2D time2D = (CoordinateTime2D) c;
 
     // group time coords by offset hour
-    Map<Integer, List<CoordinateTimeAbstract>> hourMap = new HashMap<>();
+    Map<Integer, List<CoordinateTimeAbstract>> hourMap = new HashMap<>(); // <hour, all coords for that hour>
     for (int runIdx = 0; runIdx < time2D.getNruns(); runIdx++) {
       CoordinateTimeAbstract coord = time2D.getTimeCoordinate(runIdx);
       CalendarDate runDate = coord.getRefDate();
@@ -656,7 +656,7 @@ public class CdmIndexPanel extends JPanel {
     boolean ok = true;
     for (int hour : hourMap.keySet()) {
       List<CoordinateTimeAbstract> hg = hourMap.get(hour);
-      boolean isOrthogonal = testOrthogonal(f, hg, false);
+      boolean isOrthogonal = testOrthogonal(f, hg, false); // LOOK why orthoginal, why not regular?
       f.format("Hour %d: isOrthogonal=%s%n", hour, isOrthogonal);
       ok &= isOrthogonal;
     }
@@ -673,7 +673,7 @@ public class CdmIndexPanel extends JPanel {
     return false;
   }
 
-  private boolean testOrthogonal(Formatter f, List<CoordinateTimeAbstract> times) {
+  private boolean testRegular(Formatter f, List<CoordinateTimeAbstract> times) {
     int max = 0;
     Set<Object> allCoords = new HashSet<>(100);
     for (CoordinateTimeAbstract coord : times) {

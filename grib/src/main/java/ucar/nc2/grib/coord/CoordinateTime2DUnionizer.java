@@ -26,11 +26,10 @@ import java.util.*;
  * @since 11/22/2014
  */
 class CoordinateTime2DUnionizer<T> extends CoordinateBuilderImpl<T> {
-
-  private boolean isTimeInterval;
-  private boolean makeVals;
-  private CalendarPeriod timeUnit;
-  private int code;
+  private final boolean isTimeInterval;
+  private final boolean makeVals;
+  private final CalendarPeriod timeUnit;
+  private final int code;
   org.slf4j.Logger logger;
   private SortedMap<Long, CoordinateTimeAbstract> timeMap = new TreeMap<>();
 
@@ -98,12 +97,14 @@ class CoordinateTime2DUnionizer<T> extends CoordinateBuilderImpl<T> {
     CoordinateRuntime runtime = new CoordinateRuntime(runtimes, timeUnit);
 
     CoordinateTimeAbstract maxCoord = testOrthogonal(timeMap.values());
-    if (maxCoord != null)
+    if (maxCoord != null) {
       return new CoordinateTime2D(code, timeUnit, allVals, runtime, maxCoord, times, null);
+    }
 
     List<Coordinate> regCoords = testIsRegular();
-    if (!regCoords.isEmpty())
+    if (!regCoords.isEmpty()) {
       return new CoordinateTime2D(code, timeUnit, allVals, runtime, regCoords, times, null);
+    }
 
     return new CoordinateTime2D(code, timeUnit, allVals, runtime, times, null);
   }
@@ -111,22 +112,24 @@ class CoordinateTime2DUnionizer<T> extends CoordinateBuilderImpl<T> {
   // regular means that all the times for each offset from 0Z can be made into a single time coordinate (FMRC algo)
   private List<Coordinate> testIsRegular() {
 
-    // group time coords by offset hour
-    Map<Integer, List<CoordinateTimeAbstract>> hourMap = new TreeMap<>();
+    // group time coords by offset minute
+    Map<Integer, List<CoordinateTimeAbstract>> minuteMap = new TreeMap<>();
     for (CoordinateTimeAbstract coord : timeMap.values()) {
       CalendarDate runDate = coord.getRefDate();
       int hour = runDate.getHourOfDay();
-      List<CoordinateTimeAbstract> hg = hourMap.computeIfAbsent(hour, k -> new ArrayList<>());
+      int min = runDate.getMinuteOfHour();
+      List<CoordinateTimeAbstract> hg = minuteMap.computeIfAbsent(hour * 60 + min, k -> new ArrayList<>());
       hg.add(coord);
     }
 
     // see if each offset hour is orthogonal
     List<Coordinate> result = new ArrayList<>();
-    for (int hour : hourMap.keySet()) {
-      List<CoordinateTimeAbstract> hg = hourMap.get(hour);
+    for (int minute : minuteMap.keySet()) {
+      List<CoordinateTimeAbstract> hg = minuteMap.get(minute);
       Coordinate maxCoord = testOrthogonal(hg);
-      if (maxCoord == null)
+      if (maxCoord == null) {
         return ImmutableList.of();
+      }
       result.add(maxCoord);
     }
     return result;
@@ -146,7 +149,6 @@ class CoordinateTime2DUnionizer<T> extends CoordinateBuilderImpl<T> {
         maxCoord = coord;
         max = coord.getSize();
       }
-
       result.addAll(coord.getValues());
     }
 

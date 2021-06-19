@@ -311,7 +311,7 @@ public class GcdmGridConverter {
     if (axisb instanceof GridAxisOffsetTimeRegular.Builder) {
       GridAxisOffsetTimeRegular.Builder<?> axisReg = (GridAxisOffsetTimeRegular.Builder<?>) axisb;
       axisReg.setRuntimeAxisName(proto.getRuntimeAxisName());
-      axisReg.setHourOffsets(proto.getHourOffsetsList());
+      axisReg.setMinutesOffsets(proto.getHourOffsetsList());
       axisReg.setMidpointsBounds(proto.getShapesList(), proto.getMidpointsList(), proto.getBoundsList());
     }
 
@@ -435,7 +435,7 @@ public class GcdmGridConverter {
     if (axis instanceof GridAxisOffsetTimeRegular) {
       GridAxisOffsetTimeRegular axisReg = (GridAxisOffsetTimeRegular) axis;
       builder.setRuntimeAxisName(axisReg.getRunTimeAxis().getName());
-      for (int hour : axisReg.getHourOffsets()) {
+      for (int hour : axisReg.getMinuteOffsets()) {
         builder.addHourOffsets(hour);
       }
       for (double mid : axisReg.getCoordsAsArray()) {

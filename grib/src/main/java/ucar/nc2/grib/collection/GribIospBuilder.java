@@ -865,11 +865,11 @@ class GribIospBuilder {
     return toName;
   }
 
-  // regular runtime, offset; offset depends on runtime hour from 0z
+  // regular runtime, offset; offset depends on runtime minute from 0z
   private String makeTimeOffsetRegular(Group.Builder gb, CoordinateTime2D time2D) {
     try {
-      List<Object> hourFrom0z = ImmutableList.copyOf(time2D.getRegularHourOffsets());
-      int nhours = hourFrom0z.size();
+      List<Object> minsFrom0z = ImmutableList.copyOf(time2D.getRegularMinuteOffsets());
+      int nhours = minsFrom0z.size();
       int noffsets = time2D.getNtimes();
       String toName = makeTimeOffsetName(time2D.getName());
       gb.addDimension(new Dimension(toName, noffsets));
@@ -889,7 +889,7 @@ class GribIospBuilder {
       v.addAttribute(
           new Attribute(CDM.RUNTIME_COORDINATE, gb.makeFullName() + time2D.getRuntimeCoordinate().getName()));
       Attribute.Builder attb =
-          Attribute.builder(CDM.TIME_OFFSET_HOUR).setArrayType(ArrayType.INT).setValues(hourFrom0z, false);
+          Attribute.builder(CDM.TIME_OFFSET_MINUTES).setArrayType(ArrayType.INT).setValues(minsFrom0z, false);
       v.addAttribute(attb.build());
 
       // We use a rectangular array; uneven arrays will have NaNs.
@@ -899,30 +899,30 @@ class GribIospBuilder {
       if (time2D.isTimeInterval()) {
         bounds = new double[2 * nhours * noffsets];
         java.util.Arrays.fill(bounds, Double.NaN);
-        int houridx = 0;
-        for (int hour : time2D.getRegularHourOffsets()) {
-          CoordinateTimeIntv timeCoord = (CoordinateTimeIntv) time2D.getRegularTimeCoordinate(hour);
-          // may be uneven number of values for each hour
-          int count = houridx * noffsets;
-          int countb = 2 * houridx * noffsets;
+        int offsetidx = 0;
+        for (int minutes : time2D.getRegularMinuteOffsets()) {
+          CoordinateTimeIntv timeCoord = (CoordinateTimeIntv) time2D.getRegularTimeCoordinateFromMinuteOfDay(minutes);
+          // may be uneven number of values for each
+          int count = offsetidx * noffsets;
+          int countb = 2 * offsetidx * noffsets;
           for (TimeCoordIntvValue tinv : timeCoord.getTimeIntervals()) {
             midpoints[count++] = (tinv.getBounds1() + tinv.getBounds2()) / 2.0;
             bounds[countb++] = tinv.getBounds1();
             bounds[countb++] = tinv.getBounds2();
           }
-          houridx++;
+          offsetidx++;
         }
       } else {
         java.util.Arrays.fill(midpoints, Double.NaN);
-        int houridx = 0;
-        for (int hour : time2D.getRegularHourOffsets()) {
-          CoordinateTime timeCoord = (CoordinateTime) time2D.getRegularTimeCoordinate(hour);
+        int offsetidx = 0;
+        for (int minutes : time2D.getRegularMinuteOffsets()) {
+          CoordinateTime timeCoord = (CoordinateTime) time2D.getRegularTimeCoordinateFromMinuteOfDay(minutes);
           // may be uneven number of values for each hour
-          int count = houridx * noffsets;
+          int count = offsetidx * noffsets;
           for (Integer offset : timeCoord.getOffsetSorted()) {
             midpoints[count++] = offset;
           }
-          houridx++;
+          offsetidx++;
         }
       }
       v.setSourceData(Arrays.factory(ArrayType.DOUBLE, new int[] {nhours, noffsets}, midpoints));

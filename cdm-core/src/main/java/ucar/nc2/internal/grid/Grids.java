@@ -120,7 +120,7 @@ class Grids {
     CoordinateAxis2DExtractor extract = new CoordinateAxis2DExtractor(axis);
     builder.setMidpoints(extract.getMidpoints());
     builder.setBounds(extract.getBounds());
-    builder.setHourOffsets(extract.getHourOffsets());
+    builder.setMinutesOffsets(extract.getMinutesOffsets());
     builder.setSpacing(extract.isInterval() ? GridAxis.Spacing.discontiguousInterval : GridAxis.Spacing.irregularPoint);
 
     Preconditions.checkNotNull(extract.getRuntimeAxisName());
