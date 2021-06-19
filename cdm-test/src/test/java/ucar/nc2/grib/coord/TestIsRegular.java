@@ -2,6 +2,7 @@ package ucar.nc2.grib.coord;
 
 import com.google.common.collect.Iterables;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
@@ -10,6 +11,7 @@ import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.grib.collection.GribCollectionImmutable;
 import ucar.nc2.util.Indent;
 import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -28,6 +30,7 @@ public class TestIsRegular {
   private static final FeatureCollectionConfig config = new FeatureCollectionConfig();
 
   @Test
+  @Category(NeedsCdmUnitTest.class)
   public void testWhyIsntThisRegular() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "tds_index/NCEP/NDFD/NWS/NDFD_NWS_CONUS_CONDUIT.ncx4";
     String cname = "time";
