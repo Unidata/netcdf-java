@@ -24,6 +24,7 @@ public class CalendarPeriod {
   private static final Cache<CalendarPeriod, CalendarPeriod> cache = CacheBuilder.newBuilder().maximumSize(100).build();
 
   public static final CalendarPeriod Hour = CalendarPeriod.of(1, Field.Hour);
+  public static final CalendarPeriod Minute = CalendarPeriod.of(1, Field.Minute);
   public static final CalendarPeriod Second = CalendarPeriod.of(1, Field.Second);
 
   public enum Field {

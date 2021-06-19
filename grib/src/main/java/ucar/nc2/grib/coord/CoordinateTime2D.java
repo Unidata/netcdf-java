@@ -48,12 +48,12 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
   private final CoordinateRuntime runtime;
   private final List<Coordinate> times; // nruns time coordinates - original offsets
   private final CoordinateTimeAbstract otime; // orthogonal time coordinates - only when isOrthogonal
-  // only when isRegular: <hour of day, time coordinate>
+  // only when isRegular: <minute of day, time coordinate>
   private final SortedMap<Integer, CoordinateTimeAbstract> regTimes;
   private final int[] offset; // list all offsets from the base/first runtime, length nruns (LOOK can we use
                               // SmartArrayInt ?)
 
-  private final boolean isRegular; // offsets are the same for each "runtime hour of day"
+  private final boolean isRegular; // offsets are the same for each "runtime minute of day"
   private final boolean isOrthogonal; // offsets same for all runtimes, so 2d time array is (runtime X otime)
   private final boolean isTimeInterval;
   private final int nruns;
@@ -162,7 +162,8 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
       CoordinateTimeAbstract time = (CoordinateTimeAbstract) coord;
       CalendarDate ref = time.getRefDate();
       int hour = ref.getHourOfDay();
-      this.regTimes.put(hour, time);
+      int min = ref.getMinuteOfHour();
+      this.regTimes.put(hour * 60 + min, time);
     }
 
     this.offset = makeOffsets(timeUnit);
@@ -199,11 +200,13 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     if (isOrthogonal())
       otime.setName(name);
     else if (isRegular()) {
-      for (CoordinateTimeAbstract time : regTimes.values())
+      for (CoordinateTimeAbstract time : regTimes.values()) {
         time.setName(name);
+      }
     } else {
-      for (Coordinate time : times)
+      for (Coordinate time : times) {
         ((CoordinateTimeAbstract) time).setName(name);
+      }
     }
   }
 
@@ -237,7 +240,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     return offset[runIndex];
   }
 
-  public Iterable<Integer> getRegularHourOffsets() {
+  public Iterable<Integer> getRegularMinuteOffsets() {
     if (!isRegular) {
       return null;
     }
@@ -263,9 +266,10 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     }
 
     else if (isRegular)
-      for (int hour : regTimes.keySet()) {
-        CoordinateTimeAbstract timeCoord = regTimes.get(hour);
-        info.format("%shour %d: ", indent, hour);
+      for (int minute : regTimes.keySet()) {
+        CoordinateTimeAbstract timeCoord = regTimes.get(minute);
+        String hourS = String.format("%d:%2d", minute / 60, minute % 60);
+        info.format("%shour %s: ", indent, hourS);
         timeCoord.showInfo(info, new Indent(0));
       }
 
@@ -287,9 +291,10 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
       otime.showCoords(info);
 
     else if (isRegular)
-      for (int hour : regTimes.keySet()) {
-        CoordinateTimeAbstract timeCoord = regTimes.get(hour);
-        info.format("hour %d: ", hour);
+      for (int minute : regTimes.keySet()) {
+        CoordinateTimeAbstract timeCoord = regTimes.get(minute);
+        String hourS = String.format("%d:%2d", minute / 60, minute % 60);
+        info.format("hour %s: ", hourS);
         timeCoord.showInfo(info, new Indent(0));
       }
 
@@ -466,14 +471,15 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     if (isRegular) {
       CalendarDate ref = getRefDate(runIdx);
       int hour = ref.getHourOfDay();
-      return regTimes.get(hour);
+      int min = ref.getMinuteOfHour();
+      return regTimes.get(hour * 60 + min);
     }
 
     return (CoordinateTimeAbstract) times.get(runIdx);
   }
 
-  public CoordinateTimeAbstract getRegularTimeCoordinate(int hour) {
-    return regTimes.get(hour);
+  public CoordinateTimeAbstract getRegularTimeCoordinateFromMinuteOfDay(int minute) {
+    return regTimes.get(minute);
   }
 
   public CalendarDate getRefDate(int runIdx) {
@@ -679,8 +685,9 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
 
     } else if (isRegular) {
       int nPerRun = 0;
-      for (Map.Entry<Integer, CoordinateTimeAbstract> entry : regTimes.entrySet())
+      for (Map.Entry<Integer, CoordinateTimeAbstract> entry : regTimes.entrySet()) {
         nPerRun += entry.getValue().getNCoords();
+      }
       if (nPerRun > 0) {
         result[0] = timeIdx / nPerRun;
         result[1] = timeIdx % nPerRun;
