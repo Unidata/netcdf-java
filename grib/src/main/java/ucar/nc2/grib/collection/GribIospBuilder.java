@@ -35,6 +35,10 @@ import ucar.nc2.grib.grib2.Grib2Utils;
 import ucar.nc2.calendar.Calendar;
 import ucar.nc2.calendar.CalendarPeriod;
 import ucar.unidata.geoloc.projection.RotatedPole;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Formatter;
 import java.util.List;
 
@@ -208,7 +212,9 @@ class GribIospBuilder {
       }
     }
 
-    for (GribCollectionImmutable.VariableIndex vindex : group.variList) {
+    List<GribCollectionImmutable.VariableIndex> vlist = new ArrayList<>(group.variList);
+    vlist.sort(Comparator.comparing(GribCollectionImmutable.VariableIndex::makeVariableName));
+    for (GribCollectionImmutable.VariableIndex vindex : vlist) {
       try (Formatter dimNames = new Formatter(); Formatter coordinateAtt = new Formatter()) {
         // do the times first
         Coordinate run = vindex.getCoordinate(Coordinate.Type.runtime);
