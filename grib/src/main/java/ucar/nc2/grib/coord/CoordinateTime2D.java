@@ -908,7 +908,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     private final boolean isTimeInterval;
     private final Grib2Tables cust;
     private final int code; // pdsFirst.getTimeUnit()
-    private CalendarPeriod timeUnit; // time duration, based on code
+    private final CalendarPeriod timeUnit; // time duration, based on code
 
     private final CoordinateRuntime.Builder2 runBuilder;
     private final Map<Object, CoordinateBuilderImpl<Grib2Record>> timeBuilders; // one for each runtime
@@ -950,10 +950,6 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     @Override
     public Coordinate makeCoordinate(List<Object> values) {
       CoordinateRuntime runCoord = (CoordinateRuntime) runBuilder.finish();
-      if (this.timeUnit != runCoord.timePeriod) {
-        this.timeUnit = runCoord.timePeriod; // override time units if need be.
-        // do we have to mess with the time coordinates??
-      }
 
       List<Coordinate> times = new ArrayList<>(runCoord.getSize());
       for (int idx = 0; idx < runCoord.getSize(); idx++) {
