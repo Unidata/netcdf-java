@@ -216,6 +216,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     Formatter f = new Formatter();
     f.format("%s", super.getDetailInfo());
     if (gribCollection != null) {
+      f.format("GribTable %s%n%n", this.gribTable);
       gribCollection.showIndex(f);
     }
     return f.toString();

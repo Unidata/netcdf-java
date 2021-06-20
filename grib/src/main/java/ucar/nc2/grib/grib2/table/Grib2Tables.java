@@ -796,4 +796,9 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter 
   public void showEntryDetails(Formatter f, List<GribTables.Parameter> params) {}
 
   public void showSpecialPdsInfo(Grib2Record pds, Formatter f) {}
+
+  @Override
+  public String toString() {
+    return String.format("Grib2Tables{ class=%s, config=%s}", getClass().getName(), config);
+  }
 }
