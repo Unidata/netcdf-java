@@ -63,7 +63,7 @@ public class CalendarDateUnit {
   ////////////////////////////////////////////////////////////////////////////////////////
   private final CalendarPeriod period;
   private final CalendarDate baseDate;
-  private final boolean isCalendarField;
+  private final boolean isCalendarField; // LOOK is this used for anything?
 
   private CalendarDateUnit(CalendarPeriod period, boolean isCalendarField, CalendarDate baseDate) {
     this.period = period;

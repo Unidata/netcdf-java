@@ -43,13 +43,13 @@ import java.util.TreeMap;
  */
 @Immutable
 public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordinate {
-  private static Logger logger = LoggerFactory.getLogger(CoordinateTime2D.class);
+  private static final Logger logger = LoggerFactory.getLogger(CoordinateTime2D.class);
 
   private final CoordinateRuntime runtime;
   private final List<Coordinate> times; // nruns time coordinates - original offsets
   private final CoordinateTimeAbstract otime; // orthogonal time coordinates - only when isOrthogonal
-  private final SortedMap<Integer, CoordinateTimeAbstract> regTimes; // only when isRegular: <hour of day, time
-                                                                     // coordinate>
+  // only when isRegular: <hour of day, time coordinate>
+  private final SortedMap<Integer, CoordinateTimeAbstract> regTimes;
   private final int[] offset; // list all offsets from the base/first runtime, length nruns (LOOK can we use
                               // SmartArrayInt ?)
 
@@ -252,13 +252,15 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     indent.incr();
 
     info.format("%sAll time values=", indent);
-    List timeValues = getOffsetsSorted();
-    for (Object val : timeValues)
+    List<?> timeValues = getOffsetsSorted();
+    for (Object val : timeValues) {
       info.format(" %s,", val);
+    }
     info.format(" (n=%d)%n", timeValues.size());
 
-    if (isOrthogonal)
+    if (isOrthogonal) {
       otime.showInfo(info, indent);
+    }
 
     else if (isRegular)
       for (int hour : regTimes.keySet()) {

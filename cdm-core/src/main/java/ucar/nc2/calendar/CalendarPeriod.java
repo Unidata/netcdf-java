@@ -17,15 +17,14 @@ import java.util.Objects;
 /**
  * A CalendarPeriod is a logical duration of time, it requires a Calendar to convert to an actual duration of time.
  * A CalendarPeriod is expressed as {integer x Field}.
- *
- * Design follows joda Period class.
- * TODO redo this, not using fixed length intervals.
  */
 @Immutable
 public class CalendarPeriod {
+  // LOOK is this needed?
   private static final Cache<CalendarPeriod, CalendarPeriod> cache = CacheBuilder.newBuilder().maximumSize(100).build();
 
   public static final CalendarPeriod Hour = CalendarPeriod.of(1, Field.Hour);
+  public static final CalendarPeriod Second = CalendarPeriod.of(1, Field.Second);
 
   public enum Field {
     Millisec("millisecs", ChronoUnit.MILLIS), //

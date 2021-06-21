@@ -78,8 +78,9 @@ public class CoordinateND<T> {
     public CoordinateND<T> finish(List<T> records, Formatter info) {
       for (CoordinateBuilder builder : builders) {
         Coordinate coord = builder.finish();
-        if (coord.getType() == Coordinate.Type.time2D)
+        if (coord.getType() == Coordinate.Type.time2D) {
           coordb.add(((CoordinateTime2D) coord).getRuntimeCoordinate());
+        }
         coordb.add(coord);
       }
 

@@ -16,7 +16,7 @@ import ucar.util.prefs.PreferencesExt;
 import java.io.*;
 import java.util.*;
 
-/** Run through GRIB ncx indices and make reports */
+/** Run through GRIB ncx4 indices and make reports */
 public class CdmIndexReportPanel extends ReportPanel {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2ReportPanel.class);
 
@@ -49,29 +49,8 @@ public class CdmIndexReportPanel extends ReportPanel {
 
   ///////////////////////////////////////////////
 
-  private static class Accum {
-    int nrecords, ndups, nmissing;
-
-    Accum add(GribCollectionImmutable.VariableIndex v) {
-      this.nrecords += v.getNrecords();
-      this.ndups += v.getNdups();
-      this.nmissing += v.getNmissing();
-      return this;
-    }
-
-    @Override
-    public String toString() {
-      Formatter f = new Formatter();
-      f.format("Accum{nrecords=%d, ", nrecords);
-      double fn = (float) nrecords / 100.0;
-      f.format("ndups=%d (%3.1f %%), ", ndups, ndups / fn);
-      f.format("nmissing=%d (%3.1f %%)}", nmissing, nmissing / fn);
-      return f.toString();
-    }
-  }
-
   protected void doDupAndMissing(Formatter f, MCollection dcm, boolean eachFile, boolean extra) throws IOException {
-    Accum total = new Accum();
+    CdmIndexScan.Accum total = new CdmIndexScan.Accum();
     try (CloseableIterator<MFile> iter = dcm.getFileIterator()) { // not sorted
       while (iter.hasNext()) {
         doDupAndMissingEach(f, iter.next(), eachFile, extra, total);
@@ -81,11 +60,12 @@ public class CdmIndexReportPanel extends ReportPanel {
   }
 
   // separate report for each file in collection
-  private void doDupAndMissingEach(Formatter f, MFile mfile, boolean each, boolean extra, Accum accum)
+  private void doDupAndMissingEach(Formatter f, MFile mfile, boolean each, boolean extra, CdmIndexScan.Accum accum)
       throws IOException {
 
-    if (each)
+    if (each) {
       f.format("%nFile %s%n", mfile.getPath());
+    }
     FeatureCollectionConfig config = new FeatureCollectionConfig();
 
     try (GribCollectionImmutable gc = GribCdmIndex.openCdmIndex(mfile.getPath(), config, false, logger)) {
@@ -95,17 +75,20 @@ public class CdmIndexReportPanel extends ReportPanel {
       }
 
       for (GribCollectionImmutable.Dataset ds : gc.getDatasets()) {
-        if (each)
+        if (each) {
           f.format("%nDataset %s%n", ds.getType());
+        }
         for (GribCollectionImmutable.GroupGC g : ds.getGroups()) {
-          Accum groupAccum = new Accum();
-          if (each)
+          CdmIndexScan.Accum groupAccum = new CdmIndexScan.Accum();
+          if (each) {
             f.format(" Group %s%n", g.getDescription());
+          }
           for (GribCollectionImmutable.VariableIndex v : g.getVariables()) {
-            if (each && extra)
+            if (each && extra) {
               f.format("  %s%n", v.toStringFrom());
-            else
+            } else {
               showIfNonZero(f, v, mfile.getPath());
+            }
 
             groupAccum.add(v);
             accum.add(v);

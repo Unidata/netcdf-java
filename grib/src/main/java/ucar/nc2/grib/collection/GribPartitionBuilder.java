@@ -172,7 +172,7 @@ abstract class GribPartitionBuilder {
   // each dataset / group has one of these, across all partitions
   private class GroupPartitions {
     final GribCollectionMutable.GroupGC resultGroup;
-    final GribCollectionMutable.GroupGC[] componentGroups; // one for each partition; may be null if group is not in the
+    final GribCollectionMutable.GroupGC[] componentGroups; // one for each partition;null if group is not in the
                                                            // partition
     final int[] componentGroupIndex; // one for each partition; the index into the partition.ds2d.groups() array
     final int npart;
@@ -212,15 +212,15 @@ abstract class GribPartitionBuilder {
     // make a list of unique groups across all partitions as well as component groups for each group
     List<CoordinateRuntime> masterRuntimes = new ArrayList<>();
     Map<Object, GroupPartitions> groupMap = new HashMap<>(40); // gdsHashObject, GroupPartition
-    CoordinateBuilder runtimeAllBuilder = new CoordinateRuntime.Builder2(null); // ok to use Builder2 for both grib1 and
-                                                                                // grib2 because not extracting
+    // ok to use Builder2 for both grib1 and grib2 because not extracting
+    CoordinateBuilder<?> runtimeAllBuilder = new CoordinateRuntime.Builder2(null);
 
     int countPartition = 0;
     CalendarDateRange dateRangeAll = null;
     boolean rangeOverlaps = false;
     for (PartitionCollectionMutable.Partition tpp : result.getPartitions()) {
-      try (GribCollectionMutable gc = tpp.makeGribCollection()) { // LOOK open/close each child partition. could leave
-                                                                  // open ? they are NOT in cache
+      // LOOK open/close each child partition. could leave open ? they are NOT in cache
+      try (GribCollectionMutable gc = tpp.makeGribCollection()) {
         if (gc == null)
           continue; // skip if they dont exist
 
@@ -277,15 +277,17 @@ abstract class GribPartitionBuilder {
 
     List<GroupPartitions> groupPartitions = new ArrayList<>(groupMap.values());
     result.masterRuntime = (CoordinateRuntime) runtimeAllBuilder.finish();
-    if (result.isPartitionOfPartitions) // cache calendar dates for efficiency
+    if (result.isPartitionOfPartitions) {// cache calendar dates for efficiency
       CoordinateTimeAbstract.cdf = new CalendarDateFactory(result.masterRuntime);
+    }
 
-    if (!rangeOverlaps)
+    if (!rangeOverlaps) {
       ds2D.gctype = GribCollectionImmutable.Type.MRUTP;
-    // else if (allAre1D)
-    // ds2D.gctype = GribCollectionImmutable.Type.MRSTP;
-    else
+      // else if (allAre1D)
+      // ds2D.gctype = GribCollectionImmutable.Type.MRSTP;
+    } else {
       ds2D.gctype = GribCollectionImmutable.Type.TwoD;
+    }
 
     // create run2part: for each run, which partition to use
     result.run2part = new int[result.masterRuntime.getSize()];
@@ -293,8 +295,8 @@ abstract class GribPartitionBuilder {
     for (CoordinateRuntime partRuntime : masterRuntimes) {
       for (Object val : partRuntime.getValues()) {
         int idx = result.masterRuntime.getIndex(val);
-        result.run2part[idx] = partIdx; // note that later partitions will override earlier if they have the same
-                                        // runtime
+        // note that later partitions will override earlier if they have the same runtime
+        result.run2part[idx] = partIdx;
       }
       partIdx++;
     }
@@ -327,9 +329,10 @@ abstract class GribPartitionBuilder {
       // each VariableIndexPartitioned now has its list of PartitionForVariable
 
       // overall set of unique coordinates
-      boolean isDense = false; // (config != null) && "dense".equals(config.gribConfig.getParameter("CoordSys")); // for
-                               // now, assume non-dense
-      CoordinateSharer sharify = new CoordinateSharer(isDense, logger);
+      // (config != null) && "dense".equals(config.gribConfig.getParameter("CoordSys"));
+      // for now, assume non-dense
+      boolean isDense = false;
+      CoordinateSharer<?> sharify = new CoordinateSharer<>(isDense, logger);
 
       // for each variable, create union of coordinates across the partitions
       for (GribCollectionMutable.VariableIndex viResult : resultGroup.variList) {

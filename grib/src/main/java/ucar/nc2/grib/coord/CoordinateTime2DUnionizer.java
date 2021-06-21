@@ -62,7 +62,6 @@ class CoordinateTime2DUnionizer<T> extends CoordinateBuilderImpl<T> {
 
   // used when isRuntimeUnion=true
   // set the list of runtime coordinates; add any that are not already present, and make an empty CoordinateTimeAbstract
-  // for it
   void setRuntimeCoords(CoordinateRuntime runtimes) {
     for (int idx = 0; idx < runtimes.getSize(); idx++) {
       CalendarDate cd = runtimes.getRuntimeDate(idx);
@@ -157,4 +156,4 @@ class CoordinateTime2DUnionizer<T> extends CoordinateBuilderImpl<T> {
     return totalMax == max ? maxCoord : null;
   }
 
-} // Time2DUnionBuilder
+}

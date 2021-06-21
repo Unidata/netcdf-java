@@ -219,8 +219,8 @@ public class ToolsUI extends JPanel {
     addListeners(bufrTabPane);
 
     // nested-2 tab - grib
-    gribTabPane.addTab("CdmIndex4", new JLabel("CdmIndex4"));
     gribTabPane.addTab("CdmIndexScan", new JLabel("CdmIndexScan"));
+    gribTabPane.addTab("CdmIndex4", new JLabel("CdmIndex4"));
     gribTabPane.addTab("CdmIndexReport", new JLabel("CdmIndexReport"));
     gribTabPane.addTab("GribIndex", new JLabel("GribIndex"));
     gribTabPane.addTab("WMO-COMMON", new JLabel("WMO-COMMON"));
@@ -397,11 +397,6 @@ public class ToolsUI extends JPanel {
       case "BufrCdmIndex":
         bufrCdmIndexPanel = new BufrCdmIndexOpPanel((PreferencesExt) mainPrefs.node("bufrCdmIdx"));
         c = bufrCdmIndexPanel;
-        /*
-         * } else if (title.equals("CdmIndex")) {
-         * gribCdmIndexPanel = new GribCdmIndexPanel((PreferencesExt) mainPrefs.node("cdmIdx"));
-         * c = gribCdmIndexPanel;
-         */
         break;
 
       case "CdmIndex4":
@@ -969,7 +964,7 @@ public class ToolsUI extends JPanel {
   }
 
   public void openIndexFile(String datasetName) {
-    makeComponent(ftTabPane, "WMS");
+    makeComponent(gribTabPane, "CdmIndex4");
     cdmIndexPanel.doit(datasetName);
     tabbedPane.setSelectedComponent(iospTabPane);
     iospTabPane.setSelectedComponent(gribTabPane);

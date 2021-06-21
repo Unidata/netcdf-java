@@ -34,10 +34,14 @@ public class CdmIndexScan extends JPanel {
 
   private final BeanTable<IndexScanBean> indexBeanTable;
   private final JSplitPane split;
-  private final TextHistoryPane dumpTA;
+  private final TextHistoryPane dumpTA = new TextHistoryPane();
+  private final TextHistoryPane infoTA = new TextHistoryPane();
   private final IndependentWindow infoWindow;
   private final AbstractButton filterButt;
-  private boolean filterSRC;
+
+  private Formatter scanInfo = new Formatter();
+  private boolean filterSRC = true;
+  private String topdir;
 
   public CdmIndexScan(PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
@@ -56,11 +60,9 @@ public class CdmIndexScan extends JPanel {
     });
 
     // the info window
-    TextHistoryPane infoTA = new TextHistoryPane();
     infoWindow = new IndependentWindow("Extra Information", BAMutil.getImage("nj22/NetcdfUI"), infoTA);
     infoWindow.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 500, 300)));
 
-    dumpTA = new TextHistoryPane();
     split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, indexBeanTable, dumpTA);
     split.setDividerLocation(prefs.getInt("splitPos", 500));
 
@@ -71,15 +73,34 @@ public class CdmIndexScan extends JPanel {
       @Override
       public void actionPerformed(ActionEvent e) {
         filterSRC = (Boolean) getValue(BAMutil.STATE);
-        String tooltip = filterSRC ? "dont include SRC" : "include type SRC";
+        String tooltip = filterSRC ? "dont include SRC/MRUTC" : "include SRC/MRUTC";
         filterButt.setToolTipText(tooltip);
       }
     };
-    String tooltip = filterSRC ? "dont include type SRC" : "include type SRC";
+    String tooltip = filterSRC ? "dont include type SRC/MRUTC" : "include SRC/MRUTC";
     BAMutil.setActionProperties(filterAction, "nj22/AddCoords", tooltip, true, 'C', -1);
     filterAction.putValue(BAMutil.STATE, filterSRC);
     filterButt = BAMutil.addActionToContainer(buttPanel, filterAction);
     buttPanel.add(filterButt);
+
+    AbstractAction infoAction = new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        infoTA.setText(scanInfo.toString());
+        infoWindow.show();
+      }
+    };
+    BAMutil.setActionProperties(infoAction, "Information", "scan info", false, 'I', -1);
+    BAMutil.addActionToContainer(buttPanel, infoAction);
+
+    AbstractAction doitButt = new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        infoTA.setText(makeReport());
+        infoWindow.show();
+      }
+    };
+    BAMutil.setActionProperties(doitButt, "alien", "make report", false, 'C', -1);
+    BAMutil.addActionToContainer(buttPanel, doitButt);
   }
 
   public PreferencesExt getPrefs() {
@@ -98,6 +119,7 @@ public class CdmIndexScan extends JPanel {
 
   public boolean setScanDirectory(String dirName) {
     clear();
+    this.topdir = dirName;
 
     List<IndexScanBean> beans;
     try {
@@ -124,7 +146,7 @@ public class CdmIndexScan extends JPanel {
     dumpTA.gotoTop();
   }
 
-  public java.util.List<IndexScanBean> scan(String topDir) throws IOException {
+  private java.util.List<IndexScanBean> scan(String topDir) throws IOException {
     List<IndexScanBean> result = new ArrayList<>();
     File topFile = new File(topDir);
     if (!topFile.exists()) {
@@ -136,16 +158,25 @@ public class CdmIndexScan extends JPanel {
     if (topFile.isDirectory()) {
       scanDirectory(topFile, result, info);
     } else {
-      Accum accum = new Accum();
-      openCdmIndex(topFile.getPath(), accum, result, info);
-      info.format("%n%s%n", accum);
+      Accum accum = openCdmIndex(topFile.getPath(), result, info);
+      info.format("%s%n", accum);
     }
     dumpTA.setText(info.toString());
+    this.scanInfo = info;
 
     return result;
   }
 
-  private void scanDirectory(File dir, List<IndexScanBean> result, Formatter info) throws IOException {
+  private String makeReport() {
+    Formatter result = new Formatter();
+    result.format("# %s%n", this.topdir);
+    for (IndexScanBean bean : indexBeanTable.getBeans()) {
+      result.format("%s%n", bean.report);
+    }
+    return result.toString();
+  }
+
+  public void scanDirectory(File dir, List<IndexScanBean> result, Formatter info) throws IOException {
     if ((dir.getName().equals("exclude")) || (dir.getName().equals("problem"))) {
       return;
     }
@@ -158,9 +189,8 @@ public class CdmIndexScan extends JPanel {
 
     for (File f : fila) {
       if (!f.isDirectory() && f.getName().endsWith(".ncx4")) {
-        Accum totalAccum = new Accum();
-        openCdmIndex(f.getPath(), totalAccum, result, info);
-        info.format("%n%s%n", totalAccum);
+        Accum totalAccum = openCdmIndex(f.getPath(), result, info);
+        info.format("%s%n", totalAccum);
       }
     }
 
@@ -171,78 +201,53 @@ public class CdmIndexScan extends JPanel {
     }
   }
 
-  private void openCdmIndex(String path, Accum accum, List<IndexScanBean> result, Formatter info) throws IOException {
-
-    info.format("%nFile %s%n", path);
+  public Accum openCdmIndex(String path, List<IndexScanBean> result, Formatter info) throws IOException {
     FeatureCollectionConfig config = new FeatureCollectionConfig();
+    Accum totalAccum = new Accum();
+    System.out.printf("%s%n", path);
+    String relpath = path.substring(this.topdir.length());
 
     try (GribCollectionImmutable gc = GribCdmIndex.openCdmIndex(path, config, false, logger)) {
       if (gc == null) {
-        info.format("Not a grib collection index file=%s%n" + path);
-        return;
+        info.format("Not a grib collection index file=%s%n", path);
+        return totalAccum;
       }
+      info.format("%nGribCollection %s%n", path);
 
       for (GribCollectionImmutable.Dataset ds : gc.getDatasets()) {
-        info.format("%nDataset %s%n", ds.getType());
+        info.format(" Dataset %s%n", ds.getType());
         int groupno = 0;
         for (GribCollectionImmutable.GroupGC g : ds.getGroups()) {
           if (g.getType() == GribCollectionImmutable.Type.Best) {
             continue; // Best is deprecated.
           }
-          if (filterSRC && g.getType() == GribCollectionImmutable.Type.SRC) {
-            continue; // Best is deprecated.
+          if (filterSRC && (g.getType() == GribCollectionImmutable.Type.SRC
+              || g.getType() == GribCollectionImmutable.Type.MRUTC)) {
+            continue; // Show non-SRC/MRUTC
           }
           Formatter localInfo = new Formatter();
-          localInfo.format("File %s%n", path);
-          Accum groupAccum = new Accum();
-          localInfo.format(" Group %s%n", g.getDescription());
-          for (GribCollectionImmutable.VariableIndex v : g.getVariables()) {
-            localInfo.format("  %s%n", v.toStringFrom());
-            showIfNonZero(info, v, path);
-
-            groupAccum.add(v);
-            accum.add(v);
+          Formatter report = new Formatter();
+          localInfo.format(" %s%n", relpath);
+          if (groupno == 0) {
+            report.format("### %s%n", relpath);
           }
-          info.format(" total %s%n", groupAccum);
-          localInfo.format(" total %s%n", groupAccum);
-          result.add(new IndexScanBean(path, ds, g, groupno++, groupAccum, localInfo.toString()));
+          Accum groupAccum = new Accum();
+          localInfo.format("  Group %s%n", g.getDescription());
+          report.format("  **%s** %sGroup %s%n", g.getType(), groupno == 0 ? "" : "***", g.getDescription());
+          for (GribCollectionImmutable.VariableIndex vi : g.getVariables()) {
+            localInfo.format("   %s%n", vi.toStringFrom());
+            groupAccum.add(vi);
+            totalAccum.add(vi);
+          }
+          info.format("  groupTotal %s%n", groupAccum);
+          localInfo.format("   groupAccum %s%n", groupAccum);
+          report.format("   %s%n", groupAccum);
+          result.add(
+              new IndexScanBean(path, relpath, ds, g, groupno++, groupAccum, localInfo.toString(), report.toString()));
         }
       }
-
     }
-  }
-
-  String lastFilename;
-
-  void showIfNonZero(Formatter info, GribCollectionImmutable.VariableIndex v, String filename) {
-    if ((v.getNdups() != 0) || (v.getNmissing() != 0)) {
-      if (!filename.equals(lastFilename))
-        info.format(" %s%n  %s%n", filename, v.toStringFrom());
-      else
-        info.format("  %s%n", v.toStringFrom());
-      lastFilename = filename;
-    }
-  }
-
-  private static class Accum {
-    int nrecords, ndups, nmissing;
-
-    Accum add(GribCollectionImmutable.VariableIndex v) {
-      this.nrecords += v.getNrecords();
-      this.ndups += v.getNdups();
-      this.nmissing += (v.getSize() - v.getNrecords());
-      return this;
-    }
-
-    @Override
-    public String toString() {
-      Formatter f = new Formatter();
-      f.format("Accum{nrecords=%d, ", nrecords);
-      double fn = (float) nrecords / 100.0;
-      f.format("ndups=%d (%3.1f %%), ", ndups, ndups / fn);
-      f.format("nmissing=%d (%3.1f %%)}", nmissing, nmissing / fn);
-      return f.toString();
-    }
+    return totalAccum;
   }
 
   public static class IndexScanBean {
@@ -250,6 +255,7 @@ public class CdmIndexScan extends JPanel {
     public String name;
     public Accum accum;
     public String info;
+    public String report;
     public String time2D;
     public GribCollectionImmutable.Dataset ds;
     public int groupno;
@@ -257,15 +263,15 @@ public class CdmIndexScan extends JPanel {
     // no-arg constructor
     public IndexScanBean() {}
 
-    public IndexScanBean(String path, GribCollectionImmutable.Dataset ds, GribCollectionImmutable.GroupGC group,
-        int groupno, Accum accum, String info) {
+    public IndexScanBean(String path, String name, GribCollectionImmutable.Dataset ds,
+        GribCollectionImmutable.GroupGC group, int groupno, Accum accum, String info, String report) {
       this.path = path;
-      int pos = path.lastIndexOf('/');
-      this.name = ".." + path.substring(pos);
+      this.name = name;
       this.accum = accum;
       this.ds = ds;
       this.groupno = groupno;
       this.info = info;
+      this.report = report;
 
       // Show the most complicated type of Time2D coordinate
       boolean hasTime2D = false;
@@ -304,8 +310,16 @@ public class CdmIndexScan extends JPanel {
       return accum.nmissing;
     }
 
-    public float getNmissPct() {
+    public float getNmissingPct() {
       return accum.nrecords == 0 ? 0 : 100.0f * accum.nmissing / (float) accum.nrecords;
+    }
+
+    public int getRectMissing() {
+      return accum.rectMiss;
+    }
+
+    public float getRectMissingPct() {
+      return accum.nrecords == 0 ? 0 : 100.0f * accum.rectMiss / (float) accum.nrecords;
     }
 
     public String getType() {
@@ -322,6 +336,28 @@ public class CdmIndexScan extends JPanel {
 
     public String toString() {
       return info;
+    }
+  }
+
+  public static class Accum {
+    int nrecords, ndups, nmissing, rectMiss;
+
+    void add(GribCollectionImmutable.VariableIndex v) {
+      this.nrecords += v.getNrecords();
+      this.ndups += v.getNdups();
+      this.nmissing += v.getNmissing();
+      this.rectMiss += (v.getSize() - v.getNrecords());
+    }
+
+    @Override
+    public String toString() {
+      Formatter f = new Formatter();
+      f.format("Accum{nrecords=%d, ", nrecords);
+      double fn = (float) nrecords / 100.0;
+      f.format("ndups=%d (%3.1f %%), ", ndups, ndups / fn);
+      f.format("nmissing=%d (%3.1f %%), ", nmissing, nmissing / fn);
+      f.format("rectMiss=%d (%3.1f %%)}", rectMiss, rectMiss / fn);
+      return f.toString();
     }
   }
 }

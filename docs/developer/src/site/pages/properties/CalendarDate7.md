@@ -15,8 +15,8 @@ If you have a real world dataset that is adversely affected by this, please cont
 While this was a reasonable choice at the time it was made, subsequent standardization of the ISO8601 standard makes it 
 a burden.
 
-2. A ISO8601 library is available in all major programming languages. Julian and mixed Gregorian calendars are not
-available in the standara Java libraries.
+2. ISO8601 implementation libraries are available in all major programming languages. Julian and mixed Gregorian calendars are not
+available in the standard Java libraries.
 
 3. The julian and mixed Gregorian calendars are "real world historical calendars", that is, they are used in some contexts
 to express historical dates. These differ from ISO before some cutoff. Udunits uses a cutoff date in 1582, when the gregorian
@@ -28,13 +28,13 @@ In the case where they are modeling climate before 1582, they will be much bette
 or of using the continuous ISO calendar. That is to say, they have no need to skip 10 days in 1582 to match one arbitrary 
 encoding of historical dates.
 
-5. We beleive that most if not all users of netcdf and cdm do not need this feature and are better served using ISO dates. 
+5. We believe that most if not all users of netCDF and CDM do not need this feature and are better served using ISO dates. 
 The CF/udunits specification for dates leaves out the cutoff date. There may be other subtleties of historical encodings
 best left to specialists. In short, its better for a library to not do something, than to do it wrong.
 
 6. If you have a need to store historical encoded dates, we suggest that you:
   1. Code the historical dates as strings, and process these dates yourself. 
-  2. Also perhaps map your historical dates to ISO in some way that meets your needs and allows you to 
+  2. Also map your historical dates to ISO in some way that meets your needs and allows you to 
   use the standard ISO libaries. 
 
 ### Java

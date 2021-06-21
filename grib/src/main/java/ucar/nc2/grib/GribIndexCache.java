@@ -50,8 +50,8 @@ public class GribIndexCache {
    */
   public static File getExistingFileOrCache(String fileLocation) {
     File result = getDiskCache2().getExistingFileOrCache(fileLocation);
-    if (result == null && Grib.debugGbxIndexOnly && fileLocation.endsWith(".gbx9.ncx4")) { // might create only from
-                                                                                           // gbx9 for debugging
+    // might create only from gbx9 for debugging
+    if (result == null && Grib.debugGbxIndexOnly && fileLocation.endsWith(".gbx9.ncx4")) {
       int length = fileLocation.length();
       String maybeIndexAlreadyExists = fileLocation.substring(0, length - 10) + ".ncx4";
       result = getDiskCache2().getExistingFileOrCache(maybeIndexAlreadyExists);
