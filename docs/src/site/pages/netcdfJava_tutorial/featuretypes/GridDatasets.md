@@ -34,14 +34,14 @@ The most general way to open a `GridDataset` is to use the `FeatureDatasetFactor
 For example:
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&src/test/java/examples/featuretypes/GridDatasetsTutorial.java&gridDatasetFormat %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/featuretypes/GridDatasetsTutorial.java&gridDatasetFormat %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
 
 If you know that the file you are opening is a `GridDataset`, you can call directly:
 {% capture rmd %}
-{% includecodeblock netcdf-java&src/test/java/examples/featuretypes/GridDatasetsTutorial.java&gridFormat %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/featuretypes/GridDatasetsTutorial.java&gridFormat %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
@@ -50,7 +50,7 @@ If you know that the file you are opening is a `GridDataset`, you can call direc
 Once you have a `GridDataset`, you can get the grids and their associated coordinate systems:
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&src/test/java/examples/featuretypes/GridDatasetsTutorial.java&usingGridDataset %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/featuretypes/GridDatasetsTutorial.java&usingGridDataset %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
@@ -61,7 +61,7 @@ The `getBoundingBox()` method returns a bounding box from the `XHoriz/YHoriz` co
 You can use the `GridCoordSystem` to find the indices and coordinates of the 2D grid from the (x,y) projection point:
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&src/test/java/examples/featuretypes/GridDatasetsTutorial.java&findLatLonVal %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/featuretypes/GridDatasetsTutorial.java&findLatLonVal %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
@@ -72,14 +72,14 @@ It has various convenience routines that expose methods from the `GridCoordSyste
 The main data access method is `readDataSlice()`, where you can fix an index on any `Dimension`, or use a -1 to get all the data in that `Dimension`.
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&src/test/java/examples/featuretypes/GridDatasetsTutorial.java&readingData %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/featuretypes/GridDatasetsTutorial.java&readingData %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
 The subset method allows you to create a logical subset of a `GeoGrid` using index `Ranges`.
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&src/test/java/examples/featuretypes/GridDatasetsTutorial.java&CallMakeSubset %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/featuretypes/GridDatasetsTutorial.java&CallMakeSubset %}
 {% endcapture %}
 {{ rmd | markdownify }}
 

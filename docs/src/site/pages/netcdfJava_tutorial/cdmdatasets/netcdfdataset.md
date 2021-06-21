@@ -22,7 +22,7 @@ The [NcML](basic_ncml_tutorial.html) section of the tutorial explains how to cre
 The preferred way to open a `NetcdfFile` is through the `NetcdfDatasets.openFile` factory method:
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&src/test/java/examples/cdmdatasets/NetcdfDatasetTutorial.java&openNCFile %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/cdmdatasets/NetcdfDatasetTutorial.java&openNCFile %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
@@ -42,7 +42,7 @@ When you want the Netcdf-Java library to deal with missing values and scale/offs
 you should use the `NetcdfDatasets.openDataset` factory call:
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&src/test/java/examples/cdmdatasets/NetcdfDatasetTutorial.java&openEnhancedDataset %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/cdmdatasets/NetcdfDatasetTutorial.java&openEnhancedDataset %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
@@ -57,7 +57,7 @@ Note that `NetcdfDataset` is a subclass of `NetcdfFile`, and so can be used wher
 When you open a `NetcdfDataset` in *enhanced mode* (the default), any `Variables` that have the attributes `scale_factor` and/or `add_offset` are considered to be *packed data* `Variables`, whose data should be converted with the formula:
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&src/test/java/examples/cdmdatasets/NetcdfDatasetTutorial.java&unpackData %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/cdmdatasets/NetcdfDatasetTutorial.java&unpackData %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
@@ -130,7 +130,7 @@ use the default enhance mode if enhance is `true`, and `EnhanceMode.None` if enh
 The most general factory method for opening a `NetcdfDataset` allows one to explicitly set the `EnhanceMode`:
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&src/test/java/examples/cdmdatasets/NetcdfDatasetTutorial.java&openEnhancedDatasetOptions %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/cdmdatasets/NetcdfDatasetTutorial.java&openEnhancedDatasetOptions %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
@@ -139,7 +139,7 @@ and pass an arbitrary object to the `IOServiceProvider` that handles the dataset
 These last 3 parameters correspond to the parameters in the similar factory method for opening a `NetcdfFile`:
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&src/test/java/examples/cdmdatasets/NetcdfDatasetTutorial.java&openNCFileOptions %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/cdmdatasets/NetcdfDatasetTutorial.java&openNCFileOptions %}
 {% endcapture %}
 {{ rmd | markdownify }}
   
@@ -156,7 +156,7 @@ a cleanup if the cache exceeds it, and `period` specifies the time in seconds to
 One then calls the `acquireFile` or `acquireDataset` factory methods instead of `openFile` and `openDataset`. For example:
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&src/test/java/examples/cdmdatasets/NetcdfDatasetTutorial.java&cacheFiles %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/cdmdatasets/NetcdfDatasetTutorial.java&cacheFiles %}
 {% endcapture %}
 {{ rmd | markdownify }}
 

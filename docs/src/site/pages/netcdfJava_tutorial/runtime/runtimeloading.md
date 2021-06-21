@@ -24,7 +24,7 @@ ucar.nc2.iosp.gini.Giniiosp
 2) Alternatively, from your code, register your IOSP by calling:
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&src/test/java/examples/runtime/runtimeloadingTutorial.java&registerIOSP %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/runtime/runtimeloadingTutorial.java&registerIOSP %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
@@ -36,7 +36,7 @@ When `NetcdfFiles.open()` is called, we call `getIosp()` and loop through the `I
 From your code, register your `CoordSystemBuilder` by calling:
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&src/test/java/examples/runtime/runtimeloadingTutorial.java&registerCoordSystemBuilder %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/runtime/runtimeloadingTutorial.java&registerCoordSystemBuilder %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
@@ -46,7 +46,7 @@ If none are found, use the default `_Coordinate` convention.
 
 ### Register a TransformBuilder:
 {% capture rmd %}
-{% includecodeblock netcdf-java&src/test/java/examples/runtime/runtimeloadingTutorial.java&registerCoordTransBuilder %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/runtime/runtimeloadingTutorial.java&registerCoordTransBuilder %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
@@ -54,7 +54,7 @@ The registered class must implement `ucar.nc2.internal.dataset.CoordTransformFac
 
 ### Register a FeatureDatasetFactory:
 {% capture rmd %}
-{% includecodeblock netcdf-java&src/test/java/examples/runtime/runtimeloadingTutorial.java&registerFeatureDatasetFactory %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/runtime/runtimeloadingTutorial.java&registerFeatureDatasetFactory %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
@@ -62,7 +62,7 @@ The registered class must implement `ucar.nc2.ft.FeatureDatasetFactory`.
 
 ### Register a GRIB1 table:
 {% capture rmd %}
-{% includecodeblock netcdf-java&src/test/java/examples/runtime/runtimeloadingTutorial.java&registerGRIBTable %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/runtime/runtimeloadingTutorial.java&registerGRIBTable %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
@@ -72,7 +72,7 @@ See [GribTables](grib_tables.html) for more information about parameter tables.
 
 ### Register a GRIB1 lookup table:
 {% capture rmd %}
-{% includecodeblock netcdf-java&src/test/java/examples/runtime/runtimeloadingTutorial.java&registerGRIBLookupTable %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/runtime/runtimeloadingTutorial.java&registerGRIBLookupTable %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
@@ -82,7 +82,7 @@ See [GribTables](grib_tables.html)  for more information about lookup tables.
 
 ### Register a BUFR Table lookup:
 {% capture rmd %}
-{% includecodeblock netcdf-java&src/test/java/examples/runtime/runtimeloadingTutorial.java&registerBUFRTable %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/runtime/runtimeloadingTutorial.java&registerBUFRTable %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
@@ -131,14 +131,14 @@ There are several ways pass the Runtime Configuration XML to the CDM library. Fr
 `ucar.nc2.internal.util.xml.RuntimeConfigParser`, as in the following examples:
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&src/test/java/examples/runtime/runtimeloadingTutorial.java&passConfigurationToCDM %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/runtime/runtimeloadingTutorial.java&passConfigurationToCDM %}
 {% endcapture %}
 {{ rmd | markdownify }}
     
 For example, the ToolsUI application allows you to specify this file on the command line with the `-nj22Config` parameter:
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&src/test/java/examples/runtime/runtimeloadingTutorial.java&passConfigurationToolsUI %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/runtime/runtimeloadingTutorial.java&passConfigurationToolsUI %}
 {% endcapture %}
 {{ rmd | markdownify }}
 

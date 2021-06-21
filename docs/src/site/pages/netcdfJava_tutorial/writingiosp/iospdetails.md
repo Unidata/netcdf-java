@@ -52,7 +52,7 @@ you should probably catch `IOExceptions` and return `false` instead.
 #### Example 1:
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&src/test/java/examples/writingiosp/IospDetailsTutorial.java&isValidExample1 %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/writingiosp/IospDetailsTutorial.java&isValidExample1 %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
@@ -62,7 +62,7 @@ Still, be careful of your assumptions.
 #### Example 2:
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&src/test/java/examples/writingiosp/IospDetailsTutorial.java&isValidExample2 %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/writingiosp/IospDetailsTutorial.java&isValidExample2 %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
@@ -74,7 +74,7 @@ following the rule that `Exceptions` should only be used in exceptional circumst
 #### Example 3 (BAD!):
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&src/test/java/examples/writingiosp/IospDetailsTutorial.java&isValidExample3 %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/writingiosp/IospDetailsTutorial.java&isValidExample3 %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
@@ -84,7 +84,7 @@ The mistake might be because you want to use a scanner object and edition in the
 
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&src/test/java/examples/writingiosp/IospDetailsTutorial.java&isValidExample4 %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/writingiosp/IospDetailsTutorial.java&isValidExample4 %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
@@ -109,14 +109,14 @@ An `Attribute` is a (name, value) pair, where name is a `String`, and value is a
 You can add global `Attributes` that apply to the entire file:
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&src/test/java/examples/writingiosp/IospDetailsTutorial.java&addGlobalAttribute %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/writingiosp/IospDetailsTutorial.java&addGlobalAttribute %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
 Or you can add `Attributes` that are contained inside a `Variable` and apply only to that `Variable`, using the `Variable.Builder` API:
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&src/test/java/examples/writingiosp/IospDetailsTutorial.java&addVarAttribute %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/writingiosp/IospDetailsTutorial.java&addVarAttribute %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
@@ -126,7 +126,7 @@ A `Dimension` describes the index space for the multidimension arrays of data st
 A `Dimension` has a `String` name and in integer length. In the Netcdf-3 data model, `Dimensions` are shared between `Variables` and stored globally.
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&src/test/java/examples/writingiosp/IospDetailsTutorial.java&addDimension %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/writingiosp/IospDetailsTutorial.java&addDimension %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
@@ -138,7 +138,7 @@ type `DataType.BYTE`, `DataType.CHAR`, `DataType.SHORT`, `DataType.INT`, `DataTy
 If a `Variable` is unsigned (bytes, shorts or integer data types), you must add the `Unsigned` attribute:
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&src/test/java/examples/writingiosp/IospDetailsTutorial.java&unsignedAttribute %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/writingiosp/IospDetailsTutorial.java&unsignedAttribute %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
@@ -146,7 +146,7 @@ Here is an example creating a `Variable` of type short called "elevation", addin
 The `Dimensions` lat and lon must already have been added. When setting `Dimensions`, the slowest-varying `Dimension` goes first (C/Java order).
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&src/test/java/examples/writingiosp/IospDetailsTutorial.java&createVariable %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/writingiosp/IospDetailsTutorial.java&createVariable %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
@@ -154,14 +154,14 @@ A special kind of `Variable` is a Coordinate `Variable`, which is used to name t
 A Coordinate `Variable` has the same name as its single dimension. For example:
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&src/test/java/examples/writingiosp/IospDetailsTutorial.java&createCoordinateVariable %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/writingiosp/IospDetailsTutorial.java&createCoordinateVariable %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
 It is often convenient for IOSPs to set the data values of coordinate (or other) `Variables`.
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&src/test/java/examples/writingiosp/IospDetailsTutorial.java&setVariableData %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/writingiosp/IospDetailsTutorial.java&setVariableData %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
@@ -185,7 +185,7 @@ Here is an example, that assume the data starts at the start of the file, is in 
 #### Example 1: Reading the entire `Array`
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&src/test/java/examples/writingiosp/IospDetailsTutorial.java&readExample1 %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/writingiosp/IospDetailsTutorial.java&readExample1 %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
@@ -197,7 +197,7 @@ For large arrays, reading in all of the data can be too expensive. If your data 
 #### Example 2: Using `ucar.nc2.iosp.LayoutRegular` to read just the requested `Section`:
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&src/test/java/examples/writingiosp/IospDetailsTutorial.java&readExample2 %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/writingiosp/IospDetailsTutorial.java&readExample2 %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
@@ -209,7 +209,7 @@ For example, suppose there were multiple `Variables` starting at different locat
 storing that and other info in a `VarInfo` object:
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&src/test/java/examples/writingiosp/IospDetailsTutorial.java&readExample3 %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/writingiosp/IospDetailsTutorial.java&readExample3 %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
