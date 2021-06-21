@@ -76,4 +76,24 @@
 ### /NOAA_GSD/HRRR/CONUS_3km/wrfprs/GSD_HRRR_CONUS_3km_wrfprs.ncx4
   **TwoD** Group LambertConformal_1059X1799 (Center 38.510, -97.488)
    Accum{nrecords=1197246, ndups=0 (0.0 %), nmissing=0 (0.0 %), rectMiss=1245168 (104.0 %)}
+   
+1. time2d
+2. float DZDT_P0_L100_GLC0_isobaric(reftime=82, time1=27, isobaric=1, y=1059, x=1799);
+        :coordinates = "reftime validtime1 time1 isobaric y x "; // string
+        :description = "Vertical Velocity (Geometric)";
+    double reftime(reftime=82);
+    double validtime1(reftime=82, time1=27);  
+    
+    *** time1 is missing in the file, should be I think??
+    double time1(time1=27);  
+    double time1(reftime=82, time1=27);  
+     
+   this is the only variable like this, all the rest (14) are orthogional. 
 
+   *** probably the mistake is that it shouldnt be listed in the coordinates attriibute
+        :coordinates = "reftime validtime1 time1 isobaric y x "; 
+      should be:
+         :coordinates = "reftime validtime1 isobaric y x "; 
+       
+         
+        

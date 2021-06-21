@@ -36,7 +36,7 @@ import java.util.TreeMap;
  * Both runtime and time coordinates are tracked here. The time coordinate is dependent on the runtime, at least on the
  * offset.
  * isOrthogonal means all time coordinate offsets are the same for each runtime.
- * isRegular means all time coordinate offsets are the same for each "runtime hour of day" (from FMRC).
+ * isRegular means all time coordinate offsets are the same for each "runtime minute of day".
  *
  * @author caron
  * @since 1/22/14

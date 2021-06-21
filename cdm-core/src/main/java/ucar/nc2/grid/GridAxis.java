@@ -177,9 +177,7 @@ public abstract class GridAxis implements Iterable<Object> {
 
   @Override
   public int hashCode() {
-    int result =
-        Objects.hash(name, description, units, axisType, attributes, dependenceType, dependsOn, spacing, resolution);
-    return result;
+    return Objects.hash(name, description, units, axisType, attributes, dependenceType, dependsOn, spacing, resolution);
   }
 
   @Override

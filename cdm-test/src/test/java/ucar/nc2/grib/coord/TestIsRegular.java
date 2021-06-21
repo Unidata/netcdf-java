@@ -21,8 +21,10 @@ import java.util.Formatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import static com.google.common.truth.Truth.assertThat;
+import static org.junit.Assert.fail;
 
 /** Test Coordinate2D is regular in cdmUnitTestDir test files. */
 public class TestIsRegular {
@@ -31,9 +33,18 @@ public class TestIsRegular {
 
   @Test
   @Category(NeedsCdmUnitTest.class)
-  public void testWhyIsntThisRegular() throws IOException {
+  public void testHrrrConus3Wrfprs() throws IOException {
+    String filename =
+        TestDir.cdmUnitTestDir + "tds_index/NOAA_GSD/HRRR/CONUS_3km/wrfprs/GSD_HRRR_CONUS_3km_wrfprs.ncx4";
+    boolean sa = testIsRegular(filename, "validtime1");
+    assertThat(sa).isFalse();
+  }
+
+  @Test
+  @Category(NeedsCdmUnitTest.class)
+  public void testNdfdNws() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "tds_index/NCEP/NDFD/NWS/NDFD_NWS_CONUS_CONDUIT.ncx4";
-    String cname = "time";
+    String cname = "validtime1";
     boolean sa = testIsRegular(filename, cname);
     assertThat(sa).isTrue();
   }
@@ -50,16 +61,17 @@ public class TestIsRegular {
         Coordinate coord =
             g.getCoordinates().stream().filter(c -> c.getName().equals(coordName)).findFirst().orElseThrow();
         assertThat(coord).isInstanceOf(CoordinateTime2D.class);
-        return testIsRegular((CoordinateTime2D) coord);
+        return testRegular((CoordinateTime2D) coord);
       }
     }
+    fail();
     return false;
   }
 
   // regular means that all the times for each offset from 0Z can be made into a single time coordinate (FMRC algo)
-  private boolean testIsRegular(CoordinateTime2D time2D) {
+  private boolean testRegular(CoordinateTime2D time2D) {
     // group time coords by offset
-    Map<Integer, List<CoordinateTimeAbstract>> minuteMap = new HashMap<>(); // <hour, all coords for that hour>
+    TreeMap<Integer, List<CoordinateTimeAbstract>> minuteMap = new TreeMap<>(); // <hour, all coords for that hour>
     for (int runIdx = 0; runIdx < time2D.getNruns(); runIdx++) {
       CoordinateTimeAbstract coord = time2D.getTimeCoordinate(runIdx);
       CalendarDate runDate = coord.getRefDate();
@@ -104,6 +116,17 @@ public class TestIsRegular {
       }
       System.out.printf("%s", info);
     }
+  }
+
+
+  // orthogonal means that all the times can be made into a single time coordinate
+  private boolean testIsOrthogonal(CoordinateTime2D time2D) {
+    // LOOK bogus this is not testig, just confiring that time2D.isOrthoganal = true
+    List<CoordinateTimeAbstract> coords = new ArrayList<>();
+    for (int runIdx = 0; runIdx < time2D.getNruns(); runIdx++) {
+      coords.add(time2D.getTimeCoordinate(runIdx));
+    }
+    return testOrthogonal(coords, true);
   }
 
   private boolean testOrthogonal(List<CoordinateTimeAbstract> times, boolean show) {
