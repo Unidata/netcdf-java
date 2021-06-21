@@ -45,9 +45,27 @@ public class CoordinateRuntime implements Coordinate {
     for (long val : runtimeSorted) {
       this.runtimes[idx++] = val;
     }
-
     this.firstDate = CalendarDate.of(runtimeSorted.get(0));
-    this.timePeriod = timeUnit == null ? CalendarPeriod.Hour : timeUnit;
+    if (timeUnit == null) {
+      timeUnit = CalendarPeriod.Hour;
+    }
+
+    // check to see that the runtimes are compatible with the timeUnit. See Issue #725
+    boolean unitsOk = true;
+    for (long val : runtimeSorted) {
+      CalendarDate anotherDate = CalendarDate.of(val);
+      long offset = anotherDate.since(this.firstDate, timeUnit);
+      CalendarDate check = this.firstDate.add(offset, timeUnit);
+      if (!check.equals(this.firstDate)) {
+        unitsOk = false;
+        break;
+      }
+    }
+    if (!unitsOk) {
+      timeUnit = CalendarPeriod.Second;
+    }
+
+    this.timePeriod = timeUnit;
     CalendarPeriod.Field cf = this.timePeriod.getField();
 
     // LOOK
