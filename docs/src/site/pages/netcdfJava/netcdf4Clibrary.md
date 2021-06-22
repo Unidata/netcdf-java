@@ -142,7 +142,7 @@ To write from NCSS, simply choose netcdf-4 output type.
 See the [Writing CDM](writing_netcdf.html) page for a detailed explanation of writing netCDF-4 files.
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&src/test/java/examples/netcdfJava/netcdf4ClibraryTutorial.java&writingcdf %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/netcdfJava/netcdf4ClibraryTutorial.java&writingcdf %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
@@ -191,6 +191,6 @@ By default, compression (deflate level = 5) and the shuffle filter will be used.
 The user can override these by:
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&src/test/java/examples/netcdfJava/netcdf4ClibraryTutorial.java&chunkingOverride %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/netcdfJava/netcdf4ClibraryTutorial.java&chunkingOverride %}
 {% endcapture %}
 {{ rmd | markdownify }}

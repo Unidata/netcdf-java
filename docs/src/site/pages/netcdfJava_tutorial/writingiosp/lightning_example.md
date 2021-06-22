@@ -29,7 +29,7 @@ starting with `USPLN-LIGHTNING`, and a separate line for each lightning strike, 
 
 We will walk through implementing methods in a new IOSP: 
 {% capture rmd %}
-{% includecodeblock netcdf-java&src/test/java/examples/writingiosp/LightningExampleTutorial.java&getIOSP %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/writingiosp/LightningExampleTutorial.java&getIOSP %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
@@ -42,7 +42,7 @@ First, we must identify our files. It's not foolproof, but we will assume that a
 so our `isValidFile` function can look like this:
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&src/test/java/examples/writingiosp/LightningExampleTutorial.java&implementIsValidFile %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/writingiosp/LightningExampleTutorial.java&implementIsValidFile %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
@@ -54,7 +54,7 @@ Since these are variable length records, we have no choice but to read through t
 We will ignore the occasional header records, and place each strike into a `Strike` object:
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&src/test/java/examples/writingiosp/LightningExampleTutorial.java&readALlData %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/writingiosp/LightningExampleTutorial.java&readALlData %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
@@ -63,7 +63,7 @@ We will ignore the occasional header records, and place each strike into a `Stri
 Now we can populate the empty `Group.Builder` with the necessary objects in our `build` method, as follows:
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&src/test/java/examples/writingiosp/LightningExampleTutorial.java&implementBuild %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/writingiosp/LightningExampleTutorial.java&implementBuild %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
@@ -77,14 +77,14 @@ This allows us to create the data arrays during the open and cache them in the `
 First we'll create some instance fields to hold our read data, one for each netCDF `Variable`:
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&src/test/java/examples/writingiosp/LightningExampleTutorial.java&createDataArrays %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/writingiosp/LightningExampleTutorial.java&createDataArrays %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
 The additional code in for our `readAllData` method looks like:
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&src/test/java/examples/writingiosp/LightningExampleTutorial.java&implementReadMethods %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/writingiosp/LightningExampleTutorial.java&implementReadMethods %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
@@ -93,7 +93,7 @@ so they will get garbage-collected. So we don't have the data taking twice as mu
 
 #### Caching the read data
 {% capture rmd %}
-{% includecodeblock netcdf-java&src/test/java/examples/writingiosp/LightningExampleTutorial.java&setCachedData %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/writingiosp/LightningExampleTutorial.java&setCachedData %}
 {% endcapture %}
 {{ rmd | markdownify }}
    
@@ -111,7 +111,7 @@ Unidata's Point Observation Conventions which requires us to add certain attribu
 The additional code in the `build` method looks like this:
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&src/test/java/examples/writingiosp/LightningExampleTutorial.java&addCoordSystemsAndTypedDatasets %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/writingiosp/LightningExampleTutorial.java&addCoordSystemsAndTypedDatasets %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
@@ -121,7 +121,7 @@ We now have not only a working IOSP, but a `PointObsDataset` that can be display
 The easiest way is to load it at runtime (e.g. on application spin-up) as follows:
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&src/test/java/examples/writingiosp/LightningExampleTutorial.java&registerIOSP %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/writingiosp/LightningExampleTutorial.java&registerIOSP %}
 {% endcapture %}
 {{ rmd | markdownify }}
 

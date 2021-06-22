@@ -24,7 +24,7 @@ To write to netCDF-4:
 To create a new netCDF-3 file, use `NetcdfFormatWriter.createNewNetcdf3`:
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&src/test/java/examples/cdmdatasets/WritingNetcdfTutorial.java&createNCFile %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/cdmdatasets/WritingNetcdfTutorial.java&createNCFile %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
@@ -61,7 +61,7 @@ turning `fill` on ensures that any values not written will have the fill value.
 Otherwise, those values will be undefined: possibly zero, or possibly garbage. To enable `fill`:
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&src/test/java/examples/cdmdatasets/WritingNetcdfTutorial.java&setFillOption %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/cdmdatasets/WritingNetcdfTutorial.java&setFillOption %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
@@ -70,7 +70,7 @@ Otherwise, those values will be undefined: possibly zero, or possibly garbage. T
 To open an existing CDM file for writing:
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&src/test/java/examples/cdmdatasets/WritingNetcdfTutorial.java&openNCFileForWrite %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/cdmdatasets/WritingNetcdfTutorial.java&openNCFileForWrite %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
@@ -82,35 +82,35 @@ The following examples demonstrate several ways to write data to an opened file.
 1) Writing numeric data:
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&src/test/java/examples/cdmdatasets/WritingNetcdfTutorial.java&writeDoubleData %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/cdmdatasets/WritingNetcdfTutorial.java&writeDoubleData %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
 2) Writing char data as a String:
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&src/test/java/examples/cdmdatasets/WritingNetcdfTutorial.java&writeCharData %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/cdmdatasets/WritingNetcdfTutorial.java&writeCharData %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
 3) Writing a String array:
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&src/test/java/examples/cdmdatasets/WritingNetcdfTutorial.java&writeStringArray %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/cdmdatasets/WritingNetcdfTutorial.java&writeStringArray %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
 4) Writing scalar data:
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&src/test/java/examples/cdmdatasets/WritingNetcdfTutorial.java&writeScalarData %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/cdmdatasets/WritingNetcdfTutorial.java&writeScalarData %}
 {% endcapture %}
 {{ rmd | markdownify }}
  
 5) Netcdf files may include unlimited (record) dimensions. To write one record at a time along the record dimentsion:
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&src/test/java/examples/cdmdatasets/WritingNetcdfTutorial.java&writeRecordOneAtATime %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/cdmdatasets/WritingNetcdfTutorial.java&writeRecordOneAtATime %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
@@ -122,7 +122,7 @@ By default, the Java library will use the default chunking algorithm to write ch
 To control chunking and compression settings, you must create a `Nc4Chunking` object and pass it into `NetcdfFormatWriter.createNewNetcdf4`:
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&src/test/java/examples/cdmdatasets/WritingNetcdfTutorial.java&writeWithCompression %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/cdmdatasets/WritingNetcdfTutorial.java&writeWithCompression %}
 {% endcapture %}
 {{ rmd | markdownify }}
   

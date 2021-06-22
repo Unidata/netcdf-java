@@ -24,7 +24,7 @@ This provides default implementation of some of the methods in the `IOServicePro
 you only have to implement a few methods:
 
 {% capture rmd %}
-{% includecodeblock netcdf-java&src/test/java/examples/writingiosp/OverviewIospTutorial.java&getIOSP %}
+{% includecodeblock netcdf-java&docs/src/test/java/examples/writingiosp/OverviewIospTutorial.java&getIOSP %}
 {% endcapture %}
 {{ rmd | markdownify }}
 
