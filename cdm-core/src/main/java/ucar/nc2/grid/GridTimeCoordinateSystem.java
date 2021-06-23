@@ -1,6 +1,6 @@
 /*
- *  Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
- *  See LICENSE for license information.
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
  */
 
 package ucar.nc2.grid;
@@ -36,24 +36,31 @@ public interface GridTimeCoordinateSystem {
 
   interface SingleRuntime extends GridTimeCoordinateSystem {
     CalendarDate getRunTime();
+
     GridAxis1D getTimeAxis();
   }
 
   interface Offset extends GridTimeCoordinateSystem {
     GridAxis1DTime getRunTimeAxis();
+
     GridAxis1D getTimeOffsetAxis(); // LOOK important enough special case? UI?
+
     GridAxis1DTime getTimeAxis(int runIdx);
   }
 
   interface OffsetRegular extends GridTimeCoordinateSystem {
     GridAxis1DTime getRunTimeAxis();
+
     GridAxis1D getTimeOffsetAxis(int minute);
+
     GridAxis1DTime getTimeAxis(int runIdx);
   }
 
   interface Time2d extends GridTimeCoordinateSystem {
     GridAxis1DTime getRunTimeAxis();
+
     GridAxis1D getTimeOffsetAxis(int runIdx);
+
     GridAxis1DTime getTimeAxis(int runIdx);
   }
 }
