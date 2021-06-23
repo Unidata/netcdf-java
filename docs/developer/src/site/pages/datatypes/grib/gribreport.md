@@ -24,7 +24,7 @@
   **MRUTP** Group LatLon_721X1440 (Center 90.0, .12499)
    Accum{nrecords=551, ndups=123 (22.3 %), nmissing=0 (0.0 %), rectMiss=0 (0.0 %)}
 
-1. A few regular fields, may be deliberate?
+1. Duplicates in a few regular fields, may be deliberate?
 
 ### /NCEP/NAM/Firewxnest/NAM-Firewxnest.ncx4
   **TwoD** Group LambertConformal_368X518 (Center 41.000, -106.07)
@@ -51,17 +51,13 @@
   **TwoD** Group LambertConformal_1377X2145 (Center 38.226, -95.434)
    Accum{nrecords=206, ndups=0 (0.0 %), nmissing=0 (0.0 %), rectMiss=0 (0.0 %)}
 
-1. time2D
+1. time2D **Fixed #728**
 
 ### /NCEP/NDFD/NWS/NDFD_NWS_CONUS_CONDUIT.ncx4
   **TwoD** Group LambertConformal_1377X2145 (Center 38.229, -95.438)
    Accum{nrecords=743936, ndups=44 (0.0 %), nmissing=0 (0.0 %), rectMiss=271199 (36.5 %)}
 
-1. time2D
-
-### /NCEP/NDFD/NWS_noaaport/NDFD_NWS_CONUS_NOAAPORT.ncx4
-  **TwoD** Group LambertConformal_1377X2145 (Center 38.229, -95.438)
-   Accum{nrecords=7390, ndups=60 (0.8 %), nmissing=0 (0.0 %), rectMiss=50 (0.7 %)}
+1. time2D **Fixed #728**
    
 ### /NCEP/SREF/CONUS_40km/ensprod_biasc/SREF-CONUS_40km_biasCorrected_Ensemble-derived_products.ncx4
   **TwoD** Group LambertConformal_129X185 (Center 40.787, -100.33)
@@ -74,8 +70,8 @@
   **TwoD** Group LambertConformal_1059X1799 (Center 38.510, -97.488)
    Accum{nrecords=658827, ndups=13687 (2.1 %), nmissing=0 (0.0 %), rectMiss=345307 (52.4 %)}
 
-1. dups: Vegetation surface: 3X, different data sizes. 
-2: In addition, seems like table might be wrong.
+1. dups: Vegetation surface: 3X, different data sizes.  
+2: In addition, seems like table might be wrong. Issue #730
 
 ### /NOAA_GSD/HRRR/CONUS_3km/wrfprs/GSD_HRRR_CONUS_3km_wrfprs.ncx4
   **TwoD** Group LambertConformal_1059X1799 (Center 38.510, -97.488)

@@ -53,8 +53,8 @@ public class GridAxisOffsetTimeRegular extends GridAxis {
     return this.bounds;
   }
 
-  public ImmutableList<Integer> getHourOffsets() {
-    return hourOffsets;
+  public ImmutableList<Integer> getMinuteOffsets() {
+    return minutesOffsets;
   }
 
   public int getNOffsetPerRun() {
@@ -97,11 +97,12 @@ public class GridAxisOffsetTimeRegular extends GridAxis {
 
     // find which hour offset to use
     CalendarDate runtime = runtimeAxis.getCalendarDate(run_index);
-    int hourOffset = runtime.getHourOfDay(); // hour from 0z
-    int hourOffsetIdx = hourOffsets.indexOf(hourOffset);
+    int hour = runtime.getHourOfDay();
+    int min = 60 * hour + runtime.getMinuteOfHour();
+    int hourOffsetIdx = minutesOffsets.indexOf(min);
     if (hourOffsetIdx < 0) {
-      throw new IllegalStateException(String.format("Cant find runtime %s hour offset %d in %s hours %s", runtime,
-          hourOffset, getName(), hourOffsets));
+      throw new IllegalStateException(String.format("Cant find runtime %s hour offset %d in %s minutes %s", runtime,
+          min, getName(), minutesOffsets));
     }
 
     // eliminate NaNs: make sure all NaNs are at the end
@@ -197,17 +198,17 @@ public class GridAxisOffsetTimeRegular extends GridAxis {
   private final GridAxis1DTime runtimeAxis;
   private final Array<Double> midpoints;
   private final Array<Double> bounds;
-  private final ImmutableList<Integer> hourOffsets;
+  private final ImmutableList<Integer> minutesOffsets;
 
   protected GridAxisOffsetTimeRegular(Builder<?> builder) {
     super(builder);
     Preconditions.checkNotNull(builder.runtimeAxis);
     Preconditions.checkNotNull(builder.midpoints);
     Preconditions.checkNotNull(builder.bounds);
-    Preconditions.checkNotNull(builder.hourOffsets);
+    Preconditions.checkNotNull(builder.minutesOffsets);
     Preconditions.checkArgument(builder.midpoints.getRank() == 2);
     Preconditions.checkArgument(builder.bounds.getRank() == 3);
-    int nhours = builder.hourOffsets.size();
+    int nhours = builder.minutesOffsets.size();
     int noffsets = builder.midpoints.getShape()[1];
     Preconditions.checkArgument(java.util.Arrays.equals(builder.midpoints.getShape(), new int[] {nhours, noffsets}));
     Preconditions.checkArgument(java.util.Arrays.equals(builder.bounds.getShape(), new int[] {nhours, noffsets, 2}));
@@ -220,7 +221,7 @@ public class GridAxisOffsetTimeRegular extends GridAxis {
     } else {
       this.timeHelper = builder.runtimeAxis.getTimeHelper();
     }
-    this.hourOffsets = ImmutableList.copyOf(builder.hourOffsets);
+    this.minutesOffsets = ImmutableList.copyOf(builder.minutesOffsets);
   }
 
   private ImmutableList<CalendarDate> subsetDatesByRange(List<CalendarDate> dates, Range range) {
@@ -264,7 +265,7 @@ public class GridAxisOffsetTimeRegular extends GridAxis {
     private String runtimeAxisName;
     private Array<Double> midpoints;
     private Array<Double> bounds;
-    private List<Integer> hourOffsets;
+    private List<Integer> minutesOffsets;
 
     protected abstract T self();
 
@@ -325,15 +326,15 @@ public class GridAxisOffsetTimeRegular extends GridAxis {
       return self();
     }
 
-    public T setHourOffsets(List<Integer> hourOffsets) {
-      this.hourOffsets = hourOffsets;
+    public T setMinutesOffsets(List<Integer> minutesOffsets) {
+      this.minutesOffsets = minutesOffsets;
       return self();
     }
 
-    public T setHourOffsets(Array<Integer> hourOffsets) {
-      this.hourOffsets = new ArrayList<>();
-      for (int hour : hourOffsets) {
-        this.hourOffsets.add(hour);
+    public T setMinutesOffsets(Array<Integer> minutesOffsets) {
+      this.minutesOffsets = new ArrayList<>();
+      for (int hour : minutesOffsets) {
+        this.minutesOffsets.add(hour);
       }
       return self();
     }

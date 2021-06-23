@@ -130,7 +130,7 @@ public class TestGridNetcdfDataset {
   @Category(NeedsCdmUnitTest.class)
   public void testOffsetRegularCoordinate() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "tds_index/NCEP/NDFD/SPC/NDFD-SPC.ncx4";
-    String gname = "TwoD/Total_Probability_of_Severe_Thunderstorms_surface_24_Hour_Average_probability_above_0";
+    String gname = "Total_Probability_of_Severe_Thunderstorms_surface_24_Hour_Average_probability_above_0";
     System.out.printf("filename %s%n", filename);
 
     try (NetcdfDataset ds = ucar.nc2.dataset.NetcdfDatasets.openDataset(filename)) {
@@ -147,9 +147,9 @@ public class TestGridNetcdfDataset {
       assertThat(timeAxis).isNotNull();
       assertThat(timeAxis.getSpacing()).isEqualTo(GridAxis.Spacing.discontiguousInterval);
 
-      assertThat(timeAxis.getHourOffsets()).containsExactly(6, 7, 8, 9, 10, 18, 21);
+      assertThat(timeAxis.getMinuteOffsets()).containsExactly(360, 420, 480, 540, 600, 1080, 1260);
 
-      assertThat(timeAxis.getHourOffsets().size()).isEqualTo(7);
+      assertThat(timeAxis.getMinuteOffsets().size()).isEqualTo(7);
       assertThat(timeAxis.getNOffsetPerRun()).isEqualTo(2);
       double[] bounds1 = new double[] {30, 54, 29, 53, 28, 52, 27, 51, 26, 50, 18, 42, 15, 39};
       double[] bounds2 = new double[] {54, 78, 53, 77, 52, 76, 51, 75, 50, 74, 42, 66, 39, 63};

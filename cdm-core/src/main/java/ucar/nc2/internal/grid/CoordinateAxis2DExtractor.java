@@ -26,7 +26,7 @@ public class CoordinateAxis2DExtractor {
   private final int ntimes;
   private final Array<Double> coords;
   private final Array<Double> bounds;
-  private final Array<Integer> hours;
+  private final Array<Integer> minutesFrom0z;
   private final boolean isInterval;
   private boolean isContiguous; // TODO
   private final AttributeContainer attributes;
@@ -36,9 +36,9 @@ public class CoordinateAxis2DExtractor {
     Preconditions.checkArgument(dtCoordAxis.getRank() == 2);
     this.attributes = dtCoordAxis.attributes();
 
-    Attribute hourAtt = this.attributes.findAttribute(CDM.TIME_OFFSET_HOUR);
-    Preconditions.checkNotNull(hourAtt);
-    this.hours = (Array<Integer>) hourAtt.getArrayValues();
+    Attribute minutesAtt = this.attributes.findAttribute(CDM.TIME_OFFSET_MINUTES);
+    Preconditions.checkNotNull(minutesAtt);
+    this.minutesFrom0z = (Array<Integer>) minutesAtt.getArrayValues();
 
     this.getRuntimeAxisName = this.attributes.findAttributeString(CDM.RUNTIME_COORDINATE, null);
 
@@ -72,8 +72,8 @@ public class CoordinateAxis2DExtractor {
     return isInterval;
   }
 
-  public Array<Integer> getHourOffsets() {
-    return hours;
+  public Array<Integer> getMinutesOffsets() {
+    return minutesFrom0z;
   }
 
   public Array<Double> getMidpoints() {

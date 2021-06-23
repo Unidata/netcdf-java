@@ -122,4 +122,17 @@ public class TestGribNcepVer7IndexCreation {
     Grib.setDebugFlags(DebugFlags.create(""));
   }
 
+  @Test
+  @Category(NeedsCdmUnitTest.class)
+  public void createNDFD_NWS_CONUS_CONDUIT() throws IOException { // TWOD want regular
+    Grib.setDebugFlags(DebugFlags.create("Grib/debugGbxIndexOnly"));
+    FeatureCollectionConfig config = new FeatureCollectionConfig("NDFD_NWS_CONUS_CONDUIT_ver7",
+        "test/NDFD_NWS_CONUS_CONDUIT_ver7", FeatureCollectionType.GRIB2,
+        TestDir.cdmUnitTestDir + "tds_index/NCEP/NDFD/NWS/.*gbx9", null, null, null, "file", null);
+    System.out.printf("Create %s %s index for = %s%n", config.collectionName, config.ptype, config.spec);
+
+    GribCdmIndex.updateGribCollection(config, always, logger);
+    Grib.setDebugFlags(DebugFlags.create(""));
+  }
+
 }
