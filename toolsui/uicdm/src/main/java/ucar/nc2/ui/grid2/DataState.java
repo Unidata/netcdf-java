@@ -48,7 +48,7 @@ class DataState {
         this.toaxis = (GridAxis1D) geocs.getTimeOffsetAxis();
       }
     } else {
-      this.taxis = geocs.getTimeAxis();
+      this.taxis = (GridAxis1DTime) geocs.getTimeAxis(); // LOOK cast
     }
 
     this.rtaxis = geocs.getRunTimeAxis();

@@ -84,7 +84,7 @@ public class GridDatasetFactory {
     }
   }
 
-  public static GribOpenAttempt openGrib(String endpoint, Formatter errLog) {
+  public static GribOpenAttempt openGrib(String endpoint, Formatter errLog) throws IOException {
     List<Object> notGribThrowables = Arrays.asList(IllegalAccessException.class, IllegalArgumentException.class,
         ClassNotFoundException.class, NoSuchMethodException.class, NoSuchMethodError.class);
 
@@ -103,6 +103,13 @@ public class GridDatasetFactory {
         return new GribOpenAttempt(null, false);
       }
     } catch (Exception e) {
+      // propagate IOException
+      if (e instanceof InvocationTargetException) {
+        InvocationTargetException ite = (InvocationTargetException) e;
+        if (ite.getCause() instanceof IOException) {
+          throw (IOException) ite.getCause();
+        }
+      }
       for (Object noGrib : notGribThrowables) {
         // check for possible errors that are due to the file not being grib. Need to look
         // at the error causes too, as reflection error can be buried under a InvocationTargetException

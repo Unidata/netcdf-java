@@ -8,16 +8,16 @@ import java.util.Optional;
 /** Manages Projection or Lat/Lon CoordinateSystem, assumed to be seperable; use of indices ok. */
 public interface GridHorizCoordinateSystem {
 
-  /** Get the 1D X axis (either GeoX or Lon); null if LatLon2D */
+  /** Get the 1D X axis (either GeoX or Lon); LOOK null if LatLon2D */
   @Nullable
   GridAxis1D getXHorizAxis();
 
-  /** Get the 1D Y axis (either GeoY or Lat); null if LatLon2D */
+  /** Get the 1D Y axis (either GeoY or Lat); LOOK null if LatLon2D */
   @Nullable
   GridAxis1D getYHorizAxis();
 
   default int[] getShape() {
-    return new int[] {getYHorizAxis().ncoords, getXHorizAxis().ncoords};
+    return new int[] {getYHorizAxis().getNcoords(), getXHorizAxis().getNcoords()};
   }
 
   /** True if both X and Y axes are 1 dimensional and are regularly spaced. */

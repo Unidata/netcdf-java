@@ -50,35 +50,38 @@ public class TestGridNetcdfDataset {
       Formatter infoLog = new Formatter();
       Optional<GridNetcdfDataset> result =
           GridNetcdfDataset.create(ds, infoLog).filter(gds -> !Iterables.isEmpty(gds.getGrids()));
-      if (!result.isPresent()) {
+      if (result.isEmpty()) {
         fail();
       }
       GridNetcdfDataset gridDataset = result.get();
       Grid grid = gridDataset.findGrid("Convective_Hazard_Outlook_surface_24_Hour_Average")
           .orElseThrow(() -> new RuntimeException("Cant find grid"));
       GridCoordinateSystem csys = grid.getCoordinateSystem();
-      GridAxis1DTime timeAxis = csys.getTimeAxis();
+      GridAxis timeAxis = csys.getTimeAxis();
       assertThat(timeAxis).isNotNull();
-      assertThat(timeAxis.getSpacing()).isEqualTo(GridAxis.Spacing.regularInterval);
-      assertThat(timeAxis.getNcoords()).isEqualTo(3);
+      assertThat(timeAxis).isInstanceOf(GridAxis1DTime.class);
+      GridAxis1DTime timeAxis1D = (GridAxis1DTime) timeAxis;
+
+      assertThat(timeAxis1D.getSpacing()).isEqualTo(GridAxis.Spacing.regularInterval);
+      assertThat(timeAxis1D.getNcoords()).isEqualTo(3);
       double[] expected = new double[] {-5, 19, 43, 67};
-      for (int i = 0; i < timeAxis.getNcoords(); i++) {
-        assertThat(timeAxis.getCoordEdge1(i)).isEqualTo(expected[i]);
-        assertThat(timeAxis.getCoordEdge2(i)).isEqualTo(expected[i + 1]);
-        assertThat(timeAxis.getCoordMidpoint(i)).isEqualTo((expected[i] + expected[i + 1]) / 2);
+      for (int i = 0; i < timeAxis1D.getNcoords(); i++) {
+        assertThat(timeAxis1D.getCoordEdge1(i)).isEqualTo(expected[i]);
+        assertThat(timeAxis1D.getCoordEdge2(i)).isEqualTo(expected[i + 1]);
+        assertThat(timeAxis1D.getCoordMidpoint(i)).isEqualTo((expected[i] + expected[i + 1]) / 2);
       }
-      MinMax maxmin = timeAxis.getCoordEdgeMinMax();
+      MinMax maxmin = timeAxis1D.getCoordEdgeMinMax();
       assertThat(maxmin.min()).isEqualTo(expected[0]);
       assertThat(maxmin.max()).isEqualTo(expected[3]);
 
       double[] expectedBounds = new double[] {-5, 19, 19, 43, 43, 67};
       int count = 0;
-      for (double val : timeAxis.getCoordBoundsAsArray()) {
+      for (double val : timeAxis1D.getCoordBoundsAsArray()) {
         assertThat(val).isEqualTo(expectedBounds[count++]);
       }
 
       count = 0;
-      for (double val : timeAxis.getCoordsAsArray()) {
+      for (double val : timeAxis1D.getCoordsAsArray()) {
         assertThat(val).isEqualTo((expectedBounds[count] + expectedBounds[count + 1]) / 2);
         count += 2;
       }

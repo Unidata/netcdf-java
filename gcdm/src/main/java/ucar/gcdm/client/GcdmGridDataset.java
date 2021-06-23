@@ -59,16 +59,6 @@ public class GcdmGridDataset implements GridDataset {
   }
 
   @Override
-  public Optional<Grid> findGrid(String name) {
-    for (Grid grid : getGrids()) {
-      if (name.equals(grid.getName())) {
-        return Optional.of(grid);
-      }
-    }
-    return Optional.empty();
-  }
-
-  @Override
   public String toString() {
     Formatter f = new Formatter();
     toString(f);

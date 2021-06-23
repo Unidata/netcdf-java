@@ -103,7 +103,9 @@ public class TestReadGridCompare {
 
         GridCoordinateSystem newGcs = grid.getCoordinateSystem();
         if (newGcs.getTimeAxis() != null && gcs.getTimeAxis() != null) {
-          GridAxis1DTime newTimeAxis = newGcs.getTimeAxis();
+          GridAxis axis = newGcs.getTimeAxis();
+          assertThat(axis).isInstanceOf(GridAxis1DTime.class);
+          GridAxis1DTime newTimeAxis = (GridAxis1DTime) axis;
           CoordinateAxis1DTime timeAxis = (CoordinateAxis1DTime) gcs.getTimeAxis();
           assertThat(newTimeAxis.getNcoords()).isEqualTo(timeAxis.getSize());
 
@@ -193,7 +195,9 @@ public class TestReadGridCompare {
         assertThat(newGcs.getTimeAxis() == null).isEqualTo(gcs.getTimeAxis() == null);
 
         if (newGcs.getTimeAxis() != null) {
-          GridAxis1DTime newTimeAxis = newGcs.getTimeAxis();
+          GridAxis taxis = newGcs.getTimeAxis();
+          assertThat(taxis).isInstanceOf(GridAxis1DTime.class);
+          GridAxis1DTime newTimeAxis = (GridAxis1DTime) taxis;
 
           assertThat(gcs.getTimeAxis()).isNotNull();
           CoverageCoordAxis axis = gcs.getTimeAxis();

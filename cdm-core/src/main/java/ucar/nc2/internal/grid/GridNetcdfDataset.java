@@ -199,11 +199,6 @@ public class GridNetcdfDataset implements GridDataset {
   }
 
   @Override
-  public Optional<Grid> findGrid(String name) {
-    return grids.stream().filter(g -> g.getName().equals(name)).findFirst();
-  }
-
-  @Override
   public FeatureType getFeatureType() {
     return featureType;
   }

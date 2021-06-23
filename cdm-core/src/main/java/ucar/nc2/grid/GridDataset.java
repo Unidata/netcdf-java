@@ -31,7 +31,9 @@ public interface GridDataset extends Closeable {
   ImmutableList<Grid> getGrids();
 
   /** Find grid using its full name. */
-  Optional<Grid> findGrid(String name);
+  default Optional<Grid> findGrid(String name) {
+    return getGrids().stream().filter(g -> g.getName().equals(name)).findFirst();
+  }
 
   /** Find first grid whose name and String value match those given. */
   default Optional<Grid> findGridByAttribute(String attName, String attValue) {

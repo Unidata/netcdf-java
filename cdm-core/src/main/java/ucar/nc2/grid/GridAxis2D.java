@@ -16,7 +16,8 @@ public class GridAxis2D extends GridAxis {
     super(builder);
   }
 
-  public int[] getShape() {
+  @Override
+  public int[] getNominalShape() {
     return new int[] {ny, nx};
   }
 
@@ -32,12 +33,12 @@ public class GridAxis2D extends GridAxis {
     return Double.NaN;
   }
 
-  @Override
+  // @Override
   public Array<Double> getCoordsAsArray() {
     return null;
   }
 
-  @Override
+  // @Override
   public Array<Double> getCoordBoundsAsArray() {
     return null;
   }
@@ -53,7 +54,7 @@ public class GridAxis2D extends GridAxis {
     return Optional.empty(); // TODO
   }
 
-  @Override
+  // @Override
   public RangeIterator getRangeIterator() {
     return null;
   }
