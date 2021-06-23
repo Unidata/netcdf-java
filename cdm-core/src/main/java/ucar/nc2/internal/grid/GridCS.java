@@ -191,8 +191,7 @@ public class GridCS implements GridCoordinateSystem, MaterializedCoordinateSyste
   public List<ucar.array.RangeIterator> getRanges() {
     List<ucar.array.RangeIterator> result = new ArrayList<>();
     for (GridAxis axis : axes) { // LOOK what order are these in?
-      if (axis.getDependenceType() == GridAxis.DependenceType.independent &&
-          axis instanceof GridAxis1D) {
+      if (axis.getDependenceType() == GridAxis.DependenceType.independent && axis instanceof GridAxis1D) {
         GridAxis1D axis1D = (GridAxis1D) axis;
         result.add(axis1D.getRangeIterator());
       }
@@ -297,19 +296,17 @@ public class GridCS implements GridCoordinateSystem, MaterializedCoordinateSyste
     List<String> names = axes.stream().map(GridAxis::getName).collect(Collectors.toList());
     this.name = String.join(" ", names);
 
-    this.horizCsys = GridHorizCS.create(
-            findCoordAxis(AxisType.GeoX, AxisType.Lon),
-            findCoordAxis(AxisType.GeoY, AxisType.Lat),
-            classifier.getProjection());
+    this.horizCsys = GridHorizCS.create(findCoordAxis(AxisType.GeoX, AxisType.Lon),
+        findCoordAxis(AxisType.GeoY, AxisType.Lat), classifier.getProjection());
     this.dependMap = makeDependMap();
     this.timeCS = makeTimeCS();
   }
 
   private GridTimeCoordinateSystem makeTimeCS() {
     return new GridTimeCS(
-            (GridAxis1DTime) axes.stream().filter(a -> a.getAxisType() == AxisType.RunTime).findFirst().orElse(null),
-            axes.stream().filter(a -> a.getAxisType() == AxisType.Time).findFirst().orElse(null),
-            axes.stream().filter(a -> a.getAxisType() == AxisType.TimeOffset).findFirst().orElse(null));
+        (GridAxis1DTime) axes.stream().filter(a -> a.getAxisType() == AxisType.RunTime).findFirst().orElse(null),
+        axes.stream().filter(a -> a.getAxisType() == AxisType.Time).findFirst().orElse(null),
+        axes.stream().filter(a -> a.getAxisType() == AxisType.TimeOffset).findFirst().orElse(null));
   }
 
   private ImmutableMultimap<GridAxis, GridAxis> makeDependMap() {
@@ -342,10 +339,8 @@ public class GridCS implements GridCoordinateSystem, MaterializedCoordinateSyste
     this.name = builder.name;
     this.featureType = builder.featureType;
     this.axes = ImmutableList.copyOf(builder.axes);
-    this.horizCsys = GridHorizCS.create(
-            findCoordAxis(AxisType.GeoX, AxisType.Lon),
-            findCoordAxis(AxisType.GeoY, AxisType.Lat),
-            builder.projection);
+    this.horizCsys = GridHorizCS.create(findCoordAxis(AxisType.GeoX, AxisType.Lon),
+        findCoordAxis(AxisType.GeoY, AxisType.Lat), builder.projection);
     this.dependMap = makeDependMap();
     this.timeCS = makeTimeCS();
   }
@@ -362,10 +357,8 @@ public class GridCS implements GridCoordinateSystem, MaterializedCoordinateSyste
     }
     this.axes = axesb.build();
 
-    this.horizCsys = GridHorizCS.create(
-            findCoordAxis(AxisType.GeoX, AxisType.Lon),
-            findCoordAxis(AxisType.GeoY, AxisType.Lat),
-            builder.projection);
+    this.horizCsys = GridHorizCS.create(findCoordAxis(AxisType.GeoX, AxisType.Lon),
+        findCoordAxis(AxisType.GeoY, AxisType.Lat), builder.projection);
     this.dependMap = makeDependMap();
     this.timeCS = makeTimeCS();
   }

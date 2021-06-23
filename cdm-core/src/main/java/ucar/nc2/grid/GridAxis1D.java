@@ -229,6 +229,7 @@ public class GridAxis1D extends GridAxis {
     return Arrays.factory(ArrayType.DOUBLE, new int[] {ncoords, 2}, vals);
   }
 
+  @Override
   public int[] getNominalShape() {
     return new int[] {ncoords};
   }
