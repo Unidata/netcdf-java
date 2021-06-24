@@ -24,7 +24,6 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import static com.google.common.truth.Truth.assertThat;
-import static org.junit.Assert.fail;
 
 /** Test Coordinate2D is regular in cdmUnitTestDir test files. */
 public class TestIsRegular {
@@ -64,7 +63,6 @@ public class TestIsRegular {
         return testRegular((CoordinateTime2D) coord);
       }
     }
-    fail();
     return false;
   }
 
