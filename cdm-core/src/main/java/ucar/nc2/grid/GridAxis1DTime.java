@@ -27,6 +27,7 @@ import java.util.*;
 /**
  * A 1-dimensional GridAxis whose coordinates can be converted to CalendarDates.
  * A GridAxis1DTime has a CalendarDateUnit that allows converting between doubles and CalendarDates.
+ * LOOK can we get rid of in favor of GridTimeCS ?
  */
 @Immutable
 public class GridAxis1DTime extends GridAxis1D {

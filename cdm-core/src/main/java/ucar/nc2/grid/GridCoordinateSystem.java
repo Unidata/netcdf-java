@@ -4,6 +4,8 @@
  */
 package ucar.nc2.grid;
 
+import com.google.common.collect.Streams;
+
 import javax.annotation.Nullable;
 
 import java.util.*;
@@ -18,38 +20,53 @@ public interface GridCoordinateSystem {
   Iterable<GridAxis> getGridAxes();
 
   /** Find the named axis. */
-  Optional<GridAxis> findAxis(String axisName);
+  default Optional<GridAxis> findAxis(String axisName) {
+    return Streams.stream(getGridAxes()).filter(g -> g.getName().equals(axisName)).findFirst();
+  }
+
+  /** Get the Time CoordinateSystem. */
+  GridTimeCoordinateSystem getTimeCoordSystem();
+
+  /** Get the Runtime axis. */
+  @Nullable
+  default GridAxis1DTime getRunTimeAxis() {
+    return getTimeCoordSystem().getRunTimeAxis();
+  }
+
+  /** Get the Time axis. */
+  @Nullable
+  default GridAxis getTimeAxis() {
+    return getTimeCoordSystem().getTimeAxis();
+  }
+
+  /** Get the Time Offset axis. */
+  @Nullable
+  default GridAxis getTimeOffsetAxis() {
+    return getTimeCoordSystem().getTimeOffsetAxis();
+  }
 
   /** Get the ensemble axis. */
   @Nullable
   GridAxis1D getEnsembleAxis();
 
-  /** Get the Runtime axis. */
-  @Nullable
-  GridAxis1DTime getRunTimeAxis();
-
-  /** Get the Time axis. */
-  @Nullable
-  GridAxis1DTime getTimeAxis();
-
-  /** Get the Time Offset axis. */
-  @Nullable
-  GridAxis getTimeOffsetAxis();
-
   /** Get the Z axis (GeoZ, Height, Pressure). */
   @Nullable
   GridAxis1D getVerticalAxis();
 
-  /** Get the X axis. (either GeoX or Lon) */
-  GridAxis getXHorizAxis();
-
-  /** Get the Y axis. (either GeoY or Lat) */
-  GridAxis getYHorizAxis();
-
   /** Get the Horizontal CoordinateSystem. */
   GridHorizCoordinateSystem getHorizCoordSystem();
 
-  /** Function description, eg f:D(4)->R(5) */
+  /** Get the X axis. (either GeoX or Lon) LOOK nullable? */
+  default GridAxis getXHorizAxis() {
+    return getHorizCoordSystem().getXHorizAxis();
+  }
+
+  /** Get the Y axis. (either GeoY or Lat) LOOK nullable? */
+  default GridAxis getYHorizAxis() {
+    return getHorizCoordSystem().getYHorizAxis();
+  }
+
+  /** Function description, eg GRID(T,Z,Y,Z):R LOOK */
   String showFnSummary();
 
   void show(Formatter f, boolean showCoords);

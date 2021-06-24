@@ -7,8 +7,8 @@ import ucar.nc2.util.Misc;
 
 @Immutable
 public class EnsCoordValue implements Comparable<EnsCoordValue> {
-  private final int code;
-  private final int ensMember;
+  private final int code; // pds.getPerturbationType()
+  private final int ensMember; // pds.getPerturbationNumber()
 
   public EnsCoordValue(int code, int ensMember) {
     this.code = code;

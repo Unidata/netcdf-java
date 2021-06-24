@@ -421,7 +421,7 @@ public class GridNewTable extends JPanel {
       axisType = v.getAxisType();
       units = v.getUnits();
       desc = v.getDescription();
-      shape = v.getCoordsAsArray().getShape();
+      shape = v.getNominalShape();
     }
 
     public String getName() {

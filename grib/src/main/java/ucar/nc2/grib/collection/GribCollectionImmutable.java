@@ -622,24 +622,29 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
 
     public List<Coordinate> getCoordinates() {
       List<Coordinate> result = new ArrayList<>(coordIndex.size());
-      for (int idx : coordIndex)
+      for (int idx : coordIndex) {
         result.add(group.coords.get(idx));
+      }
       return result;
     }
 
     @Nullable
     public Coordinate getCoordinate(Coordinate.Type want) {
-      for (int idx : coordIndex)
-        if (group.coords.get(idx).getType() == want)
+      for (int idx : coordIndex) {
+        if (group.coords.get(idx).getType() == want) {
           return group.coords.get(idx);
+        }
+      }
       return null;
     }
 
     @Nullable
     CoordinateTimeAbstract getCoordinateTime() {
-      for (int idx : coordIndex)
-        if (group.coords.get(idx) instanceof CoordinateTimeAbstract)
+      for (int idx : coordIndex) {
+        if (group.coords.get(idx) instanceof CoordinateTimeAbstract) {
           return (CoordinateTimeAbstract) group.coords.get(idx);
+        }
+      }
       return null;
     }
 

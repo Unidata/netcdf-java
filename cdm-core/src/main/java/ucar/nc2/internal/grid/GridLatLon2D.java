@@ -23,14 +23,14 @@ public class GridLatLon2D extends GridHorizCS {
 
   GridLatLon2D(GridAxis2D xaxis, GridAxis2D yaxis, @Nullable Projection projection, String horizStaggerType) {
     super(null, null, projection, horizStaggerType);
-    Preconditions.checkArgument(Misc.compare(xaxis.getShape(), yaxis.getShape(), new Formatter()));
+    Preconditions.checkArgument(Misc.compare(xaxis.getNominalShape(), yaxis.getNominalShape(), new Formatter()));
     this.lon2D = xaxis;
     this.lat2D = yaxis;
   }
 
   @Override
   public int[] getShape() {
-    return lon2D.getShape();
+    return lon2D.getNominalShape();
   }
 
   public GridAxis2D getLatAxis() {

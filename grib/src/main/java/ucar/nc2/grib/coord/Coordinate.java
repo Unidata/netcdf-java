@@ -23,7 +23,7 @@ public interface Coordinate {
     runtime(0, AxisType.RunTime), //
     time(1, AxisType.Time), //
     timeIntv(1, AxisType.Time), //
-    vert(3, AxisType.Height), //
+    vert(3, AxisType.Height), // LOOK what about Pressure or GeoZ ??
     time2D(1, AxisType.TimeOffset), //
     ens(2, AxisType.Ensemble); // cant change order, protobuf uses the ordinal
 

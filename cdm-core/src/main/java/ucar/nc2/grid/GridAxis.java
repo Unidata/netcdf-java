@@ -8,7 +8,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.array.Array;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.AttributeContainerMutable;
@@ -24,7 +23,6 @@ import java.util.*;
 
 /**
  * A Coordinate Axis for Grids.
- * LOOK this is really a copy of CoverageAxis. still has a definite shape!
  */
 @Immutable
 public abstract class GridAxis implements Iterable<Object> {
@@ -86,9 +84,9 @@ public abstract class GridAxis implements Iterable<Object> {
   }
 
   // LOOK heres the shape! materializing the values. What about regular?
-  public abstract Array<Double> getCoordsAsArray();
+  // public abstract Array<Double> getCoordsAsArray();
 
-  public abstract Array<Double> getCoordBoundsAsArray();
+  // public abstract Array<Double> getCoordBoundsAsArray();
 
   /** Create a subset of this axis based on the SubsetParams. */
   // TODO throw an Exception when subset fails?
@@ -100,7 +98,7 @@ public abstract class GridAxis implements Iterable<Object> {
   public abstract Optional<GridAxis> subsetDependent(GridAxis1D subsetIndAxis, Formatter errlog);
 
   // Iterator over which coordinates wanted. TODO only in axis1d? Only for subset?? RangeIterator vs Range?
-  public abstract ucar.array.RangeIterator getRangeIterator();
+  // public abstract ucar.array.RangeIterator getRangeIterator();
 
   /////////////////////////////////////////////////////
 
@@ -132,6 +130,8 @@ public abstract class GridAxis implements Iterable<Object> {
   public boolean isRegular() {
     return spacing.isRegular();
   }
+
+  public abstract int[] getNominalShape();
 
   /** spacing.isInterval(). */
   public boolean isInterval() {

@@ -44,11 +44,16 @@ import java.util.*;
 public class GridAxisOffsetTimeRegular extends GridAxis {
 
   @Override
+  public int[] getNominalShape() {
+    return this.midpoints.getShape(); // LOOK ??
+  }
+
+  // @Override
   public Array<Double> getCoordsAsArray() {
     return this.midpoints;
   }
 
-  @Override
+  // @Override
   public Array<Double> getCoordBoundsAsArray() {
     return this.bounds;
   }
@@ -173,7 +178,7 @@ public class GridAxisOffsetTimeRegular extends GridAxis {
     return Optional.empty(); // TODO is it ever dependent? Should it be dependent on runtime?
   }
 
-  @Override
+  // @Override
   public RangeIterator getRangeIterator() {
     return null; // TODO is it needed?
   }

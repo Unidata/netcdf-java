@@ -201,7 +201,7 @@ public class GridAxis1D extends GridAxis {
     return CoordInterval.create(getCoordEdge1(index), getCoordEdge2(index));
   }
 
-  @Override
+  // @Override
   public Array<Double> getCoordsAsArray() {
     double[] vals = new double[ncoords];
     for (int i = 0; i < ncoords; i++) {
@@ -218,7 +218,7 @@ public class GridAxis1D extends GridAxis {
     return result;
   }
 
-  @Override
+  // @Override
   public Array<Double> getCoordBoundsAsArray() {
     double[] vals = new double[2 * ncoords];
     int count = 0;
@@ -227,6 +227,11 @@ public class GridAxis1D extends GridAxis {
       vals[count++] = getCoordEdge2(i);
     }
     return Arrays.factory(ArrayType.DOUBLE, new int[] {ncoords, 2}, vals);
+  }
+
+  @Override
+  public int[] getNominalShape() {
+    return new int[] {ncoords};
   }
 
   /** The number of coordinates. Coord or Interval. */
@@ -274,7 +279,7 @@ public class GridAxis1D extends GridAxis {
   /////////////////////////////////////////////////////////////////////////////
   // subsetting
 
-  @Override
+  // @Override
   public RangeIterator getRangeIterator() {
     if (range != null) {
       return range;
@@ -298,7 +303,6 @@ public class GridAxis1D extends GridAxis {
     }
   }
 
-  @Override
   @Nullable
   public GridAxis subset(GridSubset params, Formatter errLog) {
     if (params == null) {
@@ -311,6 +315,9 @@ public class GridAxis1D extends GridAxis {
   // TODO incomplete handling of subsetting params
   @Nullable
   private GridAxis1D.Builder<?> subsetBuilder(GridSubset params, Formatter errLog) {
+    if (isSubset) {
+      throw new UnsupportedOperationException();
+    }
     GridAxis1DHelper helper = new GridAxis1DHelper(this);
     switch (getAxisType()) {
       case GeoZ:
@@ -373,7 +380,6 @@ public class GridAxis1D extends GridAxis {
     return this.toBuilder();
   }
 
-  @Override
   public Optional<GridAxis> subsetDependent(GridAxis1D subsetIndAxis, Formatter errLog) {
     GridAxis1D.Builder<?> builder;
     builder = new GridAxis1DHelper(this).makeSubsetByIndex(subsetIndAxis.getRange());
@@ -388,7 +394,7 @@ public class GridAxis1D extends GridAxis {
   final double[] values; // null if isRegular, len= ncoords (irregularPoint), ncoords+1 (contiguous interval),
                          // or 2*ncoords (discontinuous interval)
 
-  GridAxis1D(Builder<?> builder) {
+  public GridAxis1D(Builder<?> builder) {
     super(builder);
 
     Preconditions.checkArgument(builder.ncoords > 0);
