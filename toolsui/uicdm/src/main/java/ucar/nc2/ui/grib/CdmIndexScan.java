@@ -274,20 +274,21 @@ public class CdmIndexScan extends JPanel {
       this.report = report;
 
       // Show the most complicated type of Time2D coordinate
-      boolean hasTime2D = false;
-      boolean hasOrthogonal = false;
-      boolean hasRegular = false;
+      Set<String> typeSet = new TreeSet<>();
       for (Coordinate coord : group.getCoordinates()) {
         if (coord.getType() == Coordinate.Type.time2D) {
-          hasTime2D = true;
           CoordinateTime2D c2d = (CoordinateTime2D) coord;
-          if (c2d.isOrthogonal())
-            hasOrthogonal = true;
-          if (c2d.isRegular())
-            hasRegular = true;
+          if (c2d.isOrthogonal()) {
+            typeSet.add("orth");
+          } else if (c2d.isRegular()) {
+            typeSet.add("reg");
+          } else {
+            typeSet.add("time2D");
+          }
         }
       }
-      time2D = hasRegular ? "reg" : hasOrthogonal ? "orth" : hasTime2D ? "time2D" : "";
+      List<String> types = new ArrayList<>(typeSet);
+      time2D = String.join(",", types);
     }
 
     public String getName() {

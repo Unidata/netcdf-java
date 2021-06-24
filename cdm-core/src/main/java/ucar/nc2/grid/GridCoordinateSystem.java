@@ -6,8 +6,6 @@ package ucar.nc2.grid;
 
 import javax.annotation.Nullable;
 
-import ucar.array.RangeIterator;
-
 import java.util.*;
 
 /** A Coordinate System for gridded data. */

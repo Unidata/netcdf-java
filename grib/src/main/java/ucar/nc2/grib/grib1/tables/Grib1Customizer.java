@@ -240,4 +240,9 @@ public class Grib1Customizer implements GribTables {
     }
   }
 
+  @Override
+  public String toString() {
+    return String.format("Grib1Customizer{ class=%s, center=%d, Grib1ParamTables=%s}", getClass().getName(), center,
+        tables);
+  }
 }

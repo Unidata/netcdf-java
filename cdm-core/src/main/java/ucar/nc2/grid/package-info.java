@@ -4,6 +4,6 @@
  */
 
 /**
- * Public interface for scientific feature type grid. Experimental.
+ * Public interface for scientific feature type grid.
  */
 package ucar.nc2.grid;

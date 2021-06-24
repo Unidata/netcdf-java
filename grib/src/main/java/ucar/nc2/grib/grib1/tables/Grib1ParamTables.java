@@ -255,6 +255,7 @@ public class Grib1ParamTables {
     List<Grib1ParamTableReader> tables = new ArrayList<>();
     // Map (center, subcenter, version) -> Grib1ParamTable
     Map<Integer, Grib1ParamTableReader> tableMap = new ConcurrentHashMap<>();
+    String name;
 
     /**
      * read the lookup table from file
@@ -264,6 +265,7 @@ public class Grib1ParamTables {
      * @throws IOException On badness
      */
     boolean readLookupTable(String resourceName) throws IOException {
+      this.name = resourceName;
       try (InputStream inputStream = GribResourceReader.getInputStream(resourceName)) {
         return readLookupTable(inputStream, resourceName);
       }
@@ -281,6 +283,7 @@ public class Grib1ParamTables {
       if (is == null)
         return false;
 
+      this.name = lookupFile;
       File parent = new File(lookupFile).getParentFile();
       try (InputStreamReader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
           BufferedReader br = new BufferedReader(isr)) {
@@ -406,4 +409,9 @@ public class Grib1ParamTables {
 
   } // Lookup
 
+  @Override
+  public String toString() {
+    return String.format("Grib1ParamTables{ lookup=%s, override=%s}", lookup == null ? "Standard" : lookup.name,
+        override == null ? "None" : override.getName());
+  }
 }

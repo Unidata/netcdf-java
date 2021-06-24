@@ -165,4 +165,10 @@ class Grib2TableConfig {
     result = 31 * result + (path != null ? path.hashCode() : 0);
     return result;
   }
+
+  @Override
+  public String toString() {
+    return "Grib2TableConfig{" + "name='" + name + '\'' + ", type=" + type + ", id=" + id + ", path='" + path + '\''
+        + '}';
+  }
 }
