@@ -29,6 +29,7 @@ public class CoordinateRuntime implements Coordinate {
   private final long[] runtimes; // msecs since epoch, using ISO8601 UTC.
   private final CalendarDate firstDate;
   final CalendarPeriod timePeriod;
+
   private final CalendarDateUnit calendarDateUnit;
   final String periodName;
   private String name = "reftime"; // yeah yeah, not final, bugger off
@@ -92,6 +93,10 @@ public class CoordinateRuntime implements Coordinate {
 
   public String getPeriodName() {
     return periodName;
+  }
+
+  public CalendarDateUnit getCalendarDateUnit() {
+    return calendarDateUnit;
   }
 
   /**

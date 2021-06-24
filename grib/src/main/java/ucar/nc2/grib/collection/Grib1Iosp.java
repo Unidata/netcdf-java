@@ -217,16 +217,10 @@ public class Grib1Iosp extends GribIosp {
 
   @Override
   protected ucar.nc2.grib.GribTables createCustomizer() throws IOException {
+    // so, an iosp message must be received before the open()
     Grib1ParamTables tables =
         (config.gribConfig.paramTable != null) ? Grib1ParamTables.factory(config.gribConfig.paramTable)
-            : Grib1ParamTables.factory(config.gribConfig.paramTablePath, config.gribConfig.lookupTablePath); // so an
-                                                                                                             // iosp
-                                                                                                             // message
-                                                                                                             // must be
-                                                                                                             // received
-                                                                                                             // before
-                                                                                                             // the
-                                                                                                             // open()
+            : Grib1ParamTables.factory(config.gribConfig.paramTablePath, config.gribConfig.lookupTablePath);
 
     cust = Grib1Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(),
         gribCollection.getMaster(), tables);
