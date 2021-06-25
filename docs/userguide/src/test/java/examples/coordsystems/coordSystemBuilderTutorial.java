@@ -37,15 +37,16 @@ public class coordSystemBuilderTutorial {
 
     public static void augmentDataset2() throws IOException {
         class nestedClass { /* DOCS-IGNORE */ public String conventionName;
-            protected void augmentDataset(NetcdfDataset.Builder<?> ncDataset, CancelTask cancelTask) throws IOException {
+            protected void augmentDataset(NetcdfDataset ncDataset, CancelTask cancelTask) throws IOException {
+                NetcdfDataset.Builder<?> ncBuilder = ncDataset.toBuilder();
                 this.conventionName = "ATDRadar";
-                ucar.nc2.internal.ncml.NcmlReader.wrapNcml( ncDataset, "file:/MyResource/ATDRadar.ncml", cancelTask);
+                ucar.nc2.internal.ncml.NcmlReader.wrapNcml( ncBuilder, "file:/MyResource/ATDRadar.ncml", cancelTask);
             }
         }
     }
 
-    public static void wrapNcmlExample(NetcdfDataset.Builder<?> ncDataset, CancelTask cancelTask) throws IOException {
-        ucar.nc2.internal.ncml.NcmlReader.wrapNcmlResource( ncDataset, "ATDRadar.ncml", cancelTask);
+    public static void wrapNcmlExample(NetcdfDataset ncDataset, CancelTask cancelTask) throws IOException {
+        ucar.nc2.internal.ncml.NcmlReader.wrapNcmlResource( ncDataset.toBuilder(), "ATDRadar.ncml", cancelTask);
     }
 
     public static void registerNcml(String conventionNameAsString, String ncmlLocationAsString){
@@ -54,11 +55,11 @@ public class coordSystemBuilderTutorial {
 
     public static void augmentDataset3( NetcdfFile netcdfFile, StringBuilder parseInfo) {
         class nestedClass { /* DOCS-IGNORE */ public String conventionName;
-            protected void augmentDataset(NetcdfDataset.Builder<?> ncDataset, CancelTask cancelTask) throws IOException {
+            protected void augmentDataset(NetcdfDataset ncDataset, CancelTask cancelTask) throws IOException {
                 this.conventionName = "Zebra";
                 // The time coord variable is created in the NcML
                 ucar.nc2.internal.ncml.NcmlReader.wrapNcmlResource(
-                        ncDataset, CoordSystemFactory.resourcesDir + "Zebra.ncml", cancelTask);
+                        ncDataset.toBuilder(), CoordSystemFactory.resourcesDir + "Zebra.ncml", cancelTask);
 
                 Dimension timeDim = netcdfFile.findDimension("time");
                 Variable base_time = netcdfFile.findVariable("base_time");

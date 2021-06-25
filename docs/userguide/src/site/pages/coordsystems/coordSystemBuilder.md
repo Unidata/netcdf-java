@@ -115,7 +115,6 @@ Example implementation:
 {% endcapture %}
 {{ rmd | markdownify }}
 
-
 You may find it easier to do the same thing using an [NcML](../developer/index.html) file, for example:
 
 {% capture rmd %}

@@ -10,14 +10,14 @@ import java.io.IOException;
 public class TestCoordSystemBuilderTutorial {
 
     @Test
-    public void testOpenDataset() throws IOException {
+    public void testOpenDataset() {
         Assert.assertThrows(FileNotFoundException.class, () -> {
             examples.coordsystems.coordSystemBuilderTutorial.openDataset("", true, null);
         });
     }
 
     @Test
-    public void testAugmentDataset1() throws IOException {
+    public void testAugmentDataset1() {
         coordSystemBuilderTutorial.augmentDataset1();
     }
 
@@ -27,24 +27,24 @@ public class TestCoordSystemBuilderTutorial {
     }
 
     @Test
-    public void testWrapNcmlExample() throws IOException {
+    public void testWrapNcmlExample() {
         Assert.assertThrows(NullPointerException.class, () -> {
             coordSystemBuilderTutorial.wrapNcmlExample(null, null);
         });
     }
 
     @Test
-    public void testRegisterNcml() throws IOException {
+    public void testRegisterNcml() {
         coordSystemBuilderTutorial.registerNcml("", "");
     }
 
     @Test
-    public void testAugmentDataset3() throws IOException {
+    public void testAugmentDataset3() {
         coordSystemBuilderTutorial.augmentDataset3(null, null);
     }
 
     @Test
-    public void testGetAxisType() throws IOException {
+    public void testGetAxisType() {
         coordSystemBuilderTutorial.getAxisType();
     }
 
@@ -54,7 +54,7 @@ public class TestCoordSystemBuilderTutorial {
     }
 
     @Test
-    public void testArgumentDataset5() throws IOException {
+    public void testArgumentDataset5() {
         coordSystemBuilderTutorial.argumentDataset5(null);
     }
 
