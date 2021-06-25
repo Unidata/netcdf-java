@@ -8,6 +8,7 @@ import com.google.common.collect.Streams;
 
 import javax.annotation.Nullable;
 import java.util.Formatter;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -71,7 +72,7 @@ public interface GridCoordinateSystem {
   }
 
   /** Nominal shape, may differ from materialized shape. */
-  int[] getNominalShape();
+  List<Integer> getNominalShape();
 
   /** Function description, eg GRID(T,Z,Y,Z):R LOOK needed? */
   String showFnSummary();

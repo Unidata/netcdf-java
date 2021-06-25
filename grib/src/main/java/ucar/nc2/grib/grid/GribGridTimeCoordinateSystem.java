@@ -6,6 +6,7 @@
 package ucar.nc2.grib.grid;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.grib.collection.GribCollectionImmutable;
 import ucar.nc2.grib.coord.Coordinate;
@@ -21,19 +22,13 @@ import javax.annotation.concurrent.Immutable;
 import java.util.List;
 
 @Immutable
-public class GribGridTimeCoordinateSystem implements GridTimeCoordinateSystem {
+public abstract class GribGridTimeCoordinateSystem implements GridTimeCoordinateSystem {
 
   public static GribGridTimeCoordinateSystem create(GribCollectionImmutable.Type type,
       List<GribGridDataset.CoordAndAxis> coordAndAxes) {
+
     GribGridDataset.CoordAndAxis runtime =
         coordAndAxes.stream().filter(ca -> ca.coord.getType() == Coordinate.Type.runtime).findFirst().orElse(null);
-    GribGridDataset.CoordAndAxis time2d =
-        coordAndAxes.stream().filter(ca -> ca.coord.getType() == Coordinate.Type.time2D).findFirst().orElse(null);
-    if (runtime != null && time2d != null) {
-      CoordinateTime2D coord2D = (CoordinateTime2D) time2d.coord;
-      Preconditions.checkArgument(coord2D.getRuntimeCoordinate().equals(runtime.coord));
-    }
-
     GribGridDataset.CoordAndAxis time =
         coordAndAxes.stream().filter(ca -> ca.coord.getType() == Coordinate.Type.time).findFirst().orElse(null);
     if (time == null) {
@@ -41,7 +36,9 @@ public class GribGridTimeCoordinateSystem implements GridTimeCoordinateSystem {
           coordAndAxes.stream().filter(ca -> ca.coord.getType() == Coordinate.Type.timeIntv).findFirst().orElse(null);
     }
     Preconditions.checkNotNull(runtime);
-    Preconditions.checkArgument(runtime.axis.getClass().isAssignableFrom(GridAxisPoint.class));
+    Preconditions.checkArgument(GridAxisPoint.class.isInstance(runtime.axis));
+    Preconditions.checkNotNull(time);
+    Preconditions.checkNotNull(time.time2d);
 
     switch (type) {
       case SRC: {
@@ -58,15 +55,12 @@ public class GribGridTimeCoordinateSystem implements GridTimeCoordinateSystem {
         return new Observation(runtime, time);
       }
       case TwoD: {
-        Preconditions.checkNotNull(time2d);
-        Preconditions.checkArgument(time2d.coord.getClass().isAssignableFrom(CoordinateTime2D.class));
-        CoordinateTime2D coord2D = (CoordinateTime2D) time2d.coord;
-        if (coord2D.isOrthogonal()) {
-          return new Offset(runtime, time2d);
-        } else if (coord2D.isRegular()) {
-          return new OffsetRegular(runtime, time2d);
+        if (time.time2d.isOrthogonal()) {
+          return new Offset(type, runtime, time);
+        } else if (time.time2d.isRegular()) {
+          return new OffsetRegular(type, runtime, time);
         } else {
-          return new Time2d(runtime, time2d);
+          return new Time2d(type, runtime, time);
         }
       }
       default:
@@ -97,12 +91,16 @@ public class GribGridTimeCoordinateSystem implements GridTimeCoordinateSystem {
     return timeOffsetAxis;
   }
 
+  @Override
+  public abstract List<Integer> getNominalShape();
+
   ///////////////////////////////////////
   private final Type type;
   private final GridAxisPoint runtimeAxis;
   private final GridAxis timeAxis;
-  private final GridAxis timeOffsetAxis;
+  final GridAxis timeOffsetAxis;
 
+  // LOOK time axis aleays null
   public GribGridTimeCoordinateSystem(Type type, GridAxisPoint runtimeAxis, GridAxis timeAxis,
       GridAxis timeOffsetAxis) {
     this.type = type;
@@ -111,15 +109,21 @@ public class GribGridTimeCoordinateSystem implements GridTimeCoordinateSystem {
     this.timeOffsetAxis = timeOffsetAxis;
   }
 
-  ///////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
   private static class Observation extends GribGridTimeCoordinateSystem
       implements GridTimeCoordinateSystem.Observation {
+
     private Observation(GribGridDataset.CoordAndAxis runtime, GribGridDataset.CoordAndAxis time) {
-      super(Type.Observation, (GridAxisPoint) runtime.axis, time.axis, null);
+      super(Type.Observation, (GridAxisPoint) runtime.axis, null, time.axis);
+    }
+
+    @Override
+    public List<Integer> getNominalShape() {
+      return ImmutableList.of(timeOffsetAxis.getNominalSize());
     }
   }
 
-  ///////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
   private static class SingleRuntime extends GribGridTimeCoordinateSystem
       implements GridTimeCoordinateSystem.SingleRuntime {
     private final CalendarDate runtimeDate;
@@ -135,70 +139,98 @@ public class GribGridTimeCoordinateSystem implements GridTimeCoordinateSystem {
     public CalendarDate getRunTime() {
       return runtimeDate;
     }
+
+    @Override
+    public List<Integer> getNominalShape() {
+      return ImmutableList.of(timeOffsetAxis.getNominalSize());
+    }
   }
 
-  ///////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
   private static class Offset extends GribGridTimeCoordinateSystem implements GridTimeCoordinateSystem.Offset {
     private final CoordinateTime2D coord2D;
+    private final GribCollectionImmutable.Type type;
 
-    private Offset(GribGridDataset.CoordAndAxis runtime, GribGridDataset.CoordAndAxis time2d) {
-      super(Type.Offset, (GridAxisPoint) runtime.axis, null, time2d.axis);
-      this.coord2D = (CoordinateTime2D) time2d.coord;
+    private Offset(GribCollectionImmutable.Type type, GribGridDataset.CoordAndAxis runtime,
+        GribGridDataset.CoordAndAxis time) {
+      super(Type.Offset, (GridAxisPoint) runtime.axis, null, time.axis);
+      this.coord2D = time.time2d;
+      this.type = type;
     }
 
     @Override
     public GridAxis getTimeAxis(int runIdx) {
       // LOOK offset or time?
       CoordinateTimeAbstract timeCoord = coord2D.getTimeCoordinate(runIdx);
-      return GribGridAxis.create(timeCoord);
+      return GribGridAxis.create(type, timeCoord).axis;
+    }
+
+    @Override
+    public List<Integer> getNominalShape() {
+      return ImmutableList.of(coord2D.getNruns(), coord2D.getNtimes());
     }
   }
 
-
-  ///////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
   private static class OffsetRegular extends GribGridTimeCoordinateSystem
       implements GridTimeCoordinateSystem.OffsetRegular {
     private final CoordinateTime2D coord2D;
+    private final GribCollectionImmutable.Type type;
 
-    private OffsetRegular(GribGridDataset.CoordAndAxis runtime, GribGridDataset.CoordAndAxis time2d) {
-      super(Type.Offset, (GridAxisPoint) runtime.axis, null, time2d.axis);
-      this.coord2D = (CoordinateTime2D) time2d.coord;
+    private OffsetRegular(GribCollectionImmutable.Type type, GribGridDataset.CoordAndAxis runtime,
+        GribGridDataset.CoordAndAxis time) {
+      super(Type.Offset, (GridAxisPoint) runtime.axis, null, time.axis);
+      this.coord2D = time.time2d;
+      this.type = type;
     }
 
     @Override
     public GridAxis getTimeOffsetAxis(int runIdx) {
       CoordinateTimeAbstract timeCoord = coord2D.getTimeCoordinate(runIdx);
-      return GribGridAxis.create(timeCoord);
+      return GribGridAxis.create(type, timeCoord).axis;
     }
 
     @Override
     public GridAxis getTimeAxis(int runIdx) {
       // LOOK offset or time?
       CoordinateTimeAbstract timeCoord = coord2D.getTimeCoordinate(runIdx);
-      return GribGridAxis.create(timeCoord);
+      return GribGridAxis.create(type, timeCoord).axis;
+    }
+
+    @Override
+    public List<Integer> getNominalShape() {
+      return ImmutableList.of(coord2D.getNruns(), coord2D.getNtimes());
     }
   }
 
-  ///////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
   private static class Time2d extends GribGridTimeCoordinateSystem implements GridTimeCoordinateSystem.Time2d {
     private final CoordinateTime2D coord2D;
+    private final GribCollectionImmutable.Type type;
 
-    private Time2d(GribGridDataset.CoordAndAxis runtime, GribGridDataset.CoordAndAxis time2d) {
-      super(Type.Offset, (GridAxisPoint) runtime.axis, null, time2d.axis);
-      this.coord2D = (CoordinateTime2D) time2d.coord;
+    private Time2d(GribCollectionImmutable.Type type, GribGridDataset.CoordAndAxis runtime,
+        GribGridDataset.CoordAndAxis time) {
+      super(Type.Offset, (GridAxisPoint) runtime.axis, null, time.axis);
+      this.coord2D = time.time2d;
+      this.type = type;
     }
 
     @Override
     public GridAxis getTimeOffsetAxis(int runIdx) {
       CoordinateTimeAbstract timeCoord = coord2D.getTimeCoordinate(runIdx);
-      return GribGridAxis.create(timeCoord);
+      return GribGridAxis.create(type, timeCoord).axis;
     }
 
     @Override
     public GridAxis getTimeAxis(int runIdx) {
       // LOOK offset or time?
       CoordinateTimeAbstract timeCoord = coord2D.getTimeCoordinate(runIdx);
-      return GribGridAxis.create(timeCoord);
+      return GribGridAxis.create(type, timeCoord).axis;
+    }
+
+    @Override
+    public List<Integer> getNominalShape() {
+      return ImmutableList.of(coord2D.getNruns(), coord2D.getNtimes());
     }
   }
 }

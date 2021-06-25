@@ -14,9 +14,12 @@ import ucar.nc2.grid2.GridHorizCoordinateSystem;
 import ucar.nc2.grid2.GridTimeCoordinateSystem;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Formatter;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class GribGridCoordinateSystem implements GridCoordinateSystem {
   private final ImmutableList<GridAxis> axes;
@@ -73,12 +76,19 @@ public class GribGridCoordinateSystem implements GridCoordinateSystem {
   }
 
   @Override
-  public void show(Formatter f, boolean showCoords) {
-
-  }
+  public void show(Formatter f, boolean showCoords) {}
 
   @Override
-  public int[] getNominalShape() {
-    return new int[0];
+  public List<Integer> getNominalShape() {
+    List<Integer> result = new ArrayList<>(getTimeCoordSystem().getNominalShape());
+    if (getEnsembleAxis() != null) {
+      result.add(getEnsembleAxis().getNominalSize());
+    }
+    if (getVerticalAxis() != null) {
+      result.add(getVerticalAxis().getNominalSize());
+    }
+    result.addAll(getHorizCoordSystem().getShape());
+
+    return result;
   }
 }

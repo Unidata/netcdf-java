@@ -16,6 +16,7 @@ import java.util.Formatter;
 import java.util.Iterator;
 import java.util.List;
 
+/** Point Grib coordinates with values stored in memory. */
 public class GridAxisPoint extends GridAxis implements Iterable<Number> {
 
   @Override

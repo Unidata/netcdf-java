@@ -1,5 +1,6 @@
 package ucar.nc2.grid2;
 
+import com.google.common.collect.ImmutableList;
 import ucar.nc2.grid.GridSubset;
 
 import javax.annotation.Nullable;
@@ -16,8 +17,8 @@ public interface GridHorizCoordinateSystem {
   /** Get the 1D Y axis (either GeoY or Lat). */
   GridAxis getYHorizAxis();
 
-  default int[] getShape() {
-    return new int[] {getYHorizAxis().getNominalSize(), getXHorizAxis().getNominalSize()};
+  default List<Integer> getShape() {
+    return ImmutableList.of(getYHorizAxis().getNominalSize(), getXHorizAxis().getNominalSize());
   }
 
   /** True if both X and Y axes are regularly spaced. */

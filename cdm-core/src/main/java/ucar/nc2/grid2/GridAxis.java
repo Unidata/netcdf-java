@@ -97,6 +97,9 @@ public abstract class GridAxis implements Comparable<GridAxis> {
   protected GridAxis(GridAxis.Builder<?> builder) {
     Preconditions.checkNotNull(builder.name);
     Preconditions.checkNotNull(builder.axisType);
+    if (builder.spacing == null) {
+      System.out.printf("HEY");
+    }
     Preconditions.checkNotNull(builder.spacing);
 
     if (builder.units == null) {

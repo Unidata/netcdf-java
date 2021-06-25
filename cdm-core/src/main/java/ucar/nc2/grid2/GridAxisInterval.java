@@ -16,6 +16,7 @@ import java.util.Formatter;
 import java.util.Iterator;
 import java.util.List;
 
+/** Interval Grib coordinates with values stored in memory. */
 public class GridAxisInterval extends GridAxis implements Iterable<CoordInterval> {
 
   @Override
@@ -96,7 +97,7 @@ public class GridAxisInterval extends GridAxis implements Iterable<CoordInterval
   final double endValue; // why needed?
   final Range range; // for subset, tracks the indexes in the original
   final double[] values; // null if isRegular, len= ncoords+1 (contiguous interval), or 2*ncoords (discontinuous
-                         // interval)
+                         // interval) (min0, max0, min1, max1, min2, max2, ...)
 
   public GridAxisInterval(Builder<?> builder) {
     super(builder);
@@ -167,10 +168,10 @@ public class GridAxisInterval extends GridAxis implements Iterable<CoordInterval
       return self();
     }
 
-    public T setValues(List<Double> values) {
+    public T setValues(List<Number> values) {
       this.values = new double[values.size()];
       for (int i = 0; i < values.size(); i++) {
-        this.values[i] = values.get(i);
+        this.values[i] = values.get(i).doubleValue();
       }
       return self();
     }

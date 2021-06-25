@@ -8,6 +8,7 @@ package ucar.nc2.grid2;
 import ucar.nc2.calendar.CalendarDate;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 /**
  * Manages the time coordinates of a GridCoordinateSystem.
@@ -37,7 +38,8 @@ import javax.annotation.Nullable;
  */
 public interface GridTimeCoordinateSystem {
   enum Type {
-    None, Observation, // 1D time, runtime = time or null
+    None, // no time coordinates
+    Observation, // 1D time, runtime = time or null
     SingleRuntime, // scaler runtime, 1D time, offset = null
     Offset, // 1D runtime and offset, time = null
     OffsetRegular, // 1D runtime, 2D offset, time = null
@@ -57,6 +59,8 @@ public interface GridTimeCoordinateSystem {
   /** Get the Time Offset axis. SRC, OBS, TIME2D = null; ORTH = 1D; REG = 2D */
   @Nullable
   GridAxis getTimeOffsetAxis();
+
+  List<Integer> getNominalShape();
 
   interface Observation extends GridTimeCoordinateSystem {
     GridAxis getTimeAxis();

@@ -5,15 +5,18 @@
 
 package ucar.nc2.grib.grid;
 
+import com.google.common.base.Preconditions;
 import ucar.nc2.Attribute;
 import ucar.nc2.calendar.CalendarDateUnit;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
+import ucar.nc2.grib.collection.GribCollectionImmutable;
 import ucar.nc2.grib.coord.Coordinate;
 import ucar.nc2.grib.coord.CoordinateEns;
 import ucar.nc2.grib.coord.CoordinateRuntime;
 import ucar.nc2.grib.coord.CoordinateTime;
+import ucar.nc2.grib.coord.CoordinateTime2D;
 import ucar.nc2.grib.coord.CoordinateTimeIntv;
 import ucar.nc2.grib.coord.CoordinateVert;
 import ucar.nc2.grib.coord.EnsCoordValue;
@@ -26,41 +29,84 @@ import ucar.nc2.grid2.GridAxisPoint;
 import ucar.nc2.grid2.GridAxisSpacing;
 import ucar.nc2.units.SimpleUnit;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static ucar.nc2.grib.grid.GribGridDataset.CoordAndAxis;
+
 public class GribGridAxis {
 
-  public static GridAxis create(Coordinate gribCoord) {
+  public static CoordAndAxis create(GribCollectionImmutable.Type type, Coordinate gribCoord) {
     switch (gribCoord.getType()) {
-      case runtime:
+      case runtime: {
         CoordinateRuntime rtCoord = (CoordinateRuntime) gribCoord;
-        return Point.builder().setRuntimeCoordinate(rtCoord).setAxisType(AxisType.RunTime).build();
+        GridAxis axis = Point.builder().setRuntimeCoordinate(rtCoord).setAxisType(AxisType.RunTime).build();
+        return new CoordAndAxis(gribCoord, axis);
+      }
 
-      case time:
+      case time: {
         CoordinateTime timeCoord = (CoordinateTime) gribCoord;
-        return Point.builder().setTimeOffsetCoordinate(timeCoord).setAxisType(AxisType.TimeOffset).build();
+        GridAxis axis = Point.builder().setTimeOffsetCoordinate(timeCoord).setAxisType(AxisType.TimeOffset).build();
+        return new CoordAndAxis(gribCoord, axis);
+      }
 
-      case timeIntv:
+      case timeIntv: {
         CoordinateTimeIntv timeIntvCoord = (CoordinateTimeIntv) gribCoord;
-        return Interval.builder().setTimeOffsetIntervalCoordinate(timeIntvCoord).setAxisType(AxisType.TimeOffset)
-            .build();
+        GridAxis axis =
+            Interval.builder().setTimeOffsetIntervalCoordinate(timeIntvCoord).setAxisType(AxisType.TimeOffset).build();
+        return new CoordAndAxis(gribCoord, axis);
+      }
 
-      case time2D:
-        throw new UnsupportedOperationException();
+      case time2D: {
+        CoordinateTime2D time2d = (CoordinateTime2D) gribCoord;
+        switch (type) {
+          case SRC: // the time coordinate is a time2D (1 X ntimes) orthogonal
+            Preconditions.checkArgument(time2d.isOrthogonal());
+            Preconditions.checkArgument(time2d.getNruns() == 1);
+            Preconditions.checkNotNull(time2d.getOrthogonalTimes());
+            return create(type, time2d.getOrthogonalTimes()).withTime2d(time2d);
+
+          case MRUTP:
+          case MRUTC: // the time coordinate is a time2D (nruns X 1) orthogonal
+            Preconditions.checkArgument(time2d.isOrthogonal());
+            Preconditions.checkArgument(time2d.getNtimes() == 1);
+            Preconditions.checkNotNull(time2d.getOrthogonalTimes());
+            return create(type, time2d.getOffsetTimes()).withTime2d(time2d);
+
+          case TwoD: // the time coordinate is a time2D (nruns X ntimes)
+            if (time2d.isOrthogonal()) {
+              Preconditions.checkNotNull(time2d.getOrthogonalTimes());
+              return create(type, time2d.getOrthogonalTimes()).withTime2d(time2d);
+
+            } else if (time2d.isRegular()) {
+              return create(type, time2d.getMaximalTimes()).withTime2d(time2d);
+
+            } else {
+              return create(type, time2d.getMaximalTimes()).withTime2d(time2d);
+            }
+
+          default:
+            throw new UnsupportedOperationException("not implemented " + type + " " + time2d);
+        }
+      }
 
       case vert:
         CoordinateVert vertCoord = (CoordinateVert) gribCoord;
         AxisType axisType = getVertType(vertCoord.getUnit());
         if (vertCoord.isLayer()) {
-          return Interval.builder().setVertCoordinate(vertCoord).setAxisType(axisType).build();
+          GridAxis axis = Interval.builder().setVertCoordinate(vertCoord).setAxisType(axisType).build();
+          return new CoordAndAxis(gribCoord, axis);
         } else {
-          return Point.builder().setVertCoordinate(vertCoord).setAxisType(axisType).build();
+          GridAxis axis = Point.builder().setVertCoordinate(vertCoord).setAxisType(axisType).build();
+          return new CoordAndAxis(gribCoord, axis);
         }
 
-      case ens:
+      case ens: {
         CoordinateEns ensCoord = (CoordinateEns) gribCoord;
-        return Point.builder().setEnsCoordinate(ensCoord).setAxisType(AxisType.Ensemble).build();
+        GridAxis axis = Point.builder().setEnsCoordinate(ensCoord).setAxisType(AxisType.Ensemble).build();
+        return new CoordAndAxis(gribCoord, axis);
+      }
 
       default:
         throw new UnsupportedOperationException();
@@ -137,13 +183,13 @@ public class GribGridAxis {
 
       public T setEnsCoordinate(CoordinateEns ensCoord) {
         this.gribCoord = ensCoord;
+        setSpacing(GridAxisSpacing.regularPoint);
         List<Number> values =
             ensCoord.getValues().stream().map(ens -> ((EnsCoordValue) ens).getEnsMember()).collect(Collectors.toList());
         setValues(values);
         return setCoordinate(ensCoord);
       }
 
-      // LOOK regular case
       public T setRuntimeCoordinate(CoordinateRuntime rtCoord) {
         this.gribCoord = rtCoord;
         this.cdu = rtCoord.getCalendarDateUnit();
@@ -156,6 +202,8 @@ public class GribGridAxis {
 
       public T setTimeOffsetCoordinate(CoordinateTime timeCoord) {
         this.gribCoord = timeCoord;
+        // LOOK check if regular
+        setSpacing(GridAxisSpacing.irregularPoint);
         List<Number> values = timeCoord.getValues().stream().map(v -> (Integer) v).collect(Collectors.toList());
         setValues(values);
         return setCoordinate(timeCoord);
@@ -164,6 +212,8 @@ public class GribGridAxis {
       public T setVertCoordinate(CoordinateVert vertCoord) {
         addVerticalAttributes(this, vertCoord);
         this.gribCoord = vertCoord;
+        // LOOK check if regular
+        setSpacing(GridAxisSpacing.irregularPoint);
         List<Number> values =
             vertCoord.getValues().stream().map(vcv -> ((VertCoordValue) vcv).getValue1()).collect(Collectors.toList());
         setValues(values);
@@ -222,17 +272,30 @@ public class GribGridAxis {
 
       public T setTimeOffsetIntervalCoordinate(CoordinateTimeIntv timeOffsetIntv) {
         this.gribCoord = timeOffsetIntv;
-        List<TimeCoordIntvValue> ivalues =
-            timeOffsetIntv.getValues().stream().map(v -> (TimeCoordIntvValue) v).collect(Collectors.toList());
-        // List<> ivalues = timeOffsetIntv.getValues().stream().map(v -> (TimeCoordIntvValue)
-        // v).collect(Collectors.toList());
-        // setValues(values);
+        // LOOK check if regular or contiguousInterval
+        setSpacing(GridAxisSpacing.discontiguousInterval);
+        List<Number> ivalues = new ArrayList<>();
+        for (TimeCoordIntvValue intvValues : timeOffsetIntv.getTimeIntervals()) {
+          ivalues.add(intvValues.getBounds1());
+          ivalues.add(intvValues.getBounds2());
+        }
+        setValues(ivalues);
+        setNcoords(timeOffsetIntv.getNCoords());
         return setCoordinate(timeOffsetIntv);
       }
 
       public T setVertCoordinate(CoordinateVert vertCoord) {
         addVerticalAttributes(this, vertCoord);
         this.gribCoord = vertCoord;
+        // LOOK check if regular or contiguousInterval
+        setSpacing(GridAxisSpacing.discontiguousInterval);
+        List<Number> ivalues = new ArrayList<>();
+        for (VertCoordValue intvValues : vertCoord.getLevelSorted()) {
+          ivalues.add(intvValues.getValue1());
+          ivalues.add(intvValues.getValue2());
+        }
+        setValues(ivalues);
+        setNcoords(vertCoord.getNCoords());
         return setCoordinate(vertCoord);
       }
 
