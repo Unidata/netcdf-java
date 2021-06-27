@@ -2,7 +2,7 @@
  * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-package ucar.nc2.grid;
+package ucar.nc2.grid2;
 
 import com.google.common.collect.Iterables;
 import ucar.nc2.dataset.DatasetUrl;
@@ -27,49 +27,51 @@ public class GridDatasetFactory {
 
     // LOOK could be a gcdm endpoint ??
 
-    /*
-     * check if its a GRIB collection
-     * DatasetUrl durl = DatasetUrl.findDatasetUrl(endpoint);
-     * if (durl.getServiceType() == null) { // skip GRIB check for anything not a plain ole file
-     * GribOpenAttempt openAttempt = openGrib(endpoint, errLog);
-     * if (openAttempt.isGrib) {
-     * return openAttempt.coverage;
-     * }
-     * }
-     */
+    // check if its a GRIB collection
+    DatasetUrl durl = DatasetUrl.findDatasetUrl(endpoint);
+    if (durl.getServiceType() == null) { // skip GRIB check for anything not a plain ole file
+      GribOpenAttempt openAttempt = openGrib(endpoint, errLog);
+      if (openAttempt.isGrib) {
+        return openAttempt.coverage;
+      }
+    }
     // this will still open a GRIB Collection, but it will be built on top of NetcdfDataset.
     // probably ok for small collections, though it differs from the direct GRIB.
     // if tests start failing, check if GRIB module is installed
 
-    return openNetcdfAsGrid(endpoint, errLog);
+    return null; // openNetcdfAsGrid(endpoint, errLog);
   }
 
-  /** Open a NetcdfDataset and wrap as a GridDataset if possible. */
-  @Nullable
-  private static GridDataset openNetcdfAsGrid(String endpoint, Formatter errLog) throws IOException {
-    // Otherwise, wrap a NetcdfDataset
-    NetcdfDataset ds = ucar.nc2.dataset.NetcdfDatasets.openDataset(endpoint);
-    Optional<GridNetcdfDataset> result =
-        GridNetcdfDataset.create(ds, errLog).filter(gds -> !Iterables.isEmpty(gds.getGrids()));
-    if (result.isEmpty()) {
-      errLog.format("Could not open as GridDataset: %s", endpoint);
-      ds.close();
-      return null;
-    }
-
-    return result.get();
-  }
-
-  /** Wrap an already open NetcdfDataset as a GridDataset if possible. */
-  public static Optional<GridDataset> wrapGridDataset(NetcdfDataset ds, Formatter errLog) throws IOException {
-    Optional<GridNetcdfDataset> result =
-        GridNetcdfDataset.create(ds, errLog).filter(gds -> !Iterables.isEmpty(gds.getGrids()));
-    if (result.isEmpty()) {
-      errLog.format("Could not open as GridDataset: %s", ds.getLocation());
-      return Optional.empty();
-    }
-    return Optional.of(result.get());
-  }
+  /**
+   * Open a NetcdfDataset and wrap as a GridDataset if possible.
+   * 
+   * @Nullable
+   *           private static GridDataset openNetcdfAsGrid(String endpoint, Formatter errLog) throws IOException {
+   *           // Otherwise, wrap a NetcdfDataset
+   *           NetcdfDataset ds = ucar.nc2.dataset.NetcdfDatasets.openDataset(endpoint);
+   *           Optional<GridNetcdfDataset> result =
+   *           GridNetcdfDataset.create(ds, errLog).filter(gds -> !Iterables.isEmpty(gds.getGrids()));
+   *           if (result.isEmpty()) {
+   *           errLog.format("Could not open as GridDataset: %s", endpoint);
+   *           ds.close();
+   *           return null;
+   *           }
+   * 
+   *           return result.get();
+   *           }
+   * 
+   *           /** Wrap an already open NetcdfDataset as a GridDataset if possible.
+   *           public static Optional<GridDataset> wrapGridDataset(NetcdfDataset ds, Formatter errLog) throws
+   *           IOException {
+   *           Optional<GridNetcdfDataset> result =
+   *           GridNetcdfDataset.create(ds, errLog).filter(gds -> !Iterables.isEmpty(gds.getGrids()));
+   *           if (result.isEmpty()) {
+   *           errLog.format("Could not open as GridDataset: %s", ds.getLocation());
+   *           return Optional.empty();
+   *           }
+   *           return Optional.of(result.get());
+   *           }
+   */
 
 
   /////////////////////////////////////////////////////////////////////////////////////

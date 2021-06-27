@@ -22,8 +22,8 @@ import java.util.Optional;
 
 public class GribGridHorizCoordinateSystem implements GridHorizCoordinateSystem {
   private final GdsHorizCoordSys hcs;
-  private final GridAxis xaxis;
-  private final GridAxis yaxis;
+  private final GridAxisPoint xaxis;
+  private final GridAxisPoint yaxis;
 
   public GribGridHorizCoordinateSystem(GdsHorizCoordSys hcs) {
     this.hcs = hcs;
@@ -41,12 +41,12 @@ public class GribGridHorizCoordinateSystem implements GridHorizCoordinateSystem 
   }
 
   @Override
-  public GridAxis getXHorizAxis() {
+  public GridAxisPoint getXHorizAxis() {
     return xaxis;
   }
 
   @Override
-  public GridAxis getYHorizAxis() {
+  public GridAxisPoint getYHorizAxis() {
     return yaxis;
   }
 
@@ -99,7 +99,7 @@ public class GribGridHorizCoordinateSystem implements GridHorizCoordinateSystem 
   }
 
   @Override
-  public List<GridAxis> subset(GridSubset params, Formatter errlog) {
+  public GribGridHorizCoordinateSystem subset(GridSubset params, Formatter errlog) {
     return null;
   }
 }

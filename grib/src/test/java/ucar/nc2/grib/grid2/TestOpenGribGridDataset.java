@@ -15,6 +15,7 @@ import ucar.nc2.grid2.GridTimeCoordinateSystem;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Formatter;
@@ -23,9 +24,10 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static com.google.common.truth.Truth.assertThat;
+import static org.junit.Assert.fail;
 
 @Category(NeedsCdmUnitTest.class)
-public class TestGribGridDataset {
+public class TestOpenGribGridDataset {
 
   @Test
   public void testTwod() throws IOException {
@@ -118,6 +120,27 @@ public class TestGribGridDataset {
           IntStream.concat(IntStream.concat(Arrays.stream(expectedTimeShape), Arrays.stream(otherCoordShape)),
               Arrays.stream(expectedHcsShape)).boxed().collect(Collectors.toList());
       assertThat(cs.getNominalShape()).isEqualTo(expectedShape);
+    }
+  }
+
+
+  @Test
+  public void testFileNotFound() throws IOException {
+    String filename = TestDir.cdmLocalTestDataDir + "conventions/fileNot.nc";
+    Formatter errlog = new Formatter();
+    try (GribGridDataset gds = GribGridDataset.open(filename, errlog).orElseThrow()) {
+      fail();
+    } catch (FileNotFoundException e) {
+      assertThat(e.getMessage()).contains("(No such file or directory)");
+    }
+  }
+
+  @Test
+  public void testFileNotGrid() throws IOException {
+    String filename = TestDir.cdmLocalTestDataDir + "point/point.ncml";
+    Formatter errlog = new Formatter();
+    try (GribGridDataset gds = GribGridDataset.open(filename, errlog).orElse(null)) {
+      assertThat(gds).isNull();
     }
   }
 }

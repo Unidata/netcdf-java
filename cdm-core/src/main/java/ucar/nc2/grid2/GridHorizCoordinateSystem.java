@@ -12,10 +12,10 @@ import java.util.Optional;
 public interface GridHorizCoordinateSystem {
 
   /** Get the 1D X axis (either GeoX or Lon). */
-  GridAxis getXHorizAxis();
+  GridAxisPoint getXHorizAxis();
 
   /** Get the 1D Y axis (either GeoY or Lat). */
-  GridAxis getYHorizAxis();
+  GridAxisPoint getYHorizAxis();
 
   default List<Integer> getShape() {
     return ImmutableList.of(getYHorizAxis().getNominalSize(), getXHorizAxis().getNominalSize());
@@ -65,7 +65,7 @@ public interface GridHorizCoordinateSystem {
   /** From the (x,y) projection point, find the indices and coordinates of the horizontal 2D grid. */
   Optional<CoordReturn> findXYindexFromCoord(double xpt, double ypt);
 
-  /** Subset both x and y axis based on the given parameters. LOOK return GridHorizCoordinateSystem? */
-  List<GridAxis> subset(GridSubset params, Formatter errlog);
+  /** Subset both x and y axis based on the given parameters. */
+  GridHorizCoordinateSystem subset(GridSubset params, Formatter errlog);
 
 }

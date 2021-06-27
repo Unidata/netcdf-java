@@ -11,11 +11,12 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.ft2.coverage.CoverageCoordAxis1D;
-import ucar.nc2.grid.Grid;
 import ucar.nc2.grid.GridAxis1D;
 import ucar.nc2.grid.GridAxis1DTime;
 import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.calendar.CalendarDateFormatter;
+import ucar.nc2.grid2.GridAxisPoint;
+import ucar.nc2.grid2.GridTimeCoordinateSystem;
 import ucar.ui.util.NamedObject;
 import ucar.unidata.util.Format;
 
@@ -100,18 +101,40 @@ public class NamedObjects {
 
   /////////////////////////////////////////////////////////////////////////////
 
-  public static List<NamedObject> getNames(Iterable<Grid> grids) {
+  public static List<NamedObject> getGridNames(Iterable<ucar.nc2.grid2.Grid> grids) {
     if (grids == null) {
       return new ArrayList<>();
     }
     List<NamedObject> result = new ArrayList<>();
-    for (Grid grid : grids) {
+    for (ucar.nc2.grid2.Grid grid : grids) {
+      result.add(NamedObject.create(grid.getName(), grid.getDescription(), grid));
+    }
+    return result;
+  }
+
+  public static List<NamedObject> getNames(Iterable<ucar.nc2.grid.Grid> grids) {
+    if (grids == null) {
+      return new ArrayList<>();
+    }
+    List<NamedObject> result = new ArrayList<>();
+    for (ucar.nc2.grid.Grid grid : grids) {
       result.add(NamedObject.create(grid.getName(), grid.getDescription(), grid));
     }
     return result;
   }
 
   public static List<NamedObject> getCoordNames(GridAxis1D axis) {
+    if (axis == null) {
+      return new ArrayList<>();
+    }
+    List<NamedObject> result = new ArrayList<>();
+    for (Object coord : axis) {
+      result.add(NamedObject.create(coord, axis.getUnits()));
+    }
+    return result;
+  }
+
+  public static List<NamedObject> getCoordNames(ucar.nc2.grid2.GridAxis<?> axis) {
     if (axis == null) {
       return new ArrayList<>();
     }
@@ -133,30 +156,15 @@ public class NamedObjects {
     return result;
   }
 
-  /*
-   * public static List<NamedObject> getNames(GridAxis1D axis) {
-   * if (axis == null) {
-   * return new ArrayList<>();
-   * }
-   * List<NamedObject> result = new ArrayList<>();
-   * for (int i = 0; i < axis.getNcoords(); i++) {
-   * Object value = null;
-   * switch (axis.getSpacing()) {
-   * case regularPoint:
-   * case irregularPoint:
-   * value = Format.d(axis.getCoordMidpoint(i), 3);
-   * break;
-   * 
-   * case regularInterval:
-   * case contiguousInterval:
-   * case discontiguousInterval:
-   * value = CoordInterval.create(axis.getCoordEdge1(i), axis.getCoordEdge2(i));
-   * break;
-   * }
-   * result.add(NamedObject.create(value, value + " " + axis.getUnits()));
-   * }
-   * return result;
-   * }
-   */
+  public static List<NamedObject> getTimeNames(GridTimeCoordinateSystem tcs, int runtimeIdx, GridAxisPoint axis) {
+    if (tcs == null || axis == null) {
+      return new ArrayList<>();
+    }
+    List<NamedObject> result = new ArrayList<>();
+    for (CalendarDate cdate : tcs.getTimesForRuntime(runtimeIdx)) {
+      result.add(NamedObject.create(cdate, axis.getAxisType().toString()));
+    }
+    return result;
+  }
 
 }

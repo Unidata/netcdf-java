@@ -21,7 +21,8 @@ import java.util.List;
  *
  * @author caron
  */
-public interface GridDatatype extends IsMissingEvaluator, Comparable<GridDatatype> {
+public interface GridDatatype
+    extends ucar.array.IsMissingEvaluator, ucar.ma2.IsMissingEvaluator, Comparable<GridDatatype> {
 
   /**
    * Get the full, unescaped name of the Grid

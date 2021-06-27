@@ -9,24 +9,23 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Streams;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.grid2.GridAxis;
+import ucar.nc2.grid2.GridAxisPoint;
 import ucar.nc2.grid2.GridCoordinateSystem;
 import ucar.nc2.grid2.GridHorizCoordinateSystem;
 import ucar.nc2.grid2.GridTimeCoordinateSystem;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Formatter;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class GribGridCoordinateSystem implements GridCoordinateSystem {
-  private final ImmutableList<GridAxis> axes;
+  private final ImmutableList<GridAxis<?>> axes;
   private final GribGridHorizCoordinateSystem hcs;
   private final GribGridTimeCoordinateSystem tcs;
 
-  public GribGridCoordinateSystem(List<GridAxis> axes, GribGridTimeCoordinateSystem tcs,
+  public GribGridCoordinateSystem(List<GridAxis<?>> axes, GribGridTimeCoordinateSystem tcs,
       GribGridHorizCoordinateSystem hcs) {
     this.axes = ImmutableList.copyOf(axes); // LOOK sort
     this.tcs = tcs;
@@ -35,13 +34,13 @@ public class GribGridCoordinateSystem implements GridCoordinateSystem {
 
   @Override
   public String getName() {
-    List<String> names = Streams.stream(getGridAxes()).map(a -> a.getName()).collect(Collectors.toList());
+    List<String> names = getGridAxes().stream().map(a -> a.getName()).collect(Collectors.toList());
     return String.join(" ", names);
   }
 
   @Override
-  public Iterable<GridAxis> getGridAxes() {
-    ImmutableList.Builder<GridAxis> builder = ImmutableList.builder();
+  public ImmutableList<GridAxis<?>> getGridAxes() {
+    ImmutableList.Builder<GridAxis<?>> builder = ImmutableList.builder();
     builder.addAll(axes);
     builder.add(hcs.getYHorizAxis());
     builder.add(hcs.getXHorizAxis());
@@ -61,8 +60,8 @@ public class GribGridCoordinateSystem implements GridCoordinateSystem {
 
   @Nullable
   @Override
-  public GridAxis getEnsembleAxis() {
-    return axes.stream().filter(a -> a.getAxisType() == AxisType.Ensemble).findFirst().orElse(null);
+  public GridAxisPoint getEnsembleAxis() {
+    return (GridAxisPoint) axes.stream().filter(a -> a.getAxisType() == AxisType.Ensemble).findFirst().orElse(null);
   }
 
   @Override

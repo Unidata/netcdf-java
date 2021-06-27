@@ -12,7 +12,10 @@ import ucar.unidata.util.Format;
 import javax.annotation.Nullable;
 import java.util.List;
 
-/** A Coordinate represented by an interval [start, end) */
+/**
+ * A Coordinate represented by an interval [start, end)
+ * LOOK double ??
+ */
 @AutoValue
 public abstract class CoordInterval {
   /** The starting value of the coordinate interval */

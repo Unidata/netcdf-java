@@ -21,7 +21,6 @@ import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.grib.collection.GribCollectionImmutable;
 import ucar.nc2.grib.coord.Coordinate;
 import ucar.nc2.grib.coord.CoordinateTime2D;
-import ucar.nc2.grib.coord.CoordinateTimeAbstract;
 import ucar.nc2.grib.grib2.Grib2Utils;
 import ucar.nc2.grid2.Grid;
 import ucar.nc2.grid2.GridAxis;
@@ -98,7 +97,7 @@ public class GribGridDataset implements GridDataset {
   private final GribCollectionImmutable.Dataset dataset;
   private final GribCollectionImmutable.GroupGC group;
   private final GribGridHorizCoordinateSystem horizCoordinateSystem;
-  private final Map<Integer, GridAxis> gridAxes; // <index, GridAxis>
+  private final Map<Integer, GridAxis<?>> gridAxes; // <index, GridAxis>
   private final Map<Integer, GribGridCoordinateSystem> gridCoordinateSystems; // <hash, GribGridCoordinateSystem>
   private final Map<Integer, GribGridTimeCoordinateSystem> timeCoordinateSystems; // <hash,
                                                                                   // GribGridTimeCoordinateSystem>
@@ -158,10 +157,10 @@ public class GribGridDataset implements GridDataset {
 
   static class CoordAndAxis {
     Coordinate coord;
-    GridAxis axis;
+    GridAxis<?> axis;
     CoordinateTime2D time2d;
 
-    CoordAndAxis(Coordinate coord, GridAxis axis) {
+    CoordAndAxis(Coordinate coord, GridAxis<?> axis) {
       this.coord = coord;
       this.axis = axis;
     }
@@ -174,7 +173,7 @@ public class GribGridDataset implements GridDataset {
 
   private GribGridCoordinateSystem makeCoordinateSystem(Iterable<Integer> indices,
       HashMap<Integer, CoordAndAxis> coordIndexMap) {
-    List<GridAxis> axes = Streams.stream(indices).map(this.gridAxes::get).collect(Collectors.toList());
+    List<GridAxis<?>> axes = Streams.stream(indices).map(this.gridAxes::get).collect(Collectors.toList());
     GribGridTimeCoordinateSystem tcs = makeTimeCoordinateSystem(indices, coordIndexMap);
     return new GribGridCoordinateSystem(axes, tcs, this.horizCoordinateSystem);
   }
@@ -226,8 +225,8 @@ public class GribGridDataset implements GridDataset {
   }
 
   @Override
-  public ImmutableList<GridAxis> getGridAxes() {
-    ImmutableList.Builder<GridAxis> builder = ImmutableList.builder();
+  public ImmutableList<GridAxis<?>> getGridAxes() {
+    ImmutableList.Builder<GridAxis<?>> builder = ImmutableList.builder();
     builder.addAll(gridAxes.values());
     builder.add(horizCoordinateSystem.getYHorizAxis());
     builder.add(horizCoordinateSystem.getXHorizAxis());

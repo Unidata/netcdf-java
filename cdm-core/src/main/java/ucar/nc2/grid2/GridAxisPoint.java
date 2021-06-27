@@ -17,7 +17,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /** Point Grib coordinates with values stored in memory. */
-public class GridAxisPoint extends GridAxis implements Iterable<Number> {
+public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> {
 
   @Override
   public int getNominalSize() {
@@ -26,7 +26,7 @@ public class GridAxisPoint extends GridAxis implements Iterable<Number> {
 
   @Nullable
   @Override
-  public GridAxis subset(GridSubset params, Formatter errlog) {
+  public GridAxisPoint subset(GridSubset params, Formatter errlog) {
     return null;
   }
 

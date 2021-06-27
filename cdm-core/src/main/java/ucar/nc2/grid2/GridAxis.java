@@ -24,7 +24,7 @@ import java.util.List;
 /**
  * A GridAxis represents a 1D Coordinate Variable.
  */
-public abstract class GridAxis implements Comparable<GridAxis> {
+public abstract class GridAxis<T> implements Comparable<GridAxis<T>>, Iterable<T> {
 
   public String getName() {
     return name;
@@ -70,7 +70,7 @@ public abstract class GridAxis implements Comparable<GridAxis> {
   public abstract int getNominalSize();
 
   @Nullable
-  public abstract GridAxis subset(GridSubset params, Formatter errlog);
+  public abstract GridAxis<T> subset(GridSubset params, Formatter errlog);
 
   public abstract Range getRange(); // subset only ?
 
@@ -97,9 +97,6 @@ public abstract class GridAxis implements Comparable<GridAxis> {
   protected GridAxis(GridAxis.Builder<?> builder) {
     Preconditions.checkNotNull(builder.name);
     Preconditions.checkNotNull(builder.axisType);
-    if (builder.spacing == null) {
-      System.out.printf("HEY");
-    }
     Preconditions.checkNotNull(builder.spacing);
 
     if (builder.units == null) {
@@ -215,7 +212,5 @@ public abstract class GridAxis implements Comparable<GridAxis> {
     public String toString() {
       return name;
     }
-
-    public abstract GridAxis build();
   }
 }

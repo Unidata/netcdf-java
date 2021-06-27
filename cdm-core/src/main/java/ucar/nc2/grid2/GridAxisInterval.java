@@ -17,7 +17,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /** Interval Grib coordinates with values stored in memory. */
-public class GridAxisInterval extends GridAxis implements Iterable<CoordInterval> {
+public class GridAxisInterval extends GridAxis<CoordInterval> implements Iterable<CoordInterval> {
 
   @Override
   public int getNominalSize() {
@@ -26,7 +26,7 @@ public class GridAxisInterval extends GridAxis implements Iterable<CoordInterval
 
   @Nullable
   @Override
-  public GridAxis subset(GridSubset params, Formatter errlog) {
+  public GridAxisInterval subset(GridSubset params, Formatter errlog) {
     return null;
   }
 
