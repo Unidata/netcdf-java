@@ -1,15 +1,18 @@
 ---
 title: Standard horizontal coordinate transforms 
-last_updated: 2019-07-23
+last_updated: 2021-06-28
 sidebar: userguide_sidebar 
 permalink: std_horizonal_coord_transforms.html
 toc: false
 ---
 
 ## Standard Horizontal Coordinate Transforms
-This page documents the <b>_horizontal coordinate transforms_</b> that are standard in CDM. Most follow the <a href="http://cfconventions.org/Data/cf-conventions/cf-conventions-1.6/build/cf-conventions.html#appendix-grid-mappings" target="_blank">CF-1.0 Conventions</a>, where they are called grid_mappings. They are also often called projections, because most emply projective geometry.
+This page documents the horizontal coordinate transforms that are standard in CDM. Most follow the [CF-1.0 Conventions](http://cfconventions.org/Data/cf-conventions/cf-conventions-1.6/build/cf-conventions.html#appendix-grid-mappings){:target="_blank"}, where they are called grid_mappings. 
+They are also often called projections, because most employ projective geometry.
 
-To follow CF, typically one creates a transform definition variable, whose purpose is to contain attributes whose values are the parameters of the transform. Typically the variable does not contain any real data, and so a scalar variable is used. Each data variable that uses the transform has an attribute with name <b>_grid_mapping_</b> whose value is the name of the transform variable. The projection coordinate variables are also required.
+To follow CF, typically one creates a transform definition variable, whose purpose is to contain attributes whose values are the parameters of the transform. 
+Typically, the variable does not contain any real data, and so a scalar variable is used. 
+Each data variable that uses the transform has an attribute with name `grid_mapping` whose value is the name of the transform variable. The projection coordinate variables are also required.
 
 For example:
 
@@ -34,7 +37,10 @@ For example:
     Lambert_Conformal:latitude_of_projection_origin = 38.5; // double
 ~~~
      
-In this example, the <b>_Lambert_Conformal_</b> variable defines the projection and the data variable references it with the <b>_grid_mapping_</b> attribute. The <b>_x0_</b> and <b>_y0_</b> are coordinate variables, and the CF convention standard_name attribute is used to identify them unambiguously as projection x and y coordinates. The defaullt unit is km, but any units that can be converted to km can be used. The value of the coordinates must be the correct geolocation for your data. The projection that you specify is then used to calculate the correct (lat, lon) point. All projections have the form:
+In this example, the `Lambert_Conformal` variable defines the projection, and the data variable references it with the `grid_mapping` attribute. 
+The `x0` and `y0` are coordinate variables, and the CF convention `standard_name` attribute is used to identify them unambiguously as projection x and y coordinates. 
+The default unit is km, but any units that can be converted to km can be used. The value of the coordinates must be the correct geolocation for your data. 
+The projection that you specify is then used to calculate the correct (lat, lon) point. All projections have the form:
 
 ~~~
  Projection: (x, y) -> (lat, lon)
@@ -43,11 +49,13 @@ In this example, the <b>_Lambert_Conformal_</b> variable defines the projection 
 
 where the x,y values in this equation are the ones that you put into the x and y projection coordinate variables.
 
-<b>_To summarize, in order for CF Horizontal transforms to work in the CDM, you must:
+### Summary: CF Horizontal transforms in the CDM
 
-1. define x and y projection coordinate variables, using the correct projection units, typically km on the projection plane.
-2. define your projection dummy variable which has an attribute "grid_mapping_name"
-3. refer to the projection in your data variables with the "grid_mapping" attribute._</b>
+In order for CF Horizontal transforms to work in the CDM, you must:
+
+1. Define x and y projection coordinate variables, using the correct projection units, typically km on the projection plane.
+2. Define your projection dummy variable which has an attribute `grid_mapping_name`
+3. Refer to the projection in your data variables with the `grid_mapping` attribute.
 
 #### Resources
 
@@ -58,18 +66,25 @@ where the x,y values in this equation are the ones that you put into the x and y
 ### Standard Horizontal Transforms (Projections)
 
 The following are the currently implemented transforms.
+Attribute names follow the [CF Conventions](http://cfconventions.org/Data/cf-conventions/cf-conventions-1.6/build/cf-conventions.html#appendix-grid-mappings){:target="_blank"} Appendix F (Grid Mappings). 
+See that document for details on the meanings of the formula terms. The projection algorithms are mostly taken from *John Snyder,* [Map Projections used by the USGS, Bulletin 1532, 2nd edition (1983)](https://pubs.usgs.gov/bul/1532/report.pdf){:target="_blank"}. 
+Some of the ellipsoidal forms are corrected versions of *com.jhlabs.map.proj*.
 
-Required attributes are in bold, optional in bold italics. Attribute names follow the <a href="http://cfconventions.org/Data/cf-conventions/cf-conventions-1.6/build/cf-conventions.html#appendix-grid-mappings" target="_blank">CF Conventions</a> Appendix F (Grid Mappings). See that document for details on the meanings of the formula terms. The projection algorithms are mostly taken from <b>_John Snyder, Map Projections used by the USGS, Bulletin 1532, 2nd edition (1983)_</b>. Some of the ellispoidal forms are corrected versions of <b>_com.jhlabs.map.proj_</b>.
+* In some cases, the earth radius may be specified, which uses a spherical earth for the projection. 
+  This is indicated by the presence of the `earth_radius` attribute.
 
-In some cases, the earth radius may be specified, which uses a spherical earth for the projection. This is indicated by the presence of the <b>_earth_radius_</b> attribute.
+* In some cases, the ellipsoidal form of the projection may be used. 
+  This is indicated by the presence of the `semi_major_axis`, and either the `semi_minor_axis` or `inverse_flattening` attributes. 
+  Note that not all projections have an ellipsoidal implementation.
 
-In some cases, the ellipsoidal form of the projection may be used. This is indicated by the presence of the <b>_semi_major_axis_</b>, and either the <b>_semi_minor_axis_</b> or <b>_inverse_flattening_</b> attributes. Note that not all projections have an ellipsoidal implementation.
+* When neither `earth_radius` or `semi_major_axis` is allowed or specified, the projection will be spherical with a default earth radius of 6371.229 km.
 
-When neither <b>_earth_radius_<b> or <b>_semi_major_axis_</b> is allowed or specified, the projection will be spherical with a default earth radius of 6371.229 km.
+* The units of `earth_radius`, `semi_major_axis`, `semi_minor_axis` must be in meters.
 
-The units of <b>_earth_radius_<b>, <b>_semi_major_axis_<b>, <b>_semi_minor_axis_</b> must be in meters.
-
-The optional <b>_false_easting_</b>, and <b>_false_northing_</b> should match the units of the x and y projection coordinates. Alternatively, the attribute "units" may be specified on the dummy Coordinate Transform Variable (this is CDM standard, not CF). When they are not present in the documentation below, they are not used. Contact us if you have a real sample where they are non-zero.
+* The optional `false_easting`, and `false_northing` should match the units of the x and y projection coordinates. 
+  Alternatively, the attribute "units" may be specified on the dummy `CoordinateTransform` variable (this is CDM standard, not CF). 
+  
+When they are not present in the documentation below, they are not used. Contact us if you have a real sample where they are non-zero.
 
 #### albers_conical_equal_area
 
@@ -136,11 +151,11 @@ This is not a standard CF projection. It is used when a "flat earth" assumption 
 
 This uses an ellipsoidal earth. Notes from CF:
 
-* The <b>_"perspective_point_height"_</b> is the distance to the surface of the ellipsoid. Adding the earth major axis gives the distance from the centre of the earth.
-* The <b>_"sweep_angle_axis"_</b> attribute indicates which axis the instrument sweeps. The value = "y" corresponds to the spin-stabilized Meteosat satellites, the value = "x" to the GOES-R satellite.
-* The <b>_"fixed_angle_axis"_</b> attribute indicates which axis the instrument is fixed. The values are opposite to "sweep_angle_axis". Only one of those two attributes are mandatory.
+* The `perspective_point_height` is the distance to the surface of the ellipsoid. Adding the earth major axis gives the distance from the centre of the earth.
+* The `sweep_angle_axis` attribute indicates which axis the instrument sweeps. The value *y* corresponds to the spin-stabilized Meteosat satellites, the value *x* to the GOES-R satellite.
+* The `fixed_angle_axis` attribute indicates which axis the instrument is fixed. The values are opposite to `sweep_angle_axis`. Only one of those two attributes are mandatory.
 
-See CF <a href="http://cfconventions.org/Data/cf-conventions/cf-conventions-1.6/build/cf-conventions.html#appendix-grid-mappings" target="_blank">adding geostationary</a>. This projection covers both Eumetsat GEOS and US GOES-R satellites.
+See CF [adding geostationary](http://cfconventions.org/Data/cf-conventions/cf-conventions-1.6/build/cf-conventions.html#appendix-grid-mappings){:target="_blank"}. This projection covers both Eumetsat GEOS and US GOES-R satellites.
 
 #### lambert_azimuthal_equal_area
 
@@ -214,8 +229,6 @@ This uses a spherical earth and default radius. See Snyder, p 47.
 
 #### MSGnavigation
 
-Used for MSG (METEOSAT 8 onwards) data.
-
 ~~~
    char Space_View_Perspective_or_Orthographic;
      :grid_mapping_name = "MSGnavigation";
@@ -228,7 +241,9 @@ Used for MSG (METEOSAT 8 onwards) data.
      :scale_y = -35785.830098; // double
 ~~~
 
-This is not a standard CF projection. This uses an ellipsoidal earth. See this document. Note there is a bug in some versions of Eumetsat GRIB encoding, per Simon Eliot 1/18/2010, in which the "apparent diameter of earth in units of grid lengths" is incorrectly specified. We do a correction for this in ucar.nc2.iosp.grid.GridHorizCoordSys when we read the GRIB file.
+This is not a standard CF projection, and is used for MSG (METEOSAT 8 onwards) data. 
+This uses an ellipsoidal earth. Note there is a bug in some versions of Eumetsat GRIB encoding, per Simon Eliot 1/18/2010, in which the "apparent diameter of earth in units of grid lengths" is incorrectly specified. 
+We do a correction for this in `ucar.nc2.internal.grid.GridHorizCS` when we read the GRIB file.
 
 #### orthographic
 
@@ -256,7 +271,8 @@ This is not a standard CF projection. This uses a spherical earth and default ra
      :inverse_flattening =   298.257;
 ~~~
 
-The Polar Stereographic is the same as the Stereographic projection with origin at the north or south pole. It can use a spherical or ellipsoidal earth.
+The Polar Stereographic is the same as the Stereographic projection with origin at the north or South Pole. 
+It can use a spherical or ellipsoidal earth.
 
 The polar stereographic will accept these alternate parameter names:
 
@@ -268,7 +284,8 @@ The polar stereographic will accept these alternate parameter names:
      :standard_parallel = 0.9330127018922193;
 ~~~
       
-If the <b>_standard_parallel_</b> is specified, this indicates the parallel where the scale factor = 1.0. In that case the projection scale factor is calculated as
+If the `standard_parallel` is specified, this indicates the parallel where the scale factor = 1.0. 
+In that case the projection scale factor is calculated as:
 
 ~~~
  double sin = Math.abs(Math.sin( Math.toRadians( stdpar)));
@@ -280,7 +297,7 @@ rotated_pole
    :grid_north_pole_longitude = -153.0f; // float
 ~~~
    
-The rotated latitude and longitude coordinates are identified by the _standard_name_ attribute values _grid_latitude_ and _grid_longitude_ respectively. Example:
+The rotated latitude and longitude coordinates are identified by the `standard_name` attribute values `grid_latitude` and `grid_longitude` respectively. For example:
 
 ~~~
  float rlat(rlat=84);
@@ -295,11 +312,9 @@ The rotated latitude and longitude coordinates are identified by the _standard_n
      :_CoordinateAxisType = "GeoX";
 ~~~
 
-The rotated longitude coordinate must be in the range [-180,180] (so there will be a problem when it crosses the dateline). Code contributed by Robert Schmunk.
+The rotated longitude coordinate must be in the range [-180,180], meaning there will be a problem when it crosses the dateline. This code was contributed by Robert Schmunk.
 
 #### rotated_latlon_grib
-
-Grib 1 projection 10 and Grib 2 projection 1. This is not a standard CF projection.
 
 ~~~
  char rotated_pole;
@@ -308,8 +323,8 @@ Grib 1 projection 10 and Grib 2 projection 1. This is not a standard CF projecti
    :grid_south_pole_longitude= -153.0f; // float
    :grid_south_pole_angle= 0.0f; // float
 ~~~   
-   
-Contributed by Tor Christian Bekkvik.
+
+Grib 1 projection 10 and Grib 2 projection 1. This is not a standard CF projection. Contributed by Tor Christian Bekkvik.
 
 #### sinusoidal
 
@@ -322,9 +337,9 @@ Contributed by Tor Christian Bekkvik.
      :earth_radius = 6371.229;
 ~~~
  
-Spherical earth. See CF <a href="http://cf-trac.llnl.gov/trac/ticket/77" target="_blank">adding sinusoidal</a>.
+This uses a spherical earth. See code to [add sinusoidal](https://github.com/cf-convention/cf-conventions/pull/85){:target="_blank"} on GitHub.
 
-This projection is one of those selected by the <a href="http://www.esa-cci.org/" target="_blank">​ESA Climate Change Initiative</a>, which will be reanalysing the MERIS, MODIS and SeaWiFS time series and producing netcdf-CF files.
+This projection is one of those selected by the [ESA Climate Change Initiative](http://www.esa-cci.org/){:target="_blank"}, which will be reanalysing the MERIS, MODIS and SeaWiFS time series and producing netcdf-CF files.
 
 #### stereographic
 

@@ -9,22 +9,23 @@ toc: false
 ### Overview
 
 In order to use a dataset at the scientific datatype layer, the dataset's coordinate systems must first be identified. 
-This is done by an implementation of `ucar.nc2.dataset.CoordSysBuilderIF` whose job is to examine the contents of the dataset and create coordinate system objects that follow this object model:
+This is done by subclassing `ucar.nc2.internal.dataset.CoordSystemBuilder` which is a super class for implementing Convention-specific parsing of netCDF files.
+Create a subclass to examine the contents of the dataset and create coordinate system objects that follow this object model:
 
 For more details, see the [CDM Object Model](../developer/cdm_overview.html){:target="_blank"}.
 
-A `CoordSysBuilderIF` class must be created for each type of dataset that encodes their coordinate systems differently. 
+A subclass of the `CoordSystemBuilder` class must be created for each type of dataset that encodes their coordinate systems differently. 
 This obviously is burdensome, and data providers are encouraged to use [existing Conventions](https://www.unidata.ucar.edu/software/netcdf/conventions.html){:target="_blank"} for writing their datasets. 
 If those are inadequate, then the next best thing is to define and document a new Convention in collaboration with others with similar needs. 
 If you do so, read [Writing NetCDF Files: Best Practices](https://www.unidata.ucar.edu/software/netcdf/documentation/NUG/best_practices.html){:target="_blank"}, look at other Convention examples, and get feedback form others before committing to it. 
 Send us a URL to your documentation, and we will add it to the [NetCDF Conventions page](https://www.unidata.ucar.edu/software/netcdf/conventions.html){:target="_blank"}.
 
-The steps to use your `CoordSysBuilderIF` class in the Netcdf-Java library:
+The steps to use your class in the Netcdf-Java library:
 
-1. Write a class that implements `ucar.nc2.dataset.CoordSysBuilderIF`, such as by subclassing `ucar.nc2.dataset.CoordSysBuilder`.
+1. Write a subclass that extends `ucar.nc2.internal.dataset.CoordSystemBuilder`
 2. Add the class to your classpath.
-3. From your application, call `ucar.nc2.dataset.CoordSysBuilder.registerConvention( String conventionName, Class c)`. This is called "plugging in" your code at runtime.
-4. When you open the dataset in enhanced mode, e.g. by calling
+3. From your application, call `ucar.nc2.dataset.CoordSystemFactory.registerConvention( String conventionName, Class c)`. This is called "plugging in" your code at runtime.
+4. Open the dataset in enhanced mode, e.g. by calling
 
 {% capture rmd %}
 {% includecodeblock netcdf-java&docs/userguide/src/test/java/examples/coordsystems/coordSystemBuilderTutorial.java&openDataset %}
@@ -51,7 +52,7 @@ ucar.nc2.dataset.CoordinateTransform:
   public List getTransformType();
 ~~~
   
-## Writing a CoordSysBuilderIF class
+## Writing a subclass of CoordSystemBuilder
 
 These are the steps taken by `CoordSystemBuilder` to add `CoordinateSystems`:
 
@@ -60,15 +61,13 @@ These are the steps taken by `CoordSystemBuilder` to add `CoordinateSystems`:
 3. Call `augmentDataset( netcdfDataset, cancelTask)` to make any changes to the dataset (add attributes, variables, etc).
 4. Call `buildCoordinateSystems( netcdfDataset)` to add the coordinate system objects.
 
-Your class must implement this interface:
+Your class must implement this following methods:
 
 ~~~java
-public interface CoordSysBuilderIF {
   public void setConventionUsed( String convName);
   public void augmentDataset( NetcdfDataset ncDataset, CancelTask cancelTask) throws IOException;
   public void buildCoordinateSystems( NetcdfDataset ncDataset);
   public void addUserAdvice( String advice);
-}
 ~~~
 
 You can override the `buildCoordinateSystems()` method and completely build the coordinate system objects yourself. 
@@ -80,7 +79,7 @@ Examples of existing `CoordSystemBuilder` subclasses are in the `ucar.nc2.intern
 The `ucar.nc2.internal.dataset.CoordSystemBuilder` class uses the  `_Coordinate` attributes ("underscore Coordinate attributes", described fully [here](coord_attr_conv.html) to create `CoordinateSystem` objects.
 An attribute that starts with an underscore is a "system attribute", which usually implies some special processing or behavior within the NetCDF library (both C and Java).
 
-If you are subclassing `ucar.nc2.internal.dataset.CoordSystemBuilder`, you can ignore the `setConventionUsed` and `addUserAdvice` methods and let the superclass handle them. 
+When you are subclassing `ucar.nc2.internal.dataset.CoordSystemBuilder`, you can ignore the `setConventionUsed` and `addUserAdvice` methods and let the superclass handle them. 
 If not, you can just implement dummy methods.
 
 The ToolsUI application has a **CoordSys** tab that is designed to help with the process of building coordinate systems. 
@@ -88,18 +87,16 @@ Open up your dataset in that tab, and 3 tables are presented: The data variables
 
 ### Identifying which datasets your class should operate on
 
-If your datasets use the global attribute convention, then you only need to pass in the value of that attribute into `ucar.nc2.internal.dataset.CoordSystemBuilder.registerConvention(String conventionName, String className)`, and you do not need to implement the `isMine()` method.
+If your datasets use the global attribute convention, then you only need to pass in the value of that attribute into `ucar.nc2.dataset.CoordSystemFactory.registerConvention(String conventionName, String className)`, and you do not need to implement the `isMine()` method.
 
 Otherwise, your class must implement a static method `isMine()` that returns true when it is given a dataset that it knows how to handle. 
 
 For example:`
 
-~~~java
-  public static boolean isMine( NetcdfFile ncfile) {
-        String stringValue =  ncfile.findAttribute( "full_name").getStringValue(); //may be null
-        return stringValue.equalsIgnoreCase("CRAFT/NEXRAD");
-    }
-~~~
+{% capture rmd %}
+{% includecodeblock netcdf-java&docs/userguide/src/test/java/examples/coordsystems/coordSystemBuilderTutorial.java&isMineEx %}
+{% endcapture %}
+{{ rmd | markdownify }}
   
 look to see if the global attribute `sensor_name` has the value `CRAFT/NEXRAD`.
 It is important that the `isMine()` method be efficient, ideally using only the dataset metadata (attributes, variable names, etc) rather than having to do any data reading.

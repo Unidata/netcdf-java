@@ -13,17 +13,33 @@ import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.write.NetcdfFormatWriter;
 import ucar.unidata.geoloc.Projection;
+import ucar.unidata.util.test.TestLogger;
 
 import java.io.IOException;
+import java.util.Objects;
 
 
 public class coordSystemBuilderTutorial {
+
+    // logs error/info message in memory and can be accessed from test functions
+    public static TestLogger logger = TestLogger.TestLoggerFactory.getLogger();
 
     public String conventionName;
 
     public static void openDataset(String locationAsString, boolean enhance, ucar.nc2.util.CancelTask cancelTask) throws IOException {
         NetcdfDatasets.openDataset(locationAsString, enhance, cancelTask);
     }
+
+    public static void isMineEx() {
+        class nestedClass { /* DOCS-IGNORE */
+            public /* INSERT static */ boolean isMine(NetcdfFile ncfile) {
+                String stringValue =  Objects.requireNonNull(ncfile.findAttribute("full_name")).getStringValue();
+                assert stringValue != null;
+                return stringValue.equalsIgnoreCase("CRAFT/NEXRAD");
+            }
+        }
+    }
+
 
     public static void augmentDataset1() {
         class nestedClass { /* DOCS-IGNORE */ public String conventionName;

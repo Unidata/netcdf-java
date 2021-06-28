@@ -13,7 +13,7 @@ import ucar.nc2.internal.dataset.transform.vertical.VerticalTransformBuilder;
 import ucar.unidata.geoloc.Earth;
 import ucar.unidata.geoloc.VerticalTransform;
 import ucar.unidata.geoloc.vertical.AtmosSigma;
-import ucar.unidata.util.Parameter;
+import ucar.unidata.geoloc.vertical.OceanSigma;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -47,7 +47,6 @@ public class coordTransformTutorial {
             public TransformType getTransformType() {
                 return TransformType.Projection;
             }
-
         }
     }
 
@@ -118,7 +117,8 @@ public class coordTransformTutorial {
 
             public VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
                  // VerticalTransform is created when method called by the VerticalCT
-                 return AtmosSigma.create(ds, timeDim, vCT.getParameters());
+                 // IMPLEMENTED BELOW
+                 return null; /* DOCS-IGNORE */
              }
 
             public VerticalCT.Builder<?> makeVerticalCT(NetcdfFile ds, AttributeContainer ctv) {
@@ -189,7 +189,7 @@ public class coordTransformTutorial {
             private double[] sigma; // The sigma array, function of z
             private double ptop;    // Top of the model
 
-            public ucar.unidata.geoloc.vertical.AtmosSigma create(NetcdfFile ds, Dimension timeDim, List<Parameter> params) {
+            public ucar.unidata.geoloc.vertical.AtmosSigma create(NetcdfFile ds, Dimension timeDim, List<Attribute> params) {
                 // IMPLEMENTED BELOW
                 return null; /* DOCS-IGNORE */
             }

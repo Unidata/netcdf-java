@@ -121,7 +121,7 @@ This is a way to assign explicit `CoordinateSystems` to a set of variables, with
 The value of the attribute is a list of dimensions. 
 A data variable that does not have an explicit `_CoordinateSystem` or `CoordinateAxes` attribute will be assigned this `CoordinateSystem`, if it contains exactly the listed dimensions.
 
-~~~
+~~~xml
   <variable name="coordSysVar4D" type="int" shape="">
   <attribute name="_CoordinateAxes" value="x y zpos time"/>
   <attribute name="_CoordinateTransforms" value="zpos"/>
@@ -129,7 +129,7 @@ A data variable that does not have an explicit `_CoordinateSystem` or `Coordinat
   </variable>
 ~~~
 
-~~~
+~~~xml
   <variable name="coordSysVar3D" type="int" shape="">
   <attribute name="_CoordinateAxes" value="x y time"/>
   <attribute name="_CoordinateSystemFor" value="xpos ypos time"/>

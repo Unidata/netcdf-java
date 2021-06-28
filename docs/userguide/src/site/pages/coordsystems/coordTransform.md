@@ -1,6 +1,6 @@
 ---
 title: Coordinate transforms
-last_updated: 2019-07-23
+last_updated: 2021-06-28
 sidebar: userguide_sidebar
 permalink: coord_transform.html
 toc: false
@@ -127,6 +127,15 @@ Following is an example from the standard implementation classes in `ucar.nc2.in
 {% endcapture %}
 {{ rmd | markdownify }}
 
+#### Implementation of makeMathTransform()
+
+Below is an example implementation of the `makeMathTransform()` method.
+
+{% capture rmd %}
+{% includecodeblock netcdf-java&cdm-core/src/main/java/ucar/nc2/internal/dataset/transform/vertical/CFOceanSigma.java&makeMathTransform %}
+{% endcapture %}
+{{ rmd | markdownify }}
+
 #### Implementation of makeVerticalCT()
 
 Below is an example implementation of the `makeVerticalCT()` method.
@@ -164,7 +173,7 @@ Below is an example implementation of the `create()` method.
 {% endcapture %}
 {{ rmd | markdownify }}
 
-Explanation:
+Explanation of `create()`:
 * The `psVar` variable holding the surface pressure 
 * The `ptopVar` variable is the value of the `ptop` scalar variable
 * The `sigmaVar` variable is the value of the `sigma[z]` coordinate
@@ -179,7 +188,7 @@ Below is an example implementation of the `getCoordinateArray()` method.
 {% endcapture %}
 {{ rmd | markdownify }}
 
-Explanation of steps:
+Explanation of `getCoordinateArray()`:
 * Reads the surface pressure variable at the given time step through a utility method in the superclass
 * Creates the result array
 * Extracts the surface pressure at the given x,y point
