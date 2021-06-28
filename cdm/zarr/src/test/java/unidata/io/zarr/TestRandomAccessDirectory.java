@@ -10,6 +10,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import ucar.nc2.NetcdfFiles;
+import ucar.nc2.iosp.zarr.ZarrTestsCommon;
 import ucar.unidata.io.KMPMatch;
 
 import java.io.ByteArrayOutputStream;
@@ -19,57 +20,59 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.WritableByteChannel;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import static com.google.common.truth.Truth.assertThat;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.io.zarr.RandomAccessDirectory;
+import ucar.unidata.io.zarr.RandomAccessDirectoryItem;
 
 public class TestRandomAccessDirectory {
-  // See end of file for test data structure and size
-
-  // AWS props
-  public static final String AWS_BUCKET_NAME = "unidata-zarr-test-data";
-  public static final String S3_PREFIX = "cdms3:";
-  public static final String S3_FRAGMENT = "delimiter=/";
-
-  // test file names
-  public static final String ZARR_FILENAME = "test_data.zarr/";
-  public static final String COMPRESSED_ZARR_FILENAME = "test_data.zip";
-
-  // Object stores
-  public static final String OBJECT_STORE_ZARR_URI =
-      S3_PREFIX + AWS_BUCKET_NAME + "?" + ZARR_FILENAME + "#" + S3_FRAGMENT;
-
-  // Local stores
-  public static final String LOCAL_TEST_DATA_PATH = "src/test/data/preserveLineEndings/";
-  public static final String DIRECTORY_STORE_URI = LOCAL_TEST_DATA_PATH + ZARR_FILENAME;
-  public static final String ZIP_STORE_URI = LOCAL_TEST_DATA_PATH + COMPRESSED_ZARR_FILENAME;
-
-
-  private static final String TEST_NOT_DIRECTORY_LOCAL = DIRECTORY_STORE_URI + ".zgroup";
-  private static final String TEST_NOT_DIRECTORY_OBJECT_STORE =
-      S3_PREFIX + AWS_BUCKET_NAME + "?" + ZARR_FILENAME + ".zgroup" + "#" + S3_FRAGMENT;
 
   private static final int TEST_BUFFER_SIZE = 100;
-  private static final int EXPECTED_SIZE = 5499;
+  private static final int EXPECTED_SIZE = 360;
 
-  private static RandomAccessFile directoryStore;
-  private static RandomAccessFile objectStore;
-  private static RandomAccessFile zipStore;
+  // contents of each test file
+  private static final String TEST_FILE_STRING = "Hello world, this is a test.\r\nThis is a second line of text.";
+  private static final byte[] UTF8_BYTES = TEST_FILE_STRING.getBytes(StandardCharsets.UTF_8);
+  private static final int FILE_SIZE = UTF8_BYTES.length;
+
+  // Object store
+  private static final String S3_FILENAME = "object_store";
+  private static final String OBJECT_STORE_ZARR_URI =
+          ZarrTestsCommon.S3_PREFIX + ZarrTestsCommon.AWS_BUCKET_NAME + "?" + S3_FILENAME + "/" + "#" + ZarrTestsCommon.S3_FRAGMENT;
+
+  // Local stores
+  private static final String TEST_DATA_PATH = ZarrTestsCommon.LOCAL_TEST_DATA_PATH + "preserveLineEndings/directory_test_data/";
+  private static final String DIRECTORY_FILENAME = "directory_store";
+  private static final String ZIP_FILENAME = "zip_store.zip";
+  private static final String DIRECTORY_STORE_URI = TEST_DATA_PATH + DIRECTORY_FILENAME;
+  private static final String ZIP_STORE_URI = TEST_DATA_PATH + ZIP_FILENAME;
+
+  // not directory paths
+  private static final String FILENAME = "file1.txt";
+  private static final String TEST_NOT_DIRECTORY_LOCAL = DIRECTORY_STORE_URI + "/" + FILENAME;
+  private static final String TEST_NOT_DIRECTORY_OBJECT_STORE =
+          ZarrTestsCommon.S3_PREFIX + ZarrTestsCommon.AWS_BUCKET_NAME + "?" + S3_FILENAME  + "/" + FILENAME
+                  + "#" + ZarrTestsCommon.S3_FRAGMENT;
+
+  private static List<RandomAccessFile> stores;
 
 
   @BeforeClass
   public static void setUpTests() throws IOException {
-    directoryStore = NetcdfFiles.getRaf(DIRECTORY_STORE_URI, TEST_BUFFER_SIZE);
-    objectStore = NetcdfFiles.getRaf(OBJECT_STORE_ZARR_URI, TEST_BUFFER_SIZE);
-    zipStore = NetcdfFiles.getRaf(ZIP_STORE_URI, TEST_BUFFER_SIZE);
+    stores = new ArrayList<>();
+    stores.add(NetcdfFiles.getRaf(DIRECTORY_STORE_URI, TEST_BUFFER_SIZE));
+    stores.add(NetcdfFiles.getRaf(OBJECT_STORE_ZARR_URI, TEST_BUFFER_SIZE));
+    stores.add(NetcdfFiles.getRaf(ZIP_STORE_URI, TEST_BUFFER_SIZE));
   }
 
   @AfterClass
   public static void cleanUpTests() throws IOException {
-    directoryStore.close();
-    objectStore.close();
-    zipStore.close();
+    for (RandomAccessFile raf : stores) {
+      raf.close();
+    }
   }
 
   @Test
@@ -81,17 +84,12 @@ public class TestRandomAccessDirectory {
     invalidStore = NetcdfFiles.getRaf(TEST_NOT_DIRECTORY_OBJECT_STORE, -1);
     assertThat(invalidStore).isNotInstanceOf(RandomAccessDirectory.class);
 
-    // directory store types
-    assertThat(directoryStore).isInstanceOf(RandomAccessDirectory.class);
-    assertThat(objectStore).isInstanceOf(RandomAccessDirectory.class);
-    assertThat(zipStore).isInstanceOf(RandomAccessDirectory.class);
+    stores.forEach(raf -> { assertThat(raf).isInstanceOf(RandomAccessDirectory.class);});
   }
 
   @Test
   public void testSetBufferSize() {
-    _testSetBufferSize(directoryStore);
-    _testSetBufferSize(objectStore);
-    _testSetBufferSize(zipStore);
+    stores.forEach(raf -> { _testSetBufferSize(raf); });
   }
 
   private void _testSetBufferSize(RandomAccessFile raf) {
@@ -104,51 +102,35 @@ public class TestRandomAccessDirectory {
 
   @Test
   public void testIsAtEndOfFile() throws IOException {
-    // directory
-    directoryStore.seek(EXPECTED_SIZE);
-    assertThat(directoryStore.isAtEndOfFile()).isTrue();
-    directoryStore.seek(0);
-    assertThat(directoryStore.isAtEndOfFile()).isFalse();
-
-    // object store
-    objectStore.seek(EXPECTED_SIZE);
-    assertThat(objectStore.isAtEndOfFile()).isTrue();
-    objectStore.seek(0);
-    assertThat(objectStore.isAtEndOfFile()).isFalse();
-
-    // zip store
-    zipStore.seek(EXPECTED_SIZE);
-    assertThat(zipStore.isAtEndOfFile()).isTrue();
-    zipStore.seek(0);
-    assertThat(zipStore.isAtEndOfFile()).isFalse();
+    for (RandomAccessFile raf : stores) {
+      raf.seek(EXPECTED_SIZE);
+      assertThat(raf.isAtEndOfFile()).isTrue();
+      raf.seek(0);
+      assertThat(raf.isAtEndOfFile()).isFalse();
+    }
   }
 
   @Test
   public void testSeek() throws IOException {
-    long pos = 100;
-    // directory
-    directoryStore.seek(pos);
-    assertThat(directoryStore.getFilePointer()).isEqualTo(pos);
-    // object store
-    objectStore.seek(pos);
-    assertThat(objectStore.getFilePointer()).isEqualTo(pos);
-    // zip store
-    zipStore.seek(pos);
-    assertThat(zipStore.getFilePointer()).isEqualTo(pos);
+    long pos = 101;
+    for (RandomAccessFile raf : stores) {
+      raf.seek(pos);
+      assertThat(raf.getFilePointer()).isEqualTo(pos);
+    }
   }
 
   @Test
   public void testByteOrder() throws IOException {
-    _testByteOrder(directoryStore);
-    _testByteOrder(objectStore);
-    _testByteOrder(zipStore);
+    for (RandomAccessFile raf : stores) {
+      _testByteOrder(raf);
+    }
   }
 
   private void _testByteOrder(RandomAccessFile raf) throws IOException {
     // directory store
-    int BE_int = 33632516;
-    int LE_int = 70320386;
-    int pos = 1722; // start of int data
+    int BE_int = getInt(0, true);
+    int LE_int = getInt(0, false);
+    int pos = 0;
     raf.order(ByteOrder.LITTLE_ENDIAN);
     raf.seek(pos);
     // check is read as little endian
@@ -161,59 +143,59 @@ public class TestRandomAccessDirectory {
 
   @Test
   public void testLength() throws IOException {
-    assertThat(directoryStore.length()).isEqualTo(EXPECTED_SIZE);
-    assertThat(objectStore.length()).isEqualTo(EXPECTED_SIZE);
-    assertThat(zipStore.length()).isEqualTo(EXPECTED_SIZE);
+    for (RandomAccessFile raf : stores) {
+      assertThat(raf.length()).isEqualTo(EXPECTED_SIZE);
+    }
   }
 
   @Test
   public void testRead() throws IOException {
-    _testRead(directoryStore);
-    _testRead(objectStore);
-    _testRead(zipStore);
+    for (RandomAccessFile raf : stores) {
+      _testRead(raf);
+    }
   }
 
   private void _testRead(RandomAccessFile raf) throws IOException {
     // read several known bytes in several files
-    int pos = 409; // start of big endian double data
-    int expected = 2;
+    int pos = 95; // second file
+    int expected = UTF8_BYTES[pos-FILE_SIZE];
     raf.seek(pos);
     assertThat(raf.read()).isEqualTo(expected);
 
-    pos = 4064; // 10 bytes into little endian int data
-    expected = 0;
+    pos = 20; // first file
+    expected = UTF8_BYTES[pos];;
     raf.seek(pos);
     assertThat(raf.read()).isEqualTo(expected);
 
-    pos = 5091; // start of second boolean data file
-    expected = 2;
+    pos = 340; // last file
+    expected = UTF8_BYTES[pos-(FILE_SIZE*5)];;
     raf.seek(pos);
     assertThat(raf.read()).isEqualTo(expected);
 
     // test readBytes within file
     int nbytes = 4;
     byte[] bytes = new byte[nbytes];
-    pos = 1722; // start of big endian int data
+    pos = 0; // start first file
     raf.seek(pos);
-    byte[] expectedBytes = new byte[] {2, 1, 49, 4};
+    byte[] expectedBytes = Arrays.copyOfRange(UTF8_BYTES, 0, 4);
     raf.readBytes(bytes, 0, nbytes);
     assertThat(bytes).isEqualTo(expectedBytes);
 
     // test readBytes across files/directories
     bytes = new byte[nbytes];
-    pos = 1881; // last two bytes of big endian ints
+    pos = FILE_SIZE*4-2; // last two bytes of fourth file
     raf.seek(pos);
-    // first two bytes should come from BE ints, second two bytes from BE longs directory
-    expectedBytes = new byte[] {98, 99, 123, 10};
+    // first two bytes should come from fourth file, second two bytes from fifth file
+    expectedBytes = new byte[]{UTF8_BYTES[FILE_SIZE-2], UTF8_BYTES[FILE_SIZE-1], UTF8_BYTES[0], UTF8_BYTES[1]};
     raf.readBytes(bytes, 0, nbytes);
     assertThat(bytes).isEqualTo(expectedBytes);
   }
 
   @Test
   public void testReadToByteChannel() throws IOException {
-    _testReadToByteChannel(directoryStore);
-    _testReadToByteChannel(objectStore);
-    _testReadToByteChannel(zipStore);
+    for (RandomAccessFile raf : stores) {
+      _testReadToByteChannel(raf);
+    }
   }
 
   private void _testReadToByteChannel(RandomAccessFile raf) throws IOException {
@@ -223,8 +205,8 @@ public class TestRandomAccessDirectory {
     int nbytes = 4;
 
     // read within a file
-    int offset = 1722; // start of big endian int data
-    byte[] expectedBytes = new byte[] {2, 1, 49, 4};
+    int offset = 95; // second file
+    byte[] expectedBytes = Arrays.copyOfRange(UTF8_BYTES, offset-FILE_SIZE, offset-FILE_SIZE+4);
     dest = new TestWritableByteChannel();
     n = raf.readToByteChannel(dest, offset, nbytes);
     assertThat(n).isEqualTo(nbytes);
@@ -232,9 +214,9 @@ public class TestRandomAccessDirectory {
     dest.reset();
 
     // test read across files/directories
-    offset = 1881; // last two bytes of big endian ints
-    // first two bytes should come from BE ints, second two bytes from BE longs directory
-    expectedBytes = new byte[] {98, 99, 123, 10};
+    offset = FILE_SIZE*4-2;  // last two bytes of fourth file
+    // first two bytes should come from fourth file, second two bytes from fifth file
+    expectedBytes = new byte[]{UTF8_BYTES[FILE_SIZE-2], UTF8_BYTES[FILE_SIZE-1], UTF8_BYTES[0], UTF8_BYTES[1]};
     n = raf.readToByteChannel(dest, offset, nbytes);
     assertThat(n).isEqualTo(nbytes);
     assertThat(dest.getBytes()).isEqualTo(expectedBytes);
@@ -248,41 +230,41 @@ public class TestRandomAccessDirectory {
 
   @Test
   public void testReadFully() throws IOException {
-    _testReadFully(directoryStore, EOFException.class);
-    // TODO: RemoteRandomAccessFile is throwing this exception - should probably be caught and turned into
-    // EOFException somewhere
-    _testReadFully(objectStore, ArrayIndexOutOfBoundsException.class);
-    _testReadFully(zipStore, EOFException.class);
+    for (RandomAccessFile raf : stores) {
+      _testReadFully(raf);
+    }
   }
 
-  private void _testReadFully(RandomAccessFile raf, Class exceptionclass) throws IOException {
+  private void _testReadFully(RandomAccessFile raf) throws IOException {
     // read fully across files/directories
     int nbytes = 4;
     byte[] bytes = new byte[nbytes];
-    int pos = 1881; // last two bytes of big endian ints
+    int pos = FILE_SIZE*4-2;  // last two bytes of big endian ints
     raf.seek(pos);
     // first two bytes should come from BE ints, second two bytes from BE longs directory
-    byte[] expectedBytes = new byte[] {98, 99, 123, 10};
+    byte[] expectedBytes = new byte[]{UTF8_BYTES[FILE_SIZE-2], UTF8_BYTES[FILE_SIZE-1], UTF8_BYTES[0], UTF8_BYTES[1]};
     raf.readFully(bytes);
     assertThat(bytes).isEqualTo(expectedBytes);
 
     // read fully, buff > file length
     raf.seek(0);
     byte[] finalBuff = new byte[EXPECTED_SIZE + 1];
-    Assert.assertThrows(exceptionclass, () -> {
+    // TODO: RemoteRandomAccessFile is throwing inconsistent exception - should probably be caught and turned into
+    //    EOFException somewhere
+    Assert.assertThrows(Exception.class, () -> {
       raf.readFully(finalBuff);
     });
   }
 
   @Test
   public void testSearchForward() throws IOException {
-    _testSearchForward(directoryStore);
-    _testSearchForward(objectStore);
-    _testSearchForward(zipStore);
+    for (RandomAccessFile raf : stores) {
+      _testSearchForward(raf);
+    }
   }
 
   private void _testSearchForward(RandomAccessFile raf) throws IOException {
-    KMPMatch match = new KMPMatch("zarr_format".getBytes(StandardCharsets.UTF_8));
+    KMPMatch match = new KMPMatch("second line".getBytes(StandardCharsets.UTF_8));
     KMPMatch notMatch = new KMPMatch("Not a match".getBytes(StandardCharsets.UTF_8));
     raf.seek(0);
     assertThat(raf.searchForward(match, 10)).isFalse();
@@ -295,18 +277,35 @@ public class TestRandomAccessDirectory {
 
   @Test
   public void testGetFiles() throws IOException {
-    _testGetFiles((RandomAccessDirectory) directoryStore);
-    _testGetFiles((RandomAccessDirectory) objectStore);
-    _testGetFiles((RandomAccessDirectory) zipStore);
+    for (RandomAccessFile raf : stores) {
+      _testGetFiles((RandomAccessDirectory) raf);
+    }
   }
 
   private void _testGetFiles(RandomAccessDirectory raf) throws IOException {
-    List<RandomAccessFile> files = raf.getFilesByName("byte_ordered_group/big_endian/float_data/0.0");
+    // get one file by name
+    List<RandomAccessFile> files = raf.getFilesByName("dir1/nested1/file1.txt");
     assertThat(files).hasSize(1);
-    assertThat(files.get(0).length()).isEqualTo(116);
 
-    files = raf.getFilesByName("unordered_group/boolean_data");
-    assertThat(files.size()).isEqualTo(3);
+    // get all files under path
+    files = raf.getFilesByName("dir1");
+    assertThat(files.size()).isEqualTo(4);
+  }
+
+  private int getInt(int startIndex, boolean bigEndian) throws IOException {
+    int ch1 = UTF8_BYTES[startIndex];
+    int ch2 = UTF8_BYTES[startIndex+1];
+    int ch3 = UTF8_BYTES[startIndex+2];
+    int ch4 = UTF8_BYTES[startIndex+3];
+    if ((ch1 | ch2 | ch3 | ch4) < 0) {
+      throw new EOFException();
+    }
+
+    if (bigEndian) {
+      return ((ch1 << 24) + (ch2 << 16) + (ch3 << 8) + (ch4));
+    } else {
+      return ((ch4 << 24) + (ch3 << 16) + (ch2 << 8) + (ch1));
+    }
   }
 
   /**
@@ -348,44 +347,4 @@ public class TestRandomAccessDirectory {
       dest.reset();
     }
   }
-
-  ////////////////////////////////////
-  // Test files, in order (file size) (start pos)
-  // .zgroup (24) [0]
-  // byte_ordered_group/.zgroup (24) [24]
-  // byte_ordered_group/big_endian/.zgroup (24) [48]
-  // byte_ordered_group/big_endian/double_data/.zarray (337) [72]
-  // byte_ordered_group/big_endian/double_data/0.0 (180) [409]
-  // byte_ordered_group/big_endian/float_data/.zarray (335) [589]
-  // byte_ordered_group/big_endian/float_data/0.0 (116) [924]
-  // byte_ordered_group/big_endian/float_data/0.1 (116) [1040]
-  // byte_ordered_group/big_endian/float_data/1.0 (116) [1156]
-  // byte_ordered_group/big_endian/float_data/1.1 (116) [1272]
-  // byte_ordered_group/big_endian/int_data/.zarray (334) [1388]
-  // byte_ordered_group/big_endian/int_data/0.0 (80) [1722]
-  // byte_ordered_group/big_endian/int_data/0.1 (81) [1802]
-  // byte_ordered_group/big_endian/long_data/.zarray (334) [1883]
-  // byte_ordered_group/big_endian/long_data/0.0 (81) [2217]
-  // byte_ordered_group/big_endian/long_data/1.0 (82) [2298]
-  // byte_ordered_group/little_endian/.zgroup (24) [2380]
-  // byte_ordered_group/little_endian/double_data/.zarray (337) [2404]
-  // byte_ordered_group/little_endian/double_data/0.0 (180) [2741]
-  // byte_ordered_group/little_endian/float_data/.zarray (335) [2921]
-  // byte_ordered_group/little_endian/float_data/0.0 (116) [3256]
-  // byte_ordered_group/little_endian/float_data/0.1 (116) [3372]
-  // byte_ordered_group/little_endian/float_data/1.0 (116) [3488]
-  // byte_ordered_group/little_endian/float_data/1.1 (116) [3604]
-  // byte_ordered_group/little_endian/int_data/.zarray (334) [3720]
-  // byte_ordered_group/little_endian/int_data/0.0 (80) [4054]
-  // byte_ordered_group/little_endian/int_data/0.1 (81) [4134]
-  // byte_ordered_group/little_endian/long_data/.zarray (334) [4215]
-  // byte_ordered_group/little_endian/long_data/0.0 (81) [4549]
-  // byte_ordered_group/little_endian/long_data/1.0 (82) [4630]
-  // unordered_group/.zgroup (24) [4712]
-  // unordered_group/boolean_data/.zarray (335) [4736]
-  // unordered_group/boolean_data/0.0 (20) [5071]
-  // unordered_group/boolean_data/0.1 (20) [5091]
-  // unordered_group/string_data/.zarray (332) [5111]
-  // unordered_group/string_data/0.0 (28) [5443]
-  // unordered_group/dtring_data/0.1 (28) [5471]
 }
