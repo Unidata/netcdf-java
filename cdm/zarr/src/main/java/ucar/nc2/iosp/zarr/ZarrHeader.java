@@ -66,7 +66,8 @@ public class ZarrHeader {
       } else {
         if (var != null) { // make variable after we've checked if next file is .zattrs
           try {
-            makeVariable(var);
+            // data is assumed to start at first file after .zarray and optional .zattrs
+            makeVariable(var, item.startIndex());
             var = null;
           } catch (ZarrFormatException ex) {
             logger.error(ex.getMessage());
@@ -87,7 +88,7 @@ public class ZarrHeader {
     }
     if (var != null) { // build any unbuilt var
       try {
-        makeVariable(var);
+        makeVariable(var, this.rootRaf.length());
       } catch (ZarrFormatException ex) {
         logger.error(ex.getMessage());
       }
@@ -118,7 +119,7 @@ public class ZarrHeader {
     }
   }
 
-  private void makeVariable(RandomAccessDirectoryItem item) throws IOException, ZarrFormatException {
+  private void makeVariable(RandomAccessDirectoryItem item, long dataOffset) throws IOException, ZarrFormatException {
     // make new Variable
     Variable.Builder var = Variable.builder();
     String location = ZarrPathUtils.trimLocation(item.getLocation());
@@ -148,9 +149,15 @@ public class ZarrHeader {
       }
       var.addDimensions(dims);
 
+      // check that dimensions and chunks match
+      int[] chunks = zarray.getChunks();
+      if (shape.length != chunks.length) {
+        throw new ZarrFormatException();
+      }
+
       // create VInfo
-      VInfo vinfo = new VInfo(zarray.getChunks(), zarray.getFillValue(), zarray.getCompressor(), zarray.getByteOrder(),
-          zarray.getOrder(), zarray.getSeparator(), zarray.getFilters());
+      VInfo vinfo = new VInfo(chunks, zarray.getFillValue(), zarray.getCompressor(), zarray.getByteOrder(),
+          zarray.getOrder(), zarray.getSeparator(), zarray.getFilters(), dataOffset);
       var.setSPobject(vinfo);
     } catch (IOException | ClassCastException ex) {
       throw new ZarrFormatException();
@@ -215,9 +222,10 @@ public class ZarrHeader {
     private final ZArray.Order order;
     private final String separator;
     private final List<ZarrFilter> filters;
+    private final long offset;
 
     VInfo(int[] chunks, Number fillValue, ZarrFilter compressor, ByteOrder byteOrder, ZArray.Order order,
-        String separator, List<ZarrFilter> filters) {
+        String separator, List<ZarrFilter> filters, long offset) {
       this.chunks = chunks;
       this.fillValue = fillValue;
       this.byteOrder = byteOrder;
@@ -225,6 +233,7 @@ public class ZarrHeader {
       this.order = order;
       this.separator = separator;
       this.filters = filters;
+      this.offset = offset;
     }
 
     public int[] getChunks() {
@@ -253,6 +262,10 @@ public class ZarrHeader {
 
     public List<ZarrFilter> getFilters() {
       return this.filters;
+    }
+
+    public long getOffset() {
+      return this.offset;
     }
 
   }

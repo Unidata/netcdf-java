@@ -147,4 +147,24 @@ public class TestZarrDataTypes {
     assertThat((Object) var).isNotNull();
     assertThat(var.getDataType()).isEqualTo(DataType.STRING);
   }
+
+  @Test
+  public void testReadBigEndian() {
+
+  }
+
+  @Test
+  public void testReadLittleEndian() {
+
+  }
+
+  @Test
+  public void testReadUnordered() {
+
+  }
+
+  @Test
+  public void testReadStringTypes() {
+
+  }
 }

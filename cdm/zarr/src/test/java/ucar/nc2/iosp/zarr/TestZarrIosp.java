@@ -5,14 +5,22 @@
 
 package ucar.nc2.iosp.zarr;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
+import ucar.ma2.Array;
+import ucar.ma2.DataType;
+import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Section;
 import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
+import ucar.unidata.io.RandomAccessFile;
 
 import java.io.IOException;
 import java.nio.ByteOrder;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.google.common.truth.Truth.assertThat;
 
@@ -35,22 +43,30 @@ public class TestZarrIosp {
   // invalid zarr file
   private static final String INVALID_ZARR_DATA = ZarrTestsCommon.LOCAL_TEST_DATA_PATH + INVALID_ZARR_FILENAME;
 
+  private static List<String> stores;
+
+  @BeforeClass
+  public static void setUpTests() throws IOException {
+    stores = new ArrayList<>();
+    stores.add(DIRECTORY_STORE_URI);
+    stores.add(ZIP_STORE_URI);
+    stores.add(OBJECT_STORE_ZARR_URI);
+  }
+
   @Test
   public void testIsValidFile() throws IOException {
     ZarrIosp iosp = new ZarrIosp();
-    // zarr stores
-    assertThat(iosp.isValidFile(NetcdfFiles.getRaf(DIRECTORY_STORE_URI, -1))).isTrue();
-    assertThat(iosp.isValidFile(NetcdfFiles.getRaf(ZIP_STORE_URI, -1))).isTrue();
-    assertThat(iosp.isValidFile(NetcdfFiles.getRaf(OBJECT_STORE_ZARR_URI, -1))).isTrue();
-    // not zarr stores
+    for (String uri : stores) {
+      assertThat(iosp.isValidFile(NetcdfFiles.getRaf(uri, -1))).isTrue();
+    }
     assertThat(iosp.isValidFile(NetcdfFiles.getRaf(DIRECTORY_STORE_URI + "/.zgroup", -1))).isFalse();
   }
 
   @Test
   public void testBuildNcfile() throws IOException {
-    _testBuildNcfile(DIRECTORY_STORE_URI);
-    _testBuildNcfile(ZIP_STORE_URI);
-    _testBuildNcfile(OBJECT_STORE_ZARR_URI);
+    for (String uri : stores) {
+      _testBuildNcfile(uri);
+    }
   }
 
   private void _testBuildNcfile(String location) throws IOException {
@@ -85,6 +101,7 @@ public class TestZarrIosp {
     assertThat(vinfo.getByteOrder()).isEqualTo(ByteOrder.LITTLE_ENDIAN);
     assertThat(vinfo.getOrder()).isEqualTo(ZArray.Order.F);
     assertThat(vinfo.getSeparator()).isEqualTo(ZArray.DEFAULT_SEPARATOR);
+
     // TODO: update when compressors/filters are implemented
     assertThat(vinfo.getCompressor()).isNull();
     assertThat(vinfo.getFilters()).isNull();
@@ -102,6 +119,8 @@ public class TestZarrIosp {
     Variable var4D = dims_grp.findVariableLocal("var4D");
     assertThat((Object) var4D).isNotNull();
     assertThat(var4D.getDimensions().size()).isEqualTo(4);
+
+    ncfile.close();
   }
 
   @Test
@@ -125,6 +144,90 @@ public class TestZarrIosp {
 
     // check valid data is added
     assertThat((Object) grp.findVariableLocal("valid_data")).isNotNull();
+
+    ncfile.close();
+  }
+
+  @Test
+  public void testReadSection() throws IOException, InvalidRangeException {
+    // test reading sections
+//     for (String uri : stores) {
+//      _testReadSection(uri);
+//     }
+    //_testReadSection(DIRECTORY_STORE_URI);
+    //_testReadSection(ZIP_STORE_URI);
+    _testReadSection(OBJECT_STORE_ZARR_URI);
+  }
+
+  private void _testReadSection(String location) throws IOException, InvalidRangeException {
+    NetcdfFile ncfile = NetcdfFiles.open(location);
+    Array data;
+    int[] expected;
+    // 1D
+     data = ncfile.findVariable("group_with_dims/var1D").read(new Section(new int[]{0}, new int[]{20}, new int[]{2}));
+     expected = new int[]{0,2,4,6,8,10,12,14,16,18};
+     assertThat(data.get1DJavaArray(DataType.INT)).isEqualTo(expected);
+     // 2D
+     data = ncfile.findVariable("group_with_dims/var2D").read(new Section(new int[]{15,1}, new int[]{5,10}, new
+     int[]{2,2}));
+     expected = new int[]{1,3,5,7,9,1,3,5,7,9,1,3,5,7,9};
+     assertThat(data.get1DJavaArray(DataType.INT)).isEqualTo(expected);
+     // 3D
+     data = ncfile.findVariable("group_with_dims/var3D").read(new Section(new int[]{0,15,1}, new int[]{4,5,10}, new
+     int[]{1,2,2}));
+     expected = new
+     int[]{1,3,5,7,9,1,3,5,7,9,1,3,5,7,9,1,3,5,7,9,1,3,5,7,9,1,3,5,7,9,1,3,5,7,9,1,3,5,7,9,1,3,5,7,9,1,3,5,7,9,1,3,5,7,9,1,3,5,7,9};
+     assertThat(data.get1DJavaArray(DataType.INT)).isEqualTo(expected);
+    // 4D
+    data = ncfile.findVariable("group_with_dims/var4D")
+        .read(new Section(new int[] {0, 0, 15, 1}, new int[] {20, 4, 5, 10}, new int[] {10, 1, 2, 2}));
+    expected = new int[] {1, 3, 5, 7, 9, 1, 3, 5, 7, 9, 1, 3, 5, 7, 9, 1, 3, 5, 7, 9, 1, 3, 5, 7, 9, 1, 3, 5, 7, 9, 1,
+        3, 5, 7, 9, 1, 3, 5, 7, 9, 1, 3, 5, 7, 9, 1, 3, 5, 7, 9, 1, 3, 5, 7, 9, 1, 3, 5, 7, 9, 1, 3, 5, 7, 9, 1, 3, 5,
+        7, 9, 1, 3, 5, 7, 9, 1, 3, 5, 7, 9, 1, 3, 5, 7, 9, 1, 3, 5, 7, 9, 1, 3, 5, 7, 9, 1, 3, 5, 7, 9, 1, 3, 5, 7, 9,
+        1, 3, 5, 7, 9, 1, 3, 5, 7, 9, 1, 3, 5, 7, 9};
+    assertThat(data.get1DJavaArray(DataType.INT)).isEqualTo(expected);
+    ncfile.close();
+  }
+
+  @Test
+  public void testReadRanges() {
+
+  }
+
+  @Test
+  public void testRead() {
+
+  }
+
+  @Test
+  public void testReadUninitialized() {
+    // fully uninitialized
+
+    //partly uninitialized
+
+  }
+
+  @Test
+  public void testFOrder() throws IOException, InvalidRangeException {
+    // test reading sections
+//     for (String uri : stores) {
+//      _testReadSection(uri);
+//     }
+    _testFOrder(DIRECTORY_STORE_URI);
+    //_testFOrder(ZIP_STORE_URI);
+    //_testFOrder(OBJECT_STORE_ZARR_URI);
+  }
+
+  private void _testFOrder(String location) throws IOException, InvalidRangeException {
+    NetcdfFile ncfile = NetcdfFiles.open(location);
+    Array data;
+    int[] expected;
+    // 2D
+    data = ncfile.findVariable("group_with_attrs/F_order_array").read(new Section(new int[]{15,1}, new int[]{5,10}, new
+            int[]{2,2}));
+    expected = new int[]{1,3,5,7,9,1,3,5,7,9,1,3,5,7,9};
+    assertThat(data.get1DJavaArray(DataType.INT)).isEqualTo(expected);
+    // 3D
   }
 
 }
