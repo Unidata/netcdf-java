@@ -1,19 +1,49 @@
 package tests.coordsystems;
 
 import examples.coordsystems.coordSystemBuilderTutorial;
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFiles;
+import ucar.nc2.util.CancelTask;
+import ucar.unidata.util.test.TestDir;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class TestCoordSystemBuilderTutorial {
 
+    private static String exampleDataPathStr = TestDir.cdmLocalTestDataDir + "jan.nc";
+    private static NetcdfFile exampleNcfile;
+
+    @BeforeClass
+    public static void setUpTests() throws Exception {
+        exampleNcfile = NetcdfFiles.open(exampleDataPathStr);
+    }
+
+    @AfterClass
+    public static void cleanUp() throws IOException {
+        exampleNcfile.close();
+    }
+
     @Test
-    public void testOpenDataset() {
+    public void testOpenDataset() throws IOException {
+        // test open success
+        coordSystemBuilderTutorial.logger.clearLog();
+        coordSystemBuilderTutorial.openDataset(exampleDataPathStr, true, CancelTask.create());
+        Assert.assertTrue( coordSystemBuilderTutorial.logger.getLogSize() == 0);
+
+        // test open fail
         Assert.assertThrows(FileNotFoundException.class, () -> {
             examples.coordsystems.coordSystemBuilderTutorial.openDataset("", true, null);
         });
+    }
+
+    @Test
+    public void testisMineEx() {
+        coordSystemBuilderTutorial.isMineEx();
     }
 
     @Test
@@ -27,7 +57,7 @@ public class TestCoordSystemBuilderTutorial {
     }
 
     @Test
-    public void testWrapNcmlExample() {
+    public void testWrapNcmlExample() throws IOException {
         Assert.assertThrows(NullPointerException.class, () -> {
             coordSystemBuilderTutorial.wrapNcmlExample(null, null);
         });

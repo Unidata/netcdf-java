@@ -1,6 +1,6 @@
 ---
 title: Coordinate transforms
-last_updated: 2019-07-23
+last_updated: 2021-06-28
 sidebar: userguide_sidebar
 permalink: coord_transform.html
 toc: false
@@ -164,7 +164,7 @@ Below is an example implementation of the `create()` method.
 {% endcapture %}
 {{ rmd | markdownify }}
 
-Explanation:
+Explanation of `create()`:
 * The `psVar` variable holding the surface pressure 
 * The `ptopVar` variable is the value of the `ptop` scalar variable
 * The `sigmaVar` variable is the value of the `sigma[z]` coordinate
@@ -179,7 +179,7 @@ Below is an example implementation of the `getCoordinateArray()` method.
 {% endcapture %}
 {{ rmd | markdownify }}
 
-Explanation of steps:
+Explanation of `getCoordinateArray()`:
 * Reads the surface pressure variable at the given time step through a utility method in the superclass
 * Creates the result array
 * Extracts the surface pressure at the given x,y point

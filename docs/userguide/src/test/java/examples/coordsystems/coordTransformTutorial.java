@@ -47,7 +47,6 @@ public class coordTransformTutorial {
             public TransformType getTransformType() {
                 return TransformType.Projection;
             }
-
         }
     }
 

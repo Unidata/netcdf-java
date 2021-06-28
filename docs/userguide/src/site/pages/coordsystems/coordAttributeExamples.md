@@ -37,13 +37,13 @@ toc: false
      earth:units = "K";
      earth:long_name = "mean Daily Soil temperature";
      earth:_CoordinateAxes="time
-    level lat lon";
+     level lat lon";
 
    float air(time, level, lat, lon);
      air:units = "K";
      air:long_name = "mean Daily Air temperature";
      air:_CoordinateAxes="time
-    level lat lon";
+     level lat lon";
 
    float lat(lat);
      lat:long_name = "Latitude";
@@ -67,7 +67,7 @@ toc: false
      time:units = "days since 1970-01-01 00:00:0.0";
      time:long_name = "Time";
 
-    time:_CoordinateAxisType="Time";
+     time:_CoordinateAxisType="Time";
 ~~~    
 In this simple case, both data `Variables` explicitly name their coordinate axes with the `_CoordinateAxes` attribute. 
 Each `CoordinateAxis` has a `_CoordinateAxisType` attribute. A single `CoordinateSystem` is defined which both data `Variables` share.
@@ -147,18 +147,17 @@ dimensions:
 
   float Volumetric_Soil_Moisture_Content(time, depth_below_surface, y, x);
      Volumetric_Soil_Moisture_Content:units = "fraction";
- Volumetric_Soil_Moisture_Content:_CoordinateSystems = "ProjectionCoordinateSystem LatLonCoordinateSystem";
+  Volumetric_Soil_Moisture_Content:_CoordinateSystems = "ProjectionCoordinateSystem LatLonCoordinateSystem";
 
   double y(y);
      y:units = "km";
      y:long_name = "y coordinate of projection";
- y:_CoordinateAxisType = "GeoY";
+  y:_CoordinateAxisType = "GeoY";
 
    double x(x);
      x:units = "km";
      x:long_name = "x coordinate of projection";
- x:_CoordinateAxisType =
-  "GeoX";
+   x:_CoordinateAxisType = "GeoX";
 
    int time(time);
      time:long_name = "forecast time";
@@ -168,8 +167,7 @@ dimensions:
    double depth_below_surface(depth_below_surface);
      depth_below_surface:long_name = "Depth below land surface";
      depth_below_surface:units = "m";
-     depth_below_surface:_CoordinateAxisType
-  = "Height";
+     depth_below_surface:_CoordinateAxisType = "Height";
      depth_below_surface:_CoordinateZisPositive = "down";
 
    double lat(y, x);
@@ -185,7 +183,7 @@ dimensions:
  char LatLonCoordinateSystem;
  LatLonCoordinateSystem:_CoordinateAxes = "time depth_below_surface lat lon";
 
-  char ProjectionCoordinateSystem;
+ char ProjectionCoordinateSystem;
  ProjectionCoordinateSystem:_CoordinateAxes = "time depth_below_surface y x";
 ~~~
  
@@ -235,15 +233,15 @@ dimensions:
      depth_below_surface:_CoordinateZisPositive = "down";
 
   char ProjectionCoordinateSystem;
-     ProjectionCoordinateSystem:_CoordinateAxes = "time depth_below_surface y x";
- ProjectionCoordinateSystem:_CoordinateTransforms = "LambertConformalProjection";
+  ProjectionCoordinateSystem:_CoordinateAxes = "time depth_below_surface y x";
+  ProjectionCoordinateSystem:_CoordinateTransforms = "LambertConformalProjection";
 
  char LambertConformalProjection;
  LambertConformalProjection:_CoordinateTransformType = "Projection";
  LambertConformalProjection:transform_name = "lambert_conformal_conic";
  LambertConformalProjection:standard_parallel = 25.0;
 
-  LambertConformalProjection:longitude_of_central_meridian = 265.0;
+ LambertConformalProjection:longitude_of_central_meridian = 265.0;
  LambertConformalProjection:latitude_of_projection_origin = 25.0;
  ~~~
  
@@ -329,8 +327,8 @@ dimensions:
      :units = "level";
      :positive = "down";
 
-    :standard_name = "atmosphere_hybrid_sigma_pressure_coordinate";
- :formula_terms = "a: hyam b: hybm p0: P0 ps: PS";
+     :standard_name = "atmosphere_hybrid_sigma_pressure_coordinate";
+     :formula_terms = "a: hyam b: hybm p0: P0 ps: PS";
 
      :_CoordinateTransformType = "Vertical";
      :_CoordinateAxisType = "GeoZ";
@@ -384,8 +382,8 @@ Example:
      :long_name = "valid time";
      :units = "hours since 1992-1-1";
 
-  :_CoordinateAliasForDimension = "record";
-  :_CoordinateAxisType = "Time"; 
+     :_CoordinateAliasForDimension = "record";
+     :_CoordinateAxisType = "Time"; 
 ~~~
 
 Note that it's very important to also identify the `CoordinateAxis` type.
