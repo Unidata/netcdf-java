@@ -40,11 +40,12 @@ public class TestRandomAccessDirectory {
 
   // Object store
   private static final String S3_FILENAME = "object_store";
-  private static final String OBJECT_STORE_ZARR_URI =
-          ZarrTestsCommon.S3_PREFIX + ZarrTestsCommon.AWS_BUCKET_NAME + "?" + S3_FILENAME + "/" + "#" + ZarrTestsCommon.S3_FRAGMENT;
+  private static final String OBJECT_STORE_ZARR_URI = ZarrTestsCommon.S3_PREFIX + ZarrTestsCommon.AWS_BUCKET_NAME + "?"
+      + S3_FILENAME + "/" + "#" + ZarrTestsCommon.S3_FRAGMENT;
 
   // Local stores
-  private static final String TEST_DATA_PATH = ZarrTestsCommon.LOCAL_TEST_DATA_PATH + "preserveLineEndings/directory_test_data/";
+  private static final String TEST_DATA_PATH =
+      ZarrTestsCommon.LOCAL_TEST_DATA_PATH + "preserveLineEndings/directory_test_data/";
   private static final String DIRECTORY_FILENAME = "directory_store";
   private static final String ZIP_FILENAME = "zip_store.zip";
   private static final String DIRECTORY_STORE_URI = TEST_DATA_PATH + DIRECTORY_FILENAME;
@@ -53,9 +54,8 @@ public class TestRandomAccessDirectory {
   // not directory paths
   private static final String FILENAME = "file1.txt";
   private static final String TEST_NOT_DIRECTORY_LOCAL = DIRECTORY_STORE_URI + "/" + FILENAME;
-  private static final String TEST_NOT_DIRECTORY_OBJECT_STORE =
-          ZarrTestsCommon.S3_PREFIX + ZarrTestsCommon.AWS_BUCKET_NAME + "?" + S3_FILENAME  + "/" + FILENAME
-                  + "#" + ZarrTestsCommon.S3_FRAGMENT;
+  private static final String TEST_NOT_DIRECTORY_OBJECT_STORE = ZarrTestsCommon.S3_PREFIX
+      + ZarrTestsCommon.AWS_BUCKET_NAME + "?" + S3_FILENAME + "/" + FILENAME + "#" + ZarrTestsCommon.S3_FRAGMENT;
 
   private static List<RandomAccessFile> stores;
 
@@ -84,12 +84,16 @@ public class TestRandomAccessDirectory {
     invalidStore = NetcdfFiles.getRaf(TEST_NOT_DIRECTORY_OBJECT_STORE, -1);
     assertThat(invalidStore).isNotInstanceOf(RandomAccessDirectory.class);
 
-    stores.forEach(raf -> { assertThat(raf).isInstanceOf(RandomAccessDirectory.class);});
+    stores.forEach(raf -> {
+      assertThat(raf).isInstanceOf(RandomAccessDirectory.class);
+    });
   }
 
   @Test
   public void testSetBufferSize() {
-    stores.forEach(raf -> { _testSetBufferSize(raf); });
+    stores.forEach(raf -> {
+      _testSetBufferSize(raf);
+    });
   }
 
   private void _testSetBufferSize(RandomAccessFile raf) {
@@ -158,7 +162,7 @@ public class TestRandomAccessDirectory {
   private void _testRead(RandomAccessFile raf) throws IOException {
     // read several known bytes in several files
     int pos = 95; // second file
-    int expected = UTF8_BYTES[pos-FILE_SIZE];
+    int expected = UTF8_BYTES[pos - FILE_SIZE];
     raf.seek(pos);
     assertThat(raf.read()).isEqualTo(expected);
 
@@ -168,7 +172,7 @@ public class TestRandomAccessDirectory {
     assertThat(raf.read()).isEqualTo(expected);
 
     pos = 340; // last file
-    expected = UTF8_BYTES[pos-(FILE_SIZE*5)];;
+    expected = UTF8_BYTES[pos - (FILE_SIZE * 5)];;
     raf.seek(pos);
     assertThat(raf.read()).isEqualTo(expected);
 
@@ -183,10 +187,10 @@ public class TestRandomAccessDirectory {
 
     // test readBytes across files/directories
     bytes = new byte[nbytes];
-    pos = FILE_SIZE*4-2; // last two bytes of fourth file
+    pos = FILE_SIZE * 4 - 2; // last two bytes of fourth file
     raf.seek(pos);
     // first two bytes should come from fourth file, second two bytes from fifth file
-    expectedBytes = new byte[]{UTF8_BYTES[FILE_SIZE-2], UTF8_BYTES[FILE_SIZE-1], UTF8_BYTES[0], UTF8_BYTES[1]};
+    expectedBytes = new byte[] {UTF8_BYTES[FILE_SIZE - 2], UTF8_BYTES[FILE_SIZE - 1], UTF8_BYTES[0], UTF8_BYTES[1]};
     raf.readBytes(bytes, 0, nbytes);
     assertThat(bytes).isEqualTo(expectedBytes);
   }
@@ -206,7 +210,7 @@ public class TestRandomAccessDirectory {
 
     // read within a file
     int offset = 95; // second file
-    byte[] expectedBytes = Arrays.copyOfRange(UTF8_BYTES, offset-FILE_SIZE, offset-FILE_SIZE+4);
+    byte[] expectedBytes = Arrays.copyOfRange(UTF8_BYTES, offset - FILE_SIZE, offset - FILE_SIZE + 4);
     dest = new TestWritableByteChannel();
     n = raf.readToByteChannel(dest, offset, nbytes);
     assertThat(n).isEqualTo(nbytes);
@@ -214,9 +218,9 @@ public class TestRandomAccessDirectory {
     dest.reset();
 
     // test read across files/directories
-    offset = FILE_SIZE*4-2;  // last two bytes of fourth file
+    offset = FILE_SIZE * 4 - 2; // last two bytes of fourth file
     // first two bytes should come from fourth file, second two bytes from fifth file
-    expectedBytes = new byte[]{UTF8_BYTES[FILE_SIZE-2], UTF8_BYTES[FILE_SIZE-1], UTF8_BYTES[0], UTF8_BYTES[1]};
+    expectedBytes = new byte[] {UTF8_BYTES[FILE_SIZE - 2], UTF8_BYTES[FILE_SIZE - 1], UTF8_BYTES[0], UTF8_BYTES[1]};
     n = raf.readToByteChannel(dest, offset, nbytes);
     assertThat(n).isEqualTo(nbytes);
     assertThat(dest.getBytes()).isEqualTo(expectedBytes);
@@ -239,10 +243,11 @@ public class TestRandomAccessDirectory {
     // read fully across files/directories
     int nbytes = 4;
     byte[] bytes = new byte[nbytes];
-    int pos = FILE_SIZE*4-2;  // last two bytes of big endian ints
+    int pos = FILE_SIZE * 4 - 2; // last two bytes of big endian ints
     raf.seek(pos);
     // first two bytes should come from BE ints, second two bytes from BE longs directory
-    byte[] expectedBytes = new byte[]{UTF8_BYTES[FILE_SIZE-2], UTF8_BYTES[FILE_SIZE-1], UTF8_BYTES[0], UTF8_BYTES[1]};
+    byte[] expectedBytes =
+        new byte[] {UTF8_BYTES[FILE_SIZE - 2], UTF8_BYTES[FILE_SIZE - 1], UTF8_BYTES[0], UTF8_BYTES[1]};
     raf.readFully(bytes);
     assertThat(bytes).isEqualTo(expectedBytes);
 
@@ -250,7 +255,7 @@ public class TestRandomAccessDirectory {
     raf.seek(0);
     byte[] finalBuff = new byte[EXPECTED_SIZE + 1];
     // TODO: RemoteRandomAccessFile is throwing inconsistent exception - should probably be caught and turned into
-    //    EOFException somewhere
+    // EOFException somewhere
     Assert.assertThrows(Exception.class, () -> {
       raf.readFully(finalBuff);
     });
@@ -294,9 +299,9 @@ public class TestRandomAccessDirectory {
 
   private int getInt(int startIndex, boolean bigEndian) throws IOException {
     int ch1 = UTF8_BYTES[startIndex];
-    int ch2 = UTF8_BYTES[startIndex+1];
-    int ch3 = UTF8_BYTES[startIndex+2];
-    int ch4 = UTF8_BYTES[startIndex+3];
+    int ch2 = UTF8_BYTES[startIndex + 1];
+    int ch3 = UTF8_BYTES[startIndex + 2];
+    int ch4 = UTF8_BYTES[startIndex + 3];
     if ((ch1 | ch2 | ch3 | ch4) < 0) {
       throw new EOFException();
     }
