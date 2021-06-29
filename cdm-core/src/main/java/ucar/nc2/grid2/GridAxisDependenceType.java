@@ -14,25 +14,25 @@ public enum GridAxisDependenceType {
   /**
    * Has its own dimension, so is a coordinate variable, eg x(x).
    */
-  independent, //
+  independent,
   /**
    * Auxilary coordinate, eg reftime(time) or time_bounds(time).
    */
-  dependent, //
+  dependent,
   /**
    * A scalar doesnt involve indices. Eg the reference time is often a scalar.
    */
-  scalar, //
+  scalar,
   /**
    * A coordinate needing two dimensions, eg lat(x,y).
    */
-  twoD, //
+  twoD,
   /**
    * Eg time(reftime, hourOfDay).
    */
-  fmrcReg, //
+  fmrcReg,
   /**
    * Eg swath(scan, scanAcross).
    */
-  dimension //
+  dimension
 }

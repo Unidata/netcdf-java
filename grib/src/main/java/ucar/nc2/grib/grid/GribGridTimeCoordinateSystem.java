@@ -10,6 +10,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Streams;
 import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.calendar.CalendarDateUnit;
+import ucar.nc2.calendar.CalendarPeriod;
 import ucar.nc2.grib.collection.GribCollectionImmutable;
 import ucar.nc2.grib.coord.Coordinate;
 import ucar.nc2.grib.coord.CoordinateRuntime;
@@ -134,8 +135,15 @@ public abstract class GribGridTimeCoordinateSystem implements GridTimeCoordinate
     private final CalendarDateUnit dateUnit;
 
     private Observation(GribGridDataset.CoordAndAxis time) {
+      // LOOK MRMS_Radar_20201027_0000.grib2.ncx4 time2D has runtime in seconds, but period name is minutes
       super(Type.Observation, null, time.axis);
-      this.dateUnit = CalendarDateUnit.fromUdunitString(null, timeOffsetAxis.getUnits()).orElseThrow();
+      if (time.time2d != null) {
+        CalendarDate refDate = time.time2d.getRefDate();
+        CalendarPeriod period = time.time2d.getTimeUnit();
+        this.dateUnit = CalendarDateUnit.of(period, true, refDate);
+      } else {
+        this.dateUnit = CalendarDateUnit.fromUdunitString(null, timeOffsetAxis.getUnits()).orElseThrow();
+      }
     }
 
     @Override

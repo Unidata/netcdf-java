@@ -21,7 +21,7 @@ public interface GridTimeCoordinateSystem {
     Observation, // No runtimes
     SingleRuntime, // Single runtime
     Offset, // All runtimes have the same offsets
-    OffsetRegular, // All runtimes, grouped by minutes from 0z, have the same offsets.
+    OffsetRegular, // All runtimes, grouped by time since 0z, have the same offsets.
     Time2d // Runtimes have irregular offsets
   }
 

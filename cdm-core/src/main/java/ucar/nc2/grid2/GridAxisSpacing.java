@@ -15,26 +15,26 @@ public enum GridAxisSpacing {
    * Regularly spaced points (start, end, npts); start and end are midpoints, edges halfway between midpoints,
    * resol = (start - end) / (npts-1)
    */
-  regularPoint, //
+  regularPoint,
   /**
    * Irregular spaced points values[npts]; edges halfway between coords.
    */
-  irregularPoint, //
+  irregularPoint,
 
   /**
    * Regular contiguous intervals (start, end, npts); start and end are edges, midpoints halfway between edges,
    * resol = (start - end) / npts.
    */
-  regularInterval, //
+  regularInterval,
   /**
    * Irregular contiguous intervals values[npts+1]; values are the edges, midpoints halfway between edges.
    */
-  contiguousInterval, //
+  contiguousInterval,
   /**
    * Irregular discontiguous intervals values[2*npts]; values are the edges: low0, high0, low1, high1, ...
    * Note that monotonicity is not guaranteed, and is ambiguous.
    */
-  discontiguousInterval; //
+  discontiguousInterval;
 
   /**
    * If the spacing is regular.
