@@ -3184,9 +3184,9 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     if (ret != 0)
       throw new IOException(errMessage("nc_inq_dimlen", ret, vinfo.g4.grpid, dimid));
 
-    SizeT[] origin = {lenp.getValue()};
-    SizeT[] shape = {new SizeT(1)};
-    SizeT[] stride = {new SizeT(1)};
+    SizeT[] shape = {lenp.getValue()}; // shape is outer dim
+    SizeT[] origin = {new SizeT(0)}; // origin is 0
+    SizeT[] stride = {new SizeT(1)}; // stride is 1, i.e. none
 
     // ArrayStructureBB valuesBB = IospHelper.copyToArrayBB(sdata, ByteOrder.nativeOrder());
     // n4 wants native byte order
