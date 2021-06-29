@@ -5,6 +5,7 @@
 
 package ucar.nc2.iosp.zarr;
 
+import javax.annotation.Nullable;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -17,10 +18,10 @@ public class ZarrPathUtils {
    * @param filePath
    * @return name of directory containing filepath as a String
    */
+  @Nullable
   public static String getObjectNameFromPath(String filePath) {
-    Path path = Paths.get(filePath);
     try {
-      return path.getParent().getFileName().toString();
+      return Paths.get(filePath).getParent().getFileName().toString();
     } catch (NullPointerException ex) {
       return null;
     }
