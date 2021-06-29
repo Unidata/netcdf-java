@@ -6,6 +6,7 @@
 package ucar.nc2.grid2;
 
 import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.calendar.CalendarDateUnit;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -26,9 +27,13 @@ public interface GridTimeCoordinateSystem {
 
   Type getType();
 
+  CalendarDateUnit getCalendarDateUnit();
+
   CalendarDate getBaseDate(); // the earliest runtime or observation date.
 
   List<Integer> getNominalShape();
+
+  List<ucar.array.Range> getSubsetRanges();
 
   /**
    * Get the Runtime axis.
@@ -44,7 +49,7 @@ public interface GridTimeCoordinateSystem {
   CalendarDate getRuntimeDate(int runIdx);
 
   /**
-   * Get the ith timeOffset axis. The offsets are reletive to getRuntimeDate(int runIdx).
+   * Get the ith timeOffset axis. The offsets are reletive to getBaseDate()
    * if type=Observation, SingleRuntime or Offset, runIdx is ignored, since the offsets are
    * always the same.
    */

@@ -5,9 +5,11 @@
 package ucar.nc2.grid2;
 
 import com.google.common.collect.ImmutableList;
+import ucar.nc2.constants.AxisType;
+import ucar.nc2.grid.GridAxis1D;
 
 import javax.annotation.Nullable;
-import java.util.Formatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,11 +37,16 @@ public interface GridCoordinateSystem {
 
   /** Get the ensemble axis, if any. */
   @Nullable
-  GridAxisPoint getEnsembleAxis();
+  default GridAxisPoint getEnsembleAxis() {
+    return (GridAxisPoint) getGridAxes().stream().filter(a -> a.getAxisType() == AxisType.Ensemble).findFirst()
+        .orElse(null);
+  }
 
   /** Get the Z axis (GeoZ, Height, Pressure), if any. */
   @Nullable
-  GridAxis<?> getVerticalAxis();
+  default GridAxis<?> getVerticalAxis() {
+    return getGridAxes().stream().filter(a -> a.getAxisType().isVert()).findFirst().orElse(null);
+  }
 
   /** Get the Horizontal CoordinateSystem. */
   GridHorizCoordinateSystem getHorizCoordSystem();
@@ -55,10 +62,21 @@ public interface GridCoordinateSystem {
   }
 
   /** Nominal shape, may differ from materialized shape. */
-  List<Integer> getNominalShape();
+  default List<Integer> getNominalShape() {
+    List<Integer> result = new ArrayList<>();
+    if (getTimeCoordSystem() != null) {
+      result.addAll(getTimeCoordSystem().getNominalShape());
+    }
+    if (getEnsembleAxis() != null) {
+      result.add(getEnsembleAxis().getNominalSize());
+    }
+    if (getVerticalAxis() != null) {
+      result.add(getVerticalAxis().getNominalSize());
+    }
+    result.addAll(getHorizCoordSystem().getShape());
+    return result;
+  }
 
   /** Function description, eg GRID(T,Z,Y,Z):R LOOK needed? */
   String showFnSummary();
-
-  void show(Formatter f, boolean showCoords);
 }

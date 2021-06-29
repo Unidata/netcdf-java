@@ -80,33 +80,16 @@ public abstract class GribGridTimeCoordinateSystem implements GridTimeCoordinate
   @Override
   public abstract List<Integer> getNominalShape();
 
+  @Override
+  public List<ucar.array.Range> getSubsetRanges() {
+    return ImmutableList.of(); // TODO
+  }
+
   @Nullable
   @Override
   public GridAxisPoint getRunTimeAxis() {
     return runtimeAxis;
   }
-
-  /*
-   * @Override
-   * public CalendarDate getBaseDate() {
-   * return getRuntimeDate(0);
-   * }
-   * 
-   * 
-   * @Nullable
-   * 
-   * @Override
-   * public CalendarDate getRuntimeDate(int idx) {
-   * return runtimeUnit.map(unit ->
-   * unit.makeCalendarDate(this.runtimeAxis.getCoordinate(idx).longValue())).orElse(null);
-   * }
-   * 
-   * @Override
-   * public GridAxis getTimeOffsetAxis(int runIdx) {
-   * return timeOffsetAxis;
-   * }
-   * 
-   */
 
   @Override
   public List<CalendarDate> getTimesForRuntime(int runIdx) {
@@ -128,7 +111,7 @@ public abstract class GribGridTimeCoordinateSystem implements GridTimeCoordinate
   final GridTimeCoordinateSystem.Type type;
   final @Nullable GridAxisPoint runtimeAxis;
   final GridAxis timeOffsetAxis;
-  final Optional<CalendarDateUnit> runtimeUnit;
+  final Optional<CalendarDateUnit> runtimeUnit; // can it really be optional? seems unlikely
 
   public GribGridTimeCoordinateSystem(Type type, @Nullable GridAxisPoint runtimeAxis, GridAxis timeOffsetAxis) {
     this.type = type;
@@ -140,6 +123,10 @@ public abstract class GribGridTimeCoordinateSystem implements GridTimeCoordinate
     } else {
       runtimeUnit = Optional.empty();
     }
+  }
+
+  public CalendarDateUnit getCalendarDateUnit() {
+    return runtimeUnit.orElse(null);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -168,7 +155,7 @@ public abstract class GribGridTimeCoordinateSystem implements GridTimeCoordinate
     }
 
     @Override
-    public GridAxis getTimeOffsetAxis(int runIdx) {
+    public GridAxis<?> getTimeOffsetAxis(int runIdx) {
       return timeOffsetAxis;
     }
   }
@@ -200,7 +187,7 @@ public abstract class GribGridTimeCoordinateSystem implements GridTimeCoordinate
     }
 
     @Override
-    public GridAxis getTimeOffsetAxis(int runIdx) {
+    public GridAxis<?> getTimeOffsetAxis(int runIdx) {
       return timeOffsetAxis;
     }
   }
@@ -235,7 +222,7 @@ public abstract class GribGridTimeCoordinateSystem implements GridTimeCoordinate
     }
 
     @Override
-    public GridAxis getTimeOffsetAxis(int runIdx) {
+    public GridAxis<?> getTimeOffsetAxis(int runIdx) {
       return timeOffsetAxis;
     }
   }
@@ -270,7 +257,7 @@ public abstract class GribGridTimeCoordinateSystem implements GridTimeCoordinate
     }
 
     @Override
-    public GridAxis getTimeOffsetAxis(int runIdx) {
+    public GridAxis<?> getTimeOffsetAxis(int runIdx) {
       CoordinateTimeAbstract timeCoord = coord2D.getTimeCoordinate(runIdx);
       return GribGridAxis.create(type, timeCoord).axis;
     }
@@ -306,10 +293,9 @@ public abstract class GribGridTimeCoordinateSystem implements GridTimeCoordinate
     }
 
     @Override
-    public GridAxis getTimeOffsetAxis(int runIdx) {
+    public GridAxis<?> getTimeOffsetAxis(int runIdx) {
       CoordinateTimeAbstract timeCoord = coord2D.getTimeCoordinate(runIdx);
       return GribGridAxis.create(type, timeCoord).axis;
     }
-
   }
 }

@@ -99,7 +99,7 @@ public class GribGridHorizCoordinateSystem implements GridHorizCoordinateSystem 
   }
 
   @Override
-  public GribGridHorizCoordinateSystem subset(GridSubset params, Formatter errlog) {
-    return null;
+  public Optional<GridHorizCoordinateSystem> subset(GridSubset params, Formatter errlog) {
+    return Optional.empty();
   }
 }

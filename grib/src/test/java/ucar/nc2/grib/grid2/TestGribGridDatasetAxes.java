@@ -50,7 +50,7 @@ public class TestGribGridDatasetAxes {
       assertThat(timeOffset.getNominalSize()).isGreaterThan(1);
       assertThat((Object) timeOffset).isInstanceOf(GridAxisInterval.class);
       GridAxisInterval toAxisItv = (GridAxisInterval) timeOffset;
-      CoordInterval coord = toAxisItv.getCoordinate(1);
+      CoordInterval coord = toAxisItv.getCoordInterval(1);
 
       grid.getReader().setRunTime(wantRuntime).setTimeOffsetCoord(coord);
     }

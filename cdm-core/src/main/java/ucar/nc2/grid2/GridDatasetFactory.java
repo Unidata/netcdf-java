@@ -7,7 +7,7 @@ package ucar.nc2.grid2;
 import com.google.common.collect.Iterables;
 import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.internal.grid.GridNetcdfDataset;
+import ucar.nc2.internal.grid2.GridNetcdfDataset;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -21,7 +21,7 @@ import java.util.Optional;
 /** A factory of Grid Datasets. */
 public class GridDatasetFactory {
 
-  // since we want GridDataset in a try-with-resource block, use Nullable instead of Optional
+  // LOOK since we want GridDataset in a try-with-resource block, use Nullable instead of Optional. Can use orElse(null)
   @Nullable
   public static GridDataset openGridDataset(String endpoint, Formatter errLog) throws IOException {
 
@@ -39,40 +39,35 @@ public class GridDatasetFactory {
     // probably ok for small collections, though it differs from the direct GRIB.
     // if tests start failing, check if GRIB module is installed
 
-    return null; // openNetcdfAsGrid(endpoint, errLog);
+    return openNetcdfAsGrid(endpoint, errLog);
   }
 
-  /**
-   * Open a NetcdfDataset and wrap as a GridDataset if possible.
-   * 
-   * @Nullable
-   *           private static GridDataset openNetcdfAsGrid(String endpoint, Formatter errLog) throws IOException {
-   *           // Otherwise, wrap a NetcdfDataset
-   *           NetcdfDataset ds = ucar.nc2.dataset.NetcdfDatasets.openDataset(endpoint);
-   *           Optional<GridNetcdfDataset> result =
-   *           GridNetcdfDataset.create(ds, errLog).filter(gds -> !Iterables.isEmpty(gds.getGrids()));
-   *           if (result.isEmpty()) {
-   *           errLog.format("Could not open as GridDataset: %s", endpoint);
-   *           ds.close();
-   *           return null;
-   *           }
-   * 
-   *           return result.get();
-   *           }
-   * 
-   *           /** Wrap an already open NetcdfDataset as a GridDataset if possible.
-   *           public static Optional<GridDataset> wrapGridDataset(NetcdfDataset ds, Formatter errLog) throws
-   *           IOException {
-   *           Optional<GridNetcdfDataset> result =
-   *           GridNetcdfDataset.create(ds, errLog).filter(gds -> !Iterables.isEmpty(gds.getGrids()));
-   *           if (result.isEmpty()) {
-   *           errLog.format("Could not open as GridDataset: %s", ds.getLocation());
-   *           return Optional.empty();
-   *           }
-   *           return Optional.of(result.get());
-   *           }
-   */
+  // Open a NetcdfDataset and wrap as a GridDataset if possible.
+  @Nullable
+  public static GridDataset openNetcdfAsGrid(String endpoint, Formatter errLog) throws IOException {
+    // Otherwise, wrap a NetcdfDataset
+    NetcdfDataset ds = ucar.nc2.dataset.NetcdfDatasets.openDataset(endpoint);
+    Optional<GridNetcdfDataset> result =
+        GridNetcdfDataset.create(ds, errLog).filter(gds -> !Iterables.isEmpty(gds.getGrids()));
+    if (result.isEmpty()) {
+      errLog.format("Could not open as GridDataset: %s", endpoint);
+      ds.close();
+      return null;
+    }
 
+    return result.get();
+  }
+
+  // Wrap an already open NetcdfDataset as a GridDataset if possible.
+  public static Optional<GridDataset> wrapGridDataset(NetcdfDataset ds, Formatter errLog) throws IOException {
+    Optional<GridNetcdfDataset> result =
+        GridNetcdfDataset.create(ds, errLog).filter(gds -> !Iterables.isEmpty(gds.getGrids()));
+    if (result.isEmpty()) {
+      errLog.format("Could not open as GridDataset: %s", ds.getLocation());
+      return Optional.empty();
+    }
+    return Optional.of(result.get());
+  }
 
   /////////////////////////////////////////////////////////////////////////////////////
   // call Grib with reflection, to decouple the modules

@@ -85,6 +85,34 @@ public class DatasetClassifier {
   }
 
   public class CoordSysClassifier {
+
+    public String getName() {
+      return cs.getName();
+    }
+
+    public FeatureType getFeatureType() {
+      return featureType;
+    }
+
+    public boolean isLatLon() {
+      return isLatLon;
+    }
+
+    public List<CoordinateTransform> getCoordTransforms() {
+      return coordTransforms;
+    }
+
+    public Projection getProjection() {
+      return orgProj;
+    }
+
+    public List<CoordinateAxis> getAxesUsed() {
+      ArrayList<CoordinateAxis> result = new ArrayList<>(indAxes);
+      result.addAll(depAxes);
+      return result;
+    }
+
+    //////////////////////////////////////////////////////////////////////
     CoordinateSystem cs;
     FeatureType featureType;
     boolean isLatLon;
@@ -258,32 +286,6 @@ public class DatasetClassifier {
       }
 
       infolog.format(" %s: classified as %s%n", cs.getName(), result);
-      return result;
-    }
-
-    public String getName() {
-      return cs.getName();
-    }
-
-    public FeatureType getFeatureType() {
-      return featureType;
-    }
-
-    public boolean isLatLon() {
-      return isLatLon;
-    }
-
-    public List<CoordinateTransform> getCoordTransforms() {
-      return coordTransforms;
-    }
-
-    public Projection getProjection() {
-      return orgProj;
-    }
-
-    public List<CoordinateAxis> getAxesUsed() {
-      ArrayList<CoordinateAxis> result = new ArrayList<>(indAxes);
-      result.addAll(depAxes);
       return result;
     }
 

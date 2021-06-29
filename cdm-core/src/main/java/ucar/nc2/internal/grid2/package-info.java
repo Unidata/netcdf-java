@@ -4,6 +4,6 @@
  */
 
 /**
- * Public interface for scientific feature type grid, version 3.1.
+ * Implementation classes for ucar.nc2.grid, wrapping NetcdfDataset amd VariableDS.
  */
-package ucar.nc2.grid2;
+package ucar.nc2.internal.grid2;

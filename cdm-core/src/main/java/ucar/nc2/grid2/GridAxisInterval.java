@@ -10,13 +10,17 @@ import com.google.common.collect.AbstractIterator;
 import ucar.array.Range;
 import ucar.nc2.grid.CoordInterval;
 import ucar.nc2.grid.GridSubset;
+import ucar.nc2.internal.grid2.SubsetIntervalHelper;
+import ucar.nc2.internal.grid2.SubsetPointHelper;
+import ucar.nc2.util.Indent;
 
 import javax.annotation.Nullable;
 import java.util.Formatter;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
-/** Interval Grib coordinates with values stored in memory. */
+/** Interval Grid coordinates. */
 public class GridAxisInterval extends GridAxis<CoordInterval> implements Iterable<CoordInterval> {
 
   @Override
@@ -24,25 +28,41 @@ public class GridAxisInterval extends GridAxis<CoordInterval> implements Iterabl
     return ncoords;
   }
 
-  @Nullable
   @Override
-  public GridAxisInterval subset(GridSubset params, Formatter errlog) {
-    return null;
+  @Nullable
+  public Optional<GridAxisInterval> subset(GridSubset params, Formatter errlog) {
+    if (params == null || params.isEmpty()) {
+      return Optional.of(this);
+    }
+    SubsetIntervalHelper helper = new SubsetIntervalHelper(this);
+    GridAxisInterval.Builder<?> builder = helper.subsetBuilder(params, errlog);
+    if (builder == null) {
+      return Optional.empty();
+    }
+    return Optional.of(builder.build());
   }
 
   @Override
-  public Range getRange() {
+  public Range getSubsetRange() {
     return this.range != null ? range : Range.make(this.name, this.ncoords);
   }
 
-  public CoordInterval getCoordinate(int index) {
+  @Override
+  public CoordInterval getCoordInterval(int index) {
     return CoordInterval.create(getCoordEdge1(index), getCoordEdge2(index));
+  }
+
+  /** The midpoint of the interval, cast to a double. */
+  @Override
+  public double getCoordMidpoint(int index) {
+    return (getCoordEdge1(index) + getCoordEdge2(index)) / 2;
   }
 
   // LOOK double vs int
   private double getCoordEdge1(int index) {
-    if (index < 0 || index >= ncoords)
+    if (index < 0 || index >= ncoords) {
       throw new IllegalArgumentException("Index out of range=" + index);
+    }
 
     switch (spacing) {
       case regularInterval:
@@ -58,8 +78,9 @@ public class GridAxisInterval extends GridAxis<CoordInterval> implements Iterabl
   }
 
   private double getCoordEdge2(int index) {
-    if (index < 0 || index >= ncoords)
+    if (index < 0 || index >= ncoords) {
       throw new IllegalArgumentException("Index out of range=" + index);
+    }
 
     switch (spacing) {
       case regularInterval:
@@ -87,7 +108,7 @@ public class GridAxisInterval extends GridAxis<CoordInterval> implements Iterabl
       if (current >= ncoords) {
         return endOfData();
       }
-      return getCoordinate(current++);
+      return getCoordInterval(current++);
     }
   }
 
@@ -99,7 +120,7 @@ public class GridAxisInterval extends GridAxis<CoordInterval> implements Iterabl
   final double[] values; // null if isRegular, len= ncoords+1 (contiguous interval), or 2*ncoords (discontinuous
                          // interval) (min0, max0, min1, max1, min2, max2, ...)
 
-  public GridAxisInterval(Builder<?> builder) {
+  protected GridAxisInterval(Builder<?> builder) {
     super(builder);
 
     Preconditions.checkArgument(builder.ncoords > 0);
@@ -118,6 +139,33 @@ public class GridAxisInterval extends GridAxis<CoordInterval> implements Iterabl
       this.range = (rangeName != null) ? builder.range.copyWithName(rangeName) : builder.range;
     } else {
       this.range = Range.make(rangeName, ncoords);
+    }
+  }
+
+  void toString(Formatter f, Indent indent) {
+    super.toString(f, indent);
+
+    f.format("%snpts: %d [%f,%f] resolution=%f spacing=%s", indent, ncoords, startValue, endValue, resolution, spacing);
+    f.format("%s range=%s isSubset=%s", indent, range, isSubset);
+    f.format("%n");
+
+    if (values != null) {
+      int n = values.length;
+      switch (spacing) {
+        case contiguousInterval:
+          f.format("%scontiguous values (%d)=", indent, n);
+          for (double v : values)
+            f.format("%f,", v);
+          f.format("%n");
+          break;
+
+        case discontiguousInterval:
+          f.format("%sdiscontiguous values (%d)=", indent, n);
+          for (int i = 0; i < n; i += 2)
+            f.format("(%f,%f) ", values[i], values[i + 1]);
+          f.format("%n");
+          break;
+      }
     }
   }
 

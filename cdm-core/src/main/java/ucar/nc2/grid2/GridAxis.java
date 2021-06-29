@@ -13,13 +13,16 @@ import ucar.nc2.AttributeContainer;
 import ucar.nc2.AttributeContainerMutable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.grid.CoordInterval;
 import ucar.nc2.grid.GridSubset;
+import ucar.nc2.util.Indent;
 import ucar.unidata.util.StringUtil2;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * A GridAxis represents a 1D Coordinate Variable.
@@ -67,18 +70,54 @@ public abstract class GridAxis<T> implements Comparable<GridAxis<T>>, Iterable<T
     return dependenceType;
   }
 
+  public List<String> getDependsOn() {
+    return dependsOn;
+  }
+
+  /** Nominal in the sense that it may not match the materialized data array. */
   public abstract int getNominalSize();
 
-  @Nullable
-  public abstract GridAxis<T> subset(GridSubset params, Formatter errlog);
+  public abstract CoordInterval getCoordInterval(int index);
 
-  public abstract Range getRange(); // subset only ?
+  public abstract double getCoordMidpoint(int index);
+
+  public abstract Optional<? extends GridAxis<T>> subset(GridSubset params, Formatter errlog);
+
+  /** For subsets, the range in the original axis that constitutes the subset. */
+  public abstract Range getSubsetRange();
 
   @Override
   public int compareTo(GridAxis o) {
     return axisType.axisOrder() - o.axisType.axisOrder();
   }
 
+  @Override
+  public String toString() {
+    Formatter f = new Formatter();
+    Indent indent = new Indent(2);
+    toString(f, indent);
+    return f.toString();
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
+    GridAxis<?> gridAxis = (GridAxis<?>) o;
+    return Double.compare(gridAxis.resolution, resolution) == 0 && isSubset == gridAxis.isSubset
+        && name.equals(gridAxis.name) && units.equals(gridAxis.units) && description.equals(gridAxis.description)
+        && axisType == gridAxis.axisType && attributes.equals(gridAxis.attributes)
+        && dependenceType == gridAxis.dependenceType && dependsOn.equals(gridAxis.dependsOn)
+        && spacing == gridAxis.spacing;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(name, units, description, axisType, attributes, dependenceType, dependsOn, spacing, resolution,
+        isSubset);
+  }
   ////////////////////////////////////////////////////////////////////////////////////////////////
 
   protected final String name;
@@ -130,6 +169,29 @@ public abstract class GridAxis<T> implements Comparable<GridAxis<T>>, Iterable<T
         .setSpacing(this.spacing).setIsSubset(this.isSubset);
 
     return builder;
+  }
+
+  void toString(Formatter f, Indent indent) {
+    f.format("%sGridAxis '%s' (%s) ", indent, name, getClass().getName());
+    indent.incr();
+
+    f.format("%s", getDependenceType());
+    if (!dependsOn.isEmpty()) {
+      f.format(" :");
+      for (String s : dependsOn)
+        f.format(" %s", s);
+    }
+    f.format("%n");
+
+    f.format("%saxisType=%s units='%s' desc='%s'%n", indent, axisType, units, description);
+
+    indent.incr();
+    for (Attribute att : attributes) {
+      f.format("%s%s%n", indent, att);
+    }
+    f.format("%n");
+    indent.decr();
+    indent.decr();
   }
 
   public static abstract class Builder<T extends GridAxis.Builder<T>> {

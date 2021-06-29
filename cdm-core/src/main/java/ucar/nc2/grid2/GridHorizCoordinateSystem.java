@@ -21,6 +21,10 @@ public interface GridHorizCoordinateSystem {
     return ImmutableList.of(getYHorizAxis().getNominalSize(), getXHorizAxis().getNominalSize());
   }
 
+  default List<ucar.array.Range> getSubsetRanges() {
+    return ImmutableList.of(getYHorizAxis().getSubsetRange(), getXHorizAxis().getSubsetRange());
+  }
+
   /** True if both X and Y axes are regularly spaced. */
   boolean isRegular();
 
@@ -66,6 +70,6 @@ public interface GridHorizCoordinateSystem {
   Optional<CoordReturn> findXYindexFromCoord(double xpt, double ypt);
 
   /** Subset both x and y axis based on the given parameters. */
-  GridHorizCoordinateSystem subset(GridSubset params, Formatter errlog);
+  Optional<GridHorizCoordinateSystem> subset(GridSubset params, Formatter errlog);
 
 }

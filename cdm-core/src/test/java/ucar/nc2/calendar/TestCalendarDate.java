@@ -6,6 +6,10 @@ package ucar.nc2.calendar;
 
 import org.junit.Test;
 
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+
 import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth8.assertThat;
 
@@ -267,8 +271,19 @@ public class TestCalendarDate {
     System.out.printf("start, end = (%d, %d)", startOffset, endOffset);
     assertThat(startOffset).isEqualTo(-3);
     assertThat(endOffset).isEqualTo(3);
-
   }
 
+  @Test
+  public void testFloatLimits() {
+    long maxPrecise = (long) 10e7; // float has 7 sig digits
+    Instant maxSecs = Instant.ofEpochSecond(maxPrecise);
+    System.out.printf("maxDate in secs = %s%n", OffsetDateTime.ofInstant(maxSecs, ZoneOffset.UTC));
+
+    Instant maxMins = Instant.ofEpochSecond(maxPrecise * 60);
+    System.out.printf("maxDate in mins = %s%n", OffsetDateTime.ofInstant(maxMins, ZoneOffset.UTC));
+
+    Instant maxHours = Instant.ofEpochSecond(maxPrecise * 3600);
+    System.out.printf("maxDate in hours = %s%n", OffsetDateTime.ofInstant(maxHours, ZoneOffset.UTC));
+  }
 
 }

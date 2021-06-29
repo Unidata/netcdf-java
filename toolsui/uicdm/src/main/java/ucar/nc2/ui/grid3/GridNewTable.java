@@ -16,6 +16,7 @@ import ucar.nc2.grid2.GridAxisSpacing;
 import ucar.nc2.grid2.GridCoordinateSystem;
 import ucar.nc2.grid2.GridDataset;
 import ucar.nc2.grid2.GridTimeCoordinateSystem;
+import ucar.nc2.util.Indent;
 import ucar.ui.prefs.BeanTable;
 import ucar.ui.util.NamedObject;
 import ucar.ui.widget.BAMutil;
@@ -134,9 +135,7 @@ public class GridNewTable extends JPanel {
         CoordSysBean bean = csysTable.getSelectedBean();
         if (bean != null) {
           infoTA.clear();
-          Formatter f = new Formatter();
-          bean.gcs.show(f, false);
-          infoTA.appendLine(f.toString());
+          infoTA.appendLine(bean.gcs.toString());
           infoTA.gotoTop();
           infoWindow.show();
         }
@@ -260,24 +259,6 @@ public class GridNewTable extends JPanel {
       return gdataset.getName();
     }
 
-    /*
-     * public String getType() {
-     * return cds.getCoverageType().toString();
-     * }
-     * 
-     * public String getCalendar() {
-     * return cds.getCalendar().toString();
-     * }
-     * 
-     * public String getDateRange() {
-     * return cds.getCalendarDateRange() == null ? "null" : cds.getCalendarDateRange().toString();
-     * }
-     * 
-     * public String getLLBB() {
-     * return cds.getLatlonBoundingBox() == null ? "null" : cds.getLatlonBoundingBox().toString();
-     * }
-     */
-
     public int getNGrids() {
       return Iterables.size(gdataset.getGrids());
     }
@@ -350,7 +331,6 @@ public class GridNewTable extends JPanel {
   public static class CoordSysBean {
     private GridCoordinateSystem gcs;
     private GridTimeCoordinateSystem tcs;
-    private String coordTrans;
     private int nIndAxis;
 
     // no-arg constructor
@@ -360,14 +340,7 @@ public class GridNewTable extends JPanel {
       this.gcs = gcs;
       this.tcs = gcs.getTimeCoordSystem();
 
-      Formatter f = new Formatter();
-      Projection p = gcs.getHorizCoordSystem().getProjection();
-      if (p != null) {
-        f.format("%s ", p.getName());
-      }
-      coordTrans = f.toString();
-
-      for (GridAxis axis : gcs.getGridAxes()) {
+      for (GridAxis<?> axis : gcs.getGridAxes()) {
         if (axis.getDependenceType() == GridAxisDependenceType.independent) {
           nIndAxis++;
         }
@@ -398,13 +371,16 @@ public class GridNewTable extends JPanel {
       return this.gcs.getVerticalAxis() == null ? "" : this.gcs.getVerticalAxis().getName();
     }
 
-    public String getTransforms() {
-      return coordTrans;
-    }
-
     public String getProjection() {
       Projection p = this.gcs.getHorizCoordSystem().getProjection();
       return p == null ? "" : p.getName();
+    }
+
+    public String getTimeType() {
+      if (this.tcs == null) {
+        return "";
+      }
+      return this.tcs.getType() == null ? "not set" : tcs.getType().toString();
     }
   }
 
@@ -417,7 +393,7 @@ public class GridNewTable extends JPanel {
     public AxisBean() {}
 
     // create from a dataset
-    public AxisBean(GridAxis v) {
+    public AxisBean(GridAxis<?> v) {
       this.axis = v;
 
       name = v.getName();

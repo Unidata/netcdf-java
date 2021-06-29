@@ -6,15 +6,11 @@
 package ucar.nc2.grib.grid;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Streams;
-import ucar.nc2.constants.AxisType;
 import ucar.nc2.grid2.GridAxis;
-import ucar.nc2.grid2.GridAxisPoint;
 import ucar.nc2.grid2.GridCoordinateSystem;
 import ucar.nc2.grid2.GridHorizCoordinateSystem;
 import ucar.nc2.grid2.GridTimeCoordinateSystem;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
@@ -52,18 +48,6 @@ public class GribGridCoordinateSystem implements GridCoordinateSystem {
     return tcs;
   }
 
-  @Nullable
-  @Override
-  public GridAxis getVerticalAxis() {
-    return axes.stream().filter(a -> a.getAxisType().isVert()).findFirst().orElse(null);
-  }
-
-  @Nullable
-  @Override
-  public GridAxisPoint getEnsembleAxis() {
-    return (GridAxisPoint) axes.stream().filter(a -> a.getAxisType() == AxisType.Ensemble).findFirst().orElse(null);
-  }
-
   @Override
   public GridHorizCoordinateSystem getHorizCoordSystem() {
     return hcs;
@@ -75,19 +59,7 @@ public class GribGridCoordinateSystem implements GridCoordinateSystem {
   }
 
   @Override
-  public void show(Formatter f, boolean showCoords) {}
-
-  @Override
-  public List<Integer> getNominalShape() {
-    List<Integer> result = new ArrayList<>(getTimeCoordSystem().getNominalShape());
-    if (getEnsembleAxis() != null) {
-      result.add(getEnsembleAxis().getNominalSize());
-    }
-    if (getVerticalAxis() != null) {
-      result.add(getVerticalAxis().getNominalSize());
-    }
-    result.addAll(getHorizCoordSystem().getShape());
-
-    return result;
+  public String toString() {
+    return "GribGridCoordinateSystem{" + "axes=" + axes + ", hcs=" + hcs + ", tcs=" + tcs + '}';
   }
 }

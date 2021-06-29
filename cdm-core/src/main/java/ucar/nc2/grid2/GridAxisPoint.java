@@ -10,13 +10,24 @@ import com.google.common.collect.AbstractIterator;
 import ucar.array.Range;
 import ucar.nc2.grid.CoordInterval;
 import ucar.nc2.grid.GridSubset;
+import ucar.nc2.internal.grid2.SubsetPointHelper;
+import ucar.nc2.internal.grid2.SubsetTimeHelper;
+import ucar.nc2.util.Indent;
 
-import javax.annotation.Nullable;
+import java.util.Arrays;
 import java.util.Formatter;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
-/** Point Grib coordinates with values stored in memory. */
+import static ucar.nc2.grid2.GridAxisSpacing.irregularPoint;
+
+/**
+ * Point Grid coordinates.
+ * LOOK although we use Number, everything is internally a double.
+ * LOOK Grid ncx4 is using floats. Problem with time coordinates, which need longs.
+ */
 public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> {
 
   @Override
@@ -24,20 +35,40 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
     return ncoords;
   }
 
-  @Nullable
   @Override
-  public GridAxisPoint subset(GridSubset params, Formatter errlog) {
-    return null;
+  public Optional<GridAxisPoint> subset(GridSubset params, Formatter errlog) {
+    if (params == null || params.isEmpty()) {
+      return Optional.of(this);
+    }
+    SubsetPointHelper helper = new SubsetPointHelper(this);
+    GridAxisPoint.Builder<?> builder = helper.subsetBuilder(params, errlog);
+    if (builder == null) {
+      return Optional.empty();
+    }
+    return Optional.of(builder.build());
+  }
+
+  public Optional<GridAxisPoint> subset(GridTimeCoordinateSystem tcs, GridSubset params, Formatter errlog) {
+    if (params == null || params.isEmpty()) {
+      return Optional.of(this);
+    }
+    SubsetTimeHelper helper = new SubsetTimeHelper(tcs, this);
+    GridAxisPoint.Builder<?> builder = helper.subsetBuilder(params, errlog);
+    if (builder == null) {
+      return Optional.empty();
+    }
+    return Optional.of(builder.build());
   }
 
   @Override
-  public Range getRange() {
+  public Range getSubsetRange() {
     return this.range != null ? range : Range.make(this.name, this.ncoords);
   }
 
   public Number getCoordinate(int index) {
-    if (index < 0 || index >= ncoords)
+    if (index < 0 || index >= ncoords) {
       throw new IllegalArgumentException("Index out of range=" + index);
+    }
 
     switch (spacing) {
       case regularPoint:
@@ -49,14 +80,23 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
     throw new IllegalStateException("Unknown spacing=" + spacing);
   }
 
+  /** CoordIntervals are midway between the point, cast to a double. */
+  @Override
   public CoordInterval getCoordInterval(int index) {
     return CoordInterval.create(getCoordEdge1(index), getCoordEdge2(index));
   }
 
+  /** The same as getCoordinate(), cast to a double. */
+  @Override
+  public double getCoordMidpoint(int index) {
+    return getCoordinate(index).doubleValue();
+  }
+
   // LOOK double vs int
   private double getCoordEdge1(int index) {
-    if (index < 0 || index >= ncoords)
+    if (index < 0 || index >= ncoords) {
       throw new IllegalArgumentException("Index out of range=" + index);
+    }
 
     switch (spacing) {
       case regularPoint:
@@ -93,6 +133,11 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
     return new CoordIterator();
   }
 
+  // LOOK encapsolation??
+  public double[] values() {
+    return values;
+  }
+
   private class CoordIterator extends AbstractIterator<Number> {
     private int current = 0;
 
@@ -105,6 +150,27 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
     }
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
+    if (!super.equals(o))
+      return false;
+    GridAxisPoint numbers = (GridAxisPoint) o;
+    return ncoords == numbers.ncoords && Double.compare(numbers.startValue, startValue) == 0
+        && Double.compare(numbers.endValue, endValue) == 0 && Objects.equals(range, numbers.range)
+        && Arrays.equals(values, numbers.values);
+  }
+
+  @Override
+  public int hashCode() {
+    int result = Objects.hash(super.hashCode(), ncoords, startValue, endValue, range);
+    result = 31 * result + Arrays.hashCode(values);
+    return result;
+  }
+
   //////////////////////////////////////////////////////////////
   final int ncoords; // number of coordinates
   final double startValue; // only for regular
@@ -113,7 +179,7 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
   final double[] values; // null if isRegular, len= ncoords+1 (contiguous interval), or 2*ncoords (discontinuous
                          // interval)
 
-  public GridAxisPoint(Builder<?> builder) {
+  protected GridAxisPoint(Builder<?> builder) {
     super(builder);
 
     Preconditions.checkArgument(builder.ncoords > 0);
@@ -135,13 +201,33 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
     }
   }
 
+  void toString(Formatter f, Indent indent) {
+    super.toString(f, indent);
+
+    f.format("%snpts: %d [%f,%f] resolution=%f spacing=%s", indent, ncoords, startValue, endValue, resolution, spacing);
+    f.format("%s range=%s isSubset=%s", indent, range, isSubset);
+    f.format("%n");
+
+    if (values != null && spacing == irregularPoint) {
+      f.format("%scontiguous values (%d)=", indent, values.length);
+      for (double v : values)
+        f.format("%f,", v);
+      f.format("%n");
+    }
+  }
+
   public Builder<?> toBuilder() {
     return addLocalFieldsToBuilder(builder());
   }
 
   // Add local fields to the builder.
   protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> builder) {
-    builder.setRegular(this.ncoords, this.startValue, this.resolution).setValues(this.values).setRange(this.range);
+    builder.setNcoords(this.ncoords).setResolution(this.resolution).setRange(this.range);
+    if (isRegular()) {
+      builder.setRegular(this.ncoords, this.startValue, this.resolution);
+    } else {
+      builder.setValues(this.values);
+    }
     return (Builder<?>) super.addLocalFieldsToBuilder(builder);
   }
 
@@ -182,10 +268,11 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
       return self();
     }
 
+    // LOOK or store Number ? or Array for efficiency
     public T setValues(List<Number> values) {
       this.values = new double[values.size()];
       for (int i = 0; i < values.size(); i++) {
-        this.values[i] = values.get(i).doubleValue(); // LOOK or store Number ? or Array for efficiency
+        this.values[i] = values.get(i).doubleValue();
       }
       this.ncoords = values.size();
       return self();

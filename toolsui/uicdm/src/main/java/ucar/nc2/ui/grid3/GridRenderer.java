@@ -18,6 +18,7 @@ import ucar.nc2.grid2.GridReader;
 
 import ucar.nc2.grid2.GridReferencedArray;
 import ucar.nc2.grid2.MaterializedCoordinateSystem;
+import ucar.nc2.grid2.Grids;
 import ucar.nc2.ui.grid.ColorScale;
 import ucar.ui.prefs.Debug;
 import ucar.unidata.geoloc.LatLonPoint;
@@ -304,8 +305,8 @@ public class GridRenderer {
     if (debugMiss) {
       System.out.println("mode = " + modeColor + " sameProj= " + sameProjection);
     }
-    MinMax xminmax = getCoordEdgeMinMax(xaxis);
-    MinMax yminmax = getCoordEdgeMinMax(yaxis);
+    MinMax xminmax = Grids.getCoordEdgeMinMax(xaxis);
+    MinMax yminmax = Grids.getCoordEdgeMinMax(yaxis);
 
     if (sameProjection) {
       // pre color the drawing area with the most used color
@@ -360,14 +361,6 @@ public class GridRenderer {
     }
     if (debugHorizDraw)
       System.out.println("debugHorizDraw = " + count);
-  }
-
-  private MinMax getCoordEdgeMinMax(GridAxisPoint axis) {
-    CoordInterval start = axis.getCoordInterval(0);
-    CoordInterval end = axis.getCoordInterval(axis.getNominalSize() - 1);
-    double min = Math.min(start.start(), end.end());
-    double max = Math.max(start.start(), end.end());
-    return MinMax.create(min, max);
   }
 
   //// draw using Rectangle when possible
