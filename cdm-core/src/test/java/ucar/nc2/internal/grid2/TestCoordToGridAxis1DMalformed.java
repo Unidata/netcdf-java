@@ -5,6 +5,7 @@
 
 package ucar.nc2.internal.grid2;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import ucar.array.Array;
 import ucar.array.ArrayType;
@@ -15,6 +16,7 @@ import java.util.Optional;
 import static com.google.common.truth.Truth.assertThat;
 
 /** In this case, the bounds are flipped (lower, upper) */
+@Ignore("Malformed File")
 public class TestCoordToGridAxis1DMalformed {
 
   // fdrom cdmUnitTest/conventions/cf/jonathan/fixed.fw0.0Sv.nc
