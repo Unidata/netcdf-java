@@ -120,7 +120,8 @@ public class TestWritingNetcdfTutorial {
     assertThat(v.getArrayType()).isEqualTo(ArrayType.CHAR);
     Array data = v.readArray();
     String dataString = NcdumpArray.printArray(data, null, null).trim();
-    assertThat(dataString.substring(1, dataString.length()-1)).isEqualTo(WritingNetcdfTutorial.someStringValue);
+    assertThat(dataString.substring(1, dataString.length() - 1))
+        .isEqualTo(WritingNetcdfTutorial.someStringValue);
     ncfile.close();
 
     assertThat(WritingNetcdfTutorial.logger.getLogSize()).isEqualTo(0);
