@@ -8,7 +8,6 @@ package ucar.unidata.io.zarr;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import thredds.inventory.*;
-import ucar.nc2.NetcdfFiles;
 import ucar.nc2.util.cache.FileCacheable;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.io.spi.RandomAccessFileProvider;
@@ -32,6 +31,8 @@ public class RandomAccessDirectory extends ucar.unidata.io.RandomAccessFile impl
 
   private long currentFileStartPos = -1; // start position of current file, relative to the directory/store
 
+  private static final String DELIMITER = "/";
+
   protected int bufferSize;
 
   private static final String WRITES_NOT_IMPLEMENTED_MESSAGE =
@@ -44,19 +45,23 @@ public class RandomAccessDirectory extends ucar.unidata.io.RandomAccessFile impl
   public RandomAccessDirectory(String location, int bufferSize) throws IOException {
     super(bufferSize);
     this.bufferSize = bufferSize;
-    this.location = location.replace("\\", "/"); // standardize path
+    this.location = location.replace("\\", DELIMITER); // standardize path
     this.readonly = true; // RandomAccessDirectory does not support writes
 
     // build children list
     this.children = new ArrayList<>();
     MController controller = MControllers.create(location);
     CollectionConfig cc = new CollectionConfig("children", location, false, null, null);
-    Iterator<MFile> files = sortIterator(controller.getInventoryAll(cc, false)); // standardize order
-    if (files != null) {
-      files.forEachRemaining(mfile -> {
-        this.children.add(new VirtualRandomAccessFile(mfile.getPath().replace("\\", "/"), mfile.getLength(),
-            mfile.getLastModified()));
-      });
+    List<MFile> files = sortIterator(controller.getInventoryAll(cc, false)); // standardize order
+    if (files == null) {
+      return;
+    }
+    long index = 0; // track file position in directory
+    for (MFile mfile : files) {
+      long length = mfile.getLength();
+      this.children.add(new VirtualRandomAccessFile(mfile.getPath().replace("\\", DELIMITER), index, length,
+          mfile.getLastModified(), this.bufferSize));
+      index += length;
     }
   }
 
@@ -66,13 +71,13 @@ public class RandomAccessDirectory extends ucar.unidata.io.RandomAccessFile impl
    * @param mfiles
    * @return sorted iterator
    */
-  private static Iterator<MFile> sortIterator(Iterator<MFile> mfiles) {
+  private static List<MFile> sortIterator(Iterator<MFile> mfiles) {
     List list = new ArrayList();
     while (mfiles.hasNext()) {
       list.add(mfiles.next());
     }
     Collections.sort(list);
-    return list.iterator();
+    return list;
   }
 
   /**
@@ -89,13 +94,15 @@ public class RandomAccessDirectory extends ucar.unidata.io.RandomAccessFile impl
    * @return list of files in path
    * @throws IOException
    */
-  public List<RandomAccessFile> getFilesByName(String path) throws IOException {
-    List<RandomAccessFile> files = new ArrayList<>();
+  public List<RandomAccessDirectoryItem> getFilesInPath(String path) throws IOException {
+    // standardize path
+    path = path.replace("\\", DELIMITER);
+
+    List<RandomAccessDirectoryItem> files = new ArrayList<>();
     for (RandomAccessDirectoryItem item : this.children) {
       String location = item.getLocation();
       if (location.contains(path)) {
-        RandomAccessFile raf = item.getRaf();
-        files.add(raf == null ? NetcdfFiles.getRaf(location, this.bufferSize) : raf);
+        files.add(item);
       }
     }
     return files;
@@ -113,12 +120,7 @@ public class RandomAccessDirectory extends ucar.unidata.io.RandomAccessFile impl
     for (RandomAccessDirectoryItem item : this.children) {
       long rafLength = item.length();
       if (tempPos + rafLength > pos) {
-        RandomAccessFile raf = item.getRaf();
-        if (raf == null) {
-          raf = NetcdfFiles.getRaf(item.getLocation(), this.bufferSize);
-          item.setRaf(raf);
-        }
-        this.currentFile = raf;
+        this.currentFile = item.getOrOpenRaf();
         this.currentFileStartPos = tempPos;
         return;
       }
@@ -127,22 +129,6 @@ public class RandomAccessDirectory extends ucar.unidata.io.RandomAccessFile impl
     // pos past EOF
     this.currentFile = null;
     this.currentFileStartPos = -1;
-  }
-
-  @Override
-  public void setBufferSize(int bufferSize) {
-    this.bufferSize = bufferSize;
-    this.children.forEach(item -> {
-      RandomAccessFile raf = item.getRaf();
-      if (raf != null) {
-        raf.setBufferSize(bufferSize);
-      }
-    });
-  }
-
-  @Override
-  public int getBufferSize() {
-    return this.bufferSize;
   }
 
   @Override

@@ -83,7 +83,9 @@ public class MFileZip implements MFile {
           entry = zipIn.getNextEntry();
           continue;
         }
-        entries.add(entry);
+        if (!entry.isDirectory()) {
+          entries.add(entry);
+        }
         zipIn.closeEntry();
         entry = zipIn.getNextEntry();
       }

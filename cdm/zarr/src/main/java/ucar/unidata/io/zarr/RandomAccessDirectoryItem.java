@@ -8,7 +8,6 @@ package ucar.unidata.io.zarr;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.IOException;
-import java.util.List;
 
 /**
  * Interface for items held by a RandomAccessDirectory
@@ -22,6 +21,11 @@ public interface RandomAccessDirectoryItem {
   String getLocation();
 
   /**
+   * @return start index of item relative to directory
+   */
+  long startIndex();
+
+  /**
    * @return size of directory item
    */
   long length();
@@ -32,14 +36,12 @@ public interface RandomAccessDirectoryItem {
   long getLastModified();
 
   /**
-   * @return RandomAccessFile for directory item
+   * @return RandomAccessFile for directory item or null if unopened
    */
   RandomAccessFile getRaf();
 
   /**
-   * Set RandomAccessFile for directory item
-   * 
-   * @param raf
+   * @return RandomAccessFile for directory item
    */
-  void setRaf(RandomAccessFile raf);
+  RandomAccessFile getOrOpenRaf() throws IOException;
 }
