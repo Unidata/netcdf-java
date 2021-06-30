@@ -1,21 +1,15 @@
 package ucar.nc2.grid2;
 
-import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import static ucar.nc2.grid2.TestGridCompare.compareWithCoverage;
 import static ucar.nc2.grid2.TestGridCompare.compareWithGrid1;
 
-// @Ignore("not fixed yet")
+@Category(NeedsCdmUnitTest.class)
 public class TestGridCompareProblem {
-
-  @Test
-  public void testProblem() throws Exception {
-    String filename = TestDir.cdmUnitTestDir + "conventions/cf/jonathan/fixed.fw0.0Sv.nc";
-    compareWithCoverage(filename);
-    compareWithGrid1(filename);
-  }
 
   @Test
   public void testProblem1() throws Exception {
@@ -27,13 +21,6 @@ public class TestGridCompareProblem {
   @Test
   public void testProblem3() throws Exception {
     String filename = TestDir.cdmUnitTestDir + "conventions/nuwg/2003021212_avn-x.nc";
-    compareWithCoverage(filename);
-    compareWithGrid1(filename);
-  }
-
-  @Test
-  public void testProblem2() throws Exception {
-    String filename = "/media/snake/Elements/data/grib/idd/namPolar90/NamPolar90.ncx4";
     compareWithCoverage(filename);
     compareWithGrid1(filename);
   }
