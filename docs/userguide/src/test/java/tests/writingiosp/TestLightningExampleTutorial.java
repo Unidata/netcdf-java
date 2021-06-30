@@ -98,7 +98,8 @@ public class TestLightningExampleTutorial {
     Array<Integer> dateArray = Arrays.factory(ArrayType.INT, new int[] {nRecords});
     Array<Double> latArray = Arrays.factory(ArrayType.DOUBLE, new int[] {nRecords});
     Array<Double> lonArray = Arrays.factory(ArrayType.DOUBLE, new int[] {nRecords});
-    LightningExampleTutorial.addCoordSystemsAndTypedDatasets(builder, dim, dateArray, latArray, lonArray);
+    LightningExampleTutorial.addCoordSystemsAndTypedDatasets(builder, dim, dateArray, latArray,
+        lonArray);
   }
 
   @Test(expected = ClassNotFoundException.class)

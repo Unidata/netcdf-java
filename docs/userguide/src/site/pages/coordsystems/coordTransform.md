@@ -83,7 +83,8 @@ You should subclass one of the abstract classes `ucar.nc2.internal.dataset.trans
   public String getTransformName();
   public TransformType getTransformType();
   public CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv);
-  public ucar.unidata.geoloc.vertical.VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT);
+  public ucar.unidata.geoloc.vertical.VerticalTransform makeMathTransform(
+          NetcdfDataset ds, Dimension timeDim, VerticalCT vCT);
 ~~~
   
 Give your transform a unique name, which is returned by the `getTransformName()` method. 

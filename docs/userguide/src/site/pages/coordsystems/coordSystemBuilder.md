@@ -24,7 +24,8 @@ The steps to use your class in the Netcdf-Java library:
 
 1. Write a subclass that extends `ucar.nc2.internal.dataset.CoordSystemBuilder`
 2. Add the class to your classpath.
-3. From your application, call `ucar.nc2.dataset.CoordSystemFactory.registerConvention( String conventionName, Class c)`. This is called "plugging in" your code at runtime.
+3. From your application, call `ucar.nc2.dataset.CoordSystemFactory.registerConvention( String conventionName, Class c)`. 
+   This is called "plugging in" your code at runtime. For more information, see the [runtime loading](runtime_loading.html) tutorial.
 4. Open the dataset in enhanced mode, e.g. by calling
 
 {% capture rmd %}
@@ -61,7 +62,7 @@ These are the steps taken by `CoordSystemBuilder` to add `CoordinateSystems`:
 3. Call `augmentDataset( netcdfDataset, cancelTask)` to make any changes to the dataset (add attributes, variables, etc).
 4. Call `buildCoordinateSystems( netcdfDataset)` to add the coordinate system objects.
 
-Your class must implement this following methods:
+Your class must implement the following methods:
 
 ~~~java
   public void setConventionUsed( String convName);
