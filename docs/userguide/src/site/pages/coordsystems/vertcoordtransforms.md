@@ -74,7 +74,7 @@ Attribute names follow the CF Conventions Appendix D ([Vertical Transforms](http
 See that document for details on the meanings of the formula terms.
 
 These are examples of placing the Coordinate Transform parameters on the corresponding vertical coordinate (required by CF).
-If you are using CF Conventions, you do not have to add the _Coordinate attributes, as they will be added automatically in the CoordSysBuilder.
+If you are using CF Conventions, you do not have to add the `_Coordinate` attributes, as they will be added automatically in the `CoordSysBuilder`.
 
 ### atmosphere_ln_pressure_coordinate
 
@@ -87,7 +87,7 @@ double levCoord(levCoord=26);
     :formula_terms = "p0: P0 lev: levCoord";
 ~~~
   
-atmosphere_ln_pressure_coordinate transform only works in CF Conventions.
+This transform only works in CF Conventions.
 Required attributes: `standard_name`, `formula_terms`
 
 ### atmosphere_hybrid_height_coordinate
