@@ -14,18 +14,19 @@ class CoordToGridAxis1D {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordToGridAxis1D.class);
 
   boolean isInterval; // is this an interval coordinate?
+  boolean isNominal; // is this an nominal point coordinate?
   final boolean boundsAreContiguous;
   final boolean boundsAreRegular;
 
   final double[] coords; // coordinate values
-  final double[] edge; // contiguous only: n+1 edges, edge[k] < midpoint[k] < edge[k+1]
+  final double[] edges; // contiguous only: n+1 edges, edge[k] < midpoint[k] < edge[k+1]
   final double[] bound1, bound2; // may be contiguous or not
 
   final int ncoords;
   final boolean isRegular;
   boolean isAscending;
 
-  CoordToGridAxis1D(String name, Array<Double> values, Optional<Array<Double>> boundsOpt) {
+  CoordToGridAxis1D(String name, Array<Double> values, Optional<Array<Double>> boundsOpt, boolean isHorizAxis) {
     Preconditions.checkArgument(values.getRank() < 2);
 
     int count = 0;
@@ -60,15 +61,15 @@ class CoordToGridAxis1D {
       }
 
       if (contig) {
-        edge = new double[ncoords + 1];
-        edge[0] = value1[0];
-        System.arraycopy(value2, 0, edge, 1, ncoords);
+        edges = new double[ncoords + 1];
+        edges[0] = value1[0];
+        System.arraycopy(value2, 0, edges, 1, ncoords);
         boundsAreContiguous = true;
-        boundsAreRegular = calcIsRegular(edge);
+        boundsAreRegular = calcIsRegular(edges);
       } else {
         boundsAreContiguous = false;
         boundsAreRegular = false;
-        edge = null;
+        edges = null;
       }
 
       bound1 = value1;
@@ -76,7 +77,7 @@ class CoordToGridAxis1D {
       isInterval = true;
     } else {
       bound1 = null;
-      edge = null;
+      edges = null;
       bound2 = null;
       isInterval = false;
       boundsAreContiguous = false;
@@ -86,6 +87,14 @@ class CoordToGridAxis1D {
     // if its an interval, see if it can be a point
     if (isInterval && boundsAreContiguous && isPointWithBounds()) {
       isInterval = false;
+    }
+
+    // Netcdf always has a coordinate, it may also have a bounds. These are made into intervals, even when they are not.
+    // How do we know if its an interval? We dont. But we do know that intervals cannot be horizontal coordinates.
+    // So we will call it a nominal point coordinate
+    if (isInterval && boundsAreContiguous && isHorizAxis) {
+      isInterval = false;
+      isNominal = true;
     }
   }
 
@@ -174,9 +183,18 @@ class CoordToGridAxis1D {
     }
   }
 
-  void extract(GridAxisPoint.Builder<?> builder) {
+  void extractToPointBuilder(GridAxisPoint.Builder<?> builder) {
     builder.setNcoords(ncoords);
-    if (isRegular) {
+    if (isNominal) {
+      builder.setSpacing(GridAxisSpacing.nominalPoint);
+      builder.setValues(coords);
+      double starting = coords[0];
+      double ending = coords[ncoords - 1];
+      double resolution = (ncoords == 1) ? 0.0 : (ending - starting) / (ncoords - 1);
+      builder.setResolution(Math.abs(resolution));
+      builder.setEdges(edges);
+
+    } else if (isRegular) {
       builder.setSpacing(GridAxisSpacing.regularPoint);
       double starting = coords[0];
       double ending = coords[ncoords - 1];
@@ -193,20 +211,20 @@ class CoordToGridAxis1D {
     }
   }
 
-  void extract(GridAxisInterval.Builder<?> builder) {
+  void extractToIntervalBuilder(GridAxisInterval.Builder<?> builder) {
     builder.setNcoords(ncoords);
     if (boundsAreRegular) {
       builder.setSpacing(GridAxisSpacing.regularInterval);
-      double starting = edge[0];
-      double ending = edge[edge.length - 1];
+      double starting = edges[0];
+      double ending = edges[edges.length - 1];
       double increment = (ncoords == 1) ? 0.0 : (ending - starting) / (ncoords);
       builder.setRegular(ncoords, starting, increment);
 
     } else if (boundsAreContiguous) {
       builder.setSpacing(GridAxisSpacing.contiguousInterval);
-      builder.setValues(edge);
-      double starting = edge[0];
-      double ending = edge[edge.length - 1];
+      builder.setValues(edges);
+      double starting = edges[0];
+      double ending = edges[edges.length - 1];
       double resolution = (ncoords == 1) ? 0.0 : (ending - starting) / (ncoords);
       builder.setResolution(Math.abs(resolution));
 

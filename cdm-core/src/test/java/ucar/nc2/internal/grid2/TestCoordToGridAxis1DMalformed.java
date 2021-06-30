@@ -37,7 +37,7 @@ public class TestCoordToGridAxis1DMalformed {
     }
     Array<Double> boundsArray = Arrays.factory(ArrayType.DOUBLE, new int[] {n, 2}, bounds);
 
-    CoordToGridAxis1D subject = new CoordToGridAxis1D("latitude_73", valuesArray, Optional.of(boundsArray));
+    CoordToGridAxis1D subject = new CoordToGridAxis1D("latitude_73", valuesArray, Optional.of(boundsArray), true);
 
     assertThat(subject.boundsAreContiguous).isTrue();
     assertThat(subject.boundsAreRegular).isTrue();
@@ -70,7 +70,8 @@ public class TestCoordToGridAxis1DMalformed {
     Array<Double> valuesArray = Arrays.factory(ArrayType.DOUBLE, new int[] {n}, valuesFlipped);
     Array<Double> boundsArray = Arrays.factory(ArrayType.DOUBLE, new int[] {n, 2}, bounds);
 
-    CoordToGridAxis1D subject = new CoordToGridAxis1D("latitude_73_flipped", valuesArray, Optional.of(boundsArray));
+    CoordToGridAxis1D subject =
+        new CoordToGridAxis1D("latitude_73_flipped", valuesArray, Optional.of(boundsArray), true);
 
     assertThat(subject.boundsAreContiguous).isTrue();
     assertThat(subject.boundsAreRegular).isTrue();

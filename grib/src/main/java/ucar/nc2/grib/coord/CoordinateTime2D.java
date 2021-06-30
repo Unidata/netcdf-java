@@ -23,6 +23,7 @@ import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Formatter;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -519,7 +520,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
   public CoordinateTimeAbstract getMaximalTimes() {
     // Kludge
     if (isRegular()) {
-      return this.regTimes.values().stream().findAny().orElse(null);
+      return this.regTimes.values().stream().max(Comparator.comparingInt(CoordinateTimeAbstract::getNCoords)).get();
     } else {
       return getTimeCoordinate(0); // LOOK can use this for all?
     }

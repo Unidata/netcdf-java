@@ -17,6 +17,7 @@ import ucar.nc2.grid.GridCoordinateSystem;
 import ucar.nc2.internal.grid.GridNetcdfDataset;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
+import ucar.unidata.util.test.category.NeedsExternalResource;
 
 import java.io.IOException;
 import java.util.Formatter;
@@ -25,6 +26,58 @@ import java.util.Optional;
 import static com.google.common.truth.Truth.assertThat;
 
 public class TestDatasetClassifier {
+
+  @Test
+  @Category(NeedsCdmUnitTest.class)
+  public void testNamPolar() throws IOException {
+    String filename = TestDir.cdmUnitTestDir + "tds_index/NCEP/NAM/Polar_90km/NAM_Polar_90km_20201027_0000.grib2.ncx4";
+    try (FeatureDatasetCoverage covDataset = CoverageDatasetFactory.open(filename)) {
+      for (CoverageCollection cc : covDataset.getCoverageCollections()) {
+        if (cc.getName().endsWith("MRUTP")) {
+          assertThat(cc.getCoverageType()).isEqualTo(FeatureType.GRID);
+        }
+      }
+    }
+
+    try (NetcdfDataset ds = NetcdfDatasets.openDataset(filename)) {
+      Formatter errlog = new Formatter();
+      Optional<GridNetcdfDataset> grido = GridNetcdfDataset.create(ds, errlog);
+      assertThat(grido.isPresent()).isTrue();
+      GridNetcdfDataset gridDataset = grido.get();
+      if (!Iterables.isEmpty(gridDataset.getGrids())) {
+        DatasetClassifier dclassifier = new DatasetClassifier(ds, errlog);
+        DatasetClassifier.CoordSysClassifier classifier =
+            dclassifier.getCoordinateSystemsUsed().stream().findFirst().orElse(null);
+        assertThat(classifier.getFeatureType()).isEqualTo(FeatureType.GRID);
+      }
+    }
+  }
+
+  @Test
+  @Category(NeedsCdmUnitTest.class)
+  public void testNamPolarCollection() throws IOException {
+    String filename = TestDir.cdmUnitTestDir + "tds_index/NCEP/NAM/Polar_90km/NAM-Polar_90km.ncx4";
+    try (FeatureDatasetCoverage covDataset = CoverageDatasetFactory.open(filename)) {
+      for (CoverageCollection cc : covDataset.getCoverageCollections()) {
+        if (cc.getName().endsWith("MRUTP")) {
+          assertThat(cc.getCoverageType()).isEqualTo(FeatureType.GRID);
+        }
+      }
+    }
+
+    try (NetcdfDataset ds = NetcdfDatasets.openDataset(filename)) {
+      Formatter errlog = new Formatter();
+      Optional<GridNetcdfDataset> grido = GridNetcdfDataset.create(ds, errlog);
+      assertThat(grido.isPresent()).isTrue();
+      GridNetcdfDataset gridDataset = grido.get();
+      if (!Iterables.isEmpty(gridDataset.getGrids())) {
+        DatasetClassifier dclassifier = new DatasetClassifier(ds, errlog);
+        DatasetClassifier.CoordSysClassifier classifier =
+            dclassifier.getCoordinateSystemsUsed().stream().findFirst().orElse(null);
+        assertThat(classifier.getFeatureType()).isEqualTo(FeatureType.GRID);
+      }
+    }
+  }
 
   @Test
   public void testNoGrids() throws IOException {

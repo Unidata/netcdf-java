@@ -35,6 +35,32 @@ import java.util.stream.Collectors;
 @Immutable
 public class GridNetcdfCS implements GridCoordinateSystem {
 
+  /**
+   * Create a GridCoordinateSystem from a DatasetClassifier.CoordSysClassifier.
+   *
+   * @param classifier the classifier.
+   * @param gridAxes The gridAxes already built, so there are no duplicates as we make the coordSys.
+   */
+  static Optional<GridNetcdfCS> createFromClassifier(DatasetClassifier.CoordSysClassifier classifier,
+      Map<String, GridAxis<?>> gridAxes) {
+    GridNetcdfCS.Builder<?> builder = GridNetcdfCS.builder();
+    builder.setFeatureType(classifier.getFeatureType());
+    builder.setProjection(classifier.getProjection());
+
+    ArrayList<GridAxis<?>> axesb = new ArrayList<>();
+    for (CoordinateAxis axis : classifier.getAxesUsed()) {
+      GridAxis<?> gaxis = gridAxes.get(axis.getFullName());
+      axesb.add(Preconditions.checkNotNull(gaxis, "Missing Coordinate Axis " + axis.getFullName()));
+    }
+    builder.setAxes(axesb);
+
+    try {
+      return Optional.of(builder.build());
+    } catch (Exception e) {
+      return Optional.empty();
+    }
+  }
+
   @Override
   public String getName() {
     return name;
@@ -208,45 +234,6 @@ public class GridNetcdfCS implements GridCoordinateSystem {
   private final GridNetcdfHorizCS horizCsys;
   private final @Nullable GridNetcdfTimeCS tcs;
 
-  /**
-   * Create a GridCoordinateSystem from a DatasetClassifier.CoordSysClassifier.
-   *
-   * @param classifier the classifier.
-   * @param gridAxes The gridAxes already built, so there are no duplicates as we make the coordSys.
-   */
-  GridNetcdfCS(DatasetClassifier.CoordSysClassifier classifier, Map<String, GridAxis<?>> gridAxes) {
-    this.featureType = classifier.getFeatureType();
-
-    ArrayList<GridAxis<?>> axesb = new ArrayList<>();
-    for (CoordinateAxis axis : classifier.getAxesUsed()) {
-      GridAxis<?> gaxis = gridAxes.get(axis.getFullName());
-      axesb.add(Preconditions.checkNotNull(gaxis, "Missing Coordinate Axis " + axis.getFullName()));
-    }
-    axesb.sort(new Grids.AxisComparator());
-    this.axes = ImmutableList.copyOf(axesb);
-    List<String> names = axes.stream().map(GridAxis::getName).collect(Collectors.toList());
-    this.name = String.join(" ", names);
-
-    GridAxis<?> xaxis = findCoordAxis(AxisType.GeoX, AxisType.Lon);
-    GridAxis<?> yaxis = findCoordAxis(AxisType.GeoY, AxisType.Lat);
-    this.horizCsys = GridNetcdfHorizCS.create(xaxis, yaxis, classifier.getProjection());
-    this.tcs = makeTimeCS();
-  }
-
-  private GridNetcdfTimeCS makeTimeCS() {
-    GridAxis<?> rtAxis = axes.stream().filter(a -> a.getAxisType() == AxisType.RunTime).findFirst().orElse(null);
-    GridAxis<?> toAxis = axes.stream().filter(a -> a.getAxisType() == AxisType.TimeOffset).findFirst().orElse(null);
-    GridAxis<?> timeAxis = axes.stream().filter(a -> a.getAxisType() == AxisType.Time).findFirst().orElse(null);
-
-    if (rtAxis != null && toAxis != null) {
-      return GridNetcdfTimeCS.create((GridAxisPoint) rtAxis, toAxis);
-    } else if (timeAxis != null) {
-      return GridNetcdfTimeCS.create(timeAxis);
-    }
-    // ok to not have a time coordinate
-    return null;
-  }
-
   public Builder<?> toBuilder() {
     return addLocalFieldsToBuilder(builder());
   }
@@ -262,6 +249,12 @@ public class GridNetcdfCS implements GridCoordinateSystem {
   private GridNetcdfCS(Builder<?> builder) {
     Preconditions.checkNotNull(builder.axes);
     Preconditions.checkNotNull(builder.projection);
+
+    builder.axes.sort(new Grids.AxisComparator());
+    if (builder.name == null) {
+      List<String> names = builder.axes.stream().map(GridAxis::getName).collect(Collectors.toList());
+      builder.setName(String.join(" ", names));
+    }
     this.name = builder.name;
     this.featureType = builder.featureType;
     this.axes = ImmutableList.copyOf(builder.axes);
@@ -285,6 +278,20 @@ public class GridNetcdfCS implements GridCoordinateSystem {
     this.horizCsys = GridNetcdfHorizCS.create(findCoordAxis(AxisType.GeoX, AxisType.Lon),
         findCoordAxis(AxisType.GeoY, AxisType.Lat), builder.projection);
     this.tcs = makeTimeCS();
+  }
+
+  private GridNetcdfTimeCS makeTimeCS() {
+    GridAxis<?> rtAxis = axes.stream().filter(a -> a.getAxisType() == AxisType.RunTime).findFirst().orElse(null);
+    GridAxis<?> toAxis = axes.stream().filter(a -> a.getAxisType() == AxisType.TimeOffset).findFirst().orElse(null);
+    GridAxis<?> timeAxis = axes.stream().filter(a -> a.getAxisType() == AxisType.Time).findFirst().orElse(null);
+
+    if (rtAxis != null && toAxis != null) {
+      return GridNetcdfTimeCS.create((GridAxisPoint) rtAxis, toAxis);
+    } else if (timeAxis != null) {
+      return GridNetcdfTimeCS.create(timeAxis);
+    }
+    // ok to not have a time coordinate
+    return null;
   }
 
   public static Builder<?> builder() {

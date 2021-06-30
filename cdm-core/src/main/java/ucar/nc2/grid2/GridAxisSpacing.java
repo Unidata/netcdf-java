@@ -20,6 +20,10 @@ public enum GridAxisSpacing {
    * Irregular spaced points values[npts]; edges halfway between coords.
    */
   irregularPoint,
+  /**
+   * Irregular spaced points values[npts]; edges are not halfway between coords, but are specified in edges[npts+1]
+   */
+  nominalPoint,
 
   /**
    * Regular contiguous intervals (start, end, npts); start and end are edges, midpoints halfway between edges,

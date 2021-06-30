@@ -20,26 +20,43 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Optional;
 
-/** static utilities */
+/** Create a GridAxis from a CoordinateAxis */
 class CoordAxisExtractor {
   private static final Logger log = LoggerFactory.getLogger(CoordAxisExtractor.class);
 
-  static GridAxis<?> extractGridAxis(NetcdfDataset ncd, CoordinateAxis axis, GridAxisDependenceType dependenceType) {
-    if (axis.isInterval()) {
+  private final NetcdfDataset ncd;
+  private final CoordinateAxis axis;
+  private final GridAxisDependenceType dependenceTypeFromClassifier;
+
+  public CoordAxisExtractor(NetcdfDataset ncd, CoordinateAxis axis,
+      GridAxisDependenceType dependenceTypeFromClassifier) {
+    this.ncd = ncd;
+    this.axis = axis;
+    this.dependenceTypeFromClassifier = dependenceTypeFromClassifier;
+  }
+
+  GridAxis<?> extractGridAxis() {
+    CoordToGridAxis1D converter =
+        new CoordToGridAxis1D(axis.getShortName(), readValues(), readBounds(), axis.getAxisType().isHoriz());
+    if (axis.getAxisType() == AxisType.Lon) {
+      // Fix discontinuities in longitude axis. These occur when the axis crosses the date line.
+      converter.correctLongitudeWrap();
+    }
+
+    if (converter.isInterval) {
       GridAxisInterval.Builder<?> builder = GridAxisInterval.builder();
-      CoordToGridAxis1D converter = extractGridAxis1D(ncd, axis, builder, dependenceType);
-      converter.extract(builder);
+      extractGridAxis1D(builder);
+      converter.extractToIntervalBuilder(builder);
       return builder.build();
     } else {
       GridAxisPoint.Builder<?> builder = GridAxisPoint.builder();
-      CoordToGridAxis1D converter = extractGridAxis1D(ncd, axis, builder, dependenceType);
-      converter.extract(builder);
+      extractGridAxis1D(builder);
+      converter.extractToPointBuilder(builder);
       return builder.build();
     }
   }
 
-  private static CoordToGridAxis1D extractGridAxis1D(NetcdfDataset ncd, CoordinateAxis axis,
-      GridAxis.Builder<?> builder, GridAxisDependenceType dependenceTypeFromClassifier) {
+  private void extractGridAxis1D(GridAxis.Builder<?> builder) {
     Preconditions.checkArgument(axis.getRank() < 2);
 
     builder.setName(axis.getShortName()).setUnits(axis.getUnitsString()).setDescription(axis.getDescription())
@@ -62,16 +79,9 @@ class CoordAxisExtractor {
       builder.setDependsOn(dependsOn);
     }
     builder.setDependenceType(axis.isScalar() ? GridAxisDependenceType.scalar : dependenceType);
-
-    CoordToGridAxis1D converter = new CoordToGridAxis1D(builder.toString(), readValues(axis), readBounds(axis));
-    if (axis.getAxisType() == AxisType.Lon) {
-      // Fix discontinuities in longitude axis. These occur when the axis crosses the date line.
-      converter.correctLongitudeWrap();
-    }
-    return converter;
   }
 
-  private static Array<Double> readValues(CoordinateAxis axis) {
+  private Array<Double> readValues() {
     Array<?> data;
     try {
       data = axis.readArray();
@@ -82,7 +92,7 @@ class CoordAxisExtractor {
     return Arrays.toDouble(data);
   }
 
-  private static Optional<Array<Double>> readBounds(CoordinateAxis axis) {
+  private Optional<Array<Double>> readBounds() {
     String boundsVarName = axis.attributes().findAttributeString(CF.BOUNDS, null);
     if (boundsVarName == null) {
       return Optional.empty();
