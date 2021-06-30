@@ -1,5 +1,6 @@
 package tests.writingiosp;
 
 public class TestIospExamplesShared {
-  public final static String testFilePath = "userguide/src/site/files/writingiosp/lightningData.txt";
+  public final static String testFilePath =
+      "userguide/src/site/files/writingiosp/lightningData.txt";
 }

@@ -17,7 +17,8 @@ import static com.google.common.truth.Truth.assertThat;
 
 public class TestNetcdfDatasetTutorial {
 
-  private static String dataPathStr = TestDir.cdmLocalTestDataDir + "ncml/enhance/testStandaloneEnhance.ncml";
+  private static String dataPathStr =
+      TestDir.cdmLocalTestDataDir + "ncml/enhance/testStandaloneEnhance.ncml";
   private static DatasetUrl datasetUrl;
 
   @BeforeClass
@@ -67,7 +68,7 @@ public class TestNetcdfDatasetTutorial {
 
       Object packed_data = scaledvar.readArray().getScalar();
       double unpacked_data =
-          NetcdfDatasetTutorial.unpackData((float)packed_data, scale_factor, add_offset);
+          NetcdfDatasetTutorial.unpackData((float) packed_data, scale_factor, add_offset);
       assertThat(unpacked_data).isNotNaN();
     }
   }
