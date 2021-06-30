@@ -201,8 +201,8 @@ public class ReadingCdmTutorial {
    * @throws IOException
    */
   public static List<Object> readScalars(Variable intVar, Variable doubleVar) throws IOException {
-    int ival = ((Array<Integer>)intVar.readArray()).getScalar();
-    double dval = ((Array<Double>)doubleVar.readArray()).getScalar();
+    int ival = ((Array<Integer>) intVar.readArray()).getScalar();
+    double dval = ((Array<Double>) doubleVar.readArray()).getScalar();
     return Arrays.asList(ival, dval); /* DOCS-IGNORE */
   }
 
@@ -222,7 +222,7 @@ public class ReadingCdmTutorial {
     for (int i = 0; i < shape[0]; i++) {
       for (int j = 0; j < shape[1]; j++) {
         for (int k = 0; k < shape[2]; k++) {
-          double dval = (double)data.get(index.set(i, j, k));
+          double dval = (double) data.get(index.set(i, j, k));
           list.add(dval); /* DOCS-IGNORE */
         }
       }
@@ -243,7 +243,7 @@ public class ReadingCdmTutorial {
 
     Iterator ii = data.iterator();
     while (ii.hasNext()) {
-      sum += (double)ii.next();
+      sum += (double) ii.next();
     }
     return sum; /* DOCS-IGNORE */
   }
@@ -277,7 +277,7 @@ public class ReadingCdmTutorial {
    */
   public static double[] copyData(Variable v) throws IOException {
     Array<Double> dataSrc = (Array<Double>) v.readArray(); // data to be copied
-    double[] dest = (double[])ucar.array.Arrays.copyPrimitiveArray(dataSrc);
+    double[] dest = (double[]) ucar.array.Arrays.copyPrimitiveArray(dataSrc);
     // do something with copied data here
     // ...
     return dest; /* DOCS-IGNORE */
