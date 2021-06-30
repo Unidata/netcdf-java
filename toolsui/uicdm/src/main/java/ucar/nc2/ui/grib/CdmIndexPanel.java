@@ -146,6 +146,7 @@ public class CdmIndexPanel extends JPanel {
         List<VarBean> beans = varTable.getSelectedBeans();
         infoTA.clear();
         for (VarBean bean : beans) {
+          infoTA.appendLine(bean.name);
           infoTA.appendLine(bean.v.toStringFrom());
         }
         infoTA.gotoTop();

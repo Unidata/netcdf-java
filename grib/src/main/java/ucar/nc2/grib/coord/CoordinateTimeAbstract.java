@@ -62,10 +62,11 @@ public abstract class CoordinateTimeAbstract implements Coordinate {
     return name;
   }
 
-  public void setName(String name) {
+  public CoordinateTimeAbstract setName(String name) {
     if (!this.name.equals("time"))
       throw new IllegalStateException("Cant modify");
     this.name = name;
+    return this;
   }
 
   public CalendarDate getRefDate() {

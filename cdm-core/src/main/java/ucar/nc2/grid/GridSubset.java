@@ -72,6 +72,10 @@ public class GridSubset {
     this.req.putAll(req);
   }
 
+  public boolean isEmpty() {
+    return req.isEmpty();
+  }
+
   @Nullable
   private Object get(String key) {
     return req.get(key);
@@ -184,11 +188,6 @@ public class GridSubset {
     return (val instanceof Boolean) && (Boolean) val;
   }
 
-  public GridSubset setHorizStride(int stride) {
-    req.put(horizStride, stride);
-    return this;
-  }
-
   public Set<Map.Entry<String, Object>> getEntries() {
     return req.entrySet();
   }
@@ -198,6 +197,11 @@ public class GridSubset {
   @Nullable
   public Integer getHorizStride() {
     return getInteger(horizStride);
+  }
+
+  public GridSubset setHorizStride(int stride) {
+    req.put(horizStride, stride);
+    return this;
   }
 
   @Nullable
@@ -435,15 +439,6 @@ public class GridSubset {
     return this;
   }
 
-  @Override
-  public String toString() {
-    Formatter f = new Formatter();
-    for (Map.Entry<String, Object> entry : req.entrySet()) {
-      f.format("%s == %s%n", entry.getKey(), entry.getValue());
-    }
-    return f.toString();
-  }
-
   public String getGridName() {
     return (String) get(gridName);
   }
@@ -453,7 +448,17 @@ public class GridSubset {
     return this;
   }
 
+  //////////////////////////////////////////////////////////////////////////////////
   GridSubset() {}
+
+  @Override
+  public String toString() {
+    Formatter f = new Formatter();
+    for (Map.Entry<String, Object> entry : req.entrySet()) {
+      f.format("%s == %s%n", entry.getKey(), entry.getValue());
+    }
+    return f.toString();
+  }
 
   @Override
   public boolean equals(Object o) {

@@ -4,7 +4,6 @@
  */
 package ucar.nc2.ui.grid;
 
-import ucar.ma2.IsMissingEvaluator;
 import ucar.ui.widget.FontUtil;
 import ucar.ui.util.ListenerManager;
 import ucar.unidata.util.Format;
@@ -47,7 +46,7 @@ public class ColorScale implements Cloneable, java.io.Serializable {
   private ListenerManager lm;
 
   // this is set for each grid
-  private IsMissingEvaluator gg;
+  private ucar.array.IsMissingEvaluator gg;
   private double[] edge;
   private int[] hist;
   private double min, max, interval;
@@ -241,7 +240,7 @@ public class ColorScale implements Cloneable, java.io.Serializable {
    * }
    */
 
-  public void setGeoGrid(IsMissingEvaluator gg) {
+  public void setGeoGrid(ucar.array.IsMissingEvaluator gg) {
     this.gg = gg;
     hasMissingData = gg.hasMissing();
   }

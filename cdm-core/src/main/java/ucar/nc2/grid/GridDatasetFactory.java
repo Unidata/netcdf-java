@@ -27,14 +27,16 @@ public class GridDatasetFactory {
 
     // LOOK could be a gcdm endpoint ??
 
-    // check if its a GRIB collection
-    DatasetUrl durl = DatasetUrl.findDatasetUrl(endpoint);
-    if (durl.getServiceType() == null) { // skip GRIB check for anything not a plain ole file
-      GribOpenAttempt openAttempt = openGrib(endpoint, errLog);
-      if (openAttempt.isGrib) {
-        return openAttempt.coverage;
-      }
-    }
+    /*
+     * check if its a GRIB collection
+     * DatasetUrl durl = DatasetUrl.findDatasetUrl(endpoint);
+     * if (durl.getServiceType() == null) { // skip GRIB check for anything not a plain ole file
+     * GribOpenAttempt openAttempt = openGrib(endpoint, errLog);
+     * if (openAttempt.isGrib) {
+     * return openAttempt.coverage;
+     * }
+     * }
+     */
     // this will still open a GRIB Collection, but it will be built on top of NetcdfDataset.
     // probably ok for small collections, though it differs from the direct GRIB.
     // if tests start failing, check if GRIB module is installed

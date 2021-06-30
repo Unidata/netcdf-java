@@ -30,7 +30,7 @@ import java.util.Formatter;
  * @since 7/11/2015
  */
 // @Immutable
-public class Coverage implements VariableSimpleIF, IsMissingEvaluator {
+public class Coverage implements VariableSimpleIF, ucar.array.IsMissingEvaluator, ucar.ma2.IsMissingEvaluator {
   private final String name;
   private final DataType dataType;
   private final AttributeContainerMutable atts;

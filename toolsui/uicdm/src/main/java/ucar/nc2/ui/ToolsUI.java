@@ -27,6 +27,7 @@ import ucar.nc2.ui.bufr.BufrTableDPanel;
 import ucar.nc2.ui.dialog.DiskCache2Form;
 import ucar.nc2.ui.grib.*;
 import ucar.nc2.ui.grid.GeoGridPanel;
+import ucar.nc2.ui.grid.Grid2Panel;
 import ucar.nc2.ui.grid.GridPanel;
 import ucar.nc2.ui.menu.*;
 import ucar.nc2.ui.op.*;
@@ -119,6 +120,7 @@ public class ToolsUI extends JPanel {
   private GribTemplatePanel gribTemplatePanel;
   private Grib1CollectionOpPanel grib1CollectionPanel;
   private GridPanel gridPanel;
+  private Grid2Panel grid2Panel;
   private ReportOpPanel grib1ReportPanel;
   private Grib1TablePanel grib1TablePanel;
   private Grib2CollectionOpPanel grib2CollectionPanel;
@@ -255,6 +257,7 @@ public class ToolsUI extends JPanel {
     ftTabPane.addTab("Grids", new JLabel("Grids"));
     ftTabPane.addTab("Coverages", new JLabel("Coverages"));
     ftTabPane.addTab("GridNew", new JLabel("GridNew"));
+    ftTabPane.addTab("Grid2", new JLabel("Grid2"));
     ftTabPane.addTab("SimpleGeometry", new JLabel("SimpleGeometry"));
     ftTabPane.addTab("WMS", new JLabel("WMS"));
     ftTabPane.addTab("PointFeature", new JLabel("PointFeature"));
@@ -498,6 +501,11 @@ public class ToolsUI extends JPanel {
         c = gridPanel;
         break;
 
+      case "Grid2":
+        grid2Panel = new Grid2Panel((PreferencesExt) mainPrefs.node("grid2Panel"));
+        c = grid2Panel;
+        break;
+
       case "HDF5-Objects":
         hdf5ObjectPanel = new Hdf5ObjectPanel((PreferencesExt) mainPrefs.node("hdf5"), useBuilders);
         c = hdf5ObjectPanel;
@@ -739,6 +747,9 @@ public class ToolsUI extends JPanel {
     if (gridPanel != null) {
       gridPanel.save();
     }
+    if (grid2Panel != null) {
+      grid2Panel.save();
+    }
     if (geoGridPanel != null) {
       geoGridPanel.save();
     }
@@ -940,6 +951,13 @@ public class ToolsUI extends JPanel {
     gridPanel.doit(datasetName);
     tabbedPane.setSelectedComponent(ftTabPane);
     ftTabPane.setSelectedComponent(gridPanel);
+  }
+
+  public void openNewGrid2(String datasetName) {
+    makeComponent(ftTabPane, "Grid2");
+    grid2Panel.doit(datasetName);
+    tabbedPane.setSelectedComponent(ftTabPane);
+    ftTabPane.setSelectedComponent(grid2Panel);
   }
 
   public void openGridDataset(NetcdfDataset dataset) {

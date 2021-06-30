@@ -23,6 +23,7 @@ dependencies {
   testImplementation project(':cdm-test-utils')
 
   testImplementation 'com.google.truth:truth'
+  testImplementation 'com.google.truth.extensions:truth-java8-extension'
   testImplementation 'org.jsoup:jsoup'
   testRuntimeOnly 'ch.qos.logback:logback-classic'
 }

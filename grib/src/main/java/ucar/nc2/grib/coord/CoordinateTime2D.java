@@ -21,6 +21,7 @@ import ucar.nc2.internal.util.Counters;
 import ucar.nc2.util.Indent;
 import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Formatter;
 import java.util.HashMap;
@@ -31,6 +32,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 /**
  * Both runtime and time coordinates are tracked here. The time coordinate is dependent on the runtime, at least on the
@@ -50,8 +52,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
   private final CoordinateTimeAbstract otime; // orthogonal time coordinates - only when isOrthogonal
   // only when isRegular: <minute of day, time coordinate>
   private final SortedMap<Integer, CoordinateTimeAbstract> regTimes;
-  private final int[] offset; // list all offsets from the base/first runtime, length nruns (LOOK can we use
-                              // SmartArrayInt ?)
+  private final int[] offset; // list all offsets from the base/first runtime, length nruns, units ?
 
   private final boolean isRegular; // offsets are the same for each "runtime minute of day"
   private final boolean isOrthogonal; // offsets same for all runtimes, so 2d time array is (runtime X otime)
@@ -195,7 +196,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
   }
 
   @Override
-  public void setName(String name) {
+  public CoordinateTimeAbstract setName(String name) {
     super.setName(name);
     if (isOrthogonal())
       otime.setName(name);
@@ -208,6 +209,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
         ((CoordinateTimeAbstract) time).setName(name);
       }
     }
+    return this;
   }
 
   ///////////////////////////////////////////////////////
@@ -501,9 +503,31 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     return result;
   }
 
+  public CoordinateTimeAbstract getOrthogonalTimes() {
+    return otime;
+  }
+
+  // For MRUTC, MRUTP
+  public CoordinateTimeAbstract getOffsetTimes() {
+    // LOOK assumes Point LOOK needs to be seconds, probably cant use this.offset ??
+    List<Integer> offsets = Arrays.stream(this.offset).boxed().collect(Collectors.toList());
+    return new CoordinateTime(this.code, otime.timeUnit, otime.refDate, offsets, otime.time2runtime)
+        .setName(this.getName());
+  }
+
+  // For TwoD, Regular, maximal time offset ??
+  public CoordinateTimeAbstract getMaximalTimes() {
+    // Kludge
+    if (isRegular()) {
+      return this.regTimes.values().stream().findAny().orElse(null);
+    } else {
+      return getTimeCoordinate(0); // LOOK can use this for all?
+    }
+  }
+
   /**
    * Get the time coordinate at the given indices, into the 2D time coordinate array
-   * 
+   *
    * @param runIdx run index
    * @param timeIdx time index
    * @return time coordinate
