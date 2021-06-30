@@ -68,4 +68,23 @@ public interface MaterializedCoordinateSystem {
     return result;
   }
 
+  default List<GridAxis<?>> getAxes() {
+    List<GridAxis<?>> result = new ArrayList<>();
+    if (getTimeCoordSystem() != null) {
+      if (getTimeCoordSystem().getRunTimeAxis() != null) {
+        result.add(getTimeCoordSystem().getRunTimeAxis());
+      }
+      result.add(getTimeCoordSystem().getTimeOffsetAxis(0));
+    }
+    if (getEnsembleAxis() != null) {
+      result.add(getEnsembleAxis());
+    }
+    if (getVerticalAxis() != null) {
+      result.add(getVerticalAxis());
+    }
+    result.add(getHorizCoordSystem().getYHorizAxis());
+    result.add(getHorizCoordSystem().getXHorizAxis());
+    return result;
+  }
+
 }

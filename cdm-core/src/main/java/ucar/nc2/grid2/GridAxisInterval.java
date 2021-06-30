@@ -11,7 +11,6 @@ import ucar.array.Range;
 import ucar.nc2.grid.CoordInterval;
 import ucar.nc2.grid.GridSubset;
 import ucar.nc2.internal.grid2.SubsetIntervalHelper;
-import ucar.nc2.internal.grid2.SubsetPointHelper;
 import ucar.nc2.util.Indent;
 
 import javax.annotation.Nullable;
@@ -20,7 +19,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
-/** Interval Grid coordinates. */
+/**
+ * Interval Grid coordinates.
+ * LOOK maybe the only real case here different from point is discontinuous ??
+ */
 public class GridAxisInterval extends GridAxis<CoordInterval> implements Iterable<CoordInterval> {
 
   @Override
@@ -50,6 +52,11 @@ public class GridAxisInterval extends GridAxis<CoordInterval> implements Iterabl
   @Override
   public CoordInterval getCoordInterval(int index) {
     return CoordInterval.create(getCoordEdge1(index), getCoordEdge2(index));
+  }
+
+  @Override
+  public Object getCoordinate(int index) {
+    return getCoordInterval(index);
   }
 
   /** The midpoint of the interval, cast to a double. */

@@ -65,6 +65,7 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
     return this.range != null ? range : Range.make(this.name, this.ncoords);
   }
 
+  @Override
   public Number getCoordinate(int index) {
     if (index < 0 || index >= ncoords) {
       throw new IllegalArgumentException("Index out of range=" + index);
@@ -103,10 +104,11 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
         return startValue + (index - .5) * getResolution();
 
       case irregularPoint:
-        if (index > 0)
+        if (index > 0) {
           return (values[index - 1] + values[index]) / 2;
-        else
+        } else {
           return values[0] - (values[1] - values[0]) / 2;
+        }
     }
     throw new IllegalStateException("Unknown spacing=" + spacing);
   }
@@ -120,10 +122,11 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
         return startValue + (index + .5) * getResolution();
 
       case irregularPoint:
-        if (index < ncoords - 1)
+        if (index < ncoords - 1) {
           return (values[index] + values[index + 1]) / 2;
-        else
+        } else {
           return values[index] + (values[index] - values[index - 1]) / 2;
+        }
     }
     throw new IllegalStateException("Unknown spacing=" + spacing);
   }

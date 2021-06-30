@@ -77,6 +77,8 @@ public abstract class GridAxis<T> implements Comparable<GridAxis<T>>, Iterable<T
   /** Nominal in the sense that it may not match the materialized data array. */
   public abstract int getNominalSize();
 
+  public abstract Object getCoordinate(int index);
+
   public abstract CoordInterval getCoordInterval(int index);
 
   public abstract double getCoordMidpoint(int index);

@@ -69,25 +69,4 @@ public class TestGridDatasetFactory {
       assertThat(cs.getNominalShape()).isEqualTo(expectedShape);
     }
   }
-
-
-  @Test
-  public void testFileNotFound() throws IOException {
-    String filename = TestDir.cdmLocalTestDataDir + "conventions/fileNot.nc";
-    Formatter errlog = new Formatter();
-    try (GribGridDataset gds = GribGridDataset.open(filename, errlog).orElseThrow()) {
-      fail();
-    } catch (FileNotFoundException e) {
-      assertThat(e.getMessage()).contains("(No such file or directory)");
-    }
-  }
-
-  @Test
-  public void testFileNotGrid() throws IOException {
-    String filename = TestDir.cdmLocalTestDataDir + "point/point.ncml";
-    Formatter errlog = new Formatter();
-    try (GribGridDataset gds = GribGridDataset.open(filename, errlog).orElse(null)) {
-      assertThat(gds).isNull();
-    }
-  }
 }

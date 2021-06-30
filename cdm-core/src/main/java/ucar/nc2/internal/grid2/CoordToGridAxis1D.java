@@ -5,6 +5,7 @@ import ucar.array.Array;
 import ucar.nc2.grid2.GridAxisInterval;
 import ucar.nc2.grid2.GridAxisPoint;
 import ucar.nc2.grid2.GridAxisSpacing;
+import ucar.nc2.util.Misc;
 
 import java.util.Optional;
 
@@ -12,7 +13,7 @@ import java.util.Optional;
 class CoordToGridAxis1D {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordToGridAxis1D.class);
 
-  final boolean isInterval; // is this an interval coordinate?
+  boolean isInterval; // is this an interval coordinate?
   final boolean boundsAreContiguous;
   final boolean boundsAreRegular;
 
@@ -53,8 +54,9 @@ class CoordToGridAxis1D {
       // decide if they are contiguous
       boolean contig = true;
       for (int i = 0; i < ncoords - 1; i++) {
-        if (!ucar.nc2.util.Misc.nearlyEquals(value1[i + 1], value2[i]))
+        if (!ucar.nc2.util.Misc.nearlyEquals(value1[i + 1], value2[i])) {
           contig = false;
+        }
       }
 
       if (contig) {
@@ -79,6 +81,11 @@ class CoordToGridAxis1D {
       isInterval = false;
       boundsAreContiguous = false;
       boundsAreRegular = false;
+    }
+
+    // if its an interval, see if it can be a point
+    if (isInterval && boundsAreContiguous && isPointWithBounds()) {
+      isInterval = false;
     }
   }
 
@@ -111,6 +118,28 @@ class CoordToGridAxis1D {
       }
     }
     return isRegular;
+  }
+
+  private boolean isPointWithBounds() {
+    if (ncoords == 1) {
+      return false;
+    }
+    boolean isPoint = true;
+    double lowerEdge = coords[0] - (coords[1] - coords[0]) / 2;
+    if (!Misc.nearlyEquals(lowerEdge, bound1[0])) {
+      isPoint = false;
+    }
+    for (int i = 0; i < this.coords.length - 1; i++) {
+      double upperBound = (this.coords[i] + this.coords[i + 1]) / 2;
+      if (!Misc.nearlyEquals(upperBound, bound2[i])) {
+        isPoint = false;
+      }
+    }
+    double upperEdge = coords[ncoords - 1] + (coords[ncoords - 1] - coords[ncoords - 2]) / 2;
+    if (!Misc.nearlyEquals(upperEdge, bound2[ncoords - 1])) {
+      isPoint = false;
+    }
+    return isPoint;
   }
 
   // correct non-monotonic longitude coords
