@@ -14,7 +14,7 @@ import java.util.Optional;
 
 import static com.google.common.truth.Truth.assertThat;
 
-public class TestCoordToGridAxis1D {
+public class TestExtractCoordinateValues {
 
   // fdrom cdmUnitTest/conventions/cf/jonathan/fixed.fw0.0Sv.nc
   @Test
@@ -34,7 +34,7 @@ public class TestCoordToGridAxis1D {
     }
     Array<Double> boundsArray = Arrays.factory(ArrayType.DOUBLE, new int[] {n, 2}, bounds);
 
-    CoordToGridAxis1D subject = new CoordToGridAxis1D("latitude_144", valuesArray, Optional.of(boundsArray), true);
+    ExtractCoordinateValues subject = new ExtractCoordinateValues("latitude_144", valuesArray, Optional.of(boundsArray), true);
 
     assertThat(subject.boundsAreContiguous).isTrue();
     assertThat(subject.boundsAreRegular).isTrue();
@@ -67,8 +67,8 @@ public class TestCoordToGridAxis1D {
     Array<Double> valuesArray = Arrays.factory(ArrayType.DOUBLE, new int[] {n}, valuesFlipped);
     Array<Double> boundsArray = Arrays.factory(ArrayType.DOUBLE, new int[] {n, 2}, bounds);
 
-    CoordToGridAxis1D subject =
-        new CoordToGridAxis1D("latitude_144_flipped", valuesArray, Optional.of(boundsArray), true);
+    ExtractCoordinateValues subject =
+        new ExtractCoordinateValues("latitude_144_flipped", valuesArray, Optional.of(boundsArray), true);
 
     assertThat(subject.boundsAreContiguous).isTrue();
     assertThat(subject.boundsAreRegular).isTrue();

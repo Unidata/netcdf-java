@@ -3,13 +3,22 @@
  * See LICENSE for license information.
  */
 
-package ucar.nc2.grid2;
+package ucar.nc2.grib.grid2;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.array.Arrays;
 import ucar.array.InvalidRangeException;
 import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.grid2.Grid;
+import ucar.nc2.grid2.GridAxis;
+import ucar.nc2.grid2.GridAxisPoint;
+import ucar.nc2.grid2.GridAxisSpacing;
+import ucar.nc2.grid2.GridCoordinateSystem;
+import ucar.nc2.grid2.GridDataset;
+import ucar.nc2.grid2.GridDatasetFactory;
+import ucar.nc2.grid2.GridReferencedArray;
+import ucar.nc2.grid2.GridTimeCoordinateSystem;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
@@ -33,7 +42,7 @@ public class TestReadGridSubset {
           .orElseThrow(() -> new RuntimeException("Cant find grid"));
 
       GridCoordinateSystem csys = grid.getCoordinateSystem();
-      GridTimeCoordinateSystem tsys = csys.getTimeCoordSystem();
+      GridTimeCoordinateSystem tsys = csys.getTimeCoordinateSystem();
       assertThat(tsys).isNotNull();
       GridAxisPoint runtimeAxis = tsys.getRunTimeAxis();
       assertThat((Object) runtimeAxis).isNotNull();
@@ -64,7 +73,7 @@ public class TestReadGridSubset {
           gridDataset.findGrid("Sunshine_Duration_surface").orElseThrow(() -> new RuntimeException("Cant find grid"));
 
       GridCoordinateSystem csys = grid.getCoordinateSystem();
-      GridTimeCoordinateSystem tsys = csys.getTimeCoordSystem();
+      GridTimeCoordinateSystem tsys = csys.getTimeCoordinateSystem();
       assertThat(tsys).isNotNull();
       GridAxisPoint runtimeAxis = tsys.getRunTimeAxis();
       assertThat((Object) runtimeAxis).isNotNull();

@@ -15,7 +15,7 @@ import ucar.nc2.calendar.CalendarDate;
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.fail;
 
-public class TestCoordinateAxis1DTimeExtractor {
+public class TestExtractTimeCoordinateValues {
 
   @Test
   public void testNumericValue() {

@@ -6,7 +6,6 @@ package ucar.nc2.grid2;
 
 import com.google.common.collect.ImmutableList;
 import ucar.nc2.constants.AxisType;
-import ucar.nc2.grid.GridAxis1D;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -33,7 +32,7 @@ public interface GridCoordinateSystem {
 
   /** Get the Time CoordinateSystem. Null if there are no time coordinates. */
   @Nullable
-  GridTimeCoordinateSystem getTimeCoordSystem();
+  GridTimeCoordinateSystem getTimeCoordinateSystem();
 
   /** Get the ensemble axis, if any. */
   @Nullable
@@ -49,23 +48,23 @@ public interface GridCoordinateSystem {
   }
 
   /** Get the Horizontal CoordinateSystem. */
-  GridHorizCoordinateSystem getHorizCoordSystem();
+  GridHorizCoordinateSystem getHorizCoordinateSystem();
 
   /** Get the X axis (either GeoX or Lon). */
   default GridAxisPoint getXHorizAxis() {
-    return getHorizCoordSystem().getXHorizAxis();
+    return getHorizCoordinateSystem().getXHorizAxis();
   }
 
   /** Get the Y axis (either GeoY or Lat). */
   default GridAxisPoint getYHorizAxis() {
-    return getHorizCoordSystem().getYHorizAxis();
+    return getHorizCoordinateSystem().getYHorizAxis();
   }
 
   /** Nominal shape, may differ from materialized shape. */
   default List<Integer> getNominalShape() {
     List<Integer> result = new ArrayList<>();
-    if (getTimeCoordSystem() != null) {
-      result.addAll(getTimeCoordSystem().getNominalShape());
+    if (getTimeCoordinateSystem() != null) {
+      result.addAll(getTimeCoordinateSystem().getNominalShape());
     }
     if (getEnsembleAxis() != null) {
       result.add(getEnsembleAxis().getNominalSize());
@@ -73,7 +72,7 @@ public interface GridCoordinateSystem {
     if (getVerticalAxis() != null) {
       result.add(getVerticalAxis().getNominalSize());
     }
-    result.addAll(getHorizCoordSystem().getShape());
+    result.addAll(getHorizCoordinateSystem().getShape());
     return result;
   }
 

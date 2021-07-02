@@ -29,6 +29,7 @@ import ucar.nc2.grid2.GridAxisPoint;
 import ucar.nc2.grid2.GridAxisSpacing;
 import ucar.nc2.units.SimpleUnit;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -183,40 +184,57 @@ public class GribGridAxis {
 
       public T setEnsCoordinate(CoordinateEns ensCoord) {
         this.gribCoord = ensCoord;
-        setSpacing(GridAxisSpacing.regularPoint);
         List<Number> values =
             ensCoord.getValues().stream().map(ens -> ((EnsCoordValue) ens).getEnsMember()).collect(Collectors.toList());
-        setValues(values);
+        RegularValues regular = calcPointIsRegular(values);
+        if (regular != null) {
+          setRegular(regular.ncoords, regular.start, regular.increment);
+        } else {
+          setSpacing(GridAxisSpacing.irregularPoint);
+          setValues(values);
+        }
         return setCoordinate(ensCoord);
       }
 
       public T setRuntimeCoordinate(CoordinateRuntime rtCoord) {
         this.gribCoord = rtCoord;
         this.cdu = rtCoord.getCalendarDateUnit();
-        // LOOK check if regular
-        setSpacing(GridAxisSpacing.irregularPoint);
         List<Number> values = rtCoord.getValues().stream().map(v -> (Long) v).collect(Collectors.toList());
-        setValues(values);
+        RegularValues regular = calcPointIsRegular(values);
+        if (regular != null) {
+          setRegular(regular.ncoords, regular.start, regular.increment);
+        } else {
+          setSpacing(GridAxisSpacing.irregularPoint);
+          setValues(values);
+        }
         return setCoordinate(rtCoord);
       }
 
       public T setTimeOffsetCoordinate(CoordinateTime timeCoord) {
         this.gribCoord = timeCoord;
-        // LOOK check if regular
-        setSpacing(GridAxisSpacing.irregularPoint);
         List<Number> values = timeCoord.getValues().stream().map(v -> (Integer) v).collect(Collectors.toList());
-        setValues(values);
+        RegularValues regular = calcPointIsRegular(values);
+        if (regular != null) {
+          setRegular(regular.ncoords, regular.start, regular.increment);
+        } else {
+          setSpacing(GridAxisSpacing.irregularPoint);
+          setValues(values);
+        }
         return setCoordinate(timeCoord);
       }
 
       public T setVertCoordinate(CoordinateVert vertCoord) {
         addVerticalAttributes(this, vertCoord);
         this.gribCoord = vertCoord;
-        // LOOK check if regular
-        setSpacing(GridAxisSpacing.irregularPoint);
         List<Number> values =
             vertCoord.getValues().stream().map(vcv -> ((VertCoordValue) vcv).getValue1()).collect(Collectors.toList());
-        setValues(values);
+        RegularValues regular = calcPointIsRegular(values);
+        if (regular != null) {
+          setRegular(regular.ncoords, regular.start, regular.increment);
+        } else {
+          setSpacing(GridAxisSpacing.irregularPoint);
+          setValues(values);
+        }
         return setCoordinate(vertCoord);
       }
 
@@ -271,31 +289,40 @@ public class GribGridAxis {
       }
 
       public T setTimeOffsetIntervalCoordinate(CoordinateTimeIntv timeOffsetIntv) {
-        this.gribCoord = timeOffsetIntv;
-        // LOOK check if regular or contiguousInterval
-        setSpacing(GridAxisSpacing.discontiguousInterval);
         List<Number> ivalues = new ArrayList<>();
         for (TimeCoordIntvValue intvValues : timeOffsetIntv.getTimeIntervals()) {
           ivalues.add(intvValues.getBounds1());
           ivalues.add(intvValues.getBounds2());
         }
-        setValues(ivalues);
         setNcoords(timeOffsetIntv.getNCoords());
+
+        IntervalSpacing ispacing = calcIntervalSpacing(ivalues);
+        if (ispacing.spacing == GridAxisSpacing.regularInterval) {
+          setRegular(ispacing.ncoords, ispacing.start, ispacing.increment);
+        } else {
+          setSpacing(ispacing.spacing);
+          setValues(ispacing.values);
+        }
         return setCoordinate(timeOffsetIntv);
       }
 
       public T setVertCoordinate(CoordinateVert vertCoord) {
         addVerticalAttributes(this, vertCoord);
-        this.gribCoord = vertCoord;
-        // LOOK check if regular or contiguousInterval
-        setSpacing(GridAxisSpacing.discontiguousInterval);
+
         List<Number> ivalues = new ArrayList<>();
         for (VertCoordValue intvValues : vertCoord.getLevelSorted()) {
           ivalues.add(intvValues.getValue1());
           ivalues.add(intvValues.getValue2());
         }
-        setValues(ivalues);
         setNcoords(vertCoord.getNCoords());
+
+        IntervalSpacing ispacing = calcIntervalSpacing(ivalues);
+        if (ispacing.spacing == GridAxisSpacing.regularInterval) {
+          setRegular(ispacing.ncoords, ispacing.start, ispacing.increment);
+        } else {
+          setSpacing(ispacing.spacing);
+          setValues(ispacing.values);
+        }
         return setCoordinate(vertCoord);
       }
 
@@ -305,6 +332,123 @@ public class GribGridAxis {
         built = true;
         return new GribGridAxis.Interval(this);
       }
+    }
+  }
+
+  ///////////////////////////////////////////////////////////////
+  // re: CoordToGridAxis1D does this for NetcdfDataset
+
+  private static final double incrTol = 5.0e-3; // LOOK why so large?
+  private static class RegularValues {
+    int ncoords;
+    double start;
+    double increment;
+
+    RegularValues(int ncoords, double start, double increment) {
+      this.ncoords = ncoords;
+      this.start = start;
+      this.increment = increment;
+    }
+  }
+
+  @Nullable
+  private static RegularValues calcPointIsRegular(List<Number> values) {
+    int nvalues = values.size();
+    double[] dvalues = new double[nvalues];
+    for (int i = 0; i < nvalues; i++) {
+      dvalues[i] = values.get(i).doubleValue();
+    }
+
+    if (nvalues == 1) {
+      return new RegularValues(nvalues, dvalues[0], 0);
+    } else if (nvalues == 2) {
+      return new RegularValues(nvalues, dvalues[0], dvalues[1] - dvalues[0]);
+    } else {
+      double increment = dvalues[1] - dvalues[0];
+      for (int i = 1; i < nvalues; i++) {
+        if (!ucar.nc2.util.Misc.nearlyEquals(dvalues[i] - dvalues[i - 1], increment, incrTol)) {
+          return null;
+        }
+      }
+      return new RegularValues(nvalues, dvalues[0], increment);
+    }
+  }
+
+  private static class IntervalSpacing {
+    GridAxisSpacing spacing;
+    int ncoords;
+    double start;
+    double increment;
+    List<Number> values;
+
+    IntervalSpacing(GridAxisSpacing spacing, int ncoords, double start, double increment, List<Number> values) {
+      this.spacing = spacing;
+      this.ncoords = ncoords;
+      this.start = start;
+      this.increment = increment;
+      this.values = values;
+    }
+  }
+
+  // 2*n values, low0, hi0, low1, hi1, ... ascending or descending
+  private static IntervalSpacing calcIntervalSpacing(List<Number> values) {
+    int ncoords = values.size() / 2;
+    double[] value1 = new double[ncoords];
+    double[] value2 = new double[ncoords];
+    int count = 0;
+    for (int i = 0; i < ncoords; i++) {
+      value1[i] = values.get(count++).doubleValue();
+      value2[i] = values.get(count++).doubleValue();
+    }
+
+    // is it regular ?
+    if (ncoords == 1) {
+      return new IntervalSpacing(GridAxisSpacing.regularInterval, ncoords, value1[0], value2[0] - value1[0], null);
+    } else {
+      boolean isRegular = true;
+      double increment = value2[0] - value1[0];
+      for (int i = 0; i < ncoords - 1; i++) {
+        if (!ucar.nc2.util.Misc.nearlyEquals(value2[i] - value1[i], increment, incrTol)) {
+          isRegular = false;
+          break;
+        }
+        if (!ucar.nc2.util.Misc.nearlyEquals(value1[i+1] - value1[i], increment, incrTol)) {
+          isRegular = false;
+          break;
+        }
+      }
+      if (isRegular) {
+        return new IntervalSpacing(GridAxisSpacing.regularInterval, ncoords, value1[0], increment, null);
+      }
+    }
+    // is it contiguous?
+    boolean isContiguous = true;
+    boolean isAscending = value1[0] < value1[1];
+    List<Number> contigValues = new ArrayList<>();
+    if (isAscending) {
+      contigValues.add(value1[0]);
+      for (int i = 0; i < ncoords - 1; i++) {
+        contigValues.add(value2[i]);
+        if (!ucar.nc2.util.Misc.nearlyEquals(value1[i + 1], value2[i])) {
+          isContiguous = false;
+          break;
+        }
+      }
+    } else {
+      for (int i = 0; i < ncoords - 1; i++) {
+        if (!ucar.nc2.util.Misc.nearlyEquals(value1[i], value2[i+1])) {
+          isContiguous = false;
+          break;
+        }
+        contigValues.add(value1[i]);
+      }
+      contigValues.add(value2[ncoords - 1]);
+    }
+
+    if (isContiguous) {
+      return new IntervalSpacing(GridAxisSpacing.contiguousInterval, ncoords, value1[0], 0, contigValues);
+    } else {
+      return new IntervalSpacing(GridAxisSpacing.discontiguousInterval, ncoords, value1[0], 0, values);
     }
   }
 }

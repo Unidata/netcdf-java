@@ -18,7 +18,7 @@ import ucar.nc2.dataset.VariableDS;
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.fail;
 
-public class TestCoordinateAxis1DTimeExtractor {
+public class TestExtractTimeCoordinateValues {
 
   @Test
   public void testNumericValue() {
@@ -33,7 +33,7 @@ public class TestCoordinateAxis1DTimeExtractor {
 
     CoordinateAxis.Builder<?> builder = CoordinateAxis.fromVariableDS(vdsBuilder).setAxisType(AxisType.Time);
     CoordinateAxis axis = builder.build(parent.build());
-    CoordinateAxis1DTimeExtractor extract = new CoordinateAxis1DTimeExtractor(axis);
+    ExtractTimeCoordinateValues extract = new ExtractTimeCoordinateValues(axis);
 
     assertThat(extract.timeHelper).isEqualTo(CoordTimeHelper.factory(units, new AttributeContainerMutable("")));
     assertThat(extract.cdates).isNull();
@@ -62,7 +62,7 @@ public class TestCoordinateAxis1DTimeExtractor {
 
     CoordinateAxis.Builder<?> builder = CoordinateAxis.fromVariableDS(vdsBuilder).setAxisType(AxisType.Time);
     CoordinateAxis axis = builder.build(parent.build());
-    CoordinateAxis1DTimeExtractor extract = new CoordinateAxis1DTimeExtractor(axis);
+    ExtractTimeCoordinateValues extract = new ExtractTimeCoordinateValues(axis);
 
     assertThat(extract.timeHelper).isEqualTo(CoordTimeHelper.factory(units, new AttributeContainerMutable("")));
     assertThat(extract.cdates).hasSize(n);
@@ -99,7 +99,7 @@ public class TestCoordinateAxis1DTimeExtractor {
     CoordinateAxis.Builder<?> builder = CoordinateAxis.fromVariableDS(vdsBuilder).setAxisType(AxisType.Time);
     CoordinateAxis axis = builder.build(parent.build());
     try {
-      new CoordinateAxis1DTimeExtractor(axis);
+      new ExtractTimeCoordinateValues(axis);
       fail();
     } catch (Exception e) {
       e.printStackTrace();
@@ -136,7 +136,7 @@ public class TestCoordinateAxis1DTimeExtractor {
 
     CoordinateAxis.Builder<?> builder = CoordinateAxis.fromVariableDS(vdsBuilder).setAxisType(AxisType.Time);
     CoordinateAxis axis = builder.build(parent.build());
-    CoordinateAxis1DTimeExtractor extract = new CoordinateAxis1DTimeExtractor(axis);
+    ExtractTimeCoordinateValues extract = new ExtractTimeCoordinateValues(axis);
 
     assertThat(extract.timeHelper).isEqualTo(CoordTimeHelper.factory(units, new AttributeContainerMutable("")));
     assertThat(extract.cdates).hasSize(ndates);

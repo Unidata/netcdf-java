@@ -29,11 +29,11 @@ public interface Grid extends IsMissingEvaluator {
   GridCoordinateSystem getCoordinateSystem();
 
   default GridTimeCoordinateSystem getTimeCoordinateSystem() {
-    return getCoordinateSystem().getTimeCoordSystem();
+    return getCoordinateSystem().getTimeCoordinateSystem();
   }
 
   default GridHorizCoordinateSystem getHorizCoordinateSystem() {
-    return getCoordinateSystem().getHorizCoordSystem();
+    return getCoordinateSystem().getHorizCoordinateSystem();
   }
 
   /**

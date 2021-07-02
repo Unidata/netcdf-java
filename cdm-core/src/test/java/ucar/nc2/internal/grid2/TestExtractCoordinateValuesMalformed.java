@@ -17,7 +17,7 @@ import static com.google.common.truth.Truth.assertThat;
 
 /** In this case, the bounds are flipped (lower, upper) */
 @Ignore("Malformed File")
-public class TestCoordToGridAxis1DMalformed {
+public class TestExtractCoordinateValuesMalformed {
 
   // fdrom cdmUnitTest/conventions/cf/jonathan/fixed.fw0.0Sv.nc
   @Test
@@ -37,7 +37,7 @@ public class TestCoordToGridAxis1DMalformed {
     }
     Array<Double> boundsArray = Arrays.factory(ArrayType.DOUBLE, new int[] {n, 2}, bounds);
 
-    CoordToGridAxis1D subject = new CoordToGridAxis1D("latitude_73", valuesArray, Optional.of(boundsArray), true);
+    ExtractCoordinateValues subject = new ExtractCoordinateValues("latitude_73", valuesArray, Optional.of(boundsArray), true);
 
     assertThat(subject.boundsAreContiguous).isTrue();
     assertThat(subject.boundsAreRegular).isTrue();
@@ -70,8 +70,8 @@ public class TestCoordToGridAxis1DMalformed {
     Array<Double> valuesArray = Arrays.factory(ArrayType.DOUBLE, new int[] {n}, valuesFlipped);
     Array<Double> boundsArray = Arrays.factory(ArrayType.DOUBLE, new int[] {n, 2}, bounds);
 
-    CoordToGridAxis1D subject =
-        new CoordToGridAxis1D("latitude_73_flipped", valuesArray, Optional.of(boundsArray), true);
+    ExtractCoordinateValues subject =
+        new ExtractCoordinateValues("latitude_73_flipped", valuesArray, Optional.of(boundsArray), true);
 
     assertThat(subject.boundsAreContiguous).isTrue();
     assertThat(subject.boundsAreRegular).isTrue();

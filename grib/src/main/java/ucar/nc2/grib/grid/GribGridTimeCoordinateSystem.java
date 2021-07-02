@@ -111,10 +111,10 @@ public abstract class GribGridTimeCoordinateSystem implements GridTimeCoordinate
   ///////////////////////////////////////
   final GridTimeCoordinateSystem.Type type;
   final @Nullable GridAxisPoint runtimeAxis;
-  final GridAxis timeOffsetAxis;
+  final GridAxis<?> timeOffsetAxis;
   final Optional<CalendarDateUnit> runtimeUnit; // can it really be optional? seems unlikely
 
-  public GribGridTimeCoordinateSystem(Type type, @Nullable GridAxisPoint runtimeAxis, GridAxis timeOffsetAxis) {
+  public GribGridTimeCoordinateSystem(Type type, @Nullable GridAxisPoint runtimeAxis, GridAxis<?> timeOffsetAxis) {
     this.type = type;
     this.runtimeAxis = runtimeAxis;
     this.timeOffsetAxis = timeOffsetAxis;

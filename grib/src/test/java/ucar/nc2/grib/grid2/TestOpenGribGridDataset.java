@@ -107,12 +107,12 @@ public class TestOpenGribGridDataset {
       GridCoordinateSystem cs = grid.getCoordinateSystem();
       assertThat(cs).isNotNull();
 
-      GridTimeCoordinateSystem tcs = cs.getTimeCoordSystem();
+      GridTimeCoordinateSystem tcs = cs.getTimeCoordinateSystem();
       assertThat(tcs).isNotNull();
       assertThat(tcs.getNominalShape())
           .isEqualTo(Arrays.stream(expectedTimeShape).boxed().collect(Collectors.toList()));
 
-      GridHorizCoordinateSystem hcs = cs.getHorizCoordSystem();
+      GridHorizCoordinateSystem hcs = cs.getHorizCoordinateSystem();
       assertThat(hcs).isNotNull();
       assertThat(hcs.getShape()).isEqualTo(Arrays.stream(expectedHcsShape).boxed().collect(Collectors.toList()));
 

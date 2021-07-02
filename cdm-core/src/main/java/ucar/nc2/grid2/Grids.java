@@ -56,11 +56,12 @@ public class Grids {
 
       case contiguousInterval:
       case irregularPoint:
+      case nominalPoint:
         return axis.getCoordMidpoint(0) <= axis.getCoordMidpoint(axis.getNominalSize() - 1);
 
       case discontiguousInterval: // actually ambiguous
         return axis.getCoordInterval(0).start() <= axis.getCoordInterval(axis.getNominalSize() - 1).end();
     }
-    throw new IllegalStateException("unknown spacing" + axis.getSpacing());
+    throw new IllegalStateException("unknown spacing=" + axis.getSpacing());
   }
 }

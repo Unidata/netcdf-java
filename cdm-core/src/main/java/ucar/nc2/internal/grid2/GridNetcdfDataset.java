@@ -70,7 +70,7 @@ public class GridNetcdfDataset implements GridDataset {
         continue; // LOOK
       }
       if (axis.getRank() < 2) {
-        GridAxis<?> gridAxis = new CoordAxisExtractor(ncd, axis, GridAxisDependenceType.independent).extractGridAxis();
+        GridAxis<?> gridAxis = new CoordAxisToGridAxis(axis, GridAxisDependenceType.independent, ncd.isIndependentCoordinate(axis)).extractGridAxis();
         gridAxes.put(axis.getFullName(), gridAxis);
       } else {
         log.warn("Independent gridAxis {} rank > 1", axis.getFullName());
@@ -84,7 +84,7 @@ public class GridNetcdfDataset implements GridDataset {
         continue;
       }
       if (axis.getRank() < 2) {
-        GridAxis<?> gridAxis = new CoordAxisExtractor(ncd, axis, GridAxisDependenceType.dependent).extractGridAxis();
+        GridAxis<?> gridAxis = new CoordAxisToGridAxis(axis, GridAxisDependenceType.dependent, ncd.isIndependentCoordinate(axis)).extractGridAxis();
         gridAxes.put(axis.getFullName(), gridAxis);
       } /*
          * else if (axis.getAxisType() == AxisType.TimeOffset && axis.getRank() == 2) {

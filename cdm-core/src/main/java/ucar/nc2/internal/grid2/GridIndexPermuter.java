@@ -20,9 +20,9 @@ class GridIndexPermuter {
     this.yDimOrgIndex = findDimension(vds, gcs.getYHorizAxis());
     this.zDimOrgIndex = findDimension(vds, gcs.getVerticalAxis());
     this.eDimOrgIndex = findDimension(vds, gcs.getEnsembleAxis());
-    if (gcs.getTimeCoordSystem() != null) {
-      this.toDimOrgIndex = findDimension(vds, gcs.getTimeCoordSystem().getTimeOffsetAxis(0));
-      this.rtDimOrgIndex = findDimension(vds, gcs.getTimeCoordSystem().getRunTimeAxis());
+    if (gcs.getTimeCoordinateSystem() != null) {
+      this.toDimOrgIndex = findDimension(vds, gcs.getTimeCoordinateSystem().getTimeOffsetAxis(0));
+      this.rtDimOrgIndex = findDimension(vds, gcs.getTimeCoordinateSystem().getRunTimeAxis());
     } else {
       this.toDimOrgIndex = -1;
       this.rtDimOrgIndex = -1;

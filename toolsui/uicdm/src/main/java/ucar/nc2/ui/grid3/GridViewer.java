@@ -739,7 +739,7 @@ public class GridViewer extends JPanel {
     currentField = gridDataset.getGrids().get(0); // first
     eventsOK = false; // dont let this trigger redraw
     this.dataState = gridRenderer.setGrid(gridDataset, currentField);
-    Projection p = currentField.getCoordinateSystem().getHorizCoordSystem().getProjection();
+    Projection p = currentField.getCoordinateSystem().getHorizCoordinateSystem().getProjection();
     gridRenderer.setDataProjection(p);
     setField(currentField);
 
@@ -747,7 +747,7 @@ public class GridViewer extends JPanel {
     if (p != null) {
       setProjection(p);
     }
-    ProjectionRect fieldBB = currentField.getCoordinateSystem().getHorizCoordSystem().getBoundingBox();
+    ProjectionRect fieldBB = currentField.getCoordinateSystem().getHorizCoordinateSystem().getBoundingBox();
     if (fieldBB != null) {
       navPanel.setMapArea(fieldBB);
     }
@@ -798,7 +798,7 @@ public class GridViewer extends JPanel {
       return false;
 
     this.dataState = gridRenderer.setGrid(gridDataset, gg);
-    gridRenderer.setDataProjection(this.dataState.gcs.getHorizCoordSystem().getProjection());
+    gridRenderer.setDataProjection(this.dataState.gcs.getHorizCoordinateSystem().getProjection());
     currentField = gg;
 
     // set runtimes

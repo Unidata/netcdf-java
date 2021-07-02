@@ -25,8 +25,7 @@ import static ucar.nc2.grid2.GridAxisSpacing.irregularPoint;
 
 /**
  * Point Grid coordinates.
- * LOOK although we use Number, everything is internally a double.
- * LOOK Grid ncx4 is using floats. Problem with time coordinates, which need longs.
+ * LOOK although we use Number, everything is internally a double. Grib wants integers.
  */
 public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> {
 
@@ -187,7 +186,7 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
   final double endValue; // why needed?
   final Range range; // for subset, tracks the indexes in the original
   final double[] values; // null if isRegular, irregular or nominal then len= ncoords
-  final double[] edges; // nominal only len= ncoords+1
+  final double[] edges; // nominal only: len = ncoords+1
 
   protected GridAxisPoint(Builder<?> builder) {
     super(builder);
@@ -251,6 +250,7 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
     } else {
       builder.setValues(this.values);
     }
+    builder.setEdges(this.edges);
     return (Builder<?>) super.addLocalFieldsToBuilder(builder);
   }
 
@@ -369,6 +369,9 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
       if (built)
         throw new IllegalStateException("already built");
       built = true;
+      if (this.resolution == 0 && this.values != null && this.values.length > 1) {
+        this.resolution = (this.values[this.values.length-1] - this.values[0]) / (this.values.length-1);
+      }
       return new GridAxisPoint(this);
     }
   }

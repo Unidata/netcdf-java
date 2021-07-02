@@ -182,7 +182,12 @@ public class GridAxisInterval extends GridAxis<CoordInterval> implements Iterabl
 
   // Add local fields to the builder.
   protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> builder) {
-    builder.setRegular(this.ncoords, this.startValue, this.resolution).setValues(this.values).setRange(this.range);
+    builder.setNcoords(this.ncoords).setResolution(this.resolution).setRange(this.range);
+    if (isRegular()) {
+      builder.setRegular(this.ncoords, this.startValue, this.resolution);
+    } else {
+      builder.setValues(this.values);
+    }
     return (Builder<?>) super.addLocalFieldsToBuilder(builder);
   }
 
@@ -202,7 +207,7 @@ public class GridAxisInterval extends GridAxis<CoordInterval> implements Iterabl
     int ncoords; // number of coordinates, required
     double startValue;
     double endValue;
-    protected double[] values; // null if isRegular, len = ncoords, ncoords+1, or 2*ncoords
+    protected double[] values; // null if isRegular; else len ncoords+1 (irregular), or 2*ncoords (discontinuous)
 
     // does this really describe all subset possibilities? what about RangeScatter, composite ??
     private Range range; // for subset, tracks the indexes in the original
@@ -301,6 +306,9 @@ public class GridAxisInterval extends GridAxis<CoordInterval> implements Iterabl
       if (built)
         throw new IllegalStateException("already built");
       built = true;
+      if (this.resolution == 0 && spacing == GridAxisSpacing.contiguousInterval && this.values.length > 1) {
+        this.resolution = (this.values[this.values.length-1] - this.values[0]) / (this.values.length - 1);
+      }
       return new GridAxisInterval(this);
     }
   }

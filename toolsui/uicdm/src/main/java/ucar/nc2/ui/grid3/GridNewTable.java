@@ -16,7 +16,6 @@ import ucar.nc2.grid2.GridAxisSpacing;
 import ucar.nc2.grid2.GridCoordinateSystem;
 import ucar.nc2.grid2.GridDataset;
 import ucar.nc2.grid2.GridTimeCoordinateSystem;
-import ucar.nc2.util.Indent;
 import ucar.ui.prefs.BeanTable;
 import ucar.ui.util.NamedObject;
 import ucar.ui.widget.BAMutil;
@@ -338,7 +337,7 @@ public class GridNewTable extends JPanel {
 
     public CoordSysBean(GridCoordinateSystem gcs) {
       this.gcs = gcs;
-      this.tcs = gcs.getTimeCoordSystem();
+      this.tcs = gcs.getTimeCoordinateSystem();
 
       for (GridAxis<?> axis : gcs.getGridAxes()) {
         if (axis.getDependenceType() == GridAxisDependenceType.independent) {
@@ -372,7 +371,7 @@ public class GridNewTable extends JPanel {
     }
 
     public String getProjection() {
-      Projection p = this.gcs.getHorizCoordSystem().getProjection();
+      Projection p = this.gcs.getHorizCoordinateSystem().getProjection();
       return p == null ? "" : p.getName();
     }
 

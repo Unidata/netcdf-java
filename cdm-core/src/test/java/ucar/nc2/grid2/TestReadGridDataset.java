@@ -50,7 +50,7 @@ public class TestReadGridDataset {
   @Test
   public void testProblem() throws IOException, InvalidRangeException {
     String filename = TestDir.cdmUnitTestDir + "conventions/nuwg/2003021212_avn-x.nc";
-    // LOOK GribIndexPermutter assumes we dimension name = axis name. Barf.
+    // LOOK GribIndexPermutter assumes the dimension name = axis name. Barf.
     readGrid(filename, "T", ImmutableList.of(15, 12, 73, 73), "valtime level lat lon", true, 15,
         "hours since 1992-01-01T00:00Z", "2003-02-13T18:00Z", "2003-02-14T18:00Z", "2003-02-14T06:00:00Z", 725.0, 700.0,
         new int[] {1, 1, 73, 73});
@@ -68,7 +68,7 @@ public class TestReadGridDataset {
       assertThat(grid).isNotNull();
       GridCoordinateSystem gcs = grid.getCoordinateSystem();
       assertThat(gcs).isNotNull();
-      GridHorizCoordinateSystem hcs = gcs.getHorizCoordSystem();
+      GridHorizCoordinateSystem hcs = gcs.getHorizCoordinateSystem();
       assertThat(hcs.isLatLon()).isEqualTo(isLatLon);
       assertThat(hcs.getProjection()).isNotNull();
       assertThat((Object) gcs.getXHorizAxis()).isNotNull();
@@ -82,7 +82,7 @@ public class TestReadGridDataset {
         System.out.printf("%s%n", axis);
       }
 
-      GridTimeCoordinateSystem tcs = gcs.getTimeCoordSystem();
+      GridTimeCoordinateSystem tcs = gcs.getTimeCoordinateSystem();
       assertThat(tcs == null).isEqualTo(ntimes == 0);
       if (tcs != null) {
         assertThat((Object) tcs.getRunTimeAxis()).isNull();

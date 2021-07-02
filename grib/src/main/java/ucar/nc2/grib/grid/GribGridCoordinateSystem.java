@@ -44,12 +44,12 @@ public class GribGridCoordinateSystem implements GridCoordinateSystem {
   }
 
   @Override
-  public GridTimeCoordinateSystem getTimeCoordSystem() {
+  public GridTimeCoordinateSystem getTimeCoordinateSystem() {
     return tcs;
   }
 
   @Override
-  public GridHorizCoordinateSystem getHorizCoordSystem() {
+  public GridHorizCoordinateSystem getHorizCoordinateSystem() {
     return hcs;
   }
 

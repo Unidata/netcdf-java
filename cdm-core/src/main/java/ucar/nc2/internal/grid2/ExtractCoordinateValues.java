@@ -10,8 +10,8 @@ import ucar.nc2.util.Misc;
 import java.util.Optional;
 
 /** This extracts coordinate values from a scalar or 1-d numeric CoordinateAxis. */
-class CoordToGridAxis1D {
-  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordToGridAxis1D.class);
+class ExtractCoordinateValues {
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ExtractCoordinateValues.class);
 
   boolean isInterval; // is this an interval coordinate?
   boolean isNominal; // is this an nominal point coordinate?
@@ -26,7 +26,7 @@ class CoordToGridAxis1D {
   final boolean isRegular;
   boolean isAscending;
 
-  CoordToGridAxis1D(String name, Array<Double> values, Optional<Array<Double>> boundsOpt, boolean isHorizAxis) {
+  ExtractCoordinateValues(String name, Array<Double> values, Optional<Array<Double>> boundsOpt, boolean isHorizAxis) {
     Preconditions.checkArgument(values.getRank() < 2);
 
     int count = 0;
@@ -54,9 +54,20 @@ class CoordToGridAxis1D {
 
       // decide if they are contiguous
       boolean contig = true;
-      for (int i = 0; i < ncoords - 1; i++) {
-        if (!ucar.nc2.util.Misc.nearlyEquals(value1[i + 1], value2[i])) {
-          contig = false;
+      boolean isAscending = ncoords >= 2 && value1[0] < value1[1];
+      if (isAscending) {
+        for (int i = 0; i < ncoords - 1; i++) {
+          if (!ucar.nc2.util.Misc.nearlyEquals(value1[i + 1], value2[i])) {
+            contig = false;
+            break;
+          }
+        }
+      } else {
+        for (int i = 0; i < ncoords - 1; i++) {
+          if (!ucar.nc2.util.Misc.nearlyEquals(value1[i], value2[i+1])) {
+            contig = false;
+            break;
+          }
         }
       }
 
