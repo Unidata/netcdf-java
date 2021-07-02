@@ -339,6 +339,7 @@ public class GribGridAxis {
   // re: CoordToGridAxis1D does this for NetcdfDataset
 
   private static final double incrTol = 5.0e-3; // LOOK why so large?
+
   private static class RegularValues {
     int ncoords;
     double start;
@@ -412,7 +413,7 @@ public class GribGridAxis {
           isRegular = false;
           break;
         }
-        if (!ucar.nc2.util.Misc.nearlyEquals(value1[i+1] - value1[i], increment, incrTol)) {
+        if (!ucar.nc2.util.Misc.nearlyEquals(value1[i + 1] - value1[i], increment, incrTol)) {
           isRegular = false;
           break;
         }
@@ -436,7 +437,7 @@ public class GribGridAxis {
       }
     } else {
       for (int i = 0; i < ncoords - 1; i++) {
-        if (!ucar.nc2.util.Misc.nearlyEquals(value1[i], value2[i+1])) {
+        if (!ucar.nc2.util.Misc.nearlyEquals(value1[i], value2[i + 1])) {
           isContiguous = false;
           break;
         }

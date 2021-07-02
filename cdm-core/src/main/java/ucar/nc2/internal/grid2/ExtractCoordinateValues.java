@@ -64,7 +64,7 @@ class ExtractCoordinateValues {
         }
       } else {
         for (int i = 0; i < ncoords - 1; i++) {
-          if (!ucar.nc2.util.Misc.nearlyEquals(value1[i], value2[i+1])) {
+          if (!ucar.nc2.util.Misc.nearlyEquals(value1[i], value2[i + 1])) {
             contig = false;
             break;
           }

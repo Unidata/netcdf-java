@@ -307,7 +307,7 @@ public class GridAxisInterval extends GridAxis<CoordInterval> implements Iterabl
         throw new IllegalStateException("already built");
       built = true;
       if (this.resolution == 0 && spacing == GridAxisSpacing.contiguousInterval && this.values.length > 1) {
-        this.resolution = (this.values[this.values.length-1] - this.values[0]) / (this.values.length - 1);
+        this.resolution = (this.values[this.values.length - 1] - this.values[0]) / (this.values.length - 1);
       }
       return new GridAxisInterval(this);
     }

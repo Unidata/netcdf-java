@@ -34,7 +34,8 @@ public class TestExtractCoordinateValues {
     }
     Array<Double> boundsArray = Arrays.factory(ArrayType.DOUBLE, new int[] {n, 2}, bounds);
 
-    ExtractCoordinateValues subject = new ExtractCoordinateValues("latitude_144", valuesArray, Optional.of(boundsArray), true);
+    ExtractCoordinateValues subject =
+        new ExtractCoordinateValues("latitude_144", valuesArray, Optional.of(boundsArray), true);
 
     assertThat(subject.boundsAreContiguous).isTrue();
     assertThat(subject.boundsAreRegular).isTrue();

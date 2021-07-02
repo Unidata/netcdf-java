@@ -40,7 +40,7 @@ public class TestCoordAxisToGridAxis {
 
     CoordinateAxis.Builder<?> builder = CoordinateAxis.fromVariableDS(vdsBuilder).setAxisType(AxisType.Ensemble);
     CoordinateAxis axis = builder.build(parent);
-    
+
     CoordAxisToGridAxis subject = new CoordAxisToGridAxis(axis, GridAxisDependenceType.independent, true);
     GridAxis<?> gridAxis = subject.extractGridAxis();
 
@@ -71,7 +71,7 @@ public class TestCoordAxisToGridAxis {
       count++;
     }
 
-    assertThat((Object)gridAxis).isInstanceOf(GridAxisPoint.class);
+    assertThat((Object) gridAxis).isInstanceOf(GridAxisPoint.class);
     GridAxisPoint gridAxisPoint = (GridAxisPoint) gridAxis;
 
     GridAxis<?> copy = gridAxisPoint.toBuilder().build();
@@ -79,7 +79,7 @@ public class TestCoordAxisToGridAxis {
     assertThat(copy.hashCode()).isEqualTo(gridAxisPoint.hashCode());
     assertThat(copy.toString()).isEqualTo(gridAxisPoint.toString());
   }
-  
+
   @Test
   public void testIrregularCoordinate() {
     String unitString = "days since 2020-11-01 0:00 GMT";
@@ -88,8 +88,8 @@ public class TestCoordAxisToGridAxis {
     Group.Builder parentb = Group.builder().addDimension(Dimension.builder("dim1", n).build());
 
     VariableDS.Builder<?> vdsBuilder = VariableDS.builder().setName("name").setArrayType(ArrayType.FLOAT)
-            .setUnits(unitString).setDesc("desc").setEnhanceMode(NetcdfDataset.getEnhanceAll())
-            .addAttribute(new Attribute(CF.CALENDAR, "noleap")).setParentGroupBuilder(parentb).setDimensionsByName("dim1");
+        .setUnits(unitString).setDesc("desc").setEnhanceMode(NetcdfDataset.getEnhanceAll())
+        .addAttribute(new Attribute(CF.CALENDAR, "noleap")).setParentGroupBuilder(parentb).setDimensionsByName("dim1");
     vdsBuilder.setSourceData(Arrays.factory(ArrayType.INT, new int[] {n}, timeOffsets));
     parentb.addVariable(vdsBuilder);
     Group parent = parentb.build();
@@ -125,7 +125,7 @@ public class TestCoordAxisToGridAxis {
       count++;
     }
 
-    assertThat((Object)gridAxis).isInstanceOf(GridAxisPoint.class);
+    assertThat((Object) gridAxis).isInstanceOf(GridAxisPoint.class);
     GridAxisPoint gridAxisPoint = (GridAxisPoint) gridAxis;
 
     GridAxis<?> copy = gridAxisPoint.toBuilder().build();

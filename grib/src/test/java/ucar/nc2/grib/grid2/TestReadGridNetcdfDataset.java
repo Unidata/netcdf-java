@@ -59,8 +59,8 @@ public class TestReadGridNetcdfDataset {
       GridTimeCoordinateSystem tcsys = csys.getTimeCoordinateSystem();
       assertThat(tcsys).isNotNull();
       GridAxis<?> timeAxis = tcsys.getTimeOffsetAxis(0);
-      assertThat((Object)timeAxis).isNotNull();
-      assertThat((Object)timeAxis).isInstanceOf(GridAxisInterval.class);
+      assertThat((Object) timeAxis).isNotNull();
+      assertThat((Object) timeAxis).isInstanceOf(GridAxisInterval.class);
       GridAxisInterval timeAxis1D = (GridAxisInterval) timeAxis;
 
       assertThat(timeAxis1D.getSpacing()).isEqualTo(GridAxisSpacing.regularInterval);
@@ -92,7 +92,7 @@ public class TestReadGridNetcdfDataset {
           gridDataset.findGrid("Ozone_mixing_ratio_isobaric").orElseThrow(() -> new RuntimeException("Cant find grid"));
       GridCoordinateSystem csys = grid.getCoordinateSystem();
       GridAxis<?> vertAxis = csys.getVerticalAxis();
-      assertThat((Object)vertAxis).isNotNull();
+      assertThat((Object) vertAxis).isNotNull();
       assertThat(vertAxis.getSpacing()).isEqualTo(GridAxisSpacing.irregularPoint);
       int ncoords = 6;
       assertThat(vertAxis.getNominalSize()).isEqualTo(ncoords);
@@ -123,8 +123,8 @@ public class TestReadGridNetcdfDataset {
       assertThat(tcsys).isNotNull();
 
       GridAxis<?> timeAxis = tcsys.getTimeOffsetAxis(0);
-      assertThat((Object)timeAxis).isNotNull();
-      assertThat((Object)timeAxis).isInstanceOf(GridAxisInterval.class);
+      assertThat((Object) timeAxis).isNotNull();
+      assertThat((Object) timeAxis).isInstanceOf(GridAxisInterval.class);
       assertThat(timeAxis.getSpacing()).isEqualTo(GridAxisSpacing.discontiguousInterval);
       GridAxisInterval timeAxisIntv = (GridAxisInterval) timeAxis;
 

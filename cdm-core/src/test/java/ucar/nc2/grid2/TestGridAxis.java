@@ -92,7 +92,7 @@ public class TestGridAxis {
     assertThat(axis1D.getNominalSize()).isEqualTo(n);
     assertThat(axis1D.getCoordMidpoint(0)).isEqualTo(0);
     assertThat(axis1D.getCoordMidpoint(axis1D.getNominalSize() - 1)).isEqualTo(100);
-    assertThat(axis1D.getResolution()).isEqualTo(100.0/(n-1));
+    assertThat(axis1D.getResolution()).isEqualTo(100.0 / (n - 1));
     assertThat(Grids.isAscending(axis1D)).isTrue();
     assertThat(axis1D.isRegular()).isFalse();
     assertThat(axis1D.isInterval()).isFalse();
@@ -137,11 +137,11 @@ public class TestGridAxis {
   @Test
   public void testNominalPoint() {
     int n = 6;
-    double[] values = new double[]  {2, 4, 8, 15,  50, 80};
+    double[] values = new double[] {2, 4, 8, 15, 50, 80};
     double[] edges = new double[] {0, 5, 10, 20, 40, 80, 100};
     GridAxisPoint.Builder<?> builder = GridAxisPoint.builder().setAxisType(AxisType.GeoX).setName("name")
-            .setUnits("unit").setDescription("desc").setNcoords(n).setValues(values).setEdges(edges)
-            .setSpacing(GridAxisSpacing.nominalPoint).addAttribute(new Attribute("aname", 99.0));
+        .setUnits("unit").setDescription("desc").setNcoords(n).setValues(values).setEdges(edges)
+        .setSpacing(GridAxisSpacing.nominalPoint).addAttribute(new Attribute("aname", 99.0));
     GridAxisPoint axis1D = builder.build();
 
     assertThat(axis1D.getName()).isEqualTo("name");
@@ -154,7 +154,7 @@ public class TestGridAxis {
     assertThat(axis1D.getNominalSize()).isEqualTo(n);
     assertThat(axis1D.getCoordMidpoint(0)).isEqualTo(2);
     assertThat(axis1D.getCoordMidpoint(axis1D.getNominalSize() - 1)).isEqualTo(80);
-    assertThat(axis1D.getResolution()).isEqualTo(78.0/(n-1));
+    assertThat(axis1D.getResolution()).isEqualTo(78.0 / (n - 1));
     assertThat(Grids.isAscending(axis1D)).isTrue();
     assertThat(axis1D.isRegular()).isFalse();
     assertThat(axis1D.isInterval()).isFalse();
@@ -163,7 +163,7 @@ public class TestGridAxis {
     for (int i = 0; i < axis1D.getNominalSize(); i++) {
       assertThat(axis1D.getCoordMidpoint(i)).isEqualTo(values[i]);
       assertThat(axis1D.getCoordInterval(i).start()).isEqualTo(edges[i]);
-      assertThat(axis1D.getCoordInterval(i).end()).isEqualTo(edges[i+1]);
+      assertThat(axis1D.getCoordInterval(i).end()).isEqualTo(edges[i + 1]);
     }
 
     int count = 0;
@@ -253,7 +253,7 @@ public class TestGridAxis {
     assertThat(axis1D.getNominalSize()).isEqualTo(n);
     assertThat(axis1D.getCoordInterval(0).start()).isEqualTo(0);
     assertThat(axis1D.getCoordInterval(axis1D.getNominalSize() - 1).end()).isEqualTo(100);
-    assertThat(axis1D.getResolution()).isEqualTo(100.0/n);
+    assertThat(axis1D.getResolution()).isEqualTo(100.0 / n);
     assertThat(Grids.isAscending(axis1D)).isTrue();
     assertThat(axis1D.isRegular()).isFalse();
     assertThat(axis1D.isInterval()).isTrue();
