@@ -65,7 +65,7 @@ public class TestReadGridNetcdfDataset {
 
       assertThat(timeAxis1D.getSpacing()).isEqualTo(GridAxisSpacing.regularInterval);
       assertThat(timeAxis1D.getNominalSize()).isEqualTo(3);
-      double[] expected = new double[] {-5, 19, 43, 67};
+      double[] expected = new double[] {-13, 11, 35, 59};
       for (int i = 0; i < timeAxis1D.getNominalSize(); i++) {
         CoordInterval intv = timeAxis1D.getCoordInterval(i);
         assertThat(intv.start()).isEqualTo(expected[i]);
@@ -110,8 +110,8 @@ public class TestReadGridNetcdfDataset {
   @Test
   @Category(NeedsCdmUnitTest.class)
   public void testDiscontiguousIntervalCoordinate() throws IOException {
-    String filename = TestDir.cdmUnitTestDir + "tds_index/NCEP/NDFD/SPC/NDFD-SPC.ncx4";
-    String gname = "Total_Probability_of_Severe_Thunderstorms_surface_24_Hour_Average_probability_above_0";
+    String filename = TestDir.cdmUnitTestDir + "tds_index/NCEP/NDFD/NWS/NDFD_NWS_CONUS_CONDUIT.ncx4";
+    String gname = "Maximum_temperature_height_above_ground_Mixed_intervals_Maximum";
     System.out.printf("filename %s%n", filename);
 
     Formatter errlog = new Formatter();
@@ -128,14 +128,14 @@ public class TestReadGridNetcdfDataset {
       assertThat(timeAxis.getSpacing()).isEqualTo(GridAxisSpacing.discontiguousInterval);
       GridAxisInterval timeAxisIntv = (GridAxisInterval) timeAxis;
 
-      double[] bounds1 = new double[] {30, 54, 29, 53, 28, 52, 27, 51, 26, 50, 18, 42, 15, 39};
-      double[] bounds2 = new double[] {54, 78, 53, 77, 52, 76, 51, 75, 50, 74, 42, 66, 39, 63};
+      double[] bounds1 = new double[] {12, 36, 60, 84, 108, 132, 156};
+      double[] bounds2 = new double[] {24, 48, 72, 96, 120, 144, 168};
 
       for (int i = 0; i < timeAxisIntv.getNominalSize(); i++) {
         CoordInterval intv = timeAxisIntv.getCoordInterval(i);
         assertThat(intv.start()).isEqualTo(bounds1[i]);
         assertThat(intv.end()).isEqualTo(bounds2[i]);
-        assertThat(timeAxisIntv.getCoordMidpoint(i)).isEqualTo((bounds1[i] + bounds2[i + 1]) / 2);
+        assertThat(timeAxisIntv.getCoordMidpoint(i)).isEqualTo((bounds1[i] + bounds2[i]) / 2);
       }
 
       int count = 0;

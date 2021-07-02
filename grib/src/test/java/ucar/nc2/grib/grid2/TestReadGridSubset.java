@@ -51,7 +51,7 @@ public class TestReadGridSubset {
 
       GridAxis<?> timeOffset = tsys.getTimeOffsetAxis(10);
       assertThat((Object) timeOffset).isNotNull();
-      assertThat(timeOffset.getSpacing()).isEqualTo(GridAxisSpacing.discontiguousInterval);
+      assertThat(timeOffset.getSpacing()).isEqualTo(GridAxisSpacing.regularInterval);
       assertThat(timeOffset.getNominalSize()).isGreaterThan(3);
       Object wantTime = timeOffset.getCoordinate(3);
 

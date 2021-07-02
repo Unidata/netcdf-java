@@ -44,7 +44,7 @@ public class TestGribGridDatasetAxes {
 
       GridAxis<?> timeOffset = tsys.getTimeOffsetAxis(10);
       assertThat((Object) timeOffset).isNotNull();
-      assertThat(timeOffset.getSpacing()).isEqualTo(GridAxisSpacing.discontiguousInterval);
+      assertThat(timeOffset.getSpacing()).isEqualTo(GridAxisSpacing.regularInterval);
       CalendarDate wantRuntime = tsys.getRuntimeDate(10);
 
       assertThat(timeOffset.getNominalSize()).isGreaterThan(1);
