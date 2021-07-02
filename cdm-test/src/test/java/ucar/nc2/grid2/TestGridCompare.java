@@ -18,6 +18,7 @@ import ucar.nc2.ft2.coverage.CoverageCoordAxis;
 import ucar.nc2.ft2.coverage.CoverageCoordSys;
 import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
 import ucar.nc2.ft2.coverage.FeatureDatasetCoverage;
+import ucar.nc2.ft2.coverage.TimeAxis2DFmrc;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
@@ -76,9 +77,10 @@ public class TestGridCompare {
       return;
     if (filename.endsWith("IntTimSciSamp.nc"))
       return;
-    if (filename.contains("conventions/cf/ipcc"))
+    if (filename.endsWith("fixed.fw0.0Sv.nc"))
       return;
 
+    System.out.printf("compareGrid %s%n", filename);
     compareWithDt(filename);
     compareWithCoverage(filename);
     compareWithGrid1(filename);
@@ -112,7 +114,7 @@ public class TestGridCompare {
         GridCoordinateSystem newGcs = grid.getCoordinateSystem();
         GridTimeCoordinateSystem newTcs = grid.getTimeCoordinateSystem();
 
-        for (GridAxis newAxis : newGcs.getGridAxes()) {
+        for (GridAxis<?> newAxis : newGcs.getGridAxes()) {
           CoordinateAxis oldAxis = oldGcs.getCoordinateAxes().stream()
               .filter(a -> a.getAxisType().equals(newAxis.getAxisType())).findFirst().orElse(null);
           if (oldAxis == null) {
@@ -122,6 +124,12 @@ public class TestGridCompare {
           assertWithMessage(String.format("    GridAxis: %s %s%n", newAxis.getName(), newAxis.getAxisType()))
               .that(oldAxis).isNotNull();
           assertThat(newAxis.getNominalSize()).isEqualTo(oldAxis.getSize());
+          int[] oldShape = oldAxis.getShape();
+          if (oldShape.length > 0) {
+            assertThat(newAxis.getNominalSize()).isEqualTo(oldShape[oldShape.length - 1]);
+          } else {
+            assertThat(newAxis.getNominalSize()).isEqualTo(oldAxis.getSize());
+          }
         }
       }
     }
@@ -156,7 +164,7 @@ public class TestGridCompare {
         GridCoordinateSystem newGcs = grid.getCoordinateSystem();
         GridTimeCoordinateSystem newTcs = grid.getTimeCoordinateSystem();
 
-        for (GridAxis newAxis : newGcs.getGridAxes()) {
+        for (GridAxis<?> newAxis : newGcs.getGridAxes()) {
           CoverageCoordAxis oldAxis = oldGcs.getAxes().stream()
               .filter(a -> a.getAxisType().equals(newAxis.getAxisType())).findFirst().orElse(null);
           if (oldAxis == null) {
@@ -165,7 +173,12 @@ public class TestGridCompare {
           }
           assertWithMessage(String.format("    GridAxis: %s %s%n", newAxis.getName(), newAxis.getAxisType()))
               .that(oldAxis).isNotNull();
-          assertThat(newAxis.getNominalSize()).isEqualTo(oldAxis.getNcoords());
+          int[] oldShape = oldAxis.getShape();
+          if (oldShape.length > 0) {
+            assertThat(newAxis.getNominalSize()).isEqualTo(oldShape[oldShape.length - 1]);
+          } else {
+            assertThat(newAxis.getNominalSize()).isEqualTo(oldAxis.getNcoords());
+          }
         }
       }
     }
@@ -208,7 +221,8 @@ public class TestGridCompare {
           }
           assertWithMessage(String.format("    GridAxis: %s %s%n", newAxis.getName(), newAxis.getAxisType()))
               .that(oldAxis).isNotNull();
-          assertThat(newAxis.getNominalSize()).isEqualTo(oldAxis.getNominalShape()[0]);
+          int[] oldShape = oldAxis.getNominalShape();
+          assertThat(newAxis.getNominalSize()).isEqualTo(oldShape[oldShape.length - 1]);
         }
       }
     }

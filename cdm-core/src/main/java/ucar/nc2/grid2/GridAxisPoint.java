@@ -76,6 +76,7 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
         return startValue + index * getResolution();
 
       case irregularPoint:
+      case nominalPoint:
         return values[index];
     }
     throw new IllegalStateException("Unknown spacing=" + spacing);
@@ -109,6 +110,9 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
         } else {
           return values[0] - (values[1] - values[0]) / 2;
         }
+
+      case nominalPoint:
+        return edges[index];
     }
     throw new IllegalStateException("Unknown spacing=" + spacing);
   }
@@ -127,6 +131,9 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
         } else {
           return values[index] + (values[index] - values[index - 1]) / 2;
         }
+
+      case nominalPoint:
+        return edges[index + 1];
     }
     throw new IllegalStateException("Unknown spacing=" + spacing);
   }
@@ -179,8 +186,8 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
   final double startValue; // only for regular
   final double endValue; // why needed?
   final Range range; // for subset, tracks the indexes in the original
-  final double[] values; // null if isRegular, len= ncoords+1 (contiguous interval), or 2*ncoords (discontinuous
-                         // interval)
+  final double[] values; // null if isRegular, irregular or nominal then len= ncoords
+  final double[] edges; // nominal only len= ncoords+1
 
   protected GridAxisPoint(Builder<?> builder) {
     super(builder);
@@ -190,6 +197,19 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
     this.startValue = builder.startValue;
     this.endValue = builder.endValue;
     this.values = builder.values;
+    if (this.values != null) {
+      Preconditions.checkArgument(this.values.length == this.ncoords);
+    }
+    if (this.getSpacing() != GridAxisSpacing.regularPoint) {
+      Preconditions.checkNotNull(this.values);
+    }
+    this.edges = builder.edges;
+    if (this.edges != null) {
+      Preconditions.checkArgument(this.edges.length == this.ncoords + 1);
+    }
+    if (this.getSpacing() == GridAxisSpacing.nominalPoint) {
+      Preconditions.checkNotNull(this.edges);
+    }
 
     if (axisType == null && builder.dependenceType == GridAxisDependenceType.independent) {
       throw new IllegalArgumentException("independent axis must have type");
@@ -251,6 +271,7 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
     double startValue;
     double endValue;
     protected double[] values; // null if isRegular, else len = ncoords
+    protected double[] edges; // only used if nominalPoint, len = ncoords+1
 
     // does this really describe all subset possibilities? what about RangeScatter, composite ??
     private Range range; // for subset, tracks the indexes in the original
@@ -264,10 +285,19 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
     /**
      * Spacing.regularXXX: not used
      * Spacing.irregularPoint: pts[ncoords]
+     * Spacing.nominalPoint: pts[ncoords]
      */
     public T setValues(double[] values) {
       this.values = values;
       this.ncoords = values.length;
+      return self();
+    }
+
+    /**
+     * Spacing.nominalPoint: pts[ncoords+1]
+     */
+    public T setEdges(double[] edges) {
+      this.edges = edges;
       return self();
     }
 

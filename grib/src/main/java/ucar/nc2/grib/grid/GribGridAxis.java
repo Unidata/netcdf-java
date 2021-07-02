@@ -41,19 +41,19 @@ public class GribGridAxis {
     switch (gribCoord.getType()) {
       case runtime: {
         CoordinateRuntime rtCoord = (CoordinateRuntime) gribCoord;
-        GridAxis axis = Point.builder().setRuntimeCoordinate(rtCoord).setAxisType(AxisType.RunTime).build();
+        GridAxis<?> axis = Point.builder().setRuntimeCoordinate(rtCoord).setAxisType(AxisType.RunTime).build();
         return new CoordAndAxis(gribCoord, axis);
       }
 
       case time: {
         CoordinateTime timeCoord = (CoordinateTime) gribCoord;
-        GridAxis axis = Point.builder().setTimeOffsetCoordinate(timeCoord).setAxisType(AxisType.TimeOffset).build();
+        GridAxis<?> axis = Point.builder().setTimeOffsetCoordinate(timeCoord).setAxisType(AxisType.TimeOffset).build();
         return new CoordAndAxis(gribCoord, axis);
       }
 
       case timeIntv: {
         CoordinateTimeIntv timeIntvCoord = (CoordinateTimeIntv) gribCoord;
-        GridAxis axis =
+        GridAxis<?> axis =
             Interval.builder().setTimeOffsetIntervalCoordinate(timeIntvCoord).setAxisType(AxisType.TimeOffset).build();
         return new CoordAndAxis(gribCoord, axis);
       }
@@ -95,16 +95,16 @@ public class GribGridAxis {
         CoordinateVert vertCoord = (CoordinateVert) gribCoord;
         AxisType axisType = getVertType(vertCoord.getUnit());
         if (vertCoord.isLayer()) {
-          GridAxis axis = Interval.builder().setVertCoordinate(vertCoord).setAxisType(axisType).build();
+          GridAxis<?> axis = Interval.builder().setVertCoordinate(vertCoord).setAxisType(axisType).build();
           return new CoordAndAxis(gribCoord, axis);
         } else {
-          GridAxis axis = Point.builder().setVertCoordinate(vertCoord).setAxisType(axisType).build();
+          GridAxis<?> axis = Point.builder().setVertCoordinate(vertCoord).setAxisType(axisType).build();
           return new CoordAndAxis(gribCoord, axis);
         }
 
       case ens: {
         CoordinateEns ensCoord = (CoordinateEns) gribCoord;
-        GridAxis axis = Point.builder().setEnsCoordinate(ensCoord).setAxisType(AxisType.Ensemble).build();
+        GridAxis<?> axis = Point.builder().setEnsCoordinate(ensCoord).setAxisType(AxisType.Ensemble).build();
         return new CoordAndAxis(gribCoord, axis);
       }
 

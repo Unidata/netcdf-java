@@ -26,7 +26,7 @@ public class TestGridCompareProblem {
 
   @Test
   public void testProblem2() throws Exception {
-    String filename = "/media/snake/Elements/data/grib/idd/namPolar90/NamPolar90.ncx4";
+    String filename = TestDir.cdmUnitTestDir + "tds_index/NCEP/NAM/Polar_90km/NAM-Polar_90km.ncx4";
     compareGridDataset(filename);
     compareGridCoverage(filename);
   }

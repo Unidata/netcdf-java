@@ -6,49 +6,34 @@
 package ucar.nc2.grib.grid2;
 
 import com.google.common.collect.Streams;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.nc2.dataset.CoordinateAxis;
-import ucar.nc2.dataset.CoordinateAxis1D;
-import ucar.nc2.dataset.CoordinateAxis1DTime;
-import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.ft2.coverage.Coverage;
 import ucar.nc2.ft2.coverage.CoverageCollection;
 import ucar.nc2.ft2.coverage.CoverageCoordAxis;
-import ucar.nc2.ft2.coverage.CoverageCoordAxis1D;
 import ucar.nc2.ft2.coverage.CoverageCoordSys;
 import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
 import ucar.nc2.ft2.coverage.FeatureDatasetCoverage;
-import ucar.nc2.ft2.coverage.GeoReferencedArray;
-import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.nc2.grid2.Grid;
 import ucar.nc2.grid2.GridAxis;
 import ucar.nc2.grid2.GridCoordinateSystem;
 import ucar.nc2.grid2.GridDataset;
 import ucar.nc2.grid2.GridDatasetFactory;
-import ucar.nc2.grid.GridReferencedArray;
-import ucar.nc2.grid.GridSubset;
-import ucar.nc2.grid2.GridReader;
 import ucar.nc2.grid2.GridTimeCoordinateSystem;
-import ucar.nc2.internal.util.CompareArrayToMa2;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.FileFilter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Stream;
 
 import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
-import static org.junit.Assert.fail;
 
 /** Compare reading new and old GridDataset. */
 @RunWith(Parameterized.class)
@@ -71,6 +56,7 @@ public class TestGribGridCompare {
 
       result.add(new Object[] {
           TestDir.cdmUnitTestDir + "tds_index/NCEP/NAM/CONUS_80km/NAM_CONUS_80km_20201027_0000.grib1.ncx4"});
+      result.add(new Object[] {TestDir.cdmUnitTestDir + "tds_index/NCEP/NAM/Polar_90km/NAM-Polar_90km.ncx4"});
       // TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "ft/grid/", ff, result);
     } catch (Exception e) {
       e.printStackTrace();
@@ -121,7 +107,7 @@ public class TestGribGridCompare {
         GridCoordinateSystem newGcs = grid.getCoordinateSystem();
         GridTimeCoordinateSystem newTcs = grid.getTimeCoordinateSystem();
 
-        for (GridAxis newAxis : newGcs.getGridAxes()) {
+        for (GridAxis<?> newAxis : newGcs.getGridAxes()) {
           CoordinateAxis oldAxis = oldGcs.getCoordinateAxes().stream()
               .filter(a -> a.getAxisType().equals(newAxis.getAxisType())).findFirst().orElse(null);
           if (oldAxis == null) {
@@ -165,7 +151,7 @@ public class TestGribGridCompare {
         GridCoordinateSystem newGcs = grid.getCoordinateSystem();
         GridTimeCoordinateSystem newTcs = grid.getTimeCoordinateSystem();
 
-        for (GridAxis newAxis : newGcs.getGridAxes()) {
+        for (GridAxis<?> newAxis : newGcs.getGridAxes()) {
           CoverageCoordAxis oldAxis = oldGcs.getAxes().stream()
               .filter(a -> a.getAxisType().equals(newAxis.getAxisType())).findFirst().orElse(null);
           if (oldAxis == null) {
@@ -174,7 +160,12 @@ public class TestGribGridCompare {
           }
           assertWithMessage(String.format("    GridAxis: %s %s%n", newAxis.getName(), newAxis.getAxisType()))
               .that(oldAxis).isNotNull();
-          assertThat(newAxis.getNominalSize()).isEqualTo(oldAxis.getNcoords());
+          int[] oldShape = oldAxis.getShape();
+          if (oldShape.length > 0) {
+            assertThat(newAxis.getNominalSize()).isEqualTo(oldShape[oldShape.length - 1]);
+          } else {
+            assertThat(newAxis.getNominalSize()).isEqualTo(oldAxis.getNcoords());
+          }
         }
       }
     }
@@ -208,16 +199,17 @@ public class TestGribGridCompare {
         GridCoordinateSystem newGcs = grid.getCoordinateSystem();
         GridTimeCoordinateSystem newTcs = grid.getTimeCoordinateSystem();
 
-        for (GridAxis newAxis : newGcs.getGridAxes()) {
+        for (GridAxis<?> newAxis : newGcs.getGridAxes()) {
           ucar.nc2.grid.GridAxis oldAxis = Streams.stream(oldGcs.getGridAxes())
               .filter(a -> a.getAxisType().equals(newAxis.getAxisType())).findFirst().orElse(null);
           if (oldAxis == null) {
             oldAxis = Streams.stream(oldGcs.getGridAxes()).filter(a -> a.getName().equals(newAxis.getName()))
                 .findFirst().orElse(null);
           }
-          assertWithMessage(String.format("    GridAxis: %s %s%n", newAxis.getName(), newAxis.getAxisType()))
-              .that(oldAxis).isNotNull();
-          assertThat(newAxis.getNominalSize()).isEqualTo(oldAxis.getNominalShape()[0]);
+          assertWithMessage(String.format("GridAxis: %s %s%n", newAxis.getName(), newAxis.getAxisType())).that(oldAxis)
+              .isNotNull();
+          int[] oldShape = oldAxis.getNominalShape();
+          assertThat(newAxis.getNominalSize()).isEqualTo(oldShape[oldShape.length - 1]);
         }
       }
     }

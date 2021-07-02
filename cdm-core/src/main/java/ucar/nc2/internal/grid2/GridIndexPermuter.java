@@ -50,6 +50,11 @@ class GridIndexPermuter {
         return i;
       }
     }
+
+    if (want.getDependenceType() == ucar.nc2.grid2.GridAxisDependenceType.scalar) {
+      return -1;
+    }
+
     throw new IllegalStateException("Cant find dimension index for " + want.getName());
   }
 
