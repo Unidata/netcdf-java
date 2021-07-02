@@ -54,20 +54,10 @@ class ExtractCoordinateValues {
 
       // decide if they are contiguous
       boolean contig = true;
-      boolean isAscending = ncoords >= 2 && value1[0] < value1[1];
-      if (isAscending) {
-        for (int i = 0; i < ncoords - 1; i++) {
-          if (!ucar.nc2.util.Misc.nearlyEquals(value1[i + 1], value2[i])) {
-            contig = false;
-            break;
-          }
-        }
-      } else {
-        for (int i = 0; i < ncoords - 1; i++) {
-          if (!ucar.nc2.util.Misc.nearlyEquals(value1[i], value2[i + 1])) {
-            contig = false;
-            break;
-          }
+      for (int i = 0; i < ncoords - 1; i++) {
+        if (!ucar.nc2.util.Misc.nearlyEquals(value1[i + 1], value2[i])) {
+          contig = false;
+          break;
         }
       }
 

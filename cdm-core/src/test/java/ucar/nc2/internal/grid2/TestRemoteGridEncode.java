@@ -8,6 +8,7 @@ import ucar.unidata.geoloc.ProjectionRect;
 
 import static com.google.common.truth.Truth.assertThat;
 
+/** Test {@link RemoteGridEncode} */
 public class TestRemoteGridEncode {
 
   @Test

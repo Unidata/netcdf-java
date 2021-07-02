@@ -21,6 +21,16 @@ import static org.junit.Assert.fail;
 
 public class TestReadGridDataset {
 
+
+  @Category(NeedsCdmUnitTest.class)
+  @Test
+  public void readGridOneVertCoord() throws IOException, InvalidRangeException {
+    String filename = TestDir.cdmUnitTestDir + "ft/grid/namExtract/20060926_0000.nc";
+    readGrid(filename, "Relative_humidity_height_above_ground", ImmutableList.of(2, 1, 103, 108),
+        "time height_above_ground2 y x", false, 2, "hours since 2006-09-26T00:00Z", "2006-09-26T03:00Z",
+        "2006-09-26T06:00Z", "2006-09-26T06:00Z", 0.0, 2.0, new int[] {1, 1, 103, 108});
+  }
+
   @Test
   public void readGridRegularTime() throws IOException, InvalidRangeException {
     String filename = TestDir.cdmLocalTestDataDir + "ncml/fmrc/GFS_Puerto_Rico_191km_20090729_0000.nc";
@@ -48,7 +58,7 @@ public class TestReadGridDataset {
 
   @Category(NeedsCdmUnitTest.class)
   @Test
-  public void testProblem() throws IOException, InvalidRangeException {
+  public void testDependentAxis() throws IOException, InvalidRangeException {
     String filename = TestDir.cdmUnitTestDir + "conventions/nuwg/2003021212_avn-x.nc";
     // LOOK GribIndexPermutter assumes the dimension name = axis name. Barf.
     readGrid(filename, "T", ImmutableList.of(15, 12, 73, 73), "valtime level lat lon", true, 15,

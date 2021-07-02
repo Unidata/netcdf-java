@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import static ucar.nc2.TestUtils.makeDummyGroup;
 
 /** Test {@link GridNetcdfCS} */
-public class TestGridCS {
+public class TestGridNetcdfCS {
 
   @Test
   public void testBasics() {

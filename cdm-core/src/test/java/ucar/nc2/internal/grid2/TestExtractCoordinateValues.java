@@ -14,6 +14,7 @@ import java.util.Optional;
 
 import static com.google.common.truth.Truth.assertThat;
 
+/** Test {@link ExtractCoordinateValues} */
 public class TestExtractCoordinateValues {
 
   // fdrom cdmUnitTest/conventions/cf/jonathan/fixed.fw0.0Sv.nc
@@ -71,8 +72,8 @@ public class TestExtractCoordinateValues {
     ExtractCoordinateValues subject =
         new ExtractCoordinateValues("latitude_144_flipped", valuesArray, Optional.of(boundsArray), true);
 
-    assertThat(subject.boundsAreContiguous).isTrue();
     assertThat(subject.boundsAreRegular).isTrue();
+    assertThat(subject.boundsAreContiguous).isTrue();
     assertThat(subject.isAscending).isFalse();
     assertThat(subject.isInterval).isFalse(); // LOOK heres the change
     assertThat(subject.isRegular).isTrue();
