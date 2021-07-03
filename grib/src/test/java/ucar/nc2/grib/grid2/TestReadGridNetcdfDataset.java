@@ -8,7 +8,6 @@ import ucar.nc2.grid.CoordInterval;
 import ucar.nc2.grid2.Grid;
 import ucar.nc2.grid2.GridAxis;
 import ucar.nc2.grid2.GridAxisInterval;
-import ucar.nc2.grid2.GridAxisPoint;
 import ucar.nc2.grid2.GridAxisSpacing;
 import ucar.nc2.grid2.GridCoordinateSystem;
 import ucar.nc2.grid2.GridDataset;
@@ -30,7 +29,7 @@ public class TestReadGridNetcdfDataset {
   @Test
   @Category(NeedsCdmUnitTest.class)
   public void testOneProblem() throws IOException {
-    String filename = TestDir.cdmUnitTestDir + "tds_index/NCEP/NDFD/SPC/NDFD-SPC.ncx4";
+    String filename = TestDir.cdmUnitTestDir + "tds_index/NCEP/NDFD/SPC/NDFD_SPC_CONUS_CONDUIT.ncx4";
     System.out.printf("filename %s%n", filename);
 
     Formatter errlog = new Formatter();
@@ -47,7 +46,7 @@ public class TestReadGridNetcdfDataset {
   @Test
   @Category(NeedsCdmUnitTest.class)
   public void testRegularIntervalCoordinate() throws IOException, InvalidRangeException {
-    String filename = TestDir.cdmUnitTestDir + "tds_index/NCEP/NDFD/SPC/NDFD-SPC.ncx4";
+    String filename = TestDir.cdmUnitTestDir + "tds_index/NCEP/NDFD/SPC/NDFD_SPC_CONUS_CONDUIT.ncx4";
     System.out.printf("filename %s%n", filename);
 
     Formatter errlog = new Formatter();

@@ -24,7 +24,7 @@ public class TestGribGridDatasetAxes {
   @Test
   @Category(NeedsCdmUnitTest.class)
   public void testTimeOffsetRegular() throws IOException {
-    String endpoint = TestDir.cdmUnitTestDir + "tds_index/NCEP/NDFD/SPC/NDFD-SPC.ncx4";
+    String endpoint = TestDir.cdmUnitTestDir + "tds_index/NCEP/NDFD/SPC/NDFD_SPC_CONUS_CONDUIT.ncx4";
 
     Formatter errlog = new Formatter();
     try (GribGridDataset gds = GribGridDataset.open(endpoint, errlog).orElse(null)) {
