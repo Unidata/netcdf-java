@@ -7,6 +7,7 @@ package ucar.nc2.grib.grid;
 
 import com.google.common.collect.ImmutableList;
 import ucar.nc2.grid2.GridAxis;
+import ucar.nc2.grid2.GridAxisDependenceType;
 import ucar.nc2.grid2.GridCoordinateSystem;
 import ucar.nc2.grid2.GridHorizCoordinateSystem;
 import ucar.nc2.grid2.GridTimeCoordinateSystem;
@@ -30,7 +31,8 @@ public class GribGridCoordinateSystem implements GridCoordinateSystem {
 
   @Override
   public String getName() {
-    List<String> names = getGridAxes().stream().map(a -> a.getName()).collect(Collectors.toList());
+    List<String> names = getGridAxes().stream().filter(a -> a.getDependenceType() == GridAxisDependenceType.independent)
+        .map(a -> a.getName()).collect(Collectors.toList());
     return String.join(" ", names);
   }
 

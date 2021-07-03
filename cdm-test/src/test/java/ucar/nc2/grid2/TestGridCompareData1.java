@@ -63,8 +63,10 @@ public class TestGridCompareData1 {
   }
 
   /////////////////////////////////////////////////////////////
-  private final String filename;
   private static final boolean show = false;
+
+  private final String filename;
+  private boolean readData = true;
 
   public TestGridCompareData1(String filename) {
     this.filename = filename;
@@ -81,10 +83,12 @@ public class TestGridCompareData1 {
       return;
 
     System.out.printf("%ncompare GridDataset %s%n", filename);
-    compareWithGrid1(filename);
+    compareWithGrid1(readData);
   }
 
-  public static boolean compareWithGrid1(String filename) throws Exception {
+  public boolean compareWithGrid1(boolean readData) throws Exception {
+    this.readData = readData;
+
     Formatter errlog = new Formatter();
     try (GridDataset newDataset = GridDatasetFactory.openGridDataset(filename, errlog);
         ucar.nc2.grid.GridDataset oldDataset = ucar.nc2.grid.GridDatasetFactory.openGridDataset(filename, errlog)) {
@@ -116,7 +120,6 @@ public class TestGridCompareData1 {
 
         if (tcs != null) {
           GridAxisPoint runtime = tcs.getRunTimeAxis();
-          assertThat(runtime == null).isEqualTo(oldRuntime == null);
           if (runtime != null && oldRuntime != null) {
             ok &= doRuntime(grid, runtime, oldGrid, oldRuntime);
           } else {
@@ -142,7 +145,7 @@ public class TestGridCompareData1 {
     return true;
   }
 
-  private static boolean doRuntime(Grid grid, GridAxisPoint runtime, ucar.nc2.grid.Grid oldGrid,
+  private boolean doRuntime(Grid grid, GridAxisPoint runtime, ucar.nc2.grid.Grid oldGrid,
       ucar.nc2.grid.GridAxis1DTime oldRuntime) throws Exception {
 
     boolean ok = true;
@@ -151,10 +154,6 @@ public class TestGridCompareData1 {
     for (int runtimeIdx = 0; runtimeIdx < oldRuntime.getNcoords(); runtimeIdx++) {
       double timeCoord = runtime.getCoordMidpoint(runtimeIdx);
       double timeCoordOld = oldRuntime.getCoordMidpoint(runtimeIdx);
-      if (timeCoord != timeCoordOld) {
-        runtime.getCoordMidpoint(runtimeIdx);
-        System.out.printf("HEY");
-      }
       assertThat(timeCoord).isEqualTo(timeCoordOld);
 
       CalendarDate runtimeDate = tcs.getRuntimeDate(runtimeIdx);
@@ -168,7 +167,7 @@ public class TestGridCompareData1 {
     return ok;
   }
 
-  private static boolean doOffsetTime(Grid grid, GridReader reader, int runtimeIdx, ucar.nc2.grid.Grid oldGrid,
+  private boolean doOffsetTime(Grid grid, GridReader reader, int runtimeIdx, ucar.nc2.grid.Grid oldGrid,
       GridSubset subsetOld) throws Exception {
     boolean ok = true;
 
@@ -188,7 +187,7 @@ public class TestGridCompareData1 {
     return ok;
   }
 
-  private static boolean doVert(Grid grid, GridReader reader, ucar.nc2.grid.Grid oldGrid, GridSubset subsetOld)
+  private boolean doVert(Grid grid, GridReader reader, ucar.nc2.grid.Grid oldGrid, GridSubset subsetOld)
       throws Exception {
     boolean ok = true;
 
@@ -206,8 +205,12 @@ public class TestGridCompareData1 {
     return ok;
   }
 
-  private static boolean doOne(Grid grid, GridReader reader, ucar.nc2.grid.Grid oldGrid, GridSubset subsetOld)
+  private boolean doOne(Grid grid, GridReader reader, ucar.nc2.grid.Grid oldGrid, GridSubset subsetOld)
       throws IOException, ucar.array.InvalidRangeException {
+
+    if (!readData) {
+      return true;
+    }
 
     GridReferencedArray gridArray = reader.read();
     ucar.nc2.grid.GridReferencedArray oldArray = oldGrid.readData(subsetOld);

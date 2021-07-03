@@ -50,9 +50,6 @@ public class GridNetcdfCS implements GridCoordinateSystem {
     ArrayList<GridAxis<?>> axesb = new ArrayList<>();
     for (CoordinateAxis axis : classifier.getAxesUsed()) {
       GridAxis<?> gaxis = gridAxes.get(axis.getShortName());
-      if (gaxis == null) {
-        System.out.printf("HEY");
-      }
       axesb.add(Preconditions.checkNotNull(gaxis, "Missing Coordinate Axis " + axis.getShortName()));
     }
     builder.setAxes(axesb);

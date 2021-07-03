@@ -19,6 +19,7 @@ import java.util.stream.IntStream;
 
 import static com.google.common.truth.Truth.assertThat;
 
+/** Test {@link GridDatasetFactory} CoordinateSystem */
 @Category(NeedsCdmUnitTest.class)
 public class TestReadGridCoordinateSystem {
 

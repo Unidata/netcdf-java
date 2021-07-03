@@ -199,7 +199,7 @@ public class GribGridAxis {
       public T setRuntimeCoordinate(CoordinateRuntime rtCoord) {
         this.gribCoord = rtCoord;
         this.cdu = rtCoord.getCalendarDateUnit();
-        List<Number> values = rtCoord.getValues().stream().map(v -> (Long) v).collect(Collectors.toList());
+        List<Number> values = rtCoord.getRuntimeOffsetsInTimeUnits().stream().collect(Collectors.toList());
         RegularValues regular = calcPointIsRegular(values);
         if (regular != null) {
           setRegular(regular.ncoords, regular.start, regular.increment);
@@ -435,7 +435,9 @@ public class GribGridAxis {
           break;
         }
       }
+      contigValues.add(value2[ncoords - 1]);
     } else {
+      contigValues.add(value2[0]);
       for (int i = 0; i < ncoords - 1; i++) {
         if (!ucar.nc2.util.Misc.nearlyEquals(value1[i], value2[i + 1])) {
           isContiguous = false;
@@ -443,7 +445,7 @@ public class GribGridAxis {
         }
         contigValues.add(value1[i]);
       }
-      contigValues.add(value2[ncoords - 1]);
+      contigValues.add(value1[ncoords - 1]);
     }
 
     if (isContiguous) {
