@@ -348,6 +348,7 @@ public class SubsetIntervalHelper {
         break;
       }
 
+      case Time:
       case TimeOffset: {
         Double dval = params.getTimeOffset();
         if (dval != null) {

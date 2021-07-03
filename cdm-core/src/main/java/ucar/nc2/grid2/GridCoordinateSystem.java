@@ -66,10 +66,10 @@ public interface GridCoordinateSystem {
     if (getTimeCoordinateSystem() != null) {
       result.addAll(getTimeCoordinateSystem().getNominalShape());
     }
-    if (getEnsembleAxis() != null) {
+    if (getEnsembleAxis() != null && getEnsembleAxis().getDependenceType() == GridAxisDependenceType.independent) {
       result.add(getEnsembleAxis().getNominalSize());
     }
-    if (getVerticalAxis() != null) {
+    if (getVerticalAxis() != null && getVerticalAxis().getDependenceType() == GridAxisDependenceType.independent) {
       result.add(getVerticalAxis().getNominalSize());
     }
     result.addAll(getHorizCoordinateSystem().getShape());

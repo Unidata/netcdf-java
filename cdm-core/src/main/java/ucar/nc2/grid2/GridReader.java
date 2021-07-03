@@ -92,4 +92,8 @@ public class GridReader {
     return this.grid.readData(new GridSubset(req));
   }
 
+  @Override
+  public String toString() {
+    return req.toString();
+  }
 }

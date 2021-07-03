@@ -75,17 +75,25 @@ class GridIndexPermuter {
         case Height:
         case Pressure:
         case GeoZ:
-          varRange[zDimOrgIndex] = r;
+          if (zDimOrgIndex >= 0) {
+            varRange[zDimOrgIndex] = r;
+          }
           break;
         case Time:
         case TimeOffset:
-          varRange[toDimOrgIndex] = r;
+          if (toDimOrgIndex >= 0) {
+            varRange[toDimOrgIndex] = r;
+          }
           break;
         case RunTime:
-          varRange[rtDimOrgIndex] = r;
+          if (rtDimOrgIndex >= 0) {
+            varRange[rtDimOrgIndex] = r;
+          }
           break;
         case Ensemble:
-          varRange[eDimOrgIndex] = r;
+          if (eDimOrgIndex >= 0) {
+            varRange[eDimOrgIndex] = r;
+          }
           break;
         default:
           throw new RuntimeException("Unknown axis type " + type);

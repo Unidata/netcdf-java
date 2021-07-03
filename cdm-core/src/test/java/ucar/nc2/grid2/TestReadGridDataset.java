@@ -21,7 +21,6 @@ import static org.junit.Assert.fail;
 
 public class TestReadGridDataset {
 
-
   @Category(NeedsCdmUnitTest.class)
   @Test
   public void readGridOneVertCoord() throws IOException, InvalidRangeException {

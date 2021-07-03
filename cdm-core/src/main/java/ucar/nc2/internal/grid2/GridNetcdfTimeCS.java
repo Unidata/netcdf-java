@@ -9,7 +9,7 @@ import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.calendar.CalendarDateUnit;
 import ucar.nc2.grid.GridSubset;
 import ucar.nc2.grid2.GridAxis;
-import ucar.nc2.grid2.GridAxisInterval;
+import ucar.nc2.grid2.GridAxisDependenceType;
 import ucar.nc2.grid2.GridAxisPoint;
 import ucar.nc2.grid2.GridTimeCoordinateSystem;
 
@@ -67,10 +67,10 @@ public class GridNetcdfTimeCS implements GridTimeCoordinateSystem {
   @Override
   public List<Integer> getNominalShape() {
     List<Integer> result = new ArrayList<>();
-    if (runTimeAxis != null) {
+    if (runTimeAxis != null && runTimeAxis.getDependenceType() == GridAxisDependenceType.independent) {
       result.add(runTimeAxis.getNominalSize());
     }
-    if (timeOffsetAxis != null) {
+    if (timeOffsetAxis != null && timeOffsetAxis.getDependenceType() == GridAxisDependenceType.independent) {
       result.add(timeOffsetAxis.getNominalSize());
     }
     return result;

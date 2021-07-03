@@ -18,10 +18,9 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static com.google.common.truth.Truth.assertThat;
-import static org.junit.Assert.fail;
 
 @Category(NeedsCdmUnitTest.class)
-public class TestGridDatasetFactory {
+public class TestReadGridCoordinateSystem {
 
   @Test
   public void testWithSingleTime() throws IOException {

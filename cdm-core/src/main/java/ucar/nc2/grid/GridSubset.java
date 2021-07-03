@@ -37,8 +37,8 @@ public class GridSubset {
   public static final String timeOffsetAll = "timeOffsetAll"; // value = Boolean
 
   public static final String time = "time"; // value = CalendarDate
-  public static final String timePoint = "timePoint"; // value = Double
-  public static final String timeIntv = "timeIntv"; // value = CoordInterval
+  public static final String timePoint = "timePoint"; // value = Double LOOK whats diff with timeOffset?
+  public static final String timeIntv = "timeIntv"; // value = CoordInterval LOOK whats diff with timeOffsetIntv?
   public static final String timeRange = "timeRange"; // value = CalendarDateRange
   public static final String timeStride = "timeStride"; // value = Integer
   public static final String timePresent = "timePresent"; // value = Boolean
@@ -453,11 +453,7 @@ public class GridSubset {
 
   @Override
   public String toString() {
-    Formatter f = new Formatter();
-    for (Map.Entry<String, Object> entry : req.entrySet()) {
-      f.format("%s == %s%n", entry.getKey(), entry.getValue());
-    }
-    return f.toString();
+    return req.toString();
   }
 
   @Override
