@@ -36,8 +36,6 @@ public class TestGridSubset {
 
     subset.setHorizStride((byte) 999);
     assertThat(subset.getHorizStride()).isEqualTo(-25);
-
-    assertThat(subset.toString()).isEqualTo("horizStride == -25\n");
   }
 
   @Test
@@ -57,8 +55,6 @@ public class TestGridSubset {
     assertThat(subset.getEnsCoord()).isEqualTo(999);
     double ens = subset.getEnsCoord();
     assertThat(ens).isEqualTo(999);
-
-    assertThat(subset.toString()).isEqualTo("ensCoord == 999.0\n");
   }
 
   @Test
@@ -84,8 +80,6 @@ public class TestGridSubset {
     assertThat(subset.getLatLonPoint()).isEqualTo(llpt);
     assertThat(subset.getLatLonPoint()).isEqualTo(LatLonPoint.create(99.0, .5));
     assertThat(subset.getLatLonPoint() == llpt).isTrue();
-
-    assertThat(subset.toString()).isEqualTo("latlonPoint == 90.0, .5\n");
   }
 
   @Test
