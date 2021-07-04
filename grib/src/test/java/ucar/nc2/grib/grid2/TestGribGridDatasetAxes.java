@@ -19,6 +19,7 @@ import java.util.Formatter;
 
 import static com.google.common.truth.Truth.assertThat;
 
+/** Compare reading Grid Axes through new and old GridDataset. */
 public class TestGribGridDatasetAxes {
 
   @Test

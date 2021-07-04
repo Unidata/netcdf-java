@@ -35,7 +35,7 @@ import java.util.List;
 import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
 
-/** Compare reading new and old GridDataset. */
+/** Compare reading Grib through new and old GridDataset. */
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
 public class TestGribGridCompare {

@@ -23,7 +23,7 @@ public class TestGridNetcdfDataset {
   @Test
   @Category(NeedsCdmUnitTest.class)
   public void testOneProblem() throws IOException {
-    String filename = TestDir.cdmUnitTestDir + "tds_index/NCEP/NDFD/SPC/NDFD-SPC.ncx4";
+    String filename = TestDir.cdmUnitTestDir + "tds_index/NCEP/NDFD/SPC/NDFD_SPC_CONUS_CONDUIT.ncx4";
 
     try (NetcdfDataset ds = ucar.nc2.dataset.NetcdfDatasets.openDataset(filename)) {
       Formatter infoLog = new Formatter();
@@ -132,7 +132,7 @@ public class TestGridNetcdfDataset {
   @Test
   @Category(NeedsCdmUnitTest.class)
   public void testOffsetRegularCoordinate() throws IOException {
-    String filename = TestDir.cdmUnitTestDir + "tds_index/NCEP/NDFD/SPC/NDFD-SPC.ncx4";
+    String filename = TestDir.cdmUnitTestDir + "tds_index/NCEP/NDFD/SPC/NDFD_SPC_CONUS_CONDUIT.ncx4";
     String gname = "Total_Probability_of_Severe_Thunderstorms_surface_24_Hour_Average_probability_above_0";
     System.out.printf("filename %s%n", filename);
 

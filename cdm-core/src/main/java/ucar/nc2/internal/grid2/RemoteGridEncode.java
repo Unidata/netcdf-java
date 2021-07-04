@@ -16,6 +16,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/** Static uttilities to encode/decode data requests between String and GridSubset. */
+// LOOK doesnt belong here, is it used?
 public class RemoteGridEncode {
 
   public static String encodeDataRequest(GridSubset subset, String varname) {

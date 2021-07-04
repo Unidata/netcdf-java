@@ -13,9 +13,6 @@ import java.util.List;
 
 /**
  * Abstract coordinate
- *
- * @author caron
- * @since 11/24/13
  */
 public interface Coordinate {
   /** Coordinate types */

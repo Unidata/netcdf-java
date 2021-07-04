@@ -9,6 +9,7 @@ import com.google.common.collect.ImmutableList;
 import ucar.nc2.grid2.GridAxis;
 import ucar.nc2.grid2.GridAxisDependenceType;
 import ucar.nc2.grid2.GridCoordinateSystem;
+import ucar.nc2.grid2.GridDataset;
 import ucar.nc2.grid2.GridHorizCoordinateSystem;
 import ucar.nc2.grid2.GridTimeCoordinateSystem;
 
@@ -17,6 +18,7 @@ import java.util.Formatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/** Grib implementation of {@link GridCoordinateSystem} */
 public class GribGridCoordinateSystem implements GridCoordinateSystem {
   private final ImmutableList<GridAxis<?>> axes;
   private final GribGridHorizCoordinateSystem hcs;

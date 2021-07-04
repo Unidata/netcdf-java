@@ -28,6 +28,7 @@ import ucar.nc2.grid2.GridCoordinateSystem;
 import ucar.nc2.grid2.GridDataset;
 import ucar.nc2.internal.dataset.DatasetClassifier;
 
+import javax.annotation.concurrent.Immutable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,6 +40,7 @@ import java.util.Optional;
 import java.util.Set;
 
 /** GridDataset implementation wrapping a NetcdfDataset. */
+@Immutable
 public class GridNetcdfDataset implements GridDataset {
   private static final Logger log = LoggerFactory.getLogger(GridNetcdfDataset.class);
 
@@ -159,8 +161,6 @@ public class GridNetcdfDataset implements GridDataset {
   }
 
   ///////////////////////////////////////////////////////////////////
-  // TODO make Immutable
-
   private final NetcdfDataset ncd;
   private final FeatureType featureType;
 

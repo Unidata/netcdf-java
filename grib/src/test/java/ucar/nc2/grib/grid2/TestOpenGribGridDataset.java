@@ -12,6 +12,7 @@ import ucar.nc2.grid2.Grid;
 import ucar.nc2.grid2.GridCoordinateSystem;
 import ucar.nc2.grid2.GridHorizCoordinateSystem;
 import ucar.nc2.grid2.GridTimeCoordinateSystem;
+import ucar.nc2.internal.grid2.GridNetcdfCS;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
@@ -26,6 +27,7 @@ import java.util.stream.IntStream;
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.fail;
 
+/** Test {@link GribGridDataset} */
 @Category(NeedsCdmUnitTest.class)
 public class TestOpenGribGridDataset {
 

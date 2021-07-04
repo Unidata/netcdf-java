@@ -19,6 +19,7 @@ import ucar.nc2.grib.coord.CoordinateTimeAbstract;
 import ucar.nc2.grid2.GridAxis;
 import ucar.nc2.grid2.GridAxisInterval;
 import ucar.nc2.grid2.GridAxisPoint;
+import ucar.nc2.grid2.GridHorizCoordinateSystem;
 import ucar.nc2.grid2.GridTimeCoordinateSystem;
 
 import javax.annotation.Nullable;
@@ -27,6 +28,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/** Grib implementation of {@link GridTimeCoordinateSystem} */
 @Immutable
 public abstract class GribGridTimeCoordinateSystem implements GridTimeCoordinateSystem {
 

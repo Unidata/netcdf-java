@@ -14,6 +14,7 @@ import ucar.nc2.internal.grid2.SubsetIntervalHelper;
 import ucar.nc2.util.Indent;
 
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import java.util.Formatter;
 import java.util.Iterator;
 import java.util.List;
@@ -21,8 +22,8 @@ import java.util.Optional;
 
 /**
  * Interval Grid coordinates.
- * LOOK maybe the only real case here different from point is discontinuous ??
  */
+@Immutable
 public class GridAxisInterval extends GridAxis<CoordInterval> implements Iterable<CoordInterval> {
 
   @Override
@@ -127,8 +128,8 @@ public class GridAxisInterval extends GridAxis<CoordInterval> implements Iterabl
   final double startValue; // only for regular
   final double endValue; // why needed?
   final Range range; // for subset, tracks the indexes in the original
-  final double[] values; // null if isRegular, len= ncoords+1 (contiguous interval), or 2*ncoords (discontinuous
-                         // interval) (min0, max0, min1, max1, min2, max2, ...)
+  private final double[] values; // null if isRegular, len= ncoords+1 (contiguous interval),
+  // or 2*ncoords (discontinuous interval) (min0, max0, min1, max1, min2, max2, ...)
 
   protected GridAxisInterval(Builder<?> builder) {
     super(builder);
@@ -227,7 +228,9 @@ public class GridAxisInterval extends GridAxis<CoordInterval> implements Iterabl
      * Spacing.discontiguousInterval: bounds[2*ncoords]
      */
     public T setValues(double[] values) {
-      this.values = values;
+      double[] copy = new double[values.length];
+      System.arraycopy(values, 0, copy, 0, values.length);
+      this.values = copy;
       return self();
     }
 

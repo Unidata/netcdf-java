@@ -17,10 +17,12 @@ import ucar.nc2.grid2.Grids;
 import ucar.nc2.util.Misc;
 
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import java.util.Formatter;
 import java.util.Optional;
 
 /** Helper class for GridAxisInterval for subsetting and searching. */
+@Immutable
 public class SubsetIntervalHelper {
   private final GridAxisInterval orgGridAxis;
 

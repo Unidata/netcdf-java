@@ -21,6 +21,7 @@ import ucar.unidata.geoloc.projection.sat.MSGnavigation;
 import ucar.unidata.geoloc.projection.sat.VerticalPerspectiveView;
 
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
@@ -28,6 +29,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 /** HorizCS with 1D x,y axes. */
+@Immutable
 public class GridNetcdfHorizCS implements GridHorizCoordinateSystem {
 
   public static GridNetcdfHorizCS create(GridAxis<?> xaxis, GridAxis<?> yaxis, @Nullable Projection projection) {
@@ -135,7 +137,7 @@ public class GridNetcdfHorizCS implements GridHorizCoordinateSystem {
     return llbb;
   }
 
-  ProjectionRect mapArea; // lazy
+  private ProjectionRect mapArea; // lazy
 
   @Override
   public ProjectionRect getBoundingBox() {

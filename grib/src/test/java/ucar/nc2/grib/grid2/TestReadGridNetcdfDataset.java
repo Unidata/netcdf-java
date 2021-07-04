@@ -23,7 +23,7 @@ import java.util.Formatter;
 
 import static com.google.common.truth.Truth.assertThat;
 
-/** Test {@link GridNetcdfDataset} */
+/** Test reading Grib through {@link GridNetcdfDataset} */
 public class TestReadGridNetcdfDataset {
 
   @Test

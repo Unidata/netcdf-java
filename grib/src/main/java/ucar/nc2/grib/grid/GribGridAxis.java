@@ -27,15 +27,18 @@ import ucar.nc2.grid2.GridAxis;
 import ucar.nc2.grid2.GridAxisInterval;
 import ucar.nc2.grid2.GridAxisPoint;
 import ucar.nc2.grid2.GridAxisSpacing;
+import ucar.nc2.grid2.GridDataset;
 import ucar.nc2.units.SimpleUnit;
 
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static ucar.nc2.grib.grid.GribGridDataset.CoordAndAxis;
 
+/** Grib implementation of {@link GridAxis} */
 public class GribGridAxis {
 
   public static CoordAndAxis create(GribCollectionImmutable.Type type, Coordinate gribCoord) {
@@ -141,8 +144,9 @@ public class GribGridAxis {
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////////
+  @Immutable
   public static class Point extends GridAxisPoint {
-    final Coordinate gribCoord;
+    private final Coordinate gribCoord; // not immutable, so dont let this escape
 
     private Point(Builder<?> builder) {
       super(builder);
@@ -248,8 +252,9 @@ public class GribGridAxis {
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////////
+  @Immutable
   public static class Interval extends GridAxisInterval {
-    final Coordinate gribCoord;
+    private final Coordinate gribCoord; // not immutable so dont let this escape
 
     private Interval(Builder<?> builder) {
       super(builder);

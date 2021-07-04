@@ -31,16 +31,21 @@ public class TestH4eos {
 
   // test the coordSysBuilder - check if grid exists
   @Test
-  public void testModis() throws IOException, InvalidRangeException {
+  public void testModisGeo() throws IOException, InvalidRangeException {
     // GEO (lat//lon)
-    testGridExists(testDir + "modis/MOD17A3.C5.1.GEO.2000.hdf", "MOD_Grid_MOD17A3/Data_Fields/Npp_0\\.05deg");
-
-    // SINUSOIDAL
-    testGridExists(testDir + "modis/MOD13Q1.A2012321.h00v08.005.2012339011757.hdf",
-        "MODIS_Grid_16DAY_250m_500m_VI/Data_Fields/250m_16_days_NIR_reflectance");
+    testGridExists(testDir + "modis/MOD17A3.C5.1.GEO.2000.hdf", "MOD_Grid_MOD17A3/Data_Fields/Npp_0\\.05deg",
+        "Npp_0.05deg");
   }
 
-  private void testGridExists(String filename, String vname) throws IOException, InvalidRangeException {
+  @Test
+  public void testModisSinusoidal() throws IOException, InvalidRangeException {
+    // SINUSOIDAL
+    testGridExists(testDir + "modis/MOD13Q1.A2012321.h00v08.005.2012339011757.hdf",
+        "MODIS_Grid_16DAY_250m_500m_VI/Data_Fields/250m_16_days_NIR_reflectance", "250m_16_days_NIR_reflectance");
+  }
+
+  private void testGridExists(String filename, String vname, String gname) throws IOException {
+    System.out.printf("filename= %s%n", filename);
     try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
       Variable v = ncfile.findVariable(vname);
       assertThat(v).isNotNull();
@@ -48,10 +53,10 @@ public class TestH4eos {
 
     Formatter errlog = new Formatter();
     try (GridDataset gds = GridDatasetFactory.openGridDataset(filename, errlog)) {
-      Grid v = gds.findGrid(vname).orElseThrow();
+      assertThat(gds).isNotNull();
+      Grid v = gds.findGrid(gname).orElseThrow();
       assertThat(v).isNotNull();
     }
-
   }
 
   @Test

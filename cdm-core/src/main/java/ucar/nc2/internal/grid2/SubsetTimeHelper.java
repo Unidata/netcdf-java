@@ -14,7 +14,6 @@ import ucar.nc2.grid2.GridAxisPoint;
 import ucar.nc2.grid2.GridTimeCoordinateSystem;
 
 import javax.annotation.Nullable;
-import java.util.Arrays;
 import java.util.Formatter;
 
 public class SubsetTimeHelper extends SubsetPointHelper {
@@ -84,7 +83,7 @@ public class SubsetTimeHelper extends SubsetPointHelper {
     }
 
     // otherwise do a binary search
-    return Arrays.binarySearch(time.values(), want);
+    return time.binarySearch(want);
   }
 
 }

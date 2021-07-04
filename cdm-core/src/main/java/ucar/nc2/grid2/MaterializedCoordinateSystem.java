@@ -4,8 +4,6 @@
  */
 package ucar.nc2.grid2;
 
-import ucar.array.RangeIterator;
-
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;

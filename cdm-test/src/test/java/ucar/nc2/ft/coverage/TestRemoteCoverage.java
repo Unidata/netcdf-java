@@ -5,6 +5,7 @@
 package ucar.nc2.ft.coverage;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
@@ -23,6 +24,7 @@ import java.lang.invoke.MethodHandles;
  * @author caron
  * @since 10/5/2015.
  */
+@Ignore("Needs remote server")
 public class TestRemoteCoverage {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 

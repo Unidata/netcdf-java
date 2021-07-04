@@ -5,14 +5,17 @@
 
 package ucar.nc2.internal.grid2;
 
+import com.google.common.collect.ImmutableList;
 import ucar.array.Range;
 import ucar.nc2.grid2.GridAxis;
 import ucar.nc2.grid2.GridAxisPoint;
 import ucar.nc2.grid2.MaterializedCoordinateSystem;
 
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import java.util.List;
 
+@Immutable
 public class GridNetcdfMaterializedCS implements MaterializedCoordinateSystem {
 
   @Override
@@ -42,7 +45,7 @@ public class GridNetcdfMaterializedCS implements MaterializedCoordinateSystem {
   private final GridNetcdfHorizCS hcs;
   private final GridAxisPoint ens;
   private final GridAxis<?> vert;
-  private final List<Range> ranges;
+  private final ImmutableList<Range> ranges;
 
   private GridNetcdfMaterializedCS(Builder builder) {
     this.tcs = builder.tcs;
@@ -66,7 +69,7 @@ public class GridNetcdfMaterializedCS implements MaterializedCoordinateSystem {
     private GridNetcdfHorizCS hcs;
     private GridAxisPoint ens;
     private GridAxis<?> vert;
-    private List<Range> ranges;
+    private ImmutableList<Range> ranges;
     private boolean built;
 
     public Builder setTimeCoordSys(GridNetcdfTimeCS tcs) {
@@ -90,7 +93,7 @@ public class GridNetcdfMaterializedCS implements MaterializedCoordinateSystem {
     }
 
     public Builder setRanges(List<Range> ranges) {
-      this.ranges = ranges;
+      this.ranges = ImmutableList.copyOf(ranges);
       return this;
     }
 
