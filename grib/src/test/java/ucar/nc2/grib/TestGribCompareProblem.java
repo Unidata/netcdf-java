@@ -9,12 +9,15 @@ import java.io.IOException;
 import java.util.Formatter;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.internal.util.CompareNetcdf2;
 import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 /** Compare problem grib file builder */
+@Category(NeedsCdmUnitTest.class)
 public class TestGribCompareProblem {
 
   @Test
