@@ -167,12 +167,7 @@ Below is an example implementation of the `AtmosSigma()` constructor.
 
 #### Implementation of create()
 
-Below is an example implementation of the `create()` method.
-
-{% capture rmd %}
-{% includecodeblock netcdf-java&cdm-core/src/main/java/ucar/unidata/geoloc/vertical/AtmosSigma.java&AtmosSigma %}
-{% endcapture %}
-{{ rmd | markdownify }}
+See `AtmosSigma.create` for an implementation. 
 
 Explanation of `create()`:
 * The `psVar` variable holding the surface pressure 
