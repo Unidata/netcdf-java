@@ -14,11 +14,13 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.collection.GribCollectionImmutable;
 import ucar.nc2.grid2.Grid;
 import ucar.nc2.grid2.GridCoordinateSystem;
+import ucar.nc2.grid2.GridDataset;
 import ucar.nc2.grid2.GridReferencedArray;
 import ucar.nc2.grid.GridSubset;
 
 import java.io.IOException;
 
+/** Grib implementation of {@link Grid} */
 public class GribGrid implements Grid {
   private final GribGridCoordinateSystem coordinateSystem;
   private final GribCollectionImmutable.VariableIndex vi;

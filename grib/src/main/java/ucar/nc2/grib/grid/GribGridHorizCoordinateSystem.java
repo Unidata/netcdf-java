@@ -9,6 +9,7 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.grid2.GridAxis;
 import ucar.nc2.grid2.GridAxisPoint;
+import ucar.nc2.grid2.GridCoordinateSystem;
 import ucar.nc2.grid2.GridHorizCoordinateSystem;
 import ucar.nc2.grid.GridSubset;
 import ucar.unidata.geoloc.LatLonRect;
@@ -20,6 +21,7 @@ import java.util.Formatter;
 import java.util.List;
 import java.util.Optional;
 
+/** Grib implementation of {@link GridHorizCoordinateSystem} */
 public class GribGridHorizCoordinateSystem implements GridHorizCoordinateSystem {
   private final GdsHorizCoordSys hcs;
   private final GridAxisPoint xaxis;

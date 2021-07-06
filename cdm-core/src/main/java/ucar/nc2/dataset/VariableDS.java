@@ -31,6 +31,7 @@ import java.util.*;
  * <li>NcML modifications to underlying Variable</li>
  * </ol>
  */
+// TODO make Immutable
 public class VariableDS extends Variable implements EnhanceScaleMissingUnsigned, VariableEnhanced {
 
   /**

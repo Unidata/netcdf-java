@@ -9,7 +9,6 @@ import ucar.nc2.Dimension;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.CoordinateAxis;
-import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.grid2.GridAxis;
 import ucar.nc2.grid2.GridAxisDependenceType;
@@ -21,23 +20,22 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 /** Create a GridAxis from a CoordinateAxis */
-class CoordAxisExtractor {
-  private static final Logger log = LoggerFactory.getLogger(CoordAxisExtractor.class);
+class CoordAxisToGridAxis {
+  private static final Logger log = LoggerFactory.getLogger(CoordAxisToGridAxis.class);
 
-  private final NetcdfDataset ncd;
   private final CoordinateAxis axis;
   private final GridAxisDependenceType dependenceTypeFromClassifier;
+  private final boolean isIndependent;
 
-  public CoordAxisExtractor(NetcdfDataset ncd, CoordinateAxis axis,
-      GridAxisDependenceType dependenceTypeFromClassifier) {
-    this.ncd = ncd;
+  CoordAxisToGridAxis(CoordinateAxis axis, GridAxisDependenceType dependenceTypeFromClassifier, boolean isIndependent) {
     this.axis = axis;
     this.dependenceTypeFromClassifier = dependenceTypeFromClassifier;
+    this.isIndependent = isIndependent;
   }
 
   GridAxis<?> extractGridAxis() {
-    CoordToGridAxis1D converter =
-        new CoordToGridAxis1D(axis.getShortName(), readValues(), readBounds(), axis.getAxisType().isHoriz());
+    ExtractCoordinateValues converter =
+        new ExtractCoordinateValues(axis.getShortName(), readValues(), readBounds(), axis.getAxisType().isHoriz());
     if (axis.getAxisType() == AxisType.Lon) {
       // Fix discontinuities in longitude axis. These occur when the axis crosses the date line.
       converter.correctLongitudeWrap();
@@ -65,7 +63,7 @@ class CoordAxisExtractor {
     GridAxisDependenceType dependenceType;
     if (axis.isCoordinateVariable()) {
       dependenceType = GridAxisDependenceType.independent;
-    } else if (ncd.isIndependentCoordinate(axis)) { // is a coordinate alias
+    } else if (this.isIndependent) { // is a coordinate alias
       dependenceType = dependenceTypeFromClassifier; // TODO not clear
       builder.setDependsOn(axis.getDimension(0).getShortName());
     } else if (axis.isScalar()) {

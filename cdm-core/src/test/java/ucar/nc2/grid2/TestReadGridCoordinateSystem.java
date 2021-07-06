@@ -7,11 +7,9 @@ package ucar.nc2.grid2;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import ucar.nc2.grib.grid.GribGridDataset;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Formatter;
@@ -20,10 +18,10 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static com.google.common.truth.Truth.assertThat;
-import static org.junit.Assert.fail;
 
+/** Test {@link GridDatasetFactory} CoordinateSystem */
 @Category(NeedsCdmUnitTest.class)
-public class TestGridDatasetFactory {
+public class TestReadGridCoordinateSystem {
 
   @Test
   public void testWithSingleTime() throws IOException {
@@ -54,12 +52,12 @@ public class TestGridDatasetFactory {
       GridCoordinateSystem cs = grid.getCoordinateSystem();
       assertThat(cs).isNotNull();
 
-      GridTimeCoordinateSystem tcs = cs.getTimeCoordSystem();
+      GridTimeCoordinateSystem tcs = cs.getTimeCoordinateSystem();
       assertThat(tcs).isNotNull();
       assertThat(tcs.getNominalShape())
           .isEqualTo(Arrays.stream(expectedTimeShape).boxed().collect(Collectors.toList()));
 
-      GridHorizCoordinateSystem hcs = cs.getHorizCoordSystem();
+      GridHorizCoordinateSystem hcs = cs.getHorizCoordinateSystem();
       assertThat(hcs).isNotNull();
       assertThat(hcs.getShape()).isEqualTo(Arrays.stream(expectedHcsShape).boxed().collect(Collectors.toList()));
 

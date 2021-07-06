@@ -28,6 +28,7 @@ import ucar.nc2.grid2.GridCoordinateSystem;
 import ucar.nc2.grid2.GridDataset;
 import ucar.nc2.internal.dataset.DatasetClassifier;
 
+import javax.annotation.concurrent.Immutable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,6 +40,7 @@ import java.util.Optional;
 import java.util.Set;
 
 /** GridDataset implementation wrapping a NetcdfDataset. */
+@Immutable
 public class GridNetcdfDataset implements GridDataset {
   private static final Logger log = LoggerFactory.getLogger(GridNetcdfDataset.class);
 
@@ -70,7 +72,9 @@ public class GridNetcdfDataset implements GridDataset {
         continue; // LOOK
       }
       if (axis.getRank() < 2) {
-        GridAxis<?> gridAxis = new CoordAxisExtractor(ncd, axis, GridAxisDependenceType.independent).extractGridAxis();
+        GridAxis<?> gridAxis =
+            new CoordAxisToGridAxis(axis, GridAxisDependenceType.independent, ncd.isIndependentCoordinate(axis))
+                .extractGridAxis();
         gridAxes.put(axis.getFullName(), gridAxis);
       } else {
         log.warn("Independent gridAxis {} rank > 1", axis.getFullName());
@@ -84,7 +88,9 @@ public class GridNetcdfDataset implements GridDataset {
         continue;
       }
       if (axis.getRank() < 2) {
-        GridAxis<?> gridAxis = new CoordAxisExtractor(ncd, axis, GridAxisDependenceType.dependent).extractGridAxis();
+        GridAxis<?> gridAxis =
+            new CoordAxisToGridAxis(axis, GridAxisDependenceType.dependent, ncd.isIndependentCoordinate(axis))
+                .extractGridAxis();
         gridAxes.put(axis.getFullName(), gridAxis);
       } /*
          * else if (axis.getAxisType() == AxisType.TimeOffset && axis.getRank() == 2) {
@@ -155,8 +161,6 @@ public class GridNetcdfDataset implements GridDataset {
   }
 
   ///////////////////////////////////////////////////////////////////
-  // TODO make Immutable
-
   private final NetcdfDataset ncd;
   private final FeatureType featureType;
 

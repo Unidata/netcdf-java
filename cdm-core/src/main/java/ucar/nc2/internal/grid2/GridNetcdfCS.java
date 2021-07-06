@@ -49,8 +49,8 @@ public class GridNetcdfCS implements GridCoordinateSystem {
 
     ArrayList<GridAxis<?>> axesb = new ArrayList<>();
     for (CoordinateAxis axis : classifier.getAxesUsed()) {
-      GridAxis<?> gaxis = gridAxes.get(axis.getFullName());
-      axesb.add(Preconditions.checkNotNull(gaxis, "Missing Coordinate Axis " + axis.getFullName()));
+      GridAxis<?> gaxis = gridAxes.get(axis.getShortName());
+      axesb.add(Preconditions.checkNotNull(gaxis, "Missing Coordinate Axis " + axis.getShortName()));
     }
     builder.setAxes(axesb);
 
@@ -89,12 +89,12 @@ public class GridNetcdfCS implements GridCoordinateSystem {
 
   @Override
   @Nullable
-  public GridTimeCoordinateSystem getTimeCoordSystem() {
+  public GridTimeCoordinateSystem getTimeCoordinateSystem() {
     return tcs;
   }
 
   @Override
-  public GridHorizCoordinateSystem getHorizCoordSystem() {
+  public GridHorizCoordinateSystem getHorizCoordinateSystem() {
     return horizCsys;
   }
 

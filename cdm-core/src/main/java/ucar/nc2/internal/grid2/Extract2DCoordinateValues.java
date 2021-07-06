@@ -20,8 +20,8 @@ import java.io.IOException;
  * Previously this was done in CoordinateAxis2D.
  */
 @Immutable
-public class CoordinateAxis2DExtractor {
-  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinateAxis2DExtractor.class);
+public class Extract2DCoordinateValues {
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Extract2DCoordinateValues.class);
 
   private final int ntimes;
   private final Array<Double> coords;
@@ -32,7 +32,7 @@ public class CoordinateAxis2DExtractor {
   private final AttributeContainer attributes;
   private final String getRuntimeAxisName;
 
-  CoordinateAxis2DExtractor(CoordinateAxis dtCoordAxis) {
+  Extract2DCoordinateValues(CoordinateAxis dtCoordAxis) {
     Preconditions.checkArgument(dtCoordAxis.getRank() == 2);
     this.attributes = dtCoordAxis.attributes();
 

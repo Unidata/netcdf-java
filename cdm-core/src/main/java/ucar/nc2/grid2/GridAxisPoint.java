@@ -14,6 +14,7 @@ import ucar.nc2.internal.grid2.SubsetPointHelper;
 import ucar.nc2.internal.grid2.SubsetTimeHelper;
 import ucar.nc2.util.Indent;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.Arrays;
 import java.util.Formatter;
 import java.util.Iterator;
@@ -25,9 +26,9 @@ import static ucar.nc2.grid2.GridAxisSpacing.irregularPoint;
 
 /**
  * Point Grid coordinates.
- * LOOK although we use Number, everything is internally a double.
- * LOOK Grid ncx4 is using floats. Problem with time coordinates, which need longs.
+ * LOOK although we use Number, everything is internally a double. Grib wants integers.
  */
+@Immutable
 public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> {
 
   @Override
@@ -143,9 +144,9 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
     return new CoordIterator();
   }
 
-  // LOOK encapsolation??
-  public double[] values() {
-    return values;
+  // LOOK cant let values escape
+  public int binarySearch(double want) {
+    return Arrays.binarySearch(values, want);
   }
 
   private class CoordIterator extends AbstractIterator<Number> {
@@ -186,8 +187,8 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
   final double startValue; // only for regular
   final double endValue; // why needed?
   final Range range; // for subset, tracks the indexes in the original
-  final double[] values; // null if isRegular, irregular or nominal then len= ncoords
-  final double[] edges; // nominal only len= ncoords+1
+  private final double[] values; // null if isRegular, irregular or nominal then len= ncoords
+  private final double[] edges; // nominal only: len = ncoords+1
 
   protected GridAxisPoint(Builder<?> builder) {
     super(builder);
@@ -251,6 +252,7 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
     } else {
       builder.setValues(this.values);
     }
+    builder.setEdges(this.edges);
     return (Builder<?>) super.addLocalFieldsToBuilder(builder);
   }
 
@@ -288,7 +290,9 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
      * Spacing.nominalPoint: pts[ncoords]
      */
     public T setValues(double[] values) {
-      this.values = values;
+      double[] copy = new double[values.length];
+      System.arraycopy(values, 0, copy, 0, values.length);
+      this.values = copy;
       this.ncoords = values.length;
       return self();
     }
@@ -369,6 +373,9 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
       if (built)
         throw new IllegalStateException("already built");
       built = true;
+      if (this.resolution == 0 && this.values != null && this.values.length > 1) {
+        this.resolution = (this.values[this.values.length - 1] - this.values[0]) / (this.values.length - 1);
+      }
       return new GridAxisPoint(this);
     }
   }

@@ -8,17 +8,21 @@ import static org.junit.Assert.fail;
 import java.io.IOException;
 import java.util.Formatter;
 import org.junit.Ignore;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.internal.util.CompareNetcdf2;
 import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 /** Compare problem grib file builder */
+@Category(NeedsCdmUnitTest.class)
 public class TestGribCompareProblem {
 
-  @Ignore
+  @Test
   public void compareProblemFile() throws IOException {
-    String filename = TestDir.cdmUnitTestDir + "formats/grib2/gfs_4_20130830_1800_144.grb2";
+    String filename = TestDir.cdmUnitTestDir + "formats/grib2/GFS_Global_2p5deg_20101023_0600.grib2";
     compare(filename);
   }
 

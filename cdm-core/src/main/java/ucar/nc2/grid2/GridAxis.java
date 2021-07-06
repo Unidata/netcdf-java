@@ -70,7 +70,7 @@ public abstract class GridAxis<T> implements Comparable<GridAxis<T>>, Iterable<T
     return dependenceType;
   }
 
-  public List<String> getDependsOn() {
+  public ImmutableList<String> getDependsOn() {
     return dependsOn;
   }
 

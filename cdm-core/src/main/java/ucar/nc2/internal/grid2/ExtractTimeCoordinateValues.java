@@ -14,14 +14,14 @@ import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
 
-class CoordinateAxis1DTimeExtractor {
-  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinateAxis1DTimeExtractor.class);
+class ExtractTimeCoordinateValues {
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ExtractTimeCoordinateValues.class);
 
   final CoordTimeHelper timeHelper;
   @Nullable
   final List<CalendarDate> cdates; // non null only if its a string or char coordinate
 
-  CoordinateAxis1DTimeExtractor(CoordinateAxis coordAxis) {
+  ExtractTimeCoordinateValues(CoordinateAxis coordAxis) {
     Preconditions.checkArgument(coordAxis.getArrayType() == ArrayType.CHAR || coordAxis.getRank() < 2);
     this.timeHelper = CoordTimeHelper.factory(coordAxis.getUnitsString(), coordAxis.attributes());
 

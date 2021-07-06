@@ -19,12 +19,13 @@ import java.util.Formatter;
 
 import static com.google.common.truth.Truth.assertThat;
 
+/** Compare reading Grid Axes through new and old GridDataset. */
 public class TestGribGridDatasetAxes {
 
   @Test
   @Category(NeedsCdmUnitTest.class)
   public void testTimeOffsetRegular() throws IOException {
-    String endpoint = TestDir.cdmUnitTestDir + "tds_index/NCEP/NDFD/SPC/NDFD-SPC.ncx4";
+    String endpoint = TestDir.cdmUnitTestDir + "tds_index/NCEP/NDFD/SPC/NDFD_SPC_CONUS_CONDUIT.ncx4";
 
     Formatter errlog = new Formatter();
     try (GribGridDataset gds = GribGridDataset.open(endpoint, errlog).orElse(null)) {
@@ -44,7 +45,7 @@ public class TestGribGridDatasetAxes {
 
       GridAxis<?> timeOffset = tsys.getTimeOffsetAxis(10);
       assertThat((Object) timeOffset).isNotNull();
-      assertThat(timeOffset.getSpacing()).isEqualTo(GridAxisSpacing.discontiguousInterval);
+      assertThat(timeOffset.getSpacing()).isEqualTo(GridAxisSpacing.regularInterval);
       CalendarDate wantRuntime = tsys.getRuntimeDate(10);
 
       assertThat(timeOffset.getNominalSize()).isGreaterThan(1);

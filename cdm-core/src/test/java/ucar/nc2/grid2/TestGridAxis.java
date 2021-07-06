@@ -79,7 +79,7 @@ public class TestGridAxis {
     double[] values = new double[] {0, 5, 10, 20, 40, 80, 100};
     GridAxisPoint.Builder<?> builder = GridAxisPoint.builder().setAxisType(AxisType.GeoX).setName("name")
         .setUnits("unit").setDescription("desc").setNcoords(n).setValues(values)
-        .setSpacing(GridAxisSpacing.irregularPoint).setResolution(13.0).addAttribute(new Attribute("aname", 99.0));
+        .setSpacing(GridAxisSpacing.irregularPoint).addAttribute(new Attribute("aname", 99.0));
     GridAxisPoint axis1D = builder.build();
 
     assertThat(axis1D.getName()).isEqualTo("name");
@@ -92,7 +92,7 @@ public class TestGridAxis {
     assertThat(axis1D.getNominalSize()).isEqualTo(n);
     assertThat(axis1D.getCoordMidpoint(0)).isEqualTo(0);
     assertThat(axis1D.getCoordMidpoint(axis1D.getNominalSize() - 1)).isEqualTo(100);
-    assertThat(axis1D.getResolution()).isEqualTo(13.0);
+    assertThat(axis1D.getResolution()).isEqualTo(100.0 / (n - 1));
     assertThat(Grids.isAscending(axis1D)).isTrue();
     assertThat(axis1D.isRegular()).isFalse();
     assertThat(axis1D.isInterval()).isFalse();
@@ -110,6 +110,60 @@ public class TestGridAxis {
       } else {
         assertThat(axis1D.getCoordInterval(i).end()).isEqualTo((values[i] + values[i + 1]) / 2);
       }
+    }
+
+    int count = 0;
+    for (Number val : axis1D) {
+      assertThat(val).isEqualTo(values[count]);
+      count++;
+    }
+
+    count = 0;
+    for (Object coord : axis1D) {
+      assertThat(coord).isInstanceOf(Double.class);
+      double val = (Double) coord;
+      assertThat(val).isEqualTo(values[count]);
+      count++;
+    }
+
+    GridAxisPoint copy = axis1D.toBuilder().build();
+    assertThat((Object) copy).isEqualTo(axis1D);
+    assertThat(copy.hashCode()).isEqualTo(axis1D.hashCode());
+    assertThat(copy.toString()).isEqualTo(axis1D.toString());
+
+    testFailures(axis1D);
+  }
+
+  @Test
+  public void testNominalPoint() {
+    int n = 6;
+    double[] values = new double[] {2, 4, 8, 15, 50, 80};
+    double[] edges = new double[] {0, 5, 10, 20, 40, 80, 100};
+    GridAxisPoint.Builder<?> builder = GridAxisPoint.builder().setAxisType(AxisType.GeoX).setName("name")
+        .setUnits("unit").setDescription("desc").setNcoords(n).setValues(values).setEdges(edges)
+        .setSpacing(GridAxisSpacing.nominalPoint).addAttribute(new Attribute("aname", 99.0));
+    GridAxisPoint axis1D = builder.build();
+
+    assertThat(axis1D.getName()).isEqualTo("name");
+    assertThat(axis1D.getAxisType()).isEqualTo(AxisType.GeoX);
+    assertThat(axis1D.getUnits()).isEqualTo("unit");
+    assertThat(axis1D.getDescription()).isEqualTo("desc");
+    assertThat(axis1D.attributes().findAttributeDouble("aname", 0.0)).isEqualTo(99.0);
+
+    assertThat(axis1D.getSpacing()).isEqualTo(GridAxisSpacing.nominalPoint);
+    assertThat(axis1D.getNominalSize()).isEqualTo(n);
+    assertThat(axis1D.getCoordMidpoint(0)).isEqualTo(2);
+    assertThat(axis1D.getCoordMidpoint(axis1D.getNominalSize() - 1)).isEqualTo(80);
+    assertThat(axis1D.getResolution()).isEqualTo(78.0 / (n - 1));
+    assertThat(Grids.isAscending(axis1D)).isTrue();
+    assertThat(axis1D.isRegular()).isFalse();
+    assertThat(axis1D.isInterval()).isFalse();
+    assertThat(Grids.getCoordEdgeMinMax(axis1D)).isEqualTo(MinMax.create(0, 100.0));
+
+    for (int i = 0; i < axis1D.getNominalSize(); i++) {
+      assertThat(axis1D.getCoordMidpoint(i)).isEqualTo(values[i]);
+      assertThat(axis1D.getCoordInterval(i).start()).isEqualTo(edges[i]);
+      assertThat(axis1D.getCoordInterval(i).end()).isEqualTo(edges[i + 1]);
     }
 
     int count = 0;
@@ -199,7 +253,7 @@ public class TestGridAxis {
     assertThat(axis1D.getNominalSize()).isEqualTo(n);
     assertThat(axis1D.getCoordInterval(0).start()).isEqualTo(0);
     assertThat(axis1D.getCoordInterval(axis1D.getNominalSize() - 1).end()).isEqualTo(100);
-    assertThat(axis1D.getResolution()).isEqualTo(0);
+    assertThat(axis1D.getResolution()).isEqualTo(100.0 / n);
     assertThat(Grids.isAscending(axis1D)).isTrue();
     assertThat(axis1D.isRegular()).isFalse();
     assertThat(axis1D.isInterval()).isTrue();

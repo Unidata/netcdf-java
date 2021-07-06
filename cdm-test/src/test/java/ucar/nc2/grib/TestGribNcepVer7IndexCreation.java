@@ -87,8 +87,8 @@ public class TestGribNcepVer7IndexCreation {
   public void createNBMAlaska() throws IOException { // TWOD
     Grib.setDebugFlags(DebugFlags.create("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config =
-        new FeatureCollectionConfig("NCEP_NBM_ALASKA", "test/NCEP_NBM_ALASKA", FeatureCollectionType.GRIB2,
-            TestDir.cdmUnitTestDir + "tds_index/NCEP/NBM/Alaska/ver7/.*gbx9", null, null, null, "file", null);
+        new FeatureCollectionConfig("NCEP_NBM_ALASKA_ver7", "test/NCEP_NBM_ALASKA", FeatureCollectionType.GRIB2,
+            TestDir.cdmUnitTestDir + "tds_index/NCEP/NBM/Alaska/.*gbx9", null, null, null, "file", null);
     System.out.printf("Create %s %s index for = %s%n", config.collectionName, config.ptype, config.spec);
 
     GribCdmIndex.updateGribCollection(config, always, logger);

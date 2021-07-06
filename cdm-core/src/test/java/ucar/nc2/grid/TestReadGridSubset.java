@@ -18,7 +18,7 @@ public class TestReadGridSubset {
   @Test
   @Category(NeedsCdmUnitTest.class)
   public void testTimeOffsetRegular() throws IOException, InvalidRangeException {
-    String filename = TestDir.cdmUnitTestDir + "tds_index/NCEP/NDFD/SPC/NDFD-SPC.ncx4";
+    String filename = TestDir.cdmUnitTestDir + "tds_index/NCEP/NDFD/SPC/NDFD_SPC_CONUS_CONDUIT.ncx4";
 
     Formatter infoLog = new Formatter();
     try (GridDataset gridDataset = GridDatasetFactory.openGridDataset(filename, infoLog)) {

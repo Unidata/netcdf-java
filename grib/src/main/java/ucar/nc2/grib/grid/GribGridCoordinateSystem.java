@@ -7,7 +7,9 @@ package ucar.nc2.grib.grid;
 
 import com.google.common.collect.ImmutableList;
 import ucar.nc2.grid2.GridAxis;
+import ucar.nc2.grid2.GridAxisDependenceType;
 import ucar.nc2.grid2.GridCoordinateSystem;
+import ucar.nc2.grid2.GridDataset;
 import ucar.nc2.grid2.GridHorizCoordinateSystem;
 import ucar.nc2.grid2.GridTimeCoordinateSystem;
 
@@ -16,6 +18,7 @@ import java.util.Formatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/** Grib implementation of {@link GridCoordinateSystem} */
 public class GribGridCoordinateSystem implements GridCoordinateSystem {
   private final ImmutableList<GridAxis<?>> axes;
   private final GribGridHorizCoordinateSystem hcs;
@@ -30,7 +33,8 @@ public class GribGridCoordinateSystem implements GridCoordinateSystem {
 
   @Override
   public String getName() {
-    List<String> names = getGridAxes().stream().map(a -> a.getName()).collect(Collectors.toList());
+    List<String> names = getGridAxes().stream().filter(a -> a.getDependenceType() == GridAxisDependenceType.independent)
+        .map(a -> a.getName()).collect(Collectors.toList());
     return String.join(" ", names);
   }
 
@@ -44,12 +48,12 @@ public class GribGridCoordinateSystem implements GridCoordinateSystem {
   }
 
   @Override
-  public GridTimeCoordinateSystem getTimeCoordSystem() {
+  public GridTimeCoordinateSystem getTimeCoordinateSystem() {
     return tcs;
   }
 
   @Override
-  public GridHorizCoordinateSystem getHorizCoordSystem() {
+  public GridHorizCoordinateSystem getHorizCoordinateSystem() {
     return hcs;
   }
 

@@ -38,8 +38,6 @@ import java.io.IOException;
 import java.util.Formatter;
 import java.util.Optional;
 
-import static ucar.nc2.grid.GridAxis.Spacing.discontiguousInterval;
-
 /**
  * Display nc2.grid objects.
  * more or less the view in MVC
@@ -154,7 +152,7 @@ public class GridRenderer {
     }
 
     // find the grid indexes
-    GridHorizCoordinateSystem hcs = dataState.gcs.getHorizCoordSystem();
+    GridHorizCoordinateSystem hcs = dataState.gcs.getHorizCoordinateSystem();
     Optional<GridHorizCoordinateSystem.CoordReturn> opt = hcs.findXYindexFromCoord(loc.getX(), loc.getY());
 
     // get value, construct the string
@@ -253,7 +251,7 @@ public class GridRenderer {
     setColorScaleParams();
 
     if (drawGrid) {
-      GridHorizCoordinateSystem hcs = dataState.gcs.getHorizCoordSystem();
+      GridHorizCoordinateSystem hcs = dataState.gcs.getHorizCoordinateSystem();
       if (hcs.isRegular()) {
         drawGridHorizRegular(g, dataArr);
       } else {

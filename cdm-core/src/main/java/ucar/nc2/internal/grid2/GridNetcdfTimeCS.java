@@ -9,17 +9,19 @@ import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.calendar.CalendarDateUnit;
 import ucar.nc2.grid.GridSubset;
 import ucar.nc2.grid2.GridAxis;
-import ucar.nc2.grid2.GridAxisInterval;
+import ucar.nc2.grid2.GridAxisDependenceType;
 import ucar.nc2.grid2.GridAxisPoint;
 import ucar.nc2.grid2.GridTimeCoordinateSystem;
 
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
 import java.util.Optional;
 
 /** Implementation of GridTimeCoordinateSystem. */
+@Immutable
 public class GridNetcdfTimeCS implements GridTimeCoordinateSystem {
 
   public static GridNetcdfTimeCS create(GridAxisPoint runTimeAxis, GridAxis<?> timeOffsetAxis) {
@@ -67,10 +69,10 @@ public class GridNetcdfTimeCS implements GridTimeCoordinateSystem {
   @Override
   public List<Integer> getNominalShape() {
     List<Integer> result = new ArrayList<>();
-    if (runTimeAxis != null) {
+    if (runTimeAxis != null && runTimeAxis.getDependenceType() == GridAxisDependenceType.independent) {
       result.add(runTimeAxis.getNominalSize());
     }
-    if (timeOffsetAxis != null) {
+    if (timeOffsetAxis != null && timeOffsetAxis.getDependenceType() == GridAxisDependenceType.independent) {
       result.add(timeOffsetAxis.getNominalSize());
     }
     return result;

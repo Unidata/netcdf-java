@@ -27,7 +27,7 @@ import ucar.nc2.util.CancelTask;
 
 /** Encapsulates a NetcdfFile that is a component of the aggregation. */
 class AggDatasetOuter extends AggDataset {
-  private static final boolean debugOpenFile = true;
+  private static final boolean debugOpenFile = false;
 
   private final AggregationOuter aggregationOuter;
   @Nullable

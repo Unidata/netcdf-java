@@ -42,7 +42,7 @@ class DataState {
     this.gridDataset = gridDataset;
     this.grid = grid;
     this.gcs = grid.getCoordinateSystem();
-    this.tcs = grid.getCoordinateSystem().getTimeCoordSystem();
+    this.tcs = grid.getCoordinateSystem().getTimeCoordinateSystem();
     if (tcs != null) {
       this.toaxis = tcs.getTimeOffsetAxis(0);
       this.rtaxis = tcs.getRunTimeAxis();

@@ -14,6 +14,7 @@ import ucar.nc2.internal.grid2.SubsetIntervalHelper;
 import ucar.nc2.util.Indent;
 
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import java.util.Formatter;
 import java.util.Iterator;
 import java.util.List;
@@ -21,8 +22,8 @@ import java.util.Optional;
 
 /**
  * Interval Grid coordinates.
- * LOOK maybe the only real case here different from point is discontinuous ??
  */
+@Immutable
 public class GridAxisInterval extends GridAxis<CoordInterval> implements Iterable<CoordInterval> {
 
   @Override
@@ -94,6 +95,9 @@ public class GridAxisInterval extends GridAxis<CoordInterval> implements Iterabl
         return startValue + (index + 1) * getResolution();
 
       case contiguousInterval:
+        if (index + 1 >= values.length) {
+          System.out.printf("HEY");
+        }
         return values[index + 1];
 
       case discontiguousInterval:
@@ -124,8 +128,8 @@ public class GridAxisInterval extends GridAxis<CoordInterval> implements Iterabl
   final double startValue; // only for regular
   final double endValue; // why needed?
   final Range range; // for subset, tracks the indexes in the original
-  final double[] values; // null if isRegular, len= ncoords+1 (contiguous interval), or 2*ncoords (discontinuous
-                         // interval) (min0, max0, min1, max1, min2, max2, ...)
+  private final double[] values; // null if isRegular, len= ncoords+1 (contiguous interval),
+  // or 2*ncoords (discontinuous interval) (min0, max0, min1, max1, min2, max2, ...)
 
   protected GridAxisInterval(Builder<?> builder) {
     super(builder);
@@ -182,7 +186,12 @@ public class GridAxisInterval extends GridAxis<CoordInterval> implements Iterabl
 
   // Add local fields to the builder.
   protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> builder) {
-    builder.setRegular(this.ncoords, this.startValue, this.resolution).setValues(this.values).setRange(this.range);
+    builder.setNcoords(this.ncoords).setResolution(this.resolution).setRange(this.range);
+    if (isRegular()) {
+      builder.setRegular(this.ncoords, this.startValue, this.resolution);
+    } else {
+      builder.setValues(this.values);
+    }
     return (Builder<?>) super.addLocalFieldsToBuilder(builder);
   }
 
@@ -202,7 +211,7 @@ public class GridAxisInterval extends GridAxis<CoordInterval> implements Iterabl
     int ncoords; // number of coordinates, required
     double startValue;
     double endValue;
-    protected double[] values; // null if isRegular, len = ncoords, ncoords+1, or 2*ncoords
+    protected double[] values; // null if isRegular; else len ncoords+1 (irregular), or 2*ncoords (discontinuous)
 
     // does this really describe all subset possibilities? what about RangeScatter, composite ??
     private Range range; // for subset, tracks the indexes in the original
@@ -219,7 +228,9 @@ public class GridAxisInterval extends GridAxis<CoordInterval> implements Iterabl
      * Spacing.discontiguousInterval: bounds[2*ncoords]
      */
     public T setValues(double[] values) {
-      this.values = values;
+      double[] copy = new double[values.length];
+      System.arraycopy(values, 0, copy, 0, values.length);
+      this.values = copy;
       return self();
     }
 
@@ -301,6 +312,9 @@ public class GridAxisInterval extends GridAxis<CoordInterval> implements Iterabl
       if (built)
         throw new IllegalStateException("already built");
       built = true;
+      if (this.resolution == 0 && spacing == GridAxisSpacing.contiguousInterval && this.values.length > 1) {
+        this.resolution = (this.values[this.values.length - 1] - this.values[0]) / (this.values.length - 1);
+      }
       return new GridAxisInterval(this);
     }
   }
