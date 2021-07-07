@@ -1,0 +1,14 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Security
+    url: https://www.unidata.ucar.edu/support/#process
+    about: Send security related inquiries and reports to security AT unidata.ucar.edu
+  - name: Questions?
+    url: https://github.com/Unidata/netcdf-java/discussions/new?category=questions-and-answers
+    about: Ask a question about netCDF-Java
+  - name: Ideas and Feature Requests
+    url: https://github.com/Unidata/netcdf-java/discussions/new?category=ideas
+    about: Propose an idea or make a feature request for netCDF-Java
+  - name: Other support
+    url: https://www.unidata.ucar.edu/support/#process
+    about: Other ways to get support
