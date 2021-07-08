@@ -322,7 +322,7 @@ public class TestGridSubset {
     GridSubset copy = GridSubset.fromStringMap(smap);
     assertThat(subset.getVertIntv()).isEqualTo(copy.getVertIntv());
     assertThat(subset.getRunTime()).isEqualTo(copy.getRunTime());
-    assertThat(subset.getEnsCoord()).isEqualTo(copy.getEnsCoord());
+    assertThat(subset.getEnsCoord().doubleValue()).isEqualTo(copy.getEnsCoord().doubleValue());
     assertThat(subset.getHorizStride()).isEqualTo(copy.getHorizStride());
     assertThat(subset.getRunTimeLatest()).isEqualTo(copy.getRunTimeLatest());
     assertThat(subset.getGridName()).isEqualTo(copy.getGridName());
