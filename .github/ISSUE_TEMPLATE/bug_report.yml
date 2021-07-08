@@ -1,0 +1,64 @@
+name: Bug Report
+description: Non-security related issues regarding this software
+title: "[VERSION]: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        :point_up: **Please edit the title above to include the highest version, of which you are aware, of netCDF-Java impacted by this bug in the title of the issue.**
+        
+        Thank you for taking the time to fill out this bug report! If you have a question, suggestion, or feature request, please use the project [GitHub Discussions forum](https://github.com/Unidata/netcdf-java/discussions/).
+        
+  - type: dropdown
+    id: versions
+    attributes:
+      label: Versions impacted by the bug
+      description: Which version(s) of netCDF-Java are impacted by this bug? If you have only tried with one version, that is ok!
+      multiple: true
+      options:
+        - v5.x
+        - v6.x
+        - v7.x
+    validations:
+      required: true
+  - type: textarea
+    id: report-details
+    attributes:
+      label: What went wrong?
+      placeholder: Please describe the bug!
+      value: "Please describe the bug."
+    validations:
+      required: true
+  - type: textarea
+    id: stack_trace
+    attributes:
+      label: Relevant stack trace
+      description: Please copy and paste the plain text of any relevant stack trace (this content be converted to a code block).
+      render: shell
+  - type: textarea
+    id: log_messages
+    attributes:
+      label: Relevant log messages
+      description: Please copy and paste any relevant log messages.
+  - type: dropdown
+    id: example_file
+    attributes:
+      label: |
+        If you have an example file that you can share, please attach it to this issue.
+        If so, may we include it in our test datasets to help ensure the bug does not return once fixed?
+        Note: the test datasets are publicly accessible without restriction.
+      options:
+        - 'Yes'
+        - 'No'
+        - N/A
+    validations:
+      required: true
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      description: By submitting this report, you agree to follow the UCAR/Unidata [Code of Conduct](https://github.com/Unidata/.github/blob/main/CODE_OF_CONDUCT.md)
+      options:
+        - label: I agree to follow the UCAR/Unidata Code of Conduct
+          required: true
