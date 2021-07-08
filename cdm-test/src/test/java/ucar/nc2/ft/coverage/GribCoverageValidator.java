@@ -82,9 +82,9 @@ public class GribCoverageValidator implements GribDataValidator {
     }
 
     // ens
-    Double wantEns = coords.getEnsCoord();
+    Number wantEns = coords.getEnsCoord();
     if (wantEns != null) {
-      Assert2.assertNearlyEquals(pds.getPerturbationNumber(), wantEns);
+      Assert2.assertNearlyEquals(pds.getPerturbationNumber(), wantEns.doubleValue());
     }
 
   }
@@ -142,10 +142,10 @@ public class GribCoverageValidator implements GribDataValidator {
     }
 
     // ens
-    Double wantEns = coords.getEnsCoord();
+    Number wantEns = coords.getEnsCoord();
     if (wantEns != null) {
       Grib2Pds.PdsEnsemble pdse = (Grib2Pds.PdsEnsemble) pds;
-      Assert2.assertNearlyEquals(wantEns, pdse.getPerturbationNumber());
+      Assert2.assertNearlyEquals(wantEns.doubleValue(), pdse.getPerturbationNumber());
     }
   }
 }
