@@ -125,23 +125,15 @@ public class GridNetcdfTimeCS implements GridTimeCoordinateSystem {
     return "GridTimeCS{" + "type=" + type + ", runTimeAxis=" + runTimeAxis + ", timeOffsetAxis=" + timeOffsetAxis + '}';
   }
 
+  // LOOK test use of SubsetTimeHelper, likely wrong.
   public Optional<GridNetcdfTimeCS> subset(GridSubset params, Formatter errlog) {
-    // theres always a timeOffset
-    Optional<? extends GridAxis<?>> timeOffsetOpt = timeOffsetAxis.isInterval() ? timeOffsetAxis.subset(params, errlog)
-        : ((GridAxisPoint) timeOffsetAxis).subset(this, params, errlog);
+    SubsetTimeHelper helper = new SubsetTimeHelper(this);
 
-    if (timeOffsetOpt.isEmpty()) {
-      return Optional.empty();
-    }
-    GridAxis<?> timeOffset = timeOffsetOpt.get();
-
-    // Handle runtime specially, need to convert dates, and may be very large.
-    if (runTimeAxis != null) {
-      Optional<? extends GridAxisPoint> runtimeSubset = runTimeAxis.subset(this, params, errlog);
-      return runtimeSubset.map(rt -> GridNetcdfTimeCS.create(rt, timeOffset));
-
+    if (type == Type.Observation || type == Type.SingleRuntime) {
+      return helper.subsetTime(params, errlog).map(timeOffset -> GridNetcdfTimeCS.create(timeOffset));
     } else {
-      return Optional.of(GridNetcdfTimeCS.create(timeOffset));
+      return helper.subsetOffset(params, errlog)
+          .map(timeOffset -> GridNetcdfTimeCS.create(helper.runtimeAxis, timeOffset));
     }
   }
 

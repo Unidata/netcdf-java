@@ -20,12 +20,12 @@ public class TestGridSubset {
 
   @Test
   public void testHorizStride() {
-    GridSubset subset = GridSubset.createNew();
+    GridSubset subset = GridSubset.create();
     Integer strideo = subset.getHorizStride();
     assertThat(strideo).isNull();
 
     try {
-      int stride = subset.getHorizStride();
+      subset.getHorizStride();
       fail();
     } catch (NullPointerException e) {
       // correct
@@ -42,12 +42,12 @@ public class TestGridSubset {
 
   @Test
   public void testEns() {
-    GridSubset subset = GridSubset.createNew();
-    Double enso = subset.getEnsCoord();
+    GridSubset subset = GridSubset.create();
+    Number enso = subset.getEnsCoord();
     assertThat(enso).isNull();
 
     try {
-      double ens = subset.getEnsCoord();
+      subset.getEnsCoord();
       fail();
     } catch (NullPointerException e) {
       // correct
@@ -55,13 +55,13 @@ public class TestGridSubset {
 
     subset.setEnsCoord(999.0);
     assertThat(subset.getEnsCoord()).isEqualTo(999);
-    double ens = subset.getEnsCoord();
+    double ens = subset.getEnsCoord().doubleValue();
     assertThat(ens).isEqualTo(999);
   }
 
   @Test
   public void testLatLonBoundingBox() {
-    GridSubset subset = GridSubset.createNew();
+    GridSubset subset = GridSubset.create();
     LatLonRect llbb = subset.getLatLonBoundingBox();
     assertThat(llbb).isNull();
 
@@ -73,7 +73,7 @@ public class TestGridSubset {
 
   @Test
   public void testLatLonPoint() {
-    GridSubset subset = GridSubset.createNew();
+    GridSubset subset = GridSubset.create();
     LatLonPoint pt = subset.getLatLonPoint();
     assertThat(pt).isNull();
 
@@ -86,7 +86,7 @@ public class TestGridSubset {
 
   @Test
   public void testProjectionBoundingBox() {
-    GridSubset subset = GridSubset.createNew();
+    GridSubset subset = GridSubset.create();
     ProjectionRect rect = subset.getProjectionBoundingBox();
     assertThat(rect).isNull();
 
@@ -98,7 +98,7 @@ public class TestGridSubset {
 
   @Test
   public void testRuntime() {
-    GridSubset subset = GridSubset.createNew();
+    GridSubset subset = GridSubset.create();
     CalendarDate cd = subset.getRunTime();
     assertThat(cd).isNull();
 
@@ -129,7 +129,7 @@ public class TestGridSubset {
 
   @Test
   public void testRuntimeLatest() {
-    GridSubset subset = GridSubset.createNew();
+    GridSubset subset = GridSubset.create();
     Boolean latest = subset.getRunTimeLatest();
     assertThat(latest).isEqualTo(false);
 
@@ -142,7 +142,7 @@ public class TestGridSubset {
 
   @Test
   public void testRuntimeAll() {
-    GridSubset subset = GridSubset.createNew();
+    GridSubset subset = GridSubset.create();
     Boolean latest = subset.getRunTimeAll();
     assertThat(latest).isEqualTo(false);
 
@@ -155,7 +155,7 @@ public class TestGridSubset {
 
   @Test
   public void testTime() {
-    GridSubset subset = GridSubset.createNew();
+    GridSubset subset = GridSubset.create();
     CalendarDate cd = subset.getTime();
     assertThat(cd).isNull();
 
@@ -167,7 +167,7 @@ public class TestGridSubset {
 
   @Test
   public void testTimeCoord() {
-    GridSubset subset = GridSubset.createNew();
+    GridSubset subset = GridSubset.create();
     ucar.nc2.grid.CoordInterval offsetv = ucar.nc2.grid.CoordInterval.create(34.56, 78.9);
     subset.setTimeCoord(offsetv);
     assertThat(subset.getTimePoint()).isNull();
@@ -195,12 +195,12 @@ public class TestGridSubset {
 
   @Test
   public void testTimeStride() {
-    GridSubset subset = GridSubset.createNew();
+    GridSubset subset = GridSubset.create();
     Integer strideo = subset.getTimeStride();
     assertThat(strideo).isNull();
 
     try {
-      int stride = subset.getTimeStride();
+      subset.getTimeStride();
       fail();
     } catch (NullPointerException e) {
       // correct
@@ -217,7 +217,7 @@ public class TestGridSubset {
 
   @Test
   public void testTimeRange() {
-    GridSubset subset = GridSubset.createNew();
+    GridSubset subset = GridSubset.create();
     CalendarDateRange cd = subset.getTimeRange();
     assertThat(cd).isNull();
 
@@ -230,7 +230,7 @@ public class TestGridSubset {
 
   @Test
   public void testTimeOffsetCoord() {
-    GridSubset subset = GridSubset.createNew();
+    GridSubset subset = GridSubset.create();
     ucar.nc2.grid.CoordInterval offsetv = ucar.nc2.grid.CoordInterval.create(34.56, 78.9);
     subset.setTimeOffsetCoord(offsetv);
     assertThat(subset.getTimeOffset()).isNull();
@@ -258,7 +258,7 @@ public class TestGridSubset {
 
   @Test
   public void testTimeOffsetFirst() {
-    GridSubset subset = GridSubset.createNew();
+    GridSubset subset = GridSubset.create();
     Boolean latest = subset.getTimeOffsetFirst();
     assertThat(latest).isEqualTo(false);
 
@@ -271,7 +271,7 @@ public class TestGridSubset {
 
   @Test
   public void testTimePresent() {
-    GridSubset subset = GridSubset.createNew();
+    GridSubset subset = GridSubset.create();
     Boolean latest = subset.getTimePresent();
     assertThat(latest).isEqualTo(false);
 
@@ -284,7 +284,7 @@ public class TestGridSubset {
 
   @Test
   public void testVertCoord() {
-    GridSubset subset = GridSubset.createNew();
+    GridSubset subset = GridSubset.create();
     ucar.nc2.grid.CoordInterval offsetv = ucar.nc2.grid.CoordInterval.create(34.56, 78.9);
     subset.setVertCoord(offsetv);
     assertThat(subset.getVertIntv()).isEqualTo(offsetv);
@@ -296,7 +296,7 @@ public class TestGridSubset {
 
   @Test
   public void testStringConstructor() {
-    GridSubset subset = GridSubset.createNew();
+    GridSubset subset = GridSubset.create();
     ucar.nc2.grid.CoordInterval offsetv = CoordInterval.create(34.5, 78.9);
     subset.setVertCoord(offsetv); // CoordInterval
 

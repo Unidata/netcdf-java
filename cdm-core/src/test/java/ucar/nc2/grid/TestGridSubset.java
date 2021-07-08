@@ -41,11 +41,11 @@ public class TestGridSubset {
   @Test
   public void testEns() {
     GridSubset subset = new GridSubset();
-    Double enso = subset.getEnsCoord();
+    Number enso = subset.getEnsCoord();
     assertThat(enso).isNull();
 
     try {
-      double ens = subset.getEnsCoord();
+      double ens = subset.getEnsCoord().doubleValue();
       fail();
     } catch (NullPointerException e) {
       // correct
@@ -53,7 +53,7 @@ public class TestGridSubset {
 
     subset.setEnsCoord(999.0);
     assertThat(subset.getEnsCoord()).isEqualTo(999);
-    double ens = subset.getEnsCoord();
+    double ens = subset.getEnsCoord().doubleValue();
     assertThat(ens).isEqualTo(999);
   }
 

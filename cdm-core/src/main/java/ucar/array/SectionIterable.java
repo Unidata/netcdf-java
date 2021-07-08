@@ -4,6 +4,8 @@
  */
 package ucar.array;
 
+import com.google.common.base.Preconditions;
+
 import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -37,7 +39,7 @@ public class SectionIterable implements Iterable<Integer> {
     int count = 0;
     this.fullShape = new int[fullShapeList.size()];
     for (RangeIterator ri : ranges) {
-      assert (ri.length() <= fullShapeList.get(count));
+      Preconditions.checkArgument(ri.length() <= fullShapeList.get(count));
       this.fullShape[count] = fullShapeList.get(count);
       count++;
     }

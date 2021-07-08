@@ -9,6 +9,8 @@ import com.google.common.collect.ImmutableList;
 import ucar.array.Range;
 import ucar.nc2.grid2.GridAxis;
 import ucar.nc2.grid2.GridAxisPoint;
+import ucar.nc2.grid2.GridHorizCoordinateSystem;
+import ucar.nc2.grid2.GridTimeCoordinateSystem;
 import ucar.nc2.grid2.MaterializedCoordinateSystem;
 
 import javax.annotation.Nullable;
@@ -19,7 +21,7 @@ import java.util.List;
 public class GridNetcdfMaterializedCS implements MaterializedCoordinateSystem {
 
   @Override
-  public GridNetcdfTimeCS getTimeCoordSystem() {
+  public GridTimeCoordinateSystem getTimeCoordSystem() {
     return tcs;
   }
 
@@ -36,13 +38,13 @@ public class GridNetcdfMaterializedCS implements MaterializedCoordinateSystem {
   }
 
   @Override
-  public GridNetcdfHorizCS getHorizCoordSystem() {
+  public GridHorizCoordinateSystem getHorizCoordSystem() {
     return hcs;
   }
 
   //////////////////////////////////////////////////////////////////////////
-  private final GridNetcdfTimeCS tcs;
-  private final GridNetcdfHorizCS hcs;
+  private final GridTimeCoordinateSystem tcs;
+  private final GridHorizCoordinateSystem hcs;
   private final GridAxisPoint ens;
   private final GridAxis<?> vert;
   private final ImmutableList<Range> ranges;
@@ -65,19 +67,19 @@ public class GridNetcdfMaterializedCS implements MaterializedCoordinateSystem {
   }
 
   public static class Builder {
-    private GridNetcdfTimeCS tcs;
-    private GridNetcdfHorizCS hcs;
+    private GridTimeCoordinateSystem tcs;
+    private GridHorizCoordinateSystem hcs;
     private GridAxisPoint ens;
     private GridAxis<?> vert;
     private ImmutableList<Range> ranges;
     private boolean built;
 
-    public Builder setTimeCoordSys(GridNetcdfTimeCS tcs) {
+    public Builder setTimeCoordSys(GridTimeCoordinateSystem tcs) {
       this.tcs = tcs;
       return this;
     }
 
-    public Builder setHorizCoordSys(GridNetcdfHorizCS hcs) {
+    public Builder setHorizCoordSys(GridHorizCoordinateSystem hcs) {
       this.hcs = hcs;
       return this;
     }

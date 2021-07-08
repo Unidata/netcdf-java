@@ -11,7 +11,6 @@ import ucar.array.Range;
 import ucar.nc2.grid.CoordInterval;
 import ucar.nc2.grid.GridSubset;
 import ucar.nc2.internal.grid2.SubsetPointHelper;
-import ucar.nc2.internal.grid2.SubsetTimeHelper;
 import ucar.nc2.util.Indent;
 
 import javax.annotation.concurrent.Immutable;
@@ -42,18 +41,6 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
       return Optional.of(this);
     }
     SubsetPointHelper helper = new SubsetPointHelper(this);
-    GridAxisPoint.Builder<?> builder = helper.subsetBuilder(params, errlog);
-    if (builder == null) {
-      return Optional.empty();
-    }
-    return Optional.of(builder.build());
-  }
-
-  public Optional<GridAxisPoint> subset(GridTimeCoordinateSystem tcs, GridSubset params, Formatter errlog) {
-    if (params == null || params.isEmpty()) {
-      return Optional.of(this);
-    }
-    SubsetTimeHelper helper = new SubsetTimeHelper(tcs, this);
     GridAxisPoint.Builder<?> builder = helper.subsetBuilder(params, errlog);
     if (builder == null) {
       return Optional.empty();
@@ -144,11 +131,6 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
     return new CoordIterator();
   }
 
-  // LOOK cant let values escape
-  public int binarySearch(double want) {
-    return Arrays.binarySearch(values, want);
-  }
-
   private class CoordIterator extends AbstractIterator<Number> {
     private int current = 0;
 
@@ -159,6 +141,13 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
       }
       return getCoordinate(current++);
     }
+  }
+
+
+  // LOOK cant let values escape
+  @Override
+  public int binarySearch(double want) {
+    return Arrays.binarySearch(values, want);
   }
 
   @Override
@@ -209,7 +198,12 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
       Preconditions.checkArgument(this.edges.length == this.ncoords + 1);
     }
     if (this.getSpacing() == GridAxisSpacing.nominalPoint) {
+      Preconditions.checkNotNull(this.values);
       Preconditions.checkNotNull(this.edges);
+      for (int i = 0; i < ncoords; i++) {
+        Preconditions.checkArgument(this.edges[i] <= this.values[i]);
+      }
+      Preconditions.checkArgument(this.edges[ncoords] >= this.values[ncoords - 1]);
     }
 
     if (axisType == null && builder.dependenceType == GridAxisDependenceType.independent) {
@@ -341,6 +335,8 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
     }
 
     public T subset(int ncoords, double startValue, double endValue, double resolution, Range range) {
+      Preconditions.checkNotNull(range);
+      Preconditions.checkArgument(ncoords == range.length());
       this.ncoords = ncoords;
       this.startValue = startValue;
       this.endValue = endValue;
@@ -348,6 +344,7 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
       this.range = range;
       this.isSubset = true;
       this.values = makeValues(range);
+      this.edges = makeEdges(range);
       return self();
     }
 
@@ -356,6 +353,7 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
         case regularPoint:
           return null;
 
+        case nominalPoint:
         case irregularPoint:
           int count = 0;
           double[] subsetValues = new double[ncoords];
@@ -367,6 +365,21 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
         default:
           throw new IllegalStateException("illegal spacing = " + spacing);
       }
+    }
+
+    private double[] makeEdges(Range range) {
+      if (spacing == GridAxisSpacing.nominalPoint) {
+        int count = 0;
+        int lastEdge = 0;
+        double[] subsetEdges = new double[ncoords + 1];
+        for (int i : range) {
+          subsetEdges[count++] = edges[i];
+          lastEdge = i;
+        }
+        subsetEdges[count] = edges[lastEdge + 1];
+        return subsetEdges;
+      }
+      return null;
     }
 
     public GridAxisPoint build() {

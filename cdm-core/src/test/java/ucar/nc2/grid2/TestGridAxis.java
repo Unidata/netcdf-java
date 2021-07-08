@@ -138,7 +138,7 @@ public class TestGridAxis {
   public void testNominalPoint() {
     int n = 6;
     double[] values = new double[] {2, 4, 8, 15, 50, 80};
-    double[] edges = new double[] {0, 5, 10, 20, 40, 80, 100};
+    double[] edges = new double[] {0, 3, 5, 10, 20, 80, 100};
     GridAxisPoint.Builder<?> builder = GridAxisPoint.builder().setAxisType(AxisType.GeoX).setName("name")
         .setUnits("unit").setDescription("desc").setNcoords(n).setValues(values).setEdges(edges)
         .setSpacing(GridAxisSpacing.nominalPoint).addAttribute(new Attribute("aname", 99.0));
@@ -187,6 +187,23 @@ public class TestGridAxis {
 
     testFailures(axis1D);
   }
+
+  @Test
+  public void testNominalPointFail() {
+    int n = 6;
+    double[] values = new double[] {2, 4, 8, 15, 50, 80};
+    double[] edges = new double[] {0, 5, 10, 20, 40, 80, 100};
+    GridAxisPoint.Builder<?> builder = GridAxisPoint.builder().setAxisType(AxisType.GeoX).setName("name")
+        .setUnits("unit").setDescription("desc").setNcoords(n).setValues(values).setEdges(edges)
+        .setSpacing(GridAxisSpacing.nominalPoint).addAttribute(new Attribute("aname", 99.0));
+    try {
+      builder.build();
+      fail();
+    } catch (Throwable e) {
+      // expected;
+    }
+  }
+
 
   @Test
   public void testRegularInterval() {

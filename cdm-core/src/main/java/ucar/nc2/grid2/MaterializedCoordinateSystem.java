@@ -11,6 +11,7 @@ import java.util.List;
 /** A Coordinate System for materialized gridded data. */
 public interface MaterializedCoordinateSystem {
 
+  // LOOK should this be MaterializedTimeCoordinateSystem ?
   @Nullable
   GridTimeCoordinateSystem getTimeCoordSystem();
 

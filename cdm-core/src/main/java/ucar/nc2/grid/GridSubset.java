@@ -18,7 +18,11 @@ import ucar.unidata.util.StringUtil2;
 import javax.annotation.Nullable;
 import java.util.*;
 
-/** Coordinate value-based subsetting of a Grid. */
+/**
+ * Coordinate value-based subsetting of a Grid.
+ * LOOK problem is that the valid combinations for time are not obvious.
+ * maybe should check, eg set vertCoord when there isnt any? or ignore?
+ */
 public class GridSubset {
   public static final String gridName = "gridName"; // value = String
 
@@ -31,22 +35,24 @@ public class GridSubset {
   public static final String runtimeLatest = "runtimeLatest"; // value = Boolean
   public static final String runtimeAll = "runtimeAll"; // value = Boolean
 
+  // LOOK The value is the offset in the units of the GridAxis, or baseDate?
   public static final String timeOffset = "timeOffset"; // value = Double
   public static final String timeOffsetIntv = "timeOffsetIntv"; // value = CoordInterval
-  public static final String timeOffsetFirst = "timeOffsetFirst"; // value = Boolean
   public static final String timeOffsetAll = "timeOffsetAll"; // value = Boolean
+  public static final String timeOffsetFirst = "timeOffsetFirst"; // value = Boolean LOOK deprecated I think
 
   public static final String time = "time"; // value = CalendarDate
+  public static final String timeRange = "timeRange"; // value = CalendarDateRange
+  public static final String timeLatest = "timeLatest"; // value = Boolean
+  public static final String timePresent = "timePresent"; // value = Boolean
+  public static final String timeStride = "timeStride"; // value = Integer LOOK is this needed?
+  public static final String timeAll = "timeAll"; // value = Boolean LOOK whats diff with timeOffsetAll?
   public static final String timePoint = "timePoint"; // value = Double LOOK whats diff with timeOffset?
   public static final String timeIntv = "timeIntv"; // value = CoordInterval LOOK whats diff with timeOffsetIntv?
-  public static final String timeRange = "timeRange"; // value = CalendarDateRange
-  public static final String timeStride = "timeStride"; // value = Integer
-  public static final String timePresent = "timePresent"; // value = Boolean
-  public static final String timeAll = "timeAll"; // value = Boolean
 
   public static final String vertPoint = "vertPoint"; // value = Double
   public static final String vertIntv = "vertIntv"; // value = CoordInterval
-  public static final String ensCoord = "ensCoord"; // value = Double
+  public static final String ensCoord = "ensCoord"; // value = Number
 
   // cant use these for selecting, used for validation LOOK not being set
   public static final String timeOffsetDate = "timeOffsetDate"; // value = CalendarDate
@@ -56,7 +62,7 @@ public class GridSubset {
 
   private final Map<String, Object> req = new HashMap<>();
 
-  public static GridSubset createNew() {
+  public static GridSubset create() {
     return new GridSubset();
   }
 
@@ -180,6 +186,23 @@ public class GridSubset {
     throw new RuntimeException(key + " not a Integer " + val);
   }
 
+  @Nullable
+  private Number getNumber(String key) {
+    Object val = req.get(key);
+    if (val == null) {
+      return null;
+    } else if (val instanceof Number) {
+      return ((Number) val).intValue();
+    } else if (val instanceof String) {
+      try {
+        return Integer.parseInt((String) val);
+      } catch (Exception e) {
+        throw new RuntimeException(key + " cant parse as Integer " + val);
+      }
+    }
+    throw new RuntimeException(key + " not a Integer " + val);
+  }
+
   private boolean isTrue(String key) {
     Object val = req.get(key);
     if (val instanceof String) {
@@ -205,12 +228,11 @@ public class GridSubset {
   }
 
   @Nullable
-  public Double getEnsCoord() {
-    return getDouble(ensCoord);
+  public Number getEnsCoord() {
+    return getNumber(ensCoord);
   }
 
-  public GridSubset setEnsCoord(Object coord) {
-    Preconditions.checkArgument(coord instanceof Double);
+  public GridSubset setEnsCoord(Number coord) {
     req.put(ensCoord, coord);
     return this;
   }
@@ -344,6 +366,15 @@ public class GridSubset {
     } else {
       throw new RuntimeException("setTimeCoord must be Number or CoordInterval " + coord);
     }
+    return this;
+  }
+
+  public boolean getTimeLatest() {
+    return isTrue(timeLatest);
+  }
+
+  public GridSubset setTimeLatest() {
+    req.put(timeLatest, true);
     return this;
   }
 

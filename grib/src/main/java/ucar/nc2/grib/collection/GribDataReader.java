@@ -32,13 +32,12 @@ import java.util.*;
  * Grib Data Reader.
  * Split from GribIosp, so can be used by GribCoverage.
  * 
- * @deprecated FeatureDatasets will move to legacy in ver7, this class will not be public.
+ * @deprecated use GribArrayReader.
  */
 @Deprecated
 @Immutable
 public abstract class GribDataReader {
   private static final Logger logger = LoggerFactory.getLogger(GribDataReader.class);
-
 
   public static GribDataReader factory(GribCollectionImmutable gribCollection,
       GribCollectionImmutable.VariableIndex vindex) {

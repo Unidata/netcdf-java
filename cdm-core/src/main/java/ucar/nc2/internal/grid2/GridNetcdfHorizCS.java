@@ -173,16 +173,14 @@ public class GridNetcdfHorizCS implements GridHorizCoordinateSystem {
 
   @Override
   public Optional<CoordReturn> findXYindexFromCoord(double x, double y) {
-    SubsetPointHelper xhelper = new SubsetPointHelper(xaxis);
-    SubsetPointHelper yhelper = new SubsetPointHelper(yaxis);
     CoordReturn result = new CoordReturn();
 
     if (xaxis.getAxisType() == AxisType.Lon) {
       x = LatLonPoints.lonNormalFrom(x, xaxis.getCoordinate(0).doubleValue()); // LOOK ??
     }
 
-    result.xindex = xhelper.findCoordElement(x, false);
-    result.yindex = yhelper.findCoordElement(y, false);
+    result.xindex = SubsetHelpers.findCoordElement(xaxis, x, false);
+    result.yindex = SubsetHelpers.findCoordElement(yaxis, y, false);
 
     if (result.xindex >= 0 && result.xindex < xaxis.getNominalSize() && result.yindex >= 0
         && result.yindex < yaxis.getNominalSize()) {
@@ -303,13 +301,11 @@ public class GridNetcdfHorizCS implements GridHorizCoordinateSystem {
       maxy = prect.getMaxPoint().getY();
     }
 
-    SubsetPointHelper xhelper = new SubsetPointHelper(xaxis);
-    SubsetPointHelper yhelper = new SubsetPointHelper(yaxis);
-    int minxIndex = xhelper.findCoordElement(minx, true);
-    int minyIndex = yhelper.findCoordElement(miny, true);
+    int minxIndex = SubsetHelpers.findCoordElement(xaxis, minx, true);
+    int minyIndex = SubsetHelpers.findCoordElement(yaxis, miny, true);
 
-    int maxxIndex = xhelper.findCoordElement(maxx, true);
-    int maxyIndex = yhelper.findCoordElement(maxy, true);
+    int maxxIndex = SubsetHelpers.findCoordElement(xaxis, maxx, true);
+    int maxyIndex = SubsetHelpers.findCoordElement(yaxis, maxy, true);
 
     List<Range> list = new ArrayList<>();
     list.add(new Range(Math.min(minyIndex, maxyIndex), Math.max(minyIndex, maxyIndex)));
