@@ -195,9 +195,9 @@ public class GridSubset {
       return ((Number) val).intValue();
     } else if (val instanceof String) {
       try {
-        return Integer.parseInt((String) val);
+        return Double.parseDouble((String) val);
       } catch (Exception e) {
-        throw new RuntimeException(key + " cant parse as Integer " + val);
+        throw new RuntimeException(key + " cant parse as Double " + val);
       }
     }
     throw new RuntimeException(key + " not a Integer " + val);
