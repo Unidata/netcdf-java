@@ -1,4 +1,9 @@
-package ucar.nc2.grib.grid2;
+/*
+ *  Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
+ *  See LICENSE for license information.
+ */
+
+package ucar.nc2.grib.grid;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -14,7 +19,6 @@ import ucar.nc2.grid2.GridDataset;
 import ucar.nc2.grid2.GridDatasetFactory;
 import ucar.nc2.grid2.GridTimeCoordinateSystem;
 import ucar.nc2.grid2.Grids;
-import ucar.nc2.internal.grid2.GridNetcdfDataset;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
@@ -23,8 +27,8 @@ import java.util.Formatter;
 
 import static com.google.common.truth.Truth.assertThat;
 
-/** Test reading Grib through {@link GridNetcdfDataset} */
-public class TestReadGridNetcdfDataset {
+/** Test reading Grib through {@link GridDatasetFactory} */
+public class TestReadGridDatasetFactory {
 
   @Test
   @Category(NeedsCdmUnitTest.class)

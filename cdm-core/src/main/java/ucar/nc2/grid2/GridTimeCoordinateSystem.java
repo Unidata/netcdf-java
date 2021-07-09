@@ -9,6 +9,7 @@ import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.calendar.CalendarDateUnit;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -34,8 +35,14 @@ public interface GridTimeCoordinateSystem {
 
   List<Integer> getNominalShape();
 
-  // LOOK Range not RangeIterator
-  List<ucar.array.Range> getSubsetRanges();
+  default List<ucar.array.Range> getSubsetRanges() {
+    List<ucar.array.Range> result = new ArrayList<>();
+    if (getRunTimeAxis() != null) {
+      result.add(getRunTimeAxis().getSubsetRange());
+    }
+    result.add(getTimeOffsetAxis(0).getSubsetRange());
+    return result;
+  }
 
   /**
    * Get the Runtime axis.
@@ -46,7 +53,6 @@ public interface GridTimeCoordinateSystem {
 
   /**
    * Get the ith runtime CalendarDate.
-   * if type=Observation or SingleRuntime, runIdx is ignored, return same as getBaseDate().
    * Null if type=Observation.
    */
   @Nullable

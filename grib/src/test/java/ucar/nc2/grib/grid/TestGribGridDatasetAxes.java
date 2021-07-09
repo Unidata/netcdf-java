@@ -1,9 +1,13 @@
-package ucar.nc2.grib.grid2;
+/*
+ *  Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
+ *  See LICENSE for license information.
+ */
+
+package ucar.nc2.grib.grid;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.nc2.calendar.CalendarDate;
-import ucar.nc2.grib.grid.GribGridDataset;
 import ucar.nc2.grid.CoordInterval;
 import ucar.nc2.grid2.Grid;
 import ucar.nc2.grid2.GridAxis;

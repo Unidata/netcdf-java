@@ -8,6 +8,7 @@ package ucar.nc2.grib.grid;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Streams;
+import ucar.array.Range;
 import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.calendar.CalendarDateUnit;
 import ucar.nc2.calendar.CalendarPeriod;
@@ -30,6 +31,8 @@ import java.util.Formatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static ucar.nc2.grid2.GridTimeCoordinateSystem.Type.Observation;
 
 /**
  * Grib implementation of {@link GridTimeCoordinateSystem}
@@ -65,7 +68,10 @@ public abstract class GribGridTimeCoordinateSystem implements GridTimeCoordinate
       case MRUTP: {
         // time2D (nruns X 1) orthogonal:
         Preconditions.checkNotNull(time);
-        return new Observation(time);
+        CalendarDate refDate = time.time2d.getRefDate();
+        CalendarPeriod period = time.time2d.getTimeUnit();
+        CalendarDateUnit dateUnit = CalendarDateUnit.of(period, true, refDate);
+        return new Observation(time, dateUnit);
       }
       case TwoD: {
         if (time.time2d.isOrthogonal()) {
@@ -73,7 +79,7 @@ public abstract class GribGridTimeCoordinateSystem implements GridTimeCoordinate
         } else if (time.time2d.isRegular()) {
           return new OffsetRegular(type, runtime, time);
         } else {
-          return new Time2d(type, runtime, time);
+          return new OffsetIrregular(type, runtime, time);
         }
       }
       default:
@@ -86,64 +92,77 @@ public abstract class GribGridTimeCoordinateSystem implements GridTimeCoordinate
     return type;
   }
 
-  @Override
-  public abstract List<Integer> getNominalShape();
-
-  // LOOK this is where orthohonality is assumed. Problem is runtime/time. How to handle ??
-  @Override
-  public List<ucar.array.Range> getSubsetRanges() {
-    List<ucar.array.Range> result = new ArrayList<>();
-    if (runTimeAxis != null) {
-      result.add(runTimeAxis.getSubsetRange());
-    }
-    if (timeOffsetAxis != null) {
-      result.add(timeOffsetAxis.getSubsetRange());
-    }
-    return result;
-  }
-
   @Nullable
   @Override
   public GridAxisPoint getRunTimeAxis() {
     return runTimeAxis;
   }
 
+  @Nullable
   @Override
-  public List<CalendarDate> getTimesForRuntime(int runIdx) {
-    GridAxis<?> timeOffset = getTimeOffsetAxis(runIdx);
-    CalendarDateUnit dateUnit = CalendarDateUnit.fromUdunitString(null, timeOffset.getUnits()).orElseThrow();
-    if (timeOffset instanceof GridAxisPoint) {
-      GridAxisPoint offsetPoint = (GridAxisPoint) timeOffset;
-      return Streams.stream(offsetPoint).map(val -> dateUnit.makeCalendarDate(val.longValue()))
-          .collect(Collectors.toList());
+  public CalendarDate getRuntimeDate(int runIdx) {
+    if (this.type == Observation) {
+      return null;
     } else {
-      GridAxisInterval offsetIntv = (GridAxisInterval) timeOffset;
-      // LOOK cast double to long
-      return Streams.stream(offsetIntv).map(intv -> dateUnit.makeCalendarDate((long) intv.midpoint()))
-          .collect(Collectors.toList());
+      return calendarDateUnit.makeCalendarDate(this.runTimeAxis.getCoordinate(runIdx).longValue());
     }
   }
 
   @Override
+  public List<CalendarDate> getTimesForRuntime(int runIdx) {
+    if (this.type == Observation) {
+      return getTimesForObservation();
+    } else {
+      return getTimesForNonObservation(runIdx);
+    }
+  }
+
+  private List<CalendarDate> getTimesForObservation() {
+    if (timeOffsetAxis instanceof GridAxisPoint) {
+      GridAxisPoint offsetPoint = (GridAxisPoint) timeOffsetAxis;
+      return Streams.stream(offsetPoint).map(val -> calendarDateUnit.makeCalendarDate(val.longValue()))
+              .collect(Collectors.toList());
+    } else {
+      GridAxisInterval offsetIntv = (GridAxisInterval) timeOffsetAxis;
+      // LOOK cast double to long
+      return Streams.stream(offsetIntv).map(intv -> calendarDateUnit.makeCalendarDate((long) intv.midpoint()))
+              .collect(Collectors.toList());
+    }
+  }
+
+  private List<CalendarDate> getTimesForNonObservation(int runIdx) {
+    Preconditions.checkArgument(runTimeAxis != null && runIdx >=0 && runIdx < runTimeAxis.getNominalSize());
+    CalendarDate baseForRun = getRuntimeDate(runIdx);
+    GridAxis<?> timeAxis = getTimeOffsetAxis(runIdx);
+    List<CalendarDate> result = new ArrayList<>();
+    for (int offsetIdx = 0; offsetIdx < timeAxis.getNominalSize(); offsetIdx++) {
+      result.add(baseForRun.add((long) timeAxis.getCoordMidpoint(offsetIdx), this.offsetPeriod));
+    }
+    return result;
+  }
+
+  @Override
   public CalendarDateUnit getCalendarDateUnit() {
-    return runtimeUnit.orElse(null);
+    return calendarDateUnit;
   }
 
   //////////////////////////////////////////////////////////////////////////////
   final GridTimeCoordinateSystem.Type type;
   final @Nullable GridAxisPoint runTimeAxis;
   final GridAxis<?> timeOffsetAxis;
-  final Optional<CalendarDateUnit> runtimeUnit; // can it really be optional? seems unlikely
+  final CalendarDateUnit calendarDateUnit;
+  final CalendarPeriod offsetPeriod;
 
-  GribGridTimeCoordinateSystem(Type type, @Nullable GridAxisPoint runTimeAxis, GridAxis<?> timeOffsetAxis) {
+  GribGridTimeCoordinateSystem(Type type, @Nullable GridAxisPoint runTimeAxis, GridAxis<?> timeOffsetAxis, CalendarDateUnit calendarDateUnit) {
     this.type = type;
     this.runTimeAxis = runTimeAxis;
     this.timeOffsetAxis = timeOffsetAxis;
+    this.offsetPeriod = CalendarPeriod.of(timeOffsetAxis.getUnits());
 
     if (runTimeAxis != null) {
-      runtimeUnit = CalendarDateUnit.fromUdunitString(null, runTimeAxis.getUnits());
+      this.calendarDateUnit = CalendarDateUnit.fromUdunitString(null, runTimeAxis.getUnits()).orElseThrow();
     } else {
-      runtimeUnit = Optional.empty();
+      this.calendarDateUnit = calendarDateUnit;
     }
   }
 
@@ -154,64 +173,26 @@ public abstract class GribGridTimeCoordinateSystem implements GridTimeCoordinate
   // are you allowed to subset across runtimes?
   public abstract Optional<GribGridTimeCoordinateSystem> subset(GridSubset params, Formatter errlog);
 
-  /*
-   * {
-   * // theres always a timeOffset
-   * Optional<? extends GridAxis<?>> timeOffsetOpt = timeOffsetAxis.isInterval() ? timeOffsetAxis.subset(params, errlog)
-   * : ((GridAxisPoint) timeOffsetAxis).subset(this, params, errlog);
-   * 
-   * if (timeOffsetOpt.isEmpty()) {
-   * return Optional.empty();
-   * }
-   * GridAxis<?> timeOffset = timeOffsetOpt.get();
-   * 
-   * // Handle runtime specially, need to convert dates, and may be very large.
-   * if (runTimeAxis != null) {
-   * Optional<? extends GridAxisPoint> runtimeSubset = runTimeAxis.subset(this, params, errlog);
-   * // LOOK retun subtype or MaterializedTimeCoordinateSystem?
-   * return runtimeSubset.map(rt -> new MaterializedTimeCoordinateSystem(this.type, rt, timeOffset));
-   * 
-   * } else {
-   * return Optional.of(new MaterializedTimeCoordinateSystem(this.type, null, timeOffset));
-   * }
-   * }
-   */
-
   //////////////////////////////////////////////////////////////////////////////
   private static class Observation extends GribGridTimeCoordinateSystem {
-    private final CalendarDateUnit dateUnit;
 
-    private Observation(GribGridDataset.CoordAndAxis time) {
+    private Observation(GribGridDataset.CoordAndAxis time, CalendarDateUnit calendarDateUnit) {
       // LOOK MRMS_Radar_20201027_0000.grib2.ncx4 time2D has runtime in seconds, but period name is minutes
-      super(Type.Observation, null, time.axis);
-      if (time.time2d != null) {
-        CalendarDate refDate = time.time2d.getRefDate();
-        CalendarPeriod period = time.time2d.getTimeUnit();
-        this.dateUnit = CalendarDateUnit.of(period, true, refDate);
-      } else {
-        this.dateUnit = CalendarDateUnit.fromUdunitString(null, timeOffsetAxis.getUnits()).orElseThrow();
-      }
+      super(Type.Observation, null, time.axis, calendarDateUnit);
     }
 
     private Observation(GridAxis<?> timeOffset, CalendarDateUnit dateUnit) {
-      super(Type.Observation, null, timeOffset);
-      this.dateUnit = dateUnit;
+      super(Type.Observation, null, timeOffset, dateUnit);
     }
 
     @Override
     public CalendarDate getBaseDate() {
-      return dateUnit.getBaseDateTime();
+      return calendarDateUnit.getBaseDateTime();
     }
 
     @Override
     public List<Integer> getNominalShape() {
       return ImmutableList.of(timeOffsetAxis.getNominalSize());
-    }
-
-    @Override
-    @Nullable
-    public CalendarDate getRuntimeDate(int idx) {
-      return getBaseDate();
     }
 
     @Override
@@ -222,7 +203,7 @@ public abstract class GribGridTimeCoordinateSystem implements GridTimeCoordinate
     @Override
     public Optional<GribGridTimeCoordinateSystem> subset(GridSubset params, Formatter errlog) {
       SubsetTimeHelper helper = new SubsetTimeHelper(this);
-      return helper.subsetTime(params, errlog).map(t -> new Observation(t, this.dateUnit));
+      return helper.subsetTime(params, errlog).map(t -> new Observation(t, this.calendarDateUnit));
     }
   }
 
@@ -231,14 +212,14 @@ public abstract class GribGridTimeCoordinateSystem implements GridTimeCoordinate
     private final CalendarDate runtimeDate;
 
     private SingleRuntime(GribGridDataset.CoordAndAxis runtime, GribGridDataset.CoordAndAxis timeOffset) {
-      super(Type.SingleRuntime, (GridAxisPoint) runtime.axis, timeOffset.axis);
+      super(Type.SingleRuntime, (GridAxisPoint) runtime.axis, timeOffset.axis, null);
       Preconditions.checkArgument(runtime.coord.getNCoords() == 1);
       CoordinateRuntime runtimeCoord = (CoordinateRuntime) runtime.coord;
       this.runtimeDate = runtimeCoord.getFirstDate();
     }
 
     private SingleRuntime(GridAxisPoint runtime, GridAxis<?> timeOffset, CalendarDate runtimeDate) {
-      super(Type.SingleRuntime, runtime, timeOffset);
+      super(Type.SingleRuntime, runtime, timeOffset, null);
       this.runtimeDate = runtimeDate;
     }
 
@@ -249,12 +230,12 @@ public abstract class GribGridTimeCoordinateSystem implements GridTimeCoordinate
 
     @Override
     public List<Integer> getNominalShape() {
-      return ImmutableList.of(timeOffsetAxis.getNominalSize());
+      return ImmutableList.of(1, timeOffsetAxis.getNominalSize());
     }
 
     @Override
     public CalendarDate getRuntimeDate(int idx) {
-      return getBaseDate();
+      return runtimeDate;
     }
 
     @Override
@@ -276,14 +257,14 @@ public abstract class GribGridTimeCoordinateSystem implements GridTimeCoordinate
 
     private Offset(GribCollectionImmutable.Type type, GribGridDataset.CoordAndAxis runtime,
         GribGridDataset.CoordAndAxis time) {
-      super(Type.Offset, (GridAxisPoint) runtime.axis, time.axis);
+      super(Type.Offset, (GridAxisPoint) runtime.axis, time.axis, null);
       this.coord2D = time.time2d;
       this.type = type;
     }
 
     private Offset(GribCollectionImmutable.Type type, CoordinateTime2D coord2D, GridAxisPoint runtime,
         GridAxis<?> timeOffset) {
-      super(Type.SingleRuntime, runtime, timeOffset);
+      super(Type.SingleRuntime, runtime, timeOffset, null);
       this.coord2D = coord2D;
       this.type = type;
     }
@@ -296,13 +277,6 @@ public abstract class GribGridTimeCoordinateSystem implements GridTimeCoordinate
     @Override
     public List<Integer> getNominalShape() {
       return ImmutableList.of(coord2D.getNruns(), coord2D.getNtimes());
-    }
-
-    @Nullable
-    @Override
-    public CalendarDate getRuntimeDate(int runIdx) {
-      return runtimeUnit.map(unit -> unit.makeCalendarDate(this.runTimeAxis.getCoordinate(runIdx).longValue()))
-          .orElse(null);
     }
 
     @Override
@@ -324,8 +298,15 @@ public abstract class GribGridTimeCoordinateSystem implements GridTimeCoordinate
 
     private OffsetRegular(GribCollectionImmutable.Type type, GribGridDataset.CoordAndAxis runtime,
         GribGridDataset.CoordAndAxis time) {
-      super(Type.OffsetRegular, (GridAxisPoint) runtime.axis, time.axis);
+      super(Type.OffsetRegular, (GridAxisPoint) runtime.axis, time.axis, null);
       this.coord2D = time.time2d;
+      this.type = type;
+    }
+
+    private OffsetRegular(GribCollectionImmutable.Type type, CoordinateTime2D coord2D, GridAxisPoint runtime,
+                   GridAxis<?> timeOffset) {
+      super(Type.OffsetRegular, runtime, timeOffset, null);
+      this.coord2D = coord2D;
       this.type = type;
     }
 
@@ -340,12 +321,6 @@ public abstract class GribGridTimeCoordinateSystem implements GridTimeCoordinate
     }
 
     @Override
-    public CalendarDate getRuntimeDate(int runIdx) {
-      return runtimeUnit.map(unit -> unit.makeCalendarDate(this.runTimeAxis.getCoordinate(runIdx).longValue()))
-          .orElse(null);
-    }
-
-    @Override
     public GridAxis<?> getTimeOffsetAxis(int runIdx) {
       CoordinateTimeAbstract timeCoord = coord2D.getTimeCoordinate(runIdx);
       return GribGridAxis.create(type, timeCoord).axis;
@@ -354,20 +329,27 @@ public abstract class GribGridTimeCoordinateSystem implements GridTimeCoordinate
     @Override
     public Optional<GribGridTimeCoordinateSystem> subset(GridSubset params, Formatter errlog) {
       SubsetTimeHelper helper = new SubsetTimeHelper(this);
-      return helper.subsetOffset(params, errlog).map(t -> new Offset(this.type, this.coord2D, helper.runtimeAxis, t));
+      return helper.subsetOffset(params, errlog).map(t -> new OffsetRegular(this.type, this.coord2D, helper.runtimeAxis, t));
     }
 
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  private static class Time2d extends GribGridTimeCoordinateSystem {
+  private static class OffsetIrregular extends GribGridTimeCoordinateSystem {
     private final CoordinateTime2D coord2D;
     private final GribCollectionImmutable.Type type;
 
-    private Time2d(GribCollectionImmutable.Type type, GribGridDataset.CoordAndAxis runtime,
-        GribGridDataset.CoordAndAxis time) {
-      super(Type.Offset, (GridAxisPoint) runtime.axis, time.axis);
+    private OffsetIrregular(GribCollectionImmutable.Type type, GribGridDataset.CoordAndAxis runtime,
+                            GribGridDataset.CoordAndAxis time) {
+      super(Type.OffsetIrregular, (GridAxisPoint) runtime.axis, time.axis, null);
       this.coord2D = time.time2d;
+      this.type = type;
+    }
+
+    private OffsetIrregular(GribCollectionImmutable.Type type, CoordinateTime2D coord2D, GridAxisPoint runtime,
+                          GridAxis<?> timeOffset) {
+      super(Type.OffsetRegular, runtime, timeOffset, null);
+      this.coord2D = coord2D;
       this.type = type;
     }
 
@@ -382,9 +364,8 @@ public abstract class GribGridTimeCoordinateSystem implements GridTimeCoordinate
     }
 
     @Override
-    public CalendarDate getRuntimeDate(int runIdx) {
-      return runtimeUnit.map(unit -> unit.makeCalendarDate(this.runTimeAxis.getCoordinate(runIdx).longValue()))
-          .orElse(null);
+    public List<ucar.array.Range> getSubsetRanges() {
+      return ImmutableList.of(new Range(coord2D.getNruns()), new Range(coord2D.getNtimes()));
     }
 
     @Override
@@ -396,7 +377,7 @@ public abstract class GribGridTimeCoordinateSystem implements GridTimeCoordinate
     @Override
     public Optional<GribGridTimeCoordinateSystem> subset(GridSubset params, Formatter errlog) {
       SubsetTimeHelper helper = new SubsetTimeHelper(this);
-      return helper.subsetOffset(params, errlog).map(t -> new Offset(this.type, this.coord2D, helper.runtimeAxis, t));
+      return helper.subsetOffset(params, errlog).map(t -> new OffsetIrregular(this.type, this.coord2D, helper.runtimeAxis, t));
     }
   }
 
@@ -404,7 +385,7 @@ public abstract class GribGridTimeCoordinateSystem implements GridTimeCoordinate
   private static class MaterializedTimeCoordinateSystem extends GribGridTimeCoordinateSystem {
 
     private MaterializedTimeCoordinateSystem(Type type, GridAxisPoint runtime, GridAxis<?> time) {
-      super(type, runtime, time);
+      super(type, runtime, time, null);
     }
 
     @Override
@@ -414,11 +395,6 @@ public abstract class GribGridTimeCoordinateSystem implements GridTimeCoordinate
 
     @Override
     public List<Integer> getNominalShape() {
-      return null;
-    }
-
-    @Override
-    public CalendarDate getRuntimeDate(int runIdx) {
       return null;
     }
 
