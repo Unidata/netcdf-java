@@ -14,7 +14,6 @@ import ucar.nc2.grid2.GridHorizCoordinateSystem;
 import ucar.nc2.grid2.GridTimeCoordinateSystem;
 import ucar.nc2.grid2.MaterializedCoordinateSystem;
 import ucar.nc2.internal.grid2.GridNetcdfHorizCS;
-import ucar.nc2.internal.grid2.GridNetcdfMaterializedCS;
 
 import java.util.Formatter;
 import java.util.List;
@@ -72,9 +71,8 @@ public class GribGridCoordinateSystem implements GridCoordinateSystem {
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////
-  // LOOK dont have a Grib specific MaterializedCoordinateSystem
   public Optional<MaterializedCoordinateSystem> subset(GridSubset params, Formatter errlog) {
-    GridNetcdfMaterializedCS.Builder builder = GridNetcdfMaterializedCS.builder();
+    MaterializedCoordinateSystem.Builder builder = MaterializedCoordinateSystem.builder();
     AtomicBoolean fail = new AtomicBoolean(false); // gets around need for final variable in lambda
 
     if (tcs != null) {

@@ -78,6 +78,7 @@ public class GridNetcdfCS implements GridCoordinateSystem {
   }
 
   // search in order given
+  @Nullable
   public GridAxis<?> findCoordAxis(AxisType... axisType) {
     for (AxisType type : axisType) {
       for (GridAxis<?> axis : axes) {
@@ -205,7 +206,7 @@ public class GridNetcdfCS implements GridCoordinateSystem {
   /////////////////////////////////////////////////////////////////////////////////////////
   /** Subsetting the coordinate system, then using that subset to do the read. Special to Netcdf, not general. */
   public Optional<MaterializedCoordinateSystem> subset(GridSubset params, Formatter errlog) {
-    GridNetcdfMaterializedCS.Builder builder = GridNetcdfMaterializedCS.builder();
+    MaterializedCoordinateSystem.Builder builder = MaterializedCoordinateSystem.builder();
     AtomicBoolean fail = new AtomicBoolean(false); // gets around need for final variable in lambda
 
     if (tcs != null) {
@@ -308,7 +309,7 @@ public class GridNetcdfCS implements GridCoordinateSystem {
 
   public static abstract class Builder<T extends Builder<T>> {
     private String name;
-    private FeatureType featureType;
+    private FeatureType featureType = FeatureType.GRID; // can it be different?
     private Projection projection;
     private ArrayList<GridAxis<?>> axes = new ArrayList<>();
     private List<String> axesNames;

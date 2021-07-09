@@ -248,7 +248,7 @@ class SubsetHelpers {
   // - time coordinate axis? Use the interval with the smallest non-zero interval width
   // - otherwise, use the one with the largest midpoint value
   private static int findClosestDiscontiguousInterval(GridAxisInterval orgGridAxis, double target) {
-    boolean isTemporal = orgGridAxis.getAxisType().equals(AxisType.Time);
+    boolean isTemporal = orgGridAxis.getAxisType().isTime();
     return isTemporal ? findClosestDiscontiguousTimeInterval(orgGridAxis, target)
         : findClosestDiscontiguousNonTimeInterval(orgGridAxis, target);
   }

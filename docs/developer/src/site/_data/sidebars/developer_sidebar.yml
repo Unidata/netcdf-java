@@ -90,6 +90,17 @@ entries:
       url: /cf_dsg_encoding_ref.html
       output: web, pdf
 
+  - title: Feature Types
+    output: web, pdf
+    folderitems:
+    subfolders:
+      - title: GRID
+        output: web, pdf
+        subfolderitems:
+          - title: Subsetting
+            url: /grid_subsetting.html
+            output: web, pdf
+
   - title: Reading CDM
     output: web, pdf
     folderitems:

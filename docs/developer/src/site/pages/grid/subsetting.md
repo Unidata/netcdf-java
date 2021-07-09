@@ -1,3 +1,11 @@
+---
+title: Grid Dataset subsetting
+last_updated: 2021-07-08
+sidebar: developer_sidebar 
+permalink: grid_subsetting.html
+toc: false
+---
+
 # Grid Dataset subsetting
 
 For NetcdfDataset, index-based subsetting is a familiar extension of Fortran-style array handling. 
