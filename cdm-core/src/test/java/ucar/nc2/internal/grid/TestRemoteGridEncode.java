@@ -12,7 +12,7 @@ public class TestRemoteGridEncode {
 
   @Test
   public void testRuntimeLatest() {
-    GridSubset subset = GridSubset.createNew();
+    GridSubset subset = GridSubset.create();
     subset.setRunTimeLatest();
     // subset.setVariable("varname");
 
@@ -25,7 +25,7 @@ public class TestRemoteGridEncode {
 
   @Test
   public void testLatLonBoundingBox() {
-    GridSubset subset = GridSubset.createNew();
+    GridSubset subset = GridSubset.create();
     LatLonRect llbb1 = new LatLonRect(0.0, 170.0, 40.0, 300.0);
     subset.setLatLonBoundingBox(llbb1);
 
@@ -38,7 +38,7 @@ public class TestRemoteGridEncode {
 
   @Test
   public void testLatLonPoint() {
-    GridSubset subset = GridSubset.createNew();
+    GridSubset subset = GridSubset.create();
     LatLonPoint llpt = LatLonPoint.create(99.0, .5);
     subset.setLatLonPoint(llpt);
 
@@ -51,7 +51,7 @@ public class TestRemoteGridEncode {
 
   @Test
   public void testProjectionBoundingBox() {
-    GridSubset subset = GridSubset.createNew();
+    GridSubset subset = GridSubset.create();
     ProjectionRect rect1 = new ProjectionRect();
     subset.setProjectionBoundingBox(rect1);
 

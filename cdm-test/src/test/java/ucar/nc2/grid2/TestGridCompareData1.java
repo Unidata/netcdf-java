@@ -126,15 +126,15 @@ public class TestGridCompareData1 {
             GridAxis<?> timeOffsetAxis = tcs.getTimeOffsetAxis(0);
             ucar.nc2.grid.GridAxis oldTimeOffsetAxis = oldGcs.getTimeOffsetAxis();
             if (timeOffsetAxis != null && oldTimeOffsetAxis != null) {
-              ok &= doOffsetTime(grid, grid.getReader(), 0, oldGrid, GridSubset.createNew());
+              ok &= doOffsetTime(grid, grid.getReader(), 0, oldGrid, GridSubset.create());
             }
             ucar.nc2.grid.GridAxis oldTimeAxis = oldGcs.getTimeAxis();
             if (timeOffsetAxis != null && oldTimeAxis != null) {
-              ok &= doOffsetTime(grid, grid.getReader(), 0, oldGrid, GridSubset.createNew());
+              ok &= doOffsetTime(grid, grid.getReader(), 0, oldGrid, GridSubset.create());
             }
           }
         } else {
-          ok &= doVert(grid, grid.getReader(), oldGrid, GridSubset.createNew());
+          ok &= doVert(grid, grid.getReader(), oldGrid, GridSubset.create());
         }
 
         if (!ok) {
@@ -161,7 +161,7 @@ public class TestGridCompareData1 {
       assertThat(runtimeDate).isEqualTo(runtimeDateOld);
 
       GridReader reader = grid.getReader().setRunTime(runtimeDate);
-      GridSubset subsetOld = GridSubset.createNew().setRunTime(runtimeDate);
+      GridSubset subsetOld = GridSubset.create().setRunTime(runtimeDate);
       ok &= doOffsetTime(grid, reader, runtimeIdx, oldGrid, subsetOld);
     }
     return ok;

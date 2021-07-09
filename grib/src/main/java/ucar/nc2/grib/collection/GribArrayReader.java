@@ -89,7 +89,9 @@ public abstract class GribArrayReader {
    * SectionIterable iterates over the source indexes, corresponding to vindex's SparseArray.
    * IOSP: works because variable coordinate corresponds 1-1 to Grib Coordinate.
    * GribCoverage: must translate coordinates to Grib Coordinate index.
-   * want.getShape() indicates the result Array shape.
+   * LOOK want.getShape() indicates the result Array shape, may not be rectangular? How does Array represent that case?
+   * old way uses NaN. Could be Vlen ?? COuld restrict subset to only swuare, eg 1 runtime, 1 time.
+   * could specialize FmrcTimeCoordinateSystem
    * SectionIterable.next(int[] index) is not used here.
    */
   private Array<?> readDataFromCollection(GribCollectionImmutable.VariableIndex vindex, SectionIterable want)

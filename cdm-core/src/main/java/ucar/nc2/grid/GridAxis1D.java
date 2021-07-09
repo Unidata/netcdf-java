@@ -336,9 +336,9 @@ public class GridAxis1D extends GridAxis {
       }
 
       case Ensemble: {
-        Double eval = params.getEnsCoord();
+        Number eval = params.getEnsCoord();
         if (eval != null) {
-          return helper.subsetClosest(eval);
+          return helper.subsetClosest(eval.doubleValue());
         }
         // default is all
         break;

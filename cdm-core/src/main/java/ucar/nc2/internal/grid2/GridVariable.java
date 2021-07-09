@@ -8,6 +8,7 @@ import ucar.nc2.grid2.Grid;
 import ucar.nc2.grid2.GridCoordinateSystem;
 import ucar.nc2.grid2.GridReferencedArray;
 import ucar.nc2.grid.GridSubset;
+import ucar.nc2.grid2.MaterializedCoordinateSystem;
 
 import javax.annotation.concurrent.Immutable;
 import java.io.IOException;
@@ -77,12 +78,12 @@ public class GridVariable implements Grid {
   @Override
   public GridReferencedArray readData(GridSubset subset) throws IOException, ucar.array.InvalidRangeException {
     Formatter errlog = new Formatter();
-    Optional<GridNetcdfMaterializedCS> opt = this.cs.subset(subset, errlog);
+    Optional<MaterializedCoordinateSystem> opt = this.cs.subset(subset, errlog);
     if (opt.isEmpty()) {
       throw new ucar.array.InvalidRangeException(errlog.toString());
     }
 
-    GridNetcdfMaterializedCS subsetCoordSys = opt.get();
+    MaterializedCoordinateSystem subsetCoordSys = opt.get();
     List<ucar.array.Range> ranges = subsetCoordSys.getSubsetRanges();
     Array<Number> data = readDataSection(new ucar.array.Section(ranges), true);
     return GridReferencedArray.create(getName(), getArrayType(), data, subsetCoordSys);

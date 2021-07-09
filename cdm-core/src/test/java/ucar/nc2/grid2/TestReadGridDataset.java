@@ -88,9 +88,6 @@ public class TestReadGridDataset {
 
       assertThat(gcs.getGridAxes()).hasSize(nominalShape.size());
       assertThat(gcs.getName()).isEqualTo(gcsName);
-      for (GridAxis<?> axis : gcs.getGridAxes()) {
-        System.out.printf("%s%n", axis);
-      }
 
       GridTimeCoordinateSystem tcs = gcs.getTimeCoordinateSystem();
       assertThat(tcs == null).isEqualTo(ntimes == 0);

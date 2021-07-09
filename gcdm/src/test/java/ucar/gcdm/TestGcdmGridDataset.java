@@ -114,7 +114,7 @@ public class TestGcdmGridDataset {
   }
 
   private static boolean compareGrid(Grid local, Grid remote) {
-    GridSubset subset = GridSubset.createNew();
+    GridSubset subset = GridSubset.create();
     try {
       return doRunTime(local, remote, subset);
     } catch (Exception e) {

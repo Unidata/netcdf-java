@@ -15,6 +15,7 @@ import java.util.List;
  * Manages the time coordinates of a GridCoordinateSystem.
  * The complexity is due to Forecast Model Run Collections (FMRC), in which the time coordinate
  * depends on the forecast run.
+ * LOOK could specialize FmrcTimeCoordinateSystem
  */
 public interface GridTimeCoordinateSystem {
   enum Type {
@@ -22,7 +23,7 @@ public interface GridTimeCoordinateSystem {
     SingleRuntime, // Single runtime
     Offset, // All runtimes have the same offsets
     OffsetRegular, // All runtimes, grouped by time since 0z, have the same offsets.
-    Time2d // Runtimes have irregular offsets
+    OffsetIrregular // Runtimes have irregular offsets
   }
 
   Type getType();
@@ -33,6 +34,7 @@ public interface GridTimeCoordinateSystem {
 
   List<Integer> getNominalShape();
 
+  // LOOK Range not RangeIterator
   List<ucar.array.Range> getSubsetRanges();
 
   /**
@@ -45,13 +47,15 @@ public interface GridTimeCoordinateSystem {
   /**
    * Get the ith runtime CalendarDate.
    * if type=Observation or SingleRuntime, runIdx is ignored, return same as getBaseDate().
+   * Null if type=Observation.
    */
+  @Nullable
   CalendarDate getRuntimeDate(int runIdx);
 
   /**
    * Get the ith timeOffset axis. The offsets are reletive to getBaseDate()
    * if type=Observation, SingleRuntime or Offset, runIdx is ignored, since the offsets are
-   * always the same.
+   * always the same. LOOK does unit reflect getBaseDate() or getRuntimeDate(int runIdx) ?
    */
   GridAxis<?> getTimeOffsetAxis(int runIdx);
 

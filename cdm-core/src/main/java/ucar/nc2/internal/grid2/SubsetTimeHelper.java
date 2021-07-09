@@ -6,73 +6,162 @@
 package ucar.nc2.internal.grid2;
 
 import com.google.common.math.DoubleMath;
-import ucar.array.Range;
 import ucar.nc2.calendar.CalendarDate;
-import ucar.nc2.grid.CoordInterval;
 import ucar.nc2.grid.GridSubset;
+import ucar.nc2.grid2.GridAxis;
 import ucar.nc2.grid2.GridAxisPoint;
 import ucar.nc2.grid2.GridTimeCoordinateSystem;
 
-import javax.annotation.Nullable;
 import java.util.Formatter;
+import java.util.Optional;
 
-public class SubsetTimeHelper extends SubsetPointHelper {
+/**
+ * Helper class for subsetting and searching, when you need the GridTimeCoordinateSystem.
+ * Placed in this package so that its not part of the public API.
+ */
+public class SubsetTimeHelper {
   private final GridTimeCoordinateSystem tcs;
-  private final GridAxisPoint time;
+  public final GridAxisPoint runtimeAxis;
 
-  public SubsetTimeHelper(GridTimeCoordinateSystem tcs, GridAxisPoint time) {
-    super(time);
+  public SubsetTimeHelper(GridTimeCoordinateSystem tcs) {
     this.tcs = tcs;
-    this.time = time;
+    this.runtimeAxis = tcs.getRunTimeAxis();
   }
 
-  @Nullable
-  public GridAxisPoint.Builder<?> subsetBuilder(GridSubset params, Formatter errlog) {
-    if (params.getRunTimeLatest()) {
-      return makeSubsetByIndex(new Range(1));
-    }
+  /*
+   * ### Time subsetting
+   * 1. **time**
+   * The value is the CalendarDate of the requested time.
+   * 2. **timeLatest**
+   * Request the latest time.
+   * 3. **timeAll**
+   * Request all times.
+   * 4. **timePresent**
+   * Request the times closest to the present time.
+   * 5. **timeStride**
+   * Request every nth time value. Use with time to request where to start. why needed ??
+   * timeClosest? timeInInterval?
+   */
 
-    CalendarDate wantRuntime = params.getRunTime();
-    if (wantRuntime != null) {
-      double want = tcs.getCalendarDateUnit().makeOffsetFromRefDate(wantRuntime);
-      int idx = search(want);
-      if (idx >= 0) {
-        return makeSubsetByIndex(Range.make(idx, idx));
-      } else {
-        return null;
-      }
-    }
+  public Optional<? extends GridAxis<?>> subsetTime(GridSubset params, Formatter errlog) {
+    GridAxis<?> timeOffsetAxis = tcs.getTimeOffsetAxis(0);
+    int timeIdx = -1;
 
+    // time
+    Double wantOffset = null;
     CalendarDate wantTime = params.getTime();
     if (wantTime != null) {
-      double want = tcs.getCalendarDateUnit().makeOffsetFromRefDate(wantTime);
-      int idx = search(want);
-      if (idx >= 0) {
-        return makeSubsetByIndex(Range.make(idx, idx));
-      } else {
-        return null;
+      wantOffset = (double) tcs.getCalendarDateUnit().makeOffsetFromRefDate(wantTime);
+    } /*
+       * else if (params.getTimePresent()) {
+       * // time present
+       * wantTime = CalendarDate.present();
+       * double wantOffset = tcs.getCalendarDateUnit().makeOffsetFromRefDate(wantTime);
+       * timeIdx = searchClosest(timeOffsetAxis, wantOffset);
+       * if (timeIdx < 0) {
+       * errlog.format("Cant find time = %s%n", wantTime);
+       * return Optional.empty();
+       * }
+       * }
+       */
+    if (wantOffset != null) {
+      return timeOffsetAxis.subset(GridSubset.create().setTimeOffsetCoord(wantOffset), errlog);
+    }
+
+    // timeOffset, timeOffsetIntv, timeLatest
+    return timeOffsetAxis.subset(params, errlog);
+  }
+
+  /*
+   * ### Runtime subsetting
+   * 1. **runtime**
+   * The value is the CalendarDate of the requested runtime.
+   * 2. **runtimeLatest**
+   * Requests the most recent runtime.
+   * 3. **runtimeAll**
+   * Request all runtimes. Limit?
+   * The Runtime coordinate may be missing, a scalar or have a single value.
+   * runtimeClosest? runtimeInInterval? runtimesInInterval?
+   * 
+   * ### Time subsetting
+   * 1. **time**
+   * The value is the CalendarDate of the requested time.
+   * 2. **timeLatest**
+   * Request the latest time.
+   * 3. **timeAll**
+   * Request all times.
+   * 4. **timePresent**
+   * Request the times closest to the present time.
+   * 5. **timeStride**
+   * Request every nth time value. Use with time to request where to start. why needed ??
+   * timeClosest? timeInInterval?
+   * 
+   * ### TimeOffset subsetting
+   * 1. **timeOffset**
+   * The value is the offset in the units of the GridAxisPoint.
+   * 2. **timeOffsetIntv**
+   * The value is the offset in the units of the GridAxisInterval.
+   */
+
+  public Optional<GridAxis<?>> subsetOffset(GridSubset params, Formatter errlog) {
+    GridAxisPoint runtimeAxis = tcs.getRunTimeAxis();
+    int runIdx = 0; // if nothing set, use the first one.
+
+    if (runtimeAxis != null) {
+      if (params.getRunTimeLatest()) {
+        runIdx = runtimeAxis.getNominalSize() - 1;
+      }
+
+      // runtime, runtimeLatest
+      CalendarDate wantRuntime = params.getRunTime();
+      if (wantRuntime != null) {
+        double want = tcs.getCalendarDateUnit().makeOffsetFromRefDate(wantRuntime);
+        runIdx = search(tcs.getRunTimeAxis(), want);
+        if (runIdx < 0) {
+          errlog.format("Cant find runtime = %s%n", wantRuntime);
+          return Optional.empty();
+        }
+      } else if (params.getRunTimeLatest()) {
+        runIdx = runtimeAxis.getNominalSize() - 1; // LOOK using nominal...
       }
     }
 
-    Double dval = params.getTimeOffset();
-    if (dval != null) {
-      return subsetClosest(dval);
-    }
+    // suppose these were the options for time. DO they have to be processed differently for different
+    // GridTimeCoordinateSystem.Type?
 
-    CoordInterval intv = params.getTimeOffsetIntv();
-    if (intv instanceof CoordInterval) {
-      return subsetClosest(intv);
-    }
+    int timeIdx = -1;
 
-    if (params.getTimeOffsetFirst()) {
-      return makeSubsetByIndex(new Range(1));
-    }
-
-    // otherwise return copy of the original axis
-    return time.toBuilder();
+    /*
+     * time: searching for a specific time. LOOK use Best when theres multiple.
+     * CalendarDate wantTime = params.getTime();
+     * if (wantTime != null) {
+     * double want = tcs.getCalendarDateUnit().makeOffsetFromRefDate(wantTime);
+     * timeIdx = search(this.timeOffsetAxis, want);
+     * if (runIdx < 0) {
+     * errlog.format("Cant find time = %s%n", wantTime);
+     * return Optional.empty();
+     * }
+     * }
+     * 
+     * // timeOffset
+     * Double dval = params.getTimeOffset();
+     * if (dval != null) {
+     * timeIdx = search(this.timeOffsetAxis, dval);
+     * }
+     * 
+     * // timeOffsetIntv
+     * CoordInterval intv = params.getTimeOffsetIntv();
+     * if (intv != null) {
+     * timeIdx = search(this.timeOffsetAxis, dval);
+     * }
+     * 
+     * // otherwise return copy of the original axis
+     * return time.toBuilder();
+     */
+    return Optional.empty();
   }
 
-  private int search(double want) {
+  private static int search(GridAxis<?> time, double want) {
     if (time.getNominalSize() == 1) {
       return DoubleMath.fuzzyEquals(want, time.getCoordMidpoint(0), 1.0e-8) ? 0 : -1;
     }

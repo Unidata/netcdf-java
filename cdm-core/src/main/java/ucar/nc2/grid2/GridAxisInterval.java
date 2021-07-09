@@ -15,6 +15,7 @@ import ucar.nc2.util.Indent;
 
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import java.util.Arrays;
 import java.util.Formatter;
 import java.util.Iterator;
 import java.util.List;
@@ -122,6 +123,14 @@ public class GridAxisInterval extends GridAxis<CoordInterval> implements Iterabl
       return getCoordInterval(current++);
     }
   }
+
+
+  // LOOK cant let values escape
+  @Override
+  public int binarySearch(double want) {
+    return Arrays.binarySearch(values, want); // LOOK what about discontinuous ?? wont work??
+  }
+
 
   //////////////////////////////////////////////////////////////
   final int ncoords; // number of coordinates

@@ -88,6 +88,8 @@ public abstract class GridAxis<T> implements Comparable<GridAxis<T>>, Iterable<T
   /** For subsets, the range in the original axis that constitutes the subset. */
   public abstract Range getSubsetRange();
 
+  public abstract int binarySearch(double want);
+
   @Override
   public int compareTo(GridAxis o) {
     return axisType.axisOrder() - o.axisType.axisOrder();

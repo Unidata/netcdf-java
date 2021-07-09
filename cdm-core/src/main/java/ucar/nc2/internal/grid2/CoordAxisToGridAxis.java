@@ -63,11 +63,11 @@ class CoordAxisToGridAxis {
     GridAxisDependenceType dependenceType;
     if (axis.isCoordinateVariable()) {
       dependenceType = GridAxisDependenceType.independent;
+    } else if (axis.isScalar()) {
+      dependenceType = GridAxisDependenceType.scalar;
     } else if (this.isIndependent) { // is a coordinate alias
       dependenceType = dependenceTypeFromClassifier; // TODO not clear
       builder.setDependsOn(axis.getDimension(0).getShortName());
-    } else if (axis.isScalar()) {
-      dependenceType = GridAxisDependenceType.scalar;
     } else {
       dependenceType = GridAxisDependenceType.dependent;
       ArrayList<String> dependsOn = new ArrayList<>();

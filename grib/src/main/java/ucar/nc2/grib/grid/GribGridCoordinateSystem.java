@@ -6,16 +6,19 @@
 package ucar.nc2.grib.grid;
 
 import com.google.common.collect.ImmutableList;
+import ucar.nc2.grid.GridSubset;
 import ucar.nc2.grid2.GridAxis;
 import ucar.nc2.grid2.GridAxisDependenceType;
 import ucar.nc2.grid2.GridCoordinateSystem;
-import ucar.nc2.grid2.GridDataset;
 import ucar.nc2.grid2.GridHorizCoordinateSystem;
 import ucar.nc2.grid2.GridTimeCoordinateSystem;
+import ucar.nc2.grid2.MaterializedCoordinateSystem;
+import ucar.nc2.internal.grid2.GridNetcdfHorizCS;
 
-import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 /** Grib implementation of {@link GridCoordinateSystem} */
@@ -65,5 +68,29 @@ public class GribGridCoordinateSystem implements GridCoordinateSystem {
   @Override
   public String toString() {
     return "GribGridCoordinateSystem{" + "axes=" + axes + ", hcs=" + hcs + ", tcs=" + tcs + '}';
+  }
+
+  /////////////////////////////////////////////////////////////////////////////////////////
+  public Optional<MaterializedCoordinateSystem> subset(GridSubset params, Formatter errlog) {
+    MaterializedCoordinateSystem.Builder builder = MaterializedCoordinateSystem.builder();
+    AtomicBoolean fail = new AtomicBoolean(false); // gets around need for final variable in lambda
+
+    if (tcs != null) {
+      tcs.subset(params, errlog).ifPresentOrElse(builder::setTimeCoordSys, () -> fail.set(true));
+    }
+    if (getEnsembleAxis() != null) {
+      getEnsembleAxis().subset(params, errlog).ifPresentOrElse(builder::setEnsAxis, () -> fail.set(true));
+    }
+    if (getVerticalAxis() != null) {
+      getVerticalAxis().subset(params, errlog).ifPresentOrElse(builder::setVertAxis, () -> fail.set(true));
+    }
+    hcs.subset(params, errlog).ifPresentOrElse(hcs -> builder.setHorizCoordSys((GridNetcdfHorizCS) hcs),
+        () -> fail.set(true));
+
+    if (fail.get()) {
+      return Optional.empty();
+    } else {
+      return Optional.of(builder.build());
+    }
   }
 }
