@@ -122,7 +122,7 @@ public class GridNetcdfTimeCS implements GridTimeCoordinateSystem {
   }
 
   private List<CalendarDate> getTimesForNonObservation(int runIdx) {
-    Preconditions.checkArgument(runTimeAxis != null && runIdx >=0 && runIdx < runTimeAxis.getNominalSize());
+    Preconditions.checkArgument(runTimeAxis != null && runIdx >= 0 && runIdx < runTimeAxis.getNominalSize());
     CalendarDate baseForRun = getRuntimeDate(runIdx);
     GridAxis<?> timeAxis = getTimeOffsetAxis(runIdx);
     List<CalendarDate> result = new ArrayList<>();

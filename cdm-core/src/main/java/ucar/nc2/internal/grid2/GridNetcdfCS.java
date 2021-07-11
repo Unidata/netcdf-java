@@ -218,8 +218,7 @@ public class GridNetcdfCS implements GridCoordinateSystem {
     if (getVerticalAxis() != null) {
       getVerticalAxis().subset(params, errlog).ifPresentOrElse(builder::setVertAxis, () -> fail.set(true));
     }
-    horizCsys.subset(params, errlog).ifPresentOrElse(hcs -> builder.setHorizCoordSys(hcs),
-        () -> fail.set(true));
+    horizCsys.subset(params, errlog).ifPresentOrElse(hcs -> builder.setHorizCoordSys(hcs), () -> fail.set(true));
 
     if (fail.get()) {
       return Optional.empty();

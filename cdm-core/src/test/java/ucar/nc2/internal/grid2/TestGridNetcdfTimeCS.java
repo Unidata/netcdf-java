@@ -36,13 +36,13 @@ public class TestGridNetcdfTimeCS {
     String unit = "days since 1990-02-01T12:12";
     int nruntimes = 1;
     GridAxisPoint.Builder<?> rbuilder = GridAxisPoint.builder().setAxisType(AxisType.RunTime).setName("runtime")
-            .setUnits(unit).setRegular(nruntimes, 1, 1).setSpacing(GridAxisSpacing.regularPoint);
+        .setUnits(unit).setRegular(nruntimes, 1, 1).setSpacing(GridAxisSpacing.regularPoint);
     GridAxisPoint runtime = rbuilder.build();
 
     int ntimes = 7;
     double[] values = new double[] {0, 5, 10, 20, 40, 80, 100};
-    GridAxisPoint.Builder<?> builder = GridAxisPoint.builder().setAxisType(AxisType.TimeOffset).setName("time").setUnits("hours")
-            .setNcoords(ntimes).setValues(values).setSpacing(GridAxisSpacing.irregularPoint);
+    GridAxisPoint.Builder<?> builder = GridAxisPoint.builder().setAxisType(AxisType.TimeOffset).setName("time")
+        .setUnits("hours").setNcoords(ntimes).setValues(values).setSpacing(GridAxisSpacing.irregularPoint);
     GridAxisPoint timeAxis = builder.build();
 
     GridNetcdfTimeCS subject = GridNetcdfTimeCS.create(runtime, timeAxis);
@@ -54,7 +54,7 @@ public class TestGridNetcdfTimeCS {
     assertThat(subject.getNominalShape()).isEqualTo(ImmutableList.of(nruntimes, ntimes));
     assertThat(subject.getSubsetRanges()).isEqualTo(ImmutableList.of(new Range(nruntimes), new Range(ntimes)));
 
-    for (int runidx=0; runidx<nruntimes; runidx++) {
+    for (int runidx = 0; runidx < nruntimes; runidx++) {
       GridAxis<?> offset = subject.getTimeOffsetAxis(runidx);
       assertThat(offset.isInterval()).isFalse();
       assertThat(offset.isRegular()).isFalse();
@@ -67,11 +67,11 @@ public class TestGridNetcdfTimeCS {
     }
 
     assertThat((Object) subject.getRunTimeAxis()).isEqualTo(runtime);
-    for (int runidx=0; runidx<nruntimes; runidx++) {
-      assertThat(subject.getRuntimeDate(runidx)).isEqualTo(cdu.makeCalendarDate(runidx+1)); // start = 1, incr = 1
+    for (int runidx = 0; runidx < nruntimes; runidx++) {
+      assertThat(subject.getRuntimeDate(runidx)).isEqualTo(cdu.makeCalendarDate(runidx + 1)); // start = 1, incr = 1
     }
 
-    for (int runidx=0; runidx<nruntimes; runidx++) {
+    for (int runidx = 0; runidx < nruntimes; runidx++) {
       GridAxis<?> offset = subject.getTimeOffsetAxis(runidx);
       CalendarDate baseForRun = subject.getRuntimeDate(runidx);
       assertThat(baseForRun).isNotNull();
@@ -80,7 +80,7 @@ public class TestGridNetcdfTimeCS {
       int offsetIdx = 0;
       for (CalendarDate time : times) {
         CalendarDate expected = baseForRun.add((long) offset.getCoordMidpoint(offsetIdx++), CalendarPeriod.Field.Hour);
-        // System.out.printf(" (%d,%d)  got= %s want= %s%n", runidx, offsetIdx, time, expected);
+        // System.out.printf(" (%d,%d) got= %s want= %s%n", runidx, offsetIdx, time, expected);
         assertThat(time).isEqualTo(expected);
       }
     }
@@ -91,13 +91,13 @@ public class TestGridNetcdfTimeCS {
     String unit = "days since 1990-02-01T12:12";
     int nruntimes = 28;
     GridAxisPoint.Builder<?> rbuilder = GridAxisPoint.builder().setAxisType(AxisType.RunTime).setName("runtime")
-            .setUnits(unit).setRegular(nruntimes, 1, 1).setSpacing(GridAxisSpacing.regularPoint);
+        .setUnits(unit).setRegular(nruntimes, 1, 1).setSpacing(GridAxisSpacing.regularPoint);
     GridAxisPoint runtime = rbuilder.build();
 
     int ntimes = 7;
     double[] values = new double[] {0, 5, 10, 20, 40, 80, 100};
-    GridAxisPoint.Builder<?> builder = GridAxisPoint.builder().setAxisType(AxisType.TimeOffset).setName("time").setUnits("hours")
-            .setNcoords(ntimes).setValues(values).setSpacing(GridAxisSpacing.irregularPoint);
+    GridAxisPoint.Builder<?> builder = GridAxisPoint.builder().setAxisType(AxisType.TimeOffset).setName("time")
+        .setUnits("hours").setNcoords(ntimes).setValues(values).setSpacing(GridAxisSpacing.irregularPoint);
     GridAxisPoint timeAxis = builder.build();
 
     GridNetcdfTimeCS subject = GridNetcdfTimeCS.create(runtime, timeAxis);
@@ -109,7 +109,7 @@ public class TestGridNetcdfTimeCS {
     assertThat(subject.getNominalShape()).isEqualTo(ImmutableList.of(nruntimes, ntimes));
     assertThat(subject.getSubsetRanges()).isEqualTo(ImmutableList.of(new Range(nruntimes), new Range(ntimes)));
 
-    for (int runidx=0; runidx<nruntimes; runidx++) {
+    for (int runidx = 0; runidx < nruntimes; runidx++) {
       GridAxis<?> offset = subject.getTimeOffsetAxis(runidx);
       assertThat(offset.isInterval()).isFalse();
       assertThat(offset.isRegular()).isFalse();
@@ -122,11 +122,11 @@ public class TestGridNetcdfTimeCS {
     }
 
     assertThat((Object) subject.getRunTimeAxis()).isEqualTo(runtime);
-    for (int runidx=0; runidx<nruntimes; runidx++) {
-      assertThat(subject.getRuntimeDate(runidx)).isEqualTo(cdu.makeCalendarDate(runidx+1)); // start = 1, incr = 1
+    for (int runidx = 0; runidx < nruntimes; runidx++) {
+      assertThat(subject.getRuntimeDate(runidx)).isEqualTo(cdu.makeCalendarDate(runidx + 1)); // start = 1, incr = 1
     }
 
-    for (int runidx=0; runidx<nruntimes; runidx++) {
+    for (int runidx = 0; runidx < nruntimes; runidx++) {
       GridAxis<?> offset = subject.getTimeOffsetAxis(runidx);
       CalendarDate baseForRun = subject.getRuntimeDate(runidx);
       assertThat(baseForRun).isNotNull();
@@ -135,7 +135,7 @@ public class TestGridNetcdfTimeCS {
       int offsetIdx = 0;
       for (CalendarDate time : times) {
         CalendarDate expected = baseForRun.add((long) offset.getCoordMidpoint(offsetIdx++), CalendarPeriod.Field.Hour);
-        // System.out.printf(" (%d,%d)  got= %s want= %s%n", runidx, offsetIdx, time, expected);
+        // System.out.printf(" (%d,%d) got= %s want= %s%n", runidx, offsetIdx, time, expected);
         assertThat(time).isEqualTo(expected);
       }
     }
@@ -146,8 +146,8 @@ public class TestGridNetcdfTimeCS {
     String unit = "days since 1990-02-01T12:12";
     int ntimes = 7;
     double[] values = new double[] {0, 5, 10, 20, 40, 80, 100};
-    GridAxisPoint.Builder<?> builder = GridAxisPoint.builder().setAxisType(AxisType.TimeOffset).setName("time").setUnits(unit)
-            .setNcoords(ntimes).setValues(values).setSpacing(GridAxisSpacing.irregularPoint);
+    GridAxisPoint.Builder<?> builder = GridAxisPoint.builder().setAxisType(AxisType.TimeOffset).setName("time")
+        .setUnits(unit).setNcoords(ntimes).setValues(values).setSpacing(GridAxisSpacing.irregularPoint);
     GridAxisPoint timeAxis = builder.build();
 
     GridNetcdfTimeCS subject = GridNetcdfTimeCS.create(timeAxis);
@@ -165,10 +165,10 @@ public class TestGridNetcdfTimeCS {
     List<CalendarDate> times = subject.getTimesForRuntime(0);
     assertThat(times).hasSize(ntimes);
     CalendarDate baseDate = subject.getBaseDate();
-    for (int idx=0; idx<ntimes; idx++) {
-        CalendarDate expected = baseDate.add((long) timeAxis.getCoordMidpoint(idx), CalendarPeriod.Field.Day);
-        System.out.printf(" (%d)  got= %s want= %s%n", idx, times.get(idx), expected);
-        assertThat(times.get(idx)).isEqualTo(expected);
+    for (int idx = 0; idx < ntimes; idx++) {
+      CalendarDate expected = baseDate.add((long) timeAxis.getCoordMidpoint(idx), CalendarPeriod.Field.Day);
+      System.out.printf(" (%d)  got= %s want= %s%n", idx, times.get(idx), expected);
+      assertThat(times.get(idx)).isEqualTo(expected);
     }
   }
 }

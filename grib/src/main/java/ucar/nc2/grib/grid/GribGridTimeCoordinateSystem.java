@@ -121,17 +121,17 @@ public abstract class GribGridTimeCoordinateSystem implements GridTimeCoordinate
     if (timeOffsetAxis instanceof GridAxisPoint) {
       GridAxisPoint offsetPoint = (GridAxisPoint) timeOffsetAxis;
       return Streams.stream(offsetPoint).map(val -> calendarDateUnit.makeCalendarDate(val.longValue()))
-              .collect(Collectors.toList());
+          .collect(Collectors.toList());
     } else {
       GridAxisInterval offsetIntv = (GridAxisInterval) timeOffsetAxis;
       // LOOK cast double to long
       return Streams.stream(offsetIntv).map(intv -> calendarDateUnit.makeCalendarDate((long) intv.midpoint()))
-              .collect(Collectors.toList());
+          .collect(Collectors.toList());
     }
   }
 
   private List<CalendarDate> getTimesForNonObservation(int runIdx) {
-    Preconditions.checkArgument(runTimeAxis != null && runIdx >=0 && runIdx < runTimeAxis.getNominalSize());
+    Preconditions.checkArgument(runTimeAxis != null && runIdx >= 0 && runIdx < runTimeAxis.getNominalSize());
     CalendarDate baseForRun = getRuntimeDate(runIdx);
     GridAxis<?> timeAxis = getTimeOffsetAxis(runIdx);
     List<CalendarDate> result = new ArrayList<>();
@@ -153,7 +153,8 @@ public abstract class GribGridTimeCoordinateSystem implements GridTimeCoordinate
   final CalendarDateUnit calendarDateUnit;
   final CalendarPeriod offsetPeriod;
 
-  GribGridTimeCoordinateSystem(Type type, @Nullable GridAxisPoint runTimeAxis, GridAxis<?> timeOffsetAxis, CalendarDateUnit calendarDateUnit) {
+  GribGridTimeCoordinateSystem(Type type, @Nullable GridAxisPoint runTimeAxis, GridAxis<?> timeOffsetAxis,
+      CalendarDateUnit calendarDateUnit) {
     this.type = type;
     this.runTimeAxis = runTimeAxis;
     this.timeOffsetAxis = timeOffsetAxis;
@@ -304,7 +305,7 @@ public abstract class GribGridTimeCoordinateSystem implements GridTimeCoordinate
     }
 
     private OffsetRegular(GribCollectionImmutable.Type type, CoordinateTime2D coord2D, GridAxisPoint runtime,
-                   GridAxis<?> timeOffset) {
+        GridAxis<?> timeOffset) {
       super(Type.OffsetRegular, runtime, timeOffset, null);
       this.coord2D = coord2D;
       this.type = type;
@@ -329,7 +330,8 @@ public abstract class GribGridTimeCoordinateSystem implements GridTimeCoordinate
     @Override
     public Optional<GribGridTimeCoordinateSystem> subset(GridSubset params, Formatter errlog) {
       SubsetTimeHelper helper = new SubsetTimeHelper(this);
-      return helper.subsetOffset(params, errlog).map(t -> new OffsetRegular(this.type, this.coord2D, helper.runtimeAxis, t));
+      return helper.subsetOffset(params, errlog)
+          .map(t -> new OffsetRegular(this.type, this.coord2D, helper.runtimeAxis, t));
     }
 
   }
@@ -340,14 +342,14 @@ public abstract class GribGridTimeCoordinateSystem implements GridTimeCoordinate
     private final GribCollectionImmutable.Type type;
 
     private OffsetIrregular(GribCollectionImmutable.Type type, GribGridDataset.CoordAndAxis runtime,
-                            GribGridDataset.CoordAndAxis time) {
+        GribGridDataset.CoordAndAxis time) {
       super(Type.OffsetIrregular, (GridAxisPoint) runtime.axis, time.axis, null);
       this.coord2D = time.time2d;
       this.type = type;
     }
 
     private OffsetIrregular(GribCollectionImmutable.Type type, CoordinateTime2D coord2D, GridAxisPoint runtime,
-                          GridAxis<?> timeOffset) {
+        GridAxis<?> timeOffset) {
       super(Type.OffsetRegular, runtime, timeOffset, null);
       this.coord2D = coord2D;
       this.type = type;
@@ -377,7 +379,8 @@ public abstract class GribGridTimeCoordinateSystem implements GridTimeCoordinate
     @Override
     public Optional<GribGridTimeCoordinateSystem> subset(GridSubset params, Formatter errlog) {
       SubsetTimeHelper helper = new SubsetTimeHelper(this);
-      return helper.subsetOffset(params, errlog).map(t -> new OffsetIrregular(this.type, this.coord2D, helper.runtimeAxis, t));
+      return helper.subsetOffset(params, errlog)
+          .map(t -> new OffsetIrregular(this.type, this.coord2D, helper.runtimeAxis, t));
     }
   }
 

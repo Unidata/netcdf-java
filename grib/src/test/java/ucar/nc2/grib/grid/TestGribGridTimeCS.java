@@ -1,6 +1,6 @@
 /*
- *  Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
- *  See LICENSE for license information.
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
  */
 
 package ucar.nc2.grib.grid;
@@ -48,7 +48,8 @@ public class TestGribGridTimeCS {
     testObservation(endpoint, gridName, new int[] {1476}, CalendarPeriod.Field.Minute);
   }
 
-  public void testObservation(String endpoint, String gridName, int[] expectedTimeShape, CalendarPeriod.Field offsetPeriod) throws IOException {
+  public void testObservation(String endpoint, String gridName, int[] expectedTimeShape,
+      CalendarPeriod.Field offsetPeriod) throws IOException {
     System.out.printf("Test Dataset %s gridName %s%n", endpoint, gridName);
 
     Formatter errlog = new Formatter();
@@ -64,7 +65,7 @@ public class TestGribGridTimeCS {
       GridTimeCoordinateSystem subject = cs.getTimeCoordinateSystem();
       assertThat(subject).isNotNull();
       assertThat(subject.getNominalShape())
-              .isEqualTo(Arrays.stream(expectedTimeShape).boxed().collect(Collectors.toList()));
+          .isEqualTo(Arrays.stream(expectedTimeShape).boxed().collect(Collectors.toList()));
 
       assertThat(subject.getType()).isEqualTo(GridTimeCoordinateSystem.Type.Observation);
       assertThat(subject.getCalendarDateUnit()).isNotNull();
@@ -94,7 +95,7 @@ public class TestGribGridTimeCS {
     String endpoint = TestDir.cdmUnitTestDir + "tds_index/NCEP/NAM/CONUS_80km/NAM_CONUS_80km_20201027_0000.grib1.ncx4";
     String gridName = "Temperature_isobaric";
     testSingleRuntime(endpoint, gridName, new int[] {1, 11}, CalendarPeriod.Field.Hour);
-    // System.out.printf(" (%d,%d)  got= %s want= %s%n", runidx, offsetIdx, time, expected););
+    // System.out.printf(" (%d,%d) got= %s want= %s%n", runidx, offsetIdx, time, expected););
   }
 
 
@@ -112,7 +113,8 @@ public class TestGribGridTimeCS {
     testSingleRuntime(filename, gridName, new int[] {1, 1}, CalendarPeriod.Field.Minute);
   }
 
-  public void testSingleRuntime(String endpoint, String gridName, int[] expectedTimeShape, CalendarPeriod.Field offsetPeriod) throws IOException {
+  public void testSingleRuntime(String endpoint, String gridName, int[] expectedTimeShape,
+      CalendarPeriod.Field offsetPeriod) throws IOException {
     System.out.printf("Test Dataset %s gridName %s%n", endpoint, gridName);
 
     Formatter errlog = new Formatter();
@@ -128,7 +130,7 @@ public class TestGribGridTimeCS {
       GridTimeCoordinateSystem subject = cs.getTimeCoordinateSystem();
       assertThat(subject).isNotNull();
       assertThat(subject.getNominalShape())
-              .isEqualTo(Arrays.stream(expectedTimeShape).boxed().collect(Collectors.toList()));
+          .isEqualTo(Arrays.stream(expectedTimeShape).boxed().collect(Collectors.toList()));
 
       GridAxisPoint runtime = subject.getRunTimeAxis();
       CalendarDateUnit cdu = CalendarDateUnit.fromUdunitString(null, runtime.getUnits()).orElseThrow();
@@ -159,7 +161,7 @@ public class TestGribGridTimeCS {
         int offsetIdx = 0;
         for (CalendarDate time : times) {
           CalendarDate expected = baseForRun.add((long) offset.getCoordMidpoint(offsetIdx++), offsetPeriod);
-          // System.out.printf(" (%d,%d)  got= %s want= %s%n", runidx, offsetIdx, time, expected);
+          // System.out.printf(" (%d,%d) got= %s want= %s%n", runidx, offsetIdx, time, expected);
           assertThat(time).isEqualTo(expected);
         }
       }
@@ -180,8 +182,8 @@ public class TestGribGridTimeCS {
     testOffsetRegular(endpoint, gridName, new int[] {4, 93}, CalendarPeriod.Field.Hour, Type.Offset);
   }
 
-  public void testOffsetRegular(String endpoint, String gridName, int[] expectedTimeShape, CalendarPeriod.Field offsetPeriod,
-                                Type type) throws IOException {
+  public void testOffsetRegular(String endpoint, String gridName, int[] expectedTimeShape,
+      CalendarPeriod.Field offsetPeriod, Type type) throws IOException {
     System.out.printf("Test Dataset %s gridName %s%n", endpoint, gridName);
 
     Formatter errlog = new Formatter();
@@ -197,7 +199,7 @@ public class TestGribGridTimeCS {
       GridTimeCoordinateSystem subject = cs.getTimeCoordinateSystem();
       assertThat(subject).isNotNull();
       assertThat(subject.getNominalShape())
-              .isEqualTo(Arrays.stream(expectedTimeShape).boxed().collect(Collectors.toList()));
+          .isEqualTo(Arrays.stream(expectedTimeShape).boxed().collect(Collectors.toList()));
 
       GridAxisPoint runtime = subject.getRunTimeAxis();
       CalendarDateUnit cdu = CalendarDateUnit.fromUdunitString(null, runtime.getUnits()).orElseThrow();
@@ -230,7 +232,7 @@ public class TestGribGridTimeCS {
         int offsetIdx = 0;
         for (CalendarDate time : times) {
           CalendarDate expected = baseForRun.add((long) offset.getCoordMidpoint(offsetIdx++), offsetPeriod);
-          // System.out.printf(" (%d,%d)  got= %s want= %s%n", runidx, offsetIdx, time, expected);
+          // System.out.printf(" (%d,%d) got= %s want= %s%n", runidx, offsetIdx, time, expected);
           assertThat(time).isEqualTo(expected);
         }
       }
@@ -244,7 +246,8 @@ public class TestGribGridTimeCS {
     testOffsetIrregular(endpoint, gridName, new int[] {1479, 15}, CalendarPeriod.Field.Minute);
   }
 
-  public void testOffsetIrregular(String endpoint, String gridName, int[] expectedTimeShape, CalendarPeriod.Field offsetPeriod) throws IOException {
+  public void testOffsetIrregular(String endpoint, String gridName, int[] expectedTimeShape,
+      CalendarPeriod.Field offsetPeriod) throws IOException {
     System.out.printf("Test Dataset %s gridName %s%n", endpoint, gridName);
 
     Formatter errlog = new Formatter();
@@ -260,7 +263,7 @@ public class TestGribGridTimeCS {
       GridTimeCoordinateSystem subject = cs.getTimeCoordinateSystem();
       assertThat(subject).isNotNull();
       assertThat(subject.getNominalShape())
-              .isEqualTo(Arrays.stream(expectedTimeShape).boxed().collect(Collectors.toList()));
+          .isEqualTo(Arrays.stream(expectedTimeShape).boxed().collect(Collectors.toList()));
 
       GridAxisPoint runtime = subject.getRunTimeAxis();
       CalendarDateUnit cdu = CalendarDateUnit.fromUdunitString(null, runtime.getUnits()).orElseThrow();
@@ -275,7 +278,7 @@ public class TestGribGridTimeCS {
 
       for (int runidx = 0; runidx < nruntimes; runidx++) {
         GridAxis<?> offset = subject.getTimeOffsetAxis(runidx);
-        assertThat(offset.getNominalSize()).isLessThan(ntimes+1);
+        assertThat(offset.getNominalSize()).isLessThan(ntimes + 1);
         assertThat(offset.getAxisType()).isEqualTo(AxisType.TimeOffset);
         assertThat(offset.getDependenceType()).isEqualTo(GridAxisDependenceType.independent);
         assertThat(offset.getDependsOn()).isEqualTo(new ArrayList<>());
@@ -286,11 +289,11 @@ public class TestGribGridTimeCS {
         CalendarDate baseForRun = subject.getRuntimeDate(runidx);
         assertThat(baseForRun).isNotNull();
         List<CalendarDate> times = subject.getTimesForRuntime(runidx);
-        assertThat(times.size()).isLessThan(ntimes+1);
+        assertThat(times.size()).isLessThan(ntimes + 1);
         int offsetIdx = 0;
         for (CalendarDate time : times) {
           CalendarDate expected = baseForRun.add((long) offset.getCoordMidpoint(offsetIdx++), offsetPeriod);
-          // System.out.printf(" (%d,%d)  got= %s want= %s%n", runidx, offsetIdx, time, expected);
+          // System.out.printf(" (%d,%d) got= %s want= %s%n", runidx, offsetIdx, time, expected);
           assertThat(time).isEqualTo(expected);
         }
       }
