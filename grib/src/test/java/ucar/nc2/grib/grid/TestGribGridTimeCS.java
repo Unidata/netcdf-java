@@ -7,6 +7,7 @@ package ucar.nc2.grib.grid;
 
 import com.google.common.collect.ImmutableList;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.array.Range;
 import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.calendar.CalendarDateUnit;
@@ -20,6 +21,7 @@ import ucar.nc2.grid2.GridCoordinateSystem;
 import ucar.nc2.grid2.GridTimeCoordinateSystem;
 import ucar.nc2.internal.grid2.GridNetcdfTimeCS;
 import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -32,6 +34,7 @@ import static com.google.common.truth.Truth.assertThat;
 import static ucar.nc2.grid2.GridTimeCoordinateSystem.Type;
 
 /** Test {@link GridNetcdfTimeCS} */
+@Category(NeedsCdmUnitTest.class)
 public class TestGribGridTimeCS {
 
   @Test
