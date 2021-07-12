@@ -38,6 +38,7 @@ public class TestReadGridSubset {
 
     Formatter infoLog = new Formatter();
     try (GridDataset gridDataset = GridDatasetFactory.openGridDataset(filename, infoLog)) {
+      assertThat(gridDataset).isNotNull();
       System.out.println("readGridDataset: " + gridDataset.getLocation());
       // float Convective_Hazard_Outlook_surface_24_hours_Average(
       Grid grid = gridDataset.findGrid("Convective_Hazard_Outlook_surface_24_Hour_Average")
@@ -50,12 +51,14 @@ public class TestReadGridSubset {
       assertThat((Object) runtimeAxis).isNotNull();
       assertThat(runtimeAxis.getNominalSize()).isGreaterThan(10);
       CalendarDate wantRuntime = tsys.getRuntimeDate(10);
+      assertThat(wantRuntime).isNotNull();
 
       GridAxis<?> timeOffset = tsys.getTimeOffsetAxis(10);
       assertThat((Object) timeOffset).isNotNull();
       assertThat(timeOffset.getSpacing()).isEqualTo(GridAxisSpacing.regularInterval);
       assertThat(timeOffset.getNominalSize()).isGreaterThan(3);
       Object wantTime = timeOffset.getCoordinate(3);
+      assertThat(wantTime).isNotNull();
 
       // LOOK cant actually read because we dont have the data files, only the index files.
       // GridReferencedArray geoArray = grid.getReader().setRunTime(wantRuntime).setTimeOffsetCoord(wantTime).read();
@@ -70,6 +73,7 @@ public class TestReadGridSubset {
 
     Formatter infoLog = new Formatter();
     try (GridDataset gridDataset = GridDatasetFactory.openGridDataset(filename, infoLog)) {
+      assertThat(gridDataset).isNotNull();
       System.out.println("readGridDataset: " + gridDataset.getLocation());
 
       Grid grid =

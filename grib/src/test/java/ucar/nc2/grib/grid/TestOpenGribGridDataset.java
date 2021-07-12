@@ -129,6 +129,7 @@ public class TestOpenGribGridDataset {
     String filename = TestDir.cdmLocalTestDataDir + "conventions/fileNot.nc";
     Formatter errlog = new Formatter();
     try (GribGridDataset gds = GribGridDataset.open(filename, errlog).orElseThrow()) {
+      assertThat(gds).isNull();
       fail();
     } catch (FileNotFoundException e) {
       assertThat(e.getMessage()).contains("(No such file or directory)");

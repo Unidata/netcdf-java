@@ -98,7 +98,6 @@ public class TestGribGridTimeCS {
     String endpoint = TestDir.cdmUnitTestDir + "tds_index/NCEP/NAM/CONUS_80km/NAM_CONUS_80km_20201027_0000.grib1.ncx4";
     String gridName = "Temperature_isobaric";
     testSingleRuntime(endpoint, gridName, new int[] {1, 11}, CalendarPeriod.Field.Hour);
-    // System.out.printf(" (%d,%d) got= %s want= %s%n", runidx, offsetIdx, time, expected););
   }
 
 
@@ -136,6 +135,7 @@ public class TestGribGridTimeCS {
           .isEqualTo(Arrays.stream(expectedTimeShape).boxed().collect(Collectors.toList()));
 
       GridAxisPoint runtime = subject.getRunTimeAxis();
+      assertThat((Object) runtime).isNotNull();
       CalendarDateUnit cdu = CalendarDateUnit.fromUdunitString(null, runtime.getUnits()).orElseThrow();
 
       assertThat(subject.getType()).isEqualTo(Type.SingleRuntime);
@@ -164,7 +164,6 @@ public class TestGribGridTimeCS {
         int offsetIdx = 0;
         for (CalendarDate time : times) {
           CalendarDate expected = baseForRun.add((long) offset.getCoordMidpoint(offsetIdx++), offsetPeriod);
-          // System.out.printf(" (%d,%d) got= %s want= %s%n", runidx, offsetIdx, time, expected);
           assertThat(time).isEqualTo(expected);
         }
       }
@@ -236,7 +235,6 @@ public class TestGribGridTimeCS {
         int offsetIdx = 0;
         for (CalendarDate time : times) {
           CalendarDate expected = baseForRun.add((long) offset.getCoordMidpoint(offsetIdx++), offsetPeriod);
-          // System.out.printf(" (%d,%d) got= %s want= %s%n", runidx, offsetIdx, time, expected);
           assertThat(time).isEqualTo(expected);
         }
       }
@@ -270,6 +268,7 @@ public class TestGribGridTimeCS {
           .isEqualTo(Arrays.stream(expectedTimeShape).boxed().collect(Collectors.toList()));
 
       GridAxisPoint runtime = subject.getRunTimeAxis();
+      assertThat((Object) runtime).isNotNull();
       CalendarDateUnit cdu = CalendarDateUnit.fromUdunitString(null, runtime.getUnits()).orElseThrow();
 
       assertThat(subject.getType()).isEqualTo(Type.OffsetIrregular);

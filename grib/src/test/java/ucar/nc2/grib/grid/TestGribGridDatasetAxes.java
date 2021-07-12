@@ -33,14 +33,15 @@ public class TestGribGridDatasetAxes {
 
     Formatter errlog = new Formatter();
     try (GribGridDataset gds = GribGridDataset.open(endpoint, errlog).orElse(null)) {
+      assertThat(gds).isNotNull();
       System.out.println("readGridDataset: " + gds.getLocation());
       // float Convective_Hazard_Outlook_surface_24_hours_Average(
       Grid grid = gds.findGrid("Convective_Hazard_Outlook_surface_24_Hour_Average")
           .orElseThrow(() -> new RuntimeException("Cant find grid"));
 
       GridCoordinateSystem csys = grid.getCoordinateSystem();
-
-      GridTimeCoordinateSystem tsys = grid.getTimeCoordinateSystem();
+      GridTimeCoordinateSystem tsys = csys.getTimeCoordinateSystem();
+      assertThat(tsys).isNotNull();
       assertThat(tsys.getType()).isEqualTo(GridTimeCoordinateSystem.Type.OffsetRegular);
 
       GridAxis<?> runtimeAxis = tsys.getRunTimeAxis();
@@ -74,9 +75,9 @@ public class TestGribGridDatasetAxes {
       assertThat(grid).isInstanceOf(ucar.nc2.grib.grid.GribGrid.class);
 
       GridCoordinateSystem gdc = grid.getCoordinateSystem();
-      GridAxis timeAxis = gdc.findAxis("time").orElseThrow();
+      GridAxis<?> timeAxis = gdc.findAxis("time").orElseThrow();
       System.out.printf("timeAxis=%s%n", timeAxis.getUnits());
-      GridAxis runtimeAxis = gdc.findAxis("reftime").orElseThrow();
+      GridAxis<?> runtimeAxis = gdc.findAxis("reftime").orElseThrow();
       System.out.printf("runtimeAxis=%s%n", runtimeAxis.getUnits());
     }
   }

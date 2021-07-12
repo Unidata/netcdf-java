@@ -193,12 +193,10 @@ public class TestCompareTdsNCEP {
       assertThat(gridDataset.getGrids()).hasSize(ngrids);
 
       HashSet<GridCoordinateSystem> csysSet = new HashSet<>();
-      HashSet<GridAxis> axisSet = new HashSet<>();
+      HashSet<GridAxis<?>> axisSet = new HashSet<>();
       for (Grid grid : gridDataset.getGrids()) {
         csysSet.add(grid.getCoordinateSystem());
-        for (GridAxis axis : grid.getCoordinateSystem().getGridAxes()) {
-          axisSet.add(axis);
-        }
+        axisSet.addAll(grid.getCoordinateSystem().getGridAxes());
       }
       assertThat(csysSet).hasSize(ncoordSys);
       assertThat(axisSet).hasSize(nAxes);

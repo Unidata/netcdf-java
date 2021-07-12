@@ -8,7 +8,6 @@ package ucar.nc2.grib.grid;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.array.MinMax;
-import ucar.ma2.InvalidRangeException;
 import ucar.nc2.grid.CoordInterval;
 import ucar.nc2.grid2.Grid;
 import ucar.nc2.grid2.GridAxis;
@@ -49,7 +48,7 @@ public class TestReadGridDatasetFactory {
 
   @Test
   @Category(NeedsCdmUnitTest.class)
-  public void testRegularIntervalCoordinate() throws IOException, InvalidRangeException {
+  public void testRegularIntervalCoordinate() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "tds_index/NCEP/NDFD/SPC/NDFD_SPC_CONUS_CONDUIT.ncx4";
     System.out.printf("filename %s%n", filename);
 

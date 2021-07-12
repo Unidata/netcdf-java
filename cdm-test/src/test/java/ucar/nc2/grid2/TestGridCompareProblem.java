@@ -33,13 +33,10 @@ public class TestGridCompareProblem {
     new TestGridCompareData1(filename).compareWithGrid1(true);
   }
 
-  // This is getting the ncoords wrong for Time2DRegular. I think validtime3 should be 4, somehow 52.
-  // We see the problem because we are comparing to earlier versions. So probably internally consistent??
-  // reproduced in TestGribGridCompare
-  // @Test LOOK GRIB not ready yet
+  @Test
   public void testTime2DRegularOffsetSize() throws Exception {
     String filename = TestDir.cdmUnitTestDir + "tds_index/NCEP/NAM/Polar_90km/NAM-Polar_90km.ncx4";
-    new TestGridCompareData1(filename).compareWithGrid1(true);
+    new TestGridCompareData1(filename).compareWithGrid1(false);
   }
 
   @Test
