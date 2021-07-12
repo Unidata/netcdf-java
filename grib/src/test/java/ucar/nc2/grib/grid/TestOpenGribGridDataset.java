@@ -3,16 +3,14 @@
  * See LICENSE for license information.
  */
 
-package ucar.nc2.grib.grid2;
+package ucar.nc2.grib.grid;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import ucar.nc2.grib.grid.GribGridDataset;
 import ucar.nc2.grid2.Grid;
 import ucar.nc2.grid2.GridCoordinateSystem;
 import ucar.nc2.grid2.GridHorizCoordinateSystem;
 import ucar.nc2.grid2.GridTimeCoordinateSystem;
-import ucar.nc2.internal.grid2.GridNetcdfCS;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
@@ -78,21 +76,21 @@ public class TestOpenGribGridDataset {
   public void testSRC() throws IOException {
     String endpoint = TestDir.cdmUnitTestDir + "tds_index/NCEP/NAM/CONUS_80km/NAM_CONUS_80km_20201027_0000.grib1.ncx4";
     String gridName = "Temperature_isobaric";
-    testOpen(endpoint, gridName, new int[] {11}, new int[] {19}, new int[] {65, 93});
+    testOpen(endpoint, gridName, new int[] {1, 11}, new int[] {19}, new int[] {65, 93});
   }
 
   @Test
   public void testEns() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "ft/grid/ensemble/jitka/MOEASURGEENS20100709060002.grib";
     String gridName = "VAR10-3-192_FROM_74-0--1_surface_ens";
-    testOpen(filename, gridName, new int[] {477}, new int[] {1}, new int[] {207, 198});
+    testOpen(filename, gridName, new int[] {1, 477}, new int[] {1}, new int[] {207, 198});
   }
 
   @Test
   public void testEns2() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "ft/grid/ensemble/jitka/ECME_RIZ_201201101200_00600_GB.ncx4";
     String gridName = "Total_precipitation_surface";
-    testOpen(filename, gridName, new int[] {1}, new int[] {51}, new int[] {21, 31});
+    testOpen(filename, gridName, new int[] {1, 1}, new int[] {51}, new int[] {21, 31});
   }
 
   private void testOpen(String endpoint, String gridName, int[] expectedTimeShape, int[] otherCoordShape,
@@ -131,6 +129,7 @@ public class TestOpenGribGridDataset {
     String filename = TestDir.cdmLocalTestDataDir + "conventions/fileNot.nc";
     Formatter errlog = new Formatter();
     try (GribGridDataset gds = GribGridDataset.open(filename, errlog).orElseThrow()) {
+      assertThat(gds).isNull();
       fail();
     } catch (FileNotFoundException e) {
       assertThat(e.getMessage()).contains("(No such file or directory)");

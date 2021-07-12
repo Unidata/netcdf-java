@@ -218,8 +218,7 @@ public class GridNetcdfCS implements GridCoordinateSystem {
     if (getVerticalAxis() != null) {
       getVerticalAxis().subset(params, errlog).ifPresentOrElse(builder::setVertAxis, () -> fail.set(true));
     }
-    horizCsys.subset(params, errlog).ifPresentOrElse(hcs -> builder.setHorizCoordSys((GridNetcdfHorizCS) hcs),
-        () -> fail.set(true));
+    horizCsys.subset(params, errlog).ifPresentOrElse(hcs -> builder.setHorizCoordSys(hcs), () -> fail.set(true));
 
     if (fail.get()) {
       return Optional.empty();
@@ -349,6 +348,7 @@ public class GridNetcdfCS implements GridCoordinateSystem {
       return self();
     }
 
+    // LOOK: used ?
     public T setAxisNames(List<String> axesNames) {
       this.axesNames = axesNames;
       return self();
@@ -362,7 +362,7 @@ public class GridNetcdfCS implements GridCoordinateSystem {
       return new GridNetcdfCS(this);
     }
 
-    /** Axes are matched from names. */
+    /** Axes are matched from names. LOOK: used ? */
     public GridNetcdfCS build(List<GridAxis<?>> gridAxes) {
       if (built)
         throw new IllegalStateException("already built");

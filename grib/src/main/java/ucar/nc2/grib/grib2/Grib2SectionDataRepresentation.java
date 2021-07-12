@@ -28,13 +28,15 @@ public class Grib2SectionDataRepresentation {
 
     // octets 1-4 (Length of DRS)
     length = GribNumbers.int4(raf);
-    if (length == 0)
+    if (length == 0) {
       throw new IllegalArgumentException("Not a GRIB-2 Data representation section");
+    }
 
     // octet 5
     int section = raf.read();
-    if (section != 5)
+    if (section != 5) {
       throw new IllegalArgumentException("Not a GRIB-2 Data representation section");
+    }
 
     // octets 6-9 number of datapoints
     dataPoints = GribNumbers.int4(raf);
@@ -53,7 +55,7 @@ public class Grib2SectionDataRepresentation {
     this.length = 0;
   }
 
-  /*
+  /**
    * Number of data points where one or more values are specified in Section 7 when a bit map
    * is present, total number of data points when a bit map is absent.
    */

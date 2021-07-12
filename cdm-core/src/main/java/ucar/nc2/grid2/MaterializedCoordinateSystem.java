@@ -50,7 +50,7 @@ public class MaterializedCoordinateSystem {
   public List<Integer> getMaterializedShape() {
     List<Integer> result = new ArrayList<>();
     if (getTimeCoordSystem() != null) {
-      result.addAll(getTimeCoordSystem().getNominalShape());
+      result.addAll(getTimeCoordSystem().getMaterializedShape());
     }
     if (getEnsembleAxis() != null) {
       result.add(getEnsembleAxis().getNominalSize());
