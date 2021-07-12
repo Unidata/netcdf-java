@@ -113,7 +113,7 @@ public class TestGribGridTimeCS {
   public void testEns2() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "ft/grid/ensemble/jitka/ECME_RIZ_201201101200_00600_GB.ncx4";
     String gridName = "Total_precipitation_surface";
-    testSingleRuntime(filename, gridName, new int[] {1, 1}, CalendarPeriod.Field.Minute);
+    testSingleRuntime(filename, gridName, new int[] {1, 1}, CalendarPeriod.Field.Hour);
   }
 
   public void testSingleRuntime(String endpoint, String gridName, int[] expectedTimeShape,
@@ -247,7 +247,7 @@ public class TestGribGridTimeCS {
   public void testTwod() throws IOException {
     String endpoint = TestDir.cdmUnitTestDir + "tds_index/NCEP/NDFD/NWS/NDFD_NWS_CONUS_CONDUIT.ncx4";
     String gridName = "Total_precipitation_surface_Mixed_intervals_Accumulation_probability_above_0p254";
-    testOffsetIrregular(endpoint, gridName, new int[] {1479, 15}, CalendarPeriod.Field.Minute);
+    testOffsetIrregular(endpoint, gridName, new int[] {1479, 15}, CalendarPeriod.Field.Hour);
   }
 
   public void testOffsetIrregular(String endpoint, String gridName, int[] expectedTimeShape,

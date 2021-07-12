@@ -33,7 +33,7 @@ public class TestReadGridSubset {
 
   @Test
   @Category(NeedsCdmUnitTest.class)
-  public void testTimeOffsetRegular() throws IOException, InvalidRangeException {
+  public void testTimeOffsetRegular() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "tds_index/NCEP/NDFD/SPC/NDFD_SPC_CONUS_CONDUIT.ncx4";
 
     Formatter infoLog = new Formatter();
