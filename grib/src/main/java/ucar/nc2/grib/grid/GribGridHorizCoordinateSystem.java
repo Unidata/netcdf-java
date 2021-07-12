@@ -102,6 +102,6 @@ public class GribGridHorizCoordinateSystem implements GridHorizCoordinateSystem 
 
   @Override
   public Optional<GridHorizCoordinateSystem> subset(GridSubset params, Formatter errlog) {
-    return Optional.empty();
+    return Optional.of(this); // LOOK
   }
 }

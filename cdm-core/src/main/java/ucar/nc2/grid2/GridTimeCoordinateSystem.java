@@ -35,6 +35,8 @@ public interface GridTimeCoordinateSystem {
 
   List<Integer> getNominalShape();
 
+  List<Integer> getMaterializedShape();
+
   default List<ucar.array.Range> getSubsetRanges() {
     List<ucar.array.Range> result = new ArrayList<>();
     if (getRunTimeAxis() != null) {

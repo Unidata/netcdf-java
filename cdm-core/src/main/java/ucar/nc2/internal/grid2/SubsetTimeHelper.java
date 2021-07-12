@@ -6,6 +6,7 @@
 package ucar.nc2.internal.grid2;
 
 import com.google.common.math.DoubleMath;
+import ucar.array.Range;
 import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.grid.GridSubset;
 import ucar.nc2.grid2.GridAxis;
@@ -21,7 +22,7 @@ import java.util.Optional;
  */
 public class SubsetTimeHelper {
   private final GridTimeCoordinateSystem tcs;
-  public final GridAxisPoint runtimeAxis;
+  public GridAxisPoint runtimeAxis;
 
   public SubsetTimeHelper(GridTimeCoordinateSystem tcs) {
     this.tcs = tcs;
@@ -103,7 +104,7 @@ public class SubsetTimeHelper {
    * The value is the offset in the units of the GridAxisInterval.
    */
 
-  public Optional<GridAxis<?>> subsetOffset(GridSubset params, Formatter errlog) {
+  public Optional<? extends GridAxis<?>> subsetOffset(GridSubset params, Formatter errlog) {
     GridAxisPoint runtimeAxis = tcs.getRunTimeAxis();
     int runIdx = 0; // if nothing set, use the first one.
 
@@ -124,41 +125,59 @@ public class SubsetTimeHelper {
       } else if (params.getRunTimeLatest()) {
         runIdx = runtimeAxis.getNominalSize() - 1; // LOOK using nominal...
       }
+
+      // LOOK what about subsetting across multiple runtimes ??
+      SubsetPointHelper helper = new SubsetPointHelper(runtimeAxis);
+      this.runtimeAxis = helper.makeSubsetByIndex(Range.make(runIdx, runIdx)).build();
     }
 
-    // suppose these were the options for time. DO they have to be processed differently for different
+    // suppose these were the options for time. Do they have to be processed differently for different
     // GridTimeCoordinateSystem.Type?
 
     int timeIdx = -1;
+    GridAxis<?> timeOffsetAxis = tcs.getTimeOffsetAxis(runIdx);
+
+    // time: searching for a specific time. LOOK: use Best when there's multiple ?? Only for Observation?
+    CalendarDate wantTime = params.getTime();
+    if (wantTime != null) {
+      double want = tcs.getCalendarDateUnit().makeOffsetFromRefDate(wantTime);
+      timeIdx = search(timeOffsetAxis, want);
+      if (timeIdx < 0) {
+        errlog.format("Cant find time = %s%n", wantTime);
+        return Optional.empty();
+      }
+    }
+
+    // LOOK otherwise, can use the GridAxis to do the subsetting
+    return timeOffsetAxis.subset(params, errlog);
 
     /*
-     * time: searching for a specific time. LOOK use Best when theres multiple.
-     * CalendarDate wantTime = params.getTime();
-     * if (wantTime != null) {
-     * double want = tcs.getCalendarDateUnit().makeOffsetFromRefDate(wantTime);
-     * timeIdx = search(this.timeOffsetAxis, want);
-     * if (runIdx < 0) {
-     * errlog.format("Cant find time = %s%n", wantTime);
-     * return Optional.empty();
-     * }
-     * }
-     * 
-     * // timeOffset
+     * timeOffset
      * Double dval = params.getTimeOffset();
      * if (dval != null) {
-     * timeIdx = search(this.timeOffsetAxis, dval);
+     * timeIdx = search(timeOffsetAxis, dval);
      * }
      * 
      * // timeOffsetIntv
      * CoordInterval intv = params.getTimeOffsetIntv();
      * if (intv != null) {
-     * timeIdx = search(this.timeOffsetAxis, dval);
+     * timeIdx = search(timeOffsetAxis, intv);
      * }
      * 
-     * // otherwise return copy of the original axis
-     * return time.toBuilder();
+     * if (timeIdx >= 0) {
+     * if (timeOffsetAxis.isInterval()) {
+     * SubsetIntervalHelper helper = new SubsetIntervalHelper((GridAxisInterval) timeOffsetAxis);
+     * return Optional.of(helper.makeSubsetByIndex(new Range(timeIdx, timeIdx)).build());
+     * } else {
+     * SubsetPointHelper helper = new SubsetPointHelper((GridAxisPoint) timeOffsetAxis);
+     * return Optional.of(helper.makeSubsetByIndex(new Range(timeIdx, timeIdx)).build());
+     * }
+     * 
+     * } else {
+     * // otherwise return original axis
+     * return Optional.of(timeOffsetAxis);
+     * }
      */
-    return Optional.empty();
   }
 
   private static int search(GridAxis<?> time, double want) {

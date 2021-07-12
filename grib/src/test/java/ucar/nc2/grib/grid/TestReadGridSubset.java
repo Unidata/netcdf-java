@@ -19,11 +19,13 @@ import ucar.nc2.grid2.GridDataset;
 import ucar.nc2.grid2.GridDatasetFactory;
 import ucar.nc2.grid2.GridReferencedArray;
 import ucar.nc2.grid2.GridTimeCoordinateSystem;
+import ucar.nc2.grid2.MaterializedCoordinateSystem;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.IOException;
 import java.util.Formatter;
+import java.util.List;
 
 import static com.google.common.truth.Truth.assertThat;
 
@@ -55,7 +57,8 @@ public class TestReadGridSubset {
       assertThat(timeOffset.getNominalSize()).isGreaterThan(3);
       Object wantTime = timeOffset.getCoordinate(3);
 
-      GridReferencedArray geoArray = grid.getReader().setRunTime(wantRuntime).setTimeOffsetCoord(wantTime).read();
+      // LOOK cant actually read because we dont have the data files, only the index files.
+      // GridReferencedArray geoArray = grid.getReader().setRunTime(wantRuntime).setTimeOffsetCoord(wantTime).read();
       // testGeoArray(geoArray, 2, wantRuntime, wantTime);
     }
   }
@@ -87,22 +90,25 @@ public class TestReadGridSubset {
       Object wantTime = timeOffset.getCoordinate(66);
 
       GridReferencedArray geoArray = grid.getReader().setRunTime(wantRuntime).setTimeOffsetCoord(wantTime).read();
-      // testGeoArray(geoArray, 2, wantRuntime, wantTime);
+      testGeoArray(geoArray, 2, wantRuntime, wantTime);
     }
   }
 
   private void testGeoArray(GridReferencedArray geoArray, int expected, CalendarDate wantRuntime, Object wantTime) {
     assertThat(Arrays.reduce(geoArray.data()).getRank()).isEqualTo(expected);
-    int[] shape = geoArray.data().getShape();
+    int[] dataShape = geoArray.data().getShape();
+
+    MaterializedCoordinateSystem mcsys = geoArray.getMaterializedCoordinateSystem();
+    List<Integer> mshapes = mcsys.getMaterializedShape();
     int count = 0;
-    for (int mshape : geoArray.getMaterializedCoordinateSystem().getMaterializedShape()) {
-      assertThat(mshape).isEqualTo(shape[count]);
+    for (int mshape : mshapes) {
+      assertThat(mshape).isEqualTo(dataShape[count]);
       count++;
     }
 
     count = 0;
-    for (GridAxis<?> axis : geoArray.getMaterializedCoordinateSystem().getAxes()) {
-      assertThat(axis.getNominalSize()).isEqualTo(shape[count]);
+    for (GridAxis<?> axis : mcsys.getAxes()) {
+      assertThat(axis.getNominalSize()).isEqualTo(dataShape[count]);
       count++;
     }
   }

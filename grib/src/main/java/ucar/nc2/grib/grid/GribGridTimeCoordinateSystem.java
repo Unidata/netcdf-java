@@ -19,6 +19,7 @@ import ucar.nc2.grib.coord.CoordinateTime2D;
 import ucar.nc2.grib.coord.CoordinateTimeAbstract;
 import ucar.nc2.grid.GridSubset;
 import ucar.nc2.grid2.GridAxis;
+import ucar.nc2.grid2.GridAxisDependenceType;
 import ucar.nc2.grid2.GridAxisInterval;
 import ucar.nc2.grid2.GridAxisPoint;
 import ucar.nc2.grid2.GridTimeCoordinateSystem;
@@ -144,6 +145,18 @@ public abstract class GribGridTimeCoordinateSystem implements GridTimeCoordinate
   @Override
   public CalendarDateUnit getCalendarDateUnit() {
     return calendarDateUnit;
+  }
+
+  @Override
+  public List<Integer> getMaterializedShape() {
+    List<Integer> result = new ArrayList<>();
+    if (runTimeAxis != null && runTimeAxis.getDependenceType() == GridAxisDependenceType.independent) {
+      result.add(runTimeAxis.getNominalSize());
+    }
+    if (timeOffsetAxis != null && timeOffsetAxis.getDependenceType() == GridAxisDependenceType.independent) {
+      result.add(timeOffsetAxis.getNominalSize());
+    }
+    return result;
   }
 
   //////////////////////////////////////////////////////////////////////////////

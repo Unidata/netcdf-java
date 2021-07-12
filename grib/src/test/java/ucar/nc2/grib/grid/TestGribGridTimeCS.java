@@ -202,6 +202,7 @@ public class TestGribGridTimeCS {
           .isEqualTo(Arrays.stream(expectedTimeShape).boxed().collect(Collectors.toList()));
 
       GridAxisPoint runtime = subject.getRunTimeAxis();
+      assertThat((Object) runtime).isNotNull();
       CalendarDateUnit cdu = CalendarDateUnit.fromUdunitString(null, runtime.getUnits()).orElseThrow();
 
       assertThat(subject.getType()).isEqualTo(type);

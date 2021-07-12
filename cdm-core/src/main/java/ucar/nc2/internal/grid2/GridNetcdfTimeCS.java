@@ -73,6 +73,11 @@ public class GridNetcdfTimeCS implements GridTimeCoordinateSystem {
 
   @Override
   public List<Integer> getNominalShape() {
+    return getMaterializedShape();
+  }
+
+  @Override
+  public List<Integer> getMaterializedShape() {
     List<Integer> result = new ArrayList<>();
     if (runTimeAxis != null && runTimeAxis.getDependenceType() == GridAxisDependenceType.independent) {
       result.add(runTimeAxis.getNominalSize());
