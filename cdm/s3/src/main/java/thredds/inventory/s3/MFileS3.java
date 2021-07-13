@@ -103,7 +103,7 @@ public class MFileS3 implements MFile {
   }
 
   public void setLength(long len) {
-    this.length = len < 0 ? headObjectResponse.get().contentLength(): len;
+    this.length = len < 0 ? headObjectResponse.get().contentLength() : len;
   }
 
   @Override

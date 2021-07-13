@@ -122,7 +122,9 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
 
   public static boolean isValidFile(RandomAccessFile raf) throws IOException {
     // fail fast on directory
-    if (raf.isDirectory()) { return false; }
+    if (raf.isDirectory()) {
+      return false;
+    }
     // For HDF5, we need to search forward
     long filePos = 0;
     long size = raf.length();

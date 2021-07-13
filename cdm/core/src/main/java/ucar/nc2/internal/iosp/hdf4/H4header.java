@@ -59,7 +59,9 @@ public class H4header implements HdfHeaderIF {
 
   static boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {
     // fail fast on directory
-    if (raf.isDirectory()) { return false; }
+    if (raf.isDirectory()) {
+      return false;
+    }
     long pos = 0;
     long size = raf.length();
 
