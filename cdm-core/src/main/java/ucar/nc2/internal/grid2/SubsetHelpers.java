@@ -14,7 +14,7 @@ import ucar.nc2.grid2.GridAxis;
 import ucar.nc2.grid2.GridAxisInterval;
 import ucar.nc2.grid2.Grids;
 
-class SubsetHelpers {
+public class SubsetHelpers {
 
   /**
    * Given a coordinate interval, find what grid element matches it.

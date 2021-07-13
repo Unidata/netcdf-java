@@ -8,6 +8,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.grid.GridSubset;
 import ucar.nc2.grid2.GridAxis;
@@ -232,7 +233,7 @@ public class GridNetcdfCS implements GridCoordinateSystem {
   private final ImmutableList<GridAxis<?>> axes; // LOOK what order are these in?
   private final FeatureType featureType; // TODO redo FeatureType
   private final String name;
-  private final GridNetcdfHorizCS horizCsys;
+  private final GridHorizCoordinateSystem horizCsys;
   private final @Nullable GridNetcdfTimeCS tcs;
 
   public Builder<?> toBuilder() {
@@ -259,8 +260,8 @@ public class GridNetcdfCS implements GridCoordinateSystem {
     this.name = builder.name;
     this.featureType = builder.featureType;
     this.axes = ImmutableList.copyOf(builder.axes);
-    this.horizCsys = GridNetcdfHorizCS.create(findCoordAxis(AxisType.GeoX, AxisType.Lon),
-        findCoordAxis(AxisType.GeoY, AxisType.Lat), builder.projection);
+    this.horizCsys = makeHorizCS(findCoordAxis(AxisType.GeoX, AxisType.Lon), findCoordAxis(AxisType.GeoY, AxisType.Lat),
+        builder.projection);
     this.tcs = makeTimeCS();
   }
 
@@ -276,8 +277,8 @@ public class GridNetcdfCS implements GridCoordinateSystem {
     }
     this.axes = axesb.build();
 
-    this.horizCsys = GridNetcdfHorizCS.create(findCoordAxis(AxisType.GeoX, AxisType.Lon),
-        findCoordAxis(AxisType.GeoY, AxisType.Lat), builder.projection);
+    this.horizCsys = makeHorizCS(findCoordAxis(AxisType.GeoX, AxisType.Lon), findCoordAxis(AxisType.GeoY, AxisType.Lat),
+        builder.projection);
     this.tcs = makeTimeCS();
   }
 
@@ -293,6 +294,15 @@ public class GridNetcdfCS implements GridCoordinateSystem {
     }
     // ok to not have a time coordinate
     return null;
+  }
+
+  public static GridHorizCoordinateSystem makeHorizCS(GridAxis<?> xaxis, GridAxis<?> yaxis,
+      @Nullable Projection projection) {
+    Preconditions.checkArgument(xaxis instanceof GridAxisPoint);
+    Preconditions.checkArgument(yaxis instanceof GridAxisPoint);
+    // LOOK heres now to find horizStaggerType in WRF NMM
+    String horizStaggerType = xaxis.attributes().findAttributeString(_Coordinate.Stagger, null);
+    return new GridHorizCoordinateSystem((GridAxisPoint) xaxis, (GridAxisPoint) yaxis, projection);
   }
 
   public static Builder<?> builder() {

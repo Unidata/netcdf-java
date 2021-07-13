@@ -1,6 +1,7 @@
 /* Copyright Unidata */
 package ucar.nc2.grid2;
 
+import com.google.common.collect.ImmutableList;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -28,7 +29,7 @@ import static com.google.common.truth.Truth.assertThat;
 
 /** Test {@link GridDataset} reading with horizontal strides */
 @Category(NeedsCdmUnitTest.class)
-@Ignore("Grid data reading not ready yet")
+// @Ignore("Grid data reading not ready yet")
 public class TestGridReadHorizStride {
 
   @Test
@@ -47,7 +48,7 @@ public class TestGridReadHorizStride {
       assertThat(cs).isNotNull();
       GridHorizCoordinateSystem hcs = cs.getHorizCoordinateSystem();
       assertThat(hcs).isNotNull();
-      assertThat(hcs.getShape()).isEqualTo(new int[] {73, 144});
+      assertThat(hcs.getShape()).isEqualTo(ImmutableList.of(73, 144));
 
       GridReferencedArray geoArray = coverage.getReader().setHorizStride(2).read();
       MaterializedCoordinateSystem mcs = geoArray.getMaterializedCoordinateSystem();
@@ -59,7 +60,7 @@ public class TestGridReadHorizStride {
       GridHorizCoordinateSystem hcs2 = mcs.getHorizCoordSystem();
       assertThat(hcs2).isNotNull();
       System.out.printf(" data hcs shape=%s%n", hcs2.getShape());
-      assertThat(hcs2.getShape()).isEqualTo(new int[] {37, 72});
+      assertThat(hcs2.getShape()).isEqualTo(ImmutableList.of(37, 72));
     }
   }
 

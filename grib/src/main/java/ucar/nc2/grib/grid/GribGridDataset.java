@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionUpdateType;
 import ucar.nc2.AttributeContainer;
+import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.grib.collection.GribCdmIndex;
@@ -25,8 +26,11 @@ import ucar.nc2.grib.coord.CoordinateTime2D;
 import ucar.nc2.grib.grib2.Grib2Utils;
 import ucar.nc2.grid2.Grid;
 import ucar.nc2.grid2.GridAxis;
+import ucar.nc2.grid2.GridAxisPoint;
 import ucar.nc2.grid2.GridCoordinateSystem;
 import ucar.nc2.grid2.GridDataset;
+import ucar.nc2.grid2.GridHorizCoordinateSystem;
+import ucar.unidata.geoloc.Projection;
 import ucar.unidata.io.RandomAccessFile;
 
 import javax.annotation.Nullable;
@@ -99,7 +103,7 @@ public class GribGridDataset implements GridDataset {
   private final GribCollectionImmutable gribCollection;
   private final GribCollectionImmutable.Dataset dataset;
   private final GribCollectionImmutable.GroupGC group;
-  private final GribGridHorizCoordinateSystem horizCoordinateSystem;
+  private final GridHorizCoordinateSystem horizCoordinateSystem;
   private final ImmutableMap<Integer, GridAxis<?>> gridAxes; // <index, GridAxis>
   private final ImmutableMap<Integer, GribGridCoordinateSystem> gridCoordinateSystems; // <index hash, >
   private final ImmutableMap<Integer, GribGridTimeCoordinateSystem> timeCoordinateSystems; // <index hash, >
@@ -123,7 +127,7 @@ public class GribGridDataset implements GridDataset {
     this.isLatLon = hcs.isLatLon();
     this.isCurvilinearOrthogonal =
         !isGrib1 && Grib2Utils.isCurvilinearOrthogonal(hcs.template, gribCollection.getCenter());
-    this.horizCoordinateSystem = new GribGridHorizCoordinateSystem(hcs);
+    this.horizCoordinateSystem = makeHorizCS(hcs);
 
     // Each Coordinate becomes a GridAxis
     HashMap<Integer, CoordAndAxis> coordIndexMap = new HashMap<>(); // <index, CoordAndAxis>
@@ -159,6 +163,23 @@ public class GribGridDataset implements GridDataset {
       gridBuilder.add(new GribGrid(ggcs, this.gribCollection, vi));
     }
     this.grids = gridBuilder.build();
+  }
+
+  private GridHorizCoordinateSystem makeHorizCS(GdsHorizCoordSys hcs) {
+    GridAxisPoint xaxis;
+    GridAxisPoint yaxis;
+    if (hcs.isLatLon()) {
+      xaxis = GridAxisPoint.builder().setName("lonaxis").setAxisType(AxisType.Lon)
+          .setRegular(hcs.nx, hcs.startx, hcs.dx).build();
+      yaxis = GridAxisPoint.builder().setName("lataxis").setAxisType(AxisType.Lat)
+          .setRegular(hcs.ny, hcs.starty, hcs.dy).build();
+    } else {
+      xaxis = GridAxisPoint.builder().setName("xaxis").setAxisType(AxisType.GeoX).setRegular(hcs.nx, hcs.startx, hcs.dx)
+          .build();
+      yaxis = GridAxisPoint.builder().setName("yaxis").setAxisType(AxisType.GeoY).setRegular(hcs.ny, hcs.starty, hcs.dy)
+          .build();
+    }
+    return new GridHorizCoordinateSystem(xaxis, yaxis, hcs.proj);
   }
 
   static class CoordAndAxis {

@@ -18,7 +18,6 @@ import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPoints;
 import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.ProjectionPoint;
-import ucar.unidata.geoloc.projection.*;
 import ucar.unidata.geoloc.projection.proj4.CylindricalEqualAreaProjection;
 import ucar.unidata.geoloc.projection.proj4.EquidistantAzimuthalProjection;
 import ucar.unidata.geoloc.projection.proj4.PolyconicProjection;
