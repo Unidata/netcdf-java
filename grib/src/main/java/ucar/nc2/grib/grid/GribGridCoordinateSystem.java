@@ -13,7 +13,6 @@ import ucar.nc2.grid2.GridCoordinateSystem;
 import ucar.nc2.grid2.GridHorizCoordinateSystem;
 import ucar.nc2.grid2.GridTimeCoordinateSystem;
 import ucar.nc2.grid2.MaterializedCoordinateSystem;
-import ucar.nc2.internal.grid2.GridNetcdfHorizCS;
 
 import java.util.Formatter;
 import java.util.List;
@@ -24,11 +23,11 @@ import java.util.stream.Collectors;
 /** Grib implementation of {@link GridCoordinateSystem} */
 public class GribGridCoordinateSystem implements GridCoordinateSystem {
   private final ImmutableList<GridAxis<?>> axes;
-  private final GribGridHorizCoordinateSystem hcs;
+  private final GridHorizCoordinateSystem hcs;
   private final GribGridTimeCoordinateSystem tcs;
 
   public GribGridCoordinateSystem(List<GridAxis<?>> axes, GribGridTimeCoordinateSystem tcs,
-      GribGridHorizCoordinateSystem hcs) {
+      GridHorizCoordinateSystem hcs) {
     this.axes = ImmutableList.copyOf(axes); // LOOK sort
     this.tcs = tcs;
     this.hcs = hcs;
