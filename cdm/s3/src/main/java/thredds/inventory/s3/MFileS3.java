@@ -34,9 +34,21 @@ public class MFileS3 implements MFile {
   private final String key;
   private final String delimiter;
 
+  private long length;
+  private long lastMod;
+
   private Object auxInfo;
 
+
   public MFileS3(String s3Uri) throws IOException {
+    this(s3Uri, -1, -1);
+  }
+
+  public MFileS3(CdmS3Uri s3Uri) {
+    this(s3Uri, -1, -1);
+  }
+
+  public MFileS3(String s3Uri, long len, long lm) throws IOException {
     try {
       cdmS3Uri = new CdmS3Uri(s3Uri);
     } catch (URISyntaxException e) {
@@ -44,14 +56,19 @@ public class MFileS3 implements MFile {
     }
     key = getKey();
     delimiter = getDelimiter();
+    length = len;
+    lastMod = lm;
+
     // This can take some time, so wait to execute until the first time headObjectResponse is accessed
     this.headObjectResponse = () -> getHeadObjectResponse();
   }
 
-  public MFileS3(CdmS3Uri s3Uri) {
+  public MFileS3(CdmS3Uri s3Uri, long len, long lm) {
     cdmS3Uri = s3Uri;
     key = getKey();
     delimiter = getDelimiter();
+    length = len;
+    lastMod = lm;
     // This can take some time, so wait to execute until the first time headObjectResponse is accessed
     this.headObjectResponse = () -> getHeadObjectResponse();
   }
@@ -87,12 +104,25 @@ public class MFileS3 implements MFile {
 
   @Override
   public long getLastModified() {
-    return headObjectResponse.get().lastModified().toEpochMilli();
+    // negative values indicate unavailable, get from head request
+    return this.lastMod < 0 ? updateLastModified() : this.lastMod;
+  }
+
+  /** Update last modified by fetching from a head request */
+  public long updateLastModified() {
+    this.lastMod = headObjectResponse.get().lastModified().toEpochMilli();
+    return this.lastMod;
   }
 
   @Override
   public long getLength() {
-    return headObjectResponse.get().contentLength();
+    return this.length < 0 ? updateLength() : this.length;
+  }
+
+  /** Update file length by fetching from a head request */
+  public long updateLength() {
+    this.length = headObjectResponse.get().contentLength();
+    return this.length;
   }
 
   @Override

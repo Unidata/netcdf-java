@@ -43,6 +43,10 @@ public class NcStreamIosp extends AbstractIOServiceProvider {
   private static final boolean debug = false;
 
   public boolean isValidFile(RandomAccessFile raf) throws IOException {
+    // fail fast on directory
+    if (raf.isDirectory()) {
+      return false;
+    }
     raf.seek(0);
     if (!readAndTest(raf, NcStream.MAGIC_START))
       return false; // must start with these 4 bytes

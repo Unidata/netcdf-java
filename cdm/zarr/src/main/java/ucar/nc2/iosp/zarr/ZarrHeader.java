@@ -29,6 +29,7 @@ public class ZarrHeader {
 
   private final RandomAccessDirectory rootRaf;
   private final Group.Builder rootGroup;
+  private final String rootLocation;
 
   private List<Attribute> attrs;
 
@@ -37,6 +38,7 @@ public class ZarrHeader {
   public ZarrHeader(RandomAccessDirectory raf, Group.Builder rootGroup) {
     this.rootRaf = raf;
     this.rootGroup = rootGroup;
+    this.rootLocation = ZarrPathUtils.trimLocation(this.rootRaf.getLocation());
     this.attrs = null;
   }
 
@@ -46,8 +48,7 @@ public class ZarrHeader {
    * @throws IOException
    */
   public void read() throws IOException {
-    String location = ZarrPathUtils.trimLocation(this.rootRaf.getLocation());
-    List<RandomAccessDirectoryItem> items = this.rootRaf.getFilesInPath(location);
+    List<RandomAccessDirectoryItem> items = this.rootRaf.getFilesInPath(this.rootLocation);
     // because items are ordered alphabetically, it is safe to assume groups will be created before subgroups and vars
     // However, we need to assure we make attrs before their groups and vars
     // assumes no files will be read between .zarray and .zattrs
@@ -97,7 +98,7 @@ public class ZarrHeader {
     // make new Group
     Group.Builder group = Group.builder();
     String location = ZarrPathUtils.trimLocation(item.getLocation());
-    if (location.equals(this.rootRaf.getLocation() + ZarrKeys.ZGROUP)) {
+    if (location.equals(this.rootLocation + ZarrKeys.ZGROUP)) {
       group = this.rootGroup;
     }
     // set Group name
@@ -199,7 +200,7 @@ public class ZarrHeader {
    */
   private Group.Builder findGroup(String location) throws ZarrFormatException {
     // set Group parent
-    String groupName = ZarrPathUtils.getParentGroupNameFromPath(location, rootRaf.getLocation());
+    String groupName = ZarrPathUtils.getParentGroupNameFromPath(location, this.rootLocation);
     return this.rootGroup.findGroupNested(groupName).orElseThrow(ZarrFormatException::new);
   }
 

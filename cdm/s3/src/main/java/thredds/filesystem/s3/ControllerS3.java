@@ -325,7 +325,7 @@ public class ControllerS3 implements MController {
       MFile nextMFile = null;
       try {
         CdmS3Uri newUri = bucketUri.resolveNewKey(object.key());
-        nextMFile = new MFileS3(newUri);
+        nextMFile = new MFileS3(newUri, object.size(), object.lastModified().toEpochMilli());
       } catch (URISyntaxException e) {
         logger.warn("Cannot create MFile for {} in bucket {}", object.key(), bucketUri.getBucket(), e);
       }

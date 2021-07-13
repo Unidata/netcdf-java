@@ -30,6 +30,10 @@ public class N3headerNew {
   public static boolean debugHeaderSize; // see NetcdfFile.setDebugFlags
 
   public static boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {
+    // fail fast on directory
+    if (raf.isDirectory()) {
+      return false;
+    }
     switch (NetcdfFileFormat.findNetcdfFormatType(raf)) {
       case NETCDF3:
       case NETCDF3_64BIT_OFFSET:
