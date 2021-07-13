@@ -38,11 +38,11 @@ public class TestZarrIosp {
   @Test
   public void testIsValidFile() throws IOException {
     ZarrIosp iosp = new ZarrIosp();
+    // zarr stores
     assertThat(iosp.isValidFile(NetcdfFiles.getRaf(DIRECTORY_STORE_URI, -1))).isTrue();
     assertThat(iosp.isValidFile(NetcdfFiles.getRaf(ZIP_STORE_URI, -1))).isTrue();
-    // TODO: S3 too slow for large set of objects
-    // assertThat(iosp.isValidFile(NetcdfFiles.getRaf(OBJECT_STORE_ZARR_URI, -1))).isTrue();
-
+    assertThat(iosp.isValidFile(NetcdfFiles.getRaf(OBJECT_STORE_ZARR_URI, -1))).isTrue();
+    // not zarr stores
     assertThat(iosp.isValidFile(NetcdfFiles.getRaf(DIRECTORY_STORE_URI + "/.zgroup", -1))).isFalse();
   }
 
@@ -50,7 +50,7 @@ public class TestZarrIosp {
   public void testBuildNcfile() throws IOException {
     _testBuildNcfile(DIRECTORY_STORE_URI);
     _testBuildNcfile(ZIP_STORE_URI);
-    // _testBuildNcfile(OBJECT_STORE_ZARR_URI);
+    _testBuildNcfile(OBJECT_STORE_ZARR_URI);
   }
 
   private void _testBuildNcfile(String location) throws IOException {

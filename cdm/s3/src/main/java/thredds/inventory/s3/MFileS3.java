@@ -34,6 +34,9 @@ public class MFileS3 implements MFile {
   private final String key;
   private final String delimiter;
 
+  private long length;
+  private long lastMod;
+
   private Object auxInfo;
 
   public MFileS3(String s3Uri) throws IOException {
@@ -87,12 +90,20 @@ public class MFileS3 implements MFile {
 
   @Override
   public long getLastModified() {
-    return headObjectResponse.get().lastModified().toEpochMilli();
+    return this.lastMod;
+  }
+
+  public void setLastModified(long lm) {
+    this.lastMod = lm < 0 ? headObjectResponse.get().lastModified().toEpochMilli() : lm;
   }
 
   @Override
   public long getLength() {
-    return headObjectResponse.get().contentLength();
+    return this.length;
+  }
+
+  public void setLength(long len) {
+    this.length = len < 0 ? headObjectResponse.get().contentLength(): len;
   }
 
   @Override
