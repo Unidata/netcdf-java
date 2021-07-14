@@ -19,7 +19,6 @@ import ucar.nc2.grid2.GridHorizCoordinateSystem;
 import ucar.nc2.grid2.GridTimeCoordinateSystem;
 import ucar.nc2.grid2.Grids;
 import ucar.nc2.grid2.MaterializedCoordinateSystem;
-import ucar.nc2.internal.dataset.DatasetClassifier;
 import ucar.unidata.geoloc.Projection;
 
 import javax.annotation.Nullable;
@@ -133,7 +132,7 @@ public class GridNetcdfCS implements GridCoordinateSystem {
     }
   }
 
-  private void showCoordinateAxis(GridAxis axis, Formatter f, boolean showCoords) {
+  private void showCoordinateAxis(GridAxis<?> axis, Formatter f, boolean showCoords) {
     if (axis == null) {
       return;
     }

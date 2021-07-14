@@ -2,7 +2,7 @@
  * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-package ucar.nc2.internal.dataset;
+package ucar.nc2.internal.grid2;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
@@ -11,16 +11,23 @@ import ucar.nc2.Dimension;
 import ucar.nc2.Dimensions;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.dataset.*;
+import ucar.nc2.dataset.CoordinateAxis;
+import ucar.nc2.dataset.CoordinateSystem;
+import ucar.nc2.dataset.CoordinateTransform;
+import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.units.SimpleUnit;
 import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.projection.RotatedPole;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Formatter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-/** Coordinate System classification. TODO Here or Grid? */
+/** Coordinate System classification. */
 public class DatasetClassifier {
   private final Formatter infolog;
   private final ArrayList<CoordSysClassifier> coordSysUsed = new ArrayList<>();
@@ -270,10 +277,11 @@ public class DatasetClassifier {
 
       } else if (is2Dhoriz) {
         Set<Dimension> xyDomain = Dimensions.makeDomain(Lists.newArrayList(xaxis, yaxis), true);
-        if (timeAxis != null && Dimensions.isSubset(Dimensions.makeDimensionsAll(timeAxis), xyDomain))
+        if (timeAxis != null && Dimensions.isSubset(Dimensions.makeDimensionsAll(timeAxis), xyDomain)) {
           result = FeatureType.SWATH; // LOOK prob not exactly right
-        else
+        } else {
           result = FeatureType.CURVILINEAR;
+        }
 
       } else {
         // what makes it a grid?

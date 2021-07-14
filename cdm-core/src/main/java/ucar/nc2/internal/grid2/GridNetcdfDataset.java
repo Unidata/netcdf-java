@@ -26,7 +26,6 @@ import ucar.nc2.grid2.GridAxis;
 import ucar.nc2.grid2.GridAxisDependenceType;
 import ucar.nc2.grid2.GridCoordinateSystem;
 import ucar.nc2.grid2.GridDataset;
-import ucar.nc2.internal.dataset.DatasetClassifier;
 
 import javax.annotation.concurrent.Immutable;
 import java.io.IOException;

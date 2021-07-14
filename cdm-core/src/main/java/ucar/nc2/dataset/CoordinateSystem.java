@@ -680,8 +680,8 @@ public class CoordinateSystem {
   // TODO make these private, final and immutable in ver7.
   protected NetcdfDataset ds; // cant remove until dt.GridCoordSys can be removed
   protected List<CoordinateAxis> coordAxes = new ArrayList<>();
-  protected List<CoordinateTransform> coordTrans = new ArrayList<>(); // LOOK keep projection and vertical separate, and
-                                                                      // only allow one?
+  // LOOK keep projection and vertical separate, and only allow one?
+  protected List<CoordinateTransform> coordTrans = new ArrayList<>();
   private Projection projection;
 
   // these are calculated

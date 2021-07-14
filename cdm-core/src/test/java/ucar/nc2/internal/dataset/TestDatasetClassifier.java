@@ -4,7 +4,6 @@ import com.google.common.collect.Iterables;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import ucar.array.Range;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
@@ -17,7 +16,6 @@ import ucar.nc2.grid.GridCoordinateSystem;
 import ucar.nc2.internal.grid.GridNetcdfDataset;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
-import ucar.unidata.util.test.category.NeedsExternalResource;
 
 import java.io.IOException;
 import java.util.Formatter;
@@ -32,6 +30,7 @@ public class TestDatasetClassifier {
   public void testNamPolar() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "tds_index/NCEP/NAM/Polar_90km/NAM_Polar_90km_20201027_0000.grib2.ncx4";
     try (FeatureDatasetCoverage covDataset = CoverageDatasetFactory.open(filename)) {
+      assertThat(covDataset).isNotNull();
       for (CoverageCollection cc : covDataset.getCoverageCollections()) {
         if (cc.getName().endsWith("MRUTP")) {
           assertThat(cc.getCoverageType()).isEqualTo(FeatureType.GRID);
@@ -48,6 +47,7 @@ public class TestDatasetClassifier {
         DatasetClassifier dclassifier = new DatasetClassifier(ds, errlog);
         DatasetClassifier.CoordSysClassifier classifier =
             dclassifier.getCoordinateSystemsUsed().stream().findFirst().orElse(null);
+        assertThat(classifier).isNotNull();
         assertThat(classifier.getFeatureType()).isEqualTo(FeatureType.GRID);
       }
     }
@@ -58,6 +58,7 @@ public class TestDatasetClassifier {
   public void testNamPolarCollection() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "tds_index/NCEP/NAM/Polar_90km/NAM-Polar_90km.ncx4";
     try (FeatureDatasetCoverage covDataset = CoverageDatasetFactory.open(filename)) {
+      assertThat(covDataset).isNotNull();
       for (CoverageCollection cc : covDataset.getCoverageCollections()) {
         if (cc.getName().endsWith("MRUTP")) {
           assertThat(cc.getCoverageType()).isEqualTo(FeatureType.GRID);
@@ -74,6 +75,7 @@ public class TestDatasetClassifier {
         DatasetClassifier dclassifier = new DatasetClassifier(ds, errlog);
         DatasetClassifier.CoordSysClassifier classifier =
             dclassifier.getCoordinateSystemsUsed().stream().findFirst().orElse(null);
+        assertThat(classifier).isNotNull();
         assertThat(classifier.getFeatureType()).isEqualTo(FeatureType.GRID);
       }
     }
@@ -173,6 +175,7 @@ public class TestDatasetClassifier {
   public void testFMRC() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "gribCollections/cfsr/pwat.gdas.199612.grb2";
     try (FeatureDatasetCoverage covDataset = CoverageDatasetFactory.open(filename)) {
+      assertThat(covDataset).isNotNull();
       CoverageCollection cc = covDataset.getSingleCoverageCollection();
       assertThat(cc.getCoverageType()).isEqualTo(FeatureType.FMRC);
     }
@@ -211,9 +214,10 @@ public class TestDatasetClassifier {
 
   // @Test TODO not dealing with multiple groups; coverage ver6 looks wrong also (ok in ver5)
   @Category(NeedsCdmUnitTest.class)
-  public void testProblemWithGroups() throws IOException {
+  public void problemWithGroups() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "gribCollections/ecmwf/mad/MAD10090000100900001";
     try (FeatureDatasetCoverage covDataset = CoverageDatasetFactory.open(filename)) {
+      assertThat(covDataset).isNotNull();
       for (CoverageCollection cc : covDataset.getCoverageCollections()) {
         assertThat(cc.getCoverageType()).isEqualTo(FeatureType.GRID);
       }
@@ -228,6 +232,7 @@ public class TestDatasetClassifier {
         DatasetClassifier dclassifier = new DatasetClassifier(ds, errlog);
         DatasetClassifier.CoordSysClassifier classifier =
             dclassifier.getCoordinateSystemsUsed().stream().findFirst().orElse(null);
+        assertThat(classifier).isNotNull();
         assertThat(classifier.getFeatureType()).isEqualTo(FeatureType.GRID);
       }
     }
@@ -245,6 +250,7 @@ public class TestDatasetClassifier {
   public void testRegularTimeOffset() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "gribCollections/gdsHashChange/noaaport/NDFD-CONUS_noaaport.ncx4";
     try (FeatureDatasetCoverage covDataset = CoverageDatasetFactory.open(filename)) {
+      assertThat(covDataset).isNotNull();
       for (CoverageCollection cc : covDataset.getCoverageCollections()) {
         if (cc.getName().endsWith("TwoD")) {
           assertThat(cc.getCoverageType()).isEqualTo(FeatureType.FMRC);
@@ -272,6 +278,7 @@ public class TestDatasetClassifier {
   public void testMRUTP() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "tds_index/NCEP/GFS/Global_0p25deg_ana/GFS-Global_0p25deg_ana.ncx4";
     try (FeatureDatasetCoverage covDataset = CoverageDatasetFactory.open(filename)) {
+      assertThat(covDataset).isNotNull();
       for (CoverageCollection cc : covDataset.getCoverageCollections()) {
         if (cc.getName().endsWith("MRUTP")) {
           assertThat(cc.getCoverageType()).isEqualTo(FeatureType.GRID);
@@ -289,6 +296,7 @@ public class TestDatasetClassifier {
         DatasetClassifier dclassifier = new DatasetClassifier(ds, errlog);
         DatasetClassifier.CoordSysClassifier classifier =
             dclassifier.getCoordinateSystemsUsed().stream().findFirst().orElse(null);
+        assertThat(classifier).isNotNull();
         assertThat(classifier.getFeatureType()).isEqualTo(FeatureType.GRID);
       }
     }
@@ -299,6 +307,7 @@ public class TestDatasetClassifier {
   public void testMRUTP2() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "gribCollections/anal/HRRRanalysis.ncx4";
     try (FeatureDatasetCoverage covDataset = CoverageDatasetFactory.open(filename)) {
+      assertThat(covDataset).isNotNull();
       for (CoverageCollection cc : covDataset.getCoverageCollections()) {
         if (cc.getName().endsWith("MRUTP")) {
           assertThat(cc.getCoverageType()).isEqualTo(FeatureType.GRID);
@@ -315,6 +324,7 @@ public class TestDatasetClassifier {
         DatasetClassifier dclassifier = new DatasetClassifier(ds, errlog);
         DatasetClassifier.CoordSysClassifier classifier =
             dclassifier.getCoordinateSystemsUsed().stream().findFirst().orElse(null);
+        assertThat(classifier).isNotNull();
         assertThat(classifier.getFeatureType()).isEqualTo(FeatureType.GRID);
       }
     }
@@ -326,6 +336,7 @@ public class TestDatasetClassifier {
   public void testMRUTP3() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds627.0/ei.oper.an.pv/ds627.0_46.ncx4";
     try (FeatureDatasetCoverage covDataset = CoverageDatasetFactory.open(filename)) {
+      assertThat(covDataset).isNotNull();
       for (CoverageCollection cc : covDataset.getCoverageCollections()) {
         if (cc.getName().endsWith("MRUTP")) {
           assertThat(cc.getCoverageType()).isEqualTo(FeatureType.GRID);
@@ -342,6 +353,7 @@ public class TestDatasetClassifier {
         DatasetClassifier dclassifier = new DatasetClassifier(ds, errlog);
         DatasetClassifier.CoordSysClassifier classifier =
             dclassifier.getCoordinateSystemsUsed().stream().findFirst().orElse(null);
+        assertThat(classifier).isNotNull();
         assertThat(classifier.getFeatureType()).isEqualTo(FeatureType.GRID);
       }
     }
