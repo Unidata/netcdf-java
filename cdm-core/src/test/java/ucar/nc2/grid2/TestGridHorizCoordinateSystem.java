@@ -11,8 +11,6 @@ import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.unidata.geoloc.projection.proj4.TransverseMercatorProjection;
 
 import static com.google.common.truth.Truth.assertThat;
-import static com.google.common.truth.Truth8.assertThat;
-import static org.junit.Assert.fail;
 
 /** Test {@link GridHorizCoordinateSystem} */
 public class TestGridHorizCoordinateSystem {
@@ -103,5 +101,6 @@ public class TestGridHorizCoordinateSystem {
      * }
      */
   }
+
 
 }

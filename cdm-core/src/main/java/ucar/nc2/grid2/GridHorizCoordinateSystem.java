@@ -213,14 +213,16 @@ public class GridHorizCoordinateSystem {
     // TODO GridSubset.latlonPoint
     if (projbb != null) { // TODO ProjectionRect ok for isLatlon = true?
       SubsetPointHelper yhelper = new SubsetPointHelper(yaxis);
-      Optional<GridAxisPoint.Builder<?>> ybo = yhelper.subset(projbb.getMinY(), projbb.getMaxY(), horizStride, errlog);
+      Optional<GridAxisPoint.Builder<?>> ybo =
+          yhelper.subsetRange(projbb.getMinY(), projbb.getMaxY(), horizStride, errlog);
       if (ybo.isEmpty()) {
         return Optional.empty();
       }
       yaxisSubset = ybo.get().build();
 
       SubsetPointHelper xhelper = new SubsetPointHelper(xaxis);
-      Optional<GridAxisPoint.Builder<?>> xbo = xhelper.subset(projbb.getMinY(), projbb.getMaxY(), horizStride, errlog);
+      Optional<GridAxisPoint.Builder<?>> xbo =
+          xhelper.subsetRange(projbb.getMinX(), projbb.getMaxX(), horizStride, errlog);
       if (xbo.isEmpty()) {
         return Optional.empty();
       }
@@ -228,7 +230,8 @@ public class GridHorizCoordinateSystem {
 
     } else if (llbb != null && isLatLon()) { // TODO LatLonRect only used for isLatlon = true?
       SubsetPointHelper yhelper = new SubsetPointHelper(yaxis);
-      Optional<GridAxisPoint.Builder<?>> ybo = yhelper.subset(llbb.getLatMin(), llbb.getLatMax(), horizStride, errlog);
+      Optional<GridAxisPoint.Builder<?>> ybo =
+          yhelper.subsetRange(llbb.getLatMin(), llbb.getLatMax(), horizStride, errlog);
       if (ybo.isEmpty()) {
         return Optional.empty();
       }
@@ -236,7 +239,8 @@ public class GridHorizCoordinateSystem {
 
       // TODO longitude wrapping
       SubsetPointHelper xhelper = new SubsetPointHelper(xaxis);
-      Optional<GridAxisPoint.Builder<?>> xbo = xhelper.subset(llbb.getLonMin(), llbb.getLonMax(), horizStride, errlog);
+      Optional<GridAxisPoint.Builder<?>> xbo =
+          xhelper.subsetRange(llbb.getLonMin(), llbb.getLonMax(), horizStride, errlog);
       if (xbo.isEmpty()) {
         return Optional.empty();
       }
@@ -245,15 +249,8 @@ public class GridHorizCoordinateSystem {
     } else if (horizStride > 1) { // no bounding box, just horiz stride
       Preconditions.checkNotNull(yaxis);
       Preconditions.checkNotNull(xaxis);
-      try {
-        Range yRange = yaxis.getSubsetRange().copyWithStride(horizStride);
-        yaxisSubset = yaxis.toBuilder().setRange(yRange).build();
-
-        Range xRange = xaxis.getSubsetRange().copyWithStride(horizStride);
-        xaxisSubset = xaxis.toBuilder().setRange(xRange).build();
-      } catch (InvalidRangeException e) {
-        errlog.format(e.getMessage());
-      }
+      yaxisSubset = yaxis.toBuilder().subsetWithStride(horizStride).build();
+      xaxisSubset = xaxis.toBuilder().subsetWithStride(horizStride).build();
     }
 
     return Optional.of(new GridHorizCoordinateSystem(xaxisSubset, yaxisSubset, this.projection));

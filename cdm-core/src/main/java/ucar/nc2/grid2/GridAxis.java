@@ -85,7 +85,7 @@ public abstract class GridAxis<T> implements Comparable<GridAxis<T>>, Iterable<T
 
   public abstract Optional<? extends GridAxis<T>> subset(GridSubset params, Formatter errlog);
 
-  /** For subsets, the range in the original axis that constitutes the subset. */
+  /** For subsets, the range in the original axis that constitutes the subset. Needed for reading data. */
   public abstract Range getSubsetRange();
 
   public abstract int binarySearch(double want);

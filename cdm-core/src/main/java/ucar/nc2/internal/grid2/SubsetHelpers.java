@@ -5,10 +5,10 @@
 
 package ucar.nc2.internal.grid2;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.math.DoubleMath;
 import ucar.array.MinMax;
-import ucar.nc2.constants.AxisType;
 import ucar.nc2.grid.CoordInterval;
 import ucar.nc2.grid2.GridAxis;
 import ucar.nc2.grid2.GridAxisInterval;
@@ -110,7 +110,8 @@ public class SubsetHelpers {
    * <p>
    * same contract as findCoordElement()
    */
-  private static int findCoordElementContiguous(GridAxis<?> orgGridAxis, double target, boolean bounded) {
+  @VisibleForTesting
+  static int findCoordElementContiguous(GridAxis<?> orgGridAxis, double target, boolean bounded) {
     int n = orgGridAxis.getNominalSize();
 
     // Check that the point is within range

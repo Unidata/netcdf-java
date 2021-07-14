@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 
 import static com.google.common.truth.Truth.assertThat;
 
-/** Test {@link GridDataset} reading with horizontal subsets */
+/** Test {@link GridHorizCoordinateSystem} reading with horizontal subsets */
 // @Ignore("Grid data reading not ready yet")
 public class TestGridReadHorizSubset {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());

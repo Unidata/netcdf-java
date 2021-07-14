@@ -34,7 +34,7 @@ public class Range implements RangeIterator {
   public static final Range SCALAR = new Range("SCALAR", 1);
   public static final Range VLEN = new Range("VLEN", -1);
 
-  /** Make a named Range from 0 to len-1. */
+  /** Make a named Range from 0 to len-1. RuntimeException on error. */
   public static Range make(String name, int len) {
     try {
       return new Range(name, 0, len - 1, 1);
@@ -43,10 +43,19 @@ public class Range implements RangeIterator {
     }
   }
 
-  /** Make an unnamed Range from first to last. */
+  /** Make an unnamed Range from first to last. RuntimeException on error. */
   public static Range make(int first, int last) {
     try {
       return new Range(first, last);
+    } catch (InvalidRangeException e) {
+      throw new RuntimeException(e); // cant happen if last >= first
+    }
+  }
+
+  /** Make an unnamed Range from first to last with stride. RuntimeException on error. */
+  public static Range make(int first, int last, int stride) {
+    try {
+      return new Range(first, last, stride);
     } catch (InvalidRangeException e) {
       throw new RuntimeException(e); // cant happen if last >= first
     }
@@ -171,11 +180,11 @@ public class Range implements RangeIterator {
   }
 
   /** Make a copy with a different stride. */
-  public Range copyWithStride(int stride) throws InvalidRangeException {
+  public Range copyWithStride(int stride) {
     if (stride == this.stride) {
       return this;
     }
-    return new Range(this.first(), this.last(), stride);
+    return Range.make(this.first(), this.last(), stride);
   }
 
   /** Make a copy with a different name. */

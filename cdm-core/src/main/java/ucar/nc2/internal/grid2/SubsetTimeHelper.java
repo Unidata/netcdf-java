@@ -128,7 +128,7 @@ public class SubsetTimeHelper {
 
       // LOOK what about subsetting across multiple runtimes ??
       SubsetPointHelper helper = new SubsetPointHelper(runtimeAxis);
-      this.runtimeAxis = helper.makeSubsetByIndex(Range.make(runIdx, runIdx)).build();
+      this.runtimeAxis = helper.makeSubsetByIndex(runIdx).build();
     }
 
     // suppose these were the options for time. Do they have to be processed differently for different

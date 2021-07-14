@@ -212,15 +212,11 @@ public class GridHorizCS implements GridHorizCoordinateSystem {
     } else if (horizStride > 1) { // no bounding box, just horiz stride
       Preconditions.checkNotNull(yaxis);
       Preconditions.checkNotNull(xaxis);
-      try {
-        Range yRange = yaxis.getRange().copyWithStride(horizStride);
-        result.add(yaxis.toBuilder().setRange(yRange).build());
+      Range yRange = yaxis.getRange().copyWithStride(horizStride);
+      result.add(yaxis.toBuilder().setRange(yRange).build());
 
-        Range xRange = xaxis.getRange().copyWithStride(horizStride);
-        result.add(xaxis.toBuilder().setRange(xRange).build());
-      } catch (InvalidRangeException e) {
-        errlog.format(e.getMessage());
-      }
+      Range xRange = xaxis.getRange().copyWithStride(horizStride);
+      result.add(xaxis.toBuilder().setRange(xRange).build());
 
     } else { // default is all x, y
       result.add(yaxis);
