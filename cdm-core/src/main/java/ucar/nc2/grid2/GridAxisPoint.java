@@ -332,17 +332,15 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
       return self();
     }
 
-    // LOOK is this only for subsetting regular ??
-    public T subset(int ncoords, double startValue, double resolution, Range range) {
+    public T subsetWithSingleValue(double startValue, Range range) {
       Preconditions.checkNotNull(range);
-      Preconditions.checkArgument(ncoords == range.length());
-      this.ncoords = ncoords;
+      this.spacing = GridAxisSpacing.regularPoint;
+      this.ncoords = 1;
       this.startValue = startValue;
-      this.resolution = resolution;
       this.range = range;
       this.isSubset = true;
-      this.values = makeValues(range);
-      this.edges = makeEdges(range);
+      this.values = null;
+      this.edges = null;
       return self();
     }
 

@@ -9,7 +9,6 @@ import ucar.array.Range;
 import ucar.nc2.grid.CoordInterval;
 import ucar.nc2.grid.GridSubset;
 import ucar.nc2.grid2.GridAxisPoint;
-import ucar.nc2.grid2.GridAxisSpacing;
 import ucar.nc2.grid2.Grids;
 import ucar.nc2.util.Misc;
 
@@ -123,10 +122,9 @@ public class SubsetPointHelper {
   }
 
   GridAxisPoint.Builder<?> makeSubsetByIndex(int index) {
-    GridAxisPoint.Builder<?> builder = orgGridAxis.toBuilder().setSpacing(GridAxisSpacing.regularPoint);
+    GridAxisPoint.Builder<?> builder = orgGridAxis.toBuilder();
     double val = orgGridAxis.getCoordMidpoint(index);
-    builder.subset(1, val, 0.0, Range.make(index, index));
-    return builder;
+    return builder.subsetWithSingleValue(val, Range.make(index, index));
   }
 
   ////////////////////////////////////////////////////////////////////////
