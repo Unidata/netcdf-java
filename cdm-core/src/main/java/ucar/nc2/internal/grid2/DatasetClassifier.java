@@ -101,10 +101,6 @@ public class DatasetClassifier {
       return featureType;
     }
 
-    public boolean isLatLon() {
-      return isLatLon;
-    }
-
     public List<CoordinateTransform> getCoordTransforms() {
       return coordTransforms;
     }
@@ -122,8 +118,8 @@ public class DatasetClassifier {
     //////////////////////////////////////////////////////////////////////
     CoordinateSystem cs;
     FeatureType featureType;
-    boolean isLatLon;
-    CoordinateAxis xaxis, yaxis, timeAxis, timeOffsetAxis; // may be 1 or 2 dimensional
+    boolean standardGeoXY, standardLatLon, curvilinear, curvilinearWith1D;
+    CoordinateAxis xaxis, yaxis, lataxis, lonaxis, timeAxis, timeOffsetAxis; // may be 1 or 2 dimensional
     CoordinateAxis vertAxis, ensAxis, rtAxis; // must be 1 dimensional
     List<CoordinateAxis> indAxes = new ArrayList<>();
     List<CoordinateAxis> depAxes = new ArrayList<>();
@@ -141,23 +137,25 @@ public class DatasetClassifier {
 
       //////////////////////////////////////////////////////////////
       // horiz
-      // must be lat/lon or have x,y and projection
-      if (!cs.isLatLon()) {
-        // do check for GeoXY
-        if ((cs.findAxis(AxisType.GeoX) == null) || (cs.findAxis(AxisType.GeoY) == null)) {
-          infolog.format(" %s: NO Lat,Lon or X,Y axis%n", cs.getName());
-          return;
-        }
-        if (null == cs.getProjection()) {
-          infolog.format(" %s: NO projection found%n", cs.getName());
-          return;
-        }
-      }
+      xaxis = cs.findAxis(AxisType.GeoX);
+      yaxis = cs.findAxis(AxisType.GeoY);
+      lataxis = cs.findAxis(AxisType.Lat);
+      lonaxis = cs.findAxis(AxisType.Lon);
 
-      // obtain the x,y or lat/lon axes. x,y normally must be convertible to km
-      if (cs.isGeoXY()) {
-        indAxes.add(xaxis = cs.findAxis(AxisType.GeoX));
-        indAxes.add(yaxis = cs.findAxis(AxisType.GeoY));
+      standardGeoXY = xaxis != null && xaxis.getRank() == 1 && yaxis != null && yaxis.getRank() == 1
+          && cs.getProjection() != null && 2 == Dimensions.makeDomain(ImmutableList.of(xaxis, yaxis), true).size();
+
+      standardLatLon = lataxis != null && lataxis.getRank() == 1 && lonaxis != null && lonaxis.getRank() == 1
+          && 2 == Dimensions.makeDomain(ImmutableList.of(lataxis, lonaxis), true).size();
+
+      curvilinear = lataxis != null && lataxis.getRank() == 2 && lonaxis != null && lonaxis.getRank() == 2
+          && 2 == Dimensions.makeDomain(ImmutableList.of(lataxis, lonaxis), true).size();
+
+      curvilinearWith1D = curvilinear && xaxis != null && xaxis.getRank() == 1 && yaxis != null && yaxis.getRank() == 1;
+
+      if (standardGeoXY) {
+        indAxes.add(xaxis);
+        indAxes.add(yaxis);
 
         Projection p = cs.getProjection();
         if (!(p instanceof RotatedPole)) {
@@ -168,28 +166,55 @@ public class DatasetClassifier {
             infolog.format(" %s: Y axis units are not convertible to km%n", cs.getName());
           }
         }
+
+      } else if (standardLatLon) {
+        indAxes.add(lonaxis);
+        indAxes.add(lataxis);
+
+      } else if (curvilinearWith1D) {
+        indAxes.add(xaxis);
+        indAxes.add(yaxis);
+        depAxes.add(lonaxis);
+        depAxes.add(lataxis);
+
+      } else if (curvilinear) {
+        depAxes.add(lonaxis);
+        depAxes.add(lataxis);
+
       } else {
-        indAxes.add(xaxis = cs.findAxis(AxisType.Lon));
-        indAxes.add(yaxis = cs.findAxis(AxisType.Lat));
-        isLatLon = true;
-      }
+        // must be lat/lon or have x,y and projection
+        if (!cs.isLatLon()) {
+          // do check for GeoXY
+          if ((cs.findAxis(AxisType.GeoX) == null) || (cs.findAxis(AxisType.GeoY) == null)) {
+            infolog.format(" %s: NO Lat,Lon or X,Y axis%n", cs.getName());
+            return;
+          }
+          if (null == cs.getProjection()) {
+            infolog.format(" %s: NO projection found%n", cs.getName());
+            return;
+          }
+        }
 
-      // check x,y rank <= 2
-      if ((xaxis.getRank() > 2) || (yaxis.getRank() > 2)) {
-        infolog.format(" %s: X and Y axis rank must be <= 2%n", cs.getName());
-        return;
-      }
+        // check x,y rank <= 2
+        if ((xaxis.getRank() > 2) || (yaxis.getRank() > 2)) {
+          infolog.format(" %s: X and Y axis rank must be <= 2%n", cs.getName());
+          return;
+        }
 
-      // check x,y with size 1
-      if ((xaxis.getSize() < 2) || (yaxis.getSize() < 2)) {
-        infolog.format(" %s: X and Y axis size must be >= 2%n", cs.getName());
-        return;
-      }
+        // check x,y with size 1
+        if ((xaxis.getSize() < 2) || (yaxis.getSize() < 2)) {
+          infolog.format(" %s: X and Y axis size must be >= 2%n", cs.getName());
+          return;
+        }
 
-      // check that the x,y have at least 2 dimensions between them ( this eliminates point data)
-      int xyDomainSize = Dimensions.makeDomain(ImmutableList.of(xaxis, yaxis), true).size();
-      if (xyDomainSize < 2) {
-        infolog.format(" %s: X and Y axis must have 2 or more dimensions%n", cs.getName());
+        // check that the x,y have at least 2 dimensions between them ( this eliminates point data)
+        int xyDomainSize = Dimensions.makeDomain(ImmutableList.of(xaxis, yaxis), true).size();
+        if (xyDomainSize < 2) {
+          infolog.format(" %s: X and Y axis must have 2 or more dimensions%n", cs.getName());
+          return;
+        }
+        // general failure
+        infolog.format(" %s: not a grid or curvilinear%n", cs.getName());
         return;
       }
 
@@ -270,13 +295,20 @@ public class DatasetClassifier {
 
       // FMRC is when we have 2D timeAxis and no timeOffset
       boolean is2Dtime = (rtAxis != null) && (timeOffsetAxis == null) && (timeAxis != null && timeAxis.getRank() == 2);
-      boolean is2Dhoriz = isLatLon && (xaxis.getRank() == 2) && (yaxis.getRank() == 2);
 
       if (is2Dtime) {
         result = FeatureType.FMRC; // LOOK this would allow 2d horiz
 
-      } else if (is2Dhoriz) {
+      } else if (curvilinearWith1D) {
         Set<Dimension> xyDomain = Dimensions.makeDomain(Lists.newArrayList(xaxis, yaxis), true);
+        if (timeAxis != null && Dimensions.isSubset(Dimensions.makeDimensionsAll(timeAxis), xyDomain)) {
+          result = FeatureType.SWATH; // LOOK prob not exactly right
+        } else {
+          result = FeatureType.CURVILINEAR;
+        }
+
+      } else if (curvilinear) {
+        Set<Dimension> xyDomain = Dimensions.makeDomain(Lists.newArrayList(lonaxis, lataxis), true);
         if (timeAxis != null && Dimensions.isSubset(Dimensions.makeDimensionsAll(timeAxis), xyDomain)) {
           result = FeatureType.SWATH; // LOOK prob not exactly right
         } else {
@@ -304,6 +336,8 @@ public class DatasetClassifier {
       f2.format("%s", featureType == null ? "" : featureType.toString());
       f2.format("%n xAxis=  %s", xaxis == null ? "" : xaxis.getNameAndDimensions());
       f2.format("%n yAxis=  %s", yaxis == null ? "" : yaxis.getNameAndDimensions());
+      f2.format("%n latAxis=  %s", lataxis == null ? "" : lataxis.getNameAndDimensions());
+      f2.format("%n lonAxis=  %s", lonaxis == null ? "" : lonaxis.getNameAndDimensions());
       f2.format("%n zAxis=  %s", vertAxis == null ? "" : vertAxis.getNameAndDimensions());
       f2.format("%n tAxis=  %s", timeAxis == null ? "" : timeAxis.getNameAndDimensions());
       f2.format("%n rtAxis= %s", rtAxis == null ? "" : rtAxis.getNameAndDimensions());

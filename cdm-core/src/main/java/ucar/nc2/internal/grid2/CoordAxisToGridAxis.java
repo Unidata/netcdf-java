@@ -28,6 +28,7 @@ class CoordAxisToGridAxis {
   private final boolean isIndependent;
 
   CoordAxisToGridAxis(CoordinateAxis axis, GridAxisDependenceType dependenceTypeFromClassifier, boolean isIndependent) {
+    Preconditions.checkArgument(axis.getRank() < 2);
     this.axis = axis;
     this.dependenceTypeFromClassifier = dependenceTypeFromClassifier;
     this.isIndependent = isIndependent;
@@ -61,10 +62,10 @@ class CoordAxisToGridAxis {
         .setAttributes(axis.attributes()).setAxisType(axis.getAxisType());
 
     GridAxisDependenceType dependenceType;
-    if (axis.isCoordinateVariable()) {
-      dependenceType = GridAxisDependenceType.independent;
-    } else if (axis.isScalar()) {
+    if (axis.isScalar()) {
       dependenceType = GridAxisDependenceType.scalar;
+    } else if (axis.isCoordinateVariable()) {
+      dependenceType = GridAxisDependenceType.independent;
     } else if (this.isIndependent) { // is a coordinate alias
       dependenceType = dependenceTypeFromClassifier; // TODO not clear
       builder.setDependsOn(axis.getDimension(0).getShortName());

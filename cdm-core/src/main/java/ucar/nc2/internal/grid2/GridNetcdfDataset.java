@@ -50,14 +50,15 @@ public class GridNetcdfDataset implements GridDataset {
       ncd = NetcdfDatasets.enhance(ncd, enhance, null);
     }
 
-    DatasetClassifier facc = new DatasetClassifier(ncd, errInfo);
-    if (facc.getFeatureType() != FeatureType.GRID) { // LOOK maybe FMRC also ??
+    DatasetClassifier classifier = new DatasetClassifier(ncd, errInfo);
+    if (classifier.getFeatureType() == FeatureType.GRID || classifier.getFeatureType() == FeatureType.CURVILINEAR) {
+      return createGrid(ncd, classifier, errInfo);
+    } else {
       return Optional.empty();
     }
-    return GridNetcdfDataset.create(ncd, facc, errInfo);
   }
 
-  private static Optional<GridNetcdfDataset> create(NetcdfDataset ncd, DatasetClassifier classifier,
+  private static Optional<GridNetcdfDataset> createGrid(NetcdfDataset ncd, DatasetClassifier classifier,
       Formatter errInfo) {
     FeatureType featureType = classifier.getFeatureType();
 
@@ -105,7 +106,7 @@ public class GridNetcdfDataset implements GridDataset {
       if (csc.getName().startsWith("Best/")) {
         continue;
       }
-      GridNetcdfCS.createFromClassifier(csc, gridAxes).ifPresent(gcs -> {
+      GridNetcdfCS.createFromClassifier(csc, gridAxes, errInfo).ifPresent(gcs -> {
         coordsys.add(gcs);
         trackCsConverted.put(csc.getName(), new TrackGridCS(csc, gcs));
       });
