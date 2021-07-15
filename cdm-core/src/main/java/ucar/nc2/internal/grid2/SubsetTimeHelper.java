@@ -46,25 +46,15 @@ public class SubsetTimeHelper {
 
   public Optional<? extends GridAxis<?>> subsetTime(GridSubset params, Formatter errlog) {
     GridAxis<?> timeOffsetAxis = tcs.getTimeOffsetAxis(0);
-    int timeIdx = -1;
 
-    // time
+    // Do any CalendarDate conversions here
     Double wantOffset = null;
     CalendarDate wantTime = params.getTime();
     if (wantTime != null) {
       wantOffset = (double) tcs.getCalendarDateUnit().makeOffsetFromRefDate(wantTime);
-    } /*
-       * else if (params.getTimePresent()) {
-       * // time present
-       * wantTime = CalendarDate.present();
-       * double wantOffset = tcs.getCalendarDateUnit().makeOffsetFromRefDate(wantTime);
-       * timeIdx = searchClosest(timeOffsetAxis, wantOffset);
-       * if (timeIdx < 0) {
-       * errlog.format("Cant find time = %s%n", wantTime);
-       * return Optional.empty();
-       * }
-       * }
-       */
+    } else if (params.getTimePresent()) {
+      wantOffset = (double) tcs.getCalendarDateUnit().makeOffsetFromRefDate(CalendarDate.present());
+    }
     if (wantOffset != null) {
       return timeOffsetAxis.subset(GridSubset.create().setTimeOffsetCoord(wantOffset), errlog);
     }
