@@ -101,7 +101,7 @@ public class TestGridReadHorizSubset {
 
   // longitude subsetting (CoordAxis1D regular) }
   @Test
-  @Ignore("not done")
+  // @Ignore("not done")
   @Category(NeedsCdmUnitTest.class)
   public void testLongitudeSubset() throws Exception {
     String filename = TestDir.cdmUnitTestDir + "tds/ncep/GFS_Global_onedeg_20100913_0000.grib2";
@@ -145,7 +145,7 @@ public class TestGridReadHorizSubset {
       assertThat(hcs).isNotNull();
 
       LatLonRect bbox = LatLonRect.builder(40.0, -100.0, 10.0, 120.0).build();
-      checkLatLonSubset(hcs, coverage, bbox, new int[] {1, 61, 441});
+      checkLatLonSubset(hcs, coverage, bbox, new int[] {61, 441});
     }
   }
 

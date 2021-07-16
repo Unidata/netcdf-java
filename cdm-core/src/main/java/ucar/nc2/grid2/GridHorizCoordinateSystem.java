@@ -100,7 +100,7 @@ public class GridHorizCoordinateSystem {
 
       } else {
         ProjectionRect bb = getBoundingBox();
-        if (projection != null && bb != null) {
+        if (bb != null) {
           llbb = projection.projToLatLonBB(bb);
         }
       }
@@ -149,8 +149,8 @@ public class GridHorizCoordinateSystem {
       horizStride = 1;
     }
 
-    GridAxisPoint xaxisSubset = xaxis;
-    GridAxisPoint yaxisSubset = yaxis;
+    GridAxisPoint xaxisSubset;
+    GridAxisPoint yaxisSubset;
     LatLonRect llbb = params.getLatLonBoundingBox();
     ProjectionRect projbb = params.getProjectionBoundingBox();
 
@@ -319,7 +319,7 @@ public class GridHorizCoordinateSystem {
   /**
    * Get Index Ranges for the given lat, lon bounding box.
    * For projection, only an approximation based on latlon corners.
-   * LOOK maybe needed by subset
+   * LOOK maybe needed by subset?
    *
    * @param rect the requested lat/lon bounding box
    * @return list of 2 Range objects, first y then x.
@@ -327,7 +327,7 @@ public class GridHorizCoordinateSystem {
   List<Range> getRangesFromLatLonRect(LatLonRect rect) throws InvalidRangeException {
     double minx, maxx, miny, maxy;
 
-    if (projection != null && !(projection instanceof VerticalPerspectiveView) && !(projection instanceof MSGnavigation)
+    if (!(projection instanceof VerticalPerspectiveView) && !(projection instanceof MSGnavigation)
         && !(projection instanceof Geostationary)) { // LOOK kludge - how to do this generrally ??
       // first clip the request rectangle to the bounding box of the grid
       LatLonRect bb = getLatLonBoundingBox();
