@@ -65,10 +65,11 @@ public abstract class AbstractProjection implements Projection {
   protected final List<Parameter> atts = new ArrayList<>();
 
   /**
-   * copy constructor - avoid clone !!
-   *
-   * @return a copy of this Projection.
+   * Copy constructor - avoid clone !!
+   * 
+   * @deprecated not needed because Immutable
    */
+  @Deprecated
   public abstract Projection constructCopy();
 
   protected AbstractProjection(String name, boolean isLatLon) {

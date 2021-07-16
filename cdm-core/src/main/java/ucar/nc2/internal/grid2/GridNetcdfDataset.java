@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Formatter;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -52,14 +53,14 @@ public class GridNetcdfDataset implements GridDataset {
 
     DatasetClassifier classifier = new DatasetClassifier(ncd, errInfo);
     if (classifier.getFeatureType() == FeatureType.GRID || classifier.getFeatureType() == FeatureType.CURVILINEAR) {
-      return createGrid(ncd, classifier, errInfo);
+      return createGridDataset(ncd, classifier, errInfo);
     } else {
       return Optional.empty();
     }
   }
 
-  private static Optional<GridNetcdfDataset> createGrid(NetcdfDataset ncd, DatasetClassifier classifier,
-      Formatter errInfo) {
+  private static Optional<GridNetcdfDataset> createGridDataset(NetcdfDataset ncd, DatasetClassifier classifier,
+      Formatter errInfo) throws IOException {
     FeatureType featureType = classifier.getFeatureType();
 
     Map<String, GridAxis<?>> gridAxes = new HashMap<>();
@@ -92,12 +93,7 @@ public class GridNetcdfDataset implements GridDataset {
             new CoordAxisToGridAxis(axis, GridAxisDependenceType.dependent, ncd.isIndependentCoordinate(axis))
                 .extractGridAxis();
         gridAxes.put(axis.getFullName(), gridAxis);
-      } /*
-         * else if (axis.getAxisType() == AxisType.TimeOffset && axis.getRank() == 2) {
-         * GridAxis<?> gridAxis = Grids.extractGridAxisOffset2D(axis, GridAxisDependenceType.dependent, gridAxes);
-         * gridAxes.put(axis.getFullName(), gridAxis);
-         * }
-         */
+      }
     }
 
     // Convert coordsys
@@ -142,12 +138,12 @@ public class GridNetcdfDataset implements GridDataset {
     }
 
     if (gridsets.isEmpty()) {
+      errInfo.format("gridsets is empty%n");
       return Optional.empty();
     }
 
-    // GridNetcdfDataset(NetcdfDataset ncd, FeatureType featureType, List<GridNetcdfCS> coordsys, List<GridAxis<?>
-    // gridAxes, List<Grid> grids)
-    return Optional.of(new GridNetcdfDataset(ncd, featureType, coordsys, gridAxes.values(), gridsets.values()));
+    HashSet<Grid> ugrids = new HashSet<>(gridsets.values());
+    return Optional.of(new GridNetcdfDataset(ncd, featureType, coordsys, gridAxes.values(), ugrids));
   }
 
   private static class TrackGridCS {

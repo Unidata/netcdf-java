@@ -45,6 +45,11 @@ public class GridReader {
     return this;
   }
 
+  public GridReader setTimeLatest() {
+    req.put(GridSubset.timeLatest, true);
+    return this;
+  }
+
   public GridReader setTimeCoord(Object coord) {
     if (coord instanceof Number) {
       req.put(GridSubset.timePoint, coord);
