@@ -1,7 +1,7 @@
-package ucar.nc2.internal.dataset;
+package ucar.nc2.internal.grid2;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.nc2.constants.FeatureType;
@@ -10,10 +10,10 @@ import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.ft2.coverage.CoverageCollection;
 import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
 import ucar.nc2.ft2.coverage.FeatureDatasetCoverage;
-import ucar.nc2.grid.Grid;
-import ucar.nc2.grid.GridAxis;
-import ucar.nc2.grid.GridCoordinateSystem;
-import ucar.nc2.internal.grid.GridNetcdfDataset;
+import ucar.nc2.grid2.Grid;
+import ucar.nc2.grid2.GridAxisDependenceType;
+import ucar.nc2.grid2.GridCoordinateSystem;
+import ucar.nc2.grid2.GridTimeCoordinateSystem;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
@@ -22,7 +22,9 @@ import java.util.Formatter;
 import java.util.Optional;
 
 import static com.google.common.truth.Truth.assertThat;
+import static com.google.common.truth.Truth.assertWithMessage;
 
+/** Test {@link DatasetClassifier} */
 public class TestDatasetClassifier {
 
   @Test
@@ -41,7 +43,7 @@ public class TestDatasetClassifier {
     try (NetcdfDataset ds = NetcdfDatasets.openDataset(filename)) {
       Formatter errlog = new Formatter();
       Optional<GridNetcdfDataset> grido = GridNetcdfDataset.create(ds, errlog);
-      assertThat(grido.isPresent()).isTrue();
+      assertWithMessage(errlog.toString()).that(grido.isPresent()).isTrue();
       GridNetcdfDataset gridDataset = grido.get();
       if (!Iterables.isEmpty(gridDataset.getGrids())) {
         DatasetClassifier dclassifier = new DatasetClassifier(ds, errlog);
@@ -69,7 +71,7 @@ public class TestDatasetClassifier {
     try (NetcdfDataset ds = NetcdfDatasets.openDataset(filename)) {
       Formatter errlog = new Formatter();
       Optional<GridNetcdfDataset> grido = GridNetcdfDataset.create(ds, errlog);
-      assertThat(grido.isPresent()).isTrue();
+      assertWithMessage(errlog.toString()).that(grido.isPresent()).isTrue();
       GridNetcdfDataset gridDataset = grido.get();
       if (!Iterables.isEmpty(gridDataset.getGrids())) {
         DatasetClassifier dclassifier = new DatasetClassifier(ds, errlog);
@@ -83,17 +85,14 @@ public class TestDatasetClassifier {
 
   @Test
   public void testNoGrids() throws IOException {
-    // Comes back as a GRID, but no Grids found because unidentified ensemble, time axis.
-    // Coverage handles wrong
+    // No Grids found because unidentified ensemble, time axis.
     String filename = TestDir.cdmLocalTestDataDir + "testNested.ncml";
     try (NetcdfDataset ds = NetcdfDatasets.openDataset(filename)) {
       Formatter errlog = new Formatter();
       DatasetClassifier classifier = new DatasetClassifier(ds, errlog);
       assertThat(classifier.getFeatureType()).isEqualTo(FeatureType.GRID);
       Optional<GridNetcdfDataset> grido = GridNetcdfDataset.create(ds, errlog);
-      assertThat(grido.isPresent()).isTrue();
-      GridNetcdfDataset gridDataset = grido.get();
-      assertThat(Iterables.isEmpty(gridDataset.getGrids())).isTrue();
+      assertThat(grido.isPresent()).isFalse();
     }
   }
 
@@ -111,6 +110,7 @@ public class TestDatasetClassifier {
       assertThat(gdso.isPresent()).isTrue();
       GridNetcdfDataset gridDataset = gdso.get();
       assertThat(Iterables.isEmpty(gridDataset.getGrids())).isFalse();
+      System.out.printf("testScalarRuntime %s%n", gridDataset.getLocation());
 
       Optional<Grid> grido =
           gridDataset.findGrid("Convective_available_potential_energy_pressure_difference_layer_ens");
@@ -118,18 +118,20 @@ public class TestDatasetClassifier {
       Grid grid = grido.get();
       GridCoordinateSystem gcs = grid.getCoordinateSystem();
       assertThat(gcs).isNotNull();
+      GridTimeCoordinateSystem tcs = gcs.getTimeCoordinateSystem();
+      assertThat(tcs).isNotNull();
+
       // rt (scalar), t, ens, z, y, x
       assertThat(Iterables.size(gcs.getGridAxes())).isEqualTo(6);
-      assertThat(gcs.getRunTimeAxis()).isNotNull();
-      assertThat(gcs.getRunTimeAxis().getDependenceType() == GridAxis.DependenceType.scalar).isTrue();
-      assertThat(gcs.getRunTimeAxis().getDependenceType()).isEqualTo(GridAxis.DependenceType.scalar);
-      assertThat(gcs.getTimeAxis()).isNotNull();
-      assertThat(gcs.getEnsembleAxis()).isNotNull();
-      assertThat(gcs.getVerticalAxis()).isNotNull();
-      assertThat(gcs.getYHorizAxis()).isNotNull();
-      assertThat(gcs.getXHorizAxis()).isNotNull();
+      assertThat((Object) tcs.getRunTimeAxis()).isNotNull();
+      assertThat(tcs.getRunTimeAxis().getDependenceType() == GridAxisDependenceType.scalar).isTrue();
+      assertThat(tcs.getRunTimeAxis().getDependenceType()).isEqualTo(GridAxisDependenceType.scalar);
+      assertThat((Object) gcs.getEnsembleAxis()).isNotNull();
+      assertThat((Object) gcs.getVerticalAxis()).isNotNull();
+      assertThat((Object) gcs.getYHorizAxis()).isNotNull();
+      assertThat((Object) gcs.getXHorizAxis()).isNotNull();
 
-      assertThat(gcs.getNominalShape()).isEqualTo(new int[] {65, 21, 1, 181, 360});
+      assertThat(gcs.getNominalShape()).isEqualTo(ImmutableList.of(65, 21, 1, 181, 360));
     }
   }
 
@@ -153,20 +155,22 @@ public class TestDatasetClassifier {
       Grid grid = grido.get();
       GridCoordinateSystem gcs = grid.getCoordinateSystem();
       assertThat(gcs).isNotNull();
+      GridTimeCoordinateSystem tcs = gcs.getTimeCoordinateSystem();
+      assertThat(tcs).isNotNull();
+
       // rt, to, z (scaler), y, x
       assertThat(Iterables.size(gcs.getGridAxes())).isEqualTo(5);
-      assertThat(gcs.getRunTimeAxis()).isNotNull();
-      assertThat(gcs.getRunTimeAxis().getDependenceType() == GridAxis.DependenceType.scalar).isFalse();
-      assertThat(gcs.getRunTimeAxis().getDependenceType()).isEqualTo(GridAxis.DependenceType.independent);
-      assertThat(gcs.getTimeAxis()).isNull();
-      assertThat(gcs.getTimeOffsetAxis()).isNotNull();
-      assertThat(gcs.getEnsembleAxis()).isNull();
-      assertThat(gcs.getVerticalAxis()).isNotNull();
-      assertThat(gcs.getVerticalAxis().getDependenceType()).isEqualTo(GridAxis.DependenceType.scalar);
-      assertThat(gcs.getYHorizAxis()).isNotNull();
-      assertThat(gcs.getXHorizAxis()).isNotNull();
+      assertThat((Object) tcs.getRunTimeAxis()).isNotNull();
+      assertThat(tcs.getRunTimeAxis().getDependenceType() == GridAxisDependenceType.scalar).isFalse();
+      assertThat(tcs.getRunTimeAxis().getDependenceType()).isEqualTo(GridAxisDependenceType.independent);
+      assertThat((Object) tcs.getTimeOffsetAxis(0)).isNotNull();
+      assertThat((Object) gcs.getEnsembleAxis()).isNull();
+      assertThat((Object) gcs.getVerticalAxis()).isNotNull();
+      assertThat((Object) gcs.getVerticalAxis().getDependenceType()).isEqualTo(GridAxisDependenceType.scalar);
+      assertThat((Object) gcs.getYHorizAxis()).isNotNull();
+      assertThat((Object) gcs.getXHorizAxis()).isNotNull();
 
-      assertThat(gcs.getNominalShape()).isEqualTo(new int[] {5, 10, 77, 97});
+      assertThat(gcs.getNominalShape()).isEqualTo(ImmutableList.of(5, 10, 77, 97));
     }
   }
 
@@ -190,25 +194,28 @@ public class TestDatasetClassifier {
       GridNetcdfDataset gridDataset = gdso.get();
       assertThat(Iterables.isEmpty(gridDataset.getGrids())).isFalse();
       assertThat(gridDataset.getFeatureType()).isEqualTo(FeatureType.GRID);
+      System.out.printf("testFMRC %s%n", gridDataset.getLocation());
 
       Optional<Grid> grido = gridDataset.findGrid("Precipitable_water_entire_atmosphere_single_layer");
       assertThat(grido.isPresent()).isTrue();
       Grid grid = grido.get();
       GridCoordinateSystem gcs = grid.getCoordinateSystem();
       assertThat(gcs).isNotNull();
+      GridTimeCoordinateSystem tcs = gcs.getTimeCoordinateSystem();
+      assertThat(tcs).isNotNull();
+
       // rt, to, t (depend), y, x
       assertThat(Iterables.size(gcs.getGridAxes())).isEqualTo(4);
-      assertThat(gcs.getRunTimeAxis()).isNotNull();
-      assertThat(gcs.getTimeOffsetAxis()).isNotNull();
-      assertThat(gcs.getTimeOffsetAxis().getDependenceType()).isEqualTo(GridAxis.DependenceType.independent);
-      assertThat(gcs.getTimeAxis()).isNull();
-      assertThat(gcs.getRunTimeAxis().getDependenceType()).isEqualTo(GridAxis.DependenceType.independent);
-      assertThat(gcs.getEnsembleAxis()).isNull();
-      assertThat(gcs.getVerticalAxis()).isNull();
-      assertThat(gcs.getYHorizAxis()).isNotNull();
-      assertThat(gcs.getXHorizAxis()).isNotNull();
+      assertThat((Object) tcs.getRunTimeAxis()).isNotNull();
+      assertThat((Object) tcs.getTimeOffsetAxis(0)).isNotNull();
+      assertThat(tcs.getTimeOffsetAxis(0).getDependenceType()).isEqualTo(GridAxisDependenceType.independent);
+      assertThat(tcs.getRunTimeAxis().getDependenceType()).isEqualTo(GridAxisDependenceType.independent);
+      assertThat((Object) gcs.getEnsembleAxis()).isNull();
+      assertThat((Object) gcs.getVerticalAxis()).isNull();
+      assertThat((Object) gcs.getYHorizAxis()).isNotNull();
+      assertThat((Object) gcs.getXHorizAxis()).isNotNull();
 
-      assertThat(gcs.getNominalShape()).isEqualTo(new int[] {124, 7, 576, 1152});
+      assertThat(gcs.getNominalShape()).isEqualTo(ImmutableList.of(124, 7, 576, 1152));
     }
   }
 
@@ -332,7 +339,6 @@ public class TestDatasetClassifier {
 
   @Test
   @Category(NeedsCdmUnitTest.class)
-  @Ignore("fix when cdmUnit Test is repaired")
   public void testMRUTP3() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds627.0/ei.oper.an.pv/ds627.0_46.ncx4";
     try (FeatureDatasetCoverage covDataset = CoverageDatasetFactory.open(filename)) {

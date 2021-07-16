@@ -4,13 +4,11 @@
  */
 package ucar.nc2.internal.grid2;
 
-import com.google.common.base.Preconditions;
 import ucar.array.InvalidRangeException;
 import ucar.array.Range;
 import ucar.nc2.grid.CoordInterval;
 import ucar.nc2.grid.GridSubset;
 import ucar.nc2.grid2.GridAxisPoint;
-import ucar.nc2.grid2.GridAxisSpacing;
 import ucar.nc2.grid2.Grids;
 import ucar.nc2.util.Misc;
 
@@ -73,14 +71,14 @@ public class SubsetPointHelper {
 
         if (params.getTimeLatest()) {
           int last = orgGridAxis.getNominalSize() - 1;
-          return makeSubsetByIndex(Range.make(last, last));
+          return makeSubsetByIndex(last);
         }
 
         // default is all
         break;
       }
 
-      // These are subsetted by the HorizCS
+      // These are subsetted by the HorizCS LOOK
       case GeoX:
       case GeoY:
       case Lat:
@@ -96,77 +94,44 @@ public class SubsetPointHelper {
     return orgGridAxis.toBuilder();
   }
 
-  public GridAxisPoint.Builder<?> subsetClosest(double want) {
+  private GridAxisPoint.Builder<?> subsetClosest(double want) {
     return makeSubsetValuesClosest(want);
   }
 
-  public GridAxisPoint.Builder<?> subsetClosest(CoordInterval want) {
+  private GridAxisPoint.Builder<?> subsetClosest(CoordInterval want) {
+    // first look for exact match
     for (int idx = 0; idx < orgGridAxis.getNominalSize(); idx++) {
       CoordInterval intv = orgGridAxis.getCoordInterval(idx);
       double bound1 = intv.start();
       double bound2 = intv.end();
       if (Misc.nearlyEquals(bound1, want.start()) && Misc.nearlyEquals(bound2, want.end())) {
-        return makeSubsetByIndex(Range.make(idx, idx));
+        return makeSubsetByIndex(idx);
       }
     }
     return makeSubsetValuesClosest(want);
   }
 
-  // SubsetRange must be contained in the total range
-  public GridAxisPoint.Builder<?> makeSubsetByIndex(Range subsetRange) {
-    int ncoords = subsetRange.length();
-    Preconditions.checkArgument(subsetRange.last() < orgGridAxis.getNominalSize());
-
-    double resolution = 0.0;
-    if (orgGridAxis.getSpacing().isRegular()) {
-      resolution = subsetRange.stride() * orgGridAxis.getResolution();
-    }
-
-    GridAxisPoint.Builder<?> builder = orgGridAxis.toBuilder();
-    builder.subset(ncoords, orgGridAxis.getCoordMidpoint(subsetRange.first()),
-        orgGridAxis.getCoordMidpoint(subsetRange.last()), resolution, subsetRange);
-    return builder;
-  }
-
   private GridAxisPoint.Builder<?> makeSubsetValuesClosest(CoordInterval want) {
     int closest_index = SubsetHelpers.findCoordElement(orgGridAxis, want, true); // bounded, always valid index
-    Range range = Range.make(closest_index, closest_index);
-
-    GridAxisPoint.Builder<?> builder = orgGridAxis.toBuilder();
-    builder.subset(1, 0, 0, 0.0, range);
-    return builder;
+    return makeSubsetByIndex(closest_index);
   }
 
   private GridAxisPoint.Builder<?> makeSubsetValuesClosest(double want) {
     int closest_index = SubsetHelpers.findCoordElement(orgGridAxis, want, true); // bounded, always valid index
+    return makeSubsetByIndex(closest_index);
+  }
+
+  GridAxisPoint.Builder<?> makeSubsetByIndex(int index) {
     GridAxisPoint.Builder<?> builder = orgGridAxis.toBuilder();
-
-    Range range;
-    try {
-      range = new Range(closest_index, closest_index);
-    } catch (InvalidRangeException e) {
-      throw new RuntimeException(e); // cant happen
-    }
-
-    if (orgGridAxis.getSpacing() == GridAxisSpacing.regularPoint) {
-      double val = orgGridAxis.getCoordMidpoint(closest_index);
-      builder.subset(1, val, val, 0.0, range);
-
-    } else {
-      builder.subset(1, 0, 0, 0.0, range);
-    }
-    return builder;
+    double val = orgGridAxis.getCoordMidpoint(index);
+    return builder.subsetWithSingleValue(val, Range.make(index, index));
   }
 
   ////////////////////////////////////////////////////////////////////////
-  // Used by HorizCS
+  // Used by GridHorizCoordinateSystem
 
-  public Optional<GridAxisPoint.Builder<?>> subset(double minValue, double maxValue, int stride, Formatter errLog) {
-    return makeSubsetValues(minValue, maxValue, stride, errLog);
-  }
-
-  // LOOK could specialize when only one point
-  private Optional<GridAxisPoint.Builder<?>> makeSubsetValues(double minValue, double maxValue, int stride,
+  // LOOK bounded ?
+  public Optional<GridAxisPoint.Builder<?>> subsetRange(double minValue, double maxValue, int stride,
       Formatter errLog) {
     double lower = Grids.isAscending(orgGridAxis) ? Math.min(minValue, maxValue) : Math.max(minValue, maxValue);
     double upper = Grids.isAscending(orgGridAxis) ? Math.max(minValue, maxValue) : Math.min(minValue, maxValue);
@@ -184,37 +149,25 @@ public class SubsetPointHelper {
       return Optional.empty();
     }
 
-    if (minIndex < 0)
+    if (minIndex < 0) {
       minIndex = 0;
-    if (maxIndex >= orgGridAxis.getNominalSize())
+    }
+    if (maxIndex >= orgGridAxis.getNominalSize()) {
       maxIndex = orgGridAxis.getNominalSize() - 1;
+    }
 
     int count = maxIndex - minIndex + 1;
-    if (count <= 0)
+    if (count <= 0) {
       throw new IllegalArgumentException("no points in subset");
+    }
 
     try {
-      return Optional.of(makeSubsetByIndex(new Range(minIndex, maxIndex, stride)));
+      GridAxisPoint.Builder<?> builder = orgGridAxis.toBuilder().subsetWithRange(new Range(minIndex, maxIndex, stride));
+      return Optional.of(builder);
     } catch (InvalidRangeException e) {
       errLog.format("%s", e.getMessage());
       return Optional.empty();
     }
-  }
-
-  private GridAxisPoint.Builder<?> makeSubsetValuesLatest() {
-    int last = orgGridAxis.getNominalSize() - 1;
-    double val = orgGridAxis.getCoordMidpoint(last);
-
-    Range range;
-    try {
-      range = new Range(last, last);
-    } catch (InvalidRangeException e) {
-      throw new RuntimeException(e); // cant happen
-    }
-
-    GridAxisPoint.Builder<?> builder = orgGridAxis.toBuilder();
-    builder.subset(1, val, val, 0.0, range);
-    return builder;
   }
 
 }

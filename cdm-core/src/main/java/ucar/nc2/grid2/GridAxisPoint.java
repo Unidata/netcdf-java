@@ -160,21 +160,21 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
       return false;
     GridAxisPoint numbers = (GridAxisPoint) o;
     return ncoords == numbers.ncoords && Double.compare(numbers.startValue, startValue) == 0
-        && Double.compare(numbers.endValue, endValue) == 0 && Objects.equals(range, numbers.range)
-        && Arrays.equals(values, numbers.values);
+        && Objects.equals(range, numbers.range) && Arrays.equals(values, numbers.values)
+        && Arrays.equals(edges, numbers.edges);
   }
 
   @Override
   public int hashCode() {
-    int result = Objects.hash(super.hashCode(), ncoords, startValue, endValue, range);
+    int result = Objects.hash(super.hashCode(), ncoords, startValue, range);
     result = 31 * result + Arrays.hashCode(values);
+    result = 31 * result + Arrays.hashCode(edges);
     return result;
   }
 
   //////////////////////////////////////////////////////////////
   final int ncoords; // number of coordinates
   final double startValue; // only for regular
-  final double endValue; // why needed?
   final Range range; // for subset, tracks the indexes in the original
   private final double[] values; // null if isRegular, irregular or nominal then len= ncoords
   private final double[] edges; // nominal only: len = ncoords+1
@@ -185,7 +185,6 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
     Preconditions.checkArgument(builder.ncoords > 0);
     this.ncoords = builder.ncoords;
     this.startValue = builder.startValue;
-    this.endValue = builder.endValue;
     this.values = builder.values;
     if (this.values != null) {
       Preconditions.checkArgument(this.values.length == this.ncoords);
@@ -222,7 +221,7 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
   void toString(Formatter f, Indent indent) {
     super.toString(f, indent);
 
-    f.format("%snpts: %d [%f,%f] resolution=%f spacing=%s", indent, ncoords, startValue, endValue, resolution, spacing);
+    f.format("%snpts: %d start=%f resolution=%f spacing=%s", indent, ncoords, startValue, resolution, spacing);
     f.format("%s range=%s isSubset=%s", indent, range, isSubset);
     f.format("%n");
 
@@ -265,7 +264,6 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
   public static abstract class Builder<T extends Builder<T>> extends GridAxis.Builder<T> {
     int ncoords; // number of coordinates, required
     double startValue;
-    double endValue;
     protected double[] values; // null if isRegular, else len = ncoords
     protected double[] edges; // only used if nominalPoint, len = ncoords+1
 
@@ -316,7 +314,6 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
     public T setRegular(int ncoords, double startValue, double increment) {
       this.ncoords = ncoords;
       this.startValue = startValue;
-      this.endValue = startValue + increment * (ncoords - 1);
       setResolution(increment);
       setSpacing(GridAxisSpacing.regularPoint); // dangerous?
       return self();
@@ -330,18 +327,38 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
     }
 
     public T setRange(Range range) {
+      Preconditions.checkNotNull(range);
       this.range = range;
       return self();
     }
 
-    public T subset(int ncoords, double startValue, double endValue, double resolution, Range range) {
+    public T subsetWithSingleValue(double startValue, Range range) {
       Preconditions.checkNotNull(range);
-      Preconditions.checkArgument(ncoords == range.length());
-      this.ncoords = ncoords;
+      this.spacing = GridAxisSpacing.regularPoint;
+      this.ncoords = 1;
       this.startValue = startValue;
-      this.endValue = endValue;
-      this.resolution = resolution;
       this.range = range;
+      this.isSubset = true;
+      this.values = null;
+      this.edges = null;
+      return self();
+    }
+
+    public T subsetWithStride(int stride) {
+      this.range = this.range.copyWithStride(stride);
+      this.ncoords = this.range.length();
+      this.resolution = this.resolution * stride;
+      this.isSubset = true;
+      this.values = makeValues(range);
+      this.edges = makeEdges(range);
+      return self();
+    }
+
+    public T subsetWithRange(Range range) {
+      this.range = range;
+      this.ncoords = this.range.length();
+      this.startValue = this.startValue + this.resolution * range.first();
+      this.resolution = this.resolution * range.stride();
       this.isSubset = true;
       this.values = makeValues(range);
       this.edges = makeEdges(range);
@@ -376,7 +393,8 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
           subsetEdges[count++] = edges[i];
           lastEdge = i;
         }
-        subsetEdges[count] = edges[lastEdge + 1];
+        int edge = Math.min(lastEdge + range.stride(), edges.length - 1);
+        subsetEdges[count] = edges[edge];
         return subsetEdges;
       }
       return null;

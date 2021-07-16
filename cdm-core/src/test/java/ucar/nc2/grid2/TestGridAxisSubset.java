@@ -17,50 +17,102 @@ public class TestGridAxisSubset {
 
   @Test
   public void testRegularPoint() {
-    GridAxisPoint.Builder<?> builder = GridAxisPoint.builder().setAxisType(AxisType.Ensemble).setName("name")
-        .setUnits("unit").setDescription("desc").setRegular(7, 1, 1).setSpacing(GridAxisSpacing.regularPoint);
+    GridAxisPoint.Builder<?> builder =
+        GridAxisPoint.builder().setAxisType(AxisType.Ensemble).setName("name").setUnits("unit").setDescription("desc")
+            .setRegular(7, 1, 1).setSpacing(GridAxisSpacing.regularPoint).addAttribute(new Attribute("me", "mine"));
     GridAxisPoint axis1D = builder.build();
 
     Formatter errlog = new Formatter();
     GridAxisPoint subset = axis1D.subset(GridSubset.create().setEnsCoord(3), errlog).orElseThrow();
     assertThat(subset.getNominalSize()).isEqualTo(1);
     assertThat(subset.getSubsetRange()).isEqualTo(Range.make(2, 2));
+    assertThat(subset.getSpacing()).isEqualTo(GridAxisSpacing.regularPoint);
+    assertThat(subset.getUnits()).isEqualTo("unit");
+    assertThat(subset.getDescription()).isEqualTo("desc");
+    assertThat(subset.getName()).isEqualTo("name");
+    assertThat(subset.getAxisType()).isEqualTo(AxisType.Ensemble);
+    assertThat(subset.getSubsetRange().name()).isEqualTo(AxisType.Ensemble.toString());
+    assertThat(subset.attributes()).isEqualTo(axis1D.attributes());
+
+    int count = 0;
+    for (Number val : subset) {
+      assertThat(val).isEqualTo(3);
+      count++;
+    }
+    assertThat(count).isEqualTo(1);
   }
 
   @Test
-  public void testTimeOffset() {
+  public void testTimeOffsetIrregular() {
     int n = 7;
     double[] values = new double[] {0, 5, 10, 20, 40, 80, 100};
     GridAxisPoint.Builder<?> builder = GridAxisPoint.builder().setAxisType(AxisType.TimeOffset).setName("name")
         .setNcoords(n).setValues(values).setSpacing(GridAxisSpacing.irregularPoint);
     GridAxisPoint axis1D = builder.build();
 
+    // empty subsetting parameters
     Formatter errlog = new Formatter();
     GridAxisPoint subset = axis1D.subset(GridSubset.create(), errlog).orElseThrow();
     assertThat(subset.getNominalSize()).isEqualTo(7);
     assertThat(subset.getSubsetRange()).isEqualTo(new Range(7));
+    assertThat((Object) subset).isEqualTo(axis1D);
 
+    int count = 0;
+    for (Number val : subset) {
+      assertThat(val).isEqualTo(values[count]);
+      count++;
+    }
+    assertThat(count).isEqualTo(7);
+
+    // select single value
     subset = axis1D.subset(GridSubset.create().setTimeOffsetCoord(40.0), errlog).orElseThrow();
     assertThat(subset.getNominalSize()).isEqualTo(1);
     assertThat(subset.getSubsetRange()).isEqualTo(Range.make(4, 4));
+    assertThat(subset.getSpacing()).isEqualTo(GridAxisSpacing.regularPoint);
 
+    count = 0;
+    for (Number val : subset) {
+      assertThat(val).isEqualTo(40);
+      count++;
+    }
+    assertThat(count).isEqualTo(1);
+
+    // select single value with an interval parameter
     subset =
         axis1D.subset(GridSubset.create().setTimeOffsetCoord(CoordInterval.create(40.0, 41.0)), errlog).orElseThrow();
     assertThat(subset.getNominalSize()).isEqualTo(1);
     assertThat(subset.getSubsetRange()).isEqualTo(Range.make(4, 4));
+    assertThat(subset.getSpacing()).isEqualTo(GridAxisSpacing.regularPoint);
 
+    count = 0;
+    for (Number val : subset) {
+      assertThat(val).isEqualTo(40.0);
+      count++;
+    }
+    assertThat(count).isEqualTo(1);
+
+    // select latest value
     subset = axis1D.subset(GridSubset.create().setTimeLatest(), errlog).orElseThrow();
     assertThat(subset.getNominalSize()).isEqualTo(1);
     assertThat(subset.getSubsetRange()).isEqualTo(Range.make(6, 6));
+    assertThat(subset.getSpacing()).isEqualTo(GridAxisSpacing.regularPoint);
+
+    count = 0;
+    for (Number val : subset) {
+      assertThat(val).isEqualTo(100);
+      count++;
+    }
+    assertThat(count).isEqualTo(1);
 
     // timePresent - no effect
     subset = axis1D.subset(GridSubset.create().setTimePresent(), errlog).orElseThrow();
     assertThat(subset.getNominalSize()).isEqualTo(7);
     assertThat(subset.getSubsetRange()).isEqualTo(new Range(7));
+    assertThat((Object) subset).isEqualTo(axis1D);
   }
 
   @Test
-  public void testVertPoint() {
+  public void testVertPointIrregular() {
     int n = 7;
     double[] values = new double[] {0, 5, 10, 20, 40, 80, 100};
     GridAxisPoint.Builder<?> builder = GridAxisPoint.builder().setAxisType(AxisType.GeoZ).setName("name")
@@ -72,14 +124,17 @@ public class TestGridAxisSubset {
     GridAxisPoint subset = axis1D.subset(GridSubset.create(), errlog).orElseThrow();
     assertThat(subset.getNominalSize()).isEqualTo(7);
     assertThat(subset.getSubsetRange()).isEqualTo(new Range(7));
+    assertThat(subset.getSpacing()).isEqualTo(GridAxisSpacing.irregularPoint);
 
     subset = axis1D.subset(GridSubset.create().setVertCoord(40.0), errlog).orElseThrow();
     assertThat(subset.getNominalSize()).isEqualTo(1);
     assertThat(subset.getSubsetRange()).isEqualTo(Range.make(4, 4));
+    assertThat(subset.getSpacing()).isEqualTo(GridAxisSpacing.regularPoint);
 
     subset = axis1D.subset(GridSubset.create().setVertCoord(CoordInterval.create(40.0, 41.0)), errlog).orElseThrow();
     assertThat(subset.getNominalSize()).isEqualTo(1);
     assertThat(subset.getSubsetRange()).isEqualTo(Range.make(4, 4));
+    assertThat(subset.getSpacing()).isEqualTo(GridAxisSpacing.regularPoint);
   }
 
   @Test
@@ -96,20 +151,24 @@ public class TestGridAxisSubset {
     GridAxisPoint subset = axis1D.subset(GridSubset.create(), errlog).orElseThrow();
     assertThat(subset.getNominalSize()).isEqualTo(n);
     assertThat(subset.getSubsetRange()).isEqualTo(new Range(n));
+    assertThat(subset.getSpacing()).isEqualTo(GridAxisSpacing.nominalPoint);
 
     subset = axis1D.subset(GridSubset.create().setTimeOffsetCoord(20.0), errlog).orElseThrow();
     assertThat(subset.getNominalSize()).isEqualTo(1);
     assertThat(subset.getSubsetRange()).isEqualTo(Range.make(3, 3));
+    assertThat(subset.getSpacing()).isEqualTo(GridAxisSpacing.regularPoint);
 
     subset = axis1D.subset(GridSubset.create().setTimeOffsetCoord(40.0), errlog).orElseThrow();
     assertThat(subset.getNominalSize()).isEqualTo(1);
     assertThat(subset.getSubsetRange()).isEqualTo(Range.make(4, 4));
+    assertThat(subset.getSpacing()).isEqualTo(GridAxisSpacing.regularPoint);
 
-    subset =
-        axis1D.subset(GridSubset.create().setTimeOffsetCoord(CoordInterval.create(21.0, 22.0)), errlog).orElseThrow();
+    GridSubset params = GridSubset.create().setTimeOffsetCoord(CoordInterval.create(21.0, 22.0));
+    subset = axis1D.subset(params, errlog).orElseThrow();
     assertThat(subset.getNominalSize()).isEqualTo(1);
     // if we were just using the midpoint, would expect = 3
     assertThat(subset.getSubsetRange()).isEqualTo(Range.make(4, 4));
+    assertThat(subset.getSpacing()).isEqualTo(GridAxisSpacing.regularPoint);
   }
 
   @Test

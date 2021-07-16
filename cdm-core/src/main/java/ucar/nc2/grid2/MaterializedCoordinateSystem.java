@@ -101,7 +101,7 @@ public class MaterializedCoordinateSystem {
   private final GridHorizCoordinateSystem hcs;
   private final GridAxisPoint ens;
   private final GridAxis<?> vert;
-  private final ImmutableList<Range> ranges;
+  private final ImmutableList<Range> ranges; // LOOK needed?
 
   private MaterializedCoordinateSystem(Builder builder) {
     this.tcs = builder.tcs;
@@ -125,7 +125,7 @@ public class MaterializedCoordinateSystem {
     private GridHorizCoordinateSystem hcs;
     private GridAxisPoint ens;
     private GridAxis<?> vert;
-    private ImmutableList<Range> ranges;
+    private ImmutableList<Range> ranges; // LOOK: needed?
     private boolean built;
 
     public Builder setTimeCoordSys(GridTimeCoordinateSystem tcs) {

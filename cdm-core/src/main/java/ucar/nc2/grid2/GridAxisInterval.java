@@ -96,9 +96,6 @@ public class GridAxisInterval extends GridAxis<CoordInterval> implements Iterabl
         return startValue + (index + 1) * getResolution();
 
       case contiguousInterval:
-        if (index + 1 >= values.length) {
-          System.out.printf("HEY");
-        }
         return values[index + 1];
 
       case discontiguousInterval:

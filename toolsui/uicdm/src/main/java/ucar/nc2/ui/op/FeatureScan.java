@@ -261,7 +261,7 @@ public class FeatureScan {
       return (ftFromMetadata == null) ? "" : ftFromMetadata.toString();
     }
 
-    public String getFeatureType() {
+    public String getFeatureDataset() {
       return ftype;
     }
 
@@ -269,7 +269,7 @@ public class FeatureScan {
       return gribType.toString();
     }
 
-    public String getCoverage() {
+    public String getDtCoverageCSBuilder() {
       return builder == null ? "" : builder.showSummary();
     }
 

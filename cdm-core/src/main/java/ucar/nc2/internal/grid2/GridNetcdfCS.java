@@ -19,7 +19,6 @@ import ucar.nc2.grid2.GridHorizCoordinateSystem;
 import ucar.nc2.grid2.GridTimeCoordinateSystem;
 import ucar.nc2.grid2.Grids;
 import ucar.nc2.grid2.MaterializedCoordinateSystem;
-import ucar.nc2.internal.dataset.DatasetClassifier;
 import ucar.unidata.geoloc.Projection;
 
 import javax.annotation.Nullable;
@@ -44,15 +43,19 @@ public class GridNetcdfCS implements GridCoordinateSystem {
    * @param gridAxes The gridAxes already built, so there are no duplicates as we make the coordSys.
    */
   static Optional<GridNetcdfCS> createFromClassifier(DatasetClassifier.CoordSysClassifier classifier,
-      Map<String, GridAxis<?>> gridAxes) {
+      Map<String, GridAxis<?>> gridAxes, Formatter errlog) {
     GridNetcdfCS.Builder<?> builder = GridNetcdfCS.builder();
     builder.setFeatureType(classifier.getFeatureType());
     builder.setProjection(classifier.getProjection());
 
     ArrayList<GridAxis<?>> axesb = new ArrayList<>();
     for (CoordinateAxis axis : classifier.getAxesUsed()) {
-      GridAxis<?> gaxis = gridAxes.get(axis.getShortName());
-      axesb.add(Preconditions.checkNotNull(gaxis, "Missing Coordinate Axis " + axis.getShortName()));
+      GridAxis<?> gaxis = gridAxes.get(axis.getFullName());
+      if (gaxis == null) {
+        errlog.format("Missing Coordinate Axis= %s%n", axis.getFullName());
+        continue;
+      }
+      axesb.add(gaxis);
     }
     builder.setAxes(axesb);
 
@@ -133,7 +136,7 @@ public class GridNetcdfCS implements GridCoordinateSystem {
     }
   }
 
-  private void showCoordinateAxis(GridAxis axis, Formatter f, boolean showCoords) {
+  private void showCoordinateAxis(GridAxis<?> axis, Formatter f, boolean showCoords) {
     if (axis == null) {
       return;
     }
@@ -286,11 +289,12 @@ public class GridNetcdfCS implements GridCoordinateSystem {
     GridAxis<?> rtAxis = axes.stream().filter(a -> a.getAxisType() == AxisType.RunTime).findFirst().orElse(null);
     GridAxis<?> toAxis = axes.stream().filter(a -> a.getAxisType() == AxisType.TimeOffset).findFirst().orElse(null);
     GridAxis<?> timeAxis = axes.stream().filter(a -> a.getAxisType() == AxisType.Time).findFirst().orElse(null);
+    GridAxis<?> useAxis = (toAxis != null) ? toAxis : timeAxis;
 
-    if (rtAxis != null && toAxis != null) {
-      return GridNetcdfTimeCS.create((GridAxisPoint) rtAxis, toAxis);
-    } else if (timeAxis != null) {
-      return GridNetcdfTimeCS.create(timeAxis);
+    if (rtAxis != null && useAxis != null) {
+      return GridNetcdfTimeCS.create((GridAxisPoint) rtAxis, useAxis);
+    } else if (useAxis != null) {
+      return GridNetcdfTimeCS.create(useAxis);
     }
     // ok to not have a time coordinate
     return null;

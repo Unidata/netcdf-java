@@ -99,7 +99,7 @@ public class GridHorizCoordinateSystem {
   private final GridAxisPoint yaxis;
   private final Projection projection;
 
-  public GridHorizCoordinateSystem(GridAxisPoint xaxis, GridAxisPoint yaxis, Projection projection) {
+  public GridHorizCoordinateSystem(GridAxisPoint xaxis, GridAxisPoint yaxis, @Nullable Projection projection) {
     this.xaxis = xaxis;
     this.yaxis = yaxis;
     // TODO set the LatLon seam?
@@ -131,10 +131,9 @@ public class GridHorizCoordinateSystem {
         llbb = new LatLonRect(llpt, endLat - startLat, endLon - startLon);
 
       } else {
-        Projection dataProjection = getProjection();
         ProjectionRect bb = getBoundingBox();
-        if (dataProjection != null && bb != null) {
-          llbb = dataProjection.projToLatLonBB(bb);
+        if (projection != null && bb != null) {
+          llbb = projection.projToLatLonBB(bb);
         }
       }
     }
@@ -172,8 +171,7 @@ public class GridHorizCoordinateSystem {
   }
 
   private LatLonPoint getLatLon(double xcoord, double ycoord) {
-    Projection dataProjection = getProjection();
-    return dataProjection.projToLatLon(ProjectionPoint.create(xcoord, ycoord));
+    return projection.projToLatLon(ProjectionPoint.create(xcoord, ycoord));
   }
 
   // LOOK needed?
@@ -213,14 +211,16 @@ public class GridHorizCoordinateSystem {
     // TODO GridSubset.latlonPoint
     if (projbb != null) { // TODO ProjectionRect ok for isLatlon = true?
       SubsetPointHelper yhelper = new SubsetPointHelper(yaxis);
-      Optional<GridAxisPoint.Builder<?>> ybo = yhelper.subset(projbb.getMinY(), projbb.getMaxY(), horizStride, errlog);
+      Optional<GridAxisPoint.Builder<?>> ybo =
+          yhelper.subsetRange(projbb.getMinY(), projbb.getMaxY(), horizStride, errlog);
       if (ybo.isEmpty()) {
         return Optional.empty();
       }
       yaxisSubset = ybo.get().build();
 
       SubsetPointHelper xhelper = new SubsetPointHelper(xaxis);
-      Optional<GridAxisPoint.Builder<?>> xbo = xhelper.subset(projbb.getMinY(), projbb.getMaxY(), horizStride, errlog);
+      Optional<GridAxisPoint.Builder<?>> xbo =
+          xhelper.subsetRange(projbb.getMinX(), projbb.getMaxX(), horizStride, errlog);
       if (xbo.isEmpty()) {
         return Optional.empty();
       }
@@ -228,7 +228,8 @@ public class GridHorizCoordinateSystem {
 
     } else if (llbb != null && isLatLon()) { // TODO LatLonRect only used for isLatlon = true?
       SubsetPointHelper yhelper = new SubsetPointHelper(yaxis);
-      Optional<GridAxisPoint.Builder<?>> ybo = yhelper.subset(llbb.getLatMin(), llbb.getLatMax(), horizStride, errlog);
+      Optional<GridAxisPoint.Builder<?>> ybo =
+          yhelper.subsetRange(llbb.getLatMin(), llbb.getLatMax(), horizStride, errlog);
       if (ybo.isEmpty()) {
         return Optional.empty();
       }
@@ -236,7 +237,8 @@ public class GridHorizCoordinateSystem {
 
       // TODO longitude wrapping
       SubsetPointHelper xhelper = new SubsetPointHelper(xaxis);
-      Optional<GridAxisPoint.Builder<?>> xbo = xhelper.subset(llbb.getLonMin(), llbb.getLonMax(), horizStride, errlog);
+      Optional<GridAxisPoint.Builder<?>> xbo =
+          xhelper.subsetRange(llbb.getLonMin(), llbb.getLonMax(), horizStride, errlog);
       if (xbo.isEmpty()) {
         return Optional.empty();
       }
@@ -245,15 +247,8 @@ public class GridHorizCoordinateSystem {
     } else if (horizStride > 1) { // no bounding box, just horiz stride
       Preconditions.checkNotNull(yaxis);
       Preconditions.checkNotNull(xaxis);
-      try {
-        Range yRange = yaxis.getSubsetRange().copyWithStride(horizStride);
-        yaxisSubset = yaxis.toBuilder().setRange(yRange).build();
-
-        Range xRange = xaxis.getSubsetRange().copyWithStride(horizStride);
-        xaxisSubset = xaxis.toBuilder().setRange(xRange).build();
-      } catch (InvalidRangeException e) {
-        errlog.format(e.getMessage());
-      }
+      yaxisSubset = yaxis.toBuilder().subsetWithStride(horizStride).build();
+      xaxisSubset = xaxis.toBuilder().subsetWithStride(horizStride).build();
     }
 
     return Optional.of(new GridHorizCoordinateSystem(xaxisSubset, yaxisSubset, this.projection));
@@ -270,9 +265,8 @@ public class GridHorizCoordinateSystem {
   List<Range> getRangesFromLatLonRect(LatLonRect rect) throws InvalidRangeException {
     double minx, maxx, miny, maxy;
 
-    Projection proj = getProjection();
-    if (proj != null && !(proj instanceof VerticalPerspectiveView) && !(proj instanceof MSGnavigation)
-        && !(proj instanceof Geostationary)) { // LOOK kludge - how to do this generrally ??
+    if (projection != null && !(projection instanceof VerticalPerspectiveView) && !(projection instanceof MSGnavigation)
+        && !(projection instanceof Geostationary)) { // LOOK kludge - how to do this generrally ??
       // first clip the request rectangle to the bounding box of the grid
       LatLonRect bb = getLatLonBoundingBox();
       LatLonRect rect2 = bb.intersect(rect);
@@ -300,7 +294,7 @@ public class GridHorizCoordinateSystem {
        */
 
     } else {
-      ProjectionRect prect = getProjection().latLonToProjBB(rect); // allow projection to override
+      ProjectionRect prect = projection.latLonToProjBB(rect); // allow projection to override
       minx = prect.getMinPoint().getX();
       miny = prect.getMinPoint().getY();
       maxx = prect.getMaxPoint().getX();

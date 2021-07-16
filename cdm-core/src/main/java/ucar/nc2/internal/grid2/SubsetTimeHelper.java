@@ -46,25 +46,15 @@ public class SubsetTimeHelper {
 
   public Optional<? extends GridAxis<?>> subsetTime(GridSubset params, Formatter errlog) {
     GridAxis<?> timeOffsetAxis = tcs.getTimeOffsetAxis(0);
-    int timeIdx = -1;
 
-    // time
+    // Do any CalendarDate conversions here
     Double wantOffset = null;
     CalendarDate wantTime = params.getTime();
     if (wantTime != null) {
       wantOffset = (double) tcs.getCalendarDateUnit().makeOffsetFromRefDate(wantTime);
-    } /*
-       * else if (params.getTimePresent()) {
-       * // time present
-       * wantTime = CalendarDate.present();
-       * double wantOffset = tcs.getCalendarDateUnit().makeOffsetFromRefDate(wantTime);
-       * timeIdx = searchClosest(timeOffsetAxis, wantOffset);
-       * if (timeIdx < 0) {
-       * errlog.format("Cant find time = %s%n", wantTime);
-       * return Optional.empty();
-       * }
-       * }
-       */
+    } else if (params.getTimePresent()) {
+      wantOffset = (double) tcs.getCalendarDateUnit().makeOffsetFromRefDate(CalendarDate.present());
+    }
     if (wantOffset != null) {
       return timeOffsetAxis.subset(GridSubset.create().setTimeOffsetCoord(wantOffset), errlog);
     }
@@ -128,7 +118,7 @@ public class SubsetTimeHelper {
 
       // LOOK what about subsetting across multiple runtimes ??
       SubsetPointHelper helper = new SubsetPointHelper(runtimeAxis);
-      this.runtimeAxis = helper.makeSubsetByIndex(Range.make(runIdx, runIdx)).build();
+      this.runtimeAxis = helper.makeSubsetByIndex(runIdx).build();
     }
 
     // suppose these were the options for time. Do they have to be processed differently for different

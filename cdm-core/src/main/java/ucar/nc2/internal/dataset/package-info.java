@@ -3,5 +3,5 @@
  * See LICENSE for license information.
  */
 
-/** Tests for Grib Grids. */
-package ucar.nc2.grib.grid;
+/** internal dataset classes. */
+package ucar.nc2.internal.dataset;

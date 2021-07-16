@@ -26,11 +26,6 @@ import java.util.*;
 public class GridSubset {
   public static final String gridName = "gridName"; // value = String
 
-  public static final String latlonBB = "latlonBB"; // value = LatLonRect
-  public static final String projBB = "projBB"; // value = ProjectionRect
-  public static final String horizStride = "horizStride"; // value = Integer
-  public static final String latlonPoint = "latlonPoint"; // value = LatLonPoint
-
   public static final String runtime = "runtime"; // value = CalendarDate
   public static final String runtimeLatest = "runtimeLatest"; // value = Boolean
   public static final String runtimeAll = "runtimeAll"; // value = Boolean
@@ -42,7 +37,7 @@ public class GridSubset {
   public static final String timeOffsetFirst = "timeOffsetFirst"; // value = Boolean LOOK deprecated I think
 
   public static final String time = "time"; // value = CalendarDate
-  public static final String timeRange = "timeRange"; // value = CalendarDateRange
+  public static final String timeRange = "timeRange"; // value = CalendarDateRange LOOK unimplemented
   public static final String timeLatest = "timeLatest"; // value = Boolean
   public static final String timePresent = "timePresent"; // value = Boolean
   public static final String timeStride = "timeStride"; // value = Integer LOOK is this needed?
@@ -53,6 +48,11 @@ public class GridSubset {
   public static final String vertPoint = "vertPoint"; // value = Double
   public static final String vertIntv = "vertIntv"; // value = CoordInterval
   public static final String ensCoord = "ensCoord"; // value = Number
+
+  public static final String latlonBB = "latlonBB"; // value = LatLonRect
+  public static final String projBB = "projBB"; // value = ProjectionRect
+  public static final String horizStride = "horizStride"; // value = Integer
+  public static final String latlonPoint = "latlonPoint"; // value = LatLonPoint
 
   // cant use these for selecting, used for validation LOOK not being set
   public static final String timeOffsetDate = "timeOffsetDate"; // value = CalendarDate

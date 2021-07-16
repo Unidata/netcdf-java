@@ -225,13 +225,9 @@ public class GridAxis1DTime extends GridAxis1D {
           return helper.subsetClosest(dateIntv);
         }
 
-        if (stride != 1)
-          try {
-            return helper.makeSubsetByIndex(getRange().copyWithStride(stride));
-          } catch (InvalidRangeException e) {
-            errLog.format(e.getMessage());
-            return null;
-          }
+        if (stride != 1) {
+          return helper.makeSubsetByIndex(getRange().copyWithStride(stride));
+        }
 
         // default is all
         break;
