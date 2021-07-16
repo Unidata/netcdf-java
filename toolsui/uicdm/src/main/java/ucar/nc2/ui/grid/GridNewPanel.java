@@ -1,18 +1,18 @@
 /*
- * Copyright (c) 1998-2019 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
 package ucar.nc2.ui.grid;
 
-import ucar.nc2.grid.GridDataset;
-import ucar.nc2.grid.GridDatasetFactory;
+import ucar.nc2.grid2.GridDataset;
+import ucar.nc2.grid2.GridDatasetFactory;
 import ucar.nc2.ui.OpPanel;
 import ucar.nc2.ui.ToolsUI;
 import ucar.nc2.ui.gis.shapefile.ShapeFileBean;
 import ucar.nc2.ui.gis.worldmap.WorldMapBean;
-import ucar.nc2.ui.grid2.GridNewTable;
-import ucar.nc2.ui.grid2.GridViewer;
+import ucar.nc2.ui.grid3.GridNewTable;
+import ucar.nc2.ui.grid3.GridViewer;
 import ucar.ui.widget.BAMutil;
 import ucar.ui.widget.IndependentWindow;
 import ucar.util.prefs.PreferencesExt;
@@ -25,7 +25,7 @@ import java.io.StringWriter;
 import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
 
-public class GridPanel extends OpPanel {
+public class GridNewPanel extends OpPanel {
   private static final org.slf4j.Logger logger =
       org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -35,7 +35,7 @@ public class GridPanel extends OpPanel {
 
   private GridDataset gridDataset;
 
-  public GridPanel(PreferencesExt prefs) {
+  public GridNewPanel(PreferencesExt prefs) {
     super(prefs, "dataset:", true, false);
     gridNewTable = new GridNewTable(prefs);
     add(gridNewTable, BorderLayout.CENTER);
@@ -66,7 +66,7 @@ public class GridPanel extends OpPanel {
   }
 
   private void makeDisplay() {
-    viewerWindow = new IndependentWindow("GridNew Viewer", BAMutil.getImage("nj22/NetcdfUI"));
+    viewerWindow = new IndependentWindow("Grid2 Viewer", BAMutil.getImage("nj22/NetcdfUI"));
 
     gridViewer = new GridViewer((PreferencesExt) prefs.node("CoverageDisplay"), viewerWindow, fileChooser, 800);
     gridViewer.addMapBean(new WorldMapBean());

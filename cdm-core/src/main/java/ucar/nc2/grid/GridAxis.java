@@ -14,6 +14,7 @@ import ucar.nc2.AttributeContainerMutable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.VariableDS;
+import ucar.nc2.grid2.GridSubset;
 import ucar.nc2.util.Indent;
 import ucar.unidata.util.StringUtil2;
 

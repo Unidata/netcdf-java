@@ -14,6 +14,8 @@ import ucar.array.InvalidRangeException;
 import ucar.array.Range;
 import ucar.array.RangeIterator;
 import ucar.nc2.dataset.VariableDS;
+import ucar.nc2.grid2.CoordInterval;
+import ucar.nc2.grid2.GridSubset;
 import ucar.nc2.internal.grid.GridAxis1DHelper;
 import ucar.nc2.util.Indent;
 

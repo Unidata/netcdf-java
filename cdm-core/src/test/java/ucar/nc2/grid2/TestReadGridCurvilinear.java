@@ -7,6 +7,7 @@ package ucar.nc2.grid2;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.primitives.Ints;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.array.Array;
@@ -90,14 +91,13 @@ public class TestReadGridCurvilinear {
     readGrid(filename, "wv", ImmutableList.of(432, 22, 12), "time ypos xpos", null, null, new int[] {1, 22, 12});
   }
 
-  /*
-   * @Test
-   * public void testGribCurvilinear() throws IOException, InvalidRangeException {
-   * String filename = TestDir.cdmUnitTestDir + "ft/fmrc/rtofs/ofs.20091122/ofs_atl.t00z.F024.grb.grib2";
-   * readGrid(filename, "Sea_Surface_Height_Relative_to_Geoid_surface", ImmutableList.of(1, 1, 1684, 1200),
-   * "reftime time lataxis lonaxis", true, "2009-11-23T00:00Z", null, new int[] {1, 1, 1684, 1200});
-   * }
-   */
+  @Test
+  @Ignore("Grib Curvilinear not done yet")
+  public void testGribCurvilinear() throws IOException, InvalidRangeException {
+    String filename = TestDir.cdmUnitTestDir + "ft/fmrc/rtofs/ofs.20091122/ofs_atl.t00z.F024.grb.grib2";
+    readGrid(filename, "Sea_Surface_Height_Relative_to_Geoid_surface", ImmutableList.of(1, 1, 1684, 1200),
+        "reftime time lataxis lonaxis", "2009-11-23T00:00Z", null, new int[] {1, 1, 1684, 1200});
+  }
 
   private void readGrid(String filename, String gridName, List<Integer> nominalShape, String gcsName, String wantDateS,
       Double wantVert, int[] matShape) throws IOException, InvalidRangeException {

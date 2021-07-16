@@ -15,6 +15,7 @@ import ucar.array.RangeIterator;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.VariableDS;
+import ucar.nc2.grid2.GridSubset;
 import ucar.nc2.internal.grid.GridAxis1DHelper;
 import ucar.nc2.internal.grid.TimeHelper;
 import ucar.nc2.calendar.CalendarDate;

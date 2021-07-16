@@ -111,7 +111,7 @@ public class TestReadGridSubset {
     }
 
     count = 0;
-    for (GridAxis<?> axis : mcsys.getAxes()) {
+    for (GridAxis<?> axis : mcsys.getGridAxes()) {
       assertThat(axis.getNominalSize()).isEqualTo(dataShape[count]);
       count++;
     }

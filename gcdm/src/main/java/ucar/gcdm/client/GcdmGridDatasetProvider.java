@@ -1,9 +1,14 @@
+/*
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
+
 package ucar.gcdm.client;
 
 import thredds.client.catalog.ServiceType;
 import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.spi.GridDatasetProvider;
-import ucar.nc2.grid.GridDataset;
+import ucar.nc2.grid2.GridDataset;
 import ucar.nc2.util.CancelTask;
 
 public class GcdmGridDatasetProvider implements GridDatasetProvider {

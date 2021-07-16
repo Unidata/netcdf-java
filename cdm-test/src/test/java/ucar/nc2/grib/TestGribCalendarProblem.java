@@ -59,9 +59,9 @@ public class TestGribCalendarProblem {
     String endpoint = TestDir.cdmUnitTestDir + "formats/grib1/cfs.wmo";
 
     Formatter errlog = new Formatter();
-    try (ucar.nc2.grid.GridDataset ds = ucar.nc2.grid.GridDatasetFactory.openGridDataset(endpoint, errlog)) {
+    try (ucar.nc2.grid2.GridDataset ds = ucar.nc2.grid2.GridDatasetFactory.openGridDataset(endpoint, errlog)) {
       assertThat(ds).isNotNull();
-      Optional<ucar.nc2.grid.Grid> gridO = ds.findGrid(vname);
+      Optional<ucar.nc2.grid2.Grid> gridO = ds.findGrid(vname);
       assertThat(gridO).isPresent();
       assertThat(gridO.get()).isInstanceOf(ucar.nc2.internal.grid.GridVariable.class);
     }

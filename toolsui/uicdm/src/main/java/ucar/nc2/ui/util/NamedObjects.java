@@ -11,8 +11,6 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.ft2.coverage.CoverageCoordAxis1D;
-import ucar.nc2.grid.GridAxis1D;
-import ucar.nc2.grid.GridAxis1DTime;
 import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.calendar.CalendarDateFormatter;
 import ucar.nc2.grid2.GridAxisPoint;
@@ -112,28 +110,6 @@ public class NamedObjects {
     return result;
   }
 
-  public static List<NamedObject> getNames(Iterable<ucar.nc2.grid.Grid> grids) {
-    if (grids == null) {
-      return new ArrayList<>();
-    }
-    List<NamedObject> result = new ArrayList<>();
-    for (ucar.nc2.grid.Grid grid : grids) {
-      result.add(NamedObject.create(grid.getName(), grid.getDescription(), grid));
-    }
-    return result;
-  }
-
-  public static List<NamedObject> getCoordNames(GridAxis1D axis) {
-    if (axis == null) {
-      return new ArrayList<>();
-    }
-    List<NamedObject> result = new ArrayList<>();
-    for (Object coord : axis) {
-      result.add(NamedObject.create(coord, axis.getUnits()));
-    }
-    return result;
-  }
-
   public static List<NamedObject> getCoordNames(ucar.nc2.grid2.GridAxis<?> axis) {
     if (axis == null) {
       return new ArrayList<>();
@@ -141,17 +117,6 @@ public class NamedObjects {
     List<NamedObject> result = new ArrayList<>();
     for (Object coord : axis) {
       result.add(NamedObject.create(coord, axis.getUnits()));
-    }
-    return result;
-  }
-
-  public static List<NamedObject> getTimeNames(GridAxis1DTime axis) {
-    if (axis == null) {
-      return new ArrayList<>();
-    }
-    List<NamedObject> result = new ArrayList<>();
-    for (CalendarDate cdate : axis.getCalendarDates()) {
-      result.add(NamedObject.create(cdate, axis.getAxisType().toString()));
     }
     return result;
   }

@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
+
 package ucar.gcdm;
 
 import com.google.common.collect.ImmutableList;
@@ -7,20 +12,363 @@ import ucar.gcdm.client.GcdmGridDataset;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.grid.*;
-import ucar.nc2.internal.grid.GridCS;
+import ucar.nc2.grid2.Grid;
+import ucar.nc2.grid2.GridAxis;
+import ucar.nc2.grid2.GridAxisDependenceType;
+import ucar.nc2.grid2.GridAxisInterval;
+import ucar.nc2.grid2.GridAxisPoint;
+import ucar.nc2.grid2.GridAxisSpacing;
+import ucar.nc2.grid2.GridCoordinateSystem;
+import ucar.nc2.grid2.GridDataset;
+import ucar.nc2.grid2.GridHorizCoordinateSystem;
+import ucar.nc2.grid2.GridReferencedArray;
+import ucar.nc2.grid2.GridTimeCoordinateSystem;
+import ucar.nc2.grid2.MaterializedCoordinateSystem;
+import ucar.nc2.internal.grid2.GridNetcdfCS;
+import ucar.nc2.internal.grid2.GridNetcdfTimeCS;
 import ucar.unidata.geoloc.Projection;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.Formatter;
 
 /** Convert between GcdmGrid Protos and GridDataset objects. */
 public class GcdmGridConverter {
 
+  public static void decodeGridDataset(GcdmGridProto.GridDataset proto, GcdmGridDataset.Builder builder,
+      Formatter errlog) {
+    for (GcdmGridProto.GridAxis axis : proto.getGridAxesList()) {
+      builder.addGridAxis(decodeGridAxis(axis));
+    }
+    for (GcdmGridProto.GridCoordinateSystem coordsys : proto.getCoordSystemsList()) {
+      builder.addCoordSys(decodeGridCS(coordsys, errlog));
+    }
+    for (GcdmGridProto.Grid grid : proto.getGridsList()) {
+      builder.addGrid(decodeGrid(grid));
+    }
+  }
+
+  public static GridAxis.Builder<?> decodeGridAxis(GcdmGridProto.GridAxis proto) {
+    boolean isInterval = proto.getIsInterval();
+
+    if (isInterval) {
+      GridAxisInterval.Builder<?> axisb = GridAxisInterval.builder();
+      axisb.setName(proto.getName());
+      axisb.setDescription(proto.getDescription());
+      axisb.setUnits(proto.getUnits());
+      axisb.setAxisType(convertAxisType(proto.getCdmAxisType()));
+      axisb.setAttributes(GcdmConverter.decodeAttributes(proto.getName(), proto.getAttributesList()));
+      axisb.setSpacing(convertAxisSpacing(proto.getSpacing()));
+      axisb.setDependenceType(convertAxisDependenceType(proto.getDependenceType()));
+      axisb.setDependsOn(proto.getDependsOnList());
+      axisb.setResolution(proto.getResolution());
+      axisb.setNcoords(proto.getNcoords());
+
+      if (proto.getValuesCount() > 0) {
+        double[] values = new double[proto.getValuesCount()];
+        for (int i = 0; i < proto.getValuesCount(); i++) {
+          values[i] = proto.getValues(i);
+        }
+        axisb.setValues(values);
+      }
+      return axisb;
+
+    } else {
+
+      GridAxisPoint.Builder<?> axisb = GridAxisPoint.builder();
+      axisb.setName(proto.getName());
+      axisb.setDescription(proto.getDescription());
+      axisb.setUnits(proto.getUnits());
+      axisb.setAxisType(convertAxisType(proto.getCdmAxisType()));
+      axisb.setAttributes(GcdmConverter.decodeAttributes(proto.getName(), proto.getAttributesList()));
+      axisb.setSpacing(convertAxisSpacing(proto.getSpacing()));
+      axisb.setDependenceType(convertAxisDependenceType(proto.getDependenceType()));
+      axisb.setDependsOn(proto.getDependsOnList());
+      axisb.setResolution(proto.getResolution());
+      axisb.setNcoords(proto.getNcoords());
+
+      if (proto.getValuesCount() > 0) {
+        double[] values = new double[proto.getValuesCount()];
+        for (int i = 0; i < proto.getValuesCount(); i++) {
+          values[i] = proto.getValues(i);
+        }
+        axisb.setValues(values);
+      }
+      if (proto.getEdgesCount() > 0) {
+        double[] edges = new double[proto.getEdgesCount()];
+        for (int i = 0; i < proto.getEdgesCount(); i++) {
+          edges[i] = proto.getValues(i);
+        }
+        axisb.setEdges(edges);
+      }
+      return axisb;
+    }
+  }
+
+  public static GridNetcdfCS.Builder<?> decodeGridCS(GcdmGridProto.GridCoordinateSystem proto, Formatter errlog) {
+    GridNetcdfCS.Builder<?> builder = GridNetcdfCS.builder();
+    builder.setName(proto.getName());
+    builder.setFeatureType(FeatureType.GRID);
+    builder.setAxisNames(proto.getAxisNamesList());
+
+    return builder;
+  }
+
+  public static GcdmGrid.Builder decodeGrid(GcdmGridProto.Grid proto) {
+    return GcdmGrid.builder().setProto(proto);
+  }
+
+  public static Projection decodeProjection(GcdmGridProto.Projection proto, Formatter errlog) {
+    AttributeContainer ctv = GcdmConverter.decodeAttributes(proto.getName(), proto.getAttributesList());
+    return ucar.nc2.internal.dataset.transform.horiz.ProjectionFactory.makeProjection(ctv, proto.getGeoUnit(), errlog);
+  }
+
+  public static GridReferencedArray decodeGridReferencedArray(GcdmGridProto.GridReferencedArray proto,
+      ImmutableList<GridAxis<?>> axes, Formatter errlog) {
+    MaterializedCoordinateSystem.Builder cs =
+        decodeMaterializedCoordSys(proto.getMaterializedCoordinateSystem(), errlog);
+    Array<Number> data = GcdmConverter.decodeData(proto.getData());
+    return GridReferencedArray.create(proto.getGridName(), data.getArrayType(), data, cs.build());
+  }
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  public static GcdmGridProto.GridDataset encodeGridDataset(GridDataset org) {
+    GcdmGridProto.GridDataset.Builder builder = GcdmGridProto.GridDataset.newBuilder();
+    builder.setName(org.getName());
+    builder.setLocation(org.getLocation());
+    builder.setFeatureType(convertFeatureType(org.getFeatureType()));
+    builder.addAllAttributes(GcdmConverter.encodeAttributes(org.attributes()));
+
+    for (GridAxis<?> axis : org.getGridAxes()) {
+      builder.addGridAxes(encodeGridAxis(axis));
+    }
+    for (GridCoordinateSystem coordsys : org.getGridCoordinateSystems()) {
+      builder.addCoordSystems(encodeGridCS(coordsys));
+    }
+    for (Grid grid : org.getGrids()) {
+      builder.addGrids(encodeGrid(grid));
+    }
+
+    return builder.build();
+  }
+
+  public static GcdmGridProto.GridHorizCoordinateSystem encodeHorizCS(GridHorizCoordinateSystem horizCS) {
+    GcdmGridProto.GridHorizCoordinateSystem.Builder builder = GcdmGridProto.GridHorizCoordinateSystem.newBuilder();
+    builder.setProjection(encodeProjection(horizCS.getProjection(), horizCS.getGeoUnits()));
+    builder.setXaxisName(horizCS.getXHorizAxis().getName());
+    builder.setYaxisName(horizCS.getYHorizAxis().getName());
+    builder.setIsCurvilinear(horizCS.isCurvilinear());
+    return builder.build();
+  }
+
+  public static GridHorizCoordinateSystem decodeHorizCS(GcdmGridProto.GridHorizCoordinateSystem horizCS,
+      Formatter errlog) {
+    GridAxisPoint xaxis = (GridAxisPoint) findAxis(horizCS.getXaxisName());
+    GridAxisPoint yaxis = (GridAxisPoint) findAxis(horizCS.getYaxisName());
+    Projection projection = decodeProjection(horizCS.getProjection(), errlog);
+    return new GridHorizCoordinateSystem(xaxis, yaxis, projection);
+  }
+
+  public static GcdmGridProto.GridTimeCoordinateSystem encodeTimeCS(GridTimeCoordinateSystem timeCS) {
+    GcdmGridProto.GridTimeCoordinateSystem.Builder builder = GcdmGridProto.GridTimeCoordinateSystem.newBuilder();
+    builder.setType(convertTimeType(timeCS.getType()));
+    builder.setCalendarDateUnit(timeCS.getCalendarDateUnit().toString());
+    builder.setTimeAxisName(timeCS.getTimeOffsetAxis(0).getName()); // ??
+    if (timeCS.getRunTimeAxis() != null) {
+      builder.setRuntimeAxisName(timeCS.getRunTimeAxis().getName());
+    }
+    return builder.build();
+  }
+
+  public static GridTimeCoordinateSystem decodeTimeCS(GcdmGridProto.GridTimeCoordinateSystem proto) {
+    GridAxis<?> timeAxis = findAxis(proto.getTimeAxisName());
+    GridAxisPoint runtimeAxis = (GridAxisPoint) findAxis(proto.getRuntimeAxisName());
+    if (runtimeAxis != null) {
+      return GridNetcdfTimeCS.create(runtimeAxis, timeAxis);
+    } else {
+      return GridNetcdfTimeCS.create(timeAxis);
+    }
+  }
+
+  public static GridAxis<?> findAxis(String name) {
+    return null;
+  }
+
+  public static GcdmGridProto.GridCoordinateSystem encodeGridCS(GridCoordinateSystem csys) {
+    GcdmGridProto.GridCoordinateSystem.Builder builder = GcdmGridProto.GridCoordinateSystem.newBuilder();
+    builder.setName(csys.getName());
+    for (GridAxis<?> axis : csys.getGridAxes()) {
+      builder.addAxisNames(axis.getName());
+    }
+    GridHorizCoordinateSystem horizCS = csys.getHorizCoordinateSystem();
+    builder.setHorizCoordinatesId(getId(horizCS));
+    GridTimeCoordinateSystem timeCS = csys.getTimeCoordinateSystem();
+    if (timeCS != null) {
+      builder.setHorizCoordinatesId(getId(timeCS));
+    }
+    return builder.build();
+  }
+
+  public static int getId(Object name) {
+    return 0;
+  }
+
+  public static GcdmGridProto.Projection encodeProjection(Projection projection, String geoUnits) {
+    GcdmGridProto.Projection.Builder builder = GcdmGridProto.Projection.newBuilder();
+    builder.setName(projection.getName());
+    if (geoUnits != null) {
+      builder.setGeoUnit(geoUnits);
+    }
+    builder.addAllAttributes(GcdmConverter.encodeAttributes(projection.getProjectionAttributes()));
+    return builder.build();
+  }
+
+  public static GcdmGridProto.GridAxis encodeGridAxis(GridAxis<?> axis) {
+    GcdmGridProto.GridAxis.Builder builder = GcdmGridProto.GridAxis.newBuilder();
+
+    builder.setName(axis.getName());
+    builder.setDescription(axis.getDescription());
+    builder.setUnits(axis.getUnits());
+    builder.setCdmAxisType(convertAxisType(axis.getAxisType()));
+    builder.addAllAttributes(GcdmConverter.encodeAttributes(axis.attributes()));
+    builder.setSpacing(convertAxisSpacing(axis.getSpacing()));
+    builder.setDependenceType(convertAxisDependenceType(axis.getDependenceType()));
+    builder.addAllDependsOn(axis.getDependsOn());
+
+    builder.setNcoords(axis.getNominalSize());
+    builder.setResolution(axis.getResolution());
+
+    if (axis instanceof GridAxisPoint) {
+      builder.setIsInterval(false);
+      // sneaky way to get at the private data
+      GridAxisPoint.Builder<?> axisPoint = ((GridAxisPoint) axis).toBuilder();
+      builder.setStartValue(axisPoint.startValue);
+      if (axisPoint.values != null) {
+        for (double value : axisPoint.values) {
+          builder.addValues(value);
+        }
+      }
+      if (axisPoint.edges != null) {
+        for (double value : axisPoint.edges) {
+          builder.addEdges(value);
+        }
+      }
+    }
+
+    if (axis instanceof GridAxisInterval) {
+      builder.setIsInterval(true);
+      // sneaky way to get at the private data
+      GridAxisInterval.Builder<?> axisInterval = ((GridAxisInterval) axis).toBuilder();
+      builder.setStartValue(axisInterval.startValue);
+      if (axisInterval.values != null) {
+        for (double value : axisInterval.values) {
+          builder.addValues(value);
+        }
+      }
+    }
+    return builder.build();
+  }
+
+  public static GcdmGridProto.Grid encodeGrid(Grid grid) {
+    GcdmGridProto.Grid.Builder builder = GcdmGridProto.Grid.newBuilder();
+    builder.setName(grid.getName());
+    builder.setDescription(grid.getDescription());
+    builder.setUnit(grid.getUnits());
+    builder.setArrayType(GcdmConverter.convertDataType(grid.getArrayType()));
+    builder.addAllAttributes(GcdmConverter.encodeAttributes(grid.attributes()));
+    builder.setCoordinateSystemName(grid.getCoordinateSystem().getName());
+    return builder.build();
+  }
+
+  public static GcdmGridProto.GridReferencedArray encodeGridReferencedArray(GridReferencedArray geoArray) {
+    GcdmGridProto.GridReferencedArray.Builder builder = GcdmGridProto.GridReferencedArray.newBuilder();
+    builder.setGridName(geoArray.gridName());
+    builder.setMaterializedCoordinateSystem(encodeMaterializedCoordSys(geoArray.getMaterializedCoordinateSystem()));
+    builder.setData(GcdmConverter.encodeData(geoArray.arrayType(), geoArray.data()));
+    return builder.build();
+  }
+
+  public static GcdmGridProto.MaterializedCoordinateSystem encodeMaterializedCoordSys(
+      MaterializedCoordinateSystem csys) {
+    GcdmGridProto.MaterializedCoordinateSystem.Builder builder =
+        GcdmGridProto.MaterializedCoordinateSystem.newBuilder();
+    for (GridAxis<?> axis : csys.getGridAxes()) {
+      builder.addAxes(encodeGridAxis(axis));
+    }
+    builder.setHorizCoordinateSystem(encodeHorizCS(csys.getHorizCoordinateSystem()));
+    if (csys.getTimeCoordSystem() != null) {
+      builder.setTimeCoordinateSystem(encodeTimeCS(csys.getTimeCoordSystem()));
+    }
+
+    return builder.build();
+  }
+
+  static MaterializedCoordinateSystem.Builder decodeMaterializedCoordSys(
+      GcdmGridProto.MaterializedCoordinateSystem proto, Formatter errlog) {
+    MaterializedCoordinateSystem.Builder builder = MaterializedCoordinateSystem.builder();
+
+    ArrayList<GridAxis.Builder<?>> axes = new ArrayList<>();
+    for (GcdmGridProto.GridAxis paxis : proto.getAxesList()) {
+      axes.add(decodeGridAxis(paxis));
+    }
+    builder.setHorizCoordSys(decodeHorizCS(proto.getHorizCoordinateSystem(), errlog));
+    builder.setTimeCoordSys(decodeTimeCS(proto.getTimeCoordinateSystem()));
+    return builder;
+  }
+
+
+  ////////////////////////////////////////////////////////////////////////////////////
+  // cobvert enums
+
+  public static GridTimeCoordinateSystem.Type convertTimeType(GcdmGridProto.GridTimeType proto) {
+    switch (proto) {
+      case GRID_TIME_TYPE_OBSERVATION:
+        return GridTimeCoordinateSystem.Type.Observation;
+      case GRID_TIME_TYPE_SINGLE_RUNTIME:
+        return GridTimeCoordinateSystem.Type.SingleRuntime;
+      case GRID_TIME_TYPE_OFFSET:
+        return GridTimeCoordinateSystem.Type.Offset;
+      case GRID_TIME_TYPE_OFFSET_REGULAR:
+        return GridTimeCoordinateSystem.Type.OffsetRegular;
+      case GRID_TIME_TYPE_OFFSET_IRREGULAR:
+        return GridTimeCoordinateSystem.Type.OffsetIrregular;
+    }
+    throw new IllegalArgumentException();
+  }
+
+  public static GcdmGridProto.GridTimeType convertTimeType(GridTimeCoordinateSystem.Type org) {
+    switch (org) {
+      case Observation:
+        return GcdmGridProto.GridTimeType.GRID_TIME_TYPE_OBSERVATION;
+      case SingleRuntime:
+        return GcdmGridProto.GridTimeType.GRID_TIME_TYPE_SINGLE_RUNTIME;
+      case Offset:
+        return GcdmGridProto.GridTimeType.GRID_TIME_TYPE_OFFSET;
+      case OffsetRegular:
+        return GcdmGridProto.GridTimeType.GRID_TIME_TYPE_OFFSET_REGULAR;
+      case OffsetIrregular:
+        return GcdmGridProto.GridTimeType.GRID_TIME_TYPE_OFFSET_IRREGULAR;
+    }
+    throw new IllegalArgumentException();
+  }
+
   public static FeatureType convertFeatureType(GcdmGridProto.CdmFeatureType proto) {
     switch (proto) {
       case CDM_FEATURE_TYPE_GRIDDED:
         return FeatureType.GRID;
+      case CDM_FEATURE_TYPE_CURVILINEAR:
+        return FeatureType.CURVILINEAR;
+    }
+    throw new IllegalArgumentException();
+  }
+
+  public static GcdmGridProto.CdmFeatureType convertFeatureType(FeatureType org) {
+    switch (org) {
+      case GRID:
+        return GcdmGridProto.CdmFeatureType.CDM_FEATURE_TYPE_GRIDDED;
+      case CURVILINEAR:
+        return GcdmGridProto.CdmFeatureType.CDM_FEATURE_TYPE_CURVILINEAR;
     }
     throw new IllegalArgumentException();
   }
@@ -62,6 +410,9 @@ public class GcdmGridConverter {
           break;
         case CDM_AXIS_TYPE_TIME_OFFSET: // 11
           axisType = AxisType.TimeOffset;
+          break;
+        case CDM_AXIS_TYPE_DIMENSION: // 12
+          axisType = AxisType.Dimension;
           break;
         case CDM_AXIS_TYPE_UNSPECIFIED: // 0
           throw new UnsupportedOperationException("CDM Axis Type is UNSPECIFIED. Cannot convert to AxisType.");
@@ -108,14 +459,16 @@ public class GcdmGridConverter {
         case Pressure: // 9
           cdmAxisType = GcdmGridProto.CdmAxisType.CDM_AXIS_TYPE_PRESSURE;
           break;
-        case TimeOffset: // 14
+        case TimeOffset: // 11
           cdmAxisType = GcdmGridProto.CdmAxisType.CDM_AXIS_TYPE_TIME_OFFSET;
+          break;
+        case Dimension: // 12
+          cdmAxisType = GcdmGridProto.CdmAxisType.CDM_AXIS_TYPE_DIMENSION;
           break;
         case RadialAzimuth: // 10
         case RadialDistance: // 11
         case RadialElevation: // 12
         case Spectral: // 13
-        case Dimension: // 15
         case SimpleGeometryX: // 16
         case SimpleGeometryY: // 17
         case SimpleGeometryZ: // 18
@@ -133,50 +486,56 @@ public class GcdmGridConverter {
   }
 
   @Nullable
-  public static GridAxis.Spacing convertAxisSpacing(GcdmGridProto.GridAxisSpacing proto) {
-    GridAxis.Spacing gridAxisSpacing = null;
+  public static GridAxisSpacing convertAxisSpacing(GcdmGridProto.GridAxisSpacing proto) {
+    GridAxisSpacing gridAxisSpacing = null;
     if (proto != null) {
       switch (proto) {
         case GRID_AXIS_SPACING_REGULAR_POINT: // 1
-          gridAxisSpacing = GridAxis.Spacing.regularPoint;
+          gridAxisSpacing = GridAxisSpacing.regularPoint;
           break;
         case GRID_AXIS_SPACING_IRREGULAR_POINT: // 2
-          gridAxisSpacing = GridAxis.Spacing.irregularPoint;
+          gridAxisSpacing = GridAxisSpacing.irregularPoint;
+          break;
+        case GRID_AXIS_SPACING_NOMINAL_POINT: // 6
+          gridAxisSpacing = GridAxisSpacing.nominalPoint;
           break;
         case GRID_AXIS_SPACING_REGULAR_INTERVAL: // 3
-          gridAxisSpacing = GridAxis.Spacing.regularInterval;
+          gridAxisSpacing = GridAxisSpacing.regularInterval;
           break;
         case GRID_AXIS_SPACING_CONTIGUOUS_INTERVAL: // 4
-          gridAxisSpacing = GridAxis.Spacing.contiguousInterval;
+          gridAxisSpacing = GridAxisSpacing.contiguousInterval;
           break;
         case GRID_AXIS_SPACING_DISCONTIGUOUS_INTERVAL: // 5
-          gridAxisSpacing = GridAxis.Spacing.discontiguousInterval;
+          gridAxisSpacing = GridAxisSpacing.discontiguousInterval;
           break;
         case GRID_AXIS_SPACING_UNSPECIFIED: // 0
           throw new UnsupportedOperationException(
-              "CDM Axis Spacing is UNSPECIFIED. Cannot convert to GridAxis.Spacing.");
+              "CDM Axis Spacing is UNSPECIFIED. Cannot convert to GridAxisSpacing.");
       }
     }
     return gridAxisSpacing;
   }
 
-  public static GcdmGridProto.GridAxisSpacing convertAxisSpacing(GridAxis.Spacing spacing) {
+  public static GcdmGridProto.GridAxisSpacing convertAxisSpacing(GridAxisSpacing spacing) {
     GcdmGridProto.GridAxisSpacing gridAxisSpacing = GcdmGridProto.GridAxisSpacing.GRID_AXIS_SPACING_UNSPECIFIED;
     if (spacing != null) {
       switch (spacing) {
-        case regularPoint: // 0
+        case regularPoint:
           gridAxisSpacing = GcdmGridProto.GridAxisSpacing.GRID_AXIS_SPACING_REGULAR_POINT;
           break;
-        case irregularPoint: // 1
+        case irregularPoint:
           gridAxisSpacing = GcdmGridProto.GridAxisSpacing.GRID_AXIS_SPACING_IRREGULAR_POINT;
           break;
-        case regularInterval: // 2
+        case nominalPoint:
+          gridAxisSpacing = GcdmGridProto.GridAxisSpacing.GRID_AXIS_SPACING_NOMINAL_POINT;
+          break;
+        case regularInterval:
           gridAxisSpacing = GcdmGridProto.GridAxisSpacing.GRID_AXIS_SPACING_REGULAR_INTERVAL;
           break;
-        case contiguousInterval: // 3
+        case contiguousInterval:
           gridAxisSpacing = GcdmGridProto.GridAxisSpacing.GRID_AXIS_SPACING_CONTIGUOUS_INTERVAL;
           break;
-        case discontiguousInterval: // 4
+        case discontiguousInterval:
           gridAxisSpacing = GcdmGridProto.GridAxisSpacing.GRID_AXIS_SPACING_DISCONTIGUOUS_INTERVAL;
           break;
         default:
@@ -190,57 +549,57 @@ public class GcdmGridConverter {
   }
 
   @Nullable
-  public static GridAxis.DependenceType convertAxisDependenceType(GcdmGridProto.GridAxisDependenceType proto) {
-    GridAxis.DependenceType dependenceType = null;
+  public static GridAxisDependenceType convertAxisDependenceType(GcdmGridProto.GridAxisDependenceType proto) {
+    GridAxisDependenceType dependenceType = null;
     if (proto != null) {
       switch (proto) {
         case GRID_AXIS_DEPENDENCE_TYPE_INDEPENDENT: // 1
-          dependenceType = GridAxis.DependenceType.independent;
+          dependenceType = GridAxisDependenceType.independent;
           break;
         case GRID_AXIS_DEPENDENCE_TYPE_DEPENDENT: // 2
-          dependenceType = GridAxis.DependenceType.dependent;
+          dependenceType = GridAxisDependenceType.dependent;
           break;
         case GRID_AXIS_DEPENDENCE_TYPE_SCALAR: // 3
-          dependenceType = GridAxis.DependenceType.scalar;
+          dependenceType = GridAxisDependenceType.scalar;
           break;
         case GRID_AXIS_DEPENDENCE_TYPE_TWO_D: // 4
-          dependenceType = GridAxis.DependenceType.twoD;
+          dependenceType = GridAxisDependenceType.twoD;
           break;
         case GRID_AXIS_DEPENDENCE_TYPE_FMRC_REG: // 5
-          dependenceType = GridAxis.DependenceType.fmrcReg;
+          dependenceType = GridAxisDependenceType.fmrcReg;
           break;
         case GRID_AXIS_DEPENDENCE_TYPE_DIMENSION: // 6
-          dependenceType = GridAxis.DependenceType.dimension;
+          dependenceType = GridAxisDependenceType.dimension;
           break;
         case GRID_AXIS_DEPENDENCE_TYPE_UNSPECIFIED: // 0
           throw new UnsupportedOperationException(
-              "Grid Axis Dependence Type is UNSPECIFIED. Cannot convert to GridAxis.DependenceType");
+              "Grid Axis Dependence Type is UNSPECIFIED. Cannot convert to GridAxisDependenceType");
       }
     }
     return dependenceType;
   }
 
-  public static GcdmGridProto.GridAxisDependenceType convertAxisDependenceType(GridAxis.DependenceType dtype) {
+  public static GcdmGridProto.GridAxisDependenceType convertAxisDependenceType(GridAxisDependenceType dtype) {
     GcdmGridProto.GridAxisDependenceType gridAxisDependenceType =
         GcdmGridProto.GridAxisDependenceType.GRID_AXIS_DEPENDENCE_TYPE_UNSPECIFIED;
     if (dtype != null) {
       switch (dtype) {
-        case independent: // 0
+        case independent:
           gridAxisDependenceType = GcdmGridProto.GridAxisDependenceType.GRID_AXIS_DEPENDENCE_TYPE_INDEPENDENT;
           break;
-        case dependent: // 1
+        case dependent:
           gridAxisDependenceType = GcdmGridProto.GridAxisDependenceType.GRID_AXIS_DEPENDENCE_TYPE_DEPENDENT;
           break;
-        case scalar: // 2
+        case scalar:
           gridAxisDependenceType = GcdmGridProto.GridAxisDependenceType.GRID_AXIS_DEPENDENCE_TYPE_SCALAR;
           break;
-        case twoD: // 3
+        case twoD:
           gridAxisDependenceType = GcdmGridProto.GridAxisDependenceType.GRID_AXIS_DEPENDENCE_TYPE_TWO_D;
           break;
-        case fmrcReg: // 4
+        case fmrcReg:
           gridAxisDependenceType = GcdmGridProto.GridAxisDependenceType.GRID_AXIS_DEPENDENCE_TYPE_FMRC_REG;
           break;
-        case dimension: // 5
+        case dimension:
           gridAxisDependenceType = GcdmGridProto.GridAxisDependenceType.GRID_AXIS_DEPENDENCE_TYPE_DIMENSION;
           break;
         default:
@@ -252,238 +611,4 @@ public class GcdmGridConverter {
     // an error to prevent sending a bad message?
     return gridAxisDependenceType;
   }
-
-  public static void decodeDataset(GcdmGridProto.GridDataset proto, GcdmGridDataset.Builder builder, Formatter errlog) {
-    for (GcdmGridProto.GridAxis axis : proto.getGridAxesList()) {
-      builder.addGridAxis(decodeGridAxis(axis));
-    }
-    for (GcdmGridProto.GridCoordinateSystem coordsys : proto.getCoordSystemsList()) {
-      builder.addCoordSys(decodeCoordSys(coordsys, errlog));
-    }
-    for (GcdmGridProto.Grid grid : proto.getGridsList()) {
-      builder.addGrid(decodeGrid(grid));
-    }
-  }
-
-  public static GridAxis.Builder<?> decodeGridAxis(GcdmGridProto.GridAxis proto) {
-    GcdmGridProto.GridAxisType gridAxisType = proto.getGridAxisType();
-
-    GridAxis.Builder<?> axisb;
-    switch (gridAxisType) {
-      case GRID_AXIS_TYPE_AXIS_1D: // 1
-        axisb = GridAxis1D.builder();
-        break;
-      case GRID_AXIS_TYPE_AXIS_1D_TIME: // 2
-        axisb = GridAxis1DTime.builder();
-        break;
-      case GRID_AXIS_TYPE_TIME_OFFSET_REGULAR: // 3
-        axisb = GridAxisOffsetTimeRegular.builder();
-        break;
-      case GRID_AXIS_TYPE_UNSPECIFIED: // 0
-        throw new UnsupportedOperationException("Grid Axis Type is UNSPECIFIED. Cannot decode.");
-      default:
-        throw new UnsupportedOperationException();
-    }
-
-    axisb.setName(proto.getName());
-    axisb.setDescription(proto.getDescription());
-    axisb.setUnits(proto.getUnit());
-    axisb.setAxisType(convertAxisType(proto.getCdmAxisType()));
-    axisb.setAttributes(GcdmConverter.decodeAttributes(proto.getName(), proto.getAttributesList()));
-    axisb.setSpacing(convertAxisSpacing(proto.getSpacing()));
-    axisb.setDependenceType(convertAxisDependenceType(proto.getDependenceType()));
-    axisb.setDependsOn(proto.getDependsOnList());
-
-    if (axisb instanceof GridAxis1D.Builder) {
-      GridAxis1D.Builder<?> axis1b = (GridAxis1D.Builder<?>) axisb;
-      axis1b.setRegular(proto.getNcoord(), proto.getStartValue(), proto.getEndValue(), proto.getResolution());
-
-      if (proto.getValuesCount() > 0) {
-        axis1b.setValues(proto.getValuesList());
-      }
-    }
-
-    if (axisb instanceof GridAxis1DTime.Builder) {
-      GridAxis1DTime.Builder<?> axis1b = (GridAxis1DTime.Builder<?>) axisb;
-      axis1b.setDateUnits(proto.getDateUnit());
-    }
-
-    if (axisb instanceof GridAxisOffsetTimeRegular.Builder) {
-      GridAxisOffsetTimeRegular.Builder<?> axisReg = (GridAxisOffsetTimeRegular.Builder<?>) axisb;
-      axisReg.setRuntimeAxisName(proto.getRuntimeAxisName());
-      axisReg.setMinutesOffsets(proto.getHourOffsetsList());
-      axisReg.setMidpointsBounds(proto.getShapesList(), proto.getMidpointsList(), proto.getBoundsList());
-    }
-
-    return axisb;
-  }
-
-  public static GridCS.Builder<?> decodeCoordSys(GcdmGridProto.GridCoordinateSystem proto, Formatter errlog) {
-    GridCS.Builder<?> builder = GridCS.builder();
-    builder.setName(proto.getName());
-    builder.setFeatureType(FeatureType.GRID);
-    builder.setAxisNames(proto.getAxisNamesList());
-    builder.setProjection(decodeProjection(proto.getProjection(), errlog));
-
-    return builder;
-  }
-
-  public static GcdmGrid.Builder decodeGrid(GcdmGridProto.Grid proto) {
-    return GcdmGrid.builder().setProto(proto);
-  }
-
-  public static Projection decodeProjection(GcdmGridProto.Projection proto, Formatter errlog) {
-    AttributeContainer ctv = GcdmConverter.decodeAttributes(proto.getName(), proto.getAttributesList());
-    return ucar.nc2.internal.dataset.transform.horiz.ProjectionFactory.makeProjection(ctv, proto.getGeoUnit(), errlog);
-  }
-
-  public static GridReferencedArray decodeGridReferencedArray(GcdmGridProto.GridReferencedArray proto,
-      ImmutableList<GridAxis> axes) {
-    Formatter errlog = new Formatter();
-    GridCS.Builder<?> cs = decodeCoordSys(proto.getCsSubset(), errlog);
-    Array<Number> data = GcdmConverter.decodeData(proto.getData());
-    return GridReferencedArray.create(proto.getGridName(), data.getArrayType(), data, cs.build(axes));
-  }
-
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-  public static GcdmGridProto.GridDataset encodeDataset(GridDataset org) {
-    GcdmGridProto.GridDataset.Builder builder = GcdmGridProto.GridDataset.newBuilder();
-    builder.setName(org.getName());
-    builder.setLocation(org.getLocation());
-    builder.setFeatureType(GcdmGridProto.CdmFeatureType.CDM_FEATURE_TYPE_GRIDDED);
-    builder.addAllAttributes(GcdmConverter.encodeAttributes(org.attributes()));
-
-    for (GridAxis axis : org.getGridAxes()) {
-      builder.addGridAxes(encodeGridAxis(axis));
-    }
-    for (GridCoordinateSystem coordsys : org.getGridCoordinateSystems()) {
-      builder.addCoordSystems(encodeCoordSys(coordsys));
-    }
-    for (Grid grid : org.getGrids()) {
-      builder.addGrids(encodeGrid(grid));
-    }
-
-    return builder.build();
-  }
-
-  public static GcdmGridProto.GridCoordinateSystem encodeCoordSys(GridCoordinateSystem csys) {
-    GcdmGridProto.GridCoordinateSystem.Builder builder = GcdmGridProto.GridCoordinateSystem.newBuilder();
-    builder.setName(csys.getName());
-    for (GridAxis axis : csys.getGridAxes()) {
-      builder.addAxisNames(axis.getName());
-    }
-    GridHorizCoordinateSystem horizCS = csys.getHorizCoordSystem();
-    builder.setProjection(encodeProjection(horizCS.getProjection(), horizCS.getGeoUnits()));
-
-    return builder.build();
-  }
-
-  public static GcdmGridProto.Projection encodeProjection(Projection projection, String geoUnits) {
-    GcdmGridProto.Projection.Builder builder = GcdmGridProto.Projection.newBuilder();
-    builder.setName(projection.getName());
-    if (geoUnits != null) {
-      builder.setGeoUnit(geoUnits);
-    }
-    builder.addAllAttributes(GcdmConverter.encodeAttributes(projection.getProjectionAttributes()));
-
-    return builder.build();
-  }
-
-  public static GcdmGridProto.GridAxis encodeGridAxis(GridAxis axis) {
-    GcdmGridProto.GridAxis.Builder builder = GcdmGridProto.GridAxis.newBuilder();
-
-    if (axis instanceof GridAxis1DTime) {
-      builder.setGridAxisType(GcdmGridProto.GridAxisType.GRID_AXIS_TYPE_AXIS_1D_TIME);
-    } else if (axis instanceof GridAxisOffsetTimeRegular) {
-      builder.setGridAxisType(GcdmGridProto.GridAxisType.GRID_AXIS_TYPE_TIME_OFFSET_REGULAR);
-    } else if (axis instanceof GridAxis2D) {
-      builder.setGridAxisType(GcdmGridProto.GridAxisType.GRID_AXIS_TYPE_AXIS_2D);
-    } else {
-      builder.setGridAxisType(GcdmGridProto.GridAxisType.GRID_AXIS_TYPE_AXIS_1D);
-    }
-
-    builder.setName(axis.getName());
-    builder.setDescription(axis.getDescription());
-    builder.setUnit(axis.getUnits());
-    builder.setCdmAxisType(convertAxisType(axis.getAxisType()));
-    builder.addAllAttributes(GcdmConverter.encodeAttributes(axis.attributes()));
-    builder.setSpacing(convertAxisSpacing(axis.getSpacing()));
-    builder.setDependenceType(convertAxisDependenceType(axis.getDependenceType()));
-    builder.addAllDependsOn(axis.getDependsOn());
-
-    if (axis instanceof GridAxis1D) {
-      GridAxis1D axis1 = (GridAxis1D) axis;
-      builder.setNcoord(axis1.getNcoords());
-      builder.setStartValue(axis1.getStartValue());
-      builder.setEndValue(axis1.getEndValue());
-      builder.setResolution(axis1.getResolution());
-
-      double[] values = axis1.getValues();
-      if (values != null) {
-        for (double value : values) {
-          builder.addValues(value);
-        }
-      }
-    }
-
-    if (axis instanceof GridAxis1DTime) {
-      GridAxis1DTime axis1t = (GridAxis1DTime) axis;
-      builder.setDateUnit(axis1t.getTimeHelper().getUdUnit());
-    }
-
-    if (axis instanceof GridAxisOffsetTimeRegular) {
-      GridAxisOffsetTimeRegular axisReg = (GridAxisOffsetTimeRegular) axis;
-      builder.setRuntimeAxisName(axisReg.getRunTimeAxis().getName());
-      for (int hour : axisReg.getMinuteOffsets()) {
-        builder.addHourOffsets(hour);
-      }
-      for (double mid : axisReg.getCoordsAsArray()) {
-        builder.addMidpoints(mid);
-      }
-      for (double bound : axisReg.getCoordBoundsAsArray()) {
-        builder.addBounds(bound);
-      }
-      for (int shape : axisReg.getCoordsAsArray().getShape()) {
-        builder.addShapes(shape);
-      }
-    }
-
-    return builder.build();
-  }
-
-  public static GcdmGridProto.Grid encodeGrid(Grid grid) {
-    GcdmGridProto.Grid.Builder builder = GcdmGridProto.Grid.newBuilder();
-    builder.setName(grid.getName());
-    builder.setDescription(grid.getDescription());
-    builder.setUnit(grid.getUnits());
-    builder.setDataType(GcdmConverter.convertDataType(grid.getArrayType()));
-    builder.addAllAttributes(GcdmConverter.encodeAttributes(grid.attributes()));
-    builder.setCoordSystem(grid.getCoordinateSystem().getName());
-    builder.setHasMissing(grid.hasMissing());
-
-    return builder.build();
-  }
-
-  public static GcdmGridProto.GridReferencedArray encodeGridReferencedArray(GridReferencedArray geoArray) {
-    GcdmGridProto.GridReferencedArray.Builder builder = GcdmGridProto.GridReferencedArray.newBuilder();
-    builder.setGridName(geoArray.gridName());
-    builder.setCsSubset(encodeMaterializedCoordSys(geoArray.getMaterializedCoordinateSystem()));
-    builder.setData(GcdmConverter.encodeData(geoArray.arrayType(), geoArray.data()));
-    return builder.build();
-  }
-
-  public static GcdmGridProto.GridCoordinateSystem encodeMaterializedCoordSys(MaterializedCoordinateSystem csys) {
-    GcdmGridProto.GridCoordinateSystem.Builder builder = GcdmGridProto.GridCoordinateSystem.newBuilder();
-    builder.setName(csys.getName());
-    for (GridAxis axis : csys.getGridAxes()) {
-      builder.addAxisNames(axis.getName());
-    }
-    GridHorizCoordinateSystem horizCS = csys.getHorizCoordSystem();
-    builder.setProjection(encodeProjection(horizCS.getProjection(), horizCS.getGeoUnits()));
-
-    return builder.build();
-  }
-
-
 }

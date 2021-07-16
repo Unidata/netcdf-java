@@ -202,7 +202,7 @@ public class TestCompareTdsNCEP {
       assertThat(axisSet).hasSize(nAxes);
     }
 
-    new TestGridCompareData1(filename).compareWithGrid1(false);
+    new TestGridCompareCoverage(filename).compareWithGrid1(false);
   }
 }
 

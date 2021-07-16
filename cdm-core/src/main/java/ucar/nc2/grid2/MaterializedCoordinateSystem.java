@@ -76,7 +76,7 @@ public class MaterializedCoordinateSystem {
     return result;
   }
 
-  public List<GridAxis<?>> getAxes() {
+  public List<GridAxis<?>> getGridAxes() {
     List<GridAxis<?>> result = new ArrayList<>();
     if (getTimeCoordSystem() != null) {
       if (getTimeCoordSystem().getRunTimeAxis() != null) {

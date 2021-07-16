@@ -8,7 +8,7 @@ package ucar.nc2.grib.grid;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.nc2.calendar.CalendarDate;
-import ucar.nc2.grid.CoordInterval;
+import ucar.nc2.grid2.CoordInterval;
 import ucar.nc2.grid2.Grid;
 import ucar.nc2.grid2.GridAxis;
 import ucar.nc2.grid2.GridAxisInterval;

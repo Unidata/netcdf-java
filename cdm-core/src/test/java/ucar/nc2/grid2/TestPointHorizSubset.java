@@ -10,7 +10,6 @@ import org.junit.Test;
 import ucar.array.Range;
 import ucar.nc2.Attribute;
 import ucar.nc2.constants.AxisType;
-import ucar.nc2.grid.GridSubset;
 import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.ProjectionRect;
 import ucar.unidata.geoloc.projection.FlatEarth;

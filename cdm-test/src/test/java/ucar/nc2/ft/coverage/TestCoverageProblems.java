@@ -5,7 +5,6 @@
 package ucar.nc2.ft.coverage;
 
 import java.io.IOException;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.nc2.constants.FeatureType;
@@ -14,6 +13,8 @@ import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
 import ucar.nc2.ft2.coverage.FeatureDatasetCoverage;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
+
+import static com.google.common.truth.Truth.assertThat;
 
 /** Test GridCoverageDataset problems. */
 @Category(NeedsCdmUnitTest.class)
@@ -27,12 +28,12 @@ public class TestCoverageProblems {
     FeatureType expectType = FeatureType.SWATH;
     int ncoverages = 93;
     try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
-      assert cc != null;
-      Assert.assertEquals(1, cc.getCoverageCollections().size());
+      assertThat(cc).isNotNull();
+      assertThat(cc.getCoverageCollections()).hasSize(1);
       CoverageCollection gds = cc.getCoverageCollections().get(0);
-      Assert.assertNotNull(endpoint, gds);
-      Assert.assertEquals("NGrids", ncoverages, gds.getCoverageCount());
-      Assert.assertEquals(expectType, gds.getCoverageType());
+      assertThat(gds).isNotNull();
+      assertThat(gds.getCoverageCount()).isEqualTo(ncoverages);
+      assertThat(gds.getCoverageType()).isEqualTo(expectType);
     }
   }
 

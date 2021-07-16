@@ -17,7 +17,7 @@ import ucar.nc2.grib.coord.Coordinate;
 import ucar.nc2.grib.coord.CoordinateRuntime;
 import ucar.nc2.grib.coord.CoordinateTime2D;
 import ucar.nc2.grib.coord.CoordinateTimeAbstract;
-import ucar.nc2.grid.GridSubset;
+import ucar.nc2.grid2.GridSubset;
 import ucar.nc2.grid2.GridAxis;
 import ucar.nc2.grid2.GridAxisDependenceType;
 import ucar.nc2.grid2.GridAxisInterval;

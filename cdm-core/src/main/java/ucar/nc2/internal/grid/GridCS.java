@@ -12,6 +12,7 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.*;
 import ucar.nc2.grid.*;
+import ucar.nc2.grid2.GridSubset;
 import ucar.nc2.internal.dataset.DatasetClassifier;
 import ucar.unidata.geoloc.*;
 

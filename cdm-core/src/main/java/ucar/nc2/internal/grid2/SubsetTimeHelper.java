@@ -7,7 +7,7 @@ package ucar.nc2.internal.grid2;
 
 import com.google.common.math.DoubleMath;
 import ucar.nc2.calendar.CalendarDate;
-import ucar.nc2.grid.GridSubset;
+import ucar.nc2.grid2.GridSubset;
 import ucar.nc2.grid2.GridAxis;
 import ucar.nc2.grid2.GridAxisPoint;
 import ucar.nc2.grid2.GridTimeCoordinateSystem;

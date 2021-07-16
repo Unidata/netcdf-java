@@ -19,10 +19,10 @@ import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.nc2.grid.Grid;
-import ucar.nc2.grid.GridDatasetFactory;
-import ucar.nc2.grid.GridReferencedArray;
-import ucar.nc2.grid.GridSubset;
+import ucar.nc2.grid2.Grid;
+import ucar.nc2.grid2.GridDataset;
+import ucar.nc2.grid2.GridDatasetFactory;
+import ucar.nc2.grid2.GridReferencedArray;
 import ucar.nc2.util.DebugFlags;
 import ucar.nc2.write.NcdumpArray;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
@@ -62,7 +62,7 @@ public class TestN4problems {
     String filename = TestN4reading.testDir + "tiling.nc4";
     String vname = "Turbulence_SIGMET_AIRMET";
     Formatter errlog = new Formatter();
-    try (ucar.nc2.grid.GridDataset gds = GridDatasetFactory.openGridDataset(filename, errlog)) {
+    try (GridDataset gds = GridDatasetFactory.openGridDataset(filename, errlog)) {
       Grid grid = gds.findGrid(vname).orElseThrow();
       System.out.printf("grid=%s%n", grid);
       GridReferencedArray data = grid.getReader().read();

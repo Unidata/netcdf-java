@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
+
 package ucar.gcdm.server;
 
 import com.google.common.base.Stopwatch;
@@ -32,7 +37,11 @@ import ucar.nc2.ParsedArraySectionSpec;
 import ucar.nc2.Sequence;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.nc2.grid.*;
+import ucar.nc2.grid2.Grid;
+import ucar.nc2.grid2.GridDataset;
+import ucar.nc2.grid2.GridDatasetFactory;
+import ucar.nc2.grid2.GridReferencedArray;
+import ucar.nc2.grid2.GridSubset;
 import ucar.nc2.util.Misc;
 import ucar.nc2.write.ChunkingIndex;
 
@@ -243,7 +252,7 @@ public class GcdmServer {
       GcdmGridProto.GridDatasetResponse.Builder response = GcdmGridProto.GridDatasetResponse.newBuilder();
       Formatter errlog = new Formatter();
       try (GridDataset gridDataset = GridDatasetFactory.openGridDataset(request.getLocation(), errlog)) {
-        response.setDataset(GcdmGridConverter.encodeDataset(gridDataset));
+        response.setDataset(GcdmGridConverter.encodeGridDataset(gridDataset));
         responseObserver.onNext(response.build());
         responseObserver.onCompleted();
         logger.info("GcdmServer getGridDataset " + request.getLocation());

@@ -5,7 +5,6 @@
 
 package ucar.nc2.grib.grid;
 
-import com.google.common.collect.Streams;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -77,7 +76,6 @@ public class TestGribGridCompare {
   public void compareGrid() throws Exception {
     compareDtCoordinateSystems(filename);
     compareCoverageCoordinateSystems(filename);
-    compareGridCoordinateSystems(filename);
   }
 
   public static boolean compareDtCoordinateSystems(String filename) throws Exception {
@@ -172,48 +170,5 @@ public class TestGribGridCompare {
     return true;
   }
 
-  public static boolean compareGridCoordinateSystems(String filename) throws Exception {
-    System.out.printf("%n");
-    Formatter errlog = new Formatter();
-    try (GridDataset newDataset = GridDatasetFactory.openGridDataset(filename, errlog);
-        ucar.nc2.grid.GridDataset oldDataset = ucar.nc2.grid.GridDatasetFactory.openGridDataset(filename, errlog)) {
-      if (newDataset == null) {
-        System.out.printf("Cant open as ucar.nc2.grid2.GridDataset: %s%n", errlog);
-        return false;
-      }
-      if (oldDataset == null) {
-        System.out.printf("Cant open as ucar.nc2.grid.GridDataset: %s%n", errlog);
-        return false;
-      }
-      System.out.printf("compareGridCoordinateSystems: %s%n", newDataset.getLocation());
-
-      for (Grid grid : newDataset.getGrids()) {
-        ucar.nc2.grid.Grid oldGrid = oldDataset.findGrid(grid.getName()).orElse(null);
-        if (oldGrid == null) {
-          System.out.printf("*** Grid %s not in ucar.nc2.grid.GridDataset%n", grid.getName());
-          continue;
-        }
-        System.out.printf("  Grid/Grid: %s%n", grid.getName());
-
-        ucar.nc2.grid.GridCoordinateSystem oldGcs = oldGrid.getCoordinateSystem();
-        GridCoordinateSystem newGcs = grid.getCoordinateSystem();
-        GridTimeCoordinateSystem newTcs = grid.getTimeCoordinateSystem();
-
-        for (GridAxis<?> newAxis : newGcs.getGridAxes()) {
-          ucar.nc2.grid.GridAxis oldAxis = Streams.stream(oldGcs.getGridAxes())
-              .filter(a -> a.getAxisType().equals(newAxis.getAxisType())).findFirst().orElse(null);
-          if (oldAxis == null) {
-            oldAxis = Streams.stream(oldGcs.getGridAxes()).filter(a -> a.getName().equals(newAxis.getName()))
-                .findFirst().orElse(null);
-          }
-          assertWithMessage(String.format("GridAxis: %s %s%n", newAxis.getName(), newAxis.getAxisType())).that(oldAxis)
-              .isNotNull();
-          int[] oldShape = oldAxis.getNominalShape();
-          assertThat(newAxis.getNominalSize()).isEqualTo(oldShape[oldShape.length - 1]);
-        }
-      }
-    }
-    return true;
-  }
 }
 
