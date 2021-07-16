@@ -16,7 +16,6 @@ import java.util.List;
 @Immutable
 public class MaterializedCoordinateSystem {
 
-  // LOOK should this be MaterializedTimeCoordinateSystem ?
   @Nullable
   public GridTimeCoordinateSystem getTimeCoordSystem() {
     return tcs;
