@@ -37,7 +37,8 @@ public class TestGridHorizCoordinateSystem {
     assertThat(hcs.getProjection()).isEqualTo(project);
     assertThat(hcs.isLatLon()).isTrue();
     assertThat(hcs.isGlobalLon()).isFalse();
-    assertThat(hcs.isRegular()).isFalse();
+    assertThat(hcs.getXHorizAxis().isRegular()).isTrue();
+    assertThat(hcs.getYHorizAxis().isRegular()).isFalse();
     assertThat(hcs.getShape()).isEqualTo(ImmutableList.of(7, 9));
     assertThat(hcs.getSubsetRanges()).isEqualTo(ImmutableList.of(new Range(7), new Range(9)));
 
@@ -73,7 +74,8 @@ public class TestGridHorizCoordinateSystem {
     assertThat(hcs.getProjection()).isEqualTo(project);
     assertThat(hcs.isLatLon()).isFalse();
     assertThat(hcs.isGlobalLon()).isFalse();
-    assertThat(hcs.isRegular()).isTrue();
+    assertThat(hcs.getXHorizAxis().isRegular()).isTrue();
+    assertThat(hcs.getYHorizAxis().isRegular()).isTrue();
     assertThat(hcs.getShape()).isEqualTo(ImmutableList.of(7, 9));
     assertThat(hcs.getSubsetRanges()).isEqualTo(ImmutableList.of(new Range(7), new Range(9)));
 

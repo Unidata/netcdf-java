@@ -37,7 +37,15 @@ public class TestReadGridCoordinateSystem {
     testOpenNetcdfAsGrid(filename, gridName, new int[] {11}, new int[] {19}, new int[] {65, 93});
   }
 
-  private void testOpenNetcdfAsGrid(String endpoint, String gridName, int[] expectedTimeShape, int[] otherCoordShape,
+  @Test
+  public void testDuplicateGrids() throws IOException {
+    String filename = TestDir.cdmUnitTestDir + "ft/grid/namExtract/20060926_0000.nc";
+    String gridName = "Precipitable_water";
+    int ngrids = testOpenNetcdfAsGrid(filename, gridName, new int[] {2}, new int[] {}, new int[] {103, 108});
+    assertThat(ngrids).isEqualTo(8);
+  }
+
+  private int testOpenNetcdfAsGrid(String endpoint, String gridName, int[] expectedTimeShape, int[] otherCoordShape,
       int[] expectedHcsShape) throws IOException {
     System.out.printf("Test Dataset %s%n", endpoint);
 
@@ -65,6 +73,8 @@ public class TestReadGridCoordinateSystem {
           IntStream.concat(IntStream.concat(Arrays.stream(expectedTimeShape), Arrays.stream(otherCoordShape)),
               Arrays.stream(expectedHcsShape)).boxed().collect(Collectors.toList());
       assertThat(cs.getNominalShape()).isEqualTo(expectedShape);
+
+      return gds.getGrids().size();
     }
   }
 }

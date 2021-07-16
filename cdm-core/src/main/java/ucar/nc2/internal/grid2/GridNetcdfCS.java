@@ -6,6 +6,7 @@ package ucar.nc2.internal.grid2;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import ucar.array.Array;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.constants._Coordinate;
@@ -16,13 +17,16 @@ import ucar.nc2.grid2.GridAxisDependenceType;
 import ucar.nc2.grid2.GridAxisPoint;
 import ucar.nc2.grid2.GridCoordinateSystem;
 import ucar.nc2.grid2.GridHorizCoordinateSystem;
+import ucar.nc2.grid2.GridHorizCurvilinear;
 import ucar.nc2.grid2.GridTimeCoordinateSystem;
 import ucar.nc2.grid2.Grids;
 import ucar.nc2.grid2.MaterializedCoordinateSystem;
 import ucar.unidata.geoloc.Projection;
+import ucar.unidata.geoloc.projection.Curvilinear;
 
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
@@ -43,25 +47,35 @@ public class GridNetcdfCS implements GridCoordinateSystem {
    * @param gridAxes The gridAxes already built, so there are no duplicates as we make the coordSys.
    */
   static Optional<GridNetcdfCS> createFromClassifier(DatasetClassifier.CoordSysClassifier classifier,
-      Map<String, GridAxis<?>> gridAxes, Formatter errlog) {
+      Map<String, GridAxis<?>> gridAxes, Formatter errlog) throws IOException {
     GridNetcdfCS.Builder<?> builder = GridNetcdfCS.builder();
     builder.setFeatureType(classifier.getFeatureType());
     builder.setProjection(classifier.getProjection());
+
+    if (classifier.getFeatureType() == FeatureType.CURVILINEAR) {
+      Preconditions.checkNotNull(classifier.lataxis);
+      Preconditions.checkNotNull(classifier.lonaxis);
+      ucar.array.Array<?> latdata = classifier.lataxis.readArray();
+      ucar.array.Array<?> londata = classifier.lonaxis.readArray();
+      builder.setCurvilinearData(latdata, londata);
+    }
 
     ArrayList<GridAxis<?>> axesb = new ArrayList<>();
     for (CoordinateAxis axis : classifier.getAxesUsed()) {
       GridAxis<?> gaxis = gridAxes.get(axis.getFullName());
       if (gaxis == null) {
         errlog.format("Missing Coordinate Axis= %s%n", axis.getFullName());
-        continue;
+      } else {
+        axesb.add(gaxis);
       }
-      axesb.add(gaxis);
     }
     builder.setAxes(axesb);
 
     try {
       return Optional.of(builder.build());
     } catch (Exception e) {
+      e.printStackTrace();
+      errlog.format("createFromClassifier '%s' exception %s%n", classifier.cs.getName(), e.getMessage());
       return Optional.empty();
     }
   }
@@ -71,7 +85,7 @@ public class GridNetcdfCS implements GridCoordinateSystem {
     return name;
   }
 
-  // needed? is it always GRID?
+  // always GRID or CURVILINEAR
   public FeatureType getFeatureType() {
     return featureType;
   }
@@ -264,7 +278,7 @@ public class GridNetcdfCS implements GridCoordinateSystem {
     this.featureType = builder.featureType;
     this.axes = ImmutableList.copyOf(builder.axes);
     this.horizCsys = makeHorizCS(findCoordAxis(AxisType.GeoX, AxisType.Lon), findCoordAxis(AxisType.GeoY, AxisType.Lat),
-        builder.projection);
+        builder.projection, builder.latdata, builder.londata);
     this.tcs = makeTimeCS();
   }
 
@@ -281,7 +295,7 @@ public class GridNetcdfCS implements GridCoordinateSystem {
     this.axes = axesb.build();
 
     this.horizCsys = makeHorizCS(findCoordAxis(AxisType.GeoX, AxisType.Lon), findCoordAxis(AxisType.GeoY, AxisType.Lat),
-        builder.projection);
+        builder.projection, builder.latdata, builder.londata);
     this.tcs = makeTimeCS();
   }
 
@@ -300,13 +314,19 @@ public class GridNetcdfCS implements GridCoordinateSystem {
     return null;
   }
 
-  public static GridHorizCoordinateSystem makeHorizCS(GridAxis<?> xaxis, GridAxis<?> yaxis,
-      @Nullable Projection projection) {
+  private GridHorizCoordinateSystem makeHorizCS(GridAxis<?> xaxis, GridAxis<?> yaxis, @Nullable Projection projection,
+      Array<Number> latdata, Array<Number> londata) {
     Preconditions.checkArgument(xaxis instanceof GridAxisPoint);
     Preconditions.checkArgument(yaxis instanceof GridAxisPoint);
+
     // LOOK heres now to find horizStaggerType in WRF NMM
     String horizStaggerType = xaxis.attributes().findAttributeString(_Coordinate.Stagger, null);
-    return new GridHorizCoordinateSystem((GridAxisPoint) xaxis, (GridAxisPoint) yaxis, projection);
+
+    if (projection instanceof Curvilinear) {
+      return GridHorizCurvilinear.create((GridAxisPoint) xaxis, (GridAxisPoint) yaxis, latdata, londata);
+    } else {
+      return new GridHorizCoordinateSystem((GridAxisPoint) xaxis, (GridAxisPoint) yaxis, projection);
+    }
   }
 
   public static Builder<?> builder() {
@@ -326,6 +346,8 @@ public class GridNetcdfCS implements GridCoordinateSystem {
     private Projection projection;
     private ArrayList<GridAxis<?>> axes = new ArrayList<>();
     private List<String> axesNames;
+    private Array<Number> latdata;
+    private Array<Number> londata;
     private List<String> transformNames;
 
     private boolean built;
@@ -344,6 +366,14 @@ public class GridNetcdfCS implements GridCoordinateSystem {
 
     public T setProjection(Projection projection) {
       this.projection = projection;
+      return self();
+    }
+
+    public T setCurvilinearData(Array<?> latdata, Array<?> londata) {
+      Preconditions.checkArgument(latdata.getArrayType().isNumeric());
+      Preconditions.checkArgument(londata.getArrayType().isNumeric());
+      this.latdata = (Array<Number>) latdata;
+      this.londata = (Array<Number>) londata;
       return self();
     }
 

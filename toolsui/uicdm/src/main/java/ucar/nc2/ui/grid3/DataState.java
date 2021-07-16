@@ -113,6 +113,11 @@ class DataState {
     return false;
   }
 
+  @Override
+  public String toString() {
+    return "DataState{" + "grid=" + grid + '}';
+  }
+
   static class RuntimeNamedObject implements NamedObject {
     final int runtimeIdx;
     final CalendarDate runtime;

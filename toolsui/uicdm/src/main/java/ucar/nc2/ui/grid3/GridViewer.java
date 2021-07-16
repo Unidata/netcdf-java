@@ -11,9 +11,9 @@ import ucar.nc2.grid2.Grid;
 import ucar.nc2.grid2.GridAxis;
 import ucar.nc2.grid2.GridAxisPoint;
 import ucar.nc2.grid2.GridDataset;
+import ucar.nc2.grid2.GridHorizCoordinateSystem;
 import ucar.nc2.grid2.GridTimeCoordinateSystem;
 import ucar.nc2.ui.geoloc.NavigatedPanel;
-import ucar.nc2.ui.geoloc.ProjectionManager;
 import ucar.nc2.ui.gis.MapBean;
 import ucar.nc2.ui.grid.ColorScale;
 import ucar.nc2.ui.util.NamedObjects;
@@ -31,6 +31,7 @@ import ucar.ui.widget.SuperComboBox;
 import ucar.ui.widget.TextHistoryPane;
 import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.ProjectionRect;
+import ucar.unidata.geoloc.projection.Curvilinear;
 import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.util.prefs.PreferencesExt;
 
@@ -45,10 +46,7 @@ import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
 
-/**
- * Display nc2.grid objects.
- * more or less the controller in MVC
- */
+/** Display nc2.grid objects. more or less the controller in MVC */
 public class GridViewer extends JPanel {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GridViewer.class);
 
@@ -79,7 +77,6 @@ public class GridViewer extends JPanel {
   private final JLabel datasetNameLabel = new JLabel();
 
   // the various managers and dialog boxes
-  private ProjectionManager projManager;
   private IndependentWindow infoWindow;
 
   // toolbars
@@ -92,7 +89,6 @@ public class GridViewer extends JPanel {
   private AbstractAction showDatasetInfoAction;
   private AbstractAction minmaxHorizAction, minmaxLogAction, minmaxHoldAction;
   private AbstractAction fieldLoopAction, levelLoopAction, timeLoopAction, runtimeLoopAction;
-  private AbstractAction chooseProjectionAction, saveCurrentProjectionAction;
 
   private AbstractAction dataProjectionAction, drawBBAction, showGridAction, showContoursAction,
       showContourLabelsAction;
@@ -102,7 +98,6 @@ public class GridViewer extends JPanel {
   private DataState dataState;
   private GridDataset gridDataset;
   private Grid currentField;
-  private Projection project;
 
   private List<NamedObject> timeNames;
   private boolean drawHorizOn = true;
@@ -151,7 +146,7 @@ public class GridViewer extends JPanel {
 
       // renderer
       // set up the renderers; Maps are added by addMapBean()
-      gridRenderer = new GridRenderer(store);
+      gridRenderer = new GridRenderer();
       gridRenderer.setColorScale(colorScale);
 
       strideSpinner = new JSpinner(new SpinnerNumberModel(1, 1, 100, 1));
@@ -201,20 +196,23 @@ public class GridViewer extends JPanel {
       navPanel = new NavigatedPanel();
       navPanel.setLayout(new FlowLayout());
       ProjectionRect ma = (ProjectionRect) store.getBean(LastMapAreaName, null);
-      if (ma != null)
+      if (ma != null) {
         navPanel.setMapArea(ma);
+      }
 
       navToolbar = navPanel.getNavToolBar();
       moveToolbar = navPanel.getMoveToolBar();
-      if ((Boolean) navToolbarAction.getValue(BAMutil.STATE))
+      if ((Boolean) navToolbarAction.getValue(BAMutil.STATE)) {
         toolPanel.add(navToolbar);
-      if ((Boolean) moveToolbarAction.getValue(BAMutil.STATE))
+      }
+      if ((Boolean) moveToolbarAction.getValue(BAMutil.STATE)) {
         toolPanel.add(moveToolbar);
+      }
       makeNavPanelWiring();
       addActionsToMenus(dataMenu, configMenu, toolMenu);
 
       BAMutil.addActionToContainer(toolPanel, navPanel.setReferenceAction);
-      BAMutil.addActionToContainer(toolPanel, dataProjectionAction);
+      // BAMutil.addActionToContainer(toolPanel, dataProjectionAction);
       BAMutil.addActionToContainer(toolPanel, showGridAction);
       BAMutil.addActionToContainer(toolPanel, drawBBAction);
       // BAMutil.addActionToContainer(toolPanel, showContourLabelsAction);
@@ -257,11 +255,6 @@ public class GridViewer extends JPanel {
 
       setDrawHorizAndVert(drawHorizOn, drawVertOn);
 
-      // get last saved Projection
-      project = (Projection) store.getBean(LastProjectionName, null);
-      if (project != null)
-        setProjection(project);
-
       // redraw timer
       redrawTimer = new Timer(0, e -> {
         // invoke in event thread
@@ -271,86 +264,15 @@ public class GridViewer extends JPanel {
       redrawTimer.setInitialDelay(DELAY_DRAW_AFTER_DATA_EVENT);
       redrawTimer.setRepeats(false);
 
-
     } catch (Exception e) {
       System.out.println("UI creation failed");
       e.printStackTrace();
     }
   }
 
-
   // actions that control the dataset
   private void makeActionsDataset() {
 
-    /*
-     * choose local dataset
-     * AbstractAction chooseLocalDatasetAction = new AbstractAction() {
-     * public void actionPerformed(ActionEvent e) {
-     * String filename = fileChooser.chooseFilename();
-     * if (filename == null) return;
-     *
-     * Dataset invDs;
-     * try { // DatasetNode parent, String name, Map<String, Object> flds, List< AccessBuilder > accessBuilders, List<
-     * DatasetBuilder > datasetBuilders
-     * Map<String, Object> flds = new HashMap<>();
-     * flds.put(Dataset.FeatureType, FeatureType.GRID.toString());
-     * flds.put(Dataset.ServiceName, ServiceType.File.toString()); // bogus
-     * invDs = new Dataset(null, filename, flds, null, null);
-     * setDataset(invDs);
-     *
-     * } catch (Exception ue) {
-     * JOptionPane.showMessageDialog(CoverageDisplay.this, "Invalid filename = <" + filename + ">\n" + ue.getMessage());
-     * ue.printStackTrace();
-     * }
-     * }
-     * };
-     * BAMutil.setActionProperties(chooseLocalDatasetAction, "FileChooser", "open Local dataset...", false, 'L', -1);
-     *
-     * /* saveDatasetAction = new AbstractAction() {
-     * public void actionPerformed(ActionEvent e) {
-     * String fname = controller.getDatasetName();
-     * if (fname != null) {
-     * savedDatasetList.add( fname);
-     * BAMutil.addActionToMenu( savedDatasetMenu, new DatasetAction( fname), 0);
-     * }
-     * }
-     * };
-     * BAMutil.setActionProperties( saveDatasetAction, null, "save dataset", false, 'S', 0);
-     */
-
-    // Configure
-    chooseProjectionAction = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        getProjectionManager().setVisible();
-      }
-    };
-    BAMutil.setActionProperties(chooseProjectionAction, null, "Projection Manager...", false, 'P', 0);
-
-    saveCurrentProjectionAction = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        getProjectionManager();
-        // set the bounding box
-        // Projection proj = navPanel.getProjectionImpl().constructCopy();
-        // proj.setDefaultMapArea(navPanel.getMapArea());
-        // if (debug) System.out.println(" GV save projection "+ proj);
-
-        // projManage.setMap(renderAll.get("Map")); LOOK!
-        // projManager.saveProjection( proj);
-      }
-    };
-    BAMutil.setActionProperties(saveCurrentProjectionAction, null, "save Current Projection", false, 'S', 0);
-
-    /*
-     * chooseColorScaleAction = new AbstractAction() {
-     * public void actionPerformed(ActionEvent e) {
-     * if (null == csManager) // lazy instantiation
-     * makeColorScaleManager();
-     * csManager.show();
-     * }
-     * };
-     * BAMutil.setActionProperties( chooseColorScaleAction, null, "ColorScale Manager...", false, 'C', 0);
-     *
-     */
     // redraw
     redrawAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
@@ -446,20 +368,22 @@ public class GridViewer extends JPanel {
   private void makeActions() {
     boolean state;
 
-    dataProjectionAction = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        Boolean state = (Boolean) getValue(BAMutil.STATE);
-        if (state) {
-          Projection dataProjection = gridRenderer.getDataProjection();
-          if (null != dataProjection)
-            setProjection(dataProjection);
-        } else {
-          setProjection(new LatLonProjection());
-        }
-      }
-    };
-    BAMutil.setActionProperties(dataProjectionAction, "nj22/DataProjection", "use Data Projection", true, 'D', 0);
-    dataProjectionAction.putValue(BAMutil.STATE, true);
+    /*
+     * dataProjectionAction = new AbstractAction() {
+     * public void actionPerformed(ActionEvent e) {
+     * Boolean state = (Boolean) getValue(BAMutil.STATE);
+     * if (state) {
+     * Projection dataProjection = gridRenderer.getDataProjection();
+     * if (null != dataProjection)
+     * setProjection(dataProjection);
+     * } else {
+     * setProjection(new LatLonProjection());
+     * }
+     * }
+     * };
+     * BAMutil.setActionProperties(dataProjectionAction, "nj22/DataProjection", "use Data Projection", true, 'D', 0);
+     * dataProjectionAction.putValue(BAMutil.STATE, true);
+     */
 
     // contouring
     drawBBAction = new AbstractAction() {
@@ -654,11 +578,9 @@ public class GridViewer extends JPanel {
 
     // get Projection Events from the navigated panel
     navPanel.addNewProjectionListener(e -> {
-      if (Debug.isSet("event/NewProjection"))
-        System.out.println("Controller got NewProjectionEvent " + navPanel.getMapArea());
       if (eventsOK && mapRenderer != null) {
         mapRenderer.setProjection(e.getProjection());
-        gridRenderer.setViewProjection(e.getProjection());
+        gridRenderer.setDataProjection(e.getProjection()); // ??
         drawH(false);
       }
     });
@@ -694,9 +616,6 @@ public class GridViewer extends JPanel {
 
     store.putBoolean("navToolbarAction", (Boolean) navToolbarAction.getValue(BAMutil.STATE));
     store.putBoolean("moveToolbarAction", (Boolean) moveToolbarAction.getValue(BAMutil.STATE));
-
-    if (projManager != null)
-      projManager.storePersistentData();
 
     store.putBeanObject(LastMapAreaName, navPanel.getMapArea());
     store.putBeanObject(LastProjectionName, navPanel.getProjectionImpl());
@@ -735,26 +654,38 @@ public class GridViewer extends JPanel {
   }
 
   // assume that its done in the event thread
-  boolean showDataset() {
-    currentField = gridDataset.getGrids().get(0); // first
+  void showDataset() {
     eventsOK = false; // dont let this trigger redraw
+    this.currentField = gridDataset.getGrids().get(0); // first
     this.dataState = gridRenderer.setGrid(gridDataset, currentField);
-    Projection p = currentField.getCoordinateSystem().getHorizCoordinateSystem().getProjection();
-    gridRenderer.setDataProjection(p);
+
     setField(currentField);
+    GridHorizCoordinateSystem hcs = currentField.getCoordinateSystem().getHorizCoordinateSystem();
+    setProjection(hcs);
 
-    // LOOK if possible, change the projection and the map area to one that fits this dataset
-    if (p != null) {
-      setProjection(p);
-    }
-    ProjectionRect fieldBB = currentField.getCoordinateSystem().getHorizCoordinateSystem().getBoundingBox();
-    if (fieldBB != null) {
-      navPanel.setMapArea(fieldBB);
+    redrawLater();
+    eventsOK = true; // events now ok
+  }
+
+  private void setProjection(GridHorizCoordinateSystem hcs) {
+    Projection p = hcs.getProjection();
+    ProjectionRect bb = hcs.getBoundingBox();
+    double centerlon = 0.0;
+    if (bb != null) {
+      navPanel.setMapArea(bb);
+      navPanel.setMapAreaHome(bb);
+      centerlon = bb.getCenterX();
     }
 
-    // events now ok
-    eventsOK = true;
-    return true;
+    if (hcs.isLatLon() || hcs.isCurvilinear()) {
+      p = new LatLonProjection("LatLon", null, centerlon);
+    }
+    if (mapRenderer != null) {
+      mapRenderer.setProjection(p);
+    }
+    gridRenderer.setDataProjection(p);
+    // renderWind.setProjection( p);
+    navPanel.setProjectionImpl(p);
   }
 
   public void setDataMinMaxType(ColorScale.MinMaxType type) {
@@ -821,8 +752,9 @@ public class GridViewer extends JPanel {
     }
 
     // set time offsets
-    if (this.dataState.tcs != null && this.dataState.toaxis != null) {
-      GridAxis toaxis1D = dataState.tcs.getTimeOffsetAxis(dataState.runtimeCoord.runtimeIdx);
+    if (this.dataState.tcs != null) {
+      int runtimeIdx = (this.dataState.runtimeCoord != null) ? dataState.runtimeCoord.runtimeIdx : 0;
+      GridAxis<?> toaxis1D = dataState.tcs.getTimeOffsetAxis(runtimeIdx);
       timeNames = NamedObjects.getCoordNames(toaxis1D);
       timeChooser.setCollection(timeNames.iterator(), true);
       NamedObject no = findNamedObject(timeNames, dataState.timeCoord);
@@ -916,17 +848,6 @@ public class GridViewer extends JPanel {
     }
   }
 
-  public void setProjection(Projection p) {
-    project = p;
-    if (mapRenderer != null) // gridTable.setDataset(controller.getFields());
-
-      mapRenderer.setProjection(p);
-    gridRenderer.setViewProjection(p);
-    // renderWind.setProjection( p);
-    navPanel.setProjectionImpl(p);
-    redrawLater();
-  }
-
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   void start(boolean ok) {
@@ -944,13 +865,15 @@ public class GridViewer extends JPanel {
   }
 
   private void drawH(boolean immediate) {
-    if (!startOK)
+    if (!startOK) {
       return;
+    }
 
     // cancel any redrawLater
     boolean already = redrawTimer.isRunning();
-    if (already)
+    if (already) {
       redrawTimer.stop();
+    }
 
     long tstart = System.currentTimeMillis();
     long startTime, tookTime;
@@ -958,8 +881,9 @@ public class GridViewer extends JPanel {
     //// horizontal slice
     // the Navigated Panel's BufferedImage graphics
     Graphics2D gNP = navPanel.getBufferedImageGraphics();
-    if (gNP == null) // panel not drawn on screen yet
+    if (gNP == null) { // panel not drawn on screen yet
       return;
+    }
 
     // clear
     gNP.setBackground(navPanel.getBackgroundColor());
@@ -1014,34 +938,6 @@ public class GridViewer extends JPanel {
     }
   }
 
-  /*
-   * private void drawV(boolean immediate) {
-   * if (!startOK) return;
-   * ScaledPanel drawArea = vertPanel.getDrawArea();
-   * Graphics2D gV = drawArea.getBufferedImageGraphics();
-   * if (gV == null)
-   * return;
-   * 
-   * long startTime = System.currentTimeMillis();
-   * 
-   * gV.setBackground(Color.white);
-   * gV.fill(gV.getClipBounds());
-   * renderGrid.renderVertView(gV, atI);
-   * 
-   * if (Debug.isSet("timing/GridDrawVert")) {
-   * long tookTime = System.currentTimeMillis() - startTime;
-   * System.out.println("timing.GridDrawVert: " + tookTime*.001 + " seconds");
-   * }
-   * gV.dispose();
-   * 
-   * // copy buffer to the screen
-   * if (immediate)
-   * drawArea.drawNow();
-   * else
-   * drawArea.repaint();
-   * }
-   */
-
   private synchronized void redrawLater() {
     // redrawComplete |= complete;
     boolean already = redrawTimer.isRunning();
@@ -1049,23 +945,6 @@ public class GridViewer extends JPanel {
       redrawTimer.restart();
     else
       redrawTimer.start();
-  }
-
-  public ProjectionManager getProjectionManager() {
-    if (null != projManager)
-      return projManager;
-
-    projManager = new ProjectionManager(null, store);
-    projManager.addPropertyChangeListener(e -> {
-      if (e.getPropertyName().equals("ProjectionImpl")) {
-        Projection p = (Projection) e.getNewValue();
-        // p = p.constructCopy();
-        // System.out.println("UI: new Projection "+p);
-        setProjection(p);
-      }
-    });
-
-    return projManager;
   }
 
   private void addChoosers() {
@@ -1106,9 +985,6 @@ public class GridViewer extends JPanel {
     configMenu.add(toolbarMenu);
     BAMutil.addActionToMenu(toolbarMenu, navToolbarAction);
     BAMutil.addActionToMenu(toolbarMenu, moveToolbarAction);
-
-    BAMutil.addActionToMenu(configMenu, chooseProjectionAction);
-    BAMutil.addActionToMenu(configMenu, saveCurrentProjectionAction);
 
     //// tools menu
     JMenu displayMenu = new JMenu("Display control");

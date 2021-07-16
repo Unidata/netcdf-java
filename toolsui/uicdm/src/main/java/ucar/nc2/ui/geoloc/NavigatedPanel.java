@@ -136,7 +136,7 @@ public class NavigatedPanel extends JPanel {
   // debug
   private int repaintCount;
   private static final boolean debugDraw = false, debugEvent = false, debugThread = false, debugStatus = false;
-  private static final boolean debugTime = false, debugPrinting = false, debugBB = false, debugZoom = false;
+  private static final boolean debugTime = false, debugPrinting = false, debugBB = true, debugZoom = false;
   private static final boolean debugBounds = false, debugSelection = false, debugNewProjection = false;
 
   /** The constructor. */
@@ -701,6 +701,9 @@ public class NavigatedPanel extends JPanel {
     workS.setLocation(mousex, mousey);
     workW = navigate.screenToWorld(workS);
     LatLonPoint workL = project.projToLatLon(workW);
+    if (workL == null) {
+      return;
+    }
     if (lmMove.hasListeners())
       lmMove.sendEvent(new CursorMoveEvent(this, workW));
 

@@ -3,7 +3,6 @@ package ucar.nc2.grid2;
 
 import com.google.common.collect.ImmutableList;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.ma2.Array;
@@ -57,7 +56,7 @@ public class TestGridReadHorizStride {
       System.out.printf(" data shape=%s%n", Arrays.toString(geoArray.data().getShape()));
       assertThat(geoArray.data().getShape()).isEqualTo(new int[] {1, 93, 12, 37, 72});
 
-      GridHorizCoordinateSystem hcs2 = mcs.getHorizCoordSystem();
+      GridHorizCoordinateSystem hcs2 = mcs.getHorizCoordinateSystem();
       assertThat(hcs2).isNotNull();
       System.out.printf(" data hcs shape=%s%n", hcs2.getShape());
       assertThat(hcs2.getShape()).isEqualTo(ImmutableList.of(37, 72));

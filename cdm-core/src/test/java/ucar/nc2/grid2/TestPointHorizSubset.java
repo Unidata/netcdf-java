@@ -43,7 +43,6 @@ public class TestPointHorizSubset {
     assertThat(subset.getProjection()).isEqualTo(project);
     assertThat(subset.isLatLon()).isFalse();
     assertThat(subset.isGlobalLon()).isFalse();
-    assertThat(subset.isRegular()).isTrue();
     assertThat(subset.getSubsetRanges()).isEqualTo(ImmutableList.of(Range.make(0, 6, 3), Range.make(0, 8, 3)));
     assertThat(subset.getShape()).isEqualTo(ImmutableList.of(3, 3));
 
@@ -103,7 +102,8 @@ public class TestPointHorizSubset {
     assertThat(subset.getProjection()).isEqualTo(project);
     assertThat(subset.isLatLon()).isFalse();
     assertThat(subset.isGlobalLon()).isFalse();
-    assertThat(subset.isRegular()).isFalse();
+    assertThat(hcs.getXHorizAxis().isRegular()).isTrue();
+    assertThat(hcs.getYHorizAxis().isRegular()).isFalse();
     assertThat(subset.getSubsetRanges()).isEqualTo(ImmutableList.of(Range.make(0, 6, 2), Range.make(0, 8, 2)));
     assertThat(subset.getShape()).isEqualTo(ImmutableList.of(4, 5));
 
@@ -167,7 +167,8 @@ public class TestPointHorizSubset {
     assertThat(subset.getProjection()).isEqualTo(project);
     assertThat(subset.isLatLon()).isFalse();
     assertThat(subset.isGlobalLon()).isFalse();
-    assertThat(subset.isRegular()).isFalse();
+    assertThat(hcs.getXHorizAxis().isRegular()).isFalse();
+    assertThat(hcs.getYHorizAxis().isRegular()).isFalse();
     assertThat(subset.getSubsetRanges()).isEqualTo(ImmutableList.of(Range.make(0, 6, 2), Range.make(0, 4, 2)));
     assertThat(subset.getShape()).isEqualTo(ImmutableList.of(4, 3));
 
@@ -234,7 +235,6 @@ public class TestPointHorizSubset {
     assertThat(subset.getProjection()).isEqualTo(project);
     assertThat(subset.isLatLon()).isFalse();
     assertThat(subset.isGlobalLon()).isFalse();
-    assertThat(subset.isRegular()).isTrue();
 
     assertThat(subset.getGeoUnits()).isEqualTo("km");
     // assertThat(subset.getBoundingBox()).isEqualTo(ProjectionRect.fromSpec("-15, -16.5, 90, 99"));
@@ -298,7 +298,6 @@ public class TestPointHorizSubset {
     assertThat(subset.getProjection()).isEqualTo(project);
     assertThat(subset.isLatLon()).isFalse();
     assertThat(subset.isGlobalLon()).isFalse();
-    assertThat(subset.isRegular()).isFalse();
 
     assertThat(subset.getGeoUnits()).isEqualTo("km");
     assertThat(subset.getLatLonBoundingBox()).isNotNull();
@@ -363,7 +362,8 @@ public class TestPointHorizSubset {
     assertThat(subset.getProjection()).isEqualTo(project);
     assertThat(subset.isLatLon()).isFalse();
     assertThat(subset.isGlobalLon()).isFalse();
-    assertThat(subset.isRegular()).isFalse();
+    assertThat(subset.getXHorizAxis().isRegular()).isFalse();
+    assertThat(subset.getYHorizAxis().isRegular()).isFalse();
 
     assertThat(subset.getGeoUnits()).isEqualTo("km");
     assertThat(subset.getLatLonBoundingBox()).isNotNull();

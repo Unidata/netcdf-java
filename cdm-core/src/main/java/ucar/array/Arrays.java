@@ -525,7 +525,7 @@ public class Arrays {
     if (a instanceof ArrayDouble) {
       ArrayDouble ad = (ArrayDouble) a;
       for (double val : ad) {
-        if (hasEval && eval.isMissing(val)) {
+        if ((hasEval && eval.isMissing(val)) || Double.isNaN(val)) {
           continue;
         }
         if (val > max)
@@ -536,7 +536,7 @@ public class Arrays {
     } else {
       for (Number number : a) {
         double val = number.doubleValue();
-        if (hasEval && eval.isMissing(val)) {
+        if (hasEval && eval.isMissing(val) || Double.isNaN(val)) {
           continue;
         }
         if (val > max)

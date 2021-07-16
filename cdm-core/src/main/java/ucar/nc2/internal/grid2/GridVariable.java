@@ -14,6 +14,7 @@ import javax.annotation.concurrent.Immutable;
 import java.io.IOException;
 import java.util.Formatter;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /** Wraps a VariableDS, turns into a Grid */
@@ -69,11 +70,6 @@ public class GridVariable implements Grid {
     return vds.isMissing(val);
   }
 
-  @Override
-  public String toString() {
-    return vds + "\n permuter=" + permuter + '}';
-  }
-
   /** Subsetting the coordinate system, then using that subset to do the read. Special to Netcdf, not general. */
   @Override
   public GridReferencedArray readData(GridSubset subset) throws IOException, ucar.array.InvalidRangeException {
@@ -114,4 +110,25 @@ public class GridVariable implements Grid {
     // LOOK
     return (Array<Number>) dataVolume;
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
+    GridVariable that = (GridVariable) o;
+    return vds.equals(that.vds);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(vds);
+  }
+
+  @Override
+  public String toString() {
+    return vds + "\n permuter=" + permuter + '}';
+  }
+
 }
