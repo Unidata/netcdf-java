@@ -125,6 +125,57 @@ public class GridHorizCurvilinear extends GridHorizCoordinateSystem {
     }
   }
 
+  /*
+   * CoordInterval getCoordIntervalLon() {
+   * double edge1, edge2;
+   * 
+   * double valuei = londata.get(yindex, xindex).doubleValue();
+   * double valueim1 = xindex > 0 ? londata.get(yindex, xindex - 1).doubleValue() : Double.NaN;
+   * 
+   * if (xindex > 0) {
+   * edge1 = (valueim1 + valuei) / 2;
+   * } else {
+   * double value0 = londata.get(yindex, 0).doubleValue();
+   * double value1 = londata.get(yindex, 1).doubleValue();
+   * edge1 = value0 - (value1 - value0) / 2;
+   * }
+   * 
+   * if (xindex < nx - 1) {
+   * double valueip1 = londata.get(yindex, xindex + 1).doubleValue();
+   * edge2 = (valuei + valueip1) / 2;
+   * } else {
+   * edge2 = valuei - (valuei - valueim1) / 2;
+   * }
+   * 
+   * return CoordInterval.create(edge1, edge2);
+   * }
+   * 
+   * CoordInterval getCoordIntervalLat() {
+   * double edge1, edge2;
+   * 
+   * double valuei = latdata.get(yindex, xindex).doubleValue();
+   * double valueim1 = yindex > 0 ? latdata.get(yindex - 1, xindex).doubleValue() : Double.NaN;
+   * 
+   * if (yindex > 0) {
+   * edge1 = (valueim1 + valuei) / 2;
+   * } else {
+   * double value0 = latdata.get(0, xindex).doubleValue();
+   * double value1 = latdata.get(1, xindex).doubleValue();
+   * edge1 = value0 - (value1 - value0) / 2;
+   * }
+   * 
+   * if (yindex < ny - 1) {
+   * double valueip1 = latdata.get(yindex + 1, xindex).doubleValue();
+   * edge2 = (valuei + valueip1) / 2;
+   * } else {
+   * edge2 = valuei - (valuei - valueim1) / 2;
+   * }
+   * 
+   * return CoordInterval.create(edge1, edge2);
+   * }
+   * }
+   */
+
   private Array<Double> makeEdges(Array<Number> midpoints) {
     int[] shape = midpoints.getShape();
     int ny = shape[0];
