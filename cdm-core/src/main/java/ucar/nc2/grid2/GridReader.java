@@ -10,6 +10,7 @@ import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.grid.CoordInterval;
 import ucar.nc2.grid.GridSubset;
 import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.geoloc.ProjectionRect;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -22,17 +23,6 @@ public class GridReader {
 
   public GridReader(Grid grid) {
     this.grid = grid;
-  }
-
-  public GridReader setVertCoord(Object coord) {
-    if (coord instanceof Number) {
-      req.put(GridSubset.vertPoint, coord);
-    } else if (coord instanceof CoordInterval) {
-      req.put(GridSubset.vertIntv, coord);
-    } else {
-      throw new RuntimeException("setVertCoord must be Number or CoordInterval " + coord);
-    }
-    return this;
   }
 
   public GridReader setTime(CalendarDate date) {
@@ -77,11 +67,6 @@ public class GridReader {
     return this;
   }
 
-  public GridReader setLatLonBoundingBox(LatLonRect llbb) {
-    req.put(GridSubset.latlonBB, llbb);
-    return this;
-  }
-
   public GridReader setEnsCoord(Object coord) {
     Preconditions.checkArgument(coord instanceof Double);
     req.put(GridSubset.ensCoord, coord);
@@ -90,6 +75,27 @@ public class GridReader {
 
   public GridReader setHorizStride(int stride) {
     req.put(GridSubset.horizStride, stride);
+    return this;
+  }
+
+  public GridReader setLatLonBoundingBox(LatLonRect llbb) {
+    req.put(GridSubset.latlonBB, llbb);
+    return this;
+  }
+
+  public GridReader setProjectionBoundingBox(ProjectionRect projRect) {
+    req.put(GridSubset.projBB, projRect);
+    return this;
+  }
+
+  public GridReader setVertCoord(Object coord) {
+    if (coord instanceof Number) {
+      req.put(GridSubset.vertPoint, coord);
+    } else if (coord instanceof CoordInterval) {
+      req.put(GridSubset.vertIntv, coord);
+    } else {
+      throw new RuntimeException("setVertCoord must be Number or CoordInterval " + coord);
+    }
     return this;
   }
 

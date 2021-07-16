@@ -154,8 +154,17 @@ public class GridHorizCoordinateSystem {
     LatLonRect llbb = params.getLatLonBoundingBox();
     ProjectionRect projbb = params.getProjectionBoundingBox();
 
-    // TODO GridSubset.latlonPoint
-    if (projbb != null) { // TODO ProjectionRect ok for isLatlon = true?
+    if (llbb != null && !isLatLon()) {
+      projbb = projection.latLonToProjBB(llbb);
+      llbb = null;
+    }
+
+    if (projbb != null && isLatLon()) {
+      llbb = projection.projToLatLonBB(projbb);
+      projbb = null;
+    }
+
+    if (projbb != null) {
       SubsetPointHelper yhelper = new SubsetPointHelper(yaxis);
       Optional<GridAxisPoint.Builder<?>> ybo =
           yhelper.subsetRange(projbb.getMinY(), projbb.getMaxY(), horizStride, errlog);
@@ -172,7 +181,7 @@ public class GridHorizCoordinateSystem {
       }
       xaxisSubset = xbo.get().build();
 
-    } else if (llbb != null && isLatLon()) { // TODO LatLonRect only used for isLatlon = true?
+    } else if (llbb != null) {
       SubsetPointHelper yhelper = new SubsetPointHelper(yaxis);
       Optional<GridAxisPoint.Builder<?>> ybo =
           yhelper.subsetRange(llbb.getLatMin(), llbb.getLatMax(), horizStride, errlog);
@@ -181,7 +190,8 @@ public class GridHorizCoordinateSystem {
       }
       yaxisSubset = ybo.get().build();
 
-      // TODO longitude wrapping
+      // TODO logitude wrapping, we have to port code from ucar.nc2.ft2.coverage.HorizCoordSys.
+      // see TestGridReadHorizSubset.testCrossLongitudeSeam and in ft2.coverage
       SubsetPointHelper xhelper = new SubsetPointHelper(xaxis);
       Optional<GridAxisPoint.Builder<?>> xbo =
           xhelper.subsetRange(llbb.getLonMin(), llbb.getLonMax(), horizStride, errlog);

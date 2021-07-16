@@ -2,7 +2,7 @@
 package ucar.nc2.grid2;
 
 import com.google.common.base.Preconditions;
-import org.junit.Ignore;
+import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
@@ -22,12 +22,12 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.google.common.truth.Truth.assertThat;
 
 /** Test {@link GridHorizCoordinateSystem} reading with horizontal subsets */
-// @Ignore("Grid data reading not ready yet")
 public class TestGridReadHorizSubset {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -48,28 +48,28 @@ public class TestGridReadHorizSubset {
       assertThat(cs).isNotNull();
       GridHorizCoordinateSystem hcs = cs.getHorizCoordinateSystem();
       assertThat(hcs).isNotNull();
+      System.out.printf(" hcs BB = %s %n", hcs.getBoundingBox());
 
       // bbox = ll: 16.79S 20.5W+ ur: 14.1N 20.09E
       LatLonRect bbox = new LatLonRect(-16.79, -20.5, 14.1, 20.9);
 
       Projection p = hcs.getProjection();
       ProjectionRect prect = p.latLonToProjBB(bbox); // must override default implementation
-      System.out.printf("%s -> %s %n", bbox, prect);
+      System.out.printf("latLonToProjBB %s -> %s %n", bbox, prect);
 
       ProjectionRect expected =
           new ProjectionRect(ProjectionPoint.create(-2129.568880, -1793.004131), 4297.845286, 3308.388526);
-      // assert prect.nearlyEquals(expected);
       assertThat(prect.nearlyEquals(expected)).isTrue();
 
       LatLonRect bb2 = p.projToLatLonBB(prect);
-      System.out.printf("%s -> %s %n", prect, bb2);
-      GridReferencedArray geo = coverage.getReader().setLatLonBoundingBox(bbox).read();
-      assertThat(geo).isNotNull();
-      assertThat(geo.getMaterializedCoordinateSystem()).isNotNull();
-      assertThat(geo.getMaterializedCoordinateSystem().getHorizCoordinateSystem()).isNotNull();
+      System.out.printf("projToLatLonBB %s -> %s %n", prect, bb2);
 
-      int[] expectedShape = new int[] {363, 479};
+      List<Integer> expectedShape = ImmutableList.of(363, 479);
+      GridReferencedArray geo = coverage.getReader().setLatLonBoundingBox(bbox).read();
       assertThat(geo.getMaterializedCoordinateSystem().getHorizCoordinateSystem().getShape()).isEqualTo(expectedShape);
+
+      GridReferencedArray geo2 = coverage.getReader().setProjectionBoundingBox(prect).read();
+      assertThat(geo2.getMaterializedCoordinateSystem().getHorizCoordinateSystem().getShape()).isEqualTo(expectedShape);
     }
   }
 
@@ -91,19 +91,19 @@ public class TestGridReadHorizSubset {
       GridHorizCoordinateSystem hcs = cs.getHorizCoordinateSystem();
       assertThat(hcs).isNotNull();
 
-      LatLonRect bbox = new LatLonRect.Builder(LatLonPoint.create(40.0, -100.0), 10.0, 20.0).build();
+      LatLonRect bbox = LatLonRect.builder(LatLonPoint.create(40.0, -100.0), 10.0, 20.0).build();
       checkLatLonSubset(hcs, coverage, bbox, new int[] {141, 281});
 
-      bbox = new LatLonRect.Builder(LatLonPoint.create(-40.0, -180.0), 120.0, 300.0).build();
+      bbox = LatLonRect.builder(LatLonPoint.create(-40.0, -180.0), 120.0, 300.0).build();
       checkLatLonSubset(hcs, coverage, bbox, new int[] {800, 1300});
     }
   }
 
-  // longitude subsetting (CoordAxis1D regular) }
+  // TODO to make this test work, we have to port code from ucar.nc2.ft2.coverage.HorizCoordSys, namely subsetLon.
+  // leave it broken as a reminder to fix
   @Test
-  // @Ignore("not done")
   @Category(NeedsCdmUnitTest.class)
-  public void testLongitudeSubset() throws Exception {
+  public void testLongitudeNeedsNormalizing() throws Exception {
     String filename = TestDir.cdmUnitTestDir + "tds/ncep/GFS_Global_onedeg_20100913_0000.grib2";
     System.out.printf("open %s%n", filename);
 
@@ -119,12 +119,16 @@ public class TestGridReadHorizSubset {
       assertThat(cs).isNotNull();
       GridHorizCoordinateSystem hcs = cs.getHorizCoordinateSystem();
       assertThat(hcs).isNotNull();
+      System.out.printf(" hcs llbb = %s %n", hcs.getLatLonBoundingBox());
 
-      LatLonRect bbox = new LatLonRect.Builder(LatLonPoint.create(40.0, -100.0), 10.0, 20.0).build();
+      LatLonRect bbox = LatLonRect.builder(LatLonPoint.create(40.0, -100.0), 10.0, 20.0).build();
+      System.out.printf(" request llbb = %s %n", bbox);
       checkLatLonSubset(hcs, coverage, bbox, new int[] {1, 11, 21});
     }
   }
 
+  // TODO to make this test work, we have to port code from ucar.nc2.ft2.coverage.HorizCoordSys.
+  // leave it broken as a reminder to fix
   @Test
   @Category(NeedsCdmUnitTest.class)
   public void testCrossLongitudeSeam() throws Exception {
@@ -149,34 +153,37 @@ public class TestGridReadHorizSubset {
     }
   }
 
+  // TODO cross seam
   @Test
   @Category(NeedsCdmUnitTest.class)
-  public void testLongitudeSubsetWithHorizontalStride() throws Exception {
+  public void testCrossLongitudeSeamWithHorizontalStride() throws Exception {
     String filename = TestDir.cdmUnitTestDir + "tds/ncep/GFS_Global_onedeg_20100913_0000.grib2";
+    String gribId = "VAR_0-3-0_L1";
     System.out.printf("open %s%n", filename);
 
     Formatter errlog = new Formatter();
     try (GridDataset gds = GridDatasetFactory.openGridDataset(filename, errlog)) {
       assertThat(gds).isNotNull();
 
-      String gribId = "VAR_0-3-0_L1";
-      Grid coverage = gds.findGridByAttribute(Grib.VARIABLE_ID_ATTNAME, gribId).orElseThrow();
-      assertThat(coverage).isNotNull();
+      Grid grid = gds.findGridByAttribute(Grib.VARIABLE_ID_ATTNAME, gribId).orElseThrow();
+      assertThat(grid).isNotNull();
 
-      GridCoordinateSystem cs = coverage.getCoordinateSystem();
+      GridCoordinateSystem cs = grid.getCoordinateSystem();
       assertThat(cs).isNotNull();
       GridHorizCoordinateSystem origHcs = cs.getHorizCoordinateSystem();
       assertThat(origHcs).isNotNull();
+      System.out.printf(" origHcs llbb = %s %n", origHcs.getLatLonBoundingBox());
 
       // Next, create the subset param and make the request
-      final CalendarDate validTime = CalendarDate.fromUdunitIsoDate(null, "2010-09-21T00:00:00Z").orElseThrow();
+      CalendarDate validTime = CalendarDate.fromUdunitIsoDate(null, "2010-09-21T00:00:00Z").orElseThrow();
       // subset across the seam
-      final LatLonRect subsetLatLonRequest = new LatLonRect.Builder(LatLonPoint.create(-15, -10), 30, 20).build();
-      final int stride = 2;
+      LatLonRect subsetLatLonRequest = LatLonRect.builder(LatLonPoint.create(-15, -10), 30, 20).build();
+      System.out.printf(" llbb request = %s %n", subsetLatLonRequest);
+      int stride = 2;
 
       // make subset
-      GridReferencedArray geoArray = coverage.getReader().setTime(validTime).setLatLonBoundingBox(subsetLatLonRequest)
-          .setHorizStride(stride).read();
+      GridReferencedArray geoArray =
+          grid.getReader().setTime(validTime).setLatLonBoundingBox(subsetLatLonRequest).setHorizStride(stride).read();
       assertThat(geoArray).isNotNull();
 
       // Check that TimeAxis is 1D, has one coordinate, and it's equal to the time we requested
@@ -224,10 +231,12 @@ public class TestGridReadHorizSubset {
         double val = dataSlice.get(sliceIndex.set(i)).doubleValue();
         double valFlip = dataFlip.get(flipIndex.set(i)).doubleValue();
         // only sum if not missing
-        if (!coverage.isMissing(val))
+        if (!grid.isMissing(val)) {
           sumData += val;
-        if (!coverage.isMissing(valFlip))
+        }
+        if (!grid.isMissing(valFlip)) {
           sumDataFlip += valFlip;
+        }
       }
       assertThat(sumData).isNotEqualTo(initialSumVal);
       assertThat(sumDataFlip).isNotEqualTo(initialSumVal);
