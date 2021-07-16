@@ -75,6 +75,54 @@ public class TestNc4Structures {
     System.out.printf("%s%n", cancel);
   }
 
+  @Test
+  public void appendStructureData() throws IOException, InvalidRangeException {
+    String ncFileOut = tempFolder.newFile().getAbsolutePath();
+    NetcdfFormatWriter.Builder wb = NetcdfFormatWriter.createNewNetcdf4(NetcdfFileFormat.NETCDF4, ncFileOut, null);
+
+    Group.Builder gr_root = wb.getRootGroup();
+
+    // create dimension
+    Dimension dim = new Dimension("dim", 3);
+    gr_root.addDimension(dim);
+
+    // create structure
+    Structure.Builder<?> sb = Structure.builder();
+    sb.setName("struct");
+    sb.addDimension(dim);
+    sb.setParentGroupBuilder(gr_root);
+
+    // add a member
+    Variable.Builder<?> var = Variable.builder();
+    var.setDataType(DataType.INT);
+    var.setName("var");
+    var.addDimension(dim);
+    sb.addMemberVariable(var);
+
+    // build
+    wb.getRootGroup().addVariable(sb);
+    NetcdfFormatWriter writer = wb.build();
+
+    // add member data
+    Structure s = (Structure) writer.findVariable("/struct");
+    StructureMembers sm = s.makeStructureMembers();
+    StructureDataW sw = new StructureDataW(sm);
+    int[] data = new int[] {1, 2, 3};
+    Array dataArray = Array.factory(DataType.INT, new int[] {3}, data);
+    sw.setMemberData(sm.findMember(var.shortName), dataArray);
+
+    // write to file
+    writer.appendStructureData(s, sw);
+    writer.close();
+
+    // read and verify
+    NetcdfFile ncfile = NetcdfFiles.open(ncFileOut);
+    Structure struct = (Structure) ncfile.findVariable("/struct");
+    Array out = struct.readStructure(0).getArray(var.shortName);
+    Assert.assertArrayEquals(data, (int[]) out.get1DJavaArray(DataType.INT));
+    ncfile.close();
+  }
+
   // Demonstrates GitHub issue #296.
   @Ignore("Resolve issue before we enable this.")
   @Test
