@@ -103,7 +103,6 @@ public class TestGridCompareCoverage {
     try (GridDataset newDataset = GridDatasetFactory.openGridDataset(filename, errlog);
         FeatureDatasetCoverage cc = CoverageDatasetFactory.open(filename)) {
       assertThat(cc).isNotNull();
-      assertThat(cc.getCoverageCollections()).hasSize(1);
       CoverageCollection oldDataset = cc.getCoverageCollections().get(0);
       assertThat(oldDataset).isNotNull();
 

@@ -63,7 +63,6 @@ public class TestGribCalendarProblem {
       assertThat(ds).isNotNull();
       Optional<ucar.nc2.grid2.Grid> gridO = ds.findGrid(vname);
       assertThat(gridO).isPresent();
-      assertThat(gridO.get()).isInstanceOf(ucar.nc2.internal.grid.GridVariable.class);
     }
   }
 }

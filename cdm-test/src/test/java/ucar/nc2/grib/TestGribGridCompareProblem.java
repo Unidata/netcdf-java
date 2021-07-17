@@ -10,7 +10,7 @@ import ucar.nc2.ft2.coverage.CoverageCollection;
 import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
 import ucar.nc2.ft2.coverage.FeatureDatasetCoverage;
 import ucar.nc2.internal.grid2.DatasetClassifier;
-import ucar.nc2.internal.grid.GridNetcdfDataset;
+import ucar.nc2.internal.grid2.GridNetcdfDataset;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
