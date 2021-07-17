@@ -113,7 +113,7 @@ public class TestReadGridDataset {
 
       MaterializedCoordinateSystem mcs = geoArray.getMaterializedCoordinateSystem();
       assertThat(mcs).isNotNull();
-      assertThat(mcs.getHorizCoordSystem().isLatLon()).isEqualTo(isLatLon);
+      assertThat(mcs.getHorizCoordinateSystem().isLatLon()).isEqualTo(isLatLon);
       assertThat((Object) mcs.getXHorizAxis()).isNotNull();
       assertThat((Object) mcs.getYHorizAxis()).isNotNull();
       assertThat(mcs.getVerticalAxis() == null).isEqualTo(wantVert == null);

@@ -16,7 +16,6 @@ import java.util.List;
 @Immutable
 public class MaterializedCoordinateSystem {
 
-  // LOOK should this be MaterializedTimeCoordinateSystem ?
   @Nullable
   public GridTimeCoordinateSystem getTimeCoordSystem() {
     return tcs;
@@ -32,18 +31,18 @@ public class MaterializedCoordinateSystem {
     return vert;
   }
 
-  public GridHorizCoordinateSystem getHorizCoordSystem() {
+  public GridHorizCoordinateSystem getHorizCoordinateSystem() {
     return hcs;
   }
 
   /** Get the X axis (either GeoX or Lon). */
   public GridAxisPoint getXHorizAxis() {
-    return getHorizCoordSystem().getXHorizAxis();
+    return getHorizCoordinateSystem().getXHorizAxis();
   }
 
   /** Get the Y axis (either GeoY or Lat). */
   public GridAxisPoint getYHorizAxis() {
-    return getHorizCoordSystem().getYHorizAxis();
+    return getHorizCoordinateSystem().getYHorizAxis();
   }
 
   /** The shape of this array. */
@@ -58,7 +57,7 @@ public class MaterializedCoordinateSystem {
     if (getVerticalAxis() != null) {
       result.add(getVerticalAxis().getNominalSize());
     }
-    result.addAll(getHorizCoordSystem().getShape());
+    result.addAll(getHorizCoordinateSystem().getShape());
     return result;
   }
 
@@ -73,7 +72,7 @@ public class MaterializedCoordinateSystem {
     if (getVerticalAxis() != null) {
       result.add(getVerticalAxis().getSubsetRange());
     }
-    result.addAll(getHorizCoordSystem().getSubsetRanges());
+    result.addAll(getHorizCoordinateSystem().getSubsetRanges());
     return result;
   }
 
@@ -91,8 +90,8 @@ public class MaterializedCoordinateSystem {
     if (getVerticalAxis() != null) {
       result.add(getVerticalAxis());
     }
-    result.add(getHorizCoordSystem().getYHorizAxis());
-    result.add(getHorizCoordSystem().getXHorizAxis());
+    result.add(getHorizCoordinateSystem().getYHorizAxis());
+    result.add(getHorizCoordinateSystem().getXHorizAxis());
     return result;
   }
 

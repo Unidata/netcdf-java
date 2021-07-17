@@ -52,14 +52,14 @@ public class TestCoverageHorizSubset {
 
       Projection p = hcs.getTransform().getProjection();
       ProjectionRect prect = p.latLonToProjBB(bbox); // must override default implementation
-      System.out.printf("%s -> %s %n", bbox, prect);
+      System.out.printf("latLonToProjBB: %s -> %s %n", bbox, prect);
 
       ProjectionRect expected =
           new ProjectionRect(ProjectionPoint.create(-2129.5688, -1793.0041), 4297.8453, 3308.3885);
-      assert prect.nearlyEquals(expected);
+      assertThat(prect.nearlyEquals(expected)).isTrue();
 
       LatLonRect bb2 = p.projToLatLonBB(prect);
-      System.out.printf("%s -> %s %n", prect, bb2);
+      System.out.printf("projToLatLonBB: %s -> %s %n", prect, bb2);
 
       SubsetParams params = new SubsetParams().set(SubsetParams.latlonBB, bbox);
       GeoReferencedArray geo = coverage.readData(params);

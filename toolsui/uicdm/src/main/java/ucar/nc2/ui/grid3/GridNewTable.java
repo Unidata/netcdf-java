@@ -355,11 +355,11 @@ public class GridNewTable extends JPanel {
     }
 
     public String getRuntime() {
-      return this.tcs.getRunTimeAxis() == null ? "" : this.tcs.getRunTimeAxis().getName();
+      return this.tcs == null || this.tcs.getRunTimeAxis() == null ? "" : this.tcs.getRunTimeAxis().getName();
     }
 
     public String getTimeOffset() {
-      return this.tcs.getTimeOffsetAxis(0) == null ? "" : this.tcs.getTimeOffsetAxis(0).getName();
+      return this.tcs == null || this.tcs.getTimeOffsetAxis(0) == null ? "" : this.tcs.getTimeOffsetAxis(0).getName();
     }
 
     public String getEns() {

@@ -6,7 +6,6 @@
 package ucar.nc2.internal.grid2;
 
 import com.google.common.math.DoubleMath;
-import ucar.array.Range;
 import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.grid.GridSubset;
 import ucar.nc2.grid2.GridAxis;

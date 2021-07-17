@@ -16,7 +16,6 @@ import java.util.List;
  * Manages the time coordinates of a GridCoordinateSystem.
  * The complexity is due to Forecast Model Run Collections (FMRC), in which the time coordinate
  * depends on the forecast run.
- * LOOK could specialize FmrcTimeCoordinateSystem
  */
 public interface GridTimeCoordinateSystem {
   enum Type {

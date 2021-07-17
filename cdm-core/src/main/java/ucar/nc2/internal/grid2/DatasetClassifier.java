@@ -17,6 +17,7 @@ import ucar.nc2.dataset.CoordinateTransform;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.units.SimpleUnit;
 import ucar.unidata.geoloc.Projection;
+import ucar.unidata.geoloc.projection.Curvilinear;
 import ucar.unidata.geoloc.projection.RotatedPole;
 
 import javax.annotation.Nullable;
@@ -153,9 +154,22 @@ public class DatasetClassifier {
 
       curvilinearWith1D = curvilinear && xaxis != null && xaxis.getRank() == 1 && yaxis != null && yaxis.getRank() == 1;
 
-      if (standardGeoXY) {
+      if (curvilinearWith1D) {
         indAxes.add(xaxis);
         indAxes.add(yaxis);
+        depAxes.add(lonaxis);
+        depAxes.add(lataxis);
+        this.orgProj = new Curvilinear();
+
+      } else if (curvilinear) {
+        depAxes.add(lonaxis);
+        depAxes.add(lataxis);
+        this.orgProj = new Curvilinear();
+
+      } else if (standardGeoXY) {
+        indAxes.add(xaxis);
+        indAxes.add(yaxis);
+        this.orgProj = cs.getProjection();
 
         Projection p = cs.getProjection();
         if (!(p instanceof RotatedPole)) {
@@ -170,18 +184,9 @@ public class DatasetClassifier {
       } else if (standardLatLon) {
         indAxes.add(lonaxis);
         indAxes.add(lataxis);
+        this.orgProj = cs.getProjection();
 
-      } else if (curvilinearWith1D) {
-        indAxes.add(xaxis);
-        indAxes.add(yaxis);
-        depAxes.add(lonaxis);
-        depAxes.add(lataxis);
-
-      } else if (curvilinear) {
-        depAxes.add(lonaxis);
-        depAxes.add(lataxis);
-
-      } else {
+      } else { // add log messages on failure
         // must be lat/lon or have x,y and projection
         if (!cs.isLatLon()) {
           // do check for GeoXY
@@ -285,7 +290,6 @@ public class DatasetClassifier {
 
       this.featureType = classify();
       this.coordTransforms = new ArrayList<>(cs.getCoordinateTransforms());
-      this.orgProj = cs.getProjection();
       this.indAxes.sort(new CoordinateAxis.AxisComparator()); // canonical ordering of axes
     }
 

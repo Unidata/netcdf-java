@@ -14,7 +14,7 @@ import java.util.List;
 
 /**
  * A Coordinate represented by an interval [start, end)
- * LOOK double ??
+ * LOOK double vs int ??
  */
 @AutoValue
 public abstract class CoordInterval {
