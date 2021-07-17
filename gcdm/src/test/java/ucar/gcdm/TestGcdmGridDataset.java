@@ -5,10 +5,12 @@
 package ucar.gcdm;
 
 import org.apache.commons.io.filefilter.SuffixFileFilter;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.array.InvalidRangeException;
+import ucar.gcdm.client.GcdmGridDataset;
 import ucar.gcdm.client.GcdmNetcdfFile;
 import ucar.nc2.grid2.*;
 import ucar.nc2.internal.util.CompareArrayToArray;
@@ -25,14 +27,15 @@ import static com.google.common.truth.Truth.assertWithMessage;
 
 /** Test {@link GcdmNetcdfFile} */
 @RunWith(Parameterized.class)
+@Ignore("not ready")
 public class TestGcdmGridDataset {
   @Parameterized.Parameters(name = "{0}")
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>(500);
     try {
-      TestDir.actOnAllParameterized(TestDir.cdmLocalTestDataDir, new SuffixFileFilter(".nc"), result, true);
+      // TestDir.actOnAllParameterized(TestDir.cdmLocalTestDataDir, new SuffixFileFilter(".nc"), result, true);
 
-      // result.add(new Object[] {TestDir.cdmLocalTestDataDir + "permuteTest.nc"});
+      result.add(new Object[] {TestDir.cdmLocalTestDataDir + "permuteTest.nc"});
 
     } catch (Exception e) {
       e.printStackTrace();
@@ -56,7 +59,7 @@ public class TestGcdmGridDataset {
   @Test
   public void doOne() throws Exception {
     Formatter info = new Formatter();
-    try (GridDataset local = GridDatasetFactory.openGridDataset(filename, info)) {
+    try (GridDataset local = GridDatasetFactory.openGridDataset(gcdmUrl, info)) {
       if (local == null) {
         System.out.printf("TestGcdmNetcdfFile %s NOT a grid%n", filename);
         return;
@@ -64,6 +67,7 @@ public class TestGcdmGridDataset {
       System.out.printf("TestGcdmNetcdfFile call server for %s%n", filename);
       try (GridDataset remote = GridDatasetFactory.openGridDataset(gcdmUrl, info)) {
         assertThat(remote).isNotNull();
+        assertThat(remote).isInstanceOf(GcdmGridDataset.class);
         boolean ok = compareGridDataset(local, remote);
         if (!ok) {
           System.out.printf("infp = '%s'%n", info);

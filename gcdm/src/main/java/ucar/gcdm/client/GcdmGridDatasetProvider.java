@@ -24,7 +24,7 @@ public class GcdmGridDatasetProvider implements GridDatasetProvider {
 
   @Override
   public GridDataset open(String location, CancelTask cancelTask) {
-    return GcdmGridDataset.builder().setRemoteURI(location).build();
+    return GcdmGridDataset.builder().setRemoteURI(location).build(true);
   }
 
 }

@@ -221,11 +221,13 @@ public class GcdmGridDataset implements GridDataset {
       return this;
     }
 
-    public GcdmGridDataset build() {
+    public GcdmGridDataset build(boolean open) {
       if (built)
         throw new IllegalStateException("already built");
       built = true;
-      openChannel();
+      if (open) {
+        openChannel();
+      }
       return new GcdmGridDataset(this);
     }
 
