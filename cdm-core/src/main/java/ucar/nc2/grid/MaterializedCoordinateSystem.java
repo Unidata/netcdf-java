@@ -5,6 +5,7 @@
 package ucar.nc2.grid;
 
 import ucar.array.RangeIterator;
+import ucar.nc2.grid2.GridSubset;
 
 import javax.annotation.Nullable;
 import java.util.Formatter;

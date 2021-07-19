@@ -5,14 +5,15 @@
 package ucar.gcdm;
 
 import org.apache.commons.io.filefilter.SuffixFileFilter;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.array.InvalidRangeException;
+import ucar.gcdm.client.GcdmGridDataset;
 import ucar.gcdm.client.GcdmNetcdfFile;
-import ucar.nc2.grid.*;
+import ucar.nc2.grid2.*;
 import ucar.nc2.internal.util.CompareArrayToArray;
-import ucar.nc2.calendar.CalendarDate;
 import ucar.unidata.util.test.TestDir;
 
 import java.io.File;
@@ -26,14 +27,15 @@ import static com.google.common.truth.Truth.assertWithMessage;
 
 /** Test {@link GcdmNetcdfFile} */
 @RunWith(Parameterized.class)
+@Ignore("not ready")
 public class TestGcdmGridDataset {
   @Parameterized.Parameters(name = "{0}")
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>(500);
     try {
-      TestDir.actOnAllParameterized(TestDir.cdmLocalTestDataDir, new SuffixFileFilter(".nc"), result, true);
+      // TestDir.actOnAllParameterized(TestDir.cdmLocalTestDataDir, new SuffixFileFilter(".nc"), result, true);
 
-      // result.add(new Object[] {TestDir.cdmLocalTestDataDir + "permuteTest.nc"});
+      result.add(new Object[] {TestDir.cdmLocalTestDataDir + "permuteTest.nc"});
 
     } catch (Exception e) {
       e.printStackTrace();
@@ -57,7 +59,7 @@ public class TestGcdmGridDataset {
   @Test
   public void doOne() throws Exception {
     Formatter info = new Formatter();
-    try (GridDataset local = GridDatasetFactory.openGridDataset(filename, info)) {
+    try (GridDataset local = GridDatasetFactory.openGridDataset(gcdmUrl, info)) {
       if (local == null) {
         System.out.printf("TestGcdmNetcdfFile %s NOT a grid%n", filename);
         return;
@@ -65,6 +67,7 @@ public class TestGcdmGridDataset {
       System.out.printf("TestGcdmNetcdfFile call server for %s%n", filename);
       try (GridDataset remote = GridDatasetFactory.openGridDataset(gcdmUrl, info)) {
         assertThat(remote).isNotNull();
+        assertThat(remote).isInstanceOf(GcdmGridDataset.class);
         boolean ok = compareGridDataset(local, remote);
         if (!ok) {
           System.out.printf("infp = '%s'%n", info);
@@ -96,11 +99,11 @@ public class TestGcdmGridDataset {
       assertWithMessage(gcs.getName()).that(rcs).isEqualTo(gcs);
     }
 
-    for (GridAxis axis : local.getGridAxes()) {
-      GridAxis raxis =
+    for (GridAxis<?> axis : local.getGridAxes()) {
+      GridAxis<?> raxis =
           remote.getGridAxes().stream().filter(cs -> cs.getName().equals(axis.getName())).findFirst().orElse(null);
-      assertThat(raxis).isNotNull();
-      assertWithMessage(axis.getName()).that(raxis).isEqualTo(axis);
+      assertThat((Object) raxis).isNotNull();
+      assertThat((Object) raxis).isEqualTo(axis);
     }
 
     for (Grid grid : local.getGrids()) {
@@ -125,25 +128,28 @@ public class TestGcdmGridDataset {
 
   private static boolean doRunTime(Grid local, Grid remote, GridSubset subset) throws Exception {
     boolean ok = true;
-    GridAxis1DTime runtimeAxis = local.getCoordinateSystem().getRunTimeAxis();
-    if (runtimeAxis == null) {
-      ok &= doTime(local, remote, subset);
+    GridTimeCoordinateSystem tcs = local.getCoordinateSystem().getTimeCoordinateSystem();
+    if (tcs == null) {
+      ok &= doVert(local, remote, subset);
     } else {
-      for (CalendarDate coord : runtimeAxis.getCalendarDates()) {
-        subset.setRunTime(coord);
-        ok &= doTime(local, remote, subset);
+      GridAxisPoint runtimeAxis = tcs.getRunTimeAxis();
+      if (runtimeAxis == null) {
+        ok &= doTime(local, remote, subset, 0);
+      } else {
+        for (int runIdx = 0; runIdx < runtimeAxis.getNominalSize(); runIdx++) {
+          subset.setRunTime(tcs.getRuntimeDate(runIdx));
+          ok &= doTime(local, remote, subset, runIdx);
+        }
       }
     }
     return ok;
   }
 
-
-  private static boolean doTime(Grid local, Grid remote, GridSubset subset) throws Exception {
+  private static boolean doTime(Grid local, Grid remote, GridSubset subset, int runIdx) throws Exception {
     boolean ok = true;
-    GridAxis timeAxis = local.getCoordinateSystem().getTimeOffsetAxis();
-    if (timeAxis == null) {
-      timeAxis = local.getCoordinateSystem().getTimeAxis();
-    }
+    GridTimeCoordinateSystem tcs = local.getCoordinateSystem().getTimeCoordinateSystem();
+    assertThat(tcs).isNotNull();
+    GridAxis<?> timeAxis = tcs.getTimeOffsetAxis(runIdx);
     if (timeAxis == null) {
       ok &= doVert(local, remote, subset);
     } else {
@@ -157,7 +163,7 @@ public class TestGcdmGridDataset {
 
   private static boolean doVert(Grid local, Grid remote, GridSubset subset) throws Exception {
     boolean ok = true;
-    GridAxis1D vertAxis = local.getCoordinateSystem().getVerticalAxis();
+    GridAxis<?> vertAxis = local.getCoordinateSystem().getVerticalAxis();
     if (vertAxis == null) {
       ok &= doSubset(local, remote, subset);
     } else {

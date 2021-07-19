@@ -4,7 +4,6 @@ import org.junit.Test;
 import ucar.array.MinMax;
 import ucar.nc2.Attribute;
 import ucar.nc2.constants.AxisType;
-import ucar.nc2.grid.CoordInterval;
 
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.fail;

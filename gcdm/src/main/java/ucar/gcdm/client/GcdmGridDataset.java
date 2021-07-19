@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
+
 package ucar.gcdm.client;
 
 import com.google.common.base.Stopwatch;
@@ -9,8 +14,15 @@ import ucar.gcdm.*;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.grid.*;
-import ucar.nc2.internal.grid.GridCS;
+import ucar.nc2.grid2.Grid;
+import ucar.nc2.grid2.GridAxis;
+import ucar.nc2.grid2.GridAxisInterval;
+import ucar.nc2.grid2.GridAxisPoint;
+import ucar.nc2.grid2.GridCoordinateSystem;
+import ucar.nc2.grid2.GridDataset;
+import ucar.nc2.grid2.GridReferencedArray;
+import ucar.nc2.grid2.GridSubset;
+import ucar.nc2.internal.grid2.GridNetcdfCS;
 
 import java.io.IOException;
 import java.net.URI;
@@ -49,7 +61,7 @@ public class GcdmGridDataset implements GridDataset {
   }
 
   @Override
-  public ImmutableList<GridAxis> getGridAxes() {
+  public ImmutableList<GridAxis<?>> getGridAxes() {
     return axes;
   }
 
@@ -83,7 +95,7 @@ public class GcdmGridDataset implements GridDataset {
   private final GcdmGrpc.GcdmBlockingStub blockingStub;
 
   private final GcdmGridProto.GridDataset proto;
-  private final ImmutableList<GridAxis> axes;
+  private final ImmutableList<GridAxis<?>> axes;
   private final ImmutableList<GridCoordinateSystem> coordsys;
   private final ImmutableList<Grid> grids;
 
@@ -94,28 +106,20 @@ public class GcdmGridDataset implements GridDataset {
     this.blockingStub = builder.blockingStub;
     this.proto = builder.proto;
 
-    // Have to set runtime axis into GridAxisOffsetTimeRegular
-    ImmutableList.Builder<GridAxis> allAxesb = ImmutableList.builder();
-    List<GridAxis1DTime> runtimeAxes = new ArrayList<>();
+    ImmutableList.Builder<GridAxis<?>> allAxesb = ImmutableList.builder();
     for (GridAxis.Builder<?> axisb : builder.axes) {
-      if (axisb.axisType == AxisType.RunTime) {
-        GridAxis1DTime runtimeAxis = (GridAxis1DTime) axisb.build();
-        allAxesb.add(runtimeAxis);
-        runtimeAxes.add(runtimeAxis);
-      }
-    }
-    for (GridAxis.Builder<?> axisb : builder.axes) {
-      if (axisb.axisType != AxisType.RunTime) {
-        if (axisb instanceof GridAxisOffsetTimeRegular.Builder<?>) {
-          ((GridAxisOffsetTimeRegular.Builder<?>) axisb).setRuntimeAxis(runtimeAxes);
-        }
-        allAxesb.add(axisb.build());
+      if (axisb instanceof GridAxisPoint.Builder<?>) {
+        GridAxisPoint.Builder<?> pointb = (GridAxisPoint.Builder<?>) axisb;
+        allAxesb.add(pointb.build());
+      } else {
+        GridAxisInterval.Builder<?> intvb = (GridAxisInterval.Builder<?>) axisb;
+        allAxesb.add(intvb.build());
       }
     }
     this.axes = allAxesb.build();
 
     ImmutableList.Builder<GridCoordinateSystem> coordsysb = ImmutableList.builder();
-    for (GridCS.Builder<?> sys : builder.coordsys) {
+    for (GridNetcdfCS.Builder<?> sys : builder.coordsys) {
       coordsysb.add(sys.build(this.axes));
     }
     this.coordsys = coordsysb.build();
@@ -146,7 +150,9 @@ public class GcdmGridDataset implements GridDataset {
       if (response.hasError()) {
         throw new IOException(response.getError().getMessage());
       }
-      GridReferencedArray result = GcdmGridConverter.decodeGridReferencedArray(response.getData(), getGridAxes());
+      Formatter errlog = new Formatter();
+      GridReferencedArray result =
+          GcdmGridConverter.decodeGridReferencedArray(response.getData(), getGridAxes(), errlog);
       results.add(result);
       size += result.data().length();
       // }
@@ -188,9 +194,10 @@ public class GcdmGridDataset implements GridDataset {
     private GcdmGrpc.GcdmBlockingStub blockingStub;
     private String path;
     private GcdmGridProto.GridDataset proto;
-    private ArrayList<GridAxis.Builder<?>> axes = new ArrayList<>();
-    private ArrayList<GridCS.Builder<?>> coordsys = new ArrayList<>();
-    private ArrayList<GcdmGrid.Builder> grids = new ArrayList<>();
+    private final ArrayList<GridAxis.Builder<?>> axes = new ArrayList<>();
+    // LOOK could implement GridCoordinateSystem instead of using GridNetcdfCS
+    private final ArrayList<GridNetcdfCS.Builder<?>> coordsys = new ArrayList<>();
+    private final ArrayList<GcdmGrid.Builder> grids = new ArrayList<>();
 
     private boolean built;
 
@@ -204,7 +211,7 @@ public class GcdmGridDataset implements GridDataset {
       return this;
     }
 
-    public Builder addCoordSys(GridCS.Builder<?> sys) {
+    public Builder addCoordSys(GridNetcdfCS.Builder<?> sys) {
       coordsys.add(sys);
       return this;
     }
@@ -214,11 +221,13 @@ public class GcdmGridDataset implements GridDataset {
       return this;
     }
 
-    public GcdmGridDataset build() {
+    public GcdmGridDataset build(boolean open) {
       if (built)
         throw new IllegalStateException("already built");
       built = true;
-      openChannel();
+      if (open) {
+        openChannel();
+      }
       return new GcdmGridDataset(this);
     }
 
@@ -270,7 +279,7 @@ public class GcdmGridDataset implements GridDataset {
         throw new RuntimeException(response.getError().getMessage());
       } else {
         this.proto = response.getDataset();
-        GcdmGridConverter.decodeDataset(this.proto, this, errlog);
+        GcdmGridConverter.decodeGridDataset(this.proto, this, errlog);
       }
     }
   }

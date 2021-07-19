@@ -1,8 +1,8 @@
 /*
- * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-package ucar.nc2.grid;
+package ucar.nc2.grid2;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -31,7 +31,7 @@ public class TestGridFromDodsNetcdfFile {
 
       GridCoordinateSystem cs = coverage.getCoordinateSystem();
       assertThat(cs).isNotNull();
-      GridHorizCoordinateSystem hcs = cs.getHorizCoordSystem();
+      GridHorizCoordinateSystem hcs = cs.getHorizCoordinateSystem();
       assertThat(hcs).isNotNull();
 
       LatLonRect llbb = hcs.getLatLonBoundingBox();
@@ -50,9 +50,9 @@ public class TestGridFromDodsNetcdfFile {
     GridReferencedArray garray = coverage.getReader().setLatLonBoundingBox(bbox).setTimePresent().read();
     MaterializedCoordinateSystem mcs = garray.getMaterializedCoordinateSystem();
     assertThat(mcs).isNotNull();
-    GridHorizCoordinateSystem hcs2 = mcs.getHorizCoordSystem();
+    GridHorizCoordinateSystem hcs2 = mcs.getHorizCoordinateSystem();
     assertThat(hcs2).isNotNull();
-    System.out.printf(" data cs shape=%s%n", Arrays.toString(hcs2.getShape()));
+    System.out.printf(" data cs shape=%s%n", hcs2.getShape());
     assertThat(hcs2.getShape()).isEqualTo(expectedShape);
   }
 

@@ -8,7 +8,6 @@ package ucar.nc2.grid2;
 import com.google.common.base.Preconditions;
 import ucar.array.MinMax;
 import ucar.nc2.constants.AxisType;
-import ucar.nc2.grid.CoordInterval;
 
 import static ucar.nc2.grid2.GridAxisSpacing.discontiguousInterval;
 
@@ -29,8 +28,8 @@ public class Grids {
 
   public static MinMax getCoordEdgeMinMax(GridAxis<?> axis) {
     if (axis.getSpacing() != discontiguousInterval) {
-      ucar.nc2.grid.CoordInterval start = axis.getCoordInterval(0);
-      ucar.nc2.grid.CoordInterval end = axis.getCoordInterval(axis.getNominalSize() - 1);
+      CoordInterval start = axis.getCoordInterval(0);
+      CoordInterval end = axis.getCoordInterval(axis.getNominalSize() - 1);
       double min = Math.min(start.start(), end.end());
       double max = Math.max(start.start(), end.end());
       return MinMax.create(min, max);

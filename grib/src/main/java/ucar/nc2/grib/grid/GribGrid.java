@@ -8,7 +8,6 @@ package ucar.nc2.grib.grid;
 import ucar.array.Array;
 import ucar.array.ArrayType;
 import ucar.array.InvalidRangeException;
-import ucar.array.Range;
 import ucar.array.RangeIterator;
 import ucar.array.SectionIterable;
 import ucar.nc2.Attribute;
@@ -20,7 +19,7 @@ import ucar.nc2.grib.collection.GribCollectionImmutable;
 import ucar.nc2.grid2.Grid;
 import ucar.nc2.grid2.GridCoordinateSystem;
 import ucar.nc2.grid2.GridReferencedArray;
-import ucar.nc2.grid.GridSubset;
+import ucar.nc2.grid2.GridSubset;
 import ucar.nc2.grid2.MaterializedCoordinateSystem;
 
 import java.io.IOException;
@@ -28,7 +27,6 @@ import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /** Grib implementation of {@link Grid} */
 public class GribGrid implements Grid {

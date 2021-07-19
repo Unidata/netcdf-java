@@ -27,8 +27,7 @@ import ucar.nc2.ui.bufr.BufrTableDPanel;
 import ucar.nc2.ui.dialog.DiskCache2Form;
 import ucar.nc2.ui.grib.*;
 import ucar.nc2.ui.grid.GeoGridPanel;
-import ucar.nc2.ui.grid.Grid2Panel;
-import ucar.nc2.ui.grid.GridPanel;
+import ucar.nc2.ui.grid.GridNewPanel;
 import ucar.nc2.ui.menu.*;
 import ucar.nc2.ui.op.*;
 import ucar.nc2.ui.point.PointFeaturePanel;
@@ -119,8 +118,7 @@ public class ToolsUI extends JPanel {
   private GribRewriteOpPanel gribRewritePanel;
   private GribTemplatePanel gribTemplatePanel;
   private Grib1CollectionOpPanel grib1CollectionPanel;
-  private GridPanel gridPanel;
-  private Grid2Panel grid2Panel;
+  private GridNewPanel gridNewPanel;
   private ReportOpPanel grib1ReportPanel;
   private Grib1TablePanel grib1TablePanel;
   private Grib2CollectionOpPanel grib2CollectionPanel;
@@ -257,7 +255,6 @@ public class ToolsUI extends JPanel {
     ftTabPane.addTab("Grids", new JLabel("Grids"));
     ftTabPane.addTab("Coverages", new JLabel("Coverages"));
     ftTabPane.addTab("GridNew", new JLabel("GridNew"));
-    ftTabPane.addTab("Grid2", new JLabel("Grid2"));
     ftTabPane.addTab("SimpleGeometry", new JLabel("SimpleGeometry"));
     ftTabPane.addTab("WMS", new JLabel("WMS"));
     ftTabPane.addTab("PointFeature", new JLabel("PointFeature"));
@@ -497,13 +494,8 @@ public class ToolsUI extends JPanel {
         break;
 
       case "GridNew":
-        gridPanel = new GridPanel((PreferencesExt) mainPrefs.node("gridPanel"));
-        c = gridPanel;
-        break;
-
-      case "Grid2":
-        grid2Panel = new Grid2Panel((PreferencesExt) mainPrefs.node("grid2Panel"));
-        c = grid2Panel;
+        gridNewPanel = new GridNewPanel((PreferencesExt) mainPrefs.node("grid2Panel"));
+        c = gridNewPanel;
         break;
 
       case "HDF5-Objects":
@@ -744,11 +736,8 @@ public class ToolsUI extends JPanel {
     if (gribRewritePanel != null) {
       gribRewritePanel.save();
     }
-    if (gridPanel != null) {
-      gridPanel.save();
-    }
-    if (grid2Panel != null) {
-      grid2Panel.save();
+    if (gridNewPanel != null) {
+      gridNewPanel.save();
     }
     if (geoGridPanel != null) {
       geoGridPanel.save();
@@ -948,16 +937,9 @@ public class ToolsUI extends JPanel {
 
   public void openNewGrid(String datasetName) {
     makeComponent(ftTabPane, "GridNew");
-    gridPanel.doit(datasetName);
+    gridNewPanel.doit(datasetName);
     tabbedPane.setSelectedComponent(ftTabPane);
-    ftTabPane.setSelectedComponent(gridPanel);
-  }
-
-  public void openNewGrid2(String datasetName) {
-    makeComponent(ftTabPane, "Grid2");
-    grid2Panel.doit(datasetName);
-    tabbedPane.setSelectedComponent(ftTabPane);
-    ftTabPane.setSelectedComponent(grid2Panel);
+    ftTabPane.setSelectedComponent(gridNewPanel);
   }
 
   public void openGridDataset(NetcdfDataset dataset) {
@@ -1084,9 +1066,9 @@ public class ToolsUI extends JPanel {
 
     if (threddsData.featureType.isCoverageFeatureType()) {
       makeComponent(ftTabPane, "Grids");
-      gridPanel.setDataset(threddsData.featureDataset);
+      gridNewPanel.setDataset(threddsData.featureDataset);
       tabbedPane.setSelectedComponent(ftTabPane);
-      ftTabPane.setSelectedComponent(gridPanel);
+      ftTabPane.setSelectedComponent(gridNewPanel);
     }
   }
 

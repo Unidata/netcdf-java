@@ -5,7 +5,7 @@ import com.google.common.escape.Escaper;
 import com.google.common.net.UrlEscapers;
 import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.calendar.CalendarDateRange;
-import ucar.nc2.grid.GridSubset;
+import ucar.nc2.grid2.GridSubset;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionRect;

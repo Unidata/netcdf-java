@@ -10,7 +10,7 @@ import ucar.array.MinMax;
 import ucar.array.InvalidRangeException;
 import ucar.array.Range;
 import ucar.nc2.constants.AxisType;
-import ucar.nc2.grid.CoordInterval;
+import ucar.nc2.grid2.CoordInterval;
 import ucar.nc2.grid.GridAxis;
 import ucar.nc2.grid.GridAxis1D;
 import ucar.nc2.grid.GridAxis1DTime;

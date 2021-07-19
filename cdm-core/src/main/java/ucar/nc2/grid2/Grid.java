@@ -7,7 +7,6 @@ package ucar.nc2.grid2;
 import ucar.array.ArrayType;
 import ucar.array.IsMissingEvaluator;
 import ucar.nc2.AttributeContainer;
-import ucar.nc2.grid.GridSubset;
 
 import java.io.IOException;
 

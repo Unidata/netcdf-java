@@ -25,17 +25,17 @@ import java.util.*;
  * from plain http.
  *
  * @see "DatasetUrls.md"
- * @author caron
- * @since 10/20/2015.
+ *      LOOK should this be deprecated? its quite a mess.
  */
 @Immutable
 public class DatasetUrl {
   private static final String alpha = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
   private static final String slashalpha = "\\/" + alpha;
 
-  private static final String[] FRAGPROTOCOLS = {"dap4", "dap2", "dods", "cdmremote", "thredds", "ncml", "cdmr"};
+  private static final String[] FRAGPROTOCOLS =
+      {"dap4", "dap2", "dods", "cdmremote", "thredds", "ncml", "cdmr", "gcdm"};
   private static final ServiceType[] FRAGPROTOSVCTYPE = {ServiceType.DAP4, ServiceType.OPENDAP, ServiceType.OPENDAP,
-      ServiceType.THREDDS, ServiceType.THREDDS, ServiceType.NCML};
+      ServiceType.THREDDS, ServiceType.THREDDS, ServiceType.NCML, ServiceType.GCDM};
 
   /**
    * This creates a DatasetUrl, figures out the ServiceType if possible, and canonicalizes the URL string.

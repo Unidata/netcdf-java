@@ -6,7 +6,7 @@
 package ucar.nc2.grib.grid;
 
 import com.google.common.collect.ImmutableList;
-import ucar.nc2.grid.GridSubset;
+import ucar.nc2.grid2.GridSubset;
 import ucar.nc2.grid2.GridAxis;
 import ucar.nc2.grid2.GridAxisDependenceType;
 import ucar.nc2.grid2.GridCoordinateSystem;

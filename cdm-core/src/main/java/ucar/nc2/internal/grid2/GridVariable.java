@@ -7,7 +7,7 @@ import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.grid2.Grid;
 import ucar.nc2.grid2.GridCoordinateSystem;
 import ucar.nc2.grid2.GridReferencedArray;
-import ucar.nc2.grid.GridSubset;
+import ucar.nc2.grid2.GridSubset;
 import ucar.nc2.grid2.MaterializedCoordinateSystem;
 
 import javax.annotation.concurrent.Immutable;

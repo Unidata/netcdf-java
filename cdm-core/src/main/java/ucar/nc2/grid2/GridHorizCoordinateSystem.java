@@ -6,8 +6,6 @@ import com.google.common.collect.ImmutableList;
 import ucar.array.InvalidRangeException;
 import ucar.array.Range;
 import ucar.nc2.constants.AxisType;
-import ucar.nc2.grid.CoordInterval;
-import ucar.nc2.grid.GridSubset;
 import ucar.nc2.internal.grid2.SubsetHelpers;
 import ucar.nc2.internal.grid2.SubsetPointHelper;
 import ucar.unidata.geoloc.LatLonPoint;
@@ -100,7 +98,7 @@ public class GridHorizCoordinateSystem {
 
       } else {
         ProjectionRect bb = getBoundingBox();
-        if (bb != null) {
+        if (projection != null && bb != null) {
           llbb = projection.projToLatLonBB(bb);
         }
       }
@@ -149,22 +147,13 @@ public class GridHorizCoordinateSystem {
       horizStride = 1;
     }
 
-    GridAxisPoint xaxisSubset;
-    GridAxisPoint yaxisSubset;
+    GridAxisPoint xaxisSubset = xaxis;
+    GridAxisPoint yaxisSubset = yaxis;
     LatLonRect llbb = params.getLatLonBoundingBox();
     ProjectionRect projbb = params.getProjectionBoundingBox();
 
-    if (llbb != null && !isLatLon()) {
-      projbb = projection.latLonToProjBB(llbb);
-      llbb = null;
-    }
-
-    if (projbb != null && isLatLon()) {
-      llbb = projection.projToLatLonBB(projbb);
-      projbb = null;
-    }
-
-    if (projbb != null) {
+    // TODO GridSubset.latlonPoint
+    if (projbb != null) { // TODO ProjectionRect ok for isLatlon = true?
       SubsetPointHelper yhelper = new SubsetPointHelper(yaxis);
       Optional<GridAxisPoint.Builder<?>> ybo =
           yhelper.subsetRange(projbb.getMinY(), projbb.getMaxY(), horizStride, errlog);
@@ -181,7 +170,7 @@ public class GridHorizCoordinateSystem {
       }
       xaxisSubset = xbo.get().build();
 
-    } else if (llbb != null) {
+    } else if (llbb != null && isLatLon()) { // TODO LatLonRect only used for isLatlon = true?
       SubsetPointHelper yhelper = new SubsetPointHelper(yaxis);
       Optional<GridAxisPoint.Builder<?>> ybo =
           yhelper.subsetRange(llbb.getLatMin(), llbb.getLatMax(), horizStride, errlog);
@@ -190,8 +179,7 @@ public class GridHorizCoordinateSystem {
       }
       yaxisSubset = ybo.get().build();
 
-      // TODO logitude wrapping, we have to port code from ucar.nc2.ft2.coverage.HorizCoordSys.
-      // see TestGridReadHorizSubset.testCrossLongitudeSeam and in ft2.coverage
+      // TODO longitude wrapping
       SubsetPointHelper xhelper = new SubsetPointHelper(xaxis);
       Optional<GridAxisPoint.Builder<?>> xbo =
           xhelper.subsetRange(llbb.getLonMin(), llbb.getLonMax(), horizStride, errlog);
@@ -329,7 +317,7 @@ public class GridHorizCoordinateSystem {
   /**
    * Get Index Ranges for the given lat, lon bounding box.
    * For projection, only an approximation based on latlon corners.
-   * LOOK maybe needed by subset?
+   * LOOK maybe needed by subset
    *
    * @param rect the requested lat/lon bounding box
    * @return list of 2 Range objects, first y then x.
@@ -337,7 +325,7 @@ public class GridHorizCoordinateSystem {
   List<Range> getRangesFromLatLonRect(LatLonRect rect) throws InvalidRangeException {
     double minx, maxx, miny, maxy;
 
-    if (!(projection instanceof VerticalPerspectiveView) && !(projection instanceof MSGnavigation)
+    if (projection != null && !(projection instanceof VerticalPerspectiveView) && !(projection instanceof MSGnavigation)
         && !(projection instanceof Geostationary)) { // LOOK kludge - how to do this generrally ??
       // first clip the request rectangle to the bounding box of the grid
       LatLonRect bb = getLatLonBoundingBox();

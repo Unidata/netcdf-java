@@ -3,7 +3,7 @@ package ucar.nc2.internal.grid;
 import com.google.common.base.Splitter;
 import com.google.common.escape.Escaper;
 import com.google.common.net.UrlEscapers;
-import ucar.nc2.grid.GridSubset;
+import ucar.nc2.grid2.GridSubset;
 import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.calendar.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonPoint;

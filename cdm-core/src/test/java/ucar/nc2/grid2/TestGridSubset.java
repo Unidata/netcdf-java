@@ -3,8 +3,6 @@ package ucar.nc2.grid2;
 import org.junit.Test;
 import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.calendar.CalendarDateRange;
-import ucar.nc2.grid.CoordInterval;
-import ucar.nc2.grid.GridSubset;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionRect;
@@ -168,7 +166,7 @@ public class TestGridSubset {
   @Test
   public void testTimeCoord() {
     GridSubset subset = GridSubset.create();
-    ucar.nc2.grid.CoordInterval offsetv = ucar.nc2.grid.CoordInterval.create(34.56, 78.9);
+    CoordInterval offsetv = CoordInterval.create(34.56, 78.9);
     subset.setTimeCoord(offsetv);
     assertThat(subset.getTimePoint()).isNull();
     assertThat(subset.getTimeIntv()).isEqualTo(offsetv);
@@ -231,7 +229,7 @@ public class TestGridSubset {
   @Test
   public void testTimeOffsetCoord() {
     GridSubset subset = GridSubset.create();
-    ucar.nc2.grid.CoordInterval offsetv = ucar.nc2.grid.CoordInterval.create(34.56, 78.9);
+    CoordInterval offsetv = CoordInterval.create(34.56, 78.9);
     subset.setTimeOffsetCoord(offsetv);
     assertThat(subset.getTimeOffset()).isNull();
     assertThat(subset.getTimeOffsetIntv()).isEqualTo(offsetv);
@@ -285,7 +283,7 @@ public class TestGridSubset {
   @Test
   public void testVertCoord() {
     GridSubset subset = GridSubset.create();
-    ucar.nc2.grid.CoordInterval offsetv = ucar.nc2.grid.CoordInterval.create(34.56, 78.9);
+    CoordInterval offsetv = CoordInterval.create(34.56, 78.9);
     subset.setVertCoord(offsetv);
     assertThat(subset.getVertIntv()).isEqualTo(offsetv);
     assertThat(subset.getVertIntv() == offsetv).isTrue();
@@ -297,7 +295,7 @@ public class TestGridSubset {
   @Test
   public void testStringConstructor() {
     GridSubset subset = GridSubset.create();
-    ucar.nc2.grid.CoordInterval offsetv = CoordInterval.create(34.5, 78.9);
+    CoordInterval offsetv = CoordInterval.create(34.5, 78.9);
     subset.setVertCoord(offsetv); // CoordInterval
 
     CalendarDate cd1 = CalendarDate.of(2020, 7, 17, 11, 11, 11);

@@ -9,7 +9,7 @@ import ucar.array.Array;
 import ucar.array.Arrays;
 import ucar.array.InvalidRangeException;
 import ucar.array.MinMax;
-import ucar.nc2.grid.CoordInterval;
+import ucar.nc2.grid2.CoordInterval;
 import ucar.nc2.grid2.Grid;
 import ucar.nc2.grid2.GridAxisPoint;
 import ucar.nc2.grid2.GridDataset;

@@ -9,9 +9,19 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import ucar.ma2.InvalidRangeException;
 import ucar.nc2.calendar.CalendarDate;
-import ucar.nc2.grid.GridSubset;
-import ucar.nc2.internal.util.CompareArrayToArray;
+import ucar.nc2.constants.AxisType;
+import ucar.nc2.ft2.coverage.Coverage;
+import ucar.nc2.ft2.coverage.CoverageCollection;
+import ucar.nc2.ft2.coverage.CoverageCoordAxis;
+import ucar.nc2.ft2.coverage.CoverageCoordAxis1D;
+import ucar.nc2.ft2.coverage.CoverageCoordSys;
+import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
+import ucar.nc2.ft2.coverage.FeatureDatasetCoverage;
+import ucar.nc2.ft2.coverage.GeoReferencedArray;
+import ucar.nc2.ft2.coverage.SubsetParams;
+import ucar.nc2.internal.util.CompareArrayToMa2;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
@@ -23,10 +33,10 @@ import java.util.List;
 
 import static com.google.common.truth.Truth.assertThat;
 
-/** Compare reading new and old GridDataset. */
+/** Compare reading GridDataset and CoverageDataset. */
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
-public class TestGridCompareData1 {
+public class TestGridCompareCoverage {
 
   @Parameterized.Parameters(name = "{0}")
   public static List<Object[]> getTestParameters() {
@@ -68,7 +78,7 @@ public class TestGridCompareData1 {
   private final String filename;
   private boolean readData = true;
 
-  public TestGridCompareData1(String filename) {
+  public TestGridCompareCoverage(String filename) {
     this.filename = filename;
   }
 
@@ -91,7 +101,11 @@ public class TestGridCompareData1 {
 
     Formatter errlog = new Formatter();
     try (GridDataset newDataset = GridDatasetFactory.openGridDataset(filename, errlog);
-        ucar.nc2.grid.GridDataset oldDataset = ucar.nc2.grid.GridDatasetFactory.openGridDataset(filename, errlog)) {
+        FeatureDatasetCoverage cc = CoverageDatasetFactory.open(filename)) {
+      assertThat(cc).isNotNull();
+      CoverageCollection oldDataset = cc.getCoverageCollections().get(0);
+      assertThat(oldDataset).isNotNull();
+
       if (newDataset == null) {
         System.out.printf(" Cant open as ucar.nc2.grid2.GridDataset: %s%n", errlog);
         return false;
@@ -102,16 +116,16 @@ public class TestGridCompareData1 {
       }
 
       for (Grid grid : newDataset.getGrids()) {
-        ucar.nc2.grid.Grid oldGrid = oldDataset.findGrid(grid.getName()).orElse(null);
+        Coverage oldGrid = oldDataset.findCoverage(grid.getName());
         if (oldGrid == null) {
-          System.out.printf("*** Grid %s not in GridDataset%n", grid.getName());
+          System.out.printf("*** Coverage %s not in CoverageCollection%n", grid.getName());
           continue;
         }
         System.out.printf("  Grid: %s%n", grid.getName());
         boolean ok = true;
 
-        ucar.nc2.grid.GridCoordinateSystem oldGcs = oldGrid.getCoordinateSystem();
-        ucar.nc2.grid.GridAxis1DTime oldRuntime = oldGcs.getRunTimeAxis();
+        CoverageCoordSys oldGcs = oldGrid.getCoordSys();
+        CoverageCoordAxis oldRuntime = oldGcs.getAxis(AxisType.RunTime);
 
         GridTimeCoordinateSystem tcs = grid.getTimeCoordinateSystem();
         if (oldRuntime != null) {
@@ -124,17 +138,17 @@ public class TestGridCompareData1 {
             ok &= doRuntime(grid, runtime, oldGrid, oldRuntime);
           } else {
             GridAxis<?> timeOffsetAxis = tcs.getTimeOffsetAxis(0);
-            ucar.nc2.grid.GridAxis oldTimeOffsetAxis = oldGcs.getTimeOffsetAxis();
+            CoverageCoordAxis oldTimeOffsetAxis = oldGcs.getAxis(AxisType.TimeOffset);
             if (timeOffsetAxis != null && oldTimeOffsetAxis != null) {
-              ok &= doOffsetTime(grid, grid.getReader(), 0, oldGrid, GridSubset.create());
+              ok &= doOffsetTime(grid, grid.getReader(), 0, oldGrid, new SubsetParams());
             }
-            ucar.nc2.grid.GridAxis oldTimeAxis = oldGcs.getTimeAxis();
+            CoverageCoordAxis oldTimeAxis = oldGcs.getTimeAxis();
             if (timeOffsetAxis != null && oldTimeAxis != null) {
-              ok &= doOffsetTime(grid, grid.getReader(), 0, oldGrid, GridSubset.create());
+              ok &= doOffsetTime(grid, grid.getReader(), 0, oldGrid, new SubsetParams());
             }
           }
         } else {
-          ok &= doVert(grid, grid.getReader(), oldGrid, GridSubset.create());
+          ok &= doVert(grid, grid.getReader(), oldGrid, new SubsetParams());
         }
 
         if (!ok) {
@@ -145,30 +159,29 @@ public class TestGridCompareData1 {
     return true;
   }
 
-  private boolean doRuntime(Grid grid, GridAxisPoint runtime, ucar.nc2.grid.Grid oldGrid,
-      ucar.nc2.grid.GridAxis1DTime oldRuntime) throws Exception {
+  private boolean doRuntime(Grid grid, GridAxisPoint runtime, Coverage oldGrid, CoverageCoordAxis oldRuntime)
+      throws Exception {
 
     boolean ok = true;
     GridTimeCoordinateSystem tcs = grid.getTimeCoordinateSystem();
+    CoverageCoordAxis1D oldRuntime1D = (CoverageCoordAxis1D) oldRuntime;
 
-    for (int runtimeIdx = 0; runtimeIdx < oldRuntime.getNcoords(); runtimeIdx++) {
+    for (int runtimeIdx = 0; runtimeIdx < oldRuntime1D.getNcoords(); runtimeIdx++) {
       double timeCoord = runtime.getCoordMidpoint(runtimeIdx);
-      double timeCoordOld = oldRuntime.getCoordMidpoint(runtimeIdx);
+      double timeCoordOld = oldRuntime1D.getCoordMidpoint(runtimeIdx);
       assertThat(timeCoord).isEqualTo(timeCoordOld);
 
       CalendarDate runtimeDate = tcs.getRuntimeDate(runtimeIdx);
-      CalendarDate runtimeDateOld = oldRuntime.getCalendarDate(runtimeIdx);
-      assertThat(runtimeDate).isEqualTo(runtimeDateOld);
 
       GridReader reader = grid.getReader().setRunTime(runtimeDate);
-      GridSubset subsetOld = GridSubset.create().setRunTime(runtimeDate);
+      SubsetParams subsetOld = new SubsetParams().setRunTime(runtimeDate);
       ok &= doOffsetTime(grid, reader, runtimeIdx, oldGrid, subsetOld);
     }
     return ok;
   }
 
-  private boolean doOffsetTime(Grid grid, GridReader reader, int runtimeIdx, ucar.nc2.grid.Grid oldGrid,
-      GridSubset subsetOld) throws Exception {
+  private boolean doOffsetTime(Grid grid, GridReader reader, int runtimeIdx, Coverage oldGrid, SubsetParams subsetOld)
+      throws Exception {
     boolean ok = true;
 
     GridTimeCoordinateSystem tcs = grid.getTimeCoordinateSystem();
@@ -179,7 +192,12 @@ public class TestGridCompareData1 {
 
     for (Object timeCoord : timeAxis) {
       reader.setTimeOffsetCoord(timeCoord);
-      subsetOld.setTimeCoord(timeCoord);
+      if (timeCoord instanceof Double) {
+        subsetOld.setTimeCoord((Double) timeCoord);
+      } else {
+        CoordInterval intv = (CoordInterval) timeCoord;
+        subsetOld.setTimeOffsetIntv(new double[] {intv.start(), intv.end()});
+      }
       if (vertAxis != null) {
         ok &= doVert(grid, reader, oldGrid, subsetOld);
       }
@@ -187,8 +205,7 @@ public class TestGridCompareData1 {
     return ok;
   }
 
-  private boolean doVert(Grid grid, GridReader reader, ucar.nc2.grid.Grid oldGrid, GridSubset subsetOld)
-      throws Exception {
+  private boolean doVert(Grid grid, GridReader reader, Coverage oldGrid, SubsetParams subsetOld) throws Exception {
     boolean ok = true;
 
     GridCoordinateSystem gcs = grid.getCoordinateSystem();
@@ -196,7 +213,12 @@ public class TestGridCompareData1 {
     if (vertAxis != null) {
       for (Object vertCoord : vertAxis) {
         reader.setVertCoord(vertCoord);
-        subsetOld.setVertCoord(vertCoord);
+        if (vertCoord instanceof Double) {
+          subsetOld.setVertCoord((Double) vertCoord);
+        } else {
+          CoordInterval intv = (CoordInterval) vertCoord;
+          subsetOld.setVertCoordIntv(new double[] {intv.start(), intv.end()});
+        }
         ok &= doOne(grid, reader, oldGrid, subsetOld);
       }
     } else {
@@ -205,17 +227,17 @@ public class TestGridCompareData1 {
     return ok;
   }
 
-  private boolean doOne(Grid grid, GridReader reader, ucar.nc2.grid.Grid oldGrid, GridSubset subsetOld)
-      throws IOException, ucar.array.InvalidRangeException {
+  private boolean doOne(Grid grid, GridReader reader, Coverage oldGrid, SubsetParams subsetOld)
+      throws IOException, ucar.array.InvalidRangeException, InvalidRangeException {
 
     if (!readData) {
       return true;
     }
 
     GridReferencedArray gridArray = reader.read();
-    ucar.nc2.grid.GridReferencedArray oldArray = oldGrid.readData(subsetOld);
+    GeoReferencedArray oldArray = oldGrid.readData(subsetOld);
     Formatter f = new Formatter();
-    boolean ok1 = CompareArrayToArray.compareData(f, grid.getName(), oldArray.data(), gridArray.data(), true, true);
+    boolean ok1 = CompareArrayToMa2.compareData(f, grid.getName(), oldArray.getData(), gridArray.data(), true, true);
     if (!ok1) {
       System.out.printf("   *** FAIL reader= %s; subsetOld= %s%n%s%n", reader, subsetOld, f);
     } else if (show) {

@@ -14,8 +14,8 @@ import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageCS;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageCSBuilder;
-import ucar.nc2.grid.GridCoordinateSystem;
-import ucar.nc2.internal.grid.GridNetcdfDataset;
+import ucar.nc2.grid2.GridCoordinateSystem;
+import ucar.nc2.internal.grid2.GridNetcdfDataset;
 
 import java.io.File;
 import java.io.IOException;

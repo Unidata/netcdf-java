@@ -13,7 +13,7 @@ import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
-import ucar.nc2.grid.CoordInterval;
+import ucar.nc2.grid2.CoordInterval;
 import ucar.nc2.grid2.GridAxis;
 import ucar.nc2.grid2.GridAxisDependenceType;
 import ucar.nc2.grid2.GridAxisPoint;

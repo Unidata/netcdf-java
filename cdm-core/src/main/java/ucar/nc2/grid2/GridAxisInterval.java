@@ -8,8 +8,6 @@ package ucar.nc2.grid2;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.AbstractIterator;
 import ucar.array.Range;
-import ucar.nc2.grid.CoordInterval;
-import ucar.nc2.grid.GridSubset;
 import ucar.nc2.internal.grid2.SubsetIntervalHelper;
 import ucar.nc2.util.Indent;
 
@@ -215,9 +213,10 @@ public class GridAxisInterval extends GridAxis<CoordInterval> implements Iterabl
 
   public static abstract class Builder<T extends Builder<T>> extends GridAxis.Builder<T> {
     int ncoords; // number of coordinates, required
-    double startValue;
-    double endValue;
-    protected double[] values; // null if isRegular; else len ncoords+1 (irregular), or 2*ncoords (discontinuous)
+    // sneaky way to let Gcdm get at the private data
+    public double startValue;
+    public double endValue;
+    public double[] values; // null if isRegular; else len ncoords+1 (irregular), or 2*ncoords (discontinuous)
 
     // does this really describe all subset possibilities? what about RangeScatter, composite ??
     private Range range; // for subset, tracks the indexes in the original

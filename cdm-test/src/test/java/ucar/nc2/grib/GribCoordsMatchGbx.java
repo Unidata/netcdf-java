@@ -23,13 +23,14 @@ import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.calendar.CalendarDateUnit;
 import ucar.nc2.calendar.CalendarPeriod;
-import ucar.nc2.grid.CoordInterval;
-import ucar.nc2.grid.Grid;
-import ucar.nc2.grid.GridAxis;
-import ucar.nc2.grid.GridCoordinateSystem;
-import ucar.nc2.grid.GridDatasetFactory;
-import ucar.nc2.grid.GridReferencedArray;
-import ucar.nc2.grid.GridSubset;
+import ucar.nc2.grid2.CoordInterval;
+import ucar.nc2.grid2.Grid;
+import ucar.nc2.grid2.GridAxis;
+import ucar.nc2.grid2.GridCoordinateSystem;
+import ucar.nc2.grid2.GridDataset;
+import ucar.nc2.grid2.GridDatasetFactory;
+import ucar.nc2.grid2.GridReferencedArray;
+import ucar.nc2.grid2.GridSubset;
 import ucar.nc2.internal.util.Counters;
 import ucar.nc2.util.Misc;
 import java.io.FileNotFoundException;
@@ -87,7 +88,7 @@ public class GribCoordsMatchGbx {
     kind = KIND_GRID;
     int countFailures = 0;
     Formatter errlog = new Formatter();
-    try (ucar.nc2.grid.GridDataset fdc = GridDatasetFactory.openGridDataset(filename, errlog)) {
+    try (GridDataset fdc = GridDatasetFactory.openGridDataset(filename, errlog)) {
       assertThat(fdc).isNotNull();
       String gribVersion = fdc.attributes().findAttributeString("file_format", "GRIB-2");
       isGrib1 = gribVersion.equalsIgnoreCase("GRIB-1");

@@ -7,6 +7,7 @@ package ucar.nc2.grid2;
 import com.google.common.collect.Iterables;
 import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.spi.GridDatasetProvider;
 import ucar.nc2.internal.grid2.GridNetcdfDataset;
 
 import javax.annotation.Nullable;
@@ -17,6 +18,7 @@ import java.util.Arrays;
 import java.util.Formatter;
 import java.util.List;
 import java.util.Optional;
+import java.util.ServiceLoader;
 
 /** A factory of Grid Datasets. */
 public class GridDatasetFactory {
@@ -24,11 +26,19 @@ public class GridDatasetFactory {
   // LOOK since we want GridDataset in a try-with-resource block, use Nullable instead of Optional. Can use orElse(null)
   @Nullable
   public static GridDataset openGridDataset(String endpoint, Formatter errLog) throws IOException {
-
-    // LOOK could be a gcdm endpoint ??
-
-    // check if its a GRIB collection
     DatasetUrl durl = DatasetUrl.findDatasetUrl(endpoint);
+
+    // look for dynamically loaded GridDatasetProvider
+    for (GridDatasetProvider provider : ServiceLoader.load(GridDatasetProvider.class)) {
+      if (provider.isOwnerOf(durl)) {
+        return provider.open(durl.getTrueurl(), null);
+      }
+      if (provider.isOwnerOf(endpoint)) {
+        return provider.open(durl.getTrueurl(), null);
+      }
+    }
+
+    // check if its a GRIB collection LOOK why not a GridDatasetProvider?
     if (durl.getServiceType() == null) { // skip GRIB check for anything not a plain ole file
       GribOpenAttempt openAttempt = openGrib(endpoint, errLog);
       if (openAttempt.isGrib) {
