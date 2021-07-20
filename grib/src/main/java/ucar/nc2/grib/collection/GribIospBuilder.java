@@ -113,11 +113,11 @@ class GribIospBuilder {
       rlon.addAttribute(new Attribute(CDM.UNITS, CDM.RLATLON_UNITS));
       rlon.setAutoGen(hcs.startx, hcs.dx);
     } else if (isLatLon2D) { // CurvilinearOrthogonal - lat and lon fields must be present in the file
-      horizDims = "lat lon";
+      horizDims = Grib.LAT_AXIS + " " + Grib.LON_AXIS;
 
       // LOOK - assume same number of points for all grids
-      g.addDimension(new Dimension("lon", hcs.nx));
-      g.addDimension(new Dimension("lat", hcs.ny));
+      g.addDimension(new Dimension(Grib.LON_AXIS, hcs.nx));
+      g.addDimension(new Dimension(Grib.LAT_AXIS, hcs.ny));
 
     } else if (isLatLon) {
       // make horiz coordsys coordinate variable
@@ -126,12 +126,12 @@ class GribIospBuilder {
       hcsV.setSourceData(Arrays.factory(ArrayType.INT, new int[0], new int[] {0}));
       hcsV.addAttributes(hcs.proj.getProjectionAttributes());
 
-      horizDims = "lat lon";
-      g.addDimension(new Dimension("lon", hcs.nx));
-      g.addDimension(new Dimension("lat", hcs.ny));
+      horizDims = Grib.LAT_AXIS + " " + Grib.LON_AXIS;
+      g.addDimension(new Dimension(Grib.LON_AXIS, hcs.nx));
+      g.addDimension(new Dimension(Grib.LAT_AXIS, hcs.ny));
 
-      Variable.Builder<?> lat = Variable.builder().setName("lat").setArrayType(ArrayType.FLOAT).setParentGroupBuilder(g)
-          .setDimensionsByName("lat");
+      Variable.Builder<?> lat = Variable.builder().setName(Grib.LAT_AXIS).setArrayType(ArrayType.FLOAT)
+          .setParentGroupBuilder(g).setDimensionsByName(Grib.LAT_AXIS);
       g.addVariable(lat);
       lat.addAttribute(new Attribute(CDM.UNITS, CDM.LAT_UNITS));
       if (hcs.getGaussianLats() != null) {
@@ -141,8 +141,8 @@ class GribIospBuilder {
         lat.setAutoGen(hcs.starty, hcs.dy);
       }
 
-      Variable.Builder<?> lon = Variable.builder().setName("lon").setArrayType(ArrayType.FLOAT).setParentGroupBuilder(g)
-          .setDimensionsByName("lon");
+      Variable.Builder<?> lon = Variable.builder().setName(Grib.LON_AXIS).setArrayType(ArrayType.FLOAT)
+          .setParentGroupBuilder(g).setDimensionsByName(Grib.LON_AXIS);
       g.addVariable(lon);
       lon.addAttribute(new Attribute(CDM.UNITS, CDM.LON_UNITS));
       lon.setAutoGen(hcs.startx, hcs.dx);
@@ -154,19 +154,19 @@ class GribIospBuilder {
       hcsV.setSourceData(Arrays.factory(ArrayType.INT, new int[0], new int[] {0}));
       hcsV.addAttributes(hcs.proj.getProjectionAttributes());
 
-      horizDims = "y x";
-      g.addDimension(new Dimension("x", hcs.nx));
-      g.addDimension(new Dimension("y", hcs.ny));
+      horizDims = Grib.YAXIS + " " + Grib.XAXIS;
+      g.addDimension(new Dimension(Grib.XAXIS, hcs.nx));
+      g.addDimension(new Dimension(Grib.YAXIS, hcs.ny));
 
-      Variable.Builder<?> xcv = Variable.builder().setName("x").setArrayType(ArrayType.FLOAT).setParentGroupBuilder(g)
-          .setDimensionsByName("x");
+      Variable.Builder<?> xcv = Variable.builder().setName(Grib.XAXIS).setArrayType(ArrayType.FLOAT)
+          .setParentGroupBuilder(g).setDimensionsByName(Grib.XAXIS);
       g.addVariable(xcv);
       xcv.addAttribute(new Attribute(CF.STANDARD_NAME, CF.PROJECTION_X_COORDINATE));
       xcv.addAttribute(new Attribute(CDM.UNITS, "km"));
       xcv.setAutoGen(hcs.startx, hcs.dx);
 
-      Variable.Builder<?> ycv = Variable.builder().setName("y").setArrayType(ArrayType.FLOAT).setParentGroupBuilder(g)
-          .setDimensionsByName("y");
+      Variable.Builder<?> ycv = Variable.builder().setName(Grib.YAXIS).setArrayType(ArrayType.FLOAT)
+          .setParentGroupBuilder(g).setDimensionsByName(Grib.YAXIS);
       g.addVariable(ycv);
       ycv.addAttribute(new Attribute(CF.STANDARD_NAME, CF.PROJECTION_Y_COORDINATE));
       ycv.addAttribute(new Attribute(CDM.UNITS, "km"));
@@ -291,6 +291,7 @@ class GribIospBuilder {
         dimNames.format("%s", horizDims);
         coordinateAtt.format("%s ", horizDims);
 
+        // heres where the Variable gets made
         String vname = iosp.makeVariableName(vindex);
         Variable.Builder<?> v = Variable.builder().setName(vname).setArrayType(ArrayType.FLOAT).setParentGroupBuilder(g)
             .setDimensionsByName(dimNames.toString());

@@ -442,6 +442,10 @@ public class GridNewTable extends JPanel {
       return axis.getDependenceType().toString();
     }
 
+    public String getDependsOn() {
+      return String.join(",", axis.getDependsOn());
+    }
+
     /*
      * String showCoordValueDiffs() {
      * Formatter f = new Formatter();

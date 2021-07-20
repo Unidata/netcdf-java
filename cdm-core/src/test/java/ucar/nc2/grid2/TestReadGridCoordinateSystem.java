@@ -23,6 +23,21 @@ import static com.google.common.truth.Truth.assertThat;
 @Category(NeedsCdmUnitTest.class)
 public class TestReadGridCoordinateSystem {
 
+  // Heres a CF-encoded FMRC with offset (orthogonal). Possible offset bounds are miscoded
+  // lat, lon, offset coordinates have bounds.
+  // lat coded as nominal point, seems correct
+  // lon coded as regular point, seems correct
+  // offset coded as discontiguous interval, should probably be nominal point.
+  // midpoints== 6.000000 12.000000 18.000000 24.000000 30.000000 36.000000 42.000000 48.000000 60.000000 72.000000
+  // bound1== 6.000000 12.000000 18.000000 24.000000 30.000000 36.000000 42.000000 48.000000 60.000000 72.000000
+  // bound2== 6.000000 12.000000 18.000000 24.000000 30.000000 36.000000 42.000000 48.000000 60.000000 72.000000
+  @Test
+  public void testCFmiscodedBounds() throws IOException {
+    String filename = TestDir.cdmUnitTestDir + "ft/fmrc/ukmo.nc";
+    String gridName = "temperature_2m";
+    testOpenNetcdfAsGrid(filename, gridName, new int[] {5, 10}, new int[] {}, new int[] {77, 97});
+  }
+
   @Test
   public void testWithSingleTime() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "/ft/grid/cg/CG2006158_150000h_usfc.nc";

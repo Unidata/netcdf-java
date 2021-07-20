@@ -253,6 +253,8 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
 
   protected abstract String makeVariableId(VariableIndex v);
 
+  public abstract GribIosp getIosp() throws IOException;
+
   static class Info {
     final int version; // the ncx version
     final int center, subcenter, master, local; // GRIB 1 uses "local" for table version

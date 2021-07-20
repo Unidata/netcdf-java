@@ -65,6 +65,13 @@ public class Grib1Collection extends GribCollectionImmutable {
   }
 
   @Override
+  public GribIosp getIosp() throws IOException {
+    GribIosp result = new Grib1Iosp(this);
+    result.createCustomizer();
+    return result;
+  }
+
+  @Override
   @Nullable
   public CoverageCollection getGridCoverage(Dataset ds, GroupGC group, String filename,
       FeatureCollectionConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException {

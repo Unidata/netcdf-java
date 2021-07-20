@@ -93,10 +93,10 @@ public class TestGridCompareCoverage {
       return;
 
     System.out.printf("%ncompare GridDataset %s%n", filename);
-    compareWithGrid1(readData);
+    compareWithCoverage(readData);
   }
 
-  public boolean compareWithGrid1(boolean readData) throws Exception {
+  public boolean compareWithCoverage(boolean readData) throws Exception {
     this.readData = readData;
 
     Formatter errlog = new Formatter();

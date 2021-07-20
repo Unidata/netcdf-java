@@ -156,17 +156,17 @@ public class Grib2Iosp extends GribIosp {
   }
 
   @Override
-  protected String makeVariableName(GribCollectionImmutable.VariableIndex vindex) {
+  public String makeVariableName(GribCollectionImmutable.VariableIndex vindex) {
     return makeVariableNameFromTable(cust, gribCollection, vindex, gribCollection.config.gribConfig.useGenType);
   }
 
   @Override
-  protected String makeVariableLongName(GribCollectionImmutable.VariableIndex vindex) {
+  public String makeVariableLongName(GribCollectionImmutable.VariableIndex vindex) {
     return makeVariableLongName(cust, vindex, gribCollection.config.gribConfig.useGenType);
   }
 
   @Override
-  protected String makeVariableUnits(GribCollectionImmutable.VariableIndex vindex) {
+  public String makeVariableUnits(GribCollectionImmutable.VariableIndex vindex) {
     return makeVariableUnits(cust, vindex);
   }
 
@@ -242,7 +242,7 @@ public class Grib2Iosp extends GribIosp {
   }
 
   @Override
-  protected String getVerticalCoordDesc(int vc_code) {
+  public String getVerticalCoordDesc(int vc_code) {
     return cust.getCodeTableValue("4.5", vc_code);
   }
 

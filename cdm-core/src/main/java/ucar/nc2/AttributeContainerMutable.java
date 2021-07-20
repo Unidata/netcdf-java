@@ -6,6 +6,7 @@ package ucar.nc2;
 
 import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
+import java.util.Formatter;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
@@ -292,6 +293,14 @@ public class AttributeContainerMutable implements AttributeContainer {
     @Override
     public int hashCode() {
       return Objects.hash(name, atts);
+    }
+
+    @Override
+    public String toString() {
+      Formatter f = new Formatter();
+      f.format("name ='%s'%n", name);
+      atts.forEach(a -> f.format(" %s%n", a));
+      return f.toString();
     }
   }
 }

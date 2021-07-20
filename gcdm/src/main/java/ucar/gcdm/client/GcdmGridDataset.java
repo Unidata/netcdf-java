@@ -12,24 +12,20 @@ import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
 import ucar.gcdm.*;
 import ucar.nc2.AttributeContainer;
-import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.grid2.Grid;
 import ucar.nc2.grid2.GridAxis;
-import ucar.nc2.grid2.GridAxisInterval;
-import ucar.nc2.grid2.GridAxisPoint;
 import ucar.nc2.grid2.GridCoordinateSystem;
 import ucar.nc2.grid2.GridDataset;
 import ucar.nc2.grid2.GridReferencedArray;
 import ucar.nc2.grid2.GridSubset;
-import ucar.nc2.internal.grid2.GridNetcdfCS;
 
 import java.io.IOException;
 import java.net.URI;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-/** A remote CDM GridDataset, using gprc protocol to communicate. */
+/** A remote CDM GridDataset, using gRpc protocol to communicate. */
 public class GcdmGridDataset implements GridDataset {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GcdmGridDataset.class);
   private static final int MAX_DATA_WAIT_SECONDS = 30;
@@ -71,13 +67,6 @@ public class GcdmGridDataset implements GridDataset {
   }
 
   @Override
-  public String toString() {
-    Formatter f = new Formatter();
-    toString(f);
-    return f.toString();
-  }
-
-  @Override
   public void close() {
     try {
       channel.shutdownNow().awaitTermination(5, TimeUnit.SECONDS);
@@ -85,50 +74,6 @@ public class GcdmGridDataset implements GridDataset {
       log.warn("GcdmGridDataset shutdown interrupted");
       // fall through
     }
-  }
-
-  ////////////////////////////////////////////////////////////////////////////////////////////
-
-  private final String remoteURI;
-  private final String path;
-  private final ManagedChannel channel;
-  private final GcdmGrpc.GcdmBlockingStub blockingStub;
-
-  private final GcdmGridProto.GridDataset proto;
-  private final ImmutableList<GridAxis<?>> axes;
-  private final ImmutableList<GridCoordinateSystem> coordsys;
-  private final ImmutableList<Grid> grids;
-
-  private GcdmGridDataset(Builder builder) {
-    this.remoteURI = builder.remoteURI;
-    this.path = builder.path;
-    this.channel = builder.channel;
-    this.blockingStub = builder.blockingStub;
-    this.proto = builder.proto;
-
-    ImmutableList.Builder<GridAxis<?>> allAxesb = ImmutableList.builder();
-    for (GridAxis.Builder<?> axisb : builder.axes) {
-      if (axisb instanceof GridAxisPoint.Builder<?>) {
-        GridAxisPoint.Builder<?> pointb = (GridAxisPoint.Builder<?>) axisb;
-        allAxesb.add(pointb.build());
-      } else {
-        GridAxisInterval.Builder<?> intvb = (GridAxisInterval.Builder<?>) axisb;
-        allAxesb.add(intvb.build());
-      }
-    }
-    this.axes = allAxesb.build();
-
-    ImmutableList.Builder<GridCoordinateSystem> coordsysb = ImmutableList.builder();
-    for (GridNetcdfCS.Builder<?> sys : builder.coordsys) {
-      coordsysb.add(sys.build(this.axes));
-    }
-    this.coordsys = coordsysb.build();
-
-    ImmutableList.Builder<Grid> gridsb = ImmutableList.builder();
-    for (GcdmGrid.Builder b : builder.grids) {
-      gridsb.add(b.setDataset(this).build(this.coordsys));
-    }
-    this.grids = gridsb.build();
   }
 
   GridReferencedArray readData(GridSubset subset) throws IOException {
@@ -175,6 +120,44 @@ public class GcdmGridDataset implements GridDataset {
     }
   }
 
+  ////////////////////////////////////////////////////////////////////////////////////////////
+
+  private final String remoteURI;
+  private final String path;
+  private final ManagedChannel channel;
+  private final GcdmGrpc.GcdmBlockingStub blockingStub;
+
+  private final GcdmGridProto.GridDataset proto;
+  private final ImmutableList<GridAxis<?>> axes;
+  private final ImmutableList<GridCoordinateSystem> coordsys;
+  private final ImmutableList<Grid> grids;
+
+  private GcdmGridDataset(Builder builder) {
+    this.remoteURI = builder.remoteURI;
+    this.path = builder.path;
+    this.channel = builder.channel;
+    this.blockingStub = builder.blockingStub;
+    this.proto = builder.proto;
+
+    this.axes = ImmutableList.copyOf(builder.axes);
+    this.coordsys = ImmutableList.copyOf(builder.coordsys);
+
+    ImmutableList.Builder<Grid> gridsb = ImmutableList.builder();
+    for (GcdmGrid.Builder b : builder.grids) {
+      gridsb.add(b.setDataset(this).build(this.coordsys));
+    }
+    this.grids = gridsb.build();
+  }
+
+  @Override
+  public String toString() {
+    Formatter f = new Formatter();
+    toString(f);
+    return f.toString();
+  }
+
+  ////////////////////////////////////////////////////////////////////////////////////////////
+
   public Builder toBuilder() {
     return addLocalFieldsToBuilder(builder());
   }
@@ -194,9 +177,8 @@ public class GcdmGridDataset implements GridDataset {
     private GcdmGrpc.GcdmBlockingStub blockingStub;
     private String path;
     private GcdmGridProto.GridDataset proto;
-    private final ArrayList<GridAxis.Builder<?>> axes = new ArrayList<>();
-    // LOOK could implement GridCoordinateSystem instead of using GridNetcdfCS
-    private final ArrayList<GridNetcdfCS.Builder<?>> coordsys = new ArrayList<>();
+    public final ArrayList<GridAxis<?>> axes = new ArrayList<>();
+    private final ArrayList<GridCoordinateSystem> coordsys = new ArrayList<>();
     private final ArrayList<GcdmGrid.Builder> grids = new ArrayList<>();
 
     private boolean built;
@@ -206,18 +188,23 @@ public class GcdmGridDataset implements GridDataset {
       return this;
     }
 
-    public Builder addGridAxis(GridAxis.Builder<?> axis) {
+    public Builder addGridAxis(GridAxis<?> axis) {
       axes.add(axis);
       return this;
     }
 
-    public Builder addCoordSys(GridNetcdfCS.Builder<?> sys) {
+    public Builder addCoordSys(GridCoordinateSystem sys) {
       coordsys.add(sys);
       return this;
     }
 
     public Builder addGrid(GcdmGrid.Builder grid) {
       grids.add(grid);
+      return this;
+    }
+
+    public Builder setProto(GcdmGridProto.GridDataset proto) {
+      this.proto = proto;
       return this;
     }
 

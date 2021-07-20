@@ -92,13 +92,13 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
 
   protected abstract ucar.nc2.grib.GribTables createCustomizer() throws IOException;
 
-  protected abstract String makeVariableName(GribCollectionImmutable.VariableIndex vindex);
+  public abstract String makeVariableName(GribCollectionImmutable.VariableIndex vindex);
 
-  protected abstract String makeVariableLongName(GribCollectionImmutable.VariableIndex vindex);
+  public abstract String makeVariableLongName(GribCollectionImmutable.VariableIndex vindex);
 
-  protected abstract String makeVariableUnits(GribCollectionImmutable.VariableIndex vindex);
+  public abstract String makeVariableUnits(GribCollectionImmutable.VariableIndex vindex);
 
-  protected abstract String getVerticalCoordDesc(int vc_code);
+  public abstract String getVerticalCoordDesc(int vc_code);
 
   protected abstract GribTables.Parameter getParameter(GribCollectionImmutable.VariableIndex vindex);
 

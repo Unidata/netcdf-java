@@ -13,16 +13,16 @@ import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.grid2.GridAxis;
 import ucar.nc2.grid2.GridAxisDependenceType;
 import ucar.nc2.grid2.GridAxisPoint;
+import ucar.nc2.grid2.GridCoordinateSystem;
 import ucar.unidata.geoloc.projection.FlatEarth;
 
 import java.util.ArrayList;
-import java.util.Formatter;
 
 import static com.google.common.truth.Truth.assertThat;
 import static ucar.nc2.TestUtils.makeDummyGroup;
 
-/** Test {@link GridNetcdfCS} */
-public class TestGridNetcdfCS {
+/** Test {@link GridNetcdfCSBuilder} */
+public class TestGridNetcdfCSBuilder {
 
   @Test
   public void testBasics() {
@@ -47,7 +47,7 @@ public class TestGridNetcdfCS {
     CoordinateSystem coordSys = csb.build(ncd, axes, transforms);
 
     // GridDataset
-    GridNetcdfCS.Builder<?> builder = GridNetcdfCS.builder();
+    GridNetcdfCSBuilder builder = new GridNetcdfCSBuilder();
     builder.setName(coordSys.getName());
     builder.setProjection(coordSys.getProjection());
 
@@ -57,7 +57,7 @@ public class TestGridNetcdfCS {
       builder.addAxis(gridAxis);
     }
 
-    GridNetcdfCS subject = builder.build();
+    GridCoordinateSystem subject = builder.build();
     assertThat(subject.getName()).isEqualTo(coordSys.getName());
     assertThat(subject.getHorizCoordinateSystem().getProjection()).isEqualTo(coordSys.getProjection());
 
@@ -71,21 +71,11 @@ public class TestGridNetcdfCS {
     GridAxisPoint yaxis = subject.getYHorizAxis();
     assertThat(yaxis.getName()).isEqualTo("yname");
 
-    assertThat((Object) subject.findCoordAxis(AxisType.Ensemble)).isNull();
+    assertThat((Object) subject.findCoordAxisByType(AxisType.Ensemble)).isNull();
     assertThat((Object) subject.getEnsembleAxis()).isNull();
     assertThat((Object) subject.getVerticalAxis()).isNull();
     assertThat(subject.getTimeCoordinateSystem()).isNull();
 
     assertThat(subject.getNominalShape()).isEqualTo(ImmutableList.of(1, 1));
-
-    GridNetcdfCS copy = subject.toBuilder().build();
-    assertThat(copy).isEqualTo(subject);
-    assertThat(copy.hashCode()).isEqualTo(subject.hashCode());
-
-    assertThat(copy.toString()).contains("(yname xname)");
-    assertThat(copy.showFnSummary()).isEqualTo("GRID(): Y,X");
-    Formatter info = new Formatter();
-    copy.show(info, true);
-    assertThat(info.toString()).contains("yname (GridAxisPoint) NaN, yunits");
   }
 }

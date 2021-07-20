@@ -17,10 +17,13 @@ import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionUpdateType;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants.CF;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.grib.GdsHorizCoordSys;
+import ucar.nc2.grib.collection.Grib;
 import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.grib.collection.GribCollectionImmutable;
+import ucar.nc2.grib.collection.GribIosp;
 import ucar.nc2.grib.coord.Coordinate;
 import ucar.nc2.grib.coord.CoordinateTime2D;
 import ucar.nc2.grib.grib2.Grib2Utils;
@@ -30,18 +33,20 @@ import ucar.nc2.grid2.GridAxisPoint;
 import ucar.nc2.grid2.GridCoordinateSystem;
 import ucar.nc2.grid2.GridDataset;
 import ucar.nc2.grid2.GridHorizCoordinateSystem;
-import ucar.unidata.geoloc.Projection;
 import ucar.unidata.io.RandomAccessFile;
 
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static java.lang.CharSequence.compare;
 
 /** Grib implementation of {@link GridDataset} */
 @Immutable
@@ -53,7 +58,6 @@ public class GribGridDataset implements GridDataset {
    *
    * @param errLog if is grib but error, add error message to this log.
    * @return empty if not a GribCollection or on error.
-   *         LOOK optional prevents being in a try-with-resource
    */
   public static Optional<GribGridDataset> open(String endpoint, Formatter errLog) throws IOException {
     GribCollectionImmutable gc;
@@ -105,7 +109,7 @@ public class GribGridDataset implements GridDataset {
   private final GribCollectionImmutable.GroupGC group;
   private final GridHorizCoordinateSystem horizCoordinateSystem;
   private final ImmutableMap<Integer, GridAxis<?>> gridAxes; // <index, GridAxis>
-  private final ImmutableMap<Integer, GribGridCoordinateSystem> gridCoordinateSystems; // <index hash, >
+  private final ImmutableMap<Integer, GridCoordinateSystem> gridCoordinateSystems; // <index hash, >
   private final ImmutableMap<Integer, GribGridTimeCoordinateSystem> timeCoordinateSystems; // <index hash, >
   private final ImmutableList<GribGrid> grids;
 
@@ -113,14 +117,16 @@ public class GribGridDataset implements GridDataset {
   private final boolean isCurvilinearOrthogonal;
 
   public GribGridDataset(GribCollectionImmutable gribCollection, @Nullable GribCollectionImmutable.Dataset dataset,
-      @Nullable GribCollectionImmutable.GroupGC group) {
+      @Nullable GribCollectionImmutable.GroupGC group) throws IOException {
     Preconditions.checkNotNull(gribCollection);
     this.gribCollection = gribCollection;
     this.dataset = (dataset != null) ? dataset : gribCollection.getDataset(0);
     Preconditions.checkNotNull(this.dataset);
     this.group = (group != null) ? group : this.dataset.getGroup(0);
     Preconditions.checkNotNull(this.group);
+
     boolean isGrib1 = gribCollection.isGrib1;
+    GribIosp iosp = gribCollection.getIosp();
 
     // A GribGridDataset has a unique GridHorizCoordinateSystem LOOK true?
     GdsHorizCoordSys hcs = this.group.getGdsHorizCoordSys();
@@ -134,7 +140,7 @@ public class GribGridDataset implements GridDataset {
     ImmutableMap.Builder<Integer, GridAxis<?>> axesBuilder = ImmutableMap.builder(); // <index, GridAxis>
     int coordIndex = 0;
     for (Coordinate coord : this.group.getCoordinates()) {
-      CoordAndAxis coordAndAxis = GribGridAxis.create(this.dataset.getType(), coord);
+      CoordAndAxis coordAndAxis = GribGridAxis.create(this.dataset.getType(), coord, iosp);
       axesBuilder.put(coordIndex, coordAndAxis.axis);
       coordIndexMap.put(coordIndex, coordAndAxis);
       coordIndex++;
@@ -148,7 +154,7 @@ public class GribGridDataset implements GridDataset {
       uniqueIndexList.put(hash, vi.getCoordinateIndex());
     }
     Map<Integer, GribGridTimeCoordinateSystem> timeCsBuilder = new HashMap<>();
-    ImmutableMap.Builder<Integer, GribGridCoordinateSystem> csBuilder = ImmutableMap.builder();
+    ImmutableMap.Builder<Integer, GridCoordinateSystem> csBuilder = ImmutableMap.builder();
     for (Iterable<Integer> indexList : uniqueIndexList.values()) {
       int hash = makeHash(indexList);
       csBuilder.put(hash, makeCoordinateSystem(indexList, coordIndexMap, timeCsBuilder));
@@ -157,27 +163,28 @@ public class GribGridDataset implements GridDataset {
     this.timeCoordinateSystems = ImmutableMap.copyOf(timeCsBuilder);
 
     // Each VariableIndex becomes a grid
-    ImmutableList.Builder<GribGrid> gridBuilder = ImmutableList.builder();
+    ArrayList<GribGrid> grids = new ArrayList<>();
     for (GribCollectionImmutable.VariableIndex vi : this.group.getVariables()) {
-      GribGridCoordinateSystem ggcs = this.gridCoordinateSystems.get(makeHash(vi.getCoordinateIndex()));
-      gridBuilder.add(new GribGrid(ggcs, this.gribCollection, vi));
+      GridCoordinateSystem ggcs = this.gridCoordinateSystems.get(makeHash(vi.getCoordinateIndex()));
+      grids.add(new GribGrid(iosp, this.gribCollection, ggcs, vi));
     }
-    this.grids = gridBuilder.build();
+    grids.sort((g1, g2) -> CharSequence.compare(g1.getName(), g2.getName()));
+    this.grids = ImmutableList.copyOf(grids);
   }
 
   private GridHorizCoordinateSystem makeHorizCS(GdsHorizCoordSys hcs) {
     GridAxisPoint xaxis;
     GridAxisPoint yaxis;
     if (hcs.isLatLon()) {
-      xaxis = GridAxisPoint.builder().setName("lonaxis").setAxisType(AxisType.Lon)
+      xaxis = GridAxisPoint.builder().setName(Grib.LON_AXIS).setAxisType(AxisType.Lon).setUnits("degrees_east")
           .setRegular(hcs.nx, hcs.startx, hcs.dx).build();
-      yaxis = GridAxisPoint.builder().setName("lataxis").setAxisType(AxisType.Lat)
+      yaxis = GridAxisPoint.builder().setName(Grib.LAT_AXIS).setAxisType(AxisType.Lat).setUnits("degrees_north")
           .setRegular(hcs.ny, hcs.starty, hcs.dy).build();
     } else {
-      xaxis = GridAxisPoint.builder().setName("xaxis").setAxisType(AxisType.GeoX).setRegular(hcs.nx, hcs.startx, hcs.dx)
-          .build();
-      yaxis = GridAxisPoint.builder().setName("yaxis").setAxisType(AxisType.GeoY).setRegular(hcs.ny, hcs.starty, hcs.dy)
-          .build();
+      xaxis = GridAxisPoint.builder().setName(Grib.XAXIS).setAxisType(AxisType.GeoX).setUnits("km")
+          .setDescription(CF.PROJECTION_X_COORDINATE).setRegular(hcs.nx, hcs.startx, hcs.dx).build();
+      yaxis = GridAxisPoint.builder().setName(Grib.YAXIS).setAxisType(AxisType.GeoY).setUnits("km")
+          .setDescription(CF.PROJECTION_Y_COORDINATE).setRegular(hcs.ny, hcs.starty, hcs.dy).build();
     }
     return new GridHorizCoordinateSystem(xaxis, yaxis, hcs.proj);
   }
@@ -198,15 +205,20 @@ public class GribGridDataset implements GridDataset {
     }
   }
 
-  private GribGridCoordinateSystem makeCoordinateSystem(Iterable<Integer> indices,
+  private GridCoordinateSystem makeCoordinateSystem(Iterable<Integer> indices,
       HashMap<Integer, CoordAndAxis> coordIndexMap, Map<Integer, GribGridTimeCoordinateSystem> timeCsBuilder) {
-    List<GridAxis<?>> axes = Streams.stream(indices).map(this.gridAxes::get).collect(Collectors.toList());
+
     GribGridTimeCoordinateSystem tcs = makeTimeCoordinateSystem(indices, coordIndexMap, timeCsBuilder);
-    return new GribGridCoordinateSystem(axes, tcs, this.horizCoordinateSystem);
+    ArrayList<GridAxis<?>> axes =
+        new ArrayList<>(Streams.stream(indices).map(this.gridAxes::get).collect(Collectors.toList()));
+    axes.add(this.horizCoordinateSystem.getYHorizAxis());
+    axes.add(this.horizCoordinateSystem.getXHorizAxis());
+    return new GridCoordinateSystem(axes, tcs, this.horizCoordinateSystem);
   }
 
   private GribGridTimeCoordinateSystem makeTimeCoordinateSystem(Iterable<Integer> indices,
       HashMap<Integer, CoordAndAxis> coordIndexMap, Map<Integer, GribGridTimeCoordinateSystem> timeCsBuilder) {
+
     List<Integer> timeIndices = Streams.stream(indices).filter(index -> this.gridAxes.get(index).getAxisType().isTime())
         .collect(Collectors.toList());
     int hash = makeHash(timeIndices);

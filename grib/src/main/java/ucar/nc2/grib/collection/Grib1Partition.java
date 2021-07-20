@@ -42,6 +42,13 @@ public class Grib1Partition extends PartitionCollectionImmutable {
   }
 
   @Override
+  public GribIosp getIosp() throws IOException {
+    GribIosp result = new Grib1Iosp(this);
+    result.createCustomizer();
+    return result;
+  }
+
+  @Override
   public CoverageCollection getGridCoverage(Dataset ds, GroupGC group, String filename, FeatureCollectionConfig config,
       Formatter errlog, org.slf4j.Logger logger) {
 

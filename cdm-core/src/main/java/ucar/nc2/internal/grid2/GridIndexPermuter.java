@@ -4,6 +4,7 @@ import ucar.nc2.Dimension;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.grid2.GridAxis;
+import ucar.nc2.grid2.GridCoordinateSystem;
 
 import javax.annotation.concurrent.Immutable;
 import java.util.Arrays;
@@ -14,7 +15,7 @@ class GridIndexPermuter {
   private final int[] shape;
   private final int xDimOrgIndex, yDimOrgIndex, zDimOrgIndex, eDimOrgIndex, toDimOrgIndex, rtDimOrgIndex;
 
-  GridIndexPermuter(GridNetcdfCS gcs, VariableDS vds) {
+  GridIndexPermuter(GridCoordinateSystem gcs, VariableDS vds) {
     this.shape = vds.getShape();
     this.xDimOrgIndex = findDimension(vds, gcs.getXHorizAxis());
     this.yDimOrgIndex = findDimension(vds, gcs.getYHorizAxis());

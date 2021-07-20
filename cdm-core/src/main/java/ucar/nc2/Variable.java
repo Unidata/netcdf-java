@@ -1248,7 +1248,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     this.ncfile = builder.ncfile;
     this.parentStructure = builder.parentStruct;
     this.dataType = builder.dataType;
-    this.attributes = builder.attributes;
+    this.attributes = builder.attributes.toImmutable();
     this.spiObject = builder.spiObject;
     this.cache = builder.cache;
 

@@ -8,10 +8,8 @@ package ucar.nc2.internal.grid2;
 import com.google.common.base.Preconditions;
 import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.calendar.CalendarDateUnit;
-import ucar.nc2.calendar.CalendarPeriod;
 import ucar.nc2.grid2.GridSubset;
 import ucar.nc2.grid2.GridAxis;
-import ucar.nc2.grid2.GridAxisDependenceType;
 import ucar.nc2.grid2.GridAxisPoint;
 import ucar.nc2.grid2.GridTimeCoordinateSystem;
 
@@ -20,13 +18,12 @@ import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
-
-import static ucar.nc2.grid2.GridTimeCoordinateSystem.Type.Observation;
 
 /** Implementation of GridTimeCoordinateSystem. */
 @Immutable
-public class GridNetcdfTimeCS implements GridTimeCoordinateSystem {
+public class GridNetcdfTimeCS extends GridTimeCoordinateSystem {
 
   public static GridNetcdfTimeCS create(GridAxisPoint runTimeAxis, GridAxis<?> timeOffsetAxis) {
     CalendarDateUnit dateUnit = CalendarDateUnit.fromUdunitString(null, runTimeAxis.getUnits()).orElseThrow();
@@ -36,68 +33,15 @@ public class GridNetcdfTimeCS implements GridTimeCoordinateSystem {
 
   public static GridNetcdfTimeCS create(GridAxis<?> timeAxis) {
     CalendarDateUnit dateUnit = CalendarDateUnit.fromUdunitString(null, timeAxis.getUnits()).orElseThrow();
-    return new GridNetcdfTimeCS(Observation, null, timeAxis, dateUnit);
+    return new GridNetcdfTimeCS(Type.Observation, null, timeAxis, dateUnit);
   }
 
-  ////////////////////////////////////////////////////////
-  private final Type type;
-  private final @Nullable GridAxisPoint runTimeAxis;
-  private final GridAxis<?> timeOffsetAxis;
-  private final CalendarDateUnit calendarDateUnit;
-  private final @Nullable CalendarPeriod offsetPeriod; // is null ok?
-
-  private GridNetcdfTimeCS(Type type, @Nullable GridAxisPoint runTimeAxis, GridAxis<?> timeOffsetAxis,
-      CalendarDateUnit calendarDateUnit) {
-    this.type = type;
-    this.runTimeAxis = runTimeAxis;
-    this.timeOffsetAxis = timeOffsetAxis;
-    this.calendarDateUnit = calendarDateUnit;
-    this.offsetPeriod = CalendarPeriod.of(timeOffsetAxis.getUnits());
-  }
-
-
-  @Override
-  public Type getType() {
-    return type;
-  }
-
-  @Override
-  public CalendarDateUnit getCalendarDateUnit() {
-    return calendarDateUnit;
-  }
-
-  @Override
-  public CalendarDate getBaseDate() {
-    return this.calendarDateUnit.getBaseDateTime();
-  }
-
-  @Override
-  public List<Integer> getNominalShape() {
-    return getMaterializedShape();
-  }
-
-  @Override
-  public List<Integer> getMaterializedShape() {
-    List<Integer> result = new ArrayList<>();
-    if (runTimeAxis != null && runTimeAxis.getDependenceType() == GridAxisDependenceType.independent) {
-      result.add(runTimeAxis.getNominalSize());
-    }
-    if (timeOffsetAxis != null && timeOffsetAxis.getDependenceType() == GridAxisDependenceType.independent) {
-      result.add(timeOffsetAxis.getNominalSize());
-    }
-    return result;
-  }
-
-  @Nullable
-  @Override
-  public GridAxisPoint getRunTimeAxis() {
-    return runTimeAxis;
-  }
+  /////////////////////////////////////////////////////////////////////////////////////////////
 
   @Nullable
   @Override
   public CalendarDate getRuntimeDate(int runIdx) {
-    if (this.type == Observation) {
+    if (this.runTimeAxis == null) {
       return null;
     } else {
       return calendarDateUnit.makeCalendarDate(this.runTimeAxis.getCoordinate(runIdx).longValue());
@@ -111,7 +55,7 @@ public class GridNetcdfTimeCS implements GridTimeCoordinateSystem {
 
   @Override
   public List<CalendarDate> getTimesForRuntime(int runIdx) {
-    if (this.type == Observation) {
+    if (this.type == Type.Observation) {
       return getTimesForObservation();
     } else {
       return getTimesForNonObservation(runIdx);
@@ -137,16 +81,11 @@ public class GridNetcdfTimeCS implements GridTimeCoordinateSystem {
     return result;
   }
 
-  @Override
-  public String toString() {
-    return "GridTimeCS{" + "type=" + type + ", runTimeAxis=" + runTimeAxis + ", timeOffsetAxis=" + timeOffsetAxis + '}';
-  }
-
   // LOOK test use of SubsetTimeHelper, likely wrong.
   public Optional<GridNetcdfTimeCS> subset(GridSubset params, Formatter errlog) {
     SubsetTimeHelper helper = new SubsetTimeHelper(this);
 
-    if (type == Observation || type == Type.SingleRuntime) {
+    if (type == Type.Observation || type == Type.SingleRuntime) {
       return helper.subsetTime(params, errlog).map(timeOffset -> GridNetcdfTimeCS.create(timeOffset));
     } else {
       return helper.subsetOffset(params, errlog)
@@ -154,4 +93,27 @@ public class GridNetcdfTimeCS implements GridTimeCoordinateSystem {
     }
   }
 
+  ////////////////////////////////////////////////////////
+
+  private GridNetcdfTimeCS(Type type, @Nullable GridAxisPoint runTimeAxis, GridAxis<?> timeOffsetAxis,
+      CalendarDateUnit calendarDateUnit) {
+    super(type, runTimeAxis, timeOffsetAxis, calendarDateUnit);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
+    GridNetcdfTimeCS that = (GridNetcdfTimeCS) o;
+    return type == that.type && Objects.equals(runTimeAxis, that.runTimeAxis)
+        && Objects.equals(timeOffsetAxis, that.timeOffsetAxis)
+        && Objects.equals(calendarDateUnit, that.calendarDateUnit) && Objects.equals(offsetPeriod, that.offsetPeriod);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(type, runTimeAxis, timeOffsetAxis, calendarDateUnit, offsetPeriod);
+  }
 }

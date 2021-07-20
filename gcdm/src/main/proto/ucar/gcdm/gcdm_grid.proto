@@ -115,6 +115,7 @@ message GridTimeCoordinateSystem {
   string calendar_date_unit = 2;
   string time_axis_name = 3;
   string runtime_axis_name = 4;
+  int32 id = 5;
 }
 
 message GridHorizCoordinateSystem {
@@ -122,6 +123,7 @@ message GridHorizCoordinateSystem {
   string xaxis_name = 2;
   string yaxis_name = 3;
   bool is_curvilinear = 4;
+  int32 id = 5;
 }
 
 message GridCoordinateSystem {
