@@ -146,7 +146,7 @@ public class Grib1Iosp extends GribIosp {
   }
 
   @Override
-  protected String makeVariableUnits(GribCollectionImmutable.VariableIndex vindex) {
+  public String makeVariableUnits(GribCollectionImmutable.VariableIndex vindex) {
     return makeVariableUnits(gribCollection.getCenter(), gribCollection.getSubcenter(), vindex.getTableVersion(),
         vindex.getParameter());
   }
@@ -228,7 +228,7 @@ public class Grib1Iosp extends GribIosp {
   }
 
   @Override
-  protected String getVerticalCoordDesc(int vc_code) {
+  public String getVerticalCoordDesc(int vc_code) {
     return cust.getLevelDescription(vc_code);
   }
 

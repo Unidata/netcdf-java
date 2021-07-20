@@ -2,33 +2,23 @@ package ucar.nc2.internal.grid2;
 
 import com.google.common.collect.ImmutableList;
 import org.junit.Test;
-import ucar.array.ArrayType;
 import ucar.array.Range;
 import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.calendar.CalendarDateUnit;
 import ucar.nc2.calendar.CalendarPeriod;
 import ucar.nc2.constants.AxisType;
-import ucar.nc2.dataset.CoordinateAxis;
-import ucar.nc2.dataset.CoordinateSystem;
-import ucar.nc2.dataset.CoordinateTransform;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.ProjectionCT;
-import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.grid2.GridAxis;
 import ucar.nc2.grid2.GridAxisDependenceType;
 import ucar.nc2.grid2.GridAxisPoint;
 import ucar.nc2.grid2.GridAxisSpacing;
 import ucar.nc2.grid2.GridTimeCoordinateSystem;
-import ucar.unidata.geoloc.projection.FlatEarth;
 
 import java.util.ArrayList;
-import java.util.Formatter;
 import java.util.List;
 
 import static com.google.common.truth.Truth.assertThat;
-import static ucar.nc2.TestUtils.makeDummyGroup;
 
-/** Test {@link GridNetcdfTimeCS} */
+/** Test {@link GridNetcdfTimeCS} with builders (not real data) */
 public class TestGridNetcdfTimeCS {
 
   @Test
@@ -79,9 +69,11 @@ public class TestGridNetcdfTimeCS {
       assertThat(times).hasSize(ntimes);
       int offsetIdx = 0;
       for (CalendarDate time : times) {
-        CalendarDate expected = baseForRun.add((long) offset.getCoordMidpoint(offsetIdx++), CalendarPeriod.Field.Hour);
+        long what = (long) offset.getCoordMidpoint(offsetIdx);
+        CalendarDate expected = baseForRun.add(what, CalendarPeriod.Field.Day);
         // System.out.printf(" (%d,%d) got= %s want= %s%n", runidx, offsetIdx, time, expected);
         assertThat(time).isEqualTo(expected);
+        offsetIdx++;
       }
     }
   }
@@ -134,7 +126,7 @@ public class TestGridNetcdfTimeCS {
       assertThat(times).hasSize(ntimes);
       int offsetIdx = 0;
       for (CalendarDate time : times) {
-        CalendarDate expected = baseForRun.add((long) offset.getCoordMidpoint(offsetIdx++), CalendarPeriod.Field.Hour);
+        CalendarDate expected = baseForRun.add((long) offset.getCoordMidpoint(offsetIdx++), subject.getOffsetPeriod());
         // System.out.printf(" (%d,%d) got= %s want= %s%n", runidx, offsetIdx, time, expected);
         assertThat(time).isEqualTo(expected);
       }
@@ -166,7 +158,7 @@ public class TestGridNetcdfTimeCS {
     assertThat(times).hasSize(ntimes);
     CalendarDate baseDate = subject.getBaseDate();
     for (int idx = 0; idx < ntimes; idx++) {
-      CalendarDate expected = baseDate.add((long) timeAxis.getCoordMidpoint(idx), CalendarPeriod.Field.Day);
+      CalendarDate expected = baseDate.add((long) timeAxis.getCoordMidpoint(idx), subject.getOffsetPeriod());
       System.out.printf(" (%d)  got= %s want= %s%n", idx, times.get(idx), expected);
       assertThat(times.get(idx)).isEqualTo(expected);
     }

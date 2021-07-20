@@ -14,8 +14,10 @@ import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.AttributeContainerMutable;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.grib.collection.Grib1Iosp;
 import ucar.nc2.grib.collection.GribArrayReader;
 import ucar.nc2.grib.collection.GribCollectionImmutable;
+import ucar.nc2.grib.collection.GribIosp;
 import ucar.nc2.grid2.Grid;
 import ucar.nc2.grid2.GridCoordinateSystem;
 import ucar.nc2.grid2.GridReferencedArray;
@@ -30,22 +32,22 @@ import java.util.Optional;
 
 /** Grib implementation of {@link Grid} */
 public class GribGrid implements Grid {
-  private final GribGridCoordinateSystem coordinateSystem;
+  private final GridCoordinateSystem coordinateSystem;
   public final GribCollectionImmutable gribCollection;
   private final GribCollectionImmutable.VariableIndex vi;
   private final String name;
   private final AttributeContainer attributes;
 
-  public GribGrid(GribGridCoordinateSystem coordinateSystem, GribCollectionImmutable gribCollection,
+  public GribGrid(GribIosp iosp, GribCollectionImmutable gribCollection, GridCoordinateSystem coordinateSystem,
       GribCollectionImmutable.VariableIndex vi) {
     this.coordinateSystem = coordinateSystem;
     this.gribCollection = gribCollection;
     this.vi = vi;
-    this.name = vi.makeVariableName();
+    this.name = iosp.makeVariableName(vi);
 
-    AttributeContainerMutable atts = new AttributeContainerMutable(vi.makeVariableName());
-    atts.addAttribute(new Attribute(CDM.LONG_NAME, vi.makeVariableDescription()));
-    atts.addAttribute(new Attribute(CDM.UNITS, vi.makeVariableUnits()));
+    AttributeContainerMutable atts = new AttributeContainerMutable(this.name);
+    atts.addAttribute(new Attribute(CDM.LONG_NAME, iosp.makeVariableLongName(vi)));
+    atts.addAttribute(new Attribute(CDM.UNITS, iosp.makeVariableUnits(vi)));
     gribCollection.addVariableAttributes(atts, vi);
     this.attributes = atts.toImmutable();
   }
@@ -107,5 +109,10 @@ public class GribGrid implements Grid {
     Array<?> data = dataReader.readData(want);
 
     return GridReferencedArray.create(this.name, getArrayType(), (Array<Number>) data, subsetCoordSys);
+  }
+
+  @Override
+  public String toString() {
+    return name;
   }
 }

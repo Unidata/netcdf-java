@@ -35,6 +35,7 @@ dependencies {
   runtimeOnly 'org.slf4j:slf4j-jdk14'
 
   testImplementation enforcedPlatform(project(':netcdf-java-testing-platform'))
+  testImplementation project(':grib')
   testImplementation project(':cdm-test-utils')
   testImplementation 'com.google.truth:truth'
   testImplementation 'junit:junit'

@@ -20,11 +20,11 @@ import java.util.Optional;
 /** Wraps a VariableDS, turns into a Grid */
 @Immutable
 public class GridVariable implements Grid {
-  private final GridNetcdfCS cs;
+  private final GridCoordinateSystem cs;
   private final VariableDS vds;
   private final GridIndexPermuter permuter;
 
-  GridVariable(GridNetcdfCS cs, VariableDS vds) {
+  GridVariable(GridCoordinateSystem cs, VariableDS vds) {
     this.cs = cs;
     this.vds = vds;
     this.permuter = new GridIndexPermuter(cs, vds);

@@ -227,6 +227,11 @@ public class GridAxisInterval extends GridAxis<CoordInterval> implements Iterabl
       return self();
     }
 
+    public T setStartValue(double startValue) {
+      this.startValue = startValue;
+      return self();
+    }
+
     /**
      * Spacing.regularXXX: not used
      * Spacing.contiguousInterval: edges[ncoords+1]

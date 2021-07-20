@@ -64,8 +64,8 @@ public class GridNetcdfDataset implements GridDataset {
     FeatureType featureType = classifier.getFeatureType();
 
     Map<String, GridAxis<?>> gridAxes = new HashMap<>();
-    ArrayList<GridNetcdfCS> coordsys = new ArrayList<>();
-    Multimap<GridNetcdfCS, Grid> gridsets = ArrayListMultimap.create();
+    ArrayList<GridCoordinateSystem> coordsys = new ArrayList<>();
+    Multimap<GridCoordinateSystem, Grid> gridsets = ArrayListMultimap.create();
 
     // Do all the independent axes first
     for (CoordinateAxis axis : classifier.getIndependentAxes()) {
@@ -102,7 +102,7 @@ public class GridNetcdfDataset implements GridDataset {
       if (csc.getName().startsWith("Best/")) {
         continue;
       }
-      GridNetcdfCS.createFromClassifier(csc, gridAxes, errInfo).ifPresent(gcs -> {
+      GridNetcdfCSBuilder.createFromClassifier(csc, gridAxes, errInfo).ifPresent(gcs -> {
         coordsys.add(gcs);
         trackCsConverted.put(csc.getName(), new TrackGridCS(csc, gcs));
       });
@@ -126,7 +126,7 @@ public class GridNetcdfDataset implements GridDataset {
           if (track == null) {
             continue; // not used
           }
-          GridNetcdfCS gcs = track.gridCS;
+          GridCoordinateSystem gcs = track.gridCS;
           Set<Dimension> domain = Dimensions.makeDomain(track.csc.getAxesUsed(), false);
           if (gcs != null && gcs.getFeatureType() == featureType && Dimensions.isCoordinateSystemFor(domain, v)) {
             Grid grid = new GridVariable(gcs, (VariableDS) ve);
@@ -143,14 +143,16 @@ public class GridNetcdfDataset implements GridDataset {
     }
 
     HashSet<Grid> ugrids = new HashSet<>(gridsets.values());
-    return Optional.of(new GridNetcdfDataset(ncd, featureType, coordsys, gridAxes.values(), ugrids));
+    ArrayList<Grid> grids = new ArrayList<>(ugrids);
+    grids.sort((g1, g2) -> CharSequence.compare(g1.getName(), g2.getName()));
+    return Optional.of(new GridNetcdfDataset(ncd, featureType, coordsys, gridAxes.values(), grids));
   }
 
   private static class TrackGridCS {
     DatasetClassifier.CoordSysClassifier csc;
-    GridNetcdfCS gridCS;
+    GridCoordinateSystem gridCS;
 
-    public TrackGridCS(DatasetClassifier.CoordSysClassifier csc, GridNetcdfCS gridCS) {
+    public TrackGridCS(DatasetClassifier.CoordSysClassifier csc, GridCoordinateSystem gridCS) {
       this.csc = csc;
       this.gridCS = gridCS;
     }
@@ -160,12 +162,12 @@ public class GridNetcdfDataset implements GridDataset {
   private final NetcdfDataset ncd;
   private final FeatureType featureType;
 
-  private final ImmutableList<GridNetcdfCS> coordsys;
+  private final ImmutableList<GridCoordinateSystem> coordsys;
 
   private final ImmutableList<GridAxis<?>> gridAxes;
   private final ImmutableList<Grid> grids;
 
-  public GridNetcdfDataset(NetcdfDataset ncd, FeatureType featureType, List<GridNetcdfCS> coordsys,
+  public GridNetcdfDataset(NetcdfDataset ncd, FeatureType featureType, List<GridCoordinateSystem> coordsys,
       Collection<GridAxis<?>> gridAxes, Collection<Grid> grids) {
     this.ncd = ncd;
     this.featureType = featureType;

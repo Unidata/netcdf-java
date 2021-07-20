@@ -22,12 +22,32 @@ import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Formatter;
 
 import static com.google.common.truth.Truth.assertThat;
 
 /** Test reading Grib through {@link GridDatasetFactory} */
-public class TestReadGridDatasetFactory {
+public class TestReadGribGridDatasetFactory {
+
+  @Test
+  @Category(NeedsCdmUnitTest.class)
+  public void testCsysTooManyAxes() throws IOException {
+    String filename = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4";
+    System.out.printf("filename %s%n", filename);
+
+    Formatter errlog = new Formatter();
+    try (GridDataset gridDataset = GridDatasetFactory.openGridDataset(filename, errlog)) {
+      assertThat(gridDataset).isNotNull();
+      assertThat(gridDataset.getGridCoordinateSystems()).hasSize(23);
+      assertThat(gridDataset.getGridAxes()).hasSize(25);
+      assertThat(gridDataset.getGrids()).hasSize(135);
+      for (GridCoordinateSystem csys : gridDataset.getGridCoordinateSystems()) {
+        assertThat(csys.getGridAxes().size()).isLessThan(6);
+      }
+    }
+  }
 
   @Test
   @Category(NeedsCdmUnitTest.class)
@@ -39,9 +59,7 @@ public class TestReadGridDatasetFactory {
     try (GridDataset gridDataset = GridDatasetFactory.openGridDataset(filename, errlog)) {
       assertThat(gridDataset).isNotNull();
       assertThat(gridDataset.getGridCoordinateSystems()).hasSize(4);
-      assertThat(gridDataset.getGridCoordinateSystems()).hasSize(4);
       assertThat(gridDataset.getGridAxes()).hasSize(10);
-      assertThat(gridDataset.getGridCoordinateSystems()).hasSize(4);
       assertThat(gridDataset.getGrids()).hasSize(4);
     }
   }

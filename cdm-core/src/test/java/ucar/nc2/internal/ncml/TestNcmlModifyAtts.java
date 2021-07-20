@@ -11,6 +11,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ucar.array.ArrayType;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.IndexIterator;
@@ -21,6 +22,8 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
 import ucar.unidata.util.test.Assert2;
+
+import static com.google.common.truth.Truth.assertThat;
 
 public class TestNcmlModifyAtts {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -44,7 +47,7 @@ public class TestNcmlModifyAtts {
     assert null != att;
     assert !att.isArray();
     assert att.isString();
-    assert att.getDataType() == DataType.STRING;
+    assert att.getArrayType() == ArrayType.STRING;
     assert att.getStringValue().equals("Metapps");
     assert att.getNumericValue() == null;
     assert att.getNumericValue(3) == null;
@@ -56,18 +59,16 @@ public class TestNcmlModifyAtts {
     assert null != v;
 
     Attribute att = v.findAttribute(CDM.LONG_NAME);
-    assert null == att;
+    assertThat(att).isNull();
 
-    att = v.findAttribute("units");
-    assert null != att;
-    assert att.getStringValue().equals("percent");
-
+    assertThat(v.findAttribute("units")).isNull();
+    assertThat(v.attributes().findAttributeIgnoreCase("units")).isNotNull();
     att = v.findAttribute("UNITS");
-    assert null != att;
-    assert att.getStringValue().equals("percent");
+    assertThat(att).isNotNull();
+    assertThat(att.getStringValue()).isEqualTo("percent");
 
     att = v.findAttribute("longer_name");
-    assert null != att;
+    assertThat(att).isNotNull();
     assert !att.isArray();
     assert att.isString();
     assert att.getDataType() == DataType.STRING;

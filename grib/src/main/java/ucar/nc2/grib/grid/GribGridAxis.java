@@ -9,9 +9,9 @@ import com.google.common.base.Preconditions;
 import ucar.nc2.Attribute;
 import ucar.nc2.calendar.CalendarDateUnit;
 import ucar.nc2.constants.AxisType;
-import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.grib.collection.GribCollectionImmutable;
+import ucar.nc2.grib.collection.GribIosp;
 import ucar.nc2.grib.coord.Coordinate;
 import ucar.nc2.grib.coord.CoordinateEns;
 import ucar.nc2.grib.coord.CoordinateRuntime;
@@ -27,7 +27,6 @@ import ucar.nc2.grid2.GridAxis;
 import ucar.nc2.grid2.GridAxisInterval;
 import ucar.nc2.grid2.GridAxisPoint;
 import ucar.nc2.grid2.GridAxisSpacing;
-import ucar.nc2.grid2.GridDataset;
 import ucar.nc2.units.SimpleUnit;
 
 import javax.annotation.Nullable;
@@ -41,7 +40,7 @@ import static ucar.nc2.grib.grid.GribGridDataset.CoordAndAxis;
 /** Grib implementation of {@link GridAxis} */
 public class GribGridAxis {
 
-  public static CoordAndAxis create(GribCollectionImmutable.Type type, Coordinate gribCoord) {
+  public static CoordAndAxis create(GribCollectionImmutable.Type type, Coordinate gribCoord, @Nullable GribIosp iosp) {
     switch (gribCoord.getType()) {
       case runtime: {
         CoordinateRuntime rtCoord = (CoordinateRuntime) gribCoord;
@@ -69,25 +68,25 @@ public class GribGridAxis {
             Preconditions.checkArgument(time2d.isOrthogonal());
             Preconditions.checkArgument(time2d.getNruns() == 1);
             Preconditions.checkNotNull(time2d.getOrthogonalTimes());
-            return create(type, time2d.getOrthogonalTimes()).withTime2d(time2d);
+            return create(type, time2d.getOrthogonalTimes(), iosp).withTime2d(time2d);
 
           case MRUTP:
           case MRUTC: // the time coordinate is a time2D (nruns X 1) orthogonal
             Preconditions.checkArgument(time2d.isOrthogonal());
             Preconditions.checkArgument(time2d.getNtimes() == 1);
             Preconditions.checkNotNull(time2d.getOrthogonalTimes());
-            return create(type, time2d.getOffsetTimes()).withTime2d(time2d);
+            return create(type, time2d.getOffsetTimes(), iosp).withTime2d(time2d);
 
           case TwoD: // the time coordinate is a time2D (nruns X ntimes)
             if (time2d.isOrthogonal()) {
               Preconditions.checkNotNull(time2d.getOrthogonalTimes());
-              return create(type, time2d.getOrthogonalTimes()).withTime2d(time2d);
+              return create(type, time2d.getOrthogonalTimes(), iosp).withTime2d(time2d);
 
             } else if (time2d.isRegular()) {
-              return create(type, time2d.getMaximalTimes()).withTime2d(time2d);
+              return create(type, time2d.getMaximalTimes(), iosp).withTime2d(time2d);
 
             } else {
-              return create(type, time2d.getMaximalTimes()).withTime2d(time2d);
+              return create(type, time2d.getMaximalTimes(), iosp).withTime2d(time2d);
             }
 
           default:
@@ -98,12 +97,17 @@ public class GribGridAxis {
       case vert:
         CoordinateVert vertCoord = (CoordinateVert) gribCoord;
         AxisType axisType = getVertType(vertCoord.getUnit());
+        String desc = iosp != null ? iosp.getVerticalCoordDesc(vertCoord.getCode()) : "";
+
         if (vertCoord.isLayer()) {
-          GridAxis<?> axis = Interval.builder().setVertCoordinate(vertCoord).setAxisType(axisType).build();
-          return new CoordAndAxis(gribCoord, axis);
+          GridAxisInterval.Builder<?> axis = Interval.builder().setVertCoordinate(vertCoord).setAxisType(axisType);
+          addVerticalAttributes(axis, vertCoord, iosp);
+          return new CoordAndAxis(gribCoord, axis.build());
         } else {
-          GridAxis<?> axis = Point.builder().setVertCoordinate(vertCoord).setAxisType(axisType).build();
-          return new CoordAndAxis(gribCoord, axis);
+          GridAxisPoint.Builder<?> axis = Point.builder().setVertCoordinate(vertCoord).setAxisType(axisType)
+              .setUnits(vertCoord.getUnit()).setDescription(desc);
+          addVerticalAttributes(axis, vertCoord, iosp);
+          return new CoordAndAxis(gribCoord, axis.build());
         }
 
       case ens: {
@@ -127,18 +131,18 @@ public class GribGridAxis {
     }
   }
 
-  private static void addVerticalAttributes(GridAxis.Builder<?> v, CoordinateVert vc) {
-    String desc = null; // iosp.getVerticalCoordDesc(vc.getCode()); // Needs a cust to resolve this
-    if (desc != null) {
-      v.addAttribute(new Attribute(CDM.LONG_NAME, desc));
-    }
-    v.addAttribute(new Attribute(CF.POSITIVE, vc.isPositiveUp() ? CF.POSITIVE_UP : CF.POSITIVE_DOWN));
+  private static void addVerticalAttributes(GridAxis.Builder<?> axis, CoordinateVert vc, @Nullable GribIosp iosp) {
+    axis.setUnits(vc.getUnit());
 
-    v.addAttribute(new Attribute("Grib_level_type", vc.getCode()));
+    String desc = iosp != null ? iosp.getVerticalCoordDesc(vc.getCode()) : "";
+    axis.setDescription(desc);
+
+    axis.addAttribute(new Attribute(CF.POSITIVE, vc.isPositiveUp() ? CF.POSITIVE_UP : CF.POSITIVE_DOWN));
+    axis.addAttribute(new Attribute("Grib_level_type", vc.getCode()));
     VertCoordType vu = vc.getVertUnit();
     if (vu != null) {
       if (vu.getDatum() != null) {
-        v.addAttribute(new Attribute("datum", vu.getDatum()));
+        axis.addAttribute(new Attribute("datum", vu.getDatum()));
       }
     }
   }
@@ -228,7 +232,6 @@ public class GribGridAxis {
       }
 
       public T setVertCoordinate(CoordinateVert vertCoord) {
-        addVerticalAttributes(this, vertCoord);
         this.gribCoord = vertCoord;
         List<Number> values =
             vertCoord.getValues().stream().map(vcv -> ((VertCoordValue) vcv).getValue1()).collect(Collectors.toList());
@@ -312,8 +315,6 @@ public class GribGridAxis {
       }
 
       public T setVertCoordinate(CoordinateVert vertCoord) {
-        addVerticalAttributes(this, vertCoord);
-
         List<Number> ivalues = new ArrayList<>();
         for (VertCoordValue intvValues : vertCoord.getLevelSorted()) {
           ivalues.add(intvValues.getValue1());

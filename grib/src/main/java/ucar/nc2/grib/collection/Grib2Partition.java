@@ -44,6 +44,13 @@ public class Grib2Partition extends PartitionCollectionImmutable implements Clos
   }
 
   @Override
+  public GribIosp getIosp() throws IOException {
+    GribIosp result = new Grib2Iosp(this);
+    result.createCustomizer();
+    return result;
+  }
+
+  @Override
   public CoverageCollection getGridCoverage(Dataset ds, GroupGC group, String filename, FeatureCollectionConfig config,
       Formatter errlog, org.slf4j.Logger logger) {
 

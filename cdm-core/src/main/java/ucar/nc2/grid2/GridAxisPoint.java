@@ -275,6 +275,11 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
       return self();
     }
 
+    public T setStartValue(double startValue) {
+      this.startValue = startValue;
+      return self();
+    }
+
     /**
      * Spacing.regularXXX: not used
      * Spacing.irregularPoint: pts[ncoords]

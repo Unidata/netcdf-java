@@ -17,6 +17,12 @@ public class Grib {
   public static final String GRIB_RUNTIME = "GRIB reference time";
   public static final String GRIB_STAT_TYPE = "Grib_Statistical_Interval_Type";
 
+  public static final String XAXIS = "xaxis";
+  public static final String YAXIS = "yaxis";
+  public static final String LAT_AXIS = "lat";
+  public static final String LON_AXIS = "lon";
+
+
   // do not use
   public static boolean debugRead;
   public static boolean debugGbxIndexOnly; // we are running with only ncx and gbx index files, no data

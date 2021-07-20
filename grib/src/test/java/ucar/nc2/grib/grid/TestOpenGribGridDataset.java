@@ -123,7 +123,6 @@ public class TestOpenGribGridDataset {
     }
   }
 
-
   @Test
   public void testFileNotFound() throws IOException {
     String filename = TestDir.cdmLocalTestDataDir + "conventions/fileNot.nc";

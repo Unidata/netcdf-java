@@ -29,7 +29,7 @@ import java.util.List;
 
 import static com.google.common.truth.Truth.assertThat;
 
-public class TestReadGridSubset {
+public class TestReadGribGridSubset {
 
   @Test
   @Category(NeedsCdmUnitTest.class)

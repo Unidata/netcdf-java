@@ -37,6 +37,7 @@ public class Grib2Collection extends GribCollectionImmutable {
     super(gc);
   }
 
+  // LOOK unused ??
   @Override
   @Nullable
   public ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(Dataset ds, GroupGC group, String filename,
@@ -63,6 +64,13 @@ public class Grib2Collection extends GribCollectionImmutable {
       }
       return null;
     }
+  }
+
+  @Override
+  public GribIosp getIosp() throws IOException {
+    GribIosp result = new Grib2Iosp(this);
+    result.createCustomizer();
+    return result;
   }
 
   @Override
