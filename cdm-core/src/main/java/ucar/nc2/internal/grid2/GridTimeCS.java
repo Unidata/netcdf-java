@@ -3,7 +3,7 @@
  * See LICENSE for license information.
  */
 
-package ucar.gcdm.client;
+package ucar.nc2.internal.grid2;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
@@ -13,7 +13,6 @@ import ucar.nc2.grid2.GridAxis;
 import ucar.nc2.grid2.GridAxisPoint;
 import ucar.nc2.grid2.GridSubset;
 import ucar.nc2.grid2.GridTimeCoordinateSystem;
-import ucar.nc2.internal.grid2.SubsetTimeHelper;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -23,9 +22,20 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
 
-public class GcdmTimeCS extends GridTimeCoordinateSystem {
+public class GridTimeCS extends GridTimeCoordinateSystem {
 
-  public static GcdmTimeCS create(Type type, @Nullable GridAxisPoint runtimeAxis, // missing for Observation
+  public static GridTimeCS createSingleOrOffset(GridAxisPoint runTimeAxis, GridAxis<?> timeOffsetAxis) {
+    CalendarDateUnit dateUnit = CalendarDateUnit.fromUdunitString(null, runTimeAxis.getUnits()).orElseThrow();
+    return create(runTimeAxis.getNominalSize() == 1 ? Type.SingleRuntime : Type.Offset, runTimeAxis, timeOffsetAxis,
+        dateUnit, null, null);
+  }
+
+  public static GridTimeCS createObservation(GridAxis<?> timeAxis) {
+    CalendarDateUnit dateUnit = CalendarDateUnit.fromUdunitString(null, timeAxis.getUnits()).orElseThrow();
+    return create(Type.Observation, null, timeAxis, dateUnit, null, null);
+  }
+
+  public static GridTimeCS create(Type type, @Nullable GridAxisPoint runtimeAxis, // missing for Observation
       GridAxis<?> timeOffsetAxis, CalendarDateUnit calendarDateUnit, Map<Integer, GridAxis<?>> timeOffsetMap, // OffsetRegular
                                                                                                               // only
       List<GridAxis<?>> timeOffsets // OffsetIrregular only
@@ -97,13 +107,13 @@ public class GcdmTimeCS extends GridTimeCoordinateSystem {
 
   //////////////////////////////////////////////////////////////////////////////////////
 
-  protected GcdmTimeCS(Type type, @Nullable GridAxisPoint runTimeAxis, GridAxis<?> timeOffsetAxis,
+  protected GridTimeCS(Type type, @Nullable GridAxisPoint runTimeAxis, GridAxis<?> timeOffsetAxis,
       CalendarDateUnit calendarDateUnit) {
     super(type, runTimeAxis, timeOffsetAxis, calendarDateUnit);
   }
 
   //////////////////////////////////////////////////////////////////////////////////////
-  static class Observation extends GcdmTimeCS {
+  static class Observation extends GridTimeCS {
 
     Observation(GridAxis<?> time, CalendarDateUnit calendarDateUnit) {
       // LOOK MRMS_Radar_20201027_0000.grib2.ncx4 time2D has runtime in seconds, but period name is minutes
@@ -126,14 +136,14 @@ public class GcdmTimeCS extends GridTimeCoordinateSystem {
     }
 
     @Override
-    public Optional<GcdmTimeCS> subset(GridSubset params, Formatter errlog) {
+    public Optional<GridTimeCS> subset(GridSubset params, Formatter errlog) {
       SubsetTimeHelper helper = new SubsetTimeHelper(this);
       return helper.subsetTime(params, errlog).map(t -> new Observation(t, this.calendarDateUnit));
     }
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  static class SingleRuntime extends GcdmTimeCS {
+  static class SingleRuntime extends GridTimeCS {
     private final CalendarDate runtimeDate;
 
     SingleRuntime(GridAxisPoint runtime, GridAxis<?> timeOffset, CalendarDate runtimeDate) {
@@ -163,7 +173,7 @@ public class GcdmTimeCS extends GridTimeCoordinateSystem {
     }
 
     @Override
-    public Optional<GcdmTimeCS> subset(GridSubset params, Formatter errlog) {
+    public Optional<GridTimeCS> subset(GridSubset params, Formatter errlog) {
       SubsetTimeHelper helper = new SubsetTimeHelper(this);
       return helper.subsetTime(params, errlog).map(t -> new SingleRuntime(runTimeAxis, t, this.runtimeDate));
     }
@@ -171,7 +181,7 @@ public class GcdmTimeCS extends GridTimeCoordinateSystem {
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  static class Offset extends GcdmTimeCS {
+  static class Offset extends GridTimeCS {
 
     Offset(GridAxisPoint runtime, GridAxis<?> timeOffset) {
       super(Type.Offset, runtime, timeOffset, null);
@@ -188,7 +198,7 @@ public class GcdmTimeCS extends GridTimeCoordinateSystem {
     }
 
     @Override
-    public Optional<GcdmTimeCS> subset(GridSubset params, Formatter errlog) {
+    public Optional<GridTimeCS> subset(GridSubset params, Formatter errlog) {
       SubsetTimeHelper helper = new SubsetTimeHelper(this);
       return helper.subsetOffset(params, errlog).map(t -> new Offset(helper.runtimeAxis, t));
     }
@@ -196,7 +206,7 @@ public class GcdmTimeCS extends GridTimeCoordinateSystem {
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  static class OffsetRegular extends GcdmTimeCS {
+  static class OffsetRegular extends GridTimeCS {
     private final Map<Integer, GridAxis<?>> timeOffsets;
 
     OffsetRegular(GridAxisPoint runtime, GridAxis<?> timeOffset, Map<Integer, GridAxis<?>> timeOffsets) {
@@ -223,7 +233,7 @@ public class GcdmTimeCS extends GridTimeCoordinateSystem {
     }
 
     @Override
-    public Optional<GcdmTimeCS> subset(GridSubset params, Formatter errlog) {
+    public Optional<GridTimeCS> subset(GridSubset params, Formatter errlog) {
       SubsetTimeHelper helper = new SubsetTimeHelper(this);
       return helper.subsetOffset(params, errlog).map(t -> new OffsetRegular(helper.runtimeAxis, t, timeOffsets)); // LOOK
                                                                                                                   // wrong?
@@ -241,7 +251,7 @@ public class GcdmTimeCS extends GridTimeCoordinateSystem {
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  static class OffsetIrregular extends GcdmTimeCS {
+  static class OffsetIrregular extends GridTimeCS {
     private final List<GridAxis<?>> timeOffsets;
 
     OffsetIrregular(GridAxisPoint runtime, GridAxis<?> timeOffset, List<GridAxis<?>> timeOffsets) {
@@ -265,7 +275,7 @@ public class GcdmTimeCS extends GridTimeCoordinateSystem {
     }
 
     @Override
-    public Optional<GcdmTimeCS> subset(GridSubset params, Formatter errlog) {
+    public Optional<GridTimeCS> subset(GridSubset params, Formatter errlog) {
       SubsetTimeHelper helper = new SubsetTimeHelper(this);
       return helper.subsetOffset(params, errlog).map(t -> new OffsetIrregular(helper.runtimeAxis, t, timeOffsets)); // LOOK
                                                                                                                     // wrong

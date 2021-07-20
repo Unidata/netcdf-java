@@ -18,8 +18,8 @@ import java.util.List;
 
 import static com.google.common.truth.Truth.assertThat;
 
-/** Test {@link GridNetcdfTimeCS} with builders (not real data) */
-public class TestGridNetcdfTimeCS {
+/** Test {@link GridTimeCS} with builders (not real data) */
+public class TestGridTimeCS {
 
   @Test
   public void testSingleRuntime() {
@@ -35,7 +35,7 @@ public class TestGridNetcdfTimeCS {
         .setUnits("hours").setNcoords(ntimes).setValues(values).setSpacing(GridAxisSpacing.irregularPoint);
     GridAxisPoint timeAxis = builder.build();
 
-    GridNetcdfTimeCS subject = GridNetcdfTimeCS.create(runtime, timeAxis);
+    GridTimeCS subject = GridTimeCS.createSingleOrOffset(runtime, timeAxis);
     CalendarDateUnit cdu = CalendarDateUnit.fromUdunitString(null, unit).orElseThrow();
 
     assertThat(subject.getType()).isEqualTo(GridTimeCoordinateSystem.Type.SingleRuntime);
@@ -92,7 +92,7 @@ public class TestGridNetcdfTimeCS {
         .setUnits("hours").setNcoords(ntimes).setValues(values).setSpacing(GridAxisSpacing.irregularPoint);
     GridAxisPoint timeAxis = builder.build();
 
-    GridNetcdfTimeCS subject = GridNetcdfTimeCS.create(runtime, timeAxis);
+    GridTimeCS subject = GridTimeCS.createSingleOrOffset(runtime, timeAxis);
     CalendarDateUnit cdu = CalendarDateUnit.fromUdunitString(null, unit).orElseThrow();
 
     assertThat(subject.getType()).isEqualTo(GridTimeCoordinateSystem.Type.Offset);

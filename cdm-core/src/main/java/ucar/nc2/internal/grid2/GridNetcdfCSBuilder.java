@@ -129,7 +129,7 @@ public class GridNetcdfCSBuilder {
     axes.sort(new Grids.AxisComparator());
     GridHorizCoordinateSystem horizCsys = makeHorizCS(findCoordAxisByType(AxisType.GeoX, AxisType.Lon),
         findCoordAxisByType(AxisType.GeoY, AxisType.Lat), this.projection, this.latdata, this.londata);
-    GridNetcdfTimeCS tcs = makeTimeCS();
+    GridTimeCS tcs = makeTimeCS();
 
     return new GridCoordinateSystem(this.axes, tcs, horizCsys);
   }
@@ -144,16 +144,16 @@ public class GridNetcdfCSBuilder {
     return null;
   }
 
-  private GridNetcdfTimeCS makeTimeCS() {
+  private GridTimeCS makeTimeCS() {
     GridAxis<?> rtAxis = axes.stream().filter(a -> a.getAxisType() == AxisType.RunTime).findFirst().orElse(null);
     GridAxis<?> toAxis = axes.stream().filter(a -> a.getAxisType() == AxisType.TimeOffset).findFirst().orElse(null);
     GridAxis<?> timeAxis = axes.stream().filter(a -> a.getAxisType() == AxisType.Time).findFirst().orElse(null);
     GridAxis<?> useAxis = (toAxis != null) ? toAxis : timeAxis;
 
     if (rtAxis != null && useAxis != null) {
-      return GridNetcdfTimeCS.create((GridAxisPoint) rtAxis, useAxis);
+      return GridTimeCS.createSingleOrOffset((GridAxisPoint) rtAxis, useAxis);
     } else if (useAxis != null) {
-      return GridNetcdfTimeCS.create(useAxis);
+      return GridTimeCS.createObservation(useAxis);
     }
     // ok to not have a time coordinate
     return null;

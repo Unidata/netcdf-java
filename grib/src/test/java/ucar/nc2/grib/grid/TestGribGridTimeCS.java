@@ -19,7 +19,6 @@ import ucar.nc2.grid2.GridAxisDependenceType;
 import ucar.nc2.grid2.GridAxisPoint;
 import ucar.nc2.grid2.GridCoordinateSystem;
 import ucar.nc2.grid2.GridTimeCoordinateSystem;
-import ucar.nc2.internal.grid2.GridNetcdfTimeCS;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
@@ -33,7 +32,7 @@ import java.util.stream.Collectors;
 import static com.google.common.truth.Truth.assertThat;
 import static ucar.nc2.grid2.GridTimeCoordinateSystem.Type;
 
-/** Test {@link GridNetcdfTimeCS} */
+/** Test {@link GribGridTimeCoordinateSystem} */
 @Category(NeedsCdmUnitTest.class)
 public class TestGribGridTimeCS {
 

@@ -9,7 +9,6 @@ import com.google.common.collect.ImmutableList;
 import ucar.array.Array;
 import ucar.gcdm.client.GcdmGrid;
 import ucar.gcdm.client.GcdmGridDataset;
-import ucar.gcdm.client.GcdmTimeCS;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.calendar.CalendarDateUnit;
@@ -27,6 +26,7 @@ import ucar.nc2.grid2.GridHorizCoordinateSystem;
 import ucar.nc2.grid2.GridReferencedArray;
 import ucar.nc2.grid2.GridTimeCoordinateSystem;
 import ucar.nc2.grid2.MaterializedCoordinateSystem;
+import ucar.nc2.internal.grid2.GridTimeCS;
 import ucar.unidata.geoloc.Projection;
 
 import javax.annotation.Nullable;
@@ -339,7 +339,7 @@ public class GcdmGridConverter {
     // GridTimeCoordinateSystem.Type type, @Nullable GridAxisPoint runtimeAxis, GridAxis<?> timeOffsetAxis,
     // CalendarDateUnit calendarDateUnit, CalendarDate calendarDate,
     // Map<Integer, GridAxis<?>> timeOffsetMap, List<GridAxis<?>> timeOffsets
-    return GcdmTimeCS.create(convertTimeType(proto.getType()), runtimeAxis, timeAxis, dateUnit, timeOffsetMap,
+    return GridTimeCS.create(convertTimeType(proto.getType()), runtimeAxis, timeAxis, dateUnit, timeOffsetMap,
         timeOffsets);
   }
 
