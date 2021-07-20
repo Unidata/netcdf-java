@@ -5,13 +5,12 @@
 
 package ucar.gcdm;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import ucar.array.Array;
 import ucar.gcdm.client.GcdmGrid;
 import ucar.gcdm.client.GcdmGridDataset;
-import ucar.gcdm.client.GcdmTimeCS;
 import ucar.nc2.AttributeContainer;
+import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.calendar.CalendarDateUnit;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
@@ -27,6 +26,7 @@ import ucar.nc2.grid2.GridHorizCoordinateSystem;
 import ucar.nc2.grid2.GridReferencedArray;
 import ucar.nc2.grid2.GridTimeCoordinateSystem;
 import ucar.nc2.grid2.MaterializedCoordinateSystem;
+import ucar.nc2.internal.grid2.GridTimeCS;
 import ucar.unidata.geoloc.Projection;
 
 import javax.annotation.Nullable;
@@ -38,9 +38,43 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /** Convert between GcdmGrid Protos and GridDataset objects. */
 public class GcdmGridConverter {
+
+  public static GcdmGridProto.GridDataset encodeGridDataset(GridDataset org) {
+    GcdmGridProto.GridDataset.Builder builder = GcdmGridProto.GridDataset.newBuilder();
+    builder.setName(org.getName());
+    builder.setLocation(org.getLocation());
+    builder.setFeatureType(convertFeatureType(org.getFeatureType()));
+    builder.addAllAttributes(GcdmConverter.encodeAttributes(org.attributes()));
+
+    for (GridAxis<?> axis : org.getGridAxes()) {
+      builder.addGridAxes(encodeGridAxis(axis));
+    }
+
+    Set<GridHorizCoordinateSystem> hsyss = new HashSet<>();
+    Set<GridTimeCoordinateSystem> tsyss = new HashSet<>();
+    for (GridCoordinateSystem coordsys : org.getGridCoordinateSystems()) {
+      builder.addCoordSystems(encodeCoordinateSystem(coordsys));
+      hsyss.add(coordsys.getHorizCoordinateSystem());
+      if (coordsys.getTimeCoordinateSystem() != null) {
+        tsyss.add(coordsys.getTimeCoordinateSystem());
+      }
+    }
+    for (GridHorizCoordinateSystem hsys : hsyss) {
+      builder.addHorizCoordSystems(encodeHorizCS(hsys));
+    }
+    for (GridTimeCoordinateSystem tsys : tsyss) {
+      builder.addTimeCoordSystems(encodeTimeCS(tsys));
+    }
+    for (Grid grid : org.getGrids()) {
+      builder.addGrids(encodeGrid(grid));
+    }
+
+    return builder.build();
+  }
 
   public static void decodeGridDataset(GcdmGridProto.GridDataset proto, GcdmGridDataset.Builder builder,
       Formatter errlog) {
@@ -116,6 +150,21 @@ public class GcdmGridConverter {
 
       return new GridCoordinateSystem(caxes, wantTcs, wantHcs);
     }
+  }
+
+  public static GcdmGridProto.GridCoordinateSystem encodeCoordinateSystem(GridCoordinateSystem csys) {
+    GcdmGridProto.GridCoordinateSystem.Builder builder = GcdmGridProto.GridCoordinateSystem.newBuilder();
+    builder.setName(csys.getName());
+    for (GridAxis<?> axis : csys.getGridAxes()) {
+      builder.addAxisNames(axis.getName());
+    }
+    GridHorizCoordinateSystem horizCS = csys.getHorizCoordinateSystem();
+    builder.setHorizCoordinatesId(horizCS.hashCode());
+    GridTimeCoordinateSystem timeCS = csys.getTimeCoordinateSystem();
+    if (timeCS != null) {
+      builder.setTimeCoordinatesId(timeCS.hashCode());
+    }
+    return builder.build();
   }
 
   public static GcdmGridProto.GridAxis encodeGridAxis(GridAxis<?> axis) {
@@ -223,57 +272,7 @@ public class GcdmGridConverter {
     }
   }
 
-  public static GcdmGrid.Builder decodeGrid(GcdmGridProto.Grid proto) {
-    return GcdmGrid.builder().setProto(proto);
-  }
-
-  public static Projection decodeProjection(GcdmGridProto.Projection proto, Formatter errlog) {
-    AttributeContainer ctv = GcdmConverter.decodeAttributes(proto.getName(), proto.getAttributesList());
-    return ucar.nc2.internal.dataset.transform.horiz.ProjectionFactory.makeProjection(ctv, proto.getGeoUnit(), errlog);
-  }
-
-  public static GridReferencedArray decodeGridReferencedArray(GcdmGridProto.GridReferencedArray proto,
-      ImmutableList<GridAxis<?>> axes, Formatter errlog) {
-    MaterializedCoordinateSystem.Builder cs =
-        decodeMaterializedCoordSys(proto.getMaterializedCoordinateSystem(), errlog);
-    Array<Number> data = GcdmConverter.decodeData(proto.getData());
-    return GridReferencedArray.create(proto.getGridName(), data.getArrayType(), data, cs.build());
-  }
-
   //////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-  public static GcdmGridProto.GridDataset encodeGridDataset(GridDataset org) {
-    GcdmGridProto.GridDataset.Builder builder = GcdmGridProto.GridDataset.newBuilder();
-    builder.setName(org.getName());
-    builder.setLocation(org.getLocation());
-    builder.setFeatureType(convertFeatureType(org.getFeatureType()));
-    builder.addAllAttributes(GcdmConverter.encodeAttributes(org.attributes()));
-
-    for (GridAxis<?> axis : org.getGridAxes()) {
-      builder.addGridAxes(encodeGridAxis(axis));
-    }
-
-    Set<GridHorizCoordinateSystem> hsyss = new HashSet<>();
-    Set<GridTimeCoordinateSystem> tsyss = new HashSet<>();
-    for (GridCoordinateSystem coordsys : org.getGridCoordinateSystems()) {
-      builder.addCoordSystems(encodeCoordinateSystem(coordsys));
-      hsyss.add(coordsys.getHorizCoordinateSystem());
-      if (coordsys.getTimeCoordinateSystem() != null) {
-        tsyss.add(coordsys.getTimeCoordinateSystem());
-      }
-    }
-    for (GridHorizCoordinateSystem hsys : hsyss) {
-      builder.addHorizCoordSystems(encodeHorizCS(hsys));
-    }
-    for (GridTimeCoordinateSystem tsys : tsyss) {
-      builder.addTimeCoordSystems(encodeTimeCS(tsys));
-    }
-    for (Grid grid : org.getGrids()) {
-      builder.addGrids(encodeGrid(grid));
-    }
-
-    return builder.build();
-  }
 
   public static GcdmGridProto.GridHorizCoordinateSystem encodeHorizCS(GridHorizCoordinateSystem horizCS) {
     GcdmGridProto.GridHorizCoordinateSystem.Builder builder = GcdmGridProto.GridHorizCoordinateSystem.newBuilder();
@@ -294,6 +293,7 @@ public class GcdmGridConverter {
   }
 
   public static GcdmGridProto.GridTimeCoordinateSystem encodeTimeCS(GridTimeCoordinateSystem timeCS) {
+    System.out.printf("  encodeCoordinateSystem %d%n", timeCS.hashCode());
     GcdmGridProto.GridTimeCoordinateSystem.Builder builder = GcdmGridProto.GridTimeCoordinateSystem.newBuilder();
     builder.setType(convertTimeType(timeCS.getType()));
     builder.setCalendarDateUnit(timeCS.getCalendarDateUnit().toString());
@@ -302,6 +302,24 @@ public class GcdmGridConverter {
       builder.setRuntimeAxisName(timeCS.getRunTimeAxis().getName());
     }
     builder.setId(timeCS.hashCode());
+
+    if (timeCS.getType() == GridTimeCoordinateSystem.Type.OffsetRegular) {
+      GridAxisPoint runtime = timeCS.getRunTimeAxis();
+      for (int runidx = 0; runidx < runtime.getNominalSize(); runidx++) {
+        CalendarDate runtimeDate = timeCS.getRuntimeDate(runidx);
+        int hour = runtimeDate.getHourOfDay();
+        int minutes = runtimeDate.getMinuteOfHour();
+        int minutesFrom0z = 60 * hour + minutes;
+        System.out.printf("  %d: minutesFrom0z= %d%n", runidx, minutesFrom0z);
+        builder.putRegular(minutesFrom0z, encodeGridAxis(timeCS.getTimeOffsetAxis(runidx)));
+      }
+    }
+
+    if (timeCS.getType() == GridTimeCoordinateSystem.Type.OffsetIrregular) {
+      for (int runidx = 0; runidx < timeCS.getRunTimeAxis().getNominalSize(); runidx++) {
+        builder.addIrregular(encodeGridAxis(timeCS.getTimeOffsetAxis(runidx)));
+      }
+    }
     return builder.build();
   }
 
@@ -310,27 +328,19 @@ public class GcdmGridConverter {
     GridAxis<?> timeAxis = findAxis(proto.getTimeAxisName(), axes);
     GridAxisPoint runtimeAxis = (GridAxisPoint) findAxis(proto.getRuntimeAxisName(), axes);
     CalendarDateUnit dateUnit = CalendarDateUnit.fromUdunitString(null, proto.getCalendarDateUnit()).orElseThrow();
-    return new GcdmTimeCS(convertTimeType(proto.getType()), runtimeAxis, timeAxis, dateUnit);
-  }
 
-  @Nullable
-  private static GridAxis<?> findAxis(String axisName, List<GridAxis<?>> axes) {
-    return axes.stream().filter(a -> a.getName().equals(axisName)).findFirst().orElse(null);
-  }
+    Map<Integer, GridAxis<?>> timeOffsetMap = new HashMap<>();
+    for (Map.Entry<Integer, GcdmGridProto.GridAxis> entry : proto.getRegularMap().entrySet()) {
+      timeOffsetMap.put(entry.getKey(), decodeGridAxis(entry.getValue()));
+    }
+    List<GridAxis<?>> timeOffsets =
+        proto.getIrregularList().stream().map(a -> decodeGridAxis(a)).collect(Collectors.toList());
 
-  public static GcdmGridProto.GridCoordinateSystem encodeCoordinateSystem(GridCoordinateSystem csys) {
-    GcdmGridProto.GridCoordinateSystem.Builder builder = GcdmGridProto.GridCoordinateSystem.newBuilder();
-    builder.setName(csys.getName());
-    for (GridAxis<?> axis : csys.getGridAxes()) {
-      builder.addAxisNames(axis.getName());
-    }
-    GridHorizCoordinateSystem horizCS = csys.getHorizCoordinateSystem();
-    builder.setHorizCoordinatesId(horizCS.hashCode());
-    GridTimeCoordinateSystem timeCS = csys.getTimeCoordinateSystem();
-    if (timeCS != null) {
-      builder.setTimeCoordinatesId(timeCS.hashCode());
-    }
-    return builder.build();
+    // GridTimeCoordinateSystem.Type type, @Nullable GridAxisPoint runtimeAxis, GridAxis<?> timeOffsetAxis,
+    // CalendarDateUnit calendarDateUnit, CalendarDate calendarDate,
+    // Map<Integer, GridAxis<?>> timeOffsetMap, List<GridAxis<?>> timeOffsets
+    return GridTimeCS.create(convertTimeType(proto.getType()), runtimeAxis, timeAxis, dateUnit, timeOffsetMap,
+        timeOffsets);
   }
 
   public static GcdmGridProto.Projection encodeProjection(Projection projection, String geoUnits) {
@@ -341,6 +351,11 @@ public class GcdmGridConverter {
     }
     builder.addAllAttributes(GcdmConverter.encodeAttributes(projection.getProjectionAttributes()));
     return builder.build();
+  }
+
+  public static Projection decodeProjection(GcdmGridProto.Projection proto, Formatter errlog) {
+    AttributeContainer ctv = GcdmConverter.decodeAttributes(proto.getName(), proto.getAttributesList());
+    return ucar.nc2.internal.dataset.transform.horiz.ProjectionFactory.makeProjection(ctv, proto.getGeoUnit(), errlog);
   }
 
   public static GcdmGridProto.Grid encodeGrid(Grid grid) {
@@ -354,12 +369,31 @@ public class GcdmGridConverter {
     return builder.build();
   }
 
+  public static GcdmGrid.Builder decodeGrid(GcdmGridProto.Grid proto) {
+    return GcdmGrid.builder().setProto(proto);
+  }
+
+  @Nullable
+  private static GridAxis<?> findAxis(String axisName, List<GridAxis<?>> axes) {
+    return axes.stream().filter(a -> a.getName().equals(axisName)).findFirst().orElse(null);
+  }
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////
+  // data fetching
   public static GcdmGridProto.GridReferencedArray encodeGridReferencedArray(GridReferencedArray geoArray) {
     GcdmGridProto.GridReferencedArray.Builder builder = GcdmGridProto.GridReferencedArray.newBuilder();
     builder.setGridName(geoArray.gridName());
     builder.setMaterializedCoordinateSystem(encodeMaterializedCoordSys(geoArray.getMaterializedCoordinateSystem()));
     builder.setData(GcdmConverter.encodeData(geoArray.arrayType(), geoArray.data()));
     return builder.build();
+  }
+
+  public static GridReferencedArray decodeGridReferencedArray(GcdmGridProto.GridReferencedArray proto,
+      ImmutableList<GridAxis<?>> axes, Formatter errlog) {
+    MaterializedCoordinateSystem.Builder cs =
+        decodeMaterializedCoordSys(proto.getMaterializedCoordinateSystem(), errlog);
+    Array<Number> data = GcdmConverter.decodeData(proto.getData());
+    return GridReferencedArray.create(proto.getGridName(), data.getArrayType(), data, cs.build());
   }
 
   public static GcdmGridProto.MaterializedCoordinateSystem encodeMaterializedCoordSys(

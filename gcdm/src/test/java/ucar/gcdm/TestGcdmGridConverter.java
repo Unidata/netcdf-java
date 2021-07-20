@@ -37,6 +37,7 @@ import static com.google.common.truth.Truth.assertWithMessage;
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
 public class TestGcdmGridConverter {
+
   @Parameterized.Parameters(name = "{0}")
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>(500);
@@ -56,15 +57,21 @@ public class TestGcdmGridConverter {
       result.add(new Object[] {TestDir.cdmUnitTestDir + "tds_index/NCEP/MRMS/Radar/MRMS-Radar.ncx4"});
       result
           .add(new Object[] {TestDir.cdmUnitTestDir + "tds_index/NCEP/MRMS/Radar/MRMS_Radar_20201027_0000.grib2.ncx4"});
-      result.add(new Object[] {TestDir.cdmUnitTestDir + "tds_index/NCEP/NDFD/CPC/NCEP_NDFD_CPC_Experimental.ncx4"}); // Offset
-                                                                                                                     // (orthogonal)
-      // result.add(new Object[] {TestDir.cdmUnitTestDir + "tds_index/NCEP/NBM/Alaska/NCEP_ALASKA_MODEL_BLEND.ncx4"});
-      // // orth, reg
-      result.add(new Object[] {TestDir.cdmUnitTestDir + "tds_index/NCEP/NDFD/NWS/NDFD_NWS_CONUS_CONDUIT_ver7.ncx4"}); // OffsetRegular
-      result.add(new Object[] {TestDir.cdmUnitTestDir + "tds_index/NCEP/NBM/Ocean/NCEP_OCEAN_MODEL_BLEND.ncx4"}); // OffsetRegular
-      result.add(new Object[] {TestDir.cdmUnitTestDir + "tds_index/NCEP/NDFD/CPC/NDFD_CPC_CONUS_CONDUIT.ncx4"}); // OffsetIrregular
-      // result.add(new Object[] {TestDir.cdmUnitTestDir + "tds_index/NCEP/NDFD/NWS/NDFD_NWS_CONUS_CONDUIT.ncx4"}); //
+
+      // Offset (orthogonal)
+      result.add(new Object[] {TestDir.cdmUnitTestDir + "tds_index/NCEP/NDFD/CPC/NCEP_NDFD_CPC_Experimental.ncx4"});
+
+      // orth, reg
+      result.add(new Object[] {TestDir.cdmUnitTestDir + "tds_index/NCEP/NBM/Alaska/NCEP_ALASKA_MODEL_BLEND.ncx4"});
+
+      // OffsetRegular
+      result.add(new Object[] {TestDir.cdmUnitTestDir + "tds_index/NCEP/NDFD/NWS/NDFD_NWS_CONUS_CONDUIT_ver7.ncx4"});
+      result.add(new Object[] {TestDir.cdmUnitTestDir + "tds_index/NCEP/NBM/Ocean/NCEP_OCEAN_MODEL_BLEND.ncx4"});
+
       // OffsetIrregular
+      result.add(new Object[] {TestDir.cdmUnitTestDir + "tds_index/NCEP/NDFD/CPC/NDFD_CPC_CONUS_CONDUIT.ncx4"});
+      result.add(new Object[] {TestDir.cdmUnitTestDir + "tds_index/NCEP/NDFD/NWS/NDFD_NWS_CONUS_CONDUIT.ncx4"});
+
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -109,7 +116,7 @@ public class TestGcdmGridConverter {
     assertThat(roundtrip.getName()).startsWith(expected.getName());
     // assertThat(roundtrip.getLocation()).isEqualTo(expected.getLocation());
     assertThat(roundtrip.getFeatureType()).isEqualTo(expected.getFeatureType());
-    // compareValuesEqual(roundtrip.attributes(), expected.attributes());
+    compareValuesEqual(roundtrip.attributes(), expected.attributes());
 
     assertThat(roundtrip.getGridAxes()).hasSize(expected.getGridAxes().size());
     for (GridAxis<?> axis : roundtrip.getGridAxes()) {
@@ -139,6 +146,7 @@ public class TestGcdmGridConverter {
   }
 
   public static void compareValuesEqual(GridCoordinateSystem csys, GridCoordinateSystem expected) {
+    assertThat(csys.getName()).isEqualTo(expected.getName());
     compareValuesEqual(csys.getHorizCoordinateSystem(), expected.getHorizCoordinateSystem());
     compareValuesEqual(csys.getTimeCoordinateSystem(), expected.getTimeCoordinateSystem());
   }
@@ -161,6 +169,7 @@ public class TestGcdmGridConverter {
     if (tsys == null) {
       return;
     }
+    System.out.printf("GridTimeCoordinateSystem %d %n", tsys.hashCode());
     if (tsys.getClass() == expected.getClass()) {
       assertThat(tsys).isEqualTo(expected);
     }
@@ -190,7 +199,10 @@ public class TestGcdmGridConverter {
     if (axis == null) {
       return;
     }
-    // assertThat(axis.getAxisType()).isEqualTo(expected.getAxisType());
+    assertThat(axis.getAxisType().isTime()).isEqualTo(expected.getAxisType().isTime());
+    if (!axis.getAxisType().isTime()) {
+      assertThat(axis.getAxisType()).isEqualTo(expected.getAxisType());
+    }
     if (!axis.getDescription().equals(expected.getDescription())) {
       System.out.printf("HEY %s getDescription %s != %s %n", axis.getName(), axis.getDescription(),
           expected.getDescription());
@@ -231,7 +243,7 @@ public class TestGcdmGridConverter {
   // Just require that all expected attributes are present and equal
   public static void compareValuesEqual(AttributeContainer atts, AttributeContainer expected) {
     // assertThat(atts).isEqualTo(expected);
-    assertThat(atts.getName()).isEqualTo(expected.getName());
+    // assertThat(atts.getName()).isEqualTo(expected.getName());
     for (Attribute att : expected) {
       Attribute expectedAtt = atts.findAttribute(att.getName());
       assertWithMessage(att.getName()).that(expectedAtt).isNotNull();

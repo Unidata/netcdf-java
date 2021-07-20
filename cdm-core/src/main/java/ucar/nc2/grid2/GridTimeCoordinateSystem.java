@@ -5,7 +5,6 @@
 
 package ucar.nc2.grid2;
 
-import com.google.common.base.Preconditions;
 import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.calendar.CalendarDateUnit;
 import ucar.nc2.calendar.CalendarPeriod;
@@ -14,6 +13,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -47,6 +47,16 @@ public abstract class GridTimeCoordinateSystem {
     return this.calendarDateUnit.getBaseDateTime();
   }
 
+  /**
+   * Get the Runtime axis.
+   * Null if type=Observation.
+   */
+  @Nullable
+  public GridAxisPoint getRunTimeAxis() {
+    return runTimeAxis;
+  }
+
+  // LOOK, not right
   public List<Integer> getNominalShape() {
     return getMaterializedShape();
   }
@@ -61,15 +71,6 @@ public abstract class GridTimeCoordinateSystem {
       result.add(timeOffsetAxis.getNominalSize());
     }
     return result;
-  }
-
-  /**
-   * Get the Runtime axis.
-   * Null if type=Observation.
-   */
-  @Nullable
-  public GridAxisPoint getRunTimeAxis() {
-    return runTimeAxis;
   }
 
   public List<ucar.array.Range> getSubsetRanges() {
@@ -125,14 +126,13 @@ public abstract class GridTimeCoordinateSystem {
     } else {
       throw new IllegalArgumentException("calendarDateUnit or runTimeAxis must not be null");
     }
-    Preconditions.checkNotNull(this.calendarDateUnit);
+    Objects.requireNonNull(this.calendarDateUnit);
 
     CalendarPeriod period = this.calendarDateUnit.getCalendarPeriod();
     if (period == null) {
       period = CalendarPeriod.of(timeOffsetAxis.getUnits());
     }
-    this.offsetPeriod = period;
-    Preconditions.checkNotNull(this.offsetPeriod);
+    this.offsetPeriod = Objects.requireNonNull(period);
   }
 
   @Override

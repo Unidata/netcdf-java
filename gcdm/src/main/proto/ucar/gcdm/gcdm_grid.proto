@@ -116,6 +116,9 @@ message GridTimeCoordinateSystem {
   string time_axis_name = 3;
   string runtime_axis_name = 4;
   int32 id = 5;
+
+  map<int32, GridAxis> regular = 6; // <minutes since 0Z, time offset axis>
+  repeated GridAxis irregular = 7;  // list of time offset axes
 }
 
 message GridHorizCoordinateSystem {
