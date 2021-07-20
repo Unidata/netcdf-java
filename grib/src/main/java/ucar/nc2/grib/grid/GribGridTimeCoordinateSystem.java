@@ -5,7 +5,6 @@
 
 package ucar.nc2.grib.grid;
 
-import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Streams;
@@ -241,7 +240,7 @@ public abstract class GribGridTimeCoordinateSystem extends GridTimeCoordinateSys
 
     private Offset(GribCollectionImmutable.Type gribType, CoordinateTime2D coord2D, GridAxisPoint runtime,
         GridAxis<?> timeOffset) {
-      super(Type.SingleRuntime, runtime, timeOffset, null);
+      super(Type.Offset, runtime, timeOffset, null);
       this.coord2D = coord2D;
       this.gribType = gribType;
     }

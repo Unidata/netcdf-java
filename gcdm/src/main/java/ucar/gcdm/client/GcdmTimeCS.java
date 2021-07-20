@@ -6,20 +6,48 @@
 package ucar.gcdm.client;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.calendar.CalendarDateUnit;
 import ucar.nc2.grid2.GridAxis;
 import ucar.nc2.grid2.GridAxisPoint;
 import ucar.nc2.grid2.GridSubset;
 import ucar.nc2.grid2.GridTimeCoordinateSystem;
+import ucar.nc2.internal.grid2.SubsetTimeHelper;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.TreeMap;
 
 public class GcdmTimeCS extends GridTimeCoordinateSystem {
+
+  public static GcdmTimeCS create(Type type,
+                                  @Nullable GridAxisPoint runtimeAxis, // missing for Observation
+                                  GridAxis<?> timeOffsetAxis,
+                                  CalendarDateUnit calendarDateUnit,
+                                  Map<Integer, GridAxis<?>> timeOffsetMap, // OffsetRegular only
+                                  List<GridAxis<?>> timeOffsets // OffsetIrregular only
+  ) {
+    switch (type) {
+      case Observation:
+        return new Observation(timeOffsetAxis, calendarDateUnit);
+      case SingleRuntime:
+        return new SingleRuntime(runtimeAxis, timeOffsetAxis, calendarDateUnit.getBaseDateTime());
+      case Offset:
+        return new Offset(runtimeAxis, timeOffsetAxis);
+      case OffsetRegular:
+        return new OffsetRegular(runtimeAxis, timeOffsetAxis, timeOffsetMap);
+      case OffsetIrregular:
+        return new OffsetIrregular(runtimeAxis, timeOffsetAxis, timeOffsets);
+    }
+    throw new IllegalStateException("unkown type =" + type);
+  }
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   @Nullable
   @Override
@@ -33,7 +61,7 @@ public class GcdmTimeCS extends GridTimeCoordinateSystem {
 
   @Override
   public GridAxis<?> getTimeOffsetAxis(int runIdx) {
-    return timeOffsetAxis; // So we are only supporting Orthogonal times right now
+    return timeOffsetAxis; // default
   }
 
   @Override
@@ -69,8 +97,183 @@ public class GcdmTimeCS extends GridTimeCoordinateSystem {
     return Optional.empty();
   }
 
-  public GcdmTimeCS(Type type, @Nullable GridAxisPoint runTimeAxis, GridAxis<?> timeOffsetAxis,
+  //////////////////////////////////////////////////////////////////////////////////////
+
+  protected GcdmTimeCS(Type type, @Nullable GridAxisPoint runTimeAxis, GridAxis<?> timeOffsetAxis,
       CalendarDateUnit calendarDateUnit) {
     super(type, runTimeAxis, timeOffsetAxis, calendarDateUnit);
   }
+
+  //////////////////////////////////////////////////////////////////////////////////////
+  static class Observation extends GcdmTimeCS {
+
+    Observation(GridAxis<?> time, CalendarDateUnit calendarDateUnit) {
+      // LOOK MRMS_Radar_20201027_0000.grib2.ncx4 time2D has runtime in seconds, but period name is minutes
+      super(Type.Observation, null, time, calendarDateUnit);
+    }
+
+    @Override
+    public CalendarDate getBaseDate() {
+      return calendarDateUnit.getBaseDateTime();
+    }
+
+    @Override
+    public List<Integer> getNominalShape() {
+      return ImmutableList.of(timeOffsetAxis.getNominalSize());
+    }
+
+    @Override
+    public GridAxis<?> getTimeOffsetAxis(int runIdx) {
+      return timeOffsetAxis;
+    }
+
+    @Override
+    public Optional<GcdmTimeCS> subset(GridSubset params, Formatter errlog) {
+      SubsetTimeHelper helper = new SubsetTimeHelper(this);
+      return helper.subsetTime(params, errlog).map(t -> new Observation(t, this.calendarDateUnit));
+    }
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  static class SingleRuntime extends GcdmTimeCS {
+    private final CalendarDate runtimeDate;
+
+    SingleRuntime(GridAxisPoint runtime, GridAxis<?> timeOffset, CalendarDate runtimeDate) {
+      super(Type.SingleRuntime, runtime, timeOffset, null);
+      Preconditions.checkArgument(runtime.getNominalSize() == 1);
+      this.runtimeDate = runtimeDate;
+    }
+
+    @Override
+    public CalendarDate getBaseDate() {
+      return runtimeDate;
+    }
+
+    @Override
+    public List<Integer> getNominalShape() {
+      return ImmutableList.of(1, timeOffsetAxis.getNominalSize());
+    }
+
+    @Override
+    public CalendarDate getRuntimeDate(int idx) {
+      return runtimeDate;
+    }
+
+    @Override
+    public GridAxis<?> getTimeOffsetAxis(int runIdx) {
+      return timeOffsetAxis;
+    }
+
+    @Override
+    public Optional<GcdmTimeCS> subset(GridSubset params, Formatter errlog) {
+      SubsetTimeHelper helper = new SubsetTimeHelper(this);
+      return helper.subsetTime(params, errlog).map(t -> new SingleRuntime(runTimeAxis, t, this.runtimeDate));
+    }
+
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  static class Offset extends GcdmTimeCS {
+
+    Offset(GridAxisPoint runtime, GridAxis<?> timeOffset) {
+      super(Type.Offset, runtime, timeOffset, null);
+    }
+
+    @Override
+    public CalendarDate getBaseDate() {
+      return getRuntimeDate(0);
+    }
+
+    @Override
+    public List<Integer> getNominalShape() {
+      return ImmutableList.of(runTimeAxis.getNominalSize(), timeOffsetAxis.getNominalSize());
+    }
+
+    @Override
+    public Optional<GcdmTimeCS> subset(GridSubset params, Formatter errlog) {
+      SubsetTimeHelper helper = new SubsetTimeHelper(this);
+      return helper.subsetOffset(params, errlog)
+              .map(t -> new Offset(helper.runtimeAxis, t));
+    }
+
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  static class OffsetRegular extends GcdmTimeCS {
+    private final Map<Integer, GridAxis<?>> timeOffsets;
+
+    OffsetRegular(GridAxisPoint runtime, GridAxis<?> timeOffset, Map<Integer, GridAxis<?>> timeOffsets) {
+      super(Type.OffsetRegular, runtime, timeOffset, null);
+      this.timeOffsets = new TreeMap(timeOffsets);
+    }
+
+    @Override
+    public CalendarDate getBaseDate() {
+      return getRuntimeDate(0);
+    }
+
+    @Override
+    public List<Integer> getNominalShape() {
+      return ImmutableList.of(runTimeAxis.getNominalSize(), timeOffsetAxis.getNominalSize());
+    }
+
+    @Override
+    public GridAxis<?> getTimeOffsetAxis(int runIdx) {
+      CalendarDate runtime = getRuntimeDate(runIdx);
+      int hour = runtime.getHourOfDay();
+      int min = runtime.getMinuteOfHour();
+      return timeOffsets.get(hour * 60 + min);
+    }
+
+    @Override
+    public Optional<GcdmTimeCS> subset(GridSubset params, Formatter errlog) {
+      SubsetTimeHelper helper = new SubsetTimeHelper(this);
+      return helper.subsetOffset(params, errlog)
+              .map(t -> new OffsetRegular(helper.runtimeAxis, t, timeOffsets)); // LOOK wrong?
+    }
+
+    @Override
+    public String toString() {
+      Formatter f = new Formatter();
+      f.format("%s%n", super.toString());
+      for (Integer offset : timeOffsets.keySet()) {
+        f.format("  %d == %s%n", offset, timeOffsets.get(offset));
+      }
+      return f.toString();
+    }
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  static class OffsetIrregular extends GcdmTimeCS {
+    private final List<GridAxis<?>> timeOffsets;
+
+    OffsetIrregular(GridAxisPoint runtime, GridAxis<?> timeOffset, List<GridAxis<?>> timeOffsets) {
+      super(Type.OffsetIrregular, runtime, timeOffset, null);
+      this.timeOffsets = timeOffsets;
+    }
+
+    @Override
+    public CalendarDate getBaseDate() {
+      return getRuntimeDate(0);
+    }
+
+    @Override
+    public List<Integer> getNominalShape() {
+      return ImmutableList.of(runTimeAxis.getNominalSize(), timeOffsetAxis.getNominalSize());
+    }
+
+    @Override
+    public GridAxis<?> getTimeOffsetAxis(int runIdx) {
+      return timeOffsets.get(runIdx);
+    }
+
+    @Override
+    public Optional<GcdmTimeCS> subset(GridSubset params, Formatter errlog) {
+      SubsetTimeHelper helper = new SubsetTimeHelper(this);
+      return helper.subsetOffset(params, errlog)
+              .map(t -> new OffsetIrregular(helper.runtimeAxis, t, timeOffsets)); // LOOK wrong
+    }
+
+  }
+
 }
