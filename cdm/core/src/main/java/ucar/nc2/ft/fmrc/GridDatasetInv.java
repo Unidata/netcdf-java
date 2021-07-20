@@ -65,16 +65,6 @@ public class GridDatasetInv {
     }
   }
 
-  /**
-   * Check if a given version of the GribDatasetInv xml format can be read by this code.
-   *
-   * @param version GridDatasetInv xml format version
-   * @return true if version can be read, otherwise false.
-   */
-  public static boolean isXmlVersionCompatible(int version) {
-    return version >= REQ_VERSION;
-  }
-
   private static class GenerateInv implements Callable<GridDatasetInv> {
     private final MCollection cm;
     private final MFile mfile;
@@ -203,30 +193,21 @@ public class GridDatasetInv {
     return location;
   }
 
+  /**
+   * Check if the GribDatasetInv xml format can be fully understood by this code.
+   *
+   * @return true if version can be fully understood, otherwise false.
+   */
+  public boolean isXmlVersionCompatible() {
+    return this.version >= REQ_VERSION;
+  }
+
   public String getLocation() {
     return location;
   }
 
   public long getLastModified() {
     return lastModified.getTime();
-  }
-
-  /**
-   * Version of the grid inventory format used by this inventory object
-   *
-   * @return grid inventory version
-   */
-  public int getVersion() {
-    return version;
-  }
-
-  /**
-   * Minimum support version of the GridDatasetInv inventory format that can be read.
-   *
-   * @return minimum supported version
-   */
-  public static int getMinimumSupportedVersion() {
-    return REQ_VERSION;
   }
 
   /**
