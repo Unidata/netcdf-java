@@ -142,7 +142,7 @@ public class TestGridTimeCS {
         .setUnits(unit).setNcoords(ntimes).setValues(values).setSpacing(GridAxisSpacing.irregularPoint);
     GridAxisPoint timeAxis = builder.build();
 
-    GridNetcdfTimeCS subject = GridNetcdfTimeCS.create(timeAxis);
+    GridTimeCS subject = GridTimeCS.createObservation(timeAxis);
     CalendarDateUnit cdu = CalendarDateUnit.fromUdunitString(null, unit).orElseThrow();
 
     assertThat(subject.getType()).isEqualTo(GridTimeCoordinateSystem.Type.Observation);
