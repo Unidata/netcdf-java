@@ -7,10 +7,12 @@ package ucar.gcdm;
 
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.nc2.grib.grid.GribGridDataset;
 import ucar.nc2.grid2.GridDataset;
 import ucar.nc2.grid2.GridDatasetFactory;
 import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.IOException;
 import java.util.Formatter;
@@ -18,6 +20,7 @@ import java.util.Formatter;
 import static com.google.common.truth.Truth.assertThat;
 
 /** Open Grib files through Netcdf and Grib, and compare. */
+@Category(NeedsCdmUnitTest.class)
 public class TestGcdmTimeCS {
 
   @Ignore("not working")

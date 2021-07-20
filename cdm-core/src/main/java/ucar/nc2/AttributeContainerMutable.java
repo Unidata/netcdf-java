@@ -295,14 +295,12 @@ public class AttributeContainerMutable implements AttributeContainer {
       return Objects.hash(name, atts);
     }
 
-    /*
-     * @Override
-     * public String toString() {
-     * Formatter f = new Formatter();
-     * f.format("name ='%s'%n", name);
-     * atts.forEach(a -> f.format(" %s%n", a));
-     * return f.toString();
-     * }
-     */
+    @Override
+    public String toString() {
+      Formatter f = new Formatter();
+      f.format("name ='%s'%n", name);
+      atts.forEach(a -> f.format(" %s%n", a));
+      return f.toString();
+    }
   }
 }
