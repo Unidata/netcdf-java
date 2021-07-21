@@ -1456,7 +1456,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
    * The charset parameter is an extension not implemented in java.io.RandomAccessFile.
    *
    * @param charset - character encoding to use
-   * @return
+   * @return the next line of text
    * @throws IOException
    */
   public String readLine(Charset charset) throws IOException {
