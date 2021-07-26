@@ -74,13 +74,13 @@ public class ZarrIosp extends AbstractIOServiceProvider {
     long offset = vinfo.getOffset();
     DataType dataType = v2.getDataType();
 
-    // if data is uninitialized, return array with fill value
-    if (!checkIsDataFile(offset)) {
-      Object pa = IospHelper.makePrimitiveArray((int) section.computeSize(), dataType, vinfo.getFillValue());
-      if (dataType == DataType.CHAR)
-        pa = IospHelper.convertByteToChar((byte[]) pa);
-      return Array.factory(dataType, section.getShape(), pa);
-    }
+//    // if data is uninitialized, return array with fill value
+//    if (!checkIsDataFile(offset)) {
+//      Object pa = IospHelper.makePrimitiveArray((int) section.computeSize(), dataType, vinfo.getFillValue());
+//      if (dataType == DataType.CHAR)
+//        pa = IospHelper.convertByteToChar((byte[]) pa);
+//      return Array.factory(dataType, section.getShape(), pa);
+//    }
 
     // create layout object
     Layout layout = new ZarrLayoutBB(v2, section, this.raf);
@@ -95,20 +95,5 @@ public class ZarrIosp extends AbstractIOServiceProvider {
     }
 
     return array;
-  }
-
-  /**
-   * Checks whether the files containing @pos is a datafile based on filename.
-   * Any file that is not a known metadata file is assumed to be a datafile.
-   */
-  private boolean checkIsDataFile(long pos) throws IOException {
-    try {
-      this.raf.seek(pos);
-    } catch (EOFException eof) {
-      return false;
-    }
-    String filename = ZarrPathUtils.trimLocation(((RandomAccessDirectory) this.raf).getCurrentFile().getLocation());
-    return !(filename.endsWith(ZarrKeys.ZGROUP) || filename.endsWith(ZarrKeys.ZARRAY)
-        || filename.endsWith(ZarrKeys.ZATTRS));
   }
 }

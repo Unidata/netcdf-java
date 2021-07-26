@@ -32,6 +32,7 @@ public class ZarrLayoutBB implements LayoutBB {
   private int nBytes; // number of bytes per chunk
   private int totalNChunks; // total number of chunks
   private int totalChunkSize; // total number of elements per chunk
+  private boolean F_order = false;
 
   // bytes representing compressing
   private static final int ZARR_COMPRESSOR_OFFSET = 16;
@@ -52,6 +53,7 @@ public class ZarrLayoutBB implements LayoutBB {
 
     // transpose Section and chunk if F order
     if (vinfo.getOrder() == ZArray.Order.F) {
+      this.F_order = true;
       List<Range> ranges = wantSection.getRanges();
       List<Range> transpose = new ArrayList<>();
       int[] temp = new int[ndims];
@@ -119,19 +121,39 @@ public class ZarrLayoutBB implements LayoutBB {
 
     public LayoutBBTiled.DataChunk next() {
       // TODO: handle uninitialized chunks
-      DataChunk chunk = new ZarrLayoutBB.DataChunk(this.currChunk, totalChunkSize, this.chunkNum);
+      DataChunk chunk = new ZarrLayoutBB.DataChunk(this.currChunk, this.chunkNum);
       incrementChunk();
       return chunk;
     }
 
     private void incrementChunk() {
-      this.chunkNum++;
-      int i = this.currChunk.length - 1;
-      while (this.currChunk[i] + 1 >= nChunks[i] && i > 0) {
-        this.currChunk[i] = 0;
-        i--;
+      //this.chunkNum++;
+      int i;
+      if (F_order) {
+        i = 0;
+        while (this.currChunk[i] + 1 >= nChunks[i] && i < this.currChunk.length-1) {
+          this.currChunk[i] = 0;
+          i++;
+        }
+      } else {
+        i = this.currChunk.length - 1;
+        while (this.currChunk[i] + 1 >= nChunks[i] && i > 0) {
+          this.currChunk[i] = 0;
+          i--;
+        }
       }
       this.currChunk[i]++;
+      this.chunkNum = indicesToChunkNum();
+    }
+
+    private int indicesToChunkNum() {
+      int num = 0;
+      int sz = 1;
+      for (int i = chunkSize.length-1; i >= 0; i--) {
+        num += sz * this.currChunk[i];
+        sz *= nChunks[i];
+      }
+      return num;
     }
   }
 
@@ -140,7 +162,7 @@ public class ZarrLayoutBB implements LayoutBB {
     private int[] offset; // start indices of chunk in elements
     private long rafOffset; // start position of chunk in bytes
 
-    DataChunk(int[] index, int totalChunkSize, int chunkNum) {
+    DataChunk(int[] index, int chunkNum) {
       this.offset = new int[index.length];
       this.rafOffset = varOffset + (chunkNum * (nBytes + data_bytes_offset)) + data_bytes_offset;
       for (int i = 0; i < index.length; i++) {

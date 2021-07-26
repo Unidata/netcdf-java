@@ -99,7 +99,7 @@ public class ZarrHeader {
     // make new Group
     Group.Builder group = Group.builder();
     String location = ZarrPathUtils.trimLocation(item.getLocation());
-    if (location.equals(this.rootLocation + ZarrKeys.ZGROUP)) {
+    if (location.equals(this.rootLocation + '/' + ZarrKeys.ZGROUP)) {
       group = this.rootGroup;
     }
     // set Group name
@@ -216,7 +216,7 @@ public class ZarrHeader {
    */
   class VInfo {
     private final int[] chunks;
-    private final Number fillValue;
+    private final Object fillValue;
     private final ZarrFilter compressor;
     private final ByteOrder byteOrder;
     private final ZArray.Order order;
@@ -224,7 +224,7 @@ public class ZarrHeader {
     private final List<ZarrFilter> filters;
     private final long offset;
 
-    VInfo(int[] chunks, Number fillValue, ZarrFilter compressor, ByteOrder byteOrder, ZArray.Order order,
+    VInfo(int[] chunks, Object fillValue, ZarrFilter compressor, ByteOrder byteOrder, ZArray.Order order,
         String separator, List<ZarrFilter> filters, long offset) {
       this.chunks = chunks;
       this.fillValue = fillValue;
@@ -240,7 +240,7 @@ public class ZarrHeader {
       return this.chunks;
     }
 
-    public Number getFillValue() {
+    public Object getFillValue() {
       return this.fillValue;
     }
 

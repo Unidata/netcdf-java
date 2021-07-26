@@ -81,10 +81,20 @@ public class RandomAccessDirectory extends ucar.unidata.io.RandomAccessFile impl
   }
 
   /**
-   * @return RandomAccessFile containing the current file pointer
+   * Return the directory item containing the specified position
+   * @param pos
+   * @return Directory item containing bytes at `pos`
    */
-  public RandomAccessFile getCurrentFile() {
-    return this.currentFile;
+  public RandomAccessDirectoryItem getFileAtPos(int pos) {
+    long tempPos = 0;
+    for (RandomAccessDirectoryItem item : this.children) {
+      long rafLength = item.length();
+      if (tempPos + rafLength > pos) {
+        return item;
+      }
+      tempPos += rafLength;
+    }
+    return null;
   }
 
   /**

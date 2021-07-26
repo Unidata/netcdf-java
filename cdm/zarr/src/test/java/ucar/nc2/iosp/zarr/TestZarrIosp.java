@@ -15,7 +15,6 @@ import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
-import ucar.unidata.io.RandomAccessFile;
 
 import java.io.IOException;
 import java.nio.ByteOrder;
@@ -49,8 +48,8 @@ public class TestZarrIosp {
   public static void setUpTests() throws IOException {
     stores = new ArrayList<>();
     stores.add(DIRECTORY_STORE_URI);
-    stores.add(ZIP_STORE_URI);
-    stores.add(OBJECT_STORE_ZARR_URI);
+//    stores.add(ZIP_STORE_URI);
+//    stores.add(OBJECT_STORE_ZARR_URI);
   }
 
   @Test
@@ -61,6 +60,9 @@ public class TestZarrIosp {
     }
     assertThat(iosp.isValidFile(NetcdfFiles.getRaf(DIRECTORY_STORE_URI + "/.zgroup", -1))).isFalse();
   }
+
+  //////////////////////////////////////////////////////
+  // test open and build ncfile
 
   @Test
   public void testBuildNcfile() throws IOException {
@@ -85,6 +87,15 @@ public class TestZarrIosp {
     // check for variables
     Variable F_order = attrs_grp.findVariableLocal("F_order_array");
     assertThat((Object) F_order).isNotNull();
+    Variable nested = attrs_grp.findVariableLocal("nested");
+    assertThat((Object) F_order).isNotNull();
+    Variable partial_fill1 = attrs_grp.findVariableLocal("partial_fill1");
+    assertThat((Object) F_order).isNotNull();
+    Variable partial_fill2 = attrs_grp.findVariableLocal("partial_fill2");
+    assertThat((Object) F_order).isNotNull();
+    Variable uninitialized = attrs_grp.findVariableLocal("uninitialized");
+    assertThat((Object) F_order).isNotNull();
+
     // check array attributes
     assertThat(F_order.hasAttribute("bar")).isTrue();
     assertThat(F_order.findAttribute("bar").getStringValue()).isEqualTo("apples");
@@ -102,7 +113,7 @@ public class TestZarrIosp {
     assertThat(vinfo.getOrder()).isEqualTo(ZArray.Order.F);
     assertThat(vinfo.getSeparator()).isEqualTo(ZArray.DEFAULT_SEPARATOR);
 
-    // TODO: update when compressors/filters are implemented
+    // check compressors and filters (null for these tests)
     assertThat(vinfo.getCompressor()).isNull();
     assertThat(vinfo.getFilters()).isNull();
 
@@ -148,15 +159,15 @@ public class TestZarrIosp {
     ncfile.close();
   }
 
+  ////////////////////////////////////////////////////////
+  // test reads for Zarr formats
+
   @Test
   public void testReadSection() throws IOException, InvalidRangeException {
     // test reading sections
-//     for (String uri : stores) {
-//      _testReadSection(uri);
-//     }
-    //_testReadSection(DIRECTORY_STORE_URI);
-    //_testReadSection(ZIP_STORE_URI);
-    _testReadSection(OBJECT_STORE_ZARR_URI);
+     for (String uri : stores) {
+      _testReadSection(uri);
+     }
   }
 
   private void _testReadSection(String location) throws IOException, InvalidRangeException {
@@ -203,19 +214,16 @@ public class TestZarrIosp {
   public void testReadUninitialized() {
     // fully uninitialized
 
-    //partly uninitialized
+    // partially uninitialized
 
   }
 
   @Test
   public void testFOrder() throws IOException, InvalidRangeException {
     // test reading sections
-//     for (String uri : stores) {
-//      _testReadSection(uri);
-//     }
-    _testFOrder(DIRECTORY_STORE_URI);
-    //_testFOrder(ZIP_STORE_URI);
-    //_testFOrder(OBJECT_STORE_ZARR_URI);
+     for (String uri : stores) {
+       _testFOrder(uri);
+     }
   }
 
   private void _testFOrder(String location) throws IOException, InvalidRangeException {
@@ -229,5 +237,7 @@ public class TestZarrIosp {
     assertThat(data.get1DJavaArray(DataType.INT)).isEqualTo(expected);
     // 3D
   }
+
+
 
 }

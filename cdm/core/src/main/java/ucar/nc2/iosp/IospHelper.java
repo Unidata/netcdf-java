@@ -301,7 +301,7 @@ public class IospHelper {
     if (showLayoutTypes)
       System.out.println("***BB LayoutType=" + layout.getClass().getName());
 
-    if (dataType.getPrimitiveClassType() == byte.class || (dataType == DataType.CHAR)) {
+    if (dataType.getPrimitiveClassType() == byte.class || (dataType == DataType.CHAR) || dataType == DataType.BOOLEAN) {
       byte[] pa = (byte[]) arr;
       while (layout.hasNext()) {
         LayoutBB.Chunk chunk = layout.next();
@@ -312,8 +312,12 @@ public class IospHelper {
           pa[pos++] = bb.get();
       }
       // return (dataType == DataType.CHAR) ? convertByteToChar(pa) : pa;
-      if (dataType == DataType.CHAR)
+      if (dataType == DataType.CHAR) {
         return convertByteToChar(pa);
+      }
+      else if (dataType == DataType.BOOLEAN) {
+        return convertByteToBoolean(pa);
+      }
       else
         return pa;
 
@@ -387,6 +391,23 @@ public class IospHelper {
         int pos = (int) chunk.getDestElem() * recsize;
         for (int i = 0; i < chunk.getNelems() * recsize; i++)
           pa[pos++] = bb.get();
+      }
+      return pa;
+    } else if (dataType == DataType.STRING) {
+      String[] pa = (String[]) arr;
+      int recsize = layout.getElemSize();
+      while (layout.hasNext()) {
+        LayoutBB.Chunk chunk = layout.next();
+        ByteBuffer bb = chunk.getByteBuffer();
+        bb.position(chunk.getSrcElem() * recsize);
+        int pos = (int) chunk.getDestElem();
+        for (int i = 0; i < chunk.getNelems(); i++) {
+          char[] ch = new char[dataType.getSize()];
+          for ( int j = 0; j < ch.length; j++) {
+            ch[j] = (char)bb.get();
+          }
+          pa[pos++] = new String(ch);
+        }
       }
       return pa;
     }
@@ -666,9 +687,15 @@ public class IospHelper {
    */
   public static Object makePrimitiveArray(int size, DataType dataType, Object fillValue) {
 
-    if (dataType.getPrimitiveClassType() == byte.class || (dataType == DataType.CHAR)) {
+    if (dataType.getPrimitiveClassType() == byte.class || (dataType == DataType.CHAR) || dataType == DataType.BOOLEAN) {
       byte[] pa = new byte[size];
-      byte val = ((Number) fillValue).byteValue();
+      byte val;
+      if (dataType == DataType.CHAR) {
+        byte[] bytes = ((String) fillValue).getBytes();
+        val = bytes.length > 0 ? ((String) fillValue).getBytes()[0] : 0;
+      } else {
+        val = ((Number) fillValue).byteValue();
+      }
       if (val != 0)
         for (int i = 0; i < size; i++)
           pa[i] = val;
@@ -773,6 +800,17 @@ public class IospHelper {
       to = new byte[size];
       for (int i = 0; i < size; i++)
         to[i] = (byte) from[i]; // LOOK wrong, convert back to unsigned byte ???
+    }
+    return to;
+  }
+
+  public static boolean[] convertByteToBoolean(byte[] from) {
+    boolean[] to = null;
+    if (from != null) {
+      int size = from.length;
+      to = new boolean[size];
+      for (int i = 0; i < size; i++)
+        to[i] = from[i] != 0;
     }
     return to;
   }
