@@ -118,7 +118,7 @@ public class DtCoverageDataset implements Closeable {
     Set<NetcdfDataset.Enhance> enhance = ncd.getEnhanceMode();
     if (enhance == null || enhance.isEmpty())
       enhance = NetcdfDataset.getDefaultEnhanceMode();
-    NetcdfDatasets.enhance(ncd, enhance, null);
+    ncd = NetcdfDatasets.enhance(ncd, enhance, null);
 
     DtCoverageCSBuilder facc = DtCoverageCSBuilder.classify(ncd, parseInfo);
     if (facc != null)
