@@ -68,47 +68,47 @@ public class TestControllerS3 {
   @Test
   public void testGetInventoryTopBucketNoDelimiterAws() throws URISyntaxException {
     CdmS3Uri uri = new CdmS3Uri(S3TestsCommon.TOP_LEVEL_AWS_BUCKET);
-    checkInventoryTopCount(uri, LIMIT_COUNT_MAX);
+    checkInventoryTopCountExact(uri, LIMIT_COUNT_MAX);
   }
 
   @Test
   public void testGetInventoryTopBucketNoDelimiterGcs() throws URISyntaxException {
     CdmS3Uri uri = new CdmS3Uri(S3TestsCommon.TOP_LEVEL_GCS_BUCKET);
-    checkInventoryTopCount(uri, LIMIT_COUNT_MAX);
+    checkInventoryTopCountExact(uri, LIMIT_COUNT_MAX);
   }
 
   @Test
   public void testGetInventoryTopBucketGcsNoDelimiterOsdc() throws URISyntaxException {
     CdmS3Uri uri = new CdmS3Uri(S3TestsCommon.TOP_LEVEL_OSDC_BUCKET);
-    checkInventoryTopCount(uri, LIMIT_COUNT_MAX);
+    checkInventoryTopCountExact(uri, LIMIT_COUNT_MAX);
   }
 
   @Test
   public void testGetInventoryTopBucketDelimiterAws() throws URISyntaxException {
     CdmS3Uri uri = new CdmS3Uri(S3TestsCommon.TOP_LEVEL_AWS_BUCKET + DELIMITER_FRAGMENT);
     // contains a single object at "/" (/index.html)
-    checkInventoryTopCount(uri, 1);
+    checkInventoryTopCountAtMost(uri, 3);
   }
 
   @Test
   public void testGetInventoryTopBucketDelimiterGcs() throws URISyntaxException {
     CdmS3Uri uri = new CdmS3Uri(S3TestsCommon.TOP_LEVEL_GCS_BUCKET + DELIMITER_FRAGMENT);
     // does not contain anything at "/"
-    checkInventoryTopCount(uri, 0);
+    checkInventoryTopCountExact(uri, 0);
   }
 
   @Test
   public void testGetInventoryTopBucketDelimiterOsdc() throws URISyntaxException {
     CdmS3Uri uri = new CdmS3Uri(S3TestsCommon.TOP_LEVEL_OSDC_BUCKET + DELIMITER_FRAGMENT);
     // does not contain anything at "/"
-    checkInventoryTopCount(uri, 0);
+    checkInventoryTopCountExact(uri, 0);
   }
 
   @Test
   public void testGetInventoryTopBucketAndPrefixSingleMatchAws() throws URISyntaxException {
     for (String delimiter : DELIMITER_FRAGMENTS) {
       CdmS3Uri uri = new CdmS3Uri(S3TestsCommon.TOP_LEVEL_AWS_BUCKET + "?" + G16_KEY_PREFIX_SINGLE_MATCH + delimiter);
-      checkInventoryTopCount(uri, 1);
+      checkInventoryTopCountExact(uri, 1);
     }
   }
 
@@ -116,7 +116,7 @@ public class TestControllerS3 {
   public void testGetInventoryTopBucketAndPrefixSingleMatchGcs() throws URISyntaxException {
     for (String delimiter : DELIMITER_FRAGMENTS) {
       CdmS3Uri uri = new CdmS3Uri(S3TestsCommon.TOP_LEVEL_GCS_BUCKET + "?" + G16_KEY_PREFIX_SINGLE_MATCH + delimiter);
-      checkInventoryTopCount(uri, 1);
+      checkInventoryTopCountExact(uri, 1);
     }
   }
 
@@ -125,7 +125,7 @@ public class TestControllerS3 {
     for (String delimiter : DELIMITER_FRAGMENTS) {
       CdmS3Uri uri =
           new CdmS3Uri(S3TestsCommon.TOP_LEVEL_OSDC_BUCKET + "?" + getOsdcKey(G16_KEY_PREFIX_SINGLE_MATCH) + delimiter);
-      checkInventoryTopCount(uri, 1);
+      checkInventoryTopCountExact(uri, 1);
     }
   }
 
@@ -134,7 +134,7 @@ public class TestControllerS3 {
     for (String delimiter : DELIMITER_FRAGMENTS) {
       CdmS3Uri uri =
           new CdmS3Uri(S3TestsCommon.TOP_LEVEL_AWS_BUCKET + "?" + G16_KEY_PREFIX_SINGLE_DAY_PARTIAL_FILE + delimiter);
-      checkInventoryTopCount(uri, 12);
+      checkInventoryTopCountExact(uri, 12);
     }
   }
 
@@ -143,7 +143,7 @@ public class TestControllerS3 {
     for (String delimiter : DELIMITER_FRAGMENTS) {
       CdmS3Uri uri =
           new CdmS3Uri(S3TestsCommon.TOP_LEVEL_GCS_BUCKET + "?" + G16_KEY_PREFIX_SINGLE_DAY_PARTIAL_FILE + delimiter);
-      checkInventoryTopCount(uri, 12);
+      checkInventoryTopCountExact(uri, 12);
     }
   }
 
@@ -152,7 +152,7 @@ public class TestControllerS3 {
     for (String delimiter : DELIMITER_FRAGMENTS) {
       CdmS3Uri uri = new CdmS3Uri(
           S3TestsCommon.TOP_LEVEL_OSDC_BUCKET + "?" + getOsdcKey(G16_KEY_PREFIX_SINGLE_DAY_PARTIAL_FILE) + delimiter);
-      checkInventoryTopCount(uri, 12);
+      checkInventoryTopCountExact(uri, 12);
     }
   }
 
@@ -286,12 +286,22 @@ public class TestControllerS3 {
     return new CollectionConfig(uri.getBucket(), uri.toString(), true, null, null);
   }
 
-  private void checkInventoryTopCount(CdmS3Uri uri, int expectedCount) {
+  private void checkInventoryTopCountExact(CdmS3Uri uri, int expectedCount) {
+    int actualCount = topInventoryCount(uri);
+    assertThat(actualCount).isEqualTo(expectedCount);
+  }
+
+  private void checkInventoryTopCountAtMost(CdmS3Uri uri, int expectedMaximumCount) {
+    int actualCount = topInventoryCount(uri);
+    assertThat(actualCount).isAtMost(expectedMaximumCount);
+  }
+
+  private int topInventoryCount(CdmS3Uri uri) {
     logger.debug("getInventoryTop: {}", uri);
     ControllerS3 controller = new ControllerS3();
     controller.limit = true;
     Iterator<MFile> it = controller.getInventoryTop(getCollectionConfig(uri), false);
-    assertThat(countObjects(it)).isEqualTo(expectedCount);
+    return countObjects(it);
   }
 
   private void checkInventoryAllCount(CdmS3Uri uri, int expectedCount) {
@@ -303,7 +313,7 @@ public class TestControllerS3 {
   }
 
   private void checkSubdirsCount(CdmS3Uri uri, int expectedCount) {
-    logger.debug("getInventoryAll: {}", uri);
+    logger.debug("getSubdirs: {}", uri);
     ControllerS3 controller = new ControllerS3();
     controller.limit = true;
     Iterator<MFile> it = controller.getSubdirs(getCollectionConfig(uri), false);
