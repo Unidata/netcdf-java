@@ -1,15 +1,9 @@
 {
     "chunks": [
-        4,
-        4
+        5,
+        5
     ],
-    "compressor": {
-        "blocksize": 0,
-        "clevel": 5,
-        "cname": "lz4",
-        "id": "blosc",
-        "shuffle": 1
-    },
+    "compressor": null,
     "dtype": "<i4",
     "fill_value": 0,
     "filters": null,
