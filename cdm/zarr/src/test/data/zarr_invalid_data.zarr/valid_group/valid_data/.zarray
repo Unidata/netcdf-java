@@ -16,5 +16,6 @@
     "shape": [
         20
     ],
-    "zarr_format": 2
+    "zarr_format": 2,
+    "extra_key": "test"
 }
