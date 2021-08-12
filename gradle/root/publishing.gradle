@@ -82,7 +82,7 @@ def createChecksumsTask = tasks.register('createChecksums') {
       }
     }
   }
-  dependsOn buildDap4Lib, buildNcIdv, buildNetcdfAll, buildToolsUI
+  dependsOn buildNcIdv, buildNetcdfAll, buildToolsUI
 }
 
 def publishFatJarsTask = tasks.register('publishFatJars', PublishToRawRepoTask) {
