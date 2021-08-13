@@ -30,7 +30,6 @@ configurations {
   ncIdv
   netcdfAll
   toolsUI
-  dap4lib
 }
 
 dependencies {
@@ -62,11 +61,6 @@ dependencies {
   toolsUI enforcedPlatform(project(':netcdf-java-platform'))
   toolsUI project(':uicdm')
   toolsUI 'ch.qos.logback:logback-classic'
-
-  dap4lib enforcedPlatform(project(':netcdf-java-platform'))
-  dap4lib project(':dap4:d4core')
-  dap4lib project(':dap4:d4lib')
-  dap4lib 'ch.qos.logback:logback-classic'
 }
 
 def fatJarTasks = []
@@ -110,17 +104,6 @@ fatJarTasks << tasks.create(name: 'buildToolsUI', type: ShadowJar) {
   }
 }
 
-fatJarTasks << tasks.create(name: 'buildDap4Lib', type: ShadowJar) {
-  archiveBaseName = 'dap4lib'
-  baseName = 'dap4lib'
-  setArchiveBaseName('dap4lib')
-  configurations = [project.configurations.dap4lib]
-
-  doFirst {
-    manifest.attributes project(':dap4:d4lib').tasks.jar.manifest.attributes
-  }
-}
-
 // Common configuration.
 configure(fatJarTasks) {
   dependsOn configurations*.buildDependencies
@@ -154,5 +137,4 @@ artifacts {
   archives buildNcIdv
   archives buildNetcdfAll
   archives buildToolsUI
-  archives buildDap4Lib
 }
