@@ -82,7 +82,7 @@ def createChecksumsTask = tasks.register('createChecksums') {
       }
     }
   }
-  dependsOn buildDap4Lib, buildNcIdv, buildNetcdfAll, buildToolsUI
+  dependsOn buildNcIdv, buildNetcdfAll, buildToolsUI
 }
 
 def publishFatJarsTask = tasks.register('publishFatJars', PublishToRawRepoTask) {
@@ -105,3 +105,21 @@ def publishFatJarsTask = tasks.register('publishFatJars', PublishToRawRepoTask) 
 }
 
 publish.dependsOn publishFatJarsTask
+
+// The "publish" tasks for all subprojects require credentials for our Nexus server, which they look for in Gradle
+// properties. If those properties (i.e. NEXUS_USERNAME_KEY and NEXUS_PASSWORD_KEY) haven't been provided, the build
+// will fail. Therefore, we only want to configure credentials when a "publish" task is part of the execution plan.
+// Otherwise, unavailable credentials could cause a build to fail even if we aren't doing any publishing. The
+// TaskExecutionGraph allows us to do that.
+gradle.taskGraph.whenReady {TaskExecutionGraph taskGraph ->
+  // This won't find any publishToMavenLocal tasks. Those are of type PublishToMavenLocal
+  Collection<Task> mavenPublishTasks = taskGraph.allTasks.findAll {
+    it instanceof PublishToMavenRepository
+  }
+  mavenPublishTasks.each {
+    it.repository.credentials.with {
+      username = getPropertyOrFailBuild NEXUS_USERNAME_KEY
+      password = getPropertyOrFailBuild NEXUS_PASSWORD_KEY
+    }
+  }
+ }
