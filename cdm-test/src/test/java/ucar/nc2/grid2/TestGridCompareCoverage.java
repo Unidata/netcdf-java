@@ -169,6 +169,9 @@ public class TestGridCompareCoverage {
     for (int runtimeIdx = 0; runtimeIdx < oldRuntime1D.getNcoords(); runtimeIdx++) {
       double timeCoord = runtime.getCoordMidpoint(runtimeIdx);
       double timeCoordOld = oldRuntime1D.getCoordMidpoint(runtimeIdx);
+      if (timeCoord != timeCoordOld) {
+        System.out.printf("HEY");
+      }
       assertThat(timeCoord).isEqualTo(timeCoordOld);
 
       CalendarDate runtimeDate = tcs.getRuntimeDate(runtimeIdx);

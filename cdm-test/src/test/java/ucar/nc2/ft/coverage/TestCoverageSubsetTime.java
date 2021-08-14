@@ -6,6 +6,7 @@ import java.lang.invoke.MethodHandles;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
@@ -277,7 +278,7 @@ public class TestCoverageSubsetTime {
       Assert.assertEquals(4, runtimeAxis.getNcoords());
       Assert.assertEquals(CoverageCoordAxis.Spacing.regularPoint, runtimeAxis.getSpacing());
       Assert2.assertNearlyEquals(0.0, runtimeAxis.getCoordMidpoint(0));
-      Assert2.assertNearlyEquals(6.0, runtimeAxis.getResolution());
+      Assert2.assertNearlyEquals(3600 * 6.0, runtimeAxis.getResolution());
 
       CoverageCoordAxis timeAxis = geoCs.getAxis(AxisType.TimeOffset);
       Assert.assertNotNull(timeAxis);
@@ -297,6 +298,7 @@ public class TestCoverageSubsetTime {
   }
 
   @Test // all runtimes, 1 time (Time2DCoordSys case 2a) not time interval
+  @Ignore("Confusing time and reftime")
   public void testConstantForecast() throws IOException, InvalidRangeException {
     String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4";
     String covName = "Pressure_convective_cloud_bottom";

@@ -103,7 +103,19 @@ public class TestCompareTdsOther {
       assertThat(axisSet).hasSize(nAxes);
     }
 
-    new TestGridCompareCoverage(filename).compareWithCoverage(false);
+    // This fails because Coverage thinks reftime is regular, but its not.
+    if (filename.contains("GSD_HRRR_CONUS_3km")) {
+      try (GridDataset newDataset = GridDatasetFactory.openGridDataset(filename, errlog)) {
+        assertThat(newDataset).isNotNull();
+        GridCoordinateSystem anyone = newDataset.getGridCoordinateSystems().get(0);
+        assertThat(anyone).isNotNull();
+        GridAxis<?> reftime = anyone.findAxis("reftime").orElseThrow();
+        assertThat((Object) reftime).isNotNull();
+        assertThat(reftime.isRegular()).isFalse();
+      }
+    } else {
+      new TestGridCompareCoverage(filename).compareWithCoverage(false);
+    }
   }
 }
 

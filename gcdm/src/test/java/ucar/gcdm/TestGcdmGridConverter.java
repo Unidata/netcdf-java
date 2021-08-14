@@ -169,13 +169,6 @@ public class TestGcdmGridConverter {
     if (tsys == null) {
       return;
     }
-    System.out.printf("GridTimeCoordinateSystem %d %n", tsys.hashCode());
-    if (tsys.getClass() == expected.getClass()) {
-      assertThat(tsys).isEqualTo(expected);
-    }
-    if (!tsys.getType().equals(expected.getType())) {
-      System.out.printf("HEY getType %s != %s %n", tsys.getType(), expected.getType());
-    }
     assertThat(tsys.getType()).isEqualTo(expected.getType());
     assertThat(tsys.getCalendarDateUnit()).isEqualTo(expected.getCalendarDateUnit());
     assertThat(tsys.getBaseDate()).isEqualTo(expected.getBaseDate());
