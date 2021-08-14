@@ -21,8 +21,8 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.nc2.grid2.GridDataset;
-import ucar.nc2.grid2.GridDatasetFactory;
+import ucar.nc2.grid.GridDataset;
+import ucar.nc2.grid.GridDatasetFactory;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.util.StringUtil2;
 

@@ -13,12 +13,12 @@ import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.calendar.CalendarDateUnit;
 import ucar.nc2.calendar.CalendarPeriod;
 import ucar.nc2.constants.AxisType;
-import ucar.nc2.grid2.Grid;
-import ucar.nc2.grid2.GridAxis;
-import ucar.nc2.grid2.GridAxisDependenceType;
-import ucar.nc2.grid2.GridAxisPoint;
-import ucar.nc2.grid2.GridCoordinateSystem;
-import ucar.nc2.grid2.GridTimeCoordinateSystem;
+import ucar.nc2.grid.Grid;
+import ucar.nc2.grid.GridAxis;
+import ucar.nc2.grid.GridAxisDependenceType;
+import ucar.nc2.grid.GridAxisPoint;
+import ucar.nc2.grid.GridCoordinateSystem;
+import ucar.nc2.grid.GridTimeCoordinateSystem;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.google.common.truth.Truth.assertThat;
-import static ucar.nc2.grid2.GridTimeCoordinateSystem.Type;
+import static ucar.nc2.grid.GridTimeCoordinateSystem.Type;
 
 /** Test {@link GribGridTimeCoordinateSystem} */
 @Category(NeedsCdmUnitTest.class)

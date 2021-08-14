@@ -22,7 +22,7 @@ import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.grib.grib2.Grib2RecordScanner;
 import ucar.nc2.grib.grib2.table.Grib2Tables;
-import ucar.nc2.grid2.GridSubset;
+import ucar.nc2.grid.GridSubset;
 import ucar.unidata.io.RandomAccessFile;
 import javax.annotation.concurrent.Immutable;
 import java.io.IOException;

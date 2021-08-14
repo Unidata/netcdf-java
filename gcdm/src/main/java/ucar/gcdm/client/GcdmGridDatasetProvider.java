@@ -8,7 +8,7 @@ package ucar.gcdm.client;
 import thredds.client.catalog.ServiceType;
 import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.spi.GridDatasetProvider;
-import ucar.nc2.grid2.GridDataset;
+import ucar.nc2.grid.GridDataset;
 import ucar.nc2.util.CancelTask;
 
 public class GcdmGridDatasetProvider implements GridDatasetProvider {

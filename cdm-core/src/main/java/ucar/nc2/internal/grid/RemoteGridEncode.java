@@ -3,15 +3,21 @@ package ucar.nc2.internal.grid;
 import com.google.common.base.Splitter;
 import com.google.common.escape.Escaper;
 import com.google.common.net.UrlEscapers;
-import ucar.nc2.grid2.GridSubset;
 import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.calendar.CalendarDateRange;
+import ucar.nc2.grid.GridSubset;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionRect;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Formatter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+/** Static uttilities to encode/decode data requests between String and GridSubset. */
+// LOOK doesnt belong here, is it used?
 public class RemoteGridEncode {
 
   public static String encodeDataRequest(GridSubset subset, String varname) {

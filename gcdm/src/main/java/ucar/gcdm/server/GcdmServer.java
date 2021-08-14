@@ -37,11 +37,11 @@ import ucar.nc2.ParsedArraySectionSpec;
 import ucar.nc2.Sequence;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.nc2.grid2.Grid;
-import ucar.nc2.grid2.GridDataset;
-import ucar.nc2.grid2.GridDatasetFactory;
-import ucar.nc2.grid2.GridReferencedArray;
-import ucar.nc2.grid2.GridSubset;
+import ucar.nc2.grid.Grid;
+import ucar.nc2.grid.GridDataset;
+import ucar.nc2.grid.GridDatasetFactory;
+import ucar.nc2.grid.GridReferencedArray;
+import ucar.nc2.grid.GridSubset;
 import ucar.nc2.util.Misc;
 import ucar.nc2.write.ChunkingIndex;
 

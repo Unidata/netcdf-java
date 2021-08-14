@@ -7,14 +7,14 @@ package ucar.nc2.grid;
 import ucar.array.ArrayType;
 import ucar.array.IsMissingEvaluator;
 import ucar.nc2.AttributeContainer;
-import ucar.nc2.grid2.GridSubset;
 
 import java.io.IOException;
 
-/** A georeferenced Field of data. */
-public interface Grid extends IsMissingEvaluator, ucar.ma2.IsMissingEvaluator {
+/**
+ * A georeferenced Field of data.
+ */
+public interface Grid extends IsMissingEvaluator {
 
-  /** Get Full name of Grid */
   String getName();
 
   String getDescription();
@@ -27,7 +27,19 @@ public interface Grid extends IsMissingEvaluator, ucar.ma2.IsMissingEvaluator {
 
   GridCoordinateSystem getCoordinateSystem();
 
-  /** Read the specified subset of data, return result as a Georeferenced Array. */
+  default GridTimeCoordinateSystem getTimeCoordinateSystem() {
+    return getCoordinateSystem().getTimeCoordinateSystem();
+  }
+
+  default GridHorizCoordinateSystem getHorizCoordinateSystem() {
+    return getCoordinateSystem().getHorizCoordinateSystem();
+  }
+
+  /**
+   * Read the specified subset of data, return result as a Georeferenced Array.
+   * The GridReferencedArray has a Materialized CoordinateSystem, which may be somewhat different
+   * than the shape of the GridCoordinateSystem.
+   */
   GridReferencedArray readData(GridSubset subset) throws IOException, ucar.array.InvalidRangeException;
 
   default GridReader getReader() {

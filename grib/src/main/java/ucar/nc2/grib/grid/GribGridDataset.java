@@ -27,12 +27,12 @@ import ucar.nc2.grib.collection.GribIosp;
 import ucar.nc2.grib.coord.Coordinate;
 import ucar.nc2.grib.coord.CoordinateTime2D;
 import ucar.nc2.grib.grib2.Grib2Utils;
-import ucar.nc2.grid2.Grid;
-import ucar.nc2.grid2.GridAxis;
-import ucar.nc2.grid2.GridAxisPoint;
-import ucar.nc2.grid2.GridCoordinateSystem;
-import ucar.nc2.grid2.GridDataset;
-import ucar.nc2.grid2.GridHorizCoordinateSystem;
+import ucar.nc2.grid.Grid;
+import ucar.nc2.grid.GridAxis;
+import ucar.nc2.grid.GridAxisPoint;
+import ucar.nc2.grid.GridCoordinateSystem;
+import ucar.nc2.grid.GridDataset;
+import ucar.nc2.grid.GridHorizCoordinateSystem;
 import ucar.unidata.io.RandomAccessFile;
 
 import javax.annotation.Nullable;
@@ -45,8 +45,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import static java.lang.CharSequence.compare;
 
 /** Grib implementation of {@link GridDataset} */
 @Immutable

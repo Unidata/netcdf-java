@@ -6,7 +6,7 @@ package ucar.nc2.grib.collection;
 
 import javax.annotation.Nonnull;
 import ucar.nc2.grib.GdsHorizCoordSys;
-import ucar.nc2.grid2.GridSubset;
+import ucar.nc2.grid.GridSubset;
 
 /** internal class for debugging. */
 class GribReaderRecord implements Comparable<GribReaderRecord> {

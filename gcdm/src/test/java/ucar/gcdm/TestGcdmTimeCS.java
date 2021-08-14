@@ -9,8 +9,8 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.nc2.grib.grid.GribGridDataset;
-import ucar.nc2.grid2.GridDataset;
-import ucar.nc2.grid2.GridDatasetFactory;
+import ucar.nc2.grid.GridDataset;
+import ucar.nc2.grid.GridDatasetFactory;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 

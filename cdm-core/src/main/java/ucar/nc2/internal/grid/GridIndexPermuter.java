@@ -4,6 +4,7 @@ import ucar.nc2.Dimension;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.grid.GridAxis;
+import ucar.nc2.grid.GridCoordinateSystem;
 
 import javax.annotation.concurrent.Immutable;
 import java.util.Arrays;
@@ -12,21 +13,25 @@ import java.util.List;
 @Immutable
 class GridIndexPermuter {
   private final int[] shape;
-  private final int xDimOrgIndex, yDimOrgIndex, zDimOrgIndex, eDimOrgIndex, tDimOrgIndex, toDimOrgIndex, rtDimOrgIndex;
+  private final int xDimOrgIndex, yDimOrgIndex, zDimOrgIndex, eDimOrgIndex, toDimOrgIndex, rtDimOrgIndex;
 
-  GridIndexPermuter(GridCS gcs, VariableDS vds) {
+  GridIndexPermuter(GridCoordinateSystem gcs, VariableDS vds) {
     this.shape = vds.getShape();
     this.xDimOrgIndex = findDimension(vds, gcs.getXHorizAxis());
     this.yDimOrgIndex = findDimension(vds, gcs.getYHorizAxis());
     this.zDimOrgIndex = findDimension(vds, gcs.getVerticalAxis());
     this.eDimOrgIndex = findDimension(vds, gcs.getEnsembleAxis());
-    this.tDimOrgIndex = findDimension(vds, gcs.getTimeAxis());
-    this.toDimOrgIndex = findDimension(vds, gcs.getTimeOffsetAxis());
-    this.rtDimOrgIndex = findDimension(vds, gcs.getRunTimeAxis());
+    if (gcs.getTimeCoordinateSystem() != null) {
+      this.toDimOrgIndex = findDimension(vds, gcs.getTimeCoordinateSystem().getTimeOffsetAxis(0));
+      this.rtDimOrgIndex = findDimension(vds, gcs.getTimeCoordinateSystem().getRunTimeAxis());
+    } else {
+      this.toDimOrgIndex = -1;
+      this.rtDimOrgIndex = -1;
+    }
   }
 
   // TODO this depends on the coord axis being a coord variable, or being dependent on a coord variable. Not robust?
-  private int findDimension(VariableDS vds, GridAxis want) {
+  private int findDimension(VariableDS vds, GridAxis<?> want) {
     if (want == null) {
       return -1;
     }
@@ -38,7 +43,7 @@ class GridIndexPermuter {
       }
     }
 
-    // This is the case where its a coordinate alias.
+    // This is the case where its a coordinate alias. LOOK all the dependsOn hoopla
     String depends = (want.getDependsOn().size() == 1) ? want.getDependsOn().get(0) : null;
     for (int i = 0; i < dims.size(); i++) {
       Dimension d = dims.get(i);
@@ -46,7 +51,12 @@ class GridIndexPermuter {
         return i;
       }
     }
-    return -1;
+
+    if (want.getDependenceType() == ucar.nc2.grid.GridAxisDependenceType.scalar) {
+      return -1;
+    }
+
+    throw new IllegalStateException("Cant find dimension index for " + want.getName());
   }
 
   ucar.array.Section permute(ucar.array.Section subset) {
@@ -66,19 +76,25 @@ class GridIndexPermuter {
         case Height:
         case Pressure:
         case GeoZ:
-          varRange[zDimOrgIndex] = r;
+          if (zDimOrgIndex >= 0) {
+            varRange[zDimOrgIndex] = r;
+          }
           break;
         case Time:
-          varRange[tDimOrgIndex] = r;
-          break;
         case TimeOffset:
-          varRange[toDimOrgIndex] = r;
+          if (toDimOrgIndex >= 0) {
+            varRange[toDimOrgIndex] = r;
+          }
           break;
         case RunTime:
-          varRange[rtDimOrgIndex] = r;
+          if (rtDimOrgIndex >= 0) {
+            varRange[rtDimOrgIndex] = r;
+          }
           break;
         case Ensemble:
-          varRange[eDimOrgIndex] = r;
+          if (eDimOrgIndex >= 0) {
+            varRange[eDimOrgIndex] = r;
+          }
           break;
         default:
           throw new RuntimeException("Unknown axis type " + type);
@@ -97,7 +113,7 @@ class GridIndexPermuter {
   @Override
   public String toString() {
     return "GridIndexPermuter{" + "shape=" + Arrays.toString(shape) + ", eDimOrgIndex=" + eDimOrgIndex
-        + ", rtDimOrgIndex=" + rtDimOrgIndex + ", toDimOrgIndex=" + toDimOrgIndex + ", tDimOrgIndex=" + tDimOrgIndex
-        + ", zDimOrgIndex=" + zDimOrgIndex + ", yDimOrgIndex=" + yDimOrgIndex + ", xDimOrgIndex=" + xDimOrgIndex + '}';
+        + ", rtDimOrgIndex=" + rtDimOrgIndex + ", toDimOrgIndex=" + toDimOrgIndex + ", zDimOrgIndex=" + zDimOrgIndex
+        + ", yDimOrgIndex=" + yDimOrgIndex + ", xDimOrgIndex=" + xDimOrgIndex + '}';
   }
 }
