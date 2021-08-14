@@ -75,7 +75,7 @@ public class TestGribCoverageBuilding {
       Assert.assertEquals(CoverageCoordAxis.DependenceType.independent, runtime.getDependenceType());
       Assert.assertEquals(CalendarDate.fromUdunitIsoDate(null, "2012-02-27T00:00:00Z").orElseThrow(),
           runtime.makeDate(0));
-      Assert2.assertNearlyEquals(6.0, runtime.getResolution());
+      Assert2.assertNearlyEquals(6.0 * 3600, runtime.getResolution());
 
       CoverageCoordAxis time = csys.getAxis(AxisType.TimeOffset);
       Assert.assertNotNull(AxisType.TimeOffset.toString(), time);
@@ -84,7 +84,7 @@ public class TestGribCoverageBuilding {
       Assert.assertEquals(CoverageCoordAxis.DependenceType.independent, time.getDependenceType());
       Assert.assertEquals(CalendarDate.fromUdunitIsoDate(null, "2012-02-27T00:00:00Z").orElseThrow(), time.makeDate(0));
       Assert2.assertNearlyEquals(6.0, time.getResolution());
-      Assert.assertEquals(true, csys.isTime2D(time));
+      Assert.assertTrue(csys.isTime2D(time));
     }
   }
 

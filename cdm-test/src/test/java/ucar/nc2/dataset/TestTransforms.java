@@ -83,8 +83,8 @@ public class TestTransforms {
       ucar.ma2.ArrayDouble.D3 coordVals = vt.getCoordinateArray(i);
       int[] shape = coordVals.getShape();
       assertThat(shape[0]).isEqualTo(ncd.findDimension("hybrid").getLength());
-      assertThat(shape[1]).isEqualTo(ncd.findDimension("y").getLength());
-      assertThat(shape[2]).isEqualTo(ncd.findDimension("x").getLength());
+      assertThat(shape[1]).isEqualTo(ncd.findDimension("yaxis").getLength());
+      assertThat(shape[2]).isEqualTo(ncd.findDimension("xaxis").getLength());
     }
 
     ncd.close();

@@ -66,7 +66,7 @@ public class TestGribGridDatasetAxes {
   @Category(NeedsCdmUnitTest.class)
   public void testGridWithMonthUnits() throws IOException {
     String endpoint = TestDir.cdmUnitTestDir + "formats/grib1/cfs.wmo";
-    String vname = "Volumetric_soil_moisture_content_layer_between_two_depths_below_surface_layer_Average";
+    String vname = "Volumetric_soil_moisture_content_layer_between_two_depths_below_surface_layer_1_Month_Average";
 
     Formatter errlog = new Formatter();
     try (GribGridDataset gds = GribGridDataset.open(endpoint, errlog).orElse(null)) {

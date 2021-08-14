@@ -10,6 +10,7 @@ import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
+import ucar.ma2.DataType;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
@@ -62,9 +63,10 @@ public class TestCoverageFMRCnonOrthogonal {
       CoverageCoordAxis reftime = gcs.getAxis(AxisType.RunTime);
       Assert.assertNotNull(reftime);
       Assert.assertEquals(4, reftime.getNcoords());
-      double[] want = new double[] {0., 12., 24., 36.};
+      // double[] want = new double[] {0., 12., 24., 36.}; // used to be in hours
       CompareNetcdf2 cn = new CompareNetcdf2();
-      assert cn.compareData("time", reftime.getCoordsAsArray(), Array.makeFromJavaArray(want), false);
+      assert cn.compareData("reftime", reftime.getCoordsAsArray(), Array.makeArray(DataType.DOUBLE, 4, 0, 43200),
+          false);
 
       CoverageCoordAxis time = gcs.getTimeAxis();
       Assert.assertNotNull(time);

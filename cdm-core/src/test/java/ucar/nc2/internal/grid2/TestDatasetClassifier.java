@@ -131,7 +131,7 @@ public class TestDatasetClassifier {
       assertThat((Object) gcs.getYHorizAxis()).isNotNull();
       assertThat((Object) gcs.getXHorizAxis()).isNotNull();
 
-      assertThat(gcs.getNominalShape()).isEqualTo(ImmutableList.of(65, 21, 1, 181, 360));
+      assertThat(gcs.getNominalShape()).isEqualTo(ImmutableList.of(1, 65, 21, 1, 181, 360));
     }
   }
 

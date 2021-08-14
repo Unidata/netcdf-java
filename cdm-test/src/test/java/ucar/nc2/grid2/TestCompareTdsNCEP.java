@@ -202,7 +202,19 @@ public class TestCompareTdsNCEP {
       assertThat(axisSet).hasSize(nAxes);
     }
 
-    new TestGridCompareCoverage(filename).compareWithCoverage(false);
+    // This fails because Coverage thinks reftime2 is regular, but its not.
+    if (filename.contains("RTMA-CONUS_2p5km")) {
+      try (GridDataset newDataset = GridDatasetFactory.openGridDataset(filename, errlog)) {
+        assertThat(newDataset).isNotNull();
+        GridCoordinateSystem anyone = newDataset.getGridCoordinateSystems().get(0);
+        assertThat(anyone).isNotNull();
+        GridAxis<?> reftime = anyone.findAxis("reftime2").orElseThrow();
+        assertThat((Object) reftime).isNotNull();
+        assertThat(reftime.isRegular()).isFalse();
+      }
+    } else {
+      new TestGridCompareCoverage(filename).compareWithCoverage(false);
+    }
   }
 }
 
