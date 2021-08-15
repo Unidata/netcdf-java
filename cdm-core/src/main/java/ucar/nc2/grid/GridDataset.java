@@ -13,7 +13,9 @@ import java.io.Closeable;
 import java.util.Formatter;
 import java.util.Optional;
 
-/** A Dataset that contains Grids. */
+/**
+ * A Dataset that contains Grids.
+ */
 public interface GridDataset extends Closeable {
 
   String getName();
@@ -26,7 +28,7 @@ public interface GridDataset extends Closeable {
 
   ImmutableList<GridCoordinateSystem> getGridCoordinateSystems();
 
-  ImmutableList<GridAxis> getGridAxes();
+  ImmutableList<GridAxis<?>> getGridAxes();
 
   ImmutableList<Grid> getGrids();
 
@@ -59,7 +61,7 @@ public interface GridDataset extends Closeable {
     }
 
     buf.format("%nGridAxes%n");
-    for (GridAxis axis : getGridAxes()) {
+    for (GridAxis<?> axis : getGridAxes()) {
       buf.format("%s%n", axis);
     }
 

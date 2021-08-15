@@ -6,12 +6,12 @@
 package ucar.nc2.ui.grid3;
 
 import ucar.nc2.calendar.CalendarDate;
-import ucar.nc2.grid2.Grid;
-import ucar.nc2.grid2.GridAxis;
-import ucar.nc2.grid2.GridAxisPoint;
-import ucar.nc2.grid2.GridCoordinateSystem;
-import ucar.nc2.grid2.GridDataset;
-import ucar.nc2.grid2.GridTimeCoordinateSystem;
+import ucar.nc2.grid.Grid;
+import ucar.nc2.grid.GridAxis;
+import ucar.nc2.grid.GridAxisPoint;
+import ucar.nc2.grid.GridCoordinateSystem;
+import ucar.nc2.grid.GridDataset;
+import ucar.nc2.grid.GridTimeCoordinateSystem;
 import ucar.ui.util.NamedObject;
 
 import javax.annotation.Nullable;

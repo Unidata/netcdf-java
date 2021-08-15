@@ -17,12 +17,12 @@ import ucar.nc2.ft2.coverage.CoverageCoordAxis;
 import ucar.nc2.ft2.coverage.CoverageCoordSys;
 import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
 import ucar.nc2.ft2.coverage.FeatureDatasetCoverage;
-import ucar.nc2.grid2.Grid;
-import ucar.nc2.grid2.GridAxis;
-import ucar.nc2.grid2.GridCoordinateSystem;
-import ucar.nc2.grid2.GridDataset;
-import ucar.nc2.grid2.GridDatasetFactory;
-import ucar.nc2.grid2.GridTimeCoordinateSystem;
+import ucar.nc2.grid.Grid;
+import ucar.nc2.grid.GridAxis;
+import ucar.nc2.grid.GridCoordinateSystem;
+import ucar.nc2.grid.GridDataset;
+import ucar.nc2.grid.GridDatasetFactory;
+import ucar.nc2.grid.GridTimeCoordinateSystem;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 

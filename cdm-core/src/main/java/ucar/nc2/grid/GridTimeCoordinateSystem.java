@@ -6,61 +6,138 @@
 package ucar.nc2.grid;
 
 import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.calendar.CalendarDateUnit;
+import ucar.nc2.calendar.CalendarPeriod;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Formatter;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
-public interface GridTimeCoordinateSystem {
-  enum Type {
-    Observation, // 1D time, runtime = time or null
-    SingleRuntime, // scaler runtime, 1D time, offset = null
-    Offset, // 1D runtime and offset, time = null
-    OffsetRegular, // 1D runtime, 2D offset, time = null
-    Time2d // 1D runtime, 2D time, offset = null
+/**
+ * Manages the time coordinates of a GridCoordinateSystem.
+ * The complexity is due to Forecast Model Run Collections (FMRC), in which the time coordinate
+ * depends on the forecast run. This is handled in the subclasses.
+ */
+public abstract class GridTimeCoordinateSystem {
+  public enum Type {
+    Observation, // No runtimes
+    SingleRuntime, // Single runtime
+    Offset, // All runtimes have the same offsets
+    OffsetRegular, // All runtimes, grouped by time since 0z, have the same offsets.
+    OffsetIrregular // Runtimes have irregular offsets
   }
 
-  /** Get the Runtime axis. May be scaler or null. */
+  public Type getType() {
+    return type;
+  }
+
+  public CalendarDateUnit getCalendarDateUnit() {
+    return calendarDateUnit;
+  }
+
+  public CalendarPeriod getOffsetPeriod() {
+    return offsetPeriod;
+  }
+
+  // the earliest runtime or observation date.
+  public CalendarDate getBaseDate() {
+    return this.calendarDateUnit.getBaseDateTime();
+  }
+
+  /**
+   * Get the Runtime axis.
+   * Null if type=Observation.
+   */
   @Nullable
-  GridAxis1DTime getRunTimeAxis();
+  public GridAxisPoint getRunTimeAxis() {
+    return runTimeAxis;
+  }
 
-  /** Get the Time axis. SRC, OBS = 1D; ORTH, REG = null; TIME2D = 2D */
+  // LOOK, not right
+  public List<Integer> getNominalShape() {
+    return getMaterializedShape();
+  }
+
+  // Use for MaterializedCoordinateSystem
+  public List<Integer> getMaterializedShape() {
+    List<Integer> result = new ArrayList<>();
+    if (runTimeAxis != null && runTimeAxis.getDependenceType() == GridAxisDependenceType.independent) {
+      result.add(runTimeAxis.getNominalSize());
+    }
+    if (timeOffsetAxis != null && timeOffsetAxis.getDependenceType() == GridAxisDependenceType.independent) {
+      result.add(timeOffsetAxis.getNominalSize());
+    }
+    return result;
+  }
+
+  public List<ucar.array.Range> getSubsetRanges() {
+    List<ucar.array.Range> result = new ArrayList<>();
+    if (getRunTimeAxis() != null) {
+      result.add(getRunTimeAxis().getSubsetRange());
+    }
+    result.add(getTimeOffsetAxis(0).getSubsetRange());
+    return result;
+  }
+
+
+  /**
+   * Get the ith runtime CalendarDate.
+   * Null if type=Observation.
+   */
   @Nullable
-  GridAxis getTimeAxis();
+  public abstract CalendarDate getRuntimeDate(int runIdx);
 
-  /** Get the Time Offset axis. SRC, OBS, TIME2D = null; ORTH = 1D; REG = 2D */
-  @Nullable
-  GridAxis getTimeOffsetAxis();
+  /**
+   * Get the ith timeOffset axis. The offsets are reletive to getBaseDate()
+   * if type=Observation, SingleRuntime or Offset, runIdx is ignored, since the offsets are
+   * always the same. LOOK does unit reflect getBaseDate() or getRuntimeDate(int runIdx) ?
+   */
+  public abstract GridAxis<?> getTimeOffsetAxis(int runIdx);
 
-  interface Observation extends GridTimeCoordinateSystem {
-    GridAxis1D getTimeAxis();
+  /**
+   * Get the forecast/valid dates for a given run.
+   * if type=Observation or SingleRuntime, runIdx is ignored.
+   * For intervals this is the midpoint.
+   */
+  public abstract List<CalendarDate> getTimesForRuntime(int runIdx);
+
+  public abstract Optional<? extends GridTimeCoordinateSystem> subset(GridSubset params, Formatter errlog);
+
+  ////////////////////////////////////////////////////////
+  protected final Type type;
+  protected final @Nullable GridAxisPoint runTimeAxis;
+  protected final GridAxis<?> timeOffsetAxis; // ??
+  protected final CalendarDateUnit calendarDateUnit;
+  protected final CalendarPeriod offsetPeriod;
+
+  protected GridTimeCoordinateSystem(Type type, @Nullable GridAxisPoint runTimeAxis, GridAxis<?> timeOffsetAxis,
+      CalendarDateUnit calendarDateUnit) {
+    this.type = type;
+    this.runTimeAxis = runTimeAxis;
+    this.timeOffsetAxis = timeOffsetAxis;
+
+    if (calendarDateUnit != null) {
+      this.calendarDateUnit = calendarDateUnit;
+    } else if (runTimeAxis != null) {
+      this.calendarDateUnit = CalendarDateUnit.fromUdunitString(null, runTimeAxis.getUnits()).orElseThrow();
+    } else {
+      throw new IllegalArgumentException("calendarDateUnit or runTimeAxis must not be null");
+    }
+    Objects.requireNonNull(this.calendarDateUnit);
+
+    CalendarPeriod period = this.calendarDateUnit.getCalendarPeriod();
+    if (period == null) {
+      period = CalendarPeriod.of(timeOffsetAxis.getUnits());
+    }
+    this.offsetPeriod = Objects.requireNonNull(period);
   }
 
-  interface SingleRuntime extends GridTimeCoordinateSystem {
-    CalendarDate getRunTime();
-
-    GridAxis1D getTimeAxis();
-  }
-
-  interface Offset extends GridTimeCoordinateSystem {
-    GridAxis1DTime getRunTimeAxis();
-
-    GridAxis1D getTimeOffsetAxis(); // LOOK important enough special case? UI?
-
-    GridAxis1DTime getTimeAxis(int runIdx);
-  }
-
-  interface OffsetRegular extends GridTimeCoordinateSystem {
-    GridAxis1DTime getRunTimeAxis();
-
-    GridAxis1D getTimeOffsetAxis(int minute);
-
-    GridAxis1DTime getTimeAxis(int runIdx);
-  }
-
-  interface Time2d extends GridTimeCoordinateSystem {
-    GridAxis1DTime getRunTimeAxis();
-
-    GridAxis1D getTimeOffsetAxis(int runIdx);
-
-    GridAxis1DTime getTimeAxis(int runIdx);
+  @Override
+  public String toString() {
+    return "GridTimeCoordinateSystem type=" + type + ", calendarDateUnit=" + calendarDateUnit + ", offsetPeriod="
+        + offsetPeriod + "\n runTimeAxis=" + runTimeAxis + "\n timeOffsetAxis=" + timeOffsetAxis;
   }
 }

@@ -7,31 +7,20 @@ package ucar.nc2.grid;
 
 import com.google.common.base.Preconditions;
 import ucar.nc2.calendar.CalendarDate;
-import ucar.nc2.grid2.CoordInterval;
-import ucar.nc2.grid2.GridSubset;
 import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.geoloc.ProjectionRect;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+/** Fluent Api for creating subset parameters. LOOK incomplete. */
 public class GridReader {
   private final Grid grid;
   private final Map<String, Object> req = new HashMap<>();
 
   public GridReader(Grid grid) {
     this.grid = grid;
-  }
-
-  public GridReader setVertCoord(Object coord) {
-    if (coord instanceof Number) {
-      req.put(GridSubset.vertPoint, coord);
-    } else if (coord instanceof CoordInterval) {
-      req.put(GridSubset.vertIntv, coord);
-    } else {
-      throw new RuntimeException("setVertCoord must be Number or CoordInterval " + coord);
-    }
-    return this;
   }
 
   public GridReader setTime(CalendarDate date) {
@@ -41,6 +30,11 @@ public class GridReader {
 
   public GridReader setTimePresent() {
     req.put(GridSubset.timePresent, true);
+    return this;
+  }
+
+  public GridReader setTimeLatest() {
+    req.put(GridSubset.timeLatest, true);
     return this;
   }
 
@@ -71,11 +65,6 @@ public class GridReader {
     return this;
   }
 
-  public GridReader setLatLonBoundingBox(LatLonRect llbb) {
-    req.put(GridSubset.latlonBB, llbb);
-    return this;
-  }
-
   public GridReader setEnsCoord(Object coord) {
     Preconditions.checkArgument(coord instanceof Double);
     req.put(GridSubset.ensCoord, coord);
@@ -87,8 +76,33 @@ public class GridReader {
     return this;
   }
 
+  public GridReader setLatLonBoundingBox(LatLonRect llbb) {
+    req.put(GridSubset.latlonBB, llbb);
+    return this;
+  }
+
+  public GridReader setProjectionBoundingBox(ProjectionRect projRect) {
+    req.put(GridSubset.projBB, projRect);
+    return this;
+  }
+
+  public GridReader setVertCoord(Object coord) {
+    if (coord instanceof Number) {
+      req.put(GridSubset.vertPoint, coord);
+    } else if (coord instanceof CoordInterval) {
+      req.put(GridSubset.vertIntv, coord);
+    } else {
+      throw new RuntimeException("setVertCoord must be Number or CoordInterval " + coord);
+    }
+    return this;
+  }
+
   public GridReferencedArray read() throws IOException, ucar.array.InvalidRangeException {
     return this.grid.readData(new GridSubset(req));
   }
 
+  @Override
+  public String toString() {
+    return req.toString();
+  }
 }

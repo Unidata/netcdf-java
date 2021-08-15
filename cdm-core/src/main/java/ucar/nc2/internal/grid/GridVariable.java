@@ -7,21 +7,24 @@ import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.grid.Grid;
 import ucar.nc2.grid.GridCoordinateSystem;
 import ucar.nc2.grid.GridReferencedArray;
-import ucar.nc2.grid2.GridSubset;
+import ucar.nc2.grid.GridSubset;
 import ucar.nc2.grid.MaterializedCoordinateSystem;
 
 import javax.annotation.concurrent.Immutable;
 import java.io.IOException;
-import java.util.*;
+import java.util.Formatter;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 /** Wraps a VariableDS, turns into a Grid */
 @Immutable
 public class GridVariable implements Grid {
-  private final GridCS cs;
+  private final GridCoordinateSystem cs;
   private final VariableDS vds;
   private final GridIndexPermuter permuter;
 
-  GridVariable(GridCS cs, VariableDS vds) {
+  GridVariable(GridCoordinateSystem cs, VariableDS vds) {
     this.cs = cs;
     this.vds = vds;
     this.permuter = new GridIndexPermuter(cs, vds);
@@ -67,11 +70,7 @@ public class GridVariable implements Grid {
     return vds.isMissing(val);
   }
 
-  @Override
-  public String toString() {
-    return vds + "\n permuter=" + permuter + '}';
-  }
-
+  /** Subsetting the coordinate system, then using that subset to do the read. Special to Netcdf, not general. */
   @Override
   public GridReferencedArray readData(GridSubset subset) throws IOException, ucar.array.InvalidRangeException {
     Formatter errlog = new Formatter();
@@ -81,24 +80,9 @@ public class GridVariable implements Grid {
     }
 
     MaterializedCoordinateSystem subsetCoordSys = opt.get();
-    List<ucar.array.RangeIterator> rangeIters = subsetCoordSys.getRanges();
-    List<ucar.array.Range> ranges = new ArrayList<>();
-
-    boolean hasComposite = false;
-    for (ucar.array.RangeIterator ri : rangeIters) {
-      // if (ri instanceof ucar.array.RangeComposite) // TODO LOOK
-      // hasComposite = true;
-      // else
-      ranges.add((ucar.array.Range) ri);
-    }
-
-    // if (!hasComposite) {
+    List<ucar.array.Range> ranges = subsetCoordSys.getSubsetRanges();
     Array<Number> data = readDataSection(new ucar.array.Section(ranges), true);
-    // LOOK
     return GridReferencedArray.create(getName(), getArrayType(), data, subsetCoordSys);
-    // }
-
-    // throw new UnsupportedOperationException();
   }
 
   /**
@@ -126,4 +110,25 @@ public class GridVariable implements Grid {
     // LOOK
     return (Array<Number>) dataVolume;
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
+    GridVariable that = (GridVariable) o;
+    return vds.equals(that.vds);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(vds);
+  }
+
+  @Override
+  public String toString() {
+    return vds + "\n permuter=" + permuter + '}';
+  }
+
 }

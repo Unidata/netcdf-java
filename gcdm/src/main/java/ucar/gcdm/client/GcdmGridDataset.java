@@ -13,12 +13,12 @@ import io.grpc.StatusRuntimeException;
 import ucar.gcdm.*;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.grid2.Grid;
-import ucar.nc2.grid2.GridAxis;
-import ucar.nc2.grid2.GridCoordinateSystem;
-import ucar.nc2.grid2.GridDataset;
-import ucar.nc2.grid2.GridReferencedArray;
-import ucar.nc2.grid2.GridSubset;
+import ucar.nc2.grid.Grid;
+import ucar.nc2.grid.GridAxis;
+import ucar.nc2.grid.GridCoordinateSystem;
+import ucar.nc2.grid.GridDataset;
+import ucar.nc2.grid.GridReferencedArray;
+import ucar.nc2.grid.GridSubset;
 
 import java.io.IOException;
 import java.net.URI;

@@ -9,22 +9,40 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.nc2.*;
-import ucar.nc2.constants.AxisType;
+import ucar.nc2.AttributeContainer;
+import ucar.nc2.Dimension;
+import ucar.nc2.Dimensions;
+import ucar.nc2.Variable;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.dataset.*;
+import ucar.nc2.dataset.CoordinateAxis;
+import ucar.nc2.dataset.CoordinateSystem;
+import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDataset.Enhance;
-import ucar.nc2.grid.*;
-import ucar.nc2.internal.dataset.DatasetClassifier;
-import ucar.unidata.geoloc.LatLonRect;
-import ucar.unidata.geoloc.ProjectionRect;
+import ucar.nc2.dataset.NetcdfDatasets;
+import ucar.nc2.dataset.VariableDS;
+import ucar.nc2.dataset.VariableEnhanced;
+import ucar.nc2.grid.Grid;
+import ucar.nc2.grid.GridAxis;
+import ucar.nc2.grid.GridAxisDependenceType;
+import ucar.nc2.grid.GridCoordinateSystem;
+import ucar.nc2.grid.GridDataset;
 
+import javax.annotation.concurrent.Immutable;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Formatter;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 /** GridDataset implementation wrapping a NetcdfDataset. */
+@Immutable
 public class GridNetcdfDataset implements GridDataset {
-  private static Logger log = LoggerFactory.getLogger(GridNetcdfDataset.class);
+  private static final Logger log = LoggerFactory.getLogger(GridNetcdfDataset.class);
 
   public static Optional<GridNetcdfDataset> create(NetcdfDataset ncd, Formatter errInfo) throws IOException {
     Set<Enhance> enhance = ncd.getEnhanceMode();
@@ -33,36 +51,31 @@ public class GridNetcdfDataset implements GridDataset {
       ncd = NetcdfDatasets.enhance(ncd, enhance, null);
     }
 
-    DatasetClassifier facc = new DatasetClassifier(ncd, errInfo);
-    return (facc.getFeatureType() == FeatureType.GRID) ? Optional.of(new GridNetcdfDataset(ncd, facc, errInfo))
-        : Optional.empty();
+    DatasetClassifier classifier = new DatasetClassifier(ncd, errInfo);
+    if (classifier.getFeatureType() == FeatureType.GRID || classifier.getFeatureType() == FeatureType.CURVILINEAR) {
+      return createGridDataset(ncd, classifier, errInfo);
+    } else {
+      return Optional.empty();
+    }
   }
 
-  ///////////////////////////////////////////////////////////////////
-  // TODO make Immutable
+  private static Optional<GridNetcdfDataset> createGridDataset(NetcdfDataset ncd, DatasetClassifier classifier,
+      Formatter errInfo) throws IOException {
+    FeatureType featureType = classifier.getFeatureType();
 
-  private final NetcdfDataset ncd;
-  private final FeatureType featureType;
-
-  private final ArrayList<GridCS> coordsys = new ArrayList<>();
-
-  private final Map<String, GridAxis> gridAxes;
-  private final ArrayList<Grid> grids = new ArrayList<>();
-  private final Multimap<GridCS, Grid> gridsets;
-
-  private GridNetcdfDataset(NetcdfDataset ncd, DatasetClassifier classifier, Formatter errInfo) {
-    this.ncd = ncd;
-    this.featureType = classifier.getFeatureType();
-
-    this.gridAxes = new HashMap<>();
+    Map<String, GridAxis<?>> gridAxes = new HashMap<>();
+    ArrayList<GridCoordinateSystem> coordsys = new ArrayList<>();
+    Multimap<GridCoordinateSystem, Grid> gridsets = ArrayListMultimap.create();
 
     // Do all the independent axes first
     for (CoordinateAxis axis : classifier.getIndependentAxes()) {
       if (axis.getFullName().startsWith("Best/")) {
-        continue;
+        continue; // LOOK
       }
       if (axis.getRank() < 2) {
-        GridAxis gridAxis = Grids.extractGridAxis1D(ncd, axis, GridAxis.DependenceType.independent);
+        GridAxis<?> gridAxis =
+            new CoordAxisToGridAxis(axis, GridAxisDependenceType.independent, ncd.isIndependentCoordinate(axis))
+                .extractGridAxis();
         gridAxes.put(axis.getFullName(), gridAxis);
       } else {
         log.warn("Independent gridAxis {} rank > 1", axis.getFullName());
@@ -76,10 +89,9 @@ public class GridNetcdfDataset implements GridDataset {
         continue;
       }
       if (axis.getRank() < 2) {
-        GridAxis gridAxis = Grids.extractGridAxis1D(ncd, axis, GridAxis.DependenceType.dependent);
-        gridAxes.put(axis.getFullName(), gridAxis);
-      } else if (axis.getAxisType() == AxisType.TimeOffset && axis.getRank() == 2) {
-        GridAxis gridAxis = Grids.extractGridAxisOffset2D(axis, GridAxis.DependenceType.dependent, gridAxes);
+        GridAxis<?> gridAxis =
+            new CoordAxisToGridAxis(axis, GridAxisDependenceType.dependent, ncd.isIndependentCoordinate(axis))
+                .extractGridAxis();
         gridAxes.put(axis.getFullName(), gridAxis);
       }
     }
@@ -90,74 +102,78 @@ public class GridNetcdfDataset implements GridDataset {
       if (csc.getName().startsWith("Best/")) {
         continue;
       }
-      GridCS gcs = new GridCS(csc, this.gridAxes);
-      coordsys.add(gcs);
-      trackCsConverted.put(csc.getName(), new TrackGridCS(csc, gcs));
-    }
-    // Largest Coordinate Systems come first
-    coordsys.sort((o1, o2) -> o2.getGridAxes().size() - o1.getGridAxes().size());
+      GridNetcdfCSBuilder.createFromClassifier(csc, gridAxes, errInfo).ifPresent(gcs -> {
+        coordsys.add(gcs);
+        trackCsConverted.put(csc.getName(), new TrackGridCS(csc, gcs));
+      });
+      // Largest Coordinate Systems come first
+      coordsys.sort((o1, o2) -> o2.getGridAxes().size() - o1.getGridAxes().size());
 
-    // Assign coordsys to grids
-    this.gridsets = ArrayListMultimap.create();
-    for (Variable v : ncd.getVariables()) {
-      if (v.getFullName().startsWith("Best/")) { // TODO remove Best from grib generation code
-        continue;
-      }
-      VariableEnhanced ve = (VariableEnhanced) v;
-      List<CoordinateSystem> css = new ArrayList<>(ve.getCoordinateSystems());
-      if (css.isEmpty()) {
-        continue;
-      }
-      // Use the largest (# axes) coordsys
-      css.sort((o1, o2) -> o2.getCoordinateAxes().size() - o1.getCoordinateAxes().size());
-      for (CoordinateSystem cs : css) {
-        TrackGridCS track = trackCsConverted.get(cs.getName());
-        if (track == null) {
-          continue; // not used
+      // Assign coordsys to grids
+      for (Variable v : ncd.getVariables()) {
+        if (v.getFullName().startsWith("Best/")) { // TODO remove Best from grib generation code
+          continue;
         }
-        GridCS gcs = track.gridCS;
-        Set<Dimension> domain = Dimensions.makeDomain(track.csc.getAxesUsed(), false);
-        if (gcs != null && gcs.getFeatureType() == this.featureType && Dimensions.isCoordinateSystemFor(domain, v)) {
-          Grid grid = new GridVariable(gcs, (VariableDS) ve);
-          grids.add(grid);
-          this.gridsets.put(gcs, grid);
-          break;
+        VariableEnhanced ve = (VariableEnhanced) v;
+        List<CoordinateSystem> css = new ArrayList<>(ve.getCoordinateSystems());
+        if (css.isEmpty()) {
+          continue;
+        }
+        // Use the largest (# axes) coordsys
+        css.sort((o1, o2) -> o2.getCoordinateAxes().size() - o1.getCoordinateAxes().size());
+        for (CoordinateSystem cs : css) {
+          TrackGridCS track = trackCsConverted.get(cs.getName());
+          if (track == null) {
+            continue; // not used
+          }
+          GridCoordinateSystem gcs = track.gridCS;
+          Set<Dimension> domain = Dimensions.makeDomain(track.csc.getAxesUsed(), false);
+          if (gcs != null && gcs.getFeatureType() == featureType && Dimensions.isCoordinateSystemFor(domain, v)) {
+            Grid grid = new GridVariable(gcs, (VariableDS) ve);
+            gridsets.put(gcs, grid);
+            break;
+          }
         }
       }
     }
+
+    if (gridsets.isEmpty()) {
+      errInfo.format("gridsets is empty%n");
+      return Optional.empty();
+    }
+
+    HashSet<Grid> ugrids = new HashSet<>(gridsets.values());
+    ArrayList<Grid> grids = new ArrayList<>(ugrids);
+    grids.sort((g1, g2) -> CharSequence.compare(g1.getName(), g2.getName()));
+    return Optional.of(new GridNetcdfDataset(ncd, featureType, coordsys, gridAxes.values(), grids));
   }
 
   private static class TrackGridCS {
     DatasetClassifier.CoordSysClassifier csc;
-    GridCS gridCS;
+    GridCoordinateSystem gridCS;
 
-    public TrackGridCS(DatasetClassifier.CoordSysClassifier csc, GridCS gridCS) {
+    public TrackGridCS(DatasetClassifier.CoordSysClassifier csc, GridCoordinateSystem gridCS) {
       this.csc = csc;
       this.gridCS = gridCS;
     }
   }
 
-  private void makeHorizRanges() {
-    LatLonRect.Builder llbbBuilder = null;
+  ///////////////////////////////////////////////////////////////////
+  private final NetcdfDataset ncd;
+  private final FeatureType featureType;
 
-    ProjectionRect.Builder projBBbuilder = null;
-    for (GridCoordinateSystem gcs : this.gridsets.keySet()) {
-      ProjectionRect bb = gcs.getHorizCoordSystem().getBoundingBox();
-      if (projBBbuilder == null)
-        projBBbuilder = bb.toBuilder();
-      else if (bb != null)
-        projBBbuilder.add(bb);
+  private final ImmutableList<GridCoordinateSystem> coordsys;
 
-      LatLonRect llbb = gcs.getHorizCoordSystem().getLatLonBoundingBox();
-      if (llbbBuilder == null)
-        llbbBuilder = llbb.toBuilder();
-      else if (llbb != null)
-        llbbBuilder.extend(llbb);
-    }
+  private final ImmutableList<GridAxis<?>> gridAxes;
+  private final ImmutableList<Grid> grids;
 
-    if (llbbBuilder != null) {
-      LatLonRect llbbMax = llbbBuilder.build();
-    }
+  public GridNetcdfDataset(NetcdfDataset ncd, FeatureType featureType, List<GridCoordinateSystem> coordsys,
+      Collection<GridAxis<?>> gridAxes, Collection<Grid> grids) {
+    this.ncd = ncd;
+    this.featureType = featureType;
+    this.coordsys = ImmutableList.copyOf(coordsys);
+    this.gridAxes = ImmutableList.copyOf(gridAxes);
+    this.grids = ImmutableList.copyOf(grids);
   }
 
   public FeatureType getCoverageType() {
@@ -189,8 +205,8 @@ public class GridNetcdfDataset implements GridDataset {
   }
 
   @Override
-  public ImmutableList<GridAxis> getGridAxes() {
-    return ImmutableList.copyOf(gridAxes.values());
+  public ImmutableList<GridAxis<?>> getGridAxes() {
+    return gridAxes;
   }
 
   @Override
@@ -209,32 +225,6 @@ public class GridNetcdfDataset implements GridDataset {
     toString(f);
     return f.toString();
   }
-
-  /*
-   * @Override
-   * public void toString(Formatter buf) {
-   * int countGridset = 0;
-   *
-   * for (GridCS gcs : gridsets.keySet()) {
-   * buf.format("%nGridset %d: ", countGridset);
-   * gcs.show(buf, false);
-   * buf.format("%n");
-   * buf.format("Name___________________________________________Unit____________Description%n");
-   * for (Grid grid : gridsets.get(gcs)) {
-   * buf.format(" %-46s %-15s %s%n", grid.getName(), grid.getUnits(), grid.getDescription());
-   * }
-   * countGridset++;
-   * buf.format("%n");
-   * }
-   *
-   * buf.format("%nGeoReferencing Coordinate Axes%n");
-   * buf.format("Name__________________________Units_________________________Type______Description%n");
-   * for (CoordinateAxis axis : ncd.getCoordinateAxes()) {
-   * axis.getInfo(buf);
-   * buf.format("%n");
-   * }
-   * }
-   */
 
   private boolean wasClosed = false;
 

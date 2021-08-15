@@ -4,7 +4,6 @@
  */
 package ucar.gcdm;
 
-import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,7 +11,7 @@ import org.junit.runners.Parameterized;
 import ucar.array.InvalidRangeException;
 import ucar.gcdm.client.GcdmGridDataset;
 import ucar.gcdm.client.GcdmNetcdfFile;
-import ucar.nc2.grid2.*;
+import ucar.nc2.grid.*;
 import ucar.nc2.internal.util.CompareArrayToArray;
 import ucar.unidata.util.test.TestDir;
 

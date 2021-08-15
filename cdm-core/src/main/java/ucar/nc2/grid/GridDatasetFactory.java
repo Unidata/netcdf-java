@@ -7,6 +7,7 @@ package ucar.nc2.grid;
 import com.google.common.collect.Iterables;
 import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.spi.GridDatasetProvider;
 import ucar.nc2.internal.grid.GridNetcdfDataset;
 
 import javax.annotation.Nullable;
@@ -17,26 +18,33 @@ import java.util.Arrays;
 import java.util.Formatter;
 import java.util.List;
 import java.util.Optional;
+import java.util.ServiceLoader;
 
 /** A factory of Grid Datasets. */
 public class GridDatasetFactory {
 
-  // since we want GridDataset in a try-with-resource block, use Nullable instead of Optional
+  // LOOK since we want GridDataset in a try-with-resource block, use Nullable instead of Optional. Can use orElse(null)
   @Nullable
   public static GridDataset openGridDataset(String endpoint, Formatter errLog) throws IOException {
+    DatasetUrl durl = DatasetUrl.findDatasetUrl(endpoint);
 
-    // LOOK could be a gcdm endpoint ??
+    // look for dynamically loaded GridDatasetProvider
+    for (GridDatasetProvider provider : ServiceLoader.load(GridDatasetProvider.class)) {
+      if (provider.isOwnerOf(durl)) {
+        return provider.open(durl.getTrueurl(), null);
+      }
+      if (provider.isOwnerOf(endpoint)) {
+        return provider.open(durl.getTrueurl(), null);
+      }
+    }
 
-    /*
-     * check if its a GRIB collection
-     * DatasetUrl durl = DatasetUrl.findDatasetUrl(endpoint);
-     * if (durl.getServiceType() == null) { // skip GRIB check for anything not a plain ole file
-     * GribOpenAttempt openAttempt = openGrib(endpoint, errLog);
-     * if (openAttempt.isGrib) {
-     * return openAttempt.coverage;
-     * }
-     * }
-     */
+    // check if its a GRIB collection LOOK why not a GridDatasetProvider?
+    if (durl.getServiceType() == null) { // skip GRIB check for anything not a plain ole file
+      GribOpenAttempt openAttempt = openGrib(endpoint, errLog);
+      if (openAttempt.isGrib) {
+        return openAttempt.coverage;
+      }
+    }
     // this will still open a GRIB Collection, but it will be built on top of NetcdfDataset.
     // probably ok for small collections, though it differs from the direct GRIB.
     // if tests start failing, check if GRIB module is installed
@@ -44,9 +52,9 @@ public class GridDatasetFactory {
     return openNetcdfAsGrid(endpoint, errLog);
   }
 
-  /** Open a NetcdfDataset and wrap as a GridDataset if possible. */
+  // Open a NetcdfDataset and wrap as a GridDataset if possible.
   @Nullable
-  private static GridDataset openNetcdfAsGrid(String endpoint, Formatter errLog) throws IOException {
+  public static GridDataset openNetcdfAsGrid(String endpoint, Formatter errLog) throws IOException {
     // Otherwise, wrap a NetcdfDataset
     NetcdfDataset ds = ucar.nc2.dataset.NetcdfDatasets.openDataset(endpoint);
     Optional<GridNetcdfDataset> result =
@@ -60,7 +68,7 @@ public class GridDatasetFactory {
     return result.get();
   }
 
-  /** Wrap an already open NetcdfDataset as a GridDataset if possible. */
+  // Wrap an already open NetcdfDataset as a GridDataset if possible.
   public static Optional<GridDataset> wrapGridDataset(NetcdfDataset ds, Formatter errLog) throws IOException {
     Optional<GridNetcdfDataset> result =
         GridNetcdfDataset.create(ds, errLog).filter(gds -> !Iterables.isEmpty(gds.getGrids()));
@@ -70,7 +78,6 @@ public class GridDatasetFactory {
     }
     return Optional.of(result.get());
   }
-
 
   /////////////////////////////////////////////////////////////////////////////////////
   // call Grib with reflection, to decouple the modules

@@ -13,8 +13,8 @@ import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.ft2.coverage.CoverageCoordAxis1D;
 import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.calendar.CalendarDateFormatter;
-import ucar.nc2.grid2.GridAxisPoint;
-import ucar.nc2.grid2.GridTimeCoordinateSystem;
+import ucar.nc2.grid.GridAxisPoint;
+import ucar.nc2.grid.GridTimeCoordinateSystem;
 import ucar.ui.util.NamedObject;
 import ucar.unidata.util.Format;
 
@@ -99,18 +99,18 @@ public class NamedObjects {
 
   /////////////////////////////////////////////////////////////////////////////
 
-  public static List<NamedObject> getGridNames(Iterable<ucar.nc2.grid2.Grid> grids) {
+  public static List<NamedObject> getGridNames(Iterable<ucar.nc2.grid.Grid> grids) {
     if (grids == null) {
       return new ArrayList<>();
     }
     List<NamedObject> result = new ArrayList<>();
-    for (ucar.nc2.grid2.Grid grid : grids) {
+    for (ucar.nc2.grid.Grid grid : grids) {
       result.add(NamedObject.create(grid.getName(), grid.getDescription(), grid));
     }
     return result;
   }
 
-  public static List<NamedObject> getCoordNames(ucar.nc2.grid2.GridAxis<?> axis) {
+  public static List<NamedObject> getCoordNames(ucar.nc2.grid.GridAxis<?> axis) {
     if (axis == null) {
       return new ArrayList<>();
     }

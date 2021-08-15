@@ -4,60 +4,160 @@
  */
 package ucar.nc2.grid;
 
-import ucar.array.RangeIterator;
-import ucar.nc2.grid2.GridSubset;
+import com.google.common.collect.ImmutableList;
+import ucar.array.Range;
 
 import javax.annotation.Nullable;
-import java.util.Formatter;
+import javax.annotation.concurrent.Immutable;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /** A Coordinate System for materialized gridded data. */
-public interface MaterializedCoordinateSystem {
+@Immutable
+public class MaterializedCoordinateSystem {
 
-  /** The name of the Grid Coordinate System. */
-  String getName();
-
-  /** the GridAxes that constitute this Coordinate System */
-  Iterable<GridAxis> getGridAxes();
-
-  /** Get the ensemble axis. */
   @Nullable
-  GridAxis1D getEnsembleAxis();
+  public GridTimeCoordinateSystem getTimeCoordSystem() {
+    return tcs;
+  }
 
-  /** Get the Runtime axis. */
   @Nullable
-  GridAxis1DTime getRunTimeAxis();
+  public GridAxisPoint getEnsembleAxis() {
+    return ens;
+  }
 
-  /** Get the Time axis. */
   @Nullable
-  GridAxis1DTime getTimeAxis();
+  public GridAxis<?> getVerticalAxis() {
+    return vert;
+  }
 
-  /** Get the Time Offset axis. */
-  @Nullable
-  GridAxis getTimeOffsetAxis();
+  public GridHorizCoordinateSystem getHorizCoordinateSystem() {
+    return hcs;
+  }
 
-  /** Get the Z axis (GeoZ, Height, Pressure). */
-  @Nullable
-  GridAxis1D getVerticalAxis();
+  /** Get the X axis (either GeoX or Lon). */
+  public GridAxisPoint getXHorizAxis() {
+    return getHorizCoordinateSystem().getXHorizAxis();
+  }
 
-  /** Get the X axis. (either GeoX or Lon) */
-  GridAxis getXHorizAxis();
-
-  /** Get the Y axis. (either GeoY or Lat) */
-  GridAxis getYHorizAxis();
-
-  /** Get the Horizontal CoordinateSystem. */
-  GridHorizCoordinateSystem getHorizCoordSystem();
-
-  void show(Formatter f, boolean showCoords);
-
-  /** Subset each axis based on the given parameters. */
-  Optional<MaterializedCoordinateSystem> subset(GridSubset params, Formatter errLog);
-
-  /** The index ranges in this array. */
-  List<RangeIterator> getRanges();
+  /** Get the Y axis (either GeoY or Lat). */
+  public GridAxisPoint getYHorizAxis() {
+    return getHorizCoordinateSystem().getYHorizAxis();
+  }
 
   /** The shape of this array. */
-  int[] getMaterializedShape();
+  public List<Integer> getMaterializedShape() {
+    List<Integer> result = new ArrayList<>();
+    if (getTimeCoordSystem() != null) {
+      result.addAll(getTimeCoordSystem().getMaterializedShape());
+    }
+    if (getEnsembleAxis() != null) {
+      result.add(getEnsembleAxis().getNominalSize());
+    }
+    if (getVerticalAxis() != null) {
+      result.add(getVerticalAxis().getNominalSize());
+    }
+    result.addAll(getHorizCoordinateSystem().getShape());
+    return result;
+  }
+
+  public List<ucar.array.Range> getSubsetRanges() {
+    List<ucar.array.Range> result = new ArrayList<>();
+    if (getTimeCoordSystem() != null) {
+      result.addAll(getTimeCoordSystem().getSubsetRanges());
+    }
+    if (getEnsembleAxis() != null) {
+      result.add(getEnsembleAxis().getSubsetRange());
+    }
+    if (getVerticalAxis() != null) {
+      result.add(getVerticalAxis().getSubsetRange());
+    }
+    result.addAll(getHorizCoordinateSystem().getSubsetRanges());
+    return result;
+  }
+
+  public List<GridAxis<?>> getGridAxes() {
+    List<GridAxis<?>> result = new ArrayList<>();
+    if (getTimeCoordSystem() != null) {
+      if (getTimeCoordSystem().getRunTimeAxis() != null) {
+        result.add(getTimeCoordSystem().getRunTimeAxis());
+      }
+      result.add(getTimeCoordSystem().getTimeOffsetAxis(0));
+    }
+    if (getEnsembleAxis() != null) {
+      result.add(getEnsembleAxis());
+    }
+    if (getVerticalAxis() != null) {
+      result.add(getVerticalAxis());
+    }
+    result.add(getHorizCoordinateSystem().getYHorizAxis());
+    result.add(getHorizCoordinateSystem().getXHorizAxis());
+    return result;
+  }
+
+  //////////////////////////////////////////////////////////////////////////
+  private final GridTimeCoordinateSystem tcs;
+  private final GridHorizCoordinateSystem hcs;
+  private final GridAxisPoint ens;
+  private final GridAxis<?> vert;
+  private final ImmutableList<Range> ranges; // LOOK needed?
+
+  private MaterializedCoordinateSystem(Builder builder) {
+    this.tcs = builder.tcs;
+    this.hcs = builder.hcs;
+    this.ens = builder.ens;
+    this.vert = builder.vert;
+    this.ranges = builder.ranges;
+  }
+
+  /** Turn into a mutable Builder. Can use toBuilder().build() to copy. */
+  public Builder toBuilder() {
+    return builder().setTimeCoordSys(this.tcs).setHorizCoordSys(this.hcs).setEnsAxis(this.ens).setVertAxis(this.vert);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  public static class Builder {
+    private GridTimeCoordinateSystem tcs;
+    private GridHorizCoordinateSystem hcs;
+    private GridAxisPoint ens;
+    private GridAxis<?> vert;
+    private ImmutableList<Range> ranges; // LOOK: needed?
+    private boolean built;
+
+    public Builder setTimeCoordSys(GridTimeCoordinateSystem tcs) {
+      this.tcs = tcs;
+      return this;
+    }
+
+    public Builder setHorizCoordSys(GridHorizCoordinateSystem hcs) {
+      this.hcs = hcs;
+      return this;
+    }
+
+    public Builder setEnsAxis(GridAxisPoint ens) {
+      this.ens = ens;
+      return this;
+    }
+
+    public Builder setVertAxis(GridAxis<?> vert) {
+      this.vert = vert;
+      return this;
+    }
+
+    public Builder setRanges(List<Range> ranges) {
+      this.ranges = ImmutableList.copyOf(ranges);
+      return this;
+    }
+
+    public MaterializedCoordinateSystem build() {
+      if (built)
+        throw new IllegalStateException("already built");
+      built = true;
+      return new MaterializedCoordinateSystem(this);
+    }
+  }
+
 }

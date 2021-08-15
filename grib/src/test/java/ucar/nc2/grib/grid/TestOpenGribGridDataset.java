@@ -7,10 +7,10 @@ package ucar.nc2.grib.grid;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import ucar.nc2.grid2.Grid;
-import ucar.nc2.grid2.GridCoordinateSystem;
-import ucar.nc2.grid2.GridHorizCoordinateSystem;
-import ucar.nc2.grid2.GridTimeCoordinateSystem;
+import ucar.nc2.grid.Grid;
+import ucar.nc2.grid.GridCoordinateSystem;
+import ucar.nc2.grid.GridHorizCoordinateSystem;
+import ucar.nc2.grid.GridTimeCoordinateSystem;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 

@@ -10,10 +10,10 @@ import ucar.array.ArrayType;
 import ucar.gcdm.GcdmGridProto;
 import ucar.gcdm.GcdmConverter;
 import ucar.nc2.AttributeContainer;
-import ucar.nc2.grid2.Grid;
-import ucar.nc2.grid2.GridCoordinateSystem;
-import ucar.nc2.grid2.GridReferencedArray;
-import ucar.nc2.grid2.GridSubset;
+import ucar.nc2.grid.Grid;
+import ucar.nc2.grid.GridCoordinateSystem;
+import ucar.nc2.grid.GridReferencedArray;
+import ucar.nc2.grid.GridSubset;
 
 import java.io.IOException;
 import java.util.List;

@@ -17,12 +17,12 @@ import ucar.nc2.grib.coord.Coordinate;
 import ucar.nc2.grib.coord.CoordinateRuntime;
 import ucar.nc2.grib.coord.CoordinateTime2D;
 import ucar.nc2.grib.coord.CoordinateTimeAbstract;
-import ucar.nc2.grid2.GridSubset;
-import ucar.nc2.grid2.GridAxis;
-import ucar.nc2.grid2.GridAxisInterval;
-import ucar.nc2.grid2.GridAxisPoint;
-import ucar.nc2.grid2.GridTimeCoordinateSystem;
-import ucar.nc2.internal.grid2.SubsetTimeHelper;
+import ucar.nc2.grid.GridSubset;
+import ucar.nc2.grid.GridAxis;
+import ucar.nc2.grid.GridAxisInterval;
+import ucar.nc2.grid.GridAxisPoint;
+import ucar.nc2.grid.GridTimeCoordinateSystem;
+import ucar.nc2.internal.grid.SubsetTimeHelper;
 import ucar.nc2.util.Indent;
 
 import javax.annotation.Nullable;
@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static ucar.nc2.grid2.GridTimeCoordinateSystem.Type.Observation;
+import static ucar.nc2.grid.GridTimeCoordinateSystem.Type.Observation;
 
 /**
  * Grib implementation of {@link GridTimeCoordinateSystem}

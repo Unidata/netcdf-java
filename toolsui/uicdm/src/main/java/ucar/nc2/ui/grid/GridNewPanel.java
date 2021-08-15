@@ -5,8 +5,8 @@
 
 package ucar.nc2.ui.grid;
 
-import ucar.nc2.grid2.GridDataset;
-import ucar.nc2.grid2.GridDatasetFactory;
+import ucar.nc2.grid.GridDataset;
+import ucar.nc2.grid.GridDatasetFactory;
 import ucar.nc2.ui.OpPanel;
 import ucar.nc2.ui.ToolsUI;
 import ucar.nc2.ui.gis.shapefile.ShapeFileBean;

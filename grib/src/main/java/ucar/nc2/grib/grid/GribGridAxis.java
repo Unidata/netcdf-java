@@ -23,10 +23,10 @@ import ucar.nc2.grib.coord.EnsCoordValue;
 import ucar.nc2.grib.coord.TimeCoordIntvValue;
 import ucar.nc2.grib.coord.VertCoordType;
 import ucar.nc2.grib.coord.VertCoordValue;
-import ucar.nc2.grid2.GridAxis;
-import ucar.nc2.grid2.GridAxisInterval;
-import ucar.nc2.grid2.GridAxisPoint;
-import ucar.nc2.grid2.GridAxisSpacing;
+import ucar.nc2.grid.GridAxis;
+import ucar.nc2.grid.GridAxisInterval;
+import ucar.nc2.grid.GridAxisPoint;
+import ucar.nc2.grid.GridAxisSpacing;
 import ucar.nc2.units.SimpleUnit;
 
 import javax.annotation.Nullable;

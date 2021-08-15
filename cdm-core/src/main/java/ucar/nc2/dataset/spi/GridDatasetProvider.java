@@ -1,7 +1,7 @@
 package ucar.nc2.dataset.spi;
 
 import ucar.nc2.dataset.DatasetUrl;
-import ucar.nc2.grid2.GridDataset;
+import ucar.nc2.grid.GridDataset;
 
 import java.io.IOException;
 

@@ -7,12 +7,12 @@ package ucar.nc2.ui.grid3;
 
 import ucar.array.InvalidRangeException;
 import ucar.nc2.calendar.CalendarDate;
-import ucar.nc2.grid2.Grid;
-import ucar.nc2.grid2.GridAxis;
-import ucar.nc2.grid2.GridAxisPoint;
-import ucar.nc2.grid2.GridDataset;
-import ucar.nc2.grid2.GridHorizCoordinateSystem;
-import ucar.nc2.grid2.GridTimeCoordinateSystem;
+import ucar.nc2.grid.Grid;
+import ucar.nc2.grid.GridAxis;
+import ucar.nc2.grid.GridAxisPoint;
+import ucar.nc2.grid.GridDataset;
+import ucar.nc2.grid.GridHorizCoordinateSystem;
+import ucar.nc2.grid.GridTimeCoordinateSystem;
 import ucar.nc2.ui.geoloc.NavigatedPanel;
 import ucar.nc2.ui.gis.MapBean;
 import ucar.nc2.ui.grid.ColorScale;
@@ -31,7 +31,6 @@ import ucar.ui.widget.SuperComboBox;
 import ucar.ui.widget.TextHistoryPane;
 import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.ProjectionRect;
-import ucar.unidata.geoloc.projection.Curvilinear;
 import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.util.prefs.PreferencesExt;
 
