@@ -43,42 +43,44 @@ import java.security.MessageDigest
 def createChecksumsTask = tasks.register('createChecksums') {
   group = 'publishing'
   description = 'Create .sha1, .sha256, and .md5 checksum files for the fatJars.'
-  String sourceDir = "${rootProject.getBuildDir()}/libs"
-  def files = fileTree(dir: "${sourceDir}", include: '**/*.jar')
-  def algorithms = ["MD5", "SHA-1", "SHA-256"]
-  algorithms.each {algorithm ->
-    MessageDigest md = MessageDigest.getInstance(algorithm)
-    files.each { File jarFile ->
-      InputStream is = null
-      DigestInputStream dis = null
-      byte[] buffer = new byte[2048]
-      try {
-        is = Files.newInputStream(Paths.get(jarFile.absolutePath))
-        dis = new DigestInputStream(is, md)
-        while (dis.read(buffer) != -1) {
-          // just need to read through the file
-        }
-        dis.close()
-        is.close()
-      } finally {
-        if (dis != null) {
+  doLast {
+    String sourceDir = "${rootProject.getBuildDir()}/libs"
+    def files = fileTree(dir: "${sourceDir}", include: '**/*.jar')
+    def algorithms = ["MD5", "SHA-1", "SHA-256"]
+      algorithms.each { algorithm ->
+      MessageDigest md = MessageDigest.getInstance(algorithm)
+      files.each { File jarFile ->
+        InputStream is = null
+        DigestInputStream dis = null
+        byte[] buffer = new byte[2048]
+        try {
+          is = Files.newInputStream(Paths.get(jarFile.absolutePath))
+          dis = new DigestInputStream(is, md)
+          while (dis.read(buffer) != -1) {
+            // just need to read through the file
+          }
           dis.close()
-        }
-        if (is != null) {
           is.close()
+        } finally {
+          if (dis != null) {
+            dis.close()
+          }
+          if (is != null) {
+            is.close()
+          }
         }
-      }
 
-      byte[] digest = md.digest()
-      StringBuilder sb = new StringBuilder()
-      for (int b=0; b < digest.length; b++) {
-        sb.append(Integer.toString((digest[b] & 0xff) + 0x100, 16).substring(1))
-      }
-      String checksum = sb.toString()
-      def ext = algorithm.toLowerCase().replace("-","")
-      String outputFilename = "${buildDir}/libs/${jarFile.getName()}.${ext}"
-      new File(outputFilename).withWriter { writer ->
-        writer.write checksum
+        byte[] digest = md.digest()
+        StringBuilder sb = new StringBuilder()
+        for (int b = 0; b < digest.length; b++) {
+          sb.append(Integer.toString((digest[b] & 0xff) + 0x100, 16).substring(1))
+        }
+        String checksum = sb.toString()
+        def ext = algorithm.toLowerCase().replace("-", "")
+        String outputFilename = "${buildDir}/libs/${jarFile.getName()}.${ext}"
+        new File(outputFilename).withWriter { writer ->
+          writer.write checksum
+        }
       }
     }
   }
