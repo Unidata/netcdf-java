@@ -31,7 +31,9 @@ configurations {
 }
 
 dependencies {
+  toolsUI enforcedPlatform(project(':netcdf-java-platform'))
   toolsUI project(':toolsui:uicdm')
+  toolsUI 'ch.qos.logback:logback-classic'
 }
 
 def fatJarTasks = []
