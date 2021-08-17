@@ -90,12 +90,13 @@ public class TestGribCollectionCoordinates {
     config.gribConfig.setExcludeZero(true); // no longer the default
 
     boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
+    String topLevelIndex = GribCdmIndex.getTopIndexFileFromConfig(config).getAbsolutePath();
+
     System.out.printf("changed = %s%n", changed);
 
     boolean ok = true;
 
-    try (NetcdfDataset ds =
-        NetcdfDatasets.openDataset(TestDir.cdmUnitTestDir + "gribCollections/namAlaska22/namAlaska22.ncx4")) {
+    try (NetcdfDataset ds = NetcdfDatasets.openDataset(topLevelIndex)) {
       for (Variable vds : ds.getVariables()) {
         String stdname = vds.findAttributeString("standard_name", "no");
         if (!stdname.equalsIgnoreCase("time"))
@@ -147,11 +148,10 @@ public class TestGribCollectionCoordinates {
 
     boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
     System.out.printf("changed = %s%n", changed);
-
+    String topLevelIndex = GribCdmIndex.getTopIndexFileFromConfig(config).getAbsolutePath();
     boolean ok = true;
 
-    try (NetcdfDataset ds =
-        NetcdfDatasets.openDataset(TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4")) {
+    try (NetcdfDataset ds = NetcdfDatasets.openDataset(topLevelIndex)) {
       for (Variable vds : ds.getVariables()) {
         String stdname = vds.findAttributeString("standard_name", "no");
         if (!stdname.equalsIgnoreCase("forecast_reference_time"))
