@@ -47,7 +47,7 @@ public class WmoCodeFlagTables {
 
   private static WmoCodeFlagTables instance;
 
-  public static WmoCodeFlagTables getInstance() {
+  public static synchronized WmoCodeFlagTables getInstance() {
     if (instance == null) {
       instance = new WmoCodeFlagTables();
       try {
