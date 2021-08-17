@@ -6,8 +6,6 @@
 package ucar.nc2.iosp.zarr;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.Group;
@@ -25,21 +23,91 @@ import java.util.*;
  */
 public class ZarrHeader {
 
-  private static final Logger logger = LoggerFactory.getLogger(ZarrHeader.class);
-
   private final RandomAccessDirectory rootRaf;
   private final Group.Builder rootGroup;
   private final String rootLocation;
-
-  private List<Attribute> attrs;
-
   private static ObjectMapper objectMapper = new ObjectMapper();
 
   public ZarrHeader(RandomAccessDirectory raf, Group.Builder rootGroup) {
     this.rootRaf = raf;
     this.rootGroup = rootGroup;
-    this.rootLocation = ZarrPathUtils.trimLocation(this.rootRaf.getLocation());
-    this.attrs = null;
+    this.rootLocation = ZarrUtils.trimLocation(this.rootRaf.getLocation());
+  }
+
+
+  /**
+   * class used to delay the creation of a variable until other files related to the variable have been read
+   * i.e. check for attrs and missing chunks before instantiating Variable
+   */
+  private class DelayedVarMaker {
+    private RandomAccessDirectoryItem var;
+    private ZArray zarray;
+    private Set<Integer> initializedChunks; // track any uninitialized chunks for var
+    private List<Attribute> attrs; // list of variable attributes
+    private long dataOffset; // byte position where data starts
+
+    void setAttrs(List<Attribute> attrs) {
+      this.attrs = attrs;
+    }
+
+    void setVar(RandomAccessDirectoryItem var) {
+      this.var = var;
+      this.attrs = null;
+      this.initializedChunks = new HashSet<>();
+      this.dataOffset = -1;
+      if (var != null) {
+        try {
+          // get RandomAccessFile for JSON parsing and read metadata
+          RandomAccessFile raf = var.getOrOpenRaf();
+          raf.seek(0); // reset in case file has previously been opened by another iosp
+          this.zarray = objectMapper.readValue(raf, ZArray.class);
+        } catch (IOException | ClassCastException ex) {
+          ZarrIosp.logger.error(new ZarrFormatException(ex.getMessage()).getMessage());
+          // skip var if metadata invalid
+          this.var = null;
+        }
+      }
+    }
+
+    // check if attribute file belongs to current variable
+    boolean myAttrs(RandomAccessDirectoryItem attrs) {
+      if (var == null || attrs == null) {
+        return false;
+      }
+      String attrPath = ZarrUtils.trimLocation(attrs.getLocation());
+      String varPath = ZarrUtils.trimLocation(var.getLocation());
+      // true if zarray and zattrs have same parent object
+      return ZarrUtils.getObjectNameFromPath(attrPath).equals(ZarrUtils.getObjectNameFromPath(varPath));
+    }
+
+    void processItem(RandomAccessDirectoryItem item) {
+      if (var == null) {
+        return;
+      }
+      // get index of chunks
+      int index = getChunkIndex(item, this.zarray);
+      if (index < 0) { // not data files, skip rest of var
+        ZarrIosp.logger.error(new ZarrFormatException().getMessage());
+        this.var = null; // skip rest of var is unrecognized files found
+      }
+      this.initializedChunks.add(index);
+      // if data offset is uninitialized, set here
+      if (this.dataOffset < 0) {
+        this.dataOffset = item.startIndex();
+      }
+    }
+
+    void makeVar() {
+      if (var == null) {
+        return; // do nothing if no variable is in progress
+      }
+      try {
+        makeVariable(var, dataOffset, zarray, initializedChunks, attrs);
+      } catch (ZarrFormatException ex) {
+        ZarrIosp.logger.error(ex.getMessage());
+      }
+      var = null; // reset var
+    }
   }
 
   /**
@@ -49,124 +117,106 @@ public class ZarrHeader {
    */
   public void read() throws IOException {
     List<RandomAccessDirectoryItem> items = this.rootRaf.getFilesInPath(this.rootLocation);
-    // because items are ordered alphabetically, it is safe to assume groups will be created before subgroups and vars
-    // However, we need to assure we make attrs before their groups and vars
-    // assumes no files will be read between .zarray and .zattrs
+    DelayedVarMaker delayedVarMaker = new DelayedVarMaker();
 
-    RandomAccessDirectoryItem var = null;
+    List<Attribute> grp_attrs = null;
+
     for (RandomAccessDirectoryItem item : items) {
-      String filepath = ZarrPathUtils.trimLocation(item.getLocation());
-      if (filepath.endsWith(ZarrKeys.ZATTRS)) {
-        try {
-          attrs = makeAttributes(item); // process .zattrs into attributes list
-        } catch (ZarrFormatException ex) {
-          logger.error(ex.getMessage());
-          attrs = null;
+      String filepath = ZarrUtils.trimLocation(item.getLocation());
+      if (filepath.endsWith(ZarrKeys.ZATTRS)) { // attributes
+        List<Attribute> attrs = makeAttributes(item);
+        // assign attrs to either variable or group
+        if (delayedVarMaker.myAttrs(item)) {
+          delayedVarMaker.setAttrs(attrs);
+        } else {
+          // if .zattrs file does not belong to current var, we are in a new object and need to finish variable build
+          delayedVarMaker.makeVar();
+          grp_attrs = attrs;
         }
+      } else if (filepath.endsWith(ZarrKeys.ZGROUP)) { // groups
+        // build any vars in progress
+        delayedVarMaker.makeVar();
+        makeGroup(item, grp_attrs); // .zattrs will always be processed before .zgroup, so we can make group immediately
+        grp_attrs = null; // reset
+      } else if (filepath.endsWith(ZarrKeys.ZARRAY)) { // variables
+        // build any vars in progress
+        delayedVarMaker.makeVar();
+        // set up variable to be created after processing the rest of the files in the folder
+        delayedVarMaker.setVar(item);
       } else {
-        if (var != null) { // make variable after we've checked if next file is .zattrs
-          try {
-            // data is assumed to start at first file after .zarray and optional .zattrs
-            makeVariable(var, item.startIndex());
-            var = null;
-          } catch (ZarrFormatException ex) {
-            logger.error(ex.getMessage());
-            attrs = null;
-            var = null;
-          }
-        }
-        if (filepath.endsWith(ZarrKeys.ZGROUP)) {
-          try {
-            makeGroup(item); // .zattrs will always be processed before .zgroup, so we make groups immediately
-          } catch (ZarrFormatException ex) {
-            logger.error(ex.getMessage());
-          }
-        } else if (filepath.endsWith(ZarrKeys.ZARRAY)) {
-          var = item; // .zarray appears before .zattrs, so we delay processing until next file is read
-        }
+        delayedVarMaker.processItem(item);
       }
     }
-    if (var != null) { // build any unbuilt var
-      try {
-        makeVariable(var, this.rootRaf.length());
-      } catch (ZarrFormatException ex) {
-        logger.error(ex.getMessage());
-      }
-    }
+    // finish making any vars in progress at end of file
+    delayedVarMaker.makeVar();
   }
 
-  private void makeGroup(RandomAccessDirectoryItem item) throws ZarrFormatException {
+  private void makeGroup(RandomAccessDirectoryItem item, List<Attribute> attrs) {
     // make new Group
     Group.Builder group = Group.builder();
-    String location = ZarrPathUtils.trimLocation(item.getLocation());
+    String location = ZarrUtils.trimLocation(item.getLocation());
     if (location.equals(this.rootLocation + '/' + ZarrKeys.ZGROUP)) {
       group = this.rootGroup;
     }
     // set Group name
-    group.setName(ZarrPathUtils.getObjectNameFromPath(location));
+    group.setName(ZarrUtils.getObjectNameFromPath(location));
 
     // add current attributes, if any exist
     if (attrs != null) {
       group.addAttributes(attrs);
-      attrs = null; // reset attrs
     }
 
     if (group != this.rootGroup) {
-      // set parent group or throws if non-existent
-      Group.Builder parentGroup = findGroup(location);
-      group.setParentGroup(parentGroup);
-      parentGroup.addGroup(group);
+      try {
+        // set parent group or throws if non-existent
+        Group.Builder parentGroup = findGroup(location);
+        group.setParentGroup(parentGroup);
+        parentGroup.addGroup(group);
+      } catch (ZarrFormatException ex) {
+        ZarrIosp.logger.error(ex.getMessage());
+      }
     }
   }
 
-  private void makeVariable(RandomAccessDirectoryItem item, long dataOffset) throws IOException, ZarrFormatException {
+  private void makeVariable(RandomAccessDirectoryItem item, long dataOffset, ZArray zarray,
+      Set<Integer> initializedChunks, List<Attribute> attrs) throws ZarrFormatException {
     // make new Variable
     Variable.Builder var = Variable.builder();
-    String location = ZarrPathUtils.trimLocation(item.getLocation());
+    String location = ZarrUtils.trimLocation(item.getLocation());
 
     // set var name
-    var.setName(ZarrPathUtils.getObjectNameFromPath(location));
-    // get RandomAccessFile for JSON parsing
-    RandomAccessFile raf = item.getOrOpenRaf();
-    raf.seek(0); // reset in case file has previously been opened by another iosp
+    var.setName(ZarrUtils.getObjectNameFromPath(location));
 
-    try {
-      ZArray zarray = objectMapper.readValue(raf, ZArray.class);
+    // set variable datatype
+    var.setDataType(zarray.getDataType());
 
-      // set variable datatype
-      var.setDataType(zarray.getDataType());
+    // create and set dimensions
+    int[] shape = zarray.getShape();
+    List<Dimension> dims = new ArrayList<>();
+    for (int d = 0; d < shape.length; d++) {
+      // TODO: revisit dimension props and names (especially for nczarr)
+      Dimension.Builder dim = Dimension.builder(String.format("dim%d", d), shape[d]);
+      dim.setIsVariableLength(false);
+      dim.setIsUnlimited(false);
+      dim.setIsShared(false);
+      dims.add(dim.build());
+    }
+    var.addDimensions(dims);
 
-      // create and set dimensions
-      int[] shape = zarray.getShape();
-      List<Dimension> dims = new ArrayList<>();
-      for (int d = 0; d < shape.length; d++) {
-        // TODO: revisit dimension props and names (especially for nczarr)
-        Dimension.Builder dim = Dimension.builder(String.format("dim%d", d), shape[d]);
-        dim.setIsVariableLength(false);
-        dim.setIsUnlimited(false);
-        dim.setIsShared(false);
-        dims.add(dim.build());
-      }
-      var.addDimensions(dims);
-
-      // check that dimensions and chunks match
-      int[] chunks = zarray.getChunks();
-      if (shape.length != chunks.length) {
-        throw new ZarrFormatException();
-      }
-
-      // create VInfo
-      VInfo vinfo = new VInfo(chunks, zarray.getFillValue(), zarray.getCompressor(), zarray.getByteOrder(),
-          zarray.getOrder(), zarray.getSeparator(), zarray.getFilters(), dataOffset);
-      var.setSPobject(vinfo);
-    } catch (IOException | ClassCastException ex) {
+    // check that dimensions and chunks match
+    int[] chunks = zarray.getChunks();
+    if (shape.length != chunks.length) {
       throw new ZarrFormatException();
     }
+
+    // create VInfo
+    VInfo vinfo = new VInfo(chunks, zarray.getFillValue(), zarray.getCompressor(), zarray.getByteOrder(),
+        zarray.getOrder(), zarray.getSeparator(), zarray.getFilters(), dataOffset, initializedChunks);
+    var.setSPobject(vinfo);
 
     // add current attributes, if any exist
     if (attrs != null) {
       var.addAttributes(attrs);
-      attrs = null; // reset attrs
     }
 
     // find variable's group or throw if non-existent
@@ -174,30 +224,63 @@ public class ZarrHeader {
     parentGroup.addVariable(var);
   }
 
-  private List<Attribute> makeAttributes(RandomAccessDirectoryItem item) throws IOException, ZarrFormatException {
+  private List<Attribute> makeAttributes(RandomAccessDirectoryItem item) {
     // get RandomAccessFile for JSON parsing
-    String location = ZarrPathUtils.trimLocation(item.getLocation());
-    RandomAccessFile raf = item.getOrOpenRaf();
+    try (RandomAccessFile raf = item.getOrOpenRaf()) {
+      // read attributes from file
+      raf.seek(0);
+      Map<String, Object> attrMap = objectMapper.readValue(raf, HashMap.class);
 
-    // read attributes from file
-    raf.seek(0);
-    Map<String, Object> attrMap = objectMapper.readValue(raf, HashMap.class);
+      // create Attribute objects
+      List<Attribute> attrs = new ArrayList<>();
+      attrMap.keySet().forEach(key -> {
+        Attribute.Builder attr = Attribute.builder(key);
+        Object val = attrMap.get(key);
+        if (val instanceof Collection<?>) {
+          attr.setValues(Arrays.asList(((Collection) val).toArray()), false);
+        } else if (val instanceof Number) {
+          attr.setNumericValue((Number) val, false);
+        } else {
+          attr.setStringValue((String) val);
+        }
+        attrs.add(attr.build());
+      });
+      return attrs;
+    } catch (IOException ioe) {
+      ZarrIosp.logger.error(new ZarrFormatException().getMessage());
+    }
+    return null;
+  }
 
-    // create Attribute objects
-    List<Attribute> attrs = new ArrayList<>();
-    attrMap.keySet().forEach(key -> {
-      Attribute.Builder attr = Attribute.builder(key);
-      Object val = attrMap.get(key);
-      if (val instanceof Collection<?>) {
-        attr.setValues(Arrays.asList(((Collection) val).toArray()), false);
-      } else if (val instanceof Number) {
-        attr.setNumericValue((Number) val, false);
-      } else {
-        attr.setStringValue((String) val);
-      }
-      attrs.add(attr.build());
-    });
-    return attrs;
+  /**
+   * Get chunk number from file name
+   */
+  private static int getChunkIndex(RandomAccessDirectoryItem item, ZArray zarray) {
+    String fileName = ZarrUtils.getDataFileName(item.getLocation());
+    // return -1 if filename can't be resolved
+    if (fileName.isEmpty()) {
+      return -1;
+    }
+
+    int nDims = zarray.getShape().length;
+    // verify is data file, else return -1
+    String pattern = String.format("([0-9]+%c){%d}[0-9]+", zarray.getSeparator().charAt(0), nDims - 1);
+    if (!fileName.matches(pattern)) {
+      return -1;
+    }
+
+    // split by dimension separator and convert to ints
+    String[] dims = fileName.split(String.format("\\%c", zarray.getSeparator().charAt(0)));
+    int[] subs = Arrays.stream(dims).mapToInt(dim -> Integer.parseInt(dim)).toArray();
+
+    // get number of chunks in each dimension
+    int[] nChunks = new int[nDims];
+    int[] shape = zarray.getShape();
+    int[] chunkSize = zarray.getChunks();
+    for (int i = 0; i < nDims; i++) {
+      nChunks[i] = (int) Math.ceil(shape[i] / chunkSize[i]);
+    }
+    return ZarrUtils.subscriptsToIndex(subs, nChunks);
   }
 
   /**
@@ -207,7 +290,7 @@ public class ZarrHeader {
    */
   private Group.Builder findGroup(String location) throws ZarrFormatException {
     // set Group parent
-    String groupName = ZarrPathUtils.getParentGroupNameFromPath(location, this.rootLocation);
+    String groupName = ZarrUtils.getParentGroupNameFromPath(location, this.rootLocation);
     return this.rootGroup.findGroupNested(groupName).orElseThrow(ZarrFormatException::new);
   }
 
@@ -223,9 +306,10 @@ public class ZarrHeader {
     private final String separator;
     private final List<ZarrFilter> filters;
     private final long offset;
+    private final Set<Integer> initializedChunks;
 
     VInfo(int[] chunks, Object fillValue, ZarrFilter compressor, ByteOrder byteOrder, ZArray.Order order,
-        String separator, List<ZarrFilter> filters, long offset) {
+        String separator, List<ZarrFilter> filters, long offset, Set<Integer> initializedChunks) {
       this.chunks = chunks;
       this.fillValue = fillValue;
       this.byteOrder = byteOrder;
@@ -234,6 +318,7 @@ public class ZarrHeader {
       this.separator = separator;
       this.filters = filters;
       this.offset = offset;
+      this.initializedChunks = initializedChunks;
     }
 
     public int[] getChunks() {
@@ -266,6 +351,10 @@ public class ZarrHeader {
 
     public long getOffset() {
       return this.offset;
+    }
+
+    public Set<Integer> getInitializedChunks() {
+      return this.initializedChunks;
     }
 
   }

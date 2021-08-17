@@ -155,7 +155,7 @@ public class TestZarrDataTypes {
     Variable var = ncfile.findVariable(BE_DOUBLE);
     assertThat(var.read("0,2").getDouble(0)).isEqualTo(2.0);
     var = ncfile.findVariable(BE_FLOAT);
-    assertThat(var.read("3,1").getFloat(0)).isEqualTo((float)16.0);
+    assertThat(var.read("3,1").getFloat(0)).isEqualTo((float) 16.0);
     var = ncfile.findVariable(BE_INT);
     assertThat(var.read("2,0").getInt(0)).isEqualTo(10);
     var = ncfile.findVariable(BE_LONG);
@@ -175,7 +175,7 @@ public class TestZarrDataTypes {
     Variable var = ncfile.findVariable(LE_DOUBLE);
     assertThat(var.read("0,2").getDouble(0)).isEqualTo(2.0);
     var = ncfile.findVariable(LE_FLOAT);
-    assertThat(var.read("3,1").getFloat(0)).isEqualTo((float)16.0);
+    assertThat(var.read("3,1").getFloat(0)).isEqualTo((float) 16.0);
     var = ncfile.findVariable(LE_INT);
     assertThat(var.read("2,0").getInt(0)).isEqualTo(10);
     var = ncfile.findVariable(LE_LONG);
@@ -195,9 +195,9 @@ public class TestZarrDataTypes {
     Variable var = ncfile.findVariable(BOOLEAN);
     assertThat(var.read("2,2").getBoolean(0)).isFalse();
     var = ncfile.findVariable(BYTE);
-    assertThat(var.read("0,7").getByte(0)).isEqualTo((byte)1);
+    assertThat(var.read("0,7").getByte(0)).isEqualTo((byte) 1);
     var = ncfile.findVariable(UBYTE);
-    assertThat(var.read("5,3").getByte(0)).isEqualTo((byte)10);
+    assertThat(var.read("5,3").getByte(0)).isEqualTo((byte) 10);
   }
 
   @Test

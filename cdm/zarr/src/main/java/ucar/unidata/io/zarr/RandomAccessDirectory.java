@@ -82,6 +82,7 @@ public class RandomAccessDirectory extends ucar.unidata.io.RandomAccessFile impl
 
   /**
    * Return the directory item containing the specified position
+   * 
    * @param pos
    * @return Directory item containing bytes at `pos`
    */

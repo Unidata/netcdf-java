@@ -1,6 +1,5 @@
 package ucar.nc2.iosp.zarr;
 
-import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 import ucar.ma2.Section;
 import ucar.nc2.Dimension;
@@ -13,68 +12,70 @@ import java.io.IOException;
 import java.nio.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
+/**
+ * A tiled layout for Zarr formats that accommodates uncompressing anf filtering data before returning
+ */
 public class ZarrLayoutBB implements LayoutBB {
 
   private LayoutBBTiled delegate;
 
   private RandomAccessFile raf;
   private ByteOrder byteOrder;
-  private final long varOffset;
-
-  // TODO filters and inflateBufferSize
-
+  private final long varOffset; // start of variable data in raf
   private final Section want;
 
   private int[] chunkSize; // number of elements per chunks
-  private int elemSize;
+  private int elemSize; // size of eelements in bytes
   private int nChunks[]; // number of chunks per dimension
   private int nBytes; // number of bytes per chunk
   private int totalNChunks; // total number of chunks
   private int totalChunkSize; // total number of elements per chunk
-  private boolean F_order = false;
+  private boolean F_order = false; // F order storage?
+  private Set<Integer> initializedChunks; // set of chunks that exist as files
 
-  // bytes representing compressing
+  // offset to start of data
   private static final int ZARR_COMPRESSOR_OFFSET = 16;
-  private int data_bytes_offset; // 0 or 16 depending on whether a compressor is found
+  private int data_bytes_offset;
 
-  public ZarrLayoutBB(Variable v2, Section wantSection, RandomAccessFile raf) throws InvalidRangeException {
+  public ZarrLayoutBB(Variable v2, Section wantSection, RandomAccessFile raf) {
+    // var data info
     this.raf = raf;
-
     ZarrHeader.VInfo vinfo = (ZarrHeader.VInfo) v2.getSPobject();
-
     this.byteOrder = vinfo.getByteOrder();
     this.varOffset = vinfo.getOffset();
     this.data_bytes_offset = vinfo.getCompressor() == null ? 0 : ZARR_COMPRESSOR_OFFSET;
 
-    // get chunk info
+    // fill in chunk info
     this.chunkSize = vinfo.getChunks();
     int ndims = this.chunkSize.length;
+    this.initializedChunks = vinfo.getInitializedChunks();
+    this.nChunks = new int[ndims];
+    this.totalNChunks = 1;
+    this.totalChunkSize = 1;
+    for (int i = 0; i < ndims; i++) {
+      Dimension dim = v2.getDimension(i);
+      // round up nchunks if not evenly divisible by chunk size
+      this.nChunks[i] = (int) Math.ceil(dim.getLength() / this.chunkSize[i]);
+      this.totalNChunks *= nChunks[i];
+      this.totalChunkSize *= chunkSize[i];
+    }
 
-    // transpose Section and chunk if F order
+    // transpose wantsSection and chunk shape if F order
     if (vinfo.getOrder() == ZArray.Order.F) {
       this.F_order = true;
       List<Range> ranges = wantSection.getRanges();
       List<Range> transpose = new ArrayList<>();
       int[] temp = new int[ndims];
       for (int i = 0; i < ndims; i++) {
-        transpose.add(ranges.get(ndims-i-1));
-        temp[i] = this.chunkSize[ndims-i-1];
+        transpose.add(ranges.get(ndims - i - 1));
+        temp[i] = this.chunkSize[ndims - i - 1];
       }
       this.want = new Section(transpose);
       this.chunkSize = temp;
     } else {
       this.want = wantSection;
-    }
-
-    this.nChunks = new int[ndims];
-    this.totalNChunks = 1;
-    this.totalChunkSize = 1;
-    for (int i = 0; i < ndims; i++) {
-      Dimension dim = v2.getDimension(i);
-      this.nChunks[i] = (int) Math.ceil(dim.getLength() / this.chunkSize[i]);
-      this.totalNChunks *= nChunks[i];
-      this.totalChunkSize *= chunkSize[i];
     }
 
     this.elemSize = v2.getDataType().getSize();
@@ -107,7 +108,7 @@ public class ZarrLayoutBB implements LayoutBB {
 
   private class DataChunkIterator implements LayoutBBTiled.DataChunkIterator {
 
-    private int[] currChunk; // current chunk in array coords
+    private int[] currChunk; // current chunk in subscript coords
     private int chunkNum; // current chunk as flat index
 
     DataChunkIterator() {
@@ -120,40 +121,20 @@ public class ZarrLayoutBB implements LayoutBB {
     }
 
     public LayoutBBTiled.DataChunk next() {
-      // TODO: handle uninitialized chunks
       DataChunk chunk = new ZarrLayoutBB.DataChunk(this.currChunk, this.chunkNum);
       incrementChunk();
       return chunk;
     }
 
     private void incrementChunk() {
-      //this.chunkNum++;
-      int i;
-      if (F_order) {
-        i = 0;
-        while (this.currChunk[i] + 1 >= nChunks[i] && i < this.currChunk.length-1) {
-          this.currChunk[i] = 0;
-          i++;
-        }
-      } else {
-        i = this.currChunk.length - 1;
-        while (this.currChunk[i] + 1 >= nChunks[i] && i > 0) {
-          this.currChunk[i] = 0;
-          i--;
-        }
+      // increment index from inner dimension outward
+      int i = this.currChunk.length - 1;
+      while (this.currChunk[i] + 1 >= nChunks[i] && i > 0) {
+        this.currChunk[i] = 0;
+        i--;
       }
       this.currChunk[i]++;
-      this.chunkNum = indicesToChunkNum();
-    }
-
-    private int indicesToChunkNum() {
-      int num = 0;
-      int sz = 1;
-      for (int i = chunkSize.length-1; i >= 0; i--) {
-        num += sz * this.currChunk[i];
-        sz *= nChunks[i];
-      }
-      return num;
+      this.chunkNum = ZarrUtils.subscriptsToIndex(this.currChunk, nChunks);
     }
   }
 
@@ -161,13 +142,16 @@ public class ZarrLayoutBB implements LayoutBB {
 
     private int[] offset; // start indices of chunk in elements
     private long rafOffset; // start position of chunk in bytes
+    private int chunkNum;
 
     DataChunk(int[] index, int chunkNum) {
       this.offset = new int[index.length];
       this.rafOffset = varOffset + (chunkNum * (nBytes + data_bytes_offset)) + data_bytes_offset;
       for (int i = 0; i < index.length; i++) {
-        this.offset[i] = index[i] * chunkSize[i];
+        int j = F_order ? index.length - i - 1 : i;
+        this.offset[i] = index[j] * chunkSize[i];
       }
+      this.chunkNum = chunkNum;
     }
 
     public int[] getOffset() {
@@ -175,23 +159,22 @@ public class ZarrLayoutBB implements LayoutBB {
     }
 
     public ByteBuffer getByteBuffer() throws IOException {
-      try {
-        // read the data
-        byte[] data = new byte[nBytes];
+      // read the data
+      byte[] data;
+      // if chunk does not exist as file, return empty buffer
+      if (!initializedChunks.contains(chunkNum)) {
+        data = new byte[0];
+      } else {
+        data = new byte[nBytes];
         raf.seek(this.rafOffset);
         raf.readFully(data);
 
         // TODO: apply filters in reverse order
-
-        ByteBuffer result = ByteBuffer.wrap(data);
-        result.order(byteOrder);
-        return result;
-      } catch (OutOfMemoryError e) {
-        Error oom = new OutOfMemoryError("Ran out of memory trying to read zarr filtered chunk. Either increase the "
-            + "JVM's heap size (use the -Xmx switch) or reduce the size of the dataset's chunks.");
-        oom.initCause(e); // OutOfMemoryError lacks a constructor with a cause parameter.
-        throw oom;
       }
+
+      ByteBuffer result = ByteBuffer.wrap(data);
+      result.order(byteOrder);
+      return result;
     }
   }
 

@@ -306,6 +306,9 @@ public class IospHelper {
       while (layout.hasNext()) {
         LayoutBB.Chunk chunk = layout.next();
         ByteBuffer bb = chunk.getByteBuffer();
+        if (!bb.hasRemaining()) {
+          continue;
+        }
         bb.position(chunk.getSrcElem());
         int pos = (int) chunk.getDestElem();
         for (int i = 0; i < chunk.getNelems(); i++)
@@ -314,11 +317,9 @@ public class IospHelper {
       // return (dataType == DataType.CHAR) ? convertByteToChar(pa) : pa;
       if (dataType == DataType.CHAR) {
         return convertByteToChar(pa);
-      }
-      else if (dataType == DataType.BOOLEAN) {
+      } else if (dataType == DataType.BOOLEAN) {
         return convertByteToBoolean(pa);
-      }
-      else
+      } else
         return pa;
 
     } else if (dataType.getPrimitiveClassType() == short.class) {
@@ -326,6 +327,9 @@ public class IospHelper {
       while (layout.hasNext()) {
         LayoutBB.Chunk chunk = layout.next();
         ShortBuffer buff = chunk.getShortBuffer();
+        if (!buff.hasRemaining()) {
+          continue;
+        }
         buff.position(chunk.getSrcElem());
         int pos = (int) chunk.getDestElem();
         for (int i = 0; i < chunk.getNelems(); i++)
@@ -338,6 +342,9 @@ public class IospHelper {
       while (layout.hasNext()) {
         LayoutBB.Chunk chunk = layout.next();
         IntBuffer buff = chunk.getIntBuffer();
+        if (!buff.hasRemaining()) {
+          continue;
+        }
         buff.position(chunk.getSrcElem());
         int pos = (int) chunk.getDestElem();
         for (int i = 0; i < chunk.getNelems(); i++)
@@ -350,6 +357,9 @@ public class IospHelper {
       while (layout.hasNext()) {
         LayoutBB.Chunk chunk = layout.next();
         FloatBuffer buff = chunk.getFloatBuffer();
+        if (!buff.hasRemaining()) {
+          continue;
+        }
         buff.position(chunk.getSrcElem());
         int pos = (int) chunk.getDestElem();
         for (int i = 0; i < chunk.getNelems(); i++)
@@ -362,6 +372,9 @@ public class IospHelper {
       while (layout.hasNext()) {
         LayoutBB.Chunk chunk = layout.next();
         DoubleBuffer buff = chunk.getDoubleBuffer();
+        if (!buff.hasRemaining()) {
+          continue;
+        }
         buff.position(chunk.getSrcElem());
         int pos = (int) chunk.getDestElem();
         for (int i = 0; i < chunk.getNelems(); i++)
@@ -374,6 +387,9 @@ public class IospHelper {
       while (layout.hasNext()) {
         LayoutBB.Chunk chunk = layout.next();
         LongBuffer buff = chunk.getLongBuffer();
+        if (!buff.hasRemaining()) {
+          continue;
+        }
         buff.position(chunk.getSrcElem());
         int pos = (int) chunk.getDestElem();
         for (int i = 0; i < chunk.getNelems(); i++)
@@ -387,6 +403,9 @@ public class IospHelper {
       while (layout.hasNext()) {
         LayoutBB.Chunk chunk = layout.next();
         ByteBuffer bb = chunk.getByteBuffer();
+        if (!bb.hasRemaining()) {
+          continue;
+        }
         bb.position(chunk.getSrcElem() * recsize);
         int pos = (int) chunk.getDestElem() * recsize;
         for (int i = 0; i < chunk.getNelems() * recsize; i++)
@@ -399,12 +418,15 @@ public class IospHelper {
       while (layout.hasNext()) {
         LayoutBB.Chunk chunk = layout.next();
         ByteBuffer bb = chunk.getByteBuffer();
+        if (!bb.hasRemaining()) {
+          continue;
+        }
         bb.position(chunk.getSrcElem() * recsize);
         int pos = (int) chunk.getDestElem();
         for (int i = 0; i < chunk.getNelems(); i++) {
           char[] ch = new char[dataType.getSize()];
-          for ( int j = 0; j < ch.length; j++) {
-            ch[j] = (char)bb.get();
+          for (int j = 0; j < ch.length; j++) {
+            ch[j] = (char) bb.get();
           }
           pa[pos++] = new String(ch);
         }

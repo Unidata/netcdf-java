@@ -181,7 +181,7 @@ public class ZArray {
         fill = fillValueNode.longValue();
       } else if (fillValueNode.isFloat()) {
         fill = fillValueNode.floatValue();
-      }  else if (fillValueNode.isNumber()){
+      } else if (fillValueNode.isNumber()) {
         fill = fillValueNode.asDouble();
       } else {
         fill = fillValueNode.asText("");
