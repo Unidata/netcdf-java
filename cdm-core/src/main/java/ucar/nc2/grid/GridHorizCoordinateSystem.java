@@ -387,6 +387,8 @@ public class GridHorizCoordinateSystem {
   private final Projection projection;
 
   public GridHorizCoordinateSystem(GridAxisPoint xaxis, GridAxisPoint yaxis, @Nullable Projection projection) {
+    Preconditions.checkNotNull(xaxis);
+    Preconditions.checkNotNull(yaxis);
     this.xaxis = xaxis;
     this.yaxis = yaxis;
     // TODO set the LatLon seam?

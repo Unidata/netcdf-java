@@ -123,6 +123,9 @@ public class TestGridCompareCoverage {
         }
         System.out.printf("  Grid: %s%n", grid.getName());
         boolean ok = true;
+        if (grid.getName().equals("PB")) {
+          System.out.printf("HEY");
+        }
 
         CoverageCoordSys oldGcs = oldGrid.getCoordSys();
         CoverageCoordAxis oldRuntime = oldGcs.getAxis(AxisType.RunTime);

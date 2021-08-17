@@ -7,6 +7,7 @@ package ucar.nc2.internal.grid;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.Dimensions;
 import ucar.nc2.constants.AxisType;
@@ -15,6 +16,8 @@ import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dataset.CoordinateTransform;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.grid.GridAxisPoint;
+import ucar.nc2.grid.GridAxisSpacing;
 import ucar.nc2.units.SimpleUnit;
 import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.projection.Curvilinear;
@@ -143,33 +146,26 @@ public class DatasetClassifier {
       lataxis = cs.findAxis(AxisType.Lat);
       lonaxis = cs.findAxis(AxisType.Lon);
 
-      standardGeoXY = xaxis != null && xaxis.getRank() == 1 && yaxis != null && yaxis.getRank() == 1
-          && cs.getProjection() != null && 2 == Dimensions.makeDomain(ImmutableList.of(xaxis, yaxis), true).size();
+      standardGeoXY = cs.isGeoXY() && xaxis.getRank() == 1 && yaxis.getRank() == 1
+          && 2 == Dimensions.makeDomain(ImmutableList.of(xaxis, yaxis), true).size();
 
-      standardLatLon = lataxis != null && lataxis.getRank() == 1 && lonaxis != null && lonaxis.getRank() == 1
+      standardLatLon = cs.isLatLon() && lataxis.getRank() == 1 && lonaxis.getRank() == 1
           && 2 == Dimensions.makeDomain(ImmutableList.of(lataxis, lonaxis), true).size();
 
-      curvilinear = lataxis != null && lataxis.getRank() == 2 && lonaxis != null && lonaxis.getRank() == 2
+      curvilinear = cs.isLatLon() && lataxis.getRank() == 2 && lonaxis != null && lonaxis.getRank() == 2
           && 2 == Dimensions.makeDomain(ImmutableList.of(lataxis, lonaxis), true).size();
 
       curvilinearWith1D = curvilinear && xaxis != null && xaxis.getRank() == 1 && yaxis != null && yaxis.getRank() == 1;
 
-      if (curvilinearWith1D) {
-        indAxes.add(xaxis);
-        indAxes.add(yaxis);
-        depAxes.add(lonaxis);
-        depAxes.add(lataxis);
-        this.orgProj = new Curvilinear();
-
-      } else if (curvilinear) {
-        depAxes.add(lonaxis);
-        depAxes.add(lataxis);
-        this.orgProj = new Curvilinear();
-
-      } else if (standardGeoXY) {
+      if (standardGeoXY) {
         indAxes.add(xaxis);
         indAxes.add(yaxis);
         this.orgProj = cs.getProjection();
+
+        if (curvilinearWith1D) {
+          depAxes.add(lonaxis);
+          depAxes.add(lataxis);
+        }
 
         Projection p = cs.getProjection();
         if (!(p instanceof RotatedPole)) {
@@ -180,6 +176,17 @@ public class DatasetClassifier {
             infolog.format(" %s: Y axis units are not convertible to km%n", cs.getName());
           }
         }
+      } else if (curvilinearWith1D) {
+        indAxes.add(xaxis);
+        indAxes.add(yaxis);
+        depAxes.add(lonaxis);
+        depAxes.add(lataxis);
+        this.orgProj = new Curvilinear();
+
+      } else if (curvilinear) {
+        depAxes.add(lonaxis);
+        depAxes.add(lataxis);
+        this.orgProj = new Curvilinear();
 
       } else if (standardLatLon) {
         indAxes.add(lonaxis);
@@ -303,7 +310,7 @@ public class DatasetClassifier {
       if (is2Dtime) {
         result = FeatureType.FMRC; // LOOK this would allow 2d horiz
 
-      } else if (curvilinearWith1D) {
+      } else if (!standardGeoXY && curvilinearWith1D) {
         Set<Dimension> xyDomain = Dimensions.makeDomain(Lists.newArrayList(xaxis, yaxis), true);
         if (timeAxis != null && Dimensions.isSubset(Dimensions.makeDimensionsAll(timeAxis), xyDomain)) {
           result = FeatureType.SWATH; // LOOK prob not exactly right
@@ -311,7 +318,7 @@ public class DatasetClassifier {
           result = FeatureType.CURVILINEAR;
         }
 
-      } else if (curvilinear) {
+      } else if (!standardGeoXY && curvilinear) {
         Set<Dimension> xyDomain = Dimensions.makeDomain(Lists.newArrayList(lonaxis, lataxis), true);
         if (timeAxis != null && Dimensions.isSubset(Dimensions.makeDimensionsAll(timeAxis), xyDomain)) {
           result = FeatureType.SWATH; // LOOK prob not exactly right

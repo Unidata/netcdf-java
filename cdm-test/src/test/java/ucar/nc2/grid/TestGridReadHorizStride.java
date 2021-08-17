@@ -28,7 +28,6 @@ import static com.google.common.truth.Truth.assertThat;
 
 /** Test {@link GridHorizCoordinateSystem} reading with horizontal strides */
 @Category(NeedsCdmUnitTest.class)
-// @Ignore("Grid data reading not ready yet")
 public class TestGridReadHorizStride {
 
   @Test

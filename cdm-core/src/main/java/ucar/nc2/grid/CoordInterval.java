@@ -5,16 +5,16 @@
 package ucar.nc2.grid;
 
 import com.google.auto.value.AutoValue;
-import com.google.common.base.Splitter;
 import com.google.common.math.DoubleMath;
+import com.google.re2j.Matcher;
+import com.google.re2j.Pattern;
 import ucar.unidata.util.Format;
 
 import javax.annotation.Nullable;
-import java.util.List;
 
 /**
  * A Coordinate represented by an interval [start, end)
- * LOOK double vs int ??
+ * LOOK start < end ?
  */
 @AutoValue
 public abstract class CoordInterval {
@@ -48,19 +48,45 @@ public abstract class CoordInterval {
     return Format.d(start(), ndecimals) + "-" + Format.d(end(), ndecimals);
   }
 
-  /** The inverse of toString(), or null if cant parse */
+  private static final String decimal = "[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+)";
+  private static final String patternS = String.format("^(%s)[\\\\-](%s)$", decimal, decimal);
+  private static final Pattern pattern = Pattern.compile(patternS);
+
+  /**
+   * The inverse of toString(), or null if cant parse.
+   * startValue + "-" + endValue
+   */
   @Nullable
   public static CoordInterval parse(String source) {
-    List<String> ss = Splitter.on('-').omitEmptyStrings().trimResults().splitToList(source);
-    if (ss.size() != 2) {
+    if (source == null) {
+      return null;
+    }
+    source = source.trim();
+    Matcher m = pattern.matcher(source);
+    if (!m.matches()) {
+      return null;
+    }
+    show(m);
+    if (m.groupCount() < 5) {
       return null;
     }
     try {
-      double start = Double.parseDouble(ss.get(0));
-      double end = Double.parseDouble(ss.get(1));
+      double start = Double.parseDouble(m.group(1));
+      double end = Double.parseDouble(m.group(4));
       return CoordInterval.create(start, end);
     } catch (Exception e) {
       return null;
+    }
+  }
+
+  private static final boolean show = false;
+
+  private static void show(Matcher m) {
+    if (!show)
+      return;
+    System.out.printf("matches = %d%n", m.groupCount());
+    for (int i = 0; i < m.groupCount(); i++) {
+      System.out.printf(" %d == %s%n", i, m.group(i));
     }
   }
 }

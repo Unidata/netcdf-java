@@ -59,7 +59,7 @@ public abstract class Array<T> implements Iterable<T> {
 
   /** Get the shape: length of array in each dimension. */
   public int[] getShape() {
-    return indexFn.getShape();
+    return indexFn.getShape(); // use Ints.asList()
   }
 
   /** Get the section: list of Ranges, one for each dimension. */

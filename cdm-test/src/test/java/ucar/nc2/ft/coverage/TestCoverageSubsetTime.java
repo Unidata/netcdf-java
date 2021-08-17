@@ -354,7 +354,7 @@ public class TestCoverageSubsetTime {
     }
   }
 
-  static void testGeoArray(GeoReferencedArray geo, CalendarDate runtime, CalendarDate time, Double offsetVal) {
+  public static void testGeoArray(GeoReferencedArray geo, CalendarDate runtime, CalendarDate time, Double offsetVal) {
     CoverageCoordSys geoCs = geo.getCoordSysForData();
 
     CoverageCoordAxis runtimeAxis = geoCs.getAxis(AxisType.RunTime);

@@ -22,7 +22,7 @@ import static com.google.common.truth.Truth.assertThat;
 @Ignore("Malformed File")
 public class TestExtractCoordinateValuesMalformed {
 
-  // fdrom cdmUnitTest/conventions/cf/jonathan/fixed.fw0.0Sv.nc
+  // from cdmUnitTest/conventions/cf/jonathan/fixed.fw0.0Sv.nc
   @Test
   public void testContinguousAscending() {
     int n = values.length;

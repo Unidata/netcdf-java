@@ -5,11 +5,11 @@
 
 package ucar.nc2.grid;
 
-import com.google.common.collect.Streams;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.ft2.coverage.Coverage;
@@ -82,7 +82,6 @@ public class TestGridCompareCS {
     System.out.printf("compareGrid %s%n", filename);
     compareWithDt(filename);
     compareWithCoverage(filename);
-    compareWithGrid1(filename);
   }
 
   public static boolean compareWithDt(String filename) throws Exception {
@@ -120,8 +119,21 @@ public class TestGridCompareCS {
             oldAxis = oldGcs.getCoordinateAxes().stream().filter(a -> a.getShortName().equals(newAxis.getName()))
                 .findFirst().orElse(null);
           }
+          if (oldAxis == null) {
+            System.out.printf(" ***missing Axis %s %s in old grid%n", newAxis.getName(), newAxis.getAxisType());
+            if (newGcs.getFeatureType() == FeatureType.CURVILINEAR) { // ok for CURVILINEAR
+              continue;
+            }
+          }
           assertWithMessage(String.format("    GridAxis: %s %s%n", newAxis.getName(), newAxis.getAxisType()))
               .that(oldAxis).isNotNull();
+          if (newAxis.getNominalSize() != oldAxis.getSize()) {
+            System.out.printf(" *** Axis %s %s size differs%n", newAxis.getName(), newAxis.getAxisType());
+            if (newGcs.getFeatureType() == FeatureType.CURVILINEAR) { // ok for CURVILINEAR
+              continue;
+            }
+            System.out.printf("HEY");
+          }
           assertThat(newAxis.getNominalSize()).isEqualTo(oldAxis.getSize());
           int[] oldShape = oldAxis.getShape();
           if (oldShape.length > 0) {
@@ -174,54 +186,18 @@ public class TestGridCompareCS {
               .that(oldAxis).isNotNull();
           int[] oldShape = oldAxis.getShape();
           if (oldShape.length > 0) {
+            if (newAxis.getNominalSize() != oldShape[oldShape.length - 1]) {
+              System.out.printf(" *** Axis %s %s size differs %d !=%d%n", newAxis.getName(), newAxis.getAxisType(),
+                  newAxis.getNominalSize(), oldShape[oldShape.length - 1]);
+              if (newGcs.getFeatureType() == FeatureType.CURVILINEAR) { // ok for CURVILINEAR
+                continue;
+              }
+              System.out.printf("HEY");
+            }
             assertThat(newAxis.getNominalSize()).isEqualTo(oldShape[oldShape.length - 1]);
           } else {
             assertThat(newAxis.getNominalSize()).isEqualTo(oldAxis.getNcoords());
           }
-        }
-      }
-    }
-    return true;
-  }
-
-  public static boolean compareWithGrid1(String filename) throws Exception {
-    System.out.printf("%n");
-    Formatter errlog = new Formatter();
-    try (GridDataset newDataset = GridDatasetFactory.openGridDataset(filename, errlog);
-        GridDataset oldDataset = GridDatasetFactory.openGridDataset(filename, errlog)) {
-      if (newDataset == null) {
-        System.out.printf("Cant open as ucar.nc2.grid2.GridDataset: %s%n", errlog);
-        return false;
-      }
-      if (oldDataset == null) {
-        System.out.printf("Cant open as GridDataset: %s%n", errlog);
-        return false;
-      }
-      System.out.printf("compareGridCoordinateSystems: %s%n", newDataset.getLocation());
-
-      for (Grid grid : newDataset.getGrids()) {
-        Grid oldGrid = oldDataset.findGrid(grid.getName()).orElse(null);
-        if (oldGrid == null) {
-          System.out.printf("*** Grid %s not in GridDataset%n", grid.getName());
-          continue;
-        }
-        System.out.printf("  Grid/Grid: %s%n", grid.getName());
-
-        GridCoordinateSystem oldGcs = oldGrid.getCoordinateSystem();
-        GridCoordinateSystem newGcs = grid.getCoordinateSystem();
-        GridTimeCoordinateSystem newTcs = grid.getTimeCoordinateSystem();
-
-        for (GridAxis<?> newAxis : newGcs.getGridAxes()) {
-          GridAxis<?> oldAxis = Streams.stream(oldGcs.getGridAxes())
-              .filter(a -> a.getAxisType().equals(newAxis.getAxisType())).findFirst().orElse(null);
-          if (oldAxis == null) {
-            oldAxis = Streams.stream(oldGcs.getGridAxes()).filter(a -> a.getName().equals(newAxis.getName()))
-                .findFirst().orElse(null);
-          }
-          assertWithMessage(String.format("    GridAxis: %s %s%n", newAxis.getName(), newAxis.getAxisType()))
-              .that((Object) oldAxis).isNotNull();
-          int oldSize = oldAxis.getNominalSize();
-          assertThat(newAxis.getNominalSize()).isEqualTo(oldSize);
         }
       }
     }
