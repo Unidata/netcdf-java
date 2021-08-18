@@ -31,8 +31,8 @@ public class GridHorizCurvilinear extends GridHorizCoordinateSystem {
     Preconditions.checkNotNull(yaxis);
     Preconditions.checkNotNull(latdata);
     Preconditions.checkNotNull(londata);
+    Preconditions.checkArgument(java.util.Arrays.equals(londata.getShape(), latdata.getShape()));
     Preconditions.checkArgument(latdata.getRank() == 2);
-    Preconditions.checkArgument(londata.getRank() == 2);
 
     return new GridHorizCurvilinear(xaxis, yaxis, new Curvilinear(), latdata, londata);
   }

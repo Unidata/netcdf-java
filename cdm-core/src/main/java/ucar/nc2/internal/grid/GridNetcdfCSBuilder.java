@@ -6,12 +6,14 @@ package ucar.nc2.internal.grid;
 
 import com.google.common.base.Preconditions;
 import ucar.array.Array;
+import ucar.nc2.Dimension;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.grid.GridAxis;
 import ucar.nc2.grid.GridAxisPoint;
+import ucar.nc2.grid.GridAxisSpacing;
 import ucar.nc2.grid.GridCoordinateSystem;
 import ucar.nc2.grid.GridHorizCoordinateSystem;
 import ucar.nc2.grid.GridHorizCurvilinear;
@@ -47,14 +49,6 @@ public class GridNetcdfCSBuilder {
     builder.setFeatureType(classifier.getFeatureType());
     builder.setProjection(classifier.getProjection());
 
-    if (classifier.getFeatureType() == FeatureType.CURVILINEAR) {
-      Preconditions.checkNotNull(classifier.lataxis);
-      Preconditions.checkNotNull(classifier.lonaxis);
-      ucar.array.Array<?> latdata = classifier.lataxis.readArray();
-      ucar.array.Array<?> londata = classifier.lonaxis.readArray();
-      builder.setCurvilinearData(latdata, londata);
-    }
-
     ArrayList<GridAxis<?>> axesb = new ArrayList<>();
     for (CoordinateAxis axis : classifier.getAxesUsed()) {
       GridAxis<?> gaxis = gridAxes.get(axis.getFullName());
@@ -65,6 +59,28 @@ public class GridNetcdfCSBuilder {
       }
     }
     builder.setAxes(axesb);
+
+    if (classifier.getFeatureType() == FeatureType.CURVILINEAR) {
+      Preconditions.checkNotNull(classifier.lataxis);
+      Preconditions.checkNotNull(classifier.lonaxis);
+      ucar.array.Array<?> latdata = classifier.lataxis.readArray();
+      ucar.array.Array<?> londata = classifier.lonaxis.readArray();
+      builder.setCurvilinearData(latdata, londata);
+
+      // create fake 1d axes if needed
+      if (classifier.xaxis == null) {
+        Dimension xdim = classifier.lataxis.getDimension(1);
+        builder.addAxis(GridAxisPoint.builder().setAxisType(AxisType.GeoX).setName(xdim.getShortName()).setUnits("")
+            .setDescription("fake 1d xaxis for curvilinear grid").setRegular(xdim.getLength(), 0.0, 1.0)
+            .setSpacing(GridAxisSpacing.regularPoint).build());
+      }
+      if (classifier.yaxis == null) {
+        Dimension ydim = classifier.lataxis.getDimension(0);
+        builder.addAxis(GridAxisPoint.builder().setAxisType(AxisType.GeoY).setName(ydim.getShortName()).setUnits("")
+            .setDescription("fake 1d yaxis for curvilinear grid").setRegular(ydim.getLength(), 0.0, 1.0)
+            .setSpacing(GridAxisSpacing.regularPoint).build());
+      }
+    }
 
     try {
       return Optional.of(builder.build());
@@ -127,8 +143,9 @@ public class GridNetcdfCSBuilder {
     Preconditions.checkNotNull(projection);
 
     axes.sort(new Grids.AxisComparator());
-    GridHorizCoordinateSystem horizCsys = makeHorizCS(findCoordAxisByType(AxisType.GeoX, AxisType.Lon),
-        findCoordAxisByType(AxisType.GeoY, AxisType.Lat), this.projection, this.latdata, this.londata);
+    GridAxis<?> xaxis = findCoordAxisByType(AxisType.GeoX, AxisType.Lon);
+    GridAxis<?> yaxis = findCoordAxisByType(AxisType.GeoY, AxisType.Lat);
+    GridHorizCoordinateSystem horizCsys = makeHorizCS(xaxis, yaxis, this.projection, this.latdata, this.londata);
     GridTimeCS tcs = makeTimeCS();
 
     return new GridCoordinateSystem(this.axes, tcs, horizCsys);
@@ -161,15 +178,15 @@ public class GridNetcdfCSBuilder {
 
   private GridHorizCoordinateSystem makeHorizCS(GridAxis<?> xaxis, GridAxis<?> yaxis, @Nullable Projection projection,
       Array<Number> latdata, Array<Number> londata) {
-    Preconditions.checkArgument(xaxis instanceof GridAxisPoint);
-    Preconditions.checkArgument(yaxis instanceof GridAxisPoint);
 
     // LOOK heres now to find horizStaggerType in WRF NMM
-    String horizStaggerType = xaxis.attributes().findAttributeString(_Coordinate.Stagger, null);
+    // String horizStaggerType = xaxis.attributes().findAttributeString(_Coordinate.Stagger, null);
 
     if (projection instanceof Curvilinear) {
       return GridHorizCurvilinear.create((GridAxisPoint) xaxis, (GridAxisPoint) yaxis, latdata, londata);
     } else {
+      Preconditions.checkArgument(xaxis instanceof GridAxisPoint);
+      Preconditions.checkArgument(yaxis instanceof GridAxisPoint);
       return new GridHorizCoordinateSystem((GridAxisPoint) xaxis, (GridAxisPoint) yaxis, projection);
     }
   }

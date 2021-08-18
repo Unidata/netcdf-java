@@ -365,4 +365,94 @@ public class TestDatasetClassifier {
     }
   }
 
+  @Test
+  @Category(NeedsCdmUnitTest.class)
+  public void testBothXYandLatLon() throws IOException {
+    String filename = TestDir.cdmUnitTestDir + "ft/coverage/testCFwriter.nc";
+    String gridName = "Temperature";
+    System.out.printf("file %s coverage %s%n", filename, gridName);
+
+    try (NetcdfDataset ds = NetcdfDatasets.openDataset(filename)) {
+      Formatter errlog = new Formatter();
+      Optional<GridNetcdfDataset> grido = GridNetcdfDataset.create(ds, errlog);
+      assertThat(grido.isPresent()).isTrue();
+      GridNetcdfDataset gridDataset = grido.get();
+      if (!Iterables.isEmpty(gridDataset.getGrids())) {
+        DatasetClassifier dclassifier = new DatasetClassifier(ds, errlog);
+        DatasetClassifier.CoordSysClassifier classifier =
+            dclassifier.getCoordinateSystemsUsed().stream().findFirst().orElse(null);
+        assertThat(classifier).isNotNull();
+        assertThat(classifier.getFeatureType()).isEqualTo(FeatureType.GRID);
+      }
+    }
+  }
+
+  @Test
+  @Category(NeedsCdmUnitTest.class)
+  public void testCurvilinear1D() throws IOException {
+    String filename = TestDir.cdmUnitTestDir + "ft/coverage/Run_20091025_0000.nc";
+    String gridName = "temp";
+    System.out.printf("file %s coverage %s%n", filename, gridName);
+
+    try (NetcdfDataset ds = NetcdfDatasets.openDataset(filename)) {
+      Formatter errlog = new Formatter();
+      Optional<GridNetcdfDataset> grido = GridNetcdfDataset.create(ds, errlog);
+      assertThat(grido.isPresent()).isTrue();
+      GridNetcdfDataset gridDataset = grido.get();
+      if (!Iterables.isEmpty(gridDataset.getGrids())) {
+        DatasetClassifier dclassifier = new DatasetClassifier(ds, errlog);
+        DatasetClassifier.CoordSysClassifier classifier =
+            dclassifier.getCoordinateSystemsUsed().stream().findFirst().orElse(null);
+        assertThat(classifier).isNotNull();
+        assertThat(classifier.getFeatureType()).isEqualTo(FeatureType.CURVILINEAR);
+      }
+    }
+  }
+
+  @Test
+  @Category(NeedsCdmUnitTest.class)
+  public void testCurvilinear() throws IOException {
+    String filename = TestDir.cdmUnitTestDir + "conventions/cf/mississippi.nc";
+    String gridName = "temp";
+    System.out.printf("file %s coverage %s%n", filename, gridName);
+
+    try (NetcdfDataset ds = NetcdfDatasets.openDataset(filename)) {
+      Formatter errlog = new Formatter();
+      Optional<GridNetcdfDataset> grido = GridNetcdfDataset.create(ds, errlog);
+      assertThat(grido.isPresent()).isTrue();
+      GridNetcdfDataset gridDataset = grido.get();
+      if (!Iterables.isEmpty(gridDataset.getGrids())) {
+        DatasetClassifier dclassifier = new DatasetClassifier(ds, errlog);
+        DatasetClassifier.CoordSysClassifier classifier =
+            dclassifier.getCoordinateSystemsUsed().stream().findFirst().orElse(null);
+        assertThat(classifier).isNotNull();
+        assertThat(classifier.getFeatureType()).isEqualTo(FeatureType.CURVILINEAR);
+      }
+    }
+  }
+
+  @Test
+  @Category(NeedsCdmUnitTest.class)
+  public void testCurvilinear2() throws IOException {
+    String filename = TestDir.cdmUnitTestDir + "conventions/cf/signell/signell_bathy_fixed.nc";
+    String gridName = "h";
+    System.out.printf("file %s coverage %s%n", filename, gridName);
+
+    try (NetcdfDataset ds = NetcdfDatasets.openDataset(filename)) {
+      Formatter errlog = new Formatter();
+      Optional<GridNetcdfDataset> grido = GridNetcdfDataset.create(ds, errlog);
+      assertThat(grido.isPresent()).isTrue();
+      GridNetcdfDataset gridDataset = grido.get();
+      if (!Iterables.isEmpty(gridDataset.getGrids())) {
+        DatasetClassifier dclassifier = new DatasetClassifier(ds, errlog);
+        DatasetClassifier.CoordSysClassifier classifier =
+            dclassifier.getCoordinateSystemsUsed().stream().findFirst().orElse(null);
+        assertThat(classifier).isNotNull();
+        assertThat(classifier.getFeatureType()).isEqualTo(FeatureType.CURVILINEAR);
+      }
+    }
+  }
+
+
+
 }

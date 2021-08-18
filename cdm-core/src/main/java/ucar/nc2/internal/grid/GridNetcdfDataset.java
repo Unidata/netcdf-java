@@ -97,6 +97,7 @@ public class GridNetcdfDataset implements GridDataset {
     }
 
     // Convert coordsys
+    Set<String> alreadyDone = new HashSet<>();
     Map<String, TrackGridCS> trackCsConverted = new HashMap<>();
     for (DatasetClassifier.CoordSysClassifier csc : classifier.getCoordinateSystemsUsed()) {
       if (csc.getName().startsWith("Best/")) {
@@ -112,6 +113,9 @@ public class GridNetcdfDataset implements GridDataset {
       // Assign coordsys to grids
       for (Variable v : ncd.getVariables()) {
         if (v.getFullName().startsWith("Best/")) { // TODO remove Best from grib generation code
+          continue;
+        }
+        if (alreadyDone.contains(v.getFullName())) {
           continue;
         }
         VariableEnhanced ve = (VariableEnhanced) v;
@@ -131,6 +135,7 @@ public class GridNetcdfDataset implements GridDataset {
           if (gcs != null && gcs.getFeatureType() == featureType && Dimensions.isCoordinateSystemFor(domain, v)) {
             Grid grid = new GridVariable(gcs, (VariableDS) ve);
             gridsets.put(gcs, grid);
+            alreadyDone.add(v.getFullName());
             break;
           }
         }
@@ -174,10 +179,6 @@ public class GridNetcdfDataset implements GridDataset {
     this.coordsys = ImmutableList.copyOf(coordsys);
     this.gridAxes = ImmutableList.copyOf(gridAxes);
     this.grids = ImmutableList.copyOf(grids);
-  }
-
-  public FeatureType getCoverageType() {
-    return featureType;
   }
 
   @Override

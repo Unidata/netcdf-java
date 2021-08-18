@@ -20,7 +20,6 @@ public class TestFeatureDatasetFactoryManager {
 
   /** Tests a non-CF compliant trajectory file */
   @Test
-  @Ignore("fixed in following PR")
   public void testSimpleTrajectory() throws IOException {
     Path location_path =
         Paths.get(TestDir.cdmLocalTestDataDir, "trajectory", "aircraft", "uw_kingair-2005-01-19-113957.nc");

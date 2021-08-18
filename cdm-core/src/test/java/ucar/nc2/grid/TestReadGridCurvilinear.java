@@ -99,6 +99,23 @@ public class TestReadGridCurvilinear {
         "reftime time lataxis lonaxis", "2009-11-23T00:00Z", null, new int[] {1, 1, 1684, 1200});
   }
 
+  @Test
+  @Category(NeedsCdmUnitTest.class)
+  @Ignore("GRIB curvilinear not ready")
+  public void testCurvilinearGrib() throws IOException {
+    String filename = TestDir.cdmUnitTestDir + "ft/fmrc/rtofs/ofs.20091122/ofs_atl.t00z.F024.grb.grib2";
+    String gridName = "3-D_Temperature_depth_below_sea";
+    System.out.printf("file %s coverage %s%n", filename, gridName);
+
+    Formatter errlog = new Formatter();
+    try (GridDataset gds = GridDatasetFactory.openGridDataset(filename, errlog)) {
+      assertThat(gds).isNotNull();
+      Grid grid = gds.findGrid(gridName).orElseThrow();
+      GridCoordinateSystem csys = grid.getCoordinateSystem();
+      assertThat(csys.getFeatureType()).isEqualTo(FeatureType.CURVILINEAR);
+    }
+  }
+
   private void readGrid(String filename, String gridName, List<Integer> nominalShape, String gcsName, String wantDateS,
       Double wantVert, int[] matShape) throws IOException, InvalidRangeException {
 

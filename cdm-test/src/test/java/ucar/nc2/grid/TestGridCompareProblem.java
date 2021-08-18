@@ -45,15 +45,15 @@ public class TestGridCompareProblem {
     new TestGridCompareCoverage(filename).compareWithCoverage(true);
   }
 
-  // @Test
+  @Test
   public void testCurvilinear() throws Exception {
     String filename = TestDir.cdmUnitTestDir + "ft/grid/stag/bora_feb-coord.ncml";
     new TestGridCompareCoverage(filename).compareWithCoverage(true);
   }
 
-  // @Test
+  @Test
   public void testCurvilinear2() throws Exception {
-    String filename = TestDir.cdmUnitTestDir + "cf/bora_test_agg.ncml";
+    String filename = TestDir.cdmUnitTestDir + "conventions/cf/bora_test_agg.ncml";
     new TestGridCompareCoverage(filename).compareWithCoverage(true);
   }
 
