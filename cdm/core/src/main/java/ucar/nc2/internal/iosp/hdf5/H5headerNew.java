@@ -93,6 +93,9 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
   private static boolean warnings = true, debugReference, debugRegionReference, debugCreationOrder, debugStructure;
   private static boolean debugDimensionScales;
 
+  // NULL string value, following netCDF-C, set to NIL
+  private static final String NULL_STRING_VALUE = "NIL";
+
   public static void setWarnings(boolean warn) {
     warnings = warn;
   }
@@ -2135,6 +2138,9 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
    */
   String readHeapString(long heapIdAddress) throws IOException {
     HeapIdentifier heapId = h5objects.readHeapIdentifier(heapIdAddress);
+    if (heapId.isEmpty()) {
+      return NULL_STRING_VALUE;
+    }
     GlobalHeap.HeapObject ho = heapId.getHeapObject();
     if (ho == null)
       throw new IllegalStateException("Cant find Heap Object,heapId=" + heapId);
@@ -2154,6 +2160,9 @@ public class H5headerNew implements H5headerIF, HdfHeaderIF {
    */
   String readHeapString(ByteBuffer bb, int pos) throws IOException {
     HeapIdentifier heapId = h5objects.readHeapIdentifier(bb, pos);
+    if (heapId.isEmpty()) {
+      return NULL_STRING_VALUE;
+    }
     GlobalHeap.HeapObject ho = heapId.getHeapObject();
     if (ho == null)
       throw new IllegalStateException("Cant find Heap Object,heapId=" + heapId);
