@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -90,6 +90,9 @@ public class H5header implements HdfHeaderIF {
   private static boolean debugContinueMessage, debugTracker, debugSoftLink, debugHardLink, debugSymbolTable;
   private static boolean warnings = true, debugReference, debugRegionReference, debugCreationOrder, debugStructure;
   private static boolean debugDimensionScales;
+
+  // NULL string value, following netCDF-C, set to NIL
+  private static final String NULL_STRING_VALUE = "NIL";
 
   public static void setWarnings(boolean warn) {
     warnings = warn;
@@ -2098,6 +2101,9 @@ public class H5header implements HdfHeaderIF {
    */
   String readHeapString(long heapIdAddress) throws IOException {
     HeapIdentifier heapId = h5objects.readHeapIdentifier(heapIdAddress);
+    if (heapId.isEmpty()) {
+      return NULL_STRING_VALUE;
+    }
     GlobalHeap.HeapObject ho = heapId.getHeapObject();
     if (ho == null)
       throw new IllegalStateException("Cant find Heap Object,heapId=" + heapId);
@@ -2117,6 +2123,9 @@ public class H5header implements HdfHeaderIF {
    */
   String readHeapString(ByteBuffer bb, int pos) throws IOException {
     HeapIdentifier heapId = h5objects.readHeapIdentifier(bb, pos);
+    if (heapId.isEmpty()) {
+      return NULL_STRING_VALUE;
+    }
     GlobalHeap.HeapObject ho = heapId.getHeapObject();
     if (ho == null)
       throw new IllegalStateException("Cant find Heap Object,heapId=" + heapId);
