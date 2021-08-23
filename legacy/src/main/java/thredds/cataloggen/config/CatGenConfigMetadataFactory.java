@@ -64,6 +64,7 @@ public class CatGenConfigMetadataFactory implements MetadataConverterIF {
     Document doc;
     try {
       SAXBuilder builder = new SAXBuilder(true);
+      builder.setExpandEntities(false);
       doc = builder.build(urlString);
     } catch (JDOMException e) {
       log.error("CatGenConfigMetadataFactory parsing error= \n" + e.getMessage());

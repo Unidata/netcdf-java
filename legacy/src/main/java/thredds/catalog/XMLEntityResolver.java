@@ -410,6 +410,7 @@ public class XMLEntityResolver implements org.xml.sax.EntityResolver {
           XMLEntityResolver.getExternalSchemas());
     }
     saxBuilder.setEntityResolver(this);
+    saxBuilder.setExpandEntities(false);
   }
 
   public SAXBuilder getSAXBuilder() {

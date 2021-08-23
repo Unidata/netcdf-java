@@ -66,6 +66,7 @@ public class runtimeloadingTutorial {
     // Example 3: extract JDOM element from a larger XML document:
     Document doc;
     SAXBuilder saxBuilder = new SAXBuilder();
+    saxBuilder.setExpandEntities(false);
     try {
       doc = saxBuilder.build(yourFileNameAsString);
     } catch (JDOMException | IOException e) {

@@ -118,6 +118,7 @@ public class CdmrFeatureDataset {
     org.jdom2.Document doc;
     try (InputStream in = CdmRemote.sendQuery(null, endpoint, "req=capabilities")) {
       SAXBuilder builder = new SAXBuilder();
+      builder.setExpandEntities(false);
       doc = builder.build(in); // LOOK closes in when done ??
 
     } catch (Throwable t) {

@@ -42,6 +42,7 @@ public class RuntimeConfigParser {
 
     Document doc;
     SAXBuilder saxBuilder = new SAXBuilder();
+    saxBuilder.setExpandEntities(false);
     try {
       doc = saxBuilder.build(is);
     } catch (JDOMException e) {

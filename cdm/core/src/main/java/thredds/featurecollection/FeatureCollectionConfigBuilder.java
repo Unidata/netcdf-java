@@ -61,6 +61,7 @@ public class FeatureCollectionConfigBuilder {
   // input is xml file with just the <featureCollection>
   public FeatureCollectionConfig readConfigFromFile(String filename) throws IOException {
     SAXBuilder builder = new SAXBuilder();
+    builder.setExpandEntities(false);
     try {
       org.jdom2.Document doc = builder.build(filename);
       return readConfig(doc.getRootElement());
@@ -91,6 +92,7 @@ public class FeatureCollectionConfigBuilder {
     org.jdom2.Document doc;
     try {
       SAXBuilder builder = new SAXBuilder();
+      builder.setExpandEntities(false);
       doc = builder.build(cat);
     } catch (Exception e) {
       e.printStackTrace();
