@@ -10,8 +10,9 @@ import java.nio.file.Paths;
 public class ZarrUtils {
   /**
    * Converts subscripted chunk number to a flat index
+   * 
    * @param subs - chunk index in each dimension
-   * @param nChunks  number of chunks per dimension
+   * @param nChunks number of chunks per dimension
    * @return chunk number as a flat index
    */
   public static int subscriptsToIndex(int[] subs, int[] nChunks) {
@@ -27,6 +28,7 @@ public class ZarrUtils {
   /**
    * Get name of an file within a Zarr object, i.e. name of file
    * e.g. 0.0.0 or, in the case of a nested store, 0/0/0
+   * 
    * @param filePath
    * @return data path relative to Zarr object
    */

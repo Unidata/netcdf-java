@@ -306,6 +306,7 @@ public class IospHelper {
       while (layout.hasNext()) {
         LayoutBB.Chunk chunk = layout.next();
         ByteBuffer bb = chunk.getByteBuffer();
+        // if chunk is empty, use fill value
         if (!bb.hasRemaining()) {
           continue;
         }
@@ -327,6 +328,7 @@ public class IospHelper {
       while (layout.hasNext()) {
         LayoutBB.Chunk chunk = layout.next();
         ShortBuffer buff = chunk.getShortBuffer();
+        // if chunk is empty, use fill value
         if (!buff.hasRemaining()) {
           continue;
         }
@@ -342,6 +344,7 @@ public class IospHelper {
       while (layout.hasNext()) {
         LayoutBB.Chunk chunk = layout.next();
         IntBuffer buff = chunk.getIntBuffer();
+        // if chunk is empty, use fill value
         if (!buff.hasRemaining()) {
           continue;
         }
@@ -357,6 +360,7 @@ public class IospHelper {
       while (layout.hasNext()) {
         LayoutBB.Chunk chunk = layout.next();
         FloatBuffer buff = chunk.getFloatBuffer();
+        // if chunk is empty, use fill value
         if (!buff.hasRemaining()) {
           continue;
         }
@@ -372,6 +376,7 @@ public class IospHelper {
       while (layout.hasNext()) {
         LayoutBB.Chunk chunk = layout.next();
         DoubleBuffer buff = chunk.getDoubleBuffer();
+        // if chunk is empty, use fill value
         if (!buff.hasRemaining()) {
           continue;
         }
@@ -387,6 +392,7 @@ public class IospHelper {
       while (layout.hasNext()) {
         LayoutBB.Chunk chunk = layout.next();
         LongBuffer buff = chunk.getLongBuffer();
+        // if chunk is empty, use fill value
         if (!buff.hasRemaining()) {
           continue;
         }
@@ -403,6 +409,7 @@ public class IospHelper {
       while (layout.hasNext()) {
         LayoutBB.Chunk chunk = layout.next();
         ByteBuffer bb = chunk.getByteBuffer();
+        // if chunk is empty, use fill value
         if (!bb.hasRemaining()) {
           continue;
         }
@@ -418,6 +425,7 @@ public class IospHelper {
       while (layout.hasNext()) {
         LayoutBB.Chunk chunk = layout.next();
         ByteBuffer bb = chunk.getByteBuffer();
+        // if chunk is empty, use fill value
         if (!bb.hasRemaining()) {
           continue;
         }
@@ -804,7 +812,6 @@ public class IospHelper {
   }
 
   // convert byte array to char array
-
   public static char[] convertByteToChar(byte[] byteArray) {
     int size = byteArray.length;
     char[] cbuff = new char[size];
@@ -814,7 +821,6 @@ public class IospHelper {
   }
 
   // convert char array to byte array
-
   public static byte[] convertCharToByte(char[] from) {
     byte[] to = null;
     if (from != null) {
@@ -826,6 +832,7 @@ public class IospHelper {
     return to;
   }
 
+  // convert byte array to boolean array
   public static boolean[] convertByteToBoolean(byte[] from) {
     boolean[] to = null;
     if (from != null) {

@@ -202,7 +202,6 @@ public class TestZarrIosp {
     }
   }
 
-  // TODO: test values
   private void _testUninitialized(String location) throws IOException, InvalidRangeException {
     NetcdfFile ncfile = NetcdfFiles.open(location);
 
