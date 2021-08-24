@@ -38,6 +38,7 @@ public class RuntimeConfigParser {
   public static void read(InputStream is, Formatter errlog) throws IOException {
     Document doc;
     SAXBuilder saxBuilder = new SAXBuilder();
+    saxBuilder.setExpandEntities(false);
     try {
       doc = saxBuilder.build(is);
     } catch (JDOMException e) {
