@@ -68,6 +68,7 @@ public class DqcFactory {
   public DqcFactory(boolean validate) {
     XMLEntityResolver jaxp = new XMLEntityResolver(validate);
     builder = jaxp.getSAXBuilder();
+    builder.setExpandEntities(false);
     warnMessages = jaxp.getWarningMessages();
     errMessages = jaxp.getErrorMessages();
     fatalMessages = jaxp.getFatalMessages();

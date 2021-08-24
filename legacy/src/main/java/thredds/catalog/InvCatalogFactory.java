@@ -122,6 +122,7 @@ public class InvCatalogFactory {
 
     XMLEntityResolver xml = new XMLEntityResolver(validate);
     saxBuilder = xml.getSAXBuilder();
+    saxBuilder.setExpandEntities(false);
     warnMessages = xml.getWarningMessages();
     errMessages = xml.getErrorMessages();
     fatalMessages = xml.getFatalMessages();
@@ -351,6 +352,7 @@ public class InvCatalogFactory {
   public InvCatalogImpl readXML(StringReader catAsStringReader, URI baseUri) {
     XMLEntityResolver resolver = new XMLEntityResolver(false);
     SAXBuilder builder = resolver.getSAXBuilder();
+    builder.setExpandEntities(false);
 
     Document inDoc;
     try {

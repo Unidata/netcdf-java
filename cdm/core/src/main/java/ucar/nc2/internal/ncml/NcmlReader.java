@@ -191,6 +191,7 @@ public class NcmlReader {
     org.jdom2.Document doc;
     try {
       SAXBuilder builder = new SAXBuilder();
+      builder.setExpandEntities(false);
       if (debugURL) {
         System.out.println(" NetcdfDataset URL = <" + ncmlLocation + ">");
       }
@@ -244,6 +245,7 @@ public class NcmlReader {
       org.jdom2.Document doc;
       try {
         SAXBuilder builder = new SAXBuilder();
+        builder.setExpandEntities(false);
         if (debugURL) {
           System.out.println(" NetcdfDataset URL = <" + ncmlResourceLocation + ">");
         }
@@ -309,6 +311,7 @@ public class NcmlReader {
     org.jdom2.Document doc;
     try {
       SAXBuilder builder = new SAXBuilder();
+      builder.setExpandEntities(false);
       doc = builder.build(r);
     } catch (JDOMException e) {
       throw new IOException(e.getMessage());
@@ -360,6 +363,7 @@ public class NcmlReader {
     org.jdom2.Document doc;
     try {
       SAXBuilder builder = new SAXBuilder();
+      builder.setExpandEntities(false);
       if (debugURL) {
         System.out.println(" NetcdfDataset URL = <" + url + ">");
       }

@@ -235,6 +235,7 @@ public class FeatureDatasetCapabilitiesWriter {
 
   public Document readCapabilitiesDocument(InputStream in) throws JDOMException, IOException {
     SAXBuilder builder = new SAXBuilder();
+    builder.setExpandEntities(false);
     return builder.build(in);
   }
 
