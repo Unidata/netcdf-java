@@ -152,6 +152,7 @@ There are several ways pass the Runtime Configuration XML to the CDM library. Fr
   // Example 3: extract JDOM element from a larger XML document:
   Document doc;
   SAXBuilder saxBuilder = new SAXBuilder();
+  saxBuilder.setExpandEntities(false);
   try {
     doc = saxBuilder.build(filename);
   } catch (JDOMException e) {

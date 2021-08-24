@@ -45,6 +45,7 @@ public class NcmlCollectionReader {
     org.jdom2.Document doc;
     try {
       SAXBuilder builder = new SAXBuilder();
+      builder.setExpandEntities(false);
       if (debugURL)
         System.out.println(" NetcdfDataset NcML String = <" + ncmlString + ">");
       doc = builder.build(new StringReader(ncmlString));
@@ -69,6 +70,7 @@ public class NcmlCollectionReader {
     org.jdom2.Document doc;
     try {
       SAXBuilder builder = new SAXBuilder();
+      builder.setExpandEntities(false);
       if (debugURL)
         System.out.println(" NetcdfDataset NcML String = <" + ncmlString + ">");
       doc = builder.build(new StringReader(ncmlString));
@@ -98,6 +100,7 @@ public class NcmlCollectionReader {
     org.jdom2.Document doc;
     try {
       SAXBuilder builder = new SAXBuilder();
+      builder.setExpandEntities(false);
       if (debugURL)
         System.out.println(" NetcdfDataset URL = <" + url + ">");
       doc = builder.build(url);
