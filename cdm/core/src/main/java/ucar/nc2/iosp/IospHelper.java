@@ -720,7 +720,7 @@ public class IospHelper {
     if (dataType.getPrimitiveClassType() == byte.class || (dataType == DataType.CHAR) || dataType == DataType.BOOLEAN) {
       byte[] pa = new byte[size];
       byte val;
-      if (dataType == DataType.CHAR) {
+      if (fillValue instanceof String) {
         byte[] bytes = ((String) fillValue).getBytes();
         val = bytes.length > 0 ? ((String) fillValue).getBytes()[0] : 0;
       } else {
