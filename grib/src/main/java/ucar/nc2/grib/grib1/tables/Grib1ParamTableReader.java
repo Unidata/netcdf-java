@@ -482,6 +482,7 @@ public class Grib1ParamTableReader {
   private Map<Integer, Grib1Parameter> readParameterTableXml(XmlTableParser parser) throws IOException {
     try (InputStream is = GribResourceReader.getInputStream(path)) {
       SAXBuilder builder = new SAXBuilder();
+      builder.setExpandEntities(false);
       org.jdom2.Document doc = builder.build(is);
       Element root = doc.getRootElement();
       return parser.parseXml(root); // all at once - thread safe

@@ -224,6 +224,7 @@ public class NcepTables extends Grib1Customizer {
     String path = "resources/grib1/ncep/ncepTableA.xml";
     try (InputStream is = GribResourceReader.getInputStream(path)) {
       SAXBuilder builder = new SAXBuilder();
+      builder.setExpandEntities(false);
       org.jdom2.Document doc = builder.build(is);
       Element root = doc.getRootElement();
 

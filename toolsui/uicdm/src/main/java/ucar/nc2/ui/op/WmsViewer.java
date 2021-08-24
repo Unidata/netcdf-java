@@ -190,6 +190,7 @@ public class WmsViewer extends JPanel {
       info.format("GetCapabilities:%n%n");
 
       SAXBuilder builder = new SAXBuilder();
+      builder.setExpandEntities(false);
       Document tdoc = builder.build(response.body());
       Element root = tdoc.getRootElement();
       parseGetCapabilities(root);
