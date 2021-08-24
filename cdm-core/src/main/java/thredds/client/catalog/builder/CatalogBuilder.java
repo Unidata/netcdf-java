@@ -284,6 +284,7 @@ public class CatalogBuilder {
   private void readXML(String location) {
     try {
       SAXBuilder saxBuilder = new SAXBuilder();
+      saxBuilder.setExpandEntities(false);
       Document jdomDoc = saxBuilder.build(location);
       readCatalog(jdomDoc.getRootElement());
     } catch (Exception e) {
@@ -299,6 +300,7 @@ public class CatalogBuilder {
   private void readXML(URI uri) {
     try {
       SAXBuilder saxBuilder = new SAXBuilder();
+      saxBuilder.setExpandEntities(false);
       Document jdomDoc = saxBuilder.build(uri.toURL());
       readCatalog(jdomDoc.getRootElement());
     } catch (Exception e) {
@@ -315,6 +317,7 @@ public class CatalogBuilder {
     try {
       StringReader in = new StringReader(catalogAsString);
       SAXBuilder saxBuilder = new SAXBuilder(); // LOOK non-validating
+      saxBuilder.setExpandEntities(false);
       Document jdomDoc = saxBuilder.build(in);
       readCatalog(jdomDoc.getRootElement());
     } catch (Exception e) {
@@ -330,6 +333,7 @@ public class CatalogBuilder {
   private void readXML(InputStream stream) {
     try {
       SAXBuilder saxBuilder = new SAXBuilder();
+      saxBuilder.setExpandEntities(false);
       Document jdomDoc = saxBuilder.build(stream);
       readCatalog(jdomDoc.getRootElement());
     } catch (Exception e) {
@@ -1023,6 +1027,7 @@ public class CatalogBuilder {
 
   private Element readMetadataFromUrl(java.net.URI uri) throws java.io.IOException {
     SAXBuilder saxBuilder = new SAXBuilder();
+    saxBuilder.setExpandEntities(false);
     Document doc;
     try {
       doc = saxBuilder.build(uri.toURL());

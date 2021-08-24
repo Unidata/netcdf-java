@@ -75,6 +75,7 @@ public class FnmocTables extends Grib1Customizer {
   private Map<Integer, String> readGenProcess(String path) {
     try (InputStream is = GribResourceReader.getInputStream(path)) {
       SAXBuilder builder = new SAXBuilder();
+      builder.setExpandEntities(false);
       org.jdom2.Document doc = builder.build(is);
       Element root = doc.getRootElement();
 
@@ -131,6 +132,7 @@ public class FnmocTables extends Grib1Customizer {
   private HashMap<Integer, VertCoordType> readFnmocTable3(String path) {
     try (InputStream is = GribResourceReader.getInputStream(path)) {
       SAXBuilder builder = new SAXBuilder();
+      builder.setExpandEntities(false);
       org.jdom2.Document doc = builder.build(is);
       Element root = doc.getRootElement();
 
