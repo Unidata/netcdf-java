@@ -19,4 +19,7 @@ public class ZarrFormatException extends Exception {
     super(String.format(customExceptionMessageFormat, invalidField, value));
   }
 
+  public ZarrFormatException(String msg) {
+    super(msg);
+  }
 }

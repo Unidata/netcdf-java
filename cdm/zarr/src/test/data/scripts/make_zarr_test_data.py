@@ -14,6 +14,14 @@ root_grp = zarr.group(store, overwrite=True)
 # In[ ]:
 
 
+# make array without group and uninitialized data, set fill_vaue
+a = zarr.create(shape=(20, 20), chunks=(10, 10), dtype='f4', fill_value=999.0, store=store, overwrite=True)
+a[:] = 0
+
+
+# In[ ]:
+
+
 # make group with '/' separator and 'F' order
 attrs_grp = root_grp.create_group('group_with_attrs', overwrite=True)
 
@@ -29,7 +37,7 @@ attrs_grp.attrs['group_attr'] = 'foo'
 
 
 # add array to group with 'F' order
-a = attrs_grp.create_dataset('F_order_array', shape=(20, 20), chunks=(4, 5), dtype='i4', order='F', overwrite=True, compressor=None)
+a = attrs_grp.create_dataset('F_order_array', shape=(20, 20), chunks=(4, 5), dtype='i4', order='F', overwrite=True)
 
 
 # In[ ]:
@@ -53,32 +61,6 @@ a.attrs['baz'] = [1, 2, 3, 4]
 # In[ ]:
 
 
-# create uninitialized array
-a = attrs_grp.create_dataset('uninitialized', shape=(20, 20), chunks=(10, 10), dtype='f4', fill_value=999.0, overwrite=True, compressor=None)
-
-
-# In[ ]:
-
-
-# create partially initialized arrays
-a = attrs_grp.create_dataset('partial_fill1', shape=(20, 20), chunks=(10, 10), dtype='f4', fill_value=999.0, overwrite=True, compressor=None)
-a[0:10,0:10]=0
-a = attrs_grp.create_dataset('partial_fill2', shape=(20, 20), chunks=(10, 10), dtype='f4', fill_value=999.0, overwrite=True, compressor=None)
-a[15:20,10:20]=0
-
-
-# In[ ]:
-
-
-# create nested arrays
-# dimension_separator keyword does not work for now, data is manually edited
-a = attrs_grp.create_dataset('nested', shape=(20, 20), chunks=(10, 10), dtype='i2', overwrite=True, compressor=None) #, dimension_separator='/')
-a[:]=0
-
-
-# In[ ]:
-
-
 # make group for multidimensonal data
 dims_grp = root_grp.create_group('group_with_dims', overwrite=True)
 
@@ -87,7 +69,7 @@ dims_grp = root_grp.create_group('group_with_dims', overwrite=True)
 
 
 # add 1D array
-a1 = dims_grp.create_dataset('var1D', shape=(20,), chunks=(5,), dtype='i4', overwrite=True, compressor=None)
+a1 = dims_grp.create_dataset('var1D', shape=(20,), chunks=(4,), dtype='i4', overwrite=True, compressor=None)
 data = np.arange(20)
 a1[:] = data
 
@@ -96,7 +78,7 @@ a1[:] = data
 
 
 # add 2D array
-a2 = dims_grp.create_dataset('var2D', shape=(20,20), chunks=(5,5), dtype='i4', overwrite=True, compressor=None)
+a2 = dims_grp.create_dataset('var2D', shape=(20,20), chunks=(4,4), dtype='i4', overwrite=True, compressor=None)
 a2[:] = np.tile(data, (20,1))
 
 
@@ -104,7 +86,7 @@ a2[:] = np.tile(data, (20,1))
 
 
 # add 3D array
-a3 = dims_grp.create_dataset('var3D', shape=(20,20,20), chunks=(5,5,5), dtype='i4', overwrite=True, compressor=None)
+a3 = dims_grp.create_dataset('var3D', shape=(20,20,20), chunks=(4,4,4), dtype='i4', overwrite=True, compressor=None)
 a3[:] = np.tile(data, (20,20,1))
 
 
@@ -112,13 +94,12 @@ a3[:] = np.tile(data, (20,20,1))
 
 
 # add 4D array
-a4 = dims_grp.create_dataset('var4D', shape=(20,20,20,20), chunks=(5,5,5,5), dtype='i4', overwrite=True, compressor=None)
+a4 = dims_grp.create_dataset('var4D', shape=(20,20,20,20), chunks=(4,4,4,4), dtype='i4', overwrite=True, compressor=None)
 a4[:] = np.tile(data, (20,20,20,1))
 
 
 # In[ ]:
 
 
-## uncomment for zip store
-# store.close()
+store.close()
 

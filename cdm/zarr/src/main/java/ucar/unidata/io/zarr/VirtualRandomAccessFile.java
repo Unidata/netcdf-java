@@ -42,11 +42,7 @@ public class VirtualRandomAccessFile implements RandomAccessDirectoryItem {
   }
 
   public long length() {
-    try {
-      return this.raf == null ? this.length : raf.length();
-    } catch (IOException ioe) {
-      return this.length;
-    }
+    return this.length;
   }
 
   public long getLastModified() {

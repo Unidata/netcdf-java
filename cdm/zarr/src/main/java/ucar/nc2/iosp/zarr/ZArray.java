@@ -60,7 +60,7 @@ public class ZArray {
   // .zarray fields
   private final int[] shape;
   private final int[] chunks;
-  private final Number fillValue;
+  private final Object fillValue;
   private final DataType datatype;
   private final String dtype;
   private final ZarrFilter compressor;
@@ -69,7 +69,7 @@ public class ZArray {
   private final List<ZarrFilter> filters;
   private final String separator;
 
-  public ZArray(int[] shape, int[] chunks, Number fill_value, String dtype, ZarrFilter compressor, String order,
+  public ZArray(int[] shape, int[] chunks, Object fill_value, String dtype, ZarrFilter compressor, String order,
       List<ZarrFilter> filters, String separator) throws ZarrFormatException {
     this.shape = shape;
     this.chunks = chunks;
@@ -99,7 +99,7 @@ public class ZArray {
     return this.filters;
   }
 
-  public Number getFillValue() {
+  public Object getFillValue() {
     return fillValue;
   }
 
@@ -176,13 +176,15 @@ public class ZArray {
           .mapToInt(JsonNode::asInt).toArray();
       String dtype = ((JsonNode) root.path(ZarrKeys.DTYPE)).asText();
       JsonNode fillValueNode = (JsonNode) root.path(ZarrKeys.FILL_VALUE);
-      final Number fill;
+      final Object fill;
       if (fillValueNode.isLong()) {
         fill = fillValueNode.longValue();
       } else if (fillValueNode.isFloat()) {
         fill = fillValueNode.floatValue();
-      } else {
+      } else if (fillValueNode.isNumber()) {
         fill = fillValueNode.asDouble();
+      } else {
+        fill = fillValueNode.asText("");
       }
 
       String order = ((JsonNode) root.path(ZarrKeys.ORDER)).asText();

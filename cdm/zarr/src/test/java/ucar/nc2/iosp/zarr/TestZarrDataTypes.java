@@ -10,7 +10,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ucar.ma2.Array;
 import ucar.ma2.DataType;
+import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
@@ -146,5 +148,65 @@ public class TestZarrDataTypes {
     var = ncfile.findVariable(UNICODE);
     assertThat((Object) var).isNotNull();
     assertThat(var.getDataType()).isEqualTo(DataType.STRING);
+  }
+
+  @Test
+  public void testReadBigEndian() throws IOException, InvalidRangeException {
+    Variable var = ncfile.findVariable(BE_DOUBLE);
+    assertThat(var.read("0,2").getDouble(0)).isEqualTo(2.0);
+    var = ncfile.findVariable(BE_FLOAT);
+    assertThat(var.read("3,1").getFloat(0)).isEqualTo((float) 16.0);
+    var = ncfile.findVariable(BE_INT);
+    assertThat(var.read("2,0").getInt(0)).isEqualTo(10);
+    var = ncfile.findVariable(BE_LONG);
+    assertThat(var.read("2,3").getLong(0)).isEqualTo(11);
+    var = ncfile.findVariable(BE_SHORT);
+    assertThat(var.read("0,4").getShort(0)).isEqualTo(4);
+    var = ncfile.findVariable(BE_UINT);
+    assertThat(var.read("3,4").getInt(0)).isEqualTo(19);
+    var = ncfile.findVariable(BE_ULONG);
+    assertThat(var.read("2,3").getLong(0)).isEqualTo(11);
+    var = ncfile.findVariable(BE_USHORT);
+    assertThat(var.read("0,0").getShort(0)).isEqualTo(0);
+  }
+
+  @Test
+  public void testReadLittleEndian() throws IOException, InvalidRangeException {
+    Variable var = ncfile.findVariable(LE_DOUBLE);
+    assertThat(var.read("0,2").getDouble(0)).isEqualTo(2.0);
+    var = ncfile.findVariable(LE_FLOAT);
+    assertThat(var.read("3,1").getFloat(0)).isEqualTo((float) 16.0);
+    var = ncfile.findVariable(LE_INT);
+    assertThat(var.read("2,0").getInt(0)).isEqualTo(10);
+    var = ncfile.findVariable(LE_LONG);
+    assertThat(var.read("2,3").getLong(0)).isEqualTo(11);
+    var = ncfile.findVariable(LE_SHORT);
+    assertThat(var.read("0,4").getShort(0)).isEqualTo(4);
+    var = ncfile.findVariable(LE_UINT);
+    assertThat(var.read("3,4").getInt(0)).isEqualTo(19);
+    var = ncfile.findVariable(LE_ULONG);
+    assertThat(var.read("2,3").getLong(0)).isEqualTo(11);
+    var = ncfile.findVariable(LE_USHORT);
+    assertThat(var.read("0,0").getShort(0)).isEqualTo(0);
+  }
+
+  @Test
+  public void testReadUnordered() throws IOException, InvalidRangeException {
+    Variable var = ncfile.findVariable(BOOLEAN);
+    assertThat(var.read("2,2").getBoolean(0)).isFalse();
+    var = ncfile.findVariable(BYTE);
+    assertThat(var.read("0,7").getByte(0)).isEqualTo((byte) 1);
+    var = ncfile.findVariable(UBYTE);
+    assertThat(var.read("5,3").getByte(0)).isEqualTo((byte) 10);
+  }
+
+  @Test
+  public void testReadStringTypes() throws IOException, InvalidRangeException {
+    Variable var = ncfile.findVariable(CHAR);
+    assertThat(var.read("2,4").getChar(0)).isEqualTo('a');
+    var = ncfile.findVariable(STRING);
+    assertThat(var.read("0,7").toString().trim()).isEqualTo("abcd");
+    var = ncfile.findVariable(UNICODE);
+    assertThat(var.read("5,3").toString().trim()).isEqualTo("d");
   }
 }
