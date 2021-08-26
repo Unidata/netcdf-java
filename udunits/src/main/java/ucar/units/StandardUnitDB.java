@@ -111,22 +111,37 @@ public final class StandardUnitDB extends UnitDBImpl {
     au("fahrenheit", "rankine @ 459.67");
 
     aa("degree Kelvin", "kelvin", "degrees Kelvin");
+    aa("degree_kelvin", "kelvin", "degrees_kelvin");
     aa("degreeK", "kelvin", "degreesK");
     aa("degree K", "kelvin", "degrees K");
+    aa("degree_K", "kelvin", "degrees_K");
+    aa("deg_K", "kelvin", "degs_K");
+    aa("degK", "kelvin", "degsK");
 
     aa("Celsius", "degree_Celsius");
     aa("degreeC", "degree_Celsius", "degreesC");
     aa("degree C", "degree_Celsius", "degrees C");
+    aa("degree_C", "degree_Celsius", "degrees_C");
     aa("degree centigrade", "degree_Celsius", "degrees centigrade");
     aa("centigrade", "degree_Celsius");
+    aa("deg_C", "degree_Celsius", "degs_C");
+    aa("degC", "degree_Celsius", "degsC");
 
     aa("degree Rankine", "rankine", "degrees Rankine");
+    aa("degree_rankine", "rankine", "degrees_rankine");
     aa("degreeR", "rankine", "degreesR");
     aa("degree R", "rankine", "degrees R");
+    aa("degree_R", "rankine", "degrees_R");
+    aa("degR", "rankine", "degR");
+    aa("deg_R", "rankine", "deg_R");
 
     aa("degree Fahrenheit", "fahrenheit", "degrees Fahrenheit");
+    aa("degree_fahrenheit", "fahrenheit", "degrees_fahrenheit");
     aa("degreeF", "fahrenheit", "degreesF");
     aa("degree F", "fahrenheit", "degrees F");
+    aa("degree_F", "fahrenheit", "degrees_F");
+    aa("degF", "fahrenheit", "degF");
+    aa("deg_F", "fahrenheit", "deg_F");
 
     as("degK", "kelvin");
     as("deg K", "kelvin");
