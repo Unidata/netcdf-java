@@ -295,7 +295,7 @@ public class LatLonRect {
   }
 
   /**
-   * Return a String representation of this LatLonRect that can be used in new LatLonRect.Builder(String):
+   * Return a String representation of this LatLonRect that can be used in LatLonRect.fromSpec(String):
    * "lat, lon, deltaLat, deltaLon"
    */
   @Override

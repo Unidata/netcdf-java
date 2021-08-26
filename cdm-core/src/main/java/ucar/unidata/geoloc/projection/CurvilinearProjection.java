@@ -10,14 +10,21 @@ import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.ProjectionPoint;
 
+import java.util.Objects;
 import java.util.Optional;
 
-public class Curvilinear extends AbstractProjection {
-  Array<Double> latArray;
-  Array<Double> lonArray;
+public class CurvilinearProjection extends AbstractProjection {
+  Array<Double> latdata;
+  Array<Double> londata;
 
-  public Curvilinear() {
+  public CurvilinearProjection() {
     super("Curvilinear", false);
+  }
+
+  public CurvilinearProjection(Array<Double> latdata, Array<Double> londata) {
+    super("Curvilinear", false);
+    this.latdata = latdata;
+    this.londata = londata;
   }
 
   @Override
@@ -62,5 +69,21 @@ public class Curvilinear extends AbstractProjection {
 
   private Optional<CoordReturn> findXYindexFromCoord(double lat, double lon) {
     return Optional.empty();
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
+    CurvilinearProjection that = (CurvilinearProjection) o;
+    boolean what = Objects.equals(latdata, that.latdata) && Objects.equals(londata, that.londata);
+    return what; // LOOK fuzzy math needed
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(latdata, londata);
   }
 }

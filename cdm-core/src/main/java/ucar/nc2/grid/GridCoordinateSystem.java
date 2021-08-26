@@ -7,7 +7,7 @@ package ucar.nc2.grid;
 import com.google.common.collect.ImmutableList;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
-import ucar.unidata.geoloc.projection.Curvilinear;
+import ucar.unidata.geoloc.projection.CurvilinearProjection;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -144,7 +144,8 @@ public class GridCoordinateSystem {
     this.axes = ImmutableList.copyOf(mutable);
     this.tcs = tcs;
     this.hcs = hcs;
-    this.featureType = hcs.getProjection() instanceof Curvilinear ? FeatureType.CURVILINEAR : FeatureType.GRID;
+    this.featureType =
+        hcs.getProjection() instanceof CurvilinearProjection ? FeatureType.CURVILINEAR : FeatureType.GRID;
 
     List<String> names = this.axes.stream().map(a -> a.getName()).collect(Collectors.toList());
     this.name = String.join(" ", names);

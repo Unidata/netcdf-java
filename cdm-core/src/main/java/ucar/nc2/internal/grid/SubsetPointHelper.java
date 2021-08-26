@@ -4,6 +4,7 @@
  */
 package ucar.nc2.internal.grid;
 
+import com.google.common.base.Preconditions;
 import ucar.array.InvalidRangeException;
 import ucar.array.Range;
 import ucar.nc2.grid.CoordInterval;
@@ -132,7 +133,9 @@ public class SubsetPointHelper {
 
   // LOOK bounded ?
   public Optional<GridAxisPoint.Builder<?>> subsetRange(double minValue, double maxValue, int stride,
-      Formatter errLog) {
+      Formatter errlog) {
+    Preconditions.checkNotNull(errlog);
+
     double lower = Grids.isAscending(orgGridAxis) ? Math.min(minValue, maxValue) : Math.max(minValue, maxValue);
     double upper = Grids.isAscending(orgGridAxis) ? Math.max(minValue, maxValue) : Math.min(minValue, maxValue);
 
@@ -140,12 +143,12 @@ public class SubsetPointHelper {
     int maxIndex = SubsetHelpers.findCoordElement(orgGridAxis, upper, false);
 
     if (minIndex >= orgGridAxis.getNominalSize()) {
-      errLog.format("no points in subset: lower %f > end %f", lower,
+      errlog.format("no points in subset: lower %f > end %f", lower,
           orgGridAxis.getCoordMidpoint(orgGridAxis.getNominalSize() - 1));
       return Optional.empty();
     }
     if (maxIndex < 0) {
-      errLog.format("no points in subset: upper %f < start %f", upper, orgGridAxis.getCoordMidpoint(0));
+      errlog.format("no points in subset: upper %f < start %f", upper, orgGridAxis.getCoordMidpoint(0));
       return Optional.empty();
     }
 
@@ -165,7 +168,7 @@ public class SubsetPointHelper {
       GridAxisPoint.Builder<?> builder = orgGridAxis.toBuilder().subsetWithRange(new Range(minIndex, maxIndex, stride));
       return Optional.of(builder);
     } catch (InvalidRangeException e) {
-      errLog.format("%s", e.getMessage());
+      errlog.format("%s", e.getMessage());
       return Optional.empty();
     }
   }

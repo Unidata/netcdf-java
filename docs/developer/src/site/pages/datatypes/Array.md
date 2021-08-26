@@ -108,3 +108,131 @@ This 2D primitive array is wrapped by an ArrayVlen\<T>, which extends Array\<Arr
 Iterable\<Array\<T>>. When you iterate over an ArrayVlen, or get an element from it, you get an Array\<T>, which is 
 an array of type T, whose length may be different for each element of ArrayVlen.
 
+## Create an array
+
+````
+int m = 18, n = 11, p = 60;
+int[] shape = new int[] {m, n, p};
+double[] data = new double[m * n * p];
+int count = 0;
+for (int i = 0; i < m; i++) {
+   for (int j = 0; j < n; j++) {
+     for (int k = 0; k < p; k++) {
+       data[count++] = (i * 100 + j * 10 + k);
+     }
+   }
+}
+Array<Double> A = Arrays.factory(ArrayType.DOUBLE, shape, data);
+````
+
+Discover an Array's rank and shape: 
+````
+int rank = A.getRank();
+int[] shape = A.getShape();
+Section section = A.getSection();
+````
+
+## Reading from Array
+
+Iterate over all the elements of an array in canonical (row-major) order:
+
+````
+double sum(Array<Double> A) {
+  double sum = 0;
+  for (double val : A) {
+    sum += val;
+  }
+  return sum;
+}
+````
+Array\<T> implements Iterable\<T>, so you can use streams:
+````
+double sum = StreamSupport.stream(A.spliterator(), false).mapToDouble(Double::doubleValue).sum();
+double sum = Streams.stream(A).mapToDouble(Double::doubleValue).sum();
+````
+Where the second form uses Guava.
+
+To access individual elements, you can use either a list of indices, 
+one for each dimension (rank):
+
+````
+double value341 = A.get(3,4,1);
+````
+or an _**Index**_, which wraps the integer index array:
+
+````
+Index idx = A.getIndex();
+double val341 = A.get(idx.set(3,4,1));
+double val331 = A.get(idx.set1(3));
+````
+
+The Index keeps state, and has various convenience methods. In the above example,
+idx.set1(3) sets index 1 to 3, keeping the values of index 0 and index 2 the same.
+Indices are numbered from 0, from slower to faster varying.
+
+You implicitly need to know the Array's rank and shape to keep your request in bounds, else
+you will get an _IllegalArgumentException_ runtime Exception.
+
+## The Arrays class
+
+The **_Arrays_** class has static members to perform various operations on **_Array_**.
+Generally these create logical views of an Array, ie there is no data copying. 
+Note that Array is _**Immutable**_.
+
+### Working with sections of an Array
+
+Use a _**Section**_ of the same rank for the general case:
+
+````
+ Section section = new Section("2:4,:,:");
+ Array<Double> arraySection = Arrays.section(A, section);
+````
+
+A _**slice**_ always sets one of the dimensions to a single value, 
+and reduces the rank by one:
+
+````
+ Array<Double> arraySlice = Arrays.slice(A, 0, 22);
+````
+
+One can remove all dimensions of length one from an Array, or just a particular
+dimension:
+
+````
+ Array<Double> allReduced = Arrays.reduce(A);
+ Array<Double> dim0Reduced = Arrays.reduce(A, 0);
+````
+
+### Changing the logical ordering of Array elements
+
+You can **permute** the order of the dimensions. For example to switch the dimensions
+from row-major to column-major ordering:
+
+````
+ Array<Double> columnOrder = Arrays.permute(A, new int[2,1,0]);
+````
+
+**Flip** index 1 so that it runs from shape[index]-1 to 0:
+
+````
+ Array<Double> flipped1 = Arrays.permute(A, 1);
+````
+
+**Transpose** two dimensions of an Array:
+
+````
+ Array<Double> transArray = Arrays.transpose(A, 1, 2);
+````
+
+**Reshape** the Array, so that it has a different shape. 
+
+````
+ Array<Double> columnOrder = Arrays.permute(A, new int[mp, np, pp]);
+````
+
+The total elements must be
+the same, eg if Array has shape [m,n, p], and the new shape is [mp, np, pp], then
+````
+m * n * p = mp * np * pp
+````
+

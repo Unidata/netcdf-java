@@ -6,9 +6,11 @@ package ucar.array;
 
 import com.google.common.base.Preconditions;
 import com.google.protobuf.ByteString;
+import ucar.nc2.util.Misc;
 
 import javax.annotation.Nullable;
 import java.nio.ByteBuffer;
+import java.util.Iterator;
 import java.util.List;
 
 /** Static helper classes for {@link Array} */
@@ -650,5 +652,43 @@ public class Arrays {
   /** Convert the Array into a ByteString. */
   public static ByteString getByteString(Array<Byte> from) {
     return ((ArrayByte) from).getByteString();
+  }
+
+  /**
+   * Compare values which must be equal to within {@link Misc#defaultMaxRelativeDiffDouble}.
+   */
+  public static boolean equalDoubles(Array<Double> arr1, Array<Double> arr2) {
+    if (arr1.length() != arr2.length()) {
+      return false;
+    }
+    Iterator<Double> iter1 = arr1.iterator();
+    Iterator<Double> iter2 = arr2.iterator();
+    while (iter1.hasNext() && iter2.hasNext()) {
+      double v1 = iter1.next();
+      double v2 = iter2.next();
+      if (!Misc.nearlyEquals(v1, v2)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /**
+   * Compare values which must be equal to within {@link Misc#defaultMaxRelativeDiffFloat}.
+   */
+  public static boolean equalFloats(Array<Float> arr1, Array<Float> arr2) {
+    if (arr1.length() != arr2.length()) {
+      return false;
+    }
+    Iterator<Float> iter1 = arr1.iterator();
+    Iterator<Float> iter2 = arr2.iterator();
+    while (iter1.hasNext() && iter2.hasNext()) {
+      float v1 = iter1.next();
+      float v2 = iter2.next();
+      if (!Misc.nearlyEquals(v1, v2)) {
+        return false;
+      }
+    }
+    return true;
   }
 }

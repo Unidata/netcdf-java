@@ -18,7 +18,8 @@ import java.util.Formatter;
 
 import static com.google.common.truth.Truth.assertThat;
 
-public class TestPointHorizSubset {
+/** Test {@link GridHorizCoordinateSystem} subsetting */
+public class TestGridHorizCoordinateSystemSubsetting {
 
   @Test
   public void testRegularWithStride() {

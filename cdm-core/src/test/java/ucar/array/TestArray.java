@@ -7,8 +7,11 @@ package ucar.array;
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.fail;
 
+import com.google.common.collect.Streams;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.stream.StreamSupport;
 
 /** Test {@link Array} */
 public class TestArray {
@@ -60,6 +63,44 @@ public class TestArray {
       fail();
     } catch (Exception e) {
       assertThat(e).isInstanceOf(IllegalArgumentException.class);
+    }
+  }
+
+  @Test
+  public void testIterator() {
+    double sum = 0;
+    for (double val : array) {
+      sum += val;
+    }
+    assertThat(sum).isEqualTo(21.0);
+
+    double sum2 = StreamSupport.stream(array.spliterator(), false).mapToDouble(Double::doubleValue).sum();
+    assertThat(sum2).isEqualTo(21.0);
+  }
+
+  @Test
+  public void testException() {
+    try {
+      array.get(99, 1, 1);
+      fail();
+    } catch (IllegalArgumentException e) {
+      // ok
+    }
+
+    try {
+      Index idx = array.getIndex();
+      array.get(idx.set(99, 1, 1));
+      fail();
+    } catch (IllegalArgumentException e) {
+      // ok
+    }
+
+    try {
+      Index idx = array.getIndex();
+      array.get(idx.set5(99));
+      fail();
+    } catch (IllegalArgumentException e) {
+      // ok
     }
   }
 

@@ -9,7 +9,6 @@ import ucar.array.Array;
 import ucar.nc2.Dimension;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.grid.GridAxis;
 import ucar.nc2.grid.GridAxisPoint;
@@ -19,7 +18,7 @@ import ucar.nc2.grid.GridHorizCoordinateSystem;
 import ucar.nc2.grid.GridHorizCurvilinear;
 import ucar.nc2.grid.Grids;
 import ucar.unidata.geoloc.Projection;
-import ucar.unidata.geoloc.projection.Curvilinear;
+import ucar.unidata.geoloc.projection.CurvilinearProjection;
 
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
@@ -93,7 +92,7 @@ public class GridNetcdfCSBuilder {
 
   ////////////////////////////////////////////////////////////////////
   private String name;
-  private FeatureType featureType = FeatureType.GRID; // can it be different?
+  private FeatureType featureType = FeatureType.GRID; // can it be different? Curvilinear?
   private Projection projection;
   private ArrayList<GridAxis<?>> axes = new ArrayList<>();
   private Array<Number> latdata;
@@ -140,7 +139,7 @@ public class GridNetcdfCSBuilder {
     built = true;
 
     Preconditions.checkNotNull(axes);
-    Preconditions.checkNotNull(projection);
+    // LOOK Preconditions.checkNotNull(projection);
 
     axes.sort(new Grids.AxisComparator());
     GridAxis<?> xaxis = findCoordAxisByType(AxisType.GeoX, AxisType.Lon);
@@ -182,7 +181,7 @@ public class GridNetcdfCSBuilder {
     // LOOK heres now to find horizStaggerType in WRF NMM
     // String horizStaggerType = xaxis.attributes().findAttributeString(_Coordinate.Stagger, null);
 
-    if (projection instanceof Curvilinear) {
+    if (projection instanceof CurvilinearProjection) {
       return GridHorizCurvilinear.create((GridAxisPoint) xaxis, (GridAxisPoint) yaxis, latdata, londata);
     } else {
       Preconditions.checkArgument(xaxis instanceof GridAxisPoint);
