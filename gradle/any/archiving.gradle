@@ -1,4 +1,7 @@
 // Safe for root project: no plugins applied.
+import java.nio.file.Paths
+
+def license = Paths.get(rootDir.absolutePath, 'LICENSE')
 
 tasks.withType(Jar).all {   // Applies to Jar, War, Ear and ShadowJar tasks.
   // Fails the build when an attempt is made to add a duplicate entry to an archive.
@@ -24,5 +27,9 @@ tasks.withType(Jar).all {   // Applies to Jar, War, Ear and ShadowJar tasks.
     // be UP-TO-DATE: http://goo.gl/kbVWXR. Adding it during the execution phase removes it as an input to
     // Gradle's incremental build machinery.
     manifest.attributes 'Built-On': project.buildTimestamp  // Defined in root project.
+  }
+
+  from(license) {
+    into 'META-INF/'
   }
 }
