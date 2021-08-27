@@ -155,13 +155,15 @@ timeClosest? timeInInterval?
     
 ### Horizontal subsetting
 
-1. **latlonBB**
+If both projBB and latlonBB are given, only the projBB is used. 
+
+1. **projBB**
+
+   The value is a ProjectionRect. 
+
+2. **latlonBB**
 
     The value is a LatLonRect.
-    
-2. **projBB**
-
-    The value is a ProjectionRect.    
 
 3. **horizStride**
 

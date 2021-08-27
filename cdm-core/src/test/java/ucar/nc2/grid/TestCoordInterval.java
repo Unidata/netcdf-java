@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import static com.google.common.truth.Truth.assertThat;
 
+/** Test {@link CoordInterval} */
 public class TestCoordInterval {
 
   @Test

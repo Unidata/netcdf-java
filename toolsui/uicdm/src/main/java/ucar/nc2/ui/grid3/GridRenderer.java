@@ -343,7 +343,7 @@ public class GridRenderer {
 
     GeneralPath gp = new GeneralPath(GeneralPath.WIND_EVEN_ODD, 5);
 
-    for (GridHorizCoordinateSystem.CoordBounds edge : hcsys2D.bounds()) {
+    for (GridHorizCoordinateSystem.CellBounds edge : hcsys2D.cells()) {
       gp.reset();
       gp.moveTo((float) edge.ll.xcoord, (float) edge.ll.ycoord);
       gp.lineTo((float) edge.lr.xcoord, (float) edge.lr.ycoord);

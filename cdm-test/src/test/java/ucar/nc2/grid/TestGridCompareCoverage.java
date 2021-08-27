@@ -123,9 +123,6 @@ public class TestGridCompareCoverage {
         }
         System.out.printf("  Grid: %s%n", grid.getName());
         boolean ok = true;
-        if (grid.getName().equals("PB")) {
-          System.out.printf("HEY");
-        }
 
         CoverageCoordSys oldGcs = oldGrid.getCoordSys();
         CoverageCoordAxis oldRuntime = oldGcs.getAxis(AxisType.RunTime);
@@ -172,9 +169,6 @@ public class TestGridCompareCoverage {
     for (int runtimeIdx = 0; runtimeIdx < oldRuntime1D.getNcoords(); runtimeIdx++) {
       double timeCoord = runtime.getCoordMidpoint(runtimeIdx);
       double timeCoordOld = oldRuntime1D.getCoordMidpoint(runtimeIdx);
-      if (timeCoord != timeCoordOld) {
-        System.out.printf("HEY");
-      }
       assertThat(timeCoord).isEqualTo(timeCoordOld);
 
       CalendarDate runtimeDate = tcs.getRuntimeDate(runtimeIdx);

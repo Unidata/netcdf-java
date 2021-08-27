@@ -7,7 +7,6 @@ package ucar.nc2.internal.grid;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.Dimensions;
 import ucar.nc2.constants.AxisType;
@@ -16,11 +15,9 @@ import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dataset.CoordinateTransform;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.grid.GridAxisPoint;
-import ucar.nc2.grid.GridAxisSpacing;
 import ucar.nc2.units.SimpleUnit;
 import ucar.unidata.geoloc.Projection;
-import ucar.unidata.geoloc.projection.Curvilinear;
+import ucar.unidata.geoloc.projection.CurvilinearProjection;
 import ucar.unidata.geoloc.projection.RotatedPole;
 
 import javax.annotation.Nullable;
@@ -128,6 +125,7 @@ public class DatasetClassifier {
     List<CoordinateAxis> indAxes = new ArrayList<>();
     List<CoordinateAxis> depAxes = new ArrayList<>();
     List<CoordinateTransform> coordTransforms;
+    @Nullable
     Projection orgProj;
 
     private CoordSysClassifier(CoordinateSystem cs) {
@@ -181,12 +179,12 @@ public class DatasetClassifier {
         indAxes.add(yaxis);
         depAxes.add(lonaxis);
         depAxes.add(lataxis);
-        this.orgProj = new Curvilinear();
+        this.orgProj = new CurvilinearProjection();
 
       } else if (curvilinear) {
         depAxes.add(lonaxis);
         depAxes.add(lataxis);
-        this.orgProj = new Curvilinear();
+        this.orgProj = new CurvilinearProjection();
 
       } else if (standardLatLon) {
         indAxes.add(lonaxis);

@@ -31,7 +31,6 @@ import static com.google.common.truth.Truth.assertWithMessage;
 @Category(NeedsCdmUnitTest.class)
 public class TestReadGridCurvilinear {
 
-
   // NetCDF has 2D only
   // classifier = ocean_time sc_r lat_rho lon_rho CURVILINEAR
   // xAxis= lon_rho(eta_rho=64, xi_rho=128)
@@ -130,7 +129,7 @@ public class TestReadGridCurvilinear {
       GridCoordinateSystem gcs = grid.getCoordinateSystem();
       assertThat(gcs).isNotNull();
       GridHorizCoordinateSystem hcs = gcs.getHorizCoordinateSystem();
-      assertThat(hcs.isLatLon()).isFalse();
+      assertThat(hcs.isLatLon()).isTrue();
       assertThat(hcs.isCurvilinear()).isTrue();
       assertThat(hcs.getProjection()).isNotNull();
       assertThat(hcs).isInstanceOf(GridHorizCurvilinear.class);
@@ -159,7 +158,7 @@ public class TestReadGridCurvilinear {
 
       MaterializedCoordinateSystem mcs = geoArray.getMaterializedCoordinateSystem();
       assertThat(mcs).isNotNull();
-      assertThat(mcs.getHorizCoordinateSystem().isLatLon()).isFalse();
+      assertThat(mcs.getHorizCoordinateSystem().isLatLon()).isTrue();
       assertThat(mcs.getHorizCoordinateSystem().isCurvilinear()).isTrue();
       assertThat((Object) mcs.getXHorizAxis()).isNotNull();
       assertThat((Object) mcs.getYHorizAxis()).isNotNull();
@@ -171,7 +170,7 @@ public class TestReadGridCurvilinear {
 
       GridHorizCoordinateSystem mhcs = mcs.getHorizCoordinateSystem();
       assertThat(mhcs).isInstanceOf(GridHorizCurvilinear.class);
-      for (GridHorizCoordinateSystem.CoordBounds bound : mhcs.bounds()) {
+      for (GridHorizCoordinateSystem.CellBounds bound : mhcs.cells()) {
         System.out.printf("%s%n", bound);
       }
       System.out.printf("  llbb = %s%n", mhcs.getLatLonBoundingBox());

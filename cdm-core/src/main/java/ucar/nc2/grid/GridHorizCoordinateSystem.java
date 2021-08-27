@@ -14,20 +14,22 @@ import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.ProjectionPoint;
 import ucar.unidata.geoloc.ProjectionRect;
-import ucar.unidata.geoloc.projection.Curvilinear;
+import ucar.unidata.geoloc.projection.CurvilinearProjection;
 import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.unidata.geoloc.projection.sat.Geostationary;
 import ucar.unidata.geoloc.projection.sat.MSGnavigation;
 import ucar.unidata.geoloc.projection.sat.VerticalPerspectiveView;
 
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-/** Manages Projection GeoX/GeoY or Lat/Lon CoordinateSystem. */
+/** Manages or Projection GeoX/GeoY or Lat/Lon horizontal CoordinateSystem, with orthogonal axes. */
+@Immutable
 public class GridHorizCoordinateSystem {
 
   /** Get the 1D X axis (either GeoX or Lon). */
@@ -50,9 +52,9 @@ public class GridHorizCoordinateSystem {
     return projection instanceof LatLonProjection;
   }
 
-  /** Does this use lat/lon horizontal axes? */
+  /** If its curvilinear (will be instance of HorizCurviliner) */
   public boolean isCurvilinear() {
-    return projection instanceof Curvilinear;
+    return projection instanceof CurvilinearProjection;
   }
 
   /** Is this a global coverage over longitude ? */
@@ -81,44 +83,15 @@ public class GridHorizCoordinateSystem {
     return isLatLon() ? null : xaxis.getUnits();
   }
 
-  private LatLonRect llbb; // lazy
-
-  /** Get horizontal bounding box in lat, lon coordinates. For projection, only an approximation based on corners. */
+  /**
+   * Get horizontal bounding box in lat, lon coordinates. When not isLatLon(), only an approximation based on corners.
+   */
   public LatLonRect getLatLonBoundingBox() {
-    if (llbb == null) {
-      if (isLatLon()) {
-        double startLat = yaxis.getCoordInterval(0).start();
-        double startLon = xaxis.getCoordInterval(0).start();
-
-        double endLat = yaxis.getCoordInterval(yaxis.getNominalSize() - 1).end();
-        double endLon = xaxis.getCoordInterval(xaxis.getNominalSize() - 1).end();
-
-        LatLonPoint llpt = LatLonPoint.create(startLat, startLon);
-        llbb = new LatLonRect(llpt, endLat - startLat, endLon - startLon);
-
-      } else {
-        ProjectionRect bb = getBoundingBox();
-        if (projection != null && bb != null) {
-          llbb = projection.projToLatLonBB(bb);
-        }
-      }
-    }
     return llbb;
   }
 
-  private ProjectionRect mapArea; // lazy
-
   /** Get horizontal bounding box in projection coordinates. */
   public ProjectionRect getBoundingBox() {
-    if (mapArea == null) {
-      double startY = yaxis.getCoordInterval(0).start();
-      double startX = xaxis.getCoordInterval(0).start();
-
-      double endY = yaxis.getCoordInterval(yaxis.getNominalSize() - 1).end();
-      double endX = xaxis.getCoordInterval(xaxis.getNominalSize() - 1).end();
-
-      mapArea = new ProjectionRect(startX, startY, endX, endY);
-    }
     return mapArea;
   }
 
@@ -141,14 +114,17 @@ public class GridHorizCoordinateSystem {
   }
 
   /** Subset both x and y axis based on the given parameters. */
+  // see ucar.nc2.ft2.coverage.HorizCoordSys.subset()
   public Optional<GridHorizCoordinateSystem> subset(GridSubset params, Formatter errlog) {
+    Preconditions.checkNotNull(params);
+    Preconditions.checkNotNull(errlog);
     Integer horizStride = params.getHorizStride();
     if (horizStride == null || horizStride < 1) {
       horizStride = 1;
     }
 
-    GridAxisPoint xaxisSubset = xaxis;
-    GridAxisPoint yaxisSubset = yaxis;
+    GridAxisPoint xaxisSubset;
+    GridAxisPoint yaxisSubset;
     LatLonRect llbb = params.getLatLonBoundingBox();
     ProjectionRect projbb = params.getProjectionBoundingBox();
 
@@ -203,26 +179,27 @@ public class GridHorizCoordinateSystem {
 
   ///////////////////////////////////////////////////////////////////////////////
 
-  /** Return value from bounds(). */
-  public class CoordBounds {
+  /** The bounds of a particular grid cell. Return value from cells(). */
+  @Immutable
+  public class CellBounds {
     public final CoordReturn ll;
     public final CoordReturn lr;
     public final CoordReturn ur;
     public final CoordReturn ul;
     public final int xindex, yindex;
 
-    public CoordBounds(int xindex, int yindex) {
+    public CellBounds(int xindex, int yindex) {
       this.xindex = xindex;
       this.yindex = yindex;
       CoordInterval xintv = xaxis.getCoordInterval(xindex);
       CoordInterval yintv = yaxis.getCoordInterval(yindex);
-      this.ll = new CoordReturn(xintv.start(), yintv.start());
-      this.lr = new CoordReturn(xintv.end(), yintv.start());
-      this.ur = new CoordReturn(xintv.end(), yintv.end());
-      this.ul = new CoordReturn(xintv.start(), yintv.end());
+      this.ll = new CoordReturn(xintv.start(), yintv.start(), xindex, yindex);
+      this.lr = new CoordReturn(xintv.end(), yintv.start(), xindex, yindex);
+      this.ur = new CoordReturn(xintv.end(), yintv.end(), xindex, yindex);
+      this.ul = new CoordReturn(xintv.start(), yintv.end(), xindex, yindex);
     }
 
-    public CoordBounds(CoordReturn ll, CoordReturn lr, CoordReturn ur, CoordReturn ul, int xindex, int yindex) {
+    public CellBounds(CoordReturn ll, CoordReturn lr, CoordReturn ur, CoordReturn ul, int xindex, int yindex) {
       this.ll = ll;
       this.lr = lr;
       this.ur = ur;
@@ -238,23 +215,24 @@ public class GridHorizCoordinateSystem {
     }
   }
 
-  public Iterable<CoordBounds> bounds() {
-    return () -> new BoundsIterator(xaxis.getNominalSize(), yaxis.getNominalSize());
+  /** An iterator over each cell of the GridHorizCoordinateSystem. */
+  public Iterable<CellBounds> cells() {
+    return () -> new CellBoundsIterator(xaxis.getNominalSize(), yaxis.getNominalSize());
   }
 
-  private class BoundsIterator extends AbstractIterator<CoordBounds> {
+  private class CellBoundsIterator extends AbstractIterator<CellBounds> {
     final int nx;
     final int ny;
     int xindex = 0;
     int yindex = 0;
 
-    public BoundsIterator(int nx, int ny) {
+    public CellBoundsIterator(int nx, int ny) {
       this.nx = nx;
       this.ny = ny;
     }
 
     @Override
-    protected CoordBounds computeNext() {
+    protected CellBounds computeNext() {
       if (xindex >= nx) {
         yindex++;
         xindex = 0;
@@ -262,22 +240,23 @@ public class GridHorizCoordinateSystem {
       if (yindex >= ny) {
         return endOfData();
       }
-      CoordBounds result = new CoordBounds(xindex, yindex);
+      CellBounds result = new CellBounds(xindex, yindex);
       xindex++;
       return result;
     }
   }
 
   /** Return value from findXYindexFromCoord(). */
+  @Immutable
   public static class CoordReturn {
     /** The data index */
-    public int xindex, yindex;
-    /** The x,y grid coordinate. */
-    public double xcoord, ycoord;
+    public final int xindex, yindex;
+    /** The x,y (or lon, lat) grid coordinate. */
+    public final double xcoord, ycoord;
 
-    public CoordReturn() {}
-
-    public CoordReturn(double xcoord, double ycoord) {
+    public CoordReturn(double xcoord, double ycoord, int xindex, int yindex) {
+      this.xindex = xindex;
+      this.yindex = yindex;
       this.xcoord = xcoord;
       this.ycoord = ycoord;
     }
@@ -292,23 +271,20 @@ public class GridHorizCoordinateSystem {
     }
   }
 
-  // LOOK needed?
   /** From the (x,y) projection point, find the indices and coordinates of the horizontal 2D grid. */
   public Optional<CoordReturn> findXYindexFromCoord(double x, double y) {
-    CoordReturn result = new CoordReturn();
 
     if (xaxis.getAxisType() == AxisType.Lon) {
       x = LatLonPoints.lonNormalFrom(x, xaxis.getCoordinate(0).doubleValue()); // LOOK ??
     }
 
-    result.xindex = SubsetHelpers.findCoordElement(xaxis, x, false);
-    result.yindex = SubsetHelpers.findCoordElement(yaxis, y, false);
+    int xindex = SubsetHelpers.findCoordElement(xaxis, x, false);
+    int yindex = SubsetHelpers.findCoordElement(yaxis, y, false);
 
-    if (result.xindex >= 0 && result.xindex < xaxis.getNominalSize() && result.yindex >= 0
-        && result.yindex < yaxis.getNominalSize()) {
-      result.xcoord = xaxis.getCoordinate(result.xindex).doubleValue();
-      result.ycoord = yaxis.getCoordinate(result.yindex).doubleValue();
-      return Optional.of(result);
+    if (xindex >= 0 && xindex < xaxis.getNominalSize() && yindex >= 0 && yindex < yaxis.getNominalSize()) {
+      double xcoord = xaxis.getCoordinate(xindex).doubleValue();
+      double ycoord = yaxis.getCoordinate(yindex).doubleValue();
+      return Optional.of(new CoordReturn(xcoord, ycoord, xindex, yindex));
     } else {
       return Optional.empty();
     }
@@ -382,9 +358,11 @@ public class GridHorizCoordinateSystem {
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////
-  private final GridAxisPoint xaxis;
-  private final GridAxisPoint yaxis;
+  final GridAxisPoint xaxis;
+  final GridAxisPoint yaxis;
   private final Projection projection;
+  private final ProjectionRect mapArea;
+  private final LatLonRect llbb;
 
   public GridHorizCoordinateSystem(GridAxisPoint xaxis, GridAxisPoint yaxis, @Nullable Projection projection) {
     Preconditions.checkNotNull(xaxis);
@@ -393,6 +371,46 @@ public class GridHorizCoordinateSystem {
     this.yaxis = yaxis;
     // TODO set the LatLon seam?
     this.projection = projection == null ? new LatLonProjection() : projection;
+    this.mapArea = calcBoundingBox();
+    this.llbb = calcLatLonBoundingBox();
+  }
+
+  // for GridHorizCurvilinear
+  GridHorizCoordinateSystem(GridAxisPoint xaxis, GridAxisPoint yaxis, Projection projection, ProjectionRect mapArea,
+      LatLonRect llbb) {
+    Preconditions.checkNotNull(xaxis);
+    Preconditions.checkNotNull(yaxis);
+    this.xaxis = xaxis;
+    this.yaxis = yaxis;
+    this.projection = projection;
+    this.mapArea = mapArea;
+    this.llbb = llbb;
+  }
+
+  private ProjectionRect calcBoundingBox() {
+    double startY = yaxis.getCoordInterval(0).start();
+    double startX = xaxis.getCoordInterval(0).start();
+
+    double endY = yaxis.getCoordInterval(yaxis.getNominalSize() - 1).end();
+    double endX = xaxis.getCoordInterval(xaxis.getNominalSize() - 1).end();
+
+    return new ProjectionRect(startX, startY, endX, endY);
+  }
+
+  private LatLonRect calcLatLonBoundingBox() {
+    if (isLatLon()) {
+      double startLat = yaxis.getCoordInterval(0).start();
+      double startLon = xaxis.getCoordInterval(0).start();
+
+      double endLat = yaxis.getCoordInterval(yaxis.getNominalSize() - 1).end();
+      double endLon = xaxis.getCoordInterval(xaxis.getNominalSize() - 1).end();
+
+      LatLonPoint llpt = LatLonPoint.create(startLat, startLon);
+      return new LatLonRect(llpt, endLat - startLat, endLon - startLon);
+
+    } else {
+      return projection.projToLatLonBB(getBoundingBox());
+    }
   }
 
   @Override
