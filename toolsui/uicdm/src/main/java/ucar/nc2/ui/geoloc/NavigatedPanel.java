@@ -274,17 +274,19 @@ public class NavigatedPanel extends JPanel {
       double lonBeg = LatLonPoints.lonNormal(box.getMinX(), center);
       double lonEnd = lonBeg + box.getMaxX() - box.getMinX();
       boolean showShift = Debug.isSet("projection/LatLonShift") || debugNewProjection;
-      if (showShift)
+      if (showShift) {
         System.out.println("projection/LatLonShift: min,max = " + box.getMinX() + " " + box.getMaxX() + " beg,end= "
             + lonBeg + " " + lonEnd + " center = " + center);
+      }
 
       if ((lonBeg < center - 180) || (lonEnd > center + 180)) { // got to do it
         double wx0 = box.getX() + box.getWidth() / 2;
         // llproj.setCenterLon(wx0); // shift cylinder seam
         double newWx0 = llproj.getCenterLon(); // normalize wx0 to [-180,180]
         setWorldCenterX(newWx0); // tell navigation panel to shift
-        if (showShift)
+        if (showShift) {
           System.out.println("projection/LatLonShift: shift center to " + wx0 + "->" + newWx0);
+        }
 
         // send projection event instead of map area event
         lmProject.sendEvent(new NewProjectionEvent(this, llproj));

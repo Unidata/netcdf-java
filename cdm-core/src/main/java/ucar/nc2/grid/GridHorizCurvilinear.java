@@ -96,6 +96,9 @@ public class GridHorizCurvilinear extends GridHorizCoordinateSystem {
     this.lonedge = lonedge;
     this.helper = new CurvilinearCoords("GridHorizCurvilinear", latedge, lonedge, latMinmax, lonMinmax);
   }
+  public CurvilinearCoords getCurvilinearCoords() {
+    return helper;
+  }
 
   @Override
   public boolean isLatLon() {
