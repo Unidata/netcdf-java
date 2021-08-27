@@ -28,8 +28,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.CoverageType.Curvilinear;
-
 /** Coordinate System classification. */
 public class DatasetClassifier {
   private final Formatter infolog;
