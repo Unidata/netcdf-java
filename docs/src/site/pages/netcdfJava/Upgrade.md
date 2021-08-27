@@ -21,15 +21,19 @@ Java WebStart has been deprecated as of [Java 9](https://www.oracle.com/technetw
 As such, we no longer utilize WebStart.
 
 ## Quick Navigation
+* [Summary of changes for v5.5.x](#netcdf-java-api-changes-55x)
 * [Summary of changes for v5.4.x](#netcdf-java-api-changes-54x)
 * [Summary of changes for v5.3.x](#netcdf-java-api-changes-53x)
 * [Summary of changes for v5.2.x](#netcdf-java-api-changes-52x)
 * [Summary of changes for v5.1.x](#netcdf-java-api-changes-51x)
 * [Summary of changes for v5.0.x](#netcdf-java-api-changes-50x)
 
+## netCDF-Java API Changes (5.5.x)
+
 ## netCDF-Java API Changes (5.4.x)
 
 Point release notes:
+* [5.4.2](https://github.com/Unidata/netcdf-java/releases/tag/v5.4.2){:target="_blank"} (_2021-08-26_)
 * [5.4.1](https://github.com/Unidata/netcdf-java/releases/tag/v5.4.1){:target="_blank"} (_2020-12-17_)
 * `5.4.0` was released but not announced.
   It should not be used.
