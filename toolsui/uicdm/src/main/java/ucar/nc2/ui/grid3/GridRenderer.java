@@ -85,20 +85,20 @@ public class GridRenderer {
     this.dataProjection = dataProjection;
   }
 
-  /* set the Projection to use for drawing */
+  /** set a bounding box */
   public void setDrawBB(boolean drawBB) {}
 
-  /* set whether grid should be drawn */
+  /** set whether grid should be drawn */
   public void setDrawGridLines(boolean drawGrid) {
     this.drawGridLines = drawGrid;
   }
 
-  /* set whether countours should be drawn */
+  /** set whether countours should be drawn */
   public void setDrawContours(boolean drawContours) {
     this.drawContours = drawContours;
   }
 
-  /* set whether contour labels should be drawn */
+  /** set whether contour labels should be drawn */
   public void setDrawContourLabels(boolean drawContourLabels) {}
 
   /**
@@ -144,7 +144,6 @@ public class GridRenderer {
   //////// data routines
 
   private GridReferencedArray readHSlice() throws IOException, InvalidRangeException {
-    System.out.printf("readHSlice %s%n", dataState.grid.getName());
     // make sure we need new one
     if (!dataState.hasChanged()) {
       return geodata;
@@ -170,7 +169,7 @@ public class GridRenderer {
 
     geodata = reader.read();
     dataState.saveState();
-    System.out.printf("readHSlice done%n");
+    System.out.printf("readHSlice %s done%n", dataState.grid.getName());
     return geodata;
   }
 

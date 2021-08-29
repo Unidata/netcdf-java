@@ -32,6 +32,7 @@ import javax.swing.JOptionPane;
 
 public class GeoGridPanel extends OpPanel {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  private static final String GRIDVIEW_FRAME_SIZE = "GridViewerWindowSize";
 
   private final GeoGridTable dsTable;
   private IndependentWindow viewerWindow;
@@ -71,7 +72,7 @@ public class GeoGridPanel extends OpPanel {
     gridUI.addMapBean(new ShapeFileBean("USDetailMap", "US Detailed Map", "nj22/USMap", ToolsUI.US_MAP));
 
     viewerWindow.setComponent(gridUI);
-    Rectangle bounds = (Rectangle) ToolsUI.getPrefsBean(ToolsUI.GRIDVIEW_FRAME_SIZE, new Rectangle(77, 22, 700, 900));
+    Rectangle bounds = (Rectangle) prefs.getBean(GRIDVIEW_FRAME_SIZE, new Rectangle(77, 22, 700, 900));
     if (bounds.x < 0) {
       bounds.x = 0;
     }
@@ -175,7 +176,7 @@ public class GeoGridPanel extends OpPanel {
       gridUI.storePersistentData();
     }
     if (viewerWindow != null) {
-      ToolsUI.putPrefsBeanObject(ToolsUI.GRIDVIEW_FRAME_SIZE, viewerWindow.getBounds());
+      prefs.putBeanObject(GRIDVIEW_FRAME_SIZE, viewerWindow.getBounds());
     }
   }
 }

@@ -384,15 +384,16 @@ public class GridViewer extends JPanel {
      * dataProjectionAction.putValue(BAMutil.STATE, true);
      */
 
-    // contouring
+    // select bounding box
     drawBBAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Boolean state = (Boolean) getValue(BAMutil.STATE);
+        navPanel.setGeoSelectionMode(state);
         gridRenderer.setDrawBB(state);
-        draw(false);
+        draw(true);
       }
     };
-    BAMutil.setActionProperties(drawBBAction, "nj22/Contours", "draw bounding box", true, 'B', 0);
+    BAMutil.setActionProperties(drawBBAction, "nj22/Geoselect", "select bounding box", true, 'B', 0);
     drawBBAction.putValue(BAMutil.STATE, false);
 
     // draw horiz

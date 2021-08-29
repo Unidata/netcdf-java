@@ -88,22 +88,10 @@ public class SimpleGeomPanel extends OpPanel {
     sgUI.addMapBean(new ShapeFileBean("USDetailMap", "US Detailed Map", "nj22/USMap", ToolsUI.US_MAP));
 
     viewerWindow.setComponent(sgUI);
-    Rectangle bounds = (Rectangle) ToolsUI.getPrefsBean(ToolsUI.GRIDVIEW_FRAME_SIZE, new Rectangle(77, 22, 700, 900));
-    if (bounds.x < 0) {
-      bounds.x = 0;
-    }
-    if (bounds.y < 0) {
-      bounds.x = 0;
-    }
-    viewerWindow.setBounds(bounds);
   }
 
   private void makeImageWindow() {
     imageWindow = new IndependentWindow("Simple Geometry Image Viewer", BAMutil.getImage("nj22/NetcdfUI"));
-    // imageViewer = new ImageViewPanel(null);
-    // imageWindow.setComponent(imageViewer);
-    imageWindow
-        .setBounds((Rectangle) ToolsUI.getPrefsBean(ToolsUI.GRIDIMAGE_FRAME_SIZE, new Rectangle(77, 22, 700, 900)));
   }
 
   @Override
@@ -200,12 +188,6 @@ public class SimpleGeomPanel extends OpPanel {
     sgTable.save();
     if (sgUI != null) {
       sgUI.storePersistentData();
-    }
-    if (viewerWindow != null) {
-      ToolsUI.putPrefsBeanObject(ToolsUI.GRIDVIEW_FRAME_SIZE, viewerWindow.getBounds());
-    }
-    if (imageWindow != null) {
-      ToolsUI.putPrefsBeanObject(ToolsUI.GRIDIMAGE_FRAME_SIZE, imageWindow.getBounds());
     }
   }
 }

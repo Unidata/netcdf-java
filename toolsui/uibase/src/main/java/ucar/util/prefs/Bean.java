@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.util.prefs;
@@ -27,18 +27,21 @@ class Bean {
   public Bean(org.xml.sax.Attributes atts)
       throws ClassNotFoundException, InstantiationException, IllegalAccessException {
     String className = atts.getValue("class");
-    // LOOK debug occasional failure
-    System.out.printf("ClassForName %s", className);
-    Class<?> c = Class.forName(className);
-    o = c.newInstance();
-    p = BeanParser.getParser(c);
-    p.readProperties(o, atts);
+    Class<?> clazz = Class.forName(className);
+    try {
+      o = clazz.getDeclaredConstructor().newInstance();
+      p = BeanParser.getParser(clazz);
+      p.readProperties(o, atts);
+    } catch (InvocationTargetException | NoSuchMethodException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   // write XML using the bean properties of the contained object
   public void writeProperties(PrintWriter out) {
-    if (p == null)
+    if (p == null) {
       p = BeanParser.getParser(o.getClass());
+    }
     p.writeProperties(o, out);
   }
 
@@ -91,12 +94,15 @@ class Bean {
 
     // write XML using the bean properties of the contained object
     public Object readProperties(org.xml.sax.Attributes atts) throws InstantiationException, IllegalAccessException {
-      Object o = beanClass.newInstance();
-      p.readProperties(o, atts);
-      collect.add(o);
-      return o;
+      try {
+        Object o = beanClass.getDeclaredConstructor().newInstance();
+        p.readProperties(o, atts);
+        collect.add(o);
+        return o;
+      } catch (InvocationTargetException | NoSuchMethodException e) {
+        throw new RuntimeException(e);
+      }
     }
-
   }
 
   private static class BeanParser {
@@ -113,7 +119,7 @@ class Bean {
     }
 
     private final Map<String, PropertyDescriptor> properties = new TreeMap<>();
-    private final Object[] args = new Object[1];
+    private final Object[] args = new Object[1]; // why instance variable?
 
     BeanParser(Class<?> beanClass) {
 
@@ -165,8 +171,7 @@ class Bean {
     }
 
     void readProperties(Object bean, org.xml.sax.Attributes atts) {
-      for (Object o1 : properties.values()) {
-        PropertyDescriptor pds = (PropertyDescriptor) o1;
+      for (PropertyDescriptor pds : properties.values()) {
         Method setter = pds.getWriteMethod();
         if (setter == null) {
           continue;
@@ -179,7 +184,7 @@ class Bean {
             System.out.println(" property set " + pds.getName() + "=" + sArg + " == " + arg);
           }
           if (arg == null) {
-            return;
+            continue;
           }
           args[0] = arg;
           setter.invoke(bean, args);

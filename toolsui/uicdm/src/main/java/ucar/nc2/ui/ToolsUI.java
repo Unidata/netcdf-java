@@ -65,8 +65,6 @@ public class ToolsUI extends JPanel {
   public static final String WORLD_DETAIL_MAP = "/resources/ui/maps/Countries.shp";
   public static final String US_MAP = "/resources/ui/maps/us_state.shp";
   public static final String FRAME_SIZE = "FrameSize";
-  public static final String GRIDVIEW_FRAME_SIZE = "GridUIWindowSize";
-  public static final String GRIDIMAGE_FRAME_SIZE = "GridImageWindowSize";
 
   private static ToolsUI ui;
   private static JFrame frame;
@@ -831,24 +829,6 @@ public class ToolsUI extends JPanel {
     ncdumpPanel.setNetcdfFile(ds);
 
     tabbedPane.setSelectedComponent(ncdumpPanel);
-  }
-
-
-  public static Object getPrefsBean(String key, Object defaultVal) {
-    return ui.getPrefsBeanPriv(key, defaultVal);
-  }
-
-  private Object getPrefsBeanPriv(String key, Object defaultVal) {
-    return mainPrefs.getBean(key, defaultVal);
-  }
-
-
-  public static void putPrefsBeanObject(String key, Object newVal) {
-    ui.putPrefsBeanObjectPriv(key, newVal);
-  }
-
-  private void putPrefsBeanObjectPriv(String key, Object newVal) {
-    mainPrefs.putBean(key, newVal);
   }
 
   public void openNetcdfFile(String datasetName) {

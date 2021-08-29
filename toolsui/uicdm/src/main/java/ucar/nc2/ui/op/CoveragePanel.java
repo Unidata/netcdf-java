@@ -32,6 +32,7 @@ import javax.swing.JOptionPane;
 public class CoveragePanel extends OpPanel {
   private static final org.slf4j.Logger logger =
       org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  private static final String GRIDVIEW_FRAME_SIZE = "CoverageiewerWindowSize";
 
   private final CoverageTable dsTable;
   private CoverageViewer display;
@@ -79,7 +80,7 @@ public class CoveragePanel extends OpPanel {
     display.addMapBean(new ShapeFileBean("USDetailMap", "US Detailed Map", "nj22/USMap", ToolsUI.US_MAP));
 
     viewerWindow.setComponent(display);
-    Rectangle bounds = (Rectangle) ToolsUI.getPrefsBean(ToolsUI.GRIDVIEW_FRAME_SIZE, new Rectangle(77, 22, 700, 900));
+    Rectangle bounds = (Rectangle) prefs.getBean(GRIDVIEW_FRAME_SIZE, new Rectangle(77, 22, 700, 900));
     if (bounds.x < 0) {
       bounds.x = 0;
     }
@@ -159,7 +160,7 @@ public class CoveragePanel extends OpPanel {
     super.save();
     dsTable.save();
     if (viewerWindow != null) {
-      ToolsUI.putPrefsBeanObject(ToolsUI.GRIDVIEW_FRAME_SIZE, viewerWindow.getBounds());
+      prefs.putBeanObject(GRIDVIEW_FRAME_SIZE, viewerWindow.getBounds());
     }
   }
 }

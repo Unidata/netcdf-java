@@ -125,7 +125,9 @@ public class PreferencesExt extends java.util.prefs.AbstractPreferences implemen
    * @throws NullPointerException if key or value is <tt>null</tt>.
    * @throws IllegalStateException if this node (or an ancestor) has been
    *         removed with the {@link #removeNode()} method.
+   * @deprecated use putBeanObject()
    */
+  @Deprecated
   public void putBean(String key, Object newValue) {
     // if matches a stored Default, dont store
     Object oldValue = getBean(key, null);
