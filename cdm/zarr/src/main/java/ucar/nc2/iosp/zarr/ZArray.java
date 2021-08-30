@@ -9,6 +9,9 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import ucar.ma2.DataType;
+import ucar.nc2.filter.Filter;
+import ucar.nc2.filter.Filters;
+import ucar.nc2.filter.UnknownFilterException;
 
 import java.io.IOException;
 import java.nio.ByteOrder;
@@ -63,14 +66,14 @@ public class ZArray {
   private final Object fillValue;
   private final DataType datatype;
   private final String dtype;
-  private final ZarrFilter compressor;
+  private final Filter compressor;
   private final ByteOrder byteOrder;
   private final Order order;
-  private final List<ZarrFilter> filters;
+  private final List<Filter> filters;
   private final String separator;
 
-  public ZArray(int[] shape, int[] chunks, Object fill_value, String dtype, ZarrFilter compressor, String order,
-      List<ZarrFilter> filters, String separator) throws ZarrFormatException {
+  public ZArray(int[] shape, int[] chunks, Object fill_value, String dtype, Filter compressor, String order,
+      List<Filter> filters, String separator) throws ZarrFormatException {
     this.shape = shape;
     this.chunks = chunks;
     this.fillValue = fill_value;
@@ -91,11 +94,11 @@ public class ZArray {
     return this.chunks;
   }
 
-  public ZarrFilter getCompressor() {
+  public Filter getCompressor() {
     return this.compressor;
   }
 
-  public List<ZarrFilter> getFilters() {
+  public List<Filter> getFilters() {
     return this.filters;
   }
 
@@ -192,21 +195,23 @@ public class ZArray {
       TreeNode dim_sep = root.path(ZarrKeys.DIMENSION_SEPARATOR);
       String delimiter = dim_sep.isMissingNode() ? DEFAULT_SEPARATOR : ((JsonNode) dim_sep).asText();
 
-      Map<String, Object> compBean = codec.readValue(root.path(ZarrKeys.COMPRESSOR).traverse(codec), HashMap.class);
-
-      ZarrFilter compressor;
-      if (compBean == null) {
-        compressor = null;
-      } else {
-        compressor = null; // TODO: implement compressors
-      }
-
-      // TODO: filters
-      List<ZarrFilter> filters = null;
-
+      // Filters and compressor
       try {
+        Map<String, Object> compBean = codec.readValue(root.path(ZarrKeys.COMPRESSOR).traverse(codec), HashMap.class);
+
+        Filter compressor = Filters.getFilterByName(compBean);
+
+        List<Filter> filters = new ArrayList<>();
+
+        Map<String, Object>[] filtersBean = codec.readValue(root.path(ZarrKeys.FILTERS).traverse(codec), HashMap[].class);
+
+        if (filtersBean != null) {
+          for (Map<String, Object> bean : filtersBean) {
+            filters.add(Filters.getFilterByName(bean));
+          }
+        }
         return new ZArray(shape, chunks, fill, dtype, compressor, order, filters, delimiter);
-      } catch (ZarrFormatException ex) {
+      } catch (UnknownFilterException|ZarrFormatException ex) {
         throw new IOException(ex.getMessage(), ex.getCause());
       }
     }
