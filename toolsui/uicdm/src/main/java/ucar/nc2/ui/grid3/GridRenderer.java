@@ -14,13 +14,14 @@ import ucar.nc2.grid.Grid;
 import ucar.nc2.grid.GridAxisPoint;
 import ucar.nc2.grid.GridDataset;
 import ucar.nc2.grid.GridHorizCoordinateSystem;
+import ucar.nc2.grid.GridHorizCurvilinear;
 import ucar.nc2.grid.GridReader;
 
 import ucar.nc2.grid.GridReferencedArray;
 import ucar.nc2.grid.MaterializedCoordinateSystem;
 import ucar.nc2.grid.Grids;
+import ucar.nc2.internal.grid.CurvilinearCoords;
 import ucar.nc2.ui.grid.ColorScale;
-import ucar.ui.prefs.Debug;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.ProjectionPoint;
@@ -41,8 +42,6 @@ import java.util.Optional;
  * more or less the view in MVC
  */
 public class GridRenderer {
-  private static boolean debugPts = false;
-
   // draw state
   private final boolean drawGrid = true;
   private boolean drawGridLines = true;
@@ -86,20 +85,20 @@ public class GridRenderer {
     this.dataProjection = dataProjection;
   }
 
-  /* set the Projection to use for drawing */
+  /** set a bounding box */
   public void setDrawBB(boolean drawBB) {}
 
-  /* set whether grid should be drawn */
+  /** set whether grid should be drawn */
   public void setDrawGridLines(boolean drawGrid) {
     this.drawGridLines = drawGrid;
   }
 
-  /* set whether countours should be drawn */
+  /** set whether countours should be drawn */
   public void setDrawContours(boolean drawContours) {
     this.drawContours = drawContours;
   }
 
-  /* set whether contour labels should be drawn */
+  /** set whether contour labels should be drawn */
   public void setDrawContourLabels(boolean drawContourLabels) {}
 
   /**
@@ -119,15 +118,16 @@ public class GridRenderer {
 
     // get value, construct the string
     if (opt.isEmpty()) {
-      return "hcs.findXYindexFromCoord failed";
+      return "outside data grid";
     } else {
       GridHorizCoordinateSystem.CoordReturn cr = opt.get();
       try {
-        Array<?> array = geodata.data();
-        double dataValue = ((Number) array.get(cr.yindex, cr.xindex)).doubleValue();
+        Array<Number> array = Arrays.reduce(geodata.data());
+        double dataValue = array.get(cr.yindex, cr.xindex).doubleValue();
         return makeXYZvalueStr(dataValue, cr);
       } catch (Exception e) {
-        return "error on " + cr;
+        e.printStackTrace();
+        return e.getMessage() + " error on " + cr;
       }
     }
   }
@@ -144,7 +144,6 @@ public class GridRenderer {
   //////// data routines
 
   private GridReferencedArray readHSlice() throws IOException, InvalidRangeException {
-    System.out.printf("readHSlice %s%n", dataState.grid.getName());
     // make sure we need new one
     if (!dataState.hasChanged()) {
       return geodata;
@@ -170,7 +169,7 @@ public class GridRenderer {
 
     geodata = reader.read();
     dataState.saveState();
-    System.out.printf("readHSlice done%n");
+    System.out.printf("readHSlice %s done%n", dataState.grid.getName());
     return geodata;
   }
 
@@ -224,6 +223,14 @@ public class GridRenderer {
         drawGridCurvilinear(g, dataArr);
       }
     }
+    if (drawGridLines) {
+      GridHorizCoordinateSystem hcs = dataArr.getMaterializedCoordinateSystem().getHorizCoordinateSystem();
+      if (hcs.isCurvilinear()) {
+        drawGridLinesCurvilinear(g, (GridHorizCurvilinear) hcs);
+      } else {
+        drawGridLines(g, hcs);
+      }
+    }
   }
 
   private boolean drawGridBB(Graphics2D g, LatLonRect latLonRect) {
@@ -240,7 +247,6 @@ public class GridRenderer {
     Array<Number> data = referencedArray.data();
     data = Arrays.reduce(data);
 
-    int count = 0;
     GridAxisPoint xaxis = msys.getXHorizAxis();
     GridAxisPoint yaxis = msys.getYHorizAxis();
     if (data.getRank() != 2) {
@@ -262,10 +268,7 @@ public class GridRenderer {
     MinMax yminmax = Grids.getCoordEdgeMinMax(yaxis);
 
     // pre color the drawing area with the most used color
-    count +=
-        drawRect(g, modeColor, xminmax.min(), yminmax.min(), xminmax.max(), yminmax.max(), dataProjection.isLatLon());
-
-    debugPts = Debug.isSet("GridRenderer/showPts");
+    drawRect(g, modeColor, xminmax.min(), xminmax.max(), yminmax.min(), yminmax.max(), dataProjection.isLatLon());
 
     // draw individual rects with run length
     for (int y = 0; y < ny; y++) {
@@ -285,8 +288,8 @@ public class GridRenderer {
           run++;
         } else {
           if (lastColor != modeColor) { // dont have to draw these
-            count += drawRect(g, lastColor, xaxis.getCoordInterval(xbeg).start(), ybeg, xaxis.getCoordInterval(x).end(),
-                yend, dataProjection.isLatLon());
+            drawRect(g, lastColor, xaxis.getCoordInterval(xbeg).start(), xaxis.getCoordInterval(x).end(), ybeg, yend,
+                dataProjection.isLatLon());
           }
           xbeg = x;
         }
@@ -295,32 +298,13 @@ public class GridRenderer {
 
       // get the ones at the end
       if (lastColor != modeColor) {
-        count += drawRect(g, lastColor, xaxis.getCoordInterval(xbeg).start(), ybeg,
-            xaxis.getCoordInterval(xaxis.getNominalSize() - 1).end(), yend, dataProjection.isLatLon());
+        drawRect(g, lastColor, xaxis.getCoordInterval(xbeg).start(),
+            xaxis.getCoordInterval(xaxis.getNominalSize() - 1).end(), ybeg, yend, dataProjection.isLatLon());
       }
     }
   }
 
-  //// draw using Rectangle when possible
-  private int drawRectLatLon(Graphics2D g, int color, double lon1, double lat1, double lon2, double lat2) {
-    g.setColor(colorScale.getColor(color));
-
-    LatLonProjection projectll = (LatLonProjection) dataProjection;
-
-    int count = 0;
-    ProjectionRect[] rects = projectll.latLonToProjRect(lat1, lon1, lat2, lon2);
-    for (int i = 0; i < 2; i++) {
-      if (null != rects[i]) {
-        ProjectionRect r2 = rects[i];
-        Rectangle2D.Double r = new Rectangle2D.Double(r2.getX(), r2.getY(), r2.getWidth(), r2.getHeight());
-        g.fill(r);
-        count++;
-      }
-    }
-    return count;
-  }
-
-  private int drawRect(Graphics2D g, int color, double w1, double h1, double w2, double h2, boolean useLatlon) {
+  private int drawRect(Graphics2D g, int color, double w1, double w2, double h1, double h2, boolean useLatlon) {
     if (useLatlon) {
       return drawRectLatLon(g, color, w1, h1, w2, h2);
     }
@@ -333,6 +317,26 @@ public class GridRenderer {
     Rectangle2D rect = new Rectangle2D.Double(wmin, hmin, width, height);
     g.fill(rect);
     return 1;
+  }
+
+
+  //// draw using Rectangle when possible
+  private int drawRectLatLon(Graphics2D g, int color, double lon1, double lat1, double lon2, double lat2) {
+    g.setColor(colorScale.getColor(color));
+
+    LatLonProjection projectll = (LatLonProjection) dataProjection;
+
+    int count = 0;
+    ProjectionRect[] rects = projectll.latLonToProjRect(lat1, lon1, lat2, lon2);
+    for (int i = 0; i < 2; i++) {
+      if (null != rects[i]) {
+        ProjectionRect r2 = rects[i];
+        Rectangle2D.Double r = new Rectangle2D.Double(r2.getMinX(), r2.getMinY(), r2.getWidth(), r2.getHeight());
+        g.fill(r);
+        count++;
+      }
+    }
+    return count;
   }
 
   // 2D case
@@ -355,6 +359,139 @@ public class GridRenderer {
       g.setColor(colorScale.getColor(colorIndex));
       g.fill(gp);
     }
+  }
+
+  private void drawGridLinesCurvilinear(java.awt.Graphics2D g, GridHorizCurvilinear hcs) {
+    CurvilinearCoords cc = hcs.getCurvilinearCoords();
+    Array<Double> latEdge = cc.getLatEdge();
+    Array<Double> lonEdge = cc.getLonEdge();
+
+    GeneralPath gp = new GeneralPath(GeneralPath.WIND_EVEN_ODD, 100);
+    g.setColor(Color.BLACK);
+
+    int[] shape = latEdge.getShape(); // should both be the same
+    int nrows = shape[0];
+    int ncols = shape[1];
+
+    for (int y = 0; y < nrows; y += 10) {
+      gp.reset();
+      for (int x = 0; x < ncols; x++) {
+        if (x == 0) {
+          gp.moveTo(lonEdge.get(y, x).floatValue(), latEdge.get(y, x).floatValue());
+        } else {
+          gp.lineTo(lonEdge.get(y, x).floatValue(), latEdge.get(y, x).floatValue());
+        }
+      }
+      g.draw(gp);
+    }
+
+    gp.reset();
+    for (int x = 0; x < ncols; x++) {
+      if (x == 0) {
+        gp.moveTo(lonEdge.get(nrows - 1, x).floatValue(), latEdge.get(nrows - 1, x).floatValue());
+      } else {
+        gp.lineTo(lonEdge.get(nrows - 1, x).floatValue(), latEdge.get(nrows - 1, x).floatValue());
+      }
+    }
+    g.draw(gp);
+
+    for (int x = 0; x < ncols; x += 10) {
+      gp.reset();
+      for (int y = 0; y < nrows; y++) {
+        if (y == 0) {
+          gp.moveTo(lonEdge.get(y, x).floatValue(), latEdge.get(y, x).floatValue());
+        } else {
+          gp.lineTo(lonEdge.get(y, x).floatValue(), latEdge.get(y, x).floatValue());
+        }
+      }
+      g.draw(gp);
+    }
+
+    gp.reset();
+    for (int y = 0; y < nrows; y++) {
+      if (y == 0) {
+        gp.moveTo(lonEdge.get(y, ncols - 1).floatValue(), latEdge.get(y, ncols - 1).floatValue());
+      } else {
+        gp.lineTo(lonEdge.get(y, ncols - 1).floatValue(), latEdge.get(y, ncols - 1).floatValue());
+      }
+    }
+    g.draw(gp);
+  }
+
+  private void drawGridLines(java.awt.Graphics2D g, GridHorizCoordinateSystem hcs) {
+    GridAxisPoint xaxis = hcs.getXHorizAxis();
+    GridAxisPoint yaxis = hcs.getYHorizAxis();
+
+    GeneralPath gp = new GeneralPath(GeneralPath.WIND_EVEN_ODD, 100);
+    g.setColor(Color.BLACK);
+
+    int ny = yaxis.getNominalSize();
+    int nx = xaxis.getNominalSize();
+
+    for (int y = 0; y < ny; y += 10) {
+      gp.reset();
+      CoordInterval yintv = yaxis.getCoordInterval(y);
+      for (int x = 0; x < nx; x++) {
+        CoordInterval xintv = xaxis.getCoordInterval(x);
+        if (x == 0) {
+          gp.moveTo(xintv.start(), yintv.start());
+        } else {
+          gp.lineTo(xintv.start(), yintv.start());
+        }
+        if (x == nx - 1) {
+          gp.lineTo(xintv.end(), yintv.start());
+        }
+      }
+      g.draw(gp);
+    }
+
+    gp.reset();
+    CoordInterval yintvLast = yaxis.getCoordInterval(ny - 1);
+    for (int x = 0; x < nx; x++) {
+      CoordInterval xintv = xaxis.getCoordInterval(x);
+      if (x == 0) {
+        gp.moveTo(xintv.start(), yintvLast.end());
+      } else {
+        gp.lineTo(xintv.start(), yintvLast.end());
+      }
+      if (x == nx - 1) {
+        gp.lineTo(xintv.end(), yintvLast.end());
+      }
+    }
+    g.draw(gp);
+
+    for (int x = 0; x < nx; x += 10) {
+      gp.reset();
+      CoordInterval xintv = xaxis.getCoordInterval(x);
+      for (int y = 0; y < ny; y++) {
+        CoordInterval yintv = yaxis.getCoordInterval(y);
+        if (y == 0) {
+          gp.moveTo(xintv.start(), yintv.start());
+        } else {
+          gp.lineTo(xintv.start(), yintv.start());
+        }
+        if (y == ny - 1) {
+          gp.lineTo(xintv.start(), yintv.end());
+        }
+      }
+      g.draw(gp);
+    }
+
+    gp.reset();
+    CoordInterval xintvLast = xaxis.getCoordInterval(nx - 1);
+    for (int y = 0; y < ny; y++) {
+      CoordInterval yintv = yaxis.getCoordInterval(y);
+      if (y == 0) {
+        gp.moveTo(xintvLast.end(), yintv.start());
+      } else {
+        gp.lineTo(xintvLast.end(), yintv.start());
+      }
+      if (y == ny - 1) {
+        gp.lineTo(xintvLast.end(), yintv.end());
+      }
+    }
+    g.draw(gp);
+
   }
 
 }

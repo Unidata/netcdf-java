@@ -135,9 +135,10 @@ public class NavigatedPanel extends JPanel {
 
   // debug
   private int repaintCount;
-  private static final boolean debugDraw = false, debugEvent = false, debugThread = false, debugStatus = false;
-  private static final boolean debugTime = false, debugPrinting = false, debugBB = true, debugZoom = false;
-  private static final boolean debugBounds = false, debugSelection = false, debugNewProjection = false;
+  private static final boolean debugDraw = false, debugEvent = false, debugThread = false;
+  private static final boolean debugScreensize = false, debugMaparea = false, debugNewProjection = false;
+  private static final boolean debugZoom = false;
+  private static final boolean debugSelection = true;
 
   /** The constructor. */
   public NavigatedPanel() {
@@ -274,17 +275,19 @@ public class NavigatedPanel extends JPanel {
       double lonBeg = LatLonPoints.lonNormal(box.getMinX(), center);
       double lonEnd = lonBeg + box.getMaxX() - box.getMinX();
       boolean showShift = Debug.isSet("projection/LatLonShift") || debugNewProjection;
-      if (showShift)
+      if (showShift) {
         System.out.println("projection/LatLonShift: min,max = " + box.getMinX() + " " + box.getMaxX() + " beg,end= "
             + lonBeg + " " + lonEnd + " center = " + center);
+      }
 
       if ((lonBeg < center - 180) || (lonEnd > center + 180)) { // got to do it
         double wx0 = box.getX() + box.getWidth() / 2;
         // llproj.setCenterLon(wx0); // shift cylinder seam
         double newWx0 = llproj.getCenterLon(); // normalize wx0 to [-180,180]
         setWorldCenterX(newWx0); // tell navigation panel to shift
-        if (showShift)
+        if (showShift) {
           System.out.println("projection/LatLonShift: shift center to " + wx0 + "->" + newWx0);
+        }
 
         // send projection event instead of map area event
         lmProject.sendEvent(new NewProjectionEvent(this, llproj));
@@ -310,7 +313,7 @@ public class NavigatedPanel extends JPanel {
 
   /** Set the Map Area. */
   public void setMapArea(ProjectionRect ma) {
-    if (debugBB)
+    if (debugMaparea)
       System.out.println("NP.setMapArea " + ma);
     navigate.setMapArea(ma);
   }
@@ -489,14 +492,16 @@ public class NavigatedPanel extends JPanel {
 
   /** User must get this Graphics2D and draw into it when panel needs redrawing */
   public Graphics2D getBufferedImageGraphics() {
-    if (bImage == null)
+    if (bImage == null) {
       return null;
+    }
     Graphics2D g2 = bImage.createGraphics();
 
     // set clipping rectangle into boundingBox
     boundingBox = navigate.getMapArea();
-    if (debugBB)
+    if (debugMaparea) {
       System.out.println(" getBufferedImageGraphics BB = " + boundingBox);
+    }
 
     // set graphics attributes
     g2.setTransform(navigate.getTransform());
@@ -539,83 +544,15 @@ public class NavigatedPanel extends JPanel {
     return navigate.calcTransform(rotate, displayX, displayY, displayWidth, displayHeight);
   }
 
-
-  // LOOK! change this to an inner class ?
-  /*
-   * Render to a printer. part of Printable interface
-   * 
-   * @param g the Graphics context
-   * 
-   * @param pf describes the page format
-   * 
-   * @param pi page number
-   * 
-   * public int print(Graphics g, PageFormat pf, int pi) throws PrinterException {
-   * if (pi >= 1) {
-   * return Printable.NO_SUCH_PAGE;
-   * }
-   * Graphics2D g2 = (Graphics2D) g;
-   * g2.setColor(Color.black);
-   * 
-   * double pheight = pf.getImageableHeight();
-   * double pwidth = pf.getImageableWidth();
-   * double px = pf.getImageableX();
-   * double py = pf.getImageableY();
-   * g2.drawRect( (int) px, (int) py, (int) pwidth, (int)pheight);
-   * 
-   * AffineTransform orgAT = g2.getTransform();
-   * if (debugPrinting) System.out.println(" org transform = "+orgAT);
-   * 
-   * // set clipping rectangle LOOK ????
-   * //navigate.getMapArea( boundingBox);
-   * //g2.setClip( boundingBox);
-   * 
-   * boolean rotate = navigate.wantRotate(pwidth, pheight);
-   * AffineTransform at2 = navigate.calcTransform(rotate, px, py, pwidth, pheight);
-   * g2.transform( at2);
-   * AffineTransform at = g2.getTransform();
-   * if (debugPrinting) System.out.println(" use transform = "+at);
-   * double scale = at.getScaleX();
-   * 
-   * // if we need to rotate, also rotate the original transform
-   * if (rotate)
-   * orgAT.rotate( -Math.PI/2, px + pwidth/2, py + pheight/2);
-   * 
-   * // set graphics attributes // LOOK! hanging printer
-   * //g2.setStroke(new BasicStroke((float)(2.0/scale))); // default stroke size is two pixels
-   * g2.setStroke(new BasicStroke(0.0f)); // default stroke size is two pixels
-   * g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
-   * g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
-   * 
-   * // draw the image to the buffer
-   * //render.draw(g2, orgAT);
-   * 
-   * if (debugPrinting) {
-   * System.out.println("  Graphics clip "+ g2.getClipBounds());
-   * System.out.println("  Page Format     "+ pf.getOrientation());
-   * System.out.println("  getH/W          "+ pf.getHeight()+ " "+ pf.getWidth());
-   * System.out.println("  getImageableH/W "+ pf.getImageableHeight()+ " "+ pf.getImageableWidth());
-   * System.out.println("  getImageableX/Y "+ pf.getImageableX()+ " "+ pf.getImageableY());
-   * 
-   * /* Paper paper = pf.getPaper();
-   * System.out.println("  Paper     ");
-   * System.out.println("  getH/W          "+ paper.getHeight()+ " "+ paper.getWidth());
-   * System.out.println("  getImageableH/W "+ paper.getImageableHeight()+ " "+ paper.getImageableWidth());
-   * System.out.println("  getImageableX/Y "+ paper.getImageableX()+ " "+ paper.getImageableY());
-   * }
-   * 
-   * return Printable.PAGE_EXISTS;
-   * }
-   */
-
   ///////////////////////////////////////////////////////////////////////////////////
   // private methods
 
   // when component resizes we need a new buffer
   private void newScreenSize(Rectangle b) {
     boolean sameSize = (b.width == myBounds.width) && (b.height == myBounds.height);
-    if (debugBounds)
+    if (debugScreensize) {
       System.out.println("NavigatedPanel newScreenSize old= " + myBounds);
+    }
     if (sameSize && (b.x == myBounds.x) && (b.y == myBounds.y))
       return;
 
@@ -623,12 +560,9 @@ public class NavigatedPanel extends JPanel {
     if (sameSize)
       return;
 
-    if (debugBounds)
+    if (debugScreensize) {
       System.out.println("  newBounds = " + b);
-
-    // create new buffer the size of the window
-    // if (bImage != null)
-    // bImage.dispose();
+    }
 
     if ((b.width > 0) && (b.height > 0)) {
       bImage = new BufferedImage(b.width, b.height, BufferedImage.TYPE_INT_RGB); // why RGB ?
@@ -795,16 +729,20 @@ public class NavigatedPanel extends JPanel {
 
     @Override
     public void mousePressed(MouseEvent e) {
-      if (!changeable)
+      if (!changeable) {
         return;
+      }
 
       startx = e.getX();
       starty = e.getY();
-      if (debugSelection)
-        System.out.println(" NP press=" + e.getPoint());
+      if (debugSelection) {
+        System.out.printf("NP mousePressed= %s%n", e);
+      }
 
       // geoSelectionMode
       if (geoSelectionMode && (geoSelection != null)) {
+
+        // double click means end selection process ?
         if (e.getClickCount() == 2) {
           ProjectionPoint pp = navigate.screenToWorld(e.getPoint());
           // make geoSelection fit in screen
@@ -819,7 +757,7 @@ public class NavigatedPanel extends JPanel {
           return;
         }
 
-        // CTRL is down, but SHIFT is up
+        // mousePressed: CTRL is down, SHIFT is up: start selection?
         int onmask = InputEvent.CTRL_DOWN_MASK;
         int offmask = InputEvent.SHIFT_DOWN_MASK;
         if (onmask == (e.getModifiersEx() & (onmask | offmask))) {
@@ -857,20 +795,25 @@ public class NavigatedPanel extends JPanel {
         setCursor(Cursor.MOVE_CURSOR);
       }
 
-      if (debugEvent)
+      if (debugEvent) {
         System.out.println("mousePressed " + startx + " " + starty);
+      }
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-      if (!changeable)
+      if (!changeable) {
         return;
-      // System.out.println(" NP release="+e.getPoint());
+      }
 
       deltax = e.getX() - startx;
       deltay = e.getY() - starty;
-      if (debugEvent)
+      if (debugEvent) {
         System.out.println("mouseReleased " + e.getX() + " " + e.getY() + "=" + deltax + " " + deltay);
+      }
+      if (debugSelection) {
+        System.out.printf("NP mouseReleased= %s%n", e);
+      }
 
       if (geoSelectionMode && selectionRB.isActive()) {
         selectionRB.setActive(false);
@@ -879,8 +822,9 @@ public class NavigatedPanel extends JPanel {
         setCursor(Cursor.DEFAULT_CURSOR);
 
         if (!NavigatedPanel.this.contains(e.getPoint())) { // point is off the panel
-          if (debugBounds)
+          if (debugScreensize) {
             System.out.println("NP.select: point " + e.getPoint() + " out of bounds: " + myBounds);
+          }
           return;
         }
 
@@ -903,7 +847,7 @@ public class NavigatedPanel extends JPanel {
         zoomRB.end(e.getPoint());
         zoomingMode = false;
         if (!NavigatedPanel.this.contains(e.getPoint())) { // point is off the panel
-          if (debugBounds)
+          if (debugScreensize)
             System.out.println("NP.zoom: point " + e.getPoint() + " out of bounds: " + myBounds);
           return;
         }
@@ -1124,26 +1068,11 @@ public class NavigatedPanel extends JPanel {
     }
   }
 
-  /*
-   * public void setEnabled( boolean mode) {
-   * for (int i=0; i< getComponentCount(); i++) {
-   * Component c = getComponentAtIndex(i);
-   * c.setEnabled( mode);
-   * }
-   * }
-   * 
-   * public void remove(String which) {
-   * // find which
-   * for (int i=0; i< getComponentCount(); i++) {
-   * Component c = getComponentAtIndex(i);
-   * if (which.equals(c.getName()))
-   * remove(c);
-   * }
-   * }
-   * 
-   * } // end inner class
-   */
-
+  @Override
+  public String toString() {
+    return "NavigatedPanel{" + "panningMode=" + panningMode + ", zoomingMode=" + zoomingMode + ", isReferenceMode="
+        + isReferenceMode + ", geoSelectionMode=" + geoSelectionMode + ", moveSelectionMode=" + moveSelectionMode + '}';
+  }
 } // end NavPanel
 
 

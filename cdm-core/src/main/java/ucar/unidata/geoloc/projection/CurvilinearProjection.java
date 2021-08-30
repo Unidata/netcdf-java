@@ -7,6 +7,7 @@ package ucar.unidata.geoloc.projection;
 
 import ucar.array.Array;
 import ucar.unidata.geoloc.LatLonPoint;
+import ucar.unidata.geoloc.LatLonPoints;
 import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.ProjectionPoint;
 
@@ -29,22 +30,16 @@ public class CurvilinearProjection extends AbstractProjection {
 
   @Override
   public ProjectionPoint latLonToProj(LatLonPoint latlon) {
-    double lat = latlon.getLatitude();
-    double lon = latlon.getLongitude();
-    Optional<CoordReturn> coords = findXYindexFromCoord(lat, lon);
-    return coords.map(c -> ProjectionPoint.create(c.yidx, c.xidx)).orElse(null);
+    return latLonToProj(latlon, 0.0);
+  }
+
+  private ProjectionPoint latLonToProj(LatLonPoint latlon, double centerLon) {
+    return ProjectionPoint.create(LatLonPoints.lonNormal(latlon.getLongitude(), centerLon), latlon.getLatitude());
   }
 
   @Override
-  public LatLonPoint projToLatLon(ProjectionPoint ppt) {
-    return null;
-    /*
-     * int xidx = (int) ppt.getX(); // LOOK 0 based
-     * int yidx = (int) ppt.getY();
-     * double lat = latArray.get(yidx, xidx);
-     * double lon = lonArray.get(yidx, xidx);
-     * return LatLonPoint.create(lat, lon);
-     */
+  public LatLonPoint projToLatLon(ProjectionPoint world) {
+    return LatLonPoint.create(world.getX(), world.getY());
   }
 
   @Override

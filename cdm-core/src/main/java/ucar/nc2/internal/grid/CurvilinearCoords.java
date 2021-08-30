@@ -92,8 +92,8 @@ public class CurvilinearCoords {
 
     int[] shape = lat.getShape();
     // midpoints, not edges
-    this.ncols = shape[0];
-    this.nrows = shape[1];
+    this.nrows = shape[0];
+    this.ncols = shape[1];
   }
 
   public CurvilinearCoords(String name, Array<Double> latedge, Array<Double> lonedge, MinMax latMinmax,
@@ -106,8 +106,16 @@ public class CurvilinearCoords {
 
     int[] shape = latedge.getShape();
     // midpoints, not edges
-    this.ncols = shape[0] - 1;
-    this.nrows = shape[1] - 1;
+    this.nrows = shape[0] - 1;
+    this.ncols = shape[1] - 1;
+  }
+
+  public Array<Double> getLatEdge() {
+    return latEdge;
+  }
+
+  public Array<Double> getLonEdge() {
+    return lonEdge;
   }
 
   /** Calculate the midpoint from average of the 4 surrounding edges */

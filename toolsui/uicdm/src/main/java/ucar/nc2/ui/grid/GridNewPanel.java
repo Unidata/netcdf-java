@@ -28,6 +28,7 @@ import java.util.Formatter;
 public class GridNewPanel extends OpPanel {
   private static final org.slf4j.Logger logger =
       org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  private static final String GRIDNEW_VIEW_FRAME_SIZE = "GridNewViewerWindowSize";
 
   private final GridNewTable gridNewTable;
   private GridViewer gridViewer;
@@ -75,13 +76,7 @@ public class GridNewPanel extends OpPanel {
     gridViewer.addMapBean(new ShapeFileBean("USDetailMap", "US Detailed Map", "nj22/USMap", ToolsUI.US_MAP));
 
     viewerWindow.setComponent(gridViewer);
-    Rectangle bounds = (Rectangle) ToolsUI.getPrefsBean(ToolsUI.GRIDVIEW_FRAME_SIZE, new Rectangle(77, 22, 700, 900));
-    if (bounds.x < 0) {
-      bounds.x = 0;
-    }
-    if (bounds.y < 0) {
-      bounds.x = 0;
-    }
+    Rectangle bounds = (Rectangle) prefs.getBean(GRIDNEW_VIEW_FRAME_SIZE, new Rectangle(77, 22, 700, 900));
     viewerWindow.setBounds(bounds);
   }
 
@@ -150,7 +145,7 @@ public class GridNewPanel extends OpPanel {
     super.save();
     gridNewTable.save();
     if (viewerWindow != null) {
-      ToolsUI.putPrefsBeanObject(ToolsUI.GRIDVIEW_FRAME_SIZE, viewerWindow.getBounds());
+      prefs.putBeanObject(GRIDNEW_VIEW_FRAME_SIZE, viewerWindow.getBounds());
     }
   }
 }
