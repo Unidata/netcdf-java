@@ -758,17 +758,19 @@ public class NavigatedPanel extends JPanel {
         return;
       } // geoSelectionMode
 
-      if (!SwingUtilities.isRightMouseButton(e)) { // left and center mouse
-        // initiate zoom
-        zoomRB.anchor(e.getPoint());
-        zoomRB.setActive(true);
-        zoomingMode = true;
-
-      } else { // right mouse = pan
+      if (SwingUtilities.isLeftMouseButton(e)) {
         // initiate pan
         panningMode = true;
         setCursor(Cursor.MOVE_CURSOR);
       }
+
+      /*
+       * initiate zoom
+       * zoomRB.anchor(e.getPoint());
+       * zoomRB.setActive(true);
+       * zoomingMode = true;
+       */
+
 
       if (debugEvent) {
         System.out.println("mousePressed " + startx + " " + starty);
@@ -820,20 +822,22 @@ public class NavigatedPanel extends JPanel {
         setCursor(Cursor.DEFAULT_CURSOR);
       }
 
-      if (zoomingMode) {
-        zoomRB.setActive(false);
-        zoomRB.end(e.getPoint());
-        zoomingMode = false;
-        if (!NavigatedPanel.this.contains(e.getPoint())) { // point is off the panel
-          if (debugScreensize)
-            System.out.println("NP.zoom: point " + e.getPoint() + " out of bounds: " + myBounds);
-          return;
-        }
-        // "start" must be upper left
-        startx = Math.min(startx, e.getX());
-        starty = Math.min(starty, e.getY());
-        navigate.zoom(startx, starty, Math.abs(deltax), Math.abs(deltay));
-      }
+      /*
+       * if (zoomingMode) {
+       * zoomRB.setActive(false);
+       * zoomRB.end(e.getPoint());
+       * zoomingMode = false;
+       * if (!NavigatedPanel.this.contains(e.getPoint())) { // point is off the panel
+       * if (debugScreensize)
+       * System.out.println("NP.zoom: point " + e.getPoint() + " out of bounds: " + myBounds);
+       * return;
+       * }
+       * // "start" must be upper left
+       * startx = Math.min(startx, e.getX());
+       * starty = Math.min(starty, e.getY());
+       * navigate.zoom(startx, starty, Math.abs(deltax), Math.abs(deltay));
+       * }
+       */
       // drawG();
     }
   } // end myMouseListener
@@ -879,12 +883,12 @@ public class NavigatedPanel extends JPanel {
     public void mouseWheelMoved(MouseWheelEvent e) {
       if (e.getWheelRotation() < 0) {
         for (int rotation = e.getWheelRotation(); rotation < 0; ++rotation) {
-          navigate.zoomIn();
+          navigate.zoomIn(e.getX(), e.getY());
           drawG();
         }
       } else {
         for (int rotation = e.getWheelRotation(); rotation > 0; --rotation) {
-          navigate.zoomOut();
+          navigate.zoomOut(e.getX(), e.getY());
           drawG();
         }
       }
