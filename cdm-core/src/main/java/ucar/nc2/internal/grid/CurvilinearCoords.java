@@ -12,7 +12,6 @@ import ucar.array.MinMax;
 import ucar.nc2.write.NcdumpArray;
 import ucar.unidata.geoloc.ProjectionPoint;
 import ucar.unidata.geoloc.ProjectionRect;
-import ucar.unidata.geoloc.projection.CurvilinearProjection;
 
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
@@ -210,15 +209,13 @@ public class CurvilinearCoords {
       return Optional.empty();
     }
 
-    double gradientLat = (latMinMax.max() - latMinMax.min()) / nrows;
-    double gradientLon = (lonMinMax.max() - lonMinMax.min()) / ncols;
-
-    double diffLat = wantLat - latMinMax.min();
-    double diffLon = wantLon - lonMinMax.min();
-
     // initial guess
     int[] rectIndex = initial;
     if (rectIndex == null) {
+      double gradientLat = (latMinMax.max() - latMinMax.min()) / nrows;
+      double gradientLon = (lonMinMax.max() - lonMinMax.min()) / ncols;
+      double diffLat = wantLat - latMinMax.min();
+      double diffLon = wantLon - lonMinMax.min();
       rectIndex = new int[2];
       rectIndex[0] = (int) (Math.round(diffLat / gradientLat)); // row
       rectIndex[1] = (int) (Math.round(diffLon / gradientLon)); // col
@@ -279,19 +276,20 @@ public class CurvilinearCoords {
 
   /*
    * http://mathforum.org/library/drmath/view/54386.html
+   * also: https://math.stackexchange.com/questions/299352/show-that-the-area-of-a-triangle-is-given-by-this-determinant
    *
    * Given any three points on the plane (x0,y0), (x1,y1), and
    * (x2,y2), the area of the triangle determined by them is
    * given by the following formula:
    *
-   * 1 | x0 y0 1 |
-   * A = - | x1 y1 1 |,
-   * 2 | x2 y2 1 |
+   * | x0 y0 1 |
+   * A = - | x1 y1 1 |
+   * | x2 y2 1 |
    *
    * where the vertical bars represent the determinant.
    * the value of the expression above is:
    *
-   * (.5)(x1*y2 - y1*x2 -x0*y2 + y0*x2 + x0*y1 - y0*x1)
+   * (.5)(x1*y2 - y1*x2 - x0*y2 + y0*x2 + x0*y1 - y0*x1)
    *
    * The amazing thing is that A is positive if the three points are
    * taken in a counter-clockwise orientation, and negative otherwise.
@@ -617,7 +615,6 @@ public class CurvilinearCoords {
   }
 
   private void addLatLonEdges(ProjectionRect projbb, MinMaxIndices result) {
-    CurvilinearProjection proj = new CurvilinearProjection();
     // go along the perimeter of the edge arrays
     for (int y = 0; y < nrows; y++) {
       // top and bottom

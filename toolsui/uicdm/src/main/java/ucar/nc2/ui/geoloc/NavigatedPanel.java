@@ -138,7 +138,7 @@ public class NavigatedPanel extends JPanel {
   private static final boolean debugDraw = false, debugEvent = false, debugThread = false;
   private static final boolean debugScreensize = false, debugMaparea = false, debugNewProjection = false;
   private static final boolean debugZoom = false;
-  private static final boolean debugSelection = true;
+  private static final boolean debugSelection = false;
 
   /** The constructor. */
   public NavigatedPanel() {

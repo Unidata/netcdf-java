@@ -39,6 +39,7 @@ class DataState {
   Double ensCoord;
   int horizStride = 1;
   ProjectionRect projRect;
+  int[] index = null;
 
   public DataState(GridDataset gridDataset, Grid grid) {
     this.gridDataset = gridDataset;

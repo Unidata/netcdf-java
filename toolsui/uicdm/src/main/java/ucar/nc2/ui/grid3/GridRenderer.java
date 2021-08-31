@@ -20,7 +20,6 @@ import ucar.nc2.grid.GridReader;
 import ucar.nc2.grid.GridReferencedArray;
 import ucar.nc2.grid.MaterializedCoordinateSystem;
 import ucar.nc2.grid.Grids;
-import ucar.nc2.internal.grid.CurvilinearCoords;
 import ucar.nc2.ui.grid.ColorScale;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Projection;
@@ -128,7 +127,8 @@ public class GridRenderer {
 
     // find the grid indexes
     GridHorizCoordinateSystem hcs = dataState.gcs.getHorizCoordinateSystem();
-    Optional<GridHorizCoordinateSystem.CoordReturn> opt = hcs.findXYindexFromCoord(loc.getX(), loc.getY());
+    Optional<GridHorizCoordinateSystem.CoordReturn> opt =
+        hcs.findXYindexFromCoord(loc.getX(), loc.getY(), dataState.index);
 
     // get value, construct the string
     if (opt.isEmpty()) {
@@ -141,6 +141,7 @@ public class GridRenderer {
           return String.format("invalid index (%d,%d)", cr.yindex, cr.xindex);
         }
         double dataValue = array.get(cr.yindex, cr.xindex).doubleValue();
+        dataState.index = new int[] {cr.yindex, cr.xindex};
         return makeXYZvalueStr(dataValue, cr);
       } catch (Exception e) {
         // e.printStackTrace();

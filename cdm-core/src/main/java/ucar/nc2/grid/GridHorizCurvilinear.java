@@ -22,6 +22,7 @@ import ucar.unidata.geoloc.ProjectionPoint;
 import ucar.unidata.geoloc.ProjectionRect;
 import ucar.unidata.geoloc.projection.CurvilinearProjection;
 
+import javax.annotation.Nullable;
 import java.util.Formatter;
 import java.util.Objects;
 import java.util.Optional;
@@ -113,6 +114,12 @@ public class GridHorizCurvilinear extends GridHorizCoordinateSystem {
   @Override
   public Optional<CoordReturn> findXYindexFromCoord(double x, double y) {
     return helper.findIndexFromLatLon(y, x).map(cr -> new CoordReturn(cr.lon, cr.lat, cr.lonindex, cr.latindex));
+  }
+
+  @Override
+  public Optional<CoordReturn> findXYindexFromCoord(double x, double y, @Nullable int[] initial) {
+    return helper.findIndexFromLatLon(y, x, initial)
+        .map(cr -> new CoordReturn(cr.lon, cr.lat, cr.lonindex, cr.latindex));
   }
 
   @Override

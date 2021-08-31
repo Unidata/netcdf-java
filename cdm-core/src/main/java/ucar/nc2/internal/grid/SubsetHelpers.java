@@ -72,30 +72,19 @@ public class SubsetHelpers {
   // same contract as findCoordElement()
   private static int findCoordElementRegular(GridAxis<?> orgGridAxis, double coordValue, boolean bounded) {
     int n = orgGridAxis.getNominalSize();
-    if (n == 1 && bounded)
+    if (n == 1 && bounded) {
       return 0;
+    }
 
     double distance = coordValue - orgGridAxis.getCoordInterval(0).start();
     double exactNumSteps = distance / orgGridAxis.getResolution();
-    // int index = (int) Math.round(exactNumSteps); // ties round to +Inf
-    int index = (int) exactNumSteps; // truncate down
+    int index = (int) Math.floor(exactNumSteps);
 
-    if (bounded && index < 0)
-      return 0;
-    if (bounded && index >= n)
-      return n - 1;
-
-    // check that found point is within interval
-    if (index >= 0 && index < n) {
-      CoordInterval intv = orgGridAxis.getCoordInterval(index);
-      double lower = intv.start();
-      double upper = intv.end();
-      if (Grids.isAscending(orgGridAxis)) {
-        assert lower <= coordValue : lower + " should be le " + coordValue;
-        assert upper >= coordValue : upper + " should be ge " + coordValue;
-      } else {
-        assert lower >= coordValue : lower + " should be ge " + coordValue;
-        assert upper <= coordValue : upper + " should be le " + coordValue;
+    if (bounded) {
+      if (index < 0) {
+        return 0;
+      } else if (index >= n) {
+        return n - 1;
       }
     }
 
