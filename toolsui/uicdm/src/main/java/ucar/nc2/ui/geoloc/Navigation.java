@@ -25,8 +25,8 @@ public class Navigation {
   private final NavigatedPanel np;
 
   // fundamental quantities
-  private double pwidth, pheight; // current display size
-  private double pix_per_world = 1.0; // scale always the same in both directions
+  private double pwidth, pheight; // current display size (changes when window is resized)
+  private double pix_per_world = 1.0; // pixels per world unit (same in both directions)
   private double pix_x0, pix_y0; // offset from world origin, in pixels
 
   // derived
@@ -119,8 +119,8 @@ public class Navigation {
     double pps = Math.min(pxpsx, pypsy);
 
     // calc offset: based on center point staying in center
-    double wx0 = bb.getX() + bb.getWidth() / 2; // world midpoint
-    double wy0 = bb.getY() + bb.getHeight() / 2;
+    double wx0 = bb.getMinX() + bb.getWidth() / 2; // world midpoint
+    double wy0 = bb.getMinY() + bb.getHeight() / 2;
     double x0 = displayX + displayWidth / 2 - pps * wx0;
     double y0 = displayY + displayHeight / 2 + pps * wy0;
 
@@ -234,12 +234,14 @@ public class Navigation {
     zoom(pwidth / width);
   }
 
+  // keep x, y invariant while zooming in 2x
   public void zoomIn(double x, double y) {
-    zoomIn();
+    zoom(2.0, x, y);
   }
 
+  // keep x, y invariant while zooming out 2x
   public void zoomOut(double x, double y) {
-    zoomOut();
+    zoom(.5, x, y);
   }
 
   void zoomIn() {
@@ -250,15 +252,26 @@ public class Navigation {
     zoom(.5);
   }
 
+  // see notes below
+  // change scale, but leave center point fixed
+  // get these equations by solving for pix_x0, pix_y0
+  // that leaves center point invariant
   private void zoom(double scale) {
     zoom.push();
-
-    // change scale, but leave center point fixed
-    // get these equations by solving for pix_x0, pix_y0
-    // that leaves center point invariant
     double fac = (1 - scale);
     pix_x0 = scale * pix_x0 + fac * pwidth / 2;
     pix_y0 = scale * pix_y0 + fac * pheight / 2;
+    pix_per_world *= scale;
+    fireMapAreaEvent();
+  }
+
+  //// change scale, but leave point (x, y) fixed
+  private void zoom(double scale, double x, double y) {
+    zoom.push();
+    double fac = (1 - scale);
+
+    pix_x0 = scale * pix_x0 + fac * x;
+    pix_y0 = scale * pix_y0 + fac * y;
     pix_per_world *= scale;
     fireMapAreaEvent();
   }
@@ -313,8 +326,8 @@ public class Navigation {
     pix_per_world = Math.min(pixx_per_wx, pixy_per_wy);
 
     // calc the center point
-    double wx0 = bb.getX() + bb.getWidth() / 2;
-    double wy0 = bb.getY() + bb.getHeight() / 2;
+    double wx0 = bb.getMinX() + bb.getWidth() / 2;
+    double wy0 = bb.getMinY() + bb.getHeight() / 2;
 
     // calc offset based on center point
     pix_x0 = pwidth / 2 - pix_per_world * wx0;
@@ -370,4 +383,96 @@ public class Navigation {
   }
 
 }
+
+/*
+ * Notes for zoom calculations, because Math is Hard (TM)
+ * 
+ * linear transformation between pixel space and world space
+ * 
+ * 1) px = px0 + ppw * wx
+ * 2) py = py0 - ppw * wy
+ * 3) wx = (px - px0) / ppw
+ * 4) wy = (py0 - py) / ppw
+ * 
+ * where:
+ * px, py = pixel in display spae
+ * wx, wy = coordinate in world space
+ * px0, py0 = offset of pixel coord from from world origin
+ * ppw = pixels per unit world coordinate
+ * 
+ * // map bounding box to pixel box
+ * pixel space goes from 0..pwidth-1, 0..pheight-1
+ * world space uses a projection rectangle = map area = [minx, miny, width, height]
+ * 
+ * // calc the center points
+ * wx0 = minx + width / 2;
+ * wy0 = miny + height / 2;
+ * 
+ * 1) pcenterx = px0 + ppw * wx0
+ * px0 = pcenterx - ppw * wx0
+ * pcenterx = pwidth / 2
+ * px0 = pwidth / 2 - ppw * wx0
+ * 
+ * 2) pcentery = py0 - ppw * wy0
+ * py0 = pcentery + ppw * wy0
+ * pcentery = pheight / 2
+ * py0 = pheight / 2 + ppw * wy0
+ * 
+ * //// change scale, but leave center point fixed
+ * // get these equations by solving for pix_x0, pix_y0
+ * // that leaves center point invariant
+ * 
+ * 3) wx0 = (pcenterx - px0) / ppw
+ * wx0'= wx0 = (pcenterx - px0') / scale * ppw
+ * 
+ * ppw*wx0 = pcenterx - px0
+ * ppw'*wx0' = pcenterx - px0'
+ * (ppw - ppw')*wx0 = px0' - px0
+ * px0'= (ppw - ppw')*wx0 + px0
+ * 
+ * ppw'= ppw * scale
+ * px0'= (ppw - ppw * scale)*wx0 + px0
+ * px0'= (1 - scale)*wx0*ppw + px0
+ * 
+ * wx0 = (pcenterx - px0) / ppw
+ * wx0*ppw = (pcenterx - px0)
+ * 
+ * px0'= (1 - scale)*(pcenterx - px0) + px0
+ * px0'= (1 - scale)*pcenterx + scale * px0
+ * px0'= (1 - scale)*pwidth/2 + scale * px0
+ * 
+ * //// change scale, but leave point (x, y) fixed
+ * 
+ * // we know wx:
+ * 3) wx = (px - px0) / ppw
+ * wx'= wx = (px - px0') / scale * ppw
+ * 
+ * ppw*wx = px - px0
+ * scale*ppw*wx = px - px0'
+ * 
+ * (1 - scale)*ppw*wx = px0' - px0
+ * px0'= (1 - scale)*ppw*wx + px0
+ * 
+ * wx = (px - px0) / ppw
+ * ppw * wx = (px - px0)
+ * 
+ * px0'= (1 - scale)*(px - px0) + px0
+ * px0'= (1 - scale)*px + scale * px0 *****
+ * 
+ * // we know wy:
+ * 4) wy = (py0 - py) / ppw
+ * wy'= wy = (py0' - py) / scale * ppw
+ * 
+ * ppw*wy = py0 - py
+ * scale*ppw*wy = py0' - py
+ * 
+ * (1 - scale)*ppw*wy = py0 - py0'
+ * py0'= (1 - scale)*ppw*wy - py0
+ * 
+ * wy = (py0 - py) / ppw
+ * ppw * wx = (py0 - py)
+ * 
+ * py0'= (1 - scale)*(py0 - py) - py0
+ * px0'= (1 - scale)*py + scale * py0
+ */
 
