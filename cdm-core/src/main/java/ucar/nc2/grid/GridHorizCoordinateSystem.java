@@ -271,7 +271,13 @@ public class GridHorizCoordinateSystem {
     }
   }
 
-  /** From the (x,y) projection point, find the indices and coordinates of the horizontal 2D grid. */
+  /**
+   * From the (x,y) projection point, find the indices and coordinates of the horizontal 2D grid.
+   *
+   * @param x x of point
+   * @param y y of point
+   * @return empty if not in the grid.
+   */
   public Optional<CoordReturn> findXYindexFromCoord(double x, double y) {
 
     if (xaxis.getAxisType() == AxisType.Lon) {
@@ -288,6 +294,18 @@ public class GridHorizCoordinateSystem {
     } else {
       return Optional.empty();
     }
+  }
+
+  /**
+   * From the (x,y) projection point, find the indices and coordinates of the horizontal 2D grid.
+   *
+   * @param x x of point
+   * @param y y of point
+   * @param initial initial guess, used eg for mouse tracking in UI
+   * @return empty if not in the grid.
+   */
+  public Optional<CoordReturn> findXYindexFromCoord(double x, double y, @Nullable int[] initial) {
+    return findXYindexFromCoord(x, y);
   }
 
   /**

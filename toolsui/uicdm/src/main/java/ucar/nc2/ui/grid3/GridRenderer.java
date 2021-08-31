@@ -20,7 +20,6 @@ import ucar.nc2.grid.GridReader;
 import ucar.nc2.grid.GridReferencedArray;
 import ucar.nc2.grid.MaterializedCoordinateSystem;
 import ucar.nc2.grid.Grids;
-import ucar.nc2.internal.grid.CurvilinearCoords;
 import ucar.nc2.ui.grid.ColorScale;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Projection;
@@ -42,6 +41,8 @@ import java.util.Optional;
  * more or less the view in MVC
  */
 public class GridRenderer {
+  private static final Color selectionColor = Color.MAGENTA;
+
   // draw state
   private final boolean drawGrid = true;
   private boolean drawGridLines = true;
@@ -55,6 +56,7 @@ public class GridRenderer {
   // data stuff
   private DataState dataState;
   private GridReferencedArray geodata;
+  private ProjectionRect geoSelection;
 
   /* get the current ColorScale */
   public ColorScale getColorScale() {
@@ -86,7 +88,12 @@ public class GridRenderer {
   }
 
   /** set a bounding box */
-  public void setDrawBB(boolean drawBB) {}
+  public void setGeoSelectionMode(boolean geoSelectionMode) {
+    if (!geoSelectionMode) {
+      this.geoSelection = null;
+      this.dataState.setProjRect(null);
+    }
+  }
 
   /** set whether grid should be drawn */
   public void setDrawGridLines(boolean drawGrid) {
@@ -101,6 +108,12 @@ public class GridRenderer {
   /** set whether contour labels should be drawn */
   public void setDrawContourLabels(boolean drawContourLabels) {}
 
+  /** set whether contour labels should be drawn */
+  public void setGeoSelection(ProjectionRect geoSelection) {
+    this.geoSelection = geoSelection;
+    this.dataState.setProjRect(geoSelection);
+  }
+
   /**
    * Get the data value at this projection (x,y) point.
    *
@@ -114,7 +127,8 @@ public class GridRenderer {
 
     // find the grid indexes
     GridHorizCoordinateSystem hcs = dataState.gcs.getHorizCoordinateSystem();
-    Optional<GridHorizCoordinateSystem.CoordReturn> opt = hcs.findXYindexFromCoord(loc.getX(), loc.getY());
+    Optional<GridHorizCoordinateSystem.CoordReturn> opt =
+        hcs.findXYindexFromCoord(loc.getX(), loc.getY(), dataState.index);
 
     // get value, construct the string
     if (opt.isEmpty()) {
@@ -123,10 +137,14 @@ public class GridRenderer {
       GridHorizCoordinateSystem.CoordReturn cr = opt.get();
       try {
         Array<Number> array = Arrays.reduce(geodata.data());
+        if (!array.contains(cr.yindex, cr.xindex)) {
+          return String.format("invalid index (%d,%d)", cr.yindex, cr.xindex);
+        }
         double dataValue = array.get(cr.yindex, cr.xindex).doubleValue();
+        dataState.index = new int[] {cr.yindex, cr.xindex};
         return makeXYZvalueStr(dataValue, cr);
       } catch (Exception e) {
-        e.printStackTrace();
+        // e.printStackTrace();
         return e.getMessage() + " error on " + cr;
       }
     }
@@ -148,7 +166,6 @@ public class GridRenderer {
     if (!dataState.hasChanged()) {
       return geodata;
     }
-
     // get the data slice
     GridReader reader = dataState.grid.getReader();
     if (dataState.vertCoord != null) {
@@ -162,6 +179,9 @@ public class GridRenderer {
     }
     if (dataState.ensCoord != null) {
       reader.setEnsCoord(dataState.ensCoord);
+    }
+    if (dataState.projRect != null) {
+      reader.setProjectionBoundingBox(dataState.projRect);
     }
     if (dataState.horizStride != 1) {
       reader.setHorizStride(dataState.horizStride);
@@ -231,14 +251,23 @@ public class GridRenderer {
         drawGridLines(g, hcs);
       }
     }
+    if (geoSelection != null) {
+      drawProjectionRect(g, selectionColor, geoSelection);
+    }
   }
 
-  private boolean drawGridBB(Graphics2D g, LatLonRect latLonRect) {
-    g.setColor(Color.BLACK);
+  private void drawProjectionRect(Graphics2D g, Color color, ProjectionRect projRect) {
+    g.setColor(color);
+    Rectangle2D rect =
+        new Rectangle2D.Double(projRect.getMinX(), projRect.getMinY(), projRect.getWidth(), projRect.getHeight());
+    g.draw(rect);
+  }
+
+  private void drawLatlonRect(Graphics2D g, Color color, LatLonRect latLonRect) {
+    g.setColor(color);
     Rectangle2D rect = new Rectangle2D.Double(latLonRect.getLonMin(), latLonRect.getLatMin(), latLonRect.getWidth(),
         latLonRect.getHeight());
     g.draw(rect);
-    return true;
   }
 
   // orthogonal axes (not curvilinear)
@@ -268,7 +297,8 @@ public class GridRenderer {
     MinMax yminmax = Grids.getCoordEdgeMinMax(yaxis);
 
     // pre color the drawing area with the most used color
-    drawRect(g, modeColor, xminmax.min(), xminmax.max(), yminmax.min(), yminmax.max(), dataProjection.isLatLon());
+    drawRect(g, colorScale.getColor(modeColor), xminmax.min(), xminmax.max(), yminmax.min(), yminmax.max(),
+        dataProjection.isLatLon());
 
     // draw individual rects with run length
     for (int y = 0; y < ny; y++) {
@@ -288,8 +318,8 @@ public class GridRenderer {
           run++;
         } else {
           if (lastColor != modeColor) { // dont have to draw these
-            drawRect(g, lastColor, xaxis.getCoordInterval(xbeg).start(), xaxis.getCoordInterval(x).end(), ybeg, yend,
-                dataProjection.isLatLon());
+            drawRect(g, colorScale.getColor(lastColor), xaxis.getCoordInterval(xbeg).start(),
+                xaxis.getCoordInterval(x).end(), ybeg, yend, dataProjection.isLatLon());
           }
           xbeg = x;
         }
@@ -298,18 +328,18 @@ public class GridRenderer {
 
       // get the ones at the end
       if (lastColor != modeColor) {
-        drawRect(g, lastColor, xaxis.getCoordInterval(xbeg).start(),
+        drawRect(g, colorScale.getColor(lastColor), xaxis.getCoordInterval(xbeg).start(),
             xaxis.getCoordInterval(xaxis.getNominalSize() - 1).end(), ybeg, yend, dataProjection.isLatLon());
       }
     }
   }
 
-  private int drawRect(Graphics2D g, int color, double w1, double w2, double h1, double h2, boolean useLatlon) {
+  private int drawRect(Graphics2D g, Color color, double w1, double w2, double h1, double h2, boolean useLatlon) {
     if (useLatlon) {
       return drawRectLatLon(g, color, w1, h1, w2, h2);
     }
 
-    g.setColor(colorScale.getColor(color));
+    g.setColor(color);
     double wmin = Math.min(w1, w2);
     double hmin = Math.min(h1, h2);
     double width = Math.abs(w1 - w2);
@@ -321,8 +351,8 @@ public class GridRenderer {
 
 
   //// draw using Rectangle when possible
-  private int drawRectLatLon(Graphics2D g, int color, double lon1, double lat1, double lon2, double lat2) {
-    g.setColor(colorScale.getColor(color));
+  private int drawRectLatLon(Graphics2D g, Color color, double lon1, double lat1, double lon2, double lat2) {
+    g.setColor(color);
 
     LatLonProjection projectll = (LatLonProjection) dataProjection;
 
@@ -362,9 +392,8 @@ public class GridRenderer {
   }
 
   private void drawGridLinesCurvilinear(java.awt.Graphics2D g, GridHorizCurvilinear hcs) {
-    CurvilinearCoords cc = hcs.getCurvilinearCoords();
-    Array<Double> latEdge = cc.getLatEdge();
-    Array<Double> lonEdge = cc.getLonEdge();
+    Array<Double> latEdge = hcs.getLatEdges();
+    Array<Double> lonEdge = hcs.getLonEdges();
 
     GeneralPath gp = new GeneralPath(GeneralPath.WIND_EVEN_ODD, 100);
     g.setColor(Color.BLACK);

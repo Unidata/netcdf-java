@@ -55,6 +55,21 @@ public class RubberbandRectangleHandles extends Rubberband {
     } // if
   }
 
+
+  public boolean anchor2(Point p, int width, int height) {
+    if (current == null)
+      return false;
+
+    anchorPt.x = p.x;
+    anchorPt.y = p.y;
+
+    stretchedPt.x = lastPt.x = p.x + width;
+    stretchedPt.y = lastPt.y = p.y + height;
+
+    firstStretch = true;
+    return true;
+  }
+
   public boolean anchor(Point p) {
     if (current == null)
       return false;

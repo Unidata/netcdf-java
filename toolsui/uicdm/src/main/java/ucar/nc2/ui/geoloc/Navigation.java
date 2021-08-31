@@ -13,7 +13,7 @@ import java.awt.geom.Point2D;
  * Handle display to world coordinate transformation, always linear.
  * Call np.newMapAreaEvent() when MapArea changes.
  * setMapArea() trigger a NewMapAreaEvent also.
- * 
+ *
  * @author John Caron
  **/
 
@@ -173,7 +173,8 @@ public class Navigation {
   }
 
   /** convert a world coordinate to a display point */
-  Point2D worldToScreen(ProjectionPoint w, Point2D p) {
+  Point2D worldToScreen(ProjectionPoint w) {
+    Point2D p = new Point2D.Double();
     p.setLocation(pix_per_world * w.getX() + pix_x0, -pix_per_world * w.getY() + pix_y0);
     return p;
   }
@@ -196,11 +197,8 @@ public class Navigation {
 
   /** convert a projection (world) rectangle to a screen Rectangle */
   java.awt.Rectangle worldToScreen(ProjectionRect projRect) {
-    Point2D p1 = new Point2D.Double();
-    Point2D p2 = new Point2D.Double();
-
-    worldToScreen(projRect.getMaxPoint(), p1);
-    worldToScreen(projRect.getMinPoint(), p2);
+    Point2D p1 = worldToScreen(projRect.getMaxPoint());
+    Point2D p2 = worldToScreen(projRect.getMinPoint());
     return new java.awt.Rectangle((int) p1.getX(), (int) p1.getY(), (int) p2.getX(), (int) p2.getY());
   }
 

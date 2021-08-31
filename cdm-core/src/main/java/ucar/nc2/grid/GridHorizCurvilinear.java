@@ -22,6 +22,7 @@ import ucar.unidata.geoloc.ProjectionPoint;
 import ucar.unidata.geoloc.ProjectionRect;
 import ucar.unidata.geoloc.projection.CurvilinearProjection;
 
+import javax.annotation.Nullable;
 import java.util.Formatter;
 import java.util.Objects;
 import java.util.Optional;
@@ -97,8 +98,12 @@ public class GridHorizCurvilinear extends GridHorizCoordinateSystem {
     this.helper = new CurvilinearCoords("GridHorizCurvilinear", latedge, lonedge, latMinmax, lonMinmax);
   }
 
-  public CurvilinearCoords getCurvilinearCoords() {
-    return helper;
+  public Array<Double> getLatEdges() {
+    return helper.getLatEdges();
+  }
+
+  public Array<Double> getLonEdges() {
+    return helper.getLonEdges();
   }
 
   @Override
@@ -109,6 +114,12 @@ public class GridHorizCurvilinear extends GridHorizCoordinateSystem {
   @Override
   public Optional<CoordReturn> findXYindexFromCoord(double x, double y) {
     return helper.findIndexFromLatLon(y, x).map(cr -> new CoordReturn(cr.lon, cr.lat, cr.lonindex, cr.latindex));
+  }
+
+  @Override
+  public Optional<CoordReturn> findXYindexFromCoord(double x, double y, @Nullable int[] initial) {
+    return helper.findIndexFromLatLon(y, x, initial)
+        .map(cr -> new CoordReturn(cr.lon, cr.lat, cr.lonindex, cr.latindex));
   }
 
   @Override
@@ -123,6 +134,9 @@ public class GridHorizCurvilinear extends GridHorizCoordinateSystem {
     int yindex = 0;
 
     public BoundsIterator(int nx, int ny) {
+      int[] shape = lonedge.getShape();
+      Preconditions.checkArgument(nx == shape[1] - 1);
+      Preconditions.checkArgument(ny == shape[0] - 1);
       this.nx = nx;
       this.ny = ny;
     }
@@ -224,7 +238,6 @@ public class GridHorizCurvilinear extends GridHorizCoordinateSystem {
     return Objects.hash(super.hashCode(), latedge, lonedge);
   }
 
-
   ///////////////////////////////////////////////////////////////////////////
   // from HorizCoordSys2D
   @Override
@@ -232,24 +245,19 @@ public class GridHorizCurvilinear extends GridHorizCoordinateSystem {
     Preconditions.checkNotNull(params);
     Preconditions.checkNotNull(errlog);
 
-    LatLonRect llbb = params.getLatLonBoundingBox();
-    LatLonPoint latlon = params.getLatLonPoint();
     Integer horizStride = params.getHorizStride();
     if (horizStride == null || horizStride < 1) {
       horizStride = 1;
     }
 
-    ProjectionRect projbb = params.getProjectionBoundingBox();
-    if (projbb != null) {
-      return subsetProjectionRect(projbb, horizStride, errlog);
-    }
-
+    // point
+    LatLonPoint latlon = params.getLatLonPoint();
     if (latlon != null) {
       // find the x,y index of the given latlon
       Optional<CurvilinearCoords.CoordReturn> resulto =
           helper.findIndexFromLatLon(latlon.getLatitude(), latlon.getLongitude());
       if (resulto.isEmpty()) {
-        errlog.format("failed to find index for latlon");
+        errlog.format("subset failed to find index for latlon.");
         return Optional.empty();
       }
       CurvilinearCoords.CoordReturn result = resulto.get();
@@ -258,9 +266,19 @@ public class GridHorizCurvilinear extends GridHorizCoordinateSystem {
       return subset(result.latindex, result.lonindex, result.latindex, result.lonindex, horizStride, errlog);
     }
 
-    if (llbb != null) {
+    ProjectionRect projbb = params.getProjectionBoundingBox();
+    LatLonRect llbb = params.getLatLonBoundingBox();
+    if (projbb == null && llbb != null) {
+      projbb = getProjection().latLonToProjBB(llbb);
+    }
+
+    if (projbb != null) {
       // find the min and max indices that are needed to cover as much of the LatLonRect as possible
-      CurvilinearCoords.MinMaxIndices ret = helper.subsetLatLonRect(llbb);
+      CurvilinearCoords.MinMaxIndices ret = helper.subsetProjectionRect(projbb);
+      if (ret.isEmpty()) {
+        errlog.format("ProjectionRect does not intersect the data");
+        return Optional.empty();
+      }
       // use those indices to create a rectangle of data.
       return subset(ret.minLat, ret.minLon, ret.maxLat, ret.maxLon, horizStride, errlog);
 
@@ -272,49 +290,28 @@ public class GridHorizCurvilinear extends GridHorizCoordinateSystem {
     return Optional.of(this);
   }
 
-  private Optional<GridHorizCoordinateSystem> subsetProjectionRect(ProjectionRect projbb, int stride,
-      Formatter errlog) {
-    // find the x,y index of the starting point and ending points
-    ProjectionPoint ll = projbb.getLowerLeftPoint();
-    Optional<CurvilinearCoords.CoordReturn> resulto = helper.findIndexFromLatLon(ll.getY(), ll.getX());
-    if (resulto.isEmpty()) {
-      errlog.format("failed to find index for latlon");
-      return Optional.empty();
-    }
-    CurvilinearCoords.CoordReturn llindex = resulto.get();
-
-    ProjectionPoint ur = projbb.getUpperRightPoint();
-    resulto = helper.findIndexFromLatLon(ur.getY(), ur.getX());
-    if (resulto.isEmpty()) {
-      errlog.format("failed to find index for latlon");
-      return Optional.empty();
-    }
-    CurvilinearCoords.CoordReturn urindex = resulto.get();
-
-    // use those indices to create a rectangle of data.
-    return subset(llindex.latindex, llindex.lonindex, urindex.latindex, urindex.lonindex, stride, errlog);
-  }
-
   private Optional<GridHorizCoordinateSystem> subset(int llLat, int llLon, int urLat, int urLon, int stride,
       Formatter errlog) {
+    int latmin = Math.min(llLat, urLat);
+    int latmax = Math.max(llLat, urLat);
+
     // use those indices to create a rectangle of data.
-    Range latRange = Range.make(llLat, urLat, stride);
+    Range latRange = Range.make(latmin, latmax, stride);
     GridAxisPoint lataxisSubset = yaxis.toBuilder().subsetWithRange(latRange).build();
 
-    Range lonRange = Range.make(llLon, urLon, stride);
+    int lonmin = Math.min(llLon, urLon);
+    int lonmax = Math.max(llLon, urLon);
+    Range lonRange = Range.make(lonmin, lonmax, stride);
     GridAxisPoint lonaxisSubset = xaxis.toBuilder().subsetWithRange(lonRange).build();
 
     // Subset the edge arrays
-    Section latSection = Section.builder().appendRange(Range.make(llLat, urLat + 1, stride))
-        .appendRange(Range.make(llLon, urLon + 1, stride)).build();
-    Section lonSection = Section.builder().appendRange(Range.make(llLat, urLat + 1, stride))
-        .appendRange(Range.make(llLon, urLon + 1, stride)).build();
-
+    Section section = Section.builder().appendRange(Range.make(latmin, latmax + 1, stride))
+        .appendRange(Range.make(lonmin, lonmax + 1, stride)).build();
     try {
-      Array<Double> latedgeSubset = Arrays.section(latedge, latSection);
-      Array<Double> lonedgeSubset = Arrays.section(lonedge, lonSection);
+      Array<Double> latedgeSubset = Arrays.section(latedge, section);
+      Array<Double> lonedgeSubset = Arrays.section(lonedge, section);
       return Optional
-          .of(GridHorizCurvilinear.createFromEdges(lataxisSubset, lonaxisSubset, latedgeSubset, lonedgeSubset));
+          .of(GridHorizCurvilinear.createFromEdges(lonaxisSubset, lataxisSubset, latedgeSubset, lonedgeSubset));
 
     } catch (InvalidRangeException e) {
       errlog.format("failed to create subsetted edge arrays");

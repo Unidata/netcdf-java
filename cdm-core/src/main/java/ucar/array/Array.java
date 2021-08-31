@@ -147,5 +147,10 @@ public abstract class Array<T> implements Iterable<T> {
    */
   abstract Array<T> createView(IndexFn view);
 
+  /** Check if the given index is valid. */
+  public boolean contains(int... index) {
+    return indexFn.contains(index);
+  }
+
 }
 

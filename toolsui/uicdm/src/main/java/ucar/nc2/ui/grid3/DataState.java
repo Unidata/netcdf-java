@@ -13,6 +13,7 @@ import ucar.nc2.grid.GridCoordinateSystem;
 import ucar.nc2.grid.GridDataset;
 import ucar.nc2.grid.GridTimeCoordinateSystem;
 import ucar.ui.util.NamedObject;
+import ucar.unidata.geoloc.ProjectionRect;
 
 import javax.annotation.Nullable;
 
@@ -37,6 +38,8 @@ class DataState {
   Object vertCoord;
   Double ensCoord;
   int horizStride = 1;
+  ProjectionRect projRect;
+  int[] index = null;
 
   public DataState(GridDataset gridDataset, Grid grid) {
     this.gridDataset = gridDataset;
@@ -75,12 +78,22 @@ class DataState {
     return changed;
   }
 
+  boolean setProjRect(@Nullable ProjectionRect projRect) {
+    boolean changed = (projRect == null) != (this.projRect == null);
+    if (projRect != null && this.projRect != null) {
+      changed = !projRect.nearlyEquals(this.projRect);
+    }
+    this.projRect = projRect;
+    return changed;
+  }
+
   Grid lastGrid;
   Object lastRuntime;
   Object lastTime;
   Object lastVert;
   Object lastEnsemble;
   int lastStride;
+  ProjectionRect lastProjRect;
 
   void saveState() {
     lastGrid = grid;
@@ -89,6 +102,7 @@ class DataState {
     lastVert = vertCoord;
     lastEnsemble = ensCoord;
     lastStride = horizStride;
+    lastProjRect = projRect;
   }
 
   boolean hasChanged() {
@@ -108,6 +122,9 @@ class DataState {
       return true;
     }
     if (horizStride != lastStride) {
+      return true;
+    }
+    if (projRect != lastProjRect) {
       return true;
     }
     return false;

@@ -12,7 +12,7 @@ import ucar.array.ArrayType;
 import ucar.array.Arrays;
 import ucar.nc2.internal.grid.CurvilinearCoords.CoordReturn;
 import ucar.nc2.write.NcdumpArray;
-import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.geoloc.ProjectionRect;
 
 import java.util.Random;
 
@@ -51,18 +51,22 @@ public class TestCurvilinearCoords {
     make(10, 10, (y, x) -> y, (y, x) -> x);
     System.out.printf("%s%n", NcdumpArray.printArray(lat2d, "test lat2d", null));
     System.out.printf("%s%n", NcdumpArray.printArray(lon2d, "test lon2d", null));
-    CurvilinearCoords hcs = new CurvilinearCoords("test edges", lat2d, lon2d);
-    hcs.showEdges();
-    hcs.check();
-    assertThat(hcs.findIndexFromLatLon(0, 0).orElseThrow()).isEqualTo(new CoordReturn(0, 0, 0, 0));
-    assertThat(hcs.findIndexFromLatLon(4, 5).orElseThrow()).isEqualTo(new CoordReturn(4, 5, 4, 5));
-    assertThat(hcs.findIndexFromLatLon(4.8, 5.8).orElseThrow()).isEqualTo(new CoordReturn(4.8, 5.8, 5, 6));
+    CurvilinearCoords cc = new CurvilinearCoords("test edges", lat2d, lon2d);
+    cc.showEdges();
+    cc.check();
+    assertThat(cc.findIndexFromLatLon(0, 0).orElseThrow()).isEqualTo(new CoordReturn(0, 0, 0, 0));
+    assertThat(cc.findIndexFromLatLon(4, 5).orElseThrow()).isEqualTo(new CoordReturn(4, 5, 4, 5));
+    assertThat(cc.findIndexFromLatLon(4.8, 5.8).orElseThrow()).isEqualTo(new CoordReturn(4.8, 5.8, 5, 6));
 
-    testRandomValues(hcs, 50);
+    testRandomValues(cc, 50);
 
-    CurvilinearCoords.MinMaxIndices result = hcs.subsetLatLonRect(new LatLonRect(-10, -10, 12, 13));
+    CurvilinearCoords.MinMaxIndices result = cc.subsetProjectionRect(new ProjectionRect(-10, -10, 12, 13));
     System.out.printf("MinMaxIndices = %s%n", result);
-    assertThat(result).isEqualTo(hcs.create(0, 0, 9, 9));
+    assertThat(result.isEmpty()).isFalse();
+    assertThat(result).isEqualTo(cc.create(0, 0, 9, 9));
+
+    assertThat(cc.showBox(0, 0)).contains(
+        "lat1=[-0.500000, -0.500000] lat2=[0.500000, 0.500000] lon1=[-0.500000, 0.500000] lon2=[-0.500000, 0.500000]");
   }
 
   @Test
@@ -100,7 +104,8 @@ public class TestCurvilinearCoords {
 
     testRandomValues(hcs, 50);
 
-    CurvilinearCoords.MinMaxIndices result = hcs.subsetLatLonRect(new LatLonRect(-10, 10, 12, 13));
+    CurvilinearCoords.MinMaxIndices result = hcs.subsetProjectionRect(new ProjectionRect(10, -10, 13, 12));
+    assertThat(result.isEmpty()).isFalse();
     assertThat(result).isEqualTo(hcs.create(0, 9, 9, 9));
   }
 
@@ -143,7 +148,7 @@ public class TestCurvilinearCoords {
 
     testRandomValues(hcs, 50);
 
-    CurvilinearCoords.MinMaxIndices result = hcs.subsetLatLonRect(new LatLonRect(-3, 3, 10, 4));
+    CurvilinearCoords.MinMaxIndices result = hcs.subsetProjectionRect(new ProjectionRect(-3, 3, 10, 4));
     assertThat(result).isEqualTo(hcs.create(0, 0, 3, 3)); // no intersection
   }
 
