@@ -234,14 +234,14 @@ public class Navigation {
     zoom(pwidth / width);
   }
 
-  // keep x, y invariant while zooming in 2x
+  // keep x, y invariant while zooming in
   public void zoomIn(double x, double y) {
-    zoom(2.0, x, y);
+    zoom(1.1, x, y);
   }
 
-  // keep x, y invariant while zooming out 2x
+  // keep x, y invariant while zooming out
   public void zoomOut(double x, double y) {
-    zoom(.5, x, y);
+    zoom(.9, x, y);
   }
 
   void zoomIn() {
