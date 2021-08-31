@@ -10,7 +10,9 @@ import ucar.array.ArrayType;
 import ucar.array.Arrays;
 import ucar.array.MinMax;
 import ucar.nc2.write.NcdumpArray;
-import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.geoloc.ProjectionPoint;
+import ucar.unidata.geoloc.ProjectionRect;
+import ucar.unidata.geoloc.projection.CurvilinearProjection;
 
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
@@ -19,11 +21,13 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
-// from ucar.nc2.ft2.coverage.adapter.GeoGridCoordinate2D
+/**
+ * Helper class for curvilinear lat, lon coordinates. The longitude values must use projection coordinates,
+ * i.e. continuous values that are not normalized to a 360 cylinder.
+ * originally from ucar.nc2.ft2.coverage.adapter.GeoGridCoordinate2D and CoordinateAxis2D.makeEdges()
+ */
 public class CurvilinearCoords {
 
-  // from CoordinateAxis2D.makeEdges()
-  // LOOK probably want to eliminate seam crossing, by normalizing the longitude?
   public static Array<Double> makeEdges(Array<Number> midpoints) {
     int[] shape = midpoints.getShape();
     int ny = shape[0];
@@ -110,11 +114,11 @@ public class CurvilinearCoords {
     this.ncols = shape[1] - 1;
   }
 
-  public Array<Double> getLatEdge() {
+  public Array<Double> getLatEdges() {
     return latEdge;
   }
 
-  public Array<Double> getLonEdge() {
+  public Array<Double> getLonEdges() {
     return lonEdge;
   }
 
@@ -469,7 +473,7 @@ public class CurvilinearCoords {
     return false;
   }
 
-  String showBox(int[] idx) {
+  String showBox(int... idx) {
     int row = idx[0];
     int col = idx[1];
 
@@ -537,10 +541,14 @@ public class CurvilinearCoords {
       maxLon = Math.max(maxLon, lonidx);
     }
 
+    public boolean isEmpty() {
+      return (minLat > maxLat) || (minLon > maxLon);
+    }
+
     @Override
     public String toString() {
       return "MinMaxIndices{" + "minLat=" + minLat + ", minLon=" + minLon + ", maxLat=" + maxLat + ", maxLon=" + maxLon
-          + '}';
+          + "isEmpty=" + isEmpty() + '}';
     }
 
     @Override
@@ -559,34 +567,79 @@ public class CurvilinearCoords {
     }
   }
 
-  public MinMaxIndices subsetLatLonRect(LatLonRect llbb) {
+  // LOOK what about no intersection?
+  public MinMaxIndices subsetProjectionRect(ProjectionRect projbb) {
     MinMaxIndices result = new MinMaxIndices();
+    boolean needsEdges = false;
 
+    // find the x,y index of the starting point and ending points
+    ProjectionPoint ll = projbb.getLowerLeftPoint();
+    Optional<CurvilinearCoords.CoordReturn> resulto = findIndexFromLatLon(ll.getY(), ll.getX());
+    if (resulto.isEmpty()) { // LOOK what to do?
+      needsEdges = true;
+    } else {
+      CurvilinearCoords.CoordReturn index = resulto.get();
+      result.addPoint(index.latindex, index.lonindex);
+    }
+
+    ProjectionPoint ur = projbb.getUpperRightPoint();
+    resulto = findIndexFromLatLon(ur.getY(), ur.getX());
+    if (resulto.isEmpty()) {
+      needsEdges = true;
+    } else {
+      CurvilinearCoords.CoordReturn index = resulto.get();
+      result.addPoint(index.latindex, index.lonindex);
+    }
+
+    ProjectionPoint lr = projbb.getLowerRightPoint();
+    resulto = findIndexFromLatLon(lr.getY(), lr.getX());
+    if (resulto.isEmpty()) {
+      needsEdges = true;
+    } else {
+      CurvilinearCoords.CoordReturn index = resulto.get();
+      result.addPoint(index.latindex, index.lonindex);
+    }
+
+    ProjectionPoint ul = projbb.getUpperLeftPoint();
+    resulto = findIndexFromLatLon(ul.getY(), ul.getX());
+    if (resulto.isEmpty()) {
+      needsEdges = true;
+    } else {
+      CurvilinearCoords.CoordReturn index = resulto.get();
+      result.addPoint(index.latindex, index.lonindex);
+    }
+
+    if (needsEdges) {
+      addLatLonEdges(projbb, result);
+    }
+
+    return result;
+  }
+
+  private void addLatLonEdges(ProjectionRect projbb, MinMaxIndices result) {
+    CurvilinearProjection proj = new CurvilinearProjection();
     // go along the perimeter of the edge arrays
     for (int y = 0; y < nrows; y++) {
       // top and bottom
       if (y == 0 || y == nrows - 1) {
         for (int x = 0; x < ncols; x++) {
           CoordReturn midpoint = midpoint(y, x);
-          if (llbb.contains(midpoint.lat, midpoint.lon)) {
+          if (projbb.contains(ProjectionPoint.create(midpoint.lon, midpoint.lat))) {
             result.addPoint(y, x);
           }
         }
       } else {
         // internal rows
         CoordReturn midpoint = midpoint(y, 0);
-        if (llbb.contains(midpoint.lat, midpoint.lon)) {
+        if (projbb.contains(ProjectionPoint.create(midpoint.lon, midpoint.lat))) {
           result.addPoint(y, 0);
         }
         midpoint = midpoint(y, ncols - 1);
-        if (llbb.contains(midpoint.lat, midpoint.lon)) {
+        if (projbb.contains(ProjectionPoint.create(midpoint.lon, midpoint.lat))) {
           result.addPoint(y, ncols - 1);
         }
       }
     }
-    return result;
   }
-
-
 
 }

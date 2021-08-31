@@ -56,13 +56,13 @@ public class CoordTimeHelper {
     return dateUnit.toString();
   }
 
+  public CalendarDate getRefDate() {
+    return dateUnit.getBaseDateTime();
+  }
+
   // get offset from runDate, in units of dateUnit
   public double offsetFromRefDate(CalendarDate date) {
     return dateUnit.makeOffsetFromRefDate(date);
-  }
-
-  public CalendarDate getRefDate() {
-    return dateUnit.getBaseDateTime();
   }
 
   public CalendarDate makeDate(long value) {

@@ -106,7 +106,7 @@ public class NavigatedPanel extends JPanel {
   private boolean isReferenceMode, hasReference;
   private ProjectionPoint refWorld = ProjectionPoint.create(0, 0);
   private LatLonPoint refLatLon = LatLonPoint.create(0, 0);
-  private final Point2D refScreen = new Point2D.Double();
+  private Point2D refScreen = new Point2D.Double();
   private Cursor referenceCursor;
   private static final int REFERENCE_CURSOR = -100;
 
@@ -252,12 +252,12 @@ public class NavigatedPanel extends JPanel {
     lmPick.removeListener(l);
   }
 
-  /** Register a PickEventListener. */
+  /** Register a GeoSelectionListener. */
   public void addGeoSelectionListener(GeoSelectionListener l) {
     lmGeoSelect.addListener(l);
   }
 
-  /** Remove a PickEventListener. */
+  /** Remove a GeoSelectionListener. */
   public void removeGeoSelectionListener(GeoSelectionListener l) {
     lmGeoSelect.removeListener(l);
   }
@@ -604,7 +604,7 @@ public class NavigatedPanel extends JPanel {
 
     if (hasReference && redrawReference) {
       refWorld = project.latLonToProj(refLatLon);
-      navigate.worldToScreen(refWorld, refScreen);
+      refScreen = navigate.worldToScreen(refWorld);
       int px = (int) refScreen.getX();
       int py = (int) refScreen.getY();
       g.setColor(Color.red);
@@ -739,58 +739,33 @@ public class NavigatedPanel extends JPanel {
         System.out.printf("NP mousePressed= %s%n", e);
       }
 
-      // geoSelectionMode
-      if (geoSelectionMode && (geoSelection != null)) {
-
-        // double click means end selection process ?
-        if (e.getClickCount() == 2) {
-          ProjectionPoint pp = navigate.screenToWorld(e.getPoint());
-          // make geoSelection fit in screen
-          ProjectionRect.Builder builder = ProjectionRect.builder();
-          builder.setWidth(boundingBox.getWidth() / 4);
-          builder.setHeight(boundingBox.getHeight() / 4);
-          // make it the center point
-          builder.setX(pp.getX() - geoSelection.getWidth() / 2);
-          builder.setY(pp.getY() - geoSelection.getHeight() / 2);
-          geoSelection = builder.build();
-          lmGeoSelect.sendEvent(new GeoSelectionEvent(this, geoSelection));
-          return;
+      if (geoSelectionMode && SwingUtilities.isLeftMouseButton(e)) {
+        // start geoSelection
+        ProjectionPoint pp = navigate.screenToWorld(e.getPoint());
+        geoSelection = new ProjectionRect(pp, 0, 0);
+        Rectangle sw = navigate.worldToScreen(geoSelection);
+        selectionRB.setRectangle(sw);
+        if (debugSelection) {
+          System.out.printf("NB start selection= %s => %s%n", geoSelection, sw);
         }
 
-        // mousePressed: CTRL is down, SHIFT is up: start selection?
-        int onmask = InputEvent.CTRL_DOWN_MASK;
-        int offmask = InputEvent.SHIFT_DOWN_MASK;
-        if (onmask == (e.getModifiersEx() & (onmask | offmask))) {
-          Rectangle sw = navigate.worldToScreen(geoSelection);
-          selectionRB.setRectangle(sw);
-          if (debugSelection)
-            System.out.println("NB start selection=" + geoSelection + " => " + sw);
-
-          if (SwingUtilities.isRightMouseButton(e)) { // pan
-            if (sw.contains(e.getPoint())) {
-              moveSelectionMode = true;
-              setCursor(Cursor.MOVE_CURSOR);
-              selectionRB.setActive(true);
-            }
-          } else { // zoom
-            if (selectionRB.anchor(e.getPoint())) {
-              selectionRB.setActive(true);
-              if (debugSelection)
-                System.out.println("  anchor at =" + selectionRB.getAnchor());
-            }
+        if (selectionRB.anchor2(e.getPoint(), 10, 10)) {
+          selectionRB.setActive(true);
+          if (debugSelection) {
+            System.out.println("  anchor at =" + selectionRB.getAnchor());
           }
-          return;
         }
+        return;
       } // geoSelectionMode
 
       if (!SwingUtilities.isRightMouseButton(e)) { // left and center mouse
-        // zoom mapArea
+        // initiate zoom
         zoomRB.anchor(e.getPoint());
         zoomRB.setActive(true);
         zoomingMode = true;
 
       } else { // right mouse = pan
-        // pan mapArea
+        // initiate pan
         panningMode = true;
         setCursor(Cursor.MOVE_CURSOR);
       }
@@ -829,11 +804,14 @@ public class NavigatedPanel extends JPanel {
         }
 
         geoSelection = navigate.screenToWorld(selectionRB.getAnchor(), selectionRB.getLast());
+        if (debugSelection) {
+          System.out.printf("NP selection rect= %s %s => %s%n", selectionRB.getAnchor(), selectionRB.getLast(),
+              geoSelection);
+        }
 
-        // System.out.println(" NP selection rect= "+selectionRB.getAnchor()+" "+selectionRB.getLast()+
-        // " => "+rect);
-        // send new map area event
+        // send geoSelection event
         lmGeoSelect.sendEvent(new GeoSelectionEvent(this, geoSelection));
+        return;
       }
 
       if (panningMode) {

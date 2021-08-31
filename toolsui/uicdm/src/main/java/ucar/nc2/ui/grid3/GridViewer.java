@@ -45,7 +45,7 @@ import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
 
-/** Display nc2.grid objects. more or less the controller in MVC */
+/** Display nc2.grid objects. More or less the controller in MVC */
 public class GridViewer extends JPanel {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GridViewer.class);
 
@@ -389,7 +389,7 @@ public class GridViewer extends JPanel {
       public void actionPerformed(ActionEvent e) {
         Boolean state = (Boolean) getValue(BAMutil.STATE);
         navPanel.setGeoSelectionMode(state);
-        gridRenderer.setDrawBB(state);
+        gridRenderer.setGeoSelectionMode(state);
         draw(true);
       }
     };
@@ -596,6 +596,13 @@ public class GridViewer extends JPanel {
     navPanel.addCursorMoveEventListener(e -> {
       String valueS = gridRenderer.getXYvalueStr(e.getLocation());
       dataValueLabel.setText(valueS);
+    });
+
+    // get GeoSelection events from the navigated panel
+    navPanel.addGeoSelectionListener(e -> {
+      // GeoSelectionListener
+      gridRenderer.setGeoSelection(e.getProjectionRect());
+      drawH(false);
     });
   }
 

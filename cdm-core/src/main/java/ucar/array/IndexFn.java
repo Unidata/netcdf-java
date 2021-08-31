@@ -39,6 +39,22 @@ final class IndexFn implements Iterable<Integer> {
     return value;
   }
 
+  /** Check if the given index is valid. */
+  public boolean contains(int... index) {
+    if (this.rank == 0 && index.length == 1 && index[0] == 0) {
+      return true;
+    }
+    if (this.rank != index.length) {
+      return false;
+    }
+    for (int ii = 0; ii < rank; ii++) {
+      if (index[ii] < 0 || index[ii] >= shape[ii]) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   /** Get the number of dimensions in the array. */
   public int getRank() {
     return rank;
