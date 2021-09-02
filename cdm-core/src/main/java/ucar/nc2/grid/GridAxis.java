@@ -191,7 +191,6 @@ public abstract class GridAxis<T> implements Comparable<GridAxis<T>>, Iterable<T
     for (Attribute att : attributes) {
       f.format("%s%s%n", indent, att);
     }
-    f.format("%n");
     indent.decr();
     indent.decr();
   }

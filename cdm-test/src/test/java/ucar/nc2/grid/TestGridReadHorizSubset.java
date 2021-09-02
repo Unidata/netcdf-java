@@ -235,9 +235,9 @@ public class TestGridReadHorizSubset {
 
   private void checkLatLonSubset(GridHorizCoordinateSystem hcs, Grid coverage, LatLonRect bbox, int[] expectedShape)
       throws Exception {
-    // System.out.printf(" coverage llbb = %s width=%f%n", hcs.getLatLonBoundingBox().toString2(),
-    // hcs.getLatLonBoundingBox().getWidth());
-    // System.out.printf(" constrain bbox= %s width=%f%n", bbox.toString2(), bbox.getWidth());
+    System.out.printf(" coverage llbb = %s width=%f%n", hcs.getLatLonBoundingBox().toString2(),
+        hcs.getLatLonBoundingBox().getWidth());
+    System.out.printf(" constrain bbox= %s width=%f%n", bbox.toString2(), bbox.getWidth());
 
     GridReferencedArray geoArray = coverage.getReader().setLatLonBoundingBox(bbox).setTimePresent().read();
     assertThat(geoArray).isNotNull();

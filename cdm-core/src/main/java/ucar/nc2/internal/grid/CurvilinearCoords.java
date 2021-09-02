@@ -388,10 +388,11 @@ public class CurvilinearCoords {
     } else {
       x = (fyy * diffLon - fxy * diffLat) / det;
       if (fyy == 0) {
-        // should not happen, means that the cell has no height
-        throw new IllegalArgumentException(String.format("cell height == 0 at index %d %d", row, col));
+        // we just happened to land on the same row
+        y = (diffLat - fyx * x);
+      } else {
+        y = (diffLat - fyx * x) / fyy;
       }
-      y = (diffLat - fyx * x) / fyy;
     }
 
     int drow = (int) Math.round(y);

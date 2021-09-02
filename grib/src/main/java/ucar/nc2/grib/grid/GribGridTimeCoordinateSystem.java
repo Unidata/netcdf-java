@@ -223,7 +223,7 @@ public abstract class GribGridTimeCoordinateSystem extends GridTimeCoordinateSys
 
     @Override
     public String toString() {
-      return "SingleRuntime{" + "runtimeDate=" + runtimeDate + "} " + super.toString();
+      return super.toString() + "\nSingleRuntime{" + "runtimeDate=" + runtimeDate + "}";
     }
   }
 

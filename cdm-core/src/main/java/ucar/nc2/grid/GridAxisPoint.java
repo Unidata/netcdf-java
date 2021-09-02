@@ -219,14 +219,14 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
   void toString(Formatter f, Indent indent) {
     super.toString(f, indent);
 
-    f.format("%snpts: %d start=%f resolution=%f spacing=%s", indent, ncoords, startValue, resolution, spacing);
+    f.format("%s  npts: %d start=%f resolution=%f spacing=%s", indent, ncoords, startValue, resolution, spacing);
     f.format("%s range=%s isSubset=%s", indent, range, isSubset);
-    f.format("%n");
 
     if (values != null && spacing == irregularPoint) {
-      f.format("%scontiguous values (%d)=", indent, values.length);
-      for (double v : values)
+      f.format("%s contiguous values (%d)=", indent, values.length);
+      for (double v : values) {
         f.format("%f,", v);
+      }
       f.format("%n");
     }
   }

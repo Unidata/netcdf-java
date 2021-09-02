@@ -184,7 +184,6 @@ public class GridCoordinateSystem {
     showCoordinateAxis(getVerticalAxis(), f, showCoords);
     showCoordinateAxis(getYHorizAxis(), f, showCoords);
     showCoordinateAxis(getXHorizAxis(), f, showCoords);
-    f.format("%n");
 
     if (hcs.getProjection() != null) {
       f.format(" Projection: %s %s%n", hcs.getProjection().getName(), hcs.getProjection().paramsToString());

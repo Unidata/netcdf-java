@@ -43,10 +43,13 @@ public class TestGridCurvilinear {
       GridCoordinateSystem cs = grid.getCoordinateSystem();
       assertThat(cs).isNotNull();
       assertThat(cs.getFeatureType()).isEqualTo(FeatureType.CURVILINEAR);
+      assertThat(cs.getNominalShape()).isEqualTo(ImmutableList.of(432, 11, 22, 12));
+
       GridHorizCoordinateSystem hcs = cs.getHorizCoordinateSystem();
       assertThat(hcs).isNotNull();
       assertThat(hcs.isCurvilinear()).isTrue();
       assertThat(hcs).isInstanceOf(GridHorizCurvilinear.class);
+
       System.out.printf("  getLatLonBoundingBox = %s%n", hcs.getLatLonBoundingBox());
       System.out.printf("  getBoundingBox = %s%n", hcs.getBoundingBox());
 
@@ -61,14 +64,12 @@ public class TestGridCurvilinear {
       // read data with ProjectionRect subsetting
       ProjectionRect prect = ProjectionRect.fromSpec("-73.966053, 40.076202, 0.3246, 0.242");
       GridReferencedArray geoSubsetP = grid.readData(new GridSubset().setTimePresent().setProjectionBoundingBox(prect));
-      assertThat(geoSubsetP.data().getShape()).isEqualTo(new int[] {1, 1, 11, 16});
+      assertThat(geoSubsetP.data().getShape()).isEqualTo(new int[] {1, 11, 11, 6});
 
-      /*
-       * read data with latlon subsetting
-       * LatLonRect bbox = LatLonRect.fromSpec("40.076201, -73.966053, 0.242, 0.3246");
-       * GridReferencedArray geoSubset = grid.readData(new GridSubset().setTimePresent().setLatLonBoundingBox(bbox));
-       * assertThat(geoSubset.data().getShape()).isEqualTo(new int[] {1, 1, 11, 6});
-       */
+      // read data with ProjectionRect subsetting
+      LatLonRect llbb = LatLonRect.fromSpec("40.076202, -73.966053, 0.242, 0.3246");
+      GridReferencedArray geoSubsetP1 = grid.readData(new GridSubset().setTimePresent().setLatLonBoundingBox(llbb));
+      assertThat(geoSubsetP1.data().getShape()).isEqualTo(new int[] {1, 11, 11, 6});
     }
   }
 
@@ -119,16 +120,16 @@ public class TestGridCurvilinear {
       GridHorizCoordinateSystem hcs = cs.getHorizCoordinateSystem();
       assertThat(hcs).isNotNull();
       assertThat(hcs.isCurvilinear()).isTrue();
-      assertThat(hcs.getShape()).isEqualTo(ImmutableList.of(1, 151, 171));
+      assertThat(hcs.getShape()).isEqualTo(ImmutableList.of(151, 171));
 
       LatLonRect bbox = new LatLonRect(43.489, -8.5353, 43.371, -8.2420);
       GridReferencedArray geo = grid.readData(new GridSubset().setTimePresent().setLatLonBoundingBox(bbox));
 
-      int[] expectedShape = new int[] {1, 99, 105};
+      int[] expectedShape = new int[] {1, 102, 108};
       assertThat(geo.data().getShape()).isEqualTo(expectedShape);
 
-      assertThat(geo.data().get(0, 0, 0).doubleValue()).isWithin(1.7829999923706055);
-      assertThat(geo.data().get(0, 11, 0).doubleValue()).isWithin(1.7669999599456787);
+      assertThat(geo.data().get(0, 0, 0).doubleValue()).isWithin(TOL).of(1.781000018119812);
+      assertThat(geo.data().get(0, 11, 0).doubleValue()).isWithin(TOL).of(1.7699999809265137);
     }
   }
 
@@ -147,18 +148,20 @@ public class TestGridCurvilinear {
       GridCoordinateSystem cs = grid.getCoordinateSystem();
       assertThat(cs).isNotNull();
       assertThat(cs.getFeatureType()).isEqualTo(FeatureType.CURVILINEAR);
+      assertThat(cs.getNominalShape()).isEqualTo(ImmutableList.of(1, 20, 64, 128));
+
       GridHorizCoordinateSystem hcs = cs.getHorizCoordinateSystem();
       assertThat(hcs).isNotNull();
       assertThat(hcs.isCurvilinear()).isTrue();
 
-      LatLonRect bbox = new LatLonRect(43.489, -8.5353, 43.371, -8.2420);
+      LatLonRect bbox = LatLonRect.fromSpec("27.437455, -91.697438, 2.892091, 3.935719");
       GridReferencedArray geo = grid.readData(new GridSubset().setTimePresent().setLatLonBoundingBox(bbox));
 
-      int[] expectedShape = new int[] {1, 20, 64, 75};
+      int[] expectedShape = new int[] {1, 20, 64, 95};
       assertThat(geo.data().getShape()).isEqualTo(expectedShape);
 
-      assertThat(geo.data().get(0, 0, 0).doubleValue()).isWithin(1.7829999923706055);
-      assertThat(geo.data().get(0, 11, 0).doubleValue()).isWithin(1.7669999599456787);
+      assertThat(geo.data().get(0, 0, 0, 0).doubleValue()).isWithin(TOL).of(35.410011291503906);
+      assertThat(geo.data().get(0, 11, 11, 11).doubleValue()).isWithin(TOL).of(35.51934051513672);
     }
   }
 
@@ -171,7 +174,7 @@ public class TestGridCurvilinear {
     Formatter errlog = new Formatter();
     try (GridDataset gds = GridDatasetFactory.openGridDataset(endpoint, errlog)) {
       assertThat(gds).isNotNull();
-      assertThat(gds.getGrids()).hasSize(13);
+      assertThat(gds.getGrids()).hasSize(7);
       Grid grid = gds.findGrid(gridName).orElseThrow();
       assertThat(grid).isNotNull();
 
@@ -183,7 +186,7 @@ public class TestGridCurvilinear {
       assertThat(hcs.isCurvilinear()).isTrue();
 
       GridReferencedArray geo = grid.readData(new GridSubset());
-      int[] expectedShape = new int[] {1, 165, 161};
+      int[] expectedShape = new int[] {1, 1, 1684, 1200};
       assertThat(geo.data().getShape()).isEqualTo(expectedShape);
     }
   }
@@ -211,7 +214,7 @@ public class TestGridCurvilinear {
       LatLonRect bbox = new LatLonRect(64.0, -61., 59.0, -52.);
 
       GridReferencedArray geo = grid.readData(new GridSubset().setTimePresent().setLatLonBoundingBox(bbox));
-      int[] expectedShape = new int[] {1, 165, 161};
+      int[] expectedShape = new int[] {1, 1, 168, 164};
       assertThat(geo.data().getShape()).isEqualTo(expectedShape);
     }
   }
@@ -238,11 +241,11 @@ public class TestGridCurvilinear {
 
       GridReferencedArray geo = grid.readData(new GridSubset().setTimePresent().setHorizStride(2));
 
-      int[] expectedShape = new int[] {1, 20, 64, 75};
+      int[] expectedShape = new int[] {1, 1, 1684 / 2, 1200 / 2};
       assertThat(geo.data().getShape()).isEqualTo(expectedShape);
 
-      assertThat(geo.data().get(0, 0, 0).doubleValue()).isWithin(1.7829999923706055);
-      assertThat(geo.data().get(0, 11, 0).doubleValue()).isWithin(1.7669999599456787);
+      assertThat(Double.isNaN(geo.data().get(0, 0, 0, 0).floatValue())).isTrue();
+      assertThat(geo.data().get(0, 0, 400, 300).floatValue()).isWithin((float) TOL).of(9.5f);
     }
   }
 }
