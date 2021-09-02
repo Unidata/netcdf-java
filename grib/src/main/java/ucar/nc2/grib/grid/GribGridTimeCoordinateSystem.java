@@ -123,6 +123,7 @@ public abstract class GribGridTimeCoordinateSystem extends GridTimeCoordinateSys
   private List<CalendarDate> getTimesForNonObservation(int runIdx) {
     Preconditions.checkArgument(runTimeAxis != null && runIdx >= 0 && runIdx < runTimeAxis.getNominalSize());
     CalendarDate baseForRun = getRuntimeDate(runIdx);
+    Preconditions.checkNotNull(baseForRun);
     GridAxis<?> timeAxis = getTimeOffsetAxis(runIdx);
     List<CalendarDate> result = new ArrayList<>();
     for (int offsetIdx = 0; offsetIdx < timeAxis.getNominalSize(); offsetIdx++) {

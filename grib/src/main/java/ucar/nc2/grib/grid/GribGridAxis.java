@@ -207,7 +207,7 @@ public class GribGridAxis {
       public T setRuntimeCoordinate(CoordinateRuntime rtCoord) {
         this.gribCoord = rtCoord;
         this.cdu = rtCoord.getCalendarDateUnit();
-        List<Number> values = rtCoord.getRuntimeOffsetsInTimeUnits().stream().collect(Collectors.toList());
+        List<Number> values = new ArrayList<>(rtCoord.getRuntimeOffsetsInTimeUnits());
         RegularValues regular = calcPointIsRegular(values);
         if (regular != null) {
           setRegular(regular.ncoords, regular.start, regular.increment);

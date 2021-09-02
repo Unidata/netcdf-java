@@ -101,13 +101,11 @@ public class GribGridDataset implements GridDataset {
   private final GribCollectionImmutable gribCollection;
   private final GribCollectionImmutable.Dataset dataset;
   private final GribCollectionImmutable.GroupGC group;
-  private final GdsHorizCoordSys hcs; // unique
   private final GridGribHorizHelper hhelper;
   private final Map<Integer, GridAxis<?>> gridAxes; // <index, GridAxis>
-  private final ImmutableList<GridCoordinateSystem> gridCoordinateSystems; // <csHash, GridAxis>
+  private final ImmutableList<GridCoordinateSystem> gridCoordinateSystems;
   private final ImmutableList<GribGrid> grids;
 
-  private final boolean isLatLon;
   private final boolean isCurvilinearOrthogonal;
 
   GribGridDataset(GribCollectionImmutable gribCollection, @Nullable GribCollectionImmutable.Dataset dataset,
@@ -122,9 +120,8 @@ public class GribGridDataset implements GridDataset {
     boolean isGrib1 = gribCollection.isGrib1;
     GribIosp iosp = gribCollection.getIosp();
 
-    // A GribGridDataset has a unique GdsHorizCoordSys. When curvilinear, there may be multiple horiz CS
-    this.hcs = this.group.getGdsHorizCoordSys();
-    this.isLatLon = hcs.isLatLon();
+    // A GribGridDataset has a unique GdsHorizCoordSys. When curvilinear, there may be multiple horizCS
+    GdsHorizCoordSys hcs = this.group.getGdsHorizCoordSys();
     this.isCurvilinearOrthogonal =
         !isGrib1 && Grib2Utils.isCurvilinearOrthogonal(hcs.template, gribCollection.getCenter());
     this.hhelper = new GridGribHorizHelper(gribCollection, hcs, isCurvilinearOrthogonal, this.group.getVariables());
