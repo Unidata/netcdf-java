@@ -100,8 +100,9 @@ public class Grib2Utils {
   }
 
   //////////////////////////////////////////////////////////////////////////////////
-  // pretty much lame stuff
+  // ad-hoc Conventions for identifying curvilinear coordinates.
   // possibly move to Customizer
+  // LOOK is there some real Convention?
 
   // check if grid template is "Curvilinear Orthogonal", (NCEP 204) methods below only used when thats true
   public static boolean isCurvilinearOrthogonal(int gridTemplate, int center) {
@@ -136,14 +137,29 @@ public class Grib2Utils {
   public enum LatLon2DCoord {
     U_Latitude, U_Longitude, V_Latitude, V_Longitude, P_Latitude, P_Longitude;
 
+    public LatLonCoordType getCoordType() {
+      switch (this) {
+        case U_Latitude:
+        case U_Longitude:
+          return LatLonCoordType.U;
+        case V_Latitude:
+        case V_Longitude:
+          return LatLonCoordType.V;
+        case P_Latitude:
+        case P_Longitude:
+          return LatLonCoordType.P;
+      }
+      throw new IllegalStateException();
+    }
+
     public AxisType getAxisType() {
       return this.name().contains("Latitude") ? AxisType.Lat : AxisType.Lon;
     }
   }
 
   /**
-   * This looks for snippets in the variable name/desc as to whether it wants U, V, or P 2D coordinates
-   * 
+   * This looks for snippets in the variable name/desc as to whether it wants U, V, or P 2D coordinates.
+   *
    * @param desc variable name/desc
    * @return U, V, or P for normal variables, null for the coordinates themselves
    */

@@ -7,10 +7,10 @@ package ucar.nc2.grid;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.primitives.Ints;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.array.Array;
+import ucar.array.Arrays;
 import ucar.array.InvalidRangeException;
 import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.constants.FeatureType;
@@ -91,16 +91,13 @@ public class TestReadGridCurvilinear {
   }
 
   @Test
-  @Ignore("Grib Curvilinear not done yet")
   public void testGribCurvilinear() throws IOException, InvalidRangeException {
     String filename = TestDir.cdmUnitTestDir + "ft/fmrc/rtofs/ofs.20091122/ofs_atl.t00z.F024.grb.grib2";
     readGrid(filename, "Sea_Surface_Height_Relative_to_Geoid_surface", ImmutableList.of(1, 1, 1684, 1200),
-        "reftime time lataxis lonaxis", "2009-11-23T00:00Z", null, new int[] {1, 1, 1684, 1200});
+        "reftime time Lat Lon", "2009-11-23T00:00Z", null, new int[] {1, 1, 1684, 1200});
   }
 
   @Test
-  @Category(NeedsCdmUnitTest.class)
-  @Ignore("GRIB curvilinear not ready")
   public void testCurvilinearGrib() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "ft/fmrc/rtofs/ofs.20091122/ofs_atl.t00z.F024.grb.grib2";
     String gridName = "3-D_Temperature_depth_below_sea";
@@ -170,9 +167,11 @@ public class TestReadGridCurvilinear {
 
       GridHorizCoordinateSystem mhcs = mcs.getHorizCoordinateSystem();
       assertThat(mhcs).isInstanceOf(GridHorizCurvilinear.class);
+      int count = 0;
       for (GridHorizCoordinateSystem.CellBounds bound : mhcs.cells()) {
-        System.out.printf("%s%n", bound);
+        count++;
       }
+      assertThat(count).isEqualTo(Arrays.computeSize(matShape));
       System.out.printf("  llbb = %s%n", mhcs.getLatLonBoundingBox());
       System.out.printf("  mapArea = %s%n", mhcs.getBoundingBox());
     }
