@@ -121,12 +121,12 @@ public class GridRenderer {
    * @return String representation of value
    */
   public String getXYvalueStr(ProjectionPoint loc) {
-    if ((dataState.grid == null) || (geodata == null)) {
+    if ((dataState.grid == null) || (geodata == null) || (dataState.mcs == null)) {
       return "";
     }
 
-    // find the grid indexes
-    GridHorizCoordinateSystem hcs = dataState.gcs.getHorizCoordinateSystem();
+    // find the grid indexes in the materialized grid array
+    GridHorizCoordinateSystem hcs = dataState.mcs.getHorizCoordinateSystem();
     Optional<GridHorizCoordinateSystem.CoordReturn> opt =
         hcs.findXYindexFromCoord(loc.getX(), loc.getY(), dataState.index);
 
@@ -188,7 +188,8 @@ public class GridRenderer {
     }
 
     geodata = reader.read();
-    dataState.saveState();
+    dataState.saveState(); // ?
+    dataState.mcs = geodata.getMaterializedCoordinateSystem();
     System.out.printf("readHSlice %s done%n", dataState.grid.getName());
     return geodata;
   }

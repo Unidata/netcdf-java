@@ -124,7 +124,7 @@ public class SubsetPointHelper {
 
   GridAxisPoint.Builder<?> makeSubsetByIndex(int index) {
     GridAxisPoint.Builder<?> builder = orgGridAxis.toBuilder();
-    double val = orgGridAxis.getCoordMidpoint(index);
+    double val = orgGridAxis.getCoordDouble(index);
     return builder.subsetWithSingleValue(val, Range.make(index, index));
   }
 
@@ -144,11 +144,11 @@ public class SubsetPointHelper {
 
     if (minIndex >= orgGridAxis.getNominalSize()) {
       errlog.format("no points in subset: lower %f > end %f", lower,
-          orgGridAxis.getCoordMidpoint(orgGridAxis.getNominalSize() - 1));
+          orgGridAxis.getCoordDouble(orgGridAxis.getNominalSize() - 1));
       return Optional.empty();
     }
     if (maxIndex < 0) {
-      errlog.format("no points in subset: upper %f < start %f", upper, orgGridAxis.getCoordMidpoint(0));
+      errlog.format("no points in subset: upper %f < start %f", upper, orgGridAxis.getCoordDouble(0));
       return Optional.empty();
     }
 

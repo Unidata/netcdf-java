@@ -12,6 +12,7 @@ import ucar.nc2.grid.GridAxisPoint;
 import ucar.nc2.grid.GridCoordinateSystem;
 import ucar.nc2.grid.GridDataset;
 import ucar.nc2.grid.GridTimeCoordinateSystem;
+import ucar.nc2.grid.MaterializedCoordinateSystem;
 import ucar.ui.util.NamedObject;
 import ucar.unidata.geoloc.ProjectionRect;
 
@@ -21,8 +22,9 @@ import javax.annotation.Nullable;
 class DataState {
   GridDataset gridDataset;
   Grid grid;
-  GridCoordinateSystem gcs;
-  GridTimeCoordinateSystem tcs;
+  GridCoordinateSystem gcs; // from the grid object
+  GridTimeCoordinateSystem tcs; // from the grid object
+  MaterializedCoordinateSystem mcs; // from the currently read (materialized) data array
 
   @Nullable
   GridAxisPoint rtaxis;

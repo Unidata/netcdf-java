@@ -58,7 +58,7 @@ public class TestCoordAxisToGridAxis {
     assertThat(Grids.getCoordEdgeMinMax(gridAxis)).isEqualTo(MinMax.create(-5.0, 65));
 
     for (int i = 0; i < gridAxis.getNominalSize(); i++) {
-      assertThat(gridAxis.getCoordMidpoint(i)).isEqualTo(10.0 * i);
+      assertThat(gridAxis.getCoordDouble(i)).isEqualTo(10.0 * i);
       CoordInterval intv = gridAxis.getCoordInterval(i);
       assertThat(intv.start()).isEqualTo(10.0 * i - 5.0);
       assertThat(intv.end()).isEqualTo(10.0 * i + 5.0);
@@ -116,7 +116,7 @@ public class TestCoordAxisToGridAxis {
     assertThat(Grids.getCoordEdgeMinMax(gridAxis)).isEqualTo(MinMax.create(-0.5, 25));
 
     for (int i = 0; i < gridAxis.getNominalSize(); i++) {
-      assertThat(gridAxis.getCoordMidpoint(i)).isEqualTo(timeOffsets[i]);
+      assertThat(gridAxis.getCoordDouble(i)).isEqualTo(timeOffsets[i]);
     }
 
     int count = 0;

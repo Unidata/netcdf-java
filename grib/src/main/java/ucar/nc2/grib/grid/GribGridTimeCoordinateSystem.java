@@ -127,7 +127,7 @@ public abstract class GribGridTimeCoordinateSystem extends GridTimeCoordinateSys
     GridAxis<?> timeAxis = getTimeOffsetAxis(runIdx);
     List<CalendarDate> result = new ArrayList<>();
     for (int offsetIdx = 0; offsetIdx < timeAxis.getNominalSize(); offsetIdx++) {
-      result.add(baseForRun.add((long) timeAxis.getCoordMidpoint(offsetIdx), this.offsetPeriod));
+      result.add(baseForRun.add((long) timeAxis.getCoordDouble(offsetIdx), this.offsetPeriod));
     }
     return result;
   }

@@ -116,8 +116,8 @@ public class SubsetIntervalHelper {
     }
 
     GridAxisInterval.Builder<?> builder = orgGridAxis.toBuilder();
-    builder.subset(ncoords, orgGridAxis.getCoordMidpoint(subsetRange.first()),
-        orgGridAxis.getCoordMidpoint(subsetRange.last()), resolution, subsetRange);
+    builder.subset(ncoords, orgGridAxis.getCoordDouble(subsetRange.first()),
+        orgGridAxis.getCoordDouble(subsetRange.last()), resolution, subsetRange);
     return builder;
   }
 

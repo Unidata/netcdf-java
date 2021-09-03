@@ -85,7 +85,7 @@ public class TestGribGridTimeCS {
       assertThat(times).hasSize(ntimes);
       CalendarDate baseDate = subject.getBaseDate();
       for (int idx = 0; idx < ntimes; idx++) {
-        CalendarDate expected = baseDate.add((long) timeAxis.getCoordMidpoint(idx), offsetPeriod);
+        CalendarDate expected = baseDate.add((long) timeAxis.getCoordDouble(idx), offsetPeriod);
         System.out.printf(" (%d)  got= %s want= %s%n", idx, times.get(idx), expected);
         assertThat(times.get(idx)).isEqualTo(expected);
       }
@@ -162,7 +162,7 @@ public class TestGribGridTimeCS {
         assertThat(times).hasSize(ntimes);
         int offsetIdx = 0;
         for (CalendarDate time : times) {
-          CalendarDate expected = baseForRun.add((long) offset.getCoordMidpoint(offsetIdx++), offsetPeriod);
+          CalendarDate expected = baseForRun.add((long) offset.getCoordDouble(offsetIdx++), offsetPeriod);
           assertThat(time).isEqualTo(expected);
         }
       }
@@ -233,7 +233,7 @@ public class TestGribGridTimeCS {
         assertThat(times).hasSize(ntimes);
         int offsetIdx = 0;
         for (CalendarDate time : times) {
-          CalendarDate expected = baseForRun.add((long) offset.getCoordMidpoint(offsetIdx++), offsetPeriod);
+          CalendarDate expected = baseForRun.add((long) offset.getCoordDouble(offsetIdx++), offsetPeriod);
           assertThat(time).isEqualTo(expected);
         }
       }
@@ -294,7 +294,7 @@ public class TestGribGridTimeCS {
         assertThat(times.size()).isLessThan(ntimes + 1);
         int offsetIdx = 0;
         for (CalendarDate time : times) {
-          CalendarDate expected = baseForRun.add((long) offset.getCoordMidpoint(offsetIdx++), offsetPeriod);
+          CalendarDate expected = baseForRun.add((long) offset.getCoordDouble(offsetIdx++), offsetPeriod);
           // System.out.printf(" (%d,%d) got= %s want= %s%n", runidx, offsetIdx, time, expected);
           assertThat(time).isEqualTo(expected);
         }

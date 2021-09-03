@@ -85,7 +85,7 @@ public class GridTimeCS extends GridTimeCoordinateSystem {
   private List<CalendarDate> getTimesForObservation() {
     List<CalendarDate> result = new ArrayList<>();
     for (int timeIdx = 0; timeIdx < timeOffsetAxis.getNominalSize(); timeIdx++) {
-      result.add(this.calendarDateUnit.makeCalendarDate((long) timeOffsetAxis.getCoordMidpoint(timeIdx)));
+      result.add(this.calendarDateUnit.makeCalendarDate((long) timeOffsetAxis.getCoordDouble(timeIdx)));
     }
     return result;
   }
@@ -96,7 +96,7 @@ public class GridTimeCS extends GridTimeCoordinateSystem {
     GridAxis<?> timeAxis = getTimeOffsetAxis(runIdx);
     List<CalendarDate> result = new ArrayList<>();
     for (int offsetIdx = 0; offsetIdx < timeAxis.getNominalSize(); offsetIdx++) {
-      result.add(baseForRun.add((long) timeAxis.getCoordMidpoint(offsetIdx), this.offsetPeriod));
+      result.add(baseForRun.add((long) timeAxis.getCoordDouble(offsetIdx), this.offsetPeriod));
     }
     return result;
   }

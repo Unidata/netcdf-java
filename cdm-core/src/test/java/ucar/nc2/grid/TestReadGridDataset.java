@@ -125,7 +125,7 @@ public class TestReadGridDataset {
       GridAxis<?> vert = mcs.getVerticalAxis();
       if (vert != null) {
         assertThat(vert.getNominalSize()).isEqualTo(1);
-        assertThat(vert.getCoordMidpoint(0)).isEqualTo(expectVert);
+        assertThat(vert.getCoordDouble(0)).isEqualTo(expectVert);
       }
 
       GridTimeCoordinateSystem mtcs = mcs.getTimeCoordSystem();

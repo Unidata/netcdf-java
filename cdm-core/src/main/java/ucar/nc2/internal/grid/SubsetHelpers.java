@@ -287,7 +287,7 @@ public class SubsetHelpers {
       // only check if target is in discontiguous interval i
       if (intervalContains(orgGridAxis, target, i)) {
         // get midpoint of interval
-        double coord = orgGridAxis.getCoordMidpoint(i);
+        double coord = orgGridAxis.getCoordDouble(i);
         // how close is the midpoint of this interval to our target value?
         double diff = Math.abs(coord - target);
         // Look for the interval with the minimum difference. If multiple intervals have the same
@@ -307,10 +307,10 @@ public class SubsetHelpers {
 
   static int search(GridAxis<?> time, double want) {
     if (time.getNominalSize() == 1) {
-      return DoubleMath.fuzzyEquals(want, time.getCoordMidpoint(0), 1.0e-8) ? 0 : -1;
+      return DoubleMath.fuzzyEquals(want, time.getCoordDouble(0), 1.0e-8) ? 0 : -1;
     }
     if (time.isRegular()) {
-      double fval = (want - time.getCoordMidpoint(0)) / time.getResolution();
+      double fval = (want - time.getCoordDouble(0)) / time.getResolution();
       double ival = Math.rint(fval);
       return DoubleMath.fuzzyEquals(fval, ival, 1.0e-8) ? (int) ival : (int) -ival - 1; // LOOK
     }

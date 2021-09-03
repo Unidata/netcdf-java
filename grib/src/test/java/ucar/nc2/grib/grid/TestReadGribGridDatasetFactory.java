@@ -88,7 +88,7 @@ public class TestReadGribGridDatasetFactory {
         CoordInterval intv = timeAxis1D.getCoordInterval(i);
         assertThat(intv.start()).isEqualTo(expected[i]);
         assertThat(intv.end()).isEqualTo(expected[i + 1]);
-        assertThat(timeAxis1D.getCoordMidpoint(i)).isEqualTo((expected[i] + expected[i + 1]) / 2);
+        assertThat(timeAxis1D.getCoordDouble(i)).isEqualTo((expected[i] + expected[i + 1]) / 2);
       }
       MinMax maxmin = Grids.getCoordEdgeMinMax(timeAxis1D);
       assertThat(maxmin.min()).isEqualTo(expected[0]);
@@ -117,7 +117,7 @@ public class TestReadGribGridDatasetFactory {
       double[] expected = new double[] {10.000000, 20.000000, 30.000000, 50.000000, 70.000000, 100.000000};
       double[] bounds = new double[] {5, 15.000000, 25.000000, 40.000000, 60.000000, 85.000000, 115.000000};
       for (int i = 0; i < vertAxis.getNominalSize(); i++) {
-        assertThat(vertAxis.getCoordMidpoint(i)).isEqualTo(expected[i]);
+        assertThat(vertAxis.getCoordDouble(i)).isEqualTo(expected[i]);
         CoordInterval intv = vertAxis.getCoordInterval(i);
         assertThat(intv.start()).isEqualTo(bounds[i]);
         assertThat(intv.end()).isEqualTo(bounds[i + 1]);
@@ -153,7 +153,7 @@ public class TestReadGribGridDatasetFactory {
         CoordInterval intv = timeAxisIntv.getCoordInterval(i);
         assertThat(intv.start()).isEqualTo(bounds1[i]);
         assertThat(intv.end()).isEqualTo(bounds2[i]);
-        assertThat(timeAxisIntv.getCoordMidpoint(i)).isEqualTo((bounds1[i] + bounds2[i]) / 2);
+        assertThat(timeAxisIntv.getCoordDouble(i)).isEqualTo((bounds1[i] + bounds2[i]) / 2);
       }
 
       int count = 0;

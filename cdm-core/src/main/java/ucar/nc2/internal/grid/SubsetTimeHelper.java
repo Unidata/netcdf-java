@@ -171,10 +171,10 @@ public class SubsetTimeHelper {
 
   private static int search(GridAxis<?> time, double want) {
     if (time.getNominalSize() == 1) {
-      return DoubleMath.fuzzyEquals(want, time.getCoordMidpoint(0), 1.0e-8) ? 0 : -1;
+      return DoubleMath.fuzzyEquals(want, time.getCoordDouble(0), 1.0e-8) ? 0 : -1;
     }
     if (time.isRegular()) {
-      double fval = (want - time.getCoordMidpoint(0)) / time.getResolution();
+      double fval = (want - time.getCoordDouble(0)) / time.getResolution();
       double ival = Math.rint(fval);
       return DoubleMath.fuzzyEquals(fval, ival, 1.0e-8) ? (int) ival : (int) -ival - 1; // LOOK
     }

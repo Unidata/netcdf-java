@@ -108,7 +108,7 @@ public class TestRange {
   }
 
   @Test
-  public void testCopyWithStride() throws InvalidRangeException {
+  public void testCopyWithStride() {
     Range r = Range.make("test", 42);
 
     Range rs = r.copyWithStride(6);
@@ -129,6 +129,19 @@ public class TestRange {
     } catch (Exception e) {
       assertThat(e.getMessage()).contains("stride (-1) must be > 0");
     }
+  }
+
+  @Test
+  public void testCopyWithStride2() {
+    Range r0 = Range.make(0, 10, 3);
+    assertThat(r0.stride()).isEqualTo(3);
+    assertThat(r0.first()).isEqualTo(0);
+    assertThat(r0.last()).isEqualTo(9);
+    assertThat(r0.length()).isEqualTo(4);
+
+    Range r = Range.make("test", 10);
+    Range rs = r.copyWithStride(3);
+    assertThat(r0).isEqualTo(rs);
   }
 
   @Test

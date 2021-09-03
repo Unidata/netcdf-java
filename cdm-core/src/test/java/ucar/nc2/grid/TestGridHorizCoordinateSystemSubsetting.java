@@ -24,17 +24,16 @@ public class TestGridHorizCoordinateSystemSubsetting {
   @Test
   public void testRegularWithStride() {
     GridAxisPoint.Builder<?> xbuilder = GridAxisPoint.builder().setAxisType(AxisType.GeoX).setName("xname")
-        .setUnits("km").setDescription("desc").setRegular(9, 0.0, 10.0).setSpacing(GridAxisSpacing.regularPoint)
-        .addAttribute(new Attribute("aname", 99.0));
+        .setUnits("km").setDescription("desc").setRegular(9, 0.0, 10.0).setSpacing(GridAxisSpacing.regularPoint);
     GridAxisPoint xaxis = xbuilder.build();
 
     GridAxisPoint.Builder<?> ybuilder = GridAxisPoint.builder().setAxisType(AxisType.GeoY).setName("yname")
-        .setUnits("km").setDescription("desc").setRegular(7, 0.0, 11.0).setSpacing(GridAxisSpacing.regularPoint)
-        .addAttribute(new Attribute("aname", 99.0));
+        .setUnits("km").setDescription("desc").setRegular(7, 0.0, 11.0).setSpacing(GridAxisSpacing.regularPoint);
     GridAxisPoint yaxis = ybuilder.build();
 
     Projection project = new FlatEarth();
     GridHorizCoordinateSystem hcs = new GridHorizCoordinateSystem(xaxis, yaxis, project);
+    System.out.printf("hcs = %s%n", hcs);
 
     Formatter errlog = new Formatter();
     GridHorizCoordinateSystem subset = hcs.subset(GridSubset.create().setHorizStride(3), errlog).orElseThrow();
@@ -46,10 +45,6 @@ public class TestGridHorizCoordinateSystemSubsetting {
     assertThat(subset.getSubsetRanges()).isEqualTo(ImmutableList.of(Range.make(0, 6, 3), Range.make(0, 8, 3)));
     assertThat(subset.getShape()).isEqualTo(ImmutableList.of(3, 3));
 
-    assertThat(subset.getGeoUnits()).isEqualTo("km");
-    assertThat(subset.getBoundingBox()).isEqualTo(ProjectionRect.fromSpec("-15, -16.5, 90, 99"));
-    assertThat(subset.getLatLonBoundingBox()).isNotNull();
-
     GridHorizCoordinateSystem copy =
         new GridHorizCoordinateSystem(hcs.getXHorizAxis(), hcs.getYHorizAxis(), hcs.getProjection());
     assertThat(copy).isEqualTo(hcs);
@@ -57,14 +52,16 @@ public class TestGridHorizCoordinateSystemSubsetting {
 
     GridAxisPoint ysubset = subset.getYHorizAxis();
     assertThat((Object) ysubset).isNotNull();
-    assertThat(ysubset.getSpacing()).isEqualTo(GridAxisSpacing.regularPoint);
+    assertThat(ysubset.getSpacing()).isEqualTo(GridAxisSpacing.nominalPoint);
+    System.out.printf("ysubset = %s%n", ysubset);
+
     GridAxisPoint xsubset = subset.getXHorizAxis();
     assertThat((Object) xsubset).isNotNull();
-    assertThat(xsubset.getSpacing()).isEqualTo(GridAxisSpacing.regularPoint);
+    assertThat(xsubset.getSpacing()).isEqualTo(GridAxisSpacing.nominalPoint);
+    System.out.printf("xsubset = %s%n", xsubset);
 
     int count = 0;
     for (Number val : ysubset) {
-      System.out.printf(" %s%n", val);
       assertThat(val).isEqualTo(count * 33);
       count++;
     }
@@ -72,11 +69,14 @@ public class TestGridHorizCoordinateSystemSubsetting {
 
     count = 0;
     for (Number val : xsubset) {
-      System.out.printf(" %s%n", val);
       assertThat(val).isEqualTo(count * 30);
       count++;
     }
     assertThat(count).isEqualTo(3);
+
+    assertThat(subset.getGeoUnits()).isEqualTo("km");
+    assertThat(subset.getBoundingBox()).isEqualTo(ProjectionRect.fromSpec("-5, -5.5, 90, 77"));
+    assertThat(subset.getLatLonBoundingBox()).isNotNull();
   }
 
   @Test
@@ -107,10 +107,6 @@ public class TestGridHorizCoordinateSystemSubsetting {
     assertThat(subset.getSubsetRanges()).isEqualTo(ImmutableList.of(Range.make(0, 6, 2), Range.make(0, 8, 2)));
     assertThat(subset.getShape()).isEqualTo(ImmutableList.of(4, 5));
 
-    assertThat(subset.getGeoUnits()).isEqualTo("km");
-    assertThat(subset.getBoundingBox()).isEqualTo(ProjectionRect.fromSpec("-10, -5, 100, 135"));
-    assertThat(subset.getLatLonBoundingBox()).isNotNull();
-
     GridHorizCoordinateSystem copy =
         new GridHorizCoordinateSystem(hcs.getXHorizAxis(), hcs.getYHorizAxis(), hcs.getProjection());
     assertThat(copy).isEqualTo(hcs);
@@ -118,11 +114,11 @@ public class TestGridHorizCoordinateSystemSubsetting {
 
     GridAxisPoint ysubset = subset.getYHorizAxis();
     assertThat((Object) ysubset).isNotNull();
-    assertThat(ysubset.getSpacing()).isEqualTo(GridAxisSpacing.irregularPoint);
+    assertThat(ysubset.getSpacing()).isEqualTo(GridAxisSpacing.nominalPoint);
+    System.out.printf("ysubset = %s%n", ysubset);
 
     int count = 0;
     for (Number val : ysubset) {
-      System.out.printf(" %s%n", val);
       assertThat(val).isEqualTo(values[count * 2]);
       count++;
     }
@@ -130,15 +126,19 @@ public class TestGridHorizCoordinateSystemSubsetting {
 
     GridAxisPoint xsubset = subset.getXHorizAxis();
     assertThat((Object) xsubset).isNotNull();
-    assertThat(xsubset.getSpacing()).isEqualTo(GridAxisSpacing.regularPoint);
+    assertThat(xsubset.getSpacing()).isEqualTo(GridAxisSpacing.nominalPoint);
+    System.out.printf("xsubset = %s%n", xsubset);
 
     count = 0;
     for (Number val : xsubset) {
-      System.out.printf(" %s%n", val);
       assertThat(val).isEqualTo(count * 20);
       count++;
     }
     assertThat(count).isEqualTo(5);
+
+    assertThat(subset.getGeoUnits()).isEqualTo("km");
+    assertThat(subset.getBoundingBox()).isEqualTo(ProjectionRect.fromSpec("-5, -2.5, 90, 112.5"));
+    assertThat(subset.getLatLonBoundingBox()).isNotNull();
   }
 
   @Test
@@ -172,10 +172,6 @@ public class TestGridHorizCoordinateSystemSubsetting {
     assertThat(subset.getSubsetRanges()).isEqualTo(ImmutableList.of(Range.make(0, 6, 2), Range.make(0, 4, 2)));
     assertThat(subset.getShape()).isEqualTo(ImmutableList.of(4, 3));
 
-    assertThat(subset.getGeoUnits()).isEqualTo("km");
-    // assertThat(subset.getBoundingBox()).isEqualTo(ProjectionRect.fromSpec("-10, -5, 100, 135"));
-    assertThat(subset.getLatLonBoundingBox()).isNotNull();
-
     GridHorizCoordinateSystem copy =
         new GridHorizCoordinateSystem(hcs.getXHorizAxis(), hcs.getYHorizAxis(), hcs.getProjection());
     assertThat(copy).isEqualTo(hcs);
@@ -183,14 +179,15 @@ public class TestGridHorizCoordinateSystemSubsetting {
 
     GridAxisPoint ysubset = subset.getYHorizAxis();
     assertThat((Object) ysubset).isNotNull();
-    assertThat(ysubset.getSpacing()).isEqualTo(GridAxisSpacing.irregularPoint);
+    assertThat(ysubset.getSpacing()).isEqualTo(GridAxisSpacing.nominalPoint);
+    System.out.printf("ysubset = %s%n", ysubset);
     GridAxisPoint xsubset = subset.getXHorizAxis();
     assertThat((Object) xsubset).isNotNull();
     assertThat(xsubset.getSpacing()).isEqualTo(GridAxisSpacing.nominalPoint);
+    System.out.printf("xsubset = %s%n", xsubset);
 
     int count = 0;
     for (Number val : ysubset) {
-      System.out.printf(" %s%n", val);
       assertThat(val).isEqualTo(yvalues[count * 2]);
       count++;
     }
@@ -198,17 +195,20 @@ public class TestGridHorizCoordinateSystemSubsetting {
 
     count = 0;
     for (Number val : xsubset) {
-      System.out.printf(" %s%n", val);
       assertThat(val).isEqualTo(xvalues[count * 2]);
       count++;
     }
     assertThat(count).isEqualTo(3);
 
     for (int i = 0; i < xsubset.getNominalSize(); i++) {
-      assertThat(xsubset.getCoordMidpoint(i)).isEqualTo(xvalues[2 * i]);
+      assertThat(xsubset.getCoordDouble(i)).isEqualTo(xvalues[2 * i]);
       assertThat(xsubset.getCoordInterval(i).start()).isEqualTo(xedges[2 * i]);
       assertThat(xsubset.getCoordInterval(i).end()).isEqualTo(xedges[2 * (i + 1)]);
     }
+
+    assertThat(subset.getGeoUnits()).isEqualTo("km");
+    assertThat(subset.getBoundingBox().nearlyEquals(ProjectionRect.fromSpec("-0, -2.5, 100, 112.5"))).isTrue();
+    assertThat(subset.getLatLonBoundingBox()).isNotNull();
   }
 
   @Test
@@ -252,7 +252,6 @@ public class TestGridHorizCoordinateSystemSubsetting {
 
     int count = 3;
     for (Number val : ysubset) {
-      System.out.printf(" %s%n", val);
       assertThat(val).isEqualTo(count * 110);
       count++;
     }
@@ -266,7 +265,6 @@ public class TestGridHorizCoordinateSystemSubsetting {
 
     count = 2;
     for (Number val : xsubset) {
-      System.out.printf(" %s%n", val);
       assertThat(val).isEqualTo(count * 100);
       count++;
     }
@@ -314,7 +312,6 @@ public class TestGridHorizCoordinateSystemSubsetting {
 
     int count = 1;
     for (Number val : ysubset) {
-      System.out.printf(" %s%n", val);
       assertThat(val).isEqualTo(values[count]);
       count++;
     }
@@ -327,7 +324,6 @@ public class TestGridHorizCoordinateSystemSubsetting {
 
     count = 2;
     for (Number val : xsubset) {
-      System.out.printf(" %s%n", val);
       assertThat(val).isEqualTo(count * 10);
       count++;
     }
@@ -380,7 +376,6 @@ public class TestGridHorizCoordinateSystemSubsetting {
 
     int count = 1;
     for (Number val : ysubset) {
-      System.out.printf(" %s%n", val);
       assertThat(val).isEqualTo(yvalues[count]);
       count++;
     }
@@ -393,14 +388,13 @@ public class TestGridHorizCoordinateSystemSubsetting {
 
     count = 1;
     for (Number val : xsubset) {
-      System.out.printf(" %s%n", val);
       assertThat(val).isEqualTo(xvalues[count]);
       count++;
     }
     assertThat(count).isEqualTo(6);
 
     for (int i = 0; i < xsubset.getNominalSize(); i++) {
-      assertThat(xsubset.getCoordMidpoint(i)).isEqualTo(xvalues[i + 1]);
+      assertThat(xsubset.getCoordDouble(i)).isEqualTo(xvalues[i + 1]);
       assertThat(xsubset.getCoordInterval(i).start()).isEqualTo(xedges[i + 1]);
       assertThat(xsubset.getCoordInterval(i).end()).isEqualTo(xedges[i + 2]);
     }
@@ -428,32 +422,36 @@ public class TestGridHorizCoordinateSystemSubsetting {
 
     GridAxisPoint ysubset = subset.getYHorizAxis();
     assertThat((Object) ysubset).isNotNull();
-    assertThat(ysubset.getSpacing()).isEqualTo(GridAxisSpacing.regularPoint);
+    assertThat(ysubset.getSpacing()).isEqualTo(GridAxisSpacing.nominalPoint);
     assertThat(ysubset.getSubsetRange()).isEqualTo(Range.make(3, 6, 3));
     assertThat(ysubset.getNominalSize()).isEqualTo(2);
+    System.out.printf("ysubset = %s%n", ysubset);
 
     int count = 0;
     for (Number val : ysubset) {
-      System.out.printf(" %s%n", val);
       assertThat(val).isEqualTo((3 + 3 * count) * 110);
       count++;
     }
     assertThat(count).isEqualTo(2);
 
-
     GridAxisPoint xsubset = subset.getXHorizAxis();
     assertThat((Object) xsubset).isNotNull();
-    assertThat(xsubset.getSpacing()).isEqualTo(GridAxisSpacing.regularPoint);
+    assertThat(xsubset.getSpacing()).isEqualTo(GridAxisSpacing.nominalPoint);
     assertThat(xsubset.getSubsetRange()).isEqualTo(Range.make(2, 5, 3));
     assertThat(xsubset.getNominalSize()).isEqualTo(2);
+    System.out.printf("xsubset = %s%n", xsubset);
 
     count = 0;
     for (Number val : xsubset) {
-      System.out.printf(" %s%n", val);
       assertThat(val).isEqualTo((2 + 3 * count) * 100);
       count++;
     }
     assertThat(count).isEqualTo(2);
+
+    assertThat(subset.getGeoUnits()).isEqualTo("km");
+    assertThat(subset.getBoundingBox()).isEqualTo(ProjectionRect.fromSpec("150, 275, 600, 660"));
+    assertThat(subset.getLatLonBoundingBox()).isNotNull();
+    assertThat(subset.getLatLonBoundingBox()).isNotNull();
   }
 
   @Test
@@ -479,13 +477,13 @@ public class TestGridHorizCoordinateSystemSubsetting {
 
     GridAxisPoint ysubset = subset.getYHorizAxis();
     assertThat((Object) ysubset).isNotNull();
-    assertThat(ysubset.getSpacing()).isEqualTo(GridAxisSpacing.irregularPoint);
+    assertThat(ysubset.getSpacing()).isEqualTo(GridAxisSpacing.nominalPoint);
     assertThat(ysubset.getSubsetRange()).isEqualTo(Range.make(1, 5, 2));
     assertThat(ysubset.getNominalSize()).isEqualTo(3);
+    System.out.printf("ysubset = %s%n", ysubset);
 
     int count = 0;
     for (Number val : ysubset) {
-      System.out.printf(" %s%n", val);
       assertThat(val).isEqualTo(values[1 + 2 * count]);
       count++;
     }
@@ -493,17 +491,22 @@ public class TestGridHorizCoordinateSystemSubsetting {
 
     GridAxisPoint xsubset = subset.getXHorizAxis();
     assertThat((Object) xsubset).isNotNull();
-    assertThat(xsubset.getSpacing()).isEqualTo(GridAxisSpacing.regularPoint);
+    assertThat(xsubset.getSpacing()).isEqualTo(GridAxisSpacing.nominalPoint);
     assertThat(xsubset.getSubsetRange()).isEqualTo(Range.make(2, 6, 2));
     assertThat(xsubset.getNominalSize()).isEqualTo(3);
+    System.out.printf("xsubset = %s%n", xsubset);
 
     count = 0;
     for (Number val : xsubset) {
-      System.out.printf(" %s%n", val);
       assertThat(val).isEqualTo((2 + 2 * count) * 10);
       count++;
     }
     assertThat(count).isEqualTo(3);
+
+    assertThat(subset.getGeoUnits()).isEqualTo("km");
+    assertThat(subset.getBoundingBox()).isEqualTo(ProjectionRect.fromSpec("15, 2.5, 60, 107.5"));
+    assertThat(subset.getLatLonBoundingBox()).isNotNull();
+    assertThat(subset.getLatLonBoundingBox()).isNotNull();
   }
 
   @Test
@@ -532,9 +535,10 @@ public class TestGridHorizCoordinateSystemSubsetting {
 
     GridAxisPoint ysubset = subset.getYHorizAxis();
     assertThat((Object) ysubset).isNotNull();
-    assertThat(ysubset.getSpacing()).isEqualTo(GridAxisSpacing.irregularPoint);
+    assertThat(ysubset.getSpacing()).isEqualTo(GridAxisSpacing.nominalPoint);
     assertThat(ysubset.getSubsetRange()).isEqualTo(Range.make(1, 3, 2));
     assertThat(ysubset.getNominalSize()).isEqualTo(2);
+    System.out.printf("ysubset = %s%n", ysubset);
 
     int count = 0;
     for (Number val : ysubset) {
@@ -548,20 +552,25 @@ public class TestGridHorizCoordinateSystemSubsetting {
     assertThat(xsubset.getSpacing()).isEqualTo(GridAxisSpacing.nominalPoint);
     assertThat(xsubset.getSubsetRange()).isEqualTo(Range.make(1, 5, 2));
     assertThat(xsubset.getNominalSize()).isEqualTo(3);
+    System.out.printf("xsubset = %s%n", xsubset);
 
     count = 0;
     for (Number val : xsubset) {
-      System.out.printf(" %s%n", val);
       assertThat(val).isEqualTo(xvalues[1 + 2 * count]);
       count++;
     }
     assertThat(count).isEqualTo(3);
 
     for (int i = 0; i < xsubset.getNominalSize(); i++) {
-      assertThat(xsubset.getCoordMidpoint(i)).isEqualTo(xvalues[1 + 2 * i]);
+      assertThat(xsubset.getCoordDouble(i)).isEqualTo(xvalues[1 + 2 * i]);
       assertThat(xsubset.getCoordInterval(i).start()).isEqualTo(xedges[1 + 2 * i]);
       int maxIdx = Math.min(1 + 2 * (i + 1), xedges.length - 1);
       assertThat(xsubset.getCoordInterval(i).end()).isEqualTo(xedges[maxIdx]);
     }
+
+    assertThat(subset.getGeoUnits()).isEqualTo("km");
+    assertThat(subset.getBoundingBox()).isEqualTo(ProjectionRect.fromSpec("3, 2.5, 97, 57.5"));
+    assertThat(subset.getLatLonBoundingBox()).isNotNull();
+    assertThat(subset.getLatLonBoundingBox()).isNotNull();
   }
 }

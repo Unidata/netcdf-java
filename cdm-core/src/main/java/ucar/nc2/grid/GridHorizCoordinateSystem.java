@@ -138,7 +138,8 @@ public class GridHorizCoordinateSystem {
       projbb = null;
     }
 
-    // TODO GridSubset.latlonPoint
+    // LOOK not done: GridSubset.latlonPoint
+
     if (projbb != null) {
       SubsetPointHelper yhelper = new SubsetPointHelper(yaxis);
       Optional<GridAxisPoint.Builder<?>> ybo =

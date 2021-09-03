@@ -167,7 +167,7 @@ public class TestGridCompareCoverage {
     CoverageCoordAxis1D oldRuntime1D = (CoverageCoordAxis1D) oldRuntime;
 
     for (int runtimeIdx = 0; runtimeIdx < oldRuntime1D.getNcoords(); runtimeIdx++) {
-      double timeCoord = runtime.getCoordMidpoint(runtimeIdx);
+      double timeCoord = runtime.getCoordDouble(runtimeIdx);
       double timeCoordOld = oldRuntime1D.getCoordMidpoint(runtimeIdx);
       assertThat(timeCoord).isEqualTo(timeCoordOld);
 
