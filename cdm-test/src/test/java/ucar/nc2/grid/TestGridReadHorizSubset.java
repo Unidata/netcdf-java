@@ -2,7 +2,7 @@
 package ucar.nc2.grid;
 
 import com.google.common.base.Preconditions;
-import org.junit.Ignore;
+import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
@@ -45,6 +45,7 @@ public class TestGridReadHorizSubset {
 
       GridCoordinateSystem cs = coverage.getCoordinateSystem();
       assertThat(cs).isNotNull();
+      assertThat(cs.getNominalShape()).isEqualTo(ImmutableList.of(1, 1, 1237, 1237));
       GridHorizCoordinateSystem hcs = cs.getHorizCoordinateSystem();
       assertThat(hcs).isNotNull();
 
@@ -67,8 +68,8 @@ public class TestGridReadHorizSubset {
       assertThat(geo.getMaterializedCoordinateSystem()).isNotNull();
       assertThat(geo.getMaterializedCoordinateSystem().getHorizCoordinateSystem()).isNotNull();
 
-      int[] expectedShape = new int[] {363, 479};
-      assertThat(geo.getMaterializedCoordinateSystem().getHorizCoordinateSystem().getShape()).isEqualTo(expectedShape);
+      assertThat(geo.getMaterializedCoordinateSystem().getHorizCoordinateSystem().getShape())
+          .isEqualTo(ImmutableList.of(363, 479));
     }
   }
 
@@ -90,17 +91,16 @@ public class TestGridReadHorizSubset {
       GridHorizCoordinateSystem hcs = cs.getHorizCoordinateSystem();
       assertThat(hcs).isNotNull();
 
-      LatLonRect bbox = new LatLonRect.Builder(LatLonPoint.create(40.0, -100.0), 10.0, 20.0).build();
+      LatLonRect bbox = LatLonRect.builder(LatLonPoint.create(40.0, -100.0), 10.0, 20.0).build();
       checkLatLonSubset(hcs, coverage, bbox, new int[] {141, 281});
 
-      bbox = new LatLonRect.Builder(LatLonPoint.create(-40.0, -180.0), 120.0, 300.0).build();
+      bbox = LatLonRect.builder(LatLonPoint.create(-40.0, -180.0), 120.0, 300.0).build();
       checkLatLonSubset(hcs, coverage, bbox, new int[] {800, 1300});
     }
   }
 
   // longitude subsetting (CoordAxis1D regular) }
   @Test
-  @Ignore("not done")
   @Category(NeedsCdmUnitTest.class)
   public void testLongitudeSubset() throws Exception {
     String filename = TestDir.cdmUnitTestDir + "tds/ncep/GFS_Global_onedeg_20100913_0000.grib2";
@@ -119,7 +119,7 @@ public class TestGridReadHorizSubset {
       GridHorizCoordinateSystem hcs = cs.getHorizCoordinateSystem();
       assertThat(hcs).isNotNull();
 
-      LatLonRect bbox = new LatLonRect.Builder(LatLonPoint.create(40.0, -100.0), 10.0, 20.0).build();
+      LatLonRect bbox = LatLonRect.builder(LatLonPoint.create(40.0, -100.0), 10.0, 20.0).build();
       checkLatLonSubset(hcs, coverage, bbox, new int[] {1, 11, 21});
     }
   }
@@ -135,16 +135,18 @@ public class TestGridReadHorizSubset {
       assertThat(gds).isNotNull();
 
       String gribId = "VAR_2-0-0_L1";
-      Grid coverage = gds.findGridByAttribute(Grib.VARIABLE_ID_ATTNAME, gribId).orElseThrow(); // "Land_cover_0__sea_1__land_surface");
-      assertThat(coverage).isNotNull();
+      Grid grid = gds.findGridByAttribute(Grib.VARIABLE_ID_ATTNAME, gribId).orElseThrow(); // "Land_cover_0__sea_1__land_surface");
+      assertThat(grid).isNotNull();
+      System.out.printf("grid %s%n", grid.getName());
 
-      GridCoordinateSystem cs = coverage.getCoordinateSystem();
+      GridCoordinateSystem cs = grid.getCoordinateSystem();
       assertThat(cs).isNotNull();
+      assertThat(cs.getNominalShape()).isEqualTo(ImmutableList.of(1, 65, 361, 720));
       GridHorizCoordinateSystem hcs = cs.getHorizCoordinateSystem();
       assertThat(hcs).isNotNull();
 
       LatLonRect bbox = LatLonRect.builder(40.0, -100.0, 10.0, 120.0).build();
-      checkLatLonSubset(hcs, coverage, bbox, new int[] {1, 61, 441});
+      checkLatLonSubset(hcs, grid, bbox, new int[] {61, 441});
     }
   }
 
@@ -170,7 +172,7 @@ public class TestGridReadHorizSubset {
       // Next, create the subset param and make the request
       final CalendarDate validTime = CalendarDate.fromUdunitIsoDate(null, "2010-09-21T00:00:00Z").orElseThrow();
       // subset across the seam
-      final LatLonRect subsetLatLonRequest = new LatLonRect.Builder(LatLonPoint.create(-15, -10), 30, 20).build();
+      final LatLonRect subsetLatLonRequest = LatLonRect.builder(LatLonPoint.create(-15, -10), 30, 20).build();
       final int stride = 2;
 
       // make subset

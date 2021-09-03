@@ -34,7 +34,7 @@ public class TestVerticalPerspectiveView {
     System.out.println(" limit = " + limit);
     System.out.println(" limit*90 = " + limit * 90);
 
-    LatLonRect rect = new LatLonRect.Builder(LatLonPoint.create(-45.0, -45.0), -45.0, -45.0).build();
+    LatLonRect rect = LatLonRect.builder(LatLonPoint.create(-45.0, -45.0), -45.0, -45.0).build();
     ProjectionRect r = a.latLonToProjBB(rect);
     System.out.println(" ProjectionRect result = " + r);
   }

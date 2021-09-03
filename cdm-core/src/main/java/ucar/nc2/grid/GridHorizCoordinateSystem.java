@@ -128,8 +128,18 @@ public class GridHorizCoordinateSystem {
     LatLonRect llbb = params.getLatLonBoundingBox();
     ProjectionRect projbb = params.getProjectionBoundingBox();
 
+    if (projbb == null && llbb != null && !isLatLon()) {
+      projbb = getProjection().latLonToProjBB(llbb);
+      llbb = null;
+    }
+
+    if (projbb != null && llbb == null && isLatLon()) {
+      llbb = getProjection().projToLatLonBB(projbb);
+      projbb = null;
+    }
+
     // TODO GridSubset.latlonPoint
-    if (projbb != null) { // TODO ProjectionRect ok for isLatlon = true?
+    if (projbb != null) {
       SubsetPointHelper yhelper = new SubsetPointHelper(yaxis);
       Optional<GridAxisPoint.Builder<?>> ybo =
           yhelper.subsetRange(projbb.getMinY(), projbb.getMaxY(), horizStride, errlog);
@@ -146,7 +156,7 @@ public class GridHorizCoordinateSystem {
       }
       xaxisSubset = xbo.get().build();
 
-    } else if (llbb != null && isLatLon()) { // TODO LatLonRect only used for isLatlon = true?
+    } else if (llbb != null) {
       SubsetPointHelper yhelper = new SubsetPointHelper(yaxis);
       Optional<GridAxisPoint.Builder<?>> ybo =
           yhelper.subsetRange(llbb.getLatMin(), llbb.getLatMax(), horizStride, errlog);

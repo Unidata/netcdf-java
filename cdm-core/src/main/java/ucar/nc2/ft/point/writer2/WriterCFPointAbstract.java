@@ -523,7 +523,7 @@ abstract class WriterCFPointAbstract implements Closeable {
   void trackBB(LatLonPoint loc, CalendarDate obsDate) {
     if (loc != null) {
       if (llbb == null) {
-        llbb = new LatLonRect.Builder(loc, .001, .001);
+        llbb = LatLonRect.builder(loc, .001, .001);
       } else {
         llbb.extend(loc);
       }

@@ -61,7 +61,7 @@ public class UnidataPointDatasetHelper {
     double lon_max = getAttAsDouble(ds, "geospatial_lon_max");
     double lon_min = getAttAsDouble(ds, "geospatial_lon_min");
 
-    return new LatLonRect.Builder(LatLonPoint.create(lat_min, lon_min), lat_max - lat_min, lon_max - lon_min).build();
+    return LatLonRect.builder(LatLonPoint.create(lat_min, lon_min), lat_max - lat_min, lon_max - lon_min).build();
   }
 
   private static double getAttAsDouble(NetcdfDataset ds, String attname) {

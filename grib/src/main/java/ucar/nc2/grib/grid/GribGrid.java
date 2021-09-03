@@ -98,7 +98,7 @@ public class GribGrid implements Grid {
     // LOOK it would appear the only thing needed out of it (besides geo referencing) is getSubsetRanges()
     Optional<MaterializedCoordinateSystem> opt = coordinateSystem.subset(subset, errLog);
     if (opt.isEmpty()) {
-      throw new InvalidRangeException(errLog.toString());
+      throw new InvalidRangeException(errLog.toString()); // LOOK lame. Optional, empty, null?
     }
     MaterializedCoordinateSystem subsetCoordSys = opt.get();
     List<RangeIterator> ranges = new ArrayList<>(subsetCoordSys.getSubsetRanges());

@@ -304,7 +304,7 @@ public class GridHorizCurvilinear extends GridHorizCoordinateSystem {
     Range lonRange = Range.make(lonmin, lonmax, stride);
     GridAxisPoint lonaxisSubset = xaxis.toBuilder().subsetWithRange(lonRange).build();
 
-    // Subset the edge arrays
+    // Subset the edge arrays LOOK cant subset edge array if there is a stride; must recalculate
     Section section = Section.builder().appendRange(Range.make(latmin, latmax + 1, stride))
         .appendRange(Range.make(lonmin, lonmax + 1, stride)).build();
     try {

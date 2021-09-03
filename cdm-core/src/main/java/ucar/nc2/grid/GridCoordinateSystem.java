@@ -195,6 +195,7 @@ public class GridCoordinateSystem {
     if (tcs != null) {
       f.format("%n%s%n", tcs);
     }
+    f.format("%n%s%n", hcs);
   }
 
   private void showCoordinateAxis(GridAxis<?> axis, Formatter f, boolean showCoords) {

@@ -46,7 +46,7 @@ public class TestDodsCoverage {
       // Assert.assertArrayEquals(new int[]{65, 361, 720}, cs.getShape());
 
       LatLonRect llbb = gcs.getLatlonBoundingBox();
-      LatLonRect llbb_subset = new LatLonRect.Builder(llbb.getLowerLeftPoint(), 20.0, llbb.getWidth() / 2).build();
+      LatLonRect llbb_subset = LatLonRect.builder(llbb.getLowerLeftPoint(), 20.0, llbb.getWidth() / 2).build();
 
       checkLatLonSubset(gcs, coverage, llbb_subset, new int[] {1, 35, 45});
     }

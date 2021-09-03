@@ -124,7 +124,7 @@ public class GdsHorizCoordSys {
 
   public LatLonRect getLatLonBB() {
     if (isLatLon()) {
-      return new LatLonRect.Builder(LatLonPoint.create(getStartY(), getStartX()), dy * (ny - 1), dx * (nx - 1)).build();
+      return LatLonRect.builder(LatLonPoint.create(getStartY(), getStartX()), dy * (ny - 1), dx * (nx - 1)).build();
     } else {
       return proj.projToLatLonBB(getProjectionBB());
     }

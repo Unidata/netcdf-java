@@ -54,7 +54,7 @@ public class DsgCollectionHelper {
 
     for (PointFeature pf : pfc) {
       if (bbox == null)
-        bbox = new LatLonRect.Builder(pf.getLocation().getLatLon(), .001, .001);
+        bbox = LatLonRect.builder(pf.getLocation().getLatLon(), .001, .001);
       else
         bbox.extend(pf.getLocation().getLatLon());
 
