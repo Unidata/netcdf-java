@@ -8,6 +8,8 @@ package ucar.nc2.internal.grid;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import ucar.array.Array;
+import ucar.array.ArrayType;
+import ucar.array.Arrays;
 import ucar.array.InvalidRangeException;
 import ucar.array.Range;
 import ucar.nc2.constants.AxisType;
@@ -20,6 +22,7 @@ import ucar.unidata.geoloc.LatLonPoints;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
 import java.util.Optional;
@@ -33,31 +36,29 @@ public class CylindricalCoord {
     return (xaxis.getAxisType() == AxisType.Lon && width >= 360);
   }
 
-  private final GridHorizCoordinateSystem hcs;
-  private final GridAxisPoint xaxis;
+  private final GridAxisPoint xaxis; // original xaxis
   private final double start;
   private final double end;
-  private List<Range> needsSpecialRead;
+  private List<Range> lonIntvs;
 
   public CylindricalCoord(GridHorizCoordinateSystem hcs) {
     Preconditions.checkArgument(isCylindrical(hcs));
-    this.hcs = hcs;
     this.xaxis = hcs.getXHorizAxis();
     this.start = xaxis.getCoordInterval(0).start();
     this.end = xaxis.getCoordInterval(xaxis.getNominalSize() - 1).end();
   }
 
   public boolean needsSpecialRead() {
-    return (this.needsSpecialRead != null);
+    return (this.lonIntvs != null);
   }
 
   // no strides for now
-  public Optional<GridAxisPoint> subsetLon(LatLonRect llbb, Formatter errlog) {
+  public Optional<GridAxisPoint> subsetLon(LatLonRect llbb, int horizStride, Formatter errlog) {
     double wantMin = LatLonPoints.lonNormalFrom(llbb.getLonMin(), this.start);
     double wantMax = LatLonPoints.lonNormalFrom(llbb.getLonMax(), this.start);
 
     // may be 0, 1, or 2 CoordIntervals
-    List<Range> lonIntvs = subsetLonIntervals(wantMin, wantMax);
+    List<Range> lonIntvs = subsetLonIntervals(wantMin, wantMax, horizStride);
 
     if (lonIntvs.isEmpty()) {
       errlog.format("longitude want [%f,%f] does not intersect lon axis [%f,%f]", wantMin, wantMax, start, end);
@@ -71,26 +72,71 @@ public class CylindricalCoord {
 
     // this is the seam crossing case.
     // Munge the axis, must call readSpecial()
-    this.needsSpecialRead = lonIntvs;
-    return null; // xaxis.subsetByIntervals(lonIntvs, stride, errLog);
+    this.lonIntvs = lonIntvs;
+    GridAxisPoint xaxis0 = xaxis.toBuilder().subsetWithRange(lonIntvs.get(0)).build();
+    GridAxisPoint xaxis1 = xaxis.toBuilder().subsetWithRange(lonIntvs.get(1)).build();
+    GridAxisPoint.Builder<?> builder = xaxis.toBuilder();
+    int ncoords = xaxis0.getNominalSize() + xaxis1.getNominalSize();
+    int firstIndex = lonIntvs.get(0).first();
+    Range rangeSubset = Range.make(firstIndex, firstIndex + ncoords * horizStride, horizStride);
+
+    switch (xaxis.getSpacing()) {
+      case regularPoint: // LOOK mistake to assume, probably need to convert to nominal
+        builder.setRegular(ncoords, xaxis0.getCoordDouble(0), xaxis0.getResolution()).setIsSubset(true)
+            .setRange(rangeSubset);
+        break;
+    }
+    return Optional.of(builder.build());
   }
 
-  // LOOK CoordReturn not right
-  private List<Range> subsetLonIntervals(double wantMin, double wantMax) {
+  private List<Range> subsetLonIntervals(double wantMin, double wantMax, int horizStride) {
     int minIndex = SubsetHelpers.findCoordElement(this.xaxis, wantMin, true);
     int maxIndex = SubsetHelpers.findCoordElement(this.xaxis, wantMax, true);
 
     if (wantMin < wantMax) {
-      return ImmutableList.of(Range.make(minIndex, maxIndex));
+      return ImmutableList.of(Range.make(minIndex, maxIndex, horizStride));
     } else {
-      return ImmutableList.of(Range.make(minIndex, xaxis.getNominalSize() - 1), Range.make(0, maxIndex));
+      return ImmutableList.of(Range.make(minIndex, xaxis.getNominalSize() - 1, horizStride),
+          Range.make(0, maxIndex, horizStride));
     }
   }
 
   public Array<Number> readSpecial(MaterializedCoordinateSystem subsetCoordSys, Grid grid)
       throws InvalidRangeException, IOException {
-    List<ucar.array.Range> ranges = subsetCoordSys.getSubsetRanges();
-    return grid.readDataSection(new ucar.array.Section(ranges));
+    ArrayList<Range> ranges = new ArrayList(subsetCoordSys.getSubsetRanges());
+    int last = ranges.size() - 1;
+    ranges.set(last, this.lonIntvs.get(0));
+    Array<Number> data0 = grid.readDataSection(new ucar.array.Section(ranges));
+    ranges.set(last, this.lonIntvs.get(1));
+    Array<Number> data1 = grid.readDataSection(new ucar.array.Section(ranges));
+
+    // LOOK could get clever and just manipulate the indices on two arrays
+    int[] shape0 = data0.getShape();
+    int[] shape1 = data1.getShape();
+    int part0 = (int) data0.length() / shape0[last];
+    int part1 = (int) data1.length() / shape1[last];
+    int xlen = shape0[last] + shape1[last];
+
+    int[] reshape0 = new int[] {part0, shape0[last]};
+    int[] reshape1 = new int[] {part1, shape1[last]};
+    Array<Number> redata0 = Arrays.reshape(data0, reshape0);
+    Array<Number> redata1 = Arrays.reshape(data1, reshape1);
+
+    double[] values = new double[(int) (data0.length() + data1.length())];
+    for (int j = 0; j < part0; j++) {
+      for (int i = 0; i < shape0[last]; i++) {
+        values[j * xlen + i] = redata0.get(j, i).doubleValue();
+      }
+    }
+    for (int j = 0; j < part1; j++) {
+      for (int i = 0; i < shape1[last]; i++) {
+        values[j * xlen + shape0[last] + i] = redata1.get(j, i).doubleValue();
+      }
+    }
+
+    int[] shapeAll = java.util.Arrays.copyOf(shape0, shape0.length);
+    shapeAll[last] = xlen;
+    return Arrays.factory(ArrayType.DOUBLE, shapeAll, values);
   }
 
   /*

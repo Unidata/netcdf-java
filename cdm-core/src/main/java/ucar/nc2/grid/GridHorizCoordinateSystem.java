@@ -175,7 +175,7 @@ public class GridHorizCoordinateSystem {
       if (builder != null && CylindricalCoord.isCylindrical(this)) {
         // possible subset across the longitude cylinder seam
         CylindricalCoord lonCoord = new CylindricalCoord(this);
-        Optional<GridAxisPoint> axisO = lonCoord.subsetLon(llbb, errlog);
+        Optional<GridAxisPoint> axisO = lonCoord.subsetLon(llbb, horizStride, errlog);
         if (axisO.isEmpty()) {
           return Optional.empty();
         }
