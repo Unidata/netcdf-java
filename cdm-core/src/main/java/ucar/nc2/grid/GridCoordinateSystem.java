@@ -119,7 +119,7 @@ public class GridCoordinateSystem {
     if (getVerticalAxis() != null) {
       getVerticalAxis().subset(params, errlog).ifPresentOrElse(builder::setVertAxis, () -> fail.set(true));
     }
-    hcs.subset(params, errlog).ifPresentOrElse(hcs -> builder.setHorizCoordSys(hcs), () -> fail.set(true));
+    hcs.subset(params, builder, errlog).ifPresentOrElse(hcs -> builder.setHorizCoordSys(hcs), () -> fail.set(true));
 
     if (fail.get()) {
       return Optional.empty();

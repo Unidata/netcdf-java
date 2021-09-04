@@ -53,6 +53,19 @@ public class SectionIterable implements Iterable<Integer> {
     this.fullShape = fullShape;
   }
 
+  public SectionIterable(Section section, List<Integer> fullShapeList) {
+    this.ranges = new ArrayList<>();
+    this.ranges.addAll(section.getRanges());
+
+    int count = 0;
+    this.fullShape = new int[fullShapeList.size()];
+    for (RangeIterator ri : ranges) {
+      Preconditions.checkArgument(ri.length() <= fullShapeList.get(count));
+      this.fullShape[count] = fullShapeList.get(count);
+      count++;
+    }
+  }
+
   public int getRank() {
     return ranges.size();
   }

@@ -93,8 +93,8 @@ public class SubsetHelpers {
 
   /**
    * Binary search to find the index whose value is contained in the contiguous intervals.
-   * irregularPoint, // irregular spaced points (values, npts), edges halfway between coords
-   * contiguousInterval, // irregular contiguous spaced intervals (values, npts), values are the edges, and there are
+   * irregularPoint, irregular spaced points (values, npts), edges halfway between coords
+   * contiguousInterval, irregular contiguous spaced intervals (values, npts), values are the edges, and there are
    * npts+1, coord halfway between edges
    * <p>
    * same contract as findCoordElement()

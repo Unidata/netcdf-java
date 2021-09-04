@@ -19,8 +19,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import static ucar.nc2.grid.GridAxisSpacing.irregularPoint;
-
 /**
  * Point Grid coordinates.
  * LOOK although we use Number, everything is internally a double. Grib wants integers.
@@ -175,8 +173,8 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
   final int ncoords; // number of coordinates
   final double startValue; // only for regular
   final Range range; // for subset, tracks the indexes in the original
-  private final double[] values; // null if isRegular, irregular or nominal then len= ncoords
-  private final double[] edges; // nominal only: len = ncoords+1
+  private final double[] values; // null if isRegular, irregular or nominal then len= ncoords, monotonic
+  private final double[] edges; // nominal only: len = ncoords+1, monotonic, between values
 
   protected GridAxisPoint(Builder<?> builder) {
     super(builder);
@@ -187,6 +185,7 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
     this.values = builder.values;
     if (this.values != null) {
       Preconditions.checkArgument(this.values.length == this.ncoords);
+      Preconditions.checkArgument(checkMonotonic(this.values));
     }
     if (this.getSpacing() != GridAxisSpacing.regularPoint) {
       Preconditions.checkNotNull(this.values);
@@ -198,17 +197,7 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
     if (this.getSpacing() == GridAxisSpacing.nominalPoint) {
       Preconditions.checkNotNull(this.values);
       Preconditions.checkNotNull(this.edges);
-      if (this.edges[0] < this.values[ncoords - 1]) { // ascending
-        for (int i = 0; i < ncoords; i++) {
-          Preconditions.checkArgument(this.edges[i] <= this.values[i]);
-        }
-        Preconditions.checkArgument(this.edges[ncoords] >= this.values[ncoords - 1]);
-      } else {
-        for (int i = 0; i < ncoords; i++) { // descending
-          Preconditions.checkArgument(this.edges[i] >= this.values[i]);
-        }
-        Preconditions.checkArgument(this.edges[ncoords] <= this.values[ncoords - 1]);
-      }
+      Preconditions.checkArgument(checkBetween(this.values, this.edges));
     }
 
     if (axisType == null && builder.dependenceType == GridAxisDependenceType.independent) {
@@ -222,6 +211,48 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
     } else {
       this.range = Range.make(rangeName, ncoords);
     }
+  }
+
+  private boolean checkMonotonic(double[] a) {
+    if (a.length < 3) {
+      return true;
+    }
+    int last = a.length - 1;
+    if (a[0] < a[last]) { // ascending
+      for (int i = 0; i < last; i++) {
+        if (a[i] >= a[i + 1]) {
+          return false;
+        }
+      }
+    } else {
+      for (int i = 0; i < last; i++) {
+        if (a[i] <= a[i + 1]) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  private boolean checkBetween(double[] mid, double[] edges) {
+    if (edges.length != mid.length + 1) {
+      return false;
+    }
+    int last = mid.length - 1;
+    if (mid[0] < mid[last]) { // ascending
+      for (int i = 0; i < last; i++) {
+        if (edges[i] > mid[i] || edges[i + 1] < mid[i]) {
+          return false;
+        }
+      }
+    } else { // descending
+      for (int i = 0; i < last; i++) {
+        if (edges[i] < mid[i] || edges[i + 1] > mid[i]) {
+          return false;
+        }
+      }
+    }
+    return true;
   }
 
   void toString(Formatter f, Indent indent) {

@@ -6,6 +6,7 @@ import com.google.common.collect.ImmutableList;
 import ucar.array.InvalidRangeException;
 import ucar.array.Range;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.internal.grid.CylindricalCoord;
 import ucar.nc2.internal.grid.SubsetHelpers;
 import ucar.nc2.internal.grid.SubsetPointHelper;
 import ucar.unidata.geoloc.LatLonPoint;
@@ -113,9 +114,14 @@ public class GridHorizCoordinateSystem {
     return projection.projToLatLon(ProjectionPoint.create(xcoord, ycoord));
   }
 
+  public Optional<GridHorizCoordinateSystem> subset(GridSubset params, Formatter errlog) {
+    return subset(params, null, errlog);
+  }
+
   /** Subset both x and y axis based on the given parameters. */
   // see ucar.nc2.ft2.coverage.HorizCoordSys.subset()
-  public Optional<GridHorizCoordinateSystem> subset(GridSubset params, Formatter errlog) {
+  public Optional<GridHorizCoordinateSystem> subset(GridSubset params, MaterializedCoordinateSystem.Builder builder,
+      Formatter errlog) {
     Preconditions.checkNotNull(params);
     Preconditions.checkNotNull(errlog);
     Integer horizStride = params.getHorizStride();
@@ -166,14 +172,27 @@ public class GridHorizCoordinateSystem {
       }
       yaxisSubset = ybo.get().build();
 
-      // TODO longitude wrapping
-      SubsetPointHelper xhelper = new SubsetPointHelper(xaxis);
-      Optional<GridAxisPoint.Builder<?>> xbo =
-          xhelper.subsetRange(llbb.getLonMin(), llbb.getLonMax(), horizStride, errlog);
-      if (xbo.isEmpty()) {
-        return Optional.empty();
+      if (builder != null && CylindricalCoord.isCylindrical(this)) {
+        // possible subset across the longitude cylinder seam
+        CylindricalCoord lonCoord = new CylindricalCoord(this);
+        Optional<GridAxisPoint> axisO = lonCoord.subsetLon(llbb, errlog);
+        if (axisO.isEmpty()) {
+          return Optional.empty();
+        }
+        xaxisSubset = axisO.get();
+        if (lonCoord.needsSpecialRead()) {
+          builder.setCylindricalCoord(lonCoord);
+        }
+
+      } else {
+        SubsetPointHelper xhelper = new SubsetPointHelper(xaxis);
+        Optional<GridAxisPoint.Builder<?>> xbo =
+            xhelper.subsetRange(llbb.getLonMin(), llbb.getLonMax(), horizStride, errlog);
+        if (xbo.isEmpty()) {
+          return Optional.empty();
+        }
+        xaxisSubset = xbo.get().build();
       }
-      xaxisSubset = xbo.get().build();
 
     } else if (horizStride > 1) { // no bounding box, just horiz stride
       Preconditions.checkNotNull(yaxis);
@@ -322,7 +341,7 @@ public class GridHorizCoordinateSystem {
   /**
    * Get Index Ranges for the given lat, lon bounding box.
    * For projection, only an approximation based on latlon corners.
-   * LOOK maybe needed by subset
+   * From dt.grid.GridCoordSys, used in subsetting the csys
    *
    * @param rect the requested lat/lon bounding box
    * @return list of 2 Range objects, first y then x.

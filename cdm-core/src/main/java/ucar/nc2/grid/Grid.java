@@ -4,7 +4,9 @@
  */
 package ucar.nc2.grid;
 
+import ucar.array.Array;
 import ucar.array.ArrayType;
+import ucar.array.InvalidRangeException;
 import ucar.array.IsMissingEvaluator;
 import ucar.nc2.AttributeContainer;
 
@@ -45,5 +47,8 @@ public interface Grid extends IsMissingEvaluator {
   default GridReader getReader() {
     return new GridReader(this);
   }
+
+  // experimental
+  Array<Number> readDataSection(ucar.array.Section subset) throws InvalidRangeException, IOException;
 
 }

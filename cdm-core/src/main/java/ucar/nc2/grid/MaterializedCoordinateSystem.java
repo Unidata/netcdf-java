@@ -5,10 +5,14 @@
 package ucar.nc2.grid;
 
 import com.google.common.collect.ImmutableList;
+import ucar.array.Array;
+import ucar.array.InvalidRangeException;
 import ucar.array.Range;
+import ucar.nc2.internal.grid.CylindricalCoord;
 
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -95,12 +99,21 @@ public class MaterializedCoordinateSystem {
     return result;
   }
 
+  public boolean needSpecialRead() {
+    return lonCoordinate != null;
+  }
+
+  public Array<Number> readSpecial(Grid grid) throws InvalidRangeException, IOException {
+    return lonCoordinate.readSpecial(this, grid);
+  }
+
   //////////////////////////////////////////////////////////////////////////
   private final GridTimeCoordinateSystem tcs;
   private final GridHorizCoordinateSystem hcs;
   private final GridAxisPoint ens;
   private final GridAxis<?> vert;
   private final ImmutableList<Range> ranges; // LOOK needed?
+  private final @Nullable CylindricalCoord lonCoordinate;
 
   private MaterializedCoordinateSystem(Builder builder) {
     this.tcs = builder.tcs;
@@ -108,6 +121,7 @@ public class MaterializedCoordinateSystem {
     this.ens = builder.ens;
     this.vert = builder.vert;
     this.ranges = builder.ranges;
+    this.lonCoordinate = builder.lonCoordinate;
   }
 
   /** Turn into a mutable Builder. Can use toBuilder().build() to copy. */
@@ -125,6 +139,7 @@ public class MaterializedCoordinateSystem {
     private GridAxisPoint ens;
     private GridAxis<?> vert;
     private ImmutableList<Range> ranges; // LOOK: needed?
+    private CylindricalCoord lonCoordinate;
     private boolean built;
 
     public Builder setTimeCoordSys(GridTimeCoordinateSystem tcs) {
@@ -149,6 +164,11 @@ public class MaterializedCoordinateSystem {
 
     public Builder setRanges(List<Range> ranges) {
       this.ranges = ImmutableList.copyOf(ranges);
+      return this;
+    }
+
+    public Builder setCylindricalCoord(CylindricalCoord lonCoordinate) {
+      this.lonCoordinate = lonCoordinate;
       return this;
     }
 

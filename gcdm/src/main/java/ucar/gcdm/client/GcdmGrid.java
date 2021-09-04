@@ -6,7 +6,10 @@ package ucar.gcdm.client;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ucar.array.Array;
 import ucar.array.ArrayType;
+import ucar.array.InvalidRangeException;
+import ucar.array.Section;
 import ucar.gcdm.GcdmGridProto;
 import ucar.gcdm.GcdmConverter;
 import ucar.nc2.AttributeContainer;
@@ -66,6 +69,12 @@ public class GcdmGrid implements Grid {
   public GridReferencedArray readData(GridSubset subset) throws IOException {
     subset.setGridName(getName());
     return gcdmGridDataset.readData(subset);
+  }
+
+  @Override
+  public Array<Number> readDataSection(Section subset) throws InvalidRangeException, IOException {
+    // LOOK this doesnt look like it works.... but maybe it doesnt have to, if all the work is done on the server
+    return null;
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////

@@ -2,6 +2,7 @@ package ucar.nc2.internal.grid;
 
 import ucar.array.Array;
 import ucar.array.ArrayType;
+import ucar.array.InvalidRangeException;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.grid.Grid;
@@ -72,17 +73,23 @@ public class GridVariable implements Grid {
 
   /** Subsetting the coordinate system, then using that subset to do the read. Special to Netcdf, not general. */
   @Override
-  public GridReferencedArray readData(GridSubset subset) throws IOException, ucar.array.InvalidRangeException {
+  public GridReferencedArray readData(GridSubset subset) throws IOException, InvalidRangeException {
     Formatter errlog = new Formatter();
     Optional<MaterializedCoordinateSystem> opt = this.cs.subset(subset, errlog);
     if (opt.isEmpty()) {
-      throw new ucar.array.InvalidRangeException(errlog.toString());
+      throw new InvalidRangeException(errlog.toString());
     }
-
     MaterializedCoordinateSystem subsetCoordSys = opt.get();
-    List<ucar.array.Range> ranges = subsetCoordSys.getSubsetRanges();
-    Array<Number> data = readDataSection(new ucar.array.Section(ranges), true);
-    return GridReferencedArray.create(getName(), getArrayType(), data, subsetCoordSys);
+
+    if (subsetCoordSys.needSpecialRead()) {
+      // handles longitude cylindrical coord when data has full (360 deg) longitude axis.
+      Array<Number> data = subsetCoordSys.readSpecial(this);
+      return GridReferencedArray.create(getName(), getArrayType(), data, subsetCoordSys);
+    } else {
+      List<ucar.array.Range> ranges = subsetCoordSys.getSubsetRanges();
+      Array<Number> data = readDataSection(new ucar.array.Section(ranges));
+      return GridReferencedArray.create(getName(), getArrayType(), data, subsetCoordSys);
+    }
   }
 
   /**
@@ -93,21 +100,10 @@ public class GridVariable implements Grid {
    *
    * @return data[rt, e, t, z, y, x], eliminating missing dimensions. length=1 not eliminated
    */
-  private Array<Number> readDataSection(ucar.array.Section subset, boolean canonicalOrder)
-      throws ucar.array.InvalidRangeException, IOException {
-    // read it
+  @Override
+  public Array<Number> readDataSection(ucar.array.Section subset) throws InvalidRangeException, IOException {
     Array<?> dataVolume = vds.readArray(this.permuter.permute(subset));
-
-    /*
-     * permute to canonical order if needed; order rt,e,t,z,y,x
-     * if (canonicalOrder) {
-     * int[] permuteIndex = calcPermuteIndex();
-     * if (permuteIndex != null)
-     * dataVolume = dataVolume.permute(permuteIndex);
-     * }
-     */
-
-    // LOOK
+    // LOOK unchecked cast
     return (Array<Number>) dataVolume;
   }
 
