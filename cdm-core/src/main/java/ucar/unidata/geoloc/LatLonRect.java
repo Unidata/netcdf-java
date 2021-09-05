@@ -17,7 +17,7 @@ import java.util.StringTokenizer;
  * This is a rectangle in lat/lon coordinates.
  * This class handles the longitude wrapping problem.
  * The Rectangle always starts from lowerLeft, goes east width degrees until upperRight
- * For latitude, lower < upper.
+ * For latitude, lower &lt; upper.
  * Since the longitude must be in the range +/-180., right may be less or greater than left.
  */
 @Immutable
@@ -118,7 +118,7 @@ public class LatLonRect {
     return lon0;
   }
 
-  /** Get minimum longitude, aka "west" edge. This may be > LonMax when crossDateline is true. */
+  /** Get minimum longitude, aka "west" edge. This may be &gt; LonMax when crossDateline is true. */
   public double getLonMin() {
     return lowerLeft.getLongitude();
   }
@@ -365,7 +365,6 @@ public class LatLonRect {
    * Construct a lat/lon bounding box from a string, or null if format is wrong.
    *
    * @param spec "lat, lon, deltaLat, deltaLon"
-   *        {@link LatLonRect.Builder(LatLonPoint, double, double)}
    */
   @Nullable
   public static LatLonRect fromSpec(String spec) {
@@ -618,7 +617,7 @@ public class LatLonRect {
       }
     }
 
-    /** Extend to allLongitudes if width > minWidth */
+    /** Extend to allLongitudes if width &gt; minWidth */
     public Builder extendToAllLongitudes(double minWidth) {
       if (crossDateline && this.width > minWidth) {
         this.llLon = -180;

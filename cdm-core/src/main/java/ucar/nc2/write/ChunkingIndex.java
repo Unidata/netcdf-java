@@ -12,7 +12,7 @@ import ucar.ma2.Index;
 /**
  * An index that computes chunk shapes. It is intended to be used to compute the origins and shapes for a series
  * of contiguous writes to a multidimensional array.
- * It writes the first n elements (n < maxChunkElems), then the next, etc.
+ * It writes the first n elements (n &lt; maxChunkElems), then the next, etc.
  * Contributed by cwardgar@usgs.gov 4/12/2010
  */
 public class ChunkingIndex extends Index {

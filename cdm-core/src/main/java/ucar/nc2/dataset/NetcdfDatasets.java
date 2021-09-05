@@ -57,7 +57,7 @@ public class NetcdfDatasets {
    *
    * @param minElementsInMemory keep this number in the cache
    * @param maxElementsInMemory trigger a cleanup if it goes over this number.
-   * @param period (secs) do periodic cleanups every this number of seconds. set to < 0 to not cleanup
+   * @param period (secs) do periodic cleanups every this number of seconds. set to &lt; 0 to not cleanup
    */
   public static synchronized void initNetcdfFileCache(int minElementsInMemory, int maxElementsInMemory, int period) {
     initNetcdfFileCache(minElementsInMemory, maxElementsInMemory, -1, period);
@@ -69,7 +69,7 @@ public class NetcdfDatasets {
    *
    * @param minElementsInMemory keep this number in the cache
    * @param maxElementsInMemory trigger a cleanup if it goes over this number.
-   * @param hardLimit if > 0, never allow more than this many elements. This causes a cleanup to be done in
+   * @param hardLimit if &gt; 0, never allow more than this many elements. This causes a cleanup to be done in
    *        the calling thread.
    * @param period (secs) do periodic cleanups every this number of seconds.
    */
@@ -166,7 +166,7 @@ public class NetcdfDatasets {
    *
    * @param location location of file
    * @param enhanceMode set of enhancements. If null, then none
-   * @param buffer_size RandomAccessFile buffer size, if <= 0, use default size
+   * @param buffer_size RandomAccessFile buffer size, if &le; 0, use default size
    * @param cancelTask allow task to be cancelled; may be null.
    * @param iospMessage send to iosp.sendIospMessage() if not null
    * @return NetcdfDataset object
@@ -350,7 +350,7 @@ public class NetcdfDatasets {
    * @param fac if not null, use this factory if the file is not in the cache. If null, use the default factory.
    * @param durl location of file, passed to FileFactory
    * @param enhanceMode how to enhance. if null, then no enhancement
-   * @param buffer_size RandomAccessFile buffer size, if <= 0, use default size
+   * @param buffer_size RandomAccessFile buffer size, if &le; 0, use default size
    * @param cancelTask allow task to be cancelled; may be null.
    * @param iospMessage send to iosp.sendIospMessage() if not null
    *
@@ -422,7 +422,7 @@ public class NetcdfDatasets {
    * for that.
    *
    * @param location location of dataset.
-   * @param buffer_size RandomAccessFile buffer size, if <= 0, use default size
+   * @param buffer_size RandomAccessFile buffer size, if &le; 0, use default size
    * @param cancelTask allow task to be cancelled; may be null.
    * @param iospMessage send to iosp.sendIospMessage() if not null
    * @return NetcdfFile object
@@ -453,7 +453,7 @@ public class NetcdfDatasets {
    * @param factory if not null, use this factory to read the file. If null, use the default factory.
    * @param hashKey if not null, use as the cache key, else use the location
    * @param location location of file, passed to FileFactory
-   * @param buffer_size RandomAccessFile buffer size, if <= 0, use default size
+   * @param buffer_size RandomAccessFile buffer size, if &le; 0, use default size
    * @param cancelTask allow task to be cancelled; may be null.
    * @param spiObject send to iosp.sendIospMessage(); may be null
    * @return NetcdfFile object

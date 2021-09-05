@@ -79,7 +79,7 @@ public class BitReader {
   /**
    * Read the next nb bits and return the value as an unsigned long.
    *
-   * @param nb the number of bits to convert to int, must be 0 <= nb <= 64.
+   * @param nb the number of bits to convert to int, must be 0 &lt; nb &le; 64.
    * @return the value as an unsigned long.
    * @throws java.io.IOException on read error
    */
@@ -128,7 +128,7 @@ public class BitReader {
   /**
    * Read the next nb bits and return the value as a signed long.
    *
-   * @param nb the number of bits to convert to int, must be <= 64.
+   * @param nb the number of bits to convert to int, must be &le; 64.
    * @return the value as a signed long
    * @throws java.io.IOException on read error
    */

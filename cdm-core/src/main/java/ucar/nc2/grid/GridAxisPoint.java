@@ -415,7 +415,7 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
       return self();
     }
 
-    /** Subset with given range. If stride > 1, turns into a nominalPoint. */
+    /** Subset with given range. If stride &gt; 1, turns into a nominalPoint. */
     public T subsetWithRange(Range range) {
       this.range = range;
       this.edges = makeEdges(range);

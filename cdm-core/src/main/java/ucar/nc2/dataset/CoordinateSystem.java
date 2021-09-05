@@ -446,13 +446,13 @@ public class CoordinateSystem {
 
   /**
    * Check if this Coordinate System is complete for v, ie if all v's dimensions are used by the Coordinate System.
-   * Exclude dimensions with length < 2.
+   * Exclude dimensions with length &lt; 2.
    */
   public boolean isComplete(Variable v) {
     return isComplete(v.getDimensionSet(), domain);
   }
 
-  /** True if all variableDomain dimensions are contained in csysDomain, or have length < 2. */
+  /** True if all variableDomain dimensions are contained in csysDomain, or have length &lt; 2. */
   public static boolean isComplete(Collection<Dimension> variableDomain, Collection<Dimension> csysDomain) {
     for (Dimension d : variableDomain) {
       if (!(csysDomain.contains(d)) && (d.getLength() > 1)) {

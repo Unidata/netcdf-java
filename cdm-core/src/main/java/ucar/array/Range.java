@@ -93,7 +93,7 @@ public class Range implements RangeIterator {
    *
    * @param first first value in range
    * @param last last value in range, inclusive
-   * @throws InvalidRangeException elements must be nonnegative, 0 <= first <= last
+   * @throws InvalidRangeException elements must be nonnegative, 0 &le; first &le; last
    */
   public Range(int first, int last) throws InvalidRangeException {
     this(null, first, last, 1);
@@ -119,7 +119,7 @@ public class Range implements RangeIterator {
    * @param name name of Range
    * @param first first value in range
    * @param last last value in range, inclusive
-   * @throws InvalidRangeException elements must be nonnegative, 0 <= first <= last
+   * @throws InvalidRangeException elements must be nonnegative, 0 &le; first &le; last
    */
   public Range(String name, int first, int last) throws InvalidRangeException {
     this(name, first, last, 1);
@@ -130,8 +130,8 @@ public class Range implements RangeIterator {
    *
    * @param first first value in range
    * @param last last value in range, inclusive
-   * @param stride stride between consecutive elements, must be > 0
-   * @throws InvalidRangeException elements must be nonnegative: 0 <= first <= last, stride > 0
+   * @param stride stride between consecutive elements, must be &gt; 0
+   * @throws InvalidRangeException elements must be nonnegative: 0 &le; first &le; last, stride &gt; 0
    */
   public Range(int first, int last, int stride) throws InvalidRangeException {
     this(null, first, last, stride);
@@ -143,8 +143,8 @@ public class Range implements RangeIterator {
    * @param name name of Range
    * @param first first value in range
    * @param last last value in range, inclusive
-   * @param stride stride between consecutive elements, must be > 0
-   * @throws InvalidRangeException elements must be nonnegative: 0 <= first <= last, stride > 0
+   * @param stride stride between consecutive elements, must be &gt; 0
+   * @throws InvalidRangeException elements must be nonnegative: 0 &le; first &le; last, stride &gt; 0
    */
   public Range(String name, int first, int last, int stride) throws InvalidRangeException {
     if (first < 0)
@@ -223,7 +223,7 @@ public class Range implements RangeIterator {
     return length;
   }
 
-  /** @return stride, must be >= 1. */
+  /** @return stride, must be &ge; 1. */
   public int stride() {
     return stride;
   }
@@ -251,7 +251,7 @@ public class Range implements RangeIterator {
    * 
    * @param r range elements are reletive to this
    * @return combined Range, may be EMPTY
-   * @throws InvalidRangeException elements must be nonnegative, 0 <= first <= last
+   * @throws InvalidRangeException elements must be nonnegative, 0 &le; first &le; last
    */
   public Range compose(Range r) throws InvalidRangeException {
     if ((length() == 0) || (r.length() == 0)) {
@@ -282,7 +282,7 @@ public class Range implements RangeIterator {
    * first = first/stride, last=last/stride, stride=1.
    *
    * @return compacted Range
-   * @throws InvalidRangeException elements must be nonnegative, 0 <= first <= last
+   * @throws InvalidRangeException elements must be nonnegative, 0 &le; first &le; last
    */
   public Range compact() throws InvalidRangeException {
     if (stride == 1)
@@ -297,7 +297,7 @@ public class Range implements RangeIterator {
    *
    * @param i index of the element
    * @return the i-th element of a range.
-   * @throws InvalidRangeException i must be: 0 <= i < length
+   * @throws InvalidRangeException i must be: 0 &le; i &lt; length
    */
   public int element(int i) throws InvalidRangeException {
     if (i < 0) {
@@ -322,7 +322,7 @@ public class Range implements RangeIterator {
       throw new InvalidRangeException("elem must be >= first");
     int result = (want - first) / stride;
     if (result > length)
-      throw new InvalidRangeException("elem must be <= first = n * stride");
+      throw new InvalidRangeException("elem must be &le; first = n * stride");
     return result;
   }
 
@@ -384,9 +384,9 @@ public class Range implements RangeIterator {
    * Find the first element in a strided array after some index start.
    * Return the smallest element k in the Range, such that
    * <ul>
-   * <li>k >= first
-   * <li>k >= start
-   * <li>k <= last
+   * <li>k &ge; first
+   * <li>k &ge; start
+   * <li>k &le; last
    * <li>k = element of this Range
    * </ul>
    *

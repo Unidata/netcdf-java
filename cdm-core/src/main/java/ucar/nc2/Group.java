@@ -297,7 +297,7 @@ public class Group {
    *
    * @param dimString : whitespace separated list of dimension names, or '*' for Dimension.UNKNOWN, or number for anon
    *        dimension. null or empty String is a scalar.
-   * @return list of dimensions, will return ImmutableList<> in version 6
+   * @return list of dimensions.
    * @throws IllegalArgumentException if cant find dimension or parse error.
    */
   public ImmutableList<Dimension> makeDimensionsList(String dimString) throws IllegalArgumentException {
@@ -788,7 +788,7 @@ public class Group {
      * Any other chars may also be escaped, as they are removed before testing.
      *
      * @param fullNameEscaped eg "/group/subgroup/name1.name2.name".
-     * @return Optional<Variable.Builder>
+     * @return Optional\<Variable.Builder>
      *         {@link NetcdfFile#findVariable(String fullNameEscaped)}
      */
     public Optional<Variable.Builder<?>> findVariable(String fullNameEscaped) {

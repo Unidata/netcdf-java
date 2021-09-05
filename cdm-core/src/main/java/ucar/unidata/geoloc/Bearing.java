@@ -25,7 +25,7 @@ public abstract class Bearing {
    * Calculate the bearing between the 2 points.
    * See calculateBearing below.
    *
-   * @param e Earth object (defines radius & flattening)
+   * @param e Earth object (defines radius and flattening)
    * @param pt1 Point 1
    * @param pt2 Point 2
    * @return The bearing

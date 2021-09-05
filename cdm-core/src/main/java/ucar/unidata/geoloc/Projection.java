@@ -43,7 +43,7 @@ public interface Projection {
 
   /**
    * Does the line between these two points cross the projection "seam", which
-   * is a discontinuity in the function latlon <-> projection plane
+   * is a discontinuity in the function latlon to/from projection plane
    *
    * @param pt1 the line goes between these two points
    * @param pt2 the line goes between these two points
