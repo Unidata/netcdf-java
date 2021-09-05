@@ -14,7 +14,7 @@ import javax.annotation.Nullable;
 
 /**
  * A Coordinate represented by an interval [start, end)
- * LOOK start < end ?
+ * LOOK must start less than end ?
  */
 @AutoValue
 public abstract class CoordInterval {

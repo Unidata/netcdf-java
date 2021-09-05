@@ -18,8 +18,7 @@ import ucar.nc2.grid.Grid;
 import ucar.nc2.grid.GridAxisPoint;
 import ucar.nc2.grid.GridHorizCoordinateSystem;
 import ucar.nc2.grid.MaterializedCoordinateSystem;
-import ucar.unidata.geoloc.LatLonPoints;
-import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.geoloc.ProjectionRect;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -53,9 +52,9 @@ public class CylindricalCoord {
   }
 
   // no strides for now
-  public Optional<GridAxisPoint> subsetLon(LatLonRect llbb, int horizStride, Formatter errlog) {
-    double wantMin = LatLonPoints.lonNormalFrom(llbb.getLonMin(), this.start);
-    double wantMax = LatLonPoints.lonNormalFrom(llbb.getLonMax(), this.start);
+  public Optional<GridAxisPoint> subsetLon(ProjectionRect projbb, int horizStride, Formatter errlog) {
+    double wantMin = projbb.getMinX();
+    double wantMax = projbb.getMaxX();
 
     // may be 0, 1, or 2 CoordIntervals
     List<Range> lonIntvs = subsetLonIntervals(wantMin, wantMax, horizStride);

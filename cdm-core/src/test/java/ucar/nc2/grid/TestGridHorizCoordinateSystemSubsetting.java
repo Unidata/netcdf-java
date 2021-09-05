@@ -6,13 +6,20 @@
 package ucar.nc2.grid;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.truth.Truth8;
 import org.junit.Test;
 import ucar.array.Range;
 import ucar.nc2.Attribute;
 import ucar.nc2.constants.AxisType;
+import ucar.unidata.geoloc.Earth;
+import ucar.unidata.geoloc.LatLonPoint;
+import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Projection;
+import ucar.unidata.geoloc.ProjectionPoint;
 import ucar.unidata.geoloc.ProjectionRect;
 import ucar.unidata.geoloc.projection.FlatEarth;
+import ucar.unidata.geoloc.projection.LatLonProjection;
+import ucar.unidata.geoloc.projection.proj4.TransverseMercatorProjection;
 
 import java.util.Formatter;
 
@@ -36,14 +43,15 @@ public class TestGridHorizCoordinateSystemSubsetting {
     System.out.printf("hcs = %s%n", hcs);
 
     Formatter errlog = new Formatter();
-    GridHorizCoordinateSystem subset = hcs.subset(GridSubset.create().setHorizStride(3), errlog).orElseThrow();
+    GridHorizCoordinateSystem subset = hcs.subset(GridSubset.create().setHorizStride(3), null, errlog).orElseThrow();
     assertThat((Object) subset.getXHorizAxis()).isNotNull();
     assertThat((Object) subset.getYHorizAxis()).isNotNull();
     assertThat(subset.getProjection()).isEqualTo(project);
     assertThat(subset.isLatLon()).isFalse();
     assertThat(subset.isGlobalLon()).isFalse();
-    assertThat(subset.getSubsetRanges()).isEqualTo(ImmutableList.of(Range.make(0, 6, 3), Range.make(0, 8, 3)));
     assertThat(subset.getShape()).isEqualTo(ImmutableList.of(3, 3));
+    assertThat(subset.getYHorizAxis().getSubsetRange()).isEqualTo(Range.make(0, 6, 3));
+    assertThat(subset.getXHorizAxis().getSubsetRange()).isEqualTo(Range.make(0, 8, 3));
 
     GridHorizCoordinateSystem copy =
         new GridHorizCoordinateSystem(hcs.getXHorizAxis(), hcs.getYHorizAxis(), hcs.getProjection());
@@ -96,7 +104,7 @@ public class TestGridHorizCoordinateSystemSubsetting {
     GridHorizCoordinateSystem hcs = new GridHorizCoordinateSystem(xaxis, yaxis, project);
 
     Formatter errlog = new Formatter();
-    GridHorizCoordinateSystem subset = hcs.subset(GridSubset.create().setHorizStride(2), errlog).orElseThrow();
+    GridHorizCoordinateSystem subset = hcs.subset(GridSubset.create().setHorizStride(2), null, errlog).orElseThrow();
     assertThat((Object) subset.getXHorizAxis()).isNotNull();
     assertThat((Object) subset.getYHorizAxis()).isNotNull();
     assertThat(subset.getProjection()).isEqualTo(project);
@@ -104,8 +112,9 @@ public class TestGridHorizCoordinateSystemSubsetting {
     assertThat(subset.isGlobalLon()).isFalse();
     assertThat(hcs.getXHorizAxis().isRegular()).isTrue();
     assertThat(hcs.getYHorizAxis().isRegular()).isFalse();
-    assertThat(subset.getSubsetRanges()).isEqualTo(ImmutableList.of(Range.make(0, 6, 2), Range.make(0, 8, 2)));
     assertThat(subset.getShape()).isEqualTo(ImmutableList.of(4, 5));
+    assertThat(subset.getYHorizAxis().getSubsetRange()).isEqualTo(Range.make(0, 6, 2));
+    assertThat(subset.getXHorizAxis().getSubsetRange()).isEqualTo(Range.make(0, 8, 2));
 
     GridHorizCoordinateSystem copy =
         new GridHorizCoordinateSystem(hcs.getXHorizAxis(), hcs.getYHorizAxis(), hcs.getProjection());
@@ -161,7 +170,7 @@ public class TestGridHorizCoordinateSystemSubsetting {
     GridHorizCoordinateSystem hcs = new GridHorizCoordinateSystem(xaxis, yaxis, project);
 
     Formatter errlog = new Formatter();
-    GridHorizCoordinateSystem subset = hcs.subset(GridSubset.create().setHorizStride(2), errlog).orElseThrow();
+    GridHorizCoordinateSystem subset = hcs.subset(GridSubset.create().setHorizStride(2), null, errlog).orElseThrow();
     assertThat((Object) subset.getXHorizAxis()).isNotNull();
     assertThat((Object) subset.getYHorizAxis()).isNotNull();
     assertThat(subset.getProjection()).isEqualTo(project);
@@ -169,8 +178,9 @@ public class TestGridHorizCoordinateSystemSubsetting {
     assertThat(subset.isGlobalLon()).isFalse();
     assertThat(hcs.getXHorizAxis().isRegular()).isFalse();
     assertThat(hcs.getYHorizAxis().isRegular()).isFalse();
-    assertThat(subset.getSubsetRanges()).isEqualTo(ImmutableList.of(Range.make(0, 6, 2), Range.make(0, 4, 2)));
     assertThat(subset.getShape()).isEqualTo(ImmutableList.of(4, 3));
+    assertThat(subset.getYHorizAxis().getSubsetRange()).isEqualTo(Range.make(0, 6, 2));
+    assertThat(subset.getXHorizAxis().getSubsetRange()).isEqualTo(Range.make(0, 4, 2));
 
     GridHorizCoordinateSystem copy =
         new GridHorizCoordinateSystem(hcs.getXHorizAxis(), hcs.getYHorizAxis(), hcs.getProjection());
@@ -229,7 +239,7 @@ public class TestGridHorizCoordinateSystemSubsetting {
     ProjectionRect rect = new ProjectionRect(200, 300, 600, 800);
     GridSubset params = GridSubset.create().setProjectionBoundingBox(rect);
     Formatter errlog = new Formatter();
-    GridHorizCoordinateSystem subset = hcs.subset(params, errlog).orElseThrow();
+    GridHorizCoordinateSystem subset = hcs.subset(params, null, errlog).orElseThrow();
     assertThat((Object) subset.getXHorizAxis()).isNotNull();
     assertThat((Object) subset.getYHorizAxis()).isNotNull();
     assertThat(subset.getProjection()).isEqualTo(project);
@@ -290,7 +300,7 @@ public class TestGridHorizCoordinateSystemSubsetting {
     ProjectionRect rect = new ProjectionRect(20, 7, 66, 70);
     GridSubset params = GridSubset.create().setProjectionBoundingBox(rect);
     Formatter errlog = new Formatter();
-    GridHorizCoordinateSystem subset = hcs.subset(params, errlog).orElseThrow();
+    GridHorizCoordinateSystem subset = hcs.subset(params, null, errlog).orElseThrow();
     assertThat((Object) subset.getXHorizAxis()).isNotNull();
     assertThat((Object) subset.getYHorizAxis()).isNotNull();
     assertThat(subset.getProjection()).isEqualTo(project);
@@ -352,7 +362,7 @@ public class TestGridHorizCoordinateSystemSubsetting {
     ProjectionRect rect = new ProjectionRect(4.1, 7, 80, 40);
     GridSubset params = GridSubset.create().setProjectionBoundingBox(rect);
     Formatter errlog = new Formatter();
-    GridHorizCoordinateSystem subset = hcs.subset(params, errlog).orElseThrow();
+    GridHorizCoordinateSystem subset = hcs.subset(params, null, errlog).orElseThrow();
     assertThat((Object) subset.getXHorizAxis()).isNotNull();
     assertThat((Object) subset.getYHorizAxis()).isNotNull();
     assertThat(subset.getProjection()).isEqualTo(project);
@@ -418,7 +428,7 @@ public class TestGridHorizCoordinateSystemSubsetting {
     ProjectionRect rect = new ProjectionRect(200, 300, 600, 800);
     GridSubset params = GridSubset.create().setProjectionBoundingBox(rect).setHorizStride(3);
     Formatter errlog = new Formatter();
-    GridHorizCoordinateSystem subset = hcs.subset(params, errlog).orElseThrow();
+    GridHorizCoordinateSystem subset = hcs.subset(params, null, errlog).orElseThrow();
 
     GridAxisPoint ysubset = subset.getYHorizAxis();
     assertThat((Object) ysubset).isNotNull();
@@ -473,7 +483,7 @@ public class TestGridHorizCoordinateSystemSubsetting {
     ProjectionRect rect = new ProjectionRect(20, 7, 66, 70);
     GridSubset params = GridSubset.create().setProjectionBoundingBox(rect).setHorizStride(2);
     Formatter errlog = new Formatter();
-    GridHorizCoordinateSystem subset = hcs.subset(params, errlog).orElseThrow();
+    GridHorizCoordinateSystem subset = hcs.subset(params, null, errlog).orElseThrow();
 
     GridAxisPoint ysubset = subset.getYHorizAxis();
     assertThat((Object) ysubset).isNotNull();
@@ -531,7 +541,7 @@ public class TestGridHorizCoordinateSystemSubsetting {
     ProjectionRect rect = new ProjectionRect(4.1, 7, 80, 40);
     GridSubset params = GridSubset.create().setProjectionBoundingBox(rect).setHorizStride(2);
     Formatter errlog = new Formatter();
-    GridHorizCoordinateSystem subset = hcs.subset(params, errlog).orElseThrow();
+    GridHorizCoordinateSystem subset = hcs.subset(params, null, errlog).orElseThrow();
 
     GridAxisPoint ysubset = subset.getYHorizAxis();
     assertThat((Object) ysubset).isNotNull();
@@ -571,6 +581,120 @@ public class TestGridHorizCoordinateSystemSubsetting {
     assertThat(subset.getGeoUnits()).isEqualTo("km");
     assertThat(subset.getBoundingBox()).isEqualTo(ProjectionRect.fromSpec("3, 2.5, 97, 57.5"));
     assertThat(subset.getLatLonBoundingBox()).isNotNull();
-    assertThat(subset.getLatLonBoundingBox()).isNotNull();
   }
+
+  @Test
+  public void testLatLonProjectionRect() {
+    int n = 7;
+    double[] yvalues = new double[] {0, 5, 10, 20, 40, 80, 100};
+    GridAxisPoint.Builder<?> builder = GridAxisPoint.builder().setAxisType(AxisType.Lat).setName("lat").setUnits("degN")
+        .setDescription("desc").setNcoords(n).setValues(yvalues).setSpacing(GridAxisSpacing.irregularPoint)
+        .addAttribute(new Attribute("aname", 99.0));
+    GridAxisPoint latAxis = builder.build();
+
+    GridAxisPoint.Builder<?> xbuilder = GridAxisPoint.builder().setAxisType(AxisType.Lon).setName("lon")
+        .setUnits("degE").setDescription("desc").setRegular(9, 0.0, 10.0).setSpacing(GridAxisSpacing.regularPoint)
+        .addAttribute(new Attribute("aname", 99.0));
+    GridAxisPoint lonAxis = xbuilder.build();
+
+    LatLonProjection project = new LatLonProjection(new Earth());
+    GridHorizCoordinateSystem hcs = new GridHorizCoordinateSystem(lonAxis, latAxis, project);
+
+    assertThat((Object) hcs.getXHorizAxis()).isEqualTo(lonAxis);
+    assertThat((Object) hcs.getYHorizAxis()).isEqualTo(latAxis);
+    assertThat(hcs.getProjection()).isEqualTo(project);
+    assertThat(hcs.isLatLon()).isTrue();
+    assertThat(hcs.isGlobalLon()).isFalse();
+    assertThat(hcs.getXHorizAxis().isRegular()).isTrue();
+    assertThat(hcs.getYHorizAxis().isRegular()).isFalse();
+    assertThat(hcs.getShape()).isEqualTo(ImmutableList.of(7, 9));
+    assertThat(hcs.getGeoUnits()).isNull();
+
+    assertThat(hcs.getBoundingBox()).isEqualTo(ProjectionRect.fromSpec("-5, -2.5, 90, 112.5"));
+    assertThat(hcs.getLatLonBoundingBox()).isEqualTo(LatLonRect.fromSpec("-2.5, -5, 92.5, 90"));
+
+    LatLonRect rect = LatLonRect.fromSpec("2.5, 5, 47.5, 80");
+    GridSubset params = GridSubset.create().setLatLonBoundingBox(rect);
+    Formatter errlog = new Formatter();
+    GridHorizCoordinateSystem hcsSubset = hcs.subset(params, null, errlog).orElseThrow();
+    assertThat(hcsSubset.getProjection()).isEqualTo(project);
+    assertThat(hcsSubset.isLatLon()).isTrue();
+    assertThat(hcsSubset.isGlobalLon()).isFalse();
+    assertThat(hcsSubset.getXHorizAxis().isRegular()).isTrue();
+    assertThat(hcsSubset.getYHorizAxis().isRegular()).isFalse();
+    assertThat(hcsSubset.getShape()).isEqualTo(ImmutableList.of(4, 8));
+    assertThat(hcsSubset.getGeoUnits()).isNull();
+
+    System.out.printf("Subset rectangle request = %s%n", rect);
+    assertThat(hcsSubset.getBoundingBox()).isEqualTo(ProjectionRect.fromSpec("5, 2.5, 80, 47.5"));
+    assertThat(hcsSubset.getLatLonBoundingBox()).isEqualTo(LatLonRect.fromSpec("2.5, 5, 47.5, 80"));
+
+    GridAxisPoint ysubset = hcsSubset.getYHorizAxis();
+    System.out.printf("ysubset = %s%n", ysubset);
+    assertThat((Object) ysubset).isNotNull();
+    assertThat(ysubset.getSpacing()).isEqualTo(GridAxisSpacing.irregularPoint);
+    assertThat(ysubset.getSubsetRange()).isEqualTo(Range.make(1, 4));
+    assertThat(ysubset.getNominalSize()).isEqualTo(4);
+
+    int count = 0;
+    for (Number val : ysubset) {
+      assertThat(val).isEqualTo(yvalues[1 + count]);
+      count++;
+    }
+    assertThat(count).isEqualTo(4);
+
+    GridAxisPoint xsubset = hcsSubset.getXHorizAxis();
+    System.out.printf("xsubset = %s%n", xsubset);
+    assertThat((Object) xsubset).isNotNull();
+    assertThat(xsubset.getSpacing()).isEqualTo(GridAxisSpacing.regularPoint);
+    assertThat(xsubset.getSubsetRange()).isEqualTo(Range.make(1, 8));
+    assertThat(xsubset.getNominalSize()).isEqualTo(8);
+
+    count = 0;
+    for (Number val : xsubset) {
+      assertThat(val).isEqualTo((1 + count) * 10);
+      count++;
+    }
+    assertThat(count).isEqualTo(8);
+
+    GridHorizCoordinateSystem hcsSubset2 = hcs
+        .subset(GridSubset.create().setProjectionBoundingBox(hcsSubset.getBoundingBox()), null, errlog).orElseThrow();
+    assertThat(hcsSubset2).isEqualTo(hcsSubset);
+
+    GridHorizCoordinateSystem hcsSubset3 =
+        hcs.subset(GridSubset.create().setLatLonPoint(LatLonPoint.create(30, 45)), null, errlog).orElseThrow();
+    assertThat(hcsSubset3.getShape()).isEqualTo(ImmutableList.of(1, 1));
+  }
+
+  @Test
+  public void testLatLonPoint() {
+    int n = 7;
+    double[] yvalues = new double[] {0, 5, 10, 20, 40, 80, 100};
+    GridAxisPoint.Builder<?> builder = GridAxisPoint.builder().setAxisType(AxisType.Lat).setName("lat").setUnits("degN")
+        .setDescription("desc").setNcoords(n).setValues(yvalues).setSpacing(GridAxisSpacing.irregularPoint)
+        .addAttribute(new Attribute("aname", 99.0));
+    GridAxisPoint latAxis = builder.build();
+
+    GridAxisPoint.Builder<?> xbuilder = GridAxisPoint.builder().setAxisType(AxisType.Lon).setName("lon")
+        .setUnits("degE").setDescription("desc").setRegular(9, 0.0, 10.0).setSpacing(GridAxisSpacing.regularPoint)
+        .addAttribute(new Attribute("aname", 99.0));
+    GridAxisPoint lonAxis = xbuilder.build();
+
+    LatLonProjection project = new LatLonProjection(new Earth());
+    GridHorizCoordinateSystem hcs = new GridHorizCoordinateSystem(lonAxis, latAxis, project);
+
+    Formatter errlog = new Formatter();
+    GridHorizCoordinateSystem hcsSubset =
+        hcs.subset(GridSubset.create().setLatLonPoint(LatLonPoint.create(30, 45)), null, errlog).orElseThrow();
+    assertThat(hcsSubset.getProjection()).isEqualTo(project);
+    assertThat(hcsSubset.isLatLon()).isTrue();
+    assertThat(hcsSubset.isGlobalLon()).isFalse();
+
+    assertThat(hcsSubset.getShape()).isEqualTo(ImmutableList.of(1, 1));
+    assertThat(hcsSubset.getXHorizAxis().isRegular()).isTrue();
+    assertThat(hcsSubset.getXHorizAxis().getSpacing()).isEqualTo(GridAxisSpacing.nominalPoint);
+    assertThat(hcsSubset.getYHorizAxis().isRegular()).isTrue();
+    assertThat(hcsSubset.getYHorizAxis().getSpacing()).isEqualTo(GridAxisSpacing.nominalPoint);
+  }
+
 }

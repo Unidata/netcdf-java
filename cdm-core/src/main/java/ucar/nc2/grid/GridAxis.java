@@ -54,7 +54,7 @@ public abstract class GridAxis<T> implements Comparable<GridAxis<T>>, Iterable<T
 
   /** Is it regularly spaced? */
   public boolean isRegular() {
-    return spacing.isRegular();
+    return spacing.isRegular() || getNominalSize() == 1;
   }
 
   /** Is it an interval coordinate? */

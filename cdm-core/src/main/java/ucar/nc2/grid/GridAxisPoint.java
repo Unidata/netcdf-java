@@ -21,6 +21,8 @@ import java.util.Optional;
 
 /**
  * Point Grid coordinates.
+ * When representing Lon coordinates, these are projecion latlon, not constrained to an interval like LatLonPoint,
+ * and must be monotonic.
  * LOOK although we use Number, everything is internally a double. Grib wants integers.
  */
 @Immutable
@@ -394,7 +396,7 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
       return self();
     }
 
-    /** Subset with stride > 1; Turns into a nominalPoint. */
+    /** Subset with stride &gt; 1; Turns into a nominalPoint. */
     public T subsetWithStride(int stride) {
       if (stride < 2) {
         return self();
@@ -490,6 +492,9 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
       built = true;
       if (this.resolution == 0 && this.values != null && this.values.length > 1) {
         this.resolution = (this.values[this.values.length - 1] - this.values[0]) / (this.values.length - 1);
+      }
+      if (this.ncoords == 1) {
+        this.spacing = GridAxisSpacing.nominalPoint;
       }
       return new GridAxisPoint(this);
     }

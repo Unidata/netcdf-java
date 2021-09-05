@@ -76,7 +76,8 @@ public class MaterializedCoordinateSystem {
     if (getVerticalAxis() != null) {
       result.add(getVerticalAxis().getSubsetRange());
     }
-    result.addAll(getHorizCoordinateSystem().getSubsetRanges());
+    result.add(getHorizCoordinateSystem().getYHorizAxis().getSubsetRange());
+    result.add(getHorizCoordinateSystem().getXHorizAxis().getSubsetRange());
     return result;
   }
 
@@ -162,6 +163,7 @@ public class MaterializedCoordinateSystem {
       return this;
     }
 
+    // LOOK needed ?
     public Builder setRanges(List<Range> ranges) {
       this.ranges = ImmutableList.copyOf(ranges);
       return this;

@@ -179,8 +179,8 @@ public class CurvilinearCoords {
   /**
    * Find the best index for the given lat,lon point.
    *
-   * @param wantLon lon of point
    * @param wantLat lat of point
+   * @param wantLon lon of point
    * @return empty if not in the grid.
    */
   public Optional<CoordReturn> findIndexFromLatLon(double wantLat, double wantLon) {
@@ -188,10 +188,11 @@ public class CurvilinearCoords {
   }
 
   /**
-   * Find the best index for the given lat,lon point.
+   * Find the best index for the given lat,lon point. Uses a simple gradient search, starting from the
+   * initial guess if it exists.
    *
-   * @param wantLon lon of point
    * @param wantLat lat of point
+   * @param wantLon lon of point
    * @param initial initial guess, used eg for mouse tracking in UI
    * @return empty if not in the grid.
    */

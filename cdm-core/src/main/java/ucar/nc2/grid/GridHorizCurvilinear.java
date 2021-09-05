@@ -23,12 +23,29 @@ import ucar.unidata.geoloc.ProjectionRect;
 import ucar.unidata.geoloc.projection.CurvilinearProjection;
 
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import java.util.Formatter;
 import java.util.Objects;
 import java.util.Optional;
 
+/**
+ * A "Curvilinear" horizontal CoordinateSystem does not have a closed form projection function, nor orthogonal lat/lon
+ * axes.
+ * The x/y axes are typically nominal (eg just reflect the x,y index). The lat/lon values are stored in a 2D array.
+ * To find a cell from a lat/lon value, we do a search in those 2D arrays.
+ */
+@Immutable
 public class GridHorizCurvilinear extends GridHorizCoordinateSystem {
 
+  /**
+   * Create a GridHorizCurvilinear from the x/y axes and 2D lat/lon arrays.
+   * 
+   * @param xaxis the xaxis, may be nominal, as the projection is never used.
+   * @param yaxis the yaxis, may be nominal, as the projection is never used.
+   * @param latdata The latitude of the center points.
+   * @param londata The longitude of the center points.
+   * @return a new GridHorizCurvilinear
+   */
   public static GridHorizCurvilinear create(GridAxisPoint xaxis, GridAxisPoint yaxis, Array<Number> latdata,
       Array<Number> londata) {
 
@@ -38,7 +55,7 @@ public class GridHorizCurvilinear extends GridHorizCoordinateSystem {
     return createFromEdges(xaxis, yaxis, latedge, lonedge);
   }
 
-  public static GridHorizCurvilinear createFromEdges(GridAxisPoint xaxis, GridAxisPoint yaxis, Array<Double> latedge,
+  static GridHorizCurvilinear createFromEdges(GridAxisPoint xaxis, GridAxisPoint yaxis, Array<Double> latedge,
       Array<Double> lonedge) {
     Preconditions.checkNotNull(xaxis);
     Preconditions.checkNotNull(yaxis);
@@ -98,14 +115,17 @@ public class GridHorizCurvilinear extends GridHorizCoordinateSystem {
     this.helper = new CurvilinearCoords("GridHorizCurvilinear", latedge, lonedge, latMinmax, lonMinmax);
   }
 
+  /** The latitude edge array. */
   public Array<Double> getLatEdges() {
     return helper.getLatEdges();
   }
 
+  /** The longitude edge array. */
   public Array<Double> getLonEdges() {
     return helper.getLonEdges();
   }
 
+  /** Always true for GridHorizCurvilinear. */
   @Override
   public boolean isLatLon() {
     return true;
@@ -188,9 +208,9 @@ public class GridHorizCurvilinear extends GridHorizCoordinateSystem {
   }
 
   ///////////////////////////////////////////////////////////////////////////
-  // from HorizCoordSys2D
+  // originally from ucar.nc2.ft2.coverage.HorizCoordSys2D
   @Override
-  public Optional<GridHorizCoordinateSystem> subset(GridSubset params, MaterializedCoordinateSystem.Builder builder,
+  Optional<GridHorizCoordinateSystem> subset(GridSubset params, MaterializedCoordinateSystem.Builder builder,
       Formatter errlog) {
     Preconditions.checkNotNull(params);
     Preconditions.checkNotNull(errlog);
