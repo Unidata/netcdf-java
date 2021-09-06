@@ -692,9 +692,9 @@ public class TestGridHorizCoordinateSystemSubsetting {
 
     assertThat(hcsSubset.getShape()).isEqualTo(ImmutableList.of(1, 1));
     assertThat(hcsSubset.getXHorizAxis().isRegular()).isTrue();
-    assertThat(hcsSubset.getXHorizAxis().getSpacing()).isEqualTo(GridAxisSpacing.nominalPoint);
+    assertThat(hcsSubset.getXHorizAxis().getSpacing()).isEqualTo(GridAxisSpacing.regularPoint);
     assertThat(hcsSubset.getYHorizAxis().isRegular()).isTrue();
-    assertThat(hcsSubset.getYHorizAxis().getSpacing()).isEqualTo(GridAxisSpacing.nominalPoint);
+    assertThat(hcsSubset.getYHorizAxis().getSpacing()).isEqualTo(GridAxisSpacing.irregularPoint);
   }
 
 }

@@ -131,7 +131,7 @@ public class TestGridReadHorizCylindrical {
       assertThat(subsetLonAxisNo.isSubset).isTrue();
       assertThat(subsetLonAxisNo.getSpacing()).isEqualTo(GridAxisSpacing.regularPoint);
       assertThat(subsetLonAxisNo.startValue).isEqualTo(350.0);
-      assertThat(subsetLonAxisNo.getNominalSize()).isEqualTo(21);
+      assertThat(subsetLonAxisNo.getNominalSize()).isEqualTo(31);
       assertThat(subsetLonAxisNo.getResolution()).isEqualTo(1);
 
       // make subset with stride
@@ -148,7 +148,7 @@ public class TestGridReadHorizCylindrical {
       assertThat(subsetLonAxis.isSubset).isTrue();
       assertThat(subsetLonAxis.getSpacing()).isEqualTo(GridAxisSpacing.regularPoint);
       assertThat(subsetLonAxis.startValue).isEqualTo(350.0);
-      assertThat(subsetLonAxis.getNominalSize()).isEqualTo(11);
+      assertThat(subsetLonAxis.getNominalSize()).isEqualTo(16);
       assertThat(subsetLonAxis.getResolution()).isEqualTo(2.0);
 
       // Note that the horizontal coordinate system of the GeoReferencedArray produced by the subset

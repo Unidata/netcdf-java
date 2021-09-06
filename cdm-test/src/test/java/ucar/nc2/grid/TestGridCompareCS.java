@@ -40,13 +40,8 @@ public class TestGridCompareCS {
         ".ncx4 .gbx9 .cdl .pdf perverse.nc aggFmrc.xml 2003021212_avn-x.nc wrfout_01_000000_0003.nc wrfout_01_000000_0003.ncml");
     List<Object[]> result = new ArrayList<>(500);
     try {
-      // in this case the time coordinate is not monotonic.
-      // result.add(new Object[] {TestDir.cdmUnitTestDir + "conventions/nuwg/2003021212_avn-x.nc"});
-
-      // in this case the vert coordinate is not identified.
-      // Note that TestDir skips this in favor of the ncml file in the same directory (true?)
-      // result.add(new Object[] {TestDir.cdmUnitTestDir + "conventions/avhrr/amsr-avhrr-v2.20040729.nc"});
-      // result.add(new Object[] {TestDir.cdmUnitTestDir + "wrf/wrfout_01_000000_0003.ncml"});
+      // in this case the vert coordinate is not identified. GridNew works magically anyway.
+      result.add(new Object[] {TestDir.cdmUnitTestDir + "conventions/avhrr/amsr-avhrr-v2.20040729.nc"});
 
       result.add(new Object[] {TestDir.cdmLocalTestDataDir + "ncml/nc/ubyte_1.nc4"});
       result.add(new Object[] {TestDir.cdmLocalTestDataDir + "ncml/nc/cldc.mean.nc"});
@@ -71,12 +66,10 @@ public class TestGridCompareCS {
 
   @Test
   public void compareGrid() throws Exception {
-    // these are failing in old code.
-    if (filename.endsWith("cdm_sea_soundings.nc4"))
+    // time coordinate not monotonic
+    if (filename.endsWith("2003021212_avn-x.nc"))
       return;
-    if (filename.endsWith("IntTimSciSamp.nc"))
-      return;
-    if (filename.endsWith("fixed.fw0.0Sv.nc"))
+    if (filename.endsWith("cg.ncml"))
       return;
 
     System.out.printf("compareGrid %s%n", filename);

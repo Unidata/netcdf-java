@@ -94,8 +94,10 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
       case irregularPoint:
         if (index > 0) {
           return (values[index - 1] + values[index]) / 2;
-        } else {
+        } else if (ncoords > 1) {
           return values[0] - (values[1] - values[0]) / 2;
+        } else {
+          return values[0] - resolution / 2;
         }
 
       case nominalPoint:
@@ -115,8 +117,10 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
       case irregularPoint:
         if (index < ncoords - 1) {
           return (values[index] + values[index + 1]) / 2;
-        } else {
+        } else if (ncoords > 1) {
           return values[index] + (values[index] - values[index - 1]) / 2;
+        } else {
+          return values[0] + resolution / 2;
         }
 
       case nominalPoint:
@@ -493,9 +497,14 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
       if (this.resolution == 0 && this.values != null && this.values.length > 1) {
         this.resolution = (this.values[this.values.length - 1] - this.values[0]) / (this.values.length - 1);
       }
-      if (this.ncoords == 1) {
-        this.spacing = GridAxisSpacing.nominalPoint;
-      }
+      /*
+       * if (this.ncoords == 1) {
+       * this.range = Range.make(0, 0);
+       * this.edges = makeEdges(range);
+       * this.values = makeValues(range);
+       * this.spacing = GridAxisSpacing.nominalPoint;
+       * }
+       */
       return new GridAxisPoint(this);
     }
   }
