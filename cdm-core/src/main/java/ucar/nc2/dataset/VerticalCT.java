@@ -13,8 +13,8 @@ import ucar.nc2.internal.dataset.transform.vertical.VerticalTransformBuilder;
 import ucar.unidata.geoloc.VerticalTransform;
 
 /**
- * A Vertical CoordinateTransform is a function CT: (GeoZ) -> Height or Pressure.
- * It may be dependent also on X,Y and/or Time. CT: (X,Y,GeoZ,Time) -> Height or Pressure.
+ * A Vertical CoordinateTransform is a function CT: (GeoZ) -&gt; Height or Pressure.
+ * It may be dependent also on X,Y and/or Time. CT: (X,Y,GeoZ,Time) -&gt; Height or Pressure.
  * This class just records the transformation parameters. The mathematical transformation itself is
  * delegated to a class implementing {@link ucar.unidata.geoloc.VerticalTransform}.
  */

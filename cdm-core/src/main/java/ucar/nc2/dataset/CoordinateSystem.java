@@ -22,7 +22,7 @@ import ucar.unidata.util.StringUtil2;
  *
  * <pre>
  * Mathematically it is a vector function F from index space to Sn:
- *  F(i,j,k,...) -> (S1, S2, ...Sn)
+ *  F(i,j,k,...) -&gt; (S1, S2, ...Sn)
  *  where i,j,k are integers, and S is the set of reals (R) or Strings.
  * </pre>
  * 
@@ -30,9 +30,9 @@ import ucar.unidata.util.StringUtil2;
  * 
  * <pre>
  *  F = (A1, A2, ...An)
- *    A1(i,j,k,...) -> S1
- *    A2(i,j,k,...) -> S2
- *    An(i,j,k,...) -> Sn
+ *    A1(i,j,k,...) -&gt; S1
+ *    A2(i,j,k,...) -&gt; S2
+ *    An(i,j,k,...) -&gt; Sn
  * </pre>
  *
  * Concretely, a CoordinateSystem is a set of coordinate axes, and an optional set

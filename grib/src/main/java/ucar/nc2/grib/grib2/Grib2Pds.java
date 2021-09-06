@@ -16,9 +16,6 @@ import java.util.zip.CRC32;
 /**
  * Abstract superclass for GRIB2 PDS handling.
  * Inner classes are specific to each template.
- *
- * @author caron
- * @since 3/28/11
  */
 
 @Immutable
@@ -282,11 +279,11 @@ public abstract class Grib2Pds {
 
   /**
    * Get the index'th byte in the PDS as an unsigned integer.
-   * THIS IS ONE BASED (not zero) to correspond with the manual.
+   * INDEX IS ONE BASED (not zero) to correspond with the manual.
    * Will throw Exception if index is out of bounds.
    *
    * @param index 1 based index
-   * @return input[index-1] & 0xff
+   * @return input[index-1] as an int
    */
   public final int getOctet(int index) {
     return Byte.toUnsignedInt(input[index - 1]);

@@ -16,10 +16,7 @@ import java.util.Formatter;
 import java.util.zip.Deflater;
 
 /**
- * Abstraction for handling Grib 1 & 2 data in a uniform way.
- *
- * @author John
- * @since 9/1/2014
+ * Abstraction for handling Grib 1 and 2 data in a uniform way.
  */
 public class GribData {
   private static Logger logger = LoggerFactory.getLogger(GribData.class);

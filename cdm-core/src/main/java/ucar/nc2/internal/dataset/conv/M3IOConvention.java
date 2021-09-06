@@ -38,8 +38,8 @@ import ucar.unidata.geoloc.projection.UtmProjection;
  * The Models-3/EDSS Input/Output Applications Programming Interface (I/O API)
  * is the standard data access library for both NCSC's EDSS project and EPA's Models-3.
  * <p/>
- * 6/24/09: Modified to support multiple projection types of data by Qun He <qunhe@unc.edu>
- * and Alexis Zubrow <azubrow@unc.edu> added makePolarStereographicProjection, UTM, and modified latlon
+ * 6/24/09: Modified to support multiple projection types of data by Qun He "qunhe@unc.edu"
+ * and Alexis Zubrow "azubrow@unc.edu" added makePolarStereographicProjection, UTM, and modified latlon
  * <p/>
  * 09/2010 plessel.todd@epa.gov add projections 7,8,9,10
  *

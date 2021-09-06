@@ -137,9 +137,10 @@ public class FileCache implements FileCacheIF {
    *
    * @param minElementsInMemory keep this number in the cache
    * @param softLimit trigger a cleanup if it goes over this number.
-   * @param hardLimit if > 0, never allow more than this many elements. This causes a cleanup to be done in the calling
+   * @param hardLimit if &gt; 0, never allow more than this many elements. This causes a cleanup to be done in the
+   *        calling
    *        thread.
-   * @param period if > 0, do periodic cleanups every this number of seconds.
+   * @param period if &gt; 0, do periodic cleanups every this number of seconds.
    */
   public FileCache(int minElementsInMemory, int softLimit, int hardLimit, int period) {
     this("", minElementsInMemory, softLimit, hardLimit, period);
@@ -151,9 +152,10 @@ public class FileCache implements FileCacheIF {
    * @param name of file cache
    * @param minElementsInMemory keep this number in the cache
    * @param softLimit trigger a cleanup if it goes over this number.
-   * @param hardLimit if > 0, never allow more than this many elements. This causes a cleanup to be done in the calling
+   * @param hardLimit if &gt; 0, never allow more than this many elements. This causes a cleanup to be done in the
+   *        calling
    *        thread.
-   * @param period if > 0, do periodic cleanups every this number of seconds.
+   * @param period if &gt; 0, do periodic cleanups every this number of seconds.
    */
   public FileCache(String name, int minElementsInMemory, int softLimit, int hardLimit, int period) {
     this.name = name;
@@ -229,7 +231,7 @@ public class FileCache implements FileCacheIF {
    * @param factory use this factory to open the file if not in the cache; may not be null
    * @param hashKey unique key for this file. If null, the location will be used
    * @param location file location, may also used as the cache name, will be passed to the NetcdfFileFactory
-   * @param buffer_size RandomAccessFile buffer size, if <= 0, use default size
+   * @param buffer_size RandomAccessFile buffer size, if &le; 0, use default size
    * @param cancelTask user can cancel, ok to be null.
    * @param spiObject passed to the factory if object needs to be recreated
    * @return FileCacheable corresponding to location.

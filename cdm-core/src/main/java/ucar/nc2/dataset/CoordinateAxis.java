@@ -26,7 +26,7 @@ import java.util.Formatter;
  * 
  * <pre>
  * Mathematically it is a scalar function F from index space to S:
- *  F:D -> S
+ *  F:D -&gt; S
  *  where D is a product set of dimensions (aka <i>index space</i>), and S is the set of reals (R) or Strings.
  * </pre>
  * <p/>
