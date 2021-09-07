@@ -41,7 +41,7 @@ public abstract class PointIteratorAbstract implements PointFeatureIterator, Ite
       return;
 
     if (bb == null)
-      bb = new LatLonRect.Builder(pf.getLocation().getLatLon(), .001, .001);
+      bb = LatLonRect.builder(pf.getLocation().getLatLon(), .001, .001);
     else
       bb.extend(pf.getLocation().getLatLon());
 
@@ -60,7 +60,7 @@ public abstract class PointIteratorAbstract implements PointFeatureIterator, Ite
     if (llrect.crossDateline() && (llrect.getWidth() > 350.0)) { // call it global - less confusing
       double lat_min = llrect.getLowerLeftPoint().getLatitude();
       double deltaLat = llrect.getUpperLeftPoint().getLatitude() - lat_min;
-      llrect = new LatLonRect.Builder(LatLonPoint.create(lat_min, -180.0), deltaLat, 360.0).build();
+      llrect = LatLonRect.builder(LatLonPoint.create(lat_min, -180.0), deltaLat, 360.0).build();
     }
 
     info.bbox = llrect;

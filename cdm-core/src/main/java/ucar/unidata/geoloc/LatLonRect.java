@@ -257,7 +257,7 @@ public class LatLonRect {
     if (deltaLon < 0)
       return null;
 
-    return new LatLonRect.Builder(LatLonPoint.create(latMin, lonMin), deltaLat, deltaLon).build();
+    return LatLonRect.builder(LatLonPoint.create(latMin, lonMin), deltaLat, deltaLon).build();
   }
 
   private boolean intersect(double min1, double max1, double min2, double max2) {

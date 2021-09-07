@@ -21,7 +21,7 @@ public enum GridAxisSpacing {
    */
   irregularPoint,
   /**
-   * Irregular spaced points values[npts]; edges are not halfway between coords, but are specified in edges[npts+1]
+   * Edges are not halfway between coords, but are specified in edges[npts+1].
    */
   nominalPoint,
 

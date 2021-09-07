@@ -23,12 +23,29 @@ import ucar.unidata.geoloc.ProjectionRect;
 import ucar.unidata.geoloc.projection.CurvilinearProjection;
 
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import java.util.Formatter;
 import java.util.Objects;
 import java.util.Optional;
 
+/**
+ * A "Curvilinear" horizontal CoordinateSystem does not have a closed form projection function, nor orthogonal lat/lon
+ * axes.
+ * The x/y axes are typically nominal (eg just reflect the x,y index). The lat/lon values are stored in a 2D array.
+ * To find a cell from a lat/lon value, we do a search in those 2D arrays.
+ */
+@Immutable
 public class GridHorizCurvilinear extends GridHorizCoordinateSystem {
 
+  /**
+   * Create a GridHorizCurvilinear from the x/y axes and 2D lat/lon arrays.
+   * 
+   * @param xaxis the xaxis, may be nominal, as the projection is never used.
+   * @param yaxis the yaxis, may be nominal, as the projection is never used.
+   * @param latdata The latitude of the center points.
+   * @param londata The longitude of the center points.
+   * @return a new GridHorizCurvilinear
+   */
   public static GridHorizCurvilinear create(GridAxisPoint xaxis, GridAxisPoint yaxis, Array<Number> latdata,
       Array<Number> londata) {
 
@@ -38,7 +55,7 @@ public class GridHorizCurvilinear extends GridHorizCoordinateSystem {
     return createFromEdges(xaxis, yaxis, latedge, lonedge);
   }
 
-  public static GridHorizCurvilinear createFromEdges(GridAxisPoint xaxis, GridAxisPoint yaxis, Array<Double> latedge,
+  static GridHorizCurvilinear createFromEdges(GridAxisPoint xaxis, GridAxisPoint yaxis, Array<Double> latedge,
       Array<Double> lonedge) {
     Preconditions.checkNotNull(xaxis);
     Preconditions.checkNotNull(yaxis);
@@ -98,14 +115,17 @@ public class GridHorizCurvilinear extends GridHorizCoordinateSystem {
     this.helper = new CurvilinearCoords("GridHorizCurvilinear", latedge, lonedge, latMinmax, lonMinmax);
   }
 
+  /** The latitude edge array. */
   public Array<Double> getLatEdges() {
     return helper.getLatEdges();
   }
 
+  /** The longitude edge array. */
   public Array<Double> getLonEdges() {
     return helper.getLonEdges();
   }
 
+  /** Always true for GridHorizCurvilinear. */
   @Override
   public boolean isLatLon() {
     return true;
@@ -165,57 +185,6 @@ public class GridHorizCurvilinear extends GridHorizCoordinateSystem {
     }
   }
 
-  /*
-   * CoordInterval getCoordIntervalLon() {
-   * double edge1, edge2;
-   * 
-   * double valuei = londata.get(yindex, xindex).doubleValue();
-   * double valueim1 = xindex > 0 ? londata.get(yindex, xindex - 1).doubleValue() : Double.NaN;
-   * 
-   * if (xindex > 0) {
-   * edge1 = (valueim1 + valuei) / 2;
-   * } else {
-   * double value0 = londata.get(yindex, 0).doubleValue();
-   * double value1 = londata.get(yindex, 1).doubleValue();
-   * edge1 = value0 - (value1 - value0) / 2;
-   * }
-   * 
-   * if (xindex < nx - 1) {
-   * double valueip1 = londata.get(yindex, xindex + 1).doubleValue();
-   * edge2 = (valuei + valueip1) / 2;
-   * } else {
-   * edge2 = valuei - (valuei - valueim1) / 2;
-   * }
-   * 
-   * return CoordInterval.create(edge1, edge2);
-   * }
-   * 
-   * CoordInterval getCoordIntervalLat() {
-   * double edge1, edge2;
-   * 
-   * double valuei = latdata.get(yindex, xindex).doubleValue();
-   * double valueim1 = yindex > 0 ? latdata.get(yindex - 1, xindex).doubleValue() : Double.NaN;
-   * 
-   * if (yindex > 0) {
-   * edge1 = (valueim1 + valuei) / 2;
-   * } else {
-   * double value0 = latdata.get(0, xindex).doubleValue();
-   * double value1 = latdata.get(1, xindex).doubleValue();
-   * edge1 = value0 - (value1 - value0) / 2;
-   * }
-   * 
-   * if (yindex < ny - 1) {
-   * double valueip1 = latdata.get(yindex + 1, xindex).doubleValue();
-   * edge2 = (valuei + valueip1) / 2;
-   * } else {
-   * edge2 = valuei - (valuei - valueim1) / 2;
-   * }
-   * 
-   * return CoordInterval.create(edge1, edge2);
-   * }
-   * }
-   */
-
   void showEdges() {
     System.out.printf("latedge = %s%n", NcdumpArray.printArray(latedge));
     System.out.printf("lonedge = %s%n", NcdumpArray.printArray(lonedge));
@@ -239,9 +208,16 @@ public class GridHorizCurvilinear extends GridHorizCoordinateSystem {
   }
 
   ///////////////////////////////////////////////////////////////////////////
-  // from HorizCoordSys2D
+
   @Override
-  public Optional<GridHorizCoordinateSystem> subset(GridSubset params, Formatter errlog) {
+  public LatLonPoint getLatLon(int xindex, int yindex) {
+    CurvilinearCoords.CoordReturn cr = helper.midpoint(yindex, xindex);
+    return LatLonPoint.create(cr.lat, cr.lon);
+  }
+
+  @Override
+  Optional<GridHorizCoordinateSystem> subset(GridSubset params, MaterializedCoordinateSystem.Builder builder,
+      Formatter errlog) {
     Preconditions.checkNotNull(params);
     Preconditions.checkNotNull(errlog);
 
@@ -304,7 +280,7 @@ public class GridHorizCurvilinear extends GridHorizCoordinateSystem {
     Range lonRange = Range.make(lonmin, lonmax, stride);
     GridAxisPoint lonaxisSubset = xaxis.toBuilder().subsetWithRange(lonRange).build();
 
-    // Subset the edge arrays
+    // Subset the edge arrays LOOK cant subset edge array if there is a stride; must recalculate
     Section section = Section.builder().appendRange(Range.make(latmin, latmax + 1, stride))
         .appendRange(Range.make(lonmin, lonmax + 1, stride)).build();
     try {

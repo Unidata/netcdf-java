@@ -375,7 +375,7 @@ public class ThreddsMetadata implements ThreddsMetadataContainer {
 
     public LatLonRect getBoundingBox() {
       return isGlobal ? new LatLonRect()
-          : new LatLonRect.Builder(LatLonPoint.create(getLatStart(), getLonStart()), getLatExtent(), getLonExtent())
+          : LatLonRect.builder(LatLonPoint.create(getLatStart(), getLonStart()), getLatExtent(), getLonExtent())
               .build();
     }
   }

@@ -7,6 +7,7 @@ package ucar.nc2.internal.grid;
 import com.google.common.base.Preconditions;
 import ucar.array.InvalidRangeException;
 import ucar.array.Range;
+import ucar.nc2.constants.AxisType;
 import ucar.nc2.grid.CoordInterval;
 import ucar.nc2.grid.GridSubset;
 import ucar.nc2.grid.GridAxisPoint;
@@ -124,7 +125,7 @@ public class SubsetPointHelper {
 
   GridAxisPoint.Builder<?> makeSubsetByIndex(int index) {
     GridAxisPoint.Builder<?> builder = orgGridAxis.toBuilder();
-    double val = orgGridAxis.getCoordMidpoint(index);
+    double val = orgGridAxis.getCoordDouble(index);
     return builder.subsetWithSingleValue(val, Range.make(index, index));
   }
 
@@ -136,19 +137,42 @@ public class SubsetPointHelper {
       Formatter errlog) {
     Preconditions.checkNotNull(errlog);
 
-    double lower = Grids.isAscending(orgGridAxis) ? Math.min(minValue, maxValue) : Math.max(minValue, maxValue);
-    double upper = Grids.isAscending(orgGridAxis) ? Math.max(minValue, maxValue) : Math.min(minValue, maxValue);
+    double lower;
+    double upper;
+
+    // LOOK can we do this in CylindricalCoord instead?
+    // longitude wrapping (no seam cross, just look for cylinder that intersects)
+    if (orgGridAxis.getAxisType() == AxisType.Lon) {
+      if (maxValue < minValue) {
+        maxValue = +360;
+      }
+      double minAxis = orgGridAxis.getCoordDouble(0);
+      double maxAxis = orgGridAxis.getCoordDouble(orgGridAxis.getNominalSize() - 1);
+      if (maxValue < minAxis) {
+        lower = minValue + 360;
+        upper = maxValue + 360;
+      } else if (minValue > maxAxis) {
+        lower = minValue - 360;
+        upper = maxValue - 360;
+      } else {
+        lower = minValue;
+        upper = maxValue;
+      }
+    } else {
+      lower = Grids.isAscending(orgGridAxis) ? Math.min(minValue, maxValue) : Math.max(minValue, maxValue);
+      upper = Grids.isAscending(orgGridAxis) ? Math.max(minValue, maxValue) : Math.min(minValue, maxValue);
+    }
 
     int minIndex = SubsetHelpers.findCoordElement(orgGridAxis, lower, false);
     int maxIndex = SubsetHelpers.findCoordElement(orgGridAxis, upper, false);
 
     if (minIndex >= orgGridAxis.getNominalSize()) {
       errlog.format("no points in subset: lower %f > end %f", lower,
-          orgGridAxis.getCoordMidpoint(orgGridAxis.getNominalSize() - 1));
+          orgGridAxis.getCoordDouble(orgGridAxis.getNominalSize() - 1));
       return Optional.empty();
     }
     if (maxIndex < 0) {
-      errlog.format("no points in subset: upper %f < start %f", upper, orgGridAxis.getCoordMidpoint(0));
+      errlog.format("no points in subset: upper %f < start %f", upper, orgGridAxis.getCoordDouble(0));
       return Optional.empty();
     }
 

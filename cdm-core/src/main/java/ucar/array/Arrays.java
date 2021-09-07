@@ -306,7 +306,7 @@ public class Arrays {
 
   /**
    * Create a new Array using same backing store as the org Array, by
-   * eliminating the specified dimension.
+   * eliminating the specified dimension, which must have length 1.
    *
    * @param org original Array
    * @param dim dimension to eliminate: must be of length one.
@@ -317,6 +317,26 @@ public class Arrays {
     if (ri == org.indexFn())
       return org;
     return org.createView(ri);
+  }
+
+  /**
+   * Create a new Array using same backing store as the org Array, by
+   * eliminating the first ndim dimensions, iff they have length 1.
+   *
+   * @param org original Array
+   * @param ndim number of dimensions to reduce.
+   * @return the new Array, or the same Array if no reduction was done
+   */
+  public static <T> Array<T> reduceFirst(Array<T> org, int ndim) {
+    int[] orgShape = org.getShape();
+    for (int i = 0; i < ndim; i++) {
+      if (orgShape[i] == 1) {
+        org = Arrays.reduce(org, 0);
+      } else {
+        break;
+      }
+    }
+    return org;
   }
 
   /**

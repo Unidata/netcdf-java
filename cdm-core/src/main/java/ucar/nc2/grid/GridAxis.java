@@ -47,14 +47,17 @@ public abstract class GridAxis<T> implements Comparable<GridAxis<T>>, Iterable<T
     return attributes;
   }
 
+  /** regularPoint, irregularPoint, or nominalPoint. */
   public GridAxisSpacing getSpacing() {
     return spacing;
   }
 
+  /** Is it regularly spaced? */
   public boolean isRegular() {
-    return spacing.isRegular();
+    return spacing.isRegular() || getNominalSize() == 1;
   }
 
+  /** Is it an interval coordinate? */
   public boolean isInterval() {
     return spacing.isInterval();
   }
@@ -75,11 +78,14 @@ public abstract class GridAxis<T> implements Comparable<GridAxis<T>>, Iterable<T
   /** Nominal in the sense that it may not match the materialized data array. */
   public abstract int getNominalSize();
 
+  /** The nominal value of the coordinate. */
   public abstract Object getCoordinate(int index);
 
+  /** The nominal edges of the coordinate. */
   public abstract CoordInterval getCoordInterval(int index);
 
-  public abstract double getCoordMidpoint(int index);
+  /** The nominal value of the coordinate, cast to a double. */
+  public abstract double getCoordDouble(int index);
 
   public abstract Optional<? extends GridAxis<T>> subset(GridSubset params, Formatter errlog);
 
@@ -191,7 +197,6 @@ public abstract class GridAxis<T> implements Comparable<GridAxis<T>>, Iterable<T
     for (Attribute att : attributes) {
       f.format("%s%s%n", indent, att);
     }
-    f.format("%n");
     indent.decr();
     indent.decr();
   }
@@ -206,7 +211,7 @@ public abstract class GridAxis<T> implements Comparable<GridAxis<T>>, Iterable<T
     private ArrayList<String> dependsOn; // independent axes or dimensions
 
     GridAxisSpacing spacing; // required
-    double resolution;
+    protected double resolution;
     boolean isSubset;
 
     protected abstract T self();

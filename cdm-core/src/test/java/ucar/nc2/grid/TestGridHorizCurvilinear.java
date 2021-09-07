@@ -99,7 +99,8 @@ public class TestGridHorizCurvilinear {
     assertThat(hcs.isLatLon()).isTrue();
     assertThat(hcs.isGlobalLon()).isFalse();
     assertThat(hcs.getShape()).isEqualTo(ImmutableList.of(ny, nx));
-    assertThat(hcs.getSubsetRanges()).isEqualTo(ImmutableList.of(new Range(ny), new Range(nx)));
+    assertThat(hcs.getYHorizAxis().getSubsetRange()).isEqualTo(new Range(ny));
+    assertThat(hcs.getXHorizAxis().getSubsetRange()).isEqualTo(new Range(nx));
 
     assertThat(hcs.getGeoUnits()).isNull();
     assertThat(hcs.getBoundingBox().nearlyEquals(ProjectionRect.fromSpec("-1.020000, -1.010000, 20.400000, 20.200000")))
@@ -107,6 +108,8 @@ public class TestGridHorizCurvilinear {
     assertThat(
         hcs.getLatLonBoundingBox().nearlyEquals(LatLonRect.fromSpec("-1.010000, -1.020000, 20.200000, 20.400000")))
             .isTrue();
+
+    assertThat(hcs.findXYindexFromCoord(0, 0)).isEqualTo(hcs.findXYindexFromCoord(0, 0, null));
   }
 
   @Test
@@ -128,7 +131,8 @@ public class TestGridHorizCurvilinear {
     assertThat(hcs.isLatLon()).isTrue();
     assertThat(hcs.isGlobalLon()).isFalse();
     assertThat(hcs.getShape()).isEqualTo(ImmutableList.of(ny, nx));
-    assertThat(hcs.getSubsetRanges()).isEqualTo(ImmutableList.of(new Range(ny), new Range(nx)));
+    assertThat(hcs.getYHorizAxis().getSubsetRange()).isEqualTo(new Range(ny));
+    assertThat(hcs.getXHorizAxis().getSubsetRange()).isEqualTo(new Range(nx));
 
     assertThat(hcs.getGeoUnits()).isNull();
     assertThat(hcs.getBoundingBox().nearlyEquals(ProjectionRect.fromSpec("-1.020000, -1.010000, 20.400000, 20.200000")))

@@ -2,33 +2,17 @@ package ucar.nc2.grid;
 
 import com.google.common.primitives.Ints;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ucar.array.Array;
 import ucar.array.InvalidRangeException;
-import ucar.ma2.Range;
 import ucar.nc2.calendar.CalendarDate;
-import ucar.nc2.calendar.CalendarDateRange;
-import ucar.nc2.constants.AxisType;
-import ucar.nc2.ft.coverage.GribCoverageValidator;
-import ucar.nc2.ft2.coverage.CoverageCoordAxis;
-import ucar.nc2.ft2.coverage.CoverageCoordAxis.Spacing;
-import ucar.nc2.ft2.coverage.CoverageCoordAxis1D;
-import ucar.nc2.ft2.coverage.CoverageCoordSys;
-import ucar.nc2.ft2.coverage.SubsetParams;
-import ucar.nc2.ft2.coverage.TimeOffsetAxis;
 import ucar.nc2.grib.collection.GribDataReader;
-import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
 import java.util.List;
 
@@ -39,7 +23,6 @@ import static com.google.common.truth.Truth.assertThat;
  */
 @Category(NeedsCdmUnitTest.class)
 public class TestGridSubsetTime {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @BeforeClass
   public static void before() {
@@ -378,7 +361,7 @@ public class TestGridSubsetTime {
     assertThat(timeAxis.getNominalSize()).isEqualTo(1);
 
     if (offsetVal != null) {
-      time = tcs.getCalendarDateUnit().makeCalendarDate(offsetVal);
+      time = tcs.getRuntimeDateUnit().makeCalendarDate(offsetVal);
     }
 
     /*

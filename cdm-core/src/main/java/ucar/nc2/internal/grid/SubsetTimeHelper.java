@@ -50,9 +50,9 @@ public class SubsetTimeHelper {
     Double wantOffset = null;
     CalendarDate wantTime = params.getTime();
     if (wantTime != null) {
-      wantOffset = (double) tcs.getCalendarDateUnit().makeOffsetFromRefDate(wantTime);
+      wantOffset = (double) tcs.getRuntimeDateUnit().makeOffsetFromRefDate(wantTime);
     } else if (params.getTimePresent()) {
-      wantOffset = (double) tcs.getCalendarDateUnit().makeOffsetFromRefDate(CalendarDate.present());
+      wantOffset = (double) tcs.getRuntimeDateUnit().makeOffsetFromRefDate(CalendarDate.present());
     }
     if (wantOffset != null) {
       return timeOffsetAxis.subset(GridSubset.create().setTimeOffsetCoord(wantOffset), errlog);
@@ -105,7 +105,7 @@ public class SubsetTimeHelper {
       // runtime, runtimeLatest
       CalendarDate wantRuntime = params.getRunTime();
       if (wantRuntime != null) {
-        double want = tcs.getCalendarDateUnit().makeOffsetFromRefDate(wantRuntime);
+        double want = tcs.getRuntimeDateUnit().makeOffsetFromRefDate(wantRuntime);
         runIdx = search(tcs.getRunTimeAxis(), want);
         if (runIdx < 0) {
           errlog.format("Cant find runtime = %s%n", wantRuntime);
@@ -129,7 +129,7 @@ public class SubsetTimeHelper {
     // time: searching for a specific time. LOOK: use Best when there's multiple ?? Only for Observation?
     CalendarDate wantTime = params.getTime();
     if (wantTime != null) {
-      double want = tcs.getCalendarDateUnit().makeOffsetFromRefDate(wantTime);
+      double want = tcs.getRuntimeDateUnit().makeOffsetFromRefDate(wantTime);
       timeIdx = search(timeOffsetAxis, want);
       if (timeIdx < 0) {
         errlog.format("Cant find time = %s%n", wantTime);
@@ -171,10 +171,10 @@ public class SubsetTimeHelper {
 
   private static int search(GridAxis<?> time, double want) {
     if (time.getNominalSize() == 1) {
-      return DoubleMath.fuzzyEquals(want, time.getCoordMidpoint(0), 1.0e-8) ? 0 : -1;
+      return DoubleMath.fuzzyEquals(want, time.getCoordDouble(0), 1.0e-8) ? 0 : -1;
     }
     if (time.isRegular()) {
-      double fval = (want - time.getCoordMidpoint(0)) / time.getResolution();
+      double fval = (want - time.getCoordDouble(0)) / time.getResolution();
       double ival = Math.rint(fval);
       return DoubleMath.fuzzyEquals(fval, ival, 1.0e-8) ? (int) ival : (int) -ival - 1; // LOOK
     }

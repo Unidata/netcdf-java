@@ -170,7 +170,7 @@ public class TestGcdmGridConverter {
       return;
     }
     assertThat(tsys.getType()).isEqualTo(expected.getType());
-    assertThat(tsys.getCalendarDateUnit()).isEqualTo(expected.getCalendarDateUnit());
+    assertThat(tsys.getRuntimeDateUnit()).isEqualTo(expected.getRuntimeDateUnit());
     assertThat(tsys.getBaseDate()).isEqualTo(expected.getBaseDate());
     if (!tsys.getNominalShape().equals(expected.getNominalShape())) {
       System.out.printf("HEY getNominalShape%n");

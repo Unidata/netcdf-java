@@ -5,7 +5,7 @@ import org.junit.experimental.categories.Category;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
-/** Test problems reading new and old GridDataset. */
+/** Test problems reading new GridDataset and old Coverage. */
 @Category(NeedsCdmUnitTest.class)
 public class TestGridCompareProblem {
 

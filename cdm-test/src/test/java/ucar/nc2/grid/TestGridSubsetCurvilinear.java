@@ -384,7 +384,7 @@ public class TestGridSubsetCurvilinear {
     subsetParams.setVariables(Collections.singletonList(covVarName));
     double deltaLat = subsetLatLon2.getLatitude() - subsetLatLon1.getLatitude();
     double deltaLon = subsetLatLon2.getLongitude() - subsetLatLon1.getLongitude();
-    LatLonRect subsetBoundingBox = (new LatLonRect.Builder(subsetLatLon1, deltaLat, deltaLon)).build();
+    LatLonRect subsetBoundingBox = LatLonRect.builder(subsetLatLon1, deltaLat, deltaLon).build();
     subsetParams.setLatLonBoundingBox(subsetBoundingBox);
     GeoReferencedArray covGeoRefArray = coverage.readData(subsetParams);
     LatLonRect covSubsetBoundingBox = covGeoRefArray.getCoordSysForData().getHorizCoordSys().calcLatLonBoundingBox();
@@ -411,7 +411,7 @@ public class TestGridSubsetCurvilinear {
     subsetParams.setVariables(Collections.singletonList(covVarName));
     double deltaLat = subsetLatLon2.getLatitude() - subsetLatLon1.getLatitude();
     double deltaLon = subsetLatLon2.getLongitude() - subsetLatLon1.getLongitude();
-    LatLonRect subsetBoundingBox = (new LatLonRect.Builder(subsetLatLon1, deltaLat, deltaLon)).build();
+    LatLonRect subsetBoundingBox = LatLonRect.builder(subsetLatLon1, deltaLat, deltaLon).build();
     subsetParams.setLatLonBoundingBox(subsetBoundingBox);
     subsetParams.setTimeRange(CalendarDateRange.of(subsetCalendarDateStart, subsetCalendarDateEnd));
     GeoReferencedArray covGeoRefArray = coverage.readData(subsetParams);

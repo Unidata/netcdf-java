@@ -119,7 +119,7 @@ public class GridCoordinateSystem {
     if (getVerticalAxis() != null) {
       getVerticalAxis().subset(params, errlog).ifPresentOrElse(builder::setVertAxis, () -> fail.set(true));
     }
-    hcs.subset(params, errlog).ifPresentOrElse(hcs -> builder.setHorizCoordSys(hcs), () -> fail.set(true));
+    hcs.subset(params, builder, errlog).ifPresentOrElse(hcs -> builder.setHorizCoordSys(hcs), () -> fail.set(true));
 
     if (fail.get()) {
       return Optional.empty();
@@ -184,7 +184,6 @@ public class GridCoordinateSystem {
     showCoordinateAxis(getVerticalAxis(), f, showCoords);
     showCoordinateAxis(getYHorizAxis(), f, showCoords);
     showCoordinateAxis(getXHorizAxis(), f, showCoords);
-    f.format("%n");
 
     if (hcs.getProjection() != null) {
       f.format(" Projection: %s %s%n", hcs.getProjection().getName(), hcs.getProjection().paramsToString());
@@ -196,6 +195,7 @@ public class GridCoordinateSystem {
     if (tcs != null) {
       f.format("%n%s%n", tcs);
     }
+    f.format("%n%s%n", hcs);
   }
 
   private void showCoordinateAxis(GridAxis<?> axis, Formatter f, boolean showCoords) {

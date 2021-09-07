@@ -179,8 +179,8 @@ public class CurvilinearCoords {
   /**
    * Find the best index for the given lat,lon point.
    *
-   * @param wantLon lon of point
    * @param wantLat lat of point
+   * @param wantLon lon of point
    * @return empty if not in the grid.
    */
   public Optional<CoordReturn> findIndexFromLatLon(double wantLat, double wantLon) {
@@ -188,10 +188,11 @@ public class CurvilinearCoords {
   }
 
   /**
-   * Find the best index for the given lat,lon point.
+   * Find the best index for the given lat,lon point. Uses a simple gradient search, starting from the
+   * initial guess if it exists.
    *
-   * @param wantLon lon of point
    * @param wantLat lat of point
+   * @param wantLon lon of point
    * @param initial initial guess, used eg for mouse tracking in UI
    * @return empty if not in the grid.
    */
@@ -388,10 +389,11 @@ public class CurvilinearCoords {
     } else {
       x = (fyy * diffLon - fxy * diffLat) / det;
       if (fyy == 0) {
-        // should not happen, means that the cell has no height
-        throw new IllegalArgumentException(String.format("cell height == 0 at index %d %d", row, col));
+        // we just happened to land on the same row
+        y = (diffLat - fyx * x);
+      } else {
+        y = (diffLat - fyx * x) / fyy;
       }
-      y = (diffLat - fyx * x) / fyy;
     }
 
     int drow = (int) Math.round(y);

@@ -34,8 +34,9 @@ public abstract class GridTimeCoordinateSystem {
     return type;
   }
 
-  public CalendarDateUnit getCalendarDateUnit() {
-    return calendarDateUnit;
+  // LOOK Dont use this for the offsets, because we may need fractional values of the CalendarPeriod
+  public CalendarDateUnit getRuntimeDateUnit() {
+    return runtimeDateUnit;
   }
 
   public CalendarPeriod getOffsetPeriod() {
@@ -44,13 +45,11 @@ public abstract class GridTimeCoordinateSystem {
 
   // the earliest runtime or observation date.
   public CalendarDate getBaseDate() {
-    return this.calendarDateUnit.getBaseDateTime();
+    return this.runtimeDateUnit.getBaseDateTime();
   }
 
-  /**
-   * Get the Runtime axis.
-   * Null if type=Observation.
-   */
+  /* Would be nice if the runtime units used getOffsetPeriod(), but not required. */
+  /** Get the Runtime axis. Null if type=Observation. LOOK maybe should be getBaseDate() ? */
   @Nullable
   public GridAxisPoint getRunTimeAxis() {
     return runTimeAxis;
@@ -82,24 +81,20 @@ public abstract class GridTimeCoordinateSystem {
     return result;
   }
 
-
-  /**
-   * Get the ith runtime CalendarDate.
-   * Null if type=Observation.
-   */
+  /** Get the ith runtime CalendarDate. Null if type=Observation. */
   @Nullable
   public abstract CalendarDate getRuntimeDate(int runIdx);
 
   /**
-   * Get the ith timeOffset axis. The offsets are reletive to getBaseDate()
+   * Get the ith timeOffset axis. The offsets are reletive to getRuntimeDate(int runIdx), in units of getOffsetPeriod().
    * if type=Observation, SingleRuntime or Offset, runIdx is ignored, since the offsets are
-   * always the same. LOOK does unit reflect getBaseDate() or getRuntimeDate(int runIdx) ?
+   * always the same, so can pass in 0. LOOK does unit reflect getBaseDate() or getRuntimeDate(int runIdx) ?
    */
   public abstract GridAxis<?> getTimeOffsetAxis(int runIdx);
 
   /**
    * Get the forecast/valid dates for a given run.
-   * if type=Observation or SingleRuntime, runIdx is ignored.
+   * If type=Observation or SingleRuntime, runIdx is ignored. LOOK not true
    * For intervals this is the midpoint.
    */
   public abstract List<CalendarDate> getTimesForRuntime(int runIdx);
@@ -109,8 +104,8 @@ public abstract class GridTimeCoordinateSystem {
   ////////////////////////////////////////////////////////
   protected final Type type;
   protected final @Nullable GridAxisPoint runTimeAxis;
-  protected final GridAxis<?> timeOffsetAxis; // ??
-  protected final CalendarDateUnit calendarDateUnit;
+  protected final GridAxis<?> timeOffsetAxis;
+  protected final CalendarDateUnit runtimeDateUnit;
   protected final CalendarPeriod offsetPeriod;
 
   protected GridTimeCoordinateSystem(Type type, @Nullable GridAxisPoint runTimeAxis, GridAxis<?> timeOffsetAxis,
@@ -120,15 +115,15 @@ public abstract class GridTimeCoordinateSystem {
     this.timeOffsetAxis = timeOffsetAxis;
 
     if (calendarDateUnit != null) {
-      this.calendarDateUnit = calendarDateUnit;
+      this.runtimeDateUnit = calendarDateUnit;
     } else if (runTimeAxis != null) {
-      this.calendarDateUnit = CalendarDateUnit.fromUdunitString(null, runTimeAxis.getUnits()).orElseThrow();
+      this.runtimeDateUnit = CalendarDateUnit.fromUdunitString(null, runTimeAxis.getUnits()).orElseThrow();
     } else {
       throw new IllegalArgumentException("calendarDateUnit or runTimeAxis must not be null");
     }
-    Objects.requireNonNull(this.calendarDateUnit);
+    Objects.requireNonNull(this.runtimeDateUnit);
 
-    CalendarPeriod period = this.calendarDateUnit.getCalendarPeriod();
+    CalendarPeriod period = this.runtimeDateUnit.getCalendarPeriod();
     if (period == null) {
       period = CalendarPeriod.of(timeOffsetAxis.getUnits());
     }
@@ -137,7 +132,7 @@ public abstract class GridTimeCoordinateSystem {
 
   @Override
   public String toString() {
-    return "GridTimeCoordinateSystem type=" + type + ", calendarDateUnit=" + calendarDateUnit + ", offsetPeriod="
+    return "GridTimeCoordinateSystem type=" + type + ", runtimeDateUnit=" + runtimeDateUnit + ", offsetPeriod="
         + offsetPeriod + "\n runTimeAxis=" + runTimeAxis + "\n timeOffsetAxis=" + timeOffsetAxis;
   }
 }

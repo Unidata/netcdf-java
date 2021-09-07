@@ -59,9 +59,9 @@ public class GridAxisInterval extends GridAxis<CoordInterval> implements Iterabl
     return getCoordInterval(index);
   }
 
-  /** The midpoint of the interval, cast to a double. */
+  /** The nominal value of the interval, cast to a double. */
   @Override
-  public double getCoordMidpoint(int index) {
+  public double getCoordDouble(int index) {
     return (getCoordEdge1(index) + getCoordEdge2(index)) / 2;
   }
 

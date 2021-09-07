@@ -6,11 +6,14 @@ import ucar.array.Range;
 import ucar.nc2.Attribute;
 import ucar.nc2.constants.AxisType;
 import ucar.unidata.geoloc.Earth;
+import ucar.unidata.geoloc.LatLonPoint;
+import ucar.unidata.geoloc.ProjectionPoint;
 import ucar.unidata.geoloc.ProjectionRect;
 import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.unidata.geoloc.projection.proj4.TransverseMercatorProjection;
 
 import static com.google.common.truth.Truth.assertThat;
+import static com.google.common.truth.Truth8.assertThat;
 
 /** Test {@link GridHorizCoordinateSystem} */
 public class TestGridHorizCoordinateSystem {
@@ -40,7 +43,6 @@ public class TestGridHorizCoordinateSystem {
     assertThat(hcs.getXHorizAxis().isRegular()).isTrue();
     assertThat(hcs.getYHorizAxis().isRegular()).isFalse();
     assertThat(hcs.getShape()).isEqualTo(ImmutableList.of(7, 9));
-    assertThat(hcs.getSubsetRanges()).isEqualTo(ImmutableList.of(new Range(7), new Range(9)));
 
     assertThat(hcs.getGeoUnits()).isNull();
     assertThat(hcs.getBoundingBox()).isEqualTo(ProjectionRect.fromSpec("-5, -2.5, 90, 112.5"));
@@ -51,7 +53,37 @@ public class TestGridHorizCoordinateSystem {
     assertThat(copy).isEqualTo(hcs);
     assertThat(copy.hashCode()).isEqualTo(hcs.hashCode());
 
-    testFailures(hcs);
+    LatLonPoint llpt = hcs.getLatLon(3, 3);
+    assertThat(llpt).isEqualTo(LatLonPoint.create(20, 30));
+    GridHorizCoordinateSystem.CoordReturn cr = hcs.findXYindexFromCoord(30, 20).orElseThrow();
+    assertThat(cr).isEqualTo(new GridHorizCoordinateSystem.CoordReturn(30, 20, 3, 3));
+    assertThat(cr.hashCode()).isEqualTo(new GridHorizCoordinateSystem.CoordReturn(30, 20, 3, 3).hashCode());
+    assertThat(hcs.findXYindexFromCoord(-30, 20)).isEmpty();
+    assertThat(hcs.findXYindexFromCoord(-30, 20, null)).isEmpty();
+    assertThat(cr).isEqualTo(hcs.findXYindexFromCoord(30, 20, new int[] {0, 7}).orElseThrow());
+    System.out.printf("%s%n", cr);
+    System.out.printf("%s%n", cr.toStringShort());
+
+    int count = 0;
+    int nx = lonAxis.getNominalSize();
+    for (GridHorizCoordinateSystem.CellBounds cell : hcs.cells()) {
+      int yindex = count / nx;
+      int xindex = count % nx;
+      CoordInterval xintv = lonAxis.getCoordInterval(xindex);
+      CoordInterval yintv = latAxis.getCoordInterval(yindex);
+      assertThat(cell.ll)
+          .isEqualTo(new GridHorizCoordinateSystem.CoordReturn(xintv.start(), yintv.start(), xindex, yindex));
+      assertThat(cell.ur)
+          .isEqualTo(new GridHorizCoordinateSystem.CoordReturn(xintv.end(), yintv.end(), xindex, yindex));
+      assertThat(cell.lr)
+          .isEqualTo(new GridHorizCoordinateSystem.CoordReturn(xintv.end(), yintv.start(), xindex, yindex));
+      assertThat(cell.ul)
+          .isEqualTo(new GridHorizCoordinateSystem.CoordReturn(xintv.start(), yintv.end(), xindex, yindex));
+      count++;
+      if (count == 0) {
+        System.out.printf("%s%n", cell);
+      }
+    }
   }
 
   @Test
@@ -77,7 +109,6 @@ public class TestGridHorizCoordinateSystem {
     assertThat(hcs.getXHorizAxis().isRegular()).isTrue();
     assertThat(hcs.getYHorizAxis().isRegular()).isTrue();
     assertThat(hcs.getShape()).isEqualTo(ImmutableList.of(7, 9));
-    assertThat(hcs.getSubsetRanges()).isEqualTo(ImmutableList.of(new Range(7), new Range(9)));
 
     assertThat(hcs.getGeoUnits()).isEqualTo("km");
     assertThat(hcs.getBoundingBox()).isEqualTo(ProjectionRect.fromSpec("-5, -5, 90, 70"));
@@ -88,20 +119,33 @@ public class TestGridHorizCoordinateSystem {
     assertThat(copy).isEqualTo(hcs);
     assertThat(copy.hashCode()).isEqualTo(hcs.hashCode());
 
-    testFailures(hcs);
-  }
+    LatLonPoint llpt = hcs.getLatLon(3, 4);
+    ProjectionPoint ppt = ProjectionPoint.create(30, 40);
+    assertThat(llpt).isEqualTo(hcs.getProjection().projToLatLon(ppt));
+    GridHorizCoordinateSystem.CoordReturn cr = hcs.findXYindexFromCoord(ppt.getX(), ppt.getY()).orElseThrow();
+    assertThat(cr).isEqualTo(new GridHorizCoordinateSystem.CoordReturn(ppt.getX(), ppt.getY(), 3, 4));
+    assertThat(hcs.findXYindexFromCoord(-30, 20)).isEmpty();
 
-
-  private void testFailures(GridHorizCoordinateSystem subject) {
-    /*
-     * assertThat(subject.findXYindexFromCoord(-1, -1)).isEmpty();
-     * try {
-     * subject.findXYindexFromCoord(-1, -1);
-     * fail();
-     * } catch (Exception ok) {
-     * // ok
-     * }
-     */
+    int count = 0;
+    int nx = xaxis.getNominalSize();
+    for (GridHorizCoordinateSystem.CellBounds cell : hcs.cells()) {
+      int yindex = count / nx;
+      int xindex = count % nx;
+      CoordInterval xintv = xaxis.getCoordInterval(xindex);
+      CoordInterval yintv = yaxis.getCoordInterval(yindex);
+      assertThat(cell.ll)
+          .isEqualTo(new GridHorizCoordinateSystem.CoordReturn(xintv.start(), yintv.start(), xindex, yindex));
+      assertThat(cell.ur)
+          .isEqualTo(new GridHorizCoordinateSystem.CoordReturn(xintv.end(), yintv.end(), xindex, yindex));
+      assertThat(cell.lr)
+          .isEqualTo(new GridHorizCoordinateSystem.CoordReturn(xintv.end(), yintv.start(), xindex, yindex));
+      assertThat(cell.ul)
+          .isEqualTo(new GridHorizCoordinateSystem.CoordReturn(xintv.start(), yintv.end(), xindex, yindex));
+      if (count == 0) {
+        System.out.printf("%s%n", cell);
+      }
+      count++;
+    }
   }
 
 

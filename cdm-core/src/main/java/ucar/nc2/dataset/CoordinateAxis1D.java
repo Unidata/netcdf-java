@@ -647,7 +647,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
   }
 
   /**
-   * If longitude coordinate is not monotic, construct a new one that is.
+   * If longitude coordinate is not monotonic, construct a new one that is.
    * LOOK Should this be here? Perhaps its a Grid method?
    */
   public CoordinateAxis1D correctLongitudeWrap() {
@@ -689,7 +689,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
 
     builder.setSourceData(cachedData);
 
-    // LOOK repalce in parentGroup? too late for that.
+    // LOOK replace in parentGroup? too late for that.
     return builder.build(this.getParentGroup());
   }
 

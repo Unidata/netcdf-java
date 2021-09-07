@@ -25,8 +25,8 @@ public class TestGridAxis {
     assertThat(axis1D.attributes().findAttributeDouble("aname", 0.0)).isEqualTo(99.0);
 
     assertThat(axis1D.getSpacing()).isEqualTo(GridAxisSpacing.regularPoint);
-    assertThat(axis1D.getCoordMidpoint(0)).isEqualTo(0);
-    assertThat(axis1D.getCoordMidpoint(axis1D.getNominalSize() - 1)).isEqualTo(60);
+    assertThat(axis1D.getCoordDouble(0)).isEqualTo(0);
+    assertThat(axis1D.getCoordDouble(axis1D.getNominalSize() - 1)).isEqualTo(60);
     assertThat(axis1D.getResolution()).isEqualTo(10);
     assertThat(axis1D.getNominalSize()).isEqualTo(7);
     assertThat(Grids.isAscending(axis1D)).isTrue();
@@ -36,7 +36,7 @@ public class TestGridAxis {
     assertThat(Grids.getCoordEdgeMinMax(axis1D)).isEqualTo(MinMax.create(-5.0, 65.0));
 
     for (int i = 0; i < axis1D.getNominalSize(); i++) {
-      assertThat(axis1D.getCoordMidpoint(i)).isEqualTo(10.0 * i);
+      assertThat(axis1D.getCoordDouble(i)).isEqualTo(10.0 * i);
       assertThat(axis1D.getCoordInterval(i).start()).isEqualTo(10.0 * i - 5.0);
       assertThat(axis1D.getCoordInterval(i).end()).isEqualTo(10.0 * i + 5.0);
       assertThat(axis1D.getCoordInterval(i)).isEqualTo(CoordInterval.create(10.0 * i - 5.0, 10.0 * i + 5.0));
@@ -89,8 +89,8 @@ public class TestGridAxis {
 
     assertThat(axis1D.getSpacing()).isEqualTo(GridAxisSpacing.irregularPoint);
     assertThat(axis1D.getNominalSize()).isEqualTo(n);
-    assertThat(axis1D.getCoordMidpoint(0)).isEqualTo(0);
-    assertThat(axis1D.getCoordMidpoint(axis1D.getNominalSize() - 1)).isEqualTo(100);
+    assertThat(axis1D.getCoordDouble(0)).isEqualTo(0);
+    assertThat(axis1D.getCoordDouble(axis1D.getNominalSize() - 1)).isEqualTo(100);
     assertThat(axis1D.getResolution()).isEqualTo(100.0 / (n - 1));
     assertThat(Grids.isAscending(axis1D)).isTrue();
     assertThat(axis1D.isRegular()).isFalse();
@@ -98,7 +98,7 @@ public class TestGridAxis {
     assertThat(Grids.getCoordEdgeMinMax(axis1D)).isEqualTo(MinMax.create(-2.5, 110.0));
 
     for (int i = 0; i < axis1D.getNominalSize(); i++) {
-      assertThat(axis1D.getCoordMidpoint(i)).isEqualTo(values[i]);
+      assertThat(axis1D.getCoordDouble(i)).isEqualTo(values[i]);
       if (i == 0) {
         assertThat(axis1D.getCoordInterval(i).start()).isEqualTo(values[i] - (values[i + 1] - values[i]) / 2);
       } else {
@@ -151,8 +151,8 @@ public class TestGridAxis {
 
     assertThat(axis1D.getSpacing()).isEqualTo(GridAxisSpacing.nominalPoint);
     assertThat(axis1D.getNominalSize()).isEqualTo(n);
-    assertThat(axis1D.getCoordMidpoint(0)).isEqualTo(2);
-    assertThat(axis1D.getCoordMidpoint(axis1D.getNominalSize() - 1)).isEqualTo(80);
+    assertThat(axis1D.getCoordDouble(0)).isEqualTo(2);
+    assertThat(axis1D.getCoordDouble(axis1D.getNominalSize() - 1)).isEqualTo(80);
     assertThat(axis1D.getResolution()).isEqualTo(78.0 / (n - 1));
     assertThat(Grids.isAscending(axis1D)).isTrue();
     assertThat(axis1D.isRegular()).isFalse();
@@ -160,7 +160,7 @@ public class TestGridAxis {
     assertThat(Grids.getCoordEdgeMinMax(axis1D)).isEqualTo(MinMax.create(0, 100.0));
 
     for (int i = 0; i < axis1D.getNominalSize(); i++) {
-      assertThat(axis1D.getCoordMidpoint(i)).isEqualTo(values[i]);
+      assertThat(axis1D.getCoordDouble(i)).isEqualTo(values[i]);
       assertThat(axis1D.getCoordInterval(i).start()).isEqualTo(edges[i]);
       assertThat(axis1D.getCoordInterval(i).end()).isEqualTo(edges[i + 1]);
     }
@@ -230,7 +230,7 @@ public class TestGridAxis {
     assertThat(Grids.getCoordEdgeMinMax(axis1D)).isEqualTo(MinMax.create(-5.0, 65.0));
 
     for (int i = 0; i < axis1D.getNominalSize(); i++) {
-      assertThat(axis1D.getCoordMidpoint(i)).isEqualTo(10.0 * i);
+      assertThat(axis1D.getCoordDouble(i)).isEqualTo(10.0 * i);
       assertThat(axis1D.getCoordInterval(i).start()).isEqualTo(10.0 * i - 5.0);
       assertThat(axis1D.getCoordInterval(i).end()).isEqualTo(10.0 * i + 5.0);
       assertThat(axis1D.getCoordInterval(i)).isEqualTo(CoordInterval.create(10.0 * i - 5.0, 10.0 * i + 5.0));
@@ -276,7 +276,7 @@ public class TestGridAxis {
     assertThat(Grids.getCoordEdgeMinMax(axis1D)).isEqualTo(MinMax.create(0, 100.0));
 
     for (int i = 0; i < axis1D.getNominalSize(); i++) {
-      assertThat(axis1D.getCoordMidpoint(i)).isEqualTo((values[i] + values[i + 1]) / 2);
+      assertThat(axis1D.getCoordDouble(i)).isEqualTo((values[i] + values[i + 1]) / 2);
       assertThat(axis1D.getCoordInterval(i).start()).isEqualTo(values[i]);
       assertThat(axis1D.getCoordInterval(i).end()).isEqualTo(values[i + 1]);
       assertThat(axis1D.getCoordInterval(i)).isEqualTo(CoordInterval.create(values[i], values[i + 1]));
@@ -323,7 +323,7 @@ public class TestGridAxis {
     assertThat(Grids.getCoordEdgeMinMax(axis1D)).isEqualTo(MinMax.create(0, 100));
 
     for (int i = 0; i < axis1D.getNominalSize(); i++) {
-      assertThat(axis1D.getCoordMidpoint(i)).isEqualTo((values[2 * i] + values[2 * i + 1]) / 2);
+      assertThat(axis1D.getCoordDouble(i)).isEqualTo((values[2 * i] + values[2 * i + 1]) / 2);
       assertThat(axis1D.getCoordInterval(i).start()).isEqualTo(values[2 * i]);
       assertThat(axis1D.getCoordInterval(i).end()).isEqualTo(values[2 * i + 1]);
       assertThat(axis1D.getCoordInterval(i)).isEqualTo(CoordInterval.create(values[2 * i], values[2 * i + 1]));
@@ -383,13 +383,13 @@ public class TestGridAxis {
 
   private void testFailures(GridAxis<?> subject) {
     try {
-      subject.getCoordMidpoint(-1);
+      subject.getCoordDouble(-1);
       fail();
     } catch (Exception ok) {
       // ok
     }
     try {
-      subject.getCoordMidpoint(10000);
+      subject.getCoordDouble(10000);
       fail();
     } catch (Exception ok) {
       // ok

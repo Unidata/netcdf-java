@@ -95,19 +95,33 @@ public class GribGrid implements Grid {
   @Override
   public GridReferencedArray readData(GridSubset subset) throws IOException, InvalidRangeException {
     Formatter errLog = new Formatter();
-    // LOOK it would appear the only thing needed out of it (besides geo referencing) is getSubsetRanges()
     Optional<MaterializedCoordinateSystem> opt = coordinateSystem.subset(subset, errLog);
     if (opt.isEmpty()) {
-      throw new InvalidRangeException(errLog.toString());
+      throw new InvalidRangeException(errLog.toString()); // LOOK lame. Optional, empty, null?
     }
     MaterializedCoordinateSystem subsetCoordSys = opt.get();
-    List<RangeIterator> ranges = new ArrayList<>(subsetCoordSys.getSubsetRanges());
-    SectionIterable want = new ucar.array.SectionIterable(ranges, getCoordinateSystem().getNominalShape());
 
+    if (subsetCoordSys.needSpecialRead()) {
+      // handles longitude cylindrical coord when data has full (360 deg) longitude axis.
+      Array<Number> data = subsetCoordSys.readSpecial(this);
+      return GridReferencedArray.create(getName(), getArrayType(), data, subsetCoordSys);
+
+    } else {
+      List<RangeIterator> ranges = new ArrayList<>(subsetCoordSys.getSubsetRanges());
+      SectionIterable want = new ucar.array.SectionIterable(ranges, getCoordinateSystem().getNominalShape());
+
+      GribArrayReader dataReader = GribArrayReader.factory(gribCollection, vi);
+      Array<?> data = dataReader.readData(want);
+
+      return GridReferencedArray.create(this.name, getArrayType(), (Array<Number>) data, subsetCoordSys);
+    }
+  }
+
+  @Override
+  public Array<Number> readDataSection(ucar.array.Section section) throws InvalidRangeException, IOException {
     GribArrayReader dataReader = GribArrayReader.factory(gribCollection, vi);
-    Array<?> data = dataReader.readData(want);
-
-    return GridReferencedArray.create(this.name, getArrayType(), (Array<Number>) data, subsetCoordSys);
+    SectionIterable want = new ucar.array.SectionIterable(section, getCoordinateSystem().getNominalShape());
+    return (Array<Number>) dataReader.readData(want);
   }
 
   @Override

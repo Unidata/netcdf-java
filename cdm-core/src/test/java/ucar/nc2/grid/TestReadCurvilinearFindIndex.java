@@ -99,4 +99,58 @@ public class TestReadCurvilinearFindIndex {
     }
   }
 
+  @Test
+  public void TestGribCurvilinear() throws IOException, InvalidRangeException {
+    String endpoint = TestDir.cdmUnitTestDir + "ft/fmrc/rtofs/ofs.20091122/ofs_atl.t00z.F024.grb.grib2";
+    String gridName = "Mixed_layer_depth_surface";
+    System.out.printf("open %s %s%n", endpoint, gridName);
+
+    Formatter errlog = new Formatter();
+    try (GridDataset gds = GridDatasetFactory.openGridDataset(endpoint, errlog)) {
+      assertThat(gds).isNotNull();
+      assertThat(gds.getGrids()).hasSize(7);
+      Grid grid = gds.findGrid(gridName).orElseThrow();
+      assertThat(grid).isNotNull();
+
+      GridCoordinateSystem cs = grid.getCoordinateSystem();
+      assertThat(cs).isNotNull();
+      assertThat(cs.getFeatureType()).isEqualTo(FeatureType.CURVILINEAR);
+      System.out.printf("GridCoordinateSystem = %s%n", cs);
+      GridHorizCoordinateSystem hcs = cs.getHorizCoordinateSystem();
+      assertThat(hcs).isNotNull();
+      assertThat(hcs.isCurvilinear()).isTrue();
+      System.out.printf("GridHorizCoordinateSystem = %s%n", hcs);
+
+      Optional<GridHorizCoordinateSystem.CoordReturn> cro = hcs.findXYindexFromCoord(-6.6, -6.6);
+      assertThat(cro).isPresent();
+      GridHorizCoordinateSystem.CoordReturn cr = cro.get();
+      System.out.printf("%nCoordReturn = %s%n", cr);
+      assertThat(cr.xindex).isEqualTo(124);
+      assertThat(cr.yindex).isEqualTo(393);
+
+      // -23.479818, -4.231693
+      cro = hcs.findXYindexFromCoord(-23.479818, -4.231693);
+      assertThat(cro).isPresent();
+      cr = cro.get();
+      System.out.printf("%nCoordReturn = %s%n", cr);
+      assertThat(cr.xindex).isEqualTo(145);
+      assertThat(cr.yindex).isEqualTo(523);
+
+      // -23.152880, -4.558632
+      cro = hcs.findXYindexFromCoord(-23.152880, -4.558632);
+      assertThat(cro).isPresent();
+      cr = cro.get();
+      System.out.printf("%nCoordReturn = %s%n", cr);
+      assertThat(cr.xindex).isEqualTo(143);
+      assertThat(cr.yindex).isEqualTo(520);
+
+      cro = hcs.findXYindexFromCoord(0, 0);
+      assertThat(cro).isPresent();
+      cr = cro.get();
+      System.out.printf("%nCoordReturn = %s%n", cr);
+      assertThat(cr.yindex).isEqualTo(343);
+      assertThat(cr.xindex).isEqualTo(167);
+    }
+  }
+
 }
