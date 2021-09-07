@@ -123,8 +123,11 @@ public abstract class GridTimeCoordinateSystem {
     }
     Objects.requireNonNull(this.runtimeDateUnit);
 
-    this.offsetPeriod = CalendarPeriod.of(timeOffsetAxis.getUnits());
-    Objects.requireNonNull(this.offsetPeriod);
+    CalendarPeriod period = this.runtimeDateUnit.getCalendarPeriod();
+    if (period == null) {
+      period = CalendarPeriod.of(timeOffsetAxis.getUnits());
+    }
+    this.offsetPeriod = Objects.requireNonNull(period);
   }
 
   @Override
