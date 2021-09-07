@@ -26,7 +26,7 @@ import java.util.Optional;
 
 import static com.google.common.truth.Truth.assertThat;
 
-/** Test {@link GridHorizCoordinateSystem} reading with horizontal strides */
+/** Test {@link GridHorizCoordinateSystem} reading with horizontal strides. */
 @Category(NeedsCdmUnitTest.class)
 public class TestGridReadHorizStride {
 

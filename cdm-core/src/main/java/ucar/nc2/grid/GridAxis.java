@@ -211,7 +211,7 @@ public abstract class GridAxis<T> implements Comparable<GridAxis<T>>, Iterable<T
     private ArrayList<String> dependsOn; // independent axes or dimensions
 
     GridAxisSpacing spacing; // required
-    double resolution;
+    protected double resolution;
     boolean isSubset;
 
     protected abstract T self();

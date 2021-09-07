@@ -296,7 +296,7 @@ public class GcdmGridConverter {
     System.out.printf("  encodeCoordinateSystem %d%n", timeCS.hashCode());
     GcdmGridProto.GridTimeCoordinateSystem.Builder builder = GcdmGridProto.GridTimeCoordinateSystem.newBuilder();
     builder.setType(convertTimeType(timeCS.getType()));
-    builder.setCalendarDateUnit(timeCS.getCalendarDateUnit().toString());
+    builder.setCalendarDateUnit(timeCS.getRuntimeDateUnit().toString());
     builder.setTimeAxisName(timeCS.getTimeOffsetAxis(0).getName()); // ??
     if (timeCS.getRunTimeAxis() != null) {
       builder.setRuntimeAxisName(timeCS.getRunTimeAxis().getName());

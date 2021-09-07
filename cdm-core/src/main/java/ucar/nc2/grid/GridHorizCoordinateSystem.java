@@ -108,8 +108,7 @@ public class GridHorizCoordinateSystem {
   }
 
   /**
-   * Get the Lat/Lon coordinates of the midpoint of a grid cell, using the x,y indices
-   * LOOK needed?
+   * Get the Lat/Lon coordinates of the midpoint of a grid cell, using the x,y indices.
    *
    * @param xindex x index
    * @param yindex y index
@@ -118,10 +117,10 @@ public class GridHorizCoordinateSystem {
   public LatLonPoint getLatLon(int xindex, int yindex) {
     double x = xaxis.getCoordinate(xindex).doubleValue();
     double y = yaxis.getCoordinate(yindex).doubleValue();
-    return isLatLon() ? LatLonPoint.create(y, x) : getLatLon(x, y);
+    return isLatLon() ? LatLonPoint.create(y, x) : makeLatLon(x, y);
   }
 
-  private LatLonPoint getLatLon(double xcoord, double ycoord) {
+  LatLonPoint makeLatLon(double xcoord, double ycoord) {
     return projection.projToLatLon(ProjectionPoint.create(xcoord, ycoord));
   }
 

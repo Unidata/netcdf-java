@@ -191,8 +191,18 @@ public class GdsHorizCoordSys {
     this.gaussw = Array.factory(DataType.FLOAT, new int[] {nyRaw}, gaussw);
   }
 
+  /** @deprecated use getGaussianLatsArray */
+  @Deprecated
   public Array getGaussianLats() {
     return gaussLats;
+  }
+
+  public boolean hasGaussianLats() {
+    return gaussLats != null;
+  }
+
+  public double[] getGaussianLatsArray() {
+    return (double[]) gaussLats.get1DJavaArray(DataType.DOUBLE);
   }
 
   public Array getGaussianWeights() {

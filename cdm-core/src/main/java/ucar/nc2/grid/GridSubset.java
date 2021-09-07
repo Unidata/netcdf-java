@@ -36,6 +36,7 @@ public class GridSubset {
   public static final String timeOffsetAll = "timeOffsetAll"; // value = Boolean
   public static final String timeOffsetFirst = "timeOffsetFirst"; // value = Boolean LOOK deprecated I think
 
+  // validtime
   public static final String time = "time"; // value = CalendarDate
   public static final String timeRange = "timeRange"; // value = CalendarDateRange LOOK unimplemented
   public static final String timeLatest = "timeLatest"; // value = Boolean

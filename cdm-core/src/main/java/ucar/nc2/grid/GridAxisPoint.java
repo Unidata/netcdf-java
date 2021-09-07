@@ -498,6 +498,7 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
         this.resolution = (this.values[this.values.length - 1] - this.values[0]) / (this.values.length - 1);
       }
       /*
+       * LOOK maybe should use this?
        * if (this.ncoords == 1) {
        * this.range = Range.make(0, 0);
        * this.edges = makeEdges(range);

@@ -96,7 +96,7 @@ public class TestReadGridDataset {
       if (tcs != null) {
         assertThat((Object) tcs.getRunTimeAxis()).isNull();
         assertThat(tcs.getRuntimeDate(0)).isNull();
-        assertThat(tcs.getCalendarDateUnit().toString()).isEqualTo(timeUnit);
+        assertThat(tcs.getRuntimeDateUnit().toString()).isEqualTo(timeUnit);
         assertThat((Object) tcs.getTimeOffsetAxis(0)).isNotNull();
         List<CalendarDate> dates = tcs.getTimesForRuntime(0);
         assertThat(dates.size()).isEqualTo(ntimes);

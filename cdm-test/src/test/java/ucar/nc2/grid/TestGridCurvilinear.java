@@ -20,9 +20,7 @@ import java.util.Formatter;
 import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
 
-/**
- * Port of Coverage tests for Grid. Subsetting curvilinear coordinate systems.
- */
+/** Port of Coverage tests for Grid. Subsetting curvilinear coordinate systems. */
 @Category(NeedsCdmUnitTest.class)
 public class TestGridCurvilinear {
   private static final double TOL = 1e-6;

@@ -249,6 +249,9 @@ public class GribGridAxis {
         if (built)
           throw new IllegalStateException("already built");
         built = true;
+        if (this.resolution == 0 && this.values != null && this.values.length > 1) {
+          this.resolution = (this.values[this.values.length - 1] - this.values[0]) / (this.values.length - 1);
+        }
         return new GribGridAxis.Point(this);
       }
     }

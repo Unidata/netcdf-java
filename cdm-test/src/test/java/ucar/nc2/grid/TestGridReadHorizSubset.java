@@ -17,7 +17,7 @@ import java.util.Formatter;
 
 import static com.google.common.truth.Truth.assertThat;
 
-/** Test {@link GridHorizCoordinateSystem} reading with horizontal subsets */
+/** Test {@link GridHorizCoordinateSystem} reading with horizontal subsets. */
 public class TestGridReadHorizSubset {
 
   @Test

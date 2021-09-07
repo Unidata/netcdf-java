@@ -39,7 +39,7 @@ public class TestGridTimeCS {
     CalendarDateUnit cdu = CalendarDateUnit.fromUdunitString(null, unit).orElseThrow();
 
     assertThat(subject.getType()).isEqualTo(GridTimeCoordinateSystem.Type.SingleRuntime);
-    assertThat(subject.getCalendarDateUnit()).isEqualTo(cdu);
+    assertThat(subject.getRuntimeDateUnit()).isEqualTo(cdu);
     assertThat(subject.getBaseDate()).isEqualTo(cdu.getBaseDateTime());
     assertThat(subject.getNominalShape()).isEqualTo(ImmutableList.of(nruntimes, ntimes));
     assertThat(subject.getSubsetRanges()).isEqualTo(ImmutableList.of(new Range(nruntimes), new Range(ntimes)));
@@ -96,7 +96,7 @@ public class TestGridTimeCS {
     CalendarDateUnit cdu = CalendarDateUnit.fromUdunitString(null, unit).orElseThrow();
 
     assertThat(subject.getType()).isEqualTo(GridTimeCoordinateSystem.Type.Offset);
-    assertThat(subject.getCalendarDateUnit()).isEqualTo(cdu);
+    assertThat(subject.getRuntimeDateUnit()).isEqualTo(cdu);
     assertThat(subject.getBaseDate()).isEqualTo(cdu.getBaseDateTime());
     assertThat(subject.getNominalShape()).isEqualTo(ImmutableList.of(nruntimes, ntimes));
     assertThat(subject.getSubsetRanges()).isEqualTo(ImmutableList.of(new Range(nruntimes), new Range(ntimes)));
@@ -146,7 +146,7 @@ public class TestGridTimeCS {
     CalendarDateUnit cdu = CalendarDateUnit.fromUdunitString(null, unit).orElseThrow();
 
     assertThat(subject.getType()).isEqualTo(GridTimeCoordinateSystem.Type.Observation);
-    assertThat(subject.getCalendarDateUnit()).isEqualTo(cdu);
+    assertThat(subject.getRuntimeDateUnit()).isEqualTo(cdu);
     assertThat(subject.getBaseDate()).isEqualTo(cdu.getBaseDateTime());
     assertThat(subject.getNominalShape()).isEqualTo(ImmutableList.of(ntimes));
     assertThat(subject.getSubsetRanges()).isEqualTo(ImmutableList.of(new Range(ntimes)));

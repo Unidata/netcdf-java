@@ -47,10 +47,9 @@ public class TestGridClassificationP {
     result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/coverage/testCFwriter.nc", "Temperature", FeatureType.GRID, 3,
         2, "GRID(Z,Y,X)"});
 
-    // GRIB Curvilinear (not ready)
-    // result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/fmrc/rtofs/ofs.20091122/ofs_atl.t00z.F024.grb.grib2",
-    // "3-D_Temperature_depth_below_sea",
-    // FeatureType.CURVILINEAR, 4, 7, "GRID(T,Z,Y,X)"});
+    // GRIB Curvilinear
+    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/fmrc/rtofs/ofs.20091122/ofs_atl.t00z.F024.grb.grib2",
+        "3-D_Temperature_depth_below_sea", FeatureType.CURVILINEAR, 4, 7, "CURVILINEAR(R,TO,Z,Y,X)"});
 
     // x,y axis but no projection
     result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/coverage/Run_20091025_0000.nc", "u", FeatureType.CURVILINEAR,

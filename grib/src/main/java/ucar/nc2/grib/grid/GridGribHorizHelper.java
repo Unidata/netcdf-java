@@ -10,6 +10,7 @@ import ucar.array.Array;
 import ucar.array.InvalidRangeException;
 import ucar.array.Section;
 import ucar.array.SectionIterable;
+import ucar.nc2.Attribute;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
@@ -50,7 +51,7 @@ class GridGribHorizHelper {
     this.vars = new ArrayList<>(vars);
 
     if (isCurvilinearOrthogonal) {
-      // create fake 1d axes
+      // for curvilinear these are nominal, not real
       xaxis = GridAxisPoint.builder().setAxisType(AxisType.GeoX).setName(AxisType.Lon.name()).setUnits("")
           .setDescription("fake 1d xaxis for curvilinear grid").setRegular(hcs.nx, 0.0, 1.0)
           .setSpacing(GridAxisSpacing.regularPoint).build();
@@ -58,15 +59,22 @@ class GridGribHorizHelper {
           .setDescription("fake 1d yaxis for curvilinear grid").setRegular(hcs.ny, 0.0, 1.0)
           .setSpacing(GridAxisSpacing.regularPoint).build();
 
-    } else {
+    } else { // not curvilinear
 
-      if (hcs.isLatLon()) {
-        // LOOK for curvilinear these are nominal, not real
+      if (hcs.isLatLon()) { // latlon
         xaxis = GridAxisPoint.builder().setName(Grib.LON_AXIS).setAxisType(AxisType.Lon).setUnits(CDM.LON_UNITS)
             .setRegular(hcs.nx, hcs.startx, hcs.dx).build();
-        yaxis = GridAxisPoint.builder().setName(Grib.LAT_AXIS).setAxisType(AxisType.Lat).setUnits(CDM.LAT_UNITS)
-            .setRegular(hcs.ny, hcs.starty, hcs.dy).build();
-      } else {
+
+        if (hcs.hasGaussianLats()) {
+          yaxis = GridAxisPoint.builder().setName(Grib.LAT_AXIS).setAxisType(AxisType.Lat).setUnits(CDM.LAT_UNITS)
+              .setValues(hcs.getGaussianLatsArray()).setSpacing(GridAxisSpacing.irregularPoint)
+              .addAttribute(new Attribute(CDM.GAUSSIAN, "true")).build();
+        } else {
+          yaxis = GridAxisPoint.builder().setName(Grib.LAT_AXIS).setAxisType(AxisType.Lat).setUnits(CDM.LAT_UNITS)
+              .setRegular(hcs.ny, hcs.starty, hcs.dy).build();
+        }
+
+      } else { // regular projection coordinates
         xaxis = GridAxisPoint.builder().setName(Grib.XAXIS).setAxisType(AxisType.GeoX).setUnits("km")
             .setDescription(CF.PROJECTION_X_COORDINATE).setRegular(hcs.nx, hcs.startx, hcs.dx).build();
         yaxis = GridAxisPoint.builder().setName(Grib.YAXIS).setAxisType(AxisType.GeoY).setUnits("km")

@@ -208,7 +208,13 @@ public class GridHorizCurvilinear extends GridHorizCoordinateSystem {
   }
 
   ///////////////////////////////////////////////////////////////////////////
-  // originally from ucar.nc2.ft2.coverage.HorizCoordSys2D
+
+  @Override
+  public LatLonPoint getLatLon(int xindex, int yindex) {
+    CurvilinearCoords.CoordReturn cr = helper.midpoint(yindex, xindex);
+    return LatLonPoint.create(cr.lat, cr.lon);
+  }
+
   @Override
   Optional<GridHorizCoordinateSystem> subset(GridSubset params, MaterializedCoordinateSystem.Builder builder,
       Formatter errlog) {

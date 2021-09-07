@@ -94,7 +94,7 @@ public abstract class GribGridTimeCoordinateSystem extends GridTimeCoordinateSys
     if (this.runTimeAxis == null) {
       return null;
     } else {
-      return calendarDateUnit.makeCalendarDate(this.runTimeAxis.getCoordinate(runIdx).longValue());
+      return runtimeDateUnit.makeCalendarDate(this.runTimeAxis.getCoordinate(runIdx).longValue());
     }
   }
 
@@ -110,12 +110,12 @@ public abstract class GribGridTimeCoordinateSystem extends GridTimeCoordinateSys
   private List<CalendarDate> getTimesForObservation() {
     if (timeOffsetAxis instanceof GridAxisPoint) {
       GridAxisPoint offsetPoint = (GridAxisPoint) timeOffsetAxis;
-      return Streams.stream(offsetPoint).map(val -> calendarDateUnit.makeCalendarDate(val.longValue()))
+      return Streams.stream(offsetPoint).map(val -> runtimeDateUnit.makeCalendarDate(val.longValue()))
           .collect(Collectors.toList());
     } else {
       GridAxisInterval offsetIntv = (GridAxisInterval) timeOffsetAxis;
       // LOOK cast double to long
-      return Streams.stream(offsetIntv).map(intv -> calendarDateUnit.makeCalendarDate((long) intv.midpoint()))
+      return Streams.stream(offsetIntv).map(intv -> runtimeDateUnit.makeCalendarDate((long) intv.midpoint()))
           .collect(Collectors.toList());
     }
   }
@@ -134,8 +134,8 @@ public abstract class GribGridTimeCoordinateSystem extends GridTimeCoordinateSys
 
   //////////////////////////////////////////////////////////////////////////////
   GribGridTimeCoordinateSystem(Type type, @Nullable GridAxisPoint runTimeAxis, GridAxis<?> timeOffsetAxis,
-      CalendarDateUnit calendarDateUnit) {
-    super(type, runTimeAxis, timeOffsetAxis, calendarDateUnit);
+      CalendarDateUnit runtimeDateUnit) {
+    super(type, runTimeAxis, timeOffsetAxis, runtimeDateUnit);
   }
 
   // LOOK so what is special about GribGridTimeCoordinateSystem ??
@@ -148,9 +148,9 @@ public abstract class GribGridTimeCoordinateSystem extends GridTimeCoordinateSys
   //////////////////////////////////////////////////////////////////////////////
   private static class Observation extends GribGridTimeCoordinateSystem {
 
-    private Observation(GribGridDataset.CoordAndAxis time, CalendarDateUnit calendarDateUnit) {
+    private Observation(GribGridDataset.CoordAndAxis time, CalendarDateUnit runtimeDateUnit) {
       // LOOK MRMS_Radar_20201027_0000.grib2.ncx4 time2D has runtime in seconds, but period name is minutes
-      super(Type.Observation, null, time.axis, calendarDateUnit);
+      super(Type.Observation, null, time.axis, runtimeDateUnit);
     }
 
     private Observation(GridAxis<?> timeOffset, CalendarDateUnit dateUnit) {
@@ -159,7 +159,7 @@ public abstract class GribGridTimeCoordinateSystem extends GridTimeCoordinateSys
 
     @Override
     public CalendarDate getBaseDate() {
-      return calendarDateUnit.getBaseDateTime();
+      return runtimeDateUnit.getBaseDateTime();
     }
 
     @Override
@@ -175,7 +175,7 @@ public abstract class GribGridTimeCoordinateSystem extends GridTimeCoordinateSys
     @Override
     public Optional<GribGridTimeCoordinateSystem> subset(GridSubset params, Formatter errlog) {
       SubsetTimeHelper helper = new SubsetTimeHelper(this);
-      return helper.subsetTime(params, errlog).map(t -> new Observation(t, this.calendarDateUnit));
+      return helper.subsetTime(params, errlog).map(t -> new Observation(t, this.runtimeDateUnit));
     }
   }
 
