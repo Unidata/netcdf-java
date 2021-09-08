@@ -788,7 +788,7 @@ public class Group {
      * Any other chars may also be escaped, as they are removed before testing.
      *
      * @param fullNameEscaped eg "/group/subgroup/name1.name2.name".
-     * @return Optional\<Variable.Builder>
+     * @return Optional Variable.Builder
      *         {@link NetcdfFile#findVariable(String fullNameEscaped)}
      */
     public Optional<Variable.Builder<?>> findVariable(String fullNameEscaped) {
