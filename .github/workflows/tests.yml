@@ -6,9 +6,12 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        # test against latest 11, 14 of zulu and temurin java
-        java-version: [ 11, 14 ]
+        # test against latest 11, 14 of zulu and 11 of temurin java
+        java-version: [ 11 ]
         java-vendor: [ 'zulu', 'temurin' ]
+        include:
+          - java-version: 14
+            java-vendor: 'zulu'
     steps:
       - uses: actions/checkout@v2
       - name: Build and test with Gradle (${{ matrix.java-vendor }} ${{ matrix.java-version }})
