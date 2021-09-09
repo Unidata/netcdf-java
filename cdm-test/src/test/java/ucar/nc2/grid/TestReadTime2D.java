@@ -83,7 +83,7 @@ public class TestReadTime2D {
       GridTimeCoordinateSystem tcs = grid.getTimeCoordinateSystem();
       assertThat(tcs).isNotNull();
       assertThat(tcs.getNominalShape()).isEqualTo(ImmutableList.of(6, 21));
-      assertThat(tcs.getOffsetPeriod()).isEqualTo(CalendarPeriod.of(1, CalendarPeriod.Field.Second));
+      assertThat(tcs.getOffsetPeriod()).isEqualTo(CalendarPeriod.of(1, CalendarPeriod.Field.Hour));
       assertThat(tcs.getRuntimeDateUnit().getCalendarPeriod()).isEqualTo(tcs.getOffsetPeriod());
 
       GridAxisPoint reftime = tcs.getRunTimeAxis();

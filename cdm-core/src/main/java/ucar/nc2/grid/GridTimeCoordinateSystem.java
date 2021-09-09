@@ -5,6 +5,7 @@
 
 package ucar.nc2.grid;
 
+import com.google.common.base.Preconditions;
 import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.calendar.CalendarDateUnit;
 import ucar.nc2.calendar.CalendarPeriod;
@@ -30,75 +31,65 @@ public abstract class GridTimeCoordinateSystem {
     OffsetIrregular // Runtimes have irregular offsets
   }
 
-  public Type getType() {
-    return type;
-  }
+  /** Get the ith runtime CalendarDate. If type=Observation, equals getBaseDate(). */
+  public abstract CalendarDate getRuntimeDate(int runIdx);
 
-  // LOOK Dont use this for the offsets, because we may need fractional values of the CalendarPeriod
-  public CalendarDateUnit getRuntimeDateUnit() {
-    return runtimeDateUnit;
-  }
+  /**
+   * Get the ith timeOffset axis. The offsets are reletive to getRuntimeDate(int runIdx), in units of getOffsetPeriod().
+   * if type=Observation, SingleRuntime, runIdx is ignored, since the offsets are
+   * always the same, by convention, pass in 0. LOOK does unit = getOffsetPeriod?
+   */
+  public abstract GridAxis<?> getTimeOffsetAxis(int runIdx);
 
+  /** The units of the TimeOffsetAxis. */
   public CalendarPeriod getOffsetPeriod() {
     return offsetPeriod;
   }
 
-  // the earliest runtime or observation date.
+  /** The runtime CalendarDateUnit. Note this may have different CalendarPeriod from the offset. */
+  public CalendarDateUnit getRuntimeDateUnit() {
+    return runtimeDateUnit;
+  }
+
+  /** The earliest runtime or observation date. */
   public CalendarDate getBaseDate() {
     return this.runtimeDateUnit.getBaseDateTime();
   }
 
-  /* Would be nice if the runtime units used getOffsetPeriod(), but not required. */
-  /** Get the Runtime axis. Null if type=Observation. LOOK maybe should be getBaseDate() ? */
+  /** Get the Runtime axis. Null if type=Observation */
   @Nullable
   public GridAxisPoint getRunTimeAxis() {
     return runTimeAxis;
   }
 
-  // LOOK, not right
-  public List<Integer> getNominalShape() {
-    return getMaterializedShape();
-  }
-
-  // Use for MaterializedCoordinateSystem
-  public List<Integer> getMaterializedShape() {
-    List<Integer> result = new ArrayList<>();
-    if (runTimeAxis != null && runTimeAxis.getDependenceType() == GridAxisDependenceType.independent) {
-      result.add(runTimeAxis.getNominalSize());
-    }
-    if (timeOffsetAxis != null && timeOffsetAxis.getDependenceType() == GridAxisDependenceType.independent) {
-      result.add(timeOffsetAxis.getNominalSize());
-    }
-    return result;
-  }
-
-  public List<ucar.array.Range> getSubsetRanges() {
-    List<ucar.array.Range> result = new ArrayList<>();
-    if (getRunTimeAxis() != null) {
-      result.add(getRunTimeAxis().getSubsetRange());
-    }
-    result.add(getTimeOffsetAxis(0).getSubsetRange());
-    return result;
-  }
-
-  /** Get the ith runtime CalendarDate. Null if type=Observation. */
-  @Nullable
-  public abstract CalendarDate getRuntimeDate(int runIdx);
-
-  /**
-   * Get the ith timeOffset axis. The offsets are reletive to getRuntimeDate(int runIdx), in units of getOffsetPeriod().
-   * if type=Observation, SingleRuntime or Offset, runIdx is ignored, since the offsets are
-   * always the same, so can pass in 0. LOOK does unit reflect getBaseDate() or getRuntimeDate(int runIdx) ?
-   */
-  public abstract GridAxis<?> getTimeOffsetAxis(int runIdx);
-
   /**
    * Get the forecast/valid dates for a given run.
-   * If type=Observation or SingleRuntime, runIdx is ignored. LOOK not true
+   * If type=Observation or SingleRuntime, runIdx is ignored. LOOK true?
    * For intervals this is the midpoint.
    */
-  public abstract List<CalendarDate> getTimesForRuntime(int runIdx);
+  public List<CalendarDate> getTimesForRuntime(int runIdx) {
+    List<CalendarDate> result = new ArrayList<>();
+    if (this.type == Type.Observation) {
+      for (int timeIdx = 0; timeIdx < timeOffsetAxis.getNominalSize(); timeIdx++) {
+        result.add(this.runtimeDateUnit.makeCalendarDate((long) timeOffsetAxis.getCoordDouble(timeIdx)));
+      }
+    } else {
+      Preconditions.checkArgument(runTimeAxis != null && runIdx >= 0 && runIdx < runTimeAxis.getNominalSize());
+      CalendarDate baseForRun = getRuntimeDate(runIdx);
+      GridAxis<?> timeAxis = getTimeOffsetAxis(runIdx);
+      for (int offsetIdx = 0; offsetIdx < timeAxis.getNominalSize(); offsetIdx++) {
+        result.add(baseForRun.add((long) timeAxis.getCoordDouble(offsetIdx), this.offsetPeriod));
+      }
+    }
+    return result;
+  }
 
+  /** The CalendarDateUnit for the offset time axis for runIdx. */
+  public CalendarDateUnit makeOffsetDateUnit(int runIdx) {
+    return CalendarDateUnit.of(getOffsetPeriod(), true, getRuntimeDate(runIdx));
+  }
+
+  /** Create a subsetted GridTimeCoordinateSystem. */
   public abstract Optional<? extends GridTimeCoordinateSystem> subset(GridSubset params, Formatter errlog);
 
   ////////////////////////////////////////////////////////
@@ -123,11 +114,43 @@ public abstract class GridTimeCoordinateSystem {
     }
     Objects.requireNonNull(this.runtimeDateUnit);
 
-    CalendarPeriod period = this.runtimeDateUnit.getCalendarPeriod();
+    CalendarPeriod period = CalendarPeriod.of(timeOffsetAxis.getUnits());
     if (period == null) {
-      period = CalendarPeriod.of(timeOffsetAxis.getUnits());
+      period = this.runtimeDateUnit.getCalendarPeriod();
     }
     this.offsetPeriod = Objects.requireNonNull(period);
+  }
+
+  // public by necessity, but would be nice not to be in the public API ??
+
+  public Type getType() {
+    return type;
+  }
+
+  // LOOK, not right
+  public List<Integer> getNominalShape() {
+    return getMaterializedShape();
+  }
+
+  // Used for MaterializedCoordinateSystem
+  public List<Integer> getMaterializedShape() {
+    List<Integer> result = new ArrayList<>();
+    if (runTimeAxis != null && runTimeAxis.getDependenceType() == GridAxisDependenceType.independent) {
+      result.add(runTimeAxis.getNominalSize());
+    }
+    if (timeOffsetAxis != null && timeOffsetAxis.getDependenceType() == GridAxisDependenceType.independent) {
+      result.add(timeOffsetAxis.getNominalSize());
+    }
+    return result;
+  }
+
+  public List<ucar.array.Range> getSubsetRanges() {
+    List<ucar.array.Range> result = new ArrayList<>();
+    if (getRunTimeAxis() != null) {
+      result.add(getRunTimeAxis().getSubsetRange());
+    }
+    result.add(getTimeOffsetAxis(0).getSubsetRange());
+    return result;
   }
 
   @Override

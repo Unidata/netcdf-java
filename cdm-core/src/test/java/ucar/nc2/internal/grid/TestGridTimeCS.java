@@ -53,6 +53,7 @@ public class TestGridTimeCS {
       assertThat(offset.getDependenceType()).isEqualTo(GridAxisDependenceType.independent);
       assertThat(offset.getDependsOn()).isEqualTo(new ArrayList<>());
       assertThat(offset.getUnits()).isEqualTo("hours");
+      assertThat(subject.getOffsetPeriod()).isEqualTo(CalendarPeriod.of("hours"));
       assertThat((Object) offset).isEqualTo(timeAxis);
     }
 
@@ -70,8 +71,7 @@ public class TestGridTimeCS {
       int offsetIdx = 0;
       for (CalendarDate time : times) {
         long what = (long) offset.getCoordDouble(offsetIdx);
-        CalendarDate expected = baseForRun.add(what, CalendarPeriod.Field.Day);
-        // System.out.printf(" (%d,%d) got= %s want= %s%n", runidx, offsetIdx, time, expected);
+        CalendarDate expected = baseForRun.add(what, subject.getOffsetPeriod());
         assertThat(time).isEqualTo(expected);
         offsetIdx++;
       }
@@ -110,6 +110,7 @@ public class TestGridTimeCS {
       assertThat(offset.getDependenceType()).isEqualTo(GridAxisDependenceType.independent);
       assertThat(offset.getDependsOn()).isEqualTo(new ArrayList<>());
       assertThat(offset.getUnits()).isEqualTo("hours");
+      assertThat(subject.getOffsetPeriod()).isEqualTo(CalendarPeriod.of("hours"));
       assertThat((Object) offset).isEqualTo(timeAxis);
     }
 
@@ -127,7 +128,6 @@ public class TestGridTimeCS {
       int offsetIdx = 0;
       for (CalendarDate time : times) {
         CalendarDate expected = baseForRun.add((long) offset.getCoordDouble(offsetIdx++), subject.getOffsetPeriod());
-        // System.out.printf(" (%d,%d) got= %s want= %s%n", runidx, offsetIdx, time, expected);
         assertThat(time).isEqualTo(expected);
       }
     }
@@ -152,14 +152,14 @@ public class TestGridTimeCS {
     assertThat(subject.getSubsetRanges()).isEqualTo(ImmutableList.of(new Range(ntimes)));
 
     assertThat((Object) subject.getTimeOffsetAxis(0)).isEqualTo(timeAxis);
-    assertThat(subject.getRuntimeDate(0)).isNull();
+    assertThat(subject.getRuntimeDate(0)).isEqualTo(cdu.getBaseDateTime());
+    assertThat(subject.getOffsetPeriod()).isEqualTo(CalendarPeriod.of("days"));
 
     List<CalendarDate> times = subject.getTimesForRuntime(0);
     assertThat(times).hasSize(ntimes);
     CalendarDate baseDate = subject.getBaseDate();
     for (int idx = 0; idx < ntimes; idx++) {
       CalendarDate expected = baseDate.add((long) timeAxis.getCoordDouble(idx), subject.getOffsetPeriod());
-      System.out.printf(" (%d)  got= %s want= %s%n", idx, times.get(idx), expected);
       assertThat(times.get(idx)).isEqualTo(expected);
     }
   }

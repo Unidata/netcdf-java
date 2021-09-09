@@ -388,6 +388,24 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
       return self();
     }
 
+    public T scaleValues(double factor) {
+      if (spacing == GridAxisSpacing.regularPoint) {
+        this.resolution *= factor;
+        return self();
+      }
+      if (values != null) {
+        for (int i = 0; i < values.length; i++) {
+          values[i] *= factor;
+        }
+      }
+      if (edges != null) {
+        for (int i = 0; i < edges.length; i++) {
+          edges[i] *= factor;
+        }
+      }
+      return self();
+    }
+
     public T subsetWithSingleValue(double startValue, Range range) {
       Preconditions.checkNotNull(range);
       this.spacing = GridAxisSpacing.regularPoint;

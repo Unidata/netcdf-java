@@ -21,7 +21,7 @@ import java.util.*;
 /**
  * Coordinate value-based subsetting of a Grid.
  * LOOK problem is that the valid combinations for time are not obvious.
- * maybe should check, eg set vertCoord when there isnt any? or ignore?
+ * LOOK maybe should check, eg set vertCoord when there isnt any? or ignore?
  */
 public class GridSubset {
   public static final String gridName = "gridName"; // value = String
