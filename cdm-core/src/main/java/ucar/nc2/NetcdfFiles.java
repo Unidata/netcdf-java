@@ -230,7 +230,7 @@ public class NetcdfFiles {
    * efficiency.
    *
    * @param location location of file.
-   * @param buffer_size RandomAccessFile buffer size, if <= 0, use default size
+   * @param buffer_size RandomAccessFile buffer size, if &le; 0, use default size
    * @param cancelTask allow task to be cancelled; may be null.
    * @return NetcdfFile object, or null if cant find IOServiceProver
    * @throws IOException if error
@@ -259,7 +259,7 @@ public class NetcdfFiles {
    *        place the uncompressed file in the same directory as the original file. If it does not have write permission
    *        on that directory, it will use the directory defined by ucar.nc2.util.DiskCache class.
    *
-   * @param buffer_size RandomAccessFile buffer size, if <= 0, use default size
+   * @param buffer_size RandomAccessFile buffer size, if &le; 0, use default size
    * @param cancelTask allow task to be cancelled; may be null.
    * @param iospMessage special iosp tweaking (sent before open is called), may be null
    * @return NetcdfFile object, or null if cant find IOServiceProver
@@ -282,7 +282,7 @@ public class NetcdfFiles {
    *
    * @param location location of file
    * @param iospClassName fully qualified class name of the IOSP class to handle this file
-   * @param bufferSize RandomAccessFile buffer size, if <= 0, use default size
+   * @param bufferSize RandomAccessFile buffer size, if &le; 0, use default size
    * @param cancelTask allow task to be cancelled; may be null.
    * @param iospMessage special iosp tweaking (sent before open is called), may be null
    * @return NetcdfFile object, or null if cant find IOServiceProver
@@ -804,7 +804,7 @@ public class NetcdfFiles {
 
   /**
    * Create a valid CDM object name.
-   * Control chars (< 0x20) are not allowed.
+   * Control chars (&lt; 0x20) are not allowed.
    * Trailing and leading blanks are not allowed and are stripped off.
    * A space is converted into an underscore "_".
    * A forward slash "/" is converted into an underscore "_".

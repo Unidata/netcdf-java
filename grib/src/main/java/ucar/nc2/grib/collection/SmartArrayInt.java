@@ -80,7 +80,7 @@ public class SmartArrayInt {
    * Find which index holds the value want
    * 
    * @param want value wanted
-   * @return < 0 if not found, else the index. If duplicates, then return any match
+   * @return &lt; 0 if not found, else the index. If duplicates, then return any match
    */
   public int findIdx(int want) {
     if (isConstant)

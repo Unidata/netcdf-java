@@ -42,7 +42,7 @@ public class Grib1Variable {
    * @param gdsHashOverride can override the gdsHash, 0 for no override
    * @param useTableVersion use pdss.getTableVersion(), default is false
    * @param intvMerge put all intervals together, default true
-   * @param useCenter use center id when param no > 127, default is false
+   * @param useCenter use center id when param no &gt; 127, default is false
    */
   public Grib1Variable(Grib1Customizer cust, Grib1Record gr, int gdsHashOverride, boolean useTableVersion,
       boolean intvMerge, boolean useCenter) {
@@ -63,7 +63,7 @@ public class Grib1Variable {
    * @param gds the group gds
    * @param useTableVersion use pdss.getTableVersion(), default is false
    * @param intvMerge put all intervals together, default true
-   * @param useCenter use center id when param no > 127, default is false
+   * @param useCenter use center id when param no &gt; 127, default is false
    */
   public Grib1Variable(Grib1Customizer cust, Grib1SectionProductDefinition pds, Grib1Gds gds, boolean useTableVersion,
       boolean intvMerge, boolean useCenter) {

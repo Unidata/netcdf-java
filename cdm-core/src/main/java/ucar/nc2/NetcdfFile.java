@@ -229,12 +229,9 @@ public class NetcdfFile implements FileCacheable, Closeable {
 
   /**
    * Finds a Dimension with the specified full name. It may be nested in multiple groups. An embedded "/" is interpreted
-   * as a group
-   * separator. A leading slash indicates the root group. That slash may be omitted, but the {@code fullName} will be
-   * treated as if it were
-   * there. In other words, the first name token in {@code fullName} is treated as the short name of a Group or
-   * Dimension, relative to the
-   * root group.
+   * as a group separator. A leading slash indicates the root group. That slash may be omitted, but the {@code fullName}
+   * will be treated as if it were there. In other words, the first name token in {@code fullName} is treated as the
+   * short name of a Group or Dimension, relative to the root group.
    *
    * @param fullName Dimension full name, e.g. "/group/subgroup/dim".
    * @return the Dimension or {@code null} if it wasn't found.

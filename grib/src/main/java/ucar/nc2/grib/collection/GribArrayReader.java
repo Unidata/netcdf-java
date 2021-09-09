@@ -76,7 +76,7 @@ public abstract class GribArrayReader {
    * Read the section of data described by want
    * 
    * @param want which data do you want?
-   * @return data as an Array<?>
+   * @return data as an Array
    */
   public Array<?> readData(ucar.array.SectionIterable want) throws IOException, InvalidRangeException {
     if (vindex instanceof PartitionCollectionImmutable.VariableIndexPartitioned)

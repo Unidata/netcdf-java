@@ -1139,7 +1139,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
 
   /**
    * Will this Variable be cached when read.
-   * Set externally by setCaching, or calculated based on total size < sizeToCache.
+   * Set externally by setCaching, or calculated based on total size &lt; sizeToCache.
    * <p>
    * This will always return {@code false} if {@link #permitCaching caching isn't permitted}.
    *
@@ -1492,8 +1492,8 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     /**
      * Set the dimensions using all anonymous (unshared) dimensions
      *
-     * @param shape defines the dimension lengths. must be > 0, or -1 for VLEN
-     * @throws RuntimeException if any shape < 1 and not -1.
+     * @param shape defines the dimension lengths. must be &gt; 0, or -1 for VLEN
+     * @throws RuntimeException if any shape &lt; 1 and not -1.
      */
     public T setDimensionsAnonymous(int[] shape) {
       this.dimensions = new ArrayList<>(Dimensions.makeDimensionsAnon(shape));

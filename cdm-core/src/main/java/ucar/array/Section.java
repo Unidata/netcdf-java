@@ -68,7 +68,7 @@ public class Section {
   /**
    * Create Section from a shape array, assumes 0 origin.
    *
-   * @param shape array of lengths for each Range. 0 = EMPTY, < 0 = VLEN
+   * @param shape array of lengths for each Range. 0 = EMPTY, &lt; 0 = VLEN
    */
   public Section(int[] shape) {
     ArrayList<Range> builder = new ArrayList<>();
@@ -89,7 +89,7 @@ public class Section {
    *
    * @param origin array of start for each Range
    * @param shape array of lengths for each Range
-   * @throws InvalidRangeException if origin < 0, or shape < 1.
+   * @throws InvalidRangeException if origin &lt; 0, or shape &lt; 1.
    */
   public Section(int[] origin, int[] shape) throws InvalidRangeException {
     ArrayList<Range> builder = new ArrayList<>();
@@ -221,7 +221,7 @@ public class Section {
    * first = first/stride, last=last/stride, stride=1.
    *
    * @return compacted Section
-   * @throws InvalidRangeException elements must be nonnegative, 0 <= first <= last
+   * @throws InvalidRangeException elements must be nonnegative, 0 &le; first &le; last
    */
   public Section compact() throws InvalidRangeException {
     List<Range> results = new ArrayList<>(getRank());
@@ -669,7 +669,7 @@ public class Section {
      * Append a new Range(first, last) to the Section
      *
      * @param first starting index
-     * @param last last index, inclusive. If last < 0, then append a VLEN Range.
+     * @param last last index, inclusive. If last &lt; 0, then append a VLEN Range.
      */
     public Builder appendRange(int first, int last) throws InvalidRangeException {
       if (last < 0)
@@ -778,7 +778,7 @@ public class Section {
       return this;
     }
 
-    /** Remove the first n Ranges, n <= number of ranges. */
+    /** Remove the first n Ranges, n &le; number of ranges. */
     public Builder removeFirst(int n) {
       assert n <= ranges.size();
       ranges = ranges.subList(n, ranges.size());

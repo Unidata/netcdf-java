@@ -270,7 +270,7 @@ public class Attribute {
     return values;
   }
 
-  /** True if value is an array (getLength() > 1) */
+  /** True if value is an array (getLength() &gt; 1) */
   public boolean isArray() {
     return (getLength() > 1);
   }

@@ -234,7 +234,7 @@ public class Arrays {
   // multiple arrays < 2G.
 
   /**
-   * Experimental: keep list of Arrays separate. This allows length > 2Gb.
+   * Experimental: keep list of Arrays separate. This allows length &gt; 2Gb.
    */
   public static <T> Array<T> factoryArrays(ArrayType dataType, int[] shape, List<Array<?>> dataArrays) {
     if (dataArrays.size() == 1) {
@@ -421,7 +421,7 @@ public class Arrays {
   }
 
   /**
-   * If there are any VLEN dimensions (length < 0), remove it and all dimensions to the right.
+   * If there are any VLEN dimensions (length &lt; 0), remove it and all dimensions to the right.
    *
    * @param shape multidimensional shape
    * @return modified shape, if needed.

@@ -17,7 +17,7 @@ import java.util.Formatter;
  * When a Dimension is shared, it has a unique name within its Group.
  * It may have a coordinate Variable, which gives each index a coordinate value.
  * A private Dimension cannot have a coordinate Variable, so use shared dimensions with coordinates when possible.
- * The Dimension length must be > 0, except for an unlimited dimension which may have length = 0, and a vlen
+ * The Dimension length must be &gt; 0, except for an unlimited dimension which may have length = 0, and a vlen
  * Dimension which has a length known only when the variable is read.
  * <p/>
  * <p>
@@ -42,7 +42,7 @@ public class Dimension implements Comparable<Dimension> {
    * General Constructor.
    *
    * @param name name must be unique within group. Can be null/empty only if not shared.
-   * @param length length, ignored if isVariableLength, >= 0 if unlimited, else > 0.
+   * @param length length, ignored if isVariableLength, &ge; 0 if unlimited, else &gt; 0.
    * @param isShared whether its shared or local to Variable.
    * @param isUnlimited whether the length can grow.
    * @param isVariableLength whether the length is unknown until the data is read.
