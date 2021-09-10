@@ -28,7 +28,9 @@ public class SubsetTimeHelper {
     this.runtimeAxis = tcs.getRunTimeAxis();
   }
 
-  /*
+  /**
+   * Called by Observation and SingleRuntime, so, runtime if any is ignored.
+   * /*
    * ### Time subsetting
    * 1. **time**
    * The value is the CalendarDate of the requested time.
@@ -44,15 +46,14 @@ public class SubsetTimeHelper {
    */
 
   public Optional<? extends GridAxis<?>> subsetTime(GridSubset params, Formatter errlog) {
-    GridAxis<?> timeOffsetAxis = tcs.getTimeOffsetAxis(0);
+    GridAxis<?> timeOffsetAxis = tcs.getTimeOffsetAxis(0); // Observation and SingleRuntime
 
-    // Do any CalendarDate conversions here
     Double wantOffset = null;
     CalendarDate wantTime = params.getTime();
     if (wantTime != null) {
-      wantOffset = (double) tcs.getRuntimeDateUnit().makeOffsetFromRefDate(wantTime);
+      wantOffset = (double) tcs.makeOffsetDateUnit(0).makeOffsetFromRefDate(wantTime);
     } else if (params.getTimePresent()) {
-      wantOffset = (double) tcs.getRuntimeDateUnit().makeOffsetFromRefDate(CalendarDate.present());
+      wantOffset = (double) tcs.makeOffsetDateUnit(0).makeOffsetFromRefDate(CalendarDate.present());
     }
     if (wantOffset != null) {
       return timeOffsetAxis.subset(GridSubset.create().setTimeOffsetCoord(wantOffset), errlog);
@@ -61,6 +62,28 @@ public class SubsetTimeHelper {
     // timeOffset, timeOffsetIntv, timeLatest
     return timeOffsetAxis.subset(params, errlog);
   }
+
+  /*
+   * public static final String runtime = "runtime"; // value = CalendarDate
+   * public static final String runtimeLatest = "runtimeLatest"; // value = Boolean
+   * public static final String runtimeAll = "runtimeAll"; // value = Boolean
+   * 
+   * // LOOK The value is the offset in the units of the GridAxis, or baseDate?
+   * public static final String timeOffset = "timeOffset"; // value = Double
+   * public static final String timeOffsetIntv = "timeOffsetIntv"; // value = CoordInterval
+   * public static final String timeOffsetAll = "timeOffsetAll"; // value = Boolean
+   * public static final String timeOffsetFirst = "timeOffsetFirst"; // value = Boolean LOOK deprecated I think
+   * 
+   * // validtime
+   * public static final String time = "time"; // value = CalendarDate
+   * public static final String timeRange = "timeRange"; // value = CalendarDateRange LOOK unimplemented
+   * public static final String timeLatest = "timeLatest"; // value = Boolean
+   * public static final String timePresent = "timePresent"; // value = Boolean
+   * public static final String timeStride = "timeStride"; // value = Integer LOOK is this needed?
+   * public static final String timeAll = "timeAll"; // value = Boolean LOOK whats diff with timeOffsetAll?
+   * public static final String timePoint = "timePoint"; // value = Double LOOK whats diff with timeOffset?
+   * public static final String timeIntv = "timeIntv"; // value = CoordInterval LOOK whats diff with timeOffsetIntv?
+   */
 
   /*
    * ### Runtime subsetting
@@ -126,18 +149,33 @@ public class SubsetTimeHelper {
     int timeIdx = -1;
     GridAxis<?> timeOffsetAxis = tcs.getTimeOffsetAxis(runIdx);
 
-    // time: searching for a specific time. LOOK: use Best when there's multiple ?? Only for Observation?
+    // convert calendarDate to
     CalendarDate wantTime = params.getTime();
     if (wantTime != null) {
-      double want = tcs.getRuntimeDateUnit().makeOffsetFromRefDate(wantTime);
-      timeIdx = search(timeOffsetAxis, want);
-      if (timeIdx < 0) {
-        errlog.format("Cant find time = %s%n", wantTime);
-        return Optional.empty();
-      }
+      double want = tcs.makeOffsetDateUnit(runIdx).makeOffsetFromRefDate(wantTime);
+      return timeOffsetAxis.subset(GridSubset.create().setTimeOffsetCoord(want), errlog);
+      /*
+       * if (timeOffsetAxis instanceof GridAxisPoint) {
+       * timeIdx = search(timeOffsetAxis, want);
+       * if (timeIdx < 0) {
+       * errlog.format("Cant find time = %s%n", wantTime);
+       * return Optional.empty();
+       * }
+       * SubsetPointHelper helper = new SubsetPointHelper((GridAxisPoint) timeOffsetAxis);
+       * return Optional.of(helper.makeSubsetByIndex(timeIdx).build());
+       * } else {
+       * timeIdx = search(timeOffsetAxis, want);
+       * if (timeIdx < 0) {
+       * errlog.format("Cant find time = %s%n", wantTime);
+       * return Optional.empty();
+       * }
+       * SubsetIntervalHelper helper = new SubsetIntervalHelper((GridAxisInterval) timeOffsetAxis);
+       * return Optional.of(helper.makeSubsetByIndex(timeIdx).build());
+       * }
+       */
     }
 
-    // LOOK otherwise, can use the GridAxis to do the subsetting
+    // timeOffset, timeOffsetIntv, timeLatest
     return timeOffsetAxis.subset(params, errlog);
 
     /*

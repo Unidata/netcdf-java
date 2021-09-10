@@ -180,57 +180,31 @@ public class CalendarPeriod {
     return field.chronoUnit;
   }
 
-  /*
+  /**
    * Get the conversion factor of the other CalendarPeriod to this one
    * 
    * @param from convert from this
    * 
    * @return conversion factor, so that getConvertFactor(from) * from = this
-   * 
-   * @deprecated dont use because these are fixed length and thus approximate.
-   *
-   * @Deprecated
-   * public double getConvertFactor(CalendarPeriod from) {
-   * if (field == Field.Month || field == Field.Year) {
-   * log.warn(" CalendarDate.convert on Month or Year");
-   * }
-   * 
-   * return (double) from.millisecs() / millisecs();
-   * }
-   * 
-   * /*
-   * Get the duration in milliseconds -+
-   * 
-   * @return the duration in seconds
-   * 
-   * @deprecated dont use because these are fixed length and thus approximate.
-   *
-   * @Deprecated
-   * public double getValueInMillisecs() {
-   * if (field == Field.Month)
-   * return 30.0 * 24.0 * 60.0 * 60.0 * 1000.0 * value;
-   * else if (field == Field.Year)
-   * return 365.0 * 24.0 * 60.0 * 60.0 * 1000.0 * value;
-   * else
-   * return millisecs();
-   * }
-   * 
-   * private int millisecs() {
-   * if (field == Field.Millisec)
-   * return value;
-   * else if (field == Field.Second)
-   * return 1000 * value;
-   * else if (field == Field.Minute)
-   * return 60 * 1000 * value;
-   * else if (field == Field.Hour)
-   * return 60 * 60 * 1000 * value;
-   * else if (field == Field.Day)
-   * return 24 * 60 * 60 * 1000 * value;
-   * 
-   * else
-   * throw new IllegalStateException("Illegal Field = " + field);
-   * }
    */
+  public double getConvertFactor(CalendarPeriod from) {
+    return (double) from.millisecs() / millisecs();
+  }
+
+  private int millisecs() {
+    if (field == Field.Millisec)
+      return value;
+    else if (field == Field.Second)
+      return 1000 * value;
+    else if (field == Field.Minute)
+      return 60 * 1000 * value;
+    else if (field == Field.Hour)
+      return 60 * 60 * 1000 * value;
+    else if (field == Field.Day)
+      return 24 * 60 * 60 * 1000 * value;
+    else
+      throw new IllegalStateException("Illegal Field = " + field);
+  }
 
   /*
    * LOOK from old TimeCoord code, which is better ??

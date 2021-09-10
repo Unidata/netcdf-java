@@ -277,6 +277,20 @@ public class GridAxisInterval extends GridAxis<CoordInterval> implements Iterabl
       return self();
     }
 
+    public T scaleValues(double factor) {
+      if (spacing == GridAxisSpacing.regularPoint) {
+        this.startValue *= factor;
+        this.endValue *= factor;
+        return self();
+      }
+      if (values != null) {
+        for (int i = 0; i < values.length; i++) {
+          values[i] *= factor;
+        }
+      }
+      return self();
+    }
+
     public T subset(int ncoords, double startValue, double endValue, double resolution, Range range) {
       this.ncoords = ncoords;
       this.startValue = startValue;

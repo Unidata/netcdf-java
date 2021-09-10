@@ -65,6 +65,11 @@ public class GridReader {
     return this;
   }
 
+  public GridReader setRunTimeLatest() {
+    req.put(GridSubset.runtimeLatest, true);
+    return this;
+  }
+
   public GridReader setEnsCoord(Object coord) {
     Preconditions.checkArgument(coord instanceof Double);
     req.put(GridSubset.ensCoord, coord);

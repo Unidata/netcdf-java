@@ -7,7 +7,6 @@ package ucar.nc2.grib.grid;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Streams;
 import ucar.array.Range;
 import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.calendar.CalendarDateUnit;
@@ -17,9 +16,9 @@ import ucar.nc2.grib.coord.Coordinate;
 import ucar.nc2.grib.coord.CoordinateRuntime;
 import ucar.nc2.grib.coord.CoordinateTime2D;
 import ucar.nc2.grib.coord.CoordinateTimeAbstract;
+import ucar.nc2.grid.GridAxisInterval;
 import ucar.nc2.grid.GridSubset;
 import ucar.nc2.grid.GridAxis;
-import ucar.nc2.grid.GridAxisInterval;
 import ucar.nc2.grid.GridAxisPoint;
 import ucar.nc2.grid.GridTimeCoordinateSystem;
 import ucar.nc2.internal.grid.SubsetTimeHelper;
@@ -27,13 +26,9 @@ import ucar.nc2.util.Indent;
 
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-
-import static ucar.nc2.grid.GridTimeCoordinateSystem.Type.Observation;
 
 /**
  * Grib implementation of {@link GridTimeCoordinateSystem}
@@ -88,48 +83,13 @@ public abstract class GribGridTimeCoordinateSystem extends GridTimeCoordinateSys
     }
   }
 
-  @Nullable
   @Override
   public CalendarDate getRuntimeDate(int runIdx) {
     if (this.runTimeAxis == null) {
-      return null;
+      return this.runtimeDateUnit.getBaseDateTime();
     } else {
       return runtimeDateUnit.makeCalendarDate(this.runTimeAxis.getCoordinate(runIdx).longValue());
     }
-  }
-
-  @Override
-  public List<CalendarDate> getTimesForRuntime(int runIdx) {
-    if (this.type == Observation) {
-      return getTimesForObservation();
-    } else {
-      return getTimesForNonObservation(runIdx);
-    }
-  }
-
-  private List<CalendarDate> getTimesForObservation() {
-    if (timeOffsetAxis instanceof GridAxisPoint) {
-      GridAxisPoint offsetPoint = (GridAxisPoint) timeOffsetAxis;
-      return Streams.stream(offsetPoint).map(val -> runtimeDateUnit.makeCalendarDate(val.longValue()))
-          .collect(Collectors.toList());
-    } else {
-      GridAxisInterval offsetIntv = (GridAxisInterval) timeOffsetAxis;
-      // LOOK cast double to long
-      return Streams.stream(offsetIntv).map(intv -> runtimeDateUnit.makeCalendarDate((long) intv.midpoint()))
-          .collect(Collectors.toList());
-    }
-  }
-
-  private List<CalendarDate> getTimesForNonObservation(int runIdx) {
-    Preconditions.checkArgument(runTimeAxis != null && runIdx >= 0 && runIdx < runTimeAxis.getNominalSize());
-    CalendarDate baseForRun = getRuntimeDate(runIdx);
-    Preconditions.checkNotNull(baseForRun);
-    GridAxis<?> timeAxis = getTimeOffsetAxis(runIdx);
-    List<CalendarDate> result = new ArrayList<>();
-    for (int offsetIdx = 0; offsetIdx < timeAxis.getNominalSize(); offsetIdx++) {
-      result.add(baseForRun.add((long) timeAxis.getCoordDouble(offsetIdx), this.offsetPeriod));
-    }
-    return result;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -155,11 +115,6 @@ public abstract class GribGridTimeCoordinateSystem extends GridTimeCoordinateSys
 
     private Observation(GridAxis<?> timeOffset, CalendarDateUnit dateUnit) {
       super(Type.Observation, null, timeOffset, dateUnit);
-    }
-
-    @Override
-    public CalendarDate getBaseDate() {
-      return runtimeDateUnit.getBaseDateTime();
     }
 
     @Override
@@ -363,7 +318,16 @@ public abstract class GribGridTimeCoordinateSystem extends GridTimeCoordinateSys
     @Override
     public GridAxis<?> getTimeOffsetAxis(int runIdx) {
       CoordinateTimeAbstract timeCoord = coord2D.getTimeCoordinate(runIdx);
-      return GribGridAxis.create(gribType, timeCoord, null).axis;
+      GridAxis<?> axis = GribGridAxis.create(gribType, timeCoord, null).axis;
+      if (timeCoord.getTimeUnit() != this.offsetPeriod) {
+        double factor = this.offsetPeriod.getConvertFactor(timeCoord.getTimeUnit());
+        if (axis instanceof GridAxisPoint) {
+          return ((GridAxisPoint) axis).toBuilder().setUnits(offsetPeriod.toString()).scaleValues(factor).build();
+        } else {
+          return ((GridAxisInterval) axis).toBuilder().setUnits(offsetPeriod.toString()).scaleValues(factor).build();
+        }
+      }
+      return axis;
     }
 
     @Override

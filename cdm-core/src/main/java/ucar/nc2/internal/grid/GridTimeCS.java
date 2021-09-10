@@ -58,11 +58,10 @@ public class GridTimeCS extends GridTimeCoordinateSystem {
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  @Nullable
   @Override
   public CalendarDate getRuntimeDate(int runIdx) {
     if (this.runTimeAxis == null) {
-      return null;
+      return this.runtimeDateUnit.getBaseDateTime();
     } else {
       return runtimeDateUnit.makeCalendarDate(this.runTimeAxis.getCoordinate(runIdx).longValue());
     }
@@ -71,34 +70,6 @@ public class GridTimeCS extends GridTimeCoordinateSystem {
   @Override
   public GridAxis<?> getTimeOffsetAxis(int runIdx) {
     return timeOffsetAxis; // default
-  }
-
-  @Override
-  public List<CalendarDate> getTimesForRuntime(int runIdx) {
-    if (this.type == Type.Observation) {
-      return getTimesForObservation();
-    } else {
-      return getTimesForNonObservation(runIdx);
-    }
-  }
-
-  private List<CalendarDate> getTimesForObservation() {
-    List<CalendarDate> result = new ArrayList<>();
-    for (int timeIdx = 0; timeIdx < timeOffsetAxis.getNominalSize(); timeIdx++) {
-      result.add(this.runtimeDateUnit.makeCalendarDate((long) timeOffsetAxis.getCoordDouble(timeIdx)));
-    }
-    return result;
-  }
-
-  private List<CalendarDate> getTimesForNonObservation(int runIdx) {
-    Preconditions.checkArgument(runTimeAxis != null && runIdx >= 0 && runIdx < runTimeAxis.getNominalSize());
-    CalendarDate baseForRun = getRuntimeDate(runIdx);
-    GridAxis<?> timeAxis = getTimeOffsetAxis(runIdx);
-    List<CalendarDate> result = new ArrayList<>();
-    for (int offsetIdx = 0; offsetIdx < timeAxis.getNominalSize(); offsetIdx++) {
-      result.add(baseForRun.add((long) timeAxis.getCoordDouble(offsetIdx), this.offsetPeriod));
-    }
-    return result;
   }
 
   @Override
@@ -119,11 +90,6 @@ public class GridTimeCS extends GridTimeCoordinateSystem {
     Observation(GridAxis<?> time, CalendarDateUnit runtimeDateUnit) {
       // LOOK MRMS_Radar_20201027_0000.grib2.ncx4 time2D has runtime in seconds, but period name is minutes
       super(Type.Observation, null, time, runtimeDateUnit);
-    }
-
-    @Override
-    public CalendarDate getBaseDate() {
-      return runtimeDateUnit.getBaseDateTime();
     }
 
     @Override

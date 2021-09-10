@@ -5,38 +5,23 @@
 package ucar.nc2.grid;
 
 import com.google.common.collect.ImmutableList;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.Array;
-import ucar.ma2.InvalidRangeException;
+import ucar.array.Arrays;
 import ucar.nc2.calendar.CalendarDate;
-import ucar.nc2.constants.FeatureType;
-import ucar.nc2.ft2.coverage.Coverage;
-import ucar.nc2.ft2.coverage.CoverageCollection;
-import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
-import ucar.nc2.ft2.coverage.FeatureDatasetCoverage;
-import ucar.nc2.ft2.coverage.GeoReferencedArray;
-import ucar.nc2.ft2.coverage.SubsetParams;
-import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
-import java.util.Arrays;
 import java.util.Formatter;
 
 import static com.google.common.truth.Truth.assertThat;
 
 /**
- * Test Grib Collection reading.
- * LOOK: Tests are flakey, is there a caching issue?
- *
- * @author caron
- * @since 2/9/2016.
+ * Test Grib Collection reading Grid.
  */
 @Category(NeedsCdmUnitTest.class)
 public class TestGribGridRead {
@@ -46,7 +31,7 @@ public class TestGribGridRead {
   CalendarDate useDate = CalendarDate.fromUdunitIsoDate(null, "2014-10-27T06:00:00Z").orElseThrow();
 
   @Test
-  public void TestTwoDRead() throws IOException, InvalidRangeException, ucar.array.InvalidRangeException {
+  public void TestTwoDRead() throws IOException, ucar.array.InvalidRangeException {
     String filename = TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/gfsConus80_file.ncx4";
     String gridName = "Temperature_isobaric";
     System.out.printf("TestTwoDRead %s%n", filename);
@@ -63,187 +48,169 @@ public class TestGribGridRead {
       GridTimeCoordinateSystem tcs = csys.getTimeCoordinateSystem();
       assertThat(tcs).isNotNull();
 
-      // LOOK if we dont set the runtime, assume latest. driven by Cdmrf spec. could be different.
-      GridReferencedArray geoArray = coverage.getReader().setVertCoord(300.0).setTime(useDate).read();
+      GridReferencedArray geoArray =
+          coverage.getReader().setVertCoord(300.0).setRunTimeLatest().setTime(useDate).read();
       MaterializedCoordinateSystem mcs = geoArray.getMaterializedCoordinateSystem();
       assertThat(mcs).isNotNull();
 
-      System.out.printf(" data shape=%s%n", Arrays.toString(geoArray.data().getShape()));
+      System.out.printf(" data shape=%s%n", java.util.Arrays.toString(geoArray.data().getShape()));
       assertThat(geoArray.data().getShape()).isEqualTo(new int[] {1, 1, 1, 65, 93});
 
       GridHorizCoordinateSystem hcs2 = mcs.getHorizCoordinateSystem();
       assertThat(hcs2).isNotNull();
       System.out.printf(" data hcs shape=%s%n", hcs2.getShape());
       assertThat(hcs2.getShape()).isEqualTo(ImmutableList.of(65, 93));
-
-      float first = geoArray.data().get(0, 0).floatValue();
-      float last = geoArray.data().get(64, 92).floatValue();
+      ucar.array.Array<Number> data = Arrays.reduceFirst(geoArray.data(), 3);
+      float first = data.get(0, 0).floatValue();
+      float last = data.get(64, 92).floatValue();
       assertThat(first).isWithin(TOL).of(241.699997f);
       assertThat(last).isWithin(TOL).of(225.099991f);
     }
   }
 
   @Test
-  public void TestBestRead() throws IOException, InvalidRangeException {
-    String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/gfsConus80_file.ncx4";
-    logger.debug("open {}", endpoint);
-
-    try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
-      assert cc != null;
-      Assert.assertEquals(2, cc.getCoverageCollections().size());
-      CoverageCollection gds = cc.getCoverageCollections().get(1);
-      Assert.assertEquals(FeatureType.GRID, gds.getCoverageType());
-
-      String covName = "Temperature_isobaric";
-      Coverage cover = gds.findCoverage(covName);
-      Assert.assertNotNull(covName, cover);
-      long size = cover.getSizeInBytes();
-      Assert.assertEquals(41 * 29 * 65 * 93 * 4, size);
-
-      SubsetParams subset = new SubsetParams().setVertCoord(300.0).setTime(useDate);
-      GeoReferencedArray geo = cover.readData(subset);
-      Array data = geo.getData();
-      logger.debug("{}", Arrays.toString(data.getShape()));
-      Assert.assertArrayEquals(new int[] {1, 1, 65, 93}, data.getShape());
-
-      float first = data.getFloat(0);
-      float last = data.getFloat((int) data.getSize() - 1);
-      logger.debug("data first = {} last = {}", first, last);
-      Assert2.assertNearlyEquals(241.699997, first);
-      Assert2.assertNearlyEquals(225.099991, last);
-    }
-  }
-
-  @Test
-  public void TestSRCRead() throws IOException, InvalidRangeException {
-    String endpoint =
+  public void TestSRCRead() throws IOException, ucar.array.InvalidRangeException {
+    String filename =
         TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/20141025/GFS_CONUS_80km_20141025_0000.grib1.ncx4";
-    logger.debug("open {}", endpoint);
+    String gridName = "Temperature_isobaric";
+    System.out.printf("TestSRCRead %s%n", filename);
 
-    try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
-      assert cc != null;
-      Assert.assertEquals(1, cc.getCoverageCollections().size());
-      CoverageCollection gds = cc.getCoverageCollections().get(0);
-      Assert.assertEquals(FeatureType.GRID, gds.getCoverageType());
+    Formatter errlog = new Formatter();
+    try (GridDataset gds = GridDatasetFactory.openGridDataset(filename, errlog)) {
+      assertThat(gds).isNotNull();
+      Grid coverage = gds.findGrid(gridName).orElseThrow();
+      assertThat(coverage).isNotNull();
 
-      String covName = "Temperature_isobaric";
-      Coverage cover = gds.findCoverage(covName);
-      Assert.assertNotNull(covName, cover);
-      long size = cover.getSizeInBytes();
-      Assert.assertEquals(25243920, size);
+      GridCoordinateSystem csys = coverage.getCoordinateSystem();
+      assertThat(csys).isNotNull();
+      assertThat(csys.getNominalShape()).isEqualTo(ImmutableList.of(1, 36, 29, 65, 93));
+      GridTimeCoordinateSystem tcs = csys.getTimeCoordinateSystem();
+      assertThat(tcs).isNotNull();
 
-      SubsetParams subset = new SubsetParams().setVertCoord(200.0).setTimeOffset(42.0);
-      GeoReferencedArray geo = cover.readData(subset);
-      Array data = geo.getData();
-      logger.debug("{}", Arrays.toString(data.getShape()));
-      Assert.assertArrayEquals(new int[] {1, 1, 65, 93}, data.getShape());
+      GridReferencedArray geoArray = coverage.getReader().setVertCoord(200.0).setTimeOffsetCoord(42.0).read();
+      MaterializedCoordinateSystem mcs = geoArray.getMaterializedCoordinateSystem();
+      assertThat(mcs).isNotNull();
 
-      float first = data.getFloat(0);
-      float last = data.getFloat((int) data.getSize() - 1);
-      logger.debug("data first = {} last = {}", first, last);
-      Assert2.assertNearlyEquals(219.5f, first);
-      Assert2.assertNearlyEquals(218.6f, last);
+      System.out.printf(" data shape=%s%n", java.util.Arrays.toString(geoArray.data().getShape()));
+      assertThat(geoArray.data().getShape()).isEqualTo(new int[] {1, 1, 1, 65, 93});
+
+      GridHorizCoordinateSystem hcs2 = mcs.getHorizCoordinateSystem();
+      assertThat(hcs2).isNotNull();
+      System.out.printf(" data hcs shape=%s%n", hcs2.getShape());
+      assertThat(hcs2.getShape()).isEqualTo(ImmutableList.of(65, 93));
+      ucar.array.Array<Number> data = Arrays.reduceFirst(geoArray.data(), 3);
+      float first = data.get(0, 0).floatValue();
+      float last = data.get(64, 92).floatValue();
+      assertThat(first).isWithin(TOL).of(219.5f);
+      assertThat(last).isWithin(TOL).of(218.6f);
     }
   }
 
   @Test
-  public void TestMRUTCRead() throws IOException, InvalidRangeException {
-    String endpoint = TestDir.cdmUnitTestDir + "gribCollections/anal/HRRRanalysis.ncx4";
-    logger.debug("open {}", endpoint);
+  public void TestMRUTCRead() throws IOException, ucar.array.InvalidRangeException {
+    String filename = TestDir.cdmUnitTestDir + "gribCollections/anal/HRRRanalysis.ncx4";
+    String gridName = "Temperature_isobaric";
+    System.out.printf("TestSRCRead %s%n", filename);
 
-    try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
-      assert cc != null;
-      Assert.assertEquals(1, cc.getCoverageCollections().size());
-      CoverageCollection gds = cc.getCoverageCollections().get(0);
-      Assert.assertEquals(FeatureType.GRID, gds.getCoverageType());
+    Formatter errlog = new Formatter();
+    try (GridDataset gds = GridDatasetFactory.openGridDataset(filename, errlog)) {
+      assertThat(gds).isNotNull();
+      Grid coverage = gds.findGrid(gridName).orElseThrow();
+      assertThat(coverage).isNotNull();
 
-      String covName = "Temperature_isobaric";
-      Coverage cover = gds.findCoverage(covName);
-      Assert.assertNotNull(covName, cover);
-      long size = cover.getSizeInBytes();
-      Assert.assertEquals(4 * 5 * 1377 * 2145 * 4, size);
+      GridCoordinateSystem csys = coverage.getCoordinateSystem();
+      assertThat(csys).isNotNull();
+      assertThat(csys.getNominalShape()).isEqualTo(ImmutableList.of(4, 5, 1377, 2145));
+      GridTimeCoordinateSystem tcs = csys.getTimeCoordinateSystem();
+      assertThat(tcs).isNotNull();
 
-      SubsetParams subset = new SubsetParams().setVertCoord(70000).setTimeOffset(2);
-      GeoReferencedArray geo = cover.readData(subset);
-      Array data = geo.getData();
-      logger.debug("{}", Arrays.toString(data.getShape()));
-      Assert.assertArrayEquals(new int[] {1, 1, 1377, 2145}, data.getShape());
+      GridReferencedArray geoArray = coverage.getReader().setVertCoord(70000).setTimeOffsetCoord(2).read();
+      MaterializedCoordinateSystem mcs = geoArray.getMaterializedCoordinateSystem();
+      assertThat(mcs).isNotNull();
 
-      float val = data.getFloat(40600);
-      logger.debug("data val at {} = {}", 40600, val);
-      Assert2.assertNearlyEquals(281.627563, val);
+      System.out.printf(" data shape=%s%n", java.util.Arrays.toString(geoArray.data().getShape()));
+      assertThat(geoArray.data().getShape()).isEqualTo(new int[] {1, 1, 1377, 2145});
+      GridHorizCoordinateSystem hcs2 = mcs.getHorizCoordinateSystem();
+      assertThat(hcs2).isNotNull();
+      System.out.printf(" data hcs shape=%s%n", hcs2.getShape());
+      assertThat(hcs2.getShape()).isEqualTo(ImmutableList.of(1377, 2145));
+      ucar.array.Array<Number> data = Arrays.reduceFirst(geoArray.data(), 3);
 
-      val = data.getFloat(55583);
-      logger.debug("data val at {} = {}", 55583, val);
-      Assert2.assertNearlyEquals(281.690063, val);
+      float val = data.get(547, 947).floatValue();
+      assertThat(val).isWithin(TOL).of(283.1135f);
     }
   }
 
   @Test
-  public void TestMRUTPRead() throws IOException, InvalidRangeException {
-    String endpoint = TestDir.cdmUnitTestDir + "gribCollections/tp/GFSonedega.ncx4";
-    logger.debug("open {}", endpoint);
+  public void TestMRUTPRead() throws IOException, ucar.array.InvalidRangeException {
+    String filename = TestDir.cdmUnitTestDir + "gribCollections/tp/GFSonedega.ncx4";
+    String gridName = "Relative_humidity_sigma";
+    System.out.printf("TestSRCRead %s%n", filename);
 
-    try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
-      assert cc != null;
-      Assert.assertEquals(1, cc.getCoverageCollections().size());
-      CoverageCollection gds = cc.getCoverageCollections().get(0);
-      Assert.assertEquals(FeatureType.GRID, gds.getCoverageType());
+    Formatter errlog = new Formatter();
+    try (GridDataset gds = GridDatasetFactory.openGridDataset(filename, errlog)) {
+      assertThat(gds).isNotNull();
+      Grid coverage = gds.findGrid(gridName).orElseThrow();
+      assertThat(coverage).isNotNull();
 
-      String covName = "Relative_humidity_sigma";
-      Coverage cover = gds.findCoverage(covName);
-      Assert.assertNotNull(covName, cover);
-      long size = cover.getSizeInBytes();
-      Assert.assertEquals(2 * 181 * 360 * 4, size);
+      GridCoordinateSystem csys = coverage.getCoordinateSystem();
+      assertThat(csys).isNotNull();
+      assertThat(csys.getNominalShape()).isEqualTo(ImmutableList.of(2, 1, 181, 360));
+      GridTimeCoordinateSystem tcs = csys.getTimeCoordinateSystem();
+      assertThat(tcs).isNotNull();
 
-      SubsetParams subset = new SubsetParams().setTimeOffset(6);
-      GeoReferencedArray geo = cover.readData(subset);
-      Array data = geo.getData();
-      logger.debug("{}", Arrays.toString(data.getShape()));
-      Assert.assertArrayEquals(new int[] {1, 1, 181, 360}, data.getShape());
+      GridReferencedArray geoArray = coverage.getReader().setVertCoord(70000).setTimeOffsetCoord(6).read();
+      MaterializedCoordinateSystem mcs = geoArray.getMaterializedCoordinateSystem();
+      assertThat(mcs).isNotNull();
 
-      float val = data.getFloat(3179);
-      logger.debug("data val at {} = {}", 3179, val);
-      Assert2.assertNearlyEquals(98.0, val);
+      System.out.printf(" data shape=%s%n", java.util.Arrays.toString(geoArray.data().getShape()));
+      assertThat(geoArray.data().getShape()).isEqualTo(new int[] {1, 1, 181, 360});
+      GridHorizCoordinateSystem hcs2 = mcs.getHorizCoordinateSystem();
+      assertThat(hcs2).isNotNull();
+      System.out.printf(" data hcs shape=%s%n", hcs2.getShape());
+      assertThat(hcs2.getShape()).isEqualTo(ImmutableList.of(181, 360));
+      ucar.array.Array<Number> data = Arrays.reduceFirst(geoArray.data(), 2);
 
-      val = data.getFloat(5020);
-      logger.debug("data val at {} = {}", 5020, val);
-      Assert2.assertNearlyEquals(60.0, val);
+      float val = data.get(48, 128).floatValue();
+      assertThat(val).isWithin(TOL).of(94.0f);
     }
   }
 
   @Test
-  public void TestPofPRead() throws IOException, InvalidRangeException {
-    String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/gfsConus80_file.ncx4";
-    logger.debug("open {}", endpoint);
+  public void TestPofPRead() throws IOException, ucar.array.InvalidRangeException {
+    String filename = TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/gfsConus80_file.ncx4";
+    String gridName = "Vertical_velocity_pressure_isobaric";
+    System.out.printf("TestSRCRead %s%n", filename);
 
-    try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
-      assert cc != null;
-      Assert.assertEquals(2, cc.getCoverageCollections().size());
-      CoverageCollection gds = cc.getCoverageCollections().get(0);
-      Assert.assertEquals(FeatureType.FMRC, gds.getCoverageType());
+    Formatter errlog = new Formatter();
+    try (GridDataset gds = GridDatasetFactory.openGridDataset(filename, errlog)) {
+      assertThat(gds).isNotNull();
+      Grid coverage = gds.findGrid(gridName).orElseThrow();
+      assertThat(coverage).isNotNull();
 
-      String covName = "Vertical_velocity_pressure_isobaric";
-      Coverage cover = gds.findCoverage(covName);
-      Assert.assertNotNull(covName, cover);
-      long size = cover.getSizeInBytes();
-      Assert.assertEquals(6 * 35 * 9 * 65 * 93 * 4, size);
+      GridCoordinateSystem csys = coverage.getCoordinateSystem();
+      assertThat(csys).isNotNull();
+      assertThat(csys.getNominalShape()).isEqualTo(ImmutableList.of(6, 35, 9, 65, 93));
+      GridTimeCoordinateSystem tcs = csys.getTimeCoordinateSystem();
+      assertThat(tcs).isNotNull();
 
-      SubsetParams subset =
-          new SubsetParams().setRunTime(CalendarDate.fromUdunitIsoDate(null, "2014-10-24T12:00:00Z").orElseThrow())
-              .setTimeOffset(42).setVertCoord(500);
-      GeoReferencedArray geo = cover.readData(subset);
-      Array data = geo.getData();
-      logger.debug("{}", Arrays.toString(data.getShape()));
-      Assert.assertArrayEquals(new int[] {1, 1, 1, 65, 93}, data.getShape());
+      GridReferencedArray geoArray =
+          coverage.getReader().setRunTime(CalendarDate.fromUdunitIsoDate(null, "2014-10-24T12:00:00Z").orElseThrow())
+              .setTimeOffsetCoord(42).setVertCoord(500).read();
+      MaterializedCoordinateSystem mcs = geoArray.getMaterializedCoordinateSystem();
+      assertThat(mcs).isNotNull();
 
-      float val = data.getFloat(0);
-      logger.debug("data val first = {}", val);
-      Assert2.assertNearlyEquals(-0.10470009f, val);
+      System.out.printf(" data shape=%s%n", java.util.Arrays.toString(geoArray.data().getShape()));
+      assertThat(geoArray.data().getShape()).isEqualTo(new int[] {1, 1, 1, 65, 93});
+      GridHorizCoordinateSystem hcs2 = mcs.getHorizCoordinateSystem();
+      assertThat(hcs2).isNotNull();
+      System.out.printf(" data hcs shape=%s%n", hcs2.getShape());
+      assertThat(hcs2.getShape()).isEqualTo(ImmutableList.of(65, 93));
+      ucar.array.Array<Number> data = Arrays.reduceFirst(geoArray.data(), 3);
 
-      val = data.getFloat((int) data.getSize() - 1);
-      logger.debug("data val last = {}", val);
-      Assert2.assertNearlyEquals(0.18079996f, val);
+      float val = data.get(46, 25).floatValue();
+      assertThat(val).isWithin(TOL).of(-2.493f);
     }
   }
+
 }
