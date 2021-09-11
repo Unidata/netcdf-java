@@ -32,14 +32,22 @@ public abstract class GridTimeCoordinateSystem {
   }
 
   /** Get the ith runtime CalendarDate. If type=Observation, equals getBaseDate(). */
-  public abstract CalendarDate getRuntimeDate(int runIdx);
+  public CalendarDate getRuntimeDate(int runIdx) {
+    if (this.runTimeAxis == null) {
+      return this.runtimeDateUnit.getBaseDateTime();
+    } else {
+      return runtimeDateUnit.makeCalendarDate(this.runTimeAxis.getCoordinate(runIdx).longValue());
+    }
+  }
 
   /**
    * Get the ith timeOffset axis. The offsets are reletive to getRuntimeDate(int runIdx), in units of getOffsetPeriod().
    * if type=Observation, SingleRuntime, runIdx is ignored, since the offsets are
    * always the same, by convention, pass in 0. LOOK does unit = getOffsetPeriod?
    */
-  public abstract GridAxis<?> getTimeOffsetAxis(int runIdx);
+  public GridAxis<?> getTimeOffsetAxis(int runIdx) {
+    return timeOffsetAxis;
+  }
 
   /** The units of the TimeOffsetAxis. */
   public CalendarPeriod getOffsetPeriod() {

@@ -1,9 +1,13 @@
 package ucar.nc2.calendar;
 
 import org.junit.Test;
+import ucar.nc2.AttributeContainerMutable;
+import ucar.nc2.constants.CDM;
+import ucar.nc2.constants.CF;
 
 import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth8.assertThat;
+import static org.junit.Assert.fail;
 
 /** Test {@link CalendarDateUnit} */
 public class TestCalendarDateUnit {
@@ -33,6 +37,44 @@ public class TestCalendarDateUnit {
     assertThat(cdu4).isNotEqualTo(cdu);
     assertThat(cdu4.hashCode()).isNotEqualTo(cdu.hashCode());
   }
+
+  @Test
+  public void testFactory() {
+    CalendarDateUnit cdu =
+        CalendarDateUnit.fromAttributes(new AttributeContainerMutable("empty"), "years since 1970-01-01").orElseThrow();
+    assertThat(cdu.getCalendar()).isEqualTo(Calendar.proleptic_gregorian);
+    assertThat(cdu.getCalendarPeriod()).isEqualTo(CalendarPeriod.of("years"));
+    assertThat(cdu.getCalendarField()).isEqualTo(CalendarPeriod.fromUnitString("years"));
+    CalendarDate refDate = CalendarDate.fromUdunitIsoDate("proleptic_gregorian", "1970-01-01").orElseThrow();
+    assertThat(cdu.getBaseDateTime()).isEqualTo(refDate);
+
+    AttributeContainerMutable atts = new AttributeContainerMutable("full");
+    atts.addAttribute(CDM.UNITS, "days since 1970-01-01");
+    atts.addAttribute(CF.CALENDAR, Calendar.noleap.toString());
+    cdu = CalendarDateUnit.fromAttributes(atts, null).orElseThrow();
+    assertThat(cdu.getCalendar()).isEqualTo(Calendar.noleap);
+    assertThat(cdu.getCalendarPeriod()).isEqualTo(CalendarPeriod.of("days"));
+    refDate = CalendarDate.fromUdunitIsoDate("noleap", "1970-01-01").orElseThrow();
+    assertThat(cdu.getBaseDateTime()).isEqualTo(refDate);
+
+    atts = new AttributeContainerMutable("full");
+    atts.addAttribute(CDM.UNITS, "days since 2021-01-01");
+    atts.addAttribute(CF.CALENDAR, Calendar.noleap.toString());
+    cdu = CalendarDateUnit.fromAttributes(atts, "years since 1970-01-01").orElseThrow();
+    assertThat(cdu.getCalendar()).isEqualTo(Calendar.noleap);
+    assertThat(cdu.getCalendarPeriod()).isEqualTo(CalendarPeriod.of("years"));
+    refDate = CalendarDate.fromUdunitIsoDate("noleap", "1970-01-01").orElseThrow();
+    assertThat(cdu.getBaseDateTime()).isEqualTo(refDate);
+
+    assertThat(CalendarDateUnit.fromAttributes(new AttributeContainerMutable("empty"), null)).isEmpty();
+    try {
+      assertThat(CalendarDateUnit.fromAttributes(null, null)).isEmpty();
+      fail();
+    } catch (Exception e) {
+      // ok
+    }
+  }
+
 
   @Test
   public void testFailures() {

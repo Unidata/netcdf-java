@@ -4,6 +4,11 @@
  */
 package ucar.nc2.calendar;
 
+import com.google.common.base.Preconditions;
+import ucar.nc2.AttributeContainer;
+import ucar.nc2.constants.CDM;
+import ucar.nc2.constants.CF;
+
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.time.Instant;
@@ -56,8 +61,42 @@ public class CalendarDateUnit {
     return new CalendarDateUnit(CalendarPeriod.of(1, periodField), isCalendarField, baseDate);
   }
 
+  /**
+   * Create a CalendarDateUnit from a CalendarPeriod, and a base date
+   *
+   * @param period a CalendarPeriod like 1 Hour or 30 seconds
+   * @param baseDate "since baseDate"
+   * @return CalendarDateUnit
+   */
   public static CalendarDateUnit of(CalendarPeriod period, boolean isCalendarField, CalendarDate baseDate) {
     return new CalendarDateUnit(period, isCalendarField, baseDate);
+  }
+
+  /**
+   * Create a CalendarDateUnit from attributes.
+   *
+   * @param atts AttributeContainer, look for 'units' attribute and 'calendar' attribute
+   * @param units the units string, may be null
+   * @return CalendarDateUnit if possible
+   */
+  public static Optional<CalendarDateUnit> fromAttributes(AttributeContainer atts, @Nullable String units) {
+    Preconditions.checkNotNull(atts);
+    if (units != null && units.trim().isEmpty()) {
+      units = null;
+    }
+    if (units == null) {
+      units = atts.findAttributeString(CDM.UDUNITS, null);
+    }
+    if (units == null) {
+      units = atts.findAttributeString(CDM.UNITS, null);
+    }
+    if (units == null) {
+      return Optional.empty();
+    }
+
+    String calS = atts.findAttributeString(CF.CALENDAR, null);
+    Calendar cal = Calendar.get(calS).orElse(null);
+    return CalendarDateUnit.fromUdunitString(cal, units);
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////

@@ -54,11 +54,12 @@ public class TestGridReadingAgainstDtSingle {
     result.add(new Object[] {TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4", FeatureType.GRID,
         "5-Wave_Geopotential_Height_isobaric", "2015-03-01T00:00:00Z", null, "2015-03-01T03:00:00Z ", null, null});
 
-    // Total_ozone_entire_atmosphere_single_layer runtime=2015-03-01T00:00:00Z (0) ens=0.000000 (-1)
-    // time=2015-03-01T06:00:00Z (2) vert=0.000000 (-1)
-    result.add(new Object[] {TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4", FeatureType.GRID,
-        "Total_ozone_entire_atmosphere_single_layer", "2015-03-01T00:00:00Z", null, "2015-03-01T06:00:00Z ", null,
-        null});
+    /*
+     * dt fails here because offset axis units (hour) different from runtime (secs)
+     * result.add(new Object[] {TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4", FeatureType.GRID,
+     * "Total_ozone_entire_atmosphere_single_layer", "2015-03-01T00:00:00Z", null, "2015-03-01T06:00:00Z ", null,
+     * null});
+     */
 
     result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/coverage/03061219_ruc.nc", FeatureType.GRID, "RH_lpdg", null,
         null, "2003-06-12T19:00:00Z", 150.0, null}); // NUWG - has CoordinateAlias
