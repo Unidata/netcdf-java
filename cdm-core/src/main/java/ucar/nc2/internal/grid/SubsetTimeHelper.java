@@ -7,6 +7,7 @@ package ucar.nc2.internal.grid;
 
 import com.google.common.math.DoubleMath;
 import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.calendar.CalendarDateUnit;
 import ucar.nc2.grid.GridSubset;
 import ucar.nc2.grid.GridAxis;
 import ucar.nc2.grid.GridAxisPoint;
@@ -51,7 +52,8 @@ public class SubsetTimeHelper {
     Double wantOffset = null;
     CalendarDate wantTime = params.getTime();
     if (wantTime != null) {
-      wantOffset = (double) tcs.makeOffsetDateUnit(0).makeOffsetFromRefDate(wantTime);
+      CalendarDateUnit cdu = tcs.makeOffsetDateUnit(0);
+      wantOffset = cdu.makeFractionalOffsetFromRefDate(wantTime);
     } else if (params.getTimePresent()) {
       wantOffset = (double) tcs.makeOffsetDateUnit(0).makeOffsetFromRefDate(CalendarDate.present());
     }

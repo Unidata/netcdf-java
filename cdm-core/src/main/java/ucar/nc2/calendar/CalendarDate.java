@@ -226,7 +226,7 @@ public interface CalendarDate extends Comparable<CalendarDate> {
     return getFieldValue(CalendarPeriod.Field.Millisec);
   }
 
-  /** Get difference between two CalendarDates in millisecs. Must be same Calendar. */
+  /** Get difference between (this - other) in millisecs. Must be same Calendar. */
   default long getDifferenceInMsecs(CalendarDate o) {
     return getMillisFromEpoch() - o.getMillisFromEpoch();
   }

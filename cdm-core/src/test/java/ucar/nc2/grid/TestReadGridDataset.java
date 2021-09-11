@@ -9,6 +9,10 @@ import ucar.array.Array;
 import ucar.array.ArrayType;
 import ucar.array.InvalidRangeException;
 import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.constants.FeatureType;
+import ucar.nc2.ft2.coverage.CoverageCollection;
+import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
+import ucar.nc2.ft2.coverage.FeatureDatasetCoverage;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
@@ -68,13 +72,39 @@ public class TestReadGridDataset {
         new int[] {1, 1, 73, 73});
   }
 
+  @Test
+  @Category(NeedsCdmUnitTest.class)
+  @Ignore("Cant read swath")
+  public void testSwath() throws IOException, InvalidRangeException {
+    String filename =
+        TestDir.cdmUnitTestDir + "formats/hdf4/AIRS.2003.01.24.116.L2.RetStd_H.v5.0.14.0.G07295101113.hdf";
+    readGrid(filename, "T", ImmutableList.of(15, 12, 73, 73), "valtime level lat lon", true, 15,
+        "hours since 1992-01-01T00:00Z", "2003-02-13T18:00Z", "2003-02-14T18:00Z", "2003-02-14T06:00:00Z", 725.0, 700.0,
+        new int[] {1, 1, 73, 73});
+
+    /*
+     * System.out.printf("TestCoverageProblems %s%n", endpoint);
+     * FeatureType expectType = FeatureType.SWATH;
+     * int ncoverages = 93;
+     * try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
+     * assertThat(cc).isNotNull();
+     * assertThat(cc.getCoverageCollections()).hasSize(1);
+     * CoverageCollection gds = cc.getCoverageCollections().get(0);
+     * assertThat(gds).isNotNull();
+     * assertThat(gds.getCoverageCount()).isEqualTo(ncoverages);
+     * assertThat(gds.getCoverageType()).isEqualTo(expectType);
+     * }
+     */
+  }
+
   private void readGrid(String filename, String gridName, List<Integer> nominalShape, String gcsName, boolean isLatLon,
       int ntimes, String timeUnit, String firstRuntime, String lastRuntime, String wantDateS, Double wantVert,
       Double expectVert, int[] matShape) throws IOException, InvalidRangeException {
+
+    System.out.println("readGridDataset: " + filename);
     Formatter errlog = new Formatter();
     try (GridDataset gridDataset = GridDatasetFactory.openGridDataset(filename, errlog)) {
       assertThat(gridDataset).isNotNull();
-      System.out.println("readGridDataset: " + gridDataset.getLocation());
 
       Grid grid = gridDataset.findGrid(gridName).orElse(null);
       assertThat(grid).isNotNull();

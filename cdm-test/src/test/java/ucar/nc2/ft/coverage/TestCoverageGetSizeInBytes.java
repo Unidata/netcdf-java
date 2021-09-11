@@ -40,7 +40,7 @@ import java.lang.invoke.MethodHandles;
  * @since 10/6/2015.
  */
 @Category(NeedsCdmUnitTest.class)
-public class TestCoverageMisc {
+public class TestCoverageGetSizeInBytes {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Rule
