@@ -103,7 +103,6 @@ public class ToolsUI extends JPanel {
   private ReportOpPanel cdmIndexReportPanel;
   private CollectionSpecPanel fcPanel;
   private CoordSysPanel coordSysPanel;
-  private CoveragePanel coveragePanel;
   private final DatasetViewerPanel viewerPanel;
   private DatasetViewerPanel nc4viewer;
   private DatasetWriterPanel writerPanel;
@@ -251,7 +250,6 @@ public class ToolsUI extends JPanel {
     // nested tab - features
     ftTabPane.addTab("FeatureScan", new JLabel("FeatureScan"));
     ftTabPane.addTab("Grids", new JLabel("Grids"));
-    ftTabPane.addTab("Coverages", new JLabel("Coverages"));
     ftTabPane.addTab("GridNew", new JLabel("GridNew"));
     ftTabPane.addTab("SimpleGeometry", new JLabel("SimpleGeometry"));
     ftTabPane.addTab("WMS", new JLabel("WMS"));
@@ -486,11 +484,6 @@ public class ToolsUI extends JPanel {
         c = simpleGeomPanel;
         break;
 
-      case "Coverages":
-        coveragePanel = new CoveragePanel((PreferencesExt) mainPrefs.node("coverage2"));
-        c = coveragePanel;
-        break;
-
       case "GridNew":
         gridNewPanel = new GridNewPanel((PreferencesExt) mainPrefs.node("grid2Panel"));
         c = gridNewPanel;
@@ -670,9 +663,6 @@ public class ToolsUI extends JPanel {
     }
     if (coordSysPanel != null) {
       coordSysPanel.save();
-    }
-    if (coveragePanel != null) {
-      coveragePanel.save();
     }
     if (cdmIndexPanel != null) {
       cdmIndexPanel.save();
@@ -908,13 +898,6 @@ public class ToolsUI extends JPanel {
     ftTabPane.setSelectedComponent(geoGridPanel);
   }
 
-  public void openCoverageDataset(String datasetName) {
-    makeComponent(ftTabPane, "Coverages");
-    coveragePanel.doit(datasetName);
-    tabbedPane.setSelectedComponent(ftTabPane);
-    ftTabPane.setSelectedComponent(coveragePanel);
-  }
-
   public void openNewGrid(String datasetName) {
     makeComponent(ftTabPane, "GridNew");
     gridNewPanel.doit(datasetName);
@@ -995,11 +978,6 @@ public class ToolsUI extends JPanel {
 
     if (s.getType() == ServiceType.WMS) {
       openWMSDataset(invAccess.getStandardUrlName());
-      return;
-    }
-
-    if (s.getType() == ServiceType.CdmrFeature) {
-      openCoverageDataset(invAccess.getWrappedUrlName());
       return;
     }
 
