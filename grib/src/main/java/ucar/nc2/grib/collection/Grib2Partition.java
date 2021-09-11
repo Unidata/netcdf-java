@@ -17,8 +17,6 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.nc2.ft2.coverage.CoverageCollection;
-import ucar.nc2.grib.coverage.GribCoverageDataset;
 import ucar.unidata.io.RandomAccessFile;
 
 /**
@@ -48,14 +46,6 @@ public class Grib2Partition extends PartitionCollectionImmutable implements Clos
     GribIosp result = new Grib2Iosp(this);
     result.createCustomizer();
     return result;
-  }
-
-  @Override
-  public CoverageCollection getGridCoverage(Dataset ds, GroupGC group, String filename, FeatureCollectionConfig config,
-      Formatter errlog, org.slf4j.Logger logger) {
-
-    GribCoverageDataset gribCov = new GribCoverageDataset(this, ds, group);
-    return gribCov.createCoverageCollection();
   }
 
   @Override
