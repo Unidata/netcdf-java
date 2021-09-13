@@ -7,7 +7,7 @@ import ucar.nc2.constants.CF;
 
 import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth8.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertThrows;
 
 /** Test {@link CalendarDateUnit} */
 public class TestCalendarDateUnit {
@@ -67,14 +67,8 @@ public class TestCalendarDateUnit {
     assertThat(cdu.getBaseDateTime()).isEqualTo(refDate);
 
     assertThat(CalendarDateUnit.fromAttributes(new AttributeContainerMutable("empty"), null)).isEmpty();
-    try {
-      assertThat(CalendarDateUnit.fromAttributes(null, null)).isEmpty();
-      fail();
-    } catch (Exception e) {
-      // ok
-    }
+    assertThrows(NullPointerException.class, () -> CalendarDateUnit.fromAttributes(null, "ok"));
   }
-
 
   @Test
   public void testFailures() {
