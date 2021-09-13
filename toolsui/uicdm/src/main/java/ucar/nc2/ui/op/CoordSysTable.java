@@ -506,7 +506,7 @@ public class CoordSysTable extends JPanel {
   private String makeCalendarDateStringOrMissing(CalendarDateUnit cdu, double value) {
     if (Double.isNaN(value))
       return "missing";
-    return cdu.makeCalendarDate((long) value).toString(); // LOOK
+    return cdu.makeFractionalCalendarDate(value).toString();
   }
 
   private String getCalendarAttribute(Variable vds) {
@@ -520,15 +520,15 @@ public class CoordSysTable extends JPanel {
         if (Double.isNaN(val))
           infoTA.appendLine(" N/A");
         else
-          infoTA.appendLine(" " + cdu.makeCalendarDate((long) val)); // LOOK
+          infoTA.appendLine(" " + cdu.makeFractionalCalendarDate(val));
       }
     } else { // is interval
       Formatter f = new Formatter();
       double[] b1 = axis1D.getBound1();
       double[] b2 = axis1D.getBound2();
       for (int i = 0; i < b1.length; i++)
-        f.format(" (%f, %f) == (%s, %s)%n", b1[i], b2[i], cdu.makeCalendarDate((long) b1[i]),
-            cdu.makeCalendarDate((long) b2[i])); // LOOK
+        f.format(" (%f, %f) == (%s, %s)%n", b1[i], b2[i], cdu.makeFractionalCalendarDate(b1[i]),
+            cdu.makeFractionalCalendarDate(b2[i]));
       infoTA.appendLine(f.toString());
     }
   }

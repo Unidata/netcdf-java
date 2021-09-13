@@ -17,13 +17,11 @@ import java.util.List;
 class ExtractTimeCoordinateValues {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ExtractTimeCoordinateValues.class);
 
-  final CoordTimeHelper timeHelper;
   @Nullable
   final List<CalendarDate> cdates; // non null only if its a string or char coordinate
 
   ExtractTimeCoordinateValues(CoordinateAxis coordAxis) {
     Preconditions.checkArgument(coordAxis.getArrayType() == ArrayType.CHAR || coordAxis.getRank() < 2);
-    this.timeHelper = CoordTimeHelper.factory(coordAxis.getUnitsString(), coordAxis.attributes());
 
     Formatter errMessages = new Formatter();
     try {
@@ -67,7 +65,7 @@ class ExtractTimeCoordinateValues {
 
   private CalendarDate makeCalendarDateFromStringCoord(String coordValue, Variable org, Formatter errMessages) {
     try {
-      return timeHelper.makeCalendarDateFromOffset(coordValue);
+      return CalendarDate.fromUdunitIsoDate(null, coordValue).orElseThrow();
     } catch (Exception e) {
       errMessages.format("Bad time coordinate '%s' in dataset '%s'%n", coordValue, org.getDatasetLocation());
       log.info("Bad time coordinate '{}' in dataset '{}'", coordValue, org.getDatasetLocation());
