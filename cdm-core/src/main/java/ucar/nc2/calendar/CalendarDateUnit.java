@@ -160,7 +160,9 @@ public class CalendarDateUnit {
     double convert = period.getConvertFactor(CalendarPeriod.Millisec);
     long baseMillis = baseDate.getMillisFromEpoch();
     long msecs = baseMillis + (long) (value / convert);
-    return CalendarDate.of(msecs);
+    // round to seconds
+    long rounded = 1000 * Math.round(msecs / 1000.0);
+    return CalendarDate.of(rounded);
   }
 
   /**
