@@ -65,14 +65,14 @@ public class TestGribGridCompare {
   }
 
   @Test
-  public boolean compareDtCoordinateSystems() throws Exception {
+  public void compareDtCoordinateSystems() throws Exception {
     System.out.printf("%n");
     Formatter errlog = new Formatter();
     try (GridDataset newDataset = GridDatasetFactory.openGridDataset(filename, errlog);
         ucar.nc2.dt.grid.GridDataset oldDataset = ucar.nc2.dt.grid.GridDataset.open(filename)) {
       if (newDataset == null) {
         System.out.printf("Cant open as ucar.nc2.grid2.GridDataset: %s%n", filename);
-        return false;
+        return;
       }
       System.out.printf("compareDtCoordinateSystems: %s%n", newDataset.getLocation());
 
@@ -100,7 +100,6 @@ public class TestGribGridCompare {
         }
       }
     }
-    return true;
   }
 
 }
