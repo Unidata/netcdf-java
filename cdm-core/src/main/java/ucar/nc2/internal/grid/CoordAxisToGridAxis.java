@@ -23,11 +23,21 @@ import java.util.Optional;
 class CoordAxisToGridAxis {
   private static final Logger log = LoggerFactory.getLogger(CoordAxisToGridAxis.class);
 
+  static CoordAxisToGridAxis create(CoordinateAxis axis, GridAxisDependenceType dependenceTypeFromClassifier,
+      boolean isIndependent) {
+    if (axis.getAxisType().isTime() && axis.getArrayType().isString()) {
+      ExtractTimeCoordinateValues extract = new ExtractTimeCoordinateValues(axis);
+      return new CoordAxisToGridAxis(extract.getConvertedAxis(), dependenceTypeFromClassifier, isIndependent);
+    }
+    return new CoordAxisToGridAxis(axis, dependenceTypeFromClassifier, isIndependent);
+  }
+
   private final CoordinateAxis axis;
   private final GridAxisDependenceType dependenceTypeFromClassifier;
   private final boolean isIndependent;
 
-  CoordAxisToGridAxis(CoordinateAxis axis, GridAxisDependenceType dependenceTypeFromClassifier, boolean isIndependent) {
+  private CoordAxisToGridAxis(CoordinateAxis axis, GridAxisDependenceType dependenceTypeFromClassifier,
+      boolean isIndependent) {
     Preconditions.checkArgument(axis.getRank() < 2);
     this.axis = axis;
     this.dependenceTypeFromClassifier = dependenceTypeFromClassifier;

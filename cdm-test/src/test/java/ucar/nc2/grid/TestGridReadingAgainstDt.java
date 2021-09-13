@@ -11,6 +11,7 @@ import ucar.ma2.Array;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.Index;
 import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.calendar.CalendarDateUnit;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis1D;
@@ -19,7 +20,6 @@ import ucar.nc2.dataset.CoordinateAxis2D;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
-import ucar.nc2.ft2.coverage.TimeHelper;
 import ucar.nc2.grib.collection.GribDataReader;
 import ucar.nc2.internal.util.CompareArrayToMa2;
 import ucar.unidata.util.test.TestDir;
@@ -138,7 +138,8 @@ public class TestGridReadingAgainstDt {
         readAllTimes1D(grid, dt, runtimeAxis.getCalendarDate(i), i, timeAxis1D, ensAxis, vertAxis);
 
     } else { // 2D time
-      TimeHelper helper = TimeHelper.factory(timeAxis.getUnitsString(), timeAxis.attributes());
+      CalendarDateUnit helper =
+          CalendarDateUnit.fromAttributes(timeAxis.attributes(), timeAxis.getUnitsString()).orElseThrow();
 
       if (timeAxis2D.isInterval()) {
         ArrayDouble.D3 bounds = timeAxis2D.getCoordBoundsArray();
@@ -166,8 +167,8 @@ public class TestGridReadingAgainstDt {
     }
   }
 
-  private static void readAllTimes2D(Grid grid, GridDatatype dt, CalendarDate rt_val, int rt_idx, TimeHelper helper,
-      Array timeVals, CoordinateAxis1D ensAxis, CoordinateAxis1D vertAxis) {
+  private static void readAllTimes2D(Grid grid, GridDatatype dt, CalendarDate rt_val, int rt_idx,
+      CalendarDateUnit helper, Array timeVals, CoordinateAxis1D ensAxis, CoordinateAxis1D vertAxis) {
 
     int[] shape = timeVals.getShape();
     if (timeVals.getRank() == 1) {
@@ -175,14 +176,15 @@ public class TestGridReadingAgainstDt {
       int time_idx = 0;
       while (timeVals.hasNext()) {
         double timeVal = timeVals.nextDouble();
-        readAllEnsembles(grid, dt, rt_val, rt_idx, helper.makeDate((int) timeVal), time_idx++, ensAxis, vertAxis);
+        readAllEnsembles(grid, dt, rt_val, rt_idx, helper.makeFractionalCalendarDate(timeVal), time_idx++, ensAxis,
+            vertAxis);
       }
 
     } else {
       Index index = timeVals.getIndex();
       for (int i = 0; i < shape[0]; i++) {
         double timeVal = (timeVals.getDouble(index.set(i, 0)) + timeVals.getDouble(index.set(i, 1))) / 2;
-        readAllEnsembles(grid, dt, rt_val, rt_idx, helper.makeDate((int) timeVal), i, ensAxis, vertAxis);
+        readAllEnsembles(grid, dt, rt_val, rt_idx, helper.makeFractionalCalendarDate(timeVal), i, ensAxis, vertAxis);
       }
     }
   }
@@ -229,7 +231,7 @@ public class TestGridReadingAgainstDt {
     if (ens_idx >= 0)
       subset.setEnsCoord(ens_val);
     if (time_idx >= 0)
-      subset.setTime(time_val);
+      subset.setDate(time_val);
     if (vert_idx >= 0)
       subset.setVertCoord(vert_val);
 

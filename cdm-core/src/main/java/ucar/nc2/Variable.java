@@ -1400,6 +1400,11 @@ public class Variable implements VariableSimpleIF, ProxyReader {
       return self();
     }
 
+    public T removeAttribute(String attName) {
+      attributes.removeAttribute(attName);
+      return self();
+    }
+
     public AttributeContainerMutable getAttributeContainer() {
       return attributes;
     }

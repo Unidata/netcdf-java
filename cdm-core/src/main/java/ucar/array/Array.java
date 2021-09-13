@@ -57,7 +57,7 @@ public abstract class Array<T> implements Iterable<T> {
     return rank;
   }
 
-  /** Get the shape: length of array in each dimension. */
+  /** Get the shape: length of array in each dimension. Use Ints.asList() to convert to List of Integer */
   public int[] getShape() {
     return indexFn.getShape(); // use Ints.asList()
   }

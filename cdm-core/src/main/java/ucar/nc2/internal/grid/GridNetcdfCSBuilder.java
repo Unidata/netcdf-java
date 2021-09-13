@@ -81,10 +81,13 @@ public class GridNetcdfCSBuilder {
       }
     }
 
+    if (builder.axes.size() < 2) {
+      return Optional.empty();
+    }
+
     try {
       return Optional.of(builder.build());
     } catch (Exception e) {
-      e.printStackTrace();
       errlog.format("createFromClassifier '%s' exception %s%n", classifier.cs.getName(), e.getMessage());
       return Optional.empty();
     }

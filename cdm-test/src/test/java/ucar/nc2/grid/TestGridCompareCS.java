@@ -12,12 +12,6 @@ import org.junit.runners.Parameterized;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dt.GridCoordSystem;
-import ucar.nc2.ft2.coverage.Coverage;
-import ucar.nc2.ft2.coverage.CoverageCollection;
-import ucar.nc2.ft2.coverage.CoverageCoordAxis;
-import ucar.nc2.ft2.coverage.CoverageCoordSys;
-import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
-import ucar.nc2.ft2.coverage.FeatureDatasetCoverage;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
@@ -33,6 +27,7 @@ import static com.google.common.truth.Truth.assertWithMessage;
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
 public class TestGridCompareCS {
+  private static final boolean show = false;
 
   @Parameterized.Parameters(name = "{0}")
   public static List<Object[]> getTestParameters() {
@@ -57,12 +52,10 @@ public class TestGridCompareCS {
 
   /////////////////////////////////////////////////////////////
   private final String filename;
-  private static final boolean show = false;
 
   public TestGridCompareCS(String filename) {
     this.filename = filename;
   }
-
 
   @Test
   public void compareGrid() throws Exception {
@@ -74,7 +67,6 @@ public class TestGridCompareCS {
 
     System.out.printf("compareGrid %s%n", filename);
     compareWithDt(filename);
-    compareWithCoverage(filename);
   }
 
   public static boolean compareWithDt(String filename) throws Exception {
@@ -84,10 +76,6 @@ public class TestGridCompareCS {
         ucar.nc2.dt.grid.GridDataset oldDataset = ucar.nc2.dt.grid.GridDataset.open(filename)) {
       if (newDataset == null) {
         System.out.printf("Cant open as ucar.nc2.grid2.GridDataset: %s%n", filename);
-        return false;
-      }
-      if (oldDataset == null) {
-        System.out.printf("Cant open as ucar.nc2.dt.grid.GridDataset: %s%n", filename);
         return false;
       }
       System.out.printf("compareDtCoordinateSystems: %s%n", newDataset.getLocation());
@@ -103,7 +91,6 @@ public class TestGridCompareCS {
 
         GridCoordSystem oldGcs = geogrid.getCoordinateSystem();
         GridCoordinateSystem newGcs = grid.getCoordinateSystem();
-        GridTimeCoordinateSystem newTcs = grid.getTimeCoordinateSystem();
 
         for (GridAxis<?> newAxis : newGcs.getGridAxes()) {
           CoordinateAxis oldAxis = oldGcs.getCoordinateAxes().stream()
@@ -125,7 +112,6 @@ public class TestGridCompareCS {
             if (newGcs.getFeatureType() == FeatureType.CURVILINEAR) { // ok for CURVILINEAR
               continue;
             }
-            System.out.printf("HEY");
           }
           assertThat(newAxis.getNominalSize()).isEqualTo(oldAxis.getSize());
           int[] oldShape = oldAxis.getShape();
@@ -133,63 +119,6 @@ public class TestGridCompareCS {
             assertThat(newAxis.getNominalSize()).isEqualTo(oldShape[oldShape.length - 1]);
           } else {
             assertThat(newAxis.getNominalSize()).isEqualTo(oldAxis.getSize());
-          }
-        }
-      }
-    }
-    return true;
-  }
-
-  public static boolean compareWithCoverage(String filename) throws Exception {
-    System.out.printf("%n");
-    Formatter errlog = new Formatter();
-    try (GridDataset newDataset = GridDatasetFactory.openGridDataset(filename, errlog);
-        FeatureDatasetCoverage covDataset = CoverageDatasetFactory.open(filename)) {
-      if (newDataset == null) {
-        System.out.printf("Cant open as ucar.nc2.grid2.GridDataset: %s%n", filename);
-        return false;
-      }
-      if (covDataset == null) {
-        System.out.printf("Cant open as FeatureDatasetCoverage: %s%n", filename);
-        return false;
-      }
-      CoverageCollection covCollection = covDataset.getCoverageCollections().get(0);
-      System.out.printf("compareCoverageCoordinateSystems: %s%n", newDataset.getLocation());
-
-      for (Grid grid : newDataset.getGrids()) {
-        Coverage coverage = covCollection.findCoverage(grid.getName());
-        if (coverage == null) {
-          System.out.printf("*** Coverage %s not in covCollection%n", grid.getName());
-          continue;
-        }
-        System.out.printf("  Grid/Coverage: %s%n", grid.getName());
-
-        CoverageCoordSys oldGcs = coverage.getCoordSys();
-        GridCoordinateSystem newGcs = grid.getCoordinateSystem();
-        GridTimeCoordinateSystem newTcs = grid.getTimeCoordinateSystem();
-
-        for (GridAxis<?> newAxis : newGcs.getGridAxes()) {
-          CoverageCoordAxis oldAxis = oldGcs.getAxes().stream()
-              .filter(a -> a.getAxisType().equals(newAxis.getAxisType())).findFirst().orElse(null);
-          if (oldAxis == null) {
-            oldAxis =
-                oldGcs.getAxes().stream().filter(a -> a.getName().equals(newAxis.getName())).findFirst().orElse(null);
-          }
-          assertWithMessage(String.format("    GridAxis: %s %s%n", newAxis.getName(), newAxis.getAxisType()))
-              .that(oldAxis).isNotNull();
-          int[] oldShape = oldAxis.getShape();
-          if (oldShape.length > 0) {
-            if (newAxis.getNominalSize() != oldShape[oldShape.length - 1]) {
-              System.out.printf(" *** Axis %s %s size differs %d !=%d%n", newAxis.getName(), newAxis.getAxisType(),
-                  newAxis.getNominalSize(), oldShape[oldShape.length - 1]);
-              if (newGcs.getFeatureType() == FeatureType.CURVILINEAR) { // ok for CURVILINEAR
-                continue;
-              }
-              System.out.printf("HEY");
-            }
-            assertThat(newAxis.getNominalSize()).isEqualTo(oldShape[oldShape.length - 1]);
-          } else {
-            assertThat(newAxis.getNominalSize()).isEqualTo(oldAxis.getNcoords());
           }
         }
       }

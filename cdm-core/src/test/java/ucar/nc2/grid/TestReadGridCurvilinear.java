@@ -141,7 +141,7 @@ public class TestReadGridCurvilinear {
 
       GridReader reader = grid.getReader();
       if (wantDateS != null) {
-        reader.setTime(CalendarDate.fromUdunitIsoDate(null, wantDateS).orElseThrow());
+        reader.setDate(CalendarDate.fromUdunitIsoDate(null, wantDateS).orElseThrow());
       } else {
         reader.setTimeLatest();
       }

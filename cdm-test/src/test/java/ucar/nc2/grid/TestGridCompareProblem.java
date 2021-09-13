@@ -27,6 +27,7 @@ public class TestGridCompareProblem {
     new TestGridCompareCoverage(filename).compareWithCoverage(true);
   }
 
+  // GRID fails because not monotonic
   @Test
   public void testProblem3() throws Exception {
     String filename = TestDir.cdmUnitTestDir + "conventions/nuwg/2003021212_avn-x.nc";

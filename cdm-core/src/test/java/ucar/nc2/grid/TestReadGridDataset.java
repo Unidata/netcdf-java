@@ -9,10 +9,6 @@ import ucar.array.Array;
 import ucar.array.ArrayType;
 import ucar.array.InvalidRangeException;
 import ucar.nc2.calendar.CalendarDate;
-import ucar.nc2.constants.FeatureType;
-import ucar.nc2.ft2.coverage.CoverageCollection;
-import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
-import ucar.nc2.ft2.coverage.FeatureDatasetCoverage;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
@@ -137,7 +133,7 @@ public class TestReadGridDataset {
       CalendarDate wantDate =
           wantDateS == null ? CalendarDate.present() : CalendarDate.fromUdunitIsoDate(null, wantDateS).orElseThrow();
       GridReferencedArray geoArray =
-          grid.getReader().setTime(wantDate).setVertCoord(wantVert == null ? 0.0 : wantVert).read();
+          grid.getReader().setDate(wantDate).setVertCoord(wantVert == null ? 0.0 : wantVert).read();
       Array<Number> data = geoArray.data();
       assertThat(data.getArrayType()).isEqualTo(ArrayType.FLOAT);
       assertThat(data.getRank()).isEqualTo(matShape.length);

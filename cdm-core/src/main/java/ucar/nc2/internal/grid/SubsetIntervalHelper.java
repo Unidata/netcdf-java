@@ -50,21 +50,30 @@ public class SubsetIntervalHelper {
         break;
       }
 
+      // timeOffset, timeOffsetIntv, timeLatest, timeFirst; timeAll is the default
       case Time:
       case TimeOffset: {
         Double dval = params.getTimeOffset();
         if (dval != null) {
           return subsetClosest(dval); // LOOK what does this mean for an interval?
         }
-
         CoordInterval intv = params.getTimeOffsetIntv();
         if (intv != null) {
           return subsetClosest(intv);
         }
-
         if (params.getTimeLatest()) {
           int last = orgGridAxis.getNominalSize() - 1;
           return makeSubsetByIndex(Range.make(last, last));
+        }
+        if (params.getTimeFirst()) {
+          return makeSubsetByIndex(Range.make(0, 0));
+        }
+        if (params.getTimeOffsetRange() != null) {
+          CoordInterval range = params.getTimeOffsetRange();
+          int start_index = SubsetHelpers.findCoordElement(orgGridAxis, range.start(), true); // bounded, always valid
+                                                                                              // index
+          int end_index = SubsetHelpers.findCoordElement(orgGridAxis, range.end(), true); // bounded, always valid index
+          return makeSubsetByIndex(Range.make(start_index, end_index));
         }
 
         // default is all

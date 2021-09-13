@@ -465,6 +465,11 @@ public class Section {
     return ranges.get(i);
   }
 
+  /** Fil any null sections with the ccorresponding value from shape. */
+  public Section fill(int[] shape) throws InvalidRangeException {
+    return fill(this, shape);
+  }
+
   /**
    * Find a Range by its name.
    *
@@ -646,7 +651,7 @@ public class Section {
   public static class Builder {
     List<Range> ranges = new ArrayList<>();
 
-    /** Append a Range to the Section, may be null. */
+    /** Append a Range to the Section, LOOK may be null. */
     public Builder appendRange(@Nullable Range range) {
       ranges.add(range);
       return this;

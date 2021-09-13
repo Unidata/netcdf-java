@@ -61,7 +61,8 @@ public class DataEnhancer {
   // TODO
   public ucar.array.Array<?> convertArray(ucar.array.Array<?> data, Set<Enhance> enhancements) {
     ucar.ma2.Array ma2 = ArraysConvert.convertFromArray(data);
-    return ArraysConvert.convertToArray(convert(ma2, enhancements));
+    ucar.ma2.Array from = convert(ma2, enhancements);
+    return ArraysConvert.convertToArray(from);
   }
 
 }
