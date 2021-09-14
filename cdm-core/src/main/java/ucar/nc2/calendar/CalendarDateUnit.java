@@ -4,6 +4,11 @@
  */
 package ucar.nc2.calendar;
 
+import com.google.common.base.Preconditions;
+import ucar.nc2.AttributeContainer;
+import ucar.nc2.constants.CDM;
+import ucar.nc2.constants.CF;
+
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.time.Instant;
@@ -56,8 +61,42 @@ public class CalendarDateUnit {
     return new CalendarDateUnit(CalendarPeriod.of(1, periodField), isCalendarField, baseDate);
   }
 
+  /**
+   * Create a CalendarDateUnit from a CalendarPeriod, and a base date
+   *
+   * @param period a CalendarPeriod like 1 Hour or 30 seconds
+   * @param baseDate "since baseDate"
+   * @return CalendarDateUnit
+   */
   public static CalendarDateUnit of(CalendarPeriod period, boolean isCalendarField, CalendarDate baseDate) {
     return new CalendarDateUnit(period, isCalendarField, baseDate);
+  }
+
+  /**
+   * Create a CalendarDateUnit from attributes.
+   *
+   * @param atts AttributeContainer, look for 'units' attribute and 'calendar' attribute
+   * @param units the units string, may be null
+   * @return CalendarDateUnit if possible
+   */
+  public static Optional<CalendarDateUnit> fromAttributes(AttributeContainer atts, @Nullable String units) {
+    Preconditions.checkNotNull(atts);
+    if (units != null && units.trim().isEmpty()) {
+      units = null;
+    }
+    if (units == null) {
+      units = atts.findAttributeString(CDM.UDUNITS, null);
+    }
+    if (units == null) {
+      units = atts.findAttributeString(CDM.UNITS, null);
+    }
+    if (units == null) {
+      return Optional.empty();
+    }
+
+    String calS = atts.findAttributeString(CF.CALENDAR, null);
+    Calendar cal = Calendar.get(calS).orElse(null);
+    return CalendarDateUnit.fromUdunitString(cal, units);
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////
@@ -92,7 +131,7 @@ public class CalendarDateUnit {
   }
 
   /**
-   * Add the given (value * period) to the baseDateTime to make a new CalendarDate.
+   * Add the given integer (value * period) to the baseDateTime to make a new CalendarDate.
    * 
    * @param value number of periods to add. May be negative.
    */
@@ -101,7 +140,7 @@ public class CalendarDateUnit {
   }
 
   /**
-   * Find the offset of date in this unit (secs, days, etc) from the baseDateTime.
+   * Find the offset of date in integral units of this period from the baseDateTime.
    * Inverse of makeCalendarDate.
    * LOOK not working when period is month, see TestCalendarDateUnit
    */
@@ -110,6 +149,32 @@ public class CalendarDateUnit {
       return 0;
     }
     return date.since(baseDate, period);
+  }
+
+  /**
+   * Add the given (value * period) to the baseDateTime to make a new CalendarDate.
+   * 
+   * @param value number of (possibly non-integral) periods to add. May be negative.
+   */
+  public CalendarDate makeFractionalCalendarDate(double value) {
+    double convert = period.getConvertFactor(CalendarPeriod.Millisec);
+    long baseMillis = baseDate.getMillisFromEpoch();
+    long msecs = baseMillis + (long) (value / convert);
+    return CalendarDate.of(msecs);
+  }
+
+  /**
+   * Find the offset of date in fractional units of this period from the baseDateTime.
+   * Inverse of makeFractionalCalendarDate.
+   * LOOK not working when period is month, see TestCalendarDateUnit
+   */
+  public double makeFractionalOffsetFromRefDate(CalendarDate date) {
+    if (date.equals(baseDate)) {
+      return 0;
+    }
+    long diff = date.getDifferenceInMsecs(baseDate);
+    double convert = period.getConvertFactor(CalendarPeriod.Millisec);
+    return diff * convert;
   }
 
   @Override

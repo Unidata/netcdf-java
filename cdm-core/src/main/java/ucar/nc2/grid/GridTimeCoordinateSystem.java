@@ -32,14 +32,22 @@ public abstract class GridTimeCoordinateSystem {
   }
 
   /** Get the ith runtime CalendarDate. If type=Observation, equals getBaseDate(). */
-  public abstract CalendarDate getRuntimeDate(int runIdx);
+  public CalendarDate getRuntimeDate(int runIdx) {
+    if (this.runTimeAxis == null) {
+      return this.runtimeDateUnit.getBaseDateTime();
+    } else {
+      return runtimeDateUnit.makeCalendarDate(this.runTimeAxis.getCoordinate(runIdx).longValue());
+    }
+  }
 
   /**
    * Get the ith timeOffset axis. The offsets are reletive to getRuntimeDate(int runIdx), in units of getOffsetPeriod().
    * if type=Observation, SingleRuntime, runIdx is ignored, since the offsets are
    * always the same, by convention, pass in 0. LOOK does unit = getOffsetPeriod?
    */
-  public abstract GridAxis<?> getTimeOffsetAxis(int runIdx);
+  public GridAxis<?> getTimeOffsetAxis(int runIdx) {
+    return timeOffsetAxis;
+  }
 
   /** The units of the TimeOffsetAxis. */
   public CalendarPeriod getOffsetPeriod() {
@@ -64,22 +72,16 @@ public abstract class GridTimeCoordinateSystem {
 
   /**
    * Get the forecast/valid dates for a given run.
-   * If type=Observation or SingleRuntime, runIdx is ignored. LOOK true?
+   * If type=Observation or SingleRuntime, runIdx is ignored.
    * For intervals this is the midpoint.
    */
   public List<CalendarDate> getTimesForRuntime(int runIdx) {
     List<CalendarDate> result = new ArrayList<>();
-    if (this.type == Type.Observation) {
-      for (int timeIdx = 0; timeIdx < timeOffsetAxis.getNominalSize(); timeIdx++) {
-        result.add(this.runtimeDateUnit.makeCalendarDate((long) timeOffsetAxis.getCoordDouble(timeIdx)));
-      }
-    } else {
-      Preconditions.checkArgument(runTimeAxis != null && runIdx >= 0 && runIdx < runTimeAxis.getNominalSize());
-      CalendarDate baseForRun = getRuntimeDate(runIdx);
-      GridAxis<?> timeAxis = getTimeOffsetAxis(runIdx);
-      for (int offsetIdx = 0; offsetIdx < timeAxis.getNominalSize(); offsetIdx++) {
-        result.add(baseForRun.add((long) timeAxis.getCoordDouble(offsetIdx), this.offsetPeriod));
-      }
+    CalendarDateUnit cdu = makeOffsetDateUnit(runIdx);
+    GridAxis<?> timeAxis = getTimeOffsetAxis(runIdx);
+    for (int offsetIdx = 0; offsetIdx < timeAxis.getNominalSize(); offsetIdx++) {
+      double coord = timeAxis.getCoordDouble(offsetIdx);
+      result.add(cdu.makeFractionalCalendarDate(coord));
     }
     return result;
   }

@@ -15,7 +15,6 @@ import ucar.nc2.grid.GridSubset;
 import ucar.nc2.grid.GridTimeCoordinateSystem;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
 import java.util.Map;
@@ -59,20 +58,6 @@ public class GridTimeCS extends GridTimeCoordinateSystem {
   //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   @Override
-  public CalendarDate getRuntimeDate(int runIdx) {
-    if (this.runTimeAxis == null) {
-      return this.runtimeDateUnit.getBaseDateTime();
-    } else {
-      return runtimeDateUnit.makeCalendarDate(this.runTimeAxis.getCoordinate(runIdx).longValue());
-    }
-  }
-
-  @Override
-  public GridAxis<?> getTimeOffsetAxis(int runIdx) {
-    return timeOffsetAxis; // default
-  }
-
-  @Override
   public Optional<? extends GridTimeCoordinateSystem> subset(GridSubset params, Formatter errlog) {
     return Optional.empty();
   }
@@ -98,11 +83,6 @@ public class GridTimeCS extends GridTimeCoordinateSystem {
     }
 
     @Override
-    public GridAxis<?> getTimeOffsetAxis(int runIdx) {
-      return timeOffsetAxis;
-    }
-
-    @Override
     public Optional<GridTimeCS> subset(GridSubset params, Formatter errlog) {
       SubsetTimeHelper helper = new SubsetTimeHelper(this);
       return helper.subsetTime(params, errlog).map(t -> new Observation(t, this.runtimeDateUnit));
@@ -120,11 +100,6 @@ public class GridTimeCS extends GridTimeCoordinateSystem {
     @Override
     public List<Integer> getNominalShape() {
       return ImmutableList.of(1, timeOffsetAxis.getNominalSize());
-    }
-
-    @Override
-    public GridAxis<?> getTimeOffsetAxis(int runIdx) {
-      return timeOffsetAxis;
     }
 
     @Override

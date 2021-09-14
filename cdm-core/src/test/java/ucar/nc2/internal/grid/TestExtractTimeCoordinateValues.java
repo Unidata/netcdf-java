@@ -6,10 +6,10 @@ import ucar.array.ArrayType;
 import ucar.array.Arrays;
 import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
-import ucar.nc2.AttributeContainerMutable;
 import ucar.nc2.Dimension;
 import ucar.nc2.Group;
 import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.calendar.CalendarDateUnit;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -36,7 +36,6 @@ public class TestExtractTimeCoordinateValues {
     CoordinateAxis axis = builder.build(parent.build());
     ExtractTimeCoordinateValues extract = new ExtractTimeCoordinateValues(axis);
 
-    assertThat(extract.timeHelper).isEqualTo(CoordTimeHelper.factory(units, new AttributeContainerMutable("")));
     assertThat(extract.cdates).isNull();
   }
 
@@ -65,13 +64,13 @@ public class TestExtractTimeCoordinateValues {
     CoordinateAxis axis = builder.build(parent.build());
     ExtractTimeCoordinateValues extract = new ExtractTimeCoordinateValues(axis);
 
-    assertThat(extract.timeHelper).isEqualTo(CoordTimeHelper.factory(units, new AttributeContainerMutable("")));
     assertThat(extract.cdates).hasSize(n);
     System.out.printf("extract.cdates = %s%n", extract.cdates);
 
+    CalendarDateUnit dateUnit = CalendarDateUnit.fromAttributes(axis.attributes(), null).orElseThrow();
     count = 0;
     for (CalendarDate cd : extract.cdates) {
-      assertThat(cd).isEqualTo(extract.timeHelper.makeCalendarDateFromOffset(count++));
+      assertThat(cd).isEqualTo(dateUnit.makeCalendarDate(count++));
     }
   }
 
@@ -139,13 +138,13 @@ public class TestExtractTimeCoordinateValues {
     CoordinateAxis axis = builder.build(parent.build());
     ExtractTimeCoordinateValues extract = new ExtractTimeCoordinateValues(axis);
 
-    assertThat(extract.timeHelper).isEqualTo(CoordTimeHelper.factory(units, new AttributeContainerMutable("")));
     assertThat(extract.cdates).hasSize(ndates);
     System.out.printf("extract.cdates = %s%n", extract.cdates);
 
+    CalendarDateUnit dateUnit = CalendarDateUnit.fromAttributes(axis.attributes(), null).orElseThrow();
     count = 0;
     for (CalendarDate cd : extract.cdates) {
-      assertThat(cd).isEqualTo(extract.timeHelper.makeCalendarDateFromOffset(count++));
+      assertThat(cd).isEqualTo(dateUnit.makeCalendarDate(count++));
     }
   }
 

@@ -26,6 +26,7 @@ public class CalendarPeriod {
   public static final CalendarPeriod Hour = CalendarPeriod.of(1, Field.Hour);
   public static final CalendarPeriod Minute = CalendarPeriod.of(1, Field.Minute);
   public static final CalendarPeriod Second = CalendarPeriod.of(1, Field.Second);
+  public static final CalendarPeriod Millisec = CalendarPeriod.of(1, Field.Millisec);
 
   public enum Field {
     Millisec("millisecs", ChronoUnit.MILLIS), //

@@ -83,15 +83,6 @@ public abstract class GribGridTimeCoordinateSystem extends GridTimeCoordinateSys
     }
   }
 
-  @Override
-  public CalendarDate getRuntimeDate(int runIdx) {
-    if (this.runTimeAxis == null) {
-      return this.runtimeDateUnit.getBaseDateTime();
-    } else {
-      return runtimeDateUnit.makeCalendarDate(this.runTimeAxis.getCoordinate(runIdx).longValue());
-    }
-  }
-
   //////////////////////////////////////////////////////////////////////////////
   GribGridTimeCoordinateSystem(Type type, @Nullable GridAxisPoint runTimeAxis, GridAxis<?> timeOffsetAxis,
       CalendarDateUnit runtimeDateUnit) {
@@ -120,11 +111,6 @@ public abstract class GribGridTimeCoordinateSystem extends GridTimeCoordinateSys
     @Override
     public List<Integer> getNominalShape() {
       return ImmutableList.of(timeOffsetAxis.getNominalSize());
-    }
-
-    @Override
-    public GridAxis<?> getTimeOffsetAxis(int runIdx) {
-      return timeOffsetAxis;
     }
 
     @Override
@@ -166,11 +152,6 @@ public abstract class GribGridTimeCoordinateSystem extends GridTimeCoordinateSys
     }
 
     @Override
-    public GridAxis<?> getTimeOffsetAxis(int runIdx) {
-      return timeOffsetAxis;
-    }
-
-    @Override
     public Optional<GribGridTimeCoordinateSystem> subset(GridSubset params, Formatter errlog) {
       SubsetTimeHelper helper = new SubsetTimeHelper(this);
       return helper.subsetTime(params, errlog).map(t -> new SingleRuntime(runTimeAxis, t, this.runtimeDate));
@@ -209,11 +190,6 @@ public abstract class GribGridTimeCoordinateSystem extends GridTimeCoordinateSys
     @Override
     public List<Integer> getNominalShape() {
       return ImmutableList.of(coord2D.getNruns(), coord2D.getNtimes());
-    }
-
-    @Override
-    public GridAxis<?> getTimeOffsetAxis(int runIdx) {
-      return timeOffsetAxis;
     }
 
     @Override

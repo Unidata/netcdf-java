@@ -16,7 +16,7 @@ public abstract class GridReferencedArray {
   public abstract ArrayType arrayType();
 
   // LOOK Array<Number> ??
-  public abstract Array<Number> data(); // not reduced
+  public abstract Array<Number> data(); // LOOK not reduced: should it be ??
 
   public abstract MaterializedCoordinateSystem getMaterializedCoordinateSystem();
 

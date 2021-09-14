@@ -21,6 +21,7 @@ import static com.google.common.truth.Truth.assertThat;
 
 @Category(NeedsCdmUnitTest.class)
 public class TestReadTime2D {
+  private static final double TOL = 1.0e-7f;
 
   /** Test Grib 2D time that is regular, not orthogonal. */
   @Test
@@ -84,7 +85,8 @@ public class TestReadTime2D {
       assertThat(tcs).isNotNull();
       assertThat(tcs.getNominalShape()).isEqualTo(ImmutableList.of(6, 21));
       assertThat(tcs.getOffsetPeriod()).isEqualTo(CalendarPeriod.of(1, CalendarPeriod.Field.Hour));
-      assertThat(tcs.getRuntimeDateUnit().getCalendarPeriod()).isEqualTo(tcs.getOffsetPeriod());
+      assertThat(tcs.getRuntimeDateUnit().getCalendarPeriod())
+          .isEqualTo(CalendarPeriod.of(1, CalendarPeriod.Field.Second));
 
       GridAxisPoint reftime = tcs.getRunTimeAxis();
       assertThat((Object) reftime).isNotNull();
@@ -121,6 +123,50 @@ public class TestReadTime2D {
       count = 0;
       for (CalendarDate value : tcs.getTimesForRuntime(0)) {
         cdates[count] = value;
+        count++;
+      }
+    }
+  }
+
+  // problem here is fractional units:
+  // days since 2009-06-14 04:00:00; values are 132.00346, 132.0104, 132.01736...
+  // coordsys, dt, coverage dont work correctly, probably never did (!)
+  @Test
+  public void testFractionalTimeValues() throws IOException {
+    String filename = TestDir.cdmUnitTestDir + "ft/coverage/Run_20091025_0000.nc";
+    String gridName = "elev";
+    System.out.printf("file %s coverage %s%n", filename, gridName);
+
+    Formatter errlog = new Formatter();
+    try (GridDataset gds = GridDatasetFactory.openGridDataset(filename, errlog)) {
+      assertThat(gds).isNotNull();
+      Grid grid = gds.findGrid(gridName).orElseThrow();
+      assertThat(grid).isNotNull();
+
+      GridCoordinateSystem gcs = grid.getCoordinateSystem();
+      assertThat(gcs).isNotNull();
+      assertThat(gcs.getNominalShape()).isEqualTo(ImmutableList.of(432, 22, 12));
+
+      GridTimeCoordinateSystem tcs = grid.getTimeCoordinateSystem();
+      assertThat(tcs).isNotNull();
+      assertThat(tcs.getNominalShape()).isEqualTo(ImmutableList.of(432));
+      assertThat(tcs.getOffsetPeriod()).isEqualTo(CalendarPeriod.of(1, CalendarPeriod.Field.Day));
+      assertThat(tcs.getRuntimeDateUnit().getCalendarPeriod()).isEqualTo(tcs.getOffsetPeriod());
+
+      assertThat((Object) tcs.getRunTimeAxis()).isNull();
+
+      GridAxisPoint validtime = (GridAxisPoint) tcs.getTimeOffsetAxis(0);
+      assertThat((Object) validtime).isNotNull();
+      assertThat(validtime.getNominalSize()).isEqualTo(432);
+      assertThat(validtime.getSpacing()).isEqualTo(GridAxisSpacing.regularPoint);
+      assertThat(validtime.getDependenceType()).isEqualTo(GridAxisDependenceType.independent);
+      assertThat(validtime.getUnits()).isEqualTo("days since 2009-06-14 04:00:00 +00:00");
+
+      CalendarDateUnit cdu = tcs.makeOffsetDateUnit(0);
+      int count = 0;
+      for (CalendarDate cdate : tcs.getTimesForRuntime(0)) {
+        double value = cdu.makeFractionalOffsetFromRefDate(cdate);
+        assertThat(value).isWithin(TOL).of(validtime.getCoordinate(count).doubleValue());
         count++;
       }
     }
