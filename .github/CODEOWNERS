@@ -15,7 +15,7 @@
 # users just like we do for commit author emails.
 # docs/*  docs@example.com
 
-* @lesserwhirls
+* @haileyajohnson
 
 #####################
 # top level modules #
@@ -37,10 +37,11 @@ netcdf4/** @DennisHeimbigner
 # general file types #
 ######################
 
-*.py @lesserwhirls @dopplershift
+*.py @dopplershift
+**/test/**/*.py
 
 ####################
 # individual files #
 ####################
 
-gradle/any/dependencies.gradle @DennisHeimbigner @lesserwhirls
+gradle/any/dependencies.gradle @DennisHeimbigner @haileyajohnson
