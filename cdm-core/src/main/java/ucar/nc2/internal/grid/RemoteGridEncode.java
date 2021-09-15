@@ -55,7 +55,7 @@ public class RemoteGridEncode {
           f.format("&runtime=all");
           break;
 
-        case GridSubset.timeRange:
+        case GridSubset.dateRange:
           CalendarDateRange timeRange = (CalendarDateRange) entry.getValue();
           f.format("&time_start=%s&time_end=%s", timeRange.getStart(), timeRange.getEnd());
           break;
@@ -66,11 +66,8 @@ public class RemoteGridEncode {
           f.format("&time=all");
           break;
 
-        case GridSubset.timeOffsetAll:
-          f.format("&timeOffset=all");
-          break;
-        case GridSubset.timeOffsetFirst:
-          f.format("&timeOffset=first");
+        case GridSubset.timeFirst:
+          f.format("&time=first");
           break;
 
         case GridSubset.gridName:

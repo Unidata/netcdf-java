@@ -11,7 +11,7 @@ import ucar.nc2.write.NcdumpArray;
 import java.util.Iterator;
 
 import static com.google.common.truth.Truth.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertThrows;
 
 /** Test {@link Section} */
 public class TestSection {
@@ -311,12 +311,8 @@ public class TestSection {
     assertThat(Section.fill(null, shape)).isEqualTo(new Section(shape));
     assertThat(Section.fill(Section.SCALAR, new int[0])).isEqualTo(Section.SCALAR);
     assertThat(new Section().getRank()).isEqualTo(0);
-    try {
-      assertThat(Section.fill(new Section(), shape).getRank()).isEqualTo(0);
-      fail();
-    } catch (Exception e) {
-      // expected
-    }
+
+    assertThrows(InvalidRangeException.class, () -> Section.fill(new Section(), shape));
 
     Section s = Section.builder().appendRange(m).appendRange(null).appendRange(m).build();
     Section sf = Section.fill(s, shape);

@@ -73,9 +73,8 @@ public class GridNetcdfDataset implements GridDataset {
         continue; // LOOK
       }
       if (axis.getRank() < 2) {
-        GridAxis<?> gridAxis =
-            new CoordAxisToGridAxis(axis, GridAxisDependenceType.independent, ncd.isIndependentCoordinate(axis))
-                .extractGridAxis();
+        GridAxis<?> gridAxis = CoordAxisToGridAxis
+            .create(axis, GridAxisDependenceType.independent, ncd.isIndependentCoordinate(axis)).extractGridAxis();
         gridAxes.put(axis.getFullName(), gridAxis);
       } else {
         log.warn("Independent gridAxis {} rank > 1", axis.getFullName());
@@ -89,14 +88,13 @@ public class GridNetcdfDataset implements GridDataset {
         continue;
       }
       if (axis.getRank() < 2) {
-        GridAxis<?> gridAxis =
-            new CoordAxisToGridAxis(axis, GridAxisDependenceType.dependent, ncd.isIndependentCoordinate(axis))
-                .extractGridAxis();
+        GridAxis<?> gridAxis = CoordAxisToGridAxis
+            .create(axis, GridAxisDependenceType.dependent, ncd.isIndependentCoordinate(axis)).extractGridAxis();
         gridAxes.put(axis.getFullName(), gridAxis);
       }
     }
 
-    // Convert coordsys
+    // Convert CoordinateSystem to GridCoordinateSystem
     Set<String> alreadyDone = new HashSet<>();
     Map<String, TrackGridCS> trackCsConverted = new HashMap<>();
     for (DatasetClassifier.CoordSysClassifier csc : classifier.getCoordinateSystemsUsed()) {
@@ -107,37 +105,38 @@ public class GridNetcdfDataset implements GridDataset {
         coordsys.add(gcs);
         trackCsConverted.put(csc.getName(), new TrackGridCS(csc, gcs));
       });
-      // Largest Coordinate Systems come first
-      coordsys.sort((o1, o2) -> o2.getGridAxes().size() - o1.getGridAxes().size());
+    }
 
-      // Assign coordsys to grids
-      for (Variable v : ncd.getVariables()) {
-        if (v.getFullName().startsWith("Best/")) { // TODO remove Best from grib generation code
-          continue;
+    // Largest Coordinate Systems come first
+    coordsys.sort((o1, o2) -> o2.getGridAxes().size() - o1.getGridAxes().size());
+
+    // Assign coordsys to grids
+    for (Variable v : ncd.getVariables()) {
+      if (v.getFullName().startsWith("Best/")) { // TODO remove Best from grib generation code
+        continue;
+      }
+      if (alreadyDone.contains(v.getFullName())) {
+        continue;
+      }
+      VariableEnhanced ve = (VariableEnhanced) v;
+      List<CoordinateSystem> css = new ArrayList<>(ve.getCoordinateSystems());
+      if (css.isEmpty()) {
+        continue;
+      }
+      // Use the largest (# axes) coordsys
+      css.sort((o1, o2) -> o2.getCoordinateAxes().size() - o1.getCoordinateAxes().size());
+      for (CoordinateSystem cs : css) {
+        TrackGridCS track = trackCsConverted.get(cs.getName());
+        if (track == null) {
+          continue; // not used
         }
-        if (alreadyDone.contains(v.getFullName())) {
-          continue;
-        }
-        VariableEnhanced ve = (VariableEnhanced) v;
-        List<CoordinateSystem> css = new ArrayList<>(ve.getCoordinateSystems());
-        if (css.isEmpty()) {
-          continue;
-        }
-        // Use the largest (# axes) coordsys
-        css.sort((o1, o2) -> o2.getCoordinateAxes().size() - o1.getCoordinateAxes().size());
-        for (CoordinateSystem cs : css) {
-          TrackGridCS track = trackCsConverted.get(cs.getName());
-          if (track == null) {
-            continue; // not used
-          }
-          GridCoordinateSystem gcs = track.gridCS;
-          Set<Dimension> domain = Dimensions.makeDomain(track.csc.getAxesUsed(), false);
-          if (gcs != null && gcs.getFeatureType() == featureType && Dimensions.isCoordinateSystemFor(domain, v)) {
-            Grid grid = new GridVariable(gcs, (VariableDS) ve);
-            gridsets.put(gcs, grid);
-            alreadyDone.add(v.getFullName());
-            break;
-          }
+        GridCoordinateSystem gcs = track.gridCS;
+        Set<Dimension> domain = Dimensions.makeDomain(track.csc.getAxesUsed(), false);
+        if (gcs != null && gcs.getFeatureType() == featureType && Dimensions.isCoordinateSystemFor(domain, v)) {
+          Grid grid = new GridVariable(gcs, (VariableDS) ve);
+          gridsets.put(gcs, grid);
+          alreadyDone.add(v.getFullName());
+          break;
         }
       }
     }

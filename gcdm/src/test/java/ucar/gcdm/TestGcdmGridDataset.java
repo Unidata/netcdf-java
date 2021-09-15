@@ -153,7 +153,7 @@ public class TestGcdmGridDataset {
       ok &= doVert(local, remote, subset);
     } else {
       for (Object coord : timeAxis) {
-        subset.setTimeCoord(coord);
+        subset.setTimeOffsetCoord(coord);
         ok &= doVert(local, remote, subset);
       }
     }

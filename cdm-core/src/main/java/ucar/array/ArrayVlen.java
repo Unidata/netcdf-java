@@ -136,6 +136,11 @@ public final class ArrayVlen<T> extends Array<Array<T>> {
   }
 
   @Override
+  public long length() {
+    return storage.length();
+  }
+
+  @Override
   Iterator<Array<T>> fastIterator() {
     return storage.iterator();
   }
@@ -218,7 +223,13 @@ public final class ArrayVlen<T> extends Array<Array<T>> {
 
     @Override
     public long length() {
-      return primitiveArray.length;
+      long total = 0;
+      for (byte[] vals : primitiveArray) {
+        if (vals != null) {
+          total += vals.length;
+        }
+      }
+      return total;
     }
 
     @Override
@@ -249,12 +260,12 @@ public final class ArrayVlen<T> extends Array<Array<T>> {
       private int count = 0;
 
       @Override
-      public final boolean hasNext() {
+      public boolean hasNext() {
         return count < primitiveArray.length;
       }
 
       @Override
-      public final Array<Byte> next() {
+      public Array<Byte> next() {
         byte[] p = primitiveArray[count++];
         return (p == null) ? null : Arrays.factory(primitiveArrayType, new int[] {p.length}, p);
       }
@@ -272,7 +283,13 @@ public final class ArrayVlen<T> extends Array<Array<T>> {
 
     @Override
     public long length() {
-      return primitiveArray.length;
+      long total = 0;
+      for (double[] vals : primitiveArray) {
+        if (vals != null) {
+          total += vals.length;
+        }
+      }
+      return total;
     }
 
     @Override
@@ -303,12 +320,12 @@ public final class ArrayVlen<T> extends Array<Array<T>> {
       private int count = 0;
 
       @Override
-      public final boolean hasNext() {
+      public boolean hasNext() {
         return count < primitiveArray.length;
       }
 
       @Override
-      public final Array<Double> next() {
+      public Array<Double> next() {
         double[] p = primitiveArray[count++];
         return (p == null) ? null : Arrays.factory(ArrayType.DOUBLE, new int[] {p.length}, p);
       }
@@ -326,7 +343,13 @@ public final class ArrayVlen<T> extends Array<Array<T>> {
 
     @Override
     public long length() {
-      return primitiveArray.length;
+      long total = 0;
+      for (float[] vals : primitiveArray) {
+        if (vals != null) {
+          total += vals.length;
+        }
+      }
+      return total;
     }
 
     @Override
@@ -357,12 +380,12 @@ public final class ArrayVlen<T> extends Array<Array<T>> {
       private int count = 0;
 
       @Override
-      public final boolean hasNext() {
+      public boolean hasNext() {
         return count < primitiveArray.length;
       }
 
       @Override
-      public final Array<Float> next() {
+      public Array<Float> next() {
         float[] p = primitiveArray[count++];
         return (p == null) ? null : Arrays.factory(ArrayType.FLOAT, new int[] {p.length}, p);
       }
@@ -382,7 +405,13 @@ public final class ArrayVlen<T> extends Array<Array<T>> {
 
     @Override
     public long length() {
-      return primitiveArray.length;
+      long total = 0;
+      for (int[] vals : primitiveArray) {
+        if (vals != null) {
+          total += vals.length;
+        }
+      }
+      return total;
     }
 
     @Override
@@ -413,12 +442,12 @@ public final class ArrayVlen<T> extends Array<Array<T>> {
       private int count = 0;
 
       @Override
-      public final boolean hasNext() {
+      public boolean hasNext() {
         return count < primitiveArray.length;
       }
 
       @Override
-      public final Array<Integer> next() {
+      public Array<Integer> next() {
         int[] p = primitiveArray[count++];
         return (p == null) ? null : Arrays.factory(primitiveArrayType, new int[] {p.length}, p);
       }
@@ -438,7 +467,13 @@ public final class ArrayVlen<T> extends Array<Array<T>> {
 
     @Override
     public long length() {
-      return primitiveArray.length;
+      long total = 0;
+      for (long[] vals : primitiveArray) {
+        if (vals != null) {
+          total += vals.length;
+        }
+      }
+      return total;
     }
 
     @Override
@@ -469,12 +504,12 @@ public final class ArrayVlen<T> extends Array<Array<T>> {
       private int count = 0;
 
       @Override
-      public final boolean hasNext() {
+      public boolean hasNext() {
         return count < primitiveArray.length;
       }
 
       @Override
-      public final Array<Long> next() {
+      public Array<Long> next() {
         long[] p = primitiveArray[count++];
         return (p == null) ? null : Arrays.factory(primitiveArrayType, new int[] {p.length}, p);
       }
@@ -494,7 +529,13 @@ public final class ArrayVlen<T> extends Array<Array<T>> {
 
     @Override
     public long length() {
-      return primitiveArray.length;
+      long total = 0;
+      for (short[] vals : primitiveArray) {
+        if (vals != null) {
+          total += vals.length;
+        }
+      }
+      return total;
     }
 
     @Override
@@ -525,12 +566,12 @@ public final class ArrayVlen<T> extends Array<Array<T>> {
       private int count = 0;
 
       @Override
-      public final boolean hasNext() {
+      public boolean hasNext() {
         return count < primitiveArray.length;
       }
 
       @Override
-      public final Array<Short> next() {
+      public Array<Short> next() {
         short[] p = primitiveArray[count++];
         return (p == null) ? null : Arrays.factory(primitiveArrayType, new int[] {p.length}, p);
       }
@@ -548,7 +589,13 @@ public final class ArrayVlen<T> extends Array<Array<T>> {
 
     @Override
     public long length() {
-      return primitiveArray.length;
+      long total = 0;
+      for (String[] vals : primitiveArray) {
+        if (vals != null) {
+          total += vals.length;
+        }
+      }
+      return total;
     }
 
     @Override
@@ -579,12 +626,12 @@ public final class ArrayVlen<T> extends Array<Array<T>> {
       private int count = 0;
 
       @Override
-      public final boolean hasNext() {
+      public boolean hasNext() {
         return count < primitiveArray.length;
       }
 
       @Override
-      public final Array<String> next() {
+      public Array<String> next() {
         String[] p = primitiveArray[count++];
         return (p == null) ? null : Arrays.factory(ArrayType.STRING, new int[] {p.length}, p);
       }

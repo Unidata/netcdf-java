@@ -102,7 +102,7 @@ public class CalendarDateUnit {
   ////////////////////////////////////////////////////////////////////////////////////////
   private final CalendarPeriod period;
   private final CalendarDate baseDate;
-  private final boolean isCalendarField; // LOOK is this used for anything?
+  private final boolean isCalendarField; // used to require integral (non fractional) values
 
   private CalendarDateUnit(CalendarPeriod period, boolean isCalendarField, CalendarDate baseDate) {
     this.period = period;
@@ -153,28 +153,44 @@ public class CalendarDateUnit {
 
   /**
    * Add the given (value * period) to the baseDateTime to make a new CalendarDate.
+   * Inverse of makeFractionalOffsetFromRefDate.
+   * This uses makeCalendarDate when its a calendar date or uses a non-ISO calendar, and
+   * rounds the value to a long.
    * 
    * @param value number of (possibly non-integral) periods to add. May be negative.
    */
   public CalendarDate makeFractionalCalendarDate(double value) {
-    double convert = period.getConvertFactor(CalendarPeriod.Millisec);
-    long baseMillis = baseDate.getMillisFromEpoch();
-    long msecs = baseMillis + (long) (value / convert);
-    return CalendarDate.of(msecs);
+    if (isCalendarField() || (getBaseDateTime() instanceof CalendarDateChrono)) {
+      return makeCalendarDate((long) value);
+    } else {
+      double convert = period.getConvertFactor(CalendarPeriod.Millisec);
+      long baseMillis = baseDate.getMillisFromEpoch();
+      long msecs = baseMillis + (long) (value / convert);
+      // round to seconds
+      long rounded = 1000 * Math.round(msecs / 1000.0);
+      return CalendarDate.of(rounded);
+    }
   }
 
   /**
    * Find the offset of date in fractional units of this period from the baseDateTime.
    * Inverse of makeFractionalCalendarDate.
-   * LOOK not working when period is month, see TestCalendarDateUnit
+   * This uses makeOffsetFromRefDate when its a calendar date or uses a non-ISO calendar, and
+   * rounds the value to a long.
+   * 
+   * @return number of (possibly non-integral) periods since base date. May be negative.
    */
   public double makeFractionalOffsetFromRefDate(CalendarDate date) {
     if (date.equals(baseDate)) {
       return 0;
     }
-    long diff = date.getDifferenceInMsecs(baseDate);
-    double convert = period.getConvertFactor(CalendarPeriod.Millisec);
-    return diff * convert;
+    if (isCalendarField() || (getBaseDateTime() instanceof CalendarDateChrono)) {
+      return (double) makeOffsetFromRefDate(date);
+    } else {
+      long diff = date.getDifferenceInMsecs(baseDate);
+      double convert = period.getConvertFactor(CalendarPeriod.Millisec);
+      return diff * convert;
+    }
   }
 
   @Override

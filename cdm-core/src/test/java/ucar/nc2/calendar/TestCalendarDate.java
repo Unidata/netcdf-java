@@ -227,6 +227,12 @@ public class TestCalendarDate {
   }
 
   @Test
+  public void testSinceChrono() {
+    CalendarDate baseDate = CalendarDate.of(null, 2000, 1, 2, 3, 4, 5, 0, null);
+    CalendarDate diffDate = CalendarDate.of(null, 2001, 2, 3, 4, 5, 6, 0, null);
+  }
+
+  @Test
   public void testDifferenceInMsecs() {
     CalendarDate baseDate = CalendarDate.of(null, 2000, 1, 2, 3, 4, 5, 0, null);
     CalendarDate diffDate = CalendarDate.of(null, 2000, 1, 3, 4, 5, 6, 999, null);

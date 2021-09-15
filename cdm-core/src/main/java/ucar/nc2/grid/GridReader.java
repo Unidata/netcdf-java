@@ -7,6 +7,8 @@ package ucar.nc2.grid;
 
 import com.google.common.base.Preconditions;
 import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.calendar.CalendarDateRange;
+import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionRect;
 
@@ -23,29 +25,14 @@ public class GridReader {
     this.grid = grid;
   }
 
-  public GridReader setTime(CalendarDate date) {
-    req.put(GridSubset.time, date);
+
+  public GridReader setRunTime(CalendarDate date) {
+    req.put(GridSubset.runtime, date);
     return this;
   }
 
-  public GridReader setTimePresent() {
-    req.put(GridSubset.timePresent, true);
-    return this;
-  }
-
-  public GridReader setTimeLatest() {
-    req.put(GridSubset.timeLatest, true);
-    return this;
-  }
-
-  public GridReader setTimeCoord(Object coord) {
-    if (coord instanceof Number) {
-      req.put(GridSubset.timePoint, coord);
-    } else if (coord instanceof CoordInterval) {
-      req.put(GridSubset.timeIntv, coord);
-    } else {
-      throw new RuntimeException("setTimeCoord must be Number or CoordInterval " + coord);
-    }
+  public GridReader setRunTimeLatest() {
+    req.put(GridSubset.runtimeLatest, true);
     return this;
   }
 
@@ -60,13 +47,49 @@ public class GridReader {
     return this;
   }
 
-  public GridReader setRunTime(CalendarDate date) {
-    req.put(GridSubset.runtime, date);
+  public GridReader setTimeOffsetRange(CoordInterval range) {
+    req.put(GridSubset.timeOffsetRange, range);
     return this;
   }
 
-  public GridReader setRunTimeLatest() {
-    req.put(GridSubset.runtimeLatest, true);
+  public GridReader setTimeFirst() {
+    req.put(GridSubset.timeFirst, true);
+    return this;
+  }
+
+  public GridReader setDate(CalendarDate date) {
+    req.put(GridSubset.date, date);
+    return this;
+  }
+
+  public GridReader setDateRange(CalendarDateRange dateRange) {
+    req.put(GridSubset.dateRange, dateRange);
+    return this;
+  }
+
+  public GridReader setTimePresent() {
+    req.put(GridSubset.timePresent, true);
+    return this;
+  }
+
+  public GridReader setTimeLatest() {
+    req.put(GridSubset.timeLatest, true);
+    return this;
+  }
+
+  public GridReader setTimeAll() {
+    req.put(GridSubset.timeAll, true);
+    return this;
+  }
+
+  public GridReader setVertCoord(Object coord) {
+    if (coord instanceof Number) {
+      req.put(GridSubset.vertPoint, coord);
+    } else if (coord instanceof CoordInterval) {
+      req.put(GridSubset.vertIntv, coord);
+    } else {
+      throw new RuntimeException("setVertCoord must be Number or CoordInterval " + coord);
+    }
     return this;
   }
 
@@ -76,8 +99,8 @@ public class GridReader {
     return this;
   }
 
-  public GridReader setHorizStride(int stride) {
-    req.put(GridSubset.horizStride, stride);
+  public GridReader setLatLonPoint(LatLonPoint pt) {
+    req.put(GridSubset.latlonPoint, pt);
     return this;
   }
 
@@ -91,14 +114,8 @@ public class GridReader {
     return this;
   }
 
-  public GridReader setVertCoord(Object coord) {
-    if (coord instanceof Number) {
-      req.put(GridSubset.vertPoint, coord);
-    } else if (coord instanceof CoordInterval) {
-      req.put(GridSubset.vertIntv, coord);
-    } else {
-      throw new RuntimeException("setVertCoord must be Number or CoordInterval " + coord);
-    }
+  public GridReader setHorizStride(int stride) {
+    req.put(GridSubset.horizStride, stride);
     return this;
   }
 

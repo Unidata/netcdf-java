@@ -181,6 +181,10 @@ public class CalendarPeriod {
     return field.chronoUnit;
   }
 
+  public boolean isDefaultCalendarField() {
+    return field == Field.Month || field == Field.Year;
+  }
+
   /**
    * Get the conversion factor of the other CalendarPeriod to this one
    * 

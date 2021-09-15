@@ -5,6 +5,7 @@
 package ucar.array;
 
 import static com.google.common.truth.Truth.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.fail;
 
 import org.junit.Test;
@@ -23,19 +24,8 @@ public class TestIndexFn {
     assertThat(index.get(0, 0, 2)).isEqualTo(2);
     assertThat(index.get(0, 1, 2)).isEqualTo(5);
 
-    try {
-      assertThat(index.get(0, 2, 2)).isEqualTo(8);
-      fail();
-    } catch (Exception e) {
-      assertThat(e).isInstanceOf(IllegalArgumentException.class);
-    }
-
-    try {
-      assertThat(index.get(0, 1)).isEqualTo(4);
-      fail();
-    } catch (Exception e) {
-      assertThat(e).isInstanceOf(IllegalArgumentException.class);
-    }
+    assertThrows(IllegalArgumentException.class, () -> index.get(0, 2, 2));
+    assertThrows(IllegalArgumentException.class, () -> index.get(0, 1));
   }
 
   @Test

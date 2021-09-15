@@ -24,13 +24,16 @@ import java.util.TreeMap;
 public class GridTimeCS extends GridTimeCoordinateSystem {
 
   public static GridTimeCS createSingleOrOffset(GridAxisPoint runTimeAxis, GridAxis<?> timeOffsetAxis) {
-    CalendarDateUnit dateUnit = CalendarDateUnit.fromUdunitString(null, runTimeAxis.getUnits()).orElseThrow();
+    CalendarDateUnit dateUnit =
+        CalendarDateUnit.fromAttributes(runTimeAxis.attributes(), runTimeAxis.getUnits()).orElseGet(
+            () -> CalendarDateUnit.fromAttributes(timeOffsetAxis.attributes(), timeOffsetAxis.getUnits()).orElse(null));
     return create(runTimeAxis.getNominalSize() == 1 ? Type.SingleRuntime : Type.Offset, runTimeAxis, timeOffsetAxis,
         dateUnit, null, null);
   }
 
   public static GridTimeCS createObservation(GridAxis<?> timeAxis) {
-    CalendarDateUnit dateUnit = CalendarDateUnit.fromUdunitString(null, timeAxis.getUnits()).orElseThrow();
+    CalendarDateUnit dateUnit =
+        CalendarDateUnit.fromAttributes(timeAxis.attributes(), timeAxis.getUnits()).orElseThrow();
     return create(Type.Observation, null, timeAxis, dateUnit, null, null);
   }
 
@@ -73,7 +76,6 @@ public class GridTimeCS extends GridTimeCoordinateSystem {
   static class Observation extends GridTimeCS {
 
     Observation(GridAxis<?> time, CalendarDateUnit runtimeDateUnit) {
-      // LOOK MRMS_Radar_20201027_0000.grib2.ncx4 time2D has runtime in seconds, but period name is minutes
       super(Type.Observation, null, time, runtimeDateUnit);
     }
 
@@ -118,11 +120,6 @@ public class GridTimeCS extends GridTimeCoordinateSystem {
     }
 
     @Override
-    public List<Integer> getNominalShape() {
-      return ImmutableList.of(runTimeAxis.getNominalSize(), timeOffsetAxis.getNominalSize());
-    }
-
-    @Override
     public Optional<GridTimeCS> subset(GridSubset params, Formatter errlog) {
       SubsetTimeHelper helper = new SubsetTimeHelper(this);
       return helper.subsetOffset(params, errlog).map(t -> new Offset(helper.runtimeAxis, t, runtimeDateUnit));
@@ -137,17 +134,12 @@ public class GridTimeCS extends GridTimeCoordinateSystem {
     OffsetRegular(GridAxisPoint runtime, GridAxis<?> timeOffset, CalendarDateUnit runtimeDateUnit,
         Map<Integer, GridAxis<?>> timeOffsets) {
       super(Type.OffsetRegular, runtime, timeOffset, runtimeDateUnit);
-      this.timeOffsets = new TreeMap(timeOffsets);
+      this.timeOffsets = new TreeMap<>(timeOffsets);
     }
 
     @Override
     public CalendarDate getBaseDate() {
       return getRuntimeDate(0);
-    }
-
-    @Override
-    public List<Integer> getNominalShape() {
-      return ImmutableList.of(runTimeAxis.getNominalSize(), timeOffsetAxis.getNominalSize());
     }
 
     @Override
@@ -189,11 +181,6 @@ public class GridTimeCS extends GridTimeCoordinateSystem {
     @Override
     public CalendarDate getBaseDate() {
       return getRuntimeDate(0);
-    }
-
-    @Override
-    public List<Integer> getNominalShape() {
-      return ImmutableList.of(runTimeAxis.getNominalSize(), timeOffsetAxis.getNominalSize());
     }
 
     @Override

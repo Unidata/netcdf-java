@@ -20,6 +20,7 @@ import java.util.Formatter;
 
 import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.fail;
 
 /** Test {@link GridDataset} that is curvilinear. */
@@ -112,14 +113,11 @@ public class TestReadCurvilinearSubsetProjectRect {
       Grid grid = gridDataset.findGrid(gridName).orElse(null);
       assertThat(grid).isNotNull();
 
-      try {
+      assertThrows(InvalidRangeException.class, () -> {
         GridReader reader =
             grid.getReader().setTimeLatest().setProjectionBoundingBox(ProjectionRect.fromSpec(subsetOff));
         reader.read();
-        fail();
-      } catch (InvalidRangeException e) {
-        // expected
-      }
+      });
     }
   }
 

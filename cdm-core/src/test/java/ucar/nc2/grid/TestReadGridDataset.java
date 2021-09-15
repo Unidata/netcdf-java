@@ -9,10 +9,6 @@ import ucar.array.Array;
 import ucar.array.ArrayType;
 import ucar.array.InvalidRangeException;
 import ucar.nc2.calendar.CalendarDate;
-import ucar.nc2.constants.FeatureType;
-import ucar.nc2.ft2.coverage.CoverageCollection;
-import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
-import ucar.nc2.ft2.coverage.FeatureDatasetCoverage;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
@@ -22,6 +18,7 @@ import java.util.Formatter;
 import java.util.List;
 
 import static com.google.common.truth.Truth.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.fail;
 
 /** Test reading {@link GridDataset} */
@@ -137,7 +134,7 @@ public class TestReadGridDataset {
       CalendarDate wantDate =
           wantDateS == null ? CalendarDate.present() : CalendarDate.fromUdunitIsoDate(null, wantDateS).orElseThrow();
       GridReferencedArray geoArray =
-          grid.getReader().setTime(wantDate).setVertCoord(wantVert == null ? 0.0 : wantVert).read();
+          grid.getReader().setDate(wantDate).setVertCoord(wantVert == null ? 0.0 : wantVert).read();
       Array<Number> data = geoArray.data();
       assertThat(data.getArrayType()).isEqualTo(ArrayType.FLOAT);
       assertThat(data.getRank()).isEqualTo(matShape.length);
@@ -175,14 +172,11 @@ public class TestReadGridDataset {
   }
 
   @Test
-  public void testFileNotFound() throws IOException {
+  public void testFileNotFound() {
     String filename = TestDir.cdmLocalTestDataDir + "conventions/fileNot.nc";
     Formatter errlog = new Formatter();
-    try (GridDataset gridDataset = GridDatasetFactory.openGridDataset(filename, errlog)) {
-      fail();
-    } catch (FileNotFoundException e) {
-      assertThat(e.getMessage()).contains("(No such file or directory)");
-    }
+
+    assertThrows(FileNotFoundException.class, () -> GridDatasetFactory.openGridDataset(filename, errlog));
   }
 
   @Test

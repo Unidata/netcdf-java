@@ -5,9 +5,8 @@
 package ucar.array;
 
 import static com.google.common.truth.Truth.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertThrows;
 
-import com.google.common.collect.Streams;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -50,20 +49,8 @@ public class TestArray {
       count++;
     }
 
-    // Note that this does fail
-    try {
-      assertThat(array.get(0, 2, 2)).isEqualTo(8);
-      fail();
-    } catch (Exception e) {
-      assertThat(e).isInstanceOf(IllegalArgumentException.class);
-    }
-
-    try {
-      assertThat(array.get(0, 1)).isEqualTo(4);
-      fail();
-    } catch (Exception e) {
-      assertThat(e).isInstanceOf(IllegalArgumentException.class);
-    }
+    assertThrows(IllegalArgumentException.class, () -> array.get(0, 2, 2));
+    assertThrows(IllegalArgumentException.class, () -> array.get(0, 1));
   }
 
   @Test
@@ -80,28 +67,15 @@ public class TestArray {
 
   @Test
   public void testException() {
-    try {
-      array.get(99, 1, 1);
-      fail();
-    } catch (IllegalArgumentException e) {
-      // ok
-    }
-
-    try {
+    assertThrows(IllegalArgumentException.class, () -> array.get(99, 1, 1));
+    assertThrows(IllegalArgumentException.class, () -> {
       Index idx = array.getIndex();
       array.get(idx.set(99, 1, 1));
-      fail();
-    } catch (IllegalArgumentException e) {
-      // ok
-    }
-
-    try {
+    });
+    assertThrows(IllegalArgumentException.class, () -> {
       Index idx = array.getIndex();
       array.get(idx.set5(99));
-      fail();
-    } catch (IllegalArgumentException e) {
-      // ok
-    }
+    });
   }
 
 }

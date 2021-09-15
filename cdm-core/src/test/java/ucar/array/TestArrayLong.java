@@ -5,11 +5,10 @@
 package ucar.array;
 
 import static com.google.common.truth.Truth.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertThrows;
 
 import com.google.common.collect.ImmutableList;
 import org.junit.Test;
-import ucar.ma2.DataType;
 
 /** Test {@link ArrayLong} */
 public class TestArrayLong {
@@ -33,20 +32,8 @@ public class TestArrayLong {
       count++;
     }
 
-    // Note that this does fail
-    try {
-      assertThat(array.get(0, 2, 2)).isEqualTo(8);
-      fail();
-    } catch (Exception e) {
-      assertThat(e).isInstanceOf(IllegalArgumentException.class);
-    }
-
-    try {
-      assertThat(array.get(0, 1)).isEqualTo(4);
-      fail();
-    } catch (Exception e) {
-      assertThat(e).isInstanceOf(IllegalArgumentException.class);
-    }
+    assertThrows(IllegalArgumentException.class, () -> array.get(0, 2, 2));
+    assertThrows(IllegalArgumentException.class, () -> array.get(0, 1));
 
     long[] result = new long[3];
     array.arraycopy(1, result, 0, 3);

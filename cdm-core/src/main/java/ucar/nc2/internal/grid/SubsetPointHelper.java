@@ -59,23 +59,28 @@ public class SubsetPointHelper {
         break;
       }
 
+      // timeOffset, timeOffsetIntv, timeLatest, timeFirst; timeAll is the default
       case Time:
       case TimeOffset: {
         Double dval = params.getTimeOffset();
         if (dval != null) {
           return subsetClosest(dval);
         }
-
         CoordInterval intv = params.getTimeOffsetIntv();
         if (intv != null) {
           return subsetClosest(intv);
         }
-
         if (params.getTimeLatest()) {
           int last = orgGridAxis.getNominalSize() - 1;
           return makeSubsetByIndex(last);
         }
-
+        if (params.getTimeFirst()) {
+          return makeSubsetByIndex(0);
+        }
+        if (params.getTimeOffsetRange() != null) {
+          CoordInterval range = params.getTimeOffsetRange();
+          return subsetRange(range.start(), range.end(), 1, errlog).orElse(null);
+        }
         // default is all
         break;
       }

@@ -124,6 +124,11 @@ public abstract class ArrayStructure extends Array implements Iterable<Structure
     return StructureData.class;
   }
 
+  @Override
+  public long getSize() {
+    return nelems;
+  }
+
   /**
    * Get the StructureMembers object.
    *

@@ -18,7 +18,6 @@ import ucar.nc2.Group;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.ft2.coverage.adapter.DtCoverageCSBuilder;
 import ucar.nc2.calendar.*;
 import ucar.nc2.write.Ncdump;
 import ucar.nc2.write.NcdumpArray;
@@ -114,21 +113,6 @@ public class CoordSysTable extends JPanel {
             return;
           infoTA.clear();
           infoTA.appendLine(tryGrid(v));
-          infoTA.gotoTop();
-          infoWindow.show();
-        }
-      }
-    });
-
-    varPopup.addAction("Try as Coverage", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        VariableBean vb = varTable.getSelectedBean();
-        if (vb != null) {
-          VariableEnhanced v = (VariableEnhanced) ds.findVariable(vb.getName());
-          if (v == null)
-            return;
-          infoTA.clear();
-          infoTA.appendLine(tryCoverage(v));
           infoTA.gotoTop();
           infoWindow.show();
         }
@@ -648,24 +632,6 @@ public class CoordSysTable extends JPanel {
     return buff.toString();
   }
 
-  private String tryCoverage(VariableEnhanced v) {
-    Formatter buff = new Formatter();
-    buff.format("%s%n", v);
-    List<CoordinateSystem> csList = v.getCoordinateSystems();
-    if (csList.isEmpty())
-      buff.format(" No Coord System found");
-    else {
-      for (CoordinateSystem cs : csList) {
-        buff.format("%nCoordSys: %s%n", cs);
-        Formatter errlog = new Formatter();
-        String result = DtCoverageCSBuilder.describe(ds, cs, errlog);
-        buff.format("  coverage desc: %s%n", result);
-        buff.format("  coverage errlog: %s%n", errlog);
-      }
-    }
-    return buff.toString();
-  }
-
   private String showMissing(Variable v) {
     if (!(v instanceof VariableDS))
       return "";
@@ -757,20 +723,13 @@ public class CoordSysTable extends JPanel {
       return v.getArrayType().toString();
     }
 
-    public String getCoverage() {
-      if (coordSysBean == null)
-        return "";
-      boolean complete = coordSysBean.coordSys.isComplete(v);
-      return complete ? coordSysBean.getCoverage() : "Incomplete " + coordSysBean.getCoverage();
-    }
-
   }
 
   public class CoordinateSystemBean {
     // static public String editableProperties() { return "title include logging freq"; }
 
     CoordinateSystem coordSys;
-    private String name, ctNames, dataType = "", coverageType;
+    private String name, ctNames, dataType = "";
     private int domainRank, rangeRank;
     private boolean isGeoXY, isLatLon, isProductSet, isRegular;
 
@@ -788,8 +747,6 @@ public class CoordSysTable extends JPanel {
       setRegular(cs.isRegular());
       setDomainRank(cs.getDomain().size());
       setRangeRank(cs.getCoordinateAxes().size());
-
-      coverageType = DtCoverageCSBuilder.describe(ds, cs, null);
 
       Formatter parseInfo = new Formatter();
       if (GridCoordSys.isGridCoordSys(parseInfo, cs, null)) {
@@ -884,9 +841,6 @@ public class CoordSysTable extends JPanel {
       return coordSys.isImplicit();
     }
 
-    public String getCoverage() {
-      return coverageType;
-    }
   }
 
   public static class AttributeBean {

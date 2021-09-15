@@ -2,7 +2,7 @@
 package ucar.nc2.dataset;
 
 import static com.google.common.truth.Truth.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertThrows;
 import static ucar.nc2.TestUtils.makeDummyGroup;
 import java.io.IOException;
 import java.util.List;
@@ -52,14 +52,10 @@ public class TestVariableDSBuilder {
 
   @Test
   public void testWithDims() {
-    try {
-      // Must set dimension first
+    assertThrows(NullPointerException.class, () -> {
       VariableDS.builder().setName("name").setDataType(DataType.FLOAT).setDimensionsByName("dim1 dim2")
           .build(makeDummyGroup());
-      fail();
-    } catch (Exception e) {
-      // ok
-    }
+    });
 
     Group group =
         Group.builder().addDimension(Dimension.builder().setName("dim1").setLength(7).setIsUnlimited(true).build())

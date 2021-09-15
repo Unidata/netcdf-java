@@ -90,7 +90,7 @@ public class GribGridDataset implements GridDataset {
     } catch (IOException ioe) {
       throw ioe; // propagate up
     } catch (Throwable t) {
-      logger.error("GribCoverageDataset.open failed", t);
+      logger.error("GribGridDataset.open failed", t);
       errLog.format("%s", t.getMessage());
       return Optional.empty();
     }

@@ -8,10 +8,10 @@
     <values>2017-08-30T00:02:16Z 2017-08-30T00:07:16Z 2017-08-30T00:12:16Z 2017-08-30T00:17:16Z 2017-08-30T00:22:16Z 2017-08-30T00:27:16Z 2017-08-30T00:32:16Z 2017-08-30T00:37:16Z 2017-08-30T00:42:16Z 2017-08-30T00:47:16Z 2017-08-30T00:52:16Z 2017-08-30T00:57:16Z</values>
   </variable>
   <variable name="Rad">
-    <attribute name="coordinates" value="band_id band_wavelength time y x" />
+    <attribute name="coordinates" value="time y x" />
   </variable>
   <variable name="DQF">
-    <attribute name="coordinates" value="band_id band_wavelength time y x" />
+    <attribute name="coordinates" value="time y x" />
   </variable>
   <aggregation dimName="time" type="joinNew">
     <variableAgg name="Rad"/>

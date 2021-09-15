@@ -49,7 +49,7 @@ public class TestGribGridRead {
       assertThat(tcs).isNotNull();
 
       GridReferencedArray geoArray =
-          coverage.getReader().setVertCoord(300.0).setRunTimeLatest().setTime(useDate).read();
+          coverage.getReader().setVertCoord(300.0).setRunTimeLatest().setDate(useDate).read();
       MaterializedCoordinateSystem mcs = geoArray.getMaterializedCoordinateSystem();
       assertThat(mcs).isNotNull();
 

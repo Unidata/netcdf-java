@@ -5,6 +5,7 @@
 package ucar.array;
 
 import static com.google.common.truth.Truth.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.fail;
 
 import com.google.common.collect.ImmutableList;
@@ -66,12 +67,7 @@ public class TestStructureMembers {
     assertThat(m2.length()).isEqualTo(1);
     assertThat(m2.getStorageSizeBytes()).isEqualTo(2);
 
-    try {
-      assertThat(sm.getMember(3)).isNull();
-      fail();
-    } catch (Exception e) {
-      // expected
-    }
+    assertThrows(ArrayIndexOutOfBoundsException.class, () -> sm.getMember(3));
 
     assertThat(sm.getStorageSizeBytes()).isEqualTo(200);
     assertThat(sm.toString())

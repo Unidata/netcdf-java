@@ -81,6 +81,10 @@ public class GridNetcdfCSBuilder {
       }
     }
 
+    if (builder.axes.size() < 2) {
+      return Optional.empty();
+    }
+
     try {
       return Optional.of(builder.build());
     } catch (Exception e) {

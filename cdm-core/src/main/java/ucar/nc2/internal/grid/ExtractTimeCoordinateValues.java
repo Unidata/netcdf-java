@@ -6,6 +6,9 @@ import ucar.array.ArrayType;
 import ucar.array.Arrays;
 import ucar.nc2.Variable;
 import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.calendar.CalendarDateUnit;
+import ucar.nc2.calendar.CalendarPeriod;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.CoordinateAxis;
 
 import javax.annotation.Nullable;
@@ -19,6 +22,8 @@ class ExtractTimeCoordinateValues {
 
   @Nullable
   final List<CalendarDate> cdates; // non null only if its a string or char coordinate
+  @Nullable
+  final CoordinateAxis convertedAxis;
 
   ExtractTimeCoordinateValues(CoordinateAxis coordAxis) {
     Preconditions.checkArgument(coordAxis.getArrayType() == ArrayType.CHAR || coordAxis.getRank() < 2);
@@ -31,10 +36,42 @@ class ExtractTimeCoordinateValues {
         cdates = makeTimesFromStrings(coordAxis, errMessages);
       } else {
         cdates = null;
+        this.convertedAxis = null;
+        return;
       }
+      this.convertedAxis = makeConvertedAxis(coordAxis);
     } catch (IOException ioe) {
       throw new RuntimeException(errMessages.toString(), ioe);
     }
+  }
+
+  CoordinateAxis getConvertedAxis() {
+    return convertedAxis;
+  }
+
+  private CoordinateAxis makeConvertedAxis(CoordinateAxis coordAxis) {
+    CoordinateAxis.Builder<?> builder = coordAxis.toBuilder();
+    builder.removeAttribute(CDM.UNITS);
+    builder.removeAttribute(CDM.MISSING_VALUE);
+    builder.removeAttribute(CDM.SCALE_FACTOR);
+    builder.removeAttribute(CDM.ADD_OFFSET);
+    builder.removeAttribute(CDM.VALID_RANGE);
+    builder.removeAttribute(CDM.VALID_MIN);
+    builder.removeAttribute(CDM.VALID_MAX);
+
+    CalendarDateUnit cdu = CalendarDateUnit.of(CalendarPeriod.Hour, false, cdates.get(0));
+    int n = cdates.size();
+    double[] parray = new double[n];
+    int count = 0;
+    for (CalendarDate cdate : cdates) {
+      parray[count++] = cdu.makeFractionalOffsetFromRefDate(cdate);
+    }
+
+    builder.setSourceData(Arrays.factory(ArrayType.DOUBLE, new int[] {n}, parray));
+    builder.setArrayType(ArrayType.DOUBLE);
+    builder.setUnits(cdu.toString());
+
+    return builder.build(coordAxis.getParentGroup());
   }
 
   private List<CalendarDate> makeTimesFromChar(Variable org, Formatter errMessages) throws IOException {
@@ -69,7 +106,7 @@ class ExtractTimeCoordinateValues {
     } catch (Exception e) {
       errMessages.format("Bad time coordinate '%s' in dataset '%s'%n", coordValue, org.getDatasetLocation());
       log.info("Bad time coordinate '{}' in dataset '{}'", coordValue, org.getDatasetLocation());
-      throw new RuntimeException(errMessages.toString(), e);
+      throw new IllegalArgumentException(errMessages.toString(), e);
     }
   }
 }

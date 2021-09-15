@@ -64,15 +64,6 @@ public class FeatureScanPanel extends JPanel {
       }
     });
 
-    varPopup.addAction("Open as CoverageDataset", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        FeatureScan.Bean ftb = ftTable.getSelectedBean();
-        if (ftb == null)
-          return;
-        FeatureScanPanel.this.firePropertyChange("openCoverageDataset", null, ftb.f.getPath());
-      }
-    });
-
     varPopup.addAction("Open as NewGrid", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         FeatureScan.Bean ftb = ftTable.getSelectedBean();
@@ -117,15 +108,6 @@ public class FeatureScanPanel extends JPanel {
           bean.toString(f, false);
         }
         dumpTA.setText(f.toString());
-      }
-    });
-
-    varPopup.addAction("Run Coverage Classifier", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        FeatureScan.Bean ftb = ftTable.getSelectedBean();
-        if (ftb == null)
-          return;
-        dumpTA.setText(ftb.runClassifier());
       }
     });
 
