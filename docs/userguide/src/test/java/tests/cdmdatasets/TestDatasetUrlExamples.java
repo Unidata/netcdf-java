@@ -16,7 +16,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import ucar.httpservices.Escape;
+import ucar.nc2.internal.util.EscapeStrings;
 import ucar.nc2.util.IO;
 import ucar.unidata.io.http.ReadFromUrl;
 import ucar.unidata.util.test.category.NeedsExternalResource;
@@ -41,7 +41,7 @@ public class TestDatasetUrlExamples {
   public static void setup() throws IOException {
     Path tmpDownloadDir = Files.createTempDirectory("ncj_tests_");
     tmpDownloadDir.toFile().deleteOnExit();
-    String escapedCe = Escape.escapeURLQuery(constraintExpression);
+    String escapedCe = EscapeStrings.escapeURLQuery(constraintExpression);
 
     // save .dods response to temp file
     dodsFile = tmpDownloadDir.resolve(baseFilename + ".dods").toFile();
