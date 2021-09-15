@@ -18,7 +18,7 @@ topnav_dropdowns:
           - title: GitHub
             external_url: https://github.com/Unidata/netcdf-java
           - title: User guide
-            external_url: https://docs.unidata.ucar.edu/netcdf-java/5.4/userguide/index.html
+            external_url: https://docs.unidata.ucar.edu/netcdf-java/5.5/userguide/index.html
           - title: NcML
             external_url: https://docs.unidata.ucar.edu/thredds/ncml/2.2/index.html
 
