@@ -66,8 +66,10 @@ public class TestReadGridCoordinateSystem {
 
     Formatter errlog = new Formatter();
     try (GridDataset gds = GridDatasetFactory.openNetcdfAsGrid(endpoint, errlog)) {
+      if (gds == null) {
+        System.out.printf("failed = %s%n", errlog);
+      }
       assertThat(gds).isNotNull();
-      System.out.printf("Test Dataset %s%n", gds.getLocation());
 
       Grid grid = gds.findGrid(gridName).orElse(null);
       assertThat(grid).isNotNull();

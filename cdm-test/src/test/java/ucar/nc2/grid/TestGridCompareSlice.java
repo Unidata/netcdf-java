@@ -32,7 +32,7 @@ import static com.google.common.truth.Truth.assertThat;
  */
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
-public class TestGridReadingAgainstDtSingle {
+public class TestGridCompareSlice {
 
   @BeforeClass
   public static void before() {
@@ -95,8 +95,8 @@ public class TestGridReadingAgainstDtSingle {
   Double vert_val;
   Integer time_idx;
 
-  public TestGridReadingAgainstDtSingle(String endpoint, FeatureType type, String covName, String rt_val,
-      Double ens_val, String time_val, Double vert_val, Integer time_idx) {
+  public TestGridCompareSlice(String endpoint, FeatureType type, String covName, String rt_val,
+                              Double ens_val, String time_val, Double vert_val, Integer time_idx) {
     this.endpoint = endpoint;
     this.type = type;
     this.gridName = covName;
@@ -109,7 +109,7 @@ public class TestGridReadingAgainstDtSingle {
   }
 
   @Test
-  public void testReadGridCoverageSlice() throws IOException { // read single slice
+  public void testReadGridSlice() throws IOException { // read single slice
     System.out.printf("Test Dataset %s coverage %s%n", endpoint, gridName);
 
     Formatter errlog = new Formatter();
@@ -154,7 +154,7 @@ public class TestGridReadingAgainstDtSingle {
         int ens_idx = (ensAxis == null || ens_val == null) ? -1 : ensAxis.findCoordElement(ens_val);
         int vert_idx = (vertAxis == null || vert_val == null) ? -1 : vertAxis.findCoordElement(vert_val);
 
-        TestGridReadingAgainstDt.readOneSlice(cover, dt, rt_val, rt_idx, time_val, calcTimeIdx,
+        TestGridCompareWithDt.readOneSlice(cover, dt, rt_val, rt_idx, time_val, calcTimeIdx,
             ens_val == null ? 0 : ens_val, ens_idx, vert_val == null ? 0 : vert_val, vert_idx, true);
       }
     }

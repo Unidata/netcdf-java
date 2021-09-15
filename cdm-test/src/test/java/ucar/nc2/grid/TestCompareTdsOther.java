@@ -83,7 +83,8 @@ public class TestCompareTdsOther {
   @Test
   public void checkGridDataset() throws Exception {
     Formatter errlog = new Formatter();
-    try (GridDataset gridDataset = GridDatasetFactory.openGridDataset(filename, errlog)) {
+    try (GridDataset gridDataset = GridDatasetFactory.openGridDataset(filename, errlog);
+         ucar.nc2.dt.grid.GridDataset oldDataset = ucar.nc2.dt.grid.GridDataset.open(filename)) {
       if (gridDataset == null) {
         System.out.printf("Cant open as GridDataset: %s%n", filename);
         return;
@@ -94,27 +95,15 @@ public class TestCompareTdsOther {
       assertThat(gridDataset.getGrids()).hasSize(ngrids);
 
       HashSet<GridCoordinateSystem> csysSet = new HashSet<>();
-      HashSet<ucar.nc2.grid.GridAxis<?>> axisSet = new HashSet<>();
+      HashSet<GridAxis<?>> axisSet = new HashSet<>();
       for (Grid grid : gridDataset.getGrids()) {
         csysSet.add(grid.getCoordinateSystem());
         axisSet.addAll(grid.getCoordinateSystem().getGridAxes());
       }
       assertThat(csysSet).hasSize(ncoordSys);
       assertThat(axisSet).hasSize(nAxes);
-    }
 
-    // This fails because Coverage thinks reftime is regular, but its not.
-    if (filename.contains("GSD_HRRR_CONUS_3km")) {
-      try (GridDataset newDataset = GridDatasetFactory.openGridDataset(filename, errlog)) {
-        assertThat(newDataset).isNotNull();
-        GridCoordinateSystem anyone = newDataset.getGridCoordinateSystems().get(0);
-        assertThat(anyone).isNotNull();
-        GridAxis<?> reftime = anyone.findAxis("reftime").orElseThrow();
-        assertThat((Object) reftime).isNotNull();
-        assertThat(reftime.isRegular()).isFalse();
-      }
-    } else {
-      new TestGridCompareCoverage(filename).compareWithCoverage(false);
+      TestGridCompareWithDt.compareCoordinateSystems(gridDataset, oldDataset, true);
     }
   }
 }

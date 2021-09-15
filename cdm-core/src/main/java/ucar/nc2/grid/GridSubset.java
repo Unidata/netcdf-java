@@ -408,7 +408,7 @@ public class GridSubset {
     } else if (coord instanceof CoordInterval) {
       req.put(timeOffsetIntv, coord);
     } else {
-      throw new RuntimeException("setTimeOffsetCoord must be Number or CoordInterval " + coord);
+      throw new IllegalArgumentException("setTimeOffsetCoord must be Number or CoordInterval " + coord);
     }
     return this;
   }

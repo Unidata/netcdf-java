@@ -13,15 +13,9 @@ import ucar.ma2.ArrayDouble;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
 import ucar.nc2.Dimension;
-import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.grid.GeoGrid;
 import ucar.nc2.dt.grid.GridDataset;
-import ucar.nc2.ft2.coverage.Coverage;
-import ucar.nc2.ft2.coverage.CoverageCollection;
-import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
-import ucar.nc2.ft2.coverage.FeatureDatasetCoverage;
-import ucar.nc2.ft2.coverage.HorizCoordSys;
 import ucar.nc2.internal.dataset.CoordTransformFactory;
 import ucar.nc2.units.SimpleUnit;
 import ucar.unidata.geoloc.VerticalTransform;
@@ -225,9 +219,7 @@ public class TestTransforms {
     ncd.close();
 
     if (varsMatch) {
-      if (!testGrid(filename, varName)) {
-        testCoverage(filename, varName);
-      }
+      testGrid(filename, varName);
     }
     return null;
   }
@@ -332,24 +324,6 @@ public class TestTransforms {
       assertThat(s).isEqualTo(sv);
     }
     return true;
-  }
-
-  private void testCoverage(String endpoint, String covName) throws IOException {
-    try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
-      assertThat(cc).isNotNull();
-      assertThat(cc.getCoverageCollections()).hasSize(1);
-      CoverageCollection gds = cc.getCoverageCollections().get(0);
-      assertThat(gds).isNotNull();
-      assertThat(gds.getCoverageType()).isEqualTo(FeatureType.CURVILINEAR);
-
-      HorizCoordSys hcs = gds.getHorizCoordSys();
-      assertThat(hcs).isNotNull();
-      assertThat(hcs.isProjection()).isFalse();
-      assertThat(hcs.getTransform()).isNull();
-
-      Coverage cover = gds.findCoverage(covName);
-      assertThat(cover).isNotNull();
-    }
   }
 
 }
