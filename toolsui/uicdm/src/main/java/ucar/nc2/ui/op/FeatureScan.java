@@ -12,13 +12,10 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
-import ucar.nc2.ft2.coverage.adapter.DtCoverageCS;
-import ucar.nc2.ft2.coverage.adapter.DtCoverageCSBuilder;
 import ucar.nc2.grid.GridCoordinateSystem;
 import ucar.nc2.internal.grid.GridNetcdfDataset;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -143,7 +140,6 @@ public class FeatureScan {
     Formatter gribType = new Formatter();
     StringBuilder info = new StringBuilder();
     Throwable problem;
-    DtCoverageCSBuilder builder; // LOOK replace with CoverageDataset
     GridCoordinateSystem gridCoordinateSystem;
 
     // no-arg constructor
@@ -158,9 +154,6 @@ public class FeatureScan {
         fileType = ds.getFileTypeId();
 
         Formatter errlog = new Formatter();
-        builder = DtCoverageCSBuilder.classify(ds, errlog);
-        info.append(errlog);
-        setCoordMap();
 
         ftFromMetadata = FeatureDatasetFactoryManager.findFeatureType(ds);
         findGribType(ds.getRootGroup(), gribType);
@@ -248,15 +241,6 @@ public class FeatureScan {
       return gridCoordinateSystem == null ? "" : gridCoordinateSystem.showFnSummary();
     }
 
-    public void setCoordMap() {
-      if (builder == null)
-        return;
-      DtCoverageCS cs = builder.makeCoordSys();
-      if (cs == null || cs.getCoverageType() == null)
-        return;
-      coordMap = "f:D(" + cs.getDomainRank() + ")->R(" + cs.getRangeRank() + ")";
-    }
-
     public String getFtMetadata() {
       return (ftFromMetadata == null) ? "" : ftFromMetadata.toString();
     }
@@ -269,18 +253,10 @@ public class FeatureScan {
       return gribType.toString();
     }
 
-    public String getDtCoverageCSBuilder() {
-      return builder == null ? "" : builder.showSummary();
-    }
-
     public void toString(Formatter f, boolean showInfo) {
       f.format("%s%n %s%n map = '%s'%n", getName(), getFileType(), getCoordMap());
       if (gridCoordinateSystem != null) {
         f.format("GridCoordinateSystem %s%n", gridCoordinateSystem.showFnSummary());
-      }
-
-      if (builder != null) {
-        f.format("%nDtCoverageCSBuilder %s%n", builder.toString());
       }
 
       if (showInfo && info != null) {
@@ -298,21 +274,6 @@ public class FeatureScan {
       Formatter f = new Formatter();
       toString(f, true);
       return f.toString();
-    }
-
-    public String runClassifier() {
-      Formatter ff = new Formatter();
-      String type = null;
-      try (NetcdfDataset ds = NetcdfDatasets.openDataset(f.getPath())) {
-        type = DtCoverageCSBuilder.describe(ds, ff);
-
-      } catch (IOException e) {
-        StringWriter sw = new StringWriter(10000);
-        e.printStackTrace(new PrintWriter(sw));
-        ff.format("%n%s", sw.toString());
-      }
-      ff.format("CoverageCS.Type = %s", type);
-      return ff.toString();
     }
   }
 

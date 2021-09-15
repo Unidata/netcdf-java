@@ -20,7 +20,12 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/** Coordinate System classification. TODO Here or Grid? */
+/**
+ * Coordinate System classification.
+ * 
+ * @deprecated use grid.DatasetClassifier
+ */
+@Deprecated
 public class DatasetClassifier {
   private final Formatter infolog;
   private final ArrayList<CoordSysClassifier> coordSysUsed = new ArrayList<>();

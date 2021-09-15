@@ -191,7 +191,9 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
     this.values = builder.values;
     if (this.values != null) {
       Preconditions.checkArgument(this.values.length == this.ncoords);
-      Preconditions.checkArgument(checkMonotonic(this.values));
+      if (builder.dependenceType == GridAxisDependenceType.independent) {
+        Preconditions.checkArgument(checkMonotonic(this.values));
+      }
     }
     if (this.getSpacing() != GridAxisSpacing.regularPoint) {
       Preconditions.checkNotNull(this.values);

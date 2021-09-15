@@ -121,7 +121,7 @@ public class TestGridReadHorizCylindrical {
 
       // make subset without stride
       GridReferencedArray geoArrayNo =
-          coverage.getReader().setTime(validTime).setLatLonBoundingBox(subsetLatLonRequest).read();
+          coverage.getReader().setDate(validTime).setLatLonBoundingBox(subsetLatLonRequest).read();
       assertThat(geoArrayNo).isNotNull();
       System.out.printf("geoArray = %s%n", geoArrayNo);
 
@@ -136,7 +136,7 @@ public class TestGridReadHorizCylindrical {
 
       // make subset with stride
       final int stride = 2;
-      GridReferencedArray geoArray = coverage.getReader().setTime(validTime).setLatLonBoundingBox(subsetLatLonRequest)
+      GridReferencedArray geoArray = coverage.getReader().setDate(validTime).setLatLonBoundingBox(subsetLatLonRequest)
           .setHorizStride(stride).read();
       assertThat(geoArray).isNotNull();
       System.out.printf("geoArray = %s%n", geoArray);

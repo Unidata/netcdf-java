@@ -7,16 +7,13 @@ package ucar.nc2.ui.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
-import ucar.nc2.ft2.coverage.CoverageCoordAxis1D;
 import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.calendar.CalendarDateFormatter;
 import ucar.nc2.grid.GridAxisPoint;
 import ucar.nc2.grid.GridTimeCoordinateSystem;
 import ucar.ui.util.NamedObject;
-import ucar.unidata.util.Format;
 
 /** Utililies for creating named objects. */
 public class NamedObjects {
@@ -42,59 +39,6 @@ public class NamedObjects {
       names.add(NamedObject.create(axis.getCoordName(i), axis.getShortName() + " " + axis.getUnitsString()));
     }
     return names;
-  }
-
-  public static List<NamedObject> getNames(CoverageCoordAxis1D axis) {
-    if (axis == null) {
-      return new ArrayList<>();
-    }
-    if (axis.getAxisType() == AxisType.Time || axis.getAxisType() == AxisType.RunTime) {
-      return getCoverageCoordTimeNames(axis);
-    }
-
-    List<NamedObject> result = new ArrayList<>();
-    for (int i = 0; i < axis.getNcoords(); i++) {
-      Object value = null;
-      switch (axis.getSpacing()) {
-        case regularPoint:
-        case irregularPoint:
-          value = Format.d(axis.getCoordMidpoint(i), 3);
-          break;
-
-        case regularInterval:
-        case contiguousInterval:
-        case discontiguousInterval:
-          value = new ucar.nc2.ft2.coverage.CoordInterval(axis.getCoordEdge1(i), axis.getCoordEdge2(i), 3);
-          break;
-      }
-      result.add(NamedObject.create(value, value + " " + axis.getUnits()));
-    }
-
-    return result;
-  }
-
-  private static List<NamedObject> getCoverageCoordTimeNames(CoverageCoordAxis1D axis) {
-    List<NamedObject> result = new ArrayList<>();
-    for (int i = 0; i < axis.getNcoords(); i++) {
-      double value;
-      switch (axis.getSpacing()) {
-        case regularPoint:
-        case irregularPoint:
-          value = axis.getCoordMidpoint(i);
-          result.add(NamedObject.create(axis.makeDate(value), axis.getAxisType().toString()));
-          break;
-
-        case regularInterval:
-        case contiguousInterval:
-        case discontiguousInterval:
-          ucar.nc2.ft2.coverage.CoordInterval coord =
-              new ucar.nc2.ft2.coverage.CoordInterval(axis.getCoordEdge1(i), axis.getCoordEdge2(i), 3);
-          result.add(NamedObject.create(coord, coord + " " + axis.getUnits()));
-          break;
-      }
-    }
-
-    return result;
   }
 
   /////////////////////////////////////////////////////////////////////////////

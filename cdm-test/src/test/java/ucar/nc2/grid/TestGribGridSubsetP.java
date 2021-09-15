@@ -101,7 +101,7 @@ public class TestGribGridSubsetP {
     if (rt_val != null)
       subset.setRunTime(rt_val);
     if (time_val != null)
-      subset.setTime(time_val);
+      subset.setDate(time_val);
     if (time_offset != null)
       subset.setTimeOffsetCoord(time_offset);
     if (vert_level != null)

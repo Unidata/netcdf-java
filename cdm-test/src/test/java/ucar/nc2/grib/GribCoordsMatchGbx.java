@@ -211,14 +211,14 @@ public class GribCoordsMatchGbx {
     }
 
     // check time
-    CalendarDate time_val = coords.getTime();
+    CalendarDate time_val = coords.getDate();
     if (time_val == null) {
       time_val = coords.getTimeOffsetDate();
     }
     Grib1ParamTime ptime = gr1.getParamTime(cust1);
     if (ptime.isInterval()) {
       CalendarDate[] gbxInv = getForecastInterval(pdss, ptime);
-      CalendarDateRange date_bounds = coords.getTimeRange();
+      CalendarDateRange date_bounds = coords.getDateRange();
       if (date_bounds == null) {
         date_bounds = makeDateBounds(coords, rt_val);
       }
@@ -344,7 +344,7 @@ public class GribCoordsMatchGbx {
       }
     }
 
-    CalendarDate time_val = coords.getTime();
+    CalendarDate time_val = coords.getDate();
     if (time_val == null) {
       time_val = coords.getTimeOffsetDate();
     }
@@ -352,7 +352,7 @@ public class GribCoordsMatchGbx {
     boolean timeOk = true;
     if (bean.isTimeInterval()) {
       TimeCoordIntvDateValue dateFromGribRecord = bean.getTimeIntervalDates();
-      CalendarDateRange date_bounds = coords.getTimeRange();
+      CalendarDateRange date_bounds = coords.getDateRange();
       if (date_bounds == null) {
         date_bounds = makeDateBounds(coords, rt_val);
       }

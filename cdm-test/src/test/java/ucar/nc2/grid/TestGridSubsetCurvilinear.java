@@ -5,54 +5,43 @@
 package ucar.nc2.grid;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.primitives.Ints;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import ucar.ma2.Array;
-import ucar.ma2.Index;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Section;
-import ucar.ma2.Section.Builder;
+import ucar.array.Array;
+import ucar.array.Index;
+import ucar.array.InvalidRangeException;
+import ucar.array.Section;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.calendar.CalendarDateRange;
 import ucar.nc2.calendar.CalendarDateUnit;
-import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.nc2.ft2.coverage.Coverage;
-import ucar.nc2.ft2.coverage.CoverageCollection;
-import ucar.nc2.ft2.coverage.CoverageCoordAxis;
-import ucar.nc2.ft2.coverage.CoverageCoordAxis1D;
-import ucar.nc2.ft2.coverage.CoverageCoordSys;
-import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
-import ucar.nc2.ft2.coverage.FeatureDatasetCoverage;
-import ucar.nc2.ft2.coverage.GeoReferencedArray;
-import ucar.nc2.ft2.coverage.HorizCoordSys;
-import ucar.nc2.ft2.coverage.SubsetParams;
-import ucar.nc2.internal.util.CompareNetcdf2;
+import ucar.nc2.internal.util.CompareArrayToArray;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.IOException;
-import java.util.Collections;
+import java.util.Arrays;
+import java.util.Formatter;
 
 import static com.google.common.truth.Truth.assertThat;
 
 /**
  * Test point and grid subsetting of a curvilinear coverage.
- *
- * todo: merge with cdm-test/src/test/java/ucar/nc2/ft/coverage/TestCoverageCurvilinear.java
  */
 @Category(NeedsCdmUnitTest.class)
 public class TestGridSubsetCurvilinear {
   private static final String curvilinearGrid = TestDir.cdmUnitTestDir + "transforms/UTM/artabro_20120425.nc";
-  private static FeatureDatasetCoverage covDs;
+  private static GridDataset covDs;
   private static NetcdfFile ncf;
+  private static final double TOL = 1.0e-5;
 
   private final String latVarName = "lat";
   private final String lonVarName = "lon";
@@ -77,45 +66,46 @@ public class TestGridSubsetCurvilinear {
       CalendarDate.fromUdunitIsoDate(null, subsetTimeIsoEnd).orElseThrow();
 
   // closest time, lat, and lon values to the subset time, lat, and lon from the the dataset
+  private final int closestIndexTimeStart = 21;
+  private final int closestIndexTimeEnd = 32;
   private final int closestTimeStart = 75600;
   private final int closestTimeEnd = 115200;
   private final CalendarDate closestCalendarDateStart =
       CalendarDate.fromUdunitIsoDate(null, "2012-04-26T09:00:00").orElseThrow();
   private final CalendarDate closestCalendarDateEnd =
       CalendarDate.fromUdunitIsoDate(null, "2012-04-26T20:00:00").orElseThrow();
+
+  private final int closestIndexX1 = 109;
+  private final int closestIndexY1 = 107;
   private final double closestLat1 = 43.42203903198242;
   private final double closestLon1 = -8.24138069152832;
   private final LatLonPoint closestLatLon1 = LatLonPoint.create(closestLat1, closestLon1);
+
+  private final int closestIndexX2 = 129;
+  private final int closestIndexY2 = 97;
   private final double closestLat2 = 43.468040466308594;
   private final double closestLon2 = -8.213236808776855;
   private final LatLonPoint closestLatLon2 = LatLonPoint.create(closestLat2, closestLon2);
 
-  // index values associated with the closest coordinate values
-  private final int closestIndexTimeStart = 21;
-  private final int closestIndexTimeEnd = 32;
-  private final int closestIndexX1 = 109;
-  private final int closestIndexY1 = 107;
-  private final int closestIndexX2 = 129;
-  private final int closestIndexY2 = 97;
-
   @BeforeClass
   public static void readDataset() throws IOException {
-    covDs = CoverageDatasetFactory.open(curvilinearGrid);
+    Formatter errlog = new Formatter();
+    covDs = GridDatasetFactory.openGridDataset(curvilinearGrid, errlog);
     ncf = NetcdfDatasets.openFile(curvilinearGrid, null);
-    System.out.printf("curvilinearGrid = %s%n", curvilinearGrid);
+    System.out.printf("curvilinearGrid = %s errs = %s%n", curvilinearGrid, errlog);
   }
 
   /////////////////////////////////////////////////
   // test helper methods to reduce code duplication
 
-  private void checkNeighborNumerical(Index neighborIndex, Array values, double subset, double actual) {
-    double neighbor = values.getDouble(neighborIndex);
+  private void checkNeighborNumerical(Index neighborIndex, Array<Number> values, double subset, double actual) {
+    double neighbor = values.get(neighborIndex).doubleValue();
     double neighborLatDiff = Math.abs(subset - neighbor);
     assertThat(Math.abs(subset - actual)).isLessThan(neighborLatDiff);
   }
 
-  private void checkNeighborLatLon(Index neighborIndex, Array latValues, Array lonValues, LatLonPoint subset,
-      LatLonPoint actual) {
+  private void checkNeighborLatLon(Index neighborIndex, Array<Number> latValues, Array<Number> lonValues,
+      LatLonPoint subset, LatLonPoint actual) {
     checkNeighborNumerical(neighborIndex, latValues, subset.getLatitude(), actual.getLatitude());
     checkNeighborNumerical(neighborIndex, lonValues, subset.getLongitude(), actual.getLongitude());
   }
@@ -123,12 +113,13 @@ public class TestGridSubsetCurvilinear {
   private void checkWellKnownLatLon(Variable lon, Variable lat, int closestIndexY, int closestIndexX,
       LatLonPoint closestLatLonPoint, LatLonPoint subsetLatLonPoint) throws IOException {
     // test well known spatial indices
-    Index testIndex = Index.factory(lon.getShape());
-    testIndex.set(new int[] {closestIndexY, closestIndexX});
-    Array lonValues = lon.read();
-    Array latValues = lat.read();
-    double actualLon = lonValues.getDouble(testIndex);
-    double actualLat = latValues.getDouble(testIndex);
+    Array<Number> lonValues = (Array<Number>) lon.readArray();
+    Array<Number> latValues = (Array<Number>) lat.readArray();
+
+    Index testIndex = lonValues.getIndex();
+    testIndex.set(closestIndexY, closestIndexX);
+    double actualLon = lonValues.get(testIndex).doubleValue();
+    double actualLat = latValues.get(testIndex).doubleValue();
     LatLonPoint actualLatLon = LatLonPoint.create(actualLat, actualLon);
 
     assertThat(actualLat).isWithin(1e-6).of(closestLatLonPoint.getLatitude());
@@ -136,15 +127,15 @@ public class TestGridSubsetCurvilinear {
 
     // check that surrounding grid points are not closer to the subset lat/lon than the one
     // manually identified as the closest
-    Index neighborIndex = Index.factory(lon.getShape());
+    Index neighborIndex = lonValues.getIndex();
     for (int j = closestIndexY - 1; j <= closestIndexY + 1; j = j + 2) {
-      neighborIndex.set(new int[] {j, closestIndexX});
+      neighborIndex.set(j, closestIndexX);
       checkNeighborLatLon(neighborIndex, latValues, lonValues, subsetLatLonPoint, actualLatLon);
       for (int i = closestIndexX - 1; i <= closestIndexX + 1; i = i + 2) {
-        neighborIndex.set(new int[] {closestIndexY, i});
+        neighborIndex.set(closestIndexY, i);
         checkNeighborLatLon(neighborIndex, latValues, lonValues, subsetLatLonPoint, actualLatLon);
 
-        neighborIndex.set(new int[] {j, i});
+        neighborIndex.set(j, i);
         checkNeighborLatLon(neighborIndex, latValues, lonValues, subsetLatLonPoint, actualLatLon);
       }
     }
@@ -153,10 +144,10 @@ public class TestGridSubsetCurvilinear {
   private void checkWellKnownTime(Variable time, int closestIndex, int closestTime, CalendarDate closestCalendarDate,
       String subsetIsoString) throws IOException {
     // test well known time indices
-    Index testTimeIndex = Index.factory(time.getShape());
-    Array timeValues = time.read();
-    testTimeIndex.set(new int[] {closestIndex});
-    int actualTime = timeValues.getInt(testTimeIndex);
+    Array<Number> timeValues = (Array<Number>) time.readArray();
+    Index testTimeIndex = timeValues.getIndex();
+    testTimeIndex.set(closestIndex);
+    int actualTime = timeValues.get(testTimeIndex).intValue();
     CalendarDateUnit cdu = CalendarDateUnit.fromUdunitString(null, time.getUnitsString()).orElseThrow();
     CalendarDate actualCalendarDate = cdu.makeCalendarDate(actualTime);
     assertThat(actualTime).isEqualTo(closestTime);
@@ -168,32 +159,32 @@ public class TestGridSubsetCurvilinear {
     CalendarDate subsetCalendarDate = CalendarDate.fromUdunitIsoDate(null, subsetIsoString).orElseThrow();
     double subsetTime = cdu.makeOffsetFromRefDate(subsetCalendarDate);
     for (int i = closestIndex - 1; i <= closestIndex + 1; i = i + 2) {
-      testTimeIndex.set(new int[] {i});
+      testTimeIndex.set(i);
       checkNeighborCalendarDate(testTimeIndex, timeValues, cdu, subsetTime, actualTime);
     }
   }
 
-  private void checkNeighborCalendarDate(Index neighborIndex, Array offsetTimeValues, CalendarDateUnit cdu,
+  private void checkNeighborCalendarDate(Index neighborIndex, Array<Number> offsetTimeValues, CalendarDateUnit cdu,
       double subsetOffsetTime, int actualOffsetTime) {
     checkNeighborNumerical(neighborIndex, offsetTimeValues, subsetOffsetTime, actualOffsetTime);
 
     CalendarDate actualCalendarDate = cdu.makeCalendarDate(actualOffsetTime);
-    CalendarDate neighborCalendarDate = cdu.makeCalendarDate(offsetTimeValues.getInt(neighborIndex));
+    CalendarDate neighborCalendarDate = cdu.makeCalendarDate(offsetTimeValues.get(neighborIndex).intValue());
     CalendarDate subsetCalendarDate = cdu.makeCalendarDate((long) subsetOffsetTime);
     double diffActualCalendar = Math.abs(subsetCalendarDate.getDifferenceInMsecs(actualCalendarDate));
     double diffNeighbor = Math.abs(subsetCalendarDate.getDifferenceInMsecs(neighborCalendarDate));
     assertThat(diffActualCalendar).isLessThan(diffNeighbor);
   }
 
-  private Array getExpectedData(Variable var, int startIndX, int endIndX, int startIndY, int endIndY)
+  private Array<Number> getExpectedData(Variable var, int startIndX, int endIndX, int startIndY, int endIndY)
       throws IOException, InvalidRangeException {
     return getExpectedData(var, startIndX, endIndX, startIndY, endIndY, -1, -1);
   }
 
-  private Array getExpectedData(Variable var, int startIndX, int endIndX, int startIndY, int endIndY, int startIndTime,
-      int endIndTime) throws InvalidRangeException, IOException {
+  private Array<Number> getExpectedData(Variable var, int startIndX, int endIndX, int startIndY, int endIndY,
+      int startIndTime, int endIndTime) throws InvalidRangeException, IOException {
     // Build a section string for the data read
-    Builder sectionBuilder = Section.builder();
+    Section.Builder sectionBuilder = Section.builder();
     ImmutableList<Dimension> dims = var.getDimensions();
     for (Dimension dim : dims) {
       String dimName = dim.getShortName();
@@ -217,14 +208,14 @@ public class TestGridSubsetCurvilinear {
               sectionBuilder.appendRange(endIndY, startIndY);
             }
           } else {
-            sectionBuilder.appendRangeAll();
+            sectionBuilder.appendRange(null);
           }
           break;
         case "time":
           if (startIndTime != -1) {
             sectionBuilder.appendRange(startIndTime, endIndTime);
           } else {
-            sectionBuilder.appendRangeAll();
+            sectionBuilder.appendRange(null);
           }
           break;
         default:
@@ -232,7 +223,7 @@ public class TestGridSubsetCurvilinear {
       }
     }
     // read directly from the 3D array
-    return var.read(sectionBuilder.build());
+    return (Array<Number>) var.readArray(sectionBuilder.build().fill(var.getShape()));
   }
 
   ///////////////
@@ -259,49 +250,42 @@ public class TestGridSubsetCurvilinear {
   public void testCoverageHcs() throws IOException {
     Variable lon = ncf.findVariable(lonVarName);
     Variable lat = ncf.findVariable(latVarName);
+    assertThat(lat).isNotNull();
+    assertThat(lon).isNotNull();
 
-    assert lon != null;
-    assert lat != null;
+    Array<Number> lonValues = (Array<Number>) lon.readArray();
+    Array<Number> latValues = (Array<Number>) lat.readArray();
 
-    Array lonValues = lon.read();
-    Array latValues = lat.read();
-
-    Index testIndex = Index.factory(lon.getShape());
-    testIndex.set(new int[] {closestIndexY1, closestIndexX1});
-    double actualLon = lonValues.getDouble(testIndex);
-    double actualLat = latValues.getDouble(testIndex);
+    Index testIndex = lonValues.getIndex();
+    testIndex.set(closestIndexY1, closestIndexX1);
+    double actualLon = lonValues.get(testIndex).doubleValue();
+    double actualLat = latValues.get(testIndex).doubleValue();
     LatLonPoint actualLatLon = LatLonPoint.create(actualLat, actualLon);
 
-    CoverageCollection gcc = covDs.findCoverageDataset(FeatureType.CURVILINEAR);
-    Coverage coverage = gcc.findCoverage(covVarName);
-    CoverageCoordSys coordSys = coverage.getCoordSys();
-    HorizCoordSys hcs = coordSys.getHorizCoordSys();
+    Grid coverage = covDs.findGrid(covVarName).orElseThrow();
+    GridHorizCoordinateSystem hcs = coverage.getHorizCoordinateSystem();
 
-    // make sure the coverage coordinate system is able to get the same lat/lon point at
+    // make sure the coverage coordinate system is able to get the expected lat/lon point
     // using the expected x and y indices
-    LatLonPoint covLatLonPoint = hcs.getLatLon(closestIndexY1, closestIndexX1);
-    assertThat(covLatLonPoint).isEqualTo(actualLatLon);
+    LatLonPoint covLatLonPoint = hcs.getLatLon(closestIndexX1, closestIndexY1);
+    assertThat(covLatLonPoint.nearlyEquals(actualLatLon, TOL)).isTrue();
   }
 
   @Test
   public void testCoverageTime() throws IOException {
     Variable time = ncf.findVariable(timeVarName);
+    assertThat(time).isNotNull();
 
-    assert time != null;
+    Array<Number> timeValues = (Array<Number>) time.readArray();
 
-    Array timeValues = time.read();
+    Index testIndex = timeValues.getIndex();
+    testIndex.set(closestIndexTimeStart);
+    int actualTime = timeValues.get(testIndex).intValue();
 
-    Index testIndex = Index.factory(time.getShape());
-    testIndex.set(new int[] {closestIndexTimeStart});
-    int actualTime = timeValues.getInt(testIndex);
-
-    CoverageCollection gcc = covDs.findCoverageDataset(FeatureType.CURVILINEAR);
-    Coverage coverage = gcc.findCoverage(covVarName);
-    CoverageCoordSys coordSys = coverage.getCoordSys();
-    CoverageCoordAxis covAxis = coordSys.getTimeAxis();
-    assertThat(covAxis).isInstanceOf(CoverageCoordAxis1D.class);
-    CoverageCoordAxis1D timeAxis = (CoverageCoordAxis1D) covAxis;
-    double timeAxisValue = timeAxis.getCoordMidpoint(closestIndexTimeStart);
+    Grid coverage = covDs.findGrid(covVarName).orElseThrow();
+    GridTimeCoordinateSystem tcs = coverage.getTimeCoordinateSystem();
+    GridAxis<?> timeAxis = tcs.getTimeOffsetAxis(0);
+    double timeAxisValue = timeAxis.getCoordDouble(closestIndexTimeStart);
 
     // make sure the coverage coordinate system is able to get the same lat/lon point at
     // using the expected x and y indices
@@ -310,126 +294,116 @@ public class TestGridSubsetCurvilinear {
   }
 
   @Test
-  public void coverageCurvilinearPointSubset() throws IOException, InvalidRangeException {
+  public void testSetLatLonPoint() throws IOException, ucar.array.InvalidRangeException {
     Variable var = ncf.findVariable(covVarName);
-    assert var != null;
+    assertThat(var).isNotNull();
     String varName = var.getFullName();
-    assert varName != null;
+    assertThat(varName).isNotNull();
+
+    // Now, subset the coverage and compare with the time series read from the array object
+    Grid coverage = covDs.findGrid(covVarName).orElseThrow();
+    GridReferencedArray geoArray = coverage.getReader().setLatLonPoint(subsetLatLon1).setTimeLatest().read();
+    MaterializedCoordinateSystem mcs = geoArray.getMaterializedCoordinateSystem();
+    assertThat(mcs).isNotNull();
+    System.out.printf(" data cs shape=%s%n", mcs.getMaterializedShape());
+    System.out.printf(" data shape=%s%n", Arrays.toString(geoArray.data().getShape()));
+
+    assertThat(Ints.asList(geoArray.data().getShape())).isEqualTo(mcs.getMaterializedShape());
+
+    // compare the values of the data arrays
+    double val = geoArray.data().getScalar().doubleValue();
+    assertThat(val).isWithin(TOL).of(0.08546);
+  }
+
+  @Test
+  public void testSetLatLonPointWithTimeRange() throws IOException, InvalidRangeException {
+    Variable var = ncf.findVariable(covVarName);
+    assertThat(var).isNotNull();
 
     // testWellKnownValues() and testCoverageHcs() shows that we we have correctly identified the x and y indices for
     // the closest grid point to the subset lat/lon.
     // Now, let's read the expected "time series" from the grid point and test that against the time series
     // from the subset coverage
-    Array expectedTimeSeries = getExpectedData(var, closestIndexX1, closestIndexX1, closestIndexY1, closestIndexY1);
+    Array<Number> expectedTimeSeries = getExpectedData(var, closestIndexX1, closestIndexX1, closestIndexY1,
+        closestIndexY1, closestIndexTimeStart, closestIndexTimeEnd);
 
     // Now, subset the coverage and compare with the time series read from the array object
-    CoverageCollection gcc = covDs.findCoverageDataset(FeatureType.CURVILINEAR);
-    Coverage coverage = gcc.findCoverage(covVarName);
-
-    // subset coverage using well known location
-    SubsetParams subsetParams = new SubsetParams();
-    subsetParams.setVariables(Collections.singletonList(covVarName));
-    subsetParams.setLatLonPoint(subsetLatLon1);
-    GeoReferencedArray covGeoRefArray = coverage.readData(subsetParams);
-    Array subsetData = covGeoRefArray.getData();
+    Grid coverage = covDs.findGrid(covVarName).orElseThrow();
+    GridReferencedArray geoArray = coverage.getReader().setLatLonPoint(subsetLatLon1)
+        .setDateRange(CalendarDateRange.of(subsetCalendarDateStart, subsetCalendarDateEnd)).read();
+    MaterializedCoordinateSystem mcs = geoArray.getMaterializedCoordinateSystem();
+    assertThat(mcs).isNotNull();
 
     // expected time series array and the coverage subset array should have the same shape
-    assertThat(expectedTimeSeries.getShape()).isEqualTo(subsetData.getShape());
+    assertThat(geoArray.data().getShape()).isEqualTo(expectedTimeSeries.getShape());
     // compare the values of the data arrays
-    assertThat(var.getFullName()).isNotNull();
-    assertThat(CompareNetcdf2.compareData(var.getFullName(), expectedTimeSeries, subsetData)).isTrue();
+    assertThat(CompareArrayToArray.compareData(var.getFullName(), expectedTimeSeries, geoArray.data())).isTrue();
   }
 
   @Test
-  public void coverageCurvilinearPointSubsetWithTime() throws IOException, InvalidRangeException {
+  public void testSetLatLonBB() throws IOException, InvalidRangeException {
     Variable var = ncf.findVariable(covVarName);
-    assert var != null;
-
-    // testWellKnownValues() and testCoverageHcs() shows that we we have correctly identified the x and y indices for
-    // the closest grid point to the subset lat/lon.
-    // Now, let's read the expected "time series" from the grid point and test that against the time series
-    // from the subset coverage
-    Array expectedTimeSeries = getExpectedData(var, closestIndexX1, closestIndexX1, closestIndexY1, closestIndexY1,
-        closestIndexTimeStart, closestIndexTimeEnd);
-
-    // Now, subset the coverage and compare with the time series read from the array object
-    CoverageCollection gcc = covDs.findCoverageDataset(FeatureType.CURVILINEAR);
-    Coverage coverage = gcc.findCoverage(covVarName);
-
-    // subset coverage using well known location
-    SubsetParams subsetParams = new SubsetParams();
-    subsetParams.setVariables(Collections.singletonList(covVarName));
-    subsetParams.setLatLonPoint(subsetLatLon1);
-    subsetParams.setTimeRange(CalendarDateRange.of(subsetCalendarDateStart, subsetCalendarDateEnd));
-    GeoReferencedArray covGeoRefArray = coverage.readData(subsetParams);
-    Array subsetData = covGeoRefArray.getData();
-
-    // expected time series array and the coverage subset array should have the same shape
-    assertThat(expectedTimeSeries.getShape()).isEqualTo(subsetData.getShape());
-    // compare the values of the data arrays
-    assertThat(CompareNetcdf2.compareData(var.getFullName(), expectedTimeSeries, subsetData)).isTrue();
-  }
-
-  @Test
-  public void coverageCurvilinearGridSubset() throws IOException, InvalidRangeException {
-    Variable var = ncf.findVariable(covVarName);
-    assert var != null;
+    assertThat(var).isNotNull();
     String varName = var.getFullName();
-    assert varName != null;
+    assertThat(varName).isNotNull();
 
-    // subset coverage using well known location
-    CoverageCollection gcc = covDs.findCoverageDataset(FeatureType.CURVILINEAR);
-    Coverage coverage = gcc.findCoverage(covVarName);
-    SubsetParams subsetParams = new SubsetParams();
-    subsetParams.setVariables(Collections.singletonList(covVarName));
     double deltaLat = subsetLatLon2.getLatitude() - subsetLatLon1.getLatitude();
     double deltaLon = subsetLatLon2.getLongitude() - subsetLatLon1.getLongitude();
     LatLonRect subsetBoundingBox = LatLonRect.builder(subsetLatLon1, deltaLat, deltaLon).build();
-    subsetParams.setLatLonBoundingBox(subsetBoundingBox);
-    GeoReferencedArray covGeoRefArray = coverage.readData(subsetParams);
-    LatLonRect covSubsetBoundingBox = covGeoRefArray.getCoordSysForData().getHorizCoordSys().calcLatLonBoundingBox();
 
-    // make sure that the bounding box of the subsetted data from the coverage is contained within the
-    // bounding box of the area used to subset
-    assertThat(subsetBoundingBox.containedIn(covSubsetBoundingBox)).isTrue();
+    // subset coverage using well known location
+    Grid coverage = covDs.findGrid(covVarName).orElseThrow();
+    GridReferencedArray geoArray = coverage.getReader().setLatLonBoundingBox(subsetBoundingBox).read();
+    MaterializedCoordinateSystem mcs = geoArray.getMaterializedCoordinateSystem();
+    assertThat(mcs).isNotNull();
+
+    // the returned area is generally bigger thaan the request, esp for curvilinear
+    LatLonRect covSubsetBoundingBox = mcs.getHorizCoordinateSystem().getLatLonBoundingBox();
+    System.out.printf(" request llbb= %s%n", subsetBoundingBox);
+    System.out.printf(" subset llbb= %s%n", covSubsetBoundingBox);
+    assertThat(covSubsetBoundingBox.nearlyEquals(LatLonRect.fromSpec("43.404860, -8.274957, 0.080894, 0.110731"), TOL))
+        .isTrue();
   }
 
   @Test
-  public void coverageCurvilinearGridSubsetWithTime() throws IOException, InvalidRangeException {
+  public void testSetLatLonBBWithTimeRange() throws IOException, InvalidRangeException {
     Variable var = ncf.findVariable(covVarName);
-    assert var != null;
+    assertThat(var).isNotNull();
     String varName = var.getFullName();
-    assert varName != null;
+    assertThat(varName).isNotNull();
 
     Variable timeVar = ncf.findVariable(timeVarName);
-    assert timeVar != null;
+    assertThat(timeVar).isNotNull();
+    Array<Number> timeVarVals = (Array<Number>) timeVar.readArray();
 
-    // subset coverage using well known location
-    CoverageCollection gcc = covDs.findCoverageDataset(FeatureType.CURVILINEAR);
-    Coverage coverage = gcc.findCoverage(covVarName);
-    SubsetParams subsetParams = new SubsetParams();
-    subsetParams.setVariables(Collections.singletonList(covVarName));
     double deltaLat = subsetLatLon2.getLatitude() - subsetLatLon1.getLatitude();
     double deltaLon = subsetLatLon2.getLongitude() - subsetLatLon1.getLongitude();
     LatLonRect subsetBoundingBox = LatLonRect.builder(subsetLatLon1, deltaLat, deltaLon).build();
-    subsetParams.setLatLonBoundingBox(subsetBoundingBox);
-    subsetParams.setTimeRange(CalendarDateRange.of(subsetCalendarDateStart, subsetCalendarDateEnd));
-    GeoReferencedArray covGeoRefArray = coverage.readData(subsetParams);
+
+    // subset coverage using well known location
+    Grid coverage = covDs.findGrid(covVarName).orElseThrow();
+    GridReferencedArray geoArray = coverage.getReader().setLatLonBoundingBox(subsetBoundingBox)
+        .setDateRange(CalendarDateRange.of(subsetCalendarDateStart, subsetCalendarDateEnd)).read();
+    MaterializedCoordinateSystem mcs = geoArray.getMaterializedCoordinateSystem();
+    assertThat(mcs).isNotNull();
 
     // compare subset time values
-    int nPointsTime = covGeoRefArray.getCoordSysForData().getTimeAxis().getNcoords();
+    GridAxisPoint timeAxis = (GridAxisPoint) mcs.getTimeCoordSystem().getTimeOffsetAxis(0);
+    int nPointsTime = timeAxis.getNominalSize();
     assertThat(nPointsTime).isEqualTo(closestIndexTimeEnd - closestIndexTimeStart + 1);
-    Array covAxisVals = covGeoRefArray.getCoordSysForData().getTimeAxis().getCoordsAsArray();
-    Array timeVarVals = timeVar.read();
-    for (int i = 0; i < nPointsTime; i++) {
-      double timeVarVal = timeVarVals.getDouble(closestIndexTimeStart + i);
-      assertThat(timeVarVal).isWithin(1e-6).of(covAxisVals.getDouble(i));
+    int idx = 0;
+    for (Number coord : timeAxis) {
+      double timeVarVal = timeVarVals.get(closestIndexTimeStart + idx).doubleValue();
+      assertThat(timeVarVal).isWithin(1e-6).of(coord.doubleValue());
+      idx++;
     }
 
-    // make sure that the bounding box of the subsetted data from the coverage is contained within the
-    // bounding box of the area used to subset
-    LatLonRect covSubsetBoundingBox = covGeoRefArray.getCoordSysForData().getHorizCoordSys().calcLatLonBoundingBox();
-    assertThat(subsetBoundingBox.containedIn(covSubsetBoundingBox)).isTrue();
+    // the returned area is generally bigger thaan the request, esp for curvilinear
+    LatLonRect covSubsetBoundingBox = mcs.getHorizCoordinateSystem().getLatLonBoundingBox();
+    System.out.printf(" request llbb= %s%n", subsetBoundingBox);
+    System.out.printf(" subset llbb= %s%n", covSubsetBoundingBox);
+    assertThat(covSubsetBoundingBox.nearlyEquals(LatLonRect.fromSpec("43.404860, -8.274957, 0.080894, 0.110731"), TOL))
+        .isTrue();
   }
 
   @AfterClass

@@ -19,7 +19,6 @@ import ucar.unidata.util.StringUtil2;
 /**
  * Specifies the coordinates of a Variable's values.
  *
- *
  * <pre>
  * Mathematically it is a vector function F from index space to Sn:
  *  F(i,j,k,...) -&gt; (S1, S2, ...Sn)
@@ -46,8 +45,7 @@ import ucar.unidata.util.StringUtil2;
  * axis and a Projection CoordinateTransform will have <i>isGeoReferencing()</i> true.
  * A CoordinateSystem that has a Height, Pressure, or GeoZ axis will have <i>hasVerticalAxis()</i> true.
  * <p>
- * Further CoordinateSystems specialization is done by "data type specific" classes such as
- * ucar.nc2.ft2.coverage.grid.GridCoordSys.
+ * Further CoordinateSystems specialization is done by "data type specific" classes such as ucar.nc2.grid.
  *
  * @author caron
  * @see <a href="https://www.unidata.ucar.edu/software/netcdf-java/reference/CSObjectModel.html">

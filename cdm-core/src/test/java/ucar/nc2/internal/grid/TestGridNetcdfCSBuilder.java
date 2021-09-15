@@ -52,7 +52,7 @@ public class TestGridNetcdfCSBuilder {
     builder.setProjection(coordSys.getProjection());
 
     for (CoordinateAxis axis : coordSys.getCoordinateAxes()) {
-      CoordAxisToGridAxis subject = new CoordAxisToGridAxis(axis, GridAxisDependenceType.independent, true);
+      CoordAxisToGridAxis subject = CoordAxisToGridAxis.create(axis, GridAxisDependenceType.independent, true);
       GridAxis<?> gridAxis = subject.extractGridAxis();
       builder.addAxis(gridAxis);
     }

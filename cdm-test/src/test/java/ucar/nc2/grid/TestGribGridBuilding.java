@@ -5,28 +5,16 @@
 
 package ucar.nc2.grid;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import ucar.ma2.Array;
-import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Attribute;
 import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.constants.FeatureType;
-import ucar.nc2.ft2.coverage.Coverage;
-import ucar.nc2.ft2.coverage.CoverageCollection;
-import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
-import ucar.nc2.ft2.coverage.FeatureDatasetCoverage;
-import ucar.nc2.ft2.coverage.GeoReferencedArray;
-import ucar.nc2.ft2.coverage.SubsetParams;
-import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Formatter;
 
 import static com.google.common.truth.Truth.assertThat;

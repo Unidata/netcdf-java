@@ -1,7 +1,6 @@
 /* Copyright */
 package ucar.nc2.dataset;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -9,9 +8,8 @@ import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.ft.FeatureDataset;
-import ucar.nc2.ft.FeatureDatasetFactoryManager;
-import ucar.nc2.ft2.coverage.adapter.DtCoverageCSBuilder;
+import ucar.nc2.grid.GridDataset;
+import ucar.nc2.grid.GridDatasetFactory;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.io.File;
@@ -21,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Formatter;
 import java.util.List;
+import java.util.Optional;
 
 import static com.google.common.truth.Truth.assertThat;
 
@@ -68,14 +67,14 @@ public class TestConventionFeatureTypes {
 
   @Test
   public void testFeatureDatasets() throws IOException {
+    Formatter errlog = new Formatter();
     for (File f : getAllFilesInDirectoryStandardFilter(dir)) {
       System.out.printf("Open FeatureDataset %s%n", f.getPath());
-      try (FeatureDataset fd = FeatureDatasetFactoryManager.open(type, f.getPath(), null, new Formatter())) {
-        assertThat(fd).isNotNull();
-        if (type == FeatureType.GRID)
-          Assert.assertTrue(f.getPath(), fd.getFeatureType().isCoverageFeatureType());
-        else if (type == FeatureType.POINT)
-          Assert.assertTrue(f.getPath(), fd.getFeatureType().isPointFeatureType());
+      try (GridDataset gds = GridDatasetFactory.openGridDataset(f.getPath(), errlog)) {
+        assertThat(gds).isNotNull();
+        if (type == FeatureType.GRID) {
+          assertThat(gds.getFeatureType().isCoverageFeatureType()).isTrue();
+        }
       }
     }
   }
@@ -85,11 +84,12 @@ public class TestConventionFeatureTypes {
     if (type != FeatureType.GRID) {
       return;
     }
+    Formatter errlog = new Formatter();
     for (File f : getAllFilesInDirectoryStandardFilter(dir)) {
       System.out.printf("DtCoverageCSBuilder.classify %s%n", f.getPath());
-      try (NetcdfDataset ds = NetcdfDatasets.openDataset(f.getPath())) {
-        DtCoverageCSBuilder builder = DtCoverageCSBuilder.classify(ds, new Formatter());
-        Assert.assertNotNull(builder);
+      try (NetcdfDataset ds = NetcdfDatasets.openDataset(f.getPath());
+          GridDataset gds = GridDatasetFactory.wrapGridDataset(ds, errlog).orElseThrow()) {
+        assertThat(gds).isNotNull();
       }
     }
   }

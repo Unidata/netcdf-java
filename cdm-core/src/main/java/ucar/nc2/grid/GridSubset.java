@@ -28,32 +28,31 @@ public class GridSubset {
 
   public static final String runtime = "runtime"; // value = CalendarDate
   public static final String runtimeLatest = "runtimeLatest"; // value = Boolean
-  public static final String runtimeAll = "runtimeAll"; // value = Boolean
+  public static final String runtimeAll = "runtimeAll"; // value = Boolean LOOK unimplemented
 
-  // LOOK The value is the offset in the units of the GridAxis, or baseDate?
+  // The value is the offset in the units of the GridAxis
   public static final String timeOffset = "timeOffset"; // value = Double
   public static final String timeOffsetIntv = "timeOffsetIntv"; // value = CoordInterval
-  public static final String timeOffsetAll = "timeOffsetAll"; // value = Boolean
-  public static final String timeOffsetFirst = "timeOffsetFirst"; // value = Boolean LOOK deprecated I think
+  public static final String timeOffsetRange = "timeOffsetRange"; // value = CoordInterval (start, end or range).
 
   // validtime
-  public static final String time = "time"; // value = CalendarDate
-  public static final String timeRange = "timeRange"; // value = CalendarDateRange LOOK unimplemented
+  public static final String date = "date"; // value = CalendarDate
+  public static final String dateRange = "dateRange"; // value = CalendarDateRange
+
+  public static final String timeAll = "timeAll"; // value = Boolean
+  public static final String timeFirst = "timeFirst"; // value = Boolean
   public static final String timeLatest = "timeLatest"; // value = Boolean
   public static final String timePresent = "timePresent"; // value = Boolean
-  public static final String timeStride = "timeStride"; // value = Integer LOOK is this needed?
-  public static final String timeAll = "timeAll"; // value = Boolean LOOK whats diff with timeOffsetAll?
-  public static final String timePoint = "timePoint"; // value = Double LOOK whats diff with timeOffset?
-  public static final String timeIntv = "timeIntv"; // value = CoordInterval LOOK whats diff with timeOffsetIntv?
+  public static final String timeStride = "timeStride"; // value = Integer LOOK unimplemented
 
   public static final String vertPoint = "vertPoint"; // value = Double
   public static final String vertIntv = "vertIntv"; // value = CoordInterval
   public static final String ensCoord = "ensCoord"; // value = Number
 
+  public static final String latlonPoint = "latlonPoint"; // value = LatLonPoint
   public static final String latlonBB = "latlonBB"; // value = LatLonRect
   public static final String projBB = "projBB"; // value = ProjectionRect
   public static final String horizStride = "horizStride"; // value = Integer
-  public static final String latlonPoint = "latlonPoint"; // value = LatLonPoint
 
   // cant use these for selecting, used for validation LOOK not being set
   public static final String timeOffsetDate = "timeOffsetDate"; // value = CalendarDate
@@ -309,8 +308,8 @@ public class GridSubset {
     return getCalendarDate(runtime);
   }
 
-  public GridSubset setRunTime(CalendarDate date) {
-    req.put(runtime, date);
+  public GridSubset setRunTime(CalendarDate runDate) {
+    req.put(runtime, runDate);
     return this;
   }
 
@@ -340,33 +339,21 @@ public class GridSubset {
   }
 
   @Nullable
-  public CalendarDate getTime() {
-    return getCalendarDate(time);
+  public CalendarDate getDate() {
+    return getCalendarDate(date);
   }
 
-  public GridSubset setTime(CalendarDate date) {
-    req.put(time, date);
+  public GridSubset setDate(CalendarDate datetime) {
+    req.put(GridSubset.date, datetime);
     return this;
   }
 
-  @Nullable
-  public Double getTimePoint() {
-    return getDouble(timePoint);
+  public boolean getTimeAll() {
+    return isTrue(timeAll);
   }
 
-  @Nullable
-  public CoordInterval getTimeIntv() {
-    return getCoordInterval(timeIntv);
-  }
-
-  public GridSubset setTimeCoord(Object coord) {
-    if (coord instanceof Number) {
-      req.put(timePoint, coord);
-    } else if (coord instanceof CoordInterval) {
-      req.put(timeIntv, coord);
-    } else {
-      throw new RuntimeException("setTimeCoord must be Number or CoordInterval " + coord);
-    }
+  public GridSubset setTimeAll() {
+    req.put(timeAll, true);
     return this;
   }
 
@@ -389,12 +376,12 @@ public class GridSubset {
   }
 
   @Nullable
-  public CalendarDateRange getTimeRange() {
-    return getCalendarDateRange(timeRange);
+  public CalendarDateRange getDateRange() {
+    return getCalendarDateRange(dateRange);
   }
 
-  public GridSubset setTimeRange(CalendarDateRange dateRange) {
-    req.put(timeRange, dateRange);
+  public GridSubset setDateRange(CalendarDateRange dateRange) {
+    req.put(GridSubset.dateRange, dateRange);
     return this;
   }
 
@@ -431,8 +418,19 @@ public class GridSubset {
     return getCoordInterval(timeOffsetIntv);
   }
 
-  public boolean getTimeOffsetFirst() {
-    return isTrue(timeOffsetFirst);
+  @Nullable
+  public GridSubset setTimeOffsetRange(CoordInterval range) {
+    req.put(timeOffsetRange, range);
+    return this;
+  }
+
+  @Nullable
+  public CoordInterval getTimeOffsetRange() {
+    return getCoordInterval(timeOffsetRange);
+  }
+
+  public boolean getTimeFirst() {
+    return isTrue(timeFirst);
   }
 
   // LOOK not set - used in grib validation
@@ -445,8 +443,8 @@ public class GridSubset {
     return (CalendarDateUnit) get(timeOffsetUnit);
   }
 
-  public GridSubset setTimeOffsetFirst() {
-    req.put(timeOffsetFirst, true);
+  public GridSubset setTimeFirst() {
+    req.put(timeFirst, true);
     return this;
   }
 

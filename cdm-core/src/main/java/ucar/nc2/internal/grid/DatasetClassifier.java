@@ -19,6 +19,7 @@ import ucar.nc2.units.SimpleUnit;
 import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.projection.CurvilinearProjection;
 import ucar.unidata.geoloc.projection.RotatedPole;
+import ucar.unidata.geoloc.projection.sat.Geostationary;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -166,7 +167,7 @@ public class DatasetClassifier {
         }
 
         Projection p = cs.getProjection();
-        if (!(p instanceof RotatedPole)) {
+        if (!(p instanceof RotatedPole) && !(p instanceof Geostationary)) {
           if (!SimpleUnit.kmUnit.isCompatible(xaxis.getUnitsString())) {
             infolog.format(" %s: X axis units are not convertible to km%n", cs.getName());
           }
