@@ -16,7 +16,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
 
 import static com.google.common.truth.Truth.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertThrows;
 
 /** Test {@link ExtractTimeCoordinateValues} */
 public class TestExtractTimeCoordinateValues {
@@ -98,14 +98,9 @@ public class TestExtractTimeCoordinateValues {
 
     CoordinateAxis.Builder<?> builder = CoordinateAxis.fromVariableDS(vdsBuilder).setAxisType(AxisType.Time);
     CoordinateAxis axis = builder.build(parent.build());
-    try {
-      new ExtractTimeCoordinateValues(axis);
-      fail();
-    } catch (Exception e) {
-      e.printStackTrace();
-      assertThat(e).isInstanceOf(RuntimeException.class);
-      assertThat(e.getMessage()).contains("badenoff");
-    }
+
+    assertThrows(IllegalArgumentException.class, () -> new ExtractTimeCoordinateValues(axis)).getMessage()
+        .contains("badenoff");
   }
 
   @Test

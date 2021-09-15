@@ -10,31 +10,19 @@ import org.junit.Test;
 import java.util.Random;
 
 import static com.google.common.truth.Truth.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertThrows;
 
 /** Test {@link ucar.array.Range} */
 public class TestRange {
   Random random = new Random(System.currentTimeMillis());
 
   @Test
-  public void testNonNegetive() throws InvalidRangeException {
-    try {
-      Range r = new Range(-10, 10, 9);
-    } catch (Exception e) {
-      assertThat(e.getMessage()).contains("first (-10) must be >= 0");
-    }
+  public void testNonNegetive() {
+    assertThrows(InvalidRangeException.class, () -> new Range(-10, 10, 9)).getMessage()
+        .contains("first (-10) must be >= 0");
 
-    try {
-      Range r = new Range(0, -10, 9);
-    } catch (Exception e) {
-      assertThat(e.getMessage()).contains("last (-10) must be >= first (0)");
-    }
-
-    try {
-      Range r = new Range(0, 10, -9);
-    } catch (Exception e) {
-      assertThat(e.getMessage()).contains("stride (-9) must be > 0");
-    }
+    assertThrows(InvalidRangeException.class, () -> new Range(0, -10, 9)).getMessage()
+        .contains("last (-10) must be >= first (0)");
   }
 
   @Test
@@ -108,7 +96,7 @@ public class TestRange {
   }
 
   @Test
-  public void testCopyWithStride() {
+  public void testCopyWithStride() throws InvalidRangeException {
     Range r = Range.make("test", 42);
 
     Range rs = r.copyWithStride(6);
@@ -123,16 +111,11 @@ public class TestRange {
     assertThat(rs.last()).isEqualTo(r.first());
     assertThat(rs.length()).isEqualTo(1);
 
-    try {
-      Range bad = r.copyWithStride(-1);
-      fail();
-    } catch (Exception e) {
-      assertThat(e.getMessage()).contains("stride (-1) must be > 0");
-    }
+    assertThrows(InvalidRangeException.class, () -> r.copyWithStride(-1));
   }
 
   @Test
-  public void testCopyWithStride2() {
+  public void testCopyWithStride2() throws InvalidRangeException {
     Range r0 = Range.make(0, 10, 3);
     assertThat(r0.stride()).isEqualTo(3);
     assertThat(r0.first()).isEqualTo(0);
@@ -160,12 +143,8 @@ public class TestRange {
     }
     assertThat(count).isEqualTo(0);
 
-    try {
-      Range fake = r.copyWithName("FAKE");
-      fail();
-    } catch (Exception e) {
-      assertThat(e.getMessage()).contains("last (-1) must be >= first (0)");
-    }
+    // cant copy empty
+    assertThrows(RuntimeException.class, () -> r.copyWithName("FAKE"));
   }
 
   @Test
@@ -203,12 +182,8 @@ public class TestRange {
     }
     assertThat(count).isEqualTo(0);
 
-    try {
-      Range fake = r.copyWithName("FAKE");
-      fail();
-    } catch (Exception e) {
-      assertThat(e.getMessage()).contains("last (-2) must be >= first (0)");
-    }
+    // cant copy vlen
+    assertThrows(RuntimeException.class, () -> r.copyWithName("FAKE"));
   }
 
   @Test

@@ -106,7 +106,7 @@ class ExtractTimeCoordinateValues {
     } catch (Exception e) {
       errMessages.format("Bad time coordinate '%s' in dataset '%s'%n", coordValue, org.getDatasetLocation());
       log.info("Bad time coordinate '{}' in dataset '{}'", coordValue, org.getDatasetLocation());
-      throw new RuntimeException(errMessages.toString(), e);
+      throw new IllegalArgumentException(errMessages.toString(), e);
     }
   }
 }

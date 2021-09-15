@@ -7,7 +7,7 @@ package ucar.nc2.calendar;
 
 import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth8.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertThrows;
 
 import java.lang.invoke.MethodHandles;
 import java.text.DateFormat;
@@ -43,8 +43,8 @@ public class TestUdunitCalendarDateParser {
   }
 
   @Test
-  public void testBad() {
-    claimBad("1143848700");
+  public void testBadWithException() {
+    claimBadWithException("1143848700");
   }
 
   @Test
@@ -129,23 +129,18 @@ public class TestUdunitCalendarDateParser {
   }
 
   private void claimGood(String s) {
-    try {
-      CalendarDate result = CalendarDate.fromUdunitIsoDate(null, s).orElseThrow();
-      System.out.printf("%s == %s%n", s, result);
-    } catch (Exception e) {
-      e.printStackTrace();
-      fail();
-    }
+    CalendarDate result = CalendarDate.fromUdunitIsoDate(null, s).orElseThrow();
+    System.out.printf("%s == %s%n", s, result);
   }
 
   private void claimBad(String s) {
-    try {
-      CalendarDate result = CalendarDate.fromUdunitIsoDate(null, s).orElseThrow();
-      System.out.printf("%s = %s should have failed%n", s, result);
-      fail();
-    } catch (Exception e) {
-      System.out.printf("expected fail = %s%n", s);
-    }
+    System.out.printf("%s should fail%n", s);
+    assertThat(CalendarDate.fromUdunitIsoDate(null, s).isEmpty());
+  }
+
+  private void claimBadWithException(String s) {
+    System.out.printf("%s should fail%n", s);
+    assertThrows(RuntimeException.class, () -> CalendarDate.fromUdunitIsoDate(null, s));
   }
 
   @Test
@@ -236,19 +231,13 @@ public class TestUdunitCalendarDateParser {
 
   private void testSO(String s) {
     System.out.printf("'%s': ", s);
-    try {
-      CalendarDate isoDate = CalendarDate.fromUdunitIsoDate(null, s).orElseThrow();
-      assertThat(isoDate).isInstanceOf(CalendarDateIso.class);
-      OffsetDateTime isoOffset = ((CalendarDateIso) isoDate).dateTime();
+    CalendarDate isoDate = CalendarDate.fromUdunitIsoDate(null, s).orElseThrow();
+    assertThat(isoDate).isInstanceOf(CalendarDateIso.class);
+    OffsetDateTime isoOffset = ((CalendarDateIso) isoDate).dateTime();
 
-      OffsetDateTime resultSO = parseSO(s);
-      System.out.printf("%s == %s%n", resultSO, isoOffset);
-      assertThat(resultSO).isEqualTo(isoOffset);
-    } catch (Exception e) {
-      logger.error("FAIL %s%n", s);
-      e.printStackTrace();
-      fail();
-    }
+    OffsetDateTime resultSO = parseSO(s);
+    System.out.printf("%s == %s%n", resultSO, isoOffset);
+    assertThat(resultSO).isEqualTo(isoOffset);
   }
 
   private static DateTimeFormatter dtf = new DateTimeFormatterBuilder().appendPattern(

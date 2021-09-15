@@ -5,6 +5,7 @@
 package ucar.array;
 
 import static com.google.common.truth.Truth.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.fail;
 
 import org.junit.Before;
@@ -54,12 +55,7 @@ public class TestIndex {
     index.set(2, 3, 4, 5, 6, 7, 8);
     assertThat(index.getCurrentIndex()).isEqualTo(new int[] {2, 3, 4, 5, 6, 7, 8});
 
-    try {
-      index.set(0, 1, 2, 3);
-      fail();
-    } catch (Exception e) {
-      assertThat(e).isInstanceOf(ArrayIndexOutOfBoundsException.class);
-    }
+    assertThrows(ArrayIndexOutOfBoundsException.class, () -> index.set(0, 1, 2, 3));
   }
 
 }

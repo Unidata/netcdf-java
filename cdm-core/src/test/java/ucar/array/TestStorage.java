@@ -5,10 +5,9 @@
 package ucar.array;
 
 import static com.google.common.truth.Truth.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertThrows;
 
 import org.junit.Test;
-import ucar.ma2.DataType;
 
 /** Test {@link Storage} */
 public class TestStorage {
@@ -20,12 +19,7 @@ public class TestStorage {
     assertThat(store.get(1)).isEqualTo(2);
     assertThat(store.get(2)).isEqualTo(3);
 
-    try {
-      assertThat(store.get(3)).isEqualTo(4);
-      fail();
-    } catch (Exception e) {
-      assertThat(e).isInstanceOf(ArrayIndexOutOfBoundsException.class);
-    }
+    assertThrows(ArrayIndexOutOfBoundsException.class, () -> store.get(3));
 
     for (Double val : store) {
       System.out.printf("%s%n", val);
