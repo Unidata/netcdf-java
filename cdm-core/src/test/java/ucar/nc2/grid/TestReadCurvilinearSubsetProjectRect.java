@@ -115,7 +115,7 @@ public class TestReadCurvilinearSubsetProjectRect {
 
       assertThrows(InvalidRangeException.class, () -> {
         GridReader reader =
-                grid.getReader().setTimeLatest().setProjectionBoundingBox(ProjectionRect.fromSpec(subsetOff));
+            grid.getReader().setTimeLatest().setProjectionBoundingBox(ProjectionRect.fromSpec(subsetOff));
         reader.read();
       });
     }

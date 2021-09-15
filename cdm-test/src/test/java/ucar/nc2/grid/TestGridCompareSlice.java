@@ -95,8 +95,8 @@ public class TestGridCompareSlice {
   Double vert_val;
   Integer time_idx;
 
-  public TestGridCompareSlice(String endpoint, FeatureType type, String covName, String rt_val,
-                              Double ens_val, String time_val, Double vert_val, Integer time_idx) {
+  public TestGridCompareSlice(String endpoint, FeatureType type, String covName, String rt_val, Double ens_val,
+      String time_val, Double vert_val, Integer time_idx) {
     this.endpoint = endpoint;
     this.type = type;
     this.gridName = covName;

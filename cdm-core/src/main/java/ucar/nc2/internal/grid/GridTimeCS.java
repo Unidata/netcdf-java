@@ -24,16 +24,16 @@ import java.util.TreeMap;
 public class GridTimeCS extends GridTimeCoordinateSystem {
 
   public static GridTimeCS createSingleOrOffset(GridAxisPoint runTimeAxis, GridAxis<?> timeOffsetAxis) {
-    CalendarDateUnit dateUnit = CalendarDateUnit.fromAttributes(runTimeAxis.attributes(), runTimeAxis.getUnits())
-            .orElseGet(() -> CalendarDateUnit.fromAttributes(timeOffsetAxis.attributes(), timeOffsetAxis.getUnits())
-            .orElse(null));
+    CalendarDateUnit dateUnit =
+        CalendarDateUnit.fromAttributes(runTimeAxis.attributes(), runTimeAxis.getUnits()).orElseGet(
+            () -> CalendarDateUnit.fromAttributes(timeOffsetAxis.attributes(), timeOffsetAxis.getUnits()).orElse(null));
     return create(runTimeAxis.getNominalSize() == 1 ? Type.SingleRuntime : Type.Offset, runTimeAxis, timeOffsetAxis,
         dateUnit, null, null);
   }
 
   public static GridTimeCS createObservation(GridAxis<?> timeAxis) {
-    CalendarDateUnit dateUnit = CalendarDateUnit.fromAttributes(timeAxis.attributes(), timeAxis.getUnits())
-                    .orElseThrow();
+    CalendarDateUnit dateUnit =
+        CalendarDateUnit.fromAttributes(timeAxis.attributes(), timeAxis.getUnits()).orElseThrow();
     return create(Type.Observation, null, timeAxis, dateUnit, null, null);
   }
 

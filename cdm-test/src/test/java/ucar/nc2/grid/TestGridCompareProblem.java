@@ -17,8 +17,8 @@ public class TestGridCompareProblem {
 
   @Test
   public void testProblem() throws IOException {
-    TestGridCompareSlice tester = new TestGridCompareSlice(TestDir.cdmUnitTestDir + "conventions/cf/gomoos_cf.nc", FeatureType.GRID,
-            "elev", null, null, "2003-03-30T03:00Z", 100000.0, null);
+    TestGridCompareSlice tester = new TestGridCompareSlice(TestDir.cdmUnitTestDir + "conventions/cf/gomoos_cf.nc",
+        FeatureType.GRID, "elev", null, null, "2003-03-30T03:00Z", 100000.0, null);
     tester.testReadGridSlice();
   }
 
@@ -31,8 +31,8 @@ public class TestGridCompareProblem {
   @Test
   public void testNonMonotonic() {
     String filename = TestDir.cdmUnitTestDir + "ft/grid/cg/cg.ncml";
-    assertThrows(IllegalArgumentException.class, () -> TestGridCompareWithDt.testAll(filename, true)).
-            getMessage().contains("time not monotonic");
+    assertThrows(IllegalArgumentException.class, () -> TestGridCompareWithDt.testAll(filename, true)).getMessage()
+        .contains("time not monotonic");
   }
 
   @Test

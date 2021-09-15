@@ -84,7 +84,7 @@ public class TestCompareTdsOther {
   public void checkGridDataset() throws Exception {
     Formatter errlog = new Formatter();
     try (GridDataset gridDataset = GridDatasetFactory.openGridDataset(filename, errlog);
-         ucar.nc2.dt.grid.GridDataset oldDataset = ucar.nc2.dt.grid.GridDataset.open(filename)) {
+        ucar.nc2.dt.grid.GridDataset oldDataset = ucar.nc2.dt.grid.GridDataset.open(filename)) {
       if (gridDataset == null) {
         System.out.printf("Cant open as GridDataset: %s%n", filename);
         return;

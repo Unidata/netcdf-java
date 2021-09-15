@@ -156,6 +156,7 @@ public class CalendarDateUnit {
    * Inverse of makeFractionalOffsetFromRefDate.
    * This uses makeCalendarDate when its a calendar date or uses a non-ISO calendar, and
    * rounds the value to a long.
+   * 
    * @param value number of (possibly non-integral) periods to add. May be negative.
    */
   public CalendarDate makeFractionalCalendarDate(double value) {
@@ -176,6 +177,7 @@ public class CalendarDateUnit {
    * Inverse of makeFractionalCalendarDate.
    * This uses makeOffsetFromRefDate when its a calendar date or uses a non-ISO calendar, and
    * rounds the value to a long.
+   * 
    * @return number of (possibly non-integral) periods since base date. May be negative.
    */
   public double makeFractionalOffsetFromRefDate(CalendarDate date) {

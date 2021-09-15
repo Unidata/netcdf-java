@@ -60,13 +60,12 @@ public class TestGridCompareWithDt {
     // NUWG - has CoordinateAlias
     result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/coverage/03061219_ruc.nc"});
     // scalar runtime
-    result.add(
-        new Object[] {TestDir.cdmUnitTestDir + "ft/coverage/ECME_RIZ_201201101200_00600_GB"});
+    result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/coverage/ECME_RIZ_201201101200_00600_GB"});
     // both x,y and lat,lon
     result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/coverage/testCFwriter.nc"});
     // SRC
-    result
-        .add(new Object[] {TestDir.cdmUnitTestDir + "gribCollections/tp/GFS_Global_onedeg_ana_20150326_0600.grib2.ncx4"});
+    result.add(
+        new Object[] {TestDir.cdmUnitTestDir + "gribCollections/tp/GFS_Global_onedeg_ana_20150326_0600.grib2.ncx4"});
     // ensemble, time-offset
     result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/coverage/MM_cnrm_129_red.ncml"});
     // scalar vert LOOK change to TimeOffset ??
@@ -84,7 +83,7 @@ public class TestGridCompareWithDt {
 
     //// from TestGridCompareCoverage
     FileFilter ff = TestDir.FileFilterSkipSuffix(
-            ".ncx4 .gbx9 .cdl .pdf perverse.nc aggFmrc.xml 2003021212_avn-x.nc wrfout_01_000000_0003.nc wrfout_01_000000_0003.ncml");
+        ".ncx4 .gbx9 .cdl .pdf perverse.nc aggFmrc.xml 2003021212_avn-x.nc wrfout_01_000000_0003.nc wrfout_01_000000_0003.ncml");
     try {
       result.add(new Object[] {TestDir.cdmLocalTestDataDir + "ncml/nc/ubyte_1.nc4"});
       result.add(new Object[] {TestDir.cdmLocalTestDataDir + "ncml/nc/cldc.mean.nc"});
@@ -158,10 +157,10 @@ public class TestGridCompareWithDt {
 
       for (GridAxis<?> newAxis : newGcs.getGridAxes()) {
         CoordinateAxis oldAxis = oldGcs.getCoordinateAxes().stream()
-                .filter(a -> a.getAxisType().equals(newAxis.getAxisType())).findFirst().orElse(null);
+            .filter(a -> a.getAxisType().equals(newAxis.getAxisType())).findFirst().orElse(null);
         if (oldAxis == null) {
           oldAxis = oldGcs.getCoordinateAxes().stream().filter(a -> a.getShortName().equals(newAxis.getName()))
-                  .findFirst().orElse(null);
+              .findFirst().orElse(null);
         }
         if (oldAxis == null) {
           System.out.printf(" ***missing Axis %s %s in old grid%n", newAxis.getName(), newAxis.getAxisType());
@@ -170,7 +169,7 @@ public class TestGridCompareWithDt {
           }
         }
         assertWithMessage(String.format("    GridAxis: %s %s%n", newAxis.getName(), newAxis.getAxisType()))
-                .that(oldAxis).isNotNull();
+            .that(oldAxis).isNotNull();
         if (newAxis.getNominalSize() != oldAxis.getSize()) {
           System.out.printf(" *** Axis %s %s size differs%n", newAxis.getName(), newAxis.getAxisType());
           if (newGcs.getFeatureType() == FeatureType.CURVILINEAR) { // ok for CURVILINEAR
@@ -304,7 +303,7 @@ public class TestGridCompareWithDt {
       int time_idx, double ens_val, int ens_idx, double vert_val, int vert_idx, boolean show) {
     if (show) {
       System.out.printf("%n===Slice %s runtime=%s (%d) ens=%f (%d) time=%s (%d) vert=%f (%d) %n", grid.getName(),
-              rt_val, rt_idx, ens_val, ens_idx, time_val, time_idx, vert_val, vert_idx);
+          rt_val, rt_idx, ens_val, ens_idx, time_val, time_idx, vert_val, vert_idx);
     }
 
     Array dt_array;

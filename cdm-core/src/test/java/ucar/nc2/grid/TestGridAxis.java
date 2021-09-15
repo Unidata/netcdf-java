@@ -356,22 +356,22 @@ public class TestGridAxis {
   @Test
   public void testPointSpacingFails() {
     int n = 7;
-    double[] values = new double[]{0, 5, 10, 20, 40, 80, 100};
+    double[] values = new double[] {0, 5, 10, 20, 40, 80, 100};
     assertThrows(IllegalArgumentException.class, () -> {
       GridAxisPoint.builder().setAxisType(AxisType.GeoX).setName("name").setUnits("unit").setDescription("desc")
-              .setNcoords(n).setValues(values).setSpacing(GridAxisSpacing.contiguousInterval).setResolution(13.0)
-              .addAttribute(new Attribute("aname", 99.0));
+          .setNcoords(n).setValues(values).setSpacing(GridAxisSpacing.contiguousInterval).setResolution(13.0)
+          .addAttribute(new Attribute("aname", 99.0));
     });
   }
 
   @Test
   public void testIntervalSpacingFails() {
     int n = 6;
-    double[] values = new double[]{0, 3, 4, 5, 10, 15, 16, 20, 40, 80, 90, 100};
+    double[] values = new double[] {0, 3, 4, 5, 10, 15, 16, 20, 40, 80, 90, 100};
     assertThrows(IllegalArgumentException.class, () -> {
-      GridAxisInterval.builder().setAxisType(AxisType.GeoX).setName("name")
-              .setUnits("unit").setDescription("desc").setNcoords(n).setValues(values)
-              .setSpacing(GridAxisSpacing.irregularPoint).addAttribute(new Attribute("aname", 99.0));
+      GridAxisInterval.builder().setAxisType(AxisType.GeoX).setName("name").setUnits("unit").setDescription("desc")
+          .setNcoords(n).setValues(values).setSpacing(GridAxisSpacing.irregularPoint)
+          .addAttribute(new Attribute("aname", 99.0));
     });
   }
 
