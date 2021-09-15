@@ -180,11 +180,11 @@ public class Range implements RangeIterator {
   }
 
   /** Make a copy with a different stride. */
-  public Range copyWithStride(int stride) {
+  public Range copyWithStride(int stride) throws InvalidRangeException {
     if (stride == this.stride) {
       return this;
     }
-    return Range.make(this.first(), this.last(), stride);
+    return new Range(this.first(), this.last(), stride);
   }
 
   /** Make a copy with a different name. */

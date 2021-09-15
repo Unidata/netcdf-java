@@ -143,7 +143,6 @@ public class TestReadArrayProblem {
   }
 
   @Test
-  @Ignore("needs fix vlen length")
   public void testNc4Vlen() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "formats/netcdf4/vlen/cdm_sea_soundings.nc4";
     TestReadArrayCompare.compareNetcdfFile(filename);

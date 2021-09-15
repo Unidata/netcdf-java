@@ -7,6 +7,7 @@ package ucar.nc2.grid;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.AbstractIterator;
+import ucar.array.InvalidRangeException;
 import ucar.array.Range;
 import ucar.nc2.internal.grid.SubsetPointHelper;
 import ucar.nc2.util.Indent;
@@ -425,7 +426,11 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
       if (stride < 2) {
         return self();
       }
-      this.range = this.range.copyWithStride(stride);
+      try {
+        this.range = this.range.copyWithStride(stride);
+      } catch (InvalidRangeException e) {
+        throw new RuntimeException(e); // shouldnt happen
+      }
       this.edges = makeEdges(range);
       this.values = makeValues(range);
       this.ncoords = this.range.length();

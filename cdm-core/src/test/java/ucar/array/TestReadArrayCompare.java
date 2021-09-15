@@ -40,7 +40,7 @@ public class TestReadArrayCompare {
 
   @Parameterized.Parameters(name = "{0}")
   public static List<Object[]> getTestParameters() {
-    FileFilter ff = TestDir.FileFilterSkipSuffix(".cdl .ncml perverse.nc .mip222k.oschp cdm_sea_soundings.nc4");
+    FileFilter ff = TestDir.FileFilterSkipSuffix(".cdl .ncml perverse.nc .mip222k.oschp");
     List<Object[]> result = new ArrayList<>(500);
     try {
       TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "formats/netcdf3/", ff, result);

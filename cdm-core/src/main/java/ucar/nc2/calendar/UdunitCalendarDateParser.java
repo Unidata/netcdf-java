@@ -301,7 +301,6 @@ class UdunitCalendarDateParser {
       return Optional.of(flds);
 
     } catch (Throwable e) {
-      e.printStackTrace();
       return Optional.empty();
     }
   }

@@ -5,12 +5,11 @@
 package ucar.array;
 
 import static com.google.common.truth.Truth.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertThrows;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import org.junit.Test;
-import ucar.ma2.DataType;
 
 import java.nio.ByteBuffer;
 
@@ -39,20 +38,8 @@ public class TestStructureDataArray {
       count++;
     }
 
-    // Note that this does fail
-    try {
-      assertThat(array.get(0, 2, 2)).isEqualTo(8);
-      fail();
-    } catch (Exception e) {
-      assertThat(e).isInstanceOf(IllegalArgumentException.class);
-    }
-
-    try {
-      assertThat(array.get(0, 1)).isEqualTo(4);
-      fail();
-    } catch (Exception e) {
-      assertThat(e).isInstanceOf(IllegalArgumentException.class);
-    }
+    assertThrows(IllegalArgumentException.class, () -> array.get(0, 2, 2));
+    assertThrows(IllegalArgumentException.class, () -> array.get(0, 1));
 
     assertThat(array.getStructureMembers()).isEqualTo(members);
     assertThat(array.getStructureMemberNames()).isEqualTo(ImmutableList.of("mname1", "mname2"));

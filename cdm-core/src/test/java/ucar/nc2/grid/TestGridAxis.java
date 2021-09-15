@@ -7,7 +7,6 @@ import ucar.nc2.constants.AxisType;
 
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.fail;
 
 /** Test {@link GridAxis} */
 public class TestGridAxis {
@@ -196,12 +195,8 @@ public class TestGridAxis {
     GridAxisPoint.Builder<?> builder = GridAxisPoint.builder().setAxisType(AxisType.GeoX).setName("name")
         .setUnits("unit").setDescription("desc").setNcoords(n).setValues(values).setEdges(edges)
         .setSpacing(GridAxisSpacing.nominalPoint).addAttribute(new Attribute("aname", 99.0));
-    try {
-      builder.build();
-      fail();
-    } catch (Throwable e) {
-      // expected;
-    }
+
+    assertThrows(IllegalArgumentException.class, () -> builder.build());
   }
 
 

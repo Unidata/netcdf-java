@@ -5,7 +5,7 @@
 package ucar.nc2.units;
 
 import static com.google.common.truth.Truth.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertThrows;
 
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -32,12 +32,7 @@ public class TestSimpleUnit {
   public void testConvertFail() {
     SimpleUnit t1 = SimpleUnit.factory("1 days");
     SimpleUnit t2 = SimpleUnit.factory("1 meter");
-    try {
-      t1.convertTo(1.0, t2);
-      fail();
-    } catch (Exception e) {
-      // expected
-    }
+    assertThrows(IllegalArgumentException.class, () -> t1.convertTo(1.0, t2));
   }
 
   @Test
@@ -97,12 +92,8 @@ public class TestSimpleUnit {
     assertThat(SimpleUnit.isCompatibleWithExceptions("11 hPa", "mbar")).isTrue();
     assertThat(SimpleUnit.isCompatibleWithExceptions("11 hPa", "m")).isFalse();
     assertThat(SimpleUnit.isCompatibleWithExceptions("11 hPa", "sec")).isFalse();
-    try {
-      SimpleUnit.isCompatibleWithExceptions("11 hPa", "3 bad days since 1930-07-27 12:00:00-05:00");
-      fail();
-    } catch (Exception e) {
-      // expected
-    }
+    assertThrows(ucar.units.UnitParseException.class,
+        () -> SimpleUnit.isCompatibleWithExceptions("11 hPa", "3 bad days since 1930-07-27 12:00:00-05:00"));
   }
 
   @Test

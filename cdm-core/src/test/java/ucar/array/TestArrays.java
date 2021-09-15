@@ -5,9 +5,9 @@
 package ucar.array;
 
 import static com.google.common.truth.Truth.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.fail;
 
-import java.util.ArrayList;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -100,21 +100,15 @@ public class TestArrays {
     assertThat(pArray.get(1, 0, 1)).isEqualTo(5);
     assertThat(pArray.get(2, 0, 1)).isEqualTo(6);
 
-    try {
-      permute = new int[] {0, 2, 3};
-      array = Arrays.permute(array, permute);
-      fail();
-    } catch (Exception e) {
-      assertThat(e).isInstanceOf(IllegalArgumentException.class);
-    }
+    assertThrows(IllegalArgumentException.class, () -> {
+      int[] permute2 = new int[] {0, 2, 3};
+      Arrays.permute(array, permute2);
+    });
 
-    try {
-      permute = new int[] {0, 2, 2};
-      array = Arrays.permute(array, permute);
-      fail();
-    } catch (Exception e) {
-      assertThat(e).isInstanceOf(IllegalArgumentException.class);
-    }
+    assertThrows(IllegalArgumentException.class, () -> {
+      int[] permute2 = new int[] {0, 2, 2};
+      Arrays.permute(array, permute2);
+    });
   }
 
   @Test
@@ -146,13 +140,10 @@ public class TestArrays {
     assertThat(pArray.get(1, 1, 0)).isEqualTo(5);
     assertThat(pArray.get(1, 2, 0)).isEqualTo(6);
 
-    try {
-      reshape = new int[] {2, 2, 2};
-      Arrays.reshape(array, reshape);
-      fail();
-    } catch (Exception e) {
-      assertThat(e).isInstanceOf(IllegalArgumentException.class);
-    }
+    assertThrows(IllegalArgumentException.class, () -> {
+      int[] reshape2 = new int[] {2, 2, 2};
+      Arrays.reshape(array, reshape2);
+    });
   }
 
   @Test
@@ -160,19 +151,8 @@ public class TestArrays {
     Array<Double> rArray = Arrays.reduce(array, 0);
     assertThat(rArray.getShape()).isEqualTo(new int[] {2, 3});
 
-    try {
-      Arrays.reduce(array, 1);
-      fail();
-    } catch (Exception e) {
-      assertThat(e).isInstanceOf(IllegalArgumentException.class);
-    }
-
-    try {
-      Arrays.reduce(array, 3);
-      fail();
-    } catch (Exception e) {
-      assertThat(e).isInstanceOf(IllegalArgumentException.class);
-    }
+    assertThrows(IllegalArgumentException.class, () -> Arrays.reduce(array, 1));
+    assertThrows(IllegalArgumentException.class, () -> Arrays.reduce(array, 3));
 
     int[] reshape = new int[] {3, 2, 1};
     Array<Double> pArray = Arrays.reshape(array, reshape);
@@ -205,19 +185,13 @@ public class TestArrays {
     assertThat(pArray.get(0, 1, 0)).isEqualTo(4);
     assertThat(pArray.get(0, 1, 1)).isEqualTo(5);
 
-    try {
-      assertThat(pArray.get(0, 0, 2)).isEqualTo(3);
-      fail();
-    } catch (Exception e) {
-      assertThat(e).isInstanceOf(IllegalArgumentException.class);
-    }
+    assertThrows(IllegalArgumentException.class, () -> pArray.get(0, 0, 2));
 
     double total = 0.0;
     for (double val : pArray) {
       total += val;
     }
     assertThat(total).isEqualTo(12.0);
-
 
     Array<Double> rArray = Arrays.reduce(pArray);
     assertThat(rArray.getShape()).isEqualTo(new int[] {2, 2});
@@ -227,12 +201,7 @@ public class TestArrays {
     assertThat(rArray.get(1, 0)).isEqualTo(4);
     assertThat(rArray.get(1, 1)).isEqualTo(5);
 
-    try {
-      assertThat(rArray.get(0, 2)).isEqualTo(3);
-      fail();
-    } catch (Exception e) {
-      assertThat(e).isInstanceOf(IllegalArgumentException.class);
-    }
+    assertThrows(IllegalArgumentException.class, () -> pArray.get(0, 2));
   }
 
   @Test

@@ -96,7 +96,9 @@ public class CompareArrayToMa2 {
 
     if (org.getSize() != array.length()) {
       f.format(" WARN  %s: data nelems org %d !== array %d%n", name, org.getSize(), array.length());
-      ok = false;
+      if (!org.isVlen() && !(org.getDataType().getArrayType() == ArrayType.OPAQUE)) { // org vlen hopeless
+        ok = false;
+      }
     }
 
     /*
