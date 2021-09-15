@@ -169,25 +169,25 @@ public class TestTdsGribProblems {
   @Ignore("doesnt work")
   public void testHrrrConusWrfprs() throws Exception {
     String filename = indexDir + "NOAA_GSD/HRRR/CONUS_3km/wrfprs/GSD_HRRR_CONUS_3km_wrfprs.ncx4";
-    new TestGridCompareCoverage(filename).compareWithCoverage(false);
+    TestGridCompareWithDt.testAll(filename, false);
   }
 
   @Test
   public void testRuntimeCoordinateValues() throws Exception {
     String filename = indexDir + "NCEP/GFS/Alaska_20km/GFS-Alaska_20km.ncx4";
-    new TestGridCompareCoverage(filename).compareWithCoverage(false);
+    TestGridCompareWithDt.testAll(filename, false);
   }
 
   @Test
   public void testCoordIntervalOutOfBounds() throws Exception {
     String filename = indexDir + "NCEP/GFS/Global_0p5deg/GFS-Global_0p5deg.ncx4";
-    new TestGridCompareCoverage(filename).compareWithCoverage(false);
+    TestGridCompareWithDt.testAll(filename, false);
   }
 
   @Test
   public void testObservationDataset() throws Exception {
     String filename = indexDir + "NCEP/HRRR/CONUS_2p5km_Analysis/NCEP_HRRR_CONUS_2p5km_Analysis.ncx4";
-    new TestGridCompareCoverage(filename).compareWithCoverage(false);
+    TestGridCompareWithDt.testAll(filename, false);
   }
 
 }

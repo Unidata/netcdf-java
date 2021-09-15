@@ -39,7 +39,7 @@ public class SubsetTimeHelper {
   public Optional<? extends GridAxis<?>> subsetTime(GridSubset params, Formatter errlog) {
     GridAxis<?> timeOffsetAxis = tcs.getTimeOffsetAxis(0); // Observation and SingleRuntime
 
-    // anything requiting a date conversion must be done here
+    // anything requiring a date conversion must be done here
     Double wantOffset = null;
     CalendarDate wantTime = params.getDate();
     if (wantTime != null) {

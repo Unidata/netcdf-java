@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.google.common.truth.Truth.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertThrows;
 
 /** Test {@link GridSubset} */
 public class TestGridSubset {
@@ -21,13 +21,9 @@ public class TestGridSubset {
     GridSubset subset = GridSubset.create();
     Integer strideo = subset.getHorizStride();
     assertThat(strideo).isNull();
-
-    try {
+    assertThrows(NullPointerException.class, () -> {
       int bad = subset.getHorizStride();
-      fail();
-    } catch (NullPointerException e) {
-      // correct
-    }
+    });
 
     subset.setHorizStride(999);
     assertThat(subset.getHorizStride()).isEqualTo(999);
@@ -43,13 +39,7 @@ public class TestGridSubset {
     GridSubset subset = GridSubset.create();
     Number enso = subset.getEnsCoord();
     assertThat(enso).isNull();
-
-    try {
-      subset.getEnsCoord().doubleValue();
-      fail();
-    } catch (NullPointerException e) {
-      // correct
-    }
+    assertThrows(NullPointerException.class, () -> subset.getEnsCoord().doubleValue());
 
     subset.setEnsCoord(999.0);
     assertThat(subset.getEnsCoord()).isEqualTo(999);
@@ -110,19 +100,8 @@ public class TestGridSubset {
     assertThat(subset.getRunTime()).isEqualTo(cd2);
     assertThat(subset.getRunTime() == cd2).isTrue();
 
-    try {
-      subset.setRunTimeCoord("bad");
-      fail();
-    } catch (Exception e) {
-      // ok
-    }
-
-    try {
-      subset.setRunTimeCoord(99);
-      fail();
-    } catch (Exception e) {
-      // ok
-    }
+    assertThrows(IllegalArgumentException.class, () -> subset.setRunTimeCoord("bad"));
+    assertThrows(IllegalArgumentException.class, () -> subset.setRunTimeCoord(99));
   }
 
   @Test
@@ -163,48 +142,15 @@ public class TestGridSubset {
     assertThat(subset.getDate() == cd1).isTrue();
   }
 
-  /*
-   * @Test
-   * public void testTimeCoord() {
-   * GridSubset subset = GridSubset.create();
-   * CoordInterval offsetv = CoordInterval.create(34.56, 78.9);
-   * subset.setTimeCoord(offsetv);
-   * assertThat(subset.getTimePoint()).isNull();
-   * assertThat(subset.getTimeIntv()).isEqualTo(offsetv);
-   * assertThat(subset.getTimeIntv() == offsetv).isTrue();
-   * 
-   * subset.setTimeCoord(123.456);
-   * assertThat(subset.getTimePoint()).isEqualTo(123.456);
-   * 
-   * subset.setTimeCoord(999);
-   * assertThat(subset.getTimePoint()).isEqualTo(999);
-   * 
-   * try {
-   * subset.setTimeCoord(999);
-   * } catch (Exception e) {
-   * // correct
-   * }
-   * 
-   * try {
-   * subset.setTimeCoord("999.9");
-   * } catch (Exception e) {
-   * // correct
-   * }
-   * }
-   */
-
   @Test
   public void testTimeStride() {
     GridSubset subset = GridSubset.create();
     Integer strideo = subset.getTimeStride();
     assertThat(strideo).isNull();
 
-    try {
+    assertThrows(NullPointerException.class, () -> {
       int bad = subset.getTimeStride();
-      fail();
-    } catch (NullPointerException e) {
-      // correct
-    }
+    });
 
     subset.setTimeStride(999);
     assertThat(subset.getTimeStride()).isEqualTo(999);
@@ -243,17 +189,7 @@ public class TestGridSubset {
     subset.setTimeOffsetCoord(999);
     assertThat(subset.getTimeOffset()).isEqualTo(999);
 
-    try {
-      subset.setTimeOffsetCoord(999);
-    } catch (Exception e) {
-      // correct
-    }
-
-    try {
-      subset.setTimeOffsetCoord("999.9");
-    } catch (Exception e) {
-      // correct
-    }
+    assertThrows(IllegalArgumentException.class, () -> subset.setTimeOffsetCoord("999.9"));
   }
 
   @Test

@@ -18,6 +18,7 @@ import java.util.Formatter;
 import java.util.List;
 
 import static com.google.common.truth.Truth.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.fail;
 
 /** Test reading {@link GridDataset} */
@@ -171,14 +172,11 @@ public class TestReadGridDataset {
   }
 
   @Test
-  public void testFileNotFound() throws IOException {
+  public void testFileNotFound() {
     String filename = TestDir.cdmLocalTestDataDir + "conventions/fileNot.nc";
     Formatter errlog = new Formatter();
-    try (GridDataset gridDataset = GridDatasetFactory.openGridDataset(filename, errlog)) {
-      fail();
-    } catch (FileNotFoundException e) {
-      assertThat(e.getMessage()).contains("(No such file or directory)");
-    }
+
+    assertThrows(FileNotFoundException.class, () -> GridDatasetFactory.openGridDataset(filename, errlog));
   }
 
   @Test

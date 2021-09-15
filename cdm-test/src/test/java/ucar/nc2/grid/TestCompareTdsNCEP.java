@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import ucar.nc2.dt.GridDatatype;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
@@ -182,7 +183,8 @@ public class TestCompareTdsNCEP {
   @Test
   public void checkGridDataset() throws Exception {
     Formatter errlog = new Formatter();
-    try (GridDataset gridDataset = GridDatasetFactory.openGridDataset(filename, errlog)) {
+    try (GridDataset gridDataset = GridDatasetFactory.openGridDataset(filename, errlog);
+        ucar.nc2.dt.grid.GridDataset oldDataset = ucar.nc2.dt.grid.GridDataset.open(filename)) {
       if (gridDataset == null) {
         System.out.printf("Cant open as GridDataset: %s%n", filename);
         return;
@@ -200,20 +202,8 @@ public class TestCompareTdsNCEP {
       }
       assertThat(csysSet).hasSize(ncoordSys);
       assertThat(axisSet).hasSize(nAxes);
-    }
 
-    // This fails because Coverage thinks reftime2 is regular, but its not.
-    if (filename.contains("RTMA-CONUS_2p5km")) {
-      try (GridDataset newDataset = GridDatasetFactory.openGridDataset(filename, errlog)) {
-        assertThat(newDataset).isNotNull();
-        GridCoordinateSystem anyone = newDataset.getGridCoordinateSystems().get(0);
-        assertThat(anyone).isNotNull();
-        GridAxis<?> reftime = anyone.findAxis("reftime2").orElseThrow();
-        assertThat((Object) reftime).isNotNull();
-        assertThat(reftime.isRegular()).isFalse();
-      }
-    } else {
-      new TestGridCompareCoverage(filename).compareWithCoverage(false);
+      TestGridCompareWithDt.compareCoordinateSystems(gridDataset, oldDataset, true);
     }
   }
 }

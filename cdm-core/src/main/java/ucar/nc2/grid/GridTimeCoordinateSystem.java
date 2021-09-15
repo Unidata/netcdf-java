@@ -88,7 +88,7 @@ public abstract class GridTimeCoordinateSystem {
 
   /** The CalendarDateUnit for the offset time axis for runIdx. */
   public CalendarDateUnit makeOffsetDateUnit(int runIdx) {
-    return CalendarDateUnit.of(getOffsetPeriod(), true, getRuntimeDate(runIdx));
+    return CalendarDateUnit.of(getOffsetPeriod(), getOffsetPeriod().isDefaultCalendarField(), getRuntimeDate(runIdx));
   }
 
   /** Create a subsetted GridTimeCoordinateSystem. */

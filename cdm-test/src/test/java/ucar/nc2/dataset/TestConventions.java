@@ -11,27 +11,19 @@ import java.util.Formatter;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
+
+import ucar.array.ArrayType;
 import ucar.ma2.DataType;
-import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.grid.GeoGrid;
 import ucar.nc2.dt.grid.GridDataset;
-import ucar.nc2.ft.FeatureDataset;
-import ucar.nc2.ft.FeatureDatasetFactoryManager;
-import ucar.nc2.ft2.coverage.Coverage;
-import ucar.nc2.ft2.coverage.CoverageCollection;
-import ucar.nc2.ft2.coverage.CoverageCoordSys;
-import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
-import ucar.nc2.ft2.coverage.FeatureDatasetCoverage;
-import ucar.nc2.ft2.coverage.HorizCoordSys;
 import ucar.nc2.calendar.Calendar;
 import ucar.nc2.calendar.CalendarDate;
 
-import java.util.Optional;
+import ucar.nc2.grid.Grid;
+import ucar.nc2.grid.GridDatasetFactory;
+import ucar.nc2.grid.GridHorizCoordinateSystem;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
@@ -40,15 +32,15 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
  */
 @Category(NeedsCdmUnitTest.class)
 public class TestConventions {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
   public void testProblem() throws IOException {
     String problem = TestDir.cdmUnitTestDir + "conventions/cf/cf1_rap.nc";
     System.out.printf("FeatureDatasetFactoryManager.open %s%n", problem);
-    try (FeatureDataset fd = FeatureDatasetFactoryManager.open(FeatureType.GRID, problem, null, new Formatter())) {
-      assertThat(fd).isNotNull();
-      assertThat(fd.getFeatureType().isCoverageFeatureType()).isTrue();
+    Formatter errlog = new Formatter();
+    try (ucar.nc2.grid.GridDataset gds = GridDatasetFactory.openGridDataset(problem, errlog)) {
+      assertThat(gds).isNotNull();
+      assertThat(gds.getFeatureType().isCoverageFeatureType()).isTrue();
     }
   }
 
@@ -120,19 +112,15 @@ public class TestConventions {
 
   @Test
   public void testIfps() throws IOException {
-    Optional<FeatureDatasetCoverage> ds = CoverageDatasetFactory
-        .openCoverageDataset(TestDir.cdmUnitTestDir + "conventions/ifps/HUNGrids.netcdf", new Formatter());
-    assertThat(ds.isPresent()).isTrue();
-    FeatureDatasetCoverage fds = ds.get();
-    CoverageCollection cc = fds.getSingleCoverageCollection();
-    assertThat(cc).isNotNull();
-    Coverage coverage = cc.findCoverage("T_SFC");
-    assertThat(coverage).isNotNull();
-    CoverageCoordSys cs = coverage.getCoordSys();
-    HorizCoordSys hcs = cs.getHorizCoordSys();
-    assertThat(hcs.isProjection()).isTrue();
-    assertThat(coverage.getDataType()).isEqualTo(DataType.FLOAT);
-    fds.close();
+    String problem = TestDir.cdmUnitTestDir + "conventions/ifps/HUNGrids.netcdf";
+    Formatter errlog = new Formatter();
+    try (ucar.nc2.grid.GridDataset gds = GridDatasetFactory.openGridDataset(problem, errlog)) {
+      assertThat(gds).isNotNull();
+      Grid coverage = gds.findGrid("T_SFC").orElseThrow();
+      GridHorizCoordinateSystem hcs = coverage.getHorizCoordinateSystem();
+      assertThat(hcs.getProjection()).isNotNull();
+      assertThat(coverage.getArrayType()).isEqualTo(ArrayType.FLOAT);
+    }
   }
 
 }

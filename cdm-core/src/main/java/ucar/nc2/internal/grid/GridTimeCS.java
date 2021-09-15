@@ -24,13 +24,16 @@ import java.util.TreeMap;
 public class GridTimeCS extends GridTimeCoordinateSystem {
 
   public static GridTimeCS createSingleOrOffset(GridAxisPoint runTimeAxis, GridAxis<?> timeOffsetAxis) {
-    CalendarDateUnit dateUnit = CalendarDateUnit.fromUdunitString(null, runTimeAxis.getUnits()).orElseThrow();
+    CalendarDateUnit dateUnit =
+        CalendarDateUnit.fromAttributes(runTimeAxis.attributes(), runTimeAxis.getUnits()).orElseGet(
+            () -> CalendarDateUnit.fromAttributes(timeOffsetAxis.attributes(), timeOffsetAxis.getUnits()).orElse(null));
     return create(runTimeAxis.getNominalSize() == 1 ? Type.SingleRuntime : Type.Offset, runTimeAxis, timeOffsetAxis,
         dateUnit, null, null);
   }
 
   public static GridTimeCS createObservation(GridAxis<?> timeAxis) {
-    CalendarDateUnit dateUnit = CalendarDateUnit.fromUdunitString(null, timeAxis.getUnits()).orElseThrow();
+    CalendarDateUnit dateUnit =
+        CalendarDateUnit.fromAttributes(timeAxis.attributes(), timeAxis.getUnits()).orElseThrow();
     return create(Type.Observation, null, timeAxis, dateUnit, null, null);
   }
 
@@ -73,7 +76,6 @@ public class GridTimeCS extends GridTimeCoordinateSystem {
   static class Observation extends GridTimeCS {
 
     Observation(GridAxis<?> time, CalendarDateUnit runtimeDateUnit) {
-      // LOOK MRMS_Radar_20201027_0000.grib2.ncx4 time2D has runtime in seconds, but period name is minutes
       super(Type.Observation, null, time, runtimeDateUnit);
     }
 
