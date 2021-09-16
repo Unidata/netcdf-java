@@ -12,7 +12,7 @@ dependencies {
   compile project(':cdm-core')
   compile project(':bufr')
   compile project(':grib')
-  compile project(':httpservices')
+  // compile project(':httpservices')
   runtime project(':netcdf4')
   compile project(':opendap')
   compile project(':toolsui:uibase')

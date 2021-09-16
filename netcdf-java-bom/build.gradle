@@ -16,7 +16,7 @@ dependencies {
     api project(':cdm-core')
     api project(':cdm-s3')
     api project(':grib')
-    api project(':httpservices')
+    // api project(':httpservices')
     api project(':netcdf4')
     api project(':opendap')
     api project(':udunits')

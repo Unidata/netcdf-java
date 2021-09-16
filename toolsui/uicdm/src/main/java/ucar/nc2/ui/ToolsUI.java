@@ -33,7 +33,6 @@ import ucar.nc2.ui.op.*;
 import ucar.nc2.ui.point.PointFeaturePanel;
 import ucar.nc2.ui.util.SocketMessage;
 import ucar.nc2.ui.widget.URLDumpPane;
-import ucar.nc2.ui.widget.UrlAuthenticatorDialog;
 import ucar.nc2.write.NetcdfCopier;
 import ucar.ui.widget.*;
 import ucar.ui.widget.ProgressMonitor;
@@ -1398,13 +1397,15 @@ public class ToolsUI extends JPanel {
       frame.setVisible(true);
     });
 
-    // Name HTTP user agent and set Authentication for accessing password protected services
-    SwingUtilities.invokeLater(() -> {
-      UrlAuthenticatorDialog provider = new UrlAuthenticatorDialog(frame);
-      // HttpService.INSTANCE.setCredentialsProvider(provider);
-      HttpService.STANDARD.setUserAgent("ToolsUI v7.0");
-
-      java.net.Authenticator.setDefault(provider);
-    });
+    /*
+     * Name HTTP user agent and set Authentication for accessing password protected services
+     * SwingUtilities.invokeLater(() -> {
+     * UrlAuthenticatorDialog provider = new UrlAuthenticatorDialog(frame);
+     * // HttpService.INSTANCE.setCredentialsProvider(provider);
+     * HttpService.STANDARD.setUserAgent("ToolsUI v7.0");
+     * 
+     * java.net.Authenticator.setDefault(provider);
+     * });
+     */
   }
 }

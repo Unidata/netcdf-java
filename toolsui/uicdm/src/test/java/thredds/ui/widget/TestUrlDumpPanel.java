@@ -7,7 +7,6 @@ import java.io.IOException;
 import javax.swing.JFrame;
 import org.junit.Test;
 import ucar.nc2.ui.widget.URLDumpPane;
-import ucar.nc2.ui.widget.UrlAuthenticatorDialog;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.XMLStore;
 
@@ -32,7 +31,7 @@ public class TestUrlDumpPanel {
         }
       });
 
-      java.net.Authenticator.setDefault(new UrlAuthenticatorDialog(frame));
+      // java.net.Authenticator.setDefault(new UrlAuthenticatorDialog(frame));
 
       // open up the preferences file(s)
       try {
