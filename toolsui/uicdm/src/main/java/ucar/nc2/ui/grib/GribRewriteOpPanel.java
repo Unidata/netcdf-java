@@ -7,7 +7,6 @@ package ucar.nc2.ui.grib;
 
 import ucar.nc2.ui.OpPanel;
 import ucar.nc2.ui.ToolsUI;
-import ucar.nc2.ui.grib.GribRewritePanel;
 import ucar.ui.widget.BAMutil;
 import ucar.ui.widget.FileManager;
 import ucar.util.prefs.PreferencesExt;
