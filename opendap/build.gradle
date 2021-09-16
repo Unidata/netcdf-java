@@ -12,7 +12,7 @@ dependencies {
   testImplementation enforcedPlatform(project(':netcdf-java-testing-platform'))
 
   api project(':cdm-core')
-  api project(':httpservices')
+  // api project(':httpservices')
 
   implementation 'com.google.guava:guava'
 

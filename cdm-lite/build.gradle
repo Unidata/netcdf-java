@@ -14,7 +14,7 @@ dependencies {
   testImplementation enforcedPlatform(project(':netcdf-java-testing-platform'))
 
   api project(':cdm-core')
-  api project(':httpservices')
+  // api project(':httpservices')
   api project(':opendap')
 
   compile 'com.google.guava:guava'

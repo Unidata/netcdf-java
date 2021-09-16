@@ -10,7 +10,7 @@ dependencies {
 
   api project(':cdm-core')
 
-  implementation project(':httpservices')
+  // implementation project(':httpservices')
 
   implementation "junit:junit:${depVersion.junit}"
   implementation 'org.slf4j:slf4j-api'
