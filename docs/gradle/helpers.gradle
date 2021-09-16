@@ -56,7 +56,7 @@ def getNexusPath(docSetInfo, versioned = true) {
     persistentNameNexus = branchName != 'develop' ? 'dev' : 'current'
   }
   def nexusVersion = versioned ? "${docSetInfo.version}" : "${persistentNameNexus}"
-  "${nexusVersion}"
+  topLevelRawRepoDir == 'ncml' ? "${topLevelRawRepoDir}/${nexusVersion}" : "${nexusVersion}"
 }
 
 //////////////////////////
