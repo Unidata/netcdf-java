@@ -14,7 +14,6 @@ import ucar.nc2.dataset.*;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.grib.collection.GribCdmIndex;
-import ucar.nc2.internal.http.HttpService;
 import ucar.nc2.internal.iosp.hdf5.H5iosp;
 import ucar.nc2.internal.ncml.Aggregation;
 import ucar.nc2.internal.ncml.NcmlReader;
@@ -128,7 +127,6 @@ public class ToolsUI extends JPanel {
   private NCdumpPanel ncdumpPanel;
   private NcmlEditorPanel ncmlEditorPanel;
   private PointFeaturePanel pointFeaturePanel;
-  private SimpleGeomPanel simpleGeomPanel;
   private ThreddsUI threddsUI;
   private UnitsPanel unitsPanel;
   private URLDumpPane urlPanel;
@@ -250,7 +248,6 @@ public class ToolsUI extends JPanel {
     ftTabPane.addTab("FeatureScan", new JLabel("FeatureScan"));
     ftTabPane.addTab("Grids", new JLabel("Grids"));
     ftTabPane.addTab("GridNew", new JLabel("GridNew"));
-    ftTabPane.addTab("SimpleGeometry", new JLabel("SimpleGeometry"));
     ftTabPane.addTab("WMS", new JLabel("WMS"));
     ftTabPane.addTab("PointFeature", new JLabel("PointFeature"));
     ftTabPane.addTab("FeatureCollection", fcTabPane);
@@ -476,11 +473,6 @@ public class ToolsUI extends JPanel {
       case "Grids":
         geoGridPanel = new GeoGridPanel((PreferencesExt) mainPrefs.node("grid"));
         c = geoGridPanel;
-        break;
-
-      case "SimpleGeometry":
-        simpleGeomPanel = new SimpleGeomPanel((PreferencesExt) mainPrefs.node("simpleGeom"));
-        c = simpleGeomPanel;
         break;
 
       case "GridNew":
@@ -749,9 +741,6 @@ public class ToolsUI extends JPanel {
     }
     if (pointFeaturePanel != null) {
       pointFeaturePanel.save();
-    }
-    if (simpleGeomPanel != null) {
-      simpleGeomPanel.save();
     }
     if (threddsUI != null) {
       threddsUI.storePersistentData();

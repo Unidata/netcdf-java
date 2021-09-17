@@ -19,6 +19,7 @@ import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.calendar.*;
+import ucar.nc2.internal.grid.DatasetClassifier;
 import ucar.nc2.write.Ncdump;
 import ucar.nc2.write.NcdumpArray;
 import ucar.ui.widget.BAMutil;
@@ -28,7 +29,6 @@ import ucar.ui.widget.TextHistoryPane;
 import ucar.nc2.dataset.*;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.AxisType;
-import ucar.nc2.dt.grid.*;
 import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.*;
 import java.awt.BorderLayout;
@@ -56,6 +56,7 @@ public class CoordSysTable extends JPanel {
 
   private IndependentWindow attWindow;
   private NetcdfDataset ds;
+  private DatasetClassifier dcl;
 
   public CoordSysTable(PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
@@ -98,21 +99,6 @@ public class CoordSysTable extends JPanel {
           infoTA.clear();
           infoTA.appendLine(((VariableEnhanced) v).toString());
           infoTA.appendLine(showMissing(v));
-          infoTA.gotoTop();
-          infoWindow.show();
-        }
-      }
-    });
-
-    varPopup.addAction("Try as Grid", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        VariableBean vb = varTable.getSelectedBean();
-        if (vb != null) {
-          VariableEnhanced v = (VariableEnhanced) ds.findVariable(vb.getName());
-          if (v == null)
-            return;
-          infoTA.clear();
-          infoTA.appendLine(tryGrid(v));
           infoTA.gotoTop();
           infoWindow.show();
         }
@@ -562,6 +548,8 @@ public class CoordSysTable extends JPanel {
 
   public void setDataset(NetcdfDataset ds) {
     this.ds = ds;
+    Formatter infolog = new Formatter();
+    this.dcl = new DatasetClassifier(ds, infolog);
 
     List<CoordinateSystemBean> csList = getCoordinateSystemBeans(ds);
     List<VariableBean> beanList = new ArrayList<>();
@@ -611,25 +599,6 @@ public class CoordSysTable extends JPanel {
         return;
       }
     }
-  }
-
-  private String tryGrid(VariableEnhanced v) {
-    Formatter buff = new Formatter();
-    buff.format("%s:", v.getFullName());
-    List<CoordinateSystem> csList = v.getCoordinateSystems();
-    if (csList.isEmpty())
-      buff.format(" No Coord System found");
-    else {
-      for (CoordinateSystem cs : csList) {
-        buff.format("%s:", cs.getName());
-        if (GridCoordSys.isGridCoordSys(buff, cs, v)) {
-          buff.format("GRID OK%n");
-        } else {
-          buff.format(" NOT GRID");
-        }
-      }
-    }
-    return buff.toString();
   }
 
   private String showMissing(Variable v) {
@@ -748,8 +717,8 @@ public class CoordSysTable extends JPanel {
       setDomainRank(cs.getDomain().size());
       setRangeRank(cs.getCoordinateAxes().size());
 
-      Formatter parseInfo = new Formatter();
-      if (GridCoordSys.isGridCoordSys(parseInfo, cs, null)) {
+      if (dcl.getCoordinateSystemsUsed().stream().filter(dsc -> dsc.getCoordinateSystem().equals(cs)).findAny()
+          .isPresent()) {
         addDataType("grid");
       }
 

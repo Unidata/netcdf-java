@@ -99,6 +99,10 @@ public class DatasetClassifier {
       return cs.getName();
     }
 
+    public CoordinateSystem getCoordinateSystem() {
+      return cs;
+    }
+
     public FeatureType getFeatureType() {
       return featureType;
     }
