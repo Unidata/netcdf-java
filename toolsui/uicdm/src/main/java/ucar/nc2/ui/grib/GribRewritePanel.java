@@ -11,8 +11,6 @@ import org.slf4j.LoggerFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.nc2.dt.GridDatatype;
-import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.grib.collection.GribCollectionImmutable;
 import ucar.ui.widget.BAMutil;
@@ -174,23 +172,17 @@ public class GribRewritePanel extends JPanel {
   private void calcAverage(String what, Formatter f) {
 
     double totalRecords = 0.0;
-    double ratio = 0.0;
     List<FileBean> beans = ftTable.getBeans();
     for (FileBean bean : beans) {
       if (bean.getNdups() > 0)
         continue;
-      if (bean.getRatio() == 0)
-        continue;
       if (what != null && (!bean.getPath().contains(what)))
         continue;
       totalRecords += bean.getNrecords();
-      ratio += bean.getNrecords() * bean.getRatio();
     }
 
-    double weightedAvg = (totalRecords == 0.0) ? 0.0 : ratio / totalRecords;
     if (what != null)
       f.format("%n%s%n", what);
-    f.format("Weighted average ratio = %f%n", weightedAvg);
     f.format("Total # grib records = %f%n", totalRecords);
   }
 
@@ -304,7 +296,6 @@ public class GribRewritePanel extends JPanel {
   public static class FileBean {
     private File f;
     String fileType;
-    long cdmData2D, nc4Data2D, nc4Size;
     int nrecords, nvars, ndups;
 
     // no-arg constructor
@@ -317,9 +308,7 @@ public class GribRewritePanel extends JPanel {
         System.out.printf(" fileScan=%s%n", getPath());
       try (NetcdfDataset ncd = NetcdfDatasets.openDataset(getPath())) {
         fileType = ncd.getFileTypeId();
-        cdmData2D = countCdmData2D(ncd);
         countGribData2D(f);
-        countNc4Data2D(f);
       }
     }
 
@@ -336,16 +325,8 @@ public class GribRewritePanel extends JPanel {
       return ((double) f.length()) / 1000 / 1000;
     }
 
-    public long getCdmData2D() {
-      return cdmData2D;
-    }
-
     public int getNrecords() {
       return nrecords;
-    }
-
-    public boolean isMatch() {
-      return nrecords == cdmData2D;
     }
 
     public int getNvars() {
@@ -354,34 +335,6 @@ public class GribRewritePanel extends JPanel {
 
     public int getNdups() {
       return ndups;
-    }
-
-    public double getNc4SizeM() {
-      return ((double) nc4Size) / 1000 / 1000;
-    }
-
-    public long getNc4Data2D() {
-      return nc4Data2D;
-    }
-
-    public double getRatio() {
-      long size = f.length();
-      return (size == 0) ? 0 : nc4Size / (double) size;
-    }
-
-    public long countCdmData2D(NetcdfDataset ncd) throws IOException {
-      long result = 0;
-      try (GridDataset ds = new GridDataset(ncd)) {
-        for (GridDatatype grid : ds.getGrids()) {
-          int[] shape = grid.getShape();
-          int rank = grid.getRank();
-          long data2D = 1;
-          for (int i = 0; i < rank - 2; i++)
-            data2D *= shape[i];
-          result += data2D;
-        }
-      }
-      return result;
     }
 
     public void countGribData2D(File f) throws IOException {
@@ -401,27 +354,10 @@ public class GribRewritePanel extends JPanel {
       }
     }
 
-    public void countNc4Data2D(File f) {
-      String filename = f.getName();
-
-      String nc4Filename = "G:/write/" + filename + ".3.grib.nc4";
-      File nc4 = new File(nc4Filename);
-      if (!nc4.exists())
-        return;
-      nc4Size = nc4.length();
-
-      try (NetcdfDataset ncd = NetcdfDatasets.openDataset(nc4Filename)) {
-        nc4Data2D = countCdmData2D(ncd);
-      } catch (IOException e) {
-        System.out.printf("Error opening %s%n", nc4Filename);
-      }
-    }
-
     @Override
     public String toString() {
-      return MoreObjects.toStringHelper(this).add("f", f).add("fileType", fileType).add("cdmData2D", cdmData2D)
-          .add("nc4Data2D", nc4Data2D).add("nc4Size", nc4Size).add("nrecords", nrecords).add("nvars", nvars)
-          .add("ndups", ndups).toString();
+      return MoreObjects.toStringHelper(this).add("f", f).add("fileType", fileType).add("nrecords", nrecords)
+          .add("nvars", nvars).add("ndups", ndups).toString();
     }
   }
 }

@@ -16,12 +16,8 @@ import thredds.inventory.MFile;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
-import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.nc2.dt.GridCoordSystem;
-import ucar.nc2.dt.GridDatatype;
-import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.grib.GribData;
 import ucar.nc2.grib.GribStatType;
 import ucar.nc2.grib.GribTables;
@@ -33,6 +29,11 @@ import ucar.nc2.grib.coord.TimeCoordIntvDateValue;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.nc2.grib.grib2.table.WmoParamTable;
+import ucar.nc2.grid.Grid;
+import ucar.nc2.grid.GridAxis;
+import ucar.nc2.grid.GridCoordinateSystem;
+import ucar.nc2.grid.GridDataset;
+import ucar.nc2.grid.GridDatasetFactory;
 import ucar.nc2.ui.ReportPanel;
 import ucar.nc2.internal.util.Counters;
 import ucar.unidata.io.RandomAccessFile;
@@ -323,19 +324,20 @@ public class Grib2ReportPanel extends ReportPanel {
     int nonop = 0;
     int total = 0;
 
-    try (GridDataset ncfile = GridDataset.open(ff.getPath())) {
-      for (GridDatatype dt : ncfile.getGrids()) {
+    Formatter errlog = new Formatter();
+    try (GridDataset gds = GridDatasetFactory.openGridDataset(ff.getPath(), errlog)) {
+      for (Grid dt : gds.getGrids()) {
         String currName = dt.getName();
         total++;
 
-        Attribute att = dt.findAttributeIgnoreCase("Grib_Parameter");
+        Attribute att = dt.attributes().findAttributeIgnoreCase("Grib_Parameter");
         if (att != null && att.getLength() == 3) {
           int discipline = (Integer) att.getValue(0);
           int category = (Integer) att.getValue(1);
           int number = (Integer) att.getValue(2);
           if ((category > 191) || (number > 191)) {
             fm.format("  local parameter (%d %d %d) = %s units=%s %n", discipline, category, number, currName,
-                dt.getUnitsString());
+                dt.getUnits());
             local++;
             continue;
           }
@@ -343,7 +345,7 @@ public class Grib2ReportPanel extends ReportPanel {
           GribTables.Parameter entry = WmoParamTable.getParameter(discipline, category, number);
           if (entry == null) {
             fm.format("  missing from WMO table (%d %d %d) = %s units=%s %n", discipline, category, number, currName,
-                dt.getUnitsString());
+                dt.getUnits());
             miss++;
             continue;
           }
@@ -583,18 +585,18 @@ public class Grib2ReportPanel extends ReportPanel {
       // ??
     }
 
-    try (GridDataset ncfile = GridDataset.open(path + GribCdmIndex.NCX_SUFFIX)) {
-      for (GridDatatype dt : ncfile.getGrids()) {
+    try (GridDataset gds = GridDatasetFactory.openGridDataset(path + GribCdmIndex.NCX_SUFFIX, errlog)) {
+      for (Grid dt : gds.getGrids()) {
         String currName = dt.getName();
         total++;
 
-        Attribute att = dt.findAttributeIgnoreCase("Grib_Probability_Type");
+        Attribute att = dt.attributes().findAttributeIgnoreCase("Grib_Probability_Type");
         if (att != null) {
           fm.format("  %s (PROB) desc=%s %n", currName, dt.getDescription());
           prob++;
         }
 
-        att = dt.findAttributeIgnoreCase(Grib.GRIB_STAT_TYPE);
+        att = dt.attributes().findAttributeIgnoreCase(Grib.GRIB_STAT_TYPE);
         if (att != null) {
           if (att.getNumericValue() == null) {
             System.out.printf("HEY expect number for %s%n", att.getName());
@@ -607,7 +609,7 @@ public class Grib2ReportPanel extends ReportPanel {
           }
         }
 
-        att = dt.findAttributeIgnoreCase("Grib_Ensemble_Derived_Type");
+        att = dt.attributes().findAttributeIgnoreCase("Grib_Ensemble_Derived_Type");
         if (att != null) {
           if (att.getNumericValue() == null) {
             System.out.printf("HEY expect number for %s%n", att.getName());
@@ -1102,9 +1104,9 @@ public class Grib2ReportPanel extends ReportPanel {
       // look for exact match on name
       Set<String> namesNew = new HashSet<>(gridsNew.size());
       for (GridMatch gm : gridsNew.values())
-        namesNew.add(gm.grid.getFullName());
+        namesNew.add(gm.grid.getName());
       for (GridMatch gm : gridsOld.values()) {
-        if (namesNew.contains(gm.grid.getFullName()))
+        if (namesNew.contains(gm.grid.getName()))
           countExactMatch++;
         countOldVars++;
       }
@@ -1134,15 +1136,15 @@ public class Grib2ReportPanel extends ReportPanel {
       List<GridMatch> listNew = new ArrayList<>(gridsNew.values());
       Collections.sort(listNew);
       for (GridMatch gm : listNew) {
-        f.format(" %s%n", gm.grid.findAttributeIgnoreCase(Grib.VARIABLE_ID_ATTNAME));
-        f.format(" %s (%d)%n", gm.grid.getFullName(), gm.hashCode());
+        f.format(" %s%n", gm.grid.attributes().findAttributeIgnoreCase(Grib.VARIABLE_ID_ATTNAME));
+        f.format(" %s (%d)%n", gm.grid.getName(), gm.hashCode());
         if (gm.match != null) {
-          boolean exact = gm.match.grid.getFullName().equals(gm.grid.getFullName());
-          boolean exactIg = !exact && gm.match.grid.getFullName().equalsIgnoreCase(gm.grid.getFullName());
+          boolean exact = gm.match.grid.getName().equals(gm.grid.getName());
+          boolean exactIg = !exact && gm.match.grid.getName().equalsIgnoreCase(gm.grid.getName());
           if (exactIg)
             countExactMatchIg++;
           String status = exact ? " " : exactIg ? "**" : " *";
-          f.format("%s%s (%d)%n", status, gm.match.grid.getFullName(), gm.match.hashCode());
+          f.format("%s%s (%d)%n", status, gm.match.grid.getName(), gm.match.hashCode());
         }
         f.format("%n");
       }
@@ -1153,22 +1155,22 @@ public class Grib2ReportPanel extends ReportPanel {
       Collections.sort(list);
       for (GridMatch gm : list) {
         if (gm.match == null)
-          f.format(" %s (%s) == %s%n", gm.grid.getFullName(), gm.show(), gm.grid.getDescription());
+          f.format(" %s (%s) == %s%n", gm.grid.getName(), gm.show(), gm.grid.getDescription());
       }
       f.format("%nMISSING MATCHES IN OLD%n");
       List<GridMatch> listOld = new ArrayList<>(gridsOld.values());
       Collections.sort(listOld);
       for (GridMatch gm : listOld) {
         if (gm.match == null)
-          f.format(" %s (%s)%n", gm.grid.getFullName(), gm.show());
+          f.format(" %s (%s)%n", gm.grid.getName(), gm.show());
       }
 
       // add to gridsAll to track old -> new mapping
       for (GridMatch gmOld : listOld) {
-        String key = gmOld.grid.getShortName();
+        String key = gmOld.grid.getName();
         List<String> newGrids = gridsAll.computeIfAbsent(key, k -> new ArrayList<>());
         if (gmOld.match != null) {
-          String keyNew = gmOld.match.grid.getShortName();
+          String keyNew = gmOld.match.grid.getName();
           if (!newGrids.contains(keyNew))
             newGrids.add(keyNew);
         }
@@ -1177,12 +1179,12 @@ public class Grib2ReportPanel extends ReportPanel {
       // add matches to VarNames
       for (GridMatch gmOld : listOld) {
         if (gmOld.match == null) {
-          f.format("MISSING %s (%s)%n", gmOld.grid.getFullName(), gmOld.show());
+          f.format("MISSING %s (%s)%n", gmOld.grid.getName(), gmOld.show());
           continue;
         }
-        Attribute att = gmOld.match.grid.findAttributeIgnoreCase(Grib.VARIABLE_ID_ATTNAME);
+        Attribute att = gmOld.match.grid.attributes().findAttributeIgnoreCase(Grib.VARIABLE_ID_ATTNAME);
         String varId = att == null ? "" : att.getStringValue();
-        varNames.add(new VarName(mfile.getName(), gmOld.grid.getShortName(), gmOld.match.grid.getShortName(), varId));
+        varNames.add(new VarName(mfile.getName(), gmOld.grid.getName(), gmOld.match.grid.getName(), varId));
       }
 
     }
@@ -1300,7 +1302,7 @@ public class Grib2ReportPanel extends ReportPanel {
   }
 
   private static class GridMatch implements Comparable<GridMatch> {
-    GridDatatype grid;
+    Grid grid;
     GridMatch match;
     boolean isNew;
     int[] param = new int[3];
@@ -1311,36 +1313,38 @@ public class Grib2ReportPanel extends ReportPanel {
     int ens = -1;
     int probLimit = Integer.MAX_VALUE;
 
-    private GridMatch(GridDatatype grid, boolean aNew) {
+    private GridMatch(Grid grid, boolean aNew) {
       this.grid = grid;
       isNew = aNew;
 
-      GridCoordSystem gcs = grid.getCoordinateSystem();
-      CoordinateAxis1D zaxis = gcs.getVerticalAxis();
-      if (zaxis != null)
+      GridCoordinateSystem gcs = grid.getCoordinateSystem();
+      GridAxis<?> zaxis = gcs.getVerticalAxis();
+      if (zaxis != null) {
         isLayer = zaxis.isInterval();
+      }
 
       if (isNew) {
-        Attribute att = grid.findAttributeIgnoreCase("Grib2_Parameter");
+        Attribute att = grid.attributes().findAttributeIgnoreCase("Grib2_Parameter");
         for (int i = 0; i < 3; i++)
           param[i] = att.getNumericValue(i).intValue();
 
-        att = grid.findAttributeIgnoreCase("Grib2_Level_Type");
+        att = grid.attributes().findAttributeIgnoreCase("Grib2_Level_Type");
         level = att.getNumericValue().intValue();
         isError = grid.getName().contains("error");
 
-        att = grid.findAttributeIgnoreCase("Grib2_Statistical_Interval_Type");
+        att = grid.attributes().findAttributeIgnoreCase("Grib2_Statistical_Interval_Type");
         if (att != null) {
           int intv = att.getNumericValue().intValue();
           if (intv != 255)
             interval = intv;
         }
 
-        att = grid.findAttributeIgnoreCase("Grib2_Probability_Type");
+        att = grid.attributes().findAttributeIgnoreCase("Grib2_Probability_Type");
         if (att != null)
           prob = att.getNumericValue().intValue();
 
-        att = grid.findAttributeIgnoreCase("Grib2_Probability_Name"); // :Grib2_Probability_Name = "above_17.5";
+        att = grid.attributes().findAttributeIgnoreCase("Grib2_Probability_Name"); // :Grib2_Probability_Name =
+                                                                                   // "above_17.5";
         if (att != null) {
           String pname = att.getStringValue();
           int pos = pname.indexOf('_');
@@ -1348,42 +1352,43 @@ public class Grib2ReportPanel extends ReportPanel {
           probLimit = (int) (1000.0 * Double.parseDouble(pname));
         }
 
-        att = grid.findAttributeIgnoreCase("Grib2_Ensemble_Derived_Type");
+        att = grid.attributes().findAttributeIgnoreCase("Grib2_Ensemble_Derived_Type");
         if (att != null)
           ens = att.getNumericValue().intValue();
 
       } else {
-        Attribute att = grid.findAttributeIgnoreCase("GRIB_param_id");
+        Attribute att = grid.attributes().findAttributeIgnoreCase("GRIB_param_id");
         for (int i = 0; i < 3; i++)
           param[i] = att.getNumericValue(i + 1).intValue();
 
-        att = grid.findAttributeIgnoreCase("GRIB_level_type");
+        att = grid.attributes().findAttributeIgnoreCase("GRIB_level_type");
         level = att.getNumericValue().intValue();
         isError = grid.getName().contains("error");
 
-        att = grid.findAttributeIgnoreCase("GRIB_interval_stat_type");
+        att = grid.attributes().findAttributeIgnoreCase("GRIB_interval_stat_type");
         if (att != null) {
           String intName = att.getStringValue();
           interval = GribStatType.getStatTypeNumber(intName);
         }
 
-        att = grid.findAttributeIgnoreCase("GRIB_probability_type");
+        att = grid.attributes().findAttributeIgnoreCase("GRIB_probability_type");
         if (att != null)
           prob = att.getNumericValue().intValue();
         if (prob == 0) {
-          att = grid.findAttributeIgnoreCase("GRIB_probability_lower_limit");
+          att = grid.attributes().findAttributeIgnoreCase("GRIB_probability_lower_limit");
           if (att != null)
             probLimit = (int) (1000 * att.getNumericValue().doubleValue());
           // if (Math.abs(probLimit) > 100000) probLimit /= 1000; // wierd bug in 4.2
         } else if (prob == 1) {
-          att = grid.findAttributeIgnoreCase("GRIB_probability_upper_limit"); // GRIB_probability_upper_limit = 12.89;
-                                                                              // // double
+          att = grid.attributes().findAttributeIgnoreCase("GRIB_probability_upper_limit"); // GRIB_probability_upper_limit
+                                                                                           // = 12.89;
+          // // double
           if (att != null)
             probLimit = (int) (1000 * att.getNumericValue().doubleValue());
           // if (Math.abs(probLimit) > 100000) probLimit /= 1000; // wierd bug in 4.2
         }
 
-        att = grid.findAttributeIgnoreCase("GRIB_ensemble_derived_type");
+        att = grid.attributes().findAttributeIgnoreCase("GRIB_ensemble_derived_type");
         if (att != null)
           ens = att.getNumericValue().intValue();
       }
@@ -1471,7 +1476,7 @@ public class Grib2ReportPanel extends ReportPanel {
 
     @Override
     public int compareTo(GridMatch o) {
-      return grid.compareTo(o.grid);
+      return grid.getName().compareTo(o.grid.getName());
     }
 
     String show() {
@@ -1495,13 +1500,14 @@ public class Grib2ReportPanel extends ReportPanel {
 
   private Map<Integer, GridMatch> getGridsNew(MFile ff, Formatter f) throws IOException {
     Map<Integer, GridMatch> grids = new HashMap<>(100);
-    try (GridDataset ncfile = GridDataset.open(ff.getPath())) {
-      for (GridDatatype dt : ncfile.getGrids()) {
+    Formatter errlog = new Formatter();
+    try (GridDataset ncfile = GridDatasetFactory.openGridDataset(ff.getPath(), errlog)) {
+      for (Grid dt : ncfile.getGrids()) {
         GridMatch gm = new GridMatch(dt, true);
         GridMatch dup = grids.get(gm.hashCode());
         if (dup != null)
-          f.format(" DUP NEW (%d == %d) = %s (%s) and DUP %s (%s)%n", gm.hashCode(), dup.hashCode(),
-              gm.grid.getFullName(), gm.show(), dup.grid.getFullName(), dup.show());
+          f.format(" DUP NEW (%d == %d) = %s (%s) and DUP %s (%s)%n", gm.hashCode(), dup.hashCode(), gm.grid.getName(),
+              gm.show(), dup.grid.getName(), dup.show());
         else
           grids.put(gm.hashCode(), gm);
       }
@@ -1513,15 +1519,17 @@ public class Grib2ReportPanel extends ReportPanel {
     Map<Integer, GridMatch> grids = new HashMap<>(100);
     try (NetcdfFile ncfile = NetcdfFiles.open(ff.getPath(), "ucar.nc2.iosp.grib.GribServiceProvider", -1, null, null)) {
       NetcdfDataset ncd = NetcdfDatasets.enhance(ncfile, NetcdfDataset.getDefaultEnhanceMode(), null);
-      GridDataset grid = new GridDataset(ncd);
-      for (GridDatatype dt : grid.getGrids()) {
-        GridMatch gm = new GridMatch(dt, false);
-        GridMatch dup = grids.get(gm.hashCode());
-        if (dup != null)
-          f.format(" DUP OLD (%d == %d) = %s (%s) and DUP %s (%s)%n", gm.hashCode(), dup.hashCode(),
-              gm.grid.getFullName(), gm.show(), dup.grid.getFullName(), dup.show());
-        else
-          grids.put(gm.hashCode(), gm);
+      Formatter errlog = new Formatter();
+      try (GridDataset gds = GridDatasetFactory.wrapGridDataset(ncd, errlog).orElseThrow()) {
+        for (Grid dt : gds.getGrids()) {
+          GridMatch gm = new GridMatch(dt, false);
+          GridMatch dup = grids.get(gm.hashCode());
+          if (dup != null)
+            f.format(" DUP OLD (%d == %d) = %s (%s) and DUP %s (%s)%n", gm.hashCode(), dup.hashCode(),
+                gm.grid.getName(), gm.show(), dup.grid.getName(), dup.show());
+          else
+            grids.put(gm.hashCode(), gm);
+        }
       }
     } catch (Throwable t) {
       t.printStackTrace();
