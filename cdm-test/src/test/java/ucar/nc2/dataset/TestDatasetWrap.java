@@ -1,32 +1,29 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.dataset;
 
 import java.util.Formatter;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.internal.util.CompareNetcdf2;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.google.common.truth.Truth.assertThat;
 
 /** Compare acquireDataset with enhance(acquireFile) */
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
 public class TestDatasetWrap {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Parameterized.Parameters(name = "{0}")
   public static List<Object[]> getTestParameters() {
@@ -39,7 +36,7 @@ public class TestDatasetWrap {
     return result;
   }
 
-  private DatasetUrl durl;
+  private final DatasetUrl durl;
 
   public TestDatasetWrap(String filename) {
     durl = DatasetUrl.create(null, filename);
@@ -58,7 +55,7 @@ public class TestDatasetWrap {
       if (!ok) {
         System.out.printf("FAIL %s %s%n", durl, errlog);
       }
-      Assert.assertTrue(ok);
+      assertThat(ok).isTrue();
     }
   }
 }

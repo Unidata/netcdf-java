@@ -18,14 +18,17 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.nc2.dt.grid.GridDataset;
+import ucar.nc2.grid.GridDataset;
+import ucar.nc2.grid.GridDatasetFactory;
 import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.io.IOException;
 import java.io.StringReader;
 import java.lang.invoke.MethodHandles;
-import java.util.List;
+import java.util.Formatter;
+
+import static com.google.common.truth.Truth.assertThat;
 
 @Category(NeedsCdmUnitTest.class)
 public class TestOffAggDirectory {
@@ -60,11 +63,12 @@ public class TestOffAggDirectory {
   @Test
   public void testNcmlGrid() throws IOException {
     String filename = "file:" + TestDir.cdmUnitTestDir + "ncml/nc/seawifs/aggDirectory.ncml";
+    System.out.printf("TestNcmlAggExisting.openGrid %s%n", filename);
 
-    try (GridDataset gds = GridDataset.open(filename)) {
-      logger.debug(" TestNcmlAggExisting.openGrid {}", filename);
-      List grids = gds.getGrids();
-      assert grids.size() == 2;
+    Formatter errlog = new Formatter();
+    try (GridDataset ncd = GridDatasetFactory.openGridDataset(filename, errlog)) {
+      assertThat(ncd).isNotNull();
+      assertThat(ncd.getGrids()).hasSize(2);
     }
   }
 

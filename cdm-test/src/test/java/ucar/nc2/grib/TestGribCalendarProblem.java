@@ -43,18 +43,6 @@ public class TestGribCalendarProblem {
   }
 
   @Test
-  public void testDtGridWithMonthUnits() throws IOException {
-    String endpoint = TestDir.cdmUnitTestDir + "formats/grib1/cfs.wmo";
-
-    try (ucar.nc2.dt.grid.GridDataset ds = ucar.nc2.dt.grid.GridDataset.open(endpoint)) {
-      assertThat(ds).isNotNull();
-      ucar.nc2.dt.grid.GeoGrid v = ds.findGridByName(vname);
-      assertThat(v).isNotNull();
-      assertThat(v).isInstanceOf(ucar.nc2.dt.grid.GeoGrid.class);
-    }
-  }
-
-  @Test
   public void testGridWithMonthUnits() throws IOException {
     String endpoint = TestDir.cdmUnitTestDir + "formats/grib1/cfs.wmo";
 

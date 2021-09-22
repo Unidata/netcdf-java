@@ -10,6 +10,7 @@ import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.calendar.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.geoloc.ProjectionPoint;
 import ucar.unidata.geoloc.ProjectionRect;
 
 import java.io.IOException;
@@ -106,6 +107,11 @@ public class GridReader {
 
   public GridReader setLatLonBoundingBox(LatLonRect llbb) {
     req.put(GridSubset.latlonBB, llbb);
+    return this;
+  }
+
+  public GridReader setProjectionPoint(ProjectionPoint pt) {
+    req.put(GridSubset.projectionPoint, pt);
     return this;
   }
 

@@ -391,6 +391,15 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
       return self();
     }
 
+    /** Change the value units by the given scale factor. */
+    public T changeUnits(double factor) {
+      if (spacing == GridAxisSpacing.regularPoint) {
+        this.startValue *= factor;
+      }
+      return scaleValues(factor);
+    }
+
+    /** Multiply the values by the given scale factor */
     public T scaleValues(double factor) {
       if (spacing == GridAxisSpacing.regularPoint) {
         this.resolution *= factor;

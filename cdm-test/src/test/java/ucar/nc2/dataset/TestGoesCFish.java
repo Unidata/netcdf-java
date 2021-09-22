@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.dataset;
@@ -21,7 +21,7 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 @Category(NeedsCdmUnitTest.class)
 public class TestGoesCFish {
 
-  private static String testFile = TestDir.cdmUnitTestDir + "/conventions/cf/cf-ish/OR_EFD-060.nc";
+  private static final String testFile = TestDir.cdmUnitTestDir + "/conventions/cf/cf-ish/OR_EFD-060.nc";
 
   @Test
   public void testBadProjVarAttrs() throws IOException {
@@ -32,7 +32,7 @@ public class TestGoesCFish {
 
   private void checkAxis(NetcdfDataset ncd) {
     CoordinateAxis latAxis = ncd.findCoordinateAxis(AxisType.GeoX);
-    assertThat(latAxis != null);
+    assertThat(latAxis).isNotNull();
     assertThat(latAxis.getAxisType()).isEqualTo(AxisType.GeoX);
   }
 

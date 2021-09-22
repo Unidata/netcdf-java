@@ -97,8 +97,7 @@ Here is a summary of the ways that an application might use the CDM to open GRIB
 Pass the local data file location to any of the standard dataset opening classes:
 * `ucar.nc2.NetcdfFile.open(String location)`
 * `ucar.nc2.dataset.NetcdfDataset.openFile(String location)`
-* `ucar.nc2.dt.grid.GridDataset.open(String location)`
-* `ucar.nc2.ft.FeatureDatasetFactoryManager.open(FeatureType.GRID, String location, CancelTask task, Formatter errlog);`
+* `ucar.nc2.grid.GridDatasetFactory.openDataset(String location, Formatter errlog)`
 
 The GRIB Index (**.gbx9**) and GRIB Collection index (**.ncx4**) files will be created as needed.
 

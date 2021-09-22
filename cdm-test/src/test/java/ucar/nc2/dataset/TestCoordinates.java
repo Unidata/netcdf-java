@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.dataset;
@@ -7,25 +7,20 @@ package ucar.nc2.dataset;
 import static com.google.common.truth.Truth.assertThat;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ucar.ma2.Array;
-import ucar.ma2.DataType;
-import ucar.ma2.IndexIterator;
+import ucar.array.Array;
+import ucar.array.ArrayType;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
-import ucar.nc2.dt.grid.GeoGrid;
-import ucar.nc2.dt.grid.GridDataset;
-import ucar.nc2.write.Ncdump;
+import ucar.nc2.grid.Grid;
+import ucar.nc2.grid.GridDatasetFactory;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import java.io.IOException;
 import java.io.StringReader;
-import java.lang.invoke.MethodHandles;
+import java.util.Formatter;
 
 /** Test _Coordinates dataset in the JUnit framework. */
 public class TestCoordinates {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Category(NeedsCdmUnitTest.class)
   @Test
@@ -33,11 +28,10 @@ public class TestCoordinates {
     String filename = TestDir.cdmUnitTestDir + "ft/grid/ensemble/demeter/MM_cnrm_129_red.ncml";
     try (NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDatasets.openDataset(filename)) {
       Variable v = ncd.findCoordinateAxis("number");
-      assert v != null;
-      // assert v.isCoordinateVariable();
-      assert v instanceof CoordinateAxis1D;
-      assert null != ncd.findDimension("ensemble");
-      assert v.getDimension(0) == ncd.findDimension("ensemble");
+      assertThat(v).isNotNull();
+      assertThat(v).isInstanceOf(CoordinateAxis1D.class);
+      assertThat(ncd.findDimension("ensemble")).isNotNull();
+      assertThat(ncd.findDimension("ensemble")).isEqualTo(v.getDimension(0));
     }
   }
 
@@ -49,15 +43,14 @@ public class TestCoordinates {
     System.out.printf("%s%n", filename);
     try (NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDatasets.openDataset(filename)) {
       Variable v = ncd.findCoordinateAxis("Longitude");
-      assert v != null;
-      assert v instanceof CoordinateAxis1D;
+      assertThat(v).isNotNull();
+      assertThat(v).isInstanceOf(CoordinateAxis1D.class);
 
       // if offset is applied twice, the result is not in +-180 range
-      Array data = v.read();
-      logger.debug(Ncdump.printArray(data));
-      IndexIterator ii = data.getIndexIterator();
-      while (ii.hasNext()) {
-        assert Math.abs(ii.getDoubleNext()) < 180 : ii.getDoubleCurrent();
+      Array<Number> data = (Array<Number>) v.readArray();
+      for (Number val : data) {
+        assertThat(val.doubleValue() < 180).isTrue();
+        assertThat(val.doubleValue() > -180).isTrue();
       }
     }
   }
@@ -102,18 +95,19 @@ public class TestCoordinates {
     try (NetcdfDataset ncd = NetcdfDatasets.openNcmlDataset(new StringReader(ncml), location, null)) {
       System.out.printf("%n%s%n", ncd);
       VariableDS v = (VariableDS) ncd.findVariable("time");
-      assert v != null;
-      assert v.getDataType() == DataType.INT;
+      assertThat(v).isNotNull();
+      assertThat(v.getArrayType()).isEqualTo(ArrayType.INT);
       assertThat((Object) v).isInstanceOf(CoordinateAxis.class);
       CoordinateAxis axis = (CoordinateAxis) v;
-      assert axis.getAxisType() == AxisType.Time;
+      assertThat(axis.getAxisType()).isEqualTo(AxisType.Time);
 
-      GridDataset gd = new GridDataset(ncd, null);
-
-      GeoGrid grid = gd.findGridByName("rh");
-      assert grid != null;
-      assert grid.getDataType() == DataType.INT;
-      System.out.printf("%s%n", ncd);
+      Formatter errlog = new Formatter();
+      try (ucar.nc2.grid.GridDataset gds = GridDatasetFactory.wrapGridDataset(ncd, errlog).orElseThrow()) {
+        assertThat(gds).isNotNull();
+        Grid grid = gds.findGrid("rh").orElseThrow();
+        assertThat(grid).isNotNull();
+        assertThat(grid.getArrayType()).isEqualTo(ArrayType.INT);
+      }
     }
   }
 

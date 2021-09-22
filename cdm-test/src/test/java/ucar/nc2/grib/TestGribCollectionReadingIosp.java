@@ -25,11 +25,7 @@ import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
 /**
- * Read data through the Grib iosp.
- * Though this is superceeded by coverage, we need to keep it working.
- *
- * @author caron
- * @since 4/9/2015
+ * Read data through the Grib iosp (NetcdfDataset).
  */
 @Category(NeedsCdmUnitTest.class)
 public class TestGribCollectionReadingIosp {

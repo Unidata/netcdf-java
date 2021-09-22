@@ -959,9 +959,16 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
       f.format("%nDataset %s%n", ds.getType());
       for (GroupGC g : ds.groups) {
         f.format(" Group %s%n", g.horizCoordSys.getId());
+        int totRecords = 0;
+        int totDups = 0;
+        int totMiss = 0;
         for (VariableIndex v : g.variList) {
           f.format("  %s%n", v.toStringFrom());
+          totRecords += v.nrecords;
+          totDups += v.ndups;
+          totMiss += v.nmissing;
         }
+        f.format(" Total   nrecords=%d, ndups=%d, nmiss=%d %n", totRecords, totDups, totMiss);
       }
     }
 

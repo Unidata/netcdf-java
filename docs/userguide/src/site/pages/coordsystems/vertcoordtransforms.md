@@ -242,16 +242,26 @@ This is not part of CF, but a way to mark an existing 3D (4D if time dependent) 
 
 ~~~java
 public void testAtmHybrid() throws java.io.IOException, InvalidRangeException {
-  GridDataset gds = ucar.nc2.dt.grid.GridDataset.open( TestAll.cdmUnitTestDir + "conventions/cf/ccsm2.nc"); 
-  GridDatatype grid = gds.findGridDatatype("T");
-  GridCoordSystem gcs = grid.getCoordinateSystem();
+  try (NetcdfDataset gds = NetcdfDatasets.openDataset(TestDir.cdmUnitTestDir + "conventions/cf/ccsm2.nc")) {
+    System.out.printf("openDataset %s%n", gds.getLocation());
 
-  VerticalTransform vt = gcs.getVerticalTransform();
-  CoordinateAxis1DTime taxis = gcs.getTimeAxis1D();
-  for (int t=0; t<taxis.getSize(); t++) {
-    System.out.printf("vert coord for time = %s%n", taxis.getTimeDate(t));
-    ArrayDouble.D3 ca = vt.getCoordinateArray(t);
-    doSomething(ca);
+    VariableDS vds = (VariableDS) gds.findVariable("T");
+    assertThat(vds).isNotNull();
+    assertThat(vds.getShape()).isEqualTo(new int[] {1, 26, 64, 128});
+
+    CoordinateSystem cs = vds.getCoordinateSystems().get(0);
+    assertThat(cs).isNotNull();
+
+    VerticalCT vct = cs.getVerticalCT();
+    assertThat(vct).isNotNull();
+    assertThat(vct.getVerticalTransformType()).isEqualTo(VerticalCT.Type.HybridSigmaPressure);
+
+    VerticalTransform vt = vct.makeVerticalTransform(gds, null);
+    assertThat(vt).isNotNull();
+
+    ArrayDouble.D3 ca = vt.getCoordinateArray(0);
+    assertThat(ca).isNotNull();
+    assertThat(ca.getShape()).isEqualTo(new int[] {26, 64, 128});
   }
 }
 ~~~

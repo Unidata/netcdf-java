@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.dataset;
@@ -8,8 +8,6 @@ import java.util.Formatter;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.nc2.NetcdfFile;
@@ -18,14 +16,10 @@ import ucar.nc2.Variable;
 import ucar.nc2.internal.util.CompareNetcdf2;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-import java.lang.invoke.MethodHandles;
 
-/**
- * Test things are ok when wrapping by a Dataset
- */
+/** Test things are ok when wrapping by a Dataset */
 @Category(NeedsCdmUnitTest.class)
 public class TestDatasetWrapProblem {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
   public void testDatasetWrap() throws Exception {

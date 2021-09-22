@@ -12,6 +12,7 @@ import ucar.nc2.calendar.CalendarDateUnit;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPoints;
 import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.geoloc.ProjectionPoint;
 import ucar.unidata.geoloc.ProjectionRect;
 import ucar.unidata.util.StringUtil2;
 
@@ -50,6 +51,7 @@ public class GridSubset {
   public static final String ensCoord = "ensCoord"; // value = Number
 
   public static final String latlonPoint = "latlonPoint"; // value = LatLonPoint
+  public static final String projectionPoint = "projectionPoint"; // value = ProjectionPoint
   public static final String latlonBB = "latlonBB"; // value = LatLonRect
   public static final String projBB = "projBB"; // value = ProjectionRect
   public static final String horizStride = "horizStride"; // value = Integer
@@ -279,6 +281,21 @@ public class GridSubset {
   public GridSubset setLatLonPoint(LatLonPoint pt) {
     req.put(latlonPoint, pt);
     return this;
+  }
+
+
+  public GridSubset setProjectionPoint(ProjectionPoint pt) {
+    req.put(projectionPoint, pt);
+    return this;
+  }
+
+  public ProjectionPoint getProjectionPoint() {
+    Object val = req.get(projectionPoint);
+    if (val instanceof ProjectionPoint) {
+      return (ProjectionPoint) val;
+    } else {
+      return null;
+    }
   }
 
   @Nullable

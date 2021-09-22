@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
- * See LICENSE.txt for license information.
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
  */
 
 package ucar.nc2.dataset;
@@ -43,8 +43,8 @@ import static com.google.common.truth.Truth.assertThat;
 public class TestProjections {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  private static String testDir = TestDir.cdmUnitTestDir + "transforms/";
-  private static LatLonPoint testPoint = LatLonPoint.create(0, 145.0);
+  private static final String testDir = TestDir.cdmUnitTestDir + "transforms/";
+  private static final LatLonPoint testPoint = LatLonPoint.create(0, 145.0);
 
   @Parameterized.Parameters(name = "{0}-{1}")
   public static Collection<Object[]> data() {
@@ -109,11 +109,11 @@ public class TestProjections {
   String filename;
   String ctvName;
   String varName;
-  Class projClass;
+  Class<?> projClass;
   LatLonPoint testPt;
   int ncoordsys;
 
-  public TestProjections(String filename, String ctvName, String varName, Class projClass, LatLonPoint testPt,
+  public TestProjections(String filename, String ctvName, String varName, Class<?> projClass, LatLonPoint testPt,
       int ncoordsys) {
     this.filename = filename;
     this.ctvName = ctvName;
@@ -176,6 +176,7 @@ public class TestProjections {
         }
 
         assertThat(found).isTrue();
+        System.out.printf("  radius = %f%n", radius);
         assertThat(radius).isGreaterThan(10000);
       }
 

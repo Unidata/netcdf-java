@@ -2,71 +2,69 @@ package ucar.nc2.iosp.grib;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ucar.ma2.Array;
-import ucar.ma2.Index;
-import ucar.nc2.dt.GridCoordSystem;
-import ucar.nc2.dt.grid.GeoGrid;
-import ucar.nc2.dt.grid.GridDataset;
-import ucar.nc2.write.Ncdump;
-import ucar.unidata.util.test.Assert2;
+import ucar.array.InvalidRangeException;
+import ucar.nc2.grid.Grid;
+import ucar.nc2.grid.GridDatasetFactory;
+import ucar.nc2.grid.GridHorizCoordinateSystem;
+import ucar.nc2.grid.GridReferencedArray;
+import ucar.unidata.geoloc.LatLonPoint;
+import ucar.unidata.geoloc.ProjectionPoint;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
+import java.util.Formatter;
+
+import static com.google.common.truth.Truth.assertThat;
 
 @Category(NeedsCdmUnitTest.class)
 public class TestScanMode {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
-  // scanMode = 0
-  public void testScanMode0() throws IOException {
+  public void testScanMode0() throws IOException, InvalidRangeException {
     String filename = TestDir.cdmUnitTestDir + "formats/grib2/S-HSAF-h03_20131214_1312_rom.grb";
-    logger.debug("Reading File {}", filename);
-    GridDataset gds = GridDataset.open(filename);
-    GeoGrid grid = gds.findGridByName("Instantaneous_rain_rate");
-    assert grid != null;
-    assert (grid.getDimensions().size() == 3);
+    System.out.printf("testScanMode0 openGrid %s%n", filename);
 
-    GridCoordSystem gcs = grid.getCoordinateSystem();
-    int[] result = gcs.findXYindexFromCoord(-7, 60.0, null);
-    logger.debug("x,y={},{}", result[0], result[1]);
+    Formatter errlog = new Formatter();
+    try (ucar.nc2.grid.GridDataset gds = GridDatasetFactory.openGridDataset(filename, errlog)) {
+      assertThat(gds).isNotNull();
+      Grid grid = gds.findGrid("Instantaneous_rain_rate").orElseThrow();
 
-    // should be non NAN
-    Array data = grid.readDataSlice(0, 0, 714, 1779);
-    logger.debug("{}", Ncdump.printArray(data));
+      GridHorizCoordinateSystem hcs = grid.getHorizCoordinateSystem();
+      GridHorizCoordinateSystem.CoordReturn result = hcs.findXYindexFromCoord(-432, 5016).orElseThrow();
+      System.out.printf("  CoordReturn = %s%n", result);
+      assertThat(result.xindex).isEqualTo(619);
+      assertThat(result.yindex).isEqualTo(126);
 
-    Index ima = data.getIndex();
-    float val = data.getFloat(ima);
-    Assert2.assertNearlyEquals(val, 5.0192626E-5);
+      GridReferencedArray gra2 = grid.getReader().setLatLonPoint(LatLonPoint.create(60.088, -8.5)).read();
+      float val2 = gra2.data().getScalar().floatValue();
+      assertThat(val2).isWithin(1.e-5f).of(.001536f);
 
-    gds.close();
+      GridReferencedArray gra =
+          grid.getReader().setProjectionPoint(ProjectionPoint.create(result.xcoord, result.ycoord)).read();
+      float val = gra.data().getScalar().floatValue();
+      assertThat(val).isWithin(1.e-5f).of(.001536f);
+    }
   }
 
   @Test
-  public void testEcmwf() throws IOException { // scanMode 192
+  public void testEcmwf() throws IOException, InvalidRangeException {
     String filename =
         TestDir.cdmUnitTestDir + "formats/grib2/MSG1-SEVI-MSGCLMK-0100-0100-20060102111500.000000000Z-12774.grb.grb";
-    logger.debug("Reading File {}", filename);
-    GridDataset gds = GridDataset.open(filename);
-    GeoGrid grid = gds.findGridByName("Cloud_mask");
-    assert grid != null;
-    assert (grid.getDimensions().size() == 3);
+    System.out.printf("testEcmwf openGrid %s%n", filename);
 
-    GridCoordSystem gcs = grid.getCoordinateSystem();
-    int[] result = gcs.findXYindexFromCoord(0, 0, null);
-    logger.debug("x,y={},{}", result[0], result[1]);
+    Formatter errlog = new Formatter();
+    try (ucar.nc2.grid.GridDataset gds = GridDatasetFactory.openGridDataset(filename, errlog)) {
+      assertThat(gds).isNotNull();
+      Grid grid = gds.findGrid("Cloud_mask").orElseThrow();
 
-    // should be non NAN
-    Array data = grid.readDataSlice(0, 0, result[1], result[0]);
-    logger.debug("{}", Ncdump.printArray(data));
+      GridHorizCoordinateSystem hcs = grid.getHorizCoordinateSystem();
+      GridHorizCoordinateSystem.CoordReturn result = hcs.findXYindexFromCoord(0, 0).orElseThrow();
+      System.out.printf("  CoordReturn = %s%n", result);
 
-    Index ima = data.getIndex();
-    float val = data.getFloat(ima);
-    Assert2.assertNearlyEquals(val, 0.0);
-
-    gds.close();
+      GridReferencedArray gra =
+          grid.getReader().setProjectionPoint(ProjectionPoint.create(result.xcoord, result.ycoord)).read();
+      float val = gra.data().getScalar().floatValue();
+      assertThat(val).isWithin(1.e-5f).of(0f);
+    }
   }
 }

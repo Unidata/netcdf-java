@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.dataset;
@@ -7,6 +7,7 @@ package ucar.nc2.dataset;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.ma2.*;
+import ucar.nc2.constants.AxisType;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridCoordSystem;
@@ -14,178 +15,170 @@ import ucar.unidata.geoloc.VerticalTransform;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 
+import static com.google.common.truth.Truth.assertThat;
+
 /** Test basic projection methods */
 @Category(NeedsCdmUnitTest.class)
 public class TestVertical {
 
   @Test
   public void testOceanS() throws java.io.IOException, InvalidRangeException {
-    try (GridDataset gds =
-        ucar.nc2.dt.grid.GridDataset.open(TestDir.cdmUnitTestDir + "transforms/roms_ocean_s_coordinate.nc")) {
+    try (NetcdfDataset gds =
+        NetcdfDatasets.openDataset(TestDir.cdmUnitTestDir + "transforms/roms_ocean_s_coordinate.nc")) {
+      System.out.printf("openDataset %s%n", gds.getLocation());
 
-      GridDatatype grid = gds.findGridDatatype("temp");
-      assert grid != null;
+      VariableDS vds = (VariableDS) gds.findVariable("temp");
+      assertThat(vds).isNotNull();
+      assertThat(vds.getShape()).isEqualTo(new int[] {2, 20, 60, 160});
 
-      GridCoordSystem gcs = grid.getCoordinateSystem();
-      assert gcs != null;
+      CoordinateSystem cs = vds.getCoordinateSystems().get(0);
+      assertThat(cs).isNotNull();
 
-      VerticalCT vct = gcs.getVerticalCT();
-      assert vct != null;
-      assert vct.getVerticalTransformType() == VerticalCT.Type.OceanS;
+      VerticalCT vct = cs.getVerticalCT();
+      assertThat(vct).isNotNull();
+      assertThat(vct.getVerticalTransformType()).isEqualTo(VerticalCT.Type.OceanS);
 
-      VerticalTransform vt = gcs.getVerticalTransform();
-      assert vt != null;
+      VerticalTransform vt = vct.makeVerticalTransform(gds, null);
+      assertThat(vt).isNotNull();
 
       ArrayDouble.D3 ca = vt.getCoordinateArray(0);
-      assert ca != null;
-      assert ca.getRank() == 3 : ca.getRank();
-
-      int[] shape = ca.getShape();
-      for (int i = 0; i < 3; i++)
-        System.out.println(" shape " + i + " = " + shape[i]);
-
+      assertThat(ca).isNotNull();
+      assertThat(ca.getShape()).isEqualTo(new int[] {20, 2, 60});
     }
   }
 
   @Test
   public void testOceanSigma() throws java.io.IOException, InvalidRangeException {
-    try (GridDataset gds = ucar.nc2.dt.grid.GridDataset.open(TestDir.cdmUnitTestDir + "conventions/cf/gomoos_cf.nc")) {
+    try (NetcdfDataset gds = NetcdfDatasets.openDataset(TestDir.cdmUnitTestDir + "conventions/cf/gomoos_cf.nc")) {
+      System.out.printf("openDataset %s%n", gds.getLocation());
 
-      GridDatatype grid = gds.findGridDatatype("temp");
-      assert grid != null;
+      VariableDS vds = (VariableDS) gds.findVariable("temp");
+      assertThat(vds).isNotNull();
+      assertThat(vds.getShape()).isEqualTo(new int[] {2, 22, 120, 180});
 
-      GridCoordSystem gcs = grid.getCoordinateSystem();
-      assert gcs != null;
+      CoordinateSystem cs = vds.getCoordinateSystems().get(0);
+      assertThat(cs).isNotNull();
 
-      VerticalCT vct = gcs.getVerticalCT();
-      assert vct != null;
-      assert vct.getVerticalTransformType() == VerticalCT.Type.OceanSigma;
+      VerticalCT vct = cs.getVerticalCT();
+      assertThat(vct).isNotNull();
+      assertThat(vct.getVerticalTransformType()).isEqualTo(VerticalCT.Type.OceanSigma);
 
-      VerticalTransform vt = gcs.getVerticalTransform();
-      assert vt != null;
+      VerticalTransform vt = vct.makeVerticalTransform(gds, null);
+      assertThat(vt).isNotNull();
 
-      CoordinateAxis1DTime taxis = gcs.getTimeAxis1D();
+      CoordinateAxis1D taxis = (CoordinateAxis1D) cs.findAxis(AxisType.Time);
+      assertThat(taxis).isNotNull();
       for (int t = 0; t < taxis.getSize(); t++) {
-        System.out.printf("vert coord for time = %s%n", taxis.getCalendarDate(t));
         ArrayDouble.D3 ca = vt.getCoordinateArray(t);
-        assert ca != null;
-        assert ca.getRank() == 3 : ca.getRank();
-
-        int[] shape = ca.getShape();
-        for (int i = 0; i < 3; i++)
-          System.out.println(" shape " + i + " = " + shape[i]);
+        assertThat(ca).isNotNull();
+        assertThat(ca.getShape()).isEqualTo(new int[] {22, 2, 120});
       }
     }
   }
 
   @Test
   public void testAtmSigma() throws java.io.IOException, InvalidRangeException {
-    try (GridDataset gds = ucar.nc2.dt.grid.GridDataset.open(TestDir.cdmUnitTestDir + "transforms/temperature.nc")) {
+    try (NetcdfDataset gds = NetcdfDatasets.openDataset(TestDir.cdmUnitTestDir + "transforms/temperature.nc")) {
+      System.out.printf("openDataset %s%n", gds.getLocation());
 
-      GridDatatype grid = gds.findGridDatatype("Temperature");
-      assert grid != null;
+      VariableDS vds = (VariableDS) gds.findVariable("Temperature");
+      assertThat(vds).isNotNull();
+      assertThat(vds.getShape()).isEqualTo(new int[] {2, 128, 164});
 
-      GridCoordSystem gcs = grid.getCoordinateSystem();
-      assert gcs != null;
+      CoordinateSystem cs = vds.getCoordinateSystems().get(0);
+      assertThat(cs).isNotNull();
 
-      VerticalCT vct = gcs.getVerticalCT();
-      assert vct != null;
-      assert vct.getVerticalTransformType() == VerticalCT.Type.Sigma;
+      VerticalCT vct = cs.getVerticalCT();
+      assertThat(vct).isNotNull();
+      assertThat(vct.getVerticalTransformType()).isEqualTo(VerticalCT.Type.Sigma);
 
-      VerticalTransform vt = gcs.getVerticalTransform();
-      assert vt != null;
+      VerticalTransform vt = vct.makeVerticalTransform(gds, null);
+      assertThat(vt).isNotNull();
 
       ArrayDouble.D3 ca = vt.getCoordinateArray(0);
-      assert ca != null;
-      assert ca.getRank() == 3 : ca.getRank();
-
-      int[] shape = ca.getShape();
-      for (int i = 0; i < 3; i++)
-        System.out.println(" shape " + i + " = " + shape[i]);
+      assertThat(ca).isNotNull();
+      assertThat(ca.getShape()).isEqualTo(new int[] {2, 128, 164});
     }
   }
 
   @Test
   public void testAtmHybrid() throws java.io.IOException, InvalidRangeException {
-    try (GridDataset gds = ucar.nc2.dt.grid.GridDataset.open(TestDir.cdmUnitTestDir + "conventions/cf/ccsm2.nc")) {
+    try (NetcdfDataset gds = NetcdfDatasets.openDataset(TestDir.cdmUnitTestDir + "conventions/cf/ccsm2.nc")) {
+      System.out.printf("openDataset %s%n", gds.getLocation());
 
-      GridDatatype grid = gds.findGridDatatype("T");
-      assert grid != null;
+      VariableDS vds = (VariableDS) gds.findVariable("T");
+      assertThat(vds).isNotNull();
+      assertThat(vds.getShape()).isEqualTo(new int[] {1, 26, 64, 128});
 
-      GridCoordSystem gcs = grid.getCoordinateSystem();
-      assert gcs != null;
+      CoordinateSystem cs = vds.getCoordinateSystems().get(0);
+      assertThat(cs).isNotNull();
 
-      VerticalCT vct = gcs.getVerticalCT();
-      assert vct != null;
-      assert vct.getVerticalTransformType() == VerticalCT.Type.HybridSigmaPressure : vct.getVerticalTransformType();
+      VerticalCT vct = cs.getVerticalCT();
+      assertThat(vct).isNotNull();
+      assertThat(vct.getVerticalTransformType()).isEqualTo(VerticalCT.Type.HybridSigmaPressure);
 
-      VerticalTransform vt = gcs.getVerticalTransform();
-      assert vt != null;
+      VerticalTransform vt = vct.makeVerticalTransform(gds, null);
+      assertThat(vt).isNotNull();
 
       ArrayDouble.D3 ca = vt.getCoordinateArray(0);
-      assert ca != null;
-      assert ca.getRank() == 3 : ca.getRank();
-
-      int[] shape = ca.getShape();
-      for (int i = 0; i < 3; i++)
-        System.out.println(" shape " + i + " = " + shape[i]);
+      assertThat(ca).isNotNull();
+      assertThat(ca.getShape()).isEqualTo(new int[] {26, 64, 128});
     }
   }
 
   @Test
   public void testWrfEta() throws java.io.IOException, InvalidRangeException {
-    try (GridDataset gds =
-        ucar.nc2.dt.grid.GridDataset.open(TestDir.cdmUnitTestDir + "conventions/wrf/wrfout_v2_Lambert.nc")) {
+    try (NetcdfDataset gds =
+        NetcdfDatasets.openDataset(TestDir.cdmUnitTestDir + "conventions/wrf/wrfout_v2_Lambert.nc")) {
+      System.out.printf("openDataset %s%n", gds.getLocation());
 
-      GridDatatype grid = gds.findGridDatatype("T");
-      assert grid != null;
+      VariableDS vds = (VariableDS) gds.findVariable("T");
+      assertThat(vds).isNotNull();
+      assertThat(vds.getShape()).isEqualTo(new int[] {1, 26, 64, 128});
 
-      GridCoordSystem gcs = grid.getCoordinateSystem();
-      assert gcs != null;
+      CoordinateSystem cs = vds.getCoordinateSystems().get(0);
+      assertThat(cs).isNotNull();
 
-      VerticalCT vct = gcs.getVerticalCT();
-      assert vct != null;
-      assert vct.getVerticalTransformType() == VerticalCT.Type.WRFEta : vct.getVerticalTransformType();
+      VerticalCT vct = cs.getVerticalCT();
+      assertThat(vct).isNotNull();
+      assertThat(vct.getVerticalTransformType()).isEqualTo(VerticalCT.Type.WRFEta);
 
-      VerticalTransform vt = gcs.getVerticalTransform();
-      assert vt != null;
+      VerticalTransform vt = vct.makeVerticalTransform(gds, null);
+      assertThat(vt).isNotNull();
 
       ArrayDouble.D3 ca = vt.getCoordinateArray(0);
-      assert ca != null;
-      assert ca.getRank() == 3 : ca.getRank();
-
-      int[] shape = ca.getShape();
-      for (int i = 0; i < 3; i++)
-        System.out.println(" shape " + i + " = " + shape[i]);
+      assertThat(ca).isNotNull();
+      assertThat(ca.getShape()).isEqualTo(new int[] {26, 64, 128});
     }
   }
 
   @Test
   public void testStride() throws java.io.IOException, InvalidRangeException {
-    String filename = TestDir.cdmUnitTestDir + "/conventions/wrf/wrfout_d01_2006-03-08_21-00-00";
-    try (GridDataset gds = ucar.nc2.dt.grid.GridDataset.open(filename)) {
-      GridDatatype grid = gds.findGridDatatype("T");
-      assert grid != null;
+    try (NetcdfDataset gds =
+        NetcdfDatasets.openDataset(TestDir.cdmUnitTestDir + "/conventions/wrf/wrfout_d01_2006-03-08_21-00-00")) {
+      System.out.printf("openDataset %s%n", gds.getLocation());
 
-      grid = grid.makeSubset(null, null, null, 1, 2, 4);
+      VariableDS vds = (VariableDS) gds.findVariable("T");
+      assertThat(vds).isNotNull();
+      assertThat(vds.getShape()).isEqualTo(new int[] {1, 44, 399, 399});
 
-      GridCoordSystem gcs = grid.getCoordinateSystem();
-      assert gcs != null;
+      // LOOK WAS
+      // grid = grid.makeSubset(null, null, null, 1, 2, 4);
 
-      VerticalTransform vt = gcs.getVerticalTransform();
-      assert vt != null;
+      CoordinateSystem cs = vds.getCoordinateSystems().get(0);
+      assertThat(cs).isNotNull();
+
+      VerticalCT vct = cs.getVerticalCT();
+      assertThat(vct).isNotNull();
+      assertThat(vct.getVerticalTransformType()).isEqualTo(VerticalCT.Type.WRFEta);
+
+      VerticalTransform vt = vct.makeVerticalTransform(gds, null);
+      assertThat(vt).isNotNull();
 
       ArrayDouble.D3 ca = vt.getCoordinateArray(0);
-      assert ca != null;
-      assert ca.getRank() == 3 : ca.getRank();
-
-      int[] shape = ca.getShape();
-      for (int i = 0; i < 3; i++)
-        System.out.println(" shape " + i + " = " + shape[i]);
-
-      assert shape[0] == 44;
-      assert shape[1] == 399 / 2 + 1;
-      assert shape[2] == 399 / 4 + 1;
+      assertThat(ca).isNotNull();
+      assertThat(ca.getShape()).isEqualTo(new int[] {44, 399, 399});
     }
   }
+
 }
