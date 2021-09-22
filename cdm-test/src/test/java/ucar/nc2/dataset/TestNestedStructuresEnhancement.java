@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.dataset;
@@ -31,7 +31,7 @@ public class TestNestedStructuresEnhancement {
 
   @Ignore("cant deal with BUFR at the moment")
   @Test
-  public void testNestedTable() throws IOException, InvalidRangeException {
+  public void testNestedTable() throws IOException {
     String filename = TestDir.cdmLocalTestDataDir + "dataset/nestedTable.bufr";
     try (NetcdfFile ncfile = ucar.nc2.dataset.NetcdfDatasets.openFile(filename, null)) {
       logger.debug("Open {}", ncfile.getLocation());

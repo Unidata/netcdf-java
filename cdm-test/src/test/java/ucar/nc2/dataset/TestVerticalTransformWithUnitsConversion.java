@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.dataset;
@@ -9,8 +9,6 @@ import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.dt.grid.GeoGrid;
@@ -22,7 +20,6 @@ import ucar.unidata.geoloc.VerticalTransform;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
 import java.util.Collection;
 import static org.junit.Assert.assertArrayEquals;
@@ -34,28 +31,21 @@ import static org.junit.Assert.assertArrayEquals;
  * - AtmosSigma
  * - HybridSigma (with P param and with AP param)
  * 
- * 
  * @author mhermida
  *
  */
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
 public class TestVerticalTransformWithUnitsConversion {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
-  private String sameUnitsFile;
-  private String diffUnitsFile;
-  private LatLonPoint point;
-  private String var;
+  private final String sameUnitsFile;
+  private final LatLonPoint point;
+  private final String var;
 
   public TestVerticalTransformWithUnitsConversion(String sameUnitsFile, String diffUnitsFile, LatLonPoint point,
       String var) {
-
     this.sameUnitsFile = sameUnitsFile;
-    this.diffUnitsFile = diffUnitsFile;
     this.point = point;
     this.var = var;
-
   }
 
   @Parameters(name = "{0}")

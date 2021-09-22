@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
+
 package ucar.nc2.grid;
 
 import com.google.common.base.Preconditions;
@@ -8,6 +13,7 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.internal.grid.CylindricalCoord;
 import ucar.nc2.internal.grid.SubsetHelpers;
 import ucar.nc2.internal.grid.SubsetPointHelper;
+import ucar.nc2.units.SimpleUnit;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPoints;
 import ucar.unidata.geoloc.LatLonRect;
@@ -150,10 +156,27 @@ public class GridHorizCoordinateSystem {
       projbb = getProjection().latLonToProjBB(llbbt);
     }
 
+    ProjectionPoint projCoord = params.getProjectionPoint();
+    if (projCoord != null) {
+      Optional<CoordReturn> resulto = findXYindexFromCoord(projCoord.getX(), projCoord.getY());
+      if (resulto.isEmpty()) {
+        errlog.format("subset failed to find index for ProjectionPoint.");
+        return Optional.empty();
+      }
+      CoordReturn result = resulto.get();
+
+      // use that index to create a subset of just that point.
+      Preconditions.checkNotNull(yaxis);
+      Preconditions.checkNotNull(xaxis);
+      yaxisSubset = yaxis.toBuilder().subsetWithRange(Range.make(result.yindex, result.yindex)).build();
+      xaxisSubset = xaxis.toBuilder().subsetWithRange(Range.make(result.xindex, result.xindex)).build();
+      return Optional.of(new GridHorizCoordinateSystem(xaxisSubset, yaxisSubset, this.projection));
+    }
+
     LatLonPoint latlon = params.getLatLonPoint();
     if (latlon != null) {
-      // find the x,y index of the given latlon
-      Optional<CoordReturn> resulto = findXYindexFromCoord(latlon.getLatitude(), latlon.getLongitude());
+      ProjectionPoint projCoord2 = getProjection().latLonToProj(latlon);
+      Optional<CoordReturn> resulto = findXYindexFromCoord(projCoord2.getX(), projCoord2.getY());
       if (resulto.isEmpty()) {
         errlog.format("subset failed to find index for latlonPoint.");
         return Optional.empty();
@@ -394,8 +417,8 @@ public class GridHorizCoordinateSystem {
   public GridHorizCoordinateSystem(GridAxisPoint xaxis, GridAxisPoint yaxis, @Nullable Projection projection) {
     Preconditions.checkNotNull(xaxis);
     Preconditions.checkNotNull(yaxis);
-    this.xaxis = xaxis;
-    this.yaxis = yaxis;
+    this.xaxis = convertUnits(xaxis);
+    this.yaxis = convertUnits(yaxis);
     // TODO set the LatLon seam?
     this.projection = projection == null ? new LatLonProjection() : projection;
     this.mapArea = calcBoundingBox();
@@ -407,11 +430,35 @@ public class GridHorizCoordinateSystem {
       LatLonRect llbb) {
     Preconditions.checkNotNull(xaxis);
     Preconditions.checkNotNull(yaxis);
-    this.xaxis = xaxis;
-    this.yaxis = yaxis;
+    this.xaxis = convertUnits(xaxis);
+    this.yaxis = convertUnits(yaxis);
     this.projection = projection;
     this.mapArea = mapArea;
     this.llbb = llbb;
+  }
+
+  // convert projection units to km
+  private GridAxisPoint convertUnits(GridAxisPoint axis) {
+    String units = axis.getUnits();
+    SimpleUnit axisUnit = SimpleUnit.factory(units);
+    if (axisUnit == null) {
+      return axis;
+    }
+
+    double factor;
+    try {
+      factor = axisUnit.convertTo(1.0, SimpleUnit.kmUnit);
+      if (factor == 1.0) {
+        return axis;
+      }
+    } catch (IllegalArgumentException e) {
+      return axis;
+    }
+
+    GridAxisPoint.Builder<?> newAxisBuilder = axis.toBuilder();
+    newAxisBuilder.changeUnits(factor);
+    newAxisBuilder.setUnits("km");
+    return newAxisBuilder.build();
   }
 
   private ProjectionRect calcBoundingBox() {

@@ -2,24 +2,26 @@ package ucar.nc2.ncml;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import com.google.common.collect.ImmutableList;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.Array;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Section;
-import ucar.nc2.dt.GridDatatype;
-import ucar.nc2.dt.grid.GridDataset;
+import ucar.array.Array;
+import ucar.array.InvalidRangeException;
+import ucar.nc2.grid.Grid;
+import ucar.nc2.grid.GridDataset;
+import ucar.nc2.grid.GridDatasetFactory;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+import java.util.Formatter;
 
 /**
  * JoinNew has bug when groups are present because non-agg vars are not getting proxied.
- * The example unfortunately does not satisfy homogeneity = one is 44 x 60, the other 46 x 60.
+ * The example unfortunately does not satisfy agg homogeneity: one is 44 x 60, the other 46 x 60.
  */
 @Category(NeedsCdmUnitTest.class)
 @Ignore("Fails")
@@ -29,20 +31,20 @@ public class TestJoinNewWithGroups {
   // test case from joleenf@ssec.wisc.edu 03/22/2012
 
   @Test
-  public void testJoinNewWithGroups() throws IOException {
+  public void testJoinNewWithGroups() throws IOException, InvalidRangeException {
     String location = TestDir.cdmUnitTestDir + "agg/groups/groupsJoinNew.ncml";
-    try (GridDataset ncd = GridDataset.open(location)) {
-      GridDatatype v = ncd.findGridDatatype("All_Data/Lifted_Index"); // the only agg var
-      assertThat(v).isNotNull();
-      assertThat(v.getRank()).isEqualTo(3);
-      Section s = new Section(v.getShape());
-      // assert s.equals(new Section(new int[] {2, 44, 60})) : s ;
+    Formatter errlog = new Formatter();
+    try (GridDataset ncd = GridDatasetFactory.openGridDataset(location, errlog)) {
+      assertThat(ncd).isNotNull();
+      Grid va = ncd.findGrid("All_Data/Lifted_Index").orElseThrow(); // the only agg var
+      assertThat(va).isNotNull();
+      assertThat(va.getCoordinateSystem().getNominalShape()).hasSize(3);
+      assertThat(va.getCoordinateSystem().getNominalShape()).isEqualTo(ImmutableList.of(2, 44, 60));
 
-      v = ncd.findGridDatatype("All_Data/CAPE"); // random non-agg var
-      assertThat(v).isNotNull();
-      assertThat(v.getRank()).isEqualTo(2);
-      Array a = v.readVolumeData(0);
-      System.out.printf("array section for %s = %s%n", v, new Section(a.getShape()));
+      Grid v = ncd.findGrid("All_Data/CAPE").orElseThrow(); // random non-agg var
+      assertThat(va.getCoordinateSystem().getNominalShape()).hasSize(2);
+      Array<?> data = v.getReader().read().data();
+      assertThat(va.getCoordinateSystem().getNominalShape()).isEqualTo(data.getShape());
     }
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -7,15 +7,9 @@ package ucar.nc2.dataset;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ucar.ma2.ArrayDouble;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
 import ucar.nc2.Dimension;
-import ucar.nc2.dt.GridCoordSystem;
-import ucar.nc2.dt.grid.GeoGrid;
-import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.internal.dataset.CoordTransformFactory;
 import ucar.nc2.units.SimpleUnit;
 import ucar.unidata.geoloc.VerticalTransform;
@@ -23,7 +17,6 @@ import ucar.unidata.geoloc.vertical.*;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,10 +25,9 @@ import static com.google.common.truth.Truth.assertThat;
 /** Test vertical transforms. */
 @Category(NeedsCdmUnitTest.class)
 public class TestTransforms {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private static final boolean show = false;
-  private String testDir = TestDir.cdmUnitTestDir + "transforms/";
+  private final String testDir = TestDir.cdmUnitTestDir + "transforms/";
 
   @Test
   public void testHybridSigmaPressure() throws IOException, InvalidRangeException {
@@ -218,9 +210,11 @@ public class TestTransforms {
     test(ncd, levName, varName, timeName, vtype, vclass, unit, varsMatch);
     ncd.close();
 
-    if (varsMatch) {
-      testGrid(filename, varName);
-    }
+    /*
+     * if (varsMatch) {
+     * testGrid(filename, varName);
+     * }
+     */
     return null;
   }
 
@@ -304,26 +298,29 @@ public class TestTransforms {
     return vt;
   }
 
-  private boolean testGrid(String uri, String var) throws IOException, InvalidRangeException {
-    try (GridDataset ds = GridDataset.open(uri)) {
-      GeoGrid grid = ds.findGridByName(var);
-      if (grid == null)
-        return false;
-      Section s = new Section(grid.getShape());
-      System.out.printf("var = %s %n", s);
-
-      GridCoordSystem GridCoordS = grid.getCoordinateSystem();
-      VerticalTransform vt = GridCoordS.getVerticalTransform();
-      assertThat(vt).isNotNull();
-      ArrayDouble.D3 z = vt.getCoordinateArray(0);
-      Section sv = new Section(z.getShape());
-      System.out.printf("3dcoord = %s %n", sv);
-
-      if (vt.isTimeDependent())
-        s = s.toBuilder().removeRange(0).build();
-      assertThat(s).isEqualTo(sv);
-    }
-    return true;
-  }
+  /*
+   * LOOK Grid not currently supporting VerticalTransform
+   * private boolean testGrid(String filename, String var) throws IOException, InvalidRangeException {
+   * System.out.printf("%n***Open %s%n", filename);
+   * Formatter errlog = new Formatter();
+   * try (ucar.nc2.grid.GridDataset gds = GridDatasetFactory.openGridDataset(filename, errlog)) {
+   * assertThat(gds).isNotNull();
+   * Grid grid = gds.findGrid(var).orElseThrow();
+   * GridCoordinateSystem gridCoordinateSystem = grid.getCoordinateSystem();
+   * Section s = new Section(gridCoordinateSystem.getNominalShape());
+   * 
+   * VerticalTransform vt = gridCoordinateSystem.getVerticalAxis();
+   * assertThat(vt).isNotNull();
+   * ArrayDouble.D3 z = vt.getCoordinateArray(0);
+   * Section sv = new Section(z.getShape());
+   * System.out.printf("3dcoord = %s %n", sv);
+   * 
+   * if (vt.isTimeDependent())
+   * s = s.toBuilder().removeRange(0).build();
+   * assertThat(s).isEqualTo(sv);
+   * }
+   * return true;
+   * }
+   */
 
 }

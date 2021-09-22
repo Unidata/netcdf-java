@@ -77,6 +77,7 @@ public class GribGridAxis {
             Preconditions.checkNotNull(time2d.getOrthogonalTimes());
             return create(type, time2d.getOffsetTimes(), iosp).withTime2d(time2d);
 
+          case MRC:
           case TwoD: // the time coordinate is a time2D (nruns X ntimes)
             if (time2d.isOrthogonal()) {
               Preconditions.checkNotNull(time2d.getOrthogonalTimes());

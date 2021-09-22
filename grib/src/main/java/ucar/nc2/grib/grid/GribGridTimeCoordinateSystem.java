@@ -69,6 +69,7 @@ public abstract class GribGridTimeCoordinateSystem extends GridTimeCoordinateSys
         CalendarDateUnit dateUnit = CalendarDateUnit.of(period, true, refDate);
         return new Observation(time, dateUnit);
       }
+      case MRC:
       case TwoD: {
         if (time.time2d.isOrthogonal()) {
           return new Offset(type, runtime, time);

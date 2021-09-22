@@ -70,15 +70,16 @@ public class TransformBuilders {
   /**
    * Get the earth radius in km from the attribute "earth_radius".
    * Normally this is in meters, convert to km if its > 10,000.
-   * Use Earth.getRadius() as default.
+   * Use Earth.WGS84_EARTH_RADIUS_METERS as default.
    *
    * @param ctv coord transform variable
    * @return earth radius in km
    */
   static double getEarthRadiusInKm(AttributeContainer ctv) {
     double earth_radius = ctv.findAttributeDouble(CF.EARTH_RADIUS, Earth.WGS84_EARTH_RADIUS_METERS);
-    if (earth_radius > 10000.0)
+    if (earth_radius > 10000.0) {
       earth_radius *= .001;
+    }
     return earth_radius;
   }
 

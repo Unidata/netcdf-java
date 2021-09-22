@@ -1,12 +1,13 @@
-/* Copyright */
+/*
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
 package ucar.nc2.dataset;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.grid.GridDataset;
 import ucar.nc2.grid.GridDatasetFactory;
@@ -14,20 +15,16 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.io.File;
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Formatter;
 import java.util.List;
-import java.util.Optional;
 
 import static com.google.common.truth.Truth.assertThat;
 
 @Category(NeedsCdmUnitTest.class)
 @RunWith(Parameterized.class)
 public class TestConventionFeatureTypes {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
   static String base = TestDir.cdmUnitTestDir + "conventions/";
 
   @Parameterized.Parameters(name = "{0}")
@@ -40,8 +37,8 @@ public class TestConventionFeatureTypes {
     result.add(new Object[] {"awips", FeatureType.GRID});
     result.add(new Object[] {"cedric", FeatureType.GRID});
     result.add(new Object[] {"cf", FeatureType.GRID});
-    result.add(new Object[] {"cf/dsc", FeatureType.POINT});
-    // result.add(new Object[] {"cfradial", FeatureType.RADIAL});
+    // result.add(new Object[] {"cf/dsc", FeatureType.POINT}); not supported in ver7
+    // result.add(new Object[] {"cfradial", FeatureType.RADIAL}); not supported in ver7
     result.add(new Object[] {"coards", FeatureType.GRID});
     result.add(new Object[] {"csm", FeatureType.GRID});
     result.add(new Object[] {"gdv", FeatureType.GRID});
@@ -66,10 +63,10 @@ public class TestConventionFeatureTypes {
   }
 
   @Test
-  public void testFeatureDatasets() throws IOException {
+  public void testOpenGridDataset() throws IOException {
     Formatter errlog = new Formatter();
     for (File f : getAllFilesInDirectoryStandardFilter(dir)) {
-      System.out.printf("Open FeatureDataset %s%n", f.getPath());
+      System.out.printf("GridDatasetFactory.openGridDataset %s%n", f.getPath());
       try (GridDataset gds = GridDatasetFactory.openGridDataset(f.getPath(), errlog)) {
         assertThat(gds).isNotNull();
         if (type == FeatureType.GRID) {
@@ -80,16 +77,19 @@ public class TestConventionFeatureTypes {
   }
 
   @Test
-  public void testCoverageDatasets() throws IOException {
+  public void testWrapGridDataset() throws IOException {
     if (type != FeatureType.GRID) {
       return;
     }
     Formatter errlog = new Formatter();
     for (File f : getAllFilesInDirectoryStandardFilter(dir)) {
-      System.out.printf("DtCoverageCSBuilder.classify %s%n", f.getPath());
+      System.out.printf("GridDatasetFactory.wrapGridDataset %s%n", f.getPath());
       try (NetcdfDataset ds = NetcdfDatasets.openDataset(f.getPath());
           GridDataset gds = GridDatasetFactory.wrapGridDataset(ds, errlog).orElseThrow()) {
         assertThat(gds).isNotNull();
+        if (type == FeatureType.GRID) {
+          assertThat(gds.getFeatureType().isCoverageFeatureType()).isTrue();
+        }
       }
     }
   }
@@ -128,6 +128,9 @@ public class TestConventionFeatureTypes {
         String stem = stem(name);
         if (name.contains(".gbx") || name.contains(".ncx") || name.endsWith(".xml") || name.endsWith(".pdf")
             || name.endsWith(".txt") || name.endsWith(".tar")) {
+          files2.remove(f);
+
+        } else if (name.contains("2003021212_avn-x.nc")) { // valtime not monotonic
           files2.remove(f);
 
         } else if (prev != null) {
