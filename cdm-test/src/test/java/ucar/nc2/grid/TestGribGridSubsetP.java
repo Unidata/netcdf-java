@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
 package ucar.nc2.grid;
 
 import org.junit.AfterClass;
@@ -62,7 +66,7 @@ public class TestGribGridSubsetP {
 
     result.add(new Object[] {TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4",
         "Ozone_Mixing_Ratio_isobaric", "2015-03-01T06:00:00Z", null, 213.0, 10000.}); // specific level
-    // */
+
     return result;
   }
 

@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
+
 package ucar.nc2.grid;
 
 import org.junit.Test;
@@ -9,7 +14,13 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.dataset.CoordinateAxis;
+import ucar.nc2.dataset.CoordinateAxis2D;
+import ucar.nc2.dt.GridCoordSystem;
+import ucar.nc2.dt.grid.GeoGrid;
+import ucar.nc2.dt.grid.GridCoordinate2D;
 import ucar.unidata.geoloc.LatLonPoint;
+import ucar.unidata.geoloc.ProjectionPoint;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
@@ -24,14 +35,13 @@ import static com.google.common.truth.Truth.assertThat;
 @Category(NeedsCdmUnitTest.class)
 public class TestCurvilinearGridPointMapping {
 
-  private final String datasetLocation = TestDir.cdmUnitTestDir + "transforms/UTM/artabro_20120425.nc";
-  private final String covName = "hs";
-
-  private final int lonIndex = 170;
-  private final int latIndex = 62;
-
   @Test
-  public void checkGridCoordSystem_getLatLon() throws IOException, InvalidRangeException {
+  public void testUtmArtabro() throws IOException, InvalidRangeException {
+    final String datasetLocation = TestDir.cdmUnitTestDir + "transforms/UTM/artabro_20120425.nc";
+    final String covName = "hs";
+    final int lonIndex = 170;
+    final int latIndex = 62;
+
     NetcdfFile ncf = NetcdfFiles.open(datasetLocation);
     Variable latVar = ncf.findVariable("lat");
     assertThat(latVar).isNotNull();
@@ -65,4 +75,66 @@ public class TestCurvilinearGridPointMapping {
       assertThat(lonVal).isWithin(TOL).of((float) llPnt.getLongitude());
     }
   }
+
+  @Test
+  public void testApexFmrc() throws IOException {
+    String filename = TestDir.cdmUnitTestDir + "ft/fmrc/apex_fmrc/Run_20091025_0000.nc";
+    final String gridName = "temp";
+    double lonVal = -73.6650;
+    double latVal = 40.33211;
+
+    Formatter errlog = new Formatter();
+    try (GridDataset gds = GridDatasetFactory.openGridDataset(filename, errlog)) {
+      assertThat(gds).isNotNull();
+      Grid grid = gds.findGrid(gridName).orElseThrow();
+      assertThat(grid).isNotNull();
+
+      GridCoordinateSystem cs = grid.getCoordinateSystem();
+      assertThat(cs).isNotNull();
+      assertThat(cs.getFeatureType()).isEqualTo(FeatureType.CURVILINEAR);
+      GridHorizCoordinateSystem hcs = cs.getHorizCoordinateSystem();
+      assertThat(hcs).isNotNull();
+      assertThat(hcs.isCurvilinear()).isTrue();
+
+      float TOL = 1.0e-4f; // just the average of the edges, not exact.
+      LatLonPoint llPnt = hcs.getLatLon(5, 5);
+      assertThat(llPnt.getLatitude()).isWithin(TOL).of(latVal);
+      assertThat(llPnt.getLongitude()).isWithin(TOL).of(lonVal);
+    }
+  }
+
+  @Test
+  public void testRtofsGrib() throws IOException, InvalidRangeException {
+    String filename = TestDir.cdmUnitTestDir + "ft/fmrc/rtofs/ofs.20091122/ofs_atl.t00z.F024.grb.grib2";
+    final String gridName = "Sea_Surface_Height_Relative_to_Geoid_surface";
+
+    Formatter errlog = new Formatter();
+    try (GridDataset gds = GridDatasetFactory.openGridDataset(filename, errlog)) {
+      assertThat(gds).isNotNull();
+      Grid grid = gds.findGrid(gridName).orElseThrow();
+      assertThat(grid).isNotNull();
+
+      GridCoordinateSystem cs = grid.getCoordinateSystem();
+      assertThat(cs).isNotNull();
+      assertThat(cs.getFeatureType()).isEqualTo(FeatureType.CURVILINEAR);
+      GridHorizCoordinateSystem hcs = cs.getHorizCoordinateSystem();
+      assertThat(hcs).isNotNull();
+      assertThat(hcs.isCurvilinear()).isTrue();
+
+      // find the x,y point for a specific lat/lon position
+      double lat = -1.7272;
+      double lon = -18.505;
+      ProjectionPoint pp = hcs.getProjection().latLonToProj(lat, lon);
+
+      GridHorizCoordinateSystem.CoordReturn cr = hcs.findXYindexFromCoord(pp.getX(), pp.getY()).orElseThrow();
+      System.out.printf("Value at %s%n", cr);
+      assertThat(cr.xindex).isEqualTo(165);
+      assertThat(cr.yindex).isEqualTo(482);
+
+      GridReferencedArray gra = grid.getReader().setProjectionPoint(pp).read();
+      float val = gra.data().getScalar().floatValue();
+      assertThat(val).isWithin(1.e-5f).of(.329f);
+    }
+  }
+
 }

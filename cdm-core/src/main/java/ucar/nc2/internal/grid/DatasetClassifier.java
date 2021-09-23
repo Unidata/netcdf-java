@@ -13,10 +13,10 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateSystem;
-import ucar.nc2.dataset.CoordinateTransform;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.units.SimpleUnit;
 import ucar.unidata.geoloc.Projection;
+import ucar.unidata.geoloc.VerticalTransform;
 import ucar.unidata.geoloc.projection.CurvilinearProjection;
 import ucar.unidata.geoloc.projection.RotatedPole;
 import ucar.unidata.geoloc.projection.sat.Geostationary;
@@ -50,7 +50,7 @@ public class DatasetClassifier {
     css.sort((o1, o2) -> o2.getCoordinateAxes().size() - o1.getCoordinateAxes().size());
 
     for (CoordinateSystem cs : css) {
-      classifyCoordSys(cs);
+      classifyCoordSys(ds, cs);
     }
     infolog.format("Dataset featureType = %s%n", featureType);
   }
@@ -75,8 +75,8 @@ public class DatasetClassifier {
     return featureType;
   }
 
-  private CoordSysClassifier classifyCoordSys(CoordinateSystem cs) {
-    CoordSysClassifier csc = new CoordSysClassifier(cs);
+  private CoordSysClassifier classifyCoordSys(NetcdfDataset ds, CoordinateSystem cs) {
+    CoordSysClassifier csc = new CoordSysClassifier(ds, cs);
 
     // Use the first (largest) one that has a classification
     if (this.featureType == null) {
@@ -107,8 +107,9 @@ public class DatasetClassifier {
       return featureType;
     }
 
-    public List<CoordinateTransform> getCoordTransforms() {
-      return coordTransforms;
+    @Nullable
+    public VerticalTransform getVerticalTransform() {
+      return verticalTransform; // LOOK we need to have only one copy
     }
 
     public Projection getProjection() {
@@ -129,11 +130,12 @@ public class DatasetClassifier {
     CoordinateAxis vertAxis, ensAxis, rtAxis; // must be 1 dimensional
     List<CoordinateAxis> indAxes = new ArrayList<>();
     List<CoordinateAxis> depAxes = new ArrayList<>();
-    List<CoordinateTransform> coordTransforms;
+    @Nullable
+    VerticalTransform verticalTransform;
     @Nullable
     Projection orgProj;
 
-    private CoordSysClassifier(CoordinateSystem cs) {
+    private CoordSysClassifier(NetcdfDataset ds, CoordinateSystem cs) {
       this.cs = cs;
 
       // must be at least 2 dimensions
@@ -299,7 +301,7 @@ public class DatasetClassifier {
       }
 
       this.featureType = classify();
-      this.coordTransforms = new ArrayList<>(cs.getCoordinateTransforms());
+      this.verticalTransform = (cs.getVerticalCT() == null) ? null : cs.getVerticalCT().makeVerticalTransform(ds, null);
       this.indAxes.sort(new CoordinateAxis.AxisComparator()); // canonical ordering of axes
     }
 

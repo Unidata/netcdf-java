@@ -5,6 +5,8 @@
 
 package ucar.ma2;
 
+import com.google.common.primitives.Ints;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -76,6 +78,15 @@ public class Section {
   //////////////////////////////////////////////////////////////////////////////
   // Cant use ImmutableList because doesnt allow nulls.
   private final List<Range> ranges;
+
+  /**
+   * Create Section from a shape list, assumes 0 origin.
+   * 
+   * @param shapeList list of lengths for each Range.
+   */
+  public static Section makeFromList(List<Integer> shapeList) {
+    return new Section(Ints.toArray(shapeList));
+  }
 
   /**
    * Create Section from a shape array, assumes 0 origin.

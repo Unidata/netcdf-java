@@ -148,7 +148,8 @@ public class GcdmGridConverter {
         throw new RuntimeException(errlog.toString());
       }
 
-      return new GridCoordinateSystem(caxes, wantTcs, wantHcs);
+      // LOOK verticalTransform
+      return new GridCoordinateSystem(caxes, wantTcs, null, wantHcs);
     }
   }
 

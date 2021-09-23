@@ -7,6 +7,7 @@ package ucar.nc2.grid;
 import com.google.common.collect.ImmutableList;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
+import ucar.unidata.geoloc.VerticalTransform;
 import ucar.unidata.geoloc.projection.CurvilinearProjection;
 
 import javax.annotation.Nullable;
@@ -75,6 +76,12 @@ public class GridCoordinateSystem {
     return getGridAxes().stream().filter(a -> a.getAxisType().isVert()).findFirst().orElse(null);
   }
 
+  /** Get the vertical transform, if any. */
+  @Nullable
+  public VerticalTransform getVerticalTransform() {
+    return verticalTransform;
+  }
+
   /** Get the X axis (either GeoX or Lon). */
   public GridAxisPoint getXHorizAxis() {
     return getHorizCoordinateSystem().getXHorizAxis();
@@ -135,9 +142,10 @@ public class GridCoordinateSystem {
   private final GridTimeCoordinateSystem tcs;
   private final String name;
   private final FeatureType featureType;
+  private final VerticalTransform verticalTransform;
 
   public GridCoordinateSystem(List<GridAxis<?>> axes, @Nullable GridTimeCoordinateSystem tcs,
-      GridHorizCoordinateSystem hcs) {
+      @Nullable VerticalTransform verticalTransform, GridHorizCoordinateSystem hcs) {
 
     ArrayList<GridAxis<?>> mutable = new ArrayList<>(axes);
     mutable.sort(new Grids.AxisComparator());
@@ -146,6 +154,7 @@ public class GridCoordinateSystem {
     this.hcs = hcs;
     this.featureType =
         hcs.getProjection() instanceof CurvilinearProjection ? FeatureType.CURVILINEAR : FeatureType.GRID;
+    this.verticalTransform = verticalTransform;
 
     List<String> names = this.axes.stream().map(a -> a.getName()).collect(Collectors.toList());
     this.name = String.join(" ", names);

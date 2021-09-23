@@ -194,11 +194,12 @@ public class SubsetIntervalHelper {
     int maxIndex = SubsetHelpers.findCoordElement(orgGridAxis, upper, false);
 
     if (minIndex >= orgGridAxis.getNominalSize()) {
-      errLog.format("no points in subset: lower %f > end %f", lower, orgGridAxis.getCoordInterval(0).start());
+      errLog.format("%s: no points in subset: lower %f > end %f", this.orgGridAxis.getName(), lower,
+          orgGridAxis.getCoordInterval(0).start());
       return Optional.empty();
     }
     if (maxIndex < 0) {
-      errLog.format("no points in subset: upper %f < start %f", upper,
+      errLog.format("%s: no points in subset: upper %f < start %f", this.orgGridAxis.getName(), upper,
           orgGridAxis.getCoordInterval(orgGridAxis.getNominalSize() - 1).end());
       return Optional.empty();
     }
