@@ -18,6 +18,7 @@ import ucar.nc2.grid.GridHorizCoordinateSystem;
 import ucar.nc2.grid.GridHorizCurvilinear;
 import ucar.nc2.grid.Grids;
 import ucar.unidata.geoloc.Projection;
+import ucar.unidata.geoloc.VerticalTransform;
 import ucar.unidata.geoloc.projection.CurvilinearProjection;
 
 import javax.annotation.Nullable;
@@ -47,6 +48,7 @@ public class GridNetcdfCSBuilder {
     GridNetcdfCSBuilder builder = new GridNetcdfCSBuilder();
     builder.setFeatureType(classifier.getFeatureType());
     builder.setProjection(classifier.getProjection());
+    builder.setVerticalCT(classifier.getVerticalTransform());
 
     ArrayList<GridAxis<?>> axesb = new ArrayList<>();
     for (CoordinateAxis axis : classifier.getAxesUsed()) {
@@ -98,6 +100,7 @@ public class GridNetcdfCSBuilder {
   private String name;
   private FeatureType featureType = FeatureType.GRID; // can it be different? Curvilinear?
   private Projection projection;
+  private VerticalTransform verticalTransform;
   private ArrayList<GridAxis<?>> axes = new ArrayList<>();
   private Array<Number> latdata;
   private Array<Number> londata;
@@ -116,6 +119,11 @@ public class GridNetcdfCSBuilder {
 
   public GridNetcdfCSBuilder setProjection(Projection projection) {
     this.projection = projection;
+    return this;
+  }
+
+  public GridNetcdfCSBuilder setVerticalCT(@Nullable VerticalTransform verticalTransform) {
+    this.verticalTransform = verticalTransform;
     return this;
   }
 
@@ -143,15 +151,13 @@ public class GridNetcdfCSBuilder {
     built = true;
 
     Preconditions.checkNotNull(axes);
-    // LOOK Preconditions.checkNotNull(projection);
 
     axes.sort(new Grids.AxisComparator());
     GridAxis<?> xaxis = findCoordAxisByType(AxisType.GeoX, AxisType.Lon);
     GridAxis<?> yaxis = findCoordAxisByType(AxisType.GeoY, AxisType.Lat);
     GridHorizCoordinateSystem horizCsys = makeHorizCS(xaxis, yaxis, this.projection, this.latdata, this.londata);
     GridTimeCS tcs = makeTimeCS();
-
-    return new GridCoordinateSystem(this.axes, tcs, horizCsys);
+    return new GridCoordinateSystem(this.axes, tcs, this.verticalTransform, horizCsys);
   }
 
   GridAxis<?> findCoordAxisByType(AxisType... axisType) {

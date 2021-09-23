@@ -16,6 +16,7 @@ import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionUpdateType;
 import ucar.array.InvalidRangeException;
 import ucar.nc2.AttributeContainer;
+import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.grib.collection.GribCdmIndex;
@@ -29,6 +30,7 @@ import ucar.nc2.grid.GridAxis;
 import ucar.nc2.grid.GridCoordinateSystem;
 import ucar.nc2.grid.GridDataset;
 import ucar.nc2.grid.GridHorizCoordinateSystem;
+import ucar.nc2.grid.GridTimeCoordinateSystem;
 import ucar.unidata.io.RandomAccessFile;
 
 import javax.annotation.Nullable;
@@ -161,11 +163,18 @@ public class GribGridDataset implements GridDataset {
     int hash = horizCs.hashCode() + makeHash(indices);
     return csMap.computeIfAbsent(hash, h -> {
       GribGridTimeCoordinateSystem tcs = makeTimeCoordinateSystem(indices, coordIndexMap, timeCsMap);
-      ArrayList<GridAxis<?>> axes =
+      List<GridAxis<?>> axes =
           new ArrayList<>(Streams.stream(indices).map(this.gridAxes::get).collect(Collectors.toList()));
       axes.add(hhelper.yaxis);
       axes.add(hhelper.xaxis);
-      return new GridCoordinateSystem(axes, tcs, horizCs);
+
+      // remove RunTime axis if its an Observation Type
+      if (tcs.getType() == GridTimeCoordinateSystem.Type.Observation) {
+        axes = axes.stream().filter(a -> a.getAxisType() != AxisType.RunTime).collect(Collectors.toList());
+      }
+
+      // LOOK need verticalTransform
+      return new GridCoordinateSystem(axes, tcs, null, horizCs);
     });
   }
 

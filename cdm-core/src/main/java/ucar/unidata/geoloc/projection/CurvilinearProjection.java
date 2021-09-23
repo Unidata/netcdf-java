@@ -39,7 +39,7 @@ public class CurvilinearProjection extends AbstractProjection {
 
   @Override
   public LatLonPoint projToLatLon(ProjectionPoint world) {
-    return LatLonPoint.create(world.getX(), world.getY());
+    return LatLonPoint.create(world.getY(), world.getX());
   }
 
   @Override

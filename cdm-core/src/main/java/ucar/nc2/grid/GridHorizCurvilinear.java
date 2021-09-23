@@ -227,7 +227,12 @@ public class GridHorizCurvilinear extends GridHorizCoordinateSystem {
     }
 
     // point
+    ProjectionPoint projCoord = params.getProjectionPoint();
     LatLonPoint latlon = params.getLatLonPoint();
+    if (projCoord != null && latlon == null) {
+      latlon = getProjection().projToLatLon(projCoord);
+    }
+
     if (latlon != null) {
       // find the x,y index of the given latlon
       Optional<CurvilinearCoords.CoordReturn> resulto =

@@ -172,12 +172,13 @@ public class SubsetPointHelper {
     int maxIndex = SubsetHelpers.findCoordElement(orgGridAxis, upper, false);
 
     if (minIndex >= orgGridAxis.getNominalSize()) {
-      errlog.format("no points in subset: lower %f > end %f", lower,
+      errlog.format("%s: no points in subset: lower %f > end %f", this.orgGridAxis.getName(), lower,
           orgGridAxis.getCoordDouble(orgGridAxis.getNominalSize() - 1));
       return Optional.empty();
     }
     if (maxIndex < 0) {
-      errlog.format("no points in subset: upper %f < start %f", upper, orgGridAxis.getCoordDouble(0));
+      errlog.format("%s: no points in subset: upper %f < start %f", this.orgGridAxis.getName(), upper,
+          orgGridAxis.getCoordDouble(0));
       return Optional.empty();
     }
 
