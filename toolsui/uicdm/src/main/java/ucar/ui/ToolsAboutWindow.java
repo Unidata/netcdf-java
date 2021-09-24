@@ -1,0 +1,134 @@
+/*
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
+
+package ucar.ui;
+
+import java.nio.charset.StandardCharsets;
+import ucar.ui.util.Resource;
+import ucar.ui.widget.BAMutil;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.Toolkit;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.IOException;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JWindow;
+
+public class ToolsAboutWindow extends JWindow {
+
+  public ToolsAboutWindow(JFrame parent) {
+    super(parent);
+
+    JLabel lab1 = new JLabel("<html> <body bgcolor=\"#FFECEC\"> <center>"
+        + "<h1>Netcdf Tools User Interface (ToolsUI)</h1>" + "<b>" + getVersion() + "</b>"
+        + "<br><i>https://www.unidata.ucar.edu/software/netcdf-java/</i>" //
+        + "<br><b><i>Developers:</b> John Caron, Sean Arms</i></b></center>" //
+        + "<br><br>With thanks to these <b>Open Source</b> contributors:" + "<ul>" //
+        + "<li><b>ADDE/VisAD</b>: Bill Hibbard, Don Murray, Tom Whittaker, et al (http://visad.ssec.wisc.edu/)</li>"
+        + "<li><b>Apache HTTP Components</b> libraries: (http://hc.apache.org/)</li>"
+        + "<li><b>Guava</b> library: Google (https://github.com/google/guava)</li>"
+        + "<li><b>IDV:</b> Yuan Ho, Julien Chastang, Don Murray, Jeff McWhirter (https://www.unidata.ucar.edu/software/IDV/)</li>"
+        + "<li><b>Java Native Access (JNA)</b> Todd Fast and Timothy Wall et al. (https://github.com/java-native-access/jna)</li>"
+        + "<li><b>Joda Time</b> library: Stephen Colebourne (http://www.joda.org/joda-time/)</li>"
+        + "<li><b>JDOM</b> library: Jason Hunter, Brett McLaughlin et al (www.jdom.org)</li>"
+        + "<li><b>JGoodies</b> library: Karsten Lentzsch (www.jgoodies.com)</li>"
+        + "<li><b>JPEG-2000</b> Java library: (http://www.jpeg.org/jpeg2000/)</li>"
+        + "<li><b>JUnit</b> library: Erich Gamma, Kent Beck, Erik Meade, et al (http://sourceforge.net/projects/junit/)</li>"
+        + "<li><b>NetCDF C Library</b> library: Russ Rew, Ward Fisher, Dennis Heimbinger</li>"
+        + "<li><b>OPeNDAP Java</b> library: Dennis Heimbinger, James Gallagher, Nathan Potter, Don Denbo, et. al.(http://opendap.org)</li>"
+        + "<li><b>Protobuf serialization</b> library: Google (https://developers.google.com/protocol-buffers)</li>"
+        + "<li><b>Simple Logging Facade for Java</b> library: Ceki Gulcu (http://www.slf4j.org/)</li>"
+        + "<li><b>Udunits:</b>: Steve Emmerson</li>" //
+        + "</ul>" //
+        + "<center>Special thanks to <b>Sun/Oracle/OpenJDK</b> for the platform on which we stand."
+        + "</center></body></html> ");
+
+    JPanel main = new JPanel(new BorderLayout());
+    main.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.BLACK, 1),
+        BorderFactory.createEmptyBorder(8, 8, 8, 8)));
+    main.setBackground(new Color(0xFFECEC));
+
+    JLabel ring = new JLabel(new ImageIcon(BAMutil.getImage("nj22/NetcdfUI")));
+    ring.setOpaque(true);
+    ring.setBackground(new Color(0xFFECEC));
+
+    JLabel threddsLogo = new JLabel(Resource.getIcon(BAMutil.getResourcePath() + "nj22/Cdm.png", false));
+    threddsLogo.setBackground(new Color(0xFFECEC));
+    threddsLogo.setOpaque(true);
+
+    main.add(threddsLogo, BorderLayout.NORTH);
+    main.add(lab1, BorderLayout.CENTER);
+    main.add(ring, BorderLayout.SOUTH);
+    getContentPane().add(main);
+    pack();
+
+    // show();
+    Dimension labelSize = getPreferredSize();
+
+    GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+    GraphicsDevice gd = ge.getDefaultScreenDevice();
+    GraphicsConfiguration gc = gd.getDefaultConfiguration();
+
+    Point location;
+
+    if (gc != null) {
+      Rectangle gcrect = gc.getBounds();
+
+      location = new Point(gcrect.x + gcrect.width / 2 - (labelSize.width / 2),
+          gcrect.y + gcrect.height / 2 - (labelSize.height / 2));
+    } else {
+      Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+
+      location =
+          new Point(screenSize.width / 2 - (labelSize.width / 2), screenSize.height / 2 - (labelSize.height / 2));
+    }
+
+    setLocation(location);
+
+    // Any click on the window hides it.
+    addMouseListener(new MouseAdapter() {
+      @Override
+      public void mousePressed(MouseEvent e) {
+        setVisible(false);
+      }
+    });
+    setVisible(true);
+  }
+
+  private String getVersion() {
+    String version;
+    try (InputStream is = Resource.getFileResource("/README")) {
+      if (is == null) {
+        return "6.0";
+      }
+      BufferedReader dataIS = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
+      StringBuilder sbuff = new StringBuilder();
+      for (int i = 0; i < 3; i++) {
+        sbuff.append(dataIS.readLine());
+        sbuff.append("<br>");
+      }
+      version = sbuff.toString();
+    } catch (IOException ioe) {
+      ioe.printStackTrace();
+      version = "version unknown";
+    }
+
+    return version;
+  }
+}

@@ -6,7 +6,7 @@ import java.awt.event.WindowEvent;
 import java.io.IOException;
 import javax.swing.JFrame;
 import org.junit.Test;
-import ucar.nc2.ui.widget.URLDumpPane;
+import ucar.ui.widget.URLDumpPane;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.XMLStore;
 

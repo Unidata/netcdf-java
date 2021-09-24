@@ -19,7 +19,7 @@ import java.time.ZoneId;
 import thredds.logs.LogReader;
 import thredds.logs.LogCategorizer;
 import ucar.nc2.internal.http.HttpService;
-import ucar.nc2.ui.widget.URLDumpPane;
+import ucar.ui.widget.URLDumpPane;
 import ucar.ui.widget.*;
 import ucar.nc2.util.IO;
 import ucar.nc2.util.net.HttpClientManager;
