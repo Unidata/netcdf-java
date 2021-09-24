@@ -120,15 +120,15 @@ public class TestReadandCount {
 
   @org.junit.Test
   public void openAsGridAndCount() throws Exception {
-    doOne(dir, name, ngrids, ncoordSys, ncoordAxes, nVertCooordAxes);
+    doOne(dir + name, ngrids, ncoordSys, ncoordAxes, nVertCooordAxes);
   }
 
-  static public void doOne(String dir, String name, int ngrids, int ncoordSys, int ncoordAxes, int nVertCooordAxes)
+  static public void doOne(String filename, int ngrids, int ncoordSys, int ncoordAxes, int nVertCooordAxes)
       throws Exception {
-    System.out.printf("test read GridDataset= %s%s%n", dir, name);
+    System.out.printf("test read GridDataset= %s%n", filename);
 
     Formatter errlog = new Formatter();
-    try (ucar.nc2.grid.GridDataset gds = GridDatasetFactory.openGridDataset(dir + name, errlog)) {
+    try (ucar.nc2.grid.GridDataset gds = GridDatasetFactory.openGridDataset(filename, errlog)) {
       assertThat(gds).isNotNull();
 
       int countGrids = gds.getGrids().size();

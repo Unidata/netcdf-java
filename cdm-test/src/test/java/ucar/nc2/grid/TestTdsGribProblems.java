@@ -26,6 +26,7 @@ public class TestTdsGribProblems {
   private static final String indexDir = TestDir.cdmUnitTestDir + "tds_index/";
 
   @Test
+  @Ignore("this is classified as MRUTC but most time coordinates are not")
   public void checkGEFSensemble() throws Exception {
     String filename =
         TestDir.cdmUnitTestDir + "ncss/GEFS/Global_1p0deg_Ensemble/member/GEFS-Global_1p0deg_Ensemble-members.ncx4";
@@ -174,25 +175,25 @@ public class TestTdsGribProblems {
   @Ignore("doesnt work")
   public void testHrrrConusWrfprs() throws Exception {
     String filename = indexDir + "NOAA_GSD/HRRR/CONUS_3km/wrfprs/GSD_HRRR_CONUS_3km_wrfprs.ncx4";
-    TestGridCompareWithDt.testAll(filename, false);
+    TestReadandCount.doOne(filename, -1, -1, -1, -1);
   }
 
   @Test
   public void testRuntimeCoordinateValues() throws Exception {
     String filename = indexDir + "NCEP/GFS/Alaska_20km/GFS-Alaska_20km.ncx4";
-    TestGridCompareWithDt.testAll(filename, false);
+    TestReadandCount.doOne(filename, -1, -1, -1, -1);
   }
 
   @Test
   public void testCoordIntervalOutOfBounds() throws Exception {
     String filename = indexDir + "NCEP/GFS/Global_0p5deg/GFS-Global_0p5deg.ncx4";
-    TestGridCompareWithDt.testAll(filename, false);
+    TestReadandCount.doOne(filename, -1, -1, -1, -1);
   }
 
   @Test
   public void testObservationDataset() throws Exception {
     String filename = indexDir + "NCEP/HRRR/CONUS_2p5km_Analysis/NCEP_HRRR_CONUS_2p5km_Analysis.ncx4";
-    TestGridCompareWithDt.testAll(filename, false);
+    TestReadandCount.doOne(filename, -1, -1, -1, -1);
   }
 
 }

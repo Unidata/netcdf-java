@@ -134,7 +134,7 @@ public class TestVertical {
 
       VariableDS vds = (VariableDS) gds.findVariable("T");
       assertThat(vds).isNotNull();
-      assertThat(vds.getShape()).isEqualTo(new int[] {1, 26, 64, 128});
+      assertThat(vds.getShape()).isEqualTo(new int[] {13, 27, 60, 73});
 
       CoordinateSystem cs = vds.getCoordinateSystems().get(0);
       assertThat(cs).isNotNull();
@@ -148,7 +148,7 @@ public class TestVertical {
 
       ArrayDouble.D3 ca = vt.getCoordinateArray(0);
       assertThat(ca).isNotNull();
-      assertThat(ca.getShape()).isEqualTo(new int[] {26, 64, 128});
+      assertThat(ca.getShape()).isEqualTo(new int[] {13, 27, 60});
     }
   }
 

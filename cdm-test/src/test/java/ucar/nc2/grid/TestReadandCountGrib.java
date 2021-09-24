@@ -71,7 +71,7 @@ public class TestReadandCountGrib {
   @Test
   public void doOne() throws Exception {
     dir = TestDir.cdmUnitTestDir + "formats/" + dir;
-    TestReadandCount.doOne(dir, name, ngrids, ncoordSys, ncoordAxes, nVertCooordAxes);
+    TestReadandCount.doOne(dir + name, ngrids, ncoordSys, ncoordAxes, nVertCooordAxes);
   }
 
 }

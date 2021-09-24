@@ -20,7 +20,7 @@ import java.util.List;
 /** Compare reading new and old GridDataset. */
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
-public class TestGridCompareCoordinateSystem {
+public class TestGridCoordinateSystem {
   private static final boolean show = false;
 
   @Parameterized.Parameters(name = "{0}")
@@ -47,7 +47,7 @@ public class TestGridCompareCoordinateSystem {
   /////////////////////////////////////////////////////////////
   private final String filename;
 
-  public TestGridCompareCoordinateSystem(String filename) {
+  public TestGridCoordinateSystem(String filename) {
     this.filename = filename;
   }
 
@@ -60,13 +60,12 @@ public class TestGridCompareCoordinateSystem {
       return;
 
     Formatter errlog = new Formatter();
-    try (GridDataset newDataset = GridDatasetFactory.openGridDataset(filename, errlog);
-        ucar.nc2.dt.grid.GridDataset oldDataset = ucar.nc2.dt.grid.GridDataset.open(filename)) {
+    try (GridDataset newDataset = GridDatasetFactory.openGridDataset(filename, errlog)) {
       if (newDataset == null) {
         System.out.printf("Cant open as ucar.nc2.grid2.GridDataset: %s%n", filename);
         return;
       }
-      TestGridCompareWithDt.compareCoordinateSystems(newDataset, oldDataset, true);
+      TestReadandCount.doOne(filename, -1, -1, -1, -1);
     }
   }
 
