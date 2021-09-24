@@ -277,17 +277,6 @@ public class FeatureDatasetFactoryManager {
     if (ft != null)
       return wrap(ft, ncd, task, errlog);
 
-    /*
-     * grids dont usually have a FeatureType attribute, so check these fist
-     * if (isGrid(ncd.getCoordinateSystems())) {
-     * ucar.nc2.dt.grid.GridDataset gds = new ucar.nc2.dt.grid.GridDataset(ncd); // LOOK
-     * if (gds.getGrids().size() > 0) {
-     * if (debug) System.out.println(" wrapUnknown found grids ");
-     * return gds;
-     * }
-     * }
-     */
-
     // find a Factory that claims this dataset
     Object analysis = null;
     FeatureDatasetFactory useFactory = null;
@@ -302,16 +291,6 @@ public class FeatureDatasetFactoryManager {
       }
     }
 
-    /*
-     * try again as a Grid
-     * if (null == useFactory) {
-     * // if no datatype was requested, give em a GridDataset only if some Grids are found.
-     * ucar.nc2.dt.grid.GridDataset gds = new ucar.nc2.dt.grid.GridDataset(ncd);
-     * if (gds.getGrids().size() > 0)
-     * return gds;
-     * }
-     */
-
     // Fail
     if (null == useFactory) {
       errlog.format("Failed (wrapUnknown) to find Datatype Factory for= %s%n", ncd.getLocation());
@@ -321,26 +300,6 @@ public class FeatureDatasetFactoryManager {
     // this call must be thread safe - done by implementation
     return useFactory.open(null, ncd, analysis, task, errlog);
   }
-
-  /*
-   * static private boolean isGrid(java.util.List<CoordinateSystem> csysList) {
-   * CoordinateSystem use = null;
-   * for (CoordinateSystem csys : csysList) {
-   * if (use == null) use = csys;
-   * else if (csys.getCoordinateAxes().size() > use.getCoordinateAxes().size())
-   * use = csys;
-   * }
-   * 
-   * if (use == null) return false;
-   * CoordinateAxis lat = use.getLatAxis();
-   * CoordinateAxis lon = use.getLonAxis();
-   * if ((lat != null) && (lat.getSize() <= 1)) return false; // COARDS singletons
-   * if ((lon != null) && (lon.getSize() <= 1)) return false;
-   * 
-   * // hueristics - cant say i like this, multidim point features could easily violate
-   * return (use.getRankDomain() > 2) && (use.getRankDomain() <= use.getRankRange());
-   * }
-   */
 
   /**
    * Determine if factory type matches wanted feature type.
