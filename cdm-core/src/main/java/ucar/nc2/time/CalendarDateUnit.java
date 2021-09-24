@@ -42,7 +42,10 @@ import java.util.Objects;
  * same semantic effect.
  * (However, personally I like the "by calendar field" solution since it allows other fields to vary between calendars,
  * e.g. because of leap-seconds.)
+ * 
+ * @deprecated use ucar.calendar.CalendarDateUnit
  */
+@Deprecated
 @Immutable
 public class CalendarDateUnit {
   public static final CalendarDateUnit unixDateUnit =

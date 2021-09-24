@@ -18,11 +18,10 @@ import javax.annotation.concurrent.Immutable;
  * A Calendar Date, replaces java.util.Date, currently wraps joda.time.
  * Allows non-standard calendars. Default is Calendar.gregorian.
  * Always in UTC time zone.
- * LOOK should a CalendarDate have a CalendarDateUnit?
- *
- * @author caron
- * @since 3/21/11
+ * 
+ * @deprecated use ucar.calendar.CalendarDate
  */
+@Deprecated
 @Immutable
 public class CalendarDate implements Comparable<CalendarDate> {
   public static final CalendarDate UNKNOWN = CalendarDate.of(0);

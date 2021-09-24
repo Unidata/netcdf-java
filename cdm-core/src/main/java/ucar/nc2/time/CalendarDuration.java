@@ -38,9 +38,10 @@ import javax.annotation.concurrent.Immutable;
  * change to JSR-310 javax.time.Duration when ready
  * relation to javax.xml.datatype ?
  *
- * @author john caron
  * @see "https://www.unidata.ucar.edu/projects/THREDDS/tech/catalog/InvCatalogSpec.html#durationType"
+ * @deprecated use thredds.client.catalog.TimeDuration
  */
+@Deprecated
 @Immutable
 public class CalendarDuration {
 

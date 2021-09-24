@@ -7,5 +7,7 @@
  * Calendar Date handling.
  * Uses joda-time, will switch to java.time in version 7.
  * Note that Joda-time is not exposed.
+ * 
+ * @deprecated use ucar.nc2.calendar
  */
 package ucar.nc2.time;

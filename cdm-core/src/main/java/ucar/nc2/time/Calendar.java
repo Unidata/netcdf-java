@@ -17,10 +17,10 @@ import java.util.Map;
  * Implements CF calendar attribute.
  * Uses joda-time, will switch to java.time at a later date.
  * So joda-time classes are not exposed.
- *
- * @author caron
- * @since 3/22/11
+ * 
+ * @deprecated use ucar.calendar.Calendar
  */
+@Deprecated
 public enum Calendar {
   // If making changes, update ucar.gcdm.GcdmGridConverter#convertAxisType(AxisType)
   // and consider if need for addition to gcdm_grid.proto.

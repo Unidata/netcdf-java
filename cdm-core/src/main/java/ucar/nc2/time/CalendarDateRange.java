@@ -13,7 +13,12 @@ import javax.annotation.concurrent.Immutable;
 import java.util.Date;
 import java.util.List;
 
-/** A range of CalendarDates. */
+/**
+ * A range of CalendarDates.
+ * 
+ * @deprecated use ucar.calendar.CalendarDateRange
+ */
+@Deprecated
 @Immutable
 public class CalendarDateRange {
   private final CalendarDate start, end;

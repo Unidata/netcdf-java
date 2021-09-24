@@ -18,8 +18,10 @@ import javax.annotation.concurrent.Immutable;
  * A CalendarField is expressed as {integer x Field}.
  *
  * Design follows joda Period class.
- * TODO redo this, not using fixed length intervals.
+ * 
+ * @deprecated use ucar.calendar.CalendarPeriod
  */
+@Deprecated
 @Immutable
 public class CalendarPeriod {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CalendarPeriod.class);
