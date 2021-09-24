@@ -11,9 +11,9 @@ import java.util.TimeZone;
 /**
  * Encapsulate org.joda.time.DateTimeZone functionality.
  *
- * @author caron
- * @since 10/28/12
+ * @deprecated use java.time.ZoneOffset
  */
+@Deprecated
 public class CalendarTimeZone {
 
   public static final CalendarTimeZone UTC = new CalendarTimeZone("UTC");

@@ -8,9 +8,6 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.ma2.*;
 import ucar.nc2.constants.AxisType;
-import ucar.nc2.dt.GridDatatype;
-import ucar.nc2.dt.GridDataset;
-import ucar.nc2.dt.GridCoordSystem;
 import ucar.unidata.geoloc.VerticalTransform;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
@@ -134,7 +131,7 @@ public class TestVertical {
 
       VariableDS vds = (VariableDS) gds.findVariable("T");
       assertThat(vds).isNotNull();
-      assertThat(vds.getShape()).isEqualTo(new int[] {1, 26, 64, 128});
+      assertThat(vds.getShape()).isEqualTo(new int[] {13, 27, 60, 73});
 
       CoordinateSystem cs = vds.getCoordinateSystems().get(0);
       assertThat(cs).isNotNull();
@@ -148,7 +145,7 @@ public class TestVertical {
 
       ArrayDouble.D3 ca = vt.getCoordinateArray(0);
       assertThat(ca).isNotNull();
-      assertThat(ca.getShape()).isEqualTo(new int[] {26, 64, 128});
+      assertThat(ca.getShape()).isEqualTo(new int[] {13, 27, 60});
     }
   }
 

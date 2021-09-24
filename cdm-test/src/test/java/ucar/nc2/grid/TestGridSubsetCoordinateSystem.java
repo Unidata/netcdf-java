@@ -71,9 +71,6 @@ public class TestGridSubsetCoordinateSystem {
 
       for (GridAxis<?> axis : csys.getGridAxes()) {
         Optional<GridAxis<?>> found = mcs.getGridAxes().stream().filter(ga -> ga.name.equals(axis.name)).findFirst();
-        if (found.isEmpty()) {
-          System.out.printf("HEY");
-        }
         assertWithMessage(axis.getName()).that(found.isPresent()).isTrue();
       }
 

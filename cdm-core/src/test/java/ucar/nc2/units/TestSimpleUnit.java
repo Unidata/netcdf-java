@@ -97,21 +97,6 @@ public class TestSimpleUnit {
   }
 
   @Test
-  public void testDates() throws Exception {
-    String text = "months since 1930-01-01";
-    DateUnit du = new DateUnit(text);
-    for (int i = 0; i < 12; i++) {
-      System.out.printf("%d %s == %s%n", i, text, CalendarDateFormatter.toDateTimeStringISO(du.makeDate(i)));
-    }
-
-    text = "years since 1850-01-01";
-    du = new DateUnit(text);
-    for (int i = 0; i < 100; i += 10) {
-      System.out.printf("%d %s == %s%n", i, text, CalendarDateFormatter.toDateTimeStringISO(du.makeDate(i)));
-    }
-  }
-
-  @Test
   public void testConversionFactor() throws Exception {
     assertThat(SimpleUnit.getConversionFactor("m", "km")).isEqualTo(1 / 1000.0);
     assertThat(SimpleUnit.getConversionFactor("km", "m")).isEqualTo(1000.0);

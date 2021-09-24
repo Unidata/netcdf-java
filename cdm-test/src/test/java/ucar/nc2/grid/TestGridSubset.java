@@ -333,23 +333,17 @@ public class TestGridSubset {
       System.out.printf("original proj bbox = %s%n", hcs.getBoundingBox());
       System.out.printf("original lat/lon bbox = %s%n", hcs.getLatLonBoundingBox());
 
-      LatLonRect bbox = new LatLonRect(38, -110, 42, -90);
+      LatLonRect bbox = new LatLonRect(48, -100, 52, -90);
       System.out.printf("subset proj bbox = %s%n", hcs.getProjection().latLonToProjBB(bbox));
       System.out.printf("subset lat/lon bbox = %s%n", bbox);
 
       GridReferencedArray geoArray = grid.getReader().setTimeLatest().setLatLonBoundingBox(bbox).read();
       MaterializedCoordinateSystem mcs = geoArray.getMaterializedCoordinateSystem();
       assertThat(mcs).isNotNull();
-      assertThat(mcs.getMaterializedShape()).isEqualTo(ImmutableList.of(1, 128, 158));
+      assertThat(mcs.getMaterializedShape()).isEqualTo(ImmutableList.of(1, 12, 18));
       GridHorizCoordinateSystem hcsSubset = mcs.getHorizCoordinateSystem();
       assertThat(hcsSubset).isNotNull();
-      assertThat(hcsSubset.getShape()).isEqualTo(ImmutableList.of(235, 436));
-
-      LatLonRect expectLBB = LatLonRect.fromSpec("46.992792, -103.156421, 0.540102, 14.635361");
-      assertThat(hcsSubset.getLatLonBoundingBox().nearlyEquals(expectLBB)).isTrue();
-
-      ProjectionRect expectBB = ProjectionRect.fromSpec("-25.000000, -25.000000, 1250.000000, 50.000000");
-      assertThat(hcsSubset.getBoundingBox().nearlyEquals(expectBB)).isTrue();
+      assertThat(hcsSubset.getShape()).isEqualTo(ImmutableList.of(12, 18));
     }
   }
 

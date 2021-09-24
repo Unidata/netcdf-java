@@ -10,8 +10,6 @@ import ucar.nc2.Group;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.nc2.ft.FeatureDataset;
-import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.grid.GridCoordinateSystem;
 import ucar.nc2.internal.grid.GridNetcdfDataset;
 
@@ -135,7 +133,7 @@ public class FeatureScan {
     public File f;
     String fileType;
     String coordMap;
-    FeatureType featureType, ftFromMetadata;
+    FeatureType featureType;
     String ftype;
     Formatter gribType = new Formatter();
     StringBuilder info = new StringBuilder();
@@ -154,8 +152,6 @@ public class FeatureScan {
         fileType = ds.getFileTypeId();
 
         Formatter errlog = new Formatter();
-
-        ftFromMetadata = FeatureDatasetFactoryManager.findFeatureType(ds);
         findGribType(ds.getRootGroup(), gribType);
 
         try {
@@ -171,24 +167,6 @@ public class FeatureScan {
           info.append("\nGridNetcdfDataset errlog = ");
           info.append(errlog);
           info.append("\n\n");
-
-          // old
-          errlog = new Formatter();
-          FeatureDataset featureDataset = FeatureDatasetFactoryManager.wrap(null, ds, null, errlog);
-          info.append("FeatureDatasetFactoryManager errlog = ");
-          info.append(errlog);
-          info.append("\n\n");
-
-          if (featureDataset != null) {
-            featureType = featureDataset.getFeatureType();
-            if (featureType != null)
-              ftype = featureType.toString();
-            Formatter infof = new Formatter();
-            featureDataset.getDetailInfo(infof);
-            // info.append(infof);
-          } else {
-            ftype = "";
-          }
 
         } catch (Throwable t) {
           ftype = " ERR: " + t.getMessage();
@@ -239,10 +217,6 @@ public class FeatureScan {
 
     public String getNewGrid() {
       return gridCoordinateSystem == null ? "" : gridCoordinateSystem.showFnSummary();
-    }
-
-    public String getFtMetadata() {
-      return (ftFromMetadata == null) ? "" : ftFromMetadata.toString();
     }
 
     public String getFeatureDataset() {

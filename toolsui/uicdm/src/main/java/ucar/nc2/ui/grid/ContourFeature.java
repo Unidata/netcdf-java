@@ -1,11 +1,12 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.ui.grid;
 
 import ucar.nc2.ui.gis.AbstractGisFeature;
 import ucar.nc2.ui.gis.GisPart;
+
 import java.util.*; // for Iterator and ArrayList
 import java.awt.geom.*; // for Point2D.Double
 

@@ -21,7 +21,6 @@ import ucar.ma2.StructureDataIterator;
 import ucar.ma2.StructureMembers;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
-import ucar.nc2.ft.PointFeature;
 import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.calendar.CalendarDateFormatter;
 import ucar.nc2.calendar.CalendarPeriod;
@@ -155,17 +154,6 @@ public class StructureTable extends JPanel {
 
   public void setSequenceData(Structure s, ArraySequence seq) {
     dataModel = new ArraySequenceModel(s, seq);
-    initTable(dataModel);
-  }
-
-  /**
-   * Set the data as a collection of PointFeature.
-   *
-   * @param obsData List of type PointFeature
-   * @throws IOException on io error
-   */
-  public void setPointFeatureData(List<PointFeature> obsData) throws IOException {
-    dataModel = new PointFeatureDataModel(obsData);
     initTable(dataModel);
   }
 
@@ -651,54 +639,6 @@ public class StructureTable extends JPanel {
   }
 
   ////////////////////////////////////////////////////////////////////////
-
-  private static class PointFeatureDataModel extends StructureTableModel {
-    private List<PointFeature> obsData;
-
-    PointFeatureDataModel(List<PointFeature> obsData) throws IOException {
-      wantDate = true;
-
-      this.obsData = obsData;
-      if (!obsData.isEmpty()) {
-        StructureData sd;
-        try {
-          sd = getStructureData(0);
-        } catch (InvalidRangeException e) {
-          JOptionPane.showMessageDialog(null, "ERROR: " + e.getMessage());
-          throw new IOException(e.getMessage());
-        }
-        this.members = sd.getStructureMembers();
-      }
-    }
-
-    public CalendarDate getObsDate(int row) {
-      PointFeature obs = obsData.get(row);
-      return obs.getObservationTimeAsCalendarDate();
-    }
-
-    public CalendarDate getNomDate(int row) {
-      PointFeature obs = obsData.get(row);
-      return obs.getNominalTimeAsCalendarDate();
-    }
-
-    public int getRowCount() {
-      return obsData.size();
-    }
-
-    public StructureData getStructureData(int row) throws InvalidRangeException, IOException {
-      PointFeature obs = obsData.get(row);
-      return obs.getFeatureData();
-    }
-
-    public Object getRow(int row) throws InvalidRangeException, IOException {
-      return obsData.get(row); // PointObsDatatype
-    }
-
-    public void clear() {
-      obsData = new ArrayList<>(); // empty list
-      fireTableDataChanged();
-    }
-  }
 
   /**
    * Renderer for Date type

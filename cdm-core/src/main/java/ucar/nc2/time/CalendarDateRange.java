@@ -6,7 +6,6 @@ package ucar.nc2.time;
 
 import com.google.common.base.Splitter;
 import org.joda.time.DateTime;
-import ucar.nc2.units.DateRange;
 import ucar.unidata.util.StringUtil2;
 
 import javax.annotation.Nullable;
@@ -14,7 +13,12 @@ import javax.annotation.concurrent.Immutable;
 import java.util.Date;
 import java.util.List;
 
-/** A range of CalendarDates. */
+/**
+ * A range of CalendarDates.
+ * 
+ * @deprecated use ucar.calendar.CalendarDateRange
+ */
+@Deprecated
 @Immutable
 public class CalendarDateRange {
   private final CalendarDate start, end;
@@ -134,30 +138,6 @@ public class CalendarDateRange {
       return null;
     }
   }
-
-  ///////////////////////////////////////////////
-  /**
-   * Does not handle non-standard calendars
-   * 
-   * @deprecated do not use.
-   */
-  @Deprecated
-  public static CalendarDateRange of(DateRange dr) {
-    if (dr == null)
-      return null;
-    return CalendarDateRange.of(dr.getStart().getDate(), dr.getEnd().getDate());
-  }
-
-  /**
-   * Does not handle non-standard calendars
-   * 
-   * @deprecated do not use.
-   */
-  @Deprecated
-  public DateRange toDateRange() {
-    return new DateRange(start.toDate(), end.toDate());
-  }
-
 
   @Override
   public boolean equals(Object o) {

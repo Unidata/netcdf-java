@@ -21,7 +21,7 @@ import static com.google.common.truth.Truth.assertThat;
 
 @Category(NeedsCdmUnitTest.class)
 public class TestReadTime2D {
-  private static final double TOL = 1.0e-7f;
+  private static final double TOL = 1.0e-5f;
 
   /** Test Grib 2D time that is regular, not orthogonal. */
   @Test

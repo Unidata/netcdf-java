@@ -14,11 +14,7 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.FileFilter;
 import java.util.ArrayList;
-import java.util.Formatter;
-import java.util.HashSet;
 import java.util.List;
-
-import static com.google.common.truth.Truth.assertThat;
 
 /** Compare reading TDS Grib Collections with old and new GridDataset. */
 @RunWith(Parameterized.class)
@@ -82,29 +78,7 @@ public class TestCompareTdsOther {
 
   @Test
   public void checkGridDataset() throws Exception {
-    Formatter errlog = new Formatter();
-    try (GridDataset gridDataset = GridDatasetFactory.openGridDataset(filename, errlog);
-        ucar.nc2.dt.grid.GridDataset oldDataset = ucar.nc2.dt.grid.GridDataset.open(filename)) {
-      if (gridDataset == null) {
-        System.out.printf("Cant open as GridDataset: %s%n", filename);
-        return;
-      }
-      System.out.printf("checkGridDataset: %s%n", gridDataset.getLocation());
-      assertThat(gridDataset.getGridCoordinateSystems()).hasSize(ncoordSys);
-      assertThat(gridDataset.getGridAxes()).hasSize(nAxes);
-      assertThat(gridDataset.getGrids()).hasSize(ngrids);
-
-      HashSet<GridCoordinateSystem> csysSet = new HashSet<>();
-      HashSet<GridAxis<?>> axisSet = new HashSet<>();
-      for (Grid grid : gridDataset.getGrids()) {
-        csysSet.add(grid.getCoordinateSystem());
-        axisSet.addAll(grid.getCoordinateSystem().getGridAxes());
-      }
-      assertThat(csysSet).hasSize(ncoordSys);
-      assertThat(axisSet).hasSize(nAxes);
-
-      TestGridCompareWithDt.compareCoordinateSystems(gridDataset, oldDataset, true);
-    }
+    TestReadandCount.doOne(filename, ngrids, ncoordSys, nAxes, -1);
   }
 }
 

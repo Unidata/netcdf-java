@@ -19,10 +19,10 @@ import java.util.StringTokenizer;
 /**
  * Threadsafe static routines for date formatting.
  * Replacement for ucar.nc2.units.DateFormatter
- *
- * @author John
- * @since 7/9/11
+ * 
+ * @deprecated use ucar.calendar.CalendarDateFormatter
  */
+@Deprecated
 @ThreadSafe
 public class CalendarDateFormatter {
   // these are thread-safe (yeah!)

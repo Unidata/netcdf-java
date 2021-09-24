@@ -21,72 +21,71 @@ import static org.junit.Assert.assertThrows;
 public class TestGridCompareProblem {
 
   @Test
-  public void testProblem() throws IOException {
-    TestGridCompareSlice tester = new TestGridCompareSlice(TestDir.cdmUnitTestDir + "conventions/cf/gomoos_cf.nc",
-        FeatureType.GRID, "elev", null, null, "2003-03-30T03:00Z", 100000.0, null);
-    tester.testReadGridSlice();
+  public void testProblem() throws Exception {
+    String filename = TestDir.cdmUnitTestDir + "conventions/cf/gomoos_cf.nc";
+    TestReadandCount.doOne(filename, -1, -1, -1, -1);
   }
 
   @Test
-  public void testNonStandardCalendar() throws IOException {
+  public void testNonStandardCalendar() throws Exception {
     String filename = TestDir.cdmUnitTestDir + "conventions/cf/cf1.nc";
-    TestGridCompareWithDt.testAll(filename, true);
+    TestReadandCount.doOne(filename, -1, -1, -1, -1);
   }
 
   @Test
   public void testNonMonotonic() {
     String filename = TestDir.cdmUnitTestDir + "ft/grid/cg/cg.ncml";
-    assertThrows(IllegalArgumentException.class, () -> TestGridCompareWithDt.testAll(filename, true)).getMessage()
+    assertThrows(IllegalArgumentException.class, () -> TestReadandCount.doOne(filename, -1, -1, -1, -1)).getMessage()
         .contains("time not monotonic");
   }
 
   @Test
   public void testScalarVertCoordinate() throws Exception {
     String filename = TestDir.cdmUnitTestDir + "conventions/cf/ipcc/tas_A1.nc";
-    TestGridCompareWithDt.testAll(filename, true);
+    TestReadandCount.doOne(filename, -1, -1, -1, -1);
   }
 
   @Test
   public void testNominalPointAxis() throws Exception {
     String filename = TestDir.cdmUnitTestDir + "conventions/cf/ipcc/cl_A1.nc";
-    TestGridCompareWithDt.testAll(filename, true);
+    TestReadandCount.doOne(filename, -1, -1, -1, -1);
   }
 
   @Test
   public void testProblem1() throws Exception {
     String filename = TestDir.cdmUnitTestDir + "conventions/wrf/wrfout_01_000000_0003.nc";
-    TestGridCompareWithDt.testAll(filename, true);
+    TestReadandCount.doOne(filename, -1, -1, -1, -1);
   }
 
   @Ignore("GRID fails because not monotonic")
   @Test
   public void testProblem3() throws Exception {
     String filename = TestDir.cdmUnitTestDir + "conventions/nuwg/2003021212_avn-x.nc";
-    TestGridCompareWithDt.testAll(filename, true);
+    TestReadandCount.doOne(filename, -1, -1, -1, -1);
   }
 
   @Test
   public void testTime2DRegularOffsetSize() throws Exception {
     String filename = TestDir.cdmUnitTestDir + "tds_index/NCEP/NAM/Polar_90km/NAM-Polar_90km.ncx4";
-    TestGridCompareWithDt.testAll(filename, false);
+    TestReadandCount.doOne(filename, -1, -1, -1, -1);
   }
 
   @Test
   public void testProblem4() throws Exception {
     String filename = TestDir.cdmUnitTestDir + "conventions/ifps/HUNGrids.netcdf";
-    TestGridCompareWithDt.testAll(filename, true);
+    TestReadandCount.doOne(filename, -1, -1, -1, -1);
   }
 
   @Test
   public void testCurvilinear() throws Exception {
     String filename = TestDir.cdmUnitTestDir + "ft/grid/stag/bora_feb-coord.ncml";
-    TestGridCompareWithDt.testAll(filename, true);
+    TestReadandCount.doOne(filename, -1, -1, -1, -1);
   }
 
   @Test
   public void testCurvilinear2() throws Exception {
     String filename = TestDir.cdmUnitTestDir + "conventions/cf/bora_test_agg.ncml";
-    TestGridCompareWithDt.testAll(filename, true);
+    TestReadandCount.doOne(filename, -1, -1, -1, -1);
   }
 
 }

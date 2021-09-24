@@ -10,7 +10,6 @@ import com.google.common.collect.ImmutableList;
 import org.joda.time.DurationFieldType;
 import org.joda.time.Period;
 import org.joda.time.PeriodType;
-import ucar.nc2.units.TimeDuration;
 import ucar.unidata.util.StringUtil2;
 import javax.annotation.concurrent.Immutable;
 
@@ -19,8 +18,10 @@ import javax.annotation.concurrent.Immutable;
  * A CalendarField is expressed as {integer x Field}.
  *
  * Design follows joda Period class.
- * TODO redo this, not using fixed length intervals.
+ * 
+ * @deprecated use ucar.calendar.CalendarPeriod
  */
+@Deprecated
 @Immutable
 public class CalendarPeriod {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CalendarPeriod.class);
@@ -133,13 +134,6 @@ public class CalendarPeriod {
 
     CalendarPeriod.Field unit = CalendarPeriod.fromUnitString(units);
     return CalendarPeriod.of(value, unit);
-  }
-
-  /** @deprecated do not use */
-  @Deprecated
-  public static CalendarPeriod of(TimeDuration td) {
-    CalendarPeriod.Field unit = CalendarPeriod.fromUnitString(td.getTimeUnit().getUnitString());
-    return CalendarPeriod.of((int) td.getValue(), unit);
   }
 
   ////////////////////////

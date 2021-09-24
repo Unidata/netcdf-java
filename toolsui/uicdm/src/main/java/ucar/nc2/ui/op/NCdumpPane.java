@@ -10,8 +10,6 @@ import ucar.ma2.IsMissingEvaluator;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.ParsedSectionSpec;
 import ucar.nc2.Variable;
-// import ucar.nc2.dt.image.ImageArrayAdapter;
-// import ucar.nc2.ui.image.ImageViewPanel;
 import ucar.nc2.write.Ncdump;
 import ucar.ui.widget.*;
 import ucar.util.prefs.PreferencesExt;
