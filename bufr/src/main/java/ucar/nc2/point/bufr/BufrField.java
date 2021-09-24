@@ -1,9 +1,11 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
-package ucar.nc2.ft.point.bufr;
+package ucar.nc2.point.bufr;
+
+import ucar.nc2.ft.point.bufr.BufrCdmIndexProto;
 
 import java.util.List;
 

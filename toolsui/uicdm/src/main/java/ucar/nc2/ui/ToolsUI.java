@@ -9,7 +9,6 @@ import thredds.client.catalog.ServiceType;
 import thredds.client.catalog.tools.DataFactory;
 import thredds.ui.catalog.ThreddsUI;
 import ucar.nc2.*;
-import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.*;
 import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.grib.collection.GribCdmIndex;
@@ -27,7 +26,6 @@ import ucar.nc2.ui.grib.*;
 import ucar.nc2.ui.grid.GridNewPanel;
 import ucar.nc2.ui.menu.*;
 import ucar.nc2.ui.op.*;
-import ucar.nc2.ui.point.PointFeaturePanel;
 import ucar.nc2.ui.util.SocketMessage;
 import ucar.nc2.ui.widget.URLDumpPane;
 import ucar.nc2.write.NetcdfCopier;
@@ -123,7 +121,6 @@ public class ToolsUI extends JPanel {
   private Hdf4Panel hdf4Panel;
   private NCdumpPanel ncdumpPanel;
   private NcmlEditorPanel ncmlEditorPanel;
-  private PointFeaturePanel pointFeaturePanel;
   private ThreddsUI threddsUI;
   private UnitsPanel unitsPanel;
   private URLDumpPane urlPanel;
@@ -501,11 +498,6 @@ public class ToolsUI extends JPanel {
         c = ncmlEditorPanel;
         break;
 
-      case "PointFeature":
-        pointFeaturePanel = new PointFeaturePanel((PreferencesExt) mainPrefs.node("pointFeature"));
-        c = pointFeaturePanel;
-        break;
-
       case "THREDDS":
         threddsUI = new ThreddsUI(parentFrame, (PreferencesExt) mainPrefs.node("thredds"));
         threddsUI.addPropertyChangeListener(e -> {
@@ -591,12 +583,9 @@ public class ToolsUI extends JPanel {
     NetcdfFile.setDebugFlags(debugFlags);
     H5iosp.setDebugFlags(debugFlags);
     NcmlReader.setDebugFlags(debugFlags);
-    // DODSNetcdfFile.setDebugFlags(debugFlags);
-    // Nc4Iosp.setDebugFlags(debugFlags);
     DataFactory.setDebugFlags(debugFlags);
 
     NetcdfCopier.setDebugFlags(debugFlags);
-    ucar.nc2.ft.point.standard.PointDatasetStandardFactory.setDebugFlags(debugFlags);
     ucar.nc2.grib.collection.Grib.setDebugFlags(debugFlags);
   }
 
@@ -727,9 +716,6 @@ public class ToolsUI extends JPanel {
     if (ncmlEditorPanel != null) {
       ncmlEditorPanel.save();
     }
-    if (pointFeaturePanel != null) {
-      pointFeaturePanel.save();
-    }
     if (threddsUI != null) {
       threddsUI.storePersistentData();
     }
@@ -826,13 +812,6 @@ public class ToolsUI extends JPanel {
     ncmlEditorPanel.doit(datasetName);
     tabbedPane.setSelectedComponent(ncmlTabPane);
     ncmlTabPane.setSelectedComponent(ncmlEditorPanel);
-  }
-
-  public void openPointFeatureDataset(String datasetName) {
-    makeComponent(ftTabPane, "PointFeature");
-    pointFeaturePanel.setPointFeatureDataset(FeatureType.ANY_POINT, datasetName);
-    tabbedPane.setSelectedComponent(ftTabPane);
-    ftTabPane.setSelectedComponent(pointFeaturePanel);
   }
 
   public void openGrib1Collection(String collection) {

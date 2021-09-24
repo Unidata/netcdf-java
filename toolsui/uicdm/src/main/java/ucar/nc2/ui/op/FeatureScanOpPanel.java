@@ -33,9 +33,6 @@ public class FeatureScanOpPanel extends OpPanel {
       String datasetName = (String) e.getNewValue();
 
       switch (e.getPropertyName()) {
-        case "openPointFeatureDataset":
-          ToolsUI.getToolsUI().openPointFeatureDataset(datasetName);
-          break;
         case "openNetcdfFile":
           ToolsUI.getToolsUI().openNetcdfFile(datasetName);
           break;

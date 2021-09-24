@@ -6,4 +6,4 @@
 /**
  * DEPRECATED API - THIS AND ALL SUBPACKAGES WILL BE REPLACED / MOVE.
  */
-package ucar.nc2.ft.point.bufr;
+package ucar.nc2.point.bufr;

@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
-package ucar.nc2.ft.point.bufr;
+package ucar.nc2.point.bufr;
 
 import ucar.ma2.DataType;
 import ucar.ma2.StructureData;
@@ -11,6 +11,7 @@ import ucar.ma2.StructureMembers;
 import ucar.nc2.Attribute;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
+import ucar.nc2.ft.point.bufr.BufrCdmIndexProto;
 import ucar.nc2.iosp.bufr.BufrIosp;
 import ucar.nc2.iosp.bufr.DataDescriptor;
 import ucar.nc2.iosp.bufr.Message;

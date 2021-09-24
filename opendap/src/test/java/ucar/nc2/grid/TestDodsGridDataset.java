@@ -2,7 +2,7 @@
  * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-package ucar.nc2.ft.coverage;
+package ucar.nc2.grid;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -13,14 +13,6 @@ import com.google.common.primitives.Ints;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.array.InvalidRangeException;
-import ucar.nc2.grid.Grid;
-import ucar.nc2.grid.GridCoordinateSystem;
-import ucar.nc2.grid.GridDataset;
-import ucar.nc2.grid.GridDatasetFactory;
-import ucar.nc2.grid.GridHorizCoordinateSystem;
-import ucar.nc2.grid.GridReferencedArray;
-import ucar.nc2.grid.GridTimeCoordinateSystem;
-import ucar.nc2.grid.MaterializedCoordinateSystem;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.util.test.category.NeedsExternalResource;
 
