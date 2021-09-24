@@ -11,7 +11,6 @@ import thredds.ui.catalog.ThreddsUI;
 import ucar.nc2.*;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.*;
-import ucar.nc2.dt.GridDataset;
 import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.internal.iosp.hdf5.H5iosp;
@@ -25,7 +24,6 @@ import ucar.nc2.ui.bufr.BufrTableBPanel;
 import ucar.nc2.ui.bufr.BufrTableDPanel;
 import ucar.nc2.ui.dialog.DiskCache2Form;
 import ucar.nc2.ui.grib.*;
-import ucar.nc2.ui.grid.GeoGridPanel;
 import ucar.nc2.ui.grid.GridNewPanel;
 import ucar.nc2.ui.menu.*;
 import ucar.nc2.ui.op.*;
@@ -106,7 +104,6 @@ public class ToolsUI extends JPanel {
   private DatasetWriterPanel writerPanel;
   private DirectoryPartitionPanel dirPartPanel;
   private FeatureScanOpPanel ftPanel;
-  private GeoGridPanel geoGridPanel;
   private GribCodePanel gribCodePanel;
   private GribFilesOpPanel gribFilesPanel;
   private GribIndexOpPanel gribIdxPanel;
@@ -246,7 +243,6 @@ public class ToolsUI extends JPanel {
 
     // nested tab - features
     ftTabPane.addTab("FeatureScan", new JLabel("FeatureScan"));
-    ftTabPane.addTab("Grids", new JLabel("Grids"));
     ftTabPane.addTab("GridNew", new JLabel("GridNew"));
     ftTabPane.addTab("WMS", new JLabel("WMS"));
     ftTabPane.addTab("PointFeature", new JLabel("PointFeature"));
@@ -468,11 +464,6 @@ public class ToolsUI extends JPanel {
       case "FeatureScan":
         ftPanel = new FeatureScanOpPanel((PreferencesExt) mainPrefs.node("ftPanel"), dirChooser);
         c = ftPanel;
-        break;
-
-      case "Grids":
-        geoGridPanel = new GeoGridPanel((PreferencesExt) mainPrefs.node("grid"));
-        c = geoGridPanel;
         break;
 
       case "GridNew":
@@ -718,9 +709,6 @@ public class ToolsUI extends JPanel {
     if (gridNewPanel != null) {
       gridNewPanel.save();
     }
-    if (geoGridPanel != null) {
-      geoGridPanel.save();
-    }
     if (hdf5ObjectPanel != null) {
       hdf5ObjectPanel.save();
     }
@@ -879,13 +867,6 @@ public class ToolsUI extends JPanel {
     grib1TabPane.setSelectedComponent(grib1DataPanel);
   }
 
-  public void openGridDataset(String datasetName) {
-    makeComponent(ftTabPane, "Grids");
-    geoGridPanel.doit(datasetName);
-    tabbedPane.setSelectedComponent(ftTabPane);
-    ftTabPane.setSelectedComponent(geoGridPanel);
-  }
-
   public void openNewGrid(String datasetName) {
     makeComponent(ftTabPane, "GridNew");
     gridNewPanel.doit(datasetName);
@@ -895,16 +876,9 @@ public class ToolsUI extends JPanel {
 
   public void openGridDataset(NetcdfDataset dataset) {
     makeComponent(ftTabPane, "Grids");
-    geoGridPanel.setDataset(dataset);
+    gridNewPanel.setNetcdfDataset(dataset);
     tabbedPane.setSelectedComponent(ftTabPane);
-    ftTabPane.setSelectedComponent(geoGridPanel);
-  }
-
-  public void openGridDataset(GridDataset dataset) {
-    makeComponent(ftTabPane, "Grids");
-    geoGridPanel.setDataset(dataset);
-    tabbedPane.setSelectedComponent(ftTabPane);
-    ftTabPane.setSelectedComponent(geoGridPanel);
+    ftTabPane.setSelectedComponent(gridNewPanel);
   }
 
   private void openWMSDataset(String datasetName) {

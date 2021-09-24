@@ -46,8 +46,6 @@ public class FeatureScanOpPanel extends OpPanel {
           ToolsUI.getToolsUI().openNcML(datasetName);
           break;
         case "openGridDataset":
-          ToolsUI.getToolsUI().openGridDataset(datasetName);
-          break;
         case "openNewGrid":
           ToolsUI.getToolsUI().openNewGrid(datasetName);
           break;

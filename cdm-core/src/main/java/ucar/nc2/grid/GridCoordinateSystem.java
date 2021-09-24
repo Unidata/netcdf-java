@@ -82,6 +82,22 @@ public class GridCoordinateSystem {
     return verticalTransform;
   }
 
+  /** True if increasing z coordinate values means "up" in altitude */
+  public boolean isZPositive() {
+    GridAxis<?> vertAxis = getVerticalAxis();
+    if (vertAxis == null) {
+      return false;
+    }
+    String positive = vertAxis.attributes.findAttributeString(ucar.nc2.constants.CF.POSITIVE_UP, null);
+    if (positive != null) {
+      return positive.equals("true");
+    }
+    if (vertAxis.getAxisType() == AxisType.Height) {
+      return true;
+    }
+    return vertAxis.getAxisType() != AxisType.Pressure;
+  }
+
   /** Get the X axis (either GeoX or Lon). */
   public GridAxisPoint getXHorizAxis() {
     return getHorizCoordinateSystem().getXHorizAxis();

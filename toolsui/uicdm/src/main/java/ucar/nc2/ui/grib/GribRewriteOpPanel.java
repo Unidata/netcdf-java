@@ -41,7 +41,7 @@ public class GribRewriteOpPanel extends OpPanel {
       if ("openNetcdfFile".equals(pname)) {
         ToolsUI.getToolsUI().openNetcdfFile(datasetName);
       } else if ("openGridDataset".equals(pname)) {
-        ToolsUI.getToolsUI().openGridDataset(datasetName);
+        ToolsUI.getToolsUI().openNewGrid(datasetName);
       } else if ("openGrib1Data".equals(pname)) {
         ToolsUI.getToolsUI().openGrib1Data(datasetName);
       } else if ("openGrib2Data".equals(pname)) {

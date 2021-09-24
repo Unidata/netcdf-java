@@ -3,4 +3,4 @@
  * See LICENSE for license information.
  */
 /** UI for ucar.nc2.grid data. */
-package ucar.nc2.ui.grid3;
+package ucar.nc2.ui.grid;

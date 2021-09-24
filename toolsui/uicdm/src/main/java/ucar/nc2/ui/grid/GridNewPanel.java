@@ -1,18 +1,17 @@
 /*
- * Copyright (c) 1998-2021 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
 package ucar.nc2.ui.grid;
 
+import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.grid.GridDataset;
 import ucar.nc2.grid.GridDatasetFactory;
 import ucar.nc2.ui.OpPanel;
 import ucar.nc2.ui.ToolsUI;
 import ucar.nc2.ui.gis.shapefile.ShapeFileBean;
 import ucar.nc2.ui.gis.worldmap.WorldMapBean;
-import ucar.nc2.ui.grid3.GridNewTable;
-import ucar.nc2.ui.grid3.GridViewer;
 import ucar.ui.widget.BAMutil;
 import ucar.ui.widget.IndependentWindow;
 import ucar.util.prefs.PreferencesExt;
@@ -129,6 +128,20 @@ public class GridNewPanel extends OpPanel {
 
     gridNewTable.setGridDataset(fd);
     setSelectedItem(fd.getLocation());
+  }
+
+  public void setNetcdfDataset(NetcdfDataset ncd) {
+    if (ncd == null) {
+      return;
+    }
+    try {
+      closeOpenFiles();
+      GridDataset fd = GridDatasetFactory.wrapGridDataset(ncd, new Formatter()).orElse(null);
+      gridNewTable.setGridDataset(fd);
+      setSelectedItem(fd.getLocation());
+    } catch (IOException ioe) {
+      logger.warn("close failed");
+    }
   }
 
   @Override

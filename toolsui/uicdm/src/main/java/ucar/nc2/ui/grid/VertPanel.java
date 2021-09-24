@@ -1,12 +1,12 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.ui.grid;
 
-import ucar.nc2.dataset.CoordinateAxis;
-import ucar.nc2.dataset.CoordinateAxis1D;
-import ucar.nc2.dt.GridCoordSystem;
+import ucar.nc2.grid.GridAxis;
+import ucar.nc2.grid.GridAxisPoint;
+import ucar.nc2.grid.GridCoordinateSystem;
 import ucar.ui.event.ActionSourceListener;
 import ucar.nc2.ui.widget.ScaledPanel;
 import ucar.unidata.geoloc.LatLonPoint;
@@ -19,11 +19,9 @@ import java.awt.*;
  * 2D Vertical "slice" drawing widget.
  * Integrates a drawing area (ucar.unidata.ui.ScaledPanel), a slider widget
  * (ucar.unidata.view.grid.VertScaleSlider) and a bottom axis.
- *
- * @author caron
  */
 
-public class VertPanel extends JPanel {
+class VertPanel extends JPanel {
   private static final boolean debugBounds = false;
 
   private final ScaledPanel drawArea;
@@ -33,7 +31,7 @@ public class VertPanel extends JPanel {
   private double yleft, ymid, yright;
   private boolean isLatLon = true;
   private Projection proj;
-  private CoordinateAxis xaxis;
+  private GridAxisPoint xaxis;
 
   public VertPanel() {
     setLayout(new BorderLayout());
@@ -72,17 +70,17 @@ public class VertPanel extends JPanel {
     return drawArea;
   }
 
-  public void setLevels(GridCoordSystem gcs, int current) {
+  public void setLevels(GridCoordinateSystem gcs, int current) {
     vslider.setLevels(gcs, current);
   }
 
-  public void setCoordSys(GridCoordSystem geocs, int currentLevel) {
-    CoordinateAxis1D zaxis = geocs.getVerticalAxis();
+  public void setCoordSys(GridCoordinateSystem geocs, int currentLevel) {
+    GridAxis<?> zaxis = geocs.getVerticalAxis();
     if (zaxis == null)
       return;
 
     vslider.setLevels(geocs, currentLevel);
-    vertUnitsLabel.setText("  " + zaxis.getUnitsString());
+    vertUnitsLabel.setText("  " + zaxis.getUnits());
 
     /*
      * set the bounds of the world coordinates.
@@ -91,15 +89,16 @@ public class VertPanel extends JPanel {
      * to the upper right corner. Therefore if coords decrease as you go up, world.Height()
      * should be negetive.
      */
-    CoordinateAxis yaxis = geocs.getYHorizAxis();
-    if ((yaxis == null) || (zaxis == null))
+    GridAxis<?> yaxis = geocs.getYHorizAxis();
+    if ((yaxis == null) || (zaxis == null)) {
       return;
-    // int nz = (int) zaxis.getSize();
-    // int ny = (int) yaxis.getSize();
+    }
+    int nz = zaxis.getNominalSize();
+    int ny = yaxis.getNominalSize();
 
-    // must determine which is on top: depends on ifz is up or down!
-    double zmin = zaxis.getMinValue(); // Math.min(zaxis.getCoordEdge(0), zaxis.getCoordEdge(nz));
-    double zmax = zaxis.getMaxValue(); // Math.max(zaxis.getCoordEdge(0), zaxis.getCoordEdge(nz));
+    // must determine which is on top: depends on if z is up or down!
+    double zmin = Math.min(zaxis.getCoordDouble(0), zaxis.getCoordDouble(nz - 1));
+    double zmax = Math.max(zaxis.getCoordDouble(0), zaxis.getCoordDouble(nz - 1));
     double zupper, zlower;
     if (geocs.isZPositive()) {
       zlower = zmin;
@@ -109,10 +108,9 @@ public class VertPanel extends JPanel {
       zupper = zmin;
     }
 
-    // LOOK: actuallly may be non-linear if its a 2D XY coordinate system.
-    // so this is just an approximation
-    yleft = yaxis.getMinValue();
-    yright = yaxis.getMaxValue();
+    // LOOK: actuallly may be non-linear if its a 2D XY coordinate system, so this is just an approximation
+    yleft = Math.min(yaxis.getCoordDouble(0), yaxis.getCoordDouble(ny - 1));
+    yright = Math.max(yaxis.getCoordDouble(0), yaxis.getCoordDouble(ny - 1));
 
     if (debugBounds) {
       System.out.println("VertPanel: ascending from " + zlower + " to " + zupper);
@@ -123,11 +121,11 @@ public class VertPanel extends JPanel {
     drawArea.setWorldBounds(bounds);
 
     // set bottom scale
-    proj = geocs.getProjection();
-    isLatLon = geocs.isLatLon();
+    proj = geocs.getHorizCoordinateSystem().getProjection();
+    isLatLon = geocs.getHorizCoordinateSystem().isLatLon();
     ymid = (yleft + yright) / 2;
 
-    xaxis = geocs.getXHorizAxis();
+    xaxis = geocs.getHorizCoordinateSystem().getXHorizAxis();
 
     setSlice(0);
   }
@@ -140,10 +138,9 @@ public class VertPanel extends JPanel {
       rightScale.setText(LatLonPoints.latToString(yright, 3));
       return;
     }
-    double xval;
 
-    if ((xaxis != null) && (xaxis instanceof CoordinateAxis1D)) {
-      xval = ((CoordinateAxis1D) xaxis).getCoordValue(slice);
+    if (xaxis != null) {
+      double xval = xaxis.getCoordDouble(slice);
 
       // set bottom scale
       leftScale.setText(getYstr(xval, yleft));

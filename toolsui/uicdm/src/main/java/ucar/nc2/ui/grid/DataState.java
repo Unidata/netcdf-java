@@ -3,7 +3,7 @@
  * See LICENSE for license information.
  */
 
-package ucar.nc2.ui.grid3;
+package ucar.nc2.ui.grid;
 
 import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.grid.Grid;

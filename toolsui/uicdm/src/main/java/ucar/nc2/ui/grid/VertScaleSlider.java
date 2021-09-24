@@ -1,18 +1,19 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.ui.grid;
 
+import ucar.nc2.grid.GridAxis;
+import ucar.nc2.grid.GridCoordinateSystem;
 import ucar.ui.event.ActionSourceListener;
-import ucar.nc2.dataset.*;
 import ucar.ui.event.ActionValueEvent;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
 /** Slider for Vertical scale */
-public class VertScaleSlider extends JPanel {
+class VertScaleSlider extends JPanel {
   private static final boolean debugEvent = false;
   private static final boolean debugLevels = false;
 
@@ -27,7 +28,7 @@ public class VertScaleSlider extends JPanel {
   // state
   private int currentIdx = -1;
   private double min, max, scale = 1.0;
-  private CoordinateAxis1D zAxis;
+  private GridAxis<?> zAxis;
 
   public VertScaleSlider() {
 
@@ -51,7 +52,7 @@ public class VertScaleSlider extends JPanel {
         SwingUtilities.invokeLater(new Runnable() {
           public void run() {
             setSelectedIndex(currentIdx);
-            actionSource.fireActionValueEvent(actionName, zAxis.getCoordName(currentIdx));
+            actionSource.fireActionValueEvent(actionName, zAxis.getCoordDouble(currentIdx));
           } // run
         }); // invokeLater
 
@@ -84,7 +85,7 @@ public class VertScaleSlider extends JPanel {
     return actionSource;
   }
 
-  public void setLevels(ucar.nc2.dt.GridCoordSystem gcs, int current) {
+  public void setLevels(GridCoordinateSystem gcs, int current) {
     this.zAxis = gcs.getVerticalAxis();
     if (zAxis == null) {
       slider.setEnabled(false);
@@ -93,17 +94,12 @@ public class VertScaleSlider extends JPanel {
     // set up the slider and conversion
     slider.setEnabled(true);
     slider.setInverted(!gcs.isZPositive());
-    slider.setToolTipText(zAxis.getUnitsString());
+    slider.setToolTipText(zAxis.getUnits());
     setSelectedIndex(current);
 
-    int n = (int) zAxis.getSize();
-    if (zAxis.isContiguous()) {
-      min = Math.min(zAxis.getCoordEdge(0), zAxis.getCoordEdge(n));
-      max = Math.max(zAxis.getCoordEdge(0), zAxis.getCoordEdge(n));
-    } else {
-      min = zAxis.getMinValue();
-      max = zAxis.getMaxValue();
-    }
+    int nz = zAxis.getNominalSize();
+    this.min = Math.min(zAxis.getCoordDouble(0), zAxis.getCoordDouble(nz - 1));
+    this.max = Math.max(zAxis.getCoordDouble(0), zAxis.getCoordDouble(nz - 1));
 
     setLabels();
     slider.setPaintLabels(true);
@@ -111,9 +107,6 @@ public class VertScaleSlider extends JPanel {
 
   private void setLabels() {
     Rectangle bounds = slider.getBounds();
-    if (debugEvent)
-      System.out.println(" setLevels Bounds= " + bounds);
-
     double h = (bounds.getHeight() > 0) ? bounds.getHeight() : 100.0;
     double wh = (max - min) > 0.0 ? (max - min) : 1.0;
     scale = 100.0 / wh;
@@ -123,35 +116,26 @@ public class VertScaleSlider extends JPanel {
     FontMetrics fontMetrics = Toolkit.getDefaultToolkit().getFontMetrics(font);
     if (fontMetrics != null)
       incrY = fontMetrics.getAscent(); // + fontMetrics.getDescent();
-    if (debugEvent)
-      System.out.println(" scale= " + scale + " incrY = " + incrY);
 
     java.util.Hashtable<Integer, JLabel> labelTable = new java.util.Hashtable<>();
 
     if (zAxis == null)
       return;
-    int n = (int) zAxis.getSize();
-    int last = world2slider(zAxis.getCoordValue(n - 1)); // always
-    labelTable.put(last, new JLabel(zAxis.getCoordName(n - 1))); // always
-    int next = world2slider(zAxis.getCoordValue(0));
-    labelTable.put(next, new JLabel(zAxis.getCoordName(0))); // always
-    if (debugLevels)
-      System.out.println("level = " + slider2pixel * next + " " + zAxis.getCoordName(0) + " added ");
+    int n = zAxis.getNominalSize();
+    int last = world2slider(zAxis.getCoordDouble(n - 1)); // always
+    labelTable.put(last, new JLabel(coordName(n - 1))); // always
+    int next = world2slider(zAxis.getCoordDouble(0));
+    labelTable.put(next, new JLabel(coordName(0))); // always
 
     for (int i = 1; i < n - 1; i++) {
-      int ival = world2slider(zAxis.getCoordValue(i));
-      if (debugLevels)
-        System.out.println("level = " + slider2pixel * ival + " " + zAxis.getCoordName(i));
+      int ival = world2slider(zAxis.getCoordDouble(i));
       if ((slider2pixel * Math.abs(ival - last) > incrY) && (slider2pixel * Math.abs(ival - next) > incrY)) {
-        labelTable.put(ival, new JLabel(zAxis.getCoordName(i)));
+        labelTable.put(ival, new JLabel(coordName(i)));
         next = ival;
         if (debugLevels)
           System.out.println("  added ");
       }
     }
-    if (debugLevels)
-      System.out.println("level = " + slider2pixel * last + " " + zAxis.getCoordName(n - 1) + " added ");
-
     slider.setLabelTable(labelTable);
   }
 
@@ -159,20 +143,27 @@ public class VertScaleSlider extends JPanel {
     return ((int) (scale * (val - min)));
   }
 
+  private String coordName(int index) {
+    return Double.toString(zAxis.getCoordDouble(index));
+  }
+
+
   private double slider2world(int pval) {
     return pval / scale + min;
   }
 
   private int slider2index(int pval) {
     // optimization
-    return zAxis.findCoordElement(slider2world(pval));
+    // return zAxis.findCoordElement(slider2world(pval));
+    // LOOK wrong
+    return pval;
   }
 
   private void setSelectedByName(String name) {
     if (zAxis == null)
       return;
-    for (int i = 0; i < zAxis.getSize(); i++)
-      if (name.equals(zAxis.getCoordName(i))) {
+    for (int i = 0; i < zAxis.getNominalSize(); i++)
+      if (name.equals(coordName(i))) {
         setSelectedIndex(i);
         return;
       }
@@ -185,7 +176,7 @@ public class VertScaleSlider extends JPanel {
       return;
     eventOK = false;
     currentIdx = idx;
-    slider.setValue(world2slider(zAxis.getCoordValue(currentIdx)));
+    slider.setValue(world2slider(zAxis.getCoordDouble(currentIdx)));
     eventOK = true;
   }
 

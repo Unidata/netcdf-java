@@ -3,7 +3,7 @@
  * See LICENSE for license information.
  */
 
-package ucar.nc2.ui.grid3;
+package ucar.nc2.ui.grid;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;

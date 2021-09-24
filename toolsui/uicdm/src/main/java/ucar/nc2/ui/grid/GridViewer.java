@@ -3,7 +3,7 @@
  * See LICENSE for license information.
  */
 
-package ucar.nc2.ui.grid3;
+package ucar.nc2.ui.grid;
 
 import ucar.array.InvalidRangeException;
 import ucar.nc2.calendar.CalendarDate;
@@ -15,7 +15,6 @@ import ucar.nc2.grid.GridHorizCoordinateSystem;
 import ucar.nc2.grid.GridTimeCoordinateSystem;
 import ucar.nc2.ui.geoloc.NavigatedPanel;
 import ucar.nc2.ui.gis.MapBean;
-import ucar.nc2.ui.grid.ColorScale;
 import ucar.nc2.ui.util.NamedObjects;
 import ucar.ui.event.ActionCoordinator;
 import ucar.ui.event.ActionSourceListener;

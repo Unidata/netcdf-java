@@ -1,15 +1,19 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.ui.grid;
 
 import com.google.common.collect.ImmutableList;
-import ucar.ma2.*; // for Array, Index, MAMath
-import ucar.nc2.dt.GridDatatype;
+import ucar.array.Array;
+import ucar.array.Arrays;
+import ucar.array.MinMax;
+import ucar.nc2.grid.Grid;
 import ucar.ui.prefs.Debug;
-import java.awt.geom.*; // for Point2D.Double
-import java.util.*; // for Iterator and ArrayList
+
+import java.awt.geom.Point2D;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -161,9 +165,8 @@ import java.util.*; // for Iterator and ArrayList
  * @author wier
  */
 public class ContourGrid {
-  private final GridDatatype geogrid;
-  private final ucar.ma2.Array dataArray;
-  private final Index dgIndex;
+  private final Grid geogrid;
+  private final Array<Number> dataArray;
 
   private final List<Double> contourValues = new ArrayList<>(); // contour levels
   private final List<ContourLine> contourLines = new ArrayList<>(); // the contours made here
@@ -195,12 +198,9 @@ public class ContourGrid {
    * @param yPosition the y position values of rows in the grid
    * @param geogrid a GeoGridImpl which is used for its missing data methods.
    */
-  public ContourGrid(ucar.ma2.Array dataGrid, List<Double> allContourValues, double[] xPosition, double[] yPosition,
-      GridDatatype geogrid) {
+  public ContourGrid(ucar.array.Array<Number> dataGrid, List<Double> allContourValues, double[] xPosition,
+      double[] yPosition, Grid geogrid) {
     this.geogrid = geogrid;
-
-    dgIndex = dataGrid.getIndex();
-
     this.dataArray = dataGrid;
 
     dimX = (dataGrid.getShape())[1];
@@ -217,14 +217,9 @@ public class ContourGrid {
 
     conLevel = 0.0;
 
-    /*
-     * Determine max and min values in the data grid,
-     * used here to determine valid contour levels to use.
-     * JCaron changes 2/15/2001
-     */
-    MAMath.MinMax minmax = geogrid.getMinMaxSkipMissingData(dataGrid);
-    gridmax = minmax.max;
-    gridmin = minmax.min;
+    MinMax minmax = Arrays.getMinMaxSkipMissingData(dataGrid, geogrid);
+    gridmax = minmax.max();
+    gridmin = minmax.min();
 
     /*
      * if a grid with missing values, reset grid max and grid min
@@ -436,8 +431,8 @@ public class ContourGrid {
       v1 = value(0, j); // call method "value(i,j)"
       for (i = 0; i < xMaxInd; i++) {
         v2 = value(i + 1, j);
-        boolean v1IsMissingData = geogrid.isMissingData(v1);
-        boolean v2IsMissingData = geogrid.isMissingData(v2);
+        boolean v1IsMissingData = geogrid.isMissing(v1);
+        boolean v2IsMissingData = geogrid.isMissing(v2);
 
         // check all contour levels - do not assume they are in order!
         for (m = 0; m < contourValues.size(); m++) {
@@ -461,8 +456,8 @@ public class ContourGrid {
       v1 = value(i, 0);
       for (j = 0; j < yMaxInd; j++) {
         v2 = value(i, j + 1);
-        boolean v1IsMissingData = geogrid.isMissingData(v1);
-        boolean v2IsMissingData = geogrid.isMissingData(v2);
+        boolean v1IsMissingData = geogrid.isMissing(v1);
+        boolean v2IsMissingData = geogrid.isMissing(v2);
 
         // check all contour levels - do not assume they are in order!
         for (m = 0; m < contourValues.size(); m++) {
@@ -498,7 +493,7 @@ public class ContourGrid {
   private double value(int i, int j) {
     // convert from array of any type to double.
     // AbstractArray does the type conversion to double from whatever.
-    double truevalue = dataArray.getDouble(dgIndex.set(i, j));
+    double truevalue = dataArray.get(i, j).doubleValue();
 
     // check for missing value is now done in setupContourCrossings()
 
