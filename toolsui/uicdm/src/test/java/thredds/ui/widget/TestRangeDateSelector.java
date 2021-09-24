@@ -10,7 +10,7 @@ import org.junit.Test;
 import thredds.client.catalog.DateType;
 import thredds.client.catalog.TimeCoverage;
 import thredds.client.catalog.TimeDuration;
-import ucar.nc2.ui.widget.RangeDateSelector;
+import ucar.ui.widget.RangeDateSelector;
 import ucar.nc2.units.TimeUnit;
 
 public class TestRangeDateSelector {

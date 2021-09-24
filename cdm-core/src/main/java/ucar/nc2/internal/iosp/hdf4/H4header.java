@@ -1278,7 +1278,7 @@ public class H4header implements HdfHeaderIF {
     }
   }
 
-  // public for debugging (ucar.nc2.ui.Hdf4Table)
+  // public for debugging (ucar.ui.Hdf4Table)
   // Tag == "Data Descriptor" (DD) and (usually) a "Data Element" that the offset/length points to
   public class Tag {
     short code;

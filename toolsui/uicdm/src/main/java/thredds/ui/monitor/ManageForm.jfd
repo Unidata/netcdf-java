@@ -171,7 +171,7 @@
       </void> 
       <void method="add"> 
        <object class="com.jformdesigner.model.FormComponent"> 
-        <string>ucar.nc2.ui.widget.StopButton</string> 
+        <string>ucar.ui.widget.StopButton</string>
         <void method="setProperty"> 
          <string>text</string> 
          <string>Stop</string> 

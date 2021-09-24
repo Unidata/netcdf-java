@@ -6,7 +6,7 @@ package thredds.ui.catalog;
 
 import thredds.client.catalog.*;
 import ucar.nc2.constants.DataFormatType;
-import ucar.nc2.ui.widget.TextGetPutPane;
+import ucar.ui.widget.TextGetPutPane;
 import ucar.ui.widget.*;
 import ucar.unidata.io.http.ReadFromUrl;
 import ucar.util.prefs.PreferencesExt;

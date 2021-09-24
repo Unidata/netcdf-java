@@ -44,7 +44,7 @@ fatJarTasks << tasks.create(name: 'buildToolsUI', type: ShadowJar) {
   configurations = [project.configurations.toolsUI]
 
   doFirst {
-    manifest.attributes 'Main-Class': 'ucar.nc2.ui.ToolsUI'
+    manifest.attributes 'Main-Class': 'ucar.ui.ToolsUI'
   }
 }
 

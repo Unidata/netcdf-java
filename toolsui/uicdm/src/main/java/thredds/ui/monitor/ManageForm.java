@@ -7,7 +7,7 @@ package thredds.ui.monitor;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import javax.swing.*;
-import ucar.nc2.ui.widget.StopButtonCancelTask;
+import ucar.ui.widget.StopButtonCancelTask;
 import ucar.util.prefs.PersistenceManager;
 import ucar.ui.prefs.*;
 
