@@ -56,14 +56,6 @@ public class CoordinateSystem {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinateSystem.class);
 
   /**
-   * TODO needed for GridCoordSys, remove in ver7
-   * 
-   * @deprecated Use CoordinateSystem.builder().
-   */
-  @Deprecated
-  protected CoordinateSystem() {}
-
-  /**
    * Create standard name from list of axes. Sort the axes first
    * 
    * @param axes list of CoordinateAxis
@@ -99,7 +91,7 @@ public class CoordinateSystem {
 
   /**
    * Get the underlying NetcdfDataset
-   * 
+   *
    * @deprecated do not use
    */
   @Deprecated
@@ -357,7 +349,12 @@ public class CoordinateSystem {
     return projection;
   }
 
-  /** Get the Vertical Transform for this coordinate system, if any. */
+  /**
+   * Get the Vertical Transform for this coordinate system, if any.
+   * 
+   * @deprecated use GridCooordinateSystem.getVerticalTransform()
+   */
+  @Deprecated
   @Nullable
   public VerticalCT getVerticalCT() {
     Optional<CoordinateTransform> result =
@@ -368,11 +365,7 @@ public class CoordinateSystem {
   ////////////////////////////////////////////////////////////////////////////
   // classification
 
-  /**
-   * true if it has X and Y CoordinateAxis, and a CoordTransform Projection
-   * 
-   * @return true if it has X and Y CoordinateAxis, and a CoordTransform Projection
-   */
+  /** True if it has X and Y CoordinateAxis, and a Projection */
   public boolean isGeoXY() {
     if ((xAxis == null) || (yAxis == null)) {
       return false;
@@ -676,19 +669,18 @@ public class CoordinateSystem {
 
   ////////////////////////////////////////////////////////////////////////////////////////////
   // TODO make these private, final and immutable in ver7.
-  protected NetcdfDataset ds; // cant remove until dt.GridCoordSys can be removed
-  protected List<CoordinateAxis> coordAxes = new ArrayList<>();
+  private final NetcdfDataset ds; // cant remove until dt.GridCoordSys can be removed
+  private final ImmutableList<CoordinateAxis> coordAxes;
   // LOOK keep projection and vertical separate, and only allow one?
-  protected List<CoordinateTransform> coordTrans = new ArrayList<>();
+  private final List<CoordinateTransform> coordTrans = new ArrayList<>();
   private Projection projection;
 
   // these are calculated
-  protected String name;
-  protected Set<Dimension> domain = new HashSet<>(); // set of dimension
-  protected CoordinateAxis xAxis, yAxis, zAxis, tAxis, latAxis, lonAxis, hAxis, pAxis, ensAxis;
-  protected CoordinateAxis aziAxis, elevAxis, radialAxis;
-  protected boolean isImplicit; // where set?
-  protected String dataType; // Grid, Station, etc. where set?
+  private final String name;
+  private final Set<Dimension> domain = new HashSet<>(); // set of dimension
+  private CoordinateAxis xAxis, yAxis, zAxis, tAxis, latAxis, lonAxis, hAxis, pAxis, ensAxis;
+  private CoordinateAxis aziAxis, elevAxis, radialAxis;
+  private final boolean isImplicit; // where set?
 
   protected CoordinateSystem(Builder<?> builder, NetcdfDataset ncd, List<CoordinateAxis> axesAll,
       List<CoordinateTransform> allTransforms) {
@@ -705,8 +697,8 @@ public class CoordinateSystem {
         axesList.add(found.get());
       }
     }
-    this.coordAxes = axesList;
-    this.coordAxes.sort(new CoordinateAxis.AxisComparator());
+    axesList.sort(new CoordinateAxis.AxisComparator());
+    this.coordAxes = ImmutableList.copyOf(axesList);
 
     // calculated
     this.name = makeName(coordAxes);

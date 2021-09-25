@@ -7,7 +7,7 @@ package ucar.nc2.grid;
 import com.google.common.collect.ImmutableList;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
-import ucar.unidata.geoloc.VerticalTransform;
+import ucar.nc2.geoloc.vertical.VerticalTransform;
 import ucar.unidata.geoloc.projection.CurvilinearProjection;
 
 import javax.annotation.Nullable;
@@ -76,7 +76,7 @@ public class GridCoordinateSystem {
     return getGridAxes().stream().filter(a -> a.getAxisType().isVert()).findFirst().orElse(null);
   }
 
-  /** Get the vertical transform, if any. */
+  /** Get the vertical transform, if any. LOOK lazy construction I think. */
   @Nullable
   public VerticalTransform getVerticalTransform() {
     return verticalTransform;
@@ -84,17 +84,19 @@ public class GridCoordinateSystem {
 
   /** True if increasing z coordinate values means "up" in altitude */
   public boolean isZPositive() {
+    // LOOK allow this to be set, eg by the CoordSysBuilder
     GridAxis<?> vertAxis = getVerticalAxis();
     if (vertAxis == null) {
       return false;
     }
     String positive = vertAxis.attributes.findAttributeString(ucar.nc2.constants.CF.POSITIVE_UP, null);
     if (positive != null) {
-      return positive.equals("true");
+      return positive.equalsIgnoreCase("true");
     }
     if (vertAxis.getAxisType() == AxisType.Height) {
       return true;
     }
+    // make something up
     return vertAxis.getAxisType() != AxisType.Pressure;
   }
 

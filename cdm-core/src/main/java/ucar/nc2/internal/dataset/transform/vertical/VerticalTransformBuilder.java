@@ -10,7 +10,12 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VerticalCT;
 import ucar.unidata.geoloc.VerticalTransform;
 
-/** A Builder of VerticalTransform objects */
+/**
+ * A Builder of VerticalTransform objects
+ * 
+ * @deprecated use ucar.nc2.geoloc.vertical
+ */
+@Deprecated
 public interface VerticalTransformBuilder {
   /**
    * Make a VerticalTransform.

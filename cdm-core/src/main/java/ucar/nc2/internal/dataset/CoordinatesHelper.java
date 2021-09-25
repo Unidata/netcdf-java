@@ -24,7 +24,7 @@ import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.*;
 
-/** A helper class for NetcdfDataset to build and manage coordinates. */
+/** An immutable helper class for NetcdfDataset to build and manage coordinates. */
 @Immutable
 public class CoordinatesHelper {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinatesHelper.class);
@@ -116,6 +116,7 @@ public class CoordinatesHelper {
     return new Builder();
   }
 
+  // Mutable Builder. */
   public static class Builder {
     public List<CoordinateAxis.Builder<?>> coordAxes = new ArrayList<>();
     public List<CoordinateSystem.Builder<?>> coordSys = new ArrayList<>();

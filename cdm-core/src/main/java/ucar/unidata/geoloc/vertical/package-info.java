@@ -5,5 +5,7 @@
 
 /**
  * INTERNAL CLASSES DO NOT USE: Implementations of vertical coordinate transformations.
+ * 
+ * @deprecated use ucar.nc2.geoloc.vertical
  */
 package ucar.unidata.geoloc.vertical;

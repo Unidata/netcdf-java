@@ -19,7 +19,10 @@ import javax.annotation.concurrent.Immutable;
  *
  * CoordinateTransform is the superclass for ProjectionCT and VerticalCT.
  * It contains the Attributes/Parameters needed to make a "Coordinate Transform Variable".
+ * 
+ * @deprecated use GridCooordinateSystem.getVerticalTransform() and getProjection()
  */
+@Deprecated
 @Immutable
 public abstract class CoordinateTransform implements Comparable<CoordinateTransform> {
 

@@ -118,20 +118,22 @@ public class TestGridSubset {
       assertThat((Object) zaxis).isNotNull();
       assertThat(zaxis.getNominalSize()).isEqualTo(27);
 
-      VerticalTransform vt = csys.getVerticalTransform();
-      assertThat(vt).isNotNull();
-      assertThat(vt.getUnitString()).isEqualTo("Pa");
-
-      GridReferencedArray geoArray = grid.getReader().setHorizStride(3).read();
-      MaterializedCoordinateSystem mcs = geoArray.getMaterializedCoordinateSystem();
-      assertThat(mcs).isNotNull();
-
-      System.out.printf(" data shape=%s%n", java.util.Arrays.toString(geoArray.data().getShape()));
-      assertThat(geoArray.data().getShape()).isEqualTo(new int[] {13, 27, 20, 25});
-
-      GridAxis<?> zaxis2 = mcs.getVerticalAxis();
-      assertThat((Object) zaxis2).isNotNull();
-      assertThat(zaxis2.getUnits()).isEqualTo(zaxis.getUnits());
+      /*
+       * LOOK VerticalTransform vt = csys.getVerticalTransform();
+       * assertThat(vt).isNotNull();
+       * assertThat(vt.getUnitString()).isEqualTo("Pa");
+       * 
+       * GridReferencedArray geoArray = grid.getReader().setHorizStride(3).read();
+       * MaterializedCoordinateSystem mcs = geoArray.getMaterializedCoordinateSystem();
+       * assertThat(mcs).isNotNull();
+       * 
+       * System.out.printf(" data shape=%s%n", java.util.Arrays.toString(geoArray.data().getShape()));
+       * assertThat(geoArray.data().getShape()).isEqualTo(new int[] {13, 27, 20, 25});
+       * 
+       * GridAxis<?> zaxis2 = mcs.getVerticalAxis();
+       * assertThat((Object) zaxis2).isNotNull();
+       * assertThat(zaxis2.getUnits()).isEqualTo(zaxis.getUnits());
+       */
     }
   }
 

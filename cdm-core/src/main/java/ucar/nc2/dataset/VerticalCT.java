@@ -17,7 +17,10 @@ import ucar.unidata.geoloc.VerticalTransform;
  * It may be dependent also on X,Y and/or Time. CT: (X,Y,GeoZ,Time) -&gt; Height or Pressure.
  * This class just records the transformation parameters. The mathematical transformation itself is
  * delegated to a class implementing {@link ucar.unidata.geoloc.VerticalTransform}.
+ * 
+ * @deprecated use GridCooordinateSystem.getVerticalTransform()
  */
+@Deprecated
 @Immutable
 public class VerticalCT extends CoordinateTransform {
 

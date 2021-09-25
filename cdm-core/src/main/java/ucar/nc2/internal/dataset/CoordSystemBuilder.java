@@ -46,7 +46,7 @@ import ucar.nc2.util.CancelTask;
  * 1) create a dummy Variable called the Coordinate Transform Variable.
  * This Coordinate Transform variable always has a name that identifies the transform,
  * and any attributes needed for the transformation.
- * 2) explicitly point to it by adding a _CoordinateTransform attribute to a Coordinate System Variable
+ * 2) explicitly point to it by adding a _CoordinateTransforms attribute to a Coordinate System Variable
  * _CoordinateTransforms = "LambertProjection HybridSigmaVerticalTransform"
  *
  * B. You could explicitly add it by overriding assignCoordinateTransforms()

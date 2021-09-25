@@ -11,7 +11,10 @@ import ucar.unidata.geoloc.Projection;
 /**
  * A Projection CoordinateTransform has a Projection bijection (GeoX, GeoY) to/from (Lat, Lon).
  * All the work is done in the {@link ucar.unidata.geoloc.Projection}.
+ * 
+ * @deprecated use CooordinateSystem.getProjection()
  */
+@Deprecated
 @Immutable
 public class ProjectionCT extends CoordinateTransform {
   /**

@@ -67,20 +67,22 @@ public class TestGridVerticalTransforms {
     GridAxis<?> xaxis = gcs.getXHorizAxis();
     assertThat(shape.get(3)).isEqualTo(xaxis.getNominalSize());
 
-    VerticalTransform vt = gcs.getVerticalTransform();
-    assertThat(vt).isNotNull();
-    assertThat(vt.getUnitString()).isNotNull();
-
-    ArrayDouble.D3 vcoord = null;
-    try {
-      vcoord = vt.getCoordinateArray(0);
-    } catch (ucar.ma2.InvalidRangeException e) {
-      e.printStackTrace();
-    }
-    int[] zshape = vcoord.getShape();
-    assertThat(zshape[0]).isEqualTo(zaxis.getNominalSize());
-    assertThat(zshape[1]).isEqualTo(yaxis.getNominalSize());
-    assertThat(zshape[2]).isEqualTo(xaxis.getNominalSize());
+    /*
+     * LOOK VerticalTransform vt = gcs.getVerticalTransform();
+     * assertThat(vt).isNotNull();
+     * assertThat(vt.getUnitString()).isNotNull();
+     * 
+     * ArrayDouble.D3 vcoord = null;
+     * try {
+     * vcoord = vt.getCoordinateArray(0);
+     * } catch (ucar.ma2.InvalidRangeException e) {
+     * e.printStackTrace();
+     * }
+     * int[] zshape = vcoord.getShape();
+     * assertThat(zshape[0]).isEqualTo(zaxis.getNominalSize());
+     * assertThat(zshape[1]).isEqualTo(yaxis.getNominalSize());
+     * assertThat(zshape[2]).isEqualTo(xaxis.getNominalSize());
+     */
   }
 
 
@@ -114,15 +116,17 @@ public class TestGridVerticalTransforms {
       GridHorizCoordinateSystem hcs = gcs.getHorizCoordinateSystem();
       assertThat(hcs).isNotNull();
 
-      VerticalTransform vt = gcs.getVerticalTransform();
-      assertThat(vt).isNotNull();
-      assertThat(vt).isInstanceOf(OceanSigma.class);
-      ArrayDouble.D3 z = vt.getCoordinateArray(0);
-      Section sv = new Section(z.getShape());
-      System.out.printf("3dcoord = %s %n", sv);
-
-      s = s.toBuilder().removeRange(0).build();
-      assertThat(s).isEqualTo(sv);
+      /*
+       * LOOK VerticalTransform vt = gcs.getVerticalTransform();
+       * assertThat(vt).isNotNull();
+       * assertThat(vt).isInstanceOf(OceanSigma.class);
+       * ArrayDouble.D3 z = vt.getCoordinateArray(0);
+       * Section sv = new Section(z.getShape());
+       * System.out.printf("3dcoord = %s %n", sv);
+       * 
+       * s = s.toBuilder().removeRange(0).build();
+       * assertThat(s).isEqualTo(sv);
+       */
     }
   }
 
