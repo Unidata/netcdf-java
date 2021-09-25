@@ -21,7 +21,7 @@ import javax.annotation.concurrent.Immutable;
  * A section of multidimensional array indices.
  * Represented as List<Range>.
  * 
- * @deprecated use ucar.array.Section
+ * TODO switch to using ucar.array.Section
  */
 @Immutable
 public class Section {
