@@ -157,7 +157,8 @@ public class GridNetcdfCSBuilder {
     GridAxis<?> yaxis = findCoordAxisByType(AxisType.GeoY, AxisType.Lat);
     GridHorizCoordinateSystem horizCsys = makeHorizCS(xaxis, yaxis, this.projection, this.latdata, this.londata);
     GridTimeCS tcs = makeTimeCS();
-    return new GridCoordinateSystem(this.axes, tcs, this.verticalTransform, horizCsys);
+    // return new GridCoordinateSystem(this.axes, tcs, this.verticalTransform, horizCsys);
+    return new GridCoordinateSystem(this.axes, tcs, null, horizCsys);
   }
 
   GridAxis<?> findCoordAxisByType(AxisType... axisType) {
