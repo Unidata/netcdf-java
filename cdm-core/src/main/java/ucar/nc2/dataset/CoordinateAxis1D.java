@@ -39,7 +39,7 @@ import java.io.IOException;
  * bounds(ncoords,2). These contain the cell bounds, and must be ascending or descending as the coordinate values are.
  * In this case isContiguous() is true when bounds1(i+1) == bounds2(i) for all i.
  * 
- * @deprecated use GridAxis1D
+ * @deprecated use GridAxis
  */
 @Deprecated
 public class CoordinateAxis1D extends CoordinateAxis {

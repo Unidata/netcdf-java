@@ -15,7 +15,6 @@ import ucar.ma2.InvalidRangeException;
 import ucar.ma2.StructureDataIterator;
 import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.ParsedArraySectionSpec;
 import ucar.nc2.ParsedSectionSpec;
 import ucar.nc2.Sequence;
 import ucar.nc2.Structure;

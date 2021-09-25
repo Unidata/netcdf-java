@@ -10,7 +10,7 @@ import java.util.Iterator;
  * Generalization of Range (which is restricted to (start:stop:stride).
  * RangeIterator is over an arbitrary set of integers from the set {0..fullSize-1}.
  * 
- * @deprecated will move to ucar.array in ver7.
+ * @deprecated use ucar.array.RangeIterator.
  */
 @Deprecated
 public interface RangeIterator extends Iterable<Integer> {

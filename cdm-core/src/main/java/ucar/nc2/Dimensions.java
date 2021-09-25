@@ -8,18 +8,9 @@ import com.google.common.collect.ImmutableList;
 
 import java.util.*;
 import javax.annotation.Nullable;
-
 import com.google.common.collect.ImmutableSet;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Range;
-import ucar.ma2.Section;
 
-/**
- * Static helper methods for Dimension.
- *
- * @author caron
- * @since 10/3/2019.
- */
+/** Static helper methods for Dimension. */
 public class Dimensions {
 
   private Dimensions() {}
@@ -30,24 +21,53 @@ public class Dimensions {
     Optional<Dimension> findByName(String dimName);
   }
 
-  /** Make a ucar.ma2.Section.Builder from an ordered set of Dimension objects. */
-  public static ucar.ma2.Section.Builder makeSectionFromDimensions(Iterable<Dimension> dimensions) {
+  /**
+   * Make a ucar.array.Section.Builder from an ordered set of Dimension objects.
+   */
+  public static ucar.array.Section.Builder makeArraySectionFromDimensions(Iterable<Dimension> dimensions) {
     try {
-      Section.Builder builder = Section.builder();
+      ucar.array.Section.Builder builder = ucar.array.Section.builder();
       for (Dimension d : dimensions) {
         int len = d.getLength();
         if (len > 0)
-          builder.appendRange(new Range(d.getShortName(), 0, len - 1));
+          builder.appendRange(new ucar.array.Range(d.getShortName(), 0, len - 1));
         else if (len == 0)
-          builder.appendRange(Range.EMPTY); // LOOK empty not named
+          builder.appendRange(ucar.array.Range.EMPTY); // LOOK empty not named
         else {
           assert d.isVariableLength();
-          builder.appendRange(Range.VLEN); // LOOK vlen not named
+          builder.appendRange(ucar.array.Range.VLEN); // LOOK vlen not named
         }
       }
       return builder;
 
-    } catch (InvalidRangeException e) {
+    } catch (ucar.array.InvalidRangeException e) {
+      throw new IllegalStateException(e.getMessage());
+    }
+  }
+
+  /**
+   * Make a ucar.ma2.Section.Builder from an ordered set of Dimension objects.
+   * 
+   * @deprecated use makeArraySectionFromDimensions
+   */
+  @Deprecated
+  public static ucar.ma2.Section.Builder makeSectionFromDimensions(Iterable<Dimension> dimensions) {
+    try {
+      ucar.ma2.Section.Builder builder = ucar.ma2.Section.builder();
+      for (Dimension d : dimensions) {
+        int len = d.getLength();
+        if (len > 0)
+          builder.appendRange(new ucar.ma2.Range(d.getShortName(), 0, len - 1));
+        else if (len == 0)
+          builder.appendRange(ucar.ma2.Range.EMPTY); // LOOK empty not named
+        else {
+          assert d.isVariableLength();
+          builder.appendRange(ucar.ma2.Range.VLEN); // LOOK vlen not named
+        }
+      }
+      return builder;
+
+    } catch (ucar.ma2.InvalidRangeException e) {
       throw new IllegalStateException(e.getMessage());
     }
   }
@@ -70,7 +90,7 @@ public class Dimensions {
 
   /** Make an array of Dimension lengths. */
   public static int[] makeShape(Iterable<Dimension> dimensions) {
-    return makeSectionFromDimensions(dimensions).build().getShape();
+    return makeArraySectionFromDimensions(dimensions).build().getShape();
   }
 
   /** Make a space-delineated String from a list of Dimension names, inverse of makeDimensionsList(). */

@@ -183,7 +183,7 @@ public class GcdmConverter {
   private static GcdmNetcdfProto.Attribute.Builder encodeAtt(Attribute att) {
     GcdmNetcdfProto.Attribute.Builder attBuilder = GcdmNetcdfProto.Attribute.newBuilder();
     attBuilder.setName(att.getShortName());
-    attBuilder.setDataType(convertDataType(att.getDataType().getArrayType()));
+    attBuilder.setDataType(convertDataType(att.getArrayType()));
     attBuilder.setLength(att.getLength());
 
     // values
@@ -538,8 +538,8 @@ public class GcdmConverter {
     return section.build();
   }
 
-  public static ucar.ma2.Section decodeSection(GcdmNetcdfProto.Variable var) {
-    ucar.ma2.Section.Builder section = ucar.ma2.Section.builder();
+  public static ucar.array.Section decodeSection(GcdmNetcdfProto.Variable var) {
+    ucar.array.Section.Builder section = ucar.array.Section.builder();
     for (GcdmNetcdfProto.Dimension dim : var.getShapesList()) {
       section.appendRange((int) dim.getLength());
     }

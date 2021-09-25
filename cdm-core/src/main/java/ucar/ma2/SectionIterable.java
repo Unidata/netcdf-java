@@ -14,7 +14,7 @@ import java.util.List;
  * SectionIterable knows the fullShape of which it is a section.
  * The iteration is over the elements in the section, returning 1D index into the full shape.
  *
- * @deprecated will move to ucar.array in ver7.
+ * @deprecated use ucar.array.SectionIterable
  */
 @Deprecated
 @Immutable

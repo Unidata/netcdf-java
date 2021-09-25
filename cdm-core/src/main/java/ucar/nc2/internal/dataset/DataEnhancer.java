@@ -14,7 +14,7 @@ import ucar.nc2.dataset.EnhanceScaleMissingUnsignedImpl;
 import ucar.nc2.dataset.NetcdfDataset.Enhance;
 import ucar.nc2.dataset.VariableDS;
 
-/** Does enhancemnets to a VariableDS' data. */
+/** Does enhancements to a VariableDS' data. */
 public class DataEnhancer {
   private final VariableDS variableDS;
   private final ArrayType dataType;

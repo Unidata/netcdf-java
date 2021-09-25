@@ -11,8 +11,7 @@ import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 
 /**
- * A transformation to a vertical reference coordinate system,
- * such as height or pressure.
+ * A transformation to a vertical reference coordinate system, such as height or pressure.
  */
 public interface VerticalTransform {
 
@@ -26,7 +25,9 @@ public interface VerticalTransform {
    *
    * @throws java.io.IOException problem reading the data
    * @throws ucar.ma2.InvalidRangeException timeIndex out of bounds
+   * @deprecated will be replaced in ver8 to use ucar.array
    */
+  @Deprecated
   ucar.ma2.ArrayDouble.D3 getCoordinateArray(int timeIndex) throws java.io.IOException, ucar.ma2.InvalidRangeException;
 
   /**
@@ -39,7 +40,9 @@ public interface VerticalTransform {
    * @return vertical coordinate array
    * @throws java.io.IOException problem reading data
    * @throws ucar.ma2.InvalidRangeException _more_
+   * @deprecated will be replaced in ver8 to use ucar.array
    */
+  @Deprecated
   ArrayDouble.D1 getCoordinateArray1D(int timeIndex, int xIndex, int yIndex) throws IOException, InvalidRangeException;
 
   /** Get the unit string for the vertical coordinate. */

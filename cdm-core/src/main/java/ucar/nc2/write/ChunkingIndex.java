@@ -14,7 +14,10 @@ import ucar.ma2.Index;
  * of contiguous writes to a multidimensional array.
  * It writes the first n elements (n &lt; maxChunkElems), then the next, etc.
  * Contributed by cwardgar@usgs.gov 4/12/2010
+ * 
+ * @deprecated will be replaced in ver8
  */
+@Deprecated
 public class ChunkingIndex extends Index {
   public ChunkingIndex(int[] shape) {
     super(shape);

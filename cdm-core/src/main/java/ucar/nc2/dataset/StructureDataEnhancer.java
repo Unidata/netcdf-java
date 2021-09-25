@@ -24,7 +24,7 @@ import ucar.nc2.Variable;
 /**
  * Enhance StructureData, for both StructureDS and SequenceDS.
  *
- * @deprecated will move to internal in ver7
+ * @deprecated use ucar.internal.dataset.StructureDataArrayEnhancer
  */
 @Deprecated
 class StructureDataEnhancer {

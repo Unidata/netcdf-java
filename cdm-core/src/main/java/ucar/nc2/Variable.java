@@ -1767,9 +1767,9 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     }
 
     private ucar.array.Array<?> makeDataArray(ArrayType dtype, List<Dimension> dimensions) {
-      Section section = Dimensions.makeSectionFromDimensions(dimensions).build();
+      int[] shape = Dimensions.makeArraySectionFromDimensions(dimensions).build().getShape();
       return ArraysConvert.convertToArray(
-          Array.makeArray(dtype.getDataType(), (int) section.getSize(), start, incr).reshape(section.getShape()));
+          Array.makeArray(dtype.getDataType(), (int) Arrays.computeSize(shape), start, incr).reshape(shape));
     }
   }
 
