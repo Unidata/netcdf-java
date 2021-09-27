@@ -506,7 +506,7 @@ public class TestVariable {
   @Test
   public void testReadArrayScalarFloat() throws IOException {
     Variable varb =
-            Variable.builder().setName("varb").setArrayType(ArrayType.FLOAT).setAutoGen(11, 1).build(makeDummyGroup());
+        Variable.builder().setName("varb").setArrayType(ArrayType.FLOAT).setAutoGen(11, 1).build(makeDummyGroup());
     assertThat(varb.readArray().getScalar()).isNotEqualTo((byte) 11);
     assertThat(varb.readArray().getScalar()).isNotEqualTo((short) 11);
     assertThat(varb.readArray().getScalar()).isEqualTo(11);
@@ -554,9 +554,9 @@ public class TestVariable {
 
   @Test
   public void testReadArrayScalarString() throws IOException {
-    ucar.array.Array<?> data = Arrays.factory(ArrayType.STRING, new int[] {2}, new String[] {"11",  "22"});
+    ucar.array.Array<?> data = Arrays.factory(ArrayType.STRING, new int[] {2}, new String[] {"11", "22"});
     Variable varb =
-            Variable.builder().setName("varc").setArrayType(ArrayType.STRING).setSourceData(data).build(makeDummyGroup());
+        Variable.builder().setName("varc").setArrayType(ArrayType.STRING).setSourceData(data).build(makeDummyGroup());
     assertThat(varb.readArray().getScalar()).isEqualTo("11");
 
     ucar.array.Array<?> arr = varb.readArray();
@@ -575,7 +575,7 @@ public class TestVariable {
   public void testReadArrayScalarChar() throws IOException {
     ucar.array.Array<?> data = Arrays.factory(ArrayType.CHAR, new int[] {3}, new char[] {'1', '2', '3'});
     Variable varb =
-            Variable.builder().setName("varc").setArrayType(ArrayType.CHAR).setSourceData(data).build(makeDummyGroup());
+        Variable.builder().setName("varc").setArrayType(ArrayType.CHAR).setSourceData(data).build(makeDummyGroup());
     assertThat(varb.readArray().getScalar()).isEqualTo('1');
     assertThat(varb.readArray().getScalar()).isEqualTo(49);
     assertThat(varb.readArray().getScalar()).isNotEqualTo("123");

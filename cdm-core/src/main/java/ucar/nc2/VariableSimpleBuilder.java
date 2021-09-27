@@ -19,8 +19,8 @@ public class VariableSimpleBuilder {
 
   /** @deprecated use fromMember(ucar.array.StructureMembers.Member m) */
   public static VariableSimpleBuilder fromMember(ucar.ma2.StructureMembers.Member m) {
-    return new VariableSimpleBuilder(m.getName(), m.getDescription(), m.getUnitsString(), m.getDataType().getArrayType(),
-        Dimensions.makeDimensionsAnon(m.getShape()));
+    return new VariableSimpleBuilder(m.getName(), m.getDescription(), m.getUnitsString(),
+        m.getDataType().getArrayType(), Dimensions.makeDimensionsAnon(m.getShape()));
   }
 
   public static VariableSimpleBuilder fromMember(ucar.array.StructureMembers.Member m) {
