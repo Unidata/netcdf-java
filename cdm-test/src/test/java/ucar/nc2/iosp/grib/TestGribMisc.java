@@ -52,9 +52,6 @@ import java.lang.invoke.MethodHandles;
 
 /**
  * Test misc GRIB features
- *
- * @author caron
- * @since 11/1/11
  */
 @Category(NeedsCdmUnitTest.class)
 public class TestGribMisc {
@@ -66,7 +63,7 @@ public class TestGribMisc {
     logger.debug("{}", filename);
     try (NetcdfFile ncfile = NetcdfFiles.open(filename, null)) {
       Variable v = ncfile.findVariable("isobaric");
-      float val = v.readScalarFloat();
+      float val = (Float) v.readArray().getScalar();
       Assert2.assertNearlyEquals(val, 92500.0);
     }
   }

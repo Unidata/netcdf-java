@@ -112,7 +112,7 @@ public class TestAttribute {
 
   @Test
   public void testEmptyValues() {
-    Attribute att = Attribute.emptyValued("name", DataType.STRING);
+    Attribute att = Attribute.emptyValued("name", ArrayType.STRING);
     Attribute att2 = Attribute.builder().setName("name").build();
     assertThat(att.equals(att2)).isTrue();
     assertThat(att.getStringValue()).isNull();
@@ -190,7 +190,7 @@ public class TestAttribute {
     assertThat(MAMath.equals(values, data)).isTrue();
 
     Attribute attNullArray = Attribute.builder().setName("name").setValues(null).build();
-    assertThat(attNullArray).isEqualTo(Attribute.emptyValued("name", DataType.STRING));
+    assertThat(attNullArray).isEqualTo(Attribute.emptyValued("name", ArrayType.STRING));
   }
 
   @Test
@@ -204,7 +204,7 @@ public class TestAttribute {
     assertThat(values.equals(data)).isTrue();
 
     Attribute attNullArray = Attribute.builder().setName("name").setArrayValues(null).build();
-    assertThat(attNullArray).isEqualTo(Attribute.emptyValued("name", DataType.STRING));
+    assertThat(attNullArray).isEqualTo(Attribute.emptyValued("name", ArrayType.STRING));
   }
 
   @Test

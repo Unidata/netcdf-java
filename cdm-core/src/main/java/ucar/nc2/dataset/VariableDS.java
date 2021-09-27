@@ -309,17 +309,6 @@ public class VariableDS extends Variable implements EnhanceScaleMissingUnsigned,
     return orgVar.readArray(section);
   }
 
-  @Override
-  /** @deprecated do not use. */
-  @Deprecated
-  public long readToStream(ucar.ma2.Section section, OutputStream out)
-      throws IOException, ucar.ma2.InvalidRangeException {
-    if (orgVar == null)
-      return super.readToStream(section, out);
-
-    return orgVar.readToStream(section, out);
-  }
-
   /**
    * Return Array with missing data
    *

@@ -112,6 +112,7 @@ abstract class AbstractVerticalTransform implements VerticalTransform {
   static double readAndConvertUnit(Variable scalarVariable, String convertToUnit) {
     double result;
     try {
+      result = ((Number) scalarVariable.readArray().getScalar()).doubleValue();
       result = scalarVariable.readScalarDouble();
     } catch (IOException e) {
       throw new IllegalArgumentException(

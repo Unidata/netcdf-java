@@ -12,6 +12,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import spock.lang.Shared
 import spock.lang.Specification
+import ucar.array.ArrayType
 import ucar.ma2.Array
 import ucar.ma2.DataType
 import ucar.nc2.*
@@ -78,7 +79,7 @@ recordsGroup/recordsStruct = UNREADABLE
         and: "create Variable of type dessertType and add it"
         Variable.Builder dessert = Variable.builder().setName("dessert").setDataType(DataType.ENUM2)
             .setParentGroupBuilder(root).setDimensionsByName("time").setEnumTypeName("dessertType")
-            .addAttribute(Attribute.emptyValued("zero", DataType.ULONG)) ; // unsigned, zero-length, LONG attribute
+            .addAttribute(Attribute.emptyValued("zero", ArrayType.ULONG)) ; // unsigned, zero-length, LONG attribute
         short[] dessertStorage = [18, 268, 3284] as short[]
         dessert.setSourceData(Array.factory(DataType.SHORT, [3] as int[], dessertStorage))  // Irregularly-spaced values
         root.addVariable(dessert)

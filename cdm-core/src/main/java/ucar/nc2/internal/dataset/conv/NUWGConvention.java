@@ -386,7 +386,7 @@ public class NUWGConvention extends CoordSystemBuilder {
   private class NavInfo {
     VariableDS.Builder<?> vb;
     Variable orgVar;
-    DataType valueType;
+    ArrayType valueType;
     String svalue;
     byte bvalue;
     int ivalue;
@@ -395,16 +395,19 @@ public class NUWGConvention extends CoordSystemBuilder {
     NavInfo(VariableDS.Builder<?> vb) throws IOException {
       this.vb = vb;
       this.orgVar = vb.orgVar;
-      valueType = vb.dataType.getDataType();
+      valueType = vb.dataType;
       try {
-        if ((valueType == DataType.CHAR) || (valueType == DataType.STRING))
-          svalue = orgVar.readScalarString();
-        else if (valueType == DataType.BYTE)
-          bvalue = orgVar.readScalarByte();
-        else if ((valueType == DataType.INT) || (valueType == DataType.SHORT))
-          ivalue = orgVar.readScalarInt();
-        else
-          dvalue = orgVar.readScalarDouble();
+        if (valueType == ArrayType.CHAR) {
+          svalue = Arrays.makeStringFromChar((ucar.array.Array<Byte>) orgVar.readArray());
+        } else if (valueType == ArrayType.STRING) {
+          svalue = (String) orgVar.readArray().getScalar();
+        } else if (valueType == ArrayType.BYTE) {
+          bvalue = (Byte) orgVar.readArray().getScalar();
+        } else if ((valueType == ArrayType.INT) || (valueType == ArrayType.SHORT)) {
+          ivalue = (Integer) orgVar.readArray().getScalar();
+        } else {
+          dvalue = (Double) orgVar.readArray().getScalar();
+        }
       } catch (UnsupportedOperationException e) {
         parseInfo.format("Nav variable %s  not a scalar%n", getName());
       }
@@ -420,11 +423,11 @@ public class NUWGConvention extends CoordSystemBuilder {
     }
 
     public String getStringValue() {
-      if ((valueType == DataType.CHAR) || (valueType == DataType.STRING))
+      if ((valueType == ArrayType.CHAR) || (valueType == ArrayType.STRING))
         return svalue;
-      else if (valueType == DataType.BYTE)
+      else if (valueType == ArrayType.BYTE)
         return Byte.toString(bvalue);
-      else if ((valueType == DataType.INT) || (valueType == DataType.SHORT))
+      else if ((valueType == ArrayType.INT) || (valueType == ArrayType.SHORT))
         return Integer.toString(ivalue);
       else
         return Double.toString(dvalue);
@@ -450,11 +453,11 @@ public class NUWGConvention extends CoordSystemBuilder {
       if (nav == null)
         throw new NoSuchElementException("GRIB1 " + name);
 
-      if ((nav.valueType == DataType.DOUBLE) || (nav.valueType == DataType.FLOAT))
+      if ((nav.valueType == ArrayType.DOUBLE) || (nav.valueType == ArrayType.FLOAT))
         return nav.dvalue;
-      else if ((nav.valueType == DataType.INT) || (nav.valueType == DataType.SHORT))
+      else if ((nav.valueType == ArrayType.INT) || (nav.valueType == ArrayType.SHORT))
         return nav.ivalue;
-      else if (nav.valueType == DataType.BYTE)
+      else if (nav.valueType == ArrayType.BYTE)
         return nav.bvalue;
 
       throw new IllegalArgumentException("NUWGConvention.GRIB1.getDouble " + name + " type = " + nav.valueType);
@@ -465,11 +468,11 @@ public class NUWGConvention extends CoordSystemBuilder {
       if (nav == null)
         throw new NoSuchElementException("GRIB1 " + name);
 
-      if ((nav.valueType == DataType.INT) || (nav.valueType == DataType.SHORT))
+      if ((nav.valueType == ArrayType.INT) || (nav.valueType == ArrayType.SHORT))
         return nav.ivalue;
-      else if ((nav.valueType == DataType.DOUBLE) || (nav.valueType == DataType.FLOAT))
+      else if ((nav.valueType == ArrayType.DOUBLE) || (nav.valueType == ArrayType.FLOAT))
         return (int) nav.dvalue;
-      else if (nav.valueType == DataType.BYTE)
+      else if (nav.valueType == ArrayType.BYTE)
         return nav.bvalue;
 
       throw new IllegalArgumentException("NUWGConvention.GRIB1.getInt " + name + " type = " + nav.valueType);

@@ -53,8 +53,8 @@ public class CEDRICRadarConvention extends CF1Convention {
         .orElseThrow(() -> new IllegalStateException("Must have radar_latitude variable"));
     VariableDS.Builder<?> lon = (VariableDS.Builder<?>) rootGroup.findVariableLocal("radar_longitude")
         .orElseThrow(() -> new IllegalStateException("Must have radar_longitude variable"));
-    float latv = (float) lat.orgVar.readScalarDouble();
-    float lonv = (float) lon.orgVar.readScalarDouble();
+    float latv = ((Number) lat.orgVar.readArray().getScalar()).floatValue();
+    float lonv = ((Number) lon.orgVar.readArray().getScalar()).floatValue();
 
     VariableDS.Builder<?> pv = (VariableDS.Builder<?>) rootGroup.findVariableLocal("Projection")
         .orElseThrow(() -> new IllegalStateException("Must have Projection variable"));
