@@ -18,10 +18,17 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.*;
+import ucar.nc2.geoloc.vertical.CsmHybridSigmaBuilder;
 import ucar.nc2.internal.dataset.transform.horiz.*;
 import ucar.nc2.internal.dataset.transform.vertical.*;
 
-/** Factory for Coordinate Transforms. */
+/**
+ * Factory for Coordinate Transforms.
+ * 
+ * @deprecated
+ *             Vertical Transforms here are deprecated, replaced by ucar.nc2.geoloc.vertical.
+ *             Projections will remain, but ProjectionCT will go away.
+ */
 public class CoordTransformFactory {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordTransformFactory.class);
   private static final List<Transform> transformList = new ArrayList<>();
@@ -70,7 +77,7 @@ public class CoordTransformFactory {
     registerTransform("ocean_s_coordinate_g2", VOceanSG2.class);
 
     registerTransform("sigma_level", CsmSigma.class);
-    registerTransform("hybrid_sigma_pressure", CsmSigma.HybridSigmaPressureBuilder.class);
+    registerTransform(CsmHybridSigmaBuilder.transform_name, CsmSigma.HybridSigmaPressureBuilder.class);
 
     // further calls to registerTransform are by the user
     userMode = true;
@@ -159,7 +166,7 @@ public class CoordTransformFactory {
   public static CoordinateTransform.Builder<?> makeCoordinateTransform(NetcdfDataset ds, AttributeContainer ctv,
       Formatter parseInfo, Formatter errInfo) {
     // standard name
-    String transform_name = ctv.findAttributeString("transform_name", null);
+    String transform_name = ctv.findAttributeString(CDM.TRANSFORM_NAME, null);
     if (null == transform_name)
       transform_name = ctv.findAttributeString("Projection_Name", null);
 

@@ -4,7 +4,12 @@
  */
 package ucar.nc2.dataset;
 
-/** Enumeration of CoordinateTransform types. */
+/**
+ * Enumeration of CoordinateTransform types.
+ * 
+ * @deprecated will be removed in ver8
+ */
+@Deprecated
 public enum TransformType {
   Projection, Vertical
 }

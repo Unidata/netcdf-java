@@ -12,7 +12,7 @@ import ucar.nc2.grib.collection.Grib;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionRect;
-import ucar.unidata.geoloc.VerticalTransform;
+import ucar.nc2.geoloc.vertical.VerticalTransform;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 

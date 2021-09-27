@@ -4,8 +4,8 @@
  */
 
 /**
- * INTERNAL CLASSES DO NOT USE: Implementations of vertical coordinate transformations.
+ * Vertical transforms - old way
  * 
  * @deprecated use ucar.nc2.geoloc.vertical
  */
-package ucar.unidata.geoloc.vertical;
+package ucar.nc2.internal.dataset.transform.vertical;

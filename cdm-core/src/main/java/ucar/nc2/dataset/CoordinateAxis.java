@@ -252,12 +252,12 @@ public class CoordinateAxis extends VariableDS {
   /** Figure out what calendar to use from the axis' attributes. */
   // needed by time coordinates
   public Calendar getCalendarFromAttribute() {
-    return getCalendarFromAttribute(ncd, attributes);
+    return getCalendarFromAttribute(this.ncfile, this.attributes);
   }
 
   /** Figure out what calendar to use from the given attributes. */
   @Nullable
-  public static Calendar getCalendarFromAttribute(@Nullable NetcdfDataset ncd, AttributeContainer attributes) {
+  public static Calendar getCalendarFromAttribute(@Nullable NetcdfFile ncd, AttributeContainer attributes) {
     String cal = attributes.findAttributeString(CF.CALENDAR, null);
     if (cal == null) { // default for CF and COARDS
       Attribute convention = (ncd == null) ? null : ncd.getRootGroup().findAttribute(CDM.CONVENTIONS);
@@ -277,15 +277,13 @@ public class CoordinateAxis extends VariableDS {
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////
-  protected final NetcdfDataset ncd; // remove
   protected final AxisType axisType;
   protected final String positive; // remove
   protected final String boundaryRef; // remove
-  protected boolean isContiguous; // remove
+  protected boolean isContiguous; // remove LOOK not final, see CoordinateAxis1D
 
   protected CoordinateAxis(Builder<?> builder, Group parentGroup) {
     super(builder, parentGroup);
-    this.ncd = (NetcdfDataset) this.ncfile;
     this.axisType = builder.axisType;
     this.positive = builder.positive;
     this.boundaryRef = builder.boundaryRef;
@@ -296,7 +294,7 @@ public class CoordinateAxis extends VariableDS {
     return addLocalFieldsToBuilder(builder());
   }
 
-  // Add local fields to the passed - in builder.
+  // Add local fields to the passed-in builder.
   protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
     b.setAxisType(this.axisType).setPositive(this.positive).setBoundary(this.boundaryRef)
         .setIsContiguous(this.isContiguous);

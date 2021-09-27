@@ -11,10 +11,16 @@ import javax.annotation.Nullable;
 import ucar.array.ArrayType;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
-import ucar.unidata.geoloc.*;
-import java.util.*;
+import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.unidata.util.StringUtil2;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * Specifies the coordinates of a Variable's values.
@@ -56,14 +62,6 @@ public class CoordinateSystem {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinateSystem.class);
 
   /**
-   * TODO needed for GridCoordSys, remove in ver7
-   * 
-   * @deprecated Use CoordinateSystem.builder().
-   */
-  @Deprecated
-  protected CoordinateSystem() {}
-
-  /**
    * Create standard name from list of axes. Sort the axes first
    * 
    * @param axes list of CoordinateAxis
@@ -99,7 +97,7 @@ public class CoordinateSystem {
 
   /**
    * Get the underlying NetcdfDataset
-   * 
+   *
    * @deprecated do not use
    */
   @Deprecated
@@ -338,9 +336,7 @@ public class CoordinateSystem {
 
   /**
    * Get the Projection for this coordinate system.
-   * If isLatLon(), then returns a LatLonProjection. Otherwise, extracts the
-   * projection from any ProjectionCT CoordinateTransform.
-   *
+   * 
    * @return Projection or null if none.
    */
   @Nullable
@@ -357,7 +353,12 @@ public class CoordinateSystem {
     return projection;
   }
 
-  /** Get the Vertical Transform for this coordinate system, if any. */
+  /**
+   * Get the VerticalCT for this coordinate system, if any.
+   * 
+   * @deprecated use GridCooordinateSystem.getVerticalTransform()
+   */
+  @Deprecated
   @Nullable
   public VerticalCT getVerticalCT() {
     Optional<CoordinateTransform> result =
@@ -368,11 +369,7 @@ public class CoordinateSystem {
   ////////////////////////////////////////////////////////////////////////////
   // classification
 
-  /**
-   * true if it has X and Y CoordinateAxis, and a CoordTransform Projection
-   * 
-   * @return true if it has X and Y CoordinateAxis, and a CoordTransform Projection
-   */
+  /** True if it has X and Y CoordinateAxis, and a Projection */
   public boolean isGeoXY() {
     if ((xAxis == null) || (yAxis == null)) {
       return false;
@@ -675,20 +672,20 @@ public class CoordinateSystem {
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////
+  private final NetcdfDataset ds; // cant remove until dt.GridCoordSys can be removed
+  private final ImmutableList<CoordinateAxis> coordAxes;
+  // LOOK only keep projection and only allow one in ver8.
+  private final ImmutableList<CoordinateTransform> coordTrans;
+
   // TODO make these private, final and immutable in ver7.
-  protected NetcdfDataset ds; // cant remove until dt.GridCoordSys can be removed
-  protected List<CoordinateAxis> coordAxes = new ArrayList<>();
-  // LOOK keep projection and vertical separate, and only allow one?
-  protected List<CoordinateTransform> coordTrans = new ArrayList<>();
   private Projection projection;
 
   // these are calculated
-  protected String name;
-  protected Set<Dimension> domain = new HashSet<>(); // set of dimension
-  protected CoordinateAxis xAxis, yAxis, zAxis, tAxis, latAxis, lonAxis, hAxis, pAxis, ensAxis;
-  protected CoordinateAxis aziAxis, elevAxis, radialAxis;
-  protected boolean isImplicit; // where set?
-  protected String dataType; // Grid, Station, etc. where set?
+  private final String name;
+  private final Set<Dimension> domain = new HashSet<>(); // set of dimension
+  private CoordinateAxis xAxis, yAxis, zAxis, tAxis, latAxis, lonAxis, hAxis, pAxis, ensAxis;
+  private CoordinateAxis aziAxis, elevAxis, radialAxis;
+  private final boolean isImplicit; // where set?
 
   protected CoordinateSystem(Builder<?> builder, NetcdfDataset ncd, List<CoordinateAxis> axesAll,
       List<CoordinateTransform> allTransforms) {
@@ -705,8 +702,8 @@ public class CoordinateSystem {
         axesList.add(found.get());
       }
     }
-    this.coordAxes = axesList;
-    this.coordAxes.sort(new CoordinateAxis.AxisComparator());
+    axesList.sort(new CoordinateAxis.AxisComparator());
+    this.coordAxes = ImmutableList.copyOf(axesList);
 
     // calculated
     this.name = makeName(coordAxes);
@@ -746,13 +743,15 @@ public class CoordinateSystem {
     }
 
     // Find the named coordinate transforms in allTransforms.
+    ArrayList<CoordinateTransform> vcts = new ArrayList<>();
     for (String want : builder.transNames) {
       // TODO what is the case where wantTransName matches attribute collection name?
       allTransforms.stream()
           .filter(ct -> (want.equals(ct.getName())
               || (ct.getCtvAttributes() != null && want.equals(ct.getCtvAttributes().getName()))))
-          .findFirst().ifPresent(got -> coordTrans.add(got));
+          .findFirst().ifPresent(vcts::add);
     }
+    coordTrans = ImmutableList.copyOf(vcts);
   }
 
   /** Convert to a mutable Builder. */
@@ -796,7 +795,8 @@ public class CoordinateSystem {
       return self();
     }
 
-    public T addCoordinateTransforms(Collection<CoordinateTransform> transforms) {
+    // used when making a copy
+    T addCoordinateTransforms(Collection<CoordinateTransform> transforms) {
       transforms.forEach(trans -> addCoordinateTransformByName(trans.name));
       return self();
     }

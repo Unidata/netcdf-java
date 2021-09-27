@@ -8,11 +8,13 @@ import java.io.IOException;
 import ucar.nc2.Attribute;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.TransformType;
 import ucar.nc2.dataset.VariableDS;
+import ucar.nc2.geoloc.vertical.CsmHybridSigmaBuilder;
 import ucar.nc2.internal.dataset.CoordSystemBuilder;
 import ucar.nc2.dataset.spi.CoordSystemBuilderFactory;
 import ucar.nc2.util.CancelTask;
@@ -39,6 +41,7 @@ class CSMConvention extends CoardsConventions {
       String unit = vds.getUnits();
       if (unit != null && (unit.equalsIgnoreCase("hybrid_sigma_pressure") || unit.equalsIgnoreCase("sigma_level"))) {
         // both a coordinate axis and transform
+        vds.addAttribute(new Attribute(CDM.TRANSFORM_NAME, CsmHybridSigmaBuilder.transform_name));
         vds.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.GeoZ.toString()));
         vds.addAttribute(new Attribute(_Coordinate.TransformType, TransformType.Vertical.toString()));
         vds.addAttribute(new Attribute(_Coordinate.Axes, vds.getFullName()));

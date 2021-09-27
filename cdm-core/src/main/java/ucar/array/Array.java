@@ -62,6 +62,11 @@ public abstract class Array<T> implements Iterable<T> {
     return indexFn.getShape(); // use Ints.asList()
   }
 
+  /** Get the total Number of elements */
+  public long getSize() {
+    return Arrays.computeSize(getShape());
+  }
+
   /** Get the section: list of Ranges, one for each dimension. */
   public Section getSection() {
     return indexFn.getSection();

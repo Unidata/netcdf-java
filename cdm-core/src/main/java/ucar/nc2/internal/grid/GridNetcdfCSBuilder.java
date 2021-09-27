@@ -10,6 +10,9 @@ import ucar.nc2.Dimension;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.CoordinateAxis;
+import ucar.nc2.dataset.CoordinateTransform;
+import ucar.nc2.dataset.TransformType;
+import ucar.nc2.geoloc.vertical.VerticalTransformFactory;
 import ucar.nc2.grid.GridAxis;
 import ucar.nc2.grid.GridAxisPoint;
 import ucar.nc2.grid.GridAxisSpacing;
@@ -18,11 +21,10 @@ import ucar.nc2.grid.GridHorizCoordinateSystem;
 import ucar.nc2.grid.GridHorizCurvilinear;
 import ucar.nc2.grid.Grids;
 import ucar.unidata.geoloc.Projection;
-import ucar.unidata.geoloc.VerticalTransform;
+import ucar.nc2.geoloc.vertical.VerticalTransform;
 import ucar.unidata.geoloc.projection.CurvilinearProjection;
 
 import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Formatter;
@@ -31,9 +33,8 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Implementation of GridCoordinateSystem.
+ * Builder of GridCoordinateSystem, using DatasetClassifier.CoordSysClassifier.
  */
-@Immutable
 public class GridNetcdfCSBuilder {
 
   /**
@@ -48,7 +49,7 @@ public class GridNetcdfCSBuilder {
     GridNetcdfCSBuilder builder = new GridNetcdfCSBuilder();
     builder.setFeatureType(classifier.getFeatureType());
     builder.setProjection(classifier.getProjection());
-    builder.setVerticalCT(classifier.getVerticalTransform());
+    builder.setVerticalTransform(makeVerticalTransform(classifier, errlog));
 
     ArrayList<GridAxis<?>> axesb = new ArrayList<>();
     for (CoordinateAxis axis : classifier.getAxesUsed()) {
@@ -96,11 +97,26 @@ public class GridNetcdfCSBuilder {
     }
   }
 
+  @Nullable
+  private static VerticalTransform makeVerticalTransform(DatasetClassifier.CoordSysClassifier classifier,
+      Formatter errlog) {
+    for (CoordinateTransform ct : classifier.getCoordinateSystem().getCoordinateTransforms()) {
+      if (ct.getTransformType() == TransformType.Vertical) {
+        Optional<VerticalTransform> vto = VerticalTransformFactory.makeVerticalTransform(classifier.getDataset(),
+            classifier.getCoordinateSystem(), ct.getCtvAttributes(), errlog);
+        if (vto.isPresent()) {
+          return vto.get();
+        }
+      }
+    }
+    return null;
+  }
+
   ////////////////////////////////////////////////////////////////////
   private String name;
   private FeatureType featureType = FeatureType.GRID; // can it be different? Curvilinear?
   private Projection projection;
-  private VerticalTransform verticalTransform;
+  private ucar.nc2.geoloc.vertical.VerticalTransform verticalTransform;
   private ArrayList<GridAxis<?>> axes = new ArrayList<>();
   private Array<Number> latdata;
   private Array<Number> londata;
@@ -122,7 +138,8 @@ public class GridNetcdfCSBuilder {
     return this;
   }
 
-  public GridNetcdfCSBuilder setVerticalCT(@Nullable VerticalTransform verticalTransform) {
+  public GridNetcdfCSBuilder setVerticalTransform(
+      @Nullable ucar.nc2.geoloc.vertical.VerticalTransform verticalTransform) {
     this.verticalTransform = verticalTransform;
     return this;
   }

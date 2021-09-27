@@ -11,7 +11,15 @@ import ucar.nc2.dataset.VerticalCT;
 
 import java.util.Formatter;
 
-/** A Builder of VerticalCT objects */
+/**
+ * A Builder of VerticalCT objects,
+ * LOOK Problem is we need a NetcdfFile to extract variable data from.
+ * 1) NetcdfFile is being constructed when we need it.
+ * 2) GribGridDataset doesnt have a NetcdfFile.
+ * 
+ * @deprecated use ucar.nc2.geoloc.vertical
+ */
+@Deprecated
 public interface VerticalCTBuilder {
   /**
    * Make a vertical VerticalCT.

@@ -16,7 +16,6 @@ import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.units.SimpleUnit;
 import ucar.unidata.geoloc.Projection;
-import ucar.unidata.geoloc.VerticalTransform;
 import ucar.unidata.geoloc.projection.CurvilinearProjection;
 import ucar.unidata.geoloc.projection.RotatedPole;
 import ucar.unidata.geoloc.projection.sat.Geostationary;
@@ -99,17 +98,16 @@ public class DatasetClassifier {
       return cs.getName();
     }
 
+    public NetcdfDataset getDataset() {
+      return ds;
+    }
+
     public CoordinateSystem getCoordinateSystem() {
       return cs;
     }
 
     public FeatureType getFeatureType() {
       return featureType;
-    }
-
-    @Nullable
-    public VerticalTransform getVerticalTransform() {
-      return verticalTransform; // LOOK we need to have only one copy
     }
 
     public Projection getProjection() {
@@ -123,6 +121,7 @@ public class DatasetClassifier {
     }
 
     //////////////////////////////////////////////////////////////////////
+    NetcdfDataset ds;
     CoordinateSystem cs;
     FeatureType featureType;
     boolean standardGeoXY, standardLatLon, curvilinear, curvilinearWith1D;
@@ -131,11 +130,10 @@ public class DatasetClassifier {
     List<CoordinateAxis> indAxes = new ArrayList<>();
     List<CoordinateAxis> depAxes = new ArrayList<>();
     @Nullable
-    VerticalTransform verticalTransform;
-    @Nullable
     Projection orgProj;
 
     private CoordSysClassifier(NetcdfDataset ds, CoordinateSystem cs) {
+      this.ds = ds;
       this.cs = cs;
 
       // must be at least 2 dimensions
@@ -301,7 +299,6 @@ public class DatasetClassifier {
       }
 
       this.featureType = classify();
-      this.verticalTransform = (cs.getVerticalCT() == null) ? null : cs.getVerticalCT().makeVerticalTransform(ds, null);
       this.indAxes.sort(new CoordinateAxis.AxisComparator()); // canonical ordering of axes
     }
 

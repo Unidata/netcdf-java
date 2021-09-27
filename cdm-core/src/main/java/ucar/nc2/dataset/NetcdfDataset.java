@@ -237,7 +237,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * @return list of type CoordinateAxis; may be empty, not null.
    */
   public ImmutableList<CoordinateAxis> getCoordinateAxes() {
-    if (coords == null && coordAxes != null) {
+    if (coords == null && coordAxes != null) { // LOOK when is this true?
       return coordAxes;
     }
     return coords.getCoordAxes();
@@ -296,7 +296,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    *
    * @param name String which identifies the desired CoordinateSystem
    * @return the CoordinateSystem, or null if not found
-   * @deprecated get transform from CoordinateSystem.
+   * @deprecated use CoordinateSystem.getProjection(), GridCoordinateSystem.getVerticalTransform()
    */
   @Deprecated
   public CoordinateTransform findCoordinateTransform(String name) {
@@ -468,8 +468,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   private final @Nullable NetcdfFile orgFile; // can be null in Ncml
   private final CoordinatesHelper coords;
   private final String convUsed;
-  private final Set<Enhance> enhanceMode; // enhancement mode for this specific dataset
-  private final ucar.nc2.internal.ncml.Aggregation agg;
+  private final ImmutableSet<Enhance> enhanceMode; // enhancement mode for this specific dataset
+  private final ucar.nc2.internal.ncml.Aggregation agg; // LOOK not immutable
   private final String fileTypeId;
 
   private final ImmutableList<CoordinateAxis> coordAxes; // TODO get rid of if possible
@@ -479,7 +479,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     this.orgFile = builder.orgFile;
     this.fileTypeId = builder.fileTypeId;
     this.convUsed = builder.convUsed;
-    this.enhanceMode = builder.getEnhanceMode();
+    this.enhanceMode = ImmutableSet.copyOf(builder.getEnhanceMode());
     this.agg = builder.agg;
 
     // The need to reference the NetcdfDataset means we can't build the axes or system until now.
@@ -490,7 +490,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     // Note that only ncd.axes can be accessed, not coordsys or transforms.
     coords = builder.coords.build(this, this.coordAxes);
 
-    // LOOK We have to break strict Immutability here, best we can do for now.
+    // LOOK We have to break VariableDS Immutability here, because VariableDS is constructed in NetcdfFile, but needs a
+    // link to the CoordinatesHelper, which isnt complete yet.
     for (Variable v : this.getVariables()) {
       if (v instanceof CoordinateAxis) {
         continue;
@@ -522,7 +523,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     return (Builder<?>) super.addLocalFieldsToBuilder(b);
   }
 
-  /** Get Builder for NetcdfDataset. */
+  /** Get Builder for NetcdfDataset. LOOK no longer need to subclass. */
   // Subclassing: "https://community.oracle.com/blogs/emcmanus/2010/10/24/using-builder-pattern-subclasses"
   public static Builder<?> builder() {
     return new Builder2();
