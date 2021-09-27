@@ -17,6 +17,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nonnull;
+
+import ucar.array.ArrayType;
 import ucar.gcdm.GcdmNetcdfProto.Data;
 import ucar.gcdm.GcdmNetcdfProto.StructureMemberProto;
 import ucar.ma2.Array;
@@ -108,7 +110,7 @@ public class GcdmConverterMa2 {
     GcdmNetcdfProto.EnumTypedef.Builder builder = GcdmNetcdfProto.EnumTypedef.newBuilder();
 
     builder.setName(enumType.getShortName());
-    builder.setBaseType(convertDataType(enumType.getBaseType()));
+    builder.setBaseType(convertDataType(enumType.getBaseArrayType().getDataType()));
     Map<Integer, String> map = enumType.getMap();
     GcdmNetcdfProto.EnumTypedef.EnumType.Builder b2 = GcdmNetcdfProto.EnumTypedef.EnumType.newBuilder();
     for (int code : map.keySet()) {
@@ -392,12 +394,12 @@ public class GcdmConverterMa2 {
     for (GcdmNetcdfProto.EnumTypedef.EnumType et : list) {
       map.put(et.getCode(), et.getValue());
     }
-    DataType basetype = convertDataType(enumType.getBaseType());
+    ArrayType basetype = convertDataType(enumType.getBaseType());
     return new EnumTypedef(enumType.getName(), map, basetype);
   }
 
   public static Attribute decodeAtt(GcdmNetcdfProto.Attribute attp) {
-    DataType dtUse = convertDataType(attp.getDataType());
+    DataType dtUse = convertDataType(attp.getDataType()).getDataType();
     int len = attp.getLength();
     if (len == 0) { // deal with empty attribute
       return Attribute.builder(attp.getName()).setDataType(dtUse).build();
@@ -424,8 +426,8 @@ public class GcdmConverterMa2 {
   }
 
   private static Variable.Builder<?> decodeVar(GcdmNetcdfProto.Variable var) {
-    DataType varType = convertDataType(var.getDataType());
-    Variable.Builder<?> ncvar = Variable.builder().setName(var.getName()).setDataType(varType);
+    ArrayType varType = convertDataType(var.getDataType());
+    Variable.Builder<?> ncvar = Variable.builder().setName(var.getName()).setArrayType(varType);
 
     if (varType.isEnum()) {
       ncvar.setEnumTypeName(var.getEnumType());
@@ -457,7 +459,7 @@ public class GcdmConverterMa2 {
     Structure.Builder<?> ncvar =
         (s.getDataType() == GcdmNetcdfProto.DataType.DATA_TYPE_SEQUENCE) ? Sequence.builder() : Structure.builder();
 
-    ncvar.setName(s.getName()).setDataType(convertDataType(s.getDataType()));
+    ncvar.setName(s.getName()).setArrayType(convertDataType(s.getDataType()));
 
     List<Dimension> dims = new ArrayList<>(6);
     for (GcdmNetcdfProto.Dimension dim : s.getShapesList()) {
@@ -505,7 +507,7 @@ public class GcdmConverterMa2 {
 
   // Note that this converts to Objects, so not very efficient ??
   public static Array decodeData(Data data, Section section) {
-    DataType dataType = convertDataType(data.getDataType());
+    DataType dataType = convertDataType(data.getDataType()).getDataType();
     int[] shape = section.getShape();
     switch (dataType) {
       case CHAR: {
@@ -615,7 +617,7 @@ public class GcdmConverterMa2 {
     int length = (int) Index.computeSize(shape);
     Preconditions.checkArgument(length == data.getVlenCount());
     Array[] storage = new Array[length];
-    DataType dataType = convertDataType(data.getDataType());
+    DataType dataType = convertDataType(data.getDataType()).getDataType();
 
     int innerStart = 0;
     for (int index = 0; index < length; index++) {
@@ -780,44 +782,44 @@ public class GcdmConverterMa2 {
     throw new IllegalStateException("illegal data type " + dtype);
   }
 
-  public static DataType convertDataType(GcdmNetcdfProto.DataType dtype) {
+  public static ArrayType convertDataType(GcdmNetcdfProto.DataType dtype) {
     switch (dtype) {
       case DATA_TYPE_CHAR:
-        return DataType.CHAR;
+        return ArrayType.CHAR;
       case DATA_TYPE_BYTE:
-        return DataType.BYTE;
+        return ArrayType.BYTE;
       case DATA_TYPE_SHORT:
-        return DataType.SHORT;
+        return ArrayType.SHORT;
       case DATA_TYPE_INT:
-        return DataType.INT;
+        return ArrayType.INT;
       case DATA_TYPE_LONG:
-        return DataType.LONG;
+        return ArrayType.LONG;
       case DATA_TYPE_FLOAT:
-        return DataType.FLOAT;
+        return ArrayType.FLOAT;
       case DATA_TYPE_DOUBLE:
-        return DataType.DOUBLE;
+        return ArrayType.DOUBLE;
       case DATA_TYPE_STRING:
-        return DataType.STRING;
+        return ArrayType.STRING;
       case DATA_TYPE_STRUCTURE:
-        return DataType.STRUCTURE;
+        return ArrayType.STRUCTURE;
       case DATA_TYPE_SEQUENCE:
-        return DataType.SEQUENCE;
+        return ArrayType.SEQUENCE;
       case DATA_TYPE_ENUM1:
-        return DataType.ENUM1;
+        return ArrayType.ENUM1;
       case DATA_TYPE_ENUM2:
-        return DataType.ENUM2;
+        return ArrayType.ENUM2;
       case DATA_TYPE_ENUM4:
-        return DataType.ENUM4;
+        return ArrayType.ENUM4;
       case DATA_TYPE_OPAQUE:
-        return DataType.OPAQUE;
+        return ArrayType.OPAQUE;
       case DATA_TYPE_UBYTE:
-        return DataType.UBYTE;
+        return ArrayType.UBYTE;
       case DATA_TYPE_USHORT:
-        return DataType.USHORT;
+        return ArrayType.USHORT;
       case DATA_TYPE_UINT:
-        return DataType.UINT;
+        return ArrayType.UINT;
       case DATA_TYPE_ULONG:
-        return DataType.ULONG;
+        return ArrayType.ULONG;
     }
     throw new IllegalStateException("illegal data type " + dtype);
   }

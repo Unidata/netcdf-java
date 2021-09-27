@@ -9,7 +9,6 @@ import com.google.common.collect.ImmutableMap;
 import javax.annotation.Nullable;
 
 import ucar.array.ArrayType;
-import ucar.ma2.DataType;
 import ucar.nc2.util.Indent;
 import javax.annotation.concurrent.Immutable;
 import java.util.*;
@@ -33,18 +32,6 @@ public class EnumTypedef {
     this(name, map, ArrayType.ENUM4); // default basetype
   }
 
-  /** @deprecated use EnumTypedef(String name, Map<Integer, String> map, ArrayType basetype) */
-  @Deprecated
-  public EnumTypedef(String name, Map<Integer, String> map, DataType basetype) {
-    this.name = name;
-    Preconditions.checkArgument(basetype == DataType.ENUM1 || basetype == DataType.ENUM2 || basetype == DataType.ENUM4);
-    this.basetype = basetype.getArrayType();
-
-    Preconditions.checkNotNull(map);
-    Preconditions.checkArgument(validateMap(map, this.basetype));
-    this.map = ImmutableMap.copyOf(map);
-  }
-
   /** Make an EnumTypedef setting the base type (must be ENUM1, ENUM2, ENUM4). */
   public EnumTypedef(String name, Map<Integer, String> map, ArrayType basetype) {
     this.name = name;
@@ -55,12 +42,6 @@ public class EnumTypedef {
     Preconditions.checkNotNull(map);
     Preconditions.checkArgument(validateMap(map, basetype));
     this.map = ImmutableMap.copyOf(map);
-  }
-
-  /** @deprecated use getBaseArrayType() */
-  @Deprecated
-  public DataType getBaseType() {
-    return this.basetype.getDataType();
   }
 
   /** One of ArrayType.ENUM1, ArrayType.ENUM2, or ArrayType.ENUM4. */
