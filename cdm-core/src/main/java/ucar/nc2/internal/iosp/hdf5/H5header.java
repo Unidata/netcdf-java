@@ -480,16 +480,16 @@ public class H5header implements HdfHeaderIF {
         if (facadeNested.dobj.mdt.map != null) {
           EnumTypedef enumTypedef = parentGroup.findEnumeration(facadeNested.name).orElse(null);
           if (enumTypedef == null) {
-            DataType basetype;
+            ArrayType basetype;
             switch (facadeNested.dobj.mdt.byteSize) {
               case 1:
-                basetype = DataType.ENUM1;
+                basetype = ArrayType.ENUM1;
                 break;
               case 2:
-                basetype = DataType.ENUM2;
+                basetype = ArrayType.ENUM2;
                 break;
               default:
-                basetype = DataType.ENUM4;
+                basetype = ArrayType.ENUM4;
                 break;
             }
             enumTypedef = new EnumTypedef(facadeNested.name, facadeNested.dobj.mdt.map, basetype);

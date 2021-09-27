@@ -138,7 +138,7 @@ public class CompareNetcdf2 {
         name2 = name2.substring(0, name2.length() - 2);
       }
       return Objects.equals(name1, name2) && Objects.equals(enum1.getMap(), enum2.getMap())
-          && enum1.getBaseType() == enum2.getBaseType();
+          && enum1.getBaseArrayType() == enum2.getBaseArrayType();
     }
 
   }

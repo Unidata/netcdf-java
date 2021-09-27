@@ -15,6 +15,8 @@ import com.sun.jna.ptr.IntByReference;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import javax.annotation.Nullable;
+
+import ucar.array.ArrayType;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
@@ -622,7 +624,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
       EnumTypedef en = userType.e;
       for (int i = 0; i < len; i++) {
         long lval = 0;
-        switch (en.getBaseType()) {
+        switch (en.getBaseArrayType()) {
           case ENUM1:
             lval = bb.get(i);
             break;
@@ -1908,24 +1910,24 @@ public class Nc4reader extends AbstractIOServiceProvider {
       return this;
     }
 
-    DataType getEnumBaseType() {
+    ArrayType getEnumBaseType() {
       // set the enum's basetype
       if (baseTypeid > 0 && baseTypeid <= NC_MAX_ATOMIC_TYPE) {
-        DataType cdmtype;
+        ArrayType cdmtype;
         switch (baseTypeid) {
           case NC_CHAR:
           case NC_UBYTE:
           case NC_BYTE:
-            cdmtype = DataType.ENUM1;
+            cdmtype = ArrayType.ENUM1;
             break;
           case NC_USHORT:
           case NC_SHORT:
-            cdmtype = DataType.ENUM2;
+            cdmtype = ArrayType.ENUM2;
             break;
           case NC_UINT:
           case NC_INT:
           default:
-            cdmtype = DataType.ENUM4;
+            cdmtype = ArrayType.ENUM4;
             break;
         }
         return cdmtype;

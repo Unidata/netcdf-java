@@ -10,6 +10,7 @@ import static org.junit.Assert.fail;
 import com.google.common.collect.ImmutableMap;
 import java.util.Map;
 import org.junit.Test;
+import ucar.array.ArrayType;
 import ucar.ma2.DataType;
 
 /** Test {@link ucar.nc2.EnumTypedef} */
@@ -21,7 +22,7 @@ public class TestEnumTypedef {
     EnumTypedef typedef = new EnumTypedef("enumName", map);
 
     assertThat(typedef.getShortName()).isEqualTo("enumName");
-    assertThat(typedef.getBaseType()).isEqualTo(DataType.ENUM4);
+    assertThat(typedef.getBaseArrayType()).isEqualTo(ArrayType.ENUM4);
     assertThat(typedef.getMap()).isEqualTo(map);
 
     assertThat(typedef.lookupEnumString(1)).isEqualTo("name1");
@@ -37,10 +38,10 @@ public class TestEnumTypedef {
     EnumTypedef typedef = new EnumTypedef("typeName", map);
     assertThat(typedef.toString()).isEqualTo("enum typeName { 'name1' = 1, 'name2' = 2, 'name3' = 3};");
 
-    EnumTypedef typedef1 = new EnumTypedef("typeName", map, DataType.ENUM1);
+    EnumTypedef typedef1 = new EnumTypedef("typeName", map, ArrayType.ENUM1);
     assertThat(typedef1.toString()).isEqualTo("byte enum typeName { 'name1' = 1, 'name2' = 2, 'name3' = 3};");
 
-    EnumTypedef typedef2 = new EnumTypedef("typeName", map, DataType.ENUM2);
+    EnumTypedef typedef2 = new EnumTypedef("typeName", map, ArrayType.ENUM2);
     assertThat(typedef2.toString()).isEqualTo("short enum typeName { 'name1' = 1, 'name2' = 2, 'name3' = 3};");
   }
 
@@ -61,7 +62,7 @@ public class TestEnumTypedef {
   public void testValidate() {
     Map<Integer, String> map = ImmutableMap.of(1, "name1", 2, "name2", 1000, "name3");
     try {
-      new EnumTypedef("typeName1", map, DataType.ENUM1);
+      new EnumTypedef("typeName1", map, ArrayType.ENUM1);
       fail();
     } catch (Exception e) {
       // expected
@@ -69,7 +70,7 @@ public class TestEnumTypedef {
 
     Map<Integer, String> map2 = ImmutableMap.of(1, "name1", 2, "name2", 100000, "name3");
     try {
-      new EnumTypedef("typeName2", map2, DataType.ENUM2);
+      new EnumTypedef("typeName2", map2, ArrayType.ENUM2);
       fail();
     } catch (Exception e) {
       // expected
