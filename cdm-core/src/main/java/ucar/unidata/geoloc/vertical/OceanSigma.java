@@ -8,9 +8,7 @@ import ucar.ma2.*;
 import ucar.ma2.ArrayDouble.D1;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
-import ucar.unidata.util.Parameter;
 import java.io.IOException;
-import java.util.List;
 
 /**
  * Create a 3D height(z,y,x) array using the CF formula for "ocean_sigma_z_coordinate".
@@ -37,9 +35,8 @@ public class OceanSigma extends AbstractVerticalTransform {
    * @param ds dataset
    * @param timeDim time dimension
    * @param params list of transformation Parameters
-   *        TODO: params will change to AttributeContainer in ver7.
    */
-  public static OceanSigma create(NetcdfFile ds, Dimension timeDim, List<Parameter> params) {
+  public static OceanSigma create(NetcdfFile ds, Dimension timeDim, AttributeContainer params) {
 
     Variable etaVar = findVariableFromParameterName(ds, params, ETA);
     Variable sVar = findVariableFromParameterName(ds, params, SIGMA);

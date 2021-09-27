@@ -5,13 +5,13 @@
 
 package ucar.nc2.internal.dataset.transform.vertical;
 
+import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.*;
 import ucar.nc2.Dimension;
 import ucar.unidata.geoloc.VerticalTransform;
 import ucar.unidata.geoloc.vertical.OceanS;
-import ucar.unidata.util.Parameter;
 
 /**
  * Create a ocean_s_coordinate Vertical Transform from the information in the Coordinate Transform Variable.
@@ -45,15 +45,15 @@ public class CFOceanS extends AbstractVerticalCTBuilder implements VerticalTrans
     VerticalCT.Builder<?> rs = VerticalCT.builder().setName("OceanS_Transform_" + ctv.getName())
         .setAuthority(getTransformName()).setVerticalType(VerticalCT.Type.OceanS).setTransformBuilder(this);
 
-    rs.addParameter(new Parameter("standard_name", getTransformName()));
-    rs.addParameter(new Parameter("formula_terms", formula_terms));
+    rs.addParameter(new Attribute("standard_name", getTransformName()));
+    rs.addParameter(new Attribute("formula_terms", formula_terms));
     // rs.addParameter((new Parameter("height_formula", "height(x,y,z) = eta(x,y)*(1+s(z)) + depth_c*s(z) +
     // (depth(x,y)-depth_c)*C(z)")));
     // -sachin 03/25/09 modify formula according to Hernan Arango
-    rs.addParameter((new Parameter("height_formula",
+    rs.addParameter((new Attribute("height_formula",
         "height(x,y,z) = depth_c*s(z) + (depth(x,y)-depth_c)*C(z) + eta(x,y) * (1 + (depth_c*s(z) + (depth(x,y)-depth_c)*C(z))/depth(x,y) ")));
     rs.addParameter(
-        (new Parameter("C_formula", "C(z) = (1-b)*sinh(a*s(z))/sinh(a) + b*(tanh(a*(s(z)+0.5))/(2*tanh(0.5*a))-0.5)")));
+        (new Attribute("C_formula", "C(z) = (1-b)*sinh(a*s(z))/sinh(a) + b*(tanh(a*(s(z)+0.5))/(2*tanh(0.5*a))-0.5)")));
 
     if (!addParameter(rs, OceanS.ETA, ds, eta))
       return null;
@@ -78,7 +78,7 @@ public class CFOceanS extends AbstractVerticalCTBuilder implements VerticalTrans
   }
 
   public VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
-    return OceanS.create(ds, timeDim, vCT.getParameters());
+    return OceanS.create(ds, timeDim, vCT.getCtvAttributes());
   }
 }
 

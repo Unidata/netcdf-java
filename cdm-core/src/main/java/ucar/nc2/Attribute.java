@@ -13,7 +13,6 @@ import ucar.array.ArrayType;
 import ucar.array.Arrays;
 import ucar.array.ArraysConvert;
 import ucar.ma2.DataType;
-import ucar.unidata.util.Parameter;
 import ucar.unidata.util.StringUtil2;
 import java.util.Formatter;
 import java.util.List;
@@ -25,41 +24,6 @@ import java.util.List;
  */
 @Immutable
 public class Attribute {
-
-  /** Create an Attribute from a ucar.unidata.util.Parameter. */
-  public static Attribute fromParameter(Parameter param) {
-    Preconditions.checkNotNull(param);
-    Builder b = builder(param.getName());
-
-    if (param.isString()) {
-      b.setStringValue(param.getStringValue());
-    } else {
-      double[] values = param.getNumericValues();
-      assert values != null;
-      int n = values.length;
-      Array<?> vala = Arrays.factory(ArrayType.DOUBLE, new int[] {n}, values);
-      b.setArrayValues(vala); // make private
-    }
-    return b.build();
-  }
-
-  /** Create an Attribute from a ucar.unidata.util.Parameter. */
-  public static Parameter toParameter(Attribute att) {
-    Preconditions.checkNotNull(att);
-
-    if (att.isString()) {
-      return new Parameter(att.getShortName(), att.getStringValue());
-    } else {
-      if (att.getLength() == 1) {
-        return new Parameter(att.getShortName(), att.getNumericValue().doubleValue());
-      }
-      double[] values = new double[att.getLength()];
-      for (int idx = 0; idx < att.getLength(); idx++) {
-        values[idx] = att.getNumericValue(idx).doubleValue();
-      }
-      return new Parameter(att.getShortName(), values);
-    }
-  }
 
   /** @deprecated use fromArray(String name, Array<?> values) */
   @Deprecated

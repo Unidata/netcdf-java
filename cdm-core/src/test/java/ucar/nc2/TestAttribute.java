@@ -17,7 +17,6 @@ import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.MAMath;
 import ucar.nc2.iosp.NetcdfFormatUtils;
-import ucar.unidata.util.Parameter;
 
 /** Test {@link ucar.nc2.Attribute} */
 public class TestAttribute {
@@ -177,27 +176,6 @@ public class TestAttribute {
 
     Attribute attNoValue = Attribute.builder().setName("name").build();
     assertThat(attNoValue.equals("name")).isFalse();
-  }
-
-  @Test
-  public void testFromStringParameter() {
-    Parameter p = new Parameter("name", "svalue");
-    Attribute att = Attribute.fromParameter(p);
-    assertThat(att).isEqualTo(new Attribute("name", "svalue"));
-    assertThat(Attribute.toParameter(att)).isEqualTo(p);
-  }
-
-  @Test
-  public void testFromArrayParameter() {
-    double[] darray = new double[] {1.1, 2.2, 3.3};
-    Parameter p = new Parameter("name", darray);
-    Attribute att = Attribute.fromParameter(p);
-
-    int[] shape = new int[] {3};
-    Array data = Array.factory(DataType.DOUBLE, shape, darray);
-    Attribute expect = Attribute.builder().setName("name").setValues(data).build();
-    assertThat(att).isEqualTo(expect);
-    assertThat(Attribute.toParameter(att)).isEqualTo(p);
   }
 
   @Test

@@ -9,9 +9,7 @@ import ucar.ma2.*;
 import ucar.ma2.ArrayDouble.D1;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
-import ucar.unidata.util.Parameter;
 import java.io.IOException;
-import java.util.List;
 
 /**
  * Create a 3D height(z,y,x) array using the netCDF CF convention formula for
@@ -41,9 +39,8 @@ public class HybridHeight extends AbstractVerticalTransform {
    * @param ds netCDF dataset
    * @param timeDim time dimension
    * @param params list of transformation Parameters
-   *        TODO: params will change to AttributeContainer in ver7.
    */
-  public static HybridHeight create(NetcdfFile ds, Dimension timeDim, List<Parameter> params) {
+  public static HybridHeight create(NetcdfFile ds, Dimension timeDim, AttributeContainer params) {
     Variable aVar = findVariableFromParameterName(ds, params, A);
     Variable bVar = findVariableFromParameterName(ds, params, B);
     Variable orogVar = findVariableFromParameterName(ds, params, OROG);

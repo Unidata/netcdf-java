@@ -4,13 +4,13 @@
  */
 package ucar.nc2.internal.dataset.transform.vertical;
 
+import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.*;
 import ucar.unidata.geoloc.VerticalTransform;
 import ucar.unidata.geoloc.vertical.HybridHeight;
-import ucar.unidata.util.Parameter;
 
 /**
  * Create a atmosphere_hybrid_height_coordinate Vertical Transform from
@@ -76,10 +76,10 @@ public class CFHybridHeight extends AbstractVerticalCTBuilder implements Vertica
 
     VerticalCT.Builder<?> rs = VerticalCT.builder().setName("AtmHybridHeight_Transform_" + ctv.getName())
         .setAuthority(getTransformName()).setVerticalType(VerticalCT.Type.HybridHeight).setTransformBuilder(this);
-    rs.addParameter(new Parameter("standard_name", getTransformName()));
-    rs.addParameter(new Parameter("formula_terms", formula_terms));
+    rs.addParameter(new Attribute("standard_name", getTransformName()));
+    rs.addParameter(new Attribute("formula_terms", formula_terms));
 
-    rs.addParameter(new Parameter("formula", "height(x,y,z) = a(z) + b(z)*orog(x,y)"));
+    rs.addParameter(new Attribute("formula", "height(x,y,z) = a(z) + b(z)*orog(x,y)"));
     if (!addParameter(rs, HybridHeight.A, ds, a)) {
       return null;
     }
@@ -110,6 +110,6 @@ public class CFHybridHeight extends AbstractVerticalCTBuilder implements Vertica
    * @return the VerticalTransform
    */
   public VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
-    return HybridHeight.create(ds, timeDim, vCT.getParameters());
+    return HybridHeight.create(ds, timeDim, vCT.getCtvAttributes());
   }
 }

@@ -5,13 +5,13 @@
 
 package ucar.nc2.internal.dataset.transform.vertical;
 
+import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.*;
 import ucar.nc2.Dimension;
 import ucar.unidata.geoloc.VerticalTransform;
 import ucar.unidata.geoloc.vertical.AtmosSigma;
-import ucar.unidata.util.Parameter;
 
 /**
  * Create a atmosphere_sigma_coordinate Vertical Transform from the information in the Coordinate Transform Variable.
@@ -47,10 +47,9 @@ public class CFSigma extends AbstractVerticalCTBuilder implements VerticalTransf
     VerticalCT.Builder<?> rs = VerticalCT.builder().setName("AtmSigma_Transform_" + ctv.getName())
         .setAuthority(getTransformName()).setVerticalType(VerticalCT.Type.Sigma).setTransformBuilder(this);
 
-    rs.addParameter(new Parameter("standard_name", getTransformName()));
-    rs.addParameter(new Parameter("formula_terms", formula_terms));
-
-    rs.addParameter(new Parameter("formula", "pressure(x,y,z) = ptop + sigma(z)*(surfacePressure(x,y)-ptop)"));
+    rs.addParameter(new Attribute("standard_name", getTransformName()));
+    rs.addParameter(new Attribute("formula_terms", formula_terms));
+    rs.addParameter(new Attribute("formula", "pressure(x,y,z) = ptop + sigma(z)*(surfacePressure(x,y)-ptop)"));
 
     if (!addParameter(rs, AtmosSigma.PS, ds, ps))
       return null;
@@ -67,7 +66,7 @@ public class CFSigma extends AbstractVerticalCTBuilder implements VerticalTransf
   }
 
   public VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
-    return AtmosSigma.create(ds, timeDim, vCT.getParameters());
+    return AtmosSigma.create(ds, timeDim, vCT.getCtvAttributes());
   }
 }
 

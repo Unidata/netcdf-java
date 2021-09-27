@@ -5,13 +5,13 @@
 
 package ucar.nc2.internal.dataset.transform.vertical;
 
+import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.*;
 import ucar.nc2.Dimension;
 import ucar.unidata.geoloc.VerticalTransform;
 import ucar.unidata.geoloc.vertical.AtmosLnPressure;
-import ucar.unidata.util.Parameter;
 
 /**
  * implementation for CF vertical coordinate "atmosphere_ln_pressure_coordinate".
@@ -43,9 +43,9 @@ public class CFLnPressure extends AbstractVerticalCTBuilder implements VerticalT
     VerticalCT.Builder<?> rs = VerticalCT.builder().setName("AtmSigma_Transform_" + ctv.getName())
         .setAuthority(getTransformName()).setVerticalType(VerticalCT.Type.LnPressure).setTransformBuilder(this);
 
-    rs.addParameter(new Parameter("standard_name", getTransformName()));
-    rs.addParameter(new Parameter("formula_terms", formula_terms));
-    rs.addParameter(new Parameter("formula", "pressure(z) = p0 * exp(-lev(k))"));
+    rs.addParameter(new Attribute("standard_name", getTransformName()));
+    rs.addParameter(new Attribute("formula_terms", formula_terms));
+    rs.addParameter(new Attribute("formula", "pressure(z) = p0 * exp(-lev(k))"));
 
     if (!addParameter(rs, AtmosLnPressure.P0, ds, p0))
       return null;
@@ -60,7 +60,7 @@ public class CFLnPressure extends AbstractVerticalCTBuilder implements VerticalT
   }
 
   public VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
-    return AtmosLnPressure.create(ds, timeDim, vCT.getParameters());
+    return AtmosLnPressure.create(ds, timeDim, vCT.getCtvAttributes());
   }
 }
 

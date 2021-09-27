@@ -5,10 +5,12 @@
 package ucar.unidata.geoloc.projection;
 
 import javax.annotation.concurrent.Immutable;
+
+import com.google.common.collect.ImmutableList;
+import ucar.nc2.Attribute;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.unidata.geoloc.*;
-import ucar.unidata.util.Parameter;
 
 /**
  * Lambert Conformal Projection, one or two standard parallels, spherical earth.
@@ -158,10 +160,7 @@ public class LambertConformal extends AbstractProjection {
     if (par2 == par1) {
       addParameter(CF.STANDARD_PARALLEL, par1);
     } else {
-      double[] data = new double[2];
-      data[0] = par1;
-      data[1] = par2;
-      addParameter(new Parameter(CF.STANDARD_PARALLEL, data));
+      addParameter(Attribute.builder(CF.STANDARD_PARALLEL).setValues(ImmutableList.of(par1, par2), false).build());
     }
     if ((false_easting != 0.0) || (false_northing != 0.0)) {
       addParameter(CF.FALSE_EASTING, false_easting);

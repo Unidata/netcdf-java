@@ -7,12 +7,11 @@ package ucar.unidata.geoloc.vertical;
 import javax.annotation.concurrent.Immutable;
 import ucar.ma2.*;
 import ucar.ma2.ArrayDouble.D1;
+import ucar.nc2.AttributeContainer;
 import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
 import ucar.nc2.NetcdfFile;
-import ucar.unidata.util.Parameter;
 import java.io.IOException;
-import java.util.List;
 
 /**
  * This implements a VerticalTransform using an existing 3D variable.
@@ -32,9 +31,8 @@ public class VTfromExistingData extends AbstractVerticalTransform {
    * @param ds containing Dataset
    * @param timeDim time Dimension
    * @param params list of transformation Parameters
-   *        TODO: params will change to AttributeContainer in ver7.
    */
-  public static VTfromExistingData create(NetcdfFile ds, Dimension timeDim, List<Parameter> params) {
+  public static VTfromExistingData create(NetcdfFile ds, Dimension timeDim, AttributeContainer params) {
     Variable existingDataVar = findVariableFromParameterName(ds, params, existingDataField);
     String units = existingDataVar.getUnitsString();
     return new VTfromExistingData(timeDim, units, existingDataVar);

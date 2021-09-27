@@ -5,18 +5,17 @@
 package ucar.unidata.geoloc.vertical;
 
 import java.io.IOException;
-import java.util.List;
 import javax.annotation.concurrent.Immutable;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.ArrayDouble.D1;
 import ucar.ma2.Index;
 import ucar.ma2.InvalidRangeException;
+import ucar.nc2.AttributeContainer;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
-import ucar.unidata.util.Parameter;
 
 /**
  * Create a 3D height(z,y,x) array using the CF formula for "atmospheric sigma vertical coordinate".
@@ -48,9 +47,8 @@ public class AtmosSigma extends AbstractVerticalTransform {
    * @param ds dataset
    * @param timeDim time dimension
    * @param params list of transformation Parameters
-   *        TODO: params will change to AttributeContainer in ver7.
    */
-  public static AtmosSigma create(NetcdfFile ds, Dimension timeDim, List<Parameter> params) {
+  public static AtmosSigma create(NetcdfFile ds, Dimension timeDim, AttributeContainer params) {
 
     Variable psVar = findVariableFromParameterName(ds, params, PS);
     String units = psVar.findAttributeString(CDM.UNITS, "none");

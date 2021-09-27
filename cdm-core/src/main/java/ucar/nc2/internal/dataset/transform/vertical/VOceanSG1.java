@@ -5,13 +5,13 @@
 
 package ucar.nc2.internal.dataset.transform.vertical;
 
+import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.*;
 import ucar.unidata.geoloc.VerticalTransform;
 import ucar.unidata.geoloc.vertical.OceanSG1;
-import ucar.unidata.util.Parameter;
 
 /**
  * Create a ocean_s_coordinate_g1 Vertical Transform from the information in the Coordinate Transform Variable.
@@ -44,9 +44,9 @@ public class VOceanSG1 extends AbstractVerticalCTBuilder implements VerticalTran
     VerticalCT.Builder<?> rs = VerticalCT.builder().setName("OceanSG1_Transform_" + ctv.getName())
         .setAuthority(getTransformName()).setVerticalType(VerticalCT.Type.OceanSG1).setTransformBuilder(this);
 
-    rs.addParameter(new Parameter("standard_name", getTransformName()));
-    rs.addParameter(new Parameter("formula_terms", formula_terms));
-    rs.addParameter((new Parameter("height_formula",
+    rs.addParameter(new Attribute("standard_name", getTransformName()));
+    rs.addParameter(new Attribute("formula_terms", formula_terms));
+    rs.addParameter((new Attribute("height_formula",
         "height(x,y,z) =  depth_c*s(z) + (depth([n],x,y)-depth_c)*C(z) + eta(x,y)*(1+(depth_c*s(z) + (depth([n],x,y)-depth_c)*C(z))/depth([n],x,y))")));
     if (!addParameter(rs, OceanSG1.ETA, ds, eta))
       return null;
@@ -67,6 +67,6 @@ public class VOceanSG1 extends AbstractVerticalCTBuilder implements VerticalTran
   }
 
   public VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
-    return OceanSG1.create(ds, timeDim, vCT.getParameters());
+    return OceanSG1.create(ds, timeDim, vCT.getCtvAttributes());
   }
 }

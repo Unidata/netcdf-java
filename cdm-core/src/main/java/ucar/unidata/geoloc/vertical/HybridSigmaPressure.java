@@ -10,9 +10,7 @@ import ucar.ma2.*;
 import ucar.ma2.ArrayDouble.D1;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
-import ucar.unidata.util.Parameter;
 import java.io.IOException;
-import java.util.List;
 
 /**
  * Create a 3D height(z,y,x) array using the netCDF CF convention formula for
@@ -54,9 +52,8 @@ public class HybridSigmaPressure extends AbstractVerticalTransform {
    * @param ds netCDF dataset
    * @param timeDim time dimension
    * @param params list of transformation Parameters
-   *        TODO: params will change to AttributeContainer in ver7.
    */
-  public static HybridSigmaPressure create(NetcdfFile ds, Dimension timeDim, List<Parameter> params) {
+  public static HybridSigmaPressure create(NetcdfFile ds, Dimension timeDim, AttributeContainer params) {
     Variable psVar = findVariableFromParameterName(ds, params, PS);
     String units = psVar.findAttributeString(CDM.UNITS, "none");
 
