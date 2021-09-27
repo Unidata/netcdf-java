@@ -131,7 +131,7 @@ public class ProjectionFactory {
   @Nullable
   public static Projection makeProjection(AttributeContainer ctv, String geoUnits, Formatter parseInfo) {
     // standard name
-    String transform_name = ctv.findAttributeString("transform_name", null);
+    String transform_name = ctv.findAttributeString(CDM.TRANSFORM_NAME, null);
     if (null == transform_name)
       transform_name = ctv.findAttributeString("Projection_Name", null);
 

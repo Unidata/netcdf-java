@@ -11,6 +11,7 @@ import ucar.nc2.Dimension;
 import ucar.nc2.constants.CF;
 import ucar.nc2.internal.dataset.transform.vertical.VerticalTransformBuilder;
 import ucar.unidata.geoloc.VerticalTransform;
+import ucar.unidata.util.StringUtil2;
 
 /**
  * A Vertical CoordinateTransform is a function CT: (GeoZ) -&gt; Height or Pressure.
@@ -93,6 +94,10 @@ public class VerticalCT extends CoordinateTransform {
   @Override
   public String toString() {
     return "VerticalCT {" + "type=" + type + ", builder=" + transformBuilder + '}';
+  }
+
+  public String transformName() {
+    return transformBuilder == null ? null : StringUtil2.classShortName(transformBuilder.getClass());
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////

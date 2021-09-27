@@ -9,6 +9,9 @@ import ucar.nc2.internal.dataset.transform.vertical.VerticalCTBuilder;
 import javax.annotation.Nullable;
 import java.util.Formatter;
 
+/**
+ * @deprecated use ucar.nc2.geoloc.vertical.VerticalTransformFactory
+ */
 public class TransformBuilder {
   public String name;
   private AttributeContainer ctvAttributes = new AttributeContainerMutable("");
@@ -21,9 +24,17 @@ public class TransformBuilder {
     return this;
   }
 
+  public boolean isVertical() {
+    return preBuilt == null; // LOOK so why not just make it a ProjectionCT ?
+  }
+
   public TransformBuilder setCtvAttributes(AttributeContainer ctv) {
     this.ctvAttributes = ctv;
     return this;
+  }
+
+  public AttributeContainer getCtvAttributes() {
+    return this.ctvAttributes;
   }
 
   public TransformBuilder setPreBuilt(CoordinateTransform preBuilt) {

@@ -33,7 +33,7 @@ public class VerticalTransformSubset extends AbstractVerticalTransform {
    */
   VerticalTransformSubset(AbstractVerticalTransform original, Range t_range, Range z_range, Range y_range,
       Range x_range) {
-    super(null, original.getUnitString()); // timeDim not used in this class
+    super(original.ds, original.getName(), original.getCtvName(), original.getUnitString());
 
     this.original = original;
     this.t_range = t_range;
@@ -45,7 +45,7 @@ public class VerticalTransformSubset extends AbstractVerticalTransform {
   @Override
   public Array<Number> getCoordinateArray3D(int subsetIndex) throws IOException, InvalidRangeException {
     int orgIndex = subsetIndex;
-    if (isTimeDependent() && (t_range != null)) {
+    if (t_range != null) {
       orgIndex = t_range.element(subsetIndex);
     }
 
@@ -75,7 +75,7 @@ public class VerticalTransformSubset extends AbstractVerticalTransform {
     shape[2] = 1;
 
     origin[0] = timeIndex;
-    if (isTimeDependent() && (t_range != null)) {
+    if (t_range != null) {
       origin[0] = t_range.element(timeIndex);
     }
 
@@ -84,12 +84,6 @@ public class VerticalTransformSubset extends AbstractVerticalTransform {
 
     Section section = new Section(origin, shape);
     return Arrays.reduce(Arrays.section(data, section));
-
-  }
-
-  @Override
-  public boolean isTimeDependent() {
-    return original.isTimeDependent();
   }
 }
 

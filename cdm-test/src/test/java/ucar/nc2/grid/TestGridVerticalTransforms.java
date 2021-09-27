@@ -6,14 +6,13 @@
 package ucar.nc2.grid;
 
 import com.google.common.collect.ImmutableList;
-import org.junit.Ignore;
+import com.google.common.primitives.Ints;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import ucar.ma2.ArrayDouble;
+import ucar.array.Array;
 import ucar.array.InvalidRangeException;
 import ucar.ma2.Section;
-import ucar.unidata.geoloc.VerticalTransform;
-import ucar.unidata.geoloc.vertical.OceanSigma;
+import ucar.nc2.geoloc.vertical.VerticalTransform;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
@@ -27,7 +26,6 @@ import static com.google.common.truth.Truth.assertThat;
 public class TestGridVerticalTransforms {
 
   @Test
-  @Ignore("must know the time dimension for wrf")
   public void testWRF() throws Exception {
     testDataset(TestDir.cdmUnitTestDir + "conventions/wrf/wrfout_v2_Lambert.nc");
     testDataset(TestDir.cdmUnitTestDir + "conventions/wrf/wrfout_d01_2006-03-08_21-00-00");
@@ -67,22 +65,30 @@ public class TestGridVerticalTransforms {
     GridAxis<?> xaxis = gcs.getXHorizAxis();
     assertThat(shape.get(3)).isEqualTo(xaxis.getNominalSize());
 
-    /*
-     * LOOK VerticalTransform vt = gcs.getVerticalTransform();
-     * assertThat(vt).isNotNull();
-     * assertThat(vt.getUnitString()).isNotNull();
-     * 
-     * ArrayDouble.D3 vcoord = null;
-     * try {
-     * vcoord = vt.getCoordinateArray(0);
-     * } catch (ucar.ma2.InvalidRangeException e) {
-     * e.printStackTrace();
-     * }
-     * int[] zshape = vcoord.getShape();
-     * assertThat(zshape[0]).isEqualTo(zaxis.getNominalSize());
-     * assertThat(zshape[1]).isEqualTo(yaxis.getNominalSize());
-     * assertThat(zshape[2]).isEqualTo(xaxis.getNominalSize());
-     */
+    VerticalTransform vt = gcs.getVerticalTransform();
+    assertThat(vt).isNotNull();
+    assertThat(vt).isInstanceOf(ucar.nc2.geoloc.vertical.OceanSigma.class);
+
+    Array<Number> z3d = vt.getCoordinateArray3D(0);
+    Section sv = new Section(z3d.getShape());
+    System.out.printf("3dcoord = %s %n", sv);
+    assertThat(Ints.asList(z3d.getShape())).isEqualTo(ImmutableList.of(20, 87, 193));
+
+    Array<Number> z1D = vt.getCoordinateArray1D(0, 10, 10);
+    assertThat(Ints.asList(z1D.getShape())).isEqualTo(ImmutableList.of(20));
+
+    int timeIndex = 0;
+    GridTimeCoordinateSystem tcs = grid.getTimeCoordinateSystem();
+    for (Object timeCoord : tcs.getTimeOffsetAxis(0)) {
+      Array<Number> zt = vt.getCoordinateArray3D(timeIndex++);
+      assertThat(Ints.asList(zt.getShape())).isEqualTo(ImmutableList.of(20, 87, 193));
+    }
+
+    Array<Number> vcoord = vt.getCoordinateArray3D(0);
+    int[] zshape = vcoord.getShape();
+    assertThat(zshape[0]).isEqualTo(zaxis.getNominalSize());
+    assertThat(zshape[1]).isEqualTo(yaxis.getNominalSize());
+    assertThat(zshape[2]).isEqualTo(xaxis.getNominalSize());
   }
 
 
@@ -95,12 +101,11 @@ public class TestGridVerticalTransforms {
    * z is of shape 20x2x87, it should be 20x87x193.
    */
   @Test
-  @Ignore("must know the time dimension for OceanSigma")
   public void testErie() throws IOException, InvalidRangeException, ucar.ma2.InvalidRangeException {
     String filename = TestDir.cdmUnitTestDir + "transforms/erie_test.ncml";
     String gridName = "temp";
-
     System.out.printf("testErie %s%n", filename);
+
     Formatter errlog = new Formatter();
     try (ucar.nc2.grid.GridDataset gds = GridDatasetFactory.openGridDataset(filename, errlog)) {
       assertThat(gds).isNotNull();
@@ -116,17 +121,25 @@ public class TestGridVerticalTransforms {
       GridHorizCoordinateSystem hcs = gcs.getHorizCoordinateSystem();
       assertThat(hcs).isNotNull();
 
-      /*
-       * LOOK VerticalTransform vt = gcs.getVerticalTransform();
-       * assertThat(vt).isNotNull();
-       * assertThat(vt).isInstanceOf(OceanSigma.class);
-       * ArrayDouble.D3 z = vt.getCoordinateArray(0);
-       * Section sv = new Section(z.getShape());
-       * System.out.printf("3dcoord = %s %n", sv);
-       * 
-       * s = s.toBuilder().removeRange(0).build();
-       * assertThat(s).isEqualTo(sv);
-       */
+      VerticalTransform vt = gcs.getVerticalTransform();
+      assertThat(vt).isNotNull();
+      assertThat(vt).isInstanceOf(ucar.nc2.geoloc.vertical.OceanSigma.class);
+
+      Array<Number> z3d = vt.getCoordinateArray3D(0);
+      Section sv = new Section(z3d.getShape());
+      System.out.printf("3dcoord = %s %n", sv);
+      assertThat(Ints.asList(z3d.getShape())).isEqualTo(ImmutableList.of(20, 87, 193));
+      assertThat(s.toBuilder().removeRange(0).build()).isEqualTo(sv);
+
+      Array<Number> z1D = vt.getCoordinateArray1D(0, 10, 10);
+      assertThat(Ints.asList(z1D.getShape())).isEqualTo(ImmutableList.of(20));
+
+      int timeIndex = 0;
+      GridTimeCoordinateSystem tcs = grid.getTimeCoordinateSystem();
+      for (Object timeCoord : tcs.getTimeOffsetAxis(0)) {
+        Array<Number> zt = vt.getCoordinateArray3D(timeIndex++);
+        assertThat(Ints.asList(zt.getShape())).isEqualTo(ImmutableList.of(20, 87, 193));
+      }
     }
   }
 

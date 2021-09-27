@@ -551,7 +551,7 @@ public class WRFConvention extends CoordSystemBuilder {
   @Nullable
   private CoordinateAxis.Builder<?> makeZCoordAxis(String axisName, String dimName) {
     Optional<Dimension> dimOpt = rootGroup.findDimension(dimName);
-    if (!dimOpt.isPresent()) {
+    if (dimOpt.isEmpty()) {
       return null;
     }
     Dimension dim = dimOpt.get();

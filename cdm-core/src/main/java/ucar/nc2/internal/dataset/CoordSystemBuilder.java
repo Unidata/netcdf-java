@@ -595,6 +595,7 @@ public class CoordSystemBuilder {
   }
 
   protected TransformBuilder makeTransformBuilder(Variable.Builder<?> vb) {
+    // LOOK at this point dont know if its a Projection or a VerticalTransform
     return new TransformBuilder().setName(vb.getFullName()).setCtvAttributes(vb.getAttributeContainer());
   }
 

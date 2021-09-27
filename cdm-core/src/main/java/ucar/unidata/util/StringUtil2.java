@@ -8,7 +8,10 @@ package ucar.unidata.util;
 import com.google.common.base.CharMatcher;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
+
 import java.nio.charset.StandardCharsets;
+import java.util.Iterator;
 import java.util.StringTokenizer;
 
 /** Static String utilities. Replace with standard java library when possible. */
@@ -71,6 +74,10 @@ public class StringUtil2 {
     }
 
     return buff.toString();
+  }
+
+  public static String classShortName(Class<?> classz) {
+    return Iterables.getLast(Splitter.on('.').trimResults().omitEmptyStrings().split(classz.getName()));
   }
 
   /**

@@ -7,15 +7,26 @@ package ucar.nc2.geoloc.vertical;
 import ucar.array.Array;
 import ucar.array.InvalidRangeException;
 import ucar.array.Range;
+import ucar.nc2.AttributeContainer;
+import ucar.nc2.Dimension;
+import ucar.nc2.dataset.CoordinateSystem;
+import ucar.nc2.dataset.NetcdfDataset;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.util.Formatter;
+import java.util.Optional;
 
 /**
  * A transformation to a vertical reference coordinate system, such as height or pressure.
- * LOOK index space
+ * LOOK index space for timeIndex and subset. Could reposition at Grid level and use coordinate space.
  */
 public interface VerticalTransform {
+
+  String getName();
+
+  /** The name of the Coordinate Variable Transform container. */
+  String getCtvName();
 
   /**
    * Get the 3D vertical coordinate array for this time step.
@@ -41,11 +52,8 @@ public interface VerticalTransform {
   @Nullable
   String getUnitString();
 
-  /** Get whether this coordinate is time dependent. */
-  boolean isTimeDependent();
-
   /**
-   * Create a VerticalTransform as a section of an this VerticalTransform.
+   * Create a VerticalTransform as a section of this VerticalTransform.
    * 
    * @param t_range subset the time dimension, or null if you want all of it
    * @param z_range subset the vertical dimension, or null if you want all of it
@@ -54,5 +62,13 @@ public interface VerticalTransform {
    * @return a new VerticalTransform for the given subset
    */
   VerticalTransform subset(Range t_range, Range z_range, Range y_range, Range x_range);
+
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  /** a Builder of VerticalTransforms. */
+  interface Builder {
+    Optional<VerticalTransform> create(NetcdfDataset ds, CoordinateSystem csys, AttributeContainer params,
+        Formatter errlog);
+  }
 }
 

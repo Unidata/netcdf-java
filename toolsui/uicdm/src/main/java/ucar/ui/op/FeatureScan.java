@@ -8,8 +8,12 @@ import com.google.common.collect.Iterables;
 import ucar.nc2.Attribute;
 import ucar.nc2.Group;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.dataset.CoordinateTransform;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
+import ucar.nc2.dataset.TransformType;
+import ucar.nc2.dataset.VerticalCT;
+import ucar.nc2.geoloc.vertical.VerticalTransform;
 import ucar.nc2.grid.GridCoordinateSystem;
 import ucar.nc2.internal.grid.GridNetcdfDataset;
 
@@ -19,8 +23,10 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Formatter;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /** Scan a directory, try to open files in various ways. */
 public class FeatureScan {
@@ -132,13 +138,12 @@ public class FeatureScan {
   public static class Bean {
     public File f;
     String fileType;
-    String coordMap;
-    FeatureType featureType;
-    String ftype;
     Formatter gribType = new Formatter();
     StringBuilder info = new StringBuilder();
     Throwable problem;
-    GridCoordinateSystem gridCoordinateSystem;
+    String newGridFn = null;
+    Set<String> ctNames = new HashSet<>();
+    Set<String> vctNames = new HashSet<>();
 
     // no-arg constructor
     public Bean() {}
@@ -154,6 +159,12 @@ public class FeatureScan {
         Formatter errlog = new Formatter();
         findGribType(ds.getRootGroup(), gribType);
 
+        for (CoordinateTransform ct : ds.getCoordinateTransforms()) {
+          if (ct instanceof VerticalCT) {
+            ctNames.add(((VerticalCT) ct).transformName());
+          }
+        }
+
         try {
           // new
           errlog = new Formatter();
@@ -161,7 +172,13 @@ public class FeatureScan {
           if (grido.isPresent()) {
             GridNetcdfDataset gridDataset = grido.get();
             if (!Iterables.isEmpty(gridDataset.getGrids())) {
-              gridCoordinateSystem = gridDataset.getGridCoordinateSystems().get(0);
+              for (GridCoordinateSystem gcs : gridDataset.getGridCoordinateSystems()) {
+                VerticalTransform vt = gcs.getVerticalTransform();
+                if (vt != null) {
+                  vctNames.add((vt.getName()));
+                }
+              }
+              newGridFn = gridDataset.getGridCoordinateSystems().get(0).showFnSummary();
             }
           }
           info.append("\nGridNetcdfDataset errlog = ");
@@ -169,7 +186,6 @@ public class FeatureScan {
           info.append("\n\n");
 
         } catch (Throwable t) {
-          ftype = " ERR: " + t.getMessage();
           info.append(errlog);
           problem = t;
         }
@@ -211,16 +227,16 @@ public class FeatureScan {
       return f.length() / 1000.0 / 1000.0;
     }
 
-    public String getCoordMap() {
-      return coordMap;
-    }
-
     public String getNewGrid() {
-      return gridCoordinateSystem == null ? "" : gridCoordinateSystem.showFnSummary();
+      return newGridFn;
     }
 
-    public String getFeatureDataset() {
-      return ftype;
+    public String getCoordinateVTs() {
+      return String.join(",", ctNames);
+    }
+
+    public String getGridVTs() {
+      return String.join(",", vctNames);
     }
 
     public String getGribType() {
@@ -228,9 +244,9 @@ public class FeatureScan {
     }
 
     public void toString(Formatter f, boolean showInfo) {
-      f.format("%s%n %s%n map = '%s'%n", getName(), getFileType(), getCoordMap());
-      if (gridCoordinateSystem != null) {
-        f.format("GridCoordinateSystem %s%n", gridCoordinateSystem.showFnSummary());
+      f.format("%s%n %s%n%n", getName(), getFileType());
+      if (newGridFn != null) {
+        f.format("GridCoordinateSystem %s%n", newGridFn);
       }
 
       if (showInfo && info != null) {

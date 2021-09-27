@@ -7,10 +7,12 @@ package ucar.nc2.internal.dataset.transform.vertical;
 
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.TransformType;
 import ucar.nc2.dataset.VerticalCT;
+import ucar.nc2.geoloc.vertical.WrfEta;
 import ucar.nc2.internal.dataset.CoordinatesHelper;
 import ucar.unidata.geoloc.VerticalTransform;
 import ucar.unidata.geoloc.vertical.WRFEta;
@@ -32,6 +34,7 @@ public class WRFEtaTransformBuilder implements VerticalCTBuilder, VerticalTransf
   public VerticalCT.Builder<?> makeVerticalCT(NetcdfFile ds, AttributeContainer ctv1) {
     VerticalCT.Type type = VerticalCT.Type.WRFEta;
     AttributeContainerMutable atts = new AttributeContainerMutable(getTransformName());
+    atts.addAttribute(new Attribute(CDM.TRANSFORM_NAME, WrfEta.WRF_ETA_COORDINATE));
     atts.addAttribute(new Attribute("height formula", "height(x,y,z) = (PH(x,y,z) + PHB(x,y,z)) / 9.81"));
     atts.addAttribute(new Attribute(WRFEta.PerturbationGeopotentialVariable, "PH"));
     atts.addAttribute(new Attribute(WRFEta.BaseGeopotentialVariable, "PHB"));

@@ -11,10 +11,16 @@ import javax.annotation.Nullable;
 import ucar.array.ArrayType;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
-import ucar.unidata.geoloc.*;
-import java.util.*;
+import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.unidata.util.StringUtil2;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * Specifies the coordinates of a Variable's values.
@@ -330,9 +336,7 @@ public class CoordinateSystem {
 
   /**
    * Get the Projection for this coordinate system.
-   * If isLatLon(), then returns a LatLonProjection. Otherwise, extracts the
-   * projection from any ProjectionCT CoordinateTransform.
-   *
+   * 
    * @return Projection or null if none.
    */
   @Nullable
@@ -350,7 +354,7 @@ public class CoordinateSystem {
   }
 
   /**
-   * Get the Vertical Transform for this coordinate system, if any.
+   * Get the VerticalCT for this coordinate system, if any.
    * 
    * @deprecated use GridCooordinateSystem.getVerticalTransform()
    */
@@ -668,11 +672,12 @@ public class CoordinateSystem {
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////
-  // TODO make these private, final and immutable in ver7.
   private final NetcdfDataset ds; // cant remove until dt.GridCoordSys can be removed
   private final ImmutableList<CoordinateAxis> coordAxes;
-  // LOOK keep projection and vertical separate, and only allow one?
-  private final List<CoordinateTransform> coordTrans = new ArrayList<>();
+  // LOOK only keep projection and only allow one in ver8.
+  private final ImmutableList<CoordinateTransform> coordTrans;
+
+  // TODO make these private, final and immutable in ver7.
   private Projection projection;
 
   // these are calculated
@@ -738,13 +743,15 @@ public class CoordinateSystem {
     }
 
     // Find the named coordinate transforms in allTransforms.
+    ArrayList<CoordinateTransform> vcts = new ArrayList<>();
     for (String want : builder.transNames) {
       // TODO what is the case where wantTransName matches attribute collection name?
       allTransforms.stream()
           .filter(ct -> (want.equals(ct.getName())
               || (ct.getCtvAttributes() != null && want.equals(ct.getCtvAttributes().getName()))))
-          .findFirst().ifPresent(got -> coordTrans.add(got));
+          .findFirst().ifPresent(vcts::add);
     }
+    coordTrans = ImmutableList.copyOf(vcts);
   }
 
   /** Convert to a mutable Builder. */
@@ -788,7 +795,8 @@ public class CoordinateSystem {
       return self();
     }
 
-    public T addCoordinateTransforms(Collection<CoordinateTransform> transforms) {
+    // used when making a copy
+    T addCoordinateTransforms(Collection<CoordinateTransform> transforms) {
       transforms.forEach(trans -> addCoordinateTransformByName(trans.name));
       return self();
     }

@@ -52,9 +52,10 @@ public class CDM {
   public static final String LAT_UNITS = "degrees_north";
   public static final String LON_UNITS = "degrees_east";
   public static final String RLATLON_UNITS = "degrees";
+  public static final String RUNTIME_COORDINATE = "runtimeCoordinate";
   public static final String TIME_OFFSET = "time offset from runtime";
   public static final String TIME_OFFSET_MINUTES = "minutesFrom0z";
-  public static final String RUNTIME_COORDINATE = "runtimeCoordinate";
+  public static final String TRANSFORM_NAME = "transform_name";
 
   // Special Attribute Names added by the Netcdf C library (apparently).
   public static final String NCPROPERTIES = "_NCProperties";
