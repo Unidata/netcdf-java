@@ -409,7 +409,8 @@ public class Nc4writer extends Nc4reader implements IospFileWriter {
         throw new IOException(nc4.nc_strerror(ret) + " on\n" + entry.getValue());
     }
     // keep track of the User Defined types
-    UserType ut = new UserType(g4.grpid, typeid, name, ent.getBaseArrayType().getSize(), basetype, emap.size(), NC_ENUM);
+    UserType ut =
+        new UserType(g4.grpid, typeid, name, ent.getBaseArrayType().getSize(), basetype, emap.size(), NC_ENUM);
     userTypes.put(typeid, ut);
     enumUserTypes.put(ent, ut);
   }
