@@ -5,12 +5,10 @@
 package ucar.nc2.dataset;
 
 import com.google.common.base.Objects;
-import com.google.common.collect.ImmutableList;
 
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.AttributeContainerMutable;
-import ucar.unidata.util.Parameter;
 
 import javax.annotation.concurrent.Immutable;
 
@@ -46,29 +44,9 @@ public abstract class CoordinateTransform implements Comparable<CoordinateTransf
     return transformType;
   }
 
-  /** @deprecated use getCtvAttributes() */
-  @Deprecated
-  public ImmutableList<Parameter> getParameters() {
-    ImmutableList.Builder<Parameter> params = ImmutableList.builder();
-    for (Attribute a : ctvAttributes) {
-      params.add(Attribute.toParameter(a));
-    }
-    return params.build();
-  }
-
   /** The attributes in the corresponding CoordinateTransform's Variable. */
   public AttributeContainer getCtvAttributes() {
     return ctvAttributes;
-  }
-
-  /** @deprecated use getCtvAttributes() */
-  @Deprecated
-  public Parameter findParameterIgnoreCase(String name) {
-    for (Attribute a : ctvAttributes) {
-      if (name.equalsIgnoreCase(a.getName()))
-        return Attribute.toParameter(a);
-    }
-    return null;
   }
 
   @Override
@@ -160,13 +138,6 @@ public abstract class CoordinateTransform implements Comparable<CoordinateTransf
 
     public T setCtvAttributes(AttributeContainer attributeContainer) {
       this.ctvAttributes.addAll(attributeContainer);
-      return self();
-    }
-
-    /** @deprecated use addParameter(Attribute param) */
-    @Deprecated
-    public T addParameter(Parameter param) {
-      this.ctvAttributes.addAttribute(Attribute.fromParameter(param));
       return self();
     }
 

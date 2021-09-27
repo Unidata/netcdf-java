@@ -14,9 +14,7 @@ import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.units.SimpleUnit;
 import ucar.unidata.geoloc.VerticalTransform;
-import ucar.unidata.util.Parameter;
 import java.io.IOException;
-import java.util.List;
 
 /** Abstract superclass for implementations of VerticalTransform. */
 @Immutable
@@ -93,8 +91,8 @@ abstract class AbstractVerticalTransform implements VerticalTransform {
     return new VerticalTransformSubset(this, t_range, z_range, y_range, x_range);
   }
 
-  static Variable findVariableFromParameterName(NetcdfFile ds, List<Parameter> params, String paramName) {
-    String vName = getParameterStringValue(params, paramName);
+  static Variable findVariableFromParameterName(NetcdfFile ds, AttributeContainer params, String paramName) {
+    String vName = params.findAttributeString(paramName, null);
     Preconditions.checkNotNull(vName, String.format("VerticalTransform parameter %s not found", paramName));
     Variable v = ds.findVariable(vName);
     Preconditions.checkNotNull(v, String.format("VerticalTransform variable %s not found", vName));
@@ -102,20 +100,13 @@ abstract class AbstractVerticalTransform implements VerticalTransform {
   }
 
   @Nullable
-  static String getParameterStringValue(List<Parameter> params, String name) {
-    for (Parameter a : params) {
-      if (name.equalsIgnoreCase(a.getName()))
-        return a.getStringValue();
-    }
-    return null;
+  static String getParameterStringValue(AttributeContainer params, String name) {
+    return params.findAttributeString(name, null);
   }
 
-  static boolean getParameterBooleanValue(List<Parameter> params, String name) {
-    for (Parameter p : params) {
-      if (name.equalsIgnoreCase(p.getName()))
-        return Boolean.parseBoolean(p.getStringValue());
-    }
-    return false;
+  static boolean getParameterBooleanValue(AttributeContainer params, String name) {
+    String val = params.findAttributeString(name, null);
+    return val != null && Boolean.parseBoolean(val);
   }
 
   static double readAndConvertUnit(Variable scalarVariable, String convertToUnit) {

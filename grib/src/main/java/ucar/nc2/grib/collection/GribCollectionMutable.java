@@ -28,7 +28,6 @@ import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.calendar.CalendarDateFormatter;
 import ucar.nc2.calendar.CalendarDateRange;
 import ucar.unidata.io.RandomAccessFile;
-import ucar.unidata.util.Parameter;
 import ucar.unidata.util.StringUtil2;
 import javax.annotation.concurrent.Immutable;
 import java.io.Closeable;
@@ -74,7 +73,6 @@ public class GribCollectionMutable implements Closeable {
   public int version; // the ncx version
   public int center, subcenter, master, local; // GRIB 1 uses "local" for table version
   public int genProcessType, genProcessId, backProcessId;
-  public List<Parameter> params; // not used
   protected Map<Integer, MFile> fileMap; // all the files used in the GC; key is the index in original collection, GC
                                          // has subset of them
   protected List<Dataset> datasets;
@@ -727,8 +725,8 @@ public class GribCollectionMutable implements Closeable {
     return MoreObjects.toStringHelper(this).add("name", name).add("config", config).add("isGrib1", isGrib1)
         .add("directory", directory).add("orgDirectory", orgDirectory).add("version", version).add("center", center)
         .add("subcenter", subcenter).add("master", master).add("local", local).add("genProcessType", genProcessType)
-        .add("genProcessId", genProcessId).add("backProcessId", backProcessId).add("params", params)
-        .add("fileMap", fileMap).add("datasets", datasets).add("masterRuntime", masterRuntime).add("cust", cust)
+        .add("genProcessId", genProcessId).add("backProcessId", backProcessId).add("fileMap", fileMap)
+        .add("datasets", datasets).add("masterRuntime", masterRuntime).add("cust", cust)
         .add("indexVersion", indexVersion).add("dateRange", dateRange).add("indexRaf", indexRaf)
         .add("indexFilename", indexFilename).add("lastModified", lastModified).add("fileSize", fileSize).toString();
   }

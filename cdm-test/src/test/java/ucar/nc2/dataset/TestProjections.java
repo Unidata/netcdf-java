@@ -19,6 +19,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Formatter;
 import java.util.List;
+
+import ucar.nc2.Attribute;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CF;
 import ucar.nc2.internal.dataset.CoordTransformFactory;
@@ -31,7 +33,6 @@ import ucar.unidata.geoloc.projection.proj4.CylindricalEqualAreaProjection;
 import ucar.unidata.geoloc.projection.proj4.EquidistantAzimuthalProjection;
 import ucar.unidata.geoloc.projection.sat.Geostationary;
 import ucar.unidata.geoloc.projection.sat.MSGnavigation;
-import ucar.unidata.util.Parameter;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
@@ -163,15 +164,15 @@ public class TestProjections {
         logger.debug("Projection Parameters");
         boolean found = false;
         double radius = 0.0;
-        for (Parameter p : proj.getProjectionParameters()) {
+        for (Attribute p : proj.getProjectionAttributes()) {
           logger.debug("{}", p);
           if (p.getName().equals(CF.EARTH_RADIUS)) {
             found = true;
-            radius = p.getNumericValue();
+            radius = p.getNumericValue().doubleValue();
           }
           if (p.getName().equals(CF.SEMI_MAJOR_AXIS)) {
             found = true;
-            radius = p.getNumericValue();
+            radius = p.getNumericValue().doubleValue();
           }
         }
 

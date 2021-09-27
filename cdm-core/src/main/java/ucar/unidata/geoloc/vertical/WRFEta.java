@@ -11,12 +11,11 @@ import ucar.ma2.Index;
 import ucar.ma2.IndexIterator;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.ArrayDouble.D1;
+import ucar.nc2.AttributeContainer;
 import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
 import ucar.nc2.NetcdfFile;
-import ucar.unidata.util.Parameter;
 import java.io.IOException;
-import java.util.List;
 
 /** Models the vertical coordinate for the Weather Research and Forecast (WRF) model's vertical Eta coordinate */
 @Immutable
@@ -41,7 +40,7 @@ public class WRFEta extends AbstractVerticalTransform {
    * @param params list of transformation Parameters
    *        TODO: params will change to AttributeContainer in ver7.
    */
-  public static WRFEta create(NetcdfFile ds, Dimension timeDim, List<Parameter> params) {
+  public static WRFEta create(NetcdfFile ds, Dimension timeDim, AttributeContainer params) {
     boolean isXStag = getParameterBooleanValue(params, IsStaggeredX);
     boolean isYStag = getParameterBooleanValue(params, IsStaggeredY);
     boolean isZStag = getParameterBooleanValue(params, IsStaggeredZ);

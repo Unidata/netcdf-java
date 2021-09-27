@@ -4,7 +4,6 @@
  */
 package ucar.unidata.geoloc.projection;
 
-import com.google.common.collect.ImmutableList;
 import javax.annotation.concurrent.Immutable;
 
 import ucar.nc2.Attribute;
@@ -18,8 +17,6 @@ import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.ProjectionPoint;
 import ucar.unidata.geoloc.ProjectionRect;
 import ucar.unidata.util.Format;
-import ucar.unidata.util.Parameter;
-import java.util.*;
 
 /**
  * Superclass for our implementations of geoloc.Projection.
@@ -62,7 +59,7 @@ public abstract class AbstractProjection implements Projection {
 
   protected final String name;
   protected final boolean isLatLon;
-  protected final List<Parameter> atts = new ArrayList<>();
+  protected final AttributeContainerMutable attc;
 
   /**
    * Copy constructor - avoid clone !!
@@ -75,6 +72,7 @@ public abstract class AbstractProjection implements Projection {
   protected AbstractProjection(String name, boolean isLatLon) {
     this.name = name;
     this.isLatLon = isLatLon;
+    this.attc = new AttributeContainerMutable(name);
   }
 
   @Override
@@ -105,30 +103,9 @@ public abstract class AbstractProjection implements Projection {
     return name;
   }
 
-  /** @deprecated use getProjectionAttributes. */
-  @Deprecated
-  @Override
-  public ImmutableList<Parameter> getProjectionParameters() {
-    return ImmutableList.copyOf(atts);
-  }
-
   @Override
   public AttributeContainer getProjectionAttributes() {
-    AttributeContainerMutable attc = new AttributeContainerMutable(this.getName());
-    for (Parameter p : atts) {
-      attc.addAttribute(Attribute.fromParameter(p));
-    }
     return attc.toImmutable();
-  }
-
-  /** @deprecated do not use */
-  @Deprecated
-  public Parameter findProjectionParameter(String want) {
-    for (Parameter p : atts) {
-      if (p.getName().equals(want))
-        return p;
-    }
-    return null;
   }
 
   /**
@@ -138,7 +115,7 @@ public abstract class AbstractProjection implements Projection {
    * @param value parameter value as a string
    */
   protected void addParameter(String name, String value) {
-    atts.add(new Parameter(name, value));
+    attc.addAttribute(new Attribute(name, value));
   }
 
   /**
@@ -148,18 +125,12 @@ public abstract class AbstractProjection implements Projection {
    * @param value parameter value as a double
    */
   protected void addParameter(String name, double value) {
-    atts.add(new Parameter(name, value));
+    attc.addAttribute(new Attribute(name, value));
   }
 
   /** Add a parameter to this projection */
   protected void addParameter(Attribute att) {
-    atts.add(Attribute.toParameter(att));
-  }
-
-  /** @deprecated use addParameter(Attribute) */
-  @Deprecated
-  protected void addParameter(Parameter p) {
-    atts.add(p);
+    attc.addAttribute(att);
   }
 
   /**

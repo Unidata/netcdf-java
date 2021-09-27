@@ -7,7 +7,6 @@ package ucar.nc2.internal.dataset.transform.vertical;
 
 import ucar.nc2.*;
 import ucar.nc2.dataset.*;
-import ucar.unidata.util.Parameter;
 import java.util.Formatter;
 
 /** Abstract superclass for implementations of VertTransformBuilderIF */
@@ -40,7 +39,7 @@ public abstract class AbstractVerticalCTBuilder implements VerticalCTBuilder {
       return false;
     }
 
-    rs.addParameter(new Parameter(paramName, varNameEscaped));
+    rs.addParameter(new Attribute(paramName, varNameEscaped));
     return true;
   }
 

@@ -5,13 +5,13 @@
 
 package ucar.nc2.internal.dataset.transform.vertical;
 
+import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.*;
 import ucar.nc2.Dimension;
 import ucar.unidata.geoloc.VerticalTransform;
 import ucar.unidata.geoloc.vertical.HybridSigmaPressure;
-import ucar.unidata.util.Parameter;
 
 /**
  * Create a atmosphere_hybrid_sigma_pressure_coordinate Vertical Transform from the information in the Coordinate
@@ -42,8 +42,8 @@ public class CFHybridSigmaPressure extends AbstractVerticalCTBuilder implements 
     VerticalCT.Builder<?> rs = VerticalCT.builder().setName("AtmHybridSigmaPressure_Transform_" + ctv.getName())
         .setAuthority(getTransformName()).setVerticalType(VerticalCT.Type.HybridSigmaPressure)
         .setTransformBuilder(this);
-    rs.addParameter(new Parameter("standard_name", getTransformName()));
-    rs.addParameter(new Parameter("formula_terms", formula_terms));
+    rs.addParameter(new Attribute("standard_name", getTransformName()));
+    rs.addParameter(new Attribute("formula_terms", formula_terms));
 
     // parse the formula string
     if (useAp) {
@@ -55,7 +55,7 @@ public class CFHybridSigmaPressure extends AbstractVerticalCTBuilder implements 
       b = values[1];
       ps = values[2];
 
-      rs.addParameter(new Parameter("formula", "pressure(x,y,z) = ap(z) + b(z)*surfacePressure(x,y)"));
+      rs.addParameter(new Attribute("formula", "pressure(x,y,z) = ap(z) + b(z)*surfacePressure(x,y)"));
       if (!addParameter(rs, HybridSigmaPressure.PS, ds, ps))
         return null;
       if (!addParameter(rs, HybridSigmaPressure.AP, ds, ap))
@@ -73,7 +73,7 @@ public class CFHybridSigmaPressure extends AbstractVerticalCTBuilder implements 
       ps = values[2];
       p0 = values[3];
 
-      rs.addParameter(new Parameter("formula", "pressure(x,y,z) = a(z)*p0 + b(z)*surfacePressure(x,y)"));
+      rs.addParameter(new Attribute("formula", "pressure(x,y,z) = a(z)*p0 + b(z)*surfacePressure(x,y)"));
       if (!addParameter(rs, HybridSigmaPressure.PS, ds, ps))
         return null;
       if (!addParameter(rs, HybridSigmaPressure.A, ds, a))
@@ -93,7 +93,7 @@ public class CFHybridSigmaPressure extends AbstractVerticalCTBuilder implements 
   }
 
   public VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
-    return HybridSigmaPressure.create(ds, timeDim, vCT.getParameters());
+    return HybridSigmaPressure.create(ds, timeDim, vCT.getCtvAttributes());
   }
 }
 

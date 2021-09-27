@@ -69,7 +69,7 @@ public class WRFEtaTransformBuilder implements VerticalCTBuilder, VerticalTransf
 
   @Override
   public VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
-    return WRFEta.create(ds, timeDim, vCT.getParameters());
+    return WRFEta.create(ds, timeDim, vCT.getCtvAttributes());
   }
 
   private boolean isStaggered(AxisType type) {

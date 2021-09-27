@@ -5,13 +5,13 @@
 
 package ucar.nc2.internal.dataset.transform.vertical;
 
+import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.*;
 import ucar.nc2.Dimension;
 import ucar.unidata.geoloc.VerticalTransform;
 import ucar.unidata.geoloc.vertical.VTfromExistingData;
-import ucar.unidata.util.Parameter;
 
 /**
  * Create a Vertical Transform from an "explicit_field", where the vertical coordinate is explcitly specified as a
@@ -31,13 +31,13 @@ public class VExplicitField extends AbstractVerticalCTBuilder implements Vertica
     if (null == fieldName)
       throw new IllegalArgumentException(
           "ExplicitField Vertical Transform must have attribute " + VTfromExistingData.existingDataField);
-    rs.addParameter(new Parameter("standard_name", getTransformName()));
-    rs.addParameter(new Parameter(VTfromExistingData.existingDataField, fieldName));
+    rs.addParameter(new Attribute("standard_name", getTransformName()));
+    rs.addParameter(new Attribute(VTfromExistingData.existingDataField, fieldName));
     return rs;
   }
 
   public VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
-    return VTfromExistingData.create(ds, timeDim, vCT.getParameters());
+    return VTfromExistingData.create(ds, timeDim, vCT.getCtvAttributes());
   }
 
 }

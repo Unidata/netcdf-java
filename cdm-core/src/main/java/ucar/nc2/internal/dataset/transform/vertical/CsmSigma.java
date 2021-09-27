@@ -5,8 +5,11 @@
 package ucar.nc2.internal.dataset.transform.vertical;
 
 import java.io.IOException;
+
+import com.google.common.collect.ImmutableList;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
+import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
@@ -17,7 +20,6 @@ import ucar.nc2.dataset.VerticalCT;
 import ucar.unidata.geoloc.VerticalTransform;
 import ucar.unidata.geoloc.vertical.AtmosSigma;
 import ucar.unidata.geoloc.vertical.HybridSigmaPressure;
-import ucar.unidata.util.Parameter;
 
 public class CsmSigma extends AbstractVerticalCTBuilder implements VerticalTransformBuilder {
 
@@ -29,7 +31,7 @@ public class CsmSigma extends AbstractVerticalCTBuilder implements VerticalTrans
     VerticalCT.Builder<?> rs = VerticalCT.builder().setName("sigma-" + ctv.getName()).setAuthority(getTransformName())
         .setVerticalType(VerticalCT.Type.Sigma).setTransformBuilder(this);
 
-    rs.addParameter(new Parameter("formula", "pressure(x,y,z) = ptop + sigma(z)*(surfacePressure(x,y)-ptop)"));
+    rs.addParameter(new Attribute("formula", "pressure(x,y,z) = ptop + sigma(z)*(surfacePressure(x,y)-ptop)"));
 
     if (!addParameter2(rs, AtmosSigma.PS, ds, ctv, "PS_var", false)) {
       return null;
@@ -44,7 +46,7 @@ public class CsmSigma extends AbstractVerticalCTBuilder implements VerticalTrans
   }
 
   public VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
-    return AtmosSigma.create(ds, timeDim, vCT.getParameters());
+    return AtmosSigma.create(ds, timeDim, vCT.getCtvAttributes());
   }
 
   /**
@@ -83,10 +85,9 @@ public class CsmSigma extends AbstractVerticalCTBuilder implements VerticalTrans
         return false;
       }
       double[] vals = (double[]) data.get1DJavaArray(DataType.DOUBLE);
-      rs.addParameter(new Parameter(paramName, vals));
-
+      rs.addParameter(Attribute.builder(paramName).setValues(ImmutableList.of(vals[0], vals[1]), false).build());
     } else {
-      rs.addParameter(new Parameter(paramName, varName));
+      rs.addParameter(new Attribute(paramName, varName));
     }
 
     return true;
@@ -102,7 +103,7 @@ public class CsmSigma extends AbstractVerticalCTBuilder implements VerticalTrans
       VerticalCT.Builder<?> rs = VerticalCT.builder().setName(ctv.getName()).setAuthority(getTransformName())
           .setVerticalType(VerticalCT.Type.HybridSigmaPressure).setTransformBuilder(this);
 
-      rs.addParameter(new Parameter("formula", "pressure(x,y,z) = a(z)*p0 + b(z)*surfacePressure(x,y)"));
+      rs.addParameter(new Attribute("formula", "pressure(x,y,z) = a(z)*p0 + b(z)*surfacePressure(x,y)"));
 
       if (!addParameter2(rs, HybridSigmaPressure.PS, ds, ctv, "PS_var", false)) {
         return null;
@@ -120,7 +121,7 @@ public class CsmSigma extends AbstractVerticalCTBuilder implements VerticalTrans
     }
 
     public VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
-      return HybridSigmaPressure.create(ds, timeDim, vCT.getParameters());
+      return HybridSigmaPressure.create(ds, timeDim, vCT.getCtvAttributes());
     }
   }
 

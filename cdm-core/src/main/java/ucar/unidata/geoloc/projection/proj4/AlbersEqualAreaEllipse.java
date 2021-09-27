@@ -5,11 +5,13 @@
 package ucar.unidata.geoloc.projection.proj4;
 
 import javax.annotation.concurrent.Immutable;
+
+import com.google.common.collect.ImmutableList;
+import ucar.nc2.Attribute;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.AbstractProjection;
-import ucar.unidata.util.Parameter;
 import java.util.Formatter;
 
 /**
@@ -133,10 +135,7 @@ public class AlbersEqualAreaEllipse extends AbstractProjection {
     if (par2 == par1) {
       addParameter(CF.STANDARD_PARALLEL, par1);
     } else {
-      double[] data = new double[2];
-      data[0] = par1;
-      data[1] = par2;
-      addParameter(new Parameter(CF.STANDARD_PARALLEL, data));
+      addParameter(Attribute.builder(CF.STANDARD_PARALLEL).setValues(ImmutableList.of(par1, par2), false).build());
     }
 
     if ((falseEasting != 0.0) || (falseNorthing != 0.0)) {

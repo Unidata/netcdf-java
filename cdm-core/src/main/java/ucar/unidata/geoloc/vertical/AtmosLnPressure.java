@@ -5,13 +5,13 @@
 package ucar.unidata.geoloc.vertical;
 
 import javax.annotation.concurrent.Immutable;
+
+import ucar.nc2.AttributeContainer;
 import ucar.nc2.Variable;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Dimension;
 import ucar.ma2.*;
 import ucar.ma2.ArrayDouble.D1;
-import ucar.unidata.util.Parameter;
-import java.util.List;
 import java.io.IOException;
 
 /**
@@ -38,9 +38,8 @@ public class AtmosLnPressure extends AbstractVerticalTransform {
    * @param ds dataset
    * @param timeDim time dimension
    * @param params list of transformation Parameters
-   *        TODO: params will change to AttributeContainer in ver7.
    */
-  public static AtmosLnPressure create(NetcdfFile ds, Dimension timeDim, List<Parameter> params) {
+  public static AtmosLnPressure create(NetcdfFile ds, Dimension timeDim, AttributeContainer params) {
     Variable p0var = findVariableFromParameterName(ds, params, P0);
 
     double p0;

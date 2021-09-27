@@ -8,9 +8,7 @@ import javax.annotation.concurrent.Immutable;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
-import ucar.unidata.util.Parameter;
 import java.io.IOException;
-import java.util.List;
 
 /**
  * Create a 3D height(z,y,x) array using the CF formula for "ocean s vertical coordinate g2".
@@ -48,7 +46,7 @@ public class OceanSG2 extends AbstractVerticalTransform {
    * @param params list of transformation Parameters
    *        TODO: params will change to AttributeContainer in ver7.
    */
-  public static OceanSG2 create(NetcdfFile ds, Dimension timeDim, List<Parameter> params) {
+  public static OceanSG2 create(NetcdfFile ds, Dimension timeDim, AttributeContainer params) {
     Variable etaVar = findVariableFromParameterName(ds, params, ETA);
     Variable sVar = findVariableFromParameterName(ds, params, S);
     Variable depthVar = findVariableFromParameterName(ds, params, DEPTH);
