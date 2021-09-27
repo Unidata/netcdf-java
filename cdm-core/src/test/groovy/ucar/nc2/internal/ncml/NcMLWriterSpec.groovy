@@ -12,6 +12,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import spock.lang.Shared
 import spock.lang.Specification
+import ucar.array.ArrayType
 import ucar.ma2.Array
 import ucar.ma2.DataType
 import ucar.nc2.*
