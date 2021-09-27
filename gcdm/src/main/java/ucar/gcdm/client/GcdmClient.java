@@ -15,8 +15,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import ucar.array.ArrayType;
+import ucar.array.Array;
 import ucar.array.Arrays;
+import ucar.array.ArrayType;
+import ucar.array.Section;
 import ucar.gcdm.GcdmGrpc;
 import ucar.gcdm.GcdmNetcdfProto.DataRequest;
 import ucar.gcdm.GcdmNetcdfProto.DataResponse;
@@ -25,8 +27,6 @@ import ucar.gcdm.GcdmNetcdfProto.HeaderRequest;
 import ucar.gcdm.GcdmNetcdfProto.HeaderResponse;
 import ucar.gcdm.GcdmNetcdfProto.Variable;
 import ucar.gcdm.GcdmConverter;
-import ucar.array.Array;
-import ucar.ma2.Section;
 
 /** A simple client that makes a Netcdf request from GcdmServer. Used for testing. */
 public class GcdmClient {

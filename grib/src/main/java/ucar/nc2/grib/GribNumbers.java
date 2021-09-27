@@ -5,7 +5,7 @@
 
 package ucar.nc2.grib;
 
-import ucar.ma2.DataType;
+import ucar.array.ArrayType;
 import ucar.unidata.io.RandomAccessFile;
 import java.io.IOException;
 
@@ -75,7 +75,7 @@ public final class GribNumbers {
    */
   public static int uint(RandomAccessFile raf) throws IOException {
     int a = raf.read();
-    return (int) DataType.unsignedByteToShort((byte) a);
+    return ArrayType.unsignedByteToShort((byte) a);
   }
 
   /**
@@ -288,7 +288,7 @@ public final class GribNumbers {
   public static int countBits(byte[] bitmap) {
     int bits = 0;
     for (byte b : bitmap) {
-      short s = DataType.unsignedByteToShort(b);
+      short s = ArrayType.unsignedByteToShort(b);
       bits += Long.bitCount(s);
     }
     return bits;

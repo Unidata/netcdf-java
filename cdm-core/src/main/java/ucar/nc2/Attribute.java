@@ -250,6 +250,7 @@ public class Attribute {
   }
 
   /** Get the values as an ucar.ma2.Array. */
+  @Deprecated
   @Nullable
   public ucar.ma2.Array getValues() {
     ucar.array.Array<?> arrayValues = getArrayValues();

@@ -33,7 +33,7 @@ import java.io.IOException;
  * <p/>
  * May use udunit dates, or ISO Strings.
  *
- * @deprecated use GridAxis1DTime
+ * @deprecated use GridAxis
  */
 @Deprecated
 public class CoordinateAxis1DTime extends CoordinateAxis1D {

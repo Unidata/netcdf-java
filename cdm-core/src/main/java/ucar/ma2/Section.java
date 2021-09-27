@@ -20,7 +20,8 @@ import javax.annotation.concurrent.Immutable;
 /**
  * A section of multidimensional array indices.
  * Represented as List<Range>.
- * TODO evaluate use of null in ver7
+ * 
+ * TODO switch to using ucar.array.Section
  */
 @Immutable
 public class Section {

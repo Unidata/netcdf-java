@@ -8,7 +8,7 @@ package ucar.nc2.grib;
 import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.DataType;
+import ucar.array.ArrayType;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -353,7 +353,7 @@ public class GribData {
 
     // count occurrences
     for (byte b : data) {
-      short s = DataType.unsignedByteToShort(b);
+      short s = ArrayType.unsignedByteToShort(b);
       p[s]++;
     }
 

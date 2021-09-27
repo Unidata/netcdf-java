@@ -7,7 +7,7 @@ import java.util.Iterator;
 /**
  * A Range of indices describes by a list, rather than start:stop:stride.
  * 
- * @deprecated do not use.
+ * @deprecated use ucar.array.RangeScatter
  */
 @Deprecated
 @Immutable

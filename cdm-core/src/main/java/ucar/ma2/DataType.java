@@ -15,7 +15,7 @@ import javax.annotation.Nullable;
  * Type-safe enumeration of data types.
  * Do not change the ordering of these enums, as they are used in protobuf messages, only add new ones onto the end.
  *
- * @deprecated will move to ucar.array.ArrayType in ver7.
+ * @deprecated use ucar.array.ArrayType
  */
 @Deprecated
 public enum DataType {
