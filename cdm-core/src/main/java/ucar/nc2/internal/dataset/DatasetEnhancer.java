@@ -40,53 +40,6 @@ public class DatasetEnhancer {
   }
 
   /*
-   * private static CoordSysBuilderIF enhance(NetcdfDataset ds, Set<Enhance> mode, CancelTask cancelTask)
-   * throws IOException {
-   * if (mode == null) {
-   * mode = EnumSet.noneOf(Enhance.class);
-   * }
-   * 
-   * // CoordSysBuilder may enhance dataset: add new variables, attributes, etc
-   * CoordSysBuilderIF builder = null;
-   * if (mode.contains(Enhance.CoordSystems) && !ds.getEnhanceMode().contains(Enhance.CoordSystems)) {
-   * builder = ucar.nc2.dataset.CoordSysBuilder.factory(ds, cancelTask);
-   * builder.augmentDataset(ds, cancelTask);
-   * // LOOK ds.convUsed = builder.getConventionUsed();
-   * }
-   * 
-   * // now enhance enum/scale/offset/unsigned, using augmented dataset
-   * if ((mode.contains(Enhance.ConvertEnums) && !ds.getEnhanceMode().contains(Enhance.ConvertEnums))
-   * || (mode.contains(Enhance.ConvertUnsigned) && !ds.getEnhanceMode().contains(Enhance.ConvertUnsigned))
-   * || (mode.contains(Enhance.ApplyScaleOffset) && !ds.getEnhanceMode().contains(Enhance.ApplyScaleOffset))
-   * || (mode.contains(Enhance.ConvertMissing) && !ds.getEnhanceMode().contains(Enhance.ConvertMissing))) {
-   * for (Variable v : ds.getVariables()) {
-   * VariableEnhanced ve = (VariableEnhanced) v;
-   * ve.enhance(mode);
-   * if ((cancelTask != null) && cancelTask.isCancel())
-   * return null;
-   * }
-   * }
-   * 
-   * // now find coord systems which may change some Variables to axes, etc
-   * if (builder != null) {
-   * // temporarily set enhanceMode if incomplete coordinate systems are allowed
-   * if (mode.contains(Enhance.IncompleteCoordSystems)) {
-   * ds.getEnhanceMode().add(Enhance.IncompleteCoordSystems);
-   * builder.buildCoordinateSystems(ds);
-   * ds.getEnhanceMode().remove(Enhance.IncompleteCoordSystems);
-   * } else {
-   * builder.buildCoordinateSystems(ds);
-   * }
-   * }
-   * 
-   * ds.finish(); // recalc the global lists
-   * ds.getEnhanceMode().addAll(mode);
-   * 
-   * return builder;
-   * }
-   */
-
-  /*
    * Enhancement use cases
    * 1. open NetcdfDataset(enhance).
    * 2. NcML - must create the NetcdfDataset, and enhance when its done.

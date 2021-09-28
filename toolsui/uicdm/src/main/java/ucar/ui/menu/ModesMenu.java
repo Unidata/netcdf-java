@@ -81,39 +81,6 @@ public class ModesMenu extends JMenu {
         CoordSystemFactory.getUseMaximalCoordSys(), 'N', -1);
     BAMutil.addActionToMenu(dsMenu, a);
 
-    a = new AbstractAction() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        boolean state = (Boolean) getValue(BAMutil.STATE);
-        NetcdfDataset.setFillValueIsMissing(state);
-      }
-    };
-    BAMutil.setActionPropertiesToggle(a, null, "Use _FillValue attribute for missing values",
-        NetcdfDataset.getFillValueIsMissing(), 'F', -1);
-    BAMutil.addActionToMenu(dsMenu, a);
-
-    a = new AbstractAction() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        boolean state = (Boolean) getValue(BAMutil.STATE);
-        NetcdfDataset.setInvalidDataIsMissing(state);
-      }
-    };
-    BAMutil.setActionPropertiesToggle(a, null, "Use valid_range attribute for missing values",
-        NetcdfDataset.getInvalidDataIsMissing(), 'V', -1);
-    BAMutil.addActionToMenu(dsMenu, a);
-
-    a = new AbstractAction() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        boolean state = (Boolean) getValue(BAMutil.STATE);
-        NetcdfDataset.setMissingDataIsMissing(state);
-      }
-    };
-    BAMutil.setActionPropertiesToggle(a, null, "Use missing_value attribute for missing values",
-        NetcdfDataset.getMissingDataIsMissing(), 'M', -1);
-    BAMutil.addActionToMenu(dsMenu, a);
-
     // Add the submenu
     add(dsMenu);
   }

@@ -4,6 +4,7 @@
  */
 package ucar.nc2.dataset;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
@@ -14,12 +15,12 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.NetcdfDataset.Enhance;
 import ucar.nc2.internal.dataset.CoordinatesHelper;
 import ucar.nc2.internal.dataset.DataEnhancer;
+import ucar.nc2.internal.dataset.EnhanceScaleMissingUnsigned;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.Indent;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.*;
 
 /**
@@ -32,7 +33,7 @@ import java.util.*;
  * </ol>
  */
 // TODO make Immutable
-public class VariableDS extends Variable implements EnhanceScaleMissingUnsigned, VariableEnhanced {
+public class VariableDS extends Variable implements VariableEnhanced {
 
   /**
    * Create a VariableDS from orgVar, with default enhancements if requested.
@@ -62,16 +63,31 @@ public class VariableDS extends Variable implements EnhanceScaleMissingUnsigned,
     return getParentGroup() == null ? null : getParentGroup().getNetcdfFile();
   }
 
+  /** true if Variable has missing data values */
+  public boolean hasMissing() {
+    return scaleMissingUnsignedProxy.hasMissing();
+  }
+
+  /**
+   * true if the argument is a missing value.
+   * Note that {@link Float#NaN} and {@link Double#NaN} are always considered missing data.
+   * 
+   * @param val an unpacked value.
+   */
+  public boolean isMissing(double val) {
+    return scaleMissingUnsignedProxy.isMissing(val);
+  }
+
   /** Does data need to be converted? */
   public boolean convertNeeded() {
     if (enhanceMode.contains(Enhance.ConvertEnums)
         && (dataType.isEnum() || (orgDataType != null && orgDataType.isEnum()))) {
       return true;
     }
-    if (enhanceMode.contains(Enhance.ConvertMissing) && hasMissing()) {
+    if (enhanceMode.contains(Enhance.ConvertMissing) && scaleMissingUnsignedProxy.hasMissing()) {
       return true;
     }
-    if (enhanceMode.contains(Enhance.ApplyScaleOffset) && hasScaleOffset()) {
+    if (enhanceMode.contains(Enhance.ApplyScaleOffset) && scaleMissingUnsignedProxy.hasScaleOffset()) {
       return true;
     }
     if (enhanceMode.contains(Enhance.ConvertUnsigned) && dataType.isUnsigned()) {
@@ -317,7 +333,7 @@ public class VariableDS extends Variable implements EnhanceScaleMissingUnsigned,
    * @deprecated use Arrays.getMissingDataArray()
    */
   @Deprecated
-  public ucar.ma2.Array getMissingDataArray(int[] shape) {
+  private ucar.ma2.Array getMissingDataArray(int[] shape) {
     Object storage;
 
     switch (getDataType()) {
@@ -363,38 +379,9 @@ public class VariableDS extends Variable implements EnhanceScaleMissingUnsigned,
     return array;
   }
 
-  /**
-   * public for debugging
-   *
-   * @param f put info here
-   * @deprecated use Arrays.getMissingDataArray()
-   */
-  @Deprecated
-  public void showScaleMissingProxy(Formatter f) {
-    f.format("has missing = %s%n", scaleMissingUnsignedProxy.hasMissing());
-    if (scaleMissingUnsignedProxy.hasMissing()) {
-      if (scaleMissingUnsignedProxy.hasMissingValue()) {
-        f.format("   missing value(s) = ");
-        for (double d : scaleMissingUnsignedProxy.getMissingValues())
-          f.format(" %f", d);
-        f.format("%n");
-      }
-      if (scaleMissingUnsignedProxy.hasFillValue())
-        f.format("   fillValue = %f%n", scaleMissingUnsignedProxy.getFillValue());
-      if (scaleMissingUnsignedProxy.hasValidData())
-        f.format("   valid min/max = [%f,%f]%n", scaleMissingUnsignedProxy.getValidMin(),
-            scaleMissingUnsignedProxy.getValidMax());
-    }
-    f.format("FillValue or default = %s%n", scaleMissingUnsignedProxy.getFillValue());
-
-    f.format("%nhas scale/offset = %s%n", scaleMissingUnsignedProxy.hasScaleOffset());
-    if (scaleMissingUnsignedProxy.hasScaleOffset()) {
-      double offset = scaleMissingUnsignedProxy.applyScaleOffset(0.0);
-      double scale = scaleMissingUnsignedProxy.applyScaleOffset(1.0) - offset;
-      f.format("   scale_factor = %f add_offset = %f%n", scale, offset);
-    }
-    f.format("original data type = %s%n", orgDataType);
-    f.format("converted data type = %s%n", getDataType());
+  @VisibleForTesting
+  public EnhanceScaleMissingUnsigned scaleMissingUnsignedProxy() {
+    return scaleMissingUnsignedProxy;
   }
 
   ////////////////////////////////////////////// Enhancements //////////////////////////////////////////////
@@ -414,185 +401,9 @@ public class VariableDS extends Variable implements EnhanceScaleMissingUnsigned,
     return this.coordinateSystems == null ? ImmutableList.of() : this.coordinateSystems;
   }
 
-  //////////////////////////////////////////// EnhanceScaleMissingUnsigned ////////////////////////////////////////////
-
-  /** @deprecated do not use */
-  @Override
-  @Deprecated
-  public boolean hasScaleOffset() {
-    return scaleMissingUnsignedProxy.hasScaleOffset();
-  }
-
-  /** @deprecated do not use */
-  @Override
-  @Deprecated
-  public double getScaleFactor() {
-    return scaleMissingUnsignedProxy.getScaleFactor();
-  }
-
-  /** @deprecated do not use */
-  @Override
-  @Deprecated
-  public double getOffset() {
-    return scaleMissingUnsignedProxy.getOffset();
-  }
-
-  /** @deprecated do not use */
-  @Override
-  @Deprecated
-  public boolean hasMissing() {
-    return scaleMissingUnsignedProxy.hasMissing();
-  }
-
-  /** @deprecated do not use */
-  @Deprecated
-  public boolean isMissing(double val) {
-    return scaleMissingUnsignedProxy.isMissing(val);
-  }
-
-  @Override
-  public boolean hasValidData() {
-    return scaleMissingUnsignedProxy.hasValidData();
-  }
-
-  /** @deprecated do not use */
-  @Override
-  @Deprecated
-  public double getValidMin() {
-    return scaleMissingUnsignedProxy.getValidMin();
-  }
-
-  /** @deprecated do not use */
-  @Override
-  @Deprecated
-  public double getValidMax() {
-    return scaleMissingUnsignedProxy.getValidMax();
-  }
-
-  /** @deprecated do not use */
-  @Override
-  @Deprecated
-  public boolean isInvalidData(double val) {
-    return scaleMissingUnsignedProxy.isInvalidData(val);
-  }
-
-  /** @deprecated do not use */
-  @Override
-  @Deprecated
-  public boolean hasFillValue() {
-    return scaleMissingUnsignedProxy.hasFillValue();
-  }
-
-  /** @deprecated do not use */
-  @Override
-  @Deprecated
-  public double getFillValue() {
-    return scaleMissingUnsignedProxy.getFillValue();
-  }
-
-  /** @deprecated do not use */
-  @Override
-  @Deprecated
-  public boolean isFillValue(double val) {
-    return scaleMissingUnsignedProxy.isFillValue(val);
-  }
-
-  /** @deprecated do not use */
-  @Override
-  @Deprecated
-  public boolean hasMissingValue() {
-    return scaleMissingUnsignedProxy.hasMissingValue();
-  }
-
-  /** @deprecated do not use */
-  @Override
-  @Deprecated
-  public double[] getMissingValues() {
-    return scaleMissingUnsignedProxy.getMissingValues();
-  }
-
-  /** @deprecated do not use */
-  @Override
-  @Deprecated
-  public boolean isMissingValue(double val) {
-    return scaleMissingUnsignedProxy.isMissingValue(val);
-  }
-
-  /** @deprecated do not use */
-  @Override
-  @Deprecated
-  @Nullable
-  public ucar.ma2.DataType getScaledOffsetType() {
-    return scaleMissingUnsignedProxy.getScaledOffsetType();
-  }
-
-  /** @deprecated do not use */
-  @Override
-  @Deprecated
-  public ucar.ma2.DataType getUnsignedConversionType() {
-    return scaleMissingUnsignedProxy.getUnsignedConversionType();
-  }
-
-  /** @deprecated do not use */
-  @Override
-  @Deprecated
-  public ucar.ma2.DataType.Signedness getSignedness() {
-    return scaleMissingUnsignedProxy.getSignedness();
-  }
-
-  /** @deprecated do not use */
-  @Override
-  @Deprecated
-  public double applyScaleOffset(Number value) {
-    return scaleMissingUnsignedProxy.applyScaleOffset(value);
-  }
-
-  /** @deprecated do not use */
-  @Override
-  @Deprecated
-  public ucar.ma2.Array applyScaleOffset(ucar.ma2.Array data) {
-    return scaleMissingUnsignedProxy.applyScaleOffset(data);
-  }
-
-  /** @deprecated do not use */
-  @Override
-  @Deprecated
-  public Number convertUnsigned(Number value) {
-    return scaleMissingUnsignedProxy.convertUnsigned(value);
-  }
-
-  /** @deprecated do not use */
-  @Override
-  @Deprecated
-  public ucar.ma2.Array convertUnsigned(ucar.ma2.Array in) {
-    return scaleMissingUnsignedProxy.convertUnsigned(in);
-  }
-
-  /** @deprecated do not use */
-  @Override
-  @Deprecated
-  public Number convertMissing(Number value) {
-    return scaleMissingUnsignedProxy.convertMissing(value);
-  }
-
-  /** @deprecated do not use */
-  @Override
-  @Deprecated
-  public ucar.ma2.Array convertMissing(ucar.ma2.Array in) {
-    return scaleMissingUnsignedProxy.convertMissing(in);
-  }
-
-  /** @deprecated do not use */
-  @Override
-  @Deprecated
-  public ucar.ma2.Array convert(ucar.ma2.Array in, boolean convertUnsigned, boolean applyScaleOffset,
-      boolean convertMissing) {
-    return scaleMissingUnsignedProxy.convert(in, convertUnsigned, applyScaleOffset, convertMissing);
-  }
-
   ////////////////////////////////////////////////////////////////////////////////////////////
   private final EnhancementsImpl enhanceProxy;
-  private final EnhanceScaleMissingUnsignedImpl scaleMissingUnsignedProxy;
+  private final EnhanceScaleMissingUnsigned scaleMissingUnsignedProxy;
   private final Set<Enhance> enhanceMode; // The set of enhancements that were made.
   private final DataEnhancer dataEnhancer;
 
@@ -623,7 +434,7 @@ public class VariableDS extends Variable implements EnhanceScaleMissingUnsigned,
 
     this.orgFileTypeId = builder.orgFileTypeId;
     this.enhanceProxy = new EnhancementsImpl(this, builder.units, builder.getDescription());
-    this.scaleMissingUnsignedProxy = new EnhanceScaleMissingUnsignedImpl(this, this.enhanceMode);
+    this.scaleMissingUnsignedProxy = new EnhanceScaleMissingUnsigned(this, this.enhanceMode);
     this.scaleMissingUnsignedProxy.setFillValueIsMissing(builder.fillValueIsMissing);
     this.scaleMissingUnsignedProxy.setInvalidDataIsMissing(builder.invalidDataIsMissing);
     this.scaleMissingUnsignedProxy.setMissingDataIsMissing(builder.missingDataIsMissing);

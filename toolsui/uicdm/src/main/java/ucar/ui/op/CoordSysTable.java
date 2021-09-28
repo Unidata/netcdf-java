@@ -608,7 +608,7 @@ public class CoordSysTable extends JPanel {
     Formatter buff = new Formatter();
     buff.format("%s:", v.getFullName());
     buff.format("enhanceMode= %s%n", ve.getEnhanceMode());
-    ve.showScaleMissingProxy(buff);
+    ve.scaleMissingUnsignedProxy().showInfo(buff);
     return buff.toString();
   }
 

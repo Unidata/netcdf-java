@@ -16,7 +16,12 @@ import ucar.array.StructureDataStorageBB;
 import ucar.array.StructureMembers;
 import ucar.nc2.dataset.SequenceDS;
 
-/** Enhance StructureData, for both StructureDS and SequenceDS. TODO move to internal. */
+/**
+ * Enhance StructureData, for both StructureDS and SequenceDS.
+ *
+ * @deprecated use StructureDataArrayEnhancer
+ */
+@Deprecated
 public class SequenceArrayEnhancer implements Iterator<StructureData> {
   private static final Logger logger = LoggerFactory.getLogger(SequenceArrayEnhancer.class);
   private final SequenceDS topStructure;

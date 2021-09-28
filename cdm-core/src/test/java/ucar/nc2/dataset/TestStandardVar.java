@@ -216,9 +216,9 @@ public class TestStandardVar {
     assert (DataType.BYTE == att.getDataType());
 
     assert (vs.hasMissing());
-    assert (vs.hasFillValue());
+    assert (vs.scaleMissingUnsignedProxy().hasFillValue());
     assert (vs.isMissing((double) ((byte) 255)));
-    assert (vs.isFillValue((double) ((byte) 255)));
+    assert (vs.scaleMissingUnsignedProxy().isFillValue((double) ((byte) 255)));
 
     Array A = vs.read();
     assert (A.getElementType() == byte.class) : A.getElementType();
@@ -254,9 +254,9 @@ public class TestStandardVar {
     assert (DataType.SHORT == att.getDataType());
 
     assert (vs.hasMissing());
-    assert (vs.hasMissingValue());
+    assert (vs.scaleMissingUnsignedProxy().hasMissingValue());
     assert (vs.isMissing((double) ((short) -9999)));
-    assert (vs.isMissingValue((double) ((short) -9999)));
+    assert (vs.scaleMissingUnsignedProxy().isMissingValue((double) ((short) -9999)));
 
     Array A = vs.read();
     Index ima = A.getIndex();
@@ -284,10 +284,10 @@ public class TestStandardVar {
     assert (vs.getDataType() == DataType.SHORT);
 
     assert (vs.hasMissing());
-    assert (vs.hasMissingValue());
+    assert (vs.scaleMissingUnsignedProxy().hasMissingValue());
     double mv = 2 * (-9999) + 77;
     assert (vs.isMissing(mv));
-    assert (vs.isMissingValue(mv));
+    assert (vs.scaleMissingUnsignedProxy().isMissingValue(mv));
 
     Array A = vs.read();
     Index ima = A.getIndex();
@@ -345,7 +345,7 @@ public class TestStandardVar {
         logger.debug("Comparison result = {}", compareOutputFormatter.toString());
         assert !nc.compareData(enhancedVar.getShortName(), enhancedData, deferredData, false);
 
-        Array processedData = enhancedVar.applyScaleOffset(deferredData);
+        Array processedData = enhancedVar.scaleMissingUnsignedProxy().applyScaleOffset(deferredData);
 
         logger.debug("Processed = {}", Ncdump.printArray(deferredData));
         assert nc.compareData(enhancedVar.getShortName(), enhancedData, processedData, false);

@@ -13,6 +13,8 @@ import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.internal.dataset.CoordinatesHelper;
+import ucar.nc2.internal.dataset.EnhanceScaleMissingUnsigned;
+
 import java.io.IOException;
 import java.util.*;
 
@@ -73,7 +75,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
      * Convert unsigned values to signed values.
      * For {@link ucar.nc2.constants.CDM#UNSIGNED} variables, reinterpret the bit patterns of any
      * negative values as unsigned. The result will be positive values that must be stored in a
-     * {@link EnhanceScaleMissingUnsignedImpl#nextLarger larger data type}.
+     * {@link EnhanceScaleMissingUnsigned#nextLarger larger data type}.
      */
     ConvertUnsigned,
     /** Apply scale and offset to values, promoting the data type if needed. */
@@ -121,75 +123,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     defaultEnhanceMode = Collections.unmodifiableSet(mode);
   }
 
-  protected static boolean fillValueIsMissing = true;
-  protected static boolean invalidDataIsMissing = true;
-  protected static boolean missingDataIsMissing = true;
-
-  /**
-   * Set if _FillValue attribute is considered isMissing()
-   *
-   * @param b true if _FillValue are missing (default true)
-   * @deprecated do not use
-   */
-  @Deprecated
-  public static void setFillValueIsMissing(boolean b) {
-    fillValueIsMissing = b;
-  }
-
-  /**
-   * Get if _FillValue attribute is considered isMissing()
-   *
-   * @return if _FillValue attribute is considered isMissing()
-   * @deprecated do not use
-   */
-  @Deprecated
-  public static boolean getFillValueIsMissing() {
-    return fillValueIsMissing;
-  }
-
-  /**
-   * Set if valid_range attribute is considered isMissing()
-   *
-   * @param b true if valid_range are missing (default true)
-   * @deprecated do not use
-   */
-  @Deprecated
-  public static void setInvalidDataIsMissing(boolean b) {
-    invalidDataIsMissing = b;
-  }
-
-  /**
-   * Get if valid_range attribute is considered isMissing()
-   *
-   * @return if valid_range attribute is considered isMissing()
-   * @deprecated do not use
-   */
-  @Deprecated
-  public static boolean getInvalidDataIsMissing() {
-    return invalidDataIsMissing;
-  }
-
-  /**
-   * Set if missing_data attribute is considered isMissing()
-   *
-   * @param b true if missing_data are missing (default true)
-   * @deprecated do not use
-   */
-  @Deprecated
-  public static void setMissingDataIsMissing(boolean b) {
-    missingDataIsMissing = b;
-  }
-
-  /**
-   * Get if missing_data attribute is considered isMissing()
-   *
-   * @return if missing_data attribute is considered isMissing()
-   * @deprecated do not use
-   */
-  @Deprecated
-  public static boolean getMissingDataIsMissing() {
-    return missingDataIsMissing;
-  }
+  public static final boolean fillValueIsMissing = true;
+  public static final boolean invalidDataIsMissing = true;
+  public static final boolean missingDataIsMissing = true;
 
   ////////////////////////////////////////////////////////////////////////////////////
 

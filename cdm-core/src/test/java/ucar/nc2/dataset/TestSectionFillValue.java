@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
+import ucar.nc2.internal.dataset.EnhanceScaleMissingUnsigned;
 import ucar.nc2.iosp.NetcdfFormatUtils;
 import ucar.unidata.util.test.TestDir;
 
@@ -33,7 +34,8 @@ public class TestSectionFillValue {
     try (NetcdfDataset ncfile = NetcdfDatasets.openDataset(filename)) {
       VariableDS v = (VariableDS) ncfile.findVariable("t3");
       Assert.assertNotNull("t3", v);
-      Assert.assertTrue(v.hasFillValue());
+      EnhanceScaleMissingUnsigned proxy = v.scaleMissingUnsignedProxy();
+      Assert.assertTrue(proxy.hasFillValue());
       Assert.assertNotNull(v.findAttribute("_FillValue"));
 
       int rank = v.getRank();
@@ -46,7 +48,7 @@ public class TestSectionFillValue {
       VariableDS v_section = (VariableDS) v.section(ranges);
       Assert.assertNotNull(v_section.findAttribute("_FillValue"));
       System.out.println(v_section.findAttribute("_FillValue"));
-      Assert.assertTrue(v_section.hasFillValue());
+      Assert.assertTrue(v_section.scaleMissingUnsignedProxy().hasFillValue());
     }
   }
 
@@ -65,7 +67,7 @@ public class TestSectionFillValue {
         VariableDS ve = (VariableDS) ncd.findVariable(v.getFullName());
         if (varWithFill.contains(v.getShortName())) {
           Assert.assertNotNull(v.findAttribute("_FillValue"));
-          Assert.assertTrue(ve.hasFillValue());
+          Assert.assertTrue(ve.scaleMissingUnsignedProxy().hasFillValue());
           Number fillValue = v.findAttribute("_FillValue").getNumericValue();
 
           Array data = v.read();
@@ -78,7 +80,7 @@ public class TestSectionFillValue {
             Object vale = iterE.next();
             double vald = ((Number) val).doubleValue();
             double valde = ((Number) vale).doubleValue();
-            if (ve.isFillValue(vald)) {
+            if (ve.scaleMissingUnsignedProxy().isFillValue(vald)) {
               if (v.getDataType().isFloatingPoint())
                 Assert.assertTrue(Double.toString(valde), Double.isNaN(valde));
               else
@@ -87,7 +89,7 @@ public class TestSectionFillValue {
           }
         } else {
           Assert.assertNull(v.findAttribute("_FillValue"));
-          Assert.assertTrue(ve.hasFillValue());
+          Assert.assertTrue(ve.scaleMissingUnsignedProxy().hasFillValue());
           Number fillValue = NetcdfFormatUtils.getFillValueDefault(v.getDataType());
           Assert.assertNotNull(v.getDataType().toString(), fillValue);
 
@@ -102,9 +104,9 @@ public class TestSectionFillValue {
             double vald = ((Number) val).doubleValue();
             double valde = ((Number) vale).doubleValue();
             if (val.equals(fillValue))
-              Assert.assertTrue(ve.isFillValue(vald));
+              Assert.assertTrue(ve.scaleMissingUnsignedProxy().isFillValue(vald));
 
-            if (ve.isFillValue(vald)) {
+            if (ve.scaleMissingUnsignedProxy().isFillValue(vald)) {
               if (v.getDataType().isFloatingPoint())
                 Assert.assertTrue(Double.toString(valde), Double.isNaN(valde));
               else

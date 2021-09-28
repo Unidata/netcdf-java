@@ -26,12 +26,6 @@ public class StructureDS extends ucar.nc2.Structure implements StructureEnhanced
     return orgVar;
   }
 
-  /** @deprecated use getOriginalArrayType() */
-  @Deprecated
-  public ucar.ma2.DataType getOriginalDataType() {
-    return ucar.ma2.DataType.STRUCTURE;
-  }
-
   /** When this wraps another Variable, get the original Variable's ArrayType. */
   public ArrayType getOriginalArrayType() {
     return ArrayType.STRUCTURE;
