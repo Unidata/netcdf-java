@@ -251,7 +251,7 @@ public class CDLWriter {
   private void writeCDL(EnumTypedef e, Indent indent) {
     String name = strict ? NetcdfFiles.makeValidCDLName(e.getShortName()) : e.getShortName();
     String basetype = "";
-    switch (e.getBaseType()) {
+    switch (e.getBaseArrayType()) {
       case ENUM1:
         basetype = "byte ";
         break;

@@ -218,7 +218,7 @@ public class GcdmConverter {
     GcdmNetcdfProto.EnumTypedef.Builder builder = GcdmNetcdfProto.EnumTypedef.newBuilder();
 
     builder.setName(enumType.getShortName());
-    builder.setBaseType(convertDataType(enumType.getBaseType().getArrayType()));
+    builder.setBaseType(convertDataType(enumType.getBaseArrayType()));
     Map<Integer, String> map = enumType.getMap();
     GcdmNetcdfProto.EnumTypedef.EnumType.Builder b2 = GcdmNetcdfProto.EnumTypedef.EnumType.newBuilder();
     for (int code : map.keySet()) {
@@ -485,7 +485,7 @@ public class GcdmConverter {
       map.put(et.getCode(), et.getValue());
     }
     ArrayType basetype = convertDataType(enumType.getBaseType());
-    return new EnumTypedef(enumType.getName(), map, basetype.getDataType());
+    return new EnumTypedef(enumType.getName(), map, basetype);
   }
 
   private static Structure.Builder<?> decodeStructure(GcdmNetcdfProto.Structure s) {

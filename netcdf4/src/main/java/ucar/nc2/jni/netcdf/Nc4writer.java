@@ -389,13 +389,13 @@ public class Nc4writer extends Nc4reader implements IospFileWriter {
     if (!name.endsWith("_t")) {
       name = name + "_t";
     }
-    DataType enumbase = ent.getBaseType();
+    ArrayType enumbase = ent.getBaseArrayType();
     int basetype = NC_NAT;
-    if (enumbase == DataType.ENUM1)
+    if (enumbase == ArrayType.ENUM1)
       basetype = Nc4prototypes.NC_BYTE;
-    else if (enumbase == DataType.ENUM2)
+    else if (enumbase == ArrayType.ENUM2)
       basetype = Nc4prototypes.NC_SHORT;
-    else if (enumbase == DataType.ENUM4)
+    else if (enumbase == ArrayType.ENUM4)
       basetype = Nc4prototypes.NC_INT;
     int ret = nc4.nc_def_enum(g4.grpid, basetype, name, typeidp);
     if (ret != 0)
@@ -409,7 +409,8 @@ public class Nc4writer extends Nc4reader implements IospFileWriter {
         throw new IOException(nc4.nc_strerror(ret) + " on\n" + entry.getValue());
     }
     // keep track of the User Defined types
-    UserType ut = new UserType(g4.grpid, typeid, name, ent.getBaseType().getSize(), basetype, emap.size(), NC_ENUM);
+    UserType ut =
+        new UserType(g4.grpid, typeid, name, ent.getBaseArrayType().getSize(), basetype, emap.size(), NC_ENUM);
     userTypes.put(typeid, ut);
     enumUserTypes.put(ent, ut);
   }

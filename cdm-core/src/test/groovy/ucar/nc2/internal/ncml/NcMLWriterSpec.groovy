@@ -12,6 +12,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import spock.lang.Shared
 import spock.lang.Specification
+import ucar.array.ArrayType
 import ucar.ma2.Array
 import ucar.ma2.DataType
 import ucar.nc2.*
@@ -72,7 +73,7 @@ recordsGroup/recordsStruct = UNREADABLE
         root.addDimension(timeDim)
 
         and: "create EnumTypedef and add it to root group"
-        EnumTypedef dessertType = new EnumTypedef("dessertType", [18: 'pie', 268: 'donut', 3284: 'cake'], DataType.ENUM2)
+        EnumTypedef dessertType = new EnumTypedef("dessertType", [18: 'pie', 268: 'donut', 3284: 'cake'], ArrayType.ENUM2)
         root.addEnumTypedef(dessertType)
 
         and: "create Variable of type dessertType and add it"

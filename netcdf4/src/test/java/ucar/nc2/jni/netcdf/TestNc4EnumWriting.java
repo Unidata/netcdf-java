@@ -20,6 +20,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ucar.array.ArrayType;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
@@ -99,11 +100,11 @@ public class TestNc4EnumWriting {
     enumMap.put(3284, "cake");
 
     // Create EnumTypedef and add it to root group.
-    EnumTypedef dessertType = new EnumTypedef("dessertType", enumMap, DataType.ENUM2);
+    EnumTypedef dessertType = new EnumTypedef("dessertType", enumMap, ArrayType.ENUM2);
     writerb.getRootGroup().addEnumTypedef(dessertType);
 
     // Create Variable of type dessertType.
-    Variable.Builder<?> dessert = writerb.addVariable("dessert", DataType.ENUM2, "time");
+    Variable.Builder<?> dessert = writerb.addVariable("dessert", ArrayType.ENUM2, "time");
     dessert.setEnumTypeName(dessertType.getShortName());
 
     try (NetcdfFormatWriter writer = writerb.build()) {
