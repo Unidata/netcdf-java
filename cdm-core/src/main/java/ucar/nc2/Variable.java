@@ -15,19 +15,15 @@ import ucar.array.ArrayType;
 import ucar.array.Arrays;
 import ucar.array.ArraysConvert;
 import ucar.ma2.Array;
-import ucar.ma2.ArrayChar;
 import ucar.ma2.ArrayStructure;
 import ucar.ma2.DataType;
-import ucar.ma2.Index;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 import ucar.ma2.Section;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
-import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.Indent;
-import java.io.OutputStream;
 import java.util.*;
 import java.io.IOException;
 
@@ -224,7 +220,9 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    * The List is immutable.
    *
    * @return List of Ranges, one for each Dimension.
+   * @deprecated use getSection() or getSection().getRanges()
    */
+  @Deprecated
   public ImmutableList<Range> getRanges() {
     // Ok to use Immutable as there are no nulls.
     return ImmutableList.copyOf(getShapeAsSection().getRanges());
@@ -392,9 +390,15 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    *        A Range object may be null, which means use the entire dimension.
    * @return a new Variable which is a logical section of this Variable.
    * @throws InvalidRangeException if shape and range list dont match
+   * @deprecated use getSection() or getSection().getRanges()
    */
+  @Deprecated
   public Variable section(List<Range> ranges) throws InvalidRangeException {
     return section(new Section(ranges, shape));
+  }
+
+  public Variable section(ucar.array.Section subsection) throws InvalidRangeException {
+    return section(ArraysConvert.convertSection(subsection));
   }
 
   /**
@@ -407,7 +411,9 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    *        A Range object may be null, which means use the entire dimension.
    * @return a new Variable which is a logical section of this Variable.
    * @throws InvalidRangeException if section not compatible with shape
+   * @deprecated use section(ucar.array.Section subsection);
    */
+  @Deprecated
   public Variable section(Section subsection) throws InvalidRangeException {
     subsection = Section.fill(subsection, shape);
 
@@ -507,15 +513,6 @@ public class Variable implements VariableSimpleIF, ProxyReader {
   // _read()
   // _read(Section section)
   // _readNestedData(Section section, boolean flatten)
-
-  /** @deprecated do not use. */
-  @Deprecated
-  public long readToStream(Section section, OutputStream out) throws IOException, InvalidRangeException {
-    if ((ncfile == null) || hasCachedData())
-      return IospHelper.copyToOutputStream(read(section), out);
-
-    return ncfile.readToOutputStream(this, section, out);
-  }
 
   /**
    * Read a section of the data for this Variable and return a memory resident Array.
@@ -630,12 +627,9 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    * @throws IOException if theres an IO Error
    * @throws UnsupportedOperationException if not a scalar Variable or one-dimensional of length 1.
    * @throws RuntimeException if data type not convertible to byte
-   * @deprecated use (byte) readArray().getScalar();
    */
-  @Deprecated
   public byte readScalarByte() throws IOException {
-    Array data = _readScalarData();
-    return data.getByte(Index.scalarIndexImmutable);
+    return ((Number) readArray().getScalar()).byteValue();
   }
 
   /**
@@ -643,13 +637,10 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    *
    * @throws IOException if theres an IO Error
    * @throws UnsupportedOperationException if not a scalar Variable or one-dimensional of length 1.
-   * @throws RuntimeException if data type not convertible to byte
-   * @deprecated use (short) readArray().getScalar();
+   * @throws RuntimeException if data type not convertible to short
    */
-  @Deprecated
   public short readScalarShort() throws IOException {
-    Array data = _readScalarData();
-    return data.getShort(Index.scalarIndexImmutable);
+    return ((Number) readArray().getScalar()).shortValue();
   }
 
   /**
@@ -657,13 +648,10 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    *
    * @throws IOException if theres an IO Error
    * @throws UnsupportedOperationException if not a scalar Variable or one-dimensional of length 1.
-   * @throws RuntimeException if data type not convertible to byte
-   * @deprecated use (int) readArray().getScalar();
+   * @throws RuntimeException if data type not convertible to int
    */
-  @Deprecated
   public int readScalarInt() throws IOException {
-    Array data = _readScalarData();
-    return data.getInt(Index.scalarIndexImmutable);
+    return ((Number) readArray().getScalar()).intValue();
   }
 
   /**
@@ -671,13 +659,10 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    *
    * @throws IOException if theres an IO Error
    * @throws UnsupportedOperationException if not a scalar Variable
-   * @throws RuntimeException if data type not convertible to byte
-   * @deprecated use (long) readArray().getScalar();
+   * @throws RuntimeException if data type not convertible to long
    */
-  @Deprecated
   public long readScalarLong() throws IOException {
-    Array data = _readScalarData();
-    return data.getLong(Index.scalarIndexImmutable);
+    return ((Number) readArray().getScalar()).longValue();
   }
 
   /**
@@ -685,13 +670,10 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    *
    * @throws IOException if theres an IO Error
    * @throws UnsupportedOperationException if not a scalar Variable or one-dimensional of length 1.
-   * @throws RuntimeException if data type not convertible to byte
-   * @deprecated use (float) readArray().getScalar();
+   * @throws RuntimeException if data type not convertible to float
    */
-  @Deprecated
   public float readScalarFloat() throws IOException {
-    Array data = _readScalarData();
-    return data.getFloat(Index.scalarIndexImmutable);
+    return ((Number) readArray().getScalar()).floatValue();
   }
 
   /**
@@ -699,34 +681,27 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    *
    * @throws IOException if theres an IO Error
    * @throws UnsupportedOperationException if not a scalar Variable or one-dimensional of length 1.
-   * @throws RuntimeException if data type not convertible to byte
-   * @deprecated use (double) readArray().getScalar();
+   * @throws RuntimeException if data type not convertible to double
    */
-  @Deprecated
   public double readScalarDouble() throws IOException {
-    Array data = _readScalarData();
-    return data.getDouble(Index.scalarIndexImmutable);
+    return ((Number) readArray().getScalar()).doubleValue();
   }
 
   /**
    * Get the value as a String for a scalar Variable. May also be one-dimensional of length 1.
-   * May also be one-dimensional of type CHAR, which wil be turned into a scalar String.
+   * May also be one-dimensional of type CHAR, which will be turned into a scalar String.
    *
    * @throws IOException if theres an IO Error
-   * @throws UnsupportedOperationException if not a scalar or one-dimensional.
-   * @throws ClassCastException if data type not DataType.STRING or DataType.CHAR.
-   * @deprecated use (String) readArray().getScalar() or if CHAR, readArray().makeStringFromChar()
+   * @throws IllegalArgumentException if data type not STRING or CHAR
    */
-  @Deprecated
   public String readScalarString() throws IOException {
-    Array data = _readScalarData();
-    if (getArrayType() == ArrayType.STRING)
-      return (String) data.getObject(Index.scalarIndexImmutable);
-    else if (getArrayType() == ArrayType.CHAR) {
-      ArrayChar dataC = (ArrayChar) data;
-      return dataC.getString();
-    } else
+    if (getArrayType() == ArrayType.STRING) {
+      return (String) readArray().getScalar();
+    } else if (getArrayType() == ArrayType.CHAR) {
+      return Arrays.makeStringFromChar((ucar.array.Array<Byte>) readArray());
+    } else {
       throw new IllegalArgumentException("readScalarString not STRING or CHAR " + getFullName());
+    }
   }
 
   ///////////////
@@ -819,17 +794,6 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     }
     // not caching
     return proxyReader.proxyReadArray(this, section, null);
-  }
-
-  /** @deprecated do not use */
-  @Deprecated
-  protected Array _readScalarData() throws IOException {
-    Array scalarData = read();
-    scalarData = scalarData.reduce();
-
-    if ((scalarData.getRank() == 0) || ((scalarData.getRank() == 1) && getArrayType() == ArrayType.CHAR))
-      return scalarData;
-    throw new java.lang.UnsupportedOperationException("not a scalar variable =" + this);
   }
 
   ////// ProxyReader

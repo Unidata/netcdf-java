@@ -50,12 +50,12 @@ public class ZebraConvention extends CoordSystemBuilder {
 
     Array data;
     try {
-      double baseValue = base_time.orgVar.readScalarDouble();
-
+      double baseValue = ((Number) base_time.orgVar.readArray().getScalar()).doubleValue();
       data = time_offset.orgVar.read();
       IndexIterator iter = data.getIndexIterator();
-      while (iter.hasNext())
+      while (iter.hasNext()) {
         iter.setDoubleCurrent(iter.getDoubleNext() + baseValue);
+      }
 
     } catch (IOException ioe) {
       parseInfo.format("ZebraConvention failed to create time Coord Axis for file %s err= %s%n",

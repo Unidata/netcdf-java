@@ -96,10 +96,6 @@ public class TestDODSStructureScalarsNested {
     assert (null != (v = s.findVariable("s")));
     CheckS(v);
 
-    // url
-    assert (null != (v = s.findVariable("u")));
-    CheckUrl(v);
-
   }
 
   @Test

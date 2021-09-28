@@ -373,48 +373,48 @@ public class Nc4reader extends AbstractIOServiceProvider {
         Attribute att;
         switch (type) {
           case Nc4prototypes.NC_BYTE:
-            att = Attribute.emptyValued(attname, DataType.BYTE);
+            att = Attribute.emptyValued(attname, ArrayType.BYTE);
             break;
           case Nc4prototypes.NC_UBYTE:
-            att = Attribute.emptyValued(attname, DataType.UBYTE);
+            att = Attribute.emptyValued(attname, ArrayType.UBYTE);
             break;
           case Nc4prototypes.NC_CHAR:
             // From what I can tell, the way we should treat char attrs depends on
             // the netCDF format used (3 vs. 4)
             if ((format == NC_FORMAT_NETCDF4_CLASSIC) || (format == NC_FORMAT_NETCDF4)) {
               // if netcdf4, make null char attrs null string attrs
-              att = Attribute.emptyValued(attname, DataType.STRING);
+              att = Attribute.emptyValued(attname, ArrayType.STRING);
             } else {
               // all others, treat null char attrs as empty string attrs
               att = new Attribute(attname, "");
             }
             break;
           case Nc4prototypes.NC_DOUBLE:
-            att = Attribute.emptyValued(attname, DataType.DOUBLE);
+            att = Attribute.emptyValued(attname, ArrayType.DOUBLE);
             break;
           case Nc4prototypes.NC_FLOAT:
-            att = Attribute.emptyValued(attname, DataType.FLOAT);
+            att = Attribute.emptyValued(attname, ArrayType.FLOAT);
             break;
           case Nc4prototypes.NC_INT:
-            att = Attribute.emptyValued(attname, DataType.INT);
+            att = Attribute.emptyValued(attname, ArrayType.INT);
             break;
           case Nc4prototypes.NC_UINT:
-            att = Attribute.emptyValued(attname, DataType.UINT);
+            att = Attribute.emptyValued(attname, ArrayType.UINT);
             break;
           case Nc4prototypes.NC_UINT64:
-            att = Attribute.emptyValued(attname, DataType.ULONG);
+            att = Attribute.emptyValued(attname, ArrayType.ULONG);
             break;
           case Nc4prototypes.NC_INT64:
-            att = Attribute.emptyValued(attname, DataType.LONG);
+            att = Attribute.emptyValued(attname, ArrayType.LONG);
             break;
           case Nc4prototypes.NC_USHORT:
-            att = Attribute.emptyValued(attname, DataType.USHORT);
+            att = Attribute.emptyValued(attname, ArrayType.USHORT);
             break;
           case Nc4prototypes.NC_SHORT:
-            att = Attribute.emptyValued(attname, DataType.SHORT);
+            att = Attribute.emptyValued(attname, ArrayType.SHORT);
             break;
           case Nc4prototypes.NC_STRING:
-            att = Attribute.emptyValued(attname, DataType.STRING);
+            att = Attribute.emptyValued(attname, ArrayType.STRING);
             break;
           default:
             log.warn("Unsupported attribute data type == " + type);

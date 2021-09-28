@@ -299,14 +299,6 @@ public class TestDODSStructureScalars {
     assert a instanceof ArrayObject.D0;
     String str = (String) a.getObject(a.getIndex());
     assert str.equals("This is a data test string (pass 0).");
-
-    // url
-    assert (null != (v = s.findVariable("u")));
-    assert v.getShortName().equals("u");
-    assert v.getRank() == 0;
-    assert v.getDataType() == DataType.STRING : v.getDataType();
-    str = v.readScalarString();
-    assert str.equals("http://www.opendap.org") || str.equals("http://www.dods.org") : str;
   }
 
   @Test

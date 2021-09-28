@@ -6,9 +6,9 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import spock.lang.Specification
 import spock.lang.Unroll
+import ucar.array.ArrayType
 import ucar.ma2.Array
 import ucar.ma2.ArrayChar
-import ucar.ma2.DataType
 import ucar.nc2.Attribute
 import ucar.nc2.Dimension
 import ucar.nc2.NetcdfFile
@@ -128,20 +128,20 @@ class Nc4IospMiscSpec extends Specification {
         NetcdfFormatWriter.Builder writerb = NetcdfFormatWriter.createNewNetcdf4(NetcdfFileFormat.NETCDF4, tempFile.absolutePath, null);
 
         and: "add a numerical valued attribute with a null value"
-        Attribute attrNumBefore = Attribute.emptyValued("nullvalnum", DataType.INT)
+        Attribute attrNumBefore = Attribute.emptyValued("nullvalnum", ArrayType.INT)
         writerb.addAttribute(attrNumBefore)
 
         and: "add a string valued attribute with a null value"
-        Attribute attrStrBefore = Attribute.emptyValued("nullvalstr", DataType.STRING)
+        Attribute attrStrBefore = Attribute.emptyValued("nullvalstr", ArrayType.STRING)
         writerb.addAttribute(attrStrBefore)
 
         and: "add a character valued attribute with a null value"
-        Attribute attrCharBefore = Attribute.emptyValued("nullvalchar", DataType.CHAR)
+        Attribute attrCharBefore = Attribute.emptyValued("nullvalchar", ArrayType.CHAR)
         writerb.addAttribute(attrCharBefore)
 
         and: "add a character valued attribute with a specific null char value"
         Array attrNullCharValue = ArrayChar.makeFromString("\0", 1);
-        Attribute attrNullCharBefore = Attribute.builder("nullcharvalchar").setDataType(DataType.CHAR).setValues(attrNullCharValue).build();
+        Attribute attrNullCharBefore = Attribute.builder("nullcharvalchar").setArrayType(ArrayType.CHAR).setValues(attrNullCharValue).build();
         writerb.addAttribute(attrNullCharBefore)
 
         NetcdfFormatWriter writer = writerb.build();

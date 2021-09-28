@@ -19,19 +19,13 @@ public class VariableSimpleBuilder {
 
   /** @deprecated use fromMember(ucar.array.StructureMembers.Member m) */
   public static VariableSimpleBuilder fromMember(ucar.ma2.StructureMembers.Member m) {
-    return new VariableSimpleBuilder(m.getName(), m.getDescription(), m.getUnitsString(), m.getDataType(),
-        Dimensions.makeDimensionsAnon(m.getShape()));
+    return new VariableSimpleBuilder(m.getName(), m.getDescription(), m.getUnitsString(),
+        m.getDataType().getArrayType(), Dimensions.makeDimensionsAnon(m.getShape()));
   }
 
   public static VariableSimpleBuilder fromMember(ucar.array.StructureMembers.Member m) {
     return new VariableSimpleBuilder(m.getName(), m.getDescription(), m.getUnitsString(), m.getArrayType(),
         Dimensions.makeDimensionsAnon(m.getShape()));
-  }
-
-  /** @deprecated use makeScalar(String name, String desc, String units, ArrayType dt) */
-  @Deprecated
-  public static VariableSimpleBuilder makeScalar(String name, String desc, String units, DataType dt) {
-    return new VariableSimpleBuilder(name, desc, units, dt, null);
   }
 
   public static VariableSimpleBuilder makeScalar(String name, String desc, String units, ArrayType dt) {
@@ -47,26 +41,6 @@ public class VariableSimpleBuilder {
   private final ArrayType dt;
   private final AttributeContainerMutable atts;
   private final ImmutableList<Dimension> dims;
-
-  /**
-   * @deprecated use VariableSimpleBuilder(String name, String desc, String units, ArrayType dt, List<Dimension> dims)
-   */
-  @Deprecated
-  public VariableSimpleBuilder(String name, String desc, String units, DataType dt, List<Dimension> dims) {
-    this.name = name;
-    this.desc = desc;
-    this.units = units;
-    this.dt = dt.getArrayType();
-    this.dims = (dims == null || dims.size() == 0) ? ImmutableList.of() : ImmutableList.copyOf(dims);
-    this.atts = new AttributeContainerMutable(name);
-
-    if (units != null) {
-      atts.addAttribute(new Attribute(CDM.UNITS, units));
-    }
-    if (desc != null) {
-      atts.addAttribute(new Attribute(CDM.LONG_NAME, desc));
-    }
-  }
 
   public VariableSimpleBuilder(String name, String desc, String units, ArrayType dt, List<Dimension> dims) {
     this.name = name;

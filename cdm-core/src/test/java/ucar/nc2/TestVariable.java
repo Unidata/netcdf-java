@@ -1,6 +1,7 @@
 package ucar.nc2;
 
 import static com.google.common.truth.Truth.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.fail;
 import static ucar.nc2.TestUtils.makeDummyGroup;
 
@@ -9,6 +10,8 @@ import com.google.common.collect.ImmutableMap;
 import java.io.IOException;
 import java.util.Map;
 import org.junit.Test;
+import ucar.array.ArrayType;
+import ucar.array.Arrays;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
@@ -426,6 +429,31 @@ public class TestVariable {
   }
 
   @Test
+  public void testReadArrayScalarByte() throws IOException {
+    Variable varb =
+        Variable.builder().setName("varb").setArrayType(ArrayType.BYTE).setAutoGen(10, 1).build(makeDummyGroup());
+    assertThat(varb.readArray().getScalar()).isEqualTo((byte) 10);
+    assertThat(varb.readArray().getScalar()).isEqualTo(10);
+    assertThat(varb.readArray().getScalar()).isEqualTo(Byte.valueOf((byte) 10));
+
+    assertThat(varb.readArray().getScalar()).isEqualTo((short) 10);
+    assertThat(varb.readArray().getScalar()).isEqualTo((int) 10);
+    assertThat(varb.readArray().getScalar()).isEqualTo((long) 10);
+    assertThat(varb.readArray().getScalar()).isNotEqualTo((float) 10); // LOOK
+    assertThat(varb.readArray().getScalar()).isNotEqualTo((double) 10); // LOOK
+    byte val = (byte) varb.readArray().getScalar();
+    Byte val2 = (Byte) varb.readArray().getScalar();
+    int vali = (Byte) varb.readArray().getScalar();
+
+    assertThrows(ClassCastException.class, () -> {
+      int temp = (Integer) varb.readArray().getScalar();
+    });
+    assertThrows(ClassCastException.class, () -> {
+      Integer temp = (Integer) varb.readArray().getScalar();
+    });
+  }
+
+  @Test
   public void testReadScalarShort() throws IOException {
     Variable varb =
         Variable.builder().setName("varb").setDataType(DataType.SHORT).setAutoGen(11, 1).build(makeDummyGroup());
@@ -463,17 +491,45 @@ public class TestVariable {
     assertThat(varb.readScalarDouble()).isEqualTo((double) 11);
   }
 
-
   @Test
   public void testReadScalarFloat() throws IOException {
     Variable varb =
-        Variable.builder().setName("varb").setDataType(DataType.FLOAT).setAutoGen(11, 1).build(makeDummyGroup());
+        Variable.builder().setName("varb").setArrayType(ArrayType.FLOAT).setAutoGen(11, 1).build(makeDummyGroup());
     assertThat(varb.readScalarByte()).isEqualTo((byte) 11);
     assertThat(varb.readScalarShort()).isEqualTo((short) 11);
     assertThat(varb.readScalarInt()).isEqualTo(11);
     assertThat(varb.readScalarLong()).isEqualTo((long) 11);
-    assertThat(varb.readScalarFloat()).isEqualTo((float) 11);
-    assertThat(varb.readScalarDouble()).isEqualTo((double) 11);
+    assertThat(varb.readScalarFloat()).isEqualTo(11f);
+    assertThat(varb.readScalarDouble()).isEqualTo(11d);
+  }
+
+  @Test
+  public void testReadArrayScalarFloat() throws IOException {
+    Variable varb =
+        Variable.builder().setName("varb").setArrayType(ArrayType.FLOAT).setAutoGen(11, 1).build(makeDummyGroup());
+    assertThat(varb.readArray().getScalar()).isNotEqualTo((byte) 11);
+    assertThat(varb.readArray().getScalar()).isNotEqualTo((short) 11);
+    assertThat(varb.readArray().getScalar()).isEqualTo(11);
+    assertThat(varb.readArray().getScalar()).isEqualTo((int) 11);
+    assertThat(varb.readArray().getScalar()).isNotEqualTo((long) 11);
+    assertThat(varb.readArray().getScalar()).isNotEqualTo(11L);
+    assertThat(varb.readArray().getScalar()).isEqualTo(11f);
+    assertThat(varb.readArray().getScalar()).isNotEqualTo(11d);
+
+    assertThat(varb.readArray().getScalar()).isEqualTo((float) 11);
+    assertThat(varb.readArray().getScalar()).isEqualTo((float) 11f);
+    float val = (float) varb.readArray().getScalar();
+    Float val2 = (Float) varb.readArray().getScalar();
+    float val3 = (Float) varb.readArray().getScalar();
+
+    int vali = ((Number) varb.readArray().getScalar()).intValue();
+
+    assertThrows(ClassCastException.class, () -> {
+      int temp = (Integer) varb.readArray().getScalar();
+    });
+    assertThrows(ClassCastException.class, () -> {
+      Integer temp = (Integer) varb.readArray().getScalar();
+    });
   }
 
   @Test
@@ -492,16 +548,41 @@ public class TestVariable {
   public void testReadScalarString() throws IOException {
     Array data = Array.makeArray(DataType.STRING, new String[] {"one"});
     Variable varb =
-        Variable.builder().setName("varb").setDataType(DataType.STRING).setSourceData(data).build(makeDummyGroup());
+        Variable.builder().setName("vars").setDataType(DataType.STRING).setSourceData(data).build(makeDummyGroup());
     assertThat(varb.readScalarString()).isEqualTo("one");
+  }
+
+  @Test
+  public void testReadArrayScalarString() throws IOException {
+    ucar.array.Array<?> data = Arrays.factory(ArrayType.STRING, new int[] {2}, new String[] {"11", "22"});
+    Variable varb =
+        Variable.builder().setName("varc").setArrayType(ArrayType.STRING).setSourceData(data).build(makeDummyGroup());
+    assertThat(varb.readArray().getScalar()).isEqualTo("11");
+
+    ucar.array.Array<?> arr = varb.readArray();
+    assertThat(arr).isEqualTo(data);
   }
 
   @Test
   public void testReadScalarChar() throws IOException {
     Array data = Array.factory(DataType.CHAR, new int[] {3}, new char[] {'1', '2', '3'});
     Variable varb =
-        Variable.builder().setName("varb").setDataType(DataType.CHAR).setSourceData(data).build(makeDummyGroup());
+        Variable.builder().setName("varc").setDataType(DataType.CHAR).setSourceData(data).build(makeDummyGroup());
     assertThat(varb.readScalarString()).isEqualTo("123");
+  }
+
+  @Test
+  public void testReadArrayScalarChar() throws IOException {
+    ucar.array.Array<?> data = Arrays.factory(ArrayType.CHAR, new int[] {3}, new char[] {'1', '2', '3'});
+    Variable varb =
+        Variable.builder().setName("varc").setArrayType(ArrayType.CHAR).setSourceData(data).build(makeDummyGroup());
+    assertThat(varb.readArray().getScalar()).isEqualTo('1');
+    assertThat(varb.readArray().getScalar()).isEqualTo(49);
+    assertThat(varb.readArray().getScalar()).isNotEqualTo("123");
+
+    ucar.array.Array<?> arr = varb.readArray();
+    assertThat(arr).isEqualTo(data);
+    assertThat(Arrays.makeStringFromChar((ucar.array.Array<Byte>) arr)).isEqualTo("123");
   }
 
 }

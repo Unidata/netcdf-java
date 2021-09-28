@@ -8,6 +8,7 @@ import static com.google.common.truth.Truth.assertThat;
 
 import com.google.common.collect.ImmutableList;
 import org.junit.Test;
+import ucar.array.ArrayType;
 import ucar.ma2.DataType;
 import ucar.ma2.StructureMembers;
 
@@ -19,7 +20,7 @@ public class TestVariableSimpleBuilder {
     Dimension dim1 = new Dimension("dim1", 1);
     Dimension dim2 = new Dimension("dim2", 2);
     VariableSimpleBuilder builder =
-        new VariableSimpleBuilder("name", "desc", "units", DataType.INT, ImmutableList.of(dim1, dim2));
+        new VariableSimpleBuilder("name", "desc", "units", ArrayType.INT, ImmutableList.of(dim1, dim2));
 
     builder.addAttribute(new Attribute("name", 1.23));
     builder.addAttribute("name2", "value2");
@@ -29,7 +30,7 @@ public class TestVariableSimpleBuilder {
     assertThat(vs.getFullName()).isEqualTo("name");
     assertThat(vs.getDescription()).isEqualTo("desc");
     assertThat(vs.getUnitsString()).isEqualTo("units");
-    assertThat(vs.getDataType()).isEqualTo(DataType.INT);
+    assertThat(vs.getArrayType()).isEqualTo(ArrayType.INT);
     assertThat(vs.getDimensions()).hasSize(2);
     assertThat(vs.getDimensions()).isInstanceOf(ImmutableList.class);
     assertThat(vs.getShape()).isEqualTo(new int[] {1, 2});
@@ -41,7 +42,7 @@ public class TestVariableSimpleBuilder {
 
   @Test
   public void testMakeScalar() {
-    VariableSimpleBuilder builder = VariableSimpleBuilder.makeScalar("name", "desc", "units", DataType.CHAR)
+    VariableSimpleBuilder builder = VariableSimpleBuilder.makeScalar("name", "desc", "units", ArrayType.CHAR)
         .addAttribute(new Attribute("name", 2.34));
 
     VariableSimpleIF vs = builder.build();
@@ -49,7 +50,7 @@ public class TestVariableSimpleBuilder {
     assertThat(vs.getFullName()).isEqualTo("name");
     assertThat(vs.getDescription()).isEqualTo("desc");
     assertThat(vs.getUnitsString()).isEqualTo("units");
-    assertThat(vs.getDataType()).isEqualTo(DataType.CHAR);
+    assertThat(vs.getArrayType()).isEqualTo(ArrayType.CHAR);
     assertThat(vs.getDimensions()).hasSize(0);
     assertThat(vs.getShape()).isEqualTo(new int[] {});
     assertThat(vs.getRank()).isEqualTo(0);
@@ -67,7 +68,7 @@ public class TestVariableSimpleBuilder {
     assertThat(vs.getFullName()).isEqualTo("name");
     assertThat(vs.getDescription()).isEqualTo("desc");
     assertThat(vs.getUnitsString()).isEqualTo("units");
-    assertThat(vs.getDataType()).isEqualTo(DataType.CHAR);
+    assertThat(vs.getArrayType()).isEqualTo(ArrayType.CHAR);
     assertThat(vs.getDimensions()).hasSize(1);
     assertThat(vs.getShape()).isEqualTo(new int[] {11});
     assertThat(vs.getRank()).isEqualTo(1);
@@ -86,7 +87,7 @@ public class TestVariableSimpleBuilder {
     assertThat(vs.getFullName()).isEqualTo("name");
     assertThat(vs.getDescription()).isEqualTo("desc");
     assertThat(vs.getUnitsString()).isEqualTo("units");
-    assertThat(vs.getDataType()).isEqualTo(DataType.INT);
+    assertThat(vs.getArrayType()).isEqualTo(ArrayType.INT);
     assertThat(vs.getDimensions()).hasSize(2);
     assertThat(vs.getShape()).isEqualTo(new int[] {22, 6});
     assertThat(vs.getRank()).isEqualTo(2);

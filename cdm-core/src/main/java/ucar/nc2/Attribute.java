@@ -36,12 +36,6 @@ public class Attribute {
     return builder(name).setArrayValues(values).build();
   }
 
-  /** @deprecated use emptyValued(String name, ArrayType dtype) */
-  @Deprecated
-  public static Attribute emptyValued(String name, DataType dtype) {
-    return builder(name).setDataType(dtype).build();
-  }
-
   /** Create an Attribute with a datatype but no value. */
   public static Attribute emptyValued(String name, ArrayType dtype) {
     return builder(name).setArrayType(dtype).build();
