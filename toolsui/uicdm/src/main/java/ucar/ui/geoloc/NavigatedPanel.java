@@ -280,7 +280,7 @@ public class NavigatedPanel extends JPanel {
       }
 
       if ((lonBeg < center - 180) || (lonEnd > center + 180)) { // got to do it
-        double wx0 = box.getX() + box.getWidth() / 2;
+        double wx0 = box.getMinX() + box.getWidth() / 2;
         // llproj.setCenterLon(wx0); // shift cylinder seam
         double newWx0 = llproj.getCenterLon(); // normalize wx0 to [-180,180]
         setWorldCenterX(newWx0); // tell navigation panel to shift

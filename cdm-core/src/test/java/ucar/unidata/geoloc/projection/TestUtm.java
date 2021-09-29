@@ -12,7 +12,6 @@ import ucar.unidata.geoloc.*;
 import java.lang.invoke.MethodHandles;
 
 /** Test basic projection methods */
-
 public class TestUtm {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -79,83 +78,6 @@ public class TestUtm {
     sumNormal += took;
     System.out.println(" " + n + " normal " + proj.getClassName() + " took " + took + " msecs." + " avg error x= "
         + 1000 * sumx / n + " y=" + 1000 * sumy / n + " maxx err = " + 1000 * maxx + " m");
-
-    // array
-    double[][] to = new double[2][NPTS];
-    double[][] result2 = new double[2][NPTS];
-    long start = System.currentTimeMillis();
-    for (int k = 0; k < REPEAT; k++) {
-      Projections.projToLatLon(proj, from, to);
-      Projections.latLonToProj(proj, to, result2);
-
-      if (checkit) {
-        for (int i = 0; i < NPTS; i++) {
-          check_km("xa", from[0][i], result2[0][i]);
-          check_km("ya", from[1][i], result2[1][i]);
-          if (show)
-            System.out.println("  x:" + result2[0][i] + " y=" + result2[1][i]);
-        }
-      }
-    }
-    took = System.currentTimeMillis() - start;
-    sumArray += took;
-    System.out.println(" " + n + " array " + proj.getClass().getName() + " took " + took + " msecs "); // == "+
-                                                                                                       // .001*took/NTRIALS+"
-                                                                                                       // secs/call ");
-    // System.out.println(NTRIALS + " array "+ proj.getClassName()+" took "+took+ " msecs == "+
-    // .001*took/NTRIALS/REPEAT+" secs/call ");
-
-    /*
-     * original geotransform code
-     * Gdc_Coord_3d latlon[] = new Gdc_Coord_3d[NPTS];
-     * Utm_Coord_3d xy[] = new Utm_Coord_3d[NPTS];
-     * Utm_Coord_3d xy2[] = new Utm_Coord_3d[NPTS];
-     * 
-     * for (int i = 0; i < NPTS; i++) {
-     * latlon[i] = new Gdc_Coord_3d(0.0, 0.0, 0.0);
-     * xy[i] = new Utm_Coord_3d(1000*from[0][i], 1000*from[1][i], 0., (byte) zone, isNorth);
-     * xy2[i] = new Utm_Coord_3d(0., 0., 0., (byte) 0, true);
-     * }
-     * 
-     * Gdc_To_Utm_Converter.Init(new WE_Ellipsoid());
-     * Utm_To_Gdc_Converter.Init(new WE_Ellipsoid());
-     * 
-     * long t3 = System.currentTimeMillis();
-     * 
-     * maxx = 0.0;
-     * sumx = 0.0;
-     * sumy = 0.0;
-     * for (int k = 0; k < REPEAT; k++) {
-     * Utm_To_Gdc_Converter.Convert(xy, latlon);
-     * Gdc_To_Utm_Converter.Convert(latlon, xy2, (byte) zone);
-     * 
-     * if (calcErrs) {
-     * for (int i = 0; i < NPTS; i++) {
-     * double errx = error(xy[i].x, xy2[i].x);
-     * sumx += errx;
-     * sumy += error(xy[i].y, xy2[i].y);
-     * maxx = Math.max( maxx, errx);
-     * }
-     * }
-     * 
-     * if (checkit) {
-     * for (int i = 0; i < NPTS; i++) {
-     * check_m("Gx", xy[i].x, xy2[i].x);
-     * check_m("Gy", xy[i].y, xy2[i].y);
-     * if (show) System.out.println("x=" + xy[i].x + " y=" + xy[i].y);
-     * 
-     * // check against array results
-     * check_deg("Glat", latlon[i].latitude, to[0][i]);
-     * check_deg("Glon", latlon[i].longitude, to[1][i]);
-     * if (show) System.out.println("  lat=" + latlon[i].latitude + " lon=" + latlon[i].longitude);
-     * }
-     * }
-     * }
-     * long took3 = System.currentTimeMillis() - t3;
-     * double msecs = ((double)took3)/(NPTS*REPEAT);
-     * System.out.println(" "+n+" geotransform (org) took "+took3+ " msecs. avg error = "+ sumx/n+" "+sumy/n+
-     * " maxx = "+maxx);
-     */
   }
 
   double error(double d1, double d2) {
@@ -186,22 +108,8 @@ public class TestUtm {
   @Test
   public void testStuff2() {
     TestUtm r = new TestUtm();
-
-    // r.doOne( 8.864733394164137, 2020.9206059122835, 2, false);
-    // r.doOneG( 8.864733394164137, 2020.9206059122835, 2, false);
-    // r.doOne( 858.1318063115505, 93.39736531227544, 22, true);
-    // r.doOneG( 858.1318063115505, 93.39736531227544, 22, true);
-
-    /*
-     * for (int zone=1; zone<=60; zone++) {
-     * r.run( zone, true);
-     * r.run( zone, false);
-     * }
-     */
-
     r.run(1, true);
     r.run(60, false);
-
     System.out.println("\nmaxx_all= " + 1000 * maxx_all + " m");
   }
 

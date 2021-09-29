@@ -10,7 +10,6 @@ import ucar.array.ArrayType;
 import ucar.array.ArraysConvert;
 import ucar.ma2.DataType;
 import ucar.ma2.IndexIterator;
-import ucar.nc2.dataset.EnhanceScaleMissingUnsignedImpl;
 import ucar.nc2.dataset.NetcdfDataset.Enhance;
 import ucar.nc2.dataset.VariableDS;
 
@@ -19,9 +18,9 @@ public class DataEnhancer {
   private final VariableDS variableDS;
   private final ArrayType dataType;
   private final ArrayType orgDataType;
-  private final EnhanceScaleMissingUnsignedImpl scaleMissingUnsignedProxy;
+  private final EnhanceScaleMissingUnsigned scaleMissingUnsignedProxy;
 
-  public DataEnhancer(VariableDS variableDS, EnhanceScaleMissingUnsignedImpl scaleMissingUnsignedProxy) {
+  public DataEnhancer(VariableDS variableDS, EnhanceScaleMissingUnsigned scaleMissingUnsignedProxy) {
     this.variableDS = variableDS;
     this.dataType = variableDS.getArrayType();
     this.orgDataType = variableDS.getOriginalArrayType();

@@ -6,9 +6,7 @@ package ucar.nc2.iosp;
 
 import java.util.Iterator;
 import javax.annotation.Nullable;
-import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Section;
 import ucar.ma2.StructureDataIterator;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.ParsedSectionSpec;
@@ -20,7 +18,6 @@ import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Format;
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.Formatter;
 
 /**
@@ -94,16 +91,6 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
   public ucar.array.Array<?> readArrayData(Variable v2, ucar.array.Section section)
       throws java.io.IOException, ucar.array.InvalidRangeException {
     return null;
-  }
-
-  /** @deprecated do not use. */
-  @Deprecated
-  @Override
-  public long readToOutputStream(ucar.nc2.Variable v2, Section section, OutputStream out)
-      throws java.io.IOException, ucar.ma2.InvalidRangeException {
-
-    Array data = readData(v2, section);
-    return IospHelper.copyToOutputStream(data, out);
   }
 
   /** @deprecated do not use. */

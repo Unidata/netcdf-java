@@ -6,7 +6,6 @@ package ucar.nc2.iosp;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.Iterator;
 import javax.annotation.Nullable;
 
@@ -82,26 +81,6 @@ public interface IOServiceProvider extends Closeable {
    */
   ucar.array.Array<?> readArrayData(Variable v2, ucar.array.Section section)
       throws java.io.IOException, ucar.array.InvalidRangeException;
-
-  /**
-   * Read data from a top level Variable and send data to a OutputStream.
-   * Must be in big-endian order, following ncstream conventions.
-   * Default implementation just reads to memory and writes to stream.
-   * Allow override for possible performance improvements.
-   *
-   * @param v2 a top-level Variable
-   * @param section the section of data to read.
-   *        There must be a Range for each Dimension in the variable, in order.
-   *        Note: no nulls allowed. IOSP may not modify.
-   * @param out write data to this OutputStream
-   * @return the number of bytes written to the channel
-   * @throws java.io.IOException if read error
-   * @throws ucar.ma2.InvalidRangeException if invalid section
-   * @deprecated do not use.
-   */
-  @Deprecated
-  long readToOutputStream(Variable v2, Section section, OutputStream out)
-      throws java.io.IOException, ucar.ma2.InvalidRangeException;
 
   /** @deprecated do not use. */
   @Deprecated

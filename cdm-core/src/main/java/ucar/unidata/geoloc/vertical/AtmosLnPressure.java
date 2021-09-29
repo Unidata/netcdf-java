@@ -18,13 +18,9 @@ import java.io.IOException;
  * Implement CF vertical coordinate "atmosphere_ln_pressure_coordinate"
  * pressure(z) = p0 * exp(-lev(k))" .
  *
- * Theres a problem here, since its not 3D, we dont know what the 2D extent is.
- * DO NOT USE: see CF1Convention.makeAtmLnCoordinate()
- * 
- * @author caron
- * @see <a href="http://cf-pcmdi.llnl.gov/">http://cf-pcmdi.llnl.gov/</a>
- * @since May 6, 2008
+ * @deprecated use ucar.nc2.geoloc.vertical
  */
+@Deprecated
 @Immutable
 public class AtmosLnPressure extends AbstractVerticalTransform {
   public static final String P0 = "ReferencePressureVariableName";

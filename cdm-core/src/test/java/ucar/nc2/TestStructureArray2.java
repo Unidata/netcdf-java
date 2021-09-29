@@ -8,9 +8,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.nc2.internal.dataset.StructurePseudoDS;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.UtilsTestStructureArray;
 import java.io.IOException;
@@ -37,27 +34,6 @@ public class TestStructureArray2 {
       Array data = v.read();
       assert (data instanceof ArrayStructure);
       assert (data instanceof ArrayStructureBB);
-      assert (data.getElementType() == StructureData.class);
-
-      test.testArrayStructure((ArrayStructure) data);
-    }
-  }
-
-  @Test
-  public void testMA() throws IOException, InvalidRangeException {
-    // jan.nc is 1 dimensional (nc2 record dimension)
-    try (NetcdfFile ncfile = TestDir.openFileLocal("jan.nc");
-        NetcdfDataset ncd = NetcdfDatasets.enhance(ncfile, NetcdfDataset.getDefaultEnhanceMode(), null)) {
-      Dimension dim = ncd.findDimension("time");
-      assert dim != null;
-
-      Structure p = StructurePseudoDS.fromVars(ncd.getRootGroup(), "Psuedo", null, dim);
-
-      assert (p.getDataType() == DataType.STRUCTURE);
-
-      Array data = p.read();
-      assert (data instanceof ArrayStructure);
-      assert (data instanceof ArrayStructureMA);
       assert (data.getElementType() == StructureData.class);
 
       test.testArrayStructure((ArrayStructure) data);

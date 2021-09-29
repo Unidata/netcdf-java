@@ -1,15 +1,124 @@
 /*
- * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-package ucar.nc2.dataset;
 
+/**
+ * A Variable decorator that handles unsigned data, scale/offset packed data, and missing data.
+ * Specifically, it handles:
+ * <ul>
+ * <li>unsigned data using {@code _Unsigned}</li>
+ * <li>packed data using {@code scale_factor} and {@code add_offset}</li>
+ * <li>invalid/missing data using {@code valid_min}, {@code valid_max}, {@code valid_range}, {@code missing_value},
+ * or {@code _FillValue}</li>
+ * </ul>
+ * if those "standard attributes" are present.
+ *
+ * <h2>Standard Use</h2>
+ *
+ * <h3>Implementation rules for unsigned data</h3>
+ *
+ * <ol>
+ * <li>A variable is considered unsigned if it has an {@link DataType#isUnsigned() unsigned data type} or an
+ * {@code _Unsigned} attribute with value {@code true}.</li>
+ * <li>Values will be {@link DataType#widenNumber widened}, which effectively reinterprets signed data as unsigned
+ * data.</li>
+ * <li>To accommodate the unsigned conversion, the variable's data type will be changed to the
+ * {@link EnhanceScaleMissingUnsignedImpl#nextLarger(DataType) next larger type}.</li>
+ * </ol>
+ *
+ * <h3>Implementation rules for scale/offset</h3>
+ *
+ * <ol>
+ * <li>If scale_factor and/or add_offset variable attributes are present, then this is a "packed" Variable.</li>
+ * <li>The data type of the variable will be set to the {@link EnhanceScaleMissingUnsignedImpl#largestOf largest of}:
+ * <ul>
+ * <li>the original data type</li>
+ * <li>the unsigned conversion type, if applicable</li>
+ * <li>the {@code scale_factor} attribute type</li>
+ * <li>the {@code add_offset} attribute type</li>
+ * </ul>
+ * The signedness of the variable's data type will be preserved. For example, if the variable was originally
+ * unsigned, then {@link #getScaledOffsetType()} will be unsigned as well.
+ * </li>
+ * <li>External (packed) data is converted to internal (unpacked) data transparently during the
+ * {@link #applyScaleOffset(Array)} call.</li>
+ * </ol>
+ *
+ * <h3>Implementation rules for missing data</h3>
+ *
+ * Here "missing data" is a general name for invalid/never-written/missing values. Use this interface when you don't
+ * need to distinguish these variants. See below for a lower-level interface if you do need to distinguish between them.
+ *
+ * <ol>
+ * <li>By default, hasMissing() is true if any of hasValidData(), hasFillValue() or hasMissingValue() are true
+ * (see below). You can modify this behavior by calling setInvalidDataIsMissing(), setFillValueIsMissing(), or
+ * setMissingDataIsMissing().</li>
+ * <li>Test specific values through isMissing(double). Note that the data is converted and compared as a double.</li>
+ * <li>Data values of float or double NaN are considered missing data and will return true if called with
+ * isMissing(). (However isMissing() will not detect if you are setting NaNs yourself).</li>
+ * </ol>
+ *
+ * <h3>Implementation rules for missing data with scale/offset</h3>
+ *
+ * <ol>
+ * <li>_FillValue and missing_value values are always in the units of the external (packed) data.</li>
+ * <li>If valid_range is the same type as scale_factor (actually the wider of scale_factor and add_offset) and this
+ * is wider than the external data, then it will be interpreted as being in the units of the internal (unpacked)
+ * data. Otherwise it is in the units of the external (packed) data.</li>
+ * </ol>
+ *
+ * <h2>Low Level Access</h2>
+ *
+ * The following provide more direct access to missing/invalid data. These are mostly convenience routines for
+ * checking the standard attributes. If you set useNaNs = true in the constructor, these routines cannot be used when
+ * the data has type float or double.
+ *
+ * <h3>Implementation rules for valid_range</h3>
+ *
+ * <ol>
+ * <li>If valid_range is present, valid_min and valid_max attributes are ignored. Otherwise, the valid_min and/or
+ * valid_max is used to construct a valid range. If any of these exist, hasValidData() is true.</li>
+ * <li>To test a specific value, call isInvalidData(). Note that the data is converted and compared as a double. Or
+ * get the range through getValidMin() and getValidMax().</li>
+ * </ol>
+ *
+ * <h3>Implementation rules for _FillData</h3>
+ *
+ * <ol>
+ * <li>If the _FillData attribute is present, it must have a scalar value of the same type as the data. In this
+ * case, hasFillValue() returns true.</li>
+ * <li>Test specific values through isFillValue(). Note that the data is converted and compared as a double.</li>
+ * </ol>
+ *
+ * <h3>Implementation rules for missing_value</h3>
+ *
+ * <ol>
+ * <li>If the missing_value attribute is present, it must have a scalar or vector value of the same type as the
+ * data. In this case, hasMissingValue() returns true.</li>
+ * <li>Test specific values through isMissingValue(). Note that the data is converted and compared as a double.</li>
+ * </ol>
+ *
+ * <h3>Strategies for using EnhanceScaleMissingUnsigned</h3>
+ *
+ * <ol>
+ * <li>Low-level: use the is/has InvalidData/FillValue/MissingValue routines to "roll-your own" tests for the
+ * various kinds of missing/invalid data.</li>
+ * <li>Standard: use is/hasMissing() to test for missing data when you don't need to distinguish between the
+ * variants. Use the setXXXisMissing() to customize the behavior if needed.</li>
+ * </ol>
+ * TODO switch to using ucar.array.* in ver8.
+ */
+package ucar.nc2.internal.dataset;
+
+import java.util.Formatter;
 import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDataset.Enhance;
 import ucar.nc2.iosp.NetcdfFormatUtils;
 import ucar.nc2.util.Misc;
@@ -20,11 +129,8 @@ import static ucar.ma2.DataType.*;
 
 /**
  * Implementation of EnhanceScaleMissingUnsigned for unsigned data, scale/offset packed data, and missing data.
- *
- * @deprecated will move in ver7
  */
-@Deprecated
-public class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsigned {
+public class EnhanceScaleMissingUnsigned {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private final DataType origDataType;
@@ -55,7 +161,7 @@ public class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsig
    *
    * @param forVar the Variable to decorate.
    */
-  public EnhanceScaleMissingUnsignedImpl(VariableSimpleIF forVar, Set<Enhance> enhancements) {
+  public EnhanceScaleMissingUnsigned(VariableSimpleIF forVar, Set<Enhance> enhancements) {
     this(forVar, enhancements, NetcdfDataset.fillValueIsMissing, NetcdfDataset.invalidDataIsMissing,
         NetcdfDataset.missingDataIsMissing);
   }
@@ -69,7 +175,7 @@ public class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsig
    * @param invalidDataIsMissing use valid_range for isMissing()
    * @param missingDataIsMissing use missing_value for isMissing()
    */
-  public EnhanceScaleMissingUnsignedImpl(VariableSimpleIF forVar, Set<Enhance> enhancements, boolean fillValueIsMissing,
+  public EnhanceScaleMissingUnsigned(VariableSimpleIF forVar, Set<Enhance> enhancements, boolean fillValueIsMissing,
       boolean invalidDataIsMissing, boolean missingDataIsMissing) {
     this.fillValueIsMissing = fillValueIsMissing;
     this.invalidDataIsMissing = invalidDataIsMissing;
@@ -394,50 +500,41 @@ public class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsig
     }
   }
 
-  @Override
   public double getScaleFactor() {
     return scale;
   }
 
-  @Override
   public double getOffset() {
     return offset;
   }
 
-  @Override
   public Signedness getSignedness() {
     return signedness;
   }
 
-  @Override
   public DataType getScaledOffsetType() {
     return scaledOffsetType;
   }
 
   @Nonnull
-  @Override
   public DataType getUnsignedConversionType() {
     return unsignedConversionType;
   }
 
-  @Override
   public boolean hasValidData() {
     return hasValidRange || hasValidMin || hasValidMax;
   }
 
-  @Override
   public double getValidMin() {
     return validMin;
   }
 
-  @Override
   public double getValidMax() {
     return validMax;
   }
 
   // TODO using valid_min, valid_max to indicate "missing". Seems that these are often not used correctly,
   // and we should not support. CF or NUWG?
-  @Override
   public boolean isInvalidData(double val) {
     // valid_min and valid_max may have been multiplied by scale_factor, which could be a float, not a double.
     // That potential loss of precision means that we cannot do the nearlyEquals() comparison with
@@ -451,32 +548,26 @@ public class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsig
         || (hasValidMin && !greaterThanOrEqualToValidMin) || (hasValidMax && !lessThanOrEqualToValidMax);
   }
 
-  @Override
   public boolean hasFillValue() {
     return hasFillValue;
   }
 
-  @Override
   public boolean isFillValue(double val) {
     return hasFillValue && Misc.nearlyEquals(val, fillValue, Misc.defaultMaxRelativeDiffFloat);
   }
 
-  @Override
   public double getFillValue() {
     return fillValue;
   }
 
-  @Override
   public boolean hasScaleOffset() {
     return useScaleOffset;
   }
 
-  @Override
   public boolean hasMissingValue() {
     return hasMissingValue;
   }
 
-  @Override
   public boolean isMissingValue(double val) {
     if (!hasMissingValue) {
       return false;
@@ -489,7 +580,6 @@ public class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsig
     return false;
   }
 
-  @Override
   public double[] getMissingValues() {
     return missingValue;
   }
@@ -506,13 +596,11 @@ public class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsig
     this.missingDataIsMissing = b;
   }
 
-  @Override
   public boolean hasMissing() {
     return (invalidDataIsMissing && hasValidData()) || (fillValueIsMissing && hasFillValue())
         || (missingDataIsMissing && hasMissingValue());
   }
 
-  @Override
   public boolean isMissing(double val) {
     if (Double.isNaN(val)) {
       return true;
@@ -523,7 +611,6 @@ public class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsig
   }
 
 
-  @Override
   public Number convertUnsigned(Number value) {
     return convertUnsigned(value, signedness);
   }
@@ -541,33 +628,27 @@ public class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsig
     }
   }
 
-  @Override
   public Array convertUnsigned(Array in) {
     return convert(in, true, false, false);
   }
 
-  @Override
   public double applyScaleOffset(Number value) {
     double convertedValue = value.doubleValue();
     return useScaleOffset ? scale * convertedValue + offset : convertedValue;
   }
 
-  @Override
   public Array applyScaleOffset(Array in) {
     return convert(in, false, true, false);
   }
 
-  @Override
   public Number convertMissing(Number value) {
     return isMissing(value.doubleValue()) ? Double.NaN : value;
   }
 
-  @Override
   public Array convertMissing(Array in) {
     return convert(in, false, false, true);
   }
 
-  @Override
   public Array convert(Array in, boolean convertUnsigned, boolean applyScaleOffset, boolean convertMissing) {
     if (!in.getDataType().isNumeric() || (!convertUnsigned && !applyScaleOffset && !convertMissing)) {
       return in; // Nothing to do!
@@ -613,5 +694,33 @@ public class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsig
     }
 
     return out;
+  }
+
+  /** public for debugging */
+  public void showInfo(Formatter f) {
+    f.format("has missing = %s%n", hasMissing());
+    if (hasMissing()) {
+      if (hasMissingValue()) {
+        f.format("   missing value(s) = ");
+        for (double d : getMissingValues())
+          f.format(" %f", d);
+        f.format("%n");
+      }
+      if (hasFillValue())
+        f.format("   fillValue = %f%n", getFillValue());
+      if (hasValidData())
+        f.format("   valid min/max = [%f,%f]%n", getValidMin(), getValidMax());
+    }
+    f.format("FillValue or default = %s%n", getFillValue());
+
+    f.format("%nhas scale/offset = %s%n", hasScaleOffset());
+    if (hasScaleOffset()) {
+      double offset = applyScaleOffset(0.0);
+      double scale = applyScaleOffset(1.0) - offset;
+      f.format("   scale_factor = %f add_offset = %f%n", scale, offset);
+    }
+    f.format("original data type = %s%n", origDataType);
+    f.format("ScaledOffsetType data type = %s%n", getScaledOffsetType());
+    f.format("UnsignedConversionType data type = %s%n", getUnsignedConversionType());
   }
 }

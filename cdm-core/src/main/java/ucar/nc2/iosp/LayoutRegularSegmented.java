@@ -11,6 +11,7 @@ import ucar.ma2.InvalidRangeException;
 /**
  * LayoutRegularSegmented has data stored in segments that are regularly spaced.
  * This is how Netcdf-3 "record variables" are laid out.
+ * TODO will switch to ucar.array.* in ver8.
  */
 public class LayoutRegularSegmented implements Layout {
   private static final boolean debugNext = false;

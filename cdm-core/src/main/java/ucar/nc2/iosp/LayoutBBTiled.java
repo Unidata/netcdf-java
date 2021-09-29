@@ -15,6 +15,7 @@ import java.nio.*;
  * "Tiled" means that all chunks are assumed to be equal size.
  * Chunks do not necessarily cover the array, missing data is possible.
  * Used by HDF4 and HDF5.
+ * TODO will switch to ucar.array.* in ver8.
  */
 public class LayoutBBTiled implements LayoutBB {
   private static final boolean debug = false, debugIntersection = false;

@@ -4,6 +4,7 @@ import static com.google.common.truth.Truth.assertThat;
 import static ucar.nc2.TestUtils.makeDummyGroup;
 import com.google.common.collect.ImmutableList;
 import org.junit.Test;
+import ucar.array.ArrayType;
 import ucar.ma2.DataType;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
@@ -69,7 +70,7 @@ public class TestStructureDSBuilder {
     Structure orgVar = Structure.builder().setName("orgName").setDataType(DataType.INT).build(makeDummyGroup());
     StructureDS var = StructureDS.builder().setName("name").setOriginalName("orgName").setOriginalVariable(orgVar)
         .build(makeDummyGroup());
-    assertThat(var.getOriginalDataType()).isEqualTo(DataType.STRUCTURE);
+    assertThat(var.getOriginalArrayType()).isEqualTo(ArrayType.STRUCTURE);
     assertThat(var.getOriginalName()).isEqualTo("orgName");
     assertThat((Object) var.getOriginalVariable()).isEqualTo(orgVar);
   }

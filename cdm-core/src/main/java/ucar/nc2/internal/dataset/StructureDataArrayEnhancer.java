@@ -16,7 +16,7 @@ import ucar.nc2.dataset.StructureEnhanced;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dataset.VariableEnhanced;
 
-/** Enhance StructureData, for both StructureDS and SequenceDS. TODO move to internal. */
+/** Enhance StructureData, for both StructureDS and SequenceDS. */
 public class StructureDataArrayEnhancer {
   private static final Logger logger = LoggerFactory.getLogger(StructureDataArrayEnhancer.class);
   private final StructureEnhanced topStructure;

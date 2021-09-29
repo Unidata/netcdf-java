@@ -16,7 +16,10 @@ import java.io.IOException;
 /**
  * This implements a VerticalTransform using an existing 3D variable.
  * This is a common case when the 3D pressure or height field is stored in the file.
+ * 
+ * @deprecated use ucar.nc2.geoloc.vertical
  */
+@Deprecated
 @Immutable
 public class VTfromExistingData extends AbstractVerticalTransform {
   /** The name of the Parameter whose value is the variable that contains the 2D Height or Pressure field */

@@ -21,8 +21,9 @@ import java.io.IOException;
  * <p>
  * <strong>pressure(x,y,z) = ap(z) + b(z)*surfacePressure(x,y)</strong>
  *
- * @see "http://cfconventions.org/Data/cf-conventions/cf-conventions-1.8/cf-conventions.html#_atmosphere_hybrid_sigma_pressure_coordinate"
+ * @deprecated use ucar.nc2.geoloc.vertical
  */
+@Deprecated
 @Immutable
 public class HybridSigmaPressure extends AbstractVerticalTransform {
 

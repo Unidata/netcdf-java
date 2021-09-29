@@ -28,8 +28,7 @@ import java.util.ArrayList;
  * <p/>
  * Both dataSection and wantSection refer to the variable's overall shape.
  *
- * @author caron
- * @since Jan 9, 2008
+ * TODO will switch to ucar.array.* in ver8.
  */
 public class IndexChunkerTiled {
   private final List<Dim> dimList = new ArrayList<>();

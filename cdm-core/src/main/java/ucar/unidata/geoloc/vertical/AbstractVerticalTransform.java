@@ -16,7 +16,12 @@ import ucar.nc2.units.SimpleUnit;
 import ucar.unidata.geoloc.VerticalTransform;
 import java.io.IOException;
 
-/** Abstract superclass for implementations of VerticalTransform. */
+/**
+ * Abstract superclass for implementations of VerticalTransform.
+ * 
+ * @deprecated use ucar.nc2.geoloc.vertical
+ */
+@Deprecated
 @Immutable
 abstract class AbstractVerticalTransform implements VerticalTransform {
   protected final String units;

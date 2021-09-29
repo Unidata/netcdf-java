@@ -97,12 +97,12 @@ final class ArrayByte extends Array<Byte> {
   }
 
   /**
-   * Create a String out of this rank zero or one Array.
+   * Create a String out of this Array, collapsing all dimensions into one.
    * If there is a null (zero) value in the array, the String will end there.
    * The null is not returned as part of the String.
    */
   String makeStringFromChar() {
-    Preconditions.checkArgument(getRank() < 2);
+    // LOOK Preconditions.checkArgument(getRank() < 2);
     int count = 0;
     for (byte c : this) {
       if (c == 0) {

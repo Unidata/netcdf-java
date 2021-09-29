@@ -603,15 +603,6 @@ public class NetcdfFile implements FileCacheable, Closeable {
     throw new UnsupportedOperationException();
   }
 
-  protected long readToOutputStream(Variable v, ucar.ma2.Section section, OutputStream out)
-      throws IOException, ucar.ma2.InvalidRangeException {
-
-    if ((iosp == null) || v.hasCachedData())
-      return IospHelper.copyToOutputStream(v.read(section), out);
-
-    return iosp.readToOutputStream(v, section, out);
-  }
-
   /**
    * Generic way to send a "message" to the underlying IOSP.
    * This message is sent after the file is open. To affect the creation of the file,

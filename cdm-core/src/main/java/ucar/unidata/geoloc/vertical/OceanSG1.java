@@ -13,10 +13,10 @@ import java.io.IOException;
 /**
  * Create a 3D height(z,y,x) array using the CF formula for "ocean s vertical coordinate g1".
  * standard name: ocean_s_coordinate_g1
- * 
- * @author Sachin (skbhate@ngi.msstate.edu)
- * @see "http://cfconventions.org/Data/cf-conventions/cf-conventions-1.8/cf-conventions.html#_ocean_s_coordinate_generic_form_1"
+ *
+ * @deprecated use ucar.nc2.geoloc.vertical
  */
+@Deprecated
 @Immutable
 public class OceanSG1 extends AbstractVerticalTransform {
 

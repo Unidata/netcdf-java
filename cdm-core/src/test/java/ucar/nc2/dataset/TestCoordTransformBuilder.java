@@ -56,7 +56,6 @@ public class TestCoordTransformBuilder {
     try (NetcdfDataset ncdb = NetcdfDatasets.openDataset(fileLocation)) {
       for (CoordinateTransform ct : ncdb.getCoordinateTransforms()) {
         System.out.printf("  %s%n", ct);
-
         CoordinateTransform copy = ct.toBuilder().build();
         assertThat(copy).isEqualTo(ct);
       }

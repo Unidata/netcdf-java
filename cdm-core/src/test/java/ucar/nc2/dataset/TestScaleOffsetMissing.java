@@ -36,12 +36,12 @@ public class TestScaleOffsetMissing {
     try (NetcdfDataset ncd = NetcdfDatasets.openDataset(testResource.getAbsolutePath(), true, null)) {
       VariableDS var = (VariableDS) ncd.findVariable("scaleOffsetValidMaxMin");
 
-      assertThat(var.getValidMin()).isWithin(fpTol).of(expectedValidMin);
-      assertThat(var.getValidMax()).isWithin(fpTol).of(expectedValidMax);
+      assertThat(var.scaleMissingUnsignedProxy().getValidMin()).isWithin(fpTol).of(expectedValidMin);
+      assertThat(var.scaleMissingUnsignedProxy().getValidMax()).isWithin(fpTol).of(expectedValidMax);
 
       float[] actual = (float[]) var.read().getStorage();
       for (int i = 0; i < actual.length; i++) {
-        if (var.isInvalidData(actual[i])) {
+        if (var.scaleMissingUnsignedProxy().isInvalidData(actual[i])) {
           assertThat(actual[i]).isNaN();
           assertThat(expected[i]).isNaN();
         } else {
@@ -60,12 +60,12 @@ public class TestScaleOffsetMissing {
       // same as scaleOffsetValidMaxMin, but uses valid_range attribute instead of valid_min and valid_max attributes.
       VariableDS var = (VariableDS) ncd.findVariable("scaleOffsetValidRange");
 
-      assertThat(var.getValidMin()).isWithin(fpTol).of(expectedValidMin);
-      assertThat(var.getValidMax()).isWithin(fpTol).of(expectedValidMax);
+      assertThat(var.scaleMissingUnsignedProxy().getValidMin()).isWithin(fpTol).of(expectedValidMin);
+      assertThat(var.scaleMissingUnsignedProxy().getValidMax()).isWithin(fpTol).of(expectedValidMax);
 
       float[] actual = (float[]) var.read().getStorage();
       for (int i = 0; i < actual.length; i++) {
-        if (var.isInvalidData(actual[i])) {
+        if (var.scaleMissingUnsignedProxy().isInvalidData(actual[i])) {
           assertThat(actual[i]).isNaN();
           assertThat(expected[i]).isNaN();
         } else {
@@ -88,12 +88,12 @@ public class TestScaleOffsetMissing {
       VariableDS var = (VariableDS) ncd.findVariable("negScaleOffsetValidRange");
 
       // Note: checking that the actual valid min/max is the negative of the expected valid max/min.
-      assertThat(var.getValidMin()).isWithin(fpTol).of(-expectedValidMax);
-      assertThat(var.getValidMax()).isWithin(fpTol).of(-expectedValidMin);
+      assertThat(var.scaleMissingUnsignedProxy().getValidMin()).isWithin(fpTol).of(-expectedValidMax);
+      assertThat(var.scaleMissingUnsignedProxy().getValidMax()).isWithin(fpTol).of(-expectedValidMin);
 
       float[] actual = (float[]) var.read().getStorage();
       for (int i = 0; i < actual.length; i++) {
-        if (var.isInvalidData(actual[i])) {
+        if (var.scaleMissingUnsignedProxy().isInvalidData(actual[i])) {
           assertThat(actual[i]).isNaN();
           assertThat(expected[i]).isNaN();
         } else {
