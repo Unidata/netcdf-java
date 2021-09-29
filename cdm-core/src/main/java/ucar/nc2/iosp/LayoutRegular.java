@@ -15,6 +15,7 @@ import ucar.ma2.InvalidRangeException;
  * The data is contiguous, with outer dimension varying fastest.
  * Given a Section, this calculates the set of contiguous "chunks" of the wanted data into the stored data.
  * The wanted section is always a subset of the data section (see RegularSectionLayout where thats not the case).
+ * TODO will switch to ucar.array.* in ver8.
  */
 @Immutable
 public class LayoutRegular implements Layout {

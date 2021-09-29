@@ -12,6 +12,7 @@ import ucar.ma2.InvalidRangeException;
  * LayoutSegmented has data stored in segments.
  * Assume that each segment size is a multiple of elemSize.
  * Used by HDF4.
+ * TODO will switch to ucar.array.* in ver8.
  */
 public class LayoutSegmented implements Layout {
   private static final boolean debugNext = false;

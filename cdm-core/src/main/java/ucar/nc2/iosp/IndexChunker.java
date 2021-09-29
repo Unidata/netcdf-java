@@ -48,6 +48,8 @@ import java.util.ArrayList;
  *   }
  * }
  * </pre>
+ * 
+ * TODO will switch to ucar.array.* in ver8.
  */
 public class IndexChunker {
   private static final boolean debug = false, debugMerge = false, debugNext = false;

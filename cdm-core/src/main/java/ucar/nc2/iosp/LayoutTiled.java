@@ -17,6 +17,7 @@ import java.util.List;
  * Chunks have an offset into the complete array.
  * Chunks do not necessarily cover the array, missing data is possible.
  * Used by HDF4 and HDF5.
+ * TODO will switch to ucar.array.* in ver8.
  */
 public class LayoutTiled implements Layout {
   private static final boolean debug = false, debugNext = false;
