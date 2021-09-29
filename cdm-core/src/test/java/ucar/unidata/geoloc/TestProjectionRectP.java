@@ -7,20 +7,16 @@ package ucar.unidata.geoloc;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
-import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
 import java.util.Collection;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /** Test {@link ProjectionRect} */
 @RunWith(Parameterized.class)
 public class TestProjectionRectP {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private double x1, x2, y1, y2;
   private ProjectionRect projectionRect;
@@ -99,7 +95,7 @@ public class TestProjectionRectP {
   @Test
   public void testGetHeight2() {
     // getX() should give the y value for the upper left corner
-    double minY = projectionRect.getY();
+    double minY = projectionRect.getMinY();
     double maxY = projectionRect.getMaxY();
     double testHeight = maxY - minY;
     double height = projectionRect.getHeight();
@@ -148,11 +144,11 @@ public class TestProjectionRectP {
 
   @Test
   public void testSetY() {
-    double y = projectionRect.getY();
+    double y = projectionRect.getMinY();
     double y2 = y * y + 1d;
     ProjectionRect test = projectionRect.toBuilder().setY(y2).build();
 
-    assertEquals(y2, test.getY(), 0);
+    assertEquals(y2, test.getMinY(), 0);
     assertEquals(y2, test.getMinY(), 0);
     assertNotEquals(y, y2);
   }

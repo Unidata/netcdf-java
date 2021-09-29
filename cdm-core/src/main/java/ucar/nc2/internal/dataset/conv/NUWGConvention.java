@@ -397,16 +397,14 @@ public class NUWGConvention extends CoordSystemBuilder {
       this.orgVar = vb.orgVar;
       valueType = vb.dataType;
       try {
-        if (valueType == ArrayType.CHAR) {
-          svalue = Arrays.makeStringFromChar((ucar.array.Array<Byte>) orgVar.readArray());
-        } else if (valueType == ArrayType.STRING) {
-          svalue = (String) orgVar.readArray().getScalar();
+        if ((valueType == ArrayType.CHAR) || (valueType == ArrayType.STRING)) {
+          svalue = orgVar.readScalarString();
         } else if (valueType == ArrayType.BYTE) {
-          bvalue = (Byte) orgVar.readArray().getScalar();
+          bvalue = orgVar.readScalarByte();
         } else if ((valueType == ArrayType.INT) || (valueType == ArrayType.SHORT)) {
-          ivalue = (Integer) orgVar.readArray().getScalar();
+          ivalue = orgVar.readScalarInt();
         } else {
-          dvalue = (Double) orgVar.readArray().getScalar();
+          dvalue = orgVar.readScalarDouble();
         }
       } catch (UnsupportedOperationException e) {
         parseInfo.format("Nav variable %s  not a scalar%n", getName());
