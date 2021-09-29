@@ -46,7 +46,7 @@ public class TestProjectionRectP {
   @Test
   public void testGetX() {
     // getX() should give the x value for the upper left corner
-    double getX = projectionRect.getX();
+    double getX = projectionRect.getMinX();
     double getMinX = projectionRect.getMinX();
     double getMaxX = projectionRect.getMaxX();
 
@@ -57,7 +57,7 @@ public class TestProjectionRectP {
   @Test
   public void testGetY() {
     // getX() should give the y value for the upper left corner
-    double getY = projectionRect.getY();
+    double getY = projectionRect.getMinY();
     double getMinY = projectionRect.getMinY();
     double getMaxY = projectionRect.getMaxY();
 
@@ -88,7 +88,7 @@ public class TestProjectionRectP {
   @Test
   public void testGetWidth2() {
     // getX() should give the y value for the upper left corner
-    double minX = projectionRect.getX();
+    double minX = projectionRect.getMinX();
     double maxX = projectionRect.getMaxX();
     double testWidth = maxX - minX;
     double width = projectionRect.getWidth();
@@ -137,23 +137,20 @@ public class TestProjectionRectP {
 
   @Test
   public void testSetX() {
-
-    double x = projectionRect.getX();
+    double x = projectionRect.getMinX();
     double x2 = x * x + 1d;
     ProjectionRect test = projectionRect.toBuilder().setX(x2).build();
 
-    assertEquals(x2, test.getX(), 0);
+    assertEquals(x2, test.getMinX(), 0);
     assertEquals(x2, test.getMinX(), 0);
     assertNotEquals(x, x2);
   }
 
   @Test
   public void testSetY() {
-
     double y = projectionRect.getY();
     double y2 = y * y + 1d;
     ProjectionRect test = projectionRect.toBuilder().setY(y2).build();
-
 
     assertEquals(y2, test.getY(), 0);
     assertEquals(y2, test.getMinY(), 0);
@@ -162,7 +159,6 @@ public class TestProjectionRectP {
 
   @Test
   public void testSetWidth() {
-
     double width = projectionRect.getWidth();
     double width2 = width + 10d;
     ProjectionRect test = projectionRect.toBuilder().setWidth(width2).build();

@@ -12,7 +12,10 @@ import ucar.ma2.Range;
 
 /**
  * A transformation to a vertical reference coordinate system, such as height or pressure.
+ * 
+ * @deprecated use ucar.nc2.geoloc.vertical
  */
+@Deprecated
 public interface VerticalTransform {
 
   /**

@@ -12,8 +12,6 @@ import ucar.nc2.util.Misc;
 
 /**
  * Bounding box for ProjectionPoints.
- * Note that getX() getY() really means getMinX(), getMinY(), rather than
- * "upper left point" of the rectangle.
  */
 @Immutable
 public class ProjectionRect {
@@ -42,8 +40,8 @@ public class ProjectionRect {
    * @param height y height
    */
   public ProjectionRect(ProjectionPoint minimum, double width, double height) {
-    this.x = minimum.getX();
-    this.y = minimum.getY();
+    this.minx = minimum.getX();
+    this.miny = minimum.getY();
     this.width = width;
     this.height = height;
   }
@@ -61,8 +59,8 @@ public class ProjectionRect {
     this.height = Math.abs(y1 - y2);
     double wx0 = 0.5 * (x1 + x2);
     double wy0 = 0.5 * (y1 + y2);
-    this.x = wx0 - width / 2;
-    this.y = wy0 - height / 2;
+    this.minx = wx0 - width / 2;
+    this.miny = wy0 - height / 2;
   }
 
   /**
@@ -88,32 +86,6 @@ public class ProjectionRect {
     }
   }
 
-  /** @deprecated use fromSpec(String spec) */
-  @Deprecated
-  public ProjectionRect(String spec) {
-    StringTokenizer stoker = new StringTokenizer(spec, " ,");
-    int n = stoker.countTokens();
-    if (n != 4) {
-      throw new IllegalArgumentException("Must be 4 numbers = lat, lon, latWidth, lonWidth");
-    }
-    this.x = Double.parseDouble(stoker.nextToken());
-    this.y = Double.parseDouble(stoker.nextToken());
-    this.width = Double.parseDouble(stoker.nextToken());
-    this.height = Double.parseDouble(stoker.nextToken());
-  }
-
-  /** @deprecated use getMinX */
-  @Deprecated
-  public double getX() {
-    return x;
-  }
-
-  /** @deprecated use getMinY */
-  @Deprecated
-  public double getY() {
-    return y;
-  }
-
   public double getWidth() {
     return width;
   }
@@ -122,85 +94,28 @@ public class ProjectionRect {
     return height;
   }
 
-  ////////////////////////////////////////////////////
-  // taken from java.awt.geom.Rectangle2D, removed because awt missing on android
-
-  /**
-   * Returns the smallest X coordinate of the framing
-   * rectangle of the <code>Shape</code> in <code>double</code>
-   * precision.
-   *
-   * @return the smallest X coordinate of the framing
-   *         rectangle of the <code>Shape</code>.
-   * @since 1.2
-   */
   public double getMinX() {
-    return getX();
+    return minx;
   }
 
-  /**
-   * Returns the smallest Y coordinate of the framing
-   * rectangle of the <code>Shape</code> in <code>double</code>
-   * precision.
-   *
-   * @return the smallest Y coordinate of the framing
-   *         rectangle of the <code>Shape</code>.
-   * @since 1.2
-   */
   public double getMinY() {
-    return getY();
+    return miny;
   }
 
-  /**
-   * Returns the largest X coordinate of the framing
-   * rectangle of the <code>Shape</code> in <code>double</code>
-   * precision.
-   *
-   * @return the largest X coordinate of the framing
-   *         rectangle of the <code>Shape</code>.
-   * @since 1.2
-   */
   public double getMaxX() {
-    return getX() + getWidth();
+    return getMinX() + getWidth();
   }
 
-  /**
-   * Returns the largest Y coordinate of the framing
-   * rectangle of the <code>Shape</code> in <code>double</code>
-   * precision.
-   *
-   * @return the largest Y coordinate of the framing
-   *         rectangle of the <code>Shape</code>.
-   * @since 1.2
-   */
   public double getMaxY() {
-    return getY() + getHeight();
+    return getMinY() + getHeight();
   }
 
-  /**
-   * Returns the X coordinate of the center of the framing
-   * rectangle of the <code>Shape</code> in <code>double</code>
-   * precision.
-   * 
-   * @return the X coordinate of the center of the framing rectangle
-   *         of the <code>Shape</code>.
-   * @since 1.2
-   */
   public double getCenterX() {
-    return getX() + getWidth() / 2.0;
+    return getMinX() + getWidth() / 2.0;
   }
 
-  /**
-   * Returns the Y coordinate of the center of the framing
-   * rectangle of the <code>Shape</code> in <code>double</code>
-   * precision.
-   * 
-   * @return the Y coordinate of the center of the framing rectangle
-   *         of the <code>Shape</code>.
-   * @since 1.2
-   */
   public double getCenterY() {
-    return getY() + getHeight() / 2.0;
+    return getMinY() + getHeight() / 2.0;
   }
 
   public boolean isEmpty() {
@@ -208,15 +123,15 @@ public class ProjectionRect {
   }
 
   public boolean intersects(ProjectionRect r) {
-    return intersects(r.getX(), r.getY(), r.getWidth(), r.getHeight());
+    return intersects(r.getMinX(), r.getMinY(), r.getWidth(), r.getHeight());
   }
 
   public boolean intersects(double x, double y, double w, double h) {
     if (isEmpty() || w <= 0 || h <= 0) {
       return false;
     }
-    double x0 = getX();
-    double y0 = getY();
+    double x0 = getMinX();
+    double y0 = getMinY();
     return (x + w > x0 && y + h > y0 && x < x0 + getWidth() && y < y0 + getHeight());
   }
 
@@ -323,7 +238,7 @@ public class ProjectionRect {
    * @return minimum corner of the bounding box
    */
   public ProjectionPoint getMinPoint() {
-    return ProjectionPoint.create(getX(), getY());
+    return ProjectionPoint.create(getMinX(), getMinY());
   }
 
   /**
@@ -332,21 +247,15 @@ public class ProjectionRect {
    * @return maximum corner of the bounding box
    */
   public ProjectionPoint getMaxPoint() {
-    return ProjectionPoint.create(getX() + getWidth(), getY() + getHeight());
+    return ProjectionPoint.create(getMinX() + getWidth(), getMinY() + getHeight());
   }
 
   /**
-   * Get a String representation of this object.
-   *
-   * @return a String representation of this object.
+   * Get a String representation of this object, with user settable number of decomal places.
    */
-  public String toString1() {
-    return String.format("min: %.3f %.3f size: %.3f %.3f", getX(), getY(), getWidth(), getHeight());
-  }
-
-  public String toString2(int ndec) {
+  public String toStringNDec(int ndec) {
     String f = " %." + ndec + "f";
-    return String.format("min:" + f + f + " max:" + f + f, getX(), getY(), getMaxX(), getMaxY());
+    return String.format("min:" + f + f + " max:" + f + f, getMinX(), getMinY(), getMaxX(), getMaxY());
   }
 
   /**
@@ -354,7 +263,7 @@ public class ProjectionRect {
    * "x, y, width, height"
    */
   public String toString() {
-    return String.format("%f, %f, %f, %f", x, y, getWidth(), getHeight());
+    return String.format("%f, %f, %f, %f", minx, miny, getWidth(), getHeight());
   }
 
   // Exact comparison is needed in order to be consistent with hashCode().
@@ -370,19 +279,18 @@ public class ProjectionRect {
       return false;
     if (Double.compare(that.width, width) != 0)
       return false;
-    if (Double.compare(that.x, x) != 0)
+    if (Double.compare(that.minx, minx) != 0)
       return false;
-    return Double.compare(that.y, y) == 0;
-
+    return Double.compare(that.miny, miny) == 0;
   }
 
   @Override
   public int hashCode() {
     int result;
     long temp;
-    temp = Double.doubleToLongBits(x);
+    temp = Double.doubleToLongBits(minx);
     result = (int) (temp ^ (temp >>> 32));
-    temp = Double.doubleToLongBits(y);
+    temp = Double.doubleToLongBits(miny);
     result = 31 * result + (int) (temp ^ (temp >>> 32));
     temp = Double.doubleToLongBits(width);
     result = 31 * result + (int) (temp ^ (temp >>> 32));
@@ -412,21 +320,21 @@ public class ProjectionRect {
   }
 
   //////////////////////////////////////////////////////////////////////////
-  private final double x;
-  private final double y;
+  private final double minx;
+  private final double miny;
   private final double width;
   private final double height;
 
   private ProjectionRect(ProjectionRect.Builder builder) {
-    this.x = builder.x;
-    this.y = builder.y;
+    this.minx = builder.x;
+    this.miny = builder.y;
     this.width = builder.width;
     this.height = builder.height;
   }
 
   /** Turn into a mutable Builder. Can use toBuilder().build() to copy. */
   public ProjectionRect.Builder toBuilder() {
-    return builder().setX(this.x).setY(this.y).setWidth(this.width).setHeight(this.height);
+    return builder().setX(this.minx).setY(this.miny).setWidth(this.width).setHeight(this.height);
   }
 
   public static Builder builder() {
@@ -484,7 +392,7 @@ public class ProjectionRect {
     }
 
     public Builder setRect(ProjectionRect r) {
-      return setRect(r.getX(), r.getY(), r.getWidth(), r.getHeight());
+      return setRect(r.getMinX(), r.getMinY(), r.getWidth(), r.getHeight());
     }
 
     /** Extend the rectangle by the given rectangle. */

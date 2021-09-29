@@ -98,8 +98,7 @@ public abstract class Bearing {
    * @param lon1 longitude of starting point
    * @param az forward azimuth (degrees)
    * @param dist distance from the point (km)
-   * @return the position as a LatLonPointImpl
-   * @deprecated will return LatLonPoint in 6.
+   * @return the position as a LatLonPoint
    */
   public static LatLonPoint findPoint(double lat1, double lon1, double az, double dist) {
     return findPoint(defaultEarth, lat1, lon1, az, dist);
@@ -127,8 +126,7 @@ public abstract class Bearing {
    * @param lon1 longitude of starting point
    * @param az forward azimuth (degrees)
    * @param dist distance from the point (km)
-   * @return the position as a LatLonPointImpl
-   * @deprecated will return LatLonPoint in 6.
+   * @return the position as a LatLonPoint
    */
   public static LatLonPoint findPoint(Earth e, double lat1, double lon1, double az, double dist) {
     if (dist == 0) {
@@ -222,22 +220,13 @@ public abstract class Bearing {
    * See http://www.ngs.noaa.gov/TOOLS/Inv_Fwd/Inv_Fwd.html
    * <P>
    * Original documentation:
-   * <br>
    * SOLUTION OF THE GEODETIC INVERSE PROBLEM AFTER T.VINCENTY
-   * <br>
    * MODIFIED RAINSFORD'S METHOD WITH HELMERT'S ELLIPTICAL TERMS
-   * <br>
    * EFFECTIVE IN ANY AZIMUTH AND AT ANY DISTANCE SHORT OF ANTIPODAL
-   * <br>
    * STANDPOINT/FOREPOINT MUST NOT BE THE GEOGRAPHIC POLE
-   * </P>
    * Reference ellipsoid is the WGS-84 ellipsoid.
-   * <br>
    * See http://www.colorado.edu/geography/gcraft/notes/datum/elist.html
-   * <p/>
-   * Requires close to 1.4 E-5 seconds wall clock time per call
-   * on a 550 MHz Pentium with Linux 7.2.
-   *
+   * 
    * @param e Earth object (defines radius and flattening)
    * @param lat1 Lat of point 1
    * @param lon1 Lon of point 1

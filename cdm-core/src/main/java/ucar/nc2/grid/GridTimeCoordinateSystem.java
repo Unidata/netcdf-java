@@ -23,6 +23,7 @@ import java.util.Optional;
  * depends on the forecast run. This is handled in the subclasses.
  */
 public abstract class GridTimeCoordinateSystem {
+  /** Types of GridTimeCoordinateSystem. */
   public enum Type {
     Observation, // No runtimes
     SingleRuntime, // Single runtime

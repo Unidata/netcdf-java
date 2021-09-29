@@ -21,7 +21,10 @@ import ucar.nc2.constants.CDM;
  * Create a 3D height(z,y,x) array using the CF formula for "atmospheric sigma vertical coordinate".
  * <p>
  * <strong>pressure(x,y,z) = ptop + sigma(z)*surfacePressure(x,y)</strong>
+ * 
+ * @deprecated use ucar.nc2.geoloc.vertical
  */
+@Deprecated
 @Immutable
 public class AtmosSigma extends AbstractVerticalTransform {
 

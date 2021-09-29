@@ -32,9 +32,10 @@ import java.io.IOException;
  * Create a 3D height(z,y,x) array using the CF formula for "ocean_s_coordinate".
  * <p/>
  * Modified April 20, 2009 by sachin
- * 
- * @see "http://cfconventions.org/Data/cf-conventions/cf-conventions-1.8/cf-conventions.html#_ocean_s_coordinate"
+ *
+ * @deprecated use ucar.nc2.geoloc.vertical
  */
+@Deprecated
 @Immutable
 public class OceanS extends AbstractVerticalTransform {
   /** The eta variable name identifier */

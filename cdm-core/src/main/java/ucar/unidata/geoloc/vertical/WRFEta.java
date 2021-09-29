@@ -17,7 +17,12 @@ import ucar.nc2.Variable;
 import ucar.nc2.NetcdfFile;
 import java.io.IOException;
 
-/** Models the vertical coordinate for the Weather Research and Forecast (WRF) model's vertical Eta coordinate */
+/**
+ * Models the vertical coordinate for the Weather Research and Forecast (WRF) model's vertical Eta coordinate
+ * 
+ * @deprecated use ucar.nc2.geoloc.vertical
+ */
+@Deprecated
 @Immutable
 public class WRFEta extends AbstractVerticalTransform {
   public static final String BasePressureVariable = "base_presure";

@@ -17,8 +17,9 @@ import java.io.IOException;
  * <p>
  * <strong>height(x,y,z) = a(z) + b(z)*orog(x,y)</strong>
  *
- * @see "http://cfconventions.org/Data/cf-conventions/cf-conventions-1.8/cf-conventions.html#atmosphere-hybrid-height-coordinate"
+ * @deprecated use ucar.nc2.geoloc.vertical
  */
+@Deprecated
 @Immutable
 public class HybridHeight extends AbstractVerticalTransform {
 

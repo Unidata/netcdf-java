@@ -12,10 +12,10 @@ import java.io.IOException;
 
 /**
  * Create a 3D height(z,y,x) array using the CF formula for "ocean_sigma_z_coordinate".
- * 
- * @see "http://cfconventions.org/Data/cf-conventions/cf-conventions-1.8/cf-conventions.html#_ocean_sigma_over_z_coordinate"
+ *
+ * @deprecated use ucar.nc2.geoloc.vertical
  */
-
+@Deprecated
 public class OceanSigma extends AbstractVerticalTransform {
 
   /** The eta variable name identifier */

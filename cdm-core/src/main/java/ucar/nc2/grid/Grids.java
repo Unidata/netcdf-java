@@ -11,6 +11,7 @@ import ucar.nc2.constants.AxisType;
 
 import static ucar.nc2.grid.GridAxisSpacing.discontiguousInterval;
 
+/** Static methods of GridDataset. */
 public class Grids {
 
   /** Standard sort on Coordinate Axes */

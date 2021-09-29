@@ -380,21 +380,6 @@ public class LatLonRect {
     return new Builder().init(LatLonPoint.create(lat, lon), deltaLat, deltaLon).build();
   }
 
-  /** @deprecated use fromSpec(String spec) */
-  @Deprecated
-  public static Builder builder(String spec) {
-    StringTokenizer stoker = new StringTokenizer(spec, " ,");
-    int n = stoker.countTokens();
-    if (n != 4)
-      throw new IllegalArgumentException("Must be 4 numbers = lat, lon, latWidth, lonWidth");
-    double lat = Double.parseDouble(stoker.nextToken());
-    double lon = Double.parseDouble(stoker.nextToken());
-    double deltaLat = Double.parseDouble(stoker.nextToken());
-    double deltaLon = Double.parseDouble(stoker.nextToken());
-
-    return new Builder().init(LatLonPoint.create(lat, lon), deltaLat, deltaLon);
-  }
-
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   private LatLonRect(Builder builder) {

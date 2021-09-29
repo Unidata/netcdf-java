@@ -15,7 +15,12 @@ import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 import ucar.unidata.geoloc.VerticalTransform;
 
-/** A subset of a vertical transform. */
+/**
+ * A subset of a vertical transform.
+ * 
+ * @deprecated use ucar.nc2.geoloc.vertical
+ */
+@Deprecated
 @Immutable
 public class VerticalTransformSubset extends AbstractVerticalTransform {
   private final VerticalTransform original;
