@@ -235,7 +235,7 @@ public class GcdmNetcdfFile extends NetcdfFile {
         Header header = response.getHeader();
         setId(header.getId());
         setTitle(header.getTitle());
-        setLocation(SCHEME + header.getLocation());
+        setLocation(remoteURI);
 
         this.rootGroup = Group.builder().setName("");
         GcdmConverter.decodeGroup(header.getRoot(), this.rootGroup);

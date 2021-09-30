@@ -194,6 +194,7 @@ public class GcdmConverter {
           datab.addSdata(att.getStringValue(i));
         }
         datab.setDataType(convertDataType(att.getArrayType()));
+        encodeShape(datab, new int[] {att.getLength()});
         attBuilder.setData(datab);
       } else {
         attBuilder.setData(encodePrimitiveData(att.getArrayType(), att.getArrayValues()));
@@ -283,7 +284,9 @@ public class GcdmConverter {
   ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   public static GcdmNetcdfProto.Data encodeData(ArrayType dataType, Array<?> data) {
-    if (data.isVlen()) {
+    if (dataType == ArrayType.OPAQUE) {
+      return encodePrimitiveData(dataType, data);
+    } else if (data.isVlen()) {
       return encodeVlenData(dataType, (ArrayVlen) data);
     } else if (data instanceof StructureDataArray) {
       return encodeStructureDataArray(dataType, (StructureDataArray) data);
@@ -304,7 +307,15 @@ public class GcdmConverter {
     encodeShape(builder, data.getShape());
 
     switch (dataType) {
-      case OPAQUE:
+      case OPAQUE: {
+        ArrayVlen<Byte> vlen = (ArrayVlen) data;
+        int nelems = (int) Arrays.computeSize(data.getShape());
+        for (int i = 0; i < nelems; i++) {
+          builder.addBdata(Arrays.getByteString(vlen.get(i)));
+        }
+        break;
+      }
+
       case ENUM1:
       case CHAR:
       case UBYTE:
@@ -359,19 +370,6 @@ public class GcdmConverter {
         sdata.forEach(val -> builder.addSdata(val));
         break;
       }
-      /*
-       * case OPAQUE: {
-       * // location: "cdm/core/src/test/data/hdf5/test_atomic_types.nc" variableSpec: "vo"
-       * if (data instanceof ArrayByte) {
-       * ArrayByte bdata = (ArrayByte) data;
-       * builder.addBdata(bdata.getByteString());
-       * } else {
-       * Array<ByteBuffer> bdata = (Array<ByteBuffer>) data; // LOOK does this happen?
-       * bdata.forEach(val -> builder.addBdata(ByteString.copyFrom(val.array())));
-       * }
-       * break;
-       * }
-       */
       default:
         throw new IllegalStateException("Unkown datatype " + dataType);
     }
@@ -601,8 +599,16 @@ public class GcdmConverter {
     ArrayType dataType = convertDataType(data.getDataType());
     int[] shape = decodeShape(data);
     switch (dataType) {
+      case OPAQUE: {
+        byte[][] ragged = new byte[data.getBdataCount()][];
+        int countOuter = 0;
+        for (ByteString nestedBytes : data.getBdataList()) {
+          ragged[countOuter++] = nestedBytes.toByteArray();
+        }
+        return (Array<T>) ArrayVlen.factory(ArrayType.OPAQUE, shape, ragged);
+      }
+
       case CHAR:
-      case OPAQUE:
       case ENUM1:
       case UBYTE:
       case BYTE: {
@@ -683,21 +689,6 @@ public class GcdmConverter {
         }
         return Arrays.factory(dataType, shape, array);
       }
-      /*
-       * case OPAQUE: {
-       * if (data.getBdataCount() == 1) {
-       * byte[] array = data.getBdata(0).toByteArray();
-       * return Arrays.factory(dataType, shape, array);
-       * }
-       * // LOOK PROBABLY WRONG
-       * int count = 0;
-       * Object[] array = new Object[data.getBdataCount()];
-       * for (ByteString val : data.getBdataList()) {
-       * array[count++] = ByteBuffer.wrap(val.toByteArray());
-       * }
-       * return Arrays.factory(dataType, shape, array);
-       * }
-       */
       default:
         throw new IllegalStateException("Unknown datatype " + dataType);
     }

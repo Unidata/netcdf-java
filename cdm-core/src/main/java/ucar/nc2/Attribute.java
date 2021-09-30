@@ -10,6 +10,7 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import ucar.array.Array;
 import ucar.array.ArrayType;
+import ucar.array.ArrayVlen;
 import ucar.array.Arrays;
 import ucar.array.ArraysConvert;
 import ucar.ma2.DataType;
@@ -20,7 +21,6 @@ import java.util.List;
 /**
  * An Attribute is a name and a value, used for associating arbitrary metadata with another object.
  * The value can be a one dimensional array of Strings or numeric values.
- * LOOK: support for OPAQUE attributes?
  */
 @Immutable
 public class Attribute {
@@ -193,16 +193,26 @@ public class Attribute {
     return (String) values.get(index);
   }
 
+  /** Retrieve the ith Opaque value, only call if isOpaque(). */
+  @Nullable
+  public Array<Byte> getOpaqueValue(int index) {
+    Preconditions.checkArgument(dataType == ArrayType.OPAQUE);
+    ArrayVlen<Byte> vlen = (ArrayVlen) values;
+    return vlen.get(index);
+  }
+
   /**
    * Get the value as an Object (String or Number).
    *
-   * @param index index into value Array.
+   * @param index index into value Array.2
    * @return ith value as an Object.
    */
   @Nullable
   public Object getValue(int index) {
     if (isString()) {
       return getStringValue(index);
+    } else if (dataType == ArrayType.OPAQUE) {
+      return getOpaqueValue(index);
     }
     return getNumericValue(index);
   }
@@ -239,6 +249,11 @@ public class Attribute {
     return (dataType == ArrayType.STRING) && null != getStringValue();
   }
 
+  /** True if value is of type Opaque and values instanceof ArrayVlen. */
+  public boolean isOpaque() {
+    return (dataType == ArrayType.OPAQUE) && (values instanceof ArrayVlen);
+  }
+
   @Override
   public String toString() {
     Formatter f = new Formatter();
@@ -273,6 +288,19 @@ public class Attribute {
         String val = getStringValue(i);
         if (val != null) {
           f.format("\"%s\"", encodeString(val));
+        }
+      }
+    } else if (isOpaque()) {
+      f.format(" = ");
+      for (int i = 0; i < getLength(); i++) {
+        if (i != 0) {
+          f.format("; ");
+        }
+        Array<Byte> oval = getOpaqueValue(i);
+        if (oval != null) {
+          for (byte b : oval) {
+            f.format("%d,", b);
+          }
         }
       }
     } else if (getEnumType() != null) {
@@ -356,14 +384,36 @@ public class Attribute {
     }
 
     if (values != null) {
-      for (int i = 0; i < getLength(); i++) {
-        int r1 = isString() ? getStringValue(i).hashCode() : getNumericValue(i).hashCode();
-        int r2 = att.isString() ? att.getStringValue(i).hashCode() : att.getNumericValue(i).hashCode();
-        if (r1 != r2)
-          return false;
+      if (isOpaque()) {
+        for (int i = 0; i < getLength(); i++) {
+          if (!checkContents(getOpaqueValue(i), att.getOpaqueValue(i))) {
+            return false;
+          }
+        }
+      } else {
+        for (int i = 0; i < getLength(); i++) {
+          int r1 = isString() ? getStringValue(i).hashCode() : getNumericValue(i).hashCode();
+          int r2 = att.isString() ? att.getStringValue(i).hashCode() : att.getNumericValue(i).hashCode();
+          if (r1 != r2) {
+            return false;
+          }
+        }
       }
     }
+    return true;
+  }
 
+  private boolean checkContents(Array<Byte> r1, Array<Byte> r2) {
+    if (!r1.equals(r2)) {
+      return false;
+    }
+    int count = 0;
+    for (byte b1 : r1) {
+      byte b2 = r2.get(count++);
+      if (b1 != b2) {
+        return false;
+      }
+    }
     return true;
   }
 
@@ -379,7 +429,8 @@ public class Attribute {
       result = 37 * result + nvalue.hashCode();
     } else if (values != null) {
       for (int i = 0; i < getLength(); i++) {
-        int h = isString() ? getStringValue(i).hashCode() : getNumericValue(i).hashCode();
+        int h = isString() ? getStringValue(i).hashCode()
+            : isOpaque() ? getOpaqueValue(i).hashCode() : getNumericValue(i).hashCode();
         result = 37 * result + h;
       }
     }
@@ -593,6 +644,19 @@ public class Attribute {
     public Builder setArrayValues(Array<?> arr) {
       if (arr == null) {
         dataType = ArrayType.STRING;
+        return this;
+      }
+
+      if (arr.getArrayType() == ArrayType.OPAQUE) {
+        this.nelems = (int) arr.getSize();
+        int count = 0;
+        for (Object val : arr) {
+          Preconditions.checkArgument(val != null);
+          count++;
+        }
+        Preconditions.checkArgument(count == nelems);
+        this.values = arr;
+        this.dataType = ArrayType.OPAQUE;
         return this;
       }
 
