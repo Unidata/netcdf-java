@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit;
 public class GcdmGridDataset implements GridDataset {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GcdmGridDataset.class);
   private static final int MAX_DATA_WAIT_SECONDS = 30;
-  private static final int MAX_MESSAGE = 51 * 1000 * 1000; // 51 Mb
+  private static final int MAX_MESSAGE = 101 * 1000 * 1000; // 101 Mb
 
   @Override
   public String getName() {

@@ -47,7 +47,7 @@ public class TestGcdmGridConverter {
       result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/grid/namExtract/20060926_0000.nc"});
       result.add(new Object[] {TestDir.cdmLocalTestDataDir + "ncml/fmrc/GFS_Puerto_Rico_191km_20090729_0000.nc"});
       result.add(new Object[] {TestDir.cdmUnitTestDir + "conventions/coards/inittest24.QRIDV07200.ncml"});
-      result.add(new Object[] {TestDir.cdmUnitTestDir + "conventions/nuwg/2003021212_avn-x.nc"});
+      result.add(new Object[] {TestDir.cdmUnitTestDir + "conventions/nuwg/avn-x.nc"});
 
       result.add(new Object[] {
           TestDir.cdmUnitTestDir + "tds_index/NCEP/NAM/CONUS_80km/NAM_CONUS_80km_20201027_0000.grib1.ncx4"});
@@ -59,7 +59,7 @@ public class TestGcdmGridConverter {
           .add(new Object[] {TestDir.cdmUnitTestDir + "tds_index/NCEP/MRMS/Radar/MRMS_Radar_20201027_0000.grib2.ncx4"});
 
       // Offset (orthogonal)
-      result.add(new Object[] {TestDir.cdmUnitTestDir + "tds_index/NCEP/NDFD/CPC/NCEP_NDFD_CPC_Experimental.ncx4"});
+      result.add(new Object[] {TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4"});
 
       // orth, reg
       result.add(new Object[] {TestDir.cdmUnitTestDir + "tds_index/NCEP/NBM/Alaska/NCEP_ALASKA_MODEL_BLEND.ncx4"});

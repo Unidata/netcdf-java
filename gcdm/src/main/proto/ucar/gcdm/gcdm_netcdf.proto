@@ -145,8 +145,8 @@ message Data {
 
   // oneof, depends on data_type
   repeated bytes bdata = 3;   // ENUM1, BYTE, OPAQUE, CHAR
-  repeated sint32 idata = 4;  // SHORT, INT
-  repeated uint32 uidata = 5; // ENUM2, USHORT, ENUM4, UINT
+  repeated sint32 idata = 4;  // SHORT, INT, ENUM2, USHORT
+  repeated uint32 uidata = 5; // ENUM4, UINT
   repeated sint64 ldata = 6;  // LONG
   repeated uint64 uldata = 7; // ULONG
   repeated float fdata = 8;   // FLOAT

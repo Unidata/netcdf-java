@@ -11,7 +11,6 @@ import java.util.Formatter;
 import java.util.Iterator;
 
 import ucar.array.*;
-import ucar.ma2.DataType;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Sequence;
 import ucar.nc2.Variable;
@@ -34,33 +33,55 @@ public class CompareArrayToArray {
     }
 
     for (Variable v : arrayFile.getVariables()) {
-      if (v.getDataType() == DataType.SEQUENCE) {
-        System.out.printf("  read sequence %s %s%n", v.getDataType(), v.getShortName());
-        Sequence s = (Sequence) v;
-        Iterator<StructureData> orgSeq = s.iterator();
-        Sequence copyv = (Sequence) arrayFile2.findVariable(v.getFullName());
-        Iterator<StructureData> array = copyv.iterator();
-        Formatter f = new Formatter();
-        boolean ok1 = compareSequence(f, v.getShortName(), orgSeq, array);
-        if (!ok1) {
-          System.out.printf("%s%n", f);
-        }
-        ok &= ok1;
+      ok &= compareVariable(arrayFile, arrayFile2, v.getFullName(), false);
+    }
+    System.out.printf("*** took %s%n", stopwatchAll.stop());
+    return ok;
+  }
 
-      } else {
-        Array<?> org = v.readArray();
-        Variable cdmrVar = arrayFile2.findVariable(v.getFullName());
-        Array<?> array = cdmrVar.readArray();
-        System.out.printf("  check %s %s%n", v.getDataType(), v.getNameAndDimensions());
+  public static boolean compareVariable(NetcdfFile arrayFile1, NetcdfFile arrayFile2, String varName, boolean justOne)
+      throws IOException {
+    boolean ok = true;
+
+    Variable vorg = arrayFile1.findVariable(varName);
+    if (vorg == null) {
+      System.out.printf("  Cant find variable %s in original %s%n", varName, arrayFile1.getLocation());
+      return false;
+    }
+    Variable vnew = arrayFile2.findVariable(varName);
+    if (vnew == null) {
+      System.out.printf("  Cant find variable %s in copy %s%n", varName, arrayFile2.getLocation());
+      return false;
+    }
+
+    if (vorg.getArrayType() == ArrayType.SEQUENCE) {
+      System.out.printf("  read sequence %s %s%n", vorg.getDataType(), vorg.getShortName());
+      Sequence s = (Sequence) vorg;
+      Iterator<StructureData> orgSeq = s.iterator();
+      Sequence copyv = (Sequence) vnew;
+      Iterator<StructureData> array = copyv.iterator();
+      Formatter f = new Formatter();
+      boolean ok1 = compareSequence(f, vorg.getShortName(), orgSeq, array);
+      if (!ok1) {
+        System.out.printf("%s%n", f);
+      }
+      ok &= ok1;
+
+    } else {
+      long size = vorg.getSize();
+      if (size < Integer.MAX_VALUE) {
+        Array<?> org = vorg.readArray();
+        Array<?> array = vnew.readArray();
+        System.out.printf("  compareData %s %s%n", vorg.getDataType(), vorg.getNameAndDimensions());
         Formatter f = new Formatter();
-        boolean ok1 = compareData(f, v.getShortName(), org, array, false, true);
+        boolean ok1 = compareData(f, vorg.getShortName(), org, array, justOne, true);
         if (!ok1) {
           System.out.printf("%s%n", f);
         }
         ok &= ok1;
       }
     }
-    System.out.printf("*** took %s%n", stopwatchAll.stop());
+
     return ok;
   }
 
@@ -320,7 +341,7 @@ public class CompareArrayToArray {
         System.out.printf("Cant find %s in copy%n", m1.getName());
         continue;
       }
-      Array<?> data1 = org.getMemberData(m2);
+      Array<?> data1 = org.getMemberData(m1);
       Array<?> data2 = array.getMemberData(m2);
       if (data2 != null) {
         f.format("    compare member %s %s%n", m1.getArrayType(), m1.getName());

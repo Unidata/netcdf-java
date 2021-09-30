@@ -7,6 +7,7 @@ package ucar.array;
 import com.google.common.base.Preconditions;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.Set;
 import javax.annotation.concurrent.Immutable;
 
@@ -355,6 +356,26 @@ final class IndexFn implements Iterable<Integer> {
       product *= thisDim;
     }
     return product;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (o == null || getClass() != o.getClass())
+      return false;
+    IndexFn integers = (IndexFn) o;
+    return rank == integers.rank && length == integers.length && offset == integers.offset
+        && canonicalOrder == integers.canonicalOrder && java.util.Arrays.equals(shape, integers.shape)
+        && java.util.Arrays.equals(stride, integers.stride);
+  }
+
+  @Override
+  public int hashCode() {
+    int result = Objects.hash(rank, length, offset, canonicalOrder);
+    result = 31 * result + java.util.Arrays.hashCode(shape);
+    result = 31 * result + java.util.Arrays.hashCode(stride);
+    return result;
   }
 
   public static class Builder {
