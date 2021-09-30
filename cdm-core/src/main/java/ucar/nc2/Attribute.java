@@ -111,7 +111,7 @@ public class Attribute {
   public Attribute(String name, Number val) {
     Preconditions.checkNotNull(Strings.emptyToNull(name), "Attribute name cannot be empty or null");
     Preconditions.checkNotNull(val, "Attribute value cannot be null");
-    this.name = name;
+    this.name = NetcdfFiles.makeValidCdmObjectName(name);
     this.dataType = ArrayType.forPrimitiveClass(val.getClass(), false);
     this.nvalue = val;
 

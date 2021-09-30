@@ -26,7 +26,7 @@ import ucar.ma2.Section;
 /** A simple client that makes a Netcdf request from GcdmServer. Used for testing. */
 public class GcdmClient {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GcdmClient.class);
-  private static final int MAX_MESSAGE = 51 * 1000 * 1000; // 51 Mb
+  private static final int MAX_MESSAGE = 99 * 1000 * 1000;
 
   private final GcdmGrpc.GcdmBlockingStub blockingStub;
   private static final String cdmUnitTestDir = "D:/testData/thredds-test-data/local/thredds-test-data/cdmUnitTest/";

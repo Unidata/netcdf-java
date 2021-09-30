@@ -23,12 +23,54 @@ import java.nio.file.Paths;
 /** Test {@link GcdmNetcdfFile} problems */
 public class TestGcdmNetcdfFileProblem {
 
-  // @Test
+  /*
+   * ushort EV_1KM_RefSB(Band_1KM_RefSB=15, 10*nscans=2030, Max_EV_frames=1354);
+   * 
+   * GcdmServer getData
+   * /media/snake/0B681ADF0B681ADF/thredds-test-data/local/thredds-test-data/cdmUnitTest/formats/hdf4/MOD021KM.A2004328.
+   * 1735.004.2004329164007.hdf
+   * MODIS_SWATH_Type_L1B/Data_Fields/EV_1KM_RefSB(0:14, 0:2029, 0:1353)
+   * Send one chunk MODIS_SWATH_Type_L1B/Data_Fields/EV_1KM_RefSB(0:8, 0:2029, 0:1353) size=49475160 bytes
+   * Send one chunk MODIS_SWATH_Type_L1B/Data_Fields/EV_1KM_RefSB(9:14, 0:2029, 0:1353) size=32983440 bytes
+   ** size=82,458,600 took=1.461 s
+   * 
+   * WARNING: readSection requestData failed failed:
+   * io.grpc.StatusRuntimeException: RESOURCE_EXHAUSTED: gRPC message exceeds maximum size 51000000: 99265809
+   * at io.grpc.Status.asRuntimeException(Status.java:535)
+   * at io.grpc.stub.ClientCalls$BlockingResponseStream.hasNext(ClientCalls.java:648)
+   * at ucar.gcdm.client.GcdmNetcdfFile.readArrayData(GcdmNetcdfFile.java:85)
+   * at ucar.nc2.Variable.proxyReadArray(Variable.java:829)
+   * at ucar.nc2.Variable.readArray(Variable.java:738)
+   * ...
+   * 
+   * LOOK what is 99265809 here? This implies my calculation of the data size is seriously wrong.
+   * Temp fix is to put MAX = 101 Mbytes.
+   * Confirmed this is an artifact of unsigned short, which doesnt have a direct protobug type, so we use uint32.
+   * Ratios are sometimes ~2. see GcdmConverter.debugSize.
+   * GcdmNetcdfProto.Data nelems = 24737580 type=ushort expected size =49475160 actual = 99265523 ratio = 2.006371
+   * 
+   */
+  @Test
+  @Category(NeedsCdmUnitTest.class)
+  public void testRequestTooBig() throws Exception {
+    String localFilename = TestDir.cdmUnitTestDir + "formats/hdf4/MOD021KM.A2004328.1735.004.2004329164007.hdf";
+    Path path = Paths.get(localFilename);
+    compareArrayToArray(path, "MODIS_SWATH_Type_L1B/Data_Fields/EV_1KM_RefSB");
+  }
+
+  @Test
+  @Category(NeedsCdmUnitTest.class)
+  public void testRequestNotTooBig() throws Exception {
+    String localFilename = TestDir.cdmUnitTestDir + "formats/hdf4/MOD021KM.A2004328.1735.004.2004329164007.hdf";
+    Path path = Paths.get(localFilename);
+    compareArrayToArray(path, "MODIS_SWATH_Type_L1B/Data_Fields/EV_500_Aggr1km_RefSB_Samples_Used");
+  }
+
+  @Test
   @Category(NeedsCdmUnitTest.class)
   public void testHdf4() throws Exception {
     String localFilename = TestDir.cdmUnitTestDir + "formats/hdf4/MOD021KM.A2004328.1735.004.2004329164007.hdf";
     Path path = Paths.get(localFilename);
-    compareArrayToMa2(path);
     compareArrayToMa2(path, "MODIS_SWATH_Type_L1B/Data_Fields/EV_250_Aggr1km_RefSB");
     compareArrayToArray(path, "MODIS_SWATH_Type_L1B/Data_Fields/EV_250_Aggr1km_RefSB");
   }
