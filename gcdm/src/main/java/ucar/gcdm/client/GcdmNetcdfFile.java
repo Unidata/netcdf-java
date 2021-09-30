@@ -38,7 +38,7 @@ import ucar.nc2.Variable;
 public class GcdmNetcdfFile extends NetcdfFile {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GcdmNetcdfFile.class);
   private static final int MAX_DATA_WAIT_SECONDS = 30;
-  private static final int MAX_MESSAGE = 51 * 1000 * 1000; // 51 Mb
+  private static final int MAX_MESSAGE = 101 * 1000 * 1000; // 101 Mb
   private static boolean showRequest = true;
 
   public static final String PROTOCOL = "gcdm";
@@ -71,9 +71,11 @@ public class GcdmNetcdfFile extends NetcdfFile {
   @Nullable
   protected ucar.array.Array<?> readArrayData(Variable v, ucar.array.Section sectionWanted) throws IOException {
     String spec = ParsedArraySectionSpec.makeSectionSpecString(v, sectionWanted);
-    if (showRequest)
-      System.out.printf("GcdmNetcdfFile data request forspec=(%s)%n url='%s'%n path='%s'%n", spec, this.remoteURI,
-          this.path);
+    if (showRequest) {
+      long expected = sectionWanted.computeSize() * v.getElementSize();
+      System.out.printf("GcdmNetcdfFile data request forspec=(%s)%n url='%s'%n path='%s' request bytes = %d%n", spec,
+          this.remoteURI, this.path, expected);
+    }
     final Stopwatch stopwatch = Stopwatch.createStarted();
 
     List<ucar.array.Array<?>> results = new ArrayList<>();
@@ -90,7 +92,11 @@ public class GcdmNetcdfFile extends NetcdfFile {
         // Section sectionReturned = GcdmConverter.decodeSection(response.getSection());
         ucar.array.Array<?> result = GcdmConverter.decodeData(response.getData());
         results.add(result);
-        size += result.length();
+        size += result.length() * v.getElementSize();
+        if (showRequest) {
+          long recieved = result.length() * v.getElementSize();
+          System.out.printf("  readArrayData bytes recieved = %d %n", recieved);
+        }
       }
 
     } catch (StatusRuntimeException e) {
@@ -102,7 +108,10 @@ public class GcdmNetcdfFile extends NetcdfFile {
       log.warn("readSection requestData failed failed: ", t);
       throw new IOException(t);
     }
-    System.out.printf(" ** size=%d took=%s%n", size, stopwatch.stop());
+    if (showRequest) {
+      double rate = ((double) size) / stopwatch.elapsed(TimeUnit.MICROSECONDS);
+      System.out.printf(" ** recieved=%d took=%s rate=%.2f MB/sec%n", size, stopwatch.stop(), rate);
+    }
 
     if (results.size() == 1) {
       return results.get(0);
