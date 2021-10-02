@@ -18,6 +18,4 @@ include 'opendap'
 include 'udunits'
 include 'toolsui:uibase'
 include 'toolsui:uicdm'
-
-include 'cdm-lite'
 include 'gcdm'
