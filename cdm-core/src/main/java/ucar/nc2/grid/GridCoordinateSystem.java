@@ -212,6 +212,10 @@ public class GridCoordinateSystem {
     showCoordinateAxis(getYHorizAxis(), f, showCoords);
     showCoordinateAxis(getXHorizAxis(), f, showCoords);
 
+    if (getVerticalTransform() != null) {
+      f.format(" VerticalTransform: %s%n", getVerticalTransform());
+    }
+
     if (hcs.getProjection() != null) {
       f.format(" Projection: %s %s%n", hcs.getProjection().getName(), hcs.getProjection().paramsToString());
     }

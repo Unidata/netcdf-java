@@ -8,7 +8,6 @@ import ucar.array.Array;
 import ucar.array.InvalidRangeException;
 import ucar.array.Range;
 import ucar.nc2.AttributeContainer;
-import ucar.nc2.Dimension;
 import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dataset.NetcdfDataset;
 
@@ -27,6 +26,10 @@ public interface VerticalTransform {
 
   /** The name of the Coordinate Variable Transform container. */
   String getCtvName();
+
+  /** Get the unit string for the vertical coordinate. */
+  @Nullable
+  String getUnitString();
 
   /**
    * Get the 3D vertical coordinate array for this time step.
@@ -48,10 +51,6 @@ public interface VerticalTransform {
    */
   Array<Number> getCoordinateArray1D(int timeIndex, int xIndex, int yIndex) throws IOException, InvalidRangeException;
 
-  /** Get the unit string for the vertical coordinate. */
-  @Nullable
-  String getUnitString();
-
   /**
    * Create a VerticalTransform as a section of this VerticalTransform.
    * 
@@ -60,12 +59,18 @@ public interface VerticalTransform {
    * @param y_range subset the y dimension, or null if you want all of it
    * @param x_range subset the x dimension, or null if you want all of it
    * @return a new VerticalTransform for the given subset
+   *         LOOK used?
    */
   VerticalTransform subset(Range t_range, Range z_range, Range y_range, Range x_range);
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  /** a Builder of VerticalTransforms. */
+  /**
+   * A Builder of VerticalTransforms.
+   * LOOK Note the use of NetcdfDataset ds, CoordinateSystem csys. VerticalTransform are only
+   * available on Grids built on NetcdfDataset. GRIB does not have these. However, we do want to transport these
+   * over gcdm.
+   */
   interface Builder {
     Optional<VerticalTransform> create(NetcdfDataset ds, CoordinateSystem csys, AttributeContainer params,
         Formatter errlog);

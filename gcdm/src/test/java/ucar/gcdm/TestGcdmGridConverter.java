@@ -114,7 +114,6 @@ public class TestGcdmGridConverter {
 
   public static void compareValuesEqual(GridDataset roundtrip, GridDataset expected, boolean skipTimes) {
     assertThat(roundtrip.getName()).startsWith(expected.getName());
-    // assertThat(roundtrip.getLocation()).isEqualTo(expected.getLocation());
     assertThat(roundtrip.getFeatureType()).isEqualTo(expected.getFeatureType());
     compareValuesEqual(roundtrip.attributes(), expected.attributes());
 

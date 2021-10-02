@@ -21,14 +21,27 @@ import java.nio.file.Paths;
 import static com.google.common.truth.Truth.assertThat;
 
 /** Test {@link GcdmNetcdfFile} */
-public class TestGcdmGridProblem {
+public class TestGcdmGridDatasetProblems {
+
+  @Test
+  public void testCurvilinear() throws Exception {
+    String filename = TestDir.cdmUnitTestDir + "ft/grid/stag/bora_feb.nc";
+    new TestGcdmGridDataset(filename).doOne();
+  }
+
+  @Test
+  public void testVerticalTransform() throws Exception {
+    String filename = TestDir.cdmUnitTestDir + "ft/grid/testCFwriter.nc";
+    new TestGcdmGridDataset(filename).doOne();
+  }
 
   @Test
   @Category(NeedsCdmUnitTest.class)
-  public void testCsysShapeFailing() throws Exception {
+  public void testSanityCheck() throws Exception {
     String filename = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4";
     Path path = Paths.get(filename);
     TestGcdmGridConverter.roundtrip(path);
+    new TestGcdmGridDataset(filename).doOne();
   }
 
 }
