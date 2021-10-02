@@ -5,6 +5,7 @@
 package ucar.gcdm;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.array.InvalidRangeException;
@@ -13,6 +14,7 @@ import ucar.gcdm.client.GcdmNetcdfFile;
 import ucar.nc2.grid.*;
 import ucar.nc2.internal.util.CompareArrayToArray;
 import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -26,6 +28,7 @@ import static com.google.common.truth.Truth.assertWithMessage;
 
 /** Test {@link GcdmNetcdfFile} */
 @RunWith(Parameterized.class)
+@Category(NeedsCdmUnitTest.class)
 public class TestGcdmGridDataset {
   @Parameterized.Parameters(name = "{0}")
   public static List<Object[]> getTestParameters() {

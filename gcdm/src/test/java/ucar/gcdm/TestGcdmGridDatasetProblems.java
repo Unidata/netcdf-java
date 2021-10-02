@@ -21,6 +21,7 @@ import java.nio.file.Paths;
 import static com.google.common.truth.Truth.assertThat;
 
 /** Test {@link GcdmNetcdfFile} */
+@Category(NeedsCdmUnitTest.class)
 public class TestGcdmGridDatasetProblems {
 
   @Test
