@@ -174,6 +174,9 @@ public class Arrays {
       return factory(dataType, shape, dataArrays.get(0).storage());
     }
     Object dataArray = combine(dataType, shape, dataArrays);
+    if (dataArray instanceof Array) {
+      return (Array<T>) dataArray;
+    }
     return factory(dataType, shape, dataArray);
   }
 
@@ -216,6 +219,23 @@ public class Arrays {
       case STRING:
         all = new String[(int) size];
         break;
+
+      case STRUCTURE: {
+        StructureData[] parray = new StructureData[(int) size];
+        StructureMembers members = null;
+        int count = 0;
+        for (Array<?> dataArray : dataArrays) {
+          StructureDataArray sdataArray = (StructureDataArray) dataArray;
+          if (members == null) {
+            members = sdataArray.getStructureMembers();
+          }
+          for (StructureData sdata : sdataArray) {
+            parray[count++] = sdata;
+          }
+        }
+        return new StructureDataArray(members, new int[] {count}, parray);
+      }
+
       default:
         throw new RuntimeException(" ArrayType " + dataType);
     }

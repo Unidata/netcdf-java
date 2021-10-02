@@ -36,7 +36,12 @@ public class CompareNetcdf2 {
 
     // override attribute comparision if needed
     default boolean attsAreEqual(Attribute att1, Attribute att2) {
-      return att1.equals(att2);
+      try {
+        return att1.equals(att2);
+      } catch (Exception e) {
+        System.out.printf("att1 = %s != att2 = %s%n", att1, att2);
+        return false;
+      }
     }
 
     // override dimension comparision if needed
@@ -690,12 +695,12 @@ public class CompareNetcdf2 {
     Attribute found = list2.findAttributeIgnoreCase(want.getShortName());
     if (found == null) {
       boolean check = objFilter.attCheckOk(want);
-      f.format("  ** %s: %s (%s) not in %s %n", what, want, name1, name2);
+      f.format("  ** Attribute %s: %s (%s) not in %s %n", what, want, name1, name2);
       ok = false;
     } else {
       if (!objFilter.attsAreEqual(want, found)) {
-        f.format("  ** %s: %s 0x%x (%s) not equal to %s 0x%x (%s) %n", what, want, want.hashCode(), name1, found,
-            found.hashCode(), name2);
+        f.format("  ** Attribute %s: %s 0x%x (%s) not equal to %s 0x%x (%s) %n", what, want, want.hashCode(), name1,
+            found, found.hashCode(), name2);
         ok = false;
       } else if (showEach) {
         f.format("  OK <%s> equals <%s>%n", want, found);

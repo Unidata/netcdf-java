@@ -4,6 +4,7 @@
  */
 package ucar.gcdm;
 
+import org.junit.Ignore;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,6 +17,7 @@ import ucar.nc2.time.CalendarDate;
 import ucar.unidata.util.test.TestDir;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Formatter;
@@ -31,9 +33,10 @@ public class TestGcdmGridDataset {
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>(500);
     try {
-      TestDir.actOnAllParameterized(TestDir.cdmLocalTestDataDir, new SuffixFileFilter(".nc"), result, true);
+      result.add(new Object[] {TestDir.cdmLocalTestDataDir + "permuteTest.nc"});
 
-      // result.add(new Object[] {TestDir.cdmLocalTestDataDir + "permuteTest.nc"});
+      FileFilter ff = TestDir.FileFilterSkipSuffix(".cdl .ncml perverse.nc");
+      TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "/ft/grid", ff, result, true);
 
     } catch (Exception e) {
       e.printStackTrace();
