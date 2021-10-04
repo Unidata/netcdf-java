@@ -8,7 +8,6 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 import ucar.array.ArrayType;
-import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.iosp.NetcdfFileFormat;
 import ucar.unidata.io.RandomAccessFile;
@@ -20,7 +19,7 @@ public class N3header {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(N3header.class);
 
   static final byte[] MAGIC = {0x43, 0x44, 0x46, 0x01};
-  // 64-bit offset format : only affects the variable offset value
+  // 64-bit offset format : only effects the variable offset value
   static final byte[] MAGIC_LONG = {0x43, 0x44, 0x46, 0x02};
   static final int MAGIC_DIM = 10;
   static final int MAGIC_VAR = 11;
@@ -217,8 +216,8 @@ public class N3header {
 
       // data type
       int type = raf.readInt();
-      DataType dataType = getDataType(type);
-      var.setDataType(dataType);
+      ArrayType dataType = getDataType(type);
+      var.setArrayType(dataType);
 
       // size and beginning data position in file
       long vsize = raf.readInt();
@@ -400,7 +399,7 @@ public class N3header {
       int type = raf.readInt();
       Attribute att;
 
-      if (type == 2) {
+      if (type == 2) { // CHAR
         if (fout != null)
           fout.format(" begin read String val pos= %d%n", raf.getFilePointer());
         String val = readString(getValueCharset());
@@ -415,18 +414,11 @@ public class N3header {
           fout.format(" begin read val pos= %d%n", raf.getFilePointer());
         int nelems = raf.readInt();
 
-        DataType dtype = getDataType(type);
-        Attribute.Builder builder = Attribute.builder(name).setDataType(dtype);
+        ArrayType dtype = getDataType(type);
+        Attribute.Builder builder = Attribute.builder(name).setArrayType(dtype);
 
         if (nelems > 0) {
-          int[] shape = {nelems};
-          Array arr = Array.factory(dtype, shape);
-          IndexIterator ii = arr.getIndexIterator();
-          int nbytes = 0;
-          for (int j = 0; j < nelems; j++)
-            nbytes += readAttributeValue(dtype, ii);
-
-          builder.setValues(arr); // no validation !!
+          int nbytes = readAttributeArray(dtype, nelems, builder);
           skip(nbytes);
         }
         att = builder.build();
@@ -443,42 +435,56 @@ public class N3header {
     return natts;
   }
 
-  int readAttributeValue(DataType type, IndexIterator ii) throws IOException {
-    if (type == DataType.BYTE) {
-      byte b = (byte) raf.read();
-      // if (debug) out.println(" byte val = "+b);
-      ii.setByteNext(b);
-      return 1;
+  int readAttributeArray(ArrayType type, int nelems, Attribute.Builder attBuilder) throws IOException {
+    switch (type) {
+      case CHAR:
+      case BYTE: {
+        List<Byte> vals = new ArrayList<>();
+        for (int i = 0; i < nelems; i++) {
+          vals.add((byte) raf.read());
+        }
+        attBuilder.setValues(vals, false);
+        return nelems;
+      }
 
-    } else if (type == DataType.CHAR) {
-      char c = (char) raf.read();
-      // if (debug) out.println(" char val = "+c);
-      ii.setCharNext(c);
-      return 1;
+      case SHORT: {
+        List<Short> vals = new ArrayList<>();
+        for (int i = 0; i < nelems; i++) {
+          vals.add(raf.readShort());
+        }
+        attBuilder.setValues(vals, false);
+        return 2 * nelems;
+      }
 
-    } else if (type == DataType.SHORT) {
-      short s = raf.readShort();
-      // if (debug) out.println(" short val = "+s);
-      ii.setShortNext(s);
-      return 2;
 
-    } else if (type == DataType.INT) {
-      int i = raf.readInt();
-      // if (debug) out.println(" int val = "+i);
-      ii.setIntNext(i);
-      return 4;
+      case INT: {
+        List<Integer> vals = new ArrayList<>();
+        for (int i = 0; i < nelems; i++) {
+          vals.add(raf.readInt());
+        }
+        attBuilder.setValues(vals, false);
+        return 4 * nelems;
+      }
 
-    } else if (type == DataType.FLOAT) {
-      float f = raf.readFloat();
-      // if (debug) out.println(" float val = "+f);
-      ii.setFloatNext(f);
-      return 4;
 
-    } else if (type == DataType.DOUBLE) {
-      double d = raf.readDouble();
-      // if (debug) out.println(" double val = "+d);
-      ii.setDoubleNext(d);
-      return 8;
+      case FLOAT: {
+        List<Float> vals = new ArrayList<>();
+        for (int i = 0; i < nelems; i++) {
+          vals.add(raf.readFloat());
+        }
+        attBuilder.setValues(vals, false);
+        return 4 * nelems;
+      }
+
+
+      case DOUBLE: {
+        List<Double> vals = new ArrayList<>();
+        for (int i = 0; i < nelems; i++) {
+          vals.add(raf.readDouble());
+        }
+        attBuilder.setValues(vals, false);
+        return 8 * nelems;
+      }
     }
     return 0;
   }
@@ -494,14 +500,16 @@ public class N3header {
     raf.readFully(b);
     skip(nelems); // pad to 4 byte boundary
 
-    if (nelems == 0)
+    if (nelems == 0) {
       return null;
+    }
 
     // null terminates
     int count = 0;
     while (count < nelems) {
-      if (b[count] == 0)
+      if (b[count] == 0) {
         break;
+      }
       count++;
     }
 
@@ -531,37 +539,37 @@ public class N3header {
     return pad;
   }
 
-  static DataType getDataType(int type) {
+  static ArrayType getDataType(int type) {
     switch (type) {
       case 1:
-        return DataType.BYTE;
+        return ArrayType.BYTE;
       case 2:
-        return DataType.CHAR;
+        return ArrayType.CHAR;
       case 3:
-        return DataType.SHORT;
+        return ArrayType.SHORT;
       case 4:
-        return DataType.INT;
+        return ArrayType.INT;
       case 5:
-        return DataType.FLOAT;
+        return ArrayType.FLOAT;
       case 6:
-        return DataType.DOUBLE;
+        return ArrayType.DOUBLE;
       default:
         throw new IllegalArgumentException("unknown type == " + type);
     }
   }
 
-  static int getType(DataType dt) {
-    if (dt == DataType.BYTE)
+  static int getType(ArrayType dt) {
+    if (dt == ArrayType.BYTE)
       return 1;
-    else if ((dt == DataType.CHAR) || (dt == DataType.STRING))
+    else if ((dt == ArrayType.CHAR) || (dt == ArrayType.STRING))
       return 2;
-    else if (dt == DataType.SHORT)
+    else if (dt == ArrayType.SHORT)
       return 3;
-    else if (dt == DataType.INT)
+    else if (dt == ArrayType.INT)
       return 4;
-    else if (dt == DataType.FLOAT)
+    else if (dt == ArrayType.FLOAT)
       return 5;
-    else if (dt == DataType.DOUBLE)
+    else if (dt == ArrayType.DOUBLE)
       return 6;
 
     throw new IllegalArgumentException("unknown DataType == " + dt);
