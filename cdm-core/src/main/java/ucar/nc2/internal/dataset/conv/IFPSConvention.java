@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -8,12 +8,13 @@ package ucar.nc2.internal.dataset.conv;
 import com.google.common.collect.ImmutableList;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
-import ucar.ma2.Array;
-import ucar.ma2.DataType;
-import ucar.ma2.Index;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Range;
+import ucar.array.Array;
+import ucar.array.ArrayType;
+import ucar.array.Arrays;
+import ucar.array.Index;
+import ucar.array.InvalidRangeException;
+import ucar.array.Range;
+import ucar.array.Section;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
@@ -137,23 +138,23 @@ public class IFPSConvention extends CoordSystemBuilder {
 
     // get the times values
     Attribute timesAtt = ncVar.getAttributeContainer().findAttribute("validTimes");
-    if (timesAtt == null || timesAtt.getValues() == null) {
+    if (timesAtt == null || timesAtt.getArrayValues() == null) {
       return;
     }
-    Array timesArray = timesAtt.getValues();
+    Array<?> timesArray = timesAtt.getArrayValues();
 
     // get every other one LOOK this is awkward
     try {
       int n = (int) timesArray.getSize();
-      List<Range> list = new ArrayList<>();
-      list.add(new Range(0, n - 1, 2));
-      timesArray = timesArray.section(list);
+      Section.Builder sectionb = Section.builder();
+      sectionb.appendRange(new Range(0, n - 1, 2));
+      timesArray = Arrays.section(timesArray, sectionb.build());
     } catch (InvalidRangeException e) {
       throw new IllegalStateException(e);
     }
 
     // make sure it matches the dimension
-    DataType dtype = DataType.getType(timesArray);
+    ArrayType dtype = timesArray.getArrayType();
     int nTimesAtt = (int) timesArray.getSize();
 
     // create a special dimension and coordinate variable
@@ -174,7 +175,7 @@ public class IFPSConvention extends CoordSystemBuilder {
     String units = "seconds since 1970-1-1 00:00:00";
     String desc = "time coordinate for " + ncVar.shortName;
 
-    CoordinateAxis1D.Builder<?> timeCoord = CoordinateAxis1D.builder().setName(dimName).setDataType(dtype)
+    CoordinateAxis1D.Builder<?> timeCoord = CoordinateAxis1D.builder().setName(dimName).setArrayType(dtype)
         .setParentGroupBuilder(rootGroup).setDimensionsByName(dimName).setUnits(units).setDesc(desc);
     timeCoord.setSourceData(timesArray);
     timeCoord.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
@@ -225,54 +226,53 @@ public class IFPSConvention extends CoordSystemBuilder {
 
   private void makeXYcoords(Projection proj, VariableDS.Builder<?> latVar, VariableDS.Builder<?> lonVar)
       throws IOException {
-    // brute force
-    Array latData = latVar.orgVar.read();
-    Array lonData = lonVar.orgVar.read();
+
+    // lat, lon are 2D with same shape
+    Array<Number> latData = (Array<Number>) latVar.orgVar.readArray();
+    Array<Number> lonData = (Array<Number>) lonVar.orgVar.readArray();
 
     Dimension y_dim = latVar.orgVar.getDimension(0);
     Dimension x_dim = latVar.orgVar.getDimension(1);
 
-    Array xData = Array.factory(DataType.FLOAT, new int[] {x_dim.getLength()});
-    Array yData = Array.factory(DataType.FLOAT, new int[] {y_dim.getLength()});
+    double[] xData = new double[x_dim.getLength()];
+    double[] yData = new double[y_dim.getLength()];
 
     Index latlonIndex = latData.getIndex();
-    Index xIndex = xData.getIndex();
-    Index yIndex = yData.getIndex();
 
     // construct x coord
     for (int i = 0; i < x_dim.getLength(); i++) {
-      double lat = latData.getDouble(latlonIndex.set1(i));
-      double lon = lonData.getDouble(latlonIndex);
+      double lat = latData.get(latlonIndex.set1(i)).doubleValue();
+      double lon = lonData.get(latlonIndex).doubleValue();
       LatLonPoint latlon = LatLonPoint.create(lat, lon);
       ProjectionPoint pp = proj.latLonToProj(latlon);
-      xData.setDouble(xIndex.set(i), pp.getX());
+      xData[i] = pp.getX();
     }
 
     // construct y coord
     for (int i = 0; i < y_dim.getLength(); i++) {
-      double lat = latData.getDouble(latlonIndex.set0(i));
-      double lon = lonData.getDouble(latlonIndex);
+      double lat = latData.get(latlonIndex.set0(i)).doubleValue();
+      double lon = lonData.get(latlonIndex).doubleValue();
       LatLonPoint latlon = LatLonPoint.create(lat, lon);
       ProjectionPoint pp = proj.latLonToProj(latlon);
-      yData.setDouble(yIndex.set(i), pp.getY());
+      yData[i] = pp.getY();
     }
 
     VariableDS.Builder<?> xaxis =
-        VariableDS.builder().setName("xCoord").setDataType(DataType.FLOAT).setParentGroupBuilder(rootGroup)
+        VariableDS.builder().setName("xCoord").setArrayType(ArrayType.FLOAT).setParentGroupBuilder(rootGroup)
             .setDimensionsByName(x_dim.getShortName()).setUnits("km").setDesc("x on projection");
     xaxis.addAttribute(new Attribute(CDM.UNITS, "km"));
     xaxis.addAttribute(new Attribute(CDM.LONG_NAME, "x on projection"));
     xaxis.addAttribute(new Attribute(_Coordinate.AxisType, "GeoX"));
 
     VariableDS.Builder<?> yaxis =
-        VariableDS.builder().setName("yCoord").setDataType(DataType.FLOAT).setParentGroupBuilder(rootGroup)
+        VariableDS.builder().setName("yCoord").setArrayType(ArrayType.FLOAT).setParentGroupBuilder(rootGroup)
             .setDimensionsByName(y_dim.getShortName()).setUnits("km").setDesc("y on projection");
     yaxis.addAttribute(new Attribute(CDM.UNITS, "km"));
     yaxis.addAttribute(new Attribute(CDM.LONG_NAME, "y on projection"));
     yaxis.addAttribute(new Attribute(_Coordinate.AxisType, "GeoY"));
 
-    xaxis.setSourceData(xData);
-    yaxis.setSourceData(yData);
+    xaxis.setSourceData(Arrays.factory(ArrayType.DOUBLE, new int[] {x_dim.getLength()}, xData));
+    yaxis.setSourceData(Arrays.factory(ArrayType.DOUBLE, new int[] {y_dim.getLength()}, yData));
 
     rootGroup.addVariable(xaxis);
     rootGroup.addVariable(yaxis);

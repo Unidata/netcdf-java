@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
+
 package ucar.nc2.internal.dataset.conv;
 
 import java.io.IOException;
@@ -7,10 +12,8 @@ import java.util.StringTokenizer;
 import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ucar.array.Array;
 import ucar.array.ArrayType;
-import ucar.ma2.Array;
-import ucar.ma2.ArrayObject;
-import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
@@ -210,15 +213,15 @@ public class DefaultConventions extends CoordSystemBuilder {
     if (vname.equalsIgnoreCase("time") && vb.dataType == ArrayType.STRING) {
       if (vb.orgVar != null) {
         try {
-          Array firstValue = vb.orgVar.read("0");
-          if (firstValue instanceof ArrayObject.D1) {
-            ArrayObject.D1 sarry = (ArrayObject.D1) firstValue;
-            String firstStringValue = (String) sarry.get(0);
+          Array<?> values = vb.orgVar.readArray();
+          if (values.getArrayType() == ArrayType.STRING) {
+            Array<String> svalues = (Array<String>) values;
+            String firstStringValue = svalues.getScalar();
             if (CalendarDate.fromUdunitIsoDate(null, firstStringValue).isPresent()) { // valid iso date string LOOK
               return AxisType.Time;
             }
           }
-        } catch (IOException | InvalidRangeException | IllegalArgumentException e) {
+        } catch (IOException | IllegalArgumentException e) {
           logger.warn("time string error", e);
         }
       } else {

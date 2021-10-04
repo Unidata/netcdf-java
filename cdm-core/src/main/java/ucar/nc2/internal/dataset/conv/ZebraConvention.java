@@ -1,13 +1,15 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
 package ucar.nc2.internal.dataset.conv;
 
 import java.io.IOException;
-import ucar.ma2.Array;
-import ucar.ma2.IndexIterator;
+
+import ucar.array.Array;
+import ucar.array.ArrayType;
+import ucar.array.Arrays;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
@@ -48,14 +50,19 @@ public class ZebraConvention extends CoordSystemBuilder {
         base_time.getAttributeContainer().findAttributeString(CDM.UNITS, "seconds since 1970-01-01 00:00 UTC");
     time.addAttribute(new Attribute(CDM.UNITS, units));
 
-    Array data;
+    Array<Number> orgData;
+    Array<Number> modData;
     try {
       double baseValue = ((Number) base_time.orgVar.readArray().getScalar()).doubleValue();
-      data = time_offset.orgVar.read();
-      IndexIterator iter = data.getIndexIterator();
-      while (iter.hasNext()) {
-        iter.setDoubleCurrent(iter.getDoubleNext() + baseValue);
+      orgData = (Array<Number>) time_offset.orgVar.readArray();
+
+      int n = (int) orgData.length();
+      double[] storage = new double[n];
+      int count = 0;
+      for (Number val : orgData) {
+        storage[count++] = val.doubleValue() + baseValue;
       }
+      modData = Arrays.factory(ArrayType.DOUBLE, orgData.getShape(), storage);
 
     } catch (IOException ioe) {
       parseInfo.format("ZebraConvention failed to create time Coord Axis for file %s err= %s%n",
@@ -63,7 +70,7 @@ public class ZebraConvention extends CoordSystemBuilder {
       return;
     }
 
-    time.setSourceData(data);
+    time.setSourceData(modData);
   }
 
   public static class Factory implements CoordSystemBuilderFactory {

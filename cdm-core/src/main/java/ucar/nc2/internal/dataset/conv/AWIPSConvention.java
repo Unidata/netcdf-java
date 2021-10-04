@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -14,12 +14,10 @@ import java.util.StringTokenizer;
 import javax.annotation.Nullable;
 
 import ucar.array.ArrayType;
-import ucar.ma2.Array;
-import ucar.ma2.ArrayChar;
-import ucar.ma2.DataType;
-import ucar.ma2.IndexIterator;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Section;
+import ucar.array.Array;
+import ucar.array.Arrays;
+import ucar.array.InvalidRangeException;
+import ucar.array.Section;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
@@ -163,21 +161,18 @@ public class AWIPSConvention extends CoordSystemBuilder {
       parseInfo.format("breakupLevels = %s%n", levelVar.shortName);
 
     List<Dimension> dimList = new ArrayList<>();
-    ArrayChar levelVarData;
+    Array<Byte> levelVarData;
     try {
-      levelVarData = (ArrayChar) levelVar.orgVar.read();
+      levelVarData = (Array<Byte>) levelVar.orgVar.readArray();
     } catch (IOException ioe) {
       return dimList;
     }
 
     List<String> values = null;
     String currentUnits = null;
-    ArrayChar.StringIterator iter = levelVarData.getStringIterator();
-    while (iter.hasNext()) {
-      String s = iter.next();
-      if (debugBreakup)
-        parseInfo.format("   %s%n", s);
-      StringTokenizer stoke = new StringTokenizer(s);
+    Array<String> levels = Arrays.makeStringsFromChar(levelVarData);
+    for (String levelS : levels) {
+      StringTokenizer stoke = new StringTokenizer(levelS);
 
       /*
        * problem with blank string:
@@ -221,10 +216,11 @@ public class AWIPSConvention extends CoordSystemBuilder {
   private Dimension makeZCoordAxis(List<String> values, String units) {
     int len = values.size();
     String name = makeZCoordName(units);
-    if (len > 1)
+    if (len > 1) {
       name = name + len;
-    else
+    } else {
       name = name + values.get(0);
+    }
     StringUtil2.replace(name, ' ', "-");
 
     if (rootGroup.findDimension(name).isPresent()) {
@@ -252,14 +248,25 @@ public class AWIPSConvention extends CoordSystemBuilder {
     }
 
     CoordinateAxis1D.Builder<?> v =
-        CoordinateAxis1D.builder().setName(name).setDataType(DataType.DOUBLE).setParentGroupBuilder(rootGroup)
+        CoordinateAxis1D.builder().setName(name).setArrayType(ArrayType.DOUBLE).setParentGroupBuilder(rootGroup)
             .setDimensionsByName(name).setUnits(makeUnitsName(units)).setDesc(makeLongName(name));
     String positive = getZisPositive(v);
     if (null != positive) {
       v.addAttribute(new Attribute(_Coordinate.ZisPositive, positive));
     }
 
-    Array data = Array.makeArray(DataType.DOUBLE, values);
+    double[] dvalues = new double[values.size()];
+    int countv = 0;
+    for (String s : values) {
+      try {
+        dvalues[countv++] = Double.parseDouble(s);
+      } catch (NumberFormatException e) {
+        System.out.printf("NumberFormatException '%s'", s);
+        throw e;
+      }
+    }
+
+    Array<Double> data = Arrays.factory(ArrayType.DOUBLE, new int[] {values.size()}, dvalues);
     v.setSourceData(data);
     datasetBuilder.replaceCoordinateAxis(rootGroup, v);
 
@@ -458,7 +465,7 @@ public class AWIPSConvention extends CoordSystemBuilder {
   }
 
   CoordinateAxis.Builder<?> makeXCoordAxis(String xname) {
-    CoordinateAxis1D.Builder<?> v = CoordinateAxis1D.builder().setName(xname).setDataType(DataType.DOUBLE)
+    CoordinateAxis1D.Builder<?> v = CoordinateAxis1D.builder().setName(xname).setArrayType(ArrayType.DOUBLE)
         .setParentGroupBuilder(rootGroup).setDimensionsByName(xname).setUnits("km").setDesc("x on projection");
     v.setAutoGen(startx, dx);
 
@@ -467,7 +474,7 @@ public class AWIPSConvention extends CoordSystemBuilder {
   }
 
   CoordinateAxis.Builder<?> makeYCoordAxis(String yname) {
-    CoordinateAxis1D.Builder<?> v = CoordinateAxis1D.builder().setName(yname).setDataType(DataType.DOUBLE)
+    CoordinateAxis1D.Builder<?> v = CoordinateAxis1D.builder().setName(yname).setArrayType(ArrayType.DOUBLE)
         .setParentGroupBuilder(rootGroup).setDimensionsByName(yname).setUnits("km").setDesc("y on projection");
     v.setAutoGen(starty, dy);
 
@@ -483,7 +490,7 @@ public class AWIPSConvention extends CoordSystemBuilder {
     if (Double.isNaN(min) || Double.isNaN(max) || Double.isNaN(d))
       return null;
 
-    CoordinateAxis1D.Builder<?> v = CoordinateAxis1D.builder().setName(xname).setDataType(DataType.DOUBLE)
+    CoordinateAxis1D.Builder<?> v = CoordinateAxis1D.builder().setName(xname).setArrayType(ArrayType.DOUBLE)
         .setParentGroupBuilder(rootGroup).setDimensionsByName(xname).setUnits(CDM.LON_UNITS).setDesc("longitude");
     v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
     v.setAutoGen(min, d);
@@ -500,7 +507,7 @@ public class AWIPSConvention extends CoordSystemBuilder {
     if (Double.isNaN(min) || Double.isNaN(max) || Double.isNaN(d))
       return null;
 
-    CoordinateAxis1D.Builder<?> v = CoordinateAxis1D.builder().setName(name).setDataType(DataType.DOUBLE)
+    CoordinateAxis1D.Builder<?> v = CoordinateAxis1D.builder().setName(name).setArrayType(ArrayType.DOUBLE)
         .setParentGroupBuilder(rootGroup).setDimensionsByName(name).setUnits(CDM.LAT_UNITS).setDesc("latitude");
     v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
     v.setAutoGen(min, d);
@@ -517,9 +524,9 @@ public class AWIPSConvention extends CoordSystemBuilder {
     Dimension recordDim =
         rootGroup.findDimension("record").orElseThrow(() -> new RuntimeException("must have dimension 'record'"));
 
-    Array vals;
+    Array<Number> vals;
     try {
-      vals = timeVar.orgVar.read();
+      vals = (Array<Number>) timeVar.orgVar.readArray();
     } catch (IOException ioe) {
       return null;
     }
@@ -530,7 +537,8 @@ public class AWIPSConvention extends CoordSystemBuilder {
     int valLen = (int) vals.getSize();
     if (recLen != valLen) {
       try {
-        vals = vals.sectionNoReduce(new int[] {0}, new int[] {recordDim.getLength()}, null);
+        Section section = new Section(new int[] {0}, new int[] {recordDim.getLength()});
+        vals = Arrays.section(vals, section);
         parseInfo.format(" corrected the TimeCoordAxis length%n");
       } catch (InvalidRangeException e) {
         parseInfo.format("makeTimeCoordAxis InvalidRangeException%n");
@@ -539,15 +547,19 @@ public class AWIPSConvention extends CoordSystemBuilder {
 
     // create the units out of the filename if possible
     String units = makeTimeUnitFromFilename(datasetBuilder.location);
-    if (units == null) {// ok that didnt work, try something else
-      return makeTimeCoordAxisFromReference(vals);
+    if (units == null) { // ok that didnt work, try something else
+      try {
+        return makeTimeCoordAxisFromReference(vals);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
     }
 
     // create the coord axis
     String name = "timeCoord";
     String desc = "synthesized time coordinate from valtimeMINUSreftime and filename YYYYMMDD_HHMM";
     CoordinateAxis1D.Builder<?> timeCoord =
-        CoordinateAxis1D.builder().setName(name).setDataType(DataType.INT).setParentGroupBuilder(rootGroup)
+        CoordinateAxis1D.builder().setName(name).setArrayType(ArrayType.INT).setParentGroupBuilder(rootGroup)
             .setDimensionsByName("record").setUnits(units).setDesc(desc).setSourceData(vals);
 
     parseInfo.format("Created Time Coordinate Axis = %s%n", name);
@@ -584,35 +596,32 @@ public class AWIPSConvention extends CoordSystemBuilder {
 
   // construct time coordinate from reftime variable
   @Nullable
-  private CoordinateAxis.Builder<?> makeTimeCoordAxisFromReference(Array vals) {
-    if (!rootGroup.findVariableLocal("reftime").isPresent())
-      return null;
-    VariableDS.Builder<?> refVar = (VariableDS.Builder<?>) rootGroup.findVariableLocal("reftime").get();
-
-    double refValue;
-    try {
-      Array refArray = refVar.orgVar.read();
-      refValue = refArray.getDouble(refArray.getIndex()); // get the first value
-    } catch (IOException ioe) {
+  private CoordinateAxis.Builder<?> makeTimeCoordAxisFromReference(Array<Number> vals) throws IOException {
+    if (rootGroup.findVariableLocal("reftime").isEmpty()) {
       return null;
     }
-    if (refValue == NetcdfFormatUtils.NC_FILL_DOUBLE) // why?
+    VariableDS.Builder<?> refVar = (VariableDS.Builder<?>) rootGroup.findVariableLocal("reftime").get();
+
+    double refValue = refVar.orgVar.readScalarDouble();
+    if (refValue == NetcdfFormatUtils.NC_FILL_DOUBLE) { // why?
       return null;
+    }
 
     // construct the values array - make it a double to be safe
-    Array dvals = Array.factory(DataType.DOUBLE, vals.getShape());
-    IndexIterator diter = dvals.getIndexIterator();
-    IndexIterator iiter = vals.getIndexIterator();
-    while (iiter.hasNext())
-      diter.setDoubleNext(iiter.getDoubleNext() + refValue); // add reftime to each of the values
+    double[] dvals = new double[(int) vals.length()];
+    int count = 0;
+    for (Number val : vals) {
+      dvals[count++] = val.doubleValue() + refValue;
+    }
+    Array<Double> dvalArray = Arrays.factory(ArrayType.DOUBLE, vals.getShape(), dvals);
 
     String name = "timeCoord";
     String units = refVar.getAttributeContainer().findAttributeString(CDM.UNITS, "seconds since 1970-1-1 00:00:00");
     units = normalize(units);
     String desc = "synthesized time coordinate from reftime, valtimeMINUSreftime";
     CoordinateAxis1D.Builder<?> timeCoord =
-        CoordinateAxis1D.builder().setName(name).setDataType(DataType.DOUBLE).setParentGroupBuilder(rootGroup)
-            .setDimensionsByName("record").setUnits(units).setDesc(desc).setSourceData(dvals);
+        CoordinateAxis1D.builder().setName(name).setArrayType(ArrayType.DOUBLE).setParentGroupBuilder(rootGroup)
+            .setDimensionsByName("record").setUnits(units).setDesc(desc).setSourceData(dvalArray);
 
     parseInfo.format("Created Time Coordinate Axis From reftime Variable%n");
     return timeCoord;

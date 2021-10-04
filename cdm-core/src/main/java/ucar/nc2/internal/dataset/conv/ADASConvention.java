@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -7,10 +7,8 @@ package ucar.nc2.internal.dataset.conv;
 
 import java.io.IOException;
 import java.util.Optional;
-import ucar.ma2.Array;
-import ucar.ma2.ArrayFloat;
-import ucar.ma2.DataType;
-import ucar.ma2.Index;
+import ucar.array.Array;
+import ucar.array.Arrays;
 import ucar.nc2.Attribute;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
@@ -41,7 +39,7 @@ public class ADASConvention extends CoordSystemBuilder {
 
   @Override
   protected void augmentDataset(CancelTask cancelTask) throws IOException {
-    if (!rootGroup.findVariableLocal("x").isPresent()) {
+    if (rootGroup.findVariableLocal("x").isEmpty()) {
       return; // check if its already been done - aggregating enhanced datasets.
     }
 
@@ -125,7 +123,7 @@ public class ADASConvention extends CoordSystemBuilder {
         .orElseThrow(() -> new IllegalStateException("Must have x_stag Variable"));
     Variable xstagOrg = xstag.orgVar;
     int nxpts = (int) xstagOrg.getSize();
-    ArrayFloat.D1 xstagData = (ArrayFloat.D1) xstagOrg.read();
+    Array<Float> xstagData = (Array<Float>) xstagOrg.readArray();
     float center_x = xstagData.get(nxpts - 1);
     double false_easting = center_x / 2000 - ppt0.getX() * 1000.0;
 
@@ -133,7 +131,7 @@ public class ADASConvention extends CoordSystemBuilder {
         .orElseThrow(() -> new IllegalStateException("Must have y_stag Variable"));
     Variable ystagOrg = ystag.orgVar;
     int nypts = (int) ystagOrg.getSize();
-    ArrayFloat.D1 ystagData = (ArrayFloat.D1) ystagOrg.read();
+    Array<Float> ystagData = (Array<Float>) ystagOrg.readArray();
     float center_y = ystagData.get(nypts - 1);
     double false_northing = center_y / 2000 - ppt0.getY() * 1000.0;
     log.debug("false easting/northing= {} {} ", false_easting, false_northing);
@@ -217,20 +215,17 @@ public class ADASConvention extends CoordSystemBuilder {
       return;
     }
     VariableDS.Builder<?> stagV = (VariableDS.Builder<?>) rootGroup.findVariableLocal(name).get();
-    Array data_stag = stagV.orgVar.read();
+    Array<Number> data_stag = (Array<Number>) stagV.orgVar.readArray();
     int n = (int) data_stag.getSize() - 1;
-    DataType dt = DataType.getType(data_stag);
-    Array data = Array.factory(dt, new int[] {n});
-    Index stagIndex = data_stag.getIndex();
-    Index dataIndex = data.getIndex();
+    double[] pdata = new double[n];
     for (int i = 0; i < n; i++) {
-      double val = data_stag.getDouble(stagIndex.set(i)) + data_stag.getDouble(stagIndex.set(i + 1));
-      data.setDouble(dataIndex.set(i), 0.5 * val);
+      double val = data_stag.get(i).doubleValue() + data_stag.get(i + 1).doubleValue();
+      pdata[i] = 0.5 * val;
     }
+    Array<Double> data = Arrays.factory(data_stag.getArrayType(), new int[] {n}, pdata);
 
-    DataType dtype = DataType.getType(data);
     String units = stagV.getAttributeContainer().findAttributeString(CDM.UNITS, "m");
-    CoordinateAxis.Builder<?> cb = CoordinateAxis1D.builder().setName(axisName).setDataType(dtype)
+    CoordinateAxis.Builder<?> cb = CoordinateAxis1D.builder().setName(axisName).setArrayType(data.getArrayType())
         .setParentGroupBuilder(rootGroup).setDimensionsByName(axisName).setUnits(units)
         .setDesc("synthesized non-staggered " + axisName + " coordinate");
     cb.setSourceData(data);

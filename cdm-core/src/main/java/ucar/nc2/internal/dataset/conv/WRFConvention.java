@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -12,12 +12,11 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nullable;
-import ucar.ma2.Array;
-import ucar.ma2.ArrayChar;
-import ucar.ma2.ArrayDouble;
-import ucar.ma2.DataType;
-import ucar.ma2.IndexIterator;
-import ucar.ma2.InvalidRangeException;
+import ucar.array.Array;
+import ucar.array.ArrayType;
+import ucar.array.Arrays;
+import ucar.array.Section;
+import ucar.ma2.InvalidRangeException; // have to port Variable.section()
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
@@ -185,7 +184,7 @@ public class WRFConvention extends CoordSystemBuilder {
 
     if (projType == 203) {
       Optional<Variable.Builder<?>> glatOpt = rootGroup.findVariableLocal("GLAT");
-      if (!glatOpt.isPresent()) {
+      if (glatOpt.isEmpty()) {
         parseInfo.format("Projection type 203 - expected GLAT variable not found%n");
       } else {
         Variable.Builder<?> glat = glatOpt.get();
@@ -198,7 +197,7 @@ public class WRFConvention extends CoordSystemBuilder {
       }
 
       Optional<Variable.Builder<?>> glonOpt = rootGroup.findVariableLocal("GLON");
-      if (!glonOpt.isPresent()) {
+      if (glonOpt.isEmpty()) {
         parseInfo.format("Projection type 203 - expected GLON variable not found%n");
       } else {
         Variable.Builder<?> glon = glonOpt.get();
@@ -211,9 +210,9 @@ public class WRFConvention extends CoordSystemBuilder {
       }
 
       // Make coordinate system variable
-      VariableDS.Builder<?> v = VariableDS.builder().setName("LatLonCoordSys").setDataType(DataType.CHAR);
+      VariableDS.Builder<?> v = VariableDS.builder().setName("LatLonCoordSys").setArrayType(ArrayType.CHAR);
       v.addAttribute(new Attribute(_Coordinate.Axes, "GLAT GLON Time"));
-      Array data = Array.factory(DataType.CHAR, new int[] {}, new char[] {' '});
+      Array<Byte> data = Arrays.factory(ArrayType.CHAR, new int[] {}, new char[] {' '});
       v.setSourceData(data);
       rootGroup.addVariable(v);
 
@@ -325,7 +324,7 @@ public class WRFConvention extends CoordSystemBuilder {
 
     // time coordinate variations
     Optional<Variable.Builder<?>> timeVar = rootGroup.findVariableLocal("Time");
-    if (!timeVar.isPresent()) { // Can skip this if its already there, eg from NcML
+    if (timeVar.isEmpty()) { // Can skip this if its already there, eg from NcML
       CoordinateAxis.Builder<?> taxis = makeTimeCoordAxis("Time", "Time");
       if (taxis == null)
         taxis = makeTimeCoordAxis("Time", "Times");
@@ -356,36 +355,22 @@ public class WRFConvention extends CoordSystemBuilder {
     return vds;
   }
 
-  /*
-   * TODO this doesnt work, leaving original way to do it, should revisit
-   * private Variable.Builder<?> removeConstantTimeDim(Variable.Builder<?> vb) {
-   * VariableDS.Builder<?> vds = (VariableDS.Builder<?>) vb;
-   * Variable v = vds.orgVar;
-   * int[] shape = v.getShape();
-   * if (v.getRank() == 3 && shape[0] == 1) {
-   * Variable.Builder<?> vdslice = vds.makeSliceBuilder(0, 0);
-   * rootGroup.replaceVariable(vdslice);
-   * return vdslice;
-   * }
-   * return vds;
-   * }
-   */
-
-  private Array convertToDegrees(Variable.Builder<?> vb) {
+  private Array<?> convertToDegrees(Variable.Builder<?> vb) {
     VariableDS.Builder<?> vds = (VariableDS.Builder<?>) vb;
     Variable v = vds.orgVar;
-    Array data;
+    Array<Number> data;
     try {
-      data = v.read();
-      data = data.reduce();
+      data = (Array<Number>) v.readArray();
+      data = Arrays.reduce(data);
     } catch (IOException ioe) {
       throw new RuntimeException("data read failed on " + v.getFullName() + "=" + ioe.getMessage());
     }
-    IndexIterator ii = data.getIndexIterator();
-    while (ii.hasNext()) {
-      ii.setDoubleCurrent(Math.toDegrees(ii.getDoubleNext()));
+    double[] dataInDegrees = new double[(int) data.getSize()];
+    int count = 0;
+    for (Number val : data) {
+      dataInDegrees[count++] = Math.toDegrees(val.doubleValue());
     }
-    return data;
+    return Arrays.factory(ArrayType.DOUBLE, new int[] {dataInDegrees.length}, dataInDegrees);
   }
 
   // pretty much WRF specific
@@ -468,7 +453,7 @@ public class WRFConvention extends CoordSystemBuilder {
     int nx = dim.getLength();
     double startx = centerX - dx * (nx - 1) / 2;
 
-    CoordinateAxis.Builder<?> v = CoordinateAxis1D.builder().setName(axisName).setDataType(DataType.DOUBLE)
+    CoordinateAxis.Builder<?> v = CoordinateAxis1D.builder().setName(axisName).setArrayType(ArrayType.DOUBLE)
         .setDimensionsByName(dim.getShortName()).setUnits("degrees_east").setDesc("synthesized longitude coordinate");
     v.setAutoGen(startx, dx);
     v.setAxisType(AxisType.Lon);
@@ -487,7 +472,7 @@ public class WRFConvention extends CoordSystemBuilder {
     int ny = dim.getLength();
     double starty = centerY - dy * (ny - 1) / 2;
 
-    CoordinateAxis.Builder<?> v = CoordinateAxis1D.builder().setName(axisName).setDataType(DataType.DOUBLE)
+    CoordinateAxis.Builder<?> v = CoordinateAxis1D.builder().setName(axisName).setArrayType(ArrayType.DOUBLE)
         .setDimensionsByName(dim.getShortName()).setUnits("degrees_north").setDesc("synthesized latitude coordinate");
     v.setAutoGen(starty, dy);
     v.setAxisType(AxisType.Lat);
@@ -501,7 +486,7 @@ public class WRFConvention extends CoordSystemBuilder {
   @Nullable
   private CoordinateAxis.Builder<?> makeXCoordAxis(String axisName, String dimName) {
     Optional<Dimension> dimOpt = rootGroup.findDimension(dimName);
-    if (!dimOpt.isPresent()) {
+    if (dimOpt.isEmpty()) {
       return null;
     }
     Dimension dim = dimOpt.get();
@@ -509,7 +494,7 @@ public class WRFConvention extends CoordSystemBuilder {
     int nx = dim.getLength();
     double startx = centerX - dx * (nx - 1) / 2; // ya just gotta know
 
-    CoordinateAxis.Builder<?> v = CoordinateAxis1D.builder().setName(axisName).setDataType(DataType.DOUBLE)
+    CoordinateAxis.Builder<?> v = CoordinateAxis1D.builder().setName(axisName).setArrayType(ArrayType.DOUBLE)
         .setParentGroupBuilder(rootGroup).setDimensionsByName(dim.getShortName()).setUnits("km")
         .setDesc("synthesized GeoX coordinate from DX attribute");
     v.setAutoGen(startx, dx);
@@ -526,7 +511,7 @@ public class WRFConvention extends CoordSystemBuilder {
   @Nullable
   private CoordinateAxis.Builder<?> makeYCoordAxis(String axisName, String dimName) {
     Optional<Dimension> dimOpt = rootGroup.findDimension(dimName);
-    if (!dimOpt.isPresent()) {
+    if (dimOpt.isEmpty()) {
       return null;
     }
     Dimension dim = dimOpt.get();
@@ -534,7 +519,7 @@ public class WRFConvention extends CoordSystemBuilder {
     int ny = dim.getLength();
     double starty = centerY - dy * (ny - 1) / 2; // - dy/2; // ya just gotta know
 
-    CoordinateAxis.Builder<?> v = CoordinateAxis1D.builder().setName(axisName).setDataType(DataType.DOUBLE)
+    CoordinateAxis.Builder<?> v = CoordinateAxis1D.builder().setName(axisName).setArrayType(ArrayType.DOUBLE)
         .setParentGroupBuilder(rootGroup).setDimensionsByName(dim.getShortName()).setUnits("km")
         .setDesc("synthesized GeoY coordinate from DY attribute");
     v.setAxisType(AxisType.GeoY);
@@ -559,7 +544,7 @@ public class WRFConvention extends CoordSystemBuilder {
     String fromWhere = axisName.endsWith("stag") ? "ZNW" : "ZNU";
 
     CoordinateAxis.Builder<?> v =
-        CoordinateAxis1D.builder().setName(axisName).setDataType(DataType.DOUBLE).setParentGroupBuilder(rootGroup)
+        CoordinateAxis1D.builder().setName(axisName).setArrayType(ArrayType.DOUBLE).setParentGroupBuilder(rootGroup)
             .setDimensionsByName(dim.getShortName()).setUnits("").setDesc("eta values from variable " + fromWhere);
     v.addAttribute(new Attribute(CF.POSITIVE, CF.POSITIVE_DOWN)); // eta coordinate is 1.0 at bottom, 0 at top
     v.setAxisType(AxisType.GeoZ);
@@ -572,7 +557,7 @@ public class WRFConvention extends CoordSystemBuilder {
     // But they are a function of time though the values are the same in the sample file
     // NOTE: Use first time sample assuming all are the same!!
     Optional<Variable.Builder<?>> etaVarOpt = rootGroup.findVariableLocal(fromWhere);
-    if (!etaVarOpt.isPresent()) {
+    if (etaVarOpt.isEmpty()) {
       return makeFakeCoordAxis(axisName, dim);
     } else {
       VariableDS.Builder<?> etaVarDS = (VariableDS.Builder<?>) etaVarOpt.get();
@@ -581,15 +566,13 @@ public class WRFConvention extends CoordSystemBuilder {
       int[] origin = {0, 0};
       int[] shape = {1, n};
       try {
-        Array array = etaVar.read(origin, shape);// read first time slice
-        ArrayDouble.D1 newArray = new ArrayDouble.D1(n);
-        IndexIterator it = array.getIndexIterator();
+        Array<Number> array = (Array<Number>) etaVar.readArray(new Section(origin, shape)); // read first time slice
+        double[] newArray = new double[n];
         int count = 0;
-        while (it.hasNext()) {
-          double d = it.getDoubleNext();
-          newArray.set(count++, d);
+        for (Number val : array) {
+          newArray[count++] = val.doubleValue();
         }
-        v.setSourceData(newArray);
+        v.setSourceData(Arrays.factory(ArrayType.DOUBLE, new int[] {n}, newArray));
       } catch (Exception e) {
         e.printStackTrace();
       } // ADD: error?
@@ -603,7 +586,7 @@ public class WRFConvention extends CoordSystemBuilder {
     if (dim == null)
       return null;
     CoordinateAxis.Builder<?> v =
-        CoordinateAxis1D.builder().setName(axisName).setDataType(DataType.SHORT).setParentGroupBuilder(rootGroup)
+        CoordinateAxis1D.builder().setName(axisName).setArrayType(ArrayType.SHORT).setParentGroupBuilder(rootGroup)
             .setDimensionsByName(dim.getShortName()).setUnits("").setDesc("synthesized coordinate: only an index");
     v.setAxisType(AxisType.GeoZ);
     v.addAttribute(new Attribute(_Coordinate.AxisType, "GeoZ"));
@@ -617,50 +600,49 @@ public class WRFConvention extends CoordSystemBuilder {
   @Nullable
   private CoordinateAxis.Builder<?> makeTimeCoordAxis(String axisName, String dimName) {
     Optional<Dimension> dimOpt = rootGroup.findDimension(dimName);
-    if (!dimOpt.isPresent()) {
+    if (dimOpt.isEmpty()) {
       return null;
     }
     Dimension dim = dimOpt.get();
     int nt = dim.getLength();
     Optional<Variable.Builder<?>> timeOpt = rootGroup.findVariableLocal("Times");
-    if (!timeOpt.isPresent()) {
+    if (timeOpt.isEmpty()) {
       return null;
     }
 
     Variable timeV = ((VariableDS.Builder<?>) timeOpt.get()).orgVar;
 
-    Array timeData;
+    Array<?> timeData;
     try {
-      timeData = timeV.read();
+      timeData = timeV.readArray();
     } catch (IOException ioe) {
       return null;
     }
 
-    ArrayDouble.D1 values = new ArrayDouble.D1(nt);
+    double[] values = new double[nt];
     int count = 0;
 
-    if (timeData instanceof ArrayChar) {
-      ArrayChar.StringIterator iter = ((ArrayChar) timeData).getStringIterator();
-      String testTimeStr = ((ArrayChar) timeData).getString(0);
+    if (timeData.getArrayType() == ArrayType.CHAR) {
+      Array<String> stringArray = Arrays.makeStringsFromChar((Array<Byte>) timeData);
+      String testTimeStr = stringArray.get(0);
       boolean isCanonicalIsoStr;
-      // Maybe too specific to require WRF to give 10 digits or
-      // dashes for the date (e.g. yyyy-mm-dd)?
+      // Maybe too specific to require WRF to give 10 digits or dashes for the date (e.g. yyyy-mm-dd)?
       String wrfDateWithUnderscore = "([\\-\\d]{10})_";
       Pattern wrfDateWithUnderscorePattern = Pattern.compile(wrfDateWithUnderscore);
       Matcher m = wrfDateWithUnderscorePattern.matcher(testTimeStr);
       isCanonicalIsoStr = m.matches();
 
-      while (iter.hasNext()) {
-        String dateS = iter.next();
-        CalendarDate cd;
+      for (String dateS : stringArray) {
+        Optional<CalendarDate> cd;
         if (isCanonicalIsoStr) {
-          cd = CalendarDate.fromUdunitIsoDate(null, dateS).orElse(null);
+          cd = CalendarDate.fromUdunitIsoDate(null, dateS);
         } else {
-          cd = CalendarDate.fromUdunitIsoDate(null, dateS.replaceFirst("_", "T")).orElse(null);
+          cd = CalendarDate.fromUdunitIsoDate(null, dateS.replaceFirst("_", "T"));
         }
 
-        if (cd != null) {
-          values.set(count++, (double) cd.getMillisFromEpoch() / 1000);
+        if (cd.isPresent()) {
+          values[count++] = (double) cd.get().getMillisFromEpoch() / 1000;
+
         } else {
           parseInfo.format("ERROR: cant parse Time string = <%s>%n", dateS);
 
@@ -668,8 +650,13 @@ public class WRFConvention extends CoordSystemBuilder {
           String startAtt = rootGroup.getAttributeContainer().findAttributeString("START_DATE", null);
           if ((nt == 1) && (null != startAtt)) {
             try {
-              cd = CalendarDate.fromUdunitIsoDate(null, startAtt).orElseThrow();
-              values.set(0, (double) cd.getMillisFromEpoch() / 1000);
+              cd = CalendarDate.fromUdunitIsoDate(null, startAtt);
+              if (cd.isPresent()) {
+                values[0] = (double) cd.get().getMillisFromEpoch() / 1000;
+              } else {
+                parseInfo.format("ERROR: cant parse global attribute START_DATE = <%s>%n", startAtt);
+                return null;
+              }
             } catch (Exception e2) {
               parseInfo.format("ERROR: cant parse global attribute START_DATE = <%s> err=%s%n", startAtt,
                   e2.getMessage());
@@ -677,21 +664,23 @@ public class WRFConvention extends CoordSystemBuilder {
           }
         }
       }
-    } else {
-      IndexIterator iter = timeData.getIndexIterator();
-      while (iter.hasNext()) {
-        String dateS = (String) iter.next();
+    } else if (timeData.getArrayType() == ArrayType.STRING) {
+      for (String dateS : (Array<String>) timeData) {
         try {
           CalendarDate cd = CalendarDate.fromUdunitIsoDate(null, dateS).orElseThrow();
-          values.set(count++, (double) cd.getMillisFromEpoch() / 1000);
+          values[count++] = (double) cd.getMillisFromEpoch() / 1000;
         } catch (IllegalArgumentException e) {
           parseInfo.format("ERROR: cant parse Time string = %s%n", dateS);
+          return null;
         }
       }
 
+    } else {
+      parseInfo.format("ERROR: timeData must be CHAR or String = <%s>%n", timeData.getArrayType());
+      return null;
     }
 
-    CoordinateAxis.Builder<?> v = CoordinateAxis1D.builder().setName(axisName).setDataType(DataType.DOUBLE)
+    CoordinateAxis.Builder<?> v = CoordinateAxis1D.builder().setName(axisName).setArrayType(ArrayType.DOUBLE)
         .setParentGroupBuilder(rootGroup).setDimensionsByName(dim.getShortName())
         .setUnits("secs since 1970-01-01 00:00:00").setDesc("synthesized time coordinate from Times(time)");
     v.setAxisType(AxisType.Time);
@@ -699,7 +688,7 @@ public class WRFConvention extends CoordSystemBuilder {
     if (!axisName.equals(dim.getShortName()))
       v.addAttribute(new Attribute(_Coordinate.AliasForDimension, dim.getShortName()));
 
-    v.setSourceData(values);
+    v.setSourceData(Arrays.factory(ArrayType.DOUBLE, new int[] {values.length}, values));
     return v;
   }
 
@@ -733,7 +722,7 @@ public class WRFConvention extends CoordSystemBuilder {
     String units = coordVar.attributes().findAttributeString(CDM.UNITS, "");
 
     CoordinateAxis.Builder<?> v =
-        CoordinateAxis1D.builder().setName("soilDepth").setDataType(DataType.DOUBLE).setParentGroupBuilder(rootGroup)
+        CoordinateAxis1D.builder().setName("soilDepth").setArrayType(ArrayType.DOUBLE).setParentGroupBuilder(rootGroup)
             .setDimensionsByName(soilDim.getShortName()).setUnits(units).setDesc("soil depth");
     v.addAttribute(new Attribute(CF.POSITIVE, CF.POSITIVE_DOWN)); // soil depth gets larger as you go down
     v.setAxisType(AxisType.GeoZ);
@@ -747,15 +736,13 @@ public class WRFConvention extends CoordSystemBuilder {
     int[] origin = {0, 0};
     int[] shape = {1, n};
     try {
-      Array array = coordVar.read(origin, shape);
-      ArrayDouble.D1 newArray = new ArrayDouble.D1(n);
-      IndexIterator it = array.getIndexIterator();
+      Array<Number> array = (Array<Number>) coordVar.readArray(new Section(origin, shape));
+      double[] newArray = new double[n];
       int count = 0;
-      while (it.hasNext()) {
-        double d = it.getDoubleNext();
-        newArray.set(count++, d);
+      for (Number val : array) {
+        newArray[count++] = val.doubleValue();
       }
-      v.setSourceData(newArray);
+      v.setSourceData(Arrays.factory(ArrayType.DOUBLE, new int[] {n}, newArray));
     } catch (Exception e) {
       e.printStackTrace();
     }
