@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -7,8 +7,9 @@ package ucar.nc2.internal.dataset.conv;
 
 import java.io.IOException;
 import java.util.NoSuchElementException;
-import ucar.ma2.ArrayByte;
-import ucar.ma2.DataType;
+
+import com.google.common.collect.ImmutableList;
+import ucar.array.ArrayType;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
@@ -111,10 +112,8 @@ public class AWIPSSatConvention extends AWIPSConvention {
     // datav.setDataType(DataType.UBYTE);
 
     // missing values
-    ArrayByte.D1 missing_values = new ArrayByte.D1(2, true);
-    missing_values.set(0, (byte) 0);
-    missing_values.set(1, (byte) -127);
-    datav.addAttribute(Attribute.fromArray(CDM.MISSING_VALUE, missing_values));
+    datav.addAttribute(
+        Attribute.builder(CDM.MISSING_VALUE).setValues(ImmutableList.of((byte) 0, (byte) -127), false).build());
 
     if (projCT != null) {
       VariableDS.Builder<?> v = makeCoordinateTransformVariable(projCT);
@@ -227,7 +226,7 @@ public class AWIPSSatConvention extends AWIPSConvention {
   }
 
   private CoordinateAxis.Builder<?> makeLonCoordAxis(String xname) {
-    CoordinateAxis1D.Builder<?> v = CoordinateAxis1D.builder().setName(xname).setDataType(DataType.DOUBLE)
+    CoordinateAxis1D.Builder<?> v = CoordinateAxis1D.builder().setName(xname).setArrayType(ArrayType.DOUBLE)
         .setParentGroupBuilder(rootGroup).setDimensionsByName(xname).setUnits(CDM.LON_UNITS).setDesc("longitude");
     v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
     v.setAutoGen(startx, dx);
@@ -237,7 +236,7 @@ public class AWIPSSatConvention extends AWIPSConvention {
   }
 
   private CoordinateAxis.Builder<?> makeLatCoordAxis(String yname) {
-    CoordinateAxis1D.Builder<?> v = CoordinateAxis1D.builder().setName(yname).setDataType(DataType.DOUBLE)
+    CoordinateAxis1D.Builder<?> v = CoordinateAxis1D.builder().setName(yname).setArrayType(ArrayType.DOUBLE)
         .setParentGroupBuilder(rootGroup).setDimensionsByName(yname).setUnits(CDM.LAT_UNITS).setDesc("latitude");
     v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
     v.setAutoGen(starty, dy);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -12,11 +12,9 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
+import ucar.array.Array;
 import ucar.array.ArrayType;
 import ucar.array.Arrays;
-import ucar.ma2.Array;
-import ucar.ma2.DataType;
-import ucar.ma2.IndexIterator;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
@@ -115,7 +113,7 @@ public class NUWGConvention extends CoordSystemBuilder {
     }
     grib = new Grib1(mode);
 
-    if (!rootGroup.findVariableLocal(xaxisName).isPresent()) {
+    if (rootGroup.findVariableLocal(xaxisName).isEmpty()) {
       grib.makeXCoordAxis(xaxisName);
       parseInfo.format("Generated x axis from NUWG nav= %s%n", xaxisName);
 
@@ -124,20 +122,20 @@ public class NUWGConvention extends CoordSystemBuilder {
         // check monotonicity
         boolean ok = true;
         VariableDS.Builder<?> dc = (VariableDS.Builder<?>) rootGroup.findVariableLocal(xaxisName).get();
-        Array coordVal = dc.orgVar.read();
-        IndexIterator coordIndex = coordVal.getIndexIterator();
+        Array<Number> coordVal = (Array<Number>) dc.orgVar.readArray();
 
-        double coord1 = coordIndex.getDoubleNext();
-        double coord2 = coordIndex.getDoubleNext();
+        double coord1 = coordVal.get(0).doubleValue();
+        double coord2 = coordVal.get(1).doubleValue();
         boolean increase = coord1 > coord2;
-        coord1 = coord2;
-        while (coordIndex.hasNext()) {
-          coord2 = coordIndex.getDoubleNext();
-          if ((coord1 > coord2) ^ increase) {
-            ok = false;
-            break;
+        Number last = null;
+        for (Number val : coordVal) {
+          if (last != null) {
+            if ((val.doubleValue() > last.doubleValue()) != increase) {
+              ok = false;
+              break;
+            }
           }
-          coord1 = coord2;
+          last = val;
         }
 
         if (!ok) {
@@ -149,7 +147,7 @@ public class NUWGConvention extends CoordSystemBuilder {
       }
     }
 
-    if (!rootGroup.findVariableLocal(yaxisName).isPresent()) {
+    if (rootGroup.findVariableLocal(yaxisName).isEmpty()) {
       grib.makeYCoordAxis(yaxisName);
       parseInfo.format("Generated y axis from NUWG nav=%s%n", yaxisName);
     }
@@ -257,12 +255,12 @@ public class NUWGConvention extends CoordSystemBuilder {
 
     String boundsName = dim.getShortName() + "_bounds";
     Variable.Builder<?> coordVarBounds =
-        VariableDS.builder().setName(boundsName).setDataType(DataType.DOUBLE).setDesc("synthesized Z coord bounds")
+        VariableDS.builder().setName(boundsName).setArrayType(ArrayType.DOUBLE).setDesc("synthesized Z coord bounds")
             .setParentGroupBuilder(this.rootGroup).setDimensionsByName(dim.getShortName() + " 2")
             .setSourceData(Arrays.factory(ArrayType.DOUBLE, new int[] {n, 2}, boundsData));
     this.rootGroup.addVariable(coordVarBounds);
 
-    Variable.Builder<?> coordVar = VariableDS.builder().setName(dim.getShortName()).setDataType(DataType.DOUBLE)
+    Variable.Builder<?> coordVar = VariableDS.builder().setName(dim.getShortName()).setArrayType(ArrayType.DOUBLE)
         .setParentGroupBuilder(this.rootGroup).addDimension(dim).setDesc("synthesized Z coord")
         .addAttribute(new Attribute(CF.BOUNDS, boundsName))
         .addAttribute(new Attribute(_Coordinate.AliasForDimension, dim.getShortName()))
@@ -291,7 +289,7 @@ public class NUWGConvention extends CoordSystemBuilder {
     StringTokenizer parser = new StringTokenizer(alias, " ,");
     while (parser.hasMoreTokens()) {
       String token = parser.nextToken();
-      if (!rootGroup.findVariableLocal(token).isPresent()) {
+      if (rootGroup.findVariableLocal(token).isEmpty()) {
         continue;
       }
       Variable.Builder<?> ncvar = rootGroup.findVariableLocal(token).get();
@@ -520,7 +518,7 @@ public class NUWGConvention extends CoordSystemBuilder {
     }
 
     void makeXCoordAxis(String xname) {
-      CoordinateAxis.Builder<?> v = CoordinateAxis1D.builder().setName(xname).setDataType(DataType.DOUBLE)
+      CoordinateAxis.Builder<?> v = CoordinateAxis1D.builder().setName(xname).setArrayType(ArrayType.DOUBLE)
           .setParentGroupBuilder(rootGroup).setDimensionsByName(xname).setUnits((0 == grid_code) ? CDM.LON_UNITS : "km")
           .setDesc("synthesized X coord");
       v.addAttribute(
@@ -530,7 +528,7 @@ public class NUWGConvention extends CoordSystemBuilder {
     }
 
     void makeYCoordAxis(String yname) {
-      CoordinateAxis.Builder<?> v = CoordinateAxis1D.builder().setName(yname).setDataType(DataType.DOUBLE)
+      CoordinateAxis.Builder<?> v = CoordinateAxis1D.builder().setName(yname).setArrayType(ArrayType.DOUBLE)
           .setParentGroupBuilder(rootGroup).setDimensionsByName(yname).setUnits((0 == grid_code) ? CDM.LAT_UNITS : "km")
           .setDesc("synthesized Y coord");
       v.addAttribute(

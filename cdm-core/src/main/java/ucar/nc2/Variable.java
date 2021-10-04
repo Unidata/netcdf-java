@@ -390,15 +390,19 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    *        A Range object may be null, which means use the entire dimension.
    * @return a new Variable which is a logical section of this Variable.
    * @throws InvalidRangeException if shape and range list dont match
-   * @deprecated use getSection() or getSection().getRanges()
+   * @deprecated use section(ucar.array.Section)
    */
   @Deprecated
   public Variable section(List<Range> ranges) throws InvalidRangeException {
     return section(new Section(ranges, shape));
   }
 
-  public Variable section(ucar.array.Section subsection) throws InvalidRangeException {
-    return section(ArraysConvert.convertSection(subsection));
+  public Variable section(ucar.array.Section subsection) throws ucar.array.InvalidRangeException {
+    try {
+      return section(ArraysConvert.convertSection(subsection));
+    } catch (InvalidRangeException e) {
+      throw new ucar.array.InvalidRangeException(e);
+    }
   }
 
   /**

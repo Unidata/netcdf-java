@@ -1,12 +1,13 @@
 /*
- * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
 package ucar.nc2.internal.dataset.conv;
 
 import java.util.Optional;
-import ucar.ma2.DataType;
+
+import ucar.array.ArrayType;
 import ucar.nc2.Attribute;
 import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
@@ -45,7 +46,7 @@ public class HdfEosOmiConvention extends CoordSystemBuilder {
 
     @Override
     public boolean isMine(NetcdfFile ncfile) {
-      if (!ncfile.getFileTypeId().equals("HDF5-EOS")) {
+      if (ncfile.getFileTypeId() == null || !ncfile.getFileTypeId().equals("HDF5-EOS")) {
         return false;
       }
 
@@ -193,7 +194,7 @@ public class HdfEosOmiConvention extends CoordSystemBuilder {
   }
 
   private CoordinateAxis.Builder<?> makeLatCoordAxis(Group.Builder g2, int n, String dimName) {
-    CoordinateAxis.Builder<?> v = CoordinateAxis1D.builder().setName("lat").setDataType(DataType.FLOAT)
+    CoordinateAxis.Builder<?> v = CoordinateAxis1D.builder().setName("lat").setArrayType(ArrayType.FLOAT)
         .setParentGroupBuilder(g2).setDimensionsByName(dimName).setUnits(CDM.LAT_UNITS).setDesc("latitude");
 
     double incr = 180.0 / n;
@@ -203,7 +204,7 @@ public class HdfEosOmiConvention extends CoordSystemBuilder {
   }
 
   private CoordinateAxis.Builder<?> makeLonCoordAxis(Group.Builder g2, int n, String dimName) {
-    CoordinateAxis.Builder<?> v = CoordinateAxis1D.builder().setName("lon").setDataType(DataType.FLOAT)
+    CoordinateAxis.Builder<?> v = CoordinateAxis1D.builder().setName("lon").setArrayType(ArrayType.FLOAT)
         .setParentGroupBuilder(g2).setDimensionsByName(dimName).setUnits(CDM.LON_UNITS).setDesc("longitude");
 
     double incr = 360.0 / n;

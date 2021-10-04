@@ -11,7 +11,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import ucar.ma2.Array;
+
+import ucar.array.Array;
 import ucar.nc2.Attribute;
 import ucar.nc2.Group;
 import ucar.nc2.Variable;
@@ -332,7 +333,7 @@ public class CF1Convention extends CSMConvention {
         possibleCorrections.forEach((incorrect, correct) -> {
           Attribute attr = gridMappingVar.getAttributeContainer().findAttributeIgnoreCase(incorrect);
           if (attr != null) {
-            Array vals = attr.getValues();
+            Array<?> vals = attr.getArrayValues();
             if (vals != null) {
               gridMappingVar.getAttributeContainer().replace(attr, correct);
               log.debug("Renamed {} attribute {} to {}", gridMappingVar, incorrect, correct);
