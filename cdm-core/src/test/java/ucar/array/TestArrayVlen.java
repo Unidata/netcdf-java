@@ -5,6 +5,7 @@
 package ucar.array;
 
 import static com.google.common.truth.Truth.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.fail;
 
 import com.google.common.collect.ImmutableList;
@@ -47,7 +48,7 @@ public class TestArrayVlen {
 
     assertThat(array.getShape()).isEqualTo(new int[] {1, 2});
     assertThat(array.getRank()).isEqualTo(2);
-    assertThat(array.length()).isEqualTo(2);
+    assertThat(array.totalLength()).isEqualTo(7);
     assertThat(array.getArrayType()).isEqualTo(ArrayType.SHORT);
   }
 

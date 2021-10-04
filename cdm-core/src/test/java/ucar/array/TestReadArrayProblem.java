@@ -146,5 +146,11 @@ public class TestReadArrayProblem {
     TestReadArrayCompare.compareNetcdfFile(filename);
   }
 
+  @Test
+  public void testNc4AttributeVlen() throws Exception {
+    String filename = TestDir.cdmUnitTestDir + "formats/netcdf4/files/tst_opaque_data.nc4";
+    TestReadArrayCompare.compareNetcdfFile(filename);
+  }
+
 }
 

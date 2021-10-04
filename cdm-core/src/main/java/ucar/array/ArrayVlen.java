@@ -11,7 +11,6 @@ import javax.annotation.concurrent.Immutable;
 /**
  * Array of variable length primitive arrays of T, eg double[length][].
  * Cast resulting Array<T>, eg to Array<Double>.
- * Find out type from getPrimitiveArrayType() (not getArrayType(), which is VLEN).
  * This is mutable, to assist users in constructing. See set(index, value).
  */
 public final class ArrayVlen<T> extends Array<Array<T>> {
@@ -133,6 +132,18 @@ public final class ArrayVlen<T> extends Array<Array<T>> {
   @Override
   public boolean isVlen() {
     return true;
+  }
+
+  public long length() {
+    return storage.length();
+  }
+
+  public long totalLength() {
+    long len = 0;
+    for (Array<T> arr : storage) {
+      len += arr.length();
+    }
+    return len;
   }
 
   @Override

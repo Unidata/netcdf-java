@@ -39,7 +39,7 @@ import ucar.nc2.write.ChunkingIndex;
 /** Server that manages startup/shutdown of a gCDM Server. */
 public class GcdmServer {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GcdmServer.class);
-  private static final int MAX_MESSAGE = 50 * 1000 * 1000; // 50 Mb
+  private static final int MAX_MESSAGE = 50 * 1000 * 1000; // 50 Mb LOOK could be tuned
   private static final int SEQUENCE_CHUNK = 1000;
 
   private Server server;
