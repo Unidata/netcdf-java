@@ -875,7 +875,7 @@ class GribIospBuilder {
   // regular runtime, offset; offset depends on runtime minute from 0z
   private String makeTimeOffsetRegular(Group.Builder gb, CoordinateTime2D time2D) {
     try {
-      List<Object> minsFrom0z = ImmutableList.copyOf(time2D.getRegularMinuteOffsets());
+      List<Integer> minsFrom0z = ImmutableList.copyOf(time2D.getRegularMinuteOffsets());
       int nhours = minsFrom0z.size();
       int noffsets = time2D.getNtimes();
       String toName = makeTimeOffsetName(time2D.getName());

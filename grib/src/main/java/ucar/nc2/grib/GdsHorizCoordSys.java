@@ -6,8 +6,9 @@
 package ucar.nc2.grib;
 
 import com.google.common.base.MoreObjects;
-import ucar.ma2.Array;
-import ucar.ma2.DataType;
+import ucar.array.Array;
+import ucar.array.ArrayType;
+import ucar.array.Arrays;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.unidata.util.GaussianLatitudes;
@@ -15,10 +16,7 @@ import ucar.unidata.util.StringUtil2;
 import javax.annotation.concurrent.Immutable;
 
 /**
- * A Horizontal coordinate system generated from a GRIB-1 or GRIB-2 GDS.
- *
- * @author John
- * @since 9/5/11
+ * A Horizontal coordinate system generated from a GRIB1 or GRIB2 GDS.
  */
 @Immutable
 public class GdsHorizCoordSys {
@@ -34,8 +32,8 @@ public class GdsHorizCoordSys {
   public final int[] nptsInLine; // non-null id thin grid
 
   // hmmmm
-  private Array gaussLats;
-  private Array gaussw;
+  private Array<Double> gaussLats;
+  private Array<Double> gaussw;
 
   public GdsHorizCoordSys(String name, int template, int gdsNumberPoints, int scanMode, Projection proj, double startx,
       double dx, double starty, double dy, int nxRaw, int nyRaw, int[] nptsInLine) {
@@ -79,8 +77,9 @@ public class GdsHorizCoordSys {
   }
 
   public double getStartY() {
-    if (gaussLats != null)
-      return gaussLats.getDouble(0);
+    if (gaussLats != null) {
+      return gaussLats.get(0);
+    }
     return starty;
   }
 
@@ -89,8 +88,9 @@ public class GdsHorizCoordSys {
   }
 
   public double getEndY() {
-    if (gaussLats != null)
-      return gaussLats.getDouble((int) gaussLats.getSize() - 1);
+    if (gaussLats != null) {
+      return gaussLats.get((int) gaussLats.getSize() - 1);
+    }
     return starty + dy * (ny - 1);
   }
 
@@ -135,9 +135,9 @@ public class GdsHorizCoordSys {
   // set gaussian weights based on nparallels
   // some weird adjustment for la1 and la2.
   public void setGaussianLats(int nparallels, float la1, float la2) {
-    log.debug("la1 {}, la2 {}", la1, la2);
-    if (this.gaussLats != null)
+    if (this.gaussLats != null) {
       throw new RuntimeException("Cant modify GdsHorizCoordSys");
+    }
 
     int nlats = (2 * nparallels);
     GaussianLatitudes gaussLats = GaussianLatitudes.factory(nlats);
@@ -158,8 +158,6 @@ public class GdsHorizCoordSys {
       }
     }
 
-    log.debug("first pass: bestStartIndex {}, bestEndIndex {}", bestStartIndex, bestEndIndex);
-
     if (Math.abs(bestEndIndex - bestStartIndex) + 1 != nyRaw) {
       log.warn("GRIB gaussian lats: NP != NY, use NY"); // see email from Toussaint@dkrz.de datafil:
       nlats = nyRaw;
@@ -169,17 +167,14 @@ public class GdsHorizCoordSys {
     }
     boolean goesUp = bestEndIndex > bestStartIndex;
 
-    log.debug("bestStartIndex {}, bestEndIndex {}, goesUp {}", bestStartIndex, bestEndIndex, goesUp);
-
     // create the data
     int useIndex = bestStartIndex;
-    float[] data = new float[nyRaw];
-    float[] gaussw = new float[nyRaw];
+    double[] data = new double[nyRaw];
+    double[] gaussw = new double[nyRaw];
     for (int i = 0; i < nyRaw; i++) {
-      data[i] = (float) gaussLats.getLatitude(useIndex);
-      gaussw[i] = (float) gaussLats.getGaussWeight(useIndex);
+      data[i] = gaussLats.getLatitude(useIndex);
+      gaussw[i] = gaussLats.getGaussWeight(useIndex);
 
-      log.trace("i {}, useIndex {}, data {}, gaussw {}", i, useIndex, data[i], gaussw[i]);
       if (goesUp) {
         useIndex++;
       } else {
@@ -187,25 +182,23 @@ public class GdsHorizCoordSys {
       }
     }
 
-    this.gaussLats = Array.factory(DataType.FLOAT, new int[] {nyRaw}, data);
-    this.gaussw = Array.factory(DataType.FLOAT, new int[] {nyRaw}, gaussw);
-  }
-
-  /** @deprecated use getGaussianLatsArray */
-  @Deprecated
-  public Array getGaussianLats() {
-    return gaussLats;
+    this.gaussLats = Arrays.factory(ArrayType.DOUBLE, new int[] {nyRaw}, data);
+    this.gaussw = Arrays.factory(ArrayType.DOUBLE, new int[] {nyRaw}, gaussw);
   }
 
   public boolean hasGaussianLats() {
     return gaussLats != null;
   }
 
-  public double[] getGaussianLatsArray() {
-    return (double[]) gaussLats.get1DJavaArray(DataType.DOUBLE);
+  public Array<Double> getGaussianLats() {
+    return gaussLats;
   }
 
-  public Array getGaussianWeights() {
+  public double[] getGaussianLatsArray() {
+    return (double[]) Arrays.copyPrimitiveArray(gaussLats);
+  }
+
+  public Array<Double> getGaussianWeights() {
     return gaussw;
   }
 

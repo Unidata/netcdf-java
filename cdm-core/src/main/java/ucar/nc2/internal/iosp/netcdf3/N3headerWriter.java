@@ -9,9 +9,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import ucar.ma2.Array;
-import ucar.ma2.DataType;
-import ucar.ma2.IndexIterator;
+
+import ucar.array.ArrayType;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.Group;
@@ -248,7 +247,7 @@ class N3headerWriter extends N3header {
     int count = 0;
     for (Attribute att : atts) {
       writeString(att.getShortName());
-      int type = getType(att.getDataType());
+      int type = getType(att.getArrayType());
       raf.writeInt(type);
 
       if (type == 2) {
@@ -271,7 +270,7 @@ class N3headerWriter extends N3header {
       size += sizeString(att.getShortName());
       size += 4; // type
 
-      int type = getType(att.getDataType());
+      int type = getType(att.getArrayType());
       if (type == 2) {
         size += sizeStringValues(att);
       } else {
@@ -393,17 +392,17 @@ class N3headerWriter extends N3header {
       writeAtts(var.getAttributeContainer());
 
       // data type, variable size, beginning file position
-      DataType dtype = var.dataType.getDataType();
-      int type = getType(dtype);
+      int type = getType(var.dataType);
       raf.writeInt(type);
 
       int vsizeWrite = (vsize < MAX_UNSIGNED_INT) ? (int) vsize : -1;
       raf.writeInt(vsizeWrite);
       long pos = raf.getFilePointer();
-      if (largeFile)
+      if (largeFile) {
         raf.writeLong(0); // come back to this later
-      else
+      } else {
         raf.writeInt(0); // come back to this later
+      }
 
       // From nc3 file format specification
       // (https://www.unidata.ucar.edu/software/netcdf/docs/netcdf.html#NetCDF-Classic-Format):
@@ -412,7 +411,7 @@ class N3headerWriter extends N3header {
       // 2/15/2011: we will continue to write the (incorrect) padded vsize into the header, but we will use the unpadded
       // size to read/write
       if (uvarb.size() == 1 && uvarb.get(0) == var) {
-        if ((dtype == DataType.CHAR) || (dtype == DataType.BYTE) || (dtype == DataType.SHORT)) {
+        if ((var.dataType == ArrayType.CHAR) || (var.dataType == ArrayType.BYTE) || (var.dataType == ArrayType.SHORT)) {
           vsize = unpaddedVsize;
         }
       }
@@ -467,18 +466,19 @@ class N3headerWriter extends N3header {
   void updateAttribute(ucar.nc2.Variable v2, Attribute att) throws IOException {
     long pos;
     if (v2 == null)
-      pos = findAtt(globalAttsPos, att.getShortName());
+      pos = findAttPos(globalAttsPos, att.getShortName());
     else {
       N3header.Vinfo vinfo = (N3header.Vinfo) v2.getSPobject();
-      pos = findAtt(vinfo.attsPos, att.getShortName());
+      pos = findAttPos(vinfo.attsPos, att.getShortName());
     }
 
     raf.seek(pos);
     int type = raf.readInt();
-    DataType have = getDataType(type);
-    DataType want = att.getDataType();
-    if (want == DataType.STRING)
-      want = DataType.CHAR;
+    ArrayType have = getDataType(type);
+    ArrayType want = att.getArrayType();
+    if (want == ArrayType.STRING) {
+      want = ArrayType.CHAR;
+    }
     if (want != have) {
       throw new IllegalArgumentException(
           "Update Attribute must have same type or original = " + have + " att = " + att);
@@ -507,30 +507,23 @@ class N3headerWriter extends N3header {
     }
   }
 
-  private long findAtt(long start_pos, String want) throws IOException {
+  // just skipping forward to find the named attribute's file position (after the name)
+  private long findAttPos(long start_pos, String want) throws IOException {
     raf.seek(start_pos + 4);
 
     int natts = raf.readInt();
     for (int i = 0; i < natts; i++) {
       String name = readString();
-      if (name.equals(want))
+      if (name.equals(want)) {
         return raf.getFilePointer();
+      }
 
       int type = raf.readInt();
-
-      if (type == 2) {
-        readString();
-      } else {
-        int nelems = raf.readInt();
-        DataType dtype = getDataType(type);
-        int[] shape = {nelems};
-        Array arr = Array.factory(dtype, shape);
-        IndexIterator ii = arr.getIndexIterator();
-        int nbytes = 0;
-        for (int j = 0; j < nelems; j++)
-          nbytes += readAttributeValue(dtype, ii);
-        skip(nbytes);
-      }
+      int nelems = raf.readInt();
+      ArrayType dtype = getDataType(type);
+      int nbytes = nelems * dtype.getSize();
+      raf.skipBytes(nbytes);
+      skip(nbytes); // 4 byte boundary
     }
 
     throw new IllegalArgumentException("no such attribute " + want);

@@ -4,7 +4,7 @@
  */
 package ucar.nc2;
 
-import ucar.ma2.Array;
+import ucar.array.Array;
 import java.io.IOException;
 
 /**
@@ -24,7 +24,7 @@ public class TimeRecords2 {
     long start = System.currentTimeMillis();
     long total = 0;
     for (Variable variable : ncfile.getVariables()) {
-      Array data = variable.read();
+      Array<?> data = variable.readArray();
       total += data.getSize();
     }
     double took = (System.currentTimeMillis() - start) * .001;
@@ -36,7 +36,7 @@ public class TimeRecords2 {
     long start = System.currentTimeMillis();
     long total = 0;
     Variable variable = ncfile.findVariable(varName);
-    Array data = variable.read();
+    Array<?> data = variable.readArray();
     total += data.getSize();
     double took = (System.currentTimeMillis() - start) * .001;
     System.out.println("   read var = " + varName + " from " + ncfile.getLocation());

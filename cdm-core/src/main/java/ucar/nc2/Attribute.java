@@ -562,7 +562,7 @@ public class Attribute {
      * Set the values from a list of String or one of the primitives
      * Integer, Float, Double, Short, Long, Integer, Byte.
      */
-    public Builder setValues(List<Object> values, boolean unsigned) {
+    public Builder setValues(List<?> values, boolean unsigned) {
       if (values == null || values.isEmpty()) {
         throw new IllegalArgumentException("values may not be null or empty");
       }

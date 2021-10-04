@@ -182,10 +182,8 @@ public class CoordinateND<T> {
       }
 
       // now that we have the track, make the real SA
-      SparseArray<T> newSA = new SparseArray<>(sizeArray, track, prevSA.getContent(), prevSA.getNdups()); // content
-                                                                                                          // (list of
-                                                                                                          // records) is
-                                                                                                          // the same
+      // content (list of records) is the same
+      SparseArray<T> newSA = new SparseArray<>(sizeArray, track, prevSA.getContent(), prevSA.getNdups());
       return new CoordinateND<>(newCoords, newSA); // reindexed result
     }
 

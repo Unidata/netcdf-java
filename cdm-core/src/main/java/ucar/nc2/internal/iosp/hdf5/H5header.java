@@ -1342,7 +1342,7 @@ public class H5header implements HdfHeaderIF {
         List<Integer> chunksize = new ArrayList<>();
         for (int i = 0; i < vinfo.storageSize.length - 1; i++) // skip last one - its the element size
           chunksize.add(vinfo.storageSize[i]);
-        vb.addAttribute(Attribute.builder(CDM.CHUNK_SIZES).setValues((List) chunksize, true).build());
+        vb.addAttribute(Attribute.builder(CDM.CHUNK_SIZES).setValues(chunksize, true).build());
       }
     }
 
