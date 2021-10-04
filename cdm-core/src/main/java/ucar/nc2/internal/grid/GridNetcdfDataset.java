@@ -10,6 +10,7 @@ import com.google.common.collect.Multimap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.AttributeContainer;
+import ucar.nc2.AttributeContainerMutable;
 import ucar.nc2.Dimension;
 import ucar.nc2.Dimensions;
 import ucar.nc2.Variable;
@@ -196,7 +197,7 @@ public class GridNetcdfDataset implements GridDataset {
 
   @Override
   public AttributeContainer attributes() {
-    return ncd.getRootGroup().attributes();
+    return AttributeContainerMutable.copyFrom(ncd.getRootGroup().attributes()).setName(getName()).toImmutable();
   }
 
   @Override

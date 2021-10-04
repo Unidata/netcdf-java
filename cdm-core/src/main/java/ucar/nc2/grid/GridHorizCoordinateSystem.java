@@ -84,6 +84,10 @@ public class GridHorizCoordinateSystem {
     return rect.getWidth() >= 360;
   }
 
+  public boolean hasAxis(String axisName) {
+    return xaxis.getName().equals(axisName) || yaxis.getName().equals(axisName);
+  }
+
   /**
    * The nominal sizes of the yaxis, xaxis as a list.
    */

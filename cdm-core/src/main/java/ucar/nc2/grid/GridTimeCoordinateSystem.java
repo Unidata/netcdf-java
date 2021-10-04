@@ -5,7 +5,6 @@
 
 package ucar.nc2.grid;
 
-import com.google.common.base.Preconditions;
 import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.calendar.CalendarDateUnit;
 import ucar.nc2.calendar.CalendarPeriod;
@@ -27,7 +26,7 @@ public abstract class GridTimeCoordinateSystem {
   public enum Type {
     Observation, // No runtimes
     SingleRuntime, // Single runtime
-    Offset, // All runtimes have the same offsets
+    Offset, // All runtimes have the same offsets (orthogonal)
     OffsetRegular, // All runtimes, grouped by time since 0z, have the same offsets.
     OffsetIrregular // Runtimes have irregular offsets
   }

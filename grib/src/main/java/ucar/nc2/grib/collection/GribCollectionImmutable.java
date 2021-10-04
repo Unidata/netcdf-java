@@ -239,7 +239,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     result.addAttribute(new Attribute(CDM.HISTORY, "Read using CDM IOSP GribCollection v3"));
     result.addAttribute(new Attribute(CF.FEATURE_TYPE, FeatureType.GRID.name()));
 
-    return result;
+    return result.toImmutable();
   }
 
   public abstract void addGlobalAttributes(AttributeContainerMutable result);

@@ -39,7 +39,7 @@ import ucar.nc2.Sequence;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 
-/** Convert between Gcdm Protos and Netcdf objects, using ucar.ma2.Array for data. */
+/** Convert between Gcdm Protos and Netcdf objects, using ucar.array.Array for data. */
 public class GcdmConverter {
   private static final boolean debugSize = false;
 

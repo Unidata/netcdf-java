@@ -55,7 +55,7 @@ public class GridHorizCurvilinear extends GridHorizCoordinateSystem {
     return createFromEdges(xaxis, yaxis, latedge, lonedge);
   }
 
-  static GridHorizCurvilinear createFromEdges(GridAxisPoint xaxis, GridAxisPoint yaxis, Array<Double> latedge,
+  public static GridHorizCurvilinear createFromEdges(GridAxisPoint xaxis, GridAxisPoint yaxis, Array<Double> latedge,
       Array<Double> lonedge) {
     Preconditions.checkNotNull(xaxis);
     Preconditions.checkNotNull(yaxis);

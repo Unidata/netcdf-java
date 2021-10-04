@@ -6,15 +6,16 @@ apply from: "$rootDir/gradle/any/java-library.gradle"
 
 dependencies {
   api enforcedPlatform(project(':netcdf-java-platform'))
-  testImplementation enforcedPlatform(project(':netcdf-java-testing-platform'))
+  implementation enforcedPlatform(project(':netcdf-java-testing-platform'))
 
   api project(':cdm-core')
-
-  // implementation project(':httpservices')
 
   implementation "junit:junit:${depVersion.junit}"
   implementation 'org.slf4j:slf4j-api'
   implementation 'com.google.re2j:re2j'
+  // implementation 'com.google.truth:truth'
+  implementation 'com.google.truth:truth:1.1'
+
 
   testRuntimeOnly 'ch.qos.logback:logback-classic'
 }

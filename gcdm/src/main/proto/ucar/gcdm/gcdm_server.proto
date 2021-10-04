@@ -16,4 +16,5 @@ service Gcdm {
   rpc GetNetcdfData (DataRequest) returns (stream DataResponse) {}
   rpc GetGridDataset (GridDatasetRequest) returns (GridDatasetResponse) {}
   rpc GetGridData (GridDataRequest) returns (stream GridDataResponse) {}
+  rpc GetVerticalTransform (VerticalTransformRequest) returns (VerticalTransformResponse) {}
 }

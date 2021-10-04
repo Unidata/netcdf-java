@@ -27,24 +27,20 @@ public class TestGridVerticalTransforms {
 
   @Test
   public void testWRF() throws Exception {
-    testDataset(TestDir.cdmUnitTestDir + "conventions/wrf/wrfout_v2_Lambert.nc");
-    testDataset(TestDir.cdmUnitTestDir + "conventions/wrf/wrfout_d01_2006-03-08_21-00-00");
-  }
-
-  private void testDataset(String filename) throws IOException, InvalidRangeException {
+    String filename = TestDir.cdmUnitTestDir + "conventions/wrf/wrfout_v2_Lambert.nc";
     System.out.printf("testWRF %s%n", filename);
     Formatter errlog = new Formatter();
     try (ucar.nc2.grid.GridDataset gds = GridDatasetFactory.openGridDataset(filename, errlog)) {
       assertThat(gds).isNotNull();
 
-      testWrfGrid(gds.findGrid("U").orElseThrow());
-      testWrfGrid(gds.findGrid("V").orElseThrow());
-      testWrfGrid(gds.findGrid("W").orElseThrow());
-      testWrfGrid(gds.findGrid("T").orElseThrow());
+      testWrfGrid(gds.findGrid("U").orElseThrow(), ImmutableList.of(27, 60, 74));
+      testWrfGrid(gds.findGrid("V").orElseThrow(), ImmutableList.of(27, 61, 73));
+      testWrfGrid(gds.findGrid("W").orElseThrow(), ImmutableList.of(28, 60, 73));
+      testWrfGrid(gds.findGrid("T").orElseThrow(), ImmutableList.of(27, 60, 73));
     }
   }
 
-  private void testWrfGrid(Grid grid) throws IOException, InvalidRangeException {
+  private void testWrfGrid(Grid grid, List<Integer> expected) throws IOException, InvalidRangeException {
     GridCoordinateSystem gcs = grid.getCoordinateSystem();
     assertThat(gcs).isNotNull();
     GridHorizCoordinateSystem hcs = gcs.getHorizCoordinateSystem();
@@ -67,21 +63,21 @@ public class TestGridVerticalTransforms {
 
     VerticalTransform vt = gcs.getVerticalTransform();
     assertThat(vt).isNotNull();
-    assertThat(vt).isInstanceOf(ucar.nc2.geoloc.vertical.OceanSigma.class);
+    assertThat(vt).isInstanceOf(ucar.nc2.geoloc.vertical.WrfEta.class);
 
     Array<Number> z3d = vt.getCoordinateArray3D(0);
     Section sv = new Section(z3d.getShape());
     System.out.printf("3dcoord = %s %n", sv);
-    assertThat(Ints.asList(z3d.getShape())).isEqualTo(ImmutableList.of(20, 87, 193));
+    assertThat(Ints.asList(z3d.getShape())).isEqualTo(expected);
 
     Array<Number> z1D = vt.getCoordinateArray1D(0, 10, 10);
-    assertThat(Ints.asList(z1D.getShape())).isEqualTo(ImmutableList.of(20));
+    assertThat(Ints.asList(z1D.getShape())).isEqualTo(expected.subList(0, 1));
 
     int timeIndex = 0;
     GridTimeCoordinateSystem tcs = grid.getTimeCoordinateSystem();
     for (Object timeCoord : tcs.getTimeOffsetAxis(0)) {
       Array<Number> zt = vt.getCoordinateArray3D(timeIndex++);
-      assertThat(Ints.asList(zt.getShape())).isEqualTo(ImmutableList.of(20, 87, 193));
+      assertThat(Ints.asList(zt.getShape())).isEqualTo(expected);
     }
 
     Array<Number> vcoord = vt.getCoordinateArray3D(0);

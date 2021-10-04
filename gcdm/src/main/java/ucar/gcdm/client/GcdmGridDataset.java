@@ -10,6 +10,7 @@ import com.google.common.collect.ImmutableList;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
+import ucar.array.Array;
 import ucar.gcdm.*;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.FeatureType;
@@ -90,17 +91,14 @@ public class GcdmGridDataset implements GridDataset {
       Iterator<GcdmGridProto.GridDataResponse> responses =
           blockingStub.withDeadlineAfter(MAX_DATA_WAIT_SECONDS, TimeUnit.SECONDS).getGridData(requestb.build());
 
-      // while (responses.hasNext()) {
       GcdmGridProto.GridDataResponse response = responses.next();
       if (response.hasError()) {
         throw new IOException(response.getError().getMessage());
       }
       Formatter errlog = new Formatter();
-      GridReferencedArray result =
-          GcdmGridConverter.decodeGridReferencedArray(response.getData(), getGridAxes(), errlog);
+      GridReferencedArray result = GcdmGridConverter.decodeGridReferencedArray(response.getData(), errlog);
       results.add(result);
       size += result.data().length();
-      // }
 
     } catch (StatusRuntimeException e) {
       log.warn("readSection requestData failed failed: ", e);
@@ -117,6 +115,21 @@ public class GcdmGridDataset implements GridDataset {
       return results.get(0);
     } else {
       throw new UnsupportedOperationException("multiple responses not supported"); // TODO
+    }
+  }
+
+  Array<Number> getVerticalTransform(int id, String name, int timeIndex) {
+    log.info("GcdmGridDataset request getVerticalTransform {} {} {}", id, name, timeIndex);
+    final Stopwatch stopwatch = Stopwatch.createStarted();
+
+    GcdmGridProto.VerticalTransformRequest request = GcdmGridProto.VerticalTransformRequest.newBuilder().setId(id)
+        .setLocation(path).setVerticalTransform(name).setTimeIndex(timeIndex).build();
+    GcdmGridProto.VerticalTransformResponse response = blockingStub.getVerticalTransform(request);
+    if (response.hasError()) {
+      throw new RuntimeException(response.getError().getMessage());
+    } else {
+      log.info("GcdmGridDataset request getVerticalTransform took {}", stopwatch.stop().elapsed());
+      return GcdmConverter.decodeData(response.getData3D());
     }
   }
 
@@ -147,6 +160,11 @@ public class GcdmGridDataset implements GridDataset {
       gridsb.add(b.setDataset(this).build(this.coordsys));
     }
     this.grids = gridsb.build();
+
+    // inject the dataset
+    for (GcdmVerticalTransform vt : builder.vts) {
+      vt.setDataset(this);
+    }
   }
 
   @Override
@@ -180,6 +198,7 @@ public class GcdmGridDataset implements GridDataset {
     public final ArrayList<GridAxis<?>> axes = new ArrayList<>();
     private final ArrayList<GridCoordinateSystem> coordsys = new ArrayList<>();
     private final ArrayList<GcdmGrid.Builder> grids = new ArrayList<>();
+    public final ArrayList<GcdmVerticalTransform> vts = new ArrayList<>();
 
     private boolean built;
 
@@ -200,6 +219,11 @@ public class GcdmGridDataset implements GridDataset {
 
     public Builder addGrid(GcdmGrid.Builder grid) {
       grids.add(grid);
+      return this;
+    }
+
+    public Builder addVerticalTransform(GcdmVerticalTransform vtb) {
+      vts.add(vtb);
       return this;
     }
 

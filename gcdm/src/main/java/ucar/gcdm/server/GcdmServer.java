@@ -17,6 +17,7 @@ import io.grpc.stub.StreamObserver;
 import java.io.IOException;
 import java.util.Formatter;
 import java.util.Iterator;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import ucar.array.*;
@@ -37,6 +38,7 @@ import ucar.nc2.ParsedArraySectionSpec;
 import ucar.nc2.Sequence;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDatasets;
+import ucar.nc2.geoloc.vertical.VerticalTransform;
 import ucar.nc2.grid.Grid;
 import ucar.nc2.grid.GridDataset;
 import ucar.nc2.grid.GridDatasetFactory;
@@ -45,7 +47,11 @@ import ucar.nc2.grid.GridSubset;
 import ucar.nc2.util.Misc;
 import ucar.nc2.write.ChunkingIndex;
 
-/** Server that manages startup/shutdown of a gCDM Server. */
+/**
+ * Server that manages startup/shutdown of a gCDM Server.
+ * Note that NetcdfDatast / GridDataset is opened/closed on each request.
+ * LOOK test caching performance.
+ */
 public class GcdmServer {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GcdmServer.class);
   private static final int MAX_MESSAGE = 50 * 1000 * 1000; // 50 Mb LOOK could be tuned
@@ -252,7 +258,13 @@ public class GcdmServer {
       GcdmGridProto.GridDatasetResponse.Builder response = GcdmGridProto.GridDatasetResponse.newBuilder();
       Formatter errlog = new Formatter();
       try (GridDataset gridDataset = GridDatasetFactory.openGridDataset(request.getLocation(), errlog)) {
-        response.setDataset(GcdmGridConverter.encodeGridDataset(gridDataset));
+        if (gridDataset == null) {
+          response.setError(GcdmNetcdfProto.Error.newBuilder()
+              .setMessage(String.format("Dataset '%s' not found or not a GridDataset", request.getLocation())).build());
+        } else {
+          response.setDataset(GcdmGridConverter.encodeGridDataset(gridDataset));
+        }
+
         responseObserver.onNext(response.build());
         responseObserver.onCompleted();
         logger.info("GcdmServer getGridDataset " + request.getLocation());
@@ -312,6 +324,45 @@ public class GcdmServer {
     void makeError(GcdmGridProto.GridDataResponse.Builder response, String message) {
       response.setError(GcdmNetcdfProto.Error.newBuilder().setMessage(message).build());
     }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // VerticalTransform
+
+    @Override
+    public void getVerticalTransform(GcdmGridProto.VerticalTransformRequest request,
+        io.grpc.stub.StreamObserver<GcdmGridProto.VerticalTransformResponse> responseObserver) {
+      System.out.printf("GcdmServer getVerticalTransform open %s%n", request.getLocation());
+      GcdmGridProto.VerticalTransformResponse.Builder response = GcdmGridProto.VerticalTransformResponse.newBuilder();
+      Formatter errlog = new Formatter();
+      try (GridDataset gridDataset = GridDatasetFactory.openGridDataset(request.getLocation(), errlog)) {
+        response.setLocation(request.getLocation());
+        response.setVerticalTransform(request.getVerticalTransform());
+        response.setTimeIndex(request.getTimeIndex());
+
+        if (gridDataset == null) {
+          response.setError(
+              GcdmNetcdfProto.Error.newBuilder().setMessage("Dataset not found or not a GridDataset").build());
+        } else {
+          Optional<VerticalTransform> cto = gridDataset.findVerticalTransformByHash(request.getId());
+          if (cto.isPresent()) {
+            Array<?> data = cto.get().getCoordinateArray3D(request.getTimeIndex());
+            response.setData3D(GcdmConverter.encodeData(data.getArrayType(), data));
+          } else {
+            response.setError(GcdmNetcdfProto.Error.newBuilder().setMessage("VerticalTransform not found").build());
+          }
+        }
+
+        responseObserver.onNext(response.build());
+        responseObserver.onCompleted();
+        logger.info("GcdmServer getVerticalTransform " + request.getLocation());
+      } catch (Throwable t) {
+        System.out.printf("GcdmServer getVerticalTransform failed %s %n%s%n", t.getMessage(), errlog);
+        logger.warn("GcdmServer getVerticalTransform failed ", t);
+        t.printStackTrace();
+        response.setError(GcdmNetcdfProto.Error.newBuilder().setMessage(t.getMessage()).build());
+      }
+    }
+
 
   } // GcdmImpl
 }

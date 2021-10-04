@@ -10,6 +10,7 @@ import ucar.nc2.Attribute;
 import ucar.nc2.calendar.CalendarDateUnit;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CF;
+import ucar.nc2.grib.collection.Grib;
 import ucar.nc2.grib.collection.GribCollectionImmutable;
 import ucar.nc2.grib.collection.GribIosp;
 import ucar.nc2.grib.coord.Coordinate;
@@ -44,20 +45,22 @@ public class GribGridAxis {
     switch (gribCoord.getType()) {
       case runtime: {
         CoordinateRuntime rtCoord = (CoordinateRuntime) gribCoord;
-        GridAxis<?> axis = Point.builder().setRuntimeCoordinate(rtCoord).setAxisType(AxisType.RunTime).build();
+        GridAxis<?> axis = Point.builder().setRuntimeCoordinate(rtCoord).setAxisType(AxisType.RunTime)
+            .setDescription(Grib.GRIB_RUNTIME).build();
         return new CoordAndAxis(gribCoord, axis);
       }
 
       case time: {
         CoordinateTime timeCoord = (CoordinateTime) gribCoord;
-        GridAxis<?> axis = Point.builder().setTimeOffsetCoordinate(timeCoord).setAxisType(AxisType.TimeOffset).build();
+        GridAxis<?> axis = Point.builder().setTimeOffsetCoordinate(timeCoord).setAxisType(AxisType.TimeOffset)
+            .setDescription(Grib.GRIB_VALID_TIME).build();
         return new CoordAndAxis(gribCoord, axis);
       }
 
       case timeIntv: {
         CoordinateTimeIntv timeIntvCoord = (CoordinateTimeIntv) gribCoord;
-        GridAxis<?> axis =
-            Interval.builder().setTimeOffsetIntervalCoordinate(timeIntvCoord).setAxisType(AxisType.TimeOffset).build();
+        GridAxis<?> axis = Interval.builder().setTimeOffsetIntervalCoordinate(timeIntvCoord)
+            .setAxisType(AxisType.TimeOffset).setDescription(Grib.GRIB_VALID_TIME).build();
         return new CoordAndAxis(gribCoord, axis);
       }
 
@@ -340,6 +343,9 @@ public class GribGridAxis {
         if (built)
           throw new IllegalStateException("already built");
         built = true;
+        if (this.resolution == 0 && this.spacing == GridAxisSpacing.contiguousInterval && this.values.length > 1) {
+          this.resolution = (this.values[this.values.length - 1] - this.values[0]) / (this.values.length - 1);
+        }
         return new GribGridAxis.Interval(this);
       }
     }

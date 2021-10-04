@@ -8,6 +8,7 @@ import com.google.common.collect.ImmutableList;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.geoloc.vertical.VerticalTransform;
 
 import java.io.Closeable;
 import java.util.Formatter;
@@ -45,6 +46,12 @@ public interface GridDataset extends Closeable {
           return Optional.of(cov);
     }
     return Optional.empty();
+  }
+
+  /** Find VerticalTransform using its hashCode. */
+  default Optional<VerticalTransform> findVerticalTransformByHash(int hash) {
+    return getGridCoordinateSystems().stream().map(cs -> cs.getVerticalTransform())
+        .filter(vt -> (vt != null) && vt.hashCode() == hash).findFirst();
   }
 
   default void toString(Formatter buf) {

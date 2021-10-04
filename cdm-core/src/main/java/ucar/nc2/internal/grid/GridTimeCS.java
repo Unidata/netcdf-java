@@ -15,6 +15,7 @@ import ucar.nc2.grid.GridSubset;
 import ucar.nc2.grid.GridTimeCoordinateSystem;
 
 import javax.annotation.Nullable;
+import java.util.Comparator;
 import java.util.Formatter;
 import java.util.List;
 import java.util.Map;
@@ -130,11 +131,14 @@ public class GridTimeCS extends GridTimeCoordinateSystem {
   //////////////////////////////////////////////////////////////////////////////
   static class OffsetRegular extends GridTimeCS {
     private final Map<Integer, GridAxis<?>> timeOffsets;
+    private final int maxTimeOffsets;
 
     OffsetRegular(GridAxisPoint runtime, GridAxis<?> timeOffset, CalendarDateUnit runtimeDateUnit,
         Map<Integer, GridAxis<?>> timeOffsets) {
       super(Type.OffsetRegular, runtime, timeOffset, runtimeDateUnit);
       this.timeOffsets = new TreeMap<>(timeOffsets);
+      this.maxTimeOffsets =
+          timeOffsets.values().stream().map(GridAxis::getNominalSize).max(Comparator.naturalOrder()).orElse(0);
     }
 
     @Override
@@ -148,6 +152,11 @@ public class GridTimeCS extends GridTimeCoordinateSystem {
       int hour = runtime.getHourOfDay();
       int min = runtime.getMinuteOfHour();
       return timeOffsets.get(hour * 60 + min);
+    }
+
+    @Override
+    public List<Integer> getNominalShape() {
+      return ImmutableList.of(runTimeAxis.getNominalSize(), this.maxTimeOffsets);
     }
 
     @Override
@@ -171,11 +180,13 @@ public class GridTimeCS extends GridTimeCoordinateSystem {
   //////////////////////////////////////////////////////////////////////////////
   static class OffsetIrregular extends GridTimeCS {
     private final List<GridAxis<?>> timeOffsets;
+    private final int maxTimeOffsets;
 
     OffsetIrregular(GridAxisPoint runtime, GridAxis<?> timeOffset, CalendarDateUnit runtimeDateUnit,
         List<GridAxis<?>> timeOffsets) {
       super(Type.OffsetIrregular, runtime, timeOffset, runtimeDateUnit);
       this.timeOffsets = timeOffsets;
+      this.maxTimeOffsets = timeOffsets.stream().map(GridAxis::getNominalSize).max(Comparator.naturalOrder()).orElse(0);
     }
 
     @Override
@@ -186,6 +197,11 @@ public class GridTimeCS extends GridTimeCoordinateSystem {
     @Override
     public GridAxis<?> getTimeOffsetAxis(int runIdx) {
       return timeOffsets.get(runIdx);
+    }
+
+    @Override
+    public List<Integer> getNominalShape() {
+      return ImmutableList.of(runTimeAxis.getNominalSize(), this.maxTimeOffsets);
     }
 
     @Override

@@ -5,15 +5,17 @@
 
 package ucar.gcdm;
 
-import com.google.common.collect.ImmutableList;
 import ucar.array.Array;
+import ucar.array.ArrayType;
 import ucar.gcdm.client.GcdmGrid;
 import ucar.gcdm.client.GcdmGridDataset;
+import ucar.gcdm.client.GcdmVerticalTransform;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.calendar.CalendarDateUnit;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.geoloc.vertical.VerticalTransform;
 import ucar.nc2.grid.Grid;
 import ucar.nc2.grid.GridAxis;
 import ucar.nc2.grid.GridAxisDependenceType;
@@ -23,9 +25,11 @@ import ucar.nc2.grid.GridAxisSpacing;
 import ucar.nc2.grid.GridCoordinateSystem;
 import ucar.nc2.grid.GridDataset;
 import ucar.nc2.grid.GridHorizCoordinateSystem;
+import ucar.nc2.grid.GridHorizCurvilinear;
 import ucar.nc2.grid.GridReferencedArray;
 import ucar.nc2.grid.GridTimeCoordinateSystem;
 import ucar.nc2.grid.MaterializedCoordinateSystem;
+import ucar.nc2.internal.dataset.transform.horiz.ProjectionFactory;
 import ucar.nc2.internal.grid.GridTimeCS;
 import ucar.unidata.geoloc.Projection;
 
@@ -56,18 +60,26 @@ public class GcdmGridConverter {
 
     Set<GridHorizCoordinateSystem> hsyss = new HashSet<>();
     Set<GridTimeCoordinateSystem> tsyss = new HashSet<>();
+    Set<VerticalTransform> vts = new HashSet<>();
     for (GridCoordinateSystem coordsys : org.getGridCoordinateSystems()) {
       builder.addCoordSystems(encodeCoordinateSystem(coordsys));
       hsyss.add(coordsys.getHorizCoordinateSystem());
       if (coordsys.getTimeCoordinateSystem() != null) {
         tsyss.add(coordsys.getTimeCoordinateSystem());
       }
+      if (coordsys.getVerticalTransform() != null) {
+        vts.add(coordsys.getVerticalTransform());
+      }
     }
+
     for (GridHorizCoordinateSystem hsys : hsyss) {
       builder.addHorizCoordSystems(encodeHorizCS(hsys));
     }
     for (GridTimeCoordinateSystem tsys : tsyss) {
       builder.addTimeCoordSystems(encodeTimeCS(tsys));
+    }
+    for (VerticalTransform vt : vts) {
+      builder.addVerticalTransform(encodeVerticalTransform(vt));
     }
     for (Grid grid : org.getGrids()) {
       builder.addGrids(encodeGrid(grid));
@@ -83,16 +95,31 @@ public class GcdmGridConverter {
     for (GcdmGridProto.GridAxis axisp : proto.getGridAxesList()) {
       builder.addGridAxis(decodeGridAxis(axisp));
     }
+
     Map<Integer, GridHorizCoordinateSystem> hsys = new HashMap<>();
     for (GcdmGridProto.GridHorizCoordinateSystem coordsys : proto.getHorizCoordSystemsList()) {
-      hsys.put(coordsys.getId(), decodeHorizCS(coordsys, builder.axes, errlog));
+      GridHorizCoordinateSystem hcs;
+      if (coordsys.getIsCurvilinear()) {
+        hcs = decodeHorizCurvililinear(coordsys);
+      } else {
+        hcs = decodeHorizCS(coordsys, builder.axes, errlog);
+      }
+      hsys.put(coordsys.getId(), hcs);
     }
+
     Map<Integer, GridTimeCoordinateSystem> tsys = new HashMap<>();
     for (GcdmGridProto.GridTimeCoordinateSystem coordsys : proto.getTimeCoordSystemsList()) {
       tsys.put(coordsys.getId(), decodeTimeCS(coordsys, builder.axes));
     }
 
-    Decoder csysDecoder = new Decoder(builder.axes, tsys, hsys);
+    Map<Integer, GcdmVerticalTransform> vtMap = new HashMap<>();
+    for (GcdmGridProto.VerticalTransform vtp : proto.getVerticalTransformList()) {
+      GcdmVerticalTransform vt = decodeVerticalTransform(vtp);
+      builder.addVerticalTransform(vt);
+      vtMap.put(vt.getId(), vt);
+    }
+
+    Decoder csysDecoder = new Decoder(builder.axes, tsys, hsys, vtMap);
     for (GcdmGridProto.GridCoordinateSystem coordsys : proto.getCoordSystemsList()) {
       builder.addCoordSys(csysDecoder.decodeCoordinateSystem(coordsys, errlog));
     }
@@ -106,25 +133,42 @@ public class GcdmGridConverter {
     List<GridAxis<?>> axes;
     Map<Integer, GridTimeCoordinateSystem> tsys;
     Map<Integer, GridHorizCoordinateSystem> hsys;
+    Map<Integer, GcdmVerticalTransform> vts;
 
     Decoder(List<GridAxis<?>> axes, Map<Integer, GridTimeCoordinateSystem> tsys,
-        Map<Integer, GridHorizCoordinateSystem> hsys) {
+        Map<Integer, GridHorizCoordinateSystem> hsys, Map<Integer, GcdmVerticalTransform> vts) {
       this.axes = axes;
       this.tsys = tsys;
       this.hsys = hsys;
+      this.vts = vts;
     }
 
     public GridCoordinateSystem decodeCoordinateSystem(GcdmGridProto.GridCoordinateSystem proto, Formatter errlog) {
       boolean error = false;
       ArrayList<GridAxis<?>> caxes = new ArrayList<>();
+
+      GridHorizCoordinateSystem wantHcs = this.hsys.get(proto.getHorizCoordinatesId());
+      if (wantHcs == null) {
+        errlog.format("Cant find GridHorizCoordinateSystem %d for GridCoordinateSystem %s%n",
+            proto.getHorizCoordinatesId(), proto.getName());
+        error = true;
+      }
+
       for (String axisName : proto.getAxisNamesList()) {
         Optional<GridAxis<?>> want = this.axes.stream().filter(a -> a.getName().equals(axisName)).findFirst();
         if (want.isEmpty()) {
-          errlog.format("Cant find axis named %s%n", axisName);
-          error = true;
+          if (wantHcs.isCurvilinear() && !wantHcs.hasAxis(axisName)) {
+            errlog.format("Cant find axis named %s%n", axisName);
+            error = true;
+          }
         } else {
           caxes.add(want.get());
         }
+      }
+
+      if (wantHcs != null && wantHcs.isCurvilinear()) {
+        caxes.add(wantHcs.getYHorizAxis());
+        caxes.add(wantHcs.getXHorizAxis());
       }
 
       GridTimeCoordinateSystem wantTcs = null;
@@ -137,19 +181,21 @@ public class GcdmGridConverter {
         }
       }
 
-      GridHorizCoordinateSystem wantHcs = this.hsys.get(proto.getHorizCoordinatesId());
-      if (wantHcs == null) {
-        errlog.format("Cant find GridHorizCoordinateSystem %d for GridCoordinateSystem %s%n",
-            proto.getHorizCoordinatesId(), proto.getName());
-        error = true;
+      VerticalTransform vt = null;
+      if (proto.getVerticalTransformId() != 0) {
+        vt = this.vts.get(proto.getVerticalTransformId());
+        if (vt == null) {
+          errlog.format("Cant find VerticalTransform %d for GridCoordinateSystem %s%n", proto.getVerticalTransformId(),
+              proto.getName());
+          error = true;
+        }
       }
 
       if (error) {
         throw new RuntimeException(errlog.toString());
       }
 
-      // LOOK verticalTransform
-      return new GridCoordinateSystem(caxes, wantTcs, null, wantHcs);
+      return new GridCoordinateSystem(caxes, wantTcs, vt, wantHcs);
     }
   }
 
@@ -164,6 +210,9 @@ public class GcdmGridConverter {
     GridTimeCoordinateSystem timeCS = csys.getTimeCoordinateSystem();
     if (timeCS != null) {
       builder.setTimeCoordinatesId(timeCS.hashCode());
+    }
+    if (csys.getVerticalTransform() != null) {
+      builder.setVerticalTransformId(csys.getVerticalTransform().hashCode());
     }
     return builder.build();
   }
@@ -282,7 +331,18 @@ public class GcdmGridConverter {
     builder.setYaxisName(horizCS.getYHorizAxis().getName());
     builder.setIsCurvilinear(horizCS.isCurvilinear());
     builder.setId(horizCS.hashCode());
+    if (horizCS.isCurvilinear()) {
+      encodeHorizCurvililinear((GridHorizCurvilinear) horizCS, builder);
+    }
     return builder.build();
+  }
+
+  private static void encodeHorizCurvililinear(GridHorizCurvilinear horizCurvilinear,
+      GcdmGridProto.GridHorizCoordinateSystem.Builder builder) {
+    builder.setXaxis(encodeGridAxis(horizCurvilinear.getXHorizAxis()));
+    builder.setYaxis(encodeGridAxis(horizCurvilinear.getYHorizAxis()));
+    builder.setLatEdges(GcdmConverter.encodeData(ArrayType.DOUBLE, horizCurvilinear.getLatEdges()));
+    builder.setLonEdges(GcdmConverter.encodeData(ArrayType.DOUBLE, horizCurvilinear.getLonEdges()));
   }
 
   public static GridHorizCoordinateSystem decodeHorizCS(GcdmGridProto.GridHorizCoordinateSystem horizCS,
@@ -293,8 +353,17 @@ public class GcdmGridConverter {
     return new GridHorizCoordinateSystem(xaxis, yaxis, projection);
   }
 
+  public static GridHorizCoordinateSystem decodeHorizCurvililinear(
+      GcdmGridProto.GridHorizCoordinateSystem horizCurvilinear) {
+    GridAxisPoint xaxis = (GridAxisPoint) decodeGridAxis(horizCurvilinear.getXaxis());
+    GridAxisPoint yaxis = (GridAxisPoint) decodeGridAxis(horizCurvilinear.getYaxis());
+    Array<Double> latEdge = GcdmConverter.decodeData(horizCurvilinear.getLatEdges());
+    Array<Double> lonEdge = GcdmConverter.decodeData(horizCurvilinear.getLonEdges());
+
+    return GridHorizCurvilinear.createFromEdges(xaxis, yaxis, latEdge, lonEdge);
+  }
+
   public static GcdmGridProto.GridTimeCoordinateSystem encodeTimeCS(GridTimeCoordinateSystem timeCS) {
-    System.out.printf("  encodeCoordinateSystem %d%n", timeCS.hashCode());
     GcdmGridProto.GridTimeCoordinateSystem.Builder builder = GcdmGridProto.GridTimeCoordinateSystem.newBuilder();
     builder.setType(convertTimeType(timeCS.getType()));
     builder.setCalendarDateUnit(timeCS.getRuntimeDateUnit().toString());
@@ -311,7 +380,6 @@ public class GcdmGridConverter {
         int hour = runtimeDate.getHourOfDay();
         int minutes = runtimeDate.getMinuteOfHour();
         int minutesFrom0z = 60 * hour + minutes;
-        System.out.printf("  %d: minutesFrom0z= %d%n", runidx, minutesFrom0z);
         builder.putRegular(minutesFrom0z, encodeGridAxis(timeCS.getTimeOffsetAxis(runidx)));
       }
     }
@@ -337,9 +405,6 @@ public class GcdmGridConverter {
     List<GridAxis<?>> timeOffsets =
         proto.getIrregularList().stream().map(a -> decodeGridAxis(a)).collect(Collectors.toList());
 
-    // GridTimeCoordinateSystem.Type type, @Nullable GridAxisPoint runtimeAxis, GridAxis<?> timeOffsetAxis,
-    // CalendarDateUnit calendarDateUnit, CalendarDate calendarDate,
-    // Map<Integer, GridAxis<?>> timeOffsetMap, List<GridAxis<?>> timeOffsets
     return GridTimeCS.create(convertTimeType(proto.getType()), runtimeAxis, timeAxis, dateUnit, timeOffsetMap,
         timeOffsets);
   }
@@ -354,9 +419,23 @@ public class GcdmGridConverter {
     return builder.build();
   }
 
+  @Nullable
   public static Projection decodeProjection(GcdmGridProto.Projection proto, Formatter errlog) {
     AttributeContainer ctv = GcdmConverter.decodeAttributes(proto.getName(), proto.getAttributesList());
-    return ucar.nc2.internal.dataset.transform.horiz.ProjectionFactory.makeProjection(ctv, proto.getGeoUnit(), errlog);
+    return ProjectionFactory.makeProjection(ctv, proto.getGeoUnit(), errlog);
+  }
+
+  public static GcdmGridProto.VerticalTransform encodeVerticalTransform(VerticalTransform vt) {
+    GcdmGridProto.VerticalTransform.Builder builder = GcdmGridProto.VerticalTransform.newBuilder();
+    builder.setId(vt.hashCode());
+    builder.setName(vt.getName());
+    builder.setCtvName(vt.getCtvName());
+    builder.setUnits(vt.getUnitString());
+    return builder.build();
+  }
+
+  public static GcdmVerticalTransform decodeVerticalTransform(GcdmGridProto.VerticalTransform proto) {
+    return new GcdmVerticalTransform(proto.getId(), proto.getName(), proto.getCtvName(), proto.getUnits());
   }
 
   public static GcdmGridProto.Grid encodeGrid(Grid grid) {
@@ -390,7 +469,7 @@ public class GcdmGridConverter {
   }
 
   public static GridReferencedArray decodeGridReferencedArray(GcdmGridProto.GridReferencedArray proto,
-      ImmutableList<GridAxis<?>> axes, Formatter errlog) {
+      Formatter errlog) {
     MaterializedCoordinateSystem.Builder cs =
         decodeMaterializedCoordSys(proto.getMaterializedCoordinateSystem(), errlog);
     Array<Number> data = GcdmConverter.decodeData(proto.getData());
@@ -427,7 +506,7 @@ public class GcdmGridConverter {
 
 
   ////////////////////////////////////////////////////////////////////////////////////
-  // cobvert enums
+  // convert enums
 
   public static GridTimeCoordinateSystem.Type convertTimeType(GcdmGridProto.GridTimeType proto) {
     switch (proto) {
