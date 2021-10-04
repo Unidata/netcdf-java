@@ -1,16 +1,14 @@
 /*
- * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
 package ucar.nc2.internal.dataset.conv;
 
 import java.io.IOException;
-import ucar.ma2.Array;
-import ucar.ma2.ArrayDouble;
-import ucar.ma2.ArrayFloat;
-import ucar.ma2.DataType;
-import ucar.ma2.IndexIterator;
+import ucar.array.Array;
+import ucar.array.ArrayType;
+import ucar.array.Arrays;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.Dimension;
@@ -62,7 +60,7 @@ public class Cosmic1Convention extends CoordSystemBuilder {
 
     Attribute leoAtt = gatts.findAttribute("leoId");
     if (leoAtt == null) {
-      if (!rootGroup.findVariableLocal("time").isPresent()) {
+      if (rootGroup.findVariableLocal("time").isEmpty()) {
         // create a time Variable.Builder - assume its linear along the vertical dimension
         double start = gatts.findAttributeDouble("start_time", Double.NaN);
         double stop = gatts.findAttributeDouble("stop_time", Double.NaN);
@@ -85,34 +83,35 @@ public class Cosmic1Convention extends CoordSystemBuilder {
             .orElseThrow(() -> new IllegalStateException("Canrt find dimension MSL_alt"));
         VariableDS.Builder<?> dimV = (VariableDS.Builder<?>) rootGroup.findVariableLocal("MSL_alt")
             .orElseThrow(() -> new IllegalStateException("Canrt find variable MSL_alt"));
-        Array dimU = dimV.orgVar.read();
-        int inscr = (dimU.getFloat(1) - dimU.getFloat(0)) > 0 ? 1 : 0;
+        Array<Number> dimU = (Array<Number>) dimV.orgVar.readArray();
+        int inscr = (dimU.get(1).floatValue() - dimU.get(0).floatValue()) > 0 ? 1 : 0;
         int n = dim.getLength();
         double incr = (stop - start) / n;
 
         String timeUnits = "seconds since 1980-01-06 00:00:00";
-        VariableDS.Builder<?> timeVar = VariableDS.builder().setName("time").setDataType(DataType.DOUBLE)
+        VariableDS.Builder<?> timeVar = VariableDS.builder().setName("time").setArrayType(ArrayType.DOUBLE)
             .setParentGroupBuilder(rootGroup).setDimensionsByName(dim.getShortName()).setUnits(timeUnits);
         rootGroup.addVariable(timeVar);
         timeVar.setUnits(timeUnits);
         timeVar.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
         int dir = gatts.findAttributeInteger("irs", 1);
-        ArrayDouble.D1 data = (ArrayDouble.D1) Array.factory(DataType.DOUBLE, new int[] {n});
+        double[] pdata = new double[n];
         if (inscr == 0) {
           if (dir == 1) {
             for (int i = 0; i < n; i++) {
-              data.set(i, start + i * incr);
+              pdata[i] = start + i * incr;
             }
           } else {
             for (int i = 0; i < n; i++) {
-              data.set(i, stop - i * incr);
+              pdata[i] = stop - i * incr;
             }
           }
         } else {
           for (int i = 0; i < n; i++) {
-            data.set(i, stop - i * incr);
+            pdata[i] = stop - i * incr;
           }
         }
+        Array<Double> data = Arrays.factory(ArrayType.DOUBLE, new int[] {n}, pdata);
         timeVar.setSourceData(data);
       }
 
@@ -132,24 +131,20 @@ public class Cosmic1Convention extends CoordSystemBuilder {
       Dimension dim =
           rootGroup.findDimension("time").orElseThrow(() -> new IllegalStateException("Cant find dimension time"));
       int n = dim.getLength();
-      Variable.Builder<?> latVar = VariableDS.builder().setName("Lat").setDataType(DataType.FLOAT)
+      Variable.Builder<?> latVar = VariableDS.builder().setName("Lat").setArrayType(ArrayType.FLOAT)
           .setParentGroupBuilder(rootGroup).setDimensionsByName(dim.getShortName()).setUnits("degree");
       latVar.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
       rootGroup.addVariable(latVar);
-      Variable.Builder<?> lonVar = VariableDS.builder().setName("Lon").setDataType(DataType.FLOAT)
+      Variable.Builder<?> lonVar = VariableDS.builder().setName("Lon").setArrayType(ArrayType.FLOAT)
           .setParentGroupBuilder(rootGroup).setDimensionsByName(dim.getShortName()).setUnits("degree");
       lonVar.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
       rootGroup.addVariable(lonVar);
-      Variable.Builder<?> altVar = VariableDS.builder().setName("MSL_alt").setDataType(DataType.FLOAT)
+      Variable.Builder<?> altVar = VariableDS.builder().setName("MSL_alt").setArrayType(ArrayType.FLOAT)
           .setParentGroupBuilder(rootGroup).setDimensionsByName(dim.getShortName()).setUnits("meter");
       altVar.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Height.toString()));
       rootGroup.addVariable(altVar);
 
       // cal data array
-      ArrayFloat.D1 latData = (ArrayFloat.D1) Array.factory(DataType.FLOAT, new int[] {n});
-      ArrayFloat.D1 lonData = (ArrayFloat.D1) Array.factory(DataType.FLOAT, new int[] {n});
-      ArrayFloat.D1 altData = (ArrayFloat.D1) Array.factory(DataType.FLOAT, new int[] {n});
-      ArrayDouble.D1 timeData = (ArrayDouble.D1) Array.factory(DataType.DOUBLE, new int[] {n});
       this.conventionName = "Cosmic3";
 
       int iyr = gatts.findAttributeInteger("year", 2009);
@@ -176,26 +171,27 @@ public class Cosmic1Convention extends CoordSystemBuilder {
 
       VariableDS.Builder<?> xLeoVar = (VariableDS.Builder<?>) rootGroup.findVariableLocal("xLeo")
           .orElseThrow(() -> new IllegalStateException("Cant find variable xLeo"));
-      Array xLeoData = xLeoVar.orgVar.read();
+      Array<Number> xLeoData = (Array<Number>) xLeoVar.orgVar.readArray();
       VariableDS.Builder<?> yLeoVar = (VariableDS.Builder<?>) rootGroup.findVariableLocal("yLeo")
           .orElseThrow(() -> new IllegalStateException("Cant find variable yLeo"));
-      Array yLeoData = yLeoVar.orgVar.read();
+      Array<Number> yLeoData = (Array<Number>) yLeoVar.orgVar.readArray();
       VariableDS.Builder<?> zLeoVar = (VariableDS.Builder<?>) rootGroup.findVariableLocal("zLeo")
           .orElseThrow(() -> new IllegalStateException("Cant find variable zLeo"));
-      Array zLeoData = zLeoVar.orgVar.read();
+      Array<Number> zLeoData = (Array<Number>) zLeoVar.orgVar.readArray();
 
       double a = 6378.1370;
       double b = 6356.7523142;
-      IndexIterator xLeoIter = xLeoData.getIndexIterator();
-      IndexIterator yLeoIter = yLeoData.getIndexIterator();
-      IndexIterator zLeoIter = zLeoData.getIndexIterator();
 
-      int i = 0;
-      while (xLeoIter.hasNext()) {
+      float[] latData = new float[n];
+      float[] lonData = new float[n];
+      float[] altData = new float[n];
+      double[] timeData = new double[n];
+
+      for (int i = 0; i < n; i++) {
         double[] v_inertial = new double[3];
-        v_inertial[0] = xLeoIter.getDoubleNext();
-        v_inertial[1] = yLeoIter.getDoubleNext();
-        v_inertial[2] = zLeoIter.getDoubleNext();
+        v_inertial[0] = xLeoData.get(i).doubleValue();
+        v_inertial[1] = yLeoData.get(i).doubleValue();
+        v_inertial[2] = zLeoData.get(i).doubleValue();
         double[] uvz = new double[3];
         uvz[0] = 0.0;
         uvz[1] = 0.0;
@@ -207,17 +203,17 @@ public class Cosmic1Convention extends CoordSystemBuilder {
         // cal lat/lon here
         // double [] llh = ECFtoLLA(v_ecf[0]*1000, v_ecf[1]*1000, v_ecf[2]*1000, a, b);
         double[] llh = xyzell(a, b, v_ecf);
-        latData.set(i, (float) llh[0]);
-        lonData.set(i, (float) llh[1]);
-        altData.set(i, (float) llh[2]);
-        timeData.set(i, start + i * incr);
+        latData[i] = (float) llh[0];
+        lonData[i] = (float) llh[1];
+        altData[i] = (float) llh[2];
+        timeData[i] = start + i * incr;
         i++;
       }
 
-      latVar.setSourceData(latData);
-      lonVar.setSourceData(lonData);
-      altVar.setSourceData(altData);
-      tVar.setSourceData(timeData);
+      latVar.setSourceData(Arrays.factory(ArrayType.FLOAT, new int[] {n}, latData));
+      lonVar.setSourceData(Arrays.factory(ArrayType.FLOAT, new int[] {n}, lonData));
+      altVar.setSourceData(Arrays.factory(ArrayType.FLOAT, new int[] {n}, altData));
+      tVar.setSourceData(Arrays.factory(ArrayType.DOUBLE, new int[] {n}, timeData));
     }
   }
 

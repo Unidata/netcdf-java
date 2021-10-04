@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -11,8 +11,9 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.SimpleTimeZone;
 import java.util.TimeZone;
-import ucar.ma2.ArrayDouble;
-import ucar.ma2.DataType;
+
+import ucar.array.ArrayType;
+import ucar.array.Arrays;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
@@ -143,7 +144,7 @@ public class M3IOConvention extends CoordSystemBuilder {
     double start = .001 * findAttributeDouble(startName); // km
     double incr = .001 * findAttributeDouble(incrName); // km
     start = start + incr / 2.0; // shifting x and y to central
-    CoordinateAxis.Builder<?> v = CoordinateAxis1D.builder().setName(name).setDataType(DataType.DOUBLE)
+    CoordinateAxis.Builder<?> v = CoordinateAxis1D.builder().setName(name).setArrayType(ArrayType.DOUBLE)
         .setParentGroupBuilder(rootGroup).setDimensionsByName(dimName).setUnits(unitName)
         .setDesc("synthesized coordinate from " + startName + " " + incrName + " global attributes");
     v.setAutoGen(start, incr);
@@ -158,7 +159,7 @@ public class M3IOConvention extends CoordSystemBuilder {
     // The coordinate value should be the cell center.
     // I recommend also adding a bounds coordinate variable for clarity in the future.
     start = start + incr / 2.; // shiftin lon and lat to central
-    CoordinateAxis.Builder<?> v = CoordinateAxis1D.builder().setName(name).setDataType(DataType.DOUBLE)
+    CoordinateAxis.Builder<?> v = CoordinateAxis1D.builder().setName(name).setArrayType(ArrayType.DOUBLE)
         .setParentGroupBuilder(rootGroup).setDimensionsByName(dimName).setUnits(unitName)
         .setDesc("synthesized coordinate from " + startName + " " + incrName + " global attributes");
     v.setAutoGen(start, incr);
@@ -169,8 +170,8 @@ public class M3IOConvention extends CoordSystemBuilder {
     Dimension dimz =
         rootGroup.findDimension(dimName).orElseThrow(() -> new IllegalStateException("Cant find dimension " + dimName));
     int nz = dimz.getLength();
-    ArrayDouble.D1 dataLev = new ArrayDouble.D1(nz);
-    ArrayDouble.D1 dataLayers = new ArrayDouble.D1(nz + 1);
+    double[] dataLev = new double[nz];
+    double[] dataLayers = new double[nz + 1];
 
     // layer values are a numeric global attribute array !!
     Attribute layers = rootGroup.getAttributeContainer().findAttribute(levelsName);
@@ -178,18 +179,17 @@ public class M3IOConvention extends CoordSystemBuilder {
     Preconditions.checkArgument(layers.isArray());
     Preconditions.checkArgument(layers.getLength() == nz + 1);
     for (int i = 0; i <= nz; i++) {
-      dataLayers.set(i, layers.getNumericValue(i).doubleValue());
+      dataLayers[i] = layers.getNumericValue(i).doubleValue();
     }
 
     for (int i = 0; i < nz; i++) {
-      double midpoint = (dataLayers.get(i) + dataLayers.get(i + 1)) / 2;
-      dataLev.set(i, midpoint);
+      dataLev[i] = (dataLayers[i] + dataLayers[i + 1]) / 2;
     }
 
-    CoordinateAxis.Builder<?> v = CoordinateAxis1D.builder().setName("level").setDataType(DataType.DOUBLE)
+    CoordinateAxis.Builder<?> v = CoordinateAxis1D.builder().setName("level").setArrayType(ArrayType.DOUBLE)
         .setParentGroupBuilder(rootGroup).setDimensionsByName(dimName).setUnits(unitName)
         .setDesc("synthesized coordinate from " + levelsName + " global attributes");
-    v.setSourceData(dataLev);
+    v.setSourceData(Arrays.factory(ArrayType.DOUBLE, new int[] {nz}, dataLev));
     v.addAttribute(new Attribute("positive", "down"));
     v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.GeoZ.toString()));
 
@@ -197,10 +197,10 @@ public class M3IOConvention extends CoordSystemBuilder {
     String edge_name = "layer";
     Dimension lay_edge = new Dimension(edge_name, nz + 1);
     rootGroup.addDimension(lay_edge);
-    CoordinateAxis.Builder<?> vedge = CoordinateAxis1D.builder().setName(edge_name).setDataType(DataType.DOUBLE)
+    CoordinateAxis.Builder<?> vedge = CoordinateAxis1D.builder().setName(edge_name).setArrayType(ArrayType.DOUBLE)
         .setParentGroupBuilder(rootGroup).setDimensionsByName(edge_name).setUnits(unitName)
         .setDesc("synthesized coordinate from " + levelsName + " global attributes");
-    vedge.setSourceData(dataLayers);
+    vedge.setSourceData(Arrays.factory(ArrayType.DOUBLE, new int[] {nz + 1}, dataLayers));
     v.setBoundary(edge_name);
 
     datasetBuilder.replaceCoordinateAxis(rootGroup, v);
@@ -240,7 +240,7 @@ public class M3IOConvention extends CoordSystemBuilder {
     time_step = hour * 3600 + min * 60 + sec;
 
     // create the coord axis
-    CoordinateAxis1D.Builder<?> timeCoord = CoordinateAxis1D.builder().setName("time").setDataType(DataType.INT)
+    CoordinateAxis1D.Builder<?> timeCoord = CoordinateAxis1D.builder().setName("time").setArrayType(ArrayType.INT)
         .setParentGroupBuilder(rootGroup).setDimensionsByName(timeName).setUnits(units)
         .setDesc("synthesized time coordinate from SDATE, STIME, STEP global attributes");
     timeCoord.setAutoGen(0, time_step);

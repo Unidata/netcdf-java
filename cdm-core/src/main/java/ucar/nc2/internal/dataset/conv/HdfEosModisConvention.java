@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -8,7 +8,8 @@ package ucar.nc2.internal.dataset.conv;
 import com.google.common.base.Preconditions;
 import java.io.IOException;
 import java.util.Optional;
-import ucar.ma2.DataType;
+
+import ucar.array.ArrayType;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.Group;
@@ -58,7 +59,7 @@ public class HdfEosModisConvention extends CoordSystemBuilder {
 
     @Override
     public boolean isMine(NetcdfFile ncfile) {
-      if (!ncfile.getFileTypeId().equals("HDF4-EOS")) {
+      if (ncfile.getFileTypeId() == null || !ncfile.getFileTypeId().equals("HDF4-EOS")) {
         return false;
       }
 
@@ -148,7 +149,7 @@ public class HdfEosModisConvention extends CoordSystemBuilder {
 
     // add the coordinate variable
     String units = "seconds since " + cd;
-    CoordinateAxis.Builder<?> timeCoord = CoordinateAxis1D.builder().setName(TIME_NAME).setDataType(DataType.DOUBLE)
+    CoordinateAxis.Builder<?> timeCoord = CoordinateAxis1D.builder().setName(TIME_NAME).setArrayType(ArrayType.DOUBLE)
         .setParentGroupBuilder(rootGroup).setDimensionsByName("").setUnits(units).setDesc("time coordinate");
     timeCoord.setAutoGen(0, 0);
     timeCoord.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
@@ -191,14 +192,14 @@ public class HdfEosModisConvention extends CoordSystemBuilder {
 
   private void augmentGroupWithProjectionInfo(Group.Builder g) {
     Optional<Group.Builder> dataGopt = g.findGroupLocal(DATA_GROUP);
-    if (!dataGopt.isPresent()) {
+    if (dataGopt.isEmpty()) {
       return;
     }
     Group.Builder dataG = dataGopt.get();
 
     Optional<Dimension> dimXopt = dataG.findDimensionLocal(DIMX_NAME);
     Optional<Dimension> dimYopt = dataG.findDimensionLocal(DIMY_NAME);
-    if (!dimXopt.isPresent() || !dimYopt.isPresent()) {
+    if (dimXopt.isEmpty() || dimYopt.isEmpty()) {
       return;
     }
     Dimension dimX = dimXopt.get();
@@ -279,7 +280,7 @@ public class HdfEosModisConvention extends CoordSystemBuilder {
   private CoordinateAxis.Builder<?> makeCoordAxis(Group.Builder dataG, String name, int n, double start, double end,
       boolean isX) {
     CoordinateAxis.Builder<?> vb =
-        CoordinateAxis1D.builder().setName(name).setDataType(DataType.DOUBLE).setParentGroupBuilder(dataG)
+        CoordinateAxis1D.builder().setName(name).setArrayType(ArrayType.DOUBLE).setParentGroupBuilder(dataG)
             .setDimensionsByName(name).setUnits("km").setDesc(isX ? "x coordinate" : "y coordinate");
 
     double incr = (end - start) / n;
@@ -301,7 +302,7 @@ public class HdfEosModisConvention extends CoordSystemBuilder {
     String name = isLon ? AxisType.Lon.toString() : AxisType.Lat.toString();
     String dimName = isLon ? DIMX_NAME : DIMY_NAME;
 
-    CoordinateAxis.Builder<?> v = CoordinateAxis1D.builder().setName(name).setDataType(DataType.DOUBLE)
+    CoordinateAxis.Builder<?> v = CoordinateAxis1D.builder().setName(name).setArrayType(ArrayType.DOUBLE)
         .setParentGroupBuilder(dataG).setDimensionsByName(dimName).setUnits(isLon ? "degrees_east" : "degrees_north");
 
     double incr = (end - start) / n;
