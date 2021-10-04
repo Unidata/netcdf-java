@@ -7,22 +7,21 @@ package ucar.gcdm;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.gcdm.client.GcdmNetcdfFile;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.nc2.internal.util.CompareArrayToArray;
-import ucar.nc2.internal.util.CompareArrayToMa2;
-import ucar.nc2.util.Misc;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static com.google.common.truth.Truth.assertThat;
-
 /** Test {@link GcdmNetcdfFile} */
 @Category(NeedsCdmUnitTest.class)
 public class TestGcdmGridDatasetProblems {
+
+  @Test
+  public void testTimeCoordRegular() throws Exception {
+    String filename = TestDir.cdmUnitTestDir + "tds_index/NCEP/NBM/Alaska/NCEP_ALASKA_MODEL_BLEND.ncx4";
+    TestGcdmGridConverter.roundtrip(Paths.get(filename));
+  }
 
   @Test
   public void testCurvilinear() throws Exception {

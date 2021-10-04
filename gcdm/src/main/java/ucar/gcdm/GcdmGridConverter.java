@@ -380,7 +380,6 @@ public class GcdmGridConverter {
         int hour = runtimeDate.getHourOfDay();
         int minutes = runtimeDate.getMinuteOfHour();
         int minutesFrom0z = 60 * hour + minutes;
-        System.out.printf("  %d: minutesFrom0z= %d%n", runidx, minutesFrom0z);
         builder.putRegular(minutesFrom0z, encodeGridAxis(timeCS.getTimeOffsetAxis(runidx)));
       }
     }

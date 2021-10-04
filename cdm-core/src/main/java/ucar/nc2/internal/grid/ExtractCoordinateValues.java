@@ -218,7 +218,7 @@ class ExtractCoordinateValues {
       builder.setSpacing(GridAxisSpacing.regularInterval);
       double starting = edges[0];
       double ending = edges[edges.length - 1];
-      double increment = (ncoords == 1) ? 0.0 : (ending - starting) / (ncoords);
+      double increment = (ending - starting) / ncoords;
       builder.setRegular(ncoords, starting, increment);
 
     } else if (boundsAreContiguous) {
@@ -226,7 +226,7 @@ class ExtractCoordinateValues {
       builder.setValues(edges);
       double starting = edges[0];
       double ending = edges[edges.length - 1];
-      double resolution = (ncoords == 1) ? 0.0 : (ending - starting) / (ncoords);
+      double resolution = (ending - starting) / ncoords;
       builder.setResolution(Math.abs(resolution));
 
     } else {
@@ -240,7 +240,7 @@ class ExtractCoordinateValues {
       builder.setValues(bounds);
       double starting = bounds[0];
       double ending = bounds[2 * ncoords - 1];
-      double resolution = (ncoords == 1) ? 0.0 : (ending - starting) / (ncoords - 1);
+      double resolution = (ending - starting) / (ncoords - 1);
       builder.setResolution(Math.abs(resolution));
     }
   }

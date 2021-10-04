@@ -5,16 +5,16 @@
 package ucar.nc2.grid;
 
 import com.google.auto.value.AutoValue;
-import com.google.common.math.DoubleMath;
 import com.google.re2j.Matcher;
 import com.google.re2j.Pattern;
+import ucar.nc2.util.Misc;
 import ucar.unidata.util.Format;
 
 import javax.annotation.Nullable;
 
 /**
  * A Coordinate represented by an interval [start, end)
- * LOOK must start less than end ?
+ * LOOK must start be less than end ?
  */
 @AutoValue
 public abstract class CoordInterval {
@@ -36,7 +36,7 @@ public abstract class CoordInterval {
 
   /** Compare two intervals to within the given tolerence. */
   public boolean fuzzyEquals(CoordInterval other, double tol) {
-    return DoubleMath.fuzzyEquals(start(), other.start(), tol) && DoubleMath.fuzzyEquals(end(), other.end(), tol);
+    return Misc.nearlyEquals(start(), other.start(), tol) && Misc.nearlyEquals(end(), other.end(), tol);
   }
 
   public String toString() {

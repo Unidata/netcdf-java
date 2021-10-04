@@ -71,7 +71,7 @@ public class TestGridVerticalTransforms {
     assertThat(Ints.asList(z3d.getShape())).isEqualTo(expected);
 
     Array<Number> z1D = vt.getCoordinateArray1D(0, 10, 10);
-    assertThat(Ints.asList(z1D.getShape())).isEqualTo(expected.subList(0,1));
+    assertThat(Ints.asList(z1D.getShape())).isEqualTo(expected.subList(0, 1));
 
     int timeIndex = 0;
     GridTimeCoordinateSystem tcs = grid.getTimeCoordinateSystem();
