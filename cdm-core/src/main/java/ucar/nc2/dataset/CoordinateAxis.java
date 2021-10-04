@@ -8,8 +8,9 @@ import com.google.common.base.Preconditions;
 import javax.annotation.Nullable;
 
 import ucar.array.ArrayType;
-import ucar.ma2.Array;
-import ucar.ma2.MAMath;
+import ucar.array.Array;
+import ucar.array.Arrays;
+import ucar.array.MinMax;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CDM;
@@ -139,13 +140,13 @@ public class CoordinateAxis extends VariableDS {
 
   ////////////////////////////////
 
-  private MAMath.MinMax minmax; // remove
+  private MinMax minmax; // remove
 
   // TODO make Immutable in ver7
   private void init() {
     try {
-      Array data = read();
-      minmax = MAMath.getMinMax(data);
+      Array<Number> data = (Array<Number>) readArray();
+      minmax = Arrays.getMinMaxSkipMissingData(data, null);
     } catch (IOException ioe) {
       log.error("Error reading coordinate values ", ioe);
       throw new IllegalStateException(ioe);
@@ -162,7 +163,7 @@ public class CoordinateAxis extends VariableDS {
   public double getMinValue() {
     if (minmax == null)
       init();
-    return minmax.min;
+    return minmax.min();
   }
 
   /**
@@ -175,7 +176,7 @@ public class CoordinateAxis extends VariableDS {
   public double getMaxValue() {
     if (minmax == null)
       init();
-    return minmax.max;
+    return minmax.max();
   }
 
   //////////////////////

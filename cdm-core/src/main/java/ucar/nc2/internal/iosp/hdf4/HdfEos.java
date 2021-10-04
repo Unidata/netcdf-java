@@ -579,7 +579,7 @@ public class HdfEos {
           log.warn("Cant parse double value " + valueS);
         }
       }
-      Attribute att = Attribute.builder(name).setValues((List) values, false).build();
+      Attribute att = Attribute.builder(name).setValues(values, false).build();
       v.addAttribute(att);
     } else {
       String value = child.getText().trim();

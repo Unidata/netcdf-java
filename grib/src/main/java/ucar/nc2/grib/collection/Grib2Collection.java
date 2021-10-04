@@ -6,9 +6,11 @@
 package ucar.nc2.grib.collection;
 
 import javax.annotation.Nullable;
+
+import ucar.array.ArrayType;
+import ucar.array.Arrays;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.grib.coord.CoordinateTimeAbstract;
-import ucar.ma2.Array;
 import ucar.nc2.*;
 import ucar.nc2.constants.DataFormatType;
 import thredds.featurecollection.FeatureCollectionConfig;
@@ -189,7 +191,7 @@ public class Grib2Collection extends GribCollectionImmutable {
 
     v.addAttribute(new Attribute(Grib.VARIABLE_ID_ATTNAME, gc.makeVariableId(vindex)));
     int[] param = {vindex.getDiscipline(), vindex.getCategory(), vindex.getParameter()};
-    v.addAttribute(Attribute.fromArray("Grib2_Parameter", Array.makeFromJavaArray(param, false)));
+    v.addAttribute(Attribute.fromArray("Grib2_Parameter", Arrays.factory(ArrayType.INT, new int[] {3}, param)));
     String disc = cust2.getCodeTableValue("0.0", vindex.getDiscipline());
     if (disc != null)
       v.addAttribute(new Attribute("Grib2_Parameter_Discipline", disc));

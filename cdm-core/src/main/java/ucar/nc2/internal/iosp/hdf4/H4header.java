@@ -1014,19 +1014,19 @@ public class H4header implements HdfHeaderIF {
         TagTextN labels = (TagTextN) tag;
         labels.read(dim.rank);
         tag.used = true;
-        vb.addAttribute(Attribute.builder().setName(CDM.LONG_NAME).setValues((List) labels.getList(), false).build());
+        vb.addAttribute(Attribute.builder().setName(CDM.LONG_NAME).setValues(labels.getList(), false).build());
       }
       if (tag.code == 705) {
         TagTextN units = (TagTextN) tag;
         units.read(dim.rank);
         tag.used = true;
-        vb.addAttribute(Attribute.builder().setName(CDM.UNITS).setValues((List) units.getList(), false).build());
+        vb.addAttribute(Attribute.builder().setName(CDM.UNITS).setValues(units.getList(), false).build());
       }
       if (tag.code == 706) {
         TagTextN formats = (TagTextN) tag;
         formats.read(dim.rank);
         tag.used = true;
-        vb.addAttribute(Attribute.builder().setName("formats").setValues((List) formats.getList(), false).build());
+        vb.addAttribute(Attribute.builder().setName("formats").setValues(formats.getList(), false).build());
       }
       if (tag.code == 707) {
         TagSDminmax minmax = (TagSDminmax) tag;
