@@ -58,7 +58,7 @@ public class GcdmClient {
     return null;
   }
 
-  private <T> Array<T> getData(String location, Variable v) {
+  private Array<?> getData(String location, Variable v) {
     ArrayType dataType = GcdmConverter.convertDataType(v.getDataType());
     Section section = GcdmConverter.decodeSection(v);
     System.out.printf("Data request %s %s (%s)%n", v.getDataType(), v.getName(), section);
@@ -70,7 +70,7 @@ public class GcdmClient {
     Iterator<DataResponse> responses;
     try {
       responses = blockingStub.withDeadlineAfter(30, TimeUnit.SECONDS).getNetcdfData(request);
-      List<Array<T>> results = new ArrayList<>();
+      List<Array<?>> results = new ArrayList<>();
       while (responses.hasNext()) {
         DataResponse response = responses.next();
         results.add(GcdmConverter.decodeData(response.getData()));

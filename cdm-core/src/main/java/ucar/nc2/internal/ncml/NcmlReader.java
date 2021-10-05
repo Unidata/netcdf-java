@@ -27,7 +27,6 @@ import org.jdom2.output.XMLOutputter;
 import ucar.array.ArrayType;
 import ucar.array.Arrays;
 import ucar.array.Array;
-import ucar.array.ArraysConvert;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.AttributeContainerMutable;
@@ -607,21 +606,16 @@ public class NcmlReader {
     // see if its new
     ucar.nc2.Attribute oldatt = findAttribute(ref, nameInFile);
     if (oldatt == null) { // new
-      if (debugConstruct) {
-        System.out.println(" add new att = " + name);
-      }
       try {
         Array<?> values = readAttributeValues(attElem);
         dest.addAttribute(Attribute.fromArray(name, values));
       } catch (RuntimeException e) {
+        e.printStackTrace();
         errlog.format("NcML new Attribute Exception: %s att=%s in=%s%n", e.getMessage(), name, refName);
       }
 
     } else { // already exists
 
-      if (debugConstruct) {
-        System.out.println(" modify existing att = " + name);
-      }
       boolean hasValue = attElem.getAttribute("value") != null;
       if (hasValue) { // has a new value
         try {
@@ -698,8 +692,7 @@ public class NcmlReader {
     if ((sep == null) && (dtype == ArrayType.STRING)) {
       List<String> list = new ArrayList<>();
       list.add(valString);
-      ucar.ma2.Array old = ucar.ma2.Array.makeArray(dtype.getDataType(), list);
-      return ArraysConvert.convertToArray(old);
+      return Aggregations.makeArray(dtype, list);
     }
 
     if (sep == null) {
@@ -712,8 +705,7 @@ public class NcmlReader {
       stringValues.add(tokn.nextToken());
     }
 
-    ucar.ma2.Array old = ucar.ma2.Array.makeArray(dtype.getDataType(), stringValues);
-    return ArraysConvert.convertToArray(old);
+    return Aggregations.makeArray(dtype, stringValues);
   }
 
   private ucar.nc2.Attribute findAttribute(AttributeContainer atts, String name) {
@@ -1251,9 +1243,9 @@ public class NcmlReader {
 
       } else {
         List<String> valList = getTokens(values, sep);
-        ucar.ma2.Array data = ucar.ma2.Array.makeArray(dtype.getDataType(), valList);
+        Array<?> data = Aggregations.makeArray(dtype, valList);
         if (v.getDimensions().size() != 1) { // dont have to reshape for rank 1
-          data = data.reshape(Dimensions.makeShape(v.getDimensions()));
+          data = Arrays.reshape(data, Dimensions.makeShape(v.getDimensions()));
         }
         v.setSourceData(data);
       }

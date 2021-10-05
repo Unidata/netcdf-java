@@ -8,7 +8,7 @@ package ucar.nc2.internal.ncml;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
-import ucar.ma2.DataType;
+import ucar.array.ArrayType;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.Group;
@@ -51,8 +51,8 @@ public class AggregationNew extends AggregationOuter {
 
     // Not found, create the aggregation coordinate variable
     if (!joinAggCoord.isPresent()) {
-      DataType coordType = getCoordinateType();
-      VariableDS.Builder<?> joinAggCoordVar = VariableDS.builder().setName(dimName).setDataType(coordType)
+      ArrayType coordType = getCoordinateType();
+      VariableDS.Builder<?> joinAggCoordVar = VariableDS.builder().setName(dimName).setArrayType(coordType)
           .setParentGroupBuilder(root).setDimensionsByName(dimName);
       root.addVariable(joinAggCoordVar);
       joinAggCoordVar.setProxyReader(this);
@@ -62,8 +62,7 @@ public class AggregationNew extends AggregationOuter {
       // if speced externally, this variable will get replaced
       // LOOK was CacheVar cv = new CoordValueVar(joinAggCoordVar.getFullName(), joinAggCoordVar.dataType,
       // joinAggCoordVar.units);
-      CacheVar cv = new CoordValueVar(joinAggCoordVar.shortName, joinAggCoordVar.dataType.getDataType(),
-          joinAggCoordVar.getUnits());
+      CacheVar cv = new CoordValueVar(joinAggCoordVar.shortName, joinAggCoordVar.dataType, joinAggCoordVar.getUnits());
       joinAggCoordVar.setSPobject(cv);
       cacheList.add(cv);
     } else {
@@ -138,15 +137,11 @@ public class AggregationNew extends AggregationOuter {
     // LOOK ncDataset.finish();
   }
 
-  /**
-   * What is the data type of the aggregation coordinate ?
-   *
-   * @return the data type of the aggregation coordinate
-   */
-  private DataType getCoordinateType() {
+  /** What is the data type of the aggregation coordinate ? */
+  private ArrayType getCoordinateType() {
     List<AggDataset> nestedDatasets = getDatasets();
     AggDatasetOuter first = (AggDatasetOuter) nestedDatasets.get(0);
-    return first.isStringValued ? DataType.STRING : DataType.DOUBLE;
+    return first.isStringValued ? ArrayType.STRING : ArrayType.DOUBLE;
   }
 
 }

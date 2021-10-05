@@ -4,17 +4,15 @@ package ucar.nc2.internal.ncml;
 import java.io.IOException;
 import java.util.EnumSet;
 import java.util.Formatter;
-import java.util.List;
 import java.util.Set;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import org.jdom2.Element;
 import thredds.inventory.MFile;
 import thredds.inventory.MFiles;
-import ucar.ma2.Array;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Range;
-import ucar.ma2.Section;
+import ucar.array.Array;
+import ucar.array.InvalidRangeException;
+import ucar.array.Section;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
@@ -137,7 +135,7 @@ public class AggDataset implements Comparable<AggDataset> {
     f.format("   %s%n", mfile.getPath());
   }
 
-  protected Array read(Variable mainv, CancelTask cancelTask) throws IOException {
+  protected Array<?> read(Variable mainv, CancelTask cancelTask) throws IOException {
     NetcdfFile ncd = null;
     try {
       ncd = acquireFile(cancelTask);
@@ -148,7 +146,7 @@ public class AggDataset implements Comparable<AggDataset> {
       if (debugRead)
         System.out.printf("Agg.read %s from %s in %s%n", mainv.getNameAndDimensions(), v.getNameAndDimensions(),
             getLocation());
-      return v.read();
+      return v.readArray();
 
     } finally {
       close(ncd);
@@ -165,7 +163,7 @@ public class AggDataset implements Comparable<AggDataset> {
    * @throws IOException on I/O error
    * @throws InvalidRangeException on section error
    */
-  protected Array read(Variable mainv, CancelTask cancelTask, List<Range> section)
+  protected Array<?> read(Variable mainv, CancelTask cancelTask, Section section)
       throws IOException, InvalidRangeException {
     NetcdfFile ncd = null;
     try {
@@ -174,13 +172,7 @@ public class AggDataset implements Comparable<AggDataset> {
         return null;
 
       Variable v = findVariable(ncd, mainv);
-      if (debugRead) {
-        Section want = new Section(section);
-        System.out.printf("Agg.read(%s) %s from %s in %s%n", want, mainv.getNameAndDimensions(),
-            v.getNameAndDimensions(), getLocation());
-      }
-
-      return v.read(section);
+      return v.readArray(section);
 
     } finally {
       close(ncd);

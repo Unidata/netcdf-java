@@ -67,7 +67,7 @@ public class TestArrayShort {
     Array<Short> array2 = Arrays.factory(ArrayType.SHORT, shape1, new short[] {7, 8, 9, 10, 11, 12});
 
     int[] shape = new int[] {2, 2, 3};
-    Array<Short> array = Arrays.factoryCopy(ArrayType.SHORT, shape, ImmutableList.of(array1, array2));
+    Array<Short> array = (Array<Short>) Arrays.factoryCopy(ArrayType.SHORT, shape, ImmutableList.of(array1, array2));
 
     assertThat(array.get(0, 0, 0)).isEqualTo(1);
     assertThat(array.get(0, 0, 1)).isEqualTo(2);

@@ -14,6 +14,7 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.nio.channels.OverlappingFileLockException;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,8 +24,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import thredds.client.catalog.Catalog;
 import thredds.inventory.MFile;
-import ucar.ma2.Array;
-import ucar.ma2.DataType;
+import ucar.array.Array;
+import ucar.array.ArrayType;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.Group;
@@ -65,11 +66,11 @@ class AggregationExisting extends AggregationOuter {
     if (type != Type.joinExistingOne) {
       Variable tcv = typical.findVariable(dimName);
       if (tcv != null) {
-        coordCacheVar = new CoordValueVar(dimName, tcv.getDataType(), tcv.getUnitsString());
+        coordCacheVar = new CoordValueVar(dimName, tcv.getArrayType(), tcv.getUnitsString());
       } else {
         // docs claim we can add the coord variable in the outer ncml, so make a fake one for now, make
         // sure it gets removed if user adds it outside of aggregation.
-        VariableDS.Builder<?> fake = VariableDS.builder().setName(dimName).setDataType(DataType.INT)
+        VariableDS.Builder<?> fake = VariableDS.builder().setName(dimName).setArrayType(ArrayType.INT)
             .setParentGroupBuilder(rootGroup).setDimensionsByName(dimName);
         fake.setAutoGen(0, 1);
         rootGroup.addVariable(fake);
@@ -77,7 +78,7 @@ class AggregationExisting extends AggregationOuter {
       }
 
     } else {
-      coordCacheVar = new CoordValueVar(dimName, DataType.STRING, "");
+      coordCacheVar = new CoordValueVar(dimName, ArrayType.STRING, "");
     }
     if (coordCacheVar != null) {
       cacheList.add(coordCacheVar); // coordinate variable is always cached
@@ -137,8 +138,8 @@ class AggregationExisting extends AggregationOuter {
       // replace aggregation coordinate variable
       joinAggCoordOpt.ifPresent(joinAgg -> rootGroup.removeVariable(joinAgg.shortName));
 
-      joinAggCoord = VariableDS.builder().setName(dimName).setDataType(DataType.STRING).setParentGroupBuilder(rootGroup)
-          .setDimensionsByName(dimName);
+      joinAggCoord = VariableDS.builder().setName(dimName).setArrayType(ArrayType.STRING)
+          .setParentGroupBuilder(rootGroup).setDimensionsByName(dimName);
       joinAggCoord.setProxyReader(this);
       rootGroup.addVariable(joinAggCoord);
       aggVars.add(joinAggCoord);
@@ -243,11 +244,11 @@ class AggregationExisting extends AggregationOuter {
         out.print("ncoords='" + dod.getNcoords(null) + "' >\n");
 
         for (CacheVar pv : cacheList) {
-          Array data = pv.getData(dod.getId());
+          Array<?> data = pv.getCachedData(dod.getId());
           if (data != null) {
             out.print("    <cache varName='" + pv.varName + "' >");
-            while (data.hasNext()) {
-              out.printf("%s ", data.next());
+            for (Object val : data) {
+              out.printf("%s ", val);
             }
             out.print("</cache>\n");
             if (logger.isDebugEnabled()) {
@@ -363,8 +364,6 @@ class AggregationExisting extends AggregationOuter {
         }
       }
 
-      // if (dod.coordValue != null) continue; // allow ncml to override
-
       List<Element> cacheElemList = netcdfElemNested.getChildren("cache", Catalog.ncmlNS);
       for (Element cacheElemNested : cacheElemList) {
         String varName = cacheElemNested.getAttributeValue("varName");
@@ -382,8 +381,8 @@ class AggregationExisting extends AggregationOuter {
           String[] vals = sdata.split(" ");
 
           try {
-            Array data = Array.makeArray(pv.dtype, vals);
-            pv.putData(id, data);
+            Array<?> data = Aggregations.makeArray(pv.dtype, Arrays.asList(vals));
+            pv.putCachedData(id, data);
             countCacheUse++;
 
           } catch (Exception e) {
