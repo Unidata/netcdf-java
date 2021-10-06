@@ -147,11 +147,11 @@ public class TestNetcdfFormatWithWriter {
       writer.config().forVariable("lat").withPrimitiveArray(new float[] {41, 40, 39}).write();
       writer.config().forVariable("lon").withPrimitiveArray(new float[] {-109, -107, -105, -103}).write();
 
-      Index timeOrigin = Index.ofRank(1);
-      Index recordOrigin = Index.ofRank(3);
-
       Variable timeVar = writer.findVariable("time");
       Preconditions.checkNotNull(timeVar);
+
+      Index timeOrigin = Index.ofRank(1);
+      Index recordOrigin = Index.ofRank(3);
 
       // write 10 records
       int[] timeValue = new int[1];
@@ -226,9 +226,9 @@ public class TestNetcdfFormatWithWriter {
       // Note that origin is incremented.
       Index index = Index.ofRank(time.getRank());
       writer.config().forVariable(time).withOrigin(index).withString("This is the first string.").write();
-      writer.config().forVariable(time).withOrigin(index).withString("Shorty").write();
-      writer.config().forVariable(time).withOrigin(index).withString("This is too long so it will get truncated")
-          .write();
+      writer.config().forVariable(time).withOrigin(index.incr(0)).withString("Shorty").write();
+      writer.config().forVariable(time).withOrigin(index.incr(0))
+          .withString("This is too long so it will get truncated").write();
     }
 
     try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {

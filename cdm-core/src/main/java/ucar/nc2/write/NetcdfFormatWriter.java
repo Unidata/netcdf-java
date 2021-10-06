@@ -5,6 +5,7 @@
 package ucar.nc2.write;
 
 import com.google.common.base.Preconditions;
+import ucar.array.Array;
 import ucar.array.ArrayType;
 import ucar.array.Arrays;
 import ucar.array.ArraysConvert;
@@ -31,6 +32,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static ucar.nc2.NetcdfFile.IOSP_MESSAGE_GET_NETCDF_FILE_FORMAT;
@@ -169,6 +171,8 @@ public class NetcdfFormatWriter implements Closeable {
   public void write(Variable v, Index origin, ucar.array.Array<?> values) throws IOException, InvalidRangeException {
     Preconditions.checkArgument(v.getArrayType() == values.getArrayType()); // LOOK do something better?
     Preconditions.checkArgument(v.getRank() == values.getRank()); // LOOK do something better: contains?
+
+    // we have to keep using old until all spis implement new?
     ucar.ma2.Array oldArray = ArraysConvert.convertFromArray(values);
     try {
       write(v, origin.getCurrentIndex(), oldArray);
@@ -180,12 +184,13 @@ public class NetcdfFormatWriter implements Closeable {
   /**
    * Write String value to a CHAR Variable.
    * Truncated or zero extended as needed to fit into last dimension of v.
+   * Note that origin is not incremeted as in previous versions.
    * 
    * <pre>
    * Index index = Index.ofRank(v.getRank());
    * writer.writeStringData(v, index, "This is the first string.");
-   * writer.writeStringData(v, index, "Shorty");
-   * writer.writeStringData(v, index, "This is too long so it will get truncated");
+   * writer.writeStringData(v, index.incr(0), "Shorty");
+   * writer.writeStringData(v, index.incr(0), "This is too long so it will get truncated");
    * </pre>
    * 
    * @param v write to this variable, must be of type CHAR.
@@ -195,22 +200,24 @@ public class NetcdfFormatWriter implements Closeable {
   public void writeStringData(Variable v, Index origin, String data) throws IOException, InvalidRangeException {
     Preconditions.checkArgument(v.getArrayType() == ArrayType.CHAR);
     Preconditions.checkArgument(v.getRank() > 0);
-    int rank = v.getRank();
-    int[] offset = origin.getCurrentIndex();
-    ucar.ma2.Array cvalues = ucar.ma2.ArrayChar.makeFromString(data, v.getShape(rank - 1));
-    if (rank > 1) {
-      // LOOK: rather do this in ucar.array, but must convert all iosp's to use array first; will do in ver7
-      cvalues = cvalues.extend(rank);
+    int[] shape = v.getShape();
+    // all but the last shape is 1
+    for (int i = 0; i < shape.length - 1; i++) {
+      shape[i] = 1;
     }
-    try {
-      write(v, offset, cvalues);
-    } catch (ucar.ma2.InvalidRangeException e) {
-      throw new InvalidRangeException(e);
+    int last = shape[shape.length - 1];
+
+    // previously we truncated chars to bytes.
+    // here we are going to use UTF encoded bytes, just as if we were real programmers.
+    byte[] bb = data.getBytes(StandardCharsets.UTF_8);
+    if (bb.length != last) {
+      byte[] storage = new byte[last];
+      System.arraycopy(bb, 0, storage, 0, Math.min(bb.length, last));
+      bb = storage;
     }
-    // increment origin, if possible
-    if (rank > 1) {
-      origin.incr(rank - 2); // LOOK this is wrong when rank > 2
-    }
+
+    Array<?> barray = Arrays.factory(ArrayType.CHAR, shape, bb);
+    write(v, origin, barray);
   }
 
   /**
@@ -661,27 +668,30 @@ public class NetcdfFormatWriter implements Closeable {
     Object primArray;
     ucar.array.Array<?> values;
     int[] shape;
-    String sval;
+    String stringValue;
 
-    /** Write to this Variable. */
+    /** Write to this Variable. Set Variable or Variable name. */
     public WriteConfig forVariable(Variable v) {
       this.v = v;
       return this;
     }
 
-    /** Write to this named Variable. */
+    /** Write to this named Variable. Set Variable or Variable name. */
     public WriteConfig forVariable(String varName) {
       this.varName = varName;
       return this;
     }
 
-    /** If not set, assume all zeroes. */
+    /**
+     * The starting element, ie write(int[] origin, int[] shape).
+     * If not set, origin of 0 is assumed.
+     */
     public WriteConfig withOrigin(Index origin) {
       this.origin = origin;
       return this;
     }
 
-    /** If not set, assume all zeroes. */
+    /** The starting element as an int[]. */
     public WriteConfig withOrigin(int... origin) {
       this.origin = Index.of(origin);
       return this;
@@ -690,6 +700,7 @@ public class NetcdfFormatWriter implements Closeable {
     /** The values to write. ArrayType must match the Variable. */
     public WriteConfig withArray(ucar.array.Array<?> values) {
       this.values = values;
+      this.shape = values.getShape();
       return this;
     }
 
@@ -703,7 +714,11 @@ public class NetcdfFormatWriter implements Closeable {
       return this;
     }
 
-    /** Shape of primitive array, not needed for Array. If not set, assume v.getShape(). */
+    /**
+     * Shape of primitive array to write, ie write(int[] origin, int[] shape).
+     * Only needed if you use withPrimitiveArray, otherwise the Array values' shape is used.
+     * Use v.getShape() if shape is not set, and Array values is not set.
+     */
     public WriteConfig withShape(int... shape) {
       this.shape = shape;
       return this;
@@ -715,12 +730,12 @@ public class NetcdfFormatWriter implements Closeable {
      * @see NetcdfFormatWriter#writeStringData(Variable, Index, String)
      */
     public WriteConfig withString(String sval) {
-      this.sval = sval;
+      this.stringValue = sval;
       return this;
     }
 
     /**
-     * Do the write to the file.
+     * Do the write to the file, agter constructing the WriteConfig.
      * 
      * @throws IllegalArgumentException when not configured correctly.
      * @see NetcdfFormatWriter#write(Variable, ucar.array.Index, ucar.array.Array)
@@ -739,8 +754,8 @@ public class NetcdfFormatWriter implements Closeable {
         this.origin = Index.ofRank(v.getRank());
       }
 
-      if (sval != null) {
-        NetcdfFormatWriter.this.writeStringData(this.v, this.origin, sval);
+      if (stringValue != null) {
+        NetcdfFormatWriter.this.writeStringData(this.v, this.origin, stringValue);
         return;
       }
 

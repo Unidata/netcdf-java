@@ -4,11 +4,12 @@
  */
 package ucar.nc2.write;
 
-import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 import java.io.File;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+import java.nio.charset.StandardCharsets;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -32,7 +33,7 @@ public class TestNcdump {
       String ncdumpOut = ncdump.print();
 
       File expectedOutputFile = new File(TestDir.cdmLocalTestDataDir, "testUnsignedFillValueNew.dump");
-      String expectedOutput = Files.toString(expectedOutputFile, Charsets.UTF_8);
+      String expectedOutput = Files.toString(expectedOutputFile, StandardCharsets.UTF_8);
 
       Assert.assertEquals(toUnixEOLs(expectedOutput), toUnixEOLs(ncdumpOut));
     }
@@ -46,7 +47,7 @@ public class TestNcdump {
       String ncdumpOut = ncdump.print();
 
       File expectedOutputFile = new File(TestDir.cdmLocalTestDataDir, "testNestedGroups.dump");
-      String expectedOutput = Files.toString(expectedOutputFile, Charsets.UTF_8);
+      String expectedOutput = Files.toString(expectedOutputFile, StandardCharsets.UTF_8);
 
       Assert.assertEquals(toUnixEOLs(expectedOutput), toUnixEOLs(ncdumpOut));
     }

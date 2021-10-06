@@ -413,10 +413,11 @@ public class NcdumpArray {
     int last = dims[0];
 
     out.format("%n%s{", indent);
-    Index ima = ma.getIndex();
+    IndexFn indexFn = IndexFn.builder(ma.getShape()).build();
+
     if ((rank == 1) && (ma.getArrayType() != ArrayType.STRUCTURE)) {
       for (int ii = 0; ii < last; ii++) {
-        Object value = ma.get(ima.setElem(ii)); // LOOK
+        Object value = ma.get(indexFn.odometer(ii));
 
         if (ma.getArrayType().isUnsigned()) {
           assert value instanceof Number : "A data type being unsigned implies that it is numeric.";
