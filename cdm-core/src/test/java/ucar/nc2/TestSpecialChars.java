@@ -10,9 +10,9 @@ import org.junit.rules.TemporaryFolder;
 import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.Array;
-import ucar.ma2.DataType;
-import ucar.ma2.InvalidRangeException;
+import ucar.array.Array;
+import ucar.array.ArrayType;
+import ucar.array.InvalidRangeException;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.write.NcmlWriter;
 import java.io.FileOutputStream;
@@ -31,7 +31,7 @@ public class TestSpecialChars {
   String trouble = "here is a &, <, >, \', \", \n, \r, \t, to handle";
 
   @Test
-  public void testWriteAndRead() throws IOException, InvalidRangeException {
+  public void testWriteAndRead() throws IOException, ucar.ma2.InvalidRangeException {
     String filename = tempFolder.newFile().getAbsolutePath();
 
     NetcdfFormatWriter.Builder writerb = NetcdfFormatWriter.createNewNetcdf3(filename);
@@ -41,12 +41,12 @@ public class TestSpecialChars {
         .addDimension(Dimension.builder().setName("t_strlen").setLength(trouble.length()).setIsShared(false).build());
 
     // define Variables
-    writerb.addVariable("t", DataType.CHAR, "t_strlen").addAttribute(new Attribute("yow", trouble));
+    writerb.addVariable("t", ArrayType.CHAR, "t_strlen").addAttribute(new Attribute("yow", trouble));
 
     try (NetcdfFormatWriter writer = writerb.build()) {
       Variable v = writer.findVariable("t");
       assert v != null;
-      Array data = Array.factory(DataType.STRING, new int[0]);
+      ucar.ma2.Array data = ucar.ma2.Array.factory(ucar.ma2.DataType.STRING, new int[0]);
       data.setObject(data.getIndex(), trouble);
       writer.writeStringDataToChar(v, data);
     }

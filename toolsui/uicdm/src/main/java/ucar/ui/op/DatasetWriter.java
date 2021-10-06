@@ -690,7 +690,7 @@ public class DatasetWriter extends JPanel {
       setName(vs.getShortName());
       setDescription(vs.getDescription());
       setUnits(vs.getUnitsString());
-      setDataType(vs.getDataType().toString());
+      setDataType(vs.getArrayType().toString());
 
       // collect dimensions
       Formatter lens = new Formatter();

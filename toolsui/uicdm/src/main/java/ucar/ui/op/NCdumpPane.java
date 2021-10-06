@@ -5,12 +5,12 @@
 
 package ucar.ui.op;
 
-import ucar.ma2.Array;
-import ucar.ma2.IsMissingEvaluator;
+import ucar.array.Array;
+import ucar.array.IsMissingEvaluator;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.ParsedSectionSpec;
 import ucar.nc2.Variable;
-import ucar.nc2.write.Ncdump;
+import ucar.nc2.write.NcdumpArray;
 import ucar.ui.widget.*;
 import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.ComboBox;
@@ -18,15 +18,12 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.lang.invoke.MethodHandles;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 /** Dump data using NetcdfFile.readSection() */
 public class NCdumpPane extends TextHistoryPane {
-  private static final org.slf4j.Logger logger =
-      org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private final ComboBox<String> cb;
   private CommonTask task;
@@ -130,7 +127,7 @@ public class NCdumpPane extends TextHistoryPane {
   private abstract class CommonTask extends ProgressMonitorTask implements ucar.nc2.util.CancelTask {
     String contents, command;
     Variable v;
-    Array data;
+    Array<?> data;
     IsMissingEvaluator eval;
 
     CommonTask(String command) {
@@ -160,7 +157,7 @@ public class NCdumpPane extends TextHistoryPane {
       StringWriter sw = new StringWriter(100000);
       PrintWriter ps = new PrintWriter(sw);
       try {
-        data = ds.readSection(command);
+        data = ds.readSectionArray(command);
       } catch (Exception e) {
         e.printStackTrace();
         e.printStackTrace(new PrintWriter(sw));
@@ -189,8 +186,8 @@ public class NCdumpPane extends TextHistoryPane {
 
     public void run() {
       try {
-        data = ds.readSection(command);
-        contents = Ncdump.printArray(data, null, this);
+        data = ds.readSectionArray(command);
+        contents = NcdumpArray.printArray(data, null, this);
       } catch (Exception e) {
         e.printStackTrace();
         StringWriter sw = new StringWriter(100000);

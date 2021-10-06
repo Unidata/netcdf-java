@@ -258,7 +258,7 @@ public class GcdmConverter {
     GcdmNetcdfProto.Variable.Builder builder = GcdmNetcdfProto.Variable.newBuilder();
     builder.setName(var.getShortName());
     builder.setDataType(convertDataType(var.getArrayType()));
-    if (var.getDataType().isEnum()) {
+    if (var.getArrayType().isEnum()) {
       EnumTypedef enumType = var.getEnumTypedef();
       if (enumType != null)
         builder.setEnumType(enumType.getShortName());

@@ -395,7 +395,7 @@ public class CoordSysTable extends JPanel {
       infoTA.appendLine(units);
       infoTA.appendLine(Ncdump.printVariableData(axis, null));
 
-      if (axis.getDataType().isNumeric()) {
+      if (axis.getArrayType().isNumeric()) {
         if (axis instanceof CoordinateAxis2D) {
           showDates2D((CoordinateAxis2D) axis, cdu);
 

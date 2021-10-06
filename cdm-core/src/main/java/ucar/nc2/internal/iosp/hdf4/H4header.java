@@ -24,9 +24,8 @@ import java.util.Set;
 import javax.annotation.Nullable;
 
 import ucar.array.ArrayType;
-import ucar.ma2.Array;
+import ucar.array.Arrays;
 import ucar.ma2.ArrayStructure;
-import ucar.ma2.DataType;
 import ucar.ma2.StructureMembers;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
@@ -447,7 +446,7 @@ public class H4header implements HdfHeaderIF {
         TagVH vh = (TagVH) tag;
         if (vh.className.startsWith("Att")) {
           String lowername = vh.name.toLowerCase();
-          if ((vh.nfields == 1) && (H4type.getDataType(vh.fld_type[0]) == DataType.CHAR)
+          if ((vh.nfields == 1) && (H4type.getDataType(vh.fld_type[0]) == ArrayType.CHAR)
               && ((vh.fld_isize[0] > 4000) || lowername.startsWith("archivemetadata")
                   || lowername.startsWith("coremetadata") || lowername.startsWith("productmetadata")
                   || lowername.startsWith("structmetadata"))) {
@@ -492,7 +491,7 @@ public class H4header implements HdfHeaderIF {
           String[] vals = new String[nelems];
           for (int i = 0; i < nelems; i++)
             vals[i] = raf.readStringMax(size, valueCharset);
-          att = Attribute.fromArray(name, Array.factory(DataType.STRING, new int[] {nelems}, vals));
+          att = Attribute.fromArray(name, Arrays.factory(ArrayType.STRING, new int[] {nelems}, vals));
         }
         break;
       case 5:
@@ -502,7 +501,7 @@ public class H4header implements HdfHeaderIF {
           float[] vals = new float[nelems];
           for (int i = 0; i < nelems; i++)
             vals[i] = raf.readFloat();
-          att = Attribute.fromArray(name, Array.factory(DataType.FLOAT, new int[] {nelems}, vals));
+          att = Attribute.fromArray(name, Arrays.factory(ArrayType.FLOAT, new int[] {nelems}, vals));
         }
         break;
       case 6:
@@ -512,7 +511,7 @@ public class H4header implements HdfHeaderIF {
           double[] vals = new double[nelems];
           for (int i = 0; i < nelems; i++)
             vals[i] = raf.readDouble();
-          att = Attribute.fromArray(name, Array.factory(DataType.DOUBLE, new int[] {nelems}, vals));
+          att = Attribute.fromArray(name, Arrays.factory(ArrayType.DOUBLE, new int[] {nelems}, vals));
         }
         break;
       case 20:
@@ -523,7 +522,7 @@ public class H4header implements HdfHeaderIF {
           byte[] vals = new byte[nelems];
           for (int i = 0; i < nelems; i++)
             vals[i] = raf.readByte();
-          att = Attribute.fromArray(name, Array.factory(DataType.BYTE, new int[] {nelems}, vals));
+          att = Attribute.fromArray(name, Arrays.factory(ArrayType.BYTE, new int[] {nelems}, vals));
         }
         break;
       case 22:
@@ -534,7 +533,7 @@ public class H4header implements HdfHeaderIF {
           short[] vals = new short[nelems];
           for (int i = 0; i < nelems; i++)
             vals[i] = raf.readShort();
-          att = Attribute.fromArray(name, Array.factory(DataType.SHORT, new int[] {nelems}, vals));
+          att = Attribute.fromArray(name, Arrays.factory(ArrayType.SHORT, new int[] {nelems}, vals));
         }
         break;
       case 24:
@@ -545,7 +544,7 @@ public class H4header implements HdfHeaderIF {
           int[] vals = new int[nelems];
           for (int i = 0; i < nelems; i++)
             vals[i] = raf.readInt();
-          att = Attribute.fromArray(name, Array.factory(DataType.INT, new int[] {nelems}, vals));
+          att = Attribute.fromArray(name, Arrays.factory(ArrayType.INT, new int[] {nelems}, vals));
         }
         break;
       case 26:
@@ -556,7 +555,7 @@ public class H4header implements HdfHeaderIF {
           long[] vals = new long[nelems];
           for (int i = 0; i < nelems; i++)
             vals[i] = raf.readLong();
-          att = Attribute.fromArray(name, Array.factory(DataType.LONG, new int[] {nelems}, vals));
+          att = Attribute.fromArray(name, Arrays.factory(ArrayType.LONG, new int[] {nelems}, vals));
         }
         break;
     }
@@ -712,7 +711,7 @@ public class H4header implements HdfHeaderIF {
     }
 
     Variable.Builder<?> vb = Variable.builder().setName("Image-" + group.refno);
-    vb.setDataType(H4type.getDataType(ntag.type));
+    vb.setArrayType(H4type.getDataType(ntag.type));
     vb.addDimensions(dimTag.dims);
     vinfo.setVariable(vb);
 
@@ -756,7 +755,7 @@ public class H4header implements HdfHeaderIF {
       Variable.Builder<?> m = Variable.builder().setName(vh.fld_name[fld]);
       short type = vh.fld_type[fld];
       short nelems = vh.fld_order[fld];
-      m.setDataType(H4type.getDataType(type));
+      m.setArrayType(H4type.getDataType(type));
       if (nelems > 1)
         m.setDimensionsAnonymous(new int[] {nelems});
       else
@@ -794,7 +793,7 @@ public class H4header implements HdfHeaderIF {
       // String name = createValidObjectName(vh.name);
       vb = Variable.builder().setName(vh.name);
       vinfo.setVariable(vb);
-      vb.setDataType(H4type.getDataType(vh.fld_type[0]));
+      vb.setArrayType(H4type.getDataType(vh.fld_type[0]));
 
       if (vh.nvert > 1) {
 
@@ -832,7 +831,7 @@ public class H4header implements HdfHeaderIF {
         Variable.Builder<?> m = Variable.builder().setName(vh.fld_name[fld]);
         short type = vh.fld_type[fld];
         short nelems = vh.fld_order[fld];
-        m.setDataType(H4type.getDataType(type));
+        m.setArrayType(H4type.getDataType(type));
         if (nelems > 1)
           m.setDimensionsAnonymous(new int[] {nelems});
         else
@@ -930,7 +929,7 @@ public class H4header implements HdfHeaderIF {
     }
     Variable.Builder<?> vb = Variable.builder().setName(group.name);
     vb.addDimensions(dims);
-    vb.setDataType(H4type.getDataType(ntag.type));
+    vb.setArrayType(H4type.getDataType(ntag.type));
 
     vinfo.setVariable(vb);
     vinfo.setData(data, vb.dataType.getSize());
@@ -998,8 +997,8 @@ public class H4header implements HdfHeaderIF {
 
     Variable.Builder<?> vb = Variable.builder().setName("SDS-" + group.refno);
     vb.setDimensionsAnonymous(dim.shape);
-    DataType dataType = H4type.getDataType(nt.type);
-    vb.setDataType(dataType);
+    ArrayType dataType = H4type.getDataType(nt.type);
+    vb.setArrayType(dataType);
 
     vinfo.setVariable(vb);
     vinfo.setData(data, vb.dataType.getSize());
@@ -1213,8 +1212,8 @@ public class H4header implements HdfHeaderIF {
   private long readDDH(List<Tag> alltags, long start) throws IOException {
     raf.seek(start);
 
-    int ndd = DataType.unsignedShortToInt(raf.readShort()); // number of DD blocks
-    long link = DataType.unsignedIntToLong(raf.readInt()); // point to the next DDH; link == 0 means no more
+    int ndd = ArrayType.unsignedShortToInt(raf.readShort()); // number of DD blocks
+    long link = ArrayType.unsignedIntToLong(raf.readInt()); // point to the next DDH; link == 0 means no more
     long pos = raf.getFilePointer();
     for (int i = 0; i < ndd; i++) {
       raf.seek(pos);
@@ -1902,7 +1901,7 @@ public class H4header implements HdfHeaderIF {
   // 707, p132
   private class TagSDminmax extends Tag {
     ByteBuffer bb;
-    DataType dt;
+    ArrayType dt;
 
     TagSDminmax(short code) throws IOException {
       super(code);
@@ -1915,28 +1914,28 @@ public class H4header implements HdfHeaderIF {
       bb = ByteBuffer.wrap(buff);
     }
 
-    Number getMin(DataType dataType) {
+    Number getMin(ArrayType dataType) {
       dt = dataType;
       return get(dataType, 1);
     }
 
-    Number getMax(DataType dataType) {
+    Number getMax(ArrayType dataType) {
       dt = dataType;
       return get(dataType, 0);
     }
 
-    Number get(DataType dataType, int index) {
-      if (dataType == DataType.BYTE)
+    Number get(ArrayType dataType, int index) {
+      if (dataType == ArrayType.BYTE)
         return bb.get(index);
-      if (dataType == DataType.SHORT)
+      if (dataType == ArrayType.SHORT)
         return bb.asShortBuffer().get(index);
-      if (dataType == DataType.INT)
+      if (dataType == ArrayType.INT)
         return bb.asIntBuffer().get(index);
-      if (dataType == DataType.LONG)
+      if (dataType == ArrayType.LONG)
         return bb.asLongBuffer().get(index);
-      if (dataType == DataType.FLOAT)
+      if (dataType == ArrayType.FLOAT)
         return bb.asFloatBuffer().get(index);
-      if (dataType == DataType.DOUBLE)
+      if (dataType == ArrayType.DOUBLE)
         return bb.asDoubleBuffer().get(index);
       return Double.NaN;
     }
@@ -2058,7 +2057,7 @@ public class H4header implements HdfHeaderIF {
       raf.seek(offset);
       interlace = raf.readShort();
       nvert = raf.readInt();
-      ivsize = DataType.unsignedShortToInt(raf.readShort());
+      ivsize = ArrayType.unsignedShortToInt(raf.readShort());
       nfields = raf.readShort();
 
       fld_type = new short[nfields];
@@ -2067,11 +2066,11 @@ public class H4header implements HdfHeaderIF {
 
       fld_isize = new int[nfields];
       for (int i = 0; i < nfields; i++)
-        fld_isize[i] = DataType.unsignedShortToInt(raf.readShort());
+        fld_isize[i] = ArrayType.unsignedShortToInt(raf.readShort());
 
       fld_offset = new int[nfields];
       for (int i = 0; i < nfields; i++)
-        fld_offset[i] = DataType.unsignedShortToInt(raf.readShort());
+        fld_offset[i] = ArrayType.unsignedShortToInt(raf.readShort());
 
       fld_order = new short[nfields];
       for (int i = 0; i < nfields; i++)

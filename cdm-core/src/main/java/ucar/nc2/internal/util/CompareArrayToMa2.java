@@ -64,7 +64,7 @@ public class CompareArrayToMa2 {
     }
 
     if (vorg.getArrayType() == ArrayType.SEQUENCE) {
-      System.out.printf("  read sequence %s %s%n", vorg.getDataType(), vorg.getShortName());
+      System.out.printf("  read sequence %s %s%n", vorg.getArrayType(), vorg.getShortName());
       Sequence sorg = (Sequence) vorg;
       StructureDataIterator orgIter = sorg.getStructureIterator(-1);
       Sequence sarray = (Sequence) vnew;
@@ -78,7 +78,7 @@ public class CompareArrayToMa2 {
     } else {
       ucar.ma2.Array org = vorg.read();
       Array<?> array = vnew.readArray();
-      System.out.printf("  read variable %s %s%n", vorg.getDataType(), vorg.getNameAndDimensions());
+      System.out.printf("  read variable %s %s%n", vorg.getArrayType(), vorg.getNameAndDimensions());
       Formatter f = new Formatter();
       boolean ok1 = CompareArrayToMa2.compareData(f, vorg.getShortName(), org, array, justOne, true);
       if (!ok1) {
@@ -87,6 +87,10 @@ public class CompareArrayToMa2 {
       }
     }
     return true;
+  }
+
+  public static boolean compareData(String name, ucar.ma2.Array org, Array<?> array) throws IOException {
+    return compareData(new Formatter(), name, org, array, false, true);
   }
 
   public static boolean compareData(Formatter f, String name, ucar.ma2.Array org, Array<?> array, boolean justOne,

@@ -80,7 +80,6 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    * @deprecated use getArrayType()
    */
   @Deprecated
-  @Override
   public DataType getDataType() {
     return dataType.getDataType();
   }
@@ -978,7 +977,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
       return false;
     if (isScalar() != o.isScalar())
       return false;
-    if (getDataType() != o.getDataType())
+    if (getArrayType() != o.getArrayType())
       return false;
     if (!getParentGroup().equals(o.getParentGroup()))
       return false;
@@ -1002,7 +1001,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
       result = 37 * result + getShortName().hashCode();
       if (isScalar())
         result++;
-      result = 37 * result + getDataType().hashCode();
+      result = 37 * result + getArrayType().hashCode();
       result = 37 * result + getParentGroup().hashCode();
       if (getParentStructure() != null)
         result = 37 * result + getParentStructure().hashCode();
@@ -1135,7 +1134,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
   protected void setCachedData(ucar.array.Array<?> cacheData) {
     if ((cacheData != null) && (cacheData.getArrayType() != getArrayType())) {
       throw new IllegalArgumentException(
-          "setCachedData type=" + cacheData.getArrayType() + " incompatible with variable type=" + getDataType());
+          "setCachedData type=" + cacheData.getArrayType() + " incompatible with variable type=" + getArrayType());
     }
     this.cache.setCachedData(cacheData);
   }
@@ -1268,7 +1267,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     }
 
     // calculated fields
-    this.elementSize = builder.elementSize > 0 ? builder.elementSize : getDataType().getSize();
+    this.elementSize = builder.elementSize > 0 ? builder.elementSize : getArrayType().getSize();
     this.isVariableLength = this.dimensions.stream().anyMatch(Dimension::isVariableLength);
     try {
       List<Range> list = new ArrayList<>();
@@ -1681,7 +1680,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     /** TODO Copy metadata from orgVar. */
     public T copyFrom(Variable orgVar) {
       setName(orgVar.getShortName());
-      setDataType(orgVar.getDataType());
+      setArrayType(orgVar.getArrayType());
       if (orgVar.getEnumTypedef() != null) {
         setEnumTypeName(orgVar.getEnumTypedef().getShortName());
       }

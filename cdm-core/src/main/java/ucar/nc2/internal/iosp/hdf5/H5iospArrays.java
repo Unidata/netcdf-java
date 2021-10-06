@@ -425,7 +425,7 @@ public class H5iospArrays extends H5iosp {
       mb.setOffset((int) vm.dataPos);
 
       // track if there is a heap
-      if (v2.getDataType() == DataType.STRING || v2.isVariableLength()) {
+      if (v2.getArrayType() == ArrayType.STRING || v2.isVariableLength()) {
         hasHeap = true;
       }
 

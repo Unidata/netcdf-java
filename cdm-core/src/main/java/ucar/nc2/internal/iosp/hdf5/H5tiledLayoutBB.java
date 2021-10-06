@@ -12,7 +12,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import ucar.ma2.DataType;
+
+import ucar.array.ArrayType;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
 import ucar.nc2.Variable;
@@ -79,15 +80,15 @@ public class H5tiledLayoutBB implements LayoutBB {
     // we have to translate the want section into the same rank as the storageSize, in order to be able to call
     // Section.intersect(). It appears that storageSize (actually msl.chunkSize) may have an extra dimension, reletive
     // to the Variable.
-    DataType dtype = v2.getDataType();
-    if ((dtype == DataType.CHAR) && (wantSection.getRank() < vinfo.storageSize.length)) {
+    ArrayType dtype = v2.getArrayType();
+    if ((dtype == ArrayType.CHAR) && (wantSection.getRank() < vinfo.storageSize.length)) {
       this.want = Section.builder().appendRanges(wantSection.getRanges()).appendRange(1).build();
     } else {
       this.want = wantSection;
     }
 
     // one less chunk dimension, except in the case of char
-    nChunkDims = (dtype == DataType.CHAR) ? vinfo.storageSize.length : vinfo.storageSize.length - 1;
+    nChunkDims = (dtype == ArrayType.CHAR) ? vinfo.storageSize.length : vinfo.storageSize.length - 1;
     this.chunkSize = new int[nChunkDims];
     System.arraycopy(vinfo.storageSize, 0, chunkSize, 0, nChunkDims);
     this.elemSize = vinfo.storageSize[vinfo.storageSize.length - 1]; // last one is always the elements size

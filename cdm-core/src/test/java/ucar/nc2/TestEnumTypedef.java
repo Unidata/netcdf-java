@@ -11,7 +11,6 @@ import com.google.common.collect.ImmutableMap;
 import java.util.Map;
 import org.junit.Test;
 import ucar.array.ArrayType;
-import ucar.ma2.DataType;
 
 /** Test {@link ucar.nc2.EnumTypedef} */
 public class TestEnumTypedef {

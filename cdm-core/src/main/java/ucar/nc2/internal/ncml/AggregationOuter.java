@@ -717,7 +717,7 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
     if (debugConvert && mainv instanceof VariableDS) {
       ArrayType dtype = ((VariableDS) mainv).getOriginalArrayType();
       if ((dtype != null) && (dtype != mainv.getArrayType())) {
-        logger.warn("Original type = {} mainv type= {}", dtype, mainv.getDataType());
+        logger.warn("Original type = {} mainv type= {}", dtype, mainv.getArrayType());
       }
     }
 

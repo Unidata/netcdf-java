@@ -46,11 +46,11 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
       return (CoordinateAxis1DTime) org;
     }
 
-    if (org.getDataType() == DataType.CHAR) {
+    if (org.getArrayType() == ArrayType.CHAR) {
       return fromStringVarDS(ncd, org, ImmutableList.of(org.getDimension(0)));
     }
 
-    if (org.getDataType() == DataType.STRING) {
+    if (org.getArrayType() == ArrayType.STRING) {
       return fromStringVarDS(ncd, org, org.getDimensions());
     }
 
@@ -90,7 +90,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
   private static CoordinateAxis1DTime fromVarDS(@Nullable NetcdfDataset ncd, VariableDS org, Formatter errMessages)
       throws IOException {
     CoordinateAxis1DTime.Builder<?> builder = CoordinateAxis1DTime.builder().setName(org.getShortName())
-        .setDataType(org.getDataType()).setUnits(org.getUnitsString()).setDesc(org.getDescription());
+        .setArrayType(org.getArrayType()).setUnits(org.getUnitsString()).setDesc(org.getDescription());
     builder.setOriginalVariable(org).setOriginalName(org.getOriginalName());
 
     CoordinateAxisTimeHelper helper =
@@ -359,9 +359,9 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
 
     try {
       Formatter errMessages = new Formatter();
-      if (getDataType() == DataType.CHAR) {
+      if (getArrayType() == ArrayType.CHAR) {
         cdates = makeTimesFromChar((VariableDS) builder.orgVar, errMessages);
-      } else if (getDataType() == DataType.STRING) {
+      } else if (getArrayType() == ArrayType.STRING) {
         cdates = makeTimesFromStrings((VariableDS) builder.orgVar, errMessages);
       } else {
         cdates = builder.cdates;

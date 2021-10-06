@@ -6,7 +6,7 @@ import static org.junit.Assert.fail;
 import com.google.common.collect.ImmutableList;
 import java.util.Optional;
 import org.junit.Test;
-import ucar.ma2.DataType;
+import ucar.array.ArrayType;
 
 /** Test {@link ucar.nc2.Dimension} */
 public class TestDimension {
@@ -153,7 +153,7 @@ public class TestDimension {
     Group.Builder grandparent = Group.builder().setName("gramps").addGroup(parentg);
     Group root = Group.builder().addGroup(grandparent).build();
     Optional<Group> parent = root.findGroupNested("parent");
-    Variable v = Variable.builder().setName("v").setDataType(DataType.STRING).setParentGroupBuilder(parentg)
+    Variable v = Variable.builder().setName("v").setArrayType(ArrayType.STRING).setParentGroupBuilder(parentg)
         .setDimensionsByName("dimname").build(parent.get());
 
     // TODO shouldnt that have a leading / ?
@@ -167,7 +167,7 @@ public class TestDimension {
     Group.Builder grandparent = Group.builder().setName("gramps").addGroup(parentg);
     Group root = Group.builder().addGroup(grandparent).build();
     Optional<Group> parent = root.findGroupNested("parent");
-    Variable v = Variable.builder().setName("v").setDataType(DataType.CHAR).setParentGroupBuilder(parentg)
+    Variable v = Variable.builder().setName("v").setArrayType(ArrayType.CHAR).setParentGroupBuilder(parentg)
         .setDimensions(ImmutableList.of(dim)).build(parent.get());
 
     // TODO what should it be?

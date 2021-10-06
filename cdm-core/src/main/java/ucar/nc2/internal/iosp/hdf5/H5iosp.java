@@ -11,6 +11,8 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.Charset;
 import java.util.Optional;
+
+import ucar.array.ArrayType;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayStructure;
 import ucar.ma2.ArrayStructureBB;
@@ -426,7 +428,7 @@ public class H5iosp extends AbstractIOServiceProvider {
       m.setDataParam((int) vm.dataPos);
 
       // track if there is a heap
-      if (v2.getDataType() == DataType.STRING || v2.isVariableLength())
+      if (v2.getArrayType() == ArrayType.STRING || v2.isVariableLength())
         hasHeap = true;
 
       // recurse

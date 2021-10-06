@@ -2,7 +2,7 @@ package ucar.nc2.dataset;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import ucar.ma2.DataType;
+import ucar.array.ArrayType;
 import ucar.nc2.AttributeContainerMutable;
 import ucar.nc2.Dimension;
 import ucar.nc2.Group;
@@ -29,11 +29,11 @@ public class TestCoordSystemBuilder {
     ArrayList<CoordinateAxis> axes = new ArrayList<>();
     ArrayList<CoordinateTransform> transforms = new ArrayList<>();
 
-    VariableDS.Builder<?> xBuilder = VariableDS.builder().setName("xname").setDataType(DataType.FLOAT)
+    VariableDS.Builder<?> xBuilder = VariableDS.builder().setName("xname").setArrayType(ArrayType.FLOAT)
         .setUnits("xunits").setDesc("xdesc").setEnhanceMode(NetcdfDataset.getEnhanceAll());
     axes.add(CoordinateAxis.fromVariableDS(xBuilder).setAxisType(AxisType.GeoX).build(makeDummyGroup()));
 
-    VariableDS.Builder<?> yBuilder = VariableDS.builder().setName("yname").setDataType(DataType.FLOAT)
+    VariableDS.Builder<?> yBuilder = VariableDS.builder().setName("yname").setArrayType(ArrayType.FLOAT)
         .setUnits("yunits").setDesc("ydesc").setEnhanceMode(NetcdfDataset.getEnhanceAll());
     axes.add(CoordinateAxis.fromVariableDS(yBuilder).setAxisType(AxisType.GeoY).build(makeDummyGroup()));
 
@@ -49,7 +49,7 @@ public class TestCoordSystemBuilder {
     CoordinateAxis xaxis = coordSys.findAxis(AxisType.GeoX);
     assertThat(xaxis).isNotNull();
     assertThat(xaxis.getShortName()).isEqualTo("xname");
-    assertThat(xaxis.getDataType()).isEqualTo(DataType.FLOAT);
+    assertThat(xaxis.getArrayType()).isEqualTo(ArrayType.FLOAT);
     assertThat(xaxis.getUnitsString()).isEqualTo("xunits");
     assertThat(xaxis.getDescription()).isEqualTo("xdesc");
     assertThat(xaxis.getEnhanceMode()).isEqualTo(NetcdfDataset.getEnhanceAll());
@@ -81,11 +81,11 @@ public class TestCoordSystemBuilder {
     ArrayList<CoordinateAxis> axes = new ArrayList<>();
     ArrayList<CoordinateTransform> transforms = new ArrayList<>();
 
-    VariableDS.Builder<?> xBuilder = VariableDS.builder().setName("xname").setDataType(DataType.FLOAT)
+    VariableDS.Builder<?> xBuilder = VariableDS.builder().setName("xname").setArrayType(ArrayType.FLOAT)
         .setUnits("xunits").setDesc("xdesc").setEnhanceMode(NetcdfDataset.getEnhanceAll());
     axes.add(CoordinateAxis.fromVariableDS(xBuilder).setAxisType(AxisType.GeoX).build(makeDummyGroup()));
 
-    VariableDS.Builder<?> yBuilder = VariableDS.builder().setName("yname").setDataType(DataType.FLOAT)
+    VariableDS.Builder<?> yBuilder = VariableDS.builder().setName("yname").setArrayType(ArrayType.FLOAT)
         .setUnits("yunits").setDesc("ydesc").setEnhanceMode(NetcdfDataset.getEnhanceAll());
     axes.add(CoordinateAxis.fromVariableDS(yBuilder).setAxisType(AxisType.GeoY).build(makeDummyGroup()));
 

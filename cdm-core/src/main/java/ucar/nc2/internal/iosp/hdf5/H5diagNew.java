@@ -56,7 +56,7 @@ public class H5diagNew {
     H5objects.MessageDataspace mdt = vinfo.mds;
 
     long total_elems = 1;
-    f.format("%8s %-40s(", v.getDataType(), v.getShortName());
+    f.format("%8s %-40s(", v.getArrayType(), v.getShortName());
     for (int len : mdt.dimLength) {
       f.format("%d ", len);
       total_elems *= len;

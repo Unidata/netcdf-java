@@ -22,7 +22,7 @@ import ucar.nc2.constants._Coordinate;
 import ucar.ui.StructureArrayTable;
 import ucar.ui.StructureTable;
 import org.jdom2.Element;
-import ucar.ma2.Array;
+import ucar.array.Array;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.ParsedSectionSpec;
@@ -34,7 +34,6 @@ import ucar.ui.dialog.NetcdfOutputChooser;
 import ucar.nc2.internal.util.CompareNetcdf2.ObjFilter;
 import ucar.nc2.write.NcdumpArray;
 import ucar.nc2.write.NetcdfCopier;
-import ucar.nc2.write.Ncdump;
 import ucar.nc2.write.NcmlWriter;
 import ucar.nc2.write.NetcdfFormatWriter;
 import ucar.ui.widget.BAMutil;
@@ -562,8 +561,8 @@ public class DatasetViewer extends JPanel {
         ucar.array.Array<?> data = v.readArray();
         infoTA.setText(NcdumpArray.printArray(data, v.getFullName(), null));
       } else {
-        Array data = v.read();
-        infoTA.setText(Ncdump.printArray(data, v.getFullName(), null));
+        Array<?> data = v.readArray();
+        infoTA.setText(NcdumpArray.printArray(data, v.getFullName(), null));
       }
 
     } catch (Exception ex) {
@@ -729,7 +728,7 @@ public class DatasetViewer extends JPanel {
       setName(vs.getShortName());
       setDescription(vs.getDescription());
       setUnits(vs.getUnitsString());
-      setDataType(vs.getDataType().toString());
+      setDataType(vs.getArrayType().toString());
 
       // collect dimensions
       StringBuilder lens = new StringBuilder();
