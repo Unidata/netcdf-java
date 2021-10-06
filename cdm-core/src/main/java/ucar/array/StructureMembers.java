@@ -16,7 +16,10 @@ import java.util.List;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
-/** A collection of members contained in StructureData. */
+/**
+ * A collection of members contained in StructureData.
+ * Nested Structures may be stored on or off the heap.
+ */
 @Immutable
 public final class StructureMembers implements Iterable<StructureMembers.Member> {
 
@@ -60,6 +63,7 @@ public final class StructureMembers implements Iterable<StructureMembers.Member>
     return structureSize;
   }
 
+  /** Whether nested Structures are stored on the heap or inline. */
   public boolean isStructuresOnHeap() {
     return structuresOnHeap;
   }
@@ -166,7 +170,7 @@ public final class StructureMembers implements Iterable<StructureMembers.Member>
       return dataType;
     }
 
-    /** Get the index in the Members list. */
+    /** Get the heap index in the Members list. */
     public int getIndex() {
       return index;
     }
@@ -198,7 +202,7 @@ public final class StructureMembers implements Iterable<StructureMembers.Member>
 
     /**
      * Get the total size in bytes needed for storing the data in this Member.
-     * A Sequence, String Opaque, and Vlen are always stored on the heap, so this returns 4 bytes used for the heap
+     * A Sequence, String, Opaque, and Vlen are always stored on the heap, so this returns 4 bytes used for the heap
      * index.
      * A Structure may be stored on the heap, depending on StructureMembers.isStructuresOnHeap().
      * If true, then takes 4 bytes. If false, then this will be the sum of the member's sizes (including nested
@@ -349,7 +353,7 @@ public final class StructureMembers implements Iterable<StructureMembers.Member>
 
   private final String name;
   private final int structureSize;
-  private final boolean structuresOnHeap;
+  private final boolean structuresOnHeap; // LOOK is this used?
   private final ImmutableList<Member> members;
 
   private StructureMembers(Builder builder) {

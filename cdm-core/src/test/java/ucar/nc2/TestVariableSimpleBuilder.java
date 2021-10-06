@@ -9,8 +9,7 @@ import static com.google.common.truth.Truth.assertThat;
 import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import ucar.array.ArrayType;
-import ucar.ma2.DataType;
-import ucar.ma2.StructureMembers;
+import ucar.array.StructureMembers;
 
 /** Test {@link ucar.nc2.VariableSimpleBuilder} */
 public class TestVariableSimpleBuilder {
@@ -79,8 +78,8 @@ public class TestVariableSimpleBuilder {
   @Test
   public void testMakeMember() {
     StructureMembers.MemberBuilder mb = StructureMembers.memberBuilder().setName("name").setDesc("desc")
-        .setUnits("units").setDataType(DataType.INT).setShape(new int[] {22, 6});
-    VariableSimpleBuilder builder = VariableSimpleBuilder.fromMember(mb.build());
+        .setUnits("units").setArrayType(ArrayType.INT).setShape(new int[] {22, 6});
+    VariableSimpleBuilder builder = VariableSimpleBuilder.fromMember(mb.build(0, false));
 
     VariableSimpleIF vs = builder.build();
     assertThat(vs.getShortName()).isEqualTo("name");

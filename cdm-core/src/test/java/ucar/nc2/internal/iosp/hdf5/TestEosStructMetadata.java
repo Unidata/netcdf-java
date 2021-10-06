@@ -8,8 +8,8 @@ import static com.google.common.truth.Truth.assertThat;
 
 import java.io.IOException;
 import org.junit.Test;
-import ucar.ma2.Array;
-import ucar.ma2.DataType;
+import ucar.array.Array;
+import ucar.array.ArrayType;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
@@ -30,15 +30,12 @@ public class TestEosStructMetadata {
     String testFile = TestDir.cdmLocalTestDataDir + "hdf5/structmetadata_eos.h5";
     try (NetcdfFile ncf = NetcdfFiles.open(testFile)) {
       Variable testVar = ncf.findVariable("HDFEOS_INFORMATION/StructMetadata\\.0");
-      Array data = testVar.read();
+      Array<?> data = testVar.readArray();
 
-      assertThat(data.getDataType()).isEqualTo(DataType.STRING);
+      assertThat(data.getArrayType()).isEqualTo(ArrayType.STRING);
       assertThat(data.getSize()).isEqualTo(1);
 
-      Object ob = data.getObject(0);
-      assertThat(ob).isInstanceOf(String.class);
-
-      String strData = String.valueOf(ob);
+      String strData = ((Array<String>) data).getScalar();
       assertThat(strData).hasLength(1664);
       assertThat(strData).startsWith("GROUP=SwathStructure\nEND_GROUP=SwathStructure\nGROUP=GridStructure");
       assertThat(strData).endsWith("END_GROUP=ZaStructure\nEND\n");
