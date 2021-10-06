@@ -149,10 +149,12 @@ public class CompareNetcdf2 {
 
   }
 
+  @Deprecated
   public static boolean compareData(String name, Array data1, Array data2) {
     return new CompareNetcdf2().compareData(name, data1, data2, false, true);
   }
 
+  @Deprecated
   public static boolean compareData(String name, Array data1, double[] data2) {
     Array data2a = Array.factory(DataType.DOUBLE, new int[] {data2.length}, data2);
     return compareData(name, data1, data2a);

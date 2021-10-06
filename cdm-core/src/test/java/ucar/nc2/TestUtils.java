@@ -8,7 +8,7 @@ import java.io.*;
 import java.lang.invoke.MethodHandles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.Array;
+import ucar.array.Array;
 
 /** Static utilities for testing */
 public class TestUtils {
@@ -30,9 +30,8 @@ public class TestUtils {
   }
 
   public static void testVarMatchesData(Variable v, boolean showStatus) throws IOException {
-    Array data = v.read();
+    Array<?> data = v.readArray();
     assert data.getSize() == v.getSize();
-    assert data.getElementType() == v.getDataType().getPrimitiveClassType();
 
     assert data.getRank() == v.getRank();
     int[] dataShape = data.getShape();

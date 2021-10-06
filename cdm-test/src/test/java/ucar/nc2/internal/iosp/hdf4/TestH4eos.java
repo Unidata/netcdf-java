@@ -7,16 +7,17 @@ package ucar.nc2.internal.iosp.hdf4;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import ucar.ma2.Array;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Section;
+import ucar.array.Array;
+import ucar.array.Arrays;
+import ucar.array.InvalidRangeException;
+import ucar.array.Section;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import ucar.nc2.grid.Grid;
 import ucar.nc2.grid.GridDataset;
 import ucar.nc2.grid.GridDatasetFactory;
-import ucar.nc2.internal.util.CompareNetcdf2;
+import ucar.nc2.internal.util.CompareArrayToArray;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.io.IOException;
@@ -71,7 +72,7 @@ public class TestH4eos {
       assert shape[1] == 50;
       assert shape[2] == 716;
 
-      Array data = v.read("0:809:10,0:49:5,0:715:2");
+      Array<?> data = v.readArray(new Section("0:809:10,0:49:5,0:715:2"));
       assert data.getRank() == 3;
       int[] dshape = data.getShape();
       assert dshape[0] == 810 / 10;
@@ -79,9 +80,9 @@ public class TestH4eos {
       assert dshape[2] == 716 / 2;
 
       // read entire array
-      Array A;
+      Array<?> A;
       try {
-        A = v.read();
+        A = v.readArray();
       } catch (IOException e) {
         System.err.println("ERROR reading file");
         assert (false);
@@ -89,12 +90,12 @@ public class TestH4eos {
       }
 
       // compare
-      Array Asection = A.section(new Section("0:809:10,0:49:5,0:715:2").getRanges());
+      Array<?> Asection = Arrays.section(A, new Section("0:809:10,0:49:5,0:715:2"));
       assert (Asection.getRank() == 3);
       for (int i = 0; i < 3; i++)
         assert Asection.getShape()[i] == dshape[i];
 
-      CompareNetcdf2.compareData(v.getShortName(), data, Asection);
+      CompareArrayToArray.compareData(v.getShortName(), data, Asection);
     }
   }
 
