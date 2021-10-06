@@ -21,7 +21,6 @@
 # top level modules #
 #####################
 
-httpservices/** @DennisHeimbigner
 netcdf4/** @DennisHeimbigner
 
 ###########################################

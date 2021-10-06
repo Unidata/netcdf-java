@@ -23,7 +23,7 @@ public abstract class UnitTestCommon {
   static final boolean DEBUG = false;
 
   // Look for these to verify we have found the thredds root
-  static final String[] DEFAULTSUBDIRS = {"httpservices", "cdm-core", "opendap"};
+  static final String[] DEFAULTSUBDIRS = {"cdm-core", "opendap"};
 
   static String threddsroot;
   static String threddsServer;

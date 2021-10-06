@@ -25,7 +25,7 @@ public interface ReadableRemoteFile extends Closeable {
 
   /**
    * Close any resources used to enable remote reading.
-   * For example, HTTPSession from httpservices, or S3Client from the AWS SDK
+   * For example, S3Client from the AWS SDK
    */
   void closeRemote();
 }

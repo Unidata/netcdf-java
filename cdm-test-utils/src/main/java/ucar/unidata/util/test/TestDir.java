@@ -348,7 +348,7 @@ public class TestDir {
   ////////////////////////////////////////////////////////////////////////////////////////
   // from UnitTestCommon
   // Look for these to verify we have found the thredds root
-  static final String[] DEFAULTSUBDIRS = {"httpservices", "cdm", "opendap"};
+  static final String[] DEFAULTSUBDIRS = {"cdm-core", "opendap"};
 
   public static String locateThreddsRoot() {
     // Walk up the user.dir path looking for a node that has

@@ -110,8 +110,7 @@ ext {
   // Will hold the list of projects that apply the maven-publish plugin
   // A project is registered when the gradle/any/publishing.gradle script plugin
   // is applied. We track these so that we can be sure to remove any dependencies added
-  // by the gretty plugin (for example, httpservices certainly does not depend on javax.servlet-api,
-  // spring-boot-starter-tomcat, or spring-boot-starter-jetty :-/
+  // by the gretty plugin.
   publishedProjects = []
 }
 
