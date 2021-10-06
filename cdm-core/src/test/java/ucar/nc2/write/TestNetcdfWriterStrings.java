@@ -21,6 +21,7 @@ import ucar.nc2.Variable;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.text.Normalizer;
 
 import static com.google.common.truth.Truth.assertThat;
@@ -186,7 +187,7 @@ public class TestNetcdfWriterStrings {
       b[i] = (byte) codes[i];
     if (debug)
       System.out.println(" orgBytes= " + showBytes(b));
-    String s = new String(b, "UTF-8");
+    String s = new String(b, StandardCharsets.UTF_8);
     if (debug)
       System.out.println("convBytes= " + showString(s));
     return s;

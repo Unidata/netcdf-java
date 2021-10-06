@@ -4,10 +4,10 @@
  */
 package ucar.array;
 
-import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
 import com.google.protobuf.ByteString;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import javax.annotation.concurrent.Immutable;
 
@@ -117,7 +117,7 @@ final class ArrayByte extends Array<Byte> {
       }
       carr[idx++] = c;
     }
-    return new String(carr, Charsets.UTF_8);
+    return new String(carr, StandardCharsets.UTF_8);
   }
 
   /**
@@ -147,13 +147,13 @@ final class ArrayByte extends Array<Byte> {
       int idx = sidx * innerLength + cidx;
       byte c = get(indexFn.odometer(idx));
       if (c == 0) {
-        result[sidx++] = new String(carr, 0, cidx, Charsets.UTF_8);
+        result[sidx++] = new String(carr, 0, cidx, StandardCharsets.UTF_8);
         cidx = 0;
         continue;
       }
       carr[cidx++] = c;
       if (cidx == innerLength) {
-        result[sidx++] = new String(carr, Charsets.UTF_8);
+        result[sidx++] = new String(carr, StandardCharsets.UTF_8);
         cidx = 0;
       }
     }

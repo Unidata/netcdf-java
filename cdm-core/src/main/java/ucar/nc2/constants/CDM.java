@@ -6,13 +6,10 @@ package ucar.nc2.constants;
 
 import com.google.common.collect.ImmutableList;
 
-/**
- * CDM constants.
- *
- * @author caron
- * @since 12/20/11
- */
+/** CDM constants. */
 public class CDM {
+  /** @deprecated use StandardCharsets.UTF_8 */
+  @Deprecated
   public static final String UTF8 = "UTF-8";
 
   // structural

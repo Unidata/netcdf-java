@@ -4,7 +4,6 @@
  */
 package ucar.nc2.write;
 
-import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
 import ucar.array.Array;
 import ucar.array.ArrayType;
@@ -33,6 +32,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static ucar.nc2.NetcdfFile.IOSP_MESSAGE_GET_NETCDF_FILE_FORMAT;
@@ -209,7 +209,7 @@ public class NetcdfFormatWriter implements Closeable {
 
     // previously we truncated chars to bytes.
     // here we are going to use UTF encoded bytes, just as if we were real programmers.
-    byte[] bb = data.getBytes(Charsets.UTF_8);
+    byte[] bb = data.getBytes(StandardCharsets.UTF_8);
     if (bb.length != last) {
       byte[] storage = new byte[last];
       System.arraycopy(bb, 0, storage, 0, Math.min(bb.length, last));
