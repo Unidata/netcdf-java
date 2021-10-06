@@ -5,6 +5,7 @@
 
 package ucar.nc2.write;
 
+import com.google.common.base.Charsets;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -23,6 +24,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.text.Normalizer;
+import java.util.Formatter;
 
 import static com.google.common.truth.Truth.assertThat;
 
@@ -41,7 +43,9 @@ public class TestNetcdfWriterStrings {
   @Test
   public void writeNetCDFchar() throws IOException, InvalidRangeException {
     String helloGreek = makeString(helloGreekCode, true);
-    helloGreek = Normalizer.normalize(helloGreek, Normalizer.Form.NFC);
+    System.out.printf("writeNetCDFchar= %s%n", showBoth(helloGreek));
+    String helloGreek2 = Normalizer.normalize(helloGreek, Normalizer.Form.NFC);
+    System.out.printf(" normalized= %s%n", showBoth(helloGreek2));
 
     String filename = tempFolder.newFile().getPath();
     NetcdfFormatWriter.Builder<?> writerb = NetcdfFormatWriter.createNewNetcdf3(filename);
@@ -68,8 +72,7 @@ public class TestNetcdfWriterStrings {
 
       Array<String> sdata = Arrays.makeStringsFromChar((Array<Byte>) vrdata);
       String strData = sdata.getScalar();
-      System.out.printf(" writeNetCDFchar %s = %s = %s%n", strData, showString(strData),
-                showBytes(strData.getBytes()));
+      System.out.printf(" writeNetCDFchar read = %s%n", showBoth(strData));
       assertThat(strData).isEqualTo(helloGreek);
 
       Attribute att = vr.findAttribute("units");
@@ -82,7 +85,8 @@ public class TestNetcdfWriterStrings {
   @Test
   public void writeNetCDFcharArray() throws IOException, InvalidRangeException {
     String helloGreek = makeString(helloGreekCode, true);
-    helloGreek = Normalizer.normalize(helloGreek, Normalizer.Form.NFC);
+    // helloGreek = Normalizer.normalize(helloGreek, Normalizer.Form.NFC);
+    System.out.printf("writeNetCDFcharArray=%s%n", showBoth(helloGreek));
 
     String filename = tempFolder.newFile().getPath();
     NetcdfFormatWriter.Builder<?> writerb = NetcdfFormatWriter.createNewNetcdf3(filename);
@@ -112,8 +116,7 @@ public class TestNetcdfWriterStrings {
       Array<String> sdata = Arrays.makeStringsFromChar((Array<Byte>) vrdata);
       for (int i = 0; i < ngreeks; i++) {
         String strData = sdata.get(i);
-        System.out.printf(" writeNetCDFcharArray %s = %s = %s%n", strData, showString(strData),
-                showBytes(strData.getBytes()));
+        System.out.printf(" writeNetCDFcharArray read = %s%n", showBoth(strData));
       }
       for (int i = 0; i < ngreeks; i++) {
         String strData = sdata.get(i);
@@ -125,9 +128,8 @@ public class TestNetcdfWriterStrings {
   @Test
   public void writeNetCDFstring() throws IOException, InvalidRangeException {
     String helloGreek = makeString(helloGreekCode, true);
-    System.out.printf(" org=%s%n", helloGreek);
     helloGreek = Normalizer.normalize(helloGreek, Normalizer.Form.NFC);
-    System.out.printf("norm=%s%n", helloGreek);
+    System.out.printf("writeNetCDFstring=%s%n", showBoth(helloGreek));
 
     String filename = tempFolder.newFile().getPath();
     NetcdfFormatWriter.Builder<?> writerb = NetcdfFormatWriter.createNewNetcdf3(filename);
@@ -150,6 +152,7 @@ public class TestNetcdfWriterStrings {
       assertThat(vrdata.getShape()).isEqualTo(new int[] {helloGreekLen});
       Array<String> sdata = Arrays.makeStringsFromChar((Array<Byte>) vrdata);
       String strData = sdata.getScalar();
+      System.out.printf(" writeNetCDFstring read = %s%n", showBoth(strData));
       assertThat(strData).isEqualTo(helloGreek);
     }
   }
@@ -158,6 +161,7 @@ public class TestNetcdfWriterStrings {
   public void testWriteStringData() throws IOException, InvalidRangeException {
     String helloGreek = makeString(helloGreekCode, false);
     helloGreek = Normalizer.normalize(helloGreek, Normalizer.Form.NFC);
+    System.out.printf("testWriteStringData=%s%n", showBoth(helloGreek));
 
     String filename = tempFolder.newFile().getPath();
     NetcdfFormatWriter.Builder<?> writerb = NetcdfFormatWriter.createNewNetcdf3(filename);
@@ -185,6 +189,7 @@ public class TestNetcdfWriterStrings {
       Array<String> sdata = Arrays.makeStringsFromChar((Array<Byte>) vrdata);
       for (int i = 0; i < ngreeks; i++) {
         String strData = sdata.get(i);
+        System.out.printf(" testWriteStringData read = %s%n", showBoth(strData));
         assertThat(strData).isEqualTo(helloGreek);
       }
     }
@@ -233,6 +238,12 @@ public class TestNetcdfWriterStrings {
         sbuff.append(" ");
       sbuff.append(Integer.toHexString(c));
     }
+    return sbuff.toString();
+  }
+
+  private String showBoth(String s) {
+    Formatter sbuff = new Formatter();
+    sbuff.format(" %s == %s", s, showBytes(s.getBytes(Charsets.UTF_8)));
     return sbuff.toString();
   }
 
