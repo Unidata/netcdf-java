@@ -3,7 +3,7 @@ package ucar.nc2.dataset;
 import static com.google.common.truth.Truth.assertThat;
 
 import org.junit.Test;
-import ucar.ma2.DataType;
+import ucar.array.ArrayType;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.Group;
@@ -21,7 +21,7 @@ public class TestNetcdfDatasetBuilder {
     Attribute att = new Attribute("attName", "value");
     Dimension dim = new Dimension("dimName", 42);
     Group.Builder nested = Group.builder().setName("child");
-    VariableDS.Builder<?> vb = VariableDS.builder().setName("varName").setDataType(DataType.STRING);
+    VariableDS.Builder<?> vb = VariableDS.builder().setName("varName").setArrayType(ArrayType.STRING);
     Group.Builder groupb =
         Group.builder().setName("").addAttribute(att).addDimension(dim).addGroup(nested).addVariable(vb);
     nested.setParentGroup(groupb);
@@ -69,11 +69,11 @@ public class TestNetcdfDatasetBuilder {
     NetcdfDataset.Builder<?> ncdb = NetcdfDataset.builder();
     CoordinatesHelper.Builder coords = ncdb.coords;
 
-    VariableDS.Builder<?> xBuilder = VariableDS.builder().setName("xname").setDataType(DataType.FLOAT)
+    VariableDS.Builder<?> xBuilder = VariableDS.builder().setName("xname").setArrayType(ArrayType.FLOAT)
         .setUnits("xunits").setDesc("xdesc").setEnhanceMode(NetcdfDataset.getEnhanceAll());
     ncdb.rootGroup.addVariable(CoordinateAxis.fromVariableDS(xBuilder).setAxisType(AxisType.GeoX));
 
-    VariableDS.Builder<?> yBuilder = VariableDS.builder().setName("yname").setDataType(DataType.FLOAT)
+    VariableDS.Builder<?> yBuilder = VariableDS.builder().setName("yname").setArrayType(ArrayType.FLOAT)
         .setUnits("yunits").setDesc("ydesc").setEnhanceMode(NetcdfDataset.getEnhanceAll());
     ncdb.rootGroup.addVariable(CoordinateAxis.fromVariableDS(yBuilder).setAxisType(AxisType.GeoY));
 
@@ -87,7 +87,7 @@ public class TestNetcdfDatasetBuilder {
     CoordinateAxis xaxis = coordSys.findAxis(AxisType.GeoX);
     assertThat(xaxis).isNotNull();
     assertThat(xaxis.getShortName()).isEqualTo("xname");
-    assertThat(xaxis.getDataType()).isEqualTo(DataType.FLOAT);
+    assertThat(xaxis.getArrayType()).isEqualTo(ArrayType.FLOAT);
     assertThat(xaxis.getUnitsString()).isEqualTo("xunits");
     assertThat(xaxis.getDescription()).isEqualTo("xdesc");
     assertThat(xaxis.getEnhanceMode()).isEqualTo(NetcdfDataset.getEnhanceAll());

@@ -336,7 +336,7 @@ public class VariableDS extends Variable implements VariableEnhanced {
   private ucar.ma2.Array getMissingDataArray(int[] shape) {
     Object storage;
 
-    switch (getDataType()) {
+    switch (getArrayType()) {
       case BOOLEAN:
         storage = new boolean[1];
         break;

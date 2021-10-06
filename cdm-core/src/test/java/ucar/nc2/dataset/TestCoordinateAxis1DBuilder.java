@@ -5,7 +5,6 @@ import java.io.IOException;
 import org.junit.Test;
 import ucar.array.Array;
 import ucar.array.ArrayType;
-import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.Group;
@@ -19,7 +18,7 @@ public class TestCoordinateAxis1DBuilder {
     Group.Builder parent = Group.builder().addDimension(Dimension.builder("dim1", 7).setIsUnlimited(true).build())
         .addDimension(new Dimension("dim2", 27));
 
-    VariableDS.Builder<?> vdsBuilder = VariableDS.builder().setName("name").setDataType(DataType.FLOAT)
+    VariableDS.Builder<?> vdsBuilder = VariableDS.builder().setName("name").setArrayType(ArrayType.FLOAT)
         .setUnits("units").setDesc("desc").setEnhanceMode(NetcdfDataset.getEnhanceAll())
         .addAttribute(new Attribute("missing_value", 0.0f)).setParentGroupBuilder(parent).setDimensionsByName("dim1");
     parent.addVariable(vdsBuilder);
@@ -28,7 +27,7 @@ public class TestCoordinateAxis1DBuilder {
     CoordinateAxis axis = builder.build(parent.build());
 
     assertThat(axis.getShortName()).isEqualTo("name");
-    assertThat(axis.getDataType()).isEqualTo(DataType.FLOAT);
+    assertThat(axis.getArrayType()).isEqualTo(ArrayType.FLOAT);
     assertThat(axis.getAxisType()).isEqualTo(AxisType.GeoX);
     assertThat(axis.getUnitsString()).isEqualTo("units");
     assertThat(axis.getDescription()).isEqualTo("desc");
@@ -51,7 +50,7 @@ public class TestCoordinateAxis1DBuilder {
     Group.Builder parent = Group.builder().addDimension(Dimension.builder("dim1", 7).setIsUnlimited(true).build())
         .addDimension(new Dimension("dim2", 27));
 
-    VariableDS.Builder<?> vdsBuilder = VariableDS.builder().setName("name").setDataType(DataType.FLOAT)
+    VariableDS.Builder<?> vdsBuilder = VariableDS.builder().setName("name").setArrayType(ArrayType.FLOAT)
         .setUnits("days since 2001-01-01:00:00").setDesc("desc").setEnhanceMode(NetcdfDataset.getEnhanceAll())
         .setAutoGen(1, 2).addAttribute(new Attribute("missing_value", 0.0f)).setParentGroupBuilder(parent)
         .setDimensionsByName("dim1");
@@ -61,7 +60,7 @@ public class TestCoordinateAxis1DBuilder {
     CoordinateAxis axis = builder.build(parent.build());
 
     assertThat(axis.getShortName()).isEqualTo("name");
-    assertThat(axis.getDataType()).isEqualTo(DataType.FLOAT);
+    assertThat(axis.getArrayType()).isEqualTo(ArrayType.FLOAT);
     assertThat(axis.getAxisType()).isEqualTo(AxisType.Time);
     assertThat(axis.getUnitsString()).isEqualTo("days since 2001-01-01:00:00");
     assertThat(axis.getDescription()).isEqualTo("desc");

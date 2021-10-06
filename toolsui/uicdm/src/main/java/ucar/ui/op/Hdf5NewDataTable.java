@@ -5,7 +5,8 @@
 
 package ucar.ui.op;
 
-import ucar.ma2.Array;
+import ucar.array.Array;
+import ucar.array.ArrayVlen;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
@@ -33,9 +34,6 @@ import javax.swing.JSplitPane;
 
 /**
  * Show HDF5 data objects and their compression
- *
- * @author caron
- * @since 6/26/12
  */
 public class Hdf5NewDataTable extends Hdf5DataTable {
   private final BeanTable<VarBean> objectTable;
@@ -228,10 +226,9 @@ public class Hdf5NewDataTable extends Hdf5DataTable {
     try {
       int countRows = 0;
       long countElems = 0;
-      Array result = bean.v.read();
+      ArrayVlen<?> result = (ArrayVlen<?>) bean.v.readArray();
       f.format("class = %s%n", result.getClass().getName());
-      while (result.hasNext()) {
-        Array line = (Array) result.next();
+      for (Array<?> line : result) {
         countRows++;
         long size = line.getSize();
         countElems += size;
@@ -327,7 +324,7 @@ public class Hdf5NewDataTable extends Hdf5DataTable {
     }
 
     public String getDataType() {
-      return v.getDataType().toString();
+      return v.getArrayType().toString();
     }
 
     public String getCompression() {

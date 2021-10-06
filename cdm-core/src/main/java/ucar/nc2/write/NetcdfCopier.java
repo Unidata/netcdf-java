@@ -234,7 +234,7 @@ public class NetcdfCopier implements Closeable {
       Variable newVar = groupOut.findVariableLocal(oldVar.getShortName());
       if (debug) {
         System.out.format("write var= %s size = %d type = %s%n", oldVar.getFullName(), oldVar.getSize(),
-            oldVar.getDataType());
+            oldVar.getArrayType());
       }
 
       long size = oldVar.getSize() * oldVar.getElementSize();

@@ -124,11 +124,6 @@ public class VariableSimpleBuilder {
     }
 
     @Override
-    public DataType getDataType() {
-      return dt.getDataType();
-    }
-
-    @Override
     public ArrayType getArrayType() {
       return dt;
     }

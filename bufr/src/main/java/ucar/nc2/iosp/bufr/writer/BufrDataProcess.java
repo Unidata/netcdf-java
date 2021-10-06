@@ -6,6 +6,8 @@
 package ucar.nc2.iosp.bufr.writer;
 
 import java.nio.charset.StandardCharsets;
+
+import ucar.array.ArrayType;
 import ucar.nc2.iosp.bufr.Message;
 import ucar.nc2.iosp.bufr.BufrIosp;
 import ucar.nc2.iosp.bufr.MessageScanner;
@@ -185,7 +187,7 @@ public class BufrDataProcess {
     mdata.resetLocalIterator();
     while (mdata.hasNext()) {
       count.nvals++;
-      if (v.getDataType().isUnsigned()) {
+      if (v.getArrayType().isUnsigned()) {
         if (isMissingUnsigned(v, mdata, bitWidth))
           count.nmiss++;
       } else {
@@ -199,7 +201,7 @@ public class BufrDataProcess {
 
   private boolean isMissing(Variable v, Array mdata, int bitWidth) {
 
-    if (v.getDataType().isNumeric()) {
+    if (v.getArrayType().isNumeric()) {
       long val = mdata.nextLong();
       boolean result = BufrNumbers.isMissing(val, bitWidth);
       if (showData)
@@ -215,21 +217,21 @@ public class BufrDataProcess {
 
   private boolean isMissingUnsigned(Variable v, Array mdata, int bitWidth) {
     long val;
-    switch (v.getDataType()) {
+    switch (v.getArrayType()) {
       case ENUM1:
       case BYTE:
-        val = DataType.unsignedByteToShort(mdata.nextByte());
+        val = ArrayType.unsignedByteToShort(mdata.nextByte());
         break;
       case ENUM2:
       case SHORT:
-        val = DataType.unsignedShortToInt(mdata.nextShort());
+        val = ArrayType.unsignedShortToInt(mdata.nextShort());
         break;
       case ENUM4:
       case INT:
-        val = DataType.unsignedIntToLong(mdata.nextInt());
+        val = ArrayType.unsignedIntToLong(mdata.nextInt());
         break;
       default:
-        throw new RuntimeException("illegal datatype " + v.getDataType());
+        throw new RuntimeException("illegal datatype " + v.getArrayType());
     }
 
     boolean result = BufrNumbers.isMissing(val, bitWidth);

@@ -124,7 +124,7 @@ public class Arrays {
   /**
    * Create Array using empty java array of T, or java primitive array, same size as shape.
    * Do not use this for Vlens or Structures.
-   * LOOK what is this used for?
+   * LOOK what is this used for: testing, NcML
    *
    * @param shape multidimensional shape
    */
@@ -171,18 +171,18 @@ public class Arrays {
   /**
    * Combine list of Array's by copying the underlying Array's into a single primitive array
    */
-  public static <T> Array<T> factoryCopy(ArrayType dataType, int[] shape, List<Array<T>> dataArrays) {
+  public static Array<?> factoryCopy(ArrayType dataType, int[] shape, List<Array<?>> dataArrays) {
     if (dataArrays.size() == 1) {
       return factory(dataType, shape, dataArrays.get(0).storage());
     }
     Object dataArray = combine(dataType, shape, dataArrays);
     if (dataArray instanceof Array) {
-      return (Array<T>) dataArray;
+      return (Array<?>) dataArray;
     }
     return factory(dataType, shape, dataArray);
   }
 
-  private static <T> Object combine(ArrayType dataType, int[] shape, List<Array<T>> dataArrays) {
+  private static Object combine(ArrayType dataType, int[] shape, List<Array<?>> dataArrays) {
     long size = Arrays.computeSize(shape);
     if (size > Integer.MAX_VALUE) {
       throw new OutOfMemoryError();
@@ -591,7 +591,7 @@ public class Arrays {
   }
 
   /**
-   * Make a numeric array from a start and incr.
+   * Make a regular numeric array from a start and incr.
    *
    * @param type type of array
    * @param npts number of points

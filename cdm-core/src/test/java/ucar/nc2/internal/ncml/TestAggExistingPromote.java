@@ -143,7 +143,7 @@ public class TestAggExistingPromote {
    * </netcdf>
    */
   @Test
-  public void testNotOne() throws IOException, InvalidRangeException {
+  public void testNotOne() throws IOException {
     String filename = "file:" + TestNcmlRead.topDir + "aggExistingPromote2.ncml";
 
     String aggExistingPromote2 = "<?xml version='1.0' encoding='UTF-8'?>\n"

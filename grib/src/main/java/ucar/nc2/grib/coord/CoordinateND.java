@@ -4,7 +4,7 @@
  */
 package ucar.nc2.grib.coord;
 
-import ucar.ma2.Section;
+import ucar.array.Section;
 import ucar.nc2.util.Indent;
 import javax.annotation.concurrent.Immutable;
 import java.util.*;

@@ -684,7 +684,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
     }
 
     Array cachedData = Array.factory(DataType.DOUBLE, getShape(), coords);
-    if (getDataType() != DataType.DOUBLE)
+    if (getArrayType() != ArrayType.DOUBLE)
       cachedData = MAMath.convert(cachedData, getDataType());
 
     builder.setSourceData(cachedData);

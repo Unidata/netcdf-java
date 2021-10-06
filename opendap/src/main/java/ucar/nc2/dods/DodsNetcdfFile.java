@@ -7,11 +7,11 @@ import com.google.common.base.Preconditions;
 import java.nio.charset.StandardCharsets;
 import opendap.dap.*;
 import opendap.dap.parsers.ParseException;
+import ucar.array.ArrayType;
 import ucar.array.ArraysConvert;
 import ucar.ma2.*;
 import ucar.nc2.*;
 
-import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -86,7 +86,7 @@ public class DodsNetcdfFile extends ucar.nc2.NetcdfFile {
       for (Variable dodsVar : getVariables()) {
         long size = dodsVar.getSize() * dodsVar.getElementSize();
         if ((dodsVar.isCoordinateVariable() && size < DodsNetcdfFile.preloadCoordVarSize) || dodsVar.isCaching()
-            || dodsVar.getDataType() == DataType.STRING) {
+            || dodsVar.getArrayType() == ArrayType.STRING) {
           dodsVar.setCaching(true);
           preloadList.add(dodsVar);
           if (DodsNetcdfFiles.debugPreload)
@@ -327,7 +327,7 @@ public class DodsNetcdfFile extends ucar.nc2.NetcdfFile {
     // add the selector if not a Sequence
     if (!v.isVariableLength()) {
       List<Range> dodsSection = section.getRanges();
-      if ((v.getDataType() == DataType.CHAR)) { // CHAR is mapped to DString
+      if ((v.getArrayType() == ArrayType.CHAR)) { // CHAR is mapped to DString
         int n = section.getRank();
         if (n == v.getRank()) // remove last section if present
           dodsSection = dodsSection.subList(0, n - 1);

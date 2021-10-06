@@ -8,7 +8,7 @@ import java.io.StringWriter;
 import java.util.Formatter;
 import java.util.List;
 import org.junit.Test;
-import ucar.ma2.DataType;
+import ucar.array.ArrayType;
 import ucar.nc2.util.Indent;
 
 /** Test {@link ucar.nc2.NetcdfFile} */
@@ -19,7 +19,7 @@ public class TestNetcdfFile {
     Attribute att = new Attribute("attName", "value");
     Dimension dim = new Dimension("dimName", 42);
     Group.Builder nested = Group.builder().setName("child");
-    Variable.Builder<?> vb = Variable.builder().setName("varName").setDataType(DataType.STRING);
+    Variable.Builder<?> vb = Variable.builder().setName("varName").setArrayType(ArrayType.STRING);
     Group.Builder groupb =
         Group.builder().setName("").addAttribute(att).addDimension(dim).addGroup(nested).addVariable(vb);
 
@@ -62,7 +62,7 @@ public class TestNetcdfFile {
     Attribute att = new Attribute("attName", "value");
     Dimension dim = new Dimension("dimName", 42);
     Group.Builder nested = Group.builder().setName("child");
-    Variable.Builder<?> vb = Variable.builder().setName("varName").setDataType(DataType.STRING);
+    Variable.Builder<?> vb = Variable.builder().setName("varName").setArrayType(ArrayType.STRING);
     Group.Builder groupb =
         Group.builder().setName("").addAttribute(att).addDimension(dim).addGroup(nested).addVariable(vb);
 
@@ -88,7 +88,7 @@ public class TestNetcdfFile {
     Attribute att = new Attribute("attName", "value");
     Dimension dim = new Dimension("dimName", 42);
     Group.Builder nested = Group.builder().setName("child");
-    Variable.Builder<?> vb = Variable.builder().setName("varName").setDataType(DataType.STRING);
+    Variable.Builder<?> vb = Variable.builder().setName("varName").setArrayType(ArrayType.STRING);
     Group.Builder groupb =
         Group.builder().setName("").addAttribute(att).addDimension(dim).addGroup(nested).addVariable(vb);
 
@@ -127,7 +127,7 @@ public class TestNetcdfFile {
 
   @Test
   public void testFindAttribute() {
-    Variable.Builder<?> vb = Variable.builder().setName("varName").setDataType(DataType.STRING)
+    Variable.Builder<?> vb = Variable.builder().setName("varName").setArrayType(ArrayType.STRING)
         .addAttribute(new Attribute("attName", "nestedGroupVariable"));
     Group.Builder nested =
         Group.builder().setName("child").addAttribute(new Attribute("attName", "nestedGroup")).addVariable(vb);
@@ -172,7 +172,7 @@ public class TestNetcdfFile {
   @Test
   public void testFindGlobals() {
     Dimension dim = new Dimension("dimName", 42);
-    Variable.Builder<?> vb = Variable.builder().setName("varName").setDataType(DataType.STRING)
+    Variable.Builder<?> vb = Variable.builder().setName("varName").setArrayType(ArrayType.STRING)
         .addAttribute(new Attribute("attName", "nestedGroupVariable"));
     Group.Builder nested = Group.builder().setName("child").addAttribute(new Attribute("attNameNested", "nestedGroup"))
         .addVariable(vb).addDimension(dim);
@@ -224,13 +224,13 @@ public class TestNetcdfFile {
 
   @Test
   public void testFindAttributeStructure() {
-    Variable.Builder<?> mem1 =
-        Variable.builder().setName("mem1").setDataType(DataType.STRING).addAttribute(new Attribute("attName", "mem1"));
-    Variable.Builder<?> mem2 =
-        Variable.builder().setName("mem2").setDataType(DataType.STRING).addAttribute(new Attribute("attName", "mem2"));
+    Variable.Builder<?> mem1 = Variable.builder().setName("mem1").setArrayType(ArrayType.STRING)
+        .addAttribute(new Attribute("attName", "mem1"));
+    Variable.Builder<?> mem2 = Variable.builder().setName("mem2").setArrayType(ArrayType.STRING)
+        .addAttribute(new Attribute("attName", "mem2"));
 
-    Structure.Builder<?> vb = Structure.builder().setName("varName").setDataType(DataType.STRING)
-        .addAttribute(new Attribute("attName", "nestedGroupVariable")).addMemberVariable("memm", DataType.STRING, "")
+    Structure.Builder<?> vb = Structure.builder().setName("varName").setArrayType(ArrayType.STRING)
+        .addAttribute(new Attribute("attName", "nestedGroupVariable")).addMemberVariable("memm", ArrayType.STRING, "")
         .addMemberVariable(mem1).addMemberVariable(mem2);
 
     Group.Builder nested =

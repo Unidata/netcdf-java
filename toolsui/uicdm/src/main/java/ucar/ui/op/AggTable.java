@@ -8,13 +8,13 @@ package ucar.ui.op;
 import static ucar.nc2.dataset.NetcdfDataset.AGGREGATION;
 
 import javax.annotation.Nullable;
-import ucar.ma2.Array;
+import ucar.array.Array;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.internal.ncml.AggDataset;
 import ucar.nc2.internal.ncml.Aggregation;
-import ucar.nc2.write.Ncdump;
+import ucar.nc2.write.NcdumpArray;
 import ucar.ui.widget.BAMutil;
 import ucar.ui.widget.IndependentWindow;
 import ucar.ui.widget.PopupMenu;
@@ -158,10 +158,9 @@ public class AggTable extends JPanel {
       String aggDimName = agg.getDimensionName();
       Variable aggCoord = current.findVariable(aggDimName);
 
-      Array data = aggCoord.read();
-
+      Array<?> data = aggCoord.readArray();
       f.format("   Aggregated coordinate variable %s%n", aggCoord);
-      f.format(Ncdump.printArray(data, aggDimName, null));
+      f.format(NcdumpArray.printArray(data, aggDimName, null));
 
       for (Object bean : datasetTable.getBeans()) {
         DatasetBean dbean = (DatasetBean) bean;
@@ -173,9 +172,9 @@ public class AggTable extends JPanel {
           if (aggCoordp == null) {
             f.format("   doesnt have coordinate variable%n");
           } else {
-            data = aggCoordp.read();
-            f.format(Ncdump.printArray(data, aggCoordp.getNameAndDimensions() + " (" + aggCoordp.getUnitsString() + ")",
-                null));
+            data = aggCoordp.readArray();
+            f.format(NcdumpArray.printArray(data,
+                aggCoordp.getNameAndDimensions() + " (" + aggCoordp.getUnitsString() + ")", null));
           }
         }
       }

@@ -2,7 +2,7 @@ package ucar.nc2.write;
 
 import org.jdom2.Element;
 import org.junit.Test;
-import ucar.ma2.DataType;
+import ucar.array.ArrayType;
 import ucar.nc2.Variable;
 
 import java.io.IOException;
@@ -14,8 +14,8 @@ public class TestNcmlWriter {
 
   @Test
   public void testMakeValuesElementFloat() throws IOException {
-    Variable var = Variable.builder().setName("name").setDataType(DataType.FLOAT).setDimensionsAnonymous(new int[] {3})
-        .setAutoGen(3.2, 2).build(makeDummyGroup());
+    Variable var = Variable.builder().setName("name").setArrayType(ArrayType.FLOAT)
+        .setDimensionsAnonymous(new int[] {3}).setAutoGen(3.2, 2).build(makeDummyGroup());
 
     ucar.array.Array<?> data = var.readArray();
     System.out.printf("data = %s%n", data);
@@ -31,8 +31,8 @@ public class TestNcmlWriter {
 
   @Test
   public void testMakeValuesElementDouble() throws IOException {
-    Variable var = Variable.builder().setName("name").setDataType(DataType.DOUBLE).setDimensionsAnonymous(new int[] {3})
-        .setAutoGen(3.2, 2).build(makeDummyGroup());
+    Variable var = Variable.builder().setName("name").setArrayType(ArrayType.DOUBLE)
+        .setDimensionsAnonymous(new int[] {3}).setAutoGen(3.2, 2).build(makeDummyGroup());
 
     ucar.array.Array<?> data = var.readArray();
     System.out.printf("data = %s%n", data);
@@ -48,7 +48,7 @@ public class TestNcmlWriter {
 
   @Test
   public void testMakeValuesElementInteger() throws IOException {
-    Variable var = Variable.builder().setName("name").setDataType(DataType.INT).setDimensionsAnonymous(new int[] {3})
+    Variable var = Variable.builder().setName("name").setArrayType(ArrayType.INT).setDimensionsAnonymous(new int[] {3})
         .setAutoGen(3, 22).build(makeDummyGroup());
 
     ucar.array.Array<?> data = var.readArray();
@@ -65,7 +65,7 @@ public class TestNcmlWriter {
 
   @Test
   public void testMakeValuesElementUInteger() throws IOException {
-    Variable var = Variable.builder().setName("name").setDataType(DataType.UINT).setDimensionsAnonymous(new int[] {3})
+    Variable var = Variable.builder().setName("name").setArrayType(ArrayType.UINT).setDimensionsAnonymous(new int[] {3})
         .setAutoGen(-33, 22).build(makeDummyGroup());
 
     ucar.array.Array<?> data = var.readArray();
@@ -82,8 +82,8 @@ public class TestNcmlWriter {
 
   @Test
   public void testMakeValuesElementAllowRegular() throws IOException {
-    Variable var = Variable.builder().setName("name").setDataType(DataType.DOUBLE).setDimensionsAnonymous(new int[] {3})
-        .setAutoGen(3.2, 2).build(makeDummyGroup());
+    Variable var = Variable.builder().setName("name").setArrayType(ArrayType.DOUBLE)
+        .setDimensionsAnonymous(new int[] {3}).setAutoGen(3.2, 2).build(makeDummyGroup());
 
     ucar.array.Array<?> data = var.readArray();
     System.out.printf("data = %s%n", data);

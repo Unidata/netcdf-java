@@ -9,7 +9,7 @@ import com.google.common.collect.Iterables;
 import java.util.Map;
 import java.util.Optional;
 import org.junit.Test;
-import ucar.ma2.DataType;
+import ucar.array.ArrayType;
 
 /** Test {@link ucar.nc2.Group} */
 public class TestGroup {
@@ -19,7 +19,7 @@ public class TestGroup {
     Attribute att = new Attribute("attName", "value");
     Dimension dim = new Dimension("dimName", 42);
     Group.Builder nested = Group.builder().setName("child");
-    Variable.Builder<?> vb = Variable.builder().setName("varName").setDataType(DataType.STRING);
+    Variable.Builder<?> vb = Variable.builder().setName("varName").setArrayType(ArrayType.STRING);
     Group group =
         Group.builder().setName("name").addAttribute(att).addDimension(dim).addGroup(nested).addVariable(vb).build();
 
@@ -291,9 +291,9 @@ public class TestGroup {
     Group.Builder grampsb = Group.builder().setName("gramps").addGroup(parentg).addDimension(mid);
     Group.Builder uncleb = Group.builder().setName("uncle");
 
-    Variable.Builder<?> vb = Variable.builder().setName("v").setDataType(DataType.STRING).setParentGroupBuilder(parentg)
-        .setDimensionsByName("low");
-    Variable.Builder<?> vattb = Variable.builder().setName("vatt").setDataType(DataType.STRING)
+    Variable.Builder<?> vb = Variable.builder().setName("v").setArrayType(ArrayType.STRING)
+        .setParentGroupBuilder(parentg).setDimensionsByName("low");
+    Variable.Builder<?> vattb = Variable.builder().setName("vatt").setArrayType(ArrayType.STRING)
         .setParentGroupBuilder(parentg).setDimensionsByName("mid").addAttribute(new Attribute("findme", "findmevalue"));
     parentg.addVariable(vb);
     grampsb.addVariable(vattb);
@@ -333,9 +333,9 @@ public class TestGroup {
     Group.Builder grampsb = Group.builder().setName("gramps").addGroup(parentg).addDimension(mid);
     Group.Builder uncleb = Group.builder().setName("uncle");
 
-    Variable.Builder<?> vb = Variable.builder().setName("v").setDataType(DataType.STRING).setParentGroupBuilder(parentg)
-        .setDimensionsByName("low");
-    Variable.Builder<?> vattb = Variable.builder().setName("vatt").setDataType(DataType.STRING)
+    Variable.Builder<?> vb = Variable.builder().setName("v").setArrayType(ArrayType.STRING)
+        .setParentGroupBuilder(parentg).setDimensionsByName("low");
+    Variable.Builder<?> vattb = Variable.builder().setName("vatt").setArrayType(ArrayType.STRING)
         .setParentGroupBuilder(parentg).setDimensionsByName("mid").addAttribute(new Attribute("findme", "findmevalue"));
     parentg.addVariable(vb);
     grampsb.addVariable(vattb);
@@ -383,9 +383,9 @@ public class TestGroup {
     Group.Builder grampsb = Group.builder().setName("gramps").addGroup(parentg).addDimension(mid);
     Group.Builder uncleb = Group.builder().setName("uncle");
 
-    Variable.Builder<?> vb = Variable.builder().setName("v").setDataType(DataType.STRING).setParentGroupBuilder(parentg)
-        .setDimensionsByName("low");
-    Variable.Builder<?> vattb = Variable.builder().setName("vatt").setDataType(DataType.STRING)
+    Variable.Builder<?> vb = Variable.builder().setName("v").setArrayType(ArrayType.STRING)
+        .setParentGroupBuilder(parentg).setDimensionsByName("low");
+    Variable.Builder<?> vattb = Variable.builder().setName("vatt").setArrayType(ArrayType.STRING)
         .setParentGroupBuilder(parentg).setDimensionsByName("mid").addAttribute(new Attribute("findme", "findmevalue"));
     parentg.addVariable(vb).addAttribute(new Attribute("groupAtt", "groupVal"));
     grampsb.addVariable(vattb);
@@ -474,9 +474,9 @@ public class TestGroup {
 
   @Test
   public void testNestedGroupBuilders() {
-    Variable.Builder<?> vroot = Variable.builder().setName("vroot").setDataType(DataType.STRING);
-    Variable.Builder<?> vleaf = Variable.builder().setName("vleaf").setDataType(DataType.STRING);
-    Variable.Builder<?> voff = Variable.builder().setName("voff").setDataType(DataType.STRING);
+    Variable.Builder<?> vroot = Variable.builder().setName("vroot").setArrayType(ArrayType.STRING);
+    Variable.Builder<?> vleaf = Variable.builder().setName("vleaf").setArrayType(ArrayType.STRING);
+    Variable.Builder<?> voff = Variable.builder().setName("voff").setArrayType(ArrayType.STRING);
 
     Group.Builder parent = Group.builder().setName("parent").addVariable(vleaf);
     Group.Builder gramps = Group.builder().setName("gramps").addGroup(parent);
@@ -593,9 +593,9 @@ public class TestGroup {
     Group.Builder gramps = Group.builder().setName("gramps").addGroup(parent).addDimension(mid);
     Group.Builder uncle = Group.builder().setName("uncle");
 
-    Variable.Builder<?> vb = Variable.builder().setName("v").setDataType(DataType.STRING).setParentGroupBuilder(parent)
-        .setDimensionsByName("low");
-    Variable.Builder<?> vattb = Variable.builder().setName("vatt").setDataType(DataType.STRING)
+    Variable.Builder<?> vb = Variable.builder().setName("v").setArrayType(ArrayType.STRING)
+        .setParentGroupBuilder(parent).setDimensionsByName("low");
+    Variable.Builder<?> vattb = Variable.builder().setName("vatt").setArrayType(ArrayType.STRING)
         .setParentGroupBuilder(parent).setDimensionsByName("mid").addAttribute(new Attribute("findme", "findmevalue"));
     parent.addVariables(ImmutableList.of(vb, vattb));
     parent.replaceVariable(vb);
@@ -607,7 +607,7 @@ public class TestGroup {
     assertThat(root.findVariableLocal("v").isPresent()).isFalse();
 
     Variable.Builder<?> vhigh =
-        Variable.builder().setName("vhigh").setDataType(DataType.STRING).setParentGroupBuilder(gramps);
+        Variable.builder().setName("vhigh").setArrayType(ArrayType.STRING).setParentGroupBuilder(gramps);
     gramps.replaceVariable(vhigh);
     assertThat(parent.findVariableOrInParent("vhigh").isPresent()).isTrue();
 

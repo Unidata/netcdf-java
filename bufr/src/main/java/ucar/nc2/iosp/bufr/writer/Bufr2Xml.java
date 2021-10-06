@@ -7,6 +7,7 @@ package ucar.nc2.iosp.bufr.writer;
 
 import com.google.common.escape.Escaper;
 import com.google.common.xml.XmlEscapers;
+import ucar.array.ArrayType;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.bufr.BufrIosp;
 import ucar.nc2.iosp.bufr.Message;
@@ -217,7 +218,7 @@ public class Bufr2Xml {
     String desc = v.attributes().findAttributeString(BufrIosp.fxyAttName, "N/A");
     staxWriter.writeAttribute("bufr", escaper.escape(desc));
 
-    if (v.getDataType() == DataType.CHAR) {
+    if (v.getArrayType() == ArrayType.CHAR) {
       ArrayChar ac = (ArrayChar) mdata;
       staxWriter.writeCharacters(ac.getString()); // turn into a string
 
@@ -230,13 +231,13 @@ public class Bufr2Xml {
           staxWriter.writeCharacters(" ");
         count++;
 
-        if (v.getDataType().isNumeric()) {
+        if (v.getArrayType().isNumeric()) {
           double val = mdata.nextDouble();
 
           if (v.isMissing(val)) {
             staxWriter.writeCharacters("missing");
 
-          } else if ((v.getDataType() == DataType.FLOAT) || (v.getDataType() == DataType.DOUBLE)) {
+          } else if ((v.getArrayType() == ArrayType.FLOAT) || (v.getArrayType() == ArrayType.DOUBLE)) {
             writeFloat(v, val);
 
           } else { // numeric, not float

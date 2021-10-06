@@ -6,7 +6,7 @@ package ucar.nc2.internal.iosp.hdf5;
 
 import static com.google.common.truth.Truth.assertThat;
 import org.junit.Test;
-import ucar.ma2.DataType;
+import ucar.array.ArrayType;
 import ucar.nc2.EnumTypedef;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
@@ -21,8 +21,8 @@ public class TestEnumTypedef {
     try (NetcdfFile ncfile = NetcdfFiles.open(TestDir.cdmLocalTestDataDir + "hdf5/test_atomic_types.nc")) {
       Variable primaryCloud = ncfile.findVariable("primary_cloud");
       assertThat((Object) primaryCloud).isNotNull();
-      assertThat(primaryCloud.getDataType().isEnum());
-      assertThat(primaryCloud.getDataType()).isEqualTo(DataType.ENUM1);
+      assertThat(primaryCloud.getArrayType().isEnum());
+      assertThat(primaryCloud.getArrayType()).isEqualTo(ArrayType.ENUM1);
       assertThat(primaryCloud.getEnumTypedef()).isNotNull();
       EnumTypedef typedef = primaryCloud.getEnumTypedef();
       assertThat(typedef).isNotNull();

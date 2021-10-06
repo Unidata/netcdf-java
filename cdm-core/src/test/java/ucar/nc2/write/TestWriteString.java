@@ -10,7 +10,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.DataType;
+import ucar.array.ArrayType;
 import ucar.nc2.Attribute;
 import ucar.nc2.constants.CDM;
 import java.io.File;
@@ -38,21 +38,21 @@ public class TestWriteString {
 
   private void defineHeader(NetcdfFormatWriter.Builder writerb, String timeDim, String latDim, String lonDim,
       String dim3) {
-    writerb.addVariable(latVar, DataType.FLOAT, latDim).addAttribute(new Attribute(unitsAttName, "degrees_north"))
+    writerb.addVariable(latVar, ArrayType.FLOAT, latDim).addAttribute(new Attribute(unitsAttName, "degrees_north"))
         .addAttribute(new Attribute(axisAttName, "Y")).addAttribute(new Attribute(standardNameAttName, "latitude"));
     // could add bounds, but not familiar how it works
 
-    writerb.addVariable(lonVar, DataType.FLOAT, lonDim).addAttribute(new Attribute(unitsAttName, "degrees_east"))
+    writerb.addVariable(lonVar, ArrayType.FLOAT, lonDim).addAttribute(new Attribute(unitsAttName, "degrees_east"))
         .addAttribute(new Attribute(axisAttName, "X")).addAttribute(new Attribute(standardNameAttName, "longitude"));
     // could add bounds, but not familiar how it works
 
-    writerb.addVariable(variableName, DataType.FLOAT, dim3).addAttribute(new Attribute(longNameAttName, variableName))
+    writerb.addVariable(variableName, ArrayType.FLOAT, dim3).addAttribute(new Attribute(longNameAttName, variableName))
         .addAttribute(new Attribute(unitsAttName, units));
 
-    writerb.addVariable("cellId", DataType.CHAR, "lat lon") // STRING illegal change to CHAR
+    writerb.addVariable("cellId", ArrayType.CHAR, "lat lon") // STRING illegal change to CHAR
         .addAttribute(new Attribute(longNameAttName, "Cell ID"));
 
-    writerb.addVariable(timeVar, DataType.INT, timeDim).addAttribute(new Attribute(axisAttName, "T"))
+    writerb.addVariable(timeVar, ArrayType.INT, timeDim).addAttribute(new Attribute(axisAttName, "T"))
         .addAttribute(new Attribute(standardNameAttName, timeVar))
         .addAttribute(new Attribute(longNameAttName, timeVar));
   }

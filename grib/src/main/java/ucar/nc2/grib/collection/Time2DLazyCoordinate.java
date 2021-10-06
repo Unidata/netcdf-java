@@ -35,6 +35,8 @@ class Time2DLazyCoordinate {
     return Arrays.factory(ArrayType.DOUBLE, v2.getShape(), data);
   }
 
+  /** @deprecated use makeLazyCoordinateArray */
+  @Deprecated
   static Array makeLazyCoordinateData(Variable v2, Time2Dinfo info, GribCollectionImmutable gribCollection) {
     double[] data;
     if (info.time2D != null) {

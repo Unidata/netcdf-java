@@ -7,11 +7,12 @@ package ucar.nc2.internal.iosp.netcdf3;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+
+import ucar.array.ArrayType;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayChar;
 import ucar.ma2.ArrayObject;
 import ucar.ma2.ArrayStructure;
-import ucar.ma2.DataType;
 import ucar.ma2.IndexIterator;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
@@ -122,7 +123,7 @@ public class N3iospWriter extends N3iosp implements IospFileWriter {
   @Override
   public void writeData(Variable v2, Section section, Array values) throws java.io.IOException, InvalidRangeException {
     N3header.Vinfo vinfo = (N3header.Vinfo) v2.getSPobject();
-    DataType dataType = v2.getDataType();
+    ArrayType dataType = v2.getArrayType();
 
     int[] varShape = v2.getShape();
     if (v2.isUnlimited()) {
@@ -183,7 +184,7 @@ public class N3iospWriter extends N3iosp implements IospFileWriter {
 
       // convert String member data into CHAR data
       Array data = sdata.getArray(m);
-      if (data instanceof ArrayObject && vm.getDataType() == DataType.CHAR && vm.getRank() > 0) {
+      if (data instanceof ArrayObject && vm.getArrayType() == ArrayType.CHAR && vm.getRank() > 0) {
         int strlen = vm.getShape(vm.getRank() - 1);
         data = ArrayChar.makeFromStringArray((ArrayObject) data, strlen); // turn it into an ArrayChar
       }
@@ -195,7 +196,7 @@ public class N3iospWriter extends N3iosp implements IospFileWriter {
       Layout layout = new LayoutRegular(begin, vm.getElementSize(), vm.getShape(), memberSection);
 
       try {
-        writeData(data, layout, vm.getDataType());
+        writeData(data, layout, vm.getArrayType());
       } catch (Exception e) {
         log.error("Error writing member=" + vm.getShortName() + " in struct=" + s.getFullName(), e);
         throw new IOException(e);
@@ -210,8 +211,8 @@ public class N3iospWriter extends N3iosp implements IospFileWriter {
    * @param index handles skipping around in the file.
    * @param dataType dataType of the variable
    */
-  private void writeData(Array values, Layout index, DataType dataType) throws java.io.IOException {
-    if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR)) {
+  private void writeData(Array values, Layout index, ArrayType dataType) throws java.io.IOException {
+    if ((dataType == ArrayType.BYTE) || (dataType == ArrayType.CHAR)) {
       IndexIterator ii = values.getIndexIterator();
       while (index.hasNext()) {
         Layout.Chunk chunk = index.next();
@@ -221,7 +222,7 @@ public class N3iospWriter extends N3iosp implements IospFileWriter {
       }
       return;
 
-    } else if (dataType == DataType.STRING) { // LOOK not legal
+    } else if (dataType == ArrayType.STRING) { // LOOK not legal
       IndexIterator ii = values.getIndexIterator();
       while (index.hasNext()) {
         Layout.Chunk chunk = index.next();
@@ -234,7 +235,7 @@ public class N3iospWriter extends N3iosp implements IospFileWriter {
       }
       return;
 
-    } else if (dataType == DataType.SHORT) {
+    } else if (dataType == ArrayType.SHORT) {
       IndexIterator ii = values.getIndexIterator();
       while (index.hasNext()) {
         Layout.Chunk chunk = index.next();
@@ -244,7 +245,7 @@ public class N3iospWriter extends N3iosp implements IospFileWriter {
       }
       return;
 
-    } else if (dataType == DataType.INT) {
+    } else if (dataType == ArrayType.INT) {
       IndexIterator ii = values.getIndexIterator();
       while (index.hasNext()) {
         Layout.Chunk chunk = index.next();
@@ -254,7 +255,7 @@ public class N3iospWriter extends N3iosp implements IospFileWriter {
       }
       return;
 
-    } else if (dataType == DataType.FLOAT) {
+    } else if (dataType == ArrayType.FLOAT) {
       IndexIterator ii = values.getIndexIterator();
       while (index.hasNext()) {
         Layout.Chunk chunk = index.next();
@@ -264,7 +265,7 @@ public class N3iospWriter extends N3iosp implements IospFileWriter {
       }
       return;
 
-    } else if (dataType == DataType.DOUBLE) {
+    } else if (dataType == ArrayType.DOUBLE) {
       IndexIterator ii = values.getIndexIterator();
       while (index.hasNext()) {
         Layout.Chunk chunk = index.next();

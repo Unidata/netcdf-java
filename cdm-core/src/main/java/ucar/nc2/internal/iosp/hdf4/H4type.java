@@ -4,7 +4,7 @@
  */
 package ucar.nc2.internal.iosp.hdf4;
 
-import ucar.ma2.DataType;
+import ucar.array.ArrayType;
 
 /** Convert HDF4 data type values */
 public class H4type {
@@ -45,48 +45,34 @@ public class H4type {
    * #define DFNT_INT64 26
    * #define DFNT_UINT64 27
    */
-  public static DataType getDataType(short type) {
-    DataType dt;
+  public static ArrayType getDataType(short type) {
     switch (type) {
       case 3:
       case 21:
-        dt = DataType.UBYTE;
-        break;
+        return ArrayType.UBYTE;
       case 4:
-        dt = DataType.CHAR;
-        break;
+        return ArrayType.CHAR;
       case 5:
-        dt = DataType.FLOAT;
-        break;
+        return ArrayType.FLOAT;
       case 6:
-        dt = DataType.DOUBLE;
-        break;
+        return ArrayType.DOUBLE;
       case 20:
-        dt = DataType.BYTE;
-        break;
+        return ArrayType.BYTE;
       case 22:
-        dt = DataType.SHORT;
-        break;
+        return ArrayType.SHORT;
       case 23:
-        dt = DataType.USHORT;
-        break;
+        return ArrayType.USHORT;
       case 24:
-        dt = DataType.INT;
-        break;
+        return ArrayType.INT;
       case 25:
-        dt = DataType.UINT;
-        break;
+        return ArrayType.UINT;
       case 26:
-        dt = DataType.LONG;
-        break;
+        return ArrayType.LONG;
       case 27:
-        dt = DataType.ULONG;
-        break;
+        return ArrayType.ULONG;
       default:
         throw new IllegalStateException("unknown type= " + type);
     }
-
-    return dt;
   }
 
 }

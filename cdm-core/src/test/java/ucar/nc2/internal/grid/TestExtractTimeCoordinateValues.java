@@ -4,7 +4,6 @@ import org.junit.Test;
 import ucar.array.Array;
 import ucar.array.ArrayType;
 import ucar.array.Arrays;
-import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.Group;
@@ -27,8 +26,8 @@ public class TestExtractTimeCoordinateValues {
     Group.Builder parent = Group.builder().addDimension(Dimension.builder("dim1", 7).setIsUnlimited(true).build())
         .addDimension(new Dimension("dim2", 27));
 
-    VariableDS.Builder<?> vdsBuilder = VariableDS.builder().setName("name").setDataType(DataType.FLOAT).setUnits(units)
-        .setDesc("desc").setEnhanceMode(NetcdfDataset.getEnhanceAll()).setAutoGen(1, 2)
+    VariableDS.Builder<?> vdsBuilder = VariableDS.builder().setName("name").setArrayType(ArrayType.FLOAT)
+        .setUnits(units).setDesc("desc").setEnhanceMode(NetcdfDataset.getEnhanceAll()).setAutoGen(1, 2)
         .addAttribute(new Attribute("missing_value", 0.0f)).setParentGroupBuilder(parent).setDimensionsByName("dim1");
     parent.addVariable(vdsBuilder);
 
@@ -55,7 +54,7 @@ public class TestExtractTimeCoordinateValues {
     Array<String> values = Arrays.factory(ArrayType.STRING, new int[] {n}, strings);
 
     VariableDS.Builder<?> vdsBuilder =
-        VariableDS.builder().setName("name").setDataType(DataType.STRING).setUnits(units).setDesc("desc")
+        VariableDS.builder().setName("name").setArrayType(ArrayType.STRING).setUnits(units).setDesc("desc")
             .setEnhanceMode(NetcdfDataset.getEnhanceAll()).addAttribute(new Attribute("missing_value", 0.0f))
             .setParentGroupBuilder(parent).setDimensionsByName("dim1").setSourceData(values);
     parent.addVariable(vdsBuilder);
@@ -91,7 +90,7 @@ public class TestExtractTimeCoordinateValues {
     Array<String> values = Arrays.factory(ArrayType.STRING, new int[] {n}, strings);
 
     VariableDS.Builder<?> vdsBuilder =
-        VariableDS.builder().setName("name").setDataType(DataType.STRING).setUnits(units).setDesc("desc")
+        VariableDS.builder().setName("name").setArrayType(ArrayType.STRING).setUnits(units).setDesc("desc")
             .setEnhanceMode(NetcdfDataset.getEnhanceAll()).addAttribute(new Attribute("missing_value", 0.0f))
             .setParentGroupBuilder(parent).setDimensionsByName("dim1").setSourceData(values);
     parent.addVariable(vdsBuilder);

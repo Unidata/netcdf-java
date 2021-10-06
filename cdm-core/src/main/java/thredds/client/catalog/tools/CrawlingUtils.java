@@ -4,10 +4,10 @@
  */
 package thredds.client.catalog.tools;
 
-import ucar.ma2.Array;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Range;
-import ucar.ma2.Section;
+import ucar.array.Array;
+import ucar.array.InvalidRangeException;
+import ucar.array.Range;
+import ucar.array.Section;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
@@ -18,12 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-/**
- * Utilities for crawling and testing TDS servers
- *
- * @author caron
- * @since 3/14/2015
- */
+/** Utilities for crawling and testing TDS servers */
 public class CrawlingUtils {
   private static final Random random = new Random();
 
@@ -74,12 +69,10 @@ public class CrawlingUtils {
       System.out.printf(" thread done %d%n", count);
     }
 
-    private Array doLimitedRead(Variable v) throws IOException, InvalidRangeException {
+    private Array<?> doLimitedRead(Variable v) throws IOException, InvalidRangeException {
       long size = v.getSize() * v.getElementSize();
       if (size < 1000 * 1000 || v.getRank() < 3) {
-        if (showDetail)
-          System.out.printf(" thread %s read %s bytes = %d ", who, v.getFullName(), size);
-        return v.read();
+        return v.readArray();
 
       } else {
         // randomly choose a 2D slice
@@ -98,7 +91,7 @@ public class CrawlingUtils {
         Section s = new Section(ranges);
         if (showDetail)
           System.out.printf(" thread %s read %s(%s) bytes= %d ", who, v.getFullName(), s, s.computeSize());
-        Array result = v.read(s);
+        Array<?> result = v.readArray(s);
         assert result.getSize() == s.computeSize();
         return result;
       }

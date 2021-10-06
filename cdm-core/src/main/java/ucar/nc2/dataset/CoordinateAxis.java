@@ -80,7 +80,7 @@ public class CoordinateAxis extends VariableDS {
    * @return true if the CoordAxis is numeric, false if its string valued ("nominal").
    */
   public boolean isNumeric() {
-    return getDataType().isNumeric();
+    return getArrayType().isNumeric();
   }
 
   /**

@@ -1038,7 +1038,7 @@ public class Nc4writer extends Nc4reader implements IospFileWriter {
 
     long offset = 0;
     for (Variable v : s.getVariables()) {
-      if (v.getDataType() == DataType.STRING)
+      if (v.getArrayType() == ArrayType.STRING)
         continue; // LOOK embedded strings getting lost
 
       StructureMembers.Member m = sdata.findMember(v.getShortName());

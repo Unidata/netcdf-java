@@ -2,19 +2,18 @@
 package ucar.nc2.internal.ncml;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.Formatter;
-import java.util.List;
 import java.util.StringTokenizer;
 import javax.annotation.Nullable;
 import thredds.inventory.MFile;
 import thredds.inventory.internal.DateFromString;
 
-import ucar.ma2.Array;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Range;
-import ucar.ma2.Section;
+import ucar.array.Array;
+import ucar.array.Arrays;
+import ucar.array.InvalidRangeException;
+import ucar.array.Range;
+import ucar.array.Section;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
@@ -70,8 +69,7 @@ class AggDatasetOuter extends AggDataset {
     }
 
     boolean isString = false;
-    if ((aggregationOuter.type == Type.joinNew) || (aggregationOuter.type == Type.joinExistingOne)
-        || (aggregationOuter.type == Type.forecastModelRunCollection)) {
+    if ((aggregationOuter.type == Type.joinNew) || (aggregationOuter.type == Type.joinExistingOne)) {
       if (coordValueS == null) {
         coordValueS = extractCoordNameFromFilename(this.getLocation());
         isString = true;
@@ -116,8 +114,7 @@ class AggDatasetOuter extends AggDataset {
     // default is that the coordinates are just the filenames
     // this can be overriden by an explicit declaration, which will replace the variable after ther agg is processed in
     // NcMLReader
-    if ((aggregationOuter.type == Type.joinNew) || (aggregationOuter.type == Type.joinExistingOne)
-        || (aggregationOuter.type == Type.forecastModelRunCollection)) {
+    if ((aggregationOuter.type == Type.joinNew) || (aggregationOuter.type == Type.joinExistingOne)) {
       coordValueS = extractCoordNameFromFilename(this.getLocation());
       this.isStringValued = true;
     } else {
@@ -255,20 +252,6 @@ class AggDatasetOuter extends AggDataset {
 
   }
 
-  /*
-   * @Override
-   * protected void cacheCoordValues(NetcdfFile ncfile) throws IOException {
-   * if (coordValue != null) return;
-   *
-   * Variable coordVar = ncfile.findVariable(dimName);
-   * if (coordVar != null) {
-   * Array data = coordVar.read();
-   * coordValue = data.toString();
-   * }
-   *
-   * }
-   */
-
   // read any cached variables that need it
 
   @Override
@@ -279,7 +262,7 @@ class AggDatasetOuter extends AggDataset {
   }
 
   @Override
-  protected Array read(Variable mainv, CancelTask cancelTask, List<Range> section)
+  protected Array<?> read(Variable mainv, CancelTask cancelTask, Section section)
       throws IOException, InvalidRangeException {
     NetcdfFile ncd = null;
     try {
@@ -291,27 +274,22 @@ class AggDatasetOuter extends AggDataset {
       if (v == null) {
         Aggregation.logger.error("AggOuterDimension cant find " + mainv.getFullName() + " in " + ncd.getLocation()
             + "; return all zeroes!!!");
-        return Array.factory(mainv.getDataType(), new Section(section).getShape()); // all zeros LOOK need missing
-                                                                                    // value
-      }
-
-      if (Aggregation.debugRead) {
-        Section want = new Section(section);
-        System.out.printf("AggOuter.read(%s) %s from %s in %s%n", want, mainv.getNameAndDimensions(),
-            v.getNameAndDimensions(), getLocation());
+        // all zeros LOOK need missing value
+        return Arrays.factory(mainv.getArrayType(), section.getShape());
       }
 
       // its possible that we are asking for more of the time coordinate than actually exists (fmrc ragged time)
       // so we need to read only what is there
-      Range fullRange = v.getRanges().get(0);
-      Range want = section.get(0);
+      Range fullRange = v.getSection().getRange(0);
+      Range want = section.getRange(0);
       if (fullRange.last() < want.last()) {
         Range limitRange = new Range(want.first(), fullRange.last(), want.stride());
-        section = new ArrayList<>(section); // make a copy
-        section.set(0, limitRange);
+        Section.Builder sectionb = section.toBuilder(); // make a copy
+        sectionb.setRange(0, limitRange);
+        section = sectionb.build();
       }
 
-      return v.read(section);
+      return v.readArray(section);
 
     } finally {
       close(ncd);

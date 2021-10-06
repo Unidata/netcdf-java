@@ -67,7 +67,7 @@ public class TestArrayString {
     Array<String> array2 = Arrays.factory(ArrayType.STRING, shape1, new String[] {"7", "8", "9", "10", "11", "12"});
 
     int[] shape = new int[] {2, 2, 3};
-    Array<String> array = Arrays.factoryCopy(ArrayType.STRING, shape, ImmutableList.of(array1, array2));
+    Array<String> array = (Array<String>) Arrays.factoryCopy(ArrayType.STRING, shape, ImmutableList.of(array1, array2));
 
     assertThat(array.get(0, 0, 0)).isEqualTo("1");
     assertThat(array.get(0, 0, 1)).isEqualTo("2");

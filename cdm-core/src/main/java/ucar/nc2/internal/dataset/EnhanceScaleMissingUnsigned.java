@@ -181,7 +181,7 @@ public class EnhanceScaleMissingUnsigned {
     this.invalidDataIsMissing = invalidDataIsMissing;
     this.missingDataIsMissing = missingDataIsMissing;
 
-    this.origDataType = forVar.getDataType();
+    this.origDataType = forVar.getArrayType().getDataType();
     this.unsignedConversionType = origDataType;
 
     // unsignedConversionType is initialized to origDataType, and origDataType may be a non-integral type that doesn't

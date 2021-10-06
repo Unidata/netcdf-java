@@ -10,6 +10,7 @@ package ucar.nc2.internal.util;
 import java.util.*;
 import javax.annotation.Nullable;
 
+import ucar.array.ArrayType;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.*;
 import ucar.nc2.*;
@@ -110,9 +111,9 @@ public class CompareNetcdf2 {
 
     @Override
     public boolean varDataTypeCheckOk(Variable v) {
-      if (v.getDataType() == DataType.CHAR)
+      if (v.getArrayType() == ArrayType.CHAR)
         return false; // temp workaround
-      return v.getDataType() != DataType.STRING;
+      return v.getArrayType() != ArrayType.STRING;
     }
 
     // override att comparision if needed
@@ -365,8 +366,9 @@ public class CompareNetcdf2 {
       f.format(" ** names are different %s != %s %n", org.getFullName(), copy.getFullName());
       ok = false;
     }
-    if (filter.varDataTypeCheckOk(org) && (org.getDataType() != copy.getDataType())) {
-      f.format(" ** %s dataTypes are different %s != %s %n", org.getFullName(), org.getDataType(), copy.getDataType());
+    if (filter.varDataTypeCheckOk(org) && (org.getArrayType() != copy.getArrayType())) {
+      f.format(" ** %s dataTypes are different %s != %s %n", org.getFullName(), org.getArrayType(),
+          copy.getArrayType());
       ok = false;
     }
 

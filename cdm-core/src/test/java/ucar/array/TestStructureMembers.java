@@ -6,13 +6,11 @@ package ucar.array;
 
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.fail;
 
 import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import ucar.array.StructureMembers.Member;
 import ucar.array.StructureMembers.MemberBuilder;
-import ucar.ma2.DataType;
 
 /** Test {@link StructureMembers} */
 public class TestStructureMembers {

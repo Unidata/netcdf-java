@@ -12,22 +12,22 @@ import java.util.Map;
 import org.junit.Test;
 import ucar.array.ArrayType;
 import ucar.array.Arrays;
-import ucar.ma2.Array;
-import ucar.ma2.DataType;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.MAMath;
-import ucar.ma2.Range;
-import ucar.ma2.Section;
+import ucar.array.Array;
+import ucar.array.InvalidRangeException;
+import ucar.array.Range;
+import ucar.array.Section;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
+import ucar.nc2.internal.util.CompareArrayToArray;
+import ucar.nc2.internal.util.CompareArrayToMa2;
 
 /** Test {@link ucar.nc2.Variable} */
 public class TestVariable {
 
   @Test
   public void testBuilder() {
-    Variable var = Variable.builder().setName("name").setDataType(DataType.FLOAT).build(makeDummyGroup());
-    assertThat(var.getDataType()).isEqualTo(DataType.FLOAT);
+    Variable var = Variable.builder().setName("name").setArrayType(ArrayType.FLOAT).build(makeDummyGroup());
+    assertThat(var.getArrayType()).isEqualTo(ArrayType.FLOAT);
     assertThat(var.getShortName()).isEqualTo("name");
     assertThat(var.isScalar()).isTrue();
     assertThat(var.getElementSize()).isEqualTo(4);
@@ -42,7 +42,7 @@ public class TestVariable {
   public void testWithDims() {
     try {
       // Must set dimension first
-      Variable.builder().setName("name").setDataType(DataType.FLOAT).setDimensionsByName("dim1 dim2")
+      Variable.builder().setName("name").setArrayType(ArrayType.FLOAT).setDimensionsByName("dim1 dim2")
           .build(makeDummyGroup());
       fail();
     } catch (Exception e) {
@@ -53,14 +53,14 @@ public class TestVariable {
     Dimension dim2 = new Dimension("dim2", 27);
     Group.Builder gb = Group.builder().addDimensions(ImmutableList.of(dim1, dim2));
 
-    Variable var = Variable.builder().setName("name").setDataType(DataType.FLOAT).setParentGroupBuilder(gb)
+    Variable var = Variable.builder().setName("name").setArrayType(ArrayType.FLOAT).setParentGroupBuilder(gb)
         .setDimensionsByName("dim1 dim2").build(gb.build());
-    assertThat(var.getDataType()).isEqualTo(DataType.FLOAT);
+    assertThat(var.getArrayType()).isEqualTo(ArrayType.FLOAT);
     assertThat(var.getShortName()).isEqualTo("name");
     assertThat(var.isScalar()).isFalse();
     assertThat(var.isUnlimited()).isTrue();
     assertThat(var.getShape()).isEqualTo(new int[] {7, 27});
-    assertThat(var.getShapeAsSection()).isEqualTo(new Section(new int[] {7, 27}));
+    assertThat(var.getSection()).isEqualTo(new Section(new int[] {7, 27}));
 
     assertThat(var.getDimensions()).isEqualTo(ImmutableList.of(dim1, dim2));
     assertThat(var.getDimension(0)).isEqualTo(dim1);
@@ -74,14 +74,14 @@ public class TestVariable {
   @Test
   public void testWithAnonymousDims() {
     int[] shape = new int[] {3, 6, -1};
-    Variable var = Variable.builder().setName("name").setDataType(DataType.FLOAT).setDimensionsAnonymous(shape)
+    Variable var = Variable.builder().setName("name").setArrayType(ArrayType.FLOAT).setDimensionsAnonymous(shape)
         .build(makeDummyGroup());
-    assertThat(var.getDataType()).isEqualTo(DataType.FLOAT);
+    assertThat(var.getArrayType()).isEqualTo(ArrayType.FLOAT);
     assertThat(var.getShortName()).isEqualTo("name");
     assertThat(var.isScalar()).isFalse();
     assertThat(var.isUnlimited()).isFalse();
     assertThat(var.getShape()).isEqualTo(new int[] {3, 6, -1});
-    assertThat(var.getShapeAsSection()).isEqualTo(new Section(new int[] {3, 6, -1}));
+    assertThat(var.getSection()).isEqualTo(new Section(new int[] {3, 6, -1}));
     assertThat(var.getDimensionsString()).isEqualTo("3 6 *");
   }
 
@@ -91,18 +91,18 @@ public class TestVariable {
         .addDimension(new Dimension("dim2", 27));
     Group group = gb.build();
 
-    Variable var = Variable.builder().setName("name").setDataType(DataType.FLOAT).setParentGroupBuilder(gb)
+    Variable var = Variable.builder().setName("name").setArrayType(ArrayType.FLOAT).setParentGroupBuilder(gb)
         .setDimensionsByName("dim1 dim2").build(group);
 
     Variable copy = var.toBuilder().build(group);
 
     assertThat(copy.getParentGroup()).isEqualTo(group);
-    assertThat(copy.getDataType()).isEqualTo(DataType.FLOAT);
+    assertThat(copy.getArrayType()).isEqualTo(ArrayType.FLOAT);
     assertThat(copy.getShortName()).isEqualTo("name");
     assertThat(copy.isScalar()).isFalse();
     assertThat(copy.isUnlimited()).isTrue();
     assertThat(copy.getShape()).isEqualTo(new int[] {7, 27});
-    assertThat(copy.getShapeAsSection()).isEqualTo(new Section(new int[] {7, 27}));
+    assertThat(copy.getSection()).isEqualTo(new Section(new int[] {7, 27}));
 
     assertThat((Object) copy).isEqualTo(var);
   }
@@ -116,7 +116,7 @@ public class TestVariable {
     Group.Builder grampsb = Group.builder().setName("gramps").addGroup(parentg).addDimension(mid);
     Group.Builder uncleb = Group.builder().setName("uncle");
 
-    Variable.Builder<?> vattb = Variable.builder().setName("vatt").setDataType(DataType.STRING)
+    Variable.Builder<?> vattb = Variable.builder().setName("vatt").setArrayType(ArrayType.STRING)
         .setParentGroupBuilder(parentg).setDimensionsByName("mid").addAttribute(new Attribute("findme", "findmevalue"));
     grampsb.addVariable(vattb);
     assertThat(vattb.toString()).isEqualTo("string vatt");
@@ -131,7 +131,7 @@ public class TestVariable {
   @Test
   public void testNetcdf() {
     Variable.Builder<?> vb =
-        Variable.builder().setName("v").setDataType(DataType.UBYTE).setDimensionsAnonymous(new int[] {3, 6});
+        Variable.builder().setName("v").setArrayType(ArrayType.UBYTE).setDimensionsAnonymous(new int[] {3, 6});
 
     Group.Builder root = Group.builder().addVariable(vb);
     NetcdfFile ncfile = NetcdfFile.builder().setRootGroup(root).setLocation("loca").setId("notFileType").build();
@@ -148,7 +148,7 @@ public class TestVariable {
     Map<Integer, String> map = ImmutableMap.of(1, "name1", 2, "name2", 3, "name3");
     EnumTypedef typedef1 = new EnumTypedef("typename", map);
 
-    Variable.Builder<?> vb = Variable.builder().setName("v").setDataType(DataType.ENUM4)
+    Variable.Builder<?> vb = Variable.builder().setName("v").setArrayType(ArrayType.ENUM4)
         .setDimensionsAnonymous(new int[] {3, 6}).setEnumTypeName("typename");
 
     Group.Builder root = Group.builder().addEnumTypedef(typedef1).addVariable(vb);
@@ -163,7 +163,7 @@ public class TestVariable {
     assertThat(var.toString()).startsWith("enum typename v(3, 6);");
 
     try {
-      Variable.builder().setName("v").setDataType(DataType.ENUM4).setDimensionsAnonymous(new int[] {3, 6})
+      Variable.builder().setName("v").setArrayType(ArrayType.ENUM4).setDimensionsAnonymous(new int[] {3, 6})
           .build(makeDummyGroup());
       fail();
     } catch (Exception e) {
@@ -171,7 +171,7 @@ public class TestVariable {
     }
 
     try {
-      Variable.builder().setName("v").setDataType(DataType.ENUM4).setDimensionsAnonymous(new int[] {3, 6})
+      Variable.builder().setName("v").setArrayType(ArrayType.ENUM4).setDimensionsAnonymous(new int[] {3, 6})
           .setEnumTypeName("enum").build(makeDummyGroup());
       fail();
     } catch (Exception e) {
@@ -182,39 +182,39 @@ public class TestVariable {
 
   @Test
   public void testUnits() {
-    Variable v = Variable.builder().setName("v").setDataType(DataType.INT).setDimensionsAnonymous(new int[] {3, 6})
+    Variable v = Variable.builder().setName("v").setArrayType(ArrayType.INT).setDimensionsAnonymous(new int[] {3, 6})
         .addAttribute(new Attribute(CDM.UNITS, " wuw ")).build(makeDummyGroup());
     assertThat(v.getUnitsString()).isEqualTo("wuw");
 
-    Variable v2 = Variable.builder().setName("v").setDataType(DataType.INT).setDimensionsAnonymous(new int[] {3, 6})
+    Variable v2 = Variable.builder().setName("v").setArrayType(ArrayType.INT).setDimensionsAnonymous(new int[] {3, 6})
         .build(makeDummyGroup());
     assertThat(v2.getUnitsString()).isNull();
   }
 
   @Test
   public void testDesc() {
-    Variable v = Variable.builder().setName("v").setDataType(DataType.INT).setDimensionsAnonymous(new int[] {3, 6})
+    Variable v = Variable.builder().setName("v").setArrayType(ArrayType.INT).setDimensionsAnonymous(new int[] {3, 6})
         .addAttribute(new Attribute(CDM.LONG_NAME, "what")).build(makeDummyGroup());
     assertThat(v.getDescription()).isEqualTo("what");
 
-    Variable v2 = Variable.builder().setName("v").setDataType(DataType.INT).setDimensionsAnonymous(new int[] {3, 6})
+    Variable v2 = Variable.builder().setName("v").setArrayType(ArrayType.INT).setDimensionsAnonymous(new int[] {3, 6})
         .addAttribute(new Attribute("description", "desc")).build(makeDummyGroup());
     assertThat(v2.getDescription()).isEqualTo("desc");
 
-    Variable v3 = Variable.builder().setName("v").setDataType(DataType.INT).setDimensionsAnonymous(new int[] {3, 6})
+    Variable v3 = Variable.builder().setName("v").setArrayType(ArrayType.INT).setDimensionsAnonymous(new int[] {3, 6})
         .addAttribute(new Attribute(CDM.TITLE, "title")).build(makeDummyGroup());
     assertThat(v3.getDescription()).isEqualTo("title");
 
-    Variable v4 = Variable.builder().setName("v").setDataType(DataType.INT).setDimensionsAnonymous(new int[] {3, 6})
+    Variable v4 = Variable.builder().setName("v").setArrayType(ArrayType.INT).setDimensionsAnonymous(new int[] {3, 6})
         .addAttribute(new Attribute(CF.STANDARD_NAME, "standar")).build(makeDummyGroup());
     assertThat(v4.getDescription()).isEqualTo("standar");
 
-    Variable vnone = Variable.builder().setName("v").setDataType(DataType.INT).setDimensionsAnonymous(new int[] {3, 6})
-        .build(makeDummyGroup());
+    Variable vnone = Variable.builder().setName("v").setArrayType(ArrayType.INT)
+        .setDimensionsAnonymous(new int[] {3, 6}).build(makeDummyGroup());
     assertThat(vnone.getDescription()).isNull();
 
     Variable vnotString =
-        Variable.builder().setName("v").setDataType(DataType.INT).setDimensionsAnonymous(new int[] {3, 6})
+        Variable.builder().setName("v").setArrayType(ArrayType.INT).setDimensionsAnonymous(new int[] {3, 6})
             .addAttribute(new Attribute(CDM.LONG_NAME, 123)).build(makeDummyGroup());
     assertThat(vnotString.getDescription()).isNull();
   }
@@ -223,14 +223,14 @@ public class TestVariable {
   public void testIsCoordinateVariable() {
     Dimension x = new Dimension("x", 27);
     Variable.Builder<?> var =
-        Variable.builder().setName("x").setDataType(DataType.FLOAT).setDimensions(ImmutableList.of(x));
+        Variable.builder().setName("x").setArrayType(ArrayType.FLOAT).setDimensions(ImmutableList.of(x));
     Group g = Group.builder().addDimension(x).addVariable(var).build();
     Variable xvar = g.findVariableLocal("x");
     assertThat(xvar).isNotNull();
     assertThat(xvar.isCoordinateVariable()).isTrue();
 
-    Variable vnone = Variable.builder().setName("v").setDataType(DataType.INT).setDimensionsAnonymous(new int[] {3, 6})
-        .build(makeDummyGroup());
+    Variable vnone = Variable.builder().setName("v").setArrayType(ArrayType.INT)
+        .setDimensionsAnonymous(new int[] {3, 6}).build(makeDummyGroup());
     assertThat(vnone.isCoordinateVariable()).isFalse();
   }
 
@@ -239,7 +239,7 @@ public class TestVariable {
     Dimension x = new Dimension("x", 27);
     Dimension xlen = new Dimension("xlen", 27);
     Variable.Builder<?> var =
-        Variable.builder().setName("x").setDataType(DataType.CHAR).setDimensions(ImmutableList.of(x, xlen));
+        Variable.builder().setName("x").setArrayType(ArrayType.CHAR).setDimensions(ImmutableList.of(x, xlen));
     Group g = Group.builder().addDimensions(ImmutableList.of(x, xlen)).addVariable(var).build();
     Variable xvar = g.findVariableLocal("x");
     assertThat(xvar).isNotNull();
@@ -250,7 +250,7 @@ public class TestVariable {
   public void testCDL() {
     Dimension x = new Dimension("x", 27);
     Dimension xlen = new Dimension("xlen", 27);
-    Variable.Builder<?> var = Variable.builder().setName("x").setDataType(DataType.CHAR)
+    Variable.Builder<?> var = Variable.builder().setName("x").setArrayType(ArrayType.CHAR)
         .setDimensions(ImmutableList.of(x, xlen)).addAttribute(new Attribute("name", "value"));
     Group g = Group.builder().addDimensions(ImmutableList.of(x, xlen)).addVariable(var).build();
     Variable xvar = g.findVariableLocal("x");
@@ -264,13 +264,13 @@ public class TestVariable {
   public void testEquals() {
     Dimension x = new Dimension("x", 27);
     Dimension xlen = new Dimension("xlen", 27);
-    Variable.Builder<?> var = Variable.builder().setName("x").setDataType(DataType.CHAR)
+    Variable.Builder<?> var = Variable.builder().setName("x").setArrayType(ArrayType.CHAR)
         .setDimensions(ImmutableList.of(x, xlen)).addAttribute(new Attribute("name", "value"));
     Group g = Group.builder().addDimensions(ImmutableList.of(x, xlen)).addVariable(var).build();
     Variable xvar = g.findVariableLocal("x");
     assertThat(xvar).isNotNull();
 
-    Variable.Builder<?> var2 = Variable.builder().setName("x").setDataType(DataType.CHAR)
+    Variable.Builder<?> var2 = Variable.builder().setName("x").setArrayType(ArrayType.CHAR)
         .setDimensions(ImmutableList.of(x, xlen)).addAttribute(new Attribute("name", "value"));
     Group g2 = Group.builder().addDimensions(ImmutableList.of(x, xlen)).addVariable(var2).build();
     Variable xvar2 = g2.findVariableLocal("x");
@@ -284,124 +284,129 @@ public class TestVariable {
   @Test
   public void testAutoGen() throws IOException {
     Dimension x = new Dimension("x", 27);
-    Variable.Builder<?> var = Variable.builder().setName("x").setDataType(DataType.INT)
+    Variable.Builder<?> var = Variable.builder().setName("x").setArrayType(ArrayType.INT)
         .setDimensions(ImmutableList.of(x)).addAttribute(new Attribute("name", "value")).setAutoGen(100, 10);
     Group g = Group.builder().addDimensions(ImmutableList.of(x)).addVariable(var).build();
     Variable xvar = g.findVariableLocal("x");
     assertThat(xvar).isNotNull();
 
-    Array data = xvar.read();
-    assertThat(MAMath.equals(data, Array.makeArray(DataType.INT, x.getLength(), 100, 10))).isTrue();
+    Array<?> data = xvar.readArray();
+    assertThat(data).isEqualTo(Arrays.makeArray(ArrayType.INT, x.getLength(), 100, 10));
   }
 
   @Test
   public void testReadByIndex() throws IOException, InvalidRangeException {
     Dimension x = new Dimension("x", 27);
-    Variable.Builder<?> var = Variable.builder().setName("x").setDataType(DataType.INT)
+    Variable.Builder<?> var = Variable.builder().setName("x").setArrayType(ArrayType.INT)
         .setDimensions(ImmutableList.of(x)).addAttribute(new Attribute("name", "value")).setAutoGen(0, 10);
     Group g = Group.builder().addDimensions(ImmutableList.of(x)).addVariable(var).build();
     Variable xvar = g.findVariableLocal("x");
     assertThat(xvar).isNotNull();
 
-    Array data = xvar.read(new int[] {3}, new int[] {3});
-    assertThat(MAMath.equals(data, Array.makeArray(DataType.INT, 3, 30, 10))).isTrue();
+    Array data = xvar.readArray(new Section(new int[] {3}, new int[] {3}));
+    assertThat(CompareArrayToArray.compareData("testReadByIndex", data, Arrays.makeArray(ArrayType.INT, 3, 30, 10)))
+        .isTrue();
   }
 
   @Test
   public void testReadByRanges() throws IOException, InvalidRangeException {
     Dimension x = new Dimension("x", 27);
-    Variable.Builder<?> var = Variable.builder().setName("x").setDataType(DataType.INT)
+    Variable.Builder<?> var = Variable.builder().setName("x").setArrayType(ArrayType.INT)
         .setDimensions(ImmutableList.of(x)).addAttribute(new Attribute("name", "value")).setAutoGen(100, 10);
     Group g = Group.builder().addDimensions(ImmutableList.of(x)).addVariable(var).build();
     Variable xvar = g.findVariableLocal("x");
     assertThat(xvar).isNotNull();
 
     Range r = new Range(10, 20);
-    Array data = xvar.read(ImmutableList.of(r));
-    assertThat(MAMath.equals(data, Array.makeArray(DataType.INT, 11, 200, 10))).isTrue();
+    Array data = xvar.readArray(new Section(ImmutableList.of(r)));
+    assertThat(CompareArrayToArray.compareData("testReadByRanges", data, Arrays.makeArray(ArrayType.INT, 11, 200, 10)))
+        .isTrue();
   }
 
   @Test
   public void testReadBySection() throws IOException, InvalidRangeException {
     Dimension x = new Dimension("x", 99);
-    Variable.Builder<?> var = Variable.builder().setName("x").setDataType(DataType.INT)
+    Variable.Builder<?> var = Variable.builder().setName("x").setArrayType(ArrayType.INT)
         .setDimensions(ImmutableList.of(x)).addAttribute(new Attribute("name", "value")).setAutoGen(0, 10);
     Group g = Group.builder().addDimensions(ImmutableList.of(x)).addVariable(var).build();
     Variable xvar = g.findVariableLocal("x");
     assertThat(xvar).isNotNull();
 
-    Array data = xvar.read(Section.builder().appendRange(20, 66).build());
-    assertThat(MAMath.equals(data, Array.makeArray(DataType.INT, 47, 200, 10))).isTrue();
+    Array data = xvar.readArray(Section.builder().appendRange(20, 66).build());
+    assertThat(CompareArrayToArray.compareData("testReadBySection", data, Arrays.makeArray(ArrayType.INT, 47, 200, 10)))
+        .isTrue();
   }
 
   @Test
-  public void testReadBySectionSpec() throws IOException, InvalidRangeException {
+  public void testReadBySectionSpec() throws IOException, ucar.ma2.InvalidRangeException {
     Dimension x = new Dimension("x", 27);
-    Variable.Builder<?> var = Variable.builder().setName("x").setDataType(DataType.INT)
+    Variable.Builder<?> var = Variable.builder().setName("x").setArrayType(ArrayType.INT)
         .setDimensions(ImmutableList.of(x)).addAttribute(new Attribute("name", "value")).setAutoGen(100, 10);
     Group g = Group.builder().addDimensions(ImmutableList.of(x)).addVariable(var).build();
     Variable xvar = g.findVariableLocal("x");
     assertThat(xvar).isNotNull();
 
-    Array data = xvar.read("10:20");
-    assertThat(MAMath.equals(data, Array.makeArray(DataType.INT, 11, 200, 10))).isTrue();
+    ucar.ma2.Array data = xvar.read("10:20");
+    assertThat(
+        CompareArrayToMa2.compareData("testReadBySectionSpec", data, Arrays.makeArray(ArrayType.INT, 11, 200, 10)))
+            .isTrue();
   }
 
   @Test
   public void testSection() throws IOException, InvalidRangeException {
     Dimension x = new Dimension("x", 27);
-    Variable.Builder<?> var = Variable.builder().setName("x").setDataType(DataType.INT)
+    Variable.Builder<?> var = Variable.builder().setName("x").setArrayType(ArrayType.INT)
         .setDimensions(ImmutableList.of(x)).addAttribute(new Attribute("name", "value")).setAutoGen(100, 10);
     Group g = Group.builder().addDimensions(ImmutableList.of(x)).addVariable(var).build();
     Variable xvar = g.findVariableLocal("x");
     assertThat(xvar).isNotNull();
 
     Range r = new Range(10, 20);
-    Variable section = xvar.section(ImmutableList.of(r));
+    Variable section = xvar.section(new Section(ImmutableList.of(r)));
 
-    Array data = section.read();
-    assertThat(MAMath.equals(data, Array.makeArray(DataType.INT, 11, 200, 10))).isTrue();
+    Array data = section.readArray();
+    assertThat(data).isEqualTo(Arrays.makeArray(ArrayType.INT, 11, 200, 10));
 
-    Array data2 = section.read(new Section(new int[] {1}, new int[] {10}));
-    assertThat(MAMath.equals(data2, Array.makeArray(DataType.INT, 10, 210, 10))).isTrue();
+    Array data2 = section.readArray(new Section(new int[] {1}, new int[] {10}));
+    assertThat(data2).isEqualTo(Arrays.makeArray(ArrayType.INT, 10, 210, 10));
   }
 
   @Test
-  public void testSliceRowMajor() throws IOException, InvalidRangeException {
+  public void testSliceRowMajor() throws IOException, ucar.ma2.InvalidRangeException {
     Dimension x = new Dimension("x", 20);
     Dimension y = new Dimension("y", 2);
-    Variable.Builder<?> var = Variable.builder().setName("x").setDataType(DataType.INT)
+    Variable.Builder<?> var = Variable.builder().setName("x").setArrayType(ArrayType.INT)
         .setDimensions(ImmutableList.of(x, y)).addAttribute(new Attribute("name", "value")).setAutoGen(0, 10);
     Group g = Group.builder().addDimensions(ImmutableList.of(x, y)).addVariable(var).build();
     Variable xvar = g.findVariableLocal("x");
     assertThat(xvar).isNotNull();
-    Array alldata = xvar.read();
+    Array alldata = xvar.readArray();
 
     Variable section = xvar.slice(1, 1);
-    Array data = section.read();
-    assertThat(MAMath.equals(data, Array.makeArray(DataType.INT, 20, 10, 20))).isTrue();
+    Array data = section.readArray();
+    assertThat(data).isEqualTo(Arrays.makeArray(ArrayType.INT, 20, 10, 20));
   }
 
   @Test
-  public void testSliceColMajor() throws IOException, InvalidRangeException {
+  public void testSliceColMajor() throws IOException, ucar.ma2.InvalidRangeException {
     Dimension x = new Dimension("x", 20);
     Dimension y = new Dimension("y", 2);
-    Variable.Builder<?> var = Variable.builder().setName("x").setDataType(DataType.INT)
+    Variable.Builder<?> var = Variable.builder().setName("x").setArrayType(ArrayType.INT)
         .setDimensions(ImmutableList.of(y, x)).addAttribute(new Attribute("name", "value")).setAutoGen(0, 10);
     Group g = Group.builder().addDimensions(ImmutableList.of(x, y)).addVariable(var).build();
     Variable xvar = g.findVariableLocal("x");
     assertThat(xvar).isNotNull();
 
     Variable slice = xvar.slice(1, 1);
-    Array data = slice.read();
-    assertThat(MAMath.equals(data, Array.makeArray(DataType.INT, 2, 10, 200))).isTrue();
+    Array data = slice.readArray();
+    assertThat(data).isEqualTo(Arrays.makeArray(ArrayType.INT, 2, 10, 200));
   }
 
   @Test
   public void testReduce() throws IOException, InvalidRangeException {
     Dimension x = new Dimension("x", 20);
     Dimension y = new Dimension("y", 1);
-    Variable.Builder<?> var = Variable.builder().setName("x").setDataType(DataType.INT)
+    Variable.Builder<?> var = Variable.builder().setName("x").setArrayType(ArrayType.INT)
         .setDimensions(ImmutableList.of(y, x)).addAttribute(new Attribute("name", "value")).setAutoGen(10, 2);
     Group g = Group.builder().addDimensions(ImmutableList.of(x, y)).addVariable(var).build();
     Variable xvar = g.findVariableLocal("x");
@@ -409,17 +414,17 @@ public class TestVariable {
 
     Variable reduce = xvar.reduce(ImmutableList.of(y));
     assertThat(reduce.getShape()).isEqualTo(new int[] {20});
-    Array data = reduce.read();
-    assertThat(MAMath.equals(data, Array.makeArray(DataType.INT, 20, 10, 2))).isTrue();
+    Array data = reduce.readArray();
+    assertThat(data).isEqualTo(Arrays.makeArray(ArrayType.INT, 20, 10, 2));
 
-    Array data2 = reduce.read(new Section(new int[] {1}, new int[] {10}));
-    assertThat(MAMath.equals(data2, Array.makeArray(DataType.INT, 10, 12, 2))).isTrue();
+    Array data2 = reduce.readArray(new Section(new int[] {1}, new int[] {10}));
+    assertThat(data2).isEqualTo(Arrays.makeArray(ArrayType.INT, 10, 12, 2));
   }
 
   @Test
   public void testReadScalarByte() throws IOException {
     Variable varb =
-        Variable.builder().setName("varb").setDataType(DataType.BYTE).setAutoGen(10, 1).build(makeDummyGroup());
+        Variable.builder().setName("varb").setArrayType(ArrayType.BYTE).setAutoGen(10, 1).build(makeDummyGroup());
     assertThat(varb.readScalarByte()).isEqualTo((byte) 10);
     assertThat(varb.readScalarShort()).isEqualTo((short) 10);
     assertThat(varb.readScalarInt()).isEqualTo(10);
@@ -456,7 +461,7 @@ public class TestVariable {
   @Test
   public void testReadScalarShort() throws IOException {
     Variable varb =
-        Variable.builder().setName("varb").setDataType(DataType.SHORT).setAutoGen(11, 1).build(makeDummyGroup());
+        Variable.builder().setName("varb").setArrayType(ArrayType.SHORT).setAutoGen(11, 1).build(makeDummyGroup());
     assertThat(varb.readScalarByte()).isEqualTo((byte) 11);
     assertThat(varb.readScalarShort()).isEqualTo((short) 11);
     assertThat(varb.readScalarInt()).isEqualTo(11);
@@ -469,7 +474,7 @@ public class TestVariable {
   @Test
   public void testReadScalarInt() throws IOException {
     Variable varb =
-        Variable.builder().setName("varb").setDataType(DataType.INT).setAutoGen(11, 1).build(makeDummyGroup());
+        Variable.builder().setName("varb").setArrayType(ArrayType.INT).setAutoGen(11, 1).build(makeDummyGroup());
     assertThat(varb.readScalarByte()).isEqualTo((byte) 11);
     assertThat(varb.readScalarShort()).isEqualTo((short) 11);
     assertThat(varb.readScalarInt()).isEqualTo(11);
@@ -482,7 +487,7 @@ public class TestVariable {
   @Test
   public void testReadScalarLong() throws IOException {
     Variable varb =
-        Variable.builder().setName("varb").setDataType(DataType.LONG).setAutoGen(11, 1).build(makeDummyGroup());
+        Variable.builder().setName("varb").setArrayType(ArrayType.LONG).setAutoGen(11, 1).build(makeDummyGroup());
     assertThat(varb.readScalarByte()).isEqualTo((byte) 11);
     assertThat(varb.readScalarShort()).isEqualTo((short) 11);
     assertThat(varb.readScalarInt()).isEqualTo(11);
@@ -535,7 +540,7 @@ public class TestVariable {
   @Test
   public void testReadScalarDouble() throws IOException {
     Variable varb =
-        Variable.builder().setName("varb").setDataType(DataType.DOUBLE).setAutoGen(11, 1).build(makeDummyGroup());
+        Variable.builder().setName("varb").setArrayType(ArrayType.DOUBLE).setAutoGen(11, 1).build(makeDummyGroup());
     assertThat(varb.readScalarByte()).isEqualTo((byte) 11);
     assertThat(varb.readScalarShort()).isEqualTo((short) 11);
     assertThat(varb.readScalarInt()).isEqualTo(11);
@@ -546,9 +551,9 @@ public class TestVariable {
 
   @Test
   public void testReadScalarString() throws IOException {
-    Array data = Array.makeArray(DataType.STRING, new String[] {"one"});
+    Array<?> data = Arrays.factory(ArrayType.STRING, new int[] {1}, new String[] {"one"});
     Variable varb =
-        Variable.builder().setName("vars").setDataType(DataType.STRING).setSourceData(data).build(makeDummyGroup());
+        Variable.builder().setName("vars").setArrayType(ArrayType.STRING).setSourceData(data).build(makeDummyGroup());
     assertThat(varb.readScalarString()).isEqualTo("one");
   }
 
@@ -565,9 +570,9 @@ public class TestVariable {
 
   @Test
   public void testReadScalarChar() throws IOException {
-    Array data = Array.factory(DataType.CHAR, new int[] {3}, new char[] {'1', '2', '3'});
+    Array data = Arrays.factory(ArrayType.CHAR, new int[] {3}, new char[] {'1', '2', '3'});
     Variable varb =
-        Variable.builder().setName("varc").setDataType(DataType.CHAR).setSourceData(data).build(makeDummyGroup());
+        Variable.builder().setName("varc").setArrayType(ArrayType.CHAR).setSourceData(data).build(makeDummyGroup());
     assertThat(varb.readScalarString()).isEqualTo("123");
   }
 

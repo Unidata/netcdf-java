@@ -55,7 +55,7 @@ public class CompareArrayToArray {
     }
 
     if (vorg.getArrayType() == ArrayType.SEQUENCE) {
-      System.out.printf("  read sequence %s %s%n", vorg.getDataType(), vorg.getShortName());
+      System.out.printf("  read sequence %s %s%n", vorg.getArrayType(), vorg.getShortName());
       Sequence s = (Sequence) vorg;
       Iterator<StructureData> orgSeq = s.iterator();
       Sequence copyv = (Sequence) vnew;
@@ -72,7 +72,7 @@ public class CompareArrayToArray {
       if (size < Integer.MAX_VALUE) {
         Array<?> org = vorg.readArray();
         Array<?> array = vnew.readArray();
-        System.out.printf("  compareData %s %s%n", vorg.getDataType(), vorg.getNameAndDimensions());
+        System.out.printf("  compareData %s %s%n", vorg.getArrayType(), vorg.getNameAndDimensions());
         Formatter f = new Formatter();
         boolean ok1 = compareData(f, vorg.getShortName(), org, array, justOne, true);
         if (!ok1) {

@@ -5,15 +5,11 @@ import static com.google.common.truth.Truth.assertThat;
 import com.google.common.collect.ImmutableList;
 import java.util.Optional;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import java.lang.invoke.MethodHandles;
-import ucar.ma2.DataType;
-import ucar.ma2.Section;
+import ucar.array.ArrayType;
+import ucar.array.Section;
 
 /** Test {@link ucar.nc2.Dimensions} */
 public class TestDimensions {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
   public void testMakeDimensionString() {
@@ -69,7 +65,7 @@ public class TestDimensions {
     Dimension dim1 = new Dimension("dim1", 5);
     Dimension dim2 = new Dimension("dim2", 6);
     Dimension dim3 = new Dimension("dim3", 7);
-    Section section = Dimensions.makeSectionFromDimensions(ImmutableList.of(dim1, dim2, dim3)).build();
+    Section section = Dimensions.makeArraySectionFromDimensions(ImmutableList.of(dim1, dim2, dim3)).build();
     assertThat(section).isEqualTo(new Section(new int[] {5, 6, 7}));
   }
 
@@ -78,7 +74,7 @@ public class TestDimensions {
     Dimension dim1 = new Dimension("dim1", 5);
     Dimension dim2 = new Dimension("dim2", 6);
     Dimension dim3 = Dimension.builder().setIsVariableLength(true).build();
-    Section section = Dimensions.makeSectionFromDimensions(ImmutableList.of(dim1, dim2, dim3)).build();
+    Section section = Dimensions.makeArraySectionFromDimensions(ImmutableList.of(dim1, dim2, dim3)).build();
     assertThat(section).isEqualTo(new Section(new int[] {5, 6, -1}));
   }
 
@@ -87,7 +83,7 @@ public class TestDimensions {
     Dimension dim1 = new Dimension("dim1", 5);
     Dimension dim2 = new Dimension("dim2", 6);
     Dimension dim3 = Dimension.builder().setName("udim").setIsUnlimited(true).build();
-    Section section = Dimensions.makeSectionFromDimensions(ImmutableList.of(dim1, dim2, dim3)).build();
+    Section section = Dimensions.makeArraySectionFromDimensions(ImmutableList.of(dim1, dim2, dim3)).build();
     assertThat(section).isEqualTo(new Section(new int[] {5, 6, 0}));
   }
 
@@ -101,7 +97,7 @@ public class TestDimensions {
     Optional<Group> parento = root.findGroupNested("parent");
     assertThat(parento.isPresent()).isTrue();
 
-    Variable v = Variable.builder().setName("v").setDataType(DataType.STRING).setParentGroupBuilder(parentg)
+    Variable v = Variable.builder().setName("v").setArrayType(ArrayType.STRING).setParentGroupBuilder(parentg)
         .setDimensionsByName("dim1 dim2").build(parento.get());
 
     assertThat(Dimensions.makeDimensionsAll(v)).isEqualTo(ImmutableList.of(dim1, dim2));

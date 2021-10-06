@@ -4,25 +4,15 @@
  */
 package ucar.nc2;
 
-import static com.google.common.truth.Truth.assertThat;
-import com.google.common.collect.ImmutableList;
-import java.util.List;
-import org.junit.Assert;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ucar.ma2.Array;
-import ucar.ma2.DataType;
-import ucar.ma2.MAMath;
-import ucar.nc2.iosp.NetcdfFormatUtils;
+import ucar.array.Array;
+import ucar.array.ArrayType;
 import ucar.nc2.util.Misc;
 import ucar.unidata.util.test.TestDir;
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 
 /** Test reading attributes */
 public class TestAttributeReading {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
   public void testNC3ReadAttributes() throws IOException {
@@ -41,9 +31,8 @@ public class TestAttributeReading {
     assert (3 == att.getLength());
     assert (3 == att.getNumericValue(2).intValue());
 
-    Array aa = att.getValues();
-    assert (att.getDataType() == DataType.INT);
-    assert (aa.getElementType() == int.class);
+    Array<?> aa = att.getArrayValues();
+    assert (att.getArrayType() == ArrayType.INT);
     assert (aa.getSize() == 3);
 
     att = temp.findAttribute("versionD");
@@ -51,11 +40,10 @@ public class TestAttributeReading {
     assert (!att.isArray());
     assert (1 == att.getLength());
     assert (1.2 == att.getNumericValue().doubleValue());
-    assert (DataType.DOUBLE == att.getDataType());
+    assert (ArrayType.DOUBLE == att.getArrayType());
 
-    aa = att.getValues();
-    assert (att.getDataType() == DataType.DOUBLE);
-    assert (aa.getElementType() == double.class);
+    aa = att.getArrayValues();
+    assert (att.getArrayType() == ArrayType.DOUBLE);
     assert (aa.getSize() == 1);
 
     att = temp.findAttribute("versionF");
@@ -64,11 +52,10 @@ public class TestAttributeReading {
     assert (1 == att.getLength());
     assert (1.2f == att.getNumericValue().floatValue());
     assert (Misc.nearlyEquals(1.2, att.getNumericValue().doubleValue(), 1.0e-5));
-    assert (DataType.FLOAT == att.getDataType());
+    assert (ArrayType.FLOAT == att.getArrayType());
 
-    aa = att.getValues();
-    assert (att.getDataType() == DataType.FLOAT);
-    assert (aa.getElementType() == float.class);
+    aa = att.getArrayValues();
+    assert (att.getArrayType() == ArrayType.FLOAT);
     assert (aa.getSize() == 1);
 
     att = temp.findAttribute("versionI");
@@ -76,11 +63,10 @@ public class TestAttributeReading {
     assert (!att.isArray());
     assert (1 == att.getLength());
     assert (1 == att.getNumericValue().intValue());
-    assert (DataType.INT == att.getDataType());
+    assert (ArrayType.INT == att.getArrayType());
 
-    aa = att.getValues();
-    assert (att.getDataType() == DataType.INT);
-    assert (aa.getElementType() == int.class);
+    aa = att.getArrayValues();
+    assert (att.getArrayType() == ArrayType.INT);
     assert (aa.getSize() == 1);
 
     att = temp.findAttribute("versionS");
@@ -88,11 +74,10 @@ public class TestAttributeReading {
     assert (!att.isArray());
     assert (1 == att.getLength());
     assert (2 == att.getNumericValue().shortValue());
-    assert (DataType.SHORT == att.getDataType());
+    assert (ArrayType.SHORT == att.getArrayType());
 
-    aa = att.getValues();
-    assert (att.getDataType() == DataType.SHORT);
-    assert (aa.getElementType() == short.class);
+    aa = att.getArrayValues();
+    assert (att.getArrayType() == ArrayType.SHORT);
     assert (aa.getSize() == 1);
 
     att = temp.findAttribute("versionB");
@@ -100,18 +85,17 @@ public class TestAttributeReading {
     assert (!att.isArray());
     assert (1 == att.getLength());
     assert (3 == att.getNumericValue().byteValue());
-    assert (DataType.BYTE == att.getDataType());
+    assert (ArrayType.BYTE == att.getArrayType());
 
-    aa = att.getValues();
-    assert (att.getDataType() == DataType.BYTE);
-    assert (aa.getElementType() == byte.class);
+    aa = att.getArrayValues();
+    assert (att.getArrayType() == ArrayType.BYTE);
     assert (aa.getSize() == 1);
 
     att = temp.findAttribute("versionString");
     assert (null != att);
     assert (!att.isArray());
     assert (1 == att.getLength());
-    assert (DataType.STRING == att.getDataType());
+    assert (ArrayType.STRING == att.getArrayType());
 
     Number n = att.getNumericValue();
     assert (n != null);

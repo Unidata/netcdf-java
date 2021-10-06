@@ -7,37 +7,37 @@ package ucar.nc2;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ucar.ma2.Array;
+import ucar.array.Array;
+import ucar.array.ArrayType;
 import ucar.ma2.DataType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.unidata.util.test.TestDir;
 import java.io.IOException;
 import java.io.StringReader;
-import java.lang.invoke.MethodHandles;
+
+import static com.google.common.truth.Truth.assertThat;
 
 /** Test Unsigned values and attributes in NcML works correctly */
 public class TestUnsigned {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
   public void testSigned() throws IOException {
     try (NetcdfFile ncfile = NetcdfDatasets.openDataset(TestDir.cdmLocalTestDataDir + "testWrite.nc")) {
       Variable v = ncfile.findVariable("bvar");
-      Assert.assertNotNull(v);
-      Assert.assertFalse(v.getDataType().isUnsigned());
-      Assert.assertEquals(DataType.BYTE, v.getDataType());
+      assertThat(v).isNotNull();
+      assertThat(v.getArrayType().isUnsigned()).isFalse();
+      assertThat(v.getArrayType()).isEqualTo(ArrayType.BYTE);
 
       boolean hasSigned = false;
-      Array data = v.read();
-      while (data.hasNext()) {
-        byte b = data.nextByte();
-        if (b < 0)
+      Array<?> data = v.readArray();
+      assertThat(data.getArrayType()).isEqualTo(ArrayType.BYTE);
+      for (byte b : (Array<Byte>) data) {
+        if (b < 0) {
           hasSigned = true;
+        }
       }
-      assert hasSigned;
+      assertThat(hasSigned).isTrue();
     }
   }
 
@@ -45,17 +45,19 @@ public class TestUnsigned {
   public void testUnsigned() throws IOException {
     try (NetcdfFile ncfile = NetcdfDatasets.openDataset(TestDir.cdmLocalTestDataDir + "testUnsignedByte.ncml")) {
       Variable v = ncfile.findVariable("bvar");
-      Assert.assertNotNull(v);
-      Assert.assertEquals(DataType.FLOAT, v.getDataType()); // has float scale_factor
+      assertThat(v).isNotNull();
+      assertThat(v.getArrayType().isUnsigned()).isFalse();
+      assertThat(v.getArrayType()).isEqualTo(ArrayType.FLOAT); // has float scale_factor
 
       boolean hasSigned = false;
-      Array data = v.read();
-      while (data.hasNext()) {
-        float b = data.nextFloat();
-        if (b < 0)
+      Array<?> data = v.readArray();
+      assertThat(data.getArrayType()).isEqualTo(ArrayType.FLOAT);
+      for (float b : (Array<Float>) data) {
+        if (b < 0) {
           hasSigned = true;
+        }
       }
-      Assert.assertFalse(hasSigned);
+      assertThat(hasSigned).isFalse();
     }
   }
 
@@ -72,17 +74,19 @@ public class TestUnsigned {
 
     try (NetcdfDataset ncd = NetcdfDatasets.openNcmlDataset(new StringReader(ncml), null, null)) {
       Variable v = ncd.findVariable("bvar");
-      Assert.assertNotNull(v);
-      Assert.assertEquals(DataType.FLOAT, v.getDataType());
+      assertThat(v).isNotNull();
+      assertThat(v.getArrayType().isUnsigned()).isFalse();
+      assertThat(v.getArrayType()).isEqualTo(ArrayType.FLOAT); // has float scale_factor
 
       boolean hasSigned = false;
-      Array data = v.read();
-      while (data.hasNext()) {
-        float b = data.nextFloat();
-        if (b < 0)
+      Array<?> data = v.readArray();
+      assertThat(data.getArrayType()).isEqualTo(ArrayType.FLOAT);
+      for (float b : (Array<Float>) data) {
+        if (b < 0) {
           hasSigned = true;
+        }
       }
-      Assert.assertFalse(hasSigned);
+      assertThat(hasSigned).isFalse();
     }
   }
 
@@ -98,21 +102,24 @@ public class TestUnsigned {
 
     try (NetcdfDataset ncd = NetcdfDatasets.openNcmlDataset(new StringReader(ncml), null, null)) {
       Variable v = ncd.findVariable("bvar");
-      Assert.assertNotNull(v);
-      Assert.assertEquals(DataType.USHORT, v.getDataType());
+      assertThat(v).isNotNull();
+      assertThat(v.getArrayType().isUnsigned()).isTrue();
+      assertThat(v.getArrayType()).isEqualTo(ArrayType.USHORT);
 
       boolean hasSigned = false;
-      Array data = v.read();
-      while (data.hasNext()) {
-        float b = data.nextFloat();
-        if (b < 0)
+      Array<?> data = v.readArray();
+      assertThat(data.getArrayType()).isEqualTo(ArrayType.USHORT);
+      for (short b : (Array<Short>) data) {
+        if (b < 0) {
           hasSigned = true;
+        }
       }
-      Assert.assertFalse(hasSigned);
+      assertThat(hasSigned).isFalse();
     }
   }
 
   @Test
+  // arbitrarily changes the datatype to ubyte, which doesnt affect the actual data
   public void testVarWithUnsignedTypeNotEnhanced() throws IOException {
     String ncml = "<?xml version='1.0' encoding='UTF-8'?>\n"
         + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2' location='"
@@ -126,13 +133,53 @@ public class TestUnsigned {
       Assert.assertEquals(DataType.UBYTE, v.getDataType());
 
       boolean hasSigned = false;
-      Array data = v.read();
+      ucar.ma2.Array data = v.read();
+      Assert.assertEquals(DataType.BYTE, data.getDataType());
+
+      // but theres a tricky thing that when one gets as float, it seems to know its unsigned??
       while (data.hasNext()) {
         float b = data.nextFloat();
         if (b < 0)
           hasSigned = true;
       }
       Assert.assertTrue(hasSigned);
+    }
+  }
+
+  @Test
+  // arbitrarily changes the datatype to ubyte, which doesnt affect the actual data
+  public void testArrayWithUnsignedTypeNotEnhanced() throws IOException {
+    String ncml = "<?xml version='1.0' encoding='UTF-8'?>\n"
+        + "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2' location='"
+        + TestDir.cdmLocalTestDataDir + "testWrite.nc'>\n" //
+        + "  <variable name='bvar' shape='lat' type='ubyte'/>" //
+        + "</netcdf>";
+
+    try (NetcdfDataset ncd = NetcdfDatasets.openNcmlDataset(new StringReader(ncml), null, null)) {
+      Variable v = ncd.findVariable("bvar");
+      assertThat(v).isNotNull();
+      assertThat(v.getArrayType().isUnsigned()).isTrue();
+      assertThat(v.getArrayType()).isEqualTo(ArrayType.UBYTE);
+
+      boolean hasSigned = false;
+      Array<?> data = v.readArray();
+      assertThat(data.getArrayType()).isEqualTo(ArrayType.BYTE);
+      for (byte b : (Array<Byte>) data) {
+        if (b < 0) {
+          hasSigned = true;
+        }
+      }
+      assertThat(hasSigned).isTrue();
+
+      hasSigned = false;
+      Array<Number> ndata = (Array<Number>) data;
+      for (Number val : ndata) {
+        float b = val.floatValue();
+        if (b < 0) {
+          hasSigned = true;
+        }
+      }
+      assertThat(hasSigned).isTrue();
     }
   }
 
@@ -146,17 +193,19 @@ public class TestUnsigned {
 
     try (NetcdfDataset ncd = NetcdfDatasets.openNcmlDataset(new StringReader(ncml), null, null)) {
       Variable v = ncd.findVariable("bvar");
-      Assert.assertNotNull(v);
-      Assert.assertEquals(DataType.USHORT, v.getDataType());
+      assertThat(v).isNotNull();
+      assertThat(v.getArrayType().isUnsigned()).isTrue();
+      assertThat(v.getArrayType()).isEqualTo(ArrayType.USHORT);
 
       boolean hasSigned = false;
-      Array data = v.read();
-      while (data.hasNext()) {
-        float b = data.nextFloat();
-        if (b < 0)
+      Array<?> data = v.readArray();
+      assertThat(data.getArrayType()).isEqualTo(ArrayType.USHORT);
+      for (short b : (Array<Short>) data) {
+        if (b < 0) {
           hasSigned = true;
+        }
       }
-      Assert.assertFalse(hasSigned);
+      assertThat(hasSigned).isFalse();
     }
   }
 
@@ -170,19 +219,21 @@ public class TestUnsigned {
 
     try (NetcdfDataset ncd = NetcdfDatasets.openNcmlDataset(new StringReader(ncml), null, null)) {
       Attribute att = ncd.findAttribute("gatt");
-      Assert.assertNotNull(att);
-      Assert.assertEquals(DataType.UBYTE, att.getDataType());
+      assertThat(att).isNotNull();
+      assertThat(att.getArrayType().isUnsigned()).isTrue();
+      assertThat(att.getArrayType()).isEqualTo(ArrayType.UBYTE);
+      assertThat(att.getLength()).isEqualTo(3);
 
-      Assert.assertEquals(3, att.getLength());
-      Array gattValues = att.getValues();
+      Array<?> gattValues = att.getArrayValues();
 
       boolean hasSigned = false;
-      while (gattValues.hasNext()) {
-        short b = gattValues.nextShort();
-        if (b < 0)
+      assertThat(gattValues.getArrayType()).isEqualTo(ArrayType.UBYTE);
+      for (byte b : (Array<Byte>) gattValues) {
+        if (b < 0) {
           hasSigned = true;
+        }
       }
-      Assert.assertFalse(hasSigned);
+      assertThat(hasSigned).isTrue();
     }
   }
 
@@ -195,19 +246,21 @@ public class TestUnsigned {
 
     try (NetcdfDataset ncd = NetcdfDatasets.openNcmlDataset(new StringReader(ncml), null, null)) {
       Attribute att = ncd.findAttribute("gatt");
-      Assert.assertNotNull(att);
-      Assert.assertEquals(DataType.UBYTE, att.getDataType());
+      assertThat(att).isNotNull();
+      assertThat(att.getArrayType().isUnsigned()).isTrue();
+      assertThat(att.getArrayType()).isEqualTo(ArrayType.UBYTE);
+      assertThat(att.getLength()).isEqualTo(3);
 
-      Assert.assertEquals(3, att.getLength());
-      Array gattValues = att.getValues();
+      Array<?> gattValues = att.getArrayValues();
 
       boolean hasSigned = false;
-      while (gattValues.hasNext()) {
-        short b = gattValues.nextShort();
-        if (b < 0)
+      assertThat(gattValues.getArrayType()).isEqualTo(ArrayType.UBYTE);
+      for (byte b : (Array<Byte>) gattValues) {
+        if (b < 0) {
           hasSigned = true;
+        }
       }
-      Assert.assertFalse(hasSigned);
+      assertThat(hasSigned).isTrue();
     }
   }
 
@@ -220,19 +273,21 @@ public class TestUnsigned {
 
     try (NetcdfDataset ncd = NetcdfDatasets.openNcmlDataset(new StringReader(ncml), null, null)) {
       Attribute att = ncd.findAttribute("gatt");
-      Assert.assertNotNull(att);
-      Assert.assertEquals(DataType.UBYTE, att.getDataType());
+      assertThat(att).isNotNull();
+      assertThat(att.getArrayType().isUnsigned()).isTrue();
+      assertThat(att.getArrayType()).isEqualTo(ArrayType.UBYTE);
+      assertThat(att.getLength()).isEqualTo(3);
 
-      Assert.assertEquals(3, att.getLength());
-      Array gattValues = att.getValues();
+      Array<?> gattValues = att.getArrayValues();
 
       boolean hasSigned = false;
-      while (gattValues.hasNext()) {
-        short b = gattValues.nextShort();
-        if (b < 0)
+      assertThat(gattValues.getArrayType()).isEqualTo(ArrayType.UBYTE);
+      for (byte b : (Array<Byte>) gattValues) {
+        if (b < 0) {
           hasSigned = true;
+        }
       }
-      Assert.assertFalse(hasSigned);
+      assertThat(hasSigned).isTrue();
     }
   }
 }

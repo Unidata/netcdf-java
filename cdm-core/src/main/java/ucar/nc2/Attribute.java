@@ -217,7 +217,11 @@ public class Attribute {
     return getNumericValue(index);
   }
 
-  /** Get the values as an ucar.ma2.Array. */
+  /**
+   * Get the values as an ucar.ma2.Array.
+   * 
+   * @deprecated use getArrayValues().
+   */
   @Deprecated
   @Nullable
   public ucar.ma2.Array getValues() {
