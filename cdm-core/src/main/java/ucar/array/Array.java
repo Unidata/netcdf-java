@@ -52,7 +52,7 @@ public abstract class Array<T> implements Iterable<T> {
 
   /** An Index that can be used instead of int[], with the same rank as this Array. */
   public Index getIndex() {
-    return new Index(new int[this.rank], this.indexFn);
+    return Index.ofRank(rank);
   }
 
   /** Get the number of dimensions of the array. */

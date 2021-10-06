@@ -29,7 +29,7 @@ import java.util.List;
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.fail;
 
-/** Test successive NetcdfFormat Writint and updating */
+/** Test successive NetcdfFormat Writing and updating */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TestNetcdfWriteArrayAndUpdate {
   @ClassRule
@@ -169,8 +169,8 @@ public class TestNetcdfWriteArrayAndUpdate {
         assertThat(v).isNotNull();
         Index origin = Index.ofRank(v.getRank());
         writer.config().forVariable(v).withOrigin(origin).withString("No pairs of ladies stockings!").write();
-        writer.config().forVariable(v).withOrigin(origin).withString("One pairs of ladies stockings!").write();
-        writer.config().forVariable(v).withOrigin(origin).withString("Two pairs of ladies stockings!").write();
+        writer.config().forVariable(v).withOrigin(origin.incr(0)).withString("One pairs of ladies stockings!").write();
+        writer.config().forVariable(v).withOrigin(origin.incr(0)).withString("Two pairs of ladies stockings!").write();
       } catch (IOException e) {
         System.err.println("ERROR writing Achar3");
         fail();
@@ -399,8 +399,8 @@ public class TestNetcdfWriteArrayAndUpdate {
         assertThat(v).isNotNull();
         Index index = Index.ofRank(v.getRank());
         writer.writeStringData(v, index, "0 pairs of ladies stockings!");
-        writer.writeStringData(v, index, "1 pairs of ladies stockings!");
-        writer.writeStringData(v, index, "2 pairs of ladies stockings!");
+        writer.writeStringData(v, index.incr(0), "1 pairs of ladies stockings!");
+        writer.writeStringData(v, index.incr(0), "2 pairs of ladies stockings!");
       } catch (IOException e) {
         System.err.println("ERROR writing Achar3");
         fail();

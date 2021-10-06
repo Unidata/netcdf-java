@@ -102,7 +102,6 @@ final class ArrayByte extends Array<Byte> {
    * The null is not returned as part of the String.
    */
   String makeStringFromChar() {
-    // LOOK Preconditions.checkArgument(getRank() < 2);
     int count = 0;
     for (byte c : this) {
       if (c == 0) {
@@ -143,10 +142,10 @@ final class ArrayByte extends Array<Byte> {
     int cidx = 0;
     int sidx = 0;
 
-    Index index = getIndex(); // have to do this because maybe its a view
+    IndexFn indexFn = IndexFn.builder(getShape()).build();
     while (sidx < outerLength) {
       int idx = sidx * innerLength + cidx;
-      byte c = get(index.setElem(idx));
+      byte c = get(indexFn.odometer(idx));
       if (c == 0) {
         result[sidx++] = new String(carr, 0, cidx, Charsets.UTF_8);
         cidx = 0;
