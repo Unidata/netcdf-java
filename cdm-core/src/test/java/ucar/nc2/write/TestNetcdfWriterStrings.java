@@ -40,7 +40,7 @@ public class TestNetcdfWriterStrings {
 
   @Test
   public void writeNetCDFchar() throws IOException, InvalidRangeException {
-    String helloGreek = makeString(helloGreekCode, false);
+    String helloGreek = makeString(helloGreekCode, true);
     helloGreek = Normalizer.normalize(helloGreek, Normalizer.Form.NFC);
 
     String filename = tempFolder.newFile().getPath();
@@ -65,6 +65,8 @@ public class TestNetcdfWriterStrings {
       assertThat(vrdata.getShape()).isEqualTo(new int[] {helloGreekLen});
       Array<String> sdata = Arrays.makeStringsFromChar((Array<Byte>) vrdata);
       String strData = sdata.getScalar();
+      System.out.printf(" writeNetCDFchar %s = %s = %s%n", strData, showString(strData),
+                showBytes(strData.getBytes()));
       assertThat(strData).isEqualTo(helloGreek);
 
       Attribute att = vr.findAttribute("units");
@@ -76,7 +78,7 @@ public class TestNetcdfWriterStrings {
 
   @Test
   public void writeNetCDFcharArray() throws IOException, InvalidRangeException {
-    String helloGreek = makeString(helloGreekCode, false);
+    String helloGreek = makeString(helloGreekCode, true);
     helloGreek = Normalizer.normalize(helloGreek, Normalizer.Form.NFC);
 
     String filename = tempFolder.newFile().getPath();
@@ -105,6 +107,11 @@ public class TestNetcdfWriterStrings {
       assertThat(vrdata.getArrayType()).isEqualTo(ArrayType.CHAR); // writing to netcdf3 turns it into a char
       assertThat(vrdata.getShape()).isEqualTo(new int[] {ngreeks, helloGreekLen});
       Array<String> sdata = Arrays.makeStringsFromChar((Array<Byte>) vrdata);
+      for (int i = 0; i < ngreeks; i++) {
+        String strData = sdata.get(i);
+        System.out.printf(" writeNetCDFcharArray %s = %s = %s%n", strData, showString(strData),
+                showBytes(strData.getBytes()));
+      }
       for (int i = 0; i < ngreeks; i++) {
         String strData = sdata.get(i);
         assertThat(strData).isEqualTo(helloGreek);
