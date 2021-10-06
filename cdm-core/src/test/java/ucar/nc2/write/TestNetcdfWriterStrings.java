@@ -63,6 +63,9 @@ public class TestNetcdfWriterStrings {
       Array<?> vrdata = vr.readArray();
       assertThat(vrdata.getArrayType()).isEqualTo(ArrayType.CHAR); // writing to netcdf3 turns it into a char
       assertThat(vrdata.getShape()).isEqualTo(new int[] {helloGreekLen});
+      System.out.printf(" writeNetCDFchar printArray = %ss%n", NcdumpArray.printArray(vrdata));
+      System.out.printf(" writeNetCDFchar showBytes  = %ss%n", showBytes((Array<Byte>) vrdata));
+
       Array<String> sdata = Arrays.makeStringsFromChar((Array<Byte>) vrdata);
       String strData = sdata.getScalar();
       System.out.printf(" writeNetCDFchar %s = %s = %s%n", strData, showString(strData),
@@ -207,6 +210,16 @@ public class TestNetcdfWriterStrings {
       int ub = (b < 0) ? b + 256 : b;
       if (i > 0)
         sbuff.append(" ");
+      sbuff.append(Integer.toHexString(ub));
+    }
+    return sbuff.toString();
+  }
+
+  private String showBytes(Array<Byte> buff) {
+    StringBuffer sbuff = new StringBuffer();
+    for (byte b : buff) {
+      int ub = (b < 0) ? b + 256 : b;
+      sbuff.append(" ");
       sbuff.append(Integer.toHexString(ub));
     }
     return sbuff.toString();
