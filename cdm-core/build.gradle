@@ -12,7 +12,6 @@ dependencies {
   testImplementation enforcedPlatform(project(':netcdf-java-testing-platform'))
 
   compile project(':udunits')
-  // compile project(':httpservices')
 
   compile 'com.beust:jcommander'
   compile 'com.google.guava:guava'

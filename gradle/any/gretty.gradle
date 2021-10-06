@@ -70,7 +70,7 @@ gretty {
 
 farm {
   jvmArgs = ["-Dlog4j.configurationFile=$rootDir/gradle/gretty/log4j2Config.xml"]
-  // :opendap and :httpservices test.
+  // :opendap test.
   webapp 'edu.ucar:dtswar:5.0.0-beta8@war', contextPath: '/dts'
   integrationTestTask = 'test'
 
