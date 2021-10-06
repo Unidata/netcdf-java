@@ -54,7 +54,7 @@ public class TestNetcdfWriterStrings {
 
     try (NetcdfFormatWriter writer = writerb.build()) {
       Variable v = writer.findVariable(helloGreek);
-      byte[] helloBytes = helloGreek.getBytes();
+      byte[] helloBytes = helloGreek.getBytes(StandardCharsets.UTF_8); // LOOK
       Array<Byte> data = Arrays.factory(ArrayType.CHAR, new int[] {helloBytes.length}, helloBytes);
       writer.write(v, data.getIndex(), data);
     }
@@ -67,8 +67,8 @@ public class TestNetcdfWriterStrings {
       Array<?> vrdata = vr.readArray();
       assertThat(vrdata.getArrayType()).isEqualTo(ArrayType.CHAR); // writing to netcdf3 turns it into a char
       assertThat(vrdata.getShape()).isEqualTo(new int[] {helloGreekLen});
-      System.out.printf(" writeNetCDFchar printArray = %ss%n", NcdumpArray.printArray(vrdata));
-      System.out.printf(" writeNetCDFchar showBytes  = %ss%n", showBytes((Array<Byte>) vrdata));
+      System.out.printf(" writeNetCDFchar printArray = %s%n", NcdumpArray.printArray(vrdata));
+      System.out.printf(" writeNetCDFchar showBytes  = %s%n", showBytes((Array<Byte>) vrdata));
 
       Array<String> sdata = Arrays.makeStringsFromChar((Array<Byte>) vrdata);
       String strData = sdata.getScalar();
@@ -97,7 +97,7 @@ public class TestNetcdfWriterStrings {
 
     try (NetcdfFormatWriter writer = writerb.build()) {
       Variable v = writer.findVariable(helloGreek);
-      byte[] helloBytes = helloGreek.getBytes();
+      byte[] helloBytes = helloGreek.getBytes(StandardCharsets.UTF_8);
       Array<Byte> data = Arrays.factory(ArrayType.CHAR, new int[] {1, helloBytes.length}, helloBytes);
       Index index = data.getIndex();
       for (int i = 0; i < ngreeks; i++) {
