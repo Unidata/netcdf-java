@@ -13,7 +13,7 @@ import javax.annotation.concurrent.Immutable;
 
 /** Translate between multidimensional index and 1-d arrays. */
 @Immutable
-final class IndexFn implements Iterable<Integer> {
+public final class IndexFn implements Iterable<Integer> {
 
   /**
    * Get the 1-d index indicated by the list of multidimensional indices.
@@ -303,7 +303,7 @@ final class IndexFn implements Iterable<Integer> {
     return newIndex.build();
   }
 
-  public static Builder builder(int rank) {
+  private static Builder builder(int rank) {
     return new Builder(rank);
   }
 
@@ -417,7 +417,7 @@ final class IndexFn implements Iterable<Integer> {
   }
 
   /** what is the odometer (n-dim index) for element (1-d index)? */
-  int[] odometer(long element) {
+  public int[] odometer(long element) {
     int[] odometer = new int[rank];
     for (int dim = 0; dim < rank; dim++) {
       odometer[dim] = (int) (element / stride[dim]);

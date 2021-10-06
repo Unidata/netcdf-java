@@ -178,8 +178,8 @@ public class TestNetcdfFormatWriterBig {
       }
       // write the last value
       float[] prim = new float[] {lastVal};
-      writer.config().forVariable(varName).withOrigin(new int[] {timeSize - 1, latSize - 1, lonSize - 1})
-          .withPrimitiveArray(prim).withShape(1, 1, 1).write();
+      writer.config().forVariable(varName).withOrigin(timeSize - 1, latSize - 1, lonSize - 1).withPrimitiveArray(prim)
+          .withShape(1, 1, 1).write();
     }
 
     try (NetcdfFile ncfile = NetcdfFiles.open(fileName)) {

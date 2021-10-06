@@ -13,27 +13,24 @@ import com.google.common.base.Preconditions;
  */
 public class Index {
   public static Index ofRank(int rank) {
-    return new Index(new int[rank], IndexFn.builder(rank).build());
+    return new Index(new int[rank]);
   }
 
   public static Index of(int[] index) {
-    return new Index(index, IndexFn.builder(index.length).build());
+    return new Index(index);
   }
 
   /////////////////////////////////////////////////////
   private int[] current; // current element's index
-  private final IndexFn indexFn;
 
-  Index(int[] index, IndexFn indexFn) {
+  Index(int[] index) {
     this.current = index;
-    this.indexFn = indexFn;
   }
 
   // Copy constructor.
   public Index(Index from) {
     this.current = new int[from.current.length];
     System.arraycopy(from.current, 0, this.current, 0, from.current.length);
-    this.indexFn = from.indexFn; // Immutable
   }
 
   /**
@@ -51,12 +48,6 @@ public class Index {
   /** Get the current index as int[] . */
   public int[] getCurrentIndex() {
     return current;
-  }
-
-  /** Set the current multidim index using 1-d element index. */
-  public Index setElem(long elem) {
-    this.current = indexFn.odometer(elem);
-    return this;
   }
 
   /**
