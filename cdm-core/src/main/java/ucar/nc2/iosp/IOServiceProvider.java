@@ -82,7 +82,7 @@ public interface IOServiceProvider extends Closeable {
   ucar.array.Array<?> readArrayData(Variable v2, ucar.array.Section section)
       throws java.io.IOException, ucar.array.InvalidRangeException;
 
-  /** @deprecated do not use. */
+  /** @deprecated use readArrayData(new Section(cer)). */
   @Deprecated
   ucar.ma2.Array readSection(ParsedSectionSpec cer) throws IOException, InvalidRangeException;
 

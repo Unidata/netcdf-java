@@ -170,6 +170,11 @@ public class Arrays {
 
   /**
    * Combine list of Array's by copying the underlying Array's into a single primitive array
+   * 
+   * @param dataType of the dataArrays and of the result.
+   * @param shape of the result.
+   * @param dataArrays the composite data.
+   * @return composite Array, foprmed by copying the dataArrays.
    */
   public static Array<?> factoryCopy(ArrayType dataType, int[] shape, List<Array<?>> dataArrays) {
     if (dataArrays.size() == 1) {

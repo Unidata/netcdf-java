@@ -5,7 +5,7 @@
 
 package ucar.nc2.write;
 
-import ucar.ma2.Section;
+import ucar.array.Section;
 import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
 import java.util.List;

@@ -10,6 +10,7 @@ import java.io.IOException;
 import static com.google.common.truth.Truth.assertThat;
 import static ucar.nc2.TestUtils.makeDummyGroup;
 
+/** Test {@link NcmlWriter} */
 public class TestNcmlWriter {
 
   @Test

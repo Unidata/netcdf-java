@@ -7,19 +7,15 @@ package ucar.nc2.write;
 import com.google.common.base.Preconditions;
 import java.io.Closeable;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Formatter;
+import java.nio.charset.StandardCharsets;
 import javax.annotation.Nullable;
 
 import ucar.array.ArrayType;
-import ucar.ma2.Array;
-import ucar.ma2.ArrayChar;
-import ucar.ma2.Index;
-import ucar.ma2.IndexIterator;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Section;
-import ucar.nc2.Attribute;
-import ucar.nc2.AttributeContainerMutable;
+import ucar.array.Array;
+import ucar.array.Arrays;
+import ucar.array.Index;
+import ucar.array.InvalidRangeException;
+import ucar.array.Section;
 import ucar.nc2.Dimension;
 import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
@@ -31,7 +27,7 @@ import ucar.nc2.util.CancelTask;
 /**
  * Utility class for copying a NetcdfFile object, or parts of one, to a netcdf-3 or netcdf-4 file.
  * This handles the entire CDM model (groups, etc) if you are writing to netcdf-4.
- * If copying from an extended model to classic model, Strings are converted to Chars; nested groups are not allowed.
+ * If copying from an extended model to classic model, Strings are converted to Chars; nested groups are ignored.
  * <p/>
  * The fileIn may be an NcML file which has a referenced dataset in the location URL, the underlying data (modified by
  * the NcML) is written to the new file. If the NcML does not have a referenced dataset, then the new file is filled
@@ -86,6 +82,7 @@ public class NetcdfCopier implements Closeable {
       cancel = CancelTask.create();
     }
 
+    // Note that we are clobbering the original builders
     Group.Builder root = fileIn.getRootGroup().toBuilder();
     convertGroup(root);
     writerb.setRootGroup(root);
@@ -110,41 +107,7 @@ public class NetcdfCopier implements Closeable {
     }
   }
 
-  private Attribute convertAttribute(Attribute org) {
-    if (extended) {
-      return org;
-    }
-    if (org.isString() && org.getLength() > 1) {
-      Formatter f = new Formatter();
-      for (int count = 0; count < org.getLength(); count++) {
-        if (count > 0) {
-          f.format(", ");
-        }
-        f.format("%s", org.getStringValue(count));
-      }
-      return Attribute.builder().setName(org.getShortName()).setStringValue(f.toString()).build();
-    }
-
-    if (!org.getDataType().isUnsigned()) {
-      return org;
-    }
-
-    Array orgValues = org.getValues();
-    Array nc3Values = Array.makeFromJavaArray(orgValues.getStorage(), false);
-    return Attribute.builder().setName(org.getShortName()).setValues(nc3Values).build();
-  }
-
-  private void convertAttributes(AttributeContainerMutable atts) {
-    ArrayList<Attribute> newAtts = new ArrayList<>();
-    for (Attribute att : atts) {
-      newAtts.add(convertAttribute(att));
-    }
-    atts.clear().addAll(newAtts);
-  }
-
   private void convertGroup(Group.Builder group) throws IOException {
-    convertAttributes(group.getAttributeContainer());
-
     for (Variable.Builder<?> var : group.vbuilders) {
       convertVariable(group, var);
     }
@@ -164,22 +127,20 @@ public class NetcdfCopier implements Closeable {
     vb.resetCache();
     vb.resetAutoGen();
 
-    convertAttributes(vb.getAttributeContainer());
-
     if (vb.dataType == ArrayType.STRUCTURE) {
       Structure.Builder<?> sb = (Structure.Builder<?>) vb;
       for (Variable.Builder<?> nested : sb.vbuilders) {
         convertVariable(parent, nested);
       }
     } else {
+      // convert Strings to bytes
       if (!extended && vb.dataType == ArrayType.STRING) {
         // find maximum length
-        Array data = readDataFromOriginal(vb);
-        IndexIterator ii = data.getIndexIterator();
+        Array<String> sdata = (Array<String>) readDataFromOriginal(vb);
         int max_len = 0;
-        while (ii.hasNext()) {
-          String s = (String) ii.getObjectNext();
-          max_len = Math.max(max_len, s.length());
+        for (String s : sdata) {
+          byte[] bytes = s.getBytes(StandardCharsets.UTF_8);
+          max_len = Math.max(max_len, bytes.length);
         }
 
         // add last dimension
@@ -196,8 +157,8 @@ public class NetcdfCopier implements Closeable {
       int count = 0;
       for (Dimension dim : vb.getDimensions()) {
         if (!dim.isShared()) {
-          String dimName = vb.shortName + "_Dim" + count; // LOOK could turn these back into unshared dimensions when
-                                                          // reading.
+          // LOOK could turn these back into unshared dimensions when reading.
+          String dimName = vb.shortName + "_Dim" + count;
           Dimension sharedDim = Dimension.builder(dimName, dim.getLength()).setIsShared(false).build();
           parent.addDimension(sharedDim);
           vb.replaceDimension(count, sharedDim);
@@ -207,12 +168,12 @@ public class NetcdfCopier implements Closeable {
     }
   }
 
-  private Array readDataFromOriginal(Variable.Builder<?> vb) throws IOException {
+  private Array<?> readDataFromOriginal(Variable.Builder<?> vb) throws IOException {
     Variable v = fileIn.findVariable(vb.getFullName());
     if (v == null) {
       throw new RuntimeException("Cant find variable" + vb.getFullName());
     }
-    return v.read();
+    return v.readArray();
   }
 
   @Override
@@ -259,13 +220,13 @@ public class NetcdfCopier implements Closeable {
 
   // copy all the data in oldVar to the newVar
   private void copyAll(NetcdfFormatWriter ncwriter, Variable oldVar, Variable newVar) throws IOException {
-    Array data = oldVar.read();
+    Array<?> data = oldVar.readArray();
     try {
       if (!extended && oldVar.getArrayType() == ArrayType.STRING) {
-        data = convertDataToChar(newVar, data);
+        data = convertStringDataToChar(newVar, data);
       }
       if (data.getSize() > 0) { // zero when record dimension = 0
-        ncwriter.write(newVar, data);
+        ncwriter.write(newVar, data.getIndex(), data);
       }
 
     } catch (InvalidRangeException e) {
@@ -276,11 +237,10 @@ public class NetcdfCopier implements Closeable {
 
   /**
    * Copies data from {@code oldVar} to {@code newVar}. The writes are done in a series of chunks no larger than
-   * {@code maxChunkSize}
-   * bytes.
+   * {@code maxChunkSize} bytes.
    *
    * @param oldVar a variable from the original file to copy data from.
-   * @param newVar a variable from the original file to copy data from.
+   * @param newVar a variable from the new file to copy data to.
    * @param maxChunkSize the size, <b>in bytes</b>, of the largest chunk to write.
    * @param cancel allow user to cancel, may be null.
    * @throws IOException if an I/O error occurs.
@@ -288,29 +248,28 @@ public class NetcdfCopier implements Closeable {
   private void copySome(NetcdfFormatWriter ncwriter, Variable oldVar, Variable newVar, long maxChunkSize,
       CancelTask cancel) throws IOException {
     long maxChunkElems = maxChunkSize / oldVar.getElementSize();
-    long byteWriteTotal = 0;
 
     ChunkingIndex index = new ChunkingIndex(oldVar.getShape());
-    while (index.currentElement() < index.getSize()) {
+    int nelemsWritten = 0;
+    while (nelemsWritten < oldVar.getSize()) {
       try {
         int[] chunkOrigin = index.getCurrentCounter();
         int[] chunkShape = index.computeChunkShape(maxChunkElems);
 
-        Array data = oldVar.read(chunkOrigin, chunkShape);
+        Array<?> data = oldVar.readArray(new Section(chunkOrigin, chunkShape));
         if (!getOutputFormat().isNetdf4format() && oldVar.getArrayType() == ArrayType.STRING) {
-          data = convertDataToChar(newVar, data);
+          data = convertStringDataToChar(newVar, data);
         }
 
         if (data.getSize() > 0) { // zero when record dimension = 0
-          ncwriter.write(newVar, chunkOrigin, data);
+          ncwriter.write(newVar, Index.of(chunkOrigin), data);
           if (debugWrite) {
             System.out.println(" write " + data.getSize() + " bytes at " + new Section(chunkOrigin, chunkShape));
           }
-
-          byteWriteTotal += data.getSize();
+          nelemsWritten += data.getSize();
         }
 
-        index.setCurrentCounter(index.currentElement() + (int) Index.computeSize(chunkShape));
+        index.setCurrentCounter(index.currentElement() + (int) ucar.ma2.Index.computeSize(chunkShape));
         if (cancel.isCancel()) {
           return;
         }
@@ -322,19 +281,18 @@ public class NetcdfCopier implements Closeable {
     }
   }
 
-  private Array convertDataToChar(Variable newVar, Array oldData) {
-    ArrayChar newData = (ArrayChar) Array.factory(ucar.ma2.DataType.CHAR, newVar.getShape());
-    Index ima = newData.getIndex();
-    IndexIterator ii = oldData.getIndexIterator();
-    while (ii.hasNext()) {
-      String s = (String) ii.getObjectNext();
-      int[] c = ii.getCurrentCounter();
-      for (int i = 0; i < c.length; i++) {
-        ima.setDim(i, c[i]);
-      }
-      newData.setString(ima, s);
+  private Array<Byte> convertStringDataToChar(Variable newVar, Array<?> oldData) {
+    byte[] parray = new byte[(int) newVar.getSize()];
+    int maxlen = newVar.getShape()[newVar.getRank() - 1];
+
+    Array<String> sdata = (Array<String>) oldData;
+    int dst = 0;
+    for (String s : sdata) {
+      byte[] bytes = s.getBytes(StandardCharsets.UTF_8);
+      System.arraycopy(bytes, 0, parray, dst, bytes.length);
+      dst += maxlen;
     }
-    return newData;
+    return Arrays.factory(ArrayType.CHAR, newVar.getShape(), parray);
   }
 }
 

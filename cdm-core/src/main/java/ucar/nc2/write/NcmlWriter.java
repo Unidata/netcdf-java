@@ -30,9 +30,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import thredds.client.catalog.Catalog;
 import ucar.array.ArrayType;
-import ucar.ma2.Array;
-import ucar.ma2.Index;
-import ucar.ma2.IndexIterator;
+import ucar.array.Array;
+import ucar.array.Arrays;
+import ucar.array.Index;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.EnumTypedef;
@@ -444,35 +444,39 @@ public class NcmlWriter {
     Element elem = new Element("values", namespace);
 
     StringBuilder buff = new StringBuilder();
-    Array a = variable.read();
+    Array<?> a = variable.readArray();
 
     if (variable.getArrayType() == ArrayType.CHAR) {
-      char[] data = (char[]) a.getStorage();
-      elem.setText(new String(data));
+      Array<Byte> bdata = (Array<Byte>) a;
+      elem.setText(Arrays.makeStringFromChar(bdata));
+
     } else if (variable.getArrayType() == ArrayType.STRING) {
       elem.setAttribute("separator", "|");
       int count = 0;
+      Array<String> sdata = (Array<String>) a;
 
-      for (IndexIterator iter = a.getIndexIterator(); iter.hasNext();) {
+      for (String s : sdata) {
         if (count++ > 0) {
           buff.append("|");
         }
-        buff.append(iter.getObjectNext());
+        buff.append(s);
       }
 
       elem.setText(buff.toString());
     } else {
+      Array<Number> ndata = (Array<Number>) a;
       // check to see if regular
       if (allowRegular && (a.getRank() == 1) && (a.getSize() > 2)) {
-        Index ima = a.getIndex();
-        double start = a.getDouble(ima.set(0));
-        double incr = a.getDouble(ima.set(1)) - start;
+        Index ima = ndata.getIndex();
+        double start = ndata.get(ima.set(0)).doubleValue();
+        double incr = ndata.get(ima.set(1)).doubleValue() - start;
         boolean isRegular = true;
-        for (int i = 2; i < a.getSize(); i++) {
-          double v1 = a.getDouble(ima.set(i));
-          double v0 = a.getDouble(ima.set(i - 1));
-          if (!Misc.nearlyEquals(v1 - v0, incr))
+        for (int i = 2; i < ndata.getSize(); i++) {
+          double v1 = ndata.get(ima.set(i)).doubleValue();;
+          double v0 = ndata.get(ima.set(i - 1)).doubleValue();;
+          if (!Misc.nearlyEquals(v1 - v0, incr)) {
             isRegular = false;
+          }
         }
 
         if (isRegular) {
@@ -484,20 +488,20 @@ public class NcmlWriter {
       }
 
       // not regular
-      IndexIterator iter = a.getIndexIterator();
       boolean first = true;
-      while (iter.hasNext()) {
-        if (!first)
+      for (Number val : ndata) {
+        if (!first) {
           buff.append(" ");
+        }
         switch (variable.getArrayType()) {
           case FLOAT:
-            buff.append(iter.getFloatNext());
+            buff.append(val.floatValue());
             break;
           case DOUBLE:
-            buff.append(iter.getDoubleNext());
+            buff.append(val.doubleValue());
             break;
           default:
-            buff.append(iter.getIntNext());
+            buff.append(val.intValue());
             break;
         }
         first = false;

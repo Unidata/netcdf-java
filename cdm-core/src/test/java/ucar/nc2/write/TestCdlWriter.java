@@ -15,6 +15,7 @@ import java.util.Formatter;
 
 import static com.google.common.truth.Truth.assertThat;
 
+/** Test {@link CDLWriter} */
 public class TestCdlWriter {
   // see cdm-core/src/test/data/cdl/test_atomic_types.cdl
   @Test

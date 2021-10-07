@@ -13,14 +13,13 @@ import java.util.Optional;
 
 import ucar.array.ArrayType;
 import ucar.array.ArraysConvert;
+import ucar.array.Section;
 import ucar.array.Storage;
 import ucar.array.StructureData;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayStructureBB;
-import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
-import ucar.ma2.Section;
 import ucar.ma2.StructureMembers;
 import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
@@ -29,7 +28,7 @@ import ucar.nc2.Variable;
 import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.iosp.IOServiceProvider;
-import ucar.nc2.iosp.IospHelper;
+import ucar.nc2.iosp.IospArrayHelper;
 import ucar.nc2.iosp.Layout;
 import ucar.nc2.iosp.LayoutRegular;
 import ucar.nc2.iosp.LayoutRegularSegmented;
@@ -214,12 +213,14 @@ public class N3iosp extends AbstractIOServiceProvider implements IOServiceProvid
   // data reading
 
   @Override
-  public ucar.ma2.Array readData(ucar.nc2.Variable v2, Section section) throws IOException, InvalidRangeException {
+  public ucar.ma2.Array readData(ucar.nc2.Variable v2, ucar.ma2.Section section)
+      throws IOException, InvalidRangeException {
     if (v2 instanceof Structure) {
       return readStructureData((Structure) v2, section);
     }
 
-    Object data = readDataObject(v2, section);
+    Section newSection = ArraysConvert.convertSection(section);
+    Object data = readDataObject(v2, newSection);
     return Array.factory(v2.getDataType(), section.getShape(), data);
   }
 
@@ -231,8 +232,7 @@ public class N3iosp extends AbstractIOServiceProvider implements IOServiceProvid
     }
 
     try {
-      Section oldSection = ArraysConvert.convertSection(section);
-      Object data = readDataObject(v2, oldSection);
+      Object data = readDataObject(v2, section);
       if (v2.getArrayType() == ArrayType.CHAR) {
         data = ArraysConvert.convertCharToByte((char[]) data);
       }
@@ -245,16 +245,17 @@ public class N3iosp extends AbstractIOServiceProvider implements IOServiceProvid
   /** Read data subset from file for a variable, create primitive array. */
   private Object readDataObject(Variable v2, Section section) throws java.io.IOException, InvalidRangeException {
     Vinfo vinfo = (Vinfo) v2.getSPobject();
-    DataType dataType = v2.getDataType();
+    ArrayType dataType = v2.getArrayType();
 
-    Layout layout = (!v2.isUnlimited()) ? new LayoutRegular(vinfo.begin, v2.getElementSize(), v2.getShape(), section)
-        : new LayoutRegularSegmented(vinfo.begin, v2.getElementSize(), header.recsize, v2.getShape(), section);
+    ucar.ma2.Section oldSection = ArraysConvert.convertSection(section);
+    Layout layout = (!v2.isUnlimited()) ? new LayoutRegular(vinfo.begin, v2.getElementSize(), v2.getShape(), oldSection)
+        : new LayoutRegularSegmented(vinfo.begin, v2.getElementSize(), header.recsize, v2.getShape(), oldSection);
 
     // not possible, anyway wrong returning Array instead of primitive array
     // if (layout.getTotalNelems() == 0) {
     // return Array.factory(dataType, section.getShape());
     // }
-    return IospHelper.readDataFill(raf, layout, dataType, null, null);
+    return IospArrayHelper.readDataFill(raf, layout, dataType, null, null);
   }
 
   /**
@@ -266,7 +267,7 @@ public class N3iosp extends AbstractIOServiceProvider implements IOServiceProvid
    * @return an ArrayStructure, with all the data read in.
    * @throws IOException on error
    */
-  private ucar.ma2.Array readStructureData(ucar.nc2.Structure s, Section section) throws java.io.IOException {
+  private ucar.ma2.Array readStructureData(ucar.nc2.Structure s, ucar.ma2.Section section) throws java.io.IOException {
     // has to be 1D
     Range recordRange = section.getRange(0);
 

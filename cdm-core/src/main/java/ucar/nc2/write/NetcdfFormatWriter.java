@@ -194,7 +194,7 @@ public class NetcdfFormatWriter implements Closeable {
    * </pre>
    * 
    * @param v write to this variable, must be of type CHAR.
-   * @param origin offset within the variable to start writing.
+   * @param origin offset within the variable to start writing. The innermost dimension must be 0.
    * @param data The String to write.
    */
   public void writeStringData(Variable v, Index origin, String data) throws IOException, InvalidRangeException {
@@ -217,6 +217,31 @@ public class NetcdfFormatWriter implements Closeable {
     }
 
     Array<?> barray = Arrays.factory(ArrayType.CHAR, shape, bb);
+    write(v, origin, barray);
+  }
+
+  public void writeStringData(Variable v, Index origin, Array<String> data) throws IOException, InvalidRangeException {
+    Preconditions.checkArgument(v.getArrayType() == ArrayType.CHAR);
+    Preconditions.checkArgument(v.getRank() > 0);
+    Preconditions.checkArgument(v.getRank() == data.getRank() + 1);
+
+    int[] shape = v.getShape();
+    int[] dataShape = data.getShape();
+    for (int i = 0; i < shape.length - 1; i++) {
+      shape[i] = dataShape[i];
+    }
+    int last = shape[shape.length - 1];
+    int stride = (int) Arrays.computeSize(shape) / last;
+
+    // write all at once by copying bytes into a single array
+    byte[] storage = new byte[(int) Arrays.computeSize(shape)];
+    int destPos = 0;
+    for (String sdata : data) {
+      byte[] sb = sdata.getBytes(StandardCharsets.UTF_8);
+      System.arraycopy(sb, 0, storage, destPos, Math.min(sb.length, last));
+      destPos += stride;
+    }
+    Array<?> barray = Arrays.factory(ArrayType.CHAR, shape, storage);
     write(v, origin, barray);
   }
 

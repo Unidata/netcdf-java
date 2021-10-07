@@ -112,7 +112,7 @@ recordsGroup/recordsStruct = UNREADABLE
         and: "create unreadable Structure with variable-length dimension and add it to recordsGroup"
         // recordsStruct will be unreadable because we don't cache any data for it. In fact, it's not even possible
         // to cache data for Structures because ArrayStructure.copy() is unsupported, and caching needs that.
-        // Besides, there's no sensible way to represent a n>1-dimensional Structure's values in NcML anyway.
+        // Besides, there's no sensible way to represent a n > 1-dimensional Structure's values in NcML anyway.
         Structure.Builder recordsStruct = Structure.builder().setName("recordsStruct");
         Dimension numRecords = new Dimension("numRecords", -1, false, false, true)  // Variable-length dim
         recordsStruct.setDimensions([numRecords])

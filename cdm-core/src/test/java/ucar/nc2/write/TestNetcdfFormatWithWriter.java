@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.write;
@@ -26,7 +26,7 @@ import java.io.IOException;
 
 import static com.google.common.truth.Truth.assertThat;
 
-/** Test NetcdfFormatWriter */
+/** Test {@link NetcdfFormatWriter} */
 public class TestNetcdfFormatWithWriter {
   @Rule
   public TemporaryFolder tempFolder = new TemporaryFolder();

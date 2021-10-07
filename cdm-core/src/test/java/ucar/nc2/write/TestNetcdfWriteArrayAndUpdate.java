@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.write;
@@ -29,7 +29,7 @@ import java.util.List;
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.fail;
 
-/** Test successive NetcdfFormat Writing and updating */
+/** Test successive {@link NetcdfFormatWriter} Writing and updating */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TestNetcdfWriteArrayAndUpdate {
   @ClassRule

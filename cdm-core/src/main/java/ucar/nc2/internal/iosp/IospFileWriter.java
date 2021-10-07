@@ -4,9 +4,10 @@
  */
 package ucar.nc2.internal.iosp;
 
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Section;
-import ucar.ma2.StructureData;
+import ucar.array.Array;
+import ucar.array.InvalidRangeException;
+import ucar.array.Section;
+import ucar.array.StructureData;
 import ucar.nc2.Attribute;
 import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
@@ -17,7 +18,7 @@ import ucar.nc2.util.CancelTask;
 import java.io.Closeable;
 import java.io.IOException;
 
-/** This is an interface to Netcdf-3 and Netcdf-4 file creating. */
+/** This is an interface to Netcdf-3 and Netcdf-4 file writing. */
 public interface IospFileWriter extends Closeable {
   /**
    * Create new file, populate it from the objects in rootGroup.
@@ -71,7 +72,10 @@ public interface IospFileWriter extends Closeable {
    * @deprecated will change to using ucar.array in ver7.
    */
   @Deprecated
-  void writeData(Variable v2, Section section, ucar.ma2.Array values) throws IOException, InvalidRangeException;
+  void writeData(Variable v2, ucar.ma2.Section section, ucar.ma2.Array values)
+      throws IOException, ucar.ma2.InvalidRangeException;
+
+  void writeData(Variable v2, Section section, Array<?> values) throws IOException, InvalidRangeException;
 
   /**
    * Append a structureData along the unlimited dimension
@@ -82,6 +86,8 @@ public interface IospFileWriter extends Closeable {
    * @deprecated will change to using ucar.array in ver7.
    */
   @Deprecated
+  int appendStructureData(Structure s, ucar.ma2.StructureData sdata) throws IOException, ucar.ma2.InvalidRangeException;
+
   int appendStructureData(Structure s, StructureData sdata) throws IOException, InvalidRangeException;
 
   /**
