@@ -7,7 +7,7 @@ package ucar.nc2.internal.dataset.conv;
 
 import org.junit.Assert;
 import org.junit.Test;
-import ucar.ma2.Array;
+import ucar.array.Array;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants._Coordinate;
@@ -20,42 +20,36 @@ import java.util.List;
 import static java.lang.String.format;
 
 public class TestSimpleGeom {
-
-  private final String cfConvention = "CF-1.X";
+  private static final String cfConvention = "CF-1.X";
 
   @Test
   public void testLine() throws IOException {
-
     String failMessage, found, expected;
     boolean testCond;
-
     String tstFile = TestDir.cdmLocalTestDataDir + "dataset/SimpleGeos/hru_soil_moist_vlen_3hru_5timestep.nc";
 
-    // open the test file
-    NetcdfDataset ncd = NetcdfDatasets.openDataset(tstFile);
+    try (NetcdfDataset ncd = NetcdfDatasets.openDataset(tstFile)) {
+      // make sure this dataset used the cfConvention
+      expected = cfConvention;
+      found = ncd.getConventionUsed();
+      testCond = found.equals(expected);
+      failMessage =
+          format("This dataset used the %s convention, but should have used the %s convention.", found, expected);
+      Assert.assertTrue(failMessage, testCond);
 
-    // make sure this dataset used the cfConvention
-    expected = cfConvention;
-    found = ncd.getConventionUsed();
-    testCond = found.equals(expected);
-    failMessage =
-        format("This dataset used the %s convention, but should have used the %s convention.", found, expected);
-    Assert.assertTrue(failMessage, testCond);
-
-    // check that attributes were filled in correctly
-    List<Variable> vars = ncd.getVariables();
-    for (Variable v : vars) {
-      if (v.findAttribute(CF.GEOMETRY) != null) {
-        Assert.assertNotNull(v.findAttribute(CF.NODE_COORDINATES));
-        Assert.assertNotNull(v.findAttribute(_Coordinate.Axes));
+      // check that attributes were filled in correctly
+      List<Variable> vars = ncd.getVariables();
+      for (Variable v : vars) {
+        if (v.findAttribute(CF.GEOMETRY) != null) {
+          Assert.assertNotNull(v.findAttribute(CF.NODE_COORDINATES));
+          Assert.assertNotNull(v.findAttribute(_Coordinate.Axes));
+        }
       }
     }
-    ncd.close();
   }
 
   @Test
   public void testPolygon() throws IOException {
-
     String failMessage, found, expected;
     boolean testCond;
 
@@ -90,7 +84,7 @@ public class TestSimpleGeom {
     try (NetcdfDataset ncd = NetcdfDatasets.openDataset(tstFile)) {
       for (CoordinateAxis axis : ncd.getCoordinateAxes()) {
         System.out.printf("Try to read %s ", axis.getFullName());
-        Array data = axis.read();
+        Array<?> data = axis.readArray();
         System.out.printf(" OK (%d) %n", data.getSize());
       }
     }
@@ -103,7 +97,7 @@ public class TestSimpleGeom {
     try (NetcdfDataset ncd = NetcdfDatasets.openDataset(tstFile)) {
       for (CoordinateAxis axis : ncd.getCoordinateAxes()) {
         System.out.printf("Try to read %s ", axis.getFullName());
-        Array data = axis.read();
+        Array<?> data = axis.readArray();
         System.out.printf(" OK (%d) %n", data.getSize());
       }
     }

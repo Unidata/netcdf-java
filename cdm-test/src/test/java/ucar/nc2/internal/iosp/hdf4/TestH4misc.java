@@ -7,29 +7,20 @@ package ucar.nc2.internal.iosp.hdf4;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ucar.ma2.Array;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.MAMath;
+import ucar.array.Array;
+import ucar.array.Arrays;
+import ucar.array.InvalidRangeException;
+import ucar.array.Section;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
-import ucar.nc2.internal.util.CompareNetcdf2;
+import ucar.nc2.internal.util.CompareArrayToArray;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 
-/**
- * Describe
- *
- * @author caron
- * @since 10/27/2014
- */
 @Category(NeedsCdmUnitTest.class)
 public class TestH4misc {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   static public String testDir = TestDir.cdmUnitTestDir + "formats/hdf4/";
 
   @Test
@@ -40,8 +31,8 @@ public class TestH4misc {
       Variable v = ncfile.findVariable(vname);
       assert v != null : filename + " " + vname;
 
-      Array data = v.read();
-      System.out.printf(" sum =          %f%n", MAMath.sumDouble(data));
+      Array<?> data = v.readArray();
+      System.out.printf(" sum =          %f%n", Arrays.sumDouble(data));
 
       double sum2 = 0;
       double sum3 = 0;
@@ -50,18 +41,18 @@ public class TestH4misc {
       int[] size = new int[] {1, varShape[1], varShape[2]};
       for (int i = 0; i < varShape[0]; i++) {
         origin[0] = i;
-        Array data2D = v.read(origin, size);
+        Array<?> data2D = v.readArray(new Section(origin, size));
 
-        double sum = MAMath.sumDouble(data2D);
+        double sum = Arrays.sumDouble(data2D);
         System.out.printf("  %d sum3D =        %f%n", i, sum);
         sum2 += sum;
 
         // assert data2D.getRank() == 2;
-        sum = MAMath.sumDouble(data2D.reduce(0));
+        sum = Arrays.sumDouble(Arrays.reduce(data2D, 0));
         System.out.printf("  %d sum2D =        %f%n", i, sum);
         sum3 += sum;
 
-        CompareNetcdf2.compareData(v.getShortName(), data2D, data2D.reduce(0));
+        CompareArrayToArray.compareData(v.getShortName(), data2D, Arrays.reduce(data2D, 0));
       }
       System.out.printf(" sum2D =        %f%n", sum2);
       System.out.printf(" sum2D.reduce = %f%n", sum3);

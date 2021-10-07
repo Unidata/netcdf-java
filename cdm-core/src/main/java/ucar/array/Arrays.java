@@ -543,6 +543,15 @@ public class Arrays {
     }
   }
 
+  public static double sumDouble(Array<?> array) {
+    Array<Number> ddata = (Array<Number>) array;
+    double sum = 0;
+    for (Number val : ddata) {
+      sum += val.doubleValue();
+    }
+    return sum;
+  }
+
   /** Convert a numeric array to double values. */
   public static Array<Double> toDouble(Array<?> array) {
     if (array instanceof ArrayDouble) {

@@ -2,17 +2,19 @@ package ucar.nc2.util;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.Array;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Range;
-import ucar.ma2.Section;
+import ucar.array.Array;
+import ucar.array.Arrays;
+import ucar.array.InvalidRangeException;
+import ucar.array.Range;
+import ucar.array.Section;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.Random;
-import ucar.nc2.internal.util.CompareNetcdf2;
+
+import ucar.nc2.internal.util.CompareArrayToArray;
 
 /**
  * Utilities to read and subset data
@@ -40,9 +42,9 @@ public class TestSubsettingUtils {
       int[] shape = v.getShape();
 
       // read entire array
-      Array A;
+      Array<?> A;
       try {
-        A = v.read();
+        A = v.readArray();
       } catch (IOException e) {
         System.err.println("ERROR reading file");
         assert (false);
@@ -53,7 +55,7 @@ public class TestSubsettingUtils {
       assert dataShape.length == shape.length;
       for (int i = 0; i < shape.length; i++)
         assert dataShape[i] == shape[i];
-      Section all = v.getShapeAsSection();
+      Section all = v.getSection();
       System.out.println("  Entire dataset=" + all);
 
       for (int k = 0; k < ntrials; k++) {
@@ -73,28 +75,29 @@ public class TestSubsettingUtils {
     try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
       Variable v = ncfile.findVariable(varName);
       assert (null != v);
-      subsetVariable(v, s, v.read());
+      subsetVariable(v, s, v.readArray());
     }
   }
 
-  private static void subsetVariable(Variable v, Section s, Array fullData) throws IOException, InvalidRangeException {
+  private static void subsetVariable(Variable v, Section s, Array<?> fullData)
+      throws IOException, InvalidRangeException {
     System.out.println("   section=" + s);
 
     // read just that
-    Array sdata = v.read(s);
+    Array<?> sdata = v.readArray(s);
     assert sdata.getRank() == s.getRank();
     int[] sshape = sdata.getShape();
     for (int i = 0; i < sshape.length; i++)
       assert sshape[i] == s.getShape(i);
 
     // compare with logical section
-    Array Asection = fullData.sectionNoReduce(s.getRanges());
+    Array<?> Asection = Arrays.section(fullData, s);
     int[] ashape = Asection.getShape();
     assert (ashape.length == sdata.getRank());
     for (int i = 0; i < ashape.length; i++)
       assert sshape[i] == ashape[i];
 
-    CompareNetcdf2.compareData(v.getShortName(), sdata, Asection);
+    CompareArrayToArray.compareData(v.getShortName(), sdata, Asection);
   }
 
   private static Section randomSubset(Section all, int stride) throws InvalidRangeException {

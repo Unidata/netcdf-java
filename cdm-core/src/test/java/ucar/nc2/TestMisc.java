@@ -8,7 +8,6 @@ import junit.framework.TestCase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.internal.util.EscapeStrings;
-import ucar.ma2.*;
 import java.lang.invoke.MethodHandles;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -88,20 +87,6 @@ public class TestMisc extends TestCase {
         return 0;
       return (f2.getTime() > f1.getTime()) ? 1 : -1;
     }
-  }
-
-
-  public Array concatArray(Array array1, Array array2) {
-    float[] data1 = (float[]) array1.copyTo1DJavaArray();
-    float[] data2 = (float[]) array2.copyTo1DJavaArray();
-    float[] result = new float[data1.length + data2.length];
-
-    System.arraycopy(data1, 0, result, 0, data1.length);
-    System.arraycopy(data2, 0, result, data1.length, data2.length);
-
-    // now put it back into an ucar.ma2.Array
-    int[] resultShape = new int[] {result.length};
-    return Array.factory(DataType.FLOAT, resultShape, result);
   }
 
 }
