@@ -129,7 +129,7 @@ public class Arrays {
    *
    * @param shape multidimensional shape
    */
-  static <T> Array<T> factory(ArrayType dataType, int[] shape) {
+  public static <T> Array<T> factory(ArrayType dataType, int[] shape) {
     switch (dataType) {
       case BOOLEAN:
       case BYTE:
