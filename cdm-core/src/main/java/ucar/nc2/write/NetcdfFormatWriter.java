@@ -170,7 +170,7 @@ public class NetcdfFormatWriter implements Closeable {
    */
   public void write(Variable v, Index origin, ucar.array.Array<?> values) throws IOException, InvalidRangeException {
     Preconditions.checkArgument(v.getArrayType() == values.getArrayType()); // LOOK do something better?
-    Preconditions.checkArgument(v.getRank() == values.getRank()); // LOOK do something better: contains?
+    // Preconditions.checkArgument(v.getRank() == values.getRank()); // LOOK do something better: contains?
 
     // we have to keep using old until all spis implement new?
     ucar.ma2.Array oldArray = ArraysConvert.convertFromArray(values);
@@ -227,11 +227,10 @@ public class NetcdfFormatWriter implements Closeable {
 
     int[] shape = v.getShape();
     int[] dataShape = data.getShape();
-    for (int i = 0; i < shape.length - 1; i++) {
+    for (int i = 0; i < dataShape.length; i++) {
       shape[i] = dataShape[i];
     }
     int last = shape[shape.length - 1];
-    int stride = (int) Arrays.computeSize(shape) / last;
 
     // write all at once by copying bytes into a single array
     byte[] storage = new byte[(int) Arrays.computeSize(shape)];
@@ -239,7 +238,7 @@ public class NetcdfFormatWriter implements Closeable {
     for (String sdata : data) {
       byte[] sb = sdata.getBytes(StandardCharsets.UTF_8);
       System.arraycopy(sb, 0, storage, destPos, Math.min(sb.length, last));
-      destPos += stride;
+      destPos += last;
     }
     Array<?> barray = Arrays.factory(ArrayType.CHAR, shape, storage);
     write(v, origin, barray);

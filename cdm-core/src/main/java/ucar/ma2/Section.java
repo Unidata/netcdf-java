@@ -5,6 +5,7 @@
 
 package ucar.ma2;
 
+import com.google.common.base.Preconditions;
 import com.google.common.primitives.Ints;
 
 import java.util.ArrayList;
@@ -116,6 +117,7 @@ public class Section {
    * @throws InvalidRangeException if origin < 0, or shape < 1.
    */
   public Section(int[] origin, int[] shape) throws InvalidRangeException {
+    Preconditions.checkArgument(origin.length == shape.length);
     ArrayList<Range> builder = new ArrayList<>();
     for (int i = 0; i < shape.length; i++) {
       if (shape[i] > 0)
@@ -770,8 +772,12 @@ public class Section {
    * @throws InvalidRangeException if section rank doesnt match shape length
    */
   public boolean equivalent(int[] shape) throws InvalidRangeException {
-    if (getRank() != shape.length)
+    if (isScalar(shape) && isScalar(getShape())) {
+      return true;
+    }
+    if (getRank() != shape.length) {
       throw new InvalidRangeException("Invalid Section rank");
+    }
 
     for (int i = 0; i < ranges.size(); i++) {
       Range r = ranges.get(i);
@@ -783,6 +789,10 @@ public class Section {
         return false;
     }
     return true;
+  }
+
+  public static boolean isScalar(int[] shape) {
+    return (shape.length == 0) || (shape.length == 1 && shape[0] == 1);
   }
 
   public boolean conformal(Section other) {

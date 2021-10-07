@@ -80,8 +80,8 @@ public class TestNetcdfWriteAndUpdate {
     writerb.addAttribute(new Attribute("versionB", (byte) 3));
 
     // test some errors
-    assertThrows(RuntimeException.class, () -> Arrays.factory(ArrayType.OBJECT, new int[] {1}, null)).getMessage()
-        .contains("Unimplemented ArrayType");
+    assertThrows(RuntimeException.class, () -> Arrays.factory(ArrayType.OBJECT, new int[] {1}, new Object[1]))
+        .getMessage().contains("Unimplemented ArrayType");
 
     try (NetcdfFormatWriter writer = writerb.build()) {
 
@@ -119,29 +119,30 @@ public class TestNetcdfWriteAndUpdate {
 
       // write String as CHAR
       v = writer.findVariable("svar2");
-      writer.writeStringData(v, Index.ofRank(0), "Two pairs of ladies stockings!");
+      writer.writeStringData(v, Index.ofRank(v.getRank()), "Two pairs of ladies stockings!");
 
       // write String arrays
       v = writer.findVariable("names");
-      Index origin = Index.ofRank(1);
+      Index origin = Index.ofRank(v.getRank());
       writer.writeStringData(v, origin, "No pairs of ladies stockings!");
       writer.writeStringData(v, origin.incr(0), "One pairs of ladies stockings!");
       writer.writeStringData(v, origin.incr(0), "Two pairs of ladies stockings!");
 
       v = writer.findVariable("names2");
-      origin = Index.ofRank(1);
+      origin = Index.ofRank(v.getRank());
       writer.writeStringData(v, origin, "0 pairs of ladies stockings!");
       writer.writeStringData(v, origin.incr(0), "1 pairs of ladies stockings!");
       writer.writeStringData(v, origin.incr(0), "2 pairs of ladies stockings!");
 
       // write scalar data
       v = writer.findVariable("scalar");
-      writer.write(v, Index.ofRank(1), Arrays.factory(ArrayType.DOUBLE, new int[] {1}, new double[] {222.333}));
+      writer.write(v, Index.ofRank(v.getRank()),
+          Arrays.factory(ArrayType.DOUBLE, new int[] {1}, new double[] {222.333}));
     }
   }
 
   @Test
-  public void testReadBack() throws IOException, InvalidRangeException {
+  public void test1ReadBack() throws IOException, InvalidRangeException {
     try (NetcdfFile ncfile = NetcdfFiles.open(writerLocation)) {
 
       // read entire array
@@ -199,9 +200,9 @@ public class TestNetcdfWriteAndUpdate {
       assertThat(ca3.getArrayType()).isEqualTo(ArrayType.CHAR);
       Array<String> sval3 = Arrays.makeStringsFromChar((Array<Byte>) ca3);
       ima = sval3.getIndex();
-      assertThat(sval3.get(ima.set(0))).isEqualTo("No pairs of ladies stockings!");
-      assertThat(sval3.get(ima.set(1))).isEqualTo("One pairs of ladies stockings!");
-      assertThat(sval3.get(ima.set(2))).isEqualTo("Two pairs of ladies stockings!");
+      assertThat(sval3.get(ima.set0(0))).isEqualTo("No pairs of ladies stockings!");
+      assertThat(sval3.get(ima.set0(1))).isEqualTo("One pairs of ladies stockings!");
+      assertThat(sval3.get(ima.set0(2))).isEqualTo("Two pairs of ladies stockings!");
 
       // read String Array - 2
       Variable c4 = ncfile.findVariable("names2");
@@ -216,7 +217,7 @@ public class TestNetcdfWriteAndUpdate {
   }
 
   @Test
-  public void testNC3WriteExisting() throws IOException, InvalidRangeException {
+  public void test2ExistingWrite() throws IOException, InvalidRangeException {
     try (NetcdfFormatWriter writer = NetcdfFormatWriter.openExisting(writerLocation).build()) {
       Variable v = writer.findVariable("temperature");
       assertThat(v).isNotNull();
@@ -235,7 +236,7 @@ public class TestNetcdfWriteAndUpdate {
       assertThat(v).isNotNull();
       shape = v.getShape();
       String val = "Testing 1-2-3";
-      char[] carray = new char[val.length()];
+      char[] carray = new char[(int) v.getSize()];
       for (int j = 0; j < val.length(); j++) {
         carray[j] = val.charAt(j);
       }
@@ -271,18 +272,19 @@ public class TestNetcdfWriteAndUpdate {
       assertThat(v).isNotNull();
       Index origin = Index.ofRank(v.getRank());
       writer.writeStringData(v, origin, "0 pairs of ladies stockings!");
-      writer.writeStringData(v, origin.incr(0), "0 pairs of ladies stockings!");
-      writer.writeStringData(v, origin.incr(0), "0 pairs of ladies stockings!");
+      writer.writeStringData(v, origin.incr(0), "1 pairs of ladies stockings!");
+      writer.writeStringData(v, origin.incr(0), "2 pairs of ladies stockings!");
 
       // write scalar data
       v = writer.findVariable("scalar");
-      writer.write(v, Index.ofRank(1), Arrays.factory(ArrayType.DOUBLE, new int[] {1}, new double[] {222.333}));
+      writer.write(v, Index.ofRank(v.getRank()),
+          Arrays.factory(ArrayType.DOUBLE, new int[] {1}, new double[] {222.333}));
     }
   }
 
   // test reading after closing the file
   @Test
-  public void testNC3ReadExisting() throws IOException, InvalidRangeException {
+  public void test3ReadExisting() throws IOException, InvalidRangeException {
     try (NetcdfFile ncfile = NetcdfFiles.open(writerLocation)) {
       // read entire array
       Variable temp = ncfile.findVariable("temperature");
