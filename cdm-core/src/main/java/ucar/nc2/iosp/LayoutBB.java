@@ -22,7 +22,7 @@ import java.nio.*;
  *     IntBuffer buff = chunk.getIntBuffer();
  *     buff.position(chunk.getSrcElem());
  *     int pos = (int) chunk.getDestElem();
- *     for (int i = 0; i < chunk.getNelems(); i++)
+ *     for (int i = 0; i &lt; chunk.getNelems(); i++)
  *       pa[pos++] = buff.get();
  *   }
  *   return pa;

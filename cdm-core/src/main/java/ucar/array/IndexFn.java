@@ -11,7 +11,7 @@ import java.util.Objects;
 import java.util.Set;
 import javax.annotation.concurrent.Immutable;
 
-/** Translate between multidimensional index and 1-d arrays. */
+/** Public by accident. Translate between multidimensional index and 1-d arrays. */
 @Immutable
 public final class IndexFn implements Iterable<Integer> {
 

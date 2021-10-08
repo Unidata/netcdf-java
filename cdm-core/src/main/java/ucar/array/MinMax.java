@@ -9,8 +9,10 @@ import com.google.auto.value.AutoValue;
 /** A value class holding a minimum and a maximum double value. */
 @AutoValue
 public abstract class MinMax {
+  /** The minimum value. */
   public abstract double min();
 
+  /** The maximum value. */
   public abstract double max();
 
   public static MinMax create(double min, double max) {

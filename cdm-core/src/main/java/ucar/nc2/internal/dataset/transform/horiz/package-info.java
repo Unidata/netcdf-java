@@ -4,6 +4,6 @@
  */
 
 /**
- * NOT PUBLIC API - DO NOT USE: Pluggable framework for handling Coordinate Transforms, both Projections and Vertical.
+ * NOT PUBLIC API - DO NOT USE: Pluggable framework for handling Projection Coordinate Transforms.
  */
 package ucar.nc2.internal.dataset.transform.horiz;

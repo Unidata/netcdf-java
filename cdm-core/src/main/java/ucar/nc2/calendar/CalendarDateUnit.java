@@ -19,12 +19,12 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
- * A Calendar Date Unit: "[CALENDAR] unit SINCE baseDate"
+ * A Calendar Date Unit: "[CALENDAR] unit SINCE baseDate".
  * Its main job is to convert "value unit since baseDate" to a CalendarDate.
  */
 @Immutable
 public class CalendarDateUnit {
-  // "seconds since the Unix epoch".
+  /** "seconds since the Unix epoch". */
   public static final CalendarDateUnit unixDateUnit = CalendarDateUnit.of(CalendarPeriod.Field.Second, false,
       new CalendarDateIso(OffsetDateTime.ofInstant(Instant.EPOCH, ZoneOffset.UTC)));
 
@@ -110,22 +110,27 @@ public class CalendarDateUnit {
     this.isCalendarField = isCalendarField;
   }
 
+  /** The base date "[CALENDAR] unit SINCE baseDate". */
   public CalendarDate getBaseDateTime() {
     return baseDate;
   }
 
+  /** The Calendar used (default proleptic_gregorian). */
   public Calendar getCalendar() {
     return baseDate.getCalendar();
   }
 
+  /** The period field taken from the unit: "[CALENDAR] unit SINCE baseDate". */
   public CalendarPeriod.Field getCalendarField() {
     return period.getField();
   }
 
+  /** The period taken from the unit: "[CALENDAR] unit SINCE baseDate". */
   public CalendarPeriod getCalendarPeriod() {
     return period;
   }
 
+  /** Was CALENDAR specified? Only affects Period.Month, Period.Year. */
   public boolean isCalendarField() {
     return isCalendarField;
   }

@@ -18,7 +18,11 @@ import static ucar.nc2.geoloc.vertical.AbstractVerticalTransform.getUnits;
 
 /**
  * Implement CSM "ocean_sigma_coordinate".
- * pressure(x,y,z) = a(z)*p0 + b(z)*surfacePressure(x,y)
+ * 
+ * <pre>
+ * pressure(x, y, z) = a(z) * p0 + b(z) * surfacePressure(x, y)
+ * </pre>
+ * 
  * Get parameters from ctv, use AtmosHybridSigmaPressure.
  */
 @Immutable

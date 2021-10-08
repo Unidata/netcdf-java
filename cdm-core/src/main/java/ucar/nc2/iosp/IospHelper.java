@@ -406,6 +406,7 @@ public class IospHelper {
    * @throws java.io.IOException on write error
    * @deprecated do not use.
    */
+  @Deprecated
   public static long copyToOutputStream(Array data, OutputStream out) throws java.io.IOException {
     Class classType = data.getElementType();
 
@@ -659,6 +660,7 @@ public class IospHelper {
   }
 
   /** @deprecated do not use. */
+  @Deprecated
   private static void extractSection(ParsedSectionSpec child, ArrayStructure outerData, IndexIterator to)
       throws IOException, InvalidRangeException {
     long wantNelems = child.getSection().computeSize();
@@ -686,6 +688,7 @@ public class IospHelper {
   }
 
   /** @deprecated do not use. */
+  @Deprecated
   private static void extractSectionFromSequence(ParsedSectionSpec child, ArraySequence outerData, IndexIterator to)
       throws IOException {
     try (StructureDataIterator sdataIter = outerData.getStructureDataIterator()) {
@@ -699,6 +702,7 @@ public class IospHelper {
   }
 
   /** @deprecated do not use. */
+  @Deprecated
   private static ArrayStructure sectionArrayStructure(ParsedSectionSpec child, ArrayStructure innerData,
       StructureMembers.Member m) {
     StructureMembers membersw = m.getStructureMembers().toBuilder(false).build(); // no data arrays get propagated
@@ -711,7 +715,6 @@ public class IospHelper {
       StructureData sd = innerData.getStructureData(recno);
       result.setStructureData(sd, count++);
     }
-
     return result;
   }
 

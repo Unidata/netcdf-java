@@ -134,6 +134,7 @@ public final class ArrayVlen<T> extends Array<Array<T>> {
     return true;
   }
 
+  /** Element count of all the values in this Array. */
   public long totalLength() {
     return storage.length();
   }
@@ -159,7 +160,7 @@ public final class ArrayVlen<T> extends Array<Array<T>> {
   }
 
   /**
-   * Set the ith value
+   * Set the ith value. Do not use after construction.
    * 
    * @param index 1d index
    * @param value must be primitive array of T, eg double[] of any length.

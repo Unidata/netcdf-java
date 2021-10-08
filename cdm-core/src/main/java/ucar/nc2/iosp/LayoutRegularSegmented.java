@@ -39,7 +39,7 @@ public class LayoutRegularSegmented implements Layout {
    * @param startPos starting address of the entire data array.
    * @param elemSize size of an element in bytes.
    * @param recSize size of outer stride in bytes
-   * @param srcShape shape of the entire data array. must have rank > 0
+   * @param srcShape shape of the entire data array. must have rank &gt; 0
    * @param wantSection the wanted section of data
    * @throws ucar.ma2.InvalidRangeException if ranges are misformed
    */

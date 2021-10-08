@@ -55,6 +55,15 @@ public class GridHorizCurvilinear extends GridHorizCoordinateSystem {
     return createFromEdges(xaxis, yaxis, latedge, lonedge);
   }
 
+  /**
+   * Create a GridHorizCurvilinear from the x/y axes and 2D lat/lon edge arrays.
+   *
+   * @param xaxis the xaxis, may be nominal, as the projection is never used.
+   * @param yaxis the yaxis, may be nominal, as the projection is never used.
+   * @param latedge The latitudes of the edges.
+   * @param lonedge The longitude of the edges.
+   * @return a new GridHorizCurvilinear
+   */
   public static GridHorizCurvilinear createFromEdges(GridAxisPoint xaxis, GridAxisPoint yaxis, Array<Double> latedge,
       Array<Double> lonedge) {
     Preconditions.checkNotNull(xaxis);
@@ -131,14 +140,16 @@ public class GridHorizCurvilinear extends GridHorizCoordinateSystem {
     return true;
   }
 
+  /** Find the grid indexes of the given longitude and latitude. */
   @Override
-  public Optional<CoordReturn> findXYindexFromCoord(double x, double y) {
-    return helper.findIndexFromLatLon(y, x).map(cr -> new CoordReturn(cr.lon, cr.lat, cr.lonindex, cr.latindex));
+  public Optional<CoordReturn> findXYindexFromCoord(double lon, double lat) {
+    return helper.findIndexFromLatLon(lat, lon).map(cr -> new CoordReturn(cr.lon, cr.lat, cr.lonindex, cr.latindex));
   }
 
+  /** Find the grid indexes of the given longitude and latitude, with a starting guess. */
   @Override
-  public Optional<CoordReturn> findXYindexFromCoord(double x, double y, @Nullable int[] initial) {
-    return helper.findIndexFromLatLon(y, x, initial)
+  public Optional<CoordReturn> findXYindexFromCoord(double lon, double lat, @Nullable int[] initial) {
+    return helper.findIndexFromLatLon(lat, lon, initial)
         .map(cr -> new CoordReturn(cr.lon, cr.lat, cr.lonindex, cr.latindex));
   }
 

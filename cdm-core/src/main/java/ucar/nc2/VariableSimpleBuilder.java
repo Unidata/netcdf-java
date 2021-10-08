@@ -18,6 +18,7 @@ import ucar.nc2.constants.CDM;
 public class VariableSimpleBuilder {
 
   /** @deprecated use fromMember(ucar.array.StructureMembers.Member m) */
+  @Deprecated
   public static VariableSimpleBuilder fromMember(ucar.ma2.StructureMembers.Member m) {
     return new VariableSimpleBuilder(m.getName(), m.getDescription(), m.getUnitsString(),
         m.getDataType().getArrayType(), Dimensions.makeDimensionsAnon(m.getShape()));

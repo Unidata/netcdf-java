@@ -23,7 +23,11 @@ import java.util.ServiceLoader;
 /** A factory of Grid Datasets. */
 public class GridDatasetFactory {
 
-  // LOOK since we want GridDataset in a try-with-resource block, use Nullable instead of Optional. Can use orElse(null)
+  /**
+   * Open the named dataset as a GridDataset, using GridDatasetProviders present on the classpath, then
+   * GribGridDataset (if present) and then GridNetcdfDataset.
+   * Use openGridDataset().orElse(null) in a try-with-resources block.
+   */
   @Nullable
   public static GridDataset openGridDataset(String endpoint, Formatter errLog) throws IOException {
     DatasetUrl durl = DatasetUrl.findDatasetUrl(endpoint);
@@ -52,7 +56,7 @@ public class GridDatasetFactory {
     return openNetcdfAsGrid(endpoint, errLog);
   }
 
-  // Open a NetcdfDataset and wrap as a GridDataset if possible.
+  /** Open the named dataset using GridNetcdfDataset. */
   @Nullable
   public static GridDataset openNetcdfAsGrid(String endpoint, Formatter errLog) throws IOException {
     // Otherwise, wrap a NetcdfDataset
@@ -68,7 +72,7 @@ public class GridDatasetFactory {
     return result.get();
   }
 
-  // Wrap an already open NetcdfDataset as a GridDataset if possible.
+  /** Wrap an already open NetcdfDataset as a GridDataset if possible. */
   public static Optional<GridDataset> wrapGridDataset(NetcdfDataset ds, Formatter errLog) throws IOException {
     Optional<GridNetcdfDataset> result =
         GridNetcdfDataset.create(ds, errLog).filter(gds -> !Iterables.isEmpty(gds.getGrids()));
@@ -93,7 +97,7 @@ public class GridDatasetFactory {
     }
   }
 
-  public static GribOpenAttempt openGrib(String endpoint, Formatter errLog) throws IOException {
+  static GribOpenAttempt openGrib(String endpoint, Formatter errLog) throws IOException {
     List<Object> notGribThrowables = Arrays.asList(IllegalAccessException.class, IllegalArgumentException.class,
         ClassNotFoundException.class, NoSuchMethodException.class, NoSuchMethodError.class);
 

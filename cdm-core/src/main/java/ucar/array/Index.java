@@ -13,6 +13,7 @@ import com.google.common.base.Preconditions;
  * Mutable.
  */
 public class Index {
+  /** An Index of the given rank. */
   public static Index ofRank(int rank) {
     if (rank == 0) {
       rank = 1;
@@ -20,8 +21,9 @@ public class Index {
     return new Index(new int[rank]);
   }
 
-  public static Index of(int[] index) {
-    return new Index(index);
+  /** An Index with the current value passed in. */
+  public static Index of(int[] current) {
+    return new Index(current);
   }
 
   /////////////////////////////////////////////////////
@@ -31,7 +33,7 @@ public class Index {
     this.current = index;
   }
 
-  // Copy constructor.
+  /** Copy constructor. */
   public Index(Index from) {
     this.current = new int[from.current.length];
     System.arraycopy(from.current, 0, this.current, 0, from.current.length);

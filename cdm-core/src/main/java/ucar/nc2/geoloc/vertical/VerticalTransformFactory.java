@@ -17,7 +17,7 @@ import java.util.Formatter;
 import java.util.List;
 import java.util.Optional;
 
-/** Factory for Coordinate Transforms. */
+/** Factory for Vertical Coordinate Transforms. */
 public class VerticalTransformFactory {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(VerticalTransformFactory.class);
   private static final List<Transform> transformList = new ArrayList<>();

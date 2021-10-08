@@ -25,11 +25,13 @@ import java.util.Optional;
  * Implement Weather Research and Forecast (WRF) model's vertical Eta coordinate.
  * Because the transform depends on the CoordinateSystem, must handle differently.
  *
+ * <pre>
  * height(x,y,z) = (PH(x,y,z) + PHB(x,y,z)) / 9.81").
  * pressure(x,y,z) = P(x,y,z) + PB(x,y,z)
  *
  * Geopotential is provided on the staggered z grid so transform to height levels.
  * Pressure is provided on the non-staggered z grid so use pressure levels.
+ * </pre>
  */
 @Immutable
 public class WrfEta extends AbstractVerticalTransform {

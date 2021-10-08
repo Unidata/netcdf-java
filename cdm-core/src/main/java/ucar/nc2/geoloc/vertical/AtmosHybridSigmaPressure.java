@@ -23,6 +23,7 @@ import java.util.Optional;
 /**
  * Implement CF "atmosphere_sigma_coordinate".
  *
+ * <pre>
  * Atmosphere hybrid sigma pressure coordinate
  * standard_name = "atmosphere_hybrid_sigma_pressure_coordinate"
  * Definition
@@ -43,7 +44,8 @@ import java.util.Optional;
  * where a is replaced by ap if appropriate.
  *
  * The hybrid sigma-pressure coordinate for level k is defined as a(k)+b(k) or ap(k)/p0+b(k), as appropriate.
- *
+ * </pre>
+ * 
  * @see "http://cfconventions.org/Data/cf-conventions/cf-conventions-1.9/cf-conventions.html#_atmosphere_hybrid_sigma_pressure_coordinate"
  */
 @Immutable

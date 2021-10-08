@@ -16,25 +16,29 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-/** A Coordinate System for materialized gridded data. */
+/** A Coordinate System for materialized gridded data, ie that has been read into memory. */
 @Immutable
 public class MaterializedCoordinateSystem {
 
+  /** Get the GridTimeCoordinateSystem, may be null. */
   @Nullable
   public GridTimeCoordinateSystem getTimeCoordSystem() {
     return tcs;
   }
 
+  /** Get the Ensemble GridAxis, may be null. */
   @Nullable
   public GridAxisPoint getEnsembleAxis() {
     return ens;
   }
 
+  /** Get the Vertical GridAxis, may be null. */
   @Nullable
   public GridAxis<?> getVerticalAxis() {
     return vert;
   }
 
+  /** Get the GridHorizCoordinateSystem. */
   public GridHorizCoordinateSystem getHorizCoordinateSystem() {
     return hcs;
   }
@@ -65,6 +69,7 @@ public class MaterializedCoordinateSystem {
     return result;
   }
 
+  /** For subsets, the ranges of the original axes that constitutes the subset. */
   public List<ucar.array.Range> getSubsetRanges() {
     List<ucar.array.Range> result = new ArrayList<>();
     if (getTimeCoordSystem() != null) {
@@ -81,6 +86,7 @@ public class MaterializedCoordinateSystem {
     return result;
   }
 
+  /** Get the GridAxes in this MaterializedCoordinateSystem. */
   public List<GridAxis<?>> getGridAxes() {
     List<GridAxis<?>> result = new ArrayList<>();
     if (getTimeCoordSystem() != null) {
@@ -100,10 +106,12 @@ public class MaterializedCoordinateSystem {
     return result;
   }
 
-  public boolean needSpecialRead() {
+  /** Public by accident. */
+  public boolean specialReadNeeded() {
     return lonCoordinate != null;
   }
 
+  /** Public by accident. */
   public Array<Number> readSpecial(Grid grid) throws InvalidRangeException, IOException {
     return lonCoordinate.readSpecial(this, grid);
   }

@@ -21,7 +21,8 @@ import java.util.Optional;
 
 /**
  * Implement CF "ocean_s_coordinate_g1".
- * 
+ *
+ * <pre>
  * Ocean s-coordinate, generic form 1
  * standard_name = "ocean_s_coordinate_g1"
  * Definition
@@ -40,6 +41,7 @@ import java.util.Optional;
  *
  * The format for the formula_terms attribute is
  * formula_terms = "s: var1 C: var2 eta: var3 depth: var4 depth_c: var5"
+ * </pre>
  *
  * @see "http://cfconventions.org/Data/cf-conventions/cf-conventions-1.9/cf-conventions.html#_ocean_s_coordinate_generic_form_1"
  */

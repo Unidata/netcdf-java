@@ -23,31 +23,36 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
- * A GridAxis represents a 1D Coordinate Variable.
+ * A GridAxis represents a 1D Coordinate Variable used for a Grid.
  */
 public abstract class GridAxis<T> implements Comparable<GridAxis<T>>, Iterable<T> {
 
+  /** The GridAxis name. */
   public String getName() {
     return name;
   }
 
+  /** The GridAxis description. */
   public String getDescription() {
     return description;
   }
 
+  /** The GridAxis units. */
   public String getUnits() {
     return units;
   }
 
+  /** The GridAxis type. */
   public AxisType getAxisType() {
     return axisType;
   }
 
+  /** The GridAxis attributes. */
   public AttributeContainer attributes() {
     return attributes;
   }
 
-  /** regularPoint, irregularPoint, or nominalPoint. */
+  /** The spacing of the coordinate values. */
   public GridAxisSpacing getSpacing() {
     return spacing;
   }
@@ -67,10 +72,12 @@ public abstract class GridAxis<T> implements Comparable<GridAxis<T>>, Iterable<T
     return resolution;
   }
 
+  /** The way that the Axis depends on other axes. */
   public GridAxisDependenceType getDependenceType() {
     return dependenceType;
   }
 
+  /** The list of other Axis this one depends on. Only used for GridAxisDependenceType.dependent. */
   public ImmutableList<String> getDependsOn() {
     return dependsOn;
   }
@@ -87,11 +94,13 @@ public abstract class GridAxis<T> implements Comparable<GridAxis<T>>, Iterable<T
   /** The nominal value of the coordinate, cast to a double. */
   public abstract double getCoordDouble(int index);
 
+  /** Create a logically subset of this GridAxis. */
   public abstract Optional<? extends GridAxis<T>> subset(GridSubset params, Formatter errlog);
 
-  /** For subsets, the range in the original axis that constitutes the subset. Needed for reading data. */
+  /** For subsets, the range in the original axis that constitutes the subset. */
   public abstract Range getSubsetRange();
 
+  /** Public by accident. */
   public abstract int binarySearch(double want); // ??
 
   @Override

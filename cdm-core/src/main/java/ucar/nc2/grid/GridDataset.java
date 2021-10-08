@@ -19,18 +19,25 @@ import java.util.Optional;
  */
 public interface GridDataset extends Closeable {
 
+  /** The name of the gridDataset. */
   String getName();
 
+  /** The location, eg filename or url. */
   String getLocation();
 
+  /** Global attributes. */
   AttributeContainer attributes();
 
+  /** FeatureType.GRID or FeatureType.CURVILINEAR. */
   FeatureType getFeatureType();
 
+  /** All of the GridCoordinateSystem. */
   ImmutableList<GridCoordinateSystem> getGridCoordinateSystems();
 
+  /** All of the GridAxes. */
   ImmutableList<GridAxis<?>> getGridAxes();
 
+  /** All of the Grids. */
   ImmutableList<Grid> getGrids();
 
   /** Find grid using its full name. */

@@ -18,16 +18,16 @@ import java.util.Optional;
 
 /**
  * A transformation to a vertical reference coordinate system, such as height or pressure.
- * LOOK index space for timeIndex and subset. Could reposition at Grid level and use coordinate space.
  */
 public interface VerticalTransform {
 
+  /** The name of the Vertical Transform. */
   String getName();
 
   /** The name of the Coordinate Variable Transform container. */
   String getCtvName();
 
-  /** Get the unit string for the vertical coordinate. */
+  /** The unit string for the vertical coordinate. */
   @Nullable
   String getUnitString();
 
@@ -67,9 +67,8 @@ public interface VerticalTransform {
 
   /**
    * A Builder of VerticalTransforms.
-   * LOOK Note the use of NetcdfDataset ds, CoordinateSystem csys. VerticalTransform are only
-   * available on Grids built on NetcdfDataset. GRIB does not have these. However, we do want to transport these
-   * over gcdm.
+   * LOOK Note the use of NetcdfDataset and CoordinateSystem. VerticalTransform are only
+   * available on Grids built on NetcdfDataset. GRIB does not have these.
    */
   interface Builder {
     Optional<VerticalTransform> create(NetcdfDataset ds, CoordinateSystem csys, AttributeContainer params,

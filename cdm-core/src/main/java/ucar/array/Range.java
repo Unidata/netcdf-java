@@ -207,23 +207,23 @@ public class Range implements RangeIterator {
     return name;
   }
 
-  /** @return first value in range */
+  /** The first value in range */
   public int first() {
     return first;
   }
 
-  /** @return last value in range, inclusive */
+  /** The last value in range, inclusive */
   public int last() {
     return last;
   }
 
-  /** @return the number of elements in the range. */
+  /** The number of elements in the range. */
   @Override
   public int length() {
     return length;
   }
 
-  /** @return stride, must be &ge; 1. */
+  /** The stride, must be &ge; 1. */
   public int stride() {
     return stride;
   }
