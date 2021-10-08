@@ -4,12 +4,9 @@
  */
 package ucar.nc2.write;
 
-import org.junit.BeforeClass;
 import org.junit.ClassRule;
-import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.junit.runners.MethodSorters;
 import ucar.array.Array;
 import ucar.array.ArrayType;
 import ucar.array.Arrays;
@@ -30,15 +27,14 @@ import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.assertThrows;
 
 /** Test successive {@link NetcdfFormatWriter} Writing and updating */
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TestNetcdfWriteAndUpdate {
   @ClassRule
   public static TemporaryFolder tempFolder = new TemporaryFolder();
 
   private static String writerLocation;
 
-  @BeforeClass
-  public static void setupClass() throws IOException, InvalidRangeException {
+  @Test
+  public void testWriteAndUpdate() throws IOException, InvalidRangeException {
     writerLocation = tempFolder.newFile().getAbsolutePath();
 
     NetcdfFormatWriter.Builder<?> writerb = NetcdfFormatWriter.createNewNetcdf3(writerLocation);
@@ -139,12 +135,9 @@ public class TestNetcdfWriteAndUpdate {
       writer.write(v, Index.ofRank(v.getRank()),
           Arrays.factory(ArrayType.DOUBLE, new int[] {1}, new double[] {222.333}));
     }
-  }
 
-  @Test
-  public void test1ReadBack() throws IOException, InvalidRangeException {
+    // public void test1ReadBack() throws IOException, InvalidRangeException {
     try (NetcdfFile ncfile = NetcdfFiles.open(writerLocation)) {
-
       // read entire array
       Variable temp = ncfile.findVariable("temperature");
       assertThat(temp).isNotNull();
@@ -214,10 +207,8 @@ public class TestNetcdfWriteAndUpdate {
       assertThat(sval4.get(1)).isEqualTo("1 pairs of ladies stockings!");
       assertThat(sval4.get(2)).isEqualTo("2 pairs of ladies stockings!");
     }
-  }
 
-  @Test
-  public void test2ExistingWrite() throws IOException, InvalidRangeException {
+    // public void test2ExistingWrite() throws IOException, InvalidRangeException {
     try (NetcdfFormatWriter writer = NetcdfFormatWriter.openExisting(writerLocation).build()) {
       Variable v = writer.findVariable("temperature");
       assertThat(v).isNotNull();
@@ -280,11 +271,9 @@ public class TestNetcdfWriteAndUpdate {
       writer.write(v, Index.ofRank(v.getRank()),
           Arrays.factory(ArrayType.DOUBLE, new int[] {1}, new double[] {222.333}));
     }
-  }
 
-  // test reading after closing the file
-  @Test
-  public void test3ReadExisting() throws IOException, InvalidRangeException {
+    // test reading after closing the file
+    // public void test3ReadExisting() throws IOException, InvalidRangeException {
     try (NetcdfFile ncfile = NetcdfFiles.open(writerLocation)) {
       // read entire array
       Variable temp = ncfile.findVariable("temperature");
