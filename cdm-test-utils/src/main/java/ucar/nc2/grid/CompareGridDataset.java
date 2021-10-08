@@ -15,7 +15,7 @@ import static ucar.nc2.grid.GridAxisDependenceType.independent;
 import static ucar.nc2.grid.GridAxisDependenceType.scalar;
 
 public class CompareGridDataset {
-  private static final float TOL = 1.0e-5f;
+  private static final float TOL = Misc.defaultMaxRelativeDiffFloat;
 
   private final GridDataset roundtrip;
   private final GridDataset expected;

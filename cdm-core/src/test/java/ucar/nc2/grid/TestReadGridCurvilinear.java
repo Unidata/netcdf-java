@@ -90,11 +90,13 @@ public class TestReadGridCurvilinear {
     readGrid(filename, "wv", ImmutableList.of(432, 22, 12), "time ypos xpos", null, null, new int[] {1, 22, 12});
   }
 
+  // LOOK may be flakey because when ncx is generated, time coordinate naming is arbitrary.
+  // If persists, maybe dont check cs name.
   @Test
   public void testGribCurvilinear() throws IOException, InvalidRangeException {
     String filename = TestDir.cdmUnitTestDir + "ft/fmrc/rtofs/ofs.20091122/ofs_atl.t00z.F024.grb.grib2";
     readGrid(filename, "Sea_Surface_Height_Relative_to_Geoid_surface", ImmutableList.of(1, 1, 1684, 1200),
-        "reftime time Lat Lon", "2009-11-23T00:00Z", null, new int[] {1, 1, 1684, 1200});
+        "reftime time1 Lat Lon", "2009-11-23T00:00Z", null, new int[] {1, 1, 1684, 1200});
   }
 
   @Test

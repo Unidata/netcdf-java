@@ -11,6 +11,7 @@ import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.calendar.CalendarDateUnit;
 import ucar.nc2.calendar.CalendarPeriod;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.util.Misc;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
@@ -21,7 +22,7 @@ import static com.google.common.truth.Truth.assertThat;
 
 @Category(NeedsCdmUnitTest.class)
 public class TestReadTime2D {
-  private static final double TOL = 1.0e-5f;
+  private static final float TOL = Misc.defaultMaxRelativeDiffFloat;
 
   /** Test Grib 2D time that is regular, not orthogonal. */
   @Test

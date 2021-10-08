@@ -203,8 +203,9 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
     @Override
     public Coordinate makeCoordinate(List<Object> values) {
       List<Integer> offsetSorted = new ArrayList<>(values.size());
-      for (Object val : values)
+      for (Object val : values) {
         offsetSorted.add((Integer) val);
+      }
       Collections.sort(offsetSorted);
       return new CoordinateTime(code, timeUnit, refDate, offsetSorted, null);
     }

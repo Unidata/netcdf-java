@@ -22,6 +22,7 @@ import ucar.nc2.calendar.CalendarDateRange;
 import ucar.nc2.calendar.CalendarDateUnit;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.internal.util.CompareArrayToArray;
+import ucar.nc2.util.Misc;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.util.test.TestDir;
@@ -41,7 +42,7 @@ public class TestGridSubsetCurvilinear {
   private static final String curvilinearGrid = TestDir.cdmUnitTestDir + "transforms/UTM/artabro_20120425.nc";
   private static GridDataset covDs;
   private static NetcdfFile ncf;
-  private static final double TOL = 1.0e-5;
+  private static final float TOL = Misc.defaultMaxRelativeDiffFloat;
 
   private final String latVarName = "lat";
   private final String lonVarName = "lon";

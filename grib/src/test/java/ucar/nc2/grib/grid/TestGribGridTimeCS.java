@@ -19,6 +19,7 @@ import ucar.nc2.grid.GridAxisDependenceType;
 import ucar.nc2.grid.GridAxisPoint;
 import ucar.nc2.grid.GridCoordinateSystem;
 import ucar.nc2.grid.GridTimeCoordinateSystem;
+import ucar.nc2.util.Misc;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
@@ -288,6 +289,7 @@ public class TestGribGridTimeCS {
         assertThat(subject.getOffsetPeriod()).isEqualTo(CalendarPeriod.of(offset.getUnits()));
       }
 
+      boolean showMessage = true;
       for (int runidx = 0; runidx < nruntimes; runidx++) {
         GridAxis<?> offset = subject.getTimeOffsetAxis(runidx);
         CalendarDate baseForRun = subject.getRuntimeDate(runidx);
@@ -296,8 +298,19 @@ public class TestGribGridTimeCS {
         assertThat(times.size()).isLessThan(ntimes + 1);
         int offsetIdx = 0;
         for (CalendarDate time : times) {
-          CalendarDate expected = baseForRun.add((long) offset.getCoordDouble(offsetIdx++), offsetPeriod);
-          assertThat(time).isEqualTo(expected);
+          double val = offset.getCoordDouble(offsetIdx);
+          // this only works if val is integral
+          if (Misc.nearlyEquals(val, (long) val, Misc.defaultDiffFLoat)) {
+            CalendarDate expected = baseForRun.add((long) offset.getCoordDouble(offsetIdx), offsetPeriod);
+            if (!time.equals(expected)) {
+              System.out.printf("HEY");
+            }
+            assertThat(time).isEqualTo(expected);
+          } else if (showMessage) {
+            System.out.printf(" *** need cdu.makeFractionalCalendarDate(coord) coord = %f%n", val);
+            showMessage = false;
+          }
+          offsetIdx++;
         }
       }
     }

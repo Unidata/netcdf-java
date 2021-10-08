@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.array.Arrays;
 import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.util.Misc;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
@@ -26,7 +27,7 @@ import static com.google.common.truth.Truth.assertThat;
 @Category(NeedsCdmUnitTest.class)
 public class TestGribGridRead {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-  private static final float TOL = 1.0e-5f;
+  private static final float TOL = Misc.defaultMaxRelativeDiffFloat;
 
   CalendarDate useDate = CalendarDate.fromUdunitIsoDate(null, "2014-10-27T06:00:00Z").orElseThrow();
 
