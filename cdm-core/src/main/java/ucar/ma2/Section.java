@@ -118,15 +118,7 @@ public class Section {
    * @throws InvalidRangeException if origin < 0, or shape < 1.
    */
   public Section(int[] origin, int[] shape) throws InvalidRangeException {
-    if (origin.length != shape.length) {
-      try {
-        throw new InvalidRangeException();
-      } catch (Exception e) {
-        System.out.printf("HEY %s != %s%n", java.util.Arrays.toString(origin), java.util.Arrays.toString(shape));
-        e.printStackTrace();
-      }
-    }
-    Preconditions.checkArgument(origin.length == shape.length);
+    Preconditions.checkArgument(isScalar(origin) == isScalar(shape) || origin.length == shape.length);
     ArrayList<Range> builder = new ArrayList<>();
     for (int i = 0; i < shape.length; i++) {
       if (shape[i] > 0)
@@ -144,16 +136,17 @@ public class Section {
    * Create Section from a shape, origin, and stride arrays.
    *
    * @param origin array of start for each Range
-   * @param size array of lengths for each Range (last = origin + size -1)
+   * @param shape array of lengths for each Range (last = origin + size -1)
    * @param stride stride between consecutive elements, must be > 0
    * @throws InvalidRangeException if origin < 0, or shape < 1.
    */
-  public Section(int[] origin, int[] size, int[] stride) throws InvalidRangeException {
+  public Section(int[] origin, int[] shape, int[] stride) throws InvalidRangeException {
+    Preconditions.checkArgument(isScalar(origin) == isScalar(shape) || origin.length == shape.length);
     ArrayList<Range> builder = new ArrayList<>();
-    for (int i = 0; i < size.length; i++) {
-      if (size[i] > 0)
-        builder.add(new Range(origin[i], origin[i] + size[i] - 1, stride[i]));
-      else if (size[i] == 0)
+    for (int i = 0; i < shape.length; i++) {
+      if (shape[i] > 0)
+        builder.add(new Range(origin[i], origin[i] + shape[i] - 1, stride[i]));
+      else if (shape[i] == 0)
         builder.add(Range.EMPTY);
       else {
         builder.add(Range.VLEN);
@@ -801,7 +794,7 @@ public class Section {
   }
 
   public static boolean isScalar(int[] shape) {
-    return (shape.length == 0) || (shape.length == 1 && shape[0] == 1);
+    return (shape.length == 0) || (shape.length == 1 && shape[0] < 2);
   }
 
   public boolean conformal(Section other) {

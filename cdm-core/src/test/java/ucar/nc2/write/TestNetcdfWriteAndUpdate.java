@@ -31,7 +31,7 @@ public class TestNetcdfWriteAndUpdate {
   @ClassRule
   public static TemporaryFolder tempFolder = new TemporaryFolder();
 
-  private static String writerLocation;
+  private String writerLocation;
 
   @Test
   public void testWriteAndUpdate() throws IOException, InvalidRangeException {
