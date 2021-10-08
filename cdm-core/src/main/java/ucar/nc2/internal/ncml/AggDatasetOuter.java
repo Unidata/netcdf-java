@@ -22,6 +22,7 @@ import ucar.nc2.internal.ncml.Aggregation.Type;
 import ucar.nc2.internal.ncml.AggregationOuter.CacheVar;
 import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.calendar.CalendarDateFormatter;
+import ucar.nc2.iosp.IospArrayHelper;
 import ucar.nc2.util.CancelTask;
 
 /** Encapsulates a NetcdfFile that is a component of the aggregation. */
@@ -275,7 +276,8 @@ class AggDatasetOuter extends AggDataset {
         Aggregation.logger.error("AggOuterDimension cant find " + mainv.getFullName() + " in " + ncd.getLocation()
             + "; return all zeroes!!!");
         // all zeros LOOK need missing value
-        return Arrays.factory(mainv.getArrayType(), section.getShape());
+        return Arrays.factory(mainv.getArrayType(), section.getShape(),
+            IospArrayHelper.makePrimitiveArray((int) Arrays.computeSize(section.getShape()), mainv.getArrayType()));
       }
 
       // its possible that we are asking for more of the time coordinate than actually exists (fmrc ragged time)

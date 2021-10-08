@@ -5,6 +5,8 @@
 package ucar.array;
 
 import com.google.common.base.Preconditions;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import javax.annotation.concurrent.Immutable;
@@ -157,6 +159,34 @@ public final class StructureDataArray extends Array<StructureData> {
         return parray[count++];
       }
     }
+  }
+
+
+  //////////////////////////////////////////////////////////////////////////
+
+  /**
+   * Extract data for one member, over all structures.
+   * The resulting shape is the structure shape appended to the member's shape.
+   *
+   * @param m get data from this StructureMembers.Member.
+   * @return Array values.
+   * @throws java.io.IOException on read error (only happens for Sequences, otherwise data is already read)
+   */
+  public Array<?> extractMemberArray(StructureMembers.Member m) throws IOException {
+    ArrayType dataType = m.getArrayType();
+
+    // combine the shapes
+    int[] mshape = m.getShape();
+    int rrank = rank + mshape.length;
+    int[] rshape = new int[rrank];
+    System.arraycopy(getShape(), 0, rshape, 0, rank);
+    System.arraycopy(mshape, 0, rshape, rank, mshape.length);
+
+    List<Array<?>> memberData = new ArrayList<>();
+    for (StructureData sdata : this) {
+      memberData.add(sdata.getMemberData(m));
+    }
+    return Arrays.factoryCopy(dataType, rshape, memberData);
   }
 
 }

@@ -1,27 +1,18 @@
 /*
- * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
 package ucar.nc2.write;
 
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ucar.ma2.Section;
+import ucar.array.Section;
 import ucar.nc2.Dimension;
-import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Describe
- *
- * @author caron
- * @since 5/9/14
- */
+/** Test {@link ChunkingIndex} */
 public class TestChunkingIndex {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
   public void testChunkingIndex() {

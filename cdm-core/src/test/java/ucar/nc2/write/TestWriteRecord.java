@@ -4,13 +4,15 @@
  */
 package ucar.nc2.write;
 
-import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ucar.ma2.*;
+import ucar.array.ArrayType;
+import ucar.array.Arrays;
+import ucar.array.Index;
+import ucar.array.InvalidRangeException;
+import ucar.array.Array;
+import ucar.array.Section;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
@@ -19,10 +21,11 @@ import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
 import ucar.unidata.util.test.Assert2;
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
+
+import static com.google.common.truth.Truth.assertThat;
 
 /**
- * Simple example to create a new netCDF file corresponding to the following CDL:
+ * Simple example using {@link NetcdfFormatWriter} to create a new netCDF file corresponding to the following CDL:
  *
  * <pre>
  *  netcdf example {
@@ -65,13 +68,8 @@ import java.lang.invoke.MethodHandles;
  *   time = 6, 18 ;
  *  }
  * </pre>
- *
- * @author : Russ Rew
- * @author : John Caron
  */
 public class TestWriteRecord {
-
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Rule
   public TemporaryFolder tempFolder = new TemporaryFolder();
@@ -91,89 +89,68 @@ public class TestWriteRecord {
     // rh:long_name="relative humidity" ;
     // rh:units = "percent" ;
     // test attribute array
-    ArrayInt.D1 valid_range = new ArrayInt.D1(2, false);
-    valid_range.set(0, 0);
-    valid_range.set(1, 100);
+    Array<Integer> valid_range = Arrays.factory(ArrayType.INT, new int[] {2}, new int[] {0, 100});
+    Array<Double> valid_ranged = Arrays.factory(ArrayType.DOUBLE, new int[] {2}, new double[] {0., 100.});
 
-    writerb.addVariable("rh", DataType.INT, "time lat lon")
+    writerb.addVariable("rh", ArrayType.INT, "time lat lon")
         .addAttribute(new Attribute(CDM.LONG_NAME, "relative humidity")).addAttribute(new Attribute("units", "percent"))
         .addAttribute(Attribute.fromArray("range", valid_range))
-        .addAttribute(Attribute.fromArray(CDM.VALID_RANGE, Array.makeFromJavaArray(new double[] {0d, 100d}, false)));
+        .addAttribute(Attribute.fromArray(CDM.VALID_RANGE, valid_ranged));
 
     // double T(time, lat, lon) ;
     // T:long_name="surface temperature" ;
     // T:units = "degC" ;
-    writerb.addVariable("T", DataType.DOUBLE, "time lat lon")
+    writerb.addVariable("T", ArrayType.DOUBLE, "time lat lon")
         .addAttribute(new Attribute(CDM.LONG_NAME, "surface temperature")).addAttribute(new Attribute("units", "degC"));
 
     // float lat(lat) ;
     // lat:units = "degrees_north" ;
-    writerb.addVariable("lat", DataType.FLOAT, "lat").addAttribute(new Attribute("units", "degrees_north"));
+    writerb.addVariable("lat", ArrayType.FLOAT, "lat").addAttribute(new Attribute("units", "degrees_north"));
 
     // float lon(lon) ;
     // lon:units = "degrees_east" ;
-    writerb.addVariable("lon", DataType.FLOAT, "lon").addAttribute(new Attribute("units", "degrees_east"));
+    writerb.addVariable("lon", ArrayType.FLOAT, "lon").addAttribute(new Attribute("units", "degrees_east"));
 
     // int time(time) ;
     // time:units = "hours" ;
-    writerb.addVariable("time", DataType.INT, "time").addAttribute(new Attribute("units", "hours"));
+    writerb.addVariable("time", ArrayType.INT, "time").addAttribute(new Attribute("units", "hours"));
 
-    writerb.addVariable("recordvarTest", DataType.INT, "time");
+    writerb.addVariable("recordvarTest", ArrayType.INT, "time");
 
     // :title = "Example Data" ;
     writerb.addAttribute(new Attribute("title", "Example Data"));
 
     try (NetcdfFormatWriter writer = writerb.build()) {
-      Variable v = writer.findVariable("rh");
-      assert v != null;
-      assert v.isUnlimited();
+      Variable rh = writer.findVariable("rh");
+      assertThat(rh).isNotNull();
+      assertThat(rh.isUnlimited()).isTrue();
 
-      // write the RH data one value at a time to an Array
-      int[][][] rhData =
-          {{{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}}, {{21, 22, 23, 24}, {25, 26, 27, 28}, {29, 30, 31, 32}}};
-
-      ArrayInt rhA = new ArrayInt.D3(2, latDim.getLength(), lonDim.getLength(), false);
-      Index ima = rhA.getIndex();
-      // write
-      for (int i = 0; i < 2; i++) {
-        for (int j = 0; j < latDim.getLength(); j++) {
-          for (int k = 0; k < lonDim.getLength(); k++) {
-            rhA.setInt(ima.set(i, j, k), rhData[i][j][k]);
-          }
-        }
-      }
-
-      // write rhData out to disk
-      writer.write("rh", rhA);
+      int[] rhData = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32};
+      Array<Integer> rhArray = Arrays.factory(ArrayType.INT, new int[] {2, 3, 4}, rhData);
+      writer.write(rh, rhArray.getIndex(), rhArray);
 
       // Here's an Array approach to set the values of T all at once.
-      double[][][] tData =
-          {{{1., 2, 3, 4}, {2., 4, 6, 8}, {3., 6, 9, 12}}, {{2.5, 5, 7.5, 10}, {5., 10, 15, 20}, {7.5, 15, 22.5, 30}}};
-      writer.write("T", Array.makeFromJavaArray(tData, false));
+      Variable t = writer.findVariable("T");
+      assertThat(t).isNotNull();
+      assertThat(t.isUnlimited()).isTrue();
+
+      double[] tData = {1., 2, 3, 4, 2., 4, 6, 8, 3., 6, 9, 12, 2.5, 5, 7.5, 10, 5., 10, 15, 20, 7.5, 15, 22.5, 30};
+      Array<Double> tArray = Arrays.factory(ArrayType.DOUBLE, new int[] {2, 3, 4}, tData);
+      writer.write(t, tArray.getIndex(), tArray);
 
       // Store the rest of variable values
-      writer.write("lat", Array.makeFromJavaArray(new float[] {41, 40, 39}, false));
-      writer.write("lon", Array.makeFromJavaArray(new float[] {-109, -107, -105, -103}, false));
-      writer.write("time", Array.makeFromJavaArray(new int[] {6, 18}, false));
-
-      /*
-       * write using scalar arrays
-       * assert timeDim.getLength() == 2;
-       * int[] origin = {0};
-       * ArrayInt.D0 data = new ArrayInt.D0();
-       * for (int time=0; time<timeDim.getLength(); time++) {
-       * origin[0] = time;
-       * data.set(time*10);
-       * ncfile.write("recordvarTest", origin, data);
-       * }
-       */
+      writer.write(writer.findVariable("lat"), Index.ofRank(1),
+          Arrays.factory(ArrayType.FLOAT, new int[] {3}, new float[] {41, 40, 39}));
+      writer.write(writer.findVariable("lon"), Index.ofRank(1),
+          Arrays.factory(ArrayType.FLOAT, new int[] {4}, new float[] {-109, -107, -105, -103}));
+      writer.write(writer.findVariable("time"), Index.ofRank(1),
+          Arrays.factory(ArrayType.INT, new int[] {2}, new int[] {6, 18}));
     }
 
     try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
-      /* Get the value of the global attribute named "title" */
       Attribute title = ncfile.findAttribute("title");
-      assert title != null;
-      assert title.getStringValue().equals("Example Data") : title;
+      assertThat(title).isNotNull();
+      assertThat(title.getStringValue()).isEqualTo("Example Data");
 
       /*
        * Read the latitudes into an array of double.
@@ -181,15 +158,15 @@ public class TestWriteRecord {
        * type of the "lat" variable.
        */
       Variable lat = ncfile.findVariable("lat");
-      Assert.assertNotNull(lat);
-      assert (lat.getRank() == 1); // make sure it's 1-dimensional
+      assertThat(lat).isNotNull();
+      assertThat(lat.getRank()).isEqualTo(1);
       int nlats = lat.getShape()[0]; // number of latitudes
       double[] lats = new double[nlats]; // where to put them
 
-      Array values = lat.read(); // read all into memory
-      Index ima = values.getIndex(); // index array to specify which value
-      for (int ilat = 0; ilat < nlats; ilat++) {
-        lats[ilat] = values.getDouble(ima.set0(ilat));
+      Array<Number> values = (Array<Number>) lat.readArray(); // read all into memory
+      int count = 0;
+      for (Number val : values) {
+        lats[count++] = val.doubleValue();
       }
       /* Read units attribute of lat variable */
       Attribute latUnits = lat.findAttribute("units");
@@ -198,10 +175,9 @@ public class TestWriteRecord {
 
       /* Read the longitudes. */
       Variable lon = ncfile.findVariable("lon");
-      Assert.assertNotNull(lon);
-      values = lon.read();
-      assert (values instanceof ArrayFloat.D1);
-      ArrayFloat.D1 fa = (ArrayFloat.D1) values;
+      assertThat(lon).isNotNull();
+      Array<Float> fa = (Array<Float>) lon.readArray();
+      assertThat(values.getArrayType()).isEqualTo(ArrayType.FLOAT);
       Assert2.assertNearlyEquals(fa.get(0), -109.0f);
       Assert2.assertNearlyEquals(fa.get(1), -107.0f);
       Assert2.assertNearlyEquals(fa.get(2), -105.0f);
@@ -217,50 +193,46 @@ public class TestWriteRecord {
 
       /* Whats the time dimension length ? */
       Dimension td = ncfile.findDimension("time");
-      Assert.assertNotNull(td);
-      assert td.getLength() == 2;
+      assertThat(td).isNotNull();
+      assertThat(td.getLength()).isEqualTo(2);
 
       /* Read the times: unlimited dimension */
       Variable time = ncfile.findVariable("time");
-      Assert.assertNotNull(time);
-      Array timeValues = time.read();
-      assert (timeValues instanceof ArrayInt.D1);
-      ArrayInt.D1 ta = (ArrayInt.D1) timeValues;
-      assert (ta.get(0) == 6) : ta.get(0);
-      assert (ta.get(1) == 18) : ta.get(1);
+      assertThat(time).isNotNull();
+      Array<?> timeValues = time.readArray();
+      assertThat(timeValues.getArrayType()).isEqualTo(ArrayType.INT);
+      Array<Integer> ta = (Array<Integer>) timeValues;
+      assertThat(ta.get(0)).isEqualTo(6);
+      assertThat(ta.get(1)).isEqualTo(18);
 
       /* Read the relative humidity data */
       Variable rh = ncfile.findVariable("rh");
-      Assert.assertNotNull(rh);
-      Array rhValues = rh.read();
-      assert (rhValues instanceof ArrayInt.D3);
-      ArrayInt.D3 rha = (ArrayInt.D3) rhValues;
+      assertThat(rh).isNotNull();
+      Array<?> rhValues = rh.readArray();
+      assertThat(rhValues.getArrayType()).isEqualTo(ArrayType.INT);
+      Array<Integer> rha = (Array<Integer>) rhValues;
       int[] shape = rha.getShape();
       for (int i = 0; i < shape[0]; i++) {
         for (int j = 0; j < shape[1]; j++) {
           for (int k = 0; k < shape[2]; k++) {
             int want = 20 * i + 4 * j + k + 1;
             int val = rha.get(i, j, k);
-            assert (want == val) : val;
+            assertThat(want).isEqualTo(val);
           }
         }
       }
 
       /* Read the temperature data */
       Variable t = ncfile.findVariable("T");
-      Assert.assertNotNull(t);
-      Array tValues = t.read();
-      assert (tValues instanceof ArrayDouble.D3);
-      ArrayDouble.D3 Ta = (ArrayDouble.D3) tValues;
-      Assert2.assertNearlyEquals(Ta.get(0, 0, 0), 1.0f);
-      Assert2.assertNearlyEquals(Ta.get(1, 1, 1), 10.0f);
+      assertThat(t).isNotNull();
+      Array<Double> Ta = (Array<Double>) t.readArray();
+      assertThat(Ta.get(0, 0, 0)).isEqualTo(1.0);
+      assertThat(Ta.get(1, 1, 1)).isEqualTo(10.0);
 
       /* Read subset of the temperature data */
-      tValues = t.read(new int[3], new int[] {2, 2, 2});
-      assert (tValues instanceof ArrayDouble.D3);
-      Ta = (ArrayDouble.D3) tValues;
-      Assert2.assertNearlyEquals(Ta.get(0, 0, 0), 1.0f);
-      Assert2.assertNearlyEquals(Ta.get(1, 1, 1), 10.0f);
+      Array<Double> tSubset = (Array<Double>) t.readArray(new Section(new int[3], new int[] {2, 2, 2}));
+      assertThat(tSubset.get(0, 0, 0)).isEqualTo(1.0);
+      assertThat(tSubset.get(1, 1, 1)).isEqualTo(10.0);
     }
   }
 
@@ -279,48 +251,47 @@ public class TestWriteRecord {
     // double T(time, lat, lon) ;
     // T:long_name="surface temperature" ;
     // T:units = "degC" ;
-    writerb.addVariable("T", DataType.DOUBLE, "time lat lon")
+    writerb.addVariable("T", ArrayType.DOUBLE, "time lat lon")
         .addAttribute(new Attribute(CDM.LONG_NAME, "surface temperature")).addAttribute(new Attribute("units", "degC"));
 
     // float lat(lat) ;
     // lat:units = "degrees_north" ;
-    writerb.addVariable("lat", DataType.FLOAT, "lat").addAttribute(new Attribute("units", "degrees_north"));
+    writerb.addVariable("lat", ArrayType.FLOAT, "lat").addAttribute(new Attribute("units", "degrees_north"));
 
     // float lon(lon) ;
     // lon:units = "degrees_east" ;
-    writerb.addVariable("lon", DataType.FLOAT, "lon").addAttribute(new Attribute("units", "degrees_east"));
+    writerb.addVariable("lon", ArrayType.FLOAT, "lon").addAttribute(new Attribute("units", "degrees_east"));
 
     // int time(time) ;
     // time:units = "hours" ;
-    writerb.addVariable("time", DataType.INT, "time").addAttribute(new Attribute("units", "hours"));
+    writerb.addVariable("time", ArrayType.INT, "time").addAttribute(new Attribute("units", "hours"));
 
     // :title = "Example Data" ;
     writerb.addAttribute(new Attribute("title", "Example Data"));
 
     try (NetcdfFormatWriter writer = writerb.build()) {
       // now write one record at a time
-      Variable v = writer.findVariable("T");
-      Assert.assertNotNull(v);
-      ArrayDouble data = new ArrayDouble.D3(1, latDim.getLength(), lonDim.getLength());
-      ArrayInt timeData = new ArrayInt.D1(1, false);
-      int[] origin = new int[v.getRank()];
-      int[] timeOrigin = new int[1];
+      Variable tv = writer.findVariable("T");
+      assertThat(tv).isNotNull();
 
+      Index dataIndex = Index.ofRank(3);
+      Index timeIndex = Index.ofRank(1);
+      int[] dataShape = new int[] {1, latDim.getLength(), lonDim.getLength()};
+
+      double[] pdata = new double[(int) Arrays.computeSize(dataShape)];
       for (int time = 0; time < 100; time++) {
-        // fill the data array
-        Index ima = data.getIndex();
+        int count = 0;
         for (int j = 0; j < latDim.getLength(); j++) {
           for (int k = 0; k < lonDim.getLength(); k++) {
-            data.setDouble(ima.set(0, j, k), (double) time * j * k);
+            pdata[count] = (double) (time * j * k);
           }
         }
-        timeData.setInt(timeData.getIndex(), time);
+        Array<Integer> data = Arrays.factory(ArrayType.DOUBLE, dataShape, pdata);
+        Array<Integer> timeData = Arrays.factory(ArrayType.INT, new int[] {1}, new int[] {time});
 
         // write to file
-        origin[0] = time;
-        timeOrigin[0] = time;
-        writer.write("T", origin, data);
-        writer.write("time", timeOrigin, timeData);
+        writer.write(tv, dataIndex.set0(time), data);
+        writer.write(writer.findVariable("time"), timeIndex.set(time), timeData);
       }
     }
   }

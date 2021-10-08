@@ -386,6 +386,7 @@ public class ArraysConvert {
     return result;
   }
 
+  // LOOK couldnt you convert here to UTF-8 ??
   public static byte[] convertCharToByte(char[] from) {
     byte[] result = new byte[(int) from.length];
     int count = 0;

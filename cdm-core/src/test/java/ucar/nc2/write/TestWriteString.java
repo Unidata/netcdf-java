@@ -1,24 +1,20 @@
 /*
- * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-
 package ucar.nc2.write;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ucar.array.ArrayType;
 import ucar.nc2.Attribute;
 import ucar.nc2.constants.CDM;
 import java.io.File;
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 
+/** Test {@link NetcdfFormatWriter} some kinda problem dunno what. */
 public class TestWriteString {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Rule
   public TemporaryFolder tempFolder = new TemporaryFolder();
@@ -35,6 +31,15 @@ public class TestWriteString {
   private static final String longNameAttName = CDM.LONG_NAME;
   private static final String missingValueAttName = CDM.MISSING_VALUE;
   private static final String fillValueAttName = "_FillValue";
+
+
+  // this was succeeding, but it shouldnt - now fails in 4.0.26
+  @Test
+  public void testWrite() throws IOException {
+    TestWriteString test = new TestWriteString();
+    File tempFile = tempFolder.newFile();
+    test.createTimeLatLonDataCube(tempFile.getPath(), new double[] {1, 2}, new double[] {10, 20, 30, 40});
+  }
 
   private void defineHeader(NetcdfFormatWriter.Builder writerb, String timeDim, String latDim, String lonDim,
       String dim3) {
@@ -72,13 +77,5 @@ public class TestWriteString {
     try (NetcdfFormatWriter writer = writerb.build()) {
       // empty
     }
-  }
-
-  // this was succeeding, but it shoulnt - now fails in 4.0.26
-  @Test
-  public void testWrite() throws IOException {
-    TestWriteString test = new TestWriteString();
-    File tempFile = tempFolder.newFile();
-    test.createTimeLatLonDataCube(tempFile.getPath(), new double[] {1, 2}, new double[] {10, 20, 30, 40});
   }
 }

@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-
 package ucar.nc2.write;
 
 import com.google.common.base.Charsets;
@@ -28,7 +27,7 @@ import java.util.Formatter;
 
 import static com.google.common.truth.Truth.assertThat;
 
-/** Test using non ascii identifiers with Netcdf3 */
+/** Test {@link NetcdfFormatWriter} using non ascii identifiers */
 public class TestNetcdfWriterStrings {
 
   static int[] helloGreekCode =

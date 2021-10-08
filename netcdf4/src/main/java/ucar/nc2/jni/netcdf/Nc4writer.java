@@ -1239,4 +1239,19 @@ public class Nc4writer extends Nc4reader implements IospFileWriter {
     }
     return true;
   }
+
+  ///////////////////////////////////////////////////////////////////////////////////////////
+
+
+  @Override
+  public void writeData(Variable v2, ucar.array.Section section, ucar.array.Array<?> values)
+      throws IOException, ucar.array.InvalidRangeException {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public int appendStructureData(Structure s, ucar.array.StructureData sdata)
+      throws IOException, ucar.array.InvalidRangeException {
+    throw new UnsupportedOperationException();
+  }
 }

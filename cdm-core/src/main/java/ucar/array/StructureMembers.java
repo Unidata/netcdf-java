@@ -52,8 +52,9 @@ public final class StructureMembers implements Iterable<StructureMembers.Member>
   /** Find the member by its name. */
   @Nullable
   public Member findMember(String memberName) {
-    if (memberName == null)
+    if (memberName == null) {
       return null;
+    }
 
     return members.stream().filter(m -> m.name.equals(memberName)).findFirst().orElse(null);
   }

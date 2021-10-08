@@ -14,6 +14,8 @@ import javax.annotation.concurrent.Immutable;
 import ucar.array.ArrayType;
 import ucar.array.Arrays;
 import ucar.array.ArraysConvert;
+import ucar.array.StructureDataArray;
+import ucar.array.StructureMembers;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayStructure;
 import ucar.ma2.DataType;
@@ -825,7 +827,14 @@ public class Variable implements VariableSimpleIF, ProxyReader {
   @Override
   public ucar.array.Array<?> proxyReadArray(Variable client, CancelTask cancelTask) throws IOException {
     if (isMemberOfStructure()) {
-      throw new UnsupportedOperationException("Cannot directly read Member Variable=" + getFullName());
+      // throw new UnsupportedOperationException("Cannot directly read Member Variable=" + getFullName());
+      List<String> memList = new ArrayList<>();
+      memList.add(this.getShortName());
+      Structure s = getParentStructure().select(memList);
+      ucar.array.Array<?> as = s.readArray();
+      StructureDataArray sad = (StructureDataArray) as;
+      StructureMembers.Member m = sad.getStructureMembers().findMember(this.getShortName());
+      return sad.extractMemberArray(m);
     }
 
     try {

@@ -7,8 +7,11 @@ package ucar.nc2.internal.iosp.netcdf3;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Iterator;
 
 import ucar.array.ArrayType;
+import ucar.array.ArraysConvert;
+import ucar.array.StructureDataArray;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayChar;
 import ucar.ma2.ArrayObject;
@@ -204,13 +207,6 @@ public class N3iospWriter extends N3iosp implements IospFileWriter {
     }
   }
 
-  /**
-   * write data to a file for a variable.
-   *
-   * @param values write this data.
-   * @param index handles skipping around in the file.
-   * @param dataType dataType of the variable
-   */
   private void writeData(Array values, Layout index, ArrayType dataType) throws java.io.IOException {
     if ((dataType == ArrayType.BYTE) || (dataType == ArrayType.CHAR)) {
       IndexIterator ii = values.getIndexIterator();
@@ -279,6 +275,166 @@ public class N3iospWriter extends N3iosp implements IospFileWriter {
     throw new IllegalStateException("dataType= " + dataType);
   }
 
+  /////////////////////////////////////////////////////////////
+
+  @Override
+  public void writeData(Variable v2, ucar.array.Section section, ucar.array.Array<?> values)
+      throws IOException, ucar.array.InvalidRangeException {
+    N3header.Vinfo vinfo = (N3header.Vinfo) v2.getSPobject();
+    ArrayType dataType = v2.getArrayType();
+
+    try {
+      int[] varShape = v2.getShape();
+      if (v2.isUnlimited()) {
+        ucar.array.Range firstRange = section.getRange(0);
+        int n = setNumrecs(firstRange.last() + 1);
+        varShape[0] = n;
+      }
+
+      if (v2 instanceof Structure) {
+        if (!(values instanceof StructureDataArray))
+          throw new IllegalArgumentException("writeData for Structure: data must be ArrayStructure");
+
+        if (v2.getRank() == 0)
+          throw new IllegalArgumentException("writeData for Structure: must have rank > 0");
+
+        Dimension d = v2.getDimension(0);
+        if (!d.isUnlimited())
+          throw new IllegalArgumentException("writeData for Structure: must have unlimited dimension");
+
+        writeRecordArrayData((Structure) v2, section, (StructureDataArray) values);
+
+      } else {
+        ucar.ma2.Section oldSection = ArraysConvert.convertSection(section);
+
+        Layout layout = (!v2.isUnlimited()) ? new LayoutRegular(vinfo.begin, v2.getElementSize(), varShape, oldSection)
+            : new LayoutRegularSegmented(vinfo.begin, v2.getElementSize(), header.recsize, varShape, oldSection);
+        writeArrayData(values, layout, dataType);
+      }
+    } catch (InvalidRangeException range) {
+      throw new ucar.array.InvalidRangeException(range);
+    }
+  }
+
+  private void writeRecordArrayData(ucar.nc2.Structure s, ucar.array.Section section, StructureDataArray structureArray)
+      throws java.io.IOException, ucar.ma2.InvalidRangeException {
+    int countSrcRecnum = 0;
+    ucar.array.Range recordRange = section.getRange(0);
+    for (int recnum : recordRange) {
+      ucar.array.StructureData sdata = structureArray.get(countSrcRecnum);
+      writeRecordArrayData(s, recnum, sdata);
+      countSrcRecnum++;
+    }
+  }
+
+  private void writeRecordArrayData(ucar.nc2.Structure s, int recnum, ucar.array.StructureData sdata)
+      throws java.io.IOException, ucar.ma2.InvalidRangeException {
+
+    ucar.array.StructureMembers members = sdata.getStructureMembers();
+
+    // loop over members
+    for (Variable vm : s.getVariables()) {
+      ucar.array.StructureMembers.Member m = members.findMember(vm.getShortName());
+      if (null == m)
+        continue; // this means that the data is missing from the ArrayStructure
+
+      ucar.array.Array data = sdata.getMemberData(m);
+
+      // layout of the destination
+      N3header.Vinfo vinfo = (N3header.Vinfo) vm.getSPobject();
+      long begin = vinfo.begin + recnum * header.recsize; // this assumes unlimited dimension
+      Section memberSection = vm.getShapeAsSection();
+      Layout layout = new LayoutRegular(begin, vm.getElementSize(), vm.getShape(), memberSection);
+
+      try {
+        writeArrayData(data, layout, vm.getArrayType());
+      } catch (Exception e) {
+        log.error("Error writing member=" + vm.getShortName() + " in struct=" + s.getFullName(), e);
+        throw new IOException(e);
+      }
+    }
+  }
+
+  private void writeArrayData(ucar.array.Array<?> values, Layout index, ArrayType dataType) throws java.io.IOException {
+    switch (dataType) {
+      case BYTE:
+      case CHAR: {
+        ucar.array.Array<Byte> bvalues = (ucar.array.Array<Byte>) values;
+        Iterator<Byte> ii = bvalues.iterator();
+        while (index.hasNext()) {
+          Layout.Chunk chunk = index.next();
+          raf.seek(chunk.getSrcPos());
+          for (int k = 0; k < chunk.getNelems(); k++) {
+            raf.write(ii.next());
+          }
+        }
+        return;
+      }
+
+      case SHORT: {
+        ucar.array.Array<Short> bvalues = (ucar.array.Array<Short>) values;
+        Iterator<Short> ii = bvalues.iterator();
+        while (index.hasNext()) {
+          Layout.Chunk chunk = index.next();
+          raf.seek(chunk.getSrcPos());
+          for (int k = 0; k < chunk.getNelems(); k++) {
+            raf.writeShort(ii.next());
+          }
+        }
+        return;
+      }
+
+      case INT: {
+        ucar.array.Array<Integer> bvalues = (ucar.array.Array<Integer>) values;
+        Iterator<Integer> ii = bvalues.iterator();
+        while (index.hasNext()) {
+          Layout.Chunk chunk = index.next();
+          raf.seek(chunk.getSrcPos());
+          for (int k = 0; k < chunk.getNelems(); k++) {
+            raf.writeInt(ii.next());
+          }
+        }
+        return;
+      }
+
+      case FLOAT: {
+        ucar.array.Array<Float> bvalues = (ucar.array.Array<Float>) values;
+        Iterator<Float> ii = bvalues.iterator();
+        while (index.hasNext()) {
+          Layout.Chunk chunk = index.next();
+          raf.seek(chunk.getSrcPos());
+          for (int k = 0; k < chunk.getNelems(); k++) {
+            raf.writeFloat(ii.next());
+          }
+        }
+        return;
+      }
+
+      case DOUBLE: {
+        ucar.array.Array<Double> bvalues = (ucar.array.Array<Double>) values;
+        Iterator<Double> ii = bvalues.iterator();
+        while (index.hasNext()) {
+          Layout.Chunk chunk = index.next();
+          raf.seek(chunk.getSrcPos());
+          for (int k = 0; k < chunk.getNelems(); k++) {
+            raf.writeDouble(ii.next());
+          }
+        }
+        return;
+      }
+    }
+
+    throw new IllegalStateException("dataType= " + dataType);
+  }
+
+  @Override
+  public int appendStructureData(Structure s, ucar.array.StructureData sdata)
+      throws IOException, ucar.array.InvalidRangeException {
+    return 0;
+  }
+
+  /////////////////////////////////////////////////////////////
+
   private int setNumrecs(int n) throws IOException, InvalidRangeException {
     if (n <= header.numrecs) {
       return header.numrecs;
@@ -342,7 +498,6 @@ public class N3iospWriter extends N3iosp implements IospFileWriter {
     super.close();
   }
 
-  /////////////////////////////////////////////////////////////
 
   // fill buffer with fill value
 

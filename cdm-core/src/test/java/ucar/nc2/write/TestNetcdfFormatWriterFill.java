@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.write;
@@ -7,9 +7,11 @@ package ucar.nc2.write;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ucar.ma2.*;
+import ucar.array.Array;
+import ucar.array.Arrays;
+import ucar.array.ArrayType;
+import ucar.array.Index;
+import ucar.array.InvalidRangeException;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
@@ -17,20 +19,19 @@ import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import ucar.nc2.iosp.NetcdfFormatUtils;
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
+
+import static com.google.common.truth.Truth.assertThat;
 
 /**
- * Test writing with fill values
+ * Test {@link NetcdfFormatWriter} with fill values
  */
 public class TestNetcdfFormatWriterFill {
-
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Rule
   public TemporaryFolder tempFolder = new TemporaryFolder();
 
   @Test
-  public void testCreateWithFill() throws IOException {
+  public void testCreateWithFill() throws IOException, InvalidRangeException {
     String filename = tempFolder.newFile().getAbsolutePath();
 
     NetcdfFormatWriter.Builder writerb = NetcdfFormatWriter.createNewNetcdf3(filename);
@@ -39,50 +40,43 @@ public class TestNetcdfFormatWriterFill {
     Dimension lonDim = writerb.addDimension("lon", 12);
 
     // define Variables
-    writerb.addVariable("temperature", DataType.DOUBLE, "lat lon").addAttribute(new Attribute("units", "K"))
+    writerb.addVariable("temperature", ArrayType.DOUBLE, "lat lon").addAttribute(new Attribute("units", "K"))
         .addAttribute(new Attribute("_FillValue", -999.9));
 
-    writerb.addVariable("lat", DataType.DOUBLE, "lat");
-    writerb.addVariable("lon", DataType.FLOAT, "lon");
-    writerb.addVariable("shorty", DataType.SHORT, "lat");
+    writerb.addVariable("lat", ArrayType.DOUBLE, "lat");
+    writerb.addVariable("lon", ArrayType.FLOAT, "lon");
+    writerb.addVariable("shorty", ArrayType.SHORT, "lat");
 
-    writerb.addVariable("rtemperature", DataType.INT, "time lat lon").addAttribute(new Attribute("units", "K"))
+    writerb.addVariable("rtemperature", ArrayType.INT, "time lat lon").addAttribute(new Attribute("units", "K"))
         .addAttribute(new Attribute("_FillValue", -9999));
 
-    writerb.addVariable("rdefault", DataType.INT, "time lat lon");
+    writerb.addVariable("rdefault", ArrayType.INT, "time lat lon");
 
     // add string-valued variables
-    writerb.addVariable("svar", DataType.CHAR, "lat lon");
-    writerb.addVariable("svar2", DataType.CHAR, "lat lon");
+    writerb.addVariable("svar", ArrayType.CHAR, "lat lon");
+    writerb.addVariable("svar2", ArrayType.CHAR, "lat lon");
 
     // string array
     writerb.addDimension("names", 3);
     writerb.addDimension("svar_len", 80);
-    writerb.addVariable("names", DataType.CHAR, "names svar_len");
-    writerb.addVariable("names2", DataType.CHAR, "names svar_len");
+    writerb.addVariable("names", ArrayType.CHAR, "names svar_len");
+    writerb.addVariable("names2", ArrayType.CHAR, "names svar_len");
+
+    int[] shape1 = new int[] {1, latDim.getLength(), lonDim.getLength()};
+    int n = lonDim.getLength();
+    int[] parray = new int[(int) Arrays.computeSize(shape1)];
+    // write to half of it
+    for (int i = 0; i < latDim.getLength(); i++) {
+      for (int j = 0; j < n / 2; j++) {
+        parray[i * n + j] = (i * 1000000 + j * 1000);
+      }
+    }
+    Array<Double> A = Arrays.factory(ArrayType.INT, shape1, parray);
 
     try (NetcdfFormatWriter writer = writerb.build()) {
-      // write some data
-      ArrayDouble A = new ArrayDouble.D3(1, latDim.getLength(), lonDim.getLength() / 2);
-      int i, j;
-      Index ima = A.getIndex();
-      // write
-      for (i = 0; i < latDim.getLength(); i++) {
-        for (j = 0; j < lonDim.getLength() / 2; j++) {
-          A.setDouble(ima.set(0, i, j), (i * 1000000 + j * 1000));
-        }
-      }
-
-      int[] origin = new int[3];
-      try {
-        writer.write("rtemperature", origin, A);
-      } catch (IOException e) {
-        System.err.println("ERROR writing file");
-        assert (false);
-      } catch (InvalidRangeException e) {
-        e.printStackTrace();
-        assert (false);
-      }
+      Variable v = writer.findVariable("rtemperature");
+      assertThat(v).isNotNull();
+      writer.write(v, A.getIndex(), A);
     }
 
     //////////////////////////////////////////////////////////////////////
@@ -90,66 +84,59 @@ public class TestNetcdfFormatWriterFill {
     try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
 
       Variable temp = ncfile.findVariable("temperature");
-      assert (null != temp);
-
-      Array tA = temp.read();
-      assert (tA.getRank() == 2);
-
-      Index ima = tA.getIndex();
-      int[] shape = tA.getShape();
-
-      for (int i = 0; i < shape[0]; i++) {
-        for (int j = 0; j < shape[1]; j++) {
-          assert (tA.getDouble(ima.set(i, j)) == -999.9);
-        }
+      assertThat(temp).isNotNull();
+      Array<Number> tA = (Array<Number>) temp.readArray();
+      assertThat(tA.getRank()).isEqualTo(2);
+      for (Number val : tA) {
+        assertThat(val.doubleValue()).isEqualTo(-999.9);
       }
 
       Variable rtemp = ncfile.findVariable("rtemperature");
-      assert (null != rtemp);
+      assertThat(rtemp).isNotNull();
 
-      Array rA = rtemp.read();
-      assert (rA.getRank() == 3);
+      Array<Number> rA = (Array<Number>) rtemp.readArray();
+      assertThat(rA.getRank()).isEqualTo(3);
 
-      ima = rA.getIndex();
+      Index ima = rA.getIndex();
       int[] rshape = rA.getShape();
       for (int i = 0; i < rshape[1]; i++) {
-        for (int j = rshape[2] / 2 + 1; j < rshape[2]; j++) {
-          assert (rA.getDouble(ima.set(0, i, j)) == -9999.0) : rA.getDouble(ima);
+        for (int j = rshape[2]; j < rshape[2]; j++) {
+          if (j > rshape[2] / 2) {
+            assertThat(rA.get(ima.set(0, i, j)).doubleValue()).isEqualTo(-9999.0);
+          } else {
+            assertThat(rA.get(ima.set(0, i, j)).doubleValue()).isEqualTo((double) (i * 1000000 + j * 1000));
+          }
         }
       }
 
       Variable v = ncfile.findVariable("lat");
-      assert (null != v);
-      assert v.getDataType() == DataType.DOUBLE;
+      assertThat(v).isNotNull();
+      assertThat(v.getArrayType()).isEqualTo(ArrayType.DOUBLE);
 
-      Array data = v.read();
-      IndexIterator ii = data.getIndexIterator();
-      while (ii.hasNext()) {
-        assert ii.getDoubleNext() == NetcdfFormatUtils.NC_FILL_DOUBLE;
+      Array<Number> data = (Array<Number>) v.readArray();
+      for (Number val : data) {
+        assertThat(val.doubleValue()).isEqualTo(NetcdfFormatUtils.NC_FILL_DOUBLE);
       }
 
       v = ncfile.findVariable("lon");
-      assert (null != v);
-      data = v.read();
-      ii = data.getIndexIterator();
-      while (ii.hasNext()) {
-        assert ii.getFloatNext() == NetcdfFormatUtils.NC_FILL_FLOAT;
+      assertThat(v).isNotNull();
+      data = (Array<Number>) v.readArray();
+      for (Number val : data) {
+        assertThat(val.floatValue()).isEqualTo(NetcdfFormatUtils.NC_FILL_FLOAT);
       }
 
       v = ncfile.findVariable("shorty");
-      assert (null != v);
-      data = v.read();
-      ii = data.getIndexIterator();
-      while (ii.hasNext()) {
-        assert ii.getShortNext() == NetcdfFormatUtils.NC_FILL_SHORT;
+      assertThat(v).isNotNull();
+      data = (Array<Number>) v.readArray();
+      for (Number val : data) {
+        assertThat(val.shortValue()).isEqualTo(NetcdfFormatUtils.NC_FILL_SHORT);
       }
 
       v = ncfile.findVariable("rdefault");
-      assert (null != v);
-      data = v.read();
-      ii = data.getIndexIterator();
-      while (ii.hasNext()) {
-        assert ii.getIntNext() == NetcdfFormatUtils.NC_FILL_INT;
+      assertThat(v).isNotNull();
+      data = (Array<Number>) v.readArray();
+      for (Number val : data) {
+        assertThat(val.intValue()).isEqualTo(NetcdfFormatUtils.NC_FILL_INT);
       }
     }
   }

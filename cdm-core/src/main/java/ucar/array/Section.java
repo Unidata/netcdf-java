@@ -4,6 +4,8 @@
  */
 package ucar.array;
 
+import com.google.common.base.Preconditions;
+
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
@@ -92,6 +94,7 @@ public class Section {
    * @throws InvalidRangeException if origin &lt; 0, or shape &lt; 1.
    */
   public Section(int[] origin, int[] shape) throws InvalidRangeException {
+    Preconditions.checkArgument(isScalar(origin) == isScalar(shape) || origin.length == shape.length);
     ArrayList<Range> builder = new ArrayList<>();
     for (int i = 0; i < shape.length; i++) {
       if (shape[i] < 0) {
@@ -360,6 +363,10 @@ public class Section {
     return sbuff.toString();
   }
 
+  public static boolean isScalar(int[] shape) {
+    return (shape.length == 0) || (shape.length == 1 && shape[0] < 2);
+  }
+
   /** Does this contain a VLEN range? */
   public boolean isVariableLength() {
     for (Range aFrom : ranges) {
@@ -523,8 +530,12 @@ public class Section {
    * All non-null ranges must have origin 0 and length = shape[i]
    */
   public boolean equivalent(int[] shape) throws InvalidRangeException {
-    if (getRank() != shape.length)
+    if (isScalar(shape) && isScalar(getShape())) {
+      return true;
+    }
+    if (getRank() != shape.length) {
       throw new InvalidRangeException("Invalid Section rank");
+    }
 
     for (int i = 0; i < ranges.size(); i++) {
       Range r = ranges.get(i);

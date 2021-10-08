@@ -21,56 +21,11 @@ public class Arrays {
   /**
    * Create Array using java array of T, or java primitive array, as storage.
    * Do not use this for Vlens or Structures.
+   * LOOK the dataArray is not copied, for efficiency. The calling routine must not reuse the primitive array.
    *
    * @param dataType data type of the data. Vlen detected from the shape.
    * @param shape multidimensional shape, must have same total length as dataArray.
-   * @param storage storage for type T.
-   */
-  public static <T> Array<T> factory(ArrayType dataType, int[] shape, Storage<T> storage) {
-    switch (dataType) {
-      case OPAQUE:
-      case BOOLEAN:
-      case BYTE:
-      case CHAR:
-      case ENUM1:
-      case UBYTE: {
-        return (Array<T>) new ArrayByte(dataType, shape, (Storage<Byte>) storage);
-      }
-      case DOUBLE: {
-        return (Array<T>) new ArrayDouble(shape, (Storage<Double>) storage);
-      }
-      case FLOAT: {
-        return (Array<T>) new ArrayFloat(shape, (Storage<Float>) storage);
-      }
-      case INT:
-      case ENUM4:
-      case UINT: {
-        return (Array<T>) new ArrayInteger(dataType, shape, (Storage<Integer>) storage);
-      }
-      case LONG:
-      case ULONG: {
-        return (Array<T>) new ArrayLong(dataType, shape, (Storage<Long>) storage);
-      }
-      case SHORT:
-      case ENUM2:
-      case USHORT: {
-        return (Array<T>) new ArrayShort(dataType, shape, (Storage<Short>) storage);
-      }
-      case STRING: {
-        return (Array<T>) new ArrayString(shape, (Storage<String>) storage);
-      }
-      default:
-        throw new RuntimeException("Unimplemented ArrayType " + dataType);
-    }
-  }
-
-  /**
-   * Create Array using java array of T, or java primitive array, as storage.
-   * Do not use this for Vlens or Structures.
-   *
-   * @param dataType data type of the data. Vlen detected from the shape.
-   * @param shape multidimensional shape, must have same total length as dataArray.
-   * @param dataArray must be java array of T, or java primitive array
+   * @param dataArray must be java primitive array or String[]
    */
   public static <T> Array<T> factory(ArrayType dataType, int[] shape, Object dataArray) {
     switch (dataType) {
@@ -122,9 +77,55 @@ public class Arrays {
   }
 
   /**
+   * Create Array using java array of T, or java primitive array, as storage.
+   * Do not use this for Vlens or Structures.
+   *
+   * @param dataType data type of the data. Vlen detected from the shape.
+   * @param shape multidimensional shape, must have same total length as dataArray.
+   * @param storage storage for type T.
+   */
+  static <T> Array<T> factory(ArrayType dataType, int[] shape, Storage<T> storage) {
+    switch (dataType) {
+      case OPAQUE:
+      case BOOLEAN:
+      case BYTE:
+      case CHAR:
+      case ENUM1:
+      case UBYTE: {
+        return (Array<T>) new ArrayByte(dataType, shape, (Storage<Byte>) storage);
+      }
+      case DOUBLE: {
+        return (Array<T>) new ArrayDouble(shape, (Storage<Double>) storage);
+      }
+      case FLOAT: {
+        return (Array<T>) new ArrayFloat(shape, (Storage<Float>) storage);
+      }
+      case INT:
+      case ENUM4:
+      case UINT: {
+        return (Array<T>) new ArrayInteger(dataType, shape, (Storage<Integer>) storage);
+      }
+      case LONG:
+      case ULONG: {
+        return (Array<T>) new ArrayLong(dataType, shape, (Storage<Long>) storage);
+      }
+      case SHORT:
+      case ENUM2:
+      case USHORT: {
+        return (Array<T>) new ArrayShort(dataType, shape, (Storage<Short>) storage);
+      }
+      case STRING: {
+        return (Array<T>) new ArrayString(shape, (Storage<String>) storage);
+      }
+      default:
+        throw new RuntimeException("Unimplemented ArrayType " + dataType);
+    }
+  }
+
+  /**
    * Create Array using empty java array of T, or java primitive array, same size as shape.
    * Do not use this for Vlens or Structures.
-   * LOOK what is this used for: testing, NcML
+   * LOOK what is this used for: testing only; remove or replace
    *
    * @param shape multidimensional shape
    */
@@ -170,6 +171,11 @@ public class Arrays {
 
   /**
    * Combine list of Array's by copying the underlying Array's into a single primitive array
+   * 
+   * @param dataType of the dataArrays and of the result.
+   * @param shape of the result.
+   * @param dataArrays the composite data.
+   * @return composite Array, foprmed by copying the dataArrays.
    */
   public static Array<?> factoryCopy(ArrayType dataType, int[] shape, List<Array<?>> dataArrays) {
     if (dataArrays.size() == 1) {

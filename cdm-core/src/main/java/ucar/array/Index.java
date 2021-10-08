@@ -9,10 +9,14 @@ import com.google.common.base.Preconditions;
 /**
  * Indexes for Arrays. An Index refers to a particular element of an array.
  * This is a generalization of index as int[].
+ * A scalar has effectively int[1] = {1}
  * Mutable.
  */
 public class Index {
   public static Index ofRank(int rank) {
+    if (rank == 0) {
+      rank = 1;
+    }
     return new Index(new int[rank]);
   }
 

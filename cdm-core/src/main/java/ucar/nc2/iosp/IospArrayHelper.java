@@ -28,25 +28,25 @@ public class IospArrayHelper {
    *
    * @param raf read from here.
    * @param index handles skipping around in the file.
-   * @param ArrayType ArrayType of the variable
+   * @param arrayType ArrayType of the variable
    * @param fillValue must be Number if ArrayType.isNumeric(), or String for STRING, byte[] for Structure, or null for
    *        none
    * @param byteOrder if equal to RandomAccessFile.ORDER_XXXX, set the byte order just before reading
    * @return primitive array with data read in
    * @throws IOException on read error
    */
-  public static Object readDataFill(RandomAccessFile raf, Layout index, ArrayType ArrayType, Object fillValue,
+  public static Object readDataFill(RandomAccessFile raf, Layout index, ArrayType arrayType, Object fillValue,
       ByteOrder byteOrder) throws IOException {
-    Object arr = (fillValue == null) ? makePrimitiveArray((int) index.getTotalNelems(), ArrayType)
-        : makePrimitiveArray((int) index.getTotalNelems(), ArrayType, fillValue);
-    return readData(raf, index, ArrayType, arr, byteOrder, true);
+    Object arr = (fillValue == null) ? makePrimitiveArray((int) index.getTotalNelems(), arrayType)
+        : makePrimitiveArray((int) index.getTotalNelems(), arrayType, fillValue);
+    return readData(raf, index, arrayType, arr, byteOrder, true);
   }
 
-  public static Object readDataFill(RandomAccessFile raf, Layout index, ArrayType ArrayType, Object fillValue,
+  public static Object readDataFill(RandomAccessFile raf, Layout index, ArrayType arrayType, Object fillValue,
       ByteOrder byteOrder, boolean convertChar) throws IOException {
-    Object arr = (fillValue == null) ? makePrimitiveArray((int) index.getTotalNelems(), ArrayType)
-        : makePrimitiveArray((int) index.getTotalNelems(), ArrayType, fillValue);
-    return readData(raf, index, ArrayType, arr, byteOrder, convertChar);
+    Object arr = (fillValue == null) ? makePrimitiveArray((int) index.getTotalNelems(), arrayType)
+        : makePrimitiveArray((int) index.getTotalNelems(), arrayType, fillValue);
+    return readData(raf, index, arrayType, arr, byteOrder, convertChar);
   }
 
   /**
@@ -394,7 +394,7 @@ public class IospArrayHelper {
    *
    * @param size the size of the array to create
    * @param ArrayType ArrayType of the variable
-   * @return primitive array with data read in
+   * @return primitive array with all zeroes
    */
   public static Object makePrimitiveArray(int size, ArrayType ArrayType) {
     Object arr = null;
