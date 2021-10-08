@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.array.InvalidRangeException;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.util.Misc;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionRect;
 import ucar.unidata.util.test.TestDir;
@@ -23,7 +24,7 @@ import static com.google.common.truth.Truth.assertWithMessage;
 /** Port of Coverage tests for Grid. Subsetting curvilinear coordinate systems. */
 @Category(NeedsCdmUnitTest.class)
 public class TestGridCurvilinear {
-  private static final double TOL = 1e-6;
+  private static final double TOL = Misc.defaultDiffFLoat;
 
   @Test
   public void TestNetcdfCurvilinear() throws IOException, InvalidRangeException {

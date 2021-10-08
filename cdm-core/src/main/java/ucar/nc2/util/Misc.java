@@ -21,6 +21,9 @@ public class Misc {
    */
   public static final float defaultMaxRelativeDiffFloat = 1.0e-5f;
 
+  /** The default maximum relative difference for floats, when comparing as doubles. */
+  public static final double defaultDiffFLoat = 1.0e-5;
+
   /**
    * The default maximum {@link #relativeDifference(double, double) relative difference} that two doubles can have in
    * order to be deemed {@link #nearlyEquals(double, double) nearly equal}.

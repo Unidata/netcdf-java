@@ -347,7 +347,7 @@ public class TestScaleOffsetMissingUnsigned {
   @Test
   public void testNegativeScaleOffsetValidRangeUnsigned() throws URISyntaxException, IOException {
     File testResource = new File(getClass().getResource("testScaleOffsetMissingUnsigned.ncml").toURI());
-    float fpTol = 1e-6f;
+    float fpTol = Misc.defaultMaxRelativeDiffFloat;
 
     try (NetcdfDataset ncd = NetcdfDatasets.openDataset(testResource.getAbsolutePath(), true, null)) {
       VariableDS var = (VariableDS) ncd.findVariable("scaleOffsetMissingUnsignedValidRange");

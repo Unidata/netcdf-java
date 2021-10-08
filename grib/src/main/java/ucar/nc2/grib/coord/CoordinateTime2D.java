@@ -973,10 +973,15 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
         timeBuilders.put(run, timeBuilder);
       }
       Object time = timeBuilder.extract(gr);
-      if (time instanceof Integer)
-        return new Time2D(run, (Integer) time, null);
-      else
+      if (time instanceof TimeCoordIntvValue) {
         return new Time2D(run, null, (TimeCoordIntvValue) time);
+      } else if (time instanceof Integer) {
+        return new Time2D(run, (Integer) time, null);
+      } else if (time instanceof Number) {
+        return new Time2D(run, ((Number) time).intValue(), null);
+      } else {
+        throw new IllegalArgumentException("unsupported coord type = " + time.getClass().getName());
+      }
     }
 
     @Override

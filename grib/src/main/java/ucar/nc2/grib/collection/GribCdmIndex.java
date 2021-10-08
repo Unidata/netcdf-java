@@ -979,10 +979,10 @@ public class GribCdmIndex implements IndexReader {
     File inputFile;
 
     @Parameter(names = {"-update", "--CollectionUpdateType"}, description = "Collection Update Type")
-    final CollectionUpdateType updateType = CollectionUpdateType.always;
+    CollectionUpdateType updateType = CollectionUpdateType.always;
 
     @Parameter(names = {"-h", "--help"}, description = "Display this help and exit", help = true)
-    public final boolean help = false;
+    public boolean help = false;
 
     public static class CollectionUpdateTypeConverter implements IStringConverter<CollectionUpdateType> {
       @Override

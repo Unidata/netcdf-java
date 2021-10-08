@@ -4,12 +4,14 @@
  */
 package ucar.nc2.grid;
 
+import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.util.test.category.NeedsExternalResource;
 
 import java.util.Formatter;
+import java.util.List;
 
 import static com.google.common.truth.Truth.assertThat;
 
@@ -36,12 +38,12 @@ public class TestGridFromDodsNetcdfFile {
       LatLonRect llbb = hcs.getLatLonBoundingBox();
       LatLonRect bbox = new LatLonRect(llbb.getLowerLeftPoint(), 20.0, llbb.getWidth() / 2);
 
-      checkLatLonSubset(coverage, hcs, bbox, new int[] {35, 45});
+      checkLatLonSubset(coverage, hcs, bbox, ImmutableList.of(35, 45));
     }
   }
 
-  private void checkLatLonSubset(Grid coverage, GridHorizCoordinateSystem hcs, LatLonRect bbox, int[] expectedShape)
-      throws Exception {
+  private void checkLatLonSubset(Grid coverage, GridHorizCoordinateSystem hcs, LatLonRect bbox,
+      List<Integer> expectedShape) throws Exception {
     System.out.printf(" coverage llbb = %s width=%f%n", hcs.getLatLonBoundingBox().toString2(),
         hcs.getLatLonBoundingBox().getWidth());
     System.out.printf(" constrain bbox= %s width=%f%n", bbox.toString2(), bbox.getWidth());
