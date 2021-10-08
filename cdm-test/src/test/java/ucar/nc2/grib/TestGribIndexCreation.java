@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
 package ucar.nc2.grib;
 
 import org.junit.*;
@@ -248,6 +252,7 @@ public class TestGribIndexCreation {
 
   @Test
   @Category(NeedsCdmUnitTest.class)
+  @Ignore("too slow")
   public void testRdvamds083p2() throws IOException {
     Grib.setDebugFlags(DebugFlags.create("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config = new FeatureCollectionConfig("ds083.2_Aggregation", "test/ds083.2",
@@ -428,8 +433,25 @@ public class TestGribIndexCreation {
   public void createGEFSmembers() throws IOException {
     Grib.setDebugFlags(DebugFlags.create("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config = new FeatureCollectionConfig("GEFS-Global_1p0deg_Ensemble-members",
-        "test/GEFSmembners", FeatureCollectionType.GRIB2,
+        "test/GEFSmembers", FeatureCollectionType.GRIB2,
         TestDir.cdmUnitTestDir + "ncss/GEFS/Global_1p0deg_Ensemble/member/.*gbx9", null, null, null, "directory", null);
+    System.out.printf("Create %s %s index for = %s%n", config.collectionName, config.ptype, config.spec);
+
+    GribCdmIndex.updateGribCollection(config, always, logger);
+    Grib.setDebugFlags(DebugFlags.create(""));
+  }
+
+  @Test
+  @Category(NeedsCdmUnitTest.class)
+  public void createDewpointTempFromGsdHrrrrConus3surface() throws IOException {
+    Grib.setDebugFlags(DebugFlags.create("Grib/debugGbxIndexOnly"));
+    String dataset = TestDir.cdmUnitTestDir + "gribCollections/hrrr/DewpointTempFromGsdHrrrrConus3surface.grib2";
+
+    // ${cdmUnitTest}/gribCollections/hrrr/DewpointTempFromGsdHrrrrConus3surface.grib2
+    FeatureCollectionConfig config =
+        new FeatureCollectionConfig("DewpointTempFromGsdHrrrrConus3surface", "test/hrrr", FeatureCollectionType.GRIB2,
+            TestDir.cdmUnitTestDir + "gribCollections/hrrr/DewpointTempFromGsdHrrrrConus3surface.grib2", null, null,
+            null, "file", null);
     System.out.printf("Create %s %s index for = %s%n", config.collectionName, config.ptype, config.spec);
 
     GribCdmIndex.updateGribCollection(config, always, logger);

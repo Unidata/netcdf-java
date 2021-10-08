@@ -2,7 +2,6 @@
  * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-
 package ucar.nc2.grib.grid;
 
 import com.google.common.base.Preconditions;
@@ -224,7 +223,7 @@ public class GribGridAxis {
 
       public T setTimeOffsetCoordinate(CoordinateTime timeCoord) {
         this.gribCoord = timeCoord;
-        List<Number> values = timeCoord.getValues().stream().map(v -> (Integer) v).collect(Collectors.toList());
+        List<Number> values = timeCoord.getValues().stream().map(v -> (Long) v).collect(Collectors.toList());
         RegularValues regular = calcPointIsRegular(values);
         if (regular != null) {
           setRegular(regular.ncoords, regular.start, regular.increment);

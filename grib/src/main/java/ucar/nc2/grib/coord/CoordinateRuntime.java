@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.grib.coord;
@@ -308,8 +308,9 @@ public class CoordinateRuntime implements Coordinate {
     @Override
     public Coordinate makeCoordinate(List<Object> values) {
       List<Long> runtimeSorted = new ArrayList<>(values.size());
-      for (Object val : values)
+      for (Object val : values) {
         runtimeSorted.add((Long) val);
+      }
       Collections.sort(runtimeSorted);
       return new CoordinateRuntime(runtimeSorted, timeUnit);
     }

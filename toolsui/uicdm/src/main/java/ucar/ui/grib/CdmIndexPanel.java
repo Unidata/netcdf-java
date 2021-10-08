@@ -846,7 +846,7 @@ public class CdmIndexPanel extends JPanel {
 
       } else if (coord instanceof CoordinateTime) {
         CoordinateTime time = (CoordinateTime) coord;
-        List<Integer> offsets = time.getOffsetSorted();
+        List<Long> offsets = time.getOffsetSorted();
         int n = offsets.size();
         double offsetFromMaster = time.getOffsetInTimeUnits(gc.getMasterFirstDate());
         start = offsets.get(0) + offsetFromMaster;

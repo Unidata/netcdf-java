@@ -86,13 +86,16 @@ class GribCollectionWriter {
     b.setCode(coord.getCode());
     b.setUnit(coord.getTimeUnit().toString());
     b.addMsecs(coord.getRefDate().getMillisFromEpoch());
-    for (Integer offset : coord.getOffsetSorted())
+    for (Long offset : coord.getOffsetSorted()) {
       b.addValues(offset);
+    }
 
     int[] time2runtime = coord.getTime2runtime();
-    if (time2runtime != null)
-      for (int val : time2runtime)
+    if (time2runtime != null) {
+      for (int val : time2runtime) {
         b.addTime2Runtime(val);
+      }
+    }
 
     return b.build();
   }

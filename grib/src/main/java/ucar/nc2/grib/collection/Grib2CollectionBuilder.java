@@ -289,8 +289,9 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
         CoordinateTime2D.Builder2 builder2D = new CoordinateTime2D.Builder2(isTimeInterval, cust, vb.timeUnit, code);
         coordNBuilder.addBuilder(builder2D);
 
-        if (vb.first.getPDS().isEnsemble())
+        if (vb.first.getPDS().isEnsemble()) {
           coordNBuilder.addBuilder(new CoordinateEns.Builder2(0));
+        }
 
         VertCoordType vertUnit = cust.getVertUnit(pdsFirst.getLevelType1());
         if (vertUnit.isVerticalCoordinate())
@@ -298,8 +299,9 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
               new CoordinateVert.Builder2(pdsFirst.getLevelType1(), cust.getVertUnit(pdsFirst.getLevelType1())));
 
         // populate the coordinates with the inventory of data
-        for (Grib2Record gr : vb.atomList)
+        for (Grib2Record gr : vb.atomList) {
           coordNBuilder.addRecord(gr);
+        }
 
         // done, build coordinates and sparse array indicating which records to use
         vb.coordND = coordNBuilder.finish(vb.atomList, info);

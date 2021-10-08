@@ -559,7 +559,7 @@ class GribIospBuilder {
         for (int runIdx = 0; runIdx < nruns; runIdx++) {
           CoordinateTime coordTime = (CoordinateTime) time2D.getTimeCoordinate(runIdx);
           int timeIdx = 0;
-          for (int val : coordTime.getOffsetSorted()) {
+          for (long val : coordTime.getOffsetSorted()) {
             data[runIdx * ntimes + timeIdx] = timeUnit.getValue() * val + time2D.getOffset(runIdx);
             timeIdx++;
           }
@@ -570,7 +570,7 @@ class GribIospBuilder {
         count = 0;
         for (int runIdx = 0; runIdx < nruns; runIdx++) {
           CoordinateTime coordTime = (CoordinateTime) time2D.getTimeCoordinate(runIdx);
-          for (int val : coordTime.getOffsetSorted()) {
+          for (long val : coordTime.getOffsetSorted()) {
             data[count++] = timeUnit.getValue() * val + time2D.getOffset(runIdx);
           }
         }
@@ -673,7 +673,7 @@ class GribIospBuilder {
     int count = 0;
 
     // coordinate values
-    for (int val : coordTime.getOffsetSorted()) {
+    for (long val : coordTime.getOffsetSorted()) {
       data[count++] = val;
     }
     v.setSourceData(Arrays.factory(ArrayType.DOUBLE, new int[] {ntimes}, data));
@@ -853,8 +853,7 @@ class GribIospBuilder {
     } else {
       int count = 0;
       for (Object val : offsets) {
-        Integer off = (Integer) val;
-        midpoints[count++] = off; // int ??
+        midpoints[count++] = (Long) val;
       }
     }
     v.setSourceData(Arrays.factory(ArrayType.DOUBLE, new int[] {n}, midpoints));
@@ -926,7 +925,7 @@ class GribIospBuilder {
           CoordinateTime timeCoord = (CoordinateTime) time2D.getRegularTimeCoordinateFromMinuteOfDay(minutes);
           // may be uneven number of values for each hour
           int count = offsetidx * noffsets;
-          for (Integer offset : timeCoord.getOffsetSorted()) {
+          for (Long offset : timeCoord.getOffsetSorted()) {
             midpoints[count++] = offset;
           }
           offsetidx++;
