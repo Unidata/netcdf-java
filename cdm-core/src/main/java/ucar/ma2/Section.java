@@ -7,6 +7,7 @@ package ucar.ma2;
 
 import com.google.common.base.Preconditions;
 import com.google.common.primitives.Ints;
+import ucar.nc2.util.Misc;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -117,6 +118,14 @@ public class Section {
    * @throws InvalidRangeException if origin < 0, or shape < 1.
    */
   public Section(int[] origin, int[] shape) throws InvalidRangeException {
+    if (origin.length != shape.length) {
+      try {
+        throw new InvalidRangeException();
+      } catch (Exception e) {
+        System.out.printf("HEY %s != %s%n", java.util.Arrays.toString(origin), java.util.Arrays.toString(shape));
+        e.printStackTrace();
+      }
+    }
     Preconditions.checkArgument(origin.length == shape.length);
     ArrayList<Range> builder = new ArrayList<>();
     for (int i = 0; i < shape.length; i++) {
