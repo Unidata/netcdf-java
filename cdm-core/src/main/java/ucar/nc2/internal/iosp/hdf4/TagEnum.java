@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.internal.iosp.hdf4;
@@ -19,19 +19,6 @@ public class TagEnum {
   public static int SPECIAL_BUFFERED = 6; /* Buffered element */
   public static int SPECIAL_COMPRAS = 7; /* Compressed Raster element */
 
-  /*
-   * typedef enum
-   * {
-   * COMP_CODE_NONE = 0, /* don't encode at all, just store
-   * COMP_CODE_RLE, /* for simple RLE encoding
-   * COMP_CODE_NBIT, /* for N-bit encoding
-   * COMP_CODE_SKPHUFF, /* for Skipping huffman encoding
-   * COMP_CODE_DEFLATE, /* for gzip 'deflate' encoding
-   * COMP_CODE_SZIP, /* for szip encoding
-   * COMP_CODE_INVALID, /* invalid last code, for range checking
-   * COMP_CODE_JPEG /* _Ugly_ hack to allow JPEG images to be created with GRsetcompress
-   * }
-   */
   public static int COMP_CODE_NONE; // don't encode at all, just store
   public static int COMP_CODE_RLE = 1; // for simple RLE encoding
   public static int COMP_CODE_NBIT = 2; // for N-bit encoding

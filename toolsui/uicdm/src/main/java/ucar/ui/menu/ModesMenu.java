@@ -7,13 +7,11 @@ package ucar.ui.menu;
 
 import thredds.client.catalog.tools.DataFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
-import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.grib.GribData;
 import ucar.nc2.grib.grib1.tables.Grib1ParamTables;
 import ucar.nc2.internal.dataset.CoordSystemFactory;
 import ucar.nc2.internal.iosp.hdf4.H4header;
 import ucar.nc2.internal.iosp.hdf5.H5iosp;
-// import ucar.nc2.jni.netcdf.Nc4Iosp;
 import ucar.ui.ToolsUI;
 import ucar.ui.widget.BAMutil;
 import java.awt.event.ActionEvent;
