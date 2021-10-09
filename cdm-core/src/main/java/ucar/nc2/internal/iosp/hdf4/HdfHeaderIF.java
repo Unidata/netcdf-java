@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 1998-2021 University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
 package ucar.nc2.internal.iosp.hdf4;
 
 import java.io.IOException;

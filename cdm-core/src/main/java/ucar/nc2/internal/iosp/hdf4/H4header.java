@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.internal.iosp.hdf4;
@@ -23,10 +23,12 @@ import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nullable;
 
+import ucar.array.Array;
 import ucar.array.ArrayType;
 import ucar.array.Arrays;
-import ucar.ma2.ArrayStructure;
-import ucar.ma2.StructureMembers;
+import ucar.array.StructureData;
+import ucar.array.StructureDataArray;
+import ucar.array.StructureMembers;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.Group;
@@ -36,7 +38,6 @@ import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.write.Ncdump;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Format;
 
@@ -90,8 +91,9 @@ public class H4header implements HdfHeaderIF {
     debugChunkTable = debugFlag.isSet("H4header/chunkTable");
     debugChunkDetail = debugFlag.isSet("H4header/chunkDetail");
     debugTracker = debugFlag.isSet("H4header/memTracker");
-    if (debugFlag.isSet("HdfEos/showWork"))
+    if (debugFlag.isSet("HdfEos/showWork")) {
       HdfEos.showWork = true;
+    }
   }
 
   public static void useHdfEos(boolean val) {
@@ -112,11 +114,6 @@ public class H4header implements HdfHeaderIF {
   private MemTracker memTracker;
   private final PrintWriter debugOut;
   private final Charset valueCharset;
-
-  public H4header() {
-    valueCharset = StandardCharsets.UTF_8;
-    debugOut = new PrintWriter(new OutputStreamWriter(System.out, StandardCharsets.UTF_8));
-  }
 
   H4header(H4iosp h4iosp) {
     valueCharset = h4iosp.getValueCharset().orElse(StandardCharsets.UTF_8);
@@ -275,7 +272,7 @@ public class H4header implements HdfHeaderIF {
     for (Variable.Builder<?> v : vars) {
       Vinfo vinfo = (Vinfo) v.spiObject;
       // if (vinfo.group == null) {
-      if (vinfo.group == null && !root.findVariableLocal(v.shortName).isPresent()) {
+      if (vinfo.group == null && root.findVariableLocal(v.shortName).isEmpty()) {
         root.addVariable(v);
         vinfo.group = root;
       }
@@ -1462,22 +1459,22 @@ public class H4header implements HdfHeaderIF {
         Structure s = makeChunkVariable(ncfile, chunkTableTag);
         if (s == null)
           throw new IllegalStateException("cant parse " + chunkTableTag);
-        ArrayStructure sdata = (ArrayStructure) s.read();
-        if (debugChunkDetail)
-          System.out.println(Ncdump.printArray(sdata, "getChunkedTable", null));
+
+        StructureDataArray sdataArray = (StructureDataArray) s.readArray();
 
         // construct the chunks
-        StructureMembers members = sdata.getStructureMembers();
+        StructureMembers members = sdataArray.getStructureMembers();
         StructureMembers.Member originM = members.findMember("origin");
         StructureMembers.Member tagM = members.findMember("chk_tag");
         StructureMembers.Member refM = members.findMember("chk_ref");
-        int n = (int) sdata.getSize();
-        if (debugChunkTable)
-          System.out.println(" Reading " + n + " DataChunk tags");
+        int n = (int) sdataArray.getSize();
+
         for (int i = 0; i < n; i++) {
-          int[] origin = sdata.getJavaArrayInt(i, originM);
-          short tag = sdata.getScalarShort(i, tagM);
-          short ref = sdata.getScalarShort(i, refM);
+          StructureData sdata = sdataArray.get(i);
+          Array<Integer> origin = (Array<Integer>) sdata.getMemberData(originM);
+          short tag = (Short) sdata.getMemberData(tagM).getScalar();
+          short ref = (Short) sdata.getMemberData(refM).getScalar();
+
           TagData data = (TagData) tagMap.get(tagid(ref, tag));
           dataChunks.add(new DataChunk(origin, chunk_length, data));
           data.used = true;
@@ -1510,14 +1507,16 @@ public class H4header implements HdfHeaderIF {
     int[] origin;
     TagData data;
 
-    DataChunk(int[] origin, int[] chunk_length, TagData data) {
+    DataChunk(Array<Integer> originA, int[] chunk_length, TagData data) {
       // origin is in units of chunks - convert to indices
-      assert origin.length == chunk_length.length;
-      for (int i = 0; i < origin.length; i++)
-        origin[i] *= chunk_length[i];
+      assert originA.getSize() == chunk_length.length;
+      int[] origin = new int[chunk_length.length];
+      for (int i = 0; i < origin.length; i++) {
+        origin[i] = originA.get(i) * chunk_length[i];
+      }
       this.origin = origin;
-
       this.data = data;
+
       if (debugChunkTable) {
         System.out.print(" Chunk origin=");
         for (int value : origin) {

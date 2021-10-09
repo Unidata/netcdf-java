@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.internal.iosp.hdf4;
@@ -12,6 +12,8 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Optional;
+
+import ucar.array.ArrayType;
 import ucar.array.Arrays;
 import ucar.array.ArraysConvert;
 import ucar.array.Storage;
@@ -28,6 +30,7 @@ import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
+import ucar.nc2.iosp.IospArrayHelper;
 import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.iosp.Layout;
 import ucar.nc2.iosp.LayoutBB;
@@ -129,17 +132,17 @@ public class H4iosp extends AbstractIOServiceProvider {
 
   private Object readDataObject(Variable v, Section section) throws IOException, InvalidRangeException {
     H4header.Vinfo vinfo = (H4header.Vinfo) v.getSPobject();
-    DataType dataType = v.getDataType();
+    ArrayType dataType = v.getArrayType();
     vinfo.setLayoutInfo(this.ncfile); // make sure needed info is present
 
     // make sure section is complete
     section = Section.fill(section, v.getShape());
 
     if (vinfo.hasNoData) {
-      Object arr = (vinfo.fillValue == null) ? IospHelper.makePrimitiveArray((int) section.computeSize(), dataType)
-          : IospHelper.makePrimitiveArray((int) section.computeSize(), dataType, vinfo.fillValue);
-      if (dataType == DataType.CHAR) {
-        arr = IospHelper.convertByteToChar((byte[]) arr);
+      Object arr = (vinfo.fillValue == null) ? IospArrayHelper.makePrimitiveArray((int) section.computeSize(), dataType)
+          : IospArrayHelper.makePrimitiveArray((int) section.computeSize(), dataType, vinfo.fillValue);
+      if (dataType == ArrayType.CHAR) {
+        arr = IospArrayHelper.convertByteToChar((byte[]) arr);
       }
       return arr;
     }
@@ -147,16 +150,16 @@ public class H4iosp extends AbstractIOServiceProvider {
     if (!vinfo.isCompressed) {
       if (!vinfo.isLinked && !vinfo.isChunked) {
         Layout layout = new LayoutRegular(vinfo.start, v.getElementSize(), v.getShape(), section);
-        return IospHelper.readDataFill(raf, layout, dataType, vinfo.fillValue, null);
+        return IospArrayHelper.readDataFill(raf, layout, dataType, vinfo.fillValue, null);
 
       } else if (vinfo.isLinked) {
         Layout layout = new LayoutSegmented(vinfo.segPos, vinfo.segSize, v.getElementSize(), v.getShape(), section);
-        return IospHelper.readDataFill(raf, layout, dataType, vinfo.fillValue, null);
+        return IospArrayHelper.readDataFill(raf, layout, dataType, vinfo.fillValue, null);
 
       } else if (vinfo.isChunked) {
         H4ChunkIterator chunkIterator = new H4ChunkIterator(vinfo);
         Layout layout = new LayoutTiled(chunkIterator, vinfo.chunkSize, v.getElementSize(), section);
-        return IospHelper.readDataFill(raf, layout, dataType, vinfo.fillValue, null);
+        return IospArrayHelper.readDataFill(raf, layout, dataType, vinfo.fillValue, null);
       }
 
     } else {
@@ -164,18 +167,18 @@ public class H4iosp extends AbstractIOServiceProvider {
         Layout index = new LayoutRegular(0, v.getElementSize(), v.getShape(), section);
         InputStream is = getCompressedInputStream(vinfo);
         PositioningDataInputStream dataSource = new PositioningDataInputStream(is);
-        return IospHelper.readDataFill(dataSource, index, dataType, vinfo.fillValue);
+        return IospArrayHelper.readDataFill(dataSource, index, dataType, vinfo.fillValue);
 
       } else if (vinfo.isLinked) {
         Layout index = new LayoutRegular(0, v.getElementSize(), v.getShape(), section);
         InputStream is = getLinkedCompressedInputStream(vinfo);
         PositioningDataInputStream dataSource = new PositioningDataInputStream(is);
-        return IospHelper.readDataFill(dataSource, index, dataType, vinfo.fillValue);
+        return IospArrayHelper.readDataFill(dataSource, index, dataType, vinfo.fillValue);
 
       } else if (vinfo.isChunked) {
         LayoutBBTiled.DataChunkIterator chunkIterator = new H4CompressedChunkIterator(vinfo);
         LayoutBB layout = new LayoutBBTiled(chunkIterator, vinfo.chunkSize, v.getElementSize(), section);
-        return IospHelper.readDataFill(layout, dataType, vinfo.fillValue);
+        return IospArrayHelper.readDataFill(layout, dataType, vinfo.fillValue);
       }
     }
     throw new IllegalStateException();
@@ -275,26 +278,26 @@ public class H4iosp extends AbstractIOServiceProvider {
       Section oldSection = ArraysConvert.convertSection(section);
       if (!vinfo.isLinked && !vinfo.isCompressed) {
         Layout layout = new LayoutRegular(vinfo.start, recsize, s.getShape(), oldSection);
-        IospHelper.readData(raf, layout, DataType.STRUCTURE, result, null, true);
+        IospArrayHelper.readData(raf, layout, ArrayType.STRUCTURE, result, null, true);
 
         // option 2
       } else if (vinfo.isLinked && !vinfo.isCompressed) {
         InputStream is = new LinkedInputStream(vinfo);
         PositioningDataInputStream dataSource = new PositioningDataInputStream(is);
         Layout layout = new LayoutRegular(0, recsize, s.getShape(), oldSection);
-        IospHelper.readData(dataSource, layout, DataType.STRUCTURE, result);
+        IospArrayHelper.readData(dataSource, layout, ArrayType.STRUCTURE, result);
 
       } else if (!vinfo.isLinked && vinfo.isCompressed) {
         InputStream is = getCompressedInputStream(vinfo);
         PositioningDataInputStream dataSource = new PositioningDataInputStream(is);
         Layout layout = new LayoutRegular(0, recsize, s.getShape(), oldSection);
-        IospHelper.readData(dataSource, layout, DataType.STRUCTURE, result);
+        IospArrayHelper.readData(dataSource, layout, ArrayType.STRUCTURE, result);
 
       } else if (vinfo.isLinked && vinfo.isCompressed) {
         InputStream is = getLinkedCompressedInputStream(vinfo);
         PositioningDataInputStream dataSource = new PositioningDataInputStream(is);
         Layout layout = new LayoutRegular(0, recsize, s.getShape(), oldSection);
-        IospHelper.readData(dataSource, layout, DataType.STRUCTURE, result);
+        IospArrayHelper.readData(dataSource, layout, ArrayType.STRUCTURE, result);
 
       } else {
         throw new IllegalStateException();
