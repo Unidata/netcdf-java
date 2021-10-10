@@ -69,12 +69,6 @@ public class NetcdfFiles {
         log.info("Cant load class H5iosp", e);
     }
     try {
-      registerIOProvider("ucar.nc2.stream.NcStreamIosp");
-    } catch (Throwable e) {
-      if (loadWarnings)
-        log.info("Cant load class NcStreamIosp", e);
-    }
-    try {
       registerIOProvider("ucar.nc2.internal.iosp.hdf4.H4iosp");
     } catch (Throwable e) {
       if (loadWarnings)

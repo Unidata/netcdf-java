@@ -6,7 +6,7 @@
 package ucar.nc2.iosp.bufr;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -430,7 +430,7 @@ public class MessageArrayCompressedReader {
     nestedBB.order(ByteOrder.BIG_ENDIAN);
 
     StructureDataStorageBB nestedStorage = new StructureDataStorageBB(nestedMembers, nestedBB, nestedElements);
-    nestedStorage.setStructuresOnHeap(structuresOnHeap);
+    nestedStorage.setNestedStructuresOnHeap(structuresOnHeap);
 
     HashMap<DataDescriptor, Member> nestedMap = new HashMap<>();
     MessageArrayReaderUtils.associateMessage2Members(nestedMembers, seqdd, nestedMap);

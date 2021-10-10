@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
 package ucar.nc2.internal.iosp.hdf5;
 
 import java.io.IOException;
@@ -6,15 +10,15 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Formatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import ucar.ma2.Array;
-import ucar.ma2.DataType;
-import ucar.ma2.InvalidRangeException;
+import ucar.array.Array;
+import ucar.array.Arrays;
+import ucar.array.ArrayType;
+import ucar.array.InvalidRangeException;
 import ucar.nc2.Dimension;
 import ucar.nc2.calendar.CalendarDate;
 import ucar.unidata.io.RandomAccessFile;
@@ -574,7 +578,7 @@ public class H5objects {
      * Find the MessageType that matches this name.
      *
      * @param name find DataTYpe with this name.
-     * @return DataType or null if no match.
+     * @return ArrayType or null if no match.
      */
     public static MessageType getType(String name) {
       if (name == null)
@@ -664,14 +668,14 @@ public class H5objects {
 
       if (version == 1) {
         type = raf.readShort();
-        size = DataType.unsignedShortToInt(raf.readShort());
+        size = ArrayType.unsignedShortToInt(raf.readShort());
         headerMessageFlags = raf.readByte();
         raf.skipBytes(3);
         header_length = 8;
 
       } else {
         type = raf.readByte();
-        size = DataType.unsignedShortToInt(raf.readShort());
+        size = ArrayType.unsignedShortToInt(raf.readShort());
 
         headerMessageFlags = raf.readByte();
         header_length = 4;
@@ -1143,7 +1147,7 @@ public class H5objects {
     boolean unsigned;
 
     // time (2)
-    DataType timeType;
+    ArrayType timeType;
 
     // opaque (5)
     String opaque_desc;
@@ -1158,7 +1162,7 @@ public class H5objects {
     Map<Integer, String> map;
     String enumTypeName;
 
-    // enum, variable-length, array types have "base" DataType
+    // enum, variable-length, array types have "base" ArrayType
     MessageDatatype base;
     boolean isVString; // variable length (not a string)
     boolean isVlen; // vlen but not string
@@ -1170,7 +1174,7 @@ public class H5objects {
       Formatter f = new Formatter();
       f.format(" datatype= %d", type);
       f.format(" byteSize= %d", byteSize);
-      DataType dtype = header.getNCtype(type, byteSize, unsigned);
+      ArrayType dtype = new Hdf5Type(this).dataType;
       f.format(" NCtype= %s %s", dtype, unsigned ? "(unsigned)" : "");
       f.format(" flags= ");
       for (int i = 0; i < 3; i++)
@@ -1197,7 +1201,7 @@ public class H5objects {
     }
 
     public String getName() {
-      DataType dtype = header.getNCtype(type, byteSize, unsigned);
+      ArrayType dtype = new Hdf5Type(this).dataType;
       if (dtype != null)
         return dtype + " size= " + byteSize;
       else
@@ -1205,7 +1209,7 @@ public class H5objects {
     }
 
     public String getType() {
-      DataType dtype = header.getNCtype(type, byteSize, unsigned);
+      ArrayType dtype = new Hdf5Type(this).dataType;
       if (dtype != null)
         return dtype.toString();
       else
@@ -1256,11 +1260,11 @@ public class H5objects {
       } else if (type == 2) { // time
         short bitPrecision = raf.readShort();
         if (bitPrecision == 16)
-          timeType = DataType.SHORT;
+          timeType = ArrayType.SHORT;
         else if (bitPrecision == 32)
-          timeType = DataType.INT;
+          timeType = ArrayType.INT;
         else if (bitPrecision == 64)
-          timeType = DataType.LONG;
+          timeType = ArrayType.LONG;
 
         if (debug1) {
           log.debug("   type 2 (time): bitPrecision= " + bitPrecision + " timeType = " + timeType);
@@ -1950,7 +1954,7 @@ public class H5objects {
               attMessage.read(dh.getPos());
               f.format(" %-30s", trunc(attMessage.getName(), 30));
             }
-            f.format(" heapId=:%s%n", Arrays.toString(heapId));
+            f.format(" heapId=:%s%n", java.util.Arrays.toString(heapId));
           }
 
         } catch (IOException e) {
@@ -2410,7 +2414,7 @@ public class H5objects {
    * @return the Array read from the heap
    * @throws IOException on read error
    */
-  Array getHeapDataArray(long globalHeapIdAddress, DataType dataType, int endian)
+  Array getHeapDataArray(long globalHeapIdAddress, ArrayType dataType, int endian)
       throws IOException, InvalidRangeException {
     HeapIdentifier heapId = new HeapIdentifier(globalHeapIdAddress);
     if (debugHeap) {
@@ -2421,7 +2425,7 @@ public class H5objects {
     // return Array.factory(dataType.getPrimitiveClassType(), new int[]{heapId.nelems}, pa);
   }
 
-  private Array getHeapDataArray(HeapIdentifier heapId, DataType dataType, int endian)
+  private Array<?> getHeapDataArray(HeapIdentifier heapId, ArrayType dataType, int endian)
       throws IOException, InvalidRangeException {
     GlobalHeap.HeapObject ho = heapId.getHeapObject();
     if (ho == null) {
@@ -2434,41 +2438,41 @@ public class H5objects {
       raf.order(endian);
     }
 
-    if (DataType.FLOAT == dataType) {
+    if (ArrayType.FLOAT == dataType) {
       float[] pa = new float[heapId.nelems];
       raf.seek(ho.dataPos);
       raf.readFloat(pa, 0, pa.length);
-      return Array.factory(dataType, new int[] {pa.length}, pa);
+      return Arrays.factory(dataType, new int[] {pa.length}, pa);
 
-    } else if (DataType.DOUBLE == dataType) {
+    } else if (ArrayType.DOUBLE == dataType) {
       double[] pa = new double[heapId.nelems];
       raf.seek(ho.dataPos);
       raf.readDouble(pa, 0, pa.length);
-      return Array.factory(dataType, new int[] {pa.length}, pa);
+      return Arrays.factory(dataType, new int[] {pa.length}, pa);
 
-    } else if (dataType.getPrimitiveClassType() == byte.class) {
+    } else if (dataType.getPrimitiveClass() == Byte.class) {
       byte[] pa = new byte[heapId.nelems];
       raf.seek(ho.dataPos);
       raf.readFully(pa, 0, pa.length);
-      return Array.factory(dataType, new int[] {pa.length}, pa);
+      return Arrays.factory(dataType, new int[] {pa.length}, pa);
 
-    } else if (dataType.getPrimitiveClassType() == short.class) {
+    } else if (dataType.getPrimitiveClass() == Short.class) {
       short[] pa = new short[heapId.nelems];
       raf.seek(ho.dataPos);
       raf.readShort(pa, 0, pa.length);
-      return Array.factory(dataType, new int[] {pa.length}, pa);
+      return Arrays.factory(dataType, new int[] {pa.length}, pa);
 
-    } else if (dataType.getPrimitiveClassType() == int.class) {
+    } else if (dataType.getPrimitiveClass() == Integer.class) {
       int[] pa = new int[heapId.nelems];
       raf.seek(ho.dataPos);
       raf.readInt(pa, 0, pa.length);
-      return Array.factory(dataType, new int[] {pa.length}, pa);
+      return Arrays.factory(dataType, new int[] {pa.length}, pa);
 
-    } else if (dataType.getPrimitiveClassType() == long.class) {
+    } else if (dataType.getPrimitiveClass() == Long.class) {
       long[] pa = new long[heapId.nelems];
       raf.seek(ho.dataPos);
       raf.readLong(pa, 0, pa.length);
-      return Array.factory(dataType, new int[] {pa.length}, pa);
+      return Arrays.factory(dataType, new int[] {pa.length}, pa);
     }
 
     throw new UnsupportedOperationException("getHeapDataAsArray dataType=" + dataType);
@@ -2811,7 +2815,7 @@ public class H5objects {
   }
 
   private int makeUnsignedIntFromBytes(byte upper, byte lower) {
-    return DataType.unsignedByteToShort(upper) * 256 + DataType.unsignedByteToShort(lower);
+    return ArrayType.unsignedByteToShort(upper) * 256 + ArrayType.unsignedByteToShort(lower);
   }
 
   private void dump(String head, long filePos, int nbytes, boolean count) throws IOException {
