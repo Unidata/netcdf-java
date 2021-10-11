@@ -1,5 +1,5 @@
 ---
-title: Upgrading to netCDF-Java version 7.x
+title: Upgrading to netCDF-Java version 8.x
 last_updated: 2021-05-21
 sidebar: userguide_sidebar
 toc: false
@@ -16,10 +16,10 @@ permalink: upgrade.html
 
 ## Quick Navigation
 
-* [Summary of changes for v7.0.x](#netcdf-java-api-changes-60x)
+* [Summary of changes for v8.0.x](#netcdf-java-api-changes-60x)
 * [Previous versions](#previous-releases)
 
-## netCDF-Java API Changes (7.0.x)
+## netCDF-Java API Changes (8.0.x)
 
 * ...
 
