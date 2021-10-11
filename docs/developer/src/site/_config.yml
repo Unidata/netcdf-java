@@ -2,7 +2,7 @@
 theme: unidata-jekyll-theme
 
 # this will appear in an HTML meta tag, sidebar, and perhaps elsewhere
-docset_version: 7.0
+docset_version: 8.0
 
 # this appears on the top navigation bar next to the home button
 topnav_title: netCDF-Java
