@@ -20,7 +20,6 @@ import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.*;
 import ucar.nc2.geoloc.vertical.CsmHybridSigmaBuilder;
 import ucar.nc2.internal.dataset.transform.horiz.*;
-import ucar.nc2.internal.dataset.transform.vertical.*;
 
 /**
  * Factory for Coordinate Transforms.
@@ -62,24 +61,6 @@ public class CoordTransformFactory {
     registerTransform("UTM", UTM.class);
     registerTransform(CF.VERTICAL_PERSPECTIVE, VerticalPerspective.class);
 
-    // DO NOT USE: see CF1Convention.makeAtmLnCoordinate()
-    // registerTransform("atmosphere_ln_pressure_coordinate", VAtmLnPressure.class);
-
-    registerTransform("atmosphere_hybrid_height_coordinate", CFHybridHeight.class);
-    registerTransform("atmosphere_hybrid_sigma_pressure_coordinate", CFHybridSigmaPressure.class);
-    registerTransform("atmosphere_sigma_coordinate", CFSigma.class);
-    registerTransform("ocean_s_coordinate", CFOceanS.class);
-    registerTransform("ocean_sigma_coordinate", CFOceanSigma.class);
-    registerTransform("explicit_field", VExplicitField.class);
-    registerTransform("existing3DField", VExplicitField.class); // deprecate
-
-    // -sachin 03/25/09
-    registerTransform("ocean_s_coordinate_g1", VOceanSG1.class);
-    registerTransform("ocean_s_coordinate_g2", VOceanSG2.class);
-
-    registerTransform("sigma_level", CsmSigma.class);
-    registerTransform(CsmHybridSigmaBuilder.transform_name, CsmSigma.HybridSigmaPressureBuilder.class);
-
     // further calls to registerTransform are by the user
     userMode = true;
   }
@@ -91,7 +72,7 @@ public class CoordTransformFactory {
    * @param c class that implements CoordTransBuilderIF.
    */
   public static void registerTransform(String transformName, Class<?> c) {
-    if (!(VerticalCTBuilder.class.isAssignableFrom(c)) && !(HorizTransformBuilderIF.class.isAssignableFrom(c)))
+    if (!(HorizTransformBuilderIF.class.isAssignableFrom(c)))
       throw new IllegalArgumentException(
           "Class " + c.getName() + " must implement VertTransformBuilderIF or HorizTransformBuilderIF");
 
@@ -211,15 +192,7 @@ public class CoordTransformFactory {
     }
 
     CoordinateTransform.Builder<?> ct;
-    if (builderObject instanceof VerticalCTBuilder) {
-      VerticalCTBuilder vertBuilder = (VerticalCTBuilder) builderObject;
-      vertBuilder.setErrorBuffer(errInfo);
-      ct = vertBuilder.makeVerticalCT(ds, ctv); // TODO: remove dependence on ds?
-      if (ct != null) {
-        ct.setTransformType(TransformType.Vertical);
-      }
-
-    } else if (builderObject instanceof HorizTransformBuilderIF) {
+    if (builderObject instanceof HorizTransformBuilderIF) {
       HorizTransformBuilderIF horizBuilder = (HorizTransformBuilderIF) builderObject;
       horizBuilder.setErrorBuffer(errInfo);
       String units = TransformBuilders.getGeoCoordinateUnits(ds, ctv); // TODO: remove dependence on ds?

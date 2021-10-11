@@ -33,6 +33,7 @@ import java.util.Formatter;
  * TODO: add other collections to unit tests as needed.
  */
 @Category({NeedsCdmUnitTest.class, Slow.class})
+@Ignore("Data not available")
 public class TestGribIndexCreationOther {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 

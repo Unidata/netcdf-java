@@ -9,36 +9,17 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import ucar.array.Array;
 import ucar.array.InvalidRangeException;
-import ucar.nc2.Dimension;
-import ucar.nc2.constants.AxisType;
-import ucar.nc2.dataset.CoordinateAxis;
-import ucar.nc2.dataset.CoordinateSystem;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.nc2.dataset.VariableDS;
-import ucar.nc2.dataset.VerticalCT;
-import ucar.nc2.grid.Grid;
-import ucar.nc2.grid.GridCoordinateSystem;
-import ucar.nc2.grid.GridHorizCoordinateSystem;
-import ucar.nc2.grid.GridTimeCoordinateSystem;
-import ucar.nc2.internal.grid.GridNetcdfDataset;
-import ucar.nc2.internal.util.CompareArrayToMa2;
+import ucar.nc2.units.SimpleUnit;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Formatter;
 import java.util.List;
-import java.util.Optional;
-
-import static com.google.common.truth.Truth.assertThat;
-import static com.google.common.truth.Truth.assertWithMessage;
 
 /**
- * Compare new and old VerticalTransforms.
+ * Open VerticalTransforms.
  * These are all the test files I can find with a vertical transform.
  * We can port/implement more transforms if we get a test file.
  */
@@ -51,34 +32,62 @@ public class TestCompareVerticalTransforms {
     List<Object[]> result = new ArrayList<>(500);
     try {
       result.add(new Object[] {TestDir.cdmUnitTestDir + "transforms/erie_test.ncml", "temp",
-          ucar.nc2.geoloc.vertical.OceanSigma.class});
+          ucar.nc2.geoloc.vertical.OceanSigma.class, SimpleUnit.meterUnit});
+      result.add(new Object[] {TestDir.cdmUnitTestDir + "transforms/gomoos.ncml", "temp",
+          ucar.nc2.geoloc.vertical.OceanSigma.class, SimpleUnit.meterUnit});
+      result.add(new Object[] {TestDir.cdmUnitTestDir + "transforms/OceanSigma.nc", "temp",
+          ucar.nc2.geoloc.vertical.OceanSigma.class, SimpleUnit.meterUnit});
+
       result.add(new Object[] {TestDir.cdmUnitTestDir + "conventions/cf/bora_feb_001.nc", "AKs",
-          ucar.nc2.geoloc.vertical.OceanS.class});
+          ucar.nc2.geoloc.vertical.OceanS.class, SimpleUnit.meterUnit});
       result.add(new Object[] {TestDir.cdmUnitTestDir + "conventions/cf/bora_feb_001.nc", "salt",
-          ucar.nc2.geoloc.vertical.OceanS.class});
+          ucar.nc2.geoloc.vertical.OceanS.class, SimpleUnit.meterUnit});
+      result.add(new Object[] {TestDir.cdmUnitTestDir + "transforms/OceanS.nc", "salt",
+          ucar.nc2.geoloc.vertical.OceanS.class, SimpleUnit.meterUnit});
+      result.add(new Object[] {TestDir.cdmUnitTestDir + "transforms/OceanS2.nc", "salt",
+          ucar.nc2.geoloc.vertical.OceanS.class, SimpleUnit.meterUnit});
+
+      result.add(new Object[] {TestDir.cdmUnitTestDir + "transforms/ocean_his_g1.nc", "u",
+          ucar.nc2.geoloc.vertical.OceanSG1.class, SimpleUnit.meterUnit});
+      result.add(new Object[] {TestDir.cdmUnitTestDir + "transforms/ocean_his_g2.nc", "u",
+          ucar.nc2.geoloc.vertical.OceanSG2.class, SimpleUnit.meterUnit});
+
+      result.add(new Object[] {TestDir.cdmUnitTestDir + "transforms/VExisting3D_NUWG.nc", "rhu_hybr",
+          ucar.nc2.geoloc.vertical.ExistingFieldVerticalTransform.class, SimpleUnit.factory("gp m")});
+
       result.add(new Object[] {TestDir.cdmUnitTestDir + "conventions/cf/temperature.nc", "Temperature",
-          ucar.nc2.geoloc.vertical.AtmosSigma.class});
+          ucar.nc2.geoloc.vertical.AtmosSigma.class, SimpleUnit.pressureUnit});
+      result.add(new Object[] {TestDir.cdmUnitTestDir + "transforms/Sigma_LC.nc", "Temperature",
+          ucar.nc2.geoloc.vertical.AtmosSigma.class, SimpleUnit.pressureUnit});
+
       result.add(new Object[] {TestDir.cdmUnitTestDir + "conventions/cf/ccsm2.nc", "MQ",
-          ucar.nc2.geoloc.vertical.AtmosHybridSigmaPressure.class});
+          ucar.nc2.geoloc.vertical.AtmosHybridSigmaPressure.class, SimpleUnit.pressureUnit});
       result.add(new Object[] {TestDir.cdmUnitTestDir + "conventions/csm/ha0001.nc", "CME",
-          ucar.nc2.geoloc.vertical.AtmosHybridSigmaPressure.class});
+          ucar.nc2.geoloc.vertical.AtmosHybridSigmaPressure.class, SimpleUnit.pressureUnit});
       result.add(new Object[] {TestDir.cdmUnitTestDir + "conventions/csm/ha0001.nc", "CGS",
-          ucar.nc2.geoloc.vertical.AtmosHybridSigmaPressure.class});
+          ucar.nc2.geoloc.vertical.AtmosHybridSigmaPressure.class, SimpleUnit.pressureUnit});
+      result.add(new Object[] {TestDir.cdmUnitTestDir + "transforms/HybridSigmaPressure.nc", "T",
+          ucar.nc2.geoloc.vertical.AtmosHybridSigmaPressure.class, SimpleUnit.pressureUnit});
+      result.add(new Object[] {TestDir.cdmUnitTestDir + "transforms/climo.cam2.h0.0000-09.nc", "T",
+          ucar.nc2.geoloc.vertical.AtmosHybridSigmaPressure.class, SimpleUnit.pressureUnit});
+      result.add(new Object[] {TestDir.cdmUnitTestDir + "transforms/HIRLAMhybrid.ncml", "Relative_humidity_hybrid",
+          ucar.nc2.geoloc.vertical.AtmosHybridSigmaPressure.class, SimpleUnit.pressureUnit});
+
       result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/fmrc/espresso/espresso_his_20130505_0000_0001.nc", "u",
-          ucar.nc2.geoloc.vertical.OceanSG1.class});
+          ucar.nc2.geoloc.vertical.OceanSG1.class, SimpleUnit.meterUnit});
       result.add(new Object[] {TestDir.cdmUnitTestDir + "ft/fmrc/espresso/espresso_his_20130505_0000_0001.nc", "w",
-          ucar.nc2.geoloc.vertical.OceanSG1.class});
+          ucar.nc2.geoloc.vertical.OceanSG1.class, SimpleUnit.meterUnit});
 
       result.add(new Object[] {TestDir.cdmUnitTestDir + "conventions/wrf/wrfout_v2_Lambert.nc", "U",
-          ucar.nc2.geoloc.vertical.WrfEta.class});
+          ucar.nc2.geoloc.vertical.WrfEta.class, SimpleUnit.pressureUnit});
       result.add(new Object[] {TestDir.cdmUnitTestDir + "conventions/wrf/wrfout_v2_Lambert.nc", "V",
-          ucar.nc2.geoloc.vertical.WrfEta.class});
+          ucar.nc2.geoloc.vertical.WrfEta.class, SimpleUnit.pressureUnit});
       result.add(new Object[] {TestDir.cdmUnitTestDir + "conventions/wrf/wrfout_v2_Lambert.nc", "W",
-          ucar.nc2.geoloc.vertical.WrfEta.class});
+          ucar.nc2.geoloc.vertical.WrfEta.class, SimpleUnit.meterUnit}); // z_stag has meters coord
       result.add(new Object[] {TestDir.cdmUnitTestDir + "conventions/wrf/wrfout_v2_Lambert.nc", "T",
-          ucar.nc2.geoloc.vertical.WrfEta.class});
+          ucar.nc2.geoloc.vertical.WrfEta.class, SimpleUnit.pressureUnit});
       result.add(new Object[] {TestDir.cdmUnitTestDir + "conventions/wrf/wrfout_d01_2006-03-08_21-00-00", "U",
-          ucar.nc2.geoloc.vertical.WrfEta.class});
+          ucar.nc2.geoloc.vertical.WrfEta.class, SimpleUnit.pressureUnit});
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -89,78 +98,18 @@ public class TestCompareVerticalTransforms {
   private final String filename;
   private final String gridName;
   private final Class<?> vtClass;
+  private final SimpleUnit vunit;
 
-  public TestCompareVerticalTransforms(String filename, String gridName, Class<?> vtClass) {
+  public TestCompareVerticalTransforms(String filename, String gridName, Class<?> vtClass, SimpleUnit vunit) {
     this.filename = filename;
     this.gridName = gridName;
     this.vtClass = vtClass;
+    this.vunit = vunit;
   }
 
   @Test
   public void compare() throws IOException, InvalidRangeException, ucar.ma2.InvalidRangeException {
-    System.out.printf("compare %s %s%n", filename, gridName);
-
-    Formatter errlog = new Formatter();
-    try (NetcdfDataset ds = NetcdfDatasets.openDataset(filename)) {
-      VariableDS vds = (VariableDS) ds.findVariable(gridName);
-      VerticalCT vct = null;
-      CoordinateAxis timeAxis = null;
-      for (CoordinateSystem csys : vds.getCoordinateSystems()) {
-        vct = csys.getVerticalCT();
-        if (vct != null) {
-          timeAxis = csys.findAxis(AxisType.Time);
-          break;
-        }
-      }
-      assertThat(vct).isNotNull();
-      Dimension timeDim = null;
-      if (timeAxis != null) {
-        timeDim = timeAxis.getDimension(0);
-      }
-      ucar.unidata.geoloc.VerticalTransform oldVt = vct.makeVerticalTransform(ds, timeDim);
-
-      Optional<GridNetcdfDataset> grido = GridNetcdfDataset.create(ds, errlog);
-      assertWithMessage(errlog.toString()).that(grido.isPresent()).isTrue();
-      GridNetcdfDataset gridDataset = grido.get();
-      Grid grid = gridDataset.findGrid(gridName).orElseThrow();
-
-      GridCoordinateSystem gcs = grid.getCoordinateSystem();
-      assertThat(gcs).isNotNull();
-      VerticalTransform vt = gcs.getVerticalTransform();
-      assertThat(vt).isNotNull();
-      System.out.printf(" compare old %s new %s%n", oldVt.getClass().getName(), vt.getClass().getName());
-      assertThat(vt.getClass()).isEqualTo(vtClass);
-
-      GridTimeCoordinateSystem tcs = grid.getTimeCoordinateSystem();
-      int ntimes = tcs == null ? 1 : tcs.getTimeOffsetAxis(0).getNominalSize();
-      for (int timeIndex = 0; timeIndex < ntimes; timeIndex++) {
-        ucar.ma2.ArrayDouble.D3 oldZt = oldVt.getCoordinateArray(timeIndex);
-        Array<Number> zt = vt.getCoordinateArray3D(timeIndex);
-        Formatter errlog2 = new Formatter();
-        boolean ok =
-            CompareArrayToMa2.compareData(errlog2, String.format("timeIdx = %d", timeIndex), oldZt, zt, false, false);
-        if (!ok) {
-          System.out.printf(" 3D FAILED errlog=%s%n", errlog2);
-        }
-        assertThat(ok).isTrue();
-      }
-
-      GridHorizCoordinateSystem hcs = grid.getHorizCoordinateSystem();
-      int yindex = hcs.getShape().get(0) / 2;
-      int xindex = hcs.getShape().get(1) / 2;
-
-      for (int timeIndex = 0; timeIndex < ntimes; timeIndex++) {
-        ucar.ma2.ArrayDouble.D1 oldZt = oldVt.getCoordinateArray1D(timeIndex, xindex, yindex);
-        Array<Number> zt = vt.getCoordinateArray1D(timeIndex, xindex, yindex);
-        Formatter errlog2 = new Formatter();
-        boolean ok =
-            CompareArrayToMa2.compareData(errlog2, String.format("timeIdx = %d", timeIndex), oldZt, zt, false, false);
-        if (!ok) {
-          System.out.printf(" 1D FAILED errlog=%s%n", errlog2);
-        }
-        assertThat(ok).isTrue();
-      }
-    }
+    TestVertical.open(filename, gridName, vtClass, vunit);
   }
 
 }

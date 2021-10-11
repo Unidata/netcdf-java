@@ -129,10 +129,6 @@ public class CoordSysTable extends JPanel {
                 // pct.getProjection();
               }
             }
-            if (ct instanceof VerticalCT) {
-              VerticalCT vct = (VerticalCT) ct;
-              infoTA.appendLine("  VerticalCT= " + vct);
-            }
           }
         }
         infoTA.gotoTop();
@@ -725,8 +721,6 @@ public class CoordSysTable extends JPanel {
       Formatter buff = new Formatter();
       List<CoordinateTransform> ctList = cs.getCoordinateTransforms();
       for (CoordinateTransform ct : ctList) {
-        if (ct instanceof VerticalCT)
-          buff.format("V");
         if (ct instanceof ProjectionCT) {
           buff.format("P");
         }

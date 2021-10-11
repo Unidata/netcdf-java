@@ -8,6 +8,7 @@ import ucar.array.Array;
 import ucar.array.ArrayType;
 import ucar.array.Arrays;
 import ucar.array.InvalidRangeException;
+import ucar.array.Index;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.CoordinateSystem;
@@ -20,34 +21,35 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Implement CF "ocean_s_coordinate_g1".
+ * Implement CF "ocean_s_coordinate_g2".
  *
  * <pre>
- * Ocean s-coordinate, generic form 1
- * standard_name = "ocean_s_coordinate_g1"
+ * Ocean s-coordinate, generic form 2
+ * standard_name = "ocean_s_coordinate_g2"
  * Definition
- *   z(n,k,j,i) = S(k,j,i) + eta(n,j,i) * (1 + S(k,j,i) / depth(j,i))
+ *     z(n,k,j,i) = eta(n,j,i) + (eta(n,j,i) + depth(j,i)) * S(k,j,i)
  * where
- *   S(k,j,i) = depth_c * s(k) + (depth(j,i) - depth_c) * C(k)
+ *   S(k,j,i) = (depth_c * s(k) + depth(j,i) * C(k)) / (depth_c + depth(j,i))
  *
  * where
- * z(n,k,j,i) is height, positive upwards, relative to ocean datum (e.g. mean sea level) at gridpoint (n,k,j,i)
- * eta(n,j,i) is the height of the ocean surface, positive upwards, relative to ocean datum at gridpoint (n,j,i)
- * s(k) is the dimensionless coordinate at vertical gridpoint (k) with a range of -1 ⇐ s(k) ⇐ 0
- * s(0) corresponds to eta(n,j,i) whereas s(-1) corresponds to depth(j,i)
- * C(k) is the dimensionless vertical coordinate stretching function at gridpoint (k) with a range of -1 ⇐ C(k) ⇐ 0
- * C(0) corresponds to eta(n,j,i) whereas C(-1) corresponds to depth(j,i)
- * the constant depth_c, (positive value), is a critical depth controlling the stretching
+ * z(n,k,j,i) is height, positive upwards, relative to ocean datum (e.g. mean sea level) at gridpoint (n,k,j,i),
+ * eta(n,j,i) is the height of the ocean surface, positive upwards, relative to ocean datum at gridpoint (n,j,i),
+ * s(k) is the dimensionless coordinate at vertical gridpoint (k) with a range of -1 ⇐ s(k) ⇐ 0 ,
+ * S(0) corresponds to eta(n,j,i) whereas s(-1) corresponds to depth(j,i);
+ * C(k) is the dimensionless vertical coordinate stretching function at gridpoint (k) with a range of -1 ⇐ C(k) ⇐ 0,
+ * C(0) corresponds to eta(n,j,i) whereas C(-1) corresponds to depth(j,i);
+ * the constant depth_c, (positive value), is a critical depth controlling the stretching and
  * depth(j,i) is the distance from ocean datum to sea floor (positive value) at horizontal gridpoint (j,i).
  *
  * The format for the formula_terms attribute is
- * formula_terms = "s: var1 C: var2 eta: var3 depth: var4 depth_c: var5"
+ *
+ *   formula_terms = "s: var1 C: var2 eta: var3 depth: var4 depth_c: var5"
  * </pre>
  *
  * @see "http://cfconventions.org/Data/cf-conventions/cf-conventions-1.9/cf-conventions.html#_ocean_s_coordinate_generic_form_1"
  */
 @Immutable
-public class OceanSG1 extends AbstractVerticalTransform {
+public class OceanSG2 extends AbstractVerticalTransform {
 
   public static Optional<VerticalTransform> create(NetcdfDataset ds, AttributeContainer params, Formatter errlog) {
     String formula_terms = getFormula(params, errlog);
@@ -92,7 +94,7 @@ public class OceanSG1 extends AbstractVerticalTransform {
 
     try {
       return Optional
-          .of(new OceanSG1(ds, params.getName(), units, sName, cName, etaName, depthName, depthCName, etaRank));
+          .of(new OceanSG2(ds, params.getName(), units, sName, cName, etaName, depthName, depthCName, etaRank));
     } catch (IOException e) {
       errlog.format("OceanSG1 %s: failed err = %s%n", params.getName(), e.getMessage());
       return Optional.empty();
@@ -110,9 +112,9 @@ public class OceanSG1 extends AbstractVerticalTransform {
   private final Array<Number> sArray;
   private final Array<Number> cArray;
 
-  private OceanSG1(NetcdfDataset ds, String ctvName, String units, String sName, String cName, String etaName,
+  private OceanSG2(NetcdfDataset ds, String ctvName, String units, String sName, String cName, String etaName,
       String depthName, String depthCName, int etaRank) throws IOException {
-    super(ds, CF.ocean_s_coordinate_g1, ctvName, units);
+    super(ds, CF.ocean_s_coordinate_g2, ctvName, units);
 
     this.sName = sName;
     this.cName = cName;
@@ -131,41 +133,52 @@ public class OceanSG1 extends AbstractVerticalTransform {
     Array<Number> etaArray = (etaRank == 3) ? readArray(ds, etaName, timeIndex) : readArray(ds, etaName);
     Array<Number> depthArray = readArray(ds, depthName);
 
-    /**
-     * Make height from the given data.
-     * height(x,y,z) = S(x,y,z) + eta(x,y) * (1 + S(x,y,z) / depth([n],x,y) )
-     * where,
-     * S(x,y,z) = depth_c*s(z) + (depth([n],x,y)-depth_c)*C(z)
-     */
-    int nz = (int) sArray.getSize();
-    int[] shape2D = etaArray.getShape();
+    return makeHeight(etaArray, sArray, depthArray, cArray, depth_c);
+  }
+
+  /**
+   * height(x,y,z) = eta(x,y) + ( eta(x,y) + depth([n],x,y) ) * S(x,y,z)
+   * where,
+   * S(x,y,z) = (depth_c*s(z) + (depth([n],x,y) * C(z)) / (depth_c + depth([n],x,y))
+   */
+  private Array<Number> makeHeight(Array<Number> eta, Array<Number> s, Array<Number> depth, Array<Number> c,
+      double depth_c) {
+    int nz = (int) s.getSize();
+    Index sIndex = s.getIndex();
+    Index cIndex = c.getIndex();
+
+    int[] shape2D = eta.getShape();
     int ny = shape2D[0];
     int nx = shape2D[1];
+    Index etaIndex = eta.getIndex();
+    Index depthIndex = depth.getIndex();
 
+    double[] parray = new double[nz * ny * nx];
     int count = 0;
-    double[] result = new double[nz * ny * nx];
     for (int z = 0; z < nz; z++) {
-      double sz = sArray.get(z).doubleValue();
-      double cz = cArray.get(z).doubleValue();
+      double sz = s.get(sIndex.set(z)).doubleValue();
+      double cz = c.get(cIndex.set(z)).doubleValue();
+
       double term1 = depth_c * sz;
 
       for (int y = 0; y < ny; y++) {
         for (int x = 0; x < nx; x++) {
-          double fac1 = depthArray.get(y, x).doubleValue();
-          double term2 = (fac1 - depth_c) * cz;
 
-          double Sterm = term1 + term2;
+          double fac1 = depth.get(depthIndex.set(y, x)).doubleValue();
+          double term2 = fac1 * cz;
 
-          double term3 = etaArray.get(y, x).doubleValue();
-          double term4 = 1 + Sterm / fac1;
-          double hterm = Sterm + term3 * term4;
+          double Sterm = (term1 + term2) / (depth_c + fac1);
 
-          result[count++] = hterm;
+          double term3 = eta.get(etaIndex.set(y, x)).doubleValue();
+          double term4 = (term3 + fac1) * Sterm;
+          double hterm = term3 + term4;
+
+          parray[count++] = hterm;
         }
       }
     }
 
-    return Arrays.factory(ArrayType.DOUBLE, new int[] {nz, ny, nx}, result);
+    return Arrays.factory(ArrayType.DOUBLE, new int[] {nz, ny, nx}, parray);
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -173,7 +186,7 @@ public class OceanSG1 extends AbstractVerticalTransform {
   public static class Builder implements VerticalTransform.Builder {
     public Optional<VerticalTransform> create(NetcdfDataset ds, CoordinateSystem csys, AttributeContainer params,
         Formatter errlog) {
-      return OceanSG1.create(ds, params, errlog);
+      return OceanSG2.create(ds, params, errlog);
     }
   }
 }

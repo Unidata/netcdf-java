@@ -36,8 +36,24 @@ public class CsmHybridSigmaBuilder implements AbstractVerticalTransform.Builder 
     String bName = params.findAttributeString("B_var", null);
     String psName = params.findAttributeString("PS_var", null);
     String p0Name = params.findAttributeString("P0_var", null);
-    String units = getUnits(ds, psName);
+    if (null == ds.findVariable(aName)) {
+      errlog.format("CsmHybridSigma %s: aName %s does not exist%n", params.getName(), aName);
+      return Optional.empty();
+    }
+    if (null == ds.findVariable(bName)) {
+      errlog.format("CsmHybridSigma %s: bName %s does not exist%n", params.getName(), bName);
+      return Optional.empty();
+    }
+    if (null == ds.findVariable(psName)) {
+      errlog.format("CsmHybridSigma %s: psName %s does not exist%n", params.getName(), psName);
+      return Optional.empty();
+    }
+    if (null == ds.findVariable(p0Name)) {
+      errlog.format("CsmHybridSigma %s: p0Name %s does not exist%n", params.getName(), p0Name);
+      return Optional.empty();
+    }
 
+    String units = getUnits(ds, psName);
     int rank = getRank(ds, aName);
     if (rank != 1) {
       errlog.format("CsmHybridSigma %s: aName has rank %d should be 1%n", params.getName(), rank);

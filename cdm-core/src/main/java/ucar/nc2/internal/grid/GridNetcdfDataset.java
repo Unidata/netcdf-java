@@ -15,6 +15,7 @@ import ucar.nc2.Dimension;
 import ucar.nc2.Dimensions;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -22,6 +23,8 @@ import ucar.nc2.dataset.NetcdfDataset.Enhance;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dataset.VariableEnhanced;
+import ucar.nc2.geoloc.vertical.VerticalTransform;
+import ucar.nc2.geoloc.vertical.VerticalTransformFactory;
 import ucar.nc2.grid.Grid;
 import ucar.nc2.grid.GridAxis;
 import ucar.nc2.grid.GridAxisDependenceType;
@@ -37,6 +40,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -95,6 +99,10 @@ public class GridNetcdfDataset implements GridDataset {
       }
     }
 
+    // vertical transforms
+    VerticalTransformFinder finder = new VerticalTransformFinder(ncd, errInfo);
+    Set<TrackVerticalTransform> verticalTransforms = finder.findVerticalTransforms();
+
     // Convert CoordinateSystem to GridCoordinateSystem
     Set<String> alreadyDone = new HashSet<>();
     Map<String, TrackGridCS> trackCsConverted = new HashMap<>();
@@ -102,7 +110,7 @@ public class GridNetcdfDataset implements GridDataset {
       if (csc.getName().startsWith("Best/")) {
         continue;
       }
-      GridNetcdfCSBuilder.createFromClassifier(csc, gridAxes, errInfo).ifPresent(gcs -> {
+      GridNetcdfCSBuilder.createFromClassifier(csc, gridAxes, verticalTransforms, errInfo).ifPresent(gcs -> {
         coordsys.add(gcs);
         trackCsConverted.put(csc.getName(), new TrackGridCS(csc, gcs));
       });
@@ -153,6 +161,46 @@ public class GridNetcdfDataset implements GridDataset {
     return Optional.of(new GridNetcdfDataset(ncd, featureType, coordsys, gridAxes.values(), grids));
   }
 
+  private static class VerticalTransformFinder {
+    NetcdfDataset ncd;
+    Formatter errlog;
+    Set<TrackVerticalTransform> result;
+
+    VerticalTransformFinder(NetcdfDataset ncd, Formatter errlog) {
+      this.ncd = ncd;
+      this.errlog = errlog;
+      this.result = new HashSet<>();
+    }
+
+    Set<TrackVerticalTransform> findVerticalTransforms() {
+      for (Variable v : ncd.getVariables()) {
+        Optional<String> transformNameOpt = VerticalTransformFactory.hasVerticalTransformFor(v.attributes());
+        if (transformNameOpt.isPresent()) {
+          String transformName = transformNameOpt.get();
+          // A ctv that is also an axis.
+          makeVerticalTransforms(transformName, v.getFullName(), v.attributes());
+          // A ctv that has a _CoordinateAxes attribute pointing to an axis.
+          String axesNames = v.attributes().findAttributeString(_Coordinate.Axes, null);
+          if (axesNames != null) {
+            makeVerticalTransforms(transformName, axesNames, v.attributes());
+          }
+        }
+
+      }
+      return result;
+    }
+
+    private void makeVerticalTransforms(String transform_name, String axisName, AttributeContainer attributes) {
+      for (CoordinateSystem csys : ncd.getCoordinateSystems()) {
+        if (csys.containsAxis(axisName)) {
+          Optional<VerticalTransform> vto =
+              VerticalTransformFactory.makeVerticalTransform(transform_name, ncd, csys, attributes, errlog);
+          vto.ifPresent(vt -> result.add(new TrackVerticalTransform(axisName, vt, csys)));
+        }
+      }
+    }
+  }
+
   private static class TrackGridCS {
     DatasetClassifier.CoordSysClassifier csc;
     GridCoordinateSystem gridCS;
@@ -160,6 +208,37 @@ public class GridNetcdfDataset implements GridDataset {
     public TrackGridCS(DatasetClassifier.CoordSysClassifier csc, GridCoordinateSystem gridCS) {
       this.csc = csc;
       this.gridCS = gridCS;
+    }
+  }
+
+  static class TrackVerticalTransform {
+    final String axisName;
+    final VerticalTransform vertTransform;
+    final CoordinateSystem csys;
+
+    public TrackVerticalTransform(String axisName, VerticalTransform vertTransform, CoordinateSystem csys) {
+      this.axisName = axisName;
+      this.vertTransform = vertTransform;
+      this.csys = csys;
+    }
+
+    boolean equals(String name, CoordinateSystem csys) {
+      return this.axisName.equals(name) && this.csys.equals(csys);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o)
+        return true;
+      if (o == null || getClass() != o.getClass())
+        return false;
+      TrackVerticalTransform that = (TrackVerticalTransform) o;
+      return vertTransform.getName().equals(that.vertTransform.getName()) && csys.equals(that.csys);
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(vertTransform.getName(), csys);
     }
   }
 
