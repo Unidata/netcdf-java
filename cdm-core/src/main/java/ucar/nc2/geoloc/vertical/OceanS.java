@@ -21,6 +21,7 @@ import java.util.Optional;
 /**
  * Implement CF "ocean_s_coordinate".
  *
+ * <pre>
  * standard_name = "ocean_s_coordinate"
  * Definition
  * z(n,k,j,i) = eta(n,j,i)*(1+s(k)) + depth_c*s(k) + (depth(j,i)-depth_c)*C(k)
@@ -36,6 +37,7 @@ import java.util.Optional;
  *
  * The format for the formula_terms attribute is
  * formula_terms = "s: var1 eta: var2 depth: var3 a: var4 b: var5 depth_c: var6"
+ * </pre>
  *
  * @see "http://cfconventions.org/Data/cf-conventions/cf-conventions-1.9/cf-conventions.html#_ocean_s_coordinate"
  */

@@ -63,6 +63,11 @@ public class Section {
     return new Section(s.getRanges(), shape);
   }
 
+  /** Is this a scalar Section? Allows int[], int[1] {0}, int[1] {1} */
+  public static boolean isScalar(int[] shape) {
+    return (shape.length == 0) || (shape.length == 1 && shape[0] < 2);
+  }
+
   //////////////////////////////////////////////////////////////////////////////
   // Cant use ImmutableList because that doesnt allow nulls.
   private final List<Range> ranges; // unmodifiableList
@@ -121,7 +126,6 @@ public class Section {
   }
 
   /**
-   * LOOK can this replace ParsedSectionSpec ??
    * Create Section from a List<Range>, filling in nulls with shape.
    *
    * @param from the list of Range
@@ -152,7 +156,6 @@ public class Section {
   }
 
   /**
-   * LOOK can this replace ParsedSectionSpec ??
    * Parse an index section String specification, return equivilent Section.
    * A null Range means "all" (i.e.":") indices in that dimension.
    * <p/>
@@ -361,10 +364,6 @@ public class Section {
       }
     }
     return sbuff.toString();
-  }
-
-  public static boolean isScalar(int[] shape) {
-    return (shape.length == 0) || (shape.length == 1 && shape[0] < 2);
   }
 
   /** Does this contain a VLEN range? */

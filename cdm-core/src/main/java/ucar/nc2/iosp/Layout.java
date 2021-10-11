@@ -35,7 +35,7 @@ package ucar.nc2.iosp;
       while (index.hasNext()) {
         Layout.Chunk chunk = index.next();
         raf.seek ( chunk.getSrcPos());
-        for (int k=0; k<chunk.getNelems(); k++)
+        for (int k=0; k&lt;chunk.getNelems(); k++)
           raf.writeInt(src, chunk.getDestElem(), chunk.getNelems());
           raf.writeInt( ii.getByteNext());
       }

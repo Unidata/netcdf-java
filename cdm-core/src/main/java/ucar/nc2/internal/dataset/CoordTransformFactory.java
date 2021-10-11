@@ -29,6 +29,7 @@ import ucar.nc2.internal.dataset.transform.vertical.*;
  *             Vertical Transforms here are deprecated, replaced by ucar.nc2.geoloc.vertical.
  *             Projections will remain, but ProjectionCT will go away
  */
+@Deprecated
 public class CoordTransformFactory {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordTransformFactory.class);
   private static final List<Transform> transformList = new ArrayList<>();

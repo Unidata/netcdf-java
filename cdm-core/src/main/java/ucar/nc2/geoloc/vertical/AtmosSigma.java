@@ -23,6 +23,7 @@ import java.util.Optional;
 /**
  * Implement CF "atmosphere_sigma_coordinate".
  *
+ * <pre>
  * Atmosphere sigma coordinate
  * standard_name = "atmosphere_sigma_coordinate"
  * Definition
@@ -33,6 +34,7 @@ import java.util.Optional;
  *
  * The format for the formula_terms attribute is
  * formula_terms = "sigma: var1 ps: var2 ptop: var3"
+ * </pre>
  *
  * @see "http://cfconventions.org/Data/cf-conventions/cf-conventions-1.9/cf-conventions.html#_atmosphere_sigma_coordinate"
  */

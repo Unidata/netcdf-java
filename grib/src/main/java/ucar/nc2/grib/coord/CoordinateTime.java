@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.grib.coord;
@@ -37,9 +37,9 @@ import java.util.List;
 public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate {
   private static final Logger logger = LoggerFactory.getLogger(CoordinateTime.class);
 
-  private final List<Integer> offsetSorted;
+  private final List<Long> offsetSorted;
 
-  public CoordinateTime(int code, CalendarPeriod timeUnit, CalendarDate refDate, List<Integer> offsetSorted,
+  public CoordinateTime(int code, CalendarPeriod timeUnit, CalendarDate refDate, List<Long> offsetSorted,
       int[] time2runtime) {
     super(code, timeUnit, refDate, time2runtime);
     this.offsetSorted = Collections.unmodifiableList(offsetSorted);
@@ -50,7 +50,7 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
     this.offsetSorted = org.getOffsetSorted();
   }
 
-  public List<Integer> getOffsetSorted() {
+  public List<Long> getOffsetSorted() {
     return offsetSorted;
   }
 
@@ -61,7 +61,7 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
 
   @Override
   public int getIndex(Object val) {
-    return Collections.binarySearch(offsetSorted, (Integer) val);
+    return Collections.binarySearch(offsetSorted, (Long) val);
   }
 
   @Override
@@ -95,18 +95,21 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
   @Override
   public void showInfo(Formatter info, Indent indent) {
     info.format("%s%s:", indent, getType());
-    for (Integer cd : offsetSorted)
+    for (Long cd : offsetSorted) {
       info.format(" %3d,", cd);
+    }
     info.format(" (%d) %n", offsetSorted.size());
-    if (time2runtime != null)
+    if (time2runtime != null) {
       info.format("%stime2runtime: %s", indent, Arrays.toString(time2runtime));
+    }
   }
 
   @Override
   public void showCoords(Formatter info) {
     info.format("Time offsets: (%s) ref=%s %n", getTimeUnit(), getRefDate());
-    for (Integer cd : offsetSorted)
+    for (Long cd : offsetSorted) {
       info.format("   %3d%n", cd);
+    }
   }
 
   @Override
@@ -114,9 +117,9 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
     Counters counters = new Counters();
     counters.add("resol");
 
-    List<Integer> offsets = getOffsetSorted();
+    List<Long> offsets = getOffsetSorted();
     for (int i = 0; i < offsets.size() - 1; i++) {
-      int diff = offsets.get(i + 1) - offsets.get(i);
+      long diff = offsets.get(i + 1) - offsets.get(i);
       counters.count("resol", diff);
     }
 
@@ -125,17 +128,18 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
 
   @Override
   public boolean equals(Object o) {
-    if (this == o)
+    if (this == o) {
       return true;
-    if (o == null || getClass() != o.getClass())
+    }
+    if (o == null || getClass() != o.getClass()) {
       return false;
+    }
 
     CoordinateTime that = (CoordinateTime) o;
-
-    if (code != that.code)
+    if (code != that.code) {
       return false;
+    }
     return offsetSorted.equals(that.offsetSorted);
-
   }
 
   @Override
@@ -146,7 +150,7 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
   }
 
   protected CoordinateTimeAbstract makeBestFromComplete(int[] best, int n) {
-    List<Integer> offsetSortedBest = new ArrayList<>(offsetSorted.size());
+    List<Long> offsetSortedBest = new ArrayList<>(offsetSorted.size());
     int[] time2runtimeBest = new int[n];
     int count = 0;
     for (int i = 0; i < best.length; i++) {
@@ -157,7 +161,6 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
         count++;
       }
     }
-
     return new CoordinateTime(code, timeUnit, refDate, offsetSortedBest, time2runtimeBest);
   }
 
@@ -186,13 +189,12 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
       int offset = pds.getForecastTime();
       int tuInRecord = pds.getTimeUnit();
       if (tuInRecord == code) {
-        return offset;
-
+        return (long) offset;
       } else {
         CalendarPeriod period = Grib2Utils.getCalendarPeriod(tuInRecord);
         if (period == null) {
           logger.warn("Cant find period for time unit=" + tuInRecord);
-          return offset;
+          return (long) offset;
         }
         CalendarDate validDate = refDate.add(offset, period);
         // timeUnit.getOffset(refDate, validDate);
@@ -202,9 +204,9 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
 
     @Override
     public Coordinate makeCoordinate(List<Object> values) {
-      List<Integer> offsetSorted = new ArrayList<>(values.size());
+      List<Long> offsetSorted = new ArrayList<>(values.size());
       for (Object val : values) {
-        offsetSorted.add((Integer) val);
+        offsetSorted.add((Long) val);
       }
       Collections.sort(offsetSorted);
       return new CoordinateTime(code, timeUnit, refDate, offsetSorted, null);
@@ -232,25 +234,23 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
       int offset = ptime.getForecastTime();
       int tuInRecord = pds.getTimeUnit();
       if (tuInRecord == code) {
-        return offset;
-
+        return (long) offset;
       } else {
         CalendarDate validDate = GribUtils.getValidTime(refDate, tuInRecord, offset);
         // timeUnit.getOffset(refDate, validDate);
         return validDate.since(refDate, timeUnit);
       }
-
     }
 
     @Override
     public Coordinate makeCoordinate(List<Object> values) {
-      List<Integer> offsetSorted = new ArrayList<>(values.size());
-      for (Object val : values)
-        offsetSorted.add((Integer) val);
+      List<Long> offsetSorted = new ArrayList<>(values.size());
+      for (Object val : values) {
+        offsetSorted.add((Long) val);
+      }
       Collections.sort(offsetSorted);
       return new CoordinateTime(code, timeUnit, refDate, offsetSorted, null);
     }
   }
-
 
 }

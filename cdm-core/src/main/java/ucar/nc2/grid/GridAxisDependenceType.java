@@ -5,9 +5,7 @@
 
 package ucar.nc2.grid;
 
-/**
- * The way that the Axis depends on other axes.
- */
+/** The way that the Axis depends on other axes. */
 public enum GridAxisDependenceType {
   // If making changes, update ucar.gcdm.GcdmGridConverter#convertAxisDependenceType(GridAxis.DependenceType)
   // and consider if need for addition to gcdm_grid.proto.
@@ -24,15 +22,15 @@ public enum GridAxisDependenceType {
    */
   scalar,
   /**
-   * A coordinate needing two dimensions, eg lat(x,y).
+   * A coordinate needing two dimensions, eg lat(x,y). Not currently used.
    */
   twoD,
   /**
-   * Eg time(reftime, hourOfDay).
+   * Eg time(reftime, hourOfDay). Not currently used.
    */
   fmrcReg,
   /**
-   * Eg swath(scan, scanAcross).
+   * Eg swath(scan, scanAcross). Not currently used.
    */
   dimension
 }

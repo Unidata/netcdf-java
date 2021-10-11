@@ -11,10 +11,10 @@ import ucar.nc2.constants.AxisType;
 
 import static ucar.nc2.grid.GridAxisSpacing.discontiguousInterval;
 
-/** Static methods of GridDataset. */
+/** Static methods for Grids and GridDatasets. */
 public class Grids {
 
-  /** Standard sort on Coordinate Axes */
+  /** Standard sort on GridAxis. */
   public static class AxisComparator implements java.util.Comparator<GridAxis<?>> {
     public int compare(GridAxis c1, GridAxis c2) {
       Preconditions.checkNotNull(c1);
@@ -27,6 +27,7 @@ public class Grids {
     }
   }
 
+  /** Find the minimum values of a GridAxis' coordinate edges. */
   public static MinMax getCoordEdgeMinMax(GridAxis<?> axis) {
     if (axis.getSpacing() != discontiguousInterval) {
       CoordInterval start = axis.getCoordInterval(0);
@@ -48,6 +49,7 @@ public class Grids {
     }
   }
 
+  /** Does the GridAxis values ascend or descend? */
   public static boolean isAscending(GridAxis<?> axis) {
     switch (axis.getSpacing()) {
       case regularInterval:

@@ -377,12 +377,14 @@ abstract class GribCollectionBuilderFromIndex {
         return new CoordinateRuntime(pc.getMsecsList(), cdUnit.getCalendarPeriod());
 
       case time:
-        List<Integer> offs = new ArrayList<>(pc.getValuesCount());
-        for (float val : pc.getValuesList())
-          offs.add((int) val);
+        List<Long> offs = new ArrayList<>(pc.getValuesCount());
+        for (float val : pc.getValuesList()) {
+          offs.add((long) val);
+        }
         CalendarDate refDate = CalendarDate.of(pc.getMsecs(0));
-        if (unit == null)
+        if (unit == null) {
           throw new IllegalStateException("Null units");
+        }
         CalendarPeriod timeUnit = CalendarPeriod.of(unit);
         return new CoordinateTime(code, timeUnit, refDate, offs, readTime2Runtime(pc));
 

@@ -165,6 +165,7 @@ public class CoordinateAxis2D extends CoordinateAxis {
   /**
    * @deprecated use getEdges()
    */
+  @Deprecated
   public ArrayDouble.D2 getXEdges() {
     ArrayDouble.D2 mids = getCoordValuesArray();
     return makeEdges(mids);
@@ -173,6 +174,7 @@ public class CoordinateAxis2D extends CoordinateAxis {
   /**
    * @deprecated use getEdges()
    */
+  @Deprecated
   public ArrayDouble.D2 getYEdges() {
     ArrayDouble.D2 mids = getCoordValuesArray();
     return makeEdges(mids);

@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-/** Fluent Api for creating subset parameters. LOOK incomplete. */
+/** Fluent Api for creating subset parameters, and then reading with those. */
 public class GridReader {
   private final Grid grid;
   private final Map<String, Object> req = new HashMap<>();
@@ -125,6 +125,7 @@ public class GridReader {
     return this;
   }
 
+  /** Read the subset of the Grid's data described by the setters. */
   public GridReferencedArray read() throws IOException, ucar.array.InvalidRangeException {
     return this.grid.readData(new GridSubset(req));
   }

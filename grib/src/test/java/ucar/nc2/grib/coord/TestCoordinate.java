@@ -38,9 +38,9 @@ public class TestCoordinate implements Coordinate {
           cd.add(CalendarDate.of(1953, 11, i + 1, 9, i + 1, 0).getMillisFromEpoch());
         return new CoordinateRuntime(cd, period);
       case time:
-        List<Integer> vals = new ArrayList<>(nvals);
+        List<Long> vals = new ArrayList<>(nvals);
         for (int i = 0; i < nvals; i++)
-          vals.add(i);
+          vals.add((long) i);
         return new CoordinateTime(0, period, null, vals, null);
       case vert:
         List<VertCoordValue> vert = new ArrayList<>(nvals);

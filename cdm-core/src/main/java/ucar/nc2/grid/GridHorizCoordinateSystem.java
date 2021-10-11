@@ -2,7 +2,6 @@
  * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-
 package ucar.nc2.grid;
 
 import com.google.common.base.Preconditions;
@@ -84,13 +83,12 @@ public class GridHorizCoordinateSystem {
     return rect.getWidth() >= 360;
   }
 
+  /** Does the named axis exist as the x or y axis? */
   public boolean hasAxis(String axisName) {
     return xaxis.getName().equals(axisName) || yaxis.getName().equals(axisName);
   }
 
-  /**
-   * The nominal sizes of the yaxis, xaxis as a list.
-   */
+  /** The nominal sizes of the yaxis, xaxis as a list. */
   public List<Integer> getShape() {
     return ImmutableList.of(getYHorizAxis().getNominalSize(), getXHorizAxis().getNominalSize());
   }
@@ -242,7 +240,7 @@ public class GridHorizCoordinateSystem {
   ///////////////////////////////////////////////////////////////////////////////
 
   /**
-   * The bounds of a particular grid cell, in projection coordinates. Return value from cells().
+   * The bounds of a particular grid cell, in projection coordinates. Used as the return value from cells().
    */
   @Immutable
   public class CellBounds {

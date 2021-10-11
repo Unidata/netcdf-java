@@ -24,11 +24,16 @@ import java.util.Optional;
 public abstract class GridTimeCoordinateSystem {
   /** Types of GridTimeCoordinateSystem. */
   public enum Type {
-    Observation, // No runtimes
-    SingleRuntime, // Single runtime
-    Offset, // All runtimes have the same offsets (orthogonal)
-    OffsetRegular, // All runtimes, grouped by time since 0z, have the same offsets.
-    OffsetIrregular // Runtimes have irregular offsets
+    /** Observational data, no runtimes. */
+    Observation,
+    /** Single runtime. */
+    SingleRuntime,
+    /** Muliple runtimes all having the same time offsets (orthogonal). */
+    Offset,
+    /** All runtimes, grouped by time since 0z, have the same offsets (regulat). */
+    OffsetRegular,
+    /** Runtimes that have irregular offsets. */
+    OffsetIrregular
   }
 
   /** Get the ith runtime CalendarDate. If type=Observation, equals getBaseDate(). */
@@ -123,18 +128,19 @@ public abstract class GridTimeCoordinateSystem {
     this.offsetPeriod = Objects.requireNonNull(period);
   }
 
-  // public by necessity, but would be nice not to be in the public API ??
 
+  /** The GridTimeCoordinateSystem.Type. */
+  // LOOK public by necessity, but would be nice not to be in the public API ??
   public Type getType() {
     return type;
   }
 
-  // LOOK, not right
+  /** The nominal shape. */
   public List<Integer> getNominalShape() {
     return getMaterializedShape();
   }
 
-  // Used for MaterializedCoordinateSystem
+  /** The materialized shape (use only from MaterializedCoordinateSystem). */
   public List<Integer> getMaterializedShape() {
     List<Integer> result = new ArrayList<>();
     if (runTimeAxis != null && runTimeAxis.getDependenceType() == GridAxisDependenceType.independent) {
@@ -146,6 +152,7 @@ public abstract class GridTimeCoordinateSystem {
     return result;
   }
 
+  /** For subsets, the ranges of the original axes that constitutes the subset. */
   public List<ucar.array.Range> getSubsetRanges() {
     List<ucar.array.Range> result = new ArrayList<>();
     if (getRunTimeAxis() != null) {

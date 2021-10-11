@@ -623,7 +623,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
 
           CoordinateTime2D.Time2D wholeVal2D = compCoord2D.isTimeInterval()
               ? new CoordinateTime2D.Time2D(wholeCoord1Dtime.getRefDate(), null, (TimeCoordIntvValue) wholeVal1D)
-              : new CoordinateTime2D.Time2D(wholeCoord1Dtime.getRefDate(), (Integer) wholeVal1D, null);
+              : new CoordinateTime2D.Time2D(wholeCoord1Dtime.getRefDate(), (Long) wholeVal1D, null);
 
           resultIdx = compCoord2D.matchTimeCoordinate(runtimeIdxPart, wholeVal2D);
           // if (resultIdx < 0) resultIdx = compCoord2D.matchTimeCoordinate(runtimeIdxPart, wholeVal,

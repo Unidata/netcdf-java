@@ -12,12 +12,12 @@ public abstract class StructureData {
     this.members = members;
   }
 
-  /** @return name of Structure */
+  /** The name of Structure */
   public String getName() {
     return members.getName();
   }
 
-  /** @return StructureMembers */
+  /** The StructureMembers */
   public StructureMembers getStructureMembers() {
     return members;
   }

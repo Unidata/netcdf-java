@@ -2,23 +2,16 @@ package ucar.nc2.grib.coord;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ucar.nc2.grib.grib1.Grib1Record;
 import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.calendar.CalendarPeriod;
 import ucar.nc2.util.Indent;
-import java.lang.invoke.MethodHandles;
 import java.util.*;
 
 /**
- * Test CoordinateTime2DUnionizer
- *
- * @author caron
- * @since 11/25/2014
+ * Test {@link CoordinateTime2DUnionizer}
  */
 public class TestCoordinateTime2DUnionizer {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   static int code = 0;
   static CalendarPeriod timeUnit = CalendarPeriod.of("1 hour");
@@ -48,9 +41,9 @@ public class TestCoordinateTime2DUnionizer {
   }
 
   private CoordinateTime makeTimeCoordinate(CalendarDate refDate, int size, int spacing) {
-    List<Integer> offsetSorted = new ArrayList<>();
+    List<Long> offsetSorted = new ArrayList<>();
     for (int i = 0; i < size; i++)
-      offsetSorted.add(i * spacing);
+      offsetSorted.add((long) i * spacing);
     return new CoordinateTime(code, timeUnit, refDate, offsetSorted, null);
   }
 
@@ -93,8 +86,9 @@ public class TestCoordinateTime2DUnionizer {
     }
 
     CoordinateTime2DUnionizer unionizer = new CoordinateTime2DUnionizer(false, timeUnit, code, false, null);
-    for (CoordinateTime2D coord2D : coord2Ds)
+    for (CoordinateTime2D coord2D : coord2Ds) {
       unionizer.addAll(coord2D);
+    }
     unionizer.finish();
     CoordinateTime2D result = (CoordinateTime2D) unionizer.getCoordinate();
 
@@ -118,7 +112,7 @@ public class TestCoordinateTime2DUnionizer {
     for (int j = 0; j < nruns; j++) {
       CalendarDate runDate = startDate.add(j, CalendarPeriod.Field.Hour);
       for (int i = 0; i < ntimes; i++) {
-        CoordinateTime2D.Time2D time2D = new CoordinateTime2D.Time2D(runDate, i, null);
+        CoordinateTime2D.Time2D time2D = new CoordinateTime2D.Time2D(runDate, (long) i, null);
         vals.add(time2D);
 
         runBuilder.add(time2D.refDate);

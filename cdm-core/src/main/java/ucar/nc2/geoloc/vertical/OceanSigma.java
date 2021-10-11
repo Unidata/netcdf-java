@@ -22,6 +22,8 @@ import java.util.Optional;
 
 /**
  * Implement CF "ocean_sigma_coordinate".
+ *
+ * <pre>
  * :standard_name = "ocean_sigma_coordinate";
  * :formula_terms = "sigma: sigma eta: zeta depth: depth"
  * :height_formula = "height(x,y,z) = eta(n,j,i) + sigma(k)*(depth(j,i)+eta(n,j,i))"
@@ -35,6 +37,7 @@ import java.util.Optional;
  * from the datum to the sea floor at horizontal gridpoint (j,i).
  *
  * formula_terms = "sigma: var1 eta: var2 depth: var3"
+ * </pre>
  *
  * @see "http://cfconventions.org/Data/cf-conventions/cf-conventions-1.9/cf-conventions.html#_ocean_sigma_coordinate"
  */

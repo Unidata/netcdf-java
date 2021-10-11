@@ -4,6 +4,8 @@
  */
 package ucar.nc2.grib.coord;
 
+import com.google.common.collect.ImmutableList;
+
 import java.util.*;
 
 /**
@@ -21,21 +23,37 @@ public abstract class CoordinateBuilderImpl<T> implements CoordinateBuilder<T> {
   @Override
   public void addRecord(T gr) {
     Object val = extract(gr);
+    testCoord(ImmutableList.of(val));
     valSet.add(val);
   }
 
   @Override
   public void addAll(Coordinate coord) {
+    testCoord(coord.getValues());
     valSet.addAll(coord.getValues());
   }
 
   public void add(Object val) {
+    testCoord(ImmutableList.of(val));
     valSet.add(val);
   }
 
   @Override
   public void addAll(List<Object> coords) {
+    testCoord(coords);
     valSet.addAll(coords);
+  }
+
+  private boolean testCoord(List<?> vals) {
+    boolean ok = true;
+    for (Object val : vals) {
+      if (!(val instanceof Long) && !(val instanceof TimeCoordIntvValue) && !(val instanceof CoordinateTime2D.Time2D)
+          && !(val instanceof VertCoordValue) && !(val instanceof EnsCoordValue)) {
+        System.out.printf("HEY");
+        throw new IllegalArgumentException();
+      }
+    }
+    return ok;
   }
 
   @Override

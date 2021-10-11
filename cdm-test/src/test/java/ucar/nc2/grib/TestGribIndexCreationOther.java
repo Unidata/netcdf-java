@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
 package ucar.nc2.grib;
 
 import org.junit.AfterClass;
@@ -15,8 +19,11 @@ import ucar.nc2.util.DebugFlags;
 import ucar.nc2.internal.cache.FileCache;
 import ucar.nc2.internal.cache.FileCacheIF;
 import ucar.unidata.io.RandomAccessFile;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.category.NeedsRdaData;
 import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.category.Slow;
+
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
@@ -25,7 +32,7 @@ import java.util.Formatter;
  * Test that the CDM Index Creation works on other Grib collections.
  * TODO: add other collections to unit tests as needed.
  */
-@Ignore("too long")
+@Category({NeedsCdmUnitTest.class, Slow.class})
 public class TestGribIndexCreationOther {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 

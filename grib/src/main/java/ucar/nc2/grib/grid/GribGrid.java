@@ -101,7 +101,7 @@ public class GribGrid implements Grid {
     }
     MaterializedCoordinateSystem subsetCoordSys = opt.get();
 
-    if (subsetCoordSys.needSpecialRead()) {
+    if (subsetCoordSys.specialReadNeeded()) {
       // handles longitude cylindrical coord when data has full (360 deg) longitude axis.
       Array<Number> data = subsetCoordSys.readSpecial(this);
       return GridReferencedArray.create(getName(), getArrayType(), data, subsetCoordSys);

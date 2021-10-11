@@ -23,9 +23,13 @@ public class CalendarPeriod {
   // LOOK is this needed?
   private static final Cache<CalendarPeriod, CalendarPeriod> cache = CacheBuilder.newBuilder().maximumSize(100).build();
 
+  /** 1 hour */
   public static final CalendarPeriod Hour = CalendarPeriod.of(1, Field.Hour);
+  /** 1 minute */
   public static final CalendarPeriod Minute = CalendarPeriod.of(1, Field.Minute);
+  /** 1 second */
   public static final CalendarPeriod Second = CalendarPeriod.of(1, Field.Second);
+  /** 1 millisec */
   public static final CalendarPeriod Millisec = CalendarPeriod.of(1, Field.Millisec);
 
   public enum Field {
@@ -165,31 +169,35 @@ public class CalendarPeriod {
     this.field = field;
   }
 
+  /** Create a new CalendarPeriod with same Field and different value. */
   public CalendarPeriod withValue(int value) {
     return new CalendarPeriod(value, this.field);
   }
 
+  /** The number of Fields, eg 30 minutes. */
   public int getValue() {
     return value;
   }
 
+  /** The underlying Field, eg minutes. */
   public Field getField() {
     return field;
   }
 
+  /** The java.time.ChronoUnit */
   public ChronoUnit getChronoUnit() {
     return field.chronoUnit;
   }
 
+  /** Whether a field has CALENDAR on by default. True for Month and Year. */
   public boolean isDefaultCalendarField() {
     return field == Field.Month || field == Field.Year;
   }
 
   /**
-   * Get the conversion factor of the other CalendarPeriod to this one
+   * Get the conversion factor of the other CalendarPeriod to this one. Cant be used for Month or Year.
    * 
    * @param from convert from this
-   * 
    * @return conversion factor, so that getConvertFactor(from) * from = this
    */
   public double getConvertFactor(CalendarPeriod from) {

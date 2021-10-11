@@ -39,7 +39,7 @@ public abstract class Array<T> implements Iterable<T> {
 
   /**
    * The ArrayType for this Array.
-   * Note that ArrayType.CHAR is represented by an Array\<Byte\>.
+   * Note that ArrayType.CHAR is represented by an Array&lt;Byte&gt;.
    */
   public ArrayType getArrayType() {
     return this.arrayType;

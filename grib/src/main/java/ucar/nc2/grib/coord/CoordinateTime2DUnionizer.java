@@ -89,7 +89,7 @@ class CoordinateTime2DUnionizer<T> extends CoordinateBuilderImpl<T> {
         CalendarDate cd = CalendarDate.of(runtime);
         for (Object timeVal : time.getValues())
           allVals.add(isTimeInterval ? new CoordinateTime2D.Time2D(cd, null, (TimeCoordIntvValue) timeVal)
-              : new CoordinateTime2D.Time2D(cd, (Integer) timeVal, null));
+              : new CoordinateTime2D.Time2D(cd, (Long) timeVal, null));
       }
     }
     Collections.sort(allVals);

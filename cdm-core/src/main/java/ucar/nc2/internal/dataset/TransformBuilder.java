@@ -12,6 +12,7 @@ import java.util.Formatter;
 /**
  * @deprecated use ucar.nc2.geoloc.vertical.VerticalTransformFactory
  */
+@Deprecated
 public class TransformBuilder {
   public String name;
   private AttributeContainer ctvAttributes = new AttributeContainerMutable("");

@@ -104,7 +104,7 @@ class Time2DLazyCoordinate {
         for (int runIdx = 0; runIdx < nruns; runIdx++) {
           CoordinateTime coordTime = (CoordinateTime) time2D.getTimeCoordinate(runIdx);
           int timeIdx = 0;
-          for (int val : coordTime.getOffsetSorted()) {
+          for (long val : coordTime.getOffsetSorted()) {
             data[runIdx * ntimes + timeIdx] = timeUnit.getValue() * val + time2D.getOffset(runIdx);
             timeIdx++;
           }
@@ -115,7 +115,7 @@ class Time2DLazyCoordinate {
         count = 0;
         for (int runIdx = 0; runIdx < nruns; runIdx++) {
           CoordinateTime coordTime = (CoordinateTime) time2D.getTimeCoordinate(runIdx);
-          for (int val : coordTime.getOffsetSorted()) {
+          for (long val : coordTime.getOffsetSorted()) {
             data[count++] = timeUnit.getValue() * val + time2D.getOffset(runIdx);
           }
         }

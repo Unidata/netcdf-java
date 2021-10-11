@@ -118,7 +118,7 @@ def publicApiDef = [
         'ucar/nc2/constants/*.java',
         'ucar/nc2/dataset/*.java',
         'ucar/nc2/dataset/spi/*.java',
-        'ucar/nc2/geoloc/*.java',
+        'ucar/nc2/geoloc/vertical/*.java',
         'ucar/nc2/grid/*.java',
         'ucar/nc2/iosp/*.java',
         'ucar/nc2/time/*.java',

@@ -29,6 +29,7 @@ import java.util.Optional;
  */
 @Immutable
 public interface CalendarDate extends Comparable<CalendarDate> {
+  /** The Unix epoch (Jan, 1, 1970 00:00 UTC) */
   CalendarDate unixEpoch = new CalendarDateIso(OffsetDateTime.ofInstant(Instant.EPOCH, ZoneOffset.UTC));
 
   /** Create a CalendarDate representing the present moment in ISO8601 UTC */
@@ -290,9 +291,11 @@ public interface CalendarDate extends Comparable<CalendarDate> {
   // experimental - not working yet
 
   @VisibleForTesting
+  /** Public by accident. */
   Instant toInstant();
 
   @VisibleForTesting
+  /** Public by accident. */
   static CalendarDate ofInstant(@Nullable Calendar cal, Instant instant) {
     return of(instant.getLong(ChronoField.INSTANT_SECONDS) * 1000 + instant.getLong(ChronoField.MILLI_OF_SECOND));
   }

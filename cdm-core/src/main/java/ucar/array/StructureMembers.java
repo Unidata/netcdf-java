@@ -166,7 +166,7 @@ public final class StructureMembers implements Iterable<StructureMembers.Member>
       return desc;
     }
 
-    /** Get the DataType. */
+    /** Get the ArrayType. */
     public ArrayType getArrayType() {
       return dataType;
     }

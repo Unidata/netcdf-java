@@ -468,6 +468,7 @@ public class Arrays {
     return newshape;
   }
 
+  /** Copy all the data out of the Array into a 1d primitive array of the appropriate type. */
   public static Object copyPrimitiveArray(Array<?> data) {
     ArrayType dataType = data.getArrayType();
     int idx = 0;
@@ -549,6 +550,7 @@ public class Arrays {
     }
   }
 
+  /** Sum all the values in the Array as doubles. Must be an array of Number. */
   public static double sumDouble(Array<?> array) {
     Array<Number> ddata = (Array<Number>) array;
     double sum = 0;

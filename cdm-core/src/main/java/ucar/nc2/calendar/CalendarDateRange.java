@@ -40,18 +40,22 @@ public class CalendarDateRange {
     this.end = start.add((int) durationInSecs, CalendarPeriod.Field.Second);
   }
 
+  /** Starting date. */
   public CalendarDate getStart() {
     return start;
   }
 
+  /** Ending date. */
   public CalendarDate getEnd() {
     return end;
   }
 
+  /** The duration of the range in seconds. */
   public long getDurationInSecs() {
     return (end.getMillisFromEpoch() - start.getMillisFromEpoch()) / 1000;
   }
 
+  /** Extend the range by another range. */
   public CalendarDateRange extend(CalendarDateRange other) {
     CalendarDate cs = other.getStart();
     CalendarDate s = start.isBefore(cs) ? start : cs; // earlier one
@@ -62,6 +66,7 @@ public class CalendarDateRange {
     return CalendarDateRange.of(s, e);
   }
 
+  /** Does the range include this date? */
   public boolean includes(CalendarDate cd) {
     if (start.isAfter(cd)) {
       return false;
@@ -70,6 +75,7 @@ public class CalendarDateRange {
     }
   }
 
+  /** Create a new CalendarDateRange as the intersection of this and the given other range. */
   public CalendarDateRange intersect(CalendarDateRange clip) {
     CalendarDate cs = clip.getStart();
     CalendarDate s = start.isBefore(cs) ? cs : start; // later one
@@ -80,6 +86,7 @@ public class CalendarDateRange {
     return CalendarDateRange.of(s, e);
   }
 
+  /** Does the range intersect another range? */
   public boolean intersects(CalendarDateRange other) {
     if (start.isAfter(other.getEnd())) {
       return false;

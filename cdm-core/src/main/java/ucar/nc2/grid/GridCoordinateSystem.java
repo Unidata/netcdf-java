@@ -20,9 +20,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 /**
- * A Coordinate System for gridded data, consisting of 1D GridAxes.
- * In some cases, the shape is an approximation, so that when reading data, the returned Array
- * will have a different shape, reflecting the actual data.
+ * A Coordinate System for gridded data, consisting of orthogonal 1D GridAxes.
+ * In some cases, the shape is an approximation, so that when reading data, the returned Array in
+ * MaterializedCoordinateSyste will have a different shape, reflecting the actual data.
  */
 public class GridCoordinateSystem {
 
@@ -31,7 +31,7 @@ public class GridCoordinateSystem {
     return this.name;
   }
 
-  // always GRID or CURVILINEAR
+  /** Always GRID or CURVILINEAR. */
   public FeatureType getFeatureType() {
     return featureType;
   }
@@ -46,7 +46,7 @@ public class GridCoordinateSystem {
     return getGridAxes().stream().filter(g -> g.getName().equals(axisName)).findFirst();
   }
 
-  // search in order given
+  /** Find the first axis having one of the given AxisTypes. Search in order given. */
   @Nullable
   public GridAxis<?> findCoordAxisByType(AxisType... axisType) {
     for (AxisType type : axisType) {
@@ -131,6 +131,7 @@ public class GridCoordinateSystem {
     return result;
   }
 
+  /** Create a MaterializedCoordinateSystem based on the supplied subset parameters. */
   public Optional<MaterializedCoordinateSystem> subset(GridSubset params, Formatter errlog) {
     MaterializedCoordinateSystem.Builder builder = MaterializedCoordinateSystem.builder();
     AtomicBoolean fail = new AtomicBoolean(false); // gets around need for final variable in lambda
