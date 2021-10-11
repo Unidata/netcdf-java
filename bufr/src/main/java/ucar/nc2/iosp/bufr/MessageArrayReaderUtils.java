@@ -10,7 +10,6 @@ import java.util.HashMap;
 import ucar.array.ArrayType;
 import ucar.array.StructureMembers;
 import ucar.array.StructureMembers.Member;
-import ucar.ma2.DataType;
 
 /** Static utilities for Message Raders into ucar.array.Array */
 public class MessageArrayReaderUtils {

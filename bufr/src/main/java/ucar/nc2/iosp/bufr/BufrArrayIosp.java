@@ -4,18 +4,10 @@
  */
 package ucar.nc2.iosp.bufr;
 
-import java.io.IOException;
-import java.util.Formatter;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
 import org.jdom2.Element;
-import ucar.ma2.Array;
-import ucar.ma2.ArraySequence;
-import ucar.ma2.ArrayStructure;
-import ucar.ma2.Section;
-import ucar.ma2.StructureData;
-import ucar.ma2.StructureDataIterator;
+import ucar.array.Array;
+import ucar.array.Section;
+import ucar.array.StructureData;
 import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Sequence;
@@ -26,9 +18,16 @@ import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
 
+import java.io.IOException;
+import java.util.Formatter;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
+
 /** IOSP for BUFR data - using the preprocessor. */
-public class BufrIosp extends AbstractIOServiceProvider {
-  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BufrIosp.class);
+public class BufrArrayIosp extends AbstractIOServiceProvider {
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BufrArrayIosp.class);
 
   public static final String obsRecordName = "obs";
   public static final String fxyAttName = "BUFR:TableB_descriptor";
@@ -50,7 +49,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
   Element iospParam;
 
   @Override
-  public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {
+  public boolean isValidFile(RandomAccessFile raf) throws IOException {
     return MessageScanner.isValidFile(raf);
   }
 
@@ -154,16 +153,16 @@ public class BufrIosp extends AbstractIOServiceProvider {
   }
 
   @Override
-  public StructureDataIterator getStructureIterator(Structure s, int bufferSize) {
+  public Iterator<StructureData> getStructureDataArrayIterator(Structure s, int bufferSize) {
     findRootSequence();
     return isSingle ? new SeqIterSingle() : new SeqIter();
   }
 
   private void findRootSequence() {
-    this.obsStructure = (Sequence) this.ncfile.findVariable(BufrIosp.obsRecordName);
+    this.obsStructure = (Sequence) this.ncfile.findVariable(BufrArrayIosp.obsRecordName);
   }
 
-  private class SeqIter implements StructureDataIterator {
+  private class SeqIter implements Iterator<StructureData> {
     StructureDataIterator currIter;
     int recnum;
 
@@ -203,7 +202,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
       return currIter.next();
     }
 
-    private StructureDataIterator readNextMessage() throws IOException {
+    private Iterator<StructureData> readNextMessage() throws IOException {
       if (!scanner.hasNext())
         return null;
       Message m = scanner.next();
@@ -230,7 +229,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
       return as.getStructureDataIterator();
     }
 
-    private ArrayStructure readMessage(Message m) throws IOException {
+    private Array<StructureData> readMessage(Message m) throws IOException {
       ArrayStructure as;
       if (m.dds.isCompressed()) {
         MessageCompressedDataReader reader = new MessageCompressedDataReader();
@@ -257,7 +256,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
     }
   }
 
-  private class SeqIterSingle implements StructureDataIterator {
+  private class SeqIterSingle implements Iterator<StructureData> {
     StructureDataIterator currIter;
     int recnum;
 
@@ -291,7 +290,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
       return currIter.next();
     }
 
-    private StructureDataIterator readProtoMessage() throws IOException {
+    private Iterator<StructureData> readProtoMessage() throws IOException {
       Message m = protoMessage;
       ArrayStructure as;
       if (m.dds.isCompressed()) {

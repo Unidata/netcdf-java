@@ -5,9 +5,10 @@
 
 package ucar.nc2.point.bufr;
 
-import ucar.ma2.DataType;
-import ucar.ma2.StructureData;
-import ucar.ma2.StructureMembers;
+import ucar.array.Array;
+import ucar.array.ArrayType;
+import ucar.array.StructureData;
+import ucar.array.StructureMembers;
 import ucar.nc2.Attribute;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
@@ -260,14 +261,18 @@ public class StandardFields {
       StructureMembers sm = sdata.getStructureMembers();
       for (Field fld : map.values()) {
         StructureMembers.Member m = sm.findMember(fld.memberName);
-        DataType dtype = m.getDataType();
-        if (dtype.isString())
-          fld.valueS = sdata.getScalarString(m).trim();
-        else if (dtype.isIntegral()) {
-          fld.value = sdata.convertScalarInt(m);
+        ArrayType dtype = m.getArrayType();
+        Array<?> memberData = sdata.getMemberData(m);
+        if (dtype.isString()) {
+          fld.valueS = ((Array<String>) memberData).getScalar().trim();
+        } else if (dtype.isIntegral()) {
+          Number val = ((Array<Number>) memberData).getScalar();
+          fld.value = val.intValue();
           fld.valueD = fld.value;
-        } else if (dtype.isNumeric())
-          fld.valueD = sdata.convertScalarDouble(m);
+        } else if (dtype.isNumeric()) {
+          Number val = ((Array<Number>) memberData).getScalar();
+          fld.valueD = val.doubleValue();
+        }
       }
     }
 

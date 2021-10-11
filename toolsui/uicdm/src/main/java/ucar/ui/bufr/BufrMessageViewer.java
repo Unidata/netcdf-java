@@ -9,8 +9,9 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
-import ucar.ma2.StructureData;
-import ucar.ma2.StructureDataIterator;
+
+import ucar.array.Array;
+import ucar.array.StructureData;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Structure;
@@ -21,7 +22,6 @@ import ucar.nc2.point.bufr.BufrCdmIndex;
 import ucar.nc2.ft.point.bufr.BufrCdmIndexProto;
 import ucar.nc2.point.bufr.StandardFields;
 import ucar.nc2.iosp.bufr.*;
-import ucar.nc2.iosp.bufr.writer.Bufr2Xml;
 import ucar.nc2.calendar.CalendarDate;
 import ucar.ui.StructureTable;
 import ucar.ui.widget.*;
@@ -38,6 +38,7 @@ import java.nio.channels.WritableByteChannel;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import javax.swing.*;
 
@@ -338,37 +339,6 @@ public class BufrMessageViewer extends JPanel {
       }
     });
 
-    varPopup.addAction("Show XML", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        MessageBean mb = messageTable.getSelectedBean();
-        if (mb == null)
-          return;
-        Message m = mb.m;
-
-        ByteArrayOutputStream out = new ByteArrayOutputStream(1000 * 100);
-        try {
-          infoTA.clear();
-
-          NetcdfFile ncd = makeBufrMessageAsDataset(mb.m);
-          new Bufr2Xml(m, ncd, out, true);
-          infoTA.setText(out.toString(StandardCharsets.UTF_8.name()));
-
-        } catch (Exception ex) {
-          StringWriter sw = new StringWriter();
-          ex.printStackTrace(new PrintWriter(sw));
-          try {
-            infoTA.appendLine(out.toString(StandardCharsets.UTF_8.name()));
-          } catch (UnsupportedEncodingException uee) {
-            uee.printStackTrace();
-          }
-          infoTA.appendLine(sw.toString());
-        }
-
-        infoTA.gotoTop();
-        infoWindow.show();
-      }
-    });
-
     varPopup.addAction("Compare DDS", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         for (MessageBean bean : messageTable.getSelectedBeans()) {
@@ -660,10 +630,8 @@ public class BufrMessageViewer extends JPanel {
         Structure obs = (Structure) v;
         StandardFields.StandardFieldsFromStructure extract =
             new StandardFields.StandardFieldsFromStructure(center, obs);
-        try (StructureDataIterator iter = obs.getStructureIterator()) {
-          while (iter.hasNext()) {
-            beanList.add(new ObsBean(extract, iter.next()));
-          }
+        for (StructureData sdata : (Array<StructureData>) obs.readArray()) {
+            beanList.add(new ObsBean(extract, sdata));
         }
       }
     } catch (Exception ex) {
@@ -792,20 +760,16 @@ public class BufrMessageViewer extends JPanel {
     private void read() {
       try {
         NetcdfFile ncd = makeBufrMessageAsDataset(m);
-        SequenceDS v = (SequenceDS) ncd.findVariable(BufrIosp.obsRecordName);
-        try (StructureDataIterator iter = v.getStructureIterator(-1)) {
-          while (iter.hasNext())
-            iter.next();
-
+        SequenceDS seq = (SequenceDS) ncd.findVariable(BufrIosp.obsRecordName);
+        for (StructureData sdata : seq) {
+          // NOOP
         }
         setReadOk(true);
       } catch (IOException e) {
         setReadOk(false);
       }
     }
-
   }
-
 
   public static class DdsBean {
     DataDescriptor dds;
@@ -874,7 +838,7 @@ public class BufrMessageViewer extends JPanel {
 
     // create from a dataset
 
-    public ObsBean(StandardFields.StandardFieldsFromStructure extract, StructureData sdata) {
+    public ObsBean(StandardFields.StandardFieldsFromStructure extract, ucar.array.StructureData sdata) {
       extract.extract(sdata);
       this.stn = extract.getStationId();
       this.date = extract.makeCalendarDate();

@@ -8,8 +8,6 @@ import java.util.List;
 
 import ucar.array.ArrayType;
 import ucar.array.Arrays;
-import ucar.ma2.Array;
-import ucar.ma2.DataType;
 import ucar.nc2.Variable;
 import ucar.nc2.grib.collection.GribIosp.Time2Dinfo;
 import ucar.nc2.grib.collection.GribIosp.Time2DinfoType;
@@ -37,14 +35,14 @@ class Time2DLazyCoordinate {
 
   /** @deprecated use makeLazyCoordinateArray */
   @Deprecated
-  static Array makeLazyCoordinateData(Variable v2, Time2Dinfo info, GribCollectionImmutable gribCollection) {
+  static ucar.ma2.Array makeLazyCoordinateData(Variable v2, Time2Dinfo info, GribCollectionImmutable gribCollection) {
     double[] data;
     if (info.time2D != null) {
       data = makeLazyTime2Darray(v2, info);
     } else {
       data = makeLazyTime1Darray(info, gribCollection);
     }
-    return Array.factory(DataType.DOUBLE, v2.getShape(), data);
+    return ucar.ma2.Array.factory(ucar.ma2.DataType.DOUBLE, v2.getShape(), data);
   }
 
   // only for the 2d times
