@@ -353,19 +353,6 @@ public class CoordinateSystem {
     return projection;
   }
 
-  /**
-   * Get the VerticalCT for this coordinate system, if any.
-   * 
-   * @deprecated use GridCooordinateSystem.getVerticalTransform()
-   */
-  @Deprecated
-  @Nullable
-  public VerticalCT getVerticalCT() {
-    Optional<CoordinateTransform> result =
-        coordTrans.stream().filter(t -> t.getTransformType() == TransformType.Vertical).findFirst();
-    return (VerticalCT) result.orElse(null);
-  }
-
   ////////////////////////////////////////////////////////////////////////////
   // classification
 

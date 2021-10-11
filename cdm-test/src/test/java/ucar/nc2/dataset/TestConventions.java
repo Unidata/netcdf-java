@@ -32,11 +32,19 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 public class TestConventions {
 
   @Test
+  public void testVTfail() throws IOException {
+    testOpen(TestDir.cdmUnitTestDir + "conventions/csm/atmos.tuv.monthly.nc");
+  }
+
+  @Test
   public void testProblem() throws IOException {
-    String problem = TestDir.cdmUnitTestDir + "conventions/cf/cf1_rap.nc";
-    System.out.printf("testProblem %s%n", problem);
+    testOpen(TestDir.cdmUnitTestDir + "conventions/cf/cf1_rap.nc");
+  }
+
+  private void testOpen(String filename) throws IOException {
+    System.out.printf("testProblem %s%n", filename);
     Formatter errlog = new Formatter();
-    try (ucar.nc2.grid.GridDataset gds = GridDatasetFactory.openGridDataset(problem, errlog)) {
+    try (ucar.nc2.grid.GridDataset gds = GridDatasetFactory.openGridDataset(filename, errlog)) {
       assertThat(gds).isNotNull();
       assertThat(gds.getFeatureType().isCoverageFeatureType()).isTrue();
     }

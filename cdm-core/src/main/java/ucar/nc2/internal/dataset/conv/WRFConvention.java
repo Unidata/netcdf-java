@@ -26,11 +26,10 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.*;
+import ucar.nc2.geoloc.vertical.WrfEta;
 import ucar.nc2.internal.dataset.CoordSystemBuilder;
 import ucar.nc2.dataset.spi.CoordSystemBuilderFactory;
 import ucar.nc2.internal.dataset.TransformBuilder;
-import ucar.nc2.internal.dataset.transform.vertical.VerticalCTBuilder;
-import ucar.nc2.internal.dataset.transform.vertical.WRFEtaTransformBuilder;
 import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.util.CancelTask;
@@ -767,12 +766,9 @@ public class WRFConvention extends CoordSystemBuilder {
         coords.findAxisByType(cs, AxisType.GeoZ).ifPresent(axis -> {
           String units = axis.getUnits();
           if ((units == null) || (units.trim().isEmpty())) {
-            // LOOK each cs might have separate ct; but they might be equal....
-            VerticalCTBuilder vctb = new WRFEtaTransformBuilder(coords, cs);
-            TransformBuilder tb = new TransformBuilder().setVertCTBuilder(vctb);
-            coords.addTransformBuilder(tb);
-            cs.addCoordinateTransformByName(vctb.getTransformName());
-            parseInfo.format("***Added WRFEtaTransformBuilderto '%s'%n", cs.coordAxesNames);
+            parseInfo.format("***Added WRF_ETA_COORDINATE to '%s'%n", cs.coordAxesNames);
+            axis.addAttribute(new Attribute(_Coordinate.TransformType, "Vertical"));
+            axis.addAttribute(new Attribute(CDM.TRANSFORM_NAME, WrfEta.WRF_ETA_COORDINATE));
           }
         });
       }

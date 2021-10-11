@@ -53,8 +53,8 @@ Note that the file writer must construct the `formula_terms` attribute with the 
 The CDM, as well as other software that implements this part of the CF spec, will use the above information to calculate the 3D vertical coordinate.
 
 This 3D vertical coordinate can be obtained in the CDM library by opening the file as a `NetcdfDataset`, and examining the `CoordinateSystem` attached to each `VariableDS`.
-Look through the transforms from `CoordinateSystem.getCoordinateTransforms()` for the vertical transform (class `ucar.nc2.dataset.VerticalCT`).
-For performance, the actual work is not done until you call `VerticalTransform vy = VerticalCT.makeVerticalTransform()`, and then `VerticalTransform.getCoordinateArray()` to get the 3D coordinate array.
+Use `GridCoordinateSystem.getVerticalTransform()` to find a vertical transform (class `ucar.nc2.geoloc.vertical.VerticalTransform`).
+For performance, the actual work is done by `VerticalTransform.getCoordinateArray3D()` to get the 3D coordinate array.
 
 To summarize, in order for CF Vertical transforms to work in the CDM, you must:
 
