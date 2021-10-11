@@ -12,7 +12,7 @@ import org.junit.experimental.categories.Category;
 import ucar.array.Array;
 import ucar.array.InvalidRangeException;
 import ucar.nc2.calendar.CalendarDate;
-import ucar.nc2.grib.collection.GribDataReader;
+import ucar.nc2.grib.collection.GribArrayReader;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
@@ -30,12 +30,12 @@ public class TestGridSubsetTime {
 
   @BeforeClass
   public static void before() {
-    GribDataReader.validator = new GribCoverageValidator();
+    GribArrayReader.validator = new GribCoverageValidator();
   }
 
   @AfterClass
   public static void after() {
-    GribDataReader.validator = null;
+    GribArrayReader.validator = null;
   }
 
   @Test // there is no interval with offset value = 51

@@ -12,7 +12,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.calendar.CalendarDateUnit;
-import ucar.nc2.grib.collection.GribDataReader;
+import ucar.nc2.grib.collection.GribArrayReader;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
@@ -33,12 +33,12 @@ public class TestGribGridSubsetP {
 
   @BeforeClass
   public static void before() {
-    GribDataReader.validator = new GribCoverageValidator();
+    GribArrayReader.validator = new GribCoverageValidator();
   }
 
   @AfterClass
   public static void after() {
-    GribDataReader.validator = null;
+    GribArrayReader.validator = null;
   }
 
   @Parameterized.Parameters(name = "{0}")

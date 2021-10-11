@@ -7,9 +7,9 @@ package ucar.nc2.grib.collection;
 
 import com.google.common.collect.ImmutableList;
 import org.slf4j.Logger;
+import ucar.array.Array;
 import ucar.array.ArrayType;
 import ucar.array.Arrays;
-import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CDM;
@@ -37,7 +37,6 @@ import ucar.nc2.calendar.CalendarPeriod;
 import ucar.unidata.geoloc.projection.RotatedPole;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Formatter;
 import java.util.List;
@@ -494,7 +493,7 @@ class GribIospBuilder {
     }
   }
 
-  private Array makeLazyCoordinateData(Variable v2, Time2Dinfo info) {
+  private Array<?> makeLazyCoordinateData(Variable v2, Time2Dinfo info) {
     if (info.time2D != null) {
       return makeLazyTime2Darray(v2, info);
     } else {
@@ -503,7 +502,7 @@ class GribIospBuilder {
   }
 
   // only for the 2d times
-  private Array makeLazyTime1Darray(Variable v2, Time2Dinfo info) {
+  private Array<?> makeLazyTime1Darray(Variable v2, Time2Dinfo info) {
     int length = info.time1D.getSize();
     double[] data = new double[length];
     for (int i = 0; i < length; i++) {
@@ -518,7 +517,7 @@ class GribIospBuilder {
         for (double val : rtc.getOffsetsInTimeUnits()) {
           data[count++] = val;
         }
-        return Array.factory(DataType.DOUBLE, v2.getShape(), data);
+        return Arrays.factory(ArrayType.DOUBLE, v2.getShape(), data);
 
       case timeAuxRef:
         CoordinateTimeAbstract time = (CoordinateTimeAbstract) info.time1D;
@@ -527,7 +526,7 @@ class GribIospBuilder {
         for (int masterIdx : time.getTime2runtime()) {
           data[count++] = masterOffsets.get(masterIdx - 1);
         }
-        return Array.factory(DataType.DOUBLE, v2.getShape(), data);
+        return Arrays.factory(ArrayType.DOUBLE, v2.getShape(), data);
 
       default:
         throw new IllegalStateException("makeLazyTime1Darray must be reftime or timeAuxRef");
@@ -535,7 +534,7 @@ class GribIospBuilder {
   }
 
   // only for the 2d times
-  private Array makeLazyTime2Darray(Variable coord, Time2Dinfo info) {
+  private Array<?> makeLazyTime2Darray(Variable coord, Time2Dinfo info) {
     CoordinateTime2D time2D = info.time2D;
     CalendarPeriod timeUnit = time2D.getTimeUnit();
 
@@ -651,7 +650,7 @@ class GribIospBuilder {
         throw new IllegalStateException();
     }
 
-    return Array.factory(DataType.DOUBLE, coord.getShape(), data);
+    return Arrays.factory(ArrayType.DOUBLE, coord.getShape(), data);
   }
 
   private void makeTimeCoordinate1D(Group.Builder g, CoordinateTime coordTime) { // }, CoordinateRuntime
