@@ -1,0 +1,22 @@
+{
+    "chunks": [
+        50,
+        50
+    ],
+    "compressor": {
+        "astype": "|u1",
+        "dtype": "<f4",
+        "id": "fixedscaleoffset",
+        "offset": 1000,
+        "scale": 10
+    },
+    "dtype": "<f4",
+    "fill_value": 0.0,
+    "filters": null,
+    "order": "C",
+    "shape": [
+        200,
+        200
+    ],
+    "zarr_format": 2
+}
