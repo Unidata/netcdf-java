@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.internal.iosp.hdf4;
@@ -13,7 +13,7 @@ import java.util.Formatter;
 import java.util.Iterator;
 import java.util.List;
 import org.jdom2.Element;
-import ucar.ma2.DataType;
+import ucar.array.ArrayType;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainerMutable;
 import ucar.nc2.Dimension;
@@ -291,7 +291,7 @@ public class HdfEos {
       Variable.Builder<?> v = Variable.builder().setName(dataDimName);
       parent.addVariable(v);
       v.setDimensionsByName(geoDimName);
-      v.setDataType(DataType.INT);
+      v.setArrayType(ArrayType.INT);
       v.setAutoGen(offset, incr);
       v.addAttribute(new Attribute("_DimensionMap", ""));
       header.makeVinfoForDimensionMapVariable(parent, v);
@@ -462,7 +462,7 @@ public class HdfEos {
     Element proj = gridElem.getChild("Projection");
     if (proj != null) {
       Variable.Builder<?> crs = Variable.builder().setName(HDFEOS_CRS);
-      crs.setDataType(DataType.SHORT);
+      crs.setArrayType(ArrayType.SHORT);
       crs.setIsScalar();
       crs.setAutoGen(0, 0); // fake data
       parentGroupBuilder.addVariable(crs);

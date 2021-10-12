@@ -16,6 +16,13 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 public class TestReadArrayProblem {
 
   @Test
+  public void testHdf4SpecialChunked() throws IOException {
+    String filename = TestDir.cdmUnitTestDir + "formats/hdf4/MYD29.A2009152.0000.005.2009153124331.hdf";
+    TestReadArrayCompare.compareNetcdfDataset(filename);
+  }
+
+
+  @Test
   public void testProblem() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "formats/netcdf3/longOffset.nc";
     TestReadArrayCompare.compareNetcdfDataset(filename);
