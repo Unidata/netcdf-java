@@ -8,21 +8,10 @@ package ucar.unidata.util;
 import static org.junit.Assert.assertEquals;
 import com.google.re2j.Matcher;
 import com.google.re2j.Pattern;
-import java.lang.invoke.MethodHandles;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ucar.nc2.time.CalendarDateFormatter;
-import ucar.nc2.time.CalendarDateUnit;
 
-/**
- * Class Description.
- *
- * @author caron
- * @since Jun 18, 2008
- */
+/** Tests on re2j package. */
 public class TestRegexp {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
   public void testLogMatch() {
@@ -176,10 +165,9 @@ public class TestRegexp {
 
   @Test
   public void testIsoDate() {
-    String p = CalendarDateFormatter.isodatePatternString;
-    // String m = "2012-05-03 10:03:29Z";
+    String isodatePatternString = "([\\+\\-?\\d]+)([ t]([\\.\\:?\\d]*)([ \\+\\-]\\S*)?z?)?$";
     String m = "2012-04-27t08:00:00-0600";
-    testMatch(p, m, true, new String[] {"2012-04-27", "t08:00:00-0600", "08:00:00", "-0600"});
+    testMatch(isodatePatternString, m, true, new String[] {"2012-04-27", "t08:00:00-0600", "08:00:00", "-0600"});
   }
 
   @Test
@@ -297,10 +285,11 @@ public class TestRegexp {
 
   // @Test
   public void testCalendarDate() {
+    String udunitPatternString = "(\\w*)\\s*since\\s*" + "([\\+\\-?\\d]+)([ t]([\\.\\:?\\d]*)([ \\+\\-]\\S*)?z?)?$";
     String m = "sec since 1970-1-1 00:00:00Z";
     // String m = "1422175657634555 microsecs since 1970-1-1T0:0:0Z";
     // String p = "(\\w*)\\s*since\\s*([\\+\\-\\d]+)([ t]([\\.\\:\\d]*)([ \\+\\-]\\S*)?z?)?$";
-    testMatch(CalendarDateUnit.udunitPatternString, m, true, null);
+    testMatch(udunitPatternString, m, true, null);
   }
 
   // {7, "Geopotential height", "gpm", "ZGEO"},
