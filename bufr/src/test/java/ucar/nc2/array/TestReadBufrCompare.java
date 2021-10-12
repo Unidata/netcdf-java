@@ -11,18 +11,21 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
+import ucar.nc2.internal.util.CompareArrayToArray;
 import ucar.nc2.internal.util.CompareArrayToMa2;
+import ucar.nc2.internal.util.CompareNetcdf2;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Formatter;
 import java.util.List;
 
 import static com.google.common.truth.Truth.assertThat;
 
-/** Compare reading bufr with ma2.array and array.Array */
+/** Compare reading bufr with old ma2.array and new array.Array */
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
 public class TestReadBufrCompare {
@@ -30,10 +33,12 @@ public class TestReadBufrCompare {
 
   @Parameterized.Parameters(name = "{0}")
   public static List<Object[]> getTestParameters() {
-    FileFilter ff = TestDir.FileFilterSkipSuffix(".cdl .ncml RadiosondeStationData.bufr");
+    FileFilter ff = TestDir.FileFilterSkipSuffix(".cdl .ncml");
     List<Object[]> result = new ArrayList<>(500);
     try {
       TestDir.actOnAllParameterized(bufrLocalFromTop, ff, result, false);
+      TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "formats/bufr/userExamples", ff, result, false);
+      TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "formats/bufr/embeddedTable", ff, result, false);
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -50,19 +55,42 @@ public class TestReadBufrCompare {
   private final String filename;
 
   @Test
-  public void compareSequence() throws IOException {
-    compareSequence(filename);
+  public void doOne() throws Exception {
+    compareMa2Array(filename);
   }
 
-  private void compareSequence(String filename) throws IOException {
-    try (NetcdfFile org = NetcdfFiles.open(filename, -1, null);
-        NetcdfFile copy = NetcdfFiles.open(filename, -1, null)) {
-      System.out.println("Test NetcdfFile: " + org.getLocation());
+  public static void compareMa2Array(String filename) throws Exception {
+    try (NetcdfFile ma2File = NetcdfFiles.open(filename, "ucar.nc2.iosp.bufr.BufrIosp", -1, null, null);
+        NetcdfFile arrayFile = NetcdfFiles.open(filename, "ucar.nc2.iosp.bufr.BufrArrayIosp", -1, null, null)) {
+      System.out.println("Test NetcdfFile: " + arrayFile.getLocation());
 
-      boolean ok = CompareArrayToMa2.compareFiles(org, copy);
+      boolean ok = CompareArrayToMa2.compareFiles(ma2File, arrayFile);
       assertThat(ok).isTrue();
     }
   }
+
+  // compare to check complete read. need seperate files, or else they interfere
+  public static void readOrg(String filename) throws Exception {
+    try (NetcdfFile ma2File = NetcdfFiles.open(filename, "ucar.nc2.iosp.bufr.BufrIosp", -1, null, null);
+        NetcdfFile maFile = NetcdfFiles.open(filename, "ucar.nc2.iosp.bufr.BufrIosp", -1, null, null)) {
+      System.out.println("Test NetcdfFile: " + ma2File.getLocation());
+
+      boolean ok = CompareNetcdf2.compareFiles(ma2File, maFile, new Formatter());
+      assertThat(ok).isTrue();
+    }
+  }
+
+  // compare to check complete read. need seperate files, or else they interfere
+  public static void readArrays(String filename) throws Exception {
+    try (NetcdfFile arrayFile = NetcdfFiles.open(filename, "ucar.nc2.iosp.bufr.BufrArrayIosp", -1, null, null);
+        NetcdfFile arrayFile2 = NetcdfFiles.open(filename, "ucar.nc2.iosp.bufr.BufrArrayIosp", -1, null, null)) {
+      System.out.println("Test NetcdfFile: " + arrayFile.getLocation());
+
+      boolean ok = CompareArrayToArray.compareFiles(arrayFile, arrayFile2);
+      assertThat(ok).isTrue();
+    }
+  }
+
 
 }
 

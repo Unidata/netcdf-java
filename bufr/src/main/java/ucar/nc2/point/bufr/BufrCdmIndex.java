@@ -2,7 +2,6 @@
  * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-
 package ucar.nc2.point.bufr;
 
 import java.nio.charset.StandardCharsets;
@@ -21,9 +20,6 @@ import java.util.*;
  * Manage cdm index (ncx) for Bufr files.
  * Covers BufrCdmIndexProto
  * Never completed for operational use, could redo as needed
- *
- * @author caron
- * @since 8/14/13
  */
 public class BufrCdmIndex {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BufrCdmIndex.class);

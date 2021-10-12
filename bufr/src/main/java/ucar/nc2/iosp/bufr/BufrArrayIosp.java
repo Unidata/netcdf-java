@@ -1,12 +1,12 @@
 /*
- * Copyright (c) 1998-2020 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.iosp.bufr;
 
+import com.google.common.collect.AbstractIterator;
 import org.jdom2.Element;
 import ucar.array.Array;
-import ucar.array.Section;
 import ucar.array.StructureData;
 import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
@@ -18,6 +18,7 @@ import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.Formatter;
 import java.util.HashSet;
@@ -25,7 +26,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
-/** IOSP for BUFR data - using the preprocessor. */
+/** IOSP for BUFR data - using ucar.array. Registered by reflection. */
 public class BufrArrayIosp extends AbstractIOServiceProvider {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BufrArrayIosp.class);
 
@@ -42,7 +43,6 @@ public class BufrArrayIosp extends AbstractIOServiceProvider {
 
   Sequence obsStructure;
   Message protoMessage; // prototypical message: all messages in the file must be the same.
-  MessageScanner scanner;
   HashSet<Integer> messHash;
   boolean isSingle;
   BufrConfig config;
@@ -57,7 +57,7 @@ public class BufrArrayIosp extends AbstractIOServiceProvider {
   public void build(RandomAccessFile raf, Group.Builder rootGroup, CancelTask cancelTask) throws IOException {
     super.open(raf, rootGroup.getNcfile(), cancelTask);
 
-    scanner = new MessageScanner(raf);
+    MessageScanner scanner = new MessageScanner(raf);
     // TODO We have a problem - we havent finished building but we need to read the first message to use as the
     // protoMessage.
     // TODO Possible only trouble when theres an EmbeddedTable?
@@ -144,176 +144,95 @@ public class BufrArrayIosp extends AbstractIOServiceProvider {
     return iospParam;
   }
 
-  int nelems = -1;
-
   @Override
-  public Array readData(Variable v2, Section section) {
+  public Iterator<ucar.array.StructureData> getStructureDataArrayIterator(Sequence s, int bufferSize) {
     findRootSequence();
-    return new ArraySequence(obsStructure.makeStructureMembers(), new SeqIter(), nelems);
-  }
-
-  @Override
-  public Iterator<StructureData> getStructureDataArrayIterator(Structure s, int bufferSize) {
-    findRootSequence();
-    return isSingle ? new SeqIterSingle() : new SeqIter();
+    try {
+      return new SeqIter();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   private void findRootSequence() {
     this.obsStructure = (Sequence) this.ncfile.findVariable(BufrArrayIosp.obsRecordName);
   }
 
-  private class SeqIter implements Iterator<StructureData> {
-    StructureDataIterator currIter;
-    int recnum;
+  private class SeqIter extends AbstractIterator<StructureData> {
+    MessageScanner scannerIter;
+    Iterator<StructureData> currIter;
 
-    SeqIter() {
-      reset();
+    SeqIter() throws IOException {
+      scannerIter = new MessageScanner(raf);
+      currIter = readNextMessage();
     }
 
     @Override
-    public StructureDataIterator reset() {
-      recnum = 0;
-      currIter = null;
-      scanner.reset();
-      return this;
-    }
-
-    @Override
-    public boolean hasNext() throws IOException {
+    protected StructureData computeNext() {
+      if (currIter.hasNext()) {
+        return currIter.next();
+      }
+      currIter = readNextMessage();
       if (currIter == null) {
-        currIter = readNextMessage();
-        if (currIter == null) {
-          nelems = recnum;
-          return false;
-        }
+        return endOfData();
       }
-
-      if (!currIter.hasNext()) {
-        currIter = readNextMessage();
-        return hasNext();
-      }
-
-      return true;
+      return computeNext();
     }
 
-    @Override
-    public StructureData next() throws IOException {
-      recnum++;
-      return currIter.next();
-    }
+    @Nullable
+    private Iterator<StructureData> readNextMessage() {
+      while (true) { // dont use recursion to skip messages
+        try {
+          if (!scannerIter.hasNext()) {
+            return null;
+          }
+          Message m = scannerIter.next();
+          if (m == null) {
+            log.warn("BUFR scanner hasNext() true but next() is null!");
+            return null;
+          }
+          if (m.containsBufrTable()) { // skip table messages
+            continue;
+          }
+          // mixed messages
+          if (!protoMessage.equals(m)) {
+            if (messHash == null)
+              messHash = new HashSet<>(20);
+            if (!messHash.contains(m.hashCode())) {
+              log.warn(String.format("File %s has different BUFR message type proto= %s message= %s; skipping message",
+                  raf.getLocation(), Integer.toHexString(protoMessage.hashCode()), Integer.toHexString(m.hashCode())));
+              messHash.add(m.hashCode());
+            }
+            continue; // skip mixed messages
+          }
+          // ok we got a good one
+          Array<StructureData> as = readMessage(m);
+          return as.iterator();
 
-    private Iterator<StructureData> readNextMessage() throws IOException {
-      if (!scanner.hasNext())
-        return null;
-      Message m = scanner.next();
-      if (m == null) {
-        log.warn("BUFR scanner hasNext() true but next() null!");
-        return null;
-      }
-      if (m.containsBufrTable()) // data messages only
-        return readNextMessage();
-
-      // mixed messages
-      if (!protoMessage.equals(m)) {
-        if (messHash == null)
-          messHash = new HashSet<>(20);
-        if (!messHash.contains(m.hashCode())) {
-          log.warn("File " + raf.getLocation() + " has different BUFR message types hash=" + protoMessage.hashCode()
-              + "; skipping");
-          messHash.add(m.hashCode());
+        } catch (IOException ioe) {
+          log.warn(String.format("IOException reading BUFR messages on %s", raf.getLocation(), ioe));
+          return null;
         }
-        return readNextMessage();
       }
-
-      ArrayStructure as = readMessage(m);
-      return as.getStructureDataIterator();
     }
 
     private Array<StructureData> readMessage(Message m) throws IOException {
-      ArrayStructure as;
-      if (m.dds.isCompressed()) {
-        MessageCompressedDataReader reader = new MessageCompressedDataReader();
-        as = reader.readEntireMessage(obsStructure, protoMessage, m, raf, null);
-      } else {
-        MessageUncompressedDataReader reader = new MessageUncompressedDataReader();
-        as = reader.readEntireMessage(obsStructure, protoMessage, m, raf, null);
+      Array<StructureData> as;
+      Formatter f = new Formatter();
+      try {
+        if (m.dds.isCompressed()) {
+          MessageArrayCompressedReader comp = new MessageArrayCompressedReader(obsStructure, protoMessage, m, raf, f);
+          as = comp.readEntireMessage();
+        } else {
+          MessageArrayUncompressedReader uncomp =
+              new MessageArrayUncompressedReader(obsStructure, protoMessage, m, raf, f);
+          as = uncomp.readEntireMessage();
+        }
+      } catch (Throwable t) {
+        log.warn(String.format("BufrArrayIosp readMessage FAIL= %s%n", f), t);
+        throw t;
       }
       return as;
-    }
-
-    @Override
-    public int getCurrentRecno() {
-      return recnum - 1;
-    }
-
-    @Override
-    public void close() {
-      if (currIter != null)
-        currIter.close();
-      currIter = null;
-      if (debugIter)
-        System.out.printf("BUFR read recnum %d%n", recnum);
-    }
-  }
-
-  private class SeqIterSingle implements Iterator<StructureData> {
-    StructureDataIterator currIter;
-    int recnum;
-
-    SeqIterSingle() {
-      reset();
-    }
-
-    @Override
-    public StructureDataIterator reset() {
-      recnum = 0;
-      currIter = null;
-      return this;
-    }
-
-    @Override
-    public boolean hasNext() throws IOException {
-      if (currIter == null) {
-        currIter = readProtoMessage();
-        if (currIter == null) {
-          nelems = recnum;
-          return false;
-        }
-      }
-
-      return currIter.hasNext();
-    }
-
-    @Override
-    public StructureData next() throws IOException {
-      recnum++;
-      return currIter.next();
-    }
-
-    private Iterator<StructureData> readProtoMessage() throws IOException {
-      Message m = protoMessage;
-      ArrayStructure as;
-      if (m.dds.isCompressed()) {
-        MessageCompressedDataReader reader = new MessageCompressedDataReader();
-        as = reader.readEntireMessage(obsStructure, protoMessage, m, raf, null);
-      } else {
-        MessageUncompressedDataReader reader = new MessageUncompressedDataReader();
-        as = reader.readEntireMessage(obsStructure, protoMessage, m, raf, null);
-      }
-
-      return as.getStructureDataIterator();
-    }
-
-    @Override
-    public int getCurrentRecno() {
-      return recnum - 1;
-    }
-
-    @Override
-    public void close() {
-      if (currIter != null)
-        currIter.close();
-      currIter = null;
     }
   }
 

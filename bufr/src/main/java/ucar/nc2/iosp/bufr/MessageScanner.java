@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.iosp.bufr;
@@ -44,7 +44,7 @@ public class MessageScanner {
   /////////////////////////////////
 
   private ucar.unidata.io.RandomAccessFile raf;
-  private boolean useEmbeddedTables;
+  private boolean useArrays;
 
   private int countMsgs;
   private int countObs;
@@ -53,17 +53,17 @@ public class MessageScanner {
   private long lastPos;
   private boolean debug;
 
-  private EmbeddedTable embedTable;
+  private EmbeddedTableIF embedTable;
 
   public MessageScanner(RandomAccessFile raf) throws IOException {
     this(raf, 0, true);
   }
 
-  public MessageScanner(RandomAccessFile raf, long startPos, boolean useEmbeddedTables) throws IOException {
+  public MessageScanner(RandomAccessFile raf, long startPos, boolean useArrays) throws IOException {
     startPos = (startPos < 30) ? 0 : startPos - 30; // look for the header
     this.raf = raf;
     lastPos = startPos;
-    this.useEmbeddedTables = useEmbeddedTables;
+    this.useArrays = useArrays;
     raf.seek(startPos);
     raf.order(RandomAccessFile.BIG_ENDIAN);
   }
@@ -174,9 +174,10 @@ public class MessageScanner {
       m.setHeader(cleanup(header));
       m.setStartPos(start);
 
-      if (useEmbeddedTables && m.containsBufrTable()) {
-        if (embedTable == null)
-          embedTable = new EmbeddedTable(m, raf);
+      if (m.containsBufrTable()) {
+        if (embedTable == null) {
+          embedTable = useArrays ? new EmbeddedTable(m, raf) : new EmbeddedTableOrg(m, raf);
+        }
         embedTable.addTable(m);
       } else if (embedTable != null) {
         m.setTableLookup(embedTable.getTableLookup());

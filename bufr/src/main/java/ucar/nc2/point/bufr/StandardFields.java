@@ -2,7 +2,6 @@
  * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-
 package ucar.nc2.point.bufr;
 
 import ucar.array.Array;
@@ -21,9 +20,6 @@ import java.util.*;
 
 /**
  * Extract standard fields from BUFR
- *
- * @author caron
- * @since 8/7/13
  */
 public class StandardFields {
   private static final int nflds = 50;
