@@ -1,0 +1,20 @@
+{
+    "chunks": [
+        50,
+        50
+    ],
+    "compressor": null,
+    "dtype": "<i4",
+    "fill_value": 0,
+    "filters": [
+        {
+            "id": "adler32"
+        }
+    ],
+    "order": "C",
+    "shape": [
+        200,
+        200
+    ],
+    "zarr_format": 2
+}

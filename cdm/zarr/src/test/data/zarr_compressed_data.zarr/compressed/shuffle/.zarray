@@ -1,0 +1,19 @@
+{
+    "chunks": [
+        50,
+        50
+    ],
+    "compressor": {
+        "elementsize": 4,
+        "id": "shuffle"
+    },
+    "dtype": "<i4",
+    "fill_value": 0,
+    "filters": null,
+    "order": "C",
+    "shape": [
+        200,
+        200
+    ],
+    "zarr_format": 2
+}
