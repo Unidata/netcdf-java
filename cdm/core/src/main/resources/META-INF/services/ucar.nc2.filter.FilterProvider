@@ -1,0 +1,7 @@
+ucar.nc2.filter.Blosc$Provider
+ucar.nc2.filter.Deflate$Provider
+ucar.nc2.filter.Checksum32$Fletcher32Provider
+ucar.nc2.filter.Checksum32$Adler32Provider
+ucar.nc2.filter.Checksum32$CRC32Provider
+ucar.nc2.filter.ScaleOffset$Provider
+ucar.nc2.filter.Shuffle$Provider
