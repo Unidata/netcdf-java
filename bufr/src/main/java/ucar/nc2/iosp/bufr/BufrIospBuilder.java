@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
 package ucar.nc2.iosp.bufr;
 
 import java.util.Formatter;
@@ -5,8 +9,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import com.google.common.base.Strings;
 import org.slf4j.Logger;
-import ucar.ma2.DataType;
+import ucar.array.ArrayType;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainerMutable;
 import ucar.nc2.EnumTypedef;
@@ -179,11 +185,11 @@ class BufrIospBuilder {
     struct.setDimensionsAnonymous(new int[] {n}); // anon vector
 
     Variable.Builder v = Variable.builder().setName("name");
-    v.setDataType(DataType.STRING); // scalar
+    v.setArrayType(ArrayType.STRING); // scalar
     struct.addMemberVariable(v);
 
     v = Variable.builder().setName("data");
-    v.setDataType(DataType.FLOAT); // scalar
+    v.setArrayType(ArrayType.FLOAT); // scalar
     struct.addMemberVariable(v);
 
     struct.setSPobject(dpiField); // ??
@@ -194,20 +200,24 @@ class BufrIospBuilder {
     struct.setDimensionsAnonymous(new int[] {fld.dds.replication}); // scalar
 
     Variable.Builder v = Variable.builder().setName("name");
-    v.setDataType(DataType.STRING); // scalar
+    v.setArrayType(ArrayType.STRING); // scalar
     struct.addMemberVariable(v);
 
     v = Variable.builder().setName("data");
-    v.setDataType(DataType.FLOAT); // scalar
+    v.setArrayType(ArrayType.FLOAT); // scalar
     struct.addMemberVariable(v);
 
     parent.addMemberVariable(struct);
   }
 
-  private Variable.Builder addVariable(Group.Builder group, Structure.Builder struct, BufrConfig.FieldConverter fld,
+  private Variable.Builder addVariable(Group.Builder group, Structure.Builder<?> struct, BufrConfig.FieldConverter fld,
       int count) {
     DataDescriptor dkey = fld.dds;
     String uname = findGloballyUniqueName(fld.getName(), "unknown");
+    if (Strings.isNullOrEmpty(uname)) {
+      findGloballyUniqueName(fld.getName(), "unknown");
+    }
+
     dkey.name = uname; // name may need to be changed for uniqueness
 
     Variable.Builder v = Variable.builder().setName(uname);
@@ -236,7 +246,7 @@ class BufrIospBuilder {
 
     DataDescriptor dataDesc = fld.dds;
     if (dataDesc.type == 1) {
-      v.setDataType(DataType.CHAR);
+      v.setArrayType(ArrayType.CHAR);
       int size = dataDesc.bitWidth / 8;
       v.setDimensionsAnonymous(new int[] {size});
 
@@ -246,11 +256,11 @@ class BufrIospBuilder {
 
       CodeFlagTables ct = CodeFlagTables.getTable(dataDesc.fxy);
       if (nbytes == 1) {
-        v.setDataType(DataType.ENUM1);
+        v.setArrayType(ArrayType.ENUM1);
       } else if (nbytes == 2) {
-        v.setDataType(DataType.ENUM2);
+        v.setArrayType(ArrayType.ENUM2);
       } else if (nbytes == 4) {
-        v.setDataType(DataType.ENUM4);
+        v.setArrayType(ArrayType.ENUM4);
       }
 
       // v.removeAttribute(CDM.UNITS);
@@ -264,7 +274,7 @@ class BufrIospBuilder {
       // use of unsigned seems fishy, since only time it uses high bit is for missing
       // not necessarily true, just when they "add one bit" to deal with missing case
       if (nbits < 9) {
-        v.setDataType(DataType.BYTE);
+        v.setArrayType(ArrayType.BYTE);
         if (nbits == 8) {
           v.addAttribute(new Attribute(CDM.UNSIGNED, "true"));
           v.addAttribute(new Attribute(CDM.MISSING_VALUE, (short) BufrNumbers.missingValue(nbits)));
@@ -273,7 +283,7 @@ class BufrIospBuilder {
         }
 
       } else if (nbits < 17) {
-        v.setDataType(DataType.SHORT);
+        v.setArrayType(ArrayType.SHORT);
         if (nbits == 16) {
           v.addAttribute(new Attribute(CDM.UNSIGNED, "true"));
           v.addAttribute(new Attribute(CDM.MISSING_VALUE, (int) BufrNumbers.missingValue(nbits)));
@@ -282,7 +292,7 @@ class BufrIospBuilder {
         }
 
       } else if (nbits < 33) {
-        v.setDataType(DataType.INT);
+        v.setArrayType(ArrayType.INT);
         if (nbits == 32) {
           v.addAttribute(new Attribute(CDM.UNSIGNED, "true"));
           v.addAttribute(new Attribute(CDM.MISSING_VALUE, (int) BufrNumbers.missingValue(nbits)));
@@ -291,7 +301,7 @@ class BufrIospBuilder {
         }
 
       } else {
-        v.setDataType(DataType.LONG);
+        v.setArrayType(ArrayType.LONG);
         v.addAttribute(new Attribute(CDM.MISSING_VALUE, BufrNumbers.missingValue(nbits)));
       }
 
@@ -348,7 +358,7 @@ class BufrIospBuilder {
   private Map<String, Integer> names = new HashMap<>(100);
 
   private String findGloballyUniqueName(String want, String def) {
-    if (want == null) {
+    if (Strings.isNullOrEmpty(want)) {
       return def + tempNo++;
     }
 

@@ -1,13 +1,15 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-
 package ucar.nc2.iosp.bufr;
 
 import org.jdom2.Element;
 import thredds.client.catalog.Catalog;
-import ucar.ma2.*;
+import ucar.array.Array;
+import ucar.array.ArrayType;
+import ucar.array.StructureData;
+import ucar.array.StructureMembers;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
@@ -37,7 +39,7 @@ public class BufrConfig {
     return new BufrConfig(raf);
   }
 
-  static BufrConfig openFromMessage(RandomAccessFile raf, Message m, Element iospParam) throws IOException {
+  static BufrConfig openFromMessage(RandomAccessFile raf, Message m, Element iospParam) {
     BufrConfig config = new BufrConfig(raf, m);
     if (iospParam != null)
       config.merge(iospParam);
@@ -180,41 +182,33 @@ public class BufrConfig {
   private int countObs;
 
   private void scanBufrFile(RandomAccessFile raf) throws Exception {
-    NetcdfFile ncd = null;
     countObs = 0;
 
-    try {
-      MessageScanner scanner = new MessageScanner(raf);
-      Message protoMessage = scanner.getFirstDataMessage();
-      if (protoMessage == null)
-        throw new IOException("No message found!");
+    MessageScanner scanner = new MessageScanner(raf);
+    Message protoMessage = scanner.getFirstDataMessage();
+    if (protoMessage == null)
+      throw new IOException("No message found!");
 
-      messHash = protoMessage.hashCode();
-      standardFields = StandardFields.extract(protoMessage);
-      rootConverter = new FieldConverter(protoMessage.ids.getCenterId(), protoMessage.getRootDataDescriptor());
+    messHash = protoMessage.hashCode();
+    standardFields = StandardFields.extract(protoMessage);
+    rootConverter = new FieldConverter(protoMessage.ids.getCenterId(), protoMessage.getRootDataDescriptor());
 
-      if (standardFields.hasStation()) {
-        hasStations = true;
-        map = new HashMap<>(1000);
-      }
-      featureType = guessFeatureType(standardFields);
-      hasDate = standardFields.hasTime();
+    if (standardFields.hasStation()) {
+      hasStations = true;
+      map = new HashMap<>(1000);
+    }
+    featureType = guessFeatureType(standardFields);
+    hasDate = standardFields.hasTime();
 
-      ncd = NetcdfFiles.open(raf.getLocation()); // LOOK opening another raf
+    try (NetcdfFile ncd = NetcdfFiles.open(raf.getLocation())) {
       Attribute centerAtt = ncd.findAttribute(BufrIosp.centerId);
       int center = (centerAtt == null) ? 0 : centerAtt.getNumericValue().intValue();
 
       Sequence seq = (Sequence) ncd.getRootGroup().findVariableLocal(BufrIosp.obsRecordName);
       extract = new StandardFields.StandardFieldsFromStructure(center, seq);
-
-      StructureDataIterator iter = seq.getStructureIterator();
-      processSeq(iter, rootConverter, true);
+      processSeq(seq, rootConverter, true);
 
       setStandardActions(rootConverter);
-
-    } finally {
-      if (ncd != null)
-        ncd.close();
     }
   }
 
@@ -238,46 +232,41 @@ public class BufrConfig {
 
   private CalendarDate today = CalendarDate.present();
 
-  private void processSeq(StructureDataIterator sdataIter, FieldConverter parent, boolean isTop) throws IOException {
-    try {
-      while (sdataIter.hasNext()) {
-        StructureData sdata = sdataIter.next();
+  private void processSeq(Iterable<StructureData> sdataIter, FieldConverter parent, boolean isTop) throws IOException {
+    for (StructureData sdata : sdataIter) {
 
-        if (isTop) {
-          countObs++;
+      if (isTop) {
+        countObs++;
 
-          if (hasStations)
-            processStations(parent, sdata);
-          if (hasDate) {
-            extract.extract(sdata);
-            CalendarDate date = extract.makeCalendarDate();
-            if (Math.abs(date.getDifferenceInMsecs(today)) > 1000L * 3600 * 24 * 100) {
-              extract.makeCalendarDate();
-            }
-            long msecs = date.getMillisFromEpoch();
-            if (this.start > msecs) {
-              this.start = msecs;
-            }
-            if (this.end < msecs) {
-              this.end = msecs;
-            }
+        if (hasStations)
+          processStations(parent, sdata);
+        if (hasDate) {
+          extract.extract(sdata);
+          CalendarDate date = extract.makeCalendarDate();
+          if (Math.abs(date.getDifferenceInMsecs(today)) > 1000L * 3600 * 24 * 100) {
+            extract.makeCalendarDate();
           }
-        }
-
-        int count = 0;
-        for (StructureMembers.Member m : sdata.getMembers()) {
-          if (m.getDataType() == DataType.SEQUENCE) {
-            FieldConverter fld = parent.getChild(count);
-            ArraySequence data = (ArraySequence) sdata.getArray(m);
-            int n = data.getStructureDataCount();
-            fld.trackSeqCounts(n);
-            processSeq(data.getStructureDataIterator(), fld, false);
+          long msecs = date.getMillisFromEpoch();
+          if (this.start > msecs) {
+            this.start = msecs;
           }
-          count++;
+          if (this.end < msecs) {
+            this.end = msecs;
+          }
         }
       }
-    } finally {
-      sdataIter.close();
+
+      int count = 0;
+      for (StructureMembers.Member m : sdata.getStructureMembers()) {
+        if (m.getArrayType() == ArrayType.SEQUENCE) {
+          FieldConverter fld = parent.getChild(count);
+          Array<StructureData> data = (Array<StructureData>) sdata.getMemberData(m);
+          int n = (int) data.getSize();
+          fld.trackSeqCounts(n);
+          processSeq(data, fld, false);
+        }
+        count++;
+      }
     }
   }
 

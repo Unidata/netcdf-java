@@ -304,6 +304,7 @@ public class NetcdfFiles {
     ucar.unidata.io.RandomAccessFile raf = ucar.unidata.io.RandomAccessFile.acquire(urlCanonical, bufferSize);
 
     NetcdfFile result = build(spi, raf, location, cancelTask);
+    spi.buildFinish(result);
 
     // send after iosp is opened
     if (iospMessage != null) {

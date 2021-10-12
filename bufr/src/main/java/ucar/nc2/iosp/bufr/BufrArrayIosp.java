@@ -1,20 +1,14 @@
 /*
- * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.iosp.bufr;
 
-import java.io.IOException;
-import java.util.Formatter;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
+import com.google.common.collect.AbstractIterator;
 import org.jdom2.Element;
-import ucar.ma2.Array;
-import ucar.ma2.ArraySequence;
+import ucar.array.Array;
+import ucar.array.StructureData;
 import ucar.ma2.ArrayStructure;
-import ucar.ma2.Section;
-import ucar.ma2.StructureData;
 import ucar.ma2.StructureDataIterator;
 import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
@@ -26,12 +20,19 @@ import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
 
-/** IOSP for BUFR data - using the preprocessor. */
-public class BufrIosp extends AbstractIOServiceProvider {
-  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BufrIosp.class);
+import javax.annotation.Nullable;
+import java.io.IOException;
+import java.util.Formatter;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
+
+/** IOSP for BUFR data - using ucar.array. Registered by reflection. */
+public class BufrArrayIosp extends AbstractIOServiceProvider {
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BufrArrayIosp.class);
 
   public static final String obsRecordName = "obs";
-  public static final String fxyAttName = "BUFR:TableB_descriptor";
   public static final String centerId = "BUFR:centerId";
 
   // debugging
@@ -43,14 +44,13 @@ public class BufrIosp extends AbstractIOServiceProvider {
 
   Sequence obsStructure;
   Message protoMessage; // prototypical message: all messages in the file must be the same.
-  MessageScanner scanner;
   HashSet<Integer> messHash;
   boolean isSingle;
   BufrConfig config;
   Element iospParam;
 
   @Override
-  public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {
+  public boolean isValidFile(RandomAccessFile raf) throws IOException {
     return MessageScanner.isValidFile(raf);
   }
 
@@ -58,7 +58,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
   public void build(RandomAccessFile raf, Group.Builder rootGroup, CancelTask cancelTask) throws IOException {
     super.open(raf, rootGroup.getNcfile(), cancelTask);
 
-    scanner = new MessageScanner(raf, 0, false);
+    MessageScanner scanner = new MessageScanner(raf);
     // TODO We have a problem - we havent finished building but we need to read the first message to use as the
     // protoMessage.
     // TODO Possible only trouble when theres an EmbeddedTable?
@@ -145,29 +145,136 @@ public class BufrIosp extends AbstractIOServiceProvider {
     return iospParam;
   }
 
-  int nelems = -1;
-
   @Override
-  public Array readData(Variable v2, Section section) {
+  public Iterator<ucar.array.StructureData> getStructureDataArrayIterator(Sequence s, int bufferSize) {
     findRootSequence();
-    return new ArraySequence(obsStructure.makeStructureMembers(), new SeqIter(), nelems);
-  }
-
-  @Override
-  public StructureDataIterator getStructureIterator(Structure s, int bufferSize) {
-    findRootSequence();
-    return isSingle ? new SeqIterSingle() : new SeqIter();
+    try {
+      return new SeqIter();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   private void findRootSequence() {
-    this.obsStructure = (Sequence) this.ncfile.findVariable(BufrIosp.obsRecordName);
+    this.obsStructure = (Sequence) this.ncfile.findVariable(BufrArrayIosp.obsRecordName);
   }
 
-  private class SeqIter implements StructureDataIterator {
+  private class SeqIter extends AbstractIterator<StructureData> {
+    MessageScanner scannerIter;
+    Iterator<StructureData> currIter;
+
+    SeqIter() throws IOException {
+      scannerIter = new MessageScanner(raf);
+      currIter = readNextMessage();
+    }
+
+    @Override
+    protected StructureData computeNext() {
+      if (currIter.hasNext()) {
+        return currIter.next();
+      }
+      currIter = readNextMessage();
+      if (currIter == null) {
+        return endOfData();
+      }
+      return computeNext();
+    }
+
+    @Nullable
+    private Iterator<StructureData> readNextMessage() {
+      while (true) { // dont use recursion to skip messages
+        try {
+          if (!scannerIter.hasNext()) {
+            return null;
+          }
+          Message m = scannerIter.next();
+          if (m == null) {
+            log.warn("BUFR scanner hasNext() true but next() is null!");
+            return null;
+          }
+          if (m.containsBufrTable()) { // skip table messages
+            continue;
+          }
+          // mixed messages
+          if (!protoMessage.equals(m)) {
+            if (messHash == null)
+              messHash = new HashSet<>(20);
+            if (!messHash.contains(m.hashCode())) {
+              log.warn(String.format("File %s has different BUFR message type proto= %s message= %s; skipping message",
+                  raf.getLocation(), Integer.toHexString(protoMessage.hashCode()), Integer.toHexString(m.hashCode())));
+              messHash.add(m.hashCode());
+            }
+            continue; // skip mixed messages
+          }
+          // ok we got a good one
+          Array<StructureData> as = readMessage(m);
+          return as.iterator();
+
+        } catch (IOException ioe) {
+          log.warn(String.format("IOException reading BUFR messages on %s", raf.getLocation(), ioe));
+          return null;
+        }
+      }
+    }
+
+    private Array<StructureData> readMessage(Message m) throws IOException {
+      Array<StructureData> as;
+      Formatter f = new Formatter();
+      try {
+        if (m.dds.isCompressed()) {
+          MessageArrayCompressedReader comp = new MessageArrayCompressedReader(obsStructure, protoMessage, m, raf, f);
+          as = comp.readEntireMessage();
+        } else {
+          MessageArrayUncompressedReader uncomp =
+              new MessageArrayUncompressedReader(obsStructure, protoMessage, m, raf, f);
+          as = uncomp.readEntireMessage();
+        }
+      } catch (Throwable t) {
+        log.warn(String.format("BufrArrayIosp readMessage FAIL= %s%n", f), t);
+        throw t;
+      }
+      return as;
+    }
+  }
+
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  @Override
+  public String getDetailInfo() {
+    Formatter ff = new Formatter();
+    ff.format("%s", super.getDetailInfo());
+    protoMessage.dump(ff);
+    ff.format("%n");
+    config.show(ff);
+    return ff.toString();
+  }
+
+  @Override
+  public String getFileTypeId() {
+    return DataFormatType.BUFR.getDescription();
+  }
+
+  @Override
+  public String getFileTypeDescription() {
+    return "WMO Binary Universal Form";
+  }
+
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  // this all goes away soon
+
+  @Override
+  public StructureDataIterator getStructureIterator(Structure s, int bufferSize) throws IOException {
+    findRootSequence();
+    return isSingle ? new SeqIterSingle() : new SeqIterOld();
+  }
+
+  private class SeqIterOld implements StructureDataIterator {
+    MessageScanner scannerIter;
     StructureDataIterator currIter;
     int recnum;
 
-    SeqIter() {
+    SeqIterOld() throws IOException {
+      scannerIter = new MessageScanner(raf);
       reset();
     }
 
@@ -175,7 +282,6 @@ public class BufrIosp extends AbstractIOServiceProvider {
     public StructureDataIterator reset() {
       recnum = 0;
       currIter = null;
-      scanner.reset();
       return this;
     }
 
@@ -184,7 +290,6 @@ public class BufrIosp extends AbstractIOServiceProvider {
       if (currIter == null) {
         currIter = readNextMessage();
         if (currIter == null) {
-          nelems = recnum;
           return false;
         }
       }
@@ -198,16 +303,16 @@ public class BufrIosp extends AbstractIOServiceProvider {
     }
 
     @Override
-    public StructureData next() throws IOException {
+    public ucar.ma2.StructureData next() throws IOException {
       recnum++;
       return currIter.next();
     }
 
     private StructureDataIterator readNextMessage() throws IOException {
       while (true) { // dont use recursion to skip messages
-        if (!scanner.hasNext())
+        if (!scannerIter.hasNext())
           return null;
-        Message m = scanner.next();
+        Message m = scannerIter.next();
         if (m == null) {
           log.warn("BUFR scanner hasNext() true but next() null!");
           return null;
@@ -279,7 +384,6 @@ public class BufrIosp extends AbstractIOServiceProvider {
       if (currIter == null) {
         currIter = readProtoMessage();
         if (currIter == null) {
-          nelems = recnum;
           return false;
         }
       }
@@ -288,7 +392,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
     }
 
     @Override
-    public StructureData next() throws IOException {
+    public ucar.ma2.StructureData next() throws IOException {
       recnum++;
       return currIter.next();
     }
@@ -318,28 +422,6 @@ public class BufrIosp extends AbstractIOServiceProvider {
         currIter.close();
       currIter = null;
     }
-  }
-
-  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-  @Override
-  public String getDetailInfo() {
-    Formatter ff = new Formatter();
-    ff.format("%s", super.getDetailInfo());
-    protoMessage.dump(ff);
-    ff.format("%n");
-    config.show(ff);
-    return ff.toString();
-  }
-
-  @Override
-  public String getFileTypeId() {
-    return DataFormatType.BUFR.getDescription();
-  }
-
-  @Override
-  public String getFileTypeDescription() {
-    return "WMO Binary Universal Form";
   }
 
 }

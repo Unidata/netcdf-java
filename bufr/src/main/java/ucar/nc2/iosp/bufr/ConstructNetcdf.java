@@ -1,27 +1,23 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.iosp.bufr;
 
+import ucar.array.ArrayType;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.bufr.tables.CodeFlagTables;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CF;
-import ucar.ma2.*;
 import java.util.*;
 
 /**
  * BufrIosp2 delegates the construction of the Netcdf objects to Construct2.
- *
- * @author caron
- * @since 8/8/13
  */
-
-class Construct2 {
-  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Construct2.class);
+class ConstructNetcdf {
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ConstructNetcdf.class);
   private static final boolean warnUnits = false;
 
   private NetcdfFile ncfile;
@@ -32,7 +28,7 @@ class Construct2 {
   private int centerId;
   private Formatter coordinates = new Formatter();
 
-  Construct2(Message proto, BufrConfig bufrConfig, String location) {
+  ConstructNetcdf(Message proto, BufrConfig bufrConfig, String location) {
     this.rootGroup = Group.builder();
 
     // dkeyRoot = dds.getDescriptorRoot();
@@ -205,10 +201,10 @@ class Construct2 {
     int n = parentFld.dds.replication;
     struct.setDimensionsAnonymous(new int[] {n}); // anon vector
 
-    Variable.Builder<?> v = Variable.builder().setName("name").setDataType(DataType.STRING); // scalar
+    Variable.Builder<?> v = Variable.builder().setName("name").setArrayType(ArrayType.STRING); // scalar
     struct.addMemberVariable(v);
 
-    v = Variable.builder().setName("data").setDataType(DataType.FLOAT); // scalar
+    v = Variable.builder().setName("data").setArrayType(ArrayType.FLOAT); // scalar
     struct.addMemberVariable(v);
 
     parent.addMemberVariable(struct);
@@ -222,10 +218,10 @@ class Construct2 {
     Structure.Builder<?> struct = Structure.builder().setName("statistics");
     struct.setDimensionsAnonymous(new int[] {fld.dds.replication}); // scalar
 
-    Variable.Builder v = Variable.builder().setName("name").setDataType(DataType.STRING); // scalar
+    Variable.Builder v = Variable.builder().setName("name").setArrayType(ArrayType.STRING); // scalar
     struct.addMemberVariable(v);
 
-    v = Variable.builder().setName("data").setDataType(DataType.FLOAT);
+    v = Variable.builder().setName("data").setArrayType(ArrayType.FLOAT);
     struct.addMemberVariable(v);
 
     parent.addMemberVariable(struct);
@@ -261,7 +257,7 @@ class Construct2 {
 
     DataDescriptor dataDesc = fld.dds;
     if (dataDesc.type == 1) {
-      v.setDataType(DataType.CHAR);
+      v.setArrayType(ArrayType.CHAR);
       int size = dataDesc.bitWidth / 8;
       v.setDimensionsAnonymous(new int[] {size});
 
@@ -271,11 +267,11 @@ class Construct2 {
 
       CodeFlagTables ct = CodeFlagTables.getTable(dataDesc.fxy);
       if (nbytes == 1)
-        v.setDataType(DataType.ENUM1);
+        v.setArrayType(ArrayType.ENUM1);
       else if (nbytes == 2)
-        v.setDataType(DataType.ENUM2);
+        v.setArrayType(ArrayType.ENUM2);
       else if (nbytes == 4)
-        v.setDataType(DataType.ENUM4);
+        v.setArrayType(ArrayType.ENUM4);
 
       // v.removeAttribute(CDM.UNITS);
       v.addAttribute(new Attribute("BUFR:CodeTable", ct.getName() + " (" + dataDesc.getFxyName() + ")"));
@@ -288,7 +284,7 @@ class Construct2 {
       // use of unsigned seems fishy, since only time it uses high bit is for missing
       // not necessarily true, just when they "add one bit" to deal with missing case
       if (nbits < 9) {
-        v.setDataType(DataType.BYTE);
+        v.setArrayType(ArrayType.BYTE);
         if (nbits == 8) {
           v.addAttribute(new Attribute(CDM.UNSIGNED, "true"));
           v.addAttribute(new Attribute(CDM.MISSING_VALUE, (short) BufrNumbers.missingValue(nbits)));
@@ -296,7 +292,7 @@ class Construct2 {
           v.addAttribute(new Attribute(CDM.MISSING_VALUE, (byte) BufrNumbers.missingValue(nbits)));
 
       } else if (nbits < 17) {
-        v.setDataType(DataType.SHORT);
+        v.setArrayType(ArrayType.SHORT);
         if (nbits == 16) {
           v.addAttribute(new Attribute(CDM.UNSIGNED, "true"));
           v.addAttribute(new Attribute(CDM.MISSING_VALUE, (int) BufrNumbers.missingValue(nbits)));
@@ -304,7 +300,7 @@ class Construct2 {
           v.addAttribute(new Attribute(CDM.MISSING_VALUE, (short) BufrNumbers.missingValue(nbits)));
 
       } else if (nbits < 33) {
-        v.setDataType(DataType.INT);
+        v.setArrayType(ArrayType.INT);
         if (nbits == 32) {
           v.addAttribute(new Attribute(CDM.UNSIGNED, "true"));
           v.addAttribute(new Attribute(CDM.MISSING_VALUE, (int) BufrNumbers.missingValue(nbits)));
@@ -312,7 +308,7 @@ class Construct2 {
           v.addAttribute(new Attribute(CDM.MISSING_VALUE, (int) BufrNumbers.missingValue(nbits)));
 
       } else {
-        v.setDataType(DataType.LONG);
+        v.setArrayType(ArrayType.LONG);
         v.addAttribute(new Attribute(CDM.MISSING_VALUE, BufrNumbers.missingValue(nbits)));
       }
 

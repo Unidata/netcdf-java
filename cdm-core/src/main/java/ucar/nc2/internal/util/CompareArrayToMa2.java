@@ -356,7 +356,7 @@ public class CompareArrayToMa2 {
     boolean ok = true;
     int obsrow = 0;
     while (org.hasNext() && array.hasNext()) {
-      System.out.printf(" compareSequence %s row %d%n", name, obsrow);
+      // System.out.printf(" compareSequence %s row %d%n", name, obsrow);
       ok &= compareStructureData(f, org.next(), array.next(), false);
       obsrow++;
     }

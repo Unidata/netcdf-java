@@ -103,7 +103,7 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
   /** @deprecated do not use. */
   @Deprecated
   @Override
-  public StructureDataIterator getStructureIterator(Structure s, int bufferSize) {
+  public StructureDataIterator getStructureIterator(Structure s, int bufferSize) throws java.io.IOException {
     throw new UnsupportedOperationException();
   }
 

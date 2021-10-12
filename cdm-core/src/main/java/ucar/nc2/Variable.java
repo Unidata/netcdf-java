@@ -5,6 +5,7 @@
 package ucar.nc2;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import java.util.stream.Collectors;
@@ -1215,7 +1216,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
       throw new IllegalStateException(String.format("DataType must be set for Variable %s", builder.shortName));
     }
 
-    if (builder.shortName == null || builder.shortName.isEmpty()) {
+    if (Strings.isNullOrEmpty(builder.shortName)) {
       throw new IllegalStateException("Name must be set for Variable");
     }
 
