@@ -12,6 +12,7 @@ import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import ucar.nc2.internal.iosp.hdf5.H5header;
 import ucar.nc2.internal.iosp.hdf5.H5iosp;
+import ucar.nc2.internal.iosp.hdf5.H5iospArrays;
 import ucar.ui.widget.BAMutil;
 import ucar.ui.widget.PopupMenu;
 import ucar.ui.widget.TextHistoryPane;
@@ -145,7 +146,7 @@ public class Hdf5DataTable extends JPanel {
     this.location = raf.getLocation();
     List<VarBean> beanList = new ArrayList<>();
 
-    iosp = new H5iosp();
+    iosp = new H5iospArrays();
     NetcdfFile ncfile = NetcdfFiles.build(iosp, raf, raf.getLocation(), null);
     try {
       iosp.open(raf, ncfile, null);

@@ -159,5 +159,11 @@ public class TestReadArrayProblem {
     TestReadArrayCompare.compareNetcdfFile(filename);
   }
 
+  @Test
+  public void testNc4() throws Exception {
+    String filename = TestDir.cdmUnitTestDir + "formats/netcdf4/tst/c0_4.nc4";
+    TestReadArrayCompare.compareNetcdfFile(filename);
+  }
+
 }
 

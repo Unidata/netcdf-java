@@ -46,8 +46,8 @@ public final class StructureDataStorageBB implements Storage<StructureData> {
     this.heap.addAll(heap);
   }
 
-  /** If Structures are stored on the heap. Do not use until better tested. */
-  public StructureDataStorageBB setStructuresOnHeap(boolean structuresOnHeap) {
+  /** If nested Structures are stored on the heap. Do not use until better tested. */
+  public StructureDataStorageBB setNestedStructuresOnHeap(boolean structuresOnHeap) {
     this.structuresOnHeap = structuresOnHeap;
     return this;
   }

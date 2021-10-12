@@ -51,7 +51,7 @@ public class TestStructureDataArray {
     assertThat(sdata.getName()).isEqualTo("name");
   }
 
-  /** Experimental, used in Cdmr */
+  /** Experimental */
   class StructureDataRow extends StructureData {
     private final ByteBuffer bbuffer;
 
@@ -60,7 +60,7 @@ public class TestStructureDataArray {
       this.bbuffer = ByteBuffer.allocate(members.getStorageSizeBytes());
     }
 
-    public Array getMemberData(StructureMembers.Member m) {
+    public Array<?> getMemberData(StructureMembers.Member m) {
       ArrayType dataType = m.getArrayType();
       int offset = m.getOffset();
       int size = m.length();

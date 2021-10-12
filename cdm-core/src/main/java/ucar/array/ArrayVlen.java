@@ -31,6 +31,14 @@ public final class ArrayVlen<T> extends Array<Array<T>> {
     return new ArrayVlen<>(dataType, Arrays.removeVlen(shape), storage);
   }
 
+  /**
+   * Creates a Vlen of type dataType, and the given shape and primitive array like double[][].
+   * The shape of the resulting array has vlen dimension removed, if present.
+   */
+  public static <T> ArrayVlen<T> createFromStorage(ArrayType dataType, int[] shape, StorageMutable storage) {
+    return new ArrayVlen(dataType, IndexFn.builder(Arrays.removeVlen(shape)).build(), storage);
+  }
+
   /** Creates storage for a Vlen of type dataType, and the given length and primitive array like double[][]. */
   public static <T> StorageMutable<Array<T>> createStorage(ArrayType dataType, int length, Object dataArray) {
     if (dataArray == null) {
@@ -116,7 +124,7 @@ public final class ArrayVlen<T> extends Array<Array<T>> {
     this.storage = createStorage(dataType, (int) Arrays.computeSize(shape), null);
   }
 
-  /** Create an empty Vlen of type dataType and data array T[][]. */
+  /** Create a Vlen of type dataType and data array T[][]. */
   private ArrayVlen(ArrayType dataType, int[] shape, Object dataArray) {
     super(dataType, shape);
     this.storage = createStorage(dataType, (int) Arrays.computeSize(shape), dataArray);

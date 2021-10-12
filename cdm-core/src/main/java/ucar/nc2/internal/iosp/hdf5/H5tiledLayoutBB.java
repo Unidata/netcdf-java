@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.internal.iosp.hdf5;
@@ -14,8 +14,9 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 import ucar.array.ArrayType;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Section;
+import ucar.array.ArraysConvert;
+import ucar.array.InvalidRangeException;
+import ucar.array.Section;
 import ucar.nc2.Variable;
 import ucar.nc2.internal.iosp.hdf5.H5objects.Filter;
 import ucar.nc2.iosp.LayoutBB;
@@ -96,7 +97,7 @@ public class H5tiledLayoutBB implements LayoutBB {
     // create the data chunk iterator
     DataBTree.DataChunkIterator iter = vinfo.btree.getDataChunkIteratorFilter(this.want);
     DataChunkIterator dcIter = new DataChunkIterator(iter);
-    delegate = new LayoutBBTiled(dcIter, chunkSize, elemSize, this.want);
+    delegate = new LayoutBBTiled(dcIter, chunkSize, elemSize, ArraysConvert.convertSection(this.want));
 
     if (System.getProperty(INFLATEBUFFERSIZE_PROPERTY) != null) {
       try {

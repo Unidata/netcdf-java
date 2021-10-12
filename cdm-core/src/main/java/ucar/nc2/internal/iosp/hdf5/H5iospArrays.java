@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.internal.iosp.hdf5;
@@ -9,9 +9,16 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-import ucar.array.*;
-import ucar.ma2.DataType;
-import ucar.ma2.Section;
+import ucar.array.Array;
+import ucar.array.ArrayType;
+import ucar.array.ArrayVlen;
+import ucar.array.Arrays;
+import ucar.array.ArraysConvert;
+import ucar.array.Section;
+import ucar.array.StructureData;
+import ucar.array.StructureDataArray;
+import ucar.array.StructureDataStorageBB;
+import ucar.array.StructureMembers;
 import ucar.nc2.Group;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
@@ -19,7 +26,6 @@ import ucar.nc2.internal.iosp.hdf4.HdfEos;
 import ucar.nc2.internal.iosp.hdf5.H5objects.GlobalHeap;
 import ucar.nc2.internal.iosp.hdf5.H5objects.HeapIdentifier;
 import ucar.nc2.iosp.IospArrayHelper;
-import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.iosp.Layout;
 import ucar.nc2.iosp.LayoutBB;
 import ucar.nc2.iosp.LayoutRegular;
@@ -28,7 +34,7 @@ import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
 
-/** HDF5 I/O with ucar.array.Array */
+/** HDF5 I/O with ucar.array.Array. Loaded by reflection in NetcdfFiles */
 public class H5iospArrays extends H5iosp {
 
   @Override
@@ -52,7 +58,7 @@ public class H5iospArrays extends H5iosp {
   }
 
   @Override
-  public ucar.array.Array<?> readArrayData(Variable v2, ucar.array.Section section)
+  public ucar.array.Array<?> readArrayData(Variable v2, Section section)
       throws java.io.IOException, ucar.array.InvalidRangeException {
     H5header.Vinfo vinfo = (H5header.Vinfo) v2.getSPobject();
     Preconditions.checkNotNull(vinfo);
@@ -63,7 +69,7 @@ public class H5iospArrays extends H5iosp {
   }
 
   // all the work is here, so it can be called recursively
-  private ucar.array.Array<?> readArrayData(Variable v2, long dataPos, ucar.array.Section wantSection)
+  private ucar.array.Array<?> readArrayData(Variable v2, long dataPos, Section wantSection)
       throws IOException, ucar.array.InvalidRangeException {
     H5header.Vinfo vinfo = (H5header.Vinfo) v2.getSPobject();
     ArrayType dataType = v2.getArrayType();
@@ -84,25 +90,24 @@ public class H5iospArrays extends H5iosp {
           System.out.println("read variable filtered " + v2.getFullName() + " vinfo = " + vinfo);
         assert vinfo.isChunked;
         ByteOrder bo = vinfo.typeInfo.endian;
-        Section oldSection = ArraysConvert.convertSection(wantSection);
-        layout = new H5tiledLayoutBB(v2, oldSection, raf, vinfo.mfp.getFilters(), bo);
+        layout = new H5tiledLayoutBB(v2, wantSection, raf, vinfo.mfp.getFilters(), bo);
         if (vinfo.typeInfo.isVString) {
           data = readFilteredStringData((LayoutBB) layout);
         } else {
-          data = IospHelper.readDataFill((LayoutBB) layout, v2.getDataType(), vinfo.getFillValue());
+          data = IospArrayHelper.readDataFill((LayoutBB) layout, v2.getArrayType(), vinfo.getFillValue());
         }
 
       } else { // normal case
         if (debug)
           System.out.println("read variable " + v2.getFullName() + " vinfo = " + vinfo);
 
-        DataType readDtype = v2.getDataType();
+        ArrayType readDtype = v2.getArrayType();
         int elemSize = v2.getElementSize();
         Object fillValue = vinfo.getFillValue();
         ByteOrder endian = vinfo.typeInfo.endian;
 
         // fill in the wantSection
-        wantSection = ucar.array.Section.fill(wantSection, v2.getShape());
+        wantSection = Section.fill(wantSection, v2.getShape());
 
         if (vinfo.typeInfo.hdfType == 2) { // time
           readDtype = vinfo.mdt.timeType;
@@ -110,7 +115,7 @@ public class H5iospArrays extends H5iosp {
           fillValue = NetcdfFormatUtils.getFillValueDefault(readDtype);
 
         } else if (vinfo.typeInfo.hdfType == 8) { // enum
-          H5header.TypeInfo baseInfo = vinfo.typeInfo.base;
+          Hdf5Type baseInfo = vinfo.typeInfo.base;
           readDtype = baseInfo.dataType;
           elemSize = readDtype.getSize();
           fillValue = NetcdfFormatUtils.getFillValueDefault(readDtype);
@@ -122,9 +127,9 @@ public class H5iospArrays extends H5iosp {
           // wantSection = wantSection.removeVlen(); // remove vlen dimension
         }
 
-        Section oldSection = ArraysConvert.convertSection(wantSection);
+        ucar.ma2.Section oldSection = ArraysConvert.convertSection(wantSection);
         if (vinfo.isChunked) {
-          layout = new H5tiledLayout((H5header.Vinfo) v2.getSPobject(), readDtype, oldSection);
+          layout = new H5tiledLayout((H5header.Vinfo) v2.getSPobject(), readDtype, wantSection);
         } else {
           layout = new LayoutRegular(dataPos, elemSize, v2.getShape(), oldSection);
         }
@@ -169,18 +174,18 @@ public class H5iospArrays extends H5iosp {
    * @param dataType dataType of the data to read
    * @param shape the shape of the output
    * @param fillValue fill value as a wrapped primitive
-   * @return primitive array or Array with data read in
+   * @return primitive array or ucar.array.Array with data read in
    * @throws IOException if read error
    */
-  private Object readArrayOrPrimitive(H5header.Vinfo vinfo, Variable v, Layout layout, DataType dataType, int[] shape,
+  private Object readArrayOrPrimitive(H5header.Vinfo vinfo, Variable v, Layout layout, ArrayType dataType, int[] shape,
       Object fillValue, ByteOrder endian) throws IOException {
 
-    H5header.TypeInfo typeInfo = vinfo.typeInfo;
+    Hdf5Type typeInfo = vinfo.typeInfo;
 
     // special processing
     if (typeInfo.hdfType == 2) { // time
-      Object data = IospHelper.readDataFill(raf, layout, dataType, fillValue, endian, true);
-      ucar.array.Array<Long> timeArray = Arrays.factory(dataType.getArrayType(), shape, data);
+      Object data = IospArrayHelper.readDataFill(raf, layout, dataType, fillValue, endian, true);
+      ucar.array.Array<Long> timeArray = Arrays.factory(dataType, shape, data);
 
       // now transform into an ISO Date String
       String[] stringData = new String[(int) timeArray.length()];
@@ -192,18 +197,18 @@ public class H5iospArrays extends H5iosp {
     }
 
     if (typeInfo.hdfType == 8) { // enum
-      return IospHelper.readDataFill(raf, layout, dataType, fillValue, endian);
+      return IospArrayHelper.readDataFill(raf, layout, dataType, fillValue, endian);
     }
 
     if (typeInfo.isVlen) { // vlen (not string)
       return readVlen(dataType, shape, typeInfo, layout, endian);
     }
 
-    if (dataType == DataType.STRUCTURE) { // LOOK what about subsetting ?
+    if (dataType == ArrayType.STRUCTURE) { // LOOK what about subsetting ?
       return readStructureData((Structure) v, shape, layout);
     }
 
-    if (dataType == DataType.STRING) {
+    if (dataType == ArrayType.STRING) {
       int size = (int) layout.getTotalNelems();
       String[] sa = new String[size];
       int count = 0;
@@ -218,7 +223,7 @@ public class H5iospArrays extends H5iosp {
       return sa;
     }
 
-    if (dataType == DataType.OPAQUE) { // LOOK this may be wrong, needs testing
+    if (dataType == ArrayType.OPAQUE) { // LOOK this may be wrong, needs testing
       ArrayVlen<?> result = ArrayVlen.factory(ArrayType.OPAQUE, shape);
       Preconditions.checkArgument(Arrays.computeSize(shape) == layout.getTotalNelems());
 
@@ -239,20 +244,20 @@ public class H5iospArrays extends H5iosp {
     }
 
     // normal case
-    return IospHelper.readDataFill(raf, layout, dataType, fillValue, endian, true);
+    return IospArrayHelper.readDataFill(raf, layout, dataType, fillValue, endian, true);
   }
 
   ///////////////////////////////////////////////
   // Vlen
 
-  private ucar.array.Array<?> readVlen(DataType dataType, int[] shape, H5header.TypeInfo typeInfo, Layout layout,
+  private ucar.array.Array<?> readVlen(ArrayType dataType, int[] shape, Hdf5Type typeInfo, Layout layout,
       ByteOrder endian) throws IOException {
-    DataType readType = dataType;
+    ArrayType readType = dataType;
     if (typeInfo.base.hdfType == 7) { // reference
-      readType = DataType.LONG;
+      readType = ArrayType.LONG;
     }
 
-    ArrayVlen<?> vlenArray = ArrayVlen.factory(dataType.getArrayType(), shape);
+    ArrayVlen<?> vlenArray = ArrayVlen.factory(dataType, shape);
     int count = 0;
     while (layout.hasNext()) {
       Layout.Chunk chunk = layout.next();
@@ -290,7 +295,7 @@ public class H5iospArrays extends H5iosp {
    * @param endian byteOrder of the data (0 = BE, 1 = LE)
    * @return the primitice array read from the heap
    */
-  private Object readHeapPrimitiveArray(long globalHeapIdAddress, DataType dataType, ByteOrder endian)
+  private Object readHeapPrimitiveArray(long globalHeapIdAddress, ArrayType dataType, ByteOrder endian)
       throws IOException {
     HeapIdentifier heapId = header.h5objects.readHeapIdentifier(globalHeapIdAddress);
     if (debugHeap) {
@@ -309,37 +314,37 @@ public class H5iospArrays extends H5iosp {
       raf.order(endian);
     }
 
-    if (DataType.FLOAT == dataType) {
+    if (ArrayType.FLOAT == dataType) {
       float[] pa = new float[heapId.nelems];
       raf.seek(ho.dataPos);
       raf.readFloat(pa, 0, pa.length);
       return pa;
 
-    } else if (DataType.DOUBLE == dataType) {
+    } else if (ArrayType.DOUBLE == dataType) {
       double[] pa = new double[heapId.nelems];
       raf.seek(ho.dataPos);
       raf.readDouble(pa, 0, pa.length);
       return pa;
 
-    } else if (dataType.getPrimitiveClassType() == byte.class) {
+    } else if (dataType.getPrimitiveClass() == Byte.class) {
       byte[] pa = new byte[heapId.nelems];
       raf.seek(ho.dataPos);
       raf.readFully(pa, 0, pa.length);
       return pa;
 
-    } else if (dataType.getPrimitiveClassType() == short.class) {
+    } else if (dataType.getPrimitiveClass() == Short.class) {
       short[] pa = new short[heapId.nelems];
       raf.seek(ho.dataPos);
       raf.readShort(pa, 0, pa.length);
       return pa;
 
-    } else if (dataType.getPrimitiveClassType() == int.class) {
+    } else if (dataType.getPrimitiveClass() == Integer.class) {
       int[] pa = new int[heapId.nelems];
       raf.seek(ho.dataPos);
       raf.readInt(pa, 0, pa.length);
       return pa;
 
-    } else if (dataType.getPrimitiveClassType() == long.class) {
+    } else if (dataType.getPrimitiveClass() == Long.class) {
       long[] pa = new long[heapId.nelems];
       raf.seek(ho.dataPos);
       raf.readLong(pa, 0, pa.length);
@@ -373,8 +378,8 @@ public class H5iospArrays extends H5iosp {
   }
 
   // already read the data into the byte buffer.
-  private ucar.array.Array<ucar.array.StructureData> makeStructureDataArray(Structure s, Layout layout, int[] shape,
-      byte[] byteArray) throws IOException {
+  private Array<StructureData> makeStructureDataArray(Structure s, Layout layout, int[] shape, byte[] byteArray)
+      throws IOException {
 
     // create the StructureMembers
     ucar.array.StructureMembers.Builder mb = s.makeStructureMembersBuilder();
@@ -439,9 +444,10 @@ public class H5iospArrays extends H5iosp {
     return hasHeap;
   }
 
-  // Reads the Strings and Vlens from the heap
+  // Reads the Strings and Vlens from the hdf5 heap
   private void readHeapData(ByteBuffer bb, StructureDataStorageBB storage, int pos, StructureMembers sm)
       throws IOException {
+
     for (StructureMembers.Member m : sm.getMembers()) {
       if (m.getArrayType() == ArrayType.STRING) {
         int size = m.length();
@@ -466,19 +472,18 @@ public class H5iospArrays extends H5iosp {
 
         int readPos = startPos;
         for (int i = 0; i < size; i++) {
-          // LOOK coud we use readHeapPrimitiveArray(long globalHeapIdAddress, DataType dataType, int endian) ??
+          // LOOK could we use readHeapPrimitiveArray(long globalHeapIdAddress, ArrayType dataType, int endian) ??
           // header.readHeapVlen reads the vlen at destPos from H5 heap, into a ucar.ma2.Array primitive array. Structs
           // not supported.
-          ucar.ma2.Array vlen = header.readHeapVlen(bb, readPos, m.getArrayType().getDataType(), endian);
-          vlenArray.set(i, vlen.get1DJavaArray(m.getArrayType().getDataType()));
+          Array<?> vlen = header.readHeapVlen(bb, readPos, m.getArrayType(), endian);
+          vlenArray.set(i, vlen);
           readPos += VLEN_T_SIZE;
         }
         // put resulting ArrayVlen into the storage heap.
         int index = storage.putOnHeap(vlenArray);
-        bb.order(ByteOrder.nativeOrder()); // LOOK correct? depends on ArrayStuctureStogareBB
+        bb.order(ByteOrder.nativeOrder()); // LOOK correct? depends on ArrayStuctureStorageBB
         bb.putInt(startPos, index); // overwrite with the index into the Heap
       }
     }
   }
-
 }

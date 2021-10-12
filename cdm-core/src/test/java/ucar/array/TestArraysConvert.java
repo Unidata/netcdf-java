@@ -145,7 +145,7 @@ public class TestArraysConvert {
           for (int i = 0; i < m.length(); i++) {
             bbuffer.put((byte) i);
           }
-        } else if (m.getName().equals("mbyte")) {
+        } else if (m.getName().equals("mfloat")) {
           bbuffer.putFloat(99.5f);
         }
       }

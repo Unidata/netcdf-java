@@ -27,16 +27,17 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import ucar.array.ArrayType;
-import ucar.ma2.Array;
-import ucar.ma2.ArrayChar;
-import ucar.ma2.ArrayObject;
-import ucar.ma2.ArrayStructure;
-import ucar.ma2.ArrayStructureBB;
+import ucar.array.Array;
+import ucar.array.ArrayVlen;
+import ucar.array.Arrays;
+import ucar.array.ArraysConvert;
+import ucar.array.StorageMutable;
+import ucar.array.StructureDataArray;
+import ucar.array.StructureDataStorageBB;
+import ucar.array.StructureMembers;
+import ucar.array.InvalidRangeException;
+import ucar.array.Section;
 import ucar.ma2.DataType;
-import ucar.ma2.IndexIterator;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Section;
-import ucar.ma2.StructureMembers;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainerMutable;
 import ucar.nc2.Dimension;
@@ -64,8 +65,8 @@ import ucar.nc2.internal.iosp.hdf5.H5objects.MessageFillValueOld;
 import ucar.nc2.internal.iosp.hdf5.H5objects.MessageFilter;
 import ucar.nc2.internal.iosp.hdf5.H5objects.MessageType;
 import ucar.nc2.internal.iosp.hdf5.H5objects.StructureMember;
+import ucar.nc2.iosp.IospArrayHelper;
 import ucar.nc2.iosp.NetcdfFileFormat;
-import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.iosp.Layout;
 import ucar.nc2.iosp.LayoutRegular;
 import ucar.nc2.iosp.NetcdfFormatUtils;
@@ -145,7 +146,7 @@ public class H5header implements HdfHeaderIF {
 
   private final RandomAccessFile raf;
   private final Group.Builder root;
-  private final H5iosp h5iosp;
+  private final H5iospArrays h5iosp;
 
   private long baseAddress;
   byte sizeOffsets, sizeLengths;
@@ -167,7 +168,7 @@ public class H5header implements HdfHeaderIF {
 
   private final Charset valueCharset;
 
-  H5header(RandomAccessFile myRaf, Group.Builder root, H5iosp h5iosp) {
+  H5header(RandomAccessFile myRaf, Group.Builder root, H5iospArrays h5iosp) {
     this.raf = myRaf;
     this.root = root;
     this.h5iosp = h5iosp;
@@ -905,12 +906,12 @@ public class H5header implements HdfHeaderIF {
 
     if (mdt.type == 6) { // structure
       Vinfo vinfo = new Vinfo(matt.mdt, matt.mds, matt.dataPos);
-      ArrayStructure attData = (ArrayStructure) readAttributeData(matt, vinfo, DataType.STRUCTURE);
+      StructureDataArray attData = readAttributeStructureData(matt, vinfo);
 
       if (null == sb) {
         // flatten and add to list
         for (StructureMembers.Member sm : attData.getStructureMembers().getMembers()) {
-          Array memberData = attData.extractMemberArray(sm);
+          Array<?> memberData = attData.extractMemberArray(sm);
           attContainer.addAttribute(Attribute.fromArray(matt.name + "." + sm.getName(), memberData));
         }
 
@@ -923,7 +924,7 @@ public class H5header implements HdfHeaderIF {
             continue; // LOOK
           String fldName = memberName.substring(0, pos);
           String attName = memberName.substring(pos + 1);
-          Array memberData = attData.extractMemberArray(sm);
+          Array<?> memberData = attData.extractMemberArray(sm);
           sb.findMemberVariable(fldName)
               .ifPresent(vb -> vb.getAttributeContainer().addAttribute(Attribute.fromArray(attName, memberData)));
         }
@@ -935,7 +936,7 @@ public class H5header implements HdfHeaderIF {
           StructureMembers.Member sm = attMembers.findMember(v.shortName);
           if (null != sm) {
             // if so, add the att to the member variable, using the name of the compound attribute
-            Array memberData = attData.extractMemberArray(sm);
+            Array<?> memberData = attData.extractMemberArray(sm);
             v.addAttribute(Attribute.fromArray(matt.name, memberData)); // LOOK check for missing values
           }
         }
@@ -944,7 +945,7 @@ public class H5header implements HdfHeaderIF {
         for (StructureMembers.Member sm : attData.getStructureMembers().getMembers()) {
           Variable.Builder<?> vb = sb.findMemberVariable(sm.getName()).orElse(null);
           if (vb == null) {
-            Array memberData = attData.extractMemberArray(sm);
+            Array<?> memberData = attData.extractMemberArray(sm);
             attContainer.addAttribute(Attribute.fromArray(matt.name + "." + sm.getName(), memberData));
           }
         }
@@ -964,19 +965,19 @@ public class H5header implements HdfHeaderIF {
 
   private Attribute makeAttribute(MessageAttribute matt) throws IOException {
     Vinfo vinfo = new Vinfo(matt.mdt, matt.mds, matt.dataPos);
-    DataType dtype = vinfo.getNCDataType();
+    ArrayType dtype = vinfo.getNCArrayType();
 
     // check for empty attribute case
     if (matt.mds.type == 2) {
-      if (dtype == DataType.CHAR) {
+      if (dtype == ArrayType.CHAR) {
         // empty char considered to be a null string attr
-        return Attribute.builder(matt.name).setDataType(DataType.STRING).build();
+        return Attribute.builder(matt.name).setArrayType(ArrayType.STRING).build();
       } else {
-        return Attribute.builder(matt.name).setDataType(dtype).build();
+        return Attribute.builder(matt.name).setArrayType(dtype).build();
       }
     }
 
-    Array attData;
+    Array<?> attData;
     try {
       attData = readAttributeData(matt, vinfo, dtype);
     } catch (InvalidRangeException e) {
@@ -987,12 +988,13 @@ public class H5header implements HdfHeaderIF {
     Attribute result;
     if (attData.isVlen()) {
       List<Object> dataList = new ArrayList<>();
-      while (attData.hasNext()) {
-        Array nested = (Array) attData.next();
-        while (nested.hasNext()) {
-          dataList.add(nested.next());
+      for (Object val : attData) {
+        Array<?> nestedArray = (Array<?>) val;
+        for (Object nested : nestedArray) {
+          dataList.add(nested);
         }
       }
+      // LOOK probably wrong? flattening them out ??
       result = Attribute.builder(matt.name).setValues(dataList, matt.mdt.unsigned).build();
     } else {
       result = Attribute.fromArray(matt.name, attData);
@@ -1002,133 +1004,93 @@ public class H5header implements HdfHeaderIF {
     return result;
   }
 
-  // read attribute values without creating a Variable
-  private Array readAttributeData(MessageAttribute matt, H5header.Vinfo vinfo, DataType dataType)
+  // read non-Structure attribute values without creating a Variable
+  private Array<?> readAttributeData(MessageAttribute matt, H5header.Vinfo vinfo, ArrayType dataType)
       throws IOException, InvalidRangeException {
     int[] shape = matt.mds.dimLength;
 
-    // Structures
-    if (dataType == DataType.STRUCTURE) {
-      boolean hasStrings = false;
-
-      StructureMembers.Builder builder = StructureMembers.builder().setName(matt.name);
-      for (StructureMember h5sm : matt.mdt.members) {
-
-        // from tkunicki@usgs.gov 2/19/2010 - fix for compound attributes
-        // DataType dt = getNCtype(h5sm.mdt.type, h5sm.mdt.byteSize);
-        // StructureMembers.Member m = sm.addMember(h5sm.name, null, null, dt, new int[] {1});
-
-        DataType dt;
-        int[] dim;
-        switch (h5sm.mdt.type) {
-          case 9: // STRING
-            dt = DataType.STRING;
-            dim = new int[] {1};
-            break;
-          case 10: // ARRAY
-            dt = getNCtype(h5sm.mdt.base.type, h5sm.mdt.base.byteSize, h5sm.mdt.unsigned);
-            dim = h5sm.mdt.dim;
-            break;
-          default: // PRIMITIVE
-            dt = getNCtype(h5sm.mdt.type, h5sm.mdt.byteSize, h5sm.mdt.unsigned);
-            dim = new int[] {1};
-            break;
-        }
-        StructureMembers.MemberBuilder mb = builder.addMember(h5sm.name, null, null, dt, dim);
-
-        if (h5sm.mdt.endian != null) // apparently each member may have separate byte order (!!!??)
-          mb.setDataObject(h5sm.mdt.endian);
-        mb.setDataParam(h5sm.offset); // offset since start of Structure
-        if (dt == DataType.STRING)
-          hasStrings = true;
-      }
-
-      int recsize = matt.mdt.byteSize;
-      Layout layout = new LayoutRegular(matt.dataPos, recsize, shape, new Section(shape));
-      builder.setStructureSize(recsize);
-      StructureMembers sm = builder.build();
-
-      // place data into an ArrayStructureBB for efficiency
-      ArrayStructureBB asbb = new ArrayStructureBB(sm, shape);
-      byte[] byteArray = asbb.getByteBuffer().array();
-      while (layout.hasNext()) {
-        Layout.Chunk chunk = layout.next();
-        if (chunk == null)
-          continue;
-        if (debugStructure) {
-          log.debug(" readStructure " + matt.name + " chunk= " + chunk + " index.getElemSize= " + layout.getElemSize());
-        }
-
-        // copy bytes directly into the underlying byte[]
-        raf.seek(chunk.getSrcPos());
-        raf.readFully(byteArray, (int) chunk.getDestElem() * recsize, chunk.getNelems() * recsize);
-      }
-
-      // strings are stored on the heap, and must be read separately
-      if (hasStrings) {
-        int destPos = 0;
-        for (int i = 0; i < layout.getTotalNelems(); i++) { // loop over each structure
-          h5iosp.convertHeap(asbb, destPos, sm);
-          destPos += layout.getElemSize();
-        }
-      }
-      return asbb;
-    } // Structure case
+    Layout layout2;
+    try {
+      layout2 = new LayoutRegular(matt.dataPos, matt.mdt.byteSize, shape, new ucar.ma2.Section(shape));
+    } catch (ucar.ma2.InvalidRangeException e) {
+      throw new InvalidRangeException(e);
+    }
 
     // Strings
     if ((vinfo.typeInfo.hdfType == 9) && (vinfo.typeInfo.isVString)) {
-      Layout layout = new LayoutRegular(matt.dataPos, matt.mdt.byteSize, shape, new Section(shape));
-      ArrayObject.D1 data = (ArrayObject.D1) Array.factory(DataType.STRING, new int[] {(int) layout.getTotalNelems()});
+      int size = (int) layout2.getTotalNelems();
+      String[] sarray = new String[size];
       int count = 0;
-      while (layout.hasNext()) {
-        Layout.Chunk chunk = layout.next();
-        if (chunk == null)
+      while (layout2.hasNext()) {
+        Layout.Chunk chunk = layout2.next();
+        if (chunk == null) {
           continue;
+        }
         for (int i = 0; i < chunk.getNelems(); i++) {
-          long address = chunk.getSrcPos() + layout.getElemSize() * i;
+          long address = chunk.getSrcPos() + layout2.getElemSize() * i;
           String sval = readHeapString(address);
-          data.set(count++, sval);
+          sarray[count++] = sval;
         }
       }
-      return data;
-    } // vlen case
+      return Arrays.factory(ArrayType.STRING, new int[] {size}, sarray);
+    } // vlen Strings case
 
-    // Vlen (non-String)
-    if (vinfo.typeInfo.hdfType == 9) { // vlen
+    // Vlen (non-String) LOOK Attribute vlen?
+    if (vinfo.typeInfo.hdfType == 9) {
       ByteOrder endian = vinfo.typeInfo.endian;
-      DataType readType = dataType;
+      ArrayType readType = dataType;
       if (vinfo.typeInfo.base.hdfType == 7) { // reference
-        readType = DataType.LONG;
+        readType = ArrayType.LONG;
         endian = ByteOrder.LITTLE_ENDIAN; // apparently always LE
       }
 
-      Layout layout = new LayoutRegular(matt.dataPos, matt.mdt.byteSize, shape, new Section(shape));
+      // variable length array of references, get translated into strings
+      if (vinfo.typeInfo.base.hdfType == 7) {
+        List<String> refsList = new ArrayList<>();
+        while (layout2.hasNext()) {
+          Layout.Chunk chunk = layout2.next();
+          if (chunk == null) {
+            continue;
+          }
+          for (int i = 0; i < chunk.getNelems(); i++) {
+            long address = chunk.getSrcPos() + layout2.getElemSize() * i;
+            Array<?> vlenArray = getHeapDataArray(address, readType, endian);
+            ucar.array.Array<String> refsArray = h5iosp.convertReferenceArray((Array<Long>) vlenArray);
+            for (String s : refsArray) {
+              refsList.add(s);
+            }
+          }
+        }
+        return Arrays.factory(ArrayType.STRING, new int[] {refsList.size()}, refsList.toArray(new String[0]));
+      }
 
       // general case is to read an array of vlen objects
       // each vlen generates an Array - so return ArrayObject of Array
-      boolean scalar = layout.getTotalNelems() == 1; // if scalar, return just the len Array
-      Array[] data = new Array[(int) layout.getTotalNelems()];
+      int size = (int) layout2.getTotalNelems();
+      StorageMutable<Array<String>> vlenStorage = ArrayVlen.createStorage(readType, size, null);
       int count = 0;
-      while (layout.hasNext()) {
-        Layout.Chunk chunk = layout.next();
-        if (chunk == null)
+      while (layout2.hasNext()) {
+        Layout.Chunk chunk = layout2.next();
+        if (chunk == null) {
           continue;
+        }
         for (int i = 0; i < chunk.getNelems(); i++) {
-          long address = chunk.getSrcPos() + layout.getElemSize() * i;
-          Array vlenArray = getHeapDataArray(address, readType, endian);
-          if (vinfo.typeInfo.base.hdfType == 7)
-            data[count++] = h5iosp.convertReference(vlenArray);
-          else
-            data[count++] = vlenArray;
+          long address = chunk.getSrcPos() + layout2.getElemSize() * i;
+          Array<?> vlenArray = getHeapDataArray(address, readType, endian);
+          if (vinfo.typeInfo.base.hdfType == 7) {
+            vlenStorage.set(count, h5iosp.convertReferenceArray((Array<Long>) vlenArray));
+          } else {
+            vlenStorage.set(count, vlenArray);
+          }
+          count++;
         }
       }
-      // return (scalar) ? data[0] : Array.makeObjectArray(readType, data[0].getClass(), shape, data);
-      return (scalar) ? data[0] : Array.makeVlenArray(shape, data);
+      return ArrayVlen.createFromStorage(readType, shape, vlenStorage);
 
     } // vlen case
 
     // NON-STRUCTURE CASE
-    DataType readDtype = dataType;
+    ArrayType readDtype = dataType;
     int elemSize = dataType.getSize();
     ByteOrder endian = vinfo.typeInfo.endian;
 
@@ -1148,46 +1110,130 @@ public class H5header implements HdfHeaderIF {
       elemSize = vinfo.mdt.byteSize;
 
     } else if (vinfo.typeInfo.hdfType == 8) { // enum
-      H5header.TypeInfo baseInfo = vinfo.typeInfo.base;
+      Hdf5Type baseInfo = vinfo.typeInfo.base;
       readDtype = baseInfo.dataType;
       elemSize = readDtype.getSize();
       endian = baseInfo.endian;
     }
 
-    Layout layout = new LayoutRegular(matt.dataPos, elemSize, shape, new Section(shape));
-    Object data = h5iosp.readDataPrimitive(layout, dataType, shape, null, endian, false);
-    Array dataArray;
+    Layout layout;
+    try {
+      layout = new LayoutRegular(matt.dataPos, elemSize, shape, new ucar.ma2.Section(shape));
+    } catch (ucar.ma2.InvalidRangeException e) {
+      throw new InvalidRangeException(e);
+    }
 
-    if ((dataType == DataType.CHAR)) {
+    // readArrayOrPrimitive(H5header.Vinfo vinfo, Variable v, Layout layout, ArrayType dataType, int[] shape,
+    // Object fillValue, ByteOrder endian)
+    Object pdata = h5iosp.readDataPrimitive(layout, dataType.getDataType(), shape, null, endian, false);
+    Array<?> dataArray;
+
+    if (dataType == ArrayType.OPAQUE) {
+      dataArray = ArraysConvert.convertToArray((ucar.ma2.Array) pdata);
+
+    } else if ((dataType == ArrayType.CHAR)) {
       if (vinfo.mdt.byteSize > 1) { // chop back into pieces
-        byte[] bdata = (byte[]) data;
+        byte[] bdata = (byte[]) pdata;
         int strlen = vinfo.mdt.byteSize;
         int n = bdata.length / strlen;
-        ArrayObject.D1 sarray = (ArrayObject.D1) Array.factory(DataType.STRING, new int[] {n});
+        String[] sarray = new String[n];
         for (int i = 0; i < n; i++) {
           String sval = convertString(bdata, i * strlen, strlen);
-          sarray.set(i, sval);
+          sarray[i] = sval;
         }
-        dataArray = sarray;
+        dataArray = Arrays.factory(ArrayType.STRING, new int[] {n}, sarray);
 
       } else {
-        String sval = convertString((byte[]) data);
-        ArrayObject.D1 sarray = (ArrayObject.D1) Array.factory(DataType.STRING, new int[] {1});
-        sarray.set(0, sval);
-        dataArray = sarray;
+        String sval = convertString((byte[]) pdata);
+        dataArray = Arrays.factory(ArrayType.STRING, new int[] {1}, new String[] {sval});
       }
 
     } else {
-      dataArray = (data instanceof Array) ? (Array) data : Array.factory(readDtype, shape, data);
+      dataArray = (pdata instanceof Array) ? (Array) pdata : Arrays.factory(readDtype, shape, pdata);
     }
 
     // convert attributes to enum strings
     if ((vinfo.typeInfo.hdfType == 8) && (matt.mdt.map != null)) {
-      dataArray = convertEnums(matt.mdt.map, dataType, dataArray);
+      dataArray = convertEnums(matt.mdt.map, dataType, (Array<Number>) dataArray);
     }
 
     return dataArray;
   }
+
+  // read attribute values without creating a Variable
+  private StructureDataArray readAttributeStructureData(MessageAttribute matt, H5header.Vinfo vinfo)
+      throws IOException, InvalidRangeException {
+
+    int[] shape = matt.mds.dimLength;
+    boolean hasStrings = false;
+
+    StructureMembers.Builder builder = StructureMembers.builder().setName(matt.name);
+    for (StructureMember h5sm : matt.mdt.members) {
+      ArrayType dt;
+      int[] dim;
+      switch (h5sm.mdt.type) {
+        case 9: // STRING
+          dt = ArrayType.STRING;
+          dim = new int[] {1};
+          break;
+        case 10: // ARRAY
+          dt = new Hdf5Type(h5sm.mdt).dataType;
+          dim = h5sm.mdt.dim;
+          break;
+        default: // PRIMITIVE
+          dt = new Hdf5Type(h5sm.mdt).dataType;
+          dim = new int[] {1};
+          break;
+      }
+      StructureMembers.MemberBuilder mb = builder.addMember(h5sm.name, null, null, dt, dim);
+
+      if (h5sm.mdt.endian != null) { // apparently each member may have separate byte order (!!!??)
+        mb.setByteOrder(h5sm.mdt.endian);
+      }
+      mb.setOffset(h5sm.offset); // offset since start of Structure
+      if (dt == ArrayType.STRING)
+        hasStrings = true;
+    }
+
+    int recsize = matt.mdt.byteSize;
+    Layout layout = null;
+    try {
+      layout = new LayoutRegular(matt.dataPos, recsize, shape, new ucar.ma2.Section(shape));
+    } catch (ucar.ma2.InvalidRangeException e) {
+      throw new ucar.array.InvalidRangeException(e);
+    }
+    builder.setStructureSize(recsize);
+    StructureMembers members = builder.build();
+
+    // copy data into an byte[] for efficiency
+    int nrows = (int) Arrays.computeSize(shape);
+    byte[] result = new byte[(int) (nrows * members.getStorageSizeBytes())];
+    while (layout.hasNext()) {
+      Layout.Chunk chunk = layout.next();
+      if (chunk == null)
+        continue;
+      if (debugStructure) {
+        log.debug(" readStructure " + matt.name + " chunk= " + chunk + " index.getElemSize= " + layout.getElemSize());
+      }
+
+      // copy bytes directly into the underlying byte[]
+      raf.seek(chunk.getSrcPos());
+      raf.readFully(result, (int) chunk.getDestElem() * recsize, chunk.getNelems() * recsize);
+    }
+
+    ByteBuffer bb = ByteBuffer.wrap(result);
+    StructureDataStorageBB storage = new ucar.array.StructureDataStorageBB(members, bb, nrows);
+
+    // strings are stored on the heap, and must be read separately
+    if (hasStrings) {
+      int destPos = 0;
+      for (int i = 0; i < layout.getTotalNelems(); i++) { // loop over each structure
+        h5iosp.convertHeapArray(storage, bb, destPos, members);
+        destPos += layout.getElemSize();
+      }
+    }
+    return new ucar.array.StructureDataArray(members, shape, storage);
+  } // readAttributeStructureData
 
   private String convertString(byte[] b) {
     // null terminates
@@ -1212,31 +1258,26 @@ public class H5header implements HdfHeaderIF {
     // unicode
   }
 
-  protected Array convertEnums(Map<Integer, String> map, DataType dataType, Array values) {
-    Array result = Array.factory(DataType.STRING, values.getShape());
-    IndexIterator ii = result.getIndexIterator();
-    values.resetLocalIterator();
-    while (values.hasNext()) {
-      int ival;
-      if (dataType == DataType.ENUM1)
-        ival = DataType.unsignedByteToShort(values.nextByte());
-      else if (dataType == DataType.ENUM2)
-        ival = DataType.unsignedShortToInt(values.nextShort());
-      else
-        ival = values.nextInt();
+  protected Array<String> convertEnums(Map<Integer, String> map, ArrayType dataType, Array<Number> values) {
+    int size = (int) Arrays.computeSize(values.getShape());
+    String[] sarray = new String[size];
+    int count = 0;
+    for (Number val : values) {
+      int ival = val.intValue();
       String sval = map.get(ival);
-      if (sval == null)
+      if (sval == null) {
         sval = "Unknown enum value=" + ival;
-      ii.setObjectNext(sval);
+      }
+      sarray[count++] = sval;
     }
-    return result;
+    return Arrays.factory(ArrayType.STRING, values.getShape(), sarray);
   }
 
   private Variable.Builder<?> makeVariable(Group.Builder parentGroup, DataObjectFacade facade) throws IOException {
 
     Vinfo vinfo = new Vinfo(facade);
-    if (vinfo.getNCDataType() == null) {
-      log.debug("SKIPPING DataType= " + vinfo.typeInfo.hdfType + " for variable " + facade.name);
+    if (vinfo.getNCArrayType() == null) {
+      log.debug("SKIPPING ArrayType= " + vinfo.typeInfo.hdfType + " for variable " + facade.name);
       return null;
     }
 
@@ -1348,7 +1389,7 @@ public class H5header implements HdfHeaderIF {
 
     if (transformReference && (facade.dobj.mdt.type == 7) && (facade.dobj.mdt.referenceType == 0)) { // object reference
       // System.out.printf("new transform object Reference: facade= %s variable name=%s%n", facade.name, vb.shortName);
-      vb.setDataType(DataType.STRING);
+      vb.setArrayType(ArrayType.STRING);
       Array rawData = vinfo.readArray();
       Array refData = findReferenceObjectNames(rawData);
       vb.setSourceData(refData); // so H5iosp.read() is never called
@@ -1369,8 +1410,8 @@ public class H5header implements HdfHeaderIF {
        */
 
       // fake data for now
-      vb.setDataType(DataType.LONG);
-      Array newData = Array.factory(DataType.LONG, shape);
+      vb.setArrayType(ArrayType.LONG);
+      Array<?> newData = Arrays.factory(ArrayType.LONG, shape);
       vb.setSourceData(newData); // so H5iosp.read() is never called
       vb.addAttribute(new Attribute("_HDF5ReferenceType", "values are regions of referenced Variables"));
     }
@@ -1392,26 +1433,25 @@ public class H5header implements HdfHeaderIF {
     return vb;
   }
 
-  // convert an array of lons which are data object references to an array of strings,
+  // convert an array of longs which are data object references to an array of strings,
   // the names of the data objects (dobj.who)
-  private Array findReferenceObjectNames(Array data) throws IOException {
-    IndexIterator ii = data.getIndexIterator();
-
-    Array newData = Array.factory(DataType.STRING, data.getShape());
-    IndexIterator ii2 = newData.getIndexIterator();
-    while (ii.hasNext()) {
-      long objId = ii.getLongNext();
-      DataObject dobj = getDataObject(objId, null);
+  private Array<?> findReferenceObjectNames(Array<Long> data) throws IOException {
+    int size = (int) Arrays.computeSize(data.getShape());
+    String[] sarray = new String[size];
+    int count = 0;
+    for (long val : data) {
+      DataObject dobj = getDataObject(val, null);
       if (dobj == null) {
-        log.warn("readReferenceObjectNames cant find obj= {}", objId);
+        log.warn("readReferenceObjectNames cant find obj= {}", val);
       } else {
         if (debugReference) {
           log.debug(" Referenced object= {}", dobj.who);
         }
-        ii2.setObjectNext(dobj.who);
+        sarray[count] = dobj.who;
       }
+      count++;
     }
-    return newData;
+    return Arrays.factory(ArrayType.STRING, data.getShape(), sarray);
   }
 
   private void addMembersToStructure(Group.Builder parent, Structure.Builder<?> s, MessageDatatype mdt)
@@ -1432,8 +1472,8 @@ public class H5header implements HdfHeaderIF {
       MessageDatatype mdt) throws IOException {
 
     Vinfo vinfo = new Vinfo(mdt, null, dataPos); // LOOK need mds
-    if (vinfo.getNCDataType() == null) {
-      log.debug("SKIPPING DataType= " + vinfo.typeInfo.hdfType + " for variable " + name);
+    if (vinfo.getNCArrayType() == null) {
+      log.debug("SKIPPING ArrayType= " + vinfo.typeInfo.hdfType + " for variable " + name);
       return null;
     }
 
@@ -1504,7 +1544,7 @@ public class H5header implements HdfHeaderIF {
 
     // dimension names were not passed in
     if (dimNames == null) {
-      if (mdt.type == 3) { // fixed length string - DataType.CHAR, add string length
+      if (mdt.type == 3) { // fixed length string - ArrayType.CHAR, add string length
         if (mdt.byteSize != 1) { // scalar string member variable
           int[] rshape = new int[shape.length + 1];
           System.arraycopy(shape, 0, rshape, 0, shape.length);
@@ -1543,10 +1583,10 @@ public class H5header implements HdfHeaderIF {
     }
 
     // set the type
-    DataType dt = vinfo.getNCDataType();
+    ArrayType dt = vinfo.getNCArrayType();
     if (dt == null)
       return false;
-    v.setDataType(dt);
+    v.setArrayType(dt);
 
     // set the enumTypedef
     if (dt.isEnum()) {
@@ -1589,7 +1629,7 @@ public class H5header implements HdfHeaderIF {
     long dataPos; // for regular variables, needs to be absolute, with baseAddress added if needed
     // for member variables, is the offset from start of structure
 
-    TypeInfo typeInfo;
+    Hdf5Type typeInfo;
     int[] storageSize; // for type 1 (continuous) : mds.dimLength;
     // for type 2 (chunked) : msl.chunkSize (last number is element size)
     // null for attributes
@@ -1690,7 +1730,7 @@ public class H5header implements HdfHeaderIF {
       }
 
       // figure out the data type
-      this.typeInfo = calcNCtype(facade.dobj.mdt);
+      this.typeInfo = new Hdf5Type(facade.dobj.mdt);
     }
 
     /**
@@ -1713,96 +1753,14 @@ public class H5header implements HdfHeaderIF {
       isvlen = this.mdt.isVlen();
 
       // figure out the data type
-      this.typeInfo = calcNCtype(mdt);
+      this.typeInfo = new Hdf5Type(mdt);
     }
 
     void setOwner(Variable.Builder<?> owner) {
       this.owner = owner;
-      if (btree != null)
+      if (btree != null) {
         btree.setOwner(owner);
-    }
-
-    private TypeInfo calcNCtype(MessageDatatype mdt) {
-      int hdfType = mdt.type;
-      int byteSize = mdt.byteSize;
-      byte[] flags = mdt.flags;
-
-      TypeInfo tinfo = new TypeInfo(hdfType, byteSize);
-
-      if (hdfType == 0) { // int, long, short, byte
-        tinfo.dataType = getNCtype(hdfType, byteSize, mdt.unsigned);
-        tinfo.endian = mdt.endian;
-        tinfo.unsigned = ((flags[0] & 8) == 0);
-
-      } else if (hdfType == 1) { // floats, doubles
-        tinfo.dataType = getNCtype(hdfType, byteSize, mdt.unsigned);
-        tinfo.endian = mdt.endian;
-
-      } else if (hdfType == 2) { // time
-        tinfo.dataType = DataType.STRING;
-        tinfo.endian = mdt.endian;
-
-      } else if (hdfType == 3) { // fixed length strings map to CHAR. String is used for Vlen type = 1.
-        tinfo.dataType = DataType.CHAR;
-        tinfo.vpad = (flags[0] & 0xf);
-        // when elem length = 1, there is a problem with dimensionality.
-        // eg char cr(2); has a storage_size of [1,1].
-
-      } else if (hdfType == 4) { // bit field
-        tinfo.dataType = getNCtype(hdfType, byteSize, mdt.unsigned);
-
-      } else if (hdfType == 5) { // opaque
-        tinfo.dataType = DataType.OPAQUE;
-
-      } else if (hdfType == 6) { // structure
-        tinfo.dataType = DataType.STRUCTURE;
-
-      } else if (hdfType == 7) { // reference
-        tinfo.endian = ByteOrder.LITTLE_ENDIAN;
-        tinfo.dataType = DataType.LONG; // file offset of the referenced object
-        // LOOK - should get the object, and change type to whatever it is (?)
-
-      } else if (hdfType == 8) { // enums
-        if (tinfo.byteSize == 1)
-          tinfo.dataType = DataType.ENUM1;
-        else if (tinfo.byteSize == 2)
-          tinfo.dataType = DataType.ENUM2;
-        else if (tinfo.byteSize == 4)
-          tinfo.dataType = DataType.ENUM4;
-        else {
-          log.warn("Illegal byte size for enum type = {}", tinfo.byteSize);
-          throw new IllegalStateException("Illegal byte size for enum type = " + tinfo.byteSize);
-        }
-        tinfo.endian = mdt.base.endian;
-
-      } else if (hdfType == 9) { // variable length array
-        tinfo.isVString = mdt.isVString;
-        tinfo.isVlen = mdt.isVlen;
-        if (mdt.isVString) {
-          tinfo.vpad = ((flags[0] >> 4) & 0xf);
-          tinfo.dataType = DataType.STRING;
-        } else {
-          tinfo.dataType = getNCtype(mdt.getBaseType(), mdt.getBaseSize(), mdt.base.unsigned);
-          tinfo.endian = mdt.base.endian;
-          tinfo.unsigned = mdt.base.unsigned;
-        }
-      } else if (hdfType == 10) { // array : used for structure members
-        // mdt.getFlags uses the base type if it exists
-        tinfo.endian = (mdt.getFlags()[0] & 1) == 0 ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN;
-        if (mdt.isVString()) {
-          tinfo.dataType = DataType.STRING;
-        } else {
-          int basetype = mdt.getBaseType();
-          tinfo.dataType = getNCtype(basetype, mdt.getBaseSize(), mdt.unsigned);
-        }
-      } else if (warnings) {
-        log.debug("WARNING not handling hdf dataType = " + hdfType + " size= " + byteSize);
       }
-
-      if (mdt.base != null) {
-        tinfo.base = calcNCtype(mdt.base);
-      }
-      return tinfo;
     }
 
     public String toString() {
@@ -1825,7 +1783,7 @@ public class H5header implements HdfHeaderIF {
 
     public String extraInfo() {
       StringBuilder buff = new StringBuilder();
-      if ((typeInfo.dataType != DataType.CHAR) && (typeInfo.dataType != DataType.STRING))
+      if ((typeInfo.dataType != ArrayType.CHAR) && (typeInfo.dataType != ArrayType.STRING))
         buff.append(typeInfo.unsigned ? " unsigned" : " signed");
       buff.append("ByteOrder= " + typeInfo.endian);
       if (useFillValue)
@@ -1833,7 +1791,7 @@ public class H5header implements HdfHeaderIF {
       return buff.toString();
     }
 
-    DataType getNCDataType() {
+    ArrayType getNCArrayType() {
       return typeInfo.dataType;
     }
 
@@ -1850,30 +1808,30 @@ public class H5header implements HdfHeaderIF {
       if (fillValue == null)
         return null;
 
-      if ((typeInfo.dataType.getPrimitiveClassType() == byte.class) || (typeInfo.dataType == DataType.CHAR))
+      if ((typeInfo.dataType.getPrimitiveClass() == Byte.class) || (typeInfo.dataType == ArrayType.CHAR))
         return fillValue[0];
 
       ByteBuffer bbuff = ByteBuffer.wrap(fillValue);
       if (typeInfo.endian != null)
         bbuff.order(typeInfo.endian);
 
-      if (typeInfo.dataType.getPrimitiveClassType() == short.class) {
+      if (typeInfo.dataType.getPrimitiveClass() == Short.class) {
         ShortBuffer tbuff = bbuff.asShortBuffer();
         return tbuff.get();
 
-      } else if (typeInfo.dataType.getPrimitiveClassType() == int.class) {
+      } else if (typeInfo.dataType.getPrimitiveClass() == Integer.class) {
         IntBuffer tbuff = bbuff.asIntBuffer();
         return tbuff.get();
 
-      } else if (typeInfo.dataType.getPrimitiveClassType() == long.class) {
+      } else if (typeInfo.dataType.getPrimitiveClass() == Long.class) {
         LongBuffer tbuff = bbuff.asLongBuffer();
         return tbuff.get();
 
-      } else if (typeInfo.dataType == DataType.FLOAT) {
+      } else if (typeInfo.dataType == ArrayType.FLOAT) {
         FloatBuffer tbuff = bbuff.asFloatBuffer();
         return tbuff.get();
 
-      } else if (typeInfo.dataType == DataType.DOUBLE) {
+      } else if (typeInfo.dataType == ArrayType.DOUBLE) {
         DoubleBuffer tbuff = bbuff.asDoubleBuffer();
         return tbuff.get();
       }
@@ -1882,9 +1840,9 @@ public class H5header implements HdfHeaderIF {
     }
 
     // limited reader; Variable is not built yet.
-    Array readArray() throws IOException {
+    Array<?> readArray() throws IOException {
       int[] shape = mds.dimLength;
-      DataType dataType = typeInfo.dataType;
+      ArrayType dataType = typeInfo.dataType;
       Layout layout;
       try {
         if (isChunked) {
@@ -1892,18 +1850,19 @@ public class H5header implements HdfHeaderIF {
         } else {
           layout = new LayoutRegular(dataPos, dataType.getSize(), shape, null);
         }
-      } catch (InvalidRangeException e) {
+      } catch (ucar.ma2.InvalidRangeException e2) {
         // cant happen because we use null for wantSection
         throw new IllegalStateException();
       }
-      Object data = IospHelper.readDataFill(raf, layout, dataType, getFillValue(), typeInfo.endian, false);
-      return Array.factory(dataType, shape, data);
+
+      Object data = IospArrayHelper.readDataFill(raf, layout, dataType, getFillValue(), typeInfo.endian, false);
+      return Arrays.factory(dataType, shape, data);
     }
 
     // limited reader; Variable is not built yet.
     String readString() throws IOException {
       int[] shape = new int[] {mdt.byteSize};
-      DataType dataType = typeInfo.dataType;
+      ArrayType dataType = typeInfo.dataType;
       Layout layout;
       try {
         if (isChunked) {
@@ -1911,11 +1870,11 @@ public class H5header implements HdfHeaderIF {
         } else {
           layout = new LayoutRegular(dataPos, dataType.getSize(), shape, null);
         }
-      } catch (InvalidRangeException e) {
+      } catch (ucar.ma2.InvalidRangeException e) {
         // cant happen because we use null for wantSection
         throw new IllegalStateException();
       }
-      Object data = IospHelper.readDataFill(raf, layout, dataType, getFillValue(), typeInfo.endian, true);
+      Object data = IospArrayHelper.readDataFill(raf, layout, dataType, getFillValue(), typeInfo.endian, true);
 
       // read and parse the ODL
       String result = "";
@@ -1924,104 +1883,20 @@ public class H5header implements HdfHeaderIF {
         // and IospHelper returns it directly as a string, so pass it along
         result = (String) data;
       } else {
-        Array dataArray = Array.factory(dataType, shape, data);
+        Array<?> dataArray = Arrays.factory(dataType, shape, data);
         // read and parse the ODL
-        if (dataArray instanceof ArrayChar.D1) {
-          ArrayChar ca = (ArrayChar) dataArray;
-          result = ca.getString(); // common case only StructMetadata.0, avoid extra copy
-        } else if (dataArray instanceof ArrayObject.D0) {
-          ArrayObject ao = (ArrayObject) dataArray;
-          result = (String) ao.getObject(0);
-        } else if (dataArray instanceof ArrayObject.D1) {
-          result = (String) dataArray.getObject(0);
+        if (dataArray.getArrayType() == ArrayType.CHAR) {
+          result = Arrays.makeStringFromChar((Array<Byte>) dataArray);
         } else {
-          log.error("Unsupported array type {} for StructMetadata", dataArray.getElementType());
+          log.error("Unsupported array type {} for StructMetadata", dataArray.getArrayType());
         }
       }
       return result;
     }
   }
 
-  DataType getNCtype(int hdfType, int size, boolean unsigned) {
-    if ((hdfType == 0) || (hdfType == 4)) { // integer, bit field
-      DataType.Signedness signedness = unsigned ? DataType.Signedness.UNSIGNED : DataType.Signedness.SIGNED;
-
-      if (size == 1)
-        return DataType.BYTE.withSignedness(signedness);
-      else if (size == 2)
-        return DataType.SHORT.withSignedness(signedness);
-      else if (size == 4)
-        return DataType.INT.withSignedness(signedness);
-      else if (size == 8)
-        return DataType.LONG.withSignedness(signedness);
-      else if (warnings) {
-        log.debug("WARNING HDF5 file " + raf.getLocation() + " not handling hdf integer type (" + hdfType
-            + ") with size= " + size);
-        log.warn(
-            "HDF5 file " + raf.getLocation() + " not handling hdf integer type (" + hdfType + ") with size= " + size);
-        return null;
-      }
-
-    } else if (hdfType == 1) {
-      if (size == 4)
-        return DataType.FLOAT;
-      else if (size == 8)
-        return DataType.DOUBLE;
-      else if (warnings) {
-        log.debug("WARNING HDF5 file " + raf.getLocation() + " not handling hdf float type with size= " + size);
-        log.warn("HDF5 file " + raf.getLocation() + " not handling hdf float type with size= " + size);
-        return null;
-      }
-
-    } else if (hdfType == 3) { // fixed length strings. String is used for Vlen type = 1
-      return DataType.CHAR;
-
-    } else if (hdfType == 6) {
-      return DataType.STRUCTURE;
-
-    } else if (hdfType == 7) { // reference
-      return DataType.ULONG;
-
-    } else if (hdfType == 9) {
-      return null; // dunno
-
-    } else if (warnings) {
-      log.warn("HDF5 file " + raf.getLocation() + " not handling hdf type = " + hdfType + " size= " + size);
-    } else {
-      log.debug("HDF5 file " + raf.getLocation() + " not handling hdf type = " + hdfType + " size= " + size);
-    }
-    return null;
-  }
-
-  public static class TypeInfo {
-    int hdfType, byteSize;
-    DataType dataType;
-    ByteOrder endian;
-    boolean unsigned;
-    boolean isVString; // is it a vlen string
-    boolean isVlen; // vlen but not string
-    int vpad; // string padding
-    TypeInfo base; // vlen, enum
-
-    TypeInfo(int hdfType, int byteSize) {
-      this.hdfType = hdfType;
-      this.byteSize = byteSize;
-    }
-
-    public String toString() {
-      StringBuilder buff = new StringBuilder();
-      buff.append("hdfType=").append(hdfType).append(" byteSize=").append(byteSize).append(" dataType=")
-          .append(dataType);
-      buff.append(" unsigned=").append(unsigned).append(" isVString=").append(isVString).append(" vpad=").append(vpad)
-          .append(" endian=").append(endian);
-      if (base != null)
-        buff.append("\n   base=").append(base);
-      return buff.toString();
-    }
-  }
-
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  // Heaps
+  // Heaps old
 
   /**
    * Fetch a Vlen data array.
@@ -2032,7 +1907,7 @@ public class H5header implements HdfHeaderIF {
    * @return the Array read from the heap
    * @throws IOException on read error
    */
-  Array getHeapDataArray(long globalHeapIdAddress, DataType dataType, ByteOrder endian) throws IOException {
+  ucar.ma2.Array getHeapDataArray(long globalHeapIdAddress, DataType dataType, ByteOrder endian) throws IOException {
     HeapIdentifier heapId = h5objects.readHeapIdentifier(globalHeapIdAddress);
     if (debugHeap) {
       log.debug(" heapId= {}", heapId);
@@ -2040,7 +1915,7 @@ public class H5header implements HdfHeaderIF {
     return getHeapDataArray(heapId, dataType, endian);
   }
 
-  Array getHeapDataArray(HeapIdentifier heapId, DataType dataType, ByteOrder endian) throws IOException {
+  ucar.ma2.Array getHeapDataArray(HeapIdentifier heapId, DataType dataType, ByteOrder endian) throws IOException {
     GlobalHeap.HeapObject ho = heapId.getHeapObject();
     if (ho == null) {
       throw new IllegalStateException("Illegal Heap address, HeapObject = " + heapId);
@@ -2056,37 +1931,114 @@ public class H5header implements HdfHeaderIF {
       float[] pa = new float[heapId.nelems];
       raf.seek(ho.dataPos);
       raf.readFloat(pa, 0, pa.length);
-      return Array.factory(dataType, new int[] {pa.length}, pa);
+      return ucar.ma2.Array.factory(dataType, new int[] {pa.length}, pa);
 
     } else if (DataType.DOUBLE == dataType) {
       double[] pa = new double[heapId.nelems];
       raf.seek(ho.dataPos);
       raf.readDouble(pa, 0, pa.length);
-      return Array.factory(dataType, new int[] {pa.length}, pa);
+      return ucar.ma2.Array.factory(dataType, new int[] {pa.length}, pa);
 
     } else if (dataType.getPrimitiveClassType() == byte.class) {
       byte[] pa = new byte[heapId.nelems];
       raf.seek(ho.dataPos);
       raf.readFully(pa, 0, pa.length);
-      return Array.factory(dataType, new int[] {pa.length}, pa);
+      return ucar.ma2.Array.factory(dataType, new int[] {pa.length}, pa);
 
     } else if (dataType.getPrimitiveClassType() == short.class) {
       short[] pa = new short[heapId.nelems];
       raf.seek(ho.dataPos);
       raf.readShort(pa, 0, pa.length);
-      return Array.factory(dataType, new int[] {pa.length}, pa);
+      return ucar.ma2.Array.factory(dataType, new int[] {pa.length}, pa);
 
     } else if (dataType.getPrimitiveClassType() == int.class) {
       int[] pa = new int[heapId.nelems];
       raf.seek(ho.dataPos);
       raf.readInt(pa, 0, pa.length);
-      return Array.factory(dataType, new int[] {pa.length}, pa);
+      return ucar.ma2.Array.factory(dataType, new int[] {pa.length}, pa);
 
     } else if (dataType.getPrimitiveClassType() == long.class) {
       long[] pa = new long[heapId.nelems];
       raf.seek(ho.dataPos);
       raf.readLong(pa, 0, pa.length);
-      return Array.factory(dataType, new int[] {pa.length}, pa);
+      return ucar.ma2.Array.factory(dataType, new int[] {pa.length}, pa);
+    }
+
+    throw new UnsupportedOperationException("getHeapDataAsArray dataType=" + dataType);
+  }
+
+  ucar.ma2.Array readHeapVlen(ByteBuffer bb, int pos, DataType dataType, ByteOrder endian) throws IOException {
+    HeapIdentifier heapId = h5objects.readHeapIdentifier(bb, pos);
+    return getHeapDataArray(heapId, dataType, endian);
+  }
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  // Heaps new
+
+  /**
+   * Fetch a Vlen data array.
+   *
+   * @param globalHeapIdAddress address of the heapId, used to get the String out of the heap
+   * @param dataType type of data
+   * @param endian byteOrder of the data (0 = BE, 1 = LE)
+   * @return the Array read from the heap
+   * @throws IOException on read error
+   */
+  Array<?> getHeapDataArray(long globalHeapIdAddress, ArrayType dataType, ByteOrder endian) throws IOException {
+    HeapIdentifier heapId = h5objects.readHeapIdentifier(globalHeapIdAddress);
+    if (debugHeap) {
+      log.debug(" heapId= {}", heapId);
+    }
+    return getHeapDataArray(heapId, dataType, endian);
+  }
+
+  Array<?> getHeapDataArray(HeapIdentifier heapId, ArrayType dataType, ByteOrder endian) throws IOException {
+    GlobalHeap.HeapObject ho = heapId.getHeapObject();
+    if (ho == null) {
+      throw new IllegalStateException("Illegal Heap address, HeapObject = " + heapId);
+    }
+    if (debugHeap) {
+      log.debug(" HeapObject= {}", ho);
+    }
+    if (endian != null) {
+      raf.order(endian);
+    }
+
+    if (ArrayType.FLOAT == dataType) {
+      float[] pa = new float[heapId.nelems];
+      raf.seek(ho.dataPos);
+      raf.readFloat(pa, 0, pa.length);
+      return Arrays.factory(dataType, new int[] {pa.length}, pa);
+
+    } else if (ArrayType.DOUBLE == dataType) {
+      double[] pa = new double[heapId.nelems];
+      raf.seek(ho.dataPos);
+      raf.readDouble(pa, 0, pa.length);
+      return Arrays.factory(dataType, new int[] {pa.length}, pa);
+
+    } else if (dataType.getPrimitiveClass() == Byte.class) {
+      byte[] pa = new byte[heapId.nelems];
+      raf.seek(ho.dataPos);
+      raf.readFully(pa, 0, pa.length);
+      return Arrays.factory(dataType, new int[] {pa.length}, pa);
+
+    } else if (dataType.getPrimitiveClass() == Short.class) {
+      short[] pa = new short[heapId.nelems];
+      raf.seek(ho.dataPos);
+      raf.readShort(pa, 0, pa.length);
+      return Arrays.factory(dataType, new int[] {pa.length}, pa);
+
+    } else if (dataType.getPrimitiveClass() == Integer.class) {
+      int[] pa = new int[heapId.nelems];
+      raf.seek(ho.dataPos);
+      raf.readInt(pa, 0, pa.length);
+      return Arrays.factory(dataType, new int[] {pa.length}, pa);
+
+    } else if (dataType.getPrimitiveClass() == Long.class) {
+      long[] pa = new long[heapId.nelems];
+      raf.seek(ho.dataPos);
+      raf.readLong(pa, 0, pa.length);
+      return Arrays.factory(dataType, new int[] {pa.length}, pa);
     }
 
     throw new UnsupportedOperationException("getHeapDataAsArray dataType=" + dataType);
@@ -2133,7 +2085,7 @@ public class H5header implements HdfHeaderIF {
     return raf.readString((int) ho.dataSize, valueCharset);
   }
 
-  Array readHeapVlen(ByteBuffer bb, int pos, DataType dataType, ByteOrder endian) throws IOException {
+  Array<?> readHeapVlen(ByteBuffer bb, int pos, ArrayType dataType, ByteOrder endian) throws IOException {
     HeapIdentifier heapId = h5objects.readHeapIdentifier(bb, pos);
     return getHeapDataArray(heapId, dataType, endian);
   }
@@ -2232,15 +2184,15 @@ public class H5header implements HdfHeaderIF {
   public long readVariableSizeUnsigned(int size) throws IOException {
     long vv;
     if (size == 1) {
-      vv = DataType.unsignedByteToShort(raf.readByte());
+      vv = ArrayType.unsignedByteToShort(raf.readByte());
     } else if (size == 2) {
       if (debugPos) {
         log.debug("position={}", raf.getFilePointer());
       }
       short s = raf.readShort();
-      vv = DataType.unsignedShortToInt(s);
+      vv = ArrayType.unsignedShortToInt(s);
     } else if (size == 4) {
-      vv = DataType.unsignedIntToLong(raf.readInt());
+      vv = ArrayType.unsignedIntToLong(raf.readInt());
     } else if (size == 8) {
       vv = raf.readLong();
     } else {

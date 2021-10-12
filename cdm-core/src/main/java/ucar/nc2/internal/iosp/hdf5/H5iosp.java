@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.internal.iosp.hdf5;
@@ -13,6 +13,9 @@ import java.nio.charset.Charset;
 import java.util.Optional;
 
 import ucar.array.ArrayType;
+import ucar.array.Arrays;
+import ucar.array.ArraysConvert;
+import ucar.array.StructureDataStorageBB;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayStructure;
 import ucar.ma2.ArrayStructureBB;
@@ -40,7 +43,7 @@ import ucar.unidata.io.RandomAccessFile;
 import javax.annotation.Nullable;
 
 /** HDF5 I/O */
-public class H5iosp extends AbstractIOServiceProvider {
+public abstract class H5iosp extends AbstractIOServiceProvider {
   public static final String IOSP_MESSAGE_INCLUDE_ORIGINAL_ATTRIBUTES = "IncludeOrgAttributes";
 
   static final int VLEN_T_SIZE = 16; // Appears to be no way to compute on the fly.
@@ -111,25 +114,27 @@ public class H5iosp extends AbstractIOServiceProvider {
   boolean includeOriginalAttributes;
   private Charset valueCharset;
 
-  @Override
-  public void build(RandomAccessFile raf, Group.Builder rootGroup, CancelTask cancelTask) throws IOException {
-    super.open(raf, rootGroup.getNcfile(), cancelTask);
-
-    raf.order(RandomAccessFile.BIG_ENDIAN);
-    header = new H5header(raf, rootGroup, this);
-    header.read(null);
-
-    // check if its an HDF5-EOS file
-    if (useHdfEos) {
-      rootGroup.findGroupLocal(HdfEos.HDF5_GROUP).ifPresent(eosGroup -> {
-        try {
-          isEos = HdfEos.amendFromODL(raf.getLocation(), header, eosGroup);
-        } catch (IOException e) {
-          log.warn(" HdfEos.amendFromODL failed");
-        }
-      });
-    }
-  }
+  /*
+   * @Override
+   * public void build(RandomAccessFile raf, Group.Builder rootGroup, CancelTask cancelTask) throws IOException {
+   * super.open(raf, rootGroup.getNcfile(), cancelTask);
+   * 
+   * raf.order(RandomAccessFile.BIG_ENDIAN);
+   * header = new H5header(raf, rootGroup, this);
+   * header.read(null);
+   * 
+   * // check if its an HDF5-EOS file
+   * if (useHdfEos) {
+   * rootGroup.findGroupLocal(HdfEos.HDF5_GROUP).ifPresent(eosGroup -> {
+   * try {
+   * isEos = HdfEos.amendFromODL(raf.getLocation(), header, eosGroup);
+   * } catch (IOException e) {
+   * log.warn(" HdfEos.amendFromODL failed");
+   * }
+   * });
+   * }
+   * }
+   */
 
   @Override
   public Object sendIospMessage(Object message) {
@@ -180,6 +185,7 @@ public class H5iosp extends AbstractIOServiceProvider {
   private Array readData(Variable v2, long dataPos, Section wantSection) throws IOException, InvalidRangeException {
     H5header.Vinfo vinfo = (H5header.Vinfo) v2.getSPobject();
     DataType dataType = v2.getDataType();
+    ucar.array.Section sectionNew = ArraysConvert.convertSection(wantSection);
     Object data;
     Layout layout;
 
@@ -195,7 +201,11 @@ public class H5iosp extends AbstractIOServiceProvider {
         System.out.println("read variable filtered " + v2.getFullName() + " vinfo = " + vinfo);
       assert vinfo.isChunked;
       ByteOrder bo = vinfo.typeInfo.endian;
-      layout = new H5tiledLayoutBB(v2, wantSection, raf, vinfo.mfp.getFilters(), bo);
+      try {
+        layout = new H5tiledLayoutBB(v2, sectionNew, raf, vinfo.mfp.getFilters(), bo);
+      } catch (ucar.array.InvalidRangeException e) {
+        throw new ucar.ma2.InvalidRangeException(e.getMessage());
+      }
       if (vinfo.typeInfo.isVString) {
         data = readFilteredStringData((LayoutBB) layout);
       } else {
@@ -206,7 +216,7 @@ public class H5iosp extends AbstractIOServiceProvider {
       if (debug)
         System.out.println("read variable " + v2.getFullName() + " vinfo = " + vinfo);
 
-      DataType readDtype = v2.getDataType();
+      ArrayType readDtype = v2.getArrayType();
       int elemSize = v2.getElementSize();
       Object fillValue = vinfo.getFillValue();
       ByteOrder endian = vinfo.typeInfo.endian;
@@ -220,7 +230,7 @@ public class H5iosp extends AbstractIOServiceProvider {
         fillValue = NetcdfFormatUtils.getFillValueDefault(readDtype);
 
       } else if (vinfo.typeInfo.hdfType == 8) { // enum
-        H5header.TypeInfo baseInfo = vinfo.typeInfo.base;
+        Hdf5Type baseInfo = vinfo.typeInfo.base;
         readDtype = baseInfo.dataType;
         elemSize = readDtype.getSize();
         fillValue = NetcdfFormatUtils.getFillValueDefault(readDtype);
@@ -233,11 +243,11 @@ public class H5iosp extends AbstractIOServiceProvider {
       }
 
       if (vinfo.isChunked) {
-        layout = new H5tiledLayout((H5header.Vinfo) v2.getSPobject(), readDtype, wantSection);
+        layout = new H5tiledLayout((H5header.Vinfo) v2.getSPobject(), readDtype, sectionNew);
       } else {
         layout = new LayoutRegular(dataPos, elemSize, v2.getShape(), wantSection);
       }
-      data = readData(vinfo, v2, layout, readDtype, wantSection.getShape(), fillValue, endian);
+      data = readData(vinfo, v2, layout, readDtype.getDataType(), wantSection.getShape(), fillValue, endian);
     }
 
     if (data instanceof Array)
@@ -281,7 +291,7 @@ public class H5iosp extends AbstractIOServiceProvider {
   private Object readData(H5header.Vinfo vinfo, Variable v, Layout layout, DataType dataType, int[] shape,
       Object fillValue, ByteOrder endian) throws IOException, InvalidRangeException {
 
-    H5header.TypeInfo typeInfo = vinfo.typeInfo;
+    Hdf5Type typeInfo = vinfo.typeInfo;
 
     // special processing
     if (typeInfo.hdfType == 2) { // time
@@ -366,6 +376,19 @@ public class H5iosp extends AbstractIOServiceProvider {
     return readDataPrimitive(layout, dataType, shape, fillValue, endian, true);
   }
 
+  ucar.array.Array<String> convertReferenceArray(ucar.array.Array<Long> refArray) throws IOException {
+    int nelems = (int) refArray.getSize();
+    String[] result = new String[nelems];
+    for (int i = 0; i < nelems; i++) {
+      long reference = refArray.get(i);
+      String name = header.getDataObjectName(reference);
+      result[i] = name != null ? name : Long.toString(reference);
+      if (debugVlen)
+        System.out.printf(" convertReference 0x%x to %s %n", reference, result[i]);
+    }
+    return Arrays.factory(ArrayType.STRING, new int[] {nelems}, result);
+  }
+
   Array convertReference(Array refArray) throws IOException {
     int nelems = (int) refArray.getSize();
     Index ima = refArray.getIndex();
@@ -442,7 +465,8 @@ public class H5iosp extends AbstractIOServiceProvider {
     return hasHeap;
   }
 
-  void convertHeap(ArrayStructureBB asbb, int pos, StructureMembers sm) throws IOException, InvalidRangeException {
+  // read from the hd5 heap, insert into ArrayStructureBB heap
+  void convertHeap(ArrayStructureBB asbb, int pos, StructureMembers sm) throws IOException {
     ByteBuffer bb = asbb.getByteBuffer();
     for (StructureMembers.Member m : sm.getMembers()) {
       if (m.getDataType() == DataType.STRING) {
@@ -498,8 +522,66 @@ public class H5iosp extends AbstractIOServiceProvider {
     }
   }
 
+  // read from the hd5 heap, insert into StructureDataStorageBB heap
+  void convertHeapArray(StructureDataStorageBB asbb, ByteBuffer bb, int pos, ucar.array.StructureMembers sm)
+      throws IOException {
+    for (ucar.array.StructureMembers.Member m : sm.getMembers()) {
+      if (m.getArrayType() == ArrayType.STRING) {
+        int size = m.getStorageSizeBytes();
+        int destPos = pos + m.getOffset();
+        String[] result = new String[size];
+        for (int i = 0; i < size; i++) {
+          result[i] = header.readHeapString(bb, destPos + i * 16); // 16 byte "heap ids" are in the ByteBuffer
+        }
+
+        int index = asbb.putOnHeap(result);
+        bb.order(ByteOrder.nativeOrder()); // the string index is always written in "native order"
+        bb.putInt(destPos, index); // overwrite with the index into the StringHeap
+
+      } else {
+        int startPos = pos + m.getOffset();
+        bb.order(ByteOrder.LITTLE_ENDIAN);
+
+        ByteOrder endian = m.getByteOrder();
+        // Compute rank and size up to the first (and ideally last) VLEN
+        int[] fieldshape = m.getShape();
+        int prefixrank = 0;
+        int size = 1;
+        for (; prefixrank < fieldshape.length; prefixrank++) {
+          if (fieldshape[prefixrank] < 0)
+            break;
+          size *= fieldshape[prefixrank];
+        }
+        assert size == m.getStorageSizeBytes() : "Internal error: field size mismatch";
+        ucar.array.Array[] fieldarray = new ucar.array.Array[size]; // hold all the vlen instance data
+        // destPos will point to each vlen instance in turn
+        // assuming we have 'size' such instances in a row.
+        int destPos = startPos;
+        for (int i = 0; i < size; i++) {
+          // vlenarray extracts the i'th vlen contents (struct not supported).
+          ucar.array.Array<?> vlenArray = header.readHeapVlen(bb, destPos, m.getArrayType(), endian);
+          fieldarray[i] = vlenArray;
+          destPos += VLEN_T_SIZE; // Apparentlly no way to compute VLEN_T_SIZE on the fly
+        }
+        ucar.array.Array<?> result;
+        if (prefixrank == 0) // if scalar, return just the singleton vlen array
+          result = fieldarray[0];
+        else {
+          int[] newshape = new int[prefixrank];
+          System.arraycopy(fieldshape, 0, newshape, 0, prefixrank);
+          // result = Array.makeObjectArray(m.getDataType(), fieldarray[0].getClass(), newshape, fieldarray);
+          result = null; // Array.makeVlenArray(newshape, fieldarray);
+        }
+        int index = asbb.putOnHeap(result);
+        bb.order(ByteOrder.nativeOrder());
+        bb.putInt(startPos, index); // overwrite with the index into the Heap
+      }
+    }
+  }
+
   /**
-   * Read data subset from file for a variable, create primitive array.
+   * Read data subset from file, create primitive array.
+   * Note there is no Variable, so acan be used for Attribute reading, before the variables are constructed.
    *
    * @param layout handles skipping around in the file.
    * @param dataType dataType of the variable
