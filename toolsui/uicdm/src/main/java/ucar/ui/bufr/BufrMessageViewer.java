@@ -631,7 +631,7 @@ public class BufrMessageViewer extends JPanel {
         StandardFields.StandardFieldsFromStructure extract =
             new StandardFields.StandardFieldsFromStructure(center, obs);
         for (StructureData sdata : (Array<StructureData>) obs.readArray()) {
-            beanList.add(new ObsBean(extract, sdata));
+          beanList.add(new ObsBean(extract, sdata));
         }
       }
     } catch (Exception ex) {

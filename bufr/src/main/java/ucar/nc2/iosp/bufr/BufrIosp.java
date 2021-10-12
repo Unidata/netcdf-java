@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2020 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.iosp.bufr;
@@ -58,7 +58,7 @@ public class BufrIosp extends AbstractIOServiceProvider {
   public void build(RandomAccessFile raf, Group.Builder rootGroup, CancelTask cancelTask) throws IOException {
     super.open(raf, rootGroup.getNcfile(), cancelTask);
 
-    scanner = new MessageScanner(raf);
+    scanner = new MessageScanner(raf, 0, false);
     // TODO We have a problem - we havent finished building but we need to read the first message to use as the
     // protoMessage.
     // TODO Possible only trouble when theres an EmbeddedTable?
@@ -204,30 +204,32 @@ public class BufrIosp extends AbstractIOServiceProvider {
     }
 
     private StructureDataIterator readNextMessage() throws IOException {
-      if (!scanner.hasNext())
-        return null;
-      Message m = scanner.next();
-      if (m == null) {
-        log.warn("BUFR scanner hasNext() true but next() null!");
-        return null;
-      }
-      if (m.containsBufrTable()) // data messages only
-        return readNextMessage();
-
-      // mixed messages
-      if (!protoMessage.equals(m)) {
-        if (messHash == null)
-          messHash = new HashSet<>(20);
-        if (!messHash.contains(m.hashCode())) {
-          log.warn("File " + raf.getLocation() + " has different BUFR message types hash=" + protoMessage.hashCode()
-              + "; skipping");
-          messHash.add(m.hashCode());
+      while (true) { // dont use recursion to skip messages
+        if (!scanner.hasNext())
+          return null;
+        Message m = scanner.next();
+        if (m == null) {
+          log.warn("BUFR scanner hasNext() true but next() null!");
+          return null;
         }
-        return readNextMessage();
-      }
+        if (m.containsBufrTable()) // data messages only
+          continue;
 
-      ArrayStructure as = readMessage(m);
-      return as.getStructureDataIterator();
+        // mixed messages
+        if (!protoMessage.equals(m)) {
+          if (messHash == null)
+            messHash = new HashSet<>(20);
+          if (!messHash.contains(m.hashCode())) {
+            log.warn("File " + raf.getLocation() + " has different BUFR message types hash=" + protoMessage.hashCode()
+                + "; skipping");
+            messHash.add(m.hashCode());
+          }
+          continue;
+        }
+
+        ArrayStructure as = readMessage(m);
+        return as.getStructureDataIterator();
+      }
     }
 
     private ArrayStructure readMessage(Message m) throws IOException {

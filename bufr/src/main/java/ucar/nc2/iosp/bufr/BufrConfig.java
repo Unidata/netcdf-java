@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-
 package ucar.nc2.iosp.bufr;
 
 import org.jdom2.Element;
@@ -234,41 +233,41 @@ public class BufrConfig {
   private CalendarDate today = CalendarDate.present();
 
   private void processSeq(Iterable<StructureData> sdataIter, FieldConverter parent, boolean isTop) throws IOException {
-      for (StructureData sdata : sdataIter) {
+    for (StructureData sdata : sdataIter) {
 
-        if (isTop) {
-          countObs++;
+      if (isTop) {
+        countObs++;
 
-          if (hasStations)
-            processStations(parent, sdata);
-          if (hasDate) {
-            extract.extract(sdata);
-            CalendarDate date = extract.makeCalendarDate();
-            if (Math.abs(date.getDifferenceInMsecs(today)) > 1000L * 3600 * 24 * 100) {
-              extract.makeCalendarDate();
-            }
-            long msecs = date.getMillisFromEpoch();
-            if (this.start > msecs) {
-              this.start = msecs;
-            }
-            if (this.end < msecs) {
-              this.end = msecs;
-            }
+        if (hasStations)
+          processStations(parent, sdata);
+        if (hasDate) {
+          extract.extract(sdata);
+          CalendarDate date = extract.makeCalendarDate();
+          if (Math.abs(date.getDifferenceInMsecs(today)) > 1000L * 3600 * 24 * 100) {
+            extract.makeCalendarDate();
           }
-        }
-
-        int count = 0;
-        for (StructureMembers.Member m : sdata.getStructureMembers()) {
-          if (m.getArrayType() == ArrayType.SEQUENCE) {
-            FieldConverter fld = parent.getChild(count);
-            Array<StructureData> data = (Array<StructureData>) sdata.getMemberData(m);
-            int n = (int) data.getSize();
-            fld.trackSeqCounts(n);
-            processSeq(data, fld, false);
+          long msecs = date.getMillisFromEpoch();
+          if (this.start > msecs) {
+            this.start = msecs;
           }
-          count++;
+          if (this.end < msecs) {
+            this.end = msecs;
+          }
         }
       }
+
+      int count = 0;
+      for (StructureMembers.Member m : sdata.getStructureMembers()) {
+        if (m.getArrayType() == ArrayType.SEQUENCE) {
+          FieldConverter fld = parent.getChild(count);
+          Array<StructureData> data = (Array<StructureData>) sdata.getMemberData(m);
+          int n = (int) data.getSize();
+          fld.trackSeqCounts(n);
+          processSeq(data, fld, false);
+        }
+        count++;
+      }
+    }
   }
 
   private void processStations(FieldConverter parent, StructureData sdata) {

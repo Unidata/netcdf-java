@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
 package ucar.nc2.iosp.bufr;
 
 import java.util.Formatter;
@@ -5,6 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import com.google.common.base.Strings;
 import org.slf4j.Logger;
 import ucar.array.ArrayType;
 import ucar.nc2.Attribute;
@@ -204,10 +210,14 @@ class BufrIospBuilder {
     parent.addMemberVariable(struct);
   }
 
-  private Variable.Builder addVariable(Group.Builder group, Structure.Builder struct, BufrConfig.FieldConverter fld,
+  private Variable.Builder addVariable(Group.Builder group, Structure.Builder<?> struct, BufrConfig.FieldConverter fld,
       int count) {
     DataDescriptor dkey = fld.dds;
     String uname = findGloballyUniqueName(fld.getName(), "unknown");
+    if (Strings.isNullOrEmpty(uname)) {
+      findGloballyUniqueName(fld.getName(), "unknown");
+    }
+
     dkey.name = uname; // name may need to be changed for uniqueness
 
     Variable.Builder v = Variable.builder().setName(uname);
@@ -348,7 +358,7 @@ class BufrIospBuilder {
   private Map<String, Integer> names = new HashMap<>(100);
 
   private String findGloballyUniqueName(String want, String def) {
-    if (want == null) {
+    if (Strings.isNullOrEmpty(want)) {
       return def + tempNo++;
     }
 

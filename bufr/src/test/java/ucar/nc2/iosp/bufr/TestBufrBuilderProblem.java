@@ -23,7 +23,7 @@ public class TestBufrBuilderProblem {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
-  public void problem() throws Exception {
+  public void testEmbeddedTable() throws Exception {
     String filename = TestDir.cdmUnitTestDir + "formats/bufr/userExamples/mixed/gdas1.t18z.osbuv8.tm00.bufr_d";
     // showOrg(filename);
     // showNew(filename);
@@ -35,8 +35,10 @@ public class TestBufrBuilderProblem {
     TestDir.readAll(filename);
   }
 
+  // public static NetcdfFile open(String location, String iospClassName, int bufferSize, CancelTask cancelTask,
+  // Object iospMessage) throws ClassNotFoundException, IllegalAccessException, InstantiationException, IOException {
+
   @Test
-  @Ignore("SequenceDS needs work")
   public void compareCoordSysBuilders() throws IOException {
     String fileLocation =
         TestDir.cdmUnitTestDir + "/formats/bufr/userExamples/US058MCUS-BUFtdp.SPOUT_00011_buoy_20091101021700.bufr";
