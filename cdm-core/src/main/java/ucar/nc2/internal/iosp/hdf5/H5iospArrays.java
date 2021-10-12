@@ -85,12 +85,12 @@ public class H5iospArrays extends H5iosp {
     }
 
     try {
+      ByteOrder endian = vinfo.typeInfo.endian;
       if (vinfo.mfp != null) { // filtered
         if (debugFilter)
           System.out.println("read variable filtered " + v2.getFullName() + " vinfo = " + vinfo);
         assert vinfo.isChunked;
-        ByteOrder bo = vinfo.typeInfo.endian;
-        layout = new H5tiledLayoutBB(v2, wantSection, raf, vinfo.mfp.getFilters(), bo);
+        layout = new H5tiledLayoutBB(v2, wantSection, raf, vinfo.mfp.getFilters(), endian);
         if (vinfo.typeInfo.isVString) {
           data = readFilteredStringData((LayoutBB) layout);
         } else {
@@ -104,7 +104,6 @@ public class H5iospArrays extends H5iosp {
         ArrayType readDtype = v2.getArrayType();
         int elemSize = v2.getElementSize();
         Object fillValue = vinfo.getFillValue();
-        ByteOrder endian = vinfo.typeInfo.endian;
 
         // fill in the wantSection
         wantSection = Section.fill(wantSection, v2.getShape());
@@ -136,12 +135,13 @@ public class H5iospArrays extends H5iosp {
         data = readArrayOrPrimitive(vinfo, v2, layout, readDtype, wantSection.getShape(), fillValue, endian);
       }
 
-      if (data instanceof ucar.array.Array)
+      if (data instanceof ucar.array.Array) {
         return (ucar.array.Array<?>) data;
-      else if (dataType == ArrayType.STRUCTURE) // LOOK does this ever happen?
+      } else if (dataType == ArrayType.STRUCTURE) { // LOOK does this ever happen?
         return makeStructureDataArray((Structure) v2, layout, wantSection.getShape(), (byte[]) data); // LOOK
-      else
+      } else {
         return Arrays.factory(dataType, wantSection.getShape(), data);
+      }
 
     } catch (ucar.ma2.InvalidRangeException e) {
       throw new ucar.array.InvalidRangeException(e);
@@ -396,7 +396,7 @@ public class H5iospArrays extends H5iosp {
       throw new IOException("H5iosp illegal structure size " + s.getFullName());
     }
 
-    ByteBuffer bb = ByteBuffer.wrap(byteArray);
+    ByteBuffer hdf5bb = ByteBuffer.wrap(byteArray);
     StructureDataStorageBB storage =
         new StructureDataStorageBB(sm, ByteBuffer.wrap(byteArray), (int) Arrays.computeSize(shape));
 
@@ -404,7 +404,7 @@ public class H5iospArrays extends H5iosp {
     if (hasHeap) {
       int destPos = 0;
       for (int i = 0; i < layout.getTotalNelems(); i++) { // loop over each structure
-        readHeapData(bb, storage, destPos, sm);
+        readHeapData(hdf5bb, storage, destPos, sm);
         destPos += layout.getElemSize(); // LOOK use recSize ??
       }
     }
@@ -417,7 +417,7 @@ public class H5iospArrays extends H5iosp {
     boolean hasHeap = false;
     for (StructureMembers.MemberBuilder mb : sm.getStructureMembers()) {
       Variable v2 = s.findVariable(mb.getName());
-      assert v2 != null;
+      Preconditions.checkNotNull(v2);
       H5header.Vinfo vm = (H5header.Vinfo) v2.getSPobject();
 
       // apparently each member may have different byte order (!!!??)
@@ -444,28 +444,29 @@ public class H5iospArrays extends H5iosp {
     return hasHeap;
   }
 
-  // Reads the Strings and Vlens from the hdf5 heap
-  private void readHeapData(ByteBuffer bb, StructureDataStorageBB storage, int pos, StructureMembers sm)
+  // Reads the Strings and Vlens from the hdf5 heap into a structure data storage
+  private void readHeapData(ByteBuffer hdf5heap, StructureDataStorageBB storage, int pos, StructureMembers sm)
       throws IOException {
 
     for (StructureMembers.Member m : sm.getMembers()) {
+      ByteOrder endian = m.getByteOrder();
+      hdf5heap.order(endian);
       if (m.getArrayType() == ArrayType.STRING) {
         int size = m.length();
         int destPos = pos + m.getOffset();
         String[] result = new String[size];
         for (int i = 0; i < size; i++) {
-          result[i] = header.readHeapString(bb, destPos + i * 16); // 16 byte "heap ids" are in the ByteBuffer
+          result[i] = header.readHeapString(hdf5heap, destPos + i * 16); // 16 byte "heap ids" are in the ByteBuffer
         }
 
         int index = storage.putOnHeap(result);
-        bb.order(m.getByteOrder()); // write the string index in whatever that member's byte order is.
-        bb.putInt(destPos, index); // overwrite with the index into the StringHeap
+        hdf5heap.order(endian); // write the string index in whatever that member's byte order is.
+        hdf5heap.putInt(destPos, index); // overwrite with the index into the StringHeap
 
       } else if (m.isVlen()) { // LOOK this may be wrong, needs testing
         int startPos = pos + m.getOffset();
-        bb.order(ByteOrder.LITTLE_ENDIAN);
+        // hdf5heap.order(ByteOrder.LITTLE_ENDIAN); // why ?
 
-        ByteOrder endian = m.getByteOrder();
         ArrayVlen<?> vlenArray = ArrayVlen.factory(m.getArrayType(), m.getShape());
         int size = (int) Arrays.computeSize(vlenArray.getShape());
         Preconditions.checkArgument(size == m.length(), "Internal error: field size mismatch");
@@ -475,14 +476,14 @@ public class H5iospArrays extends H5iosp {
           // LOOK could we use readHeapPrimitiveArray(long globalHeapIdAddress, ArrayType dataType, int endian) ??
           // header.readHeapVlen reads the vlen at destPos from H5 heap, into a ucar.ma2.Array primitive array. Structs
           // not supported.
-          Array<?> vlen = header.readHeapVlen(bb, readPos, m.getArrayType(), endian);
+          Array<?> vlen = header.readHeapVlen(hdf5heap, readPos, m.getArrayType(), endian);
           vlenArray.set(i, vlen);
           readPos += VLEN_T_SIZE;
         }
         // put resulting ArrayVlen into the storage heap.
         int index = storage.putOnHeap(vlenArray);
-        bb.order(ByteOrder.nativeOrder()); // LOOK correct? depends on ArrayStuctureStorageBB
-        bb.putInt(startPos, index); // overwrite with the index into the Heap
+        hdf5heap.order(endian);
+        hdf5heap.putInt(startPos, index); // overwrite with the index into the Heap
       }
     }
   }

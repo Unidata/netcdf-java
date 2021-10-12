@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+import com.google.common.base.Preconditions;
 import ucar.array.ArrayType;
 import ucar.array.Array;
 import ucar.array.ArrayVlen;
@@ -920,8 +921,9 @@ public class H5header implements HdfHeaderIF {
         for (StructureMembers.Member sm : attData.getStructureMembers().getMembers()) {
           String memberName = sm.getName();
           int pos = memberName.indexOf(":");
-          if (pos < 0)
+          if (pos < 0) {
             continue; // LOOK
+          }
           String fldName = memberName.substring(0, pos);
           String attName = memberName.substring(pos + 1);
           Array<?> memberData = attData.extractMemberArray(sm);
@@ -1191,12 +1193,13 @@ public class H5header implements HdfHeaderIF {
         mb.setByteOrder(h5sm.mdt.endian);
       }
       mb.setOffset(h5sm.offset); // offset since start of Structure
-      if (dt == ArrayType.STRING)
+      if (dt == ArrayType.STRING) {
         hasStrings = true;
+      }
     }
 
     int recsize = matt.mdt.byteSize;
-    Layout layout = null;
+    Layout layout;
     try {
       layout = new LayoutRegular(matt.dataPos, recsize, shape, new ucar.ma2.Section(shape));
     } catch (ucar.ma2.InvalidRangeException e) {
@@ -1204,19 +1207,21 @@ public class H5header implements HdfHeaderIF {
     }
     builder.setStructureSize(recsize);
     StructureMembers members = builder.build();
+    Preconditions.checkArgument(members.getStorageSizeBytes() == recsize);
 
     // copy data into an byte[] for efficiency
     int nrows = (int) Arrays.computeSize(shape);
     byte[] result = new byte[(int) (nrows * members.getStorageSizeBytes())];
     while (layout.hasNext()) {
       Layout.Chunk chunk = layout.next();
-      if (chunk == null)
+      if (chunk == null) {
         continue;
+      }
       if (debugStructure) {
         log.debug(" readStructure " + matt.name + " chunk= " + chunk + " index.getElemSize= " + layout.getElemSize());
       }
 
-      // copy bytes directly into the underlying byte[]
+      // LOOK copy bytes directly into the underlying byte[], not a great idea, efficiency not needed
       raf.seek(chunk.getSrcPos());
       raf.readFully(result, (int) chunk.getDestElem() * recsize, chunk.getNelems() * recsize);
     }
@@ -1228,7 +1233,7 @@ public class H5header implements HdfHeaderIF {
     if (hasStrings) {
       int destPos = 0;
       for (int i = 0; i < layout.getTotalNelems(); i++) { // loop over each structure
-        h5iosp.convertHeapArray(storage, bb, destPos, members);
+        h5iosp.convertHeapArray(bb, storage, destPos, members);
         destPos += layout.getElemSize();
       }
     }
@@ -2066,7 +2071,7 @@ public class H5header implements HdfHeaderIF {
   }
 
   /**
-   * Fetch a String from the heap, when the heap identifier has already beed read into a ByteBuffer at given pos
+   * Fetch a String from the heap, when the heap identifier has already been put into a ByteBuffer at given pos
    *
    * @param bb heap id is here
    * @param pos at this position
