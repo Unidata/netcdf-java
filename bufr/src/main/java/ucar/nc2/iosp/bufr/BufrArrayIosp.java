@@ -8,6 +8,8 @@ import com.google.common.collect.AbstractIterator;
 import org.jdom2.Element;
 import ucar.array.Array;
 import ucar.array.StructureData;
+import ucar.ma2.ArrayStructure;
+import ucar.ma2.StructureDataIterator;
 import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Sequence;
@@ -31,7 +33,6 @@ public class BufrArrayIosp extends AbstractIOServiceProvider {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BufrArrayIosp.class);
 
   public static final String obsRecordName = "obs";
-  public static final String fxyAttName = "BUFR:TableB_descriptor";
   public static final String centerId = "BUFR:centerId";
 
   // debugging
@@ -256,6 +257,171 @@ public class BufrArrayIosp extends AbstractIOServiceProvider {
   @Override
   public String getFileTypeDescription() {
     return "WMO Binary Universal Form";
+  }
+
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  // this all goes away soon
+
+  @Override
+  public StructureDataIterator getStructureIterator(Structure s, int bufferSize) throws IOException {
+    findRootSequence();
+    return isSingle ? new SeqIterSingle() : new SeqIterOld();
+  }
+
+  private class SeqIterOld implements StructureDataIterator {
+    MessageScanner scannerIter;
+    StructureDataIterator currIter;
+    int recnum;
+
+    SeqIterOld() throws IOException {
+      scannerIter = new MessageScanner(raf);
+      reset();
+    }
+
+    @Override
+    public StructureDataIterator reset() {
+      recnum = 0;
+      currIter = null;
+      return this;
+    }
+
+    @Override
+    public boolean hasNext() throws IOException {
+      if (currIter == null) {
+        currIter = readNextMessage();
+        if (currIter == null) {
+          return false;
+        }
+      }
+
+      if (!currIter.hasNext()) {
+        currIter = readNextMessage();
+        return hasNext();
+      }
+
+      return true;
+    }
+
+    @Override
+    public ucar.ma2.StructureData next() throws IOException {
+      recnum++;
+      return currIter.next();
+    }
+
+    private StructureDataIterator readNextMessage() throws IOException {
+      while (true) { // dont use recursion to skip messages
+        if (!scannerIter.hasNext())
+          return null;
+        Message m = scannerIter.next();
+        if (m == null) {
+          log.warn("BUFR scanner hasNext() true but next() null!");
+          return null;
+        }
+        if (m.containsBufrTable()) // data messages only
+          continue;
+
+        // mixed messages
+        if (!protoMessage.equals(m)) {
+          if (messHash == null)
+            messHash = new HashSet<>(20);
+          if (!messHash.contains(m.hashCode())) {
+            log.warn("File " + raf.getLocation() + " has different BUFR message types hash=" + protoMessage.hashCode()
+                + "; skipping");
+            messHash.add(m.hashCode());
+          }
+          continue;
+        }
+
+        ArrayStructure as = readMessage(m);
+        return as.getStructureDataIterator();
+      }
+    }
+
+    private ArrayStructure readMessage(Message m) throws IOException {
+      ArrayStructure as;
+      if (m.dds.isCompressed()) {
+        MessageCompressedDataReader reader = new MessageCompressedDataReader();
+        as = reader.readEntireMessage(obsStructure, protoMessage, m, raf, null);
+      } else {
+        MessageUncompressedDataReader reader = new MessageUncompressedDataReader();
+        as = reader.readEntireMessage(obsStructure, protoMessage, m, raf, null);
+      }
+      return as;
+    }
+
+    @Override
+    public int getCurrentRecno() {
+      return recnum - 1;
+    }
+
+    @Override
+    public void close() {
+      if (currIter != null)
+        currIter.close();
+      currIter = null;
+      if (debugIter)
+        System.out.printf("BUFR read recnum %d%n", recnum);
+    }
+  }
+
+  private class SeqIterSingle implements StructureDataIterator {
+    StructureDataIterator currIter;
+    int recnum;
+
+    SeqIterSingle() {
+      reset();
+    }
+
+    @Override
+    public StructureDataIterator reset() {
+      recnum = 0;
+      currIter = null;
+      return this;
+    }
+
+    @Override
+    public boolean hasNext() throws IOException {
+      if (currIter == null) {
+        currIter = readProtoMessage();
+        if (currIter == null) {
+          return false;
+        }
+      }
+
+      return currIter.hasNext();
+    }
+
+    @Override
+    public ucar.ma2.StructureData next() throws IOException {
+      recnum++;
+      return currIter.next();
+    }
+
+    private StructureDataIterator readProtoMessage() throws IOException {
+      Message m = protoMessage;
+      ArrayStructure as;
+      if (m.dds.isCompressed()) {
+        MessageCompressedDataReader reader = new MessageCompressedDataReader();
+        as = reader.readEntireMessage(obsStructure, protoMessage, m, raf, null);
+      } else {
+        MessageUncompressedDataReader reader = new MessageUncompressedDataReader();
+        as = reader.readEntireMessage(obsStructure, protoMessage, m, raf, null);
+      }
+
+      return as.getStructureDataIterator();
+    }
+
+    @Override
+    public int getCurrentRecno() {
+      return recnum - 1;
+    }
+
+    @Override
+    public void close() {
+      if (currIter != null)
+        currIter.close();
+      currIter = null;
+    }
   }
 
 }
