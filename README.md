@@ -4,10 +4,12 @@
 
 # netCDF-Java
 
-Welcome to the development branch of the netCDF-Java library (currently version _7.x_)!
+Welcome to the development branch of the netCDF-Java library (currently version _8.x_)!
 
-> Looking for the `6.x` line of development?
-See branch [6.x](https://github.com/unidata/netcdf-java/tree/6.x).
+> Looking for the `7.x` line of development?
+See branch [7.x](https://github.com/unidata/netcdf-java/tree/7.x).
+Looking for the `6.x` line of development?
+See branch [6.x](https://github.com/unidata/netcdf-java/tree/6.x)
 Looking for the `5.x` line of development?
 See branch [maint-5.x](https://github.com/unidata/netcdf-java/tree/maint-5.x).
 Version `4.6` is no longer supported outside of the context of the THREDDS Data Server (TDS).
