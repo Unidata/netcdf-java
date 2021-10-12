@@ -7,12 +7,9 @@ package ucar.ui.op;
 import com.google.common.collect.Iterables;
 import ucar.nc2.Attribute;
 import ucar.nc2.Group;
-import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.CoordinateTransform;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.nc2.dataset.TransformType;
-import ucar.nc2.dataset.VerticalCT;
 import ucar.nc2.geoloc.vertical.VerticalTransform;
 import ucar.nc2.grid.GridCoordinateSystem;
 import ucar.nc2.internal.grid.GridNetcdfDataset;
@@ -159,12 +156,6 @@ public class FeatureScan {
         Formatter errlog = new Formatter();
         findGribType(ds.getRootGroup(), gribType);
 
-        for (CoordinateTransform ct : ds.getCoordinateTransforms()) {
-          if (ct instanceof VerticalCT) {
-            ctNames.add(((VerticalCT) ct).transformName());
-          }
-        }
-
         try {
           // new
           errlog = new Formatter();
@@ -229,10 +220,6 @@ public class FeatureScan {
 
     public String getNewGrid() {
       return newGridFn;
-    }
-
-    public String getCoordinateVTs() {
-      return String.join(",", ctNames);
     }
 
     public String getGridVTs() {

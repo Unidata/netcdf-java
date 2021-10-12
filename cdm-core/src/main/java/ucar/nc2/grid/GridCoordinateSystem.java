@@ -76,7 +76,7 @@ public class GridCoordinateSystem {
     return getGridAxes().stream().filter(a -> a.getAxisType().isVert()).findFirst().orElse(null);
   }
 
-  /** Get the vertical transform, if any. LOOK lazy construction I think. */
+  /** Get the vertical transform, if any. LOOK make this lazy construction. */
   @Nullable
   public VerticalTransform getVerticalTransform() {
     return verticalTransform;

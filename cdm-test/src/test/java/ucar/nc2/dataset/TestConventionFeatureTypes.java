@@ -37,8 +37,6 @@ public class TestConventionFeatureTypes {
     result.add(new Object[] {"awips", FeatureType.GRID});
     result.add(new Object[] {"cedric", FeatureType.GRID});
     result.add(new Object[] {"cf", FeatureType.GRID});
-    // result.add(new Object[] {"cf/dsc", FeatureType.POINT}); not supported in ver7
-    // result.add(new Object[] {"cfradial", FeatureType.RADIAL}); not supported in ver7
     result.add(new Object[] {"coards", FeatureType.GRID});
     result.add(new Object[] {"csm", FeatureType.GRID});
     result.add(new Object[] {"gdv", FeatureType.GRID});
@@ -46,7 +44,6 @@ public class TestConventionFeatureTypes {
     result.add(new Object[] {"ifps", FeatureType.GRID});
     result.add(new Object[] {"m3io", FeatureType.GRID});
     result.add(new Object[] {"mars", FeatureType.GRID});
-    // result.add(new Object[]{"mm5", FeatureType.GRID}); // Dataset lacks X and Y axes.
     result.add(new Object[] {"nuwg", FeatureType.GRID});
     result.add(new Object[] {"wrf", FeatureType.GRID});
     result.add(new Object[] {"zebra", FeatureType.GRID});

@@ -39,8 +39,6 @@ public class TestCoordSystemBuilder {
 
     ProjectionCT projct = new ProjectionCT("horiz", "auth", new FlatEarth());
     transforms.add(projct);
-    VerticalCT vertct = new VerticalCT("vert", "auth", VerticalCT.Type.HybridHeight, new AttributeContainerMutable(""));
-    transforms.add(vertct);
 
     CoordinateSystem.Builder<?> builder = CoordinateSystem.builder().setCoordAxesNames("xname yname")
         .addCoordinateTransformByName("horiz").addCoordinateTransformByName("vert");
@@ -58,7 +56,6 @@ public class TestCoordSystemBuilder {
 
     assertThat(coordSys.getProjectionCT()).isEqualTo(projct);
     assertThat(coordSys.getProjection()).isEqualTo(projct.getProjection());
-    assertThat(coordSys.getVerticalCT()).isEqualTo(vertct);
 
     assertThat(coordSys.isImplicit()).isFalse();
     assertThat(coordSys.isGeoReferencing()).isTrue();
@@ -105,7 +102,6 @@ public class TestCoordSystemBuilder {
     assertThat(coordSys.findAxis(AxisType.GeoZ, AxisType.Pressure, AxisType.Height)).isNull();
 
     assertThat(coordSys.getProjection()).isNull();
-    assertThat(coordSys.getVerticalCT()).isNull();
   }
 
   @Test

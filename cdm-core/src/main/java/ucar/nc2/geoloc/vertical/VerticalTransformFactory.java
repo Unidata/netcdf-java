@@ -33,6 +33,7 @@ public class VerticalTransformFactory {
     registerTransform(CF.ocean_sigma_coordinate, OceanSigma.Builder.class);
     registerTransform(CF.ocean_s_coordinate, OceanS.Builder.class);
     registerTransform(CF.ocean_s_coordinate_g1, OceanSG1.Builder.class);
+    registerTransform(CF.ocean_s_coordinate_g2, OceanSG2.Builder.class);
 
     // CSM
     registerTransform(CsmHybridSigmaBuilder.transform_name, CsmHybridSigmaBuilder.class);
@@ -97,16 +98,10 @@ public class VerticalTransformFactory {
   }
 
   /**
-   * Make a CoordinateTransform object from the parameters in a Coordinate Transform Variable, using an intrinsic or
-   * registered CoordTransBuilder.
-   * 
-   * @param ctv the Coordinate Transform Variable - container for the transform parameters
-   * @param errlog pass back error information.
-   * @return VerticalTransform, or empty if failure.
+   * Does this AttributeContainer contain metadata we can make a VerticalTransform from?
+   * Return empty if not, else return transform name.
    */
-  @Nullable
-  public static Optional<VerticalTransform> makeVerticalTransform(NetcdfDataset ds, CoordinateSystem csys,
-      AttributeContainer ctv, Formatter errlog) {
+  public static Optional<String> hasVerticalTransformFor(AttributeContainer ctv) {
     // standard name
     String transform_name = ctv.findAttributeString(CDM.TRANSFORM_NAME, null);
     if (null == transform_name) {
@@ -127,11 +122,31 @@ public class VerticalTransformFactory {
     }
 
     if (null == transform_name) {
-      errlog.format("**Failed to find Coordinate Transform name from Variable= %s%n", ctv);
       return Optional.empty();
     }
 
     transform_name = transform_name.trim();
+
+    // do we have a transform registered for this ?
+    for (Transform transform : transformList) {
+      if (transform.transName.equalsIgnoreCase(transform_name)) {
+        return Optional.of(transform_name);
+      }
+    }
+    return Optional.empty();
+  }
+
+
+  /**
+   * Make a CoordinateTransform object from the parameters in a Coordinate Transform Variable, using an intrinsic or
+   * registered CoordTransBuilder.
+   * 
+   * @param ctv the Coordinate Transform Variable - container for the transform parameters
+   * @param errlog pass back error information.
+   * @return VerticalTransform, or empty if failure.
+   */
+  public static Optional<VerticalTransform> makeVerticalTransform(String transform_name, NetcdfDataset ds,
+      CoordinateSystem csys, AttributeContainer ctv, Formatter errlog) {
 
     // do we have a transform registered for this ?
     Class<?> builderClass = null;

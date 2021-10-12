@@ -144,6 +144,7 @@ public class CF {
   public static final String ocean_sigma_coordinate = "ocean_sigma_coordinate";
   public static final String ocean_s_coordinate = "ocean_s_coordinate";
   public static final String ocean_s_coordinate_g1 = "ocean_s_coordinate_g1";
+  public static final String ocean_s_coordinate_g2 = "ocean_s_coordinate_g2";
   public static final String ocean_sigma_z_coordinate = "ocean_sigma_z_coordinate";
   public static final String ocean_double_sigma_coordinate = "ocean_double_sigma_coordinate";
 

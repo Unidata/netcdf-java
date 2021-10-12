@@ -11,11 +11,9 @@ import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import ucar.nc2.NetcdfFiles;
-import ucar.nc2.constants.FeatureType;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
-import ucar.nc2.internal.dataset.CoordTransformFactory;
 import ucar.nc2.internal.dataset.CoordSystemFactory;
 
 /**
@@ -71,20 +69,6 @@ public class RuntimeConfigParser {
             errlog.format("CoordSystemBuilderFactory class '%s' not found; check your classpath%n", className);
           } catch (Exception e) {
             errlog.format("CoordSystemBuilderFactory %s error='%s'%n", className, e.getMessage());
-          }
-          break;
-        }
-
-        case "coordTransBuilder": {
-          String transformName = elem.getAttributeValue("name");
-          String className = elem.getAttributeValue("class");
-          try {
-            CoordTransformFactory.registerTransform(transformName, className);
-            errlog.format("CoordTransBuilder added %s%n", className);
-          } catch (ClassNotFoundException e) {
-            errlog.format("CoordTransBuilder class %s not found; check your classpath%n", className);
-          } catch (Exception e) {
-            errlog.format("CoordTransBuilder %s error='%s'%n", className, e.getMessage());
           }
           break;
         }
