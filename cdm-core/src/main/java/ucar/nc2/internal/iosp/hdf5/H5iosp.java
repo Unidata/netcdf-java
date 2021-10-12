@@ -24,12 +24,10 @@ import ucar.ma2.Index;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
 import ucar.ma2.StructureMembers;
-import ucar.nc2.Group;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.DataFormatType;
-import ucar.nc2.internal.iosp.hdf4.HdfEos;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.iosp.Layout;
@@ -38,7 +36,6 @@ import ucar.nc2.iosp.LayoutRegular;
 import ucar.nc2.iosp.NetcdfFileFormat;
 import ucar.nc2.iosp.NetcdfFormatUtils;
 import ucar.nc2.calendar.CalendarDate;
-import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
 import javax.annotation.Nullable;
 
@@ -516,32 +513,30 @@ public abstract class H5iosp extends AbstractIOServiceProvider {
           result = Array.makeVlenArray(newshape, fieldarray);
         }
         int index = asbb.addObjectToHeap(result);
-        bb.order(ByteOrder.nativeOrder());
         bb.putInt(startPos, index); // overwrite with the index into the Heap
       }
     }
   }
 
-  // read from the hd5 heap, insert into StructureDataStorageBB heap
-  void convertHeapArray(StructureDataStorageBB asbb, ByteBuffer bb, int pos, ucar.array.StructureMembers sm)
+  // read from the hdf5 heap, insert into StructureDataStorageBB heap
+  void convertHeapArray(ByteBuffer hdf5heap, StructureDataStorageBB storage, int pos, ucar.array.StructureMembers sm)
       throws IOException {
     for (ucar.array.StructureMembers.Member m : sm.getMembers()) {
       if (m.getArrayType() == ArrayType.STRING) {
-        int size = m.getStorageSizeBytes();
+        int size = m.length();
         int destPos = pos + m.getOffset();
         String[] result = new String[size];
         for (int i = 0; i < size; i++) {
-          result[i] = header.readHeapString(bb, destPos + i * 16); // 16 byte "heap ids" are in the ByteBuffer
+          result[i] = header.readHeapString(hdf5heap, destPos + i * 16); // 16 byte "heap ids" are in the ByteBuffer
         }
 
-        int index = asbb.putOnHeap(result);
-        bb.order(ByteOrder.nativeOrder()); // the string index is always written in "native order"
-        bb.putInt(destPos, index); // overwrite with the index into the StringHeap
+        hdf5heap.order(m.getByteOrder());
+        int index = storage.putOnHeap(result);
+        hdf5heap.putInt(destPos, index); // overwrite with the index into the StringHeap
+        // System.out.printf(" put %s on heap at offset %d value %d bo %s%n", m.getName(), destPos, index, bb.order());
 
       } else {
         int startPos = pos + m.getOffset();
-        bb.order(ByteOrder.LITTLE_ENDIAN);
-
         ByteOrder endian = m.getByteOrder();
         // Compute rank and size up to the first (and ideally last) VLEN
         int[] fieldshape = m.getShape();
@@ -552,14 +547,14 @@ public abstract class H5iosp extends AbstractIOServiceProvider {
             break;
           size *= fieldshape[prefixrank];
         }
-        assert size == m.getStorageSizeBytes() : "Internal error: field size mismatch";
+        assert size == m.length() : "Internal error: field size mismatch";
         ucar.array.Array[] fieldarray = new ucar.array.Array[size]; // hold all the vlen instance data
         // destPos will point to each vlen instance in turn
         // assuming we have 'size' such instances in a row.
         int destPos = startPos;
         for (int i = 0; i < size; i++) {
           // vlenarray extracts the i'th vlen contents (struct not supported).
-          ucar.array.Array<?> vlenArray = header.readHeapVlen(bb, destPos, m.getArrayType(), endian);
+          ucar.array.Array<?> vlenArray = header.readHeapVlen(hdf5heap, destPos, m.getArrayType(), endian);
           fieldarray[i] = vlenArray;
           destPos += VLEN_T_SIZE; // Apparentlly no way to compute VLEN_T_SIZE on the fly
         }
@@ -572,9 +567,9 @@ public abstract class H5iosp extends AbstractIOServiceProvider {
           // result = Array.makeObjectArray(m.getDataType(), fieldarray[0].getClass(), newshape, fieldarray);
           result = null; // Array.makeVlenArray(newshape, fieldarray);
         }
-        int index = asbb.putOnHeap(result);
-        bb.order(ByteOrder.nativeOrder());
-        bb.putInt(startPos, index); // overwrite with the index into the Heap
+        hdf5heap.order(m.getByteOrder());
+        int index = storage.putOnHeap(result);
+        hdf5heap.putInt(startPos, index); // overwrite with the index into the Heap
       }
     }
   }
