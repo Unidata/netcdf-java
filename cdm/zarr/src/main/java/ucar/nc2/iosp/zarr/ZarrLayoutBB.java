@@ -134,7 +134,7 @@ public class ZarrLayoutBB implements LayoutBB {
         i--;
       }
       this.currChunk[i]++;
-      this.currOffset += initializedChunks.getOrDefault(this.chunkNum, (long)0);
+      this.currOffset += initializedChunks.getOrDefault(this.chunkNum, (long) 0);
       this.chunkNum = ZarrUtils.subscriptsToIndex(this.currChunk, nChunks);
     }
   }
@@ -163,22 +163,22 @@ public class ZarrLayoutBB implements LayoutBB {
       // read the data
       byte[] data;
       // if chunk does not exist as file, return empty buffer
-      long dataLength = initializedChunks.getOrDefault(chunkNum, (long)0);
+      long dataLength = initializedChunks.getOrDefault(chunkNum, (long) 0);
       if (dataLength == 0) {
         ByteBuffer result = ByteBuffer.wrap(new byte[0]);
         result.order(byteOrder);
         return result;
       }
 
-      data = new byte[(int)dataLength];
+      data = new byte[(int) dataLength];
       raf.seek(this.rafOffset);
-//      raf.read(data, 0, (int)dataLength);
+      // raf.read(data, 0, (int)dataLength);
       raf.readFully(data);
 
       // apply compressor
       data = compressor.decode(data);
       // apply filters in reverse order
-      for (int i = filters.size()-1; i >= 0; i--) {
+      for (int i = filters.size() - 1; i >= 0; i--) {
         data = filters.get(i).decode(data);
       }
 

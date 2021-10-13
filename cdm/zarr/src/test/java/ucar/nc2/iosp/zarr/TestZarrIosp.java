@@ -15,6 +15,7 @@ import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
+import ucar.nc2.filter.Filters;
 
 import java.io.IOException;
 import java.nio.ByteOrder;
@@ -107,10 +108,6 @@ public class TestZarrIosp {
     assertThat(vinfo.getByteOrder()).isEqualTo(ByteOrder.LITTLE_ENDIAN);
     assertThat(vinfo.getOrder()).isEqualTo(ZArray.Order.F);
     assertThat(vinfo.getSeparator()).isEqualTo(ZArray.DEFAULT_SEPARATOR);
-
-    // check compressors and filters (null for these tests)
-    assertThat(vinfo.getCompressor()).isNull();
-    assertThat(vinfo.getFilters()).isNull();
 
     // check variables and dimensions
     Variable var1D = dims_grp.findVariableLocal("var1D");

@@ -203,7 +203,8 @@ public class ZArray {
 
         List<Filter> filters = new ArrayList<>();
 
-        Map<String, Object>[] filtersBean = codec.readValue(root.path(ZarrKeys.FILTERS).traverse(codec), HashMap[].class);
+        Map<String, Object>[] filtersBean =
+            codec.readValue(root.path(ZarrKeys.FILTERS).traverse(codec), HashMap[].class);
 
         if (filtersBean != null) {
           for (Map<String, Object> bean : filtersBean) {
@@ -211,7 +212,7 @@ public class ZArray {
           }
         }
         return new ZArray(shape, chunks, fill, dtype, compressor, order, filters, delimiter);
-      } catch (UnknownFilterException|ZarrFormatException ex) {
+      } catch (UnknownFilterException | ZarrFormatException ex) {
         throw new IOException(ex.getMessage(), ex.getCause());
       }
     }

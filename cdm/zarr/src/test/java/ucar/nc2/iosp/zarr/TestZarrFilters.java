@@ -86,11 +86,11 @@ public class TestZarrFilters {
 
   private static boolean hasExpectedValues(Array data, int scale, float offset) {
     // For scaled data, 1/scale is the last significant digit
-    double e = 1/(double)scale;
-    double[] dataAsDoubles = (double[])data.get1DJavaArray(DataType.DOUBLE);
+    double e = 1 / (double) scale;
+    double[] dataAsDoubles = (double[]) data.get1DJavaArray(DataType.DOUBLE);
     for (int i = 0; i < dataAsDoubles.length; i++) {
-      double scaledVal = (dataAsDoubles[i]-offset) * scale;
-      if (Math.abs(scaledVal - (double)i%200) > e) {
+      double scaledVal = (dataAsDoubles[i] - offset) * scale;
+      if (Math.abs(scaledVal - (double) i % 200) > e) {
         return false;
       }
     }

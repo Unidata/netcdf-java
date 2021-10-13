@@ -309,8 +309,8 @@ public class ZarrHeader {
     private final long offset;
     private final Map<Integer, Long> initializedChunks;
 
-    VInfo(int[] chunks, Object fillValue, Filter compressor, ByteOrder byteOrder, ZArray.Order order,
-        String separator, List<Filter> filters, long offset, Map<Integer, Long> initializedChunks) {
+    VInfo(int[] chunks, Object fillValue, Filter compressor, ByteOrder byteOrder, ZArray.Order order, String separator,
+        List<Filter> filters, long offset, Map<Integer, Long> initializedChunks) {
       this.chunks = chunks;
       this.fillValue = fillValue;
       this.byteOrder = byteOrder;
