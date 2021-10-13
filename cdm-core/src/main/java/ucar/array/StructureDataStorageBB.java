@@ -12,7 +12,6 @@ import java.util.Iterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.array.StructureMembers.Member;
-import ucar.nc2.iosp.IospHelper;
 
 /**
  * Storage for StructureDataArray with all data in a single ByteBuffer, using member's offsets and ByteOrder,
@@ -285,8 +284,10 @@ public final class StructureDataStorageBB implements Storage<StructureData> {
 
         case STRING: {
           int heapIdx = bbuffer.getInt(pos);
+          // System.out.printf(" get %s on heap at offset %d heapIdx %d bo %s%n", m.getName(), pos, heapIdx,
+          // m.getByteOrder());
           if (heapIdx < 0 || heapIdx >= heap.size()) {
-            log.warn("getMemberData = {} heapIdx = {} member = {} bo = {}", pos, heapIdx, m.getName(),
+            log.warn("  bad heapIdx pos = {} heapIdx = {} member = {} bo = {}", pos, heapIdx, m.getName(),
                 m.getByteOrder());
           }
           String[] array = (String[]) heap.get(heapIdx);
@@ -295,7 +296,6 @@ public final class StructureDataStorageBB implements Storage<StructureData> {
 
         case SEQUENCE: {
           int heapIdx = bbuffer.getInt(pos);
-          // System.out.printf("getMemberData get seq %s at heap = %d pos = %d%n", m.getName(), heapIdx, pos);
           return (StructureDataArray) heap.get(heapIdx);
         }
 
@@ -317,8 +317,8 @@ public final class StructureDataStorageBB implements Storage<StructureData> {
     }
 
     private Array<?> getMemberVlenData(Member m) {
-      bbuffer.order(m.getByteOrder());
       int pos = offset + recno * members.getStorageSizeBytes() + m.getOffset();
+      bbuffer.order(m.getByteOrder());
       int heapIdx = bbuffer.getInt(pos);
       return (ArrayVlen<?>) heap.get(heapIdx);
     }
