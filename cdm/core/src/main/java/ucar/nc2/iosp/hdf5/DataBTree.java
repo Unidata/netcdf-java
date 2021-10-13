@@ -297,7 +297,7 @@ public class DataBTree {
   public class DataChunk {
     public final int size; // size of chunk in bytes; need storage layout dimensions to interpret
     public final int filterMask; // bitfield indicating which filters have been skipped for this chunk
-    public final int[] offset; // offset index of this chunk, reletive to entire array
+    public final int[] offset; // offset index of this chunk, relative to entire array
     public final long filePos; // filePos of a single raw data chunk, already shifted by the offset if needed
 
     DataChunk(int ndim, boolean last) throws IOException {

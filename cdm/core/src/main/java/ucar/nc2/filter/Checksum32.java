@@ -33,8 +33,10 @@ public class Checksum32 extends Filter {
     this.byteOrder = bo;
   }
 
+
   public Checksum32(CType type) {
-    this(type, ByteOrder.BIG_ENDIAN);
+    // TODO: can we do this better?
+    this(type, ByteOrder.LITTLE_ENDIAN);
   }
 
   @Override

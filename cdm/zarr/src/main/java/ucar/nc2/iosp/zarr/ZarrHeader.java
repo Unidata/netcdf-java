@@ -10,6 +10,7 @@ import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.Group;
 import ucar.nc2.Variable;
+import ucar.nc2.filter.Filter;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.io.zarr.RandomAccessDirectory;
 import ucar.unidata.io.zarr.RandomAccessDirectoryItem;
@@ -42,7 +43,7 @@ public class ZarrHeader {
   private class DelayedVarMaker {
     private RandomAccessDirectoryItem var;
     private ZArray zarray;
-    private Set<Integer> initializedChunks; // track any uninitialized chunks for var
+    private Map<Integer, Long> initializedChunks; // track any uninitialized chunks for var
     private List<Attribute> attrs; // list of variable attributes
     private long dataOffset; // byte position where data starts
 
@@ -53,7 +54,7 @@ public class ZarrHeader {
     void setVar(RandomAccessDirectoryItem var) {
       this.var = var;
       this.attrs = null;
-      this.initializedChunks = new HashSet<>();
+      this.initializedChunks = new HashMap<>();
       this.dataOffset = -1;
       if (var != null) {
         try {
@@ -90,7 +91,7 @@ public class ZarrHeader {
         ZarrIosp.logger.error(new ZarrFormatException().getMessage());
         this.var = null; // skip rest of var is unrecognized files found
       }
-      this.initializedChunks.add(index);
+      this.initializedChunks.put(index, item.length());
       // if data offset is uninitialized, set here
       if (this.dataOffset < 0) {
         this.dataOffset = item.startIndex();
@@ -179,7 +180,7 @@ public class ZarrHeader {
   }
 
   private void makeVariable(RandomAccessDirectoryItem item, long dataOffset, ZArray zarray,
-      Set<Integer> initializedChunks, List<Attribute> attrs) throws ZarrFormatException {
+      Map<Integer, Long> initializedChunks, List<Attribute> attrs) throws ZarrFormatException {
     // make new Variable
     Variable.Builder var = Variable.builder();
     String location = ZarrUtils.trimLocation(item.getLocation());
@@ -300,16 +301,16 @@ public class ZarrHeader {
   class VInfo {
     private final int[] chunks;
     private final Object fillValue;
-    private final ZarrFilter compressor;
+    private final Filter compressor;
     private final ByteOrder byteOrder;
     private final ZArray.Order order;
     private final String separator;
-    private final List<ZarrFilter> filters;
+    private final List<Filter> filters;
     private final long offset;
-    private final Set<Integer> initializedChunks;
+    private final Map<Integer, Long> initializedChunks;
 
-    VInfo(int[] chunks, Object fillValue, ZarrFilter compressor, ByteOrder byteOrder, ZArray.Order order,
-        String separator, List<ZarrFilter> filters, long offset, Set<Integer> initializedChunks) {
+    VInfo(int[] chunks, Object fillValue, Filter compressor, ByteOrder byteOrder, ZArray.Order order, String separator,
+        List<Filter> filters, long offset, Map<Integer, Long> initializedChunks) {
       this.chunks = chunks;
       this.fillValue = fillValue;
       this.byteOrder = byteOrder;
@@ -329,7 +330,7 @@ public class ZarrHeader {
       return this.fillValue;
     }
 
-    public ZarrFilter getCompressor() {
+    public Filter getCompressor() {
       return this.compressor;
     }
 
@@ -345,7 +346,7 @@ public class ZarrHeader {
       return this.separator;
     }
 
-    public List<ZarrFilter> getFilters() {
+    public List<Filter> getFilters() {
       return this.filters;
     }
 
@@ -353,7 +354,7 @@ public class ZarrHeader {
       return this.offset;
     }
 
-    public Set<Integer> getInitializedChunks() {
+    public Map<Integer, Long> getInitializedChunks() {
       return this.initializedChunks;
     }
 
