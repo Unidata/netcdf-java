@@ -49,7 +49,6 @@ public abstract class CoordinateBuilderImpl<T> implements CoordinateBuilder<T> {
     for (Object val : vals) {
       if (!(val instanceof Long) && !(val instanceof TimeCoordIntvValue) && !(val instanceof CoordinateTime2D.Time2D)
           && !(val instanceof VertCoordValue) && !(val instanceof EnsCoordValue)) {
-        System.out.printf("HEY");
         throw new IllegalArgumentException();
       }
     }

@@ -10,17 +10,17 @@
 package ucar.nc2.internal.dataset.transform.horiz;
 
 import ucar.nc2.AttributeContainer;
-import ucar.nc2.dataset.ProjectionCT;
 import ucar.unidata.geoloc.Earth;
+import ucar.unidata.geoloc.Projection;
 
 /**
  * Polyconic Projection.
  * 
  * @author ghansham@sac.isro.gov.in 1/8/2012
  */
-public class PolyconicProjection extends AbstractProjectionCT implements HorizTransformBuilderIF {
+public class PolyconicProjection extends AbstractProjectionCT implements ProjectionBuilder {
 
-  public ProjectionCT.Builder<?> makeCoordinateTransform(AttributeContainer ctv, String geoCoordinateUnits) {
+  public Projection makeProjection(AttributeContainer ctv, String geoCoordinateUnits) {
 
     double lon0 = ctv.findAttributeDouble("longitude_of_central_meridian", Double.NaN);
     double lat0 = ctv.findAttributeDouble("latitude_of_projection_origin", Double.NaN);
@@ -39,7 +39,7 @@ public class PolyconicProjection extends AbstractProjectionCT implements HorizTr
       proj = new ucar.unidata.geoloc.projection.proj4.PolyconicProjection(lat0, lon0);
     }
 
-    return ProjectionCT.builder().setName(ctv.getName()).setAuthority("FGDC").setProjection(proj);
+    return proj;
   }
 
   public String getTransformName() {

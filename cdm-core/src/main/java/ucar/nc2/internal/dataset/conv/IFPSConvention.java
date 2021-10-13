@@ -24,7 +24,7 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.ProjectionCT;
+import ucar.nc2.internal.dataset.transform.horiz.ProjectionCTV;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dataset.spi.CoordSystemBuilderFactory;
 import ucar.nc2.internal.dataset.CoordSystemBuilder;
@@ -90,6 +90,7 @@ public class IFPSConvention extends CoordSystemBuilder {
     this.conventionName = CONVENTION_NAME;
   }
 
+  // LOOK this is non standard for adding projection, does it work?
   @Override
   public void augmentDataset(CancelTask cancelTask) throws IOException {
     if (rootGroup.findVariableLocal("xCoord").isPresent()) {
@@ -216,7 +217,7 @@ public class IFPSConvention extends CoordSystemBuilder {
     LambertConformal lc = new LambertConformal(centralLat, centralLon, par1, par2);
 
     // make Coordinate Transform Variable
-    ProjectionCT ct = new ProjectionCT("lambertConformalProjection", "FGDC", lc);
+    ProjectionCTV ct = new ProjectionCTV("lambertConformalProjection", lc);
     VariableDS.Builder<?> ctVar = makeCoordinateTransformVariable(ct);
     ctVar.addAttribute(new Attribute(_Coordinate.Axes, "xCoord yCoord"));
     rootGroup.addVariable(ctVar);

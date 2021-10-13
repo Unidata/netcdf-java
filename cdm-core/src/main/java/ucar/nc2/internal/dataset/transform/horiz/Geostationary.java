@@ -7,8 +7,6 @@ package ucar.nc2.internal.dataset.transform.horiz;
 
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.CF;
-import ucar.nc2.dataset.ProjectionCT;
-import ucar.nc2.dataset.TransformType;
 import ucar.nc2.units.SimpleUnit;
 import ucar.unidata.geoloc.Projection;
 
@@ -62,17 +60,13 @@ import ucar.unidata.geoloc.Projection;
  * computed
  * from semi_minor/major_axis values.
  */
-public class Geostationary extends AbstractProjectionCT implements HorizTransformBuilderIF {
+public class Geostationary extends AbstractProjectionCT implements ProjectionBuilder {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Geostationary.class);
 
   private static final double defaultScaleFactor = -1.0;
 
   public String getTransformName() {
     return CF.GEOSTATIONARY;
-  }
-
-  public TransformType getTransformType() {
-    return TransformType.Projection;
   }
 
   private double getScaleFactor(String geoCoordinateUnits) {
@@ -90,7 +84,7 @@ public class Geostationary extends AbstractProjectionCT implements HorizTransfor
     return scaleFactor;
   }
 
-  public ProjectionCT.Builder<?> makeCoordinateTransform(AttributeContainer ctv, String geoCoordinateUnits) {
+  public Projection makeProjection(AttributeContainer ctv, String geoCoordinateUnits) {
     readStandardParams(ctv, geoCoordinateUnits);
 
     double subLonDegrees = ctv.findAttributeDouble(CF.LONGITUDE_OF_PROJECTION_ORIGIN, Double.NaN);
@@ -147,10 +141,8 @@ public class Geostationary extends AbstractProjectionCT implements HorizTransfor
 
     geoCoordinateScaleFactor = getScaleFactor(geoCoordinateUnits);
 
-    Projection proj = new ucar.unidata.geoloc.projection.sat.Geostationary(subLonDegrees, perspective_point_height,
+    return new ucar.unidata.geoloc.projection.sat.Geostationary(subLonDegrees, perspective_point_height,
         semi_minor_axis, semi_major_axis, inv_flattening, isSweepX, geoCoordinateScaleFactor);
-
-    return ProjectionCT.builder().setName(ctv.getName()).setAuthority("FGDC").setProjection(proj);
   }
 
 }

@@ -22,7 +22,7 @@ import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.*;
 import ucar.nc2.dataset.spi.CoordSystemBuilderFactory;
 import ucar.nc2.internal.dataset.CoordSystemBuilder;
-import ucar.nc2.internal.dataset.TransformBuilder;
+import ucar.nc2.internal.dataset.transform.horiz.ProjectionCTV;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.geoloc.projection.AlbersEqualArea;
 import ucar.unidata.geoloc.projection.LambertAzimuthalEqualArea;
@@ -72,7 +72,7 @@ public class M3IOConvention extends CoordSystemBuilder {
   }
 
   /////////////////////////////////////////////////////////////////
-  private ProjectionCT projCT;
+  private ProjectionCTV projCT;
 
   private M3IOConvention(NetcdfDataset.Builder<?> datasetBuilder) {
     super(datasetBuilder);
@@ -134,7 +134,7 @@ public class M3IOConvention extends CoordSystemBuilder {
     if (projCT != null) {
       VarProcess vp = findVarProcess(projCT.getName(), null);
       vp.isCoordinateTransform = true;
-      vp.ct = new TransformBuilder().setPreBuilt(projCT);
+      vp.ctv = projCT;
     }
     super.makeCoordinateTransforms();
   }
@@ -249,69 +249,69 @@ public class M3IOConvention extends CoordSystemBuilder {
     datasetBuilder.replaceCoordinateAxis(rootGroup, timeCoord);
   }
 
-  private ProjectionCT makeLatLongProjection() {
+  private ProjectionCTV makeLatLongProjection() {
     // Get lower left and upper right corners of domain in lat/lon
     double x1 = findAttributeDouble("XORIG");
     double x2 = x1 + findAttributeDouble("XCELL") * findAttributeDouble("NCOLS");
 
     LatLonProjection ll = new LatLonProjection("LatitudeLongitudeProjection", null, (x1 + x2) / 2);
-    return new ProjectionCT("LatitudeLongitudeProjection", "FGDC", ll);
+    return new ProjectionCTV("LatitudeLongitudeProjection", ll);
   }
 
-  private ProjectionCT makeLCProjection() {
+  private ProjectionCTV makeLCProjection() {
     double par1 = findAttributeDouble("P_ALP");
     double par2 = findAttributeDouble("P_BET");
     double lon0 = findAttributeDouble("XCENT");
     double lat0 = findAttributeDouble("YCENT");
 
     LambertConformal lc = new LambertConformal(lat0, lon0, par1, par2, 0.0, 0.0, earthRadius);
-    return new ProjectionCT("LambertConformalProjection", "FGDC", lc);
+    return new ProjectionCTV("LambertConformalProjection", lc);
   }
 
-  private ProjectionCT makePolarStereographicProjection() {
+  private ProjectionCTV makePolarStereographicProjection() {
     double lon0 = findAttributeDouble("XCENT");
     double lat0 = findAttributeDouble("YCENT");
     double latts = findAttributeDouble("P_BET");
 
     Stereographic sg = new Stereographic(latts, lat0, lon0, 0.0, 0.0, earthRadius);
-    return new ProjectionCT("PolarStereographic", "FGDC", sg);
+    return new ProjectionCTV("PolarStereographic", sg);
   }
 
-  private ProjectionCT makeEquitorialMercatorProjection() {
+  private ProjectionCTV makeEquitorialMercatorProjection() {
     double lon0 = findAttributeDouble("XCENT");
     double par = findAttributeDouble("P_ALP");
 
     Mercator p = new Mercator(lon0, par, 0.0, 0.0, earthRadius);
-    return new ProjectionCT("EquitorialMercator", "FGDC", p);
+    return new ProjectionCTV("EquitorialMercator", p);
   }
 
-  private ProjectionCT makeTransverseMercatorProjection() {
+  private ProjectionCTV makeTransverseMercatorProjection() {
     double lat0 = findAttributeDouble("P_ALP");
     double tangentLon = findAttributeDouble("P_GAM");
 
     TransverseMercator p = new TransverseMercator(lat0, tangentLon, 1.0, 0.0, 0.0, earthRadius);
-    return new ProjectionCT("TransverseMercator", "FGDC", p);
+    return new ProjectionCTV("TransverseMercator", p);
   }
 
-  private ProjectionCT makeAlbersProjection() {
+  private ProjectionCTV makeAlbersProjection() {
     double lat0 = findAttributeDouble("YCENT");
     double lon0 = findAttributeDouble("XCENT");
     double par1 = findAttributeDouble("P_ALP");
     double par2 = findAttributeDouble("P_BET");
 
     AlbersEqualArea p = new AlbersEqualArea(lat0, lon0, par1, par2, 0.0, 0.0, earthRadius);
-    return new ProjectionCT("Albers", "FGDC", p);
+    return new ProjectionCTV("Albers", p);
   }
 
-  private ProjectionCT makeLambertAzimuthalProjection() {
+  private ProjectionCTV makeLambertAzimuthalProjection() {
     double lat0 = findAttributeDouble("YCENT");
     double lon0 = findAttributeDouble("XCENT");
 
     LambertAzimuthalEqualArea p = new LambertAzimuthalEqualArea(lat0, lon0, 0.0, 0.0, earthRadius);
-    return new ProjectionCT("LambertAzimuthal", "FGDC", p);
+    return new ProjectionCTV("LambertAzimuthal", p);
   }
 
-  private ProjectionCT makeSTProjection() {
+  private ProjectionCTV makeSTProjection() {
     double latt = findAttributeDouble("PROJ_ALPHA");
     if (Double.isNaN(latt))
       latt = findAttributeDouble("P_ALP");
@@ -321,10 +321,10 @@ public class M3IOConvention extends CoordSystemBuilder {
       lont = findAttributeDouble("P_BET");
 
     Stereographic st = new Stereographic(latt, lont, 1.0, 0.0, 0.0, earthRadius);
-    return new ProjectionCT("StereographicProjection", "FGDC", st);
+    return new ProjectionCTV("StereographicProjection", st);
   }
 
-  private ProjectionCT makeTMProjection() {
+  private ProjectionCTV makeTMProjection() {
     double lat0 = findAttributeDouble("PROJ_ALPHA");
     if (Double.isNaN(lat0))
       lat0 = findAttributeDouble("P_ALP");
@@ -334,10 +334,10 @@ public class M3IOConvention extends CoordSystemBuilder {
       tangentLon = findAttributeDouble("P_BET");
 
     TransverseMercator tm = new TransverseMercator(lat0, tangentLon, 1.0, 0.0, 0.0, earthRadius);
-    return new ProjectionCT("MercatorProjection", "FGDC", tm);
+    return new ProjectionCTV("MercatorProjection", tm);
   }
 
-  private ProjectionCT makeUTMProjection() {
+  private ProjectionCTV makeUTMProjection() {
     int zone = (int) findAttributeDouble("P_ALP");
     double ycent = findAttributeDouble("YCENT");
     boolean isNorth = true;
@@ -345,7 +345,7 @@ public class M3IOConvention extends CoordSystemBuilder {
       isNorth = false;
 
     UtmProjection utm = new UtmProjection(zone, isNorth);
-    return new ProjectionCT("UTM", "EPSG", utm);
+    return new ProjectionCTV("UTM", utm);
   }
 
   /////////////////////////////////////////////////////////////////////////

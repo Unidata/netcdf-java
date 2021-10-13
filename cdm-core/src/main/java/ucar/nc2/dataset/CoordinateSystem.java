@@ -11,14 +11,18 @@ import javax.annotation.Nullable;
 import ucar.array.ArrayType;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.internal.dataset.transform.horiz.ProjectionCTV;
+import ucar.nc2.internal.dataset.transform.horiz.ProjectionFactory;
 import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.unidata.util.StringUtil2;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Formatter;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -78,16 +82,6 @@ public class CoordinateSystem {
   /** Get the List of CoordinateAxes */
   public ImmutableList<CoordinateAxis> getCoordinateAxes() {
     return ImmutableList.copyOf(coordAxes);
-  }
-
-  /**
-   * Get the List of CoordinateTransforms.
-   * 
-   * @deprecated use getProjection() or getVerticalCT()
-   */
-  @Deprecated
-  public ImmutableList<CoordinateTransform> getCoordinateTransforms() {
-    return ImmutableList.copyOf(coordTrans);
   }
 
   /** Get the name of the Coordinate System */
@@ -320,35 +314,12 @@ public class CoordinateSystem {
   }
 
   /**
-   * Find the first ProjectionCT from the list of CoordinateTransforms.
-   * 
-   * @return ProjectionCT or null if none.
-   * @deprecated use getProjection()
-   */
-  @Deprecated
-  public ProjectionCT getProjectionCT() {
-    for (CoordinateTransform ct : coordTrans) {
-      if (ct instanceof ProjectionCT)
-        return (ProjectionCT) ct;
-    }
-    return null;
-  }
-
-  /**
    * Get the Projection for this coordinate system.
-   * 
-   * @return Projection or null if none.
    */
   @Nullable
   public Projection getProjection() {
-    if (projection == null) {
-      if (isLatLon()) {
-        projection = new LatLonProjection();
-      }
-      ProjectionCT projCT = getProjectionCT();
-      if (null != projCT) {
-        projection = projCT.getProjection();
-      }
+    if (projection == null && projectionCTV != null) {
+      this.projection = ProjectionFactory.makeProjection(this.projectionCTV, new Formatter());
     }
     return projection;
   }
@@ -637,6 +608,7 @@ public class CoordinateSystem {
 
   ////////////////////////////////////////////////////////////////////////////
 
+
   @Override
   public boolean equals(Object o) {
     if (this == o)
@@ -644,14 +616,13 @@ public class CoordinateSystem {
     if (o == null || getClass() != o.getClass())
       return false;
     CoordinateSystem that = (CoordinateSystem) o;
-    return com.google.common.base.Objects.equal(coordAxes, that.coordAxes)
-        && com.google.common.base.Objects.equal(coordTrans, that.coordTrans)
-        && com.google.common.base.Objects.equal(name, that.name);
+    return coordAxes.equals(that.coordAxes) && Objects.equals(projectionCTV, that.projectionCTV)
+        && name.equals(that.name);
   }
 
   @Override
   public int hashCode() {
-    return com.google.common.base.Objects.hashCode(coordAxes, coordTrans, name);
+    return Objects.hash(coordAxes, projectionCTV, name);
   }
 
   public String toString() {
@@ -661,10 +632,9 @@ public class CoordinateSystem {
   ////////////////////////////////////////////////////////////////////////////////////////////
   private final NetcdfDataset ds; // cant remove until dt.GridCoordSys can be removed
   private final ImmutableList<CoordinateAxis> coordAxes;
-  // LOOK only keep projection and only allow one in ver8.
-  private final ImmutableList<CoordinateTransform> coordTrans;
 
   // TODO make these private, final and immutable in ver7.
+  private final ProjectionCTV projectionCTV;
   private Projection projection;
 
   // these are calculated
@@ -675,7 +645,7 @@ public class CoordinateSystem {
   private final boolean isImplicit; // where set?
 
   protected CoordinateSystem(Builder<?> builder, NetcdfDataset ncd, List<CoordinateAxis> axesAll,
-      List<CoordinateTransform> allTransforms) {
+      List<ProjectionCTV> allProjections) {
     this.ds = ncd;
     this.isImplicit = builder.isImplicit;
 
@@ -730,15 +700,12 @@ public class CoordinateSystem {
     }
 
     // Find the named coordinate transforms in allTransforms.
-    ArrayList<CoordinateTransform> vcts = new ArrayList<>();
-    for (String want : builder.transNames) {
-      // TODO what is the case where wantTransName matches attribute collection name?
-      allTransforms.stream()
-          .filter(ct -> (want.equals(ct.getName())
-              || (ct.getCtvAttributes() != null && want.equals(ct.getCtvAttributes().getName()))))
-          .findFirst().ifPresent(vcts::add);
+    ProjectionCTV proj = null;
+    if (builder.transName != null) {
+      proj = allProjections.stream().filter(ct -> builder.transName.equals(ct.getName())).findFirst().orElse(null);
     }
-    coordTrans = ImmutableList.copyOf(vcts);
+    this.projectionCTV = proj;
+
   }
 
   /** Convert to a mutable Builder. */
@@ -748,7 +715,8 @@ public class CoordinateSystem {
 
   // Add local fields to the passed - in builder.
   protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
-    return b.setImplicit(this.isImplicit).setCoordAxesNames(this.name).addCoordinateTransforms(this.coordTrans);
+    return b.setImplicit(this.isImplicit).setCoordAxesNames(this.name)
+        .setCoordinateTransformName(this.projectionCTV.getName());
   }
 
   /** Get a Builder of CoordinateSystem */
@@ -765,7 +733,7 @@ public class CoordinateSystem {
 
   public static abstract class Builder<T extends Builder<T>> {
     public String coordAxesNames = "";
-    private final List<String> transNames = new ArrayList<>();
+    private String transName;
     private boolean isImplicit;
     private boolean built;
 
@@ -777,14 +745,8 @@ public class CoordinateSystem {
       return self();
     }
 
-    public T addCoordinateTransformByName(String ct) {
-      transNames.add(ct);
-      return self();
-    }
-
-    // used when making a copy
-    T addCoordinateTransforms(Collection<CoordinateTransform> transforms) {
-      transforms.forEach(trans -> addCoordinateTransformByName(trans.name));
+    public T setCoordinateTransformName(String ct) {
+      transName = ct;
       return self();
     }
 
@@ -798,9 +760,9 @@ public class CoordinateSystem {
      * 
      * @param ncd The containing dataset, TODO remove after dt.GridCoordSys is deleted in ver7
      * @param axes Must contain all axes that are named in coordAxesNames
-     * @param transforms Must contain all transforms that are named by addCoordinateTransformByName
+     * @param transforms Must contain any transforms that are named by setCoordinateTransformName
      */
-    public CoordinateSystem build(NetcdfDataset ncd, List<CoordinateAxis> axes, List<CoordinateTransform> transforms) {
+    public CoordinateSystem build(NetcdfDataset ncd, List<CoordinateAxis> axes, List<ProjectionCTV> transforms) {
       if (built)
         throw new IllegalStateException("already built");
       built = true;

@@ -17,13 +17,14 @@ import java.util.StringTokenizer;
 import java.util.stream.Collectors;
 import javax.annotation.concurrent.Immutable;
 
-import ucar.nc2.AttributeContainer;
 import ucar.nc2.Dimension;
 import ucar.nc2.Group;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.*;
+import ucar.nc2.internal.dataset.transform.horiz.ProjectionCTV;
+import ucar.nc2.internal.dataset.transform.horiz.ProjectionFactory;
 
 /** An immutable helper class for NetcdfDataset to build and manage coordinates. */
 @Immutable
@@ -42,7 +43,7 @@ public class CoordinatesHelper {
     return coordSystems.stream().filter(cs -> cs.getName().equals(name)).findFirst();
   }
 
-  public ImmutableList<CoordinateTransform> getCoordTransforms() {
+  public ImmutableList<ProjectionCTV> getCoordTransforms() {
     return coordTransforms;
   }
 
@@ -87,26 +88,20 @@ public class CoordinatesHelper {
   ////////////////////////////////////////////////////////////////////////////////////////////////////
   private final ImmutableList<CoordinateAxis> coordAxes;
   private final ImmutableList<CoordinateSystem> coordSystems;
-  private final ImmutableList<CoordinateTransform> coordTransforms;
+  private final ImmutableList<ProjectionCTV> coordTransforms;
 
   private CoordinatesHelper(Builder builder, NetcdfDataset ncd, ImmutableList<CoordinateAxis> axes) {
     this.coordAxes = axes;
 
-    ImmutableList.Builder<CoordinateTransform> ctBuilders = ImmutableList.builder();
-
-    // LOOK keep horiz and vert transforms separate?
-    ctBuilders.addAll(
-        builder.coordTransforms.stream().map(ct -> ct.build()).filter(Objects::nonNull).collect(Collectors.toList()));
-
-    ctBuilders.addAll(builder.transformBuilders.stream().map(ct -> ct.build(ncd)).filter(Objects::nonNull)
-        .collect(Collectors.toList()));
-
-    // ctBuilders.addAll(builder.verticalCTBuilders.stream().map(ct -> ct.makeVerticalCT(ncd)).filter(Objects::nonNull)
-    // .collect(Collectors.toList()));
+    ImmutableList.Builder<ProjectionCTV> ctBuilders = ImmutableList.builder();
+    ctBuilders.addAll(builder.coordTransforms.stream().filter(Objects::nonNull).collect(Collectors.toList()));
     coordTransforms = ctBuilders.build();
 
-    // TODO trim coordSys not used by a variable....
-    this.coordSystems = builder.coordSys.stream().map(csb -> csb.build(ncd, this.coordAxes, this.coordTransforms))
+    List<ProjectionCTV> allProjections =
+        coordTransforms.stream().filter(ProjectionFactory::hasProjectionFor).collect(Collectors.toList());
+
+    // TODO remove coordSys not used by a variable....
+    this.coordSystems = builder.coordSys.stream().map(csb -> csb.build(ncd, this.coordAxes, allProjections))
         .filter(Objects::nonNull).collect(ImmutableList.toImmutableList());
   }
 
@@ -120,9 +115,7 @@ public class CoordinatesHelper {
   public static class Builder {
     public List<CoordinateAxis.Builder<?>> coordAxes = new ArrayList<>();
     public List<CoordinateSystem.Builder<?>> coordSys = new ArrayList<>();
-    public List<CoordinateTransform.Builder<?>> coordTransforms = new ArrayList<>();
-    public List<TransformBuilder> transformBuilders = new ArrayList<>();
-    List<AttributeContainer> verticalBuilders = new ArrayList<>();
+    public List<ProjectionCTV> coordTransforms = new ArrayList<>();
     private boolean built;
 
     public Builder addCoordinateAxis(CoordinateAxis.Builder<?> axis) {
@@ -188,34 +181,11 @@ public class CoordinatesHelper {
     }
 
     // this is used when making a copy, we've thrown away the TransformBuilder
-    public Builder addCoordinateTransform(CoordinateTransform.Builder<?> ct) {
+    public Builder addCoordinateTransform(ProjectionCTV ct) {
       Preconditions.checkNotNull(ct);
-      if (coordTransforms.stream().noneMatch(old -> old.name.equals(ct.name))) {
+      if (coordTransforms.stream().noneMatch(old -> old.getName().equals(ct.getName()))) {
         coordTransforms.add(ct);
       }
-      return this;
-    }
-
-    // this is used by CoordSysBuilder, when constructing
-    public Builder addTransformBuilder(TransformBuilder ct) {
-      Preconditions.checkNotNull(ct);
-      if (transformBuilders.stream().noneMatch(old -> old.name.equals(ct.name))) {
-        transformBuilders.add(ct);
-        if (ct.isVertical()) {
-          addVerticalCoordinateVariable(ct.getCtvAttributes());
-        }
-      }
-      return this;
-    }
-
-    public Builder addVerticalCoordinateVariable(AttributeContainer vctb) {
-      verticalBuilders.add(vctb);
-      return this;
-    }
-
-    public Builder addCoordinateTransforms(Collection<CoordinateTransform.Builder<?>> transforms) {
-      Preconditions.checkNotNull(transforms);
-      transforms.forEach(this::addCoordinateTransform);
       return this;
     }
 

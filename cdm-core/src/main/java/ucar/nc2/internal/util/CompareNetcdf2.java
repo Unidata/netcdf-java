@@ -21,6 +21,7 @@ import java.nio.ByteBuffer;
 import ucar.nc2.internal.iosp.hdf5.H5header;
 import ucar.nc2.iosp.NetcdfFormatUtils;
 import ucar.nc2.util.Misc;
+import ucar.unidata.geoloc.Projection;
 
 /**
  * Compare two NetcdfFile.
@@ -66,7 +67,13 @@ public class CompareNetcdf2 {
     }
 
     // if true, compare transform, else skip comparision
-    default boolean compareCoordinateTransform(CoordinateTransform ct1, CoordinateTransform ct2) {
+    default boolean compareProjection(Projection ct1, Projection ct2) {
+      if ((ct1 == null) != (ct2 == null)) {
+        return false;
+      }
+      if (ct1 == null) {
+        return true;
+      }
       return ct1.equals(ct2);
     }
   }
@@ -464,19 +471,10 @@ public class CompareNetcdf2 {
       }
     }
 
-    for (CoordinateTransform ct1 : cs1.getCoordinateTransforms()) {
-      CoordinateTransform ct2 = cs2.getCoordinateTransforms().stream()
-          .filter(ct -> filter.compareCoordinateTransform(ct1, ct)).findFirst().orElse(null);
-      if (ct2 == null) {
-        ok = false;
-        f.format("  ** Cant find transform %s in file2 %n", ct1.getName());
-      } else {
-        boolean ctOk = filter.compareCoordinateTransform(ct1, ct2);
-        if (!ctOk)
-          f.format("  ** compareCoordinateTransform failed on ct %s for cs %s %n", ct1.getName(), cs1.getName());
-        ok = ok && ctOk;
-      }
-    }
+    Projection cp1 = cs1.getProjection();
+    Projection cp2 = cs2.getProjection();
+    boolean ctOk = filter.compareProjection(cp1, cp2);
+    ok = ok && ctOk;
 
     return ok;
   }

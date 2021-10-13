@@ -14,13 +14,11 @@ import java.util.Formatter;
 import java.util.StringTokenizer;
 
 /** Abstract superclass for implementations of HorizTransformBuilderIF */
-public abstract class AbstractProjectionCT {
+public abstract class AbstractProjectionCT implements ProjectionBuilder {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(AbstractProjectionCT.class);
 
   protected double lat0, lon0, false_easting, false_northing, earth_radius;
   protected Earth earth;
-
-  public abstract String getTransformName();
 
   private Formatter errBuffer;
 

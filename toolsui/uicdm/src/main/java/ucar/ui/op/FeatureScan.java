@@ -7,7 +7,6 @@ package ucar.ui.op;
 import com.google.common.collect.Iterables;
 import ucar.nc2.Attribute;
 import ucar.nc2.Group;
-import ucar.nc2.dataset.CoordinateTransform;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.geoloc.vertical.VerticalTransform;

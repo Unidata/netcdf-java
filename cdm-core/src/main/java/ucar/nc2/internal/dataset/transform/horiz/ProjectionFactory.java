@@ -7,7 +7,6 @@ package ucar.nc2.internal.dataset.transform.horiz;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
-import ucar.nc2.dataset.*;
 import ucar.unidata.geoloc.Projection;
 
 import javax.annotation.Nullable;
@@ -59,7 +58,7 @@ public class ProjectionFactory {
    * @param c class that implements CoordTransBuilderIF.
    */
   public static void registerTransform(String transformName, Class<?> c) {
-    if (!(HorizTransformBuilderIF.class.isAssignableFrom(c)))
+    if (!(ProjectionBuilder.class.isAssignableFrom(c)))
       throw new IllegalArgumentException("Class " + c.getName() + " must implement HorizTransformBuilderIF");
 
     // fail fast - check newInstance works
@@ -121,15 +120,57 @@ public class ProjectionFactory {
   }
 
   /**
+   * Do we have a Projection, or can we make one for projCtv?
+   */
+  public static boolean hasProjectionFor(ProjectionCTV projCtv) {
+    if (projCtv.getPrecomputedProjection() != null) {
+      return true;
+    }
+    AttributeContainer ctv = projCtv.getCtvAttributes();
+    // standard name
+    String transform_name = ctv.findAttributeString(CDM.TRANSFORM_NAME, null);
+    if (null == transform_name)
+      transform_name = ctv.findAttributeString("Projection_Name", null);
+
+    // these names are from CF - dont want to have to duplicate
+    if (null == transform_name)
+      transform_name = ctv.findAttributeString(CF.GRID_MAPPING_NAME, null);
+    if (null == transform_name)
+      transform_name = ctv.findAttributeString(CF.STANDARD_NAME, null);
+
+    // Finally check the units
+    if (null == transform_name)
+      transform_name = ctv.findAttributeString(CDM.UNITS, null);
+
+    if (null == transform_name) {
+      return false;
+    }
+
+    transform_name = transform_name.trim();
+
+    // do we have a transform registered for this ?
+    for (Transform transform : transformList) {
+      if (transform.transName.equals(transform_name)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
    * Make a CoordinateTransform object from the parameters in a Coordinate Transform Variable, using an intrinsic or
    * registered CoordTransBuilder.
    * 
-   * @param ctv the Coordinate Transform Variable - container for the transform parameters
+   * @param projCtv the Coordinate Transform Variable - container for the transform parameters
    * @param parseInfo pass back information about the parsing.
    * @return CoordinateTransform, or null if failure.
    */
   @Nullable
-  public static Projection makeProjection(AttributeContainer ctv, String geoUnits, Formatter parseInfo) {
+  public static Projection makeProjection(ProjectionCTV projCtv, Formatter parseInfo) {
+    if (projCtv.getPrecomputedProjection() != null) {
+      return projCtv.getPrecomputedProjection();
+    }
+    AttributeContainer ctv = projCtv.getCtvAttributes();
     // standard name
     String transform_name = ctv.findAttributeString(CDM.TRANSFORM_NAME, null);
     if (null == transform_name)
@@ -174,15 +215,11 @@ public class ProjectionFactory {
       return null;
     }
 
-    ProjectionCT.Builder<?> ct;
-    HorizTransformBuilderIF horizBuilder = (HorizTransformBuilderIF) builderObject;
+    ProjectionBuilder horizBuilder = (ProjectionBuilder) builderObject;
     horizBuilder.setErrorBuffer(parseInfo);
-    ct = horizBuilder.makeCoordinateTransform(ctv, geoUnits);
-    if (ct != null) {
-      ct.setTransformType(TransformType.Projection);
-    }
+    Projection proj = horizBuilder.makeProjection(ctv, projCtv.getGeounits());
 
-    if (ct != null) {
+    if (proj != null) {
       parseInfo.format(" Made Coordinate transform %s from variable %s: %s%n", transform_name, ctv.getName(),
           builderObject.getClass().getName());
     } else {
@@ -190,6 +227,6 @@ public class ProjectionFactory {
           builderObject.getClass().getName());
     }
 
-    return ct.build().getProjection();
+    return proj;
   }
 }

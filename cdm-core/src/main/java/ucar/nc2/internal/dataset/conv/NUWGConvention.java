@@ -25,7 +25,7 @@ import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.*;
 import ucar.nc2.dataset.spi.CoordSystemBuilderFactory;
 import ucar.nc2.internal.dataset.CoordSystemBuilder;
-import ucar.nc2.internal.dataset.TransformBuilder;
+import ucar.nc2.internal.dataset.transform.horiz.ProjectionCTV;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.geoloc.LatLonPoint;
@@ -313,7 +313,7 @@ public class NUWGConvention extends CoordSystemBuilder {
       VarProcess vp = findVarProcess(grib.projectionCT.getName(), null);
       if (vp != null) {
         vp.isCoordinateTransform = true;
-        vp.ct = new TransformBuilder().setPreBuilt(grib.projectionCT);
+        vp.ctv = grib.projectionCT;
       }
     }
     super.makeCoordinateTransforms();
@@ -498,7 +498,7 @@ public class NUWGConvention extends CoordSystemBuilder {
   private class Grib1 {
     private final String grid_name;
     private final int grid_code;
-    private ProjectionCT projectionCT;
+    private ProjectionCTV projectionCT;
 
     private int nx, ny;
     private double startx, starty;
@@ -537,7 +537,7 @@ public class NUWGConvention extends CoordSystemBuilder {
       datasetBuilder.replaceCoordinateAxis(rootGroup, v);
     }
 
-    private ProjectionCT makeLCProjection() throws NoSuchElementException {
+    private ProjectionCTV makeLCProjection() throws NoSuchElementException {
       double latin1 = navInfo.getDouble("Latin1");
       double latin2 = navInfo.getDouble("Latin2");
       double lov = navInfo.getDouble("Lov");
@@ -557,11 +557,11 @@ public class NUWGConvention extends CoordSystemBuilder {
       dx = navInfo.getDouble("Dx") / 1000.0; // need to be km : unit conversion LOOK;
       dy = navInfo.getDouble("Dy") / 1000.0; // need to be km : unit conversion LOOK;
 
-      return new ProjectionCT(grid_name, "FGDC", lc);
+      return new ProjectionCTV(grid_name, lc);
     }
 
     // polar stereographic
-    private ProjectionCT makePSProjection() throws NoSuchElementException {
+    private ProjectionCTV makePSProjection() throws NoSuchElementException {
       double lov = navInfo.getDouble("Lov");
       double la1 = navInfo.getDouble("La1");
       double lo1 = navInfo.getDouble("Lo1");
@@ -584,7 +584,7 @@ public class NUWGConvention extends CoordSystemBuilder {
       dx = navInfo.getDouble("Dx") / 1000.0;
       dy = navInfo.getDouble("Dy") / 1000.0;
 
-      return new ProjectionCT(grid_name, "FGDC", ps);
+      return new ProjectionCTV(grid_name, ps);
     }
 
     private void processLatLonProjection() throws NoSuchElementException {

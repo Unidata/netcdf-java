@@ -6,17 +6,18 @@ import ucar.array.ArrayType;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateSystem;
-import ucar.nc2.dataset.CoordinateTransform;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.ProjectionCT;
+import ucar.nc2.internal.dataset.transform.horiz.ProjectionCTV;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.grid.GridAxis;
 import ucar.nc2.grid.GridAxisDependenceType;
 import ucar.nc2.grid.GridAxisPoint;
 import ucar.nc2.grid.GridCoordinateSystem;
+import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.projection.FlatEarth;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static com.google.common.truth.Truth.assertThat;
 import static ucar.nc2.TestUtils.makeDummyGroup;
@@ -29,7 +30,6 @@ public class TestGridNetcdfCSBuilder {
     // NetcdfDataset
     NetcdfDataset ncd = NetcdfDataset.builder().build();
     ArrayList<CoordinateAxis> axes = new ArrayList<>();
-    ArrayList<CoordinateTransform> transforms = new ArrayList<>();
 
     VariableDS.Builder<?> xBuilder = VariableDS.builder().setName("xname").setArrayType(ArrayType.FLOAT)
         .setUnits("xunits").setDesc("xdesc").setEnhanceMode(NetcdfDataset.getEnhanceAll());
@@ -39,12 +39,12 @@ public class TestGridNetcdfCSBuilder {
         .setUnits("yunits").setDesc("ydesc").setEnhanceMode(NetcdfDataset.getEnhanceAll());
     axes.add(CoordinateAxis.fromVariableDS(yBuilder).setAxisType(AxisType.GeoY).build(makeDummyGroup()));
 
-    ProjectionCT projct = new ProjectionCT("horiz", "auth", new FlatEarth());
-    transforms.add(projct);
+    ProjectionCTV projct = new ProjectionCTV("horiz", new FlatEarth());
+    List<ProjectionCTV> allProjs = ImmutableList.of(projct);
 
-    CoordinateSystem.Builder<?> csb = CoordinateSystem.builder().setCoordAxesNames("xname yname")
-        .addCoordinateTransformByName("horiz").addCoordinateTransformByName("vert");
-    CoordinateSystem coordSys = csb.build(ncd, axes, transforms);
+    CoordinateSystem.Builder<?> csb =
+        CoordinateSystem.builder().setCoordAxesNames("xname yname").setCoordinateTransformName("horiz");
+    CoordinateSystem coordSys = csb.build(ncd, axes, allProjs);
 
     // GridDataset
     GridNetcdfCSBuilder builder = new GridNetcdfCSBuilder();
