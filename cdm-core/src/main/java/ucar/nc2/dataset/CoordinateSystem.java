@@ -715,8 +715,11 @@ public class CoordinateSystem {
 
   // Add local fields to the passed - in builder.
   protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
-    return b.setImplicit(this.isImplicit).setCoordAxesNames(this.name)
-        .setCoordinateTransformName(this.projectionCTV.getName());
+    b.setImplicit(this.isImplicit).setCoordAxesNames(this.name);
+    if (this.projectionCTV != null) {
+      b.setCoordinateTransformName(this.projectionCTV.getName());
+    }
+    return b;
   }
 
   /** Get a Builder of CoordinateSystem */
