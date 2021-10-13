@@ -154,7 +154,7 @@ This is a general mechanism for any transformation a file writer wants to define
 #### _CoordinateTransformType
 This attribute is used to unambiguously indicate that a variable is a Coordinate Transform Variable (the other way is to list the variable in a _CoordinateTransforms attribute).
 
-The attribute value must be one of the valid Transform types (see ucar.nc2.dataset.TransformType) Currently the valid values are Projection or Vertical.
+The attribute value must be one of the valid Transform types: Projection or Vertical.
 
 ~~~
  _CoordinateTransformType = "Projection";

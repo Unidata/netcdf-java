@@ -23,7 +23,7 @@ import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.ProjectionCT;
+import ucar.nc2.internal.dataset.transform.horiz.ProjectionCTV;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dataset.spi.CoordSystemBuilderFactory;
 import ucar.nc2.internal.dataset.CoordSystemBuilder;
@@ -190,6 +190,7 @@ public class HdfEosModisConvention extends CoordSystemBuilder {
     }
   }
 
+  // LOOK this is non standard for adding projection, does it work?
   private void augmentGroupWithProjectionInfo(Group.Builder g) {
     Optional<Group.Builder> dataGopt = g.findGroupLocal(DATA_GROUP);
     if (dataGopt.isEmpty()) {
@@ -224,7 +225,7 @@ public class HdfEosModisConvention extends CoordSystemBuilder {
 
       boolean hasProjection = false;
       String coordinates = null;
-      ProjectionCT ct;
+      ProjectionCTV ct;
       if (projAtt.equals("GCTP_SNSOID")) {
         hasProjection = true;
         Attribute projParams = crs.getAttributeContainer().findAttribute(HdfEos.HDFEOS_CRS_ProjParams);
@@ -315,13 +316,13 @@ public class HdfEosModisConvention extends CoordSystemBuilder {
    * 1 5 7 8
    * 16 PGSd_SNSOID Sphere CentMer FE FN
    */
-  private ProjectionCT makeSinusoidalProjection(String name, Attribute projParams) {
+  private ProjectionCTV makeSinusoidalProjection(String name, Attribute projParams) {
     double radius = projParams.getNumericValue(0).doubleValue();
     double centMer = projParams.getNumericValue(4).doubleValue();
     double falseEast = projParams.getNumericValue(6).doubleValue();
     double falseNorth = projParams.getNumericValue(7).doubleValue();
 
     Sinusoidal proj = new Sinusoidal(centMer, falseEast * .001, falseNorth * .001, radius * .001);
-    return new ProjectionCT(name, "FGDC", proj);
+    return new ProjectionCTV(name, proj);
   }
 }

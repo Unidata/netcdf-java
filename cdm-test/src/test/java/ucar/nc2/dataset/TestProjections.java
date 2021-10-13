@@ -5,7 +5,6 @@
 
 package ucar.nc2.dataset;
 
-import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -14,17 +13,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Formatter;
 import java.util.List;
 
 import ucar.nc2.Attribute;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CF;
-import ucar.nc2.internal.dataset.CoordTransformFactory;
-import ucar.nc2.internal.util.CompareNetcdf2;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.ProjectionPoint;
@@ -143,20 +138,7 @@ public class TestProjections {
       assertThat(cList.size()).isEqualTo(ncoordsys);
       CoordinateSystem csys = cList.get(0);
 
-      List<CoordinateTransform> pList = new ArrayList<>();
-      List<CoordinateTransform> tList = csys.getCoordinateTransforms();
-      assertThat(tList).isNotNull();
-      for (CoordinateTransform ct : tList) {
-        if (ct.getTransformType() == TransformType.Projection)
-          pList.add(ct);
-      }
-      assertThat(pList.size()).isEqualTo(1);
-      CoordinateTransform ct = pList.get(0);
-      assertThat(ct.getTransformType()).isEqualTo(TransformType.Projection);
-      assertThat(ct instanceof ProjectionCT).isTrue();
-
-      ProjectionCT vct = (ProjectionCT) ct;
-      Projection proj = vct.getProjection();
+      Projection proj = csys.getProjection();
       assertThat(proj).isNotNull();
       assertThat(projClass.isInstance(proj)).isTrue();
 
@@ -179,16 +161,6 @@ public class TestProjections {
         assertThat(found).isTrue();
         System.out.printf("  radius = %f%n", radius);
         assertThat(radius).isGreaterThan(10000);
-      }
-
-      VariableDS ctvSyn = CoordTransformFactory.makeDummyTransformVariable(ncd, ct);
-      logger.debug(" dump of equivilent ctv = {}", ctvSyn);
-
-      if (ctv != null) {
-        Formatter f = new Formatter();
-        CompareNetcdf2.checkContains("CoordTransBuilder", ImmutableList.copyOf(ctv.attributes()),
-            ImmutableList.copyOf(ctvSyn.attributes()), f);
-        logger.debug(f.toString());
       }
 
       if (testPt != null) {

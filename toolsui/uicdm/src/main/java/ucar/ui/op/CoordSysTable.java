@@ -29,6 +29,7 @@ import ucar.ui.widget.TextHistoryPane;
 import ucar.nc2.dataset.*;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.AxisType;
+import ucar.unidata.geoloc.Projection;
 import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.*;
 import java.awt.BorderLayout;
@@ -117,18 +118,10 @@ public class CoordSysTable extends JPanel {
             infoTA.appendLine("  " + axis.getAxisType() + " " + axis.getNameAndDimensions());
           }
           infoTA.appendLine(" Coordinate Transforms");
-          for (CoordinateTransform ct : coordSys.getCoordinateTransforms()) {
-            infoTA.appendLine("  " + ct.getTransformType() + ": " + ct.getName());
-            for (Attribute p : ct.getCtvAttributes()) {
-              infoTA.appendLine("    " + p);
-            }
-            if (ct instanceof ProjectionCT) {
-              ProjectionCT pct = (ProjectionCT) ct;
-              if (pct.getProjection() != null) {
-                infoTA.appendLine("    impl.class= " + pct.getProjection().getClass().getName());
-                // pct.getProjection();
-              }
-            }
+          Projection p = coordSys.getProjection();
+          if (p != null) {
+            infoTA.appendLine("    Projection= " + p);
+            infoTA.appendLine("    impl class= " + p.getClass().getName());
           }
         }
         infoTA.gotoTop();
@@ -216,13 +209,8 @@ public class CoordSysTable extends JPanel {
     }
     int ncoordSys = csTable.getBeans().size();
     int ncoords = axisTable.getBeans().size();
-    int ntrans = ds.getCoordinateTransforms().size();
 
-    f.format(" ngrids=%d, ncoords=%d, ncoordSys=%d ntrans=%d%n", ngrids, ncoords, ncoordSys, ntrans);
-    f.format("%nCoordinate Transforms%n");
-    for (CoordinateTransform trans : ds.getCoordinateTransforms()) {
-      f.format("  %-10s %s%n", trans.getTransformType(), trans.getName());
-    }
+    f.format(" ngrids=%d, ncoords=%d, ncoordSys=%d%n", ngrids, ncoords, ncoordSys);
   }
 
   public void showAtts() {
@@ -694,7 +682,7 @@ public class CoordSysTable extends JPanel {
     // static public String editableProperties() { return "title include logging freq"; }
 
     CoordinateSystem coordSys;
-    private String name, ctNames, dataType = "";
+    private String name, dataType = "";
     private int domainRank, rangeRank;
     private boolean isGeoXY, isLatLon, isProductSet, isRegular;
 
@@ -717,15 +705,6 @@ public class CoordSysTable extends JPanel {
           .isPresent()) {
         addDataType("grid");
       }
-
-      Formatter buff = new Formatter();
-      List<CoordinateTransform> ctList = cs.getCoordinateTransforms();
-      for (CoordinateTransform ct : ctList) {
-        if (ct instanceof ProjectionCT) {
-          buff.format("P");
-        }
-      }
-      setCoordTransforms(buff.toString());
     }
 
     public String getCoordSys() {
@@ -784,12 +763,8 @@ public class CoordSysTable extends JPanel {
       this.rangeRank = rangeRank;
     }
 
-    public String getCoordTransforms() {
-      return ctNames;
-    }
-
-    public void setCoordTransforms(String ctNames) {
-      this.ctNames = ctNames;
+    public String getProjection() {
+      return this.coordSys.getProjection() == null ? "" : this.coordSys.getProjection().getName();
     }
 
     public String getDataType() {

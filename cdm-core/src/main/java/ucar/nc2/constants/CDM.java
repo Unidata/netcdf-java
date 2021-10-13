@@ -53,6 +53,8 @@ public class CDM {
   public static final String TIME_OFFSET = "time offset from runtime";
   public static final String TIME_OFFSET_MINUTES = "minutesFrom0z";
   public static final String TRANSFORM_NAME = "transform_name";
+  public static final String Projection = "Projection";
+  public static final String Vertical = "Vertical";
 
   // Special Attribute Names added by the Netcdf C library (apparently).
   public static final String NCPROPERTIES = "_NCProperties";

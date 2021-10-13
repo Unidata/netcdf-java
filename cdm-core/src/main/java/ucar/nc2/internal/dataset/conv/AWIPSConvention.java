@@ -28,7 +28,7 @@ import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.*;
 import ucar.nc2.dataset.spi.CoordSystemBuilderFactory;
 import ucar.nc2.internal.dataset.CoordSystemBuilder;
-import ucar.nc2.internal.dataset.TransformBuilder;
+import ucar.nc2.internal.dataset.transform.horiz.ProjectionCTV;
 import ucar.nc2.iosp.NetcdfFormatUtils;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.util.CancelTask;
@@ -68,7 +68,7 @@ public class AWIPSConvention extends CoordSystemBuilder {
     }
   }
 
-  ProjectionCT projCT;
+  ProjectionCTV projCT;
   double startx, starty, dx, dy;
 
   @Override
@@ -389,7 +389,7 @@ public class AWIPSConvention extends CoordSystemBuilder {
     if (projCT != null) {
       VarProcess vp = findVarProcess(projCT.getName(), null);
       vp.isCoordinateTransform = true;
-      vp.ct = new TransformBuilder().setPreBuilt(projCT);
+      vp.ctv = projCT;
     }
     super.makeCoordinateTransforms();
   }
@@ -410,7 +410,7 @@ public class AWIPSConvention extends CoordSystemBuilder {
     return null;
   }
 
-  private ProjectionCT makeLCProjection(String name) throws NoSuchElementException {
+  private ProjectionCTV makeLCProjection(String name) throws NoSuchElementException {
     double centralLat = findAttributeDouble("centralLat");
     double centralLon = findAttributeDouble("centralLon");
     double rotation = findAttributeDouble("rotation");
@@ -427,10 +427,10 @@ public class AWIPSConvention extends CoordSystemBuilder {
     dx = findAttributeDouble("dxKm");
     dy = findAttributeDouble("dyKm");
 
-    return new ProjectionCT(name, "FGDC", lc);
+    return new ProjectionCTV(name, lc);
   }
 
-  private ProjectionCT makeStereoProjection(String name) throws NoSuchElementException {
+  private ProjectionCTV makeStereoProjection(String name) throws NoSuchElementException {
     double centralLat = findAttributeDouble("centralLat");
     double centralLon = findAttributeDouble("centralLon");
 
@@ -461,7 +461,7 @@ public class AWIPSConvention extends CoordSystemBuilder {
     parseInfo.format("                        end at proj coord %s%n", pt);
     parseInfo.format("                        scale= %f%n", scale);
 
-    return new ProjectionCT(name, "FGDC", proj);
+    return new ProjectionCTV(name, proj);
   }
 
   CoordinateAxis.Builder<?> makeXCoordAxis(String xname) {

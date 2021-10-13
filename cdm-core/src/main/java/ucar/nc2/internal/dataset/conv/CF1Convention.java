@@ -18,10 +18,10 @@ import ucar.nc2.Group;
 import ucar.nc2.Variable;
 import ucar.nc2.Variable.Builder;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.TransformType;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.internal.dataset.CoordSystemBuilder;
 import ucar.nc2.dataset.spi.CoordSystemBuilderFactory;
@@ -173,7 +173,7 @@ public class CF1Convention extends CSMConvention {
 
         for (String vertical_coord : vertical_coords) {
           if (sname.equalsIgnoreCase(vertical_coord)) {
-            vb.addAttribute(new Attribute(_Coordinate.TransformType, TransformType.Vertical.toString()));
+            vb.addAttribute(new Attribute(_Coordinate.TransformType, CDM.Vertical));
             if (vb.getAttributeContainer().findAttribute(_Coordinate.Axes) == null) {
               // LOOK: may also be time dependent; was getFullName()
               vb.addAttribute(new Attribute(_Coordinate.Axes, vb.shortName));
@@ -192,7 +192,7 @@ public class CF1Convention extends CSMConvention {
         if (gridMapOpt.isPresent()) {
           // TODO might be group relative - CF does not specify - see original version
           Variable.Builder<?> gridMap = gridMapOpt.get();
-          gridMap.addAttribute(new Attribute(_Coordinate.TransformType, TransformType.Projection.toString()));
+          gridMap.addAttribute(new Attribute(_Coordinate.TransformType, CDM.Projection));
 
           String grid_mapping_name = gridMap.getAttributeContainer().findAttributeString(CF.GRID_MAPPING_NAME, null);
           if (CF.LATITUDE_LONGITUDE.equals(grid_mapping_name)) {
@@ -224,7 +224,7 @@ public class CF1Convention extends CSMConvention {
       for (Variable.Builder<?> vds : group.vbuilders) {
         String grid_mapping_name = vds.getAttributeContainer().findAttributeString(CF.GRID_MAPPING_NAME, null);
         if (grid_mapping_name != null) {
-          vds.addAttribute(new Attribute(_Coordinate.TransformType, TransformType.Projection.toString()));
+          vds.addAttribute(new Attribute(_Coordinate.TransformType, CDM.Projection));
 
           if (grid_mapping_name.equals(CF.LATITUDE_LONGITUDE)) {
             vds.addAttribute(new Attribute(_Coordinate.AxisTypes, AxisType.Lat + " " + AxisType.Lon));

@@ -21,7 +21,7 @@ The Netcdf-Java library implements a standard set of <b>_ucar.unidata.geoloc.Pro
 ## Implementing a Coordinate Transform
 The steps to using your own CoordinateTransform in the Netcdf-Java library:
 
-Write a class that implements <b>_ucar.unidata.geoloc.Projection_</b> or ucar.unidata.geoloc.vertical.VerticalTransform
+Write a class that implements <b>_ucar.unidata.geoloc.Projection_</b> or ucar.nc2.geoloc.vertical.VerticalTransform
 Write a class that implements <b>_ucar.nc2.dataset.CoordTransBuilderIF_</b>, by subclassing ucar.nc2.dataset.transform.AbstractCoordTransBuilder.
 Add these classes to your classpath.
 From your application, call <b>_ucar.nc2.dataset.CoordTransBuilder.registerTransform( String transformName, Class c)_</b>.
@@ -64,7 +64,7 @@ The Projection and VerticalTransform implement the mathematical transformation i
   public String getTransformName();
   public TransformType getTransformType();
   public CoordinateTransform makeCoordinateTransform (NetcdfDataset ds, Variable ctv);
-  public ucar.unidata.geoloc.vertical.VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT);
+  public ucar.nc2.geoloc.vertical.VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT);
 ~~~
   
 Give your transform a unique name, which is returned by the <b>_getTransformName_</b> method. The <b>_getTransformType_</b> method should return either <b>_ucar.nc2.dataset.TransformType.Projection_</b> or <b>_TransformType.Vertical_</b>. The <b>_makeCoordinateTransform_</b> method is the guts of the class, it takes as parameters the NetcdfDataset and the Coordinate Transform Variable that contains the transformation parameters. The <b>_makeMathTransform_</b> is used only for Vertical Transforms to defer the creation of the VerticalTransform until the Coordinate System has been fully constructed and, for example, the time dimension has been identified.
@@ -149,7 +149,7 @@ public class VAtmSigma extends AbstractCoordTransBuilder {
       return rs;
   }
  
-  public ucar.unidata.geoloc.vertical.VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
+  public ucar.nc2.geoloc.vertical.VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
 7)  return new AtmosSigma(ds, timeDim, vCT);
   }
 }

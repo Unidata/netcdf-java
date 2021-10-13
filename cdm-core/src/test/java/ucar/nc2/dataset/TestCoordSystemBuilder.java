@@ -1,20 +1,22 @@
 package ucar.nc2.dataset;
 
+import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.array.ArrayType;
-import ucar.nc2.AttributeContainerMutable;
 import ucar.nc2.Dimension;
 import ucar.nc2.Group;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.internal.dataset.transform.horiz.ProjectionCTV;
 import ucar.unidata.geoloc.projection.FlatEarth;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
@@ -27,7 +29,6 @@ public class TestCoordSystemBuilder {
   public void testBasics() {
     NetcdfDataset ncd = NetcdfDataset.builder().build();
     ArrayList<CoordinateAxis> axes = new ArrayList<>();
-    ArrayList<CoordinateTransform> transforms = new ArrayList<>();
 
     VariableDS.Builder<?> xBuilder = VariableDS.builder().setName("xname").setArrayType(ArrayType.FLOAT)
         .setUnits("xunits").setDesc("xdesc").setEnhanceMode(NetcdfDataset.getEnhanceAll());
@@ -37,12 +38,12 @@ public class TestCoordSystemBuilder {
         .setUnits("yunits").setDesc("ydesc").setEnhanceMode(NetcdfDataset.getEnhanceAll());
     axes.add(CoordinateAxis.fromVariableDS(yBuilder).setAxisType(AxisType.GeoY).build(makeDummyGroup()));
 
-    ProjectionCT projct = new ProjectionCT("horiz", "auth", new FlatEarth());
-    transforms.add(projct);
+    ProjectionCTV projct = new ProjectionCTV("horiz", new FlatEarth());
+    List<ProjectionCTV> allProjs = ImmutableList.of(projct);
 
-    CoordinateSystem.Builder<?> builder = CoordinateSystem.builder().setCoordAxesNames("xname yname")
-        .addCoordinateTransformByName("horiz").addCoordinateTransformByName("vert");
-    CoordinateSystem coordSys = builder.build(ncd, axes, transforms);
+    CoordinateSystem.Builder<?> builder =
+        CoordinateSystem.builder().setCoordAxesNames("xname yname").setCoordinateTransformName("horiz");
+    CoordinateSystem coordSys = builder.build(ncd, axes, allProjs);
 
     CoordinateAxis xaxis = coordSys.findAxis(AxisType.GeoX);
     assertThat(xaxis).isNotNull();
@@ -54,8 +55,7 @@ public class TestCoordSystemBuilder {
     assertThat(xaxis.findAttributeString(CDM.UNITS, "")).isEqualTo("xunits");
     assertThat(xaxis.findAttributeString(CDM.LONG_NAME, "")).isEqualTo("xdesc");
 
-    assertThat(coordSys.getProjectionCT()).isEqualTo(projct);
-    assertThat(coordSys.getProjection()).isEqualTo(projct.getProjection());
+    assertThat(coordSys.getProjection()).isEqualTo(projct.getPrecomputedProjection());
 
     assertThat(coordSys.isImplicit()).isFalse();
     assertThat(coordSys.isGeoReferencing()).isTrue();
@@ -65,7 +65,7 @@ public class TestCoordSystemBuilder {
     assertThat(coordSys.isRegular()).isTrue();
     assertThat(coordSys.isProductSet()).isFalse();
 
-    CoordinateSystem copy = coordSys.toBuilder().build(ncd, axes, transforms);
+    CoordinateSystem copy = coordSys.toBuilder().build(ncd, axes, allProjs);
     assertThat(copy.findAxis(AxisType.GeoX)).isEqualTo(coordSys.findAxis(AxisType.GeoX));
     assertThat(copy.findAxis(AxisType.GeoY)).isEqualTo(coordSys.findAxis(AxisType.GeoY));
     assertThat(copy).isEqualTo(coordSys);
@@ -76,7 +76,6 @@ public class TestCoordSystemBuilder {
   public void testFindMethods() {
     NetcdfDataset ncd = NetcdfDataset.builder().build();
     ArrayList<CoordinateAxis> axes = new ArrayList<>();
-    ArrayList<CoordinateTransform> transforms = new ArrayList<>();
 
     VariableDS.Builder<?> xBuilder = VariableDS.builder().setName("xname").setArrayType(ArrayType.FLOAT)
         .setUnits("xunits").setDesc("xdesc").setEnhanceMode(NetcdfDataset.getEnhanceAll());
@@ -86,9 +85,9 @@ public class TestCoordSystemBuilder {
         .setUnits("yunits").setDesc("ydesc").setEnhanceMode(NetcdfDataset.getEnhanceAll());
     axes.add(CoordinateAxis.fromVariableDS(yBuilder).setAxisType(AxisType.GeoY).build(makeDummyGroup()));
 
-    CoordinateSystem.Builder<?> builder = CoordinateSystem.builder().setCoordAxesNames("xname yname")
-        .addCoordinateTransformByName("horiz").addCoordinateTransformByName("vert");
-    CoordinateSystem coordSys = builder.build(ncd, axes, transforms);
+    CoordinateSystem.Builder<?> builder =
+        CoordinateSystem.builder().setCoordAxesNames("xname yname").setCoordinateTransformName("horiz");
+    CoordinateSystem coordSys = builder.build(ncd, axes, ImmutableList.of());
 
     CoordinateAxis xaxis = coordSys.findAxis(AxisType.GeoX);
     assertThat(xaxis).isNotNull();

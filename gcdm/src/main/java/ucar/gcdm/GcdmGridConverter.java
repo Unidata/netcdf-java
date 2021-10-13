@@ -29,6 +29,7 @@ import ucar.nc2.grid.GridHorizCurvilinear;
 import ucar.nc2.grid.GridReferencedArray;
 import ucar.nc2.grid.GridTimeCoordinateSystem;
 import ucar.nc2.grid.MaterializedCoordinateSystem;
+import ucar.nc2.internal.dataset.transform.horiz.ProjectionCTV;
 import ucar.nc2.internal.dataset.transform.horiz.ProjectionFactory;
 import ucar.nc2.internal.grid.GridTimeCS;
 import ucar.unidata.geoloc.Projection;
@@ -422,7 +423,8 @@ public class GcdmGridConverter {
   @Nullable
   public static Projection decodeProjection(GcdmGridProto.Projection proto, Formatter errlog) {
     AttributeContainer ctv = GcdmConverter.decodeAttributes(proto.getName(), proto.getAttributesList());
-    return ProjectionFactory.makeProjection(ctv, proto.getGeoUnit(), errlog);
+    ProjectionCTV projCTV = new ProjectionCTV(proto.getName(), ctv, proto.getGeoUnit());
+    return ProjectionFactory.makeProjection(projCTV, errlog);
   }
 
   public static GcdmGridProto.VerticalTransform encodeVerticalTransform(VerticalTransform vt) {

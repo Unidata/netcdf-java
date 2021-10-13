@@ -7,21 +7,19 @@ package ucar.nc2.internal.dataset.transform.horiz;
 
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.CF;
-import ucar.nc2.dataset.*;
+import ucar.unidata.geoloc.Projection;
 
 /** Create a LambertAzimuthal Projection from the information in the Coordinate Transform Variable. */
-public class LambertAzimuthal extends AbstractProjectionCT implements HorizTransformBuilderIF {
+public class LambertAzimuthal extends AbstractProjectionCT implements ProjectionBuilder {
 
   public String getTransformName() {
     return CF.LAMBERT_AZIMUTHAL_EQUAL_AREA;
   }
 
-  public ProjectionCT.Builder<?> makeCoordinateTransform(AttributeContainer ctv, String geoCoordinateUnits) {
+  public Projection makeProjection(AttributeContainer ctv, String geoCoordinateUnits) {
     readStandardParams(ctv, geoCoordinateUnits);
-    ucar.unidata.geoloc.projection.LambertAzimuthalEqualArea proj =
-        new ucar.unidata.geoloc.projection.LambertAzimuthalEqualArea(lat0, lon0, false_easting, false_northing,
-            earth_radius);
-    return ProjectionCT.builder().setName(ctv.getName()).setAuthority("FGDC").setProjection(proj);
+    return new ucar.unidata.geoloc.projection.LambertAzimuthalEqualArea(lat0, lon0, false_easting, false_northing,
+        earth_radius);
   }
 }
 
