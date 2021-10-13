@@ -1057,8 +1057,9 @@ public class Grib2DataReader {
         break;
     }
 
+    // LOOK see https://github.com/Unidata/netcdf-java/issues/881
     int D = gdrs.decimalScaleFactor;
-    float DD = (float) java.lang.Math.pow((double) 10, (double) D);
+    float DD = (float) java.lang.Math.pow((double) 10, (double) -D);
     float R = gdrs.referenceValue;
     int E = gdrs.binaryScaleFactor;
     float EE = (float) java.lang.Math.pow(2.0, (double) E);
