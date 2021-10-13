@@ -19,7 +19,7 @@ import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.ProjectionCT;
+import ucar.nc2.internal.dataset.transform.horiz.ProjectionCTV;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dataset.spi.CoordSystemBuilderFactory;
 import ucar.nc2.internal.dataset.CoordSystemBuilder;
@@ -150,7 +150,7 @@ public class AWIPSSatConvention extends AWIPSConvention {
     dy = (latEnd - lat0) / ny;
   }
 
-  private ProjectionCT makeLCProjection(String name, int nx, int ny) throws NoSuchElementException {
+  private ProjectionCTV makeLCProjection(String name, int nx, int ny) throws NoSuchElementException {
     double centralLat = findAttributeDouble("centralLat");
     double centralLon = findAttributeDouble("centralLon");
     double rotation = findAttributeDouble("rotation");
@@ -182,10 +182,10 @@ public class AWIPSSatConvention extends AWIPSConvention {
       parseInfo.format("  makeProjectionLC calc dy= %f file dy= %f%n", dy, fdy);
     }
 
-    return new ProjectionCT(name, "FGDC", proj);
+    return new ProjectionCTV(name, proj);
   }
 
-  private ProjectionCT makeMercatorProjection(String name, int nx, int ny) throws NoSuchElementException {
+  private ProjectionCTV makeMercatorProjection(String name, int nx, int ny) throws NoSuchElementException {
     // double centralLat = findAttributeDouble( ds, "centralLat");
     // Center longitude for the mercator projection, where the mercator projection is parallel to the Earth's surface.
     // from this, i guess is actually transverse mercator
@@ -222,7 +222,7 @@ public class AWIPSSatConvention extends AWIPSConvention {
       parseInfo.format("  makeProjectionMercator calc dy= %f file dy= %f%n", dy, fdy);
     }
 
-    return new ProjectionCT(name, "FGDC", proj);
+    return new ProjectionCTV(name, proj);
   }
 
   private CoordinateAxis.Builder<?> makeLonCoordAxis(String xname) {

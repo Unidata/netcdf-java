@@ -24,6 +24,7 @@ import ucar.nc2.constants.CF;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.*;
 import ucar.nc2.dataset.spi.CoordSystemBuilderFactory;
+import ucar.nc2.internal.dataset.transform.horiz.ProjectionCTV;
 import ucar.nc2.util.CancelTask;
 
 /**
@@ -585,18 +586,18 @@ public class CoordSystemBuilder {
    */
   protected void makeCoordinateTransforms() {
     for (VarProcess vp : varList) {
-      if (vp.isCoordinateTransform && vp.ct == null) {
-        vp.ct = makeTransformBuilder(vp.vb);
+      if (vp.isCoordinateTransform && vp.ctv == null) {
+        vp.ctv = makeTransformBuilder(vp.vb);
       }
-      if (vp.ct != null) {
-        coords.addTransformBuilder(vp.ct);
+      if (vp.ctv != null) {
+        coords.addCoordinateTransform(vp.ctv);
       }
     }
   }
 
-  protected TransformBuilder makeTransformBuilder(Variable.Builder<?> vb) {
+  protected ProjectionCTV makeTransformBuilder(Variable.Builder<?> vb) {
     // LOOK at this point dont know if its a Projection or a VerticalTransform
-    return new TransformBuilder().setName(vb.getFullName()).setCtvAttributes(vb.getAttributeContainer());
+    return new ProjectionCTV(vb.getFullName(), vb.getAttributeContainer(), null);
   }
 
   /** Assign CoordinateTransform objects to Variables and Coordinate Systems. */
@@ -609,9 +610,9 @@ public class CoordSystemBuilder {
           String vname = stoker.nextToken();
           VarProcess ap = findVarProcess(vname, vp);
           if (ap != null) {
-            if (ap.ct != null) {
-              vp.addCoordinateTransform(ap.ct);
-              parseInfo.format(" assign explicit coordTransform %s to CoordSys= %s%n", ap.ct, vp.cs);
+            if (ap.ctv != null) {
+              vp.addCoordinateTransform(ap.ctv);
+              parseInfo.format(" assign explicit coordTransform %s to CoordSys= %s%n", ap.ctv, vp.cs);
             } else {
               parseInfo.format("***Cant find coordTransform in %s referenced from var= %s%n", vname,
                   vp.vb.getFullName());
@@ -630,7 +631,7 @@ public class CoordSystemBuilder {
 
     // look for explicit coordSys assignments on the coordinate transforms
     for (VarProcess vp : varList) {
-      if (vp.isCoordinateTransform && (vp.ct != null) && (vp.coordinateSystems != null)) {
+      if (vp.isCoordinateTransform && (vp.ctv != null) && (vp.coordinateSystems != null)) {
         StringTokenizer stoker = new StringTokenizer(vp.coordinateSystems);
         while (stoker.hasMoreTokens()) {
           String vname = stoker.nextToken();
@@ -641,8 +642,8 @@ public class CoordSystemBuilder {
             userAdvice.format("***Cant find coordSystem variable= %s referenced from var= %s%n", vname,
                 vp.vb.getFullName());
           } else {
-            vcs.addCoordinateTransform(vp.ct);
-            parseInfo.format("***assign explicit coordTransform %s to CoordSys=  %s%n", vp.ct, vp.cs);
+            vcs.addCoordinateTransform(vp.ctv);
+            parseInfo.format("***assign explicit coordTransform %s to CoordSys=  %s%n", vp.ctv, vp.cs);
           }
         }
       }
@@ -650,14 +651,14 @@ public class CoordSystemBuilder {
 
     // look for coordAxes assignments on the coordinate transforms
     for (VarProcess vp : varList) {
-      if (vp.isCoordinateTransform && (vp.ct != null) && (vp.coordinateAxes != null)) {
+      if (vp.isCoordinateTransform && (vp.ctv != null) && (vp.coordinateAxes != null)) {
         List<CoordinateAxis.Builder<?>> dataAxesList = vp.findCoordinateAxes(false);
         if (!dataAxesList.isEmpty()) {
           for (CoordinateSystem.Builder<?> cs : coords.coordSys) {
             if (coords.containsAxes(cs, dataAxesList)) {
-              coords.addTransformBuilder(vp.ct);
-              cs.addCoordinateTransformByName(vp.ct.name);
-              parseInfo.format("***assign (implicit coordAxes) coordTransform %s to CoordSys=  %s%n", vp.ct, cs);
+              coords.addCoordinateTransform(vp.ctv);
+              cs.setCoordinateTransformName(vp.ctv.getName());
+              parseInfo.format("***assign (implicit coordAxes) coordTransform %s to CoordSys=  %s%n", vp.ctv, cs);
             }
           }
         }
@@ -666,7 +667,7 @@ public class CoordSystemBuilder {
 
     // look for coordAxisType assignments on the coordinate transforms
     for (VarProcess vp : varList) {
-      if (vp.isCoordinateTransform && (vp.ct != null) && (vp.coordAxisTypes != null)) {
+      if (vp.isCoordinateTransform && (vp.ctv != null) && (vp.coordAxisTypes != null)) {
         List<AxisType> axisTypesList = new ArrayList<>();
         StringTokenizer stoker = new StringTokenizer(vp.coordAxisTypes);
         while (stoker.hasMoreTokens()) {
@@ -679,8 +680,8 @@ public class CoordSystemBuilder {
         if (!axisTypesList.isEmpty()) {
           for (CoordinateSystem.Builder<?> cs : coords.coordSys) {
             if (coords.containsAxisTypes(cs, axisTypesList)) {
-              cs.addCoordinateTransformByName(vp.ct.name);
-              parseInfo.format("***assign (implicit coordAxisType) coordTransform %s to CoordSys=  %s%n", vp.ct, cs);
+              cs.setCoordinateTransformName(vp.ctv.getName());
+              parseInfo.format("***assign (implicit coordAxisType) coordTransform %s to CoordSys=  %s%n", vp.ctv, cs);
             }
           }
         }
@@ -737,22 +738,21 @@ public class CoordSystemBuilder {
   }
 
   /**
-   * Create a "dummy" Coordinate Transform Variable based on the given CoordinateTransform.
-   * This creates a scalar Variable with dummy data, and adds the Parameters of the CoordinateTransform
-   * as attributes.
+   * Create a "dummy" Coordinate Transform Variable based on the given ProjectionCTV.
+   * This creates a scalar Variable with dummy data, which is just a container for the transform
+   * attributes.
    *
-   * @param ct based on the CoordinateTransform
+   * @param ctv ProjectionCTV with Coordinate Transform Variable attributes set.
    * @return the Coordinate Transform Variable. You must add it to the dataset.
    */
-  public VariableDS.Builder<?> makeCoordinateTransformVariable(CoordinateTransform ct) {
-    VariableDS.Builder<?> v = VariableDS.builder().setName(ct.getName()).setArrayType(ArrayType.CHAR);
-    v.addAttributes(ct.getCtvAttributes());
-    v.addAttribute(new Attribute(_Coordinate.TransformType, ct.getTransformType().toString()));
+  public VariableDS.Builder<?> makeCoordinateTransformVariable(ProjectionCTV ctv) {
+    VariableDS.Builder<?> v = VariableDS.builder().setName(ctv.getName()).setArrayType(ArrayType.CHAR);
+    v.addAttributes(ctv.getCtvAttributes());
+    v.addAttribute(new Attribute(_Coordinate.TransformType, "Projection"));
 
     // fake data
     v.setSourceData(Arrays.factory(ArrayType.CHAR, new int[] {}, new char[] {' '}));
-
-    parseInfo.format("  made CoordinateTransformVariable: %s%n", ct.getName());
+    parseInfo.format("  made CoordinateTransformVariable: %s%n", ctv.getName());
     return v;
   }
 
@@ -785,7 +785,7 @@ public class CoordSystemBuilder {
 
     // coord transform
     public boolean isCoordinateTransform;
-    public TransformBuilder ct;
+    public ProjectionCTV ctv;
 
     /** Wrap the given variable. Identify Coordinate Variables. Process all _Coordinate attributes. */
     private VarProcess(Group.Builder gb, VariableDS.Builder<?> v) {
@@ -988,12 +988,13 @@ public class CoordSystemBuilder {
       return axesList;
     }
 
-    void addCoordinateTransform(TransformBuilder ct) {
+    void addCoordinateTransform(ProjectionCTV ct) {
       if (cs == null) {
-        parseInfo.format("  %s: no CoordinateSystem for CoordinateTransformVariable: %s%n", vb.getFullName(), ct.name);
+        parseInfo.format("  %s: no CoordinateSystem for CoordinateTransformVariable: %s%n", vb.getFullName(),
+            ct.getName());
         return;
       }
-      cs.addCoordinateTransformByName(ct.name);
+      cs.setCoordinateTransformName(ct.getName());
     }
 
   } // VarProcess

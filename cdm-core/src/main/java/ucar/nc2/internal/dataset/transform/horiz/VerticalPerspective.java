@@ -7,17 +7,17 @@ package ucar.nc2.internal.dataset.transform.horiz;
 
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.CF;
-import ucar.nc2.dataset.*;
+import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.projection.sat.VerticalPerspectiveView;
 
 /** VerticalPerspectiveView projection. */
-public class VerticalPerspective extends AbstractProjectionCT implements HorizTransformBuilderIF {
+public class VerticalPerspective extends AbstractProjectionCT implements ProjectionBuilder {
 
   public String getTransformName() {
     return CF.VERTICAL_PERSPECTIVE;
   }
 
-  public ProjectionCT.Builder<?> makeCoordinateTransform(AttributeContainer ctv, String geoCoordinateUnits) {
+  public Projection makeProjection(AttributeContainer ctv, String geoCoordinateUnits) {
 
     readStandardParams(ctv, geoCoordinateUnits);
 
@@ -31,9 +31,6 @@ public class VerticalPerspective extends AbstractProjectionCT implements HorizTr
           + "attributes");
 
     // We assume distance comes in 'm' (CF-compliant) and we pass in as 'km'
-    VerticalPerspectiveView proj =
-        new VerticalPerspectiveView(lat0, lon0, earth_radius, distance / 1000., false_easting, false_northing);
-
-    return ProjectionCT.builder().setName(ctv.getName()).setAuthority("FGDC").setProjection(proj);
+    return new VerticalPerspectiveView(lat0, lon0, earth_radius, distance / 1000., false_easting, false_northing);
   }
 }

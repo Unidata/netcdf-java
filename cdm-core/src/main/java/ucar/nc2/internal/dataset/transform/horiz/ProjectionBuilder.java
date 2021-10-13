@@ -2,13 +2,13 @@
 package ucar.nc2.internal.dataset.transform.horiz;
 
 import ucar.nc2.AttributeContainer;
-import ucar.nc2.dataset.ProjectionCT;
+import ucar.unidata.geoloc.Projection;
 
 import javax.annotation.Nullable;
 import java.util.Formatter;
 
 /** A Builder of Projection CoordinateTransform. */
-public interface HorizTransformBuilderIF {
+public interface ProjectionBuilder {
 
   /**
    * Make a ProjectionCT from a Coordinate Transform Variable.
@@ -19,7 +19,7 @@ public interface HorizTransformBuilderIF {
    * @return ProjectionCT.Builder or null if not able to make one.
    */
   @Nullable
-  ProjectionCT.Builder<?> makeCoordinateTransform(AttributeContainer ctv, @Nullable String geoCoordinateUnits);
+  Projection makeProjection(AttributeContainer ctv, @Nullable String geoCoordinateUnits);
 
   /** Get the Transform name. */
   String getTransformName();

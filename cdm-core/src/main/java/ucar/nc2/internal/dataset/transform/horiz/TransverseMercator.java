@@ -7,17 +7,17 @@ package ucar.nc2.internal.dataset.transform.horiz;
 
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.CF;
-import ucar.nc2.dataset.ProjectionCT;
 import ucar.unidata.geoloc.Earth;
+import ucar.unidata.geoloc.Projection;
 
 /** Create a Transverse Mercator Projection from the information in the Coordinate Transform Variable. */
-public class TransverseMercator extends AbstractProjectionCT implements HorizTransformBuilderIF {
+public class TransverseMercator extends AbstractProjectionCT implements ProjectionBuilder {
 
   public String getTransformName() {
     return CF.TRANSVERSE_MERCATOR;
   }
 
-  public ProjectionCT.Builder<?> makeCoordinateTransform(AttributeContainer ctv, String geoCoordinateUnits) {
+  public Projection makeProjection(AttributeContainer ctv, String geoCoordinateUnits) {
 
     double scale = ctv.findAttributeDouble(CF.SCALE_FACTOR_AT_CENTRAL_MERIDIAN, Double.NaN);
     if (Double.isNaN(scale))
@@ -51,6 +51,6 @@ public class TransverseMercator extends AbstractProjectionCT implements HorizTra
       proj = new ucar.unidata.geoloc.projection.TransverseMercator(lat0, lon0, scale, false_easting, false_northing,
           earth_radius);
     }
-    return ProjectionCT.builder().setName(ctv.getName()).setAuthority("FGDC").setProjection(proj);
+    return proj;
   }
 }

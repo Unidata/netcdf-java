@@ -29,8 +29,8 @@ import ucar.nc2.dataset.*;
 import ucar.nc2.geoloc.vertical.WrfEta;
 import ucar.nc2.internal.dataset.CoordSystemBuilder;
 import ucar.nc2.dataset.spi.CoordSystemBuilderFactory;
-import ucar.nc2.internal.dataset.TransformBuilder;
 import ucar.nc2.calendar.CalendarDate;
+import ucar.nc2.internal.dataset.transform.horiz.ProjectionCTV;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.geoloc.LatLonPoint;
@@ -154,7 +154,7 @@ public class WRFConvention extends CoordSystemBuilder {
   }
 
   private double centerX, centerY;
-  private ProjectionCT projCT;
+  private ProjectionCTV projCT;
   private boolean gridE;
 
   @Override
@@ -231,7 +231,7 @@ public class WRFConvention extends CoordSystemBuilder {
       switch (projType) {
         case 0: { // for diagnostic runs with no georeferencing
           proj = new FlatEarth();
-          projCT = new ProjectionCT("flat_earth", "FGDC", proj);
+          projCT = new ProjectionCTV("flat_earth", proj);
           break;
         }
         case 1: {
@@ -240,7 +240,7 @@ public class WRFConvention extends CoordSystemBuilder {
           double lon0 = (Double.isNaN(standardLon)) ? centralLon : standardLon;
           double lat0 = (Double.isNaN(standardLat)) ? lat2 : standardLat;
           proj = new LambertConformal(lat0, lon0, lat1, lat2, 0.0, 0.0, 6370);
-          projCT = new ProjectionCT("Lambert", "FGDC", proj);
+          projCT = new ProjectionCTV("Lambert", proj);
           break;
         }
         case 2: {
@@ -249,13 +249,13 @@ public class WRFConvention extends CoordSystemBuilder {
           double lat0 = (Double.isNaN(centralLat)) ? lat2 : centralLat; // ?? 7/20/2010
           double scaleFactor = (1 + Math.abs(Math.sin(Math.toRadians(lat1)))) / 2.; // R Schmunk 9/10/07
           proj = new Stereographic(lat0, lon0, scaleFactor, 0.0, 0.0, 6370);
-          projCT = new ProjectionCT("Stereographic", "FGDC", proj);
+          projCT = new ProjectionCTV("Stereographic", proj);
           break;
         }
         case 3: {
           // thanks to Robert Schmunk with edits for non-MOAD grids
           proj = new Mercator(standardLon, lat1, 0.0, 0.0, 6370);
-          projCT = new ProjectionCT("Mercator", "FGDC", proj);
+          projCT = new ProjectionCTV("Mercator", proj);
           break;
         }
         case 6: {
@@ -397,7 +397,7 @@ public class WRFConvention extends CoordSystemBuilder {
       VarProcess vp = findVarProcess(projCT.getName(), null);
       if (vp != null) {
         vp.isCoordinateTransform = true;
-        vp.ct = new TransformBuilder().setPreBuilt(projCT);
+        vp.ctv = projCT;
       }
     }
     super.makeCoordinateTransforms();

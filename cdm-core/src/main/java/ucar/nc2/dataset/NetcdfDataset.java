@@ -157,17 +157,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   }
 
   /**
-   * Get the list of all CoordinateTransform objects used by this dataset.
-   *
-   * @return list of type CoordinateTransform; may be empty, not null.
-   * @deprecated get transform from CoordinateSystem.
-   */
-  @Deprecated
-  public ImmutableList<CoordinateTransform> getCoordinateTransforms() {
-    return coords.getCoordTransforms();
-  }
-
-  /**
    * Get the list of all CoordinateAxis objects used by this dataset.
    *
    * @return list of type CoordinateAxis; may be empty, not null.
@@ -221,24 +210,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     if (name == null)
       return null;
     for (CoordinateSystem v : coords.getCoordSystems()) {
-      if (name.equals(v.getName()))
-        return v;
-    }
-    return null;
-  }
-
-  /**
-   * Retrieve the CoordinateTransform with the specified name.
-   *
-   * @param name String which identifies the desired CoordinateSystem
-   * @return the CoordinateSystem, or null if not found
-   * @deprecated use CoordinateSystem.getProjection(), GridCoordinateSystem.getVerticalTransform()
-   */
-  @Deprecated
-  public CoordinateTransform findCoordinateTransform(String name) {
-    if (name == null)
-      return null;
-    for (CoordinateTransform v : coords.getCoordTransforms()) {
       if (name.equals(v.getName()))
         return v;
     }
@@ -451,7 +422,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   private Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
     this.coords.getCoordAxes().forEach(axis -> b.coords.addCoordinateAxis(axis.toBuilder()));
     this.coords.getCoordSystems().forEach(sys -> b.coords.addCoordinateSystem(sys.toBuilder()));
-    this.coords.getCoordTransforms().forEach(trans -> b.coords.addCoordinateTransform(trans.toBuilder()));
+    this.coords.getCoordTransforms().forEach(ct -> b.coords.addCoordinateTransform(ct));
 
     b.setOrgFile(this.orgFile).setConventionUsed(this.convUsed).setEnhanceMode(this.enhanceMode)
         .setAggregation(this.agg).setFileTypeId(this.fileTypeId);

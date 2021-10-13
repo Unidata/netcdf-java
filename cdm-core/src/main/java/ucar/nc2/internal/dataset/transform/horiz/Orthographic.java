@@ -7,20 +7,19 @@ package ucar.nc2.internal.dataset.transform.horiz;
 
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.CF;
-import ucar.nc2.dataset.ProjectionCT;
+import ucar.unidata.geoloc.Projection;
 
 /** Create a Orthographic Projection from the information in the Coordinate Transform Variable. */
-public class Orthographic extends AbstractProjectionCT implements HorizTransformBuilderIF {
+public class Orthographic extends AbstractProjectionCT implements ProjectionBuilder {
 
   public String getTransformName() {
     return CF.ORTHOGRAPHIC;
   }
 
-  public ProjectionCT.Builder<?> makeCoordinateTransform(AttributeContainer ctv, String geoCoordinateUnits) {
+  public Projection makeProjection(AttributeContainer ctv, String geoCoordinateUnits) {
     double lon0 = ctv.findAttributeDouble(CF.LONGITUDE_OF_PROJECTION_ORIGIN, Double.NaN);
     double lat0 = ctv.findAttributeDouble(CF.LATITUDE_OF_PROJECTION_ORIGIN, Double.NaN);
 
-    ucar.unidata.geoloc.projection.Orthographic proj = new ucar.unidata.geoloc.projection.Orthographic(lat0, lon0);
-    return ProjectionCT.builder().setName(ctv.getName()).setAuthority("FGDC").setProjection(proj);
+    return new ucar.unidata.geoloc.projection.Orthographic(lat0, lon0);
   }
 }

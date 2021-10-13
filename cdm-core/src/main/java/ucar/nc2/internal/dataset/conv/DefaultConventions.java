@@ -22,7 +22,7 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.ProjectionCT;
+import ucar.nc2.internal.dataset.transform.horiz.ProjectionCTV;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.internal.dataset.CoordSystemBuilder;
 import ucar.nc2.dataset.spi.CoordSystemBuilderFactory;
@@ -38,7 +38,7 @@ import ucar.unidata.geoloc.projection.TransverseMercator;
 public class DefaultConventions extends CoordSystemBuilder {
   private static final Logger logger = LoggerFactory.getLogger(DefaultConventions.class);
 
-  protected ProjectionCT projCT;
+  protected ProjectionCTV projCT;
 
   private DefaultConventions(NetcdfDataset.Builder<?> datasetBuilder) {
     super(datasetBuilder);
@@ -290,7 +290,7 @@ public class DefaultConventions extends CoordSystemBuilder {
     return null;
   }
 
-  private ProjectionCT makeProjectionCT() {
+  private ProjectionCTV makeProjectionCT() {
     // look for projection in global attribute
     String projection = rootGroup.getAttributeContainer().findAttributeString("projection", null);
     if (null == projection) {
@@ -338,7 +338,7 @@ public class DefaultConventions extends CoordSystemBuilder {
       return null;
     }
 
-    return new ProjectionCT(proj.getClassName(), "FGDC", proj);
+    return new ProjectionCTV(proj.getClassName(), proj);
   }
 
   public static class Factory implements CoordSystemBuilderFactory {

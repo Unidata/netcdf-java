@@ -18,7 +18,7 @@ import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.*;
 import ucar.nc2.dataset.spi.CoordSystemBuilderFactory;
 import ucar.nc2.internal.dataset.CoordSystemBuilder;
-import ucar.nc2.internal.dataset.TransformBuilder;
+import ucar.nc2.internal.dataset.transform.horiz.ProjectionCTV;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.geoloc.LatLonPoint;
@@ -30,7 +30,7 @@ import ucar.unidata.geoloc.projection.LambertConformal;
 public class ADASConvention extends CoordSystemBuilder {
   private static final String CONVENTION_NAME = "ARPS/ADAS";
 
-  private ProjectionCT projCT;
+  private ProjectionCTV projCT;
 
   ADASConvention(NetcdfDataset.Builder<?> datasetBuilder) {
     super(datasetBuilder);
@@ -90,7 +90,7 @@ public class ADASConvention extends CoordSystemBuilder {
     Projection proj;
     if ("lambert_conformal_conic".equalsIgnoreCase(projName)) {
       proj = new LambertConformal(lat_origin, lon_origin, lat1, lat2, false_easting, false_northing);
-      projCT = new ProjectionCT("Projection", "FGDC", proj);
+      projCT = new ProjectionCTV(projName, proj);
       if (false_easting == 0.0)
         calcCenterPoints(proj); // old way
     } else {
@@ -155,7 +155,7 @@ public class ADASConvention extends CoordSystemBuilder {
     if (projCT != null) {
       VarProcess vp = findVarProcess(projCT.getName(), null);
       vp.isCoordinateTransform = true;
-      vp.ct = new TransformBuilder().setPreBuilt(projCT);
+      vp.ctv = projCT;
     }
     super.makeCoordinateTransforms();
   }

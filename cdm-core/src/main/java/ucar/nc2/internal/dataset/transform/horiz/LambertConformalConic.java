@@ -7,17 +7,17 @@ package ucar.nc2.internal.dataset.transform.horiz;
 
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.CF;
-import ucar.nc2.dataset.*;
 import ucar.unidata.geoloc.Earth;
+import ucar.unidata.geoloc.Projection;
 
 /** Create a LambertConformalConic Projection from the information in the Coordinate Transform Variable. */
-public class LambertConformalConic extends AbstractProjectionCT implements HorizTransformBuilderIF {
+public class LambertConformalConic extends AbstractProjectionCT implements ProjectionBuilder {
 
   public String getTransformName() {
     return CF.LAMBERT_CONFORMAL_CONIC;
   }
 
-  public ProjectionCT.Builder<?> makeCoordinateTransform(AttributeContainer ctv, String geoCoordinateUnits) {
+  public Projection makeProjection(AttributeContainer ctv, String geoCoordinateUnits) {
     double[] pars = readAttributeDouble2(ctv.findAttribute(CF.STANDARD_PARALLEL));
     if (pars == null)
       return null;
@@ -51,6 +51,6 @@ public class LambertConformalConic extends AbstractProjectionCT implements Horiz
           false_northing, earth_radius);
     }
 
-    return ProjectionCT.builder().setName(ctv.getName()).setAuthority("FGDC").setProjection(proj);
+    return proj;
   }
 }

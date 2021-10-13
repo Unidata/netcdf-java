@@ -16,7 +16,7 @@ import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.*;
 import ucar.nc2.dataset.spi.CoordSystemBuilderFactory;
 import ucar.nc2.internal.dataset.CoordSystemBuilder;
-import ucar.nc2.internal.dataset.TransformBuilder;
+import ucar.nc2.internal.dataset.transform.horiz.ProjectionCTV;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.projection.LambertConformal;
@@ -39,7 +39,7 @@ public class GDVConvention extends CSMConvention {
     }
   }
 
-  protected ProjectionCT projCT;
+  protected ProjectionCTV projCT;
 
   GDVConvention(NetcdfDataset.Builder<?> datasetBuilder) {
     super(datasetBuilder);
@@ -139,7 +139,7 @@ public class GDVConvention extends CSMConvention {
       VarProcess vp = findVarProcess(projCT.getName(), null);
       if (vp != null) {
         vp.isCoordinateTransform = true;
-        vp.ct = new TransformBuilder().setPreBuilt(projCT);
+        vp.ctv = projCT;
       }
     }
     super.makeCoordinateTransforms();
@@ -183,7 +183,7 @@ public class GDVConvention extends CSMConvention {
     return alias;
   }
 
-  private ProjectionCT makeProjectionCT() {
+  private ProjectionCTV makeProjectionCT() {
     // look for projection in global attribute
     String projection = rootGroup.getAttributeContainer().findAttributeString("projection", null);
     if (null == projection) {
@@ -231,7 +231,7 @@ public class GDVConvention extends CSMConvention {
       return null;
     }
 
-    return new ProjectionCT(proj.getClassName(), "FGDC", proj);
+    return new ProjectionCTV(proj.getClassName(), proj);
   }
 
 }

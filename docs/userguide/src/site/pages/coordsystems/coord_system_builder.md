@@ -40,10 +40,6 @@ ucar.nc2.dataset.CoordinateSystem:
 
 ucar.nc2.dataset.CoordinateAxis:
   public List getAxisType();
-
-ucar.nc2.dataset.CoordinateTransform:
-  public List getParameters();
-  public List getTransformType();
 ~~~
   
 ## Writing a CoordSysBuilderIF class

@@ -7,17 +7,17 @@ package ucar.nc2.internal.dataset.transform.horiz;
 
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.CF;
-import ucar.nc2.dataset.ProjectionCT;
 import ucar.unidata.geoloc.Earth;
+import ucar.unidata.geoloc.Projection;
 
 /** Create a Polar Stereographic Projection from the information in the Coordinate Transform Variable. */
-public class PolarStereographic extends AbstractProjectionCT implements HorizTransformBuilderIF {
+public class PolarStereographic extends AbstractProjectionCT implements ProjectionBuilder {
 
   public String getTransformName() {
     return CF.POLAR_STEREOGRAPHIC;
   }
 
-  public ProjectionCT.Builder<?> makeCoordinateTransform(AttributeContainer ctv, String geoCoordinateUnits) {
+  public Projection makeProjection(AttributeContainer ctv, String geoCoordinateUnits) {
     double lon0 = ctv.findAttributeDouble(CF.STRAIGHT_VERTICAL_LONGITUDE_FROM_POLE, Double.NaN);
     if (Double.isNaN(lon0))
       lon0 = ctv.findAttributeDouble(CF.LONGITUDE_OF_PROJECTION_ORIGIN, Double.NaN);
@@ -76,6 +76,6 @@ public class PolarStereographic extends AbstractProjectionCT implements HorizTra
       proj = new ucar.unidata.geoloc.projection.Stereographic(lat0, lon0, scale, false_easting, false_northing,
           earth_radius);
     }
-    return ProjectionCT.builder().setName(ctv.getName()).setAuthority("FGDC").setProjection(proj);
+    return proj;
   }
 }

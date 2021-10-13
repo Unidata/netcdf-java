@@ -7,19 +7,18 @@ package ucar.nc2.internal.dataset.transform.horiz;
 
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.CF;
-import ucar.nc2.dataset.ProjectionCT;
 import ucar.unidata.geoloc.Earth;
 import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.projection.proj4.CylindricalEqualAreaProjection;
 
 /** Lambert Cylindrical Equal Area Projection */
-public class LambertCylindricalEqualArea extends AbstractProjectionCT implements HorizTransformBuilderIF {
+public class LambertCylindricalEqualArea extends AbstractProjectionCT implements ProjectionBuilder {
 
   public String getTransformName() {
     return CF.LAMBERT_CYLINDRICAL_EQUAL_AREA;
   }
 
-  public ProjectionCT.Builder<?> makeCoordinateTransform(AttributeContainer ctv, String geoCoordinateUnits) {
+  public Projection makeProjection(AttributeContainer ctv, String geoCoordinateUnits) {
     double par = ctv.findAttributeDouble(CF.STANDARD_PARALLEL, Double.NaN);
 
     readStandardParams(ctv, geoCoordinateUnits);
@@ -34,8 +33,6 @@ public class LambertCylindricalEqualArea extends AbstractProjectionCT implements
       }
     }
 
-    Projection proj = new CylindricalEqualAreaProjection(lon0, par, false_easting, false_northing, earth);
-
-    return ProjectionCT.builder().setName(ctv.getName()).setAuthority("FGDC").setProjection(proj);
+    return new CylindricalEqualAreaProjection(lon0, par, false_easting, false_northing, earth);
   }
 }
