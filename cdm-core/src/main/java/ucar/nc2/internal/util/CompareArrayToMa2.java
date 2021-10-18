@@ -23,6 +23,7 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Sequence;
 import ucar.nc2.Variable;
 import ucar.nc2.util.Misc;
+import ucar.nc2.write.NcdumpArray;
 
 /**
  * Compare reading netcdf with Ma2 and same file with Array. Open separate files to prevent them from colliding.
@@ -30,7 +31,7 @@ import ucar.nc2.util.Misc;
 public class CompareArrayToMa2 {
 
   public static boolean compareFiles(NetcdfFile ma2File, NetcdfFile arrayFile) throws IOException {
-    return compareFiles(ma2File, arrayFile, true);
+    return compareFiles(ma2File, arrayFile, false);
   }
 
   public static boolean compareFiles(NetcdfFile ma2File, NetcdfFile arrayFile, boolean justOne) throws IOException {
@@ -80,7 +81,7 @@ public class CompareArrayToMa2 {
       Array<?> array = vnew.readArray();
       System.out.printf("  read variable %s %s%n", vorg.getArrayType(), vorg.getNameAndDimensions());
       Formatter f = new Formatter();
-      boolean ok1 = CompareArrayToMa2.compareData(f, vorg.getShortName(), org, array, justOne, true);
+      boolean ok1 = compareData(f, vorg.getShortName(), org, array, justOne, true);
       if (!ok1) {
         System.out.printf("%s%n", f);
         return false;
@@ -99,8 +100,8 @@ public class CompareArrayToMa2 {
 
     if (org.getSize() != array.length()) {
       f.format(" WARN  %s: data nelems org %d !== array %d%n", name, org.getSize(), array.length());
-      if (!org.isVlen() && !array.isVlen() && !(org.getDataType().getArrayType() == ArrayType.OPAQUE)) { // org vlen
-                                                                                                         // hopeless
+      /* org vlen hopeless */
+      if (!org.isVlen() && !array.isVlen() && !(org.getDataType().getArrayType() == ArrayType.OPAQUE)) {
         ok = false;
       }
     }
@@ -231,6 +232,19 @@ public class CompareArrayToMa2 {
       }
 
       case OPAQUE: {
+        for (Object arrayObj : array) {
+          Array<?> wtf = (Array<?>) arrayObj;
+          System.out.printf("arrayObj = %s%n", NcdumpArray.printArray(wtf));
+        }
+        while (iter1.hasNext()) {
+          ByteBuffer v1 = (ByteBuffer) iter1.getObjectNext();
+          v1.rewind();
+          System.out.print("orgObj = ");
+          while (v1.position() < v1.limit()) {
+            System.out.printf("%d,", v1.get());
+          }
+          System.out.printf("%n");
+        }
         Iterator<Object> iter2 = (Iterator<Object>) array.iterator();
         while (iter1.hasNext() && iter2.hasNext()) {
           ByteBuffer v1 = (ByteBuffer) iter1.getObjectNext();

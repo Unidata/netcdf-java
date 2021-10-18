@@ -3,7 +3,7 @@
  * See LICENSE for license information.
  */
 
-package ucar.nc2.array;
+package ucar.nc2.jni.netcdf;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -25,20 +25,21 @@ import java.util.List;
 
 import static com.google.common.truth.Truth.assertThat;
 
-/** Compare reading bufr with old ma2.array and new array.Array */
+/** Compare reading netcdf4 with old ma2.Array and new array.Array IOSPs */
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
-public class TestReadBufrCompare {
-  public static String bufrLocalFromTop = "src/test/data/";
+public class TestReadNc4Compare {
+  public static String iospOrg = "ucar.nc2.jni.netcdf.Nc4readerOrg";
+  public static String iospArray = "ucar.nc2.jni.netcdf.Nc4reader";
 
   @Parameterized.Parameters(name = "{0}")
   public static List<Object[]> getTestParameters() {
-    FileFilter ff = TestDir.FileFilterSkipSuffix(".cdl .ncml");
+    // UpperDeschutes_t4p10_swemelt.nc is too big
+    FileFilter ff = TestDir.FileFilterSkipSuffix(".cdl .ncml UpperDeschutes_t4p10_swemelt.nc");
     List<Object[]> result = new ArrayList<>(500);
     try {
-      TestDir.actOnAllParameterized(bufrLocalFromTop, ff, result, false);
-      TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "formats/bufr/userExamples", ff, result, false);
-      TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "formats/bufr/embeddedTable", ff, result, false);
+      TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "formats/netcdf3/", ff, result);
+      TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "formats/netcdf4/", ff, result);
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -48,7 +49,7 @@ public class TestReadBufrCompare {
 
   /////////////////////////////////////////////////////////////
 
-  public TestReadBufrCompare(String filename) {
+  public TestReadNc4Compare(String filename) {
     this.filename = filename;
   }
 
@@ -60,8 +61,8 @@ public class TestReadBufrCompare {
   }
 
   public static void compareMa2Array(String filename) throws Exception {
-    try (NetcdfFile ma2File = NetcdfFiles.open(filename, "ucar.nc2.iosp.bufr.BufrIosp", -1, null, null);
-        NetcdfFile arrayFile = NetcdfFiles.open(filename, "ucar.nc2.iosp.bufr.BufrArrayIosp", -1, null, null)) {
+    try (NetcdfFile ma2File = NetcdfFiles.open(filename, iospOrg, -1, null, null);
+        NetcdfFile arrayFile = NetcdfFiles.open(filename, iospArray, -1, null, null)) {
       System.out.println("Test NetcdfFile: " + arrayFile.getLocation());
 
       boolean ok = CompareArrayToMa2.compareFiles(ma2File, arrayFile);
@@ -71,8 +72,8 @@ public class TestReadBufrCompare {
 
   // compare to check complete read. need seperate files, or else they interfere
   public static void readOrg(String filename) throws Exception {
-    try (NetcdfFile ma2File = NetcdfFiles.open(filename, "ucar.nc2.iosp.bufr.BufrIosp", -1, null, null);
-        NetcdfFile maFile = NetcdfFiles.open(filename, "ucar.nc2.iosp.bufr.BufrIosp", -1, null, null)) {
+    try (NetcdfFile ma2File = NetcdfFiles.open(filename, iospOrg, -1, null, null);
+        NetcdfFile maFile = NetcdfFiles.open(filename, iospOrg, -1, null, null)) {
       System.out.println("Test NetcdfFile: " + ma2File.getLocation());
 
       boolean ok = CompareNetcdf2.compareFiles(ma2File, maFile, new Formatter());
@@ -82,8 +83,8 @@ public class TestReadBufrCompare {
 
   // compare to check complete read. need seperate files, or else they interfere
   public static void readArrays(String filename) throws Exception {
-    try (NetcdfFile arrayFile = NetcdfFiles.open(filename, "ucar.nc2.iosp.bufr.BufrArrayIosp", -1, null, null);
-        NetcdfFile arrayFile2 = NetcdfFiles.open(filename, "ucar.nc2.iosp.bufr.BufrArrayIosp", -1, null, null)) {
+    try (NetcdfFile arrayFile = NetcdfFiles.open(filename, iospArray, -1, null, null);
+        NetcdfFile arrayFile2 = NetcdfFiles.open(filename, iospArray, -1, null, null)) {
       System.out.println("Test NetcdfFile: " + arrayFile.getLocation());
 
       boolean ok = CompareArrayToArray.compareFiles(arrayFile, arrayFile2);
