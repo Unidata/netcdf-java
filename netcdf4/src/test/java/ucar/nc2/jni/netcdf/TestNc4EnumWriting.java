@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-
 package ucar.nc2.jni.netcdf;
 
 import static com.google.common.truth.Truth.assertThat;
@@ -21,9 +20,9 @@ import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.array.ArrayType;
-import ucar.ma2.Array;
-import ucar.ma2.DataType;
-import ucar.ma2.InvalidRangeException;
+import ucar.array.Array;
+import ucar.array.Arrays;
+import ucar.array.InvalidRangeException;
 import ucar.nc2.Dimension;
 import ucar.nc2.EnumTypedef;
 import ucar.nc2.Variable;
@@ -109,8 +108,8 @@ public class TestNc4EnumWriting {
 
     try (NetcdfFormatWriter writer = writerb.build()) {
       short[] dessertStorage = new short[] {18, 268, 3284};
-      Array data = Array.factory(DataType.SHORT, new int[] {3}, dessertStorage);
-      writer.write("dessert", data);
+      Array<?> data = Arrays.factory(ArrayType.SHORT, new int[] {3}, dessertStorage);
+      writer.write(writer.findVariable("dessert"), data.getIndex(), data);
     } catch (InvalidRangeException e) {
       e.printStackTrace();
       fail();

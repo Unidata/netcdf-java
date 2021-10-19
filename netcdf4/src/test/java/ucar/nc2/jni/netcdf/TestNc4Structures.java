@@ -1,16 +1,23 @@
 /*
- * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-
 package ucar.nc2.jni.netcdf;
 
+import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.assertNotNull;
 
 import org.junit.*;
 import org.junit.experimental.categories.Category;
 import org.junit.rules.TemporaryFolder;
-import ucar.ma2.*;
+import ucar.array.Array;
+import ucar.array.ArrayType;
+import ucar.array.Index;
+import ucar.array.InvalidRangeException;
+import ucar.array.StructureData;
+import ucar.array.StructureDataArray;
+import ucar.array.StructureDataStorageBB;
+import ucar.array.StructureMembers;
 import ucar.nc2.*;
 import ucar.nc2.ffi.netcdf.NetcdfClibrary;
 import ucar.nc2.util.CancelTask;
@@ -21,6 +28,7 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.io.File;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 /** Test writing structure data into netcdf4. */
 @Category(NeedsCdmUnitTest.class)
@@ -73,26 +81,26 @@ public class TestNc4Structures {
       NetcdfFormatWriter.Builder writerb =
           NetcdfFormatWriter.createNewNetcdf4(NetcdfFileFormat.NETCDF4, outFile.getAbsolutePath(), null);
       Structure.Builder<?> structb = writerb.addStructure("struct", "");
-      structb.addMemberVariable("foo", DataType.STRING, "");
+      structb.addMemberVariable("foo", ArrayType.STRING, "");
 
       try (NetcdfFormatWriter writer = writerb.build()) {
         Structure struct = (Structure) writer.findVariable("struct");
-        assertNotNull(struct);
+        assertThat(struct).isNotNull();
+
+        StructureMembers members = struct.makeStructureMembersBuilder().build();
+        ByteBuffer bbuffer = ByteBuffer.allocate(members.getStorageSizeBytes());
+        StructureDataStorageBB storage = new StructureDataStorageBB(members, bbuffer, 1);
 
         // Write data
-        ArrayString.D2 fooArray = new ArrayString.D2(1, 1);
-        fooArray.set(0, 0, "bar");
-        ArrayStructureMA arrayStruct = new ArrayStructureMA(struct.makeStructureMembers(), struct.getShape());
-        arrayStruct.setMemberArray("foo", fooArray);
-
-        writer.write("struct", arrayStruct);
+        storage.putOnHeap("bar");
+        writer.write(struct, Index.ofRank(0), new StructureDataArray(members, new int[] {1}, storage));
       }
 
       // Read the file back in and make sure that what we wrote is what we're getting back.
       try (NetcdfFile ncFileIn = NetcdfFiles.open(outFile.getAbsolutePath())) {
         Structure struct = (Structure) ncFileIn.getRootGroup().findVariableLocal("struct");
         assertNotNull(struct);
-        Assert.assertEquals("bar", struct.readScalarString());
+        assertThat(struct.readScalarString()).isEqualTo("bar");
       }
 
     } finally {
@@ -101,8 +109,8 @@ public class TestNc4Structures {
   }
 
   // Demonstrates GitHub issue #298.
-  // I did my best to write test code here that SHOULD work when NetcdfFileWriter and Nc4Iosp are fixed, using
-  // TestStructureArrayW as a reference. However, failure happens very early in the test, so it's hard to know if
+  // I did my best to write test code here that SHOULD work when NetcdfFileWriter and Nc4Iosp are fixed.
+  // However, failure happens very early in the test, so it's hard to know if
   // the unreached code is 100% correct. It may need to be fixed slightly.
   @Ignore("Resolve issue before we enable this.")
   @Test
@@ -112,37 +120,40 @@ public class TestNc4Structures {
       NetcdfFormatWriter.Builder writerb =
           NetcdfFormatWriter.createNewNetcdf4(NetcdfFileFormat.NETCDF4, outFile.getAbsolutePath(), null);
       Structure.Builder<?> outerb = writerb.addStructure("outer", "");
-      Structure.Builder<?> innerb = Structure.builder().setName("inner").addMemberVariable("foo", DataType.INT, "");
+      Structure.Builder<?> innerb = Structure.builder().setName("inner").addMemberVariable("foo", ArrayType.INT, "");
       outerb.addMemberVariable(innerb);
 
       try (NetcdfFormatWriter writer = writerb.build()) {
         Structure outer = (Structure) writer.findVariable("outer");
-        assertNotNull(outer);
+        assertThat(outer).isNotNull();
         Structure inner = (Structure) outer.findVariable("inner");
-        assertNotNull(inner);
+        assertThat(inner).isNotNull();
 
-        ArrayInt.D0 fooArray = new ArrayInt.D0(false);
-        fooArray.set(42);
+        StructureMembers members = outer.makeStructureMembersBuilder().build();
+        ByteBuffer bbuffer = ByteBuffer.allocate(members.getStorageSizeBytes());
+        StructureDataStorageBB storage = new StructureDataStorageBB(members, bbuffer, 1);
 
-        StructureDataW innerSdw = new StructureDataW(inner.makeStructureMembers());
-        innerSdw.setMemberData("foo", fooArray);
-        ArrayStructureW innerAsw = new ArrayStructureW(innerSdw);
-
-        StructureDataW outerSdw = new StructureDataW(outer.makeStructureMembers());
-        outerSdw.setMemberData("inner", innerAsw);
-        ArrayStructureW outerAsw = new ArrayStructureW(outerSdw);
-
-        writer.write(outer, outerAsw);
+        // Write data
+        bbuffer.putInt(42);
+        writer.write(outer, Index.ofRank(0), new StructureDataArray(members, new int[] {1}, storage));
       }
 
       // Read the file back in and make sure that what we wrote is what we're getting back.
       try (NetcdfFile ncFileIn = NetcdfFiles.open(outFile.getAbsolutePath())) {
         Structure struct = (Structure) ncFileIn.getRootGroup().findVariableLocal("outer");
-        StructureData outerStructureData = struct.readStructure(0);
-        StructureData innerStructureData = outerStructureData.getScalarStructure("inner");
-        int foo = innerStructureData.getScalarInt("foo");
+        StructureDataArray outerArray = (StructureDataArray) struct.readArray();
+        StructureMembers members = outerArray.getStructureMembers();
+        StructureMembers.Member innerMember = members.findMember("inner");
 
-        Assert.assertEquals(42, foo);
+        StructureData outerStructureData = outerArray.get(0);
+        StructureDataArray innerArray = (StructureDataArray) outerStructureData.getMemberData(innerMember);
+        StructureMembers innerMembers = innerArray.getStructureMembers();
+        StructureMembers.Member innerFoo = innerMembers.findMember("foo");
+
+        StructureData innerStructureData = innerArray.get(0);
+        Array<?> fooData = innerStructureData.getMemberData(innerFoo);
+        int foo = (Integer) fooData.getScalar();
+        assertThat(foo).isEqualTo(42);
       }
 
     } finally {
@@ -159,33 +170,41 @@ public class TestNc4Structures {
       NetcdfFormatWriter.Builder writerb =
           NetcdfFormatWriter.createNewNetcdf4(NetcdfFileFormat.NETCDF4, outFile.getAbsolutePath(), null);
       writerb.addDimension(Dimension.builder("dim", 5).setIsUnlimited(true).build());
-      writerb.addStructure("struct", "dim").addMemberVariable("foo", DataType.INT, null);
+      writerb.addStructure("struct", "dim").addMemberVariable("foo", ArrayType.INT, null);
 
       try (NetcdfFormatWriter writer = writerb.build()) {
         Structure struct = (Structure) writer.findVariable("struct");
         assertNotNull(struct);
 
-        // Write data
-        ArrayInt.D2 fooArray = new ArrayInt.D2(5, 1, false);
-        fooArray.set(0, 0, 2);
-        fooArray.set(1, 0, 3);
-        fooArray.set(2, 0, 5);
-        fooArray.set(3, 0, 7);
-        fooArray.set(4, 0, 11);
+        int nrecords = 5;
+        StructureMembers members = struct.makeStructureMembersBuilder().build();
+        ByteBuffer bbuffer = ByteBuffer.allocate(nrecords * members.getStorageSizeBytes());
+        StructureDataStorageBB storage = new StructureDataStorageBB(members, bbuffer, nrecords);
 
-        ArrayStructureMA arrayStruct = new ArrayStructureMA(struct.makeStructureMembers(), struct.getShape());
-        arrayStruct.setMemberArray("foo", fooArray);
+        bbuffer.putInt(2);
+        bbuffer.putInt(3);
+        bbuffer.putInt(5);
+        bbuffer.putInt(7);
+        bbuffer.putInt(11);
 
-        writer.write(struct, arrayStruct);
+        writer.write(struct, Index.ofRank(0), new StructureDataArray(members, new int[] {nrecords}, storage));
       }
 
       // Read the file back in and make sure that what we wrote is what we're getting back.
       try (NetcdfFile ncFileIn = NetcdfFiles.open(outFile.getAbsolutePath())) {
-        Array fooArray = ncFileIn.readSection("struct.foo");
+        Structure struct = (Structure) ncFileIn.findVariable("struct");
+        assertThat(struct).isNotNull();
+        StructureDataArray structArray = (StructureDataArray) struct.readArray();
+        StructureMembers members = structArray.getStructureMembers();
+        StructureMembers.Member innerMember = members.findMember("foo");
+        assertThat(innerMember).isNotNull();
 
+        Array<Integer> fooData = (Array<Integer>) structArray.extractMemberArray(innerMember);
         int[] expecteds = new int[] {2, 3, 5, 7, 11};
-        int[] actuals = (int[]) fooArray.copyToNDJavaArray();
-        Assert.assertArrayEquals(expecteds, actuals);
+        int count = 0;
+        for (int val : fooData) {
+          assertThat(val).isEqualTo(expecteds[count++]);
+        }
       }
 
     } finally {

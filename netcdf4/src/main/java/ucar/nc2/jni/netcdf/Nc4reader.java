@@ -1414,13 +1414,21 @@ public class Nc4reader extends AbstractIOServiceProvider {
             case Nc4prototypes.NC_USHORT: {
               ArrayType dt = userType.baseTypeid == Nc4prototypes.NC_SHORT ? ArrayType.SHORT : ArrayType.USHORT;
               ShortBuffer shortbb = bb.asShortBuffer();
-              return Arrays.factory(dt, shape, shortbb.array());
+              // seriously lame that shortbb.array() doesnt work.
+              shortbb.rewind();
+              short[] sa = new short[shortbb.capacity() - shortbb.position()];
+              shortbb.get(sa);
+              return Arrays.factory(dt, shape, sa);
             }
             case Nc4prototypes.NC_INT:
             case Nc4prototypes.NC_UINT: {
               ArrayType dt = userType.baseTypeid == Nc4prototypes.NC_INT ? ArrayType.INT : ArrayType.UINT;
               IntBuffer intbb = bb.asIntBuffer();
-              return Arrays.factory(dt, shape, intbb.array());
+              // seriously lame that intbb.array() doesnt work.
+              intbb.rewind();
+              int[] sa = new int[intbb.capacity() - intbb.position()];
+              intbb.get(sa);
+              return Arrays.factory(dt, shape, sa);
             }
           }
           throw new IOException("unknown enum base type " + userType.baseTypeid);

@@ -175,7 +175,7 @@ public class Arrays {
    * @param dataType of the dataArrays and of the result.
    * @param shape of the result.
    * @param dataArrays the composite data.
-   * @return composite Array, foprmed by copying the dataArrays.
+   * @return composite Array, formed by copying the dataArrays, must be of type dataType.
    */
   public static Array<?> factoryCopy(ArrayType dataType, int[] shape, List<Array<?>> dataArrays) {
     if (dataArrays.size() == 1) {
@@ -193,39 +193,37 @@ public class Arrays {
     if (size > Integer.MAX_VALUE) {
       throw new OutOfMemoryError();
     }
-    Object all;
+    Object dstAll;
 
     switch (dataType) {
       case BYTE:
       case ENUM1:
       case UBYTE:
-        all = new byte[(int) size];
-        break;
       case CHAR:
-        all = new char[(int) size];
+        dstAll = new byte[(int) size];
         break;
       case DOUBLE:
-        all = new double[(int) size];
+        dstAll = new double[(int) size];
         break;
       case FLOAT:
-        all = new float[(int) size];
+        dstAll = new float[(int) size];
         break;
       case INT:
       case ENUM4:
       case UINT:
-        all = new int[(int) size];
+        dstAll = new int[(int) size];
         break;
       case LONG:
       case ULONG:
-        all = new long[(int) size];
+        dstAll = new long[(int) size];
         break;
       case SHORT:
       case ENUM2:
       case USHORT:
-        all = new short[(int) size];
+        dstAll = new short[(int) size];
         break;
       case STRING:
-        all = new String[(int) size];
+        dstAll = new String[(int) size];
         break;
 
       case STRUCTURE: {
@@ -250,10 +248,10 @@ public class Arrays {
 
     int start = 0;
     for (Array<?> dataArray : dataArrays) {
-      dataArray.arraycopy(0, all, start, dataArray.length());
+      dataArray.arraycopy(0, dstAll, start, dataArray.length());
       start += dataArray.length();
     }
-    return all;
+    return dstAll;
   }
 
   // The only advantage over copying AFAICT is that it can handle arrays > 2G. as long as its broken up into
@@ -742,6 +740,25 @@ public class Arrays {
     while (iter1.hasNext() && iter2.hasNext()) {
       float v1 = iter1.next();
       float v2 = iter2.next();
+      if (!Misc.nearlyEquals(v1, v2)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /**
+   * Compare values which must be equal to within {@link Misc#defaultMaxRelativeDiffFloat}.
+   */
+  public static boolean equalNumbers(Array<Number> arr1, Array<Number> arr2) {
+    if (arr1.length() != arr2.length()) {
+      return false;
+    }
+    Iterator<Number> iter1 = arr1.iterator();
+    Iterator<Number> iter2 = arr2.iterator();
+    while (iter1.hasNext() && iter2.hasNext()) {
+      float v1 = iter1.next().floatValue();
+      float v2 = iter2.next().floatValue();
       if (!Misc.nearlyEquals(v1, v2)) {
         return false;
       }

@@ -788,7 +788,8 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    */
   public ucar.array.Array<?> readArray(@Nullable ucar.array.Section section)
       throws java.io.IOException, ucar.array.InvalidRangeException {
-    if ((null == section) || section.computeSize() == getSize()) {
+    section = ucar.array.Section.fill(section, getShape());
+    if (section.computeSize() == getSize()) {
       return readArray();
     }
     // full read was cached

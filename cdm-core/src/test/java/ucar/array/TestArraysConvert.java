@@ -80,7 +80,7 @@ public class TestArraysConvert {
 
     Formatter f = new Formatter();
     CompareNetcdf2 compare = new CompareNetcdf2(f);
-    boolean ok = compare.compareData("testConvertStructureDataRoundtrip", ma2Struct, converted, false);
+    boolean ok = compare.compareData("testConvertStructureDataRoundtrip", ma2Struct, converted);
     if (!ok) {
       System.out.printf("%s%n", f);
     }

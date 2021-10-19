@@ -166,6 +166,11 @@ public class VariableDS extends Variable implements VariableEnhanced {
   }
 
   @Override
+  public Object getSPobject() {
+    return (orgVar != null) ? orgVar.getSPobject() : null;
+  }
+
+  @Override
   public String lookupEnumString(int val) {
     if (dataType.isEnum())
       return super.lookupEnumString(val);

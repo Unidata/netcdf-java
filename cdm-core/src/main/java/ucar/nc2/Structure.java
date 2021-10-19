@@ -469,7 +469,7 @@ public class Structure extends Variable {
    * @see "https://community.oracle.com/blogs/emcmanus/2010/10/24/using-builder-pattern-subclasses"
    */
   public static Builder<?> builder() {
-    return new Builder2();
+    return new Builder2().setArrayType(ArrayType.STRUCTURE);
   }
 
   private static class Builder2 extends Builder<Builder2> {
