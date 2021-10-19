@@ -8,6 +8,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+import ucar.array.Array;
 import ucar.ma2.DataType;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
@@ -99,6 +100,21 @@ public class TestDataTemplate {
 
       Assert.assertEquals(0.36976, data[13], 1e-5);
       Assert.assertTrue(Double.isNaN(data[15]));
+    }
+  }
+
+  // See issue #881
+  @Test
+  public void testDrs50002() throws IOException {
+    final String testfile = "../grib/src/test/data/MeteoFrance_Indonesia_T__ISOBARIC_1000_HPA_50002.grib";
+    try (NetcdfFile nc = NetcdfFiles.open(testfile)) {
+      Variable var = nc.findVariable("Temperature_isobaric");
+      assertThat(var).isNotNull();
+      Array<Float> data = (Array<Float>) var.readArray();
+      for (float val : data) {
+        assertThat(val).isGreaterThan(290);
+        assertThat(val).isLessThan(310);
+      }
     }
   }
 }
