@@ -68,18 +68,6 @@ gretty {
   }
 }
 
-farm {
-  jvmArgs = ["-Dlog4j.configurationFile=$rootDir/gradle/gretty/log4j2Config.xml"]
-  // :opendap test.
-  webapp 'edu.ucar:dtswar:5.0@war', contextPath: '/dts'
-  integrationTestTask = 'test'
-
-  // Enable TLS
-  httpsEnabled = true
-  sslKeyStorePath = "$rootDir/gradle/gretty/tomcat/keystore"
-  sslKeyStorePassword = 'secret666'
-}
-
 if (project in publishedProjects) {
   apply plugin: 'maven-publish'
   // the gradle plugin adds a dependency on javax.servlet, as well as exclusions for

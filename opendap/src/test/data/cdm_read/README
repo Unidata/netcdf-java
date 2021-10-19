@@ -1,4 +1,0 @@
-This directory contains local files for testing the ability of netCDF-Java to
-read local dap2 binary files through the public API (e.g. NetcdfFiles.open())
-
-See opendap/src/test/java/dataset/TestBinaryFile.java
