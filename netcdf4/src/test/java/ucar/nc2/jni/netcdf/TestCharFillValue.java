@@ -82,8 +82,6 @@ public class TestCharFillValue {
 
     try (NetcdfDataset ncf = NetcdfDatasets.openDataset(filename)) {
       Variable charVarFromFile = ncf.findVariable(charVarName);
-      H5header.Vinfo h5 = (H5header.Vinfo) charVarFromFile.getSPobject();
-      System.out.printf("use fill value: %s%n", h5.useFillValue());
       // should be 3 charFillVal characters
       Array<Byte> arr = (Array<Byte>) charVarFromFile.readArray();
       System.out.printf("expected fill value: |%s|%n", charFillValue);
