@@ -165,10 +165,14 @@ public class VariableDS extends Variable implements VariableEnhanced {
     return orgName;
   }
 
-  @Override
-  public Object getSPobject() {
-    return (orgVar != null) ? orgVar.getSPobject() : null;
-  }
+  /*
+   * Cant do this, aggregation dependent (!)
+   * 
+   * @Override
+   * public Object getSPobject() {
+   * return (orgVar != null) ? orgVar.getSPobject() : null;
+   * }
+   */
 
   @Override
   public String lookupEnumString(int val) {

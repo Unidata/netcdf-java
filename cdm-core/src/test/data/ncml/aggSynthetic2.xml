@@ -8,10 +8,10 @@
   </variable>
 	
 	<aggregation dimName="time" type="joinNew">
-		<variableAgg name="T"/>
-    <netcdf location="nc/time0.nc"/>
-    <netcdf location="nc/time1.nc"/>
-    <netcdf location="nc/time2.nc"/>
-  </aggregation>
+      <variableAgg name="T"/>
+      <netcdf location="nc/time0.nc"/>
+      <netcdf location="nc/time1.nc"/>
+      <netcdf location="nc/time2.nc"/>
+    </aggregation>
   
 </netcdf>
