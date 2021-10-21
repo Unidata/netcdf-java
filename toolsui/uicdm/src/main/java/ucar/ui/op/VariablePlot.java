@@ -159,7 +159,7 @@ public class VariablePlot extends JPanel {
         p.getDomainAxis().setLabel(dimName);
 
       if (xAxis != null) {
-        log.info("X axis type " + xAxis.getDataType() + " value " + xAxis + " is Time " + xIsTime);
+        log.info("X axis type " + xAxis.getArrayType() + " value " + xAxis + " is Time " + xIsTime);
       }
     }
 

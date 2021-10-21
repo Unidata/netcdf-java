@@ -306,7 +306,7 @@ public class CDLWriter {
       writeCDL(att, v.getShortName());
       out.format(";");
       if (!strict && (att.getArrayType() != ArrayType.STRING)) {
-        out.format(" // %s", att.getDataType());
+        out.format(" // %s", att.getArrayType());
       }
       out.format("%n");
     }

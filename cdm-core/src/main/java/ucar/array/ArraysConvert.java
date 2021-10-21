@@ -80,8 +80,8 @@ public class ArraysConvert {
       int count = 0;
       IndexIterator ii = from.getIndexIterator();
       while (ii.hasNext()) {
-        Object parray = ii.getObjectNext();
-        result.set(count++, parray);
+        ucar.ma2.Array parray = (ucar.ma2.Array) ii.getObjectNext();
+        result.set(count++, parray.copyTo1DJavaArray());
       }
       return result;
     }

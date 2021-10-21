@@ -10,6 +10,8 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ucar.array.ArrayType;
+import ucar.array.Arrays;
 import ucar.ma2.*;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
@@ -34,15 +36,15 @@ public class TestWriteMiscProblems {
     String filename = tempFolder.newFile().getAbsolutePath();
     NetcdfFormatWriter.Builder<?> writerb = NetcdfFormatWriter.createNewNetcdf3(filename);
     int len = 120000;
-    ArrayChar.D1 arrayCharD1 = new ArrayChar.D1(len);
+    char[] carray1 = new char[len];
     for (int i = 0; i < len; i++)
-      arrayCharD1.set(i, '1');
-    writerb.addAttribute(Attribute.fromArray("tooLongChar", arrayCharD1));
+      carray1[i] = '1';
+    writerb.addAttribute(Attribute.fromArray("tooLongChar", Arrays.factory(ArrayType.CHAR, new int[] {len}, carray1)));
 
-    char[] carray = new char[len];
+    char[] carray2 = new char[len];
     for (int i = 0; i < len; i++)
-      carray[i] = '2';
-    String val = new String(carray);
+      carray2[i] = '2';
+    String val = new String(carray2);
     writerb.addAttribute(new Attribute("tooLongString", val));
 
     try (NetcdfFormatWriter ncfile = writerb.build()) {

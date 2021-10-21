@@ -7,11 +7,13 @@ package ucar.nc2.dataset;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ucar.array.ArrayType;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.internal.util.CompareNetcdf2;
 import ucar.nc2.write.Ncdump;
+import ucar.nc2.write.NcdumpArray;
 import ucar.nc2.write.NetcdfFormatWriter;
 import ucar.unidata.util.test.TestDir;
 import java.io.IOException;
@@ -19,6 +21,8 @@ import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.Formatter;
+
+import static com.google.common.truth.Truth.assertThat;
 
 /** Test basics of enhanced {@link NetcdfDataset} */
 public class TestStandardVar {
@@ -38,26 +42,26 @@ public class TestStandardVar {
     dims.add(lonDim);
 
     // case 1
-    writerb.addVariable("t1", DataType.DOUBLE, dims).addAttribute(new Attribute(CDM.SCALE_FACTOR, 2.0))
+    writerb.addVariable("t1", ArrayType.DOUBLE, dims).addAttribute(new Attribute(CDM.SCALE_FACTOR, 2.0))
         .addAttribute(new Attribute(CDM.ADD_OFFSET, 77.0));
 
     // case 2
-    writerb.addVariable("t2", DataType.BYTE, dims).addAttribute(new Attribute(CDM.SCALE_FACTOR, (short) 2))
+    writerb.addVariable("t2", ArrayType.BYTE, dims).addAttribute(new Attribute(CDM.SCALE_FACTOR, (short) 2))
         .addAttribute(new Attribute(CDM.ADD_OFFSET, (short) 77));
 
     // case 3
-    writerb.addVariable("t3", DataType.BYTE, dims).addAttribute(new Attribute(CDM.FILL_VALUE, (byte) 255));
+    writerb.addVariable("t3", ArrayType.BYTE, dims).addAttribute(new Attribute(CDM.FILL_VALUE, (byte) 255));
 
     // case 4
-    writerb.addVariable("t4", DataType.SHORT, dims).addAttribute(new Attribute(CDM.MISSING_VALUE, (short) -9999));
+    writerb.addVariable("t4", ArrayType.SHORT, dims).addAttribute(new Attribute(CDM.MISSING_VALUE, (short) -9999));
 
     // case 5
-    writerb.addVariable("t5", DataType.SHORT, dims).addAttribute(new Attribute(CDM.MISSING_VALUE, (short) -9999))
+    writerb.addVariable("t5", ArrayType.SHORT, dims).addAttribute(new Attribute(CDM.MISSING_VALUE, (short) -9999))
         .addAttribute(new Attribute(CDM.SCALE_FACTOR, (short) 2))
         .addAttribute(new Attribute(CDM.ADD_OFFSET, (short) 77));
 
     // case m1
-    writerb.addVariable("m1", DataType.DOUBLE, dims).addAttribute(new Attribute(CDM.MISSING_VALUE, -999.99));
+    writerb.addVariable("m1", ArrayType.DOUBLE, dims).addAttribute(new Attribute(CDM.MISSING_VALUE, -999.99));
 
     // create and write to the file
     try (NetcdfFormatWriter writer = writerb.build()) {
@@ -127,14 +131,14 @@ public class TestStandardVar {
   private void readDouble() throws Exception {
     Variable t1 = ncfileRead.findVariable("t1");
     assert (null != t1);
-    assert (t1.getDataType() == DataType.DOUBLE);
+    assert (t1.getArrayType() == ArrayType.DOUBLE);
 
     Attribute att = t1.findAttribute(CDM.SCALE_FACTOR);
     assert (null != att);
     assert (!att.isArray());
     assert (1 == att.getLength());
     assert (2.0 == att.getNumericValue().doubleValue());
-    assert (DataType.DOUBLE == att.getDataType());
+    assert (ArrayType.DOUBLE == att.getArrayType());
 
     // read
     Array A = t1.read();
@@ -151,7 +155,7 @@ public class TestStandardVar {
     t1 = dsRead.findVariable("t1");
     assert (null != t1);
     assert t1 instanceof VariableEnhanced;
-    assert (t1.getDataType() == DataType.DOUBLE);
+    assert (t1.getArrayType() == ArrayType.DOUBLE);
 
     A = t1.read();
     ima = A.getIndex();
@@ -167,20 +171,20 @@ public class TestStandardVar {
   private void readByte2Short() throws Exception {
     Variable t2 = ncfileRead.findVariable("t2");
     assert (null != t2);
-    assert (t2.getDataType() == DataType.BYTE);
+    assert (t2.getArrayType() == ArrayType.BYTE);
 
     Attribute att = t2.findAttribute(CDM.SCALE_FACTOR);
     assert (null != att);
     assert (!att.isArray());
     assert (1 == att.getLength());
     assert (2 == att.getNumericValue().doubleValue());
-    assert (DataType.SHORT == att.getDataType());
+    assert (ArrayType.SHORT == att.getArrayType());
 
     t2 = dsRead.findVariable("t2");
     assert (null != t2);
     assert t2 instanceof VariableEnhanced;
     VariableDS vs = (VariableDS) t2;
-    assert (vs.getDataType() == DataType.SHORT) : vs.getDataType();
+    assert (vs.getArrayType() == ArrayType.SHORT) : vs.getArrayType();
     assert (vs.hasMissing());
 
     Array A = vs.read();
@@ -198,14 +202,14 @@ public class TestStandardVar {
   private void readByte() throws Exception {
     Variable v = ncfileRead.findVariable("t3");
     assert (v != null);
-    assert (v.getDataType() == DataType.BYTE);
+    assert (v.getArrayType() == ArrayType.BYTE);
 
     v = dsRead.findVariable("t3");
     assert (v != null);
     assert v instanceof VariableEnhanced;
     assert v instanceof VariableDS;
     VariableDS vs = (VariableDS) v;
-    assert (vs.getDataType() == DataType.BYTE);
+    assert (vs.getArrayType() == ArrayType.BYTE);
 
     Attribute att = vs.findAttribute("_FillValue");
     assert (null != att);
@@ -213,7 +217,7 @@ public class TestStandardVar {
     assert (1 == att.getLength());
     logger.debug("_FillValue = {}", att.getNumericValue().byteValue());
     assert (((byte) 255) == att.getNumericValue().byteValue());
-    assert (DataType.BYTE == att.getDataType());
+    assert (ArrayType.BYTE == att.getArrayType());
 
     assert (vs.hasMissing());
     assert (vs.scaleMissingUnsignedProxy().hasFillValue());
@@ -235,7 +239,7 @@ public class TestStandardVar {
   private void readShortMissing() throws Exception {
     Variable v = ncfileRead.findVariable("t4");
     assert (v != null);
-    assert (v.getDataType() == DataType.SHORT);
+    assert (v.getArrayType() == ArrayType.SHORT);
 
     // default use of missing_value
     v = dsRead.findVariable("t4");
@@ -243,7 +247,7 @@ public class TestStandardVar {
     assert v instanceof VariableEnhanced;
     assert v instanceof VariableDS;
     VariableDS vs = (VariableDS) v;
-    assert (vs.getDataType() == DataType.SHORT);
+    assert (vs.getArrayType() == ArrayType.SHORT);
 
     Attribute att = vs.findAttribute(CDM.MISSING_VALUE);
     assert (null != att);
@@ -251,7 +255,7 @@ public class TestStandardVar {
     assert (1 == att.getLength());
     logger.debug("missing_value = {}", att.getNumericValue().shortValue());
     assert (((short) -9999) == att.getNumericValue().shortValue());
-    assert (DataType.SHORT == att.getDataType());
+    assert (ArrayType.SHORT == att.getArrayType());
 
     assert (vs.hasMissing());
     assert (vs.scaleMissingUnsignedProxy().hasMissingValue());
@@ -273,7 +277,7 @@ public class TestStandardVar {
   private void readShort2FloatMissing() throws Exception {
     Variable v = ncfileRead.findVariable("t5");
     assert (v != null);
-    assert (v.getDataType() == DataType.SHORT);
+    assert (v.getArrayType() == ArrayType.SHORT);
 
     // standard convert with missing data
     v = dsRead.findVariable("t5");
@@ -281,7 +285,7 @@ public class TestStandardVar {
     assert v instanceof VariableEnhanced;
     assert v instanceof VariableDS;
     VariableDS vs = (VariableDS) v;
-    assert (vs.getDataType() == DataType.SHORT);
+    assert (vs.getArrayType() == ArrayType.SHORT);
 
     assert (vs.hasMissing());
     assert (vs.scaleMissingUnsignedProxy().hasMissingValue());
@@ -310,7 +314,7 @@ public class TestStandardVar {
   private void readDoubleMissing() throws Exception {
     VariableDS v = (VariableDS) dsRead.findVariable("m1");
     assert (v != null);
-    assert (v.getDataType() == DataType.DOUBLE);
+    assert (v.getArrayType() == ArrayType.DOUBLE);
 
     Array A = v.read();
     Index ima = A.getIndex();
@@ -329,26 +333,26 @@ public class TestStandardVar {
       try (NetcdfDataset ncdefer = NetcdfDatasets.openDataset(durl, null, -1, null, null)) {
 
         VariableDS enhancedVar = (VariableDS) ncd.findVariable("t1");
-        assert (enhancedVar != null);
+        assertThat(enhancedVar).isNotNull();
         VariableDS deferVar = (VariableDS) ncdefer.findVariable("t1");
-        assert (deferVar != null);
+        assertThat(deferVar).isNotNull();
 
-        Array enhancedData = enhancedVar.read();
-        Array deferredData = deferVar.read();
+        ucar.array.Array<?> enhancedData = enhancedVar.readArray();
+        ucar.array.Array<?> deferredData = deferVar.readArray();
 
-        logger.debug("Enhanced = {}", Ncdump.printArray(enhancedData));
-        logger.debug("Deferred = {}", Ncdump.printArray(deferredData));
+        logger.debug("Enhanced = {}", NcdumpArray.printArray(enhancedData));
+        logger.debug("Deferred = {}", NcdumpArray.printArray(deferredData));
 
         Formatter compareOutputFormatter = new Formatter();
         CompareNetcdf2 nc = new CompareNetcdf2(compareOutputFormatter, false, false, true);
 
-        logger.debug("Comparison result = {}", compareOutputFormatter.toString());
-        assert !nc.compareData(enhancedVar.getShortName(), enhancedData, deferredData);
+        logger.debug("Comparison result = {}", compareOutputFormatter);
+        assertThat(nc.compareData(enhancedVar.getShortName(), enhancedData, deferredData)).isFalse();
 
-        Array processedData = enhancedVar.scaleMissingUnsignedProxy().applyScaleOffset(deferredData);
+        ucar.array.Array<?> processedData = enhancedVar.scaleMissingUnsignedProxy().applyScaleOffset(deferredData);
 
-        logger.debug("Processed = {}", Ncdump.printArray(deferredData));
-        assert nc.compareData(enhancedVar.getShortName(), enhancedData, processedData);
+        logger.debug("Processed = {}", NcdumpArray.printArray(deferredData));
+        assertThat(nc.compareData(enhancedVar.getShortName(), enhancedData, processedData)).isTrue();
       }
     }
   }

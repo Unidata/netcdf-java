@@ -69,7 +69,7 @@ public abstract class Nc4ChunkingStrategy implements Nc4Chunking {
   @Nullable
   protected Attribute getChunkAttribute(Variable v) {
     Attribute att = v.findAttribute(CDM.CHUNK_SIZES);
-    if (att != null && att.getDataType().isIntegral() && att.getLength() == v.getRank()) {
+    if (att != null && att.getArrayType().isIntegral() && att.getLength() == v.getRank()) {
       return att;
     }
     return null;

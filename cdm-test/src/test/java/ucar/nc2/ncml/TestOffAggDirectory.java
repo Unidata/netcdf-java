@@ -9,7 +9,7 @@ import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
-import ucar.ma2.DataType;
+import ucar.array.ArrayType;
 import ucar.ma2.Index;
 import ucar.ma2.IndexIterator;
 import ucar.nc2.Attribute;
@@ -93,14 +93,14 @@ public class TestOffAggDirectory {
 
   private void testCoordVar(NetcdfFile ncfile) throws IOException {
     Variable lat = ncfile.findVariable("latitude");
-    assert lat.getDataType() == DataType.FLOAT;
+    assert lat.getArrayType() == ArrayType.FLOAT;
     assert lat.getDimension(0).equals(ncfile.findDimension("latitude"));
 
     Attribute att = lat.findAttribute("units");
     assert null != att;
     assert !att.isArray();
     assert att.isString();
-    assert att.getDataType() == DataType.STRING;
+    assert att.getArrayType() == ArrayType.STRING;
     assert att.getStringValue().equals("degree_N");
 
     Array data = lat.read();
@@ -122,7 +122,7 @@ public class TestOffAggDirectory {
     assert time.getRank() == 1;
     assert time.getSize() == 6;
     assert time.getShape()[0] == 6;
-    assert time.getDataType() == DataType.FLOAT;
+    assert time.getArrayType() == ArrayType.FLOAT;
 
     assert time.getDimension(0) == ncfile.findDimension("time");
 
@@ -147,7 +147,7 @@ public class TestOffAggDirectory {
     assert v.getShape()[0] == 6;
     assert v.getShape()[1] == 630;
     assert v.getShape()[2] == 630;
-    assert v.getDataType() == DataType.SHORT;
+    assert v.getArrayType() == ArrayType.SHORT;
 
     assert !v.isCoordinateVariable();
 
@@ -179,7 +179,7 @@ public class TestOffAggDirectory {
     assert v.getShape()[0] == 6;
     assert v.getShape()[1] == 630;
     assert v.getShape()[2] == 630;
-    assert v.getDataType() == DataType.DOUBLE;
+    assert v.getArrayType() == ArrayType.DOUBLE;
 
     assert !v.isCoordinateVariable();
 
