@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-
 package ucar.nc2.jni.netcdf;
 
 import static com.google.common.truth.Truth.assertThat;
@@ -12,9 +11,11 @@ import org.junit.*;
 import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.ArrayDouble;
-import ucar.ma2.DataType;
-import ucar.ma2.InvalidRangeException;
+import ucar.array.Array;
+import ucar.array.ArrayType;
+import ucar.array.Arrays;
+import ucar.array.Index;
+import ucar.array.InvalidRangeException;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.ffi.netcdf.NetcdfClibrary;
@@ -54,28 +55,21 @@ public class TestNc4Misc {
         NetcdfFormatWriter.createNewNetcdf4(NetcdfFileFormat.NETCDF4, location, chunkingStrategy);
 
     Dimension timeDim = writerb.addUnlimitedDimension("time");
-    writerb.addVariable("time", DataType.DOUBLE, ImmutableList.of(timeDim))
+    writerb.addVariable("time", ArrayType.DOUBLE, ImmutableList.of(timeDim))
         .addAttribute(new Attribute("units", "milliseconds since 1970-01-01T00:00:00Z"));
 
     try (NetcdfFormatWriter writer = writerb.build()) {
-      // create 1-D arrays to hold data values (time is the dimension)
-      ArrayDouble.D1 timeArray = new ArrayDouble.D1(1);
-
-      int[] origin = new int[] {0};
+      double[] timeArray = new double[1];
+      Index origin = Index.ofRank(1);
       long startTime = 1398978611132L;
 
-      // write the records to the file
+      // write the records to the file, one at a time
       for (int i = 0; i < 10000; i++) {
-        // load data into array variables
         double value = startTime++;
-        timeArray.set(timeArray.getIndex(), value);
-
-        origin[0] = i;
-
-        // write a record
-        writer.write("time", origin, timeArray);
+        timeArray[0] = value;
+        Array<?> data = Arrays.factory(ArrayType.DOUBLE, new int[] {1}, timeArray);
+        writer.write(writer.findVariable("time"), origin.set(i), data);
       }
-
     }
 
     File resultFile = new File(location);
@@ -89,54 +83,6 @@ public class TestNc4Misc {
       assert chunk.getNumericValue().equals(1024) : "chunk failed= " + chunk;
     }
   }
-
-  @Ignore("remove ability to set chunk with attribute 2/10/2016")
-  @Test
-  public void testChunkFromAttribute() throws IOException, InvalidRangeException {
-    // define the file
-    String location = tempFolder.newFile().getAbsolutePath();
-
-    Nc4Chunking chunkingStrategy = Nc4ChunkingStrategy.factory(Nc4Chunking.Strategy.standard, 0, false);
-    NetcdfFormatWriter.Builder writerb =
-        NetcdfFormatWriter.createNewNetcdf4(NetcdfFileFormat.NETCDF4, location, chunkingStrategy);
-
-    Dimension timeDim = writerb.addUnlimitedDimension("time");
-    writerb.addVariable("time", DataType.DOUBLE, ImmutableList.of(timeDim))
-        .addAttribute(new Attribute("units", "milliseconds since 1970-01-01T00:00:00Z"))
-        .addAttribute(new Attribute(CDM.CHUNK_SIZES, 2000));
-
-    try (NetcdfFormatWriter writer = writerb.build()) {
-      // create 1-D arrays to hold data values (time is the dimension)
-      ArrayDouble.D1 timeArray = new ArrayDouble.D1(1);
-
-      int[] origin = new int[] {0};
-      long startTime = 1398978611132L;
-
-      // write the records to the file
-      for (int i = 0; i < 10000; i++) {
-        // load data into array variables
-        double value = startTime++;
-        timeArray.set(timeArray.getIndex(), value);
-
-        origin[0] = i;
-
-        // write a record
-        writer.write("time", origin, timeArray);
-      }
-    }
-
-    File resultFile = new File(location);
-    logger.debug("Wrote data file {} size={}", location, resultFile.length());
-    assert resultFile.length() < 100 * 1000 : resultFile.length();
-
-    try (NetcdfFile file = NetcdfFiles.open(location)) {
-      Variable time = file.findVariable("time");
-      Attribute chunk = time.findAttribute(CDM.CHUNK_SIZES);
-      assert chunk != null;
-      assert chunk.getNumericValue().equals(2000) : "chunk failed= " + chunk;
-    }
-  }
-
 
   /*
    * from peter@terrenus.ca
@@ -169,7 +115,7 @@ public class TestNc4Misc {
   private void testFileType(NetcdfFileFormat format) throws Exception {
     String fileName = tempFolder.newFile().getAbsolutePath();
     NetcdfFormatWriter.Builder writerb = NetcdfFormatWriter.builder().setFormat(format).setLocation(fileName);
-    writerb.addVariable("coord_ref", DataType.INT, "");
+    writerb.addVariable("coord_ref", ArrayType.INT, "");
     try (NetcdfFormatWriter writer = writerb.build()) {
     }
 

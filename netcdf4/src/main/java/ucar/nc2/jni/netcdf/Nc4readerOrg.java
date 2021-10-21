@@ -5,47 +5,63 @@
 
 package ucar.nc2.jni.netcdf;
 
-import static ucar.nc2.NetcdfFile.IOSP_MESSAGE_GET_NETCDF_FILE_FORMAT;
-import static ucar.nc2.ffi.netcdf.NetcdfClibrary.isLibraryPresent;
-import static ucar.nc2.jni.netcdf.Nc4prototypes.*;
-
-import com.google.common.base.Preconditions;
 import com.sun.jna.Platform;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
-
-import java.nio.IntBuffer;
-import java.nio.ShortBuffer;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import javax.annotation.Nullable;
-
-import ucar.array.Array;
-import ucar.array.ArrayVlen;
-import ucar.array.Arrays;
 import ucar.array.ArrayType;
-import ucar.array.InvalidRangeException;
-import ucar.array.Range;
-import ucar.array.Section;
-import ucar.array.StorageMutable;
-import ucar.array.StructureDataArray;
-import ucar.array.StructureDataStorageBB;
-import ucar.array.StructureMembers;
-import ucar.nc2.*;
+import ucar.ma2.Array;
+import ucar.ma2.ArrayStructureBB;
+import ucar.ma2.DataType;
+import ucar.ma2.IndexIterator;
+import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Range;
+import ucar.ma2.Section;
+import ucar.ma2.StructureMembers;
+import ucar.nc2.Attribute;
+import ucar.nc2.Dimension;
+import ucar.nc2.EnumTypedef;
+import ucar.nc2.Group;
+import ucar.nc2.Structure;
+import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.DataFormatType;
+import ucar.nc2.ffi.netcdf.NetcdfClibrary;
+import ucar.nc2.internal.util.EscapeStrings;
 import ucar.nc2.internal.util.URLnaming;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.iosp.IospHelper;
-import ucar.nc2.ffi.netcdf.NetcdfClibrary;
-import ucar.nc2.util.CancelTask;
-import ucar.nc2.internal.util.EscapeStrings;
 import ucar.nc2.iosp.NetcdfFileFormat;
+import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
+
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.*;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Formatter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+import static ucar.nc2.NetcdfFile.IOSP_MESSAGE_GET_NETCDF_FILE_FORMAT;
+import static ucar.nc2.ffi.netcdf.NetcdfClibrary.isLibraryPresent;
+import static ucar.nc2.jni.netcdf.Nc4prototypes.NC_BYTE;
+import static ucar.nc2.jni.netcdf.Nc4prototypes.NC_CHAR;
+import static ucar.nc2.jni.netcdf.Nc4prototypes.NC_FORMAT_NETCDF4;
+import static ucar.nc2.jni.netcdf.Nc4prototypes.NC_FORMAT_NETCDF4_CLASSIC;
+import static ucar.nc2.jni.netcdf.Nc4prototypes.NC_INT;
+import static ucar.nc2.jni.netcdf.Nc4prototypes.NC_MAX_ATOMIC_TYPE;
+import static ucar.nc2.jni.netcdf.Nc4prototypes.NC_NOWRITE;
+import static ucar.nc2.jni.netcdf.Nc4prototypes.NC_SHORT;
+import static ucar.nc2.jni.netcdf.Nc4prototypes.NC_UBYTE;
+import static ucar.nc2.jni.netcdf.Nc4prototypes.NC_UINT;
+import static ucar.nc2.jni.netcdf.Nc4prototypes.NC_USHORT;
+import static ucar.nc2.jni.netcdf.Nc4prototypes.Vlen_t;
 
 /**
  * IOSP for reading netcdf files through JNA interface to netcdf C library
@@ -54,10 +70,9 @@ import java.util.*;
  * @see <a href="http://earthdata.nasa.gov/sites/default/files/field/document/ESDS-RFC-022v1.pdf" />
  * @see <a href=
  *      "https://www.unidata.ucar.edu/software/netcdf/docs/faq.html#How-can-I-convert-HDF5-files-into-netCDF-4-files" />
- *      LOOK needs to be refactored. Perhaps using ffi ?
  */
-public class Nc4reader extends AbstractIOServiceProvider {
-  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Nc4reader.class);
+public class Nc4readerOrg extends AbstractIOServiceProvider {
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Nc4readerOrg.class);
 
   private static final boolean debugCompoundAtt = false;
   private static final boolean debugUserTypes = false;
@@ -78,12 +93,13 @@ public class Nc4reader extends AbstractIOServiceProvider {
   final Map<Integer, UserType> userTypes = new HashMap<>(); // hash by typeid
   final Map<Group.Builder, Integer> groupBuilderHash = new HashMap<>(); // TODO group.builder -> nc4 grpid
 
+
   // no-arg constructor for NetcdfFiles.open()
-  public Nc4reader() {
+  public Nc4readerOrg() {
     this(NetcdfFileFormat.NETCDF4);
   }
 
-  Nc4reader(NetcdfFileFormat version) {
+  Nc4readerOrg(NetcdfFileFormat version) {
     this.version = version;
   }
 
@@ -278,7 +294,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
       throw new IOException(ret + ": " + nc4.nc_strerror(ret));
 
     // Ensure array is sorted so that we can use binarySearch on it.
-    java.util.Arrays.sort(unlimitedDimIdsInGroup);
+    Arrays.sort(unlimitedDimIdsInGroup);
 
     for (int dimId : dimIdsInGroup) {
       byte[] dimNameBytes = new byte[Nc4prototypes.NC_MAX_NAME + 1];
@@ -288,7 +304,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
         throw new IOException(ret + ": " + nc4.nc_strerror(ret));
 
       String dimName = makeString(dimNameBytes);
-      boolean isUnlimited = java.util.Arrays.binarySearch(unlimitedDimIdsInGroup, dimId) >= 0;
+      boolean isUnlimited = Arrays.binarySearch(unlimitedDimIdsInGroup, dimId) >= 0;
 
       Dimension dimension = new Dimension(dimName, dimLength_p.getValue().intValue(), true, isUnlimited, false);
       g4.g.addDimension(dimension);
@@ -312,7 +328,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
    * @return String array encoded using the UTF-8 charset
    */
   private String[] transcodeString(String[] systemStrings) {
-    return java.util.Arrays.stream(systemStrings).map(systemString -> {
+    return Arrays.stream(systemStrings).map(systemString -> {
       byte[] byteArray = systemString.getBytes(Charset.defaultCharset());
       return new String(byteArray, StandardCharsets.UTF_8);
     }).toArray(String[]::new);
@@ -438,7 +454,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
       }
 
       // read the att values
-      Array<?> values = null;
+      Array values = null;
 
       switch (type) {
 
@@ -447,7 +463,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
           ret = nc4.nc_get_att_uchar(grpid, varid, attname, valbu);
           if (ret != 0)
             throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-          values = Arrays.factory(ArrayType.UBYTE, new int[] {len}, valbu);
+          values = Array.factory(DataType.UBYTE, new int[] {len}, valbu);
           break;
 
         case Nc4prototypes.NC_BYTE:
@@ -455,7 +471,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
           ret = nc4.nc_get_att_schar(grpid, varid, attname, valb);
           if (ret != 0)
             throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-          values = Arrays.factory(ArrayType.BYTE, new int[] {len}, valb);
+          values = Array.factory(DataType.BYTE, new int[] {len}, valb);
           break;
 
         case Nc4prototypes.NC_CHAR:
@@ -472,7 +488,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
           ret = nc4.nc_get_att_double(grpid, varid, attname, vald);
           if (ret != 0)
             throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-          values = Arrays.factory(ArrayType.DOUBLE, new int[] {len}, vald);
+          values = Array.factory(DataType.DOUBLE, new int[] {len}, vald);
           break;
 
         case Nc4prototypes.NC_FLOAT:
@@ -480,7 +496,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
           ret = nc4.nc_get_att_float(grpid, varid, attname, valf);
           if (ret != 0)
             throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-          values = Arrays.factory(ArrayType.FLOAT, new int[] {len}, valf);
+          values = Array.factory(DataType.FLOAT, new int[] {len}, valf);
           break;
 
         case Nc4prototypes.NC_UINT:
@@ -488,7 +504,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
           ret = nc4.nc_get_att_uint(grpid, varid, attname, valiu);
           if (ret != 0)
             throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-          values = Arrays.factory(ArrayType.UINT, new int[] {len}, valiu);
+          values = Array.factory(DataType.UINT, new int[] {len}, valiu);
           break;
 
         case Nc4prototypes.NC_INT:
@@ -496,7 +512,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
           ret = nc4.nc_get_att_int(grpid, varid, attname, vali);
           if (ret != 0)
             throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-          values = Arrays.factory(ArrayType.INT, new int[] {len}, vali);
+          values = Array.factory(DataType.INT, new int[] {len}, vali);
           break;
 
         case Nc4prototypes.NC_UINT64:
@@ -504,7 +520,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
           ret = nc4.nc_get_att_ulonglong(grpid, varid, attname, vallu);
           if (ret != 0)
             throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-          values = Arrays.factory(ArrayType.ULONG, new int[] {len}, vallu);
+          values = Array.factory(DataType.ULONG, new int[] {len}, vallu);
           break;
 
         case Nc4prototypes.NC_INT64:
@@ -512,7 +528,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
           ret = nc4.nc_get_att_longlong(grpid, varid, attname, vall);
           if (ret != 0)
             throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-          values = Arrays.factory(ArrayType.LONG, new int[] {len}, vall);
+          values = Array.factory(DataType.LONG, new int[] {len}, vall);
           break;
 
         case Nc4prototypes.NC_USHORT:
@@ -520,7 +536,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
           ret = nc4.nc_get_att_ushort(grpid, varid, attname, valsu);
           if (ret != 0)
             throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-          values = Arrays.factory(ArrayType.USHORT, new int[] {len}, valsu);
+          values = Array.factory(DataType.USHORT, new int[] {len}, valsu);
           break;
 
         case Nc4prototypes.NC_SHORT:
@@ -528,7 +544,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
           ret = nc4.nc_get_att_short(grpid, varid, attname, vals);
           if (ret != 0)
             throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-          values = Arrays.factory(ArrayType.SHORT, new int[] {len}, vals);
+          values = Array.factory(DataType.SHORT, new int[] {len}, vals);
           break;
 
         case Nc4prototypes.NC_STRING:
@@ -539,7 +555,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
           if (transcodeStrings) {
             valss = transcodeString(valss);
           }
-          values = Arrays.factory(ArrayType.STRING, new int[] {len}, valss);
+          values = Array.factory(DataType.STRING, new int[] {len}, valss);
           break;
 
         default:
@@ -571,45 +587,39 @@ public class Nc4reader extends AbstractIOServiceProvider {
     return result;
   }
 
-  // Just flatten, attributes only suupport 1D arrays. Note need to do all array types
-  private Array<?> readVlenAttValues(int grpid, int varid, String attname, int len, UserType userType)
-      throws IOException {
-    Nc4prototypes.Vlen_t[] vlen = new Nc4prototypes.Vlen_t[len];
+  private Array readVlenAttValues(int grpid, int varid, String attname, int len, UserType userType) throws IOException {
+    Vlen_t[] vlen = new Vlen_t[len];
     int ret = nc4.nc_get_att(grpid, varid, attname, vlen); // vlen
     if (ret != 0)
       throw new IOException(ret + ": " + nc4.nc_strerror(ret));
 
     int count = 0;
-    for (int i = 0; i < len; i++) {
+    for (int i = 0; i < len; i++)
       count += vlen[i].len;
-    }
 
-    // LOOK other data types ?
     switch (userType.baseTypeid) {
-      case Nc4prototypes.NC_INT: {
-        int[] parray = new int[count];
-        int idx = 0;
+      case Nc4prototypes.NC_INT:
+        Array intArray = Array.factory(DataType.INT, new int[] {count});
+        IndexIterator iter = intArray.getIndexIterator();
         for (int i = 0; i < len; i++) {
           // Coverity[FB.UWF_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD]
           int[] ba = vlen[i].p.getIntArray(0, vlen[i].len);
           for (int aBa : ba) {
-            parray[idx++] = aBa;
+            iter.setIntNext(aBa);
           }
         }
-        return Arrays.factory(ArrayType.INT, new int[] {count}, parray);
-      }
+        return intArray;
 
-      case Nc4prototypes.NC_FLOAT: {
-        float[] parray = new float[count];
-        int idx = 0;
+      case Nc4prototypes.NC_FLOAT:
+        Array fArray = Array.factory(DataType.FLOAT, new int[] {count});
+        iter = fArray.getIndexIterator();
         for (int i = 0; i < len; i++) {
           // Coverity[FB.NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD]
           float[] ba = vlen[i].p.getFloatArray(0, vlen[i].len);
           for (float aBa : ba)
-            parray[idx++] = aBa;
+            iter.setFloatNext(aBa);
         }
-        return Arrays.factory(ArrayType.FLOAT, new int[] {count}, parray);
-      }
+        return fArray;
     }
     return null;
   }
@@ -618,7 +628,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
       throws IOException {
     int ret;
 
-    ArrayType dtype = convertArrayType(userType.baseTypeid).dt;
+    DataType dtype = convertDataType(userType.baseTypeid).dt;
     int elemSize = dtype.getSize();
 
     byte[] bbuff = new byte[len * elemSize];
@@ -627,7 +637,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
       throw new IOException(ret + ": " + nc4.nc_strerror(ret));
 
     ByteBuffer bb = ByteBuffer.wrap(bbuff);
-    Array<?> data;
+    Array data;
     if (false) {
       /*
        * This is incorrect; CDM technically does not support
@@ -661,33 +671,33 @@ public class Nc4reader extends AbstractIOServiceProvider {
         }
         econsts[i] = name;
       }
-      data = Arrays.factory(ArrayType.STRING, new int[] {len}, econsts);
+      data = Array.factory(DataType.STRING, new int[] {len}, econsts);
     }
-    return Attribute.builder(attname).setArrayValues(data).setEnumType(userType.e).build();
+    return Attribute.builder(attname).setValues(data).setEnumType(userType.e).build();
   }
 
-  private Array<?> convertByteBuffer(ByteBuffer bb, int baseType, int[] shape) {
+  private Array convertByteBuffer(ByteBuffer bb, int baseType, int[] shape) {
 
     switch (baseType) {
       case Nc4prototypes.NC_BYTE:
-        return Arrays.factory(ArrayType.BYTE, shape, bb.array());
+        return Array.factory(DataType.BYTE, shape, bb.array());
       case Nc4prototypes.NC_UBYTE:
-        return Arrays.factory(ArrayType.UBYTE, shape, bb.array());
+        return Array.factory(DataType.UBYTE, shape, bb.array());
 
       case Nc4prototypes.NC_SHORT:
-        return Arrays.factory(ArrayType.SHORT, shape, bb.asShortBuffer().array());
+        return Array.factory(DataType.SHORT, shape, bb.asShortBuffer().array());
       case Nc4prototypes.NC_USHORT:
-        return Arrays.factory(ArrayType.USHORT, shape, bb.asShortBuffer().array());
+        return Array.factory(DataType.USHORT, shape, bb.asShortBuffer().array());
 
       case Nc4prototypes.NC_INT:
-        return Arrays.factory(ArrayType.INT, shape, bb.asIntBuffer().array());
+        return Array.factory(DataType.INT, shape, bb.asIntBuffer().array());
       case Nc4prototypes.NC_UINT:
-        return Arrays.factory(ArrayType.UINT, shape, bb.asIntBuffer().array());
+        return Array.factory(DataType.UINT, shape, bb.asIntBuffer().array());
 
       case Nc4prototypes.NC_INT64:
-        return Arrays.factory(ArrayType.LONG, shape, bb.asLongBuffer().array());
+        return Array.factory(DataType.LONG, shape, bb.asLongBuffer().array());
       case Nc4prototypes.NC_UINT64:
-        return Arrays.factory(ArrayType.ULONG, shape, bb.asLongBuffer().array());
+        return Array.factory(DataType.ULONG, shape, bb.asLongBuffer().array());
     }
     throw new IllegalArgumentException("Illegal type=" + baseType);
   }
@@ -699,7 +709,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
     int ret = nc4.nc_get_att(grpid, varid, attname, bb);
     if (ret != 0)
       throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-    return Attribute.fromArray(attname, Arrays.factory(ArrayType.BYTE, new int[] {total}, bb));
+    return Attribute.fromArray(attname, Array.factory(DataType.BYTE, new int[] {total}, bb));
   }
 
   private void readCompoundAttValues(int grpid, int varid, String attname, int len, UserType userType,
@@ -708,46 +718,48 @@ public class Nc4reader extends AbstractIOServiceProvider {
     int buffSize = len * userType.size;
     byte[] bb = new byte[buffSize];
     int ret = nc4.nc_get_att(grpid, varid, attname, bb);
-    if (ret != 0) {
+    if (ret != 0)
       throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-    }
-    // these are the bytes copied directly from nc4.
-    ByteBuffer nc4bytes = ByteBuffer.wrap(bb);
-    decodeCompoundAttData(len, userType, nc4bytes);
+
+    ByteBuffer bbuff = ByteBuffer.wrap(bb);
+    decodeCompoundData(len, userType, bbuff);
 
     // if its a Structure, distribute to matching fields
     if (v instanceof Structure.Builder) {
       Structure.Builder<?> s = (Structure.Builder<?>) v;
-      for (CompoundField fld : userType.flds) {
+      for (Field fld : userType.flds) {
         Variable.Builder<?> mv = s.findMemberVariable(fld.name).orElse(null);
-        ArrayType useType = (fld.ctype.dt == ArrayType.CHAR) ? ArrayType.STRING : fld.ctype.dt;
-        Array<?> merged = Arrays.factoryCopy(useType, new int[] {len}, fld.data);
-        if (mv != null) {
-          mv.addAttribute(Attribute.fromArray(attname, merged));
-        } else {
-          result.add(Attribute.fromArray(attname + "." + fld.name, merged));
-        }
+        if (mv != null)
+          mv.addAttribute(Attribute.fromArray(attname, fld.data));
+        else
+          result.add(Attribute.fromArray(attname + "." + fld.name, fld.data));
       }
     } else {
-      for (CompoundField fld : userType.flds) {
-        ArrayType useType = (fld.ctype.dt == ArrayType.CHAR) ? ArrayType.STRING : fld.ctype.dt;
-        Array<?> merged = Arrays.factoryCopy(useType, new int[] {len}, fld.data);
-        result.add(Attribute.fromArray(attname + "." + fld.name, merged));
-      }
+      for (Field fld : userType.flds)
+        result.add(Attribute.fromArray(attname + "." + fld.name, fld.data));
     }
   }
 
-  // LOOK temporary results in the fld of the userType - ok for production ??
-  private void decodeCompoundAttData(int len, UserType userType, ByteBuffer nc4bytes) throws IOException {
-    nc4bytes.order(ByteOrder.LITTLE_ENDIAN);
-    for (CompoundField fld : userType.flds) {
-      fld.data = new ArrayList<>();
+  // LOOK: placing results in the fld of the userType - ok for production ??
+  private void decodeCompoundData(int len, UserType userType, ByteBuffer bbuff) throws IOException {
+    bbuff.order(ByteOrder.LITTLE_ENDIAN);
+
+    for (Field fld : userType.flds) {
+      ConvertedType ct = convertDataType(fld.fldtypeid);
+      if (fld.fldtypeid == Nc4prototypes.NC_CHAR) {
+        fld.data = Array.factory(DataType.STRING, new int[] {len}); // LOOK ??
+      } else if (ct.isVlen) {
+        // fld.data = Array.makeObjectArray(ct.dt, ct.dt.getPrimitiveClassType(), new int[]{len}, null);
+        // fld.data = Array.makeVlenArray(ct.dt, ct.dt.getPrimitiveClassType(), new int[]{len}, null); LOOK BAD
+      } else {
+        fld.data = Array.factory(ct.dt, new int[] {len});
+      }
     }
 
     for (int i = 0; i < len; i++) {
       int record_start = i * userType.size;
 
-      for (CompoundField fld : userType.flds) {
+      for (Field fld : userType.flds) {
         int pos = record_start + fld.offset;
 
         switch (fld.fldtypeid) {
@@ -759,51 +771,67 @@ public class Nc4reader extends AbstractIOServiceProvider {
               blen = (int) s.computeSize();
             }
             byte[] dst = new byte[blen];
-            nc4bytes.get(dst, 0, blen);
+            bbuff.get(dst, 0, blen);
 
             String cval = makeAttString(dst);
-            fld.data.add(Arrays.factory(ArrayType.STRING, new int[] {1}, new String[] {cval}));
+            fld.data.setObject(i, cval);
+            if (debugCompoundAtt)
+              System.out.println("result= " + cval);
             continue;
 
           case Nc4prototypes.NC_UBYTE:
           case Nc4prototypes.NC_BYTE:
-            byte bval = nc4bytes.get(pos);
-            fld.data.add(Arrays.factory(fld.ctype.dt, new int[] {1}, new byte[] {bval}));
+            byte bval = bbuff.get(pos);
+            if (debugCompoundAtt)
+              System.out.println("bval= " + bval);
+            fld.data.setByte(i, bval);
             continue;
 
           case Nc4prototypes.NC_USHORT:
           case Nc4prototypes.NC_SHORT:
-            short sval = nc4bytes.getShort(pos);
-            fld.data.add(Arrays.factory(fld.ctype.dt, new int[] {1}, new short[] {sval}));
+            short sval = bbuff.getShort(pos);
+            if (debugCompoundAtt)
+              System.out.println("sval= " + sval);
+            fld.data.setShort(i, sval);
             continue;
 
           case Nc4prototypes.NC_UINT:
           case Nc4prototypes.NC_INT:
-            int ival = nc4bytes.getInt(pos);
-            fld.data.add(Arrays.factory(fld.ctype.dt, new int[] {1}, new int[] {ival}));
+            int ival = bbuff.getInt(pos);
+            if (debugCompoundAtt)
+              System.out.println("ival= " + ival);
+            fld.data.setInt(i, ival);
             continue;
 
           case Nc4prototypes.NC_UINT64:
           case Nc4prototypes.NC_INT64:
-            long lval = nc4bytes.getLong(pos);
-            fld.data.add(Arrays.factory(fld.ctype.dt, new int[] {1}, new long[] {lval}));
+            long lval = bbuff.getLong(pos);
+            if (debugCompoundAtt)
+              System.out.println("lval= " + lval);
+            fld.data.setLong(i, lval);
             continue;
 
           case Nc4prototypes.NC_FLOAT:
-            float fval = nc4bytes.getFloat(pos);
-            fld.data.add(Arrays.factory(fld.ctype.dt, new int[] {1}, new float[] {fval}));
+            float fval = bbuff.getFloat(pos);
+            if (debugCompoundAtt)
+              System.out.println("fval= " + fval);
+            fld.data.setFloat(i, fval);
             continue;
 
           case Nc4prototypes.NC_DOUBLE:
-            double dval = nc4bytes.getDouble(pos);
-            fld.data.add(Arrays.factory(fld.ctype.dt, new int[] {1}, new double[] {dval}));
+            double dval = bbuff.getDouble(pos);
+            if (debugCompoundAtt)
+              System.out.println("dval= " + dval);
+            fld.data.setDouble(i, dval);
             continue;
 
           case Nc4prototypes.NC_STRING:
-            lval = getNativeAddr(pos, nc4bytes);
+            lval = getNativeAddr(pos, bbuff);
             Pointer p = new Pointer(lval);
             String strval = p.getString(0, CDM.UTF8);
-            fld.data.add(Arrays.factory(fld.ctype.dt, new int[] {1}, new String[] {strval}));
+            fld.data.setObject(i, strval);
+            if (debugCompoundAtt)
+              System.out.println("result= " + strval);
             continue;
 
           default:
@@ -813,7 +841,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
             } else if (subUserType.typeClass == Nc4prototypes.NC_ENUM) {
               // WTF ?
             } else if (subUserType.typeClass == Nc4prototypes.NC_VLEN) {
-              decodeVlenField(fld, subUserType, pos, nc4bytes);
+              decodeVlenField(fld, subUserType, pos, i, bbuff);
               break;
             } else if (subUserType.typeClass == Nc4prototypes.NC_OPAQUE) {
               // return readOpaque(grpid, varid, len, userType.size);
@@ -824,17 +852,17 @@ public class Nc4reader extends AbstractIOServiceProvider {
             log.warn("UNSUPPORTED compound fld.fldtypeid= " + fld.fldtypeid);
         } // switch on fld type
       } // loop over fields
-    } // loop over structures / compounds
+    } // loop over len
   }
 
-  private void decodeVlenField(CompoundField fld, UserType userType, int pos, ByteBuffer bbuff) throws IOException {
-    ConvertedType cvt = convertArrayType(userType.baseTypeid);
-    Array<?> array = decodeVlen(cvt.dt, pos, bbuff);
-    fld.data.add(array);
+  private void decodeVlenField(Field fld, UserType userType, int pos, int idx, ByteBuffer bbuff) throws IOException {
+    ConvertedType cvt = convertDataType(userType.baseTypeid);
+    Array array = decodeVlen(cvt.dt, pos, bbuff);
+    fld.data.setObject(idx, array);
   }
 
-  private Array<?> decodeVlen(ArrayType dt, int pos, ByteBuffer bbuff) {
-    Array<?> array;
+  private Array decodeVlen(DataType dt, int pos, ByteBuffer bbuff) throws IOException {
+    Array array;
     int n = (int) bbuff.getLong(pos); // Note that this does not increment the buffer position
     long addr = getNativeAddr(pos + com.sun.jna.Native.POINTER_SIZE, bbuff);
     Pointer p = new Pointer(addr);
@@ -871,9 +899,8 @@ public class Nc4reader extends AbstractIOServiceProvider {
         // in jna version 3.0.9, but does exist in
         // verssion 4.0 and possibly some intermediate versions
         String[] stringdata = new String[n];
-        for (int i = 0; i < n; i++) {
+        for (int i = 0; i < n; i++)
           stringdata[i] = p.getString(i * 8);
-        }
         data = stringdata;
         break;
       case OPAQUE:
@@ -881,7 +908,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
       default:
         throw new IllegalStateException();
     }
-    array = Arrays.factory(dt, new int[] {n}, data);
+    array = Array.factory(dt, new int[] {n}, data);
     return array;
   }
 
@@ -915,7 +942,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
 
       // figure out the datatype
       int typeid = xtypep.getValue();
-      // ArrayType dtype = convertArrayType(typeid).dt;
+      // DataType dtype = convertDataType(typeid).dt;
 
       String vname = makeString(name);
       Vinfo vinfo = new Vinfo(g4, varno, typeid);
@@ -932,7 +959,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
 
       Variable.Builder<?> v = makeVariable(g4.g, vname, typeid, dimList);
       /*
-       * if(dtype != ArrayType.STRUCTURE) {
+       * if(dtype != DataType.STRUCTURE) {
        * v = new Variable(ncfile, g, null, vname, dtype, dimList);
        * } else if(utype != null) {
        * Structure s = new Structure(ncfile, g, null, vname);
@@ -967,20 +994,20 @@ public class Nc4reader extends AbstractIOServiceProvider {
 
   private Variable.Builder<?> makeVariable(Group.Builder g, String vname, int typeid, String dimList)
       throws IOException {
-    ConvertedType cvttype = convertArrayType(typeid);
-    ArrayType dtype = cvttype.dt;
+    ConvertedType cvttype = convertDataType(typeid);
+    DataType dtype = cvttype.dt;
     UserType utype = userTypes.get(typeid);
 
     Variable.Builder<?> v;
-    if (dtype != ArrayType.STRUCTURE) {
-      v = Variable.builder().setName(vname).setArrayType(dtype).setParentGroupBuilder(g).setDimensionsByName(dimList);
+    if (dtype != DataType.STRUCTURE) {
+      v = Variable.builder().setName(vname).setDataType(dtype).setParentGroupBuilder(g).setDimensionsByName(dimList);
     } else if (utype != null) {
       Structure.Builder<?> s = Structure.builder().setName(vname).setParentGroupBuilder(g).setDimensionsByName(dimList);
       v = s;
       if (utype.flds == null)
         utype.readFields();
       // Coverity[FORWARD_NULL]
-      for (CompoundField f : utype.flds) {
+      for (Field f : utype.flds) {
         s.addMemberVariable(f.makeMemberVariable(g));
       }
     } else {
@@ -989,7 +1016,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
 
     if (dtype.isEnum()) {
       v.setEnumTypeName(utype.name);
-    } else if (dtype == ArrayType.OPAQUE) {
+    } else if (dtype == DataType.OPAQUE) {
       // TODO whats the problem with knowing the size?? Needed to read properly??
       if (this.markReserved) {
         // annotate(v, UCARTAGOPAQUE, utype.size);
@@ -1026,7 +1053,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
 
     String vname = makeString(name);
     int typeid = xtypep.getValue();
-    ConvertedType cvt = convertArrayType(typeid);
+    ConvertedType cvt = convertDataType(typeid);
 
     for (int i = 0; i < ndimsp.getValue(); i++) {
       f.format("%d ", dimids[i]);
@@ -1144,20 +1171,21 @@ public class Nc4reader extends AbstractIOServiceProvider {
   // Data reading
 
   @Override
-  public ucar.array.Array<?> readArrayData(Variable v2, ucar.array.Section section)
-      throws java.io.IOException, ucar.array.InvalidRangeException {
+  public Array readData(Variable v2, Section section) throws IOException, InvalidRangeException {
     Vinfo vinfo = (Vinfo) v2.getSPobject();
     int vlen = (int) v2.getSize();
     int len = (int) section.computeSize();
     if (vlen == len) { // entire array
-      return readDataAll(vinfo.g4.grpid, vinfo.varid, vinfo.typeid, v2.getSection());
+      return readDataAll(vinfo.g4.grpid, vinfo.varid, vinfo.typeid, v2.getShapeAsSection());
     }
+
+    // if(!section.isStrided()) // optimisation for unstrided section
+    // return readUnstrided(vinfo.grpid, vinfo.varid, vinfo.typeid, section);
 
     return readDataSection(vinfo.g4.grpid, vinfo.varid, vinfo.typeid, section);
   }
 
-  Array<?> readDataSection(int grpid, int varid, int typeid, Section section)
-      throws IOException, InvalidRangeException {
+  Array readDataSection(int grpid, int varid, int typeid, Section section) throws IOException, InvalidRangeException {
     // general sectioning with strides
     SizeT[] origin = convertSizeT(section.getOrigin());
     SizeT[] shape = convertSizeT(section.getShape());
@@ -1165,7 +1193,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
 
     boolean isUnsigned = isUnsigned(typeid);
     int len = (int) section.computeSize();
-    Array<?> values;
+    Array values;
 
     switch (typeid) {
       // int nc_get_vars_schar(int ncid, int varid, long[] startp, long[] countp, int[] stridep, byte[] ip);
@@ -1178,7 +1206,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
             : nc4.nc_get_vars_schar(grpid, varid, origin, shape, stride, valb);
         if (ret != 0)
           throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-        values = Arrays.factory(ArrayType.BYTE, section.getShape(), valb);
+        values = Array.factory(DataType.BYTE, section.getShape(), valb);
         break;
 
       case Nc4prototypes.NC_CHAR:
@@ -1186,7 +1214,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
         ret = nc4.nc_get_vars_text(grpid, varid, origin, shape, stride, valc);
         if (ret != 0)
           throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-        values = Arrays.factory(ArrayType.CHAR, section.getShape(), IospHelper.convertByteToChar(valc));
+        values = Array.factory(DataType.CHAR, section.getShape(), IospHelper.convertByteToChar(valc));
         break;
 
       case Nc4prototypes.NC_DOUBLE:
@@ -1194,7 +1222,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
         ret = nc4.nc_get_vars_double(grpid, varid, origin, shape, stride, vald);
         if (ret != 0)
           throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-        values = Arrays.factory(ArrayType.DOUBLE, section.getShape(), vald);
+        values = Array.factory(DataType.DOUBLE, section.getShape(), vald);
         break;
 
       case Nc4prototypes.NC_FLOAT:
@@ -1202,7 +1230,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
         ret = nc4.nc_get_vars_float(grpid, varid, origin, shape, stride, valf);
         if (ret != 0)
           throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-        values = Arrays.factory(ArrayType.FLOAT, section.getShape(), valf);
+        values = Array.factory(DataType.FLOAT, section.getShape(), valf);
         break;
 
       case Nc4prototypes.NC_INT:
@@ -1213,7 +1241,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
             : nc4.nc_get_vars_int(grpid, varid, origin, shape, stride, vali);
         if (ret != 0)
           throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-        values = Arrays.factory(ArrayType.INT, section.getShape(), vali);
+        values = Array.factory(DataType.INT, section.getShape(), vali);
         break;
 
       case Nc4prototypes.NC_INT64:
@@ -1223,7 +1251,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
             : nc4.nc_get_vars_longlong(grpid, varid, origin, shape, stride, vall);
         if (ret != 0)
           throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-        values = Arrays.factory(ArrayType.LONG, section.getShape(), vall);
+        values = Array.factory(DataType.LONG, section.getShape(), vall);
         break;
 
       case Nc4prototypes.NC_SHORT:
@@ -1233,7 +1261,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
             : nc4.nc_get_vars_short(grpid, varid, origin, shape, stride, vals);
         if (ret != 0)
           throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-        values = Arrays.factory(ArrayType.SHORT, section.getShape(), vals);
+        values = Array.factory(DataType.SHORT, section.getShape(), vals);
         break;
 
       case Nc4prototypes.NC_STRING:
@@ -1244,7 +1272,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
         if (transcodeStrings) {
           valss = transcodeString(valss);
         }
-        return Arrays.factory(ArrayType.STRING, section.getShape(), valss);
+        return Array.factory(DataType.STRING, section.getShape(), valss);
 
       default:
         UserType userType = userTypes.get(typeid);
@@ -1265,190 +1293,147 @@ public class Nc4reader extends AbstractIOServiceProvider {
   }
 
   // read entire array
-  private Array<?> readDataAll(int grpid, int varid, int typeid, Section section) throws IOException {
+  private Array readDataAll(int grpid, int varid, int typeid, Section section) throws IOException {
     int ret;
     long lenl = section.computeSize();
     int len = (int) lenl;
     if (len < 0) {
       throw new IllegalArgumentException(
-          String.format("Cant read an array (%d) bigger than %d. Break into pieces", lenl, Integer.MAX_VALUE));
+          String.format("Cant read an array (%d) bigger than %d", lenl, Integer.MAX_VALUE));
     }
     int[] shape = section.getShape();
 
     switch (typeid) {
 
-      case Nc4prototypes.NC_UBYTE: {
+      case Nc4prototypes.NC_UBYTE:
         byte[] valbu = new byte[len];
         ret = nc4.nc_get_var_ubyte(grpid, varid, valbu);
-        if (ret != 0) {
+        if (ret != 0)
           throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-        }
-        return Arrays.factory(ArrayType.UBYTE, shape, valbu);
-      }
+        return Array.factory(DataType.UBYTE, shape, valbu);
 
-      case Nc4prototypes.NC_BYTE: {
+      case Nc4prototypes.NC_BYTE:
         byte[] valb = new byte[len];
         ret = nc4.nc_get_var_schar(grpid, varid, valb);
-        if (ret != 0) {
+        if (ret != 0)
           throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-        }
-        return Arrays.factory(ArrayType.BYTE, shape, valb);
-      }
+        return Array.factory(DataType.BYTE, shape, valb);
 
-      case Nc4prototypes.NC_CHAR: {
+      case Nc4prototypes.NC_CHAR:
         byte[] valc = new byte[len];
         ret = nc4.nc_get_var_text(grpid, varid, valc);
-        if (ret != 0) {
+        if (ret != 0)
           throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-        }
         char[] cvals = IospHelper.convertByteToChar(valc);
-        return Arrays.factory(ArrayType.CHAR, shape, cvals);
-      }
+        return Array.factory(DataType.CHAR, shape, cvals);
 
-      case Nc4prototypes.NC_DOUBLE: {
+      case Nc4prototypes.NC_DOUBLE:
         double[] vald = new double[len];
         ret = nc4.nc_get_var_double(grpid, varid, vald);
-        if (ret != 0) {
+        if (ret != 0)
           throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-        }
-        return Arrays.factory(ArrayType.DOUBLE, shape, vald);
-      }
+        return Array.factory(DataType.DOUBLE, shape, vald);
 
-      case Nc4prototypes.NC_FLOAT: {
+      case Nc4prototypes.NC_FLOAT:
         float[] valf = new float[len];
         ret = nc4.nc_get_var_float(grpid, varid, valf);
-        if (ret != 0) {
+        if (ret != 0)
           throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-        }
-        return Arrays.factory(ArrayType.FLOAT, shape, valf);
-      }
+        return Array.factory(DataType.FLOAT, shape, valf);
 
-      case Nc4prototypes.NC_INT: {
+      case Nc4prototypes.NC_INT:
         int[] vali = new int[len];
         ret = nc4.nc_get_var_int(grpid, varid, vali);
-        if (ret != 0) {
+        if (ret != 0)
           throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-        }
-        return Arrays.factory(ArrayType.INT, shape, vali);
-      }
+        return Array.factory(DataType.INT, shape, vali);
 
-      case Nc4prototypes.NC_INT64: {
+      case Nc4prototypes.NC_INT64:
         long[] vall = new long[len];
         ret = nc4.nc_get_var_longlong(grpid, varid, vall);
-        if (ret != 0) {
+        if (ret != 0)
           throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-        }
-        return Arrays.factory(ArrayType.LONG, shape, vall);
-      }
+        return Array.factory(DataType.LONG, shape, vall);
 
-      case Nc4prototypes.NC_UINT64: {
+      case Nc4prototypes.NC_UINT64:
         long[] vallu = new long[len];
         ret = nc4.nc_get_var_ulonglong(grpid, varid, vallu);
-        if (ret != 0) {
+        if (ret != 0)
           throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-        }
-        return Arrays.factory(ArrayType.ULONG, shape, vallu);
-      }
+        return Array.factory(DataType.ULONG, shape, vallu);
 
-      case Nc4prototypes.NC_SHORT: {
+      case Nc4prototypes.NC_SHORT:
         short[] vals = new short[len];
         ret = nc4.nc_get_var_short(grpid, varid, vals);
-        if (ret != 0) {
+        if (ret != 0)
           throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-        }
-        return Arrays.factory(ArrayType.SHORT, shape, vals);
-      }
+        return Array.factory(DataType.SHORT, shape, vals);
 
-      case Nc4prototypes.NC_USHORT: {
+      case Nc4prototypes.NC_USHORT:
         short[] valsu = new short[len];
         ret = nc4.nc_get_var_ushort(grpid, varid, valsu);
-        if (ret != 0) {
+        if (ret != 0)
           throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-        }
-        return Arrays.factory(ArrayType.USHORT, shape, valsu);
-      }
+        return Array.factory(DataType.USHORT, shape, valsu);
 
-      case Nc4prototypes.NC_UINT: {
+      case Nc4prototypes.NC_UINT:
         int[] valiu = new int[len];
         ret = nc4.nc_get_var_uint(grpid, varid, valiu);
-        if (ret != 0) {
+        if (ret != 0)
           throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-        }
-        return Arrays.factory(ArrayType.UINT, shape, valiu);
-      }
+        return Array.factory(DataType.UINT, shape, valiu);
 
-      case Nc4prototypes.NC_STRING: {
+      case Nc4prototypes.NC_STRING:
         String[] valss = new String[len];
         ret = nc4.nc_get_var_string(grpid, varid, valss);
-        if (ret != 0) {
+        if (ret != 0)
           throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-        }
         if (transcodeStrings) {
           valss = transcodeString(valss);
         }
-        return Arrays.factory(ArrayType.STRING, shape, valss);
-      }
+        return Array.factory(DataType.STRING, shape, valss);
 
-      default: {
+      default:
         UserType userType = userTypes.get(typeid);
         if (userType == null) {
           throw new IOException("Unknown userType == " + typeid);
         } else if (userType.typeClass == Nc4prototypes.NC_ENUM) {
           int buffSize = len * userType.size;
-          byte[] rawBytes = new byte[buffSize];
+          byte[] bbuff = new byte[buffSize];
           // read in the data
-          ret = nc4.nc_get_var(grpid, varid, rawBytes);
+          ret = nc4.nc_get_var(grpid, varid, bbuff);
           if (ret != 0)
             throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-          ByteBuffer bb = ByteBuffer.wrap(rawBytes);
+          ByteBuffer bb = ByteBuffer.wrap(bbuff);
           bb.order(ByteOrder.nativeOrder()); // c library returns in native order i hope
 
           switch (userType.baseTypeid) {
-            case Nc4prototypes.NC_BYTE: {
-              return Arrays.factory(ArrayType.BYTE, shape, rawBytes);
-            }
-            case Nc4prototypes.NC_UBYTE: {
-              return Arrays.factory(ArrayType.UBYTE, shape, rawBytes);
-            }
+            case Nc4prototypes.NC_BYTE:
+              return Array.factory(DataType.BYTE, shape, bb);
+            case Nc4prototypes.NC_UBYTE:
+              return Array.factory(DataType.UBYTE, shape, bb);
             case Nc4prototypes.NC_SHORT:
-            case Nc4prototypes.NC_USHORT: {
-              ArrayType dt = userType.baseTypeid == Nc4prototypes.NC_SHORT ? ArrayType.SHORT : ArrayType.USHORT;
-              ShortBuffer shortbb = bb.asShortBuffer();
-              // seriously lame that shortbb.array() doesnt work.
-              shortbb.rewind();
-              short[] sa = new short[shortbb.capacity() - shortbb.position()];
-              shortbb.get(sa);
-              return Arrays.factory(dt, shape, sa);
-            }
+              return Array.factory(DataType.SHORT, shape, bb);
+            case Nc4prototypes.NC_USHORT:
+              return Array.factory(DataType.USHORT, shape, bb);
             case Nc4prototypes.NC_INT:
-            case Nc4prototypes.NC_UINT: {
-              ArrayType dt = userType.baseTypeid == Nc4prototypes.NC_INT ? ArrayType.INT : ArrayType.UINT;
-              IntBuffer intbb = bb.asIntBuffer();
-              // seriously lame that intbb.array() doesnt work.
-              intbb.rewind();
-              int[] sa = new int[intbb.capacity() - intbb.position()];
-              intbb.get(sa);
-              return Arrays.factory(dt, shape, sa);
-            }
+              return Array.factory(DataType.INT, shape, bb);
+            case Nc4prototypes.NC_UINT:
+              return Array.factory(DataType.UINT, shape, bb);
           }
-          throw new IOException("unknown enum base type " + userType.baseTypeid);
-
+          throw new IOException("unknown type " + userType.baseTypeid);
         } else if (userType.typeClass == Nc4prototypes.NC_VLEN) {
           return readVlen(grpid, varid, userType, section);
-
         } else if (userType.typeClass == Nc4prototypes.NC_OPAQUE) {
           return readOpaque(grpid, varid, section, userType.size);
-
         } else if (userType.typeClass == Nc4prototypes.NC_COMPOUND) {
           return readCompound(grpid, varid, section, userType);
         }
         throw new IOException("Unsupported userType = " + typeid + " userType= " + userType);
-      }
     }
   }
 
-  // LOOK can we combine with readCompoundAttValues?
-  private Array<?> readCompound(int grpid, int varid, Section section, UserType userType) throws IOException {
+  private Array readCompound(int grpid, int varid, Section section, UserType userType) throws IOException {
     SizeT[] origin = convertSizeT(section.getOrigin());
     SizeT[] shape = convertSizeT(section.getShape());
     SizeT[] stride = convertSizeT(section.getStride());
@@ -1464,7 +1449,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
       throw new IOException(ret + ": " + nc4.nc_strerror(ret));
 
     ByteBuffer bb = ByteBuffer.wrap(bbuff);
-    bb.order(ByteOrder.nativeOrder()); // LOOK c library returns in native order i hope
+    bb.order(ByteOrder.nativeOrder()); // c library returns in native order i hope
 
     /*
      * This does not seem right since the user type does not
@@ -1475,87 +1460,114 @@ public class Nc4reader extends AbstractIOServiceProvider {
      * and ideally this would be in the Vinfo, but we have no easy way to get that either.
      */
     String vname = nc_inq_var_name(grpid, varid);
-    StructureMembers members = createStructureMembers(userType, vname).build();
-    StructureDataStorageBB storage = new StructureDataStorageBB(members, bb, len);
+    StructureMembers sm = createStructureMembers(userType, vname);
+    ArrayStructureBB asbb = new ArrayStructureBB(sm, section.getShape(), bb, 0);
 
     // find and convert String and vlen fields, put on asbb heap
     int destPos = 0;
     for (int i = 0; i < len; i++) { // loop over each structure
-      convertHeap(storage, bb, destPos, members);
+      convertHeap(asbb, destPos, sm);
       destPos += userType.size;
     }
-    return new StructureDataArray(members, new int[] {len}, storage);
+    return asbb;
   }
 
-  private StructureMembers.Builder createStructureMembers(UserType userType, String varname) {
+  private StructureMembers createStructureMembers(UserType userType, String varname) {
     // Incorrect: StructureMembers sm = new StructureMembers(userType.name);
-    StructureMembers.Builder smb = StructureMembers.builder().setName(varname);
-    for (CompoundField fld : userType.flds) {
-      StructureMembers.MemberBuilder mb = smb.addMember(fld.name, null, null, fld.ctype.dt, fld.dims);
-      mb.setOffset(fld.offset);
-      mb.setByteOrder(ByteOrder.nativeOrder()); // LOOK c library returns in native order i hope
+    StructureMembers.Builder sm = StructureMembers.builder().setName(varname);
+    for (Field fld : userType.flds) {
+      StructureMembers.MemberBuilder mb = sm.addMember(fld.name, null, null, fld.ctype.dt, fld.dims);
+      mb.setDataParam(fld.offset);
+      /*
+       * This should already have been taken care of
+       * if(fld.ctype.isVlen) {m.setShape(new int[]{-1}); }
+       */
 
-      if (fld.ctype.dt == ArrayType.STRUCTURE) {
+      if (fld.ctype.dt == DataType.STRUCTURE) {
         UserType nested_utype = userTypes.get(fld.fldtypeid);
         String partfqn = EscapeStrings.backslashEscapeCDMString(varname, ".") + "."
             + EscapeStrings.backslashEscapeCDMString(fld.name, ".");
-        StructureMembers.Builder nested_sm = createStructureMembers(nested_utype, partfqn);
+        StructureMembers nested_sm = createStructureMembers(nested_utype, partfqn);
         mb.setStructureMembers(nested_sm);
       }
     }
-    smb.setStructureSize(userType.size);
-    return smb;
+    sm.setStructureSize(userType.size);
+    return sm.build();
   }
 
   // LOOK: handling nested ??
-  private void convertHeap(StructureDataStorageBB storage, ByteBuffer bb, int pos, StructureMembers sm)
-      throws IOException {
+  private void convertHeap(ArrayStructureBB asbb, int pos, StructureMembers sm) throws IOException {
+    ByteBuffer bb = asbb.getByteBuffer();
     for (StructureMembers.Member m : sm.getMembers()) {
-      if (m.getArrayType() == ArrayType.STRING) {
-        int size = m.length();
-        int destPos = pos + m.getOffset();
+      if (m.getDataType() == DataType.STRING) {
+        int size = m.getSize();
+        int destPos = pos + m.getDataParam();
         String[] result = new String[size];
         for (int i = 0; i < size; i++) {
           long addr = getNativeAddr(pos, bb);
           Pointer p = new Pointer(addr);
           result[i] = p.getString(0, CDM.UTF8);
         }
-        int index = storage.putOnHeap(result);
+        int index = asbb.addObjectToHeap(result);
         bb.putInt(destPos, index); // overwrite with the index into the StringHeap
 
-      } else if (m.isVlen()) {
-        // Assume that pos points to the beginning of this structure instance
-        // and pos + m.getOffset() points to field m in this structure instance.
-        // Store the resulting array in the storage heap..
-        int nc_vlen_t_size = (new Nc4prototypes.Vlen_t()).size();
-        int startPos = pos + m.getOffset();
-        // Compute rank and size up to the first (and ideally last) VLEN
+      } else if (m.isVariableLength()) {
+        // We need to do like readVLEN, but store the resulting array
+        // in the asbb heap (a bit of a hack).
+        // we assume that pos "points" to the beginning of this structure instance
+        // and so pos + m.getDataParam() "points" to field m in this structure instance.
+        int nc_vlen_t_size = (new Vlen_t()).size();
+        int startPos = pos + m.getDataParam();
+        // Compute rank and size upto the first (and ideally last) VLEN
         int[] fieldshape = m.getShape();
         int prefixrank = 0;
         int size = 1;
         for (; prefixrank < fieldshape.length; prefixrank++) {
-          if (fieldshape[prefixrank] < 0) {
+          if (fieldshape[prefixrank] < 0)
             break;
-          }
           size *= fieldshape[prefixrank];
         }
-        Preconditions.checkArgument(size == m.length(), "Internal error: field size mismatch");
-
-        StorageMutable<Array<Object>> vlenStorage = ArrayVlen.createStorage(m.getArrayType(), size, null);
-        // destPos will point to each nc_vlen_t instance in turn assuming we have 'size' such instances in a row.
+        assert size == m.getSize() : "Internal error: field size mismatch";
+        Array[] fieldarray = new Array[size]; // hold all the nc_vlen_t instance data
+        // destPos will point to each nc_vlen_t instance in turn
+        // assuming we have 'size' such instances in a row.
         int destPos = startPos;
         for (int i = 0; i < size; i++) {
           // vlenarray extracts the i'th nc_vlen_t contents (struct not supported).
-          Array<?> vlenArray = decodeVlen(m.getArrayType(), destPos, bb);
-          vlenStorage.set(i, vlenArray);
+          Array vlenArray = decodeVlen(m.getDataType(), destPos, bb);
+          fieldarray[i] = vlenArray;
           destPos += nc_vlen_t_size;
         }
-        int[] newshape = new int[prefixrank];
-        System.arraycopy(fieldshape, 0, newshape, 0, prefixrank);
-        Array<?> result = ArrayVlen.createFromStorage(m.getArrayType(), newshape, vlenStorage);
+        Array result;
+        if (prefixrank == 0) // if scalar, return just the singleton vlen array
+          result = fieldarray[0];
 
+        else {
+          int[] newshape = new int[prefixrank];
+          System.arraycopy(fieldshape, 0, newshape, 0, prefixrank);
+          // result = Array.makeObjectArray(m.getDataType(), fieldarray[0].getClass(), newshape, fieldarray);
+          result = Array.makeVlenArray(newshape, fieldarray);
+        }
+
+        /*
+         * else if (prefixrank == 1)
+         * result = Array.makeObjectArray(m.getDataType(), fieldarray[0].getClass(), new int[]{size}, fieldarray);
+         * 
+         * else {
+         * // Otherwise create and fill in an n-dimensional Array Of Arrays
+         * int[] newshape = new int[prefixrank];
+         * System.arraycopy(fieldshape, 0, newshape, 0, prefixrank);
+         * Array ndimarray = Array.makeObjectArray(m.getDataType(), Array.class, newshape, null);
+         * // Transfer the elements of data into the n-dim arrays
+         * IndexIterator iter = ndimarray.getIndexIterator();
+         * for (int i = 0; iter.hasNext(); i++) {
+         * iter.setObjectNext(fieldarray[i]);
+         * }
+         * result = ndimarray;
+         * }
+         */
         // Store vlen result in the heap
-        int index = storage.putOnHeap(result);
+        int index = asbb.addObjectToHeap(result);
         bb.order(ByteOrder.nativeOrder()); // the string index is always written in "native order"
         bb.putInt(startPos, index); // overwrite with the index into the StringHeap
       }
@@ -1563,13 +1575,13 @@ public class Nc4reader extends AbstractIOServiceProvider {
   }
 
   /**
-   * Note that this only works for atomic base types; structures will fail.
-   * LOOK can we combine with readVlenAttValues? decodeVlenField()? convertHeap() also has Vlen
+   * Note that this only works for atomic base types;
+   * structures will fail.
    */
-  Array<?> readVlen(int grpid, int varid, UserType userType, Section section) throws IOException {
+  Array readVlen(int grpid, int varid, UserType userType, Section section) throws IOException {
     // Read all the vlen pointers
     int len = (int) section.computeSize();
-    Nc4prototypes.Vlen_t[] vlen = new Nc4prototypes.Vlen_t[len];
+    Vlen_t[] vlen = new Vlen_t[len];
     int ret = nc4.nc_get_var(grpid, varid, vlen);
     if (ret != 0)
       throw new IOException(ret + ": " + nc4.nc_strerror(ret));
@@ -1581,46 +1593,37 @@ public class Nc4reader extends AbstractIOServiceProvider {
         break;
     }
 
-    ArrayType ctype = convertArrayType(userType.baseTypeid).dt;
+    ConvertedType ctype = convertDataType(userType.baseTypeid);
+    // ArrayObject.D1 vlenArray = new ArrayObject.D1( dtype, len);
 
     // Collect the vlen's data arrays
-    Array<?>[] data = new Array[len];
-    StorageMutable<Array<Object>> vlenStorage = ArrayVlen.createStorage(ctype, len, null);
-    switch (ctype) {
+    Array[] data = new Array[len];
+    switch (ctype.dt) { // LOOK not complete
       case BYTE:
       case UBYTE:
         for (int i = 0; i < len; i++) {
           int slen = vlen[i].len;
           // Coverity[FB.NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD]
           byte[] ba = vlen[i].p.getByteArray(0, slen);
-          vlenStorage.set(i, Arrays.factory(ctype, new int[] {slen}, ba));
+          data[i] = Array.factory(ctype.dt, new int[] {slen}, ba);
         }
         break;
-      case UINT:
       case INT:
+      case UINT:
         for (int i = 0; i < len; i++) {
           int slen = vlen[i].len;
           // Coverity[FB.NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD]
           int[] ba = vlen[i].p.getIntArray(0, slen);
-          vlenStorage.set(i, Arrays.factory(ctype, new int[] {slen}, ba));
+          data[i] = Array.factory(ctype.dt, new int[] {slen}, ba);
         }
         break;
-      case ULONG:
-      case LONG:
-        for (int i = 0; i < len; i++) {
-          int slen = vlen[i].len;
-          // Coverity[FB.NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD]
-          long[] ba = vlen[i].p.getLongArray(0, slen);
-          vlenStorage.set(i, Arrays.factory(ctype, new int[] {slen}, ba));
-        }
-        break;
-      case USHORT:
       case SHORT:
+      case USHORT:
         for (int i = 0; i < len; i++) {
           int slen = vlen[i].len;
           // Coverity[FB.NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD]
           short[] ba = vlen[i].p.getShortArray(0, slen);
-          vlenStorage.set(i, Arrays.factory(ctype, new int[] {slen}, ba));
+          data[i] = Array.factory(ctype.dt, new int[] {slen}, ba);
         }
         break;
       case FLOAT:
@@ -1628,70 +1631,70 @@ public class Nc4reader extends AbstractIOServiceProvider {
           int slen = vlen[i].len;
           // Coverity[FB.NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD]
           float[] ba = vlen[i].p.getFloatArray(0, slen);
-          vlenStorage.set(i, Arrays.factory(ArrayType.FLOAT, new int[] {slen}, ba));
+          data[i] = Array.factory(DataType.FLOAT, new int[] {slen}, ba);
         }
         break;
-      case DOUBLE:
-        for (int i = 0; i < len; i++) {
-          int slen = vlen[i].len;
-          // Coverity[FB.NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD]
-          double[] ba = vlen[i].p.getDoubleArray(0, slen);
-          vlenStorage.set(i, Arrays.factory(ArrayType.DOUBLE, new int[] {slen}, ba));
-        }
-        break;
-
       default:
         throw new UnsupportedOperationException("Vlen type " + userType.baseTypeid + " = " + ctype);
     }
 
-    // create and fill in an n-dimensional Array Of Arrays
-    int[] shape = new int[prefixrank];
-    for (int i = 0; i < prefixrank; i++) {
-      shape[i] = section.getRange(i).length();
-    }
+    if (prefixrank == 0) { // if scalar, return just the len Array
+      return data[0];
+    } // else if (prefixrank == 1)
+      // return Array.makeObjectArray(ctype.dt, data[0].getClass(), new int[]{len}, data);
+      // return Array.makeVlenArray(new int[]{len}, data);
 
-    return ArrayVlen.createFromStorage(ctype, shape, vlenStorage);
+    // Otherwise create and fill in an n-dimensional Array Of Arrays
+    int[] shape = new int[prefixrank];
+    for (int i = 0; i < prefixrank; i++)
+      shape[i] = section.getRange(i).length();
+
+    // Array ndimarray = Array.makeObjectArray(ctype.dt, Array.class, shape, null);
+    Array ndimarray = Array.makeVlenArray(shape, data);
+    // Transfer the elements of data into the n-dim arrays
+    // IndexIterator iter = ndimarray.getIndexIterator();
+    // for (int i = 0; iter.hasNext(); i++) {
+    // iter.setObjectNext(data[i]);
+    // }
+    return ndimarray;
   }
 
-  // Opaque is Vlen of byte
-  // due to limits of HDF5 OPAQUE data type, all Opaques are the same size. Which kind of defeats one
-  // of the main use cases of Opaque.
-  // LOOK can we combine with readOpaqueAttValues?
-  private Array<?> readOpaque(int grpid, int varid, Section section, int objectSize) throws IOException {
+  // opaques use ArrayObjects of ByteBuffer
+  private Array readOpaque(int grpid, int varid, Section section, int size) throws IOException {
     int ret;
     SizeT[] origin = convertSizeT(section.getOrigin());
     SizeT[] shape = convertSizeT(section.getShape());
     SizeT[] stride = convertSizeT(section.getStride());
     int len = (int) section.computeSize();
 
-    byte[] bbuff = new byte[len * objectSize];
+    byte[] bbuff = new byte[len * size];
     ret = nc4.nc_get_vars(grpid, varid, origin, shape, stride, bbuff);
-    if (ret != 0) {
+    if (ret != 0)
       throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-    }
+    int[] intshape;
 
-    int[] vlenShape;
     if (shape != null) {
       // fix: this is ignoring the rank of section.
       // was: ArrayObject values = new ArrayObject(ByteBuffer.class, new int[]{len});
-      vlenShape = new int[shape.length];
-      for (int i = 0; i < vlenShape.length; i++) {
-        vlenShape[i] = shape[i].intValue();
+      intshape = new int[shape.length];
+      for (int i = 0; i < intshape.length; i++) {
+        intshape[i] = shape[i].intValue();
       }
-    } else {
-      vlenShape = new int[] {1};
-    }
-    int outerLength = (int) Arrays.computeSize(vlenShape);
+    } else
+      intshape = new int[] {1};
 
-    // copy data into byte[][]
-    byte[][] dataArray = new byte[outerLength][];
-    for (int count = 0; count < outerLength; count++) {
-      dataArray[count] = new byte[objectSize];
-      for (int inner = 0; inner < objectSize; inner++) {
-        dataArray[count][inner] = bbuff[count * objectSize + inner];
-      }
+    // LOOK ByteBuffer sucks
+    Array values = Array.factory(DataType.OPAQUE, intshape);
+    int count = 0;
+    IndexIterator ii = values.getIndexIterator();
+    while (ii.hasNext()) {
+      int offset = count * size;
+      byte[] dest = new byte[size];
+      System.arraycopy(bbuff, offset, dest, 0, size);
+      ii.setObjectNext(ByteBuffer.wrap(dest, 0, size));
+      count++;
     }
-    return ArrayVlen.factory(ArrayType.OPAQUE, vlenShape, dataArray);
+    return values;
   }
 
   /*
@@ -1700,7 +1703,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
    * {
    * int ret;
    * 
-   * ConvertedType ctype = convertArrayType(baseType);
+   * ConvertedType ctype = convertDataType(baseType);
    * int elemSize = ctype.dt.getSize();
    * 
    * ByteBuffer bb = ByteBuffer.allocate(len * elemSize);
@@ -1711,17 +1714,17 @@ public class Nc4reader extends AbstractIOServiceProvider {
    * switch (baseType) {
    * case NCLibrary.NC_BYTE:
    * case NCLibrary.NC_UBYTE:
-   * return Arrays.factory( ArrayType.BYTE, shape, bb.array());
+   * return Array.factory( DataType.BYTE, shape, bb.array());
    * 
    * case NCLibrary.NC_SHORT:
    * case NCLibrary.NC_USHORT:
    * ShortBuffer sb = bb.asShortBuffer();
-   * return Arrays.factory( ArrayType.BYTE, shape, sb.array());
+   * return Array.factory( DataType.BYTE, shape, sb.array());
    * 
    * case NCLibrary.NC_INT:
    * case NCLibrary.NC_UINT:
    * IntBuffer ib = bb.asIntBuffer();
-   * return Arrays.factory( ArrayType.BYTE, shape, ib.array());
+   * return Array.factory( DataType.BYTE, shape, ib.array());
    * }
    * 
    * return null;
@@ -1750,56 +1753,55 @@ public class Nc4reader extends AbstractIOServiceProvider {
     return to;
   }
 
-  // LOOK Huh?
   private static class ConvertedType {
-    ArrayType dt;
+    DataType dt;
     boolean isVlen;
 
-    ConvertedType(ArrayType dt) {
+    ConvertedType(DataType dt) {
       this.dt = dt;
     }
   }
 
-  private ConvertedType convertArrayType(int type) {
+  private ConvertedType convertDataType(int type) {
     switch (type) {
       case Nc4prototypes.NC_BYTE:
-        return new ConvertedType(ArrayType.BYTE);
+        return new ConvertedType(DataType.BYTE);
 
       case Nc4prototypes.NC_UBYTE:
-        return new ConvertedType(ArrayType.UBYTE);
+        return new ConvertedType(DataType.UBYTE);
 
       case Nc4prototypes.NC_CHAR:
-        return new ConvertedType(ArrayType.CHAR);
+        return new ConvertedType(DataType.CHAR);
 
       case Nc4prototypes.NC_SHORT:
-        return new ConvertedType(ArrayType.SHORT);
+        return new ConvertedType(DataType.SHORT);
 
       case Nc4prototypes.NC_USHORT:
-        return new ConvertedType(ArrayType.USHORT);
+        return new ConvertedType(DataType.USHORT);
 
       case Nc4prototypes.NC_INT:
-        return new ConvertedType(ArrayType.INT);
+        return new ConvertedType(DataType.INT);
 
       case Nc4prototypes.NC_UINT:
-        return new ConvertedType(ArrayType.UINT);
+        return new ConvertedType(DataType.UINT);
 
       case Nc4prototypes.NC_INT64:
-        return new ConvertedType(ArrayType.LONG);
+        return new ConvertedType(DataType.LONG);
 
       case Nc4prototypes.NC_UINT64:
-        return new ConvertedType(ArrayType.ULONG);
+        return new ConvertedType(DataType.ULONG);
 
       case Nc4prototypes.NC_FLOAT:
-        return new ConvertedType(ArrayType.FLOAT);
+        return new ConvertedType(DataType.FLOAT);
 
       case Nc4prototypes.NC_DOUBLE:
-        return new ConvertedType(ArrayType.DOUBLE);
+        return new ConvertedType(DataType.DOUBLE);
 
       case Nc4prototypes.NC_ENUM:
-        return new ConvertedType(ArrayType.ENUM1); // LOOK width ??
+        return new ConvertedType(DataType.ENUM1); // LOOK width ??
 
       case Nc4prototypes.NC_STRING:
-        return new ConvertedType(ArrayType.STRING);
+        return new ConvertedType(DataType.STRING);
 
       default:
         UserType userType = userTypes.get(type);
@@ -1810,23 +1812,23 @@ public class Nc4reader extends AbstractIOServiceProvider {
           case Nc4prototypes.NC_ENUM:
             switch (userType.size) {
               case 1:
-                return new ConvertedType(ArrayType.ENUM1);
+                return new ConvertedType(DataType.ENUM1);
               case 2:
-                return new ConvertedType(ArrayType.ENUM2);
+                return new ConvertedType(DataType.ENUM2);
               case 4:
-                return new ConvertedType(ArrayType.ENUM4);
+                return new ConvertedType(DataType.ENUM4);
               default:
                 throw new IllegalArgumentException("enum unknown size == " + userType);
             }
 
           case Nc4prototypes.NC_COMPOUND:
-            return new ConvertedType(ArrayType.STRUCTURE);
+            return new ConvertedType(DataType.STRUCTURE);
 
           case Nc4prototypes.NC_OPAQUE:
-            return new ConvertedType(ArrayType.OPAQUE);
+            return new ConvertedType(DataType.OPAQUE);
 
           case Nc4prototypes.NC_VLEN:
-            ConvertedType result = convertArrayType(userType.baseTypeid);
+            ConvertedType result = convertDataType(userType.baseTypeid);
             result.isVlen = true;
             return result;
         }
@@ -1834,7 +1836,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
     }
   }
 
-  private String getArrayTypeName(int type) {
+  private String getDataTypeName(int type) {
     switch (type) {
       case Nc4prototypes.NC_BYTE:
         return "byte";
@@ -1930,7 +1932,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
     int typeClass; // the class of the user defined type: NC_VLEN, NC_OPAQUE, NC_ENUM, or NC_COMPOUND.
 
     EnumTypedef e;
-    List<CompoundField> flds;
+    List<Field> flds;
 
     UserType(int grpid, int typeid, String name, long size, int baseTypeid, long nfields, int typeClass)
         throws IOException {
@@ -1941,13 +1943,11 @@ public class Nc4reader extends AbstractIOServiceProvider {
       this.baseTypeid = baseTypeid;
       this.nfields = nfields;
       this.typeClass = typeClass;
-      if (debugUserTypes) {
+      if (debugUserTypes)
         System.out.printf("%s%n", this);
-      }
 
-      if (typeClass == Nc4prototypes.NC_COMPOUND) {
+      if (typeClass == Nc4prototypes.NC_COMPOUND)
         readFields();
-      }
     }
 
     // Allow size override for e.g. opaque
@@ -1981,19 +1981,19 @@ public class Nc4reader extends AbstractIOServiceProvider {
       return null;
     }
 
-    void addField(CompoundField fld) {
+    void addField(Field fld) {
       if (flds == null)
         flds = new ArrayList<>(10);
       flds.add(fld);
     }
 
-    void setFields(List<CompoundField> flds) {
+    void setFields(List<Field> flds) {
       this.flds = flds;
     }
 
     public String toString2() {
-      return "name='" + name + "' id=" + getArrayTypeName(typeid) + " userType=" + getArrayTypeName(typeClass)
-          + " baseType=" + getArrayTypeName(baseTypeid);
+      return "name='" + name + "' id=" + getDataTypeName(typeid) + " userType=" + getDataTypeName(typeClass)
+          + " baseType=" + getDataTypeName(baseTypeid);
     }
 
     @Override
@@ -2014,7 +2014,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
         if (ret != 0)
           throw new IOException(ret + ": " + nc4.nc_strerror(ret));
 
-        CompoundField fld = new CompoundField(grpid, typeid, fldidx, makeString(fldname), offsetp.getValue().intValue(),
+        Field fld = new Field(grpid, typeid, fldidx, makeString(fldname), offsetp.getValue().intValue(),
             field_typeidp.getValue(), ndimsp.getValue(), dims);
 
         addField(fld);
@@ -2024,10 +2024,10 @@ public class Nc4reader extends AbstractIOServiceProvider {
     }
   }
 
-  // A field in a compound type
+  // encapsolate the fields in a compound type
   // Cannot be static because it references non-static parent class members
   // Coverity[FB.SIC_INNER_SHOULD_BE_STATIC]
-  class CompoundField {
+  class Field {
     int grpid;
     int typeid; // containing structure
     int fldidx;
@@ -2039,10 +2039,10 @@ public class Nc4reader extends AbstractIOServiceProvider {
 
     ConvertedType ctype;
     // int total_size;
-    List<Array<?>> data;
+    Array data;
 
     // grpid, varid, fldidx, fldname, offsetp, field_typeidp, ndimsp, dim_sizesp
-    CompoundField(int grpid, int typeid, int fldidx, String name, int offset, int fldtypeid, int ndims, int[] dimz) {
+    Field(int grpid, int typeid, int fldidx, String name, int offset, int fldtypeid, int ndims, int[] dimz) {
       this.grpid = grpid;
       this.typeid = typeid;
       this.fldidx = fldidx;
@@ -2056,12 +2056,14 @@ public class Nc4reader extends AbstractIOServiceProvider {
       this.dims = new int[ndims];
       System.arraycopy(dimz, 0, this.dims, 0, ndims);
 
-      ctype = convertArrayType(fldtypeid);
+      ctype = convertDataType(fldtypeid);
+      // Section s = new Section(this.dims);
+      // total_size = (int) s.computeSize() * ctype.dt.getSize();
+
       if (isVlen(fldtypeid)) {
         int[] edims = new int[ndims + 1];
-        if (ndims > 0) {
+        if (ndims > 0)
           System.arraycopy(dimz, 0, edims, 0, ndims);
-        }
         edims[ndims] = -1;
         this.dims = edims;
         this.ndims++;
@@ -2076,10 +2078,10 @@ public class Nc4reader extends AbstractIOServiceProvider {
       if (o == null || getClass() != o.getClass()) {
         return false;
       }
-      CompoundField field = (CompoundField) o;
+      Field field = (Field) o;
       return grpid == field.grpid && typeid == field.typeid && fldidx == field.fldidx && offset == field.offset
           && fldtypeid == field.fldtypeid && ndims == field.ndims && Objects.equals(name, field.name)
-          && java.util.Arrays.equals(dims, field.dims);
+          && Arrays.equals(dims, field.dims);
     }
 
     @Override
@@ -2088,7 +2090,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
     }
 
     public String toString2() {
-      return "name='" + name + " fldtypeid=" + getArrayTypeName(fldtypeid) + " ndims=" + ndims + " offset=" + offset;
+      return "name='" + name + " fldtypeid=" + getDataTypeName(fldtypeid) + " ndims=" + ndims + " offset=" + offset;
     }
 
     @Override
@@ -2116,7 +2118,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
      * Variable makeMemberVariable(Group g, Structure parent)
      * {
      * Variable v = new Variable(ncfile, g, parent, name);
-     * v.setArrayType(convertArrayType(fldtypeid).dt);
+     * v.setDataType(convertDataType(fldtypeid).dt);
      * if(isUnsigned(fldtypeid))
      * v.addAttribute(new Attribute(CDM.UNSIGNED, "true"));
      *

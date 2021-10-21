@@ -101,7 +101,7 @@ public class TestSlice {
   }
 
   @Test
-  public void testSlice3() throws IOException, InvalidRangeException {
+  public void testSlice3() throws IOException, InvalidRangeException, ucar.array.InvalidRangeException {
     try (NetcdfFile file = NetcdfFiles.open(filePath)) {
       Variable var = file.findVariable(DATA_VARIABLE);
       Variable sliced1 = var.slice(0, 3);
@@ -114,8 +114,8 @@ public class TestSlice {
 
       assertEquals("lat lon", sliced2.getDimensionsString());
 
-      Array org = var.read("3,3,:,:");
-      Array data = sliced2.read();
+      ucar.array.Array<?> org = var.readArray(new ucar.array.Section("3,3,:,:"));
+      ucar.array.Array<?> data = sliced2.readArray();
       CompareNetcdf2.compareData(DATA_VARIABLE, org, data);
     }
   }

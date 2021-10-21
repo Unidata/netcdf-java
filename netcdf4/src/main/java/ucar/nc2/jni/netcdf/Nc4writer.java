@@ -215,7 +215,9 @@ public class Nc4writer extends Nc4reader implements IospFileWriter {
 
     // variables
     for (Variable.Builder<?> v : g4.g.vbuilders) {
-      createVariable(g4, v);
+      if (v.dataType != ArrayType.STRUCTURE) {
+        createVariable(g4, v);
+      }
     }
 
     // groups
@@ -458,12 +460,12 @@ public class Nc4writer extends Nc4reader implements IospFileWriter {
     String name = s.shortName + "_t";
     int ret = nc4.nc_def_compound(g4.grpid, new SizeT(size), name, typeidp);
     if (ret != 0)
-      throw new IOException(nc4.nc_strerror(ret) + " on\n" + s);
+      throw new IOException(nc4.nc_strerror(ret) + " on structure " + s);
     int typeid = typeidp.getValue();
     if (debugCompound)
       System.out.printf("added compound type %s (typeid %d) size=%d %n", name, typeid, size);
 
-    List<Field> flds = new ArrayList<>();
+    List<CompoundField> flds = new ArrayList<>();
     int fldidx = 0;
     long offset = 0;
     for (Variable.Builder<?> v : s.vbuilders) {
@@ -482,8 +484,8 @@ public class Nc4writer extends Nc4reader implements IospFileWriter {
         throw new IOException(nc4.nc_strerror(ret) + " on\n" + s.shortName);
       }
 
-      Field fld =
-          new Field(g4.grpid, typeid, fldidx, v.shortName, (int) offset, field_typeid, v.getRank(), v.getShape());
+      CompoundField fld = new CompoundField(g4.grpid, typeid, fldidx, v.shortName, (int) offset, field_typeid,
+          v.getRank(), v.getShape());
       flds.add(fld);
       if (debugCompound) {
         System.out.printf(" added compound type member %s (%s) offset=%d size=%d%n", v.shortName, v.dataType, offset,

@@ -1,27 +1,30 @@
-/* Copyright Unidata */
+/*
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
 package ucar.nc2.grib.grib1;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.Array;
-import ucar.ma2.DataType;
+import ucar.array.Array;
+import ucar.array.ArrayType;
+import ucar.array.Arrays;
+import ucar.array.InvalidRangeException;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import ucar.nc2.grib.GribData;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
-import ucar.nc2.write.Ncdump;
+import ucar.nc2.write.NcdumpArray;
+
+import static com.google.common.truth.Truth.assertThat;
 
 /**
  * Test misc GRIB1 unpacking
- *
- * @author caron
- * @since 11/23/2015.
  */
 @RunWith(JUnit4.class)
 public class TestGrib1Unpack {
@@ -33,10 +36,10 @@ public class TestGrib1Unpack {
     final String testfile = "../grib/src/test/data/complex_packing.grib1";
     try (NetcdfFile nc = NetcdfFiles.open(testfile)) {
       Variable var = nc.findVariable("Minimum_temperature_at_2_metres_in_the_last_6_hours_surface_6_Hour");
-      Array data = var.read();
-      float first = data.getFloat(0);
+      Array<Float> data = (Array<Float>) var.readArray();
+      float first = data.get(0, 0, 0, 0);
 
-      Assert.assertEquals(264.135559, first, 1e-6);
+      assertThat(first).isWithin(1e-6f).of(264.135559f);
     }
   }
 
@@ -47,11 +50,9 @@ public class TestGrib1Unpack {
     try (NetcdfFile nc = NetcdfFiles.open(testfile)) {
 
       Variable var = nc.findVariable("Snowfall_surface");
-      Array data = var.read();
-
-      float first = data.getFloat(0);
-
-      Assert.assertEquals(.326607, first, 1e-6);
+      Array<Float> data = (Array<Float>) var.readArray();
+      float first = data.get(0, 0, 0, 0);
+      assertThat(first).isWithin(1e-6f).of(.326607f);
     }
   }
 
@@ -63,14 +64,13 @@ public class TestGrib1Unpack {
     try (NetcdfFile nc = NetcdfFiles.open(testfile)) {
 
       Variable var = nc.findVariable("Temperature_isobaric");
-      Array data = var.read();
-      Assert.assertEquals(73 * 73, data.getSize());
+      Array<Float> data = (Array<Float>) var.readArray();
+      assertThat(data.getSize()).isEqualTo(73 * 73);
 
-      float first = data.getFloat(0);
-      float last = data.getFloat((73 * 73) - 1);
-
-      Assert.assertEquals(291.0, first, 1e-6);
-      Assert.assertEquals(278.0, last, 1e-6);
+      float first = data.get(0, 0, 0, 0);
+      float last = data.get(0, 0, 72, 71);
+      assertThat(first).isWithin(1e-6f).of(291.0f);
+      assertThat(last).isWithin(1e-6f).of(278.0f);
     }
   }
 
@@ -81,7 +81,7 @@ public class TestGrib1Unpack {
   // linear:
   // cubic:
   @Test
-  public void testThisGridInterpolation() throws IOException {
+  public void testThisGridInterpolation() throws IOException, InvalidRangeException {
     final String testfile = "../grib/src/test/data/HPPI89_KWBC.grib1";
 
     Grib1Index index = new Grib1Index();
@@ -102,7 +102,7 @@ public class TestGrib1Unpack {
   }
 
   private float[] getData(ucar.unidata.io.RandomAccessFile raf, Grib1Record gr, GribData.InterpolationMethod method,
-      int lineno) throws IOException {
+      int lineno) throws IOException, InvalidRangeException {
     float[] data;
     data = gr.readData(raf, method);
 
@@ -122,9 +122,9 @@ public class TestGrib1Unpack {
 
     } else {
       int[] shape = new int[] {gds.getNy(), gds.getNx()};
-      Array dataA = Array.factory(DataType.FLOAT, shape, data);
-      Array lineA = dataA.slice(0, lineno);
-      logger.debug("{}", Ncdump.printArray(lineA));
+      Array dataA = Arrays.factory(ArrayType.FLOAT, shape, data);
+      Array lineA = Arrays.slice(dataA, 0, lineno);
+      logger.debug("{}", NcdumpArray.printArray(lineA));
     }
     System.out.printf("%s%n", method);
 

@@ -25,7 +25,7 @@ public final class IndexFn implements Iterable<Integer> {
     if (this.rank == 0 && index.length == 1 && index[0] == 0) {
       return 0;
     }
-    Preconditions.checkArgument(this.rank == index.length);
+    Preconditions.checkArgument(this.rank == index.length, this.rank + " != " + index.length);
     int value = offset;
     for (int ii = 0; ii < rank; ii++) {
       if (index[ii] < 0 || index[ii] >= shape[ii]) {

@@ -362,17 +362,20 @@ public class NcdumpArray {
     } else if (array instanceof StructureDataArray) {
       printStructureDataArray(out, (StructureDataArray) array, ilev, cancel);
 
-    } else if (array.getArrayType() == ArrayType.OPAQUE) { // opaque type
-      ArrayVlen<Byte> vlen = (ArrayVlen<Byte>) array;
-      int count = 0;
-      for (Array<Byte> inner : vlen) {
-        out.format("%s%n", (count == 0) ? "," : ";"); // peek ahead
-        printByteBuffer(out, Arrays.getByteBuffer(inner), ilev);
-        if (cancel != null && cancel.isCancel())
-          return;
-        count++;
-      }
-    } else if (array instanceof ArrayVlen) {
+    } /*
+       * else if (array instanceof ArrayVlen) { // opaque type
+       * ArrayVlen<Byte> vlen = (ArrayVlen<Byte>) array;
+       * int count = 0;
+       * for (Array<Byte> inner : vlen) {
+       * out.format("%s%n", (count == 0) ? "," : ";"); // peek ahead
+       * printByteBuffer(out, Arrays.getByteBuffer(inner), ilev);
+       * if (cancel != null && cancel.isCancel())
+       * return;
+       * count++;
+       * }
+       * }
+       */
+    else if (array instanceof ArrayVlen) {
       printVariableArray(out, (ArrayVlen<?>) array, ilev, cancel);
     } else {
       printArray(out, array, ilev, cancel);

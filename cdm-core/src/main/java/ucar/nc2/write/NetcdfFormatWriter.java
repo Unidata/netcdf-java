@@ -169,7 +169,7 @@ public class NetcdfFormatWriter implements Closeable {
    * @param values write this array; must have compatible type and shape with Variable
    */
   public void write(Variable v, Index origin, ucar.array.Array<?> values) throws IOException, InvalidRangeException {
-    Preconditions.checkArgument(v.getArrayType() == values.getArrayType()); // LOOK do something better?
+    // Preconditions.checkArgument(v.getArrayType() == values.getArrayType()); // LOOK do something better?
     // Preconditions.checkArgument(v.getRank() == values.getRank()); // LOOK do something better: contains?
 
     // we have to keep using old until all spis implement new?

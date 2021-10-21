@@ -28,7 +28,7 @@ public class TestStandardVar {
 
   @Test
   public void testWriteStandardVar() throws Exception {
-    NetcdfFormatWriter.Builder writerb = NetcdfFormatWriter.builder().setLocation(filename).setFill(false);
+    NetcdfFormatWriter.Builder<?> writerb = NetcdfFormatWriter.builder().setLocation(filename).setFill(false);
 
     // define dimensions
     Dimension latDim = writerb.addDimension("lat", 2);
@@ -343,12 +343,12 @@ public class TestStandardVar {
         CompareNetcdf2 nc = new CompareNetcdf2(compareOutputFormatter, false, false, true);
 
         logger.debug("Comparison result = {}", compareOutputFormatter.toString());
-        assert !nc.compareData(enhancedVar.getShortName(), enhancedData, deferredData, false);
+        assert !nc.compareData(enhancedVar.getShortName(), enhancedData, deferredData);
 
         Array processedData = enhancedVar.scaleMissingUnsignedProxy().applyScaleOffset(deferredData);
 
         logger.debug("Processed = {}", Ncdump.printArray(deferredData));
-        assert nc.compareData(enhancedVar.getShortName(), enhancedData, processedData, false);
+        assert nc.compareData(enhancedVar.getShortName(), enhancedData, processedData);
       }
     }
   }
