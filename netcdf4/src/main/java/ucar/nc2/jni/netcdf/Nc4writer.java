@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import ucar.array.ArrayType;
+import ucar.array.Arrays;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayStructure;
 import ucar.ma2.ArrayStructureBB;
@@ -516,7 +517,7 @@ public class Nc4writer extends Nc4reader implements IospFileWriter {
           if (elemSize == 0)
             elemSize = 1;
         } else {
-          elemSize = att.getDataType().getSize() * att.getLength();
+          elemSize = att.getArrayType().getSize() * att.getLength();
         }
         sizeAtts += elemSize;
       }
@@ -570,10 +571,10 @@ public class Nc4writer extends Nc4reader implements IospFileWriter {
             String val = att.getStringValue();
             elemSize = val.getBytes(StandardCharsets.UTF_8).length;
           } else {
-            elemSize = att.getDataType().getSize() * att.getLength();
+            elemSize = att.getArrayType().getSize() * att.getLength();
           }
           System.out.printf(" added compound att member %s type %s (%d) offset=%d elemSize=%d%n", memberName,
-              att.getDataType(), field_typeid, bb.position(), elemSize);
+              att.getArrayType(), field_typeid, bb.position(), elemSize);
         }
 
         // place the values in a ByteBuffer
@@ -586,7 +587,7 @@ public class Nc4writer extends Nc4reader implements IospFileWriter {
             bb.put((byte) 0); // empyy string has a 0
         } else {
           for (int i = 0; i < att.getLength(); i++) {
-            switch (att.getDataType()) {
+            switch (att.getArrayType()) {
               case BYTE:
                 bb.put(att.getNumericValue(i).byteValue());
                 break;
@@ -609,7 +610,7 @@ public class Nc4writer extends Nc4reader implements IospFileWriter {
                 bb.putShort(att.getNumericValue(i).shortValue());
                 break;
               default:
-                throw new IllegalStateException("Att type " + att.getDataType() + " not found");
+                throw new IllegalStateException("Att type " + att.getArrayType() + " not found");
             }
           }
         }
@@ -709,12 +710,12 @@ public class Nc4writer extends Nc4reader implements IospFileWriter {
       return;
 
     int ret = 0;
-    Array values = att.getValues();
+    ucar.array.Array<?> values = att.getArrayValues();
     Object arrayStorage = null;
     if (values != null) {
-      arrayStorage = values.getStorage();
+      arrayStorage = Arrays.copyPrimitiveArray(values);
     }
-    switch (att.getDataType()) {
+    switch (att.getArrayType()) {
       case STRING: // problem may be that we are mapping char * atts to string type
         if (v != null && att.getShortName().equals(CDM.FILL_VALUE) && att.getLength() == 1
             && v.dataType == ArrayType.CHAR) {

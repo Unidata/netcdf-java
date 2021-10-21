@@ -140,10 +140,7 @@ class Nc4IospMiscSpec extends Specification {
         Attribute attrCharBefore = Attribute.emptyValued("nullvalchar", ArrayType.CHAR)
         writerb.addAttribute(attrCharBefore)
 
-        and: "add a character valued attribute with a specific null char value"
-        ucar.ma2.Array attrNullCharValue = ArrayChar.makeFromString("\0", 1);
-        Attribute attrNullCharBefore = Attribute.builder("nullcharvalchar").setArrayType(ArrayType.CHAR).setValues(attrNullCharValue).build();
-        writerb.addAttribute(attrNullCharBefore)
+        and: "write file"
 
         NetcdfFormatWriter writer = writerb.build();
 
@@ -153,20 +150,20 @@ class Nc4IospMiscSpec extends Specification {
 
         expect: "the value of the attributes are null"
         Attribute attrNumAfter = ncFile.findAttribute(attrNumBefore.getShortName())
-        attrNumBefore.getValues().equals attrNumAfter.getValues()
-        attrNumBefore.getValues() == null
+        attrNumBefore.getArrayValues().equals attrNumAfter.getArrayValues()
+        attrNumBefore.getArrayValues() == null
 
         Attribute attrStrAfter = ncFile.findAttribute(attrStrBefore.getShortName())
-        attrStrBefore.getValues().equals attrStrAfter.getValues()
-        attrStrBefore.getValues() == null
+        attrStrBefore.getArrayValues().equals attrStrAfter.getArrayValues()
+        attrStrBefore.getArrayValues() == null
 
         Attribute attrCharAfter = ncFile.findAttribute(attrCharBefore.getShortName())
-        attrCharBefore.getValues().equals attrCharAfter.getValues()
-        attrCharBefore.getValues() == null
+        attrCharBefore.getArrayValues().equals attrCharAfter.getArrayValues()
+        attrCharBefore.getArrayValues() == null
 
         Attribute attrNullCharAfter = ncFile.findAttribute(attrNullCharBefore.getShortName())
-        attrNullCharBefore.getValues().getSize() == attrNullCharAfter.getValues().getSize()
-        attrNullCharBefore.getValues().getSize() == 1
+        attrNullCharBefore.getArrayValues().getSize() == attrNullCharAfter.getArrayValues().getSize()
+        attrNullCharBefore.getArrayValues().getSize() == 1
         String val1 = attrNullCharBefore.getStringValue();
         String val2 = attrNullCharAfter.getStringValue();
         val1.length() == 0;

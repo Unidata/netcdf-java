@@ -73,7 +73,7 @@ class Time2DLazyCoordinate {
     int nruns = time2D.getNruns();
     int ntimes = time2D.getNtimes();
     int length = nruns * ntimes;
-    if (info.which == Time2DinfoType.bounds) {
+    if (info.which == Time2DinfoType.bounds || info.which == Time2DinfoType.boundsU) {
       length *= 2;
     }
 

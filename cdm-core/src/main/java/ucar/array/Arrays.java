@@ -622,6 +622,7 @@ public class Arrays {
 
     Object pvals;
     switch (type) {
+      case UBYTE:
       case BYTE: {
         byte[] bvals = new byte[npts];
         for (int i = 0; i < npts; i++) {
@@ -646,6 +647,7 @@ public class Arrays {
         pvals = fvals;
         break;
       }
+      case UINT:
       case INT: {
         int[] ivals = new int[npts];
         for (int i = 0; i < npts; i++) {
@@ -654,6 +656,7 @@ public class Arrays {
         pvals = ivals;
         break;
       }
+      case USHORT:
       case SHORT: {
         short[] svals = new short[npts];
         for (int i = 0; i < npts; i++) {
@@ -662,6 +665,7 @@ public class Arrays {
         pvals = svals;
         break;
       }
+      case ULONG:
       case LONG: {
         long[] lvals = new long[npts];
         for (int i = 0; i < npts; i++) {

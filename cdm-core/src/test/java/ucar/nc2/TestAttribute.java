@@ -3,8 +3,6 @@ package ucar.nc2;
 import static com.google.common.truth.Truth.assertThat;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import java.nio.ByteBuffer;
-import java.nio.ShortBuffer;
 import java.nio.charset.Charset;
 import java.util.Formatter;
 import java.util.List;
@@ -131,12 +129,12 @@ public class TestAttribute {
   @Test
   public void testNumericConstructor() {
     Attribute att = Attribute.builder().setName("name").setNumericValue(123, true).build();
-    assertThat(att.getDataType().isUnsigned()).isTrue();
+    assertThat(att.getArrayType().isUnsigned()).isTrue();
     assertThat(att.getStringValue()).isNull();
     assertThat(att).isEqualTo(att.toBuilder().build());
 
     Attribute att2 = new Attribute("name", 123);
-    assertThat(att2.getDataType().isUnsigned()).isFalse();
+    assertThat(att2.getArrayType().isUnsigned()).isFalse();
     assertThat(att2.getStringValue()).isNull();
   }
 
@@ -174,21 +172,6 @@ public class TestAttribute {
 
     Attribute attNoValue = Attribute.builder().setName("name").build();
     assertThat(attNoValue.equals("name")).isFalse();
-  }
-
-  @Test
-  public void testSetValues() {
-    Array<Float> data = Arrays.factory(ArrayType.FLOAT, new int[] {2}, new float[] {3.14f, .0015f});
-    Attribute att = Attribute.builder().setName("name").setArrayValues(data).build();
-    assertThat(att).isEqualTo(Attribute.fromArray("name", data));
-    assertThat(att).isEqualTo(att.toBuilder().build());
-
-    Array<Float> values = (Array<Float>) att.getArrayValues();
-    assertThat(values.equals(data)).isTrue(); // Array.equals !!!
-    assertThat(Arrays.equalFloats(values, data)).isTrue();
-
-    Attribute attNullArray = Attribute.builder().setName("name").setValues(null).build();
-    assertThat(attNullArray).isEqualTo(Attribute.emptyValued("name", ArrayType.STRING));
   }
 
   @Test
@@ -259,16 +242,15 @@ public class TestAttribute {
 
   @Test
   public void testSetValuesFromByteArray() {
-    ByteBuffer bb1 = ByteBuffer.allocate(22);
-    ShortBuffer sb = bb1.asShortBuffer();
-    for (int i = 0; i < 11; i++) {
-      sb.put((short) i);
+    short[] sdata = new short[11];
+    for (short i = 0; i < 11; i++) {
+      sdata[i] = i;
     }
     int[] shape = new int[] {11};
-    ucar.ma2.Array data = ucar.ma2.Array.factory(ucar.ma2.DataType.SHORT, shape, bb1);
+    Array<?> data = Arrays.factory(ArrayType.SHORT, shape, sdata);
 
-    Attribute att = Attribute.builder().setName("name").setValues(data).build();
-    assertThat(att.getDataType()).isEqualTo(ucar.ma2.DataType.SHORT);
+    Attribute att = Attribute.builder().setName("name").setArrayValues(data).build();
+    assertThat(att.getArrayType()).isEqualTo(ArrayType.SHORT);
     assertThat(att.getLength()).isEqualTo(11);
     for (int i = 0; i < att.getLength(); i++) {
       assertThat(att.getNumericValue(i).equals((short) i));

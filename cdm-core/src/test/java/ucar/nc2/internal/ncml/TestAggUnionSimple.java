@@ -14,7 +14,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
-import ucar.ma2.DataType;
+import ucar.array.ArrayType;
 import ucar.ma2.IndexIterator;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Attribute;
@@ -147,10 +147,10 @@ public class TestAggUnionSimple {
     Variable v = ncfile.findVariable("lflx");
     assert v instanceof VariableDS;
     VariableDS vds = (VariableDS) v;
-    assert vds.getOriginalDataType() == v.getDataType();
+    assert vds.getOriginalArrayType() == v.getArrayType();
 
     Variable org = vds.getOriginalVariable();
-    assert vds.getOriginalDataType() == org.getDataType();
+    assert vds.getOriginalArrayType() == org.getArrayType();
 
     assert !(org instanceof VariableDS);
 
@@ -171,7 +171,7 @@ public class TestAggUnionSimple {
     assert null != att;
     assert !att.isArray();
     assert att.isString();
-    assert att.getDataType() == DataType.STRING;
+    assert att.getArrayType() == ArrayType.STRING;
     assert att.getStringValue().equals("Union cldc and lflx");
     assert att.getNumericValue() == null;
     assert att.getNumericValue(3) == null;
@@ -197,7 +197,7 @@ public class TestAggUnionSimple {
     assert lat.getRank() == 1;
     assert lat.getSize() == 21;
     assert lat.getShape()[0] == 21;
-    assert lat.getDataType() == DataType.FLOAT;
+    assert lat.getArrayType() == ArrayType.FLOAT;
 
     assert lat.isCoordinateVariable();
     assert !lat.isUnlimited();
@@ -208,7 +208,7 @@ public class TestAggUnionSimple {
     assert null != att;
     assert !att.isArray();
     assert att.isString();
-    assert att.getDataType() == DataType.STRING;
+    assert att.getArrayType() == ArrayType.STRING;
     assert att.getStringValue().equals("degrees_north");
     assert att.getNumericValue() == null;
     assert att.getNumericValue(3) == null;
@@ -235,7 +235,7 @@ public class TestAggUnionSimple {
     assert v.getShape()[0] == 456;
     assert v.getShape()[1] == 21;
     assert v.getShape()[2] == 360;
-    assert v.getDataType() == DataType.SHORT : v.getDataType();
+    assert v.getArrayType() == ArrayType.SHORT : v.getArrayType();
 
     assert !v.isCoordinateVariable();
     assert v.isUnlimited();
@@ -248,7 +248,7 @@ public class TestAggUnionSimple {
     assert null != att;
     assert !att.isArray();
     assert att.isString();
-    assert att.getDataType() == DataType.STRING;
+    assert att.getArrayType() == ArrayType.STRING;
     assert att.getStringValue().equals("grams/kg m/s");
     assert att.getNumericValue() == null;
     assert att.getNumericValue(3) == null;

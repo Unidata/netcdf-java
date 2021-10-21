@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.internal.dataset;
@@ -7,9 +7,9 @@ package ucar.nc2.internal.dataset;
 import java.util.Set;
 
 import ucar.array.ArrayType;
+import ucar.array.Arrays;
 import ucar.array.ArraysConvert;
-import ucar.ma2.DataType;
-import ucar.ma2.IndexIterator;
+import ucar.array.Array;
 import ucar.nc2.dataset.NetcdfDataset.Enhance;
 import ucar.nc2.dataset.VariableDS;
 
@@ -27,7 +27,15 @@ public class DataEnhancer {
     this.scaleMissingUnsignedProxy = scaleMissingUnsignedProxy;
   }
 
+  /** @deprecated use convertArray */
+  @Deprecated
   public ucar.ma2.Array convert(ucar.ma2.Array data, Set<Enhance> enhancements) {
+    Array<?> array = ArraysConvert.convertToArray(data);
+    Array<?> converted = convertArray(array, enhancements);
+    return ArraysConvert.convertFromArray(converted);
+  }
+
+  public ucar.array.Array<?> convertArray(ucar.array.Array<?> data, Set<Enhance> enhancements) {
     if (enhancements.contains(Enhance.ConvertEnums)
         && (dataType.isEnum() || (orgDataType != null && orgDataType.isEnum()))) {
       // Creates STRING data. As a result, we can return here, because the other conversions don't apply to STRING.
@@ -42,26 +50,18 @@ public class DataEnhancer {
     }
   }
 
-  private ucar.ma2.Array convertEnums(ucar.ma2.Array values) {
-    if (!values.getDataType().isIntegral()) {
+  private Array<?> convertEnums(Array<?> values) {
+    if (values.getArrayType() == ArrayType.STRING) {
       return values; // Nothing to do!
     }
 
-    ucar.ma2.Array result = ucar.ma2.Array.factory(DataType.STRING, values.getShape());
-    IndexIterator ii = result.getIndexIterator();
-    values.resetLocalIterator();
-    while (values.hasNext()) {
-      String sval = variableDS.lookupEnumString(values.nextInt());
-      ii.setObjectNext(sval);
+    String[] sdata = new String[(int) values.getSize()];
+    int count = 0;
+    for (Number val : (Array<Number>) values) {
+      String sval = variableDS.lookupEnumString(val.intValue());
+      sdata[count++] = sval;
     }
-    return result;
-  }
-
-  // TODO
-  public ucar.array.Array<?> convertArray(ucar.array.Array<?> data, Set<Enhance> enhancements) {
-    ucar.ma2.Array ma2 = ArraysConvert.convertFromArray(data);
-    ucar.ma2.Array from = convert(ma2, enhancements);
-    return ArraysConvert.convertToArray(from);
+    return Arrays.factory(ArrayType.STRING, values.getShape(), sdata);
   }
 
 }

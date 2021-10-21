@@ -2,8 +2,38 @@
  * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
+package ucar.nc2.internal.dataset;
+
+import java.util.Formatter;
+import java.util.Set;
+
+import com.google.common.base.Strings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import ucar.array.Array;
+import ucar.array.ArrayType;
+import ucar.array.Arrays;
+import ucar.nc2.Attribute;
+import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.constants.CDM;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDataset.Enhance;
+import ucar.nc2.iosp.NetcdfFormatUtils;
+import ucar.nc2.util.Misc;
+import javax.annotation.Nonnull;
+import java.lang.invoke.MethodHandles;
+
+import static ucar.array.ArrayType.DOUBLE;
+import static ucar.array.ArrayType.INT;
+import static ucar.array.ArrayType.SHORT;
+import static ucar.array.ArrayType.UINT;
+import static ucar.array.ArrayType.USHORT;
+import static ucar.array.ArrayType.LONG;
+import static ucar.array.ArrayType.ULONG;
 
 /**
+ * Implementation of EnhanceScaleMissingUnsigned for unsigned data, scale/offset packed data, and missing data.
+ *
  * A Variable decorator that handles unsigned data, scale/offset packed data, and missing data.
  * Specifically, it handles:
  * <ul>
@@ -19,19 +49,19 @@
  * <h3>Implementation rules for unsigned data</h3>
  *
  * <ol>
- * <li>A variable is considered unsigned if it has an {@link DataType#isUnsigned() unsigned data type} or an
+ * <li>A variable is considered unsigned if it has an {@link ArrayType#isUnsigned() unsigned data type} or an
  * {@code _Unsigned} attribute with value {@code true}.</li>
- * <li>Values will be {@link DataType#widenNumber widened}, which effectively reinterprets signed data as unsigned
+ * <li>Values will be {@link ArrayType#widenNumber widened}, which effectively reinterprets signed data as unsigned
  * data.</li>
  * <li>To accommodate the unsigned conversion, the variable's data type will be changed to the
- * {@link EnhanceScaleMissingUnsignedImpl#nextLarger(DataType) next larger type}.</li>
+ * {@link #nextLarger(ArrayType)} next larger type.</li>
  * </ol>
  *
  * <h3>Implementation rules for scale/offset</h3>
  *
  * <ol>
  * <li>If scale_factor and/or add_offset variable attributes are present, then this is a "packed" Variable.</li>
- * <li>The data type of the variable will be set to the {@link EnhanceScaleMissingUnsignedImpl#largestOf largest of}:
+ * <li>The data type of the variable will be set to the {@link #largestOf(ArrayType...)} largest of:
  * <ul>
  * <li>the original data type</li>
  * <li>the unsigned conversion type, if applicable</li>
@@ -107,35 +137,13 @@
  * <li>Standard: use is/hasMissing() to test for missing data when you don't need to distinguish between the
  * variants. Use the setXXXisMissing() to customize the behavior if needed.</li>
  * </ol>
- * TODO switch to using ucar.array.* in ver8.
- */
-package ucar.nc2.internal.dataset;
-
-import java.util.Formatter;
-import java.util.Set;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ucar.ma2.*;
-import ucar.nc2.*;
-import ucar.nc2.constants.CDM;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.dataset.NetcdfDataset.Enhance;
-import ucar.nc2.iosp.NetcdfFormatUtils;
-import ucar.nc2.util.Misc;
-import javax.annotation.Nonnull;
-import java.lang.invoke.MethodHandles;
-import java.util.Arrays;
-import static ucar.ma2.DataType.*;
-
-/**
- * Implementation of EnhanceScaleMissingUnsigned for unsigned data, scale/offset packed data, and missing data.
  */
 public class EnhanceScaleMissingUnsigned {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  private final DataType origDataType;
-  private DataType unsignedConversionType;
-  private DataType scaledOffsetType;
+  private final ArrayType origArrayType;
+  private ArrayType unsignedConversionType;
+  private ArrayType scaledOffsetType;
 
   // defaults from NetcdfDataset modes
   private boolean invalidDataIsMissing;
@@ -154,7 +162,7 @@ public class EnhanceScaleMissingUnsigned {
   private boolean hasMissingValue;
   private double[] missingValue; // LOOK: also wrong to make double, for the same reason.
 
-  private DataType.Signedness signedness;
+  private ArrayType.Signedness signedness;
 
   /**
    * Constructor, default values.
@@ -181,37 +189,37 @@ public class EnhanceScaleMissingUnsigned {
     this.invalidDataIsMissing = invalidDataIsMissing;
     this.missingDataIsMissing = missingDataIsMissing;
 
-    this.origDataType = forVar.getArrayType().getDataType();
-    this.unsignedConversionType = origDataType;
+    this.origArrayType = forVar.getArrayType();
+    this.unsignedConversionType = origArrayType;
 
-    // unsignedConversionType is initialized to origDataType, and origDataType may be a non-integral type that doesn't
+    // unsignedConversionType is initialized to origArrayType, and origArrayType may be a non-integral type that doesn't
     // have an "unsigned flavor" (such as FLOAT and DOUBLE). Furthermore, unsignedConversionType may start out as
     // integral, but then be widened to non-integral (i.e. LONG -> DOUBLE). For these reasons, we cannot rely upon
     // unsignedConversionType to store the signedness of the variable. We need a separate field.
-    this.signedness = origDataType.getSignedness();
+    this.signedness = origArrayType.getSignedness();
 
     // In the event of conflict, "unsigned" wins. Potential conflicts include:
-    // 1. origDataType is unsigned, but variable has "_Unsigned == false" attribute.
-    // 2. origDataType is signed, but variable has "_Unsigned == true" attribute.
-    if (signedness == Signedness.SIGNED) {
+    // 1. origArrayType is unsigned, but variable has "_Unsigned == false" attribute.
+    // 2. origArrayType is signed, but variable has "_Unsigned == true" attribute.
+    if (signedness == ArrayType.Signedness.SIGNED) {
       String unsignedAtt = forVar.attributes().findAttributeString(CDM.UNSIGNED, null);
       if (unsignedAtt != null && unsignedAtt.equalsIgnoreCase("true")) {
-        this.signedness = Signedness.UNSIGNED;
+        this.signedness = ArrayType.Signedness.UNSIGNED;
       }
     }
 
-    if (signedness == Signedness.UNSIGNED) {
+    if (signedness == ArrayType.Signedness.UNSIGNED) {
       // We may need a larger data type to hold the results of the unsigned conversion.
-      this.unsignedConversionType = nextLarger(origDataType).withSignedness(Signedness.UNSIGNED);
+      this.unsignedConversionType = nextLarger(origArrayType).withSignedness(ArrayType.Signedness.UNSIGNED);
       logger.debug("assign unsignedConversionType = {}", unsignedConversionType);
     }
 
-    DataType scaleType = null, offsetType = null, validType = null;
+    ArrayType scaleType = null, offsetType = null, validType = null;
     logger.debug("{} for Variable = {}", getClass().getSimpleName(), forVar.getShortName());
 
     Attribute scaleAtt = forVar.attributes().findAttribute(CDM.SCALE_FACTOR);
     if (scaleAtt != null && !scaleAtt.isString()) {
-      scaleType = getAttributeDataType(scaleAtt);
+      scaleType = getAttributeArrayType(scaleAtt);
       scale = convertUnsigned(scaleAtt.getNumericValue(), scaleType).doubleValue();
       useScaleOffset = enhancements.contains(Enhance.ApplyScaleOffset);
       logger.debug("scale = {}  type = {}", scale, scaleType);
@@ -219,7 +227,7 @@ public class EnhanceScaleMissingUnsigned {
 
     Attribute offsetAtt = forVar.attributes().findAttribute(CDM.ADD_OFFSET);
     if (offsetAtt != null && !offsetAtt.isString()) {
-      offsetType = getAttributeDataType(offsetAtt);
+      offsetType = getAttributeArrayType(offsetAtt);
       offset = convertUnsigned(offsetAtt.getNumericValue(), offsetType).doubleValue();
       useScaleOffset = enhancements.contains(Enhance.ApplyScaleOffset);
       logger.debug("offset = {}", offset);
@@ -228,7 +236,7 @@ public class EnhanceScaleMissingUnsigned {
     ////// missing data : valid_range. assume here its in units of unpacked data. correct this below
     Attribute validRangeAtt = forVar.attributes().findAttribute(CDM.VALID_RANGE);
     if (validRangeAtt != null && !validRangeAtt.isString() && validRangeAtt.getLength() > 1) {
-      validType = getAttributeDataType(validRangeAtt);
+      validType = getAttributeArrayType(validRangeAtt);
       validMin = convertUnsigned(validRangeAtt.getNumericValue(0), validType).doubleValue();
       validMax = convertUnsigned(validRangeAtt.getNumericValue(1), validType).doubleValue();
       hasValidRange = true;
@@ -241,14 +249,14 @@ public class EnhanceScaleMissingUnsigned {
     // Only process the valid_min and valid_max attributes if valid_range isn't present.
     if (!hasValidRange) {
       if (validMinAtt != null && !validMinAtt.isString()) {
-        validType = getAttributeDataType(validMinAtt);
+        validType = getAttributeArrayType(validMinAtt);
         validMin = convertUnsigned(validMinAtt.getNumericValue(), validType).doubleValue();
         hasValidMin = true;
         logger.debug("valid_min = {}", validMin);
       }
 
       if (validMaxAtt != null && !validMaxAtt.isString()) {
-        validType = largestOf(validType, getAttributeDataType(validMaxAtt));
+        validType = largestOf(validType, getAttributeArrayType(validMaxAtt));
         validMax = convertUnsigned(validMaxAtt.getNumericValue(), validType).doubleValue();
         hasValidMax = true;
         logger.debug("valid_min = {}", validMax);
@@ -262,7 +270,7 @@ public class EnhanceScaleMissingUnsigned {
     /// _FillValue
     Attribute fillValueAtt = forVar.attributes().findAttribute(CDM.FILL_VALUE);
     if (fillValueAtt != null && !fillValueAtt.isString()) {
-      DataType fillType = getAttributeDataType(fillValueAtt);
+      ArrayType fillType = getAttributeArrayType(fillValueAtt);
       if (fillType.isNumeric()) {
         fillValue = convertUnsigned(fillValueAtt.getNumericValue(), fillType).doubleValue();
         fillValue = applyScaleOffset(fillValue); // This will fail when _FillValue is CHAR.
@@ -271,8 +279,11 @@ public class EnhanceScaleMissingUnsigned {
     } else {
       // No _FillValue attribute found. Instead, use NetCDF default fill value.
       if (unsignedConversionType.isNumeric()) {
-        fillValue = applyScaleOffset(NetcdfFormatUtils.getFillValueDefault(unsignedConversionType));
-        hasFillValue = true;
+        Number fill = NetcdfFormatUtils.getFillValueDefault(unsignedConversionType);
+        if (fill != null) {
+          fillValue = applyScaleOffset(fill);
+          hasFillValue = true;
+        }
       }
     }
 
@@ -281,16 +292,17 @@ public class EnhanceScaleMissingUnsigned {
     if (missingValueAtt != null) {
       if (missingValueAtt.isString()) {
         String svalue = missingValueAtt.getStringValue();
-        if (origDataType == DataType.CHAR) {
+        if (origArrayType == ArrayType.CHAR) {
           missingValue = new double[1];
-          if (svalue.isEmpty()) {
+          if (Strings.isNullOrEmpty(svalue)) {
             missingValue[0] = 0;
           } else {
             missingValue[0] = svalue.charAt(0);
           }
 
           hasMissingValue = true;
-        } else { // not a CHAR - try to fix problem where they use a numeric value as a String attribute
+          // not a CHAR - try to fix problem where they use a numeric value as a String attribute
+        } else if (!Strings.isNullOrEmpty(svalue)) {
           try {
             missingValue = new double[1];
             missingValue[0] = Double.parseDouble(svalue);
@@ -300,14 +312,14 @@ public class EnhanceScaleMissingUnsigned {
           }
         }
       } else { // not a string
-        DataType missType = getAttributeDataType(missingValueAtt);
+        ArrayType missType = getAttributeArrayType(missingValueAtt);
 
         missingValue = new double[missingValueAtt.getLength()];
         for (int i = 0; i < missingValue.length; i++) {
           missingValue[i] = convertUnsigned(missingValueAtt.getNumericValue(i), missType).doubleValue();
           missingValue[i] = applyScaleOffset(missingValue[i]);
         }
-        logger.debug("missing_data: {}", Arrays.toString(missingValue));
+        logger.debug("missing_data: {}", java.util.Arrays.toString(missingValue));
 
         for (double mv : missingValue) {
           if (!Double.isNaN(mv)) {
@@ -318,7 +330,7 @@ public class EnhanceScaleMissingUnsigned {
       }
     }
 
-    /// assign convertedDataType if needed
+    /// assign convertedArrayType if needed
     if (useScaleOffset) {
       scaledOffsetType = largestOf(unsignedConversionType, scaleType, offsetType).withSignedness(signedness);
       logger.debug("assign scaledOffsetType = {}", scaledOffsetType);
@@ -353,9 +365,9 @@ public class EnhanceScaleMissingUnsigned {
   }
 
   // Get the data type of an attribute. Make it unsigned if the variable is unsigned.
-  private DataType getAttributeDataType(Attribute attribute) {
-    DataType dataType = attribute.getDataType();
-    if (signedness == Signedness.UNSIGNED) {
+  private ArrayType getAttributeArrayType(Attribute attribute) {
+    ArrayType dataType = attribute.getArrayType();
+    if (signedness == ArrayType.Signedness.UNSIGNED) {
       // If variable is unsigned, make its integral attributes unsigned too.
       dataType = dataType.withSignedness(signedness);
     }
@@ -363,14 +375,14 @@ public class EnhanceScaleMissingUnsigned {
   }
 
   /**
-   * Returns a distinct integer for each of the {@link DataType#isNumeric() numeric} data types that can be used to
-   * (roughly) order them by the range of the DataType. {@code BYTE < UBYTE < SHORT < USHORT < INT < UINT <
+   * Returns a distinct integer for each of the {@link ArrayType#isNumeric() numeric} data types that can be used to
+   * (roughly) order them by the range of the ArrayType. {@code BYTE < UBYTE < SHORT < USHORT < INT < UINT <
    * LONG < ULONG < FLOAT < DOUBLE}. {@code -1} will be returned for all non-numeric data types.
    *
    * @param dataType a numeric data type.
    * @return a distinct integer for each of the numeric data types that can be used to (roughly) order them by size.
    */
-  public static int rank(DataType dataType) {
+  public static int rank(ArrayType dataType) {
     if (dataType == null) {
       return -1;
     }
@@ -403,14 +415,14 @@ public class EnhanceScaleMissingUnsigned {
 
   /**
    * Returns the data type that is the largest among the arguments. Relative sizes of data types are determined via
-   * {@link #rank(DataType)}.
+   * {@link #rank(ArrayType)}.
    *
    * @param dataTypes an array of numeric data types.
    * @return the data type that is the largest among the arguments.
    */
-  public static DataType largestOf(DataType... dataTypes) {
-    DataType widest = null;
-    for (DataType dataType : dataTypes) {
+  public static ArrayType largestOf(ArrayType... dataTypes) {
+    ArrayType widest = null;
+    for (ArrayType dataType : dataTypes) {
       if (widest == null) {
         widest = dataType;
       } else if (rank(dataType) > rank(widest)) {
@@ -426,7 +438,7 @@ public class EnhanceScaleMissingUnsigned {
    * <li>can hold a larger integer than {@code dataType} can</li>
    * <li>if integral, has the same signedness as {@code dataType}</li>
    * </ol>
-   * The relative sizes of data types are determined in a manner consistent with {@link #rank(DataType)}.
+   * The relative sizes of data types are determined in a manner consistent with {@link #rank(ArrayType)}.
    * <p/>
    * <table border="1">
    * <tr>
@@ -478,7 +490,7 @@ public class EnhanceScaleMissingUnsigned {
    * @param dataType an integral data type.
    * @return the next larger type.
    */
-  public static DataType nextLarger(DataType dataType) {
+  public static ArrayType nextLarger(ArrayType dataType) {
     switch (dataType) {
       case BYTE:
         return SHORT;
@@ -508,16 +520,16 @@ public class EnhanceScaleMissingUnsigned {
     return offset;
   }
 
-  public Signedness getSignedness() {
+  public ArrayType.Signedness getSignedness() {
     return signedness;
   }
 
-  public DataType getScaledOffsetType() {
+  public ArrayType getScaledOffsetType() {
     return scaledOffsetType;
   }
 
   @Nonnull
-  public DataType getUnsignedConversionType() {
+  public ArrayType getUnsignedConversionType() {
     return unsignedConversionType;
   }
 
@@ -610,26 +622,21 @@ public class EnhanceScaleMissingUnsigned {
     }
   }
 
-
   public Number convertUnsigned(Number value) {
     return convertUnsigned(value, signedness);
   }
 
-  private static Number convertUnsigned(Number value, DataType dataType) {
+  private static Number convertUnsigned(Number value, ArrayType dataType) {
     return convertUnsigned(value, dataType.getSignedness());
   }
 
-  private static Number convertUnsigned(Number value, Signedness signedness) {
-    if (signedness == Signedness.UNSIGNED) {
+  private static Number convertUnsigned(Number value, ArrayType.Signedness signedness) {
+    if (signedness == ArrayType.Signedness.UNSIGNED) {
       // Handle integral types that should be treated as unsigned by widening them if necessary.
-      return DataType.widenNumberIfNegative(value);
+      return ArrayType.widenNumberIfNegative(value);
     } else {
       return value;
     }
-  }
-
-  public Array convertUnsigned(Array in) {
-    return convert(in, true, false, false);
   }
 
   public double applyScaleOffset(Number value) {
@@ -637,7 +644,7 @@ public class EnhanceScaleMissingUnsigned {
     return useScaleOffset ? scale * convertedValue + offset : convertedValue;
   }
 
-  public Array applyScaleOffset(Array in) {
+  public Array<?> applyScaleOffset(Array<?> in) {
     return convert(in, false, true, false);
   }
 
@@ -645,23 +652,23 @@ public class EnhanceScaleMissingUnsigned {
     return isMissing(value.doubleValue()) ? Double.NaN : value;
   }
 
-  public Array convertMissing(Array in) {
+  public Array<?> convertMissing(Array<?> in) {
     return convert(in, false, false, true);
   }
 
-  public Array convert(Array in, boolean convertUnsigned, boolean applyScaleOffset, boolean convertMissing) {
-    if (!in.getDataType().isNumeric() || (!convertUnsigned && !applyScaleOffset && !convertMissing)) {
+  public Array<?> convert(Array<?> in, boolean convertUnsigned, boolean applyScaleOffset, boolean convertMissing) {
+    if (!in.getArrayType().isNumeric() || (!convertUnsigned && !applyScaleOffset && !convertMissing)) {
       return in; // Nothing to do!
     }
 
-    if (getSignedness() == Signedness.SIGNED) {
+    if (getSignedness() == ArrayType.Signedness.SIGNED) {
       convertUnsigned = false;
     }
     if (!hasScaleOffset()) {
       applyScaleOffset = false;
     }
 
-    DataType outType = origDataType;
+    ArrayType outType = origArrayType;
     if (convertUnsigned) {
       outType = getUnsignedConversionType();
     }
@@ -669,17 +676,94 @@ public class EnhanceScaleMissingUnsigned {
       outType = getScaledOffsetType();
     }
 
-    if (outType != DataType.FLOAT && outType != DataType.DOUBLE) {
+    if (outType != ArrayType.FLOAT && outType != ArrayType.DOUBLE) {
       convertMissing = false;
     }
 
-    Array out = Array.factory(outType, in.getShape());
-    IndexIterator iterIn = in.getIndexIterator();
-    IndexIterator iterOut = out.getIndexIterator();
+    return convertArray(outType, (Array<Number>) in, new ConvertFn(convertUnsigned, applyScaleOffset, convertMissing));
+  }
 
-    while (iterIn.hasNext()) {
-      Number value = (Number) iterIn.getObjectNext();
+  private Array<?> convertArray(ArrayType type, Array<Number> org, ConvertFn convertFn) {
+    int npts = (int) org.getSize();
 
+    Object pvals;
+    switch (type) {
+      case UBYTE:
+      case BYTE: {
+        byte[] bvals = new byte[npts];
+        int count = 0;
+        for (Number val : org) {
+          bvals[count++] = convertFn.convert(val).byteValue();
+        }
+        pvals = bvals;
+        break;
+      }
+      case DOUBLE: {
+        double[] dvals = new double[npts];
+        int count = 0;
+        for (Number val : org) {
+          dvals[count++] = convertFn.convert(val).doubleValue();
+        }
+        pvals = dvals;
+        break;
+      }
+      case FLOAT: {
+        float[] fvals = new float[npts];
+        int count = 0;
+        for (Number val : org) {
+          fvals[count++] = convertFn.convert(val).floatValue();
+        }
+        pvals = fvals;
+        break;
+      }
+      case UINT:
+      case INT: {
+        int[] ivals = new int[npts];
+        int count = 0;
+        for (Number val : org) {
+          ivals[count++] = convertFn.convert(val).intValue();
+        }
+        pvals = ivals;
+        break;
+      }
+      case USHORT:
+      case SHORT: {
+        short[] svals = new short[npts];
+        int count = 0;
+        for (Number val : org) {
+          svals[count++] = convertFn.convert(val).shortValue();
+        }
+        pvals = svals;
+        break;
+      }
+      case ULONG:
+      case LONG: {
+        long[] lvals = new long[npts];
+        int count = 0;
+        for (Number val : org) {
+          lvals[count++] = convertFn.convert(val).longValue();
+        }
+        pvals = lvals;
+        break;
+      }
+      default:
+        throw new IllegalArgumentException("makeArray od type " + type);
+    }
+    return Arrays.factory(type, org.getShape(), pvals);
+  }
+
+  private class ConvertFn {
+    final boolean convertUnsigned;
+    final boolean applyScaleOffset;
+    final boolean convertMissing;
+
+    public ConvertFn(boolean convertUnsigned, boolean applyScaleOffset, boolean convertMissing) {
+      this.convertUnsigned = convertUnsigned;
+      this.applyScaleOffset = applyScaleOffset;
+      this.convertMissing = convertMissing;
+    }
+
+    Number convert(Number value) {
       if (convertUnsigned) {
         value = convertUnsigned(value);
       }
@@ -689,12 +773,11 @@ public class EnhanceScaleMissingUnsigned {
       if (convertMissing) {
         value = convertMissing(value);
       }
-
-      iterOut.setObjectNext(value);
+      return value;
     }
-
-    return out;
   }
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   /** public for debugging */
   public void showInfo(Formatter f) {
@@ -719,7 +802,7 @@ public class EnhanceScaleMissingUnsigned {
       double scale = applyScaleOffset(1.0) - offset;
       f.format("   scale_factor = %f add_offset = %f%n", scale, offset);
     }
-    f.format("original data type = %s%n", origDataType);
+    f.format("original data type = %s%n", origArrayType);
     f.format("ScaledOffsetType data type = %s%n", getScaledOffsetType());
     f.format("UnsignedConversionType data type = %s%n", getUnsignedConversionType());
   }

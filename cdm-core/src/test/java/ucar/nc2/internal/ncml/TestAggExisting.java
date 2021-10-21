@@ -11,7 +11,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
-import ucar.ma2.DataType;
+import ucar.array.ArrayType;
 import ucar.ma2.Index;
 import ucar.ma2.IndexIterator;
 import ucar.ma2.InvalidRangeException;
@@ -565,7 +565,7 @@ public class TestAggExisting {
     assert lat.getRank() == 1;
     assert lat.getSize() == 3;
     assert lat.getShape()[0] == 3;
-    assert lat.getDataType() == DataType.FLOAT;
+    assert lat.getArrayType() == ArrayType.FLOAT;
 
     assert !lat.isUnlimited();
     assert lat.getDimension(0).equals(ncfile.findDimension("lat"));
@@ -574,7 +574,7 @@ public class TestAggExisting {
     assert null != att;
     assert !att.isArray();
     assert att.isString();
-    assert att.getDataType() == DataType.STRING;
+    assert att.getArrayType() == ArrayType.STRING;
     assert att.getStringValue().equals("degrees_north");
     assert att.getNumericValue() == null;
     assert att.getNumericValue(3) == null;
@@ -603,7 +603,7 @@ public class TestAggExisting {
     assert time.getRank() == 1;
     assert time.getSize() == 59;
     assert time.getShape()[0] == 59;
-    assert time.getDataType() == DataType.INT;
+    assert time.getArrayType() == ArrayType.INT;
 
     assert time.getDimension(0) == ncfile.findDimension("time");
 
@@ -635,7 +635,7 @@ public class TestAggExisting {
     assert v.getShape()[0] == 59;
     assert v.getShape()[1] == 3;
     assert v.getShape()[2] == 4;
-    assert v.getDataType() == DataType.DOUBLE;
+    assert v.getArrayType() == ArrayType.DOUBLE;
 
     assert !v.isCoordinateVariable();
 

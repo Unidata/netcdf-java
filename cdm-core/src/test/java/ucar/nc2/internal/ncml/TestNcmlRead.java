@@ -16,7 +16,7 @@ import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
-import ucar.ma2.DataType;
+import ucar.array.ArrayType;
 import ucar.ma2.IndexIterator;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
@@ -66,7 +66,7 @@ public class TestNcmlRead {
     assert null != att;
     assert !att.isArray();
     assert att.isString();
-    assert att.getDataType() == DataType.STRING;
+    assert att.getArrayType() == ArrayType.STRING;
     assert att.getStringValue().equals("Example Data");
     assert att.getNumericValue() == null;
     assert att.getNumericValue(3) == null;
@@ -75,7 +75,7 @@ public class TestNcmlRead {
     assert null != att;
     assert att.isArray();
     assert !att.isString();
-    assert att.getDataType() == DataType.FLOAT;
+    assert att.getArrayType() == ArrayType.FLOAT;
     assert att.getStringValue() == null;
     assert att.getNumericValue().equals(1.0f);
     assert att.getNumericValue(3).equals(4.0f);
@@ -101,7 +101,7 @@ public class TestNcmlRead {
     assert lat.getRank() == 1;
     assert lat.getSize() == 3;
     assert lat.getShape()[0] == 3;
-    assert lat.getDataType() == DataType.FLOAT;
+    assert lat.getArrayType() == ArrayType.FLOAT;
 
     assert !lat.isUnlimited();
 
@@ -111,7 +111,7 @@ public class TestNcmlRead {
     assert null != att;
     assert !att.isArray();
     assert att.isString();
-    assert att.getDataType() == DataType.STRING;
+    assert att.getArrayType() == ArrayType.STRING;
     assert att.getStringValue().equals("degrees_north");
     assert att.getNumericValue() == null;
     assert att.getNumericValue(3) == null;
@@ -142,7 +142,7 @@ public class TestNcmlRead {
     assert v.getShape()[0] == 2;
     assert v.getShape()[1] == 3;
     assert v.getShape()[2] == 4;
-    assert v.getDataType() == DataType.INT;
+    assert v.getArrayType() == ArrayType.INT;
 
     assert !v.isCoordinateVariable();
     assert v.isUnlimited();
@@ -155,7 +155,7 @@ public class TestNcmlRead {
     assert null != att;
     assert !att.isArray();
     assert att.isString();
-    assert att.getDataType() == DataType.STRING;
+    assert att.getArrayType() == ArrayType.STRING;
     assert att.getStringValue().equals("percent");
     assert att.getNumericValue() == null;
     assert att.getNumericValue(3) == null;
@@ -232,7 +232,7 @@ public class TestNcmlRead {
     assert v.getShape()[0] == 2;
     assert v.getShape()[1] == 3;
     assert v.getShape()[2] == 4;
-    assert v.getDataType() == DataType.DOUBLE;
+    assert v.getArrayType() == ArrayType.DOUBLE;
 
     assert !v.isCoordinateVariable();
     assert v.isUnlimited();
@@ -245,7 +245,7 @@ public class TestNcmlRead {
     assert null != att;
     assert !att.isArray();
     assert att.isString();
-    assert att.getDataType() == DataType.STRING : att.getDataType();
+    assert att.getArrayType() == ArrayType.STRING : att.getArrayType();
     assert att.getStringValue().equals("degC");
     assert att.getNumericValue() == null;
     assert att.getNumericValue(3) == null;

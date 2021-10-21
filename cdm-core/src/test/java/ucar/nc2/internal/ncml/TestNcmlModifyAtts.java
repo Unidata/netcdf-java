@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.array.ArrayType;
 import ucar.ma2.Array;
-import ucar.ma2.DataType;
+import ucar.array.ArrayType;
 import ucar.ma2.IndexIterator;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Attribute;
@@ -71,7 +71,7 @@ public class TestNcmlModifyAtts {
     assertThat(att).isNotNull();
     assert !att.isArray();
     assert att.isString();
-    assert att.getDataType() == DataType.STRING;
+    assert att.getArrayType() == ArrayType.STRING;
     assert att.getStringValue().equals("Abe said what?");
   }
 
@@ -101,7 +101,7 @@ public class TestNcmlModifyAtts {
     assert lat.getRank() == 1;
     assert lat.getSize() == 3;
     assert lat.getShape()[0] == 3;
-    assert lat.getDataType() == DataType.FLOAT;
+    assert lat.getArrayType() == ArrayType.FLOAT;
 
     assert !lat.isUnlimited();
 
@@ -111,7 +111,7 @@ public class TestNcmlModifyAtts {
     assert null != att;
     assert !att.isArray();
     assert att.isString();
-    assert att.getDataType() == DataType.STRING;
+    assert att.getArrayType() == ArrayType.STRING;
     assert att.getStringValue().equals("degrees_north");
     assert att.getNumericValue() == null;
     assert att.getNumericValue(3) == null;
@@ -138,7 +138,7 @@ public class TestNcmlModifyAtts {
     assert v.getShape()[0] == 2;
     assert v.getShape()[1] == 3;
     assert v.getShape()[2] == 4;
-    assert v.getDataType() == DataType.INT;
+    assert v.getArrayType() == ArrayType.INT;
 
     assert !v.isCoordinateVariable();
     assert v.isUnlimited();
@@ -221,7 +221,7 @@ public class TestNcmlModifyAtts {
     assert v.getShape()[0] == 2;
     assert v.getShape()[1] == 3;
     assert v.getShape()[2] == 4;
-    assert v.getDataType() == DataType.DOUBLE;
+    assert v.getArrayType() == ArrayType.DOUBLE;
 
     assert !v.isCoordinateVariable();
     assert v.isUnlimited();
@@ -234,7 +234,7 @@ public class TestNcmlModifyAtts {
     assert null != att;
     assert !att.isArray();
     assert att.isString();
-    assert att.getDataType() == DataType.STRING;
+    assert att.getArrayType() == ArrayType.STRING;
     assert att.getStringValue().equals("degC");
     assert att.getNumericValue() == null;
     assert att.getNumericValue(3) == null;
