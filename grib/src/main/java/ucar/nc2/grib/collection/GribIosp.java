@@ -10,7 +10,11 @@ import org.jdom2.Element;
 import thredds.client.catalog.Catalog;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionUpdateType;
+import ucar.array.Array;
 import ucar.array.Arrays;
+import ucar.array.ArraysConvert;
+import ucar.array.InvalidRangeException;
+import ucar.array.Section;
 import ucar.nc2.*;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.coord.Coordinate;
@@ -227,37 +231,23 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
   @Override
   public ucar.ma2.Array readData(Variable v2, ucar.ma2.Section section)
       throws IOException, ucar.ma2.InvalidRangeException {
-    // see if its time2D - then generate data on the fly
-    if (v2.getSPobject() instanceof Time2Dinfo) {
-      Time2Dinfo info = (Time2Dinfo) v2.getSPobject();
-      ucar.ma2.Array data = Time2DLazyCoordinate.makeLazyCoordinateData(v2, info, gribCollection);
-      ucar.ma2.Section sectionFilled = ucar.ma2.Section.fill(section, v2.getShape());
-      return data.sectionNoReduce(sectionFilled.getRanges());
-    }
-
     try {
-      ucar.ma2.Array result;
-      GribCollectionImmutable.VariableIndex vindex = (GribCollectionImmutable.VariableIndex) v2.getSPobject();
-      GribDataReader dataReader = GribDataReader.factory(gribCollection, vindex);
-      ucar.ma2.SectionIterable sectionIter = new ucar.ma2.SectionIterable(section, v2.getShape());
-      result = dataReader.readData(sectionIter);
-
-      return result;
-
-    } catch (IOException ioe) {
-      logger.error("Failed to readData ", ioe);
-      throw ioe;
+      Section asection = ArraysConvert.convertSection(section);
+      Array<?> array = readArrayData(v2, asection);
+      return ArraysConvert.convertFromArray(array);
+    } catch (InvalidRangeException e) {
+      throw new ucar.ma2.InvalidRangeException(e.getMessage());
     }
   }
 
   @Override
-  public ucar.array.Array<?> readArrayData(Variable v2, ucar.array.Section section)
+  public Array<?> readArrayData(Variable v2, ucar.array.Section section)
       throws java.io.IOException, ucar.array.InvalidRangeException {
     // see if its time2D - then generate data on the fly
     if (v2.getSPobject() instanceof Time2Dinfo) {
       Time2Dinfo info = (Time2Dinfo) v2.getSPobject();
-      ucar.array.Array<?> data = Time2DLazyCoordinate.makeLazyCoordinateArray(v2, info, gribCollection);
-      ucar.array.Section sectionFilled = ucar.array.Section.fill(section, v2.getShape());
+      Array<?> data = Time2DLazyCoordinate.makeLazyCoordinateArray(v2, info, gribCollection);
+      Section sectionFilled = Section.fill(section, v2.getShape());
       return Arrays.section(data, sectionFilled);
     }
 

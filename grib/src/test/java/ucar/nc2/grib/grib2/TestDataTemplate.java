@@ -4,11 +4,11 @@
  */
 package ucar.nc2.grib.grib2;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-import ucar.ma2.DataType;
+import ucar.array.Array;
+import ucar.array.IndexFn;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
@@ -25,10 +25,10 @@ public class TestDataTemplate {
     try (NetcdfFile nc = NetcdfFiles.open(testfile)) {
       Variable var = nc.findVariable("Pixel_scene_type");
       assertThat(var).isNotNull();
-      float[] data = (float[]) var.read().get1DJavaArray(DataType.FLOAT);
+      Array<Float> data = (Array<Float>) var.readArray();
 
-      Assert.assertTrue(Float.isNaN(data[0]));
-      Assert.assertEquals(101.0, data[584 * 1237 + 632], 1e-6);
+      assertThat(data.getScalar()).isNaN();
+      assertThat(data.get(0, 584, 632)).isWithin(1e-6f).of(101.0f);
     }
   }
 
@@ -39,10 +39,11 @@ public class TestDataTemplate {
     try (NetcdfFile nc = NetcdfFiles.open(testfile)) {
       Variable var = nc.findVariable("Total_snowfall_surface_6_Hour_Accumulation");
       assertThat(var).isNotNull();
-      float[] data = (float[]) var.read().get1DJavaArray(DataType.FLOAT);
+      Array<Float> data = (Array<Float>) var.readArray();
 
-      Assert.assertTrue(Float.isNaN(data[0]));
-      Assert.assertTrue(Float.isNaN(data[1234]));
+      assertThat(data.getScalar()).isNaN();
+      IndexFn indexfn = IndexFn.builder(data.getShape()).build();
+      assertThat(data.get(indexfn.odometer(1234))).isNaN();
     }
   }
 
@@ -53,10 +54,10 @@ public class TestDataTemplate {
     try (NetcdfFile nc = NetcdfFiles.open(testfile)) {
       Variable var = nc.findVariable("Total_cloud_cover_surface");
       assertThat(var).isNotNull();
-      float[] data = (float[]) var.read().get1DJavaArray(DataType.FLOAT);
+      Array<Float> data = (Array<Float>) var.readArray();
 
-      Assert.assertTrue(Float.isNaN(data[0]));
-      Assert.assertEquals(23.0, data[37 * 177 + 114], 1e-6);
+      assertThat(data.getScalar()).isNaN();
+      assertThat(data.get(0, 37, 114)).isWithin(1e-6f).of(23.0f);
     }
   }
 
@@ -67,10 +68,11 @@ public class TestDataTemplate {
     try (NetcdfFile nc = NetcdfFiles.open(testfile)) {
       Variable var = nc.findVariable("Temperature_isobaric_ens");
       assertThat(var).isNotNull();
-      float[] data = (float[]) var.read().get1DJavaArray(DataType.FLOAT);
 
-      Assert.assertEquals(263.57705688, data[0], 1e-6);
-      Assert.assertEquals(263.70205688, data[1234], 1e-6);
+      Array<Float> data = (Array<Float>) var.readArray();
+      assertThat(data.getScalar()).isWithin(1e-6f).of(263.57705688f);
+      IndexFn indexfn = IndexFn.builder(data.getShape()).build();
+      assertThat(data.get(indexfn.odometer(1234))).isWithin(1e-6f).of(263.70205688f);
     }
   }
 
@@ -81,10 +83,11 @@ public class TestDataTemplate {
     try (NetcdfFile nc = NetcdfFiles.open(testfile)) {
       Variable var = nc.findVariable("LowLevelCompositeReflectivity_altitude_above_msl");
       assertThat(var).isNotNull();
-      float[] data = (float[]) var.read().get1DJavaArray(DataType.FLOAT);
 
-      Assert.assertEquals(-99., data[15], 1e-6);
-      Assert.assertEquals(18.5, data[5602228], 1e-6);
+      Array<Float> data = (Array<Float>) var.readArray();
+      assertThat(data.get(0, 0, 0, 15)).isWithin(1e-6f).of(-99f);
+      IndexFn indexfn = IndexFn.builder(data.getShape()).build();
+      assertThat(data.get(indexfn.odometer(5602228))).isWithin(1e-6f).of(18.5f);
     }
   }
 
@@ -95,10 +98,10 @@ public class TestDataTemplate {
     try (NetcdfFile nc = NetcdfFiles.open(testfile)) {
       Variable var = nc.findVariable("VAR0-19-223_FROM_7-212--1_isobaric");
       assertThat(var).isNotNull();
-      float[] data = (float[]) var.read().get1DJavaArray(DataType.FLOAT);
 
-      Assert.assertEquals(0.36976, data[13], 1e-5);
-      Assert.assertTrue(Double.isNaN(data[15]));
+      Array<Float> data = (Array<Float>) var.readArray();
+      assertThat(data.get(0, 0, 0, 13)).isWithin(1e-6f).of(0.36976f);
+      assertThat(data.get(0, 0, 0, 15)).isNaN();
     }
   }
 }

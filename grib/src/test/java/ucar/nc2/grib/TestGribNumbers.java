@@ -1,12 +1,16 @@
+/*
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
 package ucar.nc2.grib;
 
-import static org.junit.Assert.*;
+import static com.google.common.truth.Truth.assertThat;
 import static ucar.nc2.grib.GribNumbers.convertSignedByte;
 import static ucar.nc2.grib.GribNumbers.convertSignedByte2;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-import ucar.ma2.DataType;
+import ucar.array.ArrayType;
 
 @RunWith(JUnit4.class)
 public class TestGribNumbers {
@@ -18,15 +22,15 @@ public class TestGribNumbers {
       byte b = (byte) i;
       System.out.printf("%d == %d == %d == %s%n", b, convertSignedByte(b), convertSignedByte2(b),
           Long.toHexString((long) i));
-      assertEquals(convertSignedByte(b), convertSignedByte2(b));
+      assertThat(convertSignedByte(b)).isEqualTo(convertSignedByte2(b));
     }
   }
 
   @Test
   public void testConvertUnsigned() {
-    int val = (int) DataType.unsignedByteToShort((byte) -200);
-    int val2 = DataType.unsignedShortToInt((short) -200);
-    assertNotEquals(val, val2);
+    int val = ArrayType.unsignedByteToShort((byte) -200);
+    int val2 = ArrayType.unsignedShortToInt((short) -200);
+    assertThat(val).isNotEqualTo(val2);
   }
 
 }
