@@ -34,7 +34,7 @@ public class TestGridCompareProblem {
 
   @Test
   public void testNonMonotonic() {
-    String filename = TestDir.cdmUnitTestDir + "ft/grid/cg/cg.ncml";
+    String filename = TestDir.cdmUnitTestDir + "ft/grid/cg/CG2006158_120000h_usfc.nc";
     assertThrows(IllegalArgumentException.class, () -> TestReadandCount.doOne(filename, -1, -1, -1, -1)).getMessage()
         .contains("time not monotonic");
   }
@@ -84,7 +84,7 @@ public class TestGridCompareProblem {
 
   @Test
   public void testCurvilinear2() throws Exception {
-    String filename = TestDir.cdmUnitTestDir + "conventions/cf/bora_test_agg.ncml";
+    String filename = TestDir.cdmUnitTestDir + "conventions/cf/bora_feb_001.nc";
     TestReadandCount.doOne(filename, -1, -1, -1, -1);
   }
 
