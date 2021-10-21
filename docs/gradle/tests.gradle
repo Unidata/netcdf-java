@@ -6,7 +6,6 @@ dependencies {
   testCompile project(':cdm-core')
   testCompile project(':cdm-s3')
   testCompile project(':netcdf4')
-  testCompile project(':opendap')
   testCompile project(':cdm-test-utils')
   testCompile 'org.slf4j:slf4j-api'
   testCompile 'junit:junit'

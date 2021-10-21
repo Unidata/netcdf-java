@@ -17,7 +17,6 @@ dependencies {
     api project(':cdm-s3')
     api project(':grib')
     api project(':netcdf4')
-    api project(':opendap')
     api project(':udunits')
   }
 }
