@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-
 package ucar.nc2.jni.netcdf;
 
 import java.io.IOException;
@@ -15,9 +14,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.rules.TemporaryFolder;
-import ucar.ma2.Array;
-import ucar.ma2.DataType;
-import ucar.ma2.InvalidRangeException;
+import ucar.array.Array;
+import ucar.array.ArrayType;
+import ucar.array.Arrays;
+import ucar.array.InvalidRangeException;
+import ucar.array.Section;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
@@ -29,6 +30,8 @@ import ucar.nc2.write.NetcdfCopier;
 import ucar.nc2.write.NetcdfFormatWriter;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
+
+import static com.google.common.truth.Truth.assertThat;
 
 /** Compare reading netcdf through jni with native java reading */
 @Category(NeedsCdmUnitTest.class)
@@ -48,28 +51,31 @@ public class TestNc4JniWriteProblem {
   @Test
   public void writeSubset() throws IOException, InvalidRangeException {
     String fname = tempFolder.newFile().getAbsolutePath();
-    NetcdfFormatWriter.Builder writerb = NetcdfFormatWriter.createNewNetcdf4(NetcdfFileFormat.NETCDF4, fname, null);
+    NetcdfFormatWriter.Builder<?> writerb = NetcdfFormatWriter.createNewNetcdf4(NetcdfFileFormat.NETCDF4, fname, null);
 
     writerb.addDimension(new Dimension("x", 5));
-    writerb.addVariable("arr", DataType.FLOAT, "x");
+    writerb.addVariable("arr", ArrayType.FLOAT, "x");
 
     try (NetcdfFormatWriter writer = writerb.build()) {
       float[] data = new float[] {1.f, 2.f, 3.f, 4.f, 5.f, 6.f, 7.f, 8.f, 9.f, 10.f};
-      Array arrData = Array.factory(DataType.FLOAT, new int[] {10}, data);
-      Array subArr = arrData.sectionNoReduce(new int[] {1}, new int[] {5}, new int[] {2});
+      Array<?> arrData = Arrays.factory(ArrayType.FLOAT, new int[] {10}, data);
+      Array<?> subArr = Arrays.section(arrData, Section.builder().appendRange(1, 9, 2).build());
 
       // Write subsetted array
-      writer.write("arr", subArr);
+      writer.write(writer.findVariable("arr"), subArr.getIndex(), subArr);
     }
 
     // Make sure file has what we expect
     try (NetcdfFile ncFile = NetcdfFiles.open(fname)) {
       Variable arr = ncFile.getRootGroup().findVariableLocal("arr");
       Assert.assertEquals(5, arr.getSize());
-      Array arrData = arr.read();
-      float[] data = (float[]) arrData.get1DJavaArray(Float.class);
-      Assert.assertEquals(5, data.length);
-      Assert.assertArrayEquals(new float[] {2.f, 4.f, 6.f, 8.f, 10.f}, data, 1e-6f);
+      Array<Float> arrData = (Array<Float>) arr.readArray();
+      float[] expectedData = new float[] {2.f, 4.f, 6.f, 8.f, 10.f};
+      assertThat(arrData.length()).isEqualTo(5);
+      int count = 0;
+      for (float val : arrData) {
+        assertThat(val).isEqualTo(expectedData[count++]);
+      }
     }
   }
 

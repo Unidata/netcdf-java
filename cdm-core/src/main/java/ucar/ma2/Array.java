@@ -117,7 +117,7 @@ public abstract class Array {
   }
 
   /**
-   * Make a vlen array
+   * Make a vlen array: an ArrayObject of Arrays
    * 
    * @param shape the outer shape, ie excluding the vlen dimension
    * @param storage must be an Array type. must not be null

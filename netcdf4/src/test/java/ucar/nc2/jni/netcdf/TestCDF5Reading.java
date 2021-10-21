@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-
 package ucar.nc2.jni.netcdf;
 
 import static com.google.common.truth.Truth.assertThat;
@@ -12,13 +11,15 @@ import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import ucar.ma2.Array;
-import ucar.ma2.ArrayFloat;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.MAMath;
+import ucar.array.Array;
+import ucar.array.ArrayType;
+import ucar.array.Arrays;
+import ucar.array.InvalidRangeException;
+import ucar.array.Section;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.ffi.netcdf.NetcdfClibrary;
+import ucar.nc2.internal.util.CompareArrayToArray;
 import ucar.nc2.iosp.NetcdfFileFormat;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.test.TestDir;
@@ -28,13 +29,11 @@ import java.io.IOException;
 /** Test Reading of CDF-5 files using JNI netcdf-4 iosp */
 @Category(NeedsContentRoot.class)
 public class TestCDF5Reading {
-  private static final ArrayFloat.D1 BASELINE;
+  private static final Array<Float> BASELINE;
 
   static {
-    BASELINE = new ArrayFloat.D1(3);
-    BASELINE.set(0, -3.4028235E38F);
-    BASELINE.set(1, 3.4028235E38F);
-    BASELINE.set(2, Float.NEGATIVE_INFINITY);
+    BASELINE = Arrays.factory(ArrayType.FLOAT, new int[] {3},
+        new float[] {-3.4028235E38F, 3.4028235E38F, Float.NEGATIVE_INFINITY});
   }
 
   @Before
@@ -54,16 +53,12 @@ public class TestCDF5Reading {
       assertWithMessage("Fail: file format is not CDF-5").that(format).isEqualTo(NetcdfFileFormat.NETCDF3_64BIT_DATA);
     }
     try (NetcdfFile jni = TestNc4reader.openJni(location)) {
-      Array data = read(jni, "f4", "0:2");
-      assertThat(MAMath.nearlyEquals(data, BASELINE)).isTrue();
+      Variable v = jni.findVariable("f4");
+      assertThat(v).isNotNull();
+      Array<?> data = v.readArray(new Section("0:2"));
+      assertThat(CompareArrayToArray.compareData("f4", data, BASELINE)).isTrue();
       System.err.println("***Pass");
     }
-  }
-
-  private Array read(NetcdfFile ncfile, String vname, String section) throws IOException, InvalidRangeException {
-    Variable v = ncfile.findVariable(vname);
-    assert v != null;
-    return v.read(section);
   }
 
 }

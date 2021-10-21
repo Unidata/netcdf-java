@@ -73,7 +73,7 @@ public class TestSequence {
 
     Formatter f = new Formatter();
     CompareNetcdf2 compare = new CompareNetcdf2(f);
-    boolean ok = compare.compareData("testSequence", data, data2, false);
+    boolean ok = compare.compareData("testSequence", data, data2);
     if (!ok) {
       System.out.printf("%s%n", f);
     }
@@ -239,10 +239,10 @@ public class TestSequence {
     return sdata;
   }
 
-  private boolean compare(StructureData sdata1, StructureData sdata2) {
+  private boolean compare(StructureData sdata1, StructureData sdata2) throws IOException {
     Formatter f = new Formatter();
     CompareNetcdf2 compare = new CompareNetcdf2(f);
-    boolean ok = compare.compareStructureData(sdata1, sdata2, false);
+    boolean ok = compare.compareStructureData(sdata1, sdata2);
     if (!ok) {
       System.out.printf("%s%n", f);
     }

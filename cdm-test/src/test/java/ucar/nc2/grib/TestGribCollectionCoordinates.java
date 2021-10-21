@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.grib;
@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.CollectionUpdateType;
-import ucar.ma2.ArrayDouble;
+import ucar.ma2.ArrayDouble; // needed by CoordinateAxis2D
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.*;
 import ucar.nc2.grib.collection.*;
@@ -26,9 +26,6 @@ import java.lang.invoke.MethodHandles;
 
 /**
  * Test GribCollection Coordinates
- *
- * @author caron
- * @since 3/2/2015
  */
 @Category(NeedsCdmUnitTest.class)
 public class TestGribCollectionCoordinates {

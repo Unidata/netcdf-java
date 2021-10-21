@@ -29,6 +29,8 @@ import java.net.URISyntaxException;
 import java.util.EnumSet;
 import java.util.Set;
 
+import static com.google.common.truth.Truth.assertThat;
+
 public class TestScaleOffsetMissingUnsigned {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -78,7 +80,7 @@ public class TestScaleOffsetMissingUnsigned {
     Array readPacked;
     try (NetcdfFile ncfileRead = NetcdfFiles.open(filename)) {
       Variable v = ncfileRead.findVariable("packed");
-      assert v != null;
+      assertThat(v).isNotNull();
       readPacked = v.read();
       CompareNetcdf2.compareData("packed", packed, readPacked);
     }

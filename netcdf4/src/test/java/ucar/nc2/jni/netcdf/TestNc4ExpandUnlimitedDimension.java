@@ -1,24 +1,23 @@
 /*
- * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-
 package ucar.nc2.jni.netcdf;
 
 import static com.google.common.truth.Truth.assertThat;
 
 import java.io.File;
 import java.io.IOException;
-import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import ucar.ma2.Array;
-import ucar.ma2.DataType;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.MAMath;
+import ucar.array.Array;
+import ucar.array.ArrayType;
+import ucar.array.Arrays;
+import ucar.array.Index;
+import ucar.array.InvalidRangeException;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
@@ -50,42 +49,43 @@ public class TestNc4ExpandUnlimitedDimension {
 
     writerb.addDimension(Dimension.builder().setName("row").setIsUnlimited(true).build());
     writerb.addDimension(Dimension.builder().setName("col").setIsUnlimited(true).build());
-    writerb.addVariable("table", DataType.INT, "row col");
+    writerb.addVariable("table", ArrayType.INT, "row col");
 
     try (NetcdfFormatWriter writer = writerb.build()) {
       // Start with a 1x1 block. Table will look like:
       // 1
-      int[] origin = new int[] {0, 0};
+      Index origin = Index.ofRank(2);
       int[] shape = new int[] {1, 1};
       int[] data = new int[] {1};
-      writer.write("table", origin, Array.factory(DataType.INT, shape, data));
+      Variable table = writer.findVariable("table");
+      writer.write(table, Index.ofRank(2), Arrays.factory(ArrayType.INT, shape, data));
 
       // Add a row. Table will look like:
       // 1 _
       // 2 2
-      origin = new int[] {1, 0};
+      origin.set(1, 0);
       shape = new int[] {1, 2};
       data = new int[] {2, 2};
-      writer.write("table", origin, Array.factory(DataType.INT, shape, data));
+      writer.write(table, origin, Arrays.factory(ArrayType.INT, shape, data));
 
       // Add a column. Table will look like:
       // 1 _ 3
       // 2 2 3
       // _ _ 3
-      origin = new int[] {0, 2};
+      origin.set(0, 2);
       shape = new int[] {3, 1};
       data = new int[] {3, 3, 3};
-      writer.write("table", origin, Array.factory(DataType.INT, shape, data));
+      writer.write(table, origin, Arrays.factory(ArrayType.INT, shape, data));
 
       // Add a row. Table will look like:
       // 1 _ 3 _
       // 2 2 3 _
       // _ _ 3 _
       // 4 4 4 4
-      origin = new int[] {3, 0};
+      origin.set(3, 0);
       shape = new int[] {1, 4};
       data = new int[] {4, 4, 4, 4};
-      writer.write("table", origin, Array.factory(DataType.INT, shape, data));
+      writer.write(table, origin, Arrays.factory(ArrayType.INT, shape, data));
 
       // Add a column. Table will look like:
       // 1 _ 3 _ 5
@@ -93,10 +93,10 @@ public class TestNc4ExpandUnlimitedDimension {
       // _ _ 3 _ 5
       // 4 4 4 4 5
       // _ _ _ _ 5
-      origin = new int[] {0, 4};
+      origin.set(0, 4);
       shape = new int[] {5, 1};
       data = new int[] {5, 5, 5, 5, 5};
-      writer.write("table", origin, Array.factory(DataType.INT, shape, data));
+      writer.write(table, origin, Arrays.factory(ArrayType.INT, shape, data));
     } catch (IOException e) {
       if ("NetCDF: Start+count exceeds dimension bound".equals(e.getMessage())) {
         String m = String.format("This test requires netcdf-c 4.4.0+ Your version = %s", NetcdfClibrary.getVersion());
@@ -126,14 +126,17 @@ public class TestNc4ExpandUnlimitedDimension {
     try (NetcdfFile ncFile = NetcdfFiles.open(outFile.getAbsolutePath())) {
       Variable v = ncFile.getRootGroup().findVariableLocal("table");
       assertThat(v).isNotNull();
-      Array actualVals = v.read();
+      Array<Integer> actualVals = (Array<Integer>) v.readArray();
 
       int fill = -2147483647; // See EnhanceScaleMissingImpl.NC_FILL_INT
       int[] expectedData = new int[] {1, fill, 3, fill, 5, 2, 2, 3, fill, 5, fill, fill, 3, fill, 5, 4, 4, 4, 4, 5,
           fill, fill, fill, fill, 5};
-      Array expectedVals = Array.factory(DataType.INT, new int[] {5, 5}, expectedData);
+      Array expectedVals = Arrays.factory(ArrayType.INT, new int[] {5, 5}, expectedData);
 
-      Assert.assertTrue(MAMath.equals(expectedVals, actualVals));
+      int count = 0;
+      for (int val : actualVals) {
+        assertThat(val).isEqualTo(expectedData[count++]);
+      }
     }
   }
 }

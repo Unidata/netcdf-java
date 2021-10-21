@@ -26,23 +26,11 @@ class Time2DLazyCoordinate {
       GribCollectionImmutable gribCollection) {
     double[] data;
     if (info.time2D != null) {
-      data = makeLazyTime2Darray(v2, info);
+      data = makeLazyTime2Darray(info);
     } else {
       data = makeLazyTime1Darray(info, gribCollection);
     }
     return Arrays.factory(ArrayType.DOUBLE, v2.getShape(), data);
-  }
-
-  /** @deprecated use makeLazyCoordinateArray */
-  @Deprecated
-  static ucar.ma2.Array makeLazyCoordinateData(Variable v2, Time2Dinfo info, GribCollectionImmutable gribCollection) {
-    double[] data;
-    if (info.time2D != null) {
-      data = makeLazyTime2Darray(v2, info);
-    } else {
-      data = makeLazyTime1Darray(info, gribCollection);
-    }
-    return ucar.ma2.Array.factory(ucar.ma2.DataType.DOUBLE, v2.getShape(), data);
   }
 
   // only for the 2d times
@@ -78,14 +66,13 @@ class Time2DLazyCoordinate {
   }
 
   // only for the 2d times
-  private static double[] makeLazyTime2Darray(Variable coord, Time2Dinfo info) {
+  private static double[] makeLazyTime2Darray(Time2Dinfo info) {
     CoordinateTime2D time2D = info.time2D;
     CalendarPeriod timeUnit = time2D.getTimeUnit();
 
     int nruns = time2D.getNruns();
     int ntimes = time2D.getNtimes();
-
-    int length = (int) coord.getSize();
+    int length = nruns * ntimes;
     if (info.which == Time2DinfoType.bounds) {
       length *= 2;
     }

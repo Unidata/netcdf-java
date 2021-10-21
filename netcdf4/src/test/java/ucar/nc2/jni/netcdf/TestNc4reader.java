@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-
 package ucar.nc2.jni.netcdf;
 
 import java.io.IOException;
@@ -15,9 +14,10 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.Array;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.MAMath;
+import ucar.array.Array;
+import ucar.array.Arrays;
+import ucar.array.InvalidRangeException;
+import ucar.array.Section;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
@@ -26,6 +26,8 @@ import ucar.nc2.internal.util.CompareNetcdf2;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
+
+import static com.google.common.truth.Truth.assertThat;
 
 /** Test JNI netcdf-4 iosp. Compare reading with native java reading */
 @Category(NeedsCdmUnitTest.class)
@@ -49,22 +51,22 @@ public class TestNc4reader {
     String filename = testDir + "StringsWFilter.h5";
     try (NetcdfFile ncfile = NetcdfFiles.open(filename); NetcdfFile jni = openJni(filename)) {
       Variable v = ncfile.findVariable("/sample/ids");
-      assert v != null;
+      assertThat(v).isNotNull();
       int[] shape = v.getShape();
       Assert.assertEquals(1, shape.length);
       Assert.assertEquals(3107, shape[0]);
 
-      Array dataSection = v.read("700:900:2"); // make sure to go acrross a chunk boundary
+      Array dataSection = v.readArray(new Section("700:900:2")); // make sure to go acrross a chunk boundary
       Assert.assertEquals(1, dataSection.getRank());
       Assert.assertEquals(101, dataSection.getShape()[0]);
 
       Variable v2 = jni.findVariable("/sample/ids");
-      assert v2 != null;
+      assertThat(v2).isNotNull();
       int[] shape2 = v2.getShape();
       Assert.assertEquals(1, shape2.length);
       Assert.assertEquals(3107, shape2[0]);
 
-      Array dataSection2 = v2.read("700:900:2");
+      Array dataSection2 = v2.readArray(new Section("700:900:2"));
       Assert.assertEquals(1, dataSection2.getRank());
       Assert.assertEquals(101, dataSection2.getShape()[0]);
 
@@ -81,15 +83,15 @@ public class TestNc4reader {
       // NCdumpW.printArray(data1);
       System.out.printf("Read from jni%n");
       Array data2 = read(jni, "salinity", "0,11:12,22,:");
-      assert MAMath.nearlyEquals(data1, data2);
+      assertThat(Arrays.equalNumbers(data1, data2)).isTrue();
       System.out.printf("data is equal%n");
     }
   }
 
   private Array read(NetcdfFile ncfile, String vname, String section) throws IOException, InvalidRangeException {
     Variable v = ncfile.findVariable(vname);
-    assert v != null;
-    return v.read(section);
+    assertThat(v).isNotNull();
+    return v.readArray(new Section(section));
   }
 
   @Test
@@ -112,7 +114,7 @@ public class TestNc4reader {
     try (NetcdfFile jni = openJni(location)) {
       Variable v = jni.findVariable("time");
       long start = System.currentTimeMillis();
-      Array data = v.read();
+      Array data = v.readArray();
       long took = System.currentTimeMillis() - start;
       System.out.printf(" jna took= %d msecs size=%d%n", took, data.getSize());
     }
@@ -120,7 +122,7 @@ public class TestNc4reader {
     try (NetcdfFile ncfile = NetcdfFiles.open(location)) {
       Variable v = ncfile.findVariable("time");
       long start = System.currentTimeMillis();
-      Array data = v.read();
+      Array data = v.readArray();
       long took = System.currentTimeMillis() - start;
       System.out.printf(" java took= %d msecs size=%d%n", took, data.getSize());
     }

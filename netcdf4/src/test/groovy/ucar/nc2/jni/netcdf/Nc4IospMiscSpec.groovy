@@ -7,7 +7,8 @@ import org.slf4j.LoggerFactory
 import spock.lang.Specification
 import spock.lang.Unroll
 import ucar.array.ArrayType
-import ucar.ma2.Array
+import ucar.array.Array
+import ucar.array.Arrays
 import ucar.ma2.ArrayChar
 import ucar.nc2.Attribute
 import ucar.nc2.Dimension
@@ -43,15 +44,15 @@ class Nc4IospMiscSpec extends Specification {
         NetcdfFile ncFile = NetcdfFiles.open(file.absolutePath, Nc4reader.class.canonicalName, -1, null, null)
         
         and: "grab the Nc4Iosp instance within so that we can test Nc4Iosp.readDataSection()"
-        Nc4reader nc4Iosp = ncFile.iosp as Nc4reader
+        Nc4reader nc4reader = ncFile.iosp as Nc4reader
         
         when: "read all of var's data using readDataSection()"
         Variable var = ncFile.findVariable(varName)
         Nc4reader.Vinfo vinfo = var.SPobject as Nc4reader.Vinfo
-        Array array = nc4Iosp.readDataSection(vinfo.g4.grpid, vinfo.varid, vinfo.typeid, var.shapeAsSection);
+        Array<?> array = nc4reader.readDataSection(vinfo.g4.grpid, vinfo.varid, vinfo.typeid, var.section);
         
         then: "actual data equals expected data"
-        array.storage == expectedData
+        Arrays.copyPrimitiveArray(array) == expectedData
     
         cleanup: "close NetcdfFile"
         ncFile?.close()
@@ -140,7 +141,7 @@ class Nc4IospMiscSpec extends Specification {
         writerb.addAttribute(attrCharBefore)
 
         and: "add a character valued attribute with a specific null char value"
-        Array attrNullCharValue = ArrayChar.makeFromString("\0", 1);
+        ucar.ma2.Array attrNullCharValue = ArrayChar.makeFromString("\0", 1);
         Attribute attrNullCharBefore = Attribute.builder("nullcharvalchar").setArrayType(ArrayType.CHAR).setValues(attrNullCharValue).build();
         writerb.addAttribute(attrNullCharBefore)
 
