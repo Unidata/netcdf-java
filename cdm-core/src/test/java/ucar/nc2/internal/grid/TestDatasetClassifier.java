@@ -66,19 +66,6 @@ public class TestDatasetClassifier {
   }
 
   @Test
-  public void testNoGrids() throws IOException {
-    // No Grids found because unidentified ensemble, time axis.
-    String filename = TestDir.cdmLocalTestDataDir + "testNested.ncml";
-    try (NetcdfDataset ds = NetcdfDatasets.openDataset(filename)) {
-      Formatter errlog = new Formatter();
-      DatasetClassifier classifier = new DatasetClassifier(ds, errlog);
-      assertThat(classifier.getFeatureType()).isEqualTo(FeatureType.GRID);
-      Optional<GridNetcdfDataset> grido = GridNetcdfDataset.create(ds, errlog);
-      assertThat(grido.isPresent()).isFalse();
-    }
-  }
-
-  @Test
   @Category(NeedsCdmUnitTest.class)
   public void testScalarRuntime() throws IOException {
     // scalar runtime

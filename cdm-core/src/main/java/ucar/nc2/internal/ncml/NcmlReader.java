@@ -8,6 +8,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.Formatter;
@@ -25,6 +26,7 @@ import org.jdom2.Namespace;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.XMLOutputter;
 import ucar.array.ArrayType;
+import ucar.array.ArrayVlen;
 import ucar.array.Arrays;
 import ucar.array.Array;
 import ucar.nc2.Attribute;
@@ -456,15 +458,6 @@ public class NcmlReader {
     builder.setId(netcdfElem.getAttributeValue("id"));
     builder.setTitle(netcdfElem.getAttributeValue("title"));
 
-    Element aggElem = netcdfElem.getChild("aggregation", ncNS);
-    if (aggElem != null) {
-      Aggregation agg = readAgg(aggElem, ncmlLocation, builder, cancelTask);
-      builder.setAggregation(agg);
-      agg.build(cancelTask);
-
-      // LOOK seems like we should add the agg metadata here, so that it can be modified.
-    }
-
     // read the root group and recurse
     readGroup(builder, null, null, netcdfElem);
     String errors = errlog.toString();
@@ -692,7 +685,7 @@ public class NcmlReader {
     if ((sep == null) && (dtype == ArrayType.STRING)) {
       List<String> list = new ArrayList<>();
       list.add(valString);
-      return Aggregations.makeArray(dtype, list);
+      return makeArray(dtype, list);
     }
 
     if (sep == null) {
@@ -705,7 +698,7 @@ public class NcmlReader {
       stringValues.add(tokn.nextToken());
     }
 
-    return Aggregations.makeArray(dtype, stringValues);
+    return makeArray(dtype, stringValues);
   }
 
   private ucar.nc2.Attribute findAttribute(AttributeContainer atts, String name) {
@@ -1243,7 +1236,7 @@ public class NcmlReader {
 
       } else {
         List<String> valList = getTokens(values, sep);
-        Array<?> data = Aggregations.makeArray(dtype, valList);
+        Array<?> data = makeArray(dtype, valList);
         if (v.getDimensions().size() != 1) { // dont have to reshape for rank 1
           data = Arrays.reshape(data, Dimensions.makeShape(v.getDimensions()));
         }
@@ -1297,171 +1290,6 @@ public class NcmlReader {
     return strs;
   }
 
-  /////////////////////////////////////////////////////////////////////////////////////////
-
-  private Aggregation readAgg(Element aggElem, String ncmlLocation, NetcdfDataset.Builder<?> builder,
-      CancelTask cancelTask) {
-    String dimName = aggElem.getAttributeValue("dimName");
-    String type = aggElem.getAttributeValue("type");
-    String recheck = aggElem.getAttributeValue("recheckEvery");
-
-    Aggregation agg;
-    if (type.equalsIgnoreCase("joinExisting")) {
-      agg = new AggregationExisting(builder, dimName, recheck);
-
-    } else if (type.equalsIgnoreCase("joinNew")) {
-      agg = new AggregationNew(builder, dimName, recheck);
-
-    } else if (type.equalsIgnoreCase("union")) {
-      agg = new AggregationUnion(builder, dimName, recheck);
-
-    } else {
-      throw new IllegalArgumentException("Unsupported aggregation type=" + type);
-    }
-
-    if (agg instanceof AggregationOuter) {
-      AggregationOuter aggo = (AggregationOuter) agg;
-
-      String timeUnitsChange = aggElem.getAttributeValue("timeUnitsChange");
-      if (timeUnitsChange != null) {
-        aggo.setTimeUnitsChange(timeUnitsChange.equalsIgnoreCase("true"));
-      }
-
-      // look for variables that need to be aggregated (aggNew)
-      java.util.List<Element> list = aggElem.getChildren("variableAgg", ncNS);
-      for (Element vaggElem : list) {
-        String varName = vaggElem.getAttributeValue("name");
-        aggo.addVariable(varName);
-      }
-
-      // look for attributes to promote to variables
-      list = aggElem.getChildren("promoteGlobalAttribute", ncNS);
-      for (Element gattElem : list) {
-        String varName = gattElem.getAttributeValue("name");
-        String orgName = gattElem.getAttributeValue("orgName");
-        aggo.addVariableFromGlobalAttribute(varName, orgName);
-      }
-
-      // look for attributes to promote to variables
-      list = aggElem.getChildren("promoteGlobalAttributeCompose", ncNS);
-      for (Element gattElem : list) {
-        String varName = gattElem.getAttributeValue("name");
-        String format = gattElem.getAttributeValue("format");
-        String orgName = gattElem.getAttributeValue("orgName");
-        aggo.addVariableFromGlobalAttributeCompose(varName, format, orgName);
-      }
-
-      // look for variable to cache
-      list = aggElem.getChildren("cacheVariable", ncNS);
-      for (Element gattElem : list) {
-        String varName = gattElem.getAttributeValue("name");
-        aggo.addCacheVariable(varName, null);
-      }
-    }
-
-    // nested netcdf elements
-    java.util.List<Element> ncList = aggElem.getChildren("netcdf", ncNS);
-    for (Element netcdfElemNested : ncList) {
-      String location = netcdfElemNested.getAttributeValue("location");
-      if (location == null) {
-        location = netcdfElemNested.getAttributeValue("url");
-      }
-      if (location != null) {
-        location = AliasTranslator.translateAlias(location);
-      }
-
-      String id = netcdfElemNested.getAttributeValue("id");
-      String ncoords = netcdfElemNested.getAttributeValue("ncoords");
-      String coordValueS = netcdfElemNested.getAttributeValue("coordValue");
-      String sectionSpec = netcdfElemNested.getAttributeValue("section");
-
-      // must always open through a NcML reader, in case the netcdf element modifies the dataset
-      NcmlElementReader reader = new NcmlElementReader(ncmlLocation, location, netcdfElemNested);
-      String cacheName = (location != null) ? location : ncmlLocation;
-      cacheName += "#" + netcdfElemNested.hashCode(); // need a unique name, in case file has been modified by ncml
-
-      String realLocation = URLnaming.resolveFile(ncmlLocation, location);
-
-      agg.addExplicitDataset(cacheName, realLocation, id, ncoords, coordValueS, sectionSpec, reader);
-
-      if ((cancelTask != null) && cancelTask.isCancel()) {
-        return agg;
-      }
-      if (debugAggDetail) {
-        System.out.println(" debugAgg: nested dataset = " + location);
-      }
-    }
-
-    // nested scan elements
-    java.util.List<Element> dirList = aggElem.getChildren("scan", ncNS);
-    for (Element scanElem : dirList) {
-      String dirLocation = scanElem.getAttributeValue("location");
-      if (dirLocation == null) {
-        throw new IllegalArgumentException("scan element must have location attribute");
-      }
-
-      dirLocation = AliasTranslator.translateAlias(dirLocation);
-
-      String regexpPatternString = scanElem.getAttributeValue("regExp");
-      String suffix = scanElem.getAttributeValue("suffix");
-      String subdirs = scanElem.getAttributeValue("subdirs");
-      String olderS = scanElem.getAttributeValue("olderThan");
-
-      String dateFormatMark = scanElem.getAttributeValue("dateFormatMark");
-      Set<NetcdfDataset.Enhance> enhanceMode = parseEnhanceMode(scanElem.getAttributeValue("enhance"));
-
-      // possible relative location
-      dirLocation = URLnaming.resolve(ncmlLocation, dirLocation);
-
-      // can embed a full-blown crawlableDatasetImpl element
-      Element cdElement = scanElem.getChild("crawlableDatasetImpl", ncNS); // ok if null
-      agg.addDatasetScan(cdElement, dirLocation, suffix, regexpPatternString, dateFormatMark, enhanceMode, subdirs,
-          olderS);
-
-      if ((cancelTask != null) && cancelTask.isCancel()) {
-        return agg;
-      }
-      if (debugAggDetail) {
-        System.out.println(" debugAgg: nested dirLocation = " + dirLocation);
-      }
-    }
-
-    // experimental
-    Element collElem = aggElem.getChild("collection", ncNS);
-    if (collElem != null) {
-      agg.addCollection(collElem.getAttributeValue("spec"), collElem.getAttributeValue("olderThan"));
-    }
-
-    /*
-     * <!-- experimental - modify each dataset in aggregation -->
-     * <xsd:choice minOccurs="0" maxOccurs="unbounded">
-     * <xsd:element ref="group"/>
-     * <xsd:element ref="dimension"/>
-     * <xsd:element ref="variable"/>
-     * <xsd:element ref="attribute"/>
-     * <xsd:element ref="remove"/>
-     * </xsd:choice>
-     */
-    boolean needMerge = !aggElem.getChildren("attribute", ncNS).isEmpty();
-    if (!needMerge) {
-      needMerge = !aggElem.getChildren("variable", ncNS).isEmpty();
-    }
-    if (!needMerge) {
-      needMerge = !aggElem.getChildren("dimension", ncNS).isEmpty();
-    }
-    if (!needMerge) {
-      needMerge = !aggElem.getChildren("group", ncNS).isEmpty();
-    }
-    if (!needMerge) {
-      needMerge = !aggElem.getChildren("remove", ncNS).isEmpty();
-    }
-    if (needMerge) {
-      agg.setModifications(aggElem);
-    }
-
-    return agg;
-  }
-
   /////////////////////////////////////////////
   // command procesing
 
@@ -1513,4 +1341,104 @@ public class NcmlReader {
       log.info(f.toString());
     }
   }
+
+  ///////////////////////////////////////////////////////////////////////////////
+
+  // LOOK unsigned?
+  static Array<?> makeArray(ArrayType dtype, List<String> svals) throws NumberFormatException {
+    int n = svals.size();
+    int[] shape = new int[] {n};
+    int count = 0;
+
+    switch (dtype) {
+      case STRING: {
+        return Arrays.factory(dtype, shape, svals.toArray(new String[0]));
+      }
+      case OPAQUE: {
+        byte[][] dataArray = new byte[n][];
+        for (String s : svals) {
+          dataArray[count++] = s.getBytes();
+        }
+        return ArrayVlen.factory(dtype, shape, dataArray);
+
+      }
+      case ULONG: {
+        long[] dataArray = new long[n];
+        for (String s : svals) {
+          BigInteger biggy = new BigInteger(s);
+          dataArray[count++] = biggy.longValue(); // > 63 bits will become "negetive".
+        }
+        return Arrays.factory(dtype, shape, dataArray);
+      }
+      case LONG: {
+        long[] dataArray = new long[n];
+        for (String s : svals) {
+          dataArray[count++] = Long.parseLong(s);
+        }
+        return Arrays.factory(dtype, shape, dataArray);
+      }
+      case DOUBLE: {
+        double[] dataArray = new double[n];
+        for (String s : svals) {
+          dataArray[count++] = Double.parseDouble(s);
+        }
+        return Arrays.factory(dtype, shape, dataArray);
+      }
+      case FLOAT: {
+        float[] dataArray = new float[n];
+        for (String s : svals) {
+          dataArray[count++] = Float.parseFloat(s);
+        }
+        return Arrays.factory(dtype, shape, dataArray);
+      }
+      case UBYTE:
+      case ENUM1: {
+        byte[] darray = new byte[n];
+        for (String s : svals) {
+          darray[count++] = (byte) Integer.parseInt(s);
+        }
+        return Arrays.factory(dtype, shape, darray);
+      }
+      case CHAR:
+      case BYTE: {
+        byte[] darray = new byte[n];
+        for (String s : svals) {
+          darray[count++] = Byte.parseByte(s);
+        }
+        return Arrays.factory(dtype, shape, darray);
+      }
+      case UINT:
+      case ENUM4: {
+        int[] darray = new int[n];
+        for (String s : svals) {
+          darray[count++] = (int) Long.parseLong(s);
+        }
+        return Arrays.factory(dtype, shape, darray);
+      }
+      case INT: {
+        int[] darray = new int[n];
+        for (String s : svals) {
+          darray[count++] = Integer.parseInt(s);
+        }
+        return Arrays.factory(dtype, shape, darray);
+      }
+      case USHORT:
+      case ENUM2: {
+        short[] darray = new short[n];
+        for (String s : svals) {
+          darray[count++] = (short) Integer.parseInt(s);
+        }
+        return Arrays.factory(dtype, shape, darray);
+      }
+      case SHORT: {
+        short[] darray = new short[n];
+        for (String s : svals) {
+          darray[count++] = Short.parseShort(s);
+        }
+        return Arrays.factory(dtype, shape, darray);
+      }
+    }
+    throw new IllegalArgumentException("Aggregations makeArray unsupported dataype " + dtype);
+  }
+
 }

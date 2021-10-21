@@ -23,15 +23,14 @@ public class TestGridDataset {
 
   @Test
   public void testBasics() throws IOException, InvalidRangeException {
-    String filename = TestDir.cdmLocalTestDataDir + "ncml/fmrc/GFS_Puerto_Rico_191km_20090729_0000.nc";
+    String filename = TestDir.cdmLocalTestDataDir + "GFS_Puerto_Rico_191km_20090729_0000.nc";
     Formatter errlog = new Formatter();
 
     try (GridDataset gds = GridDatasetFactory.openGridDataset(filename, errlog)) {
       assertThat(gds).isNotNull();
       System.out.println("readGridDataset: " + gds.getLocation());
       assertThat(gds.toString()).startsWith("name = GFS_Puerto_Rico_191km_20090729_0000.nc\n"
-          + "location = ../cdm-core/src/test/data/ncml/fmrc/GFS_Puerto_Rico_191km_20090729_0000.nc\n"
-          + "featureType = GRID");
+          + "location = ../cdm-core/src/test/data/GFS_Puerto_Rico_191km_20090729_0000.nc\n" + "featureType = GRID");
 
       Grid grid = gds.findGridByAttribute("Grib_Variable_Id", "VAR_7-0-2-11_L100").orElseThrow();
       assertThat(grid.getName()).isEqualTo("Temperature_isobaric");

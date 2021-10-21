@@ -142,7 +142,7 @@ public class StructureDS extends ucar.nc2.Structure implements StructureEnhanced
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////
   protected final EnhancementsImpl proxy;
   protected final Structure orgVar; // wrap this Variable
-  protected final String orgName; // in case Variable was renamed, and we need the original name for aggregation
+  protected final String orgName; // in case Variable was renamed, and we need the original name
 
   // Not technically immutable because of this
   private ImmutableList<CoordinateSystem> coordinateSystems;
@@ -180,7 +180,7 @@ public class StructureDS extends ucar.nc2.Structure implements StructureEnhanced
 
   public static abstract class Builder<T extends Builder<T>> extends Structure.Builder<T> {
     private Structure orgVar; // wrap this Variable
-    protected String orgName; // in case Variable was renamed, and we need the original name for aggregation
+    protected String orgName; // in case Variable was renamed, and we need the original name
     protected String units;
     protected String desc;
     private boolean built;

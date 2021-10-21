@@ -35,7 +35,7 @@ public class TestReadGridDataset {
 
   @Test
   public void readGridRegularTime() throws IOException, InvalidRangeException {
-    String filename = TestDir.cdmLocalTestDataDir + "ncml/fmrc/GFS_Puerto_Rico_191km_20090729_0000.nc";
+    String filename = TestDir.cdmLocalTestDataDir + "GFS_Puerto_Rico_191km_20090729_0000.nc";
     readGrid(filename, "Temperature_isobaric", ImmutableList.of(20, 6, 39, 45), "time isobaric1 y x", false, 20,
         "hours since 2009-07-29T00:00Z", "2009-07-29T12:00Z", "2009-08-08T00:00Z", "2009-08-02T12:00:00Z", 700.0, 700.0,
         new int[] {1, 1, 39, 45});

@@ -10,13 +10,6 @@ import static com.google.common.truth.Truth.assertThat;
 /** Test {@link NetcdfDataset} */
 public class TestNetcdfDataset {
 
-  @Test
-  public void testNcmlFileId() throws IOException {
-    String filename = TestDir.cdmLocalTestDataDir + "testNested.ncml";
-    try (NetcdfDataset ds = NetcdfDatasets.openDataset(filename)) {
-      assertThat(ds.getFileTypeId()).isEqualTo("NcML/NetCDF-3");
-    }
-  }
 
   @Test
   public void testN3FileId() throws IOException {

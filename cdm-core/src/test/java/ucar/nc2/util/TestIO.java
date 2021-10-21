@@ -18,6 +18,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import ucar.nc2.internal.ncml.TestNcmlRead;
+import ucar.unidata.util.test.TestDir;
 
 /** Test {@link ucar.nc2.util.IO} */
 public class TestIO {
@@ -33,7 +34,7 @@ public class TestIO {
 
   @Test
   public void testGetFileResource() throws IOException {
-    String filename = TestNcmlRead.topDir + "aggExisting.xml";
+    String filename = TestDir.cdmLocalTestDataDir + "jan.nc";
     try (InputStream is = IO.getFileResource(filename)) {
       assertThat(is).isNotNull();
     }
@@ -61,7 +62,7 @@ public class TestIO {
     ByteArrayInputStream stringIS = new ByteArrayInputStream(source.getBytes());
     IO.copy2null(stringIS, 10);
 
-    String filename = TestNcmlRead.topDir + "aggExisting.xml";
+    String filename = TestDir.cdmLocalTestDataDir + "jan.nc";
     try (FileInputStream fos = new FileInputStream(filename); FileChannel channel = fos.getChannel()) {
       IO.copy2null(channel, 10);
     }
@@ -128,7 +129,7 @@ public class TestIO {
   @Test
   public void testCopyFilename() throws IOException {
     String fileout = tempFolder.newFile().getAbsolutePath();
-    String filein = TestNcmlRead.topDir + "aggExisting.xml";
+    String filein = TestDir.cdmLocalTestDataDir + "jan.nc";
     IO.copyFile(filein, fileout);
 
     String org = IO.readFile(filein);
@@ -139,7 +140,7 @@ public class TestIO {
   @Test
   public void testCopyFile() throws IOException {
     File fileout = tempFolder.newFile();
-    File filein = new File(TestNcmlRead.topDir + "aggExisting.xml");
+    File filein = new File(TestDir.cdmLocalTestDataDir + "jan.nc");
     IO.copyFile(filein, fileout);
 
     String org = IO.readFile(filein.getAbsolutePath());
@@ -158,7 +159,7 @@ public class TestIO {
 
   @Test
   public void testCopyFileOut() throws IOException {
-    String filein = TestNcmlRead.topDir + "aggExisting.xml";
+    String filein = TestDir.cdmLocalTestDataDir + "jan.nc";
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     IO.copyFile(filein, out);
 
@@ -170,7 +171,7 @@ public class TestIO {
   public void testCopyRafB() throws IOException {
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     ucar.unidata.io.RandomAccessFile raf =
-        new ucar.unidata.io.RandomAccessFile(TestNcmlRead.topDir + "aggExisting.xml", "r");
+        new ucar.unidata.io.RandomAccessFile(TestDir.cdmLocalTestDataDir + "jan.nc", "r");
     // (ucar.unidata.io.RandomAccessFile raf, long offset, long length, OutputStream out, byte[] buffer
     IO.copyRafB(raf, 11, 44, out, new byte[10]);
     assertThat(out.toByteArray()).hasLength(44);

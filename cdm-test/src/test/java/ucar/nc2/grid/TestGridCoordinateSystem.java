@@ -34,7 +34,7 @@ public class TestGridCoordinateSystem {
 
       result.add(new Object[] {TestDir.cdmLocalTestDataDir + "ncml/nc/ubyte_1.nc4"});
       result.add(new Object[] {TestDir.cdmLocalTestDataDir + "ncml/nc/cldc.mean.nc"});
-      result.add(new Object[] {TestDir.cdmLocalTestDataDir + "ncml/fmrc/GFS_Puerto_Rico_191km_20090729_0000.nc"});
+      result.add(new Object[] {TestDir.cdmLocalTestDataDir + "GFS_Puerto_Rico_191km_20090729_0000.nc"});
 
       TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "conventions/", ff, result);
       TestDir.actOnAllParameterized(TestDir.cdmUnitTestDir + "ft/grid/", ff, result);

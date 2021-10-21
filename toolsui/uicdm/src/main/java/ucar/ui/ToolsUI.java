@@ -13,7 +13,6 @@ import ucar.nc2.dataset.*;
 import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.internal.iosp.hdf5.H5iosp;
-import ucar.nc2.internal.ncml.Aggregation;
 import ucar.nc2.internal.ncml.NcmlReader;
 import ucar.ui.bufr.BufrCdmIndexOpPanel;
 import ucar.ui.bufr.BufrCodePanel;
@@ -25,7 +24,6 @@ import ucar.ui.dialog.DiskCache2Form;
 import ucar.ui.grib.Grib1TablePanel;
 import ucar.ui.grib.Grib2CollectionOpPanel;
 import ucar.ui.grid.GridNewPanel;
-import ucar.ui.op.AggPanel;
 import ucar.ui.op.CdmIndexOpPanel;
 import ucar.ui.op.CdmIndexScanOp;
 import ucar.ui.op.CollectionSpecPanel;
@@ -118,7 +116,6 @@ public class ToolsUI extends JPanel {
   private final PreferencesExt mainPrefs;
 
   // Op panels and friends
-  private AggPanel aggPanel;
   private BufrPanel bufrPanel;
   private BufrTableBPanel bufrTableBPanel;
   private BufrTableDPanel bufrTableDPanel;
@@ -287,7 +284,6 @@ public class ToolsUI extends JPanel {
 
     // nested tab - ncml
     ncmlTabPane.addTab("NcmlEditor", new JLabel("NcmlEditor"));
-    ncmlTabPane.addTab("Aggregation", new JLabel("Aggregation"));
     addListeners(ncmlTabPane);
 
     // dynamic proxy for DebugFlags
@@ -345,11 +341,6 @@ public class ToolsUI extends JPanel {
 
     Component c;
     switch (title) {
-      case "Aggregation":
-        aggPanel = new AggPanel((PreferencesExt) mainPrefs.node("NcMLAggregation"));
-        c = aggPanel;
-        break;
-
       case "BUFR":
         bufrPanel = new BufrPanel((PreferencesExt) mainPrefs.node("bufr"));
         c = bufrPanel;
@@ -644,9 +635,6 @@ public class ToolsUI extends JPanel {
 
   private void save() {
     fileChooser.save();
-    if (aggPanel != null) {
-      aggPanel.save();
-    }
     if (bufrFileChooser != null) {
       bufrFileChooser.save();
     }
@@ -1346,9 +1334,6 @@ public class ToolsUI extends JPanel {
 
     // Display the splash screen so there's something to look at while we do some more init.
     SwingUtilities.invokeLater(() -> ToolsSplashScreen.getSharedInstance().setVisible(true));
-
-    // LOOK needed? for efficiency, persist aggregations. Every hour, delete stuff older than 30 days
-    Aggregation.setPersistenceCache(new DiskCache2("/.unidata/aggCache", true, 60 * 24 * 30, 60));
 
     // open dap initializations
     // DODSNetcdfFile.setAllowCompression(true);

@@ -246,9 +246,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     if (message == IOSP_MESSAGE_GET_IOSP) {
       return (orgFile == null) ? null : orgFile.sendIospMessage(message);
     }
-    if (message == AGGREGATION) {
-      return this.agg;
-    }
     return super.sendIospMessage(message);
   }
 
@@ -258,11 +255,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    */
   @Override
   public synchronized void close() throws java.io.IOException {
-    if (agg != null) {
-      agg.persistWrite(); // LOOK maybe only on real close ??
-      agg.close();
-    }
-
     if (cache != null) {
       // unlocked = true;
       if (cache.release(this))
@@ -291,15 +283,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       orgFile.reacquire();
   }
 
-  @Override
-  @Deprecated
-  public long getLastModified() {
-    if (agg != null) {
-      return agg.getLastModified();
-    }
-    return (orgFile != null) ? orgFile.getLastModified() : 0;
-  }
-
   //////////////////////////////////////////////////////////////////////////////
   // used by NcMLReader for NcML without a referenced dataset
 
@@ -326,13 +309,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
     f.format("  class= %s%n", getClass().getName());
 
-    if (agg == null) {
-      f.format("  has no Aggregation element%n");
-    } else {
-      f.format("%nAggregation:%n");
-      agg.getDetailInfo(f);
-    }
-
     if (orgFile == null) {
       f.format("  has no referenced NetcdfFile%n");
       showCached(f);
@@ -350,9 +326,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     if (orgFile != null) {
       inner = orgFile.getFileTypeId();
     }
-    if (inner == null && agg != null) {
-      inner = agg.getFileTypeId();
-    }
     if (this.fileTypeId == null) {
       return inner;
     }
@@ -366,8 +339,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   public String getFileTypeDescription() {
     if (orgFile != null)
       return orgFile.getFileTypeDescription();
-    if (agg != null)
-      return agg.getFileTypeDescription();
     return "N/A";
   }
 
@@ -376,7 +347,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   private final CoordinatesHelper coords;
   private final String convUsed;
   private final ImmutableSet<Enhance> enhanceMode; // enhancement mode for this specific dataset
-  private final ucar.nc2.internal.ncml.Aggregation agg; // LOOK not immutable
   private final String fileTypeId;
 
   private final ImmutableList<CoordinateAxis> coordAxes; // TODO get rid of if possible
@@ -387,7 +357,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     this.fileTypeId = builder.fileTypeId;
     this.convUsed = builder.convUsed;
     this.enhanceMode = ImmutableSet.copyOf(builder.getEnhanceMode());
-    this.agg = builder.agg;
 
     // The need to reference the NetcdfDataset means we can't build the axes or system until now.
     // LOOK this assumes the dataset has already been enhanced. Where does that happen?
@@ -425,7 +394,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     this.coords.getCoordTransforms().forEach(ct -> b.coords.addCoordinateTransform(ct));
 
     b.setOrgFile(this.orgFile).setConventionUsed(this.convUsed).setEnhanceMode(this.enhanceMode)
-        .setAggregation(this.agg).setFileTypeId(this.fileTypeId);
+        .setFileTypeId(this.fileTypeId);
 
     return (Builder<?>) super.addLocalFieldsToBuilder(b);
   }
@@ -449,7 +418,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     public CoordinatesHelper.Builder coords = CoordinatesHelper.builder();
     private String convUsed;
     private Set<Enhance> enhanceMode = EnumSet.noneOf(Enhance.class); // LOOK should be default ??
-    public ucar.nc2.internal.ncml.Aggregation agg; // If its an aggregation
     private String fileTypeId;
 
     private boolean built;
@@ -515,11 +483,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       result.addAll(this.enhanceMode);
       result.addAll(addEnhanceModes);
       this.enhanceMode = result.build();
-    }
-
-    public T setAggregation(ucar.nc2.internal.ncml.Aggregation agg) {
-      this.agg = agg;
-      return self();
     }
 
     /** Copy metadata from orgFile. Do not copy the coordinates, etc */
