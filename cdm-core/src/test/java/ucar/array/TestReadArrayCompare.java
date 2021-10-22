@@ -34,11 +34,8 @@ import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 /** Compare reading netcdf with Array */
-@RunWith(Parameterized.class)
-@Category(NeedsCdmUnitTest.class)
 public class TestReadArrayCompare {
 
-  @Parameterized.Parameters(name = "{0}")
   public static List<Object[]> getTestParameters() {
     FileFilter ff = TestDir.FileFilterSkipSuffix(".cdl .ncml perverse.nc .mip222k.oschp");
     List<Object[]> result = new ArrayList<>(500);
@@ -78,7 +75,6 @@ public class TestReadArrayCompare {
 
   private final String filename;
 
-  @Test
   public void compareNetcdfFile() throws IOException {
     compareNetcdfFile(filename);
   }

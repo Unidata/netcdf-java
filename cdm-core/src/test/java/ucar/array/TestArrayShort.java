@@ -92,9 +92,9 @@ public class TestArrayShort {
   @Test
   public void testMisc() {
     int[] shape1 = new int[] {1, 2, 3};
-    Array<Short> array = Arrays.factory(ArrayType.SHORT, shape1);
+    Array<Short> array = Arrays.factoryFill(ArrayType.SHORT, shape1, 256);
     Index index = array.getIndex();
-    assertThat(array.get(index.set(0, 1, 2))).isEqualTo(0);
+    assertThat(array.get(index.set(0, 1, 2))).isEqualTo(256);
   }
 
 

@@ -26,7 +26,8 @@ public class TestNcmlWriter {
     String ncml = writer.writeToString(elem);
 
     System.out.printf("ncml = %s%n", ncml);
-    String expected = "<values xmlns=\"http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2\">3.2 5.2 7.2</values>\n";
+    String expected =
+        "<values xmlns=\"http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2\">3.200000 5.200000 7.200000</values>\n";
     assertThat(ncml).endsWith(expected);
   }
 
@@ -43,7 +44,8 @@ public class TestNcmlWriter {
     String ncml = writer.writeToString(elem);
 
     System.out.printf("ncml = %s%n", ncml);
-    String expected = "<values xmlns=\"http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2\">3.2 5.2 7.2</values>\n";
+    String expected =
+        "<values xmlns=\"http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2\">3.200000 5.200000 7.200000</values>\n";
     assertThat(ncml).endsWith(expected);
   }
 
@@ -95,7 +97,7 @@ public class TestNcmlWriter {
 
     System.out.printf("ncml = %s%n", ncml);
     String expected =
-        "<values xmlns=\"http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2\" start=\"3.2\" increment=\"2.0\" npts=\"3\" />\n";
+        "<values xmlns=\"http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2\" start=\"3.200000\" increment=\"2.000000\" npts=\"3\" />\n";
     assertThat(ncml).endsWith(expected);
   }
 

@@ -56,7 +56,7 @@ public class TestSlice {
 
   private Array<?> createData() {
     int[] shape = new int[] {DIM_T, DIM_ALT, DIM_LAT, DIM_LON};
-    float[] parray = new float[ (int) Arrays.computeSize(shape)];
+    float[] parray = new float[(int) Arrays.computeSize(shape)];
     int count = 0;
     for (int i = 0; i < DIM_T; i++) {
       for (int j = 0; j < DIM_ALT; j++) {

@@ -41,13 +41,13 @@ public class TestOtherClassesIospTutorial {
 
   @Test
   public void testArrayIterator() {
-    Array<Float> data = Arrays.factory(ArrayType.FLOAT, new int[] {10});
+    Array<Float> data = Arrays.factoryFill(ArrayType.FLOAT, new int[] {10}, 0);
     OtherClassesIospTutorial.arrayIterator(data);
   }
 
   @Test
   public void testArrayIndices() {
-    Array<Float> data = Arrays.factory(ArrayType.FLOAT, new int[] {10});
+    Array<Float> data = Arrays.factoryFill(ArrayType.FLOAT, new int[] {10}, 0);
     OtherClassesIospTutorial.arrayIndices(data);
   }
 }

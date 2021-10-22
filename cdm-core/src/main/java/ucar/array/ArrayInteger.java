@@ -14,9 +14,11 @@ class ArrayInteger extends Array<Integer> {
   private final Storage<Integer> storage;
 
   /** Create an empty Array of type Integer and the given shape. */
-  ArrayInteger(ArrayType dtype, int[] shape) {
+  ArrayInteger(ArrayType dtype, int[] shape, int fillValue) {
     super(dtype, shape);
-    storage = new StorageS(new int[(int) indexFn.length()]);
+    int[] parray = new int[(int) indexFn.length()];
+    java.util.Arrays.fill(parray, fillValue);
+    storage = new StorageS(parray);
   }
 
   /** Create an Array of type Integer and the given shape and storage. */

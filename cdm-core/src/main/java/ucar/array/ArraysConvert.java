@@ -292,11 +292,14 @@ public class ArraysConvert {
 
     Storage<StructureData> storage = (Storage<StructureData>) from.storage();
     if (storage instanceof StructureDataStorageBB) {
+      StructureDataStorageBB storagebb = (StructureDataStorageBB) storage;
       // TODO go away in version 7
-      ByteBuffer bbuffer = ((StructureDataStorageBB) storage).buffer();
+      ByteBuffer bbuffer = storagebb.buffer();
       long recSize = ucar.ma2.ArrayStructureBB.setOffsets(members);
       members.setStructureSize((int) recSize);
-      return new ucar.ma2.ArrayStructureBB(members, from.getShape(), bbuffer, 0);
+      ucar.ma2.ArrayStructureBB result = new ucar.ma2.ArrayStructureBB(members, from.getShape(), bbuffer, 0);
+      // LOOK should transfer heap
+      return result;
     } else {
       ucar.ma2.ArrayStructureW result = new ucar.ma2.ArrayStructureW(members, from.getShape());
       for (int recno = 0; recno < from.length(); recno++) {

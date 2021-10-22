@@ -92,9 +92,9 @@ public class TestArrayByte {
   @Test
   public void testMisc() {
     int[] shape1 = new int[] {1, 2, 3};
-    Array<Byte> array = Arrays.factory(ArrayType.BYTE, shape1);
+    Array<Byte> array = Arrays.factoryFill(ArrayType.BYTE, shape1, 255);
     Index index = array.getIndex();
-    assertThat(array.get(index.set(0, 1, 2))).isEqualTo(0);
+    assertThat(array.get(index.set(0, 1, 2))).isEqualTo(-1);
   }
 
 

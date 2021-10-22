@@ -19,9 +19,11 @@ final class ArrayFloat extends Array<Float> {
 
   // LOOK whats the point if you cant change the storage?
   /** Create an empty Array of type float and the given shape. */
-  ArrayFloat(int[] shape) {
+  ArrayFloat(int[] shape, float fillValue) {
     super(ArrayType.FLOAT, shape);
-    storageF = new StorageF(new float[(int) indexFn.length()]);
+    float[] parray = new float[(int) indexFn.length()];
+    java.util.Arrays.fill(parray, fillValue);
+    storageF = new StorageF(parray);
   }
 
   /** Create an Array of type float and the given shape and storage. */

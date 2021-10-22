@@ -19,7 +19,7 @@ public class TestIndex {
   @Before
   public void setup() {
     int[] shape = new int[] {1, 2, 3, 4, 5, 6, 7};
-    array = new ArrayDouble(shape);
+    array = new ArrayDouble(shape, 0);
   }
 
   @Test

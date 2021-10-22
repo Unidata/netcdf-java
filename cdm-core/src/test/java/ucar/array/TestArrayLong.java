@@ -92,9 +92,9 @@ public class TestArrayLong {
   @Test
   public void testMisc() {
     int[] shape1 = new int[] {1, 2, 3};
-    Array<Long> array = Arrays.factory(ArrayType.LONG, shape1);
+    Array<Long> array = Arrays.factoryFill(ArrayType.LONG, shape1, -1);
     Index index = array.getIndex();
-    assertThat(array.get(index.set(0, 1, 2))).isEqualTo(0);
+    assertThat(array.get(index.set(0, 1, 2))).isEqualTo(-1);
   }
 
 

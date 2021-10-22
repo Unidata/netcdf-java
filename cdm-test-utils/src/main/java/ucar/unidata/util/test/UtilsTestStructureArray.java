@@ -50,12 +50,12 @@ public class UtilsTestStructureArray {
 
   private void testArrayStructureByIterator(StructureDataArray as) throws IOException {
     for (StructureData sdata : as) {
-        // run through each member on the StructureData
-        for (StructureMembers.Member m : sdata.getStructureMembers()) {
-          Array<?> sdataArray = sdata.getMemberData(m);
-          assertThat(sdataArray.getArrayType()).isEqualTo(m.getArrayType());
-        }
-        testStructureData(sdata);
+      // run through each member on the StructureData
+      for (StructureMembers.Member m : sdata.getStructureMembers()) {
+        Array<?> sdataArray = sdata.getMemberData(m);
+        assertThat(sdataArray.getArrayType()).isEqualTo(m.getArrayType());
+      }
+      testStructureData(sdata);
     }
   }
 

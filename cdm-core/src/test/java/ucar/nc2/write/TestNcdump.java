@@ -18,6 +18,8 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.unidata.util.test.TestDir;
 
+import static com.google.common.truth.Truth.assertThat;
+
 /** Test {@link Ncdump} */
 public class TestNcdump {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -35,7 +37,7 @@ public class TestNcdump {
       File expectedOutputFile = new File(TestDir.cdmLocalTestDataDir, "testUnsignedFillValueNew.dump");
       String expectedOutput = Files.toString(expectedOutputFile, StandardCharsets.UTF_8);
 
-      Assert.assertEquals(toUnixEOLs(expectedOutput), toUnixEOLs(ncdumpOut));
+      assertThat(toUnixEOLs(expectedOutput)).isEqualTo(toUnixEOLs(ncdumpOut));
     }
   }
 

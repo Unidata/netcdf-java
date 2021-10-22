@@ -1232,7 +1232,8 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     if (builder.slicer != null) {
       int dim = builder.slicer.dim;
       int index = builder.slicer.index;
-      Section slice = Dimensions.makeArraySectionFromDimensions(dims).replaceRange(dim, Range.make(index, index)).build();
+      Section slice =
+          Dimensions.makeArraySectionFromDimensions(dims).replaceRange(dim, Range.make(index, index)).build();
       useProxyReader = new SliceReader(parentGroup, builder.slicer.orgName, dim, slice);
       builder.resetCache(); // no caching
       // remove that dimension in this variable

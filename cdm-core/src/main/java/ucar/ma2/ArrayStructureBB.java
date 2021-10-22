@@ -421,6 +421,9 @@ public class ArrayStructureBB extends ArrayStructure {
     if (m.getDataType() == DataType.STRING) {
       int offset = calcOffsetSetOrder(recnum, m);
       int heapIndex = bbuffer.getInt(offset);
+      if (heap == null || heapIndex >= heap.size()) {
+        System.out.printf("HEY");
+      }
       Object ho = heap.get(heapIndex);
       if (ho instanceof String[])
         return (String[]) ho;

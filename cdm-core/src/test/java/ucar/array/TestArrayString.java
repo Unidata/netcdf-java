@@ -92,7 +92,7 @@ public class TestArrayString {
   @Test
   public void testMisc() {
     int[] shape1 = new int[] {1, 2, 3};
-    Array<String> array = Arrays.factory(ArrayType.STRING, shape1);
+    Array<String> array = Arrays.factoryFill(ArrayType.STRING, shape1, null);
     Index index = array.getIndex();
     assertThat(array.get(index.set(0, 1, 2))).isNull();
   }
