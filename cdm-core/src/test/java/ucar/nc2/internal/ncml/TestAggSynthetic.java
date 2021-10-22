@@ -26,6 +26,8 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.unidata.util.test.Assert2;
 
+import static com.google.common.truth.Truth.assertThat;
+
 /** Test netcdf dataset in the JUnit framework. */
 public class TestAggSynthetic {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -413,7 +415,7 @@ public class TestAggSynthetic {
     Variable v = ncfile.findVariable(name);
 
     Array data = v.read(origin, shape);
-    assert data.getRank() == 3;
+    assertThat(data.getRank()).isEqualTo(3);
     assert data.getSize() == shape[0] * shape[1] * shape[2];
     assert data.getShape()[0] == shape[0] : data.getShape()[0] + " " + shape[0];
     assert data.getShape()[1] == shape[1];

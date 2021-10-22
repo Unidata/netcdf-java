@@ -178,9 +178,7 @@ public class Arrays {
    * @return composite Array, formed by copying the dataArrays, must be of type dataType.
    */
   public static Array<?> combine(ArrayType dataType, int[] shape, List<Array<?>> dataArrays) {
-    if (dataArrays.size() == 1) {
-      return dataArrays.get(0);
-    }
+    // must always do the copy, because it might be a view
     Object dataArray = combine_(dataType, shape, dataArrays);
     if (dataArray instanceof Array) {
       return (Array<?>) dataArray;
