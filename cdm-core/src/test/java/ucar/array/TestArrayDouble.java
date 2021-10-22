@@ -65,7 +65,7 @@ public class TestArrayDouble {
     Array<Double> array2 = Arrays.factory(ArrayType.DOUBLE, shape1, new double[] {7, 8, 9, 10, 11, 12});
 
     int[] shape = new int[] {2, 2, 3};
-    Array<Double> array = (Array<Double>) Arrays.factoryCopy(ArrayType.DOUBLE, shape, ImmutableList.of(array1, array2));
+    Array<Double> array = (Array<Double>) Arrays.combine(ArrayType.DOUBLE, shape, ImmutableList.of(array1, array2));
 
     assertThat(array.get(0, 0, 0)).isEqualTo(1);
     assertThat(array.get(0, 0, 1)).isEqualTo(2);

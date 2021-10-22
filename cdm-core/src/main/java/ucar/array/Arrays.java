@@ -177,18 +177,18 @@ public class Arrays {
    * @param dataArrays the composite data.
    * @return composite Array, formed by copying the dataArrays, must be of type dataType.
    */
-  public static Array<?> factoryCopy(ArrayType dataType, int[] shape, List<Array<?>> dataArrays) {
+  public static Array<?> combine(ArrayType dataType, int[] shape, List<Array<?>> dataArrays) {
     if (dataArrays.size() == 1) {
-      return factory(dataType, shape, dataArrays.get(0).storage());
+      return dataArrays.get(0);
     }
-    Object dataArray = combine(dataType, shape, dataArrays);
+    Object dataArray = combine_(dataType, shape, dataArrays);
     if (dataArray instanceof Array) {
       return (Array<?>) dataArray;
     }
     return factory(dataType, shape, dataArray);
   }
 
-  private static Object combine(ArrayType dataType, int[] shape, List<Array<?>> dataArrays) {
+  private static Object combine_(ArrayType dataType, int[] shape, List<Array<?>> dataArrays) {
     long size = Arrays.computeSize(shape);
     if (size > Integer.MAX_VALUE) {
       throw new OutOfMemoryError();

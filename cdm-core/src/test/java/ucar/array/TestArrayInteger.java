@@ -67,7 +67,7 @@ public class TestArrayInteger {
     Array<Integer> array2 = Arrays.factory(ArrayType.INT, shape1, new int[] {7, 8, 9, 10, 11, 12});
 
     int[] shape = new int[] {2, 2, 3};
-    Array<Integer> array = (Array<Integer>) Arrays.factoryCopy(ArrayType.INT, shape, ImmutableList.of(array1, array2));
+    Array<Integer> array = (Array<Integer>) Arrays.combine(ArrayType.INT, shape, ImmutableList.of(array1, array2));
 
     assertThat(array.get(0, 0, 0)).isEqualTo(1);
     assertThat(array.get(0, 0, 1)).isEqualTo(2);
