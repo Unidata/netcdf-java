@@ -418,7 +418,7 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
           return null;
       }
 
-      return Arrays.factoryCopy(dtype, section.getShape(), dataArrays);
+      return Arrays.combine(dtype, section.getShape(), dataArrays);
     }
 
     protected void putCachedData(String id, Array<?> data) {
@@ -599,7 +599,7 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
           dataArrays.add(data);
         }
         int[] shape = data.getSize() == 1 ? new int[] {dset.ncoord} : new int[] {dset.ncoord, (int) data.getSize()};
-        Array<?> allData = Arrays.factoryCopy(dtype, shape, dataArrays);
+        Array<?> allData = Arrays.combine(dtype, shape, dataArrays);
         putCachedData(dset.getId(), allData);
         data = allData;
       }
@@ -703,7 +703,8 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
 
     ucar.array.Section oldSection = ArraysConvert.convertSection(section);
     try {
-      return ArraysConvert.convertFromArray(proxyReadArray(client, oldSection, cancelTask));
+      Array<?> arrayData = proxyReadArray(client, oldSection, cancelTask);
+      return ArraysConvert.convertFromArray(arrayData);
     } catch (ucar.array.InvalidRangeException e) {
       throw new ucar.ma2.InvalidRangeException(e.getMessage());
     }
@@ -771,7 +772,7 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
       arrayData.add(varData);
     }
 
-    Array<?> sectionData = Arrays.factoryCopy(dtype, section.getShape(), arrayData);
+    Array<?> sectionData = Arrays.combine(dtype, section.getShape(), arrayData);
     return sectionData;
   }
 
@@ -822,7 +823,7 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
             dataArrays.set(r.index, Aggregations.convert(r.data, dtype)); // just in case it needs to be converted
           }
         }
-        return Arrays.factoryCopy(dtype, mainv.getShape(), dataArrays);
+        return Arrays.combine(dtype, mainv.getShape(), dataArrays);
 
       } catch (InterruptedException e) {
         Thread.currentThread().interrupt();
@@ -839,6 +840,6 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
       dataArrays.add(Aggregations.convert(varData, dtype)); // just in case it need to be converted
     }
     // ArrayType dataType, int[] shape, List<Array<T>> dataArrays
-    return Arrays.factoryCopy(dtype, mainv.getShape(), dataArrays);
+    return Arrays.combine(dtype, mainv.getShape(), dataArrays);
   }
 }

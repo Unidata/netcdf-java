@@ -67,7 +67,7 @@ public class TestArrayLong {
     Array<Long> array2 = Arrays.factory(ArrayType.LONG, shape1, new long[] {7, 8, 9, 10, 11, 12});
 
     int[] shape = new int[] {2, 2, 3};
-    Array<Long> array = (Array<Long>) Arrays.factoryCopy(ArrayType.LONG, shape, ImmutableList.of(array1, array2));
+    Array<Long> array = (Array<Long>) Arrays.combine(ArrayType.LONG, shape, ImmutableList.of(array1, array2));
 
     assertThat(array.get(0, 0, 0)).isEqualTo(1);
     assertThat(array.get(0, 0, 1)).isEqualTo(2);

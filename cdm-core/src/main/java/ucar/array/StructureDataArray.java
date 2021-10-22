@@ -186,7 +186,7 @@ public final class StructureDataArray extends Array<StructureData> {
     for (StructureData sdata : this) {
       memberData.add(sdata.getMemberData(m));
     }
-    return Arrays.factoryCopy(dataType, rshape, memberData);
+    return Arrays.combine(dataType, rshape, memberData);
   }
 
 }
