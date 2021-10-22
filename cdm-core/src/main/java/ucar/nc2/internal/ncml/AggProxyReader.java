@@ -3,9 +3,9 @@ package ucar.nc2.internal.ncml;
 
 import java.io.IOException;
 import javax.annotation.concurrent.Immutable;
-import ucar.ma2.Array;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Section;
+import ucar.array.Array;
+import ucar.array.InvalidRangeException;
+import ucar.array.Section;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.ProxyReader;
@@ -23,21 +23,21 @@ public class AggProxyReader implements ProxyReader {
   }
 
   @Override
-  public Array reallyRead(Variable mainV, CancelTask cancelTask) throws IOException {
+  public Array<?> proxyReadArray(Variable mainV, CancelTask cancelTask) throws IOException {
     NetcdfFile ncfile = null;
     try {
       ncfile = dataset.acquireFile(cancelTask);
       if ((cancelTask != null) && cancelTask.isCancel())
         return null;
       Variable proxyV = findVariable(ncfile, mainV);
-      return proxyV.read();
+      return proxyV.readArray();
     } finally {
       dataset.close(ncfile);
     }
   }
 
   @Override
-  public Array reallyRead(Variable mainV, Section section, CancelTask cancelTask)
+  public Array<?> proxyReadArray(Variable mainV, Section section, CancelTask cancelTask)
       throws IOException, InvalidRangeException {
     NetcdfFile ncfile = null;
     try {
@@ -45,13 +45,12 @@ public class AggProxyReader implements ProxyReader {
       Variable proxyV = findVariable(ncfile, mainV);
       if ((cancelTask != null) && cancelTask.isCancel())
         return null;
-      return proxyV.read(section);
+      return proxyV.readArray(section);
 
     } finally {
       dataset.close(ncfile);
     }
   }
-
 
   protected Variable findVariable(NetcdfFile ncfile, Variable mainV) {
     Variable v = ncfile.findVariable(NetcdfFiles.makeFullName(mainV));

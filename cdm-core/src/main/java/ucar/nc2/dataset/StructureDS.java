@@ -37,25 +37,6 @@ public class StructureDS extends ucar.nc2.Structure implements StructureEnhanced
   }
 
   @Override
-  @Deprecated
-  public ucar.ma2.Array reallyRead(Variable client, CancelTask cancelTask) throws IOException {
-    ucar.ma2.Array result;
-
-    if (hasCachedData())
-      result = super.reallyRead(client, cancelTask);
-    else if (orgVar != null)
-      result = orgVar.read();
-    else {
-      throw new IllegalStateException("StructureDS has no way to get data");
-      // Object data = smProxy.getFillValue(getDataType());
-      // return Array.factoryConstant(dataType.getPrimitiveClassType(), getShape(), data);
-    }
-
-    StructureDataEnhancer enhancer = new StructureDataEnhancer(this);
-    return enhancer.enhance((ucar.ma2.ArrayStructure) result, null);
-  }
-
-  @Override
   public ucar.array.Array<?> proxyReadArray(Variable client, CancelTask cancelTask) throws IOException {
     ucar.array.Array<?> result;
 
@@ -71,30 +52,6 @@ public class StructureDS extends ucar.nc2.Structure implements StructureEnhanced
 
     StructureDataArrayEnhancer enhancer = new StructureDataArrayEnhancer(this, (ucar.array.StructureDataArray) result);
     return enhancer.enhance();
-  }
-
-  @Override
-  @Deprecated
-  public ucar.ma2.Array reallyRead(Variable client, ucar.ma2.Section section, CancelTask cancelTask)
-      throws IOException, ucar.ma2.InvalidRangeException {
-    if (section.computeSize() == getSize()) {
-      return _read();
-    }
-
-    ucar.ma2.Array result;
-    if (hasCachedData()) {
-      result = super.reallyRead(client, section, cancelTask);
-    } else if (orgVar != null) {
-      result = orgVar.read(section);
-    } else {
-      throw new IllegalStateException("StructureDS has no way to get data");
-      // Object data = smProxy.getFillValue(getDataType());
-      // return Array.factoryConstant(dataType.getPrimitiveClassType(), section.getShape(), data);
-    }
-
-    // do any needed conversions (enum/scale/offset/missing/unsigned, etc)
-    StructureDataEnhancer enhancer = new StructureDataEnhancer(this);
-    return enhancer.enhance((ucar.ma2.ArrayStructure) result, section);
   }
 
   @Override

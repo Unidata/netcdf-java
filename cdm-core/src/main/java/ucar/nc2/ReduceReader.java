@@ -5,10 +5,11 @@
 package ucar.nc2;
 
 import javax.annotation.concurrent.Immutable;
-import ucar.ma2.Array;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Range;
-import ucar.ma2.Section;
+import ucar.array.Array;
+import ucar.array.Arrays;
+import ucar.array.InvalidRangeException;
+import ucar.array.Range;
+import ucar.array.Section;
 import ucar.nc2.util.CancelTask;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,7 +24,7 @@ import java.util.List;
 @Immutable
 class ReduceReader implements ProxyReader {
   private final Variable orgClient;
-  private final List<Integer> dims; // dimension index into original
+  private final List<Integer> dims; // The dimension indexes we want to reduce
 
   /**
    * Reduce 1 or more dimension of length 1
@@ -38,25 +39,26 @@ class ReduceReader implements ProxyReader {
   }
 
   @Override
-  public Array reallyRead(Variable client, CancelTask cancelTask) throws IOException {
-    Array data = orgClient._read();
-
-    for (int i = dims.size() - 1; i >= 0; i--)
-      data = data.reduce(dims.get(i)); // highest first
+  public Array<?> proxyReadArray(Variable client, CancelTask cancelTask) throws IOException {
+    Array<?> data = orgClient._read();
+    for (int i = dims.size() - 1; i >= 0; i--) {
+      data = Arrays.reduce(data, dims.get(i)); // highest first
+    }
     return data;
   }
 
   @Override
-  public Array reallyRead(Variable client, Section section, CancelTask cancelTask)
+  public Array<?> proxyReadArray(Variable client, Section section, CancelTask cancelTask)
       throws IOException, InvalidRangeException {
     Section.Builder orgSection = Section.builder().appendRanges(section.getRanges());
     for (int dim : dims) {
-      orgSection.insertRange(dim, Range.ONE); // lowest first
+      orgSection.insertRange(dim, Range.SCALAR); // lowest first
     }
 
-    Array data = orgClient._read(orgSection.build());
-    for (int i = dims.size() - 1; i >= 0; i--)
-      data = data.reduce(dims.get(i)); // highest first
+    Array<?> data = orgClient._read(orgSection.build());
+    for (int i = dims.size() - 1; i >= 0; i--) {
+      data = Arrays.reduce(data, dims.get(i)); // highest first
+    }
 
     return data;
   }

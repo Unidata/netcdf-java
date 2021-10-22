@@ -5,7 +5,10 @@
 package ucar.nc2;
 
 import javax.annotation.concurrent.Immutable;
-import ucar.ma2.*;
+
+import ucar.array.Array;
+import ucar.array.InvalidRangeException;
+import ucar.array.Section;
 import ucar.nc2.util.CancelTask;
 import java.io.IOException;
 
@@ -26,7 +29,7 @@ class SectionReader implements ProxyReader {
   }
 
   @Override
-  public Array reallyRead(Variable client, CancelTask cancelTask) throws IOException {
+  public Array proxyReadArray(Variable client, CancelTask cancelTask) throws IOException {
     try {
       return orgClient._read(orgSection);
     } catch (InvalidRangeException e) {
@@ -35,7 +38,7 @@ class SectionReader implements ProxyReader {
   }
 
   @Override
-  public Array reallyRead(Variable client, Section section, CancelTask cancelTask)
+  public Array proxyReadArray(Variable client, Section section, CancelTask cancelTask)
       throws IOException, InvalidRangeException {
     Section want = orgSection.compose(section);
     return orgClient._read(want);

@@ -372,7 +372,7 @@ public class TestVariable {
   }
 
   @Test
-  public void testSliceRowMajor() throws IOException, ucar.ma2.InvalidRangeException {
+  public void testSliceRowMajor() throws IOException, InvalidRangeException {
     Dimension x = new Dimension("x", 20);
     Dimension y = new Dimension("y", 2);
     Variable.Builder<?> var = Variable.builder().setName("x").setArrayType(ArrayType.INT)
@@ -388,7 +388,7 @@ public class TestVariable {
   }
 
   @Test
-  public void testSliceColMajor() throws IOException, ucar.ma2.InvalidRangeException {
+  public void testSliceColMajor() throws IOException, InvalidRangeException {
     Dimension x = new Dimension("x", 20);
     Dimension y = new Dimension("y", 2);
     Variable.Builder<?> var = Variable.builder().setName("x").setArrayType(ArrayType.INT)

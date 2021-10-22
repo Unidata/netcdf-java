@@ -16,7 +16,7 @@ import ucar.array.Array;
 import ucar.array.ArrayType;
 import ucar.array.Arrays;
 import ucar.array.Section;
-import ucar.ma2.InvalidRangeException; // have to port Variable.section()
+import ucar.array.InvalidRangeException; // have to port Variable.section()
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
