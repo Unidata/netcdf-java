@@ -16,11 +16,16 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 public class TestReadArrayProblem {
 
   @Test
+  public void testNc4Vlen2() throws IOException {
+    String filename = TestDir.cdmUnitTestDir + "formats/netcdf4/vlen/fpcs_1dwave_2.nc"; // srate
+    TestReadArrayCompare.compareNetcdfDataset(filename);
+  }
+
+  @Test
   public void testHdf4SpecialChunked() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "formats/hdf4/MYD29.A2009152.0000.005.2009153124331.hdf";
     TestReadArrayCompare.compareNetcdfDataset(filename);
   }
-
 
   @Test
   public void testProblem() throws IOException {

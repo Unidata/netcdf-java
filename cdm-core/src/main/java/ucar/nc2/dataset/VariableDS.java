@@ -454,12 +454,12 @@ public class VariableDS extends Variable implements VariableEnhanced {
 
     if (this.enhanceMode.contains(Enhance.ConvertUnsigned) && !dataType.isEnum()) {
       // We may need a larger data type to hold the results of the unsigned conversion.
-      this.dataType = scaleMissingUnsignedProxy.getUnsignedConversionType().getArrayType();
+      this.dataType = scaleMissingUnsignedProxy.getUnsignedConversionType();
     }
 
     if (this.enhanceMode.contains(Enhance.ApplyScaleOffset) && (dataType.isNumeric() || dataType == ArrayType.CHAR)
         && scaleMissingUnsignedProxy.hasScaleOffset()) {
-      this.dataType = scaleMissingUnsignedProxy.getScaledOffsetType().getArrayType();
+      this.dataType = scaleMissingUnsignedProxy.getScaledOffsetType();
     }
 
     // We have to complete this after the NetcdfDataset is built.

@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.google.common.truth.Truth.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.fail;
 
 /** Test successive {@link NetcdfFormatWriter} Writing and updating */
@@ -78,16 +79,6 @@ public class TestNetcdfWriteArrayAndUpdate {
     writerb.addAttribute(new Attribute("versionI", 1));
     writerb.addAttribute(new Attribute("versionS", (short) 2));
     writerb.addAttribute(new Attribute("versionB", (byte) 3));
-
-    // test some errors
-    try {
-      ucar.ma2.Array bad =
-          ucar.ma2.Array.makeObjectArray(ucar.ma2.DataType.OBJECT, ArrayList.class, new int[] {1}, null);
-      writerb.addAttribute(Attribute.fromArray("versionB", bad));
-      fail();
-    } catch (Exception e) {
-      assertThat(e.getMessage()).contains("Unimplemented ArrayType");
-    }
 
     try (NetcdfFormatWriter writer = writerb.build()) {
       // write double variable

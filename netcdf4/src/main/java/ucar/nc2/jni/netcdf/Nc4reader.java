@@ -721,7 +721,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
       for (CompoundField fld : userType.flds) {
         Variable.Builder<?> mv = s.findMemberVariable(fld.name).orElse(null);
         ArrayType useType = (fld.ctype.dt == ArrayType.CHAR) ? ArrayType.STRING : fld.ctype.dt;
-        Array<?> merged = Arrays.factoryCopy(useType, new int[] {len}, fld.data);
+        Array<?> merged = Arrays.combine(useType, new int[] {len}, fld.data);
         if (mv != null) {
           mv.addAttribute(Attribute.fromArray(attname, merged));
         } else {
@@ -731,7 +731,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
     } else {
       for (CompoundField fld : userType.flds) {
         ArrayType useType = (fld.ctype.dt == ArrayType.CHAR) ? ArrayType.STRING : fld.ctype.dt;
-        Array<?> merged = Arrays.factoryCopy(useType, new int[] {len}, fld.data);
+        Array<?> merged = Arrays.combine(useType, new int[] {len}, fld.data);
         result.add(Attribute.fromArray(attname + "." + fld.name, merged));
       }
     }

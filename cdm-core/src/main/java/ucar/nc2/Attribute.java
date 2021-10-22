@@ -79,12 +79,6 @@ public class Attribute {
     this.nelems = 1;
   }
 
-  /** @deprecated use getArrayType() */
-  @Deprecated
-  public DataType getDataType() {
-    return dataType.getDataType();
-  }
-
   /** Get the data type of the Attribute value. */
   public ArrayType getArrayType() {
     return dataType;
@@ -217,18 +211,6 @@ public class Attribute {
     return getNumericValue(index);
   }
 
-  /**
-   * Get the values as an ucar.ma2.Array.
-   * 
-   * @deprecated use getArrayValues().
-   */
-  @Deprecated
-  @Nullable
-  public ucar.ma2.Array getValues() {
-    ucar.array.Array<?> arrayValues = getArrayValues();
-    return arrayValues == null ? null : ArraysConvert.convertFromArray(arrayValues);
-  }
-
   /** Get the values as an ucar.array.Array. */
   @Nullable
   public ucar.array.Array<?> getArrayValues() {
@@ -236,9 +218,33 @@ public class Attribute {
       return Arrays.factory(ArrayType.STRING, new int[] {1}, new String[] {svalue});
     }
     if (nvalue != null) {
-      ucar.ma2.Array values = ucar.ma2.Array.factory(this.dataType.getDataType(), new int[] {1});
-      values.setObject(values.getIndex(), nvalue);
-      return ArraysConvert.convertToArray(values);
+      Object primArray = null;
+      switch (this.dataType) {
+        case BYTE:
+        case UBYTE:
+        case CHAR:
+          primArray = new byte[] {nvalue.byteValue()};
+          break;
+        case SHORT:
+        case USHORT:
+          primArray = new short[] {nvalue.shortValue()};
+          break;
+        case INT:
+        case UINT:
+          primArray = new int[] {nvalue.intValue()};
+          break;
+        case LONG:
+        case ULONG:
+          primArray = new long[] {nvalue.longValue()};
+          break;
+        case FLOAT:
+          primArray = new float[] {nvalue.floatValue()};
+          break;
+        case DOUBLE:
+          primArray = new double[] {nvalue.doubleValue()};
+          break;
+      }
+      return Arrays.factory(this.dataType, new int[] {1}, primArray);
     }
     return values;
   }
@@ -426,7 +432,7 @@ public class Attribute {
     int result = 17;
     result = 37 * result + getShortName().hashCode();
     result = 37 * result + nelems;
-    result = 37 * result + getDataType().hashCode();
+    result = 37 * result + getArrayType().hashCode();
     if (svalue != null) {
       result = 37 * result + svalue.hashCode();
     } else if (nvalue != null) {

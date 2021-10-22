@@ -13,7 +13,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
-import ucar.ma2.DataType;
+import ucar.array.ArrayType;
 import ucar.ma2.IndexIterator;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
@@ -61,7 +61,7 @@ public class TestNcmlReadOverride {
     assert v.getRank() == 1;
     assert v.getSize() == 2;
     assert v.getShape()[0] == 2;
-    assert v.getDataType() == DataType.DOUBLE;
+    assert v.getArrayType() == ArrayType.DOUBLE;
 
     assert v.isUnlimited();
     assert v.getDimension(0) == ncfile.findDimension("time");
@@ -70,7 +70,7 @@ public class TestNcmlReadOverride {
     assert null != att;
     assert !att.isArray();
     assert att.isString();
-    assert att.getDataType() == DataType.STRING;
+    assert att.getArrayType() == ArrayType.STRING;
     assert att.getStringValue().equals("days");
     assert att.getNumericValue() == null;
     assert att.getNumericValue(3) == null;
@@ -104,7 +104,7 @@ public class TestNcmlReadOverride {
     assert v.getShape()[0] == 2;
     assert v.getShape()[1] == 3;
     assert v.getShape()[2] == 4;
-    assert v.getDataType() == DataType.DOUBLE;
+    assert v.getArrayType() == ArrayType.DOUBLE;
 
     assert !v.isCoordinateVariable();
     assert v.isUnlimited();
@@ -117,7 +117,7 @@ public class TestNcmlReadOverride {
     assert null != att;
     assert !att.isArray();
     assert att.isString();
-    assert att.getDataType() == DataType.STRING;
+    assert att.getArrayType() == ArrayType.STRING;
     assert att.getStringValue().equals("degC");
     assert att.getNumericValue() == null;
     assert att.getNumericValue(3) == null;

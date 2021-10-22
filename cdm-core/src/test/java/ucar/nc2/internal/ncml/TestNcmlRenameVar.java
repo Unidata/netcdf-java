@@ -13,7 +13,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
-import ucar.ma2.DataType;
+import ucar.array.ArrayType;
 import ucar.ma2.IndexIterator;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Attribute;
@@ -50,7 +50,7 @@ public class TestNcmlRenameVar {
     assert null != att;
     assert !att.isArray();
     assert att.isString();
-    assert att.getDataType() == DataType.STRING;
+    assert att.getArrayType() == ArrayType.STRING;
     assert att.getStringValue().equals("Example Data");
     assert att.getNumericValue() == null;
     assert att.getNumericValue(3) == null;
@@ -59,7 +59,7 @@ public class TestNcmlRenameVar {
     assert null != att;
     assert att.isArray();
     assert !att.isString();
-    assert att.getDataType() == DataType.FLOAT;
+    assert att.getArrayType() == ArrayType.FLOAT;
     assert att.getStringValue() == null;
     assert att.getNumericValue().equals(1.0f);
     assert att.getNumericValue(3).equals(4.0f);
@@ -85,7 +85,7 @@ public class TestNcmlRenameVar {
     assert lat.getRank() == 1;
     assert lat.getSize() == 3;
     assert lat.getShape()[0] == 3;
-    assert lat.getDataType() == DataType.FLOAT;
+    assert lat.getArrayType() == ArrayType.FLOAT;
 
     assert !lat.isUnlimited();
     assert lat.getDimension(0) == ncfile.findDimension("lat");
@@ -94,7 +94,7 @@ public class TestNcmlRenameVar {
     assert null != att;
     assert !att.isArray();
     assert att.isString();
-    assert att.getDataType() == DataType.STRING;
+    assert att.getArrayType() == ArrayType.STRING;
     assert att.getStringValue().equals("degrees_north");
     assert att.getNumericValue() == null;
     assert att.getNumericValue(3) == null;
@@ -125,7 +125,7 @@ public class TestNcmlRenameVar {
     assert v.getShape()[0] == 4;
     assert v.getShape()[1] == 3;
     assert v.getShape()[2] == 4;
-    assert v.getDataType() == DataType.INT;
+    assert v.getArrayType() == ArrayType.INT;
 
     assert !v.isCoordinateVariable();
     assert v.isUnlimited();
@@ -138,7 +138,7 @@ public class TestNcmlRenameVar {
     assert null != att;
     assert !att.isArray();
     assert att.isString();
-    assert att.getDataType() == DataType.STRING;
+    assert att.getArrayType() == ArrayType.STRING;
     assert att.getStringValue().equals("percent");
     assert att.getNumericValue() == null;
     assert att.getNumericValue(3) == null;

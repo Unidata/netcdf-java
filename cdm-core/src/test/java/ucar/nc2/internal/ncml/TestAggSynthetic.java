@@ -14,7 +14,7 @@ import ucar.ma2.Array;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.ArrayInt;
 import ucar.ma2.ArrayObject;
-import ucar.ma2.DataType;
+import ucar.array.ArrayType;
 import ucar.ma2.Index;
 import ucar.ma2.IndexIterator;
 import ucar.ma2.InvalidRangeException;
@@ -25,6 +25,8 @@ import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.unidata.util.test.Assert2;
+
+import static com.google.common.truth.Truth.assertThat;
 
 /** Test netcdf dataset in the JUnit framework. */
 public class TestAggSynthetic {
@@ -201,7 +203,7 @@ public class TestAggSynthetic {
     assert lat.getRank() == 1;
     assert lat.getSize() == 3;
     assert lat.getShape()[0] == 3;
-    assert lat.getDataType() == DataType.FLOAT;
+    assert lat.getArrayType() == ArrayType.FLOAT;
 
     assert !lat.isUnlimited();
     assert lat.getDimension(0).equals(ncfile.findDimension("lat"));
@@ -210,7 +212,7 @@ public class TestAggSynthetic {
     assert null != att;
     assert !att.isArray();
     assert att.isString();
-    assert att.getDataType() == DataType.STRING;
+    assert att.getArrayType() == ArrayType.STRING;
     assert att.getStringValue().equals("degrees_north");
     assert att.getNumericValue() == null;
     assert att.getNumericValue(3) == null;
@@ -233,7 +235,7 @@ public class TestAggSynthetic {
     assert time.getShortName().equals("time");
     assert time.getRank() == 1 : time.getRank();
     assert time.getShape()[0] == 3;
-    assert time.getDataType() == DataType.INT;
+    assert time.getArrayType() == ArrayType.INT;
 
     assert time.getDimension(0) == ncfile.findDimension("time");
 
@@ -253,7 +255,7 @@ public class TestAggSynthetic {
     assert time.getShortName().equals("time");
     assert time.getRank() == 1 : time.getRank();
     assert time.getShape()[0] == 3;
-    assert time.getDataType() == DataType.INT;
+    assert time.getArrayType() == ArrayType.INT;
 
     assert time.getDimension(0) == ncfile.findDimension("time");
 
@@ -272,7 +274,7 @@ public class TestAggSynthetic {
     assert time.getShortName().equals("time");
     assert time.getRank() == 1 : time.getRank();
     assert time.getShape()[0] == 3;
-    assert time.getDataType() == DataType.DOUBLE : time.getDataType();
+    assert time.getArrayType() == ArrayType.DOUBLE : time.getArrayType();
 
     assert time.getDimension(0) == ncfile.findDimension("time");
 
@@ -292,7 +294,7 @@ public class TestAggSynthetic {
     assert time.getShortName().equals("time");
     assert time.getRank() == 1 : time.getRank();
     assert time.getShape()[0] == 3;
-    assert time.getDataType() == DataType.INT : time.getDataType();
+    assert time.getArrayType() == ArrayType.INT : time.getArrayType();
 
     assert time.getDimension(0) == ncfile.findDimension("time");
 
@@ -313,7 +315,7 @@ public class TestAggSynthetic {
     assert time.getShortName().equals("time");
     assert time.getRank() == 1 : time.getRank();
     assert time.getShape()[0] == 3;
-    assert time.getDataType() == DataType.INT;
+    assert time.getArrayType() == ArrayType.INT;
 
     assert time.getDimension(0) == ncfile.findDimension("time");
 
@@ -332,7 +334,7 @@ public class TestAggSynthetic {
     assert time.getShortName().equals("time");
     assert time.getRank() == 1 : time.getRank();
     assert time.getShape()[0] == 3;
-    assert time.getDataType() == DataType.STRING : time.getDataType();
+    assert time.getArrayType() == ArrayType.STRING : time.getArrayType();
 
     assert time.getDimension(0) == ncfile.findDimension("time");
 
@@ -354,7 +356,7 @@ public class TestAggSynthetic {
     assert time.getShortName().equals("time");
     assert time.getRank() == 1 : time.getRank();
     assert time.getShape()[0] == 3;
-    assert time.getDataType() == DataType.STRING : time.getDataType();
+    assert time.getArrayType() == ArrayType.STRING : time.getArrayType();
 
     assert time.getDimension(0) == ncfile.findDimension("time");
 
@@ -380,7 +382,7 @@ public class TestAggSynthetic {
     assert v.getShape()[0] == 3;
     assert v.getShape()[1] == 3;
     assert v.getShape()[2] == 4;
-    assert v.getDataType() == DataType.DOUBLE;
+    assert v.getArrayType() == ArrayType.DOUBLE;
 
     assert !v.isCoordinateVariable();
 
@@ -413,7 +415,7 @@ public class TestAggSynthetic {
     Variable v = ncfile.findVariable(name);
 
     Array data = v.read(origin, shape);
-    assert data.getRank() == 3;
+    assertThat(data.getRank()).isEqualTo(3);
     assert data.getSize() == shape[0] * shape[1] * shape[2];
     assert data.getShape()[0] == shape[0] : data.getShape()[0] + " " + shape[0];
     assert data.getShape()[1] == shape[1];

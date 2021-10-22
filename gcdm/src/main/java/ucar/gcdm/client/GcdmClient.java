@@ -75,7 +75,7 @@ public class GcdmClient {
         DataResponse response = responses.next();
         results.add(GcdmConverter.decodeData(response.getData()));
       }
-      return Arrays.factoryCopy(dataType, section.getShape(), results);
+      return Arrays.combine(dataType, section.getShape(), results);
     } catch (Throwable e) {
       logger.warn("getData failed: " + location, e);
       e.printStackTrace();

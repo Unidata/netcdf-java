@@ -177,18 +177,16 @@ public class Arrays {
    * @param dataArrays the composite data.
    * @return composite Array, formed by copying the dataArrays, must be of type dataType.
    */
-  public static Array<?> factoryCopy(ArrayType dataType, int[] shape, List<Array<?>> dataArrays) {
-    if (dataArrays.size() == 1) {
-      return factory(dataType, shape, dataArrays.get(0).storage());
-    }
-    Object dataArray = combine(dataType, shape, dataArrays);
+  public static Array<?> combine(ArrayType dataType, int[] shape, List<Array<?>> dataArrays) {
+    // must always do the copy, because it might be a view
+    Object dataArray = combine_(dataType, shape, dataArrays);
     if (dataArray instanceof Array) {
       return (Array<?>) dataArray;
     }
     return factory(dataType, shape, dataArray);
   }
 
-  private static Object combine(ArrayType dataType, int[] shape, List<Array<?>> dataArrays) {
+  private static Object combine_(ArrayType dataType, int[] shape, List<Array<?>> dataArrays) {
     long size = Arrays.computeSize(shape);
     if (size > Integer.MAX_VALUE) {
       throw new OutOfMemoryError();
@@ -622,6 +620,7 @@ public class Arrays {
 
     Object pvals;
     switch (type) {
+      case UBYTE:
       case BYTE: {
         byte[] bvals = new byte[npts];
         for (int i = 0; i < npts; i++) {
@@ -646,6 +645,7 @@ public class Arrays {
         pvals = fvals;
         break;
       }
+      case UINT:
       case INT: {
         int[] ivals = new int[npts];
         for (int i = 0; i < npts; i++) {
@@ -654,6 +654,7 @@ public class Arrays {
         pvals = ivals;
         break;
       }
+      case USHORT:
       case SHORT: {
         short[] svals = new short[npts];
         for (int i = 0; i < npts; i++) {
@@ -662,6 +663,7 @@ public class Arrays {
         pvals = svals;
         break;
       }
+      case ULONG:
       case LONG: {
         long[] lvals = new long[npts];
         for (int i = 0; i < npts; i++) {

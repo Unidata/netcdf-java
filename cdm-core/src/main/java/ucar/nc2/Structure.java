@@ -428,7 +428,7 @@ public class Structure extends Variable {
       att.writeCDL(buf, strict, getShortName());
       buf.format(";");
       if (!strict && (att.getArrayType() != ArrayType.STRING))
-        buf.format(" // %s", att.getDataType());
+        buf.format(" // %s", att.getArrayType());
       buf.format("%n");
     }
     buf.format("%n");
