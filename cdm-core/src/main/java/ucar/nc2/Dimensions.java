@@ -45,33 +45,6 @@ public class Dimensions {
     }
   }
 
-  /**
-   * Make a ucar.ma2.Section.Builder from an ordered set of Dimension objects.
-   * 
-   * @deprecated use makeArraySectionFromDimensions
-   */
-  @Deprecated
-  public static ucar.ma2.Section.Builder makeSectionFromDimensions(Iterable<Dimension> dimensions) {
-    try {
-      ucar.ma2.Section.Builder builder = ucar.ma2.Section.builder();
-      for (Dimension d : dimensions) {
-        int len = d.getLength();
-        if (len > 0)
-          builder.appendRange(new ucar.ma2.Range(d.getShortName(), 0, len - 1));
-        else if (len == 0)
-          builder.appendRange(ucar.ma2.Range.EMPTY); // LOOK empty not named
-        else {
-          assert d.isVariableLength();
-          builder.appendRange(ucar.ma2.Range.VLEN); // LOOK vlen not named
-        }
-      }
-      return builder;
-
-    } catch (ucar.ma2.InvalidRangeException e) {
-      throw new IllegalStateException(e.getMessage());
-    }
-  }
-
   /** Get the total number of elements the dimensions represent. */
   public static long getSize(Iterable<Dimension> dimensions) {
     long size = 1;

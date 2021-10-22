@@ -12,23 +12,22 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutionException;
 
 import ucar.array.ArrayType;
-import ucar.ma2.ArraySequence;
-import ucar.ma2.ArrayStructure;
-import ucar.ma2.DataType;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.StructureData;
-import ucar.ma2.StructureDataIterator;
-import ucar.ma2.StructureMembers;
+import ucar.array.InvalidRangeException;
+import ucar.array.Range;
+import ucar.array.Section;
+import ucar.array.StructureData;
+import ucar.array.StructureDataArray;
+import ucar.array.StructureMembers;
+import ucar.nc2.Sequence;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.calendar.CalendarDateFormatter;
 import ucar.nc2.calendar.CalendarPeriod;
-import ucar.nc2.write.Ncdump;
+import ucar.nc2.write.NcdumpArray;
 import ucar.ui.table.*;
 import ucar.ui.widget.*;
 import ucar.ui.widget.PopupMenu;
-import ucar.nc2.util.Indent;
 import ucar.util.prefs.PreferencesExt;
 import javax.swing.*;
 import javax.swing.event.EventListenerList;
@@ -132,28 +131,15 @@ public class StructureTable extends JPanel {
 
   public void setStructure(Structure s) {
     if (s.getArrayType() == ArrayType.SEQUENCE)
-      dataModel = new SequenceModel(s, true);
+      dataModel = new SequenceModel((Sequence) s, true);
     else
       dataModel = new StructureModel(s);
 
     initTable(dataModel);
   }
 
-  /**
-   * Set the data as a collection of StructureData.
-   */
-  public void setStructureData(List<StructureData> structureData) {
-    dataModel = new StructureDataModel(structureData);
-    initTable(dataModel);
-  }
-
-  public void setStructureData(ArrayStructure as) {
+  public void setStructureData(StructureDataArray as) {
     dataModel = new ArrayStructureModel(as);
-    initTable(dataModel);
-  }
-
-  public void setSequenceData(Structure s, ArraySequence seq) {
-    dataModel = new ArraySequenceModel(s, seq);
     initTable(dataModel);
   }
 
@@ -262,20 +248,18 @@ public class StructureTable extends JPanel {
       StructureData sd = getSelectedStructureData();
       if (sd == null)
         return;
-      StructureMembers.Member m = sd.findMember(s.getShortName());
-      if (m == null)
+      StructureMembers.Member m = sd.getStructureMembers().findMember(s.getShortName());
+      if (m == null) {
         throw new IllegalStateException("cant find member = " + s.getShortName());
+      }
 
-      if (m.getDataType() == DataType.STRUCTURE) {
-        ArrayStructure as = sd.getArrayStructure(m);
+      if (m.getArrayType() == ArrayType.STRUCTURE || m.getArrayType() == ArrayType.SEQUENCE) {
+        StructureDataArray as = (StructureDataArray) sd.getMemberData(m);
         dataTable.setStructureData(as);
 
-      } else if (m.getDataType() == DataType.SEQUENCE) {
-        ArraySequence seq = sd.getArraySequence(m);
-        dataTable.setSequenceData(s, seq);
-
-      } else
-        throw new IllegalStateException("data type = " + m.getDataType());
+      } else {
+        throw new IllegalStateException("data type = " + m.getArrayType());
+      }
 
       dataWindow.show();
     }
@@ -318,19 +302,18 @@ public class StructureTable extends JPanel {
     if (sd == null)
       return;
 
-    dumpTA.setText(Ncdump.printStructureData(sd));
+    dumpTA.setText(NcdumpArray.printStructureData(sd));
     dumpWindow.setVisible(true);
   }
 
   private void showDataInternal() {
     StructureData sd = getSelectedStructureData();
-    if (sd == null)
+    if (sd == null) {
       return;
+    }
 
     Formatter f = new Formatter();
-    sd.showInternalMembers(f, new Indent(2));
-    f.format("%n");
-    sd.showInternal(f, new Indent(2));
+    f.format("StructureMembers = %s%n", sd.getStructureMembers());
     dumpTA.setText(f.toString());
     dumpWindow.setVisible(true);
   }
@@ -429,15 +412,6 @@ public class StructureTable extends JPanel {
     }
 
     public Object getValueAt(int row, int column) {
-      /*
-       * if (column == 0) {
-       * try {
-       * return Long.toHexString( getStructureData(row).hashCode());
-       * } catch (Exception e) {
-       * return "ERROR";
-       * }
-       * }
-       */
       if (wantDate && (column == 0))
         return getObsDate(row);
       if (wantDate && (column == 1))
@@ -445,7 +419,7 @@ public class StructureTable extends JPanel {
 
       StructureData sd = getStructureDataHash(row);
       String colName = getColumnName(column);
-      return sd.getArray(colName);
+      return sd.getMemberData(colName);
     }
 
     String enumLookup(StructureMembers.Member m, Number val) {
@@ -462,10 +436,11 @@ public class StructureTable extends JPanel {
 
     StructureModel(Structure s) {
       this.struct = s;
-      this.members = s.makeStructureMembers();
+      this.members = s.makeStructureMembersBuilder().build();
       for (Variable v : s.getVariables()) {
-        if (v instanceof Structure)
+        if (v instanceof Structure) {
           subtables.add((Structure) v);
+        }
       }
     }
 
@@ -484,7 +459,9 @@ public class StructureTable extends JPanel {
     }
 
     public StructureData getStructureData(int row) throws InvalidRangeException, IOException {
-      return struct.readStructure(row);
+      Section section = Section.builder().appendRange(Range.make(row, row)).build();
+      StructureDataArray sda = (StructureDataArray) struct.readArray(section);
+      return sda.get(0);
     }
 
     public void clear() {
@@ -503,19 +480,13 @@ public class StructureTable extends JPanel {
   private static class SequenceModel extends StructureModel {
     protected List<StructureData> sdataList;
 
-    SequenceModel(Structure seq, boolean readData) {
+    SequenceModel(Sequence seq, boolean readData) {
       super(seq);
 
       if (readData) {
         sdataList = new ArrayList<>();
-        try {
-          try (StructureDataIterator iter = seq.getStructureIterator()) {
-            while (iter.hasNext())
-              sdataList.add(iter.next());
-          }
-
-        } catch (IOException e) {
-          e.printStackTrace();
+        for (StructureData sdata : seq) {
+          sdataList.add(sdata);
         }
       }
     }
@@ -539,78 +510,21 @@ public class StructureTable extends JPanel {
     // LOOK does this have to override ?
     public Object getValueAt(int row, int column) {
       StructureData sd = sdataList.get(row);
-      return sd.getScalarObject(sd.getStructureMembers().getMember(column));
+      return sd.getMemberData(sd.getStructureMembers().getMember(column));
     }
 
     public void clear() {
       sdataList = new ArrayList<>();
       fireTableDataChanged();
     }
-  }
-
-  private static class ArraySequenceModel extends SequenceModel {
-
-    ArraySequenceModel(Structure s, ArraySequence seq) {
-      super(s, false);
-
-      this.members = seq.getStructureMembers();
-
-      sdataList = new ArrayList<>();
-      try {
-        try (StructureDataIterator iter = seq.getStructureDataIterator()) {
-          while (iter.hasNext())
-            sdataList.add(iter.next()); // LOOK lame -read at all once
-        }
-
-      } catch (IOException e) {
-        JOptionPane.showMessageDialog(null, "ERROR: " + e.getMessage());
-        e.printStackTrace();
-      }
-    }
-  }
-
-  ////////////////////////////////////////////////////////////////////////
-
-  private static class StructureDataModel extends StructureTableModel {
-    private List<StructureData> structureData;
-
-    StructureDataModel(List<StructureData> structureData) {
-      this.structureData = structureData;
-      if (!structureData.isEmpty()) {
-        StructureData sd = structureData.get(0);
-        this.members = sd.getStructureMembers();
-      }
-    }
-
-    public CalendarDate getObsDate(int row) {
-      return null;
-    }
-
-    public CalendarDate getNomDate(int row) {
-      return null;
-    }
-
-    public int getRowCount() {
-      return structureData.size();
-    }
-
-    public StructureData getStructureData(int row) throws InvalidRangeException, IOException {
-      return structureData.get(row);
-    }
-
-    public void clear() {
-      structureData = new ArrayList<>(); // empty list
-      fireTableDataChanged();
-    }
-
   }
 
   ////////////////////////////////////////////////////////////////////////
 
   private static class ArrayStructureModel extends StructureTableModel {
-    private ArrayStructure as;
+    private StructureDataArray as;
 
-    ArrayStructureModel(ArrayStructure as) {
+    ArrayStructureModel(StructureDataArray as) {
       this.as = as;
       this.members = as.getStructureMembers();
     }
@@ -628,7 +542,7 @@ public class StructureTable extends JPanel {
     }
 
     public StructureData getStructureData(int row) throws InvalidRangeException, IOException {
-      return as.getStructureData(row);
+      return as.get(row);
     }
 
     public void clear() {
