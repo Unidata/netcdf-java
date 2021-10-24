@@ -252,13 +252,7 @@ public class NetcdfFormatWriter implements Closeable {
   // TODO does this work?
   public int appendStructureData(Structure s, ucar.array.StructureData sdata)
       throws IOException, InvalidRangeException {
-    ucar.ma2.StructureMembers membersMa2 = s.makeStructureMembers(); // ??
-    ucar.ma2.StructureData oldStructure = ArraysConvert.convertStructureData(membersMa2, sdata);
-    try {
-      return appendStructureData(s, oldStructure);
-    } catch (ucar.ma2.InvalidRangeException e) {
-      throw new InvalidRangeException(e);
-    }
+    return spiw.appendStructureData(s, sdata);
   }
 
   ////////////////////////////////////////////
@@ -368,15 +362,6 @@ public class NetcdfFormatWriter implements Closeable {
     System.arraycopy(origin, 0, corigin, 0, rank - 1);
 
     write(v, corigin, cvalues);
-  }
-
-  /**
-   * @deprecated use {@link NetcdfFormatWriter#appendStructureData(Structure, ucar.array.StructureData)}
-   */
-  @Deprecated
-  public int appendStructureData(Structure s, ucar.ma2.StructureData sdata)
-      throws IOException, ucar.ma2.InvalidRangeException {
-    return spiw.appendStructureData(s, sdata);
   }
 
   /**

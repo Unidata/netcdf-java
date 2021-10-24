@@ -2,7 +2,6 @@
  * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-
 package ucar.ui.grib;
 
 import com.google.common.collect.ImmutableList;
@@ -13,8 +12,9 @@ import thredds.inventory.CollectionAbstract;
 import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
-import ucar.ma2.Array;
-import ucar.ma2.DataType;
+import ucar.array.Array;
+import ucar.array.Arrays;
+import ucar.array.ArrayType;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.grib.collection.GribCollectionImmutable;
@@ -22,7 +22,7 @@ import ucar.nc2.grib.coord.TimeCoordIntvDateValue;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.nc2.calendar.CalendarDate;
-import ucar.nc2.write.Ncdump;
+import ucar.nc2.write.NcdumpArray;
 import ucar.ui.widget.*;
 import ucar.ui.widget.PopupMenu;
 import ucar.nc2.util.Misc;
@@ -37,8 +37,17 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.beans.SimpleBeanInfo;
 import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Formatter;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * A widget to show collections of GRIB2 files.
@@ -901,8 +910,8 @@ public class Grib2CollectionPanel extends JPanel {
     Grib2Gds gds = bean1.gr.getGDS();
 
     int[] shape = {gds.getNy(), gds.getNx()};
-    Array arr = Array.factory(DataType.FLOAT, shape, data);
-    f.format("%s", Ncdump.printArray(arr));
+    Array arr = Arrays.factory(ArrayType.FLOAT, shape, data);
+    f.format("%s", NcdumpArray.printArray(arr));
   }
 
   /////////////////////////////////////////////////////////
@@ -972,7 +981,7 @@ public class Grib2CollectionPanel extends JPanel {
       byte[] bytes = gds.getRawBytes();
       int count = 1;
       for (byte b : bytes) {
-        short s = DataType.unsignedByteToShort(b);
+        short s = ArrayType.unsignedByteToShort(b);
         f.format(" %d : %d%n", count++, s);
       }
     }
@@ -1214,7 +1223,7 @@ public class Grib2CollectionPanel extends JPanel {
       byte[] bytes = gr.getPDSsection().getRawBytes();
       int count = 1;
       for (byte b : bytes) {
-        short s = DataType.unsignedByteToShort(b);
+        short s = ArrayType.unsignedByteToShort(b);
         f.format(" %d : %d%n", count++, s);
       }
     }

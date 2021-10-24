@@ -531,20 +531,6 @@ public class NetcdfFile implements FileCacheable, Closeable {
   }
 
   /**
-   * Do not call this directly, use Variable.read() !!
-   * Ranges must be filled (no nulls)
-   * 
-   * @deprecated use readArrayData()
-   */
-  @Deprecated
-  protected Array readData(Variable v, ucar.ma2.Section ranges) throws IOException, ucar.ma2.InvalidRangeException {
-    if (iosp == null) {
-      throw new IOException("iosp is null, perhaps file has been closed. Trying to read variable " + v.getFullName());
-    }
-    return iosp.readData(v, ranges);
-  }
-
-  /**
    * Do not call this directly, use Variable.readArray() !!
    * Ranges must be filled (no nulls)
    */
