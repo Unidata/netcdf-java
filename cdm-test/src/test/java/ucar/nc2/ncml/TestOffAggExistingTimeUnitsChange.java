@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-
 package ucar.nc2.ncml;
 
 import static com.google.common.truth.Truth.assertThat;
@@ -23,7 +22,6 @@ import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.calendar.CalendarDateUnit;
-import ucar.nc2.write.Ncdump;
 import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
@@ -58,7 +56,6 @@ public class TestOffAggExistingTimeUnitsChange extends TestCase {
 
       int count = 0;
       Array data = v.read();
-      logger.debug(Ncdump.printArray(data, "time", null));
 
       while (data.hasNext()) {
         Assert2.assertNearlyEquals(data.nextInt(), (count + 1) * 3);
@@ -88,7 +85,6 @@ public class TestOffAggExistingTimeUnitsChange extends TestCase {
 
       int count = 0;
       Array data = v.read();
-      logger.debug(Ncdump.printArray(data, "time", null));
 
       while (data.hasNext()) {
         assert data.nextInt() == count * 3;

@@ -12,7 +12,7 @@ import ucar.nc2.NetcdfFiles;
 import ucar.nc2.util.Misc;
 import java.io.*;
 import java.lang.invoke.MethodHandles;
-import ucar.nc2.write.Ncdump;
+import ucar.nc2.write.NcdumpArray;
 import ucar.unidata.util.test.TestDir;
 
 /**
@@ -45,7 +45,7 @@ public class TestCDL {
     NetcdfFile ncfile = NetcdfFiles.open(filename, null);
     System.out.println("File " + filename);
 
-    String njCDL = Ncdump.builder(ncfile).setStrict(true).build().print();
+    String njCDL = NcdumpArray.builder(ncfile).setStrict(true).build().print();
     if (show)
       System.out.println("============================================");
     if (show)

@@ -12,7 +12,6 @@ import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.internal.util.CompareNetcdf2;
-import ucar.nc2.write.Ncdump;
 import ucar.nc2.write.NcdumpArray;
 import ucar.nc2.write.NetcdfFormatWriter;
 import ucar.unidata.util.test.TestDir;
