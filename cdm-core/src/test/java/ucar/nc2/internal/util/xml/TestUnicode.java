@@ -208,42 +208,4 @@ public class TestUnicode {
     return sbuff.toString();
   }
 
-  ////////////////////////////////////////////////////////
-
-  @Test
-  public void writeNetCDFstring() throws IOException, InvalidRangeException {
-    String helloGreek = makeString(helloGreekCode, true);
-    helloGreek = Normalizer.normalize(helloGreek, Normalizer.Form.NFC);
-    System.out.println("normalized= " + showString(helloGreek));
-
-    String filename = tempFolder.newFile().getPath();
-    NetcdfFormatWriter.Builder<?> writerb = NetcdfFormatWriter.createNewNetcdf3(filename);
-    writerb.addDimension(new Dimension(helloGreek, helloGreekLen));
-    writerb.addVariable(helloGreek, ArrayType.STRING, helloGreek).addAttribute(new Attribute("units", helloGreek));
-
-    try (NetcdfFormatWriter writer = writerb.build()) {
-      Variable v = writer.findVariable(helloGreek);
-      Array<String> data = Arrays.factory(ArrayType.STRING, new int[] {1}, new String[] {helloGreek});
-      writer.write(v, data.getIndex(), data);
-    }
-
-    try (NetcdfFile ncout = NetcdfFiles.open(filename)) {
-      Variable vr = ncout.findVariable(helloGreek);
-      assertThat(vr).isNotNull();
-      assertThat(vr.getShortName()).isEqualTo(helloGreek);
-
-      Array<?> vrdata = vr.readArray();
-      assertThat(vrdata.getArrayType()).isEqualTo(ArrayType.CHAR); // writing to netcdf3 turns it into a char
-      assertThat(vrdata.getShape()).isEqualTo(new int[] {helloGreekLen});
-      Array<String> sdata = Arrays.makeStringsFromChar((Array<Byte>) vrdata);
-      String strData = sdata.getScalar();
-      assertThat(strData).isEqualTo(helloGreek);
-
-      Attribute att = vr.findAttribute("units");
-      assertThat(att).isNotNull();
-      assertThat(att.isString()).isTrue();
-      assertThat(att.getStringValue()).isEqualTo(helloGreek);
-    }
-  }
-
 }
