@@ -16,10 +16,12 @@ import javax.annotation.concurrent.Immutable;
 final class ArrayByte extends Array<Byte> {
   private final Storage<Byte> storage;
 
-  /** Create an empty Array of type Byte and the given shape. */
-  ArrayByte(ArrayType dtype, int[] shape) {
+  /** Create an Array of type Byte and the given shape, filled with the given value. */
+  ArrayByte(ArrayType dtype, int[] shape, byte fillValue) {
     super(dtype, shape);
-    storage = new StorageS(new byte[(byte) indexFn.length()]);
+    byte[] parray = new byte[(int) indexFn.length()];
+    java.util.Arrays.fill(parray, fillValue);
+    storage = new StorageS(parray);
   }
 
   /** Create an Array of type Byte and the given shape and storage. */

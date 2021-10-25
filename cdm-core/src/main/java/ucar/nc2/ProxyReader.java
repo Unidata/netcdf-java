@@ -5,8 +5,8 @@
 package ucar.nc2;
 
 import ucar.array.ArraysConvert;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Section;
+import ucar.array.InvalidRangeException;
+import ucar.array.Section;
 import ucar.nc2.util.CancelTask; // ??
 import java.io.IOException;
 
@@ -21,13 +21,15 @@ public interface ProxyReader {
    * @deprecated use proxyReadArray()
    */
   @Deprecated
-  ucar.ma2.Array reallyRead(Variable client, CancelTask cancelTask) throws IOException;
+  default ucar.ma2.Array reallyRead(Variable client, CancelTask cancelTask) throws IOException {
+    return ArraysConvert.convertFromArray(proxyReadArray(client, cancelTask));
+  }
 
   /**
    * Read a section of the data for a Variable.
    *
    * @param client the client Variable
-   * @param section the section of data to read.
+   * @param oldSection the section of data to read.
    * @param cancelTask user may cancel
    *
    * @return memory resident Array containing the data. Will have same shape as the Section.
@@ -35,24 +37,21 @@ public interface ProxyReader {
    * @deprecated use proxyReadArray()
    */
   @Deprecated
-  ucar.ma2.Array reallyRead(Variable client, Section section, CancelTask cancelTask)
-      throws IOException, InvalidRangeException;
-
-  /** Read all the data for a Variable, returning ucar.array.Array. */
-  default ucar.array.Array<?> proxyReadArray(Variable client, CancelTask cancelTask) throws IOException {
-    return ArraysConvert.convertToArray(reallyRead(client, cancelTask));
-  }
-
-  /** Read a section of the data for a Variable, returning ucar.array.Array. */
-  default ucar.array.Array<?> proxyReadArray(Variable client, ucar.array.Section section, CancelTask cancelTask)
-      throws IOException, ucar.array.InvalidRangeException {
-
-    ucar.ma2.Section oldSection = ArraysConvert.convertSection(section);
+  default ucar.ma2.Array reallyRead(Variable client, ucar.ma2.Section oldSection, CancelTask cancelTask)
+      throws IOException, ucar.ma2.InvalidRangeException {
     try {
-      return ArraysConvert.convertToArray(reallyRead(client, oldSection, cancelTask));
+      Section section = ArraysConvert.convertSection(oldSection);
+      return ArraysConvert.convertFromArray(proxyReadArray(client, section, cancelTask));
     } catch (InvalidRangeException e) {
-      throw new ucar.array.InvalidRangeException(e);
+      throw new ucar.ma2.InvalidRangeException(e.getMessage());
     }
   }
+
+  /** Read all the data for a Variable, returning ucar.array.Array. */
+  ucar.array.Array<?> proxyReadArray(Variable client, CancelTask cancelTask) throws IOException;
+
+  /** Read a section of the data for a Variable, returning ucar.array.Array. */
+  ucar.array.Array<?> proxyReadArray(Variable client, ucar.array.Section section, CancelTask cancelTask)
+      throws IOException, ucar.array.InvalidRangeException;
 
 }

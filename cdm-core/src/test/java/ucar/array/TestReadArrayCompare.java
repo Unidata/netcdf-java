@@ -17,10 +17,6 @@ import java.util.Formatter;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureDataIterator;
 import ucar.ma2.StructureMembers;
@@ -31,14 +27,10 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.internal.util.CompareArrayToMa2;
 import ucar.unidata.util.test.TestDir;
-import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 /** Compare reading netcdf with Array */
-@RunWith(Parameterized.class)
-@Category(NeedsCdmUnitTest.class)
 public class TestReadArrayCompare {
 
-  @Parameterized.Parameters(name = "{0}")
   public static List<Object[]> getTestParameters() {
     FileFilter ff = TestDir.FileFilterSkipSuffix(".cdl .ncml perverse.nc .mip222k.oschp");
     List<Object[]> result = new ArrayList<>(500);
@@ -78,7 +70,6 @@ public class TestReadArrayCompare {
 
   private final String filename;
 
-  @Test
   public void compareNetcdfFile() throws IOException {
     compareNetcdfFile(filename);
   }
@@ -121,17 +112,6 @@ public class TestReadArrayCompare {
       throw e;
     }
     return total;
-  }
-
-  @Test
-  public void compareNetcdfDataset() throws IOException {
-    // these are failing in old code.
-    if (filename.endsWith("cdm_sea_soundings.nc4"))
-      return;
-    if (filename.endsWith("IntTimSciSamp.nc"))
-      return;
-
-    compareNetcdfDataset(filename);
   }
 
   public static void compareNetcdfDataset(String filename) throws IOException {

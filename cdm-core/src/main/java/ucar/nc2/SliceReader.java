@@ -5,7 +5,11 @@
 package ucar.nc2;
 
 import javax.annotation.concurrent.Immutable;
-import ucar.ma2.*;
+
+import ucar.array.Array;
+import ucar.array.Arrays;
+import ucar.array.InvalidRangeException;
+import ucar.array.Section;
 import ucar.nc2.util.CancelTask;
 import java.io.IOException;
 
@@ -45,27 +49,27 @@ class SliceReader implements ProxyReader {
   }
 
   @Override
-  public Array reallyRead(Variable client, CancelTask cancelTask) throws IOException {
+  public Array<?> proxyReadArray(Variable client, CancelTask cancelTask) throws IOException {
     Variable orgClient = this.orgClient != null ? this.orgClient : parentGroup.findVariableLocal(orgName);
-    Array data;
+    Array<?> data;
     try {
       data = orgClient._read(slice);
     } catch (InvalidRangeException e) {
       log.error("InvalidRangeException in slice, var=" + client);
       throw new IllegalStateException(e.getMessage());
     }
-    data = data.reduce(sliceDim);
+    data = Arrays.reduce(data, sliceDim);
     return data;
   }
 
   @Override
-  public Array reallyRead(Variable client, Section section, CancelTask cancelTask)
+  public Array<?> proxyReadArray(Variable client, Section section, CancelTask cancelTask)
       throws IOException, InvalidRangeException {
     Variable orgClient = parentGroup.findVariableLocal(orgName);
     Section.Builder orgSection = Section.builder().appendRanges(section.getRanges());
     orgSection.insertRange(sliceDim, slice.getRange(sliceDim));
-    Array data = orgClient._read(orgSection.build());
-    data = data.reduce(sliceDim);
+    Array<?> data = orgClient._read(orgSection.build());
+    data = Arrays.reduce(data, sliceDim);
     return data;
   }
 

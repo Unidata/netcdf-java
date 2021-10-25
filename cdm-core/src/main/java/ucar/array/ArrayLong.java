@@ -14,9 +14,11 @@ final class ArrayLong extends Array<Long> {
   private final Storage<Long> storage;
 
   /** Create an empty Array of type Long and the given shape. */
-  ArrayLong(ArrayType dtype, int[] shape) {
+  ArrayLong(ArrayType dtype, int[] shape, long fillValue) {
     super(dtype, shape);
-    storage = new StorageS(new long[(int) indexFn.length()]);
+    long[] parray = new long[(int) indexFn.length()];
+    java.util.Arrays.fill(parray, fillValue);
+    storage = new StorageS(parray);
   }
 
   /** Create an Array of type Long and the given shape and storage. */

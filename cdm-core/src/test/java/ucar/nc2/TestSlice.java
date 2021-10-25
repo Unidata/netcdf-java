@@ -10,10 +10,10 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.Array;
-import ucar.ma2.ArrayFloat;
-import ucar.ma2.DataType;
-import ucar.ma2.InvalidRangeException;
+import ucar.array.Array;
+import ucar.array.ArrayType;
+import ucar.array.Arrays;
+import ucar.array.InvalidRangeException;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import ucar.nc2.internal.util.CompareNetcdf2;
@@ -40,30 +40,34 @@ public class TestSlice {
   public void setUp() throws IOException, InvalidRangeException {
     filePath = tempFolder.newFile().getAbsolutePath();
 
-    Builder writerb = NetcdfFormatWriter.createNewNetcdf3(filePath);
+    Builder<?> writerb = NetcdfFormatWriter.createNewNetcdf3(filePath);
     writerb.addDimension("t", DIM_T);
     writerb.addDimension("alt", DIM_ALT);
     writerb.addDimension("lat", DIM_LAT);
     writerb.addDimension("lon", DIM_LON);
-    writerb.addVariable(DATA_VARIABLE, DataType.FLOAT, "t alt lat lon");
+    writerb.addVariable(DATA_VARIABLE, ArrayType.FLOAT, "t alt lat lon");
 
     try (NetcdfFormatWriter writer = writerb.build()) {
-      writer.write(DATA_VARIABLE, createData());
+      Variable v = writer.findVariable(DATA_VARIABLE);
+      Array<?> data = createData();
+      writer.write(v, data.getIndex(), data);
     }
   }
 
-  private Array createData() {
-    ArrayFloat.D4 values = new ArrayFloat.D4(DIM_T, DIM_ALT, DIM_LAT, DIM_LON);
+  private Array<?> createData() {
+    int[] shape = new int[] {DIM_T, DIM_ALT, DIM_LAT, DIM_LON};
+    float[] parray = new float[(int) Arrays.computeSize(shape)];
+    int count = 0;
     for (int i = 0; i < DIM_T; i++) {
       for (int j = 0; j < DIM_ALT; j++) {
         for (int k = 0; k < DIM_LAT; k++) {
           for (int l = 0; l < DIM_LON; l++) {
-            values.set(i, j, k, l, i + j);
+            parray[count++] = i + j;
           }
         }
       }
     }
-    return values;
+    return Arrays.factory(ArrayType.FLOAT, shape, parray);
   }
 
   @Test

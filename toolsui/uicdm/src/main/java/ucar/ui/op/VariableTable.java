@@ -7,7 +7,7 @@ package ucar.ui.op;
 
 import java.nio.charset.StandardCharsets;
 import ucar.array.Array;
-import ucar.ma2.InvalidRangeException;
+import ucar.array.InvalidRangeException;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;

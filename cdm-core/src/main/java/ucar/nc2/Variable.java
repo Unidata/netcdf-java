@@ -12,17 +12,15 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
+import ucar.array.Array;
 import ucar.array.ArrayType;
 import ucar.array.Arrays;
 import ucar.array.ArraysConvert;
+import ucar.array.InvalidRangeException;
 import ucar.array.StructureDataArray;
 import ucar.array.StructureMembers;
-import ucar.ma2.Array;
-import ucar.ma2.ArrayStructure;
-import ucar.ma2.DataType;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Range;
-import ucar.ma2.Section;
+import ucar.array.Range;
+import ucar.array.Section;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.util.CancelTask;
@@ -83,7 +81,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    * @deprecated use getArrayType()
    */
   @Deprecated
-  public DataType getDataType() {
+  public ucar.ma2.DataType getDataType() {
     return dataType.getDataType();
   }
 
@@ -225,7 +223,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    * @deprecated use getSection() or getSection().getRanges()
    */
   @Deprecated
-  public ImmutableList<Range> getRanges() {
+  public ImmutableList<ucar.ma2.Range> getRanges() {
     // Ok to use Immutable as there are no nulls.
     return ImmutableList.copyOf(getShapeAsSection().getRanges());
   }
@@ -251,8 +249,8 @@ public class Variable implements VariableSimpleIF, ProxyReader {
 
   /** @deprecated use getSection() */
   @Deprecated
-  public Section getShapeAsSection() {
-    return this.shapeAsSection;
+  public ucar.ma2.Section getShapeAsSection() {
+    return ArraysConvert.convertSection(this.shapeAsSection);
   }
 
   /**
@@ -260,8 +258,8 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    *
    * @return Section describing this Variable's shape.
    */
-  public ucar.array.Section getSection() {
-    return ArraysConvert.convertSection(this.shapeAsSection);
+  public Section getSection() {
+    return this.shapeAsSection;
   }
 
   /** The short name of the variable */
@@ -395,15 +393,17 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    * @deprecated use section(ucar.array.Section)
    */
   @Deprecated
-  public Variable section(List<Range> ranges) throws InvalidRangeException {
-    return section(new Section(ranges, shape));
+  public Variable section(List<ucar.ma2.Range> ranges) throws ucar.ma2.InvalidRangeException {
+    return section(new ucar.ma2.Section(ranges, shape));
   }
 
-  public Variable section(ucar.array.Section subsection) throws ucar.array.InvalidRangeException {
+  /** @deprecated use section(ucar.array.Section) */
+  @Deprecated
+  public Variable section(ucar.ma2.Section subsection) throws ucar.ma2.InvalidRangeException {
     try {
       return section(ArraysConvert.convertSection(subsection));
     } catch (InvalidRangeException e) {
-      throw new ucar.array.InvalidRangeException(e);
+      throw new ucar.ma2.InvalidRangeException(e.getMessage());
     }
   }
 
@@ -413,13 +413,10 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    *
    * @param subsection Section of this variable.
    *        Each Range in the section corresponds to a Dimension, and specifies the section of data to read in that
-   *        Dimension.
-   *        A Range object may be null, which means use the entire dimension.
+   *        Dimension. A Range object may be null, which means use the entire dimension.
    * @return a new Variable which is a logical section of this Variable.
    * @throws InvalidRangeException if section not compatible with shape
-   * @deprecated use section(ucar.array.Section subsection);
    */
-  @Deprecated
   public Variable section(Section subsection) throws InvalidRangeException {
     subsection = Section.fill(subsection, shape);
 
@@ -536,17 +533,17 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    * @deprecated use readArray(Section)
    */
   @Deprecated
-  public Array read(int[] origin, int[] shape) throws IOException, InvalidRangeException {
+  public ucar.ma2.Array read(int[] origin, int[] shape) throws IOException, ucar.ma2.InvalidRangeException {
     if ((origin == null) && (shape == null))
       return read();
 
     if (origin == null)
-      return read(new Section(shape));
+      return read(new ucar.ma2.Section(shape));
 
     if (shape == null)
-      return read(new Section(origin, this.shape));
+      return read(new ucar.ma2.Section(origin, this.shape));
 
-    return read(new Section(origin, shape));
+    return read(new ucar.ma2.Section(origin, shape));
   }
 
   /**
@@ -559,8 +556,8 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    * @deprecated use readArray(new Section(sectionSpec))
    */
   @Deprecated
-  public Array read(String sectionSpec) throws IOException, InvalidRangeException {
-    return read(new Section(sectionSpec));
+  public ucar.ma2.Array read(String sectionSpec) throws IOException, ucar.ma2.InvalidRangeException {
+    return read(new ucar.ma2.Section(sectionSpec));
   }
 
   /**
@@ -569,16 +566,15 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    * @param ranges list of Range specifying the section of data to read.
    * @return the requested data in a memory-resident Array
    * @throws IOException if error
-   * @throws InvalidRangeException if ranges is invalid
-   * @see #read(Section)
    * @deprecated use readArray(new Section(ranges))
    */
   @Deprecated
-  public Array read(List<Range> ranges) throws IOException, InvalidRangeException {
-    if (null == ranges)
-      return _read();
+  public ucar.ma2.Array read(List<ucar.ma2.Range> ranges) throws IOException, ucar.ma2.InvalidRangeException {
+    if (null == ranges) {
+      return ArraysConvert.convertFromArray(_read());
+    }
 
-    return read(new Section(ranges));
+    return read(new ucar.ma2.Section(ranges));
   }
 
   /**
@@ -595,18 +591,23 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    * If the variable is nested in a array of structures and you want to subset that, use
    * NetcdfFile.read(String sectionSpec, boolean flatten);
    *
-   * @param section list of Range specifying the section of data to read.
+   * @param oldSection list of Range specifying the section of data to read.
    *        Must be null or same rank as variable.
    *        If list is null, assume all data.
    *        Each Range corresponds to a Dimension. If the Range object is null, it means use the entire dimension.
    * @return the requested data in a memory-resident Array
    * @throws IOException if error
-   * @throws InvalidRangeException if section is invalid
    * @deprecated use readArray(Section)
    */
   @Deprecated
-  public Array read(ucar.ma2.Section section) throws java.io.IOException, ucar.ma2.InvalidRangeException {
-    return (section == null) ? _read() : _read(Section.fill(section, shape));
+  public ucar.ma2.Array read(ucar.ma2.Section oldSection) throws java.io.IOException, ucar.ma2.InvalidRangeException {
+    Section section = ArraysConvert.convertSection(oldSection);
+    try {
+      Array<?> result = (section == null) ? _read() : _read(Section.fill(section, shape));
+      return ArraysConvert.convertFromArray(result);
+    } catch (InvalidRangeException e) {
+      throw new ucar.ma2.InvalidRangeException(e.getMessage());
+    }
   }
 
   /**
@@ -621,8 +622,8 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    * @deprecated use readArray()
    */
   @Deprecated
-  public Array read() throws IOException {
-    return _read();
+  public ucar.ma2.Array read() throws IOException {
+    return ArraysConvert.convertFromArray(_read());
   }
 
   ///// scalar reading
@@ -716,18 +717,18 @@ public class Variable implements VariableSimpleIF, ProxyReader {
 
   // non-structure-member Variables.
 
-  protected Array _read() throws IOException {
+  protected Array<?> _read() throws IOException {
     // caching overrides the proxyReader
     // check if already cached
     if (cache.getData() != null) {
-      return ArraysConvert.convertFromArray(cache.getData());
+      return cache.getData();
     }
 
-    Array data = proxyReader.reallyRead(this, null);
+    Array<?> data = proxyReader.proxyReadArray(this, null);
 
     // optionally cache it
     if (isCaching()) {
-      cache.setCachedData(ArraysConvert.convertToArray(data));
+      cache.setCachedData(data);
     }
     return data;
   }
@@ -754,7 +755,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
 
   // section of non-structure-member Variable
   // assume filled, validated Section
-  protected Array _read(Section section) throws IOException, InvalidRangeException {
+  protected Array<?> _read(Section section) throws IOException, InvalidRangeException {
     // check if its really a full read
     if ((null == section) || section.computeSize() == getSize()) {
       return _read();
@@ -762,17 +763,17 @@ public class Variable implements VariableSimpleIF, ProxyReader {
 
     // full read was cached
     if (isCaching()) {
-      Array cacheData;
+      Array<?> cacheData;
       if (cache.getData() == null) {
         cacheData = _read();
-        cache.setCachedData(ArraysConvert.convertToArray(cacheData)); // read and cache entire array
+        cache.setCachedData(cacheData); // read and cache entire array
       } else {
-        cacheData = ArraysConvert.convertFromArray(cache.getData());
+        cacheData = cache.getData();
       }
-      return cacheData.sectionNoReduce(section.getRanges()).copy(); // subset it, return copy
+      return Arrays.section(cacheData, new Section(section.getRanges())); // subset it
     }
 
-    return proxyReader.reallyRead(this, section, null);
+    return proxyReader.proxyReadArray(this, section, null);
   }
 
   /**
@@ -807,26 +808,6 @@ public class Variable implements VariableSimpleIF, ProxyReader {
 
   /** public by accident, do not call directly. */
   @Override
-  @Deprecated
-  public Array reallyRead(Variable client, CancelTask cancelTask) throws IOException {
-    if (isMemberOfStructure()) { // LOOK should be UnsupportedOperationException ??
-      List<String> memList = new ArrayList<>();
-      memList.add(this.getShortName());
-      Structure s = getParentStructure().select(memList);
-      ArrayStructure as = (ArrayStructure) s.read();
-      return as.extractMemberArray(as.findMember(getShortName()));
-    }
-
-    try {
-      return ncfile.readData(this, getShapeAsSection());
-    } catch (InvalidRangeException e) {
-      e.printStackTrace();
-      throw new IOException(e.getMessage()); // cant happen haha
-    }
-  }
-
-  /** public by accident, do not call directly. */
-  @Override
   public ucar.array.Array<?> proxyReadArray(Variable client, CancelTask cancelTask) throws IOException {
     if (isMemberOfStructure()) {
       // throw new UnsupportedOperationException("Cannot directly read Member Variable=" + getFullName());
@@ -845,18 +826,6 @@ public class Variable implements VariableSimpleIF, ProxyReader {
       e.printStackTrace();
       throw new IOException(e.getMessage()); // cant happen haha
     }
-  }
-
-  /** public by accident, do not call directly. */
-  @Override
-  @Deprecated
-  public Array reallyRead(Variable client, Section section, CancelTask cancelTask)
-      throws IOException, InvalidRangeException {
-    if (isMemberOfStructure()) {
-      throw new UnsupportedOperationException("Cannot directly read section of Member Variable=" + getFullName());
-    }
-    // read just this section
-    return ncfile.readData(this, section);
   }
 
   /** public by accident, do not call directly. */
@@ -1079,7 +1048,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
         isVariableLength = true;
       }
     }
-    this.shapeAsSection = Dimensions.makeSectionFromDimensions(this.dimensions).build();
+    this.shapeAsSection = Dimensions.makeArraySectionFromDimensions(this.dimensions).build();
   }
 
   /** Get immutable service provider opaque object. */
@@ -1263,7 +1232,8 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     if (builder.slicer != null) {
       int dim = builder.slicer.dim;
       int index = builder.slicer.index;
-      Section slice = Dimensions.makeSectionFromDimensions(dims).replaceRange(dim, Range.make(index, index)).build();
+      Section slice =
+          Dimensions.makeArraySectionFromDimensions(dims).replaceRange(dim, Range.make(index, index)).build();
       useProxyReader = new SliceReader(parentGroup, builder.slicer.orgName, dim, slice);
       builder.resetCache(); // no caching
       // remove that dimension in this variable
@@ -1533,7 +1503,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
 
     /** @deprecated use setArrayType() */
     @Deprecated
-    public T setDataType(DataType dataType) {
+    public T setDataType(ucar.ma2.DataType dataType) {
       this.dataType = dataType.getArrayType();
       return self();
     }
@@ -1620,22 +1590,11 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     }
 
     /**
-     * @param cacheData
-     * @param isMetadata
-     * @deprecated Use setSourceData(ucar.array.Array<?> srcData)
-     */
-    @Deprecated
-    public T setCachedData(Array cacheData, boolean isMetadata) {
-      this.cache.srcData = ucar.array.ArraysConvert.convertToArray(cacheData);
-      return self();
-    }
-
-    /**
      * @param srcData
      * @deprecated Use setSourceData(ucar.array.Array<?> srcData)
      */
     @Deprecated
-    public T setSourceData(Array srcData) {
+    public T setSourceData(ucar.ma2.Array srcData) {
       this.cache.srcData = ucar.array.ArraysConvert.convertToArray(srcData);
       return self();
     }
@@ -1746,8 +1705,8 @@ public class Variable implements VariableSimpleIF, ProxyReader {
 
     private ucar.array.Array<?> makeDataArray(ArrayType dtype, List<Dimension> dimensions) {
       int[] shape = Dimensions.makeArraySectionFromDimensions(dimensions).build().getShape();
-      return ArraysConvert.convertToArray(
-          Array.makeArray(dtype.getDataType(), (int) Arrays.computeSize(shape), start, incr).reshape(shape));
+      Array<?> result = Arrays.makeArray(dtype, (int) Arrays.computeSize(shape), start, incr);
+      return Arrays.reshape(result, shape);
     }
   }
 

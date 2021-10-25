@@ -365,14 +365,14 @@ public class TestVariable {
     Variable section = xvar.section(new Section(ImmutableList.of(r)));
 
     Array data = section.readArray();
-    assertThat(data).isEqualTo(Arrays.makeArray(ArrayType.INT, 11, 200, 10));
+    assertThat(Arrays.equalNumbers(data, Arrays.makeArray(ArrayType.INT, 11, 200, 10))).isTrue();
 
     Array data2 = section.readArray(new Section(new int[] {1}, new int[] {10}));
-    assertThat(data2).isEqualTo(Arrays.makeArray(ArrayType.INT, 10, 210, 10));
+    assertThat(Arrays.equalNumbers(data2, Arrays.makeArray(ArrayType.INT, 10, 210, 10))).isTrue();
   }
 
   @Test
-  public void testSliceRowMajor() throws IOException, ucar.ma2.InvalidRangeException {
+  public void testSliceRowMajor() throws IOException, InvalidRangeException {
     Dimension x = new Dimension("x", 20);
     Dimension y = new Dimension("y", 2);
     Variable.Builder<?> var = Variable.builder().setName("x").setArrayType(ArrayType.INT)
@@ -384,11 +384,11 @@ public class TestVariable {
 
     Variable section = xvar.slice(1, 1);
     Array data = section.readArray();
-    assertThat(data).isEqualTo(Arrays.makeArray(ArrayType.INT, 20, 10, 20));
+    assertThat(Arrays.equalNumbers(data, Arrays.makeArray(ArrayType.INT, 20, 10, 20))).isTrue();
   }
 
   @Test
-  public void testSliceColMajor() throws IOException, ucar.ma2.InvalidRangeException {
+  public void testSliceColMajor() throws IOException, InvalidRangeException {
     Dimension x = new Dimension("x", 20);
     Dimension y = new Dimension("y", 2);
     Variable.Builder<?> var = Variable.builder().setName("x").setArrayType(ArrayType.INT)
@@ -399,7 +399,7 @@ public class TestVariable {
 
     Variable slice = xvar.slice(1, 1);
     Array data = slice.readArray();
-    assertThat(data).isEqualTo(Arrays.makeArray(ArrayType.INT, 2, 10, 200));
+    assertThat(Arrays.equalNumbers(data, Arrays.makeArray(ArrayType.INT, 2, 10, 200))).isTrue();
   }
 
   @Test
@@ -415,10 +415,10 @@ public class TestVariable {
     Variable reduce = xvar.reduce(ImmutableList.of(y));
     assertThat(reduce.getShape()).isEqualTo(new int[] {20});
     Array data = reduce.readArray();
-    assertThat(data).isEqualTo(Arrays.makeArray(ArrayType.INT, 20, 10, 2));
+    assertThat(Arrays.equalNumbers(data, Arrays.makeArray(ArrayType.INT, 20, 10, 2))).isTrue();
 
     Array data2 = reduce.readArray(new Section(new int[] {1}, new int[] {10}));
-    assertThat(data2).isEqualTo(Arrays.makeArray(ArrayType.INT, 10, 12, 2));
+    assertThat(Arrays.equalNumbers(data2, Arrays.makeArray(ArrayType.INT, 10, 12, 2))).isTrue();
   }
 
   @Test

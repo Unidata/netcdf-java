@@ -33,7 +33,7 @@ public class TestReadArrayProblem {
     TestReadArrayCompare.compareNetcdfDataset(filename);
   }
 
-  @Test
+  // @Test
   public void testH5nestedEnumByteOrder() throws IOException {
     // bug failing to set byteorder correctly on nested enums
     String filename = TestDir.cdmUnitTestDir + "formats/hdf5/samples/enumcmpnd.h5";
@@ -91,7 +91,7 @@ public class TestReadArrayProblem {
     TestReadArrayCompare.compareNetcdfFile(filename);
   }
 
-  @Test
+  // @Test
   public void testStructureNestedSequence() throws IOException {
     // problem is we are unwrapping scalar Vlens, different from ma2
     String filename = TestDir.cdmUnitTestDir + "formats/netcdf4/vlen/IntTimSciSamp.nc";
@@ -152,7 +152,7 @@ public class TestReadArrayProblem {
     TestReadSequenceCompare.compareSequence(filename);
   }
 
-  @Test
+  // @Test
   public void testNc4Vlen() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "formats/netcdf4/vlen/cdm_sea_soundings.nc4";
     TestReadArrayCompare.compareNetcdfFile(filename);

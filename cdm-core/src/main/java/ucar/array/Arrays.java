@@ -124,39 +124,38 @@ public class Arrays {
 
   /**
    * Create Array using empty java array of T, or java primitive array, same size as shape.
-   * Do not use this for Vlens or Structures.
-   * LOOK what is this used for: testing only; remove or replace
-   *
+   * Do not use this for Vlens or Structures.*
+   * 
    * @param shape multidimensional shape
    */
-  public static <T> Array<T> factory(ArrayType dataType, int[] shape) {
+  public static <T> Array<T> factoryFill(ArrayType dataType, int[] shape, Number fillValue) {
     switch (dataType) {
       case BOOLEAN:
       case BYTE:
       case CHAR:
       case ENUM1:
       case UBYTE: {
-        return (Array<T>) new ArrayByte(dataType, shape);
+        return (Array<T>) new ArrayByte(dataType, shape, fillValue.byteValue());
       }
       case DOUBLE: {
-        return (Array<T>) new ArrayDouble(shape);
+        return (Array<T>) new ArrayDouble(shape, fillValue.doubleValue());
       }
       case FLOAT: {
-        return (Array<T>) new ArrayFloat(shape);
+        return (Array<T>) new ArrayFloat(shape, fillValue.floatValue());
       }
       case INT:
       case ENUM4:
       case UINT: {
-        return (Array<T>) new ArrayInteger(dataType, shape);
+        return (Array<T>) new ArrayInteger(dataType, shape, fillValue.intValue());
       }
       case LONG:
       case ULONG: {
-        return (Array<T>) new ArrayLong(dataType, shape);
+        return (Array<T>) new ArrayLong(dataType, shape, fillValue.longValue());
       }
       case SHORT:
       case ENUM2:
       case USHORT: {
-        return (Array<T>) new ArrayShort(dataType, shape);
+        return (Array<T>) new ArrayShort(dataType, shape, fillValue.shortValue());
       }
       case STRING: {
         return (Array<T>) new ArrayString(shape);
@@ -613,13 +612,14 @@ public class Arrays {
    * @param shape shape of resulting array. if not set, use 1 dim array of length npts.
    */
   public static <T> Array<T> makeArray(ArrayType type, int npts, double start, double incr, int... shape) {
-    Preconditions.checkArgument(type.isNumeric());
+    Preconditions.checkArgument(type.isNumeric() || type.isEnum());
     if (shape.length == 0) {
       shape = new int[] {npts};
     }
 
     Object pvals;
     switch (type) {
+      case ENUM1:
       case UBYTE:
       case BYTE: {
         byte[] bvals = new byte[npts];
@@ -645,6 +645,7 @@ public class Arrays {
         pvals = fvals;
         break;
       }
+      case ENUM4:
       case UINT:
       case INT: {
         int[] ivals = new int[npts];
@@ -654,6 +655,7 @@ public class Arrays {
         pvals = ivals;
         break;
       }
+      case ENUM2:
       case USHORT:
       case SHORT: {
         short[] svals = new short[npts];

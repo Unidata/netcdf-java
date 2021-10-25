@@ -9,16 +9,15 @@ import static com.google.common.truth.Truth.assertThat;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ucar.ma2.*;
+import ucar.array.Array;
+import ucar.array.ArrayType;
+import ucar.array.InvalidRangeException;
+import ucar.array.Section;
 import ucar.unidata.util.test.TestDir;
 import java.io.*;
-import java.lang.invoke.MethodHandles;
 
 /** Test reading record data */
 public class TestStructureArray {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private NetcdfFile ncfile;
 
@@ -53,48 +52,14 @@ public class TestStructureArray {
     Variable v = ncfile.findVariable("record");
     assert v != null;
 
-    assert (v.getDataType() == DataType.STRUCTURE);
+    assert (v.getArrayType() == ArrayType.STRUCTURE);
     assert (v instanceof Structure);
     assert (v.getRank() == 1);
     assert (v.getSize() == 1000);
 
-    Array data = v.read(new int[] {4}, new int[] {3});
-    assert (data instanceof ArrayStructure);
-    assert (data instanceof ArrayStructureBB);
-
-    assert (data.getElementType() == StructureData.class);
+    Array<?> data = v.readArray(new Section(new int[] {4}, new int[] {3}));
+    assert (data.getArrayType() == ArrayType.STRUCTURE);
     assert (data.getSize() == 3) : data.getSize();
     assert (data.getRank() == 1);
   }
-
-  /*
-   * public void testReadNested() throws IOException, InvalidRangeException {
-   * 
-   * Structure v = (Structure) ncfile.findVariable("record");
-   * assert v != null;
-   * 
-   * Variable lat = v.findVariable("lat");
-   * assert null != lat;
-   * 
-   * assert( lat.getDataType() == DataType.DOUBLE);
-   * assert( lat.getRank() == 0);
-   * assert( lat.getSize() == 1);
-   * 
-   * Array data = lat.readAllStructuresSpec("(4:6,:)", false);
-   * assert( data instanceof ArrayStructure);
-   * assert( data instanceof ArrayStructureMA);
-   * 
-   * assert(data.getElementType() == StructureData.class);
-   * assert (data.getSize() == 3) : data.getSize();
-   * assert (data.getRank() == 1);
-   * 
-   * Array data2 = lat.readAllStructuresSpec("(4:6,:)", true);
-   * assert( data2 instanceof ArrayDouble);
-   * assert( data2 instanceof ArrayDouble.D1);
-   * 
-   * assert(data2.getElementType() == double.class);
-   * assert (data2.getSize() == 3) : data.getSize();
-   * assert (data2.getRank() == 1);
-   * }
-   */
 }

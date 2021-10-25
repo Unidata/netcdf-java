@@ -18,9 +18,11 @@ final class ArrayDouble extends ucar.array.Array<Double> {
   private final Storage<Double> storageD;
 
   /** Create an empty Array of type double and the given shape. */
-  ArrayDouble(int[] shape) {
+  ArrayDouble(int[] shape, double fillValue) {
     super(ArrayType.DOUBLE, shape);
-    storageD = new StorageD(new double[(int) indexFn.length()]);
+    double[] parray = new double[(int) indexFn.length()];
+    java.util.Arrays.fill(parray, fillValue);
+    storageD = new StorageD(parray);
   }
 
   /** Create an Array of type double and the given shape and storage. */

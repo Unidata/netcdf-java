@@ -14,9 +14,11 @@ final class ArrayShort extends Array<Short> {
   private final Storage<Short> storage;
 
   /** Create an empty Array of type Short and the given shape. */
-  ArrayShort(ArrayType dtype, int[] shape) {
+  ArrayShort(ArrayType dtype, int[] shape, short fillValue) {
     super(dtype, shape);
-    storage = new StorageS(new short[(int) indexFn.length()]);
+    short[] parray = new short[(int) indexFn.length()];
+    java.util.Arrays.fill(parray, fillValue);
+    storage = new StorageS(parray);
   }
 
   /** Create an Array of type Short and the given shape and storage. */

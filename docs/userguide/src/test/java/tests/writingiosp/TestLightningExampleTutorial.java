@@ -79,8 +79,8 @@ public class TestLightningExampleTutorial {
     Dimension dim = Dimension.builder("record", nRecords).build();
     builder.addDimension(dim);
 
-    Array<Integer> dateArray = Arrays.factory(ArrayType.INT, new int[] {nRecords});
-    Array<Double> latArray = Arrays.factory(ArrayType.DOUBLE, new int[] {nRecords});
+    Array<Integer> dateArray = Arrays.factoryFill(ArrayType.INT, new int[] {nRecords}, 0);
+    Array<Double> latArray = Arrays.factoryFill(ArrayType.DOUBLE, new int[] {nRecords}, 0);
     LightningExampleTutorial.setSourceData(builder, dim, dateArray, latArray);
     Group group = builder.build();
 
@@ -95,9 +95,9 @@ public class TestLightningExampleTutorial {
     Group.Builder builder = Group.builder();
     Dimension dim = Dimension.builder("record", nRecords).build();
     builder.addDimension(dim);
-    Array<Integer> dateArray = Arrays.factory(ArrayType.INT, new int[] {nRecords});
-    Array<Double> latArray = Arrays.factory(ArrayType.DOUBLE, new int[] {nRecords});
-    Array<Double> lonArray = Arrays.factory(ArrayType.DOUBLE, new int[] {nRecords});
+    Array<Integer> dateArray = Arrays.factoryFill(ArrayType.INT, new int[] {nRecords}, 0);
+    Array<Double> latArray = Arrays.factoryFill(ArrayType.DOUBLE, new int[] {nRecords}, 0);
+    Array<Double> lonArray = Arrays.factoryFill(ArrayType.DOUBLE, new int[] {nRecords}, 0);
     LightningExampleTutorial.addCoordSystemsAndTypedDatasets(builder, dim, dateArray, latArray,
         lonArray);
   }

@@ -8,8 +8,11 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
+import ucar.array.Array;
 import ucar.array.ArrayType;
-import ucar.array.ArraysConvert;
+import ucar.array.Arrays;
+import ucar.array.InvalidRangeException;
+import ucar.array.Section;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.NetcdfDataset.Enhance;
@@ -21,7 +24,10 @@ import ucar.nc2.util.Indent;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
-import java.util.*;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.Formatter;
+import java.util.Set;
 
 /**
  * A wrapper around a Variable, creating an "enhanced" Variable. The original Variable is used for the I/O.
@@ -220,17 +226,9 @@ public class VariableDS extends Variable implements VariableEnhanced {
   ////////////////////////////////////////////////////////////////////////
 
   @Override
-  @Deprecated
-  protected ucar.ma2.Array _read() throws IOException {
-    ucar.ma2.Array result;
-
-    // check if already cached - caching in VariableDS only done explicitly by app
-    if (hasCachedData())
-      result = super._read();
-    else
-      result = proxyReader.reallyRead(this, null);
-
-    return convert(result);
+  protected Array<?> _read() throws IOException {
+    Array<?> result = super._read();
+    return convertArray(result);
   }
 
   @Override
@@ -247,20 +245,10 @@ public class VariableDS extends Variable implements VariableEnhanced {
   }
 
   @Override
-  @Deprecated
-  public ucar.ma2.Array reallyRead(Variable client, CancelTask cancelTask) throws IOException {
-    if (orgVar == null) {
-      return getMissingDataArray(shape);
-    }
-
-    return orgVar.read();
-  }
-
-  @Override
   public ucar.array.Array<?> proxyReadArray(Variable client, CancelTask cancelTask) throws IOException {
     if (orgVar == null) {
       // LOOK where is this used? Do we need to make fast?
-      return ArraysConvert.convertToArray(getMissingDataArray(shape));
+      return getMissingDataArray(shape);
     }
 
     return orgVar.readArray();
@@ -269,35 +257,9 @@ public class VariableDS extends Variable implements VariableEnhanced {
   // section of regular Variable
   @Override
   @Deprecated
-  protected ucar.ma2.Array _read(ucar.ma2.Section section) throws IOException, ucar.ma2.InvalidRangeException {
-    // really a full read
-    if ((null == section) || section.computeSize() == getSize()) {
-      return _read();
-    }
-
-    ucar.ma2.Array result;
-    if (hasCachedData())
-      result = super._read(section);
-    else
-      result = proxyReader.reallyRead(this, section, null);
-
-    return convert(result);
-  }
-
-  @Override
-  @Deprecated
-  public ucar.ma2.Array reallyRead(Variable client, ucar.ma2.Section section, CancelTask cancelTask)
-      throws IOException, ucar.ma2.InvalidRangeException {
-    // see if its really a full read
-    if ((null == section) || section.computeSize() == getSize()) {
-      return reallyRead(client, cancelTask);
-    }
-
-    if (orgVar == null) {
-      return getMissingDataArray(section.getShape());
-    }
-
-    return orgVar.read(section);
+  protected Array<?> _read(Section section) throws IOException, InvalidRangeException {
+    Array<?> result = super._read(section);
+    return convertArray(result);
   }
 
   @Override
@@ -328,7 +290,7 @@ public class VariableDS extends Variable implements VariableEnhanced {
 
     if (orgVar == null) {
       // LOOK where is this used? Do we need to make fast?
-      return ArraysConvert.convertToArray(getMissingDataArray(section.getShape()));
+      return getMissingDataArray(section.getShape());
     }
 
     return orgVar.readArray(section);
@@ -336,56 +298,17 @@ public class VariableDS extends Variable implements VariableEnhanced {
 
   /**
    * Return Array with missing data
-   *
+   * 
    * @param shape of this shape
    * @return Array with given shape
-   * @deprecated use Arrays.getMissingDataArray()
    */
-  @Deprecated
-  private ucar.ma2.Array getMissingDataArray(int[] shape) {
-    Object storage;
-
-    switch (getArrayType()) {
-      case BOOLEAN:
-        storage = new boolean[1];
-        break;
-      case BYTE:
-      case UBYTE:
-      case ENUM1:
-        storage = new byte[1];
-        break;
-      case CHAR:
-        storage = new char[1];
-        break;
-      case SHORT:
-      case USHORT:
-      case ENUM2:
-        storage = new short[1];
-        break;
-      case INT:
-      case UINT:
-      case ENUM4:
-        storage = new int[1];
-        break;
-      case LONG:
-      case ULONG:
-        storage = new long[1];
-        break;
-      case FLOAT:
-        storage = new float[1];
-        break;
-      case DOUBLE:
-        storage = new double[1];
-        break;
-      default:
-        storage = new Object[1];
-    }
-
-    ucar.ma2.Array array = ucar.ma2.Array.factoryConstant(getDataType(), shape, storage);
+  private Array<?> getMissingDataArray(int[] shape) {
+    double fillValue = 0;
     if (scaleMissingUnsignedProxy.hasFillValue()) {
-      array.setObject(0, scaleMissingUnsignedProxy.getFillValue());
+      fillValue = scaleMissingUnsignedProxy.getFillValue();
     }
-    return array;
+
+    return Arrays.factoryFill(getArrayType(), shape, fillValue);
   }
 
   @VisibleForTesting

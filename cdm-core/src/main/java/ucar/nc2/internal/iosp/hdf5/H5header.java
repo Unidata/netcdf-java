@@ -1416,7 +1416,7 @@ public class H5header implements HdfHeaderIF {
 
       // fake data for now
       vb.setArrayType(ArrayType.LONG);
-      Array<?> newData = Arrays.factory(ArrayType.LONG, shape);
+      Array<?> newData = Arrays.factory(ArrayType.LONG, shape, 0);
       vb.setSourceData(newData); // so H5iosp.read() is never called
       vb.addAttribute(new Attribute("_HDF5ReferenceType", "values are regions of referenced Variables"));
     }

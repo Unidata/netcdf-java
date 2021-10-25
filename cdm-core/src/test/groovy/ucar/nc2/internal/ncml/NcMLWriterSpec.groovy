@@ -152,7 +152,7 @@ recordsGroup/recordsStruct = UNREADABLE
     <values>18 268 3284</values>
   </variable>
   <variable name="time" shape="time" type="short">
-    <values start="4.0" increment="1.0" npts="3" />
+    <values start="4.000000" increment="1.000000" npts="3" />
   </variable>
   <variable name="charVar" shape="5" type="char">
     <values>abcde</values>

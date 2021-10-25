@@ -5,19 +5,17 @@
 package ucar.nc2;
 
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ucar.ma2.*;
+import ucar.array.Array;
+import ucar.array.ArrayType;
+import ucar.array.InvalidRangeException;
+import ucar.array.StructureDataArray;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.UtilsTestStructureArray;
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 
 /** Test reading record data */
 
 public class TestStructureArray2 {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
   private UtilsTestStructureArray test = new UtilsTestStructureArray();
 
   @Test
@@ -29,14 +27,12 @@ public class TestStructureArray2 {
       Structure v = (Structure) ncfile.findVariable("record");
       assert v != null;
 
-      assert (v.getDataType() == DataType.STRUCTURE);
+      assert (v.getArrayType() == ArrayType.STRUCTURE);
 
-      Array data = v.read();
-      assert (data instanceof ArrayStructure);
-      assert (data instanceof ArrayStructureBB);
-      assert (data.getElementType() == StructureData.class);
+      Array<?> data = v.readArray();
+      assert (data.getArrayType() == ArrayType.STRUCTURE);
 
-      test.testArrayStructure((ArrayStructure) data);
+      test.testArrayStructure((StructureDataArray) data);
     }
   }
 

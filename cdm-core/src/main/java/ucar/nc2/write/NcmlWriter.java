@@ -14,6 +14,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.Formatter;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -443,7 +444,7 @@ public class NcmlWriter {
   public Element makeValuesElement(Variable variable, boolean allowRegular) throws IOException {
     Element elem = new Element("values", namespace);
 
-    StringBuilder buff = new StringBuilder();
+    Formatter buff = new Formatter();
     Array<?> a = variable.readArray();
 
     if (variable.getArrayType() == ArrayType.CHAR) {
@@ -454,15 +455,14 @@ public class NcmlWriter {
       elem.setAttribute("separator", "|");
       int count = 0;
       Array<String> sdata = (Array<String>) a;
-
       for (String s : sdata) {
         if (count++ > 0) {
-          buff.append("|");
+          buff.format("|");
         }
-        buff.append(s);
+        buff.format("%s", s);
       }
-
       elem.setText(buff.toString());
+
     } else {
       Array<Number> ndata = (Array<Number>) a;
       // check to see if regular
@@ -474,15 +474,15 @@ public class NcmlWriter {
         for (int i = 2; i < ndata.getSize(); i++) {
           double v1 = ndata.get(ima.set(i)).doubleValue();;
           double v0 = ndata.get(ima.set(i - 1)).doubleValue();;
-          if (!Misc.nearlyEquals(v1 - v0, incr)) {
+          if (!Misc.nearlyEquals(v1 - v0, incr, 2.e-7)) {
             isRegular = false;
           }
         }
 
         if (isRegular) {
-          elem.setAttribute("start", Double.toString(start));
-          elem.setAttribute("increment", Double.toString(incr));
-          elem.setAttribute("npts", Long.toString(variable.getSize()));
+          elem.setAttribute("start", String.format("%f", start));
+          elem.setAttribute("increment", String.format("%f", incr));
+          elem.setAttribute("npts", String.format("%d", variable.getSize()));
           return elem;
         }
       }
@@ -491,17 +491,17 @@ public class NcmlWriter {
       boolean first = true;
       for (Number val : ndata) {
         if (!first) {
-          buff.append(" ");
+          buff.format(" ");
         }
         switch (variable.getArrayType()) {
           case FLOAT:
-            buff.append(val.floatValue());
+            buff.format("%f", val.floatValue());
             break;
           case DOUBLE:
-            buff.append(val.doubleValue());
+            buff.format("%f", val.doubleValue());
             break;
           default:
-            buff.append(val.intValue());
+            buff.format("%d", val.intValue());
             break;
         }
         first = false;
