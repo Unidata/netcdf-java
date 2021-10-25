@@ -8,7 +8,9 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.array.ArrayType;
-import ucar.ma2.*;
+import ucar.array.Array;
+import ucar.array.Arrays;
+import ucar.array.Index;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.internal.util.CompareNetcdf2;
@@ -64,46 +66,51 @@ public class TestStandardVar {
 
     // create and write to the file
     try (NetcdfFormatWriter writer = writerb.build()) {
+      int ny = latDim.getLength();
+      int nx = lonDim.getLength();
+
       // write t1
-      ArrayDouble A = new ArrayDouble.D2(latDim.getLength(), lonDim.getLength());
-      int i, j;
-      Index ima = A.getIndex();
-      // write
-      for (i = 0; i < latDim.getLength(); i++)
-        for (j = 0; j < lonDim.getLength(); j++)
-          A.setDouble(ima.set(i, j), (i * 10.0 + j));
-      int[] origin = new int[2];
-      writer.write("t1", origin, A);
+      double[] parray = new double[nx * ny];
+      for (int i = 0; i < ny; i++) {
+        for (int j = 0; j < nx; j++) {
+          parray[i * nx + j] = i * 10.0 + j;
+        }
+      }
+      Array A = Arrays.factory(ArrayType.DOUBLE, new int[] {ny, nx}, parray);
+      writer.write("t1", Index.ofRank(2), A);
 
       // write t2
-      ArrayByte Ab = new ArrayByte.D2(latDim.getLength(), lonDim.getLength(), false);
-      ima = Ab.getIndex();
-      for (i = 0; i < latDim.getLength(); i++)
-        for (j = 0; j < lonDim.getLength(); j++)
-          Ab.setByte(ima.set(i, j), (byte) (i * 10 + j));
-      writer.write("t2", origin, Ab);
+      byte[] barray = new byte[nx * ny];
+      for (int i = 0; i < ny; i++) {
+        for (int j = 0; j < nx; j++) {
+          barray[i * nx + j] = (byte) (i * 10 + j);
+        }
+      }
+      A = Arrays.factory(ArrayType.BYTE, new int[] {ny, nx}, barray);
+      writer.write("t2", Index.ofRank(2), A);
 
       // write t3
-      writer.write("t3", origin, Ab);
+      writer.write("t3", Index.ofRank(2), A);
 
       // write t4
-      Array As = new ArrayShort.D2(latDim.getLength(), lonDim.getLength(), false);
-      ima = As.getIndex();
-      for (i = 0; i < latDim.getLength(); i++)
-        for (j = 0; j < lonDim.getLength(); j++)
-          As.setShort(ima.set(i, j), (short) (i * 10 + j));
-      writer.write("t4", origin, As);
+      short[] sarray = new short[nx * ny];
+      for (int i = 0; i < ny; i++) {
+        for (int j = 0; j < nx; j++) {
+          sarray[i * nx + j] = (byte) (i * 10 + j);
+        }
+      }
+      A = Arrays.factory(ArrayType.SHORT, new int[] {ny, nx}, sarray);
+      writer.write("t4", Index.ofRank(2), A);
 
-      As.setShort(ima.set(0, 0), (short) -9999);
-      writer.write("t5", origin, As);
+      // write t5
+      sarray[0] = (short) -9999;
+      A = Arrays.factory(ArrayType.SHORT, new int[] {ny, nx}, sarray);
+      writer.write("t5", Index.ofRank(2), A);
 
       // write m1
-      ArrayDouble.D2 Ad = new ArrayDouble.D2(latDim.getLength(), lonDim.getLength());
-      for (i = 0; i < latDim.getLength(); i++)
-        for (j = 0; j < lonDim.getLength(); j++)
-          Ad.setDouble(ima.set(i, j), (i * 10.0 + j));
-      Ad.set(1, 1, -999.99);
-      writer.write("m1", new int[2], Ad);
+      parray[nx + 1] = -999.99;
+      A = Arrays.factory(ArrayType.DOUBLE, new int[] {ny, nx}, parray);
+      writer.write("m1", Index.ofRank(2), A);
     }
   }
 
@@ -140,14 +147,12 @@ public class TestStandardVar {
     assert (ArrayType.DOUBLE == att.getArrayType());
 
     // read
-    Array A = t1.read();
-    int i, j;
+    Array<Double> A = (Array<Double>) t1.readArray();
     Index ima = A.getIndex();
     int[] shape = A.getShape();
-
-    for (i = 0; i < shape[0]; i++) {
-      for (j = 0; j < shape[1]; j++) {
-        assert (A.getDouble(ima.set(i, j)) == (double) (i * 10.0 + j));
+    for (int i = 0; i < shape[0]; i++) {
+      for (int j = 0; j < shape[1]; j++) {
+        assertThat(A.get(ima.set(i, j))).isEqualTo(i * 10.0 + j);
       }
     }
 
@@ -156,13 +161,13 @@ public class TestStandardVar {
     assert t1 instanceof VariableEnhanced;
     assert (t1.getArrayType() == ArrayType.DOUBLE);
 
-    A = t1.read();
+    A = (Array<Double>) t1.readArray();
     ima = A.getIndex();
     shape = A.getShape();
 
-    for (i = 0; i < shape[0]; i++) {
-      for (j = 0; j < shape[1]; j++) {
-        assert (A.getDouble(ima.set(i, j)) == (2.0 * (i * 10.0 + j) + 77.0));
+    for (int i = 0; i < shape[0]; i++) {
+      for (int j = 0; j < shape[1]; j++) {
+        assertThat(A.get(ima.set(i, j))).isEqualTo(2.0 * (i * 10.0 + j) + 77.0);
       }
     }
   }
@@ -186,14 +191,12 @@ public class TestStandardVar {
     assert (vs.getArrayType() == ArrayType.SHORT) : vs.getArrayType();
     assert (vs.hasMissing());
 
-    Array A = vs.read();
-    assert (A.getElementType() == short.class) : A.getElementType();
+    Array<Short> A = (Array<Short>) vs.readArray();
     Index ima = A.getIndex();
     int[] shape = A.getShape();
-    int i, j;
-    for (i = 0; i < shape[0]; i++) {
-      for (j = 0; j < shape[1]; j++) {
-        assert (A.getShort(ima.set(i, j)) == (2 * (i * 10 + j) + 77));
+    for (int i = 0; i < shape[0]; i++) {
+      for (int j = 0; j < shape[1]; j++) {
+        assertThat(A.get(ima.set(i, j))).isEqualTo(2 * (i * 10 + j) + 77);
       }
     }
   }
@@ -223,14 +226,12 @@ public class TestStandardVar {
     assert (vs.isMissing((double) ((byte) 255)));
     assert (vs.scaleMissingUnsignedProxy().isFillValue((double) ((byte) 255)));
 
-    Array A = vs.read();
-    assert (A.getElementType() == byte.class) : A.getElementType();
+    Array<Byte> A = (Array<Byte>) vs.readArray();
     Index ima = A.getIndex();
     int[] shape = A.getShape();
-    int i, j;
-    for (i = 0; i < shape[0]; i++) {
-      for (j = 0; j < shape[1]; j++) {
-        assert (A.getFloat(ima.set(i, j)) == (i * 10 + j));
+    for (int i = 0; i < shape[0]; i++) {
+      for (int j = 0; j < shape[1]; j++) {
+        assertThat(A.get(ima.set(i, j))).isEqualTo(i * 10 + j);
       }
     }
   }
@@ -261,13 +262,12 @@ public class TestStandardVar {
     assert (vs.isMissing((double) ((short) -9999)));
     assert (vs.scaleMissingUnsignedProxy().isMissingValue((double) ((short) -9999)));
 
-    Array A = vs.read();
+    Array<Short> A = (Array<Short>) vs.readArray();
     Index ima = A.getIndex();
     int[] shape = A.getShape();
-    int i, j;
-    for (i = 0; i < shape[0]; i++) {
-      for (j = 0; j < shape[1]; j++) {
-        assert (A.getFloat(ima.set(i, j)) == (i * 10 + j));
+    for (int i = 0; i < shape[0]; i++) {
+      for (int j = 0; j < shape[1]; j++) {
+        assertThat(A.get(ima.set(i, j))).isEqualTo(i * 10 + j);
       }
     }
   }
@@ -292,22 +292,16 @@ public class TestStandardVar {
     assert (vs.isMissing(mv));
     assert (vs.scaleMissingUnsignedProxy().isMissingValue(mv));
 
-    Array A = vs.read();
+    Array<Short> A = (Array<Short>) vs.readArray();
     Index ima = A.getIndex();
     int[] shape = A.getShape();
-    int i, j;
-
-    assert (vs.isMissing(A.getShort(ima.set(0, 0))));
-
-    for (i = 0; i < shape[0]; i++) {
-      for (j = 1; j < shape[1]; j++) {
-        float val = A.getShort(ima.set(i, j));
-        float want = 2 * (i * 10 + j) + 77;
-        if (val != want)
-          logger.debug("{} {} {} {}", i, j, val, want);
-        assert (val == want);
+    for (int i = 0; i < shape[0]; i++) {
+      for (int j = 1; j < shape[1]; j++) {
+        short val = A.get(ima.set(i, j));
+        assertThat(val).isEqualTo(2 * (i * 10 + j) + 77);
       }
     }
+    assertThat(vs.isMissing(A.get(ima.set(0, 0))));
   }
 
   private void readDoubleMissing() throws Exception {
@@ -315,12 +309,12 @@ public class TestStandardVar {
     assert (v != null);
     assert (v.getArrayType() == ArrayType.DOUBLE);
 
-    Array A = v.read();
+    Array<Double> A = (Array<Double>) v.readArray();
     Index ima = A.getIndex();
 
-    double val = A.getFloat(ima.set(1, 1));
-    assert Double.isNaN(val);
-    assert v.isMissing(val);
+    double val = A.get(ima.set(1, 1));
+    assertThat(val).isNaN();
+    assertThat(v.isMissing(val)).isTrue();
   }
 
   @Test

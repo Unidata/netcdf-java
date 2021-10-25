@@ -132,13 +132,15 @@ public class TestNetcdfWriterStrings {
 
     String filename = tempFolder.newFile().getPath();
     NetcdfFormatWriter.Builder<?> writerb = NetcdfFormatWriter.createNewNetcdf3(filename);
+    writerb.addDimension(new Dimension("nstr", 1));
     writerb.addDimension(new Dimension(helloGreek, helloGreekLen));
-    writerb.addVariable(helloGreek, ArrayType.STRING, helloGreek).addAttribute(new Attribute("units", helloGreek));
+    writerb.addVariable(helloGreek, ArrayType.CHAR, "nstr " + helloGreek)
+        .addAttribute(new Attribute("units", helloGreek));
 
     try (NetcdfFormatWriter writer = writerb.build()) {
       Variable v = writer.findVariable(helloGreek);
       Array<String> data = Arrays.factory(ArrayType.STRING, new int[] {1}, new String[] {helloGreek});
-      writer.write(v, data.getIndex(), data);
+      writer.writeStringData(v, Index.ofRank(2), data);
     }
 
     try (NetcdfFile ncout = NetcdfFiles.open(filename)) {
@@ -148,7 +150,7 @@ public class TestNetcdfWriterStrings {
 
       Array<?> vrdata = vr.readArray();
       assertThat(vrdata.getArrayType()).isEqualTo(ArrayType.CHAR); // writing to netcdf3 turns it into a char
-      assertThat(vrdata.getShape()).isEqualTo(new int[] {helloGreekLen});
+      assertThat(vrdata.getShape()).isEqualTo(new int[] {1, helloGreekLen});
       Array<String> sdata = Arrays.makeStringsFromChar((Array<Byte>) vrdata);
       String strData = sdata.getScalar();
       System.out.printf(" writeNetCDFstring read = %s%n", showBoth(strData));

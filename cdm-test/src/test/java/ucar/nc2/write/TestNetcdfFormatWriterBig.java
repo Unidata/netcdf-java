@@ -1,10 +1,7 @@
 /*
- *
  * * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * * See LICENSE for license information.
- *
  */
-
 package ucar.nc2.write;
 
 import com.google.common.base.Stopwatch;
@@ -13,9 +10,11 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.rules.TemporaryFolder;
 import ucar.array.ArrayType;
+import ucar.array.Arrays;
+import ucar.array.Index;
 import ucar.array.Section;
-import ucar.ma2.Array;
-import ucar.ma2.InvalidRangeException;
+import ucar.array.Array;
+import ucar.array.InvalidRangeException;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
@@ -169,11 +168,11 @@ public class TestNetcdfFormatWriterBig {
     try (NetcdfFormatWriter writer = writerb.build()) {
       int[] shape = new int[] {1, 1, lonSize};
       float[] floatStorage = new float[lonSize];
-      Array floatArray = Array.factory(ucar.ma2.DataType.FLOAT, shape, floatStorage);
+      Array floatArray = Arrays.factory(ArrayType.FLOAT, shape, floatStorage);
+      Index origin = floatArray.getIndex();
       for (int t = 0; t < timeSize; t++) {
         for (int i = 0; i < latSize; i++) {
-          int[] origin = new int[] {t, i, 0};
-          writer.write(varName, origin, floatArray);
+          writer.write(varName, origin.set(t, i, 0), floatArray);
         }
       }
       // write the last value
