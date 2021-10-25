@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2;
@@ -8,18 +8,21 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ucar.ma2.*;
-import ucar.ma2.StructureMembers.Member;
+import ucar.array.Array;
+import ucar.array.ArrayType;
+import ucar.array.InvalidRangeException;
+import ucar.array.Range;
+import ucar.array.Section;
+import ucar.array.StructureData;
+import ucar.array.StructureMembers;
 import ucar.unidata.util.test.TestDir;
 import java.io.*;
-import java.lang.invoke.MethodHandles;
 import java.util.*;
+
+import static com.google.common.truth.Truth.assertThat;
 
 /** Test reading record data */
 public class TestStructureReading {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   NetcdfFile ncfile;
 
@@ -64,86 +67,70 @@ public class TestStructureReading {
 
   @Test
   public void testReadStructureCountBytesRead() throws IOException, InvalidRangeException {
-
     Structure record = (Structure) ncfile.findVariable("record");
-    assert record != null;
+    assertThat(record).isNotNull();
+    assertThat(record.getArrayType()).isEqualTo(ArrayType.STRUCTURE);
+    Array<StructureData> data = (Array<StructureData>) record.readArray();
 
     // read all at once
     long totalAll = 0;
-    Array dataAll = record.read();
-    IndexIterator iter = dataAll.getIndexIterator();
-    while (iter.hasNext()) {
-      StructureData sd = (StructureData) iter.next();
-
-      for (Member m : sd.getMembers()) {
-        Array data = sd.getArray(m);
-        totalAll += data.getSize() * m.getDataType().getSize();
+    for (ucar.array.StructureData sd : data) {
+      for (StructureMembers.Member m : sd.getStructureMembers()) {
+        Array<?> mdata = sd.getMemberData(m);
+        totalAll += m.getStorageSizeBytes();
       }
     }
-    Assert.assertEquals("Total bytes read", 304, totalAll);
+    assertThat(totalAll).isEqualTo(304);
 
     // read one at a time
     int numrecs = record.getShape()[0];
     long totalOne = 0;
     for (int i = 0; i < numrecs; i++) {
-      StructureData sd = record.readStructure(i);
+      Array<?> arr = record.readArray(Section.builder().appendRange(new Range(i, 1)).build());
+      StructureData sd = (StructureData) arr.get(0);
 
-      for (Member m : sd.getMembers()) {
-        Array data = sd.getArray(m);
-        totalOne += data.getSize() * m.getDataType().getSize();
+      for (StructureMembers.Member m : sd.getStructureMembers()) {
+        Array mdata = sd.getMemberData(m);
+        totalOne += m.getStorageSizeBytes();
       }
     }
-    Assert.assertEquals("testReadStructureCountBytesRead", totalAll, totalOne);
-
-    // read with the iterator
-    long totalIter = 0;
-    try (StructureDataIterator iter2 = record.getStructureIterator()) {
-      while (iter2.hasNext()) {
-        StructureData sd = iter2.next();
-        for (StructureMembers.Member m : sd.getMembers()) {
-          Array data = sd.getArray(m);
-          totalIter += data.getSize() * m.getDataType().getSize();
-        }
-      }
-    }
-    Assert.assertEquals("Bytes through iteration", totalIter, totalOne);
+    assertThat(totalOne).isEqualTo(totalAll);
   }
 
   @Test
   public void testN3ReadStructureCheckValues() throws IOException, InvalidRangeException {
     Structure record = (Structure) ncfile.findVariable("record");
-    assert record != null;
+    assertThat(record).isNotNull();
+    assertThat(record.getArrayType()).isEqualTo(ArrayType.STRUCTURE);
+    Array<StructureData> data = (Array<StructureData>) record.readArray();
 
     // read all at once
     int recnum = 0;
-    Array dataAll = record.read();
-    IndexIterator iter = dataAll.getIndexIterator();
-    while (iter.hasNext()) {
-      StructureData s = (StructureData) iter.next();
-      Array rh = s.getArray("rh");
-      assert (rh instanceof ArrayInt.D2);
-      checkValues(rh, recnum); // check the values are right
-      recnum++;
+    for (ucar.array.StructureData sd : data) {
+      Array rh = sd.getMemberData("rh");
+      checkValues(rh, recnum++); // check the values are right
     }
 
     // read one at a time
+    recnum = 0;
     int numrecs = record.getShape()[0];
     for (int i = 0; i < numrecs; i++) {
-      StructureData s = record.readStructure(i);
-      Array rh = s.getArray("rh");
-      assert (rh instanceof ArrayInt.D2);
-      checkValues(rh, i); // check the values are right
+      Array<?> arr = record.readArray(Section.builder().appendRange(new Range(i, 1)).build());
+      StructureData sd = (StructureData) arr.get(0);
+      Array rh = sd.getMemberData("rh");
+      checkValues(rh, recnum++); // check the values are right
     }
+  }
 
-    // read using iterator
-    recnum = 0;
-    try (StructureDataIterator iter2 = record.getStructureIterator()) {
-      while (iter2.hasNext()) {
-        StructureData s = iter2.next();
-        Array rh = s.getArray("rh");
-        assert (rh instanceof ArrayInt.D2);
-        checkValues(rh, recnum); // check the values are right
-        recnum++;
+  private void checkValues(Array<?> rh, int recnum) {
+    // check the values are right
+    Array<Integer> rha = (Array<Integer>) rh;
+    int[] shape = rha.getShape();
+    for (int j = 0; j < shape[0]; j++) {
+      for (int k = 0; k < shape[1]; k++) {
+        int want = 20 * recnum + 4 * j + k + 1;
+        int val = rha.get(j, k);
+        assertThat(val).isEqualTo(want);
       }
     }
   }
@@ -166,20 +153,5 @@ public class TestStructureReading {
     ncfile = NetcdfFiles.open(filename);
     // System.out.println(ncfile);
     ncfile.close();
-  }
-
-  private void checkValues(Array rh, int recnum) {
-    assert (rh instanceof ArrayInt.D2) : rh.getClass().getName();
-
-    // check the values are right
-    ArrayInt.D2 rha = (ArrayInt.D2) rh;
-    int[] shape = rha.getShape();
-    for (int j = 0; j < shape[0]; j++) {
-      for (int k = 0; k < shape[1]; k++) {
-        int want = 20 * recnum + 4 * j + k + 1;
-        int val = rha.get(j, k);
-        Assert.assertEquals(" " + recnum + " " + j + " " + k + " " + want + " " + val, want, val);
-      }
-    }
   }
 }

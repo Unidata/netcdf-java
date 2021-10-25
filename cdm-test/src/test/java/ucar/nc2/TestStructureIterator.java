@@ -6,21 +6,19 @@ package ucar.nc2;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ucar.ma2.DataType;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.StructureData;
-import ucar.ma2.StructureDataIterator;
+import ucar.array.Array;
+import ucar.array.ArrayType;
+import ucar.array.InvalidRangeException;
+import ucar.array.StructureData;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
+
+import static com.google.common.truth.Truth.assertThat;
 
 /** Test StructureIterator works when opened with IOSP_MESSAGE_ADD_RECORD_STRUCTURE. */
 @Category(NeedsCdmUnitTest.class)
 public class TestStructureIterator {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
   public void testStructureIterator() throws IOException, InvalidRangeException {
@@ -28,17 +26,15 @@ public class TestStructureIterator {
         null, NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE)) {
 
       Structure v = (Structure) ncfile.findVariable("record");
-      assert v != null;
-      assert (v.getDataType() == DataType.STRUCTURE);
+      assertThat(v).isNotNull();
+      assertThat(v.getArrayType()).isEqualTo(ArrayType.STRUCTURE);
+      Array<StructureData> data = (Array<StructureData>) v.readArray();
 
       int count = 0;
-      try (StructureDataIterator si = v.getStructureIterator()) {
-        while (si.hasNext()) {
-          StructureData sd = si.next();
-          count++;
-        }
+      for (StructureData sd : data) {
+        count++;
       }
-      assert count == v.getSize();
+      assertThat(count).isEqualTo(v.getSize());
     }
   }
 

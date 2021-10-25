@@ -10,7 +10,10 @@ import javax.annotation.concurrent.Immutable;
 
 import ucar.array.ArrayType;
 import ucar.array.ArraysConvert;
-import ucar.ma2.*;
+import ucar.array.InvalidRangeException;
+import ucar.array.Section;
+import ucar.array.StructureData;
+
 import java.util.List;
 
 /**
@@ -22,13 +25,13 @@ public class Sequence extends Structure implements Iterable<ucar.array.Structure
 
   /** @deprecated use iterator() */
   @Deprecated
-  public StructureDataIterator getStructureIterator(int bufferSize) throws java.io.IOException {
+  public ucar.ma2.StructureDataIterator getStructureIterator(int bufferSize) throws java.io.IOException {
     if (cache.getData() != null) {
       ucar.array.Array<?> array = cache.getData();
       if (array instanceof ucar.array.StructureDataArray) {
         ucar.ma2.Array ma2 = ArraysConvert.convertFromArray(array);
-        if (ma2 instanceof ArrayStructure) {
-          return ((ArrayStructure) ma2).getStructureDataIterator();
+        if (ma2 instanceof ucar.ma2.ArrayStructure) {
+          return ((ucar.ma2.ArrayStructure) ma2).getStructureDataIterator();
         }
       }
     }
@@ -57,42 +60,28 @@ public class Sequence extends Structure implements Iterable<ucar.array.Structure
   /** Same as read() */
   @Override
   @Deprecated
-  public Array read(ucar.ma2.Section section) throws java.io.IOException {
+  public ucar.ma2.Array read(ucar.ma2.Section section) throws java.io.IOException {
     return read();
   }
 
   /** @throws UnsupportedOperationException always */
   @Override
   @Deprecated
-  public Array read(int[] origin, int[] shape) {
+  public ucar.ma2.Array read(int[] origin, int[] shape) {
     throw new UnsupportedOperationException();
   }
 
   /** @throws UnsupportedOperationException always */
   @Override
   @Deprecated
-  public Array read(String sectionSpec) {
+  public ucar.ma2.Array read(String sectionSpec) {
     throw new UnsupportedOperationException();
   }
 
   /** @throws UnsupportedOperationException always */
   @Override
   @Deprecated
-  public Array read(List<Range> ranges) {
-    throw new UnsupportedOperationException();
-  }
-
-  /** @throws UnsupportedOperationException always */
-  @Override
-  @Deprecated
-  public StructureData readStructure(int index) {
-    throw new UnsupportedOperationException();
-  }
-
-  /** @throws UnsupportedOperationException always */
-  @Override
-  @Deprecated
-  public ArrayStructure readStructure(int start, int count) {
+  public ucar.ma2.Array read(List<ucar.ma2.Range> ranges) {
     throw new UnsupportedOperationException();
   }
 
@@ -104,7 +93,19 @@ public class Sequence extends Structure implements Iterable<ucar.array.Structure
 
   /** @throws UnsupportedOperationException always */
   @Override
+  public Variable section(ucar.ma2.Section subsection) {
+    throw new UnsupportedOperationException();
+  }
+
+  /** @throws UnsupportedOperationException always */
+  @Override
   public Variable section(Section subsection) {
+    throw new UnsupportedOperationException();
+  }
+
+  /** @throws UnsupportedOperationException always */
+  @Override
+  public StructureData readRecord(int recno) throws IOException, InvalidRangeException {
     throw new UnsupportedOperationException();
   }
 

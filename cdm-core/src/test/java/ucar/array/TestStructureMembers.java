@@ -31,7 +31,7 @@ public class TestStructureMembers {
     assertThat(builder.hasMember("nope")).isFalse();
     assertThat(builder.hasMember("mname2")).isTrue();
 
-    StructureMembers sm = builder.build();
+    StructureMembers sm = builder.setStandardOffsets(false).build();
     assertThat(sm.getName()).isEqualTo("name");
     assertThat(sm.getMember(0).getName()).isEqualTo("mname1");
     assertThat(sm.getMember(1).getName()).isEqualTo("mname3");
@@ -94,7 +94,7 @@ public class TestStructureMembers {
         .setArrayType(ArrayType.STRUCTURE);
     topbuilder.addMember(nbuilder);
 
-    StructureMembers sm = topbuilder.build();
+    StructureMembers sm = topbuilder.setStandardOffsets(false).build();
     assertThat(sm.findMember("mname2")).isNull();
     assertThat(sm.findMember("nname2")).isNotNull();
     assertThat(sm.getStorageSizeBytes()).isEqualTo(88 + 108 + 198);

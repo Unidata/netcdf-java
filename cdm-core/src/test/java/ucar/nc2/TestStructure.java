@@ -5,25 +5,24 @@ import static ucar.nc2.TestUtils.makeDummyGroup;
 import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import ucar.array.ArrayType;
-import ucar.ma2.DataType;
-import ucar.ma2.StructureMembers;
+import ucar.array.StructureMembers;
 
 /** Test {@link ucar.nc2.Structure} */
 public class TestStructure {
 
   @Test
   public void testBuilder() {
-    Variable.Builder<?> var = Variable.builder().setName("member").setDataType(DataType.FLOAT);
+    Variable.Builder<?> var = Variable.builder().setName("member").setArrayType(ArrayType.FLOAT);
     Structure struct = Structure.builder().setName("name").addMemberVariable(var)
         .addAttribute(new Attribute("att", "value")).build(makeDummyGroup());
-    assertThat(struct.getDataType()).isEqualTo(DataType.STRUCTURE);
+    assertThat(struct.getArrayType()).isEqualTo(ArrayType.STRUCTURE);
     assertThat(struct.getShortName()).isEqualTo("name");
     assertThat(struct.isScalar()).isTrue();
     assertThat(struct.getVariableNames()).hasSize(1);
     assertThat(struct.getVariableNames().get(0)).isEqualTo("member");
     assertThat(struct.getVariables()).hasSize(1);
     assertThat(struct.getVariables().get(0).getShortName()).isEqualTo("member");
-    assertThat(struct.getVariables().get(0).getDataType()).isEqualTo(DataType.FLOAT);
+    assertThat(struct.getVariables().get(0).getArrayType()).isEqualTo(ArrayType.FLOAT);
 
     assertThat(struct.getElementSize()).isEqualTo(4);
     assertThat(struct.isSubset()).isFalse();
@@ -37,7 +36,7 @@ public class TestStructure {
   public void testBuilderChain() {
     Structure struct =
         Structure.builder().setName("struct").addMemberVariables(ImmutableList.of()).build(makeDummyGroup());
-    assertThat(struct.getDataType()).isEqualTo(DataType.STRUCTURE);
+    assertThat(struct.getArrayType()).isEqualTo(ArrayType.STRUCTURE);
     assertThat(struct.getShortName()).isEqualTo("struct");
     assertThat(struct.getVariableNames()).hasSize(0);
     assertThat(struct.getVariables()).hasSize(0);
@@ -45,17 +44,17 @@ public class TestStructure {
 
   @Test
   public void testToBuilderChain() {
-    Variable.Builder<?> var = Variable.builder().setName("member").setDataType(DataType.FLOAT);
+    Variable.Builder<?> var = Variable.builder().setName("member").setArrayType(ArrayType.FLOAT);
     Structure struct = Structure.builder().setName("name").addMemberVariable(var).build(makeDummyGroup());
     Structure struct2 = struct.toBuilder().setName("s2").build(makeDummyGroup());
-    assertThat(struct2.getDataType()).isEqualTo(DataType.STRUCTURE);
+    assertThat(struct2.getArrayType()).isEqualTo(ArrayType.STRUCTURE);
     assertThat(struct2.getShortName()).isEqualTo("s2");
 
     assertThat(struct.getVariableNames()).hasSize(1);
     assertThat(struct.getVariableNames().get(0)).isEqualTo("member");
     assertThat(struct.getVariables()).hasSize(1);
     assertThat(struct.getVariables().get(0).getShortName()).isEqualTo("member");
-    assertThat(struct.getVariables().get(0).getDataType()).isEqualTo(DataType.FLOAT);
+    assertThat(struct.getVariables().get(0).getArrayType()).isEqualTo(ArrayType.FLOAT);
 
     assertThat(struct2.getElementSize()).isEqualTo(4);
     assertThat(struct2.isSubset()).isFalse();
@@ -63,14 +62,14 @@ public class TestStructure {
 
   @Test
   public void testNestedStructure() {
-    Variable.Builder<?> varb1 = Variable.builder().setName("var1").setDataType(DataType.FLOAT);
+    Variable.Builder<?> varb1 = Variable.builder().setName("var1").setArrayType(ArrayType.FLOAT);
     Structure.Builder<?> structb = Structure.builder().setName("top").addMemberVariable(varb1);
-    Variable.Builder<?> varb2 = Variable.builder().setName("var2").setDataType(DataType.FLOAT);
+    Variable.Builder<?> varb2 = Variable.builder().setName("var2").setArrayType(ArrayType.FLOAT);
     Structure.Builder<?> structb2 = Structure.builder().setName("nested").addMemberVariable(varb2);
 
     Structure struct = structb.addMemberVariable(structb2).build(makeDummyGroup());
 
-    assertThat(struct.getDataType()).isEqualTo(DataType.STRUCTURE);
+    assertThat(struct.getArrayType()).isEqualTo(ArrayType.STRUCTURE);
     assertThat(struct.getShortName()).isEqualTo("top");
     assertThat(struct.getElementSize()).isEqualTo(8);
 
@@ -81,25 +80,25 @@ public class TestStructure {
 
     Variable nestedVar = nested.findVariable("var2");
     assertThat(nestedVar).isNotNull();
-    assertThat(nestedVar.getDataType()).isEqualTo(DataType.FLOAT);
+    assertThat(nestedVar.getArrayType()).isEqualTo(ArrayType.FLOAT);
 
     assertThat(struct.getNumberOfMemberVariables()).isEqualTo(2);
     assertThat(nested.getNumberOfMemberVariables()).isEqualTo(1);
     assertThat(struct.findVariable(null)).isNull();
 
-    StructureMembers sm = struct.makeStructureMembers();
+    StructureMembers sm = struct.makeStructureMembersBuilder().setStandardOffsets(false).build();
     assertThat(sm.findMember("var1")).isNotNull();
     assertThat(sm.findMember("nested")).isNotNull();
 
-    StructureMembers smNested = nested.makeStructureMembers();
+    StructureMembers smNested = nested.makeStructureMembersBuilder().setStandardOffsets(false).build();
     assertThat(smNested.findMember("var1")).isNull();
     assertThat(smNested.findMember("var2")).isNotNull();
   }
 
   @Test
   public void testSelect() {
-    Variable.Builder<?> varb1 = Variable.builder().setName("var1").setDataType(DataType.FLOAT);
-    Variable.Builder<?> varb2 = Variable.builder().setName("var2").setDataType(DataType.INT);
+    Variable.Builder<?> varb1 = Variable.builder().setName("var1").setArrayType(ArrayType.FLOAT);
+    Variable.Builder<?> varb2 = Variable.builder().setName("var2").setArrayType(ArrayType.INT);
     Structure.Builder<?> structb =
         Structure.builder().setName("top").addMemberVariables(ImmutableList.of(varb1, varb2));
     Structure struct = structb.build(makeDummyGroup());
@@ -118,9 +117,9 @@ public class TestStructure {
   public void testAddMembers() {
     Group.Builder parent = Group.builder();
     Structure.Builder<?> structb = Structure.builder().setName("struct").setParentGroupBuilder(parent)
-        .addMemberVariable("one", DataType.BYTE, "").addMemberVariable("two", DataType.CHAR, "");
+        .addMemberVariable("one", ArrayType.BYTE, "").addMemberVariable("two", ArrayType.CHAR, "");
 
-    Variable.Builder<?> two = Variable.builder().setName("two").setDataType(DataType.FLOAT);
+    Variable.Builder<?> two = Variable.builder().setName("two").setArrayType(ArrayType.FLOAT);
     assertThat(structb.replaceMemberVariable(two)).isTrue();
 
     assertThat(structb.removeMemberVariable("one")).isTrue();

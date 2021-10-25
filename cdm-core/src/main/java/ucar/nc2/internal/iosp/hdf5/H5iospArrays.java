@@ -271,7 +271,7 @@ public class H5iospArrays extends H5iosp {
       }
     }
     if (vlenArray.length() == 1) {
-      return vlenArray.get();
+      return vlenArray.get(0);
     }
     return vlenArray;
   }
@@ -396,9 +396,9 @@ public class H5iospArrays extends H5iosp {
       throw new IOException("H5iosp illegal structure size " + s.getFullName());
     }
 
+    // We are going to directly use the bytes on the hdf5 heap (!) for the StructureDataStorageBB
     ByteBuffer hdf5bb = ByteBuffer.wrap(byteArray);
-    StructureDataStorageBB storage =
-        new StructureDataStorageBB(sm, ByteBuffer.wrap(byteArray), (int) Arrays.computeSize(shape));
+    StructureDataStorageBB storage = new StructureDataStorageBB(sm, hdf5bb, (int) Arrays.computeSize(shape));
 
     // strings and vlens are stored on the heap, and must be read separately
     if (hasHeap) {
@@ -445,25 +445,25 @@ public class H5iospArrays extends H5iosp {
   }
 
   // Reads the Strings and Vlens from the hdf5 heap into a structure data storage
-  private void readHeapData(ByteBuffer hdf5heap, StructureDataStorageBB storage, int pos, StructureMembers sm)
+  private void readHeapData(ByteBuffer storageBB, StructureDataStorageBB storage, int pos, StructureMembers sm)
       throws IOException {
 
     for (StructureMembers.Member m : sm.getMembers()) {
       ByteOrder endian = m.getByteOrder();
-      hdf5heap.order(endian);
+      storageBB.order(endian);
       if (m.getArrayType() == ArrayType.STRING) {
         int size = m.length();
         int destPos = pos + m.getOffset();
         String[] result = new String[size];
         for (int i = 0; i < size; i++) {
-          result[i] = header.readHeapString(hdf5heap, destPos + i * 16); // 16 byte "heap ids" are in the ByteBuffer
+          result[i] = header.readHeapString(storageBB, destPos + i * 16); // 16 byte "heap ids" are in the ByteBuffer
         }
 
         int index = storage.putOnHeap(result);
-        hdf5heap.order(endian); // write the string index in whatever that member's byte order is.
-        hdf5heap.putInt(destPos, index); // overwrite with the index into the StringHeap
+        storageBB.order(endian); // write the string index in whatever that member's byte order is.
+        storageBB.putInt(destPos, index); // overwrite with the index into the StringHeap
 
-      } else if (m.isVlen()) { // LOOK this may be wrong, needs testing
+      } else if (m.isVlen()) { // LOOK this sure looks wrong, needs testing
         int startPos = pos + m.getOffset();
         // hdf5heap.order(ByteOrder.LITTLE_ENDIAN); // why ?
 
@@ -474,16 +474,17 @@ public class H5iospArrays extends H5iosp {
         int readPos = startPos;
         for (int i = 0; i < size; i++) {
           // LOOK could we use readHeapPrimitiveArray(long globalHeapIdAddress, ArrayType dataType, int endian) ??
-          // header.readHeapVlen reads the vlen at destPos from H5 heap, into a ucar.ma2.Array primitive array. Structs
-          // not supported.
-          Array<?> vlen = header.readHeapVlen(hdf5heap, readPos, m.getArrayType(), endian);
+          // header.readHeapVlen reads the vlen at destPos from H5 heap, into an Array of T.
+          // Structs not supported.
+          Array<?> vlen = header.readHeapVlen(storageBB, readPos, m.getArrayType(), endian);
           vlenArray.set(i, vlen);
           readPos += VLEN_T_SIZE;
         }
         // put resulting ArrayVlen into the storage heap.
-        int index = storage.putOnHeap(vlenArray);
-        hdf5heap.order(endian);
-        hdf5heap.putInt(startPos, index); // overwrite with the index into the Heap
+        Array heapArray = vlenArray.length() == 1 ? vlenArray.get(0) : vlenArray;
+        int index = storage.putOnHeap(heapArray);
+        storageBB.order(endian);
+        storageBB.putInt(startPos, index); // overwrite with the index into the Heap
       }
     }
   }

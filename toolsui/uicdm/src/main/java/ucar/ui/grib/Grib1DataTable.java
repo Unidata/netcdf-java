@@ -2,7 +2,6 @@
  * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-
 package ucar.ui.grib;
 
 import com.google.common.collect.ImmutableList;
@@ -10,14 +9,15 @@ import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionAbstract;
 import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
-import ucar.ma2.Array;
-import ucar.ma2.DataType;
+import ucar.array.Array;
+import ucar.array.ArrayType;
+import ucar.array.Arrays;
 import ucar.nc2.grib.GribData;
 import ucar.nc2.grib.collection.Grib1Iosp;
 import ucar.nc2.grib.grib1.*;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.calendar.CalendarDate;
-import ucar.nc2.write.Ncdump;
+import ucar.nc2.write.NcdumpArray;
 import ucar.ui.widget.*;
 import ucar.ui.widget.PopupMenu;
 import ucar.nc2.util.Misc;
@@ -30,8 +30,15 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.*;
 import java.nio.ByteOrder;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Formatter;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 /** Show Grib1 data. */
 public class Grib1DataTable extends JPanel {
@@ -609,8 +616,8 @@ public class Grib1DataTable extends JPanel {
 
     } else {
       int[] shape = {bean.gdss.getNy(), bean.gdss.getNx()};
-      Array dataA = Array.factory(DataType.FLOAT, shape, data);
-      f.format("%s%n", Ncdump.printArray(dataA));
+      Array dataA = Arrays.factory(ArrayType.FLOAT, shape, data);
+      f.format("%s%n", NcdumpArray.printArray(dataA));
     }
 
     float max = -Float.MAX_VALUE;
@@ -662,7 +669,7 @@ public class Grib1DataTable extends JPanel {
     int count = 0;
     int bits = 0;
     for (byte b : bitmap) {
-      short s = DataType.unsignedByteToShort(b);
+      short s = ArrayType.unsignedByteToShort(b);
       bits += Long.bitCount(s);
       f.format("%8s", Long.toBinaryString(s));
       if (++count % 10 == 0)
@@ -905,7 +912,7 @@ public class Grib1DataTable extends JPanel {
       return info.nPoints;
     }
 
-    public String getDataType() {
+    public String getArrayType() {
       return info.getDataTypeS();
     }
 
