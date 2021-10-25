@@ -612,13 +612,14 @@ public class Arrays {
    * @param shape shape of resulting array. if not set, use 1 dim array of length npts.
    */
   public static <T> Array<T> makeArray(ArrayType type, int npts, double start, double incr, int... shape) {
-    Preconditions.checkArgument(type.isNumeric());
+    Preconditions.checkArgument(type.isNumeric() || type.isEnum());
     if (shape.length == 0) {
       shape = new int[] {npts};
     }
 
     Object pvals;
     switch (type) {
+      case ENUM1:
       case UBYTE:
       case BYTE: {
         byte[] bvals = new byte[npts];
@@ -644,6 +645,7 @@ public class Arrays {
         pvals = fvals;
         break;
       }
+      case ENUM4:
       case UINT:
       case INT: {
         int[] ivals = new int[npts];
@@ -653,6 +655,7 @@ public class Arrays {
         pvals = ivals;
         break;
       }
+      case ENUM2:
       case USHORT:
       case SHORT: {
         short[] svals = new short[npts];
