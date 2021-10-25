@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.internal.iosp.hdf5;
@@ -14,7 +14,6 @@ import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.nc2.write.Ncdump;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import java.io.File;
@@ -99,7 +98,6 @@ public class TestH5 {
       System.out.printf("%s%n", v);
 
       Array data = v.read();
-      logger.debug("{}", Ncdump.printArray(data, "offset data", null));
       Index ii = data.getIndex();
       assert (data.getLong(ii.set(11, 93)) == 1718796166693743L);
 
@@ -115,7 +113,6 @@ public class TestH5 {
       System.out.printf("%s%n", v);
 
       Array data = v.read();
-      logger.debug("{}", Ncdump.printArray(data, "offset data", null));
       Index ii = data.getIndex();
       assert (data.getDouble(ii.set(3, 2)) == 12.0);
 

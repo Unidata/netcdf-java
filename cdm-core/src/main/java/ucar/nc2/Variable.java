@@ -562,23 +562,6 @@ public class Variable implements VariableSimpleIF, ProxyReader {
 
   /**
    * Read a section of the data for this Variable from the netcdf file and return a memory resident Array.
-   *
-   * @param ranges list of Range specifying the section of data to read.
-   * @return the requested data in a memory-resident Array
-   * @throws IOException if error
-   * @deprecated use readArray(new Section(ranges))
-   */
-  @Deprecated
-  public ucar.ma2.Array read(List<ucar.ma2.Range> ranges) throws IOException, ucar.ma2.InvalidRangeException {
-    if (null == ranges) {
-      return ArraysConvert.convertFromArray(_read());
-    }
-
-    return read(new ucar.ma2.Section(ranges));
-  }
-
-  /**
-   * Read a section of the data for this Variable from the netcdf file and return a memory resident Array.
    * The Array has the same element type as the Variable, and the requested shape.
    * Note that this does not do rank reduction, so the returned Array has the same rank
    * as the Variable. Use Array.reduce() for rank reduction.

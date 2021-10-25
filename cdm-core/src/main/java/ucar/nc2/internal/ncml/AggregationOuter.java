@@ -693,24 +693,6 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   @Override
-  public ucar.ma2.Array reallyRead(Variable client, CancelTask cancelTask) throws IOException {
-    return ArraysConvert.convertFromArray(proxyReadArray(client, cancelTask));
-  }
-
-  @Override
-  public ucar.ma2.Array reallyRead(Variable client, ucar.ma2.Section section, CancelTask cancelTask)
-      throws IOException, ucar.ma2.InvalidRangeException {
-
-    ucar.array.Section oldSection = ArraysConvert.convertSection(section);
-    try {
-      Array<?> arrayData = proxyReadArray(client, oldSection, cancelTask);
-      return ArraysConvert.convertFromArray(arrayData);
-    } catch (ucar.array.InvalidRangeException e) {
-      throw new ucar.ma2.InvalidRangeException(e.getMessage());
-    }
-  }
-
-  @Override
   public Array<?> proxyReadArray(Variable mainv, Section section, CancelTask cancelTask)
       throws IOException, InvalidRangeException {
 

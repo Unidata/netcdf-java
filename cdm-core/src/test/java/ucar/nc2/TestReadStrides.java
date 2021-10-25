@@ -5,18 +5,18 @@
 package ucar.nc2;
 
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ucar.ma2.*;
-import ucar.unidata.util.test.UtilsMa2Test;
+import ucar.array.Arrays;
+import ucar.array.Index;
+import ucar.array.InvalidRangeException;
+import ucar.array.Array;
+import ucar.array.Range;
+import ucar.array.Section;
 import ucar.unidata.util.test.TestDir;
 import java.io.*;
-import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 
 /** Test reading variable data */
 public class TestReadStrides {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
   public void testReadStridesCached() throws IOException, InvalidRangeException {
@@ -25,7 +25,7 @@ public class TestReadStrides {
       assert (null != temp);
 
       // read entire array
-      Array A = temp.read("0:2,0:3");
+      Array<Double> A = (Array<Double>) temp.readArray(new Section("0:2,0:3"));
       assert (A.getRank() == 2);
 
       Index ima = A.getIndex();
@@ -35,12 +35,12 @@ public class TestReadStrides {
 
       for (int i = 0; i < shape[0]; i++) {
         for (int j = 0; j < shape[1]; j++) {
-          double dval = A.getDouble(ima.set(i, j));
+          double dval = A.get(ima.set(i, j));
           assert (dval == (double) (i * 10 + j)) : dval;
         }
       }
 
-      A = temp.read("0:2:1,0:3:1");
+      A = (Array<Double>) temp.readArray(new Section("0:2:1,0:3:1"));
       assert (A.getRank() == 2);
 
       ima = A.getIndex();
@@ -50,12 +50,12 @@ public class TestReadStrides {
 
       for (int i = 0; i < shape[0]; i++) {
         for (int j = 0; j < shape[1]; j++) {
-          double dval = A.getDouble(ima.set(i, j));
+          double dval = A.get(ima.set(i, j));
           assert (dval == (double) (i * 10 + j)) : dval;
         }
       }
 
-      A = temp.read("0:2:2,0:3:2");
+      A = (Array<Double>) temp.readArray(new Section("0:2:2,0:3:2"));
       assert (A.getRank() == 2);
 
       ima = A.getIndex();
@@ -65,12 +65,12 @@ public class TestReadStrides {
 
       for (int i = 0; i < shape[0]; i++) {
         for (int j = 0; j < shape[1]; j++) {
-          double dval = A.getDouble(ima.set(i, j));
+          double dval = A.get(ima.set(i, j));
           assert (dval == (double) (i * 20 + j * 2)) : dval;
         }
       }
 
-      A = temp.read(":,0:3:2");
+      A = (Array<Double>) temp.readArray(new Section(":,0:3:2"));
       assert (A.getRank() == 2);
 
       ima = A.getIndex();
@@ -80,12 +80,12 @@ public class TestReadStrides {
 
       for (int i = 0; i < shape[0]; i++) {
         for (int j = 0; j < shape[1]; j++) {
-          double dval = A.getDouble(ima.set(i, j));
+          double dval = A.get(ima.set(i, j));
           assert (dval == (double) (i * 10 + j * 2)) : dval;
         }
       }
 
-      A = temp.read("0:2:2,:");
+      A = (Array<Double>) temp.readArray(new Section("0:2:2,:"));
       assert (A.getRank() == 2);
 
       ima = A.getIndex();
@@ -95,7 +95,7 @@ public class TestReadStrides {
 
       for (int i = 0; i < shape[0]; i++) {
         for (int j = 0; j < shape[1]; j++) {
-          double dval = A.getDouble(ima.set(i, j));
+          double dval = A.get(ima.set(i, j));
           assert (dval == (double) (i * 20 + j)) : dval;
         }
       }
@@ -111,7 +111,7 @@ public class TestReadStrides {
       assert (null != temp);
       temp.setCaching(false);
 
-      Array A = temp.read("0:2:1,0:3:1");
+      Array<Double> A = (Array<Double>) temp.readArray(new Section("0:2:1,0:3:1"));
       assert (A.getRank() == 2);
 
       Index ima = A.getIndex();
@@ -121,12 +121,12 @@ public class TestReadStrides {
 
       for (int i = 0; i < shape[0]; i++) {
         for (int j = 0; j < shape[1]; j++) {
-          double dval = A.getDouble(ima.set(i, j));
+          double dval = A.get(ima.set(i, j));
           assert (dval == (double) (i * 10 + j)) : dval;
         }
       }
 
-      A = temp.read("0:2:2,0:3:2");
+      A = (Array<Double>) temp.readArray(new Section("0:2:2,0:3:2"));
       assert (A.getRank() == 2);
 
       ima = A.getIndex();
@@ -136,12 +136,12 @@ public class TestReadStrides {
 
       for (int i = 0; i < shape[0]; i++) {
         for (int j = 0; j < shape[1]; j++) {
-          double dval = A.getDouble(ima.set(i, j));
+          double dval = A.get(ima.set(i, j));
           assert (dval == (double) (i * 20 + j * 2)) : dval;
         }
       }
 
-      A = temp.read(":,0:3:2");
+      A = (Array<Double>) temp.readArray(new Section(":,0:3:2"));
       assert (A.getRank() == 2);
 
       ima = A.getIndex();
@@ -151,12 +151,12 @@ public class TestReadStrides {
 
       for (int i = 0; i < shape[0]; i++) {
         for (int j = 0; j < shape[1]; j++) {
-          double dval = A.getDouble(ima.set(i, j));
+          double dval = A.get(ima.set(i, j));
           assert (dval == (double) (i * 10 + j * 2)) : dval;
         }
       }
 
-      A = temp.read("0:2:2,:");
+      A = (Array<Double>) temp.readArray(new Section("0:2:2,:"));
       assert (A.getRank() == 2);
 
       ima = A.getIndex();
@@ -166,7 +166,7 @@ public class TestReadStrides {
 
       for (int i = 0; i < shape[0]; i++) {
         for (int j = 0; j < shape[1]; j++) {
-          double dval = A.getDouble(ima.set(i, j));
+          double dval = A.get(ima.set(i, j));
           assert (dval == (double) (i * 20 + j)) : dval;
         }
       }
@@ -192,7 +192,7 @@ public class TestReadStrides {
   }
 
   private void testVariableReadStrides(Variable v) throws IOException, InvalidRangeException {
-    Array allData = v.read();
+    Array<Double> allData = (Array<Double>) v.readArray();
 
     int[] shape = v.getShape();
     if (shape.length < 5)
@@ -208,9 +208,9 @@ public class TestReadStrides {
         }
 
         System.out.println(v.getFullName() + " test range= " + new Section(ranges));
-        Array sectionRead = v.read(ranges);
-        Array sectionMake = allData.sectionNoReduce(ranges);
-        UtilsMa2Test.testEquals(sectionRead, sectionMake);
+        Array<Double> sectionRead = (Array<Double>) v.readArray(new Section(ranges));
+        Array<Double> sectionMake = Arrays.section(allData, new Section(ranges));
+        Arrays.equalDoubles(sectionRead, sectionMake);
       }
     }
   }

@@ -16,7 +16,6 @@ import ucar.ma2.IndexIterator;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.nc2.write.Ncdump;
 import ucar.unidata.util.test.Assert2;
 
 /** Test NcML AggExisting ways to define coordinate variable values */
@@ -202,8 +201,6 @@ public class TestAggExistingCoordVars {
     assert data.getSize() == 3;
     assert data.getShape()[0] == 3;
     assert data.getElementType() == String.class;
-
-    logger.debug(Ncdump.printArray(data, "time coord", null));
 
     int count = 0;
     IndexIterator dataI = data.getIndexIterator();

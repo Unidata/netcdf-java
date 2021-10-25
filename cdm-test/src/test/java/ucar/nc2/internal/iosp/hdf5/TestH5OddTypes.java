@@ -17,7 +17,6 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.DebugFlags;
-import ucar.nc2.write.Ncdump;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import java.io.IOException;
@@ -49,7 +48,6 @@ public class TestH5OddTypes {
       Array data = v2.read();
       assert data.getElementType() == ByteBuffer.class : data.getElementType();
       System.out.println("data size= " + new Section(data.getShape()));
-      logger.debug("Opaque data = {}", Ncdump.printArray(data));
 
       Array odata = v2.read(new Section("1:20"));
       assert odata.getElementType() == ByteBuffer.class;
@@ -140,7 +138,6 @@ public class TestH5OddTypes {
     try (NetcdfFile ncfile = TestH5.openH5("support/cenum.h5")) {
       Variable v = ncfile.findVariable("enum");
       Array data = v.read();
-      logger.debug("enum data = {}", Ncdump.printArray(data));
       System.out.println("\n**** testReadNetcdf4 done\n\n" + ncfile);
     }
     H5header.setDebugFlags(DebugFlags.create(""));
