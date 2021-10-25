@@ -20,8 +20,8 @@ import ucar.unidata.util.test.TestDir;
 
 import static com.google.common.truth.Truth.assertThat;
 
-/** Test {@link Ncdump} */
-public class TestNcdump {
+/** Test {@link NcdumpArray */
+public class TestNcdumpArray {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   // Asserts that the issue identified in PCM-232977 has been fixed.
@@ -31,7 +31,7 @@ public class TestNcdump {
   public void testUnsignedFillValue() throws IOException {
     try (
         NetcdfFile ncfile = NetcdfDatasets.openFile(TestDir.cdmLocalTestDataDir + "testUnsignedFillValue.ncml", null)) {
-      Ncdump ncdump = Ncdump.builder(ncfile).setShowAllValues().build();
+      NcdumpArray ncdump = NcdumpArray.builder(ncfile).setShowAllValues().build();
       String ncdumpOut = ncdump.print();
 
       File expectedOutputFile = new File(TestDir.cdmLocalTestDataDir, "testUnsignedFillValueNew.dump");
@@ -45,7 +45,7 @@ public class TestNcdump {
   @Test
   public void testNestedGroups() throws IOException {
     try (NetcdfFile ncfile = NetcdfDatasets.openFile(TestDir.cdmLocalTestDataDir + "testNestedGroups.ncml", null)) {
-      Ncdump ncdump = Ncdump.builder(ncfile).setShowAllValues().build();
+      NcdumpArray ncdump = NcdumpArray.builder(ncfile).setShowAllValues().build();
       String ncdumpOut = ncdump.print();
 
       File expectedOutputFile = new File(TestDir.cdmLocalTestDataDir, "testNestedGroups.dump");

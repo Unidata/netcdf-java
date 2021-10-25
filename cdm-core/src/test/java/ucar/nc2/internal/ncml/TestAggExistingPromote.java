@@ -1,28 +1,22 @@
 /*
- * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.internal.ncml;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.lang.invoke.MethodHandles;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.IndexIterator;
-import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.nc2.write.Ncdump;
 
 /** Test promoting an attribute to a variable. */
 public class TestAggExistingPromote {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
   public void testWithDateFormatMark() throws Exception {
@@ -57,8 +51,6 @@ public class TestAggExistingPromote {
     assert datap.getShape()[0] == 3;
     assert datap.getElementType() == String.class;
 
-    logger.debug(Ncdump.printArray(datap, "time_coverage_end", null));
-
     String[] resultp = new String[] {"2006-06-07T12:00:00Z", "2006-06-07T13:00:00Z", "2006-06-07T14:00:00Z"};
     int count = 0;
     IndexIterator dataI = datap.getIndexIterator();
@@ -91,8 +83,6 @@ public class TestAggExistingPromote {
       assert data.getSize() == 3;
       assert data.getShape()[0] == 3;
       assert data.getElementType() == String.class;
-
-      logger.debug(Ncdump.printArray(data, "time coord", null));
 
       count = 0;
       dataI = data.getIndexIterator();
@@ -183,8 +173,6 @@ public class TestAggExistingPromote {
     assert datap.getSize() == dim.getLength();
     assert datap.getElementType() == String.class;
 
-    logger.debug(Ncdump.printArray(datap, "title", null));
-
     while (datap.hasNext())
       assert datap.next().equals("Example Data");
 
@@ -203,8 +191,6 @@ public class TestAggExistingPromote {
     assert datap.getRank() == 1;
     assert datap.getSize() == dim.getLength();
     assert datap.getElementType() == String.class;
-
-    logger.debug(Ncdump.printArray(datap, "title", null));
 
     int count = 0;
     while (datap.hasNext()) {

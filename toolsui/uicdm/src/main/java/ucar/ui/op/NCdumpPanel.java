@@ -8,10 +8,10 @@ package ucar.ui.op;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDatasets;
+import ucar.nc2.write.NcdumpArray;
 import ucar.ui.GetDataRunnable;
 import ucar.ui.GetDataTask;
 import ucar.ui.OpPanel;
-import ucar.nc2.write.Ncdump;
 import ucar.ui.widget.TextHistoryPane;
 import ucar.util.prefs.PreferencesExt;
 import java.awt.BorderLayout;
@@ -94,7 +94,7 @@ public class NCdumpPanel extends OpPanel implements GetDataRunnable {
       }
 
       StringWriter sw = new StringWriter(50000);
-      Ncdump.ncdump(ncfile, command, sw, task);
+      NcdumpArray.ncdump(ncfile, command, sw, task);
       result = sw.toString();
     } finally {
       try {
@@ -117,7 +117,7 @@ public class NCdumpPanel extends OpPanel implements GetDataRunnable {
 
     GetDataRunnable runner = o -> {
       StringWriter sw = new StringWriter(50000);
-      Ncdump.ncdump(ncfile, command, sw, task);
+      NcdumpArray.ncdump(ncfile, command, sw, task);
       result = sw.toString();
     };
     task = new GetDataTask(runner, filename, null);
