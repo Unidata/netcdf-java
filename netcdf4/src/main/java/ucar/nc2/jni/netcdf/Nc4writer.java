@@ -27,6 +27,7 @@ import java.util.Map;
 
 import ucar.array.ArrayType;
 import ucar.array.Arrays;
+import ucar.array.ArraysConvert;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayStructure;
 import ucar.ma2.ArrayStructureBB;
@@ -1247,7 +1248,12 @@ public class Nc4writer extends Nc4reader implements IospFileWriter {
   @Override
   public void writeData(Variable v2, ucar.array.Section section, ucar.array.Array<?> values)
       throws IOException, ucar.array.InvalidRangeException {
-    throw new UnsupportedOperationException();
+    // temporary kludge
+    try {
+      writeData(v2, ArraysConvert.convertSection(section), ArraysConvert.convertFromArray(values));
+    } catch (InvalidRangeException e) {
+      throw new ucar.array.InvalidRangeException(e);
+    }
   }
 
   @Override
