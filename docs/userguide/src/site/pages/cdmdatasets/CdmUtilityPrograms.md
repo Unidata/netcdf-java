@@ -28,7 +28,7 @@ By default, just the header (`ncdump -h`) is output.
 This application works on any [CDM file](../developer/file_types.html){:target="_blank"}, not just netCDF files.
 
 ~~~bash
-java -Xmx1g -classpath netcdfAll-<version>.jar ucar.nc2.write.Ncdump
+java -Xmx1g -classpath netcdfAll-<version>.jar ucar.nc2.write.NcdumpArray
     filepath [-cdl | -ncml] [-c | -vall] [-v varName1;varName2;..] [-v varName(0:1,:,12)]
 ~~~
 

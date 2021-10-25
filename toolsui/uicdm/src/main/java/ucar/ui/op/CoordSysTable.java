@@ -6,12 +6,9 @@
 package ucar.ui.op;
 
 import javax.annotation.Nullable;
-import ucar.ma2.Array;
-import ucar.ma2.ArrayChar;
-import ucar.ma2.ArrayDouble;
-import ucar.ma2.ArrayObject;
-import ucar.ma2.DataType;
-import ucar.ma2.IndexIterator;
+import ucar.array.Array;
+import ucar.array.ArrayType;
+import ucar.array.Arrays;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.Group;
@@ -20,7 +17,6 @@ import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.calendar.*;
 import ucar.nc2.internal.grid.DatasetClassifier;
-import ucar.nc2.write.Ncdump;
 import ucar.nc2.write.NcdumpArray;
 import ucar.ui.widget.BAMutil;
 import ucar.ui.widget.IndependentWindow;
@@ -275,56 +271,17 @@ public class CoordSysTable extends JPanel {
         }
 
       } else if (axis instanceof CoordinateAxis2D && axis.isNumeric()) {
-        infoTA.appendLine(Ncdump.printVariableData(axis, null));
+        infoTA.appendLine(NcdumpArray.printVariableData(axis, null));
         showValues2D((CoordinateAxis2D) axis);
 
       } else {
-        infoTA.appendLine(Ncdump.printVariableData(axis, null));
+        infoTA.appendLine(NcdumpArray.printVariableData(axis, null));
       }
 
     } catch (IOException e1) {
       e1.printStackTrace();
       infoTA.appendLine(e1.getMessage());
     }
-
-  }
-
-  private void showValues2D(CoordinateAxis2D axis2D) {
-    Formatter f = new Formatter();
-
-    if (axis2D.isInterval()) {
-      ArrayDouble.D2 coords = axis2D.getCoordValuesArray();
-      ArrayDouble.D3 bounds = axis2D.getCoordBoundsArray();
-      if (bounds == null) {
-        infoTA.appendLine("No bounds for interval " + axis2D.getFullName());
-        return;
-      }
-
-      int count = 0;
-      IndexIterator coordIter = coords.getIndexIterator();
-      IndexIterator boundsIter = bounds.getIndexIterator();
-      while (coordIter.hasNext()) {
-        double coordValue = coordIter.getDoubleNext();
-        if (!boundsIter.hasNext())
-          break;
-        double bounds1 = boundsIter.getDoubleNext();
-        if (!boundsIter.hasNext())
-          break;
-        double bounds2 = boundsIter.getDoubleNext();
-        f.format("%3d: %f (%f,%f) len=%f mid=%f%n", count, coordValue, bounds1, bounds2, bounds2 - bounds1,
-            (bounds2 + bounds1) / 2);
-        count++;
-      }
-
-    } else {
-      ArrayDouble.D2 coords = axis2D.getCoordValuesArray();
-      IndexIterator coordIter = coords.getIndexIterator();
-      while (coordIter.hasNext()) {
-        double coordValue = coordIter.getDoubleNext();
-        f.format("%f%n", coordValue);
-      }
-    }
-    infoTA.appendLine(f.toString());
   }
 
   private void showValueDiffs(CoordinateAxis axis) {
@@ -341,26 +298,30 @@ public class CoordSysTable extends JPanel {
 
       } else if (axis instanceof CoordinateAxis2D) {
         CoordinateAxis2D axis2D = (CoordinateAxis2D) axis;
-        ArrayDouble.D2 mids = axis2D.getCoordValuesArray();
+        Array<Double> mids = axis2D.getCoordValuesArray();
         int[] shape = mids.getShape();
-        ArrayDouble.D2 diffx = (ArrayDouble.D2) Array.factory(DataType.DOUBLE, new int[] {shape[0], shape[1] - 1});
+        int nx1 = shape[1] - 1;
+        double[] pdiffx = new double[shape[0] * nx1];
         for (int j = 0; j < shape[0]; j++) {
           for (int i = 0; i < shape[1] - 1; i++) {
             double diff = mids.get(j, i + 1) - mids.get(j, i);
-            diffx.set(j, i, diff);
+            pdiffx[j * nx1 + i] = diff;
           }
         }
-        infoTA.appendLine(Ncdump.printArray(diffx, "diff in x", null));
+        Array diffx = Arrays.factory(ArrayType.DOUBLE, new int[] {shape[0], nx1}, pdiffx);
+        infoTA.appendLine(NcdumpArray.printArray(diffx, "diff in x", null));
 
-        ArrayDouble.D2 diffy = (ArrayDouble.D2) Array.factory(DataType.DOUBLE, new int[] {shape[0] - 1, shape[1]});
+        int ny1 = shape[0] - 1;
+        double[] pdiffy = new double[ny1 * shape[1]];
         for (int j = 0; j < shape[0] - 1; j++) {
           for (int i = 0; i < shape[1]; i++) {
             double diff = mids.get(j + 1, i) - mids.get(j, i);
-            diffy.set(j, i, diff);
+            pdiffy[j * shape[1] + i] = diff;
           }
         }
         infoTA.appendLine("\n\n\n");
-        infoTA.appendLine(Ncdump.printArray(diffy, "diff in y", null));
+        Array diffy = Arrays.factory(ArrayType.DOUBLE, new int[] {ny1, shape[1]}, pdiffx);
+        infoTA.appendLine(NcdumpArray.printArray(diffy, "diff in y", null));
       }
 
     } catch (Exception e1) {
@@ -377,7 +338,7 @@ public class CoordSysTable extends JPanel {
 
     try {
       infoTA.appendLine(units);
-      infoTA.appendLine(Ncdump.printVariableData(axis, null));
+      infoTA.appendLine(NcdumpArray.printVariableData(axis, null));
 
       if (axis.getArrayType().isNumeric()) {
         if (axis instanceof CoordinateAxis2D) {
@@ -387,28 +348,29 @@ public class CoordSysTable extends JPanel {
           showDates1D((CoordinateAxis1D) axis, cdu);
 
         } else { // > 2D
-          Array data = axis.read();
-          IndexIterator ii = data.getIndexIterator();
-          while (ii.hasNext()) {
-            double val = ii.getDoubleNext();
-            infoTA.appendLine(makeCalendarDateStringOrMissing(cdu, val));
+          Array<Number> data = (Array<Number>) axis.readArray();
+          for (Number val : data) {
+            double dval = val.doubleValue();
+            infoTA.appendLine(makeCalendarDateStringOrMissing(cdu, dval));
           }
         }
 
       } else { // must be iso dates
-        Array data = axis.read();
+        Array data = axis.readArray();
         Formatter f = new Formatter();
-        if (data instanceof ArrayChar) {
-          ArrayChar dataS = (ArrayChar) data;
-          ArrayChar.StringIterator iter = dataS.getStringIterator();
-          while (iter.hasNext())
-            f.format(" %s%n", iter.next());
+        if (data.getArrayType() == ArrayType.CHAR) {
+          Array<Byte> dataS = (Array<Byte>) data;
+          Array<String> iter = Arrays.makeStringsFromChar(dataS);
+          for (String s : iter) {
+            f.format(" %s%n", s);
+          }
           infoTA.appendLine(f.toString());
 
-        } else if (data instanceof ArrayObject) {
-          IndexIterator iter = data.getIndexIterator();
-          while (iter.hasNext())
-            f.format(" %s%n", iter.next());
+        } else if (data.getArrayType() == ArrayType.STRING) {
+          Array<String> iter = (Array<String>) data;
+          for (String s : iter) {
+            f.format(" %s%n", s);
+          }
           infoTA.appendLine(f.toString());
         }
 
@@ -419,37 +381,57 @@ public class CoordSysTable extends JPanel {
     }
   }
 
-  private void showDates2D(CoordinateAxis2D axis2D, CalendarDateUnit cdu) {
+  private void showValues2D(CoordinateAxis2D axis2D) {
     Formatter f = new Formatter();
-    int count = 0;
 
     if (axis2D.isInterval()) {
-      ArrayDouble.D2 coords = axis2D.getCoordValuesArray();
-      ArrayDouble.D3 bounds = axis2D.getCoordBoundsArray();
+      Array<Double> coords = axis2D.getCoordValuesArray();
+      Array<Double> bounds = axis2D.getCoordBoundsArray();
       if (bounds == null) {
         infoTA.appendLine("No bounds for interval " + axis2D.getFullName());
         return;
       }
 
-      IndexIterator coordIter = coords.getIndexIterator();
-      IndexIterator boundsIter = bounds.getIndexIterator();
-      while (coordIter.hasNext()) {
-        double coordValue = coordIter.getDoubleNext();
-        if (!boundsIter.hasNext())
-          break;
-        double bounds1 = boundsIter.getDoubleNext();
-        if (!boundsIter.hasNext())
-          break;
-        double bounds2 = boundsIter.getDoubleNext();
-        f.format("%3d: %s (%s,%s)%n", count++, makeCalendarDateStringOrMissing(cdu, coordValue),
+      for (int count = 0; count < coords.getSize(); count++) {
+        double coordValue = coords.get(count);
+        double bounds1 = bounds.get(count, 0);
+        double bounds2 = bounds.get(count, 1);
+        f.format("%3d: %f (%f,%f) len=%f mid=%f%n", count, coordValue, bounds1, bounds2, bounds2 - bounds1,
+            (bounds2 + bounds1) / 2);
+      }
+
+    } else {
+      Array<Double> coords = axis2D.getCoordValuesArray();
+      for (double coordValue : coords) {
+        f.format("%f%n", coordValue);
+      }
+    }
+    infoTA.appendLine(f.toString());
+  }
+
+  private void showDates2D(CoordinateAxis2D axis2D, CalendarDateUnit cdu) {
+    Formatter f = new Formatter();
+
+    if (axis2D.isInterval()) {
+      Array<Double> coords = axis2D.getCoordValuesArray();
+      Array<Double> bounds = axis2D.getCoordBoundsArray();
+      if (bounds == null) {
+        infoTA.appendLine("No bounds for interval " + axis2D.getFullName());
+        return;
+      }
+
+      for (int idx = 0; idx < coords.getSize(); idx++) {
+        double coordValue = coords.get(idx);
+        double bounds1 = bounds.get(idx, 0);
+        double bounds2 = bounds.get(idx, 1);
+        f.format("%3d: %s (%s,%s)%n", idx, makeCalendarDateStringOrMissing(cdu, coordValue),
             makeCalendarDateStringOrMissing(cdu, bounds1), makeCalendarDateStringOrMissing(cdu, bounds2));
       }
 
     } else {
-      ArrayDouble.D2 coords = axis2D.getCoordValuesArray();
-      IndexIterator coordIter = coords.getIndexIterator();
-      while (coordIter.hasNext()) {
-        double coordValue = coordIter.getDoubleNext();
+      Array<Double> coords = axis2D.getCoordValuesArray();
+      int count = 0;
+      for (double coordValue : coords) {
         f.format("%3d: %s%n", count++, makeCalendarDateStringOrMissing(cdu, coordValue));
       }
     }
@@ -703,7 +685,7 @@ public class CoordSysTable extends JPanel {
 
       if (dcl.getCoordinateSystemsUsed().stream().filter(dsc -> dsc.getCoordinateSystem().equals(cs)).findAny()
           .isPresent()) {
-        addDataType("grid");
+        addArrayType("grid");
       }
     }
 
@@ -767,11 +749,11 @@ public class CoordSysTable extends JPanel {
       return this.coordSys.getProjection() == null ? "" : this.coordSys.getProjection().getName();
     }
 
-    public String getDataType() {
+    public String getArrayType() {
       return dataType;
     }
 
-    void addDataType(String dt) {
+    void addArrayType(String dt) {
       dataType = dataType + " " + dt;
     }
 

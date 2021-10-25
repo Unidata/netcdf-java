@@ -4,17 +4,16 @@
  */
 package ucar.nc2.dataset;
 
-import ucar.ma2.Array;
-import ucar.ma2.ArrayDouble;
-import ucar.ma2.DataType;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.MAMath;
-import ucar.ma2.Range;
+import ucar.array.Array;
+import ucar.array.ArrayType;
+import ucar.array.Arrays;
+import ucar.array.InvalidRangeException;
+import ucar.array.Range;
+import ucar.array.Section;
 import ucar.nc2.Group;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CF;
-import ucar.nc2.calendar.CalendarDate;
-import ucar.nc2.util.Misc;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +44,7 @@ public class CoordinateAxis2D extends CoordinateAxis {
   private void doRead() {
     Array data;
     try {
-      data = read();
+      data = readArray();
       // if (!hasCachedData()) setCachedData(data, false); //cache data for subsequent reading
     } catch (IOException ioe) {
       log.error("Error reading coordinate values " + ioe);
@@ -55,29 +54,31 @@ public class CoordinateAxis2D extends CoordinateAxis {
     if (data.getRank() != 2)
       throw new IllegalArgumentException("must be 2D");
 
-    coords = (ArrayDouble.D2) Array.factory(DataType.DOUBLE, data.getShape(), data.get1DJavaArray(DataType.DOUBLE));
+    coords = Arrays.toDouble(data);
 
-    if (this.axisType == AxisType.Lon)
-      makeConnectedLon(coords);
+    if (this.axisType == AxisType.Lon) {
+      coords = makeConnectedLon(coords);
+    }
   }
 
   public boolean isInterval() {
-    if (!intervalWasComputed)
+    if (!intervalWasComputed) {
       isInterval = computeIsInterval();
+    }
     return isInterval;
   }
 
-  private void makeConnectedLon(ArrayDouble.D2 mid) {
-
+  private Array<Double> makeConnectedLon(Array<Double> mid) {
     int[] shape = mid.getShape();
     int ny = shape[0];
     int nx = shape[1];
+    double[] result = new double[nx * ny];
 
     // first row
     double connect = mid.get(0, 0);
     for (int i = 1; i < nx; i++) {
       connect = connectLon(connect, mid.get(0, i));
-      mid.set(0, i, connect);
+      result[i] = connect;
     }
 
     // other rows
@@ -85,44 +86,29 @@ public class CoordinateAxis2D extends CoordinateAxis {
       connect = mid.get(j - 1, 0);
       for (int i = 0; i < nx; i++) {
         connect = connectLon(connect, mid.get(j, i));
-        mid.set(j, i, connect);
+        result[j * nx + i] = connect;
       }
     }
-
+    return Arrays.factory(ArrayType.DOUBLE, shape, result);
   }
 
   private static final double MAX_JUMP = 100.0; // larger than you would ever expect
 
   private static double connectLon(double connect, double val) {
-    if (Double.isNaN(connect))
+    if (Double.isNaN(connect) || Double.isNaN(val)) {
       return val;
-    if (Double.isNaN(val))
-      return val;
-
+    }
     double diff = val - connect;
-    if (Math.abs(diff) < MAX_JUMP)
+    if (Math.abs(diff) < MAX_JUMP) {
       return val; // common case fast
+    }
     // we have to add or subtract 360
     double result = diff > 0 ? val - 360 : val + 360;
     double diff2 = connect - result;
-    if ((Math.abs(diff2)) < Math.abs(diff))
+    if ((Math.abs(diff2)) < Math.abs(diff)) {
       val = result;
+    }
     return val;
-  }
-
-
-  /**
-   * Get the coordinate values as a 1D double array, in canonical order.
-   *
-   * @return coordinate values
-   * @throws UnsupportedOperationException if !isNumeric()
-   */
-  public double[] getCoordValues() {
-    if (coords == null)
-      doRead();
-    if (!isNumeric())
-      throw new UnsupportedOperationException("CoordinateAxis2D.getCoordValues() on non-numeric");
-    return (double[]) coords.get1DJavaArray(DataType.DOUBLE);
   }
 
   /**
@@ -137,12 +123,13 @@ public class CoordinateAxis2D extends CoordinateAxis {
     List<Range> section = new ArrayList<>();
     section.add(r1);
     section.add(r2);
-    return (CoordinateAxis2D) section(section);
+    return (CoordinateAxis2D) section(new Section(section));
   }
 
-  public ArrayDouble.D2 getCoordValuesArray() {
-    if (coords == null)
+  public Array<Double> getCoordValuesArray() {
+    if (coords == null) {
       doRead();
+    }
     return coords;
   }
 
@@ -151,152 +138,18 @@ public class CoordinateAxis2D extends CoordinateAxis {
    *
    * @return bounds array pr null if not an interval
    */
-  public ArrayDouble.D3 getCoordBoundsArray() {
-    if (coords == null)
+  public Array<Double> getCoordBoundsArray() {
+    if (coords == null) {
       doRead();
+    }
     return makeBoundsFromAux();
-  }
-
-  public ArrayDouble.D2 getEdges() {
-    ArrayDouble.D2 mids = getCoordValuesArray();
-    return makeEdges(mids);
-  }
-
-  /**
-   * @deprecated use getEdges()
-   */
-  @Deprecated
-  public ArrayDouble.D2 getXEdges() {
-    ArrayDouble.D2 mids = getCoordValuesArray();
-    return makeEdges(mids);
-  }
-
-  /**
-   * @deprecated use getEdges()
-   */
-  @Deprecated
-  public ArrayDouble.D2 getYEdges() {
-    ArrayDouble.D2 mids = getCoordValuesArray();
-    return makeEdges(mids);
-  }
-
-  /**
-   * Normal case: do something reasonable in deciding on the edges when we have the midpoints of a 2D coordinate.
-   *
-   * @param midpoints values of midpoints with shape (ny, nx)
-   * @return values of edges with shape (ny+1, nx+1)
-   */
-  public static ArrayDouble.D2 makeEdges(ArrayDouble.D2 midpoints) {
-    int[] shape = midpoints.getShape();
-    int ny = shape[0];
-    int nx = shape[1];
-    ArrayDouble.D2 edge = new ArrayDouble.D2(ny + 1, nx + 1);
-
-    for (int y = 0; y < ny - 1; y++) {
-      for (int x = 0; x < nx - 1; x++) {
-        // the interior edges are the average of the 4 surrounding midpoints
-        double xval =
-            (midpoints.get(y, x) + midpoints.get(y, x + 1) + midpoints.get(y + 1, x) + midpoints.get(y + 1, x + 1)) / 4;
-        edge.set(y + 1, x + 1, xval);
-      }
-      // extrapolate to exterior points
-      edge.set(y + 1, 0, edge.get(y + 1, 1) - (edge.get(y + 1, 2) - edge.get(y + 1, 1)));
-      edge.set(y + 1, nx, edge.get(y + 1, nx - 1) + (edge.get(y + 1, nx - 1) - edge.get(y + 1, nx - 2)));
-    }
-
-    // extrapolate to the first and last row
-    for (int x = 0; x < nx + 1; x++) {
-      edge.set(0, x, edge.get(1, x) - (edge.get(2, x) - edge.get(1, x)));
-      edge.set(ny, x, edge.get(ny - 1, x) + (edge.get(ny - 1, x) - edge.get(ny - 2, x)));
-    }
-
-    return edge;
-  }
-
-
-  /**
-   * Experimental: for WRF rotated (NMM "E") Grids
-   *
-   * @param midx x coordinates of midpoints
-   * @return x coordinates of edges with shape (ny+2, nx+1)
-   */
-  public static ArrayDouble.D2 makeXEdgesRotated(ArrayDouble.D2 midx) {
-    int[] shape = midx.getShape();
-    int ny = shape[0];
-    int nx = shape[1];
-    ArrayDouble.D2 edgex = new ArrayDouble.D2(ny + 2, nx + 1);
-
-    // compute the interior rows
-    for (int y = 0; y < ny; y++) {
-      for (int x = 1; x < nx; x++) {
-        double xval = (midx.get(y, x - 1) + midx.get(y, x)) / 2;
-        edgex.set(y + 1, x, xval);
-      }
-      edgex.set(y + 1, 0, midx.get(y, 0) - (edgex.get(y + 1, 1) - midx.get(y, 0)));
-      edgex.set(y + 1, nx, midx.get(y, nx - 1) - (edgex.get(y + 1, nx - 1) - midx.get(y, nx - 1)));
-    }
-
-    // compute the first row
-    for (int x = 0; x < nx; x++) {
-      edgex.set(0, x, midx.get(0, x));
-    }
-
-    // compute the last row
-    for (int x = 0; x < nx - 1; x++) {
-      edgex.set(ny + 1, x, midx.get(ny - 1, x));
-    }
-
-    return edgex;
-  }
-
-  /**
-   * Experimental: for WRF rotated (NMM "E") Grids
-   *
-   * @param midy y coordinates of midpoints
-   * @return y coordinates of edges with shape (ny+2, nx+1)
-   */
-  public static ArrayDouble.D2 makeYEdgesRotated(ArrayDouble.D2 midy) {
-    int[] shape = midy.getShape();
-    int ny = shape[0];
-    int nx = shape[1];
-    ArrayDouble.D2 edgey = new ArrayDouble.D2(ny + 2, nx + 1);
-
-    // compute the interior rows
-    for (int y = 0; y < ny; y++) {
-      for (int x = 1; x < nx; x++) {
-        double yval = (midy.get(y, x - 1) + midy.get(y, x)) / 2;
-        edgey.set(y + 1, x, yval);
-      }
-      edgey.set(y + 1, 0, midy.get(y, 0) - (edgey.get(y + 1, 1) - midy.get(y, 0)));
-      edgey.set(y + 1, nx, midy.get(y, nx - 1) - (edgey.get(y + 1, nx - 1) - midy.get(y, nx - 1)));
-    }
-
-    // compute the first row
-    for (int x = 0; x < nx; x++) {
-      double pt0 = midy.get(0, x);
-      double pt = edgey.get(2, x);
-
-      double diff = pt0 - pt;
-      edgey.set(0, x, pt0 + diff);
-    }
-
-    // compute the last row
-    for (int x = 0; x < nx - 1; x++) {
-      double pt0 = midy.get(ny - 1, x);
-      double pt = edgey.get(ny - 1, x);
-
-      double diff = pt0 - pt;
-      edgey.set(ny + 1, x, pt0 + diff);
-    }
-
-    return edgey;
   }
 
   ///////////////////////////////////////////////////////////////////////////////
   // bounds calculations
 
-
-  private ArrayDouble.D3 makeBoundsFromAux() {
+  /** makes bounds from a CF.BOUNDS variable. */
+  private Array<Double> makeBoundsFromAux() {
     if (!computeIsInterval())
       return null;
     String boundsVarName = attributes().findAttributeString(CF.BOUNDS, null);
@@ -305,25 +158,17 @@ public class CoordinateAxis2D extends CoordinateAxis {
     }
     VariableDS boundsVar = (VariableDS) getParentGroup().findVariableLocal(boundsVarName);
 
-    Array data;
+    Array<Number> data;
     try {
       // boundsVar.setUseNaNs(false); // missing values not allowed
-      data = boundsVar.read();
+      data = (Array<Number>) boundsVar.readArray();
     } catch (IOException e) {
       log.warn("CoordinateAxis2D.makeBoundsFromAux read failed ", e);
       return null;
     }
 
-    ArrayDouble.D3 bounds;
     assert (data.getRank() == 3) && (data.getShape()[2] == 2) : "incorrect shape data for variable " + boundsVar;
-    if (data instanceof ArrayDouble.D3) {
-      bounds = (ArrayDouble.D3) data;
-    } else {
-      bounds = (ArrayDouble.D3) Array.factory(DataType.DOUBLE, data.getShape());
-      MAMath.copy(data, bounds);
-    }
-
-    return bounds;
+    return Arrays.toDouble(data);
   }
 
   private boolean computeIsInterval() {
@@ -344,85 +189,9 @@ public class CoordinateAxis2D extends CoordinateAxis {
     return 2 == boundsVar.getDimension(2).getLength();
   }
 
-  ///////////////////////////////////////
-  // time
-
-  public CoordinateAxisTimeHelper getCoordinateAxisTimeHelper() {
-    return new CoordinateAxisTimeHelper(getCalendarFromAttribute(), getUnitsString());
-  }
-
-  public int findTimeIndexFromCalendarDate(int run_idx, CalendarDate want) {
-    CoordinateAxisTimeHelper helper = getCoordinateAxisTimeHelper();
-    double wantOffset = helper.offsetFromRefDate(want);
-
-    if (isInterval()) {
-      ArrayDouble.D3 bounds = getCoordBoundsArray();
-      if (bounds == null)
-        throw new IllegalStateException("getCoordBoundsArray returned null for coordinate " + getFullName());
-      ArrayDouble.D2 boundsForRun = (ArrayDouble.D2) bounds.slice(0, run_idx);
-
-      int idx = findSingleHit(boundsForRun, wantOffset);
-      if (idx >= 0)
-        return idx;
-      if (idx == -1)
-        return -1;
-      // multiple hits = choose closest to the midpoint
-      return findClosest(boundsForRun, wantOffset);
-
-    } else {
-      ArrayDouble.D2 values = getCoordValuesArray();
-      ArrayDouble.D1 valuesForRun = (ArrayDouble.D1) values.slice(0, run_idx);
-      for (int i = 0; i < valuesForRun.getSize(); i++) {
-        if (Misc.nearlyEquals(valuesForRun.get(i), wantOffset))
-          return i;
-      }
-      return -1;
-    }
-  }
-
-  // return index if only one match, if no matches return -1, if > 1 match return -nhits
-  private int findSingleHit(ArrayDouble.D2 boundsForRun, double target) {
-    int hits = 0;
-    int idxFound = -1;
-    int n = boundsForRun.getShape()[0];
-    for (int i = 0; i < n; i++) {
-      if (contains(target, boundsForRun.get(i, 0), boundsForRun.get(i, 1))) {
-        hits++;
-        idxFound = i;
-      }
-    }
-    if (hits == 1)
-      return idxFound;
-    if (hits == 0)
-      return -1;
-    return -hits;
-  }
-
-  // return index of closest value to target
-  private int findClosest(ArrayDouble.D2 boundsForRun, double target) {
-    double minDiff = Double.MAX_VALUE;
-    int idxFound = -1;
-    int n = boundsForRun.getShape()[0];
-    for (int i = 0; i < n; i++) {
-      double midpoint = (boundsForRun.get(i, 0) + boundsForRun.get(i, 1)) / 2.0;
-      double diff = Math.abs(midpoint - target);
-      if (diff < minDiff) {
-        minDiff = diff;
-        idxFound = i;
-      }
-    }
-    return idxFound;
-  }
-
-  private boolean contains(double target, double b1, double b2) {
-    if (b1 <= target && target <= b2)
-      return true;
-    return b1 >= target && target >= b2;
-  }
-
   ////////////////////////////////////////////////////////////////////////////////////////////
   // These are all calculated, I think?
-  private ArrayDouble.D2 coords;
+  private Array<Double> coords;
   private boolean isInterval;
   private boolean intervalWasComputed;
 

@@ -1,20 +1,16 @@
 /*
- * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-
 package ucar.nc2.dataset;
 
 import ucar.array.ArrayType;
-import ucar.ma2.Array;
-import ucar.ma2.ArrayChar;
-import ucar.ma2.DataType;
-import ucar.ma2.Index;
-import ucar.ma2.IndexIterator;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.MAMath;
-import ucar.ma2.Range;
-import ucar.ma2.Section;
+import ucar.array.Array;
+import ucar.array.Arrays;
+import ucar.array.Index;
+import ucar.array.InvalidRangeException;
+import ucar.array.Range;
+import ucar.array.Section;
 import ucar.nc2.Group;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CF;
@@ -683,9 +679,9 @@ public class CoordinateAxis1D extends CoordinateAxis {
       }
     }
 
-    Array cachedData = Array.factory(DataType.DOUBLE, getShape(), coords);
+    Array cachedData = Arrays.factory(ArrayType.DOUBLE, getShape(), coords);
     if (getArrayType() != ArrayType.DOUBLE)
-      cachedData = MAMath.convert(cachedData, getDataType());
+      cachedData = Arrays.toDouble(cachedData);
 
     builder.setSourceData(cachedData);
 
@@ -696,50 +692,49 @@ public class CoordinateAxis1D extends CoordinateAxis {
   // only used if String
   private void readStringValues() {
     int count = 0;
-    Array data;
+    Array<String> data;
     try {
-      data = read();
+      data = (Array<String>) readArray();
     } catch (IOException ioe) {
       log.error("Error reading string coordinate values ", ioe);
       throw new IllegalStateException(ioe);
     }
 
     names = new String[(int) data.getSize()];
-    IndexIterator ii = data.getIndexIterator();
-    while (ii.hasNext())
-      names[count++] = (String) ii.getObjectNext();
+    for (String s : data) {
+      names[count++] = s;
+    }
   }
 
   private void readCharValues() {
     int count = 0;
-    ArrayChar data;
+    Array<Byte> data;
     try {
-      data = (ArrayChar) read();
+      data = (Array<Byte>) readArray();
     } catch (IOException ioe) {
       log.error("Error reading char coordinate values ", ioe);
       throw new IllegalStateException(ioe);
     }
-    ArrayChar.StringIterator iter = data.getStringIterator();
-    names = new String[iter.getNumElems()];
-    while (iter.hasNext())
-      names[count++] = iter.next();
+    names = new String[(int) data.getSize()];
+    Array<String> sdata = Arrays.makeStringsFromChar(data);
+    for (String s : sdata) {
+      names[count++] = s;
+    }
   }
 
   protected void readValues() {
     Array data;
     try {
       // setUseNaNs(false); // missing values not allowed LOOK not true for point data !!
-      data = read();
+      data = readArray();
       // if (!hasCachedData()) setCachedData(data, false); //cache data for subsequent reading
     } catch (IOException ioe) {
       log.error("Error reading coordinate values ", ioe);
       throw new IllegalStateException(ioe);
     }
-
-    coords = (double[]) data.get1DJavaArray(DataType.DOUBLE);
-    // IndexIterator iter = data.getIndexIterator();
-    // while (iter.hasNext())
-    // coords[count++] = iter.getDoubleNext();
+    Array<Double> ddata = Arrays.toDouble(data);
+    Arrays.copyPrimitiveArray(ddata);
+    coords = (double[]) Arrays.copyPrimitiveArray(ddata);
   }
 
   /**
@@ -771,11 +766,11 @@ public class CoordinateAxis1D extends CoordinateAxis {
     if (2 != boundsVar.getDimension(1).getLength())
       return false;
 
-    Array data;
+    Array<Number> data;
     try {
       // LOOK this seems bogus
       // boundsVar.removeEnhancement(NetcdfDataset.Enhance.ConvertMissing); // Don't convert missing values to NaN.
-      data = boundsVar.read();
+      data = (Array<Number>) boundsVar.readArray();
     } catch (IOException e) {
       log.warn("CoordinateAxis1D.hasBounds read failed ", e);
       return false;
@@ -790,8 +785,8 @@ public class CoordinateAxis1D extends CoordinateAxis {
     Index ima = data.getIndex();
     for (int i = 0; i < n; i++) {
       ima.set0(i);
-      value1[i] = data.getDouble(ima.set1(0));
-      value2[i] = data.getDouble(ima.set1(1));
+      value1[i] = data.get(ima.set1(0)).doubleValue();
+      value2[i] = data.get(ima.set1(1)).doubleValue();
     }
 
     // decide if they are contiguous
