@@ -259,32 +259,6 @@ public class NetcdfFormatWriter implements Closeable {
   //// deprecated
 
   /**
-   * Write data to the given variable, origin assumed to be 0.
-   *
-   * @param v variable to write to
-   * @param values write this array; must be same type and rank as Variable
-   * @throws IOException if I/O error
-   * @throws ucar.ma2.InvalidRangeException if values Array has illegal shape
-   * @deprecated use {@link NetcdfFormatWriter#write(Variable, ucar.array.Index, ucar.array.Array)}
-   */
-  @Deprecated
-  public void write(Variable v, ucar.ma2.Array values) throws IOException, ucar.ma2.InvalidRangeException {
-    write(v, new int[values.getRank()], values);
-  }
-
-  /**
-   * Write data to the named variable, origin assumed to be 0.
-   *
-   * @deprecated use {@link NetcdfFormatWriter#write(Variable, ucar.array.Index, ucar.array.Array)}
-   */
-  @Deprecated
-  public void write(String varName, ucar.ma2.Array values) throws IOException, ucar.ma2.InvalidRangeException {
-    Variable v = findVariable(varName);
-    Preconditions.checkNotNull(v);
-    write(v, values);
-  }
-
-  /**
    * Write data to the given variable.
    *
    * @param v variable to write to
@@ -316,52 +290,6 @@ public class NetcdfFormatWriter implements Closeable {
     Variable v = findVariable(varName);
     Preconditions.checkNotNull(v);
     write(v, origin, values);
-  }
-
-  /**
-   * Write String data to a CHAR variable, origin assumed to be 0.
-   *
-   * @param v variable to write to
-   * @param values write this array; must be ArrayObject of String
-   * @throws IOException if I/O error
-   * @throws ucar.ma2.InvalidRangeException if values Array has illegal shape
-   * @deprecated use {@link NetcdfFormatWriter#writeStringData(Variable, Index, String)}
-   */
-  @Deprecated
-  public void writeStringDataToChar(Variable v, ucar.ma2.Array values)
-      throws IOException, ucar.ma2.InvalidRangeException {
-    writeStringDataToChar(v, new int[values.getRank()], values);
-  }
-
-  /**
-   * Write String data to a CHAR variable.
-   *
-   * @param v variable to write to
-   * @param origin offset to start writing, ignore the strlen dimension.
-   * @param values write this array; must be ArrayObject of String
-   * @throws IOException if I/O error
-   * @throws ucar.ma2.InvalidRangeException if values Array has illegal shape
-   * @deprecated use {@link NetcdfFormatWriter#writeStringData(Variable, Index, String)}
-   */
-  @Deprecated
-  public void writeStringDataToChar(Variable v, int[] origin, ucar.ma2.Array values)
-      throws IOException, ucar.ma2.InvalidRangeException {
-    if (values.getElementType() != String.class)
-      throw new IllegalArgumentException("values must be an ArrayObject of String ");
-
-    if (v.getArrayType() != ArrayType.CHAR)
-      throw new IllegalArgumentException("variable " + v.getFullName() + " is not type CHAR");
-
-    int rank = v.getRank();
-    int strlen = v.getShape(rank - 1);
-
-    // turn it into an ArrayChar
-    ucar.ma2.ArrayChar cvalues = ucar.ma2.ArrayChar.makeFromStringArray((ucar.ma2.ArrayObject) values, strlen);
-
-    int[] corigin = new int[rank];
-    System.arraycopy(origin, 0, corigin, 0, rank - 1);
-
-    write(v, corigin, cvalues);
   }
 
   /**

@@ -1,32 +1,30 @@
 /*
- * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-
 package ucar.nc2.write;
 
 import com.google.common.collect.ImmutableList;
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ucar.ma2.Array;
-import ucar.ma2.DataType;
-import ucar.ma2.InvalidRangeException;
+import ucar.array.Array;
+import ucar.array.ArrayType;
+import ucar.array.Arrays;
+import ucar.array.InvalidRangeException;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.internal.util.CompareNetcdf2;
+import ucar.nc2.internal.util.CompareArrayToArray;
+
+import static com.google.common.truth.Truth.assertThat;
 
 /** NetcdfFormatWriter tests */
 public class TestNetcdfFormatUpdater {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   /*
    * byte Band1(y, x);
@@ -49,45 +47,43 @@ public class TestNetcdfFormatUpdater {
     writerb.addUnlimitedDimension("time");
     writerb.addAttribute(new Attribute("name", "value"));
 
-    // public Variable addVariable(Group g, String shortName, DataType dataType, String dims) {
-    writerb.addVariable("time", DataType.INT, "time").addAttribute(new Attribute(CDM.UNSIGNED, "true"))
+    // public Variable addVariable(Group g, String shortName, ArrayType dataType, String dims) {
+    writerb.addVariable("time", ArrayType.INT, "time").addAttribute(new Attribute(CDM.UNSIGNED, "true"))
         .addAttribute(new Attribute(CDM.SCALE_FACTOR, 10.0))
         .addAttribute(Attribute.builder(CDM.VALID_RANGE).setValues(ImmutableList.of(10, 240), false).build());
 
     // write
     try (NetcdfFormatWriter writer = writerb.build()) {
-      Array data = Array.makeFromJavaArray(new int[] {0, 1, 2, 3});
-      writer.write("time", data);
+      Array data = Arrays.factory(ArrayType.INT, new int[] {4}, new int[] {0, 1, 2, 3});
+      writer.write(writer.findVariable("time"), data.getIndex(), data);
     }
 
     // open existing, add data along unlimited dimension
     try (NetcdfFormatWriter writer = NetcdfFormatWriter.openExisting(filename).setFill(false).build()) {
       Variable time = writer.findVariable("time");
-      assert time.getSize() == 4 : time.getSize();
+      assertThat(time.getSize()).isEqualTo(4);
 
-      Array data = Array.makeFromJavaArray(new int[] {4, 5, 6});
-      int[] origin = new int[] {(int) time.getSize()};
-      writer.write("time", origin, data);
+      Array data = Arrays.factory(ArrayType.INT, new int[] {3}, new int[] {4, 5, 6});
+      writer.write(writer.findVariable("time"), data.getIndex().set((int) time.getSize()), data);
     }
 
     // read it back
     try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
       Variable vv = ncfile.getRootGroup().findVariableLocal("time");
-      assert vv.getSize() == 7 : vv.getSize();
+      assertThat(vv.getSize()).isEqualTo(7);
 
-      Array expected = Array.makeArray(DataType.INT, 7, 0, 1);
-      Array data = vv.read();
-      assert CompareNetcdf2.compareData("time", expected, data);
+      Array expected = Arrays.makeArray(ArrayType.INT, 7, 0, 1);
+      Array data = vv.readArray();
+      assertThat(CompareArrayToArray.compareData("time", expected, data)).isTrue();
     }
 
     // open existing, add more data along unlimited dimension
     try (NetcdfFormatWriter writer = NetcdfFormatWriter.openExisting(filename).setFill(false).build()) {
       Variable time = writer.findVariable("time");
-      assert time.getSize() == 7 : time.getSize();
+      assertThat(time.getSize()).isEqualTo(7);
 
-      Array data = Array.makeFromJavaArray(new int[] {7, 8});
-      int[] origin = new int[] {(int) time.getSize()};
-      writer.write("time", origin, data);
+      Array data = Arrays.factory(ArrayType.INT, new int[] {2}, new int[] {7, 8});
+      writer.write(writer.findVariable("time"), data.getIndex().set((int) time.getSize()), data);
     }
 
     // read it back
@@ -95,9 +91,9 @@ public class TestNetcdfFormatUpdater {
       Variable vv = ncfile.getRootGroup().findVariableLocal("time");
       assert vv.getSize() == 9 : vv.getSize();
 
-      Array expected = Array.makeArray(DataType.INT, 9, 0, 1);
-      Array data = vv.read();
-      assert CompareNetcdf2.compareData("time", expected, data);
+      Array expected = Arrays.makeArray(ArrayType.INT, 9, 0, 1);
+      Array data = vv.readArray();
+      assertThat(CompareArrayToArray.compareData("time", expected, data)).isTrue();
     }
   }
 }
