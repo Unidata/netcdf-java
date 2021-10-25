@@ -28,7 +28,7 @@ The simplest use of NcML is to describe the metadata and structural content of a
 * In the NetCDF-Java library, use `NetcdfFile.writeNcML()` or `NcMLWriter().writeXML()`.
 * Use the NetCDF-Java library `ncdump` application:
   ~~~bash
-  java -classpath netcdfAll.jar ucar.nc2.write.Ncdump <NetCDF-3 filename> -ncml
+  java -classpath netcdfAll.jar ucar.nc2.write.NcdumpArray <NetCDF-3 filename> -ncml
   ~~~
 * In the netCDF C library, version 3.6.1 or later , use `ncdump -x<NetCDF filename>`
 

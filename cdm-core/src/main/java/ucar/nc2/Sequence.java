@@ -80,13 +80,6 @@ public class Sequence extends Structure implements Iterable<ucar.array.Structure
 
   /** @throws UnsupportedOperationException always */
   @Override
-  @Deprecated
-  public ucar.ma2.Array read(List<ucar.ma2.Range> ranges) {
-    throw new UnsupportedOperationException();
-  }
-
-  /** @throws UnsupportedOperationException always */
-  @Override
   public Variable slice(int dim, int value) {
     throw new UnsupportedOperationException();
   }

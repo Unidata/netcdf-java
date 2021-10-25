@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-
 package ucar.nc2.dataset;
 
 import com.google.common.collect.ImmutableList;
@@ -10,22 +9,21 @@ import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.array.ArrayType;
-import ucar.ma2.Array;
-import ucar.ma2.ArrayChar;
-import ucar.ma2.ArrayObject;
-import ucar.ma2.DataType;
-import ucar.ma2.Index;
-import ucar.ma2.IndexIterator;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Range;
+import ucar.array.Array;
+import ucar.array.Arrays;
+import ucar.array.InvalidRangeException;
+import ucar.array.Range;
 import ucar.nc2.Group;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.calendar.CalendarDateRange;
 import ucar.nc2.units.TimeUnit;
 import ucar.nc2.Dimension;
-import java.util.*;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Formatter;
+import java.util.List;
+import java.util.StringTokenizer;
 
 /**
  * A 1-dimensional Coordinate Axis representing Calendar time.
@@ -68,8 +66,9 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
    */
   private static CoordinateAxis1DTime fromStringVarDS(@Nullable NetcdfDataset ncd, VariableDS org,
       List<Dimension> dims) {
-    CoordinateAxis1DTime.Builder<?> builder = CoordinateAxis1DTime.builder().setName(org.getShortName())
-        .setDataType(DataType.STRING).setUnits(org.getUnitsString()).setDesc(org.getDescription()).setDimensions(dims);
+    CoordinateAxis1DTime.Builder<?> builder =
+        CoordinateAxis1DTime.builder().setName(org.getShortName()).setArrayType(ArrayType.STRING)
+            .setUnits(org.getUnitsString()).setDesc(org.getDescription()).setDimensions(dims);
     builder.setOriginalVariable(org).setOriginalName(org.getOriginalName());
 
     builder.setTimeHelper(new CoordinateAxisTimeHelper(getCalendarFromAttribute(ncd, org.attributes()), null));
@@ -100,12 +99,11 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
     // make the coordinates
     int ncoords = (int) org.getSize();
     List<CalendarDate> result = new ArrayList<>(ncoords);
-    Array data = org.read();
+    Array<Number> data = (Array<Number>) org.readArray();
 
     int count = 0;
-    IndexIterator ii = data.getIndexIterator();
     for (int i = 0; i < ncoords; i++) {
-      double val = ii.getDoubleNext();
+      double val = data.get(i).doubleValue();
       if (Double.isNaN(val))
         continue; // LOOK ??
       // LOOK
@@ -113,25 +111,27 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
       count++;
     }
 
-    // if we encountered NaNs, shorten it up
     ArrayList<Dimension> dims = new ArrayList<>(org.getDimensions());
-    if (count != ncoords) {
-      Dimension localDim = Dimension.builder(org.getShortName(), count).setIsShared(false).build();
-      dims.set(0, localDim);
-
-      // set the shortened values
-      Array shortData = Array.factory(data.getDataType(), new int[] {count});
-      Index ima = shortData.getIndex();
-      int count2 = 0;
-      ii = data.getIndexIterator();
-      for (int i = 0; i < ncoords; i++) {
-        double val = ii.getDoubleNext();
-        if (Double.isNaN(val))
-          continue;
-        shortData.setDouble(ima.set0(count2), val);
-        count2++;
-      }
-    }
+    /*
+     * if we encountered NaNs, shorten it up
+     * if (count != ncoords) {
+     * Dimension localDim = Dimension.builder(org.getShortName(), count).setIsShared(false).build();
+     * dims.set(0, localDim);
+     * 
+     * // set the shortened values
+     * Array shortData = Array.factory(data.getArrayType(), new int[] {count});
+     * Index ima = shortData.getIndex();
+     * int count2 = 0;
+     * ii = data.getIndexIterator();
+     * for (int i = 0; i < ncoords; i++) {
+     * double val = ii.getDoubleNext();
+     * if (Double.isNaN(val))
+     * continue;
+     * shortData.setDouble(ima.set0(count2), val);
+     * count2++;
+     * }
+     * }
+     */
     builder.setCalendarDates(result);
     builder.setDimensions(dims);
     builder.addAttributes(org.attributes());
@@ -260,7 +260,7 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
 
   @Override
   protected void readValues() {
-    // if DataType is not numeric, handle special
+    // if ArrayType is not numeric, handle special
     if (!this.dataType.isNumeric()) {
       long base = cdates.get(0).getMillisFromEpoch();
       this.coords = cdates.stream().mapToDouble(cdate -> (double) (cdate.getMillisFromEpoch() - base)).toArray();
@@ -290,12 +290,12 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
 
     List<CalendarDate> result = new ArrayList<>(ncoords);
 
-    ArrayChar data = (ArrayChar) org.read();
-    ArrayChar.StringIterator ii = data.getStringIterator();
+    Array<Byte> data = (Array<Byte>) org.readArray();
+    Array<String> sdata = Arrays.makeStringsFromChar(data);
 
     String[] dateStrings = new String[ncoords];
     for (int i = 0; i < ncoords; i++) {
-      String coordValue = ii.next();
+      String coordValue = sdata.get(i);
       CalendarDate cd = makeCalendarDateFromStringCoord(coordValue, org, errMessages);
       dateStrings[i] = coordValue;
       result.add(cd);
@@ -308,10 +308,9 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
     int ncoords = (int) org.getSize();
     List<CalendarDate> result = new ArrayList<>(ncoords);
 
-    ArrayObject data = (ArrayObject) org.read();
-    IndexIterator ii = data.getIndexIterator();
+    Array<String> data = (Array<String>) org.readArray();
     for (int i = 0; i < ncoords; i++) {
-      String coordValue = (String) ii.getObjectNext();
+      String coordValue = data.get(i);
       CalendarDate cd = makeCalendarDateFromStringCoord(coordValue, org, errMessages);
       result.add(cd);
     }
@@ -331,23 +330,6 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
     return cd;
   }
 
-
-  ///////////////////////////////////////////////////////
-
-  /**
-   * Does not handle non-standard Calendars
-   *
-   * @deprecated use getCalendarDates().
-   */
-  @Deprecated
-  public java.util.Date[] getTimeDates() {
-    List<CalendarDate> cdates = getCalendarDates();
-    Date[] timeDates = new Date[cdates.size()];
-    int index = 0;
-    for (CalendarDate cd : cdates)
-      timeDates[index++] = cd.toDate();
-    return timeDates;
-  }
 
   ////////////////////////////////////////////////////////////////////////////////////////////
   private final CoordinateAxisTimeHelper helper;
