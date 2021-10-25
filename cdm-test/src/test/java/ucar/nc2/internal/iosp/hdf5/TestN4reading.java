@@ -11,10 +11,17 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.*;
+import ucar.array.ArrayType;
+import ucar.array.Index;
+import ucar.array.InvalidRangeException;
+import ucar.array.Section;
+import ucar.array.Array;
+import ucar.array.StructureData;
+import ucar.array.StructureDataArray;
+import ucar.array.StructureMembers;
 import ucar.nc2.*;
 import ucar.nc2.iosp.NetcdfFormatUtils;
-import ucar.nc2.write.Ncdump;
+import ucar.nc2.write.NcdumpArray;
 import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
@@ -23,6 +30,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.List;
 
 import static com.google.common.truth.Truth.assertThat;
+import static org.junit.Assert.assertThrows;
 
 /**
  * Test netcdf-4 reading of misc files
@@ -47,9 +55,9 @@ public class TestN4reading {
     try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
       Variable v = ncfile.findVariable("temp");
       for (Section sect : sections) {
-        Array data = v.read(sect);
+        Array data = v.readArray(sect);
         if (0 < countMissing(data)) {
-          Array data2 = v.read(sect);
+          Array data2 = v.readArray(sect);
           countMissing(data2);
           assert false;
         }
@@ -58,15 +66,14 @@ public class TestN4reading {
     }
   }
 
-  private int countMissing(Array data) {
+  private int countMissing(Array<Number> data) {
     int count = 0;
-    while (data.hasNext()) {
-      float val = data.nextFloat();
-      if (val == NetcdfFormatUtils.NC_FILL_FLOAT) {
+    for (Number val : data) {
+      float fval = val.floatValue();
+      if (fval == NetcdfFormatUtils.NC_FILL_FLOAT) {
         count++;
       }
     }
-    logger.debug(" missing= {}/{}", count, data.getSize());
     return count;
   }
 
@@ -77,9 +84,9 @@ public class TestN4reading {
     String filename = testDir + "multiDimscale.nc4";
     try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
       Variable v = ncfile.findVariable("siglev");
-      v.read();
+      v.readArray();
       v = ncfile.findVariable("siglay");
-      v.read();
+      v.readArray();
       logger.debug("**** testMultiDimScale read ok\n{}", ncfile);
     }
   }
@@ -118,55 +125,38 @@ public class TestN4reading {
     try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
       logger.debug("**** testReadNetcdf4 done\n{}", ncfile);
       Variable v = ncfile.findVariable("measure_for_measure_var");
-      Array data = v.read();
-      logger.debug(Ncdump.printArray(data, "measure_for_measure_var", null));
+      Array data = v.readArray();
+      logger.debug(NcdumpArray.printArray(data, "measure_for_measure_var", null));
     }
   }
 
   @Test
   public void testVlen() throws IOException, InvalidRangeException {
-    // H5header.setDebugFlags(DebugFlags.create("H5header/header"));
-    // String filename = "C:/data/work/bruno/fpsc_d1wave_24-11.nc";
     String filename = testDir + "vlen/fpcs_1dwave_2.nc";
     try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
       logger.debug("**** testVlen open\n{}", ncfile);
       Variable v = ncfile.findVariable("levels");
-      Array data = v.read();
-      logger.debug(Ncdump.printArray(data, "read()", null));
+      Array data = v.readArray();
+      System.out.printf("%s%n", NcdumpArray.printArray(data, "read()", null));
 
       int count = 0;
-      while (data.hasNext()) {
-        Array as = (Array) data.next();
-        logger.debug(Ncdump.printArray(as, " " + count, null));
+      for (Object o : data) {
         count++;
       }
+      assertThat(count).isEqualTo(10);
 
       // try subset
-      data = v.read("0:9:2, :");
-      logger.debug(Ncdump.printArray(data, "read(0:9:2,:)", null));
-
-      data = v.read(Section.builder().appendRange(0, 9, 2).appendRangeAll().build());
-      logger.debug(Ncdump.printArray(data, "read(Section)", null));
-
-      // fail
-      // int[] origin = new int[] {0, 0};
-      // int[] size = new int[] {3, -1};
-      // data = v.read(origin, size);
+      Array data2 = v.readArray(new Section("0:9:2, :"));
+      assertThat(data2.getShape()).isEqualTo(new int[] {5});
+      assertThat(data2.getSize()).isEqualTo(5);
 
       // from bruno
-      int initialIndex = 5;
-      int finalIndex = 5;
-      data = v.read(initialIndex + ":" + finalIndex + ",:");
-
-      logger.debug("Size: {}", data.getSize());
-      logger.debug("Data: {}", data);
-      logger.debug("Class: {}", data.getClass().getName());
-      // loop over outer dimension
-
-      while (data.hasNext()) {
-        Array as = (Array) data.next(); // inner variable length array of short
-        logger.debug("Shape: {}", new Section(as.getShape()));
-        logger.debug(as.toString());
+      Array<Short> data3 = (Array<Short>) v.readArray(new Section("5:5,:"));
+      assertThat(data3.getSize()).isEqualTo(10);
+      short[] expected = new short[] {6, 6, 6, 7, 8, 9, 10, 11, 12, 13};
+      int i = 0;
+      for (Short val : data3) {
+        assertThat(val).isEqualTo(expected[i++]);
       }
     }
   }
@@ -177,40 +167,21 @@ public class TestN4reading {
     try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
       logger.debug("**** testVlen2 open\n{}", ncfile);
       Variable v = ncfile.findVariable("ragged_array");
-      Array data = v.read();
-      logger.debug(Ncdump.printArray(data, "read()", null));
+      Array data = v.readArray();
 
-      assert data instanceof ArrayObject;
-      int row = 0;
-      while (data.hasNext()) {
-        Object vdata = data.next();
-        assert vdata instanceof Array;
-        assert vdata instanceof ArrayFloat;
-        assert vdata instanceof ArrayFloat.D1;
-        logger.debug("{} len {}", row++, ((Array) vdata).getSize());
+      for (Object o : data) {
+        Array vdata = (Array) o;
+        assertThat(vdata.getArrayType()).isEqualTo(ArrayType.FLOAT);
       }
 
       // try subset
-      data = v.read("0:4:2,:");
-      logger.debug(Ncdump.printArray(data, "read(0:4:2,:)", null));
-      assert data instanceof ArrayObject;
-      row = 0;
-      while (data.hasNext()) {
-        Object vdata = data.next();
-        assert vdata instanceof Array;
-        assert vdata instanceof ArrayFloat;
-        assert vdata instanceof ArrayFloat.D1;
-        logger.debug("{} len {}", row++, ((Array) vdata).getSize());
+      data = v.readArray(new Section("0:4:2,:"));
+      for (Object o : data) {
+        Array vdata = (Array) o;
+        assertThat(vdata.getArrayType()).isEqualTo(ArrayType.FLOAT);
       }
 
-      try {
-        // should fail
-        data = v.read(":,0");
-        assert false;
-      } catch (InvalidRangeException e) {
-        assert true;
-      }
-
+      assertThrows(InvalidRangeException.class, () -> v.readArray(new Section(":,0")));
     }
 
   }
@@ -237,16 +208,16 @@ public class TestN4reading {
 
       Variable dset = ncfile.findVariable("x");
       assert (null != ncfile.findVariable("x"));
-      assert (dset.getDataType() == DataType.STRUCTURE);
+      assert (dset.getArrayType() == ArrayType.STRUCTURE);
       assert (dset.getRank() == 0);
       assert (dset.getSize() == 1);
 
-      ArrayStructure data = (ArrayStructure) dset.read();
+      StructureDataArray data = (StructureDataArray) dset.readArray();
       StructureMembers.Member m = data.getStructureMembers().findMember("field2");
       assert m != null;
-      assert (m.getDataType() == DataType.STRUCTURE);
+      assert (m.getArrayType() == ArrayType.STRUCTURE);
 
-      logger.debug("{}", Ncdump.printArray(data, "", null));
+      logger.debug("{}", NcdumpArray.printArray(data, "", null));
 
     }
     logger.debug("*** testNestedStructure ok");
@@ -274,7 +245,7 @@ public class TestN4reading {
       Structure s = (Structure) v;
       Variable v2 = s.findVariable("tempMin");
       assert v2 != null;
-      assert v2.getDataType() == DataType.FLOAT;
+      assert v2.getArrayType() == ArrayType.FLOAT;
 
       assert null != v2.findAttribute("units");
       assert null != v2.findAttribute("coordinates");
@@ -294,7 +265,7 @@ public class TestN4reading {
       Structure s = (Structure) v;
       Variable v2 = s.findVariable("field0");
       assert v2 != null;
-      assert v2.getDataType() == DataType.FLOAT;
+      assert v2.getArrayType() == ArrayType.FLOAT;
 
       Attribute att = v2.findAttribute("att_primitive_test");
       assert !att.isString();
@@ -323,29 +294,29 @@ public class TestN4reading {
     try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
       logger.debug("**** testReadNetcdf4 done\n{}", ncfile);
       Variable v = ncfile.findVariable("fun_soundings");
-      Array data = v.read();
-      logger.debug(Ncdump.printArray(data, "fun_soundings", null));
+      Array data = v.readArray();
+      System.out.printf("testCompoundVlens %s%n", NcdumpArray.printArray(data, "fun_soundings", null));
 
-      assert data instanceof ArrayStructure;
-      ArrayStructure as = (ArrayStructure) data;
+      assertThat(data).isInstanceOf(StructureDataArray.class);
+      assertThat(data.getSize()).isEqualTo(3);
+
+      StructureDataArray as = (StructureDataArray) data;
       int index = 2;
-      String member = "temp_vl";
-      StructureData sdata = as.getStructureData(2);
-      Array vdata = sdata.getArray("temp_vl");
-      assert vdata instanceof ArrayFloat;
-      logger.debug("the {} record has {} elements for vlen member {}\n", index, vdata.getSize(), member);
-      assert vdata.getSize() == 3;
-      Index ii = vdata.getIndex();
-      Assert2.assertNearlyEquals(vdata.getFloat(ii.set(2)), 21.5);
-
       String memberName = "temp_vl";
+      StructureData sdata = as.get(2);
+      // LOOK, should we unwrap a layer?
+      // Array<Array<Float>> vvdata = (Array<Array<Float>>) sdata.getMemberData(memberName);
+      // Array<Float> vdata = vvdata.get(0);
+      Array<Float> vdata = (Array<Float>) sdata.getMemberData(memberName);
+      assertThat(vdata.getSize()).isEqualTo(3);
+      Index ii = vdata.getIndex();
+      Assert2.assertNearlyEquals(vdata.get(ii.set(2)), 21.5f);
+
       int count = 0;
       Structure s = (Structure) v;
-      StructureDataIterator siter = s.getStructureIterator();
-      siter.reset();
-      while (siter.hasNext()) {
-        StructureData sdata2 = siter.next();
-        Array vdata2 = sdata2.getArray(memberName);
+      Array<StructureData> siter = (Array<StructureData>) s.readArray();
+      for (StructureData sdata2 : siter) {
+        Array vdata2 = sdata2.getMemberData(memberName);
         logger.debug("iter {} has {} elements for vlen member {}", count++, vdata2.getSize(), memberName);
       }
     }
@@ -375,25 +346,20 @@ public class TestN4reading {
       logger.debug("**** testReadNetcdf4 done\n{}" + ncfile);
       Variable v = ncfile.findVariable("tim_records");
       int[] vshape = v.getShape();
-      Array data = v.read();
-      logger.debug(Ncdump.printArray(data, v.getFullName(), null));
+      Array data = v.readArray();
 
-      assert data instanceof ArrayStructure;
-      ArrayStructure as = (ArrayStructure) data;
+      assert data instanceof StructureDataArray;
+      StructureDataArray as = (StructureDataArray) data;
       assert as.getSize() == vshape[0]; // int loopDataA(1, *, *);
-      StructureData sdata = as.getStructureData(0);
-      Array vdata = sdata.getArray("loopDataA");
-      logger.debug(Ncdump.printArray(vdata, "loopDataA", null));
+      StructureData sdata = as.get(0);
 
-      assert vdata instanceof ArrayObject;
-      Object o1 = vdata.getObject(0);
-      assert o1 instanceof Array;
-      assert o1 instanceof ArrayInt; // i thought maybe there would be 2. are we handling this correctly ??
-
-      ArrayInt datai = (ArrayInt) o1;
-      assert datai.getSize() == 2;
-      Index ii = datai.getIndex();
-      assert datai.get(ii.set(1)) == 50334;
+      // LOOK problem is that this may be a Array of Array or an Array.
+      Array<Integer> a1 = (Array<Integer>) sdata.getMemberData("loopDataA");
+      assertThat(a1.getArrayType()).isEqualTo(ArrayType.INT); // i thought maybe there would be 2. are we handling this
+                                                              // correctly ??
+      assert a1.getSize() == 2;
+      Index ii = a1.getIndex();
+      assert a1.get(ii.set(1)) == 50334;
     }
   }
 }

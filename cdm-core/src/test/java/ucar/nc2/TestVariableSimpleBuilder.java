@@ -78,7 +78,7 @@ public class TestVariableSimpleBuilder {
   @Test
   public void testMakeMember() {
     StructureMembers.MemberBuilder mb = StructureMembers.memberBuilder().setName("name").setDesc("desc")
-        .setUnits("units").setArrayType(ArrayType.INT).setShape(new int[] {22, 6});
+        .setUnits("units").setArrayType(ArrayType.INT).setShape(new int[] {22, 6}).setOffset(0);
     VariableSimpleBuilder builder = VariableSimpleBuilder.fromMember(mb.build(0, false));
 
     VariableSimpleIF vs = builder.build();

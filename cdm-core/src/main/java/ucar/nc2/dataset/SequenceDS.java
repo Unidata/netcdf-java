@@ -11,7 +11,6 @@ import ucar.array.ArrayType;
 import ucar.array.StructureData;
 import ucar.ma2.ArrayStructure;
 import ucar.nc2.Group;
-import ucar.ma2.StructureDataIterator;
 import ucar.ma2.Array;
 import java.io.IOException;
 import ucar.nc2.Sequence;
@@ -28,7 +27,7 @@ public class SequenceDS extends Sequence implements StructureEnhanced {
 
   @Override
   @Deprecated
-  public StructureDataIterator getStructureIterator(int bufferSize) throws java.io.IOException {
+  public ucar.ma2.StructureDataIterator getStructureIterator(int bufferSize) throws java.io.IOException {
     return new StructureDataIteratorEnhanced(this, orgSeq.getStructureIterator(bufferSize));
   }
 

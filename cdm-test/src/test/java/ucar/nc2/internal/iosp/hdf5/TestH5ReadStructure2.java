@@ -8,13 +8,20 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.*;
+import ucar.array.Array;
+import ucar.array.ArrayType;
+import ucar.array.Arrays;
+import ucar.array.InvalidRangeException;
+import ucar.array.StructureData;
+import ucar.array.StructureDataArray;
+import ucar.array.StructureMembers;
 import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.nc2.write.Ncdump;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import java.lang.invoke.MethodHandles;
+
+import static com.google.common.truth.Truth.assertThat;
 
 /**
  * Test nc2 read JUnit framework.
@@ -48,7 +55,7 @@ public class TestH5ReadStructure2 {
 
       Variable dset = ncfile.findVariable("CompoundComplex");
       assert (null != dset);
-      assert (dset.getDataType() == DataType.STRUCTURE);
+      assert (dset.getArrayType() == ArrayType.STRUCTURE);
       assert (dset.getRank() == 1);
       assert (dset.getSize() == 6);
 
@@ -57,22 +64,21 @@ public class TestH5ReadStructure2 {
 
       Structure s = (Structure) dset;
 
-      // read all with the iterator
-      StructureDataIterator iter = s.getStructureIterator();
-      while (iter.hasNext()) {
-        StructureData sd = iter.next();
-        assert sd.getScalarInt("a_name") == a_name;
+      Array<StructureData> iter = (Array<StructureData>) s.readArray();
+      for (StructureData sd : iter) {
+        assertThat((Integer) sd.getMemberData("a_name").getScalar()).isEqualTo(a_name);
         a_name++;
-        assert sd.getScalarString("c_name").equals(c_name);
-        String[] results = sd.getJavaArrayString(sd.findMember("b_name"));
-        assert results.length == b_name.length;
+        Array<Byte> carr = (Array<Byte>) sd.getMemberData("c_name");
+        assertThat(Arrays.makeStringFromChar(carr)).isEqualTo(c_name);
+        Array<String> results = (Array<String>) sd.getMemberData("b_name");
+        assertThat(results.length()).isEqualTo(b_name.length);
         int count = 0;
-        for (String r : results)
+        for (String r : results) {
           assert r.equals(b_name[count++]);
+        }
 
-        for (StructureMembers.Member m : sd.getMembers()) {
-          Array data = sd.getArray(m);
-          logger.debug(Ncdump.printArray(data, m.getName(), null));
+        for (StructureMembers.Member m : sd.getStructureMembers()) {
+          Array data = sd.getMemberData(m);
         }
       }
 
@@ -93,7 +99,7 @@ public class TestH5ReadStructure2 {
 
       Variable dset = ncfile.findVariable("CompoundComplex");
       assert (null != dset);
-      assert (dset.getDataType() == DataType.STRUCTURE);
+      assert (dset.getArrayType() == ArrayType.STRUCTURE);
       assert (dset.getRank() == 1);
       assert (dset.getSize() == 6);
 
@@ -103,24 +109,23 @@ public class TestH5ReadStructure2 {
       Structure s = (Structure) dset;
 
       // read all with the iterator
-      StructureDataIterator iter = s.getStructureIterator();
-      while (iter.hasNext()) {
-        StructureData sd = iter.next();
-        assert sd.getScalarInt("a_name") == a_name;
+      Array<StructureData> iter = (Array<StructureData>) s.readArray();
+      for (StructureData sd : iter) {
+        assertThat((Integer) sd.getMemberData("a_name").getScalar()).isEqualTo(a_name);
         a_name++;
-        assert sd.getScalarString("c_name").equals(c_name);
-        String[] results = sd.getJavaArrayString(sd.findMember("b_name"));
-        assert results.length == b_name.length;
+        Array<Byte> carr = (Array<Byte>) sd.getMemberData("c_name");
+        assertThat(Arrays.makeStringFromChar(carr)).isEqualTo(c_name);
+        Array<String> results = (Array<String>) sd.getMemberData("b_name");
+        assertThat(results.length()).isEqualTo(b_name.length);
         int count = 0;
-        for (String r : results)
+        for (String r : results) {
           assert r.equals(b_name[count++]);
+        }
 
-        for (StructureMembers.Member m : sd.getMembers()) {
-          Array data = sd.getArray(m);
-          logger.debug(Ncdump.printArray(data, m.getName(), null));
+        for (StructureMembers.Member m : sd.getStructureMembers()) {
+          Array data = sd.getMemberData(m);
         }
       }
-
     }
     System.out.println("*** testH5StructureDS ok");
 
@@ -149,7 +154,7 @@ public class TestH5ReadStructure2 {
 
       Variable dset = ncfile.findVariable("CompoundNative");
       assert (null != dset);
-      assert (dset.getDataType() == DataType.STRUCTURE);
+      assert (dset.getArrayType() == ArrayType.STRUCTURE);
       assert (dset.getRank() == 1);
       assert (dset.getSize() == 15);
 
@@ -159,13 +164,10 @@ public class TestH5ReadStructure2 {
       Structure s = (Structure) dset;
 
       // read all with the iterator
-      StructureDataIterator iter = s.getStructureIterator();
-      while (iter.hasNext()) {
-        StructureData sd = iter.next();
-
-        for (StructureMembers.Member m : sd.getMembers()) {
-          Array data = sd.getArray(m);
-          logger.debug(Ncdump.printArray(data, m.getName(), null));
+      Array<StructureData> iter = (Array<StructureData>) s.readArray();
+      for (StructureData sd : iter) {
+        for (StructureMembers.Member m : sd.getStructureMembers()) {
+          Array data = sd.getMemberData(m);
         }
       }
 
@@ -187,23 +189,21 @@ public class TestH5ReadStructure2 {
 
       Variable dset = ncfile.findVariable("U-MARF/EPS/IASI_xxx_1C/DATA/IMAGE_LAT_ARRAY");
       assert (null != dset);
-      assert (dset.getDataType() == DataType.STRUCTURE);
+      assert (dset.getArrayType() == ArrayType.STRUCTURE);
       assert (dset.getRank() == 1);
       assert (dset.getSize() == 3600);
 
       Dimension d = dset.getDimension(0);
-      assert (d.getLength() == 3600);
+      assertThat(d.getLength()).isEqualTo(3600);
 
       Structure s = (Structure) dset;
-
-      // read last one - chunked
-      StructureData sd = s.readStructure(3599);
-      assert sd.getScalarInt("LAT[0]") == 70862722;
-      assert sd.getScalarInt("LAT[149]") == 85302263;
+      StructureData sd = s.readRecord(3599);
+      assertThat(sd.getMemberData("LAT[0]").getScalar()).isEqualTo(70862722);
+      assertThat(sd.getMemberData("LAT[149]").getScalar()).isEqualTo(85302263);
 
       // read one at a time
       for (int i = 3590; i < d.getLength(); i++) {
-        s.readStructure(i);
+        s.readRecord(i);
         System.out.println(" read structure " + i);
       }
 
@@ -226,18 +226,19 @@ public class TestH5ReadStructure2 {
 
       Variable dset = ncfile.findVariable("U-MARF/EPS/IASI_xxx_1C/DATA/TIME_DESCR");
       assert (null != dset);
-      assert (dset.getDataType() == DataType.STRUCTURE);
+      assert (dset.getArrayType() == ArrayType.STRUCTURE);
       assert (dset.getRank() == 1);
       assert (dset.getSize() == 60);
 
       Dimension d = dset.getDimension(0);
       assert (d.getLength() == 60);
 
-      ArrayStructure data = (ArrayStructure) dset.read();
+      StructureDataArray data = (StructureDataArray) dset.readArray();
       StructureMembers.Member m = data.getStructureMembers().findMember("EntryName");
       assert m != null;
       for (int i = 0; i < dset.getSize(); i++) {
-        String r = data.getScalarString(i, m);
+        Array<Byte> carr = (Array<Byte>) data.get(i).getMemberData(m);
+        String r = Arrays.makeStringFromChar(carr);
         if (i % 2 == 0)
           assert r.equals("TIME[" + i / 2 + "]-days") : r + " at " + i;
         else

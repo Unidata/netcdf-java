@@ -49,11 +49,6 @@ public class GcdmNetcdfFile extends NetcdfFile {
   }
 
   @Override
-  protected ucar.ma2.Array readData(Variable v, Section sectionWanted) throws IOException {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
   protected StructureDataIterator getStructureIterator(Structure s, int bufferSize) {
     throw new UnsupportedOperationException();
   }

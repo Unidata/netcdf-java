@@ -320,7 +320,7 @@ public final class StructureDataStorageBB implements Storage<StructureData> {
       int pos = offset + recno * members.getStorageSizeBytes() + m.getOffset();
       bbuffer.order(m.getByteOrder());
       int heapIdx = bbuffer.getInt(pos);
-      return (ArrayVlen<?>) heap.get(heapIdx);
+      return (Array<?>) heap.get(heapIdx);
     }
 
   }
