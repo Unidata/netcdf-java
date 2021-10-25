@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.array.Array;
 import ucar.array.ArrayType;
+import ucar.array.Index;
 import ucar.array.InvalidRangeException;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.write.NcmlWriter;
@@ -20,6 +21,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.invoke.MethodHandles;
 import ucar.nc2.write.NetcdfFormatWriter;
+
+import static com.google.common.truth.Truth.assertThat;
 
 /** Test writing and reading some special characters. */
 public class TestSpecialChars {
@@ -31,10 +34,10 @@ public class TestSpecialChars {
   String trouble = "here is a &, <, >, \', \", \n, \r, \t, to handle";
 
   @Test
-  public void testWriteAndRead() throws IOException, ucar.ma2.InvalidRangeException {
+  public void testWriteAndRead() throws IOException, InvalidRangeException {
     String filename = tempFolder.newFile().getAbsolutePath();
 
-    NetcdfFormatWriter.Builder writerb = NetcdfFormatWriter.createNewNetcdf3(filename);
+    NetcdfFormatWriter.Builder<?> writerb = NetcdfFormatWriter.createNewNetcdf3(filename);
     writerb.addAttribute(new Attribute("omy", trouble));
     writerb.addDimension("t", 1);
     writerb
@@ -45,10 +48,8 @@ public class TestSpecialChars {
 
     try (NetcdfFormatWriter writer = writerb.build()) {
       Variable v = writer.findVariable("t");
-      assert v != null;
-      ucar.ma2.Array data = ucar.ma2.Array.factory(ucar.ma2.DataType.STRING, new int[0]);
-      data.setObject(data.getIndex(), trouble);
-      writer.writeStringDataToChar(v, data);
+      assertThat(v).isNotNull();
+      writer.writeStringData(v, Index.ofRank(1), trouble);
     }
 
     String ncmlFilePath = tempFolder.newFile().getAbsolutePath();
