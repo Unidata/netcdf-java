@@ -124,6 +124,9 @@ public final class StructureMembers implements Iterable<StructureMembers.Member>
       this.members = builder.members != null ? builder.members.build() : null;
       this.byteOrder = builder.byteOrder;
       this.offset = builder.offset;
+      if (builder.offset < 0) {
+        throw new IllegalArgumentException("member offset not set");
+      }
 
       // calculated
       this.length = (int) ucar.ma2.Index.computeSize(shape);

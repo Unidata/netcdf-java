@@ -86,11 +86,11 @@ public class TestStructure {
     assertThat(nested.getNumberOfMemberVariables()).isEqualTo(1);
     assertThat(struct.findVariable(null)).isNull();
 
-    StructureMembers sm = struct.makeStructureMembersBuilder().build();
+    StructureMembers sm = struct.makeStructureMembersBuilder().setStandardOffsets(false).build();
     assertThat(sm.findMember("var1")).isNotNull();
     assertThat(sm.findMember("nested")).isNotNull();
 
-    StructureMembers smNested = nested.makeStructureMembersBuilder().build();
+    StructureMembers smNested = nested.makeStructureMembersBuilder().setStandardOffsets(false).build();
     assertThat(smNested.findMember("var1")).isNull();
     assertThat(smNested.findMember("var2")).isNotNull();
   }

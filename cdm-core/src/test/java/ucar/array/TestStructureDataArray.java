@@ -22,7 +22,7 @@ public class TestStructureDataArray {
     builder.setName("name");
     builder.addMember("mname1", "mdesc1", "munits1", ArrayType.BYTE, new int[] {11, 11});
     builder.addMember("mname2", "mdesc2", "munits1", ArrayType.FLOAT, new int[] {});
-    StructureMembers members = builder.build();
+    StructureMembers members = builder.setStandardOffsets(false).build();
 
     StructureData[] parr = new StructureData[2];
     parr[0] = new StructureDataRow(members);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2;
@@ -8,82 +8,45 @@ import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.fail;
 import static ucar.nc2.TestUtils.makeDummyGroup;
 
-import com.google.common.collect.ImmutableList;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.Formatter;
 import org.junit.Test;
 import ucar.array.ArrayType;
 import ucar.array.StructureDataArray;
 import ucar.array.StructureDataStorageBB;
 import ucar.array.StructureMembers;
-import ucar.ma2.Array;
-import ucar.ma2.ArrayStructure;
-import ucar.ma2.ArrayStructureW;
-import ucar.ma2.DataType;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Range;
-import ucar.ma2.Section;
-import ucar.ma2.StructureData;
-import ucar.ma2.StructureDataIterator;
-import ucar.ma2.StructureDataScalar;
-import ucar.nc2.internal.util.CompareNetcdf2;
+import ucar.array.Array;
+import ucar.array.InvalidRangeException;
+import ucar.array.Section;
+import ucar.array.StructureData;
 
 /** Test {@link ucar.nc2.Sequence} */
 public class TestSequence {
 
   @Test
   public void testSequence() throws IOException, InvalidRangeException {
-    Sequence.Builder<?> structb = Sequence.builder().setName("seq").addMemberVariable("one", DataType.BYTE, "")
-        .addMemberVariable("two", DataType.STRING, "").addMemberVariable("tres", DataType.FLOAT, "");
+    Sequence.Builder<?> structb = Sequence.builder().setName("seq").addMemberVariable("one", ArrayType.BYTE, "")
+        .addMemberVariable("two", ArrayType.STRING, "").addMemberVariable("tres", ArrayType.FLOAT, "");
 
-    StructureData sdata = makeStructureData(1);
-    ArrayStructureW cacheData = new ArrayStructureW(sdata.getStructureMembers(), new int[] {2, 2});
-    for (int i = 0; i < 4; i++) {
-      cacheData.setStructureData(makeStructureData(i + 1), i);
-    }
-    structb.setSourceData(cacheData);
+    structb.setSourceData(makeStructureDataArray());
     Structure struct = structb.build(makeDummyGroup());
 
-    Array data = struct.read();
+    Array data = struct.readArray();
     assertThat(data).isNotNull();
-    assertThat(data).isInstanceOf(ArrayStructure.class);
-    ArrayStructure as = (ArrayStructure) data;
-    try (StructureDataIterator iter = as.getStructureDataIterator()) {
-      int count = 0;
-      while (iter.hasNext()) {
-        StructureData sd = iter.next();
-        assertThat(compare(sd, makeStructureData(count + 1))).isTrue();
-        count++;
-      }
-      assertThat(count).isEqualTo(4);
+    assertThat(data).isInstanceOf(StructureDataArray.class);
+    StructureDataArray as = (StructureDataArray) data;
+    int count = 0;
+    for (StructureData sd : as) {
+      assertThat(compare(sd, count)).isTrue();
+      count++;
     }
-
-    try (StructureDataIterator iter = struct.getStructureIterator()) {
-      int count = 0;
-      while (iter.hasNext()) {
-        StructureData sd = iter.next();
-        assertThat(compare(sd, makeStructureData(count + 1))).isTrue();
-        count++;
-      }
-      assertThat(count).isEqualTo(4);
-    }
-
-    Array data2 = struct.read(new Section());
-
-    Formatter f = new Formatter();
-    CompareNetcdf2 compare = new CompareNetcdf2(f);
-    boolean ok = compare.compareData("testSequence", data, data2);
-    if (!ok) {
-      System.out.printf("%s%n", f);
-    }
-    assertThat(ok).isTrue();
+    assertThat(count).isEqualTo(4);
   }
 
   @Test
   public void testSequenceArray() throws IOException, InvalidRangeException {
-    Sequence.Builder<?> structb = Sequence.builder().setName("seq").addMemberVariable("one", DataType.BYTE, "")
-        .addMemberVariable("two", DataType.STRING, "").addMemberVariable("tres", DataType.FLOAT, "");
+    Sequence.Builder<?> structb = Sequence.builder().setName("seq").addMemberVariable("one", ArrayType.BYTE, "")
+        .addMemberVariable("two", ArrayType.STRING, "").addMemberVariable("tres", ArrayType.FLOAT, "");
 
     structb.setSourceData(makeStructureDataArray());
     Structure struct = structb.build(makeDummyGroup());
@@ -96,45 +59,27 @@ public class TestSequence {
     for (ucar.array.StructureData sd : as) {
       count++;
     }
-    assertThat(count).isEqualTo(2);
+    assertThat(count).isEqualTo(4);
   }
 
   private StructureDataArray makeStructureDataArray() {
-    StructureMembers.Builder builder = StructureMembers.builder();
-    builder.setName("name");
-    builder.addMember("mbyte", "mdesc1", "munits1", ArrayType.BYTE, new int[] {11, 11});
-    builder.addMember("mfloat", "mdesc2", "munits1", ArrayType.FLOAT, new int[] {});
-    builder.setStandardOffsets(false);
-    StructureMembers members = builder.build();
+    StructureMembers members = makeStructureMembers();
+    int nrecords = 4;
 
-    int nrows = 2;
-    ByteBuffer bbuffer = ByteBuffer.allocate(nrows * members.getStorageSizeBytes());
-    StructureDataStorageBB storage = new StructureDataStorageBB(members, bbuffer, nrows);
-    for (int row = 0; row < nrows; row++) {
-      for (StructureMembers.Member m : members) {
-        if (m.getName().equals("mbyte")) {
-          for (int i = 0; i < m.length(); i++) {
-            bbuffer.put((byte) i);
-          }
-        } else if (m.getName().equals("mbyte")) {
-          bbuffer.putFloat(99.5f);
-        }
-      }
+    ByteBuffer bb = ByteBuffer.allocate(nrecords * members.getStorageSizeBytes());
+    StructureDataStorageBB storage = new StructureDataStorageBB(members, bb, nrecords);
+    for (int i = 0; i < nrecords; i++) {
+      makeStructureData(storage, bb, i);
     }
-    return new StructureDataArray(members, new int[] {nrows}, storage);
+    return new StructureDataArray(members, new int[] {2, 2}, storage);
   }
 
   @Test
   public void testUnsupportedMethods() {
-    Sequence.Builder<?> structb = Sequence.builder().setName("seq").addMemberVariable("one", DataType.BYTE, "")
-        .addMemberVariable("two", DataType.STRING, "").addMemberVariable("tres", DataType.FLOAT, "");
+    Sequence.Builder<?> structb = Sequence.builder().setName("seq").addMemberVariable("one", ArrayType.BYTE, "")
+        .addMemberVariable("two", ArrayType.STRING, "").addMemberVariable("tres", ArrayType.FLOAT, "");
 
-    StructureData sdata = makeStructureData(1);
-    ArrayStructureW cacheData = new ArrayStructureW(sdata.getStructureMembers(), new int[] {2, 2});
-    for (int i = 0; i < 4; i++) {
-      cacheData.setStructureData(makeStructureData(i + 1), i);
-    }
-    structb.setSourceData(cacheData);
+    structb.setSourceData(makeStructureDataArray());
     Structure struct = structb.build(makeDummyGroup());
 
     try {
@@ -152,21 +97,7 @@ public class TestSequence {
     }
 
     try {
-      struct.read(ImmutableList.of(new Range(0, 0)));
-      fail();
-    } catch (Exception e) {
-      // expected
-    }
-
-    try {
-      struct.readStructure(0);
-      fail();
-    } catch (Exception e) {
-      // expected
-    }
-
-    try {
-      struct.readStructure(0, 1);
+      struct.readRecord(0);
       fail();
     } catch (Exception e) {
       // expected
@@ -185,68 +116,32 @@ public class TestSequence {
     } catch (Exception e) {
       // expected
     }
-
   }
 
-  @Test
-  public void testToBuilder() throws IOException {
-    Sequence.Builder<?> structb = Sequence.builder().setName("seq").addMemberVariable("one", DataType.BYTE, "")
-        .addMemberVariable("two", DataType.STRING, "").addMemberVariable("tres", DataType.FLOAT, "");
-
-    StructureData sdata = makeStructureData(1);
-    ArrayStructureW cacheData = new ArrayStructureW(sdata.getStructureMembers(), new int[] {2, 2});
-    for (int i = 0; i < 4; i++) {
-      cacheData.setStructureData(makeStructureData(i + 1), i);
-    }
-    structb.setSourceData(cacheData);
-    Structure struct1 = structb.build(makeDummyGroup());
-    Structure struct2 = struct1.toBuilder().setName("struct2").build(makeDummyGroup());
-
-    Array data = struct2.read();
-    assertThat(data).isNotNull();
-    assertThat(data).isInstanceOf(ArrayStructure.class);
-    ArrayStructure as = (ArrayStructure) data;
-    try (StructureDataIterator iter = as.getStructureDataIterator()) {
-      int count = 0;
-      while (iter.hasNext()) {
-        StructureData sd = iter.next();
-        assertThat(compare(sd, makeStructureData(count + 1))).isTrue();
-        count++;
-      }
-      assertThat(count).isEqualTo(4);
-    }
+  private StructureMembers makeStructureMembers() {
+    StructureMembers.Builder builder = StructureMembers.builder().setName("struct");
+    builder.addMember("one", "desc1", "units1", ArrayType.BYTE, new int[0]);
+    builder.addMember("two", "desc2", "units2", ArrayType.STRING, new int[0]);
+    builder.addMember("tres", "desc3", "units4", ArrayType.FLOAT, new int[0]);
+    builder.setStandardOffsets(false);
+    return builder.build();
   }
 
-  @Test
-  public void testNoData() {
-    Sequence.Builder<?> structb = Sequence.builder().setName("seq").addMemberVariable("one", DataType.BYTE, "")
-        .addMemberVariable("two", DataType.STRING, "").addMemberVariable("tres", DataType.FLOAT, "");
-    Structure struct = structb.build(makeDummyGroup());
-
-    try {
-      struct.getStructureIterator();
-      fail();
-    } catch (Exception e) {
-      // expected
-    }
+  private void makeStructureData(StructureDataStorageBB storage, ByteBuffer bb, int elem) {
+    bb.put((byte) elem);
+    int heapIdx = storage.putOnHeap(new String[] {"s" + elem});
+    bb.putInt(heapIdx);
+    bb.putFloat((float) elem);
   }
 
-  private StructureData makeStructureData(int elem) {
-    StructureDataScalar sdata = new StructureDataScalar("struct");
-    sdata.addMember("one", "desc1", "units1", DataType.BYTE, (byte) elem);
-    sdata.addMemberString("two", "desc2", "units2", "two", 4);
-    sdata.addMember("tres", "desc3", "units4", DataType.FLOAT, elem * 3.0f);
-    return sdata;
-  }
-
-  private boolean compare(StructureData sdata1, StructureData sdata2) throws IOException {
-    Formatter f = new Formatter();
-    CompareNetcdf2 compare = new CompareNetcdf2(f);
-    boolean ok = compare.compareStructureData(sdata1, sdata2);
-    if (!ok) {
-      System.out.printf("%s%n", f);
-    }
-    return ok;
+  private boolean compare(StructureData sdata1, int elem) {
+    Array<Byte> m1 = (Array<Byte>) sdata1.getMemberData("one");
+    assertThat(m1.getScalar()).isEqualTo(elem);
+    Array<String> m2 = (Array<String>) sdata1.getMemberData("two");
+    assertThat(m2.getScalar()).isEqualTo("s" + elem);
+    Array<Float> m3 = (Array<Float>) sdata1.getMemberData("tres");
+    assertThat(m3.getScalar()).isEqualTo(elem);
+    return true;
   }
 
 }
