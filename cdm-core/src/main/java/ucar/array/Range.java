@@ -4,8 +4,6 @@
  */
 package ucar.array;
 
-import com.google.common.base.Preconditions;
-
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.Iterator;
@@ -327,11 +325,10 @@ public class Range implements RangeIterator {
   }
 
   /**
-   * Create a new Range by intersecting with another Range that must have stride 1.
+   * Create a new Range by intersecting with another Range. One of them must have stride 1.
    *
-   * @param other range to intersect, must have stride 1.
+   * @param other range to intersect..
    * @return intersected Range, may be EMPTY
-   * @throws InvalidRangeException elements must be nonnegative
    */
   public Range intersect(Range other) throws InvalidRangeException {
     if ((length() == 0) || (other.length() == 0)) {
@@ -340,24 +337,37 @@ public class Range implements RangeIterator {
     if (this == VLEN || other == VLEN) {
       return VLEN;
     }
-    Preconditions.checkArgument(other.stride == 1, "other stride must be 1");
-
     int first = Math.max(this.first(), other.first());
     int last = Math.min(this.last(), other.last());
-
     if (first > last) {
       return EMPTY;
     }
 
-    if (first() < other.first()) {
-      int incr = (other.first() - first()) / this.stride;
-      first = first() + incr * this.stride;
-      if (first < other.first()) {
-        first += this.stride;
+    if (this.stride == 1) {
+      return intersect(this.name, other, this);
+    } else if (other.stride == 1) {
+      return intersect(this.name, this, other);
+    }
+    throw new UnsupportedOperationException("Intersection when both ranges have a stride");
+  }
+
+  // r1 must have stride 1, rok may have a different stride
+  private static Range intersect(String name, Range rok, Range r1) throws InvalidRangeException {
+    int first = Math.max(rok.first(), r1.first());
+    int last = Math.min(rok.last(), r1.last());
+    if (first > last) {
+      return EMPTY;
+    }
+
+    if (rok.first() < r1.first()) {
+      int incr = (r1.first() - rok.first()) / rok.stride;
+      first = rok.first() + incr * rok.stride;
+      if (first < r1.first()) {
+        first += rok.stride;
       }
     }
 
-    return new Range(name, first, last, this.stride);
+    return new Range(name, first, last, rok.stride);
   }
 
   /**
