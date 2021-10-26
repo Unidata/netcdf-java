@@ -46,12 +46,7 @@ public class NetcdfFormatUtils {
   // appended to variable when it conflicts with dimension scale
   public static final String NETCDF4_NON_COORD = "_nc4_non_coord_";
 
-  /** @deprecated use getFillValueDefault(ArrayType) */
-  @Deprecated
-  public static Number getFillValueDefault(DataType dtype) {
-    return getFillValueDefault(dtype.getArrayType());
-  }
-
+  /** The default fill value for Netcdf 3 files. */
   public static Number getFillValueDefault(ArrayType dtype) {
     if ((dtype == ArrayType.BYTE) || (dtype == ArrayType.ENUM1))
       return NC_FILL_BYTE;

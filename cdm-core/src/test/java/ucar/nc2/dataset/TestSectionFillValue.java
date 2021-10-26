@@ -90,7 +90,7 @@ public class TestSectionFillValue {
         } else {
           Assert.assertNull(v.findAttribute("_FillValue"));
           Assert.assertTrue(ve.scaleMissingUnsignedProxy().hasFillValue());
-          Number fillValue = NetcdfFormatUtils.getFillValueDefault(v.getDataType());
+          Number fillValue = NetcdfFormatUtils.getFillValueDefault(v.getArrayType());
           Assert.assertNotNull(v.getDataType().toString(), fillValue);
 
           Array data = v.read();
