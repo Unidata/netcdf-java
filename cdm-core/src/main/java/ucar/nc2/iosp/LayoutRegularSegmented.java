@@ -4,14 +4,13 @@
  */
 package ucar.nc2.iosp;
 
-import ucar.ma2.Index;
-import ucar.ma2.Section;
-import ucar.ma2.InvalidRangeException;
+import ucar.array.Arrays;
+import ucar.array.Section;
+import ucar.array.InvalidRangeException;
 
 /**
  * LayoutRegularSegmented has data stored in segments that are regularly spaced.
  * This is how Netcdf-3 "record variables" are laid out.
- * TODO will switch to ucar.array.* in ver8.
  */
 public class LayoutRegularSegmented implements Layout {
   private static final boolean debugNext = false;
@@ -41,7 +40,7 @@ public class LayoutRegularSegmented implements Layout {
    * @param recSize size of outer stride in bytes
    * @param srcShape shape of the entire data array. must have rank &gt; 0
    * @param wantSection the wanted section of data
-   * @throws ucar.ma2.InvalidRangeException if ranges are misformed
+   * @throws InvalidRangeException if ranges are misformed
    */
   public LayoutRegularSegmented(long startPos, int elemSize, long recSize, int[] srcShape, Section wantSection)
       throws InvalidRangeException {
@@ -56,7 +55,7 @@ public class LayoutRegularSegmented implements Layout {
 
     this.chunker = new IndexChunker(srcShape, wantSection);
     this.total = chunker.getTotalNelems();
-    this.innerNelems = (srcShape[0] == 0) ? 0 : Index.computeSize(srcShape) / srcShape[0];
+    this.innerNelems = (srcShape[0] == 0) ? 0 : Arrays.computeSize(srcShape) / srcShape[0];
     this.done = 0;
   }
 

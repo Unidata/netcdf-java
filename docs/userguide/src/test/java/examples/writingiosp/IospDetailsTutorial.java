@@ -227,7 +227,7 @@ public class IospDetailsTutorial {
    *         note: LayoutRegular (and other classes within ucar.nc2.iosp) use ucar.ma2 Sections and InvalidRangeExceptions
    */
   public static ucar.array.Array readExample2(RandomAccessFile raf, Variable v2,
-      ucar.ma2.Section wantSection) throws IOException, ucar.ma2.InvalidRangeException {
+      Section wantSection) throws IOException, InvalidRangeException {
     raf.seek(0);
     raf.order(RandomAccessFile.BIG_ENDIAN);
     int size = (int) v2.getSize();

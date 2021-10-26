@@ -148,8 +148,14 @@ public class N3iospWriter extends N3iosp implements IospFileWriter {
       writeRecordData((Structure) v2, section, (ArrayStructure) values);
 
     } else {
-      Layout layout = (!v2.isUnlimited()) ? new LayoutRegular(vinfo.begin, v2.getElementSize(), varShape, section)
-          : new LayoutRegularSegmented(vinfo.begin, v2.getElementSize(), header.recsize, varShape, section);
+      ucar.array.Section newSection = ArraysConvert.convertSection(section);
+      Layout layout;
+      try {
+        layout = (!v2.isUnlimited()) ? new LayoutRegular(vinfo.begin, v2.getElementSize(), varShape, newSection)
+            : new LayoutRegularSegmented(vinfo.begin, v2.getElementSize(), header.recsize, varShape, newSection);
+      } catch (ucar.array.InvalidRangeException e) {
+        throw new InvalidRangeException(e.getMessage());
+      }
       writeData(values, layout, dataType);
     }
   }
@@ -187,7 +193,13 @@ public class N3iospWriter extends N3iosp implements IospFileWriter {
       N3header.Vinfo vinfo = (N3header.Vinfo) vm.getSPobject();
       long begin = vinfo.begin + recnum * header.recsize; // this assumes unlimited dimension
       Section memberSection = vm.getShapeAsSection();
-      Layout layout = new LayoutRegular(begin, vm.getElementSize(), vm.getShape(), memberSection);
+      Layout layout;
+      try {
+        layout =
+            new LayoutRegular(begin, vm.getElementSize(), vm.getShape(), ArraysConvert.convertSection(memberSection));
+      } catch (ucar.array.InvalidRangeException e) {
+        throw new ucar.ma2.InvalidRangeException(e.getMessage());
+      }
 
       try {
         writeData(data, layout, vm.getArrayType());
@@ -296,10 +308,8 @@ public class N3iospWriter extends N3iosp implements IospFileWriter {
         writeRecordArrayData((Structure) v2, section, (StructureDataArray) values);
 
       } else {
-        ucar.ma2.Section oldSection = ArraysConvert.convertSection(section);
-
-        Layout layout = (!v2.isUnlimited()) ? new LayoutRegular(vinfo.begin, v2.getElementSize(), varShape, oldSection)
-            : new LayoutRegularSegmented(vinfo.begin, v2.getElementSize(), header.recsize, varShape, oldSection);
+        Layout layout = (!v2.isUnlimited()) ? new LayoutRegular(vinfo.begin, v2.getElementSize(), varShape, section)
+            : new LayoutRegularSegmented(vinfo.begin, v2.getElementSize(), header.recsize, varShape, section);
         writeArrayData(values, layout, dataType);
       }
     } catch (InvalidRangeException range) {
@@ -329,13 +339,17 @@ public class N3iospWriter extends N3iosp implements IospFileWriter {
       if (null == m)
         continue; // this means that the data is missing from the ArrayStructure
 
-      ucar.array.Array data = sdata.getMemberData(m);
+      ucar.array.Array<?> data = sdata.getMemberData(m);
 
       // layout of the destination
       N3header.Vinfo vinfo = (N3header.Vinfo) vm.getSPobject();
       long begin = vinfo.begin + recnum * header.recsize; // this assumes unlimited dimension
-      Section memberSection = vm.getShapeAsSection();
-      Layout layout = new LayoutRegular(begin, vm.getElementSize(), vm.getShape(), memberSection);
+      Layout layout;
+      try {
+        layout = new LayoutRegular(begin, vm.getElementSize(), vm.getShape(), vm.getSection());
+      } catch (ucar.array.InvalidRangeException e) {
+        throw new ucar.ma2.InvalidRangeException(e.getMessage());
+      }
 
       try {
         writeArrayData(data, layout, vm.getArrayType());

@@ -6,9 +6,9 @@ package ucar.nc2.iosp;
 
 import java.util.Arrays;
 import javax.annotation.Nullable;
-import ucar.ma2.Section;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Range;
+import ucar.array.Section;
+import ucar.array.InvalidRangeException;
+import ucar.array.Range;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -48,8 +48,6 @@ import java.util.ArrayList;
  *   }
  * }
  * </pre>
- * 
- * TODO will switch to ucar.array.* in ver8.
  */
 public class IndexChunker {
   private static final boolean debug = false, debugMerge = false, debugNext = false;

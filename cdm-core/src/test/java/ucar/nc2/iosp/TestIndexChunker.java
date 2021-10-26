@@ -7,15 +7,11 @@ package ucar.nc2.iosp;
 import static com.google.common.truth.Truth.assertThat;
 
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Section;
-import java.lang.invoke.MethodHandles;
+import ucar.array.InvalidRangeException;
+import ucar.array.Section;
 
 /** Test {@link ucar.nc2.iosp.IndexChunker} and {@link ucar.nc2.iosp.IndexChunkerTiled} */
 public class TestIndexChunker {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
   public void testFull() throws InvalidRangeException {

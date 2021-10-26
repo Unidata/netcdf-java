@@ -7,15 +7,14 @@ package ucar.nc2.iosp;
 import com.google.common.base.Preconditions;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import ucar.ma2.Section;
-import ucar.ma2.InvalidRangeException;
+import ucar.array.Section;
+import ucar.array.InvalidRangeException;
 
 /**
  * Indexer into data that has a "regular" layout, like netcdf-3 and hdf5 compact and contiguous storage.
  * The data is contiguous, with outer dimension varying fastest.
  * Given a Section, this calculates the set of contiguous "chunks" of the wanted data into the stored data.
  * The wanted section is always a subset of the data section (see RegularSectionLayout where thats not the case).
- * TODO will switch to ucar.array.* in ver8.
  */
 @Immutable
 public class LayoutRegular implements Layout {

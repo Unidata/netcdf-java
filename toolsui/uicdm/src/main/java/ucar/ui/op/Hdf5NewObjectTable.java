@@ -10,7 +10,6 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.internal.iosp.hdf5.H5header;
 import ucar.nc2.internal.iosp.hdf5.H5iosp;
-import ucar.nc2.internal.iosp.hdf5.H5iospArrays;
 import ucar.nc2.internal.iosp.hdf5.H5objects;
 import ucar.nc2.util.DebugFlags;
 import ucar.ui.widget.BAMutil;
@@ -180,7 +179,7 @@ public class Hdf5NewObjectTable extends Hdf5ObjectTable {
   public void setHdf5File(RandomAccessFile raf) throws IOException {
     closeOpenFiles();
 
-    iosp = new H5iospArrays();
+    iosp = new H5iosp();
     try {
       NetcdfFile ncfile = NetcdfFiles.build(iosp, raf, raf.getLocation(), null);
       ncfile.sendIospMessage(H5iosp.IOSP_MESSAGE_INCLUDE_ORIGINAL_ATTRIBUTES);
