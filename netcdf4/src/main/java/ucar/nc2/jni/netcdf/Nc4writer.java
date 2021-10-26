@@ -54,7 +54,11 @@ import ucar.nc2.util.CancelTask;
 import ucar.nc2.write.Nc4Chunking;
 import ucar.nc2.write.Nc4ChunkingDefault;
 
-/** IOSP for writing netcdf files through JNA interface to netcdf C library */
+/**
+ * IOSP for writing netcdf files through JNA interface to netcdf C library.
+ * LOOK doesnt work for a number of cases including strings inside of compounds. Do we want to support this?
+ * see TestNc4JniWriteProblem.
+ */
 public class Nc4writer extends Nc4reader implements IospFileWriter {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Nc4writer.class);
 
@@ -980,12 +984,14 @@ public class Nc4writer extends Nc4reader implements IospFileWriter {
     // write the data
     // int ret = nc4.nc_put_var(grpid, varid, bbuff);
     int ret;
-    if (section.isStrided())
+    if (section.isStrided()) {
       ret = nc4.nc_put_vars(grpid, varid, origin, shape, stride, bbuff.array());
-    else
+    } else {
       ret = nc4.nc_put_vara(grpid, varid, origin, shape, bbuff.array());
-    if (ret != 0)
+    }
+    if (ret != 0) {
       throw new IOException(errMessage("nc_put_vars", ret, grpid, varid));
+    }
   }
 
   private int appendStructureData(Structure s, StructureData sdata) throws IOException, InvalidRangeException {

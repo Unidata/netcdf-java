@@ -1,31 +1,23 @@
 /*
- * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-
 package ucar.nc2.internal.iosp.hdf5;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.*;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 
 /**
  * Miscellaneaous problems with hdf5 reader
- *
- * @author caron
- * @since 10/27/2014
  */
 @Category(NeedsCdmUnitTest.class)
 public class TestH5problem {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
   public void problem() throws IOException {
@@ -50,7 +42,6 @@ public class TestH5problem {
       Array data = v.read();
       Assert.assertEquals(1, data.getRank());
       Assert.assertEquals(3107, data.getShape()[0]);
-      // NCdumpW.printArray(data, "sample/ids", System.out, null);
     }
   }
 

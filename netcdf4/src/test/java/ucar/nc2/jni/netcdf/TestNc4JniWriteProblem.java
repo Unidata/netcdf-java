@@ -79,6 +79,24 @@ public class TestNc4JniWriteProblem {
     }
   }
 
+  /*
+   * netcdf
+   * /media/snake/0B681ADF0B681ADF/thredds-test-data/local/thredds-test-data/cdmUnitTest/formats/hdf5/support/cstr.h5 {
+   * variables:
+   * Structure {
+   * char a_string(10);
+   * char b_string(13);
+   * } Compound_String(10);
+   * 
+   * }
+   */
+  @Test
+  public void problemWithCompoundString() throws IOException {
+    String fileIn = TestDir.cdmUnitTestDir + "formats/hdf5/support/cstr.h5";
+    String fileOut = tempFolder.newFile().getAbsolutePath();
+    copyFile(fileIn, fileOut, NetcdfFileFormat.NETCDF4);
+  }
+
   @Test
   public void problemWithEnumHdf() throws IOException {
     String fileIn = TestDir.cdmUnitTestDir + "formats/hdf5/support/enum.h5";
