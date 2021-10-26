@@ -5,14 +5,15 @@
 package ucar.nc2.write;
 
 import static com.google.common.truth.Truth.assertThat;
+
+import com.google.common.base.Charsets;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import ucar.array.Array;
 import ucar.array.ArrayType;
 import ucar.array.Arrays;
-import ucar.ma2.*;
+import ucar.array.InvalidRangeException;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
@@ -20,13 +21,11 @@ import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import java.io.File;
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 
 /** Test miscellaneous {@link NetcdfFormatWriter} problems. */
 public class TestWriteMiscProblems {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Rule
   public TemporaryFolder tempFolder = new TemporaryFolder();
@@ -63,29 +62,26 @@ public class TestWriteMiscProblems {
     List<Dimension> Times_dimlist = new ArrayList<Dimension>();
     Times_dimlist.add(Time_dim);
     Times_dimlist.add(DateStrLen_dim);
-    writerb.addVariable("Times", DataType.CHAR, Times_dimlist);
+    writerb.addVariable("Times", ArrayType.CHAR, Times_dimlist);
 
     try (NetcdfFormatWriter writer = writerb.build()) {
       /* assign variable data */
       String contents = "2005-04-11_12:00:002005-04-11_13:00:00";
-      ArrayChar data = new ArrayChar(new int[] {2, 19});
-      IndexIterator iter = data.getIndexIterator();
-      int count = 0;
-      while (iter.hasNext()) {
-        iter.setCharNext(contents.charAt(count++));
-      }
-      writer.write("Times", data);
+      byte[] cdata = contents.getBytes(Charsets.UTF_8);
+      assertThat(cdata.length).isEqualTo(2 * 19);
+      Array<Byte> data = Arrays.factory(ArrayType.CHAR, new int[] {2, 19}, cdata);
+      Variable v = writer.findVariable("Times");
+      writer.write(v, data.getIndex(), data);
     }
 
     try (NetcdfFile nc = NetcdfFiles.open(filename)) {
       Variable v = nc.findVariable("Times");
-      assert v != null;
-      Array dataRead = v.read();
-      assert dataRead instanceof ArrayChar;
-      ArrayChar dataC = (ArrayChar) dataRead;
+      assertThat(v).isNotNull();
+      Array<Byte> cdata = (Array<Byte>) v.readArray();
+      Array<String> sdata = Arrays.makeStringsFromChar(cdata);
 
-      assert dataC.getString(0).equals("2005-04-11_12:00:00");
-      assert dataC.getString(1).equals("2005-04-11_13:00:00");
+      assertThat(sdata.get(0)).isEqualTo("2005-04-11_12:00:00");
+      assertThat(sdata.get(1)).isEqualTo("2005-04-11_13:00:00");
     }
   }
 

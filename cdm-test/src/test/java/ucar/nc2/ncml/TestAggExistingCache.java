@@ -11,10 +11,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.rules.TemporaryFolder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ucar.ma2.Array;
-import ucar.ma2.InvalidRangeException;
+import ucar.array.Array;
+import ucar.array.InvalidRangeException;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
@@ -26,12 +24,10 @@ import ucar.unidata.util.test.TestDir;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
-import java.lang.invoke.MethodHandles;
 
 /** Test aggregation cache is getting used */
 @Category(NeedsCdmUnitTest.class)
 public class TestAggExistingCache {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Rule
   public TemporaryFolder tempFolder = new TemporaryFolder();
@@ -64,7 +60,7 @@ public class TestAggExistingCache {
 
     try (NetcdfDataset ncfile = NetcdfDatasets.openNcmlDataset(new StringReader(ncml), filename, null)) {
       System.out.println(" TestNcmlAggExisting.open " + filename);
-      Array ATssta = ncfile.readSection("ATssta(:,0,0,0)");
+      Array ATssta = ncfile.readSectionArray("ATssta(:,0,0,0)");
       Assert.assertEquals(4, ATssta.getSize());
     }
     Assert.assertEquals(0, Aggregation.countCacheUse);
@@ -72,7 +68,7 @@ public class TestAggExistingCache {
 
     try (NetcdfDataset ncfile = NetcdfDatasets.openNcmlDataset(new StringReader(ncml), filename, null)) {
       System.out.println(" TestNcmlAggExisting.open " + filename);
-      Array ATssta = ncfile.readSection("ATssta(:,0,0,0)");
+      Array ATssta = ncfile.readSectionArray("ATssta(:,0,0,0)");
       Assert.assertEquals(4, ATssta.getSize());
     }
     Assert.assertEquals(8, Aggregation.countCacheUse);

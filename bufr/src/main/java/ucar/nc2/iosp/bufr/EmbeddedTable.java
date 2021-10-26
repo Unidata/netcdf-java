@@ -113,7 +113,7 @@ public class EmbeddedTable implements EmbeddedTableIF {
         System.out.printf("%s == %s%n", v, memberData);
       }
 
-      Attribute att = v.attributes().findAttribute(BufrIosp.fxyAttName);
+      Attribute att = v.attributes().findAttribute(BufrArrayIosp.fxyAttName);
       switch (att.getStringValue()) {
         case "0-0-10":
           break;
@@ -191,7 +191,7 @@ public class EmbeddedTable implements EmbeddedTableIF {
         memberData = Arrays.makeStringFromChar((Array<Byte>) data);
       }
 
-      Attribute att = v.attributes().findAttribute(BufrIosp.fxyAttName);
+      Attribute att = v.attributes().findAttribute(BufrArrayIosp.fxyAttName);
       if (att != null) {
         if (showD)
           System.out.printf("%s == %s%n", v, memberData);
@@ -233,7 +233,7 @@ public class EmbeddedTable implements EmbeddedTableIF {
         if (showD)
           System.out.printf("%s == %s%n", v, memberData);
 
-        Attribute att = v.attributes().findAttribute(BufrIosp.fxyAttName);
+        Attribute att = v.attributes().findAttribute(BufrArrayIosp.fxyAttName);
         if (att != null && att.getStringValue().equals("0-0-30"))
           fxyS = memberData;
       }

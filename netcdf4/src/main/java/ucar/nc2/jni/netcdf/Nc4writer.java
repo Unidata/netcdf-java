@@ -27,6 +27,7 @@ import java.util.Map;
 
 import ucar.array.ArrayType;
 import ucar.array.Arrays;
+import ucar.array.ArraysConvert;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayStructure;
 import ucar.ma2.ArrayStructureBB;
@@ -800,8 +801,7 @@ public class Nc4writer extends Nc4reader implements IospFileWriter {
       System.out.printf("Add attribute to var %s == %s%n", (v == null) ? "global" : v.getFullName(), att.toString());
   }
 
-  @Override
-  public void writeData(Variable v2, Section section, Array values) throws IOException, InvalidRangeException {
+  private void writeData(Variable v2, Section section, Array values) throws IOException, InvalidRangeException {
     Vinfo vinfo = (Vinfo) v2.getSPobject();
     if (vinfo == null) {
       log.error("vinfo null for " + v2);
@@ -988,8 +988,7 @@ public class Nc4writer extends Nc4reader implements IospFileWriter {
       throw new IOException(errMessage("nc_put_vars", ret, grpid, varid));
   }
 
-  @Override
-  public int appendStructureData(Structure s, StructureData sdata) throws IOException, InvalidRangeException {
+  private int appendStructureData(Structure s, StructureData sdata) throws IOException, InvalidRangeException {
     Vinfo vinfo = (Vinfo) s.getSPobject();
     Dimension dim = s.getDimension(0); // LOOK must be outer dim
     int dimid = vinfo.g4.dimHash.get(dim);
@@ -1249,7 +1248,12 @@ public class Nc4writer extends Nc4reader implements IospFileWriter {
   @Override
   public void writeData(Variable v2, ucar.array.Section section, ucar.array.Array<?> values)
       throws IOException, ucar.array.InvalidRangeException {
-    throw new UnsupportedOperationException();
+    // temporary kludge
+    try {
+      writeData(v2, ArraysConvert.convertSection(section), ArraysConvert.convertFromArray(values));
+    } catch (InvalidRangeException e) {
+      throw new ucar.array.InvalidRangeException(e);
+    }
   }
 
   @Override

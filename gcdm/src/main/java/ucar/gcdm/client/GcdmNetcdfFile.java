@@ -25,13 +25,10 @@ import ucar.gcdm.GcdmNetcdfProto.Header;
 import ucar.gcdm.GcdmNetcdfProto.HeaderRequest;
 import ucar.gcdm.GcdmNetcdfProto.HeaderResponse;
 import ucar.gcdm.GcdmConverter;
-import ucar.ma2.Section;
-import ucar.ma2.StructureDataIterator;
 import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.ParsedArraySectionSpec;
 import ucar.nc2.Sequence;
-import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 
 /** A remote CDM NetcdfFile, using gprc protocol to communicate. */
@@ -49,13 +46,7 @@ public class GcdmNetcdfFile extends NetcdfFile {
   }
 
   @Override
-  protected StructureDataIterator getStructureIterator(Structure s, int bufferSize) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public Iterator<ucar.array.StructureData> getStructureDataArrayIterator(Sequence s, int bufferSize)
-      throws IOException {
+  public Iterator<ucar.array.StructureData> getSequenceIterator(Sequence s, int bufferSize) throws IOException {
     ucar.array.Array<?> data = readArrayData(s, s.getSection());
     Preconditions.checkNotNull(data);
     Preconditions.checkArgument(data instanceof StructureDataArray);

@@ -8,9 +8,9 @@ import com.google.common.base.Preconditions;
 import ucar.array.Array;
 import ucar.array.ArrayType;
 import ucar.array.Arrays;
-import ucar.array.ArraysConvert;
 import ucar.array.InvalidRangeException;
 import ucar.array.Index;
+import ucar.array.Section;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.Dimensions;
@@ -161,6 +161,13 @@ public class NetcdfFormatWriter implements Closeable {
   ////////////////////////////////////////////
   // use these calls to write data to the file
 
+  public void write(String varName, Index origin, ucar.array.Array<?> values)
+      throws IOException, InvalidRangeException {
+    Variable v = findVariable(varName);
+    Preconditions.checkNotNull(v);
+    write(v, origin, values);
+  }
+
   /**
    * Write to Variable with an ucar.array.Array.
    * 
@@ -169,16 +176,7 @@ public class NetcdfFormatWriter implements Closeable {
    * @param values write this array; must have compatible type and shape with Variable
    */
   public void write(Variable v, Index origin, ucar.array.Array<?> values) throws IOException, InvalidRangeException {
-    // Preconditions.checkArgument(v.getArrayType() == values.getArrayType()); // LOOK do something better?
-    // Preconditions.checkArgument(v.getRank() == values.getRank()); // LOOK do something better: contains?
-
-    // we have to keep using old until all spis implement new?
-    ucar.ma2.Array oldArray = ArraysConvert.convertFromArray(values);
-    try {
-      write(v, origin.getCurrentIndex(), oldArray);
-    } catch (ucar.ma2.InvalidRangeException e) {
-      throw new InvalidRangeException(e);
-    }
+    spiw.writeData(v, new Section(origin.getCurrentIndex(), values.getShape()), values);
   }
 
   /**
@@ -253,115 +251,6 @@ public class NetcdfFormatWriter implements Closeable {
   public int appendStructureData(Structure s, ucar.array.StructureData sdata)
       throws IOException, InvalidRangeException {
     return spiw.appendStructureData(s, sdata);
-  }
-
-  ////////////////////////////////////////////
-  //// deprecated
-
-  /**
-   * Write data to the given variable, origin assumed to be 0.
-   *
-   * @param v variable to write to
-   * @param values write this array; must be same type and rank as Variable
-   * @throws IOException if I/O error
-   * @throws ucar.ma2.InvalidRangeException if values Array has illegal shape
-   * @deprecated use {@link NetcdfFormatWriter#write(Variable, ucar.array.Index, ucar.array.Array)}
-   */
-  @Deprecated
-  public void write(Variable v, ucar.ma2.Array values) throws IOException, ucar.ma2.InvalidRangeException {
-    write(v, new int[values.getRank()], values);
-  }
-
-  /**
-   * Write data to the named variable, origin assumed to be 0.
-   *
-   * @deprecated use {@link NetcdfFormatWriter#write(Variable, ucar.array.Index, ucar.array.Array)}
-   */
-  @Deprecated
-  public void write(String varName, ucar.ma2.Array values) throws IOException, ucar.ma2.InvalidRangeException {
-    Variable v = findVariable(varName);
-    Preconditions.checkNotNull(v);
-    write(v, values);
-  }
-
-  /**
-   * Write data to the given variable.
-   *
-   * @param v variable to write to
-   * @param origin offset within the variable to start writing.
-   * @param values write this array; must be same type and rank as Variable
-   * @throws IOException if I/O error
-   * @throws ucar.ma2.InvalidRangeException if values Array has illegal shape
-   * @deprecated use {@link NetcdfFormatWriter#write(Variable, Index, ucar.array.Array)}
-   */
-  @Deprecated
-  public void write(Variable v, int[] origin, ucar.ma2.Array values)
-      throws IOException, ucar.ma2.InvalidRangeException {
-    spiw.writeData(v, new ucar.ma2.Section(origin, values.getShape()), values);
-  }
-
-  /**
-   * Write data to the named variable.
-   *
-   * @param varName name of variable to write to
-   * @param origin offset within the variable to start writing.
-   * @param values write this array; must be same type and rank as Variable
-   * @throws IOException if I/O error
-   * @throws ucar.ma2.InvalidRangeException if values Array has illegal shape
-   * @deprecated use {@link NetcdfFormatWriter#write(Variable, ucar.array.Index, ucar.array.Array)}
-   */
-  @Deprecated
-  public void write(String varName, int[] origin, ucar.ma2.Array values)
-      throws IOException, ucar.ma2.InvalidRangeException {
-    Variable v = findVariable(varName);
-    Preconditions.checkNotNull(v);
-    write(v, origin, values);
-  }
-
-  /**
-   * Write String data to a CHAR variable, origin assumed to be 0.
-   *
-   * @param v variable to write to
-   * @param values write this array; must be ArrayObject of String
-   * @throws IOException if I/O error
-   * @throws ucar.ma2.InvalidRangeException if values Array has illegal shape
-   * @deprecated use {@link NetcdfFormatWriter#writeStringData(Variable, Index, String)}
-   */
-  @Deprecated
-  public void writeStringDataToChar(Variable v, ucar.ma2.Array values)
-      throws IOException, ucar.ma2.InvalidRangeException {
-    writeStringDataToChar(v, new int[values.getRank()], values);
-  }
-
-  /**
-   * Write String data to a CHAR variable.
-   *
-   * @param v variable to write to
-   * @param origin offset to start writing, ignore the strlen dimension.
-   * @param values write this array; must be ArrayObject of String
-   * @throws IOException if I/O error
-   * @throws ucar.ma2.InvalidRangeException if values Array has illegal shape
-   * @deprecated use {@link NetcdfFormatWriter#writeStringData(Variable, Index, String)}
-   */
-  @Deprecated
-  public void writeStringDataToChar(Variable v, int[] origin, ucar.ma2.Array values)
-      throws IOException, ucar.ma2.InvalidRangeException {
-    if (values.getElementType() != String.class)
-      throw new IllegalArgumentException("values must be an ArrayObject of String ");
-
-    if (v.getArrayType() != ArrayType.CHAR)
-      throw new IllegalArgumentException("variable " + v.getFullName() + " is not type CHAR");
-
-    int rank = v.getRank();
-    int strlen = v.getShape(rank - 1);
-
-    // turn it into an ArrayChar
-    ucar.ma2.ArrayChar cvalues = ucar.ma2.ArrayChar.makeFromStringArray((ucar.ma2.ArrayObject) values, strlen);
-
-    int[] corigin = new int[rank];
-    System.arraycopy(origin, 0, corigin, 0, rank - 1);
-
-    write(v, corigin, cvalues);
   }
 
   /**

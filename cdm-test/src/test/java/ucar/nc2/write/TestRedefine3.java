@@ -1,20 +1,19 @@
 /*
- * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.write;
 
 import static org.junit.Assert.fail;
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ucar.ma2.Array;
-import ucar.ma2.DataType;
-import ucar.ma2.InvalidRangeException;
+import ucar.array.Array;
+import ucar.array.ArrayType;
+import ucar.array.Arrays;
+import ucar.array.Index;
+import ucar.array.InvalidRangeException;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
@@ -22,7 +21,6 @@ import ucar.nc2.Variable;
 
 /** Test that redefine no longer supported by NetcdfFormatWriter. */
 public class TestRedefine3 {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Rule
   public final TemporaryFolder tempFolder = new TemporaryFolder();
@@ -41,17 +39,16 @@ public class TestRedefine3 {
     for (int i = 0; i < 100; i++)
       jillData[i] = 2 * i;
 
-    writerb.addVariable("jack", DataType.DOUBLE, "time").addAttribute(new Attribute("where", "up the hill"));
+    writerb.addVariable("jack", ArrayType.DOUBLE, "time").addAttribute(new Attribute("where", "up the hill"));
 
     try (NetcdfFormatWriter writer = writerb.build()) {
-      int[] start = new int[] {0};
       int[] count = new int[] {100};
-      writer.write("jack", start, Array.factory(DataType.DOUBLE, count, jackData));
+      writer.write("jack", Index.ofRank(1), Arrays.factory(ArrayType.DOUBLE, count, jackData));
 
-      writerb.addVariable("jill", DataType.DOUBLE, "time");
-      Array jillArray = Array.factory(DataType.DOUBLE, count, jillData);
+      writerb.addVariable("jill", ArrayType.DOUBLE, "time");
+      Array jillArray = Arrays.factory(ArrayType.DOUBLE, count, jillData);
       try {
-        writer.write("jill", start, jillArray);
+        writer.write("jill", Index.ofRank(1), jillArray);
         fail();
       } catch (Exception e) {
         assert e instanceof NullPointerException;

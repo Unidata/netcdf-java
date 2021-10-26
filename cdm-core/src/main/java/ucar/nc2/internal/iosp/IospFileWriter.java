@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.internal.iosp;
@@ -69,12 +69,7 @@ public interface IospFileWriter extends Closeable {
    * @param values data to write. The shape must match section.getShape().
    * @throws IOException if I/O error
    * @throws InvalidRangeException if invalid section
-   * @deprecated will change to using ucar.array in ver7.
    */
-  @Deprecated
-  void writeData(Variable v2, ucar.ma2.Section section, ucar.ma2.Array values)
-      throws IOException, ucar.ma2.InvalidRangeException;
-
   void writeData(Variable v2, Section section, Array<?> values) throws IOException, InvalidRangeException;
 
   /**
@@ -83,11 +78,7 @@ public interface IospFileWriter extends Closeable {
    * @param s belongs to this structure
    * @param sdata the stuctureData to append
    * @return the recnum where it was written
-   * @deprecated will change to using ucar.array in ver7.
    */
-  @Deprecated
-  int appendStructureData(Structure s, ucar.ma2.StructureData sdata) throws IOException, ucar.ma2.InvalidRangeException;
-
   int appendStructureData(Structure s, StructureData sdata) throws IOException, InvalidRangeException;
 
   /**

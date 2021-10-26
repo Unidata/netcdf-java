@@ -9,14 +9,9 @@ import java.io.IOException;
 import java.util.Iterator;
 import javax.annotation.Nullable;
 
-import ucar.ma2.Section;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.StructureDataIterator;
 import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.ParsedSectionSpec;
 import ucar.nc2.Sequence;
-import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
@@ -61,15 +56,6 @@ public interface IOServiceProvider extends Closeable {
   /** Sometimes the builder needs access to the finished objects. This is called when ncfile is finished being built. */
   void buildFinish(NetcdfFile ncfile);
 
-  /** @deprecated use readArrayData */
-  @Deprecated
-  default ucar.ma2.Array readData(Variable v2, Section section)
-      throws java.io.IOException, ucar.ma2.InvalidRangeException {
-    // default implementation; users should not have to implement a deprecated method
-    // LOOK is there a static method to convert ucar.ma2.Section to ucar.array.Section to wrap readArrayData?
-    return null;
-  }
-
   /**
    * Read data from a top level Variable and return a memory resident Array. This Array has the same element type as the
    * Variable, and the requested shape.
@@ -82,14 +68,6 @@ public interface IOServiceProvider extends Closeable {
   ucar.array.Array<?> readArrayData(Variable v2, ucar.array.Section section)
       throws java.io.IOException, ucar.array.InvalidRangeException;
 
-  /** @deprecated use readArrayData(new Section(cer)). */
-  @Deprecated
-  ucar.ma2.Array readSection(ParsedSectionSpec cer) throws IOException, InvalidRangeException;
-
-  /** @deprecated use getStructureDataArrayIterator */
-  @Deprecated
-  StructureDataIterator getStructureIterator(Structure s, int bufferSize) throws java.io.IOException;
-
   /**
    * Get the structure iterator. Iosps with top level sequences must override.
    *
@@ -97,7 +75,7 @@ public interface IOServiceProvider extends Closeable {
    * @param bufferSize the buffersize, may be -1 for default.
    * @return an iterator over the StructureData
    */
-  Iterator<ucar.array.StructureData> getStructureDataArrayIterator(Sequence s, int bufferSize);
+  Iterator<ucar.array.StructureData> getSequenceIterator(Sequence s, int bufferSize);
 
   /**
    * Close the file.

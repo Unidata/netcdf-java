@@ -17,14 +17,12 @@ import java.util.Formatter;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import ucar.ma2.StructureData;
-import ucar.ma2.StructureDataIterator;
-import ucar.ma2.StructureMembers;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
+import ucar.nc2.internal.util.CompareArrayToArray;
 import ucar.nc2.internal.util.CompareArrayToMa2;
 import ucar.unidata.util.test.TestDir;
 
@@ -137,7 +135,7 @@ public class TestReadArrayCompare {
     }
   }
 
-  private static boolean compareStructureData(Formatter f, StructureData org, ucar.array.StructureData array,
+  private static boolean compareStructureData(Formatter f, ucar.array.StructureData org, ucar.array.StructureData array,
       boolean justOne) throws IOException {
     boolean ok = true;
 
@@ -154,20 +152,19 @@ public class TestReadArrayCompare {
         System.out.printf("Cant find %s in copy%n", m1.getName());
         continue;
       }
-      ucar.ma2.Array data1 = org.getArray(m1);
+      ucar.array.Array<?> data1 = org.getMemberData(m1);
       ucar.array.Array<?> data2 = array.getMemberData(m2);
       if (data1 != null && data2 != null) {
-        f.format("    compare member %s %s%n", m1.getDataType(), m1.getName());
-        ok &= CompareArrayToMa2.compareData(f, m1.getName(), data1, data2, justOne, false);
+        f.format("    compare member %s %s%n", m1.getArrayType(), m1.getName());
+        ok &= CompareArrayToArray.compareData(f, m1.getName(), data1, data2, justOne, false);
       } else {
         f.format("    %s data MISSING %s %s%n", m1.getName(), data1 != null, data2 != null);
       }
     }
-
     return ok;
   }
 
-  static boolean compareSequence(Formatter f, String name, StructureDataIterator org,
+  static boolean compareSequence(Formatter f, String name, Iterator<ucar.array.StructureData> org,
       Iterator<ucar.array.StructureData> array) throws IOException {
     boolean ok = true;
     int obsrow = 0;

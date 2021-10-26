@@ -69,7 +69,7 @@ public class OverviewIospTutorial {
         return null; /* DOCS-IGNORE */
       }
 
-      public Iterator<StructureData> getStructureDataArrayIterator(Sequence s, int bufferSize) {
+      public Iterator<StructureData> getSequenceIterator(Sequence s, int bufferSize) {
         // If any of your top-level variables (not inside of a Structure) are Sequences,
         // this is how the data in them will be accessed, and you must implement it.
         return null; /* DOCS-IGNORE */

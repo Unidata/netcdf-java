@@ -269,7 +269,7 @@ public class NetcdfCopier implements Closeable {
           nelemsWritten += data.getSize();
         }
 
-        index.setCurrentCounter(index.currentElement() + (int) ucar.ma2.Index.computeSize(chunkShape));
+        index.setCurrentCounter(index.currentElement() + (int) Arrays.computeSize(chunkShape));
         if (cancel.isCancel()) {
           return;
         }

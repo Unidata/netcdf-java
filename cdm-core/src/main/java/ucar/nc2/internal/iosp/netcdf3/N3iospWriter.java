@@ -123,7 +123,6 @@ public class N3iospWriter extends N3iosp implements IospFileWriter {
   //////////////////////////////////////////////////////////////////////////////////////
   // write
 
-  @Override
   public void writeData(Variable v2, Section section, Array values) throws java.io.IOException, InvalidRangeException {
     N3header.Vinfo vinfo = (N3header.Vinfo) v2.getSPobject();
     ArrayType dataType = v2.getArrayType();
@@ -153,14 +152,6 @@ public class N3iospWriter extends N3iosp implements IospFileWriter {
           : new LayoutRegularSegmented(vinfo.begin, v2.getElementSize(), header.recsize, varShape, section);
       writeData(values, layout, dataType);
     }
-  }
-
-  @Override
-  public int appendStructureData(Structure s, StructureData sdata) throws IOException, InvalidRangeException {
-    int recnum = header.numrecs;
-    setNumrecs(recnum + 1);
-    writeRecordData(s, recnum, sdata);
-    return recnum;
   }
 
   private void writeRecordData(ucar.nc2.Structure s, Section section, ArrayStructure structureArray)

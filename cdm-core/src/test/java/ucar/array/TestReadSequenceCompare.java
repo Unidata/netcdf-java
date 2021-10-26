@@ -19,8 +19,6 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import ucar.ma2.DataType;
-import ucar.ma2.StructureDataIterator;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Sequence;
@@ -69,10 +67,10 @@ public class TestReadSequenceCompare {
 
       boolean ok = true;
       for (Variable v : org.getVariables()) {
-        if (v.getDataType() == DataType.SEQUENCE) {
-          System.out.printf("  read sequence %s %s%n", v.getDataType(), v.getShortName());
+        if (v.getArrayType() == ArrayType.SEQUENCE) {
+          System.out.printf("  read sequence %s %s%n", v.getArrayType(), v.getShortName());
           Sequence s = (Sequence) v;
-          StructureDataIterator orgSeq = s.getStructureIterator(-1);
+          Iterator<StructureData> orgSeq = s.iterator();
           Sequence copyv = (Sequence) copy.findVariable(v.getFullName());
           Iterator<StructureData> array = copyv.iterator();
           Formatter f = new Formatter();
@@ -104,10 +102,10 @@ public class TestReadSequenceCompare {
 
       boolean ok = true;
       for (Variable v : org.getVariables()) {
-        if (v.getDataType() == DataType.SEQUENCE) {
-          System.out.printf("  read sequence %s %s%n", v.getDataType(), v.getShortName());
+        if (v.getArrayType() == ArrayType.SEQUENCE) {
+          System.out.printf("  read sequence %s %s%n", v.getArrayType(), v.getShortName());
           Sequence s = (Sequence) v;
-          StructureDataIterator orgSeq = s.getStructureIterator(-1);
+          Iterator<StructureData> orgSeq = s.iterator();
           Sequence copyv = (Sequence) copy.findVariable(v.getFullName());
           Iterator<StructureData> array = copyv.iterator();
           Formatter f = new Formatter();

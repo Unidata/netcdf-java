@@ -67,11 +67,11 @@ public class CompareArrayToMa2 {
     if (vorg.getArrayType() == ArrayType.SEQUENCE) {
       System.out.printf("  read sequence %s %s%n", vorg.getArrayType(), vorg.getShortName());
       Sequence sorg = (Sequence) vorg;
-      StructureDataIterator orgIter = sorg.getStructureIterator(-1);
+      Iterator<ucar.array.StructureData> orgIter = sorg.iterator();
       Sequence sarray = (Sequence) vnew;
       Iterator<ucar.array.StructureData> arrayIter = sarray.iterator();
       Formatter f = new Formatter();
-      boolean ok1 = CompareArrayToMa2.compareSequence(f, vorg.getShortName(), orgIter, arrayIter);
+      boolean ok1 = CompareArrayToArray.compareSequence(f, vorg.getShortName(), orgIter, arrayIter);
       if (!ok1) {
         System.out.printf("%s%n", f);
         return false;

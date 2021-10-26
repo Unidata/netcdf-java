@@ -335,8 +335,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
     if (orgFile == null) {
       f.format("  has no referenced NetcdfFile%n");
-      showCached(f);
-      showProxies(f);
     } else {
       f.format("%nReferenced File:%n");
       f.format("%s", orgFile.getDetailInfo());
