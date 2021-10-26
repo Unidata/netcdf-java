@@ -9,20 +9,22 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.Formatter;
+import java.util.Iterator;
 import java.util.Optional;
 
 import ucar.array.ArrayType;
+import ucar.array.Arrays;
 import ucar.array.ArraysConvert;
 import ucar.array.Section;
 import ucar.array.Storage;
 import ucar.array.StructureData;
-import ucar.ma2.Array;
-import ucar.ma2.ArrayStructureBB;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Range;
-import ucar.ma2.StructureMembers;
+import ucar.array.Array;
+import ucar.array.InvalidRangeException;
+import ucar.array.Range;
+import ucar.array.StructureMembers;
 import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.Sequence;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.DataFormatType;
@@ -82,7 +84,6 @@ public class N3iosp extends AbstractIOServiceProvider implements IOServiceProvid
 
   protected N3header header;
   protected long lastModified; // used by sync
-  private final boolean debugRecord = false;
   private Charset valueCharset;
 
   @Override
@@ -213,33 +214,17 @@ public class N3iosp extends AbstractIOServiceProvider implements IOServiceProvid
   // data reading
 
   @Override
-  public ucar.ma2.Array readData(ucar.nc2.Variable v2, ucar.ma2.Section section)
-      throws IOException, InvalidRangeException {
-    if (v2 instanceof Structure) {
-      return readStructureData((Structure) v2, section);
-    }
-
-    Section newSection = ArraysConvert.convertSection(section);
-    Object data = readDataObject(v2, newSection);
-    return Array.factory(v2.getDataType(), section.getShape(), data);
-  }
-
-  @Override
-  public ucar.array.Array<?> readArrayData(Variable v2, ucar.array.Section section)
+  public Array<?> readArrayData(Variable v2, ucar.array.Section section)
       throws java.io.IOException, ucar.array.InvalidRangeException {
     if (v2 instanceof Structure) {
       return readStructureDataArray((Structure) v2, section);
     }
 
-    try {
-      Object data = readDataObject(v2, section);
-      if (v2.getArrayType() == ArrayType.CHAR) {
-        data = ArraysConvert.convertCharToByte((char[]) data);
-      }
-      return ucar.array.Arrays.factory(v2.getArrayType(), section.getShape(), data);
-    } catch (InvalidRangeException e) {
-      throw new ucar.array.InvalidRangeException(e);
+    Object data = readDataObject(v2, section);
+    if (v2.getArrayType() == ArrayType.CHAR) {
+      data = ArraysConvert.convertCharToByte((char[]) data);
     }
+    return Arrays.factory(v2.getArrayType(), section.getShape(), data);
   }
 
   /** Read data subset from file for a variable, create primitive array. */
@@ -247,15 +232,15 @@ public class N3iosp extends AbstractIOServiceProvider implements IOServiceProvid
     Vinfo vinfo = (Vinfo) v2.getSPobject();
     ArrayType dataType = v2.getArrayType();
 
-    ucar.ma2.Section oldSection = ArraysConvert.convertSection(section);
-    Layout layout = (!v2.isUnlimited()) ? new LayoutRegular(vinfo.begin, v2.getElementSize(), v2.getShape(), oldSection)
-        : new LayoutRegularSegmented(vinfo.begin, v2.getElementSize(), header.recsize, v2.getShape(), oldSection);
-
-    // not possible, anyway wrong returning Array instead of primitive array
-    // if (layout.getTotalNelems() == 0) {
-    // return Array.factory(dataType, section.getShape());
-    // }
-    return IospArrayHelper.readDataFill(raf, layout, dataType, null, null);
+    try {
+      ucar.ma2.Section oldSection = ArraysConvert.convertSection(section);
+      Layout layout =
+          (!v2.isUnlimited()) ? new LayoutRegular(vinfo.begin, v2.getElementSize(), v2.getShape(), oldSection)
+              : new LayoutRegularSegmented(vinfo.begin, v2.getElementSize(), header.recsize, v2.getShape(), oldSection);
+      return IospArrayHelper.readDataFill(raf, layout, dataType, null, null);
+    } catch (ucar.ma2.InvalidRangeException e) {
+      throw new InvalidRangeException(e);
+    }
   }
 
   /**
@@ -267,58 +252,15 @@ public class N3iosp extends AbstractIOServiceProvider implements IOServiceProvid
    * @return an ArrayStructure, with all the data read in.
    * @throws IOException on error
    */
-  private ucar.ma2.Array readStructureData(ucar.nc2.Structure s, ucar.ma2.Section section) throws java.io.IOException {
-    // has to be 1D
-    Range recordRange = section.getRange(0);
-
-    // create the ArrayStructure
-    StructureMembers members = s.makeStructureMembers();
-    for (StructureMembers.Member m : members.getMembers()) {
-      Variable v2 = s.findVariable(m.getName());
-      Vinfo vinfo = (Vinfo) v2.getSPobject();
-      m.setDataParam((int) (vinfo.begin - header.recStart));
-    }
-
-    // protect against too large of reads
-    if (header.recsize > Integer.MAX_VALUE)
-      throw new IllegalArgumentException("Cant read records when recsize > " + Integer.MAX_VALUE);
-    long nrecs = section.computeSize();
-    if (nrecs * header.recsize > Integer.MAX_VALUE)
-      throw new IllegalArgumentException(
-          "Too large read: nrecs * recsize= " + (nrecs * header.recsize) + "bytes exceeds " + Integer.MAX_VALUE);
-
-    members.setStructureSize((int) header.recsize);
-    ArrayStructureBB structureArray = new ArrayStructureBB(members, new int[] {recordRange.length()});
-
-    // loop over records
-    byte[] result = structureArray.getByteBuffer().array();
-    int count = 0;
-    for (int recnum : recordRange) {
-      if (debugRecord)
-        System.out.println(" read record " + recnum);
-      raf.seek(header.recStart + recnum * header.recsize); // where the record starts
-
-      if (recnum != header.numrecs - 1) {
-        raf.readFully(result, (int) (count * header.recsize), (int) header.recsize);
-      } else {
-        // "wart" allows file to be one byte short. since its always padding, we allow
-        raf.read(result, (int) (count * header.recsize), (int) header.recsize);
-      }
-      count++;
-    }
-
-    return structureArray;
-  }
-
-  private ucar.array.Array<ucar.array.StructureData> readStructureDataArray(ucar.nc2.Structure s,
-      ucar.array.Section section) throws java.io.IOException {
+  private Array<ucar.array.StructureData> readStructureDataArray(ucar.nc2.Structure s, ucar.array.Section section)
+      throws java.io.IOException {
     // has to be 1D
     Preconditions.checkArgument(section.getRank() == 1);
-    ucar.array.Range recordRange = section.getRange(0);
+    Range recordRange = section.getRange(0);
 
     // create the StructureMembers
-    ucar.array.StructureMembers.Builder membersb = s.makeStructureMembersBuilder();
-    for (ucar.array.StructureMembers.MemberBuilder m : membersb.getStructureMembers()) {
+    StructureMembers.Builder membersb = s.makeStructureMembersBuilder();
+    for (StructureMembers.MemberBuilder m : membersb.getStructureMembers()) {
       Variable v2 = s.findVariable(m.getName());
       Vinfo vinfo = (Vinfo) v2.getSPobject();
       m.setOffset((int) (vinfo.begin - header.recStart));
@@ -350,7 +292,7 @@ public class N3iosp extends AbstractIOServiceProvider implements IOServiceProvid
       rcount++;
     }
 
-    ucar.array.StructureMembers members = membersb.build();
+    StructureMembers members = membersb.build();
     Storage<StructureData> storage =
         new ucar.array.StructureDataStorageBB(members, ByteBuffer.wrap(result), (int) section.computeSize());
     return new ucar.array.StructureDataArray(members, section.getShape(), storage);

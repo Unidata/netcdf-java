@@ -110,7 +110,7 @@ public class EmbeddedTableOrg implements EmbeddedTableIF {
       if (showB)
         System.out.printf("%s == %s%n", v, data);
 
-      Attribute att = v.attributes().findAttribute(BufrIosp.fxyAttName);
+      Attribute att = v.attributes().findAttribute(BufrArrayIosp.fxyAttName);
       switch (att.getStringValue()) {
         case "0-0-10":
           sdata.getScalarString(m);
@@ -190,7 +190,7 @@ public class EmbeddedTableOrg implements EmbeddedTableIF {
         continue;
       }
 
-      Attribute att = v.attributes().findAttribute(BufrIosp.fxyAttName);
+      Attribute att = v.attributes().findAttribute(BufrArrayIosp.fxyAttName);
       if (att != null) {
         if (showD)
           System.out.printf("%s == %s%n", v, sdata.getScalarString(m));
@@ -237,7 +237,7 @@ public class EmbeddedTableOrg implements EmbeddedTableIF {
         if (showD)
           System.out.printf("%s == %s%n", v, data);
 
-        Attribute att = v.attributes().findAttribute(BufrIosp.fxyAttName);
+        Attribute att = v.attributes().findAttribute(BufrArrayIosp.fxyAttName);
         if (att != null && att.getStringValue().equals("0-0-30"))
           fxyS = sdata.getScalarString(m);
       }

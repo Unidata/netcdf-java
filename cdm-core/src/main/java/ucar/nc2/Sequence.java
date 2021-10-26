@@ -9,12 +9,9 @@ import java.util.Iterator;
 import javax.annotation.concurrent.Immutable;
 
 import ucar.array.ArrayType;
-import ucar.array.ArraysConvert;
 import ucar.array.InvalidRangeException;
 import ucar.array.Section;
 import ucar.array.StructureData;
-
-import java.util.List;
 
 /**
  * A one-dimensional Structure with indeterminate length, possibly 0.
@@ -22,24 +19,6 @@ import java.util.List;
  */
 @Immutable
 public class Sequence extends Structure implements Iterable<ucar.array.StructureData> {
-
-  /** @deprecated use iterator() */
-  @Deprecated
-  public ucar.ma2.StructureDataIterator getStructureIterator(int bufferSize) throws java.io.IOException {
-    if (cache.getData() != null) {
-      ucar.array.Array<?> array = cache.getData();
-      if (array instanceof ucar.array.StructureDataArray) {
-        ucar.ma2.Array ma2 = ArraysConvert.convertFromArray(array);
-        if (ma2 instanceof ucar.ma2.ArrayStructure) {
-          return ((ucar.ma2.ArrayStructure) ma2).getStructureDataIterator();
-        }
-      }
-    }
-    if (ncfile != null) {
-      return ncfile.getStructureIterator(this, bufferSize);
-    }
-    throw new UnsupportedOperationException();
-  }
 
   /** An iterator over all the data in the sequence. */
   @Override
@@ -51,7 +30,7 @@ public class Sequence extends Structure implements Iterable<ucar.array.Structure
       }
     }
     try {
-      return ncfile.getStructureDataArrayIterator(this, -1);
+      return ncfile.getSequenceIterator(this, -1);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }

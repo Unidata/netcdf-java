@@ -6,13 +6,9 @@ package ucar.nc2.iosp;
 
 import java.util.Iterator;
 import javax.annotation.Nullable;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.StructureDataIterator;
+import ucar.array.StructureData;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.ParsedSectionSpec;
 import ucar.nc2.Sequence;
-import ucar.nc2.Structure;
-import ucar.nc2.Variable;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Format;
@@ -88,27 +84,7 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
   }
 
   @Override
-  public ucar.array.Array<?> readArrayData(Variable v2, ucar.array.Section section)
-      throws java.io.IOException, ucar.array.InvalidRangeException {
-    return null;
-  }
-
-  /** @deprecated do not use. */
-  @Deprecated
-  @Override
-  public ucar.ma2.Array readSection(ParsedSectionSpec cer) throws IOException, InvalidRangeException {
-    return IospHelper.readSection(cer); // IOSPs can optimize by overriding
-  }
-
-  /** @deprecated do not use. */
-  @Deprecated
-  @Override
-  public StructureDataIterator getStructureIterator(Structure s, int bufferSize) throws java.io.IOException {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public Iterator<ucar.array.StructureData> getStructureDataArrayIterator(Sequence s, int bufferSize) {
+  public Iterator<StructureData> getSequenceIterator(Sequence s, int bufferSize) {
     throw new UnsupportedOperationException();
   }
 

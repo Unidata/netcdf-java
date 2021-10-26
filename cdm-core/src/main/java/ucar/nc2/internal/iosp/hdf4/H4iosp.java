@@ -18,20 +18,15 @@ import ucar.array.Arrays;
 import ucar.array.ArraysConvert;
 import ucar.array.Storage;
 import ucar.array.StructureData;
-import ucar.ma2.Array;
-import ucar.ma2.ArrayStructure;
-import ucar.ma2.ArrayStructureBB;
-import ucar.ma2.DataType;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Section;
-import ucar.ma2.StructureMembers;
+import ucar.array.Array;
+import ucar.array.InvalidRangeException;
+import ucar.array.Section;
 import ucar.nc2.Group;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.iosp.IospArrayHelper;
-import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.iosp.Layout;
 import ucar.nc2.iosp.LayoutBB;
 import ucar.nc2.iosp.LayoutBBTiled;
@@ -97,33 +92,12 @@ public class H4iosp extends AbstractIOServiceProvider {
   }
 
   @Override
-  public Array readData(Variable v, Section section) throws IOException, InvalidRangeException {
-    if (v instanceof Structure) {
-      return readStructureData((Structure) v, section);
-    }
-
-    Object data = readDataObject(v, section);
-    if (data != null) {
-      return Array.factory(v.getDataType(), section.getShape(), data);
-    }
-    throw new IllegalStateException();
-  }
-
-  @Override
-  public ucar.array.Array<?> readArrayData(Variable v, ucar.array.Section section)
-      throws IOException, ucar.array.InvalidRangeException {
+  public ucar.array.Array<?> readArrayData(Variable v, Section section) throws IOException, InvalidRangeException {
     if (v instanceof Structure) {
       return readStructureDataArray((Structure) v, section);
     }
 
-    Object data = null;
-    try {
-      Section oldSection = ArraysConvert.convertSection(section);
-      data = readDataObject(v, oldSection);
-    } catch (InvalidRangeException e) {
-      e.printStackTrace();
-    }
-
+    Object data = readDataObject(v, section);
     if (data != null) {
       return Arrays.factory(v.getArrayType(), section.getShape(), data);
     }
@@ -137,6 +111,7 @@ public class H4iosp extends AbstractIOServiceProvider {
 
     // make sure section is complete
     section = Section.fill(section, v.getShape());
+    ucar.ma2.Section oldSection = ArraysConvert.convertSection(section);
 
     if (vinfo.hasNoData) {
       Object arr = (vinfo.fillValue == null) ? IospArrayHelper.makePrimitiveArray((int) section.computeSize(), dataType)
@@ -147,117 +122,59 @@ public class H4iosp extends AbstractIOServiceProvider {
       return arr;
     }
 
-    if (!vinfo.isCompressed) {
-      if (!vinfo.isLinked && !vinfo.isChunked) {
-        Layout layout = new LayoutRegular(vinfo.start, v.getElementSize(), v.getShape(), section);
-        return IospArrayHelper.readDataFill(raf, layout, dataType, vinfo.fillValue, null);
+    try {
+      if (!vinfo.isCompressed) {
+        if (!vinfo.isLinked && !vinfo.isChunked) {
+          Layout layout = new LayoutRegular(vinfo.start, v.getElementSize(), v.getShape(), oldSection);
+          return IospArrayHelper.readDataFill(raf, layout, dataType, vinfo.fillValue, null);
 
-      } else if (vinfo.isLinked) {
-        Layout layout = new LayoutSegmented(vinfo.segPos, vinfo.segSize, v.getElementSize(), v.getShape(), section);
-        return IospArrayHelper.readDataFill(raf, layout, dataType, vinfo.fillValue, null);
+        } else if (vinfo.isLinked) {
+          Layout layout =
+              new LayoutSegmented(vinfo.segPos, vinfo.segSize, v.getElementSize(), v.getShape(), oldSection);
+          return IospArrayHelper.readDataFill(raf, layout, dataType, vinfo.fillValue, null);
 
-      } else if (vinfo.isChunked) {
-        H4ChunkIterator chunkIterator = new H4ChunkIterator(vinfo);
-        Layout layout = new LayoutTiled(chunkIterator, vinfo.chunkSize, v.getElementSize(), section);
-        return IospArrayHelper.readDataFill(raf, layout, dataType, vinfo.fillValue, null);
+        } else if (vinfo.isChunked) {
+          H4ChunkIterator chunkIterator = new H4ChunkIterator(vinfo);
+          Layout layout = new LayoutTiled(chunkIterator, vinfo.chunkSize, v.getElementSize(), oldSection);
+          return IospArrayHelper.readDataFill(raf, layout, dataType, vinfo.fillValue, null);
+        }
+
+      } else {
+        if (!vinfo.isLinked && !vinfo.isChunked) {
+          Layout index = new LayoutRegular(0, v.getElementSize(), v.getShape(), oldSection);
+          InputStream is = getCompressedInputStream(vinfo);
+          PositioningDataInputStream dataSource = new PositioningDataInputStream(is);
+          return IospArrayHelper.readDataFill(dataSource, index, dataType, vinfo.fillValue);
+
+        } else if (vinfo.isLinked) {
+          Layout index = new LayoutRegular(0, v.getElementSize(), v.getShape(), oldSection);
+          InputStream is = getLinkedCompressedInputStream(vinfo);
+          PositioningDataInputStream dataSource = new PositioningDataInputStream(is);
+          return IospArrayHelper.readDataFill(dataSource, index, dataType, vinfo.fillValue);
+
+        } else if (vinfo.isChunked) {
+          LayoutBBTiled.DataChunkIterator chunkIterator = new H4CompressedChunkIterator(vinfo);
+          LayoutBB layout = new LayoutBBTiled(chunkIterator, vinfo.chunkSize, v.getElementSize(), oldSection);
+          return IospArrayHelper.readDataFill(layout, dataType, vinfo.fillValue);
+        }
       }
-
-    } else {
-      if (!vinfo.isLinked && !vinfo.isChunked) {
-        Layout index = new LayoutRegular(0, v.getElementSize(), v.getShape(), section);
-        InputStream is = getCompressedInputStream(vinfo);
-        PositioningDataInputStream dataSource = new PositioningDataInputStream(is);
-        return IospArrayHelper.readDataFill(dataSource, index, dataType, vinfo.fillValue);
-
-      } else if (vinfo.isLinked) {
-        Layout index = new LayoutRegular(0, v.getElementSize(), v.getShape(), section);
-        InputStream is = getLinkedCompressedInputStream(vinfo);
-        PositioningDataInputStream dataSource = new PositioningDataInputStream(is);
-        return IospArrayHelper.readDataFill(dataSource, index, dataType, vinfo.fillValue);
-
-      } else if (vinfo.isChunked) {
-        LayoutBBTiled.DataChunkIterator chunkIterator = new H4CompressedChunkIterator(vinfo);
-        LayoutBB layout = new LayoutBBTiled(chunkIterator, vinfo.chunkSize, v.getElementSize(), section);
-        return IospArrayHelper.readDataFill(layout, dataType, vinfo.fillValue);
-      }
+    } catch (ucar.ma2.InvalidRangeException e) {
+      throw new InvalidRangeException(e);
     }
     throw new IllegalStateException();
   }
 
   /**
-   * Structures must be fixed sized
+   * Structures must be fixed sized.
    *
    * @param s the record structure
    * @param section the record range to read
-   * @return an ArrayStructure, with all the data read in.
+   * @return an Array of StructureData, with all the data read in.
    * @throws IOException on error
    * @throws InvalidRangeException if invalid section
    */
-  private ArrayStructure readStructureData(Structure s, Section section) throws IOException, InvalidRangeException {
-    H4header.Vinfo vinfo = (H4header.Vinfo) s.getSPobject();
-    vinfo.setLayoutInfo(this.ncfile); // make sure needed info is present
-    int recsize = vinfo.elemSize;
-
-    // create the ArrayStructure
-    StructureMembers members = s.makeStructureMembers();
-    for (StructureMembers.Member m : members.getMembers()) {
-      Variable v2 = s.findVariable(m.getName());
-      H4header.Minfo minfo = (H4header.Minfo) v2.getSPobject();
-      m.setDataParam(minfo.offset);
-    }
-    members.setStructureSize(recsize);
-    ArrayStructureBB structureArray = new ArrayStructureBB(members, section.getShape()); // LOOK subset
-
-    // loop over records
-    byte[] result = structureArray.getByteBuffer().array();
-
-    /*
-     * if (vinfo.isChunked) {
-     * InputStream is = getChunkedInputStream(vinfo);
-     * PositioningDataInputStream dataSource = new PositioningDataInputStream(is);
-     * Layout layout = new LayoutRegular(vinfo.start, recsize, s.getShape(), section);
-     * IospHelper.readData(dataSource, layout, DataType.STRUCTURE, result);
-     */
-
-    if (!vinfo.isLinked && !vinfo.isCompressed) {
-      Layout layout = new LayoutRegular(vinfo.start, recsize, s.getShape(), section);
-      IospHelper.readData(raf, layout, DataType.STRUCTURE, result, null, true);
-
-      /*
-       * option 1
-       * } else if (vinfo.isLinked && !vinfo.isCompressed) {
-       * Layout layout = new LayoutSegmented(vinfo.segPos, vinfo.segSize, recsize, s.getShape(), section);
-       * IospHelper.readData(raf, layout, DataType.STRUCTURE, result, -1);
-       */
-
-      // option 2
-    } else if (vinfo.isLinked && !vinfo.isCompressed) {
-      InputStream is = new LinkedInputStream(vinfo);
-      PositioningDataInputStream dataSource = new PositioningDataInputStream(is);
-      Layout layout = new LayoutRegular(0, recsize, s.getShape(), section);
-      IospHelper.readData(dataSource, layout, DataType.STRUCTURE, result);
-
-    } else if (!vinfo.isLinked && vinfo.isCompressed) {
-      InputStream is = getCompressedInputStream(vinfo);
-      PositioningDataInputStream dataSource = new PositioningDataInputStream(is);
-      Layout layout = new LayoutRegular(0, recsize, s.getShape(), section);
-      IospHelper.readData(dataSource, layout, DataType.STRUCTURE, result);
-
-    } else if (vinfo.isLinked && vinfo.isCompressed) {
-      InputStream is = getLinkedCompressedInputStream(vinfo);
-      PositioningDataInputStream dataSource = new PositioningDataInputStream(is);
-      Layout layout = new LayoutRegular(0, recsize, s.getShape(), section);
-      IospHelper.readData(dataSource, layout, DataType.STRUCTURE, result);
-
-    } else {
-      throw new IllegalStateException();
-    }
-
-    return structureArray;
-  }
-
-  private ucar.array.Array<ucar.array.StructureData> readStructureDataArray(Structure s, ucar.array.Section section)
-      throws IOException, ucar.array.InvalidRangeException {
+  private Array<StructureData> readStructureDataArray(Structure s, Section section)
+      throws IOException, InvalidRangeException {
     H4header.Vinfo vinfo = (H4header.Vinfo) s.getSPobject();
     vinfo.setLayoutInfo(this.ncfile); // make sure needed info is present
     int recsize = vinfo.elemSize;
@@ -275,7 +192,7 @@ public class H4iosp extends AbstractIOServiceProvider {
     byte[] result = new byte[(int) (nrecs * recsize)];
 
     try {
-      Section oldSection = ArraysConvert.convertSection(section);
+      ucar.ma2.Section oldSection = ArraysConvert.convertSection(section);
       if (!vinfo.isLinked && !vinfo.isCompressed) {
         Layout layout = new LayoutRegular(vinfo.start, recsize, s.getShape(), oldSection);
         IospArrayHelper.readData(raf, layout, ArrayType.STRUCTURE, result, null, true);
@@ -302,7 +219,7 @@ public class H4iosp extends AbstractIOServiceProvider {
       } else {
         throw new IllegalStateException();
       }
-    } catch (InvalidRangeException e) {
+    } catch (ucar.ma2.InvalidRangeException e) {
       throw new ucar.array.InvalidRangeException(e);
     }
 

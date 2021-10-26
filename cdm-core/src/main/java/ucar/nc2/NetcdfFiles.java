@@ -267,6 +267,7 @@ public class NetcdfFiles {
       return open(raf, location, cancelTask, iospMessage);
     } catch (Throwable t) {
       raf.close();
+      t.printStackTrace();
       throw new IOException(t);
     }
   }

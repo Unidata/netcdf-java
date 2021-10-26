@@ -7,7 +7,7 @@ package timing;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.nc2.iosp.bufr.MessageScanner;
 import ucar.nc2.iosp.bufr.Message;
-import ucar.nc2.iosp.bufr.BufrIosp;
+import ucar.nc2.iosp.bufr.BufrArrayIosp;
 import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
@@ -52,7 +52,6 @@ public class Bufr2Xml {
       }
     }
   }
-
 
   void testAllInDir(File dir, MClosure closure) {
     List<File> list = Arrays.asList(dir.listFiles());

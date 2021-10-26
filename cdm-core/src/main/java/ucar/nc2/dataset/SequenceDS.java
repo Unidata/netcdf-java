@@ -25,12 +25,6 @@ import javax.annotation.concurrent.Immutable;
 @Immutable
 public class SequenceDS extends Sequence implements StructureEnhanced {
 
-  @Override
-  @Deprecated
-  public ucar.ma2.StructureDataIterator getStructureIterator(int bufferSize) throws java.io.IOException {
-    return new StructureDataIteratorEnhanced(this, orgSeq.getStructureIterator(bufferSize));
-  }
-
   /** An iterator over all the data in the sequence, enhanced if needed. */
   @Override
   public Iterator<StructureData> iterator() {

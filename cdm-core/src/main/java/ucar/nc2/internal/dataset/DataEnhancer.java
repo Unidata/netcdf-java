@@ -59,7 +59,7 @@ public class DataEnhancer {
     int count = 0;
     for (Number val : (Array<Number>) values) {
       String sval = variableDS.lookupEnumString(val.intValue());
-      sdata[count++] = sval;
+      sdata[count++] = sval == null ? "unknown-" + val : sval;
     }
     return Arrays.factory(ArrayType.STRING, values.getShape(), sdata);
   }

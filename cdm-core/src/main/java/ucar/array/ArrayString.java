@@ -100,6 +100,12 @@ final class ArrayString extends Array<String> {
 
     StorageS(String[] storage) {
       this.storage = storage;
+      // LOOK are you allowed to have null strings?
+      for (String s : storage) {
+        if (s == null) {
+          System.out.printf("HEY StorageS null string");
+        }
+      }
     }
 
     @Override

@@ -12,8 +12,8 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.Array;
-import ucar.ma2.InvalidRangeException;
+import ucar.array.Array;
+import ucar.array.InvalidRangeException;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.unidata.io.RandomAccessFile;
@@ -48,7 +48,7 @@ public class TestOffAggExistingSSTA {
     try (NetcdfDataset ncfile = NetcdfDatasets.openNcmlDataset(new StringReader(ncml), filename, null)) {
       System.out.println(" TestNcmlAggExisting.open " + filename);
 
-      Array ATssta = ncfile.readSection("ATssta(:,0,0,0)");
+      Array ATssta = ncfile.readSectionArray("ATssta(:,0,0,0)");
       System.out.printf("array size=%d%n", ATssta.getSize());
 
       count1 = RandomAccessFile.getOpenFiles().size();

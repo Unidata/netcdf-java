@@ -21,13 +21,10 @@ import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.array.StructureData;
-import ucar.ma2.Array;
-import ucar.ma2.StructureDataIterator;
 import ucar.nc2.internal.iosp.netcdf3.N3header;
 import ucar.nc2.internal.iosp.netcdf3.N3iosp;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.iosp.IOServiceProvider;
-import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.util.DebugFlags;
 import ucar.nc2.internal.util.EscapeStrings;
 import ucar.nc2.util.Indent;
@@ -515,19 +512,9 @@ public class NetcdfFile implements FileCacheable, Closeable {
   // Service Provider calls
   // All IO eventually goes through these calls.
   // LOOK: these should not be public !!! not hitting variable cache
-  // used in NetcdfDataset - try to refactor
 
-  // this is for reading non-member variables
-  // section is null for full read
-
-  /** @deprecated use getStructureDataArrayIterator() */
-  @Deprecated
-  protected StructureDataIterator getStructureIterator(Structure s, int bufferSize) throws IOException {
-    return iosp.getStructureIterator(s, bufferSize);
-  }
-
-  protected Iterator<StructureData> getStructureDataArrayIterator(Sequence s, int bufferSize) throws IOException {
-    return iosp.getStructureDataArrayIterator(s, bufferSize);
+  protected Iterator<StructureData> getSequenceIterator(Sequence s, int bufferSize) throws IOException {
+    return iosp.getSequenceIterator(s, bufferSize);
   }
 
   /**
@@ -541,34 +528,6 @@ public class NetcdfFile implements FileCacheable, Closeable {
       throw new IOException("iosp is null, perhaps file has been closed. Trying to read variable " + v.getFullName());
     }
     return iosp.readArrayData(v, ranges);
-  }
-
-  /**
-   * Read a variable using the given section specification.
-   * The result is always an array of the type of the innermost variable.
-   * Its shape is the accumulation of all the shapes of its parent structures.
-   *
-   * @param variableSection the constraint expression.
-   * @return data requested
-   * @throws IOException if error
-   * @throws ucar.ma2.InvalidRangeException if variableSection is invalid
-   * @see <a href=
-   *      "https://www.unidata.ucar.edu/software/netcdf-java/reference/SectionSpecification.html">SectionSpecification</a>
-   *
-   * @deprecated use readSectionArray()
-   */
-  @Deprecated
-  public Array readSection(String variableSection) throws IOException, ucar.ma2.InvalidRangeException {
-    ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(this, variableSection);
-    if (cer.getChild() == null) {
-      return cer.getVariable().read(cer.getSection());
-    }
-
-    if (iosp == null)
-      return IospHelper.readSection(cer);
-    else
-      // allow iosp to optimize
-      return iosp.readSection(cer);
   }
 
   /**
@@ -787,63 +746,6 @@ public class NetcdfFile implements FileCacheable, Closeable {
       f.format("  iosp= %s%n%n", iosp.getClass());
       f.format("%s", iosp.getDetailInfo());
     }
-    showCached(f);
-    showProxies(f);
-  }
-
-  /** @deprecated do not use */
-  @Deprecated
-  protected void showCached(Formatter f) {
-    int maxNameLen = 8;
-    for (Variable v : getVariables()) {
-      maxNameLen = Math.max(maxNameLen, v.getShortName().length());
-    }
-
-    long total = 0;
-    long totalCached = 0;
-    f.format("%n%-" + maxNameLen + "s isCaching  size     cachedSize (bytes) %n", "Variable");
-    for (Variable v : getVariables()) {
-      long vtotal = v.getSize() * v.getElementSize();
-      total += vtotal;
-      f.format(" %-" + maxNameLen + "s %5s %8d ", v.getShortName(), v.isCaching(), vtotal);
-      if (v.hasCachedData()) {
-        Array data;
-        try {
-          data = v.read();
-        } catch (IOException e) {
-          e.printStackTrace();
-          return;
-        }
-        long size = data.getSizeBytes();
-        f.format(" %8d", size);
-        totalCached += size;
-      }
-      f.format("%n");
-    }
-    f.format(" %" + maxNameLen + "s                  --------%n", " ");
-    f.format(" %" + maxNameLen + "s total %8d Mb cached= %8d Kb%n", " ", total / 1000 / 1000, totalCached / 1000);
-  }
-
-  /** @deprecated do not use */
-  @Deprecated
-  protected void showProxies(Formatter f) {
-    int maxNameLen = 8;
-    boolean hasProxy = false;
-    for (Variable v : getVariables()) {
-      if (v.proxyReader != v)
-        hasProxy = true;
-      maxNameLen = Math.max(maxNameLen, v.getShortName().length());
-    }
-    if (!hasProxy)
-      return;
-
-    f.format("%n%-" + maxNameLen + "s  proxyReader   Variable.Class %n", "Variable");
-    for (Variable v : getVariables()) {
-      if (v.proxyReader != v)
-        f.format(" %-" + maxNameLen + "s  %s %s%n", v.getShortName(), v.proxyReader.getClass().getName(),
-            v.getClass().getName());
-    }
-    f.format("%n");
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////

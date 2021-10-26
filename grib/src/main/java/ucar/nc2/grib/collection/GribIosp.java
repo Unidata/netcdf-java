@@ -12,8 +12,6 @@ import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionUpdateType;
 import ucar.array.Array;
 import ucar.array.Arrays;
-import ucar.array.ArraysConvert;
-import ucar.array.InvalidRangeException;
 import ucar.array.Section;
 import ucar.nc2.*;
 import ucar.nc2.grib.*;
@@ -227,18 +225,6 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////
-
-  @Override
-  public ucar.ma2.Array readData(Variable v2, ucar.ma2.Section section)
-      throws IOException, ucar.ma2.InvalidRangeException {
-    try {
-      Section asection = ArraysConvert.convertSection(section);
-      Array<?> array = readArrayData(v2, asection);
-      return ArraysConvert.convertFromArray(array);
-    } catch (InvalidRangeException e) {
-      throw new ucar.ma2.InvalidRangeException(e.getMessage());
-    }
-  }
 
   @Override
   public Array<?> readArrayData(Variable v2, ucar.array.Section section)

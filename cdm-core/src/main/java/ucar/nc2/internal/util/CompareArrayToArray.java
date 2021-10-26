@@ -276,6 +276,10 @@ public class CompareArrayToArray {
         while (iter1.hasNext() && iter2.hasNext()) {
           String v1 = iter1.next();
           String v2 = iter2.next();
+          if (v1 == null || v2 == null) {
+            System.out.printf("HEY");
+            iter1.next();
+          }
           if (!v1.equals(v2)) {
             f.format(" DIFF string %s: %s != %s count=%s%n", name, v1, v2, 0);
             ok = false;
