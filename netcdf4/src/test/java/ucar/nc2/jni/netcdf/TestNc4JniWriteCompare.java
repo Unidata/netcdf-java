@@ -86,6 +86,7 @@ public class TestNc4JniWriteCompare {
   }
 
   @Test
+  @Ignore("not ready")
   public void copyFile() throws IOException {
     String fileout = tempFolder.newFile().getAbsolutePath();
     System.out.printf("TestNc4IospWriting copy %s to %s%n", filename, fileout);

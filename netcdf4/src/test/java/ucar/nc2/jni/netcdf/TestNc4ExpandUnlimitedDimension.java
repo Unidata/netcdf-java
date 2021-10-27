@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import org.junit.Assume;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -42,6 +43,7 @@ public class TestNc4ExpandUnlimitedDimension {
   }
 
   @Test
+  @Ignore("not ready")
   public void expandUnlimitedDimensions() throws IOException, InvalidRangeException {
     File outFile = tempFolder.newFile();
     NetcdfFormatWriter.Builder writerb = NetcdfFormatWriter.createNewNetcdf4(NetcdfFileFormat.NETCDF4,
