@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.internal.ncml;
@@ -7,29 +7,26 @@ package ucar.nc2.internal.ncml;
 import static org.junit.Assert.assertArrayEquals;
 import java.io.IOException;
 import java.io.StringReader;
-import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ucar.ma2.ArrayInt;
-import ucar.ma2.Index;
+import ucar.array.Array;
+import ucar.array.ArrayType;
+import ucar.array.Arrays;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 
 /** Test ncml value element in the JUnit framework. */
 
 public class TestNcmlValues {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   NetcdfFile ncfile = null;
   String ncml = null;
   int expectedIntLength;
   int[] expectedIntShape = null;
-  ArrayInt expectedIntValues = null;
+  Array expectedIntValues = null;
   String[] intVarNames = null;
 
   @Before
@@ -69,14 +66,13 @@ public class TestNcmlValues {
 
     expectedIntLength = 3;
     expectedIntShape = new int[] {expectedIntLength};
-    expectedIntValues = new ArrayInt(expectedIntShape, false);
     intVarNames =
         new String[] {"singleWs", "multiWs", "tabs", "mixedTabSpace", "mixedTabSpaces", "mixedSpace", "customSep"};
-    Index idx = expectedIntValues.getIndex();
+    int[] parray = new int[expectedIntLength];
     for (int i = 0; i < expectedIntLength; i++) {
-      expectedIntValues.set(idx, i);
-      idx.incr();
+      parray[i] = i;
     }
+    expectedIntValues = Arrays.factory(ArrayType.INT, expectedIntShape, parray);
 
     try {
       ncfile = NcmlReader.readNcml(new StringReader(ncml), null, null).build();
@@ -103,12 +99,11 @@ public class TestNcmlValues {
 
     for (Variable var : varList) {
       System.out.println("  " + var.getDescription());
-      ArrayInt values = (ArrayInt) var.read();
+      Array values = var.readArray();
 
       assertArrayEquals(expectedIntShape, values.getShape());
       assert expectedIntLength == values.getSize();
-      assertArrayEquals((int[]) values.get1DJavaArray(Integer.class),
-          (int[]) expectedIntValues.get1DJavaArray(Integer.class));
+      Arrays.equalNumbers(values, expectedIntValues);
     }
   }
 }

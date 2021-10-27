@@ -7,9 +7,8 @@ package ucar.nc2.internal.ncml;
 import java.io.IOException;
 import java.io.StringReader;
 import org.junit.Test;
-import ucar.ma2.Array;
-import ucar.ma2.DataType;
-import ucar.ma2.IndexIterator;
+import ucar.array.Array;
+import ucar.array.ArrayType;
 import ucar.nc2.Dimension;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -41,21 +40,18 @@ public class TestAggExistingPromote {
     assert pv.getRank() == 1;
     assert pv.getSize() == 3;
     assert pv.getShape()[0] == 3;
-    assert pv.getDataType() == DataType.STRING;
+    assert pv.getArrayType() == ArrayType.STRING;
     Dimension d = pv.getDimension(0);
     assert d.getShortName().equals("time");
 
-    Array datap = pv.read();
+    Array<String> datap = (Array<String>) pv.readArray();
     assert datap.getRank() == 1;
     assert datap.getSize() == 3;
     assert datap.getShape()[0] == 3;
-    assert datap.getElementType() == String.class;
 
     String[] resultp = new String[] {"2006-06-07T12:00:00Z", "2006-06-07T13:00:00Z", "2006-06-07T14:00:00Z"};
     int count = 0;
-    IndexIterator dataI = datap.getIndexIterator();
-    while (dataI.hasNext()) {
-      String s = (String) dataI.getObjectNext();
+    for (String s : datap) {
       assert s.equals(resultp[count]) : s;
       count++;
     }
@@ -68,7 +64,7 @@ public class TestAggExistingPromote {
     assert time.getRank() == 1;
     assert time.getSize() == 3;
     assert time.getShape()[0] == 3;
-    assert time.getDataType() == DataType.STRING;
+    assert time.getArrayType() == ArrayType.STRING;
 
     assert time.getDimension(0) == ncfile.findDimension("time");
 
@@ -78,19 +74,16 @@ public class TestAggExistingPromote {
 
     String[] result = new String[] {"2006-06-07T12:00Z", "2006-06-07T13:00Z", "2006-06-07T14:00Z"};
     try {
-      Array data = time.read();
+      Array<String> data = (Array<String>) time.readArray();
       assert data.getRank() == 1;
       assert data.getSize() == 3;
       assert data.getShape()[0] == 3;
-      assert data.getElementType() == String.class;
 
       count = 0;
-      dataI = data.getIndexIterator();
-      while (dataI.hasNext()) {
-        String val = (String) dataI.getObjectNext();
+      for (String s : data) {
         // Date dateVal = du.makeDate(val);
         // String dateS = df.toDateTimeStringISO(dateVal);
-        assert val.equals(result[count]) : val + " != " + result[count];
+        assert s.equals(result[count]);
         count++;
       }
 
@@ -164,17 +157,17 @@ public class TestAggExistingPromote {
     assert pv.getShortName().equals("title");
     assert pv.getRank() == 1;
     assert pv.getSize() == dim.getLength();
-    assert pv.getDataType() == DataType.STRING;
+    assert pv.getArrayType() == ArrayType.STRING;
     Dimension d = pv.getDimension(0);
     assert d.getShortName().equals("time");
 
-    Array datap = pv.read();
+    Array<String> datap = (Array<String>) pv.readArray();
     assert datap.getRank() == 1;
     assert datap.getSize() == dim.getLength();
-    assert datap.getElementType() == String.class;
 
-    while (datap.hasNext())
-      assert datap.next().equals("Example Data");
+    for (String s : datap) {
+      assert s.equals("Example Data");
+    }
 
     // the promoted var
     pv = ncfile.findVariable("month");
@@ -183,18 +176,17 @@ public class TestAggExistingPromote {
     assert pv.getShortName().equals("month");
     assert pv.getRank() == 1;
     assert pv.getSize() == dim.getLength();
-    assert pv.getDataType() == DataType.STRING;
+    assert pv.getArrayType() == ArrayType.STRING;
     d = pv.getDimension(0);
     assert d.getShortName().equals("time");
 
-    datap = pv.read();
+    datap = (Array<String>) pv.readArray();
     assert datap.getRank() == 1;
     assert datap.getSize() == dim.getLength();
-    assert datap.getElementType() == String.class;
 
     int count = 0;
-    while (datap.hasNext()) {
-      assert datap.next().equals((count < 31) ? "jan" : "feb") : count;
+    for (String s : datap) {
+      assert s.equals((count < 31) ? "jan" : "feb") : count;
       count++;
     }
 

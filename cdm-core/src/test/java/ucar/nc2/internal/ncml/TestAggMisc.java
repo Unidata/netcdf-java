@@ -1,15 +1,14 @@
 /*
- * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-
 package ucar.nc2.internal.ncml;
 
 import java.io.IOException;
 import java.io.StringReader;
 import org.junit.Test;
-import ucar.ma2.Array;
-import ucar.ma2.InvalidRangeException;
+import ucar.array.Array;
+import ucar.array.InvalidRangeException;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -45,7 +44,7 @@ public class TestAggMisc {
       TestDir.readAllData(ncfile);
 
       Variable v = ncfile.findVariable("time");
-      Array data = v.read();
+      Array data = v.readArray();
       assert data.getSize() == 20;
     }
   }
@@ -58,7 +57,7 @@ public class TestAggMisc {
       TestDir.readAllData(ncfile);
 
       Variable v = ncfile.findVariable("time");
-      Array data = v.read();
+      Array data = v.readArray();
       assert data.getSize() == 59;
     }
   }
@@ -71,7 +70,7 @@ public class TestAggMisc {
       TestDir.readAllData(ncfile);
 
       Variable v = ncfile.findVariable("time");
-      Array data = v.read();
+      Array data = v.readArray();
       assert data.getSize() == 3;
     }
   }

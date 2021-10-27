@@ -2,7 +2,6 @@
  * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-
 package ucar.ui.op;
 
 import java.awt.*;
@@ -33,8 +32,8 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.RectangleInsets;
-import ucar.ma2.Array;
-import ucar.ma2.Index;
+import ucar.array.Array;
+import ucar.array.Index;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
@@ -205,25 +204,23 @@ public class VariablePlot extends JPanel {
     NetcdfDataset fds = NetcdfDatasets.enhance(file, NetcdfDataset.getDefaultEnhanceMode(), null);
     CoordinateAxis1DTime tm;
     List<CalendarDate> dates = null;
-    Array varXarray = null;
+    Array<Number> varXarray = null;
 
     if (hasXdim) {
-      varXarray = varXdim.read();
+      varXarray = (Array<Number>) varXdim.readArray();
       if (xIsTime) {
         tm = CoordinateAxis1DTime.factory(fds, VariableDS.fromVar(v.getParentGroup(), varXdim, true), null);
         dates = tm.getCalendarDates();
       }
     }
 
-    Array a = v.read();
+    Array<Number> a = (Array<Number>) v.readArray();
 
     Index idx = a.getIndex();
-    idx.setCurrentCounter(0);
-
     int d2 = 1;
-    int rank = idx.getRank();
+    int rank = a.getRank();
     for (int k = 1; k < rank; k++) {
-      d2 *= idx.getShape(k);
+      d2 *= a.getShape()[k];
     }
     log.info("variable : " + v.getShortName() + " : dims " + v.getDimensionsString() + " rank " + rank + " d2 " + d2);
 
@@ -244,9 +241,9 @@ public class VariablePlot extends JPanel {
       else
         s1 = new XYSeries(name);
 
-      for (int i = 0; i < idx.getShape(0); i++) {
+      for (int i = 0; i < a.getShape()[0]; i++) {
         idx.set0(i);
-        float f = a.getFloat(idx);
+        float f = a.get(idx).floatValue();
         if (f != dfill) {
           if (!Float.isNaN(f)) {
             max = Math.max(max, f);
@@ -256,7 +253,7 @@ public class VariablePlot extends JPanel {
             Date ts = new Date(dates.get(i).getMillisFromEpoch());
             ((TimeSeries) s1).addOrUpdate(new Second(ts), f);
           } else if (hasXdim) {
-            ((XYSeries) s1).addOrUpdate(varXarray.getDouble(i), f);
+            ((XYSeries) s1).addOrUpdate(varXarray.get(i), f);
           } else {
             ((XYSeries) s1).addOrUpdate(i, f);
           }

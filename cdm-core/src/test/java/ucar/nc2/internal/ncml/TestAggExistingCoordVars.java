@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.internal.ncml;
@@ -10,9 +10,8 @@ import java.lang.invoke.MethodHandles;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.Array;
-import ucar.ma2.DataType;
-import ucar.ma2.IndexIterator;
+import ucar.array.Array;
+import ucar.array.ArrayType;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
@@ -36,20 +35,18 @@ public class TestAggExistingCoordVars {
     assert time.getRank() == 1;
     assert time.getSize() == 59;
     assert time.getShape()[0] == 59;
-    assert time.getDataType() == DataType.INT;
+    assert time.getArrayType() == ArrayType.INT;
 
     assert time.getDimension(0) == ncfile.findDimension("time");
 
-    Array data = time.read();
+    Array<Number> data = (Array<Number>) time.readArray();
     assert data.getRank() == 1;
     assert data.getSize() == 59;
     assert data.getShape()[0] == 59;
-    assert data.getElementType() == int.class;
 
     int count = 0;
-    IndexIterator dataI = data.getIndexIterator();
-    while (dataI.hasNext()) {
-      assert dataI.getIntNext() == 7 + 2 * count;
+    for (Number val : data) {
+      assert val.intValue() == 7 + 2 * count;
       count++;
     }
 
@@ -84,23 +81,21 @@ public class TestAggExistingCoordVars {
     assert time.getRank() == 1;
     assert time.getSize() == 3;
     assert time.getShape()[0] == 3;
-    assert time.getDataType() == DataType.DOUBLE;
+    assert time.getArrayType() == ArrayType.DOUBLE;
 
     assert time.getDimension(0) == ncfile.findDimension("time");
 
     double[] result = new double[] {12, 13, 14};
 
-    Array data = time.read();
+    Array<Number> data = (Array<Number>) time.readArray();
     assert data.getRank() == 1;
     assert data.getSize() == 3;
     assert data.getShape()[0] == 3;
-    assert data.getElementType() == double.class;
 
     int count = 0;
-    IndexIterator dataI = data.getIndexIterator();
-    while (dataI.hasNext()) {
-      double val = dataI.getDoubleNext();
-      Assert2.assertNearlyEquals(val, result[count]);
+    for (Number val : data) {
+      double vald = val.doubleValue();
+      Assert2.assertNearlyEquals(vald, result[count]);
       count++;
     }
 
@@ -125,20 +120,20 @@ public class TestAggExistingCoordVars {
     assert time.getRank() == 1;
     assert time.getSize() == 59;
     assert time.getShape()[0] == 59;
-    assert time.getDataType() == DataType.INT;
+    assert time.getArrayType() == ArrayType.INT;
 
     assert time.getDimension(0) == ncfile.findDimension("time");
 
-    Array data = time.read();
+    Array<Number> data = (Array<Number>) time.readArray();
     assert data.getRank() == 1;
     assert data.getSize() == 59;
     assert data.getShape()[0] == 59;
-    assert data.getElementType() == int.class;
 
     int count = 0;
-    IndexIterator dataI = data.getIndexIterator();
-    while (dataI.hasNext())
-      assert dataI.getIntNext() == count++;
+    for (Number val : data) {
+      double vali = val.intValue();
+      assert vali == count++;
+    }
 
     ncfile.close();
   }
@@ -156,22 +151,21 @@ public class TestAggExistingCoordVars {
     assert time.getRank() == 1;
     assert time.getSize() == 3;
     assert time.getShape()[0] == 3;
-    assert time.getDataType() == DataType.DOUBLE;
+    assert time.getArrayType() == ArrayType.DOUBLE;
 
     assert time.getDimension(0) == ncfile.findDimension("time");
 
     double[] result = new double[] {1.1496816E9, 1.1496852E9, 1.1496888E9};
 
-    Array data = time.read();
+    Array<Number> data = (Array<Number>) time.readArray();
     assert data.getRank() == 1;
     assert data.getSize() == 3;
     assert data.getShape()[0] == 3;
-    assert data.getElementType() == double.class;
 
     int count = 0;
-    IndexIterator dataI = data.getIndexIterator();
-    while (dataI.hasNext()) {
-      Assert2.assertNearlyEquals(dataI.getDoubleNext(), result[count]);
+    for (Number val : data) {
+      double vald = val.doubleValue();
+      Assert2.assertNearlyEquals(vald, result[count]);
       count++;
     }
 
@@ -190,22 +184,19 @@ public class TestAggExistingCoordVars {
     assert time.getRank() == 1;
     assert time.getSize() == 3;
     assert time.getShape()[0] == 3;
-    assert time.getDataType() == DataType.STRING;
+    assert time.getArrayType() == ArrayType.STRING;
 
     assert time.getDimension(0) == ncfile.findDimension("time");
 
     String[] result = new String[] {"2006-06-07T12:00Z", "2006-06-07T13:00Z", "2006-06-07T14:00Z"};
 
-    Array data = time.read();
+    Array<String> data = (Array<String>) time.readArray();
     assert data.getRank() == 1;
     assert data.getSize() == 3;
     assert data.getShape()[0] == 3;
-    assert data.getElementType() == String.class;
 
     int count = 0;
-    IndexIterator dataI = data.getIndexIterator();
-    while (dataI.hasNext()) {
-      String val = (String) dataI.getObjectNext();
+    for (String val : data) {
       assert val.equals(result[count]) : val + " != " + result[count];
       count++;
     }
@@ -225,19 +216,19 @@ public class TestAggExistingCoordVars {
     assert time.getRank() == 1;
     assert time.getSize() == 59;
     assert time.getShape()[0] == 59;
-    assert time.getDataType() == DataType.INT;
+    assert time.getArrayType() == ArrayType.INT;
 
     assert time.getDimension(0) == ncfile.findDimension("time");
 
-    Array data = time.read();
+    Array<Number> data = (Array<Number>) time.readArray();
     assert data.getRank() == 1;
     assert data.getSize() == 59;
     assert data.getShape()[0] == 59;
-    assert data.getElementType() == int.class;
 
     int count = 0;
-    while (data.hasNext()) {
-      assert data.nextInt() == count : data.nextInt() + "!=" + count;
+    for (Number val : data) {
+      int vali = val.intValue();
+      assert vali == count : vali + "!=" + count;
       count++;
     }
 

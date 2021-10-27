@@ -1,30 +1,22 @@
 /*
- * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
- */
-
-/*
- * (c) 1998-2017 University Corporation for Atmospheric Research/Unidata
  */
 package ucar.nc2.internal.ncml;
 
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ucar.ma2.Array;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Section;
+import ucar.array.Array;
+import ucar.array.InvalidRangeException;
+import ucar.array.Section;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 
 /** Test AggExisting with Unsigned Byte */
 
 public class TestAggUnsignedByte {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private final String AGG_FILENAME = "aggUbyte.ncml";
   private final String UBYTE_VAR_NAME = "ir_anvil_detection";
@@ -53,9 +45,9 @@ public class TestAggUnsignedByte {
     // this worked as of 4.6.7, so no bug here...
     // assert v.isUnsigned();
 
-    Array data = v.read();
+    Array data = v.readArray();
     // this is the failure for https://github.com/Unidata/thredds/issues/695
-    assert data.isUnsigned();
+    assert data.getArrayType().isUnsigned();
   }
 
   /**
@@ -71,9 +63,9 @@ public class TestAggUnsignedByte {
 
     int[] shape = new int[] {1, 10, 20};
     Section section = new Section(shape);
-    Array data = v.read(section);
+    Array data = v.readArray(section);
     // this is the failure for https://github.com/Unidata/thredds/issues/695
-    assert data.isUnsigned();
+    assert data.getArrayType().isUnsigned();
   }
 
   /**

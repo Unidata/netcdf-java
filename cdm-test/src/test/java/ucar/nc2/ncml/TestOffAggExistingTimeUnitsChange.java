@@ -15,8 +15,8 @@ import junit.framework.TestCase;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.Array;
-import ucar.ma2.DataType;
+import ucar.array.Array;
+import ucar.array.ArrayType;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -44,7 +44,7 @@ public class TestOffAggExistingTimeUnitsChange extends TestCase {
     try (NetcdfFile ncfile = NetcdfDatasets.openFile(location, null)) {
       Variable v = ncfile.findVariable("time");
       assertThat(v).isNotNull();
-      assertThat(v.getDataType()).isEqualTo(DataType.DOUBLE);
+      assertThat(v.getArrayType()).isEqualTo(ArrayType.DOUBLE);
 
       String units = v.getUnitsString();
       assertThat(units).isNotNull();
@@ -55,10 +55,10 @@ public class TestOffAggExistingTimeUnitsChange extends TestCase {
       assertThat(units).ignoringCase().isEqualTo(expectedCalendarDateUnit.get().toString());
 
       int count = 0;
-      Array data = v.read();
+      Array<Number> data = (Array<Number>) v.readArray();
 
-      while (data.hasNext()) {
-        Assert2.assertNearlyEquals(data.nextInt(), (count + 1) * 3);
+      for (Number val : data) {
+        Assert2.assertNearlyEquals(val.intValue(), (count + 1) * 3);
         count++;
       }
     }
@@ -77,17 +77,17 @@ public class TestOffAggExistingTimeUnitsChange extends TestCase {
     try (NetcdfDataset ncfile = NetcdfDatasets.openNcmlDataset(new StringReader(ncml), location, null)) {
       Variable v = ncfile.findVariable("time");
       assertThat(v).isNotNull();
-      assert v.getDataType() == DataType.DOUBLE;
+      assert v.getArrayType() == ArrayType.DOUBLE;
 
       String units = v.getUnitsString();
       assertThat(units).isNotNull();
       assertThat(units).isEqualTo("hours since 2007-04-11T00:00Z");
 
       int count = 0;
-      Array data = v.read();
+      Array<Number> data = (Array<Number>) v.readArray();
 
-      while (data.hasNext()) {
-        assert data.nextInt() == count * 3;
+      for (Number val : data) {
+        assert val.intValue() == count * 3;
         count++;
       }
     }
