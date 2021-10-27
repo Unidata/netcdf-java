@@ -1,11 +1,16 @@
+/*
+ * Copyright (c) 1998-2021 University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
 package ucar.unidata.util.test;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Section;
+import ucar.array.InvalidRangeException;
+import ucar.array.Section;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
+import ucar.nc2.Sequence;
 import ucar.nc2.Variable;
 import ucar.nc2.internal.util.AliasTranslator;
 import ucar.unidata.io.RandomAccessFile;
@@ -329,13 +334,23 @@ public class TestDir {
     logger.debug("------Reading ncfile {}", ncfile.getLocation());
     try {
       for (Variable v : ncfile.getVariables()) {
+        if (v instanceof Sequence) {
+          Sequence seq = (Sequence) v;
+          int count = 0;
+          for (ucar.array.StructureData sdata : seq) {
+            count++;
+          }
+          System.out.printf("  Read %s StructureData count = %s%n", v.getNameAndDimensions(), count);
+          continue;
+        }
+
         if (v.getSize() > max_size) {
           Section s = makeSubset(v);
           logger.debug("  Try to read variable {} size={} section={}", v.getNameAndDimensions(), v.getSize(), s);
-          v.read(s);
+          v.readArray(s);
         } else {
           logger.debug("  Try to read variable {} size={}", v.getNameAndDimensions(), v.getSize());
-          v.read();
+          v.readArray();
         }
       }
 

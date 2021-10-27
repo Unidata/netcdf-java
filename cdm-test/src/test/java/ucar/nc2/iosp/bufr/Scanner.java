@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.iosp.bufr;
@@ -212,62 +212,6 @@ public class Scanner {
       }
       out.format("nmsgs= %d nobs = %d%n", count, scan.getTotalObs());
     }
-  }
-
-  //////////////////////////////////////////////////////////////
-
-  static void scanMessageSizes(String filename, Formatter formatter) throws IOException {
-    try (RandomAccessFile raf = new RandomAccessFile(filename, "r")) {
-      out.format("%n-----%nOpen %s size = %d Kb %n", raf.getLocation(), raf.length() / 1000);
-
-      MessageScanner scan = new MessageScanner(raf);
-      int count = 0;
-      while (scan.hasNext()) {
-        Message m = scan.next();
-        if (m == null)
-          continue;
-        if (!m.isTablesComplete()) {
-          out.format("Message " + count + " INCOMPLETE TABLES%n");
-          count++;
-          break;
-        }
-
-        DataDescriptor root = m.getRootDataDescriptor(); // make sure the dds has been formed
-        m.dumpHeader(out);
-
-        m.calcTotalBits(formatter);
-        int nbitsCounted = m.getTotalBits();
-        int nbitsGiven = 8 * (m.dataSection.getDataLength() - 4);
-
-        boolean ok = Math.abs(m.getCountedDataBytes() - m.dataSection.getDataLength()) <= 1; // radiosondes dataLen not
-                                                                                             // even number of bytes
-
-        if (!ok)
-          out.format("*** BAD ");
-        long last = m.dataSection.getDataPos() + m.dataSection.getDataLength();
-        out.format("Message %d nds=%d compressed=%s vlen=%s countBits= %d givenBits=%d data start=0x%x end=0x%x", count,
-            m.getNumberDatasets(), m.dds.isCompressed(), root.isVarLength(), nbitsCounted, nbitsGiven,
-            m.dataSection.getDataPos(), last);
-        out.format(" countBytes= %d dataSize=%d", m.getCountedDataBytes(), m.dataSection.getDataLength());
-        out.format("%n");
-
-        /*
-         * if (m.getCountedDataBytes() != m.dataSection.dataLength) {
-         * out.format(" extra=");
-         * showBytes(out, raf, m.dataSection.dataPos + m.getCountedDataBytes(), m.dataSection.dataLength -
-         * m.getCountedDataBytes());
-         * }
-         */
-        count++;
-      }
-      out.format("nmsgs= %d nobs = %d%n", count, scan.getTotalObs());
-    }
-  }
-
-  static private void showBytes(Formatter out, RandomAccessFile raf, long start, int count) throws IOException {
-    raf.seek(start);
-    for (int i = 0; i < count; i++)
-      out.format("%d=<%d>", i, raf.read());
   }
 
   //////////////////////////////////////////////////////////////
@@ -769,7 +713,7 @@ public class Scanner {
 
   // extract the msgno-th message to fileOut
 
-  static void scanReader(String filein) throws IOException {
+  static void scanReader(String filein, BufrArrayIosp iosp) throws IOException {
     Formatter f = new Formatter(System.out);
 
     try (RandomAccessFile raf = new RandomAccessFile(filein, "r")) {
@@ -777,18 +721,12 @@ public class Scanner {
       while (scan.hasNext()) {
         Message m = scan.next();
         m.dumpHeader(out);
-        if (!m.dds.isCompressed()) {
-          MessageUncompressedDataReader reader = new MessageUncompressedDataReader();
-          reader.readData(null, m, raf, null, false, null);
-        } else {
-          MessageCompressedDataReader reader = new MessageCompressedDataReader();
-          reader.readData(null, m, raf, null, f);
-        }
-
+        MessageBitCounter counter = new MessageBitCounter(iosp.obsStructure, iosp.protoMessage, m, out);
         int nbitsGiven = 8 * (m.dataSection.getDataLength() - 4);
-        System.out.printf("nbits counted = %d expected=%d %n", m.msg_nbits, nbitsGiven);
-        System.out.printf("nbytes counted = %d expected=%d %n", m.getCountedDataBytes(), m.dataSection.getDataLength());
-        if (m.isTablesComplete() && !m.isBitCountOk())
+        System.out.printf("nbits counted = %d expected=%d %n", counter.msg_nbits, nbitsGiven);
+        System.out.printf("nbytes counted = %d expected=%d %n", counter.getCountedDataBytes(),
+            m.dataSection.getDataLength());
+        if (m.isTablesComplete() && !counter.isBitCountOk())
           System.out.printf("BAD BIT COUNT %n%n");
       }
     }

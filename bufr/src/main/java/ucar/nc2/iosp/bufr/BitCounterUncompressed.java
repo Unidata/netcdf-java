@@ -18,7 +18,7 @@ import java.util.HashMap;
  * @author caron
  * @since May 10, 2008
  */
-public class BitCounterUncompressed implements BitCounter {
+public class BitCounterUncompressed {
   private final DataDescriptor parent; // represents the table - fields/cols are the subKeys of dkey
   private final int nrows; // number of rows in this table
   private final int replicationCountSize; // number of bits taken up by the count variable (non-zero only for sequences)

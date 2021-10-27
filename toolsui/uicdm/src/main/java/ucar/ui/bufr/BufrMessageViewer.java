@@ -2,7 +2,6 @@
  * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-
 package ucar.ui.bufr;
 
 import com.google.common.collect.ArrayListMultimap;
@@ -259,19 +258,23 @@ public class BufrMessageViewer extends JPanel {
         Formatter out = new Formatter();
         try {
           infoTA2.clear();
-          if (!m.dds.isCompressed()) {
-            MessageUncompressedDataReader reader = new MessageUncompressedDataReader();
-            reader.readData(null, m, raf, null, false, out);
-          } else {
-            MessageCompressedDataReader reader = new MessageCompressedDataReader();
-            reader.readData(null, m, raf, null, out);
-          }
+          // Structure struct, Message proto, Message message, Formatter out
+          MessageBitCounter counter = new MessageBitCounter(iosp.getTopSequence(), iosp.getProtoMessage(), m, out);
+          /*
+           * if (!m.dds.isCompressed()) {
+           * MessageUncompressedDataReader reader = new MessageUncompressedDataReader();
+           * reader.readData(null, m, raf, null, false, out);
+           * } else {
+           * MessageCompressedDataReader reader = new MessageCompressedDataReader();
+           * reader.readData(null, m, raf, null, out);
+           * }
+           */
           int nbitsGiven = 8 * (m.dataSection.getDataLength() - 4);
           DataDescriptor root = m.getRootDataDescriptor();
           out.format("Message nobs=%d compressed=%s vlen=%s countBits= %d givenBits=%d %n", m.getNumberDatasets(),
-              m.dds.isCompressed(), root.isVarLength(), m.getCountedDataBits(), nbitsGiven);
-          out.format(" countBits= %d givenBits=%d %n", m.getCountedDataBits(), nbitsGiven);
-          out.format(" countBytes= %d dataSize=%d %n", m.getCountedDataBytes(), m.dataSection.getDataLength());
+              m.dds.isCompressed(), root.isVarLength(), counter.getCountedDataBits(), nbitsGiven);
+          out.format(" countBits= %d givenBits=%d %n", counter.getCountedDataBits(), nbitsGiven);
+          out.format(" countBytes= %d dataSize=%d %n", counter.getCountedDataBytes(), m.dataSection.getDataLength());
           out.format("%n");
           infoTA2.appendLine(out.toString());
 
@@ -505,23 +508,6 @@ public class BufrMessageViewer extends JPanel {
     }
   }
 
-
-  /*
-   * private void compare(Message m1, Message m2, Formatter f) {
-   * Formatter f1 = new Formatter();
-   * Formatter f2 = new Formatter();
-   * m1.dump(f1);
-   * m1.dump(f2);
-   * 
-   * TextHistoryPane ta = new TextHistoryPane();
-   * IndependentWindow info = new IndependentWindow("Extra Information", BAMutil.getImage("nj22/NetcdfUI"), ta);
-   * info.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 500, 300)));
-   * ta.appendLine(f.toString());
-   * ta.gotoTop();
-   * info.show();
-   * }
-   */
-
   private void showDDS(Message m1) {
     Formatter f1 = new Formatter();
     m1.dump(f1);
@@ -532,31 +518,6 @@ public class BufrMessageViewer extends JPanel {
     ta.gotoTop();
     info.show();
   }
-
-  /*
-   * private void compare2(Message m1, Message m2, Formatter f) {
-   * Formatter f1 = new Formatter();
-   * Formatter f2 = new Formatter();
-   * m1.dump(f1);
-   * m1.dump(f2);
-   * GoogleDiff diff = new GoogleDiff();
-   * List<GoogleDiff.Diff> result = diff.diff_main(f1.toString(), f2.toString());
-   * for (GoogleDiff.Diff d : result)
-   * f.format("%s%n", d);
-   * //DataDescriptor root1 = m1.getRootDataDescriptor();
-   * //DataDescriptor root2 = m1.getRootDataDescriptor();
-   * //compare(root1.getSubKeys(), root2.getSubKeys(), f);
-   * }
-   * 
-   * private void compare(List<DataDescriptor> dds1, List<DataDescriptor> dds2, Formatter f) throws IOException {
-   * 
-   * int count = 0;
-   * for (DataDescriptor sub1 : dds1) {
-   * DataDescriptor sub2 = dds2.get(count);
-   * 
-   * }
-   * }
-   */
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -572,6 +533,7 @@ public class BufrMessageViewer extends JPanel {
       fileChooser.save();
   }
 
+  private BufrArrayIosp iosp;
   private RandomAccessFile raf;
   private MessageScanner scan;
   int center;
@@ -598,7 +560,7 @@ public class BufrMessageViewer extends JPanel {
   }
 
   private NetcdfFile makeBufrMessageAsDataset(Message m) throws IOException {
-    BufrArrayIosp iosp = new BufrArrayIosp();
+    this.iosp = new BufrArrayIosp();
     NetcdfFile ncfile = iosp.open(raf, m);
 
     // Wrap in a NetcdfDataset so that we can get "*DS" objects. But don't enhance.
@@ -722,7 +684,9 @@ public class BufrMessageViewer extends JPanel {
       if (getNobs() == 0)
         return;
       try {
-        boolean ok = m.isBitCountOk();
+        Formatter out = new Formatter();
+        MessageBitCounter counter = new MessageBitCounter(iosp.getTopSequence(), iosp.getProtoMessage(), m, out);
+        boolean ok = counter.isBitCountOk();
         setBitsOk(ok);
       } catch (Exception e) {
         bitsOk = 3;

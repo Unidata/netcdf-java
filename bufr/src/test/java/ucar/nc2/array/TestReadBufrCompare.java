@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-
 package ucar.nc2.array;
 
 import org.junit.Test;
@@ -56,28 +55,7 @@ public class TestReadBufrCompare {
 
   @Test
   public void doOne() throws Exception {
-    compareMa2Array(filename);
-  }
-
-  public static void compareMa2Array(String filename) throws Exception {
-    try (NetcdfFile ma2File = NetcdfFiles.open(filename, "ucar.nc2.iosp.bufr.BufrIosp", -1, null, null);
-        NetcdfFile arrayFile = NetcdfFiles.open(filename, "ucar.nc2.iosp.bufr.BufrArrayIosp", -1, null, null)) {
-      System.out.println("Test NetcdfFile: " + arrayFile.getLocation());
-
-      boolean ok = CompareArrayToMa2.compareFiles(ma2File, arrayFile);
-      assertThat(ok).isTrue();
-    }
-  }
-
-  // compare to check complete read. need seperate files, or else they interfere
-  public static void readOrg(String filename) throws Exception {
-    try (NetcdfFile ma2File = NetcdfFiles.open(filename, "ucar.nc2.iosp.bufr.BufrIosp", -1, null, null);
-        NetcdfFile maFile = NetcdfFiles.open(filename, "ucar.nc2.iosp.bufr.BufrIosp", -1, null, null)) {
-      System.out.println("Test NetcdfFile: " + ma2File.getLocation());
-
-      boolean ok = CompareNetcdf2.compareFiles(ma2File, maFile, new Formatter());
-      assertThat(ok).isTrue();
-    }
+    readArrays(filename);
   }
 
   // compare to check complete read. need seperate files, or else they interfere

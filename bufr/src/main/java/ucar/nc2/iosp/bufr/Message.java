@@ -85,6 +85,10 @@ public class Message {
     this.startPos = startPos;
   }
 
+  public RandomAccessFile raf() {
+    return raf;
+  }
+
   public long getStartPos() {
     return startPos;
   }
@@ -165,88 +169,6 @@ public class Message {
 
   public BufrTableLookup getLookup() {
     return lookup;
-  }
-
-  ////////////////////////////////////////////////////////////////////////
-  // bit counting
-
-  public boolean isBitCountOk() {
-    getRootDataDescriptor(); // make sure root is calculated
-    getTotalBits(); // make sure bits are counted
-    // int nbitsGiven = 8 * (dataSection.getDataLength() - 4);
-    int nbytesCounted = getCountedDataBytes();
-    int nbytesGiven = dataSection.getDataLength();
-    return Math.abs(nbytesCounted - nbytesGiven) <= 1; // radiosondes dataLen not even number of bytes
-  }
-
-  public int getCountedDataBytes() {
-    int msg_nbytes = msg_nbits / 8;
-    if (msg_nbits % 8 != 0)
-      msg_nbytes++;
-    msg_nbytes += 4;
-    if (msg_nbytes % 2 != 0)
-      msg_nbytes++; // LOOK seems to be violated by some messages
-    return msg_nbytes;
-  }
-
-  public int getCountedDataBits() {
-    return msg_nbits;
-  }
-
-
-  /**
-   * Get the offset of this obs from the start of the message data.
-   * Use only for non compressed data
-   *
-   * @param obsOffsetInMessage index of obs in the message
-   * @return offset in bits
-   *         <p/>
-   *         public int getBitOffset(int obsOffsetInMessage) {
-   *         if (dds.isCompressed())
-   *         throw new IllegalArgumentException("cant call BufrMessage.getBitOffset() on compressed message");
-   *         <p/>
-   *         if (!root.isVarLength)
-   *         return root.total_nbits * obsOffsetInMessage;
-   *         <p/>
-   *         getTotalBits(); // make sure its been set
-   *         return nestedTableCounter[obsOffsetInMessage].getStartBit();
-   *         }
-   */
-
-  public BitCounterUncompressed getBitCounterUncompressed(int obsOffsetInMessage) {
-    if (dds.isCompressed())
-      throw new IllegalArgumentException("cant call BufrMessage.getBitOffset() on compressed message");
-
-    calcTotalBits(null); // make sure its been set
-    return counterDatasets[obsOffsetInMessage];
-  }
-
-  /**
-   * This is the total number of bits taken by the data in the data section of the message.
-   * This is the counted number.
-   *
-   * @return total number of bits
-   */
-  public int getTotalBits() {
-    if (msg_nbits == 0)
-      calcTotalBits(null);
-    return msg_nbits;
-  }
-
-  // sets msg_nbits as side-effect
-  public int calcTotalBits(Formatter out) {
-    try {
-      if (!dds.isCompressed()) {
-        MessageUncompressedDataReader reader = new MessageUncompressedDataReader();
-        reader.readData(null, this, raf, null, false, out);
-      } else {
-        MessageCompressedDataReader reader = new MessageCompressedDataReader();
-        reader.readData(null, this, raf, null, out);
-      }
-    } catch (IOException ioe) {
-      return 0;
-    }
-    return msg_nbits;
   }
 
   ///////////////////////////////////////////////////////////////////
