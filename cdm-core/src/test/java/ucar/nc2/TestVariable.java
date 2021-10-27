@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
 package ucar.nc2;
 
 import static com.google.common.truth.Truth.assertThat;
@@ -19,7 +23,6 @@ import ucar.array.Section;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.internal.util.CompareArrayToArray;
-import ucar.nc2.internal.util.CompareArrayToMa2;
 
 /** Test {@link ucar.nc2.Variable} */
 public class TestVariable {
@@ -338,7 +341,7 @@ public class TestVariable {
   }
 
   @Test
-  public void testReadBySectionSpec() throws IOException, ucar.ma2.InvalidRangeException {
+  public void testReadBySectionSpec() throws IOException, InvalidRangeException {
     Dimension x = new Dimension("x", 27);
     Variable.Builder<?> var = Variable.builder().setName("x").setArrayType(ArrayType.INT)
         .setDimensions(ImmutableList.of(x)).addAttribute(new Attribute("name", "value")).setAutoGen(100, 10);
@@ -346,9 +349,9 @@ public class TestVariable {
     Variable xvar = g.findVariableLocal("x");
     assertThat(xvar).isNotNull();
 
-    ucar.ma2.Array data = xvar.read("10:20");
+    Array data = xvar.readArray(new Section("10:20"));
     assertThat(
-        CompareArrayToMa2.compareData("testReadBySectionSpec", data, Arrays.makeArray(ArrayType.INT, 11, 200, 10)))
+        CompareArrayToArray.compareData("testReadBySectionSpec", data, Arrays.makeArray(ArrayType.INT, 11, 200, 10)))
             .isTrue();
   }
 

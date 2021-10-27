@@ -5,7 +5,6 @@
 package ucar.nc2.iosp;
 
 import ucar.array.ArrayType;
-import ucar.ma2.DataType;
 
 /** Utilities and Constants specific to the Netcdf file format (Netcdf-3 and Netcdf-4) */
 public class NetcdfFormatUtils {

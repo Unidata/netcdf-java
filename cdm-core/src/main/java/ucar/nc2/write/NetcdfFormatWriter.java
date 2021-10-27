@@ -498,24 +498,12 @@ public class NetcdfFormatWriter implements Closeable {
       return self();
     }
 
-    /** @deprecated use addVariable(String shortName, ArrayType dataType, String dimString) */
-    @Deprecated
-    public Variable.Builder<?> addVariable(String shortName, ucar.ma2.DataType dataType, String dimString) {
-      return addVariable(shortName, dataType.getArrayType(), dimString);
-    }
-
     /** Add a Variable to the root group. */
     public Variable.Builder<?> addVariable(String shortName, ArrayType dataType, String dimString) {
       Variable.Builder<?> vb = Variable.builder().setName(shortName).setArrayType(dataType)
           .setParentGroupBuilder(rootGroup).setDimensionsByName(dimString);
       rootGroup.addVariable(vb);
       return vb;
-    }
-
-    /** @deprecated use addVariable(String shortName, ArrayType dataType, List<Dimension> dims) */
-    @Deprecated
-    public Variable.Builder<?> addVariable(String shortName, ucar.ma2.DataType dataType, List<Dimension> dims) {
-      return addVariable(shortName, dataType.getArrayType(), dims);
     }
 
     /** Add a Variable to the root group. */

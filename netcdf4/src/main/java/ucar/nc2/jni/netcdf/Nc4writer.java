@@ -48,7 +48,7 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.ffi.netcdf.NetcdfClibrary;
 import ucar.nc2.internal.iosp.IospFileWriter;
 import ucar.nc2.internal.iosp.hdf5.H5header;
-import ucar.nc2.iosp.IospHelper;
+import ucar.nc2.iosp.IospArrayHelper;
 import ucar.nc2.iosp.NetcdfFileFormat;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.write.Nc4Chunking;
@@ -760,7 +760,7 @@ public class Nc4writer extends Nc4reader implements IospFileWriter {
         break;
       case CHAR:
         ret = nc4.nc_put_att_text(grpid, varid, att.getShortName(), new SizeT(att.getLength()),
-            IospHelper.convertCharToByte((char[]) arrayStorage));
+            IospArrayHelper.convertCharToByte((char[]) arrayStorage));
         break;
       case DOUBLE:
         ret = nc4.nc_put_att_double(grpid, varid, att.getShortName(), Nc4prototypes.NC_DOUBLE,
@@ -847,7 +847,7 @@ public class Nc4writer extends Nc4reader implements IospFileWriter {
         char[] valc = (char[]) data; // chars are lame
         assert valc.length == sectionLen;
 
-        valb = IospHelper.convertCharToByte(valc);
+        valb = IospArrayHelper.convertCharToByte(valc);
         ret = nc4.nc_put_vars_text(grpid, varid, origin, shape, stride, valb);
         // ret = nc4.nc_put_vara_text(grpid, varid, origin, shape, valb);
 
@@ -1137,7 +1137,7 @@ public class Nc4writer extends Nc4reader implements IospFileWriter {
           break;
         case CHAR:
           char[] cdata = sdata.getJavaArrayChar(m);
-          bb.put(IospHelper.convertCharToByte(cdata));
+          bb.put(IospArrayHelper.convertCharToByte(cdata));
           break;
         case LONG:
           long[] ldata = sdata.getJavaArrayLong(m);

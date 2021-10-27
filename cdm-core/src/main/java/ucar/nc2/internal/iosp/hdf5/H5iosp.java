@@ -23,7 +23,6 @@ import ucar.array.StructureDataStorageBB;
 import ucar.array.InvalidRangeException;
 import ucar.array.Section;
 import ucar.array.StructureMembers;
-import ucar.ma2.DataType;
 import ucar.nc2.Group;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
@@ -32,7 +31,6 @@ import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.internal.iosp.hdf4.HdfEos;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.iosp.IospArrayHelper;
-import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.iosp.Layout;
 import ucar.nc2.iosp.LayoutBB;
 import ucar.nc2.iosp.LayoutRegular;
@@ -453,48 +451,6 @@ public class H5iosp extends AbstractIOServiceProvider {
 
     // normal case
     return IospArrayHelper.readDataFill(raf, layout, dataType, fillValue, endian, convertChar);
-  }
-
-  private Object readDataPrimitive(Layout layout, DataType dataType, int[] shape, Object fillValue, ByteOrder endian,
-      boolean convertChar) throws IOException {
-
-    if (dataType == DataType.STRING) {
-      int size = (int) layout.getTotalNelems();
-      String[] sa = new String[size];
-      int count = 0;
-      while (layout.hasNext()) {
-        Layout.Chunk chunk = layout.next();
-        if (chunk == null)
-          continue;
-        for (int i = 0; i < chunk.getNelems(); i++) { // 16 byte "heap ids"
-          sa[count++] = header.readHeapString(chunk.getSrcPos() + layout.getElemSize() * i);
-        }
-      }
-      return sa;
-    }
-
-    if (dataType == DataType.OPAQUE) {
-      ucar.ma2.Array opArray = ucar.ma2.Array.factory(DataType.OPAQUE, shape);
-      assert (new ucar.ma2.Section(shape).computeSize() == layout.getTotalNelems());
-
-      int count = 0;
-      while (layout.hasNext()) {
-        Layout.Chunk chunk = layout.next();
-        if (chunk == null)
-          continue;
-        int recsize = layout.getElemSize();
-        for (int i = 0; i < chunk.getNelems(); i++) {
-          byte[] pa = new byte[recsize];
-          raf.seek(chunk.getSrcPos() + i * recsize);
-          raf.readFully(pa, 0, recsize);
-          opArray.setObject(count++, ByteBuffer.wrap(pa));
-        }
-      }
-      return opArray;
-    }
-
-    // normal case
-    return IospHelper.readDataFill(raf, layout, dataType, fillValue, endian, convertChar);
   }
 
   ///////////////////////////////////////////////

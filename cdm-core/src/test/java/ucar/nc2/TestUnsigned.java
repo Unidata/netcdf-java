@@ -1,15 +1,13 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-
 package ucar.nc2;
 
 import org.junit.Assert;
 import org.junit.Test;
 import ucar.array.Array;
 import ucar.array.ArrayType;
-import ucar.ma2.DataType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.unidata.util.test.TestDir;
@@ -130,17 +128,17 @@ public class TestUnsigned {
     try (NetcdfDataset ncd = NetcdfDatasets.openNcmlDataset(new StringReader(ncml), null, null)) {
       Variable v = ncd.findVariable("bvar");
       Assert.assertNotNull(v);
-      Assert.assertEquals(DataType.UBYTE, v.getDataType());
+      Assert.assertEquals(ArrayType.UBYTE, v.getArrayType());
 
       boolean hasSigned = false;
-      ucar.ma2.Array data = v.read();
-      Assert.assertEquals(DataType.BYTE, data.getDataType());
+      Array<Byte> data = (Array<Byte>) v.readArray();
+      Assert.assertEquals(ArrayType.BYTE, data.getArrayType());
 
       // but theres a tricky thing that when one gets as float, it seems to know its unsigned??
-      while (data.hasNext()) {
-        float b = data.nextFloat();
-        if (b < 0)
+      for (byte b : data) {
+        if (b < 0) {
           hasSigned = true;
+        }
       }
       Assert.assertTrue(hasSigned);
     }

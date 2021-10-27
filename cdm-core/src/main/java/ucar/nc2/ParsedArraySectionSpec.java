@@ -204,7 +204,7 @@ public class ParsedArraySectionSpec {
     return variable;
   }
 
-  public ucar.array.Section getArraySection() {
+  public ucar.array.Section getSection() {
     return section;
   }
 

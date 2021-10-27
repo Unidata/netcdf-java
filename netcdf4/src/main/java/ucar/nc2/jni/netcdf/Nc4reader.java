@@ -36,7 +36,7 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.internal.util.URLnaming;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
-import ucar.nc2.iosp.IospHelper;
+import ucar.nc2.iosp.IospArrayHelper;
 import ucar.nc2.ffi.netcdf.NetcdfClibrary;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.internal.util.EscapeStrings;
@@ -1186,7 +1186,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
         ret = nc4.nc_get_vars_text(grpid, varid, origin, shape, stride, valc);
         if (ret != 0)
           throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-        values = Arrays.factory(ArrayType.CHAR, section.getShape(), IospHelper.convertByteToChar(valc));
+        values = Arrays.factory(ArrayType.CHAR, section.getShape(), IospArrayHelper.convertByteToChar(valc));
         break;
 
       case Nc4prototypes.NC_DOUBLE:
@@ -1301,7 +1301,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
         if (ret != 0) {
           throw new IOException(ret + ": " + nc4.nc_strerror(ret));
         }
-        char[] cvals = IospHelper.convertByteToChar(valc);
+        char[] cvals = IospArrayHelper.convertByteToChar(valc);
         return Arrays.factory(ArrayType.CHAR, shape, cvals);
       }
 

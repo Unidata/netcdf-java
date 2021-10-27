@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.dataset;
@@ -7,26 +7,26 @@ package ucar.nc2.dataset;
 import com.google.common.collect.Lists;
 import org.junit.Assert;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ucar.ma2.Array;
-import ucar.ma2.IndexIterator;
-import ucar.ma2.Range;
-import java.lang.invoke.MethodHandles;
+import ucar.array.Array;
+import ucar.array.IndexFn;
+import ucar.array.Range;
 import java.util.ArrayList;
 import java.util.List;
+
+import ucar.array.Section;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.internal.dataset.EnhanceScaleMissingUnsigned;
 import ucar.nc2.iosp.NetcdfFormatUtils;
 import ucar.unidata.util.test.TestDir;
 
+import static com.google.common.truth.Truth.assertThat;
+
 /**
  * Test fill values when reading sections of a Variable.
  * from (WUB-664639) (Didier Earith)
  */
 public class TestSectionFillValue {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
   public void testExplicitFillValue() throws Exception {
@@ -45,7 +45,7 @@ public class TestSectionFillValue {
         ranges.add(new Range(0, 1));
       }
 
-      VariableDS v_section = (VariableDS) v.section(ranges);
+      VariableDS v_section = (VariableDS) v.section(new Section(ranges));
       Assert.assertNotNull(v_section.findAttribute("_FillValue"));
       System.out.println(v_section.findAttribute("_FillValue"));
       Assert.assertTrue(v_section.scaleMissingUnsignedProxy().hasFillValue());
@@ -60,9 +60,9 @@ public class TestSectionFillValue {
         NetcdfDataset ncd = NetcdfDatasets.openDataset(filename)) {
 
       for (Variable v : ncfile.getVariables()) {
-        if (!v.getDataType().isNumeric())
+        if (!v.getArrayType().isNumeric())
           continue;
-        System.out.printf("testImplicitFillValue for %s type=%s%n", v.getShortName(), v.getDataType());
+        System.out.printf("testImplicitFillValue for %s type=%s%n", v.getShortName(), v.getArrayType());
 
         VariableDS ve = (VariableDS) ncd.findVariable(v.getFullName());
         if (varWithFill.contains(v.getShortName())) {
@@ -70,47 +70,45 @@ public class TestSectionFillValue {
           Assert.assertTrue(ve.scaleMissingUnsignedProxy().hasFillValue());
           Number fillValue = v.findAttribute("_FillValue").getNumericValue();
 
-          Array data = v.read();
-          Array dataE = ve.read();
+          Array<Number> data = (Array<Number>) v.readArray();
+          Array<Number> dataE = (Array<Number>) ve.readArray();
+          IndexFn idxf = IndexFn.builder(data.getShape()).build();
 
-          IndexIterator iter = data.getIndexIterator();
-          IndexIterator iterE = dataE.getIndexIterator();
-          while (iter.hasNext() && iterE.hasNext()) {
-            Object val = iter.next();
-            Object vale = iterE.next();
-            double vald = ((Number) val).doubleValue();
-            double valde = ((Number) vale).doubleValue();
+          for (int idx = 0; idx < data.getSize(); idx++) {
+            double vald = data.get(idxf.odometer(idx)).doubleValue();
+            double valde = dataE.get(idxf.odometer(idx)).doubleValue();
             if (ve.scaleMissingUnsignedProxy().isFillValue(vald)) {
-              if (v.getDataType().isFloatingPoint())
-                Assert.assertTrue(Double.toString(valde), Double.isNaN(valde));
-              else
-                Assert.assertTrue(vale.toString(), fillValue.equals(vale));
+              if (v.getArrayType().isFloatingPoint()) {
+                assertThat(valde).isNaN();
+              } else {
+                assertThat(vald).isEqualTo(fillValue);
+              }
             }
           }
         } else {
           Assert.assertNull(v.findAttribute("_FillValue"));
           Assert.assertTrue(ve.scaleMissingUnsignedProxy().hasFillValue());
           Number fillValue = NetcdfFormatUtils.getFillValueDefault(v.getArrayType());
-          Assert.assertNotNull(v.getDataType().toString(), fillValue);
+          Assert.assertNotNull(v.getArrayType().toString(), fillValue);
 
-          Array data = v.read();
-          Array dataE = ve.read();
+          Array<Number> data = (Array<Number>) v.readArray();
+          Array<Number> dataE = (Array<Number>) ve.readArray();
+          IndexFn idxf = IndexFn.builder(data.getShape()).build();
 
-          IndexIterator iter = data.getIndexIterator();
-          IndexIterator iterE = dataE.getIndexIterator();
-          while (iter.hasNext() && iterE.hasNext()) {
-            Object val = iter.next();
-            Object vale = iterE.next();
-            double vald = ((Number) val).doubleValue();
-            double valde = ((Number) vale).doubleValue();
-            if (val.equals(fillValue))
-              Assert.assertTrue(ve.scaleMissingUnsignedProxy().isFillValue(vald));
+          for (int idx = 0; idx < data.getSize(); idx++) {
+            double vald = data.get(idxf.odometer(idx)).doubleValue();
+            double valde = dataE.get(idxf.odometer(idx)).doubleValue();
+
+            if (fillValue.equals(vald)) {
+              assertThat(ve.scaleMissingUnsignedProxy().isFillValue(vald)).isTrue();
+            }
 
             if (ve.scaleMissingUnsignedProxy().isFillValue(vald)) {
-              if (v.getDataType().isFloatingPoint())
-                Assert.assertTrue(Double.toString(valde), Double.isNaN(valde));
-              else
-                Assert.assertTrue(vale.toString(), fillValue.equals(vale));
+              if (v.getArrayType().isFloatingPoint()) {
+                assertThat(valde).isNaN();
+              } else {
+                assertThat(valde).isEqualTo(fillValue.doubleValue());
+              }
             }
           }
         }

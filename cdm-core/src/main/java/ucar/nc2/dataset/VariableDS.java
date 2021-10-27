@@ -109,11 +109,6 @@ public class VariableDS extends Variable implements VariableEnhanced {
   }
 
   @Deprecated
-  ucar.ma2.Array convert(ucar.ma2.Array data) {
-    return dataEnhancer.convert(data, enhanceMode);
-  }
-
-  @Deprecated
   ucar.ma2.Array convert(ucar.ma2.Array data, Set<NetcdfDataset.Enhance> enhancements) {
     return dataEnhancer.convert(data, enhancements);
   }
@@ -143,12 +138,6 @@ public class VariableDS extends Variable implements VariableEnhanced {
   @Override
   public Variable getOriginalVariable() {
     return orgVar;
-  }
-
-  /** @deprecated use getOriginalArrayType() */
-  @Deprecated
-  public ucar.ma2.DataType getOriginalDataType() {
-    return getOriginalArrayType().getDataType();
   }
 
   /**
