@@ -10,7 +10,7 @@ import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionAbstract;
 import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
-import ucar.ma2.DataType;
+import ucar.array.ArrayType;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.grib2.table.Grib2Tables;
@@ -659,7 +659,7 @@ public class Grib2DataPanel extends JPanel {
     int count = 0;
     int bits = 0;
     for (byte b : bitmap) {
-      short s = DataType.unsignedByteToShort(b);
+      short s = ArrayType.unsignedByteToShort(b);
       bits += Long.bitCount(s);
       f.format("%8s", Long.toBinaryString(s));
       if (++count % 10 == 0)
@@ -954,7 +954,7 @@ public class Grib2DataPanel extends JPanel {
       byte[] bytes = gr.getPDSsection().getRawBytes();
       int count = 1;
       for (byte b : bytes) {
-        short s = DataType.unsignedByteToShort(b);
+        short s = ArrayType.unsignedByteToShort(b);
         f.format(" %d : %d%n", count++, s);
       }
     }

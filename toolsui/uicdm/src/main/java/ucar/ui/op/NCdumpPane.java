@@ -8,7 +8,7 @@ package ucar.ui.op;
 import ucar.array.Array;
 import ucar.array.IsMissingEvaluator;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.ParsedSectionSpec;
+import ucar.nc2.ParsedArraySectionSpec;
 import ucar.nc2.Variable;
 import ucar.nc2.write.NcdumpArray;
 import ucar.ui.widget.*;
@@ -133,7 +133,7 @@ public class NCdumpPane extends TextHistoryPane {
     CommonTask(String command) {
       this.command = command;
       try {
-        ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(ds, command);
+        ParsedArraySectionSpec cer = ParsedArraySectionSpec.parseVariableSection(ds, command);
         while (cer != null) { // get inner variable
           v = cer.getVariable();
           cer = cer.getChild();

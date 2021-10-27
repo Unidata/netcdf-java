@@ -10,7 +10,6 @@ import java.util.List;
 import javax.annotation.concurrent.Immutable;
 
 import ucar.array.ArrayType;
-import ucar.ma2.DataType;
 import ucar.nc2.constants.CDM;
 
 /** Builder for VariableSimpleIF. */

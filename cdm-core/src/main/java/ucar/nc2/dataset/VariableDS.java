@@ -443,13 +443,6 @@ public class VariableDS extends Variable implements VariableEnhanced {
       return self();
     }
 
-    /** @deprecated use setOriginalArrayType() */
-    @Deprecated
-    public T setOriginalDataType(ucar.ma2.DataType orgDataType) {
-      this.orgDataType = orgDataType.getArrayType();
-      return self();
-    }
-
     public T setOriginalArrayType(ArrayType orgDataType) {
       this.orgDataType = orgDataType;
       return self();

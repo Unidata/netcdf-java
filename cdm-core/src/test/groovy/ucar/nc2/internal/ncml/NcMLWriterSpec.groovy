@@ -13,8 +13,7 @@ import org.slf4j.LoggerFactory
 import spock.lang.Shared
 import spock.lang.Specification
 import ucar.array.ArrayType
-import ucar.ma2.Array
-import ucar.ma2.DataType
+import ucar.array.Arrays
 import ucar.nc2.*
 import ucar.nc2.dataset.NetcdfDataset
 import ucar.nc2.dataset.NetcdfDatasets
@@ -77,32 +76,32 @@ recordsGroup/recordsStruct = UNREADABLE
         root.addEnumTypedef(dessertType)
 
         and: "create Variable of type dessertType and add it"
-        Variable.Builder dessert = Variable.builder().setName("dessert").setDataType(DataType.ENUM2)
+        Variable.Builder dessert = Variable.builder().setName("dessert").setArrayType(ArrayType.ENUM2)
             .setParentGroupBuilder(root).setDimensionsByName("time").setEnumTypeName("dessertType")
             .addAttribute(Attribute.emptyValued("zero", ArrayType.ULONG)) ; // unsigned, zero-length, LONG attribute
         short[] dessertStorage = [18, 268, 3284] as short[]
-        dessert.setSourceData(Array.factory(DataType.SHORT, [3] as int[], dessertStorage))  // Irregularly-spaced values
+        dessert.setSourceData(Arrays.factory(ArrayType.SHORT, [3] as int[], dessertStorage))  // Irregularly-spaced values
         root.addVariable(dessert)
 
         and: "create 'time' coordinate Variable"
-        Variable.Builder time = Variable.builder().setName("time").setDataType(DataType.SHORT)
+        Variable.Builder time = Variable.builder().setName("time").setArrayType(ArrayType.SHORT)
                 .setParentGroupBuilder(root).setDimensionsByName("time");
         short[] timeStorage = [4, 5, 6] as short[]
-        time.setSourceData(Array.factory(DataType.SHORT, [3] as int[], timeStorage))
+        time.setSourceData(Arrays.factory(ArrayType.SHORT, [3] as int[], timeStorage))
         root.addVariable(time)
 
         and: "create char-valued Variable with anonymous Dimension"
-        Variable.Builder charVar = Variable.builder().setName("charVar").setDataType(DataType.CHAR)
+        Variable.Builder charVar = Variable.builder().setName("charVar").setArrayType(ArrayType.CHAR)
                 .setParentGroupBuilder(root).setDimensionsByName("5");
         char[] charStorage = ['a', 'b', 'c', 'd', 'e'] as char[]
-        charVar.setSourceData(Array.factory(DataType.CHAR, [5] as int[], charStorage))
+        charVar.setSourceData(Arrays.factory(ArrayType.CHAR, [5] as int[], charStorage))
         root.addVariable(charVar)
 
         and: "create string-valued Variable"
-        Variable.Builder stringVar = Variable.builder().setName("stringVar").setDataType(DataType.STRING)
+        Variable.Builder stringVar = Variable.builder().setName("stringVar").setArrayType(ArrayType.STRING)
                 .setParentGroupBuilder(root).setDimensionsByName("4");
         String[] stringStorage = ['Frodo Baggins', 'Samwise Gamgee', 'Meriadoc Brandybuck', 'Peregrin Took'] as String[]
-        stringVar.setSourceData(Array.factory(DataType.STRING, [4] as int[], stringStorage))
+        stringVar.setSourceData(Arrays.factory(ArrayType.STRING, [4] as int[], stringStorage))
         root.addVariable(stringVar)
 
         and: "create Group for records"
@@ -119,7 +118,7 @@ recordsGroup/recordsStruct = UNREADABLE
         recordsGroup.addVariable(recordsStruct)
 
         and: "create record Variable and add it to the records Structure"
-        Variable.Builder recordsVar = Variable.builder().setName("recordsVar").setDataType(DataType.INT)
+        Variable.Builder recordsVar = Variable.builder().setName("recordsVar").setArrayType(ArrayType.INT)
                 .setParentGroupBuilder(recordsGroup).setDimensionsByName("3");
         recordsStruct.addMemberVariable(recordsVar)
 
