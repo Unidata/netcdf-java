@@ -37,7 +37,6 @@ import ucar.nc2.util.CancelTask;
  * Use NetcdfFormatWriter object for a lower level API.
  */
 public class NetcdfCopier implements Closeable {
-  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfCopier.class);
   private static final long maxSize = 50 * 1000 * 1000; // 50 Mbytes
   private static boolean debug, debugWrite;
 
@@ -253,7 +252,7 @@ public class NetcdfCopier implements Closeable {
     int nelemsWritten = 0;
     while (nelemsWritten < oldVar.getSize()) {
       try {
-        int[] chunkOrigin = index.getCurrentCounter();
+        int[] chunkOrigin = index.currentCounter();
         int[] chunkShape = index.computeChunkShape(maxChunkElems);
 
         Array<?> data = oldVar.readArray(new Section(chunkOrigin, chunkShape));

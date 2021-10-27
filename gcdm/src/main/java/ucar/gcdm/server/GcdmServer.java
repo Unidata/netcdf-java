@@ -189,8 +189,8 @@ public class GcdmServer {
       long maxChunkElems = MAX_MESSAGE / var.getElementSize();
       // LOOK wrong this assume starts at 0, should start at varSection
       ChunkingIndex index = new ChunkingIndex(var.getShape());
-      while (index.currentElement() < index.getSize()) {
-        int[] chunkOrigin = index.getCurrentCounter();
+      while (index.currentElement() < index.size()) {
+        int[] chunkOrigin = index.currentCounter();
         int[] chunkShape = index.computeChunkShape(maxChunkElems);
         Section section = new Section(chunkOrigin, chunkShape);
         ParsedArraySectionSpec spec = new ParsedArraySectionSpec(var, section);

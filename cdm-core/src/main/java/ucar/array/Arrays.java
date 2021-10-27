@@ -632,7 +632,7 @@ public class Arrays {
       case DOUBLE: {
         double[] dvals = new double[npts];
         for (int i = 0; i < npts; i++) {
-          dvals[i] = (float) (start + i * incr);
+          dvals[i] = (start + i * incr);
         }
         pvals = dvals;
         break;
