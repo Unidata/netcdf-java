@@ -46,6 +46,7 @@ public class TestNc4Misc {
 
   // from Jeff Johnson jeff.m.johnson@noaa.gov 5/2/2014
   @Test
+  @Ignore("not ready")
   public void testChunkStandard() throws IOException, InvalidRangeException {
     // define the file
     String location = tempFolder.newFile().getAbsolutePath();
@@ -108,6 +109,7 @@ public class TestNc4Misc {
   }
 
   @Test
+  @Ignore("not ready")
   public void testFileType4() throws Exception {
     testFileType(NetcdfFileFormat.NETCDF4);
   }
@@ -130,6 +132,7 @@ public class TestNc4Misc {
 
   // Demonstrates GitHub issue #718: https://github.com/Unidata/thredds/issues/718
   @Test
+  @Ignore("not ready")
   public void testCloseNc4inDefineMode() throws IOException {
     String location = tempFolder.newFile().getAbsolutePath();
     Nc4Chunking chunking = Nc4ChunkingDefault.factory(Nc4Chunking.Strategy.standard, 5, true);

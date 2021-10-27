@@ -49,6 +49,7 @@ public class TestNc4JniWriteProblem {
 
   // Demonstrates GitHub issue #301--badly writing subsetted arrays
   @Test
+  @Ignore("not ready")
   public void writeSubset() throws IOException, InvalidRangeException {
     String fname = tempFolder.newFile().getAbsolutePath();
     NetcdfFormatWriter.Builder<?> writerb = NetcdfFormatWriter.createNewNetcdf4(NetcdfFileFormat.NETCDF4, fname, null);
@@ -91,6 +92,7 @@ public class TestNc4JniWriteProblem {
    * }
    */
   @Test
+  @Ignore("not ready")
   public void problemWithCompoundString() throws IOException {
     String fileIn = TestDir.cdmUnitTestDir + "formats/hdf5/support/cstr.h5";
     String fileOut = tempFolder.newFile().getAbsolutePath();
@@ -98,6 +100,7 @@ public class TestNc4JniWriteProblem {
   }
 
   @Test
+  @Ignore("not ready")
   public void problemWithEnumHdf() throws IOException {
     String fileIn = TestDir.cdmUnitTestDir + "formats/hdf5/support/enum.h5";
     String fileOut = tempFolder.newFile().getAbsolutePath();

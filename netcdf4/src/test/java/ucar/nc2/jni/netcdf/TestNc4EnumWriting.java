@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 import org.junit.Assume;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -83,6 +84,7 @@ public class TestNc4EnumWriting {
 
 
   @Test // "See issue #352")
+  @Ignore("not ready")
   public void writeEnumType() throws IOException {
     String filenameOut = File.createTempFile("writeEnumType", ".nc").getAbsolutePath();
     NetcdfFormatWriter.Builder writerb =

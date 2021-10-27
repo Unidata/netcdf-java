@@ -78,6 +78,7 @@ public class ChunkingIndex {
 
   /**
    * Increment the current element by 1.
+   * 
    * @return currentElement()
    */
   public long incr() {
