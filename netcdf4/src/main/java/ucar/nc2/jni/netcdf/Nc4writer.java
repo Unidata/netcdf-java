@@ -25,18 +25,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ucar.array.Array;
 import ucar.array.ArrayType;
 import ucar.array.Arrays;
-import ucar.array.ArraysConvert;
-import ucar.ma2.Array;
+import ucar.array.InvalidRangeException;
+import ucar.array.Section;
+import ucar.array.StructureDataArray;
 import ucar.ma2.ArrayStructure;
 import ucar.ma2.ArrayStructureBB;
 import ucar.ma2.DataType;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Section;
-import ucar.ma2.StructureData;
+import ucar.array.StructureData;
 import ucar.ma2.StructureDataDeep;
-import ucar.ma2.StructureMembers;
+import ucar.array.StructureMembers;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.EnumTypedef;
@@ -56,8 +56,9 @@ import ucar.nc2.write.Nc4ChunkingDefault;
 
 /**
  * IOSP for writing netcdf files through JNA interface to netcdf C library.
- * LOOK doesnt work for a number of cases including strings inside of compounds. Do we want to support this?
- * see TestNc4JniWriteProblem.
+ * LOOK doesnt work for a number of cases including strings inside of compounds. Do we still want to support this?
+ *   see TestNc4JniWriteProblem.
+ *   Withdrawing this functionality until it can be fixed, see NetcdfFormatWriter.
  */
 public class Nc4writer extends Nc4reader implements IospFileWriter {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Nc4writer.class);
@@ -715,7 +716,7 @@ public class Nc4writer extends Nc4reader implements IospFileWriter {
       return;
 
     int ret = 0;
-    ucar.array.Array<?> values = att.getArrayValues();
+    Array<?> values = att.getArrayValues();
     Object arrayStorage = null;
     if (values != null) {
       arrayStorage = Arrays.copyPrimitiveArray(values);
@@ -804,361 +805,9 @@ public class Nc4writer extends Nc4reader implements IospFileWriter {
     if (debugWrite)
       System.out.printf("Add attribute to var %s == %s%n", (v == null) ? "global" : v.getFullName(), att.toString());
   }
+  
+  ///////////////////////////////////////////////////////////////////////////////////////////
 
-  private void writeData(Variable v2, Section section, Array values) throws IOException, InvalidRangeException {
-    Vinfo vinfo = (Vinfo) v2.getSPobject();
-    if (vinfo == null) {
-      log.error("vinfo null for " + v2);
-      throw new IllegalStateException("vinfo null for " + v2.getFullName());
-    }
-    // int vlen = (int) v2.getSize();
-    // int len = (int) section.computeSize();
-    // if (vlen == len) // entire array
-    // writeDataAll(v2, vinfo.grpid, vinfo.varid, vinfo.typeid, values);
-    // else
-    writeData(v2, vinfo.g4.grpid, vinfo.varid, vinfo.typeid, section, values);
-  }
-
-  private void writeData(Variable v, int grpid, int varid, int typeid, Section section, Array values)
-      throws IOException, InvalidRangeException {
-
-    // general sectioning with strides
-    SizeT[] origin = convertSizeT(section.getOrigin());
-    SizeT[] shape = convertSizeT(section.getShape());
-    SizeT[] stride = convertSizeT(section.getStride());
-    boolean isUnsigned = isUnsigned(typeid);
-    int sectionLen = (int) section.computeSize();
-
-    Object data = values.get1DJavaArray(values.getDataType());
-
-    switch (typeid) {
-
-      case Nc4prototypes.NC_BYTE:
-      case Nc4prototypes.NC_UBYTE:
-        byte[] valb = (byte[]) data;
-        assert valb.length == sectionLen;
-        int ret = isUnsigned ? nc4.nc_put_vars_uchar(grpid, varid, origin, shape, stride, valb)
-            : nc4.nc_put_vars_schar(grpid, varid, origin, shape, stride, valb);
-        if (ret != 0)
-          throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-        break;
-
-      case Nc4prototypes.NC_CHAR:
-        char[] valc = (char[]) data; // chars are lame
-        assert valc.length == sectionLen;
-
-        valb = IospArrayHelper.convertCharToByte(valc);
-        ret = nc4.nc_put_vars_text(grpid, varid, origin, shape, stride, valb);
-        // ret = nc4.nc_put_vara_text(grpid, varid, origin, shape, valb);
-
-        if (ret != 0) {
-          throw new IOException(nc4.nc_strerror(ret));
-        }
-        break;
-
-      case Nc4prototypes.NC_DOUBLE:
-        double[] vald = (double[]) data;
-        assert vald.length == sectionLen;
-        ret = nc4.nc_put_vars_double(grpid, varid, origin, shape, stride, vald);
-        if (ret != 0)
-          throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-        break;
-
-      case Nc4prototypes.NC_FLOAT:
-        float[] valf = (float[]) data;
-        assert valf.length == sectionLen;
-        ret = nc4.nc_put_vars_float(grpid, varid, origin, shape, stride, valf);
-        if (ret != 0) {
-          // log.error("{} on var {}", nc4.nc_strerror(ret), v);
-          // return;
-          throw new IOException(nc4.nc_strerror(ret));
-        }
-        break;
-
-      case Nc4prototypes.NC_UINT:
-      case Nc4prototypes.NC_INT:
-        int[] vali = (int[]) data;
-        assert vali.length == sectionLen;
-        ret = isUnsigned ? nc4.nc_put_vars_uint(grpid, varid, origin, shape, stride, vali)
-            : nc4.nc_put_vars_int(grpid, varid, origin, shape, stride, vali);
-
-        if (ret != 0) {
-          // log.error("{} on var {}", nc4.nc_strerror(ret), v);
-          // return;
-          throw new IOException(nc4.nc_strerror(ret));
-        }
-        break;
-
-      case Nc4prototypes.NC_UINT64:
-      case Nc4prototypes.NC_INT64:
-        long[] vall = (long[]) data;
-        assert vall.length == sectionLen;
-        ret = isUnsigned ? nc4.nc_put_vars_ulonglong(grpid, varid, origin, shape, stride, vall)
-            : nc4.nc_put_vars_longlong(grpid, varid, origin, shape, stride, vall);
-
-        if (ret != 0)
-          throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-        break;
-
-      case Nc4prototypes.NC_USHORT:
-      case Nc4prototypes.NC_SHORT:
-        short[] vals = (short[]) data;
-        assert vals.length == sectionLen;
-        ret = isUnsigned ? nc4.nc_put_vars_ushort(grpid, varid, origin, shape, stride, vals)
-            : nc4.nc_put_vars_short(grpid, varid, origin, shape, stride, vals);
-        if (ret != 0)
-          throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-        break;
-
-      case Nc4prototypes.NC_STRING:
-        String[] valss = convertStringData(data);
-        assert valss.length == sectionLen;
-        ret = nc4.nc_put_vars_string(grpid, varid, origin, shape, stride, valss);
-        if (ret != 0)
-          throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-        break;
-
-      default:
-        UserType userType = userTypes.get(typeid);
-        if (userType == null)
-          throw new IOException("Unknown userType == " + typeid);
-        switch (userType.typeClass) {
-          case NC_ENUM:
-            ret = writeEnumData(v, userType, grpid, varid, typeid, section, values);
-            if (ret != 0) {
-              // log.error("{} on var {}", nc4.nc_strerror(ret), v);
-              // return;
-              throw new IOException(nc4.nc_strerror(ret));
-            }
-            break;
-          case NC_COMPOUND:
-            writeCompoundData((Structure) v, userType, grpid, varid, typeid, section, (ArrayStructure) values);
-            return;
-          case NC_VLEN:
-          case NC_OPAQUE:
-          default:
-            throw new IOException("Unsupported writing of userType= " + userType);
-        }
-    }
-    if (debugWrite)
-      System.out.printf("OK writing var %s%n", v);
-  }
-
-  private int writeEnumData(Variable v, UserType userType, int grpid, int varid, int typeid, Section section,
-      Array values) {
-    SizeT[] origin = convertSizeT(section.getOrigin());
-    SizeT[] shape = convertSizeT(section.getShape());
-    int sectionLen = (int) section.computeSize();
-    assert values.getSize() == sectionLen;
-
-    int[] secStride = section.getStride();
-    boolean stride1 = isStride1(secStride);
-
-    int ret;
-    ByteBuffer bb = values.getDataAsByteBuffer(ByteOrder.nativeOrder());
-    byte[] data = bb.array();
-    if (stride1) {
-      ret = nc4.nc_put_vara(grpid, varid, origin, shape, data);
-    } else {
-      SizeT[] stride = convertSizeT(secStride);
-      ret = nc4.nc_put_vars(grpid, varid, origin, shape, stride, data);
-    }
-    return ret;
-  }
-
-  private void writeCompoundData(Structure s, UserType userType, int grpid, int varid, int typeid, Section section,
-      ArrayStructure values) throws IOException, InvalidRangeException {
-
-    SizeT[] origin = convertSizeT(section.getOrigin());
-    SizeT[] shape = convertSizeT(section.getShape());
-    SizeT[] stride = convertSizeT(section.getStride());
-
-    ArrayStructureBB valuesBB = StructureDataDeep.copyToArrayBB(s, values, ByteOrder.nativeOrder()); // LOOK embedded
-    // strings getting
-    // lost ??
-    ByteBuffer bbuff = valuesBB.getByteBuffer();
-
-    if (debugCompound)
-      System.out.printf("writeCompoundData variable %s (grpid %d varid %d) %n", s.getShortName(), grpid, varid);
-
-    // write the data
-    // int ret = nc4.nc_put_var(grpid, varid, bbuff);
-    int ret;
-    if (section.isStrided()) {
-      ret = nc4.nc_put_vars(grpid, varid, origin, shape, stride, bbuff.array());
-    } else {
-      ret = nc4.nc_put_vara(grpid, varid, origin, shape, bbuff.array());
-    }
-    if (ret != 0) {
-      throw new IOException(errMessage("nc_put_vars", ret, grpid, varid));
-    }
-  }
-
-  private int appendStructureData(Structure s, StructureData sdata) throws IOException, InvalidRangeException {
-    Vinfo vinfo = (Vinfo) s.getSPobject();
-    Dimension dim = s.getDimension(0); // LOOK must be outer dim
-    int dimid = vinfo.g4.dimHash.get(dim);
-    SizeTByReference lenp = new SizeTByReference();
-    int ret = nc4.nc_inq_dimlen(vinfo.g4.grpid, dimid, lenp);
-    if (ret != 0)
-      throw new IOException(errMessage("nc_inq_dimlen", ret, vinfo.g4.grpid, dimid));
-
-    SizeT[] origin = {lenp.getValue()};
-    SizeT[] shape = {new SizeT(1)};
-    SizeT[] stride = {new SizeT(1)};
-
-    // ArrayStructureBB valuesBB = IospHelper.copyToArrayBB(sdata, ByteOrder.nativeOrder());
-    // n4 wants native byte order
-    // ByteBuffer bbuff = valuesBB.getByteBuffer();
-    ByteBuffer bbuff = makeBB(s, sdata);
-
-    // write the data
-    // ret = nc4.nc_put_vara(vinfo.g4.grpid, vinfo.varid, origin, shape, bbuff);
-    // ret = nc4.nc_put_vars(vinfo.g4.grpid, vinfo.varid, origin, shape, stride, bbuff);
-    ret = nc4.nc_put_vars(vinfo.g4.grpid, vinfo.varid, origin, shape, stride, bbuff.array());
-    if (ret != 0)
-      throw new IOException(errMessage("appendStructureData (nc_put_vars)", ret, vinfo.g4.grpid, vinfo.varid));
-
-    return origin[0].intValue(); // recnum
-  }
-
-  private String errMessage(String what, int ret, int grpid, int varid) {
-    Formatter f = new Formatter();
-    f.format("%s: %d: %s grpid=%d objid=%d", what, ret, nc4.nc_strerror(ret), grpid, varid);
-    return f.toString();
-  }
-
-  private int addDimension(int grpid, String name, int length) throws IOException {
-    IntByReference dimidp = new IntByReference();
-    int ret = nc4.nc_def_dim(grpid, name, new SizeT(length), dimidp);
-    if (ret != 0)
-      throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-    if (debugDim)
-      System.out.printf("add dimension %s len=%d%n", name, length);
-    return dimidp.getValue();
-  }
-
-  // copy data out of sdata into a ByteBuffer, based on the menmbers and offsets in s
-  private ByteBuffer makeBB(Structure s, StructureData sdata) {
-    int size = s.getElementSize();
-    ByteBuffer bb = ByteBuffer.allocate(size);
-    bb.order(ByteOrder.nativeOrder());
-
-    long offset = 0;
-    for (Variable v : s.getVariables()) {
-      if (v.getArrayType() == ArrayType.STRING)
-        continue; // LOOK embedded strings getting lost
-
-      StructureMembers.Member m = sdata.findMember(v.getShortName());
-      if (m == null) {
-        log.warn("WARN Nc4Iosp.makeBB() cant find {}", v.getShortName());
-        bb.position((int) (offset + v.getElementSize() * v.getSize())); // skip over it
-      } else {
-        copy(sdata, m, bb);
-      }
-
-      offset += v.getElementSize() * v.getSize();
-    }
-
-    return bb;
-  }
-
-  private void copy(StructureData sdata, StructureMembers.Member m, ByteBuffer bb) {
-    DataType dtype = m.getDataType();
-    if (m.isScalar()) {
-      switch (dtype) {
-        case FLOAT:
-          bb.putFloat(sdata.getScalarFloat(m));
-          break;
-        case DOUBLE:
-          bb.putDouble(sdata.getScalarDouble(m));
-          break;
-        case INT:
-        case ENUM4:
-          bb.putInt(sdata.getScalarInt(m));
-          break;
-        case SHORT:
-        case ENUM2:
-          bb.putShort(sdata.getScalarShort(m));
-          break;
-        case BYTE:
-        case ENUM1:
-          bb.put(sdata.getScalarByte(m));
-          break;
-        case CHAR:
-          bb.put((byte) sdata.getScalarChar(m));
-          break;
-        case LONG:
-          bb.putLong(sdata.getScalarLong(m));
-          break;
-        default:
-          throw new IllegalStateException("scalar " + dtype);
-        /*
-         * case BOOLEAN:
-         * break;
-         * case SEQUENCE:
-         * break;
-         * case STRUCTURE:
-         * break;
-         * case OPAQUE:
-         * break;
-         */
-      }
-    } else {
-      int n = m.getSize();
-      switch (dtype) {
-        case FLOAT:
-          float[] fdata = sdata.getJavaArrayFloat(m);
-          for (int i = 0; i < n; i++)
-            bb.putFloat(fdata[i]);
-          break;
-        case DOUBLE:
-          double[] ddata = sdata.getJavaArrayDouble(m);
-          for (int i = 0; i < n; i++)
-            bb.putDouble(ddata[i]);
-          break;
-        case INT:
-        case ENUM4:
-          int[] idata = sdata.getJavaArrayInt(m);
-          for (int i = 0; i < n; i++)
-            bb.putInt(idata[i]);
-          break;
-        case SHORT:
-        case ENUM2:
-          short[] shdata = sdata.getJavaArrayShort(m);
-          for (int i = 0; i < n; i++)
-            bb.putShort(shdata[i]);
-          break;
-        case BYTE:
-        case ENUM1:
-          byte[] bdata = sdata.getJavaArrayByte(m);
-          for (int i = 0; i < n; i++)
-            bb.put(bdata[i]);
-          break;
-        case CHAR:
-          char[] cdata = sdata.getJavaArrayChar(m);
-          bb.put(IospArrayHelper.convertCharToByte(cdata));
-          break;
-        case LONG:
-          long[] ldata = sdata.getJavaArrayLong(m);
-          for (int i = 0; i < n; i++)
-            bb.putLong(ldata[i]);
-          break;
-        default:
-          throw new IllegalStateException("array " + dtype);
-        /*
-         * case BOOLEAN:
-         * break;
-         * case OPAQUE:
-         * break;
-         * case STRUCTURE:
-         * break; //
-         */
-        case SEQUENCE:
-          break; // skip
-      }
-    }
-  }
 
   private String[] convertStringData(Object org) throws IOException {
     if (org instanceof String[])
@@ -1252,19 +901,682 @@ public class Nc4writer extends Nc4reader implements IospFileWriter {
 
 
   @Override
-  public void writeData(Variable v2, ucar.array.Section section, ucar.array.Array<?> values)
-      throws IOException, ucar.array.InvalidRangeException {
-    // temporary kludge
-    try {
-      writeData(v2, ArraysConvert.convertSection(section), ArraysConvert.convertFromArray(values));
-    } catch (InvalidRangeException e) {
-      throw new ucar.array.InvalidRangeException(e);
+  public void writeData(Variable v2, Section section, Array<?> values)
+      throws IOException, InvalidRangeException {
+    Vinfo vinfo = (Vinfo) v2.getSPobject();
+    if (vinfo == null) {
+      log.error("vinfo null for " + v2);
+      throw new IllegalStateException("vinfo null for " + v2.getFullName());
+    }
+    writeData(v2, vinfo.g4.grpid, vinfo.varid, vinfo.typeid, section, values);
+  }
+  
+  private void writeData(Variable v, int grpid, int varid, int typeid, Section section, Array<?> values)
+          throws IOException, InvalidRangeException {
+
+    // general sectioning with strides
+    SizeT[] origin = convertSizeT(section.getOrigin());
+    SizeT[] shape = convertSizeT(section.getShape());
+    SizeT[] stride = convertSizeT(section.getStride());
+    boolean isUnsigned = isUnsigned(typeid);
+    int sectionLen = (int) section.computeSize();
+
+    Object data = Arrays.copyPrimitiveArray(values); // LOOK copy
+
+    switch (typeid) {
+      case Nc4prototypes.NC_BYTE:
+      case Nc4prototypes.NC_UBYTE:
+        byte[] valb = (byte[]) data;
+        assert valb.length == sectionLen;
+        int ret = isUnsigned ? nc4.nc_put_vars_uchar(grpid, varid, origin, shape, stride, valb)
+                : nc4.nc_put_vars_schar(grpid, varid, origin, shape, stride, valb);
+        if (ret != 0)
+          throw new IOException(ret + ": " + nc4.nc_strerror(ret));
+        break;
+
+      case Nc4prototypes.NC_CHAR:
+        char[] valc = (char[]) data; // chars are lame
+        assert valc.length == sectionLen;
+
+        valb = IospArrayHelper.convertCharToByte(valc);
+        ret = nc4.nc_put_vars_text(grpid, varid, origin, shape, stride, valb);
+        // ret = nc4.nc_put_vara_text(grpid, varid, origin, shape, valb);
+
+        if (ret != 0) {
+          throw new IOException(nc4.nc_strerror(ret));
+        }
+        break;
+
+      case Nc4prototypes.NC_DOUBLE:
+        double[] vald = (double[]) data;
+        assert vald.length == sectionLen;
+        ret = nc4.nc_put_vars_double(grpid, varid, origin, shape, stride, vald);
+        if (ret != 0)
+          throw new IOException(ret + ": " + nc4.nc_strerror(ret));
+        break;
+
+      case Nc4prototypes.NC_FLOAT:
+        float[] valf = (float[]) data;
+        assert valf.length == sectionLen;
+        ret = nc4.nc_put_vars_float(grpid, varid, origin, shape, stride, valf);
+        if (ret != 0) {
+          // log.error("{} on var {}", nc4.nc_strerror(ret), v);
+          // return;
+          throw new IOException(nc4.nc_strerror(ret));
+        }
+        break;
+
+      case Nc4prototypes.NC_UINT:
+      case Nc4prototypes.NC_INT:
+        int[] vali = (int[]) data;
+        assert vali.length == sectionLen;
+        ret = isUnsigned ? nc4.nc_put_vars_uint(grpid, varid, origin, shape, stride, vali)
+                : nc4.nc_put_vars_int(grpid, varid, origin, shape, stride, vali);
+
+        if (ret != 0) {
+          // log.error("{} on var {}", nc4.nc_strerror(ret), v);
+          // return;
+          throw new IOException(nc4.nc_strerror(ret));
+        }
+        break;
+
+      case Nc4prototypes.NC_UINT64:
+      case Nc4prototypes.NC_INT64:
+        long[] vall = (long[]) data;
+        assert vall.length == sectionLen;
+        ret = isUnsigned ? nc4.nc_put_vars_ulonglong(grpid, varid, origin, shape, stride, vall)
+                : nc4.nc_put_vars_longlong(grpid, varid, origin, shape, stride, vall);
+
+        if (ret != 0)
+          throw new IOException(ret + ": " + nc4.nc_strerror(ret));
+        break;
+
+      case Nc4prototypes.NC_USHORT:
+      case Nc4prototypes.NC_SHORT:
+        short[] vals = (short[]) data;
+        assert vals.length == sectionLen;
+        ret = isUnsigned ? nc4.nc_put_vars_ushort(grpid, varid, origin, shape, stride, vals)
+                : nc4.nc_put_vars_short(grpid, varid, origin, shape, stride, vals);
+        if (ret != 0)
+          throw new IOException(ret + ": " + nc4.nc_strerror(ret));
+        break;
+
+      case Nc4prototypes.NC_STRING:
+        String[] valss = convertStringData(data);
+        assert valss.length == sectionLen;
+        ret = nc4.nc_put_vars_string(grpid, varid, origin, shape, stride, valss);
+        if (ret != 0)
+          throw new IOException(ret + ": " + nc4.nc_strerror(ret));
+        break;
+
+      default:
+        UserType userType = userTypes.get(typeid);
+        if (userType == null)
+          throw new IOException("Unknown userType == " + typeid);
+        throw new IOException("Unsupported writing of userType= " + userType);
+        /* switch (userType.typeClass) {
+          case NC_ENUM:
+            ret = writeEnumData(v, userType, grpid, varid, typeid, section, values);
+            if (ret != 0) {
+              throw new IOException(nc4.nc_strerror(ret));
+            }
+            break;
+          case NC_COMPOUND:
+            writeCompoundData((Structure) v, userType, grpid, varid, typeid, section, (StructureDataArray) values);
+            return;
+          case NC_VLEN:
+          case NC_OPAQUE:
+          default:
+            throw new IOException("Unsupported writing of userType= " + userType);
+        } */
+    }
+    if (debugWrite)
+      System.out.printf("OK writing var %s%n", v);
+  }
+
+  /* why isnt enum values the same as the numeric types?
+  private int writeEnumData(Variable v, UserType userType, int grpid, int varid, int typeid, 
+                            Section section, Array<?> values) {
+    SizeT[] origin = convertSizeT(section.getOrigin());
+    SizeT[] shape = convertSizeT(section.getShape());
+    int sectionLen = (int) section.computeSize();
+    assert values.getSize() == sectionLen;
+
+    int[] secStride = section.getStride();
+    boolean stride1 = isStride1(secStride);
+
+    int ret;
+    ByteBuffer bb = values.getDataAsByteBuffer(ByteOrder.nativeOrder());
+    byte[] data = bb.array();
+    if (stride1) {
+      ret = nc4.nc_put_vara(grpid, varid, origin, shape, data);
+    } else {
+      SizeT[] stride = convertSizeT(secStride);
+      ret = nc4.nc_put_vars(grpid, varid, origin, shape, stride, data);
+    }
+    return ret;
+  }
+
+  private void writeCompoundData(Structure s, UserType userType, int grpid, int varid, int typeid, 
+                                 Section section, StructureDataArray values) 
+          throws IOException, InvalidRangeException {
+
+    SizeT[] origin = convertSizeT(section.getOrigin());
+    SizeT[] shape = convertSizeT(section.getShape());
+    SizeT[] stride = convertSizeT(section.getStride());
+
+    ArrayStructureBB valuesBB = StructureDataDeep.copyToArrayBB(s, values, ByteOrder.nativeOrder()); // LOOK embedded
+    // strings getting
+    // lost ??
+    ByteBuffer bbuff = valuesBB.getByteBuffer();
+
+    if (debugCompound)
+      System.out.printf("writeCompoundData variable %s (grpid %d varid %d) %n", s.getShortName(), grpid, varid);
+
+    // write the data
+    // int ret = nc4.nc_put_var(grpid, varid, bbuff);
+    int ret;
+    if (section.isStrided()) {
+      ret = nc4.nc_put_vars(grpid, varid, origin, shape, stride, bbuff.array());
+    } else {
+      ret = nc4.nc_put_vara(grpid, varid, origin, shape, bbuff.array());
+    }
+    if (ret != 0) {
+      throw new IOException(errMessage("nc_put_vars", ret, grpid, varid));
+    }
+  } */
+
+  @Override
+  public int appendStructureData(Structure s, ucar.array.StructureData sdata) throws IOException, InvalidRangeException {
+    Vinfo vinfo = (Vinfo) s.getSPobject();
+    Dimension dim = s.getDimension(0); // LOOK must be outer dim
+    int dimid = vinfo.g4.dimHash.get(dim);
+    SizeTByReference lenp = new SizeTByReference();
+    int ret = nc4.nc_inq_dimlen(vinfo.g4.grpid, dimid, lenp);
+    if (ret != 0)
+      throw new IOException(errMessage("nc_inq_dimlen", ret, vinfo.g4.grpid, dimid));
+
+    SizeT[] origin = {lenp.getValue()};
+    SizeT[] shape = {new SizeT(1)};
+    SizeT[] stride = {new SizeT(1)};
+
+    // ArrayStructureBB valuesBB = IospHelper.copyToArrayBB(sdata, ByteOrder.nativeOrder());
+    // n4 wants native byte order
+    // ByteBuffer bbuff = valuesBB.getByteBuffer();
+    ByteBuffer bbuff = makeBB(s, sdata);
+
+    // write the data
+    // ret = nc4.nc_put_vara(vinfo.g4.grpid, vinfo.varid, origin, shape, bbuff);
+    // ret = nc4.nc_put_vars(vinfo.g4.grpid, vinfo.varid, origin, shape, stride, bbuff);
+    ret = nc4.nc_put_vars(vinfo.g4.grpid, vinfo.varid, origin, shape, stride, bbuff.array());
+    if (ret != 0)
+      throw new IOException(errMessage("appendStructureData (nc_put_vars)", ret, vinfo.g4.grpid, vinfo.varid));
+
+    return origin[0].intValue(); // recnum
+  }
+
+  // copy data out of sdata into a ByteBuffer, based on the menmbers and offsets in s
+  private ByteBuffer makeBB(Structure s, ucar.array.StructureData sdata) {
+    int size = s.getElementSize();
+    ByteBuffer bb = ByteBuffer.allocate(size);
+    bb.order(ByteOrder.nativeOrder());
+
+    long offset = 0;
+    for (Variable v : s.getVariables()) {
+      if (v.getArrayType() == ArrayType.STRING)
+        continue; // LOOK embedded strings getting lost
+
+      ucar.array.StructureMembers.Member m = sdata.getStructureMembers().findMember(v.getShortName());
+      if (m == null) {
+        log.warn("WARN Nc4Iosp.makeBB() cant find {}", v.getShortName());
+        bb.position((int) (offset + v.getElementSize() * v.getSize())); // skip over it
+      } else {
+        copy(sdata, m, bb);
+      }
+
+      offset += v.getElementSize() * v.getSize();
+    }
+
+    return bb;
+  }
+
+  private void copy(StructureData sdata, StructureMembers.Member m, ByteBuffer bb) {
+    ArrayType dtype = m.getArrayType();
+    if (m.isScalar()) {
+      switch (dtype) {
+        case FLOAT:
+          bb.putFloat(((Number) sdata.getMemberData(m).getScalar()).floatValue());
+          break;
+        case DOUBLE:
+          bb.putDouble(((Number) sdata.getMemberData(m).getScalar()).doubleValue());
+          break;
+        case UINT:
+        case INT:
+        case ENUM4:
+          bb.putInt(((Number) sdata.getMemberData(m).getScalar()).intValue());
+          break;
+        case USHORT:
+        case SHORT:
+        case ENUM2:
+          bb.putShort(((Number) sdata.getMemberData(m).getScalar()).shortValue());
+          break;
+        case CHAR:
+        case BYTE:
+        case UBYTE:
+        case ENUM1:
+          bb.put(((Number) sdata.getMemberData(m).getScalar()).byteValue());
+          break;
+        case LONG:
+          bb.putLong(((Number) sdata.getMemberData(m).getScalar()).longValue());
+          break;
+        default:
+          throw new IllegalStateException("scalar " + dtype);
+      }
+    } else {
+      int n = m.length();
+      switch (dtype) {
+        case FLOAT:
+          Array<Float> fdata = (Array<Float>) sdata.getMemberData(m);
+          for (float val : fdata) {
+            bb.putFloat(val);
+          }
+          break;
+        case DOUBLE:
+          Array<Double> ddata = (Array<Double>) sdata.getMemberData(m);
+          for (double val : ddata) {
+            bb.putDouble(val);
+          }
+          break;
+        case UINT:
+        case INT:
+        case ENUM4:
+          Array<Integer> idata = (Array<Integer>) sdata.getMemberData(m);
+          for (int val : idata) {
+            bb.putInt(val);
+          }
+          break;
+        case USHORT:
+        case SHORT:
+        case ENUM2:
+          Array<Short> svals = (Array<Short>) sdata.getMemberData(m);
+          for (short val : svals) {
+            bb.putShort(val);
+          }
+          break;
+        case CHAR:
+        case UBYTE:
+        case BYTE:
+        case ENUM1:
+          Array<Byte> bvals = (Array<Byte>) sdata.getMemberData(m);
+          for (byte val : bvals) {
+            bb.put(val);
+          }
+          break;
+        case ULONG:
+        case LONG:
+          Array<Long> lvals = (Array<Long>) sdata.getMemberData(m);
+          for (long val : lvals) {
+            bb.putLong(val);
+          }
+          break;
+        default:
+          throw new IllegalStateException("array " + dtype);
+        case SEQUENCE:
+          break; // skip
+      }
+    }
+  }
+  
+  ////////////////////////////////////////////////////////////////////////////////////
+  // old writing
+
+  private void writeDataMa2(Variable v2, ucar.ma2.Section section, ucar.ma2.Array values) throws IOException, ucar.ma2.InvalidRangeException {
+    Vinfo vinfo = (Vinfo) v2.getSPobject();
+    if (vinfo == null) {
+      log.error("vinfo null for " + v2);
+      throw new IllegalStateException("vinfo null for " + v2.getFullName());
+    }
+    writeDataMa2(v2, vinfo.g4.grpid, vinfo.varid, vinfo.typeid, section, values);
+  }
+
+  private void writeDataMa2(Variable v, int grpid, int varid, int typeid, ucar.ma2.Section section, ucar.ma2.Array values)
+          throws IOException, ucar.ma2.InvalidRangeException {
+
+    // general sectioning with strides
+    SizeT[] origin = convertSizeT(section.getOrigin());
+    SizeT[] shape = convertSizeT(section.getShape());
+    SizeT[] stride = convertSizeT(section.getStride());
+    boolean isUnsigned = isUnsigned(typeid);
+    int sectionLen = (int) section.computeSize();
+
+    Object data = values.get1DJavaArray(values.getDataType());
+
+    switch (typeid) {
+
+      case Nc4prototypes.NC_BYTE:
+      case Nc4prototypes.NC_UBYTE:
+        byte[] valb = (byte[]) data;
+        assert valb.length == sectionLen;
+        int ret = isUnsigned ? nc4.nc_put_vars_uchar(grpid, varid, origin, shape, stride, valb)
+                : nc4.nc_put_vars_schar(grpid, varid, origin, shape, stride, valb);
+        if (ret != 0)
+          throw new IOException(ret + ": " + nc4.nc_strerror(ret));
+        break;
+
+      case Nc4prototypes.NC_CHAR:
+        char[] valc = (char[]) data; // chars are lame
+        assert valc.length == sectionLen;
+
+        valb = IospArrayHelper.convertCharToByte(valc);
+        ret = nc4.nc_put_vars_text(grpid, varid, origin, shape, stride, valb);
+        // ret = nc4.nc_put_vara_text(grpid, varid, origin, shape, valb);
+
+        if (ret != 0) {
+          throw new IOException(nc4.nc_strerror(ret));
+        }
+        break;
+
+      case Nc4prototypes.NC_DOUBLE:
+        double[] vald = (double[]) data;
+        assert vald.length == sectionLen;
+        ret = nc4.nc_put_vars_double(grpid, varid, origin, shape, stride, vald);
+        if (ret != 0)
+          throw new IOException(ret + ": " + nc4.nc_strerror(ret));
+        break;
+
+      case Nc4prototypes.NC_FLOAT:
+        float[] valf = (float[]) data;
+        assert valf.length == sectionLen;
+        ret = nc4.nc_put_vars_float(grpid, varid, origin, shape, stride, valf);
+        if (ret != 0) {
+          // log.error("{} on var {}", nc4.nc_strerror(ret), v);
+          // return;
+          throw new IOException(nc4.nc_strerror(ret));
+        }
+        break;
+
+      case Nc4prototypes.NC_UINT:
+      case Nc4prototypes.NC_INT:
+        int[] vali = (int[]) data;
+        assert vali.length == sectionLen;
+        ret = isUnsigned ? nc4.nc_put_vars_uint(grpid, varid, origin, shape, stride, vali)
+                : nc4.nc_put_vars_int(grpid, varid, origin, shape, stride, vali);
+
+        if (ret != 0) {
+          // log.error("{} on var {}", nc4.nc_strerror(ret), v);
+          // return;
+          throw new IOException(nc4.nc_strerror(ret));
+        }
+        break;
+
+      case Nc4prototypes.NC_UINT64:
+      case Nc4prototypes.NC_INT64:
+        long[] vall = (long[]) data;
+        assert vall.length == sectionLen;
+        ret = isUnsigned ? nc4.nc_put_vars_ulonglong(grpid, varid, origin, shape, stride, vall)
+                : nc4.nc_put_vars_longlong(grpid, varid, origin, shape, stride, vall);
+
+        if (ret != 0)
+          throw new IOException(ret + ": " + nc4.nc_strerror(ret));
+        break;
+
+      case Nc4prototypes.NC_USHORT:
+      case Nc4prototypes.NC_SHORT:
+        short[] vals = (short[]) data;
+        assert vals.length == sectionLen;
+        ret = isUnsigned ? nc4.nc_put_vars_ushort(grpid, varid, origin, shape, stride, vals)
+                : nc4.nc_put_vars_short(grpid, varid, origin, shape, stride, vals);
+        if (ret != 0)
+          throw new IOException(ret + ": " + nc4.nc_strerror(ret));
+        break;
+
+      case Nc4prototypes.NC_STRING:
+        String[] valss = convertStringData(data);
+        assert valss.length == sectionLen;
+        ret = nc4.nc_put_vars_string(grpid, varid, origin, shape, stride, valss);
+        if (ret != 0)
+          throw new IOException(ret + ": " + nc4.nc_strerror(ret));
+        break;
+
+      default:
+        UserType userType = userTypes.get(typeid);
+        if (userType == null)
+          throw new IOException("Unknown userType == " + typeid);
+        switch (userType.typeClass) {
+          case NC_ENUM:
+            ret = writeEnumDataMa2(v, userType, grpid, varid, typeid, section, values);
+            if (ret != 0) {
+              // log.error("{} on var {}", nc4.nc_strerror(ret), v);
+              // return;
+              throw new IOException(nc4.nc_strerror(ret));
+            }
+            break;
+          case NC_COMPOUND:
+            writeCompoundDataMa2((Structure) v, userType, grpid, varid, typeid, section, (ArrayStructure) values);
+            return;
+          case NC_VLEN:
+          case NC_OPAQUE:
+          default:
+            throw new IOException("Unsupported writing of userType= " + userType);
+        }
+    }
+    if (debugWrite)
+      System.out.printf("OK writing var %s%n", v);
+  }
+
+  private int writeEnumDataMa2(Variable v, UserType userType, int grpid, int varid, int typeid, ucar.ma2.Section section,
+                               ucar.ma2.Array values) {
+    SizeT[] origin = convertSizeT(section.getOrigin());
+    SizeT[] shape = convertSizeT(section.getShape());
+    int sectionLen = (int) section.computeSize();
+    assert values.getSize() == sectionLen;
+
+    int[] secStride = section.getStride();
+    boolean stride1 = isStride1(secStride);
+
+    int ret;
+    ByteBuffer bb = values.getDataAsByteBuffer(ByteOrder.nativeOrder());
+    byte[] data = bb.array();
+    if (stride1) {
+      ret = nc4.nc_put_vara(grpid, varid, origin, shape, data);
+    } else {
+      SizeT[] stride = convertSizeT(secStride);
+      ret = nc4.nc_put_vars(grpid, varid, origin, shape, stride, data);
+    }
+    return ret;
+  }
+
+  private void writeCompoundDataMa2(Structure s, UserType userType, int grpid, int varid, int typeid, ucar.ma2.Section section,
+                                 ArrayStructure values) throws IOException, ucar.ma2.InvalidRangeException {
+
+    SizeT[] origin = convertSizeT(section.getOrigin());
+    SizeT[] shape = convertSizeT(section.getShape());
+    SizeT[] stride = convertSizeT(section.getStride());
+
+    ArrayStructureBB valuesBB = StructureDataDeep.copyToArrayBB(s, values, ByteOrder.nativeOrder()); // LOOK embedded
+    // strings getting
+    // lost ??
+    ByteBuffer bbuff = valuesBB.getByteBuffer();
+
+    if (debugCompound)
+      System.out.printf("writeCompoundData variable %s (grpid %d varid %d) %n", s.getShortName(), grpid, varid);
+
+    // write the data
+    // int ret = nc4.nc_put_var(grpid, varid, bbuff);
+    int ret;
+    if (section.isStrided()) {
+      ret = nc4.nc_put_vars(grpid, varid, origin, shape, stride, bbuff.array());
+    } else {
+      ret = nc4.nc_put_vara(grpid, varid, origin, shape, bbuff.array());
+    }
+    if (ret != 0) {
+      throw new IOException(errMessage("nc_put_vars", ret, grpid, varid));
     }
   }
 
-  @Override
-  public int appendStructureData(Structure s, ucar.array.StructureData sdata)
-      throws IOException, ucar.array.InvalidRangeException {
-    throw new UnsupportedOperationException();
+  private int appendStructureDataMa2(Structure s, ucar.ma2.StructureData sdata) throws IOException, ucar.ma2.InvalidRangeException {
+    Vinfo vinfo = (Vinfo) s.getSPobject();
+    Dimension dim = s.getDimension(0); // LOOK must be outer dim
+    int dimid = vinfo.g4.dimHash.get(dim);
+    SizeTByReference lenp = new SizeTByReference();
+    int ret = nc4.nc_inq_dimlen(vinfo.g4.grpid, dimid, lenp);
+    if (ret != 0)
+      throw new IOException(errMessage("nc_inq_dimlen", ret, vinfo.g4.grpid, dimid));
+
+    SizeT[] origin = {lenp.getValue()};
+    SizeT[] shape = {new SizeT(1)};
+    SizeT[] stride = {new SizeT(1)};
+
+    // ArrayStructureBB valuesBB = IospHelper.copyToArrayBB(sdata, ByteOrder.nativeOrder());
+    // n4 wants native byte order
+    // ByteBuffer bbuff = valuesBB.getByteBuffer();
+    ByteBuffer bbuff = makeBB(s, sdata);
+
+    // write the data
+    // ret = nc4.nc_put_vara(vinfo.g4.grpid, vinfo.varid, origin, shape, bbuff);
+    // ret = nc4.nc_put_vars(vinfo.g4.grpid, vinfo.varid, origin, shape, stride, bbuff);
+    ret = nc4.nc_put_vars(vinfo.g4.grpid, vinfo.varid, origin, shape, stride, bbuff.array());
+    if (ret != 0)
+      throw new IOException(errMessage("appendStructureData (nc_put_vars)", ret, vinfo.g4.grpid, vinfo.varid));
+
+    return origin[0].intValue(); // recnum
+  }
+
+  private String errMessage(String what, int ret, int grpid, int varid) {
+    Formatter f = new Formatter();
+    f.format("%s: %d: %s grpid=%d objid=%d", what, ret, nc4.nc_strerror(ret), grpid, varid);
+    return f.toString();
+  }
+
+  private int addDimension(int grpid, String name, int length) throws IOException {
+    IntByReference dimidp = new IntByReference();
+    int ret = nc4.nc_def_dim(grpid, name, new SizeT(length), dimidp);
+    if (ret != 0)
+      throw new IOException(ret + ": " + nc4.nc_strerror(ret));
+    if (debugDim)
+      System.out.printf("add dimension %s len=%d%n", name, length);
+    return dimidp.getValue();
+  }
+
+  // copy data out of sdata into a ByteBuffer, based on the menmbers and offsets in s
+  private ByteBuffer makeBB(Structure s, ucar.ma2.StructureData sdata) {
+    int size = s.getElementSize();
+    ByteBuffer bb = ByteBuffer.allocate(size);
+    bb.order(ByteOrder.nativeOrder());
+
+    long offset = 0;
+    for (Variable v : s.getVariables()) {
+      if (v.getArrayType() == ArrayType.STRING)
+        continue; // LOOK embedded strings getting lost
+
+      ucar.ma2.StructureMembers.Member m = sdata.findMember(v.getShortName());
+      if (m == null) {
+        log.warn("WARN Nc4Iosp.makeBB() cant find {}", v.getShortName());
+        bb.position((int) (offset + v.getElementSize() * v.getSize())); // skip over it
+      } else {
+        copy(sdata, m, bb);
+      }
+
+      offset += v.getElementSize() * v.getSize();
+    }
+
+    return bb;
+  }
+
+  private void copy(ucar.ma2.StructureData sdata, ucar.ma2.StructureMembers.Member m, ByteBuffer bb) {
+    DataType dtype = m.getDataType();
+    if (m.isScalar()) {
+      switch (dtype) {
+        case FLOAT:
+          bb.putFloat(sdata.getScalarFloat(m));
+          break;
+        case DOUBLE:
+          bb.putDouble(sdata.getScalarDouble(m));
+          break;
+        case INT:
+        case ENUM4:
+          bb.putInt(sdata.getScalarInt(m));
+          break;
+        case SHORT:
+        case ENUM2:
+          bb.putShort(sdata.getScalarShort(m));
+          break;
+        case BYTE:
+        case ENUM1:
+          bb.put(sdata.getScalarByte(m));
+          break;
+        case CHAR:
+          bb.put((byte) sdata.getScalarChar(m));
+          break;
+        case LONG:
+          bb.putLong(sdata.getScalarLong(m));
+          break;
+        default:
+          throw new IllegalStateException("scalar " + dtype);
+          /*
+           * case BOOLEAN:
+           * break;
+           * case SEQUENCE:
+           * break;
+           * case STRUCTURE:
+           * break;
+           * case OPAQUE:
+           * break;
+           */
+      }
+    } else {
+      int n = m.getSize();
+      switch (dtype) {
+        case FLOAT:
+          float[] fdata = sdata.getJavaArrayFloat(m);
+          for (int i = 0; i < n; i++)
+            bb.putFloat(fdata[i]);
+          break;
+        case DOUBLE:
+          double[] ddata = sdata.getJavaArrayDouble(m);
+          for (int i = 0; i < n; i++)
+            bb.putDouble(ddata[i]);
+          break;
+        case INT:
+        case ENUM4:
+          int[] idata = sdata.getJavaArrayInt(m);
+          for (int i = 0; i < n; i++)
+            bb.putInt(idata[i]);
+          break;
+        case SHORT:
+        case ENUM2:
+          short[] shdata = sdata.getJavaArrayShort(m);
+          for (int i = 0; i < n; i++)
+            bb.putShort(shdata[i]);
+          break;
+        case BYTE:
+        case ENUM1:
+          byte[] bdata = sdata.getJavaArrayByte(m);
+          for (int i = 0; i < n; i++)
+            bb.put(bdata[i]);
+          break;
+        case CHAR:
+          char[] cdata = sdata.getJavaArrayChar(m);
+          bb.put(IospArrayHelper.convertCharToByte(cdata));
+          break;
+        case LONG:
+          long[] ldata = sdata.getJavaArrayLong(m);
+          for (int i = 0; i < n; i++)
+            bb.putLong(ldata[i]);
+          break;
+        default:
+          throw new IllegalStateException("array " + dtype);
+          /*
+           * case BOOLEAN:
+           * break;
+           * case OPAQUE:
+           * break;
+           * case STRUCTURE:
+           * break; //
+           */
+        case SEQUENCE:
+          break; // skip
+      }
+    }
   }
 }

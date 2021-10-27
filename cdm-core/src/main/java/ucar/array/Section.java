@@ -376,6 +376,15 @@ public class Section {
     return false;
   }
 
+  public boolean isStrided() {
+    for (Range r : ranges) {
+      if (r.stride() != 1) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   /**
    * Get shape array using the Range.length() values.
    *

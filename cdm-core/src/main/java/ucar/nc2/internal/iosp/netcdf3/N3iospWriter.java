@@ -6,23 +6,17 @@ package ucar.nc2.internal.iosp.netcdf3;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 
 import com.google.common.base.Preconditions;
 import ucar.array.Array;
 import ucar.array.ArrayType;
 import ucar.array.Arrays;
-import ucar.array.ArraysConvert;
 import ucar.array.InvalidRangeException;
 import ucar.array.Range;
 import ucar.array.Section;
 import ucar.array.StructureData;
 import ucar.array.StructureDataArray;
-import ucar.ma2.ArrayChar;
-import ucar.ma2.ArrayObject;
-import ucar.ma2.ArrayStructure;
-import ucar.ma2.IndexIterator;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.Group;
@@ -453,210 +447,6 @@ public class N3iospWriter extends N3iosp implements IospFileWriter {
         throw new IllegalArgumentException("makeArray illegal type " + type);
     }
     return Arrays.factory(type, shape, pvals);
-  }
-
-  //////////////////////////////////////////////////////////////////////////////////////
-  // write old
-
-  public void writeData(Variable v2, ucar.ma2.Section section, ucar.ma2.Array values) throws java.io.IOException, ucar.ma2.InvalidRangeException {
-    N3header.Vinfo vinfo = (N3header.Vinfo) v2.getSPobject();
-    ArrayType dataType = v2.getArrayType();
-
-    int[] varShape = v2.getShape();
-    if (v2.isUnlimited()) {
-      ucar.ma2.Range firstRange = section.getRange(0);
-      int n = 0;
-      try {
-        n = setNumrecs(firstRange.last() + 1);
-      } catch (InvalidRangeException e) {
-        throw new ucar.ma2.InvalidRangeException(e.getMessage());
-      }
-      varShape[0] = n;
-    }
-
-    if (v2 instanceof Structure) {
-      if (!(values instanceof ArrayStructure))
-        throw new IllegalArgumentException("writeData for Structure: data must be ArrayStructure");
-
-      if (v2.getRank() == 0)
-        throw new IllegalArgumentException("writeData for Structure: must have rank > 0");
-
-      Dimension d = v2.getDimension(0);
-      if (!d.isUnlimited())
-        throw new IllegalArgumentException("writeData for Structure: must have unlimited dimension");
-
-      writeRecordData((Structure) v2, section, (ArrayStructure) values);
-
-    } else {
-      Section newSection = ArraysConvert.convertSection(section);
-      Layout layout;
-      try {
-        layout = (!v2.isUnlimited()) ? new LayoutRegular(vinfo.begin, v2.getElementSize(), varShape, newSection)
-                : new LayoutRegularSegmented(vinfo.begin, v2.getElementSize(), header.recsize, varShape, newSection);
-      } catch (InvalidRangeException e) {
-        throw new ucar.ma2.InvalidRangeException(e.getMessage());
-      }
-      writeData(values, layout, dataType);
-    }
-  }
-
-  private void writeRecordData(ucar.nc2.Structure s, ucar.ma2.Section section, ArrayStructure structureArray)
-          throws java.io.IOException, ucar.ma2.InvalidRangeException {
-    int countSrcRecnum = 0;
-    ucar.ma2.Range recordRange = section.getRange(0);
-    for (int recnum : recordRange) {
-      ucar.ma2.StructureData sdata = structureArray.getStructureData(countSrcRecnum);
-      writeRecordData(s, recnum, sdata);
-      countSrcRecnum++;
-    }
-  }
-
-  private void writeRecordData(ucar.nc2.Structure s, int recnum, ucar.ma2.StructureData sdata)
-          throws java.io.IOException, ucar.ma2.InvalidRangeException {
-
-    ucar.ma2.StructureMembers members = sdata.getStructureMembers();
-
-    // loop over members
-    for (Variable vm : s.getVariables()) {
-      ucar.ma2.StructureMembers.Member m = members.findMember(vm.getShortName());
-      if (null == m)
-        continue; // this means that the data is missing from the ArrayStructure
-
-      // convert String member data into CHAR data
-      ucar.ma2.Array data = sdata.getArray(m);
-      if (data instanceof ArrayObject && vm.getArrayType() == ArrayType.CHAR && vm.getRank() > 0) {
-        int strlen = vm.getShape(vm.getRank() - 1);
-        data = ArrayChar.makeFromStringArray((ArrayObject) data, strlen); // turn it into an ArrayChar
-      }
-
-      // layout of the destination
-      N3header.Vinfo vinfo = (N3header.Vinfo) vm.getSPobject();
-      long begin = vinfo.begin + recnum * header.recsize; // this assumes unlimited dimension
-      ucar.ma2.Section memberSection = vm.getShapeAsSection();
-      Layout layout;
-      try {
-        layout =
-                new LayoutRegular(begin, vm.getElementSize(), vm.getShape(), ArraysConvert.convertSection(memberSection));
-      } catch (InvalidRangeException e) {
-        throw new ucar.ma2.InvalidRangeException(e.getMessage());
-      }
-
-      try {
-        writeData(data, layout, vm.getArrayType());
-      } catch (Exception e) {
-        log.error("Error writing member=" + vm.getShortName() + " in struct=" + s.getFullName(), e);
-        throw new IOException(e);
-      }
-    }
-  }
-
-  private void writeData(ucar.ma2.Array values, Layout index, ArrayType dataType) throws java.io.IOException {
-    if ((dataType == ArrayType.BYTE) || (dataType == ArrayType.CHAR)) {
-      IndexIterator ii = values.getIndexIterator();
-      while (index.hasNext()) {
-        Layout.Chunk chunk = index.next();
-        raf.seek(chunk.getSrcPos());
-        for (int k = 0; k < chunk.getNelems(); k++)
-          raf.write(ii.getByteNext());
-      }
-      return;
-
-    } else if (dataType == ArrayType.STRING) { // LOOK not legal
-      IndexIterator ii = values.getIndexIterator();
-      while (index.hasNext()) {
-        Layout.Chunk chunk = index.next();
-        raf.seek(chunk.getSrcPos());
-        for (int k = 0; k < chunk.getNelems(); k++) {
-          String val = (String) ii.getObjectNext();
-          if (val != null)
-            raf.write(val.getBytes(StandardCharsets.UTF_8)); // LOOK ??
-        }
-      }
-      return;
-
-    } else if (dataType == ArrayType.SHORT) {
-      IndexIterator ii = values.getIndexIterator();
-      while (index.hasNext()) {
-        Layout.Chunk chunk = index.next();
-        raf.seek(chunk.getSrcPos());
-        for (int k = 0; k < chunk.getNelems(); k++)
-          raf.writeShort(ii.getShortNext());
-      }
-      return;
-
-    } else if (dataType == ArrayType.INT) {
-      IndexIterator ii = values.getIndexIterator();
-      while (index.hasNext()) {
-        Layout.Chunk chunk = index.next();
-        raf.seek(chunk.getSrcPos());
-        for (int k = 0; k < chunk.getNelems(); k++)
-          raf.writeInt(ii.getIntNext());
-      }
-      return;
-
-    } else if (dataType == ArrayType.FLOAT) {
-      IndexIterator ii = values.getIndexIterator();
-      while (index.hasNext()) {
-        Layout.Chunk chunk = index.next();
-        raf.seek(chunk.getSrcPos());
-        for (int k = 0; k < chunk.getNelems(); k++)
-          raf.writeFloat(ii.getFloatNext());
-      }
-      return;
-
-    } else if (dataType == ArrayType.DOUBLE) {
-      IndexIterator ii = values.getIndexIterator();
-      while (index.hasNext()) {
-        Layout.Chunk chunk = index.next();
-        raf.seek(chunk.getSrcPos());
-        for (int k = 0; k < chunk.getNelems(); k++)
-          raf.writeDouble(ii.getDoubleNext());
-      }
-      return;
-    }
-
-    throw new IllegalStateException("dataType= " + dataType);
-  }
-
-  private ucar.ma2.Array makeConstantArrayMa2(Variable v) {
-    Class<?> classType = v.getDataType().getPrimitiveClassType();
-    // int [] shape = v.getShape();
-    Attribute att = v.findAttribute(CDM.FILL_VALUE);
-
-    Object storage = null;
-    if (classType == double.class) {
-      double[] storageP = new double[1];
-      storageP[0] = (att == null) ? NetcdfFormatUtils.NC_FILL_DOUBLE : att.getNumericValue().doubleValue();
-      storage = storageP;
-
-    } else if (classType == float.class) {
-      float[] storageP = new float[1];
-      storageP[0] = (att == null) ? NetcdfFormatUtils.NC_FILL_FLOAT : att.getNumericValue().floatValue();
-      storage = storageP;
-
-    } else if (classType == int.class) {
-      int[] storageP = new int[1];
-      storageP[0] = (att == null) ? NetcdfFormatUtils.NC_FILL_INT : att.getNumericValue().intValue();
-      storage = storageP;
-
-    } else if (classType == short.class) {
-      short[] storageP = new short[1];
-      storageP[0] = (att == null) ? NetcdfFormatUtils.NC_FILL_SHORT : att.getNumericValue().shortValue();
-      storage = storageP;
-
-    } else if (classType == byte.class) {
-      byte[] storageP = new byte[1];
-      storageP[0] = (att == null) ? NetcdfFormatUtils.NC_FILL_BYTE : att.getNumericValue().byteValue();
-      storage = storageP;
-
-    } else if (classType == char.class) {
-      char[] storageP = new char[1];
-      storageP[0] = (att != null) && (!att.getStringValue().isEmpty()) ? att.getStringValue().charAt(0)
-              : NetcdfFormatUtils.NC_FILL_CHAR;
-      storage = storageP;
-    }
-
-    return ucar.ma2.Array.factoryConstant(v.getDataType(), v.getShape(), storage);
   }
 
 }
