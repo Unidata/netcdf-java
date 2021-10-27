@@ -498,7 +498,7 @@ public class GcdmConverter {
     Structure.Builder<?> ncvar =
         (s.getDataType() == GcdmNetcdfProto.DataType.DATA_TYPE_SEQUENCE) ? Sequence.builder() : Structure.builder();
 
-    ncvar.setName(s.getName()).setDataType(convertDataType(s.getDataType()).getDataType());
+    ncvar.setName(s.getName()).setArrayType(convertDataType(s.getDataType()));
 
     List<Dimension> dims = new ArrayList<>(6);
     for (GcdmNetcdfProto.Dimension dim : s.getShapesList()) {
@@ -563,7 +563,7 @@ public class GcdmConverter {
 
   private static Variable.Builder<?> decodeVar(GcdmNetcdfProto.Variable var) {
     ArrayType varType = convertDataType(var.getDataType());
-    Variable.Builder<?> ncvar = Variable.builder().setName(var.getName()).setDataType(varType.getDataType());
+    Variable.Builder<?> ncvar = Variable.builder().setName(var.getName()).setArrayType(varType);
 
     if (varType.isEnum()) {
       ncvar.setEnumTypeName(var.getEnumType());

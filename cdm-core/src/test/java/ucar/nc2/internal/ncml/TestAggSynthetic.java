@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.internal.ncml;
@@ -10,14 +10,11 @@ import java.lang.invoke.MethodHandles;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.Array;
-import ucar.ma2.ArrayDouble;
-import ucar.ma2.ArrayInt;
-import ucar.ma2.ArrayObject;
+import ucar.array.Array;
 import ucar.array.ArrayType;
-import ucar.ma2.Index;
-import ucar.ma2.IndexIterator;
-import ucar.ma2.InvalidRangeException;
+import ucar.array.Index;
+import ucar.array.InvalidRangeException;
+import ucar.array.Section;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
@@ -217,16 +214,14 @@ public class TestAggSynthetic {
     assert att.getNumericValue() == null;
     assert att.getNumericValue(3) == null;
 
-    Array data = lat.read();
+    Array<Number> data = (Array<Number>) lat.readArray();
     assert data.getRank() == 1;
     assert data.getSize() == 3;
     assert data.getShape()[0] == 3;
-    assert data.getElementType() == float.class;
 
-    IndexIterator dataI = data.getIndexIterator();
-    Assert2.assertNearlyEquals(dataI.getDoubleNext(), 41.0);
-    Assert2.assertNearlyEquals(dataI.getDoubleNext(), 40.0);
-    Assert2.assertNearlyEquals(dataI.getDoubleNext(), 39.0);
+    Assert2.assertNearlyEquals(data.get(0).doubleValue(), 41.0);
+    Assert2.assertNearlyEquals(data.get(1).doubleValue(), 40.0);
+    Assert2.assertNearlyEquals(data.get(2).doubleValue(), 39.0);
   }
 
   private void testAggCoordVar(NetcdfFile ncfile) throws IOException {
@@ -239,13 +234,10 @@ public class TestAggSynthetic {
 
     assert time.getDimension(0) == ncfile.findDimension("time");
 
-    Array data = time.read();
-
-    assert (data instanceof ArrayInt.D1) : data.getClass().getName();
-    ArrayInt.D1 dataD = (ArrayInt.D1) data;
-    assert dataD.get(0) == 0;
-    assert dataD.get(1) == 10;
-    assert dataD.get(2) == 99;
+    Array<Number> data = (Array<Number>) time.readArray();
+    assert data.get(0).intValue() == 0;
+    assert data.get(1).intValue() == 10;
+    assert data.get(2).intValue() == 99;
   }
 
   private void testAggCoordVar2(NetcdfFile ncfile) throws IOException {
@@ -259,13 +251,10 @@ public class TestAggSynthetic {
 
     assert time.getDimension(0) == ncfile.findDimension("time");
 
-    Array data = time.read();
-
-    assert (data instanceof ArrayInt);
-    IndexIterator dataI = data.getIndexIterator();
-    assert dataI.getIntNext() == 0 : dataI.getIntCurrent();
-    assert dataI.getIntNext() == 1 : dataI.getIntCurrent();
-    assert dataI.getIntNext() == 2 : dataI.getIntCurrent();
+    Array<Number> data = (Array<Number>) time.readArray();
+    assert data.get(0).intValue() == 0;
+    assert data.get(1).intValue() == 1;
+    assert data.get(2).intValue() == 2;
   }
 
   private void testAggCoordVar3(NetcdfFile ncfile) throws IOException {
@@ -278,14 +267,10 @@ public class TestAggSynthetic {
 
     assert time.getDimension(0) == ncfile.findDimension("time");
 
-    Array data = time.read();
-
-    assert (data instanceof ArrayDouble);
-    IndexIterator dataI = data.getIndexIterator();
-    double val = dataI.getDoubleNext();
-    Assert2.assertNearlyEquals(val, 0.0);
-    Assert2.assertNearlyEquals(dataI.getDoubleNext(), 10.0);
-    Assert2.assertNearlyEquals(dataI.getDoubleNext(), 99.0);
+    Array<Number> data = (Array<Number>) time.readArray();
+    Assert2.assertNearlyEquals(data.get(0).doubleValue(), 0.0);
+    Assert2.assertNearlyEquals(data.get(1).doubleValue(), 10.0);
+    Assert2.assertNearlyEquals(data.get(2).doubleValue(), 99.0);
   }
 
   private void testAggCoordVarScan(NetcdfFile ncfile) throws IOException {
@@ -299,11 +284,10 @@ public class TestAggSynthetic {
     assert time.getDimension(0) == ncfile.findDimension("time");
 
     int count = 0;
-    Array data = time.read();
-    assert (data instanceof ArrayInt);
-    while (data.hasNext()) {
-      int val = data.nextInt();
-      assert val == count * 10 : val + "!=" + count * 10;
+    Array<Number> data = (Array<Number>) time.readArray();
+    for (Number val : data) {
+      int vali = val.intValue();
+      assert vali == count * 10;
       count++;
     }
   }
@@ -319,13 +303,10 @@ public class TestAggSynthetic {
 
     assert time.getDimension(0) == ncfile.findDimension("time");
 
-    Array data = time.read();
-
-    assert (data instanceof ArrayInt.D1) : data.getClass().getName();
-    ArrayInt.D1 dataI = (ArrayInt.D1) data;
-    assert dataI.get(0) == 82932;
-    assert dataI.get(1) == 83232;
-    assert dataI.get(2) == 83532;
+    Array<Number> data = (Array<Number>) time.readArray();
+    assert data.get(0).intValue() == 82932;
+    assert data.get(1).intValue() == 83232;
+    assert data.get(2).intValue() == 83532;
   }
 
   private void testAggCoordVarNoCoord(NetcdfFile ncfile) throws IOException {
@@ -338,15 +319,13 @@ public class TestAggSynthetic {
 
     assert time.getDimension(0) == ncfile.findDimension("time");
 
-    Array data = time.read();
+    Array<String> data = (Array<String>) time.readArray();
 
-    assert (data instanceof ArrayObject);
-    IndexIterator dataI = data.getIndexIterator();
-    String coordName = (String) dataI.getObjectNext();
+    String coordName = data.get(0);
     assert coordName.equals("time0.nc") : coordName;
-    coordName = (String) dataI.getObjectNext();
+    coordName = data.get(1);
     assert coordName.equals("time1.nc") : coordName;
-    coordName = (String) dataI.getObjectNext();
+    coordName = data.get(2);
     assert coordName.equals("time2.nc") : coordName;
   }
 
@@ -360,15 +339,12 @@ public class TestAggSynthetic {
 
     assert time.getDimension(0) == ncfile.findDimension("time");
 
-    Array data = time.read();
-
-    assert (data instanceof ArrayObject);
-    IndexIterator dataI = data.getIndexIterator();
-    String coordName = (String) dataI.getObjectNext();
+    Array<String> data = (Array<String>) time.readArray();
+    String coordName = data.get(0);
     assert coordName.equals("time0Dir.nc") : coordName;
-    coordName = (String) dataI.getObjectNext();
+    coordName = data.get(1);
     assert coordName.equals("time1Dir.nc") : coordName;
-    coordName = (String) dataI.getObjectNext();
+    coordName = data.get(2);
     assert coordName.equals("time2Dir.nc") : coordName;
   }
 
@@ -390,20 +366,19 @@ public class TestAggSynthetic {
     assert v.getDimension(1) == ncfile.findDimension("lat");
     assert v.getDimension(2) == ncfile.findDimension("lon");
 
-    Array data = v.read();
+    Array<Number> data = (Array<Number>) v.readArray();
     assert data.getRank() == 3;
     assert data.getSize() == 36;
     assert data.getShape()[0] == 3;
     assert data.getShape()[1] == 3;
     assert data.getShape()[2] == 4;
-    assert data.getElementType() == double.class;
 
     int[] shape = data.getShape();
     Index tIndex = data.getIndex();
     for (int i = 0; i < shape[0]; i++)
       for (int j = 0; j < shape[1]; j++)
         for (int k = 0; k < shape[2]; k++) {
-          double val = data.getDouble(tIndex.set(i, j, k));
+          double val = data.get(tIndex.set(i, j, k)).doubleValue();
           Assert2.assertNearlyEquals(val, 100 * i + 10 * j + k);
         }
 
@@ -414,19 +389,18 @@ public class TestAggSynthetic {
 
     Variable v = ncfile.findVariable(name);
 
-    Array data = v.read(origin, shape);
+    Array<Number> data = (Array<Number>) v.readArray(new Section(origin, shape));
     assertThat(data.getRank()).isEqualTo(3);
     assert data.getSize() == shape[0] * shape[1] * shape[2];
     assert data.getShape()[0] == shape[0] : data.getShape()[0] + " " + shape[0];
     assert data.getShape()[1] == shape[1];
     assert data.getShape()[2] == shape[2];
-    assert data.getElementType() == double.class;
 
     Index tIndex = data.getIndex();
     for (int i = 0; i < shape[0]; i++)
       for (int j = 0; j < shape[1]; j++)
         for (int k = 0; k < shape[2]; k++) {
-          double val = data.getDouble(tIndex.set(i, j, k));
+          double val = data.get(tIndex.set(i, j, k)).doubleValue();
           Assert2.assertNearlyEquals(val, 100 * (i + origin[0]) + 10 * j + k);
         }
   }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2;
@@ -8,21 +8,20 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ucar.ma2.*;
+import ucar.array.Array;
+import ucar.array.InvalidRangeException;
+import ucar.array.Section;
+import ucar.array.StructureDataArray;
+import ucar.array.StructureMembers;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 
 /** Test StructureIterator works when opened with IOSP_MESSAGE_ADD_RECORD_STRUCTURE. */
 @Category(NeedsCdmUnitTest.class)
 public class TestStructureSubset {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
   private NetcdfFile ncfile;
 
   @Before
@@ -48,7 +47,7 @@ public class TestStructureSubset {
     Structure subset = record.select(vars);
 
     // read entire subset
-    ArrayStructure dataAll = (ArrayStructure) subset.read();
+    StructureDataArray dataAll = (StructureDataArray) subset.readArray();
 
     StructureMembers sm = dataAll.getStructureMembers();
     for (StructureMembers.Member m : sm.getMembers()) {
@@ -56,7 +55,7 @@ public class TestStructureSubset {
       assert v != null;
       Array mdata = dataAll.extractMemberArray(m);
       assert mdata.getShape()[0] == dataAll.getShape()[0];
-      assert mdata.getElementType() == m.getDataType().getPrimitiveClassType();
+      assert mdata.getArrayType() == m.getArrayType();
       System.out.println(m.getName() + " shape=" + new Section(mdata.getShape()));
     }
     System.out.println("*** TestStructureSubset ok");
@@ -73,7 +72,7 @@ public class TestStructureSubset {
     assert subset.getSize() == 11;
 
     // read entire subset
-    ArrayStructure dataAll = (ArrayStructure) subset.read(new Section("0:10"));
+    StructureDataArray dataAll = (StructureDataArray) subset.readArray(new Section("0:10"));
     assert dataAll.getSize() == 11;
 
     StructureMembers sm = dataAll.getStructureMembers();
@@ -82,7 +81,7 @@ public class TestStructureSubset {
       assert v != null;
       Array mdata = dataAll.extractMemberArray(m);
       assert mdata.getShape()[0] == dataAll.getShape()[0];
-      assert mdata.getElementType() == m.getDataType().getPrimitiveClassType();
+      assert mdata.getArrayType() == m.getArrayType();
       System.out.println(m.getName() + " shape=" + new Section(mdata.getShape()));
     }
     System.out.println("*** TestStructureSubset ok");

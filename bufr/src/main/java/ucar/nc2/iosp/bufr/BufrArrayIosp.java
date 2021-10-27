@@ -136,6 +136,14 @@ public class BufrArrayIosp extends AbstractIOServiceProvider {
     return super.sendIospMessage(message);
   }
 
+  public Sequence getTopSequence() {
+    return obsStructure;
+  }
+
+  public Message getProtoMessage() {
+    return protoMessage;
+  }
+
   public BufrConfig getConfig() {
     return config;
   }

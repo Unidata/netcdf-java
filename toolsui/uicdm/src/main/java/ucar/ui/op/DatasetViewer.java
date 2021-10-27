@@ -18,6 +18,7 @@ import javax.swing.*;
 
 import ucar.nc2.Group;
 import ucar.nc2.NetcdfFiles;
+import ucar.nc2.ParsedArraySectionSpec;
 import ucar.nc2.constants._Coordinate;
 import ucar.ui.StructureArrayTable;
 import ucar.ui.StructureTable;
@@ -25,7 +26,6 @@ import org.jdom2.Element;
 import ucar.array.Array;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.ParsedSectionSpec;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.ui.ToolsUI;
@@ -585,7 +585,7 @@ public class DatasetViewer extends JPanel {
     String spec;
 
     try {
-      spec = ParsedSectionSpec.makeSectionSpecString(v, null);
+      spec = ParsedArraySectionSpec.makeSectionSpecString(v, null);
       dumpPane.setContext(ds, spec);
 
     } catch (Exception ex) {

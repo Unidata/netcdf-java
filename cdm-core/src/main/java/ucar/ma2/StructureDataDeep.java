@@ -6,7 +6,7 @@
 package ucar.ma2;
 
 import ucar.nc2.Structure;
-import ucar.nc2.iosp.IospHelper;
+import ucar.nc2.iosp.IospArrayHelper;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -221,7 +221,7 @@ public class StructureDataDeep extends StructureDataA {
             break;
           case CHAR:
             char[] cdata = sdata.getJavaArrayChar(m);
-            bb.put(IospHelper.convertCharToByte(cdata));
+            bb.put(IospArrayHelper.convertCharToByte(cdata));
             break;
           case LONG:
             long[] ldata = sdata.getJavaArrayLong(m);

@@ -232,15 +232,9 @@ public class N3iosp extends AbstractIOServiceProvider implements IOServiceProvid
     Vinfo vinfo = (Vinfo) v2.getSPobject();
     ArrayType dataType = v2.getArrayType();
 
-    try {
-      ucar.ma2.Section oldSection = ArraysConvert.convertSection(section);
-      Layout layout =
-          (!v2.isUnlimited()) ? new LayoutRegular(vinfo.begin, v2.getElementSize(), v2.getShape(), oldSection)
-              : new LayoutRegularSegmented(vinfo.begin, v2.getElementSize(), header.recsize, v2.getShape(), oldSection);
-      return IospArrayHelper.readDataFill(raf, layout, dataType, null, null);
-    } catch (ucar.ma2.InvalidRangeException e) {
-      throw new InvalidRangeException(e);
-    }
+    Layout layout = (!v2.isUnlimited()) ? new LayoutRegular(vinfo.begin, v2.getElementSize(), v2.getShape(), section)
+        : new LayoutRegularSegmented(vinfo.begin, v2.getElementSize(), header.recsize, v2.getShape(), section);
+    return IospArrayHelper.readDataFill(raf, layout, dataType, null, null);
   }
 
   /**

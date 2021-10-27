@@ -1,21 +1,23 @@
 /*
- * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.internal.ncml;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+import java.util.Iterator;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.array.ArrayType;
-import ucar.ma2.Array;
-import ucar.array.ArrayType;
-import ucar.ma2.IndexIterator;
-import ucar.ma2.InvalidRangeException;
+import ucar.array.Array;
+import ucar.array.Arrays;
+import ucar.array.InvalidRangeException;
+import ucar.array.Section;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
@@ -116,16 +118,15 @@ public class TestNcmlModifyAtts {
     assert att.getNumericValue() == null;
     assert att.getNumericValue(3) == null;
 
-    Array data = lat.read();
+    Array<Float> data = (Array<Float>) lat.readArray();
     assert data.getRank() == 1;
     assert data.getSize() == 3;
     assert data.getShape()[0] == 3;
-    assert data.getElementType() == float.class;
+    Iterator<Float> dataI = data.iterator();
 
-    IndexIterator dataI = data.getIndexIterator();
-    Assert2.assertNearlyEquals(dataI.getDoubleNext(), 41.0);
-    Assert2.assertNearlyEquals(dataI.getDoubleNext(), 40.0);
-    Assert2.assertNearlyEquals(dataI.getDoubleNext(), 39.0);
+    Assert2.assertNearlyEquals(dataI.next(), 41.0);
+    Assert2.assertNearlyEquals(dataI.next(), 40.0);
+    Assert2.assertNearlyEquals(dataI.next(), 39.0);
   }
 
   @Test
@@ -147,20 +148,19 @@ public class TestNcmlModifyAtts {
     assert v.getDimension(1) == ncfile.findDimension("lat");
     assert v.getDimension(2) == ncfile.findDimension("lon");
 
-    Array data = v.read();
+    Array<Integer> data = (Array<Integer>) v.readArray();
     assert data.getRank() == 3;
     assert data.getSize() == 24;
     assert data.getShape()[0] == 2;
     assert data.getShape()[1] == 3;
     assert data.getShape()[2] == 4;
-    assert data.getElementType() == int.class;
+    Iterator<Integer> dataI = data.iterator();
 
-    IndexIterator dataI = data.getIndexIterator();
-    assert dataI.getIntNext() == 1;
-    assert dataI.getIntNext() == 2;
-    assert dataI.getIntNext() == 3;
-    assert dataI.getIntNext() == 4;
-    assert dataI.getIntNext() == 5;
+    assert dataI.next() == 1;
+    assert dataI.next() == 2;
+    assert dataI.next() == 3;
+    assert dataI.next() == 4;
+    assert dataI.next() == 5;
   }
 
   @Test
@@ -169,21 +169,20 @@ public class TestNcmlModifyAtts {
     int[] origin = new int[3];
     int[] shape = {2, 3, 1};
 
-    Array data = v.read(origin, shape);
+    Array<Integer> data = (Array<Integer>) v.readArray(new Section(origin, shape));
     assert data.getRank() == 3;
     assert data.getSize() == 6;
     assert data.getShape()[0] == 2;
     assert data.getShape()[1] == 3;
     assert data.getShape()[2] == 1;
-    assert data.getElementType() == int.class;
+    Iterator<Integer> dataI = data.iterator();
 
-    IndexIterator dataI = data.getIndexIterator();
-    assert dataI.getIntNext() == 1;
-    assert dataI.getIntNext() == 5;
-    assert dataI.getIntNext() == 9;
-    assert dataI.getIntNext() == 21;
-    assert dataI.getIntNext() == 25;
-    assert dataI.getIntNext() == 29;
+    assert dataI.next() == 1;
+    assert dataI.next() == 5;
+    assert dataI.next() == 9;
+    assert dataI.next() == 21;
+    assert dataI.next() == 25;
+    assert dataI.next() == 29;
   }
 
   @Test
@@ -192,20 +191,19 @@ public class TestNcmlModifyAtts {
     int[] origin = new int[3];
     int[] shape = {2, 1, 3};
 
-    Array data = v.read(origin, shape).reduce();
+    Array<Integer> data = (Array<Integer>) Arrays.reduce(v.readArray(new Section(origin, shape)));
     assert data.getRank() == 2;
     assert data.getSize() == 6;
     assert data.getShape()[0] == 2;
     assert data.getShape()[1] == 3;
-    assert data.getElementType() == int.class;
+    Iterator<Integer> dataI = data.iterator();
 
-    IndexIterator dataI = data.getIndexIterator();
-    assert dataI.getIntNext() == 1;
-    assert dataI.getIntNext() == 2;
-    assert dataI.getIntNext() == 3;
-    assert dataI.getIntNext() == 21;
-    assert dataI.getIntNext() == 22;
-    assert dataI.getIntNext() == 23;
+    assert dataI.next() == 1;
+    assert dataI.next() == 2;
+    assert dataI.next() == 3;
+    assert dataI.next() == 21;
+    assert dataI.next() == 22;
+    assert dataI.next() == 23;
   }
 
   @Test
@@ -239,19 +237,18 @@ public class TestNcmlModifyAtts {
     assert att.getNumericValue() == null;
     assert att.getNumericValue(3) == null;
 
-    Array data = v.read();
+    Array data = v.readArray();
     assert data.getRank() == 3;
     assert data.getSize() == 24;
     assert data.getShape()[0] == 2;
     assert data.getShape()[1] == 3;
     assert data.getShape()[2] == 4;
-    assert data.getElementType() == double.class;
+    Iterator<Double> dataI = data.iterator();
 
-    IndexIterator dataI = data.getIndexIterator();
-    Assert2.assertNearlyEquals(dataI.getDoubleNext(), 1.0);
-    Assert2.assertNearlyEquals(dataI.getDoubleNext(), 2.0);
-    Assert2.assertNearlyEquals(dataI.getDoubleNext(), 3.0);
-    Assert2.assertNearlyEquals(dataI.getDoubleNext(), 4.0);
-    Assert2.assertNearlyEquals(dataI.getDoubleNext(), 2.0);
+    Assert2.assertNearlyEquals(dataI.next(), 1.0);
+    Assert2.assertNearlyEquals(dataI.next(), 2.0);
+    Assert2.assertNearlyEquals(dataI.next(), 3.0);
+    Assert2.assertNearlyEquals(dataI.next(), 4.0);
+    Assert2.assertNearlyEquals(dataI.next(), 2.0);
   }
 }

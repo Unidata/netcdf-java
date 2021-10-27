@@ -34,9 +34,10 @@ public class TestReadNc4Problem {
   }
 
   @Test
-  public void testTooBig() {
+  public void testTooBig() throws Exception {
     String filename = TestDir.cdmUnitTestDir + "formats/netcdf4/UpperDeschutes_t4p10_swemelt.nc";
-    assertThrows(IllegalArgumentException.class, () -> TestReadNc4Compare.compareMa2Array(filename));
+    TestReadNc4Compare.compareMa2Array(filename);
+    // assertThrows(IllegalArgumentException.class, () -> TestReadNc4Compare.compareMa2Array(filename));
   }
 
   @Test

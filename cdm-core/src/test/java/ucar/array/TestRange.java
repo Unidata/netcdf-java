@@ -462,6 +462,56 @@ public class TestRange {
     assertThat(r.length()).isEqualTo(1 + (nx - 99) / 2);
   }
 
+  // make sure get same results when base and other are switched
+  @Test
+  public void testIntersectStrided2() throws InvalidRangeException {
+    int nx = 1237;
+    Range base = new Range(11, nx, 2);
+    assertThat(base.first()).isEqualTo(11);
+    assertThat(base.last()).isEqualTo(nx);
+    assertThat(base.stride()).isEqualTo(2);
+    assertThat(base.length()).isEqualTo(1 + (nx - 11) / 2);
+
+    Range other = new Range(0, 20);
+    Range ri = other.intersect(base);
+    assertThat(ri.first()).isEqualTo(11);
+    assertThat(ri.last()).isEqualTo(19);
+    assertThat(ri.stride()).isEqualTo(2);
+    assertThat(ri.length()).isEqualTo(1 + (20 - 11) / 2);
+
+    Range other2 = new Range(11, 30);
+    Range ri2 = other2.intersect(base);
+    assertThat(ri2.first()).isEqualTo(11);
+    assertThat(ri2.last()).isEqualTo(29);
+    assertThat(ri2.stride()).isEqualTo(2);
+    assertThat(ri2.length()).isEqualTo(1 + (30 - 11) / 2);
+
+    Range other3 = new Range(11, nx + 30);
+    Range ri3 = other3.intersect(base);
+    assertThat(ri3).isEqualTo(base);
+
+    Range other4 = new Range(99, nx + 30);
+    Range ri4 = other4.intersect(base);
+    assertThat(ri4.first()).isEqualTo(99);
+    assertThat(ri4.last()).isEqualTo(nx);
+    assertThat(ri4.stride()).isEqualTo(2);
+    assertThat(ri4.length()).isEqualTo(1 + (nx - 99) / 2);
+
+    Range other5 = new Range(99, nx + 30);
+    Range ri5 = other5.intersect(base);
+    assertThat(ri5.first()).isEqualTo(99);
+    assertThat(ri5.last()).isEqualTo(nx);
+    assertThat(ri5.stride()).isEqualTo(2);
+    assertThat(ri5.length()).isEqualTo(1 + (nx - 99) / 2);
+
+    Range other6 = new Range(98, nx + 30);
+    Range ri6 = other6.intersect(base);
+    assertThat(ri6.first()).isEqualTo(99);
+    assertThat(ri6.last()).isEqualTo(nx);
+    assertThat(ri6.stride()).isEqualTo(2);
+    assertThat(ri6.length()).isEqualTo(1 + (nx - 99) / 2);
+  }
+
   @Test
   public void testIntersects() throws InvalidRangeException {
     int nx = 1234;

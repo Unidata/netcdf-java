@@ -7,7 +7,6 @@ package ucar.nc2.internal.iosp.hdf5;
 import java.io.IOException;
 import javax.annotation.concurrent.Immutable;
 import ucar.array.ArrayType;
-import ucar.array.ArraysConvert;
 import ucar.array.Section;
 import ucar.nc2.iosp.Layout;
 import ucar.nc2.iosp.LayoutTiled;
@@ -61,7 +60,7 @@ public class H5tiledLayout implements Layout {
 
     // create the data chunk iterator
     LayoutTiled.DataChunkIterator iter = vinfo.btree.getDataChunkIteratorNoFilter(this.want, nChunkDims);
-    delegate = new LayoutTiled(iter, chunkSize, elemSize, ArraysConvert.convertSection(this.want));
+    delegate = new LayoutTiled(iter, chunkSize, elemSize, this.want);
   }
 
   public long getTotalNelems() {

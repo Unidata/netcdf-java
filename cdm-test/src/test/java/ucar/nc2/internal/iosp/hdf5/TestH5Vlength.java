@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.internal.iosp.hdf5;
@@ -8,23 +8,25 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ucar.ma2.*;
+import ucar.array.ArrayType;
+import ucar.array.Array;
+import ucar.array.Index;
+import ucar.array.InvalidRangeException;
+import ucar.array.Section;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Attribute;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import java.io.*;
-import java.lang.invoke.MethodHandles;
+
+import static com.google.common.truth.Truth.assertThat;
 
 /**
  * Test nc2 read JUnit framework.
  */
 @Category(NeedsCdmUnitTest.class)
 public class TestH5Vlength {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   File tempFile;
   PrintStream out;
@@ -38,9 +40,9 @@ public class TestH5Vlength {
   @After
   public void tearDown() throws Exception {
     out.close();
-    boolean status = tempFile.delete();
-    if (!status)
+    if (!tempFile.delete()) {
       System.out.printf("delete failed%n");
+    }
   }
 
   @Test
@@ -55,82 +57,50 @@ public class TestH5Vlength {
   }
 
   @Test
-  public void testVlengthVariableChunked() throws IOException {
+  public void testVlengthVariableChunked() throws IOException, InvalidRangeException {
     try (NetcdfFile ncfile = TestH5.openH5("support/uvlstr.h5")) {
 
       Variable v = ncfile.findVariable("Space1");
       assert (null != v);
-      assert (v.getDataType() == DataType.STRING);
+      assert (v.getArrayType() == ArrayType.STRING);
       assert (v.getRank() == 1);
       assert (v.getShape()[0] == 9);
 
-      try {
-        Array data = v.read();
-        assert (data.getElementType() == String.class);
-        assert (data instanceof ArrayObject);
-        IndexIterator iter = data.getIndexIterator();
-        while (iter.hasNext()) {
-          out.println(iter.next());
-        }
-
-      } catch (IOException e) {
-        e.printStackTrace();
-        assert false;
+      Array data = v.readArray();
+      for (Object val : data) {
+        out.println(val);
       }
 
       int[] origin = new int[] {3};
       int[] shape = new int[] {3};
-      try {
-        Array data2 = v.read(origin, shape);
-        Index ima = data2.getIndex();
-        assert (data2.getElementType() == String.class);
-        assert (data2 instanceof ArrayObject);
-        assert ((String) data2.getObject(ima.set(0))).startsWith("testing whether that nation");
-        assert ((String) data2.getObject(ima.set(1))).startsWith("O Gloria inmarcesible!");
-        assert ((String) data2.getObject(ima.set(2))).startsWith("bien germina ya!");
-      } catch (IOException | InvalidRangeException e) {
-        assert false;
-      }
-
+      Array<String> data2 = (Array<String>) v.readArray(new Section(origin, shape));
+      Index ima = data2.getIndex();
+      assert (data2.get(ima.set(0))).startsWith("testing whether that nation");
+      assert (data2.get(ima.set(1))).startsWith("O Gloria inmarcesible!");
+      assert (data2.get(ima.set(2))).startsWith("bien germina ya!");
     }
   }
 
   @Test
-  public void testVlengthVariable() throws IOException {
+  public void testVlengthVariable() throws IOException, InvalidRangeException {
     try (NetcdfFile ncfile = TestH5.openH5("support/vlslab.h5")) {
 
       Variable v = ncfile.findVariable("Space1");
       assert (null != v);
-      assert (v.getDataType() == DataType.STRING);
+      assert (v.getArrayType() == ArrayType.STRING);
       assert (v.getRank() == 1);
       assert (v.getShape()[0] == 12);
 
-      try {
-        Array data = v.read();
-        assert (data.getElementType() == String.class);
-        assert (data instanceof ArrayObject);
-        IndexIterator iter = data.getIndexIterator();
-        while (iter.hasNext()) {
-          out.println(iter.next());
-        }
-
-      } catch (IOException e) {
-        assert false;
+      Array<String> data = (Array<String>) v.readArray();
+      for (Object val : data) {
+        out.println(val);
       }
 
       int[] origin = new int[] {4};
       int[] shape = new int[] {1};
-      try {
-        Array data2 = v.read(origin, shape);
-        Index ima = data2.getIndex();
-        assert (data2.getElementType() == String.class);
-        assert (data2 instanceof ArrayObject);
-        assert (data2.getObject(ima.set(0)))
-            .equals("Five score and seven years ago our forefathers brought forth on this continent a new nation,");
-      } catch (IOException | InvalidRangeException e) {
-        assert false;
-      }
-
+      Array<String> data2 = (Array<String>) v.readArray(new Section(origin, shape));
+      assertThat(data2.get(0))
+          .isEqualTo("Five score and seven years ago our forefathers brought forth on this continent a new nation,");
     }
   }
 
@@ -187,25 +157,15 @@ public class TestH5Vlength {
 
       Variable v = ncfile.findVariable("levels");
       assert (null != v);
-      assert (v.getDataType() == DataType.UINT);
+      assert (v.getArrayType() == ArrayType.UINT);
       assert (v.getRank() == 2);
       assert (v.getShape()[0] == n) : v.getShape()[0];
 
-      try {
-        Array data = v.read();
-        // assert(data.getElementType() instanceof ucar.ma2.ArrayInt.class) : data.getElementType();
-        assert (data instanceof ArrayObject);
-        IndexIterator iter = data.getIndexIterator();
-        while (iter.hasNext()) {
-          Array inner = (Array) iter.next();
-          assert (inner instanceof ArrayInt.D1);
-          int firstVal = inner.getInt(0);
-          System.out.printf("%d (%d) = %s%n", firstVal, inner.getSize(), inner);
-          assert (firstVal < Short.MAX_VALUE) : firstVal;
-        }
-
-      } catch (IOException e) {
-        assert false;
+      Array<Array<Integer>> data = (Array<Array<Integer>>) v.readArray();
+      for (Array<Integer> inner : data) {
+        int firstVal = inner.get(0);
+        System.out.printf("%d (%d) = %s%n", firstVal, inner.getSize(), inner);
+        assertThat(firstVal < Short.MAX_VALUE).isTrue();
       }
 
     }

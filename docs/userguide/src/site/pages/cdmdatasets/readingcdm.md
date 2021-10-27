@@ -109,8 +109,8 @@ If you want strided access, you can use the Fortran 90 string routine:
 
 #### Reading with Range Objects
 
-For general programing, use the read method that takes a `List` of `ucar.ma2.Range` objects. 
-A `Range` follows the Fortran 90 array syntax, taking the starting and ending indices (inclusive), and an optional stride:
+For general programing, use the read method that takes a `ucar.array.Section`. 
+A `ucar.array.Range` follows the Fortran 90 array syntax, taking the starting and ending indices (inclusive), and an optional stride:
 
 {% capture rmd %}
 {% includecodeblock netcdf-java&docs/userguide/src/test/java/examples/cdmdatasets/ReadingCdmTutorial.java&readByRange %}

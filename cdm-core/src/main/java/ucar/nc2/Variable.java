@@ -385,32 +385,6 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    * Create a new Variable that is a logical subsection of this Variable.
    * No data is read until a read method is called on it.
    *
-   * @param ranges List of type ucar.ma2.Range, with size equal to getRank().
-   *        Each Range corresponds to a Dimension, and specifies the section of data to read in that Dimension.
-   *        A Range object may be null, which means use the entire dimension.
-   * @return a new Variable which is a logical section of this Variable.
-   * @throws InvalidRangeException if shape and range list dont match
-   * @deprecated use section(ucar.array.Section)
-   */
-  @Deprecated
-  public Variable section(List<ucar.ma2.Range> ranges) throws ucar.ma2.InvalidRangeException {
-    return section(new ucar.ma2.Section(ranges, shape));
-  }
-
-  /** @deprecated use section(ucar.array.Section) */
-  @Deprecated
-  public Variable section(ucar.ma2.Section subsection) throws ucar.ma2.InvalidRangeException {
-    try {
-      return section(ArraysConvert.convertSection(subsection));
-    } catch (InvalidRangeException e) {
-      throw new ucar.ma2.InvalidRangeException(e.getMessage());
-    }
-  }
-
-  /**
-   * Create a new Variable that is a logical subsection of this Variable.
-   * No data is read until a read method is called on it.
-   *
    * @param subsection Section of this variable.
    *        Each Range in the section corresponds to a Dimension, and specifies the section of data to read in that
    *        Dimension. A Range object may be null, which means use the entire dimension.
@@ -1484,13 +1458,6 @@ public class Variable implements VariableSimpleIF, ProxyReader {
       return Dimensions.getSize(dimensions);
     }
 
-    /** @deprecated use setArrayType() */
-    @Deprecated
-    public T setDataType(ucar.ma2.DataType dataType) {
-      this.dataType = dataType.getArrayType();
-      return self();
-    }
-
     public T setArrayType(ArrayType dataType) {
       this.dataType = dataType;
       return self();
@@ -1569,16 +1536,6 @@ public class Variable implements VariableSimpleIF, ProxyReader {
 
     public T setProxyReader(ProxyReader proxy) {
       this.proxyReader = proxy;
-      return self();
-    }
-
-    /**
-     * @param srcData
-     * @deprecated Use setSourceData(ucar.array.Array<?> srcData)
-     */
-    @Deprecated
-    public T setSourceData(ucar.ma2.Array srcData) {
-      this.cache.srcData = ucar.array.ArraysConvert.convertToArray(srcData);
       return self();
     }
 

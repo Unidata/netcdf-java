@@ -6,7 +6,7 @@
 package ucar.ui.grib;
 
 import java.nio.charset.StandardCharsets;
-import ucar.ma2.DataType;
+import ucar.array.ArrayType;
 import ucar.nc2.grib.GribUtils;
 import ucar.nc2.grib.grib1.*;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
@@ -448,7 +448,7 @@ public class GribIndexPanel extends JPanel {
       byte[] bytes = gds.getRawBytes();
       int count = 1;
       for (byte b : bytes) {
-        short s = DataType.unsignedByteToShort(b);
+        short s = ArrayType.unsignedByteToShort(b);
         f.format(" %d : %d%n", count++, s);
       }
     }

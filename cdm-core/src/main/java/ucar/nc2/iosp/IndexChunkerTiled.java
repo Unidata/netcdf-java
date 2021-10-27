@@ -5,12 +5,11 @@
 package ucar.nc2.iosp;
 
 import com.google.common.base.Preconditions;
-import java.util.Arrays;
 import java.util.Formatter;
-import ucar.ma2.Index;
-import ucar.ma2.Section;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Range;
+import ucar.array.Arrays;
+import ucar.array.Section;
+import ucar.array.InvalidRangeException;
+import ucar.array.Range;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -27,13 +26,11 @@ import java.util.ArrayList;
  * all dataSections that intersect the wanted section.
  * <p/>
  * Both dataSection and wantSection refer to the variable's overall shape.
- *
- * TODO will switch to ucar.array.* in ver8.
  */
 public class IndexChunkerTiled {
   private final List<Dim> dimList = new ArrayList<>();
   private final IndexLong dataIndex; // Index into the data source section - used to calculate chunk.filePos
-  private final Index resultIndex; // Index into the data result section - used to calculate chunk.startElem
+  private final IndexLong resultIndex; // Index into the data result section - used to calculate chunk.startElem
 
   private IndexChunker.Chunk chunk; // gets returned on next().
   private final int nelems; // number of elements to read at one time
@@ -99,7 +96,7 @@ public class IndexChunkerTiled {
     // we will use Index objects to keep track of the chunks
     int rank = dimList.size();
     long[] dataStrides = new long[rank];
-    int[] resultStrides = new int[rank];
+    long[] resultStrides = new long[rank];
     int[] shape = new int[rank];
     for (int i = 0; i < dimList.size(); i++) { // reverse to slowest first
       Dim dim = dimList.get(i);
@@ -107,22 +104,11 @@ public class IndexChunkerTiled {
       resultStrides[rank - i - 1] = dim.wantStride; // * dim.want.stride();
       shape[rank - i - 1] = dim.wantNelems;
     }
-    if (debugDetail) {
-      System.out.printf("  indexShape=%s%n", Arrays.toString(shape));
-      System.out.printf("  dataStrides=%s%n", Arrays.toString(dataStrides));
-      System.out.printf("  wantStride=%s%n", Arrays.toString(resultStrides));
-      System.out.printf("  indexChunks=%d%n", Index.computeSize(shape));
-    }
     dataIndex = new IndexLong(shape, dataStrides);
-    resultIndex = new Index(shape, resultStrides);
-
-    if (debugDetail) {
-      System.out.println(" dataIndex=" + dataIndex);
-      System.out.println(" resultIndex=" + resultIndex.toStringDebug());
-    }
+    resultIndex = new IndexLong(shape, resultStrides);
 
     // sanity checks
-    long nchunks = Index.computeSize(shape);
+    long nchunks = Arrays.computeSize(shape);
     assert nchunks * nelems == total;
 
     if (debug) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.internal.ncml;
@@ -10,11 +10,11 @@ import java.lang.invoke.MethodHandles;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.Array;
+import ucar.array.Array;
 import ucar.array.ArrayType;
-import ucar.ma2.Index;
-import ucar.ma2.IndexIterator;
-import ucar.ma2.InvalidRangeException;
+import ucar.array.Index;
+import ucar.array.InvalidRangeException;
+import ucar.array.Section;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
@@ -172,7 +172,7 @@ public class TestAggExistingNew {
     try {
       ncd = NetcdfDatasets.openDataset(filename, true, null);
       Variable time = ncd.getRootGroup().findVariableLocal("time");
-      Array data = time.read();
+      Array data = time.readArray();
       // all missing
       // assert data.getInt(0) ==
     } finally {
@@ -232,10 +232,10 @@ public class TestAggExistingNew {
     int[] shape = timeVar.getShape();
     assertThat(shape.length).isEqualTo(1);
 
-    Array vals = timeVar.read();
-    assertThat(vals.getInt(0)).isEqualTo(0);
+    Array<Number> vals = (Array<Number>) timeVar.readArray();
+    assertThat(vals.get(0)).isEqualTo(0);
     timeVar.getShape();
-    assertThat(vals.getInt(shape[0] - 1)).isEqualTo(365 * 2 - 1);
+    assertThat(vals.get(shape[0] - 1)).isEqualTo(365 * 2 - 1);
 
     // check start and end dates of aggregation
     String expectedStart = "2017-01-01T00:00:00";
@@ -266,10 +266,10 @@ public class TestAggExistingNew {
     int[] shape = timeVar.getShape();
     assertThat(shape.length).isEqualTo(1);
 
-    Array vals = timeVar.read();
-    assertThat(vals.getInt(0)).isEqualTo(0);
+    Array<Number> vals = (Array<Number>) timeVar.readArray();
+    assertThat(vals.get(0)).isEqualTo(0);
     timeVar.getShape();
-    assertThat(vals.getInt(shape[0] - 1)).isEqualTo(365 * 2 - 1);
+    assertThat(vals.get(shape[0] - 1)).isEqualTo(365 * 2 - 1);
 
     // check start and end dates of aggregation
     String expectedStart = "2016-01-01T00:00:00";
@@ -294,10 +294,10 @@ public class TestAggExistingNew {
     int[] shape = timeVar.getShape();
     assertThat(shape.length).isEqualTo(1);
 
-    Array vals = timeVar.read();
-    assertThat(vals.getInt(0)).isEqualTo(0);
+    Array<Number> vals = (Array<Number>) timeVar.readArray();
+    assertThat(vals.get(0)).isEqualTo(0);
     timeVar.getShape();
-    assertThat(vals.getInt(shape[0] - 1)).isEqualTo(366 * 2 - 1);
+    assertThat(vals.get(shape[0] - 1)).isEqualTo(366 * 2 - 1);
 
     // check start and end dates of aggregation
     String expectedStart = "2016-01-01T00:00:00";
@@ -335,10 +335,10 @@ public class TestAggExistingNew {
     int[] shape = timeVar.getShape();
     assertThat(shape.length).isEqualTo(1);
 
-    Array vals = timeVar.read();
-    assertThat(vals.getInt(0)).isEqualTo(0);
+    Array<Number> vals = (Array<Number>) timeVar.readArray();
+    assertThat(vals.get(0)).isEqualTo(0);
     timeVar.getShape();
-    assertThat(vals.getInt(shape[0] - 1)).isEqualTo(360 * 2 - 1);
+    assertThat(vals.get(shape[0] - 1)).isEqualTo(360 * 2 - 1);
 
     // check start and end dates of aggregation
     String expectedStart = "2019-01-01T00:00:00";
@@ -364,13 +364,13 @@ public class TestAggExistingNew {
     int[] shape = timeVar.getShape();
     assertThat(shape.length).isEqualTo(1);
 
-    Array vals = timeVar.read();
-    assertThat(vals.getInt(0)).isEqualTo(0);
+    Array<Number> vals = (Array<Number>) timeVar.readArray();
+    assertThat(vals.get(0)).isEqualTo(0);
     timeVar.getShape();
     // 1582 -> 365 days (because we stay on Julian calendar)
     // 1583 -> 365 days
     // expected is 365 days + 365 days = 730 days
-    assertThat(vals.getInt(shape[0] - 1)).isEqualTo(730 - 1);
+    assertThat(vals.get(shape[0] - 1)).isEqualTo(730 - 1);
 
     // the difference between two sequential CalendarDate objects should be 1 day
     testTimeDelta(timeVar, new TimeDelta(1, Field.Day));
@@ -425,13 +425,13 @@ public class TestAggExistingNew {
     int[] shape = timeVar.getShape();
     assertThat(shape.length).isEqualTo(1);
 
-    Array vals = timeVar.read();
-    assertThat(vals.getInt(0)).isEqualTo(0);
+    Array<Number> vals = (Array<Number>) timeVar.readArray();
+    assertThat(vals.get(0)).isEqualTo(0);
     timeVar.getShape();
     // 1582 -> 365 - 10 = 355 days
     // 1583 -> 365 days
     // expected is 355 days + 365 days = 720
-    assertThat(vals.getInt(shape[0] - 1)).isEqualTo(720 - 1);
+    assertThat(vals.get(shape[0] - 1)).isEqualTo(720 - 1);
 
     // the difference between two sequential CalendarDate objects should be 1 day
     testTimeDelta(timeVar, new TimeDelta(1, Field.Day));
@@ -492,10 +492,10 @@ public class TestAggExistingNew {
     int[] shape = timeVar.getShape();
     assertThat(shape.length).isEqualTo(1);
 
-    Array vals = timeVar.read();
-    assertThat(vals.getInt(0)).isEqualTo(0);
+    Array<Number> vals = (Array<Number>) timeVar.readArray();
+    assertThat(vals.get(0)).isEqualTo(0);
     timeVar.getShape();
-    assertThat(vals.getInt(shape[0] - 1)).isEqualTo(365 * 2 - 1);
+    assertThat(vals.get(shape[0] - 1)).isEqualTo(365 * 2 - 1);
 
     // check start and end dates of aggregation
     String expectedStart = "1582-01-01T00:00:00";
@@ -533,27 +533,27 @@ public class TestAggExistingNew {
   private void testTimeDelta(Variable timeVar, TimeDelta expectedDiff) throws IOException {
     CalendarDateUnit calendarDateUnit = getCalendarDateUnit(timeVar);
     int[] shape = timeVar.getShape();
-    Array vals = timeVar.read();
+    Array<Number> vals = (Array<Number>) timeVar.readArray();
     for (int val = 1; val < shape[0]; val++) {
-      CalendarDate today = calendarDateUnit.makeCalendarDate(vals.getInt(val));
-      CalendarDate yesterday = calendarDateUnit.makeCalendarDate(vals.getInt(val - 1));
+      CalendarDate today = calendarDateUnit.makeCalendarDate(vals.get(val).longValue());
+      CalendarDate yesterday = calendarDateUnit.makeCalendarDate(vals.get(val - 1).longValue());
       long diff = today.since(yesterday, expectedDiff.getUnit());
       assertThat(diff).isEqualTo(expectedDiff.getValue());
     }
   }
 
   private void testStartAndEnd(Variable timeVar, String start, String end) throws IOException {
-    Array vals = timeVar.read();
+    Array<Number> vals = (Array<Number>) timeVar.readArray();
     int[] shape = vals.getShape();
 
     // check start date of aggregation
     CalendarDateUnit calendarDateUnit = getCalendarDateUnit(timeVar);
-    CalendarDate calendarDate = calendarDateUnit.makeCalendarDate(vals.getInt(0));
+    CalendarDate calendarDate = calendarDateUnit.makeCalendarDate(vals.get(0).longValue());
     CalendarDate expected = CalendarDate.fromUdunitIsoDate(calendarDateUnit.getCalendar().name(), start).orElseThrow();
     assertThat(calendarDate).isEqualTo(expected);
 
     // check end date of aggregation
-    calendarDate = calendarDateUnit.makeCalendarDate(vals.getInt(shape[0] - 1));
+    calendarDate = calendarDateUnit.makeCalendarDate(vals.get(shape[0] - 1).longValue());
     expected = CalendarDate.fromUdunitIsoDate(calendarDateUnit.getCalendar().name(), end).orElseThrow();
     assertThat(calendarDate).isEqualTo(expected);
   }
@@ -599,16 +599,14 @@ public class TestAggExistingNew {
     assert att.getNumericValue() == null;
     assert att.getNumericValue(3) == null;
 
-    Array data = lat.read();
+    Array<Number> data = (Array<Number>) lat.readArray();
     assert data.getRank() == 1;
     assert data.getSize() == 3;
     assert data.getShape()[0] == 3;
-    assert data.getElementType() == float.class;
 
-    IndexIterator dataI = data.getIndexIterator();
-    Assert2.assertNearlyEquals(dataI.getDoubleNext(), 41.0);
-    Assert2.assertNearlyEquals(dataI.getDoubleNext(), 40.0);
-    Assert2.assertNearlyEquals(dataI.getDoubleNext(), 39.0);
+    Assert2.assertNearlyEquals(data.get(0).doubleValue(), 41.0);
+    Assert2.assertNearlyEquals(data.get(1).doubleValue(), 40.0);
+    Assert2.assertNearlyEquals(data.get(2).doubleValue(), 39.0);
   }
 
   public void testAggCoordVar(NetcdfFile ncfile) {
@@ -628,16 +626,15 @@ public class TestAggExistingNew {
     assert time.getDimension(0) == ncfile.findDimension("time");
 
     try {
-      Array data = time.read();
+      Array<Number> data = (Array<Number>) time.readArray();
       assert data.getRank() == 1;
       assert data.getSize() == 59;
       assert data.getShape()[0] == 59;
-      assert data.getElementType() == int.class;
 
       int count = 0;
-      IndexIterator dataI = data.getIndexIterator();
-      while (dataI.hasNext())
-        assert dataI.getIntNext() == count++ : dataI.getIntCurrent();
+      for (Number val : data) {
+        assert val.intValue() == count++;
+      }
 
     } catch (IOException io) {
       io.printStackTrace();
@@ -664,20 +661,19 @@ public class TestAggExistingNew {
     assert v.getDimension(2) == ncfile.findDimension("lon");
 
     try {
-      Array data = v.read();
+      Array<Number> data = (Array<Number>) v.readArray();
       assert data.getRank() == 3;
       assert data.getSize() == 708;
       assert data.getShape()[0] == 59;
       assert data.getShape()[1] == 3;
       assert data.getShape()[2] == 4;
-      assert data.getElementType() == double.class;
 
       int[] shape = data.getShape();
       Index tIndex = data.getIndex();
       for (int i = 0; i < shape[0]; i++)
         for (int j = 0; j < shape[1]; j++)
           for (int k = 0; k < shape[2]; k++) {
-            double val = data.getDouble(tIndex.set(i, j, k));
+            double val = data.get(tIndex.set(i, j, k)).doubleValue();
             Assert2.assertNearlyEquals(val, 100 * i + 10 * j + k);
           }
 
@@ -691,19 +687,18 @@ public class TestAggExistingNew {
 
     Variable v = ncfile.findVariable("T");
 
-    Array data = v.read(origin, shape);
+    Array<Number> data = (Array<Number>) v.readArray(new Section(origin, shape));
     assert data.getRank() == 3;
     assert data.getSize() == shape[0] * shape[1] * shape[2];
     assert data.getShape()[0] == shape[0] : data.getShape()[0] + " " + shape[0];
     assert data.getShape()[1] == shape[1];
     assert data.getShape()[2] == shape[2];
-    assert data.getElementType() == double.class;
 
     Index tIndex = data.getIndex();
     for (int i = 0; i < shape[0]; i++)
       for (int j = 0; j < shape[1]; j++)
         for (int k = 0; k < shape[2]; k++) {
-          double val = data.getDouble(tIndex.set(i, j, k));
+          double val = data.get(tIndex.set(i, j, k)).doubleValue();
           Assert2.assertNearlyEquals(val, 100 * (i + origin[0]) + 10 * j + k);
         }
 

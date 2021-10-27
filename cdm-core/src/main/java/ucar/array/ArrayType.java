@@ -31,9 +31,9 @@ public enum ArrayType {
   UINT("uint", "uint", 4, Integer.class, true), // unsigned int
   ULONG("ulong", "uint64", 8, Long.class, true), // unsigned long
 
-  ENUM1("enum1", "enum1", 1, byte.class, false), // byte
-  ENUM2("enum2", "enum2", 2, short.class, false), // short
-  ENUM4("enum4", "enum4", 4, int.class, false), // int
+  ENUM1("enum1", "enum1", 1, Byte.class, false), // byte
+  ENUM2("enum2", "enum2", 2, Short.class, false), // short
+  ENUM4("enum4", "enum4", 4, Integer.class, false), // int
 
   // object types are variable length, they have 32 bit indices onto a heap inside of a Structure
   STRING("String", "string", 4, String.class, false), // Java String

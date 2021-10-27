@@ -262,8 +262,7 @@ public class DataDescriptor {
    * @param fromList transfer from here
    * @param toList to here
    */
-  static void transferInfo(List<DataDescriptor> fromList, List<DataDescriptor> toList) { // get info from proto
-                                                                                         // message
+  static void transferInfo(List<DataDescriptor> fromList, List<DataDescriptor> toList) {
     if (fromList.size() != toList.size())
       throw new IllegalArgumentException("list sizes dont match " + fromList.size() + " != " + toList.size());
 

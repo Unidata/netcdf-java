@@ -150,7 +150,7 @@ public class GcdmServer {
         if (var instanceof Sequence) {
           size = getSequenceData(ncfile, varSection, responseObserver);
         } else {
-          Section wantSection = varSection.getArraySection();
+          Section wantSection = varSection.getSection();
           size = var.getElementSize() * wantSection.computeSize();
           getNetcdfData(ncfile, varSection, responseObserver);
         }
@@ -173,7 +173,7 @@ public class GcdmServer {
     private void getNetcdfData(NetcdfFile ncfile, ParsedArraySectionSpec varSection,
         StreamObserver<DataResponse> responseObserver) throws IOException, InvalidRangeException {
       Variable var = varSection.getVariable();
-      Section wantSection = varSection.getArraySection();
+      Section wantSection = varSection.getSection();
       long size = var.getElementSize() * wantSection.computeSize();
       if (size > MAX_MESSAGE) {
         getDataInChunks(ncfile, varSection, responseObserver);
@@ -204,7 +204,7 @@ public class GcdmServer {
 
       String spec = varSection.makeSectionSpecString();
       Variable var = varSection.getVariable();
-      Section wantSection = varSection.getArraySection();
+      Section wantSection = varSection.getSection();
 
       DataResponse.Builder response = DataResponse.newBuilder().setLocation(ncfile.getLocation()).setVariableSpec(spec)
           .setVarFullName(var.getFullName()).setSection(GcdmConverter.encodeSection(wantSection));

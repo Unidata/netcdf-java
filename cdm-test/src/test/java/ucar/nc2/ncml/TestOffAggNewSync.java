@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.ncml;
@@ -7,9 +7,7 @@ package ucar.nc2.ncml;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ucar.ma2.Array;
+import ucar.array.Array;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -18,11 +16,9 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.io.IOException;
 import java.io.StringReader;
-import java.lang.invoke.MethodHandles;
 
 @Category(NeedsCdmUnitTest.class)
 public class TestOffAggNewSync {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   String dataDir = TestDir.cdmUnitTestDir + "formats/gini/";
   int ntimes = 3;
@@ -88,7 +84,7 @@ public class TestOffAggNewSync {
 
     assert time.getDimension(0) == ncfile.findDimension("time");
 
-    Array data = time.read();
+    Array data = time.readArray();
     assert data.getRank() == 1;
     assert data.getSize() == n;
     assert data.getShape()[0] == n;

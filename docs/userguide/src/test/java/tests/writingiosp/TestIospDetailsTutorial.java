@@ -123,7 +123,7 @@ public class TestIospDetailsTutorial {
   }
 
   @Test
-  public void testReadExample2() throws IOException, ucar.ma2.InvalidRangeException {
+  public void testReadExample2() throws IOException, InvalidRangeException {
     Group.Builder group = Group.builder();
     Dimension d1 = Dimension.builder("i", 190).build();
     group.addDimension(d1);

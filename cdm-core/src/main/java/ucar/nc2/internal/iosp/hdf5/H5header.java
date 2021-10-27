@@ -38,7 +38,6 @@ import ucar.array.StructureDataStorageBB;
 import ucar.array.StructureMembers;
 import ucar.array.InvalidRangeException;
 import ucar.array.Section;
-import ucar.ma2.DataType;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainerMutable;
 import ucar.nc2.Dimension;
@@ -90,7 +89,7 @@ public class H5header implements HdfHeaderIF {
   private static boolean debug1, debugDetail, debugPos, debugHeap, debugV;
   private static boolean debugGroupBtree, debugDataBtree, debugBtree2;
   private static boolean debugContinueMessage, debugTracker, debugSoftLink, debugHardLink, debugSymbolTable;
-  private static boolean warnings = true, debugReference, debugRegionReference, debugCreationOrder, debugStructure;
+  private static boolean warnings = true, debugReference, debugCreationOrder, debugStructure;
   private static boolean debugDimensionScales;
 
   // NULL string value, following netCDF-C, set to NIL
@@ -147,7 +146,7 @@ public class H5header implements HdfHeaderIF {
 
   private final RandomAccessFile raf;
   private final Group.Builder root;
-  private final H5iospArrays h5iosp;
+  private final H5iosp h5iosp;
 
   private long baseAddress;
   byte sizeOffsets, sizeLengths;
@@ -169,7 +168,7 @@ public class H5header implements HdfHeaderIF {
 
   private final Charset valueCharset;
 
-  H5header(RandomAccessFile myRaf, Group.Builder root, H5iospArrays h5iosp) {
+  H5header(RandomAccessFile myRaf, Group.Builder root, H5iosp h5iosp) {
     this.raf = myRaf;
     this.root = root;
     this.h5iosp = h5iosp;
@@ -1011,12 +1010,7 @@ public class H5header implements HdfHeaderIF {
       throws IOException, InvalidRangeException {
     int[] shape = matt.mds.dimLength;
 
-    Layout layout2;
-    try {
-      layout2 = new LayoutRegular(matt.dataPos, matt.mdt.byteSize, shape, new ucar.ma2.Section(shape));
-    } catch (ucar.ma2.InvalidRangeException e) {
-      throw new InvalidRangeException(e);
-    }
+    Layout layout2 = new LayoutRegular(matt.dataPos, matt.mdt.byteSize, shape, new Section(shape));
 
     // Strings
     if ((vinfo.typeInfo.hdfType == 9) && (vinfo.typeInfo.isVString)) {
@@ -1118,20 +1112,15 @@ public class H5header implements HdfHeaderIF {
       endian = baseInfo.endian;
     }
 
-    Layout layout;
-    try {
-      layout = new LayoutRegular(matt.dataPos, elemSize, shape, new ucar.ma2.Section(shape));
-    } catch (ucar.ma2.InvalidRangeException e) {
-      throw new InvalidRangeException(e);
-    }
+    Layout layout = new LayoutRegular(matt.dataPos, elemSize, shape, new Section(shape));
 
-    // readArrayOrPrimitive(H5header.Vinfo vinfo, Variable v, Layout layout, ArrayType dataType, int[] shape,
-    // Object fillValue, ByteOrder endian)
-    Object pdata = h5iosp.readDataPrimitive(layout, dataType.getDataType(), shape, null, endian, false);
+    // LOOK The problem is that we dont have the Variable, needed to read Structure Data.
+    // So an attribute cant be a Structure ??
+    Object pdata = h5iosp.readArrayOrPrimitive(vinfo, null, layout, dataType, shape, null, endian, false);
     Array<?> dataArray;
 
     if (dataType == ArrayType.OPAQUE) {
-      dataArray = ArraysConvert.convertToArray((ucar.ma2.Array) pdata);
+      dataArray = (Array) pdata;
 
     } else if ((dataType == ArrayType.CHAR)) {
       if (vinfo.mdt.byteSize > 1) { // chop back into pieces
@@ -1151,7 +1140,7 @@ public class H5header implements HdfHeaderIF {
       }
 
     } else {
-      dataArray = (pdata instanceof Array) ? (Array) pdata : Arrays.factory(readDtype, shape, pdata);
+      dataArray = (pdata instanceof Array) ? (Array<?>) pdata : Arrays.factory(readDtype, shape, pdata);
     }
 
     // convert attributes to enum strings
@@ -1199,12 +1188,7 @@ public class H5header implements HdfHeaderIF {
     }
 
     int recsize = matt.mdt.byteSize;
-    Layout layout;
-    try {
-      layout = new LayoutRegular(matt.dataPos, recsize, shape, new ucar.ma2.Section(shape));
-    } catch (ucar.ma2.InvalidRangeException e) {
-      throw new ucar.array.InvalidRangeException(e);
-    }
+    Layout layout = new LayoutRegular(matt.dataPos, recsize, shape, new Section(shape));
     builder.setStructureSize(recsize);
     StructureMembers members = builder.build();
     Preconditions.checkArgument(members.getStorageSizeBytes() == recsize);
@@ -1855,7 +1839,7 @@ public class H5header implements HdfHeaderIF {
         } else {
           layout = new LayoutRegular(dataPos, dataType.getSize(), shape, null);
         }
-      } catch (ucar.ma2.InvalidRangeException e2) {
+      } catch (InvalidRangeException e2) {
         // cant happen because we use null for wantSection
         throw new IllegalStateException();
       }
@@ -1875,7 +1859,7 @@ public class H5header implements HdfHeaderIF {
         } else {
           layout = new LayoutRegular(dataPos, dataType.getSize(), shape, null);
         }
-      } catch (ucar.ma2.InvalidRangeException e) {
+      } catch (InvalidRangeException e) {
         // cant happen because we use null for wantSection
         throw new IllegalStateException();
       }
@@ -1900,85 +1884,8 @@ public class H5header implements HdfHeaderIF {
     }
   }
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  // Heaps old
-
-  /**
-   * Fetch a Vlen data array.
-   *
-   * @param globalHeapIdAddress address of the heapId, used to get the String out of the heap
-   * @param dataType type of data
-   * @param endian byteOrder of the data (0 = BE, 1 = LE)
-   * @return the Array read from the heap
-   * @throws IOException on read error
-   */
-  ucar.ma2.Array getHeapDataArray(long globalHeapIdAddress, DataType dataType, ByteOrder endian) throws IOException {
-    HeapIdentifier heapId = h5objects.readHeapIdentifier(globalHeapIdAddress);
-    if (debugHeap) {
-      log.debug(" heapId= {}", heapId);
-    }
-    return getHeapDataArray(heapId, dataType, endian);
-  }
-
-  ucar.ma2.Array getHeapDataArray(HeapIdentifier heapId, DataType dataType, ByteOrder endian) throws IOException {
-    GlobalHeap.HeapObject ho = heapId.getHeapObject();
-    if (ho == null) {
-      throw new IllegalStateException("Illegal Heap address, HeapObject = " + heapId);
-    }
-    if (debugHeap) {
-      log.debug(" HeapObject= {}", ho);
-    }
-    if (endian != null) {
-      raf.order(endian);
-    }
-
-    if (DataType.FLOAT == dataType) {
-      float[] pa = new float[heapId.nelems];
-      raf.seek(ho.dataPos);
-      raf.readFloat(pa, 0, pa.length);
-      return ucar.ma2.Array.factory(dataType, new int[] {pa.length}, pa);
-
-    } else if (DataType.DOUBLE == dataType) {
-      double[] pa = new double[heapId.nelems];
-      raf.seek(ho.dataPos);
-      raf.readDouble(pa, 0, pa.length);
-      return ucar.ma2.Array.factory(dataType, new int[] {pa.length}, pa);
-
-    } else if (dataType.getPrimitiveClassType() == byte.class) {
-      byte[] pa = new byte[heapId.nelems];
-      raf.seek(ho.dataPos);
-      raf.readFully(pa, 0, pa.length);
-      return ucar.ma2.Array.factory(dataType, new int[] {pa.length}, pa);
-
-    } else if (dataType.getPrimitiveClassType() == short.class) {
-      short[] pa = new short[heapId.nelems];
-      raf.seek(ho.dataPos);
-      raf.readShort(pa, 0, pa.length);
-      return ucar.ma2.Array.factory(dataType, new int[] {pa.length}, pa);
-
-    } else if (dataType.getPrimitiveClassType() == int.class) {
-      int[] pa = new int[heapId.nelems];
-      raf.seek(ho.dataPos);
-      raf.readInt(pa, 0, pa.length);
-      return ucar.ma2.Array.factory(dataType, new int[] {pa.length}, pa);
-
-    } else if (dataType.getPrimitiveClassType() == long.class) {
-      long[] pa = new long[heapId.nelems];
-      raf.seek(ho.dataPos);
-      raf.readLong(pa, 0, pa.length);
-      return ucar.ma2.Array.factory(dataType, new int[] {pa.length}, pa);
-    }
-
-    throw new UnsupportedOperationException("getHeapDataAsArray dataType=" + dataType);
-  }
-
-  ucar.ma2.Array readHeapVlen(ByteBuffer bb, int pos, DataType dataType, ByteOrder endian) throws IOException {
-    HeapIdentifier heapId = h5objects.readHeapIdentifier(bb, pos);
-    return getHeapDataArray(heapId, dataType, endian);
-  }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  // Heaps new
 
   /**
    * Fetch a Vlen data array.

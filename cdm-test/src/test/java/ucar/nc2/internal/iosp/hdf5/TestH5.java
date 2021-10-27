@@ -4,9 +4,8 @@
  */
 package ucar.nc2.internal.iosp.hdf5;
 
+import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.Index;
 import ucar.nc2.NetcdfFile;
@@ -19,7 +18,6 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 
 /**
  * TestSuite that runs all the sample testsNew
@@ -27,8 +25,6 @@ import java.lang.invoke.MethodHandles;
  */
 @Category(NeedsCdmUnitTest.class)
 public class TestH5 {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
   private static boolean dumpFile = false;
   public static String testDir = TestDir.cdmUnitTestDir + "formats/hdf5/";
 
@@ -57,7 +53,6 @@ public class TestH5 {
       return ncfile;
 
     } catch (java.io.IOException e) {
-      System.out.println(" fail = " + e);
       e.printStackTrace();
       assert (false);
       return null;
@@ -90,7 +85,7 @@ public class TestH5 {
   //////////////////////////////////////////////////////////////////////////
 
   // file that is offset 2048 bytes - NPP!
-  @org.junit.Test
+  @Test
   public void testSuperblockIsOffset() throws IOException {
     try (NetcdfFile ncfile = TestH5.openH5("superblockIsOffsetNPP.h5")) {
 
@@ -105,7 +100,7 @@ public class TestH5 {
   }
 
   // file that is offset 512 bytes - MatLab, using compact layout (!)
-  @org.junit.Test
+  @Test
   public void testOffsetCompactLayout() throws IOException {
     try (NetcdfFile ncfile = TestH5.openH5("matlab_cols.mat")) {
 
@@ -152,7 +147,7 @@ public class TestH5 {
    * }
    * }
    */
-  @org.junit.Test
+  @Test
   public void testGroupHardLinks() throws IOException {
     try (NetcdfFile ncfile = TestH5.openH5("groupHasCycle.h5")) {
       System.out.printf("%s%n", ncfile);

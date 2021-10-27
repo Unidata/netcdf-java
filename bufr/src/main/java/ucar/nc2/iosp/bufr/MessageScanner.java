@@ -176,7 +176,7 @@ public class MessageScanner {
 
       if (m.containsBufrTable()) {
         if (embedTable == null) {
-          embedTable = useArrays ? new EmbeddedTable(m, raf) : new EmbeddedTableOrg(m, raf);
+          embedTable = new EmbeddedTable(m, raf);
         }
         embedTable.addTable(m);
       } else if (embedTable != null) {

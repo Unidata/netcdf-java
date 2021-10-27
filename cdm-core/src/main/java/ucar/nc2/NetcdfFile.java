@@ -543,7 +543,7 @@ public class NetcdfFile implements FileCacheable, Closeable {
       throws IOException, ucar.array.InvalidRangeException {
     ParsedArraySectionSpec cer = ParsedArraySectionSpec.parseVariableSection(this, variableSection);
     if (cer.getChild() == null) {
-      return cer.getVariable().readArray(cer.getArraySection());
+      return cer.getVariable().readArray(cer.getSection());
     }
     throw new UnsupportedOperationException();
   }

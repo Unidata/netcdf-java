@@ -4,15 +4,14 @@
  */
 package ucar.nc2.iosp;
 
-import ucar.ma2.Index;
-import ucar.ma2.Section;
-import ucar.ma2.InvalidRangeException;
+import ucar.array.Arrays;
+import ucar.array.Section;
+import ucar.array.InvalidRangeException;
 
 /**
  * LayoutSegmented has data stored in segments.
  * Assume that each segment size is a multiple of elemSize.
  * Used by HDF4.
- * TODO will switch to ucar.array.* in ver8.
  */
 public class LayoutSegmented implements Layout {
   private static final boolean debugNext = false;
@@ -43,7 +42,7 @@ public class LayoutSegmented implements Layout {
    * @param elemSize size of an element in bytes.
    * @param srcShape shape of the entire data array.
    * @param wantSection the wanted section of data
-   * @throws ucar.ma2.InvalidRangeException if ranges are misformed
+   * @throws InvalidRangeException if ranges are misformed
    */
   public LayoutSegmented(long[] segPos, int[] segSize, int elemSize, int[] srcShape, Section wantSection)
       throws InvalidRangeException {
@@ -63,7 +62,7 @@ public class LayoutSegmented implements Layout {
       totalElems += segSize[i];
       segMax[i] = totalElems;
     }
-    assert totalElems >= Index.computeSize(srcShape) * elemSize;
+    assert totalElems >= Arrays.computeSize(srcShape) * elemSize;
 
     chunker = new IndexChunker(srcShape, wantSection);
     this.total = chunker.getTotalNelems();

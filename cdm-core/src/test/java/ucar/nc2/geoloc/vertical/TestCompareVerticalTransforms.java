@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-
 package ucar.nc2.geoloc.vertical;
 
 import org.junit.Test;
@@ -109,7 +108,7 @@ public class TestCompareVerticalTransforms {
   }
 
   @Test
-  public void compare() throws IOException, InvalidRangeException, ucar.ma2.InvalidRangeException {
+  public void compare() throws IOException, InvalidRangeException {
     TestVertical.open(filename, gridName, vtClass, vunit);
   }
 

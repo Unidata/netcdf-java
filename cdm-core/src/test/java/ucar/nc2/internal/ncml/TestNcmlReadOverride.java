@@ -1,26 +1,23 @@
 /*
- * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.internal.ncml;
 
 import static ucar.nc2.util.Misc.nearlyEquals;
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
+import java.util.Iterator;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ucar.ma2.Array;
+import ucar.array.Array;
 import ucar.array.ArrayType;
-import ucar.ma2.IndexIterator;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 
 public class TestNcmlReadOverride {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   static NetcdfFile ncfile = null;
 
@@ -76,17 +73,16 @@ public class TestNcmlReadOverride {
     assert att.getNumericValue(3) == null;
 
     try {
-      Array data = v.read();
+      Array data = v.readArray();
       assert data.getRank() == 1;
       assert data.getSize() == 2;
       assert data.getShape()[0] == 2;
-      assert data.getElementType() == double.class;
+      Iterator<Double> dataI = data.iterator();
 
-      IndexIterator dataI = data.getIndexIterator();
-      assert nearlyEquals(dataI.getDoubleNext(), 0.5);
-      assert nearlyEquals(dataI.getDoubleNext(), 1.5);
+      assert nearlyEquals(dataI.next(), 0.5);
+      assert nearlyEquals(dataI.next(), 1.5);
       try {
-        dataI.getDoubleNext();
+        dataI.next();
         assert (false);
       } catch (Exception e) {
       }
@@ -123,20 +119,19 @@ public class TestNcmlReadOverride {
     assert att.getNumericValue(3) == null;
 
     try {
-      Array data = v.read();
+      Array data = v.readArray();
       assert data.getRank() == 3;
       assert data.getSize() == 24;
       assert data.getShape()[0] == 2;
       assert data.getShape()[1] == 3;
       assert data.getShape()[2] == 4;
-      assert data.getElementType() == double.class;
+      Iterator<Double> dataI = data.iterator();
 
-      IndexIterator dataI = data.getIndexIterator();
-      assert nearlyEquals(dataI.getDoubleNext(), 1.0);
-      assert nearlyEquals(dataI.getDoubleNext(), 2.0);
-      assert nearlyEquals(dataI.getDoubleNext(), 3.0);
-      assert nearlyEquals(dataI.getDoubleNext(), 4.0);
-      assert nearlyEquals(dataI.getDoubleNext(), 2.0);
+      assert nearlyEquals(dataI.next(), 1.0);
+      assert nearlyEquals(dataI.next(), 2.0);
+      assert nearlyEquals(dataI.next(), 3.0);
+      assert nearlyEquals(dataI.next(), 4.0);
+      assert nearlyEquals(dataI.next(), 2.0);
     } catch (IOException io) {
     }
   }

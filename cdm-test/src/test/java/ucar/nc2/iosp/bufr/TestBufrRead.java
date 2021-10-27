@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-
 package ucar.nc2.iosp.bufr;
 
 import org.junit.Test;
@@ -112,15 +111,17 @@ public class TestBufrRead {
           assert m.isTablesComplete() : "incomplete tables";
 
           if (nobs > 0) {
-            if (!m.isBitCountOk()) {
-              Formatter f = new Formatter();
-              int n = m.calcTotalBits(f);
+            BufrArrayIosp iosp = new BufrArrayIosp();
+            iosp.open(m.raf(), m);
+            Formatter f = new Formatter();
+            MessageBitCounter counter = new MessageBitCounter(iosp.getTopSequence(), iosp.getProtoMessage(), m, f);
+            if (!counter.isBitCountOk()) {
               FileOutputStream out = new FileOutputStream("C:/tmp/bitcount.txt");
               IO.writeContents(f.toString(), out);
               out.close();
-              System.out.printf("  nbits = %d%n", n);
+              System.out.printf("  nbits = %d%n", counter.msg_nbits);
             }
-            assert m.isBitCountOk() : "bit count wrong on " + filename;
+            assert counter.isBitCountOk() : "bit count wrong on " + filename;
           }
 
           totalObs += nobs;

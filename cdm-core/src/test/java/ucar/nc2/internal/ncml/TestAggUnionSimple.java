@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.internal.ncml;
@@ -7,16 +7,19 @@ package ucar.nc2.internal.ncml;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
+import java.util.Iterator;
+
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.Array;
+import ucar.array.Array;
 import ucar.array.ArrayType;
-import ucar.ma2.IndexIterator;
-import ucar.ma2.InvalidRangeException;
+import ucar.array.Arrays;
+import ucar.array.InvalidRangeException;
+import ucar.array.Section;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
@@ -213,16 +216,13 @@ public class TestAggUnionSimple {
     assert att.getNumericValue() == null;
     assert att.getNumericValue(3) == null;
 
-    Array data = lat.read();
+    Array<Number> data = (Array<Number>) lat.readArray();
     assert data.getRank() == 1;
     assert data.getSize() == 21;
     assert data.getShape()[0] == 21;
-    assert data.getElementType() == float.class;
-
-    IndexIterator dataI = data.getIndexIterator();
-    Assert2.assertNearlyEquals(dataI.getDoubleNext(), 10.0);
-    Assert2.assertNearlyEquals(dataI.getDoubleNext(), 9.0);
-    Assert2.assertNearlyEquals(dataI.getDoubleNext(), 8.0);
+    Assert2.assertNearlyEquals(data.get(0).doubleValue(), 10.0);
+    Assert2.assertNearlyEquals(data.get(1).doubleValue(), 9.0);
+    Assert2.assertNearlyEquals(data.get(2).doubleValue(), 8.0);
   }
 
   @Test
@@ -253,19 +253,18 @@ public class TestAggUnionSimple {
     assert att.getNumericValue() == null;
     assert att.getNumericValue(3) == null;
 
-    Array data = v.read();
+    Array<Short> data = (Array<Short>) v.readArray();
     assert data.getRank() == 3;
     assert data.getSize() == 360 * 21 * 456;
     assert data.getShape()[0] == 456;
     assert data.getShape()[1] == 21;
     assert data.getShape()[2] == 360;
-    assert data.getElementType() == short.class;
+    Iterator<Short> iter = data.iterator();
 
-    IndexIterator dataI = data.getIndexIterator();
-    assert 32766 == dataI.getShortNext();
-    assert 32766 == dataI.getShortNext();
-    assert 32766 == dataI.getShortNext();
-    assert 32766 == dataI.getShortNext();
+    assert 32766 == iter.next();
+    assert 32766 == iter.next();
+    assert 32766 == iter.next();
+    assert 32766 == iter.next();
   }
 
   @Test
@@ -274,20 +273,19 @@ public class TestAggUnionSimple {
     int[] origin = {0, 6, 5};
     int[] shape = {1, 2, 3};
 
-    Array data = v.read(origin, shape).reduce();
+    Array<Short> data = (Array<Short>) Arrays.reduce(v.readArray(new Section(origin, shape)));
     assert data.getRank() == 2;
     assert data.getSize() == 6;
     assert data.getShape()[0] == 2;
     assert data.getShape()[1] == 3;
-    assert data.getElementType() == short.class;
+    Iterator<Short> iter = data.iterator();
 
-    IndexIterator dataI = data.getIndexIterator();
-    assert dataI.getShortNext() == -22711;
-    assert dataI.getShortNext() == -22239;
-    assert dataI.getShortNext() == -22585;
-    assert dataI.getShortNext() == -22670;
-    assert dataI.getShortNext() == 32766;
-    assert dataI.getShortNext() == 32766;
+    assert iter.next() == -22711;
+    assert iter.next() == -22239;
+    assert iter.next() == -22585;
+    assert iter.next() == -22670;
+    assert iter.next() == 32766;
+    assert iter.next() == 32766;
   }
 
   /*

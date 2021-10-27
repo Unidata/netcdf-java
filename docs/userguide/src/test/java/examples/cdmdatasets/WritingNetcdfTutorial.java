@@ -1,7 +1,6 @@
 package examples.cdmdatasets;
 
 import ucar.array.*;
-import ucar.ma2.ArrayInt;
 import ucar.nc2.*;
 import ucar.nc2.iosp.NetcdfFileFormat;
 import ucar.nc2.write.*;

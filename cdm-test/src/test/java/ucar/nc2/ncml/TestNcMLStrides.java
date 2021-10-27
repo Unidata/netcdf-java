@@ -6,24 +6,21 @@ package ucar.nc2.ncml;
 
 import junit.framework.TestCase;
 import org.junit.experimental.categories.Category;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ucar.ma2.ArrayInt;
-import ucar.ma2.Index;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Section;
+import ucar.array.Array;
+import ucar.array.Arrays;
+import ucar.array.Index;
+import ucar.array.InvalidRangeException;
+import ucar.array.Section;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 
 /** Test netcdf dataset in the JUnit framework. */
 @Category(NeedsCdmUnitTest.class)
 public class TestNcMLStrides extends TestCase {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   public TestNcMLStrides(String name) {
     super(name);
@@ -52,9 +49,10 @@ public class TestNcMLStrides extends TestCase {
     System.out.println("ncfile opened = " + location + "\n" + ncfile);
     Variable time = ncfile.findVariable("time");
 
-    ArrayInt all = (ArrayInt) time.read();
-    for (int i = 0; i < all.getSize(); i++)
-      assert (all.getInt(i) == i + 1);
+    Array<Integer> all = (Array<Integer>) time.readArray();
+    for (int i = 0; i < all.getSize(); i++) {
+      assert (all.get(i) == i + 1);
+    }
 
     testStride("0:13:3");
 
@@ -64,15 +62,15 @@ public class TestNcMLStrides extends TestCase {
 
   private void testStride(String stride) throws IOException, InvalidRangeException {
     Variable time = ncfile.findVariable("time");
-    ArrayInt all = (ArrayInt) time.read();
+    Array<Integer> all = (Array<Integer>) time.readArray();
 
-    ArrayInt correct = (ArrayInt) all.section(new Section(stride).getRanges());
-    ArrayInt data = (ArrayInt) time.read(stride);
+    Array<Integer> correct = Arrays.section(all, new Section(stride));
+    Array<Integer> data = (Array<Integer>) time.readArray(new Section(stride));
     Index ci = correct.getIndex();
     Index di = data.getIndex();
     for (int i = 0; i < data.getSize(); i++)
-      assert (data.getInt(di.set(i)) == correct.getInt(ci.set(i))) : stride + " index " + i + " = "
-          + data.getInt(di.set(i)) + " != " + correct.getInt(ci.set(i));
+      assert (data.get(di.set(i)) == correct.get(ci.set(i))) : stride + " index " + i + " = " + data.get(di.set(i))
+          + " != " + correct.get(ci.set(i));
   }
 
 }

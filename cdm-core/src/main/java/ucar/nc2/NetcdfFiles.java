@@ -63,7 +63,7 @@ public class NetcdfFiles {
     // control the order which IOSPs try to open. So its harder to avoid mis-behaving and slow IOSPs from
     // making open() slow. So we load the core ones here to make sure they are tried first.
     try {
-      registerIOProvider("ucar.nc2.internal.iosp.hdf5.H5iospArrays");
+      registerIOProvider("ucar.nc2.internal.iosp.hdf5.H5iosp");
     } catch (Throwable e) {
       if (loadWarnings)
         log.info("Cant load class H5iosp", e);

@@ -65,12 +65,6 @@ public class Sequence extends Structure implements Iterable<ucar.array.Structure
 
   /** @throws UnsupportedOperationException always */
   @Override
-  public Variable section(ucar.ma2.Section subsection) {
-    throw new UnsupportedOperationException();
-  }
-
-  /** @throws UnsupportedOperationException always */
-  @Override
   public Variable section(Section subsection) {
     throw new UnsupportedOperationException();
   }

@@ -14,7 +14,6 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 import ucar.array.ArrayType;
-import ucar.array.ArraysConvert;
 import ucar.array.InvalidRangeException;
 import ucar.array.Section;
 import ucar.nc2.Variable;
@@ -97,7 +96,7 @@ public class H5tiledLayoutBB implements LayoutBB {
     // create the data chunk iterator
     DataBTree.DataChunkIterator iter = vinfo.btree.getDataChunkIteratorFilter(this.want);
     DataChunkIterator dcIter = new DataChunkIterator(iter);
-    delegate = new LayoutBBTiled(dcIter, chunkSize, elemSize, ArraysConvert.convertSection(this.want));
+    delegate = new LayoutBBTiled(dcIter, chunkSize, elemSize, this.want);
 
     if (System.getProperty(INFLATEBUFFERSIZE_PROPERTY) != null) {
       try {
