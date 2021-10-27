@@ -918,6 +918,7 @@ public class Nc4writer extends Nc4reader implements IospFileWriter {
     Object data = Arrays.copyPrimitiveArray(values); // LOOK copy
 
     switch (typeid) {
+      case Nc4prototypes.NC_CHAR:
       case Nc4prototypes.NC_BYTE:
       case Nc4prototypes.NC_UBYTE:
         byte[] valb = (byte[]) data;
@@ -928,18 +929,20 @@ public class Nc4writer extends Nc4reader implements IospFileWriter {
           throw new IOException(ret + ": " + nc4.nc_strerror(ret));
         break;
 
-      case Nc4prototypes.NC_CHAR:
-        char[] valc = (char[]) data; // chars are lame
-        assert valc.length == sectionLen;
-
-        valb = IospArrayHelper.convertCharToByte(valc);
-        ret = nc4.nc_put_vars_text(grpid, varid, origin, shape, stride, valb);
-        // ret = nc4.nc_put_vara_text(grpid, varid, origin, shape, valb);
-
-        if (ret != 0) {
-          throw new IOException(nc4.nc_strerror(ret));
-        }
-        break;
+      /*
+       * case Nc4prototypes.NC_CHAR:
+       * char[] valc = (char[]) data; // chars are lame
+       * assert valc.length == sectionLen;
+       * 
+       * valb = IospArrayHelper.convertCharToByte(valc);
+       * ret = nc4.nc_put_vars_text(grpid, varid, origin, shape, stride, valb);
+       * // ret = nc4.nc_put_vara_text(grpid, varid, origin, shape, valb);
+       * 
+       * if (ret != 0) {
+       * throw new IOException(nc4.nc_strerror(ret));
+       * }
+       * break;
+       */
 
       case Nc4prototypes.NC_DOUBLE:
         double[] vald = (double[]) data;

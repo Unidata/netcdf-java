@@ -468,6 +468,7 @@ public class Arrays {
     ArrayType dataType = data.getArrayType();
     int idx = 0;
     switch (dataType) {
+      case CHAR:
       case OPAQUE:
       case ENUM1:
       case UBYTE:
@@ -475,14 +476,6 @@ public class Arrays {
         Array<Byte> bdata = (Array<Byte>) data;
         byte[] parray = new byte[(int) data.length()];
         for (byte val : bdata) {
-          parray[idx++] = val;
-        }
-        return parray;
-      }
-      case CHAR: {
-        Array<Character> cdata = (Array<Character>) data;
-        char[] parray = new char[(int) data.length()];
-        for (char val : cdata) {
           parray[idx++] = val;
         }
         return parray;
