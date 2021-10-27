@@ -8,11 +8,11 @@ import java.util.Formatter;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import ucar.ma2.Array;
-import ucar.ma2.DataType;
+import ucar.array.Array;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
+import ucar.nc2.internal.util.CompareArrayToArray;
 import ucar.nc2.internal.util.CompareNetcdf2;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
@@ -53,13 +53,11 @@ public class TestDatasetWrapProblem {
       String varName = "Lon";
       Variable wrap = ds.findVariable(varName);
       assert wrap != null;
-      Array data_wrap = wrap.read();
-      double[] data_wrap_double = (double[]) data_wrap.get1DJavaArray(DataType.DOUBLE);
-
       assert wrap instanceof CoordinateAxis1D;
-      CoordinateAxis1D axis = (CoordinateAxis1D) wrap;
 
-      Assert.assertTrue(new CompareNetcdf2().compareData(varName, data_wrap_double, axis.getCoordValues()));
+      Array data_wrap = wrap.readArray();
+      CoordinateAxis1D axis = (CoordinateAxis1D) wrap;
+      Assert.assertTrue(CompareArrayToArray.compareData(varName, data_wrap, axis.readArray()));
     }
   }
 
@@ -75,8 +73,8 @@ public class TestDatasetWrapProblem {
       Variable org = ncfile.findVariable(varName);
       Variable wrap = ds.findVariable(varName);
 
-      Array data_org = org.read();
-      Array data_wrap = wrap.read();
+      Array data_org = org.readArray();
+      Array data_wrap = wrap.readArray();
 
       boolean ok;
       ok = CompareNetcdf2.compareData(varName, data_org, data_wrap);
@@ -84,8 +82,7 @@ public class TestDatasetWrapProblem {
       assert wrap instanceof CoordinateAxis1D;
       CoordinateAxis1D axis = (CoordinateAxis1D) wrap;
 
-      double[] data_org_double = (double[]) data_org.get1DJavaArray(DataType.DOUBLE);
-      ok &= new CompareNetcdf2().compareData(varName, data_org_double, axis.getCoordValues());
+      ok &= CompareArrayToArray.compareData(varName, data_org, axis.readArray());
 
       assert ok;
     }

@@ -258,6 +258,7 @@ public class VariableDS extends Variable implements VariableEnhanced {
     if ((null == section) || section.computeSize() == getSize()) {
       return readArray();
     }
+    section = ucar.array.Section.fill(section, getShape());
 
     ucar.array.Array<?> result;
     if (hasCachedData()) {

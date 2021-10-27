@@ -1,35 +1,7 @@
 /*
- * Copyright (c) 1998 - 2011. University Corporation for Atmospheric Research/Unidata
- * Portions of this software were developed by the Unidata Program at the
- * University Corporation for Atmospheric Research.
- *
- * Access and use of this software shall impose the following obligations
- * and understandings on the user. The user is granted the right, without
- * any fee or cost, to use, copy, modify, alter, enhance and distribute
- * this software, and any derivative works thereof, and its supporting
- * documentation for any purpose whatsoever, provided that this entire
- * notice appears in all copies of the software, derivative works and
- * supporting documentation. Further, UCAR requests that the user credit
- * UCAR/Unidata in any publications that result from the use of this
- * software or in any product that includes this software. The names UCAR
- * and/or Unidata, however, may not be used in any advertising or publicity
- * to endorse or promote any products or commercial entity unless specific
- * written permission is obtained from UCAR/Unidata. The user also
- * understands that UCAR/Unidata is not obligated to provide the user with
- * any support, consulting, training or assistance of any kind with regard
- * to the use, operation and performance of this software nor to provide
- * the user with any updates, revisions, new versions or "bug fixes."
- *
- * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
  */
-
 package ucar.nc2.iosp.grib;
 
 import org.junit.Assert;
@@ -38,9 +10,10 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.Array;
-import ucar.ma2.ArrayFloat;
-import ucar.ma2.InvalidRangeException;
+import ucar.array.Array;
+import ucar.array.Arrays;
+import ucar.array.InvalidRangeException;
+import ucar.array.Section;
 import ucar.nc2.*;
 import ucar.nc2.grib.collection.Grib;
 import ucar.nc2.grib.grib1.Grib1RecordScanner;
@@ -49,6 +22,9 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+import java.util.Iterator;
+
+import static com.google.common.truth.Truth.assertThat;
 
 /**
  * Test misc GRIB features
@@ -96,7 +72,7 @@ public class TestGribMisc {
       Variable v = ncfile.getRootGroup().findVariableByAttribute(Grib.VARIABLE_ID_ATTNAME, "VAR_0-0-0_L105");
       assert v != null : ncfile.getLocation();
 
-      Array data = v.read();
+      Array data = v.readArray();
       int[] shape = data.getShape();
       assert shape.length == 4;
       assert shape[shape.length - 2] == 1024;
@@ -116,9 +92,10 @@ public class TestGribMisc {
       Variable v = ncfile.getRootGroup().findVariableByAttribute(Grib.VARIABLE_ID_ATTNAME, "VAR_2-0-0_L1"); // Land_cover_0__sea_1__land_surface
       int[] origin = {0, 38, 281};
       int[] shape = {1, 1, 2};
-      Array vals = v.read(origin, shape);
-      Assert2.assertNearlyEquals(vals.getFloat(0), 0.0);
-      Assert2.assertNearlyEquals(vals.getFloat(1), 1.0);
+      Array<Float> vals = (Array<Float>) v.readArray(new Section(origin, shape));
+      Iterator<Float> iter = vals.iterator();
+      Assert2.assertNearlyEquals(iter.next(), 0.0);
+      Assert2.assertNearlyEquals(iter.next(), 1.0);
     }
   }
 
@@ -131,9 +108,9 @@ public class TestGribMisc {
     try (NetcdfFile ncfile = NetcdfFiles.open(filename, null)) {
       Variable v = ncfile.getRootGroup().findVariableByAttribute(Grib.VARIABLE_ID_ATTNAME, "VAR_0-1-194_L1");
       assert v != null : ncfile.getLocation();
-      Array vals = v.read();
-      while (vals.hasNext()) {
-        assert 0.0 == vals.nextDouble();
+      Array<Number> vals = (Array<Number>) v.readArray();
+      for (Number val : vals) {
+        assertThat(val.doubleValue()).isEqualTo(0.0);
       }
     }
   }
@@ -181,10 +158,9 @@ public class TestGribMisc {
     try (NetcdfFile ncfile = NetcdfFiles.open(filename, null)) {
       Variable v = ncfile.getRootGroup().findVariableByAttribute(Grib.VARIABLE_ID_ATTNAME, "VAR_0-0-0_L1");
       assert v != null : ncfile.getLocation();
-      ArrayFloat vals = (ArrayFloat) (v.read("0,:,0").reduce()); // read first column - its flipped
-      logger.debug("{}: first={} last={}", v.getFullName(), vals.getFloat(0), vals.getFloat((int) vals.getSize() - 1));
-      Assert2.assertNearlyEquals(vals.getFloat(0), 243.289993);
-      Assert2.assertNearlyEquals(vals.getFloat((int) vals.getSize() - 1), 242.080002);
+      Array<Number> vals = (Array<Number>) Arrays.reduce(v.readArray(new Section("0,:,0")));
+      Assert2.assertNearlyEquals(vals.get(0).doubleValue(), 243.289993);
+      Assert2.assertNearlyEquals(vals.get((int) vals.getSize() - 1).doubleValue(), 242.080002);
     }
   }
 
@@ -199,12 +175,12 @@ public class TestGribMisc {
     try (NetcdfFile nc = NetcdfFiles.open(filename)) {
 
       Variable var = nc.findVariable("2_metre_temperature_surface");
-      Array data = var.read();
+      Array<Float> data = (Array<Float>) var.readArray();
       int npts = 2560 * 5136;
       Assert.assertEquals(npts, data.getSize());
 
-      float first = data.getFloat(0);
-      float last = data.getFloat(npts - 1);
+      float first = data.get(0, 0, 0);
+      float last = data.get(0, 2559, 5135);
 
       Assert.assertEquals(273.260162, first, 1e-6);
       Assert.assertEquals(224.599670, last, 1e-6);
@@ -214,29 +190,4 @@ public class TestGribMisc {
     Grib1RecordScanner.setAllowBadIsLength(false);
   }
 
-  /*
-   * @Test
-   * public void testReadBadEcmwf2() throws IOException {
-   * //Grib1RecordScanner.setAllowBadDsLength(true);
-   * //Grib1RecordScanner.setAllowBadIsLength(true);
-   * 
-   * String filename = TestDir.cdmUnitTestDir + "formats/grib1/problem/badEcmwf.grib1";
-   * try (NetcdfFile nc = NetcdfFiles.open(filename)) {
-   * 
-   * Variable var = nc.findVariable("2_metre_temperature_surface");
-   * Array data = var.read();
-   * int npts = 2560 * 5136;
-   * Assert.assertEquals(npts, data.getSize());
-   * 
-   * float first = data.getFloat(0);
-   * float last = data.getFloat(npts-1);
-   * 
-   * Assert.assertEquals(273.260162, first, 1e-6);
-   * Assert.assertEquals(224.599670, last, 1e-6);
-   * }
-   * 
-   * //Grib1RecordScanner.setAllowBadDsLength(false);
-   * //Grib1RecordScanner.setAllowBadIsLength(false);
-   * }
-   */
 }

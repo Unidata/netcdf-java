@@ -6,8 +6,8 @@ package ucar.nc2.internal.iosp.hdf5;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import ucar.ma2.Array;
-import ucar.ma2.Index;
+import ucar.array.Array;
+import ucar.array.Index;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
@@ -88,14 +88,12 @@ public class TestH5 {
   @Test
   public void testSuperblockIsOffset() throws IOException {
     try (NetcdfFile ncfile = TestH5.openH5("superblockIsOffsetNPP.h5")) {
-
       Variable v = ncfile.findVariable("BeamTime");
       System.out.printf("%s%n", v);
 
-      Array data = v.read();
+      Array<Long> data = (Array<Long>) v.readArray();
       Index ii = data.getIndex();
-      assert (data.getLong(ii.set(11, 93)) == 1718796166693743L);
-
+      assert (data.get(ii.set(11, 93)) == 1718796166693743L);
     }
   }
 
@@ -103,14 +101,12 @@ public class TestH5 {
   @Test
   public void testOffsetCompactLayout() throws IOException {
     try (NetcdfFile ncfile = TestH5.openH5("matlab_cols.mat")) {
-
       Variable v = ncfile.findVariable("b");
       System.out.printf("%s%n", v);
 
-      Array data = v.read();
+      Array<Number> data = (Array<Number>) v.readArray();
       Index ii = data.getIndex();
-      assert (data.getDouble(ii.set(3, 2)) == 12.0);
-
+      assert (data.get(ii.set(3, 2)).doubleValue() == 12.0);
     }
   }
 

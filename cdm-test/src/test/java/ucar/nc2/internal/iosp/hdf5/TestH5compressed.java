@@ -1,22 +1,21 @@
 /*
- * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.internal.iosp.hdf5;
 
 import org.junit.experimental.categories.Category;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ucar.ma2.*;
+import ucar.array.ArrayType;
+import ucar.array.Array;
+import ucar.array.Index;
 import ucar.nc2.*;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import java.io.*;
-import java.lang.invoke.MethodHandles;
+import java.util.Iterator;
 
 /** Test compressed data from H5 read JUnit framework. */
 @Category(NeedsCdmUnitTest.class)
 public class TestH5compressed {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @org.junit.Test
   public void testReadCompressedInt() throws IOException {
@@ -25,14 +24,14 @@ public class TestH5compressed {
     try (NetcdfFile ncfile = TestH5.openH5("support/zip.h5")) {
       Variable dset = ncfile.findVariable("Data/Compressed_Data");
       assert dset != null;
-      assert (dset.getDataType() == DataType.INT);
+      assert (dset.getArrayType() == ArrayType.INT);
 
       assert (dset.getRank() == 2);
       assert (dset.getShape()[0] == 1000);
       assert (dset.getShape()[1] == 20);
 
       // read entire array
-      Array A = dset.read();
+      Array<Integer> A = (Array<Integer>) dset.readArray();
       assert (A.getRank() == 2);
       assert (A.getShape()[0] == 1000);
       assert (A.getShape()[1] == 20);
@@ -40,8 +39,9 @@ public class TestH5compressed {
       int[] shape = A.getShape();
       Index ima = A.getIndex();
       for (int i = 0; i < shape[0]; i++)
-        for (int j = 0; j < shape[1]; j++)
-          assert (A.getInt(ima.set(i, j)) == i + j) : i + " " + j + " " + A.getInt(ima);
+        for (int j = 0; j < shape[1]; j++) {
+          assert (A.get(ima.set(i, j)) == i + j) : i + " " + j + " " + A.get(ima);
+        }
 
     }
   }
@@ -53,14 +53,14 @@ public class TestH5compressed {
     try (NetcdfFile ncfile = TestH5.openH5("msg/MSG1_8bit_HRV.H5")) {
       Variable dset = ncfile.findVariable("image1/image_preview");
       assert dset != null;
-      assert (dset.getDataType() == DataType.UBYTE);
+      assert (dset.getArrayType() == ArrayType.UBYTE);
 
       assert (dset.getRank() == 2);
       assert (dset.getShape()[0] == 64);
       assert (dset.getShape()[1] == 96);
 
       // read entire array
-      Array A = dset.read();
+      Array<Byte> A = (Array<Byte>) dset.readArray();
       assert (A.getRank() == 2);
       assert (A.getShape()[0] == 64);
       assert (A.getShape()[1] == 96);
@@ -79,8 +79,8 @@ public class TestH5compressed {
       Index ima = A.getIndex();
       int lrow = shape[0] - 1;
       for (int j = 0; j < shape[1]; j++) {
-        assert (A.getByte(ima.set(0, j)) == firstRow[j]) : A.getByte(ima) + " should be " + firstRow[j];
-        assert (A.getByte(ima.set(lrow, j)) == lastRow[j]) : A.getByte(ima) + " should be " + lastRow[j];
+        assert (A.get(ima.set(0, j)) == firstRow[j]) : A.get(ima) + " should be " + firstRow[j];
+        assert (A.get(ima.set(lrow, j)) == lastRow[j]) : A.get(ima) + " should be " + lastRow[j];
       }
     }
   }
@@ -90,14 +90,15 @@ public class TestH5compressed {
     try (NetcdfFile ncfile = NetcdfFiles.open(TestN4reading.testDir + "endianTest.nc4")) {
       Variable v = ncfile.findVariable("TMP");
       assert v != null;
-      assert v.getDataType() == DataType.FLOAT;
+      assert v.getArrayType() == ArrayType.FLOAT;
 
-      Array data = v.read();
-      assert data.getElementType() == float.class;
+      Array data = v.readArray();
+      assert data.getArrayType() == ArrayType.FLOAT;
+      Iterator<Float> iter = data.iterator();
 
       // large values indicate incorrect inflate or byte swapping
-      while (data.hasNext()) {
-        float val = data.nextFloat();
+      while (iter.hasNext()) {
+        float val = iter.next();
         assert Math.abs(val) < 100.0 : val;
       }
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.internal.iosp.hdf5;
@@ -7,7 +7,9 @@ package ucar.nc2.internal.iosp.hdf5;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.*;
+import ucar.array.Array;
+import ucar.array.ArrayType;
+import ucar.array.Arrays;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Group;
 import ucar.nc2.Variable;
@@ -37,8 +39,8 @@ public class TestH5aura {
       Variable dset = ncfile.findVariable("HDFEOS/SWATHS/HIRDLS/Data_Fields/Altitude");
 
       // H5header.setDebugFlags( DebugFlags.create("H5header/dataBtree"));
-      Array data = dset.read();
-      assert data.getElementType() == float.class;
+      Array data = dset.readArray();
+      assert data.getArrayType() == ArrayType.FLOAT;
     }
   }
 
@@ -51,22 +53,13 @@ public class TestH5aura {
       Group g = root.findGroupLocal("HDFEOS_INFORMATION");
       Variable dset = g.findVariableLocal("StructMetadata.0");
       assert (null != dset);
-      assert (dset.getDataType() == DataType.CHAR);
+      assert (dset.getArrayType() == ArrayType.CHAR);
 
       // read entire array
-      Array A;
-      try {
-        A = dset.read();
-      } catch (IOException e) {
-        System.err.println("ERROR reading file");
-        assert (false);
-        return;
-      }
+      Array<Byte> A = (Array<Byte>) dset.readArray();
       assert (A.getRank() == 1);
-      assert (A instanceof ArrayChar);
 
-      ArrayChar ca = (ArrayChar) A;
-      String sval = ca.getString();
+      String sval = Arrays.makeStringFromChar(A);
       System.out.println(dset.getFullName());
       System.out.println(" Length = " + sval.length());
       System.out.println(" Value = " + sval);
@@ -74,21 +67,14 @@ public class TestH5aura {
       ////////////////
       dset = g.findVariableLocal("coremetadata.0");
       assert (null != dset);
-      assert (dset.getDataType() == DataType.CHAR);
+      assert (dset.getArrayType() == ArrayType.CHAR);
 
       // read entire array
-      try {
-        A = dset.read();
-      } catch (IOException e) {
-        System.err.println("ERROR reading file");
-        assert (false);
-        return;
-      }
-      assert (A.getRank() == 1);
-      assert (A instanceof ArrayChar);
+      A = (Array<Byte>) dset.readArray();
 
-      ca = (ArrayChar) A;
-      sval = ca.getString();
+      assert (A.getRank() == 1);
+      sval = Arrays.makeStringFromChar(A);
+
       System.out.println(dset.getFullName());
       System.out.println(" Length = " + sval.length());
       System.out.println(" Value = " + sval);

@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2019-2020 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-
 package ucar.unidata.io.s3;
 
 import static com.google.common.truth.Truth.assertThat;
@@ -23,9 +22,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.profiles.ProfileFileSystemSetting;
 import software.amazon.awssdk.regions.Region;
-import ucar.ma2.Array;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Section;
+import ucar.array.Array;
+import ucar.array.InvalidRangeException;
+import ucar.array.Section;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
@@ -532,7 +531,7 @@ public class TestS3Read {
     Assert.assertNotNull(radiance);
 
     // read full array
-    Array array = radiance.read();
+    Array array = radiance.readArray();
     assertThat(array.getRank()).isEqualTo(2);
 
     // check shape of array is the same as the shape of the variable
@@ -548,7 +547,7 @@ public class TestS3Read {
 
     // read part of the array
     Section section = new Section("(100:200:2,10:20:1)");
-    Array array = radiance.read(section);
+    Array array = radiance.readArray(section);
     assertThat(array.getRank()).isEqualTo(2);
 
     // check shape of array is the same as the shape of the section

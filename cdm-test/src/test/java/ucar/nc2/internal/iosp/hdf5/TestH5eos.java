@@ -1,30 +1,24 @@
 /*
- * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-
 package ucar.nc2.internal.iosp.hdf5;
 
 import static com.google.common.truth.Truth.assertThat;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import ucar.array.Arrays;
 import ucar.nc2.*;
-import ucar.ma2.DataType;
-import ucar.ma2.Array;
-import ucar.ma2.ArrayChar;
+import ucar.array.ArrayType;
+import ucar.array.Array;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 
 /** Test HDF5 Eos files */
 @Category(NeedsCdmUnitTest.class)
 public class TestH5eos {
-
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
   public void testStructMetadata() throws IOException {
@@ -34,22 +28,13 @@ public class TestH5eos {
       Group g = root.findGroupLocal("HDFEOS_INFORMATION");
       Variable dset = g.findVariableLocal("StructMetadata.0");
       assert (null != dset);
-      assert (dset.getDataType() == DataType.CHAR);
+      assert (dset.getArrayType() == ArrayType.CHAR);
 
       // read entire array
-      Array A;
-      try {
-        A = dset.read();
-      } catch (IOException e) {
-        System.err.println("ERROR reading file");
-        assert false;
-        return;
-      }
+      Array A = dset.readArray();
       assert (A.getRank() == 1);
-      assert (A instanceof ArrayChar);
 
-      ArrayChar ca = (ArrayChar) A;
-      String sval = ca.getString();
+      String sval = Arrays.makeStringFromChar(A);
       System.out.println(dset.getFullName());
       System.out.println(" Length = " + sval.length());
       System.out.println(" Value = " + sval);
