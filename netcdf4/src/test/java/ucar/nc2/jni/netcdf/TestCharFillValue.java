@@ -7,6 +7,7 @@ package ucar.nc2.jni.netcdf;
 import static com.google.common.truth.Truth.assertThat;
 import org.junit.Assume;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -55,6 +56,7 @@ public class TestCharFillValue {
   }
 
   @Test
+  @Ignore("not ready")
   public void testCharFillValue() throws IOException {
     logger.info("*** Test Non-Null Character Fill Value");
 
@@ -95,6 +97,7 @@ public class TestCharFillValue {
   // Re: https://github.com/Unidata/thredds/pull/1262
 
   @Test
+  @Ignore("not ready")
   public void testNullCharFillValue() throws IOException {
     logger.info("\n*** Test Null Character Fill Value");
 

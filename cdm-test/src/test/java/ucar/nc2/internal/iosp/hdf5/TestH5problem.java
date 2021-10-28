@@ -7,8 +7,9 @@ package ucar.nc2.internal.iosp.hdf5;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import ucar.ma2.Array;
-import ucar.ma2.InvalidRangeException;
+import ucar.array.Array;
+import ucar.array.InvalidRangeException;
+import ucar.array.Section;
 import ucar.nc2.*;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import java.io.IOException;
@@ -39,7 +40,7 @@ public class TestH5problem {
       int[] shape = v.getShape();
       Assert.assertEquals(1, shape.length);
       Assert.assertEquals(3107, shape[0]);
-      Array data = v.read();
+      Array data = v.readArray();
       Assert.assertEquals(1, data.getRank());
       Assert.assertEquals(3107, data.getShape()[0]);
     }
@@ -55,7 +56,7 @@ public class TestH5problem {
       Assert.assertEquals(1, shape.length);
       Assert.assertEquals(3107, shape[0]);
 
-      Array dataSection = v.read("700:900:2"); // make sure to go acrross a chunk boundary
+      Array dataSection = v.readArray(new Section("700:900:2")); // make sure to go acrross a chunk boundary
       Assert.assertEquals(1, dataSection.getRank());
       Assert.assertEquals(101, dataSection.getShape()[0]);
     }

@@ -21,8 +21,9 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.Array;
-import ucar.ma2.InvalidRangeException;
+import ucar.array.Array;
+import ucar.array.InvalidRangeException;
+import ucar.array.Section;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
@@ -112,10 +113,10 @@ public class S3AggScan {
       Variable dataVarExp = ncfExp.findVariable(NcmlTestsCommon.dataVarName);
       Assert.assertNotNull(dataVarScan);
       Assert.assertNotNull(dataVarExp);
-      Array dataScanFirst = dataVarScan.read("0,:,:");
-      Array dataScanLast = dataVarScan.read(NcmlTestsCommon.expectedNumberOfTimesInAgg - 1 + ",:,:");
-      Array dataExpFirst = dataVarExp.read("0,:,:");
-      Array dataExpLast = dataVarExp.read(NcmlTestsCommon.expectedNumberOfTimesInAgg - 1 + ",:,:");
+      Array dataScanFirst = dataVarScan.readArray(new Section("0,:,:"));
+      Array dataScanLast = dataVarScan.readArray(new Section(NcmlTestsCommon.expectedNumberOfTimesInAgg - 1 + ",:,:"));
+      Array dataExpFirst = dataVarExp.readArray(new Section("0,:,:"));
+      Array dataExpLast = dataVarExp.readArray(new Section(NcmlTestsCommon.expectedNumberOfTimesInAgg - 1 + ",:,:"));
 
       // compare data from the scan aggregation and the explicit aggregation
       assertThat(compareData(NcmlTestsCommon.dataVarName, dataScanFirst, dataExpFirst)).isTrue();
@@ -138,10 +139,10 @@ public class S3AggScan {
     assertThat(time).isNotNull();
     assertThat(time.getLength()).isEqualTo(expectedTimeDimSize);
     Variable timeVar = ncd.findVariable(timeVarName);
-    Array timeValues = timeVar.read();
+    Array timeValues = timeVar.readArray();
     assertThat(timeValues).isNotNull();
     Variable expectedTimeVar = ncd.findVariable(NcmlTestsCommon.expectedTimeVarName);
-    Array expectedTimeValues = expectedTimeVar.read();
+    Array expectedTimeValues = expectedTimeVar.readArray();
     assertThat(expectedTimeValues).isNotNull();
     assertThat(compareData(timeVarName, timeValues, expectedTimeValues)).isTrue();
 
@@ -150,9 +151,9 @@ public class S3AggScan {
     Assert.assertNotNull(dataVar);
     int[] shape = dataVar.getShape();
     assertThat(shape).isEqualTo(expectedShape);
-    Array data1 = dataVar.read("0,:,:");
-    Array data2 = dataVar.read(expectedTimeDimSize - 1 + ",:,:");
-    assertThat(data1.getDouble(0)).isNotWithin(1e-6).of(data2.getDouble(0));
+    Array<Number> data1 = (Array<Number>) dataVar.readArray(new Section("0,0,0"));
+    Array<Number> data2 = (Array<Number>) dataVar.readArray(new Section(expectedTimeDimSize - 1 + ",0,0"));
+    assertThat(data1.getScalar()).isNotEqualTo(data2.getScalar());
 
     // make sure coordinates attribute contains the time var
     assertThat(dataVar.attributes().findAttribute(CF.COORDINATES).toString()).contains(timeVarName.replace("/", ""));

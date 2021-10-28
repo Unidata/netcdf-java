@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.internal.iosp.hdf5;
@@ -7,11 +7,17 @@ package ucar.nc2.internal.iosp.hdf5;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.*;
+import ucar.array.Array;
+import ucar.array.ArrayType;
+import ucar.array.Arrays;
+import ucar.array.Index;
+import ucar.array.InvalidRangeException;
+import ucar.array.Section;
 import ucar.nc2.*;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import java.io.*;
 import java.lang.invoke.MethodHandles;
+import java.util.Iterator;
 
 /** Test nc2 read JUnit framework. */
 @Category(NeedsCdmUnitTest.class)
@@ -25,7 +31,7 @@ public class TestH5ReadBasic {
 
       Variable dset = null;
       assert (null != (dset = ncfile.findVariable("dset")));
-      assert (dset.getDataType() == DataType.INT);
+      assert (dset.getArrayType() == ArrayType.INT);
 
       Dimension d = dset.getDimension(0);
       assert (d.getLength() == 4);
@@ -44,14 +50,7 @@ public class TestH5ReadBasic {
       assert (att.getStringValue(3).equals("mesh "));
 
       // read entire array
-      Array A;
-      try {
-        A = dset.read();
-      } catch (IOException e) {
-        System.err.println("ERROR reading file");
-        assert (false);
-        return;
-      }
+      Array<Integer> A = (Array<Integer>) dset.readArray();
       assert (A.getRank() == 2);
 
       int i, j;
@@ -60,7 +59,7 @@ public class TestH5ReadBasic {
 
       for (i = 0; i < shape[0]; i++) {
         for (j = 0; j < shape[1]; j++) {
-          assert (A.getInt(ima.set(i, j)) == 0);
+          assert (A.get(ima.set(i, j)) == 0);
         }
       }
 
@@ -88,7 +87,7 @@ public class TestH5ReadBasic {
 
       Variable dset = null;
       assert (null != (dset = ncfile.findVariable("dset")));
-      assert (dset.getDataType() == DataType.INT);
+      assert (dset.getArrayType() == ArrayType.INT);
 
       Dimension d = dset.getDimension(0);
       assert (d.getLength() == 4);
@@ -96,14 +95,8 @@ public class TestH5ReadBasic {
       assert (d.getLength() == 6);
 
       // read entire array
-      Array A;
-      try {
-        A = dset.read();
-      } catch (IOException e) {
-        System.err.println("ERROR reading file");
-        assert (false);
-        return;
-      }
+      Array<Integer> A = (Array<Integer>) dset.readArray();
+
       assert (A.getRank() == 2);
 
       int i, j;
@@ -112,7 +105,7 @@ public class TestH5ReadBasic {
 
       for (i = 0; i < shape[0]; i++) {
         for (j = 0; j < shape[1]; j++) {
-          assert (A.getInt(ima.set(i, j)) == (j < 3 ? 1 : 0));
+          assert (A.get(ima.set(i, j)) == (j < 3 ? 1 : 0));
         }
       }
 
@@ -125,25 +118,18 @@ public class TestH5ReadBasic {
 
       Variable v = null;
       assert (null != (v = ncfile.findVariable("Char_Data")));
-      assert (v.getDataType() == DataType.CHAR);
+      assert (v.getArrayType() == ArrayType.CHAR);
 
       Dimension d = v.getDimension(0);
       assert (d.getLength() == 16);
 
       // read entire array
-      Array A;
-      try {
-        A = v.read();
-      } catch (IOException e) {
-        System.err.println("ERROR reading file");
-        assert (false);
-        return;
-      }
-      assert (A.getRank() == 1);
-      assert (A instanceof ArrayChar);
+      Array<Byte> A = (Array<Byte>) v.readArray();
 
-      ArrayChar ca = (ArrayChar) A;
-      assert (ca.getString().equals("This is a test."));
+      assert (A.getRank() == 1);
+
+      String s = Arrays.makeStringFromChar(A);
+      assert (s.equals("This is a test."));
 
     }
   }
@@ -155,7 +141,7 @@ public class TestH5ReadBasic {
       Variable v = null;
       assert (null != (v = ncfile.findVariable("strdata")));
       assert (v.getRank() == 3);
-      assert (v.getDataType() == DataType.CHAR);
+      assert (v.getArrayType() == ArrayType.CHAR);
 
       int[] shape = v.getShape();
       assert (shape[0] == 2);
@@ -163,19 +149,13 @@ public class TestH5ReadBasic {
       assert (shape[2] == 5);
 
       // read entire array
-      Array A;
-      try {
-        A = v.read();
-      } catch (IOException e) {
-        System.err.println("ERROR reading file");
-        assert (false);
-        return;
-      }
-      assert (A.getRank() == 3);
-      assert (A instanceof ArrayChar);
+      Array<Byte> A = (Array<Byte>) v.readArray();
 
-      ArrayChar ca = (ArrayChar) A;
-      ArrayChar.StringIterator siter = ca.getStringIterator();
+      assert (A.getRank() == 3);
+      assert (A.getArrayType() == ArrayType.CHAR);
+
+      Array<String> ss = Arrays.makeStringsFromChar(A);
+      Iterator<String> siter = ss.iterator();
       assert (siter.next().equals("test "));
       assert (siter.next().equals("left "));
       assert (siter.next().equals("call "));
@@ -185,12 +165,12 @@ public class TestH5ReadBasic {
   }
 
   @org.junit.Test
-  public void testReadH5ShortArray() throws IOException {
+  public void testReadH5ShortArray() throws IOException, InvalidRangeException {
     try (NetcdfFile ncfile = TestH5.openH5("support/short.h5")) {
 
       Variable dset = null;
       assert (null != (dset = ncfile.findVariable("IntArray")));
-      assert (dset.getDataType() == DataType.SHORT);
+      assert (dset.getArrayType() == ArrayType.SHORT);
 
       Dimension d = dset.getDimension(0);
       assert (d.getLength() == 5);
@@ -198,23 +178,16 @@ public class TestH5ReadBasic {
       assert (d.getLength() == 6);
 
       // read entire array
-      Array A;
-      try {
-        A = dset.read();
-      } catch (IOException e) {
-        System.err.println("ERROR reading file");
-        assert (false);
-        return;
-      }
-      assert (A.getRank() == 2);
+      Array<Short> As = (Array<Short>) dset.readArray();
+      assert (As.getRank() == 2);
 
       int i, j;
-      Index ima = A.getIndex();
-      int[] shape = A.getShape();
+      Index ima = As.getIndex();
+      int[] shape = As.getShape();
 
       for (i = 0; i < shape[0]; i++) {
         for (j = 0; j < shape[1]; j++) {
-          assert (A.getInt(ima.set(i, j)) == i + j);
+          assert (As.get(ima.set(i, j)) == i + j);
         }
       }
 
@@ -224,30 +197,21 @@ public class TestH5ReadBasic {
       int[] shape2 = new int[2];
       shape2[0] = 1;
       shape2[1] = dset.getShape()[1];
-      try {
-        A = dset.read(origin2, shape2);
-      } catch (InvalidRangeException e) {
-        System.err.println("ERROR reading file " + e);
-        assert (false);
-        return;
-      } catch (IOException e) {
-        System.err.println("ERROR reading file");
-        assert (false);
-        return;
-      }
-      assert (A.getRank() == 2);
+      As = (Array<Short>) dset.readArray(new Section(origin2, shape2));
+
+      assert (As.getRank() == 2);
 
       for (j = 0; j < shape2[1]; j++) {
-        assert (A.getInt(ima.set(0, j)) == j);
+        assert (As.get(ima.set(0, j)) == j);
       }
 
       // rank reduction
-      Array Areduce = A.reduce();
+      Array<Short> Areduce = Arrays.reduce(As);
       Index ima2 = Areduce.getIndex();
       assert (Areduce.getRank() == 1);
 
       for (j = 0; j < shape2[1]; j++) {
-        assert (Areduce.getInt(ima2.set(j)) == j);
+        assert (Areduce.get(ima2.set(j)) == j);
       }
 
     }

@@ -129,7 +129,7 @@ public final class StructureMembers implements Iterable<StructureMembers.Member>
       }
 
       // calculated
-      this.length = (int) ucar.ma2.Index.computeSize(shape);
+      this.length = (int) Arrays.computeSize(shape);
       this.isVlen = (dataType != ArrayType.OPAQUE) && (dataType != ArrayType.SEQUENCE)
           && (shape.length > 0 && shape[shape.length - 1] < 0);
       this.storageSizeInBytes = builder.getStorageSizeBytes(structuresOnHeap);

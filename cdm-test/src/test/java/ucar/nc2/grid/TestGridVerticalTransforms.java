@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-
 package ucar.nc2.grid;
 
 import com.google.common.collect.ImmutableList;
@@ -11,7 +10,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.array.Array;
 import ucar.array.InvalidRangeException;
-import ucar.ma2.Section;
+import ucar.array.Section;
 import ucar.nc2.geoloc.vertical.VerticalTransform;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
@@ -97,7 +96,7 @@ public class TestGridVerticalTransforms {
    * z is of shape 20x2x87, it should be 20x87x193.
    */
   @Test
-  public void testErie() throws IOException, InvalidRangeException, ucar.ma2.InvalidRangeException {
+  public void testErie() throws IOException, InvalidRangeException {
     String filename = TestDir.cdmUnitTestDir + "transforms/erie_test.ncml";
     String gridName = "temp";
     System.out.printf("testErie %s%n", filename);
@@ -112,7 +111,7 @@ public class TestGridVerticalTransforms {
       GridCoordinateSystem gcs = grid.getCoordinateSystem();
       assertThat(gcs).isNotNull();
       assertThat(gcs.getNominalShape()).isEqualTo(ImmutableList.of(2, 20, 87, 193));
-      Section s = Section.makeFromList(gcs.getNominalShape());
+      Section s = new Section(Ints.toArray(gcs.getNominalShape()));
 
       GridHorizCoordinateSystem hcs = gcs.getHorizCoordinateSystem();
       assertThat(hcs).isNotNull();

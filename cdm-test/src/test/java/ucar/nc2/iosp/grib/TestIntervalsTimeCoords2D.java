@@ -1,13 +1,7 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-/**
- * User: rkambic
- * Date: Jul 7, 2010
- * Time: 9:41:44 AM
- */
-
 package ucar.nc2.iosp.grib;
 
 import org.junit.Test;
@@ -16,8 +10,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.Array;
-import ucar.ma2.IndexIterator;
+import ucar.array.Array;
 import ucar.nc2.Dimension;
 import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
@@ -30,6 +23,7 @@ import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 
 /*
  * TestIntervalsTimeCoords tests the different type of Grib intervals.
@@ -113,12 +107,12 @@ public class TestIntervalsTimeCoords2D {
       Variable interval = best.findVariableLocal(bounds);
       assert interval != null : bounds;
 
-      Array data = interval.read();
-      IndexIterator iter = data.getIndexIterator();
+      Array<Number> data = (Array<Number>) interval.readArray();
+      Iterator<Number> iter = data.iterator();
       int idx = 0;
       while (iter.hasNext()) {
-        int start = iter.getIntNext();
-        int end = iter.getIntNext();
+        int start = iter.next().intValue();
+        int end = iter.next().intValue();
         if (start != tb[idx][0] || end != tb[idx][1]) {
           System.out.printf("bounds %s for file %s, parameter %s failed%n", interval.getFullName(), filename,
               var.getFullName());

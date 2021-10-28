@@ -457,6 +457,9 @@ public class NetcdfFormatWriter implements Closeable {
      * JNA must be used for Netcdf-4. This is used to write to Netcdf-3 format with jna.
      */
     public T setUseJna(boolean useJna) {
+      if (useJna) {
+        throw new UnsupportedOperationException("Not supporting writing to netcdf4 at this time");
+      }
       this.useJna = useJna;
       return self();
     }

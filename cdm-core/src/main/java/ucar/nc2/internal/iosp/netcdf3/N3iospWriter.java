@@ -1,27 +1,22 @@
 /*
- * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.internal.iosp.netcdf3;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 
+import com.google.common.base.Preconditions;
+import ucar.array.Array;
 import ucar.array.ArrayType;
-import ucar.array.ArraysConvert;
+import ucar.array.Arrays;
+import ucar.array.InvalidRangeException;
+import ucar.array.Range;
+import ucar.array.Section;
+import ucar.array.StructureData;
 import ucar.array.StructureDataArray;
-import ucar.ma2.Array;
-import ucar.ma2.ArrayChar;
-import ucar.ma2.ArrayObject;
-import ucar.ma2.ArrayStructure;
-import ucar.ma2.IndexIterator;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Range;
-import ucar.ma2.Section;
-import ucar.ma2.StructureData;
-import ucar.ma2.StructureMembers;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.Group;
@@ -86,6 +81,7 @@ public class N3iospWriter extends N3iosp implements IospFileWriter {
   // LOOK
   @Override
   public void openForWriting(String location, Group.Builder rootGroup, CancelTask cancelTask) throws IOException {
+    Preconditions.checkNotNull(this.iosp);
 
     this.location = location;
     this.raf = new ucar.unidata.io.RandomAccessFile(location, "rw");
@@ -120,22 +116,23 @@ public class N3iospWriter extends N3iosp implements IospFileWriter {
     return ((N3headerWriter) header).rewriteHeader(largeFile);
   }
 
-  //////////////////////////////////////////////////////////////////////////////////////
-  // write
+  /////////////////////////////////////////////////////////////
 
-  public void writeData(Variable v2, Section section, Array values) throws java.io.IOException, InvalidRangeException {
+  @Override
+  public void writeData(Variable v2, Section section, Array<?> values) throws IOException, InvalidRangeException {
     N3header.Vinfo vinfo = (N3header.Vinfo) v2.getSPobject();
+    Preconditions.checkNotNull(vinfo);
     ArrayType dataType = v2.getArrayType();
 
     int[] varShape = v2.getShape();
     if (v2.isUnlimited()) {
-      Range firstRange = section.getRange(0);
+      ucar.array.Range firstRange = section.getRange(0);
       int n = setNumrecs(firstRange.last() + 1);
       varShape[0] = n;
     }
 
     if (v2 instanceof Structure) {
-      if (!(values instanceof ArrayStructure))
+      if (!(values instanceof StructureDataArray))
         throw new IllegalArgumentException("writeData for Structure: data must be ArrayStructure");
 
       if (v2.getRank() == 0)
@@ -145,180 +142,17 @@ public class N3iospWriter extends N3iosp implements IospFileWriter {
       if (!d.isUnlimited())
         throw new IllegalArgumentException("writeData for Structure: must have unlimited dimension");
 
-      writeRecordData((Structure) v2, section, (ArrayStructure) values);
+      writeRecordArrayData((Structure) v2, section, (StructureDataArray) values);
 
     } else {
-      ucar.array.Section newSection = ArraysConvert.convertSection(section);
-      Layout layout;
-      try {
-        layout = (!v2.isUnlimited()) ? new LayoutRegular(vinfo.begin, v2.getElementSize(), varShape, newSection)
-            : new LayoutRegularSegmented(vinfo.begin, v2.getElementSize(), header.recsize, varShape, newSection);
-      } catch (ucar.array.InvalidRangeException e) {
-        throw new InvalidRangeException(e.getMessage());
-      }
-      writeData(values, layout, dataType);
+      Layout layout = (!v2.isUnlimited()) ? new LayoutRegular(vinfo.begin, v2.getElementSize(), varShape, section)
+          : new LayoutRegularSegmented(vinfo.begin, v2.getElementSize(), header.recsize, varShape, section);
+      writeArrayData(values, layout, dataType);
     }
   }
 
-  private void writeRecordData(ucar.nc2.Structure s, Section section, ArrayStructure structureArray)
-      throws java.io.IOException, ucar.ma2.InvalidRangeException {
-    int countSrcRecnum = 0;
-    Range recordRange = section.getRange(0);
-    for (int recnum : recordRange) {
-      StructureData sdata = structureArray.getStructureData(countSrcRecnum);
-      writeRecordData(s, recnum, sdata);
-      countSrcRecnum++;
-    }
-  }
-
-  private void writeRecordData(ucar.nc2.Structure s, int recnum, StructureData sdata)
-      throws java.io.IOException, ucar.ma2.InvalidRangeException {
-
-    StructureMembers members = sdata.getStructureMembers();
-
-    // loop over members
-    for (Variable vm : s.getVariables()) {
-      StructureMembers.Member m = members.findMember(vm.getShortName());
-      if (null == m)
-        continue; // this means that the data is missing from the ArrayStructure
-
-      // convert String member data into CHAR data
-      Array data = sdata.getArray(m);
-      if (data instanceof ArrayObject && vm.getArrayType() == ArrayType.CHAR && vm.getRank() > 0) {
-        int strlen = vm.getShape(vm.getRank() - 1);
-        data = ArrayChar.makeFromStringArray((ArrayObject) data, strlen); // turn it into an ArrayChar
-      }
-
-      // layout of the destination
-      N3header.Vinfo vinfo = (N3header.Vinfo) vm.getSPobject();
-      long begin = vinfo.begin + recnum * header.recsize; // this assumes unlimited dimension
-      Section memberSection = vm.getShapeAsSection();
-      Layout layout;
-      try {
-        layout =
-            new LayoutRegular(begin, vm.getElementSize(), vm.getShape(), ArraysConvert.convertSection(memberSection));
-      } catch (ucar.array.InvalidRangeException e) {
-        throw new ucar.ma2.InvalidRangeException(e.getMessage());
-      }
-
-      try {
-        writeData(data, layout, vm.getArrayType());
-      } catch (Exception e) {
-        log.error("Error writing member=" + vm.getShortName() + " in struct=" + s.getFullName(), e);
-        throw new IOException(e);
-      }
-    }
-  }
-
-  private void writeData(Array values, Layout index, ArrayType dataType) throws java.io.IOException {
-    if ((dataType == ArrayType.BYTE) || (dataType == ArrayType.CHAR)) {
-      IndexIterator ii = values.getIndexIterator();
-      while (index.hasNext()) {
-        Layout.Chunk chunk = index.next();
-        raf.seek(chunk.getSrcPos());
-        for (int k = 0; k < chunk.getNelems(); k++)
-          raf.write(ii.getByteNext());
-      }
-      return;
-
-    } else if (dataType == ArrayType.STRING) { // LOOK not legal
-      IndexIterator ii = values.getIndexIterator();
-      while (index.hasNext()) {
-        Layout.Chunk chunk = index.next();
-        raf.seek(chunk.getSrcPos());
-        for (int k = 0; k < chunk.getNelems(); k++) {
-          String val = (String) ii.getObjectNext();
-          if (val != null)
-            raf.write(val.getBytes(StandardCharsets.UTF_8)); // LOOK ??
-        }
-      }
-      return;
-
-    } else if (dataType == ArrayType.SHORT) {
-      IndexIterator ii = values.getIndexIterator();
-      while (index.hasNext()) {
-        Layout.Chunk chunk = index.next();
-        raf.seek(chunk.getSrcPos());
-        for (int k = 0; k < chunk.getNelems(); k++)
-          raf.writeShort(ii.getShortNext());
-      }
-      return;
-
-    } else if (dataType == ArrayType.INT) {
-      IndexIterator ii = values.getIndexIterator();
-      while (index.hasNext()) {
-        Layout.Chunk chunk = index.next();
-        raf.seek(chunk.getSrcPos());
-        for (int k = 0; k < chunk.getNelems(); k++)
-          raf.writeInt(ii.getIntNext());
-      }
-      return;
-
-    } else if (dataType == ArrayType.FLOAT) {
-      IndexIterator ii = values.getIndexIterator();
-      while (index.hasNext()) {
-        Layout.Chunk chunk = index.next();
-        raf.seek(chunk.getSrcPos());
-        for (int k = 0; k < chunk.getNelems(); k++)
-          raf.writeFloat(ii.getFloatNext());
-      }
-      return;
-
-    } else if (dataType == ArrayType.DOUBLE) {
-      IndexIterator ii = values.getIndexIterator();
-      while (index.hasNext()) {
-        Layout.Chunk chunk = index.next();
-        raf.seek(chunk.getSrcPos());
-        for (int k = 0; k < chunk.getNelems(); k++)
-          raf.writeDouble(ii.getDoubleNext());
-      }
-      return;
-    }
-
-    throw new IllegalStateException("dataType= " + dataType);
-  }
-
-  /////////////////////////////////////////////////////////////
-
-  @Override
-  public void writeData(Variable v2, ucar.array.Section section, ucar.array.Array<?> values)
-      throws IOException, ucar.array.InvalidRangeException {
-    N3header.Vinfo vinfo = (N3header.Vinfo) v2.getSPobject();
-    ArrayType dataType = v2.getArrayType();
-
-    try {
-      int[] varShape = v2.getShape();
-      if (v2.isUnlimited()) {
-        ucar.array.Range firstRange = section.getRange(0);
-        int n = setNumrecs(firstRange.last() + 1);
-        varShape[0] = n;
-      }
-
-      if (v2 instanceof Structure) {
-        if (!(values instanceof StructureDataArray))
-          throw new IllegalArgumentException("writeData for Structure: data must be ArrayStructure");
-
-        if (v2.getRank() == 0)
-          throw new IllegalArgumentException("writeData for Structure: must have rank > 0");
-
-        Dimension d = v2.getDimension(0);
-        if (!d.isUnlimited())
-          throw new IllegalArgumentException("writeData for Structure: must have unlimited dimension");
-
-        writeRecordArrayData((Structure) v2, section, (StructureDataArray) values);
-
-      } else {
-        Layout layout = (!v2.isUnlimited()) ? new LayoutRegular(vinfo.begin, v2.getElementSize(), varShape, section)
-            : new LayoutRegularSegmented(vinfo.begin, v2.getElementSize(), header.recsize, varShape, section);
-        writeArrayData(values, layout, dataType);
-      }
-    } catch (InvalidRangeException range) {
-      throw new ucar.array.InvalidRangeException(range);
-    }
-  }
-
-  private void writeRecordArrayData(ucar.nc2.Structure s, ucar.array.Section section, StructureDataArray structureArray)
-      throws java.io.IOException, ucar.ma2.InvalidRangeException {
+  private void writeRecordArrayData(ucar.nc2.Structure s, Section section, StructureDataArray structureArray)
+      throws java.io.IOException, InvalidRangeException {
     int countSrcRecnum = 0;
     ucar.array.Range recordRange = section.getRange(0);
     for (int recnum : recordRange) {
@@ -328,28 +162,24 @@ public class N3iospWriter extends N3iosp implements IospFileWriter {
     }
   }
 
-  private void writeRecordArrayData(ucar.nc2.Structure s, int recnum, ucar.array.StructureData sdata)
-      throws java.io.IOException, ucar.ma2.InvalidRangeException {
-
-    ucar.array.StructureMembers members = sdata.getStructureMembers();
+  private void writeRecordArrayData(ucar.nc2.Structure s, int recnum, StructureData sdata)
+      throws java.io.IOException, InvalidRangeException {
 
     // loop over members
+    ucar.array.StructureMembers members = sdata.getStructureMembers();
     for (Variable vm : s.getVariables()) {
       ucar.array.StructureMembers.Member m = members.findMember(vm.getShortName());
-      if (null == m)
+      if (null == m) {
         continue; // this means that the data is missing from the ArrayStructure
+      }
 
-      ucar.array.Array<?> data = sdata.getMemberData(m);
+      Array<?> data = sdata.getMemberData(m);
 
       // layout of the destination
       N3header.Vinfo vinfo = (N3header.Vinfo) vm.getSPobject();
+      Preconditions.checkNotNull(vinfo);
       long begin = vinfo.begin + recnum * header.recsize; // this assumes unlimited dimension
-      Layout layout;
-      try {
-        layout = new LayoutRegular(begin, vm.getElementSize(), vm.getShape(), vm.getSection());
-      } catch (ucar.array.InvalidRangeException e) {
-        throw new ucar.ma2.InvalidRangeException(e.getMessage());
-      }
+      Layout layout = new LayoutRegular(begin, vm.getElementSize(), vm.getShape(), vm.getSection());
 
       try {
         writeArrayData(data, layout, vm.getArrayType());
@@ -360,11 +190,11 @@ public class N3iospWriter extends N3iosp implements IospFileWriter {
     }
   }
 
-  private void writeArrayData(ucar.array.Array<?> values, Layout index, ArrayType dataType) throws java.io.IOException {
+  private void writeArrayData(Array<?> values, Layout index, ArrayType dataType) throws java.io.IOException {
     switch (dataType) {
       case BYTE:
       case CHAR: {
-        ucar.array.Array<Byte> bvalues = (ucar.array.Array<Byte>) values;
+        Array<Byte> bvalues = (Array<Byte>) values;
         Iterator<Byte> ii = bvalues.iterator();
         while (index.hasNext()) {
           Layout.Chunk chunk = index.next();
@@ -377,7 +207,7 @@ public class N3iospWriter extends N3iosp implements IospFileWriter {
       }
 
       case SHORT: {
-        ucar.array.Array<Short> bvalues = (ucar.array.Array<Short>) values;
+        Array<Short> bvalues = (Array<Short>) values;
         Iterator<Short> ii = bvalues.iterator();
         while (index.hasNext()) {
           Layout.Chunk chunk = index.next();
@@ -390,7 +220,7 @@ public class N3iospWriter extends N3iosp implements IospFileWriter {
       }
 
       case INT: {
-        ucar.array.Array<Integer> bvalues = (ucar.array.Array<Integer>) values;
+        Array<Integer> bvalues = (Array<Integer>) values;
         Iterator<Integer> ii = bvalues.iterator();
         while (index.hasNext()) {
           Layout.Chunk chunk = index.next();
@@ -403,7 +233,7 @@ public class N3iospWriter extends N3iosp implements IospFileWriter {
       }
 
       case FLOAT: {
-        ucar.array.Array<Float> bvalues = (ucar.array.Array<Float>) values;
+        Array<Float> bvalues = (Array<Float>) values;
         Iterator<Float> ii = bvalues.iterator();
         while (index.hasNext()) {
           Layout.Chunk chunk = index.next();
@@ -416,7 +246,7 @@ public class N3iospWriter extends N3iosp implements IospFileWriter {
       }
 
       case DOUBLE: {
-        ucar.array.Array<Double> bvalues = (ucar.array.Array<Double>) values;
+        Array<Double> bvalues = (Array<Double>) values;
         Iterator<Double> ii = bvalues.iterator();
         while (index.hasNext()) {
           Layout.Chunk chunk = index.next();
@@ -434,7 +264,7 @@ public class N3iospWriter extends N3iosp implements IospFileWriter {
 
   @Override
   public int appendStructureData(Structure s, ucar.array.StructureData sdata)
-      throws IOException, ucar.array.InvalidRangeException {
+      throws IOException, InvalidRangeException {
     return 0;
   }
 
@@ -483,7 +313,7 @@ public class N3iospWriter extends N3iosp implements IospFileWriter {
   }
 
   @Override
-  public void updateAttribute(Group g, Attribute att) throws IOException {
+  public void updateAttribute(Group g, Attribute att) {
     // LOOK
   }
 
@@ -505,14 +335,13 @@ public class N3iospWriter extends N3iosp implements IospFileWriter {
 
 
   // fill buffer with fill value
-
   private void fillNonRecordVariables() throws IOException {
     // run through each variable
     for (Variable v : ncfile.getVariables()) {
       if (v.isUnlimited())
         continue;
       try {
-        writeData(v, v.getShapeAsSection(), makeConstantArray(v));
+        writeData(v, v.getSection(), makeConstantArray(v));
       } catch (InvalidRangeException e) {
         e.printStackTrace(); // shouldnt happen
       }
@@ -529,52 +358,95 @@ public class N3iospWriter extends N3iosp implements IospFileWriter {
       for (Variable v : ncfile.getVariables()) {
         if (!v.isUnlimited() || (v instanceof Structure))
           continue;
-        Section.Builder recordSection = Section.builder().appendRanges(v.getRanges());
+        Section.Builder recordSection = v.getSection().toBuilder();
         recordSection.setRange(0, r);
         writeData(v, recordSection.build(), makeConstantArray(v));
       }
     }
   }
 
-  private Array makeConstantArray(Variable v) {
-    Class<?> classType = v.getDataType().getPrimitiveClassType();
-    // int [] shape = v.getShape();
+  private Array<?> makeConstantArray(Variable v) {
+    ArrayType type = v.getArrayType();
+    int[] shape = v.getShape();
+    int npts = (int) Arrays.computeSize(shape);
+    if (shape.length == 0) {
+      shape = new int[0];
+    }
     Attribute att = v.findAttribute(CDM.FILL_VALUE);
-
-    Object storage = null;
-    if (classType == double.class) {
-      double[] storageP = new double[1];
-      storageP[0] = (att == null) ? NetcdfFormatUtils.NC_FILL_DOUBLE : att.getNumericValue().doubleValue();
-      storage = storageP;
-
-    } else if (classType == float.class) {
-      float[] storageP = new float[1];
-      storageP[0] = (att == null) ? NetcdfFormatUtils.NC_FILL_FLOAT : att.getNumericValue().floatValue();
-      storage = storageP;
-
-    } else if (classType == int.class) {
-      int[] storageP = new int[1];
-      storageP[0] = (att == null) ? NetcdfFormatUtils.NC_FILL_INT : att.getNumericValue().intValue();
-      storage = storageP;
-
-    } else if (classType == short.class) {
-      short[] storageP = new short[1];
-      storageP[0] = (att == null) ? NetcdfFormatUtils.NC_FILL_SHORT : att.getNumericValue().shortValue();
-      storage = storageP;
-
-    } else if (classType == byte.class) {
-      byte[] storageP = new byte[1];
-      storageP[0] = (att == null) ? NetcdfFormatUtils.NC_FILL_BYTE : att.getNumericValue().byteValue();
-      storage = storageP;
-
-    } else if (classType == char.class) {
-      char[] storageP = new char[1];
-      storageP[0] = (att != null) && (!att.getStringValue().isEmpty()) ? att.getStringValue().charAt(0)
-          : NetcdfFormatUtils.NC_FILL_CHAR;
-      storage = storageP;
+    Number fillValue = null;
+    if (att != null) {
+      fillValue = att.getNumericValue();
     }
 
-    return Array.factoryConstant(v.getDataType(), v.getShape(), storage);
+    Object pvals;
+    switch (type) {
+      case CHAR: {
+        byte[] bvals = new byte[npts];
+        byte bval = (fillValue == null) ? 0 : fillValue.byteValue();
+        java.util.Arrays.fill(bvals, bval);
+        pvals = bvals;
+        break;
+      }
+      case UBYTE: {
+        byte[] bvals = new byte[npts];
+        byte bval = (fillValue == null) ? NetcdfFormatUtils.NC_FILL_UBYTE : fillValue.byteValue();
+        java.util.Arrays.fill(bvals, bval);
+        pvals = bvals;
+        break;
+      }
+      case BYTE: {
+        byte[] bvals = new byte[npts];
+        byte bval = (fillValue == null) ? NetcdfFormatUtils.NC_FILL_BYTE : fillValue.byteValue();
+        java.util.Arrays.fill(bvals, bval);
+        pvals = bvals;
+        break;
+      }
+      case DOUBLE: {
+        double[] dvals = new double[npts];
+        double dval = (fillValue == null) ? NetcdfFormatUtils.NC_FILL_DOUBLE : fillValue.doubleValue();
+        java.util.Arrays.fill(dvals, dval);
+        pvals = dvals;
+        break;
+      }
+      case FLOAT: {
+        float[] fvals = new float[npts];
+        float fval = (fillValue == null) ? NetcdfFormatUtils.NC_FILL_FLOAT : fillValue.floatValue();
+        java.util.Arrays.fill(fvals, fval);
+        pvals = fvals;
+        break;
+      }
+      case UINT: {
+        int[] ivals = new int[npts];
+        int ival = (fillValue == null) ? NetcdfFormatUtils.NC_FILL_UINT : fillValue.intValue();
+        java.util.Arrays.fill(ivals, ival);
+        pvals = ivals;
+        break;
+      }
+      case INT: {
+        int[] ivals = new int[npts];
+        int ival = (fillValue == null) ? NetcdfFormatUtils.NC_FILL_INT : fillValue.intValue();
+        java.util.Arrays.fill(ivals, ival);
+        pvals = ivals;
+        break;
+      }
+      case USHORT: {
+        short[] svals = new short[npts];
+        short sval = (fillValue == null) ? NetcdfFormatUtils.NC_FILL_USHORT : fillValue.shortValue();
+        java.util.Arrays.fill(svals, sval);
+        pvals = svals;
+        break;
+      }
+      case SHORT: {
+        short[] svals = new short[npts];
+        short sval = (fillValue == null) ? NetcdfFormatUtils.NC_FILL_SHORT : fillValue.shortValue();
+        java.util.Arrays.fill(svals, sval);
+        pvals = svals;
+        break;
+      }
+      default:
+        throw new IllegalArgumentException("makeArray illegal type " + type);
+    }
+    return Arrays.factory(type, shape, pvals);
   }
 
 }

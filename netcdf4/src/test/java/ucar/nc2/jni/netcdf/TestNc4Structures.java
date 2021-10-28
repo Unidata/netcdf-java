@@ -45,6 +45,7 @@ public class TestNc4Structures {
   }
 
   @Test
+  @Ignore("not ready")
   public void writeStructure() throws IOException, InvalidRangeException {
     String datasetIn = TestDir.cdmUnitTestDir + "formats/netcdf4/compound/tst_compounds.nc4";
     String datasetOut = tempFolder.newFile().getAbsolutePath();

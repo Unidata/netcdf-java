@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2020 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-
 package ucar.nc2.internal.ncml.s3;
 
 import static com.google.common.truth.Truth.assertThat;
@@ -21,8 +20,10 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import ucar.ma2.Array;
-import ucar.ma2.InvalidRangeException;
+import ucar.array.Array;
+import ucar.array.Arrays;
+import ucar.array.InvalidRangeException;
+import ucar.array.Section;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
@@ -55,10 +56,10 @@ public class S3JoinNew {
       assertThat(time).isNotNull();
       assertThat(time.getLength()).isEqualTo(NcmlTestsCommon.expectedNumberOfTimesInAgg);
       Variable timeVar = ncf.findVariable(NcmlTestsCommon.timeVarName);
-      Array timeValues = timeVar.read();
+      Array<Number> timeValues = (Array<Number>) timeVar.readArray();
       assertThat(timeValues).isNotNull();
       for (int i = 0; i < timeValues.getSize(); i++) {
-        assertThat(timeValues.getInt(i)).isEqualTo(2 + i * 5);
+        assertThat(timeValues.get(i)).isEqualTo(2 + i * 5);
       }
     }
   }
@@ -77,10 +78,10 @@ public class S3JoinNew {
       assertThat(time).isNotNull();
       assertThat(time.getLength()).isEqualTo(NcmlTestsCommon.expectedNumberOfTimesInAgg);
       Variable timeVar = ncd.findVariable(NcmlTestsCommon.timeVarName);
-      Array timeValues = timeVar.read();
+      Array<Number> timeValues = (Array<Number>) timeVar.readArray();
       assertThat(timeValues).isNotNull();
       for (int i = 0; i < timeValues.getSize(); i++) {
-        assertThat(timeValues.getInt(i)).isEqualTo(2 + i * 5);
+        assertThat(timeValues.get(i)).isEqualTo(2 + i * 5);
       }
     }
   }
@@ -129,18 +130,18 @@ public class S3JoinNew {
 
   private void compare(Variable single, Variable agg, String aggSectionSpec) throws IOException, InvalidRangeException {
     // read data to compare
-    Array dataSingle = single.read();
-    Array dataAgg = agg.read(aggSectionSpec);
+    Array dataSingle = single.readArray();
+    Array dataAgg = agg.readArray(new Section(aggSectionSpec));
 
     // same total number of elements?
     assertThat(dataSingle.getSize()).isEqualTo(dataAgg.getSize());
 
     // same shapes (agg array must be reduced to get rid of the single time dimension)
     assertThat(dataAgg.getShape()).isNotEqualTo(dataSingle.getShape());
-    assertThat(dataAgg.reduce().getShape()).isEqualTo(dataSingle.getShape());
+    assertThat(Arrays.reduce(dataAgg).getShape()).isEqualTo(dataSingle.getShape());
 
     // compare data arrays
-    assertThat(compareData(NcmlTestsCommon.dataVarName, dataAgg.reduce(), dataSingle)).isTrue();
+    assertThat(compareData(NcmlTestsCommon.dataVarName, Arrays.reduce(dataAgg), dataSingle)).isTrue();
   }
 
   @AfterClass

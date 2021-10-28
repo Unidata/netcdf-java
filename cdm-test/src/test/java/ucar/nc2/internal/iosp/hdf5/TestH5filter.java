@@ -1,29 +1,19 @@
 /*
- * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-
 package ucar.nc2.internal.iosp.hdf5;
 
 import org.junit.experimental.categories.Category;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ucar.ma2.Array;
-import ucar.ma2.Index;
+import ucar.array.Array;
+import ucar.array.Index;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 
-/**
- * Class Description.
- *
- * @author caron
- */
 @Category(NeedsCdmUnitTest.class)
 public class TestH5filter {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @org.junit.Test
   public void testFilterNoneApplied() throws IOException {
@@ -34,7 +24,7 @@ public class TestH5filter {
     try (NetcdfFile ncfile = TestH5.openH5("support/zip.h5")) {
       Variable v = ncfile.findVariable("Data/Compressed_Data");
       assert v != null;
-      Array data = v.read();
+      Array<Number> data = (Array<Number>) v.readArray();
       int[] shape = data.getShape();
       assert shape[0] == 1000;
       assert shape[1] == 20;
@@ -42,7 +32,7 @@ public class TestH5filter {
       Index ima = data.getIndex();
       for (int i = 0; i < 1000; i++)
         for (int j = 0; j < 20; j++) {
-          int val = data.getInt(ima.set(i, j));
+          int val = data.get(ima.set(i, j)).intValue();
           assert val == i + j : val + " != " + (i + j);
         }
     }
@@ -56,7 +46,7 @@ public class TestH5filter {
     try (NetcdfFile ncfile = TestH5.openH5("wrf/wrf_input_seq.h5")) {
       Variable v = ncfile.findVariable("DATASET=INPUT/GSW");
       assert v != null;
-      Array data = v.read();
+      Array data = v.readArray();
       int[] shape = data.getShape();
       assert shape[0] == 1;
       assert shape[1] == 20;
@@ -72,7 +62,7 @@ public class TestH5filter {
       // picture looks ok in ToolsUI
       Variable v = ncfile.findVariable("image1/image_data");
       assert v != null;
-      Array data = v.read();
+      Array data = v.readArray();
       int[] shape = data.getShape();
       assert shape[0] == 1000;
       assert shape[1] == 1500;
@@ -87,7 +77,7 @@ public class TestH5filter {
       // picture looks ok in ToolsUI
       Variable v = ncfile.findVariable("HDFEOS/SWATHS/HIRDLS/Data_Fields/Altitude");
       assert v != null;
-      Array data = v.read();
+      Array data = v.readArray();
       int[] shape = data.getShape();
       assert shape[0] == 6;
       assert shape[1] == 145;

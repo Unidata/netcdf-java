@@ -240,9 +240,7 @@ public class CompareNetcdf2 {
     return compare(org, copy, null, showCompare, showEach, compareData);
   }
 
-  /** @deprecated use constructor to set options, then compare(NetcdfFile org, NetcdfFile copy, ObjFilter filter) */
-  @Deprecated
-  public boolean compare(NetcdfFile org, NetcdfFile copy, @Nullable ObjFilter objFilter, boolean showCompare,
+  private boolean compare(NetcdfFile org, NetcdfFile copy, @Nullable ObjFilter objFilter, boolean showCompare,
       boolean showEach, boolean compareData) {
     if (objFilter == null)
       objFilter = IDENTITY_FILTER;
@@ -747,8 +745,7 @@ public class CompareNetcdf2 {
   }
 
   public boolean compareData(String name, Array<?> data1, Array<?> data2, boolean justOne) throws IOException {
-    Formatter errlog = new Formatter();
-    return CompareArrayToArray.compareData(errlog, name, data1, data2, justOne, true);
+    return CompareArrayToArray.compareData(f, name, data1, data2, justOne, true);
   }
 
   /*

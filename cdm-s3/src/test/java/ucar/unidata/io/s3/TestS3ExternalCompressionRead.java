@@ -1,8 +1,7 @@
 /*
- * Copyright (c) 2019-2020 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-
 package ucar.unidata.io.s3;
 
 import static com.google.common.truth.Truth.assertThat;
@@ -11,7 +10,7 @@ import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import ucar.ma2.Array;
+import ucar.array.Array;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Variable;
@@ -38,7 +37,7 @@ public class TestS3ExternalCompressionRead {
       Assert.assertNotNull(reflectivity);
 
       // read array
-      Array array = reflectivity.read();
+      Array array = reflectivity.readArray();
 
       assertThat(array.getRank()).isEqualTo(3);
 
@@ -66,7 +65,7 @@ public class TestS3ExternalCompressionRead {
       Assert.assertNotNull(reflectivity);
 
       // read array
-      Array array = reflectivity.read();
+      Array array = reflectivity.readArray();
 
       assertThat(array.getRank()).isEqualTo(3);
 
