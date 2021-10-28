@@ -215,19 +215,6 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     return this.parentStructure;
   }
 
-  /**
-   * Get shape as an List of Range objects.
-   * The List is immutable.
-   *
-   * @return List of Ranges, one for each Dimension.
-   * @deprecated use getSection() or getSection().getRanges()
-   */
-  @Deprecated
-  public ImmutableList<ucar.ma2.Range> getRanges() {
-    // Ok to use Immutable as there are no nulls.
-    return ImmutableList.copyOf(getShapeAsSection().getRanges());
-  }
-
   /** Get the number of dimensions of the Variable, aka the rank. */
   @Override
   public int getRank() {
@@ -245,12 +232,6 @@ public class Variable implements VariableSimpleIF, ProxyReader {
   /** Get the size of the ith dimension */
   public int getShape(int index) {
     return shape[index];
-  }
-
-  /** @deprecated use getSection() */
-  @Deprecated
-  public ucar.ma2.Section getShapeAsSection() {
-    return ArraysConvert.convertSection(this.shapeAsSection);
   }
 
   /**
@@ -490,35 +471,6 @@ public class Variable implements VariableSimpleIF, ProxyReader {
   // _read()
   // _read(Section section)
   // _readNestedData(Section section, boolean flatten)
-
-  /**
-   * Read a section of the data for this Variable and return a memory resident Array.
-   * The Array has the same element type as the Variable, and the requested shape.
-   * Note that this does not do rank reduction, so the returned Array has the same rank
-   * as the Variable. Use Array.reduce() for rank reduction.
-   * <p/>
-   * <code>assert(origin[ii] + shape[ii]*stride[ii] <= Variable.shape[ii]); </code>
-   * <p/>
-   *
-   * @param origin int array specifying the starting index. If null, assume all zeroes.
-   * @param shape int array specifying the extents in each dimension.
-   *        This becomes the shape of the returned Array.
-   * @return the requested data in a memory-resident Array
-   * @deprecated use readArray(Section)
-   */
-  @Deprecated
-  public ucar.ma2.Array read(int[] origin, int[] shape) throws IOException, ucar.ma2.InvalidRangeException {
-    if ((origin == null) && (shape == null))
-      return read();
-
-    if (origin == null)
-      return read(new ucar.ma2.Section(shape));
-
-    if (shape == null)
-      return read(new ucar.ma2.Section(origin, this.shape));
-
-    return read(new ucar.ma2.Section(origin, shape));
-  }
 
   /**
    * Read data section specified by a "section selector", and return a memory resident Array. Uses

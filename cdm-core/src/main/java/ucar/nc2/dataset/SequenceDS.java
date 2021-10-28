@@ -9,14 +9,10 @@ import java.util.Iterator;
 
 import ucar.array.ArrayType;
 import ucar.array.StructureData;
-import ucar.ma2.ArrayStructure;
 import ucar.nc2.Group;
-import ucar.ma2.Array;
-import java.io.IOException;
 import ucar.nc2.Sequence;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
-import ucar.nc2.dataset.StructureDataEnhancer.StructureDataIteratorEnhanced;
 import ucar.nc2.internal.dataset.SequenceArrayEnhancer;
 
 import javax.annotation.concurrent.Immutable;
@@ -44,20 +40,6 @@ public class SequenceDS extends Sequence implements StructureEnhanced {
   @Override
   public ImmutableList<CoordinateSystem> getCoordinateSystems() {
     return ImmutableList.of();
-  }
-
-  @Override
-  @Deprecated
-  public Array read(ucar.ma2.Section section) throws java.io.IOException {
-    return read();
-  }
-
-  @Override
-  @Deprecated
-  public Array read() throws IOException {
-    Array data = orgSeq.read();
-    StructureDataEnhancer enhancer = new StructureDataEnhancer(this);
-    return enhancer.enhance((ArrayStructure) data, null);
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////

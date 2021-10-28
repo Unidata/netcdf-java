@@ -23,7 +23,6 @@ import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.internal.util.CompareArrayToArray;
-import ucar.nc2.internal.util.CompareArrayToMa2;
 import ucar.unidata.util.test.TestDir;
 
 /** Compare reading netcdf with Array */
@@ -81,12 +80,12 @@ public class TestReadArrayCompare {
       for (Variable v : ncfile.getVariables()) {
         System.out.printf("  read variable %s %s", v.getDataType(), v.getShortName());
         com.google.common.base.Stopwatch stopwatch = Stopwatch.createStarted();
-        ucar.ma2.Array org = v.read();
         try {
+          Array<?> org = v.readArray();
           Array<?> array = v.readArray();
           System.out.printf("  COMPARE%n");
           Formatter f = new Formatter();
-          boolean ok1 = CompareArrayToMa2.compareData(f, v.getShortName(), org, array, false, true);
+          boolean ok1 = CompareArrayToArray.compareData(f, v.getShortName(), org, array, false, true);
           if (!ok1) { // array not ok
             System.out.printf("%s%n", f);
           } else {
@@ -119,12 +118,12 @@ public class TestReadArrayCompare {
 
       boolean ok = true;
       for (Variable v : ncfile.getVariables()) {
-        ucar.ma2.Array org = v.read();
+        Array<?> org = v.readArray();
         Array<?> array = v.readArray();
         if (array != null) {
-          System.out.printf("  check %s %s%n", v.getDataType(), v.getNameAndDimensions());
+          System.out.printf("  check %s %s%n", v.getArrayType(), v.getNameAndDimensions());
           Formatter f = new Formatter();
-          boolean ok1 = CompareArrayToMa2.compareData(f, v.getShortName(), org, array, false, true);
+          boolean ok1 = CompareArrayToArray.compareData(f, v.getShortName(), org, array, false, true);
           if (!ok1) {
             System.out.printf("%s%n", f);
           }

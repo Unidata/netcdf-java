@@ -281,37 +281,6 @@ public class ArrayStructureMA extends ArrayStructure {
     return super.getArray(recno, m);
   }
 
-  /**
-   * Create an ArrayStructure for a Structure. Allow nested Structures.
-   * Create the data arrays, and an iterator.
-   *
-   * @param from copy from here. If from is a ArrayStructureMA, return it.
-   * @param shape the shape of the ArrayStructure
-   * @return equivilent ArrayStructureMA
-   */
-  public static ArrayStructureMA factoryMA(Structure from, int[] shape) {
-    StructureMembers sm = from.makeStructureMembers();
-    for (Variable v : from.getVariables()) {
-      Array data;
-      if (v instanceof Sequence) {
-        data = Array.factory(DataType.SEQUENCE, shape); // an array sequence - one for each parent element
-        // Structure s = (Structure) v;
-        // StructureMembers smn = s.makeStructureMembers();
-        // data = new ArraySequenceNested(smn, (int) Index.computeSize(v.getShapeAll())); // ??
-
-      } else if (v instanceof Structure)
-        data = ArrayStructureMA.factoryMA((Structure) v, combine(shape, v.getShape()));
-
-      else
-        data = Array.factory(v.getDataType(), combine(shape, v.getShape()));
-
-      StructureMembers.Member m = sm.findMember(v.getShortName());
-      m.setDataArray(data);
-    }
-
-    return new ArrayStructureMA(sm, shape);
-  }
-
   private static int[] combine(int[] shape1, int[] shape2) {
     int[] result = new int[shape1.length + shape2.length];
     System.arraycopy(shape1, 0, result, 0, shape1.length);

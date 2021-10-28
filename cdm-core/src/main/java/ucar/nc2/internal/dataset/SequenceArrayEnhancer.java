@@ -17,11 +17,8 @@ import ucar.array.StructureMembers;
 import ucar.nc2.dataset.SequenceDS;
 
 /**
- * Enhance StructureData, for both StructureDS and SequenceDS.
- *
- * @deprecated use StructureDataArrayEnhancer
+ * Enhance StructureData, for SequenceDS.
  */
-@Deprecated
 public class SequenceArrayEnhancer implements Iterator<StructureData> {
   private static final Logger logger = LoggerFactory.getLogger(SequenceArrayEnhancer.class);
   private final SequenceDS topStructure;

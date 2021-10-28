@@ -12,7 +12,6 @@ import ucar.gcdm.client.GcdmNetcdfFile;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.internal.util.CompareArrayToArray;
-import ucar.nc2.internal.util.CompareArrayToMa2;
 import ucar.nc2.util.Misc;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
@@ -185,7 +184,7 @@ public class TestGcdmNetcdfFileProblem {
     try (NetcdfFile ncfile = NetcdfDatasets.openFile(path.toString(), null);
         GcdmNetcdfFile gcdmFile = GcdmNetcdfFile.builder().setRemoteURI(gcdmUrl).build()) {
 
-      boolean ok = CompareArrayToMa2.compareFiles(ncfile, gcdmFile);
+      boolean ok = CompareArrayToArray.compareFiles(ncfile, gcdmFile);
       assertThat(ok).isTrue();
     }
   }
@@ -196,7 +195,7 @@ public class TestGcdmNetcdfFileProblem {
     try (NetcdfFile ma2File = NetcdfDatasets.openFile(path.toString(), null);
         GcdmNetcdfFile arrayFile = GcdmNetcdfFile.builder().setRemoteURI(gcdmUrl).build()) {
 
-      boolean ok = CompareArrayToMa2.compareVariable(ma2File, arrayFile, varName, true);
+      boolean ok = CompareArrayToArray.compareVariable(ma2File, arrayFile, varName, true);
       assertThat(ok).isTrue();
     }
   }

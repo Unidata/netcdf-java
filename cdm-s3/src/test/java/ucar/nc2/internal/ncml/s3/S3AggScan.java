@@ -6,7 +6,6 @@
 package ucar.nc2.internal.ncml.s3;
 
 import static com.google.common.truth.Truth.assertThat;
-import static ucar.nc2.internal.util.CompareNetcdf2.compareData;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -30,6 +29,7 @@ import ucar.nc2.Variable;
 import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
+import ucar.nc2.internal.util.CompareArrayToArray;
 import ucar.unidata.io.s3.S3TestsCommon;
 import ucar.unidata.util.test.category.Slow;
 
@@ -119,8 +119,8 @@ public class S3AggScan {
       Array dataExpLast = dataVarExp.readArray(new Section(NcmlTestsCommon.expectedNumberOfTimesInAgg - 1 + ",:,:"));
 
       // compare data from the scan aggregation and the explicit aggregation
-      assertThat(compareData(NcmlTestsCommon.dataVarName, dataScanFirst, dataExpFirst)).isTrue();
-      assertThat(compareData(NcmlTestsCommon.dataVarName, dataScanLast, dataExpLast)).isTrue();
+      assertThat(CompareArrayToArray.compareData(NcmlTestsCommon.dataVarName, dataScanFirst, dataExpFirst)).isTrue();
+      assertThat(CompareArrayToArray.compareData(NcmlTestsCommon.dataVarName, dataScanLast, dataExpLast)).isTrue();
     }
   }
 
@@ -144,7 +144,7 @@ public class S3AggScan {
     Variable expectedTimeVar = ncd.findVariable(NcmlTestsCommon.expectedTimeVarName);
     Array expectedTimeValues = expectedTimeVar.readArray();
     assertThat(expectedTimeValues).isNotNull();
-    assertThat(compareData(timeVarName, timeValues, expectedTimeValues)).isTrue();
+    assertThat(CompareArrayToArray.compareData(timeVarName, timeValues, expectedTimeValues)).isTrue();
 
     // try to read from first and last object
     Variable dataVar = ncd.findVariable(NcmlTestsCommon.dataVarName);
