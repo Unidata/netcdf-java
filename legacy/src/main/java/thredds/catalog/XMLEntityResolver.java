@@ -160,7 +160,8 @@ public class XMLEntityResolver implements org.xml.sax.EntityResolver {
   public static final String CATALOG_NAMESPACE_10 = "http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0";
 
   // dqc namespaces (still referenced in legacy)
-  // static public final String DQC_NAMESPACE_02 = "http://www.unidata.ucar.edu/namespaces/thredds/queryCapability/v0.2";
+  // static public final String DQC_NAMESPACE_02 =
+  // "http://www.unidata.ucar.edu/namespaces/thredds/queryCapability/v0.2";
   // static public final String DQC_NAMESPACE_03 =
   // "http://www.unidata.ucar.edu/namespaces/thredds/queryCapability/v0.3";
   public static final String DQC_NAMESPACE_04 = "http://www.unidata.ucar.edu/namespaces/thredds/queryCapability/v0.4";
