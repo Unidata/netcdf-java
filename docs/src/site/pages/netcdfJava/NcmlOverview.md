@@ -64,7 +64,7 @@ A more advanced use is to modify existing NetCDF files, as well as to create "vi
 * [Aggregation](ncml_aggregation.html)
 * [Cookbook Examples](ncml_cookbook.html)
 * [Annotated Schema for Netcdf-Java 4](annotated_ncml_schema.html)
-* [ncml-2.2.xsd](https://www.unidata.ucar.edu/schemas/netcdf/ncml-2.2.xsd)
+* [ncml-2.2.xsd](https://schemas.unidata.ucar.edu/netcdf/ncml-2.2.xsd)
 
 ### Acknowledgments and History
 

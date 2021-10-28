@@ -160,7 +160,7 @@ public class XMLEntityResolver implements org.xml.sax.EntityResolver {
   public static final String CATALOG_NAMESPACE_10 = "http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0";
 
   // dqc namespaces (still referenced in legacy)
-  // static public final String DQC_NAMESPACE_02 = "http://www.unidata.ucar.edu/schemas/thredds/queryCapability";
+  // static public final String DQC_NAMESPACE_02 = "http://www.unidata.ucar.edu/namespaces/thredds/queryCapability/v0.2";
   // static public final String DQC_NAMESPACE_03 =
   // "http://www.unidata.ucar.edu/namespaces/thredds/queryCapability/v0.3";
   public static final String DQC_NAMESPACE_04 = "http://www.unidata.ucar.edu/namespaces/thredds/queryCapability/v0.4";
@@ -210,36 +210,36 @@ public class XMLEntityResolver implements org.xml.sax.EntityResolver {
 
     // catalog 1.0 schema
     initEntity(CATALOG_NAMESPACE_10, "/resources/thredds/schemas/InvCatalog.1.2.xsd",
-        "http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.2.xsd");
+        "https://schemas.unidata.ucar.edu/thredds/InvCatalog.1.2.xsd");
 
     /*
      * catalog 0.6 schema
      * initEntity( CATALOG_NAMESPACE_06,
      * "/resources/thredds/schemas/InvCatalog.0.6.xsd",
-     * "http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.0.6.xsd");
+     * "https://schemas.unidata.ucar.edu/thredds/InvCatalog.0.6.xsd");
      * 
      * // DQC schema 0.2
      * initEntity( DQC_NAMESPACE_02,
      * "/resources/thredds/schemas/queryCapability.0.2.xsd",
-     * "http://www.unidata.ucar.edu/schemas/thredds/queryCapability.0.2.xsd");
+     * "https://schemas.unidata.ucar.edu/thredds/queryCapability.0.2.xsd");
      * 
      * // DQC schema 0.3
      * initEntity( DQC_NAMESPACE_03,
      * "/resources/thredds/schemas/queryCapability.0.3.xsd",
-     * "http://www.unidata.ucar.edu/schemas/thredds/queryCapability.0.3.xsd");
+     * "https://schemas.unidata.ucar.edu/thredds/queryCapability.0.3.xsd");
      */
 
     // DQC schema 0.4
     initEntity(DQC_NAMESPACE_04, "/resources/thredds/schemas/queryCapability.0.4.xsd",
-        "http://www.unidata.ucar.edu/schemas/thredds/queryCapability.0.4.xsd");
+        "https://schemas.unidata.ucar.edu/thredds/queryCapability.0.4.xsd");
 
     // nj22 schema
     initEntity(NJ22_NAMESPACE, "/resources/nj22/schemas/ncml-2.2.xsd",
-        "http://www.unidata.ucar.edu/schemas/netcdf/ncml-2.2.xsd");
+        "https://schemas.unidata.ucar.edu/netcdf/ncml-2.2.xsd");
 
     // XLink schema
     initEntity(XLINK_NAMESPACE, "/resources/thredds/schemas/xlink.xsd",
-        "http://www.unidata.ucar.edu/schemas/other/xlink.xsd");
+        "https://schemas.unidata.ucar.edu/other/xlink.xsd");
 
     /*
      * catgen 0.5 dtd
@@ -257,15 +257,15 @@ public class XMLEntityResolver implements org.xml.sax.EntityResolver {
   public static String getExternalSchemas() {
     if (externalSchemas == null) {
       externalSchemas = XMLEntityResolver.CATALOG_NAMESPACE_10 + " "
-          + "http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.7.xsd" + " " + XMLEntityResolver.NJ22_NAMESPACE
-          + " " + "http://www.unidata.ucar.edu/schemas/netcdf/ncml-2.2.xsd" + " " + XMLEntityResolver.DQC_NAMESPACE_04
-          + " " + "http://www.unidata.ucar.edu/schemas/thredds/queryCapability.0.4.xsd" + " "
+          + "https://schemas.unidata.ucar.edu/thredds/InvCatalog.1.0.7.xsd" + " " + XMLEntityResolver.NJ22_NAMESPACE
+          + " " + "https://schemas.unidata.ucar.edu/netcdf/ncml-2.2.xsd" + " " + XMLEntityResolver.DQC_NAMESPACE_04
+          + " " + "https://schemas.unidata.ucar.edu/thredds/queryCapability.0.4.xsd" + " "
       /*
        * + XMLEntityResolver.DQC_NAMESPACE_03 + " " +
-       * "http://www.unidata.ucar.edu/schemas/thredds/queryCapability.0.3.xsd" +" " +
+       * "https://schemas.unidata.ucar.edu/thredds/queryCapability.0.3.xsd" +" " +
        * XMLEntityResolver.DQC_NAMESPACE_02 + " " +
-       * "http://www.unidata.ucar.edu/schemas/thredds/queryCapability.0.2.xsd" +" " +
-       * XMLEntityResolver.CATALOG_NAMESPACE_06 + " " + "http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.0.6.xsd"
+       * "https://schemas.unidata.ucar.edu/thredds/queryCapability.0.2.xsd" +" " +
+       * XMLEntityResolver.CATALOG_NAMESPACE_06 + " " + "https://schemas.unidata.ucar.edu/thredds/InvCatalog.0.6.xsd"
        */;
     }
     return externalSchemas;
@@ -440,7 +440,7 @@ public class XMLEntityResolver implements org.xml.sax.EntityResolver {
     }
 
     if (systemId.contains("InvCatalog.0.6.dtd")) {
-      entity = entityHash.get("http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.0.6.dtd");
+      entity = entityHash.get("https://schemas.unidata.ucar.edu/thredds/InvCatalog.0.6.dtd");
       if (entity != null) {
         logger.debug(" *** resolved2 with local copy");
         return new MyInputSource(entity);
