@@ -76,27 +76,6 @@ public class Structure extends Variable {
     return isSubset;
   }
 
-  /**
-   * Create a StructureMembers object that describes this Structure.
-   * CAUTION: Do not use for iterating over a StructureData or ArrayStructure - get the StructureMembers object
-   * directly from the StructureData or ArrayStructure.
-   *
-   * @return a StructureMembers object that describes this Structure.
-   * @deprecated use makeStructureMembersBuilder()
-   */
-  @Deprecated
-  public ucar.ma2.StructureMembers makeStructureMembers() {
-    ucar.ma2.StructureMembers.Builder builder = ucar.ma2.StructureMembers.builder().setName(getShortName());
-    for (Variable v2 : this.getVariables()) {
-      ucar.ma2.StructureMembers.MemberBuilder m = builder.addMember(v2.getShortName(), v2.getDescription(),
-          v2.getUnitsString(), v2.getDataType(), v2.getShape());
-      if (v2 instanceof Structure) {
-        m.setStructureMembers(((Structure) v2).makeStructureMembers());
-      }
-    }
-    return builder.build();
-  }
-
   public ucar.array.StructureMembers.Builder makeStructureMembersBuilder() {
     ucar.array.StructureMembers.Builder builder = ucar.array.StructureMembers.builder().setName(this.getShortName());
     for (Variable v2 : this.getVariables()) {

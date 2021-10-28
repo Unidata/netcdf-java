@@ -75,7 +75,7 @@ public class TestSlice {
     try (NetcdfFile file = NetcdfFiles.open(filePath)) {
       Variable var = file.findVariable(DATA_VARIABLE);
       Variable sliced = var.slice(0, 3);
-      sliced.read();
+      sliced.readArray();
 
       int[] shape = sliced.getShape();
       assertEquals(3, shape.length);
@@ -92,7 +92,7 @@ public class TestSlice {
     try (NetcdfFile file = NetcdfFiles.open(filePath)) {
       Variable var = file.findVariable(DATA_VARIABLE);
       Variable sliced = var.slice(1, 3);
-      sliced.read();
+      sliced.readArray();
 
       int[] shape = sliced.getShape();
       assertEquals(3, shape.length);

@@ -13,6 +13,7 @@ import java.net.URISyntaxException;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import ucar.array.Array;
 
 public class TestScaleOffsetMissing {
 
@@ -38,15 +39,17 @@ public class TestScaleOffsetMissing {
       assertThat(var.scaleMissingUnsignedProxy().getValidMin()).isWithin(fpTol).of(expectedValidMin);
       assertThat(var.scaleMissingUnsignedProxy().getValidMax()).isWithin(fpTol).of(expectedValidMax);
 
-      float[] actual = (float[]) var.read().getStorage();
-      for (int i = 0; i < actual.length; i++) {
-        if (var.scaleMissingUnsignedProxy().isInvalidData(actual[i])) {
-          assertThat(actual[i]).isNaN();
-          assertThat(expected[i]).isNaN();
+      int count = 0;
+      Array<Float> actual = (Array<Float>) var.readArray();
+      for (Float val : actual) {
+        if (var.scaleMissingUnsignedProxy().isInvalidData(val)) {
+          assertThat(val).isNaN();
+          assertThat(expected[count]).isNaN();
         } else {
-          assertThat(actual[i]).isNotNaN();
-          assertThat(actual[i]).isWithin(fpTol).of(expected[i]);
+          assertThat(val).isNotNaN();
+          assertThat(val).isWithin(fpTol).of(expected[count]);
         }
+        count++;
       }
     }
   }
@@ -62,15 +65,17 @@ public class TestScaleOffsetMissing {
       assertThat(var.scaleMissingUnsignedProxy().getValidMin()).isWithin(fpTol).of(expectedValidMin);
       assertThat(var.scaleMissingUnsignedProxy().getValidMax()).isWithin(fpTol).of(expectedValidMax);
 
-      float[] actual = (float[]) var.read().getStorage();
-      for (int i = 0; i < actual.length; i++) {
-        if (var.scaleMissingUnsignedProxy().isInvalidData(actual[i])) {
-          assertThat(actual[i]).isNaN();
-          assertThat(expected[i]).isNaN();
+      int count = 0;
+      Array<Float> actual = (Array<Float>) var.readArray();
+      for (Float val : actual) {
+        if (var.scaleMissingUnsignedProxy().isInvalidData(val)) {
+          assertThat(val).isNaN();
+          assertThat(expected[count]).isNaN();
         } else {
-          assertThat(actual[i]).isNotNaN();
-          assertThat(actual[i]).isWithin(fpTol).of(expected[i]);
+          assertThat(val).isNotNaN();
+          assertThat(val).isWithin(fpTol).of(expected[count]);
         }
+        count++;
       }
     }
   }
@@ -90,15 +95,17 @@ public class TestScaleOffsetMissing {
       assertThat(var.scaleMissingUnsignedProxy().getValidMin()).isWithin(fpTol).of(-expectedValidMax);
       assertThat(var.scaleMissingUnsignedProxy().getValidMax()).isWithin(fpTol).of(-expectedValidMin);
 
-      float[] actual = (float[]) var.read().getStorage();
-      for (int i = 0; i < actual.length; i++) {
-        if (var.scaleMissingUnsignedProxy().isInvalidData(actual[i])) {
-          assertThat(actual[i]).isNaN();
-          assertThat(expected[i]).isNaN();
+      int count = 0;
+      Array<Float> actual = (Array<Float>) var.readArray();
+      for (Float val : actual) {
+        if (var.scaleMissingUnsignedProxy().isInvalidData(val)) {
+          assertThat(val).isNaN();
+          assertThat(expected[count]).isNaN();
         } else {
-          assertThat(actual[i]).isNotNaN();
-          assertThat(actual[i]).isWithin(fpTol).of(-expected[i]);
+          assertThat(val).isNotNaN();
+          assertThat(val).isWithin(fpTol).of(-expected[count]);
         }
+        count++;
       }
     }
   }

@@ -31,7 +31,6 @@ import ucar.array.ArrayType;
 import ucar.array.Array;
 import ucar.array.ArrayVlen;
 import ucar.array.Arrays;
-import ucar.array.ArraysConvert;
 import ucar.array.StorageMutable;
 import ucar.array.StructureDataArray;
 import ucar.array.StructureDataStorageBB;

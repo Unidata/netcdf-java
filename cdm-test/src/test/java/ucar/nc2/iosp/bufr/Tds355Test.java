@@ -29,7 +29,7 @@ public class Tds355Test {
     try (NetcdfDataset dataset = NetcdfDatasets.openDataset(example.getAbsolutePath())) {
       Variable obs = dataset.findVariable("obs");
 
-      obs.read(); // Throws an NPE after about 50 seconds on my machine.
+      obs.readArray(); // Throws an NPE after about 50 seconds on my machine.
     }
   }
 }

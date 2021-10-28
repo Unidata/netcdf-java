@@ -29,7 +29,7 @@ public class TestH5aura {
     try (NetcdfFile ncfile = TestH5.open(testDir + "HIRDLS1_v4.0.2a-aIrix-c2_2003d106.he5")) {
       Variable dset = ncfile.findVariable("HDFEOS/SWATHS/HIRDLS_L1_Swath/Data_Fields/Scaled_Ch01_Radiance");
       assert dset != null;
-      dset.read();
+      dset.readArray();
     }
   }
 

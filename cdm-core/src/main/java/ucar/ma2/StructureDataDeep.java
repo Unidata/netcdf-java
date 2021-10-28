@@ -63,31 +63,6 @@ public class StructureDataDeep extends StructureDataA {
     return abb;
   }
 
-  /**
-   * Make deep copy to an ArrayStructureBB whose data is contained in a ByteBuffer.
-   * Use the order of the members in the given Structure; skip copying any not in the Structure
-   * 
-   * @param s list of structure members come from here; must be compatible with ArrayStructure's data
-   * @param as original ArrayStructure
-   * @param bo what byte order to use ? (null for default)
-   * @return ArrayStructureBB with all data self contained
-   */
-  public static ArrayStructureBB copyToArrayBB(Structure s, ArrayStructure as, ByteOrder bo) throws IOException {
-    StructureMembers sm = s.makeStructureMembers();
-    ArrayStructureBB abb = new ArrayStructureBB(sm, as.getShape());
-    ArrayStructureBB.setOffsets(sm);
-    if (bo != null) {
-      ByteBuffer bb = abb.getByteBuffer();
-      bb.order(bo);
-    }
-
-    try (StructureDataIterator iter = as.getStructureDataIterator()) {
-      while (iter.hasNext())
-        copyToArrayBB(iter.next(), abb);
-    }
-    return abb;
-  }
-
 
   /**
    * Make deep copy from a StructureData to a ArrayStructureBB whose data is contained in a ByteBuffer.

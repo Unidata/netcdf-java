@@ -78,7 +78,7 @@ public class TestReadArrayCompare {
 
       boolean ok = true;
       for (Variable v : ncfile.getVariables()) {
-        System.out.printf("  read variable %s %s", v.getDataType(), v.getShortName());
+        System.out.printf("  read variable %s %s", v.getArrayType(), v.getShortName());
         com.google.common.base.Stopwatch stopwatch = Stopwatch.createStarted();
         try {
           Array<?> org = v.readArray();
