@@ -154,8 +154,7 @@ public class RuntimeConfigParser {
           Class<?> bufrTablesClass;
           try {
             // only load if bufr.jar is present
-            bufrTablesClass =
-                RuntimeConfigParser.class.getClassLoader().loadClass("ucar.nc2.iosp.bufr.tables.BufrTables");
+            bufrTablesClass = RuntimeConfigParser.class.getClassLoader().loadClass("ucar.nc2.bufr.tables.BufrTables");
           } catch (Throwable e) {
             errlog.format("BufrTables was not loaded; check class path err='%s'%n", e.getCause().getMessage());
             break;

@@ -11,7 +11,7 @@ import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 
-/** Compare reading bufr with old ma2.array and new array.Array */
+/** Read bufr with array.Array */
 @Category(NeedsCdmUnitTest.class)
 public class TestReadBufrProblem {
 

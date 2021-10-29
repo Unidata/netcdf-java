@@ -10,7 +10,7 @@ import java.util.Formatter;
 import org.junit.Test;
 
 /** Test {@link RuntimeConfigParser} */
-public class TestRuntimeConfigParser {
+public class TestRuntimeConfigParser2 {
 
   // needs grib and bufr loaded, so doing it in cdm-test
   private final String config = "<?xml version='1.0' encoding='UTF-8'?>\n" + " <runtimeConfig>\n"

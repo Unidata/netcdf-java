@@ -34,7 +34,7 @@ public class TestOpenInMemory {
         if (m == null)
           continue;
         byte[] mbytes = scan.getMessageBytes(m);
-        try (NetcdfFile ncfile = NetcdfFiles.openInMemory("test", mbytes, "ucar.nc2.iosp.bufr.BufrArrayIosp")) {
+        try (NetcdfFile ncfile = NetcdfFiles.openInMemory("test", mbytes, "ucar.nc2.bufr.BufrArrayIosp")) {
           NetcdfDataset ncd = NetcdfDatasets.enhance(ncfile, NetcdfDataset.getDefaultEnhanceMode(), null);
         }
       }

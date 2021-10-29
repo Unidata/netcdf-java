@@ -21,7 +21,7 @@ import java.util.List;
 
 import static com.google.common.truth.Truth.assertThat;
 
-/** Compare reading bufr with old ma2.array and new array.Array */
+/** Read bufr new array.Array */
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
 public class TestReadBufrCompare {
@@ -57,8 +57,8 @@ public class TestReadBufrCompare {
 
   // compare to check complete read. need seperate files, or else they interfere
   public static void readArrays(String filename) throws Exception {
-    try (NetcdfFile arrayFile = NetcdfFiles.open(filename, "ucar.nc2.iosp.bufr.BufrArrayIosp", -1, null, null);
-        NetcdfFile arrayFile2 = NetcdfFiles.open(filename, "ucar.nc2.iosp.bufr.BufrArrayIosp", -1, null, null)) {
+    try (NetcdfFile arrayFile = NetcdfFiles.open(filename, "ucar.nc2.bufr.BufrArrayIosp", -1, null, null);
+        NetcdfFile arrayFile2 = NetcdfFiles.open(filename, "ucar.nc2.bufr.BufrArrayIosp", -1, null, null)) {
       System.out.println("Test NetcdfFile: " + arrayFile.getLocation());
 
       boolean ok = CompareArrayToArray.compareFiles(arrayFile, arrayFile2);
