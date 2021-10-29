@@ -29,7 +29,7 @@ ext {
   // In all cases except one, junit is a testImplementation configuration. However, for the cdm-test-utils
   // subproject, it is an api configuration. We define the junit version here so that it can be defined
   // in the netcdf-java-testing-platform and in the build.gradle config for cdm-test-utils subproject.
-  depVersion.junit = '4.13.2'
+  depVersion.junit = '4.13'
   // need to define the versions of protobuf and grpc here because they are needed in the protobuf configuration
   // closure, and the version defined in eiter the java platform cannot be accessed from within the closure.
   depVersion.protobuf = '3.17.2'
