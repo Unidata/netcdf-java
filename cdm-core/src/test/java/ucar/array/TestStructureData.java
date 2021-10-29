@@ -13,8 +13,8 @@ import org.junit.Test;
 
 import java.nio.ByteBuffer;
 
-/** Test {@link StructureDataArray} */
-public class TestStructureDataArray {
+/** Test {@link StructureData} and {@link StructureDataArray} with StructureDataRow */
+public class TestStructureData {
 
   @Test
   public void testBasics() {
@@ -49,9 +49,40 @@ public class TestStructureDataArray {
     StructureData sdata = array.get(0);
     assertThat(sdata.getStructureMembers()).isEqualTo(members);
     assertThat(sdata.getName()).isEqualTo("name");
+
+    StructureMembers.Member m = sdata.getStructureMembers().findMember("mname1");
+    assertThat(sdata.getMemberData("mname1")).isEqualTo(sdata.getMemberData(m));
+    assertThrows(IllegalArgumentException.class, () -> sdata.getMemberData("bad"));
   }
 
-  /** Experimental */
+  @Test
+  public void testCombine() {
+    StructureDataArray array1 = makeStructureArray(1);
+    StructureDataArray array2 = makeStructureArray(2);
+
+    int[] shape = new int[] {4};
+    Array<StructureData> array = Arrays.combine(ArrayType.STRUCTURE, shape, ImmutableList.of(array1, array2));
+
+    assertThat(array.get(0)).isEqualTo(array1.get(0));
+    assertThat(array.get(1)).isEqualTo(array1.get(1));
+    assertThat(array.get(2)).isEqualTo(array2.get(0));
+    assertThat(array.get(3)).isEqualTo(array2.get(1));
+  }
+
+  private StructureDataArray makeStructureArray(int idx) {
+    StructureMembers.Builder builder = StructureMembers.builder();
+    builder.setName("name");
+    builder.addMember("mname1", "mdesc1", "munits1", ArrayType.BYTE, new int[] {11, 11});
+    builder.addMember("mname2", "mdesc2", "munits1", ArrayType.FLOAT, new int[] {1});
+    StructureMembers members = builder.setStandardOffsets(false).build();
+
+    StructureData[] parr = new StructureData[2];
+    parr[0] = new StructureDataRow(members);
+    parr[1] = new StructureDataRow(members);
+    return new StructureDataArray(members, new int[] {2}, parr);
+  }
+
+  /** Testing only */
   class StructureDataRow extends StructureData {
     private final ByteBuffer bbuffer;
 
@@ -66,6 +97,12 @@ public class TestStructureDataArray {
       int size = m.length();
 
       switch (dataType) {
+        case BYTE:
+          byte[] barray = new byte[size];
+          for (int count = 0; count < size; count++) {
+            barray[count] = bbuffer.get(offset + count);
+          }
+          return new ArrayByte(dataType, m.getShape(), new ArrayByte.StorageS(barray));
         case DOUBLE:
           double[] darray = new double[size];
           for (int count = 0; count < size; count++) {

@@ -25,23 +25,28 @@ public class TestArray {
   }
 
   @Test
-  public void testArray() {
+  public void testBasics() {
     assertThat(array.getArrayType()).isEqualTo(ArrayType.DOUBLE);
     assertThat(array.getRank()).isEqualTo(3);
     assertThat(array.getShape()).isEqualTo(new int[] {1, 2, 3});
     assertThat(array.length()).isEqualTo(6);
+    assertThat(array.isVlen()).isFalse();
     assertThat(array.getIndex().getCurrentIndex()).isEqualTo(new int[3]);
     assertThat(array.show()).isEqualTo("1.0, 2.0, 3.0, 4.0, 5.0, 6.0");
 
     Section expected = Section.builder().appendRange(1).appendRange(2).appendRange(3).build();
     assertThat(array.getSection()).isEqualTo(expected);
 
+    assertThat(array.getScalar()).isEqualTo(1);
     assertThat(array.get(0, 0, 0)).isEqualTo(1);
     assertThat(array.get(0, 0, 1)).isEqualTo(2);
     assertThat(array.get(0, 0, 2)).isEqualTo(3);
     assertThat(array.get(0, 1, 0)).isEqualTo(4);
     assertThat(array.get(0, 1, 1)).isEqualTo(5);
     assertThat(array.get(0, 1, 2)).isEqualTo(6);
+
+    assertThat(array.contains(0, 1, 2)).isTrue();
+    assertThat(array.contains(1, 1, 2)).isFalse();
 
     int count = 0;
     for (double val : array) {
@@ -51,6 +56,13 @@ public class TestArray {
 
     assertThrows(IllegalArgumentException.class, () -> array.get(0, 2, 2));
     assertThrows(IllegalArgumentException.class, () -> array.get(0, 1));
+
+    // contents different
+    Array<?> array2 = Arrays.factory(ArrayType.DOUBLE, array.getShape(), new double[(int) array.getSize()]);
+    assertThat(array2).isEqualTo(array);
+    assertThat(array2.hashCode()).isEqualTo(array.hashCode());
+    assertThat(array.toString()).isEqualTo(
+        "Array{arrayType=double, indexFn=IndexFn{shape=[1, 2, 3], stride=[6, 3, 1], rank=3, length=6, offset=0, canonicalOrder=true}, rank=3}");
   }
 
   @Test

@@ -39,7 +39,7 @@ public final class StructureDataArray extends Array<StructureData> {
   }
 
   /** Create an Array of type StructureData and the given indexFn and storage. */
-  public StructureDataArray(StructureMembers members, IndexFn indexFn, Storage<StructureData> storage) {
+  StructureDataArray(StructureMembers members, IndexFn indexFn, Storage<StructureData> storage) {
     super(ArrayType.STRUCTURE, indexFn);
     this.members = members;
     this.storage = storage;
@@ -55,9 +55,17 @@ public final class StructureDataArray extends Array<StructureData> {
     return members.getMemberNames();
   }
 
+  /**
+   * Copies the internal data to dest. The parameters are different from the normal case.
+   *
+   * @param srcPos the starting byte offset into dest.
+   * @param dest must be a StructureDataStorageBB (LOOK or StorageSD?)
+   * @param destPos the starting byte offset into dest.
+   * @param length number of bytes to copy.
+   */
   @Override
   void arraycopy(int srcPos, Object dest, int destPos, long length) {
-    // TODO
+    storage.arraycopy(srcPos, dest, destPos, length);
   }
 
   @Override
@@ -137,8 +145,13 @@ public final class StructureDataArray extends Array<StructureData> {
     }
 
     @Override
-    public void set(int index, Object value) {
+    public void setPrimitiveArray(int index, Object value) {
       parray[index] = (StructureData) value;
+    }
+
+    @Override
+    public Object getPrimitiveArray(int elem) {
+      return parray[elem];
     }
 
     @Override

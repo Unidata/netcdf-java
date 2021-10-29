@@ -46,7 +46,6 @@ public final class ArrayVlen<T> extends Array<Array<T>> {
     }
     Object result; // LOOK cant figure out correct generics syntax
     switch (dataType) {
-      case BOOLEAN:
       case BYTE:
       case CHAR:
       case ENUM1:
@@ -86,7 +85,6 @@ public final class ArrayVlen<T> extends Array<Array<T>> {
   /** Creates primitive array like double[length][] for a Vlen of type dataType, and the given length. */
   public static Object createVlenArray(ArrayType dataType, int length) {
     switch (dataType) {
-      case BOOLEAN:
       case BYTE:
       case CHAR:
       case ENUM1:
@@ -174,9 +172,10 @@ public final class ArrayVlen<T> extends Array<Array<T>> {
    * @param value a primitive array of T, eg double[] of any length, or an Array of T.
    */
   public void set(int index, Object value) {
-    storage.set(index, value);
+    storage.setPrimitiveArray(index, value);
   }
 
+  /** Copies to a ragged array, eg short[][]. */
   @Override
   void arraycopy(int srcPos, Object dest, int destPos, long length) {
     if (indexFn.isCanonicalOrder()) {
@@ -186,7 +185,7 @@ public final class ArrayVlen<T> extends Array<Array<T>> {
       int destIndex = destPos;
       Iterator<Integer> iter = indexFn.iterator(srcPos, length);
       while (iter.hasNext()) {
-        ddest[destIndex++] = storage.get(iter.next());
+        ddest[destIndex++] = storage.getPrimitiveArray(iter.next());
       }
     }
   }
@@ -256,11 +255,16 @@ public final class ArrayVlen<T> extends Array<Array<T>> {
     }
 
     @Override
-    public void set(int index, Object value) {
+    public void setPrimitiveArray(int index, Object value) {
       if (value instanceof ArrayByte) {
         value = Arrays.copyPrimitiveArray((ArrayByte) value);
       }
       primitiveArray[index] = (byte[]) value;
+    }
+
+    @Override
+    public Object getPrimitiveArray(int index) {
+      return primitiveArray[index];
     }
 
     private final class StorageIter implements Iterator<Array<Byte>> {
@@ -316,11 +320,16 @@ public final class ArrayVlen<T> extends Array<Array<T>> {
     }
 
     @Override
-    public void set(int index, Object value) {
+    public void setPrimitiveArray(int index, Object value) {
       if (value instanceof ArrayDouble) {
         value = Arrays.copyPrimitiveArray((ArrayDouble) value);
       }
       primitiveArray[index] = (double[]) value;
+    }
+
+    @Override
+    public Object getPrimitiveArray(int index) {
+      return primitiveArray[index];
     }
 
     private final class StorageIter implements Iterator<Array<Double>> {
@@ -376,11 +385,16 @@ public final class ArrayVlen<T> extends Array<Array<T>> {
     }
 
     @Override
-    public void set(int index, Object value) {
+    public void setPrimitiveArray(int index, Object value) {
       if (value instanceof ArrayFloat) {
         value = Arrays.copyPrimitiveArray((ArrayFloat) value);
       }
       primitiveArray[index] = (float[]) value;
+    }
+
+    @Override
+    public Object getPrimitiveArray(int index) {
+      return primitiveArray[index];
     }
 
     private final class StorageIter implements Iterator<Array<Float>> {
@@ -438,11 +452,16 @@ public final class ArrayVlen<T> extends Array<Array<T>> {
     }
 
     @Override
-    public void set(int index, Object value) {
+    public void setPrimitiveArray(int index, Object value) {
       if (value instanceof ArrayInteger) {
         value = Arrays.copyPrimitiveArray((ArrayInteger) value);
       }
       primitiveArray[index] = (int[]) value;
+    }
+
+    @Override
+    public Object getPrimitiveArray(int index) {
+      return primitiveArray[index];
     }
 
     private final class StorageIter implements Iterator<Array<Integer>> {
@@ -500,11 +519,16 @@ public final class ArrayVlen<T> extends Array<Array<T>> {
     }
 
     @Override
-    public void set(int index, Object value) {
+    public void setPrimitiveArray(int index, Object value) {
       if (value instanceof ArrayLong) {
         value = Arrays.copyPrimitiveArray((ArrayLong) value);
       }
       primitiveArray[index] = (long[]) value;
+    }
+
+    @Override
+    public Object getPrimitiveArray(int index) {
+      return primitiveArray[index];
     }
 
     private final class StorageIter implements Iterator<Array<Long>> {
@@ -562,11 +586,16 @@ public final class ArrayVlen<T> extends Array<Array<T>> {
     }
 
     @Override
-    public void set(int index, Object value) {
+    public void setPrimitiveArray(int index, Object value) {
       if (value instanceof ArrayShort) {
         value = Arrays.copyPrimitiveArray((ArrayShort) value);
       }
       primitiveArray[index] = (short[]) value;
+    }
+
+    @Override
+    public Object getPrimitiveArray(int index) {
+      return primitiveArray[index];
     }
 
     private final class StorageIter implements Iterator<Array<Short>> {
@@ -622,11 +651,16 @@ public final class ArrayVlen<T> extends Array<Array<T>> {
     }
 
     @Override
-    public void set(int index, Object value) {
+    public void setPrimitiveArray(int index, Object value) {
       if (value instanceof ArrayString) {
         value = Arrays.copyPrimitiveArray((ArrayString) value);
       }
       primitiveArray[index] = (String[]) value;
+    }
+
+    @Override
+    public Object getPrimitiveArray(int elem) {
+      return primitiveArray[elem];
     }
 
     private final class StorageIter implements Iterator<Array<String>> {

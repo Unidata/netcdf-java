@@ -77,25 +77,12 @@ final class ArrayByte extends Array<Byte> {
     if (indexFn.isCanonicalOrder()) {
       return ByteString.copyFrom(((StorageS) storage).storage);
     }
-
     byte[] raw = new byte[(int) length()];
     int idx = 0;
     for (byte bval : this) {
       raw[idx++] = bval;
     }
     return ByteString.copyFrom(raw);
-  }
-
-  /** Convert the Array into a ByteBuffer. */
-  ByteBuffer getByteBuffer() {
-    if (indexFn.isCanonicalOrder()) {
-      return ByteBuffer.wrap(((StorageS) storage).storage);
-    }
-    ByteBuffer result = ByteBuffer.allocate((int) this.length());
-    for (byte bval : this) {
-      result.put(bval);
-    }
-    return result;
   }
 
   /**

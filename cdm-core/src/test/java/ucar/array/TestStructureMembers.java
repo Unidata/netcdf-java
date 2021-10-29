@@ -40,9 +40,9 @@ public class TestStructureMembers {
     assertThat(sm.getMemberNames()).isEqualTo(ImmutableList.of("mname1", "mname3", "mname2"));
 
     int count = 0;
-    for (Member m : sm.getMembers()) {
+    for (Member m : sm) {
       assertThat(m).isEqualTo(sm.findMember(m.getName()));
-      assertThat(m.getIndex()).isEqualTo(count++);
+      assertThat(m.getHeapIndex()).isEqualTo(count++);
     }
     assertThat(sm.findMember(null)).isNull();
 
@@ -54,9 +54,10 @@ public class TestStructureMembers {
     assertThat(m.getShape()).isEqualTo(new int[] {11, 11});
     assertThat(m.length()).isEqualTo(121);
     assertThat(m.getStorageSizeBytes()).isEqualTo(121);
-    assertThat(m.getIndex()).isEqualTo(0);
+    assertThat(m.getHeapIndex()).isEqualTo(0);
     assertThat(m.isVlen()).isEqualTo(false);
     assertThat(m.getStructureMembers()).isNull();
+    assertThat(m.isScalar()).isFalse();
 
     Member m2 = sm.findMember("mname3");
     assertThat(m2).isNotNull();
@@ -64,6 +65,7 @@ public class TestStructureMembers {
     assertThat(m2.getShape()).isEqualTo(new int[] {});
     assertThat(m2.length()).isEqualTo(1);
     assertThat(m2.getStorageSizeBytes()).isEqualTo(2);
+    assertThat(m2.isScalar()).isTrue();
 
     assertThrows(ArrayIndexOutOfBoundsException.class, () -> sm.getMember(3));
 
@@ -71,6 +73,7 @@ public class TestStructureMembers {
     assertThat(sm.toString())
         .isEqualTo("StructureMembers{name=name, members=[mname1, mname3, mname2], structureSize=200}");
     assertThat(sm.toBuilder().build()).isEqualTo(sm);
+    assertThat(sm.toBuilder().build().hashCode()).isEqualTo(sm.hashCode());
     assertThat(sm.toBuilder().build().equals(sm)).isTrue();
     assertThat(sm.toString())
         .contains("StructureMembers{name=name, members=[mname1, mname3, mname2], structureSize=200}");
@@ -107,8 +110,9 @@ public class TestStructureMembers {
     assertThat(m.getShape()).isEqualTo(new int[] {});
     assertThat(m.length()).isEqualTo(1);
     assertThat(m.getStorageSizeBytes()).isEqualTo(198);
-    assertThat(m.getIndex()).isEqualTo(2);
+    assertThat(m.getHeapIndex()).isEqualTo(2);
     assertThat(m.isVlen()).isEqualTo(false);
+    assertThat(m.isScalar()).isTrue();
 
     StructureMembers ncm = m.getStructureMembers();
     assertThat(ncm).isNotNull();

@@ -306,7 +306,7 @@ public class TestSection {
   }
 
   @Test
-  public void testFill() throws InvalidRangeException {
+  public void testFillStatic() throws InvalidRangeException {
     int[] shape = new int[] {m, n, p};
     assertThat(Section.fill(null, shape)).isEqualTo(new Section(shape));
     assertThat(Section.fill(Section.SCALAR, new int[0])).isEqualTo(Section.SCALAR);
@@ -314,16 +314,28 @@ public class TestSection {
 
     assertThrows(InvalidRangeException.class, () -> Section.fill(new Section(), shape));
 
-    Section s = Section.builder().appendRange(m).appendRange(null).appendRange(m).build();
+    Section s = new Section(":, 3:3, :");
     Section sf = Section.fill(s, shape);
-    assertThat(sf.getRank()).isEqualTo(3);
     assertThat(sf.getRange(0)).isEqualTo(new Range(m));
-    assertThat(sf.getRange(1)).isEqualTo(new Range(n));
-    assertThat(sf.getRange(2)).isEqualTo(new Range(m));
+    assertThat(sf.getRange(1)).isEqualTo(new Range(3, 3));
+    assertThat(sf.getRange(2)).isEqualTo(new Range(p));
   }
 
   @Test
-  public void testConstruct1() throws InvalidRangeException {
+  public void testFill() throws InvalidRangeException {
+    Section s = new Section(":, 7:7, :");
+    Section fill = s.fill(new int[] {7, 8, 7});
+    assertThat(fill).isEqualTo(Section.builder().appendRange(7).appendRange(new Range(7, 7)).appendRange(7).build());
+  }
+
+  @Test
+  public void testFillFail() throws InvalidRangeException {
+    Section s = new Section(":, 7:7, :");
+    assertThrows(InvalidRangeException.class, () -> s.fill(new int[] {7, 7, 7}));
+  }
+
+  @Test
+  public void testConstruct1() {
     int[] shape = new int[] {3, 0, -1};
     Section s = new Section(shape);
     assertThat(s.getRank()).isEqualTo(3);
@@ -379,6 +391,27 @@ public class TestSection {
 
     Section s = Section.builder().appendRange(-1).appendRange(new Range("anda", 99, 100)).build();
     assertThat(s.isVariableLength()).isTrue();
+  }
+
+  @Test
+  public void testIsStrided() throws InvalidRangeException {
+    Section s2 = Section.builder().appendRange(99).appendRange(new Range("anda", 99, 100)).build();
+    assertThat(s2.isStrided()).isFalse();
+
+    Section s = Section.builder().appendRange(-1).appendRange(new Range("anda", 99, 100, 9)).build();
+    assertThat(s.isStrided()).isTrue();
+  }
+
+  @Test
+  public void testGetters() throws InvalidRangeException {
+    Section s = Section.builder().appendRange(99).appendRange(new Range("anda", 99, 101, 2)).build();
+    assertThat(s.getOrigin(0)).isEqualTo(0);
+    assertThat(s.getShape(0)).isEqualTo(99);
+    assertThat(s.getStride(0)).isEqualTo(1);
+
+    assertThat(s.getOrigin(1)).isEqualTo(99);
+    assertThat(s.getShape(1)).isEqualTo(2);
+    assertThat(s.getStride(1)).isEqualTo(2);
   }
 
   @Test

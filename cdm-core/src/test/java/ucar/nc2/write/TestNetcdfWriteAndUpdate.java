@@ -76,7 +76,7 @@ public class TestNetcdfWriteAndUpdate {
     writerb.addAttribute(new Attribute("versionB", (byte) 3));
 
     // test some errors
-    assertThrows(RuntimeException.class, () -> Arrays.factory(ArrayType.OBJECT, new int[] {1}, new Object[1]))
+    assertThrows(RuntimeException.class, () -> Arrays.factory(ArrayType.SEQUENCE, new int[] {1}, new Object[1]))
         .getMessage().contains("Unimplemented ArrayType");
 
     try (NetcdfFormatWriter writer = writerb.build()) {

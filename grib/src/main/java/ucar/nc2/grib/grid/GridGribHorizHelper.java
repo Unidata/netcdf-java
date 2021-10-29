@@ -9,7 +9,7 @@ import com.google.common.collect.ImmutableList;
 import ucar.array.Array;
 import ucar.array.InvalidRangeException;
 import ucar.array.Section;
-import ucar.array.SectionIterable;
+import ucar.nc2.grib.SectionIterable;
 import ucar.nc2.Attribute;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CDM;
@@ -121,7 +121,7 @@ class GridGribHorizHelper {
     void makeHorizCS(GridAxisPoint xaxis, GridAxisPoint yaxis) throws InvalidRangeException, IOException {
       int[] shape = new int[] {hcs.ny, hcs.nx};
       Section section = new Section(shape);
-      SectionIterable want = new ucar.array.SectionIterable(section, shape);
+      SectionIterable want = new SectionIterable(section, shape);
       Array<Number> latdata = (Array<Number>) GribArrayReader.factory(gribCollection, lat).readData(want);
       Array<Number> londata = (Array<Number>) GribArrayReader.factory(gribCollection, lon).readData(want);
 

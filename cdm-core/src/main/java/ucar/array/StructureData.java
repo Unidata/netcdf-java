@@ -39,8 +39,9 @@ public abstract class StructureData {
    */
   public Array<?> getMemberData(String memberName) {
     StructureMembers.Member m = members.findMember(memberName);
-    if (m == null)
+    if (m == null) {
       throw new IllegalArgumentException("illegal member name =" + memberName);
+    }
     return getMemberData(m);
   }
 

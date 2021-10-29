@@ -4,14 +4,101 @@
  */
 package ucar.array;
 
+import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import java.math.BigInteger;
+import java.util.List;
 
 import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
+import static org.junit.Assert.assertThrows;
 
 /** Test {@link ucar.array.ArrayType} */
 public class TestArrayType {
+
+  @Test
+  public void testBasics() {
+    assertThat(ArrayType.STRING.toString().toUpperCase()).isEqualTo(ArrayType.STRING.name());
+    assertThat(ArrayType.STRING.toCdl()).isEqualTo(ArrayType.STRING.toNcml().toLowerCase());
+    assertThat(ArrayType.STRING.getPrimitiveClass()).isEqualTo(String.class);
+
+    assertThat(ArrayType.SHORT.getSignedness()).isEqualTo(ArrayType.Signedness.SIGNED);
+    assertThat(ArrayType.USHORT.getSignedness()).isEqualTo(ArrayType.Signedness.UNSIGNED);
+
+    assertThat(ArrayType.STRING.isString()).isTrue();
+    assertThat(ArrayType.CHAR.isString()).isTrue();
+    assertThat(ArrayType.INT.isString()).isFalse();
+
+    assertThat(ArrayType.FLOAT.isNumeric()).isTrue();
+    assertThat(ArrayType.UINT.isNumeric()).isTrue();
+    assertThat(ArrayType.STRING.isNumeric()).isFalse();
+    assertThat(ArrayType.STRUCTURE.isNumeric()).isFalse();
+
+    assertThat(ArrayType.FLOAT.isIntegral()).isFalse();
+    assertThat(ArrayType.UINT.isIntegral()).isTrue();
+    assertThat(ArrayType.STRING.isIntegral()).isFalse();
+
+    assertThat(ArrayType.FLOAT.isFloatingPoint()).isTrue();
+    assertThat(ArrayType.UINT.isFloatingPoint()).isFalse();
+    assertThat(ArrayType.STRING.isFloatingPoint()).isFalse();
+
+    assertThat(ArrayType.FLOAT.isEnum()).isFalse();
+    assertThat(ArrayType.UINT.isEnum()).isFalse();
+    assertThat(ArrayType.STRING.isEnum()).isFalse();
+    assertThat(ArrayType.ENUM1.isEnum()).isTrue();
+    assertThat(ArrayType.ENUM2.isEnum()).isTrue();
+    assertThat(ArrayType.ENUM4.isEnum()).isTrue();
+  }
+
+  @Test
+  public void testWithSigndedness() {
+    assertThat(ArrayType.UINT.withSignedness(ArrayType.Signedness.UNSIGNED)).isEqualTo(ArrayType.UINT);
+    assertThat(ArrayType.UINT.withSignedness(ArrayType.Signedness.SIGNED)).isEqualTo(ArrayType.INT);
+
+    assertThat(ArrayType.INT.withSignedness(ArrayType.Signedness.UNSIGNED)).isEqualTo(ArrayType.UINT);
+    assertThat(ArrayType.INT.withSignedness(ArrayType.Signedness.SIGNED)).isEqualTo(ArrayType.INT);
+
+    assertThat(ArrayType.USHORT.withSignedness(ArrayType.Signedness.UNSIGNED)).isEqualTo(ArrayType.USHORT);
+    assertThat(ArrayType.USHORT.withSignedness(ArrayType.Signedness.SIGNED)).isEqualTo(ArrayType.SHORT);
+
+    assertThat(ArrayType.SHORT.withSignedness(ArrayType.Signedness.UNSIGNED)).isEqualTo(ArrayType.USHORT);
+    assertThat(ArrayType.SHORT.withSignedness(ArrayType.Signedness.SIGNED)).isEqualTo(ArrayType.SHORT);
+
+    assertThat(ArrayType.BYTE.withSignedness(ArrayType.Signedness.UNSIGNED)).isEqualTo(ArrayType.UBYTE);
+    assertThat(ArrayType.BYTE.withSignedness(ArrayType.Signedness.SIGNED)).isEqualTo(ArrayType.BYTE);
+
+    assertThat(ArrayType.UBYTE.withSignedness(ArrayType.Signedness.UNSIGNED)).isEqualTo(ArrayType.UBYTE);
+    assertThat(ArrayType.UBYTE.withSignedness(ArrayType.Signedness.SIGNED)).isEqualTo(ArrayType.BYTE);
+
+    assertThat(ArrayType.LONG.withSignedness(ArrayType.Signedness.UNSIGNED)).isEqualTo(ArrayType.ULONG);
+    assertThat(ArrayType.LONG.withSignedness(ArrayType.Signedness.SIGNED)).isEqualTo(ArrayType.LONG);
+
+    assertThat(ArrayType.ULONG.withSignedness(ArrayType.Signedness.UNSIGNED)).isEqualTo(ArrayType.ULONG);
+    assertThat(ArrayType.ULONG.withSignedness(ArrayType.Signedness.SIGNED)).isEqualTo(ArrayType.LONG);
+
+    assertThat(ArrayType.STRING.withSignedness(ArrayType.Signedness.UNSIGNED)).isEqualTo(ArrayType.STRING);
+  }
+
+  @Test
+  public void testGetTypeByName() {
+    for (ArrayType type : ArrayType.values()) {
+      assertThat(ArrayType.getTypeByName(type.name())).isEqualTo(type);
+    }
+    assertThat(ArrayType.getTypeByName("bad")).isNull();
+    assertThat(ArrayType.getTypeByName(null)).isNull();
+  }
+
+  @Test
+  public void testGetPrimitiveClass() {
+    List<ArrayType> list =
+        ImmutableList.of(ArrayType.BYTE, ArrayType.DOUBLE, ArrayType.FLOAT, ArrayType.INT, ArrayType.SHORT,
+            ArrayType.LONG, ArrayType.UINT, ArrayType.USHORT, ArrayType.ULONG, ArrayType.STRUCTURE, ArrayType.STRING);
+    for (ArrayType type : list) {
+      assertWithMessage(type.toString()).that(ArrayType.forPrimitiveClass(type.getPrimitiveClass(), type.isUnsigned()))
+          .isEqualTo(type);
+    }
+    assertThrows(RuntimeException.class, () -> ArrayType.forPrimitiveClass(this.getClass(), false));
+  }
 
   @Test
   public void testUnsignedLongToBigInt() {
@@ -76,7 +163,7 @@ public class TestArrayType {
     assertSameNumber(new BigInteger("18446620616920539271"), ArrayType.widenNumberIfNegative((long) -123456789012345L));
   }
 
-  // Asserts tha numbers have the same type and value.
+  // Asserts the numbers have the same type and value.
   private static void assertSameNumber(Number expected, Number actual) {
     assertThat(expected.getClass()).isEqualTo(actual.getClass());
     assertThat(expected).isEqualTo(actual);

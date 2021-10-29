@@ -6,14 +6,20 @@
 package ucar.nc2.internal.util;
 
 import com.google.common.base.Stopwatch;
+
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Formatter;
 import java.util.Iterator;
 
 import ucar.array.*;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Sequence;
 import ucar.nc2.Variable;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.util.Misc;
 
 /**
@@ -21,6 +27,21 @@ import ucar.nc2.util.Misc;
  * Also use to test round trip through cmdr.
  */
 public class CompareArrayToArray {
+
+  public static boolean compareNetcdfFile(String filename) throws IOException {
+    try (NetcdfFile ncfile = NetcdfFiles.open(filename, -1, null, NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE)) {
+      System.out.println("compareNetcdfFile: " + ncfile.getLocation());
+      return compareFiles(ncfile, ncfile);
+    }
+  }
+
+  public static boolean compareNetcdfDataset(String filename) throws IOException {
+    try (NetcdfDataset ncfile =
+        NetcdfDatasets.openDataset(filename, true, null, NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE)) {
+      System.out.println("compareNetcdfDataset: " + ncfile.getLocation());
+      return compareFiles(ncfile, ncfile);
+    }
+  }
 
   public static boolean compareFiles(NetcdfFile arrayFile, NetcdfFile arrayFile2) throws IOException {
     Stopwatch stopwatchAll = Stopwatch.createStarted();
@@ -291,20 +312,10 @@ public class CompareArrayToArray {
       }
 
 
+      case STRUCTURE:
       case SEQUENCE: {
-        Iterator<ucar.array.StructureData> iter1 = (Iterator<ucar.array.StructureData>) org.iterator();
-        Iterator<ucar.array.StructureData> iter2 = (Iterator<ucar.array.StructureData>) array.iterator();
-        int row = 0;
-        while (iter1.hasNext() && iter2.hasNext()) {
-          ok &= compareStructureData(f, iter1.next(), iter2.next(), justOne);
-          row++;
-        }
-        break;
-      }
-
-      case STRUCTURE: {
-        Iterator<ucar.array.StructureData> iter1 = (Iterator<ucar.array.StructureData>) org.iterator();
-        Iterator<ucar.array.StructureData> iter2 = (Iterator<ucar.array.StructureData>) array.iterator();
+        Iterator<StructureData> iter1 = (Iterator<StructureData>) org.iterator();
+        Iterator<StructureData> iter2 = (Iterator<StructureData>) array.iterator();
         int row = 0;
         while (iter1.hasNext() && iter2.hasNext()) {
           ok &= compareStructureData(f, iter1.next(), iter2.next(), justOne);
@@ -328,19 +339,19 @@ public class CompareArrayToArray {
         Misc.relativeDifference(v1.doubleValue(), v2.doubleValue()));
   }
 
-  private static boolean compareStructureData(Formatter f, StructureData org, StructureData array, boolean justOne)
+  public static boolean compareStructureData(Formatter f, StructureData org, StructureData array, boolean justOne)
       throws IOException {
     boolean ok = true;
 
     StructureMembers sm1 = org.getStructureMembers();
-    ucar.array.StructureMembers sm2 = array.getStructureMembers();
+    StructureMembers sm2 = array.getStructureMembers();
     if (sm1.getMembers().size() != sm2.getMembers().size()) {
       f.format(" membersize %d !== %d%n", sm1.getMembers().size(), sm2.getMembers().size());
       ok = false;
     }
 
     for (StructureMembers.Member m1 : sm1.getMembers()) {
-      ucar.array.StructureMembers.Member m2 = sm2.findMember(m1.getName());
+      StructureMembers.Member m2 = sm2.findMember(m1.getName());
       if (m2 == null) {
         System.out.printf("Cant find %s in copy%n", m1.getName());
         continue;
@@ -354,6 +365,61 @@ public class CompareArrayToArray {
     }
 
     return ok;
+  }
+
+  public static boolean compareSequence(String filename) throws IOException {
+    try (NetcdfFile org = NetcdfFiles.open(filename, -1, null);
+        NetcdfFile copy = NetcdfFiles.open(filename, -1, null)) {
+      System.out.println("Test NetcdfFile: " + org.getLocation());
+
+      boolean ok = true;
+      for (Variable v : org.getVariables()) {
+        if (v.getArrayType() == ArrayType.SEQUENCE) {
+          System.out.printf("  read sequence %s %s%n", v.getArrayType(), v.getShortName());
+          Sequence s = (Sequence) v;
+          Iterator<StructureData> orgSeq = s.iterator();
+          Sequence copyv = (Sequence) copy.findVariable(v.getFullName());
+          Iterator<StructureData> array = copyv.iterator();
+          Formatter f = new Formatter();
+          boolean ok1 = compareSequence(f, v.getShortName(), orgSeq, array);
+          if (!ok1) {
+            System.out.printf("%s%n", f);
+          }
+          ok &= ok1;
+        }
+      }
+      return ok;
+    } catch (FileNotFoundException e) {
+      File file = new File(filename);
+      System.out.printf("File.getAbsolutePath = %s%n", file.getAbsolutePath());
+      throw e;
+    }
+  }
+
+  public static boolean compareSequenceDataset(String filename) throws IOException {
+
+    try (NetcdfDataset org = NetcdfDatasets.openDataset(filename);
+        NetcdfDataset copy = NetcdfDatasets.openDataset(filename)) {
+      System.out.println("Test NetcdfDataset: " + org.getLocation());
+
+      boolean ok = true;
+      for (Variable v : org.getVariables()) {
+        if (v.getArrayType() == ArrayType.SEQUENCE) {
+          System.out.printf("  read sequence %s %s%n", v.getArrayType(), v.getShortName());
+          Sequence s = (Sequence) v;
+          Iterator<StructureData> orgSeq = s.iterator();
+          Sequence copyv = (Sequence) copy.findVariable(v.getFullName());
+          Iterator<StructureData> array = copyv.iterator();
+          Formatter f = new Formatter();
+          boolean ok1 = compareSequence(f, v.getShortName(), orgSeq, array);
+          if (!ok1) {
+            System.out.printf("%s%n", f);
+          }
+          ok &= ok1;
+        }
+      }
+      return ok;
+    }
   }
 
   public static boolean compareSequence(Formatter f, String name, Iterator<StructureData> org,

@@ -7,5 +7,8 @@ package ucar.array;
 /** Storage that can be changed. */
 public interface StorageMutable<T> extends Storage<T> {
   /** Set the ith element. */
-  void set(int index, Object value);
+  void setPrimitiveArray(int index, Object value);
+
+  /** Get the ith element. */
+  Object getPrimitiveArray(int index);
 }

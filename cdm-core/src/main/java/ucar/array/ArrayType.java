@@ -7,15 +7,8 @@ package ucar.array;
 import javax.annotation.Nullable;
 import java.math.BigInteger;
 
-/**
- * Type-safe enumeration of Array data types.
- * <p>
- * OPAQUE: Byte blobs, where length of blobs may be different. Usually stored as a vlen of Array&lt;Byte&gt;.
- * If theres only one, may be just an Array&lt;Byte&gt;.
- * </p>
- */
+/** Type-safe enumeration of Array data types. */
 public enum ArrayType {
-  BOOLEAN("boolean", "boolean", 1, Byte.class, false), //
   BYTE("byte", "byte", 1, Byte.class, false), //
   CHAR("char", "char", 1, Byte.class, false), //
   SHORT("short", "short", 2, Short.class, false), //
@@ -33,19 +26,16 @@ public enum ArrayType {
   ENUM2("enum2", "enum2", 2, Short.class, false), // short
   ENUM4("enum4", "enum4", 4, Integer.class, false), // int
 
-  // object types are variable length, they have 32 bit indices onto a heap inside of a Structure
-  STRING("String", "string", 4, String.class, false), // Java String
-  STRUCTURE("Structure", "Structure", 0, StructureData.class, false), // compact storage of heterogeneous fields
-  SEQUENCE("Sequence", "Sequence", 4, StructureData.class, false), // Iterator<StructureData>
+  //// object types are variable length; inside a structure, they have 32 bit indices onto a heap
+  // Java String
+  STRING("String", "string", 4, String.class, false),
+  // compact storage of heterogeneous fields
+  STRUCTURE("Structure", "Structure", 0, StructureData.class, false),
+  // Iterator<StructureData>
+  SEQUENCE("Sequence", "Sequence", 4, StructureData.class, false),
 
-  // OPAQUE: Byte blobs, where length of blobs may be different. Stored as a vlen of Array&lt;Byte&gt;.
-  // LOOK: is this true? If theres only one, may be just an Array&lt;Byte&gt;.
-  OPAQUE("opaque", "opaque", 1, Array.class, false), // Array<Array<Byte>>, an array of variable length byte arrays
-
-  /** @deprecated legacy, do not use. */
-  @Deprecated
-  OBJECT("object", "object", 1, Object.class, false), // legacy: size unknown, use with ucar.ma2.Array
-  ;
+  // Array<Array<Byte>>, an array of variable length byte arrays
+  OPAQUE("opaque", "opaque", 1, Array.class, false),;
 
   /**
    * A property of {@link #isIntegral() integral} data types that determines whether they can represent both
@@ -241,8 +231,6 @@ public enum ArrayType {
       return isUnsigned ? ArrayType.UBYTE : ArrayType.BYTE;
     if ((c == char.class) || (c == Character.class))
       return ArrayType.CHAR;
-    if ((c == boolean.class) || (c == Boolean.class))
-      return ArrayType.BOOLEAN;
     if ((c == long.class) || (c == Long.class))
       return isUnsigned ? ArrayType.ULONG : ArrayType.LONG;
     if (c == String.class)

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.array;
@@ -8,8 +8,12 @@ import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.fail;
 
+import com.google.common.base.Charsets;
+import com.google.protobuf.ByteString;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.nio.charset.StandardCharsets;
 
 /** Test {@link Arrays} */
 public class TestArrays {
@@ -172,6 +176,18 @@ public class TestArrays {
   }
 
   @Test
+  public void testReduceFirst() {
+    Array<Double> rArray0 = Arrays.reduceFirst(array, 0);
+    assertThat(rArray0.getShape()).isEqualTo(new int[] {1, 2, 3});
+
+    Array<Double> rArray1 = Arrays.reduceFirst(array, 1);
+    assertThat(rArray1.getShape()).isEqualTo(new int[] {2, 3});
+
+    Array<Double> rArray2 = Arrays.reduceFirst(array, 2);
+    assertThat(rArray2.getShape()).isEqualTo(new int[] {2, 3});
+  }
+
+  @Test
   public void testSection() throws InvalidRangeException {
     Section.Builder sb = Section.builder();
     sb.appendRange(null);
@@ -289,7 +305,20 @@ public class TestArrays {
   }
 
   @Test
-  public void testMinMax() {
+  public void testSums() {
+    int[] shape = new int[] {1, 2, 3};
+    int[] parray = new int[] {1, 2, 3, 4, 5, 6};
+    Array<?> array = Arrays.factory(ArrayType.INT, shape, parray);
+
+    assertThat(Arrays.sumDouble(array)).isEqualTo(21);
+    Array<Double> darray = Arrays.toDouble(array);
+    assertThat(Arrays.sumDouble(darray)).isEqualTo(21);
+    Array<Double> darray2 = Arrays.toDouble(darray);
+    assertThat(Arrays.sumDouble(darray2)).isEqualTo(21);
+  }
+
+  @Test
+  public void testMinMaxSkipMissingDataDouble() {
     MinMax minmax = Arrays.getMinMaxSkipMissingData(array, null);
     assertThat(minmax.min()).isEqualTo(1.0);
     assertThat(minmax.max()).isEqualTo(6.0);
@@ -317,6 +346,93 @@ public class TestArrays {
     });
     assertThat(minmax3.min()).isEqualTo(2.0);
     assertThat(minmax3.max()).isEqualTo(5.0);
+  }
+
+  @Test
+  public void testMinMaxSkipMissingDataNumber() {
+    int[] shape = new int[] {1, 2, 3};
+    int[] parray = new int[] {1, 2, 3, 4, 5, 6};
+    Array<Number> narray = Arrays.factory(ArrayType.INT, shape, parray);
+
+    MinMax minmax = Arrays.getMinMaxSkipMissingData(narray, null);
+    assertThat(minmax.min()).isEqualTo(1.0);
+    assertThat(minmax.max()).isEqualTo(6.0);
+    assertThat(minmax.toString()).isEqualTo("MinMax{min=1.0, max=6.0}");
+
+    MinMax minmax2 = Arrays.getMinMaxSkipMissingData(narray, new IsMissingEvaluator() {
+      public boolean hasMissing() {
+        return false;
+      }
+
+      public boolean isMissing(double val) {
+        return val == 1.0 || val == 6.0;
+      }
+    });
+    assertThat(minmax2.min()).isEqualTo(1.0);
+    assertThat(minmax2.max()).isEqualTo(6.0);
+
+    MinMax minmax3 = Arrays.getMinMaxSkipMissingData(narray, new IsMissingEvaluator() {
+      public boolean hasMissing() {
+        return true;
+      }
+
+      public boolean isMissing(double val) {
+        return val == 1.0 || val == 6.0;
+      }
+    });
+    assertThat(minmax3.min()).isEqualTo(2.0);
+    assertThat(minmax3.max()).isEqualTo(5.0);
+  }
+
+  @Test
+  public void testEqualNumbers() {
+    int[] shape = new int[] {1, 2, 3};
+    int[] parray = new int[] {1, 2, 3, 4, 5, 6};
+    Array<Number> array = Arrays.factory(ArrayType.INT, shape, parray);
+
+    Array darray = Arrays.toDouble(array);
+    assertThat(Arrays.equalNumbers(array, (Array<Number>) darray)).isTrue();
+  }
+
+  @Test
+  public void testEqualDoubles() {
+    int[] shape = new int[] {1, 2, 3};
+    double[] parray = new double[] {1, 2, 3, 4, 5, 6};
+    Array<Double> array = Arrays.factory(ArrayType.DOUBLE, shape, parray);
+
+    Array<Double> darray = Arrays.toDouble(array);
+    assertThat(Arrays.equalDoubles(array, darray)).isTrue();
+  }
+
+  @Test
+  public void testEqualFloats() {
+    int[] shape = new int[] {1, 2, 3};
+    float[] parray = new float[] {1, 2, 3, 4, 5, 6};
+    Array<Float> array = Arrays.factory(ArrayType.FLOAT, shape, parray);
+
+    float[] fparray = new float[] {1, 2, 3, 4, 5, 6.0001f};
+    Array<Float> farray = Arrays.factory(ArrayType.FLOAT, shape, fparray);
+    assertThat(Arrays.equalFloats(array, farray)).isFalse();
+  }
+
+  @Test
+  public void testMakeStrings() {
+    byte[] barray = "What?".getBytes(StandardCharsets.UTF_8);
+    Array<Byte> array = Arrays.factory(ArrayType.BYTE, new int[] {barray.length}, barray);
+    assertThat(Arrays.makeStringFromChar(array)).isEqualTo("What?");
+
+    byte[] barray2 = "Whats?".getBytes(StandardCharsets.UTF_8);
+    Array<Byte> array2 = Arrays.factory(ArrayType.BYTE, new int[] {2, 3}, barray2);
+    Array<String> sarrays = Arrays.makeStringsFromChar(array2);
+    assertThat(sarrays.get(0)).isEqualTo("Wha");
+    assertThat(sarrays.get(1)).isEqualTo("ts?");
+  }
+
+  @Test
+  public void testGetByteString() {
+    byte[] barray = "What?".getBytes(StandardCharsets.UTF_8);
+    Array<Byte> array = Arrays.factory(ArrayType.BYTE, new int[] {barray.length}, barray);
+    assertThat(Arrays.getByteString(array)).isEqualTo(ByteString.copyFrom("What?", Charsets.UTF_8));
   }
 
 }

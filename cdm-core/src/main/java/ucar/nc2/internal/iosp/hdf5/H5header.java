@@ -1073,9 +1073,9 @@ public class H5header implements HdfHeaderIF {
           long address = chunk.getSrcPos() + layout2.getElemSize() * i;
           Array<?> vlenArray = getHeapDataArray(address, readType, endian);
           if (vinfo.typeInfo.base.hdfType == 7) {
-            vlenStorage.set(count, h5iosp.convertReferenceArray((Array<Long>) vlenArray));
+            vlenStorage.setPrimitiveArray(count, h5iosp.convertReferenceArray((Array<Long>) vlenArray));
           } else {
-            vlenStorage.set(count, vlenArray);
+            vlenStorage.setPrimitiveArray(count, vlenArray);
           }
           count++;
         }

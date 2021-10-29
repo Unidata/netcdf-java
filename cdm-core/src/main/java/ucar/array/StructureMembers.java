@@ -175,7 +175,7 @@ public final class StructureMembers implements Iterable<StructureMembers.Member>
     }
 
     /** Get the heap index in the Members list. */
-    public int getIndex() {
+    public int getHeapIndex() {
       return index;
     }
 

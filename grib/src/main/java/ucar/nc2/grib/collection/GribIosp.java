@@ -240,7 +240,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     try {
       GribCollectionImmutable.VariableIndex vindex = (GribCollectionImmutable.VariableIndex) v2.getSPobject();
       GribArrayReader dataReader = GribArrayReader.factory(gribCollection, vindex);
-      ucar.array.SectionIterable sectionIter = new ucar.array.SectionIterable(section, v2.getShape());
+      SectionIterable sectionIter = new SectionIterable(section, v2.getShape());
       return dataReader.readData(sectionIter);
 
     } catch (IOException ioe) {
