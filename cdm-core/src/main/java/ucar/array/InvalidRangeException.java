@@ -11,8 +11,4 @@ public class InvalidRangeException extends Exception {
   public InvalidRangeException(String s) {
     super(s);
   }
-
-  public InvalidRangeException(ucar.ma2.InvalidRangeException old) {
-    super(old.getMessage(), old);
-  }
 }

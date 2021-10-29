@@ -46,8 +46,6 @@ public class StructureDS extends ucar.nc2.Structure implements StructureEnhanced
       result = orgVar.readArray();
     } else {
       throw new IllegalStateException("StructureDS has no way to get data");
-      // Object data = smProxy.getFillValue(getDataType());
-      // return Array.factoryConstant(dataType.getPrimitiveClassType(), getShape(), data);
     }
 
     StructureDataArrayEnhancer enhancer = new StructureDataArrayEnhancer(this, (ucar.array.StructureDataArray) result);

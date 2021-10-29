@@ -9,12 +9,10 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.Formatter;
-import java.util.Iterator;
 import java.util.Optional;
 
 import ucar.array.ArrayType;
 import ucar.array.Arrays;
-import ucar.array.ArraysConvert;
 import ucar.array.Section;
 import ucar.array.Storage;
 import ucar.array.StructureData;
@@ -24,7 +22,6 @@ import ucar.array.Range;
 import ucar.array.StructureMembers;
 import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.Sequence;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.DataFormatType;
@@ -222,7 +219,7 @@ public class N3iosp extends AbstractIOServiceProvider implements IOServiceProvid
 
     Object data = readDataObject(v2, section);
     if (v2.getArrayType() == ArrayType.CHAR) {
-      data = ArraysConvert.convertCharToByte((char[]) data);
+      data = Arrays.convertCharToByte((char[]) data);
     }
     return Arrays.factory(v2.getArrayType(), section.getShape(), data);
   }

@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import ucar.array.Array;
 import ucar.nc2.Sequence;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.iosp.bufr.BufrArrayIosp;
+import ucar.nc2.bufr.BufrArrayIosp;
 import ucar.array.StructureData;
 import ucar.array.InvalidRangeException;
 import ucar.unidata.util.test.TestDir;

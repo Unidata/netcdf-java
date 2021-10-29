@@ -7,9 +7,9 @@ package ucar.ui.bufr;
 
 import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
-import ucar.nc2.iosp.bufr.Message;
-import ucar.nc2.iosp.bufr.MessageScanner;
-import ucar.nc2.iosp.bufr.writer.BufrSplitter2;
+import ucar.nc2.bufr.Message;
+import ucar.nc2.bufr.MessageScanner;
+import ucar.nc2.bufr.writer.BufrSplitter2;
 import ucar.ui.ReportPanel;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.util.prefs.PreferencesExt;

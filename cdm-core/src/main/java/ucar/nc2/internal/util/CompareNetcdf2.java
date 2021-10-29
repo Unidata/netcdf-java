@@ -9,9 +9,6 @@ import javax.annotation.Nullable;
 import ucar.array.Array;
 import ucar.array.Arrays;
 import ucar.array.ArrayType;
-import ucar.array.ArraysConvert;
-import ucar.ma2.StructureData;
-import ucar.ma2.StructureMembers;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.*;
 import ucar.nc2.*;
@@ -158,13 +155,6 @@ public class CompareNetcdf2 {
 
   }
 
-  @Deprecated
-  public static boolean compareData(String name, ucar.ma2.Array data1, ucar.ma2.Array data2) throws IOException {
-    Array<?> array1 = ArraysConvert.convertToArray(data1);
-    Array<?> array2 = ArraysConvert.convertToArray(data2);
-    return new CompareNetcdf2().compareData(name, array1, array2, false);
-  }
-
   public static boolean compareData(String name, Array<?> data1, Array<?> data2) throws IOException {
     return new CompareNetcdf2().compareData(name, data1, data2, false);
   }
@@ -234,9 +224,7 @@ public class CompareNetcdf2 {
     return compare(org, copy, filter, showCompare, showEach, compareData);
   }
 
-  /** @deprecated use constructor to set options, then compare(NetcdfFile org, NetcdfFile copy) */
-  @Deprecated
-  public boolean compare(NetcdfFile org, NetcdfFile copy, boolean showCompare, boolean showEach, boolean compareData) {
+  private boolean compare(NetcdfFile org, NetcdfFile copy, boolean showCompare, boolean showEach, boolean compareData) {
     return compare(org, copy, null, showCompare, showEach, compareData);
   }
 
@@ -746,205 +734,6 @@ public class CompareNetcdf2 {
 
   public boolean compareData(String name, Array<?> data1, Array<?> data2, boolean justOne) throws IOException {
     return CompareArrayToArray.compareData(f, name, data1, data2, justOne, true);
-  }
-
-  /*
-   * private boolean compareData(String name, Array data1, Array data2, boolean justOne, boolean testTypes) {
-   * boolean ok = true;
-   * if (data1.getSize() != data2.getSize()) {
-   * f.format(" DIFF %s: data size %d !== %d%n", name, data1.getSize(), data2.getSize());
-   * ok = false;
-   * }
-   * 
-   * if (testTypes && data1.getElementType() != data2.getElementType()) {
-   * f.format(" DIFF %s: data element type %s !== %s%n", name, data1.getElementType(), data2.getElementType());
-   * ok = false;
-   * }
-   * 
-   * if (testTypes && data1.getDataType() != data2.getDataType()) {
-   * f.format(" DIFF %s: data type %s !== %s%n", name, data1.getDataType(), data2.getDataType());
-   * ok = false;
-   * }
-   * 
-   * if (!Misc.compare(data1.getShape(), data2.getShape(), f)) {
-   * f.format(" DIFF %s: data shape %s !== %s%n", name, java.util.Arrays.toString(data1.getShape()),
-   * java.util.Arrays.toString(data2.getShape()));
-   * ok = false;
-   * }
-   * 
-   * if (!ok) {
-   * return false;
-   * }
-   * 
-   * ArrayType dt = data1.getDataType();
-   * 
-   * IndexIterator iter1 = data1.getIndexIterator();
-   * IndexIterator iter2 = data2.getIndexIterator();
-   * 
-   * if (data1.isVlen()) {
-   * while (iter1.hasNext() && iter2.hasNext()) {
-   * Object v1 = iter1.getObjectNext();
-   * Object v2 = iter2.getObjectNext();
-   * if (v1.getClass() != v2.getClass()) {
-   * f.format(" DIFF %s: ArrayObject class %s != %s %n", name, v1.getClass().getName(), v2.getClass().getName());
-   * ok = false;
-   * if (justOne)
-   * break;
-   * 
-   * } else if (v1 instanceof Array) {
-   * ok &= compareData(name, (Array) v1, (Array) v2, justOne, testTypes);
-   * }
-   * }
-   * 
-   * } else if (dt == ArrayType.DOUBLE) {
-   * while (iter1.hasNext() && iter2.hasNext()) {
-   * double v1 = iter1.getDoubleNext();
-   * double v2 = iter2.getDoubleNext();
-   * if (!Misc.nearlyEquals(v1, v2)) {
-   * f.format(createNumericDataDiffMessage(dt, name, v1, v2, iter1));
-   * ok = false;
-   * if (justOne)
-   * break;
-   * }
-   * }
-   * } else if (dt == ArrayType.FLOAT) {
-   * while (iter1.hasNext() && iter2.hasNext()) {
-   * float v1 = iter1.getFloatNext();
-   * float v2 = iter2.getFloatNext();
-   * if (!Misc.nearlyEquals(v1, v2)) {
-   * f.format(createNumericDataDiffMessage(dt, name, v1, v2, iter1));
-   * ok = false;
-   * if (justOne)
-   * break;
-   * }
-   * }
-   * } else if (dt.getPrimitiveClassType() == int.class) {
-   * while (iter1.hasNext() && iter2.hasNext()) {
-   * int v1 = iter1.getIntNext();
-   * int v2 = iter2.getIntNext();
-   * if (v1 != v2) {
-   * f.format(createNumericDataDiffMessage(dt, name, v1, v2, iter1));
-   * ok = false;
-   * if (justOne)
-   * break;
-   * }
-   * }
-   * } else if (dt.getPrimitiveClassType() == short.class) {
-   * while (iter1.hasNext() && iter2.hasNext()) {
-   * short v1 = iter1.getShortNext();
-   * short v2 = iter2.getShortNext();
-   * if (v1 != v2) {
-   * f.format(createNumericDataDiffMessage(dt, name, v1, v2, iter1));
-   * ok = false;
-   * if (justOne)
-   * break;
-   * }
-   * }
-   * } else if (dt.getPrimitiveClassType() == byte.class) {
-   * while (iter1.hasNext() && iter2.hasNext()) {
-   * byte v1 = iter1.getByteNext();
-   * byte v2 = iter2.getByteNext();
-   * if (v1 != v2) {
-   * f.format(createNumericDataDiffMessage(dt, name, v1, v2, iter1));
-   * ok = false;
-   * if (justOne)
-   * break;
-   * }
-   * }
-   * } else if (dt.getPrimitiveClassType() == long.class) {
-   * while (iter1.hasNext() && iter2.hasNext()) {
-   * long v1 = iter1.getLongNext();
-   * long v2 = iter2.getLongNext();
-   * if (v1 != v2) {
-   * f.format(createNumericDataDiffMessage(dt, name, v1, v2, iter1));
-   * ok = false;
-   * if (justOne)
-   * break;
-   * }
-   * }
-   * } else if (dt.getPrimitiveClassType() == char.class) {
-   * while (iter1.hasNext() && iter2.hasNext()) {
-   * char v1 = iter1.getCharNext();
-   * char v2 = iter2.getCharNext();
-   * if (v1 != v2) {
-   * f.format(" DIFF char %s: %s != %s count=%s%n", name, v1, v2, iter1);
-   * ok = false;
-   * if (justOne)
-   * break;
-   * }
-   * }
-   * } else if (dt == ArrayType.STRING) {
-   * while (iter1.hasNext() && iter2.hasNext()) {
-   * String v1 = (String) iter1.getObjectNext();
-   * String v2 = (String) iter2.getObjectNext();
-   * if (!v1.equals(v2)) {
-   * f.format(" DIFF string %s: %s != %s count=%s%n", name, v1, v2, iter1);
-   * ok = false;
-   * if (justOne)
-   * break;
-   * }
-   * }
-   * 
-   * } else if (dt == ArrayType.STRUCTURE) {
-   * while (iter1.hasNext() && iter2.hasNext()) {
-   * compareStructureData((StructureData) iter1.next(), (StructureData) iter2.next(), justOne);
-   * }
-   * 
-   * } else if (dt == ArrayType.OPAQUE) {
-   * while (iter1.hasNext() && iter2.hasNext()) {
-   * ByteBuffer bb1 = (ByteBuffer) iter1.next();
-   * ByteBuffer bb2 = (ByteBuffer) iter2.next();
-   * if (bb1.remaining() != bb2.remaining()) {
-   * f.format(" DIFF %s: opaque size %d != %d%n", name, bb1.remaining(), bb2.remaining());
-   * ok = false;
-   * if (justOne)
-   * break;
-   * }
-   * int size = bb1.remaining();
-   * for (int i = 0; i < size; i++) {
-   * if (bb1.get(i) != bb2.get(i)) {
-   * f.format(" DIFF %s: opaque value %d != %d at index %d%n", name, bb1.get(i), bb2.get(i), i);
-   * ok = false;
-   * if (justOne)
-   * break;
-   * }
-   * }
-   * }
-   * 
-   * } else {
-   * ok = false;
-   * f.format(" %s: Unknown data type %s%n", name, data1.getClass().getName());
-   * }
-   * 
-   * return ok;
-   * }
-   * 
-   * private String createNumericDataDiffMessage(ArrayType dt, String name, Number v1, Number v2, IndexIterator iter) {
-   * return String.format(" DIFF %s %s: %s != %s;  count = %s, absDiff = %s, relDiff = %s %n", dt, name, v1, v2, iter,
-   * Misc.absoluteDifference(v1.doubleValue(), v2.doubleValue()),
-   * Misc.relativeDifference(v1.doubleValue(), v2.doubleValue()));
-   * }
-   */
-
-
-  public boolean compareStructureData(StructureData sdata1, StructureData sdata2) throws IOException {
-    boolean ok = true;
-
-    StructureMembers sm1 = sdata1.getStructureMembers();
-    StructureMembers sm2 = sdata2.getStructureMembers();
-    if (sm1.getMembers().size() != sm2.getMembers().size()) {
-      f.format(" size %d !== %d%n", sm1.getMembers().size(), sm2.getMembers().size());
-      ok = false;
-    }
-
-    for (StructureMembers.Member m1 : sm1.getMembers()) {
-      StructureMembers.Member m2 = sm2.findMember(m1.getName());
-      ucar.ma2.Array data1 = sdata1.getArray(m1);
-      ucar.ma2.Array data2 = sdata2.getArray(m2);
-      ok &= compareData(m1.getName(), data1, data2);
-    }
-
-    return ok;
   }
 
 }

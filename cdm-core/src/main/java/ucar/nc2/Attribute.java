@@ -12,8 +12,6 @@ import ucar.array.Array;
 import ucar.array.ArrayType;
 import ucar.array.ArrayVlen;
 import ucar.array.Arrays;
-import ucar.array.ArraysConvert;
-import ucar.ma2.DataType;
 import ucar.unidata.util.StringUtil2;
 import java.util.Formatter;
 import java.util.List;
@@ -24,12 +22,6 @@ import java.util.List;
  */
 @Immutable
 public class Attribute {
-
-  /** @deprecated use fromArray(String name, Array<?> values) */
-  @Deprecated
-  public static Attribute fromArray(String name, ucar.ma2.Array values) {
-    return builder(name).setValues(values).build();
-  }
 
   /** Create an Attribute from an Array. */
   public static Attribute fromArray(String name, Array<?> values) {
@@ -530,13 +522,6 @@ public class Attribute {
       return this;
     }
 
-    /** @deprecated use setArrayType() */
-    @Deprecated
-    public Builder setDataType(DataType dataType) {
-      this.dataType = dataType.getArrayType();
-      return this;
-    }
-
     public Builder setArrayType(ArrayType dataType) {
       this.dataType = dataType;
       return this;
@@ -633,21 +618,6 @@ public class Attribute {
       }
 
       return setArrayValues(Arrays.factory(this.dataType, new int[] {n}, pa));
-    }
-
-    /**
-     * Set the values from an Array, and the DataType from values.getElementType().
-     * 
-     * @deprecated use Builder.setArrayValues(Array<?> arr)
-     */
-    @Deprecated
-    public Builder setValues(ucar.ma2.Array arr) {
-      if (arr == null) {
-        dataType = ArrayType.STRING;
-        return this;
-      }
-      setArrayValues(ArraysConvert.convertToArray(arr));
-      return this;
     }
 
     /** Set the values as an Array. */

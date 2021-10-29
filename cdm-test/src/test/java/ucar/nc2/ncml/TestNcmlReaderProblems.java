@@ -19,6 +19,7 @@ import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.internal.ncml.NcmlReader;
+import ucar.nc2.internal.util.CompareArrayToArray;
 import ucar.nc2.internal.util.CompareNetcdf2;
 import ucar.nc2.internal.util.CompareNetcdf2.ObjFilter;
 import ucar.unidata.util.test.TestDir;
@@ -65,7 +66,7 @@ public class TestNcmlReaderProblems {
       try (NetcdfDataset withBuilder = NcmlReader.readNcml(ncmlLocation, null, null).build()) {
         Variable vb = withBuilder.findVariable(varName);
         assert vb != null;
-        boolean ok = CompareNetcdf2.compareData(varName, v.read(), vb.read());
+        boolean ok = CompareArrayToArray.compareData(varName, v.readArray(), vb.readArray());
         System.out.printf("%s%n", ok ? "OK" : "NOT OK");
         assertThat(ok).isTrue();
       }

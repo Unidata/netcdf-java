@@ -161,7 +161,7 @@ public class TestScaleOffsetMissingUnsigned {
       // Scale factor of "1.e-05" has been applied to original "99999".
       Assert2.assertNearlyEquals(expectedFillValue, actualFillValue);
 
-      double fooValWithNaNs = fooVar.read().getDouble(0);
+      double fooValWithNaNs = (Double) fooVar.readArray().getScalar();
 
       // "foo" value was converted to NaN because it was equal to _FillValue.
       Assert.assertTrue(Double.isNaN(fooValWithNaNs));
@@ -175,7 +175,7 @@ public class TestScaleOffsetMissingUnsigned {
     enhance.remove(Enhance.ConvertMissing);
     try (NetcdfDataset ncd = NetcdfDatasets.openDataset(testResource.getAbsolutePath(), enhance, null)) {
       VariableDS fooVar = (VariableDS) ncd.findVariable("foo");
-      double fooValWithoutNaNs = fooVar.read().getDouble(0);
+      double fooValWithoutNaNs = (Double) fooVar.readArray().getScalar();
       EnhanceScaleMissingUnsigned proxy = fooVar.scaleMissingUnsignedProxy();
 
       // "foo" value is equals to fill value. Scale factor has been applied to both.
@@ -307,9 +307,10 @@ public class TestScaleOffsetMissingUnsigned {
       Assert.assertEquals(ArrayType.USHORT, var.getArrayType());
 
       // Packed values are: -107, -106, -6, -5, -1, 80. Interpreting them as unsigned yields:
-      short[] expecteds = new short[] {149, 150, 250, 251, 255, 80};
-      short[] actuals = (short[]) var.read().getStorage();
-      Assert.assertArrayEquals(expecteds, actuals);
+      Array<Number> expecteds =
+          Arrays.factory(ArrayType.SHORT, new int[] {6}, new short[] {149, 150, 250, 251, 255, 80});
+      Array<Number> actuals = (Array<Number>) var.readArray();
+      assertThat(Arrays.equalNumbers(expecteds, actuals)).isTrue();
     }
   }
 
@@ -346,9 +347,10 @@ public class TestScaleOffsetMissingUnsigned {
       Assert.assertEquals(ArrayType.UINT, var.getArrayType());
 
       // These vals are the same as ones from "missingUnsigned", but with a scale_factor of 100 and offset of 1 applied.
-      int[] expecteds = new int[] {14901, 15001, 25001, 25101, 25501, 8001};
-      int[] actuals = (int[]) var.read().getStorage();
-      Assert.assertArrayEquals(expecteds, actuals);
+      Array<Number> expecteds =
+          Arrays.factory(ArrayType.INT, new int[] {6}, new int[] {14901, 15001, 25001, 25101, 25501, 8001});
+      Array<Number> actuals = (Array<Number>) var.readArray();
+      assertThat(Arrays.equalNumbers(expecteds, actuals)).isTrue();
     }
   }
 
@@ -370,11 +372,11 @@ public class TestScaleOffsetMissingUnsigned {
       // Because scale and offset are now float (to preserve negative values), var is float
       Assert.assertEquals(ArrayType.FLOAT, var.getArrayType());
 
-      // These vals are the same as ones from "missingUnsigned", but with a scale_factor of -100 and offset of
-      // -1 applied.
-      float[] expecteds = new float[] {Float.NaN, -15001, -25001, Float.NaN, Float.NaN, Float.NaN};
-      float[] actuals = (float[]) var.read().getStorage();
-      Assert.assertArrayEquals(expecteds, actuals, fpTol);
+      // These vals are the same as ones from "missingUnsigned", but with a scale_factor of -100 and offset of -1
+      Array<Float> expecteds = Arrays.factory(ArrayType.FLOAT, new int[] {6},
+          new float[] {Float.NaN, -15001, -25001, Float.NaN, Float.NaN, Float.NaN});
+      Array<Float> actuals = (Array<Float>) var.readArray();
+      assertThat(Arrays.equalFloats(expecteds, actuals)).isTrue();
     }
   }
 
@@ -391,9 +393,10 @@ public class TestScaleOffsetMissingUnsigned {
 
       Assert.assertEquals(ArrayType.FLOAT, var.getArrayType()); // scale_factor is float.
 
-      float[] expecteds = new float[] {Float.NaN, 9.9f, 10.0f, 10.1f, Float.NaN};
-      float[] actuals = (float[]) var.read().getStorage();
-      Assert2.assertArrayNearlyEquals(expecteds, actuals);
+      Array<Float> expecteds =
+          Arrays.factory(ArrayType.FLOAT, new int[] {5}, new float[] {Float.NaN, 9.9f, 10.0f, 10.1f, Float.NaN});
+      Array<Float> actuals = (Array<Float>) var.readArray();
+      assertThat(Arrays.equalFloats(expecteds, actuals)).isTrue();
     }
   }
 
@@ -419,9 +422,10 @@ public class TestScaleOffsetMissingUnsigned {
 
       Assert.assertEquals(ArrayType.FLOAT, var.getArrayType()); // scale_factor is float.
 
-      float[] expecteds = new float[] {9.8f, 9.9f, 10.0f, 10.1f, 10.2f};
-      float[] actuals = (float[]) var.read().getStorage();
-      Assert2.assertArrayNearlyEquals(expecteds, actuals);
+      Array<Float> expecteds =
+          Arrays.factory(ArrayType.FLOAT, new int[] {5}, new float[] {9.8f, 9.9f, 10.0f, 10.1f, 10.2f});
+      Array<Float> actuals = (Array<Float>) var.readArray();
+      assertThat(Arrays.equalFloats(expecteds, actuals)).isTrue();
     }
   }
 
@@ -436,7 +440,7 @@ public class TestScaleOffsetMissingUnsigned {
       Assert.assertEquals(156, proxy.getOffset(), 0);
       Assert.assertEquals(ArrayType.BYTE, var.getArrayType()); // No change to data type.
 
-      Assert.assertEquals(106, var.read().getByte(0)); // -50 + 156 == 106
+      Assert.assertEquals((byte) 106, var.readArray().getScalar()); // -50 + 156 == 106
     }
   }
 

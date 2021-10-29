@@ -142,7 +142,7 @@ public class MemoryCounterAgentTest {
     try (NetcdfFile ncfile = NetcdfDatasets.openFile("C:/data/test2.nc", null)) {
       measureSize("beforeRead", ncfile, null, true);
       for (Variable v : ncfile.getVariables()) {
-        v.read();
+        v.readArray();
       }
       measureSize("afterRead", ncfile, null, true);
     }

@@ -5,7 +5,7 @@
 
 package ucar.ui.bufr;
 
-import ucar.nc2.iosp.bufr.tables.BufrTables;
+import ucar.nc2.bufr.tables.BufrTables;
 import ucar.ui.OpPanel;
 import ucar.ui.ToolsUI;
 import ucar.ui.widget.BAMutil;

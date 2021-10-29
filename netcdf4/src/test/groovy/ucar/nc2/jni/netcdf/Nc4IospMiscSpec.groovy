@@ -9,7 +9,6 @@ import spock.lang.Unroll
 import ucar.array.ArrayType
 import ucar.array.Array
 import ucar.array.Arrays
-import ucar.ma2.ArrayChar
 import ucar.nc2.Attribute
 import ucar.nc2.Dimension
 import ucar.nc2.NetcdfFile

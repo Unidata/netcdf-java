@@ -4,8 +4,6 @@
  */
 package ucar.array;
 
-import ucar.ma2.DataType;
-
 import javax.annotation.Nullable;
 import java.math.BigInteger;
 
@@ -209,12 +207,6 @@ public enum ArrayType {
     return this;
   }
 
-  /** @deprecated do not use. */
-  @Deprecated
-  public DataType getDataType() {
-    return DataType.valueOf(this.name());
-  }
-
   ///////////////////////////////////////////////////////////////////////////////////////////////
 
   /**
@@ -403,4 +395,5 @@ public enum ArrayType {
   public static short unsignedByteToShort(byte b) {
     return (short) Byte.toUnsignedInt(b);
   }
+
 }

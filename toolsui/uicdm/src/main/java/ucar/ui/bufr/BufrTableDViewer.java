@@ -12,8 +12,8 @@ import ucar.ui.widget.PopupMenu;
 import ucar.ui.widget.TextHistoryPane;
 import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.BeanTable;
-import ucar.nc2.iosp.bufr.tables.BufrTables;
-import ucar.nc2.iosp.bufr.tables.TableD;
+import ucar.nc2.bufr.tables.BufrTables;
+import ucar.nc2.bufr.tables.TableD;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.*;
@@ -205,7 +205,7 @@ public class BufrTableDViewer extends JPanel {
   }
 
   String fxy(short id) {
-    return ucar.nc2.iosp.bufr.Descriptor.makeString(id);
+    return ucar.nc2.bufr.Descriptor.makeString(id);
   }
 
   /*
@@ -338,7 +338,7 @@ public class BufrTableDViewer extends JPanel {
     public String getSequence() {
       Formatter out = new Formatter();
       for (short s : dds.getSequence())
-        out.format(" %s,", ucar.nc2.iosp.bufr.Descriptor.makeString(s));
+        out.format(" %s,", ucar.nc2.bufr.Descriptor.makeString(s));
       return out.toString();
     }
 

@@ -20,7 +20,7 @@ import org.junit.runners.Parameterized;
 import ucar.gcdm.client.GcdmNetcdfFile;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.nc2.internal.util.CompareArrayToMa2;
+import ucar.nc2.internal.util.CompareArrayToArray;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
@@ -67,7 +67,7 @@ public class TestGcdmNetcdf4 {
     try (NetcdfFile ncfile = NetcdfDatasets.openFile(filename, null);
         GcdmNetcdfFile gcdmFile = GcdmNetcdfFile.builder().setRemoteURI(gcdmUrl).build()) {
 
-      boolean ok = CompareArrayToMa2.compareFiles(ncfile, gcdmFile);
+      boolean ok = CompareArrayToArray.compareFiles(ncfile, gcdmFile);
       assertThat(ok).isTrue();
     }
   }

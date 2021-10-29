@@ -102,17 +102,6 @@ public class VariableDS extends Variable implements VariableEnhanced {
     return false;
   }
 
-  boolean needConvert() {
-    Set<Enhance> enhancements = getEnhanceMode();
-    return enhancements.contains(Enhance.ConvertEnums) || enhancements.contains(Enhance.ConvertUnsigned)
-        || enhancements.contains(Enhance.ApplyScaleOffset) || enhancements.contains(Enhance.ConvertMissing);
-  }
-
-  @Deprecated
-  ucar.ma2.Array convert(ucar.ma2.Array data, Set<NetcdfDataset.Enhance> enhancements) {
-    return dataEnhancer.convert(data, enhancements);
-  }
-
   /** Convert the data using the VariableDS enhancements. Generally the user does not have to call this. */
   public ucar.array.Array<?> convertArray(ucar.array.Array<?> data) {
     return dataEnhancer.convertArray(data, enhanceMode);

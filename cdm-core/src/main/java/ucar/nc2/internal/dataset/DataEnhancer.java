@@ -8,7 +8,6 @@ import java.util.Set;
 
 import ucar.array.ArrayType;
 import ucar.array.Arrays;
-import ucar.array.ArraysConvert;
 import ucar.array.Array;
 import ucar.nc2.dataset.NetcdfDataset.Enhance;
 import ucar.nc2.dataset.VariableDS;
@@ -25,14 +24,6 @@ public class DataEnhancer {
     this.dataType = variableDS.getArrayType();
     this.orgDataType = variableDS.getOriginalArrayType();
     this.scaleMissingUnsignedProxy = scaleMissingUnsignedProxy;
-  }
-
-  /** @deprecated use convertArray */
-  @Deprecated
-  public ucar.ma2.Array convert(ucar.ma2.Array data, Set<Enhance> enhancements) {
-    Array<?> array = ArraysConvert.convertToArray(data);
-    Array<?> converted = convertArray(array, enhancements);
-    return ArraysConvert.convertFromArray(converted);
   }
 
   public ucar.array.Array<?> convertArray(ucar.array.Array<?> data, Set<Enhance> enhancements) {

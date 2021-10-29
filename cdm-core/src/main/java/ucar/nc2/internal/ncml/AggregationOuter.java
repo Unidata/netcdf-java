@@ -23,7 +23,6 @@ import thredds.inventory.MFile;
 import ucar.array.ArrayType;
 import ucar.array.Array;
 import ucar.array.Arrays;
-import ucar.array.ArraysConvert;
 import ucar.array.InvalidRangeException;
 import ucar.array.Range;
 import ucar.array.Section;

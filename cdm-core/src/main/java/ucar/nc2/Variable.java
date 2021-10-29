@@ -15,7 +15,6 @@ import javax.annotation.concurrent.Immutable;
 import ucar.array.Array;
 import ucar.array.ArrayType;
 import ucar.array.Arrays;
-import ucar.array.ArraysConvert;
 import ucar.array.InvalidRangeException;
 import ucar.array.StructureDataArray;
 import ucar.array.StructureMembers;
@@ -73,16 +72,6 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     if (ncfile != null)
       return ncfile.getLocation();
     return "N/A";
-  }
-
-  /**
-   * Get the data type of the Variable.
-   * 
-   * @deprecated use getArrayType()
-   */
-  @Deprecated
-  public ucar.ma2.DataType getDataType() {
-    return dataType.getDataType();
   }
 
   /** Get the data type of the Variable. */
@@ -215,19 +204,6 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     return this.parentStructure;
   }
 
-  /**
-   * Get shape as an List of Range objects.
-   * The List is immutable.
-   *
-   * @return List of Ranges, one for each Dimension.
-   * @deprecated use getSection() or getSection().getRanges()
-   */
-  @Deprecated
-  public ImmutableList<ucar.ma2.Range> getRanges() {
-    // Ok to use Immutable as there are no nulls.
-    return ImmutableList.copyOf(getShapeAsSection().getRanges());
-  }
-
   /** Get the number of dimensions of the Variable, aka the rank. */
   @Override
   public int getRank() {
@@ -245,12 +221,6 @@ public class Variable implements VariableSimpleIF, ProxyReader {
   /** Get the size of the ith dimension */
   public int getShape(int index) {
     return shape[index];
-  }
-
-  /** @deprecated use getSection() */
-  @Deprecated
-  public ucar.ma2.Section getShapeAsSection() {
-    return ArraysConvert.convertSection(this.shapeAsSection);
   }
 
   /**
@@ -484,105 +454,6 @@ public class Variable implements VariableSimpleIF, ProxyReader {
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  // IO
-  // implementation notes to subclassers
-  // all other calls use them, so override only these:
-  // _read()
-  // _read(Section section)
-  // _readNestedData(Section section, boolean flatten)
-
-  /**
-   * Read a section of the data for this Variable and return a memory resident Array.
-   * The Array has the same element type as the Variable, and the requested shape.
-   * Note that this does not do rank reduction, so the returned Array has the same rank
-   * as the Variable. Use Array.reduce() for rank reduction.
-   * <p/>
-   * <code>assert(origin[ii] + shape[ii]*stride[ii] <= Variable.shape[ii]); </code>
-   * <p/>
-   *
-   * @param origin int array specifying the starting index. If null, assume all zeroes.
-   * @param shape int array specifying the extents in each dimension.
-   *        This becomes the shape of the returned Array.
-   * @return the requested data in a memory-resident Array
-   * @deprecated use readArray(Section)
-   */
-  @Deprecated
-  public ucar.ma2.Array read(int[] origin, int[] shape) throws IOException, ucar.ma2.InvalidRangeException {
-    if ((origin == null) && (shape == null))
-      return read();
-
-    if (origin == null)
-      return read(new ucar.ma2.Section(shape));
-
-    if (shape == null)
-      return read(new ucar.ma2.Section(origin, this.shape));
-
-    return read(new ucar.ma2.Section(origin, shape));
-  }
-
-  /**
-   * Read data section specified by a "section selector", and return a memory resident Array. Uses
-   * Fortran 90 array section syntax.
-   *
-   * @param sectionSpec specification string, eg "1:2,10,:,1:100:10". May optionally have ().
-   * @return the requested data in a memory-resident Array
-   * @see ucar.ma2.Section for sectionSpec syntax
-   * @deprecated use readArray(new Section(sectionSpec))
-   */
-  @Deprecated
-  public ucar.ma2.Array read(String sectionSpec) throws IOException, ucar.ma2.InvalidRangeException {
-    return read(new ucar.ma2.Section(sectionSpec));
-  }
-
-  /**
-   * Read a section of the data for this Variable from the netcdf file and return a memory resident Array.
-   * The Array has the same element type as the Variable, and the requested shape.
-   * Note that this does not do rank reduction, so the returned Array has the same rank
-   * as the Variable. Use Array.reduce() for rank reduction.
-   * <p/>
-   * If the Variable is a member of an array of Structures, this returns only the variable's data
-   * in the first Structure, so that the Array shape is the same as the Variable.
-   * To read the data in all structures, use ncfile.readSectionSpec().
-   * <p/>
-   * Note this only allows you to specify a subset of this variable.
-   * If the variable is nested in a array of structures and you want to subset that, use
-   * NetcdfFile.read(String sectionSpec, boolean flatten);
-   *
-   * @param oldSection list of Range specifying the section of data to read.
-   *        Must be null or same rank as variable.
-   *        If list is null, assume all data.
-   *        Each Range corresponds to a Dimension. If the Range object is null, it means use the entire dimension.
-   * @return the requested data in a memory-resident Array
-   * @throws IOException if error
-   * @deprecated use readArray(Section)
-   */
-  @Deprecated
-  public ucar.ma2.Array read(ucar.ma2.Section oldSection) throws java.io.IOException, ucar.ma2.InvalidRangeException {
-    Section section = ArraysConvert.convertSection(oldSection);
-    try {
-      Array<?> result = (section == null) ? _read() : _read(Section.fill(section, shape));
-      return ArraysConvert.convertFromArray(result);
-    } catch (InvalidRangeException e) {
-      throw new ucar.ma2.InvalidRangeException(e.getMessage());
-    }
-  }
-
-  /**
-   * Read all the data for this Variable and return a memory resident Array.
-   * The Array has the same element type and shape as the Variable.
-   * <p/>
-   * If the Variable is a member of an array of Structures, this returns only the variable's data
-   * in the first Structure, so that the Array shape is the same as the Variable.
-   * To read the data in all structures, use ncfile.readSection().
-   *
-   * @return the requested data in a memory-resident Array.
-   * @deprecated use readArray()
-   */
-  @Deprecated
-  public ucar.ma2.Array read() throws IOException {
-    return ArraysConvert.convertFromArray(_read());
-  }
-
   ///// scalar reading
 
   /**

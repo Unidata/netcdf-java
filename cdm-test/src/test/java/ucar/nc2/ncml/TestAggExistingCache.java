@@ -105,7 +105,7 @@ public class TestAggExistingCache {
       System.out.printf("%nTestNcmlAggExisting.open %s%n", filename);
       Variable time = ncfile.findVariable("time");
       System.out.printf(" Variable %s%n", time.getNameAndDimensions());
-      time.read();
+      time.readArray();
     }
     System.out.printf(" countCacheUse = %d%n", Aggregation.countCacheUse);
 
@@ -119,7 +119,7 @@ public class TestAggExistingCache {
       System.out.printf("%nTestNcmlAggExisting.open %s%n", filename);
       Variable time = ncfile.findVariable("time");
       System.out.printf(" Variable %s%n", time.getNameAndDimensions());
-      time.read();
+      time.readArray();
     }
     System.out.printf(" countCacheUse = %d%n", Aggregation.countCacheUse);
     took = System.currentTimeMillis() - start;

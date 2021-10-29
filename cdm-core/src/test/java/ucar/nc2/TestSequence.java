@@ -24,7 +24,7 @@ import ucar.array.StructureData;
 public class TestSequence {
 
   @Test
-  public void testSequence() throws IOException, InvalidRangeException {
+  public void testSequence() throws IOException {
     Sequence.Builder<?> structb = Sequence.builder().setName("seq").addMemberVariable("one", ArrayType.BYTE, "")
         .addMemberVariable("two", ArrayType.STRING, "").addMemberVariable("tres", ArrayType.FLOAT, "");
 
@@ -80,38 +80,24 @@ public class TestSequence {
         .addMemberVariable("two", ArrayType.STRING, "").addMemberVariable("tres", ArrayType.FLOAT, "");
 
     structb.setSourceData(makeStructureDataArray());
-    Structure struct = structb.build(makeDummyGroup());
+    Sequence seq = structb.build(makeDummyGroup());
 
     try {
-      struct.read(new int[] {0}, new int[] {0});
+      seq.readRecord(0);
       fail();
     } catch (Exception e) {
       // expected
     }
 
     try {
-      struct.read("0:0");
+      seq.slice(0, 1);
       fail();
     } catch (Exception e) {
       // expected
     }
 
     try {
-      struct.readRecord(0);
-      fail();
-    } catch (Exception e) {
-      // expected
-    }
-
-    try {
-      struct.slice(0, 1);
-      fail();
-    } catch (Exception e) {
-      // expected
-    }
-
-    try {
-      struct.section(new Section());
+      seq.section(new Section());
       fail();
     } catch (Exception e) {
       // expected

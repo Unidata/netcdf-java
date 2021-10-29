@@ -31,7 +31,7 @@ public class Arrays {
     switch (dataType) {
       case CHAR:
         if (dataArray instanceof char[]) {
-          dataArray = ArraysConvert.convertCharToByte((char[]) dataArray);
+          dataArray = convertCharToByte((char[]) dataArray);
         }
         // fall through
       case OPAQUE:
@@ -704,6 +704,16 @@ public class Arrays {
   /** Convert the Array into a ByteString. */
   public static ByteString getByteString(Array<Byte> from) {
     return ((ArrayByte) from).getByteString();
+  }
+
+  // LOOK couldnt you convert here to UTF-8 ??
+  public static byte[] convertCharToByte(char[] from) {
+    byte[] result = new byte[(int) from.length];
+    int count = 0;
+    for (char bval : from) {
+      result[count++] = (byte) bval;
+    }
+    return result;
   }
 
   /**

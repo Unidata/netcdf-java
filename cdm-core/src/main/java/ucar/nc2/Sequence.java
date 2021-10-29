@@ -36,36 +36,15 @@ public class Sequence extends Structure implements Iterable<ucar.array.Structure
     }
   }
 
-  /** Same as read() */
-  @Override
-  @Deprecated
-  public ucar.ma2.Array read(ucar.ma2.Section section) throws java.io.IOException {
-    return read();
-  }
-
   /** @throws UnsupportedOperationException always */
   @Override
-  @Deprecated
-  public ucar.ma2.Array read(int[] origin, int[] shape) {
-    throw new UnsupportedOperationException();
-  }
-
-  /** @throws UnsupportedOperationException always */
-  @Override
-  @Deprecated
-  public ucar.ma2.Array read(String sectionSpec) {
+  public Variable section(Section subsection) throws InvalidRangeException {
     throw new UnsupportedOperationException();
   }
 
   /** @throws UnsupportedOperationException always */
   @Override
   public Variable slice(int dim, int value) {
-    throw new UnsupportedOperationException();
-  }
-
-  /** @throws UnsupportedOperationException always */
-  @Override
-  public Variable section(Section subsection) {
     throw new UnsupportedOperationException();
   }
 

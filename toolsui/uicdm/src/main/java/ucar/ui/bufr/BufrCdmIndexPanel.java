@@ -6,10 +6,10 @@
 package ucar.ui.bufr;
 
 import javax.annotation.Nullable;
-import ucar.nc2.point.bufr.BufrCdmIndex;
+import ucar.nc2.bufr.point.BufrCdmIndex;
 import ucar.nc2.ft.point.bufr.BufrCdmIndexProto;
-import ucar.nc2.point.bufr.BufrField;
-import ucar.nc2.iosp.bufr.Descriptor;
+import ucar.nc2.bufr.point.BufrField;
+import ucar.nc2.bufr.Descriptor;
 import ucar.ui.widget.*;
 import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.BeanTable;

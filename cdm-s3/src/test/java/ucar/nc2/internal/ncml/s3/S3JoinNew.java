@@ -5,7 +5,6 @@
 package ucar.nc2.internal.ncml.s3;
 
 import static com.google.common.truth.Truth.assertThat;
-import static ucar.nc2.internal.util.CompareNetcdf2.compareData;
 
 import com.google.common.collect.ImmutableList;
 import java.io.IOException;
@@ -38,6 +37,7 @@ import ucar.nc2.calendar.Calendar;
 import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.calendar.CalendarPeriod;
 import ucar.nc2.calendar.CalendarPeriod.Field;
+import ucar.nc2.internal.util.CompareArrayToArray;
 import ucar.unidata.io.s3.S3TestsCommon;
 import ucar.unidata.util.test.category.Slow;
 
@@ -141,7 +141,8 @@ public class S3JoinNew {
     assertThat(Arrays.reduce(dataAgg).getShape()).isEqualTo(dataSingle.getShape());
 
     // compare data arrays
-    assertThat(compareData(NcmlTestsCommon.dataVarName, Arrays.reduce(dataAgg), dataSingle)).isTrue();
+    assertThat(CompareArrayToArray.compareData(NcmlTestsCommon.dataVarName, Arrays.reduce(dataAgg), dataSingle))
+        .isTrue();
   }
 
   @AfterClass

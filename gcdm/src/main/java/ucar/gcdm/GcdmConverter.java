@@ -470,7 +470,7 @@ public class GcdmConverter {
     ArrayType dtUse = convertDataType(attp.getDataType());
     int len = attp.getLength();
     if (len == 0) { // deal with empty attribute
-      return Attribute.builder(attp.getName()).setDataType(dtUse.getDataType()).build();
+      return Attribute.builder(attp.getName()).setArrayType(dtUse).build();
     }
 
     Array<?> attData = decodePrimitiveData(attp.getData());
