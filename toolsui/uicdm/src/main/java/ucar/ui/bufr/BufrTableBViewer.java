@@ -7,9 +7,9 @@ package ucar.ui.bufr;
 
 import java.nio.charset.StandardCharsets;
 import javax.annotation.Nullable;
-import ucar.nc2.iosp.bufr.*;
-import ucar.nc2.iosp.bufr.tables.BufrTables;
-import ucar.nc2.iosp.bufr.tables.TableB;
+import ucar.nc2.bufr.*;
+import ucar.nc2.bufr.tables.BufrTables;
+import ucar.nc2.bufr.tables.TableB;
 import ucar.ui.dialog.BufrBCompare;
 import ucar.ui.widget.BAMutil;
 import ucar.ui.widget.FileManager;

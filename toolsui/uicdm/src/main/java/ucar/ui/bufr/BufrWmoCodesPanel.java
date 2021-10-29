@@ -5,7 +5,7 @@
 
 package ucar.ui.bufr;
 
-import ucar.nc2.iosp.bufr.tables.CodeFlagTables;
+import ucar.nc2.bufr.tables.CodeFlagTables;
 import ucar.ui.widget.BAMutil;
 import ucar.ui.widget.IndependentWindow;
 import ucar.ui.widget.TextHistoryPane;
