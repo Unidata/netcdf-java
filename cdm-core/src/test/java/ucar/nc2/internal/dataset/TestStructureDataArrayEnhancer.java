@@ -1,6 +1,6 @@
 /*
- *  Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
- *  See LICENSE for license information.
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
  */
 package ucar.nc2.internal.dataset;
 
@@ -54,7 +54,7 @@ public class TestStructureDataArrayEnhancer {
     int count = 0;
     Index ima = array.getIndex();
     for (StructureData val : flipped) {
-      assertThat(CompareArrayToArray.compareStructureData(errlog, val, array.get(ima.set(10-count)), false)).isTrue();
+      assertThat(CompareArrayToArray.compareStructureData(errlog, val, array.get(ima.set(10 - count)), false)).isTrue();
     }
   }
 
@@ -96,7 +96,7 @@ public class TestStructureDataArrayEnhancer {
     builder.addMember("mlong", "mdesc2", "munits2", ArrayType.LONG, new int[] {1, 1});
     builder.addMember("mstring", "mdesc2", "munits2", ArrayType.STRING, new int[0]);
     builder.addMember("mstrings", "mdesc2", "munits2", ArrayType.STRING, new int[] {3});
-    StructureMembers members = builder.setStandardOffsets(false).build();
+    StructureMembers members = builder.setStandardOffsets().build();
 
     byte[] result = new byte[(int) (nelems * members.getStorageSizeBytes())];
     ByteBuffer bb = ByteBuffer.wrap(result);

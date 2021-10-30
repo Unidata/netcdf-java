@@ -17,9 +17,99 @@ import static org.junit.Assert.assertThrows;
 
 /** Test {@link StructureData} and {@link StructureDataArray} with nested structure data on the heap */
 public class TestStructureDataNestedHeap {
-
   @Test
   public void testBasics() {
+    StructureDataArray array = makeStructureArray(21);
+    for (StructureData val : array) {
+      assertThat(val.getName()).isEqualTo("myname");
+    }
+
+    assertThrows(IllegalArgumentException.class, () -> array.get(0, 2, 2));
+    assertThrows(IllegalArgumentException.class, () -> array.get(0, 1));
+    assertThrows(IllegalArgumentException.class, () -> array.get(99));
+
+    StructureMembers members = array.getStructureMembers();
+    assertThat(array.getStructureSize()).isEqualTo(members.getStorageSizeBytes());
+    assertThat(array.storage().length()).isEqualTo(21);
+
+    StructureMembers.Member m = array.getStructureMembers().findMember("mstring");
+    assertThat(m).isNotNull();
+
+    StructureData sdata0 = array.get(0);
+    assertThat(sdata0.getStructureMembers()).isEqualTo(members);
+    assertThat(sdata0.getName()).isEqualTo("myname");
+
+    StructureMembers.Member m0 = sdata0.getStructureMembers().findMember("mstring");
+    assertThat(m0).isNotNull();
+    assertThat(m0).isEqualTo(m);
+    assertThat(sdata0.getMemberData("mstring")).isEqualTo(sdata0.getMemberData(m0));
+    assertThrows(IllegalArgumentException.class, () -> sdata0.getMemberData("bad"));
+
+    // top level strings
+    int recno = 0;
+    for (StructureData sdata : array) {
+      Array<String> ssdata = (Array<String>) sdata.getMemberData(m);
+      int idx = 0;
+      for (String s : ssdata) {
+        assertThat(s).isEqualTo("Gimme Shelter" + idx + "-" + recno);
+        idx++;
+      }
+      recno++;
+    }
+
+    // strings in nested struct
+    for (StructureData sdata : array) {
+      StructureMembers.Member mstruct = sdata.getStructureMembers().findMember("mstruct");
+      Array<StructureData> nsdata = (Array<StructureData>) sdata.getMemberData(mstruct);
+
+      int nrecno = 0;
+      for (StructureData ndata : nsdata) {
+        StructureMembers.Member nstrings = ndata.getStructureMembers().findMember("nstrings");
+        Array<String> ssdata = (Array<String>) ndata.getMemberData(nstrings);
+        int idx = 0;
+        for (String s : ssdata) {
+          assertThat(s).isEqualTo("Or else" + idx + "-" + nrecno);
+          idx++;
+        }
+        nrecno++;
+      }
+    }
+
+    // strings in nested seq
+    for (StructureData sdata : array) {
+      StructureMembers.Member mstruct = sdata.getStructureMembers().findMember("mseq");
+      Array<StructureData> nsdata = (Array<StructureData>) sdata.getMemberData(mstruct);
+
+      int nrecno = 0;
+      for (StructureData ndata : nsdata) {
+        StructureMembers.Member nstrings = ndata.getStructureMembers().findMember("nstrings");
+        Array<String> ssdata = (Array<String>) ndata.getMemberData(nstrings);
+        int idx = 0;
+        for (String s : ssdata) {
+          assertThat(s).isEqualTo("Or else fade away" + idx + "-" + nrecno);
+          idx++;
+        }
+        nrecno++;
+      }
+    }
+
+    int ntop = (int) array.storage().length();
+    Array<StructureData> flipped = Arrays.flip(array, 0);
+    int fcount = 0;
+    Index ima = array.getIndex();
+    for (StructureData val : flipped) {
+      Formatter errlog = new Formatter();
+      boolean ok = CompareArrayToArray.compareStructureData(errlog, val, array.get(ima.set(ntop - fcount - 1)), true);
+      if (!ok) {
+        System.out.printf("fail = %s%n", errlog);
+      }
+      fcount++;
+    }
+  }
+
+
+  @Test
+  public void testBasics2() {
     StructureDataArray array = makeStructureArray(21);
     for (StructureData val : array) {
       assertThat(val.getName()).isEqualTo("myname");
@@ -46,7 +136,7 @@ public class TestStructureDataNestedHeap {
     int count = 0;
     Index ima = array.getIndex();
     for (StructureData val : flipped) {
-      assertThat(CompareArrayToArray.compareStructureData(errlog, val, array.get(ima.set(10-count)), false)).isTrue();
+      assertThat(CompareArrayToArray.compareStructureData(errlog, val, array.get(ima.set(10 - count)), false)).isTrue();
     }
   }
 
@@ -104,7 +194,7 @@ public class TestStructureDataNestedHeap {
     nbuilder.addMember("nbyte", "mdesc1", "munits1", ArrayType.BYTE, new int[] {11, 11});
     nbuilder.addMember("ndouble", "mdesc2", "munits2", ArrayType.DOUBLE, new int[] {1});
     nbuilder.addMember("nstrings", "mdesc2", "munits2", ArrayType.STRING, new int[] {3});
-    StructureMembers nestedMembers = nbuilder.setStandardOffsets(true).build();
+    StructureMembers nestedMembers = nbuilder.setStandardOffsets().build();
 
     StructureMembers.Builder builder = StructureMembers.builder().setStructuresOnHeap(true);
     builder.setName("myname");
@@ -114,11 +204,11 @@ public class TestStructureDataNestedHeap {
         .setStructureMembers(nestedMembers.toBuilder());
     builder.addMember("mseq", "mdesc2", "munits2", ArrayType.SEQUENCE, new int[0])
         .setStructureMembers(nestedMembers.toBuilder());
-    StructureMembers members = builder.setStandardOffsets(true).build();
+    StructureMembers members = builder.setStandardOffsets().build();
 
     byte[] result = new byte[(int) (nelems * members.getStorageSizeBytes())];
     ByteBuffer bb = ByteBuffer.wrap(result);
-    StructureDataStorageBB storage = new StructureDataStorageBB(members, bb, nelems).setNestedStructuresOnHeap(true);
+    StructureDataStorageBB storage = new StructureDataStorageBB(members, bb, nelems);
     for (int recno = 0; recno < nelems; recno++) {
       int recstart = recno * members.getStorageSizeBytes();
       for (StructureMembers.Member m : members) {

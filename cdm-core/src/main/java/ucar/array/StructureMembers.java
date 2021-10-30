@@ -10,6 +10,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
+import java.util.Formatter;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -55,7 +56,6 @@ public final class StructureMembers implements Iterable<StructureMembers.Member>
     if (memberName == null) {
       return null;
     }
-
     return members.stream().filter(m -> m.name.equals(memberName)).findFirst().orElse(null);
   }
 
@@ -64,8 +64,7 @@ public final class StructureMembers implements Iterable<StructureMembers.Member>
     return structureSize;
   }
 
-  /** Whether nested Structures are stored on the heap or inline. */
-  public boolean isStructuresOnHeap() {
+  public boolean structuresOnHeap() {
     return structuresOnHeap;
   }
 
@@ -73,6 +72,20 @@ public final class StructureMembers implements Iterable<StructureMembers.Member>
   public String toString() {
     return MoreObjects.toStringHelper(this).add("name", name).add("members", members)
         .add("structureSize", structureSize).toString();
+  }
+
+  String showOffsets() {
+    Formatter f = new Formatter();
+    f.format("size=%d; ", getStorageSizeBytes());
+    f.format("offsets=");
+    for (Member m : members) {
+      f.format("%d,", m.getOffset());
+    }
+    f.format("; sizes=");
+    for (Member m : members) {
+      f.format("%d,", m.getStorageSizeBytes());
+    }
+    return f.toString();
   }
 
   @Override
@@ -107,7 +120,7 @@ public final class StructureMembers implements Iterable<StructureMembers.Member>
     private final int index;
     private final int length;
     private final int[] shape;
-    private final StructureMembers members; // only if member is type Structure
+    private final StructureMembers nested; // only if member is type Structure
     private final ByteOrder byteOrder; // needed by StructureDataArray
     private final int offset; // needed by StructureDataArray
     private final int storageSizeInBytes; // needed by StructureDataArray
@@ -121,7 +134,7 @@ public final class StructureMembers implements Iterable<StructureMembers.Member>
       this.units = builder.units;
       this.dataType = Preconditions.checkNotNull(builder.dataType);
       this.shape = builder.shape != null ? builder.shape : new int[0];
-      this.members = builder.members != null ? builder.members.build() : null;
+      this.nested = builder.members != null ? builder.members.build() : null;
       this.byteOrder = builder.byteOrder;
       this.offset = builder.offset;
       if (builder.offset < 0) {
@@ -140,8 +153,8 @@ public final class StructureMembers implements Iterable<StructureMembers.Member>
       MemberBuilder b =
           new MemberBuilder().setName(this.name).setDesc(this.desc).setUnits(this.units).setArrayType(this.dataType)
               .setShape(this.shape).setByteOrder(this.getByteOrder()).setOffset(this.getOffset());
-      if (this.members != null) {
-        b.setStructureMembers(this.members.toBuilder());
+      if (this.nested != null) {
+        b.setStructureMembers(this.nested.toBuilder());
       }
       return b;
     }
@@ -149,7 +162,7 @@ public final class StructureMembers implements Iterable<StructureMembers.Member>
     /** Get nested StructureMembers, if this is a Structure or Sequence. */
     @Nullable
     public StructureMembers getStructureMembers() {
-      return members;
+      return nested;
     }
 
     /** Get the StructureMember's name. */
@@ -223,8 +236,8 @@ public final class StructureMembers implements Iterable<StructureMembers.Member>
 
     /** Convenience method for members.getStorageSizeBytes(). Throws exception if not a Structure. */
     public int getStructureSize() {
-      Preconditions.checkNotNull(this.members);
-      return members.getStorageSizeBytes();
+      Preconditions.checkNotNull(this.nested);
+      return nested.getStorageSizeBytes();
     }
 
     /** Is this a scalar (size == 1). */
@@ -248,13 +261,13 @@ public final class StructureMembers implements Iterable<StructureMembers.Member>
       return index == member.index && length == member.length && offset == member.offset
           && storageSizeInBytes == member.storageSizeInBytes && isVlen == member.isVlen
           && Objects.equal(name, member.name) && Objects.equal(desc, member.desc) && Objects.equal(units, member.units)
-          && dataType == member.dataType && Objects.equal(shape, member.shape) && Objects.equal(members, member.members)
+          && dataType == member.dataType && Objects.equal(shape, member.shape) && Objects.equal(nested, member.nested)
           && Objects.equal(byteOrder, member.byteOrder);
     }
 
     @Override
     public int hashCode() {
-      return Objects.hashCode(name, desc, units, dataType, index, length, shape, members, byteOrder, offset,
+      return Objects.hashCode(name, desc, units, dataType, index, length, shape, nested, byteOrder, offset,
           storageSizeInBytes, isVlen);
     }
   }
@@ -321,6 +334,7 @@ public final class StructureMembers implements Iterable<StructureMembers.Member>
       return this;
     }
 
+    // the structuresOnHeap flag is kept in the StructureMembers
     private int getStorageSizeBytes(boolean structuresOnHeap) {
       boolean isVariableLength = (shape != null && shape.length > 0 && shape[shape.length - 1] < 0);
       int length = (shape == null) ? 1 : (int) Arrays.computeSize(shape);
@@ -334,7 +348,7 @@ public final class StructureMembers implements Iterable<StructureMembers.Member>
       } else if (dataType == ArrayType.STRING) {
         return 4;
       } else if (dataType == ArrayType.STRUCTURE) {
-        return structuresOnHeap ? 4 : length * members.getStorageSizeBytes(structuresOnHeap);
+        return structuresOnHeap ? 4 : length * members.getStorageSizeBytes();
       } else {
         return length * dataType.getSize();
       }
@@ -357,7 +371,7 @@ public final class StructureMembers implements Iterable<StructureMembers.Member>
 
   private final String name;
   private final int structureSize;
-  private final boolean structuresOnHeap; // LOOK is this used?
+  private final boolean structuresOnHeap;
   private final ImmutableList<Member> members;
 
   private StructureMembers(Builder builder) {
@@ -375,8 +389,7 @@ public final class StructureMembers implements Iterable<StructureMembers.Member>
     }
     this.members = list.build();
     this.structuresOnHeap = builder.structuresOnHeap;
-    this.structureSize =
-        builder.structureSize > 0 ? builder.structureSize : builder.getStorageSizeBytes(builder.structuresOnHeap);
+    this.structureSize = builder.structureSize > 0 ? builder.structureSize : builder.getStorageSizeBytes();
   }
 
   /** Turn into a mutable Builder. Can use toBuilder().build(wantsData) to copy. */
@@ -456,23 +469,22 @@ public final class StructureMembers implements Iterable<StructureMembers.Member>
     }
 
     /** Set structureSize and offsets yourself, or call setStandardOffsets. */
-    public Builder setStandardOffsets(boolean structuresOnHeap) {
-      this.structuresOnHeap = structuresOnHeap;
+    public Builder setStandardOffsets() {
       int offset = 0;
       for (MemberBuilder m : members) {
         m.setOffset(offset);
         if (m.dataType == ArrayType.SEQUENCE || m.dataType == ArrayType.STRUCTURE) {
-          m.getStructureMembers().setStandardOffsets(structuresOnHeap);
+          m.getStructureMembers().setStandardOffsets();
         }
-        offset += m.getStorageSizeBytes(structuresOnHeap);
+        offset += m.getStorageSizeBytes(this.structuresOnHeap);
       }
       setStructureSize(offset);
       return this;
     }
 
     /** Get the total size of the Structure in bytes. */
-    public int getStorageSizeBytes(boolean structuresOnHeap) {
-      return members.stream().mapToInt(m -> m.getStorageSizeBytes(structuresOnHeap)).sum();
+    public int getStorageSizeBytes() {
+      return members.stream().mapToInt(m -> m.getStorageSizeBytes(this.structuresOnHeap)).sum();
     }
 
     public StructureMembers build() {

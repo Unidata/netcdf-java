@@ -28,8 +28,6 @@ public final class StructureDataStorageBB implements Storage<StructureData> {
   private final int offset;
   private final ArrayList<Object> heap = new ArrayList<>();
 
-  private boolean structuresOnHeap = false;
-
   public StructureDataStorageBB(StructureMembers members, ByteBuffer bbuffer, int nelems) {
     this.members = members;
     this.bbuffer = bbuffer;
@@ -43,12 +41,6 @@ public final class StructureDataStorageBB implements Storage<StructureData> {
     this.nelems = nelems;
     this.offset = offset;
     this.heap.addAll(heap);
-  }
-
-  /** If nested Structures are stored on the heap. Do not use until better tested. */
-  public StructureDataStorageBB setNestedStructuresOnHeap(boolean structuresOnHeap) {
-    this.structuresOnHeap = structuresOnHeap;
-    return this;
   }
 
   /** Put the object on the heap, return heap index. */
@@ -89,6 +81,8 @@ public final class StructureDataStorageBB implements Storage<StructureData> {
 
   /** Copy Array data into ByteBuffer at recordOffset + member.getOffset(). */
   public void setMemberData(int recordOffset, Member member, Array<?> data) {
+    Preconditions.checkArgument(members.getMembers().contains(member));
+
     int pos = recordOffset + member.getOffset();
     bbuffer.position(pos);
     bbuffer.order(member.getByteOrder());
@@ -222,6 +216,8 @@ public final class StructureDataStorageBB implements Storage<StructureData> {
 
     @Override
     public Array<?> getMemberData(Member m) {
+      Preconditions.checkArgument(members.getMembers().contains(m));
+
       ArrayType dataType = m.getArrayType();
       if (m.isVlen() || dataType == ArrayType.OPAQUE) {
         return getMemberVlenData(m);
@@ -311,7 +307,7 @@ public final class StructureDataStorageBB implements Storage<StructureData> {
         }
 
         case STRUCTURE:
-          if (structuresOnHeap) {
+          if (members.structuresOnHeap()) {
             int heapIdx = bbuffer.getInt(pos);
             StructureDataArray structArray = (StructureDataArray) heap.get(heapIdx);
             return structArray;

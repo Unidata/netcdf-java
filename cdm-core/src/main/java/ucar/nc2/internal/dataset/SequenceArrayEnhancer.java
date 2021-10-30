@@ -25,7 +25,7 @@ public class SequenceArrayEnhancer implements Iterator<StructureData> {
   public SequenceArrayEnhancer(SequenceDS topStructure, Iterator<StructureData> orgIterator) {
     this.topStructure = topStructure;
     this.orgIterator = orgIterator;
-    this.members = topStructure.makeStructureMembersBuilder().setStandardOffsets(false).build();
+    this.members = topStructure.makeStructureMembersBuilder().setStandardOffsets().build();
   }
 
   @Override

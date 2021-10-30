@@ -31,7 +31,7 @@ public class TestStructureMembers {
     assertThat(builder.hasMember("nope")).isFalse();
     assertThat(builder.hasMember("mname2")).isTrue();
 
-    StructureMembers sm = builder.setStandardOffsets(false).build();
+    StructureMembers sm = builder.setStandardOffsets().build();
     assertThat(sm.getName()).isEqualTo("name");
     assertThat(sm.getMember(0).getName()).isEqualTo("mname1");
     assertThat(sm.getMember(1).getName()).isEqualTo("mname3");
@@ -80,6 +80,23 @@ public class TestStructureMembers {
   }
 
   @Test
+  public void testMustCallSetStandardOffsets() {
+    StructureMembers.Builder builder = StructureMembers.builder();
+    builder.setName("name");
+    builder.addMember("mname1", "mdesc1", "munits1", ArrayType.BYTE, new int[] {11, 11});
+    assertThrows(IllegalArgumentException.class, () -> builder.build()).getMessage();
+  }
+
+  @Test
+  public void testDuplicateMemberName() {
+    StructureMembers.Builder builder = StructureMembers.builder();
+    builder.setName("name");
+    builder.addMember("mname1", "mdesc1", "munits1", ArrayType.BYTE, new int[] {11, 11});
+    builder.addMember("mname1", "mdesc1", "munits1", ArrayType.INT, new int[0]);
+    assertThrows(IllegalArgumentException.class, () -> builder.build()).getMessage();
+  }
+
+  @Test
   public void testNestedStructureMembers() {
     StructureMembers.Builder nested = StructureMembers.builder();
     nested.setName("nested");
@@ -97,7 +114,7 @@ public class TestStructureMembers {
         .setArrayType(ArrayType.STRUCTURE);
     topbuilder.addMember(nbuilder);
 
-    StructureMembers sm = topbuilder.setStandardOffsets(false).build();
+    StructureMembers sm = topbuilder.setStandardOffsets().build();
     assertThat(sm.findMember("mname2")).isNull();
     assertThat(sm.findMember("nname2")).isNotNull();
     assertThat(sm.getStorageSizeBytes()).isEqualTo(88 + 108 + 198);
@@ -110,6 +127,49 @@ public class TestStructureMembers {
     assertThat(m.getShape()).isEqualTo(new int[] {});
     assertThat(m.length()).isEqualTo(1);
     assertThat(m.getStorageSizeBytes()).isEqualTo(198);
+    assertThat(m.getHeapIndex()).isEqualTo(2);
+    assertThat(m.isVlen()).isEqualTo(false);
+    assertThat(m.isScalar()).isTrue();
+
+    StructureMembers ncm = m.getStructureMembers();
+    assertThat(ncm).isNotNull();
+    assertThat(ncm.numberOfMembers()).isEqualTo(2);
+    assertThat(ncm.findMember("mname2")).isNotNull();
+    assertThat(ncm.findMember("nname2")).isNull();
+    assertThat(ncm.getStorageSizeBytes()).isEqualTo(198);
+  }
+
+  @Test
+  public void testSetStructuresOnHeap() {
+    StructureMembers.Builder nested = StructureMembers.builder().setStructuresOnHeap(true);
+    nested.setName("nested");
+    nested.addMember("mname1", "mdesc1", "munits1", ArrayType.BYTE, new int[] {11, 11});
+    MemberBuilder mbuilder = StructureMembers.memberBuilder();
+    mbuilder.setName("mname2").setDesc("mdesc2").setUnits("munits2").setArrayType(ArrayType.UBYTE)
+        .setShape(new int[] {7, 11});
+    nested.addMember(mbuilder);
+
+    StructureMembers.Builder topbuilder = StructureMembers.builder().setStructuresOnHeap(true);
+    topbuilder.setName("top");
+    topbuilder.addMember("nname1", "ndesc1", "nunits1", ArrayType.DOUBLE, new int[] {11});
+    topbuilder.addMember("nname2", "ndesc2", "nunits2", ArrayType.INT, new int[] {3, 3, 3});
+    MemberBuilder nbuilder = StructureMembers.memberBuilder().setName("struct").setStructureMembers(nested)
+        .setArrayType(ArrayType.STRUCTURE);
+    topbuilder.addMember(nbuilder);
+
+    StructureMembers sm = topbuilder.setStandardOffsets().build();
+    assertThat(sm.findMember("mname2")).isNull();
+    assertThat(sm.findMember("nname2")).isNotNull();
+    assertThat(sm.getStorageSizeBytes()).isEqualTo(88 + 108 + 4);
+
+    Member m = sm.findMember("struct");
+    assertThat(m).isNotNull();
+    assertThat(m.getArrayType()).isEqualTo(ArrayType.STRUCTURE);
+    assertThat(m.getDescription()).isNull();
+    assertThat(m.getUnitsString()).isNull();
+    assertThat(m.getShape()).isEqualTo(new int[] {});
+    assertThat(m.length()).isEqualTo(1);
+    assertThat(m.getStorageSizeBytes()).isEqualTo(4);
     assertThat(m.getHeapIndex()).isEqualTo(2);
     assertThat(m.isVlen()).isEqualTo(false);
     assertThat(m.isScalar()).isTrue();

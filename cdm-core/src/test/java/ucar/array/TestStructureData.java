@@ -22,7 +22,7 @@ public class TestStructureData {
     builder.setName("name");
     builder.addMember("mname1", "mdesc1", "munits1", ArrayType.BYTE, new int[] {11, 11});
     builder.addMember("mname2", "mdesc2", "munits1", ArrayType.FLOAT, new int[] {});
-    StructureMembers members = builder.setStandardOffsets(false).build();
+    StructureMembers members = builder.setStandardOffsets().build();
 
     StructureData[] parr = new StructureData[2];
     parr[0] = new StructureDataRow(members);
@@ -74,7 +74,7 @@ public class TestStructureData {
     builder.setName("name");
     builder.addMember("mname1", "mdesc1", "munits1", ArrayType.BYTE, new int[] {11, 11});
     builder.addMember("mname2", "mdesc2", "munits1", ArrayType.FLOAT, new int[] {1});
-    StructureMembers members = builder.setStandardOffsets(false).build();
+    StructureMembers members = builder.setStandardOffsets().build();
 
     StructureData[] parr = new StructureData[2];
     parr[0] = new StructureDataRow(members);
@@ -83,7 +83,7 @@ public class TestStructureData {
   }
 
   /** Testing only */
-  class StructureDataRow extends StructureData {
+  static class StructureDataRow extends StructureData {
     private final ByteBuffer bbuffer;
 
     public StructureDataRow(StructureMembers members) {

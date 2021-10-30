@@ -726,7 +726,7 @@ public class GcdmConverter {
       }
       membersb.addMember(mb);
     }
-    membersb.setStandardOffsets(false);
+    membersb.setStandardOffsets();
     return membersb;
   }
 

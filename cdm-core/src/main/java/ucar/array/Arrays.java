@@ -699,36 +699,38 @@ public class Arrays {
   }
 }
 
-  // LOOK consider using this instead of Misc
-  // https://stackoverflow.com/questions/4915462/how-should-i-do-floating-point-comparison
-  // bool nearly_equal(
-  // float a, float b,
-  // float epsilon = 128 * FLT_EPSILON, float abs_th = FLT_MIN)
-  // // those defaults are arbitrary and could be removed
-  // {
-  // assert(std::numeric_limits<float>::epsilon() <= epsilon);
-  // assert(epsilon < 1.f);
-  //
-  // if (a == b) return true;
-  //
-  // auto diff = std::abs(a-b);
-  // auto norm = std::min((std::abs(a) + std::abs(b)), std::numeric_limits<float>::max());
-  // // or even faster: std::min(std::abs(a + b), std::numeric_limits<float>::max());
-  // // keeping this commented out until I update figures below
-  // return diff < std::max(abs_th, epsilon * norm);
-  // }
-  /* public static boolean nearlyEqual(float a, float b, float epsilon) {
-    final float absA = Math.abs(a);
-    final float absB = Math.abs(b);
-    final float diff = Math.abs(a - b);
-
-    if (a == b) { // shortcut, handles infinities
-      return true;
-    } else if (a == 0 || b == 0 || diff < Float.MIN_NORMAL) {
-      // a or b is zero or both are extremely close to it
-      // relative error is less meaningful here
-      return diff < (epsilon * Float.MIN_NORMAL);
-    } else { // use relative error
-      return diff / (absA + absB) < epsilon;
-    }
-  } */
+// LOOK consider using this instead of Misc
+// https://stackoverflow.com/questions/4915462/how-should-i-do-floating-point-comparison
+// bool nearly_equal(
+// float a, float b,
+// float epsilon = 128 * FLT_EPSILON, float abs_th = FLT_MIN)
+// // those defaults are arbitrary and could be removed
+// {
+// assert(std::numeric_limits<float>::epsilon() <= epsilon);
+// assert(epsilon < 1.f);
+//
+// if (a == b) return true;
+//
+// auto diff = std::abs(a-b);
+// auto norm = std::min((std::abs(a) + std::abs(b)), std::numeric_limits<float>::max());
+// // or even faster: std::min(std::abs(a + b), std::numeric_limits<float>::max());
+// // keeping this commented out until I update figures below
+// return diff < std::max(abs_th, epsilon * norm);
+// }
+/*
+ * public static boolean nearlyEqual(float a, float b, float epsilon) {
+ * final float absA = Math.abs(a);
+ * final float absB = Math.abs(b);
+ * final float diff = Math.abs(a - b);
+ * 
+ * if (a == b) { // shortcut, handles infinities
+ * return true;
+ * } else if (a == 0 || b == 0 || diff < Float.MIN_NORMAL) {
+ * // a or b is zero or both are extremely close to it
+ * // relative error is less meaningful here
+ * return diff < (epsilon * Float.MIN_NORMAL);
+ * } else { // use relative error
+ * return diff / (absA + absB) < epsilon;
+ * }
+ * }
+ */

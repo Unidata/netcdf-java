@@ -109,7 +109,7 @@ public class TestSequence {
     builder.addMember("one", "desc1", "units1", ArrayType.BYTE, new int[0]);
     builder.addMember("two", "desc2", "units2", ArrayType.STRING, new int[0]);
     builder.addMember("tres", "desc3", "units4", ArrayType.FLOAT, new int[0]);
-    builder.setStandardOffsets(false);
+    builder.setStandardOffsets();
     return builder.build();
   }
 

@@ -8,7 +8,6 @@ import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import ucar.nc2.internal.util.CompareArrayToArray;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Formatter;
 
@@ -46,7 +45,7 @@ public class TestStructureDataBB {
     int count = 0;
     Index ima = array.getIndex();
     for (StructureData val : flipped) {
-      assertThat(CompareArrayToArray.compareStructureData(errlog, val, array.get(ima.set(10-count)), false)).isTrue();
+      assertThat(CompareArrayToArray.compareStructureData(errlog, val, array.get(ima.set(10 - count)), false)).isTrue();
     }
   }
 
@@ -77,6 +76,22 @@ public class TestStructureDataBB {
     assertThat(CompareArrayToArray.compareStructureData(errlog, array.get(2), array2.get(1), false)).isTrue();
   }
 
+  @Test
+  public void testExtract() {
+    StructureDataArray sdarray = makeStructureArray(7);
+    StructureMembers.Member member = sdarray.getStructureMembers().findMember("mstrings");
+    Array<String> extracted = (Array<String>) sdarray.extractMemberArray(member);
+    assertThat(extracted.getSize()).isEqualTo(21);
+    assertThat(extracted.getShape()).isEqualTo(new int[] {7, 3});
+
+    int count = 0;
+    for (String val : extracted) {
+      int idx = count % 3;
+      assertThat(val).isEqualTo("Gimme Shelter" + idx);
+      count++;
+    }
+  }
+
   private StructureDataArray makeStructureArray(int nelems) {
     StructureMembers.Builder builder = StructureMembers.builder();
     builder.setName("myname");
@@ -88,7 +103,7 @@ public class TestStructureDataBB {
     builder.addMember("mlong", "mdesc2", "munits2", ArrayType.LONG, new int[] {1, 1});
     builder.addMember("mstring", "mdesc2", "munits2", ArrayType.STRING, new int[0]);
     builder.addMember("mstrings", "mdesc2", "munits2", ArrayType.STRING, new int[] {3});
-    StructureMembers members = builder.setStandardOffsets(false).build();
+    StructureMembers members = builder.setStandardOffsets().build();
 
     byte[] result = new byte[(int) (nelems * members.getStorageSizeBytes())];
     ByteBuffer bb = ByteBuffer.wrap(result);

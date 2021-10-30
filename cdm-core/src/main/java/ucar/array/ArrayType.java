@@ -165,6 +165,15 @@ public enum ArrayType {
   }
 
   /**
+   * Is this a Structure type?
+   *
+   * @return true if STRUCTURE or SEQUENCE
+   */
+  public boolean isStruct() {
+    return (this == ArrayType.STRUCTURE) || (this == ArrayType.SEQUENCE);
+  }
+
+  /**
    * Returns an ArrayType that is related to {@code this}, but with the specified signedness.
    * This method is only meaningful for {@link #isIntegral() integral} data types; if it is called on a non-integral
    * type, then {@code this} is simply returned. Examples:

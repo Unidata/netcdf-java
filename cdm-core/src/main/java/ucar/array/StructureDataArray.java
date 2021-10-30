@@ -179,11 +179,18 @@ public final class StructureDataArray extends Array<StructureData> {
   /**
    * Extract data for one member, over all structures.
    * The resulting shape is the structure shape appended to the member's shape.
+   * LOOK problem with this for sequences
    *
    * @param m get all data for this StructureMembers.Member.
    */
   public Array<?> extractMemberArray(StructureMembers.Member m) {
+    Preconditions.checkArgument(members.getMembers().contains(m));
     ArrayType dataType = m.getArrayType();
+
+    List<Array<?>> memberData = new ArrayList<>();
+    for (StructureData sdata : this) {
+      memberData.add(sdata.getMemberData(m));
+    }
 
     // combine the shapes
     int[] mshape = m.getShape();
@@ -192,11 +199,42 @@ public final class StructureDataArray extends Array<StructureData> {
     System.arraycopy(getShape(), 0, rshape, 0, rank);
     System.arraycopy(mshape, 0, rshape, rank, mshape.length);
 
+    return Arrays.combine(dataType, rshape, memberData);
+  }
+
+  /**
+   * Extract data for one member, over all nested structures.
+   * The resulting shape is the structure shape appended to the member's shape.
+   * LOOK problem with this for sequences
+   *
+   * @param nestedStruct th parent Stucture of m.
+   * @param m get all data for this StructureMembers.Member.
+   */
+  public Array<?> extractNestedMemberArray(StructureMembers.Member nestedStruct, StructureMembers.Member m) {
+    Preconditions.checkArgument(members.getMembers().contains(nestedStruct));
+    Preconditions.checkArgument(nestedStruct.getArrayType().isStruct());
+
+    StructureMembers nested = nestedStruct.getStructureMembers();
+    Preconditions.checkNotNull(nested);
+    Preconditions.checkArgument(nested.getMembers().contains(m));
+
     List<Array<?>> memberData = new ArrayList<>();
     for (StructureData sdata : this) {
-      memberData.add(sdata.getMemberData(m));
+      Array<StructureData> nsdata = (Array<StructureData>) sdata.getMemberData(nestedStruct);
+      for (StructureData ndata : nsdata) {
+        memberData.add(ndata.getMemberData(m));
+      }
     }
-    return Arrays.combine(dataType, rshape, memberData);
+
+    // combine the shapes
+    int nrank = nestedStruct.getShape().length;
+    int mrank = m.getShape().length;
+    int[] rshape = new int[rank + nrank + mrank];
+    System.arraycopy(getShape(), 0, rshape, 0, rank);
+    System.arraycopy(nestedStruct.getShape(), 0, rshape, rank, nrank);
+    System.arraycopy(m.getShape(), 0, rshape, rank + nrank, mrank);
+
+    return Arrays.combine(m.getArrayType(), rshape, memberData);
   }
 
 }

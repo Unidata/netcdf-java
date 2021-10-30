@@ -25,7 +25,7 @@ public class StructureDataArrayEnhancer {
   public StructureDataArrayEnhancer(StructureEnhanced topStructure, StructureDataArray org) {
     this.topStructure = topStructure;
     this.org = org;
-    this.members = ((Structure) topStructure).makeStructureMembersBuilder().setStandardOffsets(false).build();
+    this.members = ((Structure) topStructure).makeStructureMembersBuilder().setStandardOffsets().build();
     this.bbuffer = ByteBuffer.allocate((int) (org.length() * members.getStorageSizeBytes()));
     this.storage = new StructureDataStorageBB(members, bbuffer, (int) org.length());
   }
