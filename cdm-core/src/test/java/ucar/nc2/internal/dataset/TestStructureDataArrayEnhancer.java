@@ -1,11 +1,19 @@
 /*
- * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
- * See LICENSE for license information.
+ *  Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
+ *  See LICENSE for license information.
  */
-package ucar.array;
+package ucar.nc2.internal.dataset;
 
 import com.google.common.collect.ImmutableList;
 import org.junit.Test;
+import ucar.array.Array;
+import ucar.array.ArrayType;
+import ucar.array.Arrays;
+import ucar.array.Index;
+import ucar.array.StructureData;
+import ucar.array.StructureDataArray;
+import ucar.array.StructureDataStorageBB;
+import ucar.array.StructureMembers;
 import ucar.nc2.internal.util.CompareArrayToArray;
 
 import java.io.IOException;
@@ -15,12 +23,13 @@ import java.util.Formatter;
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.assertThrows;
 
-/** Test {@link StructureData} and {@link StructureDataArray} with StructureDataSrorageBB */
-public class TestStructureDataBB {
+/** Test {@link StructureDataArrayEnhancer} */
+public class TestStructureDataArrayEnhancer {
 
   @Test
   public void testBasics() {
     StructureDataArray array = makeStructureArray(11);
+
     for (StructureData val : array) {
       assertThat(val.getName()).isEqualTo("myname");
     }
@@ -31,7 +40,6 @@ public class TestStructureDataBB {
 
     StructureMembers members = array.getStructureMembers();
     assertThat(array.getStructureSize()).isEqualTo(members.getStorageSizeBytes());
-    assertThat(array.storage().length()).isEqualTo(11);
 
     StructureData sdata = array.get(0);
     assertThat(sdata.getStructureMembers()).isEqualTo(members);
@@ -51,7 +59,7 @@ public class TestStructureDataBB {
   }
 
   @Test
-  public void testCopy() {
+  public void testCopy() throws IOException {
     StructureDataArray org = makeStructureArray(7);
     StructureDataArray copy = copyStructureArray(org);
     assertThat(CompareArrayToArray.compareData("arr", org, copy)).isTrue();
@@ -64,7 +72,7 @@ public class TestStructureDataBB {
   }
 
   @Test
-  public void testCombine() {
+  public void testCombine() throws IOException {
     StructureDataArray array1 = makeStructureArray(1);
     StructureDataArray array2 = makeStructureArray(2);
 

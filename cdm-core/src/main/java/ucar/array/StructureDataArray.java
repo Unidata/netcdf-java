@@ -5,7 +5,6 @@
 package ucar.array;
 
 import com.google.common.base.Preconditions;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -163,12 +162,12 @@ public final class StructureDataArray extends Array<StructureData> {
       private int count = 0;
 
       @Override
-      public final boolean hasNext() {
+      public boolean hasNext() {
         return count < length;
       }
 
       @Override
-      public final StructureData next() {
+      public StructureData next() {
         return parray[count++];
       }
     }
@@ -181,11 +180,9 @@ public final class StructureDataArray extends Array<StructureData> {
    * Extract data for one member, over all structures.
    * The resulting shape is the structure shape appended to the member's shape.
    *
-   * @param m get data from this StructureMembers.Member.
-   * @return Array values.
-   * @throws java.io.IOException on read error (only happens for Sequences, otherwise data is already read)
+   * @param m get all data for this StructureMembers.Member.
    */
-  public Array<?> extractMemberArray(StructureMembers.Member m) throws IOException {
+  public Array<?> extractMemberArray(StructureMembers.Member m) {
     ArrayType dataType = m.getArrayType();
 
     // combine the shapes

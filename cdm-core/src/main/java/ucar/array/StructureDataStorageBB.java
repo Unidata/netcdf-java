@@ -88,9 +88,8 @@ public final class StructureDataStorageBB implements Storage<StructureData> {
   }
 
   /** Copy Array data into ByteBuffer at recordOffset + member.getOffset(). */
-  public void setMemberData(int recno, Member member, Array<?> data) {
-    int recstart = recno * members.getStorageSizeBytes();
-    int pos = recstart + member.getOffset();
+  public void setMemberData(int recordOffset, Member member, Array<?> data) {
+    int pos = recordOffset + member.getOffset();
     bbuffer.position(pos);
     bbuffer.order(member.getByteOrder());
     if (debug) {

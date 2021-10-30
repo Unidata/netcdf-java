@@ -106,7 +106,7 @@ public class CompareArrayToArray {
     return ok;
   }
 
-  public static boolean compareData(String name, Array<?> org, Array<?> array) throws IOException {
+  public static boolean compareData(String name, Array<?> org, Array<?> array) {
     Formatter f = new Formatter();
     boolean ok = compareData(f, name, org, array, false, true);
     if (f.toString().isEmpty()) {
@@ -116,7 +116,7 @@ public class CompareArrayToArray {
   }
 
   public static boolean compareData(Formatter f, String name, Array<?> org, Array<?> array, boolean justOne,
-      boolean testTypes) throws IOException {
+      boolean testTypes) {
     boolean ok = true;
 
     if (org.length() != array.length()) {
@@ -339,8 +339,7 @@ public class CompareArrayToArray {
         Misc.relativeDifference(v1.doubleValue(), v2.doubleValue()));
   }
 
-  public static boolean compareStructureData(Formatter f, StructureData org, StructureData array, boolean justOne)
-      throws IOException {
+  public static boolean compareStructureData(Formatter f, StructureData org, StructureData array, boolean justOne) {
     boolean ok = true;
 
     StructureMembers sm1 = org.getStructureMembers();
@@ -397,7 +396,6 @@ public class CompareArrayToArray {
   }
 
   public static boolean compareSequenceDataset(String filename) throws IOException {
-
     try (NetcdfDataset org = NetcdfDatasets.openDataset(filename);
         NetcdfDataset copy = NetcdfDatasets.openDataset(filename)) {
       System.out.println("Test NetcdfDataset: " + org.getLocation());
@@ -423,7 +421,7 @@ public class CompareArrayToArray {
   }
 
   public static boolean compareSequence(Formatter f, String name, Iterator<StructureData> org,
-      Iterator<StructureData> array) throws IOException {
+      Iterator<StructureData> array) {
     boolean ok = true;
     int obsrow = 0;
     System.out.printf(" compareSequence %s%n", name);

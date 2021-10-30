@@ -15,8 +15,8 @@ import java.util.Formatter;
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.assertThrows;
 
-/** Test {@link StructureData} and {@link StructureDataArray} with StructureDataSrorageBB */
-public class TestStructureDataNestedBB {
+/** Test {@link StructureData} and {@link StructureDataArray} with nested structure data on the heap */
+public class TestStructureDataNestedHeap {
 
   @Test
   public void testBasics() {
@@ -99,14 +99,14 @@ public class TestStructureDataNestedBB {
   }
 
   private StructureDataArray makeStructureArray(int nelems) {
-    StructureMembers.Builder nbuilder = StructureMembers.builder();
+    StructureMembers.Builder nbuilder = StructureMembers.builder().setStructuresOnHeap(true);
     nbuilder.setName("nested");
     nbuilder.addMember("nbyte", "mdesc1", "munits1", ArrayType.BYTE, new int[] {11, 11});
     nbuilder.addMember("ndouble", "mdesc2", "munits2", ArrayType.DOUBLE, new int[] {1});
     nbuilder.addMember("nstrings", "mdesc2", "munits2", ArrayType.STRING, new int[] {3});
-    StructureMembers nestedMembers = nbuilder.setStandardOffsets(false).build();
+    StructureMembers nestedMembers = nbuilder.setStandardOffsets(true).build();
 
-    StructureMembers.Builder builder = StructureMembers.builder();
+    StructureMembers.Builder builder = StructureMembers.builder().setStructuresOnHeap(true);
     builder.setName("myname");
     builder.addMember("mstring", "mdesc1", "munits1", ArrayType.STRING, new int[] {11, 11});
     builder.addMember("mopaque", "mdesc1", "munits1", ArrayType.OPAQUE, new int[] {3});
@@ -114,7 +114,7 @@ public class TestStructureDataNestedBB {
         .setStructureMembers(nestedMembers.toBuilder());
     builder.addMember("mseq", "mdesc2", "munits2", ArrayType.SEQUENCE, new int[0])
         .setStructureMembers(nestedMembers.toBuilder());
-    StructureMembers members = builder.setStandardOffsets(false).build();
+    StructureMembers members = builder.setStandardOffsets(true).build();
 
     byte[] result = new byte[(int) (nelems * members.getStorageSizeBytes())];
     ByteBuffer bb = ByteBuffer.wrap(result);
