@@ -30,6 +30,11 @@ public class Catalog extends DatasetNode {
   public static final String CATALOG_NAMESPACE_10 = "http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0";
   public static final Namespace defNS = Namespace.getNamespace(CATALOG_NAMESPACE_10);
   public static final String NJ22_NAMESPACE = "http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2";
+  // This line (and related code) handles incorrect HTTPS variant of NcML Namespace URI.
+  // NOTE: The HTTPS variant is incorrect (according to recent, Oct 2021, decision).
+  //       It probably appeared when Unidata servers started requiring HTTPS.
+  //       NcML is only place HTTPS namespace variants are handled (and tested in testReadHttps.xml).
+  //       Should probably just be dropped.
   public static final String NJ22_NAMESPACE_HTTPS = "https://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2";
   public static final Namespace ncmlNS = Namespace.getNamespace("ncml", NJ22_NAMESPACE);
   public static final Namespace ncmlNSHttps = Namespace.getNamespace("ncml", NJ22_NAMESPACE_HTTPS);

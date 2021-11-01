@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- DO NOT Change namespace URI
+   - Used to test handling of alternate/incorrect namespace URI.
+   - (See note in Catalog.java.)
+   -->
 <nc:netcdf xmlns:nc="https://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2"
   location="file:src/test/data/example1.nc">
 
