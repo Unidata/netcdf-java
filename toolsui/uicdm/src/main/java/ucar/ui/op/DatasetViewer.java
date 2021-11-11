@@ -538,13 +538,6 @@ public class DatasetViewer extends JPanel {
       infoTA.appendLine(v.toString());
     }
 
-    if (Debug.isSet("Xdeveloper")) {
-      infoTA.appendLine("\n");
-      infoTA.appendLine("FULL NAME = " + v.getFullName());
-      infoTA.appendLine("\n");
-      infoTA.appendLine(v.toStringDebug());
-    }
-
     infoTA.gotoTop();
     infoWindow.setTitle("Variable Info");
     infoWindow.show();

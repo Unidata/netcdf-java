@@ -593,11 +593,6 @@ public class NetcdfFile implements FileCacheable, Closeable {
     return (didit != null) && didit;
   }
 
-  protected void setCachedData(Variable v, ucar.array.Array<?> cacheData) {
-    v.setCachedData(cacheData);
-  }
-
-
   //////////////////////////////////////////////////////////////////////////////////////
 
   /** CDL representation of Netcdf header info, non strict */
