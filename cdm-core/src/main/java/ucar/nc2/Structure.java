@@ -37,8 +37,6 @@ import ucar.nc2.util.Indent;
  * Generally, the programmer can assume that the data in one Structure are stored together,
  * so that it is efficient to read an entire Structure, and then access the Variable data through the
  * Arrays in the StructureData.
- *
- * @author caron
  */
 @Immutable
 public class Structure extends Variable {
@@ -56,12 +54,6 @@ public class Structure extends Variable {
     return members.size();
   }
 
-  /** Get the size in bytes of one Structure. */
-  @Override
-  public int getElementSize() {
-    return elementSize;
-  }
-
   /** Get the variables contained directly in this Structure. */
   public ImmutableList<Variable> getVariables() {
     return members;
@@ -77,6 +69,7 @@ public class Structure extends Variable {
     return isSubset;
   }
 
+  /** Create a StructureMembers.Builder from the Variables of this Structure. Used to create StructureDataArray. */
   public StructureMembers.Builder makeStructureMembersBuilder() {
     StructureMembers.Builder builder = StructureMembers.builder().setName(this.getShortName());
     for (Variable v2 : this.getVariables()) {

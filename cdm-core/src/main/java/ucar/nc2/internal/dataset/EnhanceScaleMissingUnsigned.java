@@ -14,7 +14,7 @@ import ucar.array.Array;
 import ucar.array.ArrayType;
 import ucar.array.Arrays;
 import ucar.nc2.Attribute;
-import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDataset.Enhance;
@@ -169,7 +169,7 @@ public class EnhanceScaleMissingUnsigned {
    *
    * @param forVar the Variable to decorate.
    */
-  public EnhanceScaleMissingUnsigned(VariableSimpleIF forVar, Set<Enhance> enhancements) {
+  public EnhanceScaleMissingUnsigned(Variable forVar, Set<Enhance> enhancements) {
     this(forVar, enhancements, NetcdfDataset.fillValueIsMissing, NetcdfDataset.invalidDataIsMissing,
         NetcdfDataset.missingDataIsMissing);
   }
@@ -183,7 +183,7 @@ public class EnhanceScaleMissingUnsigned {
    * @param invalidDataIsMissing use valid_range for isMissing()
    * @param missingDataIsMissing use missing_value for isMissing()
    */
-  public EnhanceScaleMissingUnsigned(VariableSimpleIF forVar, Set<Enhance> enhancements, boolean fillValueIsMissing,
+  public EnhanceScaleMissingUnsigned(Variable forVar, Set<Enhance> enhancements, boolean fillValueIsMissing,
       boolean invalidDataIsMissing, boolean missingDataIsMissing) {
     this.fillValueIsMissing = fillValueIsMissing;
     this.invalidDataIsMissing = invalidDataIsMissing;
