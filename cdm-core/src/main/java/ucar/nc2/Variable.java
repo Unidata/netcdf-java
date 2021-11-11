@@ -32,11 +32,12 @@ import java.io.IOException;
  * and a set of Attributes.
  * <p/>
  * The data is a multidimensional array of primitive types, Strings, or Structures.
- * Data access is done through the read() methods, which return a memory resident Array.
+ * Data access is done through the readXXX() methods, which return a memory resident Array.
  * <p>
+ * The cache isnt immutable, but changes to it should not be visible.
  */
 @Immutable
-public class Variable implements VariableSimpleIF, ProxyReader {
+public class Variable implements ProxyReader {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Variable.class);
   private static final boolean showSize = false;
 
@@ -48,8 +49,8 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    */
   public static boolean permitCaching = true; // TODO
 
-  private static final int defaultSizeToCache = 4000; // bytes cache any variable whose size() < defaultSizeToCache
-  private static final int defaultCoordsSizeToCache = 40 * 1000; // bytes cache coordinate variable whose size() <
+  private static final int defaultSizeToCache = 4000; // bytes; cache any variable whose size() < defaultSizeToCache
+  private static final int defaultCoordsSizeToCache = 40 * 1000; // bytes; cache coordinate variable whose size() <
   // defaultSizeToCache
 
   /**
@@ -75,7 +76,6 @@ public class Variable implements VariableSimpleIF, ProxyReader {
   }
 
   /** Get the data type of the Variable. */
-  @Override
   public ArrayType getArrayType() {
     return dataType;
   }
@@ -87,7 +87,6 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    *
    * @return description, or null if not found.
    */
-  @Override
   public String getDescription() {
     String desc = null;
     Attribute att = attributes.findAttributeIgnoreCase(CDM.LONG_NAME);
@@ -120,7 +119,6 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    * The most slowly varying (leftmost for Java and C programmers) dimension is first.
    * For scalar variables, the list is empty.
    */
-  @Override
   public ImmutableList<Dimension> getDimensions() {
     return dimensions;
   }
@@ -142,11 +140,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     return dimensions.get(i);
   }
 
-  /**
-   * Get the list of Dimension names, space delineated.
-   *
-   * @return Dimension names, space delineated
-   */
+  /** Get the list of Dimension names, space delineated. */
   public String getDimensionsString() {
     return Dimensions.makeDimensionsString(dimensions);
   }
@@ -155,11 +149,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    * Get the number of bytes for one element of this Variable.
    * For Variables of primitive type, this is equal to getDataType().getSize().
    * Variables of String type dont know their size, so what they return is undefined.
-   * Variables of Structure type return the total number of bytes for all the members of
-   * one Structure, plus possibly some extra padding, depending on the underlying format.
-   * Variables of Sequence type return the number of bytes of one element.
-   *
-   * @return total number of bytes for the Variable
+   * Structure and subclasses return the size in bytes of one Structure.
    */
   public int getElementSize() {
     return elementSize;
@@ -205,13 +195,11 @@ public class Variable implements VariableSimpleIF, ProxyReader {
   }
 
   /** Get the number of dimensions of the Variable, aka the rank. */
-  @Override
   public int getRank() {
     return shape.length;
   }
 
   /** Get the shape: length of Variable in each dimension. A scalar (rank 0) will have an int[0] shape. */
-  @Override
   public int[] getShape() {
     int[] result = new int[shape.length]; // optimization over clone()
     System.arraycopy(shape, 0, result, 0, shape.length);
@@ -233,7 +221,6 @@ public class Variable implements VariableSimpleIF, ProxyReader {
   }
 
   /** The short name of the variable */
-  @Override
   public String getShortName() {
     return this.shortName;
   }
@@ -257,7 +244,6 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    * @return unit string, or null if not found.
    */
   @Nullable
-  @Override
   public String getUnitsString() {
     String units = null;
     Attribute att = attributes().findAttributeIgnoreCase(CDM.UNITS);
@@ -533,7 +519,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     if (getArrayType() == ArrayType.STRING) {
       return (String) readArray().getScalar();
     } else if (getArrayType() == ArrayType.CHAR) {
-      return Arrays.makeStringFromChar((ucar.array.Array<Byte>) readArray());
+      return Arrays.makeStringFromChar((Array<Byte>) readArray());
     } else {
       throw new IllegalArgumentException("readScalarString not STRING or CHAR " + getFullName());
     }
@@ -565,19 +551,19 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    * Read all the data for this Variable and return a memory resident Array.
    * The Array has the same element type and shape as the Variable.
    */
-  public ucar.array.Array<?> readArray() throws IOException {
+  public Array<?> readArray() throws IOException {
     if (cache.getData() != null) {
       return cache.getData();
     }
 
-    ucar.array.Array<?> data = proxyReader.proxyReadArray(this, null);
+    Array<?> data = proxyReader.proxyReadArray(this, null);
 
     // optionally cache it
     if (isCaching()) {
       cache.setCachedData(data);
     }
 
-    // ucar.array.Array allegedly Immutable
+    // ucar.array.Array is Immutable
     return data;
   }
 
@@ -615,9 +601,8 @@ public class Variable implements VariableSimpleIF, ProxyReader {
    *        If list is null, assume all data.
    *        Each Range corresponds to a Dimension. If the Range object is null, it means use the entire dimension.
    */
-  public ucar.array.Array<?> readArray(@Nullable ucar.array.Section section)
-      throws java.io.IOException, ucar.array.InvalidRangeException {
-    section = ucar.array.Section.fill(section, getShape());
+  public Array<?> readArray(@Nullable Section section) throws java.io.IOException, InvalidRangeException {
+    section = Section.fill(section, getShape());
     if (section.computeSize() == getSize()) {
       return readArray();
     }
@@ -636,21 +621,23 @@ public class Variable implements VariableSimpleIF, ProxyReader {
 
   /** public by accident, do not call directly. */
   @Override
-  public ucar.array.Array<?> proxyReadArray(Variable client, CancelTask cancelTask) throws IOException {
+  public Array<?> proxyReadArray(Variable client, CancelTask cancelTask) throws IOException {
     if (isMemberOfStructure()) {
+      Preconditions.checkNotNull(getParentStructure());
       // throw new UnsupportedOperationException("Cannot directly read Member Variable=" + getFullName());
       List<String> memList = new ArrayList<>();
       memList.add(this.getShortName());
       Structure s = getParentStructure().select(memList);
-      ucar.array.Array<?> as = s.readArray();
+      Array<?> as = s.readArray();
       StructureDataArray sad = (StructureDataArray) as;
       StructureMembers.Member m = sad.getStructureMembers().findMember(this.getShortName());
       return sad.extractMemberArray(m);
     }
 
+    Preconditions.checkNotNull(ncfile);
     try {
       return ncfile.readArrayData(this, getSection());
-    } catch (ucar.array.InvalidRangeException e) {
+    } catch (InvalidRangeException e) {
       e.printStackTrace();
       throw new IOException(e.getMessage()); // cant happen haha
     }
@@ -658,11 +645,12 @@ public class Variable implements VariableSimpleIF, ProxyReader {
 
   /** public by accident, do not call directly. */
   @Override
-  public ucar.array.Array<?> proxyReadArray(Variable client, ucar.array.Section section, CancelTask cancelTask)
-      throws IOException, ucar.array.InvalidRangeException {
+  public Array<?> proxyReadArray(Variable client, Section section, CancelTask cancelTask)
+      throws IOException, InvalidRangeException {
     if (isMemberOfStructure()) {
       throw new UnsupportedOperationException("Cannot directly read section of Member Variable=" + getFullName());
     }
+    Preconditions.checkNotNull(ncfile);
     return ncfile.readArrayData(this, section);
   }
 
@@ -825,7 +813,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
   protected int hashCode;
 
   /** Sort by name */
-  public int compareTo(VariableSimpleIF o) {
+  public int compareTo(Variable o) {
     return getShortName().compareTo(o.getShortName());
   }
 
@@ -833,7 +821,6 @@ public class Variable implements VariableSimpleIF, ProxyReader {
   // Attributes
 
   /** The attributes contained by this Variable. */
-  @Override
   public AttributeContainer attributes() {
     return attributes;
   }
@@ -939,7 +926,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     cache.setCachedData(null);
   }
 
-  protected void setCachedData(ucar.array.Array<?> cacheData) {
+  protected void setCachedData(Array<?> cacheData) {
     if ((cacheData != null) && (cacheData.getArrayType() != getArrayType())) {
       throw new IllegalArgumentException(
           "setCachedData type=" + cacheData.getArrayType() + " incompatible with variable type=" + getArrayType());
@@ -953,10 +940,12 @@ public class Variable implements VariableSimpleIF, ProxyReader {
   }
 
   // this indirection allows us to share the cache among the variable's sections and copies
+  // The cache isnt immutable, but changes to it should not be visible.
   protected static class Cache {
-    // this is the only source of the data, do not erase, can only be set in the builder
-    private ucar.array.Array<?> srcData;
-    private ucar.array.Array<?> cacheData; // this is temporary data, may be erased, can be set by setCachedData()
+    // this is the only source of the data, do not erase, can only be set in Builder
+    private Array<?> srcData;
+    // this is temporary data, may be erased, can be set by setCachedData()
+    private Array<?> cacheData;
     private Integer sizeToCacheBytes; // bytes
     private Boolean isCaching;
 
@@ -966,7 +955,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
       this.cacheData = null;
     }
 
-    protected ucar.array.Array<?> getData() {
+    protected Array<?> getData() {
       return (srcData != null) ? srcData : cacheData;
     }
 
@@ -974,7 +963,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
       this.isCaching = isCaching;
     }
 
-    protected void setCachedData(ucar.array.Array<?> data) {
+    protected void setCachedData(Array<?> data) {
       this.cacheData = data;
     }
   }
@@ -995,15 +984,15 @@ public class Variable implements VariableSimpleIF, ProxyReader {
   protected final ImmutableList<Dimension> dimensions;
   protected final AttributeContainer attributes;
   protected final ProxyReader proxyReader;
+  protected final Cache cache;
+  protected int elementSize; // LOOK set in Structure
 
   // TODO get rid of resetShape() so these can be final
   private Section shapeAsSection; // derived from the shape, immutable; used for every read, deferred creation
   protected int[] shape;
   protected boolean isVariableLength;
-  protected int elementSize; // set in Structure
 
   protected ArrayType dataType; // TODO not final, so VariableDS can override, is there a better solution?
-  protected Cache cache;
 
   protected Variable(Builder<?> builder, Group parentGroup) {
     if (parentGroup == null) {
@@ -1154,7 +1143,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
     private ArrayList<Dimension> dimensions = new ArrayList<>();
     public Object spiObject;
     public ProxyReader proxyReader;
-    public Cache cache = new Cache(); // cache cannot be null
+    Cache cache = new Cache(); // cache cannot be null
 
     private String enumTypeName;
     private AutoGen autoGen;
@@ -1410,7 +1399,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
       return self();
     }
 
-    public T setSourceData(ucar.array.Array<?> srcData) {
+    public T setSourceData(Array<?> srcData) {
       this.cache.srcData = srcData;
       return self();
     }
@@ -1514,7 +1503,7 @@ public class Variable implements VariableSimpleIF, ProxyReader {
       this.incr = incr;
     }
 
-    private ucar.array.Array<?> makeDataArray(ArrayType dtype, List<Dimension> dimensions) {
+    private Array<?> makeDataArray(ArrayType dtype, List<Dimension> dimensions) {
       int[] shape = Dimensions.makeArraySectionFromDimensions(dimensions).build().getShape();
       Array<?> result = Arrays.makeArray(dtype, (int) Arrays.computeSize(shape), start, incr);
       return Arrays.reshape(result, shape);
