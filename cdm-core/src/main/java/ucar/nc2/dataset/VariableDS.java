@@ -166,11 +166,6 @@ public class VariableDS extends Variable implements VariableEnhanced {
   }
 
   @Override
-  public String toStringDebug() {
-    return (orgVar != null) ? orgVar.toStringDebug() : "";
-  }
-
-  @Override
   public String getDatasetLocation() {
     String result = super.getDatasetLocation();
     if (result != null)

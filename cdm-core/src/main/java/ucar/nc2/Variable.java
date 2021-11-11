@@ -50,8 +50,7 @@ public class Variable implements ProxyReader {
   public static boolean permitCaching = true; // TODO
 
   private static final int defaultSizeToCache = 4000; // bytes; cache any variable whose size() < defaultSizeToCache
-  private static final int defaultCoordsSizeToCache = 40 * 1000; // bytes; cache coordinate variable whose size() <
-  // defaultSizeToCache
+  private static final int defaultCoordsSizeToCache = 40 * 1000; // bytes; cache coordinates whose size() < this
 
   /**
    * Find the index of the named Dimension in this Variable.
@@ -332,7 +331,7 @@ public class Variable implements ProxyReader {
    */
   @Nullable
   public String lookupEnumString(int val) {
-    Preconditions.checkArgument(dataType.isEnum(), "Can only call Variable.lookupEnumVal() on enum types");
+    Preconditions.checkArgument(dataType.isEnum(), "Can only call Variable.lookupEnumString() on enum types");
     Preconditions.checkNotNull(enumTypedef, "enum Variable does not have enumTypedef");
     return enumTypedef.lookupEnumString(val);
   }
@@ -744,19 +743,6 @@ public class Variable implements ProxyReader {
     indent.decr();
   }
 
-  /** Debugging info */
-  public String toStringDebug() {
-    Formatter f = new Formatter();
-    f.format("Variable %s", getFullName());
-    if (ncfile != null) {
-      f.format(" in file %s", getDatasetLocation());
-      String extra = ncfile.toStringDebug(this);
-      if (extra != null)
-        f.format(" %s", extra);
-    }
-    return f.toString();
-  }
-
   protected String extraInfo() {
     return showSize ? " // " + getElementSize() + " " + getSize() : "";
   }
@@ -926,6 +912,7 @@ public class Variable implements ProxyReader {
     cache.setCachedData(null);
   }
 
+  // LOOK
   protected void setCachedData(Array<?> cacheData) {
     if ((cacheData != null) && (cacheData.getArrayType() != getArrayType())) {
       throw new IllegalArgumentException(
