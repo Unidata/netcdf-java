@@ -77,7 +77,7 @@ public class TestStructureDataBB {
   }
 
   @Test
-  public void testExtract() {
+  public void testExtractMemberArrayString() {
     StructureDataArray sdarray = makeStructureArray(7);
     StructureMembers.Member member = sdarray.getStructureMembers().findMember("mstrings");
     Array<String> extracted = (Array<String>) sdarray.extractMemberArray(member);

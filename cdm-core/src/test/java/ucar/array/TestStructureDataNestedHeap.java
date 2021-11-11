@@ -51,7 +51,7 @@ public class TestStructureDataNestedHeap {
       Array<String> ssdata = (Array<String>) sdata.getMemberData(m);
       int idx = 0;
       for (String s : ssdata) {
-        assertThat(s).isEqualTo("Gimme Shelter" + idx + "-" + recno);
+        assertThat(s).isEqualTo("Gimme Shelter" + idx);
         idx++;
       }
       recno++;
@@ -60,15 +60,15 @@ public class TestStructureDataNestedHeap {
     // strings in nested struct
     for (StructureData sdata : array) {
       StructureMembers.Member mstruct = sdata.getStructureMembers().findMember("mstruct");
-      Array<StructureData> nsdata = (Array<StructureData>) sdata.getMemberData(mstruct);
+      Array<StructureData> mstructDataArray = (Array<StructureData>) sdata.getMemberData(mstruct);
 
       int nrecno = 0;
-      for (StructureData ndata : nsdata) {
-        StructureMembers.Member nstrings = ndata.getStructureMembers().findMember("nstrings");
-        Array<String> ssdata = (Array<String>) ndata.getMemberData(nstrings);
+      for (StructureData mstructData : mstructDataArray) {
+        StructureMembers.Member nstrings = mstructData.getStructureMembers().findMember("nstrings");
+        Array<String> ssdata = (Array<String>) mstructData.getMemberData(nstrings);
         int idx = 0;
         for (String s : ssdata) {
-          assertThat(s).isEqualTo("Or else" + idx + "-" + nrecno);
+          assertThat(s).isEqualTo("Gimme Shelter" + idx);
           idx++;
         }
         nrecno++;
@@ -140,31 +140,35 @@ public class TestStructureDataNestedHeap {
     }
   }
 
-  /*
-   * @Test
-   * public void testCopy() throws IOException {
-   * StructureDataArray org = makeStructureArray(7);
-   * StructureDataArray copy = copyStructureArray(org);
-   * assertThat(CompareArrayToArray.compareData("arr", org, copy)).isTrue();
-   * 
-   * Formatter errlog = new Formatter();
-   * int count = 0;
-   * for (StructureData val : org) {
-   * assertThat(CompareArrayToArray.compareStructureData(errlog, val, copy.get(count++), false)).isTrue();
-   * }
-   * }
-   */
+  @Test
+  public void testExtractNestedMemberArray() {
+    StructureDataArray sdarray = makeStructureArray(7);
+    StructureMembers.Member nstruct = sdarray.getStructureMembers().findMember("mstruct");
+    assertThat(nstruct).isNotNull();
+    StructureMembers.Member nested = nstruct.getStructureMembers().findMember("nbyte");
+
+    Array<Byte> extracted = (Array<Byte>) sdarray.extractNestedMemberArray(nstruct, nested);
+    assertThat(extracted.getSize()).isEqualTo(7 * 7 * 11 * 11);
+    assertThat(extracted.getShape()).isEqualTo(new int[] {7, 7, 11, 11});
+
+    int count = 0;
+    for (byte val : extracted) {
+      int idx = count % 121;
+      assertThat(val).isEqualTo((byte) (idx + 100));
+      count++;
+    }
+  }
 
   @Test
-  public void testExtract() {
+  public void testExtractNestedMemberArrayString() {
     StructureDataArray sdarray = makeStructureArray(7);
-    StructureMembers.Member member = sdarray.getStructureMembers().findMember("mstruct");
-    assertThat(member).isNotNull();
-    StructureMembers.Member nested = member.getStructureMembers().findMember("nstrings");
+    StructureMembers.Member nstruct = sdarray.getStructureMembers().findMember("mstruct");
+    assertThat(nstruct).isNotNull();
+    StructureMembers.Member nested = nstruct.getStructureMembers().findMember("nstrings");
 
-    Array<String> extracted = (Array<String>) sdarray.extractMemberArray(nested);
-    assertThat(extracted.getSize()).isEqualTo(21);
-    assertThat(extracted.getShape()).isEqualTo(new int[] {7, 3});
+    Array<String> extracted = (Array<String>) sdarray.extractNestedMemberArray(nstruct, nested);
+    assertThat(extracted.getSize()).isEqualTo(7 * 7 * 3);
+    assertThat(extracted.getShape()).isEqualTo(new int[] {7, 7, 3});
 
     int count = 0;
     for (String val : extracted) {
@@ -230,6 +234,9 @@ public class TestStructureDataNestedHeap {
             bb.putInt(pos, storage.putOnHeap(vlen));
             break;
           case SEQUENCE:
+            Array<?> seq = makeNestedSequence(11, nestedMembers);
+            bb.putInt(pos, storage.putOnHeap(seq));
+            break;
           case STRUCTURE:
             StructureDataArray sdata = makeNestedStructureArray(m.length(), nestedMembers);
             bb.putInt(pos, storage.putOnHeap(sdata)); // assumes structures are on the heap
@@ -272,25 +279,38 @@ public class TestStructureDataNestedHeap {
     return new StructureDataArray(members, new int[] {nelems}, storage);
   }
 
-  private static StructureDataArray copyStructureArray(StructureDataArray org) {
-    StructureMembers members = org.getStructureMembers().toBuilder().setStructuresOnHeap(true).build();
-
-    int nelems = (int) org.length();
+  private StructureDataArray makeNestedSequence(int nelems, StructureMembers members) {
     byte[] result = new byte[(int) (nelems * members.getStorageSizeBytes())];
     ByteBuffer bb = ByteBuffer.wrap(result);
     StructureDataStorageBB storage = new StructureDataStorageBB(members, bb, nelems);
     for (int recno = 0; recno < nelems; recno++) {
       int recstart = recno * members.getStorageSizeBytes();
       for (StructureMembers.Member m : members) {
-        Array mdata = org.get(recno).getMemberData(m);
-        if (mdata instanceof StructureDataArray) {
-          mdata = org.get(recno).getMemberData(m);
-          mdata = copyStructureArray((StructureDataArray) mdata);
+        int pos = recstart + m.getOffset();
+        switch (m.getArrayType()) {
+          case BYTE:
+            for (int idx = 0; idx < m.length(); idx++) {
+              bb.put(pos + idx, (byte) (idx + 100));
+            }
+            break;
+          case DOUBLE:
+            for (int idx = 0; idx < m.length(); idx++) {
+              bb.putDouble(pos + idx, (idx + 3.14));
+            }
+            break;
+          case STRING:
+            String[] data = new String[m.length()];
+            for (int idx = 0; idx < m.length(); idx++) {
+              data[idx] = "Or else fade away" + idx + "-" + recno;
+            }
+            bb.putInt(pos, storage.putOnHeap(data));
+            break;
         }
-        storage.setMemberData(recstart, m, mdata);
       }
     }
     return new StructureDataArray(members, new int[] {nelems}, storage);
   }
+
+
 
 }

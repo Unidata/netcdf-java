@@ -12,6 +12,7 @@ import ucar.array.StructureMembers;
 import ucar.array.Array;
 import ucar.array.Index;
 import ucar.nc2.*;
+import ucar.nc2.util.Misc;
 import ucar.unidata.util.test.TestDir;
 import java.io.IOException;
 
@@ -103,23 +104,26 @@ public class TestScaleOffsetMissingForStructure {
   public void testNetcdfDatasetAttributes() throws IOException, InvalidRangeException {
     try (NetcdfDataset ncfile = NetcdfDatasets.openDataset(TestDir.cdmLocalTestDataDir + "testScaleRecord.nc", true,
         null, NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE)) {
+      System.out.printf("Open %s%n", ncfile.getLocation());
       VariableDS v = (VariableDS) ncfile.findVariable("testScale");
-      assert null != v;
-      assert v.getArrayType() == ArrayType.FLOAT;
+      assertThat(v).isNotNull();
+      assertThat(v.getArrayType()).isEqualTo(ArrayType.FLOAT);
 
       assert v.getUnitsString().equals("m");
       assert v.attributes().findAttributeString("units", "").equals("m");
 
       Structure s = (Structure) ncfile.findVariable("record");
-      assert (s != null);
+      assertThat(s).isNotNull();
 
       Variable v2 = s.findVariable("testScale");
       assert v2.getUnitsString().equals("m");
       assert v2.getArrayType() == ArrayType.FLOAT;
 
+      double scale = v2.attributes().findAttributeDouble("scale_factor", 0.0);
+      double offset = v2.attributes().findAttributeDouble("add_offset", 0.0);
       StructureData sd = s.readRecord(0);
       StructureMembers.Member m = sd.getStructureMembers().findMember("testScale");
-      assert null != m;
+      assertThat(m).isNotNull();
       assert m.getUnitsString().equals("m") : m.getUnitsString();
       assert m.getArrayType() == ArrayType.FLOAT;
 
@@ -129,9 +133,14 @@ public class TestScaleOffsetMissingForStructure {
         m = sdata.getStructureMembers().findMember("testScale");
         assertThat(m).isNotNull();
         assert m.getUnitsString().equals("m");
-        Array<Number> marr = (Array<Number>) sd.getMemberData(m);
+        Array<Number> marr = (Array<Number>) sdata.getMemberData(m);
         double dval = marr.getScalar().doubleValue();
-        assertThat(dval).isNaN();
+        if (count == 0) {
+          assertThat(dval).isNaN();
+        } else {
+          double expect = 13.0 * scale + offset;
+          assertThat(Misc.nearlyEquals(dval, expect, 1.0e-6)).isTrue();
+        }
         count++;
       }
 
