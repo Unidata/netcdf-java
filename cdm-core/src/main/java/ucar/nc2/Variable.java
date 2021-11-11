@@ -147,7 +147,6 @@ public class Variable implements ProxyReader {
   /**
    * Get the number of bytes for one element of this Variable.
    * For Variables of primitive type, this is equal to getDataType().getSize().
-   * Variables of String type dont know their size, so what they return is undefined.
    * Structure and subclasses return the size in bytes of one Structure.
    */
   public int getElementSize() {
@@ -972,7 +971,7 @@ public class Variable implements ProxyReader {
   protected final AttributeContainer attributes;
   protected final ProxyReader proxyReader;
   protected final Cache cache;
-  protected int elementSize; // LOOK set in Structure
+  protected final int elementSize;
 
   // TODO get rid of resetShape() so these can be final
   private Section shapeAsSection; // derived from the shape, immutable; used for every read, deferred creation
