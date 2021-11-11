@@ -93,7 +93,6 @@ public class CompareArrayToArray {
       if (size < Integer.MAX_VALUE) {
         Array<?> org = vorg.readArray();
         Array<?> array = vnew.readArray();
-        System.out.printf("  compareData %s %s%n", vorg.getArrayType(), vorg.getNameAndDimensions());
         Formatter f = new Formatter();
         boolean ok1 = compareData(f, vorg.getShortName(), org, array, justOne, true);
         if (!ok1) {
