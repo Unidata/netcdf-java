@@ -80,9 +80,19 @@ public final class StructureDataStorageBB implements Storage<StructureData> {
   }
 
   /** Copy Array data into ByteBuffer at recordOffset + member.getOffset(). */
-  public void setMemberData(int recordOffset, Member member, Array<?> data) {
-    Preconditions.checkArgument(members.getMembers().contains(member));
+  public void setMemberDataNested(int recordOffset, Member member, Array<?> data) {
+    Preconditions.checkArgument(members.containsNested(member));
+    _setMemberData(recordOffset, member, data);
+  }
 
+  /** Copy Array data into ByteBuffer at recordOffset + member.getOffset(). */
+  public void setMemberData(int recordOffset, Member member, Array<?> data) {
+    Preconditions.checkArgument(members.contains(member));
+    _setMemberData(recordOffset, member, data);
+  }
+
+  /** Copy Array data into ByteBuffer at recordOffset + member.getOffset(). */
+  private void _setMemberData(int recordOffset, Member member, Array<?> data) {
     int pos = recordOffset + member.getOffset();
     bbuffer.position(pos);
     bbuffer.order(member.getByteOrder());
@@ -216,7 +226,7 @@ public final class StructureDataStorageBB implements Storage<StructureData> {
 
     @Override
     public Array<?> getMemberData(Member m) {
-      Preconditions.checkArgument(members.getMembers().contains(m));
+      Preconditions.checkArgument(members.contains(m));
 
       ArrayType dataType = m.getArrayType();
       if (m.isVlen() || dataType == ArrayType.OPAQUE) {

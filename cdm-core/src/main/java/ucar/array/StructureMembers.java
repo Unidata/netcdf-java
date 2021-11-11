@@ -59,6 +59,24 @@ public final class StructureMembers implements Iterable<StructureMembers.Member>
     return members.stream().filter(m -> m.name.equals(memberName)).findFirst().orElse(null);
   }
 
+  /** Check that a member exists */
+  public boolean contains(Member want) {
+    return getMembers().contains(want);
+  }
+
+  /** Test a nested member exists, arbitrary depth. */
+  public boolean containsNested(Member want) {
+    for (Member m : members) {
+      if (m.equals(want)) {
+        return true;
+      }
+      if (m.nested != null && m.nested.containsNested(want)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   /** Get the total size of one Structure in bytes. */
   public int getStorageSizeBytes() {
     return structureSize;

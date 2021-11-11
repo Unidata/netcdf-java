@@ -184,7 +184,7 @@ public final class StructureDataArray extends Array<StructureData> {
    * @param m get all data for this StructureMembers.Member.
    */
   public Array<?> extractMemberArray(StructureMembers.Member m) {
-    Preconditions.checkArgument(members.getMembers().contains(m));
+    Preconditions.checkArgument(members.contains(m));
     ArrayType dataType = m.getArrayType();
 
     List<Array<?>> memberData = new ArrayList<>();
@@ -207,16 +207,16 @@ public final class StructureDataArray extends Array<StructureData> {
    * The resulting shape is the structure shape appended to the member's shape.
    * LOOK problem with this for sequences
    *
-   * @param nestedStruct th parent Stucture of m.
+   * @param nestedStruct the parent Stucture of m.
    * @param m get all data for this StructureMembers.Member.
    */
   public Array<?> extractNestedMemberArray(StructureMembers.Member nestedStruct, StructureMembers.Member m) {
-    Preconditions.checkArgument(members.getMembers().contains(nestedStruct));
+    Preconditions.checkArgument(members.contains(nestedStruct));
     Preconditions.checkArgument(nestedStruct.getArrayType().isStruct());
 
     StructureMembers nested = nestedStruct.getStructureMembers();
     Preconditions.checkNotNull(nested);
-    Preconditions.checkArgument(nested.getMembers().contains(m));
+    Preconditions.checkArgument(nested.contains(m));
 
     List<Array<?>> memberData = new ArrayList<>();
     for (StructureData sdata : this) {

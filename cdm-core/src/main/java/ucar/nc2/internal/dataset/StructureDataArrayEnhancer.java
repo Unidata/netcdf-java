@@ -105,7 +105,7 @@ public class StructureDataArrayEnhancer {
       VariableDS vds = (VariableDS) ve;
       Array<?> converted = vds.convertNeeded() ? vds.convertArray(orgMemberData) : orgMemberData;
       // LOOK why not pos = offset + member.getOffset()?
-      storage.setMemberData(offset, member, converted);
+      storage.setMemberDataNested(offset, member, converted);
     }
   }
 
