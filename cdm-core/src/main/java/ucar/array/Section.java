@@ -542,7 +542,7 @@ public class Section {
       return true;
     }
     if (getRank() != shape.length) {
-      throw new InvalidRangeException("Invalid Section rank");
+      return false;
     }
 
     for (int i = 0; i < ranges.size(); i++) {

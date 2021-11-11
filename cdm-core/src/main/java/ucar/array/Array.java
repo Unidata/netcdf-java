@@ -137,7 +137,11 @@ public abstract class Array<T> implements Iterable<T> {
     this.indexFn = indexFn;
   }
 
-  /** Copies the internal primitive array to dest, just like System.arraycopy(src, srcPos, dest, destPos, length). */
+  /**
+   * Copies the internal primitive array to dest, just like System.arraycopy(src, srcPos, dest, destPos, length).
+   * dest must be a primitive array of same type as backing store.
+   * ArrayVlen, StructureDataArray are different, see javadoc.
+   */
   abstract void arraycopy(int srcPos, Object dest, int destPos, long length);
 
   /** Get underlying storage. */

@@ -20,17 +20,12 @@ import static com.google.common.truth.Truth.assertThat;
 public class UtilsTestStructureArray {
 
   public void testArrayStructure(StructureDataArray as) {
-    try {
-      testArrayStructureByRecno(as);
-      testArrayStructureByIterator(as);
-      testArrayStructureByMemberArray(as);
-
-    } catch (IOException e) {
-      assert false;
-    }
+    testArrayStructureByRecno(as);
+    testArrayStructureByIterator(as);
+    testArrayStructureByMemberArray(as);
   }
 
-  private double testArrayStructureByMemberArray(StructureDataArray as) throws IOException {
+  private double testArrayStructureByMemberArray(StructureDataArray as) {
 
     for (StructureMembers.Member m : as.getStructureMembers()) {
       Array<?> memberArray = as.extractMemberArray(m);
@@ -48,7 +43,7 @@ public class UtilsTestStructureArray {
     return 0.0;
   }
 
-  private void testArrayStructureByIterator(StructureDataArray as) throws IOException {
+  private void testArrayStructureByIterator(StructureDataArray as) {
     for (StructureData sdata : as) {
       // run through each member on the StructureData
       for (StructureMembers.Member m : sdata.getStructureMembers()) {
@@ -59,7 +54,7 @@ public class UtilsTestStructureArray {
     }
   }
 
-  private void testArrayStructureByRecno(StructureDataArray as) throws IOException {
+  private void testArrayStructureByRecno(StructureDataArray as) {
     // run through each StructureData
     for (int recno = 0; recno < as.getSize(); recno++) {
       StructureData sdata = as.get(recno);
@@ -90,7 +85,7 @@ public class UtilsTestStructureArray {
     }
   }
 
-  private void testStructureData(StructureData sdata) throws IOException {
+  private void testStructureData(StructureData sdata) {
     for (StructureMembers.Member m : sdata.getStructureMembers()) {
       Array<?> sdataArray = sdata.getMemberData(m);
       assertThat(sdataArray.getArrayType()).isEqualTo(m.getArrayType());

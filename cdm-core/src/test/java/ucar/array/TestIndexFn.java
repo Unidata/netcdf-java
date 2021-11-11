@@ -6,7 +6,6 @@ package ucar.array;
 
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
@@ -14,7 +13,7 @@ import org.junit.Test;
 public class TestIndexFn {
 
   @Test
-  public void testIndex() {
+  public void testBasics() {
     int[] shape = new int[] {1, 2, 3};
     IndexFn index = IndexFn.builder(shape).build();
     assertThat(index.getShape()).isEqualTo(shape);
@@ -26,6 +25,16 @@ public class TestIndexFn {
 
     assertThrows(IllegalArgumentException.class, () -> index.get(0, 2, 2));
     assertThrows(IllegalArgumentException.class, () -> index.get(0, 1));
+
+    assertThat(index.contains(0, 1, 2)).isTrue();
+    assertThat(index.contains(1, 1, 2)).isFalse();
+
+    IndexFn index2 = index.toBuilder().build();
+    assertThat(index2).isEqualTo(index);
+    assertThat(index2.hashCode()).isEqualTo(index.hashCode());
+
+    assertThat(index2.toString())
+        .contains("IndexFn{shape=[1, 2, 3], stride=[6, 3, 1], rank=3, length=6, offset=0, canonicalOrder=true}");
   }
 
   @Test

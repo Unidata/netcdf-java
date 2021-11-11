@@ -92,15 +92,13 @@ class MessageArrayUncompressedReader {
     this.f = f;
 
     // allocate ArrayStructureBB for outer structure
-    StructureMembers.Builder membersb = s.makeStructureMembersBuilder();
-    membersb.setStandardOffsets(structuresOnHeap);
+    StructureMembers.Builder membersb = s.makeStructureMembersBuilder().setStandardOffsets();
     this.members = membersb.build();
 
     this.nelems = m.getNumberDatasets();
     this.bbuffer = ByteBuffer.allocate(nelems * members.getStorageSizeBytes()).order(ByteOrder.BIG_ENDIAN);
 
     storageBB = new StructureDataStorageBB(members, this.bbuffer, this.nelems);
-    storageBB.setNestedStructuresOnHeap(structuresOnHeap);
 
     // map dkey to Member recursively
     MessageArrayReaderUtils.associateMessage2Members(this.members, message.getRootDataDescriptor(), topmap);
@@ -275,14 +273,12 @@ class MessageArrayUncompressedReader {
     Preconditions.checkNotNull(seq);
 
     // Create nested StructureDataArray
-    StructureMembers.Builder membersb = seq.makeStructureMembersBuilder();
-    membersb.setStandardOffsets(structuresOnHeap);
+    StructureMembers.Builder membersb = seq.makeStructureMembersBuilder().setStandardOffsets();
     StructureMembers nestedMembers = membersb.build();
 
     ByteBuffer nestedBB =
         ByteBuffer.allocate(nestedNrows * nestedMembers.getStorageSizeBytes()).order(ByteOrder.BIG_ENDIAN);
     StructureDataStorageBB nestedStorage = new StructureDataStorageBB(nestedMembers, nestedBB, nestedNrows);
-    nestedStorage.setNestedStructuresOnHeap(structuresOnHeap);
 
     HashMap<DataDescriptor, Member> nestedMap = new HashMap<>();
     MessageArrayReaderUtils.associateMessage2Members(nestedMembers, seqdd, nestedMap);

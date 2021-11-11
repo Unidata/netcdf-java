@@ -28,8 +28,6 @@ public final class StructureDataStorageBB implements Storage<StructureData> {
   private final int offset;
   private final ArrayList<Object> heap = new ArrayList<>();
 
-  private boolean structuresOnHeap = false;
-
   public StructureDataStorageBB(StructureMembers members, ByteBuffer bbuffer, int nelems) {
     this.members = members;
     this.bbuffer = bbuffer;
@@ -43,12 +41,6 @@ public final class StructureDataStorageBB implements Storage<StructureData> {
     this.nelems = nelems;
     this.offset = offset;
     this.heap.addAll(heap);
-  }
-
-  /** If nested Structures are stored on the heap. Do not use until better tested. */
-  public StructureDataStorageBB setNestedStructuresOnHeap(boolean structuresOnHeap) {
-    this.structuresOnHeap = structuresOnHeap;
-    return this;
   }
 
   /** Put the object on the heap, return heap index. */
@@ -67,9 +59,19 @@ public final class StructureDataStorageBB implements Storage<StructureData> {
     return new StructureDataBB((int) elem);
   }
 
+  /**
+   * Copies internal data to dest. The parameters are different from the normal case.
+   *
+   * @param srcPos the starting byte offset into dest.
+   * @param dest must be a ByteBuffer
+   * @param destPos the starting byte offset into dest.
+   * @param length number of bytes to copy.
+   */
   @Override
   public void arraycopy(int srcPos, Object dest, int destPos, long length) {
-    // TODO
+    ByteBuffer bbdest = (ByteBuffer) dest;
+    bbdest.position(srcPos);
+    bbdest.put(this.bbuffer.array(), destPos, (int) length);
   }
 
   /** Get the total size of one Structure in bytes. */
@@ -77,19 +79,27 @@ public final class StructureDataStorageBB implements Storage<StructureData> {
     return members.getStorageSizeBytes();
   }
 
-  // TODO go away in version 7 I hope
-  ByteBuffer buffer() {
-    return bbuffer;
+  /** Copy Array data into ByteBuffer at recordOffset + member.getOffset(). */
+  public void setMemberDataNested(int recordOffset, Member member, Array<?> data) {
+    Preconditions.checkArgument(members.containsNested(member));
+    _setMemberData(recordOffset, member, data);
   }
 
-  /** Copy Array data into ByteBuffer at offset + member.getOffset(). */
-  public void setMemberData(int offset, Member member, Array<?> data) {
-    int pos = offset + member.getOffset();
+  /** Copy Array data into ByteBuffer at recordOffset + member.getOffset(). */
+  public void setMemberData(int recordOffset, Member member, Array<?> data) {
+    Preconditions.checkArgument(members.contains(member));
+    _setMemberData(recordOffset, member, data);
+  }
+
+  /** Copy Array data into ByteBuffer at recordOffset + member.getOffset(). */
+  private void _setMemberData(int recordOffset, Member member, Array<?> data) {
+    int pos = recordOffset + member.getOffset();
     bbuffer.position(pos);
     bbuffer.order(member.getByteOrder());
     if (debug) {
       System.out.printf("setMemberData at = %d member = %s bo = %s%n", pos, member.getName(), member.getByteOrder());
     }
+
     if (member.isVlen()) {
       // LOOK not making a copy
       int index = this.putOnHeap(data);
@@ -97,7 +107,7 @@ public final class StructureDataStorageBB implements Storage<StructureData> {
       return;
     }
 
-    ArrayType dataType = data.getArrayType();
+    ArrayType dataType = member.getArrayType();
     switch (dataType) {
       case CHAR:
       case ENUM1:
@@ -155,7 +165,6 @@ public final class StructureDataStorageBB implements Storage<StructureData> {
         return;
       }
       case STRING: {
-        // LOOK could put Array<String> onto the heap
         String[] vals = new String[(int) data.length()];
         Array<String> sdata = (Array<String>) data;
         int idx = 0;
@@ -166,11 +175,13 @@ public final class StructureDataStorageBB implements Storage<StructureData> {
         bbuffer.putInt(index);
         return;
       }
+      case SEQUENCE:
       case STRUCTURE: {
         Preconditions.checkArgument(member.getStructureMembers() != null);
         StructureDataArray orgArray = (StructureDataArray) data;
         StructureMembers nestedMembers = orgArray.getStructureMembers();
         int length = (int) orgArray.length();
+        // orgArray.arraycopy(0, bbuffer, pos, );
         for (int nrow = 0; nrow < length; nrow++) {
           StructureData orgData = orgArray.get(nrow);
           for (StructureMembers.Member nmember : nestedMembers) {
@@ -195,12 +206,12 @@ public final class StructureDataStorageBB implements Storage<StructureData> {
     private int count = 0;
 
     @Override
-    public final boolean hasNext() {
+    public boolean hasNext() {
       return count < nelems;
     }
 
     @Override
-    public final StructureData next() {
+    public StructureData next() {
       return new StructureDataBB(count++);
     }
   }
@@ -215,6 +226,8 @@ public final class StructureDataStorageBB implements Storage<StructureData> {
 
     @Override
     public Array<?> getMemberData(Member m) {
+      Preconditions.checkArgument(members.contains(m));
+
       ArrayType dataType = m.getArrayType();
       if (m.isVlen() || dataType == ArrayType.OPAQUE) {
         return getMemberVlenData(m);
@@ -225,7 +238,6 @@ public final class StructureDataStorageBB implements Storage<StructureData> {
       int pos = offset + recno * members.getStorageSizeBytes() + m.getOffset();
 
       switch (dataType) {
-        case BOOLEAN:
         case CHAR:
         case UBYTE:
         case ENUM1:
@@ -294,19 +306,24 @@ public final class StructureDataStorageBB implements Storage<StructureData> {
           return new ArrayString(m.getShape(), new ucar.array.ArrayString.StorageS(array));
         }
 
+        case OPAQUE: {
+          int heapIdx = bbuffer.getInt(pos);
+          return (ArrayVlen) heap.get(heapIdx);
+        }
+
         case SEQUENCE: {
           int heapIdx = bbuffer.getInt(pos);
           return (StructureDataArray) heap.get(heapIdx);
         }
 
         case STRUCTURE:
-          if (structuresOnHeap) {
+          if (members.structuresOnHeap()) {
             int heapIdx = bbuffer.getInt(pos);
             StructureDataArray structArray = (StructureDataArray) heap.get(heapIdx);
             return structArray;
           } else {
             StructureMembers nestedMembers = Preconditions.checkNotNull(m.getStructureMembers());
-            Storage<StructureData> nestedStorage = new ucar.array.StructureDataStorageBB(nestedMembers,
+            Storage<StructureData> nestedStorage = new StructureDataStorageBB(nestedMembers,
                 StructureDataStorageBB.this.bbuffer, length, StructureDataStorageBB.this.heap, pos);
             return new StructureDataArray(nestedMembers, m.getShape(), nestedStorage);
           }

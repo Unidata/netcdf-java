@@ -840,7 +840,6 @@ public class Nc4reader extends AbstractIOServiceProvider {
     Pointer p = new Pointer(addr);
     Object data;
     switch (dt) {
-      case BOOLEAN: /* byte[] */
       case ENUM1:
       case BYTE:
         data = p.getByteArray(0, n);
@@ -1547,7 +1546,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
         for (int i = 0; i < size; i++) {
           // vlenarray extracts the i'th nc_vlen_t contents (struct not supported).
           Array<?> vlenArray = decodeVlen(m.getArrayType(), destPos, bb);
-          vlenStorage.set(i, vlenArray);
+          vlenStorage.setPrimitiveArray(i, vlenArray);
           destPos += nc_vlen_t_size;
         }
         int[] newshape = new int[prefixrank];
@@ -1593,7 +1592,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
           int slen = vlen[i].len;
           // Coverity[FB.NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD]
           byte[] ba = vlen[i].p.getByteArray(0, slen);
-          vlenStorage.set(i, Arrays.factory(ctype, new int[] {slen}, ba));
+          vlenStorage.setPrimitiveArray(i, Arrays.factory(ctype, new int[] {slen}, ba));
         }
         break;
       case UINT:
@@ -1602,7 +1601,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
           int slen = vlen[i].len;
           // Coverity[FB.NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD]
           int[] ba = vlen[i].p.getIntArray(0, slen);
-          vlenStorage.set(i, Arrays.factory(ctype, new int[] {slen}, ba));
+          vlenStorage.setPrimitiveArray(i, Arrays.factory(ctype, new int[] {slen}, ba));
         }
         break;
       case ULONG:
@@ -1611,7 +1610,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
           int slen = vlen[i].len;
           // Coverity[FB.NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD]
           long[] ba = vlen[i].p.getLongArray(0, slen);
-          vlenStorage.set(i, Arrays.factory(ctype, new int[] {slen}, ba));
+          vlenStorage.setPrimitiveArray(i, Arrays.factory(ctype, new int[] {slen}, ba));
         }
         break;
       case USHORT:
@@ -1620,7 +1619,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
           int slen = vlen[i].len;
           // Coverity[FB.NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD]
           short[] ba = vlen[i].p.getShortArray(0, slen);
-          vlenStorage.set(i, Arrays.factory(ctype, new int[] {slen}, ba));
+          vlenStorage.setPrimitiveArray(i, Arrays.factory(ctype, new int[] {slen}, ba));
         }
         break;
       case FLOAT:
@@ -1628,7 +1627,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
           int slen = vlen[i].len;
           // Coverity[FB.NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD]
           float[] ba = vlen[i].p.getFloatArray(0, slen);
-          vlenStorage.set(i, Arrays.factory(ArrayType.FLOAT, new int[] {slen}, ba));
+          vlenStorage.setPrimitiveArray(i, Arrays.factory(ArrayType.FLOAT, new int[] {slen}, ba));
         }
         break;
       case DOUBLE:
@@ -1636,7 +1635,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
           int slen = vlen[i].len;
           // Coverity[FB.NP_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD]
           double[] ba = vlen[i].p.getDoubleArray(0, slen);
-          vlenStorage.set(i, Arrays.factory(ArrayType.DOUBLE, new int[] {slen}, ba));
+          vlenStorage.setPrimitiveArray(i, Arrays.factory(ArrayType.DOUBLE, new int[] {slen}, ba));
         }
         break;
 

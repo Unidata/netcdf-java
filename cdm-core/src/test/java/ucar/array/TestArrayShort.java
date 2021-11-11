@@ -16,7 +16,8 @@ public class TestArrayShort {
   @Test
   public void testBasics() {
     int[] shape = new int[] {1, 2, 3};
-    Storage<Short> store = new ArrayShort.StorageS(new short[] {1, 2, 3, 4, 5, 6});
+    short[] parray = new short[] {1, 2, 3, 4, 5, 6};
+    Storage<Short> store = new ArrayShort.StorageS(parray);
     ArrayShort array = new ArrayShort(ArrayType.SHORT, shape, store);
 
     assertThat(array.get(0, 0, 0)).isEqualTo(1);
@@ -40,6 +41,7 @@ public class TestArrayShort {
     assertThat(result).isEqualTo(new short[] {2, 3, 4});
 
     assertThat(array.storage()).isEqualTo(store);
+    assertThat(Arrays.copyPrimitiveArray(array)).isEqualTo(parray);
   }
 
   @Test
@@ -61,13 +63,13 @@ public class TestArrayShort {
   }
 
   @Test
-  public void testFactoryCopy() {
+  public void testCombine() {
     int[] shape1 = new int[] {1, 2, 3};
     Array<Short> array1 = Arrays.factory(ArrayType.SHORT, shape1, new short[] {1, 2, 3, 4, 5, 6});
     Array<Short> array2 = Arrays.factory(ArrayType.SHORT, shape1, new short[] {7, 8, 9, 10, 11, 12});
 
     int[] shape = new int[] {2, 2, 3};
-    Array<Short> array = (Array<Short>) Arrays.combine(ArrayType.SHORT, shape, ImmutableList.of(array1, array2));
+    Array<Short> array = Arrays.combine(ArrayType.SHORT, shape, ImmutableList.of(array1, array2));
 
     assertThat(array.get(0, 0, 0)).isEqualTo(1);
     assertThat(array.get(0, 0, 1)).isEqualTo(2);
@@ -97,5 +99,27 @@ public class TestArrayShort {
     assertThat(array.get(index.set(0, 1, 2))).isEqualTo(256);
   }
 
+  @Test
+  public void testFactoryFill() {
+    int[] shape = new int[] {1, 2, 3};
+    Array<Short> array = Arrays.factoryFill(ArrayType.SHORT, shape, -9);
+
+    assertThat(array.getSize()).isEqualTo(Arrays.computeSize(shape));
+    assertThat(array.getShape()).isEqualTo(shape);
+
+    for (short val : array) {
+      assertThat(val).isEqualTo(-9);
+    }
+  }
+
+  @Test
+  public void testMakeArray() {
+    Array<Short> array = Arrays.makeArray(ArrayType.SHORT, 1000, 0.0, 1, 10, 10, 10);
+    short count = 0;
+    for (short val : array) {
+      assertThat(val).isEqualTo(count);
+      count++;
+    }
+  }
 
 }

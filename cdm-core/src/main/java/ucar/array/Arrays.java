@@ -9,7 +9,6 @@ import com.google.protobuf.ByteString;
 import ucar.nc2.util.Misc;
 
 import javax.annotation.Nullable;
-import java.nio.ByteBuffer;
 import java.util.Iterator;
 import java.util.List;
 
@@ -35,7 +34,6 @@ public class Arrays {
         }
         // fall through
       case OPAQUE:
-      case BOOLEAN:
       case BYTE:
       case ENUM1:
       case UBYTE: {
@@ -77,52 +75,6 @@ public class Arrays {
   }
 
   /**
-   * Create Array using java array of T, or java primitive array, as storage.
-   * Do not use this for Vlens or Structures.
-   *
-   * @param dataType data type of the data. Vlen detected from the shape.
-   * @param shape multidimensional shape, must have same total length as dataArray.
-   * @param storage storage for type T.
-   */
-  static <T> Array<T> factory(ArrayType dataType, int[] shape, Storage<T> storage) {
-    switch (dataType) {
-      case OPAQUE:
-      case BOOLEAN:
-      case BYTE:
-      case CHAR:
-      case ENUM1:
-      case UBYTE: {
-        return (Array<T>) new ArrayByte(dataType, shape, (Storage<Byte>) storage);
-      }
-      case DOUBLE: {
-        return (Array<T>) new ArrayDouble(shape, (Storage<Double>) storage);
-      }
-      case FLOAT: {
-        return (Array<T>) new ArrayFloat(shape, (Storage<Float>) storage);
-      }
-      case INT:
-      case ENUM4:
-      case UINT: {
-        return (Array<T>) new ArrayInteger(dataType, shape, (Storage<Integer>) storage);
-      }
-      case LONG:
-      case ULONG: {
-        return (Array<T>) new ArrayLong(dataType, shape, (Storage<Long>) storage);
-      }
-      case SHORT:
-      case ENUM2:
-      case USHORT: {
-        return (Array<T>) new ArrayShort(dataType, shape, (Storage<Short>) storage);
-      }
-      case STRING: {
-        return (Array<T>) new ArrayString(shape, (Storage<String>) storage);
-      }
-      default:
-        throw new RuntimeException("Unimplemented ArrayType " + dataType);
-    }
-  }
-
-  /**
    * Create Array using empty java array of T, or java primitive array, same size as shape.
    * Do not use this for Vlens or Structures.*
    * 
@@ -130,7 +82,6 @@ public class Arrays {
    */
   public static <T> Array<T> factoryFill(ArrayType dataType, int[] shape, Number fillValue) {
     switch (dataType) {
-      case BOOLEAN:
       case BYTE:
       case CHAR:
       case ENUM1:
@@ -176,11 +127,11 @@ public class Arrays {
    * @param dataArrays the composite data.
    * @return composite Array, formed by copying the dataArrays, must be of type dataType.
    */
-  public static Array<?> combine(ArrayType dataType, int[] shape, List<Array<?>> dataArrays) {
+  public static <T> Array<T> combine(ArrayType dataType, int[] shape, List<Array<?>> dataArrays) {
     // must always do the copy, because it might be a view
     Object dataArray = combine_(dataType, shape, dataArrays);
     if (dataArray instanceof Array) {
-      return (Array<?>) dataArray;
+      return (Array<T>) dataArray;
     }
     return factory(dataType, shape, dataArray);
   }
@@ -251,29 +202,6 @@ public class Arrays {
     return dstAll;
   }
 
-  // The only advantage over copying AFAICT is that it can handle arrays > 2G. as long as its broken up into
-  // multiple arrays < 2G.
-
-  /**
-   * Experimental: keep list of Arrays separate. This allows length &gt; 2Gb.
-   */
-  public static <T> Array<T> factoryArrays(ArrayType dataType, int[] shape, List<Array<?>> dataArrays) {
-    if (dataArrays.size() == 1) {
-      return factory(dataType, shape, (Storage<T>) dataArrays.get(0).storage());
-    }
-
-    switch (dataType) {
-      case DOUBLE:
-        Storage<Double> storageD = new ArrayDouble.StorageDM(dataArrays);
-        return (Array<T>) new ArrayDouble(shape, storageD);
-      case FLOAT:
-        Storage<Float> storageF = new ArrayFloat.StorageFM(dataArrays);
-        return (Array<T>) new ArrayFloat(shape, storageF);
-      default:
-        throw new RuntimeException();
-    }
-  }
-
   ////////////////////////////////////////////////////////////////////////////////////
 
   /**
@@ -320,8 +248,9 @@ public class Arrays {
    */
   public static <T> Array<T> reduce(Array<T> org) {
     IndexFn ri = org.indexFn().reduce();
-    if (ri == org.indexFn())
+    if (ri == org.indexFn()) {
       return org;
+    }
     return org.createView(ri);
   }
 
@@ -335,8 +264,9 @@ public class Arrays {
    */
   public static <T> Array<T> reduce(Array<T> org, int dim) {
     IndexFn ri = org.indexFn().reduce(dim);
-    if (ri == org.indexFn())
+    if (ri == org.indexFn()) {
       return org;
+    }
     return org.createView(ri);
   }
 
@@ -696,11 +626,6 @@ public class Arrays {
     return ((ArrayByte) from).makeStringFromChar();
   }
 
-  /** Convert an Array\<Byte> into a ByteBuffer. */
-  public static ByteBuffer getByteBuffer(Array<Byte> from) {
-    return ((ArrayByte) from).getByteBuffer();
-  }
-
   /** Convert the Array into a ByteString. */
   public static ByteString getByteString(Array<Byte> from) {
     return ((ArrayByte) from).getByteString();
@@ -773,3 +698,39 @@ public class Arrays {
     return true;
   }
 }
+
+// LOOK consider using this instead of Misc
+// https://stackoverflow.com/questions/4915462/how-should-i-do-floating-point-comparison
+// bool nearly_equal(
+// float a, float b,
+// float epsilon = 128 * FLT_EPSILON, float abs_th = FLT_MIN)
+// // those defaults are arbitrary and could be removed
+// {
+// assert(std::numeric_limits<float>::epsilon() <= epsilon);
+// assert(epsilon < 1.f);
+//
+// if (a == b) return true;
+//
+// auto diff = std::abs(a-b);
+// auto norm = std::min((std::abs(a) + std::abs(b)), std::numeric_limits<float>::max());
+// // or even faster: std::min(std::abs(a + b), std::numeric_limits<float>::max());
+// // keeping this commented out until I update figures below
+// return diff < std::max(abs_th, epsilon * norm);
+// }
+/*
+ * public static boolean nearlyEqual(float a, float b, float epsilon) {
+ * final float absA = Math.abs(a);
+ * final float absB = Math.abs(b);
+ * final float diff = Math.abs(a - b);
+ * 
+ * if (a == b) { // shortcut, handles infinities
+ * return true;
+ * } else if (a == 0 || b == 0 || diff < Float.MIN_NORMAL) {
+ * // a or b is zero or both are extremely close to it
+ * // relative error is less meaningful here
+ * return diff < (epsilon * Float.MIN_NORMAL);
+ * } else { // use relative error
+ * return diff / (absA + absB) < epsilon;
+ * }
+ * }
+ */

@@ -5,7 +5,6 @@
 package ucar.array;
 
 import com.google.common.base.Preconditions;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -39,7 +38,7 @@ public final class StructureDataArray extends Array<StructureData> {
   }
 
   /** Create an Array of type StructureData and the given indexFn and storage. */
-  public StructureDataArray(StructureMembers members, IndexFn indexFn, Storage<StructureData> storage) {
+  StructureDataArray(StructureMembers members, IndexFn indexFn, Storage<StructureData> storage) {
     super(ArrayType.STRUCTURE, indexFn);
     this.members = members;
     this.storage = storage;
@@ -55,9 +54,17 @@ public final class StructureDataArray extends Array<StructureData> {
     return members.getMemberNames();
   }
 
+  /**
+   * Copies the internal data to dest. The parameters are different from the normal case.
+   *
+   * @param srcPos the starting byte offset into dest.
+   * @param dest must be a StructureDataStorageBB (LOOK or StorageSD?)
+   * @param destPos the starting byte offset into dest.
+   * @param length number of bytes to copy.
+   */
   @Override
   void arraycopy(int srcPos, Object dest, int destPos, long length) {
-    // TODO
+    storage.arraycopy(srcPos, dest, destPos, length);
   }
 
   @Override
@@ -137,8 +144,13 @@ public final class StructureDataArray extends Array<StructureData> {
     }
 
     @Override
-    public void set(int index, Object value) {
+    public void setPrimitiveArray(int index, Object value) {
       parray[index] = (StructureData) value;
+    }
+
+    @Override
+    public Object getPrimitiveArray(int elem) {
+      return parray[elem];
     }
 
     @Override
@@ -150,12 +162,12 @@ public final class StructureDataArray extends Array<StructureData> {
       private int count = 0;
 
       @Override
-      public final boolean hasNext() {
+      public boolean hasNext() {
         return count < length;
       }
 
       @Override
-      public final StructureData next() {
+      public StructureData next() {
         return parray[count++];
       }
     }
@@ -167,13 +179,18 @@ public final class StructureDataArray extends Array<StructureData> {
   /**
    * Extract data for one member, over all structures.
    * The resulting shape is the structure shape appended to the member's shape.
+   * LOOK problem with this for sequences
    *
-   * @param m get data from this StructureMembers.Member.
-   * @return Array values.
-   * @throws java.io.IOException on read error (only happens for Sequences, otherwise data is already read)
+   * @param m get all data for this StructureMembers.Member.
    */
-  public Array<?> extractMemberArray(StructureMembers.Member m) throws IOException {
+  public Array<?> extractMemberArray(StructureMembers.Member m) {
+    Preconditions.checkArgument(members.contains(m));
     ArrayType dataType = m.getArrayType();
+
+    List<Array<?>> memberData = new ArrayList<>();
+    for (StructureData sdata : this) {
+      memberData.add(sdata.getMemberData(m));
+    }
 
     // combine the shapes
     int[] mshape = m.getShape();
@@ -182,11 +199,42 @@ public final class StructureDataArray extends Array<StructureData> {
     System.arraycopy(getShape(), 0, rshape, 0, rank);
     System.arraycopy(mshape, 0, rshape, rank, mshape.length);
 
+    return Arrays.combine(dataType, rshape, memberData);
+  }
+
+  /**
+   * Extract data for one member, over all nested structures.
+   * The resulting shape is the structure shape appended to the member's shape.
+   * LOOK problem with this for sequences
+   *
+   * @param nestedStruct the parent Stucture of m.
+   * @param m get all data for this StructureMembers.Member.
+   */
+  public Array<?> extractNestedMemberArray(StructureMembers.Member nestedStruct, StructureMembers.Member m) {
+    Preconditions.checkArgument(members.contains(nestedStruct));
+    Preconditions.checkArgument(nestedStruct.getArrayType().isStruct());
+
+    StructureMembers nested = nestedStruct.getStructureMembers();
+    Preconditions.checkNotNull(nested);
+    Preconditions.checkArgument(nested.contains(m));
+
     List<Array<?>> memberData = new ArrayList<>();
     for (StructureData sdata : this) {
-      memberData.add(sdata.getMemberData(m));
+      Array<StructureData> nsdata = (Array<StructureData>) sdata.getMemberData(nestedStruct);
+      for (StructureData ndata : nsdata) {
+        memberData.add(ndata.getMemberData(m));
+      }
     }
-    return Arrays.combine(dataType, rshape, memberData);
+
+    // combine the shapes
+    int nrank = nestedStruct.getShape().length;
+    int mrank = m.getShape().length;
+    int[] rshape = new int[rank + nrank + mrank];
+    System.arraycopy(getShape(), 0, rshape, 0, rank);
+    System.arraycopy(nestedStruct.getShape(), 0, rshape, rank, nrank);
+    System.arraycopy(m.getShape(), 0, rshape, rank + nrank, mrank);
+
+    return Arrays.combine(m.getArrayType(), rshape, memberData);
   }
 
 }

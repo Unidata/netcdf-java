@@ -16,7 +16,8 @@ public class TestArrayString {
   @Test
   public void testBasics() {
     int[] shape = new int[] {1, 2, 3};
-    Storage<String> store = new ArrayString.StorageS(new String[] {"1", "2", "3", "4", "5", "6"});
+    String[] parray = new String[] {"1", "2", "3", "4", "5", "6"};
+    Storage<String> store = new ArrayString.StorageS(parray);
     ArrayString array = new ArrayString(shape, store);
 
     assertThat(array.get(0, 0, 0)).isEqualTo("1");
@@ -40,6 +41,7 @@ public class TestArrayString {
     assertThat(result).isEqualTo(new String[] {"2", "3", "4"});
 
     assertThat(array.storage()).isEqualTo(store);
+    assertThat(Arrays.copyPrimitiveArray(array)).isEqualTo(parray);
   }
 
   @Test
@@ -61,13 +63,13 @@ public class TestArrayString {
   }
 
   @Test
-  public void testFactoryCopy() {
+  public void testCombine() {
     int[] shape1 = new int[] {1, 2, 3};
     Array<String> array1 = Arrays.factory(ArrayType.STRING, shape1, new String[] {"1", "2", "3", "4", "5", "6"});
     Array<String> array2 = Arrays.factory(ArrayType.STRING, shape1, new String[] {"7", "8", "9", "10", "11", "12"});
 
     int[] shape = new int[] {2, 2, 3};
-    Array<String> array = (Array<String>) Arrays.combine(ArrayType.STRING, shape, ImmutableList.of(array1, array2));
+    Array<String> array = Arrays.combine(ArrayType.STRING, shape, ImmutableList.of(array1, array2));
 
     assertThat(array.get(0, 0, 0)).isEqualTo("1");
     assertThat(array.get(0, 0, 1)).isEqualTo("2");
@@ -97,5 +99,16 @@ public class TestArrayString {
     assertThat(array.get(index.set(0, 1, 2))).isNull();
   }
 
+  @Test
+  public void testFactoryFill() {
+    int[] shape = new int[] {1, 2, 3};
+    Array<String> array = Arrays.factoryFill(ArrayType.STRING, shape, -9);
 
+    assertThat(array.getSize()).isEqualTo(Arrays.computeSize(shape));
+    assertThat(array.getShape()).isEqualTo(shape);
+
+    for (String val : array) {
+      assertThat(val).isNull();
+    }
+  }
 }

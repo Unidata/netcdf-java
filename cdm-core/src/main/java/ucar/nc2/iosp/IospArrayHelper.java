@@ -10,13 +10,11 @@ import ucar.unidata.io.RandomAccessFile;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.CharBuffer;
 import java.nio.DoubleBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.LongBuffer;
 import java.nio.ShortBuffer;
-import java.nio.charset.StandardCharsets;
 
 /** Helper methods for IOSP's for reading data. */
 public class IospArrayHelper {
@@ -55,19 +53,19 @@ public class IospArrayHelper {
    *
    * @param raf read from here.
    * @param layout handles skipping around in the file.
-   * @param ArrayType ArrayType of the variable
+   * @param arrayType ArrayType of the variable
    * @param arr primitive array to read data into
    * @param byteOrder if equal to RandomAccessFile.ORDER_XXXX, set the byte order just before reading
    * @param convertChar true if bytes should be converted to char for ArrayType CHAR
    * @return primitive array with data read in
    * @throws IOException on read error
    */
-  public static Object readData(RandomAccessFile raf, Layout layout, ArrayType ArrayType, Object arr,
+  public static Object readData(RandomAccessFile raf, Layout layout, ArrayType arrayType, Object arr,
       ByteOrder byteOrder, boolean convertChar) throws IOException {
     if (showLayoutTypes)
       System.out.println("***RAF LayoutType=" + layout.getClass().getName());
 
-    if (ArrayType.getPrimitiveClass() == Byte.class || ArrayType == ArrayType.CHAR) {
+    if (arrayType.getPrimitiveClass() == Byte.class || arrayType == ArrayType.CHAR) {
       byte[] pa = (byte[]) arr;
       while (layout.hasNext()) {
         Layout.Chunk chunk = layout.next();
@@ -75,12 +73,12 @@ public class IospArrayHelper {
         raf.seek(chunk.getSrcPos());
         raf.readFully(pa, (int) chunk.getDestElem(), chunk.getNelems());
       }
-      if (convertChar && ArrayType == ArrayType.CHAR)
+      if (convertChar && arrayType == ArrayType.CHAR)
         return convertByteToChar(pa);
       else
         return pa; // javac ternary compile error
 
-    } else if (ArrayType.getPrimitiveClass() == Short.class) {
+    } else if (arrayType.getPrimitiveClass() == Short.class) {
       short[] pa = (short[]) arr;
       while (layout.hasNext()) {
         Layout.Chunk chunk = layout.next();
@@ -90,7 +88,7 @@ public class IospArrayHelper {
       }
       return pa;
 
-    } else if (ArrayType.getPrimitiveClass() == Integer.class) {
+    } else if (arrayType.getPrimitiveClass() == Integer.class) {
       int[] pa = (int[]) arr;
       while (layout.hasNext()) {
         Layout.Chunk chunk = layout.next();
@@ -100,7 +98,7 @@ public class IospArrayHelper {
       }
       return pa;
 
-    } else if (ArrayType == ArrayType.FLOAT) {
+    } else if (arrayType == ArrayType.FLOAT) {
       float[] pa = (float[]) arr;
       while (layout.hasNext()) {
         Layout.Chunk chunk = layout.next();
@@ -110,7 +108,7 @@ public class IospArrayHelper {
       }
       return pa;
 
-    } else if (ArrayType == ArrayType.DOUBLE) {
+    } else if (arrayType == ArrayType.DOUBLE) {
       double[] pa = (double[]) arr;
       while (layout.hasNext()) {
         Layout.Chunk chunk = layout.next();
@@ -120,7 +118,7 @@ public class IospArrayHelper {
       }
       return pa;
 
-    } else if (ArrayType.getPrimitiveClass() == Long.class) {
+    } else if (arrayType.getPrimitiveClass() == Long.class) {
       long[] pa = (long[]) arr;
       while (layout.hasNext()) {
         Layout.Chunk chunk = layout.next();
@@ -130,7 +128,7 @@ public class IospArrayHelper {
       }
       return pa;
 
-    } else if (ArrayType == ArrayType.STRUCTURE) {
+    } else if (arrayType == ArrayType.STRUCTURE) {
       byte[] pa = (byte[]) arr;
       int recsize = layout.getElemSize();
       while (layout.hasNext()) {
@@ -141,7 +139,7 @@ public class IospArrayHelper {
       }
       return pa;
 
-    } else if (ArrayType == ArrayType.STRING) {
+    } else if (arrayType == ArrayType.STRING) {
       int size = (int) layout.getTotalNelems();
       int elemSize = layout.getElemSize();
       StringBuilder sb = new StringBuilder(size);
@@ -157,7 +155,7 @@ public class IospArrayHelper {
       return sb.toString();
     }
 
-    throw new IllegalStateException("unknown type= " + ArrayType);
+    throw new IllegalStateException("unknown type= " + arrayType);
   }
 
   /**
@@ -185,29 +183,29 @@ public class IospArrayHelper {
    *
    * @param raf read from here.
    * @param index handles skipping around in the file.
-   * @param ArrayType ArrayType of the variable
+   * @param arrayType ArrayType of the variable
    * @param arr primitive array to read data into
    * @return primitive array with data read in
    * @throws IOException on read error
    */
-  public static Object readData(PositioningDataInputStream raf, Layout index, ArrayType ArrayType, Object arr)
+  public static Object readData(PositioningDataInputStream raf, Layout index, ArrayType arrayType, Object arr)
       throws IOException {
     if (showLayoutTypes)
       System.out.println("***PositioningDataInputStream LayoutType=" + index.getClass().getName());
 
-    if (ArrayType.getPrimitiveClass() == Byte.class || ArrayType == ArrayType.CHAR) {
+    if (arrayType.getPrimitiveClass() == Byte.class || arrayType == ArrayType.CHAR) {
       byte[] pa = (byte[]) arr;
       while (index.hasNext()) {
         Layout.Chunk chunk = index.next();
         raf.read(chunk.getSrcPos(), pa, (int) chunk.getDestElem(), chunk.getNelems());
       }
       // return (ArrayType == ArrayType.CHAR) ? convertByteToChar(pa) : pa;
-      if (ArrayType == ArrayType.CHAR)
+      if (arrayType == ArrayType.CHAR)
         return convertByteToChar(pa);
       else
         return pa;
 
-    } else if (ArrayType.getPrimitiveClass() == Short.class) {
+    } else if (arrayType.getPrimitiveClass() == Short.class) {
       short[] pa = (short[]) arr;
       while (index.hasNext()) {
         Layout.Chunk chunk = index.next();
@@ -215,7 +213,7 @@ public class IospArrayHelper {
       }
       return pa;
 
-    } else if (ArrayType.getPrimitiveClass() == Integer.class) {
+    } else if (arrayType.getPrimitiveClass() == Integer.class) {
       int[] pa = (int[]) arr;
       while (index.hasNext()) {
         Layout.Chunk chunk = index.next();
@@ -223,7 +221,7 @@ public class IospArrayHelper {
       }
       return pa;
 
-    } else if (ArrayType == ArrayType.FLOAT) {
+    } else if (arrayType == ArrayType.FLOAT) {
       float[] pa = (float[]) arr;
       while (index.hasNext()) {
         Layout.Chunk chunk = index.next();
@@ -231,7 +229,7 @@ public class IospArrayHelper {
       }
       return pa;
 
-    } else if (ArrayType == ArrayType.DOUBLE) {
+    } else if (arrayType == ArrayType.DOUBLE) {
       double[] pa = (double[]) arr;
       while (index.hasNext()) {
         Layout.Chunk chunk = index.next();
@@ -239,7 +237,7 @@ public class IospArrayHelper {
       }
       return pa;
 
-    } else if (ArrayType.getPrimitiveClass() == Long.class) {
+    } else if (arrayType.getPrimitiveClass() == Long.class) {
       long[] pa = (long[]) arr;
       while (index.hasNext()) {
         Layout.Chunk chunk = index.next();
@@ -247,7 +245,7 @@ public class IospArrayHelper {
       }
       return pa;
 
-    } else if (ArrayType == ArrayType.STRUCTURE) {
+    } else if (arrayType == ArrayType.STRUCTURE) {
       int recsize = index.getElemSize();
       byte[] pa = (byte[]) arr;
       while (index.hasNext()) {
@@ -265,22 +263,22 @@ public class IospArrayHelper {
    * Reading is controlled by the Layout object.
    *
    * @param layout handles skipping around in the file, provide ByteBuffer to read from
-   * @param ArrayType ArrayType of the variable
+   * @param arrayType ArrayType of the variable
    * @param fillValue must be Number if ArrayType.isNumeric(), or String for STRING, byte[] for Structure, or null for
    *        none
    * @return primitive array with data read in
    */
-  public static Object readDataFill(LayoutBB layout, ArrayType ArrayType, Object fillValue) {
+  public static Object readDataFill(LayoutBB layout, ArrayType arrayType, Object fillValue) {
     long size = layout.getTotalNelems();
-    if (ArrayType == ArrayType.STRUCTURE) {
+    if (arrayType == ArrayType.STRUCTURE) {
       size *= layout.getElemSize();
     }
     if (size >= Integer.MAX_VALUE) {
       throw new RuntimeException("Read request too large");
     }
-    Object arr = (fillValue == null) ? makePrimitiveArray((int) size, ArrayType)
-        : makePrimitiveArray((int) size, ArrayType, fillValue);
-    return readData(layout, ArrayType, arr);
+    Object arr = (fillValue == null) ? makePrimitiveArray((int) size, arrayType)
+        : makePrimitiveArray((int) size, arrayType, fillValue);
+    return readData(layout, arrayType, arr);
   }
 
   /**
@@ -288,15 +286,15 @@ public class IospArrayHelper {
    * Reading is controlled by the LayoutBB object.
    *
    * @param layout handles skipping around in the file, privide ByteBuffer to read from
-   * @param ArrayType ArrayType of the variable
+   * @param arrayType ArrayType of the variable
    * @param arr primitive array to read data into
    * @return the primitive array with data read in
    */
-  public static Object readData(LayoutBB layout, ArrayType ArrayType, Object arr) {
+  public static Object readData(LayoutBB layout, ArrayType arrayType, Object arr) {
     if (showLayoutTypes)
       System.out.println("***BB LayoutType=" + layout.getClass().getName());
 
-    if (ArrayType.getPrimitiveClass() == Byte.class || (ArrayType == ArrayType.CHAR)) {
+    if (arrayType.getPrimitiveClass() == Byte.class || (arrayType == ArrayType.CHAR)) {
       byte[] pa = (byte[]) arr;
       while (layout.hasNext()) {
         LayoutBB.Chunk chunk = layout.next();
@@ -307,12 +305,12 @@ public class IospArrayHelper {
           pa[pos++] = bb.get();
       }
       // return (ArrayType == ArrayType.CHAR) ? convertByteToChar(pa) : pa;
-      if (ArrayType == ArrayType.CHAR)
+      if (arrayType == ArrayType.CHAR)
         return convertByteToChar(pa);
       else
         return pa;
 
-    } else if (ArrayType.getPrimitiveClass() == Short.class) {
+    } else if (arrayType.getPrimitiveClass() == Short.class) {
       short[] pa = (short[]) arr;
       while (layout.hasNext()) {
         LayoutBB.Chunk chunk = layout.next();
@@ -324,7 +322,7 @@ public class IospArrayHelper {
       }
       return pa;
 
-    } else if (ArrayType.getPrimitiveClass() == Integer.class) {
+    } else if (arrayType.getPrimitiveClass() == Integer.class) {
       int[] pa = (int[]) arr;
       while (layout.hasNext()) {
         LayoutBB.Chunk chunk = layout.next();
@@ -336,7 +334,7 @@ public class IospArrayHelper {
       }
       return pa;
 
-    } else if (ArrayType == ArrayType.FLOAT) {
+    } else if (arrayType == ArrayType.FLOAT) {
       float[] pa = (float[]) arr;
       while (layout.hasNext()) {
         LayoutBB.Chunk chunk = layout.next();
@@ -348,7 +346,7 @@ public class IospArrayHelper {
       }
       return pa;
 
-    } else if (ArrayType == ArrayType.DOUBLE) {
+    } else if (arrayType == ArrayType.DOUBLE) {
       double[] pa = (double[]) arr;
       while (layout.hasNext()) {
         LayoutBB.Chunk chunk = layout.next();
@@ -360,7 +358,7 @@ public class IospArrayHelper {
       }
       return pa;
 
-    } else if (ArrayType.getPrimitiveClass() == Long.class) {
+    } else if (arrayType.getPrimitiveClass() == Long.class) {
       long[] pa = (long[]) arr;
       while (layout.hasNext()) {
         LayoutBB.Chunk chunk = layout.next();
@@ -372,7 +370,7 @@ public class IospArrayHelper {
       }
       return pa;
 
-    } else if (ArrayType == ArrayType.STRUCTURE) {
+    } else if (arrayType == ArrayType.STRUCTURE) {
       byte[] pa = (byte[]) arr;
       int recsize = layout.getElemSize();
       while (layout.hasNext()) {
@@ -393,32 +391,32 @@ public class IospArrayHelper {
    * Create 1D primitive array of the given size and type
    *
    * @param size the size of the array to create
-   * @param ArrayType ArrayType of the variable
+   * @param arrayType ArrayType of the variable
    * @return primitive array with all zeroes
    */
-  public static Object makePrimitiveArray(int size, ArrayType ArrayType) {
+  public static Object makePrimitiveArray(int size, ArrayType arrayType) {
     Object arr = null;
 
-    if ((ArrayType.getPrimitiveClass() == Byte.class) || (ArrayType == ArrayType.CHAR)
-        || (ArrayType == ArrayType.OPAQUE) || (ArrayType == ArrayType.STRUCTURE)) {
+    if ((arrayType.getPrimitiveClass() == Byte.class) || (arrayType == ArrayType.CHAR)
+        || (arrayType == ArrayType.OPAQUE) || (arrayType == ArrayType.STRUCTURE)) {
       arr = new byte[size];
 
-    } else if (ArrayType.getPrimitiveClass() == Short.class) {
+    } else if (arrayType.getPrimitiveClass() == Short.class) {
       arr = new short[size];
 
-    } else if (ArrayType.getPrimitiveClass() == Integer.class) {
+    } else if (arrayType.getPrimitiveClass() == Integer.class) {
       arr = new int[size];
 
-    } else if (ArrayType.getPrimitiveClass() == Long.class) {
+    } else if (arrayType.getPrimitiveClass() == Long.class) {
       arr = new long[size];
 
-    } else if (ArrayType == ArrayType.FLOAT) {
+    } else if (arrayType == ArrayType.FLOAT) {
       arr = new float[size];
 
-    } else if (ArrayType == ArrayType.DOUBLE) {
+    } else if (arrayType == ArrayType.DOUBLE) {
       arr = new double[size];
 
-    } else if (ArrayType == ArrayType.STRING) {
+    } else if (arrayType == ArrayType.STRING) {
       arr = new String[size];
     }
 
@@ -430,94 +428,99 @@ public class IospArrayHelper {
    * Create 1D primitive array of the given size and type, fill it with the given value
    *
    * @param size the size of the array to create
-   * @param ArrayType ArrayType of the variable
+   * @param arrayType ArrayType of the variable
    * @param fillValue must be Number if ArrayType.isNumeric(), or String for STRING, byte[] for Structure, or null for
    *        none
    * @return primitive array with data read in
    */
-  public static Object makePrimitiveArray(int size, ArrayType ArrayType, Object fillValue) {
+  public static Object makePrimitiveArray(int size, ArrayType arrayType, Object fillValue) {
 
-    if (ArrayType.getPrimitiveClass() == Byte.class || (ArrayType == ArrayType.CHAR)) {
+    if (arrayType.getPrimitiveClass() == Byte.class || (arrayType == ArrayType.CHAR)) {
       byte[] pa = new byte[size];
       byte val = ((Number) fillValue).byteValue();
-      if (val != 0)
-        for (int i = 0; i < size; i++)
+      if (val != 0) {
+        for (int i = 0; i < size; i++) {
           pa[i] = val;
+        }
+      }
       // if (ArrayType == ArrayType.CHAR) return convertByteToChar(pa);
       return pa;
 
-    } else if (ArrayType == ArrayType.OPAQUE) {
+    } else if (arrayType == ArrayType.OPAQUE) {
       return new byte[size];
 
-    } else if (ArrayType.getPrimitiveClass() == Short.class) {
+    } else if (arrayType.getPrimitiveClass() == Short.class) {
       short[] pa = new short[size];
       short val = ((Number) fillValue).shortValue();
-      if (val != 0)
-        for (int i = 0; i < size; i++)
+      if (val != 0) {
+        for (int i = 0; i < size; i++) {
           pa[i] = val;
+        }
+      }
       return pa;
 
-    } else if (ArrayType.getPrimitiveClass() == Integer.class) {
+    } else if (arrayType.getPrimitiveClass() == Integer.class) {
       int[] pa = new int[size];
       int val = ((Number) fillValue).intValue();
-      if (val != 0)
-        for (int i = 0; i < size; i++)
+      if (val != 0) {
+        for (int i = 0; i < size; i++) {
           pa[i] = val;
+        }
+      }
       return pa;
 
-    } else if (ArrayType.getPrimitiveClass() == Long.class) {
+    } else if (arrayType.getPrimitiveClass() == Long.class) {
       long[] pa = new long[size];
       long val = ((Number) fillValue).longValue();
-      if (val != 0)
-        for (int i = 0; i < size; i++)
+      if (val != 0) {
+        for (int i = 0; i < size; i++) {
           pa[i] = val;
+        }
+      }
       return pa;
 
-    } else if (ArrayType == ArrayType.FLOAT) {
+    } else if (arrayType == ArrayType.FLOAT) {
       float[] pa = new float[size];
       float val = ((Number) fillValue).floatValue();
-      if (val != 0.0)
-        for (int i = 0; i < size; i++)
+      if (val != 0.0) {
+        for (int i = 0; i < size; i++) {
           pa[i] = val;
+        }
+      }
       return pa;
 
-    } else if (ArrayType == ArrayType.DOUBLE) {
+    } else if (arrayType == ArrayType.DOUBLE) {
       double[] pa = new double[size];
       double val = ((Number) fillValue).doubleValue();
-      if (val != 0.0)
-        for (int i = 0; i < size; i++)
+      if (val != 0.0) {
+        for (int i = 0; i < size; i++) {
           pa[i] = val;
+        }
+      }
       return pa;
 
-    } else if (ArrayType == ArrayType.STRING) {
+    } else if (arrayType == ArrayType.STRING) {
       String[] pa = new String[size];
-      for (int i = 0; i < size; i++)
+      for (int i = 0; i < size; i++) {
         pa[i] = (String) fillValue;
+      }
       return pa;
 
-    } else if (ArrayType == ArrayType.STRUCTURE) {
+    } else if (arrayType == ArrayType.STRUCTURE) {
       byte[] pa = new byte[size];
       if (fillValue != null) {
         byte[] val = (byte[]) fillValue;
         int count = 0;
-        while (count < size && count < val.length)
-          for (byte aVal : val)
+        while (count < size && count < val.length) {
+          for (byte aVal : val) {
             pa[count++] = aVal;
+          }
+        }
       }
       return pa;
     }
 
     throw new IllegalStateException();
-  }
-
-  // convert byte array to char array, assuming UTF-8 encoding
-  public static char[] convertByteToCharUTF(byte[] byteArray) {
-    return StandardCharsets.UTF_8.decode(ByteBuffer.wrap(byteArray)).array();
-  }
-
-  // convert char array to byte array, assuming UTF-8 encoding
-  public static byte[] convertCharToByteUTF(char[] from) {
-    return StandardCharsets.UTF_8.encode(CharBuffer.wrap(from)).array();
   }
 
   // convert byte array to char array
@@ -536,8 +539,9 @@ public class IospArrayHelper {
     if (from != null) {
       int size = from.length;
       to = new byte[size];
-      for (int i = 0; i < size; i++)
+      for (int i = 0; i < size; i++) {
         to[i] = (byte) from[i]; // LOOK wrong, convert back to unsigned byte ???
+      }
     }
     return to;
   }

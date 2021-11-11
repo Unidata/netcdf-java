@@ -9,7 +9,7 @@ import ucar.array.Array;
 import ucar.array.ArrayType;
 import ucar.array.InvalidRangeException;
 import ucar.array.RangeIterator;
-import ucar.array.SectionIterable;
+import ucar.nc2.grib.SectionIterable;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.AttributeContainerMutable;
@@ -108,7 +108,7 @@ public class GribGrid implements Grid {
 
     } else {
       List<RangeIterator> ranges = new ArrayList<>(subsetCoordSys.getSubsetRanges());
-      SectionIterable want = new ucar.array.SectionIterable(ranges, getCoordinateSystem().getNominalShape());
+      SectionIterable want = new SectionIterable(ranges, getCoordinateSystem().getNominalShape());
 
       GribArrayReader dataReader = GribArrayReader.factory(gribCollection, vi);
       Array<?> data = dataReader.readData(want);
@@ -120,7 +120,7 @@ public class GribGrid implements Grid {
   @Override
   public Array<Number> readDataSection(ucar.array.Section section) throws InvalidRangeException, IOException {
     GribArrayReader dataReader = GribArrayReader.factory(gribCollection, vi);
-    SectionIterable want = new ucar.array.SectionIterable(section, getCoordinateSystem().getNominalShape());
+    SectionIterable want = new SectionIterable(section, getCoordinateSystem().getNominalShape());
     return (Array<Number>) dataReader.readData(want);
   }
 

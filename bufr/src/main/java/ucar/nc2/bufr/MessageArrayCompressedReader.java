@@ -104,8 +104,7 @@ public class MessageArrayCompressedReader {
         message.getRootDataDescriptor().getSubKeys());
 
     // allocate ArrayStructureBB for outer structure
-    StructureMembers.Builder membersb = s.makeStructureMembersBuilder();
-    membersb.setStandardOffsets(structuresOnHeap); // LOOK ??
+    StructureMembers.Builder membersb = s.makeStructureMembersBuilder().setStandardOffsets();
     StructureMembers members = membersb.build();
 
     this.ndatasets = message.getNumberDatasets();
@@ -418,8 +417,7 @@ public class MessageArrayCompressedReader {
       Request req, BitCounterCompressed bitCounterNested, DebugOut out) throws IOException {
 
     Sequence seq = seqdd.refersTo;
-    StructureMembers.Builder membersb = seq.makeStructureMembersBuilder();
-    membersb.setStandardOffsets(structuresOnHeap);
+    StructureMembers.Builder membersb = seq.makeStructureMembersBuilder().setStandardOffsets();
     StructureMembers nestedMembers = membersb.build();
 
     // same number of rows in each dataset
@@ -428,7 +426,6 @@ public class MessageArrayCompressedReader {
     nestedBB.order(ByteOrder.BIG_ENDIAN);
 
     StructureDataStorageBB nestedStorage = new StructureDataStorageBB(nestedMembers, nestedBB, nestedElements);
-    nestedStorage.setNestedStructuresOnHeap(structuresOnHeap);
 
     HashMap<DataDescriptor, Member> nestedMap = new HashMap<>();
     MessageArrayReaderUtils.associateMessage2Members(nestedMembers, seqdd, nestedMap);

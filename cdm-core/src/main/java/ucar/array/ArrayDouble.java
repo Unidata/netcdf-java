@@ -5,11 +5,7 @@
 package ucar.array;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
-import java.util.List;
 import javax.annotation.concurrent.Immutable;
 
 /** Concrete implementation of Array specialized for doubles. */
@@ -139,89 +135,6 @@ final class ArrayDouble extends ucar.array.Array<Double> {
       @Override
       public final Double next() {
         return storage[count++];
-      }
-    }
-  }
-
-  /////////////////////////////////////////////////////////////////////////
-  // experimental storage using List of Storage<Double>
-  @Immutable
-  static class StorageDM implements Storage<Double> {
-    private final ImmutableList<Storage<Double>> dataArrays;
-    private final long[] arrayEdge;
-    private final long totalLength;
-
-    StorageDM(List<Array<?>> dataArrays) {
-      ImmutableList.Builder<Storage<Double>> builder = ImmutableList.builder();
-      List<Long> edge = new ArrayList<>();
-      edge.add(0L);
-      long total = 0L;
-      for (Array<?> dataArray : dataArrays) {
-        builder.add((Storage<Double>) dataArray.storage());
-        total += dataArray.length();
-        edge.add(total);
-      }
-      this.dataArrays = builder.build();
-      this.arrayEdge = edge.stream().mapToLong(i -> i).toArray();
-      this.totalLength = total;
-    }
-
-    @Override
-    public long length() {
-      return totalLength;
-    }
-
-    @Override
-    public Double get(long elem) {
-      int search = Arrays.binarySearch(arrayEdge, elem);
-      int arrayIndex = (search < 0) ? -search - 2 : search;
-      Storage<Double> array = dataArrays.get(arrayIndex);
-      return array.get((int) (elem - arrayEdge[arrayIndex]));
-    }
-
-    @Override
-    public void arraycopy(int srcPos, Object dest, int destPos, long length) {
-      long needed = length;
-      int startDst = destPos;
-
-      int search = Arrays.binarySearch(arrayEdge, srcPos);
-      int startIndex = (search < 0) ? -search - 2 : search;
-      int startSrc = (int) (srcPos - arrayEdge[startIndex]);
-
-      for (int index = startIndex; index < dataArrays.size(); index++) {
-        Storage<Double> storage = dataArrays.get(index);
-        int have = (int) Math.min(storage.length() - startSrc, needed);
-        storage.arraycopy(startSrc, dest, startDst, have);
-        needed -= have;
-        startDst += have;
-        startSrc = 0;
-      }
-    }
-
-    @Override
-    public Iterator<Double> iterator() {
-      return new StorageDMIter();
-    }
-
-    private final class StorageDMIter implements Iterator<Double> {
-      private int count = 0;
-      private int arrayIndex = 0;
-      private Storage<Double> array = dataArrays.get(0);
-
-      @Override
-      public final boolean hasNext() {
-        return count < totalLength;
-      }
-
-      @Override
-      public final Double next() {
-        if (count >= arrayEdge[arrayIndex + 1]) {
-          arrayIndex++;
-          array = dataArrays.get(arrayIndex);
-        }
-        double val = array.get((int) (count - arrayEdge[arrayIndex]));
-        count++;
-        return val;
       }
     }
   }

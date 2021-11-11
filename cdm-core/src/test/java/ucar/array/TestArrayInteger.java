@@ -16,7 +16,8 @@ public class TestArrayInteger {
   @Test
   public void testBasics() {
     int[] shape = new int[] {1, 2, 3};
-    Storage<Integer> store = new ArrayInteger.StorageS(new int[] {1, 2, 3, 4, 5, 6});
+    int[] parray = new int[] {1, 2, 3, 4, 5, 6};
+    Storage<Integer> store = new ArrayInteger.StorageS(parray);
     ArrayInteger array = new ArrayInteger(ArrayType.INT, shape, store);
 
     assertThat(array.get(0, 0, 0)).isEqualTo(1);
@@ -40,6 +41,7 @@ public class TestArrayInteger {
     assertThat(result).isEqualTo(new int[] {2, 3, 4});
 
     assertThat(array.storage()).isEqualTo(store);
+    assertThat(Arrays.copyPrimitiveArray(array)).isEqualTo(parray);
   }
 
   @Test
@@ -61,13 +63,13 @@ public class TestArrayInteger {
   }
 
   @Test
-  public void testFactoryCopy() {
+  public void testCombine() {
     int[] shape1 = new int[] {1, 2, 3};
     Array<Integer> array1 = Arrays.factory(ArrayType.INT, shape1, new int[] {1, 2, 3, 4, 5, 6});
     Array<Integer> array2 = Arrays.factory(ArrayType.INT, shape1, new int[] {7, 8, 9, 10, 11, 12});
 
     int[] shape = new int[] {2, 2, 3};
-    Array<Integer> array = (Array<Integer>) Arrays.combine(ArrayType.INT, shape, ImmutableList.of(array1, array2));
+    Array<Integer> array = Arrays.combine(ArrayType.INT, shape, ImmutableList.of(array1, array2));
 
     assertThat(array.get(0, 0, 0)).isEqualTo(1);
     assertThat(array.get(0, 0, 1)).isEqualTo(2);
@@ -97,5 +99,27 @@ public class TestArrayInteger {
     assertThat(array.get(index.set(0, 1, 2))).isEqualTo(2);
   }
 
+  @Test
+  public void testFactoryFill() {
+    int[] shape = new int[] {1, 2, 3};
+    Array<Integer> array = Arrays.factoryFill(ArrayType.INT, shape, -9);
+
+    assertThat(array.getSize()).isEqualTo(Arrays.computeSize(shape));
+    assertThat(array.getShape()).isEqualTo(shape);
+
+    for (int val : array) {
+      assertThat(val).isEqualTo(-9);
+    }
+  }
+
+  @Test
+  public void testMakeArray() {
+    Array<Integer> array = Arrays.makeArray(ArrayType.INT, 1000, 0.0, 1, 10, 10, 10);
+    int count = 0;
+    for (int val : array) {
+      assertThat(val).isEqualTo(count);
+      count++;
+    }
+  }
 
 }

@@ -22,7 +22,7 @@ public class Index {
   }
 
   /** An Index with the current value passed in. */
-  public static Index of(int[] current) {
+  public static Index of(int... current) {
     return new Index(current);
   }
 

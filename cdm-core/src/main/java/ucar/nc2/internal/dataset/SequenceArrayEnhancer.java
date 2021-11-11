@@ -8,8 +8,6 @@ import static ucar.nc2.internal.dataset.StructureDataArrayEnhancer.convertNested
 
 import java.nio.ByteBuffer;
 import java.util.Iterator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ucar.array.Array;
 import ucar.array.StructureData;
 import ucar.array.StructureDataStorageBB;
@@ -20,7 +18,6 @@ import ucar.nc2.dataset.SequenceDS;
  * Enhance StructureData, for SequenceDS.
  */
 public class SequenceArrayEnhancer implements Iterator<StructureData> {
-  private static final Logger logger = LoggerFactory.getLogger(SequenceArrayEnhancer.class);
   private final SequenceDS topStructure;
   private final Iterator<ucar.array.StructureData> orgIterator;
   private final StructureMembers members;
@@ -28,7 +25,7 @@ public class SequenceArrayEnhancer implements Iterator<StructureData> {
   public SequenceArrayEnhancer(SequenceDS topStructure, Iterator<StructureData> orgIterator) {
     this.topStructure = topStructure;
     this.orgIterator = orgIterator;
-    this.members = topStructure.makeStructureMembersBuilder().setStandardOffsets(false).build();
+    this.members = topStructure.makeStructureMembersBuilder().setStandardOffsets().build();
   }
 
   @Override

@@ -6,8 +6,6 @@ package ucar.nc2.internal.dataset;
 
 import com.google.common.base.Preconditions;
 import java.nio.ByteBuffer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ucar.array.*;
 import ucar.array.StructureMembers.Member;
 import ucar.nc2.Structure;
@@ -18,7 +16,6 @@ import ucar.nc2.dataset.VariableEnhanced;
 
 /** Enhance StructureData, for both StructureDS and SequenceDS. */
 public class StructureDataArrayEnhancer {
-  private static final Logger logger = LoggerFactory.getLogger(StructureDataArrayEnhancer.class);
   private final StructureEnhanced topStructure;
   private final StructureDataArray org;
   private final StructureMembers members;
@@ -28,7 +25,7 @@ public class StructureDataArrayEnhancer {
   public StructureDataArrayEnhancer(StructureEnhanced topStructure, StructureDataArray org) {
     this.topStructure = topStructure;
     this.org = org;
-    this.members = ((Structure) topStructure).makeStructureMembersBuilder().setStandardOffsets(false).build();
+    this.members = ((Structure) topStructure).makeStructureMembersBuilder().setStandardOffsets().build();
     this.bbuffer = ByteBuffer.allocate((int) (org.length() * members.getStorageSizeBytes()));
     this.storage = new StructureDataStorageBB(members, bbuffer, (int) org.length());
   }
@@ -73,9 +70,14 @@ public class StructureDataArrayEnhancer {
       bbuffer.putInt(index);
 
     } else if (member.isVlen()) {
-      Preconditions.checkArgument(orgMemberData instanceof ArrayVlen);
       Preconditions.checkArgument(ve instanceof VariableDS);
-      Array<?> converted = convertVlen((VariableDS) ve, (ArrayVlen<?>) orgMemberData);
+      Array<?> converted;
+      if ((orgMemberData instanceof ArrayVlen)) {
+        converted = convertVlen((VariableDS) ve, (ArrayVlen<?>) orgMemberData);
+      } else {
+        VariableDS vds = (VariableDS) ve;
+        converted = vds.convertNeeded() ? vds.convertArray(orgMemberData) : orgMemberData;
+      }
       int index = storage.putOnHeap(converted);
       int pos = offset + member.getOffset();
       bbuffer.position(pos);
@@ -102,9 +104,9 @@ public class StructureDataArrayEnhancer {
     } else {
       VariableDS vds = (VariableDS) ve;
       Array<?> converted = vds.convertNeeded() ? vds.convertArray(orgMemberData) : orgMemberData;
-      storage.setMemberData(offset, member, converted);
+      // LOOK why not pos = offset + member.getOffset()?
+      storage.setMemberDataNested(offset, member, converted);
     }
-
   }
 
   private static ArrayVlen<?> convertVlen(VariableDS vds, ArrayVlen<?> orgVlenData) {

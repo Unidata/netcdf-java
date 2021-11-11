@@ -223,8 +223,7 @@ public class GcdmServer {
 
       String spec = varSection.makeSectionSpecString();
       Sequence seq = (Sequence) varSection.getVariable();
-      StructureMembers.Builder membersb = seq.makeStructureMembersBuilder();
-      membersb.setStandardOffsets(false);
+      StructureMembers.Builder membersb = seq.makeStructureMembersBuilder().setStandardOffsets();
       StructureMembers members = membersb.build();
 
       StructureData[] sdata = new StructureData[SEQUENCE_CHUNK];

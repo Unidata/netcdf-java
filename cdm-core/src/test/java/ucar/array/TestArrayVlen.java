@@ -22,6 +22,7 @@ public class TestArrayVlen {
     short[] arr2 = new short[] {6, 7};
     short[][] ragged = new short[][] {arr1, arr2};
     ArrayVlen<Short> array = ArrayVlen.factory(ArrayType.SHORT, shape, ragged);
+    assertThat(array.isVlen()).isTrue();
 
     Array<Short> elem1 = array.get(0, 0);
     assertThat(Iterables.toString(elem1)).isEqualTo("[1, 2, 3, 4, 5]");
@@ -42,6 +43,18 @@ public class TestArrayVlen {
     assertThat(array.getRank()).isEqualTo(2);
     assertThat(array.totalLength()).isEqualTo(7);
     assertThat(array.getArrayType()).isEqualTo(ArrayType.SHORT);
+
+    short[][] result = new short[2][];
+    array.arraycopy(0, result, 0, result.length);
+    assertThat(result[0]).isEqualTo(arr1);
+    assertThat(result[1]).isEqualTo(arr2);
+
+    // non canonical order
+    Array<Array<Short>> array2 = Arrays.flip(array, 1);
+    short[][] result2 = new short[2][];
+    array2.arraycopy(0, result2, 0, result2.length);
+    assertThat(result2[1]).isEqualTo(arr1);
+    assertThat(result2[0]).isEqualTo(arr2);
   }
 
   @Test

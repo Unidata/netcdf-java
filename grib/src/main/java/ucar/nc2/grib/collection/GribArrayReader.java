@@ -19,7 +19,7 @@ import ucar.array.ArrayType;
 import ucar.array.Arrays;
 import ucar.array.InvalidRangeException;
 import ucar.array.RangeIterator;
-import ucar.array.SectionIterable;
+import ucar.nc2.grib.SectionIterable;
 import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.grib.coord.CoordinateTime2D;
 import ucar.nc2.grib.coord.TimeCoordIntvDateValue;
@@ -78,7 +78,7 @@ public abstract class GribArrayReader {
    * @param want which data do you want?
    * @return data as an Array
    */
-  public Array<?> readData(ucar.array.SectionIterable want) throws IOException, InvalidRangeException {
+  public Array<?> readData(SectionIterable want) throws IOException, InvalidRangeException {
     if (vindex instanceof PartitionCollectionImmutable.VariableIndexPartitioned)
       return readDataFromPartition((PartitionCollectionImmutable.VariableIndexPartitioned) vindex, want);
     else
@@ -130,12 +130,12 @@ public abstract class GribArrayReader {
    * want.getShape() indicates the result Array shape.
    */
   private Array<?> readDataFromPartition(PartitionCollectionImmutable.VariableIndexPartitioned vindexP,
-      ucar.array.SectionIterable section) throws IOException {
+      SectionIterable section) throws IOException {
 
     int rank = section.getRank();
-    ucar.array.SectionIterable sectionWanted = section.subSection(0, rank - 2); // all but x, y
-    ucar.array.SectionIterable.SectionIterator iterWanted = sectionWanted.getIterator(); // iterator over wanted indices
-                                                                                         // in vindexP
+    SectionIterable sectionWanted = section.subSection(0, rank - 2); // all but x, y
+    SectionIterable.SectionIterator iterWanted = sectionWanted.getIterator(); // iterator over wanted indices
+                                                                              // in vindexP
     int[] indexWanted = new int[rank - 2]; // place to put the iterator result
     int[] useIndex = indexWanted;
 
