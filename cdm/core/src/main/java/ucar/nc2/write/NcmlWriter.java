@@ -57,7 +57,7 @@ public class NcmlWriter {
   private static final Logger log = LoggerFactory.getLogger(NcmlWriter.class);
 
   /**
-   * A default namespace constructed from the NcML URI: {@code https://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2}.
+   * A default namespace constructed from the NcML URI: {@code http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2}.
    */
   // A default namespace means that we can use it without having to prepend the "ncml:" prefix to every element name.
   // thredds.client.catalog.Catalog.ncmlNS is *not* default and therefore *does* require the prefix.

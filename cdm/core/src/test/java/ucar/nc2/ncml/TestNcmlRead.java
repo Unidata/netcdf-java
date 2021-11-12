@@ -266,7 +266,8 @@ public class TestNcmlRead extends TestCase {
 
   static public class TestReadHttps extends TestNcmlRead {
 
-    // equivalent dataset using "readMetadata"
+    // Test handling of incorrect https variant of NcML namespace URI.
+    // See note in Catalog.java.
     public TestReadHttps(String name) {
       super(name);
       ncfile = null;
