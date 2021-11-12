@@ -37,8 +37,6 @@ import ucar.nc2.util.Indent;
  * Generally, the programmer can assume that the data in one Structure are stored together,
  * so that it is efficient to read an entire Structure, and then access the Variable data through the
  * Arrays in the StructureData.
- *
- * @author caron
  */
 @Immutable
 public class Structure extends Variable {
@@ -56,12 +54,6 @@ public class Structure extends Variable {
     return members.size();
   }
 
-  /** Get the size in bytes of one Structure. */
-  @Override
-  public int getElementSize() {
-    return elementSize;
-  }
-
   /** Get the variables contained directly in this Structure. */
   public ImmutableList<Variable> getVariables() {
     return members;
@@ -77,6 +69,7 @@ public class Structure extends Variable {
     return isSubset;
   }
 
+  /** Create a StructureMembers.Builder from the Variables of this Structure. Used to create StructureDataArray. */
   public StructureMembers.Builder makeStructureMembersBuilder() {
     StructureMembers.Builder builder = StructureMembers.builder().setName(this.getShortName());
     for (Variable v2 : this.getVariables()) {
@@ -122,7 +115,8 @@ public class Structure extends Variable {
   }
 
   /** Calculation of size of one element of this structure - equals the sum of sizes of its members. */
-  private int calcElementSize() {
+  @Override
+  public int getElementSize() {
     return makeStructureMembersBuilder().getStorageSizeBytes();
   }
 
@@ -184,9 +178,6 @@ public class Structure extends Variable {
     this.members = builder.vbuilders.stream().map(vb -> vb.build(parentGroup)).collect(ImmutableList.toImmutableList());
     memberHash = new HashMap<>();
     this.members.forEach(m -> memberHash.put(m.getShortName(), m));
-    if (builder.elementSize <= 0) {
-      this.elementSize = calcElementSize();
-    }
     this.isSubset = builder.isSubset;
   }
 
@@ -254,14 +245,6 @@ public class Structure extends Variable {
       boolean wasPresent = removeMemberVariable(replacement.shortName);
       addMemberVariable(replacement);
       return wasPresent;
-    }
-
-    public long calcElementSize() {
-      int total = 0;
-      for (Variable.Builder<?> v : vbuilders) {
-        total += v.getElementSize() * v.getSize();
-      }
-      return total;
     }
 
     public Optional<Variable.Builder<?>> findMemberVariable(String name) {

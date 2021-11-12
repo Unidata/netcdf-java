@@ -458,7 +458,7 @@ public class Nc4writer extends Nc4reader implements IospFileWriter {
    */
   private void createCompoundType(Group4 g4, Structure.Builder<?> s) throws IOException {
     IntByReference typeidp = new IntByReference();
-    long size = s.calcElementSize();
+    long size = calcElementSize(s);
     String name = s.shortName + "_t";
     int ret = nc4.nc_def_compound(g4.grpid, new SizeT(size), name, typeidp);
     if (ret != 0)
@@ -504,6 +504,15 @@ public class Nc4writer extends Nc4reader implements IospFileWriter {
     UserType ut = new UserType(g4.grpid, typeid, name, size, 0, fldidx, NC_COMPOUND);
     userTypes.put(typeid, ut);
     ut.setFields(flds); // LOOK: These were already set in the UserType ctor.
+  }
+
+  // LOOK probably wrong, you probably want to have some specialization for hdf5 ??
+  private int calcElementSize(Structure.Builder<?> s) {
+    int total = 0;
+    for (Variable.Builder<?> v : s.vbuilders) {
+      total += v.getElementSize() * v.getSize();
+    }
+    return total;
   }
 
   private void createCompoundMemberAtts(int grpid, int varid, Structure.Builder<?> s) throws IOException {
