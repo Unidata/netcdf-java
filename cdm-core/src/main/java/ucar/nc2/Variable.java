@@ -825,32 +825,6 @@ public class Variable implements ProxyReader, Comparable<Variable> {
     return attributes.findAttributeString(attName, defaultValue);
   }
 
-
-  /**
-   * Use when unlimited dimension grows, to recalculate the shape.
-   * 
-   * @deprecated Use Variable.builder()
-   */
-  @Deprecated
-  public void resetShape() {
-    // if (immutable) throw new IllegalStateException("Cant modify"); LOOK allow this for unlimited dimension updating
-    this.shape = new int[dimensions.size()];
-    for (int i = 0; i < dimensions.size(); i++) {
-      Dimension dim = dimensions.get(i);
-      shape[i] = dim.getLength();
-      // shape[i] = Math.max(dim.getLength(), 0); // LOOK
-      // if (dim.isUnlimited() && (i != 0)) // LOOK only true for Netcdf-3
-      // throw new IllegalArgumentException("Unlimited dimension must be outermost");
-      if (dim.isVariableLength()) {
-        // if (dimensions.size() != 1)
-        // throw new IllegalArgumentException("Unknown dimension can only be used in 1 dim array");
-        // else
-        isVariableLength = true;
-      }
-    }
-    this.shapeAsSection = Dimensions.makeArraySectionFromDimensions(this.dimensions).build();
-  }
-
   /** Get immutable service provider opaque object. */
   public Object getSPobject() {
     return spiObject;
@@ -973,10 +947,9 @@ public class Variable implements ProxyReader, Comparable<Variable> {
   protected final ProxyReader proxyReader;
   protected final Cache cache;
 
-  // TODO get rid of resetShape() so these can be final
-  private Section shapeAsSection; // derived from the shape, immutable; used for every read, deferred creation
-  protected int[] shape;
-  protected boolean isVariableLength;
+  private final Section shapeAsSection;
+  protected final int[] shape;
+  protected final boolean isVariableLength;
 
   protected Variable(Builder<?> builder, Group parentGroup) {
     if (parentGroup == null) {

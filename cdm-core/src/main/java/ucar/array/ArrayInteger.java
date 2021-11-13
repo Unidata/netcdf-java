@@ -130,12 +130,12 @@ class ArrayInteger extends Array<Integer> {
       private int count = 0;
 
       @Override
-      public final boolean hasNext() {
+      public boolean hasNext() {
         return count < storage.length;
       }
 
       @Override
-      public final Integer next() {
+      public Integer next() {
         return storage[count++];
       }
     }

@@ -271,7 +271,7 @@ public class TestSection {
   @Test
   public void testIntersect() throws ucar.array.InvalidRangeException {
     Section have = new Section("101:101,0:1919");
-    Section want = new Section("100:229:3,100:191:7");
+    Section want = new Section("101:229:3,100:191:7");
 
     boolean b = have.intersects(want);
     assertThat(b).isTrue();

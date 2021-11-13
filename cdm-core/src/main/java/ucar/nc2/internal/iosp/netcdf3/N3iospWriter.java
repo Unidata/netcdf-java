@@ -278,14 +278,6 @@ public class N3iospWriter extends N3iosp implements IospFileWriter {
 
     ((N3headerWriter) header).setNumrecs(n);
 
-    // need to let all unlimited variables know of new shape
-    for (Variable v : ncfile.getVariables()) {
-      if (v.isUnlimited()) {
-        v.resetShape(); // LOOK this doesnt work.
-        v.invalidateCache();
-      }
-    }
-
     // extend file, handle filling
     if (fill) {
       fillRecordVariables(startRec, n);
@@ -341,7 +333,7 @@ public class N3iospWriter extends N3iosp implements IospFileWriter {
       if (v.isUnlimited())
         continue;
       try {
-        writeData(v, v.getSection(), makeConstantArray(v));
+        writeData(v, v.getSection(), makeConstantArray(v, v.getShape()));
       } catch (InvalidRangeException e) {
         e.printStackTrace(); // shouldnt happen
       }
@@ -360,14 +352,17 @@ public class N3iospWriter extends N3iosp implements IospFileWriter {
           continue;
         Section.Builder recordSection = v.getSection().toBuilder();
         recordSection.setRange(0, r);
-        writeData(v, recordSection.build(), makeConstantArray(v));
+        int[] shape = v.getShape();
+        if (shape.length > 0) {
+          shape[0] = 1;
+        }
+        writeData(v, recordSection.build(), makeConstantArray(v, shape));
       }
     }
   }
 
-  private Array<?> makeConstantArray(Variable v) {
+  private Array<?> makeConstantArray(Variable v, int[] shape) {
     ArrayType type = v.getArrayType();
-    int[] shape = v.getShape();
     int npts = (int) Arrays.computeSize(shape);
     if (shape.length == 0) {
       shape = new int[0];

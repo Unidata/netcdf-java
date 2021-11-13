@@ -108,7 +108,6 @@ public class TestNetcdfFormatWithWriter {
       Variable time = writer.findVariable("time"); // ?? immutable ??
       assertThat(time).isNotNull();
       writer.config().forVariable(time).withArray(data).write();
-      assertThat(time.getSize()).isEqualTo(4);
     }
 
     // read it back

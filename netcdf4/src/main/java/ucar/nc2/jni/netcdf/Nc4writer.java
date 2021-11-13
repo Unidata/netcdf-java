@@ -861,19 +861,6 @@ public class Nc4writer extends Nc4reader implements IospFileWriter {
 
       if (!d.isUnlimited())
         throw new IllegalStateException("dimension " + dname + " should be unlimited");
-
-      // TODO udim.setLength : need UnlimitedDimension extends Dimension?
-      int len = lenp.getValue().intValue();
-      if (len != d.getLength()) {
-        // TODO d.setLength(len);
-        // must update all variables that use this dimension
-        for (Variable var : g.getVariables()) {
-          if (contains(var.getDimensions(), d)) {
-            var.resetShape(); // LOOK
-            var.invalidateCache();
-          }
-        }
-      }
     }
 
     // recurse
