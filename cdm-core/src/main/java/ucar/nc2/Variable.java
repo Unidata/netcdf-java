@@ -37,7 +37,7 @@ import java.io.IOException;
  * The cache isnt immutable, but changes to it should not be visible.
  */
 @Immutable
-public class Variable implements ProxyReader {
+public class Variable implements ProxyReader, Comparable<Variable> {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Variable.class);
   private static final boolean showSize = false;
 
@@ -712,15 +712,13 @@ public class Variable implements ProxyReader {
 
   protected void writeCDL(Formatter buf, Indent indent, boolean useFullName, boolean strict) {
     buf.format("%s", indent);
-    if (dataType == null)
-      buf.format("Unknown");
-    else if (dataType.isEnum()) {
+    if (getArrayType().isEnum()) {
       if (enumTypedef == null)
         buf.format("enum UNKNOWN");
       else
         buf.format("enum %s", NetcdfFiles.makeValidCDLName(enumTypedef.getShortName()));
     } else
-      buf.format("%s", dataType.toCdl());
+      buf.format("%s", getArrayType().toCdl());
 
     // if (isVariableLength) buf.append("(*)"); // LOOK
     buf.format(" ");
@@ -798,6 +796,7 @@ public class Variable implements ProxyReader {
   protected int hashCode;
 
   /** Sort by name */
+  @Override
   public int compareTo(Variable o) {
     return getShortName().compareTo(o.getShortName());
   }
@@ -959,26 +958,25 @@ public class Variable implements ProxyReader {
   private final Group parentGroup;
   @Nullable
   private final Structure parentStructure;
+  private final ArrayType dataType;
+  @Nullable
+  private final EnumTypedef enumTypedef;
+  private final int elementSize;
+
   @Nullable
   protected final NetcdfFile ncfile; // Physical container for this Variable where the I/O happens.
                                      // may be null if Variable is self contained (eg NcML).
   @Nullable
-  private final EnumTypedef enumTypedef;
-  @Nullable
   protected final Object spiObject;
-
   protected final ImmutableList<Dimension> dimensions;
   protected final AttributeContainer attributes;
   protected final ProxyReader proxyReader;
   protected final Cache cache;
-  protected final int elementSize;
 
   // TODO get rid of resetShape() so these can be final
   private Section shapeAsSection; // derived from the shape, immutable; used for every read, deferred creation
   protected int[] shape;
   protected boolean isVariableLength;
-
-  protected ArrayType dataType; // TODO not final, so VariableDS can override, is there a better solution?
 
   protected Variable(Builder<?> builder, Group parentGroup) {
     if (parentGroup == null) {

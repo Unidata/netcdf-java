@@ -92,7 +92,7 @@ public class Structure extends Variable {
   public Structure select(List<String> memberNames) {
     Structure.Builder<?> result = this.toBuilder();
     // Will read the entire Structure, then transfer selected members to StructureData
-    result.setElementSize(this.elementSize);
+    result.setElementSize(this.getElementSize());
 
     List<Variable.Builder<?>> selected = new ArrayList<>();
     for (String name : memberNames) {
@@ -134,7 +134,7 @@ public class Structure extends Variable {
 
   @Override
   protected void writeCDL(Formatter buf, Indent indent, boolean useFullName, boolean strict) {
-    buf.format("%n%s%s {%n", indent, dataType);
+    buf.format("%n%s%s {%n", indent, getArrayType());
 
     indent.incr();
     for (Variable v : members)

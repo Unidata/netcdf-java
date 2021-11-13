@@ -12,7 +12,10 @@ import static ucar.nc2.TestUtils.makeDummyGroup;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.junit.Test;
 import ucar.array.ArrayType;
 import ucar.array.Arrays;
@@ -136,7 +139,10 @@ public class TestVariable {
     Variable.Builder<?> vb =
         Variable.builder().setName("v").setArrayType(ArrayType.UBYTE).setDimensionsAnonymous(new int[] {3, 6});
 
-    Group.Builder root = Group.builder().addVariable(vb);
+    Variable.Builder<?> vb2 =
+        Variable.builder().setName("v2").setArrayType(ArrayType.INT).setDimensionsAnonymous(new int[] {3, 6});
+
+    Group.Builder root = Group.builder().addVariable(vb).addVariable(vb2);
     NetcdfFile ncfile = NetcdfFile.builder().setRootGroup(root).setLocation("loca").setId("notFileType").build();
 
     Variable var = ncfile.findVariable("v");
@@ -144,6 +150,9 @@ public class TestVariable {
     assertThat(var.getDatasetLocation()).isEqualTo("loca");
     assertThat(var.getFileTypeId()).isNull();
     assertThat(var.getNetcdfFile()).isEqualTo(ncfile);
+
+    List<Variable> vars = ncfile.getVariables().stream().sorted().collect(Collectors.toList());
+    assertThat(vars).hasSize(2);
   }
 
   @Test
@@ -189,7 +198,7 @@ public class TestVariable {
         .addAttribute(new Attribute(CDM.UNITS, " wuw ")).build(makeDummyGroup());
     assertThat(v.getUnitsString()).isEqualTo("wuw");
 
-    Variable v2 = Variable.builder().setName("v").setArrayType(ArrayType.INT).setDimensionsAnonymous(new int[] {3, 6})
+    Variable v2 = Variable.builder().setName("v2").setArrayType(ArrayType.INT).setDimensionsAnonymous(new int[] {3, 6})
         .build(makeDummyGroup());
     assertThat(v2.getUnitsString()).isNull();
   }

@@ -6,8 +6,6 @@ package ucar.nc2.internal.iosp.hdf5;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ucar.array.Array;
 import ucar.array.ArrayType;
 import ucar.array.Arrays;
@@ -19,7 +17,6 @@ import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
-import java.lang.invoke.MethodHandles;
 
 import static com.google.common.truth.Truth.assertThat;
 
@@ -28,7 +25,6 @@ import static com.google.common.truth.Truth.assertThat;
  */
 @Category(NeedsCdmUnitTest.class)
 public class TestH5ReadStructure2 {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   /*
    * Structure {
