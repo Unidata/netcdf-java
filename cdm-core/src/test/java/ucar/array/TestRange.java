@@ -554,4 +554,20 @@ public class TestRange {
     assertThat(base.getFirstInInterval(nx)).isEqualTo(nx);
     assertThat(base.getFirstInInterval(nx + 1)).isEqualTo(-1);
   }
+
+  @Test
+  public void testIntersectProblem() throws InvalidRangeException {
+    Range r1 = new Range(53, 53);
+    Range rok = new Range(20, 108, 2);
+    Range result = r1.intersect(rok);
+    assertThat(result).isEqualTo(Range.EMPTY);
+  }
+
+  @Test
+  public void testIntersectsProblem() throws InvalidRangeException {
+    Range r1 = new Range(53, 53);
+    Range rok = new Range(20, 108, 2);
+    boolean result = r1.intersects(rok);
+    assertThat(result).isFalse();
+  }
 }

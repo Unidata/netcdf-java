@@ -539,4 +539,17 @@ public class TestSection {
     assertThat(sa.compose(sb)).isEqualTo(expected);
   }
 
+  @Test
+  public void testIntersectProblem() throws ucar.array.InvalidRangeException {
+    Section have = new Section("53:53,0:7,0:31");
+    Section want = new Section("20:162:2,1:5:2,1:23:2");
+
+    boolean b = have.intersects(want);
+    assertThat(b).isFalse();
+
+    Section got = have.intersect(want);
+    assertThat(got).isNotNull();
+    assertThat(got.computeSize()).isEqualTo(0);
+  }
+
 }

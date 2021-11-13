@@ -367,27 +367,26 @@ public class Range implements RangeIterator {
       }
     }
 
+    if (first > last) {
+      return EMPTY;
+    }
+
     return new Range(name, first, last, rok.stride);
   }
 
   /**
-   * Determine if a given Range interval intersects this one. Strides are ignored, only first() and last() matter.
+   * Determine if a given Range interval intersects this one.
    *
    * @param other range to intersect
    * @return true if their intervals intersect, ignoring stride.
    */
   public boolean intersects(Range other) {
-    if ((length() == 0) || (other.length() == 0)) {
+    try {
+      Range result = this.intersect(other);
+      return result.length > 0;
+    } catch (InvalidRangeException e) {
       return false;
     }
-    if (this == VLEN || other == VLEN) {
-      return true;
-    }
-
-    int first = Math.max(this.first(), other.first());
-    int last = Math.min(this.last(), other.last());
-
-    return (first <= last);
   }
 
   /**
