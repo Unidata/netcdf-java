@@ -122,35 +122,35 @@ public class H4iosp extends AbstractIOServiceProvider {
 
     if (!vinfo.isCompressed) {
       if (!vinfo.isLinked && !vinfo.isChunked) {
-        Layout layout = new LayoutRegular(vinfo.start, v.getElementSize(), v.getShape(), section);
+        Layout layout = new LayoutRegular(vinfo.start, vinfo.getElementSize(), v.getShape(), section);
         return IospArrayHelper.readDataFill(raf, layout, dataType, vinfo.fillValue, null);
 
       } else if (vinfo.isLinked) {
-        Layout layout = new LayoutSegmented(vinfo.segPos, vinfo.segSize, v.getElementSize(), v.getShape(), section);
+        Layout layout = new LayoutSegmented(vinfo.segPos, vinfo.segSize, vinfo.getElementSize(), v.getShape(), section);
         return IospArrayHelper.readDataFill(raf, layout, dataType, vinfo.fillValue, null);
 
       } else if (vinfo.isChunked) {
         H4ChunkIterator chunkIterator = new H4ChunkIterator(vinfo);
-        Layout layout = new LayoutTiled(chunkIterator, vinfo.chunkSize, v.getElementSize(), section);
+        Layout layout = new LayoutTiled(chunkIterator, vinfo.chunkSize, vinfo.getElementSize(), section);
         return IospArrayHelper.readDataFill(raf, layout, dataType, vinfo.fillValue, null);
       }
 
     } else {
       if (!vinfo.isLinked && !vinfo.isChunked) {
-        Layout index = new LayoutRegular(0, v.getElementSize(), v.getShape(), section);
+        Layout index = new LayoutRegular(0, vinfo.getElementSize(), v.getShape(), section);
         InputStream is = getCompressedInputStream(vinfo);
         PositioningDataInputStream dataSource = new PositioningDataInputStream(is);
         return IospArrayHelper.readDataFill(dataSource, index, dataType, vinfo.fillValue);
 
       } else if (vinfo.isLinked) {
-        Layout index = new LayoutRegular(0, v.getElementSize(), v.getShape(), section);
+        Layout index = new LayoutRegular(0, vinfo.getElementSize(), v.getShape(), section);
         InputStream is = getLinkedCompressedInputStream(vinfo);
         PositioningDataInputStream dataSource = new PositioningDataInputStream(is);
         return IospArrayHelper.readDataFill(dataSource, index, dataType, vinfo.fillValue);
 
       } else if (vinfo.isChunked) {
         LayoutBBTiled.DataChunkIterator chunkIterator = new H4CompressedChunkIterator(vinfo);
-        LayoutBB layout = new LayoutBBTiled(chunkIterator, vinfo.chunkSize, v.getElementSize(), section);
+        LayoutBB layout = new LayoutBBTiled(chunkIterator, vinfo.chunkSize, vinfo.getElementSize(), section);
         return IospArrayHelper.readDataFill(layout, dataType, vinfo.fillValue);
       }
     }

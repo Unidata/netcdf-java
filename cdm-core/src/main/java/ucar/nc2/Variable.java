@@ -146,11 +146,12 @@ public class Variable implements ProxyReader, Comparable<Variable> {
 
   /**
    * Get the number of bytes for one element of this Variable.
-   * For Variables of primitive type, this is equal to getDataType().getSize().
+   * For Variables of primitive type, this is equal to getArrayType().getSize().
    * Structure and subclasses return the size in bytes of one Structure.
+   * This is the canonical size, not the actual size stored on disk.
    */
   public int getElementSize() {
-    return elementSize;
+    return getArrayType().getSize();
   }
 
   /** Get the EnumTypedef, only use if getDataType.isEnum() */
@@ -961,7 +962,6 @@ public class Variable implements ProxyReader, Comparable<Variable> {
   private final ArrayType dataType;
   @Nullable
   private final EnumTypedef enumTypedef;
-  private final int elementSize;
 
   @Nullable
   protected final NetcdfFile ncfile; // Physical container for this Variable where the I/O happens.
@@ -1049,7 +1049,6 @@ public class Variable implements ProxyReader, Comparable<Variable> {
     }
 
     // calculated fields
-    this.elementSize = builder.elementSize > 0 ? builder.elementSize : getArrayType().getSize();
     this.isVariableLength = this.dimensions.stream().anyMatch(Dimension::isVariableLength);
     try {
       List<Range> list = new ArrayList<>();
@@ -1117,7 +1116,6 @@ public class Variable implements ProxyReader, Comparable<Variable> {
   public static abstract class Builder<T extends Builder<T>> {
     public String shortName;
     public ArrayType dataType;
-    protected int elementSize;
 
     public NetcdfFile ncfile; // set in Group build() if null
     private Structure parentStruct; // set in Structure.build(), no not use otherwise
@@ -1312,13 +1310,7 @@ public class Variable implements ProxyReader, Comparable<Variable> {
     }
 
     public int getElementSize() {
-      return elementSize > 0 ? elementSize : dataType.getSize();
-    }
-
-    // In some case we need to override standard element size.
-    public T setElementSize(int elementSize) {
-      this.elementSize = elementSize;
-      return self();
+      return dataType.getSize();
     }
 
     public T setEnumTypeName(String enumTypeName) {
@@ -1451,7 +1443,6 @@ public class Variable implements ProxyReader, Comparable<Variable> {
       this.cache = builder.cache;
       setArrayType(builder.dataType);
       addDimensions(builder.dimensions);
-      this.elementSize = builder.elementSize;
       setEnumTypeName(builder.getEnumTypeName());
       setNcfile(builder.ncfile);
       this.parentBuilder = builder.parentBuilder;

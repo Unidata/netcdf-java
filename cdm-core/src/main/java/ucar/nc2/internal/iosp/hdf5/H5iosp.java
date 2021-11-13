@@ -309,7 +309,7 @@ public class H5iosp extends AbstractIOServiceProvider {
         System.out.println("read variable " + v2.getFullName() + " vinfo = " + vinfo);
 
       ArrayType readDtype = v2.getArrayType();
-      int elemSize = v2.getElementSize();
+      int elemSize = vinfo.elementSize;
       Object fillValue = vinfo.getFillValue();
 
       // fill in the wantSection

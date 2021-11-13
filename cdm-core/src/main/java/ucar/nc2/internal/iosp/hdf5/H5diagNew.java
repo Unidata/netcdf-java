@@ -67,7 +67,7 @@ public class H5diagNew {
     boolean sizeOk = total_elems == v.getSize();
     total_elems = v.getSize();
 
-    long nominalSize = total_elems * v.getElementSize();
+    long nominalSize = total_elems * vinfo.elementSize;
 
     Size size = new Size(nominalSize, 1);
     countStorageSize(vinfo, size);
