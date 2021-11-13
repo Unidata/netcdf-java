@@ -49,10 +49,12 @@ public class EnumTypedef {
     return this.basetype;
   }
 
+  /** The EnumTypedef name. */
   public String getShortName() {
     return name;
   }
 
+  /** The Map from integer to enum name. */
   public ImmutableMap<Integer, String> getMap() {
     return map;
   }
@@ -113,7 +115,6 @@ public class EnumTypedef {
     }
     out.format("%s%senum %s { ", indent, basetype, name);
     int count = 0;
-    // List<Object> keyset = Arrays.asList(map.keySet().toArray());
     List<Integer> keysetList = new ArrayList<>(map.keySet());
     Collections.sort(keysetList);
     for (Integer key : keysetList) {
@@ -141,7 +142,7 @@ public class EnumTypedef {
         && basetype == that.basetype;
   }
 
-  // Needed for netCDF4 wierdness
+  /** Compare only the values in the map. Needed for netCDF4 wierdness. */
   public boolean equalsMapOnly(Object o) {
     if (this == o) {
       return true;

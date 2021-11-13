@@ -56,9 +56,6 @@ import java.util.*;
  * NetcdfDataset without {@code ApplyScaleOffset}. The VariableDS data type is not promoted and the data is not
  * converted on a read, but you can call the convertScaleOffset() routines to do the conversion later.
  * </p>
- *
- * @author caron
- * @see ucar.nc2.NetcdfFile
  */
 @Immutable
 public class NetcdfDataset extends ucar.nc2.NetcdfFile {

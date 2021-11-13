@@ -195,19 +195,17 @@ public class Variable implements ProxyReader, Comparable<Variable> {
 
   /** Get the number of dimensions of the Variable, aka the rank. */
   public int getRank() {
-    return shape.length;
+    return shapeAsSection.getRank();
   }
 
   /** Get the shape: length of Variable in each dimension. A scalar (rank 0) will have an int[0] shape. */
   public int[] getShape() {
-    int[] result = new int[shape.length]; // optimization over clone()
-    System.arraycopy(shape, 0, result, 0, shape.length);
-    return result;
+    return shapeAsSection.getShape();
   }
 
   /** Get the size of the ith dimension */
   public int getShape(int index) {
-    return shape[index];
+    return shapeAsSection.getShape(index);
   }
 
   /**
@@ -233,7 +231,7 @@ public class Variable implements ProxyReader, Comparable<Variable> {
    * @return total number of elements in the Variable.
    */
   public long getSize() {
-    return Arrays.computeSize(this.shape);
+    return Arrays.computeSize(getShape());
   }
 
   /**
@@ -347,7 +345,7 @@ public class Variable implements ProxyReader, Comparable<Variable> {
    * @throws InvalidRangeException if section not compatible with shape
    */
   public Variable section(Section subsection) throws InvalidRangeException {
-    subsection = Section.fill(subsection, shape);
+    subsection = Section.fill(subsection, getShape());
 
     // create a copy of this variable with a proxy reader
     Variable.Builder<?> sectionV = this.toBuilder(); // subclasses override toBuilder()
@@ -380,7 +378,7 @@ public class Variable implements ProxyReader, Comparable<Variable> {
    * @throws InvalidRangeException if dimension or value is illegal
    */
   public Variable slice(int dim, int value) throws InvalidRangeException {
-    if ((dim < 0) || (dim >= shape.length))
+    if ((dim < 0) || (dim >= getRank()))
       throw new InvalidRangeException("Slice dim invalid= " + dim);
 
     // ok to make slice of record dimension with length 0
@@ -392,7 +390,7 @@ public class Variable implements ProxyReader, Comparable<Variable> {
 
     // otherwise check slice in range
     if (!recordSliceOk) {
-      if ((value < 0) || (value >= shape[dim]))
+      if ((value < 0) || (value >= getShape(dim)))
         throw new InvalidRangeException("Slice value invalid= " + value + " for dimension " + dim);
     }
 
@@ -672,36 +670,40 @@ public class Variable implements ProxyReader, Comparable<Variable> {
   public void getNameAndDimensions(Formatter buf, boolean useFullName, boolean strict) {
     useFullName = useFullName && !strict;
     String name = useFullName ? getFullName() : getShortName();
-    if (strict)
+    if (strict) {
       name = NetcdfFiles.makeValidCDLName(getShortName());
+    }
     buf.format("%s", name);
 
-    if (shape != null) {
-      if (getRank() > 0)
-        buf.format("(");
-      for (int i = 0; i < dimensions.size(); i++) {
-        Dimension myd = dimensions.get(i);
-        String dimName = myd.getShortName();
-        if ((dimName != null) && strict)
-          dimName = NetcdfFiles.makeValidCDLName(dimName);
-        if (i != 0)
-          buf.format(", ");
-        if (myd.isVariableLength()) {
-          buf.format("*");
-        } else if (myd.isShared()) {
-          if (!strict)
-            buf.format("%s=%d", dimName, myd.getLength());
-          else
-            buf.format("%s", dimName);
-        } else {
-          if (dimName != null) {
-            buf.format("%s=", dimName);
-          }
-          buf.format("%d", myd.getLength());
-        }
+    if (getRank() > 0) {
+      buf.format("(");
+    }
+    for (int i = 0; i < dimensions.size(); i++) {
+      Dimension myd = dimensions.get(i);
+      String dimName = myd.getShortName();
+      if ((dimName != null) && strict) {
+        dimName = NetcdfFiles.makeValidCDLName(dimName);
       }
-      if (getRank() > 0)
-        buf.format(")");
+      if (i != 0) {
+        buf.format(", ");
+      }
+      if (myd.isVariableLength()) {
+        buf.format("*");
+      } else if (myd.isShared()) {
+        if (!strict) {
+          buf.format("%s=%d", dimName, myd.getLength());
+        } else {
+          buf.format("%s", dimName);
+        }
+      } else {
+        if (dimName != null) {
+          buf.format("%s=", dimName);
+        }
+        buf.format("%d", myd.getLength());
+      }
+    }
+    if (getRank() > 0) {
+      buf.format(")");
     }
   }
 
@@ -948,18 +950,15 @@ public class Variable implements ProxyReader, Comparable<Variable> {
   protected final Cache cache;
 
   private final Section shapeAsSection;
-  protected final int[] shape;
   protected final boolean isVariableLength;
 
   protected Variable(Builder<?> builder, Group parentGroup) {
     if (parentGroup == null) {
       throw new IllegalStateException(String.format("Parent Group must be set for Variable %s", builder.shortName));
     }
-
     if (builder.dataType == null) {
       throw new IllegalStateException(String.format("DataType must be set for Variable %s", builder.shortName));
     }
-
     if (Strings.isNullOrEmpty(builder.shortName)) {
       throw new IllegalStateException("Name must be set for Variable");
     }
@@ -1027,17 +1026,16 @@ public class Variable implements ProxyReader, Comparable<Variable> {
       List<Range> list = new ArrayList<>();
       for (Dimension d : dimensions) {
         int len = d.getLength();
-        if (len > 0)
+        if (len > 0) {
           list.add(new Range(d.getShortName(), 0, len - 1));
-        else if (len == 0)
+        } else if (len == 0) {
           list.add(Range.EMPTY); // LOOK empty not named
-        else {
+        } else {
           assert d.isVariableLength();
           list.add(Range.VLEN); // LOOK vlen not named
         }
       }
       this.shapeAsSection = new Section(list);
-      this.shape = shapeAsSection.getShape();
 
     } catch (InvalidRangeException e) {
       log.error("Bad shape in variable " + getFullName(), e);

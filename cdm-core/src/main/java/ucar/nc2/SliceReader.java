@@ -6,6 +6,7 @@ package ucar.nc2;
 
 import javax.annotation.concurrent.Immutable;
 
+import com.google.common.base.Preconditions;
 import ucar.array.Array;
 import ucar.array.Arrays;
 import ucar.array.InvalidRangeException;
@@ -51,21 +52,23 @@ class SliceReader implements ProxyReader {
   @Override
   public Array<?> proxyReadArray(Variable client, CancelTask cancelTask) throws IOException {
     Variable orgClient = this.orgClient != null ? this.orgClient : parentGroup.findVariableLocal(orgName);
-    Array<?> data;
+    Preconditions.checkNotNull(orgClient);
     try {
-      data = orgClient._read(slice);
+      Array<?> data = orgClient._read(slice);
+      data = Arrays.reduce(data, sliceDim);
+      return data;
     } catch (InvalidRangeException e) {
       log.error("InvalidRangeException in slice, var=" + client);
       throw new IllegalStateException(e.getMessage());
     }
-    data = Arrays.reduce(data, sliceDim);
-    return data;
+
   }
 
   @Override
   public Array<?> proxyReadArray(Variable client, Section section, CancelTask cancelTask)
       throws IOException, InvalidRangeException {
     Variable orgClient = parentGroup.findVariableLocal(orgName);
+    Preconditions.checkNotNull(orgClient);
     Section.Builder orgSection = Section.builder().appendRanges(section.getRanges());
     orgSection.insertRange(sliceDim, slice.getRange(sliceDim));
     Array<?> data = orgClient._read(orgSection.build());

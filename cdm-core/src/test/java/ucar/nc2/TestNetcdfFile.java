@@ -203,22 +203,6 @@ public class TestNetcdfFile {
     assertThat(dfound).isNotNull();
     assertThat(dfound).isEqualTo(dim);
 
-    Attribute att = ncfile.findGlobalAttribute("attName");
-    assertThat(att).isNotNull();
-    assertThat(att.getStringValue()).isEqualTo("rootGroup");
-
-    Attribute att2 = ncfile.findGlobalAttributeIgnoreCase("attname");
-    assertThat(att2).isNotNull();
-    assertThat(att2.getStringValue()).isEqualTo("rootGroup");
-
-    Attribute attn = ncfile.findGlobalAttribute("attNameNested");
-    assertThat(attn).isNotNull();
-    assertThat(attn.getStringValue()).isEqualTo("nestedGroup");
-
-    Attribute attn2 = ncfile.findGlobalAttributeIgnoreCase("attnameNested");
-    assertThat(attn2).isNotNull();
-    assertThat(attn2.getStringValue()).isEqualTo("nestedGroup");
-
     List<Dimension> allDims = ncfile.getDimensions();
     assertThat(allDims).hasSize(2);
 

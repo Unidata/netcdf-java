@@ -234,7 +234,7 @@ public class VariableDS extends Variable implements VariableEnhanced {
   public ucar.array.Array<?> proxyReadArray(Variable client, CancelTask cancelTask) throws IOException {
     if (orgVar == null) {
       // LOOK where is this used? Do we need to make fast?
-      return getMissingDataArray(shape);
+      return getMissingDataArray(getShape());
     }
 
     return orgVar.readArray();
@@ -383,7 +383,7 @@ public class VariableDS extends Variable implements VariableEnhanced {
     return addLocalFieldsToBuilder(builder());
   }
 
-  // Add local fields to the passed - in builder.
+  // Add local fields to the builder.
   protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> builder) {
     builder.setOriginalVariable(this.orgVar).setOriginalArrayType(this.orgDataType).setOriginalName(this.orgName)
         .setOriginalFileTypeId(this.orgFileTypeId).setEnhanceMode(this.enhanceMode)

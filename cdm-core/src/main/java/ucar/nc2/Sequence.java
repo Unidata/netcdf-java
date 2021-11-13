@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import javax.annotation.concurrent.Immutable;
 
+import com.google.common.base.Preconditions;
 import ucar.array.ArrayType;
 import ucar.array.InvalidRangeException;
 import ucar.array.Section;
@@ -26,10 +27,11 @@ public class Sequence extends Structure implements Iterable<ucar.array.Structure
     if (cache.getData() != null) {
       ucar.array.Array<?> array = cache.getData();
       if (array instanceof ucar.array.StructureDataArray) {
-        return (Iterator<ucar.array.StructureData>) array;
+        return (Iterator<StructureData>) array;
       }
     }
     try {
+      Preconditions.checkNotNull(ncfile);
       return ncfile.getSequenceIterator(this, -1);
     } catch (IOException e) {
       throw new RuntimeException(e);

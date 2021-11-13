@@ -29,7 +29,7 @@ class SectionReader implements ProxyReader {
   }
 
   @Override
-  public Array proxyReadArray(Variable client, CancelTask cancelTask) throws IOException {
+  public Array<?> proxyReadArray(Variable client, CancelTask cancelTask) throws IOException {
     try {
       return orgClient._read(orgSection);
     } catch (InvalidRangeException e) {
@@ -38,7 +38,7 @@ class SectionReader implements ProxyReader {
   }
 
   @Override
-  public Array proxyReadArray(Variable client, Section section, CancelTask cancelTask)
+  public Array<?> proxyReadArray(Variable client, Section section, CancelTask cancelTask)
       throws IOException, InvalidRangeException {
     Section want = orgSection.compose(section);
     return orgClient._read(want);

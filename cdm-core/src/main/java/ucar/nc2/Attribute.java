@@ -183,6 +183,7 @@ public class Attribute {
   @Nullable
   public Array<Byte> getOpaqueValue(int index) {
     Preconditions.checkArgument(dataType == ArrayType.OPAQUE);
+    Preconditions.checkNotNull(values);
     ArrayVlen<Byte> vlen = (ArrayVlen) values;
     return vlen.get(index);
   }

@@ -263,49 +263,6 @@ public class NetcdfFile implements FileCacheable, Closeable {
   }
 
   /**
-   * Look up an Attribute by (short) name in the root Group or nested Groups, exact match.
-   *
-   * @param attName the name of the attribute
-   * @return the first Group attribute with given name, or null if not found
-   * @deprecated use #findAttribute
-   */
-  @Deprecated
-  @Nullable
-  public Attribute findGlobalAttribute(String attName) {
-    return findGlobalAttribute(rootGroup, attName, false);
-  }
-
-  /**
-   * Look up an Attribute by (short) name in the root Group or nested Groups, ignore case.
-   *
-   * @param attName the name of the attribute
-   * @return the first group attribute with given Attribute name, ignoring case, or null if not found
-   * @deprecated use #findAttribute
-   */
-  @Deprecated
-  public Attribute findGlobalAttributeIgnoreCase(String attName) {
-    return findGlobalAttribute(rootGroup, attName, true);
-  }
-
-  private Attribute findGlobalAttribute(Group group, String attName, boolean ignore) {
-    for (Attribute a : group.attributes()) {
-      if (attName.equals(a.getShortName())) {
-        return a;
-      }
-      if (ignore && attName.equalsIgnoreCase(a.getShortName())) {
-        return a;
-      }
-    }
-    for (Group g : group.getGroups()) {
-      Attribute a = findGlobalAttribute(g, attName, ignore);
-      if (a != null) {
-        return a;
-      }
-    }
-    return null;
-  }
-
-  /**
    * Find a Group, with the specified (full) name. A full name should start with a '/'. For backwards compatibility, we
    * accept full names
    * that omit the leading '/'. An embedded '/' separates subgroup names.
@@ -514,6 +471,7 @@ public class NetcdfFile implements FileCacheable, Closeable {
   // LOOK: these should not be public !!! not hitting variable cache
 
   protected Iterator<StructureData> getSequenceIterator(Sequence s, int bufferSize) throws IOException {
+    Preconditions.checkNotNull(iosp);
     return iosp.getSequenceIterator(s, bufferSize);
   }
 
@@ -744,14 +702,13 @@ public class NetcdfFile implements FileCacheable, Closeable {
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////
-
   private final String location;
   private final String id;
   private final String title;
   private final Group rootGroup;
 
   @Nullable
-  private IOServiceProvider iosp;
+  private IOServiceProvider iosp; // LOOK when is this null ?
 
   // LOOK can we get rid of internal caching?
   protected FileCacheIF cache;

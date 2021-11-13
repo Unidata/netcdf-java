@@ -109,6 +109,9 @@ public class ParsedArraySectionSpec {
     return new ParsedArraySectionSpec(v, section);
   }
 
+  /**
+   * Make a ParsedArraySectionSpec for the given Variable and a selector.
+   */
   public static ParsedArraySectionSpec makeFromVariable(Variable v, String selector)
       throws ucar.array.InvalidRangeException {
     String varNameEsc;
@@ -193,6 +196,7 @@ public class ParsedArraySectionSpec {
   // Modify to allow setting after creation
   private final Variable variable; // the variable
   private final ucar.array.Section section; // section for this variable, filled in from variable if needed
+  @Nullable
   private ParsedArraySectionSpec child; // if not null, variable is a Structure, and this is one of its members
 
   public ParsedArraySectionSpec(Variable variable, ucar.array.Section section) {
@@ -200,14 +204,18 @@ public class ParsedArraySectionSpec {
     this.section = section;
   }
 
+  /** Applies to this Variable. */
   public Variable getVariable() {
     return variable;
   }
 
+  /** The section of the Variable. */
   public ucar.array.Section getSection() {
     return section;
   }
 
+  /** Optional nested member of the Variable. */
+  @Nullable
   public ParsedArraySectionSpec getChild() {
     return child;
   }
@@ -217,6 +225,7 @@ public class ParsedArraySectionSpec {
     return "ParsedSectionSpec{" + "v=" + variable.getFullName() + ", section=" + section + ", child=" + child + '}';
   }
 
+  /** Inverse of toString(). */
   public String makeSectionSpecString() {
     return ParsedArraySectionSpec.makeSectionSpecString(this.variable, this.section);
   }

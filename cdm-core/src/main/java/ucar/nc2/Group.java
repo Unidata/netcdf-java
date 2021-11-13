@@ -530,7 +530,7 @@ public class Group {
      */
     public boolean addDimensionIfNotExists(Dimension dim) {
       Preconditions.checkNotNull(dim);
-      if (!findDimensionLocal(dim.getShortName()).isPresent()) {
+      if (findDimensionLocal(dim.getShortName()).isEmpty()) {
         dimensions.add(dim);
         return true;
       }
@@ -654,7 +654,7 @@ public class Group {
       while (stoke.hasMoreTokens()) {
         String groupName = NetcdfFiles.makeNameUnescaped(stoke.nextToken());
         Optional<Group.Builder> sub = g.findGroupLocal(groupName);
-        if (!sub.isPresent()) {
+        if (sub.isEmpty()) {
           return Optional.empty();
         }
         g = sub.get();
@@ -672,12 +672,15 @@ public class Group {
     /** Find the common parent with the other group ? */
     public Group.Builder commonParent(Group.Builder other) {
       Preconditions.checkNotNull(other);
-      if (isParent(other))
+      if (isParent(other)) {
         return this;
-      if (other.isParent(this))
+      }
+      if (other.isParent(this)) {
         return other;
-      while (!other.isParent(this))
+      }
+      while (!other.isParent(this)) {
         other = other.parentGroup;
+      }
       return other;
     }
 
@@ -852,7 +855,7 @@ public class Group {
       Optional<Variable.Builder<?>> vopt = findVariableLocal(varShortName);
 
       Group.Builder parent = getParentGroup();
-      if (!vopt.isPresent() && (parent != null)) {
+      if (vopt.isEmpty() && (parent != null)) {
         vopt = parent.findVariableOrInParent(varShortName);
       }
       return vopt;
