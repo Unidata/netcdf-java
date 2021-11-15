@@ -64,6 +64,14 @@ public class VariableDS extends Variable implements VariableEnhanced {
   }
 
   @Override
+  public ArrayType getArrayType() {
+    if (convertedDataType != null) {
+      return convertedDataType;
+    }
+    return super.getArrayType();
+  }
+
+  @Override
   public NetcdfFile getNetcdfFile() {
     // TODO can group really be null? Variable says no.
     return getParentGroup() == null ? null : getParentGroup().getNetcdfFile();
@@ -87,7 +95,7 @@ public class VariableDS extends Variable implements VariableEnhanced {
   /** Does data need to be converted? */
   public boolean convertNeeded() {
     if (enhanceMode.contains(Enhance.ConvertEnums)
-        && (dataType.isEnum() || (orgDataType != null && orgDataType.isEnum()))) {
+        && (getArrayType().isEnum() || (orgDataType != null && orgDataType.isEnum()))) {
       return true;
     }
     if (enhanceMode.contains(Enhance.ConvertMissing) && scaleMissingUnsignedProxy.hasMissing()) {
@@ -96,7 +104,7 @@ public class VariableDS extends Variable implements VariableEnhanced {
     if (enhanceMode.contains(Enhance.ApplyScaleOffset) && scaleMissingUnsignedProxy.hasScaleOffset()) {
       return true;
     }
-    if (enhanceMode.contains(Enhance.ConvertUnsigned) && dataType.isUnsigned()) {
+    if (enhanceMode.contains(Enhance.ConvertUnsigned) && getArrayType().isUnsigned()) {
       return true;
     }
     return false;
@@ -159,10 +167,15 @@ public class VariableDS extends Variable implements VariableEnhanced {
    */
 
   @Override
+  @Nullable
   public String lookupEnumString(int val) {
-    if (dataType.isEnum())
+    if (getArrayType().isEnum()) {
       return super.lookupEnumString(val);
-    return orgVar.lookupEnumString(val);
+    }
+    if (orgVar != null) {
+      return orgVar.lookupEnumString(val);
+    }
+    return null;
   }
 
   @Override
@@ -221,7 +234,7 @@ public class VariableDS extends Variable implements VariableEnhanced {
   public ucar.array.Array<?> proxyReadArray(Variable client, CancelTask cancelTask) throws IOException {
     if (orgVar == null) {
       // LOOK where is this used? Do we need to make fast?
-      return getMissingDataArray(shape);
+      return getMissingDataArray(getShape());
     }
 
     return orgVar.readArray();
@@ -312,6 +325,7 @@ public class VariableDS extends Variable implements VariableEnhanced {
   private final EnhanceScaleMissingUnsigned scaleMissingUnsignedProxy;
   private final Set<Enhance> enhanceMode; // The set of enhancements that were made.
   private final DataEnhancer dataEnhancer;
+  private final ArrayType convertedDataType;
 
   protected final @Nullable Variable orgVar; // wrap this Variable : use it for the I/O
   protected final ArrayType orgDataType; // keep separate for the case where there is no orgVar. TODO @Nullable?
@@ -345,19 +359,21 @@ public class VariableDS extends Variable implements VariableEnhanced {
     this.scaleMissingUnsignedProxy.setInvalidDataIsMissing(builder.invalidDataIsMissing);
     this.scaleMissingUnsignedProxy.setMissingDataIsMissing(builder.missingDataIsMissing);
 
-    if (this.enhanceMode.contains(Enhance.ConvertEnums) && dataType.isEnum()) {
-      this.dataType = ArrayType.STRING; // LOOK promote enum data type to STRING ????
+    ArrayType useArrayType = null;
+    if (this.enhanceMode.contains(Enhance.ConvertEnums) && builder.dataType.isEnum()) {
+      useArrayType = ArrayType.STRING;
     }
-
-    if (this.enhanceMode.contains(Enhance.ConvertUnsigned) && !dataType.isEnum()) {
+    if (this.enhanceMode.contains(Enhance.ConvertUnsigned) && !builder.dataType.isEnum()) {
       // We may need a larger data type to hold the results of the unsigned conversion.
-      this.dataType = scaleMissingUnsignedProxy.getUnsignedConversionType();
+      useArrayType = scaleMissingUnsignedProxy.getUnsignedConversionType();
     }
 
-    if (this.enhanceMode.contains(Enhance.ApplyScaleOffset) && (dataType.isNumeric() || dataType == ArrayType.CHAR)
+    if (this.enhanceMode.contains(Enhance.ApplyScaleOffset)
+        && (builder.dataType.isNumeric() || builder.dataType == ArrayType.CHAR)
         && scaleMissingUnsignedProxy.hasScaleOffset()) {
-      this.dataType = scaleMissingUnsignedProxy.getScaledOffsetType();
+      useArrayType = scaleMissingUnsignedProxy.getScaledOffsetType();
     }
+    this.convertedDataType = useArrayType;
 
     // We have to complete this after the NetcdfDataset is built.
     this.dataEnhancer = new DataEnhancer(this, this.scaleMissingUnsignedProxy);
@@ -367,7 +383,7 @@ public class VariableDS extends Variable implements VariableEnhanced {
     return addLocalFieldsToBuilder(builder());
   }
 
-  // Add local fields to the passed - in builder.
+  // Add local fields to the builder.
   protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> builder) {
     builder.setOriginalVariable(this.orgVar).setOriginalArrayType(this.orgDataType).setOriginalName(this.orgName)
         .setOriginalFileTypeId(this.orgFileTypeId).setEnhanceMode(this.enhanceMode)

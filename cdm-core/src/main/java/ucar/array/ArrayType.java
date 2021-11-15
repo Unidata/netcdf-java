@@ -33,9 +33,8 @@ public enum ArrayType {
   STRUCTURE("Structure", "Structure", 0, StructureData.class, false),
   // Iterator<StructureData>
   SEQUENCE("Sequence", "Sequence", 4, StructureData.class, false),
-
   // Array<Array<Byte>>, an array of variable length byte arrays
-  OPAQUE("opaque", "opaque", 1, Array.class, false),;
+  OPAQUE("opaque", "opaque", 4, Array.class, false),;
 
   /**
    * A property of {@link #isIntegral() integral} data types that determines whether they can represent both

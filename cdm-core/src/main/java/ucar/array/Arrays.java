@@ -360,7 +360,10 @@ public class Arrays {
    * @param shape length of array in each dimension.
    * @return total number of elements in the array.
    */
-  public static long computeSize(int[] shape) {
+  public static long computeSize(@Nullable int[] shape) {
+    if (shape == null) {
+      return 1;
+    }
     long product = 1;
     for (int aShape : shape) {
       if (aShape < 0) {

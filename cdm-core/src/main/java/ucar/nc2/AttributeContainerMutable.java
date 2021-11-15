@@ -36,6 +36,7 @@ public class AttributeContainerMutable implements AttributeContainer {
     addAll(from);
   }
 
+  /** Set the AttributeContainer name. */
   public AttributeContainerMutable setName(@Nullable String name) {
     this.name = name;
     return this;
@@ -177,6 +178,7 @@ public class AttributeContainerMutable implements AttributeContainer {
     return ok;
   }
 
+  /** Remove all attributes. */
   public AttributeContainerMutable clear() {
     atts.clear();
     return this;

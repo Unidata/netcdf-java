@@ -37,7 +37,7 @@ import java.io.IOException;
  * The cache isnt immutable, but changes to it should not be visible.
  */
 @Immutable
-public class Variable implements ProxyReader {
+public class Variable implements ProxyReader, Comparable<Variable> {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Variable.class);
   private static final boolean showSize = false;
 
@@ -146,11 +146,12 @@ public class Variable implements ProxyReader {
 
   /**
    * Get the number of bytes for one element of this Variable.
-   * For Variables of primitive type, this is equal to getDataType().getSize().
+   * For Variables of primitive type, this is equal to getArrayType().getSize().
    * Structure and subclasses return the size in bytes of one Structure.
+   * This is the canonical size, not the actual size stored on disk.
    */
   public int getElementSize() {
-    return elementSize;
+    return getArrayType().getSize();
   }
 
   /** Get the EnumTypedef, only use if getDataType.isEnum() */
@@ -194,19 +195,17 @@ public class Variable implements ProxyReader {
 
   /** Get the number of dimensions of the Variable, aka the rank. */
   public int getRank() {
-    return shape.length;
+    return shapeAsSection.getRank();
   }
 
   /** Get the shape: length of Variable in each dimension. A scalar (rank 0) will have an int[0] shape. */
   public int[] getShape() {
-    int[] result = new int[shape.length]; // optimization over clone()
-    System.arraycopy(shape, 0, result, 0, shape.length);
-    return result;
+    return shapeAsSection.getShape();
   }
 
   /** Get the size of the ith dimension */
   public int getShape(int index) {
-    return shape[index];
+    return shapeAsSection.getShape(index);
   }
 
   /**
@@ -232,7 +231,7 @@ public class Variable implements ProxyReader {
    * @return total number of elements in the Variable.
    */
   public long getSize() {
-    return Arrays.computeSize(this.shape);
+    return Arrays.computeSize(getShape());
   }
 
   /**
@@ -346,7 +345,7 @@ public class Variable implements ProxyReader {
    * @throws InvalidRangeException if section not compatible with shape
    */
   public Variable section(Section subsection) throws InvalidRangeException {
-    subsection = Section.fill(subsection, shape);
+    subsection = Section.fill(subsection, getShape());
 
     // create a copy of this variable with a proxy reader
     Variable.Builder<?> sectionV = this.toBuilder(); // subclasses override toBuilder()
@@ -379,7 +378,7 @@ public class Variable implements ProxyReader {
    * @throws InvalidRangeException if dimension or value is illegal
    */
   public Variable slice(int dim, int value) throws InvalidRangeException {
-    if ((dim < 0) || (dim >= shape.length))
+    if ((dim < 0) || (dim >= getRank()))
       throw new InvalidRangeException("Slice dim invalid= " + dim);
 
     // ok to make slice of record dimension with length 0
@@ -391,7 +390,7 @@ public class Variable implements ProxyReader {
 
     // otherwise check slice in range
     if (!recordSliceOk) {
-      if ((value < 0) || (value >= shape[dim]))
+      if ((value < 0) || (value >= getShape(dim)))
         throw new InvalidRangeException("Slice value invalid= " + value + " for dimension " + dim);
     }
 
@@ -671,36 +670,40 @@ public class Variable implements ProxyReader {
   public void getNameAndDimensions(Formatter buf, boolean useFullName, boolean strict) {
     useFullName = useFullName && !strict;
     String name = useFullName ? getFullName() : getShortName();
-    if (strict)
+    if (strict) {
       name = NetcdfFiles.makeValidCDLName(getShortName());
+    }
     buf.format("%s", name);
 
-    if (shape != null) {
-      if (getRank() > 0)
-        buf.format("(");
-      for (int i = 0; i < dimensions.size(); i++) {
-        Dimension myd = dimensions.get(i);
-        String dimName = myd.getShortName();
-        if ((dimName != null) && strict)
-          dimName = NetcdfFiles.makeValidCDLName(dimName);
-        if (i != 0)
-          buf.format(", ");
-        if (myd.isVariableLength()) {
-          buf.format("*");
-        } else if (myd.isShared()) {
-          if (!strict)
-            buf.format("%s=%d", dimName, myd.getLength());
-          else
-            buf.format("%s", dimName);
-        } else {
-          if (dimName != null) {
-            buf.format("%s=", dimName);
-          }
-          buf.format("%d", myd.getLength());
-        }
+    if (getRank() > 0) {
+      buf.format("(");
+    }
+    for (int i = 0; i < dimensions.size(); i++) {
+      Dimension myd = dimensions.get(i);
+      String dimName = myd.getShortName();
+      if ((dimName != null) && strict) {
+        dimName = NetcdfFiles.makeValidCDLName(dimName);
       }
-      if (getRank() > 0)
-        buf.format(")");
+      if (i != 0) {
+        buf.format(", ");
+      }
+      if (myd.isVariableLength()) {
+        buf.format("*");
+      } else if (myd.isShared()) {
+        if (!strict) {
+          buf.format("%s=%d", dimName, myd.getLength());
+        } else {
+          buf.format("%s", dimName);
+        }
+      } else {
+        if (dimName != null) {
+          buf.format("%s=", dimName);
+        }
+        buf.format("%d", myd.getLength());
+      }
+    }
+    if (getRank() > 0) {
+      buf.format(")");
     }
   }
 
@@ -712,15 +715,13 @@ public class Variable implements ProxyReader {
 
   protected void writeCDL(Formatter buf, Indent indent, boolean useFullName, boolean strict) {
     buf.format("%s", indent);
-    if (dataType == null)
-      buf.format("Unknown");
-    else if (dataType.isEnum()) {
+    if (getArrayType().isEnum()) {
       if (enumTypedef == null)
         buf.format("enum UNKNOWN");
       else
         buf.format("enum %s", NetcdfFiles.makeValidCDLName(enumTypedef.getShortName()));
     } else
-      buf.format("%s", dataType.toCdl());
+      buf.format("%s", getArrayType().toCdl());
 
     // if (isVariableLength) buf.append("(*)"); // LOOK
     buf.format(" ");
@@ -798,6 +799,7 @@ public class Variable implements ProxyReader {
   protected int hashCode;
 
   /** Sort by name */
+  @Override
   public int compareTo(Variable o) {
     return getShortName().compareTo(o.getShortName());
   }
@@ -823,32 +825,6 @@ public class Variable implements ProxyReader {
    */
   public String findAttributeString(String attName, String defaultValue) {
     return attributes.findAttributeString(attName, defaultValue);
-  }
-
-
-  /**
-   * Use when unlimited dimension grows, to recalculate the shape.
-   * 
-   * @deprecated Use Variable.builder()
-   */
-  @Deprecated
-  public void resetShape() {
-    // if (immutable) throw new IllegalStateException("Cant modify"); LOOK allow this for unlimited dimension updating
-    this.shape = new int[dimensions.size()];
-    for (int i = 0; i < dimensions.size(); i++) {
-      Dimension dim = dimensions.get(i);
-      shape[i] = dim.getLength();
-      // shape[i] = Math.max(dim.getLength(), 0); // LOOK
-      // if (dim.isUnlimited() && (i != 0)) // LOOK only true for Netcdf-3
-      // throw new IllegalArgumentException("Unlimited dimension must be outermost");
-      if (dim.isVariableLength()) {
-        // if (dimensions.size() != 1)
-        // throw new IllegalArgumentException("Unknown dimension can only be used in 1 dim array");
-        // else
-        isVariableLength = true;
-      }
-    }
-    this.shapeAsSection = Dimensions.makeArraySectionFromDimensions(this.dimensions).build();
   }
 
   /** Get immutable service provider opaque object. */
@@ -959,36 +935,30 @@ public class Variable implements ProxyReader {
   private final Group parentGroup;
   @Nullable
   private final Structure parentStructure;
+  private final ArrayType dataType;
+  @Nullable
+  private final EnumTypedef enumTypedef;
+
   @Nullable
   protected final NetcdfFile ncfile; // Physical container for this Variable where the I/O happens.
                                      // may be null if Variable is self contained (eg NcML).
   @Nullable
-  private final EnumTypedef enumTypedef;
-  @Nullable
   protected final Object spiObject;
-
   protected final ImmutableList<Dimension> dimensions;
   protected final AttributeContainer attributes;
   protected final ProxyReader proxyReader;
   protected final Cache cache;
-  protected final int elementSize;
 
-  // TODO get rid of resetShape() so these can be final
-  private Section shapeAsSection; // derived from the shape, immutable; used for every read, deferred creation
-  protected int[] shape;
-  protected boolean isVariableLength;
-
-  protected ArrayType dataType; // TODO not final, so VariableDS can override, is there a better solution?
+  private final Section shapeAsSection;
+  protected final boolean isVariableLength;
 
   protected Variable(Builder<?> builder, Group parentGroup) {
     if (parentGroup == null) {
       throw new IllegalStateException(String.format("Parent Group must be set for Variable %s", builder.shortName));
     }
-
     if (builder.dataType == null) {
       throw new IllegalStateException(String.format("DataType must be set for Variable %s", builder.shortName));
     }
-
     if (Strings.isNullOrEmpty(builder.shortName)) {
       throw new IllegalStateException("Name must be set for Variable");
     }
@@ -1051,23 +1021,21 @@ public class Variable implements ProxyReader {
     }
 
     // calculated fields
-    this.elementSize = builder.elementSize > 0 ? builder.elementSize : getArrayType().getSize();
     this.isVariableLength = this.dimensions.stream().anyMatch(Dimension::isVariableLength);
     try {
       List<Range> list = new ArrayList<>();
       for (Dimension d : dimensions) {
         int len = d.getLength();
-        if (len > 0)
+        if (len > 0) {
           list.add(new Range(d.getShortName(), 0, len - 1));
-        else if (len == 0)
+        } else if (len == 0) {
           list.add(Range.EMPTY); // LOOK empty not named
-        else {
+        } else {
           assert d.isVariableLength();
           list.add(Range.VLEN); // LOOK vlen not named
         }
       }
       this.shapeAsSection = new Section(list);
-      this.shape = shapeAsSection.getShape();
 
     } catch (InvalidRangeException e) {
       log.error("Bad shape in variable " + getFullName(), e);
@@ -1119,7 +1087,6 @@ public class Variable implements ProxyReader {
   public static abstract class Builder<T extends Builder<T>> {
     public String shortName;
     public ArrayType dataType;
-    protected int elementSize;
 
     public NetcdfFile ncfile; // set in Group build() if null
     private Structure parentStruct; // set in Structure.build(), no not use otherwise
@@ -1314,13 +1281,7 @@ public class Variable implements ProxyReader {
     }
 
     public int getElementSize() {
-      return elementSize > 0 ? elementSize : dataType.getSize();
-    }
-
-    // In some case we need to override standard element size.
-    public T setElementSize(int elementSize) {
-      this.elementSize = elementSize;
-      return self();
+      return dataType.getSize();
     }
 
     public T setEnumTypeName(String enumTypeName) {
@@ -1453,7 +1414,6 @@ public class Variable implements ProxyReader {
       this.cache = builder.cache;
       setArrayType(builder.dataType);
       addDimensions(builder.dimensions);
-      this.elementSize = builder.elementSize;
       setEnumTypeName(builder.getEnumTypeName());
       setNcfile(builder.ncfile);
       this.parentBuilder = builder.parentBuilder;

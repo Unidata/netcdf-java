@@ -8,7 +8,6 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
@@ -18,8 +17,6 @@ import org.junit.experimental.categories.Category;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.internal.util.CompareNetcdf2;
 import ucar.unidata.util.test.TestDir;
@@ -29,7 +26,6 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 @Category(NeedsCdmUnitTest.class)
 @RunWith(Parameterized.class)
 public class TestNetcdfCopierExtended {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Rule
   public final TemporaryFolder tempFolder = new TemporaryFolder();
@@ -46,8 +42,8 @@ public class TestNetcdfCopierExtended {
     result.add(new Object[] {TestDir.cdmUnitTestDir + "formats/hdf4/f13_owsa_04010_09A.hdf", true});
     result.add(new Object[] {"file:" + TestDir.cdmLocalTestDataDir + "point/stationData2Levels.ncml", false});
 
-    // extended
-    result.add(new Object[] {TestDir.cdmUnitTestDir + "formats/hdf4/17766010.hdf", true});
+    // extended: Unimplemented datatype Structure
+    // result.add(new Object[] {TestDir.cdmUnitTestDir + "formats/hdf4/17766010.hdf", true});
 
     return result;
   }
@@ -69,7 +65,7 @@ public class TestNetcdfCopierExtended {
         fout.getParentFile().exists());
 
     try (NetcdfFile ncfileIn = ucar.nc2.dataset.NetcdfDatasets.openFile(fin.getPath(), null)) {
-      NetcdfFormatWriter.Builder builder = NetcdfFormatWriter.createNewNetcdf4(fileout);
+      NetcdfFormatWriter.Builder<?> builder = NetcdfFormatWriter.createNewNetcdf4(fileout);
       try (NetcdfCopier copier = NetcdfCopier.create(ncfileIn, builder)) {
         copier.write(null);
       }

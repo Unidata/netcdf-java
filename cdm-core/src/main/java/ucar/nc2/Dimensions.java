@@ -4,10 +4,10 @@
  */
 package ucar.nc2;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
 import java.util.*;
-import javax.annotation.Nullable;
 import com.google.common.collect.ImmutableSet;
 
 /** Static helper methods for Dimension. */
@@ -17,7 +17,6 @@ public class Dimensions {
 
   /** A Function that finds a Dimension by name. */
   public interface FindDimensionByName {
-    @Nullable
     Optional<Dimension> findByName(String dimName);
   }
 
@@ -161,6 +160,7 @@ public class Dimensions {
 
   private static void addDimensionsAll(ImmutableList.Builder<Dimension> result, Variable v) {
     if (v.isMemberOfStructure()) {
+      Preconditions.checkNotNull(v.getParentStructure());
       addDimensionsAll(result, v.getParentStructure());
     }
 

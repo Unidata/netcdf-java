@@ -2496,6 +2496,10 @@ public class H5objects {
 
     // address must be absolute, getFileOffset already added
     HeapIdentifier(long address) throws IOException {
+      if (address < 0 || address >= raf.length()) {
+        throw new IllegalStateException(address + " out of bounds; address ");
+      }
+
       // header information is in le byte order
       raf.order(RandomAccessFile.LITTLE_ENDIAN);
       raf.seek(address);
@@ -2509,15 +2513,15 @@ public class H5objects {
         dump("heapIdentifier", header.getFileOffset(address), 16, true);
     }
 
-    // the heap id is has already been read into a byte array at given pos
+    // the heap id is in ByteBuffer at given pos
     HeapIdentifier(ByteBuffer bb, int pos) {
       bb.order(ByteOrder.LITTLE_ENDIAN); // header information is in LE byte order
       bb.position(pos); // reletive reading
       nelems = bb.getInt();
       heapAddress = header.isOffsetLong ? bb.getLong() : (long) bb.getInt();
       index = bb.getInt();
-      if (debugDetail) {
-        log.debug("   read HeapIdentifier from ByteBuffer={}", this);
+      if (debugHeap) {
+        System.out.printf("   read HeapIdentifier from ByteBuffer=%s%n", this);
       }
     }
 
@@ -2595,9 +2599,13 @@ public class H5objects {
     private final Map<Short, GlobalHeap.HeapObject> hos = new HashMap<>();
 
     GlobalHeap(long address) throws IOException {
+      long filePos = header.getFileOffset(address);
+      if (filePos < 0 || filePos >= raf.length()) {
+        throw new IllegalStateException(filePos + " out of bounds; address " + address);
+      }
       // header information is in le byte order
       raf.order(RandomAccessFile.LITTLE_ENDIAN);
-      raf.seek(header.getFileOffset(address));
+      raf.seek(filePos);
 
       // header
       String magic = raf.readString(4);

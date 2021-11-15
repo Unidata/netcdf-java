@@ -284,7 +284,7 @@ public class H4header implements HdfHeaderIF {
         TagAnnotate ta = (TagAnnotate) t;
         Vinfo vinfo = refnoMap.get(ta.obj_refno);
         if (vinfo != null) {
-          vinfo.v.addAttribute(new Attribute((t.code == 105) ? "description" : CDM.LONG_NAME, ta.text));
+          vinfo.vb.addAttribute(new Attribute((t.code == 105) ? "description" : CDM.LONG_NAME, ta.text));
           t.used = true;
         }
       }
@@ -581,7 +581,7 @@ public class H4header implements HdfHeaderIF {
 
       if (tag.code == 720) { // NG - prob var
         if (tag.vinfo != null) {
-          Variable.Builder<?> v = tag.vinfo.v;
+          Variable.Builder<?> v = tag.vinfo.vb;
           if (v != null)
             addVariableToGroup(group, v, tag);
           else
@@ -596,7 +596,7 @@ public class H4header implements HdfHeaderIF {
           if (null != att)
             group.addAttribute(att);
         } else if (tag.vinfo != null) {
-          Variable.Builder<?> v = tag.vinfo.v;
+          Variable.Builder<?> v = tag.vinfo.vb;
           addVariableToGroup(group, v, tag);
         }
       }
@@ -1054,7 +1054,7 @@ public class H4header implements HdfHeaderIF {
         if (vh.className.startsWith("Att")) {
           Attribute att = makeAttribute(vh);
           if (null != att) {
-            vinfo.v.addAttribute(att);
+            vinfo.vb.addAttribute(att);
             if (att.getShortName().equals(CDM.FILL_VALUE))
               vinfo.setFillValue(att);
           }
@@ -1071,7 +1071,7 @@ public class H4header implements HdfHeaderIF {
 
   class Vinfo implements Comparable<Vinfo> {
     short refno;
-    Variable.Builder<?> v;
+    Variable.Builder<?> vb;
     Group.Builder group;
     List<Tag> tags = new ArrayList<>();
 
@@ -1102,8 +1102,12 @@ public class H4header implements HdfHeaderIF {
       }
     }
 
+    int getElementSize() {
+      return elemSize > 0 ? elemSize : vb.getElementSize();
+    }
+
     void setVariable(Variable.Builder<?> v) {
-      this.v = v;
+      this.vb = v;
       v.setSPobject(this);
     }
 
@@ -1119,7 +1123,7 @@ public class H4header implements HdfHeaderIF {
 
     void setFillValue(Attribute att) {
       // see IospHelper.makePrimitiveArray(int size, DataType dataType, Object fillValue)
-      fillValue = (v.dataType == ArrayType.STRING) ? att.getStringValue() : att.getNumericValue();
+      fillValue = (vb.dataType == ArrayType.STRING) ? att.getStringValue() : att.getNumericValue();
     }
 
     // make sure needed info is present : call this when variable needs to be read
@@ -1192,7 +1196,7 @@ public class H4header implements HdfHeaderIF {
 
     public String toString() {
       Formatter sbuff = new Formatter();
-      sbuff.format("refno=%d name=%s fillValue=%s %n", refno, v.shortName, fillValue);
+      sbuff.format("refno=%d name=%s fillValue=%s %n", refno, vb.shortName, fillValue);
       sbuff.format(" isChunked=%s isCompressed=%s isLinked=%s hasNoData=%s %n", isChunked, isCompressed, isLinked,
           hasNoData);
       sbuff.format(" elemSize=%d data start=%d length=%s %n%n", elemSize, start, length);
@@ -1302,7 +1306,7 @@ public class H4header implements HdfHeaderIF {
 
     public String detail() {
       return (used ? " " : "*") + "refno=" + refno + " tag= " + t + (extended ? " EXTENDED" : "") + " offset=" + offset
-          + " length=" + length + (((vinfo != null) && (vinfo.v != null)) ? " VV=" + vinfo.v.shortName : "");
+          + " length=" + length + (((vinfo != null) && (vinfo.vb != null)) ? " VV=" + vinfo.vb.shortName : "");
     }
 
     public String toString() {
@@ -2019,7 +2023,7 @@ public class H4header implements HdfHeaderIF {
       StringBuilder sbuff = new StringBuilder();
       sbuff.append(used ? " " : "*").append("refno=").append(refno).append(" tag= ").append(t)
           .append(extended ? " EXTENDED" : "").append(" offset=").append(offset).append(" length=").append(length)
-          .append(((vinfo != null) && (vinfo.v != null)) ? " VV=" + vinfo.v.shortName : "");
+          .append(((vinfo != null) && (vinfo.vb != null)) ? " VV=" + vinfo.vb.shortName : "");
       sbuff.append(" class= ").append(className);
       sbuff.append(" extag= ").append(extag);
       sbuff.append(" exref= ").append(exref);

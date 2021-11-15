@@ -271,7 +271,7 @@ public class TestSection {
   @Test
   public void testIntersect() throws ucar.array.InvalidRangeException {
     Section have = new Section("101:101,0:1919");
-    Section want = new Section("100:229:3,100:191:7");
+    Section want = new Section("101:229:3,100:191:7");
 
     boolean b = have.intersects(want);
     assertThat(b).isTrue();
@@ -537,6 +537,19 @@ public class TestSection {
     Section sb = Section.builder().appendRange(null).appendRange(2).build();
     Section expected = Section.builder().appendRange(2).appendRange(2).build();
     assertThat(sa.compose(sb)).isEqualTo(expected);
+  }
+
+  @Test
+  public void testIntersectProblem() throws ucar.array.InvalidRangeException {
+    Section have = new Section("53:53,0:7,0:31");
+    Section want = new Section("20:162:2,1:5:2,1:23:2");
+
+    boolean b = have.intersects(want);
+    assertThat(b).isFalse();
+
+    Section got = have.intersect(want);
+    assertThat(got).isNotNull();
+    assertThat(got.computeSize()).isEqualTo(0);
   }
 
 }

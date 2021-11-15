@@ -360,7 +360,7 @@ public class Section {
       if (r == null)
         sbuff.format(":");
       else {
-        sbuff.format("%s", r.toString());
+        sbuff.format("%s", r);
       }
     }
     return sbuff.toString();

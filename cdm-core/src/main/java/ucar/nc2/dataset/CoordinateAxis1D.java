@@ -779,7 +779,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
     assert (data.getRank() == 2) && (data.getShape()[1] == 2) : "incorrect shape data for variable " + boundsVar;
 
     // extract the bounds
-    int n = shape[0];
+    int n = getShape(0);
     double[] value1 = new double[n];
     double[] value2 = new double[n];
     Index ima = data.getIndex();

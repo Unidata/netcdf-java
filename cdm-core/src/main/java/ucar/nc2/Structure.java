@@ -10,12 +10,12 @@ import com.google.common.collect.ImmutableList;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Formatter;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
+import com.google.common.collect.ImmutableMap;
 import ucar.array.Array;
 import ucar.array.ArrayType;
 import ucar.array.InvalidRangeException;
@@ -92,8 +92,6 @@ public class Structure extends Variable {
   public Structure select(List<String> memberNames) {
     Structure.Builder<?> result = this.toBuilder();
     // Will read the entire Structure, then transfer selected members to StructureData
-    result.setElementSize(this.elementSize);
-
     List<Variable.Builder<?>> selected = new ArrayList<>();
     for (String name : memberNames) {
       result.findMemberVariable(name).ifPresent(selected::add);
@@ -114,10 +112,13 @@ public class Structure extends Variable {
     return select(ImmutableList.of(varName));
   }
 
-  /** Calculation of size of one element of this structure - equals the sum of sizes of its members. */
+  /**
+   * The size of one element of this structure - equals the sum of sizes of its members.
+   * This is the canonical size, not the actual size stored on disk.
+   */
   @Override
   public int getElementSize() {
-    return makeStructureMembersBuilder().getStorageSizeBytes();
+    return elementSize;
   }
 
   /** Get String with name and attributes. Used in short descriptions like tooltips. */
@@ -134,7 +135,7 @@ public class Structure extends Variable {
 
   @Override
   protected void writeCDL(Formatter buf, Indent indent, boolean useFullName, boolean strict) {
-    buf.format("%n%s%s {%n", indent, dataType);
+    buf.format("%n%s%s {%n", indent, getArrayType());
 
     indent.incr();
     for (Variable v : members)
@@ -169,15 +170,18 @@ public class Structure extends Variable {
 
   ////////////////////////////////////////////////////////
   protected final ImmutableList<Variable> members;
-  private final HashMap<String, Variable> memberHash;
+  private final ImmutableMap<String, Variable> memberHash;
+  private final int elementSize;
   protected final boolean isSubset;
 
   protected Structure(Builder<?> builder, Group parentGroup) {
     super(builder, parentGroup);
     builder.vbuilders.forEach(v -> v.setParentStructure(this).setNcfile(builder.ncfile));
     this.members = builder.vbuilders.stream().map(vb -> vb.build(parentGroup)).collect(ImmutableList.toImmutableList());
-    memberHash = new HashMap<>();
-    this.members.forEach(m -> memberHash.put(m.getShortName(), m));
+    ImmutableMap.Builder<String, Variable> mapb = ImmutableMap.builder();
+    this.members.forEach(m -> mapb.put(m.getShortName(), m));
+    this.memberHash = mapb.build();
+    this.elementSize = makeStructureMembersBuilder().getStorageSizeBytes();
     this.isSubset = builder.isSubset;
   }
 

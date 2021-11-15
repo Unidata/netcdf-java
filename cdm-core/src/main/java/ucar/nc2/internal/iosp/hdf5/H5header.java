@@ -149,6 +149,7 @@ public class H5header implements HdfHeaderIF {
 
   private long baseAddress;
   byte sizeOffsets, sizeLengths;
+  int sizeHeapId;
   boolean isOffsetLong, isLengthLong;
 
   /*
@@ -270,6 +271,7 @@ public class H5header implements HdfHeaderIF {
 
     sizeOffsets = raf.readByte();
     isOffsetLong = (sizeOffsets == 8);
+    sizeHeapId = 8 + sizeOffsets;
 
     sizeLengths = raf.readByte();
     isLengthLong = (sizeLengths == 8);
@@ -1283,12 +1285,14 @@ public class H5header implements HdfHeaderIF {
     for (HeaderMessage mess : facade.dobj.messages) {
       if (mess.mtype == MessageType.FillValue) {
         MessageFillValue fvm = (MessageFillValue) mess.messData;
-        if (fvm.hasFillValue)
+        if (fvm.hasFillValue) {
           vinfo.fillValue = fvm.value;
+        }
       } else if (mess.mtype == MessageType.FillValueOld) {
         MessageFillValueOld fvm = (MessageFillValueOld) mess.messData;
-        if (fvm.size > 0)
+        if (fvm.size > 0) {
           vinfo.fillValue = fvm.value;
+        }
       }
 
       Object fillValue = vinfo.getFillValueNonDefault();
@@ -1318,25 +1322,29 @@ public class H5header implements HdfHeaderIF {
       String vname = facade.name;
       vb = sb = Structure.builder().setName(vname);
       vb.setParentGroupBuilder(parentGroup);
-      if (!makeVariableShapeAndType(parentGroup, sb, facade.dobj.mdt, facade.dobj.mds, vinfo, facade.dimList))
+      if (!makeVariableShapeAndType(parentGroup, sb, facade.dobj.mdt, facade.dobj.mds, vinfo, facade.dimList)) {
         return null;
+      }
       addMembersToStructure(parentGroup, sb, facade.dobj.mdt);
-      sb.setElementSize(facade.dobj.mdt.byteSize);
+      vinfo.setElementSize(facade.dobj.mdt.byteSize);
 
     } else {
       String vname = facade.name;
-      if (vname.startsWith(NetcdfFormatUtils.NETCDF4_NON_COORD))
+      if (vname.startsWith(NetcdfFormatUtils.NETCDF4_NON_COORD)) {
         vname = vname.substring(NetcdfFormatUtils.NETCDF4_NON_COORD.length()); // skip prefix
+      }
       vb = Variable.builder().setName(vname);
       vb.setParentGroupBuilder(parentGroup);
-      if (!makeVariableShapeAndType(parentGroup, vb, facade.dobj.mdt, facade.dobj.mds, vinfo, facade.dimList))
+      if (!makeVariableShapeAndType(parentGroup, vb, facade.dobj.mdt, facade.dobj.mds, vinfo, facade.dimList)) {
         return null;
+      }
 
       // special case of variable length strings
-      if (vb.dataType == ArrayType.STRING)
-        vb.setElementSize(16); // because the array has elements that are HeapIdentifier
-      else if (vb.dataType == ArrayType.OPAQUE) // special case of opaque
-        vb.setElementSize(facade.dobj.mdt.getBaseSize());
+      if (vb.dataType == ArrayType.STRING) {
+        vinfo.setElementSize(this.sizeHeapId); // because the array has elements that are HeapIdentifier
+      } else if (vb.dataType == ArrayType.OPAQUE) { // special case of opaque
+        vinfo.setElementSize(facade.dobj.mdt.getBaseSize());
+      }
     }
 
     vb.setSPobject(vinfo);
@@ -1469,7 +1477,7 @@ public class H5header implements HdfHeaderIF {
       Structure.Builder<?> sb = Structure.builder().setName(name).setParentGroupBuilder(parentGroup);
       makeVariableShapeAndType(parentGroup, sb, mdt, null, vinfo, null);
       addMembersToStructure(parentGroup, sb, mdt);
-      sb.setElementSize(mdt.byteSize);
+      vinfo.setElementSize(mdt.byteSize);
 
       sb.setSPobject(vinfo);
       vinfo.setOwner(sb);
@@ -1480,10 +1488,11 @@ public class H5header implements HdfHeaderIF {
       makeVariableShapeAndType(parentGroup, vb, mdt, null, vinfo, null);
 
       // special case of variable length strings
-      if (vb.dataType == ArrayType.STRING)
-        vb.setElementSize(16); // because the array has elements that are HeapIdentifier
-      else if (vb.dataType == ArrayType.OPAQUE) // special case of opaque
-        vb.setElementSize(mdt.getBaseSize());
+      if (vb.dataType == ArrayType.STRING) {
+        vinfo.setElementSize(this.sizeHeapId); // because the array has elements that are HeapIdentifier
+      } else if (vb.dataType == ArrayType.OPAQUE) { // special case of opaque
+        vinfo.setElementSize(mdt.getBaseSize());
+      }
 
       vb.setSPobject(vinfo);
       vinfo.setOwner(vb);
@@ -1599,7 +1608,7 @@ public class H5header implements HdfHeaderIF {
   @Override
   public void makeVinfoForDimensionMapVariable(Builder parent, Variable.Builder<?> v) {
     // this is a self contained variable, doesnt need any extra info, just make a dummy.
-    Vinfo vinfo = new Vinfo();
+    Vinfo vinfo = new Vinfo(); // LOOK no effect ??
     vinfo.owner = v;
   }
 
@@ -1618,9 +1627,10 @@ public class H5header implements HdfHeaderIF {
     // for member variables, is the offset from start of structure
 
     Hdf5Type typeInfo;
-    int[] storageSize; // for type 1 (continuous) : mds.dimLength;
-    // for type 2 (chunked) : msl.chunkSize (last number is element size)
-    // null for attributes
+    int elementSize; // total length in bytes on disk of one element
+    int[] storageSize;// for type 1 (continuous) : mds.dimLength;
+                      // for type 2 (chunked) : msl.chunkSize (last number is element size)
+                      // null for attributes
 
     boolean isvlen; // VLEN, but not vlenstring
 
@@ -1686,9 +1696,7 @@ public class H5header implements HdfHeaderIF {
       return result;
     }
 
-    Vinfo() {
-      // nuthing
-    }
+    Vinfo() {}
 
     /**
      * Constructor
@@ -1719,6 +1727,9 @@ public class H5header implements HdfHeaderIF {
 
       // figure out the data type
       this.typeInfo = new Hdf5Type(facade.dobj.mdt);
+
+      int nelems = (int) Arrays.computeSize(facade.dobj.mdt.dim);
+      this.setElementSize(facade.dobj.mdt.byteSize / nelems);
     }
 
     /**
@@ -1742,6 +1753,9 @@ public class H5header implements HdfHeaderIF {
 
       // figure out the data type
       this.typeInfo = new Hdf5Type(mdt);
+
+      int nelems = (int) Arrays.computeSize(mdt.dim);
+      this.setElementSize(mdt.byteSize / nelems);
     }
 
     void setOwner(Variable.Builder<?> owner) {
@@ -1751,31 +1765,35 @@ public class H5header implements HdfHeaderIF {
       }
     }
 
+    void setElementSize(int elementSize) {
+      this.elementSize = elementSize;
+    }
+
     public String toString() {
-      StringBuilder buff = new StringBuilder();
-      buff.append("dataPos=").append(dataPos).append(" datatype=").append(typeInfo);
+      Formatter buff = new Formatter();
+      buff.format("dataPos= %d datatype= %s elementSize = %d", dataPos, typeInfo, elementSize);
       if (isChunked) {
-        buff.append(" isChunked (");
-        for (int size : storageSize)
-          buff.append(size).append(" ");
-        buff.append(")");
+        buff.format(" isChunked (%s)", java.util.Arrays.toString(storageSize));
       }
-      if (mfp != null)
-        buff.append(" hasFilter");
-      buff.append("; // ").append(extraInfo());
-      if (null != facade)
-        buff.append("\n").append(facade);
+      if (mfp != null) {
+        buff.format(" hasFilter");
+      }
+      buff.format("; // %s", extraInfo());
+      if (null != facade) {
+        buff.format("%n %s", facade);
+      }
 
       return buff.toString();
     }
 
     public String extraInfo() {
-      StringBuilder buff = new StringBuilder();
+      Formatter buff = new Formatter();
       if ((typeInfo.dataType != ArrayType.CHAR) && (typeInfo.dataType != ArrayType.STRING))
-        buff.append(typeInfo.unsigned ? " unsigned" : " signed");
-      buff.append("ByteOrder= " + typeInfo.endian);
-      if (useFillValue)
-        buff.append(" useFillValue");
+        buff.format(typeInfo.unsigned ? " unsigned" : " signed");
+      buff.format("ByteOrder= %s", typeInfo.endian);
+      if (useFillValue) {
+        buff.format(" useFillValue");
+      }
       return buff.toString();
     }
 
