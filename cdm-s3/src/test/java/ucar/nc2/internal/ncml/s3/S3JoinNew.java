@@ -26,9 +26,10 @@ import ucar.array.Section;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
+import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis1D;
-import ucar.nc2.dataset.CoordinateAxis1DTime;
+import ucar.nc2.internal.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
@@ -94,7 +95,7 @@ public class S3JoinNew {
       ImmutableList<CoordinateSystem> coordSystems = ((VariableDS) rad).getCoordinateSystems();
       assertThat(coordSystems).hasSize(1);
       CoordinateSystem cs = coordSystems.get(0);
-      CoordinateAxis timeAxis = cs.getTaxis();
+      CoordinateAxis timeAxis = cs.findAxis(AxisType.Time);
       assertThat(timeAxis instanceof CoordinateAxis1D).isTrue();
       CoordinateAxis1DTime timeAxis1d = CoordinateAxis1DTime.factory(ncd, timeAxis, null);
       CalendarDate baseDate =

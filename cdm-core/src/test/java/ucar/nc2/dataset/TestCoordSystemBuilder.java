@@ -65,9 +65,6 @@ public class TestCoordSystemBuilder {
     assertThat(coordSys.isGeoReferencing()).isTrue();
     assertThat(coordSys.isGeoXY()).isTrue();
     assertThat(coordSys.isLatLon()).isFalse();
-    assertThat(coordSys.isRadial()).isFalse();
-    assertThat(coordSys.isRegular()).isTrue();
-    assertThat(coordSys.isProductSet()).isFalse();
 
     CoordinateSystem copy = coordSys.toBuilder().build(ncd, axes, allProjs);
     assertThat(copy.findAxis(AxisType.GeoX)).isEqualTo(coordSys.findAxis(AxisType.GeoX));

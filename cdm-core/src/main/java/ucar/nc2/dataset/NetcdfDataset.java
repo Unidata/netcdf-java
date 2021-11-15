@@ -483,11 +483,6 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       return self();
     }
 
-    public T setDefaultEnhanceMode() {
-      this.enhanceMode = NetcdfDataset.getDefaultEnhanceMode();
-      return self();
-    }
-
     public Set<Enhance> getEnhanceMode() {
       return this.enhanceMode;
     }

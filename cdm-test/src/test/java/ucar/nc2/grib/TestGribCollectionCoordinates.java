@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.CollectionUpdateType;
-import ucar.array.Array;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.*;
 import ucar.nc2.grib.collection.*;
@@ -113,21 +112,6 @@ public class TestGribCollectionCoordinates {
                 ok = false;
               }
             }
-          }
-
-        } else if (vds instanceof CoordinateAxis2D) {
-          CoordinateAxis2D axis2 = (CoordinateAxis2D) vds;
-          if (axis2.isInterval()) {
-            Array<Double> bounds = axis2.getCoordBoundsArray();
-            for (int i = 0; i < axis2.getShape(0); i++)
-              for (int j = 0; j < axis2.getShape(1); j++) {
-                double start = bounds.get(i, j, 0);
-                double end = bounds.get(i, j, 1);
-                if (start == end) {
-                  System.out.printf("ERR2 %s(%d,%d) = [%f,%f]%n", vds.getFullName(), i, j, start, end);
-                  ok = false;
-                }
-              }
           }
         }
       }

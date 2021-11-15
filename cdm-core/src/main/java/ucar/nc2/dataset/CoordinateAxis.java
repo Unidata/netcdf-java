@@ -6,23 +6,19 @@ package ucar.nc2.dataset;
 
 import com.google.common.base.Preconditions;
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 
 import ucar.array.ArrayType;
-import ucar.array.Array;
-import ucar.array.Arrays;
-import ucar.array.MinMax;
 import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
-import ucar.nc2.constants._Coordinate;
 import ucar.nc2.internal.dataset.conv.CF1Convention;
 import ucar.nc2.calendar.Calendar;
-import java.io.IOException;
-import java.util.Formatter;
 
 /**
- * A Variable that specifies one of the coordinates of a CoordinateSystem.
+ * A Variable that specifies one of the coordinates of a CoordinateSystem,
+ * this is a legacy class, use GridAxis for new code.
  * <p/>
  * 
  * <pre>
@@ -40,10 +36,9 @@ import java.util.Formatter;
  * a units string and optionally a description string.
  * <p/>
  * A Structure cannot be a CoordinateAxis, although members of Structures can.
- * TODO make Immutable in ver7
  */
+@Immutable
 public class CoordinateAxis extends VariableDS {
-  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinateAxis.class);
 
   /**
    * Create a coordinate axis from an existing VariableDS.Builder.
@@ -55,8 +50,6 @@ public class CoordinateAxis extends VariableDS {
     if ((vdsBuilder.getRank() == 0) || (vdsBuilder.getRank() == 1)
         || (vdsBuilder.getRank() == 2 && vdsBuilder.dataType == ArrayType.CHAR)) {
       return CoordinateAxis1D.builder().copyFrom(vdsBuilder);
-    } else if (vdsBuilder.getRank() == 2) {
-      return CoordinateAxis2D.builder().copyFrom(vdsBuilder);
     } else {
       return CoordinateAxis.builder().copyFrom(vdsBuilder);
     }
@@ -81,118 +74,6 @@ public class CoordinateAxis extends VariableDS {
    */
   public boolean isNumeric() {
     return getArrayType().isNumeric();
-  }
-
-  /**
-   * If the edges are contiguous or disjoint
-   * Caution: many datasets do not explicitly specify this info, this is often a guess; default is true.
-   *
-   * @return true if the edges are contiguous or false if disjoint. Assumed true unless set otherwise.
-   * @deprecated use GridAxis1D.isContiguous()
-   */
-  @Deprecated
-  public boolean isContiguous() {
-    return isContiguous;
-  }
-
-  /**
-   * An interval coordinate consists of two numbers, bound1 and bound2.
-   * The coordinate value must lie between them, but otherwise is somewhat arbitrary.
-   * If not interval, then it has one number, the coordinate value.
-   * 
-   * @return true if its an interval coordinate.
-   * @deprecated use GridAxis1D.isInterval()
-   */
-  @Deprecated
-  public boolean isInterval() {
-    return false; // interval detection is done in subclasses
-  }
-
-  /** @deprecated use NetcdfDataset.isIndependentCoordinate(CoordinateAxis) */
-  @Deprecated
-  public boolean isIndependentCoordinate() {
-    if (isCoordinateVariable())
-      return true;
-    return attributes.hasAttribute(_Coordinate.AliasForDimension);
-  }
-
-  /**
-   * Get the direction of increasing values, used only for vertical Axes.
-   *
-   * @return POSITIVE_UP, POSITIVE_DOWN, or null if unknown.
-   * @deprecated use GridCoordSys.getPositive()
-   */
-  @Deprecated
-  public String getPositive() {
-    return positive;
-  }
-
-  /**
-   * The name of this coordinate axis' boundary variable
-   *
-   * @return the name of this coordinate axis' boundary variable, or null if none.
-   * @deprecated do not use.
-   */
-  @Deprecated
-  public String getBoundaryRef() {
-    return boundaryRef;
-  }
-
-  ////////////////////////////////
-
-  private MinMax minmax; // remove
-
-  // TODO make Immutable in ver7
-  private void init() {
-    try {
-      Array<Number> data = (Array<Number>) readArray();
-      minmax = Arrays.getMinMaxSkipMissingData(data, null);
-    } catch (IOException ioe) {
-      log.error("Error reading coordinate values ", ioe);
-      throw new IllegalStateException(ioe);
-    }
-  }
-
-  /**
-   * The smallest coordinate value. Only call if isNumeric.
-   *
-   * @return the minimum coordinate value
-   * @deprecated use GridAxis1D.getMinValue()
-   */
-  @Deprecated
-  public double getMinValue() {
-    if (minmax == null)
-      init();
-    return minmax.min();
-  }
-
-  /**
-   * The largest coordinate value. Only call if isNumeric.
-   *
-   * @return the maximum coordinate value
-   * @deprecated use GridAxis1D.getMaxValue()
-   */
-  @Deprecated
-  public double getMaxValue() {
-    if (minmax == null)
-      init();
-    return minmax.max();
-  }
-
-  //////////////////////
-
-  /**
-   * Get a string representation
-   *
-   * @param buf place info here
-   */
-  public void getInfo(Formatter buf) {
-    buf.format("%-30s", getNameAndDimensions());
-    buf.format("%-30s", getUnitsString());
-    if (axisType != null) {
-      buf.format("%-10s", axisType.toString());
-    }
-    buf.format("%s", getDescription());
   }
 
   public static class AxisComparator implements java.util.Comparator<CoordinateAxis> {
@@ -230,9 +111,6 @@ public class CoordinateAxis extends VariableDS {
       if (getAxisType() != o.getAxisType())
         return false;
 
-    if (getPositive() != null)
-      return getPositive().equals(o.getPositive());
-
     return true;
   }
 
@@ -243,8 +121,6 @@ public class CoordinateAxis extends VariableDS {
     int result = super.hashCode();
     if (getAxisType() != null)
       result = 37 * result + getAxisType().hashCode();
-    if (getPositive() != null)
-      result = 37 * result + getPositive().hashCode();
     return result;
   }
 
@@ -279,26 +155,21 @@ public class CoordinateAxis extends VariableDS {
 
   ////////////////////////////////////////////////////////////////////////////////////////////
   protected final AxisType axisType;
-  protected final String positive; // remove
   protected final String boundaryRef; // remove
-  protected boolean isContiguous; // remove LOOK not final, see CoordinateAxis1D
 
   protected CoordinateAxis(Builder<?> builder, Group parentGroup) {
     super(builder, parentGroup);
     this.axisType = builder.axisType;
-    this.positive = builder.positive;
     this.boundaryRef = builder.boundaryRef;
-    this.isContiguous = builder.isContiguous;
   }
 
   public Builder<?> toBuilder() {
     return addLocalFieldsToBuilder(builder());
   }
 
-  // Add local fields to the passed-in builder.
+  // Add local fields to the Builder.
   protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
-    b.setAxisType(this.axisType).setPositive(this.positive).setBoundary(this.boundaryRef)
-        .setIsContiguous(this.isContiguous);
+    b.setAxisType(this.axisType).setBoundary(this.boundaryRef);
     return (Builder<?>) super.addLocalFieldsToBuilder(b);
   }
 
@@ -316,9 +187,7 @@ public class CoordinateAxis extends VariableDS {
 
   public static abstract class Builder<T extends Builder<T>> extends VariableDS.Builder<T> {
     public AxisType axisType;
-    protected String positive;
     protected String boundaryRef;
-    protected boolean isContiguous = true;
     private boolean built;
 
     protected abstract T self();
@@ -328,18 +197,8 @@ public class CoordinateAxis extends VariableDS {
       return self();
     }
 
-    public T setPositive(String positive) {
-      this.positive = positive;
-      return self();
-    }
-
     public T setBoundary(String boundaryRef) {
       this.boundaryRef = boundaryRef;
-      return self();
-    }
-
-    public T setIsContiguous(boolean isContiguous) {
-      this.isContiguous = isContiguous;
       return self();
     }
 

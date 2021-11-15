@@ -10,8 +10,7 @@
  * allow the specification and recognition of general and georeferencing coordinate systems within
  * a netCDF dataset.
  * <li><i><b>Scale/offset/missing data</b></i> handles the conversion of integer data to floating point, and the
- * interaction
- * with missing data values
+ * interaction with missing data values
  * <li><i><b>NcML</b></i>, the NetCDF Markup Language, is an XML
  * schema for showing, adding and changing netCDF metadata in XML. <i><b>NcML dataset</b></i> allows
  * you to create virtual netCDF datasets, including combining multiple netCDF files into one dataset.

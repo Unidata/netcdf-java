@@ -17,6 +17,7 @@ import ucar.array.ArrayType;
 import ucar.array.Arrays;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
+import ucar.nc2.Dimensions;
 import ucar.nc2.Group;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
@@ -452,8 +453,8 @@ public class CoordSystemBuilder {
       // look for vars with those dimensions
       for (VarProcess vp : varList) {
         if (!vp.hasCoordinateSystem() && vp.isData() && (csVar.cs != null)) {
-          if (CoordinateSystem.isSubset(dimList, vp.vb.getDimensionNamesAll())
-              && CoordinateSystem.isSubset(vp.vb.getDimensionNamesAll(), dimList)) {
+          if (Dimensions.isSubset(dimList, vp.vb.getDimensionNamesAll())
+              && Dimensions.isSubset(vp.vb.getDimensionNamesAll(), dimList)) {
             vp.coordSysNames.add(csVar.cs.coordAxesNames);
           }
         }
@@ -896,7 +897,6 @@ public class CoordSystemBuilder {
 
         if (((axisType == AxisType.Height) || (axisType == AxisType.Pressure) || (axisType == AxisType.GeoZ))
             && (positive != null)) {
-          axis.setPositive(positive);
           axis.addAttribute(new Attribute(_Coordinate.ZisPositive, positive));
         }
       }

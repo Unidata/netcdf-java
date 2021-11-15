@@ -27,7 +27,8 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
- * Specifies the coordinates of a Variable's values.
+ * Specifies the coordinates of a Variable's values,
+ * this is a legacy class, use GridCoordinateSystem for new code.
  *
  * <pre>
  * Mathematically it is a vector function F from index space to Sn:
@@ -54,16 +55,8 @@ import java.util.Set;
  * Variable's values in space and time. A CoordinateSystem that has a Lat and Lon axis, or a GeoX and GeoY
  * axis and a Projection CoordinateTransform will have <i>isGeoReferencing()</i> true.
  * A CoordinateSystem that has a Height, Pressure, or GeoZ axis will have <i>hasVerticalAxis()</i> true.
- * <p>
- * Further CoordinateSystems specialization is done by "data type specific" classes such as ucar.nc2.grid.
- *
- * @author caron
- * @see <a href="https://www.unidata.ucar.edu/software/netcdf-java/reference/CSObjectModel.html">
- *      Coordinate System Object Model</a>
- *      TODO: make Immutable in ver7.
  */
 public class CoordinateSystem {
-  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinateSystem.class);
 
   /**
    * Create standard name from list of axes. Sort the axes first
@@ -89,41 +82,9 @@ public class CoordinateSystem {
     return name;
   }
 
-  /**
-   * Get the underlying NetcdfDataset
-   *
-   * @deprecated do not use
-   */
-  @Deprecated
-  public NetcdfDataset getNetcdfDataset() {
-    return ds;
-  }
-
   /** Get the Collection of Dimensions used by any of the CoordinateAxes. */
   public ImmutableCollection<Dimension> getDomain() {
     return ImmutableList.copyOf(domain);
-  }
-
-  /**
-   * Get the domain rank of the coordinate system = number of dimensions it is a function of.
-   * 
-   * @return domain.size()
-   * @deprecated use getDomain().size();
-   */
-  @Deprecated
-  public int getRankDomain() {
-    return domain.size();
-  }
-
-  /**
-   * Get the range rank of the coordinate system = number of coordinate axes.
-   * 
-   * @return coordAxes.size()
-   * @deprecated use getCoordinateAxes().size();
-   */
-  @Deprecated
-  public int getRankRange() {
-    return coordAxes.size();
   }
 
   ///////////////////////////////////////////////////////////////////////////
@@ -169,151 +130,6 @@ public class CoordinateSystem {
   }
 
   /**
-   * get the CoordinateAxis with AxisType.GeoX, or null if none.
-   * if more than one, choose one with smallest rank
-   * 
-   * @return axis of type AxisType.GeoX, or null if none
-   * @deprecated use findAxis(AxisType.GeoX)
-   */
-  @Deprecated
-  public CoordinateAxis getXaxis() {
-    return xAxis;
-  }
-
-  /**
-   * get the CoordinateAxis with AxisType.GeoY, or null if none.
-   * if more than one, choose one with smallest rank
-   * 
-   * @return axis of type AxisType.GeoY, or null if none
-   * @deprecated use findAxis(AxisType.GeoY)
-   */
-  @Deprecated
-  public CoordinateAxis getYaxis() {
-    return yAxis;
-  }
-
-  /**
-   * get the CoordinateAxis with AxisType.GeoZ, or null if none.
-   * if more than one, choose one with smallest rank
-   * 
-   * @return axis of type AxisType.GeoZ, or null if none
-   * @deprecated use findAxis(AxisType.GeoZ)
-   */
-  @Deprecated
-  public CoordinateAxis getZaxis() {
-    return zAxis;
-  }
-
-  /**
-   * get the CoordinateAxis with AxisType.Time, or null if none.
-   * if more than one, choose one with smallest rank
-   * 
-   * @return axis of type AxisType.Time, or null if none
-   * @deprecated use findAxis(AxisType.Time)
-   */
-  @Deprecated
-  public CoordinateAxis getTaxis() {
-    return tAxis;
-  }
-
-  /**
-   * get the CoordinateAxis with AxisType.Lat, or null if none.
-   * if more than one, choose one with smallest rank
-   * 
-   * @return axis of type AxisType.Lat, or null if none
-   * @deprecated use findAxis(AxisType.Lat)
-   */
-  @Deprecated
-  public CoordinateAxis getLatAxis() {
-    return latAxis;
-  }
-
-  /**
-   * get the CoordinateAxis with AxisType.Lon, or null if none.
-   * if more than one, choose one with smallest rank *
-   * 
-   * @return axis of type AxisType.Lon, or null if none
-   * @deprecated use findAxis(AxisType.Lon)
-   */
-  @Deprecated
-  public CoordinateAxis getLonAxis() {
-    return lonAxis;
-  }
-
-  /**
-   * get the CoordinateAxis with AxisType.Height, or null if none.
-   * if more than one, choose one with smallest rank
-   * 
-   * @return axis of type AxisType.Height, or null if none
-   * @deprecated use findAxis(AxisType.Height)
-   */
-  @Deprecated
-  public CoordinateAxis getHeightAxis() {
-    return hAxis;
-  }
-
-  /**
-   * get the CoordinateAxis with AxisType.Pressure, or null if none.
-   * if more than one, choose one with smallest rank.
-   * 
-   * @return axis of type AxisType.Pressure, or null if none
-   * @deprecated use findAxis(AxisType.Pressure)
-   */
-  @Deprecated
-  public CoordinateAxis getPressureAxis() {
-    return pAxis;
-  }
-
-
-  /**
-   * get the CoordinateAxis with AxisType.Ensemble, or null if none.
-   * if more than one, choose one with smallest rank.
-   * 
-   * @return axis of type AxisType.Ensemble, or null if none
-   * @deprecated use findAxis(AxisType.Ensemble)
-   */
-  @Deprecated
-  public CoordinateAxis getEnsembleAxis() {
-    return ensAxis;
-  }
-
-  /**
-   * get the CoordinateAxis with AxisType.RadialAzimuth, or null if none.
-   * if more than one, choose one with smallest rank
-   * 
-   * @return axis of type AxisType.RadialAzimuth, or null if none
-   * @deprecated use findAxis(AxisType.RadialAzimuth)
-   */
-  @Deprecated
-  public CoordinateAxis getAzimuthAxis() {
-    return aziAxis;
-  }
-
-  /**
-   * get the CoordinateAxis with AxisType.RadialDistance, or null if none.
-   * if more than one, choose one with smallest rank
-   * 
-   * @return axis of type AxisType.RadialDistance, or null if none
-   * @deprecated use findAxis(AxisType.RadialDistance)
-   */
-  @Deprecated
-  public CoordinateAxis getRadialAxis() {
-    return radialAxis;
-  }
-
-  /**
-   * get the CoordinateAxis with AxisType.RadialElevation, or null if none.
-   * if more than one, choose one with smallest rank
-   * 
-   * @return axis of type AxisType.RadialElevation, or null if none
-   * @deprecated use findAxis(AxisType.RadialElevation)
-   */
-  @Deprecated
-  public CoordinateAxis getElevationAxis() {
-    return elevAxis;
-  }
-
-  /**
    * Get the Projection for this coordinate system.
    */
   @Nullable
@@ -335,66 +151,14 @@ public class CoordinateSystem {
     return null != getProjection() && !(projection instanceof LatLonProjection);
   }
 
-  /**
-   * true if it has Lat and Lon CoordinateAxis
-   * 
-   * @return true if it has Lat and Lon CoordinateAxis
-   */
+  /** True if it has Lat and Lon CoordinateAxis */
   public boolean isLatLon() {
     return (latAxis != null) && (lonAxis != null);
   }
 
-  /**
-   * true if it has radial distance and azimuth CoordinateAxis
-   * 
-   * @return true if it has radial distance and azimuth CoordinateAxis
-   */
-  public boolean isRadial() {
-    return (radialAxis != null) && (aziAxis != null);
-  }
-
-  /**
-   * true if isGeoXY or isLatLon
-   * 
-   * @return true if isGeoXY or isLatLon
-   */
+  /** True if isGeoXY or isLatLon */
   public boolean isGeoReferencing() {
     return isGeoXY() || isLatLon();
-  }
-
-  /**
-   * true if all axes are CoordinateAxis1D
-   * 
-   * @return true if all axes are CoordinateAxis1D
-   * @deprecated use GridCoordinateSystem.isProductSet()
-   */
-  @Deprecated
-  public boolean isProductSet() {
-    for (CoordinateAxis axis : coordAxes) {
-      if (axis.getRank() != 1) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  /**
-   * true if all axes are CoordinateAxis1D and are regular
-   *
-   * @return true if all axes are CoordinateAxis1D and are regular
-   * @deprecated do not use
-   */
-  @Deprecated
-  public boolean isRegular() {
-    for (CoordinateAxis axis : coordAxes) {
-      if (!(axis instanceof CoordinateAxis1D)) {
-        return false;
-      }
-      if (!((CoordinateAxis1D) axis).isRegular()) {
-        return false;
-      }
-    }
-    return true;
   }
 
   /**
@@ -451,55 +215,6 @@ public class CoordinateSystem {
   }
 
   /**
-   * Test if all the Dimensions in subset are in set
-   * 
-   * @param subset is this a subset
-   * @param set of this?
-   * @return true if all the Dimensions in subset are in set
-   * @deprecated use Dimensions.isSubset()
-   */
-  @Deprecated
-  public static boolean isSubset(Collection<Dimension> subset, Collection<Dimension> set) {
-    for (Dimension d : subset) {
-      if (!(set.contains(d))) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  /** @deprecated use Dimensions.isSubset() */
-  @Deprecated
-  public static boolean isSubset(Set<String> subset, Set<String> set) {
-    for (String d : subset) {
-      if (!(set.contains(d))) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  /** @deprecated use {@link Dimensions#makeDomain} */
-  @Deprecated
-  public static Set<Dimension> makeDomain(Iterable<? extends Variable> axes) {
-    Set<Dimension> domain = new HashSet<>();
-    for (Variable axis : axes) {
-      domain.addAll(axis.getDimensions());
-    }
-    return domain;
-  }
-
-  /** @deprecated use Dimensions.makeDomain().size() */
-  @Deprecated
-  public static int countDomain(Variable[] axes) {
-    Set<Dimension> domain = new HashSet<>();
-    for (Variable axis : axes) {
-      domain.addAll(axis.getDimensions());
-    }
-    return domain.size();
-  }
-
-  /**
    * Implicit Coordinate System are constructed based on which Coordinate Variables exist for the Dimensions of the
    * Variable. This is in contrast to a Coordinate System that is explicitly specified in the file.
    */
@@ -508,100 +223,15 @@ public class CoordinateSystem {
   }
 
   /**
-   * true if has Height, Pressure, or GeoZ axis
-   * 
-   * @return true if has a vertical axis
-   * @deprecated use findAxis(...)
-   */
-  @Deprecated
-  public boolean hasVerticalAxis() {
-    return (hAxis != null) || (pAxis != null) || (zAxis != null);
-  }
-
-  /**
-   * true if has Time axis
-   * 
-   * @return true if has Time axis
-   * @deprecated use findAxis(...)
-   */
-  @Deprecated
-  public boolean hasTimeAxis() {
-    return (tAxis != null);
-  }
-
-  /**
-   * Do we have all the axes in wantAxes, matching on full name.
-   * 
-   * @deprecated do not use
-   */
-  @Deprecated
-  public boolean containsAxes(List<CoordinateAxis> wantAxes) {
-    for (CoordinateAxis ca : wantAxes) {
-      if (!containsAxis(ca.getFullName())) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  /**
    * Do we have the named axis?
    * 
    * @param axisFullName (full unescaped) name of axis
    * @return true if we have an axis of that name
-   * @deprecated do not use
    */
-  @Deprecated
   public boolean containsAxis(String axisFullName) {
     for (CoordinateAxis ca : coordAxes) {
       if (ca.getFullName().equals(axisFullName))
         return true;
-    }
-    return false;
-  }
-
-  /**
-   * Do we have all the dimensions in wantDimensions?
-   * 
-   * @deprecated do not use
-   */
-  @Deprecated
-  public boolean containsDomain(List<Dimension> wantDimensions) {
-    for (Dimension d : wantDimensions) {
-      if (!domain.contains(d)) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  /**
-   * Do we have all the axes types in wantAxes?
-   * 
-   * @deprecated use findAxis(...)
-   */
-  @Deprecated
-  public boolean containsAxisTypes(List<AxisType> wantAxes) {
-    for (AxisType wantAxisType : wantAxes) {
-      if (!containsAxisType(wantAxisType))
-        return false;
-    }
-    return true;
-  }
-
-  /**
-   * Do we have an axis of the given type?
-   * 
-   * @param wantAxisType want this AxisType
-   * @return true if we have at least one axis of that type.
-   * @deprecated use findAxis(...) != null
-   */
-  @Deprecated
-  public boolean containsAxisType(AxisType wantAxisType) {
-    for (CoordinateAxis ca : coordAxes) {
-      if (ca.getAxisType() == wantAxisType) {
-        return true;
-      }
     }
     return false;
   }
@@ -635,7 +265,7 @@ public class CoordinateSystem {
 
   // TODO make these private, final and immutable in ver7.
   private final ProjectionCTV projectionCTV;
-  private Projection projection;
+  private Projection projection; // lazy
 
   // these are calculated
   private final String name;

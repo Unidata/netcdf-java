@@ -79,9 +79,7 @@ public class TestCoordinateAxisBuilder {
 
     assertThat(lonAxis.getSize()).isEqualTo(360);
     assertThat(lonAxis.getIncrement()).isEqualTo(1);
-    assertThat(lonAxis.getMinEdgeValue()).isEqualTo(-180.);
     assertThat(lonAxis.getCoordEdge(0)).isEqualTo(-180.);
-    assertThat(lonAxis.getMinEdgeValue()).isEqualTo(-180.);
   }
 
 

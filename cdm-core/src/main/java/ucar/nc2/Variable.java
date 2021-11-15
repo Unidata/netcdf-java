@@ -1253,6 +1253,10 @@ public class Variable implements ProxyReader, Comparable<Variable> {
       return false;
     }
 
+    public boolean isVariableLength() {
+      return this.dimensions.stream().anyMatch(Dimension::isVariableLength);
+    }
+
     public T setIsScalar() {
       this.dimensions = new ArrayList<>();
       return self();

@@ -388,17 +388,6 @@ public class NetcdfFile implements FileCacheable, Closeable {
 
 
   /**
-   * Returns the set of global attributes associated with this file, which are the attributes associated
-   * with the root group, or any subgroup. Alternatively, use groups.
-   * 
-   * @deprecated get attributes recursively through the root group, so that you know what group they belong to
-   */
-  @Deprecated
-  public ImmutableList<Attribute> getGlobalAttributes() {
-    return allAttributes;
-  }
-
-  /**
    * Get the NetcdfFile location. This is a URL, or a file pathname.
    *
    * @return location URL or file pathname.

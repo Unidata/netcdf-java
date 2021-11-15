@@ -32,7 +32,7 @@ import ucar.nc2.ProxyReader;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
-import ucar.nc2.dataset.CoordinateAxis1DTime;
+import ucar.nc2.internal.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.calendar.Calendar;
