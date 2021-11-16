@@ -44,7 +44,7 @@ public class TestGridNetcdfCSBuilder {
 
     CoordinateSystem.Builder<?> csb =
         CoordinateSystem.builder().setCoordAxesNames("xname yname").setCoordinateTransformName("horiz");
-    CoordinateSystem coordSys = csb.build(ncd, axes, allProjs);
+    CoordinateSystem coordSys = csb.build(axes, allProjs);
 
     // GridDataset
     GridNetcdfCSBuilder builder = new GridNetcdfCSBuilder();

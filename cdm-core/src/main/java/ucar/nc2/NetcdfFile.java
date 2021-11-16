@@ -18,8 +18,6 @@ import java.util.StringTokenizer;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import org.jdom2.Element;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ucar.array.StructureData;
 import ucar.nc2.internal.iosp.netcdf3.N3header;
 import ucar.nc2.internal.iosp.netcdf3.N3iosp;
@@ -93,8 +91,6 @@ import ucar.nc2.write.NcmlWriter;
 @Immutable
 public class NetcdfFile implements FileCacheable, Closeable {
 
-  private static final Logger log = LoggerFactory.getLogger(NetcdfFile.class);
-
   @Deprecated
   public static final String IOSP_MESSAGE_ADD_RECORD_STRUCTURE = "AddRecordStructure";
   public static final String IOSP_MESSAGE_RANDOM_ACCESS_FILE = "RandomAccessFile";
@@ -151,8 +147,8 @@ public class NetcdfFile implements FileCacheable, Closeable {
    * An embedded "/" is interpreted as group/group or group/variable.
    * An embedded "@" is interpreted as variable@attribute.
    * A name without an "@" is interpreted as an attribute in the root group.
-   * If the name actually has a ".", you must escape it (call NetcdfFiles.makeValidPathName(varname)). LOOK
-   * Any other chars may also be escaped, as they are removed before testing. LOOK
+   * If the name actually has a ".", you must escape it (call NetcdfFiles.makeValidPathName(varname)).
+   * Any other chars may also be escaped, as they are removed before testing.
    *
    * @param fullNameEscaped eg "attName", "@attName", "var@attname", "struct.member.@attName",
    *        "/group/subgroup/@attName", "/group/subgroup/var@attName", or "/group/subgroup/struct.member@attName"
@@ -388,17 +384,6 @@ public class NetcdfFile implements FileCacheable, Closeable {
 
 
   /**
-   * Returns the set of global attributes associated with this file, which are the attributes associated
-   * with the root group, or any subgroup. Alternatively, use groups.
-   * 
-   * @deprecated get attributes recursively through the root group, so that you know what group they belong to
-   */
-  @Deprecated
-  public ImmutableList<Attribute> getGlobalAttributes() {
-    return allAttributes;
-  }
-
-  /**
    * Get the NetcdfFile location. This is a URL, or a file pathname.
    *
    * @return location URL or file pathname.
@@ -468,7 +453,6 @@ public class NetcdfFile implements FileCacheable, Closeable {
   //////////////////////////////////////////////////////////////////////////////////////
   // Service Provider calls
   // All IO eventually goes through these calls.
-  // LOOK: these should not be public !!! not hitting variable cache
 
   protected Iterator<StructureData> getSequenceIterator(Sequence s, int bufferSize) throws IOException {
     Preconditions.checkNotNull(iosp);
@@ -616,10 +600,8 @@ public class NetcdfFile implements FileCacheable, Closeable {
   }
 
   ///////////////////////////////////////////////////////////////////////////////////
-  // deprecations
+  // caching
 
-  /** @deprecated */
-  @Deprecated
   @Override
   public long getLastModified() {
     if (iosp != null && iosp instanceof AbstractIOServiceProvider) {
@@ -630,48 +612,29 @@ public class NetcdfFile implements FileCacheable, Closeable {
   }
 
   /**
-   * Access to iosp debugging info.
-   *
-   * @param o must be a Variable, Dimension, Attribute, or Group
-   * @return debug info for this object.
-   * @deprecated do not use
-   */
-  @Deprecated
-  protected String toStringDebug(Object o) {
-    return (iosp == null) ? "" : iosp.toStringDebug(o);
-  }
-
-  /**
    * Public by accident.
    * Release any resources like file handles
-   *
-   * @deprecated do not use
    */
-  @Deprecated
   public void release() throws IOException {
-    if (iosp != null)
+    if (iosp != null) {
       iosp.release();
+    }
   }
 
   /**
    * Public by accident.
    * Reacquire any resources like file handles
-   *
-   * @deprecated do not use
    */
-  @Deprecated
   public void reacquire() throws IOException {
-    if (iosp != null)
+    if (iosp != null) {
       iosp.reacquire();
+    }
   }
 
   /**
    * Public by accident.
    * Optional file caching.
-   *
-   * @deprecated do not use
    */
-  @Deprecated
   public synchronized void setFileCache(FileCacheIF cache) {
     this.cache = cache;
   }
@@ -708,9 +671,9 @@ public class NetcdfFile implements FileCacheable, Closeable {
   private final Group rootGroup;
 
   @Nullable
-  private IOServiceProvider iosp; // LOOK when is this null ?
+  private IOServiceProvider iosp; // may be null when completely self contained, eg NcML
 
-  // LOOK can we get rid of internal caching?
+  // This allows cache management when closing the NetcdfFile object
   protected FileCacheIF cache;
 
   // "global view" over all groups.

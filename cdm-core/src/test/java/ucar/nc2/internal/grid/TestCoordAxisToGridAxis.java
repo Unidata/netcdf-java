@@ -14,6 +14,7 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.CoordinateAxis;
+import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.grid.CoordInterval;
@@ -22,6 +23,10 @@ import ucar.nc2.grid.GridAxisDependenceType;
 import ucar.nc2.grid.GridAxisPoint;
 import ucar.nc2.grid.GridAxisSpacing;
 import ucar.nc2.grid.Grids;
+import ucar.nc2.write.NcdumpArray;
+
+import java.io.IOException;
+import java.util.List;
 
 import static com.google.common.truth.Truth.assertThat;
 
@@ -177,6 +182,50 @@ public class TestCoordAxisToGridAxis {
       assertThat(dateUnit.makeFractionalCalendarDate(gridAxis.getCoordDouble(i)))
           .isEqualTo(orgUnits.makeCalendarDate(i));
     }
+  }
+
+
+  /*
+   * https://github.com/Unidata/netcdf-java/issues/592
+   * CoordinateAxis1D lonAxis = ...
+   * lonAxis.toString();
+   * double Lon(XDim=360);
+   * :units = "degrees_east";
+   * :_CoordinateAxisType = "Lon";
+   * lonAxis.isRegular() returns true
+   * lonAxis.getStart() returns -179.5
+   * lonAxis.getIncrement() returns 1.0
+   * lonAxis.getMinEdgeValue() returns invalid value -179.5 !
+   * lonAxis.getCoordEdge(0) returns valid value -180.0
+   * lonAxis.getMinEdgeValue() now returns valid value -180.0 !
+   */
+
+  @Test
+  public void testIssue592() throws IOException {
+    Group group = Group.builder().addDimension(Dimension.builder().setName("lon").setLength(360).build()).build();
+    List<Dimension> varDims = group.makeDimensionsList("lon");
+
+    VariableDS.Builder<?> vdsBuilder = VariableDS.builder().setName("LonCoord").setUnits("degrees_east")
+        .setArrayType(ArrayType.FLOAT).addDimensions(varDims).setAutoGen(-179.5, 1);
+
+    CoordinateAxis.Builder<?> builder = CoordinateAxis.fromVariableDS(vdsBuilder).setAxisType(AxisType.Lon);
+    CoordinateAxis axis = builder.build(group);
+
+    assertThat(axis.getRank()).isEqualTo(1);
+    assertThat(axis).isInstanceOf(CoordinateAxis1D.class);
+
+    CoordinateAxis1D axis1D = (CoordinateAxis1D) axis;
+    System.out.printf("axis1D values=%s%n", NcdumpArray.printArray(axis1D.readArray()));
+
+    CoordAxisToGridAxis convert = CoordAxisToGridAxis.create(axis1D, GridAxisDependenceType.independent, true);
+    GridAxisPoint extract = (GridAxisPoint) convert.extractGridAxis();
+
+    System.out.printf("extracted GridAxis=%s%n", extract);
+
+    assertThat(extract.getNominalSize()).isEqualTo(360);
+    assertThat(extract.getResolution()).isEqualTo(1);
+    assertThat(extract.getCoordInterval(0)).isEqualTo(CoordInterval.create(-180, -179));
+    assertThat(extract.getCoordInterval(extract.getNominalSize() - 1)).isEqualTo(CoordInterval.create(179, 180));
   }
 
 }

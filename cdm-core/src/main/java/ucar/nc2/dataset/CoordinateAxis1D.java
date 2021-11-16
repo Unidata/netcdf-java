@@ -8,9 +8,6 @@ import ucar.array.ArrayType;
 import ucar.array.Array;
 import ucar.array.Arrays;
 import ucar.array.Index;
-import ucar.array.InvalidRangeException;
-import ucar.array.Range;
-import ucar.array.Section;
 import ucar.nc2.Group;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CF;
@@ -18,94 +15,23 @@ import ucar.unidata.util.Format;
 import java.io.IOException;
 
 /**
- * A 1-dimensional Coordinate Axis. Its values must be monotonic.
- * <p>
- * If this is char valued, it will have rank 2, otherwise it will have rank 1.
- * <p>
- * If string or char valued, only <i>getCoordName()</i> can be called.
+ * A 1-dimensional Coordinate Axis, this is a legacy class, use GridAxis1D for new code.
+ * Values must be monotonic.
+ * If CHAR valued, it will have rank 2, otherwise it will have rank 1.
+ * If String or CHAR valued, only <i>getCoordName()</i> can be called.
  * <p>
  * If the coordinates are regularly spaced, <i>isRegular()</i> is true, and the values are equal to
  * <i>getStart()</i> + i * <i>getIncrement()</i>.
  * <p>
  * This will also set "cell bounds" for this axis. By default, the cell bounds are midway between the coordinates
- * values,
- * and are therefore contiguous, and can be accessed though getCoordEdge(i).
+ * values, and are therefore contiguous, and can be accessed though getCoordEdge(i).
+ * <p>
  * The only way the bounds can be set is if the coordinate variable has an attribute "bounds" that points to another
- * variable
- * bounds(ncoords,2). These contain the cell bounds, and must be ascending or descending as the coordinate values are.
+ * variable bounds(ncoords,2), containing the cell bounds, and must lie between the coordinate values.
  * In this case isContiguous() is true when bounds1(i+1) == bounds2(i) for all i.
- * 
- * @deprecated use GridAxis
  */
-@Deprecated
 public class CoordinateAxis1D extends CoordinateAxis {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinateAxis1D.class);
-
-  /**
-   * Create a new CoordinateAxis1D as a section of this CoordinateAxis1D.
-   *
-   * @param r the section range
-   * @return a new CoordinateAxis1D as a section of this CoordinateAxis1D
-   * @throws InvalidRangeException if IllegalRange
-   */
-  public CoordinateAxis1D section(Range r) throws InvalidRangeException {
-    Section section = Section.builder().appendRange(r).build();
-    CoordinateAxis1D result = (CoordinateAxis1D) section(section);
-    int len = r.length();
-
-    // deal with the midpoints, bounds
-    doRead();
-    if (isNumeric()) {
-      double[] new_mids = new double[len];
-      for (int idx = 0; idx < len; idx++) {
-        int old_idx = r.element(idx);
-        new_mids[idx] = coords[old_idx];
-      }
-      result.coords = new_mids;
-
-      if (isInterval) {
-        double[] new_bound1 = new double[len];
-        double[] new_bound2 = new double[len];
-        double[] new_edge = new double[len + 1];
-        for (int idx = 0; idx < len; idx++) {
-          int old_idx = r.element(idx);
-          new_bound1[idx] = bound1[old_idx];
-          new_bound2[idx] = bound2[old_idx];
-          new_edge[idx] = bound1[old_idx];
-          new_edge[idx + 1] = bound2[old_idx]; // all but last are overwritten
-        }
-        result.bound1 = new_bound1;
-        result.bound2 = new_bound2;
-        result.edge = new_edge;
-
-      } else {
-        makeBounds();
-        double[] new_edge = new double[len + 1];
-        for (int idx = 0; idx < len; idx++) {
-          int old_idx = r.element(idx);
-          new_edge[idx] = edge[old_idx];
-          new_edge[idx + 1] = edge[old_idx + 1]; // all but last are overwritten
-        }
-        result.edge = new_edge;
-      }
-    }
-
-    if (names != null) {
-      String[] new_names = new String[len];
-      for (int idx = 0; idx < len; idx++) {
-        int old_idx = r.element(idx);
-        new_names[idx] = names[old_idx];
-      }
-      result.names = new_names;
-    }
-
-    result.wasRead = true;
-    result.wasBoundsDone = true;
-    result.wasCalcRegular = false;
-    result.calcIsRegular();
-
-    return result;
-  }
 
   /**
    * The "name" of the ith coordinate. If nominal, this is all there is to a coordinate.
@@ -135,40 +61,6 @@ public class CoordinateAxis1D extends CoordinateAxis {
       throw new UnsupportedOperationException("CoordinateAxis1D.getCoordValue() on non-numeric");
     doRead();
     return coords[index];
-  }
-
-  @Override
-  public double getMinValue() {
-    if (!isNumeric())
-      throw new UnsupportedOperationException("CoordinateAxis1D.getCoordValue() on non-numeric");
-    doRead();
-    return Math.min(coords[0], coords[coords.length - 1]);
-  }
-
-  @Override
-  public double getMaxValue() {
-    if (!isNumeric())
-      throw new UnsupportedOperationException("CoordinateAxis1D.getCoordValue() on non-numeric");
-    doRead();
-    return Math.max(coords[0], coords[coords.length - 1]);
-  }
-
-  public double getMinEdgeValue() {
-    if (edge == null)
-      return getMinValue();
-    if (!isNumeric())
-      throw new UnsupportedOperationException("CoordinateAxis1D.getCoordValue() on non-numeric");
-    doRead();
-    return Math.min(edge[0], edge[edge.length - 1]);
-  }
-
-  public double getMaxEdgeValue() {
-    if (edge == null)
-      return getMaxValue();
-    if (!isNumeric())
-      throw new UnsupportedOperationException("CoordinateAxis1D.getCoordValue() on non-numeric");
-    doRead();
-    return Math.max(edge[0], edge[edge.length - 1]);
   }
 
   /**
@@ -226,7 +118,10 @@ public class CoordinateAxis1D extends CoordinateAxis {
     return edge.clone();
   }
 
-  @Override
+  /**
+   * If the edges are contiguous (true) or disjoint (false).
+   * Caution: many datasets do not explicitly specify this info, this is often a guess; default is true.
+   */
   public boolean isContiguous() {
     if (!wasBoundsDone)
       makeBounds(); // this sets isContiguous
@@ -307,11 +202,6 @@ public class CoordinateAxis1D extends CoordinateAxis {
     return e;
   }
 
-  public double getCoordBoundsMidpoint(int i) {
-    double[] bounds = getCoordBounds(i);
-    return (bounds[0] + bounds[1]) / 2;
-  }
-
   /**
    * Given a coordinate value, find what grid element contains it.
    * This means that
@@ -382,22 +272,6 @@ public class CoordinateAxis1D extends CoordinateAxis {
       return 0;
     }
 
-    /*
-     * if (axisType == AxisType.Lon) {
-     * double maxValue = this.start + this.increment * n;
-     * if (betweenLon(coordValue, this.start, maxValue)) {
-     * double distance = LatLonPointImpl.getClockwiseDistanceTo(this.start, coordValue);
-     * double exactNumSteps = distance / this.increment;
-     * // This axis might wrap, so we make sure that the returned index is within range
-     * return ((int) Math.round(exactNumSteps)) % (int) this.getSize();
-     * 
-     * } else if (coordValue < this.start) {
-     * return bounded ? 0 : -1;
-     * } else {
-     * return bounded ? n - 1 : -1;
-     * }
-     * }
-     */
     double distance = coordValue - this.start;
     double exactNumSteps = distance / this.increment;
     int index = (int) Math.round(exactNumSteps);
@@ -406,12 +280,6 @@ public class CoordinateAxis1D extends CoordinateAxis {
     else if (index >= n)
       return bounded ? n - 1 : -1;
     return index;
-  }
-
-  private boolean betweenLon(double lon, double lonBeg, double lonEnd) {
-    while (lon < lonBeg)
-      lon += 360;
-    return (lon >= lonBeg) && (lon <= lonEnd);
   }
 
   /**
@@ -566,16 +434,6 @@ public class CoordinateAxis1D extends CoordinateAxis {
   // check if Regular
 
   /**
-   * Get starting value if isRegular()
-   *
-   * @return starting value if isRegular()
-   */
-  public double getStart() {
-    calcIsRegular();
-    return start;
-  }
-
-  /**
    * Get increment value if isRegular()
    *
    * @return increment value if isRegular()
@@ -642,53 +500,6 @@ public class CoordinateAxis1D extends CoordinateAxis {
     }
   }
 
-  /**
-   * If longitude coordinate is not monotonic, construct a new one that is.
-   * LOOK Should this be here? Perhaps its a Grid method?
-   */
-  public CoordinateAxis1D correctLongitudeWrap() {
-    // correct non-monotonic longitude coords
-    if (axisType != AxisType.Lon) {
-      return this;
-    }
-    doRead();
-
-    boolean monotonic = true;
-    for (int i = 0; i < coords.length - 1; i++) {
-      monotonic &= isAscending ? coords[i] < coords[i + 1] : coords[i] > coords[i + 1];
-    }
-    if (monotonic) {
-      return this;
-    }
-
-    CoordinateAxis1D.Builder<?> builder = this.toBuilder();
-    boolean cross = false;
-    if (isAscending) {
-      for (int i = 0; i < coords.length; i++) {
-        if (cross)
-          coords[i] += 360;
-        if (!cross && (i < coords.length - 1) && (coords[i] > coords[i + 1]))
-          cross = true;
-      }
-    } else {
-      for (int i = 0; i < coords.length; i++) {
-        if (cross)
-          coords[i] -= 360;
-        if (!cross && (i < coords.length - 1) && (coords[i] < coords[i + 1]))
-          cross = true;
-      }
-    }
-
-    Array cachedData = Arrays.factory(ArrayType.DOUBLE, getShape(), coords);
-    if (getArrayType() != ArrayType.DOUBLE)
-      cachedData = Arrays.toDouble(cachedData);
-
-    builder.setSourceData(cachedData);
-
-    // LOOK replace in parentGroup? too late for that.
-    return builder.build(this.getParentGroup());
-  }
-
   // only used if String
   private void readStringValues() {
     int count = 0;
@@ -723,9 +534,8 @@ public class CoordinateAxis1D extends CoordinateAxis {
   }
 
   protected void readValues() {
-    Array data;
+    Array<?> data;
     try {
-      // setUseNaNs(false); // missing values not allowed LOOK not true for point data !!
       data = readArray();
       // if (!hasCachedData()) setCachedData(data, false); //cache data for subsequent reading
     } catch (IOException ioe) {
@@ -768,8 +578,6 @@ public class CoordinateAxis1D extends CoordinateAxis {
 
     Array<Number> data;
     try {
-      // LOOK this seems bogus
-      // boundsVar.removeEnhancement(NetcdfDataset.Enhance.ConvertMissing); // Don't convert missing values to NaN.
       data = (Array<Number>) boundsVar.readArray();
     } catch (IOException e) {
       log.warn("CoordinateAxis1D.hasBounds read failed ", e);
@@ -849,6 +657,8 @@ public class CoordinateAxis1D extends CoordinateAxis {
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////
+  protected boolean isContiguous;
+
   // These are all calculated, I think?
   protected boolean wasRead; // have the data values been read
   private boolean wasBoundsDone; // have we created the bounds arrays if exists ?
@@ -869,22 +679,19 @@ public class CoordinateAxis1D extends CoordinateAxis {
 
   protected CoordinateAxis1D(Builder<?> builder, Group parentGroup) {
     super(builder, parentGroup);
+    this.isContiguous = builder.isContiguous;
   }
 
   public Builder<?> toBuilder() {
     return addLocalFieldsToBuilder(builder());
   }
 
-  // Add local fields to the passed - in builder.
+  // Add local fields to the Builder.
   protected Builder<?> addLocalFieldsToBuilder(Builder<? extends Builder<?>> b) {
-    return (Builder<?>) super.addLocalFieldsToBuilder(b);
+    b.setIsContiguous(this.isContiguous);
+    return (CoordinateAxis1D.Builder<?>) super.addLocalFieldsToBuilder(b);
   }
 
-  /**
-   * Get Builder for this class that allows subclassing.
-   * 
-   * @see "https://community.oracle.com/blogs/emcmanus/2010/10/24/using-builder-pattern-subclasses"
-   */
   public static Builder<?> builder() {
     return new Builder2();
   }
@@ -899,8 +706,14 @@ public class CoordinateAxis1D extends CoordinateAxis {
   @Deprecated
   public static abstract class Builder<T extends Builder<T>> extends CoordinateAxis.Builder<T> {
     private boolean built;
+    protected boolean isContiguous = true;
 
     protected abstract T self();
+
+    public T setIsContiguous(boolean isContiguous) {
+      this.isContiguous = isContiguous;
+      return self();
+    }
 
     public CoordinateAxis1D build(Group parentGroup) {
       if (built)

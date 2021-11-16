@@ -8,12 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ucar.nc2.dataset.CoordinateAxis1D;
-import ucar.nc2.dataset.CoordinateAxis1DTime;
+import ucar.nc2.internal.dataset.CoordinateAxis1DTime;
 import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.calendar.CalendarDateFormatter;
 import ucar.nc2.grid.GridAxisPoint;
 import ucar.nc2.grid.GridTimeCoordinateSystem;
-import ucar.ui.util.NamedObject;
 
 /** Utililies for creating named objects. */
 public class NamedObjects {

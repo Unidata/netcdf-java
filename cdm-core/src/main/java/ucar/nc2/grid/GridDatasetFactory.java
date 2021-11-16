@@ -42,17 +42,17 @@ public class GridDatasetFactory {
       }
     }
 
-    // check if its a GRIB collection LOOK why not a GridDatasetProvider?
+    // check if its a GRIB collection
     if (durl.getServiceType() == null) { // skip GRIB check for anything not a plain ole file
       GribOpenAttempt openAttempt = openGrib(endpoint, errLog);
       if (openAttempt.isGrib) {
         return openAttempt.coverage;
       }
     }
+
     // this will still open a GRIB Collection, but it will be built on top of NetcdfDataset.
     // probably ok for small collections, though it differs from the direct GRIB.
     // if tests start failing, check if GRIB module is installed
-
     return openNetcdfAsGrid(endpoint, errLog);
   }
 
@@ -101,7 +101,6 @@ public class GridDatasetFactory {
     List<Object> notGribThrowables = Arrays.asList(IllegalAccessException.class, IllegalArgumentException.class,
         ClassNotFoundException.class, NoSuchMethodException.class, NoSuchMethodError.class);
 
-    // LOOK what happens when grib module is not present?
     try {
       Class<?> c = GridDatasetFactory.class.getClassLoader().loadClass("ucar.nc2.grib.grid.GribGridDataset");
       Method method = c.getMethod("open", String.class, Formatter.class);

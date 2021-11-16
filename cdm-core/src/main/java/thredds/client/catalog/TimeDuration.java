@@ -54,7 +54,7 @@ public class TimeDuration {
     // see if its blank
     if (text.isEmpty()) {
       try {
-        TimeUnit timeUnit = new TimeUnit("1 sec"); // LOOK why is this needed?
+        TimeUnit timeUnit = new TimeUnit("1 sec");
         return new TimeDuration(text, timeUnit);
       } catch (Exception e) { // cant happen
         throw new java.text.ParseException(e.getMessage(), 0);

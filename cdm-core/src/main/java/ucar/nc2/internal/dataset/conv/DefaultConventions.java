@@ -217,7 +217,7 @@ public class DefaultConventions extends CoordSystemBuilder {
           if (values.getArrayType() == ArrayType.STRING) {
             Array<String> svalues = (Array<String>) values;
             String firstStringValue = svalues.getScalar();
-            if (CalendarDate.fromUdunitIsoDate(null, firstStringValue).isPresent()) { // valid iso date string LOOK
+            if (CalendarDate.fromUdunitIsoDate(null, firstStringValue).isPresent()) {
               return AxisType.Time;
             }
           }

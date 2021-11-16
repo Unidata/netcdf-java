@@ -13,7 +13,7 @@ import ucar.array.Array;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.CoordinateAxis;
-import ucar.nc2.dataset.CoordinateAxisTimeHelper;
+import ucar.nc2.internal.dataset.CoordinateAxisTimeHelper;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.calendar.Calendar;

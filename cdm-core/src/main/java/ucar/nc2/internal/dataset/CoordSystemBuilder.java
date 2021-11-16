@@ -17,6 +17,7 @@ import ucar.array.ArrayType;
 import ucar.array.Arrays;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
+import ucar.nc2.Dimensions;
 import ucar.nc2.Group;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
@@ -452,8 +453,8 @@ public class CoordSystemBuilder {
       // look for vars with those dimensions
       for (VarProcess vp : varList) {
         if (!vp.hasCoordinateSystem() && vp.isData() && (csVar.cs != null)) {
-          if (CoordinateSystem.isSubset(dimList, vp.vb.getDimensionNamesAll())
-              && CoordinateSystem.isSubset(vp.vb.getDimensionNamesAll(), dimList)) {
+          if (Dimensions.isSubset(dimList, vp.vb.getDimensionNamesAll())
+              && Dimensions.isSubset(vp.vb.getDimensionNamesAll(), dimList)) {
             vp.coordSysNames.add(csVar.cs.coordAxesNames);
           }
         }
@@ -494,7 +495,7 @@ public class CoordSystemBuilder {
           continue;
         }
 
-        String csName = coords.makeCanonicalName(dataAxesList);
+        String csName = CoordinatesHelper.makeCanonicalName(dataAxesList);
         Optional<CoordinateSystem.Builder<?>> csOpt = coords.findCoordinateSystem(csName);
         if (csOpt.isPresent() && coords.isComplete(csOpt.get(), vp.vb)) {
           vp.coordSysNames.add(csName);
@@ -542,7 +543,7 @@ public class CoordSystemBuilder {
         continue;
       }
 
-      String csName = coords.makeCanonicalName(axisList);
+      String csName = CoordinatesHelper.makeCanonicalName(axisList);
       Optional<CoordinateSystem.Builder<?>> csOpt = coords.findCoordinateSystem(csName);
       boolean okToBuild = false;
 
@@ -893,10 +894,7 @@ public class CoordSystemBuilder {
       if (axisType != null) {
         axis.setAxisType(axisType);
         axis.addAttribute(new Attribute(_Coordinate.AxisType, axisType.toString()));
-
-        if (((axisType == AxisType.Height) || (axisType == AxisType.Pressure) || (axisType == AxisType.GeoZ))
-            && (positive != null)) {
-          axis.setPositive(positive);
+        if (axisType.isVert() && positive != null) {
           axis.addAttribute(new Attribute(_Coordinate.ZisPositive, positive));
         }
       }
@@ -973,7 +971,6 @@ public class CoordSystemBuilder {
         }
       }
 
-      // LOOK
       if (addCoordVariables) {
         for (Dimension d : vb.getDimensions()) {
           for (VarProcess vp : coordVarsForDimension.get(DimensionWithGroup.create(d, gb))) {

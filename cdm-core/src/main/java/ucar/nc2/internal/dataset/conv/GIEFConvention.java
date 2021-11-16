@@ -58,7 +58,6 @@ public class GIEFConvention extends CoordSystemBuilder {
     Attribute translation = rootGroup.getAttributeContainer().findAttributeIgnoreCase("translation");
     Attribute affine = rootGroup.getAttributeContainer().findAttributeIgnoreCase("affine_transformation");
 
-    // LOOK only handling the 1D case
     // add lat
     double startLat = translation.getNumericValue(1).doubleValue();
     double incrLat = affine.getNumericValue(6).doubleValue();

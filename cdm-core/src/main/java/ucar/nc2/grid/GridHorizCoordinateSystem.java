@@ -381,7 +381,7 @@ public class GridHorizCoordinateSystem {
    */
   public Optional<CoordReturn> findXYindexFromCoord(double x, double y) {
     if (xaxis.getAxisType() == AxisType.Lon) {
-      x = LatLonPoints.lonNormalFrom(x, xaxis.getCoordinate(0).doubleValue()); // LOOK ??
+      x = LatLonPoints.lonNormalFrom(x, xaxis.getCoordinate(0).doubleValue());
     }
 
     int xindex = SubsetHelpers.findCoordElement(xaxis, x, false);

@@ -19,7 +19,7 @@ import java.util.StringTokenizer;
  * A section of multidimensional array indices.
  * Represented as List<Range>.
  * <p/>
- * TODO evaluate use of null in ver7
+ * TODO evaluate use of null.
  */
 @Immutable
 public class Section {
@@ -670,7 +670,7 @@ public class Section {
   public static class Builder {
     List<Range> ranges = new ArrayList<>();
 
-    /** Append a Range to the Section, LOOK may be null. */
+    /** Append a Range to the Section, may be null. */
     public Builder appendRange(@Nullable Range range) {
       ranges.add(range);
       return this;

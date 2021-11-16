@@ -47,7 +47,7 @@ public class TestCoordSystemBuilder {
 
     CoordinateSystem.Builder<?> builder =
         CoordinateSystem.builder().setCoordAxesNames("xname yname").setCoordinateTransformName("horiz");
-    CoordinateSystem coordSys = builder.build(ncd, axes, allProjs);
+    CoordinateSystem coordSys = builder.build(axes, allProjs);
 
     CoordinateAxis xaxis = coordSys.findAxis(AxisType.GeoX);
     assertThat(xaxis).isNotNull();
@@ -65,11 +65,8 @@ public class TestCoordSystemBuilder {
     assertThat(coordSys.isGeoReferencing()).isTrue();
     assertThat(coordSys.isGeoXY()).isTrue();
     assertThat(coordSys.isLatLon()).isFalse();
-    assertThat(coordSys.isRadial()).isFalse();
-    assertThat(coordSys.isRegular()).isTrue();
-    assertThat(coordSys.isProductSet()).isFalse();
 
-    CoordinateSystem copy = coordSys.toBuilder().build(ncd, axes, allProjs);
+    CoordinateSystem copy = coordSys.toBuilder().build(axes, allProjs);
     assertThat(copy.findAxis(AxisType.GeoX)).isEqualTo(coordSys.findAxis(AxisType.GeoX));
     assertThat(copy.findAxis(AxisType.GeoY)).isEqualTo(coordSys.findAxis(AxisType.GeoY));
     assertThat(copy).isEqualTo(coordSys);
@@ -91,7 +88,7 @@ public class TestCoordSystemBuilder {
 
     CoordinateSystem.Builder<?> builder =
         CoordinateSystem.builder().setCoordAxesNames("xname yname").setCoordinateTransformName("horiz");
-    CoordinateSystem coordSys = builder.build(ncd, axes, ImmutableList.of());
+    CoordinateSystem coordSys = builder.build(axes, ImmutableList.of());
 
     CoordinateAxis xaxis = coordSys.findAxis(AxisType.GeoX);
     assertThat(xaxis).isNotNull();

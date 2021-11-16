@@ -563,11 +563,6 @@ public class NetcdfFiles {
             log.info("ungzipped {} to {}", filename, uncompressedFile);
         }
       } catch (Exception e) {
-
-        // appears we have to close before we can delete LOOK
-        // fout.close();
-        // fout = null;
-
         // dont leave bad files around
         if (uncompressedFile.exists()) {
           if (!uncompressedFile.delete())

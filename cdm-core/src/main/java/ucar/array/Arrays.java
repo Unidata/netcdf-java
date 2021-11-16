@@ -20,7 +20,7 @@ public class Arrays {
   /**
    * Create Array using java array of T, or java primitive array, as storage.
    * Do not use this for Vlens or Structures.
-   * LOOK the dataArray is not copied, for efficiency. The calling routine must not reuse the primitive array.
+   * The dataArray is not copied, for efficiency. The calling routine must not reuse the primitive array.
    *
    * @param dataType data type of the data. Vlen detected from the shape.
    * @param shape multidimensional shape, must have same total length as dataArray.

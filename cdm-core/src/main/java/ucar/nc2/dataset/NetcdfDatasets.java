@@ -257,8 +257,7 @@ public class NetcdfDatasets {
 
     // reopen the file adding the record Structure
     DatasetUrl durl = DatasetUrl.findDatasetUrl(orgFile.getLocation());
-    // LOOK we dont know if it was acquired or opened
-    // LOOK we dont know what the buffer size was
+    // Note that we dont know if it was acquired or opened, or what the buffer size was
     NetcdfFile ncfile = NetcdfDatasets.openFile(durl, -1, null, NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
     NetcdfDataset.Builder<?> builder = ncd.toBuilder().setOrgFile(ncfile);
     ncd.close();

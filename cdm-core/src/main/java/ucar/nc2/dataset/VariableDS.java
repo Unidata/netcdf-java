@@ -11,8 +11,6 @@ import com.google.common.collect.Sets;
 import ucar.array.Array;
 import ucar.array.ArrayType;
 import ucar.array.Arrays;
-import ucar.array.InvalidRangeException;
-import ucar.array.Section;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.NetcdfDataset.Enhance;
@@ -23,6 +21,7 @@ import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.Indent;
 
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -38,7 +37,7 @@ import java.util.Set;
  * <li>NcML modifications to underlying Variable</li>
  * </ol>
  */
-// TODO make Immutable
+@Immutable
 public class VariableDS extends Variable implements VariableEnhanced {
 
   /**
@@ -157,15 +156,6 @@ public class VariableDS extends Variable implements VariableEnhanced {
     return orgName;
   }
 
-  /*
-   * Cant do this, aggregation dependent (!)
-   * 
-   * @Override
-   * public Object getSPobject() {
-   * return (orgVar != null) ? orgVar.getSPobject() : null;
-   * }
-   */
-
   @Override
   @Nullable
   public String lookupEnumString(int val) {
@@ -191,7 +181,7 @@ public class VariableDS extends Variable implements VariableEnhanced {
   @Override
   public void setCaching(boolean caching) {
     if (caching && orgVar != null) {
-      orgVar.setCaching(true); // propagate down only if true LOOK why?
+      orgVar.setCaching(true); // propagate down only if true
     }
   }
 
@@ -233,19 +223,10 @@ public class VariableDS extends Variable implements VariableEnhanced {
   @Override
   public ucar.array.Array<?> proxyReadArray(Variable client, CancelTask cancelTask) throws IOException {
     if (orgVar == null) {
-      // LOOK where is this used? Do we need to make fast?
       return getMissingDataArray(getShape());
     }
 
     return orgVar.readArray();
-  }
-
-  // section of regular Variable
-  @Override
-  @Deprecated
-  protected Array<?> _read(Section section) throws IOException, InvalidRangeException {
-    Array<?> result = super._read(section);
-    return convertArray(result);
   }
 
   @Override
@@ -276,7 +257,6 @@ public class VariableDS extends Variable implements VariableEnhanced {
     }
 
     if (orgVar == null) {
-      // LOOK where is this used? Do we need to make fast?
       return getMissingDataArray(section.getShape());
     }
 
@@ -298,6 +278,7 @@ public class VariableDS extends Variable implements VariableEnhanced {
     return Arrays.factoryFill(getArrayType(), shape, fillValue);
   }
 
+  /** Visible for testing, do not use directly. */
   @VisibleForTesting
   public EnhanceScaleMissingUnsigned scaleMissingUnsignedProxy() {
     return scaleMissingUnsignedProxy;

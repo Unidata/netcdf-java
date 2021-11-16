@@ -809,20 +809,10 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     }
   }
 
-  /**
-   * release any resources like file handles.
-   * 
-   * @deprecated do not use.
-   */
-  @Deprecated
+  @Override
   public void release() {}
 
-  /**
-   * reacquire any resources like file handles.
-   * 
-   * @deprecated do not use.
-   */
-  @Deprecated
+  @Override
   public void reacquire() {}
 
   @Override
@@ -836,8 +826,6 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     return indexFile.lastModified();
   }
 
-  /** @deprecated do not use */
-  @Deprecated
   @Override
   public synchronized void setFileCache(FileCacheIF fileCache) {
     this.objCache = fileCache;

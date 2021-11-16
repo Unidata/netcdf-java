@@ -123,11 +123,6 @@ abstract class AbstractVerticalTransform implements VerticalTransform {
     return Arrays.factory(ArrayType.DOUBLE, new int[] {nz}, result);
   }
 
-  @Override
-  public AbstractVerticalTransform subset(Range t_range, Range z_range, Range y_range, Range x_range) {
-    return new VerticalTransformSubset(this, t_range, z_range, y_range, x_range);
-  }
-
   static String getFormula(AttributeContainer ctv, Formatter errlog) {
     String formula = ctv.findAttributeString("formula_terms", null);
     if (null == formula) {

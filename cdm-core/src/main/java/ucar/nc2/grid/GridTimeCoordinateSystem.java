@@ -47,8 +47,8 @@ public abstract class GridTimeCoordinateSystem {
 
   /**
    * Get the ith timeOffset axis. The offsets are reletive to getRuntimeDate(int runIdx), in units of getOffsetPeriod().
-   * if type=Observation, SingleRuntime, runIdx is ignored, since the offsets are
-   * always the same, by convention, pass in 0. LOOK does unit = getOffsetPeriod?
+   * if type=Observation, SingleRuntime, runIdx is ignored, since the offsets are always the same, by convention,
+   * pass in 0.
    */
   public GridAxis<?> getTimeOffsetAxis(int runIdx) {
     return timeOffsetAxis;
@@ -130,7 +130,6 @@ public abstract class GridTimeCoordinateSystem {
 
 
   /** The GridTimeCoordinateSystem.Type. */
-  // LOOK public by necessity, but would be nice not to be in the public API ??
   public Type getType() {
     return type;
   }

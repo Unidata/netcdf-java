@@ -13,8 +13,7 @@ import javax.annotation.concurrent.Immutable;
 final class ArrayFloat extends Array<Float> {
   private final Storage<Float> storageF;
 
-  // LOOK whats the point if you cant change the storage?
-  /** Create an empty Array of type float and the given shape. */
+  /** Create an empty Array of type float and the given shape, with fill value. */
   ArrayFloat(int[] shape, float fillValue) {
     super(ArrayType.FLOAT, shape);
     float[] parray = new float[(int) indexFn.length()];

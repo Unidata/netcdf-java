@@ -144,7 +144,7 @@ public class IFPSConvention extends CoordSystemBuilder {
     }
     Array<?> timesArray = timesAtt.getArrayValues();
 
-    // get every other one LOOK this is awkward
+    // get every other one
     try {
       int n = (int) timesArray.getSize();
       Section.Builder sectionb = Section.builder();

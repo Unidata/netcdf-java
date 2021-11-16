@@ -65,7 +65,6 @@ public class GridAxisInterval extends GridAxis<CoordInterval> implements Iterabl
     return (getCoordEdge1(index) + getCoordEdge2(index)) / 2;
   }
 
-  // LOOK double vs int
   private double getCoordEdge1(int index) {
     if (index < 0 || index >= ncoords) {
       throw new IllegalArgumentException("Index out of range=" + index);
@@ -119,13 +118,11 @@ public class GridAxisInterval extends GridAxis<CoordInterval> implements Iterabl
     }
   }
 
-
-  // LOOK cant let values escape
+  // cant let values escape
   @Override
   public int binarySearch(double want) {
     return Arrays.binarySearch(values, want); // LOOK what about discontinuous ?? wont work??
   }
-
 
   //////////////////////////////////////////////////////////////
   final int ncoords; // number of coordinates

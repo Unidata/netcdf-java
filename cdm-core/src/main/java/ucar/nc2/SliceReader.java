@@ -29,7 +29,7 @@ class SliceReader implements ProxyReader {
   private final int sliceDim; // dimension index into original
   private final Section slice; // section of the original
 
-  // LOOK could do check that slice is compatible with client
+  // TODO check that slice is compatible with client
   SliceReader(Variable orgClient, int dim, Section slice) {
     this.orgClient = orgClient;
     this.sliceDim = dim;

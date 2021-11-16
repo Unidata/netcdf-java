@@ -179,7 +179,6 @@ public final class StructureDataArray extends Array<StructureData> {
   /**
    * Extract data for one member, over all structures.
    * The resulting shape is the structure shape appended to the member's shape.
-   * LOOK problem with this for sequences
    *
    * @param m get all data for this StructureMembers.Member.
    */
@@ -205,7 +204,6 @@ public final class StructureDataArray extends Array<StructureData> {
   /**
    * Extract data for one member, over all nested structures.
    * The resulting shape is the structure shape appended to the member's shape.
-   * LOOK problem with this for sequences
    *
    * @param nestedStruct the parent Stucture of m.
    * @param m get all data for this StructureMembers.Member.

@@ -175,7 +175,6 @@ public class CF1Convention extends CSMConvention {
           if (sname.equalsIgnoreCase(vertical_coord)) {
             vb.addAttribute(new Attribute(_Coordinate.TransformType, CDM.Vertical));
             if (vb.getAttributeContainer().findAttribute(_Coordinate.Axes) == null) {
-              // LOOK: may also be time dependent; was getFullName()
               vb.addAttribute(new Attribute(_Coordinate.Axes, vb.shortName));
             }
           }

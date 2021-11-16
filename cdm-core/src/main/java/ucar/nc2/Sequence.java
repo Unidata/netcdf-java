@@ -97,7 +97,6 @@ public class Sequence extends Structure implements Iterable<ucar.array.Structure
       if (built)
         throw new IllegalStateException("already built");
       built = true;
-      // LOOK mutable!
       this.setArrayType(ArrayType.SEQUENCE);
       return new Sequence(this, parentGroup);
     }

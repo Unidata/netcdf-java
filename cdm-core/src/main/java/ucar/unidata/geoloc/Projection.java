@@ -27,7 +27,6 @@ public interface Projection {
   }
 
   /** Convert a LatLonPoint to projection coordinates. */
-  // LOOK can this be null?
   ProjectionPoint latLonToProj(LatLonPoint latlon);
 
   /** Convert projection x, y to LatLonPoint point. */
@@ -36,7 +35,6 @@ public interface Projection {
   }
 
   /** Convert projection coordinates to a LatLonPoint. */
-  // LOOK can this be null?
   LatLonPoint projToLatLon(ProjectionPoint ppt);
 
   /**

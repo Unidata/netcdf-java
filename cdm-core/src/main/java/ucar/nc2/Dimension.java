@@ -123,7 +123,7 @@ public class Dimension implements Comparable<Dimension> {
   /** Make the full name, starting with any group which contains the dimension in itself or a parent group. */
   public String makeFullName(Group containingGroup) {
     if (!isShared) {
-      return String.format("%d", getLength()); // LOOK ??
+      return String.format("%d", getLength());
     }
     Preconditions.checkNotNull(containingGroup);
     Group group = containingGroup;

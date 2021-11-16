@@ -56,7 +56,7 @@ public class GridSubset {
   public static final String projBB = "projBB"; // value = ProjectionRect
   public static final String horizStride = "horizStride"; // value = Integer
 
-  // cant use these for selecting, used for validation LOOK not being set
+  // cant use these for selecting, used for validation
   public static final String timeOffsetDate = "timeOffsetDate"; // value = CalendarDate
   public static final String timeOffsetUnit = "timeOffsetUnit"; // value = CalendarDateUnit
 

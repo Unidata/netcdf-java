@@ -353,7 +353,7 @@ public class Variable implements ProxyReader, Comparable<Variable> {
     sectionV.resetCache(); // dont cache
     sectionV.setIsCaching(false); // dont cache
 
-    // replace dimensions if needed !! LOOK not shared
+    // replace dimensions if needed, note not shared
     int[] shape = subsection.getShape();
     ArrayList<Dimension> dimensions = new ArrayList<>();
     for (int i = 0; i < getRank(); i++) {
@@ -723,7 +723,6 @@ public class Variable implements ProxyReader, Comparable<Variable> {
     } else
       buf.format("%s", getArrayType().toCdl());
 
-    // if (isVariableLength) buf.append("(*)"); // LOOK
     buf.format(" ");
     getNameAndDimensions(buf, useFullName, strict);
     buf.format(";");
@@ -769,9 +768,10 @@ public class Variable implements ProxyReader, Comparable<Variable> {
       return false;
     if (dimensions.size() != o.getDimensions().size())
       return false;
-    for (int i = 0; i < dimensions.size(); i++)
+    for (int i = 0; i < dimensions.size(); i++) {
       if (!getDimension(i).equals(o.getDimension(i)))
         return false;
+    }
 
     return true;
   }
@@ -882,20 +882,6 @@ public class Variable implements ProxyReader, Comparable<Variable> {
     return !(this instanceof Structure) && !isVariableLength && (getSize() * getElementSize() < getSizeToCache());
   }
 
-  /** Remove any cached values (but not srcData) */
-  public void invalidateCache() {
-    cache.setCachedData(null);
-  }
-
-  // LOOK
-  protected void setCachedData(Array<?> cacheData) {
-    if ((cacheData != null) && (cacheData.getArrayType() != getArrayType())) {
-      throw new IllegalArgumentException(
-          "setCachedData type=" + cacheData.getArrayType() + " incompatible with variable type=" + getArrayType());
-    }
-    this.cache.setCachedData(cacheData);
-  }
-
   /** If this has cached data, or source data. */
   public boolean hasCachedData() {
     return (null != cache.cacheData) || (null != cache.srcData);
@@ -1000,7 +986,6 @@ public class Variable implements ProxyReader, Comparable<Variable> {
       }
     }
 
-    // LOOK cant use findVariableLocal because variables not yet built.
     // possible slice of another variable
     if (builder.slicer != null) {
       int dim = builder.slicer.dim;
@@ -1016,7 +1001,6 @@ public class Variable implements ProxyReader, Comparable<Variable> {
 
     this.dimensions = ImmutableList.copyOf(dims);
     if (builder.autoGen != null) {
-      // LOOK could keep Autogen as part of cache
       this.cache.srcData = builder.autoGen.makeDataArray(getArrayType(), this.dimensions);
     }
 
@@ -1029,10 +1013,10 @@ public class Variable implements ProxyReader, Comparable<Variable> {
         if (len > 0) {
           list.add(new Range(d.getShortName(), 0, len - 1));
         } else if (len == 0) {
-          list.add(Range.EMPTY); // LOOK empty not named
+          list.add(Range.EMPTY);
         } else {
           assert d.isVariableLength();
-          list.add(Range.VLEN); // LOOK vlen not named
+          list.add(Range.VLEN);
         }
       }
       this.shapeAsSection = new Section(list);
@@ -1253,6 +1237,10 @@ public class Variable implements ProxyReader, Comparable<Variable> {
       return false;
     }
 
+    public boolean isVariableLength() {
+      return this.dimensions.stream().anyMatch(Dimension::isVariableLength);
+    }
+
     public T setIsScalar() {
       this.dimensions = new ArrayList<>();
       return self();
@@ -1368,11 +1356,6 @@ public class Variable implements ProxyReader, Comparable<Variable> {
 
     public T setIsCaching(boolean caching) {
       this.cache.isCaching = caching;
-      return self();
-    }
-
-    public T setSizeToCacheInBytes(int sizeToCacheBytes) {
-      this.cache.sizeToCacheBytes = sizeToCacheBytes;
       return self();
     }
 

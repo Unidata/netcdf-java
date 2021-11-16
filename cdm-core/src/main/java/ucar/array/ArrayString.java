@@ -8,7 +8,10 @@ import com.google.common.base.Preconditions;
 import java.util.Iterator;
 import javax.annotation.concurrent.Immutable;
 
-/** Concrete implementation of Array specialized for Strings. */
+/**
+ * Concrete implementation of Array specialized for Strings.
+ * A String might be null.
+ */
 @Immutable
 final class ArrayString extends Array<String> {
   private final Storage<String> storage;
@@ -100,7 +103,6 @@ final class ArrayString extends Array<String> {
 
     StorageS(String[] storage) {
       this.storage = storage;
-      // LOOK are you allowed to have null strings?
     }
 
     @Override
