@@ -48,13 +48,11 @@ public class ACDD {
   public static final String processing_level = "processing_level"; // metadata/documentation[@type="processing_level"]
   public static final String acknowledgement = "acknowledgement"; // metadata/documentation[@type="funding"]
 
-  public static final String standard_name_vocabulary = "standard_name_vocabulary"; // The unique name or identifier of
-                                                                                    // the controlled vocabulary from
-                                                                                    // which
-  // variable standard names are taken. If more than one controlled vocabulary is used, each may
-  // be presented with a prefix (e.g., "CF:NetCDF COARDS Climate and Forecast Standard Names")
-  // and a following comma, so that standard names may optionally be prefixed with the controlled
-  // vocabulary key. LOOK
+  // The unique name or identifier of the controlled vocabulary from which variable standard names are taken. If more
+  // than one controlled vocabulary is used, each may be presented with a prefix (e.g., "CF:NetCDF COARDS Climate and
+  // Forecast Standard Names") and a following comma, so that standard names may optionally be prefixed with the
+  // controlled vocabulary key.
+  public static final String standard_name_vocabulary = "standard_name_vocabulary";
 
   public static final String license = "license"; // metadata/documentation[@type="rights"]
 

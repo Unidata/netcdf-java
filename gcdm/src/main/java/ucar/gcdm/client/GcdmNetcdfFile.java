@@ -46,7 +46,7 @@ public class GcdmNetcdfFile extends NetcdfFile {
   }
 
   @Override
-  public Iterator<ucar.array.StructureData> getSequenceIterator(Sequence s, int bufferSize) throws IOException {
+  protected Iterator<ucar.array.StructureData> getSequenceIterator(Sequence s, int bufferSize) throws IOException {
     ucar.array.Array<?> data = readArrayData(s, s.getSection());
     Preconditions.checkNotNull(data);
     Preconditions.checkArgument(data instanceof StructureDataArray);

@@ -34,7 +34,6 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
     return ncoords;
   }
 
-  // LOOK maybe this method doesnt belong in this API?
   @Override
   public Optional<GridAxisPoint> subset(GridSubset params, Formatter errlog) {
     if (params == null || params.isEmpty()) {
@@ -148,7 +147,7 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
   }
 
 
-  // LOOK cant let values escape
+  // cant let values escape
   @Override
   public int binarySearch(double want) {
     return Arrays.binarySearch(values, want);
@@ -489,7 +488,7 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
     }
 
     private double[] makeEdges(Range range) {
-      // LOOK assumes there are at least 2 coords
+      Preconditions.checkArgument(ncoords > 1);
       double[] edges = this.edges; // nominalPoint already has edges
 
       if (spacing == GridAxisSpacing.regularPoint) {

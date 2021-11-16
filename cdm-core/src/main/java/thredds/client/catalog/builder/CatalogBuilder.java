@@ -625,8 +625,6 @@ public class CatalogBuilder {
       dataset.put(Dataset.Harvest, Boolean.TRUE);
     }
 
-    // catalog.addDatasetByID(dataset); // LOOK need to do immed for alias processing
-
     // read elements
     readThreddsMetadataGroup(dataset.flds, dataset, dsElem);
   }

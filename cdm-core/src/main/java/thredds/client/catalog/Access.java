@@ -9,13 +9,7 @@ import ucar.nc2.constants.DataFormatType;
 import javax.annotation.concurrent.Immutable;
 import java.net.URI;
 
-/**
- * A Dataset Access element
- *
- * @author caron
- * @since 1/7/2015
- *        LOOK could be @Autovalue
- */
+/** A Dataset Access element. */
 @Immutable
 public class Access { // (5)
   private final Dataset dataset;

@@ -41,46 +41,4 @@ public class TestCoordinateAxisBuilder {
     assertThat(copy.hashCode()).isEqualTo(axis.hashCode());
   }
 
-  /*
-   * https://github.com/Unidata/netcdf-java/issues/592
-   * CoordinateAxis1D lonAxis = ...
-   * lonAxis.toString();
-   * double Lon(XDim=360);
-   * :units = "degrees_east";
-   * :_CoordinateAxisType = "Lon";
-   * lonAxis.isRegular() returns true
-   * lonAxis.getStart() returns -179.5
-   * lonAxis.getIncrement() returns 1.0
-   * lonAxis.getMinEdgeValue() returns invalid value -179.5 !
-   * lonAxis.getCoordEdge(0) returns valid value -180.0
-   * lonAxis.getMinEdgeValue() now returns valid value -180.0 !
-   */
-
-  @Test
-  public void testIssue592() throws IOException {
-    Group group = Group.builder().addDimension(Dimension.builder().setName("lon").setLength(360).build()).build();
-    List<Dimension> varDims = group.makeDimensionsList("lon");
-
-    VariableDS.Builder vdsBuilder = VariableDS.builder().setName("LonCoord").setUnits("degrees_east")
-        .setArrayType(ArrayType.FLOAT).addDimensions(varDims).setAutoGen(-179.5, 1);
-
-    CoordinateAxis.Builder<?> builder = CoordinateAxis.fromVariableDS(vdsBuilder).setAxisType(AxisType.Lon);
-    CoordinateAxis axis = builder.build(group);
-
-    assertThat(axis.getRank()).isEqualTo(1);
-    assertThat(axis).isInstanceOf(CoordinateAxis1D.class);
-
-    CoordinateAxis1D axis1D = (CoordinateAxis1D) axis;
-    System.out.printf("axis1D values=%s%n", NcdumpArray.printArray(axis1D.readArray()));
-
-    CoordinateAxis1D lonAxis = axis1D.correctLongitudeWrap();
-    System.out.printf("lonAxis values=%s%n", NcdumpArray.printArray(lonAxis.readArray()));
-    System.out.printf("lonAxis edges=%s%n", Arrays.toString(lonAxis.getCoordEdges()));
-
-    assertThat(lonAxis.getSize()).isEqualTo(360);
-    assertThat(lonAxis.getIncrement()).isEqualTo(1);
-    assertThat(lonAxis.getCoordEdge(0)).isEqualTo(-180.);
-  }
-
-
 }

@@ -31,10 +31,10 @@ public class Dimensions {
         if (len > 0)
           builder.appendRange(new ucar.array.Range(d.getShortName(), 0, len - 1));
         else if (len == 0)
-          builder.appendRange(ucar.array.Range.EMPTY); // LOOK empty not named
+          builder.appendRange(ucar.array.Range.EMPTY);
         else {
           assert d.isVariableLength();
-          builder.appendRange(ucar.array.Range.VLEN); // LOOK vlen not named
+          builder.appendRange(ucar.array.Range.VLEN);
         }
       }
       return builder;
@@ -53,7 +53,6 @@ public class Dimensions {
     }
     return size;
   }
-
 
   /** Make an array of Dimension lengths from all the dimensions in a variable, including parentStructures. */
   public static int[] makeShapeAll(Variable v) {
@@ -85,8 +84,6 @@ public class Dimensions {
       } else if (myd.isShared()) {
         buf.format("%s", dimName);
       } else {
-        // if (dimName != null) // LOOK losing anon dim name
-        // buf.format("%s=", dimName);
         buf.format("%d", myd.getLength());
       }
     }

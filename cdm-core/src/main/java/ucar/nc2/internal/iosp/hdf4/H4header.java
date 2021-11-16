@@ -159,7 +159,7 @@ public class H4header implements HdfHeaderIF {
       link = readDDH(alltags, link);
 
     // now read the individual tags where needed
-    for (Tag tag : alltags) { // LOOK could sort by file offset to minimize I/O
+    for (Tag tag : alltags) {
       tag.read();
       tagMap.put(tagid(tag.refno, tag.code), tag); // track all tags in a map, key is the "tag id".
       if (debugTag1)
@@ -1168,18 +1168,6 @@ public class H4header implements HdfHeaderIF {
       int count = 0;
       for (TagLinkedBlock tag : linkedBlocks) {
         segPos[count] = tag.offset;
-
-        // option 1
-        // the size must be a multiple of elemSize - assume remaining is unused
-        // int nelems = tag.length / elemSize;
-        // segSize[count] = nelems * elemSize;
-
-        // option 2
-        // Stucture that requires requires full use of the block length.
-        // structure size = 12, block size = 4096, has 4 extra bytes
-        // E:/problem/AIRS.2007.10.17.L1B.Cal_Subset.v5.0.16.0.G07292194950.hdf#L1B_AIRS_Cal_Subset/Data
-        // Fields/radiances
-        // LOOK do we sometimes need option 1) above ??
         segSize[count] = tag.length;
         count++;
       }

@@ -274,22 +274,19 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   private boolean wasClosed = false;
 
-  /** @deprecated do not use */
-  @Deprecated
+  @Override
   public void release() throws IOException {
     if (orgFile != null)
       orgFile.release();
   }
 
-  /** @deprecated do not use */
-  @Deprecated
+  @Override
   public void reacquire() throws IOException {
     if (orgFile != null)
       orgFile.reacquire();
   }
 
   @Override
-  @Deprecated
   public long getLastModified() {
     if (agg != null) {
       return agg.getLastModified();

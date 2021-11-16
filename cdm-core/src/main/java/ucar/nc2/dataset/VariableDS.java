@@ -181,7 +181,7 @@ public class VariableDS extends Variable implements VariableEnhanced {
   @Override
   public void setCaching(boolean caching) {
     if (caching && orgVar != null) {
-      orgVar.setCaching(true); // propagate down only if true LOOK why?
+      orgVar.setCaching(true); // propagate down only if true
     }
   }
 

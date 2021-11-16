@@ -90,6 +90,5 @@ class EnhancementsImpl {
       }
     }
     return units;
-    // LOOK forVar.addAttribute(new Attribute(CDM.UNITS, units));
   }
 }

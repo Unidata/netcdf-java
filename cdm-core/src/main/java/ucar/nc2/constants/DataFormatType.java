@@ -6,10 +6,7 @@ package ucar.nc2.constants;
 
 import javax.annotation.Nullable;
 
-/**
- * Redo thredds.catalog.DataFormatType as enum in order to break dependency of ucar.nc2 on server catalog.
- * LOOK could use standard Mime type ??
- */
+/** Redo thredds.catalog.DataFormatType as enum in order to break dependency of ucar.nc2 on server catalog. */
 public enum DataFormatType {
   BUFR(null), //
   ESML(null), //

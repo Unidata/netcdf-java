@@ -72,13 +72,10 @@ public class N3iospWriter extends N3iosp implements IospFileWriter {
     if (fill) {
       fillNonRecordVariables();
     }
-    // else
-    // raf.setMinLength(recStart); // make sure file length is long enough, even if not written to.
 
     return this.ncfile;
   }
 
-  // LOOK
   @Override
   public void openForWriting(String location, Group.Builder rootGroup, CancelTask cancelTask) throws IOException {
     Preconditions.checkNotNull(this.iosp);

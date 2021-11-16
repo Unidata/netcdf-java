@@ -5,6 +5,7 @@
 package ucar.nc2.grid;
 
 import com.google.auto.value.AutoValue;
+import com.google.common.base.Preconditions;
 import com.google.re2j.Matcher;
 import com.google.re2j.Pattern;
 import ucar.nc2.util.Misc;
@@ -13,8 +14,7 @@ import ucar.unidata.util.Format;
 import javax.annotation.Nullable;
 
 /**
- * A Coordinate represented by an interval [start, end)
- * LOOK must start be less than end ?
+ * A Coordinate represented by an interval [start, end). The interval can be positive or negetive.
  */
 @AutoValue
 public abstract class CoordInterval {

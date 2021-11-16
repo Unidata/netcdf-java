@@ -67,7 +67,7 @@ public interface VerticalTransform {
 
   /**
    * A Builder of VerticalTransforms.
-   * LOOK Note the use of NetcdfDataset and CoordinateSystem. VerticalTransform are only
+   * Note the use of NetcdfDataset and CoordinateSystem. VerticalTransform are only
    * available on Grids built on NetcdfDataset. GRIB does not have these.
    */
   interface Builder {

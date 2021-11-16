@@ -9,7 +9,16 @@ import org.junit.Test;
 import ucar.array.Array;
 import ucar.array.ArrayType;
 import ucar.array.Arrays;
+import ucar.nc2.Dimension;
+import ucar.nc2.Group;
+import ucar.nc2.constants.AxisType;
+import ucar.nc2.dataset.CoordinateAxis;
+import ucar.nc2.dataset.CoordinateAxis1D;
+import ucar.nc2.dataset.VariableDS;
+import ucar.nc2.write.NcdumpArray;
 
+import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 import static com.google.common.truth.Truth.assertThat;

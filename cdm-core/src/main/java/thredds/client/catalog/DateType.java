@@ -29,7 +29,6 @@ import java.util.Optional;
  * <li>an xsd:dateTime with form "CCYY-MM-DDThh:mm:ss"
  * <li>a valid udunits date string
  * <li>the string "present"
- * <li>a date string that is parsed by a formatter string, passed in as format LOOK cant do this now
  * </ol>
  *
  * @author john caron

@@ -162,10 +162,11 @@ public class CoordinatesHelper {
       return want.isPresent();
     }
 
-    // LOOK dedup
     public Builder addCoordinateSystem(CoordinateSystem.Builder<?> cs) {
       Preconditions.checkNotNull(cs);
-      coordSys.add(cs);
+      if (!coordSys.contains(cs)) {
+        coordSys.add(cs);
+      }
       return this;
     }
 

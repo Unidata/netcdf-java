@@ -500,53 +500,6 @@ public class CoordinateAxis1D extends CoordinateAxis {
     }
   }
 
-  /**
-   * If longitude coordinate is not monotonic, construct a new one that is.
-   * LOOK Should this be here? Perhaps its a Grid method?
-   */
-  public CoordinateAxis1D correctLongitudeWrap() {
-    // correct non-monotonic longitude coords
-    if (axisType != AxisType.Lon) {
-      return this;
-    }
-    doRead();
-
-    boolean monotonic = true;
-    for (int i = 0; i < coords.length - 1; i++) {
-      monotonic &= isAscending ? coords[i] < coords[i + 1] : coords[i] > coords[i + 1];
-    }
-    if (monotonic) {
-      return this;
-    }
-
-    CoordinateAxis1D.Builder<?> builder = this.toBuilder();
-    boolean cross = false;
-    if (isAscending) {
-      for (int i = 0; i < coords.length; i++) {
-        if (cross)
-          coords[i] += 360;
-        if (!cross && (i < coords.length - 1) && (coords[i] > coords[i + 1]))
-          cross = true;
-      }
-    } else {
-      for (int i = 0; i < coords.length; i++) {
-        if (cross)
-          coords[i] -= 360;
-        if (!cross && (i < coords.length - 1) && (coords[i] < coords[i + 1]))
-          cross = true;
-      }
-    }
-
-    Array<?> cachedData = Arrays.factory(ArrayType.DOUBLE, getShape(), coords);
-    if (getArrayType() != ArrayType.DOUBLE)
-      cachedData = Arrays.toDouble(cachedData);
-
-    builder.setSourceData(cachedData);
-
-    // LOOK replace in parentGroup? too late for that.
-    return builder.build(this.getParentGroup());
-  }
-
   // only used if String
   private void readStringValues() {
     int count = 0;
@@ -583,7 +536,6 @@ public class CoordinateAxis1D extends CoordinateAxis {
   protected void readValues() {
     Array<?> data;
     try {
-      // setUseNaNs(false); // missing values not allowed LOOK not true for point data !!
       data = readArray();
       // if (!hasCachedData()) setCachedData(data, false); //cache data for subsequent reading
     } catch (IOException ioe) {
@@ -626,8 +578,6 @@ public class CoordinateAxis1D extends CoordinateAxis {
 
     Array<Number> data;
     try {
-      // LOOK this seems bogus
-      // boundsVar.removeEnhancement(NetcdfDataset.Enhance.ConvertMissing); // Don't convert missing values to NaN.
       data = (Array<Number>) boundsVar.readArray();
     } catch (IOException e) {
       log.warn("CoordinateAxis1D.hasBounds read failed ", e);

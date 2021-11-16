@@ -973,7 +973,6 @@ public class CoordSystemBuilder {
         }
       }
 
-      // LOOK
       if (addCoordVariables) {
         for (Dimension d : vb.getDimensions()) {
           for (VarProcess vp : coordVarsForDimension.get(DimensionWithGroup.create(d, gb))) {

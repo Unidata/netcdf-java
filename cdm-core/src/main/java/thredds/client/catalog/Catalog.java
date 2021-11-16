@@ -221,8 +221,8 @@ public class Catalog extends DatasetNode {
     builder.setName(dataset.getName());
 
     List<Service> neededServices = new ArrayList<>();
-    DatasetBuilder topDs = copyDataset(null, dataset, neededServices, true); // LOOK, cant set catalog as datasetNode
-                                                                             // parent
+    // LOOK, cant set catalog as datasetNode parent
+    DatasetBuilder topDs = copyDataset(null, dataset, neededServices, true);
 
     for (Service s : neededServices)
       builder.addService(s);
