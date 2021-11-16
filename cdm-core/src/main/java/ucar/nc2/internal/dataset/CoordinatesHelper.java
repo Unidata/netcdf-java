@@ -31,33 +31,6 @@ import ucar.nc2.internal.dataset.transform.horiz.ProjectionFactory;
 public class CoordinatesHelper {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinatesHelper.class);
 
-  public ImmutableList<CoordinateAxis> getCoordAxes() {
-    return coordAxes;
-  }
-
-  public ImmutableList<CoordinateSystem> getCoordSystems() {
-    return coordSystems;
-  }
-
-  public Optional<CoordinateSystem> findCoordSystem(String name) {
-    return coordSystems.stream().filter(cs -> cs.getName().equals(name)).findFirst();
-  }
-
-  public ImmutableList<ProjectionCTV> getCoordTransforms() {
-    return coordTransforms;
-  }
-
-  public ImmutableList<CoordinateSystem> makeCoordinateSystemsFor(Variable v) {
-    ArrayList<CoordinateSystem> result = new ArrayList<>();
-    for (CoordinateSystem csys : coordSystems) {
-      if (csys.isCoordinateSystemFor(v) && csys.isComplete(v)) {
-        result.add(csys);
-      }
-    }
-    result.sort((cs1, cs2) -> cs2.getCoordinateAxes().size() - cs1.getCoordinateAxes().size());
-    return ImmutableList.copyOf(result);
-  }
-
   public static ImmutableList<CoordinateAxis> makeAxes(NetcdfDataset ncd) {
     List<CoordinateAxis> axes = new ArrayList<>();
     addAxes(ncd.getRootGroup(), axes);
@@ -85,12 +58,59 @@ public class CoordinatesHelper {
     }
   }
 
+  /** Make canonical name for this list of axes. */
+  public static String makeCanonicalName(List<CoordinateAxis.Builder<?>> axes) {
+    Preconditions.checkNotNull(axes);
+    return axes.stream().sorted(new AxisComparator()).map(a -> a.getFullName()).collect(Collectors.joining(" "));
+  }
+
+  private static class AxisComparator implements java.util.Comparator<CoordinateAxis.Builder<?>> {
+    public int compare(CoordinateAxis.Builder c1, CoordinateAxis.Builder c2) {
+      AxisType t1 = c1.axisType;
+      AxisType t2 = c2.axisType;
+
+      if ((t1 == null) && (t2 == null))
+        return c1.getFullName().compareTo(c2.getFullName());
+      if (t1 == null)
+        return -1;
+      if (t2 == null)
+        return 1;
+
+      return t1.axisOrder() - t2.axisOrder();
+    }
+  }
+
+  //////////////////////////////////////////////////////////////////////////////////////////
+
+  public ImmutableList<CoordinateAxis> getCoordAxes() {
+    return coordAxes;
+  }
+
+  public ImmutableList<CoordinateSystem> getCoordSystems() {
+    return coordSystems;
+  }
+
+  public ImmutableList<ProjectionCTV> getCoordTransforms() {
+    return coordTransforms;
+  }
+
+  public ImmutableList<CoordinateSystem> makeCoordinateSystemsFor(Variable v) {
+    ArrayList<CoordinateSystem> result = new ArrayList<>();
+    for (CoordinateSystem csys : coordSystems) {
+      if (csys.isCoordinateSystemFor(v) && csys.isComplete(v)) {
+        result.add(csys);
+      }
+    }
+    result.sort((cs1, cs2) -> cs2.getCoordinateAxes().size() - cs1.getCoordinateAxes().size());
+    return ImmutableList.copyOf(result);
+  }
+
   ////////////////////////////////////////////////////////////////////////////////////////////////////
   private final ImmutableList<CoordinateAxis> coordAxes;
   private final ImmutableList<CoordinateSystem> coordSystems;
   private final ImmutableList<ProjectionCTV> coordTransforms;
 
-  private CoordinatesHelper(Builder builder, NetcdfDataset ncd, ImmutableList<CoordinateAxis> axes) {
+  private CoordinatesHelper(Builder builder, ImmutableList<CoordinateAxis> axes) {
     this.coordAxes = axes;
 
     ImmutableList.Builder<ProjectionCTV> ctBuilders = ImmutableList.builder();
@@ -101,7 +121,7 @@ public class CoordinatesHelper {
         coordTransforms.stream().filter(ProjectionFactory::hasProjectionFor).collect(Collectors.toList());
 
     // TODO remove coordSys not used by a variable....
-    this.coordSystems = builder.coordSys.stream().map(csb -> csb.build(ncd, this.coordAxes, allProjections))
+    this.coordSystems = builder.coordSys.stream().map(csb -> csb.build(this.coordAxes, allProjections))
         .filter(Objects::nonNull).collect(ImmutableList.toImmutableList());
   }
 
@@ -111,7 +131,6 @@ public class CoordinatesHelper {
     return new Builder();
   }
 
-  // Mutable Builder. */
   public static class Builder {
     public List<CoordinateAxis.Builder<?>> coordAxes = new ArrayList<>();
     public List<CoordinateSystem.Builder<?>> coordSys = new ArrayList<>();
@@ -213,23 +232,17 @@ public class CoordinatesHelper {
       while (stoker.hasMoreTokens()) {
         String vname = stoker.nextToken();
         Optional<CoordinateAxis.Builder<?>> vbOpt = findAxisByFullName(vname);
-        if (!vbOpt.isPresent()) {
+        if (vbOpt.isEmpty()) {
           vbOpt = findAxisByVerticalSearch(vb, vname);
         }
         if (vbOpt.isPresent()) {
           axes.add(vbOpt.get());
         } else {
-          // TODO this should fail, leaving it here to match current behavior.
           log.warn("No axis named {}", vname);
-          // throw new IllegalArgumentException("Cant find axis " + vname);
+          throw new IllegalArgumentException("Cant find axis " + vname);
         }
       }
-      return makeCanonicalName(axes);
-    }
-
-    String makeCanonicalName(List<CoordinateAxis.Builder<?>> axes) {
-      Preconditions.checkNotNull(axes);
-      return axes.stream().sorted(new AxisComparator()).map(a -> a.getFullName()).collect(Collectors.joining(" "));
+      return CoordinatesHelper.makeCanonicalName(axes);
     }
 
     // Check if this Coordinate System is complete for v, ie if v dimensions are a subset..
@@ -268,28 +281,12 @@ public class CoordinatesHelper {
     }
 
     // Note that only ncd.axes can be accessed, not coordsys or transforms.
-    public CoordinatesHelper build(NetcdfDataset ncd, ImmutableList<CoordinateAxis> coordAxes) {
-      Preconditions.checkNotNull(ncd);
+    public CoordinatesHelper build(ImmutableList<CoordinateAxis> coordAxes) {
       if (built)
         throw new IllegalStateException("already built");
       built = true;
-      return new CoordinatesHelper(this, ncd, coordAxes);
+      return new CoordinatesHelper(this, coordAxes);
     }
   }
 
-  private static class AxisComparator implements java.util.Comparator<CoordinateAxis.Builder<?>> {
-    public int compare(CoordinateAxis.Builder c1, CoordinateAxis.Builder c2) {
-      AxisType t1 = c1.axisType;
-      AxisType t2 = c2.axisType;
-
-      if ((t1 == null) && (t2 == null))
-        return c1.getFullName().compareTo(c2.getFullName());
-      if (t1 == null)
-        return -1;
-      if (t2 == null)
-        return 1;
-
-      return t1.axisOrder() - t2.axisOrder();
-    }
-  }
 }

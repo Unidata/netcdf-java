@@ -768,9 +768,10 @@ public class Variable implements ProxyReader, Comparable<Variable> {
       return false;
     if (dimensions.size() != o.getDimensions().size())
       return false;
-    for (int i = 0; i < dimensions.size(); i++)
+    for (int i = 0; i < dimensions.size(); i++) {
       if (!getDimension(i).equals(o.getDimension(i)))
         return false;
+    }
 
     return true;
   }
@@ -879,20 +880,6 @@ public class Variable implements ProxyReader, Comparable<Variable> {
     }
 
     return !(this instanceof Structure) && !isVariableLength && (getSize() * getElementSize() < getSizeToCache());
-  }
-
-  /** Remove any cached values (but not srcData) */
-  public void invalidateCache() {
-    cache.setCachedData(null);
-  }
-
-  // LOOK
-  protected void setCachedData(Array<?> cacheData) {
-    if ((cacheData != null) && (cacheData.getArrayType() != getArrayType())) {
-      throw new IllegalArgumentException(
-          "setCachedData type=" + cacheData.getArrayType() + " incompatible with variable type=" + getArrayType());
-    }
-    this.cache.setCachedData(cacheData);
   }
 
   /** If this has cached data, or source data. */
@@ -1014,7 +1001,6 @@ public class Variable implements ProxyReader, Comparable<Variable> {
 
     this.dimensions = ImmutableList.copyOf(dims);
     if (builder.autoGen != null) {
-      // LOOK could keep Autogen as part of cache
       this.cache.srcData = builder.autoGen.makeDataArray(getArrayType(), this.dimensions);
     }
 
@@ -1370,11 +1356,6 @@ public class Variable implements ProxyReader, Comparable<Variable> {
 
     public T setIsCaching(boolean caching) {
       this.cache.isCaching = caching;
-      return self();
-    }
-
-    public T setSizeToCacheInBytes(int sizeToCacheBytes) {
-      this.cache.sizeToCacheBytes = sizeToCacheBytes;
       return self();
     }
 

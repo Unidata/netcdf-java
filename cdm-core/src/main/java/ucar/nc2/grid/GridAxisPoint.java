@@ -12,6 +12,7 @@ import ucar.array.Range;
 import ucar.nc2.internal.grid.SubsetPointHelper;
 import ucar.nc2.util.Indent;
 
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.util.Arrays;
 import java.util.Formatter;
@@ -22,9 +23,8 @@ import java.util.Optional;
 
 /**
  * Point Grid coordinates.
- * When representing Lon coordinates, these are projecion latlon, not constrained to an interval like LatLonPoint,
+ * When representing Lon coordinates, use projection latlon, not constrained to +/- 180 like LatLonPoint,
  * and must be monotonic.
- * LOOK although we use Number, everything is internally a double. Grib wants integers.
  */
 @Immutable
 public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> {
@@ -81,7 +81,6 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
     return getCoordinate(index).doubleValue();
   }
 
-  // LOOK double vs int
   private double getCoordEdge1(int index) {
     if (index < 0 || index >= ncoords) {
       throw new IllegalArgumentException("Index out of range=" + index);
@@ -146,7 +145,6 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
     }
   }
 
-
   // cant let values escape
   @Override
   public int binarySearch(double want) {
@@ -179,7 +177,9 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
   final int ncoords; // number of coordinates
   final double startValue; // only for regular
   final Range range; // for subset, tracks the indexes in the original
+  @Nullable
   private final double[] values; // null if isRegular, irregular or nominal then len= ncoords, monotonic
+  @Nullable
   private final double[] edges; // nominal only: len = ncoords+1, monotonic, between values
 
   protected GridAxisPoint(Builder<?> builder) {
@@ -351,11 +351,12 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
      * Spacing.nominalPoint: pts[ncoords+1]
      */
     public T setEdges(double[] edges) {
-      this.edges = edges; // LOOK why arent we making a copy here?
+      double[] copy = new double[edges.length];
+      System.arraycopy(edges, 0, copy, 0, edges.length);
+      this.edges = copy;
       return self();
     }
 
-    // LOOK or store Number ? or Array for efficiency
     public T setValues(List<Number> values) {
       this.values = new double[values.size()];
       for (int i = 0; i < values.size(); i++) {
@@ -530,15 +531,6 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
       if (this.resolution == 0 && this.values != null && this.values.length > 1) {
         this.resolution = (this.values[this.values.length - 1] - this.values[0]) / (this.values.length - 1);
       }
-      /*
-       * LOOK maybe should use this?
-       * if (this.ncoords == 1) {
-       * this.range = Range.make(0, 0);
-       * this.edges = makeEdges(range);
-       * this.values = makeValues(range);
-       * this.spacing = GridAxisSpacing.nominalPoint;
-       * }
-       */
       return new GridAxisPoint(this);
     }
   }

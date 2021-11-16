@@ -373,9 +373,6 @@ public class Group {
       out.format("%s}%n%n", indent);
     }
 
-    // if (hasA && (hasE || hasD || hasV || hasG))
-    // out.format("%n");
-
     if (hasA) {
       if (isRoot())
         out.format("%s// global attributes:%n", indent);
@@ -401,7 +398,6 @@ public class Group {
     return buf.toString();
   }
 
-  // LOOK using just the name seems wrong.
   @Override
   public boolean equals(Object oo) {
     if (this == oo)
@@ -678,7 +674,7 @@ public class Group {
       if (other.isParent(this)) {
         return other;
       }
-      while (!other.isParent(this)) {
+      while (other != null && !other.isParent(this)) {
         other = other.parentGroup;
       }
       return other;

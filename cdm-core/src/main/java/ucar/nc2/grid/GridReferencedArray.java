@@ -17,8 +17,8 @@ public abstract class GridReferencedArray {
   /** The underlying data type. Must imply a subclass of Number. */
   public abstract ArrayType arrayType();
 
-  /** The actual data read. */
-  public abstract Array<Number> data(); // LOOK not reduced: should it be ??
+  /** The actual data read, not reduced. */
+  public abstract Array<Number> data();
 
   /** The MaterializedCoordinateSystem describing the data that was read. */
   public abstract MaterializedCoordinateSystem getMaterializedCoordinateSystem();

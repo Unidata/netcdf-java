@@ -35,33 +35,33 @@ public class TestReadGridCoordinateSystem {
   public void testCFmiscodedBounds() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "ft/fmrc/ukmo.nc";
     String gridName = "temperature_2m";
-    testOpenNetcdfAsGrid(filename, gridName, new int[] {5, 10}, new int[] {}, new int[] {77, 97});
+    testOpenNetcdfAsGrid(filename, gridName, new int[] {5, 10}, new int[] {}, new int[] {77, 97}, true);
   }
 
   @Test
   public void testWithSingleTime() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "/ft/grid/cg/CG2006158_150000h_usfc.nc";
     String gridName = "CGusfc";
-    testOpenNetcdfAsGrid(filename, gridName, new int[] {1}, new int[] {1}, new int[] {29, 26});
+    testOpenNetcdfAsGrid(filename, gridName, new int[] {1}, new int[] {1}, new int[] {29, 26}, true);
   }
 
   @Test
   public void testWithTimeOnly() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "ft/grid/NAM_CONUS_80km_20070501_1200.nc";
     String gridName = "RH";
-    testOpenNetcdfAsGrid(filename, gridName, new int[] {11}, new int[] {19}, new int[] {65, 93});
+    testOpenNetcdfAsGrid(filename, gridName, new int[] {11}, new int[] {19}, new int[] {65, 93}, false);
   }
 
   @Test
   public void testDuplicateGrids() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "ft/grid/namExtract/20060926_0000.nc";
     String gridName = "Precipitable_water";
-    int ngrids = testOpenNetcdfAsGrid(filename, gridName, new int[] {2}, new int[] {}, new int[] {103, 108});
+    int ngrids = testOpenNetcdfAsGrid(filename, gridName, new int[] {2}, new int[] {}, new int[] {103, 108}, false);
     assertThat(ngrids).isEqualTo(8);
   }
 
   private int testOpenNetcdfAsGrid(String endpoint, String gridName, int[] expectedTimeShape, int[] otherCoordShape,
-      int[] expectedHcsShape) throws IOException {
+      int[] expectedHcsShape, boolean zPositive) throws IOException {
     System.out.printf("Test Dataset %s%n", endpoint);
 
     Formatter errlog = new Formatter();
@@ -90,6 +90,8 @@ public class TestReadGridCoordinateSystem {
           IntStream.concat(IntStream.concat(Arrays.stream(expectedTimeShape), Arrays.stream(otherCoordShape)),
               Arrays.stream(expectedHcsShape)).boxed().collect(Collectors.toList());
       assertThat(cs.getNominalShape()).isEqualTo(expectedShape);
+
+      assertThat(cs.isZPositive()).isEqualTo(zPositive);
 
       return gds.getGrids().size();
     }

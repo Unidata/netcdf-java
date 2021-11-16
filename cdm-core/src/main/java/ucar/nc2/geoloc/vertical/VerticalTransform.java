@@ -51,18 +51,6 @@ public interface VerticalTransform {
    */
   Array<Number> getCoordinateArray1D(int timeIndex, int xIndex, int yIndex) throws IOException, InvalidRangeException;
 
-  /**
-   * Create a VerticalTransform as a section of this VerticalTransform.
-   * 
-   * @param t_range subset the time dimension, or null if you want all of it
-   * @param z_range subset the vertical dimension, or null if you want all of it
-   * @param y_range subset the y dimension, or null if you want all of it
-   * @param x_range subset the x dimension, or null if you want all of it
-   * @return a new VerticalTransform for the given subset
-   *         LOOK used?
-   */
-  VerticalTransform subset(Range t_range, Range z_range, Range y_range, Range x_range);
-
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   /**

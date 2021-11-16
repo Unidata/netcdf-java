@@ -23,9 +23,6 @@ import java.util.*;
 /**
  * Detection of the protocol from a location string. Contacts the server if necessary to disambiguate, eg opendap
  * from plain http.
- *
- * @see "DatasetUrls.md"
- *      LOOK should this be deprecated? its quite a mess.
  */
 @Immutable
 public class DatasetUrl {

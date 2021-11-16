@@ -147,8 +147,8 @@ public class NetcdfFile implements FileCacheable, Closeable {
    * An embedded "/" is interpreted as group/group or group/variable.
    * An embedded "@" is interpreted as variable@attribute.
    * A name without an "@" is interpreted as an attribute in the root group.
-   * If the name actually has a ".", you must escape it (call NetcdfFiles.makeValidPathName(varname)). LOOK
-   * Any other chars may also be escaped, as they are removed before testing. LOOK
+   * If the name actually has a ".", you must escape it (call NetcdfFiles.makeValidPathName(varname)).
+   * Any other chars may also be escaped, as they are removed before testing.
    *
    * @param fullNameEscaped eg "attName", "@attName", "var@attname", "struct.member.@attName",
    *        "/group/subgroup/@attName", "/group/subgroup/var@attName", or "/group/subgroup/struct.member@attName"

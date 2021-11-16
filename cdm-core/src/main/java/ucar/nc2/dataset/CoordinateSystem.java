@@ -238,7 +238,6 @@ public class CoordinateSystem {
 
   ////////////////////////////////////////////////////////////////////////////
 
-
   @Override
   public boolean equals(Object o) {
     if (this == o)
@@ -255,12 +254,12 @@ public class CoordinateSystem {
     return Objects.hash(coordAxes, projectionCTV, name);
   }
 
+  @Override
   public String toString() {
     return name;
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////
-  private final NetcdfDataset ds; // cant remove until dt.GridCoordSys can be removed
   private final ImmutableList<CoordinateAxis> coordAxes;
 
   // TODO make these private, final and immutable in ver7.
@@ -274,16 +273,14 @@ public class CoordinateSystem {
   private CoordinateAxis aziAxis, elevAxis, radialAxis;
   private final boolean isImplicit; // where set?
 
-  protected CoordinateSystem(Builder<?> builder, NetcdfDataset ncd, List<CoordinateAxis> axesAll,
-      List<ProjectionCTV> allProjections) {
-    this.ds = ncd;
+  protected CoordinateSystem(Builder<?> builder, List<CoordinateAxis> axesAll, List<ProjectionCTV> allProjections) {
     this.isImplicit = builder.isImplicit;
 
     // find referenced coordinate axes
     List<CoordinateAxis> axesList = new ArrayList<>();
     for (String axisName : StringUtil2.split(builder.coordAxesNames)) {
       Optional<CoordinateAxis> found = axesAll.stream().filter(a -> axisName.equals(a.getFullName())).findFirst();
-      if (!found.isPresent()) {
+      if (found.isEmpty()) {
         throw new RuntimeException("Cant find axis " + axisName);
       } else {
         axesList.add(found.get());
@@ -391,15 +388,14 @@ public class CoordinateSystem {
     /**
      * Build a CoordinateSystem
      * 
-     * @param ncd The containing dataset, TODO remove after dt.GridCoordSys is deleted in ver7
      * @param axes Must contain all axes that are named in coordAxesNames
      * @param transforms Must contain any transforms that are named by setCoordinateTransformName
      */
-    public CoordinateSystem build(NetcdfDataset ncd, List<CoordinateAxis> axes, List<ProjectionCTV> transforms) {
+    public CoordinateSystem build(List<CoordinateAxis> axes, List<ProjectionCTV> transforms) {
       if (built)
         throw new IllegalStateException("already built");
       built = true;
-      return new CoordinateSystem(this, ncd, axes, transforms);
+      return new CoordinateSystem(this, axes, transforms);
     }
   }
 

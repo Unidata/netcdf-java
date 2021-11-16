@@ -146,7 +146,6 @@ public class CoordinateAxis1DTime extends CoordinateAxis1D {
       dateStrings[i] = coordValue;
       result.add(cd);
     }
-    setCachedData(ucar.array.Arrays.factory(ArrayType.STRING, new int[] {ncoords}, dateStrings));
     return result;
   }
 

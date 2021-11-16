@@ -4,10 +4,8 @@
  */
 package ucar.nc2.grid;
 
-import com.google.common.collect.ImmutableList;
 import ucar.array.Array;
 import ucar.array.InvalidRangeException;
-import ucar.array.Range;
 import ucar.nc2.internal.grid.CylindricalCoord;
 
 import javax.annotation.Nullable;
@@ -121,7 +119,6 @@ public class MaterializedCoordinateSystem {
   private final GridHorizCoordinateSystem hcs;
   private final GridAxisPoint ens;
   private final GridAxis<?> vert;
-  private final ImmutableList<Range> ranges; // LOOK needed?
   private final @Nullable CylindricalCoord lonCoordinate;
 
   private MaterializedCoordinateSystem(Builder builder) {
@@ -129,7 +126,6 @@ public class MaterializedCoordinateSystem {
     this.hcs = builder.hcs;
     this.ens = builder.ens;
     this.vert = builder.vert;
-    this.ranges = builder.ranges;
     this.lonCoordinate = builder.lonCoordinate;
   }
 
@@ -147,7 +143,6 @@ public class MaterializedCoordinateSystem {
     private GridHorizCoordinateSystem hcs;
     private GridAxisPoint ens;
     private GridAxis<?> vert;
-    private ImmutableList<Range> ranges; // LOOK: needed?
     private CylindricalCoord lonCoordinate;
     private boolean built;
 
@@ -168,12 +163,6 @@ public class MaterializedCoordinateSystem {
 
     public Builder setVertAxis(GridAxis<?> vert) {
       this.vert = vert;
-      return this;
-    }
-
-    // LOOK needed ?
-    public Builder setRanges(List<Range> ranges) {
-      this.ranges = ImmutableList.copyOf(ranges);
       return this;
     }
 

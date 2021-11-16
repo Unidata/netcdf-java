@@ -58,15 +58,14 @@ public class GcdmVerticalTransform implements VerticalTransform {
   }
 
   @Override
-  public Array<Number> getCoordinateArray3D(int timeIndex) throws IOException, InvalidRangeException {
+  public Array<Number> getCoordinateArray3D(int timeIndex) {
     return gridDataset.getVerticalTransform(this.id, this.name, timeIndex);
   }
 
   // Implementation that reads the full 3D array and just picks out the specified x, y.
   // Optimization could cache at least one time index
   @Override
-  public Array<Number> getCoordinateArray1D(int timeIndex, int xIndex, int yIndex)
-      throws IOException, InvalidRangeException {
+  public Array<Number> getCoordinateArray1D(int timeIndex, int xIndex, int yIndex) {
     Array<Number> array3D = getCoordinateArray3D(timeIndex);
     int nz = array3D.getShape()[0];
     double[] result = new double[nz];
@@ -77,10 +76,5 @@ public class GcdmVerticalTransform implements VerticalTransform {
     }
 
     return Arrays.factory(ArrayType.DOUBLE, new int[] {nz}, result);
-  }
-
-  @Override
-  public VerticalTransform subset(Range t_range, Range z_range, Range y_range, Range x_range) {
-    return null;
   }
 }

@@ -59,7 +59,6 @@ import java.util.*;
  */
 @Immutable
 public class NetcdfDataset extends ucar.nc2.NetcdfFile {
-  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfDataset.class);
   public static final String AGGREGATION = "Aggregation";
 
   /**
@@ -154,14 +153,11 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   }
 
   /**
-   * Get the list of all CoordinateAxis objects used by this dataset.
+   * Get the list of all CoordinateAxis used by this dataset.
    *
    * @return list of type CoordinateAxis; may be empty, not null.
    */
   public ImmutableList<CoordinateAxis> getCoordinateAxes() {
-    if (coords == null && coordAxes != null) { // LOOK when is this true?
-      return coordAxes;
-    }
     return coords.getCoordAxes();
   }
 
@@ -256,12 +252,11 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   @Override
   public synchronized void close() throws java.io.IOException {
     if (agg != null) {
-      agg.persistWrite(); // LOOK maybe only on real close ??
+      agg.persistWrite();
       agg.close();
     }
 
     if (cache != null) {
-      // unlocked = true;
       if (cache.release(this))
         return;
     }
@@ -294,12 +289,11 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     return (orgFile != null) ? orgFile.getLastModified() : 0;
   }
 
-  //////////////////////////////////////////////////////////////////////////////
-  // used by NcMLReader for NcML without a referenced dataset
-
   /**
+   * Used by NcMLReader for NcML without a referenced dataset.
+   * 
    * @return underlying NetcdfFile, or null if none.
-   * @deprecated Do not use
+   * @deprecated do not use
    */
   @Deprecated
   public NetcdfFile getReferencedFile() {
@@ -364,14 +358,12 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////
-  private final @Nullable NetcdfFile orgFile; // can be null in Ncml
+  private final @Nullable NetcdfFile orgFile; // can be null in NcML
   private final CoordinatesHelper coords;
-  private final String convUsed;
+  private final @Nullable String convUsed;
   private final ImmutableSet<Enhance> enhanceMode; // enhancement mode for this specific dataset
-  private final ucar.nc2.internal.ncml.Aggregation agg; // LOOK not immutable
-  private final String fileTypeId;
-
-  private final ImmutableList<CoordinateAxis> coordAxes; // TODO get rid of if possible
+  private final @Nullable ucar.nc2.internal.ncml.Aggregation agg; // LOOK not immutable
+  private final @Nullable String fileTypeId;
 
   private NetcdfDataset(Builder<?> builder) {
     super(builder);
@@ -381,15 +373,10 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     this.enhanceMode = ImmutableSet.copyOf(builder.getEnhanceMode());
     this.agg = builder.agg;
 
-    // The need to reference the NetcdfDataset means we can't build the axes or system until now.
-    // LOOK this assumes the dataset has already been enhanced. Where does that happen?
-    // TODO: Problem, we are letting ds escape before its finished, namely coords is null at this point
-    // TODO: 1) VerticalCTBuilder.makeVerticalCT(ds) and 2) AbstractTransformBuilder.getGeoCoordinateUnits(ds, ctv)
-    this.coordAxes = CoordinatesHelper.makeAxes(this);
-    // Note that only ncd.axes can be accessed, not coordsys or transforms.
-    coords = builder.coords.build(this, this.coordAxes);
+    ImmutableList<CoordinateAxis> axes = CoordinatesHelper.makeAxes(this);
+    this.coords = builder.coords.build(axes);
 
-    // LOOK We have to break VariableDS Immutability here, because VariableDS is constructed in NetcdfFile, but needs a
+    // We have to break VariableDS Immutability here, because VariableDS is constructed in NetcdfFile, but needs a
     // link to the CoordinatesHelper, which isnt complete yet.
     for (Variable v : this.getVariables()) {
       if (v instanceof CoordinateAxis) {
@@ -422,8 +409,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     return (Builder<?>) super.addLocalFieldsToBuilder(b);
   }
 
-  /** Get Builder for NetcdfDataset. LOOK no longer need to subclass. */
-  // Subclassing: "https://community.oracle.com/blogs/emcmanus/2010/10/24/using-builder-pattern-subclasses"
+  /** Get Builder for NetcdfDataset. */
   public static Builder<?> builder() {
     return new Builder2();
   }
@@ -440,10 +426,10 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     public NetcdfFile orgFile;
     public CoordinatesHelper.Builder coords = CoordinatesHelper.builder();
     private String convUsed;
-    private Set<Enhance> enhanceMode = EnumSet.noneOf(Enhance.class); // LOOK should be default ??
-    public ucar.nc2.internal.ncml.Aggregation agg; // If its an aggregation
+    private Set<Enhance> enhanceMode = EnumSet.noneOf(Enhance.class);
+    @Nullable
+    public ucar.nc2.internal.ncml.Aggregation agg;
     private String fileTypeId;
-
     private boolean built;
 
     protected abstract T self();

@@ -495,7 +495,7 @@ public class CoordSystemBuilder {
           continue;
         }
 
-        String csName = coords.makeCanonicalName(dataAxesList);
+        String csName = CoordinatesHelper.makeCanonicalName(dataAxesList);
         Optional<CoordinateSystem.Builder<?>> csOpt = coords.findCoordinateSystem(csName);
         if (csOpt.isPresent() && coords.isComplete(csOpt.get(), vp.vb)) {
           vp.coordSysNames.add(csName);
@@ -543,7 +543,7 @@ public class CoordSystemBuilder {
         continue;
       }
 
-      String csName = coords.makeCanonicalName(axisList);
+      String csName = CoordinatesHelper.makeCanonicalName(axisList);
       Optional<CoordinateSystem.Builder<?>> csOpt = coords.findCoordinateSystem(csName);
       boolean okToBuild = false;
 
@@ -894,9 +894,7 @@ public class CoordSystemBuilder {
       if (axisType != null) {
         axis.setAxisType(axisType);
         axis.addAttribute(new Attribute(_Coordinate.AxisType, axisType.toString()));
-
-        if (((axisType == AxisType.Height) || (axisType == AxisType.Pressure) || (axisType == AxisType.GeoZ))
-            && (positive != null)) {
+        if (axisType.isVert() && positive != null) {
           axis.addAttribute(new Attribute(_Coordinate.ZisPositive, positive));
         }
       }
