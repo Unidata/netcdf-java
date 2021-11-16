@@ -350,7 +350,11 @@ public class GridAxisPoint extends GridAxis<Number> implements Iterable<Number> 
     /**
      * Spacing.nominalPoint: pts[ncoords+1]
      */
-    public T setEdges(double[] edges) {
+    public T setEdges(@Nullable double[] edges) {
+      if (edges == null) {
+        this.edges = null;
+        return self();
+      }
       double[] copy = new double[edges.length];
       System.arraycopy(edges, 0, copy, 0, edges.length);
       this.edges = copy;
