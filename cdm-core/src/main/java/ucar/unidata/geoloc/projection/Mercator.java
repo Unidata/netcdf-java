@@ -167,7 +167,7 @@ public class Mercator extends AbstractProjection {
       return true;
     }
 
-    // opposite signed long lines: LOOK ????
+    // opposite signed long lines
     return (pt1.getX() * pt2.getX() < 0);
   }
 

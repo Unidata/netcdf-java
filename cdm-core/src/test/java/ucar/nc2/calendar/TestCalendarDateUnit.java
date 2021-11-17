@@ -100,7 +100,7 @@ public class TestCalendarDateUnit {
       CalendarDate cd = cdu.makeCalendarDate(i);
       System.out.printf("%d %s == %s%n", i, cdu, CalendarDateFormatter.toDateTimeStringISO(cd));
 
-      // LOOK note that this fails for month, year
+      // This fails for month, year
       if (!badok) {
         assertThat(cdu.makeOffsetFromRefDate(cd)).isEqualTo(i);
       }

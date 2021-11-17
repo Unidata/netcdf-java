@@ -150,7 +150,6 @@ public class TestScaleOffsetMissingUnsigned {
   public void testScaledFillValue() throws URISyntaxException, IOException {
     File testResource = new File(getClass().getResource("testScaledFillValue.ncml").toURI());
 
-    // LOOK removeEnhancement does not work in new
     try (NetcdfDataset ncd = NetcdfDatasets.openDataset(testResource.getAbsolutePath(), true, null)) {
       VariableDS fooVar = (VariableDS) ncd.findVariable("foo");
       EnhanceScaleMissingUnsigned proxy = fooVar.scaleMissingUnsignedProxy();

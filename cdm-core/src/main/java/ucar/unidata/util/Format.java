@@ -218,7 +218,7 @@ public class Format {
           fraction.append("0");
         }
       } else if (fixed_decimals < fracFigs) {
-        int chop = fracFigs - fixed_decimals; // LOOK should round !!
+        int chop = fracFigs - fixed_decimals; // TODO should round !!
         fraction.setLength(fraction.length() - chop);
       }
 

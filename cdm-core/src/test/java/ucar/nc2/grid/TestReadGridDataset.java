@@ -63,7 +63,6 @@ public class TestReadGridDataset {
   @Ignore("valtime not monotonic")
   public void testDependentAxis() throws IOException, InvalidRangeException {
     String filename = TestDir.cdmUnitTestDir + "conventions/nuwg/2003021212_avn-x.nc";
-    // LOOK valtime not monotonic
     readGrid(filename, "T", ImmutableList.of(15, 12, 73, 73), "valtime level lat lon", true, 15,
         "hours since 1992-01-01T00:00Z", "2003-02-13T18:00Z", "2003-02-14T18:00Z", "2003-02-14T06:00:00Z", 725.0, 700.0,
         new int[] {1, 1, 73, 73});

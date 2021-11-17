@@ -46,7 +46,7 @@ public class TestExtractCoordinateValuesMalformed {
     assertThat(subject.boundsAreContiguous).isTrue();
     assertThat(subject.boundsAreRegular).isTrue();
     assertThat(subject.isAscending).isTrue();
-    assertThat(subject.isInterval).isFalse(); // LOOK heres the change
+    assertThat(subject.isInterval).isFalse();
     assertThat(subject.isRegular).isTrue();
     assertThat(subject.ncoords).isEqualTo(n);
     assertThat(subject.bound1).isEqualTo(bound1);
@@ -80,7 +80,7 @@ public class TestExtractCoordinateValuesMalformed {
     assertThat(subject.boundsAreContiguous).isTrue();
     assertThat(subject.boundsAreRegular).isTrue();
     assertThat(subject.isAscending).isFalse();
-    assertThat(subject.isInterval).isFalse(); // LOOK heres the change
+    assertThat(subject.isInterval).isFalse();
     assertThat(subject.isRegular).isTrue();
     assertThat(subject.ncoords).isEqualTo(n);
     assertThat(subject.bound1).isEqualTo(bound1);

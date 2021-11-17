@@ -318,8 +318,8 @@ public class LambertConformal extends AbstractProjection {
     sbuff.append("PRIMEM[\"Greenwich\",0],");
     sbuff.append("UNIT[\"degree\",0.0174532925199433]],");
     sbuff.append("PROJECTION[\"Lambert_Conformal_Conic_1SP\"],");
-    sbuff.append("PARAMETER[\"latitude_of_origin\",").append(getOriginLat()).append("],"); // LOOK assumes getOriginLat
-                                                                                           // = getParellel
+    // assumes getOriginLat = getParellel
+    sbuff.append("PARAMETER[\"latitude_of_origin\",").append(getOriginLat()).append("],");
     sbuff.append("PARAMETER[\"central_meridian\",").append(getOriginLon()).append("],");
     sbuff.append("PARAMETER[\"scale_factor\",1],");
     sbuff.append("PARAMETER[\"false_easting\",").append(falseEasting).append("],");

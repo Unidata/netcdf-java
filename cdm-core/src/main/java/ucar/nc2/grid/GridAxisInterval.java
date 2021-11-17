@@ -121,7 +121,7 @@ public class GridAxisInterval extends GridAxis<CoordInterval> implements Iterabl
   // cant let values escape
   @Override
   public int binarySearch(double want) {
-    return Arrays.binarySearch(values, want); // LOOK what about discontinuous ?? wont work??
+    return Arrays.binarySearch(values, want); // TODO what about discontinuous ?? wont work??
   }
 
   //////////////////////////////////////////////////////////////

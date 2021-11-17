@@ -153,7 +153,7 @@ public class RotatedPole extends AbstractProjection {
   @Override
   public LatLonPoint projToLatLon(ProjectionPoint ppt) {
     // "x" and "y" input for rotated pole coords are actually a lon-lat pair
-    double lonR = LatLonPoints.range180(ppt.getX()); // LOOK guessing -- shouldn't matter
+    double lonR = LatLonPoints.range180(ppt.getX());
     double latR = ppt.getY();
 
     if (Math.abs(latR) > 90.) {

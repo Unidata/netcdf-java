@@ -110,7 +110,6 @@ class CalendarDateIso implements CalendarDate {
     return add(multiply * period.getValue(), period.getField());
   }
 
-  // LOOK why does OffsetDateTime also have minus() ?
   @Override
   public CalendarDate add(long value, CalendarPeriod.Field unit) {
     switch (unit) {
@@ -138,7 +137,7 @@ class CalendarDateIso implements CalendarDate {
     return iso.dateTime.until(this.dateTime, field.chronoUnit);
   }
 
-  // LOOK what about period.value ?
+  // TODO what about period.value ?
   @Override
   public long since(CalendarDate start, CalendarPeriod period) {
     CalendarDateIso iso = (CalendarDateIso) start;

@@ -456,8 +456,10 @@ public class TestVariable {
     assertThat(varb.readArray().getScalar()).isEqualTo((short) 10);
     assertThat(varb.readArray().getScalar()).isEqualTo((int) 10);
     assertThat(varb.readArray().getScalar()).isEqualTo((long) 10);
-    assertThat(varb.readArray().getScalar()).isNotEqualTo((float) 10); // LOOK
-    assertThat(varb.readArray().getScalar()).isNotEqualTo((double) 10); // LOOK
+    assertThat(varb.readArray().getScalar()).isNotEqualTo((float) 10);
+    assertThat(varb.readArray().getScalar()).isNotEqualTo((double) 10);
+    assertThat(((Number) varb.readArray().getScalar()).floatValue()).isEqualTo((float) 10);
+    assertThat(((Number) varb.readArray().getScalar()).doubleValue()).isEqualTo((double) 10);
     byte val = (byte) varb.readArray().getScalar();
     Byte val2 = (Byte) varb.readArray().getScalar();
     int vali = (Byte) varb.readArray().getScalar();

@@ -110,7 +110,8 @@ public class CalendarPeriod {
     }
   }
 
-  // minimize memory use by interning. wacko shit in GribPartitionBuilder TimeCoordinate, whoduhthunk?
+  // minimize memory use by interning.
+  // wacko shit in GribPartitionBuilder TimeCoordinate, whoduhthunk?
   public static CalendarPeriod of(int value, Field field) {
     CalendarPeriod want = new CalendarPeriod(value, field);
     if (cache == null)
@@ -218,27 +219,6 @@ public class CalendarPeriod {
     else
       throw new IllegalStateException("Illegal Field = " + field);
   }
-
-  /*
-   * LOOK from old TimeCoord code, which is better ??
-   * public static int getOffset(CalendarDate refDate, CalendarDate cd, CalendarPeriod timeUnit) {
-   * long msecs = cd.getDifferenceInMsecs(refDate);
-   * return (int) Math.round(msecs / timeUnit.getValueInMillisecs());
-   * }
-   */
-
-  /*
-   * @deprecated use getOffset().
-   * 
-   * @Deprecated
-   * public int subtract(CalendarDate start, CalendarDate end) {
-   * long diff = end.getDifferenceInMsecs(start);
-   * int thislen = millisecs();
-   * if ((diff % thislen != 0))
-   * log.warn("roundoff error");
-   * return (int) (diff / thislen);
-   * }
-   */
 
   /*
    * TODO: review: start and end must have same calendar. should not convert to CalendarDate in the first place.

@@ -254,16 +254,16 @@ public class TestCalendarDate {
 
   @Test
   public void testSubtractFail() {
-    CalendarDate refTime = CalendarDate.fromUdunitIsoDate(null, "2005-09-01T15:00Z").orElseThrow(); // Start of forecast
+    // Start of forecast
+    CalendarDate refTime = CalendarDate.fromUdunitIsoDate(null, "2005-09-01T15:00Z").orElseThrow();
     CalendarDate forecastTimeEnd = CalendarDate.fromUdunitIsoDate(null, "2005-09-01T18:00Z").orElseThrow();
     CalendarPeriod timeUnit = CalendarPeriod.of(1, CalendarPeriod.Field.Hour);
     int forecastTime = 3;
     int timeLength = 6;
 
+    // Start of forecast
     // forecastTimeEnd - 6
-    CalendarDate forecastTimeStart = CalendarDate.fromUdunitIsoDate(null, "2005-09-01T12:00Z").orElseThrow(); // Start
-                                                                                                              // of
-                                                                                                              // forecast
+    CalendarDate forecastTimeStart = CalendarDate.fromUdunitIsoDate(null, "2005-09-01T12:00Z").orElseThrow();
 
     // so forecast interval is (-3,3) ? has (3, -3)
 

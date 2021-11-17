@@ -240,11 +240,6 @@ public class TestSection {
     Section sec2 = new Section(1 + ":" + (m - 2) + ",0:" + (n - 2) + ",1:" + (p - 1));
     Array<Double> secA2 = Arrays.section(A, sec2);
 
-    // LOOK copy the data so that physical order is the same as * logical order
-    // Array<Double> secA3 = Arrays.copy(secA2, sec2);
-    // ucar.ma2.ArrayDouble secA2 = (ucar.ma2.ArrayDouble) A.section(new Section(1 + ":" + (m - 2) + ",0:" + (n - 2) +
-    // ",1:" + (p - 1)).getRanges()).copy();
-
     Index imaOrg = A.getIndex();
     Index ima = secA2.getIndex();
 
@@ -260,7 +255,6 @@ public class TestSection {
       for (int j = 0; j < n - 1; j++) {
         for (int k = 0; k < p - 1; k++) {
           double val = secA2.get(ima.set(i, j, k));
-          // LOOK secA2.setDouble(ima, 0.0);
           double valOrg = A.get(imaOrg.set(i + 1, j, k + 1));
           assertThat(val).isEqualTo(valOrg);
         }
