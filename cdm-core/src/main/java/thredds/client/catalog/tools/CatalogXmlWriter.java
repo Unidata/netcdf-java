@@ -64,12 +64,7 @@ public class CatalogXmlWriter {
    * @param os write to this OutputStream
    */
   public void writeXML(Catalog catalog, OutputStream os) throws IOException {
-    // Output the document, use standard formatter
-    // XMLOutputter fmt = new XMLOutputter();
-    // fmt.setNewlines(true);
-    // fmt.setIndent(" ");
-    // fmt.setTrimAllWhite( true);
-    XMLOutputter fmt = new XMLOutputter(org.jdom2.output.Format.getPrettyFormat()); // LOOK maybe compact ??
+    XMLOutputter fmt = new XMLOutputter(org.jdom2.output.Format.getPrettyFormat());
     fmt.output(writeCatalog(catalog), os);
   }
 
@@ -557,7 +552,7 @@ public class CatalogXmlWriter {
       elem.addContent(writeVariables(v));
     }
 
-    // LOOK what about VariableMapLink ??
+    // TODO what about VariableMapLink ??
     ThreddsMetadata.UriResolved varMapLink = (ThreddsMetadata.UriResolved) ds.getLocalField(Dataset.VariableMapLinkURI);
     if (varMapLink != null) {
       Element velem = new Element("variableMap", Catalog.defNS);

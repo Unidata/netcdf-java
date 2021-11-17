@@ -64,7 +64,7 @@ public final class IndexFn implements Iterable<Integer> {
   /** Get the shape: length of array in each dimension. */
   public Section getSection() {
     try {
-      return new Section(odometer(offset), shape); // LOOK strides
+      return new Section(odometer(offset), shape); // TODO strides
     } catch (InvalidRangeException e) {
       throw new IllegalStateException(e);
     }

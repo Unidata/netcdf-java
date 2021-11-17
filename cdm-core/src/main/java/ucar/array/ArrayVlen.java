@@ -44,7 +44,7 @@ public final class ArrayVlen<T> extends Array<Array<T>> {
     if (dataArray == null) {
       dataArray = createVlenArray(dataType, length);
     }
-    Object result; // LOOK cant figure out correct generics syntax
+    Object result;
     switch (dataType) {
       case BYTE:
       case CHAR:

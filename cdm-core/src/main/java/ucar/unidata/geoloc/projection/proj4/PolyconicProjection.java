@@ -148,7 +148,7 @@ public class PolyconicProjection extends AbstractProjection {
               (dphi = (xyy * (lpphi * tp + 1.) - lpphi - .5 * (lpphi * lpphi + B) * tp) / ((lpphi - xyy) / tp - 1.));
         } while (Math.abs(dphi) > CONV && --i > 0);
 
-        if (i == 0) { // LOOK check original
+        if (i == 0) { // TODO check original
           toX = Double.NaN;
           toY = Double.NaN;
         }
@@ -183,7 +183,7 @@ public class PolyconicProjection extends AbstractProjection {
           }
         }
 
-        if (i == 0) { // LOOK check original
+        if (i == 0) { // TODO check original
           toX = Double.NaN;
           toY = Double.NaN;
         }

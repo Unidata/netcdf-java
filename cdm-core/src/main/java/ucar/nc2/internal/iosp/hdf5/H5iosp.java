@@ -156,7 +156,7 @@ public class H5iosp extends AbstractIOServiceProvider {
   @Override
   public void reacquire() throws IOException {
     super.reacquire();
-    // LOOK headerParser.raf = this.raf;
+    // TODO headerParser.raf = this.raf;
   }
 
   @Override
@@ -343,8 +343,8 @@ public class H5iosp extends AbstractIOServiceProvider {
 
     if (data instanceof Array) {
       return (Array<?>) data;
-    } else if (dataType == ArrayType.STRUCTURE) { // LOOK does this ever happen?
-      return makeStructureDataArray((Structure) v2, layout, wantSection.getShape(), (byte[]) data); // LOOK
+    } else if (dataType == ArrayType.STRUCTURE) { // TODO does this ever happen?
+      return makeStructureDataArray((Structure) v2, layout, wantSection.getShape(), (byte[]) data);
     } else {
       return Arrays.factory(dataType, wantSection.getShape(), data);
     }
@@ -361,7 +361,7 @@ public class H5iosp extends AbstractIOServiceProvider {
         System.out.printf("readFilteredStringData chunk=%s%n", chunk);
       int destPos = (int) chunk.getDestElem();
       for (int i = 0; i < chunk.getNelems(); i++) { // 16 byte "heap ids"
-        // LOOK does this handle section correctly ??
+        // TODO does this handle section correctly ??
         sa[destPos++] = header.readHeapString(bb, (chunk.getSrcElem() + i) * 16);
       }
     }
@@ -406,7 +406,7 @@ public class H5iosp extends AbstractIOServiceProvider {
       return readVlen(dataType, shape, typeInfo, layout, endian);
     }
 
-    if (dataType == ArrayType.STRUCTURE) { // LOOK what about subsetting ?
+    if (dataType == ArrayType.STRUCTURE) { // TODO what about subsetting ?
       if (v == null) {
         throw new IllegalStateException("Cant read in an attribute of type Structure");
       } else {
@@ -429,7 +429,7 @@ public class H5iosp extends AbstractIOServiceProvider {
       return sa;
     }
 
-    if (dataType == ArrayType.OPAQUE) { // LOOK this may be wrong, needs testing
+    if (dataType == ArrayType.OPAQUE) {
       ArrayVlen<?> result = ArrayVlen.factory(ArrayType.OPAQUE, shape);
       Preconditions.checkArgument(Arrays.computeSize(shape) == layout.getTotalNelems());
 
@@ -570,7 +570,7 @@ public class H5iosp extends AbstractIOServiceProvider {
       Layout.Chunk chunk = layout.next();
       if (chunk == null)
         continue;
-      // copy bytes directly into the underlying byte[] LOOK : assumes contiguous layout ??
+      // copy bytes directly into the underlying byte[] TODO : assumes contiguous layout ??
       raf.seek(chunk.getSrcPos());
       raf.readFully(byteArray, (int) chunk.getDestElem() * recsize, chunk.getNelems() * recsize);
     }
@@ -607,7 +607,7 @@ public class H5iosp extends AbstractIOServiceProvider {
       int destPos = 0;
       for (int i = 0; i < layout.getTotalNelems(); i++) { // loop over each structure
         readHeapData(hdf5bb, storage, destPos, sm);
-        destPos += layout.getElemSize(); // LOOK use recSize ??
+        destPos += layout.getElemSize();
       }
     }
 
@@ -665,7 +665,7 @@ public class H5iosp extends AbstractIOServiceProvider {
         storageBB.order(endian); // write the string index in whatever that member's byte order is.
         storageBB.putInt(destPos, index); // overwrite with the index into the StringHeap
 
-      } else if (m.isVlen()) { // LOOK this sure looks wrong, needs testing
+      } else if (m.isVlen()) { // TODO needs testing
         int startPos = pos + m.getOffset();
         // hdf5heap.order(ByteOrder.LITTLE_ENDIAN); // why ?
 
@@ -675,7 +675,6 @@ public class H5iosp extends AbstractIOServiceProvider {
 
         int readPos = startPos;
         for (int i = 0; i < size; i++) {
-          // LOOK could we use readHeapPrimitiveArray(long globalHeapIdAddress, ArrayType dataType, int endian) ??
           // header.readHeapVlen reads the vlen at destPos from H5 heap, into an Array of T.
           // Structs not supported.
           Array<?> vlen = header.readHeapVlen(storageBB, readPos, m.getArrayType(), endian);

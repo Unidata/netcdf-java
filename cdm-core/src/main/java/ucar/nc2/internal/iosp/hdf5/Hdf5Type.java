@@ -60,7 +60,7 @@ class Hdf5Type {
     } else if (hdfType == 7) { // reference
       this.endian = ByteOrder.LITTLE_ENDIAN;
       this.dataType = ArrayType.LONG; // file offset of the referenced object
-      // LOOK - should get the object, and change type to whatever it is (?)
+      // TODO - should get the object, and change type to whatever it is (?)
 
     } else if (hdfType == 8) { // enums
       if (this.byteSize == 1)
@@ -120,7 +120,7 @@ class Hdf5Type {
    */
   @Nullable
   private ArrayType getNCtype(int hdfType, int size, boolean unsigned) {
-    // LOOK not translating all of them !
+    // TODO not translating all of them !
     if ((hdfType == 0) || (hdfType == 4)) { // integer, bit field
       ArrayType.Signedness signedness = unsigned ? ArrayType.Signedness.UNSIGNED : ArrayType.Signedness.SIGNED;
 

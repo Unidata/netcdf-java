@@ -634,7 +634,6 @@ public class Arrays {
     return ((ArrayByte) from).getByteString();
   }
 
-  // LOOK couldnt you convert here to UTF-8 ??
   public static byte[] convertCharToByte(char[] from) {
     byte[] result = new byte[(int) from.length];
     int count = 0;
@@ -702,7 +701,7 @@ public class Arrays {
   }
 }
 
-// LOOK consider using this instead of Misc
+// TODO consider using this instead of Misc
 // https://stackoverflow.com/questions/4915462/how-should-i-do-floating-point-comparison
 // bool nearly_equal(
 // float a, float b,

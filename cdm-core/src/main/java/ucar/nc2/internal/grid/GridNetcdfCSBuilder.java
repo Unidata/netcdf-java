@@ -215,7 +215,7 @@ public class GridNetcdfCSBuilder {
   private GridHorizCoordinateSystem makeHorizCS(GridAxis<?> xaxis, GridAxis<?> yaxis, @Nullable Projection projection,
       Array<Number> latdata, Array<Number> londata) {
 
-    // LOOK heres now to find horizStaggerType in WRF NMM
+    // heres now to find horizStaggerType in WRF NMM
     // String horizStaggerType = xaxis.attributes().findAttributeString(_Coordinate.Stagger, null);
 
     if (projection instanceof CurvilinearProjection) {

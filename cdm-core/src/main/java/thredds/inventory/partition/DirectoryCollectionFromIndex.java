@@ -46,7 +46,7 @@ class DirectoryCollectionFromIndex extends CollectionAbstract {
 
   @Override
   public Iterable<MFile> getFilesSorted() throws IOException {
-    return builder.readFilesFromIndex(indexReader); // LOOK guarenteed sorted ??
+    return builder.readFilesFromIndex(indexReader); // TODO guarenteed sorted ??
   }
 
 }

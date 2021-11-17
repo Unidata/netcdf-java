@@ -20,7 +20,7 @@ import java.util.Objects;
  */
 @Immutable
 public class CalendarPeriod {
-  // LOOK is this needed?
+  // TODO is this needed?
   private static final Cache<CalendarPeriod, CalendarPeriod> cache = CacheBuilder.newBuilder().maximumSize(100).build();
 
   /** 1 hour */

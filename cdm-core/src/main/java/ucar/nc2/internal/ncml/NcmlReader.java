@@ -380,7 +380,7 @@ public class NcmlReader {
     Object iospParam = netcdfElem.getAttributeValue("iospParam");
     if (iospParam == null) {
       // can pass iosp a JDOM tree
-      iospParam = netcdfElem.getChild("iospParam", ncNS); // LOOK namespace ??
+      iospParam = netcdfElem.getChild("iospParam", ncNS); // TODO namespace ??
     }
 
     String bufferSizeS = netcdfElem.getAttributeValue("buffer_size");
@@ -462,7 +462,7 @@ public class NcmlReader {
       builder.setAggregation(agg);
       agg.build(cancelTask);
 
-      // LOOK seems like we should add the agg metadata here, so that it can be modified.
+      // TODO seems like we should add the agg metadata here, so that it can be modified.
     }
 
     // read the root group and recurse
@@ -482,13 +482,6 @@ public class NcmlReader {
         builder.setEnhanceMode(mode);
       }
     }
-
-    /*
-     * LOOK optionally add record structure to netcdf-3
-     * String addRecords = netcdfElem.getAttributeValue("addRecords");
-     * if ("true".equalsIgnoreCase(addRecords))
-     * targetDS.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
-     */
   }
 
   /**
@@ -734,8 +727,7 @@ public class NcmlReader {
       nameInFile = name;
     }
 
-    // LOOK this is wrong, groupBuilder may already have the dimension.
-    // see if it already exists
+    // TODO this is wrong, groupBuilder may already have the dimension. see if it already exists
     Dimension dim = (refGroup == null) ? null : refGroup.findDimension(nameInFile).orElse(null);
     if (dim == null) { // nope - create it
       String lengthS = dimElem.getAttributeValue("length");
@@ -765,7 +757,6 @@ public class NcmlReader {
       if (debugConstruct) {
         System.out.println(" add new dim = " + name);
       }
-      // LOOK change to replaceDimension to get fort.54 working.
       groupBuilder.replaceDimension(Dimension.builder().setName(name).setIsShared(isShared).setIsUnlimited(isUnlimited)
           .setIsVariableLength(isVariableLength).setLength(len).build());
 
@@ -1230,7 +1221,7 @@ public class NcmlReader {
       String values = varElem.getChildText("values", ncNS);
       String sep = valuesElem.getAttributeValue("separator");
 
-      if (dtype == ArrayType.CHAR) { // LOOK get rid of uses of ArrayType.CHAR
+      if (dtype == ArrayType.CHAR) { // TODO get rid of uses of ArrayType.CHAR
         byte[] have = values.getBytes();
         int nhave = values.length();
         int nwant = (int) Dimensions.getSize(v.getDimensions());

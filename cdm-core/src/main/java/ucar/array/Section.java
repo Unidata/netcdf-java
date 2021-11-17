@@ -189,7 +189,7 @@ public class Section {
     ArrayList<Range> builder = new ArrayList<>();
     Range range;
 
-    StringTokenizer stoke = new StringTokenizer(sectionSpec, "(),"); // LOOK deal with scatterRange {1,2,3}
+    StringTokenizer stoke = new StringTokenizer(sectionSpec, "(),"); // TODO deal with scatterRange {1,2,3}
     while (stoke.hasMoreTokens()) {
       String s = stoke.nextToken().trim();
       if (s.equals(":")) {
@@ -587,8 +587,7 @@ public class Section {
   }
 
   public class Iterator {
-    private final int[] odo = new int[getRank()]; // odometer - the current element LOOK could use Index, but must
-                                                  // upgrade to using Range
+    private final int[] odo = new int[getRank()]; // odometer - the current element
     private final List<java.util.Iterator<Integer>> rangeIterList = new ArrayList<>();
     private final int[] stride = new int[getRank()];
     private final long total;

@@ -80,7 +80,7 @@ public class CylindricalCoord {
     Range rangeSubset = Range.make(firstIndex, firstIndex + ncoords * horizStride, horizStride);
 
     switch (xaxis.getSpacing()) {
-      case regularPoint: // LOOK mistake to assume, probably need to convert to nominal
+      case regularPoint: // TODO mistake to assume, probably need to convert to nominal
         builder.setRegular(ncoords, xaxis0.getCoordDouble(0), xaxis0.getResolution()).setIsSubset(true)
             .setRange(rangeSubset);
         break;
@@ -109,7 +109,6 @@ public class CylindricalCoord {
     ranges.set(last, this.lonIntvs.get(1));
     Array<Number> data1 = grid.readDataSection(new ucar.array.Section(ranges));
 
-    // LOOK could get clever and just manipulate the indices on two arrays
     int[] shape0 = data0.getShape();
     int[] shape1 = data1.getShape();
     int part0 = (int) data0.length() / shape0[last];

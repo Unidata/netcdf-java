@@ -250,7 +250,7 @@ public class Geostationary extends AbstractProjection {
     }
 
     // opposite signed X values, larger then 100 km
-    // LOOK! BUG? This proj works in units of radians rather than km.
+    // TODO This proj works in units of radians rather than km.
     return (x1 * x2 < 0) && (Math.abs(x1 - x2) > 100);
   }
 

@@ -63,7 +63,7 @@ public class TimedCollection {
       if (datasets.size() == 1) {
         Dataset ds = datasets.get(0);
         if (ds.start != null)
-          dateRange = CalendarDateRange.of(ds.start, ds.start); // LOOK ??
+          dateRange = CalendarDateRange.of(ds.start, ds.start);
 
       } else if (datasets.size() > 1) {
 

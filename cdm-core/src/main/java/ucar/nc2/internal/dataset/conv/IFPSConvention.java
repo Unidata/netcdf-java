@@ -90,7 +90,7 @@ public class IFPSConvention extends CoordSystemBuilder {
     this.conventionName = CONVENTION_NAME;
   }
 
-  // LOOK this is non standard for adding projection, does it work?
+  // TODO this is non standard for adding projection, does it work?
   @Override
   public void augmentDataset(CancelTask cancelTask) throws IOException {
     if (rootGroup.findVariableLocal("xCoord").isPresent()) {
@@ -117,7 +117,7 @@ public class IFPSConvention extends CoordSystemBuilder {
     }
 
     // figure out the time coordinate for each data variable
-    // LOOK : always separate; could try to discover if they are the same
+    // always separate; could try to discover if they are the same
     // Make copy because we will add new elements to it.
     for (Variable.Builder<?> ncvar : ImmutableList.copyOf(rootGroup.vbuilders)) {
       // variables that are used but not displayable or have no data have DIM_0, also don't want history, since those

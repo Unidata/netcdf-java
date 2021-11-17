@@ -75,7 +75,7 @@ public class ControllerOS implements MController {
 
   ////////////////////////////////////////////////////////////
 
-  // handles filtering and removing/including subdirectories LOOK use AbstractIterator
+  // handles filtering and removing/including subdirectories TODO use AbstractIterator
   private static class FilteredIterator implements Iterator<MFile> {
     private final Iterator<MFile> orgIter;
     private final CollectionConfig mc;
@@ -220,7 +220,7 @@ public class ControllerOS implements MController {
     Traversal(File dir) {
       fileList = new ArrayList<>();
       if (dir == null)
-        return; // LOOK WHY
+        return;
       if (dir.listFiles() == null)
         return;
 

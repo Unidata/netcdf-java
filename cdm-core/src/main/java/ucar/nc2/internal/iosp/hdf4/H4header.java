@@ -1433,7 +1433,6 @@ public class H4header implements HdfHeaderIF {
       byte[] fill_value = new byte[fill_val_numtype];
       raf.readFully(fill_value);
 
-      // LOOK wuzzit stuff? "specialness"
       sp_tag_desc = raf.readShort();
       int sp_header_len = raf.readInt();
       sp_tag_header = new byte[sp_header_len];

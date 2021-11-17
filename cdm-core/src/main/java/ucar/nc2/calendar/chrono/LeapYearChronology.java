@@ -29,7 +29,6 @@ import static java.time.temporal.ChronoField.EPOCH_DAY;
  * CF Calendar noleap (365_day) and all_leap (366_day) chronologies.
  * Follows the normal ISO calendar, except for the leap years.
  * <p>
- * LOOK: initial implementation based on ISO8601, not Gregorian.
  * Adapted from java.time.IsoChronology
  * <p>
  * The fields are defined as follows:
@@ -185,7 +184,7 @@ public final class LeapYearChronology extends AbstractChronology implements Seri
     return LeapYearDate.of(this, year, month + 1, dom + 1);
   }
 
-  // LOOK off by 1?
+  // TODO off by 1?
   // long epochDay = (long) (this.year - 1) * DAYS_IN_YEAR + this.dayOfYear - DAYS_0001_TO_1970 - 1;
   // long epochDay = (long) (this.year - 1) * DAYS_IN_YEAR + this.dayOfYear - 1970L * DAYS_IN_YEAR - 1;
   // long epochDay = (long) (this.year - 1 - 1970) * DAYS_IN_YEAR + this.dayOfYear - 1;

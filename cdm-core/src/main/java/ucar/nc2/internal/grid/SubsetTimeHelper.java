@@ -90,10 +90,10 @@ public class SubsetTimeHelper {
           return Optional.empty();
         }
       } else if (params.getRunTimeLatest()) {
-        runIdx = runtimeAxis.getNominalSize() - 1; // LOOK using nominal...
+        runIdx = runtimeAxis.getNominalSize() - 1;
       }
 
-      // LOOK what about subsetting across multiple runtimes ??
+      // TODO what about subsetting across multiple runtimes ??
       SubsetPointHelper helper = new SubsetPointHelper(runtimeAxis);
       this.runtimeAxis = helper.makeSubsetByIndex(runIdx).build();
     }
@@ -130,7 +130,7 @@ public class SubsetTimeHelper {
     if (time.isRegular()) {
       double fval = (want - time.getCoordDouble(0)) / time.getResolution();
       double ival = Math.rint(fval);
-      return DoubleMath.fuzzyEquals(fval, ival, 1.0e-8) ? (int) ival : (int) -ival - 1; // LOOK
+      return DoubleMath.fuzzyEquals(fval, ival, 1.0e-8) ? (int) ival : (int) -ival - 1;
     }
 
     // otherwise do a binary search

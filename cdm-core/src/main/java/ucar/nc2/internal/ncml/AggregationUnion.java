@@ -23,7 +23,6 @@ class AggregationUnion extends Aggregation {
     // each Dataset just gets "transfered" into the resulting NetcdfDataset
     List<AggDataset> nestedDatasets = getDatasets();
     for (AggDataset vnested : nestedDatasets) {
-      // LOOK could just open the file, not use acquire.
       NetcdfFile ncfile = vnested.acquireFile(cancelTask);
       BuilderHelper.transferDataset(ncfile, ncDataset, null);
 

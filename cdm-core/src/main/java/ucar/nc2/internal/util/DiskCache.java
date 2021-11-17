@@ -235,7 +235,7 @@ public class DiskCache {
   private static String makeCachePath(String fileLocation) {
     Escaper urlPathEscaper = UrlEscapers.urlPathSegmentEscaper();
 
-    fileLocation = fileLocation.replace('\\', '/'); // LOOK - use better normalization code eg Spring StringUtils
+    fileLocation = fileLocation.replace('\\', '/'); // TODO - use better normalization code
     String cachePath = urlPathEscaper.escape(fileLocation);
 
     // We need to escape ":" on windows or else our cache file will be something

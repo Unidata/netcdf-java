@@ -285,7 +285,7 @@ public class Range implements RangeIterator {
   public Range compact() throws InvalidRangeException {
     if (stride == 1)
       return this;
-    int first = first() / stride; // LOOK WTF ?
+    int first = first() / stride;
     int last = first + length() - 1;
     return new Range(name, first, last, 1);
   }

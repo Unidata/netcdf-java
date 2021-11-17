@@ -24,7 +24,6 @@ import java.util.List;
 /**
  * CF Calendar uniform30day or 360_day: All years are 360 days long. Each year consists of 12 months, and each month is
  * 30 days long.
- * LOOK: initial implementation based on ISO8601, not Gregorian.
  * Adapted from org.threeten.extra.chrono.Symmetry454Chronology
  * <p>
  * The fields are defined as follows:

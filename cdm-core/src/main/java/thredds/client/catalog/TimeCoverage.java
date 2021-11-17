@@ -149,7 +149,7 @@ public class TimeCoverage {
         secs = 0;
       }
 
-      // LOOK probably wrong
+      // TODO probably wrong
       if (resolution == null) {
         return new TimeDuration(duration.getTimeUnit().newValueInSeconds(secs));
       } else {

@@ -204,7 +204,7 @@ public class DataFactory {
       return openResolver(location, task, result);
     }
 
-    if (!location.startsWith("http:") && !location.startsWith("file:")) // LOOK whats this for??
+    if (!location.startsWith("http:") && !location.startsWith("file:"))
       location = "http:" + location;
 
     Catalog catalog;

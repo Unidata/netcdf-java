@@ -56,7 +56,7 @@ public class AggProxyReader implements ProxyReader {
     Variable v = ncfile.findVariable(NetcdfFiles.makeFullName(mainV));
     if (v == null) { // might be renamed
       VariableEnhanced ve = (VariableEnhanced) mainV;
-      v = ncfile.findVariable(ve.getOriginalName()); // LOOK not escaped
+      v = ncfile.findVariable(ve.getOriginalName()); // TODO not escaped
     }
     return v;
   }

@@ -43,7 +43,7 @@ class GridIndexPermuter {
       }
     }
 
-    // This is the case where its a coordinate alias. LOOK all the dependsOn hoopla
+    // This is the case where its a coordinate alias. TODO all the dependsOn hoopla
     String depends = (want.getDependsOn().size() == 1) ? want.getDependsOn().get(0) : null;
     for (int i = 0; i < dims.size(); i++) {
       Dimension d = dims.get(i);
@@ -102,7 +102,7 @@ class GridIndexPermuter {
     }
     ucar.array.Section s = new ucar.array.Section(Arrays.asList(varRange));
 
-    // LOOK could check that unfilled dimensions are length 1
+    // TODO could check that unfilled dimensions are length 1
     try {
       return ucar.array.Section.fill(s, shape);
     } catch (ucar.array.InvalidRangeException e) {

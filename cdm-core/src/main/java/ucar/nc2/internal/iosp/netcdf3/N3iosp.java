@@ -138,7 +138,7 @@ public class N3iosp extends AbstractIOServiceProvider implements IOServiceProvid
       return Boolean.TRUE;
     }
     if (message == NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE) {
-      // LOOK does this work? must be sent before construction????
+      // TODO does this work? must be sent before construction????
       this.useRecordStructure = true;
       return Boolean.TRUE;
     }

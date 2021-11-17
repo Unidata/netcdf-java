@@ -567,7 +567,7 @@ public class CurvilinearCoords {
     }
   }
 
-  // LOOK what about no intersection?
+  // TODO what about no intersection?
   public MinMaxIndices subsetProjectionRect(ProjectionRect projbb) {
     MinMaxIndices result = new MinMaxIndices();
     boolean needsEdges = false;
@@ -575,7 +575,7 @@ public class CurvilinearCoords {
     // find the x,y index of the starting point and ending points
     ProjectionPoint ll = projbb.getLowerLeftPoint();
     Optional<CurvilinearCoords.CoordReturn> resulto = findIndexFromLatLon(ll.getY(), ll.getX());
-    if (resulto.isEmpty()) { // LOOK what to do?
+    if (resulto.isEmpty()) {
       needsEdges = true;
     } else {
       CurvilinearCoords.CoordReturn index = resulto.get();

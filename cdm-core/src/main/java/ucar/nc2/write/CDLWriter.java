@@ -294,7 +294,7 @@ public class CDLWriter {
       out.format("%s", dataType.toCdl());
     }
 
-    // if (isVariableLength) out.append("(*)"); // LOOK
+    // if (isVariableLength) out.append("(*)"); // TODO
     out.format(" ");
     v.getNameAndDimensions(out, useFullName, strict);
     out.format(";");

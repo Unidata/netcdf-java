@@ -190,7 +190,7 @@ public class HdfEosModisConvention extends CoordSystemBuilder {
     }
   }
 
-  // LOOK this is non standard for adding projection, does it work?
+  // TODO this is non standard for adding projection, does it work?
   private void augmentGroupWithProjectionInfo(Group.Builder g) {
     Optional<Group.Builder> dataGopt = g.findGroupLocal(DATA_GROUP);
     if (dataGopt.isEmpty()) {

@@ -82,7 +82,7 @@ class CoordAxisToGridAxis {
     } else {
       dependenceType = GridAxisDependenceType.dependent;
       ArrayList<String> dependsOn = new ArrayList<>();
-      for (Dimension d : axis.getDimensions()) { // LOOK axes may not exist
+      for (Dimension d : axis.getDimensions()) { // TODO axes may not exist
         dependsOn.add(d.makeFullName(axis));
       }
       builder.setDependsOn(dependsOn);

@@ -311,7 +311,7 @@ public class ThreddsMetadata implements ThreddsMetadataContainer {
       return (northsouth == null) ? null : northsouth.units;
     }
 
-    // LOOK not dealing with units degrees_south
+    // TODO not dealing with units degrees_south
     public double getLatNorth() {
       return Math.max(northsouth.start, northsouth.start + northsouth.size);
     }
@@ -340,7 +340,7 @@ public class ThreddsMetadata implements ThreddsMetadataContainer {
       return (eastwest == null) ? null : eastwest.units;
     }
 
-    // LOOK not dealing with units degrees_west
+    // TODO not dealing with units degrees_west
     public double getLonEast() {
       if (eastwest == null)
         return Double.NaN;

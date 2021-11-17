@@ -453,7 +453,6 @@ public final class Uniform30DayDate extends AbstractDate implements ChronoLocalD
    *
    * @param end The end date.
    * @return The number of years from this date to the given day.
-   *         LOOK WTF?
    */
   long yearsUntil(Uniform30DayDate end) {
     long startYear = this.prolepticYear * 512L + this.getDayOfYear();
@@ -461,7 +460,6 @@ public final class Uniform30DayDate extends AbstractDate implements ChronoLocalD
     return (endYear - startYear) / 512L;
   }
 
-  /** LOOK WTF? */
   @Override
   long weeksUntil(AbstractDate end) {
     Uniform30DayDate endDate = Uniform30DayDate.from(end);
@@ -470,7 +468,6 @@ public final class Uniform30DayDate extends AbstractDate implements ChronoLocalD
     return (endWeek - startWeek) / 8L;
   }
 
-  /** LOOK WTF? */
   @Override
   long monthsUntil(AbstractDate end) {
     Uniform30DayDate date = Uniform30DayDate.from(end);

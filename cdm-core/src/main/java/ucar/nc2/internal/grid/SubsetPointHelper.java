@@ -85,7 +85,7 @@ public class SubsetPointHelper {
         break;
       }
 
-      // These are subsetted by the HorizCS LOOK
+      // These are subsetted by the HorizCS
       case GeoX:
       case GeoY:
       case Lat:
@@ -137,7 +137,7 @@ public class SubsetPointHelper {
   ////////////////////////////////////////////////////////////////////////
   // Used by GridHorizCoordinateSystem
 
-  // LOOK bounded ?
+  // TODO bounded ?
   public Optional<GridAxisPoint.Builder<?>> subsetRange(double minValue, double maxValue, int stride,
       Formatter errlog) {
     Preconditions.checkNotNull(errlog);
@@ -145,7 +145,7 @@ public class SubsetPointHelper {
     double lower;
     double upper;
 
-    // LOOK can we do this in CylindricalCoord instead?
+    // TODO can we do this in CylindricalCoord instead?
     // longitude wrapping (no seam cross, just look for cylinder that intersects)
     if (orgGridAxis.getAxisType() == AxisType.Lon) {
       if (maxValue < minValue) {

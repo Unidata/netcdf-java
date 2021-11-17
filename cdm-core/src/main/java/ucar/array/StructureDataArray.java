@@ -58,7 +58,7 @@ public final class StructureDataArray extends Array<StructureData> {
    * Copies the internal data to dest. The parameters are different from the normal case.
    *
    * @param srcPos the starting byte offset into dest.
-   * @param dest must be a StructureDataStorageBB (LOOK or StorageSD?)
+   * @param dest must be a StructureDataStorageBB
    * @param destPos the starting byte offset into dest.
    * @param length number of bytes to copy.
    */
@@ -118,7 +118,7 @@ public final class StructureDataArray extends Array<StructureData> {
     }
   }
 
-  static final class StorageSD implements StorageMutable<StructureData> { // LOOK mutable ??
+  static final class StorageSD implements StorageMutable<StructureData> {
     final StructureData[] parray;
     final int length;
 

@@ -168,25 +168,6 @@ public enum NetcdfFileFormat {
     return this == NETCDF3 || this == NETCDF3_64BIT_OFFSET || this == NETCDF4_CLASSIC || this == NETCDF3_64BIT_DATA;
   }
 
-  // this converts old NetcdfFileWriter.Version string.
-  @Nullable
-  public static NetcdfFileFormat convertVersionToFormat(String netcdfFileWriterVersion) {
-    switch (netcdfFileWriterVersion.toLowerCase()) {
-      case "netcdf3":
-        return NetcdfFileFormat.NETCDF3;
-      case "netcdf4":
-        return NetcdfFileFormat.NETCDF4;
-      case "netcdf4_classic":
-        return NetcdfFileFormat.NETCDF4_CLASSIC;
-      // case "netcdf3c": LOOK dont have an equivalent
-      // return NetcdfFileFormat.NETCDF3_64BIT_OFFSET;
-      case "netcdf3c64":
-        return NetcdfFileFormat.NETCDF3_64BIT_OFFSET;
-      default:
-        return null;
-    }
-  }
-
   /**
    * Figure out what kind of netcdf-related file we have.
    * Constraint: leave raf read pointer to point just after the magic number.

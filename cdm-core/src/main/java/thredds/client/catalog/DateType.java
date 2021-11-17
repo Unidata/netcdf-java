@@ -78,7 +78,7 @@ public class DateType {
     // see if its got a format
     if (format != null) {
       CalendarDateFormatter dateFormat = new CalendarDateFormatter(format);
-      CalendarDate date = dateFormat.parse(text); // LOOK not using the calendar
+      CalendarDate date = dateFormat.parse(text); // TODO not using the calendar
       return new DateType(text, format, type, date);
     }
 

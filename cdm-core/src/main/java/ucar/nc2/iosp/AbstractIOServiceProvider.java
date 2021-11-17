@@ -50,7 +50,7 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
   public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
     this.raf = raf;
     this.location = (raf != null) ? raf.getLocation() : ncfile != null ? ncfile.getLocation() : null;
-    this.ncfile = ncfile; // LOOK do we need this? why ?
+    this.ncfile = ncfile;
   }
 
   // TODO: Is there an alternative to making this method public? Maybe in 6?

@@ -16,7 +16,7 @@ import java.util.List;
 /** Static helper methods for Aggregations. */
 class Aggregations {
 
-  // LOOK unsigned?
+  // TODO unsigned?
   static Array<?> makeArray(ArrayType dtype, List<String> svals) throws NumberFormatException {
     int n = svals.size();
     int[] shape = new int[] {n};

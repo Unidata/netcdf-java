@@ -174,7 +174,7 @@ public class DatasetBuilder {
     services.add(s);
   }
 
-  public Dataset makeDataset(DatasetNode parent) { // LOOK whats relationship of parent with this.parent ??
+  public Dataset makeDataset(DatasetNode parent) { // TODO whats relationship of parent with this.parent ??
     ThreddsMetadata tmi = (ThreddsMetadata) get(Dataset.ThreddsMetadataInheritable);
     if (tmi != null)
       tmi.finish();
@@ -227,7 +227,7 @@ public class DatasetBuilder {
   }
 
   // transfer inherited metadata only, always include parents
-  // place directly into flds (not in this.tmi) LOOK why not into tmi ?? LOOK put into tmi, see what breaks!
+  // place directly into flds (not in this.tmi) TODO put into tmi, see what breaks!
   public void transferInheritedMetadata(DatasetNode from) {
     ThreddsMetadata tmi = getInheritableMetadata();
     inheritMetadata(from, tmi.getFlds());

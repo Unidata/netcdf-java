@@ -146,7 +146,6 @@ public final class LeapYearDate extends AbstractDate implements Temporal, Tempor
   }
 
   /**
-   * LOOK
    * Obtains an instance of {@code LeapYearDate} from a temporal object.
    * <p>
    * This obtains a LeapYearDate based on the specified temporal.
@@ -219,7 +218,6 @@ public final class LeapYearDate extends AbstractDate implements Temporal, Tempor
   }
 
   /**
-   * LOOK
    * Gets the range of valid values for the specified field.
    * <p>
    * The range object expresses the minimum and maximum valid values for a field.
@@ -387,7 +385,7 @@ public final class LeapYearDate extends AbstractDate implements Temporal, Tempor
     return (isLeapYear() ? 366 : 365);
   }
 
-  // LOOK not sure all of with() is needed - see uniform30 and AbstractDate
+  // TODO not sure all of with() is needed - see uniform30 and AbstractDate
   @Override
   public LeapYearDate with(TemporalAdjuster adjuster) {
     // optimizations
@@ -456,7 +454,6 @@ public final class LeapYearDate extends AbstractDate implements Temporal, Tempor
 
   @Override
   ValueRange rangeAlignedWeekOfMonth() {
-    // never invoked LOOK can we remove from superclass?
     return ValueRange.of(1, WEEKS_IN_MONTH);
   }
 

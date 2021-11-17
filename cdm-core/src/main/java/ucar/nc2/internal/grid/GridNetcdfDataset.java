@@ -75,7 +75,7 @@ public class GridNetcdfDataset implements GridDataset {
     // Do all the independent axes first
     for (CoordinateAxis axis : classifier.getIndependentAxes()) {
       if (axis.getFullName().startsWith("Best/")) {
-        continue; // LOOK
+        continue;
       }
       if (axis.getRank() < 2) {
         GridAxis<?> gridAxis = CoordAxisToGridAxis

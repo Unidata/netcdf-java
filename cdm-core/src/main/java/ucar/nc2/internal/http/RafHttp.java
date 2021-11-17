@@ -195,7 +195,7 @@ public final class RafHttp extends RemoteRandomAccessFile {
    *
    * @return {@code 0L}, always.
    */
-  // LOOK: An idea of how we might implement this: https://github.com/Unidata/thredds/pull/479#issuecomment-194562614
+  // An idea of how we might implement this: https://github.com/Unidata/thredds/pull/479#issuecomment-194562614
   @Override
   public long getLastModified() {
     return 0;

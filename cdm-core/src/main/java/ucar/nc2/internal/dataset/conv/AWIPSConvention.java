@@ -153,7 +153,7 @@ public class AWIPSConvention extends CoordSystemBuilder {
     return units;
   }
 
-  // LOOK not dealing with "FHAG 0 10 ", "FHAG 0 30 "
+  // TODO not dealing with "FHAG 0 10 ", "FHAG 0 30 "
   // take a combined level variable and create multiple levels out of it
   // return the list of Dimensions that were created
   private List<Dimension> breakupLevels(VariableDS.Builder<?> levelVar) {

@@ -54,7 +54,7 @@ public class ControllerOS7 implements MController {
   ////////////////////////////////////////////////////////////
 
   private static class CollectionFilter implements DirectoryStream.Filter<Path> {
-    CollectionConfig mc; // LOOK not used yet
+    CollectionConfig mc;
 
     private CollectionFilter(CollectionConfig mc) {
       this.mc = mc;
@@ -85,7 +85,7 @@ public class ControllerOS7 implements MController {
       try {
         return new MFileOS7(dirStream.next());
       } catch (IOException e) {
-        e.printStackTrace(); // LOOK we should pass this exception up
+        e.printStackTrace();
         throw new RuntimeException(e);
       }
     }

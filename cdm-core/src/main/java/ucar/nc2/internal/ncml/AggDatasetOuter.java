@@ -90,9 +90,9 @@ class AggDatasetOuter extends AggDataset {
       this.ncoord = stoker.countTokens();
     }
 
-    this.isStringValued = isString; // LOOK ??
+    this.isStringValued = isString;
     this.coordValue = coordValueS;
-    this.coordValueDate = null; // LOOK why isnt this set?
+    this.coordValueDate = null; // TODO why isnt this set?
   }
 
   private String extractCoordNameFromFilename(String loc) {
@@ -119,11 +119,11 @@ class AggDatasetOuter extends AggDataset {
       coordValueS = extractCoordNameFromFilename(this.getLocation());
       this.isStringValued = true;
     } else {
-      this.isStringValued = false; // LOOK ??
+      this.isStringValued = false;
     }
 
     if (null != aggregationOuter.dateFormatMark) {
-      String filename = cd.getName(); // LOOK operates on name, not path
+      String filename = cd.getName(); // TODO operates on name, not path
       coordValueDate =
           CalendarDate.of(DateFromString.getDateUsingDemarkatedCount(filename, aggregationOuter.dateFormatMark, '#'));
       coordValueS = CalendarDateFormatter.toDateTimeStringISO(coordValueDate);
@@ -275,7 +275,7 @@ class AggDatasetOuter extends AggDataset {
       if (v == null) {
         Aggregation.logger.error("AggOuterDimension cant find " + mainv.getFullName() + " in " + ncd.getLocation()
             + "; return all zeroes!!!");
-        // all zeros LOOK need missing value
+        // all zeros TODO need missing value
         return Arrays.factory(mainv.getArrayType(), section.getShape(),
             IospArrayHelper.makePrimitiveArray((int) Arrays.computeSize(section.getShape()), mainv.getArrayType()));
       }

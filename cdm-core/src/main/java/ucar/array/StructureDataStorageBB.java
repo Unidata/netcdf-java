@@ -101,7 +101,7 @@ public final class StructureDataStorageBB implements Storage<StructureData> {
     }
 
     if (member.isVlen()) {
-      // LOOK not making a copy
+      // TODO not making a copy
       int index = this.putOnHeap(data);
       bbuffer.putInt(index);
       return;
