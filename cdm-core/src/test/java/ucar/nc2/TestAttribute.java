@@ -216,18 +216,18 @@ public class TestAttribute {
     assertThat(att.getStringValue(1)).isEqualTo("dg");
   }
 
-   @Test
-   public void testSetArrayValueOpaque() {
-     int[] shape = new int[] {1};
-     byte[][] bdata = new byte[1][];
-     bdata[0] = new byte[11];
-     Array<?> data = ArrayVlen.factory(ArrayType.OPAQUE, shape, bdata);
+  @Test
+  public void testSetArrayValueOpaque() {
+    int[] shape = new int[] {1};
+    byte[][] bdata = new byte[1][];
+    bdata[0] = new byte[11];
+    Array<?> data = ArrayVlen.factory(ArrayType.OPAQUE, shape, bdata);
 
-     Attribute att = Attribute.builder().setName("name").setArrayValues(data).build();
-     assertThat(att.getArrayType()).isEqualTo(ArrayType.OPAQUE);
-     assertThat(att.getLength()).isEqualTo(1);
-     assertThat(att.getValue(0)).isEqualTo(Arrays.factory(ArrayType.OPAQUE, new int[] {11}, new byte[11]));
-   }
+    Attribute att = Attribute.builder().setName("name").setArrayValues(data).build();
+    assertThat(att.getArrayType()).isEqualTo(ArrayType.OPAQUE);
+    assertThat(att.getLength()).isEqualTo(1);
+    assertThat(att.getValue(0)).isEqualTo(Arrays.factory(ArrayType.OPAQUE, new int[] {11}, new byte[11]));
+  }
 
   @Test
   public void testSetArrayValuesOpaque() {
