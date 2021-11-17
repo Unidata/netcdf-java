@@ -106,7 +106,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
 
   @Override
   public void build(RandomAccessFile raf, Group.Builder rootGroup, CancelTask cancelTask) throws IOException {
-    super.open(raf, rootGroup.getNcfile(), cancelTask);
+    setRaf(raf);
 
     if (gHcs != null) { // just use the one group that was set in the constructor
       this.gribCollection = gHcs.getGribCollection();

@@ -712,7 +712,7 @@ public class Scanner {
 
   // extract the msgno-th message to fileOut
 
-  static void scanReader(String filein, BufrArrayIosp iosp) throws IOException {
+  static void scanReader(String filein, BufrIosp iosp) throws IOException {
     Formatter f = new Formatter(System.out);
 
     try (RandomAccessFile raf = new RandomAccessFile(filein, "r")) {

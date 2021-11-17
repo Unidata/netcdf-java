@@ -16,51 +16,21 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Formatter;
 
-/**
- * Abstract base class for IOSP implementations that provides default implementations
- * of readToByteChannel(...) and readSection(...).
- * <p>
- * Implementations should make sure to handle the RandomAccessFile properly by
- * doing one of the following:
- * <ol>
- * <li>Write your own open(...) and close() methods that keep track of the
- * RandomAccessFile, be sure to close the RandomAccessFile in your close()
- * method.</li>
- * <li>Write your own open(...) and close() methods that call the open(...)
- * and close() methods defined here, use the "raf" variable also defined
- * here.</li>
- * <li>Don't write an open(...) or close() method, so that those defined
- * here are used.</li>
- * </ol>
- */
+/** Abstract base class for IOSP implementations. */
 public abstract class AbstractIOServiceProvider implements IOServiceProvider {
-  /**
-   * Subclasses that use AbstractIOServiceProvider.open(...) or close()
-   * should use this (instead of their own private variable).
-   */
   protected ucar.unidata.io.RandomAccessFile raf;
   protected String location;
   protected int rafOrder = RandomAccessFile.BIG_ENDIAN;
-
-  // In general, ncfile doesnt exist until after open is called.
-  // That argues for open() changing to a builder.
   protected NetcdfFile ncfile;
 
-  // TODO this is misused, should be in a constructor?
-  public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
+  public void setRaf(RandomAccessFile raf) throws IOException {
     this.raf = raf;
-    this.location = (raf != null) ? raf.getLocation() : ncfile != null ? ncfile.getLocation() : null;
-    this.ncfile = ncfile;
-  }
-
-  // TODO: Is there an alternative to making this method public? Maybe in 6?
-  public void setNetcdfFile(NetcdfFile ncfile) {
-    this.ncfile = ncfile;
+    this.location = raf.getLocation();
   }
 
   @Override
   public void buildFinish(NetcdfFile ncfile) {
-    // No op
+    this.ncfile = ncfile;
   }
 
   @Override
@@ -71,6 +41,7 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
   }
 
   // release any resources like file handles
+  @Override
   public void release() throws IOException {
     if (raf != null)
       raf.close();
@@ -78,6 +49,7 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
   }
 
   // reacquire any resources like file handles
+  @Override
   public void reacquire() throws IOException {
     raf = RandomAccessFile.acquire(location);
     this.raf.order(rafOrder);
@@ -104,6 +76,7 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
    * @return a {@code long} value representing the time the file(s) were last modified or {@code 0L} if the
    *         last-modified time couldn't be determined for any reason.
    */
+  @Override
   public long getLastModified() {
     if (location != null) {
       File file = new File(location);

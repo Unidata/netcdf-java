@@ -12,7 +12,7 @@ import ucar.nc2.Attribute;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.ft.point.bufr.BufrCdmIndexProto;
-import ucar.nc2.bufr.BufrArrayIosp;
+import ucar.nc2.bufr.BufrIosp;
 import ucar.nc2.bufr.DataDescriptor;
 import ucar.nc2.bufr.Message;
 import ucar.nc2.calendar.CalendarDate;
@@ -231,7 +231,7 @@ public class StandardFields {
     public StandardFieldsFromStructure(int center, Structure obs) {
       // run through all available fields - LOOK we are not recursing into sub sequences
       for (Variable v : obs.getVariables()) {
-        Attribute att = v.attributes().findAttribute(BufrArrayIosp.fxyAttName);
+        Attribute att = v.attributes().findAttribute(BufrIosp.fxyAttName);
         if (att == null)
           continue;
         String key = att.getStringValue();

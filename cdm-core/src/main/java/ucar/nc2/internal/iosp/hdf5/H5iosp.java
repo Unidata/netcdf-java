@@ -84,7 +84,7 @@ public class H5iosp extends AbstractIOServiceProvider {
 
   @Override
   public void build(RandomAccessFile raf, Group.Builder rootGroup, CancelTask cancelTask) throws IOException {
-    super.open(raf, rootGroup.getNcfile(), cancelTask);
+    setRaf(raf);
 
     raf.order(RandomAccessFile.BIG_ENDIAN);
     header = new H5header(raf, rootGroup, this);

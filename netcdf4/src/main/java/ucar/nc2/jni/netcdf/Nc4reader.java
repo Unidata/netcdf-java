@@ -169,7 +169,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
 
   @Override
   public void build(RandomAccessFile raf, Group.Builder rootGroup, CancelTask cancelTask) throws IOException {
-    super.open(raf, rootGroup.getNcfile(), cancelTask);
+    setRaf(raf);
     this.rootGroup = rootGroup;
 
     if (!isLibraryPresent()) {

@@ -127,11 +127,6 @@ public class N3iosp extends AbstractIOServiceProvider implements IOServiceProvid
   }
 
   @Override
-  public String toStringDebug(Object o) {
-    return null;
-  }
-
-  @Override
   public Object sendIospMessage(Object message) {
     if (message instanceof Charset) {
       setValueCharset((Charset) message);
@@ -188,7 +183,7 @@ public class N3iosp extends AbstractIOServiceProvider implements IOServiceProvid
 
   @Override
   public void build(RandomAccessFile raf, Group.Builder rootGroup, CancelTask cancelTask) throws IOException {
-    super.open(raf, rootGroup.getNcfile(), cancelTask);
+    setRaf(raf);
 
     String location = raf.getLocation();
     if (!location.startsWith("http:")) {

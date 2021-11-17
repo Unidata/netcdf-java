@@ -7,7 +7,7 @@ package timing;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.nc2.bufr.MessageScanner;
 import ucar.nc2.bufr.Message;
-import ucar.nc2.bufr.BufrArrayIosp;
+import ucar.nc2.bufr.BufrIosp;
 import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;

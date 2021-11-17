@@ -83,7 +83,7 @@ public class H4iosp extends AbstractIOServiceProvider {
 
   @Override
   public void build(RandomAccessFile raf, Group.Builder rootGroup, CancelTask cancelTask) throws IOException {
-    super.open(raf, rootGroup.getNcfile(), cancelTask);
+    setRaf(raf);
 
     raf.order(RandomAccessFile.BIG_ENDIAN);
     header = new H4header(this);
@@ -217,6 +217,7 @@ public class H4iosp extends AbstractIOServiceProvider {
     return new ucar.array.StructureDataArray(members, section.getShape(), storage);
   }
 
+  @Override
   public String toStringDebug(Object o) {
     if (o instanceof Variable) {
       Variable v = (Variable) o;

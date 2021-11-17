@@ -73,7 +73,7 @@ public class TestBufrModuleRead {
           assert m.isTablesComplete() : "incomplete tables";
 
           if (nobs > 0) {
-            BufrArrayIosp iosp = new BufrArrayIosp();
+            BufrIosp iosp = new BufrIosp();
             iosp.open(m.raf(), m);
             Formatter f = new Formatter();
             MessageBitCounter counter = new MessageBitCounter(iosp.getTopSequence(), iosp.getProtoMessage(), m, f);

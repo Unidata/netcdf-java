@@ -27,5 +27,11 @@ public class TestReadBufrProblem {
     TestReadBufrCompare.readArrays(filename);
   }
 
+  @Test
+  public void testEnum() throws Exception {
+    String filename = TestDir.cdmUnitTestDir + "formats/bufr/embeddedTable/gdas.adpsfc.t00z.20120603.bufr";
+    TestReadBufrCompare.readArrays(filename);
+  }
+
 }
 

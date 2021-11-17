@@ -43,7 +43,7 @@ class BufrIospBuilder {
 
   BufrIospBuilder(Message proto, BufrConfig bufrConfig, Group.Builder root, String location) {
     this.rootGroup = root;
-    this.recordStructure = Sequence.builder().setName(BufrArrayIosp.obsRecordName);
+    this.recordStructure = Sequence.builder().setName(BufrIosp.obsRecordName);
     this.rootGroup.addVariable(recordStructure);
 
     // global Attributes
@@ -60,7 +60,7 @@ class BufrIospBuilder {
     atts.addAttribute("BUFR:category", proto.ids.getCategory());
     atts.addAttribute("BUFR:subCategory", proto.ids.getSubCategory());
     atts.addAttribute("BUFR:localSubCategory", proto.ids.getLocalSubCategory());
-    atts.addAttribute(BufrArrayIosp.centerId, proto.ids.getCenterId());
+    atts.addAttribute(BufrIosp.centerId, proto.ids.getCenterId());
     atts.addAttribute("BUFR:subCenter", proto.ids.getSubCenterId());
     atts.addAttribute("BUFR:table", proto.ids.getMasterTableId());
     atts.addAttribute("BUFR:tableVersion", proto.ids.getMasterTableVersion());
@@ -323,7 +323,7 @@ class BufrIospBuilder {
     }
 
     annotate(v, fld);
-    v.addAttribute(new Attribute(BufrArrayIosp.fxyAttName, dataDesc.getFxyName()));
+    v.addAttribute(new Attribute(BufrIosp.fxyAttName, dataDesc.getFxyName()));
     v.addAttribute(new Attribute("BUFR:bitWidth", dataDesc.bitWidth));
     struct.addMemberVariable(v);
 

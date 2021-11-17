@@ -201,10 +201,10 @@ public class BufrConfig {
     hasDate = standardFields.hasTime();
 
     try (NetcdfFile ncd = NetcdfFiles.open(raf.getLocation())) {
-      Attribute centerAtt = ncd.findAttribute(BufrArrayIosp.centerId);
+      Attribute centerAtt = ncd.findAttribute(BufrIosp.centerId);
       int center = (centerAtt == null) ? 0 : centerAtt.getNumericValue().intValue();
 
-      Sequence seq = (Sequence) ncd.getRootGroup().findVariableLocal(BufrArrayIosp.obsRecordName);
+      Sequence seq = (Sequence) ncd.getRootGroup().findVariableLocal(BufrIosp.obsRecordName);
       extract = new StandardFields.StandardFieldsFromStructure(center, seq);
       processSeq(seq, rootConverter, true);
 
