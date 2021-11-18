@@ -764,8 +764,7 @@ public class Nc4writer extends Nc4reader implements IospFileWriter {
             (byte[]) arrayStorage);
         break;
       case CHAR:
-        ret = nc4.nc_put_att_text(grpid, varid, att.getShortName(), new SizeT(att.getLength()),
-            IospArrayHelper.convertCharToByte((char[]) arrayStorage));
+        ret = nc4.nc_put_att_text(grpid, varid, att.getShortName(), new SizeT(att.getLength()), (byte[]) arrayStorage);
         break;
       case DOUBLE:
         ret = nc4.nc_put_att_double(grpid, varid, att.getShortName(), Nc4prototypes.NC_DOUBLE,

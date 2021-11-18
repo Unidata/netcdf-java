@@ -1116,11 +1116,11 @@ public class H5header implements HdfHeaderIF {
     Layout layout = new LayoutRegular(matt.dataPos, elemSize, shape, new Section(shape));
 
     // So an attribute cant be a Structure ??
-    Object pdata = h5iosp.readArrayOrPrimitive(vinfo, null, layout, dataType, shape, null, endian, false);
+    Object pdata = h5iosp.readArrayOrPrimitive(vinfo, null, layout, dataType, shape, null, endian);
     Array<?> dataArray;
 
     if (dataType == ArrayType.OPAQUE) {
-      dataArray = (Array) pdata;
+      dataArray = (Array<?>) pdata;
 
     } else if ((dataType == ArrayType.CHAR)) {
       if (vinfo.mdt.byteSize > 1) { // chop back into pieces
@@ -1859,7 +1859,7 @@ public class H5header implements HdfHeaderIF {
         throw new IllegalStateException();
       }
 
-      Object data = IospArrayHelper.readDataFill(raf, layout, dataType, getFillValue(), typeInfo.endian, false);
+      Object data = IospArrayHelper.readDataFill(raf, layout, dataType, getFillValue(), typeInfo.endian);
       return Arrays.factory(dataType, shape, data);
     }
 
@@ -1878,7 +1878,7 @@ public class H5header implements HdfHeaderIF {
         // cant happen because we use null for wantSection
         throw new IllegalStateException();
       }
-      Object data = IospArrayHelper.readDataFill(raf, layout, dataType, getFillValue(), typeInfo.endian, true);
+      Object data = IospArrayHelper.readDataFill(raf, layout, dataType, getFillValue(), typeInfo.endian);
 
       // read and parse the ODL
       String result = "";

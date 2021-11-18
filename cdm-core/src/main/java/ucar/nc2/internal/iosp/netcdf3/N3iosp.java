@@ -213,9 +213,6 @@ public class N3iosp extends AbstractIOServiceProvider implements IOServiceProvid
     }
 
     Object data = readDataObject(v2, section);
-    if (v2.getArrayType() == ArrayType.CHAR) {
-      data = Arrays.convertCharToByte((char[]) data);
-    }
     return Arrays.factory(v2.getArrayType(), section.getShape(), data);
   }
 

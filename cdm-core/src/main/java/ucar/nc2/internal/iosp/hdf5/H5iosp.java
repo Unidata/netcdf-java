@@ -286,9 +286,6 @@ public class H5iosp extends AbstractIOServiceProvider {
 
     if (vinfo.useFillValue) { // fill value only
       Object pa = IospArrayHelper.makePrimitiveArray((int) wantSection.computeSize(), dataType, vinfo.getFillValue());
-      if (dataType == ArrayType.CHAR) {
-        pa = IospArrayHelper.convertByteToChar((byte[]) pa);
-      }
       return Arrays.factory(dataType, wantSection.getShape(), pa);
     }
 
@@ -338,7 +335,7 @@ public class H5iosp extends AbstractIOServiceProvider {
       } else {
         layout = new LayoutRegular(dataPos, elemSize, v2.getShape(), wantSection);
       }
-      data = readArrayOrPrimitive(vinfo, v2, layout, readDtype, wantSection.getShape(), fillValue, endian, true);
+      data = readArrayOrPrimitive(vinfo, v2, layout, readDtype, wantSection.getShape(), fillValue, endian);
     }
 
     if (data instanceof Array) {
@@ -376,17 +373,16 @@ public class H5iosp extends AbstractIOServiceProvider {
    * @param dataType dataType of the data to read
    * @param shape the shape of the output
    * @param fillValue fill value as a wrapped primitive
-   * @return primitive array or Array with data read in
    * @throws IOException if read error
    */
   Object readArrayOrPrimitive(H5header.Vinfo vinfo, @Nullable Variable v, Layout layout, ArrayType dataType,
-      int[] shape, Object fillValue, ByteOrder endian, boolean convertChar) throws IOException {
+      int[] shape, Object fillValue, ByteOrder endian) throws IOException {
 
     Hdf5Type typeInfo = vinfo.typeInfo;
 
     // special processing
     if (typeInfo.hdfType == 2) { // time
-      Object data = IospArrayHelper.readDataFill(raf, layout, dataType, fillValue, endian, true);
+      Object data = IospArrayHelper.readDataFill(raf, layout, dataType, fillValue, endian);
       Array<Long> timeArray = Arrays.factory(dataType, shape, data);
 
       // now transform into an ISO Date String
@@ -450,7 +446,7 @@ public class H5iosp extends AbstractIOServiceProvider {
     }
 
     // normal case
-    return IospArrayHelper.readDataFill(raf, layout, dataType, fillValue, endian, convertChar);
+    return IospArrayHelper.readDataFill(raf, layout, dataType, fillValue, endian);
   }
 
   ///////////////////////////////////////////////

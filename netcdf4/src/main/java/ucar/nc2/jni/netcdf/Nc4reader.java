@@ -1185,7 +1185,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
         ret = nc4.nc_get_vars_text(grpid, varid, origin, shape, stride, valc);
         if (ret != 0)
           throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-        values = Arrays.factory(ArrayType.CHAR, section.getShape(), IospArrayHelper.convertByteToChar(valc));
+        values = Arrays.factory(ArrayType.CHAR, section.getShape(), valc);
         break;
 
       case Nc4prototypes.NC_DOUBLE:
@@ -1300,8 +1300,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
         if (ret != 0) {
           throw new IOException(ret + ": " + nc4.nc_strerror(ret));
         }
-        char[] cvals = IospArrayHelper.convertByteToChar(valc);
-        return Arrays.factory(ArrayType.CHAR, shape, cvals);
+        return Arrays.factory(ArrayType.CHAR, shape, valc);
       }
 
       case Nc4prototypes.NC_DOUBLE: {
