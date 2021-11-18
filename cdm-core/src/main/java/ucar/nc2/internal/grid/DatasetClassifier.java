@@ -265,7 +265,7 @@ public class DatasetClassifier {
           indAxes.add(rtAxis = rt);
         } else { // A runtime axis must be scalar or one-dimensional
           infolog.format(" %s: RunTime axis must be 1D or scalar%n", cs.getName());
-          // return; // LOOK
+          // return; // TODO
         }
       }
 
@@ -310,12 +310,12 @@ public class DatasetClassifier {
       boolean is2Dtime = (rtAxis != null) && (timeOffsetAxis == null) && (timeAxis != null && timeAxis.getRank() == 2);
 
       if (is2Dtime) {
-        result = FeatureType.FMRC; // LOOK this would allow 2d horiz
+        result = FeatureType.FMRC; // TODO this would allow 2d horiz
 
       } else if (!standardGeoXY && curvilinearWith1D) {
         Set<Dimension> xyDomain = Dimensions.makeDomain(Lists.newArrayList(xaxis, yaxis), true);
         if (timeAxis != null && Dimensions.isSubset(Dimensions.makeDimensionsAll(timeAxis), xyDomain)) {
-          result = FeatureType.SWATH; // LOOK prob not exactly right
+          result = FeatureType.SWATH;
         } else {
           result = FeatureType.CURVILINEAR;
         }
@@ -323,7 +323,7 @@ public class DatasetClassifier {
       } else if (!standardGeoXY && curvilinear) {
         Set<Dimension> xyDomain = Dimensions.makeDomain(Lists.newArrayList(lonaxis, lataxis), true);
         if (timeAxis != null && Dimensions.isSubset(Dimensions.makeDimensionsAll(timeAxis), xyDomain)) {
-          result = FeatureType.SWATH; // LOOK prob not exactly right
+          result = FeatureType.SWATH;
         } else {
           result = FeatureType.CURVILINEAR;
         }

@@ -103,7 +103,6 @@ public class GridVariable implements Grid {
   @Override
   public Array<Number> readDataSection(ucar.array.Section subset) throws InvalidRangeException, IOException {
     Array<?> dataVolume = vds.readArray(this.permuter.permute(subset));
-    // LOOK unchecked cast
     return (Array<Number>) dataVolume;
   }
 

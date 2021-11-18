@@ -266,7 +266,7 @@ public class CoordSystemBuilder {
     for (Variable.Builder<?> vb : nested) {
       if (vb instanceof VariableDS.Builder) {
         varList.add(new VarProcess(group, (VariableDS.Builder<?>) vb));
-      } else if (vb instanceof StructureDS.Builder) { // LOOK the actual Structure isnt in the VarProcess list.
+      } else if (vb instanceof StructureDS.Builder) { // the actual Structure isnt in the VarProcess list.
         addStructure(group, (StructureDS.Builder<?>) vb);
       }
     }
@@ -597,7 +597,7 @@ public class CoordSystemBuilder {
   }
 
   protected ProjectionCTV makeTransformBuilder(Variable.Builder<?> vb) {
-    // LOOK at this point dont know if its a Projection or a VerticalTransform
+    // at this point dont know if its a Projection or a VerticalTransform
     return new ProjectionCTV(vb.getFullName(), vb.getAttributeContainer(), null);
   }
 
@@ -963,7 +963,7 @@ public class CoordSystemBuilder {
           String vname = stoker.nextToken();
           VarProcess ap = findVarProcess(vname, this);
           if (ap != null) {
-            CoordinateAxis.Builder<?> axis = ap.makeIntoCoordinateAxis(); // LOOK check if its legal
+            CoordinateAxis.Builder<?> axis = ap.makeIntoCoordinateAxis(); // TODO check if its legal
             if (!axesList.contains(axis)) {
               axesList.add(axis);
             }

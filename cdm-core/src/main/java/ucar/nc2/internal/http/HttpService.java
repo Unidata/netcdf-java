@@ -24,8 +24,8 @@ import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 
 /**
  * Http requests go through this Singleton.
- * LOOK We anticipate especially managing credentials from here. Not yet implemented.
- * LOOK HTTPSession.setGlobalCompression()
+ * TODO We anticipate especially managing credentials from here. Not yet implemented.
+ * TODO HTTPSession.setGlobalCompression()
  * If so, we might need multiple HttpService to manage different users, eg from a server?
  * escaping?
  * Lots of complicated stuff going on in ucar.httpservices.HTTPSession, etc.

@@ -109,7 +109,7 @@ public class H5objects {
       dobj = header.getDataObject(address, displayName);
 
       // hash for soft link lookup
-      header.addSymlinkMap(getName(), this); // LOOK does getName() match whats stored in soft link ??
+      header.addSymlinkMap(getName(), this); // TODO does getName() match whats stored in soft link ??
 
       // if has a "group message", then its a group
       if ((dobj.groupMessage != null) || (dobj.groupNewMessage != null)) { // if has a "groupNewMessage", then its a
@@ -455,12 +455,6 @@ public class H5objects {
       int count = 0;
       int bytesRead = 0;
       while ((count < maxMess) && (bytesRead < maxBytes)) {
-        /*
-         * LOOK: MessageContinue not correct ??
-         * if (posMess >= actualSize)
-         * break;
-         */
-
         HeaderMessage mess = new HeaderMessage();
         // messages.add( mess);
         int n = mess.read(pos, 1, false, objectName);
@@ -1282,7 +1276,6 @@ public class H5objects {
         if (debug1) {
           log.debug("   type 4 (bit field): bitOffset= " + bitOffset + " bitPrecision= " + bitPrecision);
         }
-        // isOK = (bitOffset == 0) && (bitPrecision % 8 == 0); LOOK
 
       } else if (type == 5) { // opaque
         byte len = flags[0];
@@ -2301,7 +2294,7 @@ public class H5objects {
         for (int i = 0; i < nentries; i++) {
           SymbolTableEntry entry = new SymbolTableEntry(posEntry);
           posEntry += entry.getSize();
-          if (entry.objectHeaderAddress != 0) { // LOOK: Probably a bug in HDF5 file format ?? jc July 16 2010
+          if (entry.objectHeaderAddress != 0) { // Probably a bug in HDF5 file format ?? jc July 16 2010
             if (debug1) {
               log.debug("   add {}", entry);
             }

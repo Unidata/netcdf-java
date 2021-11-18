@@ -429,7 +429,7 @@ public class DiskCache2 {
       File file = new File(root + cachePath);
       File parent = file.getParentFile();
       if (!parent.exists()) {
-        if (root == null) { // LOOK shouldnt happen, remove soon
+        if (root == null) { // TODO shouldnt happen, remove soon
           cacheLog.error("makeCachePath has null root %{}", parent.getPath());
           new Throwable().printStackTrace();
         }

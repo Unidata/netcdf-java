@@ -126,7 +126,6 @@ public abstract class RemoteRandomAccessFile extends ucar.unidata.io.RandomAcces
     if ((totalBytesRead < len) && (firstCacheBlockNumber != lastCacheBlockNumber)) {
       // Now fill the buffer using whole cache blocks, up until the last cache block (as reading from the last cache
       // block might be a partial read).
-      // LOOK: might benefit from concurrency? Need to see how often we end up inside this while statement.
       // Initial testing shows this only happens for small readCacheBlockSize (which is equal to the read buffer size)
       // when reading netCDF-4 files, but I think might depend on the specific IOSP in use.
       long currentCacheBlockNumber = firstCacheBlockNumber + 1;

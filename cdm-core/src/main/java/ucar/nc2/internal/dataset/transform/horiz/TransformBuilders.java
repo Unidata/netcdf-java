@@ -40,7 +40,7 @@ public class TransformBuilders {
       List<CoordinateAxis> axes = ds.getCoordinateAxes();
       for (CoordinateAxis axis : axes) {
         if (axis.getAxisType() == AxisType.GeoX) { // kludge - what if there's multiple ones?
-          Variable v = axis.getOriginalVariable(); // LOOK why original variable ?
+          Variable v = axis.getOriginalVariable(); // why original variable ?
           units = (v == null) ? axis.getUnitsString() : v.getUnitsString();
           break;
         }

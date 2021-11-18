@@ -311,7 +311,7 @@ public class DatasetHtmlWriter {
       out.format("</ul>%n");
     }
 
-    // LOOK what about VariableMapLink string ??
+    // TODO what about VariableMapLink string ??
     if (ds.getVariableMapLink() != null) {
       out.format("<h3>Variables:</h3>%n");
       ThreddsMetadata.UriResolved uri = ds.getVariableMapLink();
@@ -393,7 +393,7 @@ public class DatasetHtmlWriter {
     if (!props.isEmpty()) {
       out.format("<h3>Properties:</h3>%n<ul>%n");
       for (Property p : props) {
-        if (p.getName().equals("attachments")) { // LOOK whats this ?
+        if (p.getName().equals("attachments")) {
           String attachLink = resolveRelativeUrls ? makeHrefResolve(ds, p.getValue(), p.getName())
               : makeHref(p.getValue(), null, p.getName());
           out.format(" <li>%s</li>%n", attachLink);

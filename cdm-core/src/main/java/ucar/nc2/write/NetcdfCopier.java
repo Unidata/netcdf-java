@@ -151,12 +151,12 @@ public class NetcdfCopier implements Closeable {
       }
     }
 
-    // classic model does not support unshared dimensions. LOOK neither does netcdf4 ??
+    // classic model does not support unshared dimensions. TODO neither does netcdf4 ??
     if (!extended) {
       int count = 0;
       for (Dimension dim : vb.getDimensions()) {
         if (!dim.isShared()) {
-          // LOOK could turn these back into unshared dimensions when reading.
+          // TODO could turn these back into unshared dimensions when reading.
           String dimName = vb.shortName + "_Dim" + count;
           Dimension sharedDim = Dimension.builder(dimName, dim.getLength()).setIsShared(false).build();
           parent.addDimension(sharedDim);

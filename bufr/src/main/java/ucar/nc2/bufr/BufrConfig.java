@@ -22,6 +22,8 @@ import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.util.Indent;
 import ucar.unidata.geoloc.Station;
 import ucar.unidata.io.RandomAccessFile;
+
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.*;
 
@@ -39,10 +41,11 @@ public class BufrConfig {
     return new BufrConfig(raf);
   }
 
-  static BufrConfig openFromMessage(RandomAccessFile raf, Message m, Element iospParam) {
+  static BufrConfig openFromMessage(RandomAccessFile raf, Message m, @Nullable Element iospParam) {
     BufrConfig config = new BufrConfig(raf, m);
-    if (iospParam != null)
+    if (iospParam != null) {
       config.merge(iospParam);
+    }
     return config;
   }
 
@@ -201,10 +204,10 @@ public class BufrConfig {
     hasDate = standardFields.hasTime();
 
     try (NetcdfFile ncd = NetcdfFiles.open(raf.getLocation())) {
-      Attribute centerAtt = ncd.findAttribute(BufrArrayIosp.centerId);
+      Attribute centerAtt = ncd.findAttribute(BufrIosp.centerId);
       int center = (centerAtt == null) ? 0 : centerAtt.getNumericValue().intValue();
 
-      Sequence seq = (Sequence) ncd.getRootGroup().findVariableLocal(BufrArrayIosp.obsRecordName);
+      Sequence seq = (Sequence) ncd.getRootGroup().findVariableLocal(BufrIosp.obsRecordName);
       extract = new StandardFields.StandardFieldsFromStructure(center, seq);
       processSeq(seq, rootConverter, true);
 

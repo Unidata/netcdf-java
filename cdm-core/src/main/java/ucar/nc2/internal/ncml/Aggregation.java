@@ -215,7 +215,7 @@ public abstract class Aggregation {
    * @return true if directory was rescanned and dataset may have been updated
    */
   public synchronized boolean syncExtend() {
-    return false; // LOOK datasetManager.isScanNeeded() && _sync();
+    return false; // TODO
   }
 
   public long getLastModified() {
@@ -227,7 +227,7 @@ public abstract class Aggregation {
     return datasetManager.getLastChanged();
   }
 
-  public String getFileTypeId() { // LOOK - should cache ??
+  public String getFileTypeId() {
     AggDataset ds = null;
     NetcdfFile ncfile = null;
     try {
@@ -249,7 +249,7 @@ public abstract class Aggregation {
     return "N/A";
   }
 
-  public String getFileTypeDescription() { // LOOK - should cache ??
+  public String getFileTypeDescription() {
     AggDataset ds = null;
     NetcdfFile ncfile = null;
     try {
@@ -338,12 +338,10 @@ public abstract class Aggregation {
     Collections.sort(datasets);
 
     // add the explicit datasets - these need to be kept in order
-    // LOOK - should they be before or after scanned? Does it make sense to mix scan and explicit?
     // AggFmrcSingle sets explicit datasets - the scan is empty
     datasets.addAll(explicitDatasets);
 
     // Remove unreadable files (i.e. due to permissions) from the aggregation.
-    // LOOK: Is this logic we should install "upstream", perhaps in MFileCollectionManager?
     // It would affect other collections than just NcML aggregation in that case.
     for (Iterator<AggDataset> datasetsIter = datasets.iterator(); datasetsIter.hasNext();) {
       AggDataset dataset = datasetsIter.next();
@@ -440,7 +438,6 @@ public abstract class Aggregation {
   }
 
   private void setDatasetAcquireProxy(AggProxyReader proxy, Group.Builder g) {
-
     // all normal (non agg) variables must use a proxy to lock the file
     for (Variable.Builder<?> vb : g.vbuilders) {
       if (vb.proxyReader != null) {
@@ -448,13 +445,6 @@ public abstract class Aggregation {
           System.out.println(" debugProxy: hasProxyReader " + vb.shortName);
         continue; // dont mess with agg variables
       }
-      /*
-       * LOOK no caching
-       * if (v.isCaching()) { // cache the small ones
-       * v.setCachedData(v.read()); // cache the variableDS directly
-       * 
-       * } else { // put proxy on the rest
-       */
       vb.setProxyReader(proxy);
       if (debugProxy)
         System.out.println(" debugProxy: set proxy on " + vb.shortName);

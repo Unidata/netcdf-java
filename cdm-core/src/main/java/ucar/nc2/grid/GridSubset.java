@@ -21,15 +21,15 @@ import java.util.*;
 
 /**
  * Coordinate value-based subsetting of a Grid.
- * LOOK problem is that the valid combinations for time are not obvious.
- * LOOK maybe should check, eg set vertCoord when there isnt any? or ignore?
+ * TODO problem is that the valid combinations for time are not obvious.
+ * TODO maybe should check, eg set vertCoord when there isnt any? or ignore?
  */
 public class GridSubset {
   public static final String gridName = "gridName"; // value = String
 
   public static final String runtime = "runtime"; // value = CalendarDate
   public static final String runtimeLatest = "runtimeLatest"; // value = Boolean
-  public static final String runtimeAll = "runtimeAll"; // value = Boolean LOOK unimplemented
+  public static final String runtimeAll = "runtimeAll"; // value = Boolean TODO unimplemented
 
   // The value is the offset in the units of the GridAxis
   public static final String timeOffset = "timeOffset"; // value = Double
@@ -44,7 +44,7 @@ public class GridSubset {
   public static final String timeFirst = "timeFirst"; // value = Boolean
   public static final String timeLatest = "timeLatest"; // value = Boolean
   public static final String timePresent = "timePresent"; // value = Boolean
-  public static final String timeStride = "timeStride"; // value = Integer LOOK unimplemented
+  public static final String timeStride = "timeStride"; // value = Integer TODO unimplemented
 
   public static final String vertPoint = "vertPoint"; // value = Double
   public static final String vertIntv = "vertIntv"; // value = CoordInterval
@@ -56,7 +56,7 @@ public class GridSubset {
   public static final String projBB = "projBB"; // value = ProjectionRect
   public static final String horizStride = "horizStride"; // value = Integer
 
-  // cant use these for selecting, used for validation
+  // cant use these for selecting, used for GRIB validation
   public static final String timeOffsetDate = "timeOffsetDate"; // value = CalendarDate
   public static final String timeOffsetUnit = "timeOffsetUnit"; // value = CalendarDateUnit
 
@@ -450,12 +450,10 @@ public class GridSubset {
     return isTrue(timeFirst);
   }
 
-  // LOOK not set - used in grib validation
   public CalendarDate getTimeOffsetDate() {
     return (CalendarDate) get(timeOffsetDate);
   }
 
-  // LOOK not set - used in grib validation
   public CalendarDateUnit getTimeOffsetUnit() {
     return (CalendarDateUnit) get(timeOffsetUnit);
   }

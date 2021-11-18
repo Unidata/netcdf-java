@@ -531,7 +531,7 @@ public class GcdmConverter {
           stride = 1;
         }
         if (pr.getSize() == 0) {
-          section.appendRange(Range.EMPTY); // used for scalars LOOK really used ??
+          section.appendRange(Range.EMPTY); // used for scalars TODO really used ??
         } else {
           // this.last = first + (this.length-1) * stride;
           section.appendRange((int) pr.getStart(), (int) (pr.getStart() + (pr.getSize() - 1) * stride), (int) stride);
@@ -765,7 +765,7 @@ public class GcdmConverter {
       case OPAQUE: {
         for (int i = 0; i < data.getBdataCount(); i++) {
           ByteString bs = data.getBdata(i);
-          // LOOK cant count on these being the same size
+          // TODO cant count on these being the same size
         }
       }
       case SHORT: {

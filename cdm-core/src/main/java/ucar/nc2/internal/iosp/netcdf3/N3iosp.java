@@ -127,18 +127,13 @@ public class N3iosp extends AbstractIOServiceProvider implements IOServiceProvid
   }
 
   @Override
-  public String toStringDebug(Object o) {
-    return null;
-  }
-
-  @Override
   public Object sendIospMessage(Object message) {
     if (message instanceof Charset) {
       setValueCharset((Charset) message);
       return Boolean.TRUE;
     }
     if (message == NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE) {
-      // LOOK does this work? must be sent before construction????
+      // TODO does this work? must be sent before construction????
       this.useRecordStructure = true;
       return Boolean.TRUE;
     }
@@ -188,7 +183,7 @@ public class N3iosp extends AbstractIOServiceProvider implements IOServiceProvid
 
   @Override
   public void build(RandomAccessFile raf, Group.Builder rootGroup, CancelTask cancelTask) throws IOException {
-    super.open(raf, rootGroup.getNcfile(), cancelTask);
+    setRaf(raf);
 
     String location = raf.getLocation();
     if (!location.startsWith("http:")) {
@@ -218,9 +213,6 @@ public class N3iosp extends AbstractIOServiceProvider implements IOServiceProvid
     }
 
     Object data = readDataObject(v2, section);
-    if (v2.getArrayType() == ArrayType.CHAR) {
-      data = Arrays.convertCharToByte((char[]) data);
-    }
     return Arrays.factory(v2.getArrayType(), section.getShape(), data);
   }
 

@@ -131,7 +131,7 @@ public class LatLonProjection extends AbstractProjection {
    */
   @Override
   public boolean crossSeam(ProjectionPoint pt1, ProjectionPoint pt2) {
-    return Math.abs(pt1.getX() - pt2.getX()) > 270.0; // ?? LOOK: do I believe this
+    return Math.abs(pt1.getX() - pt2.getX()) > 270.0;
   }
 
   @Override

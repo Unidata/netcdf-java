@@ -308,38 +308,6 @@ public class LambertConformalConicEllipse extends AbstractProjection {
     return f.toString();
   }
 
-  /*
-   * Create a WKS string LOOK NOT DONE
-   *
-   * @return WKS string
-   *
-   * public String toWKS() {
-   * Formatter sbuff = new Formatter();
-   * sbuff.format("PROJCS[\"%s\",", getName());
-   * if (isSpherical) {
-   * sbuff.format("GEOGCS[\"Normal Sphere (r=6371007)\",");
-   * sbuff.format("DATUM[\"unknown\",");
-   * sbuff.format("SPHEROID[\"sphere\",6371007,0]],");
-   * } else {
-   * sbuff.format("GEOGCS[\"WGS 84\",");
-   * sbuff.format("DATUM[\"WGS_1984\",");
-   * sbuff.format("SPHEROID[\"WGS 84\",6378137,298.257223563],");
-   * sbuff.format("TOWGS84[0,0,0,0,0,0,0]],");
-   * }
-   * sbuff.format("PRIMEM[\"Greenwich\",0],");
-   * sbuff.format("UNIT[\"degree\",0.0174532925199433]],");
-   * sbuff.format("PROJECTION[\"Lambert_Conformal_Conic_1SP\"],");
-   * sbuff.format("PARAMETER[\"latitude_of_origin\",").append(getOriginLat()).append("],"); // LOOK assumes getOriginLat
-   * = getParellel
-   * sbuff.format("PARAMETER[\"central_meridian\",").append(getOriginLon()).append("],");
-   * sbuff.format("PARAMETER[\"scale_factor\",1],");
-   * sbuff.format("PARAMETER[\"false_easting\",").append(falseEasting).append("],");
-   * sbuff.format("PARAMETER[\"false_northing\",").append(falseNorthing).append("],");
-   *
-   * return sbuff.toString();
-   * }
-   */
-
   /**
    * This returns true when the line between pt1 and pt2 crosses the seam.
    * When the cone is flattened, the "seam" is lon0 +- 180.
@@ -350,12 +318,6 @@ public class LambertConformalConicEllipse extends AbstractProjection {
    */
   public boolean crossSeam(ProjectionPoint pt1, ProjectionPoint pt2) {
     return LatLonPoints.isInfinite(pt1) || LatLonPoints.isInfinite(pt2);
-
-    /*
-     * opposite signed X values, larger then 5000 km LOOK ????
-     * return (pt1.getX() * pt2.getX() < 0)
-     * && (Math.abs(pt1.getX() - pt2.getX()) > 5000.0);
-     */
   }
 
   private double computeTheta(double lon) {

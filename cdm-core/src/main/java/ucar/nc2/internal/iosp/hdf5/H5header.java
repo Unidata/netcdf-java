@@ -234,7 +234,7 @@ public class H5header implements HdfHeaderIF {
       throw new IOException("Unknown superblock version= " + versionSB);
     }
 
-    // now look for symbolic links LOOK this doesnt work; probably remove 10/27/14 jc
+    // now look for symbolic links TODO this doesnt work
     replaceSymbolicLinks(h5rootGroup);
 
     // recursively run through all the dataObjects and add them to the ncfile
@@ -534,7 +534,7 @@ public class H5header implements HdfHeaderIF {
               log.warn("EnumTypedef is missing for variable: {}", v.shortName);
               throw new IllegalStateException("EnumTypedef is missing for variable: " + v.shortName);
             }
-            // This code apparently addresses the possibility of an anonymous enum LOOK ??
+            // This code apparently addresses the possibility of an anonymous enum
             if (enumTypeName.isEmpty()) {
               EnumTypedef enumTypedef = parentGroup.findEnumeration(facadeNested.name).orElse(null);
               if (enumTypedef == null) {
@@ -922,7 +922,7 @@ public class H5header implements HdfHeaderIF {
           String memberName = sm.getName();
           int pos = memberName.indexOf(":");
           if (pos < 0) {
-            continue; // LOOK
+            continue;
           }
           String fldName = memberName.substring(0, pos);
           String attName = memberName.substring(pos + 1);
@@ -939,7 +939,7 @@ public class H5header implements HdfHeaderIF {
           if (null != sm) {
             // if so, add the att to the member variable, using the name of the compound attribute
             Array<?> memberData = attData.extractMemberArray(sm);
-            v.addAttribute(Attribute.fromArray(matt.name, memberData)); // LOOK check for missing values
+            v.addAttribute(Attribute.fromArray(matt.name, memberData)); // TODO check for missing values
           }
         }
 
@@ -996,7 +996,7 @@ public class H5header implements HdfHeaderIF {
           dataList.add(nested);
         }
       }
-      // LOOK probably wrong? flattening them out ??
+      // TODO probably wrong? flattening them out ??
       result = Attribute.builder(matt.name).setValues(dataList, matt.mdt.unsigned).build();
     } else {
       result = Attribute.fromArray(matt.name, attData);
@@ -1032,7 +1032,7 @@ public class H5header implements HdfHeaderIF {
       return Arrays.factory(ArrayType.STRING, new int[] {size}, sarray);
     } // vlen Strings case
 
-    // Vlen (non-String) LOOK Attribute vlen?
+    // Vlen (non-String)
     if (vinfo.typeInfo.hdfType == 9) {
       ByteOrder endian = vinfo.typeInfo.endian;
       ArrayType readType = dataType;
@@ -1115,13 +1115,12 @@ public class H5header implements HdfHeaderIF {
 
     Layout layout = new LayoutRegular(matt.dataPos, elemSize, shape, new Section(shape));
 
-    // LOOK The problem is that we dont have the Variable, needed to read Structure Data.
     // So an attribute cant be a Structure ??
-    Object pdata = h5iosp.readArrayOrPrimitive(vinfo, null, layout, dataType, shape, null, endian, false);
+    Object pdata = h5iosp.readArrayOrPrimitive(vinfo, null, layout, dataType, shape, null, endian);
     Array<?> dataArray;
 
     if (dataType == ArrayType.OPAQUE) {
-      dataArray = (Array) pdata;
+      dataArray = (Array<?>) pdata;
 
     } else if ((dataType == ArrayType.CHAR)) {
       if (vinfo.mdt.byteSize > 1) { // chop back into pieces
@@ -1206,7 +1205,6 @@ public class H5header implements HdfHeaderIF {
         log.debug(" readStructure " + matt.name + " chunk= " + chunk + " index.getElemSize= " + layout.getElemSize());
       }
 
-      // LOOK copy bytes directly into the underlying byte[], not a great idea, efficiency not needed
       raf.seek(chunk.getSrcPos());
       raf.readFully(result, (int) chunk.getDestElem() * recsize, chunk.getNelems() * recsize);
     }
@@ -1467,7 +1465,7 @@ public class H5header implements HdfHeaderIF {
   private Variable.Builder<?> makeVariableMember(Group.Builder parentGroup, String name, long dataPos,
       MessageDatatype mdt) throws IOException {
 
-    Vinfo vinfo = new Vinfo(mdt, null, dataPos); // LOOK need mds
+    Vinfo vinfo = new Vinfo(mdt, null, dataPos); // TODO need mds
     if (vinfo.getNCArrayType() == null) {
       log.debug("SKIPPING ArrayType= " + vinfo.typeInfo.hdfType + " for variable " + name);
       return null;
@@ -1608,7 +1606,7 @@ public class H5header implements HdfHeaderIF {
   @Override
   public void makeVinfoForDimensionMapVariable(Builder parent, Variable.Builder<?> v) {
     // this is a self contained variable, doesnt need any extra info, just make a dummy.
-    Vinfo vinfo = new Vinfo(); // LOOK no effect ??
+    Vinfo vinfo = new Vinfo(); // TODO noop
     vinfo.owner = v;
   }
 
@@ -1705,7 +1703,7 @@ public class H5header implements HdfHeaderIF {
      */
     Vinfo(DataObjectFacade facade) {
       this.facade = facade;
-      // LOOK if compact, do not use fileOffset
+      // TODO if compact, do not use fileOffset
       this.dataPos =
           (facade.dobj.msl.type == 0) ? facade.dobj.msl.dataAddress : getFileOffset(facade.dobj.msl.dataAddress);
       this.mdt = facade.dobj.mdt;
@@ -1861,7 +1859,7 @@ public class H5header implements HdfHeaderIF {
         throw new IllegalStateException();
       }
 
-      Object data = IospArrayHelper.readDataFill(raf, layout, dataType, getFillValue(), typeInfo.endian, false);
+      Object data = IospArrayHelper.readDataFill(raf, layout, dataType, getFillValue(), typeInfo.endian);
       return Arrays.factory(dataType, shape, data);
     }
 
@@ -1880,7 +1878,7 @@ public class H5header implements HdfHeaderIF {
         // cant happen because we use null for wantSection
         throw new IllegalStateException();
       }
-      Object data = IospArrayHelper.readDataFill(raf, layout, dataType, getFillValue(), typeInfo.endian, true);
+      Object data = IospArrayHelper.readDataFill(raf, layout, dataType, getFillValue(), typeInfo.endian);
 
       // read and parse the ODL
       String result = "";

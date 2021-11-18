@@ -102,7 +102,7 @@ public class AlbersEqualAreaEllipse extends AbstractProjection {
     double cosphi = Math.cos(phi1);
     boolean secant = Math.abs(phi1 - phi2) >= EPS10;
 
-    if (!earth.isSpherical()) { // not spherical LOOK CHANGE
+    if (!earth.isSpherical()) { // TODO not spherical
       double m1 = MapMath.msfn(sinphi, cosphi, es);
       double ml1 = MapMath.qsfn(sinphi, e, one_es);
       if (secant) { /* secant cone */
@@ -283,12 +283,6 @@ public class AlbersEqualAreaEllipse extends AbstractProjection {
    */
   public boolean crossSeam(ProjectionPoint pt1, ProjectionPoint pt2) {
     return LatLonPoints.isInfinite(pt1) || LatLonPoints.isInfinite(pt2);
-
-    /*
-     * opposite signed X values, larger then 5000 km LOOK ????
-     * return (pt1.getX() * pt2.getX() < 0)
-     * && (Math.abs(pt1.getX() - pt2.getX()) > 5000.0);
-     */
   }
 
   private double computeTheta(double lon) {

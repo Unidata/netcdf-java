@@ -72,7 +72,7 @@ public class CollectionGeneral extends CollectionAbstract {
           Path nextPath = dirStreamIterator.next();
           BasicFileAttributes attr = Files.readAttributes(nextPath, BasicFileAttributes.class);
           if (attr.isDirectory())
-            continue; // LOOK fix this
+            continue; // TODO fix this
 
           FileTime last = attr.lastModifiedTime();
           long millisSinceModified = now - last.toMillis();

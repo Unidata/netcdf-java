@@ -147,7 +147,7 @@ public class CalendarDateUnit {
   /**
    * Find the offset of date in integral units of this period from the baseDateTime.
    * Inverse of makeCalendarDate.
-   * LOOK not working when period is month, see TestCalendarDateUnit
+   * TODO not working when period is month, see TestCalendarDateUnit
    */
   public long makeOffsetFromRefDate(CalendarDate date) {
     if (date.equals(baseDate)) {

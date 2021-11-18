@@ -27,8 +27,8 @@ import java.util.List;
 import java.util.Optional;
 
 /** IOSP for BUFR data - using ucar.array. Registered by reflection. */
-public class BufrArrayIosp extends AbstractIOServiceProvider {
-  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BufrArrayIosp.class);
+public class BufrIosp extends AbstractIOServiceProvider {
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(BufrIosp.class);
 
   public static final String obsRecordName = "obs";
   public static final String centerId = "BUFR:centerId";
@@ -55,11 +55,10 @@ public class BufrArrayIosp extends AbstractIOServiceProvider {
 
   @Override
   public void build(RandomAccessFile raf, Group.Builder rootGroup, CancelTask cancelTask) throws IOException {
-    super.open(raf, rootGroup.getNcfile(), cancelTask);
+    setRaf(raf);
 
     MessageScanner scanner = new MessageScanner(raf);
-    // TODO We have a problem - we havent finished building but we need to read the first message to use as the
-    // protoMessage.
+    // TODO We have a problem - we havent finished building but we need to read the first as protoMessage
     // TODO Possible only trouble when theres an EmbeddedTable?
     protoMessage = scanner.getFirstDataMessage();
     if (protoMessage == null)
@@ -70,13 +69,14 @@ public class BufrArrayIosp extends AbstractIOServiceProvider {
     // just get the fields
     config = BufrConfig.openFromMessage(raf, protoMessage, iospParam);
 
-    // this fills the netcdf object
+    // this fills the rootGroup object
     new BufrIospBuilder(protoMessage, config, rootGroup, raf.getLocation());
     isSingle = false;
   }
 
   @Override
   public void buildFinish(NetcdfFile ncfile) {
+    super.buildFinish(ncfile);
     obsStructure = (Sequence) ncfile.findVariable(obsRecordName);
     // The proto DataDescriptor must have a link to the Sequence object to read nested Sequences.
     connectSequences(obsStructure.getVariables(), protoMessage.getRootDataDescriptor().getSubKeys());
@@ -104,25 +104,6 @@ public class BufrArrayIosp extends AbstractIOServiceProvider {
     } else {
       throw new IllegalStateException("DataDescriptor does not contain " + name);
     }
-  }
-
-  // for BufrMessageViewer
-  public NetcdfFile open(RandomAccessFile raf, Message single) throws IOException {
-    this.raf = raf;
-
-    protoMessage = single;
-    protoMessage.getRootDataDescriptor(); // construct the data descriptors, check for complete tables
-    if (!protoMessage.isTablesComplete())
-      throw new IllegalStateException("BUFR file has incomplete tables");
-
-    BufrConfig config = BufrConfig.openFromMessage(raf, protoMessage, null);
-
-    // this fills the netcdf object
-    ConstructNetcdf construct = new ConstructNetcdf(protoMessage, config, raf.getLocation());
-    this.ncfile = construct.getNetcdfFile();
-    this.obsStructure = construct.getObsStructure();
-    this.isSingle = true;
-    return this.ncfile;
   }
 
   @Override
@@ -169,7 +150,7 @@ public class BufrArrayIosp extends AbstractIOServiceProvider {
   }
 
   private void findRootSequence() {
-    this.obsStructure = (Sequence) this.ncfile.findVariable(BufrArrayIosp.obsRecordName);
+    this.obsStructure = (Sequence) this.ncfile.findVariable(BufrIosp.obsRecordName);
   }
 
   private class SeqIter extends AbstractIterator<StructureData> {
@@ -229,25 +210,25 @@ public class BufrArrayIosp extends AbstractIOServiceProvider {
         }
       }
     }
+  }
 
-    private Array<StructureData> readMessage(Message m) throws IOException {
-      Array<StructureData> as;
-      Formatter f = new Formatter();
-      try {
-        if (m.dds.isCompressed()) {
-          MessageArrayCompressedReader comp = new MessageArrayCompressedReader(obsStructure, protoMessage, m, raf, f);
-          as = comp.readEntireMessage();
-        } else {
-          MessageArrayUncompressedReader uncomp =
-              new MessageArrayUncompressedReader(obsStructure, protoMessage, m, raf, f);
-          as = uncomp.readEntireMessage();
-        }
-      } catch (Throwable t) {
-        log.warn(String.format("BufrArrayIosp readMessage FAIL= %s%n", f), t);
-        throw t;
+  public Array<StructureData> readMessage(Message m) throws IOException {
+    Array<StructureData> as;
+    Formatter f = new Formatter();
+    try {
+      if (m.dds.isCompressed()) {
+        MessageArrayCompressedReader comp = new MessageArrayCompressedReader(obsStructure, protoMessage, m, raf, f);
+        as = comp.readEntireMessage();
+      } else {
+        MessageArrayUncompressedReader uncomp =
+            new MessageArrayUncompressedReader(obsStructure, protoMessage, m, raf, f);
+        as = uncomp.readEntireMessage();
       }
-      return as;
+    } catch (Throwable t) {
+      log.warn(String.format("BufrIosp readMessage FAIL= %s%n", f), t);
+      throw t;
     }
+    return as;
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

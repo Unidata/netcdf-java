@@ -117,7 +117,7 @@ class CalendarDateChrono extends CalendarDateIso implements CalendarDate, Compar
     throw new IllegalArgumentException("Must be a ChronoDate");
   }
 
-  // LOOK what about period.value ?
+  // TODO what about period.value ?
   @Override
   public long since(CalendarDate start, CalendarPeriod period) {
     if (start instanceof CalendarDateChrono) {

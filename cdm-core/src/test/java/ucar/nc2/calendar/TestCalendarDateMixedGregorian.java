@@ -3,14 +3,11 @@ package ucar.nc2.calendar;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ucar.units.TimeScaleUnit;
 import ucar.units.Unit;
 import ucar.units.UnitFormat;
 import ucar.units.UnitFormatManager;
 
-import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -20,12 +17,9 @@ import static com.google.common.truth.Truth.assertThat;
 /**
  * Test {@link CalendarDateUnit}
  * These are all testing difference of mixed julian/gregorian vs proleptic gregorian.
- * LOOK Currently failing.
  */
 @RunWith(Parameterized.class)
 public class TestCalendarDateMixedGregorian {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
   UnitFormat format = UnitFormatManager.instance();
 
   @Parameterized.Parameters(name = "{0}: {2}")

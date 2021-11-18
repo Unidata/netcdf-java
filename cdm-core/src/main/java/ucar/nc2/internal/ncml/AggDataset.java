@@ -42,7 +42,7 @@ public class AggDataset implements Comparable<AggDataset> {
   @Nullable
   protected final Object spiObject; // pass to NetcdfFiles.open()
 
-  // deferred opening LOOK not immutable
+  // deferred opening
   protected DatasetUrl durl;
 
   protected AggDataset(MFile mfile, @Nullable Object spiObject, @Nullable Element ncmlElem) {
@@ -183,7 +183,7 @@ public class AggDataset implements Comparable<AggDataset> {
     Variable v = ncfile.findVariable(NetcdfFiles.makeFullName(mainV));
     if (v == null && mainV instanceof VariableDS) { // might be renamed
       VariableDS ve = (VariableDS) mainV;
-      v = ncfile.findVariable(ve.getOriginalName()); // LOOK not escaped
+      v = ncfile.findVariable(ve.getOriginalName()); // TODO not escaped
     }
     return v;
   }

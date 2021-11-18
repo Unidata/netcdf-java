@@ -72,8 +72,7 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
 
   // these are final
   private final List<CollectionConfig> scanList = new ArrayList<>(); // an MCollection is a collection of managed files
-  private final long olderThanInMsecs; // LOOK why not use LastModifiedLimit filter ?
-  // protected String rootDir;
+  private final long olderThanInMsecs; // TODO why not use LastModifiedLimit filter ?
   protected FeatureCollectionConfig config;
 
   @GuardedBy("this")
@@ -490,8 +489,6 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
     }
 
     reallyScan(newMap);
-    // deleteOld(newMap); // ?? hmmmmm LOOK this seems wrong; maintainence in background ?? generally collection doesnt
-    // exist
 
     // implement olderThan
     if (olderThanInMsecs > 0) {

@@ -42,11 +42,11 @@ public class Catalog extends DatasetNode {
   public static final String DatasetHash = "DatasetHash"; // Map<String,Dataset>
   public static final String DatasetRoots = "DatasetRoots"; // List<DatasetRootConfig>
   public static final String Expires = "Expires"; // CalendarDate
-  public static final String Services = "Services"; // List<Service> (LOOK what about using Map ?)
+  public static final String Services = "Services"; // List<Service>
   public static final String Version = "Version"; // String
 
   //////////////////////////////////////////////////////////////////////////////////////////
-  private final URI baseURI; // LOOK its possible we never want to use this. perhaps "location" instead ??
+  private final URI baseURI; // TODO its possible we never want to use this. perhaps "location" instead ??
 
   public Catalog(URI baseURI, String name, Map<String, Object> flds, List<DatasetBuilder> datasets) {
     super(null, name, flds, datasets);
@@ -221,7 +221,7 @@ public class Catalog extends DatasetNode {
     builder.setName(dataset.getName());
 
     List<Service> neededServices = new ArrayList<>();
-    // LOOK, cant set catalog as datasetNode parent
+    // Cant set catalog as datasetNode parent
     DatasetBuilder topDs = copyDataset(null, dataset, neededServices, true);
 
     for (Service s : neededServices)
@@ -266,7 +266,7 @@ public class Catalog extends DatasetNode {
   }
 
   private AccessBuilder copyAccess(DatasetBuilder parent, Access access, List<Service> neededServices) {
-    neededServices.add(access.getService()); // LOOK may get dups
+    neededServices.add(access.getService()); // TODO may get dups
     return new AccessBuilder(parent, access.getUrlPath(), access.getService(), access.getDataFormatName(),
         access.getDataSize());
   }

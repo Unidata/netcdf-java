@@ -18,7 +18,7 @@ import java.util.zip.GZIPInputStream;
 import ucar.nc2.util.IO;
 
 /**
- * LOOK Move to ToolsUI, or remove alltogether. Note checks for gzip. Shouldnt that be handled automatically?
+ * Note: checks for gzip. Shouldnt that be handled automatically?
  * Static utility methods that read from URLs, using URLConnection.
  * Could replace with java.net.http.HttpClient. Only used in ToolUI?
  */

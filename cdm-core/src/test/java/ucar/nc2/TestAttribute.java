@@ -14,6 +14,7 @@ import java.util.Map;
 import org.junit.Assert;
 import org.junit.Test;
 import ucar.array.ArrayType;
+import ucar.array.ArrayVlen;
 import ucar.array.Arrays;
 import ucar.array.Array;
 import ucar.nc2.iosp.NetcdfFormatUtils;
@@ -215,34 +216,33 @@ public class TestAttribute {
     assertThat(att.getStringValue(1)).isEqualTo("dg");
   }
 
-  /*
-   * LOOK are we allowing opaque atttributes?
-   * 
-   * @Test
-   * public void testSetValuesOpaque() {
-   * ByteBuffer bb1 = ByteBuffer.allocate(11);
-   * int[] shape = new int[] {1};
-   * Object[] adata = new Object[] {bb1};
-   * Array data = Array.factory(DataType.OPAQUE, shape, adata);
-   * 
-   * Attribute att = Attribute.builder().setName("name").setValues(data).build();
-   * assertThat(att.getDataType()).isEqualTo(DataType.BYTE);
-   * assertThat(att.getLength()).isEqualTo(11);
-   * }
-   * 
-   * @Test
-   * public void testSetValuesOpaqueArray() {
-   * ByteBuffer bb1 = ByteBuffer.allocate(11);
-   * ByteBuffer bb2 = ByteBuffer.allocate(1);
-   * int[] shape = new int[] {2};
-   * Object[] adata = new Object[] {bb1, bb2};
-   * Array data = Array.factory(DataType.OPAQUE, shape, adata);
-   * 
-   * Attribute att = Attribute.builder().setName("name").setValues(data).build();
-   * assertThat(att.getDataType()).isEqualTo(DataType.BYTE);
-   * assertThat(att.getLength()).isEqualTo(12); // TODO Seems wrong
-   * }
-   */
+  @Test
+  public void testSetArrayValueOpaque() {
+    int[] shape = new int[] {1};
+    byte[][] bdata = new byte[1][];
+    bdata[0] = new byte[11];
+    Array<?> data = ArrayVlen.factory(ArrayType.OPAQUE, shape, bdata);
+
+    Attribute att = Attribute.builder().setName("name").setArrayValues(data).build();
+    assertThat(att.getArrayType()).isEqualTo(ArrayType.OPAQUE);
+    assertThat(att.getLength()).isEqualTo(1);
+    assertThat(att.getValue(0)).isEqualTo(Arrays.factory(ArrayType.OPAQUE, new int[] {11}, new byte[11]));
+  }
+
+  @Test
+  public void testSetArrayValuesOpaque() {
+    int[] shape = new int[] {2};
+    byte[][] bdata = new byte[2][];
+    bdata[0] = new byte[11];
+    bdata[1] = new byte[1];
+    Array<?> data = ArrayVlen.factory(ArrayType.OPAQUE, shape, bdata);
+
+    Attribute att = Attribute.builder().setName("name").setArrayValues(data).build();
+    assertThat(att.getArrayType()).isEqualTo(ArrayType.OPAQUE);
+    assertThat(att.getLength()).isEqualTo(2);
+    assertThat(att.getValue(0)).isEqualTo(Arrays.factory(ArrayType.OPAQUE, new int[] {11}, new byte[11]));
+    assertThat(att.getValue(1)).isEqualTo(Arrays.factory(ArrayType.OPAQUE, new int[] {1}, new byte[1]));
+  }
 
   @Test
   public void testSetValuesFromByteArray() {

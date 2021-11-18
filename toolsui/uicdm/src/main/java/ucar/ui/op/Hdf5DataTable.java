@@ -148,7 +148,7 @@ public class Hdf5DataTable extends JPanel {
     iosp = new H5iosp();
     NetcdfFile ncfile = NetcdfFiles.build(iosp, raf, raf.getLocation(), null);
     try {
-      iosp.open(raf, ncfile, null);
+      iosp.setRaf(raf);
     } catch (Throwable t) {
       StringWriter sw = new StringWriter(20000);
       t.printStackTrace(new PrintWriter(sw));

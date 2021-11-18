@@ -83,7 +83,7 @@ public class H4iosp extends AbstractIOServiceProvider {
 
   @Override
   public void build(RandomAccessFile raf, Group.Builder rootGroup, CancelTask cancelTask) throws IOException {
-    super.open(raf, rootGroup.getNcfile(), cancelTask);
+    setRaf(raf);
 
     raf.order(RandomAccessFile.BIG_ENDIAN);
     header = new H4header(this);
@@ -112,12 +112,8 @@ public class H4iosp extends AbstractIOServiceProvider {
     section = Section.fill(section, v.getShape());
 
     if (vinfo.hasNoData) {
-      Object arr = (vinfo.fillValue == null) ? IospArrayHelper.makePrimitiveArray((int) section.computeSize(), dataType)
+      return (vinfo.fillValue == null) ? IospArrayHelper.makePrimitiveArray((int) section.computeSize(), dataType)
           : IospArrayHelper.makePrimitiveArray((int) section.computeSize(), dataType, vinfo.fillValue);
-      if (dataType == ArrayType.CHAR) {
-        arr = IospArrayHelper.convertByteToChar((byte[]) arr);
-      }
-      return arr;
     }
 
     if (!vinfo.isCompressed) {
@@ -186,7 +182,7 @@ public class H4iosp extends AbstractIOServiceProvider {
 
     if (!vinfo.isLinked && !vinfo.isCompressed) {
       Layout layout = new LayoutRegular(vinfo.start, recsize, s.getShape(), section);
-      IospArrayHelper.readData(raf, layout, ArrayType.STRUCTURE, result, null, true);
+      IospArrayHelper.readData(raf, layout, ArrayType.STRUCTURE, result, null);
 
       // option 2
     } else if (vinfo.isLinked && !vinfo.isCompressed) {
@@ -217,6 +213,7 @@ public class H4iosp extends AbstractIOServiceProvider {
     return new ucar.array.StructureDataArray(members, section.getShape(), storage);
   }
 
+  @Override
   public String toStringDebug(Object o) {
     if (o instanceof Variable) {
       Variable v = (Variable) o;

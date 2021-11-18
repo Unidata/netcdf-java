@@ -163,7 +163,6 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
     // make concurrent
     for (AggDataset dataset : getDatasets()) {
       try (NetcdfFile ncfile = dataset.acquireFile(cancelTask)) {
-        // LOOK was Variable v = ncfile.findVariable(timeAxis.getFullNameEscaped());
         Variable v = ncfile.findVariable(timeAxis.shortName);
         if (v == null) {
           logger.warn("readTimeCoordinates: variable = {} not found in file {}", timeAxis.shortName,
@@ -172,7 +171,6 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
         }
         VariableDS vds =
             (v instanceof VariableDS) ? (VariableDS) v : VariableDS.fromVar(ncfile.getRootGroup(), v, true);
-        // LOOK was CoordinateAxis1DTime timeCoordVar = CoordinateAxis1DTime.factory(ncDataset, vds, null);
         CoordinateAxis1DTime timeCoordVar = CoordinateAxis1DTime.factory(null, vds, null);
         dateList.addAll(timeCoordVar.getCalendarDates());
 
@@ -211,10 +209,6 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
       }
     }
 
-    // int[] shape = timeAxis.getShapeAsSection().getShape();
-    // int ntimes = shape[0];
-    // assert (ntimes == dateList.size());
-    // LOOK: used to get the shape from the commented code above
     // Now that using builders, and now that timeAxis isn't built yet, it has no shape.
     // Might not be right
     int[] shape = {dateList.size()};
@@ -277,16 +271,6 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
       pv.dtype = data.getArrayType();
       VariableDS.Builder<?> promotedVar = VariableDS.builder().setName(pv.varName).setArrayType(pv.dtype)
           .setParentGroupBuilder(ncDataset.rootGroup).setDimensionsByName(dimName);
-      /*
-       * if (data.getSize() > 1) { // LOOK case of non-scalar global attribute not dealt with
-       * Dimension outer = ncDataset.getRootGroup().findDimension(dimName);
-       * Dimension inner = new Dimension("", (int) data.getSize(), false); //anonymous
-       * List<Dimension> dims = new ArrayList<Dimension>(2);
-       * dims.add(outer);
-       * dims.add(inner);
-       * promotedVar.setDimensions(dims);
-       * }
-       */
 
       ncDataset.rootGroup.addVariable(promotedVar);
       promotedVar.setProxyReader(this);
@@ -380,7 +364,6 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
         innerSection = new Section(ranges.subList(1, ranges.size()));
       }
 
-      // LOOK could make concurrent
       List<Array<?>> dataArrays = new ArrayList<>();
       List<AggDataset> nestedDatasets = getDatasets();
       for (AggDataset vnested : nestedDatasets) {
@@ -397,7 +380,7 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
         }
 
         // which subset do we want?
-        // bit tricky - assume returned array's rank depends on type LOOK is this true?
+        // bit tricky - assume returned array's rank depends on type
         if ((type == Type.joinNew) && ((innerSection != null) && (varData.getSize() != innerSection.computeSize()))) {
           varData = Arrays.section(varData, innerSection);
 
@@ -472,7 +455,7 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
     CoordValueVar(String varName, ArrayType dtype, String units) {
       super(varName, dtype);
       this.units = units;
-      // LOOK we should look for calendar attribute
+      // TODO we should look for calendar attribute
       this.du = CalendarDateUnit.fromUdunitString(null, units).orElse(null);
     }
 
@@ -500,7 +483,7 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
         return cachedData;
       }
 
-      // LOOK this doesnt make any sense. Maybe the cached data is mutable in old versin, and we
+      // TODO this doesnt make any sense. Maybe the cached data is mutable in old version, and we
       // lazily add the coordinate values? Or ncoord == 1 ?
       Object data = null;
       if (dset.coordValueDate != null) { // its a date, typicallly parsed from the filename
@@ -589,7 +572,7 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
         dtype = data.getArrayType();
       }
 
-      if (dset.ncoord == 1) { // LOOK ??
+      if (dset.ncoord == 1) {
         putCachedData(dset.getId(), data);
       } else {
         List<Array<?>> dataArrays = new ArrayList<>();
@@ -646,7 +629,7 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
       f.format(format, vals.toArray());
       String result = f.toString();
 
-      // LOOK we seem to be concatenating all the attribute values into a String.
+      // TODO we seem to be concatenating all the attribute values into a String.
       // then replicating that across all datasets. Why?
       String[] sarray = new String[dset.ncoord];
       // duplicate the value to each of the coordinates
@@ -730,7 +713,6 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
     List<Range> nestedRanges = new ArrayList(ranges);
     Section innerSection = new Section(ranges.subList(1, ranges.size()));
 
-    // LOOK: could multithread here
     List<Array<?>> arrayData = new ArrayList<>();
     List<AggDataset> nestedDatasets = getDatasets();
     for (AggDataset nested : nestedDatasets) {

@@ -73,7 +73,7 @@ public class GcdmGrid implements Grid {
 
   @Override
   public Array<Number> readDataSection(Section subset) throws InvalidRangeException, IOException {
-    // LOOK this doesnt look like it works.... but maybe it doesnt have to, if all the work is done on the server
+    // TODO this doesnt work.... but maybe it doesnt have to, if all the work is done on the server?
     return null;
   }
 

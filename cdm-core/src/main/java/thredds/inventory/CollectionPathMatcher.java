@@ -38,7 +38,7 @@ public class CollectionPathMatcher extends CollectionAbstract {
       setDateExtractor(extract);
 
     putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
-    matcher = specp.getPathMatcher(); // LOOK still need to decide what you are matching on name, path, etc
+    matcher = specp.getPathMatcher(); // TODO still need to decide what you are matching on name, path, etc
 
     this.rootPath = Paths.get(this.root);
     this.olderThanMillis = parseOlderThanString(config.olderThan);
@@ -106,8 +106,7 @@ public class CollectionPathMatcher extends CollectionAbstract {
 
     OneDirIterator(Path dir, Queue<OneDirIterator> subdirs) throws IOException {
       this.subdirs = subdirs;
-      dirStream = Files.newDirectoryStream(dir); // , new MyStreamFilter()); LOOK dont use the
-      // DirectoryStream.Filter<Path>
+      dirStream = Files.newDirectoryStream(dir); // TODO dont use the DirectoryStream.Filter<Path>
       dirStreamIterator = dirStream.iterator();
       now = System.currentTimeMillis();
     }

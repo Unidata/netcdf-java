@@ -3,5 +3,5 @@
  * See LICENSE for license information.
  */
 
-/** Implementation of NcML. */
+/** Implementation of NcML. Aggrgation code is legacy, will not be supported in future versions. */
 package ucar.nc2.internal.ncml;

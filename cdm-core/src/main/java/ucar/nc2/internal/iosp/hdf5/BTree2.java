@@ -134,8 +134,8 @@ public class BTree2 {
       }
       entries[nrecords] = new Entry2();
 
-      int maxNumRecords = nodeSize / recordSize; // LOOK ?? guessing
-      int maxNumRecordsPlusDesc = nodeSize / recordSize; // LOOK ?? guessing
+      int maxNumRecords = nodeSize / recordSize; // guessing
+      int maxNumRecordsPlusDesc = nodeSize / recordSize; // guessing
       for (int i = 0; i < nrecords + 1; i++) {
         Entry2 e = entries[i];
         e.childAddress = h5.readOffset();
@@ -222,7 +222,7 @@ public class BTree2 {
       case 6:
         return new Record6();
       case 7: {
-        return new Record70(); // LOOK wrong
+        return new Record70(); // TODO wrong
       }
       case 8:
         return new Record8();

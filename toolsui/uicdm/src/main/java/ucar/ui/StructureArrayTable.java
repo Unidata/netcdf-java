@@ -462,7 +462,7 @@ public class StructureArrayTable extends JPanel {
 
     StructureModel(Structure s) {
       this.struct = s;
-      this.members = s.makeStructureMembersBuilder().build();
+      this.members = s.makeStructureMembersBuilder().setStandardOffsets().build();
       for (Variable v : s.getVariables()) {
         if (v instanceof Structure) {
           subtables.add(v.getShortName());

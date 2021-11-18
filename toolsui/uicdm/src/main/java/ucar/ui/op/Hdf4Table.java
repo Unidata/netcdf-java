@@ -75,10 +75,9 @@ public class Hdf4Table extends JPanel {
 
     List<TagBean> beanList = new ArrayList<>();
     iosp = new H4iosp();
-    NetcdfFile ncfile = NetcdfFiles.build(iosp, raf, raf.getLocation(), null);
 
     try {
-      iosp.open(raf, ncfile, null);
+      iosp.setRaf(raf);
     } catch (Throwable t) {
       StringWriter sw = new StringWriter(20000);
       t.printStackTrace(new PrintWriter(sw));

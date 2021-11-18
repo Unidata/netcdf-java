@@ -275,7 +275,7 @@ public class FileCache implements FileCacheIF {
     // user may have canceled
     if ((cancelTask != null) && (cancelTask.isCancel())) {
       if (ncfile != null)
-        ncfile.close(); // LOOK ??
+        ncfile.close();
       return null;
     }
 
@@ -393,7 +393,7 @@ public class FileCache implements FileCacheIF {
     return want.ncfile;
   }
 
-  // LOOK should you remove the entire CacheElement ?
+  // TODO should you remove the entire CacheElement ?
   private void remove(CacheElement.CacheFile want) {
     want.remove();
     files.remove(want.ncfile);
@@ -423,7 +423,7 @@ public class FileCache implements FileCacheIF {
 
     synchronized (wantCacheElem) { // synch in order to traverse the list
       for (CacheElement.CacheFile want : wantCacheElem.list) {
-        // LOOK can we use remove(want); ??
+        // TODO can we use remove(want); ??
         files.remove(want.ncfile);
         try {
           want.ncfile.setFileCache(null); // unhook the caching

@@ -111,22 +111,6 @@ public class PolyconicProjection extends AbstractProjection {
         return ProjectionPoint.create(x, y);
       }
     } else {
-
-      /*
-       * FORWARD(e_forward); ellipsoid
-       * double ms, sp, cp;
-       * 
-       * if (fabs(lp.phi) <= TOL) {
-       * xy.x = lp.lam; xy.y = -P->ml0; }
-       * else {
-       * sp = sin(lp.phi);
-       * ms = fabs(cp = cos(lp.phi)) > TOL ? pj_msfn(sp, cp, P->es) / sp : 0.;
-       * xy.x = ms * sin(lp.lam *= sp); // LOOK
-       * xy.y = (pj_mlfn(lp.phi, sp, cp, P->en) - P->ml0) + ms * (1. - cos(lp.lam));
-       * }
-       * return (xy);
-       * }
-       */
       double ms, sp, cp;
 
       if (Math.abs(lpphi) <= TOL) {
@@ -134,7 +118,7 @@ public class PolyconicProjection extends AbstractProjection {
       } else {
         sp = Math.sin(lpphi);
         ms = Math.abs(cp = Math.cos(lpphi)) > TOL ? MapMath.msfn(sp, cp, es) / sp : 0.;
-        lplam *= sp; // LOOK
+        lplam *= sp;
         double x = ms * Math.sin(lplam);
         double y = (MapMath.mlfn(lpphi, sp, cp, en) - ml0) + ms * (1. - Math.cos(lplam));
         return ProjectionPoint.create(x, y);
@@ -164,7 +148,7 @@ public class PolyconicProjection extends AbstractProjection {
               (dphi = (xyy * (lpphi * tp + 1.) - lpphi - .5 * (lpphi * lpphi + B) * tp) / ((lpphi - xyy) / tp - 1.));
         } while (Math.abs(dphi) > CONV && --i > 0);
 
-        if (i == 0) { // LOOK check original
+        if (i == 0) { // TODO check original
           toX = Double.NaN;
           toY = Double.NaN;
         }
@@ -199,7 +183,7 @@ public class PolyconicProjection extends AbstractProjection {
           }
         }
 
-        if (i == 0) { // LOOK check original
+        if (i == 0) { // TODO check original
           toX = Double.NaN;
           toY = Double.NaN;
         }

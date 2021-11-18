@@ -115,7 +115,7 @@ public class ToolsAboutWindow extends JWindow {
     String version;
     try (InputStream is = Resource.getFileResource("/README")) {
       if (is == null) {
-        return "6.0";
+        return "8.0";
       }
       BufferedReader dataIS = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
       StringBuilder sbuff = new StringBuilder();

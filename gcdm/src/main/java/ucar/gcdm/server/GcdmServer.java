@@ -50,11 +50,11 @@ import ucar.nc2.write.ChunkingIndex;
 /**
  * Server that manages startup/shutdown of a gCDM Server.
  * Note that NetcdfDatast / GridDataset is opened/closed on each request.
- * LOOK test caching performance.
+ * TODO test caching performance.
  */
 public class GcdmServer {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GcdmServer.class);
-  private static final int MAX_MESSAGE = 50 * 1000 * 1000; // 50 Mb LOOK could be tuned
+  private static final int MAX_MESSAGE = 50 * 1000 * 1000; // 50 Mb TODO could be tuned
   private static final int SEQUENCE_CHUNK = 1000;
 
   private Server server;
@@ -144,7 +144,7 @@ public class GcdmServer {
       final Stopwatch stopwatch = Stopwatch.createStarted();
       long size = -1;
 
-      try (NetcdfFile ncfile = NetcdfDatasets.openFile(req.getLocation(), null)) { // LOOK cache ncfile?
+      try (NetcdfFile ncfile = NetcdfDatasets.openFile(req.getLocation(), null)) { // TODO cache ncfile?
         ParsedArraySectionSpec varSection = ParsedArraySectionSpec.parseVariableSection(ncfile, req.getVariableSpec());
         Variable var = varSection.getVariable();
         if (var instanceof Sequence) {
@@ -187,7 +187,7 @@ public class GcdmServer {
 
       Variable var = varSection.getVariable();
       long maxChunkElems = MAX_MESSAGE / var.getElementSize();
-      // LOOK wrong this assume starts at 0, should start at varSection
+      // TODO wrong this assume starts at 0, should start at varSection
       ChunkingIndex index = new ChunkingIndex(var.getShape());
       while (index.currentElement() < index.size()) {
         int[] chunkOrigin = index.currentCounter();

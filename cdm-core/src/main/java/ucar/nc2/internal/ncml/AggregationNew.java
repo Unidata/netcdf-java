@@ -60,8 +60,6 @@ public class AggregationNew extends AggregationOuter {
         joinAggCoordVar.addAttribute(new Attribute(_Coordinate.AxisType, "Time"));
 
       // if speced externally, this variable will get replaced
-      // LOOK was CacheVar cv = new CoordValueVar(joinAggCoordVar.getFullName(), joinAggCoordVar.dataType,
-      // joinAggCoordVar.units);
       CacheVar cv = new CoordValueVar(joinAggCoordVar.shortName, joinAggCoordVar.dataType, joinAggCoordVar.getUnits());
       joinAggCoordVar.setSPobject(cv);
       cacheList.add(cv);
@@ -100,8 +98,7 @@ public class AggregationNew extends AggregationOuter {
       }
       Variable.Builder<?> aggVar = aggVarOpt.get();
 
-      // construct new variable, replace old one LOOK what about Structures?
-      // LOOK was Group.Builder newGroup = BuilderHelper.findGroup(ncDataset, aggVar.getParentGroup());
+      // construct new variable, replace old one TODO what about Structures?
       VariableDS.Builder<?> vagg = VariableDS.builder().setName(aggVar.shortName).setArrayType(aggVar.dataType)
           .setParentGroupBuilder(root).setDimensionsByName(dimName + " " + aggVar.makeDimensionsString());
       vagg.setProxyReader(this);
@@ -133,8 +130,6 @@ public class AggregationNew extends AggregationOuter {
         }
       });
     }
-
-    // LOOK ncDataset.finish();
   }
 
   /** What is the data type of the aggregation coordinate ? */

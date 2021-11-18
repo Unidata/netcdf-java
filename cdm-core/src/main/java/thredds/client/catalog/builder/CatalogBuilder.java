@@ -36,7 +36,7 @@ public class CatalogBuilder {
 
   //////////////////////////////////////////////////////////////////////////////////
   // used when reading from XML
-  private final Map<String, Service> serviceMap = new HashMap<>(); // LOOK why not instead of services ?
+  private final Map<String, Service> serviceMap = new HashMap<>();
   protected Formatter errlog = new Formatter();
   protected boolean fatalError;
 
@@ -315,7 +315,7 @@ public class CatalogBuilder {
   private void readXMLfromString(String catalogAsString) {
     try {
       StringReader in = new StringReader(catalogAsString);
-      SAXBuilder saxBuilder = new SAXBuilder(); // LOOK non-validating
+      SAXBuilder saxBuilder = new SAXBuilder(); // non-validating
       saxBuilder.setExpandEntities(false);
       Document jdomDoc = saxBuilder.build(in);
       readCatalog(jdomDoc.getRootElement());
@@ -361,9 +361,8 @@ public class CatalogBuilder {
    * </xsd:element>
    */
   private void readCatalog(Element catalogElem) {
-
     String name = catalogElem.getAttributeValue("name");
-    String catSpecifiedBaseURL = catalogElem.getAttributeValue("base"); // LOOK what is this ??
+    String catSpecifiedBaseURL = catalogElem.getAttributeValue("base");
     String expiresS = catalogElem.getAttributeValue("expires");
     String version = catalogElem.getAttributeValue("version");
 
@@ -773,7 +772,7 @@ public class CatalogBuilder {
       flds.put(Dataset.DataSize, size);
     }
 
-    // LOOK: we seem to have put a variableMap element not contained by <variables>
+    // TODO: we seem to have put a variableMap element not contained by <variables>
     ThreddsMetadata.UriResolved mapUri = readUri(parent.getChild("variableMap", Catalog.defNS), "variableMap");
     if (mapUri != null) {
       flds.put(Dataset.VariableMapLinkURI, mapUri);

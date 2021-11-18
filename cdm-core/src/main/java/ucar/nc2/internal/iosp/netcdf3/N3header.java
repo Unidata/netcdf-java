@@ -62,8 +62,8 @@ public class N3header {
   // N3iosp needs access to these
   private boolean isStreaming; // is streaming (numrecs = -1)
   int numrecs; // number of records written
-  long recsize; // size of each record (padded) LOOK can it really be bigger than MAX_INTEGER ?
-  long recStart = Integer.MAX_VALUE; // where the record data starts LOOK can it really be bigger than MAX_INTEGER ?
+  long recsize; // size of each record (padded) TODO can it really be bigger than MAX_INTEGER ?
+  long recStart = Integer.MAX_VALUE; // where the record data starts TODO can it really be bigger than MAX_INTEGER ?
 
   boolean useLongOffset;
   private final N3iosp n3iospNew;

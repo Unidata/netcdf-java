@@ -54,7 +54,7 @@ public class IndexChunkerTiled {
   public IndexChunkerTiled(Section dataSection, Section wantSection) throws InvalidRangeException {
     this.done = 0;
 
-    // LOOK - need test for "all" common case
+    // TODO - need test for "all" common case
 
     // The actual wanted data we can get from this section
     Section intersect = dataSection.intersect(wantSection);

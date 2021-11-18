@@ -150,7 +150,7 @@ public class DataBTree {
     // "For raw data chunk nodes, the child pointer is the address of a single raw data chunk"
     private long[] childPointer; // long[nentries];
 
-    private int currentEntry; // track iteration; LOOK this seems fishy - why not an iterator ??
+    private int currentEntry; // track iteration; TODO why not an iterator ??
 
     Node(long address, long parent) throws IOException {
       if (debugDataBtree)
@@ -259,7 +259,7 @@ public class DataBTree {
       assert (nentries == 0) || (currentEntry < nentries) : currentEntry + " >= " + nentries;
     }
 
-    // LOOK - wouldnt be a bad idea to terminate if possible instead of running through all subsequent entries
+    // TODO - wouldnt be a bad idea to terminate if possible instead of running through all subsequent entries
     boolean hasNext() {
       if (level == 0) {
         return currentEntry < nentries;

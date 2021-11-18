@@ -157,10 +157,10 @@ public class EnhanceScaleMissingUnsigned {
   private double validMin = -Double.MAX_VALUE, validMax = Double.MAX_VALUE;
 
   private boolean hasFillValue;
-  private double fillValue; // LOOK: making it double not really correct. What about CHAR?
+  private double fillValue; // TODO: making it double not really correct. What about CHAR?
 
   private boolean hasMissingValue;
-  private double[] missingValue; // LOOK: also wrong to make double, for the same reason.
+  private double[] missingValue; // TODO: also wrong to make double, for the same reason.
 
   private ArrayType.Signedness signedness;
 

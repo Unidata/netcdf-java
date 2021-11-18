@@ -669,8 +669,7 @@ public class GcdmGridConverter {
           break;
       }
     }
-    // todo: LOOK - should we catch case of CDM_AXIS_TYPE_UNSPECIFIED and throw
-    // an error to prevent sending a bad message?
+    // TODO - catch case of CDM_AXIS_TYPE_UNSPECIFIED and throw an error to prevent sending a bad message?
     return cdmAxisType;
   }
 
@@ -732,8 +731,8 @@ public class GcdmGridConverter {
           break;
       }
     }
-    // todo: LOOK - should we catch case of GcdmGridProto.GridAxisSpacing.CDM_AXIS_SPACING_UNSPECIFIED and throw
-    // an error to prevent sending a bad message?
+
+    // TODO - catch case of CDM_AXIS_TYPE_UNSPECIFIED and throw an error to prevent sending a bad message?
     return gridAxisSpacing;
   }
 
@@ -796,8 +795,7 @@ public class GcdmGridConverter {
           break;
       }
     }
-    // todo: LOOK - should we catch case of GRID_AXIS_DEPENDENCE_TYPE_UNSPECIFIED and throw
-    // an error to prevent sending a bad message?
+    // TODO - catch case of CDM_AXIS_TYPE_UNSPECIFIED and throw an error to prevent sending a bad message?
     return gridAxisDependenceType;
   }
 }

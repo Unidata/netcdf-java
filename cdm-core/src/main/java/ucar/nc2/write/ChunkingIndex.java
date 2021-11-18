@@ -9,8 +9,8 @@ package ucar.nc2.write;
  * of contiguous writes to a multidimensional array.
  * It writes the first n elements (n &lt; maxChunkElems), then the next, etc.
  * Contributed by cwardgar@usgs.gov 4/12/2010
- * LOOK this assumes strides are always 1
- * LOOK can we use nc2.write.IndexChunker?
+ * TODO this assumes strides are always 1
+ * TODO can we use nc2.write.IndexChunker?
  */
 public class ChunkingIndex {
 

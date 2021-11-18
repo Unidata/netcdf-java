@@ -61,6 +61,7 @@ public class OverviewIospTutorial {
        * Methods with a default implementation, that can optionally be overriden
        */
       public void buildFinish(NetcdfFile ncfile) {
+        super.buildFinish(ncfile);
         // Implement any clean-up or finish actions for your file type.
       }
 

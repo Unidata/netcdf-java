@@ -303,7 +303,7 @@ public class N3iospWriter extends N3iosp implements IospFileWriter {
 
   @Override
   public void updateAttribute(Group g, Attribute att) {
-    // LOOK
+    // TODO
   }
 
   public void flush() throws java.io.IOException {

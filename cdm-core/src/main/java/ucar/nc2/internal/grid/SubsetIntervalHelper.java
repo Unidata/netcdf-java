@@ -55,7 +55,7 @@ public class SubsetIntervalHelper {
       case TimeOffset: {
         Double dval = params.getTimeOffset();
         if (dval != null) {
-          return subsetClosest(dval); // LOOK what does this mean for an interval?
+          return subsetClosest(dval); // TODO what does this mean for an interval?
         }
         CoordInterval intv = params.getTimeOffsetIntv();
         if (intv != null) {
@@ -133,7 +133,7 @@ public class SubsetIntervalHelper {
   @Nullable
   private GridAxisInterval.Builder<?> makeSubsetValuesClosest(CoordInterval want) {
     int closest_index = SubsetHelpers.findCoordElement(orgGridAxis, want, true); // bounded, always valid index
-    if (closest_index < 0) { // LOOK discontIntv returns -1
+    if (closest_index < 0) { // TODO discontIntv returns -1
       return null;
     }
     Range range = Range.make(closest_index, closest_index);
@@ -153,7 +153,7 @@ public class SubsetIntervalHelper {
   @Nullable
   private GridAxisInterval.Builder<?> makeSubsetValuesClosest(double want) {
     int closest_index = SubsetHelpers.findCoordElement(orgGridAxis, want, true); // bounded, always valid index
-    if (closest_index < 0) { // LOOK discontIntv returns -1
+    if (closest_index < 0) { // TODO discontIntv returns -1
       return null;
     }
     GridAxisInterval.Builder<?> builder = orgGridAxis.toBuilder();
@@ -184,7 +184,7 @@ public class SubsetIntervalHelper {
     return makeSubsetValues(minValue, maxValue, stride, errLog);
   }
 
-  // LOOK could specialize when only one point
+  // TODO could specialize when only one point
   private Optional<GridAxisInterval.Builder<?>> makeSubsetValues(double minValue, double maxValue, int stride,
       Formatter errLog) {
     double lower = Grids.isAscending(orgGridAxis) ? Math.min(minValue, maxValue) : Math.max(minValue, maxValue);

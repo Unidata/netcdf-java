@@ -87,7 +87,7 @@ import javax.swing.filechooser.FileFilter;
 public class ToolsUI extends JPanel {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  private static final String DIALOG_VERSION = "7.0";
+  private static final String DIALOG_VERSION = "8.0";
 
   public static final String WORLD_DETAIL_MAP = "/resources/ui/maps/Countries.shp";
   public static final String US_MAP = "/resources/ui/maps/us_state.shp";

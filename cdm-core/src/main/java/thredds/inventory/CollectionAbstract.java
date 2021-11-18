@@ -87,7 +87,7 @@ public abstract class CollectionAbstract implements MCollection {
   public static String cleanName(String name) {
     if (name == null)
       return null;
-    return StringUtil2.replace(name.trim(), ' ', "_"); // LOOK must be ok in URL - probably not sufficient here
+    return StringUtil2.replace(name.trim(), ' ', "_"); // TODO must be ok in URL - probably not sufficient here
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -273,7 +273,7 @@ public abstract class CollectionAbstract implements MCollection {
   protected long parseOlderThanString(String olderThan) {
     if (olderThan != null) {
       try {
-        // LOOK Probably should use something in nc2.time
+        // TODO use nc2.calendar
         TimeDuration tu = TimeDuration.parse(olderThan);
         return (long) (1000 * tu.getValueInSeconds());
       } catch (Exception e) {

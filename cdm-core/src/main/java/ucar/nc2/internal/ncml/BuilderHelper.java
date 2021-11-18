@@ -39,7 +39,7 @@ class BuilderHelper {
   // transfer the objects in src group to the target group
   private static void transferGroup(NetcdfFile ds, NetcdfDataset.Builder<?> targetDs, Group src,
       Group.Builder targetGroup, @Nullable ReplaceVariableCheck replaceCheck) {
-    boolean unlimitedOK = true; // LOOK why not allowed?
+    boolean unlimitedOK = true;
 
     // group attributes
     transferAttributes(src.attributes(), targetGroup.getAttributeContainer());
@@ -59,30 +59,14 @@ class BuilderHelper {
       Optional<Variable.Builder<?>> targetV = targetGroup.findVariableLocal(v.getShortName());
       boolean replace = (replaceCheck != null) && replaceCheck.replace(v); // replaceCheck not currently used
       if (replace || !targetV.isPresent()) { // replace it
-        // LOOK not needed ??
-        /*
-         * if ((v instanceof Structure) && !(v instanceof StructureDS)) {
-         * v = new StructureDS(targetGroup, (Structure) v);
-         * } else
-         */
         VariableDS.Builder<?> vb;
         if (!(v instanceof VariableDS)) {
           vb = VariableDS.builder().copyFrom(v);
         } else {
           vb = ((VariableDS) v).toBuilder();
         }
-
         targetGroup.replaceVariable(vb);
-        // LOOK not needed? v.resetDimensions(); // dimensions will be different
-
-      } /*
-         * LOOK was else if (!targetV.hasCachedData() && (targetVe.getOriginalVariable() == null)) {
-         * // this is the case where we defined the variable, but didnt set its data. we now set it with the first
-         * nested
-         * // dataset that has a variable with the same name
-         * targetVe.setOriginalVariable(v);
-         * }
-         */
+      }
     }
 
     // nested groups - check if target already has it

@@ -177,7 +177,7 @@ public class SubsetHelpers {
   }
 
   // same contract as findCoordElement(); in addition, -1 is returned when the target is not contained in any interval
-  // LOOK not using bounded
+  // TODO not using bounded
   private static int findCoordElementDiscontiguousInterval(GridAxisInterval orgGridAxis, double target,
       boolean bounded) {
     int idx = findSingleHit(orgGridAxis, target);
@@ -290,10 +290,9 @@ public class SubsetHelpers {
         double coord = orgGridAxis.getCoordDouble(i);
         // how close is the midpoint of this interval to our target value?
         double diff = Math.abs(coord - target);
-        // Look for the interval with the minimum difference. If multiple intervals have the same
-        // difference between their midpoint and the target value, pick then one with the larger
-        // midpoint value
-        // LOOK - is maximum midpoint value the right tie breaker?
+        // Look for the interval with the minimum difference. If multiple intervals have the same difference between
+        // their midpoint and the target value, pick then one with the larger midpoint value
+        // TODO - is maximum midpoint value the right tie breaker?
         boolean tiebreaker = (diff == minDiff) && (coord > useValue);
         if (diff < minDiff || tiebreaker) {
           minDiff = diff;
@@ -312,7 +311,7 @@ public class SubsetHelpers {
     if (time.isRegular()) {
       double fval = (want - time.getCoordDouble(0)) / time.getResolution();
       double ival = Math.rint(fval);
-      return DoubleMath.fuzzyEquals(fval, ival, 1.0e-8) ? (int) ival : (int) -ival - 1; // LOOK
+      return DoubleMath.fuzzyEquals(fval, ival, 1.0e-8) ? (int) ival : (int) -ival - 1;
     }
 
     // otherwise do a binary search

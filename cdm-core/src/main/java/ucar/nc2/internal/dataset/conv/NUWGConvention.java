@@ -109,7 +109,6 @@ public class NUWGConvention extends CoordSystemBuilder {
       }
     } catch (NoSuchElementException e) {
       log.warn("No mode in navInfo - assume = 1");
-      // LOOK could match variable grid_type, data = "tangential lambert conformal "
     }
     grib = new Grib1(mode);
 
@@ -554,8 +553,8 @@ public class NUWGConvention extends CoordSystemBuilder {
 
       nx = navInfo.getInt("Nx");
       ny = navInfo.getInt("Ny");
-      dx = navInfo.getDouble("Dx") / 1000.0; // need to be km : unit conversion LOOK;
-      dy = navInfo.getDouble("Dy") / 1000.0; // need to be km : unit conversion LOOK;
+      dx = navInfo.getDouble("Dx") / 1000.0; // TODO need to be km : unit conversion
+      dy = navInfo.getDouble("Dy") / 1000.0;
 
       return new ProjectionCTV(grid_name, lc);
     }

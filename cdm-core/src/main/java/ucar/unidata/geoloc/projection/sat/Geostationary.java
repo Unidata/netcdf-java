@@ -250,7 +250,7 @@ public class Geostationary extends AbstractProjection {
     }
 
     // opposite signed X values, larger then 100 km
-    // LOOK! BUG? This proj works in units of radians rather than km.
+    // TODO This proj works in units of radians rather than km.
     return (x1 * x2 < 0) && (Math.abs(x1 - x2) > 100);
   }
 
@@ -280,7 +280,7 @@ public class Geostationary extends AbstractProjection {
   /**
    * Create a ProjectionRect from the given LatLonRect.
    * Handles lat/lon points that do not intersect the projection panel.
-   * LOOK NEEDS OVERRIDDING
+   * TODO NEEDS OVERRIDDING
    * 
    * @param rect the LatLonRect
    * @return ProjectionRect, or null if no part of the LatLonRect intersects the projection plane

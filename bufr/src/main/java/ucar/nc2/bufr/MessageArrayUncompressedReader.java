@@ -91,7 +91,7 @@ class MessageArrayUncompressedReader {
     this.raf = raf;
     this.f = f;
 
-    // allocate ArrayStructureBB for outer structure
+    // allocate StructureDataStorageBB for outer structure
     StructureMembers.Builder membersb = s.makeStructureMembersBuilder().setStandardOffsets();
     this.members = membersb.build();
 

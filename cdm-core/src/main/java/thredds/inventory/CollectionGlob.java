@@ -122,7 +122,7 @@ public class CollectionGlob extends CollectionAbstract {
               nextMFile = null;
               return false;
             }
-            currDepth++; // LOOK wrong
+            currDepth++; // TODO wrong
             Path nextSubdir = subdirs.pop();
             dirStream = Files.newDirectoryStream(nextSubdir);
             dirStreamIterator = dirStream.iterator();

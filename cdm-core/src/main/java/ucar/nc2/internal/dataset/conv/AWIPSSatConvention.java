@@ -95,7 +95,7 @@ public class AWIPSSatConvention extends AWIPSConvention {
       datasetBuilder.replaceCoordinateAxis(rootGroup, makeYCoordAxis("y"));
     }
 
-    // long_name; LOOK: not sure of units
+    // long_name; TODO: not sure of units
     VariableDS.Builder<?> datav = (VariableDS.Builder<?>) rootGroup.findVariableLocal("image")
         .orElseThrow(() -> new RuntimeException("must have varible 'image'"));
     String long_name = rootGroup.getAttributeContainer().findAttributeString("channel", null);
@@ -166,7 +166,7 @@ public class AWIPSSatConvention extends AWIPSConvention {
     startx = start.getX();
     starty = start.getY();
 
-    // we will use the end to compute grid size LOOK may be wrong
+    // we will use the end to compute grid size
     double latN = findAttributeDouble("latNxNy");
     double lonN = findAttributeDouble("lonNxNy");
     ProjectionPoint end = proj.latLonToProj(LatLonPoint.create(latN, lonN));
@@ -199,7 +199,7 @@ public class AWIPSSatConvention extends AWIPSConvention {
     // lat0, lon0, par
     Mercator proj = new Mercator(lonDxDy, latDxDy);
 
-    // we have to project in order to find the start LOOK may be wrong
+    // we have to project in order to find the start
     double lat0 = findAttributeDouble("lat00");
     double lon0 = findAttributeDouble("lon00");
     ProjectionPoint start = proj.latLonToProj(LatLonPoint.create(lat0, lon0));

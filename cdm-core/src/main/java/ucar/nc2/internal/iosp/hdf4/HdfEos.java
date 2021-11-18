@@ -652,7 +652,7 @@ public class HdfEos {
         // TODO
         // Group parent = dim.getGroup();
         // parent.addDimensionIfNotExists(newDim); // add to the parent
-        unknownDims.remove(dim); // remove from list LOOK is this ok?
+        unknownDims.remove(dim); // remove from list
         log.warn("unknownDim {} length set to {} {}", wantDim, oldDim.getLength(), location);
         return newDim;
       }

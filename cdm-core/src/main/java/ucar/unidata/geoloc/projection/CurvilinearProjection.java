@@ -12,7 +12,6 @@ import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.ProjectionPoint;
 
 import java.util.Objects;
-import java.util.Optional;
 
 public class CurvilinearProjection extends AbstractProjection {
   Array<Double> latdata;
@@ -57,15 +56,6 @@ public class CurvilinearProjection extends AbstractProjection {
     return "";
   }
 
-  public static class CoordReturn {
-    public double lat, lon;
-    public int xidx, yidx;
-  }
-
-  private Optional<CoordReturn> findXYindexFromCoord(double lat, double lon) {
-    return Optional.empty();
-  }
-
   @Override
   public boolean equals(Object o) {
     if (this == o)
@@ -74,7 +64,7 @@ public class CurvilinearProjection extends AbstractProjection {
       return false;
     CurvilinearProjection that = (CurvilinearProjection) o;
     boolean what = Objects.equals(latdata, that.latdata) && Objects.equals(londata, that.londata);
-    return what; // LOOK fuzzy math needed
+    return what; // TODO fuzzy math needed
   }
 
   @Override

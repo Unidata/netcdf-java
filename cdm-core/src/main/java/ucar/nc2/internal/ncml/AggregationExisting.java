@@ -58,7 +58,7 @@ class AggregationExisting extends AggregationOuter {
     BuilderHelper.transferDataset(typical, ncDataset, null);
     Group.Builder rootGroup = ncDataset.rootGroup;
 
-    // LOOK not dealing with groups
+    // TODO not dealing with groups
 
     // a little tricky to get the coord var cached if we have to read through the datasets on the buildCoords()
     String dimName = getDimensionName();
@@ -110,7 +110,6 @@ class AggregationExisting extends AggregationOuter {
         continue;
       }
 
-      // LOOK was Group.Builder newGroup = BuilderHelper.findGroup(rootGroup, v.getParentGroup());
       VariableDS.Builder<?> vagg = VariableDS.builder().setName(v.getShortName()).setArrayType(v.getArrayType())
           .setParentGroupBuilder(rootGroup).setDimensionsByName(v.getDimensionsString());
       vagg.setProxyReader(this);
@@ -158,7 +157,7 @@ class AggregationExisting extends AggregationOuter {
       joinAggCoord.setSPobject(coordCacheVar);
     }
 
-    // check persistence info - may have cached values other than coordinate LOOK ????
+    // check persistence info - may have cached values other than coordinate
     persistRead();
 
     setDatasetAcquireProxy(typicalDataset, ncDataset);
@@ -167,8 +166,6 @@ class AggregationExisting extends AggregationOuter {
     if (debugInvocation) {
       System.out.println(ncDataset.location + " invocation count = " + AggregationOuter.invocation);
     }
-
-    // LOOK ncDataset.finish();
   }
 
   /**
@@ -184,7 +181,7 @@ class AggregationExisting extends AggregationOuter {
     if (cacheName == null) {
       return;
     }
-    if (cacheName.startsWith("file:")) { // LOOK HACK
+    if (cacheName.startsWith("file:")) {
       cacheName = cacheName.substring(5);
     }
     File cacheFile = diskCache2.getCacheFile(cacheName);
@@ -289,8 +286,7 @@ class AggregationExisting extends AggregationOuter {
     if (cacheName == null) {
       return;
     }
-    if (cacheName.startsWith("file:")) // LOOK
-    {
+    if (cacheName.startsWith("file:")) {
       cacheName = cacheName.substring(5);
     }
 
@@ -402,11 +398,7 @@ class AggregationExisting extends AggregationOuter {
 
   // has the name getCacheName()
   private String getCacheName() {
-    String cacheName = ncDataset.location;
-    // if (cacheName == null) { LOOK
-    // cacheName = ncDataset.getCacheName();
-    // }
-    return cacheName;
+    return ncDataset.location;
   }
 
 }

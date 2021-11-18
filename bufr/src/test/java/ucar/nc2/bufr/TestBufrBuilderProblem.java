@@ -22,12 +22,19 @@ public class TestBufrBuilderProblem {
   @Test
   public void testEmbeddedTable() throws Exception {
     String filename = TestDir.cdmUnitTestDir + "formats/bufr/userExamples/mixed/gdas1.t18z.osbuv8.tm00.bufr_d";
-    testRead(filename);
+    TestDir.readAll(filename);
   }
 
-  private void testRead(String filename) throws IOException {
-    System.out.printf("Test read all variables for  on %s%n", filename);
-    TestDir.readAll(filename);
+  @Test
+  public void testEmbeddedRecursionArrays() throws Exception {
+    String filename = TestDir.cdmUnitTestDir + "formats/bufr/embeddedTable/gdas.adpsfc.t00z.20120603.bufr";
+    TestBufrReadAllData.readArrays(filename);
+  }
+
+  @Test
+  public void testEnum() throws Exception {
+    String filename = TestDir.cdmUnitTestDir + "formats/bufr/embeddedTable/gdas.adpsfc.t00z.20120603.bufr";
+    TestBufrReadAllData.readArrays(filename);
   }
 
   @Test

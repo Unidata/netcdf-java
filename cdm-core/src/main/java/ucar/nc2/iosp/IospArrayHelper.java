@@ -37,14 +37,7 @@ public class IospArrayHelper {
       ByteOrder byteOrder) throws IOException {
     Object arr = (fillValue == null) ? makePrimitiveArray((int) index.getTotalNelems(), arrayType)
         : makePrimitiveArray((int) index.getTotalNelems(), arrayType, fillValue);
-    return readData(raf, index, arrayType, arr, byteOrder, true);
-  }
-
-  public static Object readDataFill(RandomAccessFile raf, Layout index, ArrayType arrayType, Object fillValue,
-      ByteOrder byteOrder, boolean convertChar) throws IOException {
-    Object arr = (fillValue == null) ? makePrimitiveArray((int) index.getTotalNelems(), arrayType)
-        : makePrimitiveArray((int) index.getTotalNelems(), arrayType, fillValue);
-    return readData(raf, index, arrayType, arr, byteOrder, convertChar);
+    return readData(raf, index, arrayType, arr, byteOrder);
   }
 
   /**
@@ -56,12 +49,11 @@ public class IospArrayHelper {
    * @param arrayType ArrayType of the variable
    * @param arr primitive array to read data into
    * @param byteOrder if equal to RandomAccessFile.ORDER_XXXX, set the byte order just before reading
-   * @param convertChar true if bytes should be converted to char for ArrayType CHAR
    * @return primitive array with data read in
    * @throws IOException on read error
    */
   public static Object readData(RandomAccessFile raf, Layout layout, ArrayType arrayType, Object arr,
-      ByteOrder byteOrder, boolean convertChar) throws IOException {
+      ByteOrder byteOrder) throws IOException {
     if (showLayoutTypes)
       System.out.println("***RAF LayoutType=" + layout.getClass().getName());
 
@@ -73,10 +65,7 @@ public class IospArrayHelper {
         raf.seek(chunk.getSrcPos());
         raf.readFully(pa, (int) chunk.getDestElem(), chunk.getNelems());
       }
-      if (convertChar && arrayType == ArrayType.CHAR)
-        return convertByteToChar(pa);
-      else
-        return pa; // javac ternary compile error
+      return pa;
 
     } else if (arrayType.getPrimitiveClass() == Short.class) {
       short[] pa = (short[]) arr;
@@ -199,11 +188,7 @@ public class IospArrayHelper {
         Layout.Chunk chunk = index.next();
         raf.read(chunk.getSrcPos(), pa, (int) chunk.getDestElem(), chunk.getNelems());
       }
-      // return (ArrayType == ArrayType.CHAR) ? convertByteToChar(pa) : pa;
-      if (arrayType == ArrayType.CHAR)
-        return convertByteToChar(pa);
-      else
-        return pa;
+      return pa;
 
     } else if (arrayType.getPrimitiveClass() == Short.class) {
       short[] pa = (short[]) arr;
@@ -304,11 +289,7 @@ public class IospArrayHelper {
         for (int i = 0; i < chunk.getNelems(); i++)
           pa[pos++] = bb.get();
       }
-      // return (ArrayType == ArrayType.CHAR) ? convertByteToChar(pa) : pa;
-      if (arrayType == ArrayType.CHAR)
-        return convertByteToChar(pa);
-      else
-        return pa;
+      return pa;
 
     } else if (arrayType.getPrimitiveClass() == Short.class) {
       short[] pa = (short[]) arr;
@@ -522,28 +503,4 @@ public class IospArrayHelper {
 
     throw new IllegalStateException();
   }
-
-  // convert byte array to char array
-  public static char[] convertByteToChar(byte[] byteArray) {
-    int size = byteArray.length;
-    char[] cbuff = new char[size];
-    for (int i = 0; i < size; i++) {
-      cbuff[i] = (char) ArrayType.unsignedByteToShort(byteArray[i]); // NOTE: not Unicode !
-    }
-    return cbuff;
-  }
-
-  // convert char array to byte array
-  public static byte[] convertCharToByte(char[] from) {
-    byte[] to = null;
-    if (from != null) {
-      int size = from.length;
-      to = new byte[size];
-      for (int i = 0; i < size; i++) {
-        to[i] = (byte) from[i]; // LOOK wrong, convert back to unsigned byte ???
-      }
-    }
-    return to;
-  }
-
 }
