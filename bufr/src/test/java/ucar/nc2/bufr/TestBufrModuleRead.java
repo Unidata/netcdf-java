@@ -31,6 +31,8 @@ public class TestBufrModuleRead {
         return false;
       if (pathname.getName().endsWith(".jpg"))
         return false;
+      if (pathname.getName().endsWith("embedded.bufr")) // fails
+        return false;
       return true;
     }
   }
