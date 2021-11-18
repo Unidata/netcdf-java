@@ -9,11 +9,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
-import ucar.nc2.util.IO;
+import ucar.nc2.Sequence;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.test.TestDir;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
@@ -58,38 +57,32 @@ public class TestBufrModuleRead {
     int count = 0;
     int totalObs = 0;
     try (RandomAccessFile raf = new RandomAccessFile(filename, "r")) {
-
       MessageScanner scan = new MessageScanner(raf, 0, true);
       while (scan.hasNext()) {
         try {
-
           Message m = scan.next();
-          if (m == null)
+          if (m == null) {
             continue;
+          }
           int nobs = m.getNumberDatasets();
-          if (show)
+          if (show) {
             System.out.printf(" %3d nobs = %4d (%s) center = %s table=%s cat=%s ", count++, nobs, m.getHeader(),
                 m.getLookup().getCenterNo(), m.getLookup().getTableName(), m.getLookup().getCategoryNo());
+          }
           assert m.isTablesComplete() : "incomplete tables";
 
           if (nobs > 0) {
-            BufrIosp iosp = new BufrIosp();
-            iosp.open(m.raf(), m);
+            BufrSingleMessage bufr = new BufrSingleMessage();
+            Sequence top = bufr.fromSingleMessage(m.raf(), m);
             Formatter f = new Formatter();
-            MessageBitCounter counter = new MessageBitCounter(iosp.getTopSequence(), iosp.getProtoMessage(), m, f);
-
-            if (!counter.isBitCountOk()) {
-              FileOutputStream out = new FileOutputStream("C:/tmp/bitcount.txt");
-              IO.writeContents(f.toString(), out);
-              out.close();
-              System.out.printf("  nbits = %d%n", counter.msg_nbits);
-            }
+            MessageBitCounter counter = new MessageBitCounter(top, m, m, f);
             assert counter.isBitCountOk() : "bit count wrong on " + filename;
           }
 
           totalObs += nobs;
-          if (show)
+          if (show) {
             System.out.printf("%n");
+          }
 
         } catch (Exception e) {
           e.printStackTrace();

@@ -693,7 +693,7 @@ public class NetcdfFile implements FileCacheable, Closeable {
       rootGroup = Group.builder().setNcfile(this).setName("").build();
     }
     if (builder.iosp != null) {
-      this.iosp.buildFinish(this);
+      builder.iosp.buildFinish(this);
     }
     this.iosp = builder.iosp;
 

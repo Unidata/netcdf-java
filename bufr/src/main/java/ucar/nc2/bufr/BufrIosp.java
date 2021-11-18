@@ -106,25 +106,6 @@ public class BufrIosp extends AbstractIOServiceProvider {
     }
   }
 
-  // for BufrMessageViewer
-  public NetcdfFile open(RandomAccessFile raf, Message single) throws IOException {
-    this.raf = raf;
-
-    protoMessage = single;
-    protoMessage.getRootDataDescriptor(); // construct the data descriptors, check for complete tables
-    if (!protoMessage.isTablesComplete())
-      throw new IllegalStateException("BUFR file has incomplete tables");
-
-    BufrConfig config = BufrConfig.openFromMessage(raf, protoMessage, null);
-
-    // this fills the netcdf object
-    ConstructNetcdf construct = new ConstructNetcdf(protoMessage, config, raf.getLocation());
-    this.ncfile = construct.getNetcdfFile();
-    this.obsStructure = construct.getObsStructure();
-    this.isSingle = true;
-    return this.ncfile;
-  }
-
   @Override
   public Object sendIospMessage(Object message) {
     if (message instanceof Element) {
@@ -229,25 +210,25 @@ public class BufrIosp extends AbstractIOServiceProvider {
         }
       }
     }
+  }
 
-    private Array<StructureData> readMessage(Message m) throws IOException {
-      Array<StructureData> as;
-      Formatter f = new Formatter();
-      try {
-        if (m.dds.isCompressed()) {
-          MessageArrayCompressedReader comp = new MessageArrayCompressedReader(obsStructure, protoMessage, m, raf, f);
-          as = comp.readEntireMessage();
-        } else {
-          MessageArrayUncompressedReader uncomp =
-              new MessageArrayUncompressedReader(obsStructure, protoMessage, m, raf, f);
-          as = uncomp.readEntireMessage();
-        }
-      } catch (Throwable t) {
-        log.warn(String.format("BufrIosp readMessage FAIL= %s%n", f), t);
-        throw t;
+  public Array<StructureData> readMessage(Message m) throws IOException {
+    Array<StructureData> as;
+    Formatter f = new Formatter();
+    try {
+      if (m.dds.isCompressed()) {
+        MessageArrayCompressedReader comp = new MessageArrayCompressedReader(obsStructure, protoMessage, m, raf, f);
+        as = comp.readEntireMessage();
+      } else {
+        MessageArrayUncompressedReader uncomp =
+            new MessageArrayUncompressedReader(obsStructure, protoMessage, m, raf, f);
+        as = uncomp.readEntireMessage();
       }
-      return as;
+    } catch (Throwable t) {
+      log.warn(String.format("BufrIosp readMessage FAIL= %s%n", f), t);
+      throw t;
     }
+    return as;
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

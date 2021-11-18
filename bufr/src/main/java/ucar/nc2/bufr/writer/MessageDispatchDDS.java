@@ -6,7 +6,8 @@ package ucar.nc2.bufr.writer;
 
 import java.nio.charset.StandardCharsets;
 
-import ucar.nc2.bufr.BufrIosp;
+import ucar.nc2.Sequence;
+import ucar.nc2.bufr.BufrSingleMessage;
 import ucar.nc2.bufr.BufrTableLookup;
 import ucar.nc2.bufr.Message;
 import ucar.nc2.calendar.CalendarDate;
@@ -178,10 +179,10 @@ public class MessageDispatchDDS {
   private boolean checkIfBad(Message m) {
     boolean isBad;
     try {
-      BufrIosp iosp = new BufrIosp();
-      iosp.open(m.raf(), m);
+      BufrSingleMessage bufr = new BufrSingleMessage();
+      Sequence top = bufr.fromSingleMessage(m.raf(), m);
       Formatter out = new Formatter();
-      MessageBitCounter counter = new MessageBitCounter(iosp.getTopSequence(), iosp.getProtoMessage(), m, out);
+      MessageBitCounter counter = new MessageBitCounter(top, m, m, out);
       isBad = m.isTablesComplete() && !counter.isBitCountOk();
     } catch (Exception e) {
       isBad = true;

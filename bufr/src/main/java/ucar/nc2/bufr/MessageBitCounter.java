@@ -18,7 +18,6 @@ public class MessageBitCounter {
 
   int msg_nbits;
 
-  // LOOK why do we need Structure struct and Message proto?
   public MessageBitCounter(Sequence struct, Message proto, Message message, Formatter out) {
     this.struct = struct;
     this.proto = proto;
@@ -37,7 +36,11 @@ public class MessageBitCounter {
     // int nbitsGiven = 8 * (dataSection.getDataLength() - 4);
     int nbytesCounted = getCountedDataBytes();
     int nbytesGiven = message.dataSection.getDataLength();
-    return Math.abs(nbytesCounted - nbytesGiven) <= 1; // radiosondes dataLen not even number of bytes
+    boolean ok = Math.abs(nbytesCounted - nbytesGiven) <= 1; // radiosondes dataLen not even number of bytes
+    if (!ok) {
+      System.out.printf("HEY counted = %d actual = %d%n", nbytesCounted, nbytesGiven);
+    }
+    return ok;
   }
 
   public int getCountedDataBytes() {

@@ -22,6 +22,8 @@ import ucar.nc2.calendar.CalendarDate;
 import ucar.nc2.util.Indent;
 import ucar.unidata.geoloc.Station;
 import ucar.unidata.io.RandomAccessFile;
+
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.*;
 
@@ -39,10 +41,11 @@ public class BufrConfig {
     return new BufrConfig(raf);
   }
 
-  static BufrConfig openFromMessage(RandomAccessFile raf, Message m, Element iospParam) {
+  static BufrConfig openFromMessage(RandomAccessFile raf, Message m, @Nullable Element iospParam) {
     BufrConfig config = new BufrConfig(raf, m);
-    if (iospParam != null)
+    if (iospParam != null) {
       config.merge(iospParam);
+    }
     return config;
   }
 

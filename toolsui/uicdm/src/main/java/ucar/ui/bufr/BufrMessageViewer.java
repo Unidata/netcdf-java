@@ -13,10 +13,9 @@ import ucar.array.Array;
 import ucar.array.StructureData;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
+import ucar.nc2.Sequence;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
-import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.nc2.dataset.SequenceDS;
 import ucar.nc2.bufr.point.BufrCdmIndex;
 import ucar.nc2.ft.point.bufr.BufrCdmIndexProto;
 import ucar.nc2.bufr.point.StandardFields;
@@ -65,6 +64,8 @@ public class BufrMessageViewer extends JPanel {
   private IndependentWindow dataWindow;
   private FileManager fileChooser;
   private boolean seperateWindow;
+
+  private Sequence top;
 
   public BufrMessageViewer(PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
@@ -222,15 +223,12 @@ public class BufrMessageViewer extends JPanel {
         if (mb == null)
           return;
         try {
-          NetcdfFile ncd = makeBufrMessageAsDataset(mb.m);
-          Variable v = ncd.findVariable(BufrIosp.obsRecordName);
-          if (v instanceof Structure) {
-            if (dataTable == null)
-              makeDataTable();
-            dataTable.setStructure((Structure) v);
-            dataWindow.show();
-            mb.setReadOk(true);
-          }
+          Array<StructureData> sdata = makeBufrMessageAsDataset(mb.m);
+          if (dataTable == null)
+            makeDataTable();
+          dataTable.setStructure(top);
+          dataWindow.show();
+          mb.setReadOk(true);
         } catch (Exception ex) {
           mb.setReadOk(false);
           JOptionPane.showMessageDialog(BufrMessageViewer.this, ex.getMessage());
@@ -259,7 +257,7 @@ public class BufrMessageViewer extends JPanel {
         try {
           infoTA2.clear();
           // Structure struct, Message proto, Message message, Formatter out
-          MessageBitCounter counter = new MessageBitCounter(iosp.getTopSequence(), iosp.getProtoMessage(), m, out);
+          MessageBitCounter counter = new MessageBitCounter(top, m, m, out);
           /*
            * if (!m.dds.isCompressed()) {
            * MessageUncompressedDataReader reader = new MessageUncompressedDataReader();
@@ -467,7 +465,7 @@ public class BufrMessageViewer extends JPanel {
     } catch (Exception e) {
       StringWriter sw = new StringWriter(10000);
       e.printStackTrace(new PrintWriter(sw));
-      f.format("%s", sw.toString());
+      f.format("%s", sw);
     }
   }
 
@@ -533,7 +531,6 @@ public class BufrMessageViewer extends JPanel {
       fileChooser.save();
   }
 
-  private BufrIosp iosp;
   private RandomAccessFile raf;
   private MessageScanner scan;
   int center;
@@ -559,12 +556,10 @@ public class BufrMessageViewer extends JPanel {
     ddsTable.setBeans(new ArrayList<>());
   }
 
-  private NetcdfFile makeBufrMessageAsDataset(Message m) throws IOException {
-    this.iosp = new BufrIosp();
-    NetcdfFile ncfile = iosp.open(raf, m);
-
-    // Wrap in a NetcdfDataset so that we can get "*DS" objects. But don't enhance.
-    return NetcdfDatasets.enhance(ncfile, null, null);
+  private Array<StructureData> makeBufrMessageAsDataset(Message m) throws IOException {
+    BufrSingleMessage bufr = new BufrSingleMessage();
+    this.top = bufr.fromSingleMessage(m.raf(), m);
+    return bufr.iosp.readMessage(m);
   }
 
   private NetcdfFile makeBufrDataset() throws IOException {
@@ -582,18 +577,12 @@ public class BufrMessageViewer extends JPanel {
   }
 
   private void setObs(Message m) {
-
     List<ObsBean> beanList = new ArrayList<>();
     try {
-      NetcdfFile ncd = makeBufrMessageAsDataset(m);
-      Variable v = ncd.findVariable(BufrIosp.obsRecordName);
-      if (v instanceof Structure) {
-        Structure obs = (Structure) v;
-        StandardFields.StandardFieldsFromStructure extract =
-            new StandardFields.StandardFieldsFromStructure(center, obs);
-        for (StructureData sdata : (Array<StructureData>) obs.readArray()) {
-          beanList.add(new ObsBean(extract, sdata));
-        }
+      Array<StructureData> sdatas = makeBufrMessageAsDataset(m);
+      StandardFields.StandardFieldsFromStructure extract = new StandardFields.StandardFieldsFromStructure(center, top);
+      for (StructureData sdata : sdatas) {
+        beanList.add(new ObsBean(extract, sdata));
       }
     } catch (Exception ex) {
       JOptionPane.showMessageDialog(this, ex.getMessage());
@@ -685,7 +674,7 @@ public class BufrMessageViewer extends JPanel {
         return;
       try {
         Formatter out = new Formatter();
-        MessageBitCounter counter = new MessageBitCounter(iosp.getTopSequence(), iosp.getProtoMessage(), m, out);
+        MessageBitCounter counter = new MessageBitCounter(top, m, m, out);
         boolean ok = counter.isBitCountOk();
         setBitsOk(ok);
       } catch (Exception e) {
@@ -722,9 +711,8 @@ public class BufrMessageViewer extends JPanel {
 
     private void read() {
       try {
-        NetcdfFile ncd = makeBufrMessageAsDataset(m);
-        SequenceDS seq = (SequenceDS) ncd.findVariable(BufrIosp.obsRecordName);
-        for (StructureData sdata : seq) {
+        Array<StructureData> sdatas = makeBufrMessageAsDataset(m);
+        for (StructureData sdata : sdatas) {
           // NOOP
         }
         setReadOk(true);
