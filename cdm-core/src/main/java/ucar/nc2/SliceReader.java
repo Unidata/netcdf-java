@@ -32,6 +32,7 @@ class SliceReader implements ProxyReader {
 
   /**
    * Reads slice of orgClient
+   * 
    * @param dim slice this dimension
    * @param slice at this value
    */
@@ -39,7 +40,7 @@ class SliceReader implements ProxyReader {
     int[] orgShape = orgClient.getShape();
     Preconditions.checkArgument(dim >= 0 && dim < orgShape.length);
     Preconditions.checkArgument(slice.getRank() == orgShape.length);
-    for (int i=0; i<slice.getRank(); i++) {
+    for (int i = 0; i < slice.getRank(); i++) {
       Range r = slice.getRange(i);
       if (i == dim) {
         Preconditions.checkArgument(r.length() == 1);

@@ -25,6 +25,7 @@ class SectionReader implements ProxyReader {
 
   /**
    * Reads logical sections of orgClient.
+   * 
    * @param section of orgClient, will be filled if needed.
    */
   SectionReader(Variable orgClient, Section section) throws InvalidRangeException {
