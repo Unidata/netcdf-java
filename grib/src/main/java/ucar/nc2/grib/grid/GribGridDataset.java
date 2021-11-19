@@ -66,7 +66,7 @@ public class GribGridDataset implements GridDataset {
     RandomAccessFile raf;
     try {
       raf = new RandomAccessFile(endpoint, "r");
-      // LOOK how do you pass in a non-standard FeatureCollectionConfig ? Or is that only when you are creating?
+      // TODO how do you pass in a non-standard FeatureCollectionConfig ? Or is that only when you are creating?
       gc = GribCdmIndex.openGribCollectionFromRaf(raf, new FeatureCollectionConfig(), CollectionUpdateType.nocheck,
           logger);
 
@@ -76,8 +76,7 @@ public class GribGridDataset implements GridDataset {
       }
 
       /*
-       * LOOK here is the issue of multiple groups. How to handle? FeatureDatasetCoverage had baked in multiple
-       * // LOOK FeatureCollection ==> GridDataset.
+       * TODO here is the issue of multiple groups. How to handle? FeatureDatasetCoverage had baked in multiple
        * List<GribGridDataset> datasets = new ArrayList<>();
        * for (GribCollectionImmutable.Dataset ds : gc.getDatasets()) {
        * for (GribCollectionImmutable.GroupGC group : ds.getGroups()) {
@@ -173,7 +172,7 @@ public class GribGridDataset implements GridDataset {
         axes = axes.stream().filter(a -> a.getAxisType() != AxisType.RunTime).collect(Collectors.toList());
       }
 
-      // LOOK need verticalTransform
+      // TODO need verticalTransform
       return new GridCoordinateSystem(axes, tcs, null, horizCs);
     });
   }

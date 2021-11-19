@@ -15,8 +15,7 @@ import ucar.unidata.util.test.TestDir;
 public class TestNetcdfFiles {
 
   @Test
-  public void testOpenWithClassName()
-      throws IOException, IllegalAccessException, InstantiationException, ClassNotFoundException {
+  public void testOpenWithClassName() throws Exception {
     try (NetcdfFile ncfile = NetcdfFiles.open(TestDir.cdmLocalTestDataDir + "longOffset.nc",
         "ucar.nc2.internal.iosp.netcdf3.N3iosp", -1, null, NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE)) {
       System.out.printf("%s%n", ncfile);

@@ -94,7 +94,7 @@ public class TestDefaultCalendars {
     }
   }
 
-  // LOOK rewrite this
+  // TODO rewrite this
   // @Test
   public void testCoardsDefaultCalendar() throws IOException {
     String failMessage, found, expected;

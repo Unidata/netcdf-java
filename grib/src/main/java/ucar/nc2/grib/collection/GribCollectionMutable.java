@@ -51,8 +51,8 @@ public class GribCollectionMutable implements Closeable {
 
   static MFile makeIndexMFile(String collectionName, File directory) {
     String nameNoBlanks = StringUtil2.replace(collectionName, ' ', "_");
-    return new GcMFile(directory, nameNoBlanks + GribCdmIndex.NCX_SUFFIX, -1, -1, -1); // LOOK dont know lastMod, size.
-                                                                                       // can it be added later?
+    // TODO dont know lastMod, size. can it be added later?
+    return new GcMFile(directory, nameNoBlanks + GribCdmIndex.NCX_SUFFIX, -1, -1, -1);
   }
 
   private static final CalendarDateFormatter cf = new CalendarDateFormatter("yyyyMMdd-HHmmss");
@@ -468,11 +468,11 @@ public class GribCollectionMutable implements Closeable {
         this.probabilityName = null;
         this.percentile = -1;
 
-        this.genProcessType = pds.getGenProcess(); // LOOK process vs process type ??
+        this.genProcessType = pds.getGenProcess(); // TODO process vs process type ??
         this.isEnsemble = pds.isEnsemble();
         this.spatialStatType = -1;
 
-        // LOOK config vs serialized config
+        // TODO config vs serialized config
         gribVariable = new Grib1Variable(cust, pds, (Grib1Gds) g.getGdsHash(), config.gribConfig.useTableVersion,
             config.gribConfig.intvMerge, config.gribConfig.useCenter);
 
@@ -524,7 +524,7 @@ public class GribCollectionMutable implements Closeable {
           this.spatialStatType = -1;
         }
 
-        // LOOK config vs serialized config
+        // TODO config vs serialized config
         gribVariable = new Grib2Variable(cust2, discipline, center, subcenter, (Grib2Gds) g.getGdsHash(), pds,
             config.gribConfig.intvMerge, config.gribConfig.useGenType);
       }
@@ -641,7 +641,7 @@ public class GribCollectionMutable implements Closeable {
 
     @Override
     public int compareTo(@Nonnull VariableIndex o) {
-      int r = discipline - o.discipline; // LOOK add center, subcenter, version?
+      int r = discipline - o.discipline; // TODO add center, subcenter, version?
       if (r != 0)
         return r;
       r = category - o.category;

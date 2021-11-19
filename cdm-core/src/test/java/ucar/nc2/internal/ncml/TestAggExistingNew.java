@@ -183,7 +183,7 @@ public class TestAggExistingNew {
     // assert false;
   }
 
-  // LOOK this test expects an Exception, but it seems to work. Why isnt this test failing in travis?
+  // TODO this test expects an Exception, but it seems to work. Why isnt this test failing in travis?
   // @Test
   public void testNoCoordsDir() throws IOException {
     String filename = "file:./" + TestNcmlRead.topDir + "exclude/aggExistingNoCoordsDir.xml";
@@ -412,7 +412,7 @@ public class TestAggExistingNew {
     ncfile.close();
   }
 
-  // LOOK not supporting mixed Gregorian
+  // TODO not supporting mixed Gregorian
   // @Test
   public void testNcmlAggExistingGregorianCal() throws IOException {
     // with calendar = gregorian, 4 October 1582 was followed by 15 October 1582

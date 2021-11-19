@@ -10,7 +10,7 @@ import java.util.Map;
 
 /**
  * Reuse immutable calendar date objects.
- * LOOK: This optimization could go away.
+ * This optimization could go away.
  *
  * @author caron
  * @since 4/3/2015

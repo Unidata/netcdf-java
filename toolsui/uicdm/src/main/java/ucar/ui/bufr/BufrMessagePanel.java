@@ -15,14 +15,20 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import javax.swing.JOptionPane;
 
-public class BufrPanel extends OpPanel {
+public class BufrMessagePanel extends OpPanel {
   private RandomAccessFile raf;
   private final BufrMessageViewer bufrTable;
 
-  public BufrPanel(PreferencesExt p) {
-    super(p, "file:", true, false);
+  public BufrMessagePanel(PreferencesExt p) {
+    super(p, "file:", true, true);
     bufrTable = new BufrMessageViewer(prefs, buttPanel);
     add(bufrTable, BorderLayout.CENTER);
+    bufrTable.setUseEnhanced(this.useCoords);
+  }
+
+  @Override
+  protected void setUseCoords(boolean useCoords) {
+    bufrTable.setUseEnhanced(useCoords);
   }
 
   @Override
@@ -58,6 +64,7 @@ public class BufrPanel extends OpPanel {
       raf.close();
     }
     raf = null;
+    bufrTable.clear();
   }
 
   @Override

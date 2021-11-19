@@ -6,6 +6,7 @@ package ucar.nc2.bufr.point;
 
 import ucar.array.Array;
 import ucar.array.ArrayType;
+import ucar.array.Arrays;
 import ucar.array.StructureData;
 import ucar.array.StructureMembers;
 import ucar.nc2.Attribute;
@@ -16,7 +17,13 @@ import ucar.nc2.bufr.BufrIosp;
 import ucar.nc2.bufr.DataDescriptor;
 import ucar.nc2.bufr.Message;
 import ucar.nc2.calendar.CalendarDate;
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.Formatter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Extract standard fields from BUFR
@@ -58,7 +65,7 @@ public class StandardFields {
     addField("0-7-10", BufrCdmIndexProto.FldType.height);
     addField("0-7-7", BufrCdmIndexProto.FldType.height);
 
-    // 4th choice LOOK
+    // 4th choice
     addField("0-1-5", BufrCdmIndexProto.FldType.stationId);
     addField("0-1-6", BufrCdmIndexProto.FldType.stationId);
     // addField("0-1-7", BufrCdmIndexProto.FldType.stationId); satellite id
@@ -175,8 +182,6 @@ public class StandardFields {
       if (typeMap.get(BufrCdmIndexProto.FldType.month) == null)
         return false;
       return typeMap.get(BufrCdmIndexProto.FldType.day) != null || typeMap.get(BufrCdmIndexProto.FldType.doy) != null;
-      // if (typeMap.get(BufrCdmIndexProto.FldType.hour) == null) return false; // LOOK could assume 0:0 ??
-      // if (typeMap.get(BufrCdmIndexProto.FldType.minute) == null) return false;
     }
 
     @Override
@@ -229,7 +234,7 @@ public class StandardFields {
     private Map<BufrCdmIndexProto.FldType, Field> map = new HashMap<>();
 
     public StandardFieldsFromStructure(int center, Structure obs) {
-      // run through all available fields - LOOK we are not recursing into sub sequences
+      // run through all available fields - TODO we are not recursing into sub sequences
       for (Variable v : obs.getVariables()) {
         Attribute att = v.attributes().findAttribute(BufrIosp.fxyAttName);
         if (att == null)
@@ -259,8 +264,10 @@ public class StandardFields {
         StructureMembers.Member m = sm.findMember(fld.memberName);
         ArrayType dtype = m.getArrayType();
         Array<?> memberData = sdata.getMemberData(m);
-        if (dtype.isString()) {
+        if (dtype == ArrayType.STRING) {
           fld.valueS = ((Array<String>) memberData).getScalar().trim();
+        } else if (dtype == ArrayType.CHAR) {
+          fld.valueS = Arrays.makeStringFromChar((Array<Byte>) memberData).trim();
         } else if (dtype.isIntegral()) {
           Number val = ((Array<Number>) memberData).getScalar();
           fld.value = val.intValue();

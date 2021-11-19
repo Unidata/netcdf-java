@@ -17,14 +17,17 @@ import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.Variable.Builder;
 import ucar.nc2.dataset.NetcdfDatasets;
-import ucar.ui.dialog.CompareDialog;
-import ucar.ui.dialog.NetcdfOutputChooser;
+import ucar.nc2.internal.util.CompareNetcdf2;
 import ucar.nc2.util.CancelTask;
+import ucar.nc2.write.Nc4Chunking;
+import ucar.nc2.write.Nc4ChunkingStrategy;
 import ucar.nc2.write.NcdumpArray;
 import ucar.nc2.write.NetcdfCopier;
 import ucar.nc2.write.NcmlWriter;
 import ucar.nc2.write.NetcdfFormatWriter;
-import ucar.ui.StructureTable;
+import ucar.ui.StructureArrayTable;
+import ucar.ui.dialog.CompareDialog;
+import ucar.ui.dialog.NetcdfOutputChooser;
 import ucar.ui.widget.BAMutil;
 import ucar.ui.widget.FileManager;
 import ucar.ui.widget.IndependentWindow;
@@ -32,12 +35,8 @@ import ucar.ui.widget.PopupMenu;
 import ucar.ui.widget.ProgressMonitor;
 import ucar.ui.widget.ProgressMonitorTask;
 import ucar.ui.widget.TextHistoryPane;
-import ucar.nc2.internal.util.CompareNetcdf2;
-import ucar.nc2.write.Nc4Chunking;
-import ucar.nc2.write.Nc4ChunkingStrategy;
 import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.BeanTable;
-import ucar.ui.prefs.Debug;
 import org.jdom2.Element;
 import java.awt.BorderLayout;
 import java.awt.Frame;
@@ -81,7 +80,7 @@ public class DatasetWriter extends JPanel {
   private JComponent currentComponent;
 
   private final TextHistoryPane infoTA;
-  private final StructureTable dataTable;
+  private final StructureArrayTable dataTable;
   private final IndependentWindow infoWindow;
   private final IndependentWindow dataWindow;
   private IndependentWindow attWindow;
@@ -123,7 +122,7 @@ public class DatasetWriter extends JPanel {
     infoWindow.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 500, 300)));
 
     // the data Table
-    dataTable = new StructureTable((PreferencesExt) prefs.node("structTable"));
+    dataTable = new StructureArrayTable((PreferencesExt) prefs.node("structTable"));
     dataWindow = new IndependentWindow("Data Table", BAMutil.getImage("nj22/NetcdfUI"), dataTable);
     dataWindow.setBounds((Rectangle) prefs.getBean("dataWindow", new Rectangle(50, 300, 1000, 600)));
 
@@ -216,7 +215,7 @@ public class DatasetWriter extends JPanel {
       try {
         List<VariableBean> beans = nestedTableList.get(0).table.getBeans();
         BeanChunker bc = new BeanChunker(beans, data.deflate, data.shuffle);
-        NetcdfFormatWriter.Builder builder =
+        NetcdfFormatWriter.Builder<?> builder =
             NetcdfFormatWriter.builder().setFormat(data.format).setLocation(data.outputFilename).setChunker(bc);
         Stopwatch stopwatch = Stopwatch.createStarted();
         try (NetcdfCopier copier = NetcdfCopier.create(ds, builder)) {
@@ -375,7 +374,6 @@ public class DatasetWriter extends JPanel {
 
     if (isNcml) {
       NcmlWriter ncmlWriter = new NcmlWriter();
-      // LOOK ncmlWriter.setNamespace(null);
       ncmlWriter.getXmlFormat().setOmitDeclaration(true);
 
       Element varElement = ncmlWriter.makeVariableElement(v, false);

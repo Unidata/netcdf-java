@@ -440,10 +440,9 @@ public class Variable implements ProxyReader, Comparable<Variable> {
   ///// scalar reading
 
   /**
-   * Get the value as a byte for a scalar Variable. May also be one-dimensional of length 1.
+   * Get the first value as a byte.
    *
    * @throws IOException if theres an IO Error
-   * @throws UnsupportedOperationException if not a scalar Variable or one-dimensional of length 1.
    * @throws RuntimeException if data type not convertible to byte
    */
   public byte readScalarByte() throws IOException {
@@ -451,10 +450,9 @@ public class Variable implements ProxyReader, Comparable<Variable> {
   }
 
   /**
-   * Get the value as a short for a scalar Variable. May also be one-dimensional of length 1.
+   * Get the first value as a short.
    *
    * @throws IOException if theres an IO Error
-   * @throws UnsupportedOperationException if not a scalar Variable or one-dimensional of length 1.
    * @throws RuntimeException if data type not convertible to short
    */
   public short readScalarShort() throws IOException {
@@ -462,10 +460,9 @@ public class Variable implements ProxyReader, Comparable<Variable> {
   }
 
   /**
-   * Get the value as a int for a scalar Variable. May also be one-dimensional of length 1.
+   * Get the first value as an int.
    *
    * @throws IOException if theres an IO Error
-   * @throws UnsupportedOperationException if not a scalar Variable or one-dimensional of length 1.
    * @throws RuntimeException if data type not convertible to int
    */
   public int readScalarInt() throws IOException {
@@ -473,10 +470,9 @@ public class Variable implements ProxyReader, Comparable<Variable> {
   }
 
   /**
-   * Get the value as a long for a scalar Variable. May also be one-dimensional of length 1.
+   * Get the first value as a long.
    *
    * @throws IOException if theres an IO Error
-   * @throws UnsupportedOperationException if not a scalar Variable
    * @throws RuntimeException if data type not convertible to long
    */
   public long readScalarLong() throws IOException {
@@ -484,10 +480,9 @@ public class Variable implements ProxyReader, Comparable<Variable> {
   }
 
   /**
-   * Get the value as a float for a scalar Variable. May also be one-dimensional of length 1.
+   * Get the first value as a float.
    *
    * @throws IOException if theres an IO Error
-   * @throws UnsupportedOperationException if not a scalar Variable or one-dimensional of length 1.
    * @throws RuntimeException if data type not convertible to float
    */
   public float readScalarFloat() throws IOException {
@@ -495,10 +490,9 @@ public class Variable implements ProxyReader, Comparable<Variable> {
   }
 
   /**
-   * Get the value as a double for a scalar Variable. May also be one-dimensional of length 1.
+   * Get the first value as a double.
    *
    * @throws IOException if theres an IO Error
-   * @throws UnsupportedOperationException if not a scalar Variable or one-dimensional of length 1.
    * @throws RuntimeException if data type not convertible to double
    */
   public double readScalarDouble() throws IOException {
@@ -506,8 +500,7 @@ public class Variable implements ProxyReader, Comparable<Variable> {
   }
 
   /**
-   * Get the value as a String for a scalar Variable. May also be one-dimensional of length 1.
-   * May also be one-dimensional of type CHAR, which will be turned into a scalar String.
+   * Get the first value as a String for a STRING or CHAR Variable.
    *
    * @throws IOException if theres an IO Error
    * @throws IllegalArgumentException if data type not STRING or CHAR
@@ -971,11 +964,10 @@ public class Variable implements ProxyReader, Comparable<Variable> {
     }
 
     // Convert dimension to shared dimensions that live in a parent group.
-    // TODO: In 6.0 remove group field in dimensions, just use equals() to match.
     List<Dimension> dims = new ArrayList<>();
     for (Dimension dim : builder.dimensions) {
       if (dim.isShared()) {
-        Dimension sharedDim = this.parentGroup.findDimension(dim.getShortName()).orElse(null);
+        Dimension sharedDim = this.parentGroup.findDimension(dim);
         if (sharedDim == null) {
           throw new IllegalStateException(String.format("Shared Dimension %s does not exist in a parent proup", dim));
         } else {
@@ -1111,22 +1103,6 @@ public class Variable implements ProxyReader, Comparable<Variable> {
       return attributes;
     }
 
-    /*
-     * TODO Dimensions are tricky during the transition to 6, because they have a pointer to their Group in 5.x,
-     * but with Builders, the Group isnt created until build(). The Group is part of equals() and hash().
-     * The second issue is that we may not know their shape, so that may have to be made later.
-     * Provisionally, we are going to try this strategy: during build, Dimensions are created without Groups, and
-     * hash and equals are modified to allow that. During build, the Dimensions are recreated with the Group, and
-     * Variables Dimensions are replaced with shared Dimensions.
-     * For 6.0, Dimensions become value objects, without a reference to containing Group.
-     *
-     * A VariableBuilder does not know its Group.Builder, so searching for "parent dimensions", must be done with the
-     * Group.Builder object, not the Variable.Builder.
-     *
-     * Havent dealt with structure yet, eg getDimensionsAll(), but should be ok because Variable.Builder does know its
-     * parent structure.
-     */
-
     public T addDimension(Dimension dim) {
       dimensions.add(dim);
       return self();
@@ -1186,7 +1162,6 @@ public class Variable implements ProxyReader, Comparable<Variable> {
 
     public Iterable<String> getDimensionNames() {
       if (dimensions.size() > 0) {
-        // TODO test if this always works
         return dimensions.stream().map(Dimension::getShortName).filter(Objects::nonNull).collect(Collectors.toList());
       }
       return ImmutableList.of();
@@ -1377,7 +1352,7 @@ public class Variable implements ProxyReader, Comparable<Variable> {
       return new Builder2().copyFrom(this);
     }
 
-    /** TODO Copy metadata from orgVar. */
+    /** Copy metadata from orgVar. */
     public T copyFrom(Variable orgVar) {
       setName(orgVar.getShortName());
       setArrayType(orgVar.getArrayType());

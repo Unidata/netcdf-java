@@ -198,7 +198,6 @@ public class NcepMnemonic {
       }
 
       // add some static repetition sequences
-      // LOOK why?
       List<Short> list = new ArrayList<>();
       // 16 bit delayed repetition
       list.add(Descriptor.getFxy("1-1-0"));
@@ -270,7 +269,7 @@ public class NcepMnemonic {
             short x = Short.parseShort(X.trim());
             short y = Short.parseShort(Y.trim());
 
-            // these are in latest tables so skip LOOK WHY
+            // these are in latest tables so skip
             if (XlocalCutoff > x && YlocalCutoff > y)
               continue;
 
@@ -291,7 +290,6 @@ public class NcepMnemonic {
       ios.close();
     }
 
-    // LOOK why ?
     // default for NCEP
     // 0; 63; 0; 0; 0; 16; Numeric; Byte count
     tables.b.addDescriptor((short) 63, (short) 0, 0, 0, 16, "Byte count", "Numeric", null);

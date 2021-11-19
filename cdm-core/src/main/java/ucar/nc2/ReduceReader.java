@@ -5,6 +5,8 @@
 package ucar.nc2;
 
 import javax.annotation.concurrent.Immutable;
+
+import com.google.common.base.Preconditions;
 import ucar.array.Array;
 import ucar.array.Arrays;
 import ucar.array.InvalidRangeException;
@@ -33,6 +35,10 @@ class ReduceReader implements ProxyReader {
    * @param dims index(es) in original variable of the dimension to reduce; dimension must be length 1.
    */
   ReduceReader(Variable orgClient, List<Integer> dims) {
+    int[] orgShape = orgClient.getShape();
+    for (int reduceDim : dims) {
+      Preconditions.checkArgument(orgShape[reduceDim] == 1);
+    }
     this.orgClient = orgClient;
     this.dims = new ArrayList<>(dims);
     Collections.sort(this.dims);

@@ -48,7 +48,7 @@ public class TestGcdmGridDataset {
   public TestGcdmGridDataset(String filename) throws IOException {
     this.filename = filename.replace("\\", "/");
     File file = new File(filename);
-    // LOOK kludge for now. Also, need to auto start up CmdrServer
+    // kludge for now. Also, need to auto start up CmdrServer
     this.gcdmUrl = "gcdm://localhost:16111/" + file.getCanonicalPath();
   }
 

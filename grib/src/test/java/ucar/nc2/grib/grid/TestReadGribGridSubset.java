@@ -59,10 +59,6 @@ public class TestReadGribGridSubset {
       assertThat(timeOffset.getNominalSize()).isGreaterThan(3);
       Object wantTime = timeOffset.getCoordinate(3);
       assertThat(wantTime).isNotNull();
-
-      // LOOK cant actually read because we dont have the data files, only the index files.
-      // GridReferencedArray geoArray = grid.getReader().setRunTime(wantRuntime).setTimeOffsetCoord(wantTime).read();
-      // testGeoArray(geoArray, 2, wantRuntime, wantTime);
     }
   }
 

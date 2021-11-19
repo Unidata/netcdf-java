@@ -48,8 +48,9 @@ public class Grib1Collection extends GribCollectionImmutable {
     } else {
       MFile wantFile = findMFileByName(filename);
       if (wantFile != null) {
+        // TODO thread-safety : creating ncx here
         GribCollectionImmutable gc = GribCdmIndex.openGribCollectionFromDataFile(true, wantFile,
-            CollectionUpdateType.nocheck, gribConfig, errlog, logger); // LOOK thread-safety : creating ncx
+            CollectionUpdateType.nocheck, gribConfig, errlog, logger);
         if (gc == null)
           return null;
 

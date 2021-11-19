@@ -244,7 +244,7 @@ public class FileManager {
       try {
         return file.getCanonicalPath().replace('\\', '/');
       } catch (IOException ioe) {
-        return null; // LOOK changed 2/19/21
+        return null;
       }
     }
     return null;

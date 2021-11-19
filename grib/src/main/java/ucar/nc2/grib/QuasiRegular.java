@@ -56,7 +56,7 @@ public class QuasiRegular {
 
     if (interpolationMethod == GribData.InterpolationMethod.cubic) {
 
-      for (int j = 0; j < ny; j++) { // LOOK - assumes varies by x
+      for (int j = 0; j < ny; j++) { // Note - assumes varies by x
         // int inrow; /* input row to use */
         int npoints; /* number input points in current parrallel */
 
@@ -104,7 +104,7 @@ public class QuasiRegular {
     } else if (interpolationMethod == GribData.InterpolationMethod.linear) { // =>
       // USE_LINEAR
 
-      for (int j = 0; j < ny; j++) { // LOOK - assumes varies by x
+      for (int j = 0; j < ny; j++) { // Note - assumes varies by x
         // int inrow; /* input row to use */
         // inrow = j * (nrows - 1) / (nj - 1); /* set the row number */
         // npoints = ix[inrow+1] - ix[inrow]; /* set number of input points */

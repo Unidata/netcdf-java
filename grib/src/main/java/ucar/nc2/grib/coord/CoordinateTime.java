@@ -216,7 +216,7 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
   public static class Builder1 extends CoordinateBuilderImpl<Grib1Record> {
     final Grib1Customizer cust;
     final int code; // pdsFirst.getTimeUnit()
-    final CalendarPeriod timeUnit; // LOOK could be a CalendarDateUnit
+    final CalendarPeriod timeUnit; // TODO could be a CalendarDateUnit
     final CalendarDate refDate;
 
     public Builder1(Grib1Customizer cust, int code, CalendarPeriod timeUnit, CalendarDate refDate) {

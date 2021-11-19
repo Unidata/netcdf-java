@@ -24,12 +24,8 @@ import static java.net.HttpURLConnection.HTTP_UNAUTHORIZED;
 
 /**
  * Http requests go through this Singleton.
- * TODO We anticipate especially managing credentials from here. Not yet implemented.
+ * TODO Manage Credentials.
  * TODO HTTPSession.setGlobalCompression()
- * If so, we might need multiple HttpService to manage different users, eg from a server?
- * escaping?
- * Lots of complicated stuff going on in ucar.httpservices.HTTPSession, etc.
- * Do the naive thing for now, and see how much we will have to port.
  * HttpRequest request = HttpService.standardGetRequestBuilder(url).build();
  * HttpResponse<InputStream> response = HttpService.standardRequest(request);
  * HttpHeaders responseHeaders = response.headers();
@@ -53,7 +49,6 @@ public class HttpService {
     return STANDARD.makeRequestForString(standardHttpCLient(), request);
   }
 
-  // CredentialsProvider provider;
   private String userAgent;
   private Duration waitSecs;
 
@@ -63,14 +58,6 @@ public class HttpService {
     this.userAgent = userAgent;
     this.waitSecs = waitSecs;
   }
-
-  /*
-   * public HttpService setCredentialsProvider(CredentialsProvider provider) {
-   * Preconditions.checkNotNull(provider);
-   * this.provider = provider;
-   * return this;
-   * }
-   */
 
   public void setUserAgent(String userAgent) {
     Preconditions.checkArgument(!Strings.isNullOrEmpty(userAgent));

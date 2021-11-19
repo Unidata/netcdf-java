@@ -11,17 +11,23 @@ import java.util.Collection;
 
 import ucar.array.Array;
 import ucar.array.StructureData;
+import ucar.array.StructureDataArray;
+import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.Sequence;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.bufr.point.BufrCdmIndex;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.SequenceDS;
 import ucar.nc2.ft.point.bufr.BufrCdmIndexProto;
 import ucar.nc2.bufr.point.StandardFields;
 import ucar.nc2.bufr.*;
 import ucar.nc2.calendar.CalendarDate;
-import ucar.ui.StructureTable;
+import ucar.nc2.internal.dataset.DatasetEnhancer;
+import ucar.nc2.internal.dataset.StructureDataArrayEnhancer;
+import ucar.ui.StructureArrayTable;
 import ucar.ui.widget.*;
 import ucar.ui.widget.PopupMenu;
 import ucar.unidata.io.RandomAccessFile;
@@ -34,9 +40,12 @@ import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.EnumSet;
 import java.util.Formatter;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import javax.swing.*;
 
 /**
@@ -60,12 +69,13 @@ public class BufrMessageViewer extends JPanel {
   private final IndependentWindow infoWindow;
   private IndependentWindow infoWindow2;
 
-  private StructureTable dataTable;
+  private StructureArrayTable dataTable;
   private IndependentWindow dataWindow;
   private FileManager fileChooser;
   private boolean seperateWindow;
 
   private Sequence top;
+  private Boolean useEnhanced = Boolean.TRUE;
 
   public BufrMessageViewer(PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
@@ -220,13 +230,15 @@ public class BufrMessageViewer extends JPanel {
     varPopup.addAction("Data Table", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         MessageBean mb = messageTable.getSelectedBean();
-        if (mb == null)
+        if (mb == null) {
           return;
+        }
+        if (dataTable == null) {
+          makeDataTable();
+        }
         try {
-          Array<StructureData> sdata = makeBufrMessageAsDataset(mb.m);
-          if (dataTable == null)
-            makeDataTable();
-          dataTable.setStructure(top);
+          StructureDataArray data = makeBufrMessageAsDataset(mb.m);
+          dataTable.setStructureData(data);
           dataWindow.show();
           mb.setReadOk(true);
         } catch (Exception ex) {
@@ -373,6 +385,11 @@ public class BufrMessageViewer extends JPanel {
       fileChooser = new FileManager(null, null, null, (PreferencesExt) prefs.node("FileManager"));
   }
 
+  void setUseEnhanced(Boolean useEnhanced) {
+    this.useEnhanced = useEnhanced;
+    System.out.printf("setUseEnhanced = %s%n", useEnhanced);
+  }
+
   public boolean writeIndex(Formatter f) throws IOException {
     // MFileCollectionManager dcm = scanCollection(spec, f);
 
@@ -397,10 +414,9 @@ public class BufrMessageViewer extends JPanel {
     return BufrCdmIndex.writeIndex(raf.getLocation(), config, idxFile);
   }
 
-
   private void makeDataTable() {
     // the data Table
-    dataTable = new StructureTable((PreferencesExt) prefs.node("structTable"));
+    dataTable = new StructureArrayTable((PreferencesExt) prefs.node("structTable"));
     dataWindow = new IndependentWindow("Data Table", BAMutil.getImage("nj22/NetcdfUI"), dataTable);
     dataWindow.setBounds((Rectangle) prefs.getBean("dataWindow", new Rectangle(50, 300, 1000, 600)));
   }
@@ -519,6 +535,13 @@ public class BufrMessageViewer extends JPanel {
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+  void clear() {
+    this.raf = null;
+    messageTable.clearBeans();
+    obsTable.clearBeans();
+    ddsTable.clearBeans();
+  }
+
   public void save() {
     messageTable.saveState(false);
     ddsTable.saveState(false);
@@ -556,10 +579,23 @@ public class BufrMessageViewer extends JPanel {
     ddsTable.setBeans(new ArrayList<>());
   }
 
-  private Array<StructureData> makeBufrMessageAsDataset(Message m) throws IOException {
+  private static final Set<NetcdfDataset.Enhance> enhanceSeq =
+      Collections.unmodifiableSet(EnumSet.of(NetcdfDataset.Enhance.ConvertEnums, NetcdfDataset.Enhance.ConvertUnsigned,
+          NetcdfDataset.Enhance.ApplyScaleOffset, NetcdfDataset.Enhance.ConvertMissing));
+
+  private StructureDataArray makeBufrMessageAsDataset(Message m) throws IOException {
     BufrSingleMessage bufr = new BufrSingleMessage();
     this.top = bufr.fromSingleMessage(m.raf(), m);
-    return bufr.iosp.readMessage(m);
+    StructureDataArray raw = bufr.iosp.readMessage(m);
+    System.out.printf("makeBufrMessageAsDataset = %s%n", useEnhanced);
+    if (this.useEnhanced) {
+      Group dummy = Group.builder().setName("").build();
+      SequenceDS.Builder<?> enhancedTopSeq = SequenceDS.builder().copyFrom(this.top);
+      DatasetEnhancer.enhanceSequence(enhancedTopSeq, enhanceSeq);
+      StructureDataArrayEnhancer enhancer = new StructureDataArrayEnhancer(enhancedTopSeq.build(dummy), raw);
+      return enhancer.enhance();
+    }
+    return raw;
   }
 
   private NetcdfFile makeBufrDataset() throws IOException {
@@ -863,8 +899,6 @@ public class BufrMessageViewer extends JPanel {
     public String getDate() {
       return date.toString();
     }
-
-
   }
 
 }

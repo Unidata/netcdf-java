@@ -274,7 +274,7 @@ public class TestProjections {
     assertThat(p).isEqualTo(p2);
   }
 
-  // LOOK this fails
+  // TODO this fails
   public void testAEAE() {
     testProjectionLonMax(new AlbersEqualAreaEllipse(), 180, 80, true);
     AlbersEqualAreaEllipse p = new AlbersEqualAreaEllipse();
@@ -282,7 +282,7 @@ public class TestProjections {
     assertThat(p).isEqualTo(p2);
   }
 
-  // LOOK this fails
+  // TODO this fails
   public void testLCCE() {
     testProjectionLonMax(new LambertConformalConicEllipse(), 360, 80, true);
     LambertConformalConicEllipse p = new LambertConformalConicEllipse();

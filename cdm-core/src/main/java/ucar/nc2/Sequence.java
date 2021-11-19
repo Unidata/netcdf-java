@@ -5,7 +5,9 @@
 package ucar.nc2;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import javax.annotation.concurrent.Immutable;
 
 import com.google.common.base.Preconditions;
@@ -13,13 +15,15 @@ import ucar.array.ArrayType;
 import ucar.array.InvalidRangeException;
 import ucar.array.Section;
 import ucar.array.StructureData;
+import ucar.array.StructureDataArray;
+import ucar.array.StructureMembers;
 
 /**
  * A one-dimensional Structure with indeterminate length, possibly 0.
  * The only data access is through getStructureIterator().
  */
 @Immutable
-public class Sequence extends Structure implements Iterable<ucar.array.StructureData> {
+public class Sequence extends Structure implements Iterable<StructureData> {
 
   /** An iterator over all the data in the sequence. */
   @Override
@@ -27,7 +31,7 @@ public class Sequence extends Structure implements Iterable<ucar.array.Structure
     if (cache.getData() != null) {
       ucar.array.Array<?> array = cache.getData();
       if (array instanceof ucar.array.StructureDataArray) {
-        return (Iterator<StructureData>) array;
+        return ((StructureDataArray) array).iterator();
       }
     }
     try {
@@ -36,6 +40,19 @@ public class Sequence extends Structure implements Iterable<ucar.array.Structure
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  /** Read all data into memory. */
+  @Override
+  public StructureDataArray readArray() throws IOException {
+    List<StructureData> list = new ArrayList<>();
+    for (StructureData sdata : this) {
+      list.add(sdata);
+    }
+    StructureMembers members = list.size() > 0 ? list.get(0).getStructureMembers()
+        : makeStructureMembersBuilder().setStandardOffsets().build();
+    StructureData[] arr = list.toArray(new StructureData[0]);
+    return new StructureDataArray(members, new int[] {list.size()}, arr);
   }
 
   /** @throws UnsupportedOperationException always */

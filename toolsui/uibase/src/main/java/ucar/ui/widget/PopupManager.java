@@ -15,11 +15,9 @@ import javax.swing.Popup;
 import javax.swing.PopupFactory;
 import javax.swing.SwingUtilities;
 
-/**
- * Helper class for managing javax.swing.Popup
- */
+/** Helper class for managing javax.swing.Popup */
 public class PopupManager {
-  private final PopupFactory factory = PopupFactory.getSharedInstance(); // LOOK
+  private final PopupFactory factory = PopupFactory.getSharedInstance();
   private Popup popup; // 1.4
 
   private final JPanel main;
@@ -55,7 +53,7 @@ public class PopupManager {
     int x = (int) (p.getX());
     int y = (int) (p.getY());
 
-    popup = factory.getPopup(owner, main, x + 5, y + 5); // LOOK 1.4
+    popup = factory.getPopup(owner, main, x + 5, y + 5);
     if (popup != null) {
       popup.show();
     }

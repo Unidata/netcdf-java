@@ -7,6 +7,7 @@ package ucar.nc2.internal.dataset.transform.horiz;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
+import ucar.nc2.dataset.spi.CoordSystemBuilderFactory;
 import ucar.unidata.geoloc.Projection;
 
 import javax.annotation.Nullable;
@@ -63,12 +64,9 @@ public class ProjectionFactory {
 
     // fail fast - check newInstance works
     try {
-      c.newInstance();
-    } catch (InstantiationException e) {
-      throw new IllegalArgumentException(
-          "CoordTransBuilderIF Class " + c.getName() + " cannot instantiate, probably need default Constructor");
-    } catch (IllegalAccessException e) {
-      throw new IllegalArgumentException("CoordTransBuilderIF Class " + c.getName() + " is not accessible");
+      c.getDeclaredConstructor().newInstance();
+    } catch (Exception e) {
+      throw new IllegalArgumentException("ProjectionFactory failed for " + c.getName(), e);
     }
 
     // user stuff gets put at top
@@ -209,8 +207,8 @@ public class ProjectionFactory {
     // get an instance of that class
     Object builderObject;
     try {
-      builderObject = builderClass.newInstance();
-    } catch (InstantiationException | IllegalAccessException e) {
+      builderObject = builderClass.getDeclaredConstructor().newInstance();
+    } catch (Exception e) {
       log.error("Cant create new instance " + builderClass.getName(), e);
       return null;
     }

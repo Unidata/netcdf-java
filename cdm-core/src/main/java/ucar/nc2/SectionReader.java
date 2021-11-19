@@ -6,6 +6,7 @@ package ucar.nc2;
 
 import javax.annotation.concurrent.Immutable;
 
+import com.google.common.base.Preconditions;
 import ucar.array.Array;
 import ucar.array.InvalidRangeException;
 import ucar.array.Section;
@@ -22,10 +23,16 @@ class SectionReader implements ProxyReader {
   private final Section orgSection; // section of the original
   private final Variable orgClient;
 
-  // section must be filled
-  SectionReader(Variable orgClient, Section section) {
+  /**
+   * Reads logical sections of orgClient.
+   * 
+   * @param section of orgClient, will be filled if needed.
+   */
+  SectionReader(Variable orgClient, Section section) throws InvalidRangeException {
+    Section filled = section.fill(orgClient.getShape());
+    Preconditions.checkArgument(filled.checkInRange(orgClient.getShape()) == null);
     this.orgClient = orgClient;
-    this.orgSection = section;
+    this.orgSection = filled;
   }
 
   @Override

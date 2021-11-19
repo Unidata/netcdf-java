@@ -31,7 +31,7 @@ public class SparseArray<T> {
   private final int[] stride; // for index calculation
   private final int totalSize; // product of sizes
 
-  private final int[] track; // index into content, size totalSize. LOOK could use byte, short to save memory ??
+  private final int[] track; // index into content, size totalSize. TODO could use byte, short to save memory ??
   private final List<T> content; // keep the things in a List.
   private final int ndups;
 
@@ -113,7 +113,7 @@ public class SparseArray<T> {
     return content;
   }
 
-  public int countNotMissing() { // LOOK could use content.size()
+  public int countNotMissing() { // TODO could use content.size()
     int result = 0;
     for (int idx : track)
       if (idx > 0)
@@ -213,7 +213,7 @@ public class SparseArray<T> {
     private int totalSize; // product of sizes
     private int ndups; // number of duplicates
 
-    private int[] track; // index into content, size totalSize. LOOK use byte, short to save memory ??
+    private int[] track; // index into content, size totalSize. TODO use byte, short to save memory ??
     private List<T> content; // keep the things in a List.
 
     public Builder(int... shape) {
@@ -222,7 +222,7 @@ public class SparseArray<T> {
       this.stride = calcStrides(shape);
 
       track = new int[totalSize];
-      this.content = new ArrayList<>(totalSize); // LOOK could only allocate part of this
+      this.content = new ArrayList<>(totalSize); // TODO could only allocate part of this
     }
 
     public void add(T thing, Formatter info, int... index) {

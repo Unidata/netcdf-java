@@ -84,7 +84,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
   protected GribCollectionImmutable.GroupGC gHcs;
   protected GribCollectionImmutable.Type gtype; // only used if gHcs was set
   protected boolean isPartitioned;
-  protected boolean owned; // if Iosp is owned by GribCollection; affects close() LOOK get rid of this
+  protected boolean owned; // if Iosp is owned by GribCollection; affects close() TODO get rid of this
   protected ucar.nc2.grib.GribTables gribTable;
 
   public GribIosp(boolean isGrib1, org.slf4j.Logger logger) {
@@ -205,8 +205,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
 
   @Override
   public void close() throws java.io.IOException {
-    if (!owned && gribCollection != null) // LOOK klugerino
-    {
+    if (!owned && gribCollection != null) {
       gribCollection.close();
     }
     gribCollection = null;

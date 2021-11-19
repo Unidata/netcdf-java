@@ -43,7 +43,7 @@ public class TestReadGridDataset {
 
   @Test
   public void readGridIrregularTime() throws IOException, InvalidRangeException {
-    // LOOK "1960-01-01T00:00:00Z" in mixed gregorian is now "1960-01-03T00:00Z" in iso, so, lost 3 days ??
+    // TODO "1960-01-01T00:00:00Z" in mixed gregorian is now "1960-01-03T00:00Z" in iso, so, lost 3 days ??
     String filename = TestDir.cdmLocalTestDataDir + "ncml/nc/cldc.mean.nc";
     readGrid(filename, "cldc", ImmutableList.of(456, 21, 360), "time lat lon", true, 456,
         "days since 0001-01-01T00:00Z", "1960-01-03T00:00Z", "1997-12-03T00:00Z", "1966-06-03T00:00Z", null, null,

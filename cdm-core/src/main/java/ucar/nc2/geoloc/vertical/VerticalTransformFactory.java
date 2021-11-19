@@ -9,8 +9,10 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.iosp.IOServiceProvider;
 
 import javax.annotation.Nullable;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Formatter;
@@ -72,12 +74,9 @@ public class VerticalTransformFactory {
 
     // fail fast - check newInstance works
     try {
-      c.newInstance();
-    } catch (InstantiationException e) {
-      throw new IllegalArgumentException(
-          "VerticalTransform Class " + c.getName() + " cannot instantiate, probably needs default Constructor");
-    } catch (IllegalAccessException e) {
-      throw new IllegalArgumentException("CoordTransBuilderIF Class " + c.getName() + " is not accessible");
+      c.getDeclaredConstructor().newInstance();
+    } catch (Exception e) {
+      throw new IllegalArgumentException("VerticalTransform failed for " + c.getName(), e);
     }
 
     // user stuff gets put at top

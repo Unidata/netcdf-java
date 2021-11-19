@@ -160,7 +160,7 @@ public class TestClientCatalog {
     assertThat(r).isEqualTo(r2);
     TimeDuration d = tc.getDuration();
     TimeUnit tu = d.getTimeUnit();
-    assertThat(tu.getUnitString()).isEqualTo("days"); // LOOK should be 3 hours, or hours or ??
+    assertThat(tu.getUnitString()).isEqualTo("days"); // TODO should be 3 hours, or hours or ??
 
     ds = cat.findDatasetByID("test5");
     tc = ds.getTimeCoverageNew();
@@ -178,7 +178,7 @@ public class TestClientCatalog {
     assertThat(CalendarDateFormatter.toDateString(end)).isEqualTo("2017-04-01");
 
     // In the uniform30day calendar, the difference between 2017-02-30 and 2017-04-01 is 31 days.
-    // assertThat(end.getDifference(start, CalendarPeriod.Field.Day)).isEqualTo(31); LOOK
+    // assertThat(end.getDifference(start, CalendarPeriod.Field.Day)).isEqualTo(31); TODO
   }
 
   /////////////

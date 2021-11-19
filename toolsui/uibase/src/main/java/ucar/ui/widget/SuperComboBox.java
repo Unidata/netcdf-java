@@ -116,7 +116,7 @@ public class SuperComboBox extends JPanel {
     String[] colNames = new String[1];
     colNames[0] = name;
 
-    // LOOK JTableSorted needs TableRow
+    // JTableSorted needs TableRow
     table = new JTableSorted(colNames, rows);
     table.setSortOK(sortOK);
     if (iter != null)

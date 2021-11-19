@@ -42,7 +42,7 @@ public class TestGcdmNetcdfFileProblem {
    * at ucar.nc2.Variable.readArray(Variable.java:738)
    * ...
    * 
-   * LOOK what is 99265809 here? This implies my calculation of the data size is seriously wrong.
+   * what is 99265809 here? This implies my calculation of the data size is seriously wrong.
    * Temp fix is to put MAX = 101 Mbytes.
    * Confirmed this is an artifact of unsigned short, which doesnt have a direct protobug type, so we use uint32.
    * Ratios are sometimes ~2. see GcdmConverter.debugSize.
@@ -190,7 +190,7 @@ public class TestGcdmNetcdfFileProblem {
   }
 
   public void compareArrayToMa2(Path path, String varName) throws Exception {
-    // LOOK kludge for now. Also, need to auto start up CmdrServer
+    // kludge for now. Also, need to auto start up CmdrServer
     String gcdmUrl = "gcdm://localhost:16111/" + path.toAbsolutePath();
     try (NetcdfFile ma2File = NetcdfDatasets.openFile(path.toString(), null);
         GcdmNetcdfFile arrayFile = GcdmNetcdfFile.builder().setRemoteURI(gcdmUrl).build()) {

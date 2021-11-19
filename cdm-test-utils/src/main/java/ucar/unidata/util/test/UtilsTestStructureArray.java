@@ -32,12 +32,14 @@ public class UtilsTestStructureArray {
       assertThat(memberArray.getArrayType()).isEqualTo(m.getArrayType());
 
       // random tests
-      if (m.getArrayType().isNumeric()) {
-        return Arrays.sumDouble(memberArray);
-      } else if (m.getArrayType().isString()) {
+      if (m.getArrayType() == ArrayType.STRING) {
         for (String s : (Array<String>) memberArray) {
-          System.out.println(" " + s);
+          System.out.printf(" %s", s);
         }
+      } else if (m.getArrayType() == ArrayType.CHAR) {
+        System.out.printf(" %s", Arrays.makeStringFromChar((Array<Byte>) memberArray));
+      } else if (m.getArrayType().isNumeric()) {
+        return Arrays.sumDouble(memberArray);
       }
     }
     return 0.0;

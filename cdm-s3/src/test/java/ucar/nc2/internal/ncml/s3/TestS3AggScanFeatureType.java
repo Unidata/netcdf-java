@@ -163,7 +163,6 @@ public class TestS3AggScanFeatureType {
         cdu.makeFractionalCalendarDate(subsetTimeAxis.getCoordDouble(subsetTimeAxis.getNominalSize() - 1));
     assertThat(endate).isEqualTo(end);
 
-    // assertThat(subsetTimeAxis.getNcoords()).isEqualTo(expectedTimesInSubset); LOOK
     // check horizontal coordinate system
     GridHorizCoordinateSystem subsetHcs = subsetCoordSys.getHorizCoordinateSystem();
     GridAxisPoint subsetXAxis = subsetHcs.getXHorizAxis();

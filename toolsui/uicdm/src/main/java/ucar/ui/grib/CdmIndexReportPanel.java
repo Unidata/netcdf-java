@@ -154,7 +154,7 @@ public class CdmIndexReportPanel extends ReportPanel {
     for (VarInfo vinfo : sorted) {
       f.format(" %20s = %d%n", vinfo.name, vinfo.count);
       if (vinfo.count > MIN_COUNT)
-        vinfo.ok = true; // LOOK arbitrary cutoff
+        vinfo.ok = true; // TODO arbitrary cutoff
       if (!vinfo.ok)
         countMisplaced += vinfo.count;
     }
@@ -185,7 +185,7 @@ public class CdmIndexReportPanel extends ReportPanel {
     for (VarInfo vinfo : sorted) {
       f.format(" %20s = %d%n", vinfo.name, vinfo.count);
       if (vinfo.count > MIN_COUNT)
-        vinfo.ok = true; // LOOK arbitrary cutoff
+        vinfo.ok = true; // TODO arbitrary cutoff
       if (!vinfo.ok)
         countMisplaced += vinfo.count;
     }
@@ -235,7 +235,7 @@ public class CdmIndexReportPanel extends ReportPanel {
           f.format(" Group %s%n", g.getDescription());
 
           for (GribCollectionImmutable.VariableIndex vi : g.getVariables()) {
-            String name = vi.makeVariableName(); // LOOK not actually right - some are partitioned by level
+            String name = vi.makeVariableName(); // TODO not actually right - some are partitioned by level
             int nrecords = vi.countNRecords();
             f.format("  %7d: %s%n", nrecords, name);
             int hash = vi.hashCode() + g.getGdsHash().hashCode(); // must be both group and var

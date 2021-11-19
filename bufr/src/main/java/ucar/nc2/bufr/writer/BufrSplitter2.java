@@ -35,7 +35,7 @@ public class BufrSplitter2 {
     dispatcher = new MessageDispatchDDS(null, dirOut);
   }
 
-  // LOOK - needs to be a directory, or maybe an MFILE collection
+  // TODO - needs to be a directory, or maybe an MFILE collection
   public void execute(String filename) throws IOException {
     try (RandomAccessFile mraf = new RandomAccessFile(filename, "r")) {
       MessageScanner scanner = new MessageScanner(mraf);
@@ -47,8 +47,6 @@ public class BufrSplitter2 {
         total_msgs++;
         if (m.getNumberDatasets() == 0)
           continue;
-
-        // LOOK check on tables complete etc ??
 
         m.setRawBytes(scanner.getMessageBytes(m));
 

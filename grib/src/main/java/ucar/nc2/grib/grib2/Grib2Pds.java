@@ -1359,8 +1359,6 @@ public abstract class Grib2Pds {
       log.debug("Product Definition Template 4.30 is deprecated in favor of 4.31 (WMO Manual on Codes");
     }
 
-    // LOOK - could put this into a dummy superclass in case others need
-
     @Override
     public int getTimeUnit() {
       return 0;
@@ -1436,8 +1434,6 @@ public abstract class Grib2Pds {
     Grib2Pds31(byte[] input) {
       super(input);
     }
-
-    // LOOK - could put this into a dummy superclass in case others need
 
     @Override
     public int getTimeUnit() {

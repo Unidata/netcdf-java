@@ -301,7 +301,7 @@ public class Grib1ParamTime {
        * time (hour, minute) given in the reference time, for all the days included in the P2 period.
        * The units of P2 are given by the contents of octet 18 and Code table 4
        */
-      case 51: // LOOK ??
+      case 51: // TODO ??
         forecastTimeLocal = p2;
         break;
 
@@ -325,7 +325,7 @@ public class Grib1ParamTime {
       case 116:
         forecastTimeLocal = p1;
         startLocal = p1;
-        endLocal = (n > 0) ? p1 + (n - 1) * p2 : p1; // LOOK switch to n-1 on 3/13/2015
+        endLocal = (n > 0) ? p1 + (n - 1) * p2 : p1; // switch to n-1 on 3/13/2015
         isIntervalLocal = (n > 0);
         break;
 
@@ -398,19 +398,6 @@ public class Grib1ParamTime {
       default:
         throw new IllegalArgumentException("PDS: Unknown Time Range Indicator " + timeRangeIndicatorLocal);
     }
-
-    // added 11/30/2014. If interval (0,0), change to non interval at 0
-    // analysis (0-hour) datasets use these (0,0) intervals, they are initialization values (I think).
-    // by eliminating the extra coordinate, things get simpler.
-    /*
-     * LOOK default we eliminate (0,0) so maybe not needed? 3/13/2015
-     * if (isIntervalLocal && (p1 == p2) && (p1 == 0)) {
-     * timeRangeIndicatorLocal = 1;
-     * forecastTimeLocal = 0;
-     * startLocal = endLocal = 0;
-     * isIntervalLocal = false;
-     * }
-     */
 
     // rigamorole to keep things final
     timeRangeIndicator = timeRangeIndicatorLocal;

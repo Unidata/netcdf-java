@@ -851,7 +851,7 @@ public class GridViewer extends JPanel {
     } else if (drawHoriz) {
       drawingPanel.add(navPanel, BorderLayout.CENTER);
     } else if (drawVert) {
-      drawingPanel.add(navPanel, BorderLayout.CENTER); // LOOK drawVert not supported
+      drawingPanel.add(navPanel, BorderLayout.CENTER); // TODO drawVert not supported
     }
   }
 

@@ -78,7 +78,7 @@ public class TestTimeCoverage {
   }
 
   /*
-   * LOOK
+   * TODO
    * 
    * @Test
    * public void testDuration() throws ParseException {

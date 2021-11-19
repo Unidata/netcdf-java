@@ -23,7 +23,7 @@ import java.util.Map;
 
 /**
  * NCEP overrides of GRIB tables
- * LOOK: Why not a singleton?
+ * TODO: Make into a singleton?
  *
  * @author caron
  * @since 1/13/12
@@ -104,7 +104,7 @@ public class NcepTables extends Grib1Customizer {
       case 136:
         forecastTime = p1;
         start = p1;
-        end = (n > 0) ? p1 + (n - 1) * p2 : p1; // LOOK ??
+        end = (n > 0) ? p1 + (n - 1) * p2 : p1;
         isInterval = (n > 0);
         break;
 
@@ -245,9 +245,10 @@ public class NcepTables extends Grib1Customizer {
 
   ///////////////////////////////////////// levels
   protected VertCoordType getLevelType(int code) {
-    if (code < 129)
-      return super.getLevelType(code); // LOOK dont let NCEP override standard tables (??) looks like a conflict with
-                                       // level code 210 (!)
+    if (code < 129) {
+      // Dont let NCEP override standard tables (??) looks like a conflict with level code 210 (!)
+      return super.getLevelType(code);
+    }
 
     if (levelTypesMap == null)
       levelTypesMap = readTable3("resources/grib1/ncep/ncepTable3.xml");

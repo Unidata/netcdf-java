@@ -20,7 +20,7 @@ import java.util.Formatter;
 public class SmartArrayInt {
   private final int[] raw;
   private final int start;
-  private final boolean isSequential; // if elem[i] = constant + i; LOOK could generalize to strided
+  private final boolean isSequential; // if elem[i] = constant + i; TODO could generalize to strided
   private final boolean isConstant; // if elem[i] = constant
   private final boolean isSorted; // if elements are sorted, can use a binary search
   private final int n;

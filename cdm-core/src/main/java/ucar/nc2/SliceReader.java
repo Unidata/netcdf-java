@@ -10,6 +10,7 @@ import com.google.common.base.Preconditions;
 import ucar.array.Array;
 import ucar.array.Arrays;
 import ucar.array.InvalidRangeException;
+import ucar.array.Range;
 import ucar.array.Section;
 import ucar.nc2.util.CancelTask;
 import java.io.IOException;
@@ -29,8 +30,26 @@ class SliceReader implements ProxyReader {
   private final int sliceDim; // dimension index into original
   private final Section slice; // section of the original
 
-  // TODO check that slice is compatible with client
+  /**
+   * Reads slice of orgClient
+   * 
+   * @param dim slice this dimension
+   * @param slice at this value
+   */
   SliceReader(Variable orgClient, int dim, Section slice) {
+    int[] orgShape = orgClient.getShape();
+    Preconditions.checkArgument(dim >= 0 && dim < orgShape.length);
+    Preconditions.checkArgument(slice.getRank() == orgShape.length);
+    for (int i = 0; i < slice.getRank(); i++) {
+      Range r = slice.getRange(i);
+      if (i == dim) {
+        Preconditions.checkArgument(r.length() == 1);
+        Preconditions.checkArgument(r.first() < orgShape[i]);
+      } else {
+        Preconditions.checkArgument(r.length() == orgShape[i]);
+        Preconditions.checkArgument(r.first() == 0);
+      }
+    }
     this.orgClient = orgClient;
     this.sliceDim = dim;
     this.slice = slice;
@@ -39,7 +58,7 @@ class SliceReader implements ProxyReader {
     this.parentGroup = orgClient.getParentGroup();
   }
 
-  // This is used from Builder when we dont yet have all variables built.
+  // This is used from Builder when we dont yet have the variables built.
   SliceReader(Group parentGroup, String orgName, int dim, Section slice) {
     this.parentGroup = parentGroup;
     this.orgName = orgName;
@@ -61,7 +80,6 @@ class SliceReader implements ProxyReader {
       log.error("InvalidRangeException in slice, var=" + client);
       throw new IllegalStateException(e.getMessage());
     }
-
   }
 
   @Override

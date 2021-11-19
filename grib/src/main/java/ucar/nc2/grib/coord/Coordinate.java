@@ -20,7 +20,7 @@ public interface Coordinate {
     runtime(0, AxisType.RunTime), //
     time(1, AxisType.Time), //
     timeIntv(1, AxisType.Time), //
-    vert(3, AxisType.Height), // LOOK what about Pressure or GeoZ ??
+    vert(3, AxisType.Height), // TODO what about Pressure or GeoZ ??
     time2D(1, AxisType.TimeOffset), //
     ens(2, AxisType.Ensemble); // cant change order, protobuf uses the ordinal
 
@@ -37,7 +37,7 @@ public interface Coordinate {
 
   Object getValue(int idx); // get the ith value
 
-  int getIndex(Object val); // LOOK assumes the values are unique;
+  int getIndex(Object val); // Assumes the values are unique;
 
   int getSize(); // how many values ??
 

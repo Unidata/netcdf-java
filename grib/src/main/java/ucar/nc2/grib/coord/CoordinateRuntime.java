@@ -35,9 +35,9 @@ public class CoordinateRuntime implements Coordinate {
   private String name = "reftime"; // yeah yeah, not final, bugger off
 
   /**
-   * LOOK doesnt work for month, year.
+   * Note doesnt work for month, year.
    * 
-   * @param runtimeSorted millis from epoch. LOOK probably should be offsets in timeUnit
+   * @param runtimeSorted millis from epoch. TODO should be offsets in timeUnit?
    * @param timeUnit default is Hours. trying to preserve original semantics
    */
   public CoordinateRuntime(List<Long> runtimeSorted, @Nullable CalendarPeriod timeUnit) {
@@ -69,11 +69,10 @@ public class CoordinateRuntime implements Coordinate {
     this.timePeriod = timeUnit;
     CalendarPeriod.Field cf = this.timePeriod.getField();
 
-    // LOOK
     boolean isCalendarField = (cf == CalendarPeriod.Field.Month || cf == CalendarPeriod.Field.Year);
     this.calendarDateUnit = CalendarDateUnit.of(this.timePeriod, isCalendarField, this.firstDate);
     if (isCalendarField) {
-      this.periodName = "calendar " + cf; // LOOK maybe Period should know about isCalendarField ??
+      this.periodName = "calendar " + cf;
     } else {
       this.periodName = cf.toString();
     }
@@ -103,7 +102,6 @@ public class CoordinateRuntime implements Coordinate {
    * Get offsets from firstDate, in units of timeUnit
    * 
    * @return for each runtime, a list of values from firstdate
-   *         LOOK Double
    */
   public List<Double> getOffsetsInTimeUnits() {
     double start = firstDate.getMillisFromEpoch();
@@ -112,7 +110,7 @@ public class CoordinateRuntime implements Coordinate {
     for (int idx = 0; idx < runtimes.length; idx++) {
       double runtime = (double) getRuntime(idx);
       double msecs = (runtime - start);
-      // LOOK doesnt work for month, year.
+      // Note doesnt work for month, year.
       // since runtimes is in millis, have no choice but to use fixed time period intervals.
       result.add(msecs / GribUtils.getValueInMillisecs(timePeriod));
     }
@@ -164,9 +162,10 @@ public class CoordinateRuntime implements Coordinate {
     return name;
   }
 
-  public void setName(String name) { // LOOK need to get this in the constructor to make the name final
-    if (!this.name.equals("reftime"))
+  public void setName(String name) {
+    if (!this.name.equals("reftime")) {
       throw new IllegalStateException("Cant modify");
+    }
     this.name = name;
   }
 

@@ -229,7 +229,7 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
         }
       }
 
-      // LOOK not cached
+      // Note not cached
       return (GribCollectionImmutable) PartitionCollectionImmutable.partitionCollectionFactory
           .open(DatasetUrl.create(null, path), -1, null, this);
     }
@@ -282,7 +282,7 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
 
       String indexFilename = StringUtil2.replace(dcm.getIndexFilename(GribCdmIndex.NCX_SUFFIX), '\\', "/");
       if (partitionDate == null) {
-        partitionDate = getDateExtractor().getCalendarDateFromPath(indexFilename); // LOOK dicey
+        partitionDate = getDateExtractor().getCalendarDateFromPath(indexFilename); // TODO dicey
       }
 
       // now remove the directory
@@ -366,7 +366,7 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
     VariableIndexPartitioned vip = new VariableIndexPartitioned(group, from, nparts);
     group.addVariable(vip);
 
-    if (from instanceof VariableIndexPartitioned && !isPartitionOfPartitions) { // LOOK dont really understand this
+    if (from instanceof VariableIndexPartitioned && !isPartitionOfPartitions) {
       VariableIndexPartitioned vipFrom = (VariableIndexPartitioned) from;
       assert vipFrom.partList == null; // // check if vipFrom has been finished
       for (int i = 0; i < vipFrom.nparts; i++)

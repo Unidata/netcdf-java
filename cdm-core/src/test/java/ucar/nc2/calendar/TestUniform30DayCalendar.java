@@ -252,7 +252,7 @@ public class TestUniform30DayCalendar {
     assertThat(cdate.toString()).isEqualTo("2012-04-27T14:00Z");
 
     Instant instant = cdate.toInstant();
-    CalendarDate cdate2 = CalendarDate.ofInstant(Calendar.uniform30day, instant); // LOOK fails
+    CalendarDate cdate2 = CalendarDate.ofInstant(Calendar.uniform30day, instant); // TODO fails
 
     assertThat(cdate.toString()).isEqualTo(cdate2.toString());
     assertThat(cdate.hashCode()).isEqualTo(cdate2.hashCode());

@@ -174,7 +174,7 @@ public class TreeTableModelSorted extends TreeTableModelAbstract {
     if (treeSort) {
       makeTreeList(sortCol, rowList);
     } else {
-      treeList = null; // LOOK rowList;
+      treeList = null;
     }
   }
 
@@ -249,7 +249,7 @@ public class TreeTableModelSorted extends TreeTableModelAbstract {
     int count = 0;
     for (int i = 0; i < rowList.size(); i++) {
       TableRow row = rowList.get(i);
-      String value = (String) row.getValueAt(colNo); // LOOK assumes STRING !
+      String value = (String) row.getValueAt(colNo); // TODO assumes STRING
       if (!value.equals(current)) {
         if (null != currentNode) {
           currentNode.count = count;

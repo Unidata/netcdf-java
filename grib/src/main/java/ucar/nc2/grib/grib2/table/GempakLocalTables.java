@@ -18,11 +18,9 @@ import java.util.Map;
 
 /**
  * Read tables from https://github.com/Unidata/gempak/tree/master/gempak/tables/grid/g2*.tbl
+ * eg: https://raw.githubusercontent.com/Unidata/gempak/master/gempak/tables/grid/g2varsfsl1.tbl
  *
- * eg:
- * https://raw.githubusercontent.com/Unidata/gempak/master/gempak/tables/grid/g2varsfsl1.tbl
- *
- * LOOK: not used in standardTableMap.txt, so cannot be found in any search in Grib2Tables.
+ * TODO: not used in standardTableMap.txt, so cannot be found in any search in Grib2Tables.
  *
  * @author caron
  * @since 9/14/2014
@@ -90,7 +88,7 @@ public class GempakLocalTables extends LocalTables {
         int disc = (Integer) record.get(0);
         int cat = (Integer) record.get(1);
         int id = (Integer) record.get(2);
-        int template = (Integer) record.get(3); // LOOK - 19, 29, 39 ???
+        int template = (Integer) record.get(3); // TODO - 19, 29, 39 ???
         String name = ((String) record.get(4)).trim();
         String units = ((String) record.get(5)).trim();
         String gname = ((String) record.get(6)).trim();

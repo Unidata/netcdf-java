@@ -66,17 +66,16 @@ import ucar.unidata.io.RandomAccessFile;
  * message.
  *
  * --------------------------
- * LOOK For some reason there is an extra 6 bits after the dr. My guess its a programming mistake that is now needed.
+ * For some reason there is an extra 6 bits after the dr. My guess its a programming mistake that is now needed.
  * There is no description of this case in the spec or the guide.
  *
  * For Sequences, inner.length is the same for all datasets in the message. However, it may vary across messages.
  * However, we only iterate over the inner sequence, never across all messages. So the implementation can be specific to
- * the
- * message.
+ * the message.
  */
 public class MessageArrayCompressedReader {
   private static final boolean structuresOnHeap = false;
-  private final Message message; // LOOK gets modified I think
+  private final Message message; // TODO gets modified?
   private final RandomAccessFile raf;
   private final Formatter f;
   private final HashMap<DataDescriptor, Member> topmap = new HashMap<>(100); // map dkey to Member recursively
@@ -150,7 +149,7 @@ public class MessageArrayCompressedReader {
     DataDescriptor root = message.getRootDataDescriptor();
     if (!root.isBad) {
       DebugOut out = (f == null) ? null : new DebugOut(f);
-      // one for each field LOOK why not m.counterFlds ?
+      // one for each field
       BitCounterCompressed[] counterFlds = new BitCounterCompressed[root.subKeys.size()];
       readData(reader, root, 0, 0, this.topreq, counterFlds, out);
 
@@ -213,7 +212,7 @@ public class MessageArrayCompressedReader {
           out.f.format("%s--sequence %s bitOffset=%d replication=%s %n", out.indent(), dkey.getFxyName(), bitOffset,
               nestedNrows);
         }
-        bitOffset += 6; // LOOK seems to be an extra 6 bits.
+        bitOffset += 6; // seems to be an extra 6 bits.
 
         counter.addNestedCounters(nestedNrows);
 
@@ -254,10 +253,6 @@ public class MessageArrayCompressedReader {
       }
 
       //// all other fields
-
-      // IndexIterator iter = (IndexIterator) member.getDataObject();
-      // LOOK setDataArray never called
-      // StructureDataArray dataDpi = (iter == null) ? (StructureDataArray) member.getDataArray() : null;
 
       reader.setBitOffset(bitOffset); // ?? needed ??
 

@@ -43,7 +43,6 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.ffi.netcdf.NetcdfClibrary;
 import ucar.nc2.internal.iosp.IospFileWriter;
 import ucar.nc2.internal.iosp.hdf5.H5header;
-import ucar.nc2.iosp.IospArrayHelper;
 import ucar.nc2.iosp.NetcdfFileFormat;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.write.Nc4Chunking;
@@ -51,7 +50,7 @@ import ucar.nc2.write.Nc4ChunkingDefault;
 
 /**
  * IOSP for writing netcdf files through JNA interface to netcdf C library.
- * LOOK doesnt work for a number of cases including strings inside of compounds. Do we still want to support this?
+ * TODO doesnt work for a number of cases including strings inside of compounds. Do we still want to support this?
  * see TestNc4JniWriteProblem.
  * Withdrawing this functionality until it can be fixed, see NetcdfFormatWriter.
  */
@@ -208,7 +207,7 @@ public class Nc4writer extends Nc4reader implements IospFileWriter {
     }
 
     // a type must be created for each structure.
-    // LOOK we should look for variables with the same structure type.
+    // TODO we could look for variables with the same structure type.
     for (Variable.Builder<?> v : g4.g.vbuilders) {
       if (v.dataType == ArrayType.STRUCTURE) {
         createCompoundType(g4, (Structure.Builder<?>) v);
@@ -239,7 +238,7 @@ public class Nc4writer extends Nc4reader implements IospFileWriter {
     int count = 0;
     for (Dimension d : v.getDimensions()) {
       int dimid;
-      if (!d.isShared()) { // LOOK can Netcdf4 support non-shared dimensions ?
+      if (!d.isShared()) { // TODO can Netcdf4 support non-shared dimensions ?
         dimid = addDimension(g4.grpid, v.shortName + "_Dim" + count, d.getLength());
       } else {
         dimid = findDimensionId(g4, d);
@@ -503,10 +502,10 @@ public class Nc4writer extends Nc4reader implements IospFileWriter {
     // keep track of the User Defined types
     UserType ut = new UserType(g4.grpid, typeid, name, size, 0, fldidx, NC_COMPOUND);
     userTypes.put(typeid, ut);
-    ut.setFields(flds); // LOOK: These were already set in the UserType ctor.
+    ut.setFields(flds); // TODO: These were already set in the UserType ctor.
   }
 
-  // LOOK probably wrong, you probably want to have some specialization for hdf5 ??
+  // TODO probably wrong, you probably want to have some specialization for hdf5 ??
   private int calcElementSize(Structure.Builder<?> s) {
     int total = 0;
     for (Variable.Builder<?> v : s.vbuilders) {
@@ -553,10 +552,8 @@ public class Nc4writer extends Nc4reader implements IospFileWriter {
       for (Attribute att : m.getAttributeContainer()) {
         // add the fields to the member_atts_t
         String memberName = m.shortName + ":" + att.getShortName();
-        int field_typeid = att.isString() ? Nc4prototypes.NC_CHAR : convertDataType(att.getArrayType()); // LOOK
-                                                                                                         // override
-        // String with
-        // CHAR
+        // TODO override String with CHAR?
+        int field_typeid = att.isString() ? Nc4prototypes.NC_CHAR : convertDataType(att.getArrayType());
 
         if (att.isString()) { // String gets turned into array of char; otherwise no way to pass in
           String val = att.getStringValue();
@@ -679,13 +676,13 @@ public class Nc4writer extends Nc4reader implements IospFileWriter {
       writeAttribute(ncid, Nc4prototypes.NC_GLOBAL, att, null);
     } else {
       Vinfo vinfo = (Vinfo) v2.getSPobject();
-      writeAttribute(vinfo.g4.grpid, vinfo.varid, att, v2.toBuilder()); // LOOK
+      writeAttribute(vinfo.g4.grpid, vinfo.varid, att, v2.toBuilder());
     }
   }
 
   @Override
   public void updateAttribute(Group g, Attribute att) throws IOException {
-    // LOOK
+    // TODO
   }
 
   private void writeAttribute(int grpid, int varid, Attribute att, Variable.Builder<?> v) throws IOException {
@@ -881,7 +878,7 @@ public class Nc4writer extends Nc4reader implements IospFileWriter {
     if (strides == null)
       return true;
     for (int stride : strides) {
-      if (stride != 1) // LOOK seems fishy
+      if (stride != 1)
         return false;
     }
     return true;
@@ -910,7 +907,7 @@ public class Nc4writer extends Nc4reader implements IospFileWriter {
     boolean isUnsigned = isUnsigned(typeid);
     int sectionLen = (int) section.computeSize();
 
-    Object data = Arrays.copyPrimitiveArray(values); // LOOK copy
+    Object data = Arrays.copyPrimitiveArray(values);
 
     switch (typeid) {
       case Nc4prototypes.NC_BYTE:
@@ -1056,10 +1053,9 @@ public class Nc4writer extends Nc4reader implements IospFileWriter {
    * SizeT[] origin = convertSizeT(section.getOrigin());
    * SizeT[] shape = convertSizeT(section.getShape());
    * SizeT[] stride = convertSizeT(section.getStride());
-   * 
-   * ArrayStructureBB valuesBB = StructureDataDeep.copyToArrayBB(s, values, ByteOrder.nativeOrder()); // LOOK embedded
-   * // strings getting
-   * // lost ??
+   *
+   * // TODO embedded strings getting lost ??
+   * ArrayStructureBB valuesBB = StructureDataDeep.copyToArrayBB(s, values, ByteOrder.nativeOrder());
    * ByteBuffer bbuff = valuesBB.getByteBuffer();
    * 
    * if (debugCompound)
@@ -1080,10 +1076,9 @@ public class Nc4writer extends Nc4reader implements IospFileWriter {
    */
 
   @Override
-  public int appendStructureData(Structure s, ucar.array.StructureData sdata)
-      throws IOException, InvalidRangeException {
+  public int appendStructureData(Structure s, ucar.array.StructureData sdata) throws IOException {
     Vinfo vinfo = (Vinfo) s.getSPobject();
-    Dimension dim = s.getDimension(0); // LOOK must be outer dim
+    Dimension dim = s.getDimension(0); // must be outer dim
     int dimid = vinfo.g4.dimHash.get(dim);
     SizeTByReference lenp = new SizeTByReference();
     int ret = nc4.nc_inq_dimlen(vinfo.g4.grpid, dimid, lenp);
@@ -1118,7 +1113,7 @@ public class Nc4writer extends Nc4reader implements IospFileWriter {
     long offset = 0;
     for (Variable v : s.getVariables()) {
       if (v.getArrayType() == ArrayType.STRING)
-        continue; // LOOK embedded strings getting lost
+        continue; // TODO embedded strings getting lost
 
       ucar.array.StructureMembers.Member m = sdata.getStructureMembers().findMember(v.getShortName());
       if (m == null) {

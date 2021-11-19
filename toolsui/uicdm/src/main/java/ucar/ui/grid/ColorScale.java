@@ -653,7 +653,7 @@ public class ColorScale implements Cloneable, java.io.Serializable {
       }
 
       public void printV(Graphics2D g, int x, int y, int width, int height) {
-        int textSize = 15; // LOOK : neeed to calculate this
+        int textSize = 15; // TODO : neeed to calculate this
 
         g.setColor(cs.getColor(rank));
         g.fillRect(x, y + textSize, width, height - textSize);
@@ -669,7 +669,7 @@ public class ColorScale implements Cloneable, java.io.Serializable {
       }
 
       public void printH(Graphics2D g, int x, int y, int width, int height) {
-        int textSize = 15; // LOOK : neeed to calculate this
+        int textSize = 15; // TODO : neeed to calculate this
 
         g.setColor(cs.getColor(rank));
         g.fillRect(x, y + textSize, width, height - 2 * textSize);

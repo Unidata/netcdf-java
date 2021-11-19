@@ -53,7 +53,7 @@ public class TestNetcdfWriterStrings {
 
     try (NetcdfFormatWriter writer = writerb.build()) {
       Variable v = writer.findVariable(helloGreek);
-      byte[] helloBytes = helloGreek.getBytes(StandardCharsets.UTF_8); // LOOK
+      byte[] helloBytes = helloGreek.getBytes(StandardCharsets.UTF_8);
       Array<Byte> data = Arrays.factory(ArrayType.CHAR, new int[] {helloBytes.length}, helloBytes);
       writer.write(v, data.getIndex(), data);
     }

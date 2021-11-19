@@ -16,7 +16,6 @@ import ucar.array.StructureDataArray;
 import ucar.array.StructureDataStorageBB;
 import ucar.array.StructureMembers;
 import ucar.array.Array;
-import ucar.array.InvalidRangeException;
 import ucar.array.Section;
 import ucar.array.StructureData;
 
@@ -24,14 +23,14 @@ import ucar.array.StructureData;
 public class TestSequence {
 
   @Test
-  public void testSequence() throws IOException {
-    Sequence.Builder<?> structb = Sequence.builder().setName("seq").addMemberVariable("one", ArrayType.BYTE, "")
+  public void testReadArray() throws IOException {
+    Sequence.Builder<?> seqb = Sequence.builder().setName("seq").addMemberVariable("one", ArrayType.BYTE, "")
         .addMemberVariable("two", ArrayType.STRING, "").addMemberVariable("tres", ArrayType.FLOAT, "");
 
-    structb.setSourceData(makeStructureDataArray());
-    Structure struct = structb.build(makeDummyGroup());
+    seqb.setSourceData(makeStructureDataArray());
+    Sequence seq = seqb.build(makeDummyGroup());
 
-    Array data = struct.readArray();
+    Array<?> data = seq.readArray();
     assertThat(data).isNotNull();
     assertThat(data).isInstanceOf(StructureDataArray.class);
     StructureDataArray as = (StructureDataArray) data;
@@ -44,19 +43,16 @@ public class TestSequence {
   }
 
   @Test
-  public void testSequenceArray() throws IOException, InvalidRangeException {
-    Sequence.Builder<?> structb = Sequence.builder().setName("seq").addMemberVariable("one", ArrayType.BYTE, "")
+  public void testSequenceAsIterator() {
+    Sequence.Builder<?> seqb = Sequence.builder().setName("seq").addMemberVariable("one", ArrayType.BYTE, "")
         .addMemberVariable("two", ArrayType.STRING, "").addMemberVariable("tres", ArrayType.FLOAT, "");
 
-    structb.setSourceData(makeStructureDataArray());
-    Structure struct = structb.build(makeDummyGroup());
+    seqb.setSourceData(makeStructureDataArray());
+    Sequence seq = seqb.build(makeDummyGroup());
 
-    ucar.array.Array<?> data = struct.readArray();
-    assertThat(data).isNotNull();
-    assertThat(data).isInstanceOf(ucar.array.StructureDataArray.class);
-    ucar.array.StructureDataArray as = (ucar.array.StructureDataArray) data;
     int count = 0;
-    for (ucar.array.StructureData sd : as) {
+    for (StructureData sd : seq) {
+      assertThat(compare(sd, count)).isTrue();
       count++;
     }
     assertThat(count).isEqualTo(4);

@@ -50,7 +50,7 @@ public class MessageBitCounter {
     }
     msg_nbytes += 4;
     if (msg_nbytes % 2 != 0) {
-      msg_nbytes++; // LOOK seems to be violated by some messages
+      msg_nbytes++; // Seems to be violated by some messages
     }
     return msg_nbytes;
   }

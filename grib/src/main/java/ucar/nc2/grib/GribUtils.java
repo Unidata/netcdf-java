@@ -29,7 +29,7 @@ public class GribUtils {
    * @return equivalent CalendarPeriod
    */
   public static CalendarPeriod getCalendarPeriod(int timeUnit) {
-    // LOOK - some way to intern these ? put in hash table ?
+    // TODO - perhaps cache these ?
     switch (timeUnit) { // code table 4.4
       case 0:
         return CalendarPeriod.of(1, CalendarPeriod.Field.Minute);
@@ -62,7 +62,7 @@ public class GribUtils {
     }
   }
 
-  // LOOK cant use Month, Year
+  // Note cant use Month, Year
   public static long getValueInMillisecs(CalendarPeriod period) {
     switch (period.getField()) {
       case Day:
@@ -80,7 +80,6 @@ public class GribUtils {
     }
   }
 
-  // LOOK should be int
   public static double getConvertFactor(CalendarPeriod from, CalendarPeriod to) {
     return (double) getValueInMillisecs(from) / getValueInMillisecs(to);
   }

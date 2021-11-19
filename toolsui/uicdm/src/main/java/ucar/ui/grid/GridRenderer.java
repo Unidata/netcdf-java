@@ -239,7 +239,7 @@ public class GridRenderer {
       if (!hcs.isCurvilinear()) {
         drawGridHoriz(g, dataArr);
       } else {
-        // LOOK this should be non-regular case, not the 2D case.
+        // TODO this should be non-regular case, not the 2D case.
         drawGridCurvilinear(g, dataArr);
       }
     }

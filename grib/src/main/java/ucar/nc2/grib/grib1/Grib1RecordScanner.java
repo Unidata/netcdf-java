@@ -207,7 +207,7 @@ public class Grib1RecordScanner {
       }
 
       /*
-       * ecmwf offset by 1 bug - LOOK not sure if this is still needed
+       * ecmwf offset by 1 bug - TODO not sure if this is still needed
        * // obtain BMS or BDS offset in the file for this product
        * if (pds.getPdsVars().getCenter() == 98) { // check for ecmwf offset by 1 bug
        * int length = GribNumbers.uint3(raf); // should be length of BMS

@@ -190,7 +190,7 @@ public class DataDescriptorTreeConstructor {
    * 0-12-112: MITM
    */
 
-  // LOOK this is NCEP specific !!
+  // This is NCEP specific !!
   static boolean isNcepDRP(DataDescriptor key) {
     return key.f == 3 && key.x == 60;
   }
@@ -372,7 +372,7 @@ public class DataDescriptorTreeConstructor {
           iter.remove();
           if ((dd.y != 0) && iter.hasNext()) { // fnmoc using 2-6-0 as cancel (apparently)
             DataDescriptor next = iter.next();
-            next.bitWidth = dd.y; // LOOK should it be dd.bitWidth??
+            next.bitWidth = dd.y; // TODO should it be dd.bitWidth??
           }
 
         } else if (dd.x == 7) {
@@ -405,7 +405,7 @@ public class DataDescriptorTreeConstructor {
           if (changeScale != null)
             dd.scale += changeScale.y - 128;
           if (changeRefval != null)
-            dd.refVal += changeRefval.y - 128; // LOOK wrong
+            dd.refVal += changeRefval.y - 128; // TODO wrong
 
           if (changeWtf != null && dd.type == 0) {
             // see I.2 – BUFR Table C — 4

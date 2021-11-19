@@ -63,7 +63,6 @@ public class NwsMetDevTables extends NcepLocalTables {
    * Only use in GribVariable to decide on variable identity when intvMerge = false.
    * By returning a constant, we dont intvMerge = false.
    * Problem is we cant reconstruct interval length without reference time, which is not in the pds.
-   * LOOK can it be an int ?
    */
   @Override
   public double getForecastTimeIntervalSizeInHours(Grib2Pds pds) {
@@ -77,7 +76,7 @@ public class NwsMetDevTables extends NcepLocalTables {
     if (!needOverride) {
       return super.getForecastTimeIntervalSizeInHours(pds);
     }
-    // LOOK this is some kind of hack for Center 7 subcenter 14.
+    // this is some kind of hack for Center 7 subcenter 14.
     return 12.0;
   }
 

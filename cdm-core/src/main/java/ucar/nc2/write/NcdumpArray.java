@@ -22,6 +22,7 @@ import javax.annotation.concurrent.Immutable;
 import org.jdom2.Element;
 import ucar.array.*;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.Sequence;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.util.CancelTask;
@@ -565,7 +566,7 @@ public class NcdumpArray {
       CancelTask cancel) {
     int count = 0;
     for (StructureData sdata : array) {
-      out.format("%n%s{", indent);
+      out.format("%n%s{%n", indent);
       printStructureData(out, sdata, indent, cancel);
       out.format("%s} %s(%d)", indent, sdata.getName(), count);
       if (cancel != null && cancel.isCancel())
@@ -589,7 +590,19 @@ public class NcdumpArray {
     out.format("%n%s}", indent);
   }
 
-  /** Print StructureData to returned String. */
+  /** Print all the StructureData from a Sequence. */
+  public static String printSequenceData(Sequence seq, CancelTask cancel) {
+    Formatter out = new Formatter();
+    for (StructureData sdata : seq) {
+      printStructureData(out, sdata, new Indent(2), cancel);
+      if (cancel != null && cancel.isCancel()) {
+        return out.toString();
+      }
+    }
+    return out.toString();
+  }
+
+  /** Print StructureData. */
   public static String printStructureData(StructureData sdata) {
     Formatter out = new Formatter();
     for (StructureMembers.Member m : sdata.getStructureMembers()) {

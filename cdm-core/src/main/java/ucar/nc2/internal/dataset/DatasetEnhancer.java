@@ -82,14 +82,13 @@ public class DatasetEnhancer {
   }
 
   private void enhanceGroup(Group.Builder group) {
-
     for (Variable.Builder<?> vb : group.vbuilders) {
       if (vb instanceof StructureDS.Builder<?>) {
-        enhanceStructure((StructureDS.Builder<?>) vb);
+        enhanceStructure((StructureDS.Builder<?>) vb, wantEnhance);
       } else if (vb instanceof SequenceDS.Builder<?>) {
-        enhanceSequence((SequenceDS.Builder<?>) vb);
+        enhanceSequence((SequenceDS.Builder<?>) vb, wantEnhance);
       } else if (vb instanceof VariableDS.Builder) {
-        enhanceVariable((VariableDS.Builder<?>) vb);
+        enhanceVariable((VariableDS.Builder<?>) vb, wantEnhance);
       } else {
         throw new IllegalStateException("Not a VariableDS " + vb);
       }
@@ -100,35 +99,35 @@ public class DatasetEnhancer {
     }
   }
 
-  private void enhanceStructure(StructureDS.Builder<?> sdb) {
+  public static void enhanceStructure(StructureDS.Builder<?> sdb, Set<Enhance> wantEnhance) {
     for (Variable.Builder<?> vb : sdb.vbuilders) {
       if (vb instanceof StructureDS.Builder) {
-        enhanceStructure((StructureDS.Builder<?>) vb);
+        enhanceStructure((StructureDS.Builder<?>) vb, wantEnhance);
       } else if (vb instanceof SequenceDS.Builder) {
-        enhanceSequence((SequenceDS.Builder<?>) vb);
+        enhanceSequence((SequenceDS.Builder<?>) vb, wantEnhance);
       } else if (vb instanceof VariableDS.Builder) {
-        enhanceVariable((VariableDS.Builder<?>) vb);
+        enhanceVariable((VariableDS.Builder<?>) vb, wantEnhance);
       } else {
         throw new IllegalStateException("Not a VariableDS " + vb.shortName);
       }
     }
   }
 
-  private void enhanceSequence(SequenceDS.Builder<?> sdb) {
+  public static void enhanceSequence(SequenceDS.Builder<?> sdb, Set<Enhance> wantEnhance) {
     for (Variable.Builder<?> vb : sdb.vbuilders) {
       if (vb instanceof StructureDS.Builder) {
-        enhanceStructure((StructureDS.Builder<?>) vb);
+        enhanceStructure((StructureDS.Builder<?>) vb, wantEnhance);
       } else if (vb instanceof SequenceDS.Builder) {
-        enhanceSequence((SequenceDS.Builder<?>) vb);
+        enhanceSequence((SequenceDS.Builder<?>) vb, wantEnhance);
       } else if (vb instanceof VariableDS.Builder) {
-        enhanceVariable((VariableDS.Builder<?>) vb);
+        enhanceVariable((VariableDS.Builder<?>) vb, wantEnhance);
       } else {
         throw new IllegalStateException("Not a VariableDS " + vb.shortName);
       }
     }
   }
 
-  private void enhanceVariable(VariableDS.Builder<?> vb) {
+  public static void enhanceVariable(VariableDS.Builder<?> vb, Set<Enhance> wantEnhance) {
     Set<Enhance> varEnhance = EnumSet.copyOf(wantEnhance);
 
     // varEnhance will only contain enhancements not already applied to orgVar.

@@ -100,7 +100,7 @@ public class TestGribIndexCreation {
 
     GribCdmIndex.updateGribCollection(config, updateMode, logger);
     String location = TestDir.cdmUnitTestDir + "gribCollections/gdsHashChange/noaaport/NDFD-CONUS_noaaport.ncx4";
-    // LOOK add check that records were combined
+    // TODO add check that records were combined
     try (NetcdfFile ncfile = NetcdfFiles.open(location, null)) {
       Group root = ncfile.getRootGroup();
       Assert.assertEquals(2, root.getGroups().size());

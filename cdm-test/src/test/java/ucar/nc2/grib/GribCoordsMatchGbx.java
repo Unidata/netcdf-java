@@ -116,7 +116,7 @@ public class GribCoordsMatchGbx {
     List<GridAxis> subsetAxes = new ArrayList<>();
 
     for (GridAxis axis : ccs.getGridAxes()) {
-      switch (axis.getAxisType()) { // LOOK what about 2D ??
+      switch (axis.getAxisType()) { // TODO what about 2D ??
         case RunTime:
         case Time:
         case TimeOffset:
@@ -128,7 +128,7 @@ public class GribCoordsMatchGbx {
       }
     }
 
-    // LOOK we dont have an equivilent function for GridSubset
+    // TODO we dont have an equivilent function for GridSubset
     // CoordsSet coordIter = CoordsSet.factory(ccs.isConstantForecast(), subsetAxes);
     List<GridSubset> fake = new ArrayList<>();
     for (GridSubset coords : fake) {

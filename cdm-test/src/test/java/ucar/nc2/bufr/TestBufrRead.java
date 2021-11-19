@@ -38,7 +38,7 @@ public class TestBufrRead {
         return false;
       if (pathname.getName().endsWith(".jpg"))
         return false;
-      // all embedded fails LOOK
+      // all embedded fails TODO
       if (pathname.getName().endsWith("gdas.adpsfc.t00z.20120603.bufr"))
         return false;
       if (pathname.getName().endsWith("gdas.adpupa.t00z.20120603.bufr"))

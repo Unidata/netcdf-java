@@ -49,7 +49,7 @@ public class GribCdmIndex implements IndexReader {
     GRIB1, GRIB2, Partition1, Partition2, none
   }
 
-  // LOOK this will have to be generalized, so different collections (GRIB, BUFR, FMRC can use different suffix)
+  // TODO this will have to be generalized, so different collections (GRIB, BUFR, FMRC can use different suffix)
   public static final String NCX_SUFFIX = ".ncx4";
 
   private static final Logger classLogger = LoggerFactory.getLogger(GribCdmIndex.class);
@@ -275,9 +275,7 @@ public class GribCdmIndex implements IndexReader {
   public static boolean updateGribCollectionFromPCollection(boolean isGrib1, PartitionManager dcm,
       CollectionUpdateType updateType, Formatter errlog, org.slf4j.Logger logger) throws IOException {
 
-    if (updateType == CollectionUpdateType.never || dcm instanceof CollectionSingleIndexFile) { // LOOK would
-                                                                                                // isIndexFile() be
-                                                                                                // better ?
+    if (updateType == CollectionUpdateType.never || dcm instanceof CollectionSingleIndexFile) {
       // then just open the existing index file
       return false;
     }
@@ -326,7 +324,7 @@ public class GribCdmIndex implements IndexReader {
 
     } else {
 
-      // LOOK assume wantSubdirs makes it into a Partition. Isnt there something better ??
+      // TODO assume the presence of wantSubdirs() means its a Partition. Isnt there something better ??
       if (specp.wantSubdirs()) { // its a partition
 
         try (DirectoryPartition dpart =
@@ -470,12 +468,12 @@ public class GribCdmIndex implements IndexReader {
       for (MCollection part : dpart.makePartitions(updateType)) {
         part.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
         try {
-          if (part instanceof DirectoryPartition) { // LOOK if child partition fails, the parent partition doesnt know
-                                                    // that - suckage
+          // TODO if child partition fails, the parent partition doesnt know that - suckage
+          if (part instanceof DirectoryPartition) {
             updateDirectoryCollectionRecurse(isGrib1, (DirectoryPartition) part, config, updateType, logger);
           } else {
             Path partPath = Paths.get(part.getRoot());
-            updateLeafCollection(isGrib1, config, updateType, false, logger, partPath); // LOOK why not using part ??
+            updateLeafCollection(isGrib1, config, updateType, false, logger, partPath); // TODO why not using part ??
           }
         } catch (IllegalStateException t) {
           logger.warn("Error making partition {} '{}'", part.getRoot(), t.getMessage());
@@ -592,8 +590,7 @@ public class GribCdmIndex implements IndexReader {
         });
       }
 
-      // LOOK what if theres only one file?
-
+      // TODO what if theres only one file?
       try {
         // redo partition index if needed, will detect if children have changed
         boolean recreated = updatePartition(isGrib1, partition, updateType, logger, errlog);
@@ -815,7 +812,7 @@ public class GribCdmIndex implements IndexReader {
     MCollection dcm = new CollectionSingleFile(mfile, logger);
     dcm.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
     if (isGrib1) {
-      // LOOK ignoring partition type
+      // TODO ignoring partition type
       Grib1CollectionBuilder builder = new Grib1CollectionBuilder(dcm.getCollectionName(), dcm, logger);
       boolean changed =
           (builder.updateNeeded(updateType) && builder.createIndex(FeatureCollectionConfig.PartitionType.file, errlog));

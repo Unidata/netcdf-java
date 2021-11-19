@@ -60,7 +60,7 @@ public class JmaTables extends Grib1Customizer {
        * reference time + P2;
        * products have reference times at intervals of 24 hours, beginning at the given reference time;
        * unit of measurement is square of that in Code Table 2
-       */ // LOOK
+       */
 
       /*
        * 131: Temporal variance of N forecasts; valid time of the first product ranges between R + P1 and R + P2,
@@ -70,8 +70,6 @@ public class JmaTables extends Grib1Customizer {
        * beginning at the given reference time;
        * unit of measurement is square of that in Code Table 2
        */
-      // LOOK
-
 
       case 129:
       case 131:
@@ -98,11 +96,11 @@ public class JmaTables extends Grib1Customizer {
        * each product has valid time at the reference time + P1;
        * products have reference times at intervals of P2, beginning at the given reference time;
        * unit of measurement is square of that in Code Table 2
-       */ // LOOK
+       */
       case 132:
         forecastTime = p1;
         start = p1;
-        end = (n > 0) ? p1 + (n - 1) * p2 : p1; // LOOK ??
+        end = (n > 0) ? p1 + (n - 1) * p2 : p1;
         isInterval = (n > 0);
         break;
 

@@ -351,7 +351,7 @@ public class BufrTables {
     if (tc == null)
       return null;
 
-    if (tc.tableBformat == Format.ncep_nm) { // LOOK ??
+    if (tc.tableBformat == Format.ncep_nm) {
       // see if we already have it
       TableB b = tablesB.get(tc.tableBname);
       TableD d = tablesD.get(tc.tableBname);

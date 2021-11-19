@@ -174,6 +174,7 @@ public class Arrays {
         dstAll = new String[(int) size];
         break;
 
+      case SEQUENCE:
       case STRUCTURE: {
         StructureData[] parray = new StructureData[(int) size];
         StructureMembers members = null;

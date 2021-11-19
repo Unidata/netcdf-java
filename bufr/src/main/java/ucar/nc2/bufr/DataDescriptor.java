@@ -132,7 +132,7 @@ public class DataDescriptor {
       this.type = 1; // String
     }
 
-    // LOOK what about flag table ??
+    // TODO what about flag table ??
     if (isCodeTableUnit(units)) {
       this.type = 2; // enum
     }
@@ -240,7 +240,7 @@ public class DataDescriptor {
 
     // bpacked = (value * 10^scale - refVal)
     // value = (bpacked + refVal) / 10^scale
-    float fscale = (float) Math.pow(10.0, -scale); // LOOK precompute ??
+    float fscale = (float) Math.pow(10.0, -scale); // TODO precompute
     float fval = (raw + refVal);
     return fscale * fval;
   }
@@ -251,7 +251,7 @@ public class DataDescriptor {
 
     // bpacked = (value * 10^scale - refVal)
     // value = (bpacked + refVal) / 10^scale
-    float fscale = (float) Math.pow(10.0, -scale); // LOOK precompute ??
+    float fscale = (float) Math.pow(10.0, -scale); // TODO precompute
     float fval = (raw + refVal);
     return fscale * fval;
   }
@@ -389,7 +389,7 @@ public class DataDescriptor {
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////
-  // LOOK need different hashCode, reader assumes using object id
+  // Need different hashCode, reader assumes using object id
   public boolean equals2(Object o) {
     if (this == o)
       return true;

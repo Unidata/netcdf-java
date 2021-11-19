@@ -207,31 +207,13 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     return info.backProcessId;
   }
 
-  /*
-   * String val = CommonCodeTable.getCenterName(gribCollection.getCenter(), 2);
-   * ncfile.addAttribute(null, new Attribute(GribUtils.CENTER, val == null ?
-   * Integer.toString(gribCollection.getCenter()) : val));
-   * val = gribTable.getSubCenterName(gribCollection.getCenter(), gribCollection.getSubcenter());
-   * ncfile.addAttribute(null, new Attribute(GribUtils.SUBCENTER, val == null ?
-   * Integer.toString(gribCollection.getSubcenter()) : val));
-   * ncfile.addAttribute(null, new Attribute(GribUtils.TABLE_VERSION, gribCollection.getMaster() + "," +
-   * gribCollection.getLocal())); // LOOK
-   * 
-   * addGlobalAttributes(ncfile);
-   * 
-   * ncfile.addAttribute(null, new Attribute(CDM.CONVENTIONS, "CF-1.6"));
-   * ncfile.addAttribute(null, new Attribute(CDM.HISTORY, "Read using CDM IOSP GribCollection v3"));
-   * ncfile.addAttribute(null, new Attribute(CF.FEATURE_TYPE, FeatureType.GRID.name()));
-   * ncfile.addAttribute(null, new Attribute(CDM.FILE_FORMAT, getFileTypeId()));
-   */
-
   public AttributeContainer getGlobalAttributes() {
     AttributeContainerMutable result = new AttributeContainerMutable(name);
     String centerName = CommonCodeTable.getCenterName(getCenter(), 2);
     result.addAttribute(new Attribute(GribUtils.CENTER, centerName));
     String val = cust.getSubCenterName(getCenter(), getSubcenter());
     result.addAttribute(new Attribute(GribUtils.SUBCENTER, val == null ? Integer.toString(getSubcenter()) : val));
-    result.addAttribute(new Attribute(GribUtils.TABLE_VERSION, getMaster() + "," + getLocal())); // LOOK
+    result.addAttribute(new Attribute(GribUtils.TABLE_VERSION, getMaster() + "," + getLocal()));
 
     addGlobalAttributes(result); // add subclass atts
 

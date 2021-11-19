@@ -148,7 +148,7 @@ public class TestWritingNetcdfTutorial {
     if (!ok) {
       System.out.printf("errlog = %s%n", errlog);
     }
-    // LOOK this is failing
+    // TODO this is failing
     // assertThat(ok).isTrue();
     // assertThat(WritingNetcdfTutorial.logger.getLogSize()).isEqualTo(0);
   }

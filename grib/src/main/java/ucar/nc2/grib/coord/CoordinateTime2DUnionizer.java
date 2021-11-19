@@ -48,9 +48,9 @@ class CoordinateTime2DUnionizer<T> extends CoordinateBuilderImpl<T> {
     for (int runIdx = 0; runIdx < coordT2D.getNruns(); runIdx++) {
       CoordinateTimeAbstract times = coordT2D.getTimeCoordinate(runIdx);
       long runtime = coordT2D.getRuntime(runIdx);
-      timeMap.put(runtime, times); // possible duplicate runtimes from different partitions
-                                   // later partitions will override LOOK could check how many times there are and
-                                   // choose larger
+      // possible duplicate runtimes from different partitions later partitions will override
+      // TODO could check how many times there are and choose larger
+      timeMap.put(runtime, times);
     }
   }
 
@@ -137,7 +137,7 @@ class CoordinateTime2DUnionizer<T> extends CoordinateBuilderImpl<T> {
 
   // check if the coordinate with maximum # values includes all of the time in the collection
   // if so, we can store time2D as orthogonal
-  // LOOK not right I think, consider one coordinate every 6 hours, and one every 24; should not be merged.
+  // TODO not right? consider one coordinate every 6 hours, and one every 24; should not be merged.
   @Nullable
   static CoordinateTimeAbstract testOrthogonal(Collection<CoordinateTimeAbstract> times) {
     CoordinateTimeAbstract maxCoord = null;

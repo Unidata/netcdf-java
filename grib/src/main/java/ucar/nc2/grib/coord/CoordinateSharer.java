@@ -25,7 +25,7 @@ public class CoordinateSharer<T> {
    * @param isRuntimeUnion if true, make union of runtimes, otherwise keep separate runtimes if distinct
    */
   public CoordinateSharer(boolean isRuntimeUnion, org.slf4j.Logger logger) {
-    this.isRuntimeUnion = false; // isRuntimeUnion; LOOK turn this off until we can fix it
+    this.isRuntimeUnion = false; // isRuntimeUnion; TODO turn this off until we can fix it
     this.logger = logger;
   }
 
@@ -34,7 +34,7 @@ public class CoordinateSharer<T> {
   Set<Coordinate> timeIntvSet = new HashSet<>();
   Set<Coordinate> vertSet = new HashSet<>();
   Set<Coordinate> ensSet = new HashSet<>();
-  Set<Coordinate> time2DSet = new HashSet<>(); // LOOK could we use a fuzzy compare here?
+  Set<Coordinate> time2DSet = new HashSet<>(); // TODO could we use a fuzzy compare here?
 
   // result
   List<Coordinate> unionCoords = new ArrayList<>(); // all the coordinates in the group
@@ -237,7 +237,7 @@ public class CoordinateSharer<T> {
     return result;
   }
 
-  private Integer getIndexIntoShared(Coordinate prev) { // LOOK dont understand this, why cant you just use coordMap ??
+  private Integer getIndexIntoShared(Coordinate prev) { // TODO why cant you just use coordMap ??
     if (isRuntimeUnion) {
       switch (prev.getType()) {
         case runtime:

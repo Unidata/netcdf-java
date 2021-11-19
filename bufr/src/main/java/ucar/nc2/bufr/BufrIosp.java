@@ -8,6 +8,7 @@ import com.google.common.collect.AbstractIterator;
 import org.jdom2.Element;
 import ucar.array.Array;
 import ucar.array.StructureData;
+import ucar.array.StructureDataArray;
 import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Sequence;
@@ -212,8 +213,8 @@ public class BufrIosp extends AbstractIOServiceProvider {
     }
   }
 
-  public Array<StructureData> readMessage(Message m) throws IOException {
-    Array<StructureData> as;
+  public StructureDataArray readMessage(Message m) throws IOException {
+    StructureDataArray as;
     Formatter f = new Formatter();
     try {
       if (m.dds.isCompressed()) {

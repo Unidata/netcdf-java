@@ -37,7 +37,6 @@ public class Grib2Collection extends GribCollectionImmutable {
     super(gc);
   }
 
-  // LOOK unused ??
   @Override
   @Nullable
   public ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(Dataset ds, GroupGC group, String filename,
@@ -52,8 +51,9 @@ public class Grib2Collection extends GribCollectionImmutable {
     } else {
       MFile wantFile = findMFileByName(filename);
       if (wantFile != null) {
+        // TODO thread-safety : creating ncx here
         GribCollectionImmutable gc = GribCdmIndex.openGribCollectionFromDataFile(false, wantFile,
-            CollectionUpdateType.nocheck, gribConfig, errlog, logger); // LOOK thread-safety : creating ncx
+            CollectionUpdateType.nocheck, gribConfig, errlog, logger);
         if (gc == null)
           return null;
 

@@ -196,7 +196,7 @@ public class Grib2Index extends GribIndex {
 
   ////////////////////////////////////////////////////////////////////////////////
 
-  // LOOK what about extending an index ??
+  // TODO what about extending an index ??
   public boolean makeIndex(String filename, RandomAccessFile dataRaf) throws IOException {
     String idxPath = filename;
     if (!idxPath.endsWith(GBX9_IDX))

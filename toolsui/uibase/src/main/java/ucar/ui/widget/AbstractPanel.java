@@ -105,13 +105,13 @@ public abstract class AbstractPanel extends JPanel {
         @Override
         public void actionPerformed(ActionEvent e) {
           addCoords = (Boolean) getValue(BAMutil.STATE);
-          String tooltip = addCoords ? "add Coordinates is ON" : "add Coordinates is OFF";
+          String tooltip = addCoords ? "enhance is ON" : "enhance is OFF";
           coordButt.setToolTipText(tooltip);
           // doit( cb.getSelectedItem()); // called from cb action listener
         }
       };
       addCoords = prefs.getBoolean("coordState", false);
-      String tooltip2 = addCoords ? "add Coordinates is ON" : "add Coordinates is OFF";
+      String tooltip2 = addCoords ? "enhance is ON" : "enhance is OFF";
       BAMutil.setActionProperties(coordAction, "addCoords", tooltip2, true, 'C', -1);
       coordAction.putValue(BAMutil.STATE, addCoords);
       coordButt = BAMutil.addActionToContainer(buttPanel, coordAction);

@@ -444,7 +444,7 @@ public class CompareTableB {
     }
   }
 
-  // LOOK WRONG
+  // TODO WRONG
   String tableDirName = "C:\\dev\\tds\\bufr\\resources\\resources\\bufr\\tables\\";
 
   void addToMap(TableName t, Map<Short, DescTrack> mapAll) throws IOException {

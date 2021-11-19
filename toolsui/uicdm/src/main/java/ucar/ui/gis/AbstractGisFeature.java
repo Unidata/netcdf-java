@@ -27,7 +27,6 @@ public abstract class AbstractGisFeature implements GisFeature {
   /**
    * Convert this GisFeature to a java.awt.Shape, using the default
    * coordinate system, mapping gisFeature(x,y) -> screen(x,y).
-   * LOOK STILL HAVE TO crossSeam()
    *
    * @return shape corresponding to this feature.
    */

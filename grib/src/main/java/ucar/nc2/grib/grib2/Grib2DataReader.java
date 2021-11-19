@@ -144,7 +144,7 @@ public class Grib2DataReader {
       return null;
     }
 
-    // LOOK jpeg2k only
+    // jpeg2k only
     return getData40raw(raf, (Grib2Drs.Type40) gdrs);
   }
 
@@ -215,7 +215,7 @@ public class Grib2DataReader {
     int E = gdrs.binaryScaleFactor;
     float EE = (float) java.lang.Math.pow(2.0, (double) E);
 
-    // LOOK: can # datapoints differ from bitmap and data ?
+    // TODO: can # datapoints differ from bitmap and data ?
     // dataPoints are number of points encoded, it could be less than the
     // totalNPoints in the grid record if bitMap is used, otherwise equal
     float[] data = new float[totalNPoints];
@@ -803,19 +803,6 @@ public class Grib2DataReader {
       }
     }
     return result;
-
-    /*
-     * } catch (NullPointerException npe) {
-     * 
-     * logger.error("Grib2DataReader2.jpeg2000Unpacking: bit rate too small nb =" + nb + " for file" +
-     * raf.getLocation());
-     * float[] data = new float[dataNPoints];
-     * for (int i = 0; i < dataNPoints; i++) {
-     * data[i] = staticMissingValue; // LOOK ??
-     * }
-     * return data;
-     * }
-     */
   }
 
   // Grid point data - JPEG 2000 code stream format
@@ -875,7 +862,7 @@ public class Grib2DataReader {
     int E = gdrs.binaryScaleFactor;
     float EE = (float) java.lang.Math.pow(2.0, (double) E);
 
-    // LOOK: can # datapoints differ from bitmap and data ?
+    // TODO: can # datapoints differ from bitmap and data ?
     // dataPoints are number of points encoded, it could be less than the
     // totalNPoints in the grid record if bitMap is used, otherwise equal
     // Might also be less for 24- or 32-bit bit-depths, but do not have an example to test.
@@ -913,7 +900,7 @@ public class Grib2DataReader {
         data[i] = (R + gridValue * EE) / DD;
       }
     } else {
-      // LOOK: Might not work for 24-bit or 32-bit depths - we do not have an example to test.
+      // TODO: Might not work for 24-bit or 32-bit depths - we do not have an example to test.
       // What does bitmap look like for these cases? Is it totalNPoints length, or dataNPoints length?
       // This code assumes that if there is a bitmap, then it has a length of dataNPoints.
       for (int bitPt = 0, dataPt = 0; bitPt < totalNPoints; bitPt++) {
@@ -1057,12 +1044,11 @@ public class Grib2DataReader {
         break;
     }
 
-    // LOOK see https://github.com/Unidata/netcdf-java/issues/881
     int D = gdrs.decimalScaleFactor;
-    float DD = (float) java.lang.Math.pow((double) 10, (double) -D);
+    float DD = (float) java.lang.Math.pow(10, -D);
     float R = gdrs.referenceValue;
     int E = gdrs.binaryScaleFactor;
-    float EE = (float) java.lang.Math.pow(2.0, (double) E);
+    float EE = (float) java.lang.Math.pow(2.0, E);
 
     float[] ret = new float[totalNPoints];
     for (int i = 0; i < totalNPoints; i++) {
@@ -1130,8 +1116,8 @@ public class Grib2DataReader {
    */
 
   // Rearrange the data array using the scanning mode.
-  // LOOK: not handling scanMode generally
-  // LOOK might be wrong for a quasi regular (thin) grid ??
+  // TODO: not handling scanMode generally
+  // TODO might be wrong for a quasi regular (thin) grid ??
   private void scanningModeCheck(float[] data, int scanMode, int Xlength) {
     // Mode 0 +x, -y, adjacent x, adjacent rows same dir
     // Mode 64 +x, +y, adjacent x, adjacent rows same dir

@@ -558,7 +558,7 @@ public class JTableSorted extends JPanel {
 
       if ((c instanceof JComponent) && (value instanceof NamedObject)) {
         ((JComponent) c).setToolTipText(((NamedObject) value).getDescription());
-      } // LOOK!! should turn tip off if there is none !!
+      } // TODO should turn tip off if there is none
       return c;
     }
 

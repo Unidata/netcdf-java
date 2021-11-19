@@ -3,7 +3,5 @@
  * See LICENSE for license information.
  */
 
-/**
- * Make a file on an HTTP server look like a RandomAccessFile, by using HTTP 1.1 byte range header.
- */
-package ucar.nc2.internal.http;
+/** Utilities for GRIB. */
+package ucar.nc2.grib;
