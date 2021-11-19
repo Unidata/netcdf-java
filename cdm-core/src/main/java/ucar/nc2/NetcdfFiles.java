@@ -75,20 +75,6 @@ public class NetcdfFiles {
         log.info("Cant load class H4iosp", e);
     }
 
-    try {
-      registerRandomAccessFileProvider("ucar.unidata.io.http.HTTPRandomAccessFile$Provider");
-    } catch (Throwable e) {
-      if (loadWarnings)
-        log.info("Cant load class HTTPRandomAccessFileProvider", e);
-    }
-
-    try {
-      registerRandomAccessFileProvider("ucar.unidata.io.InMemoryRandomAccessFile$Provider");
-    } catch (Throwable e) {
-      if (loadWarnings)
-        log.info("Cant load class InMemoryRandomAccessFileProvider", e);
-    }
-
     // if a user explicitly registers an IOSP or RandomAccessFile implementation via
     // registerIOProvider or registerRandomAccessFileProvider, this ensures they are tried first,
     // even before the core implementations.
@@ -355,8 +341,6 @@ public class NetcdfFiles {
       if (provider.isOwnerOf(location)) {
         raf = provider.open(location, buffer_size);
         Preconditions.checkNotNull(raf);
-        // TODO what if resource location cannot be reliably used to determine compression
-        // TODO can provider tell if it owns it if compressed?
         if (looksCompressed(uriString)) {
           raf = downloadAndDecompress(raf, uriString, buffer_size);
         }
@@ -370,7 +354,6 @@ public class NetcdfFiles {
         if (provider.isOwnerOf(location)) {
           raf = provider.open(location, buffer_size);
           Preconditions.checkNotNull(raf);
-          // TODO what if resource location cannot be reliably used to determine compression
           if (looksCompressed(uriString)) {
             raf = downloadAndDecompress(raf, uriString, buffer_size);
           }
@@ -392,9 +375,9 @@ public class NetcdfFiles {
       String uncompressedFileName = null;
       if (looksCompressed(uriString)) {
         try {
-          stringLocker.control(uriString); // Avoid race condition where the decompressed file is trying to be read by
-                                           // one
+          // Avoid race condition where the decompressed file is trying to be read by one
           // thread while another is decompressing it
+          stringLocker.control(uriString);
           uncompressedFileName = makeUncompressed(uriString);
         } catch (Exception e) {
           log.warn("Failed to uncompress {}, err= {}; try as a regular file.", uriString, e.getMessage());
