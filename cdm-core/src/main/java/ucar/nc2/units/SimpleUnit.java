@@ -4,7 +4,10 @@
  */
 package ucar.nc2.units;
 
+import com.google.common.base.Preconditions;
 import ucar.units.*;
+
+import javax.annotation.concurrent.Immutable;
 
 /**
  * Convenience routines on top of ucar.units package.
@@ -13,16 +16,15 @@ import ucar.units.*;
  * dimensions such as length, time, mass, etc.
  * <p/>
  * CDM does not use udunits date methods.
- * TODO: 8/12/2020 make Immutable in version 7
  */
+@Immutable
 public class SimpleUnit {
   public static final SimpleUnit kmUnit;
   public static final SimpleUnit meterUnit;
   public static final SimpleUnit pressureUnit;
 
   // static protected UnitFormat format;
-  protected static Unit secsUnit, dateReferenceUnit;
-  protected static boolean debugParse;
+  protected static final Unit secsUnit, dateReferenceUnit;
 
   static {
     try {
@@ -71,9 +73,9 @@ public class SimpleUnit {
   public static SimpleUnit factoryWithExceptions(String name) throws UnitException {
     UnitFormat format = UnitFormatManager.instance();
     Unit uu = format.parse(name);
-    // if (isDateUnit(uu)) return new DateUnit(name);
-    if (isTimeUnit(uu))
-      return new TimeUnit(name);
+    if (isTimeUnit(uu)) {
+      return TimeUnit.create(name);
+    }
     return new SimpleUnit(uu);
   }
 
@@ -97,8 +99,6 @@ public class SimpleUnit {
       UnitFormat format = UnitFormatManager.instance();
       uu1 = format.parse(unitString1);
     } catch (Exception e) {
-      if (debugParse)
-        System.out.println("Parse " + unitString1 + " got Exception1 " + e);
       return false;
     }
 
@@ -106,8 +106,6 @@ public class SimpleUnit {
       UnitFormat format = UnitFormatManager.instance();
       uu2 = format.parse(unitString2);
     } catch (Exception e) {
-      if (debugParse)
-        System.out.println("Parse " + unitString2 + " got Exception2 " + e);
       return false;
     }
 
@@ -196,16 +194,13 @@ public class SimpleUnit {
       throws IllegalArgumentException {
     SimpleUnit inputUnit = SimpleUnit.factory(inputUnitString);
     SimpleUnit outputUnit = SimpleUnit.factory(outputUnitString);
+    Preconditions.checkNotNull(inputUnit);
+    Preconditions.checkNotNull(outputUnit);
     return inputUnit.convertTo(1.0, outputUnit);
   }
 
   ////////////////////////////////////////////////
-  protected ucar.units.Unit uu;
-
-  /**
-   * for subclasses.
-   */
-  protected SimpleUnit() {}
+  protected final ucar.units.Unit uu;
 
   /**
    * Wrap a ucar.units.Unit in a SimpleUnit. Use factory().

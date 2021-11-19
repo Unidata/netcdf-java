@@ -4,20 +4,18 @@
  */
 package ucar.nc2.units;
 
-import junit.framework.*;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.unidata.util.test.Assert2;
 import ucar.units.*;
 import java.lang.invoke.MethodHandles;
 
-public class TestBasic extends TestCase {
+/** Test {@link ucar.units} */
+public class TestUcarUnits {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  public TestBasic(String name) {
-    super(name);
-  }
-
+  @Test
   public void testBasic() throws UnitException {
     UnitFormat format = UnitFormatManager.instance();
 
@@ -31,6 +29,7 @@ public class TestBasic extends TestCase {
     Assert2.assertNearlyEquals(2.5722222f, knot.convertTo(5, meterPerSecondUnit));
   }
 
+  @Test
   public void testTimeConversion() throws UnitException {
     UnitFormat format = UnitFormatManager.instance();
     Unit t1, t2;
@@ -43,6 +42,7 @@ public class TestBasic extends TestCase {
     Assert2.assertNearlyEquals(86400.0, t2.convertTo(0.0, t1));
   }
 
+  @Test
   public void testTimeConversion2() throws UnitException {
     UnitFormat format = UnitFormatManager.instance();
     Unit t1, t2;
@@ -54,6 +54,7 @@ public class TestBasic extends TestCase {
     Assert2.assertNearlyEquals(24.0, t2.convertTo(0.0, t1));
   }
 
+  @Test
   public void testException() throws UnitException {
     UnitFormat format = UnitFormatManager.instance();
     Unit uu = format.parse("barf");

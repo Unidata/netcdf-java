@@ -54,7 +54,7 @@ public class TimeDuration {
     // see if its blank
     if (text.isEmpty()) {
       try {
-        TimeUnit timeUnit = new TimeUnit("1 sec");
+        TimeUnit timeUnit = TimeUnit.create("1 sec");
         return new TimeDuration(text, timeUnit);
       } catch (Exception e) { // cant happen
         throw new java.text.ParseException(e.getMessage(), 0);
@@ -63,7 +63,7 @@ public class TimeDuration {
 
     // see if its a udunits string
     try {
-      TimeUnit timeUnit = new TimeUnit(text);
+      TimeUnit timeUnit = TimeUnit.create(text);
       return new TimeDuration(text, timeUnit);
     } catch (Exception e) {
       // see if its a xsd:duration
@@ -96,7 +96,7 @@ public class TimeDuration {
       c.set(1900, 0, 1, 0, 0, 0);
       long secs = d.getTimeInMillis(c.getTime()) / 1000;
 
-      TimeUnit timeUnit = new TimeUnit(secs + " secs");
+      TimeUnit timeUnit = TimeUnit.create(secs + " secs");
       return new TimeDuration(text, timeUnit);
     } catch (Exception e) {
       throw new java.text.ParseException(e.getMessage(), 0);
@@ -150,7 +150,7 @@ public class TimeDuration {
    */
   public double getValue(String unit) {
     try {
-      TimeUnit tdayUnit = new TimeUnit(unit);
+      TimeUnit tdayUnit = TimeUnit.create(unit);
       return getValue(tdayUnit);
     } catch (UnitException e) {
       throw new IllegalArgumentException(e);

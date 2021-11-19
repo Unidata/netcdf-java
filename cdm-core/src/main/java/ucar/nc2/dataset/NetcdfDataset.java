@@ -362,7 +362,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   private final CoordinatesHelper coords;
   private final @Nullable String convUsed;
   private final ImmutableSet<Enhance> enhanceMode; // enhancement mode for this specific dataset
-  private final @Nullable ucar.nc2.internal.ncml.Aggregation agg; // TODO not immutable
+  private final @Nullable ucar.nc2.internal.ncml.Aggregation agg; // Note not immutable
   private final @Nullable String fileTypeId;
 
   private NetcdfDataset(Builder<?> builder) {

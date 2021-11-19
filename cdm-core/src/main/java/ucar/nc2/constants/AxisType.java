@@ -6,7 +6,6 @@ package ucar.nc2.constants;
 
 /**
  * Enumeration of Coordinate Axis types. These are used for tagging georeferencing axes.
- * TODO: remove dependency on ordering in ver7.
  */
 public enum AxisType {
   // If making changes, update ucar.gcdm.GcdmGridConverter#convertAxisType(AxisType)

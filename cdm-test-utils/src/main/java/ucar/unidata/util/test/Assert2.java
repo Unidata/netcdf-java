@@ -10,7 +10,6 @@ import ucar.nc2.util.Misc;
  * @author cwardgar
  * @since 2018-05-13
  */
-// TODO: Create "assertNearlyEquals(Array, Array)".
 public class Assert2 {
   /**
    * Returns the result of {@link #assertNearlyEquals(float, float, float)}, with

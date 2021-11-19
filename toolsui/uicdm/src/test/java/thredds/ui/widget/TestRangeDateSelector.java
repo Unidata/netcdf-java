@@ -42,7 +42,8 @@ public class TestRangeDateSelector {
       // simulate what we do in PointObsViewer
       TimeCoverage range = null;
       try {
-        range = TimeCoverage.builder(DateType.present(), null, new TimeDuration(new TimeUnit(1, "day")), null).build();
+        range =
+            TimeCoverage.builder(DateType.present(), null, new TimeDuration(TimeUnit.create(1, "day")), null).build();
       } catch (Exception e) {
         e.printStackTrace();
       }

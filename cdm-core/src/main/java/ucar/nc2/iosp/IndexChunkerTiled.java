@@ -22,7 +22,7 @@ import java.util.ArrayList;
  * The user asks for some section, wantSection (may have strides).
  * For each dataSection that intersects wantSection, a IndexChunkerTiled is created, which
  * figures out the optimal access pattern, based on reading contiguous runs of data. Each
- * IndexChunkerTiled handles only one dataSection. Typically the cllaing program loops over
+ * IndexChunkerTiled handles only one dataSection. Typically the calling program loops over
  * all dataSections that intersect the wanted section.
  * <p/>
  * Both dataSection and wantSection refer to the variable's overall shape.
@@ -53,8 +53,6 @@ public class IndexChunkerTiled {
    */
   public IndexChunkerTiled(Section dataSection, Section wantSection) throws InvalidRangeException {
     this.done = 0;
-
-    // TODO - need test for "all" common case
 
     // The actual wanted data we can get from this section
     Section intersect = dataSection.intersect(wantSection);
