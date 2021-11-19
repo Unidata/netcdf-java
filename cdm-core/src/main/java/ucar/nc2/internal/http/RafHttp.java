@@ -36,7 +36,7 @@ public final class RafHttp extends RemoteRandomAccessFile {
   private static final long httpMaxCacheSize = Long
       .parseLong(System.getProperty("ucar.unidata.io.http.maxReadCacheSize", String.valueOf(defaultMaxReadCacheSize)));
 
-  private static final boolean debug = false, debugDetails = false;
+  private static final boolean debug = false;
 
   ///////////////////////////////////////////////////////////////////////////////////
 
@@ -47,7 +47,6 @@ public final class RafHttp extends RemoteRandomAccessFile {
     this(url, httpBufferSize, httpMaxCacheSize);
   }
 
-  // TODO make private in 6?
   @Urlencoded
   public RafHttp(String url, int bufferSize, long maxRemoteCacheSize) throws IOException {
     super(url, bufferSize, maxRemoteCacheSize);

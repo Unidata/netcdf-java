@@ -472,7 +472,6 @@ public class Group {
     return new Builder();
   }
 
-  // TODO implement Tree interface for common methods between Group and Group.Builder
   public static class Builder {
     private @Nullable Group.Builder parentGroup; // null for root group; ignored during build()
     public List<Group.Builder> gbuilders = new ArrayList<>();

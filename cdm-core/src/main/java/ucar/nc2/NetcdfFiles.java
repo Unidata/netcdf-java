@@ -777,9 +777,7 @@ public class NetcdfFiles {
   }
 
   ///////////////////////////////////////////////////////////////////////
-  // All CDM naming convention enforcement should be here.
-  // DAP conventions should be in DODSNetcdfFile
-  // TODO move this elsewhere.
+  // All CDM naming convention enforcement are here.
 
   // reservedFullName defines the characters that must be escaped
   // when a short name is inserted into a full name

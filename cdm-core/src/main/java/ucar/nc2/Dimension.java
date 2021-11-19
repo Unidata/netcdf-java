@@ -16,11 +16,10 @@ import java.util.Formatter;
  * A Dimension may be shared among Variables, which provides a simple yet powerful way of associating Variables.
  * When a Dimension is shared, it has a unique name within its Group.
  * It may have a coordinate Variable, which gives each index a coordinate value.
- * A private Dimension cannot have a coordinate Variable, so use shared dimensions with coordinates when possible.
+ * A private Dimension cannot have a coordinate Variable, so only use shared dimensions with coordinates when possible.
  * The Dimension length must be &gt; 0, except for an unlimited dimension which may have length = 0, and a vlen
  * Dimension which has a length known only when the variable is read.
  * <p/>
- * <p>
  * Note: this class has a natural ordering (sort by name) that is inconsistent with equals.
  */
 @Immutable
