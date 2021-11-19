@@ -346,7 +346,6 @@ public class HtmlBrowser extends JPanel {
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////
-  // TODO Factor this out
   /**
    * Wrap this in a JDialog component.
    *

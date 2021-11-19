@@ -9,7 +9,6 @@ import ucar.ui.OpPanel;
 import ucar.util.prefs.PreferencesExt;
 import java.awt.BorderLayout;
 
-// TODO can remove this, use WmoCommonCodesPanel directly.
 public class WmoCCPanel extends OpPanel {
   private final WmoCommonCodesPanel codeTable;
 

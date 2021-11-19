@@ -177,16 +177,13 @@ public class VariableTable extends JPanel {
     try {
       fds = NetcdfDatasets.enhance(file, NetcdfDataset.getDefaultEnhanceMode(), null);
     } catch (IOException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
   }
 
   class VariableTableModel extends AbstractTableModel {
 
-    public void clear() {
-      // TODO Auto-generated method stub
-    }
+    public void clear() {}
 
     @Override
     public int getColumnCount() {

@@ -79,9 +79,7 @@ public class NetcdfOutputChooser extends JDialog {
     setVisible(false);
   }
 
-  private void createUIComponents() {
-    // TODO: add custom component creation code here
-  }
+  private void createUIComponents() {}
 
   public void addEventListener(ItemListener l) {
     lm.addListener(l);

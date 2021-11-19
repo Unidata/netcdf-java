@@ -413,7 +413,6 @@ public class EsriShapefile {
     // private int recordNumber;
     // Together these can be used to access more info about feature,
     // using the associated .dbf Dbase file.
-    // TODO: extend interface to permit access to this info
 
     /**
      * Get bounding rectangle for this feature.
