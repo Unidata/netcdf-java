@@ -103,8 +103,7 @@ public class TestLightningExampleTutorial {
   }
 
   @Test(expected = ClassNotFoundException.class)
-  public void testRegisterIospTutorial()
-      throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+  public void testRegisterIospTutorial() throws Exception {
     LightningExampleTutorial.registerIOSP();
   }
 }

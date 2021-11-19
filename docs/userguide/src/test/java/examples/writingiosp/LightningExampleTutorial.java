@@ -341,12 +341,8 @@ public class LightningExampleTutorial {
 
   /**
    * Code snippet to register an IOSP
-   * 
-   * @throws InstantiationException
-   * @throws IllegalAccessException
    */
-  public static void registerIOSP()
-      throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+  public static void registerIOSP() throws Exception {
     NetcdfFiles.registerIOProvider("UspLightning");
   }
 

@@ -13,6 +13,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URL;
 import java.nio.channels.FileLock;
@@ -96,8 +97,8 @@ public class NetcdfFiles {
    * @throws InstantiationException if class doesnt have a no-arg constructor.
    * @throws ClassNotFoundException if class not found.
    */
-  public static void registerIOProvider(String className)
-      throws IllegalAccessException, InstantiationException, ClassNotFoundException {
+  public static void registerIOProvider(String className) throws NoSuchMethodException, InvocationTargetException,
+      InstantiationException, IllegalAccessException, ClassNotFoundException {
     Class<?> ioClass = NetcdfFile.class.getClassLoader().loadClass(className);
     registerIOProvider(ioClass);
   }
@@ -106,11 +107,9 @@ public class NetcdfFiles {
    * Register an IOServiceProvider. A new instance will be created when one of its files is opened.
    *
    * @param iospClass Class that implements IOServiceProvider.
-   * @throws IllegalAccessException if class is not accessible.
-   * @throws InstantiationException if class doesnt have a no-arg constructor.
-   * @throws ClassCastException if class doesnt implement IOServiceProvider interface.
    */
-  public static void registerIOProvider(Class<?> iospClass) throws IllegalAccessException, InstantiationException {
+  public static void registerIOProvider(Class<?> iospClass)
+      throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
     registerIOProvider(iospClass, false);
   }
 
@@ -119,14 +118,11 @@ public class NetcdfFiles {
    *
    * @param iospClass Class that implements IOServiceProvider.
    * @param last true=>insert at the end of the list; otherwise front
-   * @throws IllegalAccessException if class is not accessible.
-   * @throws InstantiationException if class doesnt have a no-arg constructor.
-   * @throws ClassCastException if class doesnt implement IOServiceProvider interface.
    */
   private static void registerIOProvider(Class<?> iospClass, boolean last)
-      throws IllegalAccessException, InstantiationException {
+      throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
     IOServiceProvider spi;
-    spi = (IOServiceProvider) iospClass.newInstance(); // fail fast
+    spi = (IOServiceProvider) iospClass.getDeclaredConstructor().newInstance(); // fail fast
     if (userLoadsFirst && !last)
       registeredProviders.add(0, spi); // put user stuff first
     else
@@ -137,12 +133,9 @@ public class NetcdfFiles {
    * Register a RandomAccessFile Provider, using its class string name.
    *
    * @param className Class that implements RandomAccessFileProvider.
-   * @throws IllegalAccessException if class is not accessible.
-   * @throws InstantiationException if class doesnt have a no-arg constructor.
-   * @throws ClassNotFoundException if class not found.
    */
-  public static void registerRandomAccessFileProvider(String className)
-      throws IllegalAccessException, InstantiationException, ClassNotFoundException {
+  public static void registerRandomAccessFileProvider(String className) throws NoSuchMethodException,
+      InvocationTargetException, InstantiationException, IllegalAccessException, ClassNotFoundException {
     Class<?> rafClass = NetcdfFile.class.getClassLoader().loadClass(className);
     registerRandomAccessFileProvider(rafClass);
   }
@@ -156,7 +149,7 @@ public class NetcdfFiles {
    * @throws ClassCastException if class doesnt implement IOServiceProvider interface.
    */
   public static void registerRandomAccessFileProvider(Class<?> rafClass)
-      throws IllegalAccessException, InstantiationException {
+      throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
     registerRandomAccessFileProvider(rafClass, false);
   }
 
@@ -165,14 +158,11 @@ public class NetcdfFiles {
    *
    * @param rafClass Class that implements RandomAccessFileProvider.
    * @param last true=>insert at the end of the list; otherwise front
-   * @throws IllegalAccessException if class is not accessible.
-   * @throws InstantiationException if class doesnt have a no-arg constructor.
-   * @throws ClassCastException if class doesnt implement IOServiceProvider interface.
    */
   private static void registerRandomAccessFileProvider(Class<?> rafClass, boolean last)
-      throws IllegalAccessException, InstantiationException {
+      throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
     RandomAccessFileProvider rafProvider;
-    rafProvider = (RandomAccessFileProvider) rafClass.newInstance(); // fail fast
+    rafProvider = (RandomAccessFileProvider) rafClass.getDeclaredConstructor().newInstance(); // fail fast
     if (userLoadsFirst && !last) {
       registeredRandomAccessFileProviders.add(0, rafProvider); // put user stuff first
     } else {
@@ -267,16 +257,13 @@ public class NetcdfFiles {
    * @param cancelTask allow task to be cancelled; may be null.
    * @param iospMessage special iosp tweaking (sent before open is called), may be null
    * @return NetcdfFile object, or null if cant find IOServiceProver
-   * @throws IOException if read error
-   * @throws ClassNotFoundException cannat find iospClassName in the class path
-   * @throws InstantiationException if class cannot be instantiated
-   * @throws IllegalAccessException if class is not accessible
    */
   public static NetcdfFile open(String location, String iospClassName, int bufferSize, CancelTask cancelTask,
-      Object iospMessage) throws ClassNotFoundException, IllegalAccessException, InstantiationException, IOException {
+      Object iospMessage) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException,
+      InstantiationException, IllegalAccessException, IOException {
 
     Class<?> iospClass = NetcdfFile.class.getClassLoader().loadClass(iospClassName);
-    IOServiceProvider spi = (IOServiceProvider) iospClass.newInstance(); // fail fast
+    IOServiceProvider spi = (IOServiceProvider) iospClass.getDeclaredConstructor().newInstance(); // fail fast
 
     // send iospMessage before iosp is opened
     if (iospMessage != null) {
@@ -602,7 +589,6 @@ public class NetcdfFiles {
    * @param name name of the dataset. Typically use the filename or URI.
    * @param data in-memory netcdf file
    * @return memory-resident NetcdfFile
-   * @throws java.io.IOException if error
    */
   public static NetcdfFile openInMemory(String name, byte[] data) throws IOException {
     ucar.unidata.io.InMemoryRandomAccessFile raf = new ucar.unidata.io.InMemoryRandomAccessFile(name, data);
@@ -616,17 +602,14 @@ public class NetcdfFiles {
    * @param data in-memory netcdf file
    * @param iospClassName fully qualified class name of the IOSP class to handle this file
    * @return NetcdfFile object, or null if cant find IOServiceProver
-   * @throws IOException if read error
-   * @throws ClassNotFoundException cannat find iospClassName in the class path
-   * @throws InstantiationException if class cannot be instantiated
-   * @throws IllegalAccessException if class is not accessible
    */
   public static NetcdfFile openInMemory(String name, byte[] data, String iospClassName)
-      throws IOException, ClassNotFoundException, IllegalAccessException, InstantiationException {
+      throws IOException, ClassNotFoundException, IllegalAccessException, InstantiationException, NoSuchMethodException,
+      InvocationTargetException {
 
     ucar.unidata.io.InMemoryRandomAccessFile raf = new ucar.unidata.io.InMemoryRandomAccessFile(name, data);
     Class<?> iospClass = NetcdfFile.class.getClassLoader().loadClass(iospClassName);
-    IOServiceProvider spi = (IOServiceProvider) iospClass.newInstance();
+    IOServiceProvider spi = (IOServiceProvider) iospClass.getDeclaredConstructor().newInstance();
 
     return build(spi, raf, name, null);
   }
@@ -639,7 +622,6 @@ public class NetcdfFiles {
    * @param cancelTask used to monitor user cancellation; may be null.
    * @param iospMessage send this message to iosp; may be null.
    * @return NetcdfFile or throw an Exception.
-   * @throws IOException if cannot find an IOSP for it.
    */
   public static NetcdfFile open(ucar.unidata.io.RandomAccessFile raf, String location,
       @Nullable ucar.nc2.util.CancelTask cancelTask, @Nullable Object iospMessage) throws IOException {
@@ -684,11 +666,9 @@ public class NetcdfFiles {
         // need a new instance for thread safety
         Class<?> c = registeredSpi.getClass();
         try {
-          return (IOServiceProvider) c.newInstance();
-        } catch (InstantiationException e) {
-          throw new IOException("IOServiceProvider " + c.getName() + "must have no-arg constructor.");
-        } catch (IllegalAccessException e) {
-          throw new IOException("IOServiceProvider " + c.getName() + " IllegalAccessException: " + e.getMessage());
+          return (IOServiceProvider) c.getDeclaredConstructor().newInstance();
+        } catch (Exception e) {
+          throw new IOException("IOServiceProvider failed for " + c.getName(), e);
         }
       }
     }
@@ -702,11 +682,9 @@ public class NetcdfFiles {
         if (loadedSpi.isValidFile(raf)) {
           Class<?> c = loadedSpi.getClass();
           try {
-            return (IOServiceProvider) c.newInstance();
-          } catch (InstantiationException e) {
-            throw new IOException("IOServiceProvider " + c.getName() + "must have no-arg constructor.");
-          } catch (IllegalAccessException e) {
-            throw new IOException("IOServiceProvider " + c.getName() + " IllegalAccessException: " + e.getMessage());
+            return (IOServiceProvider) c.getDeclaredConstructor().newInstance();
+          } catch (Exception e) {
+            throw new IOException("IOServiceProvider ServiceLoader failed for " + c.getName(), e);
           }
         }
       }

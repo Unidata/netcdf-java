@@ -77,7 +77,7 @@ public class CoordSystemFactory {
    * @param conventionName name of Convention.
    *        This name will be used to look in the "Conventions" global attribute.
    * @param className name of class that implements CoordSystemBuilderFactory.
-   * @throws ClassNotFoundException if class could not be loaded
+   * @throws ClassNotFoundException if class could not be found
    */
   public static void registerConvention(String conventionName, String className) throws ClassNotFoundException {
     Class<?> c = Class.forName(className);
@@ -88,12 +88,9 @@ public class CoordSystemFactory {
     // fail fast - check newInstance works
     CoordSystemBuilderFactory fac;
     try {
-      fac = (CoordSystemBuilderFactory) c.newInstance();
-    } catch (InstantiationException e) {
-      throw new IllegalArgumentException(
-          "CoordSystemBuilderFactory Class " + c.getName() + " cannot instantiate, probably need default Constructor");
-    } catch (IllegalAccessException e) {
-      throw new IllegalArgumentException("CoordSysBuilderIF Class " + c.getName() + " is not accessible");
+      fac = (CoordSystemBuilderFactory) c.getDeclaredConstructor().newInstance();
+    } catch (Exception e) {
+      throw new IllegalArgumentException("CoordSysBuilderIF failed for " + c.getName(), e);
     }
 
     registerConvention(conventionName, fac);

@@ -210,7 +210,7 @@ public class RuntimeConfigParser {
               // Registers Nc4Iosp in front of all the other IOSPs already registered in NetcdfFile.<clinit>().
               // Crucially, this means that we'll try to open a file with Nc4Iosp before we try it with H5iosp.
               NetcdfFiles.registerIOProvider(nc4IospClassName);
-            } catch (IllegalAccessException | InstantiationException | ClassNotFoundException e) {
+            } catch (Exception e) {
               errlog.format("Could not register IOSP '%s': %s%n", nc4IospClassName, e.getMessage());
             }
           }
