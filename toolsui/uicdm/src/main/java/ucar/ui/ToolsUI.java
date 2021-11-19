@@ -17,7 +17,7 @@ import ucar.nc2.internal.ncml.Aggregation;
 import ucar.nc2.internal.ncml.NcmlReader;
 import ucar.ui.bufr.BufrCdmIndexOpPanel;
 import ucar.ui.bufr.BufrCodePanel;
-import ucar.ui.bufr.BufrPanel;
+import ucar.ui.bufr.BufrMessagePanel;
 import ucar.ui.bufr.BufrReportPanel;
 import ucar.ui.bufr.BufrTableBPanel;
 import ucar.ui.bufr.BufrTableDPanel;
@@ -119,7 +119,7 @@ public class ToolsUI extends JPanel {
 
   // Op panels and friends
   private AggPanel aggPanel;
-  private BufrPanel bufrPanel;
+  private BufrMessagePanel bufrPanel;
   private BufrTableBPanel bufrTableBPanel;
   private BufrTableDPanel bufrTableDPanel;
   private ReportOpPanel bufrReportPanel;
@@ -231,7 +231,8 @@ public class ToolsUI extends JPanel {
     addListeners(iospTabPane);
 
     // nested-2 tab - bufr
-    bufrTabPane.addTab("BUFR", new JLabel("BUFR"));
+    bufrPanel = new BufrMessagePanel((PreferencesExt) mainPrefs.node("bufr"));
+    bufrTabPane.addTab("BufrMessages", bufrPanel);
     bufrTabPane.addTab("BufrCdmIndex", new JLabel("BufrCdmIndex"));
     bufrTabPane.addTab("BUFRTableB", new JLabel("BUFRTableB"));
     bufrTabPane.addTab("BUFRTableD", new JLabel("BUFRTableD"));
@@ -321,9 +322,7 @@ public class ToolsUI extends JPanel {
     });
   }
 
-  /**
-   * deferred creation of components to minimize startup
-   */
+  /** deferred creation of components to minimize startup */
   private void makeComponent(JTabbedPane parent, String title) {
     if (parent == null) {
       parent = tabbedPane;
@@ -350,8 +349,8 @@ public class ToolsUI extends JPanel {
         c = aggPanel;
         break;
 
-      case "BUFR":
-        bufrPanel = new BufrPanel((PreferencesExt) mainPrefs.node("bufr"));
+      case "BufrMessages":
+        bufrPanel = new BufrMessagePanel((PreferencesExt) mainPrefs.node("bufr"));
         c = bufrPanel;
         break;
 
@@ -641,7 +640,6 @@ public class ToolsUI extends JPanel {
     diskCache2Form.setVisible(true);
   }
 
-
   private void save() {
     fileChooser.save();
     if (aggPanel != null) {
@@ -772,11 +770,7 @@ public class ToolsUI extends JPanel {
     }
   }
 
-  ///
-  /// The following are hooks and shortcuts allowing OpPanel classes to interact with the UI.
-  ///
-
-
+  //// The following are hooks and shortcuts allowing OpPanel classes to interact with the UI.
   public static ToolsUI getToolsUI() {
     return ui;
   }
@@ -799,7 +793,6 @@ public class ToolsUI extends JPanel {
     }
     return bufrFileChooser;
   }
-
 
   public static void setNCdumpPanel(NetcdfFile ds) {
     ui.setNCdumpPanelPriv(ds);
@@ -848,7 +841,7 @@ public class ToolsUI extends JPanel {
   }
 
   public void openGrib1Collection(String collection) {
-    makeComponent(grib1TabPane, "GRIB1collection"); // LOOK - does this aleays make component ?
+    makeComponent(grib1TabPane, "GRIB1collection");
     grib1CollectionPanel.setCollection(collection);
     tabbedPane.setSelectedComponent(iospTabPane);
     iospTabPane.setSelectedComponent(grib1TabPane);

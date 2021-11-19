@@ -6,6 +6,7 @@ package ucar.nc2.bufr.point;
 
 import ucar.array.Array;
 import ucar.array.ArrayType;
+import ucar.array.Arrays;
 import ucar.array.StructureData;
 import ucar.array.StructureMembers;
 import ucar.nc2.Attribute;
@@ -16,7 +17,13 @@ import ucar.nc2.bufr.BufrIosp;
 import ucar.nc2.bufr.DataDescriptor;
 import ucar.nc2.bufr.Message;
 import ucar.nc2.calendar.CalendarDate;
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.Formatter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Extract standard fields from BUFR
@@ -259,8 +266,10 @@ public class StandardFields {
         StructureMembers.Member m = sm.findMember(fld.memberName);
         ArrayType dtype = m.getArrayType();
         Array<?> memberData = sdata.getMemberData(m);
-        if (dtype.isString()) {
+        if (dtype == ArrayType.STRING) {
           fld.valueS = ((Array<String>) memberData).getScalar().trim();
+        } else if (dtype == ArrayType.CHAR) {
+          fld.valueS = Arrays.makeStringFromChar((Array<Byte>) memberData).trim();
         } else if (dtype.isIntegral()) {
           Number val = ((Array<Number>) memberData).getScalar();
           fld.value = val.intValue();

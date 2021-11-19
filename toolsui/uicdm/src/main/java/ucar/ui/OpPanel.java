@@ -41,7 +41,7 @@ public abstract class OpPanel extends JPanel {
   private AbstractButton coordButt;
   protected StopButton stopButton;
 
-  protected boolean useCoords;
+  protected Boolean useCoords = Boolean.TRUE;
   private boolean busy;
   private long lastEvent = -1;
   private boolean eventOK = true;
@@ -109,13 +109,13 @@ public abstract class OpPanel extends JPanel {
         @Override
         public void actionPerformed(ActionEvent e) {
           useCoords = (Boolean) getValue(BAMutil.STATE);
-          String tooltip = useCoords ? "add Coordinates is ON" : "add Coordinates is OFF";
+          String tooltip = useCoords ? "enhance is ON" : "enhance is OFF";
           coordButt.setToolTipText(tooltip);
           setUseCoords(useCoords);
         }
       };
       useCoords = prefs.getBoolean("coordState", false);
-      String tooltip2 = useCoords ? "add Coordinates is ON" : "add Coordinates is OFF";
+      String tooltip2 = useCoords ? "enhance is ON" : "enhance is OFF";
       BAMutil.setActionProperties(coordAction, "nj22/AddCoords", tooltip2, true, 'C', -1);
       coordAction.putValue(BAMutil.STATE, useCoords);
       coordButt = BAMutil.addActionToContainer(buttPanel, coordAction);

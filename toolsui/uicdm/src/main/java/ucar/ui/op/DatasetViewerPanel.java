@@ -31,7 +31,6 @@ public class DatasetViewerPanel extends OpPanel {
     super(dbPrefs, "dataset:");
 
     dsViewer = new DatasetViewer(dbPrefs, fileChooser);
-    dsViewer.setUseCoords(this.useCoords);
     add(dsViewer, BorderLayout.CENTER);
 
     AbstractButton infoButton = BAMutil.makeButtcon("Information", "Detail Info", false);
@@ -113,7 +112,6 @@ public class DatasetViewerPanel extends OpPanel {
       if (ncfile != null) {
         ncfile.close();
       }
-      ncfile = null;
     } catch (IOException ioe) {
       logger.warn("close failed");
     }
@@ -129,11 +127,6 @@ public class DatasetViewerPanel extends OpPanel {
   public void save() {
     super.save();
     dsViewer.save();
-  }
-
-  @Override
-  protected void setUseCoords(boolean useCoords) {
-    dsViewer.setUseCoords(useCoords);
   }
 
   public void setText(String text) {

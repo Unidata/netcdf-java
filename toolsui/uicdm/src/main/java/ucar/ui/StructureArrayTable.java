@@ -10,6 +10,7 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import java.awt.BorderLayout;
 import java.awt.Rectangle;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -33,6 +34,8 @@ import javax.swing.ToolTipManager;
 import javax.swing.event.EventListenerList;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
@@ -42,7 +45,8 @@ import ucar.nc2.Sequence;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.calendar.CalendarDate;
-import ucar.ui.StructureTable.DateRenderer;
+import ucar.nc2.calendar.CalendarDateFormatter;
+import ucar.nc2.calendar.CalendarPeriod;
 import ucar.nc2.write.NcdumpArray;
 import ucar.ui.table.ColumnWidthsResizer;
 import ucar.ui.table.HidableTableColumnModel;
@@ -58,18 +62,16 @@ import ucar.util.prefs.PreferencesExt;
 
 /** Component "Data Table" in DatasetViewer when you have a Structure selected. */
 public class StructureArrayTable extends JPanel {
-  // TODO why is this static?
-  private static final HashMap<String, IndependentWindow> windows = new HashMap<>(); // display subtables
-
+  private final HashMap<String, IndependentWindow> windows = new HashMap<>(); // display subtables
   private final PreferencesExt prefs;
-  private AbstractSATableModel dataModel;
-
-  private JTable jtable;
-  private PopupMenu popup;
   private final FileManager fileChooser; // for exporting
   private final TextHistoryPane dumpTA;
   private final IndependentWindow dumpWindow;
   private final EventListenerList listeners = new EventListenerList();
+
+  private AbstractSATableModel dataModel;
+  private JTable jtable;
+  private PopupMenu popup;
 
   public StructureArrayTable(PreferencesExt prefs) {
     this.prefs = prefs;
@@ -124,27 +126,25 @@ public class StructureArrayTable extends JPanel {
     popup.addAction(title, act);
   }
 
-  // clear the table
-
   public void clear() {
-    if (dataModel != null)
+    if (dataModel != null) {
       dataModel.clear();
+    }
   }
-
-  // save state
 
   public void saveState() {
     fileChooser.save();
-    if (prefs != null)
+    if (prefs != null) {
       prefs.getBean("DumpWindowBounds", dumpWindow.getBounds());
+    }
   }
 
   public void setStructure(Structure s) {
-    if (s.getArrayType() == ArrayType.SEQUENCE)
+    if (s.getArrayType() == ArrayType.SEQUENCE) {
       dataModel = new SequenceModel((Sequence) s, true);
-    else
+    } else {
       dataModel = new StructureModel(s);
-
+    }
     initTable(dataModel);
   }
 
@@ -171,9 +171,12 @@ public class StructureArrayTable extends JPanel {
     jtable.getColumnModel().addColumnModelListener(aligner);
 
     // Don't resize the columns to fit the available space. We do this because there may be a LOT of columns, and
-    // auto-resize would cause them to be squished together to the point of uselessness. For an example, see
-    // Q:/cdmUnitTest/ft/stationProfile/noaa-cap/XmadisXdataXLDADXprofilerXnetCDFX20100501_0200
+    // auto-resize would cause them to be squished together to the point of uselessness.
     jtable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+
+    // set the column name as the tooltip of that column, for when the column name cant be seen
+    MyTableHeader headerWithTooltips = new MyTableHeader(jtable.getColumnModel());
+    jtable.setTableHeader(headerWithTooltips);
 
     ListSelectionModel rowSM = jtable.getSelectionModel();
     rowSM.addListSelectionListener(e -> {
@@ -231,8 +234,9 @@ public class StructureArrayTable extends JPanel {
     // This keeps the corner button visible even when the table is empty (or all columns are hidden).
     scrollPane.setColumnHeaderView(new JViewport());
     scrollPane.getColumnHeader().setPreferredSize(jtable.getTableHeader().getPreferredSize());
-
     add(scrollPane, BorderLayout.CENTER);
+
+    // set the column name as the tooltip of that coilumn, for when the column width is small
 
     revalidate();
   }
@@ -446,11 +450,8 @@ public class StructureArrayTable extends JPanel {
 
       StructureData sd = getStructureDataHash(row);
       String colName = getColumnName(column);
-      Array<?> data = sd.getMemberData(colName);
-      if (data instanceof StructureDataArray) {
-        return "len =" + data.length();
-      }
-      return data;
+      Array<?> value = sd.getMemberData(colName);
+      return !(value instanceof StructureDataArray) ? value.getScalar() : "n=" + value.length();
     }
   }
 
@@ -490,20 +491,18 @@ public class StructureArrayTable extends JPanel {
     }
   }
 
+  ////////////////////////////////////////////////////////////////////////
+  // handles Sequences
+
   private static class SequenceModel extends StructureModel {
     protected List<StructureData> sdataList;
 
     SequenceModel(Sequence seq, boolean readData) {
       super(seq);
-
       if (readData) {
         sdataList = new ArrayList<>();
-        try {
-          for (StructureData sdata : seq) {
-            sdataList.add(sdata);
-          }
-        } catch (Exception e) {
-          e.printStackTrace();
+        for (StructureData sdata : seq) {
+          sdataList.add(sdata);
         }
       }
     }
@@ -518,15 +517,6 @@ public class StructureArrayTable extends JPanel {
       return sdataList.get(row);
     }
 
-    // LOOK does this have to override ?
-    @Override
-    public Object getValueAt(int row, int column) {
-      StructureData sd = sdataList.get(row);
-      Member member = sd.getStructureMembers().getMember(column);
-      Array<?> value = sd.getMemberData(member);
-      return !(value instanceof StructureDataArray) ? value.getScalar() : "n=" + value.length();
-    }
-
     @Override
     public void clear() {
       sdataList = new ArrayList<>();
@@ -535,7 +525,7 @@ public class StructureArrayTable extends JPanel {
   }
 
   ////////////////////////////////////////////////////////////////////////
-  // Handles nested StructureDataArray
+  // Handles StructureDataArray
 
   private static class StructureDataArrayModel extends AbstractSATableModel {
     private StructureDataArray as;
@@ -564,6 +554,49 @@ public class StructureArrayTable extends JPanel {
     public void clear() {
       as = null;
       fireTableDataChanged();
+    }
+  }
+
+  ////////////////////////////////////////////////////////////////////////
+
+  // https://stackoverflow.com/questions/31576795/tooltip-text-for-each-column-of-a-jtable-header
+  private class MyTableHeader extends JTableHeader {
+
+    MyTableHeader(TableColumnModel columnModel) {
+      super(columnModel);
+    }
+
+    public String getToolTipText(MouseEvent e) {
+      java.awt.Point p = e.getPoint();
+      int index = columnModel.getColumnIndexAtX(p.x);
+      return (String) columnModel.getColumn(index).getHeaderValue();
+    }
+  }
+
+  /** Renderer for Date type */
+  static class DateRenderer extends DefaultTableCellRenderer {
+    private final CalendarDateFormatter newForm;
+    private final CalendarDateFormatter oldForm;
+    private final CalendarDate cutoff;
+
+    DateRenderer() {
+      oldForm = new CalendarDateFormatter("yyyy MMM dd HH:mm");
+      newForm = new CalendarDateFormatter("MMM dd, HH:mm");
+
+      CalendarDate now = CalendarDate.present();
+      cutoff = now.add(-1, CalendarPeriod.Field.Year); // "now" time format within a year
+    }
+
+    public void setValue(Object value) {
+      if (value == null)
+        setText("");
+      else {
+        CalendarDate date = (CalendarDate) value;
+        if (date.isBefore(cutoff))
+          setText(oldForm.toString(date));
+        else
+          setText(newForm.toString(date));
+      }
     }
   }
 }

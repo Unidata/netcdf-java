@@ -4,6 +4,6 @@
  */
 
 /**
- * NetCDF Tools User Interface Op Panels
+ * NetCDF Tools User Interface OpPanels
  */
 package ucar.ui.op;

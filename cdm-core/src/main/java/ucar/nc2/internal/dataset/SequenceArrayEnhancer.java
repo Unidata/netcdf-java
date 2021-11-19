@@ -4,10 +4,10 @@
  */
 package ucar.nc2.internal.dataset;
 
-import static ucar.nc2.internal.dataset.StructureDataArrayEnhancer.convertNestedData;
-
 import java.nio.ByteBuffer;
 import java.util.Iterator;
+
+import com.google.common.base.Preconditions;
 import ucar.array.Array;
 import ucar.array.StructureData;
 import ucar.array.StructureDataStorageBB;
@@ -46,8 +46,9 @@ public class SequenceArrayEnhancer implements Iterator<StructureData> {
 
     for (StructureMembers.Member member : members) {
       StructureMembers.Member orgMember = orgMembers.findMember(member.getName());
-      Array<?> data = orgData.getMemberData(orgMember);
-      convertNestedData(topStructure, 0, member, storage, bbuffer, data);
+      Preconditions.checkNotNull(orgMember, member.getName());
+      Array<?> data = orgData.getMemberData(orgMember.getName());
+      StructureDataArrayEnhancer.convertNestedData(topStructure, 0, member, storage, bbuffer, data);
     }
     return storage.get(0);
   }

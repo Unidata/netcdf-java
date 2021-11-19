@@ -177,7 +177,7 @@ public final class StructureDataArray extends Array<StructureData> {
   //////////////////////////////////////////////////////////////////////////
 
   /**
-   * Extract data for one member, over all structures.
+   * Extract data for one member, over all structures in this StructureDataArray.
    * The resulting shape is the structure shape appended to the member's shape.
    *
    * @param m get all data for this StructureMembers.Member.
@@ -188,7 +188,7 @@ public final class StructureDataArray extends Array<StructureData> {
 
     List<Array<?>> memberData = new ArrayList<>();
     for (StructureData sdata : this) {
-      memberData.add(sdata.getMemberData(m));
+      memberData.add(sdata.getMemberData(m.getName()));
     }
 
     // combine the shapes
@@ -202,7 +202,7 @@ public final class StructureDataArray extends Array<StructureData> {
   }
 
   /**
-   * Extract data for one member, over all nested structures.
+   * Extract data for one member, over all nested structures in this StructureDataArray.
    * The resulting shape is the structure shape appended to the member's shape.
    *
    * @param nestedStruct the parent Stucture of m.

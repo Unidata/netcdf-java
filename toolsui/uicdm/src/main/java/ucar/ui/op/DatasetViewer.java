@@ -16,14 +16,16 @@ import java.util.Formatter;
 import java.util.List;
 import javax.swing.*;
 
+import ucar.array.Array;
+import ucar.array.StructureDataArray;
+import ucar.array.StructureMembers;
 import ucar.nc2.Group;
 import ucar.nc2.NetcdfFiles;
 import ucar.nc2.ParsedArraySectionSpec;
+import ucar.nc2.Sequence;
 import ucar.nc2.constants._Coordinate;
 import ucar.ui.StructureArrayTable;
-import ucar.ui.StructureTable;
 import org.jdom2.Element;
-import ucar.array.Array;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Structure;
@@ -45,7 +47,6 @@ import ucar.nc2.internal.util.CompareNetcdf2;
 import ucar.nc2.write.Nc4ChunkingStrategy;
 import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.BeanTable;
-import ucar.ui.prefs.Debug;
 
 /** The Viewer component in ToolsUI. */
 public class DatasetViewer extends JPanel {
@@ -63,9 +64,8 @@ public class DatasetViewer extends JPanel {
   private final VariableTable variableTable;
 
   private final TextHistoryPane infoTA;
-  private final StructureTable dataTable;
   private final StructureArrayTable dataArrayTable;
-  private final IndependentWindow infoWindow, dataWindow, dataArrayWindow, plotWindow, dumpWindow;
+  private final IndependentWindow infoWindow, dataArrayWindow, plotWindow, dumpWindow;
 
   private BeanTable<AttributeBean> attTable;
   private IndependentWindow attWindow;
@@ -102,12 +102,10 @@ public class DatasetViewer extends JPanel {
     infoWindow.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 500, 300)));
 
     // the data Table
-    dataTable = new StructureTable((PreferencesExt) prefs.node("structTable"));
     dataArrayTable = new StructureArrayTable((PreferencesExt) prefs.node("structTableArray"));
     variableTable = new VariableTable((PreferencesExt) prefs.node("variableTable"));
-    dataWindow = new IndependentWindow("Data Table", BAMutil.getImage("nj22/NetcdfUI"), dataTable);
     dataArrayWindow = new IndependentWindow("Data Array Table", BAMutil.getImage("nj22/NetcdfUI"), dataArrayTable);
-    dataWindow.setBounds((Rectangle) prefs.getBean("dataWindowBounds", new Rectangle(50, 300, 1000, 1200)));
+    dataArrayWindow.setBounds((Rectangle) prefs.getBean("dataWindowBounds", new Rectangle(50, 300, 1000, 1200)));
 
     // the ncdump Pane
     dumpPane = new NCdumpPane((PreferencesExt) prefs.node("dumpPane"));
@@ -310,12 +308,14 @@ public class DatasetViewer extends JPanel {
     return this.ds;
   }
 
-  public void clear() {
+  void clear() {
     this.ds = null;
-    if (attTable != null)
+    if (attTable != null) {
       attTable.clearBeans();
-    for (NestedTable nt : nestedTableList)
+    }
+    for (NestedTable nt : nestedTableList) {
       nt.table.clearBeans();
+    }
     datasetTree.clear();
   }
 
@@ -326,8 +326,6 @@ public class DatasetViewer extends JPanel {
     hideNestedTable(1);
     datasetTree.setFile(ds);
   }
-
-  void setUseCoords(boolean useCoords) {}
 
   private void setSelected(Variable v) {
     eventsOK = false;
@@ -404,12 +402,7 @@ public class DatasetViewer extends JPanel {
       });
       csPopup.addAction("Show Data", new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
-          showData(table, false);
-        }
-      });
-      csPopup.addAction("Show Data Array", new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
-          showData(table, true);
+          showData(table);
         }
       });
       csPopup.addAction("NCdump Data", "Dump", new AbstractAction() {
@@ -429,11 +422,6 @@ public class DatasetViewer extends JPanel {
        */
       if (level == 0) {
         csPopup.addAction("Data Table", new AbstractAction() {
-          public void actionPerformed(ActionEvent e) {
-            dataTable(table);
-          }
-        });
-        csPopup.addAction("Data Array Table", new AbstractAction() {
           public void actionPerformed(ActionEvent e) {
             dataArrayTable(table);
           }
@@ -543,19 +531,26 @@ public class DatasetViewer extends JPanel {
     infoWindow.show();
   }
 
-  private void showData(BeanTable<VariableBean> from, boolean useArray) {
+  private void showData(BeanTable<VariableBean> from) {
     Variable v = getSelectedVariable(from);
-    if (v == null)
+    if (v == null) {
       return;
+    }
     infoTA.clear();
 
     try {
-      if (useArray) {
-        ucar.array.Array<?> data = v.readArray();
-        infoTA.setText(NcdumpArray.printArray(data, v.getFullName(), null));
+      if (v.isMemberOfStructure()) {
+        Structure parent = v.getParentStructure();
+        StructureDataArray alldata = (StructureDataArray) parent.readArray();
+        StructureMembers.Member m = alldata.getStructureMembers().findMember(v.getShortName());
+        Array<?> memdata = alldata.extractMemberArray(m);
+        infoTA.setText(NcdumpArray.printArray(memdata, v.getFullName(), null));
+
+      } else if (v instanceof Sequence) {
+        infoTA.setText(NcdumpArray.printSequenceData((Sequence) v, null));
+
       } else {
-        Array<?> data = v.readArray();
-        infoTA.setText(NcdumpArray.printArray(data, v.getFullName(), null));
+        infoTA.setText(NcdumpArray.printArray(v.readArray(), v.getFullName(), null));
       }
 
     } catch (Exception ex) {
@@ -588,36 +583,6 @@ public class DatasetViewer extends JPanel {
     }
 
     dumpWindow.show();
-  }
-
-  private void dataTable(BeanTable<VariableBean> from) {
-    VariableBean vb = from.getSelectedBean();
-    if (vb == null)
-      return;
-    Variable v = vb.vs;
-    if (v instanceof Structure) {
-      try {
-        dataTable.setStructure((Structure) v);
-      } catch (Exception ex) {
-        ex.printStackTrace();
-      }
-      dataWindow.setComponent(dataTable);
-    } else {
-      List<VariableBean> l = from.getSelectedBeans();
-      List<Variable> vl = new ArrayList<>();
-      for (VariableBean vb1 : l) {
-        if (vb1 != null && vb1.vs != null) {
-          vl.add(vb1.vs);
-        }
-      }
-      variableTable.setDataset(ds);
-      variableTable.setVariableList(vl);
-      variableTable.createTable();
-      dataWindow.setComponent(variableTable);
-    }
-    Rectangle r = (Rectangle) prefs.getBean("dataWindowBounds", new Rectangle(50, 300, 1000, 1200));
-    dataWindow.setBounds(r);
-    dataWindow.show();
   }
 
   private void dataArrayTable(BeanTable<VariableBean> from) {
@@ -684,7 +649,7 @@ public class DatasetViewer extends JPanel {
       nt.saveState();
     }
     prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
-    prefs.putBeanObject("dataWindowBounds", dataWindow.getBounds());
+    prefs.putBeanObject("dataWindowBounds", dataArrayWindow.getBounds());
     prefs.putBeanObject("DumpWindowBounds", dumpWindow.getBounds());
     prefs.putBeanObject("PlotWindowBounds", plotWindow.getBounds());
     if (attWindow != null)
