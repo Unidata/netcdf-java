@@ -58,7 +58,7 @@ public class TestGcdmNetcdf4 {
 
   public TestGcdmNetcdf4(String filename) {
     this.filename = filename;
-    // LOOK kludge for now. Also, need to auto start up CmdrServer
+    // kludge for now. Also, need to auto start up CmdrServer
     this.gcdmUrl = "gcdm://localhost:16111/" + filename;
   }
 

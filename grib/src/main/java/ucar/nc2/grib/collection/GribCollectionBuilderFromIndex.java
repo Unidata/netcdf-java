@@ -149,7 +149,7 @@ abstract class GribCollectionBuilderFromIndex {
             raf.getLocation(), gc.getName(), proto.getName());
       }
 
-      // directory always taken from proto, since ncx2 file may be moved, or in cache, etc LOOK
+      // directory always taken from proto, since ncx2 file may be moved, or in cache, etc
       gc.directory = gc.setOrgDirectory(proto.getTopDir());
       gc.indexVersion = proto.getVersion();
 
@@ -363,9 +363,10 @@ abstract class GribCollectionBuilderFromIndex {
   private Coordinate readCoord(GribCollectionProto.Coord pc) {
     Coordinate.Type type = convertAxisType(pc.getAxisType());
     int code = pc.getCode();
+    @Nullable
     String unit = pc.getUnit();
     if (unit.isEmpty()) {
-      unit = null; // LOOK may be null
+      unit = null;
     }
 
     switch (type) {

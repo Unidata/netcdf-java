@@ -43,7 +43,7 @@ public class NcepHtmlScraper {
 
   //////////////////////////////////////////////////////////////////
   // https://www.nco.ncep.noaa.gov/pmb/docs/on388/tablea.html
-  // LOOK the table is hand edited to add the units (!)
+  // the table is hand edited to add the units (!)
   void parseTable3() throws IOException {
     String url = "https://www.nco.ncep.noaa.gov/pmb/docs/on388/table3.html";
     Document doc = Jsoup.parse(new URL(url), 5 * 1000); // 5 sec timeout

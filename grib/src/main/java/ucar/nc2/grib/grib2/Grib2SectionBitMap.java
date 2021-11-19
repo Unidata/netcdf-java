@@ -85,7 +85,6 @@ public class Grib2SectionBitMap {
     if (bitMapIndicator == 255)
       return null;
 
-    // LOOK: bitMapIndicator=254 == previously defined bitmap
     if (bitMapIndicator == 254)
       logger.debug("bitMapIndicator=254 previously defined bitmap");
 

@@ -155,7 +155,7 @@ class VertScaleSlider extends JPanel {
   private int slider2index(int pval) {
     // optimization
     // return zAxis.findCoordElement(slider2world(pval));
-    // LOOK wrong
+    // TODO wrong
     return pval;
   }
 

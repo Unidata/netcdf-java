@@ -91,13 +91,12 @@ public class GribGrid implements Grid {
     return Double.isNaN(val);
   }
 
-  // LOOK Array could be Vlen for Fmrc
   @Override
   public GridReferencedArray readData(GridSubset subset) throws IOException, InvalidRangeException {
     Formatter errLog = new Formatter();
     Optional<MaterializedCoordinateSystem> opt = coordinateSystem.subset(subset, errLog);
     if (opt.isEmpty()) {
-      throw new InvalidRangeException(errLog.toString()); // LOOK lame. Optional, empty, null?
+      throw new InvalidRangeException(errLog.toString()); // TODO: Optional, empty, null?
     }
     MaterializedCoordinateSystem subsetCoordSys = opt.get();
 

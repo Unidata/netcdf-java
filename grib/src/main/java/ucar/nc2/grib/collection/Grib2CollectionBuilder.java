@@ -42,7 +42,7 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
   private final FeatureCollectionConfig.GribConfig gribConfig;
   private Grib2Tables cust;
 
-  // LOOK prob name could be dcm.getCollectionName()
+  // TODO probable name could just be dcm.getCollectionName()
   Grib2CollectionBuilder(String name, MCollection dcm, org.slf4j.Logger logger) {
     super(false, name, dcm, logger);
 

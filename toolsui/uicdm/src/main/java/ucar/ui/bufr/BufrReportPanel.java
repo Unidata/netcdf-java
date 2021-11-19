@@ -142,7 +142,7 @@ public class BufrReportPanel extends ReportPanel {
 
   private void doBufrSplitter(Formatter f, MCollection dcm, boolean useIndex) throws IOException {
     long start = System.currentTimeMillis();
-    String dirName = dcm.getRoot() + "/split"; // LOOK temp kludge
+    String dirName = dcm.getRoot() + "/split"; // TODO temp kludge
 
     f.format("BufrSplitter on files in collection %s, write to %s%n", dcm, dirName);
     BufrSplitter2 splitter = new BufrSplitter2(dirName, f);

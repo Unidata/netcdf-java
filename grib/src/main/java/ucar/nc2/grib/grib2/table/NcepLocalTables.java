@@ -353,7 +353,7 @@ class NcepLocalTables extends LocalTables {
   public GribStatType getStatType(int id) {
     if (id < 192)
       return super.getStatType(id);
-    switch (id) { // LOOK not correct
+    switch (id) { // TODO not correct
       case 192:
       case 193:
       case 194:

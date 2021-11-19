@@ -38,7 +38,7 @@ public class TestOpenGribGridDataset {
 
   @Test
   public void testTwodWhyNotMRUTP() throws IOException {
-    // LOOK why not MRUTP?
+    // TODO why not MRUTP?
     String endpoint = TestDir.cdmUnitTestDir + "tds_index/NCEP/NDFD/CPC/NDFD_CPC_CONUS_CONDUIT.ncx4";
     String gridName = "Temperature_surface_6_Day_Average_probability_below_0";
     testOpen(endpoint, gridName, new int[] {51, 1}, new int[] {}, new int[] {1377, 2145});

@@ -51,7 +51,7 @@ public class FldInputVerifier extends InputVerifier implements KeyListener {
 
     Point p = c.getLocationOnScreen();
     Dimension cDim = c.getSize();
-    popup = popupFactory.getPopup(c, main, (int) p.getX() + 15, (int) (p.getY() + cDim.getHeight())); // LOOK 1.4
+    popup = popupFactory.getPopup(c, main, (int) p.getX() + 15, (int) (p.getY() + cDim.getHeight()));
     popup.show();
   }
 

@@ -40,7 +40,7 @@ import static ucar.nc2.NetcdfFile.IOSP_MESSAGE_GET_NETCDF_FILE_FORMAT;
 /**
  * Creates new Netcdf 3/4 format files. Writes data to new or existing files.
  * <p/>
- * TODO in ver7, netcdf3 and netcdf4 will be seperate, so they can have different functionality.
+ * TODO make netcdf3 and netcdf4 will be seperate, so they can have different functionality.
  * <p/>
  * 
  * <pre>

@@ -51,7 +51,7 @@ public class TestGridSubsetCoordinateSystem {
 
   @Test
   public void testGridSubsetCoordinateSystem() throws Exception {
-    Grib.setDebugFlags(DebugFlags.create("Grib/indexOnly")); // LOOK needed?
+    Grib.setDebugFlags(DebugFlags.create("Grib/indexOnly"));
     System.err.printf("%nOpen %s grid='%s'%n", filename, gridName);
     Formatter errlog = new Formatter();
     try (ucar.nc2.grid.GridDataset gds = GridDatasetFactory.openGridDataset(filename, errlog)) {

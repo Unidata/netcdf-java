@@ -29,7 +29,7 @@ public class TestSparseArray {
     String vname = "Maximum_relative_humidity_height_above_ground_12_Hour_Maximum";
     String sa = testShowSparseArray(filename, vname);
     assertThat(sa).isNotNull();
-    // LOOK should start with 10 XXXXXXXXXX instead of 36.
+    // TODO should start with 10 XXXXXXXXXX instead of 36.
     assertThat(sa).contains("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
   }
 

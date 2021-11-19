@@ -154,8 +154,8 @@ class ConstructNetcdf {
     parent.addMemberVariable(seq);
     seq.setSPobject(fld);
 
-    // LOOK EmbeddedTable needs to be able to read the first message with a built Sequence.
-    // SO we create a temporary one as a workaround.
+    // EmbeddedTable needs to be able to read the first message with a built Sequence, so we create a
+    // temporary one as a workaround.
     Sequence.Builder<?> seqTemp = Sequence.builder().setName(uname);
     for (BufrConfig.FieldConverter subKey : fld.flds) {
       addMember(seqTemp, subKey);

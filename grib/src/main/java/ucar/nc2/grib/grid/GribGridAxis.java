@@ -353,7 +353,7 @@ public class GribGridAxis {
   ///////////////////////////////////////////////////////////////
   // re: CoordToGridAxis1D does this for NetcdfDataset
 
-  private static final double incrTol = 5.0e-3; // LOOK why so large?
+  private static final double incrTol = 5.0e-3; // TODO why so large?
 
   private static class RegularValues {
     int ncoords;

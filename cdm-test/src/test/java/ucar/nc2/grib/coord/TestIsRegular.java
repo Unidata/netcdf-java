@@ -85,7 +85,7 @@ public class TestIsRegular {
     boolean ok = true;
     for (int hour : minuteMap.keySet()) {
       List<CoordinateTimeAbstract> hg = minuteMap.get(hour);
-      boolean isOrthogonal = testOrthogonal(hg, false); // LOOK why orthogonal, why not regular?
+      boolean isOrthogonal = testOrthogonal(hg, false); // TODO why orthogonal, why not regular?
       System.out.printf("Hour %d: isOrthogonal=%s%n", hour, isOrthogonal);
       ok &= isOrthogonal;
     }
@@ -119,7 +119,7 @@ public class TestIsRegular {
 
   // orthogonal means that all the times can be made into a single time coordinate
   private boolean testIsOrthogonal(CoordinateTime2D time2D) {
-    // LOOK bogus this is not testig, just confiring that time2D.isOrthoganal = true
+    // TODO bogus this is not testing, just confiring that time2D.isOrthoganal = true
     List<CoordinateTimeAbstract> coords = new ArrayList<>();
     for (int runIdx = 0; runIdx < time2D.getNruns(); runIdx++) {
       coords.add(time2D.getTimeCoordinate(runIdx));

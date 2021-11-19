@@ -232,7 +232,7 @@ public class TextGetPutPane extends TextHistoryPane {
       IO.writeToFile(contents, path);
 
     } else {
-      // LOOK not implemented
+      // TODO not implemented
       // int status = HttpClientManager.putContent(uriString, contents);
       // javax.swing.JOptionPane.showMessageDialog(this, "Status code= " + status);
     }

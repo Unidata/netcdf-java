@@ -657,7 +657,7 @@ public class CdmIndexPanel extends JPanel {
     boolean ok = true;
     for (int hour : hourMap.keySet()) {
       List<CoordinateTimeAbstract> hg = hourMap.get(hour);
-      boolean isOrthogonal = testOrthogonal(f, hg, false); // LOOK why orthoginal, why not regular?
+      boolean isOrthogonal = testOrthogonal(f, hg, false); // TODO why orthoginal, why not regular?
       f.format("Hour %d: isOrthogonal=%s%n", hour, isOrthogonal);
       ok &= isOrthogonal;
     }

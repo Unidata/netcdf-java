@@ -90,10 +90,10 @@ public abstract class GribGridTimeCoordinateSystem extends GridTimeCoordinateSys
     super(type, runTimeAxis, timeOffsetAxis, runtimeDateUnit);
   }
 
-  // LOOK so what is special about GribGridTimeCoordinateSystem ??
-  // LOOK should this be MaterializedTimeCoordinateSystem ?
+  // TODO so what is special about GribGridTimeCoordinateSystem ??
+  // TODO should this be MaterializedTimeCoordinateSystem ?
   // it would appear the only thing needed out of it (besides geo referencing) is getSubsetRanges()
-  // LOOK if it has a runtime, does it have a dimension of length 1?
+  // TODO if it has a runtime, does it have a dimension of length 1?
   // are you allowed to subset across runtimes?
   public abstract Optional<GribGridTimeCoordinateSystem> subset(GridSubset params, Formatter errlog);
 
@@ -101,7 +101,7 @@ public abstract class GribGridTimeCoordinateSystem extends GridTimeCoordinateSys
   private static class Observation extends GribGridTimeCoordinateSystem {
 
     private Observation(GribGridDataset.CoordAndAxis time, CalendarDateUnit runtimeDateUnit) {
-      // LOOK MRMS_Radar_20201027_0000.grib2.ncx4 time2D has runtime in seconds, but period name is minutes
+      // TODO MRMS_Radar_20201027_0000.grib2.ncx4 time2D has runtime in seconds, but period name is minutes
       super(Type.Observation, null, time.axis, runtimeDateUnit);
     }
 

@@ -270,9 +270,7 @@ public class TestCalendarDate {
     // period.getOffset(CalendarDate start, CalendarDate end)
     // end.since(CalendarDate start, CalendarPeriod period);
     int startOffset = (int) forecastTimeStart.since(refTime, timeUnit);
-    // int startOffset = timeUnit.getOffset(refDate, start); // LOOK wrong - not dealing with value ??
     int endOffset = (int) forecastTimeEnd.since(refTime, timeUnit);
-    // int endOffset = timeUnit.getOffset(refDate, end);
 
     System.out.printf("start, end = (%d, %d)", startOffset, endOffset);
     assertThat(startOffset).isEqualTo(-3);

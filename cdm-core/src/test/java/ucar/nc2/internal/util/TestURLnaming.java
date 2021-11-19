@@ -25,7 +25,7 @@ public class TestURLnaming {
     testResolve("http://test/me/", "wanna", "http://test/me/wanna");
     testResolve("http://test/me/", "/wanna", "http://test/wanna");
     testResolve("file:/test/me/", "wanna", "file:/test/me/wanna");
-    testResolve("file:/test/me/", "/wanna", "/wanna"); // LOOK doesnt work for URI.resolve() directly.
+    testResolve("file:/test/me/", "/wanna", "/wanna"); // TODO doesnt work for URI.resolve() directly.
 
     testResolve("file://test/me/", "http:/wanna", "http:/wanna");
     testResolve("file://test/me/", "file:/wanna", "file:/wanna");

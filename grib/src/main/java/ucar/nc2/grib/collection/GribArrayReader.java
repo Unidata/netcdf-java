@@ -34,13 +34,7 @@ import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.nc2.grid.GridSubset;
 import ucar.unidata.io.RandomAccessFile;
 
-/**
- * Grib Data Reader.
- * Split from GribIosp, so can be used by GribCoverage.
- *
- * @author caron
- * @since 4/6/11
- */
+/** Grib Data Reader. */
 @Immutable
 public abstract class GribArrayReader {
   private static final Logger logger = LoggerFactory.getLogger(GribArrayReader.class);
@@ -89,9 +83,6 @@ public abstract class GribArrayReader {
    * SectionIterable iterates over the source indexes, corresponding to vindex's SparseArray.
    * IOSP: works because variable coordinate corresponds 1-1 to Grib Coordinate.
    * GribCoverage: must translate coordinates to Grib Coordinate index.
-   * LOOK want.getShape() indicates the result Array shape, may not be rectangular? How does Array represent that case?
-   * old way uses NaN. Could be Vlen ?? COuld restrict subset to only swuare, eg 1 runtime, 1 time.
-   * could specialize FmrcTimeCoordinateSystem
    * SectionIterable.next(int[] index) is not used here.
    */
   private Array<?> readDataFromCollection(GribCollectionImmutable.VariableIndex vindex, SectionIterable want)
@@ -102,7 +93,7 @@ public abstract class GribArrayReader {
     int rank = want.getRank();
     int sectionLen = rank - 2; // all but x, y
     SectionIterable sectionWanted = want.subSection(0, sectionLen);
-    // assert sectionLen == vindex.getRank(); LOOK true or false ??
+    // assert sectionLen == vindex.getRank(); TODO true or false ??
 
     // collect all the records that need to be read
     int resultIndex = 0;
@@ -307,7 +298,7 @@ public abstract class GribArrayReader {
       this.horizSize = yRange.length() * xRange.length();
 
       long len = Arrays.computeSize(shape);
-      if (len > 100 * 1000 * 1000 * 4) { // LOOK make configurable
+      if (len > 100 * 1000 * 1000 * 4) { // TODO make configurable
         logger.debug("Len greater that 100MB shape={}%n{}", java.util.Arrays.toString(shape),
             Throwables.getStackTraceAsString(new Throwable()));
         throw new IllegalArgumentException("RequestTooLarge: Len greater that 100M ");

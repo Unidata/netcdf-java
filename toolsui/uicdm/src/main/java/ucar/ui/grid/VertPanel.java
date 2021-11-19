@@ -108,7 +108,7 @@ class VertPanel extends JPanel {
       zupper = zmin;
     }
 
-    // LOOK: actuallly may be non-linear if its a 2D XY coordinate system, so this is just an approximation
+    // TODO: actuallly may be non-linear if its a 2D XY coordinate system, so this is just an approximation
     yleft = Math.min(yaxis.getCoordDouble(0), yaxis.getCoordDouble(ny - 1));
     yright = Math.max(yaxis.getCoordDouble(0), yaxis.getCoordDouble(ny - 1));
 

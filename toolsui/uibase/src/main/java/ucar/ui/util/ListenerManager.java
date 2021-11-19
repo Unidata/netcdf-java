@@ -14,7 +14,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 /**
  * Helper class for managing event listeners.
  * It is thread safe, but better not to be adding/deleting listeners while sending events.
- * LOOK Probably could replace with guava eventbus
  *
  * Example:
  * 

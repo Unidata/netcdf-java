@@ -162,7 +162,7 @@ public class Grib2JpegDecoder {
       ff.readFileFormat();
       if (ff.JP2FFUsed) {
         in.seek(ff.getFirstCodeStreamPos());
-        logger.warn("ff.JP2FFUsed is used"); // LOOK probably not
+        logger.warn("ff.JP2FFUsed is used");
       }
 
       // +----------------------------+
@@ -238,7 +238,7 @@ public class Grib2JpegDecoder {
 
       // **** Color space mapping ****
       String p = pl.getParameter("nocolorspace");
-      boolean nocolorspace = "off".equals(p); // LOOK not sure what default is here
+      boolean nocolorspace = "off".equals(p); // not sure what default is here
       if (ff.JP2FFUsed && nocolorspace) {
         try {
           csMap = new ColorSpace(in, hd, pl);
@@ -295,7 +295,6 @@ public class Grib2JpegDecoder {
           data = iwa.getGdata();
           // unSigned data processing here
           if (!isSigned) {
-            // float unSignIt = (float) java.lang.Math.pow((double) 2.0, fnb - 1); // LOOK WTF ?
             int nb = depth[i];
             int levShift = 1 << (nb - 1); // check
             if (nb != rate)

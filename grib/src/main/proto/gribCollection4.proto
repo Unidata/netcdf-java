@@ -116,7 +116,7 @@ message GribCollection {
   repeated Gds gds = 5;             // unique Gds, shared amongst datasets
   Coord masterRuntime = 6;  // list of runtimes in this GC
 
-  // LOOK these are taken from first record; not storing variants (!)
+  // TODO these are taken from first record; not storing variants (!)
   int32 center = 7;      // these 4 fields are to get a GribCustomizer
   int32 subcenter = 8;
   int32 master = 9;

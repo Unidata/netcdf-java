@@ -178,9 +178,8 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     long[] offsets = new long[nruns];
     for (int idx = 0; idx < nruns; idx++) {
       CoordinateTimeAbstract coordTime = (CoordinateTimeAbstract) orgTimes.get(idx);
-      CalendarPeriod period = coordTime.getTimeUnit(); // LOOK are we assuming all have same period ??
-      offsets[idx] = (int) runtime.getRuntimeDate(idx).since(firstDate, period); // LOOK possible loss of precision
-      // offsets[idx] = period.getOffset(firstDate, runtime.getRuntimeDate(idx)); // LOOK possible loss of precision
+      CalendarPeriod period = coordTime.getTimeUnit(); // TODO are we assuming all have same period ??
+      offsets[idx] = (int) runtime.getRuntimeDate(idx).since(firstDate, period); // TODO possible loss of precision
     }
     return offsets;
   }
@@ -189,8 +188,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     CalendarDate firstDate = runtime.getFirstDate();
     long[] offsets = new long[nruns];
     for (int idx = 0; idx < nruns; idx++) {
-      offsets[idx] = runtime.getRuntimeDate(idx).since(firstDate, period); // LOOK possible loss of precision
-      // offsets[idx] = period.getOffset(firstDate, runtime.getRuntimeDate(idx)); // LOOK possible loss of precision
+      offsets[idx] = runtime.getRuntimeDate(idx).since(firstDate, period); // TODO possible loss of precision
     }
     return offsets;
   }
@@ -476,7 +474,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
 
   public CoordinateTimeAbstract getTimeCoordinate(int runIdx) {
     if (isOrthogonal) {
-      // LOOK problem is cant use time.getRefDate(), must use time2D.getRefDate(runIdx) !!
+      // TODO problem is cant use time.getRefDate(), must use time2D.getRefDate(runIdx) !!
       return factory(otime, getRefDate(runIdx));
     }
 
@@ -519,7 +517,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
 
   // For MRUTC, MRUTP
   public CoordinateTimeAbstract getOffsetTimes() {
-    // LOOK assumes Point LOOK needs to be seconds, probably cant use this.offset ??
+    // TODO assumes Point, needs to be seconds, probably cant use this.offset ??
     List<Long> offsets = Arrays.stream(this.offset).boxed().collect(Collectors.toList());
     return new CoordinateTime(this.code, otime.timeUnit, otime.refDate, offsets, otime.time2runtime)
         .setName(this.getName());
@@ -532,7 +530,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
       return this.regTimes.values().stream().max(Comparator.comparingInt(CoordinateTimeAbstract::getNCoords))
           .orElseThrow();
     } else {
-      return getTimeCoordinate(0); // LOOK can use this for all?
+      return getTimeCoordinate(0); // TODO can use this for all?
     }
   }
 

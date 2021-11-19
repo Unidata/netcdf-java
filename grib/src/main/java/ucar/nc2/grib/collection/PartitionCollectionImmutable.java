@@ -405,7 +405,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
 
       int partno = run2part[masterIdx];
       if (partno < 0) {
-        return null; // LOOK is this possible?
+        return null; // may be impossible?
       }
 
       // the 2D component variable in the partno partition
@@ -504,82 +504,17 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
           logger.debug("  cant find partition={} in vip={}", partno, vip);
         return null;
       }
-      // LOOK was partVar = new PartitionForVariable2D(partnoSA.get(idx), groupnoSA.get(idx), varnoSA.get(idx));
-      // GroupGC g = ds.groups.get(partVar.groupno);
-      // GribCollection.VariableIndex vindex = g.variList.get(partVar.varno);
-      // now
 
       Partition p = getPartition(partno);
       try (GribCollectionImmutable gc = p.getGribCollection()) { // ensure that its read in try-with
         GribCollectionImmutable.Dataset ds = gc.getDatasetCanonical(); // always references the twoD or GC dataset
         // the group and variable index may vary across partitions
-        GribCollectionImmutable.GroupGC g = ds.groups.get(vip.groupnoSA.get(partWant)); // LOOK partWant vs partno ??
+        GribCollectionImmutable.GroupGC g = ds.groups.get(vip.groupnoSA.get(partWant)); // TODO partWant vs partno ??
         GribCollectionImmutable.VariableIndex vindex = g.variList.get(vip.varnoSA.get(partWant));
         vindex.readRecords();
         return vindex;
-      } // LOOK opening the file here, and then again to read the data. partition cache helps i guess but we could do
-      // better i think.
+      } // Note opening the file here, and again to read the data. partition cache helps but we could do better.
     }
-
-    /*
-     * MRUTP
-     * translate index in VariableIndexPartitioned to corresponding index in one of its component VariableIndex (which
-     * will be 2D)
-     * by matching coordinate values.
-     *
-     * @param wholeIndex index in VariableIndexPartitioned, runtime has been added
-     *
-     * @param vindex2Dpart component 2D VariableIndex
-     *
-     * @return corresponding index in compVindex2D, or null if missing
-     *
-     * private int[] translateIndex1D(int[] wholeIndex, GribCollectionImmutable.VariableIndex vindex2Dpart) {
-     * int[] result = new int[wholeIndex.length];
-     *
-     * // figure out the runtime index in the partition
-     * Coordinate runtime = vindex2Dpart.getCoordinate(0);
-     * int runtimeIdxPart = matchCoordinate(masterRuntime, masterIdx, runtime);
-     * if (runtimeIdxPart < 0)
-     * return null; // LOOK is this possible ?? should throw exception??
-     * result[0] = runtimeIdxPart;
-     *
-     * // figure out the other indexes in the partition
-     * // assumes gc coordinates in same order as iosp
-     * int countDim = 0;
-     * while (countDim < wholeIndex.length) {
-     * Coordinate wholeCoord = getCoordinate(countDim + 1);
-     * int idx = wholeIndex[countDim];
-     *
-     * Coordinate coordPart = vindex2Dpart.getCoordinate(countDim + 1); // wholeIndex(time, vert) -> vip(runtime, time,
-     * vert)
-     * int resultIdx;
-     * if (coordPart instanceof CoordinateTime2D) {
-     * CoordinateTime2D coordPart2D = (CoordinateTime2D) coordPart; // partition coordinate
-     * CoordinateTime2D coordWhole2D = (CoordinateTime2D) wholeCoord; // whole coordinate
-     * CoordinateTime2D.Time2D wholeVal = coordWhole2D.getOrgValue(masterIdx, idx);
-     * if (wholeVal == null) // is this possible?
-     * return null;
-     *
-     * resultIdx = coordPart2D.matchTimeCoordinate(runtimeIdxPart, wholeVal);
-     * // if (resultIdx < 0) resultIdx = compCoord2D.matchTimeCoordinate(runtimeIdxPart, wholeVal,
-     * wholeCoord1Dtime.getRefDate()); // debug
-     *
-     * } else {
-     * resultIdx = matchCoordinate(wholeCoord, idx, coordPart);
-     * // if (resultIdx < 0) resultIdx = matchCoordinate(wholeCoord1D, idx, compCoord); // debug
-     * }
-     * if (resultIdx < 0) {
-     * // logger.info("Couldnt match coordinates ({}) for variable {}", Misc.showInts(wholeIndex),
-     * compVindex2D.toStringFrom());
-     * return null;
-     * }
-     * result[countDim + 1] = resultIdx;
-     * countDim++;
-     * }
-     *
-     * return result;
-     * }
-     */
 
     /**
      * Best
@@ -601,8 +536,9 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
       assert time != null;
       int masterIdx = time.getMasterRuntimeIndex(timeIdx) - 1;
       int runtimeIdxPart = matchCoordinate(masterRuntime, masterIdx, compVindex2D.getCoordinate(0));
-      if (runtimeIdxPart < 0)
-        return null; // LOOK is this possible ??
+      if (runtimeIdxPart < 0) {
+        return null; // may be impossible ??
+      }
       result[0] = runtimeIdxPart;
 
       // figure out the time and any other dimensions

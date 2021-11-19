@@ -33,7 +33,7 @@ public class TestGribGridVsIosp {
   @Ignore("not working")
   @Test
   public void testTwodWhyNotMRUTP() throws IOException {
-    // LOOK why not MRUTP?
+    // TODO why not MRUTP?
     String endpoint = TestDir.cdmUnitTestDir + "tds_index/NCEP/NDFD/CPC/NDFD_CPC_CONUS_CONDUIT.ncx4";
     testOpen(endpoint);
   }

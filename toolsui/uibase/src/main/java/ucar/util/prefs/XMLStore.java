@@ -533,7 +533,6 @@ public class XMLStore {
         out.printf("%s<map>%n", indent);
         for (String key : keys) {
           Object value = prefs.getObjectNoDefaults(key);
-          // LOOK! test if in stored defaults ??
 
           if (value instanceof String) {
             if (debugWriteNested)

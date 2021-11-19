@@ -227,7 +227,6 @@ public class Grib2Iosp extends GribIosp {
     this.gtype = gtype;
   }
 
-  // LOOK more likely we will set an individual dataset
   Grib2Iosp(GribCollectionImmutable gc) {
     super(false, logger);
     this.gribCollection = gc;

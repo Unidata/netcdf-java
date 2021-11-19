@@ -101,8 +101,7 @@ public class Grib2Utils {
 
   //////////////////////////////////////////////////////////////////////////////////
   // ad-hoc Conventions for identifying curvilinear coordinates.
-  // possibly move to Customizer
-  // LOOK is there some real Convention?
+  // TODO possibly move to Customizer
 
   // check if grid template is "Curvilinear Orthogonal", (NCEP 204) methods below only used when thats true
   public static boolean isCurvilinearOrthogonal(int gridTemplate, int center) {

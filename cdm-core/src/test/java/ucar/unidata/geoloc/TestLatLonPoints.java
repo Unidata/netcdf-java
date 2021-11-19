@@ -85,7 +85,7 @@ public class TestLatLonPoints {
   @Test
   public void testIsInfinite() {
     assertThat(LatLonPoints.isInfinite(ProjectionPoint.create(89.501, 399.999))).isFalse();
-    assertThat(LatLonPoints.isInfinite(ProjectionPoint.create(89.501, Double.NaN))).isFalse(); // LOOK ok?
+    assertThat(LatLonPoints.isInfinite(ProjectionPoint.create(89.501, Double.NaN))).isFalse();
     assertThat(LatLonPoints.isInfinite(ProjectionPoint.create(89.501, Double.POSITIVE_INFINITY))).isTrue();
   }
 

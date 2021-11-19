@@ -211,8 +211,8 @@ abstract class GribCollectionBuilder {
       // if multiple Runtimes, we will write a partition. otherwise, we need to use the standard name (without runtime)
       // so we know the filename from the collection
       String gcname = multipleRuntimes ? GribCollectionMutable.makeName(this.name, g.getRuntime()) : this.name;
-      MFile indexFileForRuntime = GribCollectionMutable.makeIndexMFile(gcname, directory); // not using disk cache LOOK
-                                                                                           // why ?
+      // TODO not using disk cache: why ?
+      MFile indexFileForRuntime = GribCollectionMutable.makeIndexMFile(gcname, directory);
       partitions.add(indexFileForRuntime);
 
       // create the master runtimes, consisting of the single runtime

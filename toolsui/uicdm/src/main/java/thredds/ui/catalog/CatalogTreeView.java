@@ -225,7 +225,6 @@ public class CatalogTreeView extends JPanel {
    * Set the currently selected InvDataset.
    * 
    * @param ds select this InvDataset, must be already in the tree.
-   *        LOOK does this work ?? doesnt throw event
    */
   public void setSelectedDataset(Dataset ds) {
     if (ds == null)
@@ -244,9 +243,7 @@ public class CatalogTreeView extends JPanel {
    * @return the corresponding TreePath.
    */
   TreePath makePath(Dataset ds) {
-    return null;
-    // TreeNode node = (TreeNode) ds.getUserProperty("TreeNode"); // LOOK
-    // return makeTreePath( node);
+    return null; // TODO
   }
 
   /**

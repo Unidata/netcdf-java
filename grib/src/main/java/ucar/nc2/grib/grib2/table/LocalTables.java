@@ -54,7 +54,7 @@ abstract class LocalTables extends Grib2Tables {
   @Override
   public String getVariableName(int discipline, int category, int number) {
     if (isLocal(discipline, category, number))
-      return super.getVariableName(discipline, category, number); // LOOK may have to change
+      return super.getVariableName(discipline, category, number);
 
     GribTables.Parameter te = getParameter(discipline, category, number);
     if (te == null)

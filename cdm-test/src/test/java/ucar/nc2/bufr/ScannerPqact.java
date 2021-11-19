@@ -288,7 +288,7 @@ public class ScannerPqact extends Scanner {
   static WritableByteChannel wbc;
   static Formatter out = new Formatter(System.out);
 
-  // LOOK turn this into a test
+  // TODO turn this into a test
   static public void main(String args[]) throws IOException {
 
     // read pattern matching

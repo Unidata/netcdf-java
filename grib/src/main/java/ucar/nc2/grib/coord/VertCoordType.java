@@ -15,7 +15,7 @@ public class VertCoordType {
   private final boolean isPositiveUp;
   private final boolean isLayer;
 
-  // LOOK for Grib2Utils - CHANGE THIS
+  // TODO This is just for Grib2Utils - CHANGE THIS
   public VertCoordType(int code, String units, String datum, boolean isPositiveUp) {
     this.code = code;
     this.desc = null;

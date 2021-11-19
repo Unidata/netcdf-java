@@ -258,7 +258,7 @@ public class DirectoryPartitionViewer extends JPanel {
   // ncx2 index
   private void setCollectionFromIndex(String indexFilename) {
     isFromIndex = true;
-    config = new FeatureCollectionConfig(); // LOOK !!
+    config = new FeatureCollectionConfig();
 
     File indexFile = new File(indexFilename);
     File parentFile = indexFile.getParentFile();

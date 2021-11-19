@@ -114,7 +114,7 @@ class GribIospBuilder {
     } else if (isLatLon2D) { // CurvilinearOrthogonal - lat and lon fields must be present in the file
       horizDims = Grib.LAT_AXIS + " " + Grib.LON_AXIS;
 
-      // LOOK - assume same number of points for all grids
+      // Assume same number of points for all grids
       g.addDimension(new Dimension(Grib.LON_AXIS, hcs.nx));
       g.addDimension(new Dimension(Grib.LAT_AXIS, hcs.ny));
 
@@ -320,7 +320,7 @@ class GribIospBuilder {
         if (isLatLon2D) { // special case of "LatLon Orthogononal"
           String s = iosp.searchCoord(Grib2Utils.getLatLon2DcoordType(desc), group.variList);
           if (s == null) { // its a 2D lat/lon coordinate
-            v.setDimensionsByName(horizDims); // LOOK make this 2D and munge the units
+            v.setDimensionsByName(horizDims);
             String units = desc.contains("Latitude of") ? CDM.LAT_UNITS : CDM.LON_UNITS;
             v.addAttribute(new Attribute(CDM.UNITS, units));
 
@@ -334,7 +334,6 @@ class GribIospBuilder {
 
         // statistical interval type
         if (vindex.getIntvType() >= 0) {
-          // LOOK find the time coordinate
           GribStatType statType = gribTable.getStatType(vindex.getIntvType());
           if (statType != null) {
             v.addAttribute(new Attribute(Grib.GRIB_STAT_TYPE, statType.toString()));

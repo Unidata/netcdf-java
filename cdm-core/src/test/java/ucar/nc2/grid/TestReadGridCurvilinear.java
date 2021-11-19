@@ -90,7 +90,7 @@ public class TestReadGridCurvilinear {
     readGrid(filename, "wv", ImmutableList.of(432, 22, 12), "time ypos xpos", null, null, new int[] {1, 22, 12});
   }
 
-  // LOOK may be flakey because when ncx is generated, time coordinate naming is arbitrary.
+  // TODO may be flakey because when ncx is generated, time coordinate naming is arbitrary.
   // If persists, maybe dont check cs name.
   @Test
   public void testGribCurvilinear() throws IOException, InvalidRangeException {

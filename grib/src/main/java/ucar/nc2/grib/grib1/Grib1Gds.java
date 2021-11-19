@@ -760,7 +760,7 @@ public abstract class Grib1Gds {
 
     protected float la1, lo1, lov, dX, dY;
     protected int projCenterFlag;
-    private final float lad = (float) 60.0; // LOOK
+    private final float lad = (float) 60.0; // TODO WTF?
 
     protected PolarStereographic(int template) {
       super(template);
@@ -863,7 +863,7 @@ public abstract class Grib1Gds {
       // since the scale factor at 60 degrees = k = 2*k0/(1+sin(60)) [Snyder,Working Manual p157]
       // then to make scale = 1 at 60 degrees, k0 = (1+sin(60))/2 = .933
       double scale;
-      if (Double.isNaN(lad)) { // LOOK ??
+      if (Double.isNaN(lad)) {
         scale = 0.9330127018922193;
       } else {
         scale = (1.0 + Math.sin(Math.toRadians(Math.abs(lad)))) / 2;
@@ -1200,7 +1200,6 @@ public abstract class Grib1Gds {
     public GdsHorizCoordSys makeHorizCoordSys() {
       // put longitude origin at first point - doesnt actually matter
       // param par standard parallel (degrees). cylinder cuts earth at this latitude.
-      // LOOK dont have an elipsoidal Mercator projection
       Earth earth = getEarth();
       ucar.unidata.geoloc.projection.Mercator proj =
           new ucar.unidata.geoloc.projection.Mercator(lo1, latin, 0, 0, earth.getEquatorRadius() * .001);
@@ -1293,10 +1292,6 @@ public abstract class Grib1Gds {
     public GdsHorizCoordSys makeHorizCoordSys() {
       ucar.unidata.geoloc.projection.RotatedLatLon proj =
           new ucar.unidata.geoloc.projection.RotatedLatLon(latSouthPole, lonSouthPole, angleRotation);
-      // LOOK dont transform - works for grib1 Q:/cdmUnitTest/transforms/HIRLAMhybrid.grib
-      // LatLonPoint startLL = proj.projToLatLon(ProjectionPoint.create(lo1, la1));
-      // double startx = startLL.getLongitude();
-      // double starty = startLL.getLatitude();
       return new GdsHorizCoordSys(getNameShort(), template, 0, scanMode, proj, lo1, deltaLon, la1, deltaLat, nx, ny,
           null);
     }
@@ -1322,7 +1317,7 @@ public abstract class Grib1Gds {
   }
 
   /*
-   * LOOK not done yet
+   * TODO not done yet
    * Grid definition – spherical harmonic coefficients (including rotated, stretched or stretched and rotated)
    * Octet No. Contents
    * 7–8 J – pentagonal resolution parameter
@@ -1371,7 +1366,7 @@ public abstract class Grib1Gds {
 
     @Override
     public GdsHorizCoordSys makeHorizCoordSys() {
-      return null; // LOOK not done yet
+      return null; // TODO
     }
 
     @Override
@@ -1402,7 +1397,7 @@ public abstract class Grib1Gds {
 
     @Override
     public GdsHorizCoordSys makeHorizCoordSys() {
-      return null; // LOOK
+      return null;
     }
 
     @Override

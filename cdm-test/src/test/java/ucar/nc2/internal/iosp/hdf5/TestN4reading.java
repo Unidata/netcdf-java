@@ -304,9 +304,6 @@ public class TestN4reading {
       int index = 2;
       String memberName = "temp_vl";
       StructureData sdata = as.get(2);
-      // LOOK, should we unwrap a layer?
-      // Array<Array<Float>> vvdata = (Array<Array<Float>>) sdata.getMemberData(memberName);
-      // Array<Float> vdata = vvdata.get(0);
       Array<Float> vdata = (Array<Float>) sdata.getMemberData(memberName);
       assertThat(vdata.getSize()).isEqualTo(3);
       Index ii = vdata.getIndex();
@@ -353,10 +350,9 @@ public class TestN4reading {
       assert as.getSize() == vshape[0]; // int loopDataA(1, *, *);
       StructureData sdata = as.get(0);
 
-      // LOOK problem is that this may be a Array of Array or an Array.
+      // TODO i thought maybe there would be 2. are we handling this correctly ??
       Array<Integer> a1 = (Array<Integer>) sdata.getMemberData("loopDataA");
-      assertThat(a1.getArrayType()).isEqualTo(ArrayType.INT); // i thought maybe there would be 2. are we handling this
-                                                              // correctly ??
+      assertThat(a1.getArrayType()).isEqualTo(ArrayType.INT);
       assert a1.getSize() == 2;
       Index ii = a1.getIndex();
       assert a1.get(ii.set(1)) == 50334;

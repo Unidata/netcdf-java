@@ -23,7 +23,7 @@ import java.util.List;
 /**
  * BUFR allows you to encode a BUFR table in BUFR.
  * if table is embedded, all entries must be from it
- * LOOK: may be NCEP specific ?
+ * May be NCEP specific.
  */
 public class EmbeddedTable implements EmbeddedTableIF {
   private static final boolean showB = false;

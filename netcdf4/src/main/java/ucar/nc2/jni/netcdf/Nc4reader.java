@@ -54,7 +54,6 @@ import java.util.*;
  * @see <a href="http://earthdata.nasa.gov/sites/default/files/field/document/ESDS-RFC-022v1.pdf" />
  * @see <a href=
  *      "https://www.unidata.ucar.edu/software/netcdf/docs/faq.html#How-can-I-convert-HDF5-files-into-netCDF-4-files" />
- *      LOOK needs to be refactored. Perhaps using ffi ?
  */
 public class Nc4reader extends AbstractIOServiceProvider {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Nc4reader.class);
@@ -584,7 +583,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
       count += vlen[i].len;
     }
 
-    // LOOK other data types ?
+    // TODO other data types
     switch (userType.baseTypeid) {
       case Nc4prototypes.NC_INT: {
         int[] parray = new int[count];
@@ -737,7 +736,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
     }
   }
 
-  // LOOK temporary results in the fld of the userType - ok for production ??
+  // TODO temporary results in the fld of the userType - ok for production ??
   private void decodeCompoundAttData(int len, UserType userType, ByteBuffer nc4bytes) throws IOException {
     nc4bytes.order(ByteOrder.LITTLE_ENDIAN);
     for (CompoundField fld : userType.flds) {
@@ -925,7 +924,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
       if (utype != null) {
         // Coverity[FB.URF_UNREAD_FIELD]
         vinfo.utype = utype;
-        if (utype.typeClass == Nc4prototypes.NC_VLEN) // LOOK ??
+        if (utype.typeClass == Nc4prototypes.NC_VLEN)
           dimList = dimList + " *";
       }
 
@@ -1445,7 +1444,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
     }
   }
 
-  // LOOK can we combine with readCompoundAttValues?
+  // TODO can we combine with readCompoundAttValues?
   private Array<?> readCompound(int grpid, int varid, Section section, UserType userType) throws IOException {
     SizeT[] origin = convertSizeT(section.getOrigin());
     SizeT[] shape = convertSizeT(section.getShape());
@@ -1462,7 +1461,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
       throw new IOException(ret + ": " + nc4.nc_strerror(ret));
 
     ByteBuffer bb = ByteBuffer.wrap(bbuff);
-    bb.order(ByteOrder.nativeOrder()); // LOOK c library returns in native order i hope
+    bb.order(ByteOrder.nativeOrder()); // c library returns in native order i hope
 
     /*
      * This does not seem right since the user type does not
@@ -1491,7 +1490,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
     for (CompoundField fld : userType.flds) {
       StructureMembers.MemberBuilder mb = smb.addMember(fld.name, null, null, fld.ctype.dt, fld.dims);
       mb.setOffset(fld.offset);
-      mb.setByteOrder(ByteOrder.nativeOrder()); // LOOK c library returns in native order i hope
+      mb.setByteOrder(ByteOrder.nativeOrder()); // c library returns in native order i hope
 
       if (fld.ctype.dt == ArrayType.STRUCTURE) {
         UserType nested_utype = userTypes.get(fld.fldtypeid);
@@ -1505,7 +1504,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
     return smb;
   }
 
-  // LOOK: handling nested ??
+  // TODO: handling nested ??
   private void convertHeap(StructureDataStorageBB storage, ByteBuffer bb, int pos, StructureMembers sm)
       throws IOException {
     for (StructureMembers.Member m : sm.getMembers()) {
@@ -1562,7 +1561,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
 
   /**
    * Note that this only works for atomic base types; structures will fail.
-   * LOOK can we combine with readVlenAttValues? decodeVlenField()? convertHeap() also has Vlen
+   * TODO can we combine with readVlenAttValues? decodeVlenField()? convertHeap() also has Vlen
    */
   Array<?> readVlen(int grpid, int varid, UserType userType, Section section) throws IOException {
     // Read all the vlen pointers
@@ -1654,7 +1653,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
   // Opaque is Vlen of byte
   // due to limits of HDF5 OPAQUE data type, all Opaques are the same size. Which kind of defeats one
   // of the main use cases of Opaque.
-  // LOOK can we combine with readOpaqueAttValues?
+  // TODO can we combine with readOpaqueAttValues?
   private Array<?> readOpaque(int grpid, int varid, Section section, int objectSize) throws IOException {
     int ret;
     SizeT[] origin = convertSizeT(section.getOrigin());
@@ -1748,7 +1747,6 @@ public class Nc4reader extends AbstractIOServiceProvider {
     return to;
   }
 
-  // LOOK Huh?
   private static class ConvertedType {
     ArrayType dt;
     boolean isVlen;
@@ -1794,7 +1792,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
         return new ConvertedType(ArrayType.DOUBLE);
 
       case Nc4prototypes.NC_ENUM:
-        return new ConvertedType(ArrayType.ENUM1); // LOOK width ??
+        return new ConvertedType(ArrayType.ENUM1); // TODO width ??
 
       case Nc4prototypes.NC_STRING:
         return new ConvertedType(ArrayType.STRING);
@@ -2133,7 +2131,7 @@ public class Nc4reader extends AbstractIOServiceProvider {
 
     Variable.Builder<?> makeMemberVariable(Group.Builder g) throws IOException {
       Variable.Builder<?> v = makeVariable(g, name, fldtypeid, "");
-      v.setDimensionsAnonymous(dims); // LOOK no shared dimensions ?
+      v.setDimensionsAnonymous(dims);
       return v;
     }
   }

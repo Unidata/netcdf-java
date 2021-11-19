@@ -52,7 +52,6 @@ public class GribCoverageValidator implements GribDataValidator {
 
     // time offset
     Double timeOffset = coords.getTimeOffset();
-    CoordInterval timeOffsetIntv = coords.getTimeOffsetIntv(); // LOOK ??
     if (timeOffset == null) {
       logger.debug("no timeOffsetCoord ");
       return;

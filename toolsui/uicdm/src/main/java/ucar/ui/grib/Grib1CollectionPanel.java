@@ -458,7 +458,7 @@ public class Grib1CollectionPanel extends JPanel {
     java.util.List<ParameterBean> params = new ArrayList<>();
     java.util.List<Gds1Bean> gdsList = new ArrayList<>();
 
-    this.cust = null; // LOOK reset for each file (?)
+    this.cust = null; // reset for each file (?)
     int fileno = 0;
     for (MFile mfile : fileList) {
       f.format("%n %s%n", mfile.getPath());
@@ -785,7 +785,7 @@ public class Grib1CollectionPanel extends JPanel {
 
     public CalendarDate getForecastDate() {
       CalendarPeriod period = GribUtils.getCalendarPeriod(pds.getTimeUnit());
-      CalendarDateUnit unit = CalendarDateUnit.of(period.getField(), false, getReferenceDate()); // LOOK
+      CalendarDateUnit unit = CalendarDateUnit.of(period.getField(), false, getReferenceDate());
       int timeCoord;
       if (ptime.isInterval()) {
         int[] intv = ptime.getInterval();

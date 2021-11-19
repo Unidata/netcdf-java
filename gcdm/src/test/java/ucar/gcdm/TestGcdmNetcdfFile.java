@@ -50,7 +50,7 @@ public class TestGcdmNetcdfFile {
   public TestGcdmNetcdfFile(String filename) {
     this.filename = filename.replace("\\", "/");
 
-    // LOOK kludge for now. Also, need to auto start up CmdrServer
+    // kludge for now. Also, need to auto start up CmdrServer
     this.gcdmUrl = "gcdm://localhost:16111/" + this.filename;
   }
 

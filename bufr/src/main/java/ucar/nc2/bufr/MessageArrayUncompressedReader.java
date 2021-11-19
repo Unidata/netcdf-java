@@ -56,12 +56,12 @@ import ucar.unidata.io.RandomAccessFile;
  * --------------------------
  * 
  * We use an StructureDataStorageBB to hold the data, and fill it sequentially as we scan the message.
- * Fixed length nested Structures are kept in the ArrayStructureBB. LOOK
+ * Fixed length nested Structures are kept in the ArrayStructureBB.
  * Variable length objects (Sequences) are added to the heap.
  */
 class MessageArrayUncompressedReader {
   private static final boolean structuresOnHeap = false;
-  private final Message message; // LOOK gets modified I think
+  private final Message message; // TODO gets modified I think
   private final RandomAccessFile raf;
   private final Formatter f;
 
@@ -85,7 +85,7 @@ class MessageArrayUncompressedReader {
    * @param f output bit count debugging info (may be null)
    */
   MessageArrayUncompressedReader(Structure s, Message proto, Message m, RandomAccessFile raf, @Nullable Formatter f) {
-    // transfer info from proto message LOOK is message modified here?
+    // transfer info from proto message TODO is message modified here?
     DataDescriptor.transferInfo(proto.getRootDataDescriptor().getSubKeys(), m.getRootDataDescriptor().getSubKeys());
     this.message = m;
     this.raf = raf;
@@ -115,7 +115,7 @@ class MessageArrayUncompressedReader {
     DataDescriptor root = message.getRootDataDescriptor();
     if (!root.isBad) {
       Request req = new Request(this.storageBB, this.bbuffer, topmap);
-      // LOOK why are we changing fields in the message. Could this be in req??
+      // TODO why are we changing fields in the message. Could this be in req??
       // Or is this the way we send the info back?
       message.counterDatasets = new BitCounterUncompressed[this.nelems]; // one for each dataset
       message.msg_nbits = 0;// loop over the rows
@@ -240,7 +240,7 @@ class MessageArrayUncompressedReader {
 
       int expected = member.getOffset(); // + row * req.storageBB.getStructureSize();
       int pos = req.bb.position();
-      // LOOK not setting position, relying on correct sequence of writing bytes....
+      // Not setting position, relying on correct sequence of writing bytes....
       // req.bb.position(member.getOffset() + nestedRow * member.getStorageSizeBytes());
       MessageArrayReaderUtils.putNumericData(dkey, req.bb, value);
 

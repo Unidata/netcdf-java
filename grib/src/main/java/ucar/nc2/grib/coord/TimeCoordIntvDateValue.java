@@ -60,7 +60,6 @@ public class TimeCoordIntvDateValue implements Comparable<TimeCoordIntvDateValue
       throw new IllegalArgumentException("null time unit");
     }
     int startOffset = (int) start.since(refDate, timeUnit);
-    // int startOffset = timeUnit.getOffset(refDate, start); // LOOK wrong - not dealing with value ??
     int endOffset = (int) end.since(refDate, timeUnit);
     // int endOffset = timeUnit.getOffset(refDate, end);
     return new TimeCoordIntvValue(startOffset, endOffset);

@@ -80,7 +80,7 @@ public class TestGcdmGridConverter {
     System.out.printf("getAbsolutePath %s%n", file.getAbsolutePath());
     System.out.printf("getCanonicalPath %s%n", file.getCanonicalPath());
 
-    // LOOK kludge for now. Also, need to auto start up CmdrServer
+    // kludge for now. Also, need to auto start up CmdrServer
     this.gcdmUrl = "gcdm://localhost:16111/" + file.getCanonicalPath();
   }
 

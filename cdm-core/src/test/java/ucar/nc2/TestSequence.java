@@ -16,7 +16,6 @@ import ucar.array.StructureDataArray;
 import ucar.array.StructureDataStorageBB;
 import ucar.array.StructureMembers;
 import ucar.array.Array;
-import ucar.array.InvalidRangeException;
 import ucar.array.Section;
 import ucar.array.StructureData;
 

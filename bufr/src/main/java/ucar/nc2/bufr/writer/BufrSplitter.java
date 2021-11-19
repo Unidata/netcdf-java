@@ -43,7 +43,7 @@ public class BufrSplitter {
     dispatcher = new MessageDispatchDDS(null, dirOut);
   }
 
-  // LOOK - needs to be a directory, or maybe an MFILE collection
+  // TODO - needs to be a directory, or maybe an MFILE collection
   public void execute(String filename) throws IOException {
     File input = new File(filename);
     out.format("BufrSplitter on %s length=%d%n", input.getPath(), input.length());

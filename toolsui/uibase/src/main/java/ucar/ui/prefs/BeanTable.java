@@ -387,7 +387,7 @@ public class BeanTable<T> extends JPanel {
   public void setBeans(List<T> beans) {
     this.beans = (beans == null) ? new ArrayList<>() : new ArrayList<>(beans);
     model.fireTableDataChanged(); // this should make the jtable update
-    revalidate(); // LOOK sometimes it doesnt, try this
+    revalidate();
   }
 
   public void clearBeans() {

@@ -73,18 +73,19 @@ abstract class GribPartitionBuilder {
     return needsUpdate(ff, collectionIndexFile);
   }
 
-  // LOOK need an option to only scan latest last partition or something
+  // TODO need an option to only scan latest last partition or something
   private boolean needsUpdate(CollectionUpdateType ff, File collectionIndexFile) throws IOException {
     long collectionLastModified = collectionIndexFile.lastModified();
     Set<String> newFileSet = new HashSet<>();
     for (MCollection dcm : partitionManager.makePartitions(CollectionUpdateType.test)) {
       String partitionIndexFilename = StringUtil2.replace(dcm.getIndexFilename(GribCdmIndex.NCX_SUFFIX), '\\', "/");
       File partitionIndexFile = GribIndexCache.getExistingFileOrCache(partitionIndexFilename);
-      if (partitionIndexFile == null) // make sure each partition has an index
+      if (partitionIndexFile == null) { // make sure each partition has an index
         return true;
-      if (collectionLastModified < partitionIndexFile.lastModified()) // and the partition index is earlier than the
-                                                                      // collection index
+      }
+      if (collectionLastModified < partitionIndexFile.lastModified()) { // and the partition is earlier collection
         return true;
+      }
       newFileSet.add(partitionIndexFilename);
     }
 
@@ -137,7 +138,7 @@ abstract class GribPartitionBuilder {
     PartitionCollectionMutable.Partition canon = result.getPartition(idx);
     logger.debug("     Using canonical partition {}", canon.getDcm().getCollectionName());
 
-    try (GribCollectionMutable gc = canon.makeGribCollection()) { // LOOK open/close canonical partition
+    try (GribCollectionMutable gc = canon.makeGribCollection()) {
       if (gc == null)
         throw new IllegalStateException("canon.makeGribCollection failed on =" + result.showLocation() + " "
             + canon.getName() + "; errs=" + errlog);
@@ -219,7 +220,7 @@ abstract class GribPartitionBuilder {
     CalendarDateRange dateRangeAll = null;
     boolean rangeOverlaps = false;
     for (PartitionCollectionMutable.Partition tpp : result.getPartitions()) {
-      // LOOK open/close each child partition. could leave open ? they are NOT in cache
+      // TODO open/close each child partition. could leave open ? they are NOT in cache
       try (GribCollectionMutable gc = tpp.makeGribCollection()) {
         if (gc == null)
           continue; // skip if they dont exist
@@ -338,7 +339,7 @@ abstract class GribPartitionBuilder {
       for (GribCollectionMutable.VariableIndex viResult : resultGroup.variList) {
         PartitionCollectionMutable.VariableIndexPartitioned vip =
             (PartitionCollectionMutable.VariableIndexPartitioned) viResult;
-        vip.finish(); // create the SA, remove list LOOK, could do it differently
+        vip.finish(); // create the SA, remove list
 
         // loop over partitions, make union coordinate; also time filter the intervals
         CoordinatePartitionUnionizer unionizer = new CoordinatePartitionUnionizer(viResult, intvMap, logger);
@@ -402,23 +403,6 @@ abstract class GribPartitionBuilder {
     CoordinateTimeAbstract.cdf = null;
     return ds2D;
   }
-
-
-  /*
-   * LOOK heres a place where one could "post process" and combine, instead of at coverage level.
-   * // this would benefit iosp, ie the netcdf API
-   * private void makeTime2runtime(GribCollectionMutable.Dataset ds2D, boolean isComplete) throws IOException {
-   * 
-   * for (GribCollectionMutable.GroupGC group2D : ds2D.groups) {
-   * // for each time2D, add time2runtime
-   * for (Coordinate coord : group2D.coords) {
-   * if (coord instanceof CoordinateTime2D) {
-   * ((CoordinateTime2D) coord).makeTime2runtime(result.masterRuntime);
-   * }
-   * }
-   * }
-   * }
-   */
 
   private void makeDatasetBest(GribCollectionMutable.Dataset ds2D, boolean isComplete) {
     GribCollectionMutable.Dataset dsBest =
@@ -731,7 +715,7 @@ abstract class GribPartitionBuilder {
       for (int i = 0; i < vp.nparts; i++) // PartitionCollection.PartitionForVariable2D pvar :
                                           // vp.getPartitionForVariable2D())
         b.addPartVariable(writePartitionVariableProto(vp.partnoSA.get(i), vp.groupnoSA.get(i), vp.varnoSA.get(i),
-            vp.nrecords, vp.ndups, vp.nmissing)); // LOOK was it finished ??
+            vp.nrecords, vp.ndups, vp.nmissing));
     }
 
     return b.build();
@@ -782,8 +766,9 @@ abstract class GribPartitionBuilder {
     // b.setDirectory(p.directory);
     b.setLastModified(p.lastModified);
     b.setLength(p.fileSize);
-    if (p.partitionDate != null)
-      b.setPartitionDate(p.partitionDate.getMillisFromEpoch()); // LOOK what about calendar ??
+    if (p.partitionDate != null) {
+      b.setPartitionDate(p.partitionDate.getMillisFromEpoch()); // TODO what about calendar ??
+    }
 
     return b.build();
   }

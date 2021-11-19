@@ -65,7 +65,7 @@ public class StandardFields {
     addField("0-7-10", BufrCdmIndexProto.FldType.height);
     addField("0-7-7", BufrCdmIndexProto.FldType.height);
 
-    // 4th choice LOOK
+    // 4th choice
     addField("0-1-5", BufrCdmIndexProto.FldType.stationId);
     addField("0-1-6", BufrCdmIndexProto.FldType.stationId);
     // addField("0-1-7", BufrCdmIndexProto.FldType.stationId); satellite id
@@ -182,8 +182,6 @@ public class StandardFields {
       if (typeMap.get(BufrCdmIndexProto.FldType.month) == null)
         return false;
       return typeMap.get(BufrCdmIndexProto.FldType.day) != null || typeMap.get(BufrCdmIndexProto.FldType.doy) != null;
-      // if (typeMap.get(BufrCdmIndexProto.FldType.hour) == null) return false; // LOOK could assume 0:0 ??
-      // if (typeMap.get(BufrCdmIndexProto.FldType.minute) == null) return false;
     }
 
     @Override
@@ -236,7 +234,7 @@ public class StandardFields {
     private Map<BufrCdmIndexProto.FldType, Field> map = new HashMap<>();
 
     public StandardFieldsFromStructure(int center, Structure obs) {
-      // run through all available fields - LOOK we are not recursing into sub sequences
+      // run through all available fields - TODO we are not recursing into sub sequences
       for (Variable v : obs.getVariables()) {
         Attribute att = v.attributes().findAttribute(BufrIosp.fxyAttName);
         if (att == null)

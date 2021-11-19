@@ -70,7 +70,7 @@ public class Grib1SectionGridDefinition {
 
   public Grib1SectionGridDefinition(Grib1SectionProductDefinition pds) {
     startingPosition = -1;
-    gridTemplate = -pds.getGridDefinition(); // LOOK ??
+    gridTemplate = -pds.getGridDefinition(); // TODO ??
     rawData = null;
     predefinedGridDefinitionCenter = pds.getCenter();
     predefinedGridDefinition = pds.getGridDefinition();

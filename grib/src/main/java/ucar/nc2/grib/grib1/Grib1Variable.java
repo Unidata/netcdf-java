@@ -70,7 +70,7 @@ public class Grib1Variable {
     this.cust = cust;
     this.pds = pds;
     this.gds = gds;
-    this.gdsHash = gds.hashCode(); // LOOK this assumes no overridden gds hashCodes have made it into the ncx
+    this.gdsHash = gds.hashCode(); // TODO this assumes that no overridden gds hashCodes have made it into the ncx
     this.useTableVersion = useTableVersion;
     this.intvMerge = intvMerge;
     this.useCenter = useCenter;
@@ -132,7 +132,6 @@ public class Grib1Variable {
     result += result * 31 + gdsHash;
 
     result += result * 31 + pds.getLevelType();
-    // if (cust.isLayer(pds.getLevelType())) result += result * 31 + 1; // LOOK not needed if same level type
 
     if (useTableVersion)
       result += result * 31 + pds.getTableVersion();

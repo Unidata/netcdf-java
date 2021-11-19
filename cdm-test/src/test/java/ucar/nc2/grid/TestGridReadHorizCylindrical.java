@@ -97,7 +97,7 @@ public class TestGridReadHorizCylindrical {
     }
   }
 
-  // LOOK need examples for irregular and nominal
+  // TODO need examples for irregular and nominal
 
   @Test
   public void testLongitudeSubsetWithHorizontalStride() throws Exception {

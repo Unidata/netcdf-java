@@ -79,7 +79,7 @@ class CfsrLocalTables extends NcepLocalTables {
       return null;
     }
 
-    // LOOK this is hack for CFSR monthly combobulation
+    // This is hack for CFSR monthly combobulation
     // see http://rda.ucar.edu/datasets/ds093.2/#docs/time_ranges.html
 
     int statType = pds.getOctet(47);

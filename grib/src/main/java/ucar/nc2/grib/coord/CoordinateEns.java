@@ -87,7 +87,7 @@ public class CoordinateEns implements Coordinate {
 
   @Override
   public String getUnit() {
-    return ""; // LOOK
+    return "";
   }
 
   public int getCode() {

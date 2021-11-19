@@ -165,7 +165,7 @@ public class Grib1ParamTables {
   private final Lookup lookup; // if lookup table was set
   private final Grib1ParamTableReader override; // Dataset specific override.
 
-  // This is the "StandardLookup". LOOK rename Grib1ParamTables -> Grib1ParamLookup.
+  // This is the "StandardLookup". TODO rename Grib1ParamTables -> Grib1ParamLookup.
   public Grib1ParamTables() {
     this.lookup = null;
     this.override = null;

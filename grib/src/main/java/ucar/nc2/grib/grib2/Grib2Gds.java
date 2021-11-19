@@ -21,7 +21,6 @@ import java.util.Formatter;
 
 /**
  * Template-specific fields for Grib2SectionGridDefinition
- * LOOK hashCode not right, cant use approximate float compare
  *
  * @author caron
  * @since 4/2/11
@@ -62,7 +61,7 @@ public abstract class Grib2Gds {
         result = new SpaceViewPerspective(data);
         break;
 
-      // LOOK NCEP specific
+      // NCEP specific
       case 204:
         result = new CurvilinearOrthogonal(data);
         break;
@@ -621,10 +620,7 @@ public abstract class Grib2Gds {
 
     public GdsHorizCoordSys makeHorizCoordSys() {
       RotatedPole proj = new RotatedPole(latNorthPole, lonNorthPole);
-      // LOOK dont transform - works for grib1 Q:/cdmUnitTest/transforms/HIRLAMhybrid.grib
-      // LatLonPoint startLL = proj.projToLatLon(ProjectionPoint.create(lo1, la1));
-      // double startx = startLL.getLongitude();
-      // double starty = startLL.getLatitude();
+      // Dont transform - works for grib1 /cdmUnitTest/transforms/HIRLAMhybrid.grib
       return new GdsHorizCoordSys(getNameShort(), template, getOctet4(7), scanMode, proj, lo1, deltaLon, la1, deltaLat,
           getNxRaw(), getNyRaw(), getNptsInLine());
     }
@@ -761,7 +757,7 @@ public abstract class Grib2Gds {
 
       scanMode = getOctet(60);
 
-      // float orient = getOctet4(61) * scale6; // LOOK not sure if should be scaled
+      // float orient = getOctet4(61) * scale6; // TODO not sure if should be scaled
       dX = getOctet4(65) * scale6; // km
       dY = getOctet4(69) * scale6; // km
 
@@ -992,8 +988,8 @@ public abstract class Grib2Gds {
       // since the scale factor at 60 degrees = k = 2*k0/(1+sin(60)) [Snyder,Working Manual p157]
       // then to make scale = 1 at 60 degrees, k0 = (1+sin(60))/2 = .933
       double scale;
-      if (GribNumbers.isUndefined(lad)) { // LOOK -9999.0 means use a default? Probably an encoding mistake fixed in
-                                          // code.
+      // -9999.0 means use a default? Probably an encoding mistake fixed in code.
+      if (GribNumbers.isUndefined(lad)) {
         scale = 0.9330127018922193;
       } else {
         scale = (1.0 + Math.sin(Math.toRadians(Math.abs(Math.abs(lad))))) / 2;
@@ -1525,7 +1521,7 @@ public abstract class Grib2Gds {
 
       scanMode = getOctet(64);
 
-      // float orient = getOctet4(65) * scale6; // LOOK dunno about scale
+      // float orient = getOctet4(65) * scale6; // TODO dunno about scale
       Nr = getOctet4(69) * scale6;
       Xo = getOctet4(73) * scale6;
       Yo = getOctet4(77) * scale6;
@@ -1647,8 +1643,8 @@ public abstract class Grib2Gds {
 
       // use km, so scale by the earth radius
       double scale_factor = (Nr - 1) * majorAxis / 1000; // this sets the units of the projection x,y coords in km
-      double scale_x = scale_factor; // LOOK fake neg need scan value
-      double scale_y = -scale_factor; // LOOK fake neg need scan value
+      double scale_x = scale_factor; // fake neg need scan value
+      double scale_y = -scale_factor; // fake neg need scan value
 
       double startx = scale_factor * (1 - Xp) / cfac;
       double incrx = scale_factor / cfac;

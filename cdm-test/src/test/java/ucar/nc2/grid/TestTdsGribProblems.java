@@ -33,7 +33,7 @@ public class TestTdsGribProblems {
     checkGridDataset(filename, 35, 11, 17, 17);
   }
 
-  // LOOK: this has two groups
+  // TODO: this has two groups
   @Test
   public void checkTwoGroups() throws Exception {
     String filename = indexDir + "CMC/RDPS/NA_15km/CMC_RDPS_ps15km_20201027_0000.grib2.ncx4";

@@ -233,7 +233,7 @@ public class Grib1DataReader {
    * bit-map.
    */
 
-  // LOOK readComplexPacking doesnt work.
+  // TODO readComplexPacking doesnt work.
   // raf will be at byte 12
   private float[] readComplexPacking(RandomAccessFile raf, byte[] bitmap, GribData.Info info) throws IOException {
 
@@ -313,7 +313,7 @@ public class Grib1DataReader {
     int[] widths;
     int bitmapStart = 21;
     if (!hasDifferentWidths) {
-      constantWidth = info.numberOfBits; // LOOK not documented ??
+      constantWidth = info.numberOfBits; // TODO not documented ??
     } else {
       widths = new int[P1];
       for (int i = 0; i < P1; i++) {
@@ -357,7 +357,7 @@ public class Grib1DataReader {
     return new float[1]; // ?? fake
   }
 
-  // LOOK not clear if this works - needs testing.
+  // TODO not clear if this works - needs testing.
   // raf will be at byte 12
   private float[] readExtendedComplexPacking(RandomAccessFile raf, byte[] bitmap, GribData.Info info)
       throws IOException {
@@ -692,7 +692,7 @@ public class Grib1DataReader {
    * int[] widths;
    * int bitmapStart = 21;
    * if (!hasDifferentWidths) {
-   * constantWidth = info.numberOfBits; // LOOK not documented ??
+   * constantWidth = info.numberOfBits; // TODO not documented ??
    * } else {
    * widths = new int[P1];
    * for (int i=0; i< P1; i++){
@@ -747,7 +747,7 @@ public class Grib1DataReader {
 
   /**
    * Rearrange the data array using the scanning mode.
-   * LOOK: not handling scanMode generally
+   * TODO: not handling scanMode generally
    * Flag/Code table 8 – Scanning mode
    * Bit No. Value Meaning
    * 1 0 Points scan in +i direction

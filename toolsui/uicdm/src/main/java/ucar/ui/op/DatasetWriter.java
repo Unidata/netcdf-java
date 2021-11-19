@@ -374,7 +374,6 @@ public class DatasetWriter extends JPanel {
 
     if (isNcml) {
       NcmlWriter ncmlWriter = new NcmlWriter();
-      // LOOK ncmlWriter.setNamespace(null);
       ncmlWriter.getXmlFormat().setOmitDeclaration(true);
 
       Element varElement = ncmlWriter.makeVariableElement(v, false);

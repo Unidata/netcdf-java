@@ -42,7 +42,7 @@ public class NdfdLocalTables extends LocalTables {
     add(0, 1, 193, "PPI", "Precipitation Potential Index", "%");
     add(0, 1, 227, "IceAccum", "Ice Accumulation", "kg/m^2");
 
-    /* LOOK ignored : grandfather'ed in a NDFD choice for POP. */
+    /* ignored : grandfather'ed in a NDFD choice for POP. */
     add(0, 10, 8, "PoP12", "Prob of 0.01 In. of Precip", "%");
     add(0, 13, 194, "smokes", "Surface level smoke from fires", "log10(g/m^3)");
     add(0, 13, 195, "smokec", "Average vertical column smoke from fires", "log10(g/m^3)");

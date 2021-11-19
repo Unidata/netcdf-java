@@ -1340,7 +1340,7 @@ public class ToolsUI extends JPanel {
     // Display the splash screen so there's something to look at while we do some more init.
     SwingUtilities.invokeLater(() -> ToolsSplashScreen.getSharedInstance().setVisible(true));
 
-    // LOOK needed? for efficiency, persist aggregations. Every hour, delete stuff older than 30 days
+    // for efficiency, persist aggregations. Every hour, delete stuff older than 30 days
     Aggregation.setPersistenceCache(new DiskCache2("/.unidata/aggCache", true, 60 * 24 * 30, 60));
 
     // open dap initializations

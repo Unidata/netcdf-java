@@ -73,7 +73,7 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter 
       case eccodes:
         return new EccodesLocalTables(config);
       case gempak:
-        return new GempakLocalTables(config); // LOOK: not used
+        return new GempakLocalTables(config); // not used
       case gsd:
         return new FslHrrrLocalTables(config);
       case kma:
@@ -361,7 +361,7 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter 
       case 161:
         return new VertCoordType(code, "m", "water surface", false);
 
-      // LOOK NCEP specific
+      // NCEP specific
       case 235:
         return new VertCoordType(code, "0.1 C", null, true);
 
@@ -459,7 +459,7 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter 
   ////////////////////////////////////////////////////////////////////////////////////////////
   // Time utilities
 
-  private TimeUnitConverter timeUnitConverter; // LOOK not really immutable
+  private TimeUnitConverter timeUnitConverter;
 
   public void setTimeUnitConverter(TimeUnitConverter timeUnitConverter) {
     if (this.timeUnitConverter != null)
@@ -574,7 +574,7 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter 
     CalendarPeriod period = unitPeriod.withValue(range * unitPeriod.getValue());
 
     // End of Interval as date
-    if (pdsIntv.hasUnknownIntervalEnd()) { // all values were set to zero LOOK guessing!
+    if (pdsIntv.hasUnknownIntervalEnd()) { // all values were set to zero: guessing!
       return new TimeCoordIntvDateValue(gr.getReferenceDate(), period);
     } else {
       return new TimeCoordIntvDateValue(period, pdsIntv.getIntervalTimeEnd());
@@ -596,9 +596,8 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter 
       return null;
     }
     CalendarPeriod havePeriod = Grib2Utils.getCalendarPeriod(convertTimeUnit(intvu.timeUnitIntv));
-    // LOOK needs to be an int
     double fac2 = intvu.timeRange * GribUtils.getConvertFactor(havePeriod, wantPeriod);
-    CalendarPeriod period = wantPeriod.withValue((int) fac2 * wantPeriod.getValue()); // LOOK needs to be an int
+    CalendarPeriod period = wantPeriod.withValue((int) fac2 * wantPeriod.getValue());
 
     // note from Arthur Taylor (degrib):
     /*
@@ -611,7 +610,7 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter 
      * and if there was no interval then I used:
      * C2) End of Interval = Begin of Interval = Ref + ForeT.
      */
-    if (pdsIntv.hasUnknownIntervalEnd()) { // all values were set to zero LOOK guessing!
+    if (pdsIntv.hasUnknownIntervalEnd()) { // all values were set to zero: guessing!
       return new TimeCoordIntvDateValue(gr.getReferenceDate(), period);
     } else {
       return new TimeCoordIntvDateValue(period, pdsIntv.getIntervalTimeEnd());
@@ -641,19 +640,8 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter 
       return null;
     }
     CalendarPeriod havePeriod = Grib2Utils.getCalendarPeriod(convertTimeUnit(intvu.timeUnitIntv));
-    // LOOK needs to be an int
     double fac2 = intvu.timeRange * GribUtils.getConvertFactor(havePeriod, wantPeriod); // wantPeriod.getConvertFactor(havePeriod);
-    CalendarPeriod range = wantPeriod.withValue((int) fac2 * wantPeriod.getValue()); // LOOK needs to be an int
-
-    // LOOK Old way
-    /*
-     * CalendarDate EI = pdsIntv.getIntervalTimeEnd();
-     * if (EI == CalendarDate.UNKNOWN) { // all values were set to zero LOOK guessing!
-     * return new TimeCoordIntvDateValue(gr.getReferenceDate(), range);
-     * } else {
-     * return new TimeCoordIntvDateValue(range, EI);
-     * }
-     */
+    CalendarPeriod range = wantPeriod.withValue((int) fac2 * wantPeriod.getValue());
 
     // Seems like it should be
     // Begin of Interval = Ref + ForeT
@@ -669,9 +657,7 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter 
    * 
    * @param pds must be a Grib2Pds.PdsInterval
    * @return interval size in units of hours
-   *         LOOK generalize this to return a size and unit?
    */
-  // LOOK can this be an int?
   public double getForecastTimeIntervalSizeInHours(Grib2Pds pds) {
     Grib2Pds.PdsInterval pdsIntv = (Grib2Pds.PdsInterval) pds;
 
@@ -685,8 +671,6 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter 
     if (timeUnitPeriod.equals(CalendarPeriod.Hour))
       return intvu.timeRange;
 
-    // LOOK leave this until we fix getConvertFactor()
-    // LOOK needs to be an int
     double fac;
     if (timeUnitPeriod.getField() == CalendarPeriod.Field.Month) {
       fac = 30.0 * 24.0; // nominal hours in a month
@@ -718,8 +702,7 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter 
       if (timeUnitIntv < 0) {
         timeUnitIntv = ti.timeRangeUnit;
       } else if ((ti.timeRangeUnit != timeUnitIntv) // make sure it doesnt change
-          || (ti.timeIncrementUnit != timeUnitIntv && ti.timeIncrementUnit != 255 && ti.timeIncrement != 0)) { // LOOK
-                                                                                                               // WTF?
+          || (ti.timeIncrementUnit != timeUnitIntv && ti.timeIncrementUnit != 255 && ti.timeIncrement != 0)) {
         logger.warn("TimeInterval(2) has different units timeUnit first=" + timeUnitIntv + " TimeInterval="
             + ti.timeIncrementUnit);
         throw new RuntimeException("TimeInterval(2) has different units");

@@ -25,7 +25,7 @@ import ucar.nc2.grib.grib2.Grib2Parameter;
  *
  * 1) This change in ECMWF table 1.0 implies that if master table = 255, then all WMO entries may be overridden.
  * Havent seen this in practice; in particular I wonder if any ECMWF GRIB2 files do this.
- * LOOK: This is not implemented.
+ * TODO: This is not implemented.
  *
  * Code table 1.0 - GRIB master tables version number
  * Ecmwf version 21 discipline 1 category 0 (resources/grib2/ecmwf/tables/21/1.0.table)
@@ -42,7 +42,7 @@ import ucar.nc2.grib.grib2.Grib2Parameter;
  * WMO 3.1 missing EcmwfEntry{codeValue=12, name=Transverse Mercator}
  * WMO 3.1 missing EcmwfEntry{codeValue=130, name=Irregular latitude/longitude grid}
  *
- * 3) LOOK: none of these are implemented.
+ * 3) TODO: none of these are implemented.
  * Code table 4.0 - Product definition template number
  * Ecmwf version 21 discipline 4 category 0 (resources/grib2/ecmwf/tables/21/4.0.table)
  * WMO 4.0 missing EcmwfEntry{codeValue=311, name=Satellite product auxiliary information}
@@ -62,7 +62,7 @@ import ucar.nc2.grib.grib2.Grib2Parameter;
  * Same with
  * Code table 4.233 - Aerosol type
  *
- * 5) LOOK: not implemented.
+ * 5) TODO: not implemented.
  * Code table 5.0 - Data representation template number
  * Ecmwf version 21 discipline 5 category 0 (resources/grib2/ecmwf/tables/21/5.0.table)
  * WMO 5.0 missing EcmwfEntry{codeValue=6, name=Grid point data - simple packing with pre-processing}
@@ -72,7 +72,7 @@ import ucar.nc2.grib.grib2.Grib2Parameter;
  * WMO 5.0 missing EcmwfEntry{codeValue=50001, name=Second order packing}
  * WMO 5.0 missing EcmwfEntry{codeValue=50002, name=Second order packing}
  *
- * 6) LOOK not implemented: So where is it specified?
+ * 6) TODO not implemented: So where is it specified?
  * Code table 6.0 - Bit map indicator
  * Ecmwf version 21 discipline 6 category 0 (resources/grib2/ecmwf/tables/21/6.0.table)
  * WMO 6.0 missing EcmwfEntry{codeValue=1, name=A bit map pre-determined by the originating/generating centre applies to
@@ -97,7 +97,7 @@ public class EccodesLocalTables extends LocalTables {
   // value.
   EccodesLocalTables(Grib2TableConfig config) {
     super(config);
-    // LOOK: change to lazy init
+    // TODO: change to lazy init
     initParams(config.getPath());
   }
 

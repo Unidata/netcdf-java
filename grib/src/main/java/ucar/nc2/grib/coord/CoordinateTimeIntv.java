@@ -73,7 +73,7 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
 
   @Override
   public int estMemorySize() {
-    return 616 + getSize() * (24); // LOOK wrong
+    return 616 + getSize() * (24); // TODO wrong
   }
 
   @Override
