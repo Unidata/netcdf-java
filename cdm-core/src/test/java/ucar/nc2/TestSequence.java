@@ -25,13 +25,13 @@ public class TestSequence {
 
   @Test
   public void testSequence() throws IOException {
-    Sequence.Builder<?> structb = Sequence.builder().setName("seq").addMemberVariable("one", ArrayType.BYTE, "")
+    Sequence.Builder<?> seqb = Sequence.builder().setName("seq").addMemberVariable("one", ArrayType.BYTE, "")
         .addMemberVariable("two", ArrayType.STRING, "").addMemberVariable("tres", ArrayType.FLOAT, "");
 
-    structb.setSourceData(makeStructureDataArray());
-    Structure struct = structb.build(makeDummyGroup());
+    seqb.setSourceData(makeStructureDataArray());
+    Sequence seq = seqb.build(makeDummyGroup());
 
-    Array data = struct.readArray();
+    Array<?> data = seq.readArray();
     assertThat(data).isNotNull();
     assertThat(data).isInstanceOf(StructureDataArray.class);
     StructureDataArray as = (StructureDataArray) data;
@@ -44,7 +44,7 @@ public class TestSequence {
   }
 
   @Test
-  public void testSequenceArray() throws IOException, InvalidRangeException {
+  public void testSequenceArray() throws IOException {
     Sequence.Builder<?> structb = Sequence.builder().setName("seq").addMemberVariable("one", ArrayType.BYTE, "")
         .addMemberVariable("two", ArrayType.STRING, "").addMemberVariable("tres", ArrayType.FLOAT, "");
 

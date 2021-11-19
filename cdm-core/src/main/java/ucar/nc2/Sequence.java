@@ -31,7 +31,7 @@ public class Sequence extends Structure implements Iterable<StructureData> {
     if (cache.getData() != null) {
       ucar.array.Array<?> array = cache.getData();
       if (array instanceof ucar.array.StructureDataArray) {
-        return (Iterator<StructureData>) array;
+        return ((StructureDataArray) array).iterator();
       }
     }
     try {
