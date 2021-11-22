@@ -279,8 +279,6 @@ public class TransverseMercatorProjection extends AbstractProjection {
 
   @Override
   public boolean crossSeam(ProjectionPoint pt1, ProjectionPoint pt2) {
-    // TODO: check, taken from ucar.unidata.geoloc.projection.TransverseMercator
-    // either point is infinite
     if (LatLonPoints.isInfinite(pt1) || LatLonPoints.isInfinite(pt2)) {
       return true;
     }

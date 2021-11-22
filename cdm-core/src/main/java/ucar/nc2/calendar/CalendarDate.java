@@ -290,12 +290,12 @@ public interface CalendarDate extends Comparable<CalendarDate> {
   ////////////////////////////////////////////////////////////////////////////////////
   // experimental - not working yet
 
-  @VisibleForTesting
   /** Public by accident. */
+  @VisibleForTesting
   Instant toInstant();
 
-  @VisibleForTesting
   /** Public by accident. */
+  @VisibleForTesting
   static CalendarDate ofInstant(@Nullable Calendar cal, Instant instant) {
     return of(instant.getLong(ChronoField.INSTANT_SECONDS) * 1000 + instant.getLong(ChronoField.MILLI_OF_SECOND));
   }

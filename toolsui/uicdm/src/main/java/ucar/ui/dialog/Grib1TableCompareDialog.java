@@ -61,13 +61,9 @@ public class Grib1TableCompareDialog extends JDialog {
     table2.setText(bean == null ? " all" : bean.getPath());
   }
 
-  private void fileBrowserActionPerformed(ActionEvent e) {
-    // TODO add your code here
-  }
+  private void fileBrowserActionPerformed(ActionEvent e) {}
 
-  private void cancelButtonActionPerformed(ActionEvent e) {
-    // TODO add your code here
-  }
+  private void cancelButtonActionPerformed(ActionEvent e) {}
 
   private void okButtonActionPerformed(ActionEvent e) {
     Data data = new Data(table1bean, table2bean, compareNames.isSelected(), compareUnits.isSelected(),

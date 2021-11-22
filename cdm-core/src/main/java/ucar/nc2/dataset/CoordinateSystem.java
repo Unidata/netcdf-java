@@ -7,6 +7,7 @@ package ucar.nc2.dataset;
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 
 import ucar.array.ArrayType;
 import ucar.nc2.*;
@@ -56,6 +57,7 @@ import java.util.Set;
  * axis and a Projection CoordinateTransform will have <i>isGeoReferencing()</i> true.
  * A CoordinateSystem that has a Height, Pressure, or GeoZ axis will have <i>hasVerticalAxis()</i> true.
  */
+@Immutable
 public class CoordinateSystem {
 
   /**
@@ -261,17 +263,15 @@ public class CoordinateSystem {
 
   ////////////////////////////////////////////////////////////////////////////////////////////
   private final ImmutableList<CoordinateAxis> coordAxes;
-
-  // TODO make these private, final and immutable in ver7.
+  private final boolean isImplicit;
   private final ProjectionCTV projectionCTV;
   private Projection projection; // lazy
 
   // these are calculated
   private final String name;
   private final Set<Dimension> domain = new HashSet<>(); // set of dimension
-  private CoordinateAxis xAxis, yAxis, zAxis, tAxis, latAxis, lonAxis, hAxis, pAxis, ensAxis;
-  private CoordinateAxis aziAxis, elevAxis, radialAxis;
-  private final boolean isImplicit; // where set?
+  private final CoordinateAxis xAxis, yAxis, zAxis, tAxis, latAxis, lonAxis, hAxis, pAxis, ensAxis;
+  private final CoordinateAxis aziAxis, elevAxis, radialAxis;
 
   protected CoordinateSystem(Builder<?> builder, List<CoordinateAxis> axesAll, List<ProjectionCTV> allProjections) {
     this.isImplicit = builder.isImplicit;
@@ -291,6 +291,10 @@ public class CoordinateSystem {
 
     // calculated
     this.name = makeName(coordAxes);
+
+    CoordinateAxis xAxis = null, yAxis = null, zAxis = null, tAxis = null, latAxis = null, lonAxis = null;
+    CoordinateAxis hAxis = null, pAxis = null, ensAxis = null;
+    CoordinateAxis aziAxis = null, elevAxis = null, radialAxis = null;
 
     for (CoordinateAxis axis : this.coordAxes) {
       // look for AxisType
@@ -325,6 +329,19 @@ public class CoordinateSystem {
       // collect dimensions
       domain.addAll(Dimensions.makeDimensionsAll(axis));
     }
+
+    this.xAxis = xAxis;
+    this.yAxis = yAxis;
+    this.zAxis = zAxis;
+    this.tAxis = tAxis;
+    this.latAxis = latAxis;
+    this.lonAxis = lonAxis;
+    this.hAxis = hAxis;
+    this.pAxis = pAxis;
+    this.ensAxis = ensAxis;
+    this.aziAxis = aziAxis;
+    this.elevAxis = elevAxis;
+    this.radialAxis = radialAxis;
 
     // Find the named coordinate transforms in allTransforms.
     ProjectionCTV proj = null;

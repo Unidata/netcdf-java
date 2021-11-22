@@ -400,8 +400,7 @@ public class StereographicAzimuthalProjection extends AbstractProjection {
 
   @Override
   public boolean crossSeam(ProjectionPoint pt1, ProjectionPoint pt2) {
-    // TODO: not sure what this is, HK
-    // just taken from ucar.unidata.geoloc.projection.Stereographic
+    // TODO
     return false;
   }
 

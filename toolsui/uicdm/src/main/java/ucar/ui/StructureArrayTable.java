@@ -249,7 +249,7 @@ public class StructureArrayTable extends JPanel {
     SubtableAction(String parentName, String memberName) {
       this.memberName = memberName;
       String fullname = parentName + "/" + memberName;
-      dataTable = new StructureArrayTable(null); // TODO no nested prefs
+      dataTable = new StructureArrayTable(null);
       dataWindow = windows.get(fullname);
       if (dataWindow == null) {
         dataWindow = new IndependentWindow("Data Array Table", BAMutil.getImage("nj22/NetcdfUI"), dataTable);

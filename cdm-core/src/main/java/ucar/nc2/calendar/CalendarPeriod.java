@@ -220,44 +220,6 @@ public class CalendarPeriod {
       throw new IllegalStateException("Illegal Field = " + field);
   }
 
-  /*
-   * TODO: review: start and end must have same calendar. should not convert to CalendarDate in the first place.
-   * offset from start to end, in these units.
-   * start + offset = end.
-   * If not even, will round down and log a warning
-   *
-   * @param start start date
-   * 
-   * @param end end date
-   * 
-   * @return difference in units of this period
-   *
-   * public int getOffset(CalendarDate start, CalendarDate end) {
-   * if (start.equals(end)) {
-   * return 0;
-   * }
-   * long start_millis = start.getDateTime().getMillis();
-   * long end_millis = end.getDateTime().getMillis();
-   * 
-   * // 5 second slop
-   * Period p;
-   * if (start_millis < end_millis)
-   * p = new Period(start_millis, end_millis + 5000, getPeriodType());
-   * else
-   * p = new Period(start_millis + 5000, end_millis, getPeriodType());
-   * 
-   * return p.get(getDurationFieldType());
-   * }
-   * 
-   * PeriodType getPeriodType() {
-   * return getField().p;
-   * }
-   * 
-   * DurationFieldType getDurationFieldType() {
-   * return getField().p.getFieldType(0);
-   * }
-   */
-
   @Override
   public String toString() {
     return value + " " + field;

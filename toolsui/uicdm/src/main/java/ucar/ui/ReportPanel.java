@@ -90,8 +90,6 @@ public abstract class ReportPanel extends JPanel {
       MCollection org = CollectionAbstract.open(spec, spec, null, f);
       return new CollectionFiltered("GribReportPanel", org, mfile -> {
         String suffix = mfile.getName();
-        // if (suffix.contains(".ncx")) TODO how to control this??
-        // return false;
         return !suffix.contains(".gbx");
       });
 

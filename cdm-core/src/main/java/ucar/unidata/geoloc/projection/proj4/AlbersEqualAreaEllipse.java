@@ -102,7 +102,7 @@ public class AlbersEqualAreaEllipse extends AbstractProjection {
     double cosphi = Math.cos(phi1);
     boolean secant = Math.abs(phi1 - phi2) >= EPS10;
 
-    if (!earth.isSpherical()) { // TODO not spherical
+    if (!earth.isSpherical()) {
       double m1 = MapMath.msfn(sinphi, cosphi, es);
       double ml1 = MapMath.qsfn(sinphi, e, one_es);
       if (secant) { /* secant cone */

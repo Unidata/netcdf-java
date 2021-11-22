@@ -47,8 +47,7 @@ public class Variable implements ProxyReader, Comparable<Variable> {
    * A {@code true} value for this field does not indicate whether a Variable
    * {@link #isCaching() is caching}, only that it's <i>permitted</i> to cache.
    */
-  public static boolean permitCaching = true; // TODO
-
+  public static boolean permitCaching = true;
   private static final int defaultSizeToCache = 4000; // bytes; cache any variable whose size() < defaultSizeToCache
   private static final int defaultCoordsSizeToCache = 40 * 1000; // bytes; cache coordinates whose size() < this
 

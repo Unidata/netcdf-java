@@ -8,16 +8,11 @@ import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.assertThrows;
 
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import java.lang.invoke.MethodHandles;
-import ucar.nc2.calendar.CalendarDateFormatter;
 import ucar.units.ScaledUnit;
 import ucar.units.UnitException;
 
 /** Test {@link ucar.nc2.units.SimpleUnit} */
 public class TestSimpleUnit {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
   public void testConvert() {
@@ -117,6 +112,7 @@ public class TestSimpleUnit {
     assertThat(uu).isNotNull();
     assertThat(uu.getUnitString()).isEqualTo("Pa");
     assertThat(uu.getCanonicalString()).isEqualTo("9900.0 Pa");
+    assertThat(uu.isUnknownUnit()).isFalse();
   }
 
   @Test
@@ -128,6 +124,7 @@ public class TestSimpleUnit {
     assertThat(uu.getUnit()).isInstanceOf(ScaledUnit.class);
     ScaledUnit scaled = (ScaledUnit) uu.getUnit();
     assertThat(scaled.getScale()).isEqualTo(9900.0);
+    assertThat(uu.isUnknownUnit()).isFalse();
   }
 
 }
