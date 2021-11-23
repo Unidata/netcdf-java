@@ -115,11 +115,6 @@ public class CylindricalEqualAreaProjection extends AbstractProjection {
   }
 
   @Override
-  public String paramsToString() {
-    return null;
-  }
-
-  @Override
   public ProjectionPoint latLonToProj(LatLonPoint latlon) {
     double lam = Math.toRadians(latlon.getLongitude() - lon0);
     double phi = Math.toRadians(latlon.getLatitude());

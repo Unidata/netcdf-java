@@ -139,11 +139,6 @@ public class RotatedLatLon extends AbstractProjection {
     return new RotatedLatLon(latpole, lonpole, polerotate);
   }
 
-  @Override
-  public String paramsToString() {
-    return " southPoleLat =" + latpole + " southPoleLon =" + lonpole + " southPoleAngle =" + polerotate;
-  }
-
   /**
    * Transform a "real" longitude and latitude into the rotated longitude (X) and
    * rotated latitude (Y).
@@ -220,6 +215,11 @@ public class RotatedLatLon extends AbstractProjection {
 
   public boolean crossSeam(ProjectionPoint pt1, ProjectionPoint pt2) {
     return Math.abs(pt1.getX() - pt2.getX()) > 270.0;
+  }
+
+  @Override
+  public String toString() {
+    return "RotatedLatLon{" + "lonpole=" + lonpole + ", latpole=" + latpole + ", polerotate=" + polerotate + '}';
   }
 
   @Override

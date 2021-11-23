@@ -23,16 +23,6 @@ public class TestLatLonRect {
 
   /////////////////// testLatLonArea /////////////////
 
-  LatLonRect makeLatLonBoundingBoxPtsOld(double lon1, double lon2) {
-    LatLonPoint pt1 = LatLonPoint.create(-10.0, lon1);
-    LatLonPoint pt2 = LatLonPoint.create(10.0, lon2);
-    LatLonRect llbb = new LatLonRect.Builder(pt1, pt2).build();
-    if (debug2)
-      System.out.println(Format.formatDouble(lon1, 8, 5) + " " + Format.formatDouble(lon2, 8, 5) + " => " + llbb
-          + " crossDateline= " + llbb.crossDateline());
-    return llbb;
-  }
-
   LatLonRect makeLatLonBoundingBoxPts(double lon1, double lon2) {
     LatLonPoint pt = LatLonPoint.create(-10.0, lon1);
     LatLonRect llbb = new LatLonRect(pt, 20.0, lon2 - lon1);

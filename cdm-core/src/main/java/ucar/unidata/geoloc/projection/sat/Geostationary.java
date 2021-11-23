@@ -190,11 +190,6 @@ public class Geostationary extends AbstractProjection {
     return new Geostationary(navigation.sub_lon_degrees, sweepAxisAngle, geoCoordinateScaleFactor);
   }
 
-  @Override
-  public String paramsToString() {
-    return "";
-  }
-
   /**
    * Returns an x/y grid point in projection coordinate matching a lat/lon point.
    * The units of the returned result will be in radians unless the {@code Geostationary} object
@@ -252,6 +247,11 @@ public class Geostationary extends AbstractProjection {
     // opposite signed X values, larger then 100 km
     // TODO This proj works in units of radians rather than km.
     return (x1 * x2 < 0) && (Math.abs(x1 - x2) > 100);
+  }
+
+  @Override
+  public String toString() {
+    return "Geostationary{" + "geoCoordinateScaleFactor=" + geoCoordinateScaleFactor + '}';
   }
 
   @Override

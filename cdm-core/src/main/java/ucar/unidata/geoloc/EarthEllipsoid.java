@@ -128,6 +128,7 @@ public class EarthEllipsoid extends Earth {
   }
 
   /** EarthEllipsoid with same name are equal */
+  @Override
   public boolean equals(Object o) {
     if (this == o)
       return true;

@@ -24,24 +24,9 @@ import java.util.StringTokenizer;
 public class LatLonRect {
   public static LatLonRect INVALID = LatLonRect.builder(LatLonPoint.INVALID, LatLonPoint.INVALID).build();
 
-  /** upper right corner */
-  private final LatLonPoint upperRight;
-
-  /** lower left corner */
-  private final LatLonPoint lowerLeft;
-
-  /** flag for dateline cross */
-  private final boolean crossDateline;
-
-  /** All longitudes are included */
-  private final boolean allLongitude;
-
-  /** longitude width */
-  private final double width;
-
   /** Create a LatLonRect that covers the whole world. */
   public LatLonRect() {
-    this(new LatLonRect.Builder(LatLonPoint.create(-90, -180), 180, 360));
+    this(builder(LatLonPoint.create(-90, -180), 180, 360));
   }
 
   /**
@@ -305,7 +290,7 @@ public class LatLonRect {
 
   /** Convert to a mutable Builder */
   public Builder toBuilder() {
-    return new Builder(this.lowerLeft, this.upperRight.getLatitude() - this.lowerLeft.getLatitude(), this.width);
+    return builder(this.lowerLeft, this.upperRight.getLatitude() - this.lowerLeft.getLatitude(), this.width);
   }
 
   /**
@@ -316,12 +301,9 @@ public class LatLonRect {
    *
    * There is an ambiguity when left = right, since LatLonPoint is normalized. Assume this is the full width = 360 case.
    * 
-   * @deprecated use builder(LatLonPoint p1, double deltaLat, double deltaLon).
-   *
    * @param left left corner
    * @param right right corner
    */
-  @Deprecated
   public static Builder builder(LatLonPoint left, LatLonPoint right) {
     double width = right.getLongitude() - left.getLongitude();
     while (width < 0.0) {
@@ -330,7 +312,7 @@ public class LatLonRect {
     if (width == 0.0) {
       width = 360;
     }
-    return new Builder(left, right.getLatitude() - left.getLatitude(), width);
+    return builder(left, right.getLatitude() - left.getLatitude(), width);
   }
 
   /**
@@ -382,6 +364,21 @@ public class LatLonRect {
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+  /** upper right corner */
+  private final LatLonPoint upperRight;
+
+  /** lower left corner */
+  private final LatLonPoint lowerLeft;
+
+  /** flag for dateline cross */
+  private final boolean crossDateline;
+
+  /** All longitudes are included */
+  private final boolean allLongitude;
+
+  /** longitude width */
+  private final double width;
+
   private LatLonRect(Builder builder) {
     this.lowerLeft = LatLonPoint.create(builder.llLat, builder.llLon);
     this.upperRight = LatLonPoint.create(builder.urLat, builder.urLon);
@@ -400,40 +397,6 @@ public class LatLonRect {
     boolean crossDateline;
 
     private Builder() {}
-
-    /**
-     * @deprecated use LatLonRect.builder(LatLonPoint p1, double deltaLat, double deltaLon), or
-     *             new LatLonRect(LatLonPoint p1, double deltaLat, double deltaLon)
-     */
-    @Deprecated
-    public Builder(LatLonPoint left, LatLonPoint right) {
-      this(left, right.getLatitude() - left.getLatitude(),
-          LatLonPoints.lonNormal360(right.getLongitude() - left.getLongitude()));
-    }
-
-    /** @deprecated use LatLonRect.builder(String spec) */
-    @Deprecated
-    public Builder(String spec) {
-      StringTokenizer stoker = new StringTokenizer(spec, " ,");
-      int n = stoker.countTokens();
-      if (n != 4)
-        throw new IllegalArgumentException("Must be 4 numbers = lat, lon, latWidth, lonWidth");
-      double lat = Double.parseDouble(stoker.nextToken());
-      double lon = Double.parseDouble(stoker.nextToken());
-      double deltaLat = Double.parseDouble(stoker.nextToken());
-      double deltaLon = Double.parseDouble(stoker.nextToken());
-
-      init(LatLonPoint.create(lat, lon), deltaLat, deltaLon);
-    }
-
-    /**
-     * @deprecated use LatLonRect.builder(LatLonPoint p1, double deltaLat, double deltaLon), or
-     *             new LatLonRect(LatLonPoint p1, double deltaLat, double deltaLon)
-     */
-    @Deprecated
-    public Builder(LatLonPoint p1, double deltaLat, double deltaLon) {
-      init(p1, deltaLat, deltaLon);
-    }
 
     private Builder init(LatLonPoint p1, double deltaLat, double deltaLon) {
       double lonmin, lonmax;
@@ -525,8 +488,9 @@ public class LatLonRect {
     /** Extend the bounding box to contain this point */
     public Builder extend(double lat, double lon) {
       lon = LatLonPoints.lonNormal(lon);
-      if (contains(lat, lon))
+      if (contains(lat, lon)) {
         return this;
+      }
 
       // lat is easy to deal with
       if (lat > urLat) {
@@ -600,16 +564,6 @@ public class LatLonRect {
         // check "normal" lon case
         return ((lon >= llLon) && (lon <= urLon));
       }
-    }
-
-    /** Extend to allLongitudes if width &gt; minWidth */
-    public Builder extendToAllLongitudes(double minWidth) {
-      if (crossDateline && this.width > minWidth) {
-        this.llLon = -180;
-        this.urLon = 180;
-        this.allLongitudes = true;
-      }
-      return this;
     }
 
     /** Expand rect in all directions by delta amount. */

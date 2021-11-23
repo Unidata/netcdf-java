@@ -274,27 +274,6 @@ public class PolyconicProjection extends AbstractProjection {
   }
 
   /**
-   * Get the label to be used in the gui for this type of projection
-   *
-   * @return Type label
-   */
-  public String getProjectionTypeLabel() {
-    return "Polyconic Projection";
-  }
-
-  /**
-   * Create a String of the parameters.
-   *
-   * @return a String of the parameters
-   */
-  @Override
-  public String paramsToString() {
-    Formatter f = new Formatter();
-    f.format("origin lat=%f, origin lon=%f earth=%s", _lat0, _lon0, ellipsoid);
-    return f.toString();
-  }
-
-  /**
    * This returns true when the line between pt1 and pt2 crosses the seam.
    * When the cone is flattened, the "seam" is lon0 +- 180.
    *

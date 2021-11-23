@@ -329,11 +329,6 @@ public class MSGnavigation extends AbstractProjection {
   }
 
   @Override
-  public String paramsToString() {
-    return "";
-  }
-
-  @Override
   public ProjectionPoint latLonToProj(LatLonPoint latlon) {
     return geocoord2pixcoord(latlon.getLatitude(), latlon.getLongitude());
   }

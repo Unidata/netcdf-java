@@ -167,8 +167,7 @@ public class Stereographic extends AbstractProjection {
   }
 
   /**
-   * Calculate polar stereographic scale factor based on the natural latitude and
-   * longitude of the original
+   * Calculate polar stereographic scale factor based on the natural latitude and longitude of the original
    * Ref: OGP Surveying and Positioning Guidance Note number 7, part 2 April 2009
    * http://www.epsg.org
    * added by Qun He <qunhe@unc.edu>
@@ -244,17 +243,13 @@ public class Stereographic extends AbstractProjection {
     return isPolar;
   }
 
-  @Override
-  public String paramsToString() {
-    return toString();
-  }
-
   //////////////////////////////////////////////
 
   @Override
   public String toString() {
     return "Stereographic{" + "falseEasting=" + falseEasting + ", falseNorthing=" + falseNorthing + ", scale=" + scale
-        + ", earthRadius=" + earthRadius + ", latt=" + _latt + ", lont=" + _lont + '}';
+        + ", earthRadius=" + earthRadius + ", latt=" + latt + ", lont=" + lont + ", isNorth=" + isNorth + ", isPolar="
+        + isPolar + '}';
   }
 
   /**

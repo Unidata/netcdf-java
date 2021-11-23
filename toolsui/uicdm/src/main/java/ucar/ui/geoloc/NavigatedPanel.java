@@ -146,7 +146,7 @@ public class NavigatedPanel extends JPanel {
 
     // default navigation and projection
     navigate = new Navigation(this);
-    project = new LatLonProjection("Cyl.Eq"); // default projection
+    project = new LatLonProjection(); // default projection
 
     // toolbar actions
     makeActions();
@@ -348,11 +348,12 @@ public class NavigatedPanel extends JPanel {
   public void setLatLonCenterMapArea(double lat, double lon) {
     ProjectionPoint center = project.latLonToProj(lat, lon);
 
-    ProjectionRect.Builder ma = getMapArea().toBuilder();
-    ma.setX(center.getX() - ma.getWidth() / 2);
-    ma.setY(center.getY() - ma.getHeight() / 2);
+    ProjectionRect ma = getMapArea();
+    ProjectionRect.Builder mab = ma.toBuilder();
+    mab.setX(center.getX() - ma.getWidth() / 2);
+    mab.setY(center.getY() - ma.getHeight() / 2);
 
-    setMapArea(ma.build());
+    setMapArea(mab.build());
   }
 
   /** Get the current Projection. */

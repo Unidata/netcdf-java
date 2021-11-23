@@ -273,28 +273,11 @@ public class LambertConformal extends AbstractProjection {
     return falseNorthing;
   }
 
-  /**
-   * Get the label to be used in the gui for this type of projection
-   *
-   * @return Type label
-   */
-  public String getProjectionTypeLabel() {
-    return "Lambert conformal conic";
-  }
-
-  /**
-   * Create a String of the parameters.
-   *
-   * @return a String of the parameters
-   */
-  public String paramsToString() {
-    return toString();
-  }
-
   @Override
   public String toString() {
-    return "LambertConformal{" + "earth_radius=" + earth_radius + ", lat0=" + _lat0 + ", lon0=" + _lon0 + ", par1="
-        + par1 + ", par2=" + par2 + ", falseEasting=" + falseEasting + ", falseNorthing=" + falseNorthing + '}';
+    return "LambertConformal{" + "earth_radius=" + earth_radius + ", par1=" + par1 + ", par2=" + par2
+        + ", falseEasting=" + falseEasting + ", falseNorthing=" + falseNorthing + ", _lat0=" + _lat0 + ", lon0Degrees="
+        + lon0Degrees + '}';
   }
 
   /**

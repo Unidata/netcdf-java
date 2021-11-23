@@ -48,16 +48,6 @@ public class LambertAzimuthalEqualArea extends AbstractProjection {
    *
    * @param lat0 lat origin of the coord system on the projection plane
    * @param lon0 lon origin of the coord system on the projection plane
-   */
-  public LambertAzimuthalEqualArea(double lat0, double lon0) {
-    this(lat0, lon0, 0.0, 0.0, EARTH_RADIUS);
-  }
-
-  /**
-   * Construct a LambertAzimuthalEqualArea Projection.
-   *
-   * @param lat0 lat origin of the coord system on the projection plane
-   * @param lon0 lon origin of the coord system on the projection plane
    * @param false_easting natural_x_coordinate + false_easting = x coordinate in km
    * @param false_northing natural_y_coordinate + false_northing = y coordinate in km
    * @param earthRadius radius of the earth in km
@@ -173,28 +163,10 @@ public class LambertAzimuthalEqualArea extends AbstractProjection {
     return falseNorthing;
   }
 
-  /**
-   * Get the label to be used in the gui for this type of projection
-   *
-   * @return Type label
-   */
-  public String getProjectionTypeLabel() {
-    return "Lambert Azimuth Equal Area";
-  }
-
-  /**
-   * Create a String of the parameters.
-   *
-   * @return a String of the parameters
-   */
-  public String paramsToString() {
-    return toString();
-  }
-
   @Override
   public String toString() {
-    return "LambertAzimuthalEqualArea{" + "falseNorthing=" + falseNorthing + ", falseEasting=" + falseEasting
-        + ", lon0=" + lon0Degrees + ", lat0=" + _lat0 + ", R=" + R + '}';
+    return "LambertAzimuthalEqualArea{" + "R=" + R + ", lon0Degrees=" + lon0Degrees + ", falseEasting=" + falseEasting
+        + ", falseNorthing=" + falseNorthing + ", _lat0=" + _lat0 + '}';
   }
 
   /**

@@ -57,19 +57,6 @@ public class TransverseMercator extends AbstractProjection {
    * @param lat0 origin of projection coord system is at (lat0, tangentLon)
    * @param tangentLon longitude that the cylinder is tangent at ("central meridian")
    * @param scale scale factor along the central meridian
-   * @param east false easting in km
-   * @param north false northing in km
-   */
-  public TransverseMercator(double lat0, double tangentLon, double scale, double east, double north) {
-    this(lat0, tangentLon, scale, east, north, EARTH_RADIUS);
-  }
-
-  /**
-   * Construct a TransverseMercator Projection.
-   *
-   * @param lat0 origin of projection coord system is at (lat0, tangentLon)
-   * @param tangentLon longitude that the cylinder is tangent at ("central meridian")
-   * @param scale scale factor along the central meridian
    * @param east false easting in units of km
    * @param north false northing in units of km
    * @param radius earth radius in km
@@ -153,28 +140,9 @@ public class TransverseMercator extends AbstractProjection {
     return earthRadius;
   }
 
-  /**
-   * Get the label to be used in the gui for this type of projection
-   *
-   * @return Type label
-   */
-  public String getProjectionTypeLabel() {
-    return "Transverse mercator";
-  }
-
-
-  /**
-   * Get the parameters as a String
-   *
-   * @return the parameters as a String
-   */
-  public String paramsToString() {
-    return toString();
-  }
-
   @Override
   public String toString() {
-    return "TransverseMercator{" + "lat0=" + _lat0 + ", lon0=" + _lon0 + ", scale=" + _scale + ", earthRadius="
+    return "TransverseMercator{" + "lat0=" + lat0 + ", lon0=" + lon0 + ", scale=" + scale + ", earthRadius="
         + earthRadius + ", falseEasting=" + falseEasting + ", falseNorthing=" + falseNorthing + '}';
   }
 
@@ -277,165 +245,6 @@ public class TransverseMercator extends AbstractProjection {
     toLat = Math.toDegrees(Math.asin(Math.sin(d) / Math.cosh(x)));
     return LatLonPoint.create(toLat, toLon);
   }
-
-  /**
-   * Convert lat/lon coordinates to projection coordinates.
-   *
-   * @param from array of lat/lon coordinates: from[2][n],
-   *        where from[0][i], from[1][i] is the (lat,lon)
-   *        coordinate of the ith point
-   * @param to resulting array of projection coordinates,
-   *        where to[0][i], to[1][i] is the (x,y) coordinate
-   *        of the ith point
-   * @param latIndex index of latitude in "from"
-   * @param lonIndex index of longitude in "from"
-   * @return the "to" array.
-   */
-  public float[][] latLonToProj(float[][] from, float[][] to, int latIndex, int lonIndex) {
-    int cnt = from[0].length;
-    float[] fromLatA = from[latIndex];
-    float[] fromLonA = from[lonIndex];
-    float[] resultXA = to[INDEX_X];
-    float[] resultYA = to[INDEX_Y];
-    double toX, toY;
-
-    for (int i = 0; i < cnt; i++) {
-      double fromLat = fromLatA[i];
-      double fromLon = fromLonA[i];
-
-      double lon = Math.toRadians(fromLon);
-      double lat = Math.toRadians(fromLat);
-      double dlon = lon - lon0;
-      double b = Math.cos(lat) * Math.sin(dlon);
-      // infinite projection
-      if ((Math.abs(Math.abs(b) - 1.0)) < TOLERANCE) {
-        toX = 0.0;
-        toY = 0.0;
-      } else {
-        toX = scale * SpecialMathFunction.atanh(b) + falseEasting;
-        toY = scale * (Math.atan2(Math.tan(lat), Math.cos(dlon)) - lat0) + falseNorthing;
-      }
-
-      resultXA[i] = (float) toX;
-      resultYA[i] = (float) toY;
-    }
-    return to;
-  }
-
-  /**
-   * Convert lat/lon coordinates to projection coordinates.
-   *
-   * @param from array of lat/lon coordinates: from[2][n], where
-   *        (from[0][i], from[1][i]) is the (lat,lon) coordinate
-   *        of the ith point
-   * @param to resulting array of projection coordinates: to[2][n]
-   *        where (to[0][i], to[1][i]) is the (x,y) coordinate
-   *        of the ith point
-   * @return the "to" array
-   */
-  public float[][] projToLatLon(float[][] from, float[][] to) {
-    int cnt = from[0].length;
-    float[] fromXA = from[INDEX_X];
-    float[] fromYA = from[INDEX_Y];
-    float[] toLatA = to[INDEX_LAT];
-    float[] toLonA = to[INDEX_LON];
-
-    double toLat, toLon;
-    for (int i = 0; i < cnt; i++) {
-      double fromX = fromXA[i];
-      double fromY = fromYA[i];
-
-      double x = (fromX - falseEasting) / scale;
-      double d = (fromY - falseNorthing) / scale + lat0;
-      toLon = Math.toDegrees(lon0 + Math.atan2(Math.sinh(x), Math.cos(d)));
-      toLat = Math.toDegrees(Math.asin(Math.sin(d) / Math.cosh(x)));
-
-      toLatA[i] = (float) toLat;
-      toLonA[i] = (float) toLon;
-    }
-    return to;
-  }
-
-  /**
-   * Convert lat/lon coordinates to projection coordinates.
-   *
-   * @param from array of lat/lon coordinates: from[2][n],
-   *        where from[0][i], from[1][i] is the (lat,lon)
-   *        coordinate of the ith point
-   * @param to resulting array of projection coordinates,
-   *        where to[0][i], to[1][i] is the (x,y) coordinate
-   *        of the ith point
-   * @param latIndex index of latitude in "from"
-   * @param lonIndex index of longitude in "from"
-   * @return the "to" array.
-   */
-  public double[][] latLonToProj(double[][] from, double[][] to, int latIndex, int lonIndex) {
-    int cnt = from[0].length;
-    double[] fromLatA = from[latIndex];
-    double[] fromLonA = from[lonIndex];
-    double[] resultXA = to[INDEX_X];
-    double[] resultYA = to[INDEX_Y];
-    double toX, toY;
-
-    for (int i = 0; i < cnt; i++) {
-      double fromLat = fromLatA[i];
-      double fromLon = fromLonA[i];
-
-      double lon = Math.toRadians(fromLon);
-      double lat = Math.toRadians(fromLat);
-      double dlon = lon - lon0;
-      double b = Math.cos(lat) * Math.sin(dlon);
-      // infinite projection
-      if ((Math.abs(Math.abs(b) - 1.0)) < TOLERANCE) {
-        toX = 0.0;
-        toY = 0.0;
-      } else {
-        toX = scale * SpecialMathFunction.atanh(b) + falseEasting;
-        toY = scale * (Math.atan2(Math.tan(lat), Math.cos(dlon)) - lat0) + falseNorthing;
-      }
-
-      resultXA[i] = toX;
-      resultYA[i] = toY;
-    }
-    return to;
-  }
-
-  /**
-   * Convert lat/lon coordinates to projection coordinates.
-   *
-   * @param from array of lat/lon coordinates: from[2][n], where
-   *        (from[0][i], from[1][i]) is the (lat,lon) coordinate
-   *        of the ith point
-   * @param to resulting array of projection coordinates: to[2][n]
-   *        where (to[0][i], to[1][i]) is the (x,y) coordinate
-   *        of the ith point
-   * @return the "to" array
-   */
-  public double[][] projToLatLon(double[][] from, double[][] to) {
-    int cnt = from[0].length;
-    double[] fromXA = from[INDEX_X];
-    double[] fromYA = from[INDEX_Y];
-    double[] toLatA = to[INDEX_LAT];
-    double[] toLonA = to[INDEX_LON];
-
-    double toLat, toLon;
-    for (int i = 0; i < cnt; i++) {
-      double fromX = fromXA[i];
-      double fromY = fromYA[i];
-
-      double x = (fromX - falseEasting) / scale;
-      double d = (fromY - falseNorthing) / scale + lat0;
-      toLon = Math.toDegrees(lon0 + Math.atan2(Math.sinh(x), Math.cos(d)));
-      toLat = Math.toDegrees(Math.asin(Math.sin(d) / Math.cosh(x)));
-
-      toLatA[i] = toLat;
-      toLonA[i] = toLon;
-    }
-    return to;
-  }
-
-  /* ENDGENERATED */
-
 
 }
 

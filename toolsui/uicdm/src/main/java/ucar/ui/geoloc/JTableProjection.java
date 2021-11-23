@@ -196,7 +196,7 @@ public class JTableProjection extends JTable {
         case 1:
           return proj.getClassName();
         case 2:
-          return proj.paramsToString();
+          return proj.toString();
         // case 3:
         // return proj.getDefaultMapArea();
       }

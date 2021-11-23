@@ -7,18 +7,17 @@ package ucar.unidata.geoloc.projection;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import ucar.unidata.geoloc.Earth;
+import ucar.unidata.geoloc.EarthEllipsoid;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.ProjectionRect;
-import java.lang.invoke.MethodHandles;
 
 import static com.google.common.truth.Truth.assertThat;
 
 /** Test {@link ucar.unidata.geoloc.projection.LatLonProjection} */
 public class TestLatLonProjection {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private LatLonProjection p;
 
@@ -27,12 +26,42 @@ public class TestLatLonProjection {
     p = new LatLonProjection();
   }
 
-  /*
-   * void showLatLonNormal(double lon, double center) {
-   * System.out.println( Format.formatDouble(lon, 8, 5)+ " => "+
-   * Format.formatDouble(LatLonPoint.lonNormal( lon, center), 8, 5));
-   * }
-   */
+  @Test
+  public void testBasics() {
+    assertThat(p.getName()).isEqualTo("LatLonProjection");
+    assertThat(p.getCenterLon()).isEqualTo(0.0);
+    assertThat(p.getEarth()).isEqualTo(new Earth());
+    assertThat(p.toString()).isEqualTo(
+        "LatLonProjection{centerLon=0.0, earth=spherical_earth equatorRadius=6371229.000000 inverseFlattening=Infinity}");
+
+    Projection p2 = p.constructCopy();
+    assertThat(p).isEqualTo(p2);
+    assertThat(p.hashCode()).isEqualTo(p2.hashCode());
+    assertThat(p.toString()).isEqualTo(p2.toString());
+  }
+
+  @Test
+  public void testEarth() {
+    LatLonProjection ell = new LatLonProjection("earth", EarthEllipsoid.WGS84, 15.0);
+    assertThat(ell.getName()).isEqualTo("earth");
+    assertThat(ell.getCenterLon()).isEqualTo(15.0);
+    assertThat(ell.getEarth()).isEqualTo(EarthEllipsoid.WGS84);
+    assertThat(ell.toString()).isEqualTo("LatLonProjection{centerLon=15.0, earth=WGS84}");
+
+    Projection p2 = ell.constructCopy();
+    assertThat(p2).isEqualTo(ell);
+    assertThat(p2.hashCode()).isEqualTo(ell.hashCode());
+    assertThat(p2.toString()).isEqualTo(ell.toString());
+  }
+
+  @Test
+  public void testLatLonToProjBB() {
+    runCenter();
+    runCenter(110.45454545454547);
+    runCenter(-110.45454545454547);
+    runCenter(0.0);
+    runCenter(420.0);
+  }
 
   void runCenter() {
     double xinc = 22.5;
@@ -60,15 +89,6 @@ public class TestLatLonProjection {
 
       Assert.assertTrue(llbb + " => " + ma2 + " => " + p2, llbb.nearlyEquals(p2));
     }
-  }
-
-  @Test
-  public void testLatLonToProjBB() {
-    runCenter();
-    runCenter(110.45454545454547);
-    runCenter(-110.45454545454547);
-    runCenter(0.0);
-    runCenter(420.0);
   }
 
   public LatLonRect testIntersection(LatLonRect bbox, LatLonRect bbox2) {

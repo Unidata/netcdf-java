@@ -328,11 +328,6 @@ public class EquidistantAzimuthalProjection extends AbstractProjection {
   }
 
   @Override
-  public String paramsToString() {
-    return null;
-  }
-
-  @Override
   public boolean crossSeam(ProjectionPoint pt1, ProjectionPoint pt2) {
     return false;
   }

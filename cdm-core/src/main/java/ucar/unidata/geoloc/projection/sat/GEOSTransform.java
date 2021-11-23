@@ -372,6 +372,12 @@ class GEOSTransform {
   }
 
   @Override
+  public String toString() {
+    return "GEOSTransform{" + "sub_lon_degrees=" + sub_lon_degrees + ", sat_height=" + sat_height + ", scan_geom='"
+        + scan_geom + '\'' + '}';
+  }
+
+  @Override
   public boolean equals(Object o) {
     if (this == o)
       return true;

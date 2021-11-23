@@ -16,7 +16,7 @@ import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.ProjectionPoint;
 import ucar.unidata.geoloc.ProjectionRect;
-import ucar.unidata.util.Format;
+import ucar.unidata.util.StringUtil2;
 
 /**
  * Superclass for our implementations of geoloc.Projection.
@@ -46,10 +46,6 @@ import ucar.unidata.util.Format;
 @Immutable
 public abstract class AbstractProjection implements Projection {
   protected static final double EARTH_RADIUS = Earth.WGS84_EARTH_RADIUS_KM;
-  protected static final int INDEX_LAT = 0;
-  protected static final int INDEX_LON = 1;
-  protected static final int INDEX_X = 0;
-  protected static final int INDEX_Y = 1;
   protected static final double TOLERANCE = 1.0e-6;
   protected static final double PI = Math.PI;
   protected static final double PI_OVER_2 = Math.PI / 2.0;
@@ -77,25 +73,7 @@ public abstract class AbstractProjection implements Projection {
 
   @Override
   public String getClassName() {
-    String className = getClass().getName();
-    int index = className.lastIndexOf(".");
-    if (index >= 0) {
-      className = className.substring(index + 1);
-    }
-    return className;
-  }
-
-  @Override
-  public abstract String paramsToString();
-
-  /**
-   * Get the label to be used in the gui for this type of projection.
-   * This defaults to call getClassName
-   *
-   * @return Type label
-   */
-  public String getProjectionTypeLabel() {
-    return getClassName();
+    return StringUtil2.classShortName(getClass());
   }
 
   @Override
@@ -140,32 +118,6 @@ public abstract class AbstractProjection implements Projection {
    */
   public boolean isLatLon() {
     return isLatLon;
-  }
-
-  /**
-   * Get a header for display.
-   *
-   * @return human readable header for display
-   */
-  public static String getHeader() {
-    StringBuilder headerB = new StringBuilder(60);
-    headerB.append("Name");
-    Format.tab(headerB, 20, true);
-    headerB.append("Class");
-    Format.tab(headerB, 40, true);
-    headerB.append("Parameters");
-    return headerB.toString();
-  }
-
-  /**
-   * Get a String representation of this projection.
-   *
-   * @return the name of the projection. This is what gets
-   *         displayed when you add the projection object to
-   *         a UI widget (e.g. label, combobox)
-   */
-  public String toString() {
-    return getName();
   }
 
   //////////////////////////////////////////////////////////////////////
@@ -247,43 +199,6 @@ public abstract class AbstractProjection implements Projection {
     }
 
     return llbb;
-  }
-
-  /**
-   * Alternate way to calculate latLonToProjBB, originally in GridCoordSys.
-   * Difficult to do this in a general way.
-   * TODO evaluate if this is better than latLonToProjBB
-   *
-   * @param latlonRect desired lat/lon rectangle
-   * @return a ProjectionRect
-   */
-  ProjectionRect latLonToProjBB2(LatLonRect latlonRect) {
-    double minx, maxx, miny, maxy;
-
-    LatLonPoint llpt = latlonRect.getLowerLeftPoint();
-    LatLonPoint urpt = latlonRect.getUpperRightPoint();
-    LatLonPoint lrpt = latlonRect.getLowerRightPoint();
-    LatLonPoint ulpt = latlonRect.getUpperLeftPoint();
-
-    if (isLatLon()) {
-      minx = getMinOrMaxLon(llpt.getLongitude(), ulpt.getLongitude(), true);
-      miny = Math.min(llpt.getLatitude(), lrpt.getLatitude());
-      maxx = getMinOrMaxLon(urpt.getLongitude(), lrpt.getLongitude(), false);
-      maxy = Math.min(ulpt.getLatitude(), urpt.getLatitude());
-
-    } else {
-      ProjectionPoint ll = latLonToProj(llpt);
-      ProjectionPoint ur = latLonToProj(urpt);
-      ProjectionPoint lr = latLonToProj(lrpt);
-      ProjectionPoint ul = latLonToProj(ulpt);
-
-      minx = Math.min(ll.getX(), ul.getX());
-      miny = Math.min(ll.getY(), lr.getY());
-      maxx = Math.max(ur.getX(), lr.getX());
-      maxy = Math.max(ul.getY(), ur.getY());
-    }
-
-    return new ProjectionRect(minx, miny, maxx, maxy);
   }
 
   protected static double getMinOrMaxLon(double lon1, double lon2, boolean wantMin) {

@@ -135,14 +135,8 @@ public class Sinusoidal extends AbstractProjection {
 
   @Override
   public String toString() {
-    String sb = "Sinusoidal" + "{earthRadius=" + earthRadius + ", centMeridian=" + centMeridian + ", falseEasting="
+    return "Sinusoidal{" + "earthRadius=" + earthRadius + ", centMeridian=" + centMeridian + ", falseEasting="
         + falseEasting + ", falseNorthing=" + falseNorthing + '}';
-    return sb;
-  }
-
-  @Override
-  public String paramsToString() {
-    return toString();
   }
 
   @Override

@@ -137,16 +137,6 @@ public class Mercator extends AbstractProjection {
     return earthRadius;
   }
 
-  /**
-   * Get the parameters as a String
-   *
-   * @return the parameters as a String
-   */
-  @Override
-  public String paramsToString() {
-    return toString();
-  }
-
   @Override
   public String toString() {
     return "Mercator{" + "earthRadius=" + earthRadius + ", lon0=" + lon0 + ", par=" + par + ", falseEasting="

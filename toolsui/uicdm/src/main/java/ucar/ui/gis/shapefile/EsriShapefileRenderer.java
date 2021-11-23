@@ -67,7 +67,7 @@ public class EsriShapefileRenderer extends GisFeatureRendererMulti {
 
   ////////////////////////////////////////
   private EsriShapefile esri;
-  private Projection dataProject = new LatLonProjection("Cylindrical Equidistant");
+  private Projection dataProject = new LatLonProjection();
 
   private EsriShapefileRenderer(InputStream stream) throws IOException {
     esri = new EsriShapefile(stream, null, defaultCoarseness);

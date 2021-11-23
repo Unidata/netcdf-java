@@ -19,7 +19,7 @@ public class TestMSGnavigation {
 
   // Demonstrates the bug described in TDS-575.
   @Test
-  public void testConstructCopy() throws Exception {
+  public void testConstructCopy() {
     // These are the same as the values used in MSGnavigation() except for the 2nd, lon0. For the purposes of
     // this test, that's the only argument I care about.
     MSGnavigation msgNav = new MSGnavigation(0.0, 180, R_EQ, R_POL, SAT_HEIGHT, SAT_HEIGHT - R_EQ, SAT_HEIGHT - R_EQ);
@@ -76,56 +76,6 @@ public class TestMSGnavigation {
 
     double scan2 = 2 * Math.asin(1.e6 / nr) / 3566;
     System.out.printf("scan2 = %g urad %n", scan2 * 1e6);
-
-
-    /*
-     * MSGnavigation msg = new MSGnavigation();
-     * System.out.printf("const1 = %f %n",msg.const1);
-     * System.out.printf("1/const1 = %f %n",1.0/msg.const1);
-     * System.out.printf("const2 = %10.8f %n",msg.const2);
-     * System.out.printf("1/const) = %f %n",1.0/msg.const2);
-     * System.out.printf("1/(1+const2) = %f %n",1.0/(1+msg.const2));
-     * System.out.printf("1/(1-const2) = %f %n",1.0/(1-msg.const2));
-     * 
-     * double s = Math.sqrt(1737121856.);
-     * System.out.printf("sqrt = %f %n",s);
-     * System.out.printf("try = %f %n",SAT_HEIGHT*SAT_HEIGHT - R_EQ * R_EQ);
-     * 
-     * /* tryit(s, SAT_HEIGHT/msg.const1);
-     * tryit(s, SAT_HEIGHT/(1+msg.const2));
-     * tryit(s, SAT_HEIGHT/(1+msg.const2*msg.const2));
-     * tryit(s, SAT_HEIGHT/msg.const1*msg.const1);
-     * tryit(s, SAT_HEIGHT/msg.const1*(1+msg.const2));
-     * 
-     * tryit(s, SAT_HEIGHT*(1+msg.const2));
-     * 
-     * /*
-     * :grid_mapping_name = "MSGnavigation";
-     * :longitude_of_projection_origin = 0.0; // double
-     * :latitude_of_projection_origin = 0.0; // double
-     * :semi_major_axis = 6378.14013671875; // double
-     * :semi_minor_axis = 6356.75537109375; // double
-     * :height_from_earth_center_km = 42163.97100180664; // double
-     * :dx = 1207.0; // double
-     * :dy = 1189.0; // double
-     */
-
-    // MSGnavigation m = new MSGnavigation(0, 0, 6378.14013671875, 6356.75537109375, 42163.97100180664);
-
-    // doOne(m, 11, 51);
-    // doOne(m, -34, 18);
-    /*
-     * doTwo(m, 100, 100);
-     * doTwo(m, 5000, 5000);
-     * 
-     * m = new MSGnavigation(0, 0, 6378.14013671875, 6356.75537109375, 42163.97100180664, 0, 0);
-     * System.out.printf("%ncfac = %f r = %f %n", m.cfac, CFAC/m.cfac);
-     * System.out.printf("lfac = %f r = %f %n", m.lfac, CFAC/m.lfac);
-     * 
-     * doTwo(m, 100, 100);
-     * doTwo(m, 5000, 5000);
-     */
-
   }
 }
 

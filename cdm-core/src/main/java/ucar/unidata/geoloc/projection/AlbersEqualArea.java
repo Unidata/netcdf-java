@@ -259,20 +259,10 @@ public class AlbersEqualArea extends AbstractProjection {
   }
 
   @Override
-  public String getProjectionTypeLabel() {
-    return "Albers Equal Area";
-  }
-
-  @Override
-  public String paramsToString() {
-    return toString();
-  }
-
-  @Override
   public String toString() {
-    return "AlbersEqualArea{" + "lat0=" + _lat0 + ", lon0=" + _lon0 + ", par1=" + par1 + ", par2=" + par2
-        + ", falseEasting=" + falseEasting + ", falseNorthing=" + falseNorthing + ", earth_radius=" + earth_radius
-        + '}';
+    return "AlbersEqualArea{" + "name='" + name + '\'' + ", lat0=" + lat0 + ", lon0=" + lon0 + ", par1=" + par1
+        + ", par2=" + par2 + ", falseEasting=" + falseEasting + ", falseNorthing=" + falseNorthing + ", earth_radius="
+        + earth_radius + ", _lat0=" + _lat0 + ", _lon0=" + _lon0 + '}';
   }
 
   /**
