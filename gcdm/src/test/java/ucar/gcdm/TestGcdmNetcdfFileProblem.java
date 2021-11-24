@@ -22,6 +22,14 @@ import java.nio.file.Paths;
 /** Test {@link GcdmNetcdfFile} problems */
 public class TestGcdmNetcdfFileProblem {
 
+  @Test
+  @Category(NeedsCdmUnitTest.class)
+  public void testProblem() throws Exception {
+    String localFilename = TestDir.cdmUnitTestDir + "formats/netcdf4/vlen/IntTimSciSamp.nc";
+    Path path = Paths.get(localFilename);
+    compareArrayToArray(path, "tim_records");
+  }
+
   /*
    * ushort EV_1KM_RefSB(Band_1KM_RefSB=15, 10*nscans=2030, Max_EV_frames=1354);
    * 

@@ -383,48 +383,7 @@ public class CompareNetcdf2 {
 
     // data !!
     if (compareData) {
-      try {
-        ok &= compareVariableData(org, copy, showCompare, justOne);
-
-      } catch (IOException e) {
-        StringWriter sw = new StringWriter(5000);
-        e.printStackTrace(new PrintWriter(sw));
-        f.format("%s", sw.toString());
-        return false;
-      }
-    }
-
-    // nested variables
-    if (org instanceof Structure) {
-      if (!(copy instanceof Structure)) {
-        f.format("  ** %s not Structure%n", org);
-        ok = false;
-
-      } else {
-        Structure orgS = (Structure) org;
-        Structure copyS = (Structure) copy;
-
-        for (Variable orgV : orgS.getVariables()) {
-          Variable copyVar = copyS.findVariable(orgV.getShortName());
-          if (copyVar == null) {
-            f.format(" ** cant find variable %s in 2nd file%n", orgV.getFullName());
-            ok = false;
-          } else {
-            boolean compareStructData = compareData && !(orgV instanceof Sequence);
-            ok &= compareVariables(orgV, copyVar, filter, compareStructData, true);
-          }
-        }
-
-        /*
-         * List vars = new ArrayList();
-         * ok &= checkAll("struct " + orgS.getNameAndDimensions(), orgS.getVariables(), copyS.getVariables(), vars);
-         * for (int i = 0; i < vars.size(); i += 2) {
-         * Variable orgV = (Variable) vars.get(i);
-         * Variable ncmlV = (Variable) vars.get(i + 1);
-         * ok &= compareVariables(orgV, ncmlV, filter, false, true);
-         * }
-         */
-      }
+      ok &= CompareArrayToArray.compareVariableData(f, org, copy, false);
     }
 
     // coordinate systems

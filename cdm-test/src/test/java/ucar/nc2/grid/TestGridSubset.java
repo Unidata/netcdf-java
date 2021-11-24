@@ -207,8 +207,8 @@ public class TestGridSubset {
   // longitude subsetting (CoordAxis1D regular)
   @Test
   public void testLatLonSubset() throws IOException, ucar.array.InvalidRangeException {
-    String filename = TestDir.cdmUnitTestDir + "conventions/problem/SUPER-NATIONAL_latlon_IR_20070222_1600.nc";
-    String gridName = "micron11";
+    String filename = TestDir.cdmUnitTestDir + "conventions/cf/fcst_int.20030424.i1502.f0058.nc";
+    String gridName = "Z_ceil";
     System.out.printf("testLatLonSubset %s%n", filename);
 
     Formatter errlog = new Formatter();
@@ -219,17 +219,17 @@ public class TestGridSubset {
 
       GridCoordinateSystem csys = grid.getCoordinateSystem();
       assertThat(csys).isNotNull();
-      assertThat(csys.getNominalShape()).isEqualTo(ImmutableList.of(800, 1300));
+      assertThat(csys.getNominalShape()).isEqualTo(ImmutableList.of(225, 301));
       GridTimeCoordinateSystem tcs = csys.getTimeCoordinateSystem();
       assertThat(tcs).isNull();
       GridHorizCoordinateSystem hcs = csys.getHorizCoordinateSystem();
       assertThat(hcs).isNotNull();
 
       LatLonRect bbox = LatLonRect.builder(LatLonPoint.create(40.0, -100.0), 10.0, 20.0).build();
-      testLatLonSubset(grid, bbox, ImmutableList.of(141, 281));
+      testLatLonSubset(grid, bbox, ImmutableList.of(63, 88));
 
       bbox = LatLonRect.builder(LatLonPoint.create(-40.0, -180.0), 120.0, 300.0).build();
-      testLatLonSubset(grid, bbox, ImmutableList.of(800, 1300));
+      testLatLonSubset(grid, bbox, ImmutableList.of(225, 301));
     }
   }
 

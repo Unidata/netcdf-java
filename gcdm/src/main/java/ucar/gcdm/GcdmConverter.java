@@ -743,10 +743,16 @@ public class GcdmConverter {
 
   private static void decodeNestedData(Member member, GcdmNetcdfProto.Data data, StructureDataStorageBB storage,
       ByteBuffer bb) {
-    if (data.getVlenCount() > 0) {
-      ArrayVlen<?> vlen = decodeVlenData(data);
-      int index = storage.putOnHeap(vlen);
-      bb.putInt(index);
+    if (member.isVlen()) {
+      if (data.getVlenCount() > 0) {
+        ArrayVlen<?> vlen = decodeVlenData(data);
+        int index = storage.putOnHeap(vlen);
+        bb.putInt(index);
+      } else { // because its row oriented, data often stored directly in Data
+        Array<?> vlen = decodeData(data);
+        int index = storage.putOnHeap(vlen);
+        bb.putInt(index);
+      }
       return;
     }
 
