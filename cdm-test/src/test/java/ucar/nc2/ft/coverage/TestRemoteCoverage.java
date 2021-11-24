@@ -6,6 +6,7 @@ package ucar.nc2.ft.coverage;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.Ignore;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +28,7 @@ public class TestRemoteCoverage {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
+  @Ignore("Depends on cdmrFeature service being available, which was removed in TDS 5 and never in an official stable release.")
   @Category(NeedsExternalResource.class)
   public void testCdmRemoteCoverage() throws Exception {
     String ds = "https://thredds-test.unidata.ucar.edu/thredds/catalog/grib/NCEP/GFS/Global_0p25deg_ana/latest.xml";
