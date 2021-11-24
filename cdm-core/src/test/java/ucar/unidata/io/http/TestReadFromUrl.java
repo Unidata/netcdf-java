@@ -8,11 +8,14 @@ package ucar.unidata.io.http;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.nc2.internal.http.InMemoryRafHttpProvider;
+import ucar.nc2.util.IO;
 import ucar.unidata.io.InMemoryRandomAccessFile;
 import ucar.unidata.io.RandomAccessFile;
+import ucar.unidata.io.ReadFromUrl;
 import ucar.unidata.util.test.category.NeedsExternalResource;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 import static com.google.common.truth.Truth.assertThat;
@@ -46,5 +49,30 @@ public class TestReadFromUrl {
 
     String contents = ReadFromUrl.readURLcontents(httpsLocation);
     assertThat(contents).isEqualTo(fromRaf);
+  }
+
+  @Test
+  @Category(NeedsExternalResource.class)
+  public void testGetgetInputStreamFromUrl() throws IOException {
+    System.out.printf("testReadURLcontents Open %s%n", httpsLocation);
+
+    String fromRaf;
+    InMemoryRafHttpProvider provider = new InMemoryRafHttpProvider();
+    try (RandomAccessFile rafh = provider.open(httpsLocation)) {
+      assertThat(rafh).isInstanceOf(InMemoryRandomAccessFile.class);
+      assertThat(rafh.getLocation()).isEqualTo(httpsLocation);
+      assertThat(rafh.getLastModified()).isEqualTo(0);
+      assertThat(rafh.length()).isEqualTo(18351);
+
+      // read a couple of random bytes
+      byte[] buff = new byte[(int) rafh.length()];
+      rafh.seek(0L);
+      assertThat(rafh.read(buff)).isEqualTo(rafh.length());
+      fromRaf = new String(buff, StandardCharsets.UTF_8);
+    }
+
+    try (InputStream is = ReadFromUrl.getInputStreamFromUrl(httpsLocation)) {
+      assertThat(IO.readContents(is)).isEqualTo(fromRaf);
+    }
   }
 }

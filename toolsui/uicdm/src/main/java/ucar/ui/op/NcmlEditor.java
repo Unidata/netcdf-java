@@ -25,7 +25,7 @@ import ucar.ui.widget.TextHistoryPane;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.IO;
 import ucar.nc2.write.Nc4ChunkingStrategy;
-import ucar.unidata.io.http.ReadFromUrl;
+import ucar.unidata.io.ReadFromUrl;
 import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.ComboBox;
 import java.awt.BorderLayout;

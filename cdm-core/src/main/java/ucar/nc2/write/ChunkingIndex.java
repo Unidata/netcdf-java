@@ -13,17 +13,6 @@ package ucar.nc2.write;
  * TODO can we use nc2.write.IndexChunker?
  */
 public class ChunkingIndex {
-
-  /** Compute total number of elements for the given shape. */
-  public static long computeSize(int[] shape) {
-    long product = 1;
-    for (int aShape : shape) {
-      product *= aShape;
-    }
-    return product;
-  }
-
-  /////////////////////////////////////////////////////////////////////////////////////
   private final int[] shape;
   private final long[] stride; // long ?
   private final int rank;
@@ -120,7 +109,7 @@ public class ChunkingIndex {
    * and with {@code numElems <= maxChunkElems}.
    *
    * @param maxChunkElems the maximum number of elements in the chunk shape. The actual element count of the shape
-   *        returned is likely to be different, and can be found with {@link #computeSize}.
+   *        returned is likely to be different, and can be found with {@link ucar.array.Arrays#computeSize}.
    * @return the shape of the largest possible contiguous chunk.
    */
   public int[] computeChunkShape(long maxChunkElems) {

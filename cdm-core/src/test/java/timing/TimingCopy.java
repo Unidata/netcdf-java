@@ -7,7 +7,7 @@ package timing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.util.IO;
-import ucar.unidata.io.http.ReadFromUrl;
+import ucar.unidata.io.ReadFromUrl;
 import ucar.unidata.util.Format;
 import java.io.*;
 import java.lang.invoke.MethodHandles;

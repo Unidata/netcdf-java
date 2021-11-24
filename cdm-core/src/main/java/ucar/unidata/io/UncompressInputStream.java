@@ -320,10 +320,6 @@ public class UncompressInputStream extends FilterInputStream {
     if (eof)
       return 0;
 
-    // Fred Hansen, 2008
-    // the old code follows. it fails because read() can return bytes even after exhausting in.read()
-    // return in.available();
-
     int avail = in.available();
     return (avail == 0) ? 1 : avail;
   }

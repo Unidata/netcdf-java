@@ -51,7 +51,6 @@ import ucar.unidata.util.StringUtil2;
 public class NetcdfFiles {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfFile.class);
   private static final List<IOServiceProvider> registeredProviders = new ArrayList<>();
-  private static final List<RandomAccessFileProvider> registeredRandomAccessFileProviders = new ArrayList<>();
   private static final int default_buffersize = 8092;
   private static final StringLocker stringLocker = new StringLocker();
   private static final List<String> possibleCompressedSuffixes = Arrays.asList("Z", "zip", "gzip", "gz", "bz2");
@@ -127,47 +126,6 @@ public class NetcdfFiles {
       registeredProviders.add(0, spi); // put user stuff first
     else
       registeredProviders.add(spi);
-  }
-
-  /**
-   * Register a RandomAccessFile Provider, using its class string name.
-   *
-   * @param className Class that implements RandomAccessFileProvider.
-   */
-  public static void registerRandomAccessFileProvider(String className) throws NoSuchMethodException,
-      InvocationTargetException, InstantiationException, IllegalAccessException, ClassNotFoundException {
-    Class<?> rafClass = NetcdfFile.class.getClassLoader().loadClass(className);
-    registerRandomAccessFileProvider(rafClass);
-  }
-
-  /**
-   * Register a RandomAccessFile Provider. A new instance will be created when one of its files is opened.
-   *
-   * @param rafClass Class that implements RandomAccessFileProvider.
-   * @throws IllegalAccessException if class is not accessible.
-   * @throws InstantiationException if class doesnt have a no-arg constructor.
-   * @throws ClassCastException if class doesnt implement IOServiceProvider interface.
-   */
-  public static void registerRandomAccessFileProvider(Class<?> rafClass)
-      throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-    registerRandomAccessFileProvider(rafClass, false);
-  }
-
-  /**
-   * Register a RandomAccessFile Provider. A new instance will be created when one of its files is opened.
-   *
-   * @param rafClass Class that implements RandomAccessFileProvider.
-   * @param last true=>insert at the end of the list; otherwise front
-   */
-  private static void registerRandomAccessFileProvider(Class<?> rafClass, boolean last)
-      throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
-    RandomAccessFileProvider rafProvider;
-    rafProvider = (RandomAccessFileProvider) rafClass.getDeclaredConstructor().newInstance(); // fail fast
-    if (userLoadsFirst && !last) {
-      registeredRandomAccessFileProviders.add(0, rafProvider); // put user stuff first
-    } else {
-      registeredRandomAccessFileProviders.add(rafProvider);
-    }
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -323,8 +281,8 @@ public class NetcdfFiles {
 
     ucar.unidata.io.RandomAccessFile raf = null;
 
-    // look for registered RandomAccessFile Providers
-    for (RandomAccessFileProvider provider : registeredRandomAccessFileProviders) {
+    // look for dynamically loaded RandomAccessFile Providers
+    for (RandomAccessFileProvider provider : ServiceLoader.load(RandomAccessFileProvider.class)) {
       if (provider.isOwnerOf(location)) {
         raf = provider.open(location, buffer_size);
         Preconditions.checkNotNull(raf);
@@ -332,20 +290,6 @@ public class NetcdfFiles {
           raf = downloadAndDecompress(raf, uriString, buffer_size);
         }
         break;
-      }
-    }
-
-    if (raf == null) {
-      // look for dynamically loaded RandomAccessFile Providers
-      for (RandomAccessFileProvider provider : ServiceLoader.load(RandomAccessFileProvider.class)) {
-        if (provider.isOwnerOf(location)) {
-          raf = provider.open(location, buffer_size);
-          Preconditions.checkNotNull(raf);
-          if (looksCompressed(uriString)) {
-            raf = downloadAndDecompress(raf, uriString, buffer_size);
-          }
-          break;
-        }
       }
     }
 
