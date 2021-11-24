@@ -73,13 +73,6 @@ public class Nc4ChunkingDefault extends Nc4ChunkingStrategy {
 
   @Override
   public long[] computeChunking(Variable.Builder<?> vb) {
-    /*
-     * check attribute
-     * int[] resultFromAtt = computeChunkingFromAttribute(v);
-     * if (resultFromAtt != null)
-     * return convertToLong(resultFromAtt);
-     */
-
     int maxElements = defaultChunkSize / vb.getElementSize();
 
     // no unlimited dimensions
@@ -111,7 +104,6 @@ public class Nc4ChunkingDefault extends Nc4ChunkingStrategy {
 
     return result;
   }
-
 
   private int[] incrUnlimitedShape(List<Dimension> dims, int[] shape, long maxElements) {
     int countUnlimitedDims = 0;

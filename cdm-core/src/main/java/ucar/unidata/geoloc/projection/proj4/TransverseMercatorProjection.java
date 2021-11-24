@@ -230,21 +230,8 @@ public class TransverseMercatorProjection extends AbstractProjection {
   }
 
   @Override
-  public String getProjectionTypeLabel() {
-    return "Transverse Mercator Ellipsoidal Earth";
-  }
-
-  @Override
   public Projection constructCopy() {
     return new TransverseMercatorProjection(ellipsoid, _lon0, _lat0, scaleFactor, falseEasting, falseNorthing);
-  }
-
-  @Override
-  public String paramsToString() {
-    Formatter f = new Formatter();
-    f.format("origin lat,lon=%f,%f scale=%f earth=%s falseEast/North=%f,%f", _lat0, _lon0, scaleFactor, ellipsoid,
-        falseEasting, falseNorthing);
-    return f.toString();
   }
 
   @Override

@@ -43,7 +43,7 @@ public class TestLambertConformalConicEllipse {
   public void testStuff() {
     LambertConformalConicEllipse a =
         new LambertConformalConicEllipse(23.0, -96.0, 29.5, 45.5, 0, 0, new Earth(6378137.0, 0.0, 298.257222101));
-    System.out.printf("proj = %s %s%n%n", a.getName(), a.paramsToString());
+    System.out.printf("proj = %s %s%n%n", a.getName(), a);
     // fromProj(a, 1730.692593817677, 1970.917991173046);
     // toProj(a, 39.089117, -75.649278);
 

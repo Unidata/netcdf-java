@@ -354,21 +354,9 @@ public class StereographicAzimuthalProjection extends AbstractProjection {
   }
 
   @Override
-  public String getProjectionTypeLabel() {
-    return "Stereographic Azimuthal Ellipsoidal Earth";
-  }
-
-  @Override
   public Projection constructCopy() {
     return new StereographicAzimuthalProjection(_latt, _lont, scaleFactor, _trueScaleLat, falseEasting, falseNorthing,
         earth);
-  }
-
-  @Override
-  public String paramsToString() {
-    Formatter f = new Formatter();
-    f.format("origin lat,lon=%f,%f scale,trueScaleLat=%f,%f earth=%s", _latt, _lont, scaleFactor, _trueScaleLat, earth);
-    return f.toString();
   }
 
   @Override

@@ -218,7 +218,7 @@ public class GridCoordinateSystem {
     }
 
     if (hcs.getProjection() != null) {
-      f.format(" Projection: %s %s%n", hcs.getProjection().getName(), hcs.getProjection().paramsToString());
+      f.format(" Projection: %s %s%n", hcs.getProjection().getName(), hcs.getProjection());
     }
     f.format(" LLbb=%s%n", hcs.getLatLonBoundingBox());
     if ((hcs.getProjection() != null) && !hcs.isLatLon()) {

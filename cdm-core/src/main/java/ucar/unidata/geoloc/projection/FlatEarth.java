@@ -146,18 +146,8 @@ public class FlatEarth extends AbstractProjection {
   }
 
   @Override
-  public String getProjectionTypeLabel() {
-    return "FlatEarth";
-  }
-
-  @Override
-  public String paramsToString() {
-    return toString();
-  }
-
-  @Override
   public String toString() {
-    return "FlatEarth{" + "rotAngle=" + rotAngle + ", radius=" + radius + ", lat0=" + _lat0 + ", lon0=" + _lon0 + '}';
+    return "FlatEarth{" + "rotAngle=" + rotAngle + ", radius=" + radius + ", _lat0=" + _lat0 + ", _lon0=" + _lon0 + '}';
   }
 
   @Override

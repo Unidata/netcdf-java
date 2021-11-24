@@ -18,7 +18,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.nc2.internal.util.EscapeStrings;
 import ucar.nc2.util.IO;
-import ucar.unidata.io.http.ReadFromUrl;
+import ucar.unidata.io.ReadFromUrl;
 import ucar.unidata.util.test.category.NeedsExternalResource;
 
 @Category(NeedsExternalResource.class)

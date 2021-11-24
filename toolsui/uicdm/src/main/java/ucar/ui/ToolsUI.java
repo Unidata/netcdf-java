@@ -71,7 +71,7 @@ import ucar.nc2.util.IO;
 import ucar.nc2.internal.cache.FileCache;
 import ucar.nc2.internal.util.xml.RuntimeConfigParser;
 import ucar.unidata.io.RandomAccessFile;
-import ucar.unidata.io.http.ReadFromUrl;
+import ucar.unidata.io.ReadFromUrl;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.XMLStore;
 import ucar.ui.prefs.Debug;

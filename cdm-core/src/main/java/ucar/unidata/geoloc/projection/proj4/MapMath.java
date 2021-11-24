@@ -199,20 +199,6 @@ class MapMath {
     return angle;
   }
 
-  /*
-   * public static void latLongToXYZ(ProjectionPoint ll, Point3D xyz) {
-   * double c = Math.cos(ll.y);
-   * xyz.x = c * Math.cos(ll.x);
-   * xyz.y = c * Math.sin(ll.x);
-   * xyz.z = Math.sin(ll.y);
-   * }
-   * 
-   * public static void xyzToLatLong(Point3D xyz, ProjectionPoint ll) {
-   * ll.y = MapMath.asin(xyz.z);
-   * ll.x = MapMath.atan2(xyz.y, xyz.x);
-   * }
-   */
-
   public static double greatCircleDistance(double lon1, double lat1, double lon2, double lat2) {
     double dlat = Math.sin((lat2 - lat1) / 2);
     double dlon = Math.sin((lon2 - lon1) / 2);
@@ -444,37 +430,5 @@ class MapMath {
       return (one_es * (sinphi / (1. - con * con) - (.5 / e) * Math.log((1. - con) / (1. + con))));
     } else
       return (sinphi + sinphi);
-  }
-
-  /*
-   * Java translation of "Nice Numbers for Graph Labels"
-   * by Paul Heckbert
-   * from "Graphics Gems", Academic Press, 1990
-   */
-  public static double niceNumber(double x, boolean round) {
-    int expv; /* exponent of x */
-    double f; /* fractional part of x */
-    double nf; /* nice, rounded fraction */
-
-    expv = (int) Math.floor(Math.log(x) / Math.log(10));
-    f = x / Math.pow(10., expv); /* between 1 and 10 */
-    if (round) {
-      if (f < 1.5)
-        nf = 1.;
-      else if (f < 3.)
-        nf = 2.;
-      else if (f < 7.)
-        nf = 5.;
-      else
-        nf = 10.;
-    } else if (f <= 1.)
-      nf = 1.;
-    else if (f <= 2.)
-      nf = 2.;
-    else if (f <= 5.)
-      nf = 5.;
-    else
-      nf = 10.;
-    return nf * Math.pow(10., expv);
   }
 }

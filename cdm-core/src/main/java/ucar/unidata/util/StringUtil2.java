@@ -11,8 +11,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Iterator;
-import java.util.StringTokenizer;
 
 /** Static String utilities. Replace with standard java library when possible. */
 public class StringUtil2 {
@@ -48,32 +46,6 @@ public class StringUtil2 {
     }
 
     return sb.toString();
-  }
-
-  /**
-   * Break the given text into lines, respecting word boundaries (blank space).
-   *
-   * @param text The text to convert
-   * @param insert break to insert
-   * @param lineSize line size to insert at
-   * @return The text with added br tags.
-   */
-  public static String breakTextAtWords(String text, String insert, int lineSize) {
-    StringBuilder buff = new StringBuilder();
-    StringTokenizer stoker = new StringTokenizer(text);
-    int lineCount = 0;
-    while (stoker.hasMoreTokens()) {
-      String tok = stoker.nextToken();
-      if (tok.length() + lineCount >= lineSize) {
-        buff.append(insert);
-        lineCount = 0;
-      }
-      buff.append(tok);
-      buff.append(" ");
-      lineCount += tok.length() + 1;
-    }
-
-    return buff.toString();
   }
 
   public static String classShortName(Class<?> classz) {
@@ -135,27 +107,6 @@ public class StringUtil2 {
     return sb.toString();
   }
 
-  /**
-   * Remove all but printable ascii
-   *
-   * @param s filter this string
-   * @return filtered string.
-   */
-  public static String filter7bits(String s) {
-    if (s == null)
-      return null;
-    char[] bo = new char[s.length()];
-    int count = 0;
-    for (int i = 0; i < s.length(); i++) {
-      char c = s.charAt(i);
-      if ((c < 128) && (c > 31) || ((c == '\n') || (c == '\t'))) {
-        bo[count++] = c;
-      }
-    }
-
-    return new String(bo, 0, count);
-  }
-
   // remove leading and trailing blanks
   // remove control characters (< 0x20)
   // transform "/" to "_"
@@ -206,59 +157,6 @@ public class StringUtil2 {
     }
     return i;
   }
-
-  /**
-   * Left pad the given value with zeros up to the number of digits
-   *
-   * @param value The value.
-   * @param numDigits number of digits
-   * @return The String represenation of the value, padded with
-   *         leading "0"-s if value &lt; 10E(numDigits-1)
-   */
-  public static String padZero(int value, int numDigits) {
-    return padLeft(String.valueOf(value), numDigits, "0");
-  }
-
-
-  /**
-   * Pad the given string with spaces on the left up to the given length.
-   *
-   * @param s String to pad
-   * @param desiredLength ending length
-   * @return padded String
-   */
-  public static String padLeft(String s, int desiredLength) {
-    return padLeft(s, desiredLength, " ");
-  }
-
-
-  /**
-   * Pad the given string with padString on the left up to the given length.
-   *
-   * @param s String to pad
-   * @param desiredLength ending length
-   * @param padString String to pad with (e.g, " ")
-   * @return padded String
-   */
-  public static String padLeft(String s, int desiredLength, String padString) {
-    while (s.length() < desiredLength) {
-      s = padString + s;
-    }
-    return s;
-  }
-
-
-  /**
-   * Pad the given string with spaces on the right up to the given length.
-   *
-   * @param s String to pad
-   * @param desiredLength ending length
-   * @return padded String
-   */
-  public static String padRight(String s, int desiredLength) {
-    return padRight(s, desiredLength, " ");
-  }
-
 
   /**
    * Pad the given string with padString on the right up to the given length.
@@ -687,7 +585,6 @@ public class StringUtil2 {
       }
     }
   }
-
 
   /**
    * Find all occurences of the "match" in original, and substitute the "subst" string,

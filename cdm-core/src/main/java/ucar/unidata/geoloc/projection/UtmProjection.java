@@ -110,31 +110,9 @@ public class UtmProjection extends AbstractProjection {
     return convert2latlon.isNorth();
   }
 
-  /**
-   * Get the label to be used in the gui for this type of projection
-   *
-   * @return Type label
-   */
-  public String getProjectionTypeLabel() {
-    return "Universal transverse mercator";
-  }
-
-  /*
-   * Getting the central meridian in degrees. depends on the zone
-   * 
-   * @return the central meridian in degrees.
-   */
+  /** Get the central meridian in degrees */
   public double getCentralMeridian() {
     return convert2xy.getCentralMeridian();
-  }
-
-  /**
-   * Get the parameters as a String
-   *
-   * @return the parameters as a String
-   */
-  public String paramsToString() {
-    return getZone() + " " + isNorth();
   }
 
   /**
@@ -146,6 +124,11 @@ public class UtmProjection extends AbstractProjection {
    */
   public boolean crossSeam(ProjectionPoint pt1, ProjectionPoint pt2) {
     return false;
+  }
+
+  @Override
+  public String toString() {
+    return "UtmProjection{" + "a=" + a + ", f=" + f + ", zone=" + zone + ", isNorth=" + isNorth + '}';
   }
 
   @Override

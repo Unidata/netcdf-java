@@ -18,9 +18,6 @@ public interface Projection {
   /** Is this the lat/lon Projection? */
   boolean isLatLon();
 
-  /** String representation of the projection parameters. */
-  String paramsToString();
-
   /** Convert lat, lon to Projection point. */
   default ProjectionPoint latLonToProj(double lat, double lon) {
     return latLonToProj(LatLonPoint.create(lat, lon));

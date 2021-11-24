@@ -36,7 +36,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasets;
 import ucar.nc2.internal.util.CompareNetcdf2;
 import ucar.nc2.util.IO;
-import ucar.unidata.io.http.ReadFromUrl;
+import ucar.unidata.io.ReadFromUrl;
 import ucar.unidata.util.test.category.NeedsExternalResource;
 import ucar.unidata.util.test.category.NeedsUcarNetwork;
 import ucar.unidata.util.test.category.Slow;

@@ -168,24 +168,6 @@ public class VerticalPerspectiveView extends AbstractProjection {
     return P;
   }
 
-  /**
-   * Get the label to be used in the gui for this type of projection
-   *
-   * @return Type label
-   */
-  public String getProjectionTypeLabel() {
-    return "VerticalPerspectiveView";
-  }
-
-  /**
-   * Create a String of the parameters.
-   *
-   * @return a String of the parameters
-   */
-  public String paramsToString() {
-    return toString();
-  }
-
   @Override
   public String toString() {
     return "VerticalPerspectiveView{" + "lat0=" + lat0 + ", lon0=" + lon0 + ", false_east=" + false_east

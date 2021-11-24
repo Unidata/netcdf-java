@@ -4,12 +4,9 @@ import java.io.PrintStream;
 import java.util.Arrays;
 import org.junit.Assert;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.ProjectionPoint;
-import java.lang.invoke.MethodHandles;
 
 /**
  * Tests for {@link RotatedLatLon}.
@@ -17,23 +14,14 @@ import java.lang.invoke.MethodHandles;
  * @author Ben Caradoc-Davies (Transient Software Limited)
  */
 public class TestRotatedLatLon {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  /**
-   * Tolerance for coordinate comparisons.
-   */
+  /** Tolerance for coordinate comparisons. */
   private static final double TOLERANCE = 1e-6;
 
-  /**
-   * A rotated lat/lon projection with origin at 54 degrees North, 254 degrees
-   * East.
-   */
+  /** A rotated lat/lon projection with origin at 54 degrees North, 254 degrees East. */
   private Projection proj = new RotatedLatLon(-36, 254, 0);
 
-  /**
-   * Test that the unrotated centre lat/lon is the origin of the rotated
-   * projection.
-   */
+  /** Test that the unrotated centre lat/lon is the origin of the rotated projection. */
   @Test
   public void testLatLonToProj() {
     LatLonPoint latlon = LatLonPoint.create(54, 254);
@@ -42,10 +30,7 @@ public class TestRotatedLatLon {
     Assert.assertEquals("Unexpected rotated latitude", 0, result.getY(), TOLERANCE);
   }
 
-  /**
-   * Test that the origin of the rotated projection is the unrotated centre
-   * lat/lon.
-   */
+  /** Test that the origin of the rotated projection is the unrotated centre lat/lon. */
   @Test
   public void testProjToLatLon() {
     ProjectionPoint p = ProjectionPoint.create(0, 0);

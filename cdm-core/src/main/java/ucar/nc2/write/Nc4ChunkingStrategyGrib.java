@@ -43,13 +43,6 @@ public class Nc4ChunkingStrategyGrib extends Nc4ChunkingDefault {
 
   @Override
   public long[] computeChunking(Variable.Builder<?> v) {
-    /*
-     * check attribute
-     * int[] resultFromAtt = computeChunkingFromAttribute(v);
-     * if (resultFromAtt != null)
-     * return convertToLong(resultFromAtt);
-     */
-
     // no unlimited dimensions
     if (!v.isUnlimited()) {
       int[] result = computeChunkingGrib(v);
@@ -67,7 +60,6 @@ public class Nc4ChunkingStrategyGrib extends Nc4ChunkingDefault {
     int[] result = computeUnlimitedChunking(v.getDimensions(), v.getElementSize());
     return convertToLong(result);
   }
-
 
   private int[] computeChunkingGrib(Variable.Builder<?> v) {
     int n = v.getRank();

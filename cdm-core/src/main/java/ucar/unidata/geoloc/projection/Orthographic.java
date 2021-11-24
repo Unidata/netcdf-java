@@ -124,18 +124,8 @@ public class Orthographic extends AbstractProjection {
   }
 
   @Override
-  public String getProjectionTypeLabel() {
-    return "Orthographic";
-  }
-
-  @Override
-  public String paramsToString() {
-    return toString();
-  }
-
-  @Override
   public String toString() {
-    return "Orthographic{" + "lat0=" + _lat0 + ", lon0=" + lon0Degrees + ", R=" + R + '}';
+    return "Orthographic{" + "lat0=" + lat0 + ", lon0=" + lon0 + ", R=" + R + '}';
   }
 
   /**

@@ -141,7 +141,7 @@ public class WorldMap extends GisFeatureRenderer {
   public WorldMap() {
     if (partList == null) // read in world map points the first time
       readWorldMap();
-    dataProjection = new LatLonProjection("Cylindrical Equidistant");
+    dataProjection = new LatLonProjection();
   }
 
   private final LatLonRect defaultLLBB = new LatLonRect(LatLonPoint.create(-180., -90.), 360., 180.);

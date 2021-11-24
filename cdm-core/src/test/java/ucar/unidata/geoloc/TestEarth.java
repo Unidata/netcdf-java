@@ -34,7 +34,9 @@ public class TestEarth {
   @Test
   public void testEllipticalEarth() {
     EarthEllipsoid earth = EarthEllipsoid.getType("WGS84");
+    assertThat(earth).isNotNull();
     Earth earth2 = EarthEllipsoid.getType(7030);
+    assertThat(earth2).isNotNull();
     assertThat(earth).isEqualTo(earth2);
     assertThat(earth.hashCode()).isEqualTo(earth2.hashCode());
 
@@ -49,6 +51,18 @@ public class TestEarth {
     assertThat(earth.getEccentricitySquared()).isEqualTo(ecc);
     assertThat(earth.getMajor()).isEqualTo(earth.getEquatorRadius());
     assertThat(earth.getMinor()).isEqualTo(earth.getPoleRadius());
+  }
+
+  @Test
+  public void testEllipticalEarthEquals() {
+    EarthEllipsoid earth = new EarthEllipsoid("test", 99, 3000.0, 4000.0, 0.0);
+    EarthEllipsoid earth2 = new EarthEllipsoid("test", 999, 30900.0, 40900.0, 0.0);
+    assertThat(earth).isEqualTo(earth2);
+    assertThat(earth.hashCode()).isEqualTo(earth2.hashCode());
+
+    EarthEllipsoid earth3 = new EarthEllipsoid("test3", 99, 3000.0, 4000.0, 0.0);
+    assertThat(earth).isNotEqualTo(earth3);
+    assertThat(earth.hashCode()).isNotEqualTo(earth3.hashCode());
   }
 
 }

@@ -30,10 +30,6 @@ public class LatLonProjection extends AbstractProjection {
     this("LatLonProjection", EarthEllipsoid.DEFAULT, 0.0);
   }
 
-  public LatLonProjection(String name) {
-    this(name, EarthEllipsoid.DEFAULT, 0.0);
-  }
-
   public LatLonProjection(Earth earth) {
     this("LatLonProjection", earth, 0.0);
   }
@@ -51,32 +47,6 @@ public class LatLonProjection extends AbstractProjection {
       addParameter(CF.SEMI_MINOR_AXIS, this.earth.getPoleRadius());
     }
   }
-
-  /**
-   * Get the label to be used in the gui for this type of projection
-   *
-   * @return Type label
-   */
-  public String getProjectionTypeLabel() {
-    return "Lat/Lon";
-  }
-
-  /**
-   * Get a String of the parameters
-   *
-   * @return a String of the parameters
-   */
-  public String paramsToString() {
-    return "Center lon:" + Format.d(centerLon, 3);
-  }
-
-
-  /**
-   * See if this projection equals the object in question
-   *
-   * @param o object in question
-   * @return true if it is a LatLonProjection and covers the same area
-   */
 
   @Override
   public boolean equals(Object o) {
@@ -96,6 +66,11 @@ public class LatLonProjection extends AbstractProjection {
     temp = Double.doubleToLongBits(centerLon);
     result = (int) (temp ^ (temp >>> 32));
     return result;
+  }
+
+  @Override
+  public String toString() {
+    return "LatLonProjection{" + "centerLon=" + centerLon + ", earth=" + earth + '}';
   }
 
   @Override
@@ -169,43 +144,6 @@ public class LatLonProjection extends AbstractProjection {
 
     return world.build();
   }
-
-  /*
-   * public ProjectionRect[] latLonToProjRect2(LatLonRect latlonR) {
-   * return latLonToProjRect2(latlonR.getLowerLeftPoint().getLatitude(),
-   * latlonR.getLowerLeftPoint().getLongitude(),
-   * latlonR.getUpperRightPoint().getLatitude(),
-   * latlonR.getUpperRightPoint().getLongitude());
-   * }
-   * 
-   * public ProjectionRect[] latLonToProjRect2(double lat0, double lon0, double lat1, double lon1) {
-   * double height = Math.abs(lat1 - lat0);
-   * lat0 = Math.min(lat1, lat0);
-   * double width = lon1 - lon0;
-   * if (Math.abs(width) < 1.0e-8) {
-   * width = 360.0; // assume its the whole thing
-   * }
-   * lon0 = LatLonPoints.lonNormal(lon0, centerLon);
-   * lon1 = LatLonPoints.lonNormal(lon1, centerLon);
-   * 
-   * ProjectionRect[] rects = new ProjectionRect[2];
-   * if (width >= 360.0) {
-   * rects[0] = ProjectionRect.builder().setRect(centerLon - 180.0, lat0, 360.0, height).build();
-   * rects[1] = null;
-   * } else if (lon0 < lon1 && width > 0) {
-   * rects[0] = ProjectionRect.builder().setRect(lon0, lat0, width, height).build();
-   * rects[1] = null;
-   * } else {
-   * double y = centerLon + 180 - lon0;
-   * if (width < 0) {
-   * width += 360;
-   * }
-   * rects[0] = ProjectionRect.builder().setRect(lon0, lat0, y, height).build();
-   * rects[1] = ProjectionRect.builder().setRect(lon1 - width + y, lat0, width - y, height).build();
-   * }
-   * return rects;
-   * }
-   */
 
   /**
    * Split a latlon rectangle to the equivalent ProjectionRect(s).

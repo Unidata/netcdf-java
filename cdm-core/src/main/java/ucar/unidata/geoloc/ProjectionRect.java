@@ -355,14 +355,6 @@ public class ProjectionRect {
     private double width;
     private double height;
 
-    public double getWidth() {
-      return width;
-    }
-
-    public double getHeight() {
-      return height;
-    }
-
     public Builder setX(double x) {
       this.x = x;
       return this;
@@ -396,9 +388,9 @@ public class ProjectionRect {
     }
 
     /** Extend the rectangle by the given rectangle. */
-    public Builder add(ProjectionRect r) {
+    public Builder extend(ProjectionRect r) {
       double x1 = Math.min(this.x, r.getMinX());
-      double x2 = Math.max(this.x + this.height, r.getMaxX());
+      double x2 = Math.max(this.x + this.width, r.getMaxX());
       double y1 = Math.min(this.y, r.getMinY());
       double y2 = Math.max(this.y + this.height, r.getMaxY());
       this.x = x1;

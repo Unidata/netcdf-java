@@ -13,6 +13,10 @@ import ucar.unidata.geoloc.ProjectionPoint;
 
 import java.util.Objects;
 
+/**
+ * A dummy Projection for Curvilear coordinates that used identity to map lat,lon to y,x.
+ * see {@link ucar.nc2.grid.GridHorizCurvilinear}
+ */
 public class CurvilinearProjection extends AbstractProjection {
   Array<Double> latdata;
   Array<Double> londata;
@@ -48,12 +52,7 @@ public class CurvilinearProjection extends AbstractProjection {
 
   @Override
   public Projection constructCopy() {
-    return null;
-  }
-
-  @Override
-  public String paramsToString() {
-    return "";
+    return new CurvilinearProjection();
   }
 
   @Override
@@ -70,5 +69,10 @@ public class CurvilinearProjection extends AbstractProjection {
   @Override
   public int hashCode() {
     return Objects.hash(latdata, londata);
+  }
+
+  @Override
+  public String toString() {
+    return "CurvilinearProjection{" + "name='" + name + '\'' + '}';
   }
 }

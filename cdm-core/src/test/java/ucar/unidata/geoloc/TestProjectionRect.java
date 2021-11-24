@@ -65,7 +65,7 @@ public class TestProjectionRect {
   }
 
   @Test
-  public void testAdd() {
+  public void testAddPoint() {
     ProjectionRect rect = new ProjectionRect().toBuilder().add(0, 0).build();
     assertThat(rect).isEqualTo(new ProjectionRect());
 
@@ -74,6 +74,15 @@ public class TestProjectionRect {
 
     ProjectionRect rect2 = new ProjectionRect().toBuilder().add(10000, 1000).build();
     assertThat(rect2).isEqualTo(ProjectionRect.fromSpec("-5000, -5000, 15000, 10000"));
+  }
+
+  @Test
+  public void testExtend() {
+    ProjectionRect rect = new ProjectionRect(-5000, -5000, 5000, 5000);
+    ProjectionRect rect2 = new ProjectionRect(-5500, -5050, 5005, 5055);
+    ProjectionRect rect3 = rect.toBuilder().extend(rect2).build();
+    ProjectionRect rect4 = rect2.toBuilder().extend(rect).build();
+    assertThat(rect3).isEqualTo(rect4);
   }
 
 }

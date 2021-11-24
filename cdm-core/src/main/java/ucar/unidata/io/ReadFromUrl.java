@@ -2,7 +2,7 @@
  * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-package ucar.unidata.io.http;
+package ucar.unidata.io;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
@@ -12,8 +12,6 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Map;
 import java.util.zip.GZIPInputStream;
 import ucar.nc2.util.IO;
 
@@ -23,9 +21,6 @@ import ucar.nc2.util.IO;
  * Could replace with java.net.http.HttpClient. Only used in ToolUI?
  */
 public class ReadFromUrl {
-  private static final boolean showStackTrace = false;
-  private static final boolean showHeaders = false;
-
   /**
    * copy contents of URL to output stream, specify internal buffer size. request gzip encoding
    *
@@ -53,34 +48,12 @@ public class ReadFromUrl {
         httpConnection.addRequestProperty("Accept-Encoding", "gzip");
       }
 
-      if (showHeaders) {
-        showRequestHeaders(urlString, connection);
-      }
-
       // get response
       if (httpConnection != null) {
         int responseCode = httpConnection.getResponseCode();
         if (responseCode / 100 != 2)
           throw new IOException("** Cant open URL <" + urlString + ">\n Response code = " + responseCode + "\n"
               + httpConnection.getResponseMessage() + "\n");
-      }
-
-      if (showHeaders && (httpConnection != null)) {
-        int code = httpConnection.getResponseCode();
-        String response = httpConnection.getResponseMessage();
-
-        // response headers
-        System.out.println("\nRESPONSE for " + urlString + ": ");
-        System.out.println(" HTTP/1.x " + code + " " + response);
-        System.out.println("Headers: ");
-
-        for (int j = 1;; j++) {
-          String header = connection.getHeaderField(j);
-          String key = connection.getHeaderFieldKey(j);
-          if (header == null || key == null)
-            break;
-          System.out.println(" " + key + ": " + header);
-        }
       }
 
       // read it
@@ -100,35 +73,11 @@ public class ReadFromUrl {
           count = IO.copyB(bis, out, bufferSize);
       }
 
-    } catch (java.net.ConnectException e) {
-      if (showStackTrace)
-        e.printStackTrace();
-      throw new IOException(
-          "** ConnectException on URL: <" + urlString + ">\n" + e.getMessage() + "\nServer probably not running");
-
-    } catch (java.net.UnknownHostException e) {
-      if (showStackTrace)
-        e.printStackTrace();
-      throw new IOException("** UnknownHostException on URL: <" + urlString + ">\n");
-
     } catch (Exception e) {
-      if (showStackTrace)
-        e.printStackTrace();
-      throw new IOException("** Exception on URL: <" + urlString + ">\n" + e);
+      throw new IOException("** Exception on URL:" + urlString, e);
     }
 
     return count;
-  }
-
-  private static void showRequestHeaders(String urlString, java.net.URLConnection connection) {
-    System.out.println("\nREQUEST Properties for " + urlString + ": ");
-    Map<String, List<String>> reqs = connection.getRequestProperties();
-    for (Map.Entry<String, List<String>> entry : reqs.entrySet()) {
-      System.out.printf(" %s:", entry.getKey());
-      for (String v : entry.getValue())
-        System.out.printf("%s,", v);
-      System.out.printf("%n");
-    }
   }
 
   /**
@@ -155,34 +104,12 @@ public class ReadFromUrl {
         httpConnection.addRequestProperty("Accept-Encoding", "gzip");
       }
 
-      if (showHeaders) {
-        showRequestHeaders(urlString, connection);
-      }
-
       // get response
       if (httpConnection != null) {
         int responseCode = httpConnection.getResponseCode();
         if (responseCode / 100 != 2)
           throw new IOException("** Cant open URL <" + urlString + ">\n Response code = " + responseCode + "\n"
               + httpConnection.getResponseMessage() + "\n");
-      }
-
-      if (showHeaders && (httpConnection != null)) {
-        int code = httpConnection.getResponseCode();
-        String response = httpConnection.getResponseMessage();
-
-        // response headers
-        System.out.println("\nRESPONSE for " + urlString + ": ");
-        System.out.println(" HTTP/1.x " + code + " " + response);
-        System.out.println("Headers: ");
-
-        for (int j = 1;; j++) {
-          String header = connection.getHeaderField(j);
-          String key = connection.getHeaderFieldKey(j);
-          if (header == null || key == null)
-            break;
-          System.out.println(" " + key + ": " + header);
-        }
       }
 
       java.io.InputStream is = null;
@@ -200,21 +127,8 @@ public class ReadFromUrl {
       }
       return is;
 
-    } catch (java.net.ConnectException e) {
-      if (showStackTrace)
-        e.printStackTrace();
-      throw new IOException(
-          "** ConnectException on URL: <" + urlString + ">\n" + e.getMessage() + "\nServer probably not running");
-
-    } catch (java.net.UnknownHostException e) {
-      if (showStackTrace)
-        e.printStackTrace();
-      throw new IOException("** UnknownHostException on URL: <" + urlString + ">\n");
-
     } catch (Exception e) {
-      if (showStackTrace)
-        e.printStackTrace();
-      throw new IOException("** Exception on URL: <" + urlString + ">\n" + e);
+      throw new IOException("** Exception on URL:" + urlString, e);
     }
   }
 
