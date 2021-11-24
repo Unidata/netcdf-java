@@ -66,32 +66,6 @@ public class TestGridReadHorizSubset {
     }
   }
 
-  @Test
-  @Category(NeedsCdmUnitTest.class)
-  public void testLatLonSubset() throws Exception {
-    String filename = TestDir.cdmUnitTestDir + "conventions/problem/SUPER-NATIONAL_latlon_IR_20070222_1600.nc";
-    System.out.printf("open %s%n", filename);
-
-    Formatter errlog = new Formatter();
-    try (GridDataset gds = GridDatasetFactory.openGridDataset(filename, errlog)) {
-      assertThat(gds).isNotNull();
-      String gribId = "micron11";
-      Grid coverage = gds.findGrid(gribId).orElseThrow();
-      assertThat(coverage).isNotNull();
-
-      GridCoordinateSystem cs = coverage.getCoordinateSystem();
-      assertThat(cs).isNotNull();
-      GridHorizCoordinateSystem hcs = cs.getHorizCoordinateSystem();
-      assertThat(hcs).isNotNull();
-
-      LatLonRect bbox = LatLonRect.builder(LatLonPoint.create(40.0, -100.0), 10.0, 20.0).build();
-      checkLatLonSubset(hcs, coverage, bbox, new int[] {141, 281});
-
-      bbox = LatLonRect.builder(LatLonPoint.create(-40.0, -180.0), 120.0, 300.0).build();
-      checkLatLonSubset(hcs, coverage, bbox, new int[] {800, 1300});
-    }
-  }
-
   static GridReferencedArray checkLatLonSubset(GridHorizCoordinateSystem hcs, Grid coverage, LatLonRect bbox,
       int[] expectedShape) throws Exception {
     System.out.printf(" coverage llbb = %s width=%f%n", hcs.getLatLonBoundingBox().toString2(),

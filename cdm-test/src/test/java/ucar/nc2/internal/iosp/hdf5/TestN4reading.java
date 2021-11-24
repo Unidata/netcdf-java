@@ -7,6 +7,8 @@ package ucar.nc2.internal.iosp.hdf5;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.stream.Collectors;
+
+import com.google.common.base.Preconditions;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
@@ -340,22 +342,32 @@ public class TestN4reading {
   public void testCompoundVlens2() throws IOException {
     String filename = testDir + "vlen/IntTimSciSamp.nc";
     try (NetcdfFile ncfile = NetcdfFiles.open(filename)) {
-      logger.debug("**** testReadNetcdf4 done\n{}" + ncfile);
+      System.out.printf("**** testCompoundVlens2 %s%n", filename);
       Variable v = ncfile.findVariable("tim_records");
+      Preconditions.checkNotNull(v);
       int[] vshape = v.getShape();
-      Array data = v.readArray();
+      Array<?> data = v.readArray();
 
-      assert data instanceof StructureDataArray;
+      assertThat(data).isInstanceOf(StructureDataArray.class);
       StructureDataArray as = (StructureDataArray) data;
-      assert as.getSize() == vshape[0]; // int loopDataA(1, *, *);
-      StructureData sdata = as.get(0);
+      assertThat(as).hasSize(vshape[0]); // int loopDataA(1, *);
 
-      // TODO i thought maybe there would be 2. are we handling this correctly ??
+      StructureData sdata = as.get(0);
       Array<Integer> a1 = (Array<Integer>) sdata.getMemberData("loopDataA");
       assertThat(a1.getArrayType()).isEqualTo(ArrayType.INT);
-      assert a1.getSize() == 2;
+      assertThat(a1).hasSize(2);
       Index ii = a1.getIndex();
-      assert a1.get(ii.set(1)) == 50334;
+      assertThat(a1.get(ii.set(1))).isEqualTo(50334);
+
+      int len = 0;
+      for (StructureData sdata2 : as) {
+        Array<Integer> a2 = (Array<Integer>) sdata2.getMemberData("loopDataA");
+        assertThat(a2.getArrayType()).isEqualTo(ArrayType.INT);
+        System.out.printf("%d ", a2.getSize());
+        len += a2.getSize();
+      }
+      System.out.printf(" = %d%n", len);
+      assertThat(len).isEqualTo(34);
     }
   }
 }

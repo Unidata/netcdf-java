@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2020 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -74,6 +74,11 @@ public class CompareArrayToArray {
       System.out.printf("  Cant find variable %s in copy %s%n", varName, arrayFile2.getLocation());
       return false;
     }
+    return compareVariableData(new Formatter(), vorg, vnew, justOne);
+  }
+
+  public static boolean compareVariableData(Formatter f, Variable vorg, Variable vnew, boolean justOne) {
+    boolean ok = true;
 
     if (vorg.getArrayType() == ArrayType.SEQUENCE) {
       System.out.printf("  read sequence %s %s%n", vorg.getArrayType(), vorg.getShortName());
@@ -81,7 +86,6 @@ public class CompareArrayToArray {
       Iterator<StructureData> orgSeq = s.iterator();
       Sequence copyv = (Sequence) vnew;
       Iterator<StructureData> array = copyv.iterator();
-      Formatter f = new Formatter();
       boolean ok1 = compareSequence(f, vorg.getShortName(), orgSeq, array);
       if (!ok1) {
         System.out.printf("%s%n", f);
@@ -91,14 +95,17 @@ public class CompareArrayToArray {
     } else {
       long size = vorg.getSize();
       if (size < Integer.MAX_VALUE) {
-        Array<?> org = vorg.readArray();
-        Array<?> array = vnew.readArray();
-        Formatter f = new Formatter();
-        boolean ok1 = compareData(f, vorg.getShortName(), org, array, justOne, true);
-        if (!ok1) {
-          System.out.printf("%s%n", f);
+        try {
+          Array<?> org = vorg.readArray();
+          Array<?> array = vnew.readArray();
+          boolean ok1 = compareData(f, vorg.getShortName(), org, array, justOne, true);
+          if (!ok1) {
+            System.out.printf("%s%n", f);
+          }
+          ok &= ok1;
+        } catch (IOException ioe) {
+          throw new RuntimeException(ioe);
         }
-        ok &= ok1;
       }
     }
 
@@ -148,8 +155,8 @@ public class CompareArrayToArray {
     if (org instanceof ArrayVlen) {
       ArrayVlen<?> orgv = (ArrayVlen<?>) org;
       ArrayVlen<?> arrv = (ArrayVlen<?>) array;
-      Iterator iter1 = orgv.iterator();
-      Iterator iter2 = arrv.iterator();
+      Iterator<?> iter1 = orgv.iterator();
+      Iterator<?> iter2 = arrv.iterator();
 
       while (iter1.hasNext() && iter2.hasNext()) {
         Array<?> v1 = (Array<?>) iter1.next();

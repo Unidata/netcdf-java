@@ -23,7 +23,7 @@ import java.util.List;
 
 import static com.google.common.truth.Truth.assertThat;
 
-/** Compare reading netcdf4 with old ma2.Array and new array.Array IOSPs */
+/** Compare reading netcdf4 with java and jna iosp */
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
 public class TestReadNc4Compare {
@@ -55,37 +55,52 @@ public class TestReadNc4Compare {
 
   @Test
   public void doOne() throws Exception {
-    compareMa2Array(filename);
+    readWithJnaIosp(filename);
   }
 
-  public static void compareMa2Array(String filename) throws Exception {
-    try (NetcdfFile ma2File = NetcdfFiles.open(filename, iospOrg, -1, null, null);
-        NetcdfFile arrayFile = NetcdfFiles.open(filename, iospArray, -1, null, null)) {
-      System.out.println("Test NetcdfFile: " + arrayFile.getLocation());
+  public static void readWithJavaIosp(String filename) throws Exception {
+    try (NetcdfFile file1 = NetcdfFiles.open(filename, null); NetcdfFile file2 = NetcdfFiles.open(filename, null)) {
+      System.out.println("Read NetcdfFile with Java: " + file1.getLocation());
 
-      boolean ok = CompareArrayToArray.compareFiles(ma2File, arrayFile);
+      Formatter f = new Formatter();
+      CompareNetcdf2 tc = new CompareNetcdf2(f, false, false, true);
+      boolean ok = tc.compare(file1, file2, new CompareNetcdf2.Netcdf4ObjectFilter());
+      if (!ok) {
+        System.out.printf("java = %s%n", file1);
+        System.out.printf("%njna = %s%n", file2);
+      }
       assertThat(ok).isTrue();
     }
   }
 
-  // compare to check complete read. need seperate files, or else they interfere
-  public static void readOrg(String filename) throws Exception {
-    try (NetcdfFile ma2File = NetcdfFiles.open(filename, iospOrg, -1, null, null);
-        NetcdfFile maFile = NetcdfFiles.open(filename, iospOrg, -1, null, null)) {
-      System.out.println("Test NetcdfFile: " + ma2File.getLocation());
+  public static void readWithJnaIosp(String filename) throws Exception {
+    try (NetcdfFile file1 = NetcdfFiles.open(filename, iospOrg, -1, null, null);
+        NetcdfFile file2 = NetcdfFiles.open(filename, iospArray, -1, null, null)) {
+      System.out.println("Read NetcdfFile with Jna: " + file1.getLocation());
 
-      boolean ok = CompareNetcdf2.compareFiles(ma2File, maFile, new Formatter());
+      Formatter f = new Formatter();
+      CompareNetcdf2 tc = new CompareNetcdf2(f, false, false, true);
+      boolean ok = tc.compare(file1, file2, new CompareNetcdf2.Netcdf4ObjectFilter());
+      if (!ok) {
+        System.out.printf("java = %s%n", file1);
+        System.out.printf("%njna = %s%n", file2);
+      }
       assertThat(ok).isTrue();
     }
   }
 
-  // compare to check complete read. need seperate files, or else they interfere
-  public static void readArrays(String filename) throws Exception {
-    try (NetcdfFile arrayFile = NetcdfFiles.open(filename, iospArray, -1, null, null);
-        NetcdfFile arrayFile2 = NetcdfFiles.open(filename, iospArray, -1, null, null)) {
-      System.out.println("Test NetcdfFile: " + arrayFile.getLocation());
+  public static void compareJavaAndJna(String filename) throws Exception {
+    try (NetcdfFile javaFile = NetcdfFiles.open(filename, null);
+        NetcdfFile jnaFile = NetcdfFiles.open(filename, iospArray, -1, null, null)) {
+      System.out.println("Compare Java with Jna: " + javaFile.getLocation());
 
-      boolean ok = CompareArrayToArray.compareFiles(arrayFile, arrayFile2);
+      Formatter f = new Formatter();
+      CompareNetcdf2 tc = new CompareNetcdf2(f, false, false, true);
+      boolean ok = tc.compare(javaFile, jnaFile, new CompareNetcdf2.Netcdf4ObjectFilter());
+      if (!ok) {
+        System.out.printf("java = %s%n", javaFile);
+        System.out.printf("%njna = %s%n", jnaFile);
+      }
       assertThat(ok).isTrue();
     }
   }
