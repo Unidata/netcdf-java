@@ -26,7 +26,7 @@ public class TestReadNc4Problem {
     String filename = TestDir.cdmUnitTestDir + "formats/netcdf4/vlen/IntTimSciSamp.nc";
     TestReadNc4Compare.readWithJavaIosp(filename);
     TestReadNc4Compare.readWithJnaIosp(filename);
-    TestReadNc4Compare.compareJavaAndJna(filename);
+    // TestReadNc4Compare.compareJavaAndJna(filename);
   }
 
   @Test

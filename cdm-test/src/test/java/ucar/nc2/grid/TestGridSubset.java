@@ -5,6 +5,7 @@
 package ucar.nc2.grid;
 
 import com.google.common.collect.ImmutableList;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.array.InvalidRangeException;
@@ -314,6 +315,7 @@ public class TestGridSubset {
 
   // x,y in meters
   @Test
+  @Ignore("false easting in meters")
   public void testBBSubsetUnits() throws IOException, ucar.array.InvalidRangeException {
     String filename = TestDir.cdmUnitTestDir + "ncml/testBBSubsetUnits.ncml";
     String gridName = "pr";

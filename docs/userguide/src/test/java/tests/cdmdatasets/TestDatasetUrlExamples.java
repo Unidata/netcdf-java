@@ -76,12 +76,6 @@ public class TestDatasetUrlExamples {
     DatasetUrlExamples.osdcGoes16Example();
   }
 
-  @Test
-  public void testDodsFileRead() throws IOException {
-    // openDodsBinaryFile method uses Google Truth
-    DatasetUrlExamples.openDodsBinaryFile(dodsFile.toString());
-  }
-
   @AfterClass
   public static void cleanup() {
     for (File tempFile : tempFiles) {

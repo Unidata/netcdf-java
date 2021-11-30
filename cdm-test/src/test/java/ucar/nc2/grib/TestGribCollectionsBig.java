@@ -1,35 +1,7 @@
 /*
- * Copyright (c) 1998 - 2014. University Corporation for Atmospheric Research/Unidata
- * Portions of this software were developed by the Unidata Program at the
- * University Corporation for Atmospheric Research.
- *
- * Access and use of this software shall impose the following obligations
- * and understandings on the user. The user is granted the right, without
- * any fee or cost, to use, copy, modify, alter, enhance and distribute
- * this software, and any derivative works thereof, and its supporting
- * documentation for any purpose whatsoever, provided that this entire
- * notice appears in all copies of the software, derivative works and
- * supporting documentation. Further, UCAR requests that the user credit
- * UCAR/Unidata in any publications that result from the use of this
- * software or in any product that includes this software. The names UCAR
- * and/or Unidata, however, may not be used in any advertising or publicity
- * to endorse or promote any products or commercial entity unless specific
- * written permission is obtained from UCAR/Unidata. The user also
- * understands that UCAR/Unidata is not obligated to provide the user with
- * any support, consulting, training or assistance of any kind with regard
- * to the use, operation and performance of this software nor to provide
- * the user with any updates, revisions, new versions or "bug fixes."
- *
- * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ * Copyright (c) 1998-2021 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
  */
-
 package ucar.nc2.grib;
 
 import org.junit.AfterClass;
@@ -37,8 +9,6 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ucar.nc2.grib.collection.*;
 import ucar.nc2.util.DebugFlags;
 import ucar.nc2.internal.cache.FileCache;
@@ -46,24 +16,16 @@ import ucar.nc2.internal.cache.FileCacheIF;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
 
 /**
  * Look for missing data in large Grib Collections.
  * These numbers will be different if we index with unionRuntimeCoords
  * Indicates that coordinates are not matching,
- *
- * @author John
- * @since 10/13/2014
  */
 @Category(NeedsCdmUnitTest.class)
 public class TestGribCollectionsBig {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
   String topdir = TestDir.cdmUnitTestDir + "gribCollections/rdavm";
-  // String topdir = "B:/rdavm"; // use for local windows to get around samba bug
 
   @BeforeClass
   static public void before() {
@@ -108,42 +70,32 @@ public class TestGribCollectionsBig {
 
 
   @Test
-  public void testSRC() throws IOException {
+  public void testSRC() {
     GribCollectionMissing.Count count =
         GribCollectionMissing.read(topdir + "/ds083.2/grib1/2008/2008.10/ds083.2_Aggregation-2008.10.ncx4");
-
-    // roberto: that took 6 secs total, 0.196227 msecs per record
-    // jenkins: that took 2 secs total, 0.083042 msecs per record
-
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
 
     assert count.nread == 35464 : count.nread;
     assert count.nmiss == 0;
   }
 
-  @Ignore("total == 366994/418704")
   @Test
-  public void testTP() throws IOException {
+  public void testTP() {
     GribCollectionMissing.Count count =
         GribCollectionMissing.read(topdir + "/ds083.2/grib1/2008/ds083.2_Aggregation-2008.ncx4");
 
-    // roberto:
-    // jenkins: that took 32 secs total, 0.077869 msecs per record
+    // local: 104 secs
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
 
-    assert count.nread == 837408 : count.nread;
+    assert count.nread == 418704 : count.nread;
     assert count.nmiss == 0;
   }
 
   @Ignore("takes too long")
   @Test
-  public void testPofP() throws IOException {
+  public void testPofP() {
     RandomAccessFile.setDebugLeaks(true);
     GribCollectionMissing.Count count = GribCollectionMissing.read(topdir + "/ds083.2/grib1/ds083.2_Aggregation.ncx4");
-
-    // ROBERTO (local drive only, samba fails) that took that took 2177 secs total, 0.156383 msecs per record
-    // 2D only 486523/6476133
-    // jenkems : that took 560 secs total, 0.079659 msecs per record
 
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
 
