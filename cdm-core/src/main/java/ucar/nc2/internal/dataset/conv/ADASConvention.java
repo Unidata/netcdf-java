@@ -211,7 +211,7 @@ public class ADASConvention extends CoordSystemBuilder {
 
   private void makeCoordAxis(String axisName) throws IOException {
     String name = axisName + "_stag";
-    if (!rootGroup.findVariableLocal(name).isPresent()) {
+    if (rootGroup.findVariableLocal(name).isEmpty()) {
       return;
     }
     VariableDS.Builder<?> stagV = (VariableDS.Builder<?>) rootGroup.findVariableLocal(name).get();

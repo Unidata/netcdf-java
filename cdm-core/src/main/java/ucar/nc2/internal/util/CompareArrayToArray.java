@@ -60,8 +60,7 @@ public class CompareArrayToArray {
     return ok;
   }
 
-  public static boolean compareVariable(NetcdfFile arrayFile1, NetcdfFile arrayFile2, String varName, boolean justOne)
-      throws IOException {
+  public static boolean compareVariable(NetcdfFile arrayFile1, NetcdfFile arrayFile2, String varName, boolean justOne) {
     boolean ok = true;
 
     Variable vorg = arrayFile1.findVariable(varName);
@@ -304,7 +303,6 @@ public class CompareArrayToArray {
           String v1 = iter1.next();
           String v2 = iter2.next();
           if (v1 == null || v2 == null) {
-            System.out.printf("HEY");
             iter1.next();
           }
           if (!v1.equals(v2)) {

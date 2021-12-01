@@ -6,7 +6,6 @@ package ucar.nc2.geoloc.vertical;
 
 import ucar.array.Array;
 import ucar.array.InvalidRangeException;
-import ucar.array.Range;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dataset.NetcdfDataset;

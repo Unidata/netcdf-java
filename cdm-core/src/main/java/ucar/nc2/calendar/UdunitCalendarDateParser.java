@@ -306,8 +306,8 @@ class UdunitCalendarDateParser {
   }
 
   private static class SecNano {
-    int secs;
-    int nanos;
+    final int secs;
+    final int nanos;
 
     public SecNano(int secs, int nanos) {
       this.secs = secs;

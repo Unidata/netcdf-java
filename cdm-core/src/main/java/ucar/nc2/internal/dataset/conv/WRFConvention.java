@@ -694,7 +694,7 @@ public class WRFConvention extends CoordSystemBuilder {
   @Nullable
   private CoordinateAxis.Builder<?> makeSoilDepthCoordAxis(String coordVarName) {
     Optional<Variable.Builder<?>> varOpt = rootGroup.findVariableLocal(coordVarName);
-    if (!varOpt.isPresent()) {
+    if (varOpt.isEmpty()) {
       return null;
     }
     VariableDS.Builder<?> coordVarB = (VariableDS.Builder<?>) varOpt.get();

@@ -89,11 +89,11 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
                         "Atmospheric chemical or physical constituent type", 14, 2,
                         new String[] {"CodeFigure", "ChemicalFormula", null, "Meaning_en"}),;
 
-    String name;
-    String[] elems; // type 1: 0 = code, 1 = code2 (may be null), 2 = value
-                    // type 2: 0 = code1, 1 = comment , 2 = code3 (may be null), 3 = value
-    int num, type; // type 1 = 1 code, type 2 = 2 codes
-    String num0;
+    final String name;
+    final String[] elems; // type 1: 0 = code, 1 = code2 (may be null), 2 = value
+                          // type 2: 0 = code1, 1 = comment , 2 = code3 (may be null), 3 = value
+    final int num, type; // type 1 = 1 code, type 2 = 2 codes
+    final String num0;
 
     Table(String name, int num, int type, String[] elems) {
       this.name = name;
@@ -368,7 +368,8 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
   }
 
   public class TableEntry implements Comparable<TableEntry> {
-    public int line, code, code2;
+    public final int line;
+    public int code, code2;
     public String value, status, comment;
 
     int parse(String s) {

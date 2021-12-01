@@ -260,8 +260,7 @@ public class N3iospWriter extends N3iosp implements IospFileWriter {
   }
 
   @Override
-  public int appendStructureData(Structure s, ucar.array.StructureData sdata)
-      throws IOException, InvalidRangeException {
+  public int appendStructureData(Structure s, ucar.array.StructureData sdata) {
     return 0;
   }
 

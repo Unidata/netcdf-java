@@ -104,7 +104,7 @@ public class FileCache implements FileCacheIF {
 
   /////////////////////////////////////////////////////////////////////////////////////////
 
-  protected String name;
+  protected final String name;
   protected final int softLimit, minElements, hardLimit;
   protected final long period; // msecs
 
@@ -662,7 +662,7 @@ public class FileCache implements FileCacheIF {
   }
 
   private static class Tracker implements Comparable<Tracker> {
-    Object key;
+    final Object key;
     int hit, miss;
 
     private Tracker(Object key) {
@@ -832,7 +832,7 @@ public class FileCache implements FileCacheIF {
       FileCacheable ncfile; // actually final, but we null it out for gc
       final AtomicBoolean isLocked = new AtomicBoolean(true);
       int countAccessed;
-      long lastModified;
+      final long lastModified;
       long lastAccessed;
 
       private CacheFile(FileCacheable ncfile) {

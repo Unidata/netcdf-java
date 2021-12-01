@@ -85,7 +85,7 @@ class N3headerWriter extends N3header {
    * @param largeFile is large file format
    * @return true if it worked
    */
-  boolean rewriteHeader(boolean largeFile) throws IOException {
+  boolean rewriteHeader(boolean largeFile) {
     int want = sizeHeader(largeFile);
     if (want > dataStart)
       return false;

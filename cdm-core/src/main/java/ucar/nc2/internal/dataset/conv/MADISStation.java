@@ -4,7 +4,6 @@
  */
 package ucar.nc2.internal.dataset.conv;
 
-import java.io.IOException;
 import java.util.StringTokenizer;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
@@ -46,7 +45,7 @@ public class MADISStation extends CoordSystemBuilder {
   }
 
   @Override
-  public void augmentDataset(CancelTask cancelTask) throws IOException {
+  public void augmentDataset(CancelTask cancelTask) {
     String timeVars = rootGroup.getAttributeContainer().findAttributeString("timeVariables", "");
     StringTokenizer stoker = new StringTokenizer(timeVars, ", ");
     while (stoker.hasMoreTokens()) {

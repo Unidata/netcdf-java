@@ -64,7 +64,7 @@ public class NUWGConvention extends CoordSystemBuilder {
   }
 
   @Override
-  protected void augmentDataset(CancelTask cancelTask) throws IOException {
+  protected void augmentDataset(CancelTask cancelTask) {
     if (null != rootGroup.getAttributeContainer().findAttribute("_enhanced"))
       return; // check if its already been done - aggregating enhanced datasets.
     rootGroup.getAttributeContainer().addAttribute("_enhanced", "");

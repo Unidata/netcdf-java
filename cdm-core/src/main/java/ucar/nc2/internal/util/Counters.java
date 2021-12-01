@@ -12,8 +12,8 @@ import javax.annotation.Nullable;
  * Manages a set of Counter objects.
  */
 public class Counters {
-  List<Counter> counters = new ArrayList<>();
-  Map<String, Counter> map = new HashMap<>();
+  final List<Counter> counters = new ArrayList<>();
+  final Map<String, Counter> map = new HashMap<>();
 
   /** Add a new Counter with the given name. */
   public Counter add(String name) {

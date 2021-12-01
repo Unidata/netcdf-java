@@ -5,7 +5,6 @@
 
 package ucar.nc2.internal.dataset.conv;
 
-import java.io.IOException;
 import java.util.NoSuchElementException;
 
 import com.google.common.collect.ImmutableList;
@@ -69,7 +68,7 @@ public class AWIPSSatConvention extends AWIPSConvention {
   }
 
   @Override
-  public void augmentDataset(CancelTask cancelTask) throws IOException {
+  public void augmentDataset(CancelTask cancelTask) {
     if (rootGroup.findVariableLocal("x").isPresent()) {
       return; // check if its already been done - aggregating enhanced datasets.
     }

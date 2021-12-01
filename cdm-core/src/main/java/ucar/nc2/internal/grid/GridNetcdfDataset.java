@@ -162,9 +162,9 @@ public class GridNetcdfDataset implements GridDataset {
   }
 
   private static class VerticalTransformFinder {
-    NetcdfDataset ncd;
-    Formatter errlog;
-    Set<TrackVerticalTransform> result;
+    final NetcdfDataset ncd;
+    final Formatter errlog;
+    final Set<TrackVerticalTransform> result;
 
     VerticalTransformFinder(NetcdfDataset ncd, Formatter errlog) {
       this.ncd = ncd;
@@ -202,8 +202,8 @@ public class GridNetcdfDataset implements GridDataset {
   }
 
   private static class TrackGridCS {
-    DatasetClassifier.CoordSysClassifier csc;
-    GridCoordinateSystem gridCS;
+    final DatasetClassifier.CoordSysClassifier csc;
+    final GridCoordinateSystem gridCS;
 
     public TrackGridCS(DatasetClassifier.CoordSysClassifier csc, GridCoordinateSystem gridCS) {
       this.csc = csc;

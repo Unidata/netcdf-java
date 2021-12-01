@@ -116,13 +116,13 @@ public class IndexChunkerTiled {
   }
 
   private static class Dim {
-    Range data; // Range we got
-    Range want; // Range we want
-    Range intersect; // Range we want
-    int dataStride; // stride in the data array
+    final Range data; // Range we got
+    final Range want; // Range we want
+    final Range intersect; // Range we want
+    final int dataStride; // stride in the data array
     int wantStride; // stride in the want array
     int wantNelems;
-    int ncontigElements;
+    final int ncontigElements;
 
     Dim(Range data, Range want, Range intersect, int dataStride, int wantStride) {
       // assert want.length() <= maxSize : want.last() +" > "+ maxSize ;

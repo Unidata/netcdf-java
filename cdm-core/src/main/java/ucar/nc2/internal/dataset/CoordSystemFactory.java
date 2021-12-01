@@ -350,9 +350,9 @@ public class CoordSystemFactory {
   }
 
   private static class Convention {
-    String convName;
-    CoordSystemBuilderFactory factory;
-    ConventionNameOk match;
+    final String convName;
+    final CoordSystemBuilderFactory factory;
+    final ConventionNameOk match;
 
     Convention(String convName, CoordSystemBuilderFactory factory, ConventionNameOk match) {
       this.convName = convName;

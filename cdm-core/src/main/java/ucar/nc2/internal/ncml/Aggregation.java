@@ -30,6 +30,7 @@ import java.util.concurrent.Executor;
  * </pre>
  */
 public abstract class Aggregation {
+  protected static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Aggregation.class);
 
   protected enum Type {
     forecastModelRunCollection, forecastModelRunSingleCollection, joinExisting, joinExistingOne, joinNew, tiled, union
@@ -41,7 +42,6 @@ public abstract class Aggregation {
 
   protected static TypicalDataset typicalDatasetMode = TypicalDataset.FIRST;
 
-  protected static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Aggregation.class);
   protected static DiskCache2 diskCache2;
 
   // this is where persist() reads/writes files
@@ -81,17 +81,17 @@ public abstract class Aggregation {
 
   //////////////////////////////////////////////////////////////////////////////////////////
 
-  protected NetcdfDataset.Builder<?> ncDataset; // the aggregation belongs to this dataset
+  protected final NetcdfDataset.Builder<?> ncDataset; // the aggregation belongs to this dataset
   protected Type type; // the aggregation type
-  protected Object spiObject = null; // not implemented in nested <netcdf> or <scan>
+  protected final Object spiObject = null; // not implemented in nested <netcdf> or <scan>
 
-  protected List<AggDataset> explicitDatasets = new ArrayList<>(); // explicitly created Dataset objects from
+  protected final List<AggDataset> explicitDatasets = new ArrayList<>(); // explicitly created Dataset objects from
   // netcdf elements
   protected List<AggDataset> datasets = new ArrayList<>(); // all : explicit and scanned
   protected MFileCollectionManager datasetManager; // manages scanning
   protected boolean cacheDirty = true; // aggCache persist file needs updating
 
-  protected String dimName; // the aggregation dimension name
+  protected final String dimName; // the aggregation dimension name
 
   Element ncmlElem;
 
@@ -430,9 +430,8 @@ public abstract class Aggregation {
    *
    * @param typicalDataset read from a "typical dataset"
    * @param newds containing dataset
-   * @throws IOException on i/o error
    */
-  void setDatasetAcquireProxy(AggDataset typicalDataset, NetcdfDataset.Builder<?> newds) throws IOException {
+  void setDatasetAcquireProxy(AggDataset typicalDataset, NetcdfDataset.Builder<?> newds) {
     AggProxyReader proxy = new AggProxyReader(typicalDataset);
     setDatasetAcquireProxy(proxy, newds.rootGroup);
   }

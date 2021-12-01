@@ -474,8 +474,8 @@ public class Group {
 
   public static class Builder {
     private @Nullable Group.Builder parentGroup; // null for root group; ignored during build()
-    public List<Group.Builder> gbuilders = new ArrayList<>();
-    public List<Variable.Builder<?>> vbuilders = new ArrayList<>();
+    public final List<Group.Builder> gbuilders = new ArrayList<>();
+    public final List<Variable.Builder<?>> vbuilders = new ArrayList<>();
     public String shortName = "";
     private NetcdfFile ncfile; // set by NetcdfFile.build()
     private final AttributeContainerMutable attributes = new AttributeContainerMutable("");

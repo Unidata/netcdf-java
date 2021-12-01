@@ -42,7 +42,7 @@ public class BTree2 {
   private final H5header h5;
   private final RandomAccessFile raf;
 
-  public List<Entry2> entryList = new ArrayList<>();
+  public final List<Entry2> entryList = new ArrayList<>();
 
   public BTree2(H5header h5, String owner, long address) throws IOException {
     this.h5 = h5;
@@ -103,7 +103,7 @@ public class BTree2 {
 
   class InternalNode {
     Entry2[] entries;
-    int depth;
+    final int depth;
 
     InternalNode(long address, short nrecords, short recordSize, int depth) throws IOException {
       this.depth = depth;
@@ -279,7 +279,7 @@ public class BTree2 {
 
   public class Record5 {
     int nameHash;
-    byte[] heapId = new byte[7];
+    final byte[] heapId = new byte[7];
 
     Record5() throws IOException {
       nameHash = raf.readInt();
@@ -296,7 +296,7 @@ public class BTree2 {
 
   public class Record6 {
     long creationOrder;
-    byte[] heapId = new byte[7];
+    final byte[] heapId = new byte[7];
 
     Record6() throws IOException {
       creationOrder = raf.readLong();
@@ -313,7 +313,7 @@ public class BTree2 {
   class Record70 {
     byte location;
     int refCount;
-    byte[] id = new byte[8];
+    final byte[] id = new byte[8];
 
     Record70() throws IOException {
       location = raf.readByte();
@@ -339,7 +339,7 @@ public class BTree2 {
   public class Record8 {
     byte flags;
     int creationOrder, nameHash;
-    byte[] heapId = new byte[8];
+    final byte[] heapId = new byte[8];
 
     Record8() throws IOException {
       raf.readFully(heapId);
@@ -358,7 +358,7 @@ public class BTree2 {
   public class Record9 {
     byte flags;
     int creationOrder;
-    byte[] heapId = new byte[8];
+    final byte[] heapId = new byte[8];
 
     Record9() throws IOException {
       raf.readFully(heapId);

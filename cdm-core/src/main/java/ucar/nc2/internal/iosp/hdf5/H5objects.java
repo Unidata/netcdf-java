@@ -77,8 +77,9 @@ public class H5objects {
    * A DataObject's name is one of its names.
    */
   class DataObjectFacade {
-    H5Group parent;
-    String name, displayName;
+    final H5Group parent;
+    final String name;
+    String displayName;
     DataObject dobj;
 
     boolean isGroup;
@@ -157,12 +158,13 @@ public class H5objects {
   }
 
   class H5Group {
-    H5Group parent;
-    String name, displayName;
-    DataObjectFacade facade;
-    List<DataObjectFacade> nestedObjects = new ArrayList<>(); // nested data objects
-    Map<String, Dimension> dimMap = new HashMap<>();
-    List<Dimension> dimList = new ArrayList<>(); // need to track dimension order
+    final H5Group parent;
+    final String name;
+    final String displayName;
+    final DataObjectFacade facade;
+    final List<DataObjectFacade> nestedObjects = new ArrayList<>(); // nested data objects
+    final Map<String, Dimension> dimMap = new HashMap<>();
+    final List<Dimension> dimList = new ArrayList<>(); // need to track dimension order
 
     // "Data Object Header" Level 2A
     // read a Data Object Header
@@ -265,10 +267,10 @@ public class H5objects {
       return attributes;
     }
 
-    long address; // aka object id : obviously unique
+    final long address; // aka object id : obviously unique
     String who; // may be null, may not be unique
-    List<HeaderMessage> messages = new ArrayList<>();
-    List<MessageAttribute> attributes = new ArrayList<>();
+    final List<HeaderMessage> messages = new ArrayList<>();
+    final List<MessageAttribute> attributes = new ArrayList<>();
 
     // need to look for these
     MessageGroup groupMessage;
@@ -325,8 +327,6 @@ public class H5objects {
           log.debug(" referenceCount=" + referenceCount + " headerSize=" + headerSize);
         }
 
-        // if (referenceCount > 1)
-        // log.debug("WARNING referenceCount="+referenceCount);
         raf.skipBytes(4); // header messages multiples of 8
 
         long posMess = raf.getFilePointer();
@@ -1134,7 +1134,7 @@ public class H5objects {
   // Message Type 3 : "Datatype"
   public class MessageDatatype implements Named {
     int type, version;
-    byte[] flags = new byte[3];
+    final byte[] flags = new byte[3];
     int byteSize;
     ByteOrder endian; // 0 (LE) or 1 (BE) == RandomAccessFile.XXXXXX_ENDIAN
     boolean isOK = true;
@@ -1446,13 +1446,6 @@ public class H5objects {
       if (debugDetail) {
         log.debug("   ***End Member name={}", name);
       }
-
-      // ??
-      // HDFdump(ncfile.out, "Member end", buffer, 16);
-      // if (HDFdebug) ncfile.log.debug(" Member pos="+raf.getFilePointer());
-      // HDFpadToMultiple( buffer, 8);
-      // if (HDFdebug) ncfile.log.debug(" Member padToMultiple="+raf.getFilePointer());
-      // raf.skipBytes( 4); // huh ??
     }
 
     @Override
@@ -1761,7 +1754,7 @@ public class H5objects {
     // short typeSize, spaceSize;
     String name;
     MessageDatatype mdt = new MessageDatatype();
-    MessageDataspace mds = new MessageDataspace();
+    final MessageDataspace mds = new MessageDataspace();
 
     public byte getVersion() {
       return version;
@@ -2177,7 +2170,7 @@ public class H5objects {
   // Level 1A
   // this just reads in all the entries into a list
   class GroupBTree {
-    protected String owner;
+    protected final String owner;
     protected int wantType;
     private final List<SymbolTableEntry> sentries = new ArrayList<>(); // list of type SymbolTableEntry
 
@@ -2264,10 +2257,10 @@ public class H5objects {
 
     // level 1B
     class GroupNode {
-      long address;
+      final long address;
       byte version;
       short nentries;
-      List<SymbolTableEntry> symbols = new ArrayList<>(); // SymbolTableEntry
+      final List<SymbolTableEntry> symbols = new ArrayList<>(); // SymbolTableEntry
 
       GroupNode(long address) throws IOException {
         this.address = address;
@@ -2414,8 +2407,6 @@ public class H5objects {
       log.debug(" heapId= {}", heapId);
     }
     return getHeapDataArray(heapId, dataType, endian);
-    // Object pa = getHeapDataArray(heapId, dataType, endian);
-    // return Array.factory(dataType.getPrimitiveClassType(), new int[]{heapId.nelems}, pa);
   }
 
   private Array<?> getHeapDataArray(HeapIdentifier heapId, ArrayType dataType, int endian)
@@ -2676,7 +2667,7 @@ public class H5objects {
 
   // level 1D
   class LocalHeap {
-    H5Group group;
+    final H5Group group;
     int size;
     long freelistOffset, dataAddress;
     byte[] heap;

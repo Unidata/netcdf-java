@@ -860,7 +860,7 @@ public class NcmlReader {
     // see if it already exists
     Variable refv = (refGroup == null) ? null : refGroup.findVariableLocal(nameInFile);
     Optional<Variable.Builder<?>> addedFromAgg = groupBuilder.findVariableLocal(nameInFile);
-    if (refv == null && !addedFromAgg.isPresent()) { // new
+    if (refv == null && addedFromAgg.isEmpty()) { // new
       if (dtype == null) {
         errlog.format("NcML Variable dtype is required for new variable (%s)%n", name);
         return;

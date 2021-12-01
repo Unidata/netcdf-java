@@ -50,7 +50,7 @@ public class AggregationNew extends AggregationOuter {
     Optional<Variable.Builder<?>> joinAggCoord = root.findVariableLocal(dimName);
 
     // Not found, create the aggregation coordinate variable
-    if (!joinAggCoord.isPresent()) {
+    if (joinAggCoord.isEmpty()) {
       ArrayType coordType = getCoordinateType();
       VariableDS.Builder<?> joinAggCoordVar = VariableDS.builder().setName(dimName).setArrayType(coordType)
           .setParentGroupBuilder(root).setDimensionsByName(dimName);
@@ -92,7 +92,7 @@ public class AggregationNew extends AggregationOuter {
     // use only named variables
     for (String varname : aggVarNames) {
       Optional<Variable.Builder<?>> aggVarOpt = root.findVariableLocal(varname);
-      if (!aggVarOpt.isPresent()) {
+      if (aggVarOpt.isEmpty()) {
         logger.error(ncDataset.location + " aggNewDimension cant find variable " + varname);
         continue;
       }

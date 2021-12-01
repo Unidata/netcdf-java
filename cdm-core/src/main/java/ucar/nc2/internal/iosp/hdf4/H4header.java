@@ -869,7 +869,7 @@ public class H4header implements HdfHeaderIF {
 
   // member info
   static class Minfo {
-    int offset;
+    final int offset;
 
     Minfo(int offset) {
       this.offset = offset;
@@ -1070,10 +1070,10 @@ public class H4header implements HdfHeaderIF {
   }
 
   class Vinfo implements Comparable<Vinfo> {
-    short refno;
+    final short refno;
     Variable.Builder<?> vb;
     Group.Builder group;
-    List<Tag> tags = new ArrayList<>();
+    final List<Tag> tags = new ArrayList<>();
 
     // info about reading the data
     TagData data;
@@ -1269,9 +1269,9 @@ public class H4header implements HdfHeaderIF {
   // public for debugging (ucar.ui.Hdf4Table)
   // Tag == "Data Descriptor" (DD) and (usually) a "Data Element" that the offset/length points to
   public class Tag {
-    short code;
+    final short code;
     short refno;
-    boolean extended;
+    final boolean extended;
     int offset, length;
     TagEnum t;
     boolean used;
@@ -2116,22 +2116,6 @@ public class H4header implements HdfHeaderIF {
     }
   }
 
-  // private String clean(String name) {
-  // return StringUtil2.remove(name.trim(), '.'); // just avoid the whole mess by removing "."
-  // }
-
-  /*
-   * private String readString(int len) throws IOException {
-   * byte[] b = new byte[len];
-   * raf.readFully(b);
-   * int count;
-   * for (count = 0; count < len; count++)
-   * if (b[count] == 0)
-   * break;
-   * return new String(b, 0, count, StandardCharsets.UTF_8);
-   * }
-   */
-
   private class MemTracker {
     private final List<Mem> memList = new ArrayList<>();
     private final long fileSize;
@@ -2170,8 +2154,8 @@ public class H4header implements HdfHeaderIF {
     }
 
     class Mem implements Comparable<Mem> {
-      public String name;
-      public long start, end;
+      public final String name;
+      public final long start, end;
 
       Mem(String name, long start, long end) {
         this.name = name;

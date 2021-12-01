@@ -142,7 +142,7 @@ abstract class AbstractDate implements ChronoLocalDate {
   }
 
   int getDayOfWeek() {
-    return (int) (Math.floorMod(toEpochDay() + 3, 7) + 1);
+    return Math.floorMod(toEpochDay() + 3, 7) + 1;
   }
 
   long getProlepticMonth() {
@@ -239,7 +239,7 @@ abstract class AbstractDate implements ChronoLocalDate {
     long curEm = getProlepticMonth();
     long calcEm = Math.addExact(curEm, months);
     int newYear = Math.toIntExact(Math.floorDiv(calcEm, lengthOfYearInMonths()));
-    int newMonth = (int) (Math.floorMod(calcEm, lengthOfYearInMonths()) + 1);
+    int newMonth = Math.floorMod(calcEm, lengthOfYearInMonths()) + 1;
     return resolvePrevious(newYear, newMonth, getDayOfMonth());
   }
 
@@ -296,8 +296,7 @@ abstract class AbstractDate implements ChronoLocalDate {
 
     long packed1 = getProlepticMonth() * 256L + getDayOfMonth(); // no overflow
     long packed2 = end.getProlepticMonth() * 256L + end.getDayOfMonth(); // no overflow
-    long result = (packed2 - packed1) / 256L;
-    return result;
+    return (packed2 - packed1) / 256L;
   }
 
   ChronoPeriod doUntil(AbstractDate end) {
@@ -355,11 +354,9 @@ abstract class AbstractDate implements ChronoLocalDate {
 
   @Override
   public String toString() {
-    StringBuilder buf = new StringBuilder(30);
-    buf.append(getChronology().toString()).append(" ").append(getEra()).append(" ").append(getYearOfEra())
-        .append(getMonth() < 10 ? "-0" : "-").append(getMonth()).append(getDayOfMonth() < 10 ? "-0" : "-")
-        .append(getDayOfMonth());
-    return buf.toString();
+    String buf = getChronology().toString() + " " + getEra() + " " + getYearOfEra() + (getMonth() < 10 ? "-0" : "-")
+        + getMonth() + (getDayOfMonth() < 10 ? "-0" : "-") + getDayOfMonth();
+    return buf;
   }
 
 }

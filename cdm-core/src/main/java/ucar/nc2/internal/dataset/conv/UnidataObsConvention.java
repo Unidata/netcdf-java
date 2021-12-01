@@ -4,7 +4,6 @@
  */
 package ucar.nc2.internal.dataset.conv;
 
-import java.io.IOException;
 import java.util.StringTokenizer;
 import ucar.nc2.Attribute;
 import ucar.nc2.Variable;
@@ -45,7 +44,7 @@ public class UnidataObsConvention extends CoordSystemBuilder {
   }
 
   @Override
-  protected void augmentDataset(CancelTask cancelTask) throws IOException {
+  protected void augmentDataset(CancelTask cancelTask) {
     if (!hasAxisType(AxisType.Lat)) { // already has _CoordinateAxisType
       if (!addAxisType("latitude", AxisType.Lat)) { // directly named
         String vname = rootGroup.getAttributeContainer().findAttributeString("latitude_coordinate", null);

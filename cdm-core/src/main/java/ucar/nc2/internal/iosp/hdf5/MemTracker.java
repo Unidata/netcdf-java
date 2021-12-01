@@ -42,8 +42,8 @@ public class MemTracker {
   }
 
   static class Mem implements Comparable<Mem> {
-    public String name;
-    public long start, end;
+    public final String name;
+    public final long start, end;
 
     Mem(String name, long start, long end) {
       this.name = name;

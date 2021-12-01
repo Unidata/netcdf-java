@@ -176,7 +176,7 @@ public class NetcdfCopier implements Closeable {
   }
 
   @Override
-  public void close() throws IOException {
+  public void close() {
 
   }
 

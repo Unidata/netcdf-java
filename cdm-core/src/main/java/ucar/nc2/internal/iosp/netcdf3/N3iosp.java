@@ -39,7 +39,7 @@ import javax.annotation.Nullable;
 
 /** Netcdf 3 version iosp, using Builders for immutability. */
 public class N3iosp extends AbstractIOServiceProvider implements IOServiceProvider {
-  protected static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(N3iosp.class);
+  protected static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(N3iosp.class);
 
   /*
    * CLASSIC

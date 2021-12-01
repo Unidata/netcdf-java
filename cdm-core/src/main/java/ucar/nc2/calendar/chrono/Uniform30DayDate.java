@@ -478,8 +478,7 @@ public final class Uniform30DayDate extends AbstractDate implements ChronoLocalD
 
   @Override
   public long toEpochDay() {
-    long epochDay = (long) (this.prolepticYear - 1) * DAYS_IN_YEAR + this.dayOfYear - DAYS_0001_TO_1970 - 1;
-    return epochDay;
+    return (long) (this.prolepticYear - 1) * DAYS_IN_YEAR + this.dayOfYear - DAYS_0001_TO_1970 - 1;
   }
 
   @Override
@@ -501,10 +500,9 @@ public final class Uniform30DayDate extends AbstractDate implements ChronoLocalD
 
   @Override
   public String toString() {
-    StringBuilder buf = new StringBuilder(30);
-    return buf.append(getChronology().toString()).append(' ').append(getEra()).append(' ').append(getYearOfEra())
-        .append(this.month < 10 && this.month > 0 ? "/0" : '/').append(this.month).append(this.day < 10 ? "/0" : '/')
-        .append(this.day).toString();
+    String buf = getChronology().toString() + ' ' + getEra() + ' ' + getYearOfEra()
+        + (this.month < 10 && this.month > 0 ? "/0" : '/') + this.month + (this.day < 10 ? "/0" : '/') + this.day;
+    return buf;
   }
 
 }

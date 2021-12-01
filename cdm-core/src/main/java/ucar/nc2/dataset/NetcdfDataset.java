@@ -424,7 +424,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   public static abstract class Builder<T extends Builder<T>> extends NetcdfFile.Builder<T> {
     @Nullable
     public NetcdfFile orgFile;
-    public CoordinatesHelper.Builder coords = CoordinatesHelper.builder();
+    public final CoordinatesHelper.Builder coords = CoordinatesHelper.builder();
     private String convUsed;
     private Set<Enhance> enhanceMode = EnumSet.noneOf(Enhance.class);
     @Nullable

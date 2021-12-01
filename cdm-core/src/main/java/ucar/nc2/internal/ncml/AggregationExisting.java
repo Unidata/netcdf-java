@@ -127,7 +127,7 @@ class AggregationExisting extends AggregationOuter {
     Optional<Variable.Builder<?>> joinAggCoordOpt = rootGroup.findVariableLocal(dimName); // long name of dimension,
                                                                                           // coord
     // variable
-    if (!joinAggCoordOpt.isPresent() && (type == Type.joinExisting)) {
+    if (joinAggCoordOpt.isEmpty() && (type == Type.joinExisting)) {
       typicalDataset.close(typical); // clean up
       throw new IllegalArgumentException("No existing coordinate variable for joinExisting on " + getLocation());
     }

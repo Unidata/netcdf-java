@@ -59,7 +59,7 @@ public class H5iosp extends AbstractIOServiceProvider {
   static boolean debugStructure;
   static boolean useHdfEos = true;
 
-  static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5iosp.class);
+  static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5iosp.class);
 
   public static void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
     debug = debugFlag.isSet("H5iosp/read");

@@ -144,7 +144,7 @@ public class H5tiledLayoutBB implements LayoutBB {
   }
 
   private class DataChunkIterator implements LayoutBBTiled.DataChunkIterator {
-    DataBTree.DataChunkIterator delegate;
+    final DataBTree.DataChunkIterator delegate;
 
     DataChunkIterator(DataBTree.DataChunkIterator delegate) {
       this.delegate = delegate;
@@ -163,7 +163,7 @@ public class H5tiledLayoutBB implements LayoutBB {
     // Copied from ArrayList.
     private static final int MAX_ARRAY_LEN = Integer.MAX_VALUE - 8;
 
-    DataBTree.DataChunk delegate;
+    final DataBTree.DataChunk delegate;
 
     DataChunk(DataBTree.DataChunk delegate) {
       this.delegate = delegate;

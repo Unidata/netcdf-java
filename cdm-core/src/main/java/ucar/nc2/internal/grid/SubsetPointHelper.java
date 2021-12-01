@@ -149,7 +149,7 @@ public class SubsetPointHelper {
     // longitude wrapping (no seam cross, just look for cylinder that intersects)
     if (orgGridAxis.getAxisType() == AxisType.Lon) {
       if (maxValue < minValue) {
-        maxValue = +360;
+        maxValue += 360;
       }
       double minAxis = orgGridAxis.getCoordDouble(0);
       double maxAxis = orgGridAxis.getCoordDouble(orgGridAxis.getNominalSize() - 1);

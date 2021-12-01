@@ -7,7 +7,6 @@ package ucar.nc2.internal.util;
 
 import java.nio.charset.StandardCharsets;
 import javax.annotation.Nullable;
-import ucar.nc2.constants.CDM;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -328,7 +327,7 @@ public class EscapeStrings {
   @Nullable
   public static String urlDecode(String s) {
     try {
-      s = URLDecoder.decode(s, CDM.UTF8);
+      s = URLDecoder.decode(s, StandardCharsets.UTF_8);
     } catch (Exception e) {
       s = null;
     }

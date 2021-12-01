@@ -691,7 +691,7 @@ public class CompareNetcdf2 {
     return compareData(name, data1a, data2a, false);
   }
 
-  public boolean compareData(String name, Array<?> data1, Array<?> data2, boolean justOne) throws IOException {
+  public boolean compareData(String name, Array<?> data1, Array<?> data2, boolean justOne) {
     return CompareArrayToArray.compareData(f, name, data1, data2, justOne, true);
   }
 

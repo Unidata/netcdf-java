@@ -6,7 +6,7 @@
 package ucar.nc2.internal.dataset.conv;
 
 import com.google.common.base.Preconditions;
-import java.io.IOException;
+
 import java.util.Optional;
 
 import ucar.array.ArrayType;
@@ -125,7 +125,7 @@ public class HdfEosModisConvention extends CoordSystemBuilder {
   private boolean addTimeCoord;
 
   @Override
-  public void augmentDataset(CancelTask cancelTask) throws IOException {
+  public void augmentDataset(CancelTask cancelTask) {
     addTimeCoord = addTimeCoordinate();
     augmentGroup(rootGroup);
     rootGroup.addAttribute(new Attribute(CDM.CONVENTIONS, "CF-1.0"));

@@ -117,11 +117,9 @@ public class TableParser {
   public static List<Record> readTable(InputStream ios, String format, int maxLines)
       throws IOException, NumberFormatException {
     List<Record> result;
-    try {
+    try (ios) {
       TableParser parser = new TableParser(format);
       result = parser.readAllRecords(ios, maxLines);
-    } finally {
-      ios.close();
     }
     return result;
   }
@@ -265,8 +263,8 @@ public class TableParser {
   }
 
   public static class DerivedField extends Field {
-    Field from;
-    Transform transform;
+    final Field from;
+    final Transform transform;
 
     DerivedField(Field from, Transform transform, Class type) {
       this.from = from;
@@ -285,7 +283,7 @@ public class TableParser {
   }
 
   public static class Record {
-    List<Object> values = new ArrayList<>();
+    final List<Object> values = new ArrayList<>();
 
     static Record make(String line, List fields) {
       try {

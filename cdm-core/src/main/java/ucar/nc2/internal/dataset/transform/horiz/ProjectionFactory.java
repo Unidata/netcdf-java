@@ -7,7 +7,6 @@ package ucar.nc2.internal.dataset.transform.horiz;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
-import ucar.nc2.dataset.spi.CoordSystemBuilderFactory;
 import ucar.unidata.geoloc.Projection;
 
 import javax.annotation.Nullable;
@@ -108,8 +107,8 @@ public class ProjectionFactory {
   }
 
   private static class Transform {
-    String transName;
-    Class<?> transClass;
+    final String transName;
+    final Class<?> transClass;
 
     Transform(String transName, Class<?> transClass) {
       this.transName = transName;

@@ -11,19 +11,19 @@ import javax.annotation.concurrent.Immutable;
 public class TagEnum {
   private static final java.util.Map<Short, TagEnum> hash = new java.util.HashMap<>(100);
 
-  public static int SPECIAL_LINKED = 1; /* Fixed-size Linked blocks */
+  public static final int SPECIAL_LINKED = 1; /* Fixed-size Linked blocks */
   public static int SPECIAL_EXT = 2; /* External */
-  public static int SPECIAL_COMP = 3; /* Compressed */
+  public static final int SPECIAL_COMP = 3; /* Compressed */
   public static int SPECIAL_VLINKED = 4; /* Variable-length linked blocks */
-  public static int SPECIAL_CHUNKED = 5; /* chunked element */
+  public static final int SPECIAL_CHUNKED = 5; /* chunked element */
   public static int SPECIAL_BUFFERED = 6; /* Buffered element */
   public static int SPECIAL_COMPRAS = 7; /* Compressed Raster element */
 
   public static int COMP_CODE_NONE; // don't encode at all, just store
   public static int COMP_CODE_RLE = 1; // for simple RLE encoding
-  public static int COMP_CODE_NBIT = 2; // for N-bit encoding
+  public static final int COMP_CODE_NBIT = 2; // for N-bit encoding
   public static int COMP_CODE_SKPHUFF = 3; // for Skipping huffman encoding
-  public static int COMP_CODE_DEFLATE = 4; // for gzip 'deflate' encoding
+  public static final int COMP_CODE_DEFLATE = 4; // for gzip 'deflate' encoding
   public static int COMP_CODE_SZIP = 5; // for szip encoding
 
   public static final TagEnum NONE = new TagEnum("NONE", "", (short) 0);

@@ -377,8 +377,8 @@ public class NetcdfDatasets {
   }
 
   private static class StandardDatasetFactory implements ucar.nc2.internal.cache.FileFactory {
-    DatasetUrl location;
-    EnumSet<Enhance> enhanceMode;
+    final DatasetUrl location;
+    final EnumSet<Enhance> enhanceMode;
 
     StandardDatasetFactory(DatasetUrl location, Set<Enhance> enhanceMode) {
       this.location = location;
