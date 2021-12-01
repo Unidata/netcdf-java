@@ -35,7 +35,7 @@ public class TestSubsettingUtils {
       Variable v = ncfile.findVariable(varName);
       if (v == null) {
         System.out.printf("Cant Find %s%n", varName);
-        for (Variable v2 : ncfile.getVariables())
+        for (Variable v2 : ncfile.getAllVariables())
           System.out.printf("  %s%n", v2.getFullName());
       }
       assert (null != v);

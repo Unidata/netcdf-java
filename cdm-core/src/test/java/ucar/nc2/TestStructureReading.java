@@ -41,7 +41,7 @@ public class TestStructureReading {
 
   @Test
   public void testNames() {
-    List<Variable> vars = ncfile.getVariables();
+    List<Variable> vars = ncfile.getAllVariables();
     String[] trueNames = {"rh", "T", "lat", "lon", "time", "recordvarTest", "record"};
     for (int i = 0; i < vars.size(); i++) {
       Assert.assertEquals("Checking names", trueNames[i], vars.get(i).getFullName());

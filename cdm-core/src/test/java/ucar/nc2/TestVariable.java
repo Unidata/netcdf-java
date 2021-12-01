@@ -151,7 +151,7 @@ public class TestVariable {
     assertThat(var.getFileTypeId()).isNull();
     assertThat(var.getNetcdfFile()).isEqualTo(ncfile);
 
-    List<Variable> vars = ncfile.getVariables().stream().sorted().collect(Collectors.toList());
+    List<Variable> vars = ncfile.getAllVariables().stream().sorted().collect(Collectors.toList());
     assertThat(vars).hasSize(2);
   }
 

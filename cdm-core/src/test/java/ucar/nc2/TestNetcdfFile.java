@@ -203,7 +203,7 @@ public class TestNetcdfFile {
     assertThat(dfound).isNotNull();
     assertThat(dfound).isEqualTo(dim);
 
-    List<Dimension> allDims = ncfile.getDimensions();
+    List<Dimension> allDims = ncfile.getAllDimensions();
     assertThat(allDims).hasSize(2);
 
     assertThat(ncfile.hasUnlimitedDimension()).isFalse();

@@ -38,7 +38,7 @@ public class TestSimpleGeom {
       Assert.assertTrue(failMessage, testCond);
 
       // check that attributes were filled in correctly
-      List<Variable> vars = ncd.getVariables();
+      List<Variable> vars = ncd.getAllVariables();
       for (Variable v : vars) {
         if (v.findAttribute(CF.GEOMETRY) != null) {
           Assert.assertNotNull(v.findAttribute(CF.NODE_COORDINATES));
@@ -67,7 +67,7 @@ public class TestSimpleGeom {
     Assert.assertTrue(failMessage, testCond);
 
     // check that attributes were filled in correctly
-    List<Variable> vars = ncd.getVariables();
+    List<Variable> vars = ncd.getAllVariables();
     for (Variable v : vars) {
       if (v.findAttribute(CF.GEOMETRY) != null) {
         Assert.assertNotNull(v.findAttribute(CF.NODE_COORDINATES));

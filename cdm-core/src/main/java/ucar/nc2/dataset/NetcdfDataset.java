@@ -378,7 +378,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
     // We have to break VariableDS Immutability here, because VariableDS is constructed in NetcdfFile, but needs a
     // link to the CoordinatesHelper, which isnt complete yet.
-    for (Variable v : this.getVariables()) {
+    for (Variable v : this.getAllVariables()) {
       if (v instanceof CoordinateAxis) {
         continue;
       }

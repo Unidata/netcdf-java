@@ -354,9 +354,8 @@ abstract class AbstractDate implements ChronoLocalDate {
 
   @Override
   public String toString() {
-    String buf = getChronology().toString() + " " + getEra() + " " + getYearOfEra() + (getMonth() < 10 ? "-0" : "-")
+    return getChronology().toString() + " " + getEra() + " " + getYearOfEra() + (getMonth() < 10 ? "-0" : "-")
         + getMonth() + (getDayOfMonth() < 10 ? "-0" : "-") + getDayOfMonth();
-    return buf;
   }
 
 }

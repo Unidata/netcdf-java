@@ -710,7 +710,7 @@ abstract class AggregationOuter extends Aggregation implements ProxyReader {
 
     List<Range> ranges = section.getRanges();
     Range joinRange = section.getRange(0);
-    List<Range> nestedRanges = new ArrayList(ranges);
+    List<Range> nestedRanges = new ArrayList<>(ranges);
     Section innerSection = new Section(ranges.subList(1, ranges.size()));
 
     List<Array<?>> arrayData = new ArrayList<>();

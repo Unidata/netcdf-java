@@ -11,11 +11,11 @@ import java.io.IOException;
 import java.util.Formatter;
 
 /** HDF5 diagnostic helper */
-public class H5diagNew {
+public class H5diagnostic {
   private final NetcdfFile ncfile;
   private final H5iosp iosp;
 
-  public H5diagNew(NetcdfFile ncfile, H5iosp iosp) {
+  public H5diagnostic(NetcdfFile ncfile, H5iosp iosp) {
     this.ncfile = ncfile;
     this.iosp = iosp;
   }
@@ -39,7 +39,7 @@ public class H5diagNew {
 
   public void showCompress(Formatter f) throws IOException {
     Size totalSize = new Size(0, 0);
-    for (Variable v : ncfile.getVariables()) {
+    for (Variable v : ncfile.getAllVariables()) {
       H5header.Vinfo vinfo = (H5header.Vinfo) v.getSPobject();
       showCompress(v, vinfo, totalSize, f);
     }

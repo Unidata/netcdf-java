@@ -10,7 +10,6 @@ import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.CF;
 import ucar.unidata.geoloc.Earth;
 
-import java.util.Formatter;
 import java.util.StringTokenizer;
 
 /** Abstract superclass for implementations of HorizTransformBuilderIF */
@@ -19,12 +18,6 @@ public abstract class AbstractProjectionCT implements ProjectionBuilder {
 
   protected double lat0, lon0, false_easting, false_northing, earth_radius;
   protected Earth earth;
-
-  private Formatter errBuffer;
-
-  public void setErrorBuffer(Formatter errBuffer) {
-    this.errBuffer = errBuffer;
-  }
 
   void readStandardParams(AttributeContainer ctv, String units) {
     lon0 = ctv.findAttributeDouble(CF.LONGITUDE_OF_CENTRAL_MERIDIAN, Double.NaN);

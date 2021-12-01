@@ -1384,8 +1384,8 @@ public class H5header implements HdfHeaderIF {
     if (transformReference && (facade.dobj.mdt.type == 7) && (facade.dobj.mdt.referenceType == 0)) { // object reference
       // System.out.printf("new transform object Reference: facade= %s variable name=%s%n", facade.name, vb.shortName);
       vb.setArrayType(ArrayType.STRING);
-      Array rawData = vinfo.readArray();
-      Array refData = findReferenceObjectNames(rawData);
+      Array<Long> rawData = (Array<Long>) vinfo.readArray();
+      Array<String> refData = findReferenceObjectNames(rawData);
       vb.setSourceData(refData); // so H5iosp.read() is never called
       vb.addAttribute(new Attribute("_HDF5ReferenceType", "values are names of referenced Variables"));
     }
@@ -1429,7 +1429,7 @@ public class H5header implements HdfHeaderIF {
 
   // convert an array of longs which are data object references to an array of strings,
   // the names of the data objects (dobj.who)
-  private Array<?> findReferenceObjectNames(Array<Long> data) throws IOException {
+  private Array<String> findReferenceObjectNames(Array<Long> data) throws IOException {
     int size = (int) Arrays.computeSize(data.getShape());
     String[] sarray = new String[size];
     int count = 0;

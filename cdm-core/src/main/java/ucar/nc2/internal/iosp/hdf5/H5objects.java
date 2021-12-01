@@ -2400,7 +2400,7 @@ public class H5objects {
    * @return the Array read from the heap
    * @throws IOException on read error
    */
-  Array getHeapDataArray(long globalHeapIdAddress, ArrayType dataType, int endian)
+  Array<?> getHeapDataArray(long globalHeapIdAddress, ArrayType dataType, int endian)
       throws IOException, InvalidRangeException {
     HeapIdentifier heapId = new HeapIdentifier(globalHeapIdAddress);
     if (debugHeap) {

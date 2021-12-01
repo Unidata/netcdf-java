@@ -59,7 +59,7 @@ public class TestSectionFillValue {
     try (NetcdfFile ncfile = NetcdfDatasets.openFile(filename, null);
         NetcdfDataset ncd = NetcdfDatasets.openDataset(filename)) {
 
-      for (Variable v : ncfile.getVariables()) {
+      for (Variable v : ncfile.getAllVariables()) {
         if (!v.getArrayType().isNumeric())
           continue;
         System.out.printf("testImplicitFillValue for %s type=%s%n", v.getShortName(), v.getArrayType());

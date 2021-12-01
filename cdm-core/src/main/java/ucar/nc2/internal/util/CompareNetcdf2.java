@@ -155,7 +155,7 @@ public class CompareNetcdf2 {
 
   }
 
-  public static boolean compareData(String name, Array<?> data1, Array<?> data2) throws IOException {
+  public static boolean compareData(String name, Array<?> data1, Array<?> data2) {
     return new CompareNetcdf2().compareData(name, data1, data2, false);
   }
 
@@ -273,7 +273,7 @@ public class CompareNetcdf2 {
     f.format("CompareTo= %s%n", copy.getLocation());
     boolean ok = true;
 
-    for (Variable orgV : org.getVariables()) {
+    for (Variable orgV : org.getAllVariables()) {
       // if (orgV.isCoordinateVariable()) continue;
 
       Variable copyVar = copy.findVariable(orgV.getShortName());
@@ -286,7 +286,7 @@ public class CompareNetcdf2 {
     }
 
     f.format("%n");
-    for (Variable orgV : copy.getVariables()) {
+    for (Variable orgV : copy.getAllVariables()) {
       // if (orgV.isCoordinateVariable()) continue;
       Variable copyVar = org.findVariable(orgV.getShortName());
       if (copyVar == null) {
@@ -685,7 +685,7 @@ public class CompareNetcdf2 {
     }
   }
 
-  public boolean compareData(String name, double[] data1, double[] data2) throws IOException {
+  public boolean compareData(String name, double[] data1, double[] data2) {
     Array<?> data1a = Arrays.factory(ArrayType.DOUBLE, new int[] {data1.length}, data1);
     Array<?> data2a = Arrays.factory(ArrayType.DOUBLE, new int[] {data2.length}, data2);
     return compareData(name, data1a, data2a, false);

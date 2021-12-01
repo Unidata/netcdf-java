@@ -99,7 +99,7 @@ class AggregationExisting extends AggregationOuter {
 
     // now create the agg variables
     // all variables with the named aggregation dimension
-    for (Variable v : typical.getVariables()) {
+    for (Variable v : typical.getAllVariables()) {
       if (v.getRank() < 1) {
         continue;
       }

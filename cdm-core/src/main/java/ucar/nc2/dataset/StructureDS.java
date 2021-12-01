@@ -26,11 +26,6 @@ public class StructureDS extends ucar.nc2.Structure implements StructureEnhanced
     return orgVar;
   }
 
-  /** When this wraps another Variable, get the original Variable's ArrayType. */
-  public ArrayType getOriginalArrayType() {
-    return ArrayType.STRUCTURE;
-  }
-
   /** When this wraps another Variable, get the original Variable's name. */
   public String getOriginalName() {
     return orgName;

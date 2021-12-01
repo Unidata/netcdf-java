@@ -200,7 +200,7 @@ public class DatasetWriter extends JPanel {
 
     WriterTask task = new WriterTask(data);
     ProgressMonitor pm = new ProgressMonitor(task, (e) -> logger.debug("success}"));
-    pm.start(null, "Writing " + filename, ds.getVariables().size());
+    pm.start(null, "Writing " + filename, ds.getAllVariables().size());
   }
 
   class WriterTask extends ProgressMonitorTask implements CancelTask {
@@ -419,7 +419,7 @@ public class DatasetWriter extends JPanel {
 
   private List<VariableBean> makeVariableBeans(NetcdfFile ds) {
     List<VariableBean> vlist = new ArrayList<>();
-    for (Variable v : ds.getVariables()) {
+    for (Variable v : ds.getAllVariables()) {
       vlist.add(new VariableBean(v));
     }
     return vlist;
@@ -427,7 +427,7 @@ public class DatasetWriter extends JPanel {
 
   private List<DimensionBean> makeDimensionBeans(NetcdfFile ds) {
     List<DimensionBean> dlist = new ArrayList<>();
-    for (Dimension d : ds.getDimensions()) {
+    for (Dimension d : ds.getAllDimensions()) {
       dlist.add(new DimensionBean(d));
     }
     return dlist;

@@ -155,7 +155,7 @@ public class Hdf5DataTable extends JPanel {
       infoTA.setText(sw.toString());
     }
 
-    for (Variable v : ncfile.getVariables()) {
+    for (Variable v : ncfile.getAllVariables()) {
       beanList.add(new VarBean(v));
     }
 

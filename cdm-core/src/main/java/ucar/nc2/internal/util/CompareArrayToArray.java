@@ -43,7 +43,7 @@ public class CompareArrayToArray {
     }
   }
 
-  public static boolean compareFiles(NetcdfFile arrayFile, NetcdfFile arrayFile2) throws IOException {
+  public static boolean compareFiles(NetcdfFile arrayFile, NetcdfFile arrayFile2) {
     Stopwatch stopwatchAll = Stopwatch.createStarted();
     // Just the header
     Formatter errlog = new Formatter();
@@ -53,7 +53,7 @@ public class CompareArrayToArray {
       return false;
     }
 
-    for (Variable v : arrayFile.getVariables()) {
+    for (Variable v : arrayFile.getAllVariables()) {
       ok &= compareVariable(arrayFile, arrayFile2, v.getFullName(), false);
     }
     System.out.printf("*** took %s%n", stopwatchAll.stop());
@@ -376,7 +376,7 @@ public class CompareArrayToArray {
       System.out.println("Test NetcdfFile: " + org.getLocation());
 
       boolean ok = true;
-      for (Variable v : org.getVariables()) {
+      for (Variable v : org.getAllVariables()) {
         if (v.getArrayType() == ArrayType.SEQUENCE) {
           System.out.printf("  read sequence %s %s%n", v.getArrayType(), v.getShortName());
           Sequence s = (Sequence) v;
@@ -405,7 +405,7 @@ public class CompareArrayToArray {
       System.out.println("Test NetcdfDataset: " + org.getLocation());
 
       boolean ok = true;
-      for (Variable v : org.getVariables()) {
+      for (Variable v : org.getAllVariables()) {
         if (v.getArrayType() == ArrayType.SEQUENCE) {
           System.out.printf("  read sequence %s %s%n", v.getArrayType(), v.getShortName());
           Sequence s = (Sequence) v;

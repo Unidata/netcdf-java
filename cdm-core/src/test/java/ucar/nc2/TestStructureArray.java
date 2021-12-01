@@ -35,7 +35,7 @@ public class TestStructureArray {
 
   @Test
   public void testNames() {
-    for (Variable v : ncfile.getVariables()) {
+    for (Variable v : ncfile.getAllVariables()) {
       System.out.println(" " + v.getShortName() + " == " + v.getFullName());
     }
 

@@ -120,7 +120,7 @@ public class GridNetcdfDataset implements GridDataset {
     coordsys.sort((o1, o2) -> o2.getGridAxes().size() - o1.getGridAxes().size());
 
     // Assign coordsys to grids
-    for (Variable v : ncd.getVariables()) {
+    for (Variable v : ncd.getAllVariables()) {
       if (v.getFullName().startsWith("Best/")) { // TODO remove Best from grib generation code
         continue;
       }
@@ -173,7 +173,7 @@ public class GridNetcdfDataset implements GridDataset {
     }
 
     Set<TrackVerticalTransform> findVerticalTransforms() {
-      for (Variable v : ncd.getVariables()) {
+      for (Variable v : ncd.getAllVariables()) {
         Optional<String> transformNameOpt = VerticalTransformFactory.hasVerticalTransformFor(v.attributes());
         if (transformNameOpt.isPresent()) {
           String transformName = transformNameOpt.get();

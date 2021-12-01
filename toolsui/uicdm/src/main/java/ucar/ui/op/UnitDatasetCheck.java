@@ -32,7 +32,7 @@ public class UnitDatasetCheck extends OpPanel {
 
     try (NetcdfDataset ncfile = NetcdfDatasets.openDataset(command, useCoords, null)) {
       ta.setText("Variables for " + command + ":");
-      for (Variable vs : ncfile.getVariables()) {
+      for (Variable vs : ncfile.getAllVariables()) {
         String units = vs.getUnitsString();
         StringBuilder sb = new StringBuilder();
         sb.append("   ").append(vs.getShortName()).append(" has unit= <").append(units).append(">");

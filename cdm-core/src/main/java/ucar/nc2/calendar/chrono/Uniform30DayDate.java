@@ -500,9 +500,8 @@ public final class Uniform30DayDate extends AbstractDate implements ChronoLocalD
 
   @Override
   public String toString() {
-    String buf = getChronology().toString() + ' ' + getEra() + ' ' + getYearOfEra()
+    return getChronology().toString() + ' ' + getEra() + ' ' + getYearOfEra()
         + (this.month < 10 && this.month > 0 ? "/0" : '/') + this.month + (this.day < 10 ? "/0" : '/') + this.day;
-    return buf;
   }
 
 }

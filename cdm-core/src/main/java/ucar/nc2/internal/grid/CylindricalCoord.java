@@ -102,7 +102,7 @@ public class CylindricalCoord {
 
   public Array<Number> readSpecial(MaterializedCoordinateSystem subsetCoordSys, Grid grid)
       throws InvalidRangeException, IOException {
-    ArrayList<Range> ranges = new ArrayList(subsetCoordSys.getSubsetRanges());
+    ArrayList<Range> ranges = new ArrayList<>(subsetCoordSys.getSubsetRanges());
     int last = ranges.size() - 1;
     ranges.set(last, this.lonIntvs.get(0));
     Array<Number> data0 = grid.readDataSection(new ucar.array.Section(ranges));

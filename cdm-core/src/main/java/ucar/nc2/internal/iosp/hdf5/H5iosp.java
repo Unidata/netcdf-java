@@ -238,7 +238,7 @@ public class H5iosp extends AbstractIOServiceProvider {
           size *= fieldshape[prefixrank];
         }
         assert size == m.length() : "Internal error: field size mismatch";
-        Array[] fieldarray = new Array[size]; // hold all the vlen instance data
+        Array<?>[] fieldarray = new Array<?>[size]; // hold all the vlen instance data
         // destPos will point to each vlen instance in turn
         // assuming we have 'size' such instances in a row.
         int destPos = startPos;
@@ -249,11 +249,12 @@ public class H5iosp extends AbstractIOServiceProvider {
           destPos += VLEN_T_SIZE; // Apparentlly no way to compute VLEN_T_SIZE on the fly
         }
         Array<?> result;
-        if (prefixrank == 0) // if scalar, return just the singleton vlen array
+        if (prefixrank == 0) { // if scalar, return just the singleton vlen array
           result = fieldarray[0];
-        else {
+        } else {
           int[] newshape = new int[prefixrank];
           System.arraycopy(fieldshape, 0, newshape, 0, prefixrank);
+          // TODO
           // result = Array.makeObjectArray(m.getArrayType(), fieldarray[0].getClass(), newshape, fieldarray);
           result = null; // Array.makeVlenArray(newshape, fieldarray);
         }
@@ -678,7 +679,7 @@ public class H5iosp extends AbstractIOServiceProvider {
           readPos += VLEN_T_SIZE;
         }
         // put resulting ArrayVlen into the storage heap.
-        Array heapArray = vlenArray.length() == 1 ? vlenArray.get(0) : vlenArray;
+        Array<?> heapArray = vlenArray.length() == 1 ? vlenArray.get(0) : vlenArray;
         int index = storage.putOnHeap(heapArray);
         storageBB.order(endian);
         storageBB.putInt(startPos, index); // overwrite with the index into the Heap

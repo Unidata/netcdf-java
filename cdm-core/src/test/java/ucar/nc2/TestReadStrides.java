@@ -181,7 +181,7 @@ public class TestReadStrides {
 
   private void testReadStrides(String filename) throws IOException, InvalidRangeException {
     try (NetcdfFile ncfile = TestDir.open(filename)) {
-      for (Variable v : ncfile.getVariables()) {
+      for (Variable v : ncfile.getAllVariables()) {
         if (v.getRank() == 0)
           continue;
         if (!v.hasCachedData())

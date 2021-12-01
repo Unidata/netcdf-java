@@ -381,9 +381,9 @@ public class NUWGConvention extends CoordSystemBuilder {
   }
 
   private class NavInfo {
-    VariableDS.Builder<?> vb;
-    Variable orgVar;
-    ArrayType valueType;
+    final VariableDS.Builder<?> vb;
+    final Variable orgVar;
+    final ArrayType valueType;
     String svalue;
     byte bvalue;
     int ivalue;
